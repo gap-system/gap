@@ -52,6 +52,7 @@
 #include <src/range.h>
 #include <src/records.h>
 #include <src/saveload.h>
+#include <src/sysfiles.h>
 #include <src/trans.h>
 
 /****************************************************************************
@@ -4443,12 +4444,12 @@ Obj FuncSCR_SIFT_HELPER(Obj self, Obj S, Obj g, Obj n)
   /* Copy g into the buffer */
   if (IS_PERM2(g) && useP2) {
     UInt2 * ptR = ADDR_PERM2(result);
-    memmove(ptR, CONST_ADDR_PERM2(g),2*dg);
+    SyMemmove(ptR, CONST_ADDR_PERM2(g),2*dg);
     for ( i = dg; i < nn; i++)
       ptR[i] = (UInt2)i;
   } else if (IS_PERM4(g) && !useP2) {
     UInt4 *ptR = ADDR_PERM4(result);
-    memmove(ptR,CONST_ADDR_PERM4(g),4*dg);    
+    SyMemmove(ptR,CONST_ADDR_PERM4(g),4*dg);
     for ( i = dg; i <nn; i++)
       ptR[i] = (UInt4)i;
   } else if (IS_PERM2(g) && !useP2) {
