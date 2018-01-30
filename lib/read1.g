@@ -38,7 +38,6 @@ ReadLib( "record.gd"   );
 
 ReadLib( "cache.gi"    );
 ReadLib( "coll.gi"     );
-ReadLib( "queue.g"     );
 
 ReadLib( "flag.g"      );
 ReadLib( "boolean.g"   );
@@ -99,6 +98,7 @@ if IsHPCGAP then
   if IsBound(GAPInfo.SystemEnvironment.GAP_WORKSTEALING) then
     ReadLib( "hpc/tasks.g" );
   else
+    ReadLib( "hpc/queue.g" );
     ReadLib( "hpc/stdtasks.g" );
   fi;
 
