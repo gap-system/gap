@@ -577,6 +577,7 @@ extern Char * SyTmpname ( void );
 */
 extern Char * SyTmpdir ( const Char * hint );
 
+
 /****************************************************************************
 **
 *F  void getwindowsize( void )  . probe the OS for the window size and
@@ -611,6 +612,9 @@ extern Char *SyFgetsSemiBlock (
 extern Obj SyReadStringFid(Int fid);
 extern Obj SyReadStringFile(Int fid);
 extern Obj SyReadStringFileGeneric(Int fid);
+
+// Internal implementation of memmove, to avoid issues with glibc
+void *SyMemmove(void *dst, const void* src, UInt size);
 
 /****************************************************************************
 **

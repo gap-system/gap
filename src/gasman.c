@@ -115,6 +115,7 @@
 
 #include <src/gaputils.h>
 #include <src/io.h>
+#include <src/sysfiles.h>
 
 
 /****************************************************************************
@@ -1362,7 +1363,7 @@ UInt ResizeBag (
         SET_PTR_BAG(bag, dst);
 
         /* copy the contents of the bag                                    */
-        memmove((void *)dst, (void *)DATA(header),
+        SyMemmove((void *)dst, (void *)DATA(header),
                 sizeof(Obj) * WORDS_BAG(old_size));
     }
 
@@ -1884,7 +1885,7 @@ again:
 
             /* Otherwise do the default thing */
             else if ( dst != DATA(header) ) {
-                memmove(dst, DATA(header), (end - DATA(header))*sizeof(Bag));
+                SyMemmove(dst, DATA(header), (end - DATA(header))*sizeof(Bag));
                 dst += end - DATA(header);
             }
             else {
@@ -2024,7 +2025,7 @@ again:
             i = SpaceBetweenPointers(EndBags,stopBags)/7 - (SizeMptrsArea-NrLiveBags);
 
             /* move the bags area                                          */
-            memmove(OldBags+i, OldBags, SizeAllBagsArea*sizeof(*OldBags));
+            SyMemmove(OldBags+i, OldBags, SizeAllBagsArea*sizeof(*OldBags));
 
             /* update the masterpointers                                   */
             for ( p = MptrBags; p < OldBags; p++ ) {
