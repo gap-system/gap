@@ -246,14 +246,6 @@ AC_DEFINE_UNQUOTED([USE_POPCNT],
     [$USE_POPCNT],
     [define as 1 if we should try and use the __builtin_popcntl function if available])
 
-AS_IF([test "x$enable_Werror" != "xno"],
-  [ax_enable_compile_warnings=error],
-  [ax_enable_compile_warnings=yes])
-
-#WARNING_CPPFLAGS=""
-AX_COMPILER_FLAGS_CFLAGS([WARNING_CPPFLAGS])
-AC_SUBST([WARNING_CPPFLAGS])
-
 dnl
 dnl External dependencies
 dnl
