@@ -577,6 +577,7 @@ extern Char * SyTmpname ( void );
 */
 extern Char * SyTmpdir ( const Char * hint );
 
+
 /****************************************************************************
 **
 *F  void getwindowsize( void )  . probe the OS for the window size and
@@ -611,6 +612,18 @@ extern Char *SyFgetsSemiBlock (
 extern Obj SyReadStringFid(Int fid);
 extern Obj SyReadStringFile(Int fid);
 extern Obj SyReadStringFileGeneric(Int fid);
+
+
+#if !defined(SYS_IS_64_BIT) && defined(__GNU_LIBRARY__)
+#define USE_CUSTOM_MEMMOVE 1
+#endif
+
+#ifdef USE_CUSTOM_MEMMOVE
+// Internal implementation of memmove, to avoid issues with glibc
+void * SyMemmove(void * dst, const void * src, size_t size);
+#else
+#define SyMemmove memmove
+#endif
 
 /****************************************************************************
 **
