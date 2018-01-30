@@ -2006,7 +2006,7 @@ void InitSystem (
             const UInt pathlen = strlen(SyGapRootPaths[i]);
             if (SyGapRootPaths[i][0] == '~' &&
                 userhomelen + pathlen < sizeof(SyGapRootPaths[i])) {
-                memmove(SyGapRootPaths[i] + userhomelen,
+                SyMemmove(SyGapRootPaths[i] + userhomelen,
                         /* don't copy the ~ but the trailing '\0' */
                         SyGapRootPaths[i] + 1, pathlen);
                 memcpy(SyGapRootPaths[i], userhome, userhomelen);
