@@ -53,6 +53,7 @@
 #include <src/range.h>
 #include <src/records.h>
 #include <src/saveload.h>
+#include <src/sysfiles.h>
 #include <src/trans.h>
 
 /****************************************************************************
