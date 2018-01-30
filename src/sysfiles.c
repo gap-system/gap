@@ -3598,6 +3598,67 @@ Obj SyReadStringFid(Int fid) {
 #endif
 
 
+#ifdef USE_CUSTOM_MEMMOVE
+// The memmove in glibc on 32-bit SSE2 systems, contained in
+// __memmove_sse2_unaligned, is buggy in at least versions
+// 2.21 - 2.26 when crossing the 2GB boundary, so GAP must
+// include its own simple memmove implementation.
+void * SyMemmove(void * dst, const void * src, UInt size)
+{
+    char *       d = dst;
+    const char * s = src;
+
+    if ((d == s) || (size == 0))
+        return dst;
+
+    if (d + size < s || d > s + size) {
+        memcpy(dst, src, size);
+    }
+    else if (d > s) {
+        d = d + (size - 1);
+        s = s + (size - 1);
+
+        // This is about 4x slower than glibc, but
+        // is simple and also complicated enough that
+        // gcc or clang seem unable to "optimise" it back
+        // into a call to memmove.
+
+        // Do size 4 jumps
+        while (size > 4) {
+            *d = *s;
+            *(d - 1) = *(s - 1);
+            *(d - 2) = *(s - 2);
+            *(d - 3) = *(s - 3);
+            d -= 4;
+            s -= 4;
+            size -= 4;
+        }
+        // Finish
+        while (size > 0) {
+            *d-- = *s--;
+            size--;
+        }
+    }
+    else {
+        while (size > 4) {
+            *d = *s;
+            *(d + 1) = *(s + 1);
+            *(d + 2) = *(s + 2);
+            *(d + 3) = *(s + 3);
+            d += 4;
+            s += 4;
+            size -= 4;
+        }
+        // Finish
+        while (size > 0) {
+            *d++ = *s++;
+            size--;
+        }
+    }
+    return dst;
+}
+#endif
+
 
 /****************************************************************************
 **
