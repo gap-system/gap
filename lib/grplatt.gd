@@ -454,9 +454,8 @@ DeclareGlobalFunction("LowLayerSubgroups");
 ##  <Func Name="ContainedConjugates" Arg='G, A, B'/>
 ##
 ##  <Description>
-##  For <M>G\ge A,B</M> this operation returns representatives of the <A>A</A> conjugacy classes
-##  of subgroups that are
-##  conjugate to <A>B</A> under <A>G</A>.
+##  For <M>A,B \leq G</M> this operation returns representatives of the <A>A</A>
+##  conjugacy classes of subgroups that are conjugate to <A>B</A> under <A>G</A>.
 ##  The function returns a list of pairs of subgroup and conjugating element.
 ##  <Example><![CDATA[
 ##  gap> g:=SymmetricGroup(8);;
@@ -480,7 +479,7 @@ DeclareSynonym("EmbeddedConjugates",ContainedConjugates);
 ##  <Func Name="ContainingConjugates" Arg='G, A, B'/>
 ##
 ##  <Description>
-##  For <M>G\ge A,B</M> this operation returns all <A>G</A> conjugates of <A>A</A> 
+##  For <M>A,B \leq G</M> this operation returns all <A>G</A> conjugates of <A>A</A> 
 ##  that contain <A>B</A>.
 ##  The function returns a list of pairs of subgroup and conjugating element.
 ##  <Example><![CDATA[
