@@ -4176,12 +4176,14 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  <Example><![CDATA[
 ##  gap> SetInfoLevel( InfoFpGroup, 1 );
 ##  gap> iso := IsomorphismFpGroupByGenerators( g, [ (1,2), (1,2,3,4,5) ] );
-##  #I  the image group has 2 gens and 5 rels of total length 39
+##  #I  the image group has 2 gens and 4 rels of total length 50
 ##  [ (1,2), (1,2,3,4,5) ] -> [ F1, F2 ]
 ##  gap> fp := Image( iso );
 ##  <fp group of size 120 on the generators [ F1, F2 ]>
 ##  gap> RelatorsOfFpGroup( fp );
-##  [ F1^2, F2^5, (F2^-1*F1)^4, (F1*F2^-1*F1*F2)^3, (F1*F2^2*F1*F2^-2)^2 ]
+##  [ F1^2, (F2*F1*F2^-2*F1)^3, 
+##    F2*F1*F2^-1*(F1*F2)^2*F2^2*(F1*F2^-1)^2*F2^-1*F1, 
+##    (F2*F1*F2^-1*F1)^2*F2^-1*F1*F2^2*F1*F2^-2*F1*F2*F1 ]
 ##  ]]></Example>
 ##  <P/>
 ##  The main task of the function
@@ -4208,9 +4210,9 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##    (1,12)(2,11)(3,6)(4,8)(5,9)(7,10) ])
 ##  gap> gens := GeneratorsOfGroup( M12 );;
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens );;
-##  #I  the image group has 3 gens and 20 rels of total length 464
+##  #I  the image group has 3 gens and 20 rels of total length 554
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens );;
-##  #I  the image group has 3 gens and 19 rels of total length 491
+##  #I  the image group has 3 gens and 19 rels of total length 427
 ##  ]]></Example>
 ##  <P/>
 ##  Also in the case of a permutation group <A>G</A>, the function
@@ -4259,7 +4261,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  #I  the image group has 3 gens and 11 rels of total length 92
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens : 
 ##  >                                           method := "fast" );;
-##  #I  the image group has 3 gens and 179 rels of total length 4099
+##  #I  the image group has 3 gens and 136 rels of total length 3215
 ##  ]]></Example>
 ##  <P/>
 ##  Though the option <C>method := "regular"</C> is only checked in the case
@@ -4281,7 +4283,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##    [ [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], 
 ##        [ 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1 ] ] ]
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens );;
-##  #I  the image group has 2 gens and 9 rels of total length 94
+##  #I  the image group has 2 gens and 10 rels of total length 126
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens : 
 ##  >                                           method := "regular");;
 ##  #I  the image group has 2 gens and 6 rels of total length 56
@@ -4293,15 +4295,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  , 0, 0, 0, 1 ] ] ]->[ F1, F2 ]>
 ##  gap> ConstituentsCompositionMapping(iso);
 ##  [ <action isomorphism>, 
-##    [ (2,3,5,9,16,29)(4,7,13,24,19,32)(6,11,20,34,40,57)(8,15,28,46,42,
-##          59)(10,18,25,41,49,67)(12,22,37,53,48,66)(14,26,31)(17,30,35,
-##          50,58,38)(21,36,33)(23,39,56)(27,44,61,72,43,60)(45,62,51,68,
-##          54,70)(47,64,73)(52,69)(55,71,75,78,77,76)(65,74), 
-##        (1,2,4,8)(3,6,12,23)(5,10,19,33)(7,14,27,45)(9,17,18,31)(11,21,
-##          16,28)(13,25,42,57)(20,35,51,67)(22,38,55,70)(24,40,26,43)(29,
-##          37,54,39)(30,47,65,68)(32,48)(34,49,36,52)(41,58,56,61)(44,50,
-##          53,64)(46,63,69,59)(60,66,75,79)(62,73,72,77)(71,76,80,74) 
-##       ] -> [ F1, F2 ] ]
+##    [ (2,3,4)(5,6)(8,9,10), (1,2,3,5)(6,7,8,9) ] -> [ F1, F2 ] ]
 ##  ]]></Example>
 ##  <P/>
 ##  Since &GAP; cannot decompose elements of a matrix group into generators,

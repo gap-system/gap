@@ -3723,7 +3723,6 @@ local fgens,grels,max,gens,t,Attempt;
   gens:=Concatenation([t,
     #pseudorandom element - try if it works
     PseudoRandom(G:radius:=Random(2,3))],
-    #Product([1..Random([2,3])],i->Random(gens)^Random([1,-1]))],
     Filtered(gens,j->UnderlyingElement(j)<>UnderlyingElement(t)));
 
   # recursive search (via smaller and smaller partitions) for a finite index
