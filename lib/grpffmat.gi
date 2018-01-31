@@ -125,13 +125,25 @@ end );
 ##
 #M  NiceMonomorphism( <ffe-mat-grp> )
 ##
+MakeThreadLocal("FULLGLNICOCACHE"); # avoid recreating same homom. repeatedly
+FULLGLNICOCACHE:=[];
 InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
     local   field,  dim,  V,  xset,  nice;
     
     field := FieldOfMatrixGroup( grp );
     dim   := DimensionOfMatrixGroup( grp );
+
+    #check cache
+    V:=Size(field);
+    nice:=First(FULLGLNICOCACHE,x->x[1]=V and x[2]=dim);
+    if nice<>fail then return nice[3];fi;
+
+    if not (HasIsNaturalGL(grp) and IsNaturalGL(grp)) then
+      grp:=GL(dim,field); # enforce map on full GL
+    fi;
     V     := field ^ dim;
     xset := ExternalSet( grp, V );
+
 
     # STILL: reverse the base to get point sorting compatible with lexicographic
     # vector arrangement
@@ -144,6 +156,16 @@ InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
     SetFilterObj(nice,IsNiceMonomorphism);
     # because we act on the full space we are canonical.
     SetIsCanonicalNiceMonomorphism(nice,true);
+    if Size(V)>10^5 then 
+      # store only one big one and have it get thrown out quickly
+      FULLGLNICOCACHE[1]:=[Size(field),dim,nice];
+    else
+      if Length(FULLGLNICOCACHE)>4 then
+        FULLGLNICOCACHE:=FULLGLNICOCACHE{[2..5]};
+      fi;
+      Add(FULLGLNICOCACHE,[Size(field),dim,nice]);
+    fi;
+
     return nice;
 end );
 
