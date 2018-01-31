@@ -150,16 +150,21 @@ end );
 InstallMethod( NiceMonomorphism, "falling back on GL", true,
     [ IsFFEMatrixGroup and IsFinite ], 0,
 function( grp )
+local tt;
   # is it GL?
   if (HasIsNaturalGL( grp ) and IsNaturalGL( grp ))
       or (HasIsNaturalSL( grp ) and IsNaturalSL( grp )) then
     return NicomorphismFFMatGroupOnFullSpace(grp);
   fi;
 
-  # is the GL domain small enough to simply use it?
+  # is the GL domain small enough in comparison to the group to simply use it?
+  tt:=2000;
+  if HasSize(grp) and Size(grp)<tt then
+    tt:=Size(grp);
+  fi;
   if IsTrivial(grp) 
-     or Size(FieldOfMatrixGroup(Parent(grp)))^DimensionOfMatrixGroup(grp)
-         >2000 then
+     or Size(FieldOfMatrixGroup(Parent(grp)))^DimensionOfMatrixGroup(grp)>tt 
+         then
     # if the permutation image would be too large, compute the orbit.
     TryNextMethod();
   fi;
