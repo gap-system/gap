@@ -27,14 +27,14 @@ BIND_GLOBAL( "GAPInfo", rec(
     NeedKernelVersion := MakeImmutable("4.dev"),
 
 # Without the needed packages, GAP does not start.
-    Dependencies := rec(
+    Dependencies := MakeImmutable(rec(
       NeededOtherPackages := [
         [ "gapdoc", ">= 1.2" ],
         [ "primgrp", ">= 3.1.0" ],
         [ "smallgrp", ">= 1.0" ],
         [ "transgrp", ">= 1.0" ],
       ],
-    ),
+    )),
 # There is no SuggestedOtherPackages here because the default value of
 # the user preference PackagesToLoad does the job      
 
@@ -139,6 +139,61 @@ od;
 
 #############################################################################
 ##
+##  On 32-bit we have to adjust some command line default values
+##
+if GAPInfo.BytesPerVariable = 4 then
+    CALL_FUNC_LIST(function()
+    local i;
+    i := 1;
+    while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
+          not(IsBound(GAPInfo.CommandLineOptionData[i].short)) or
+          GAPInfo.CommandLineOptionData[i].short <> "m" do i := i + 1; od;
+    GAPInfo.CommandLineOptionData[i].default := "64m";
+    i := 1;
+    while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
+          not(IsBound(GAPInfo.CommandLineOptionData[i].short)) or
+          GAPInfo.CommandLineOptionData[i].short <> "o" do i := i + 1; od;
+    GAPInfo.CommandLineOptionData[i].default := "1g";
+    i := 1;
+    while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
+          not(IsBound(GAPInfo.CommandLineOptionData[i].short)) or
+          GAPInfo.CommandLineOptionData[i].short <> "s" do i := i + 1; od;
+    GAPInfo.CommandLineOptionData[i].default := "1500m";
+    end, []);
+fi;
+
+
+#############################################################################
+##
+##  For HPC-GAP, we want GAPInfo and its members to be accessible from all
+##  threads, so make members atomic or immutable.
+##
+if not IsHPCGAP then
+    # HACK to silence "Unbound global variable" warnings
+    AtomicList := fail;
+    AtomicRecord := fail;
+fi;
+if IsHPCGAP then
+    MakeReadWriteGVar("GAPInfo");
+    GAPInfo := AtomicRecord(GAPInfo);
+    MakeReadOnlyGVar("GAPInfo");
+    GAPInfo.AtExitFuncs:= AtomicList([]);
+    GAPInfo.PostRestoreFuncs:= AtomicList([]);
+    GAPInfo.TestData:= ThreadLocalRecord( rec() );
+    APPEND_LIST_INTR(GAPInfo.CommandLineOptionData, [
+        ,
+        rec( short:= "S", default := false, help := ["disable/enable multi-threaded interface"] ),
+        rec( short:= "P", default := "0", arg := "<num>", help := ["set number of logical processors"] ),
+        rec( short:= "G", default := "0", arg := "<num>", help := ["set number of GC threads"] ),
+        rec( short:= "Z", default := false, help := ["enforce ordering of region locks"] ),
+      ]);
+
+    MakeImmutable(GAPInfo.CommandLineOptionData);
+fi;
+
+
+#############################################################################
+##
 #F  CallAndInstallPostRestore( <func> )
 ##
 ##  The argument <func> must be a function with no argument.
@@ -219,24 +274,6 @@ CallAndInstallPostRestore( function()
     GAPInfo.BuildVersion:= GAPInfo.KernelInfo.BUILD_VERSION;
     GAPInfo.BuildDateTime:= GAPInfo.KernelInfo.BUILD_DATETIME;
     GAPInfo.Architecture:= GAPInfo.KernelInfo.GAP_ARCHITECTURE;
-    # On 32-bit we have to adjust some values:
-    if GAPInfo.BytesPerVariable = 4 then
-      i := 1;
-      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
-            not(IsBound(GAPInfo.CommandLineOptionData[i].short)) or
-            GAPInfo.CommandLineOptionData[i].short <> "m" do i := i + 1; od;
-      GAPInfo.CommandLineOptionData[i].default := "64m";
-      i := 1;
-      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
-            not(IsBound(GAPInfo.CommandLineOptionData[i].short)) or
-            GAPInfo.CommandLineOptionData[i].short <> "o" do i := i + 1; od;
-      GAPInfo.CommandLineOptionData[i].default := "1g";
-      i := 1;
-      while not(IsBound(GAPInfo.CommandLineOptionData[i])) or
-            not(IsBound(GAPInfo.CommandLineOptionData[i].short)) or
-            GAPInfo.CommandLineOptionData[i].short <> "s" do i := i + 1; od;
-      GAPInfo.CommandLineOptionData[i].default := "1500m";
-    fi;
 
     # The exact command line which called GAP as list of strings;
     # first entry is the executable followed by the options.
@@ -259,26 +296,32 @@ CallAndInstallPostRestore( function()
     fi;
 
     # directory caches
-    GAPInfo.DirectoriesLibrary:= rec();
     GAPInfo.DirectoriesPrograms:= false;
-    GAPInfo.DirectoriesTemporary:= [];
     GAPInfo.DirectoryCurrent:= false;
-    GAPInfo.DirectoriesSystemPrograms:= [];
+    if IsHPCGAP then
+        GAPInfo.DirectoriesLibrary:= AtomicRecord( rec() );
+        GAPInfo.DirectoriesTemporary:= AtomicList([]);
+        GAPInfo.DirectoriesSystemPrograms:= AtomicList([]);
+    else
+        GAPInfo.DirectoriesLibrary:= rec();
+        GAPInfo.DirectoriesTemporary:= [];
+        GAPInfo.DirectoriesSystemPrograms:= [];
+    fi;
     if IsBound(GAPInfo.SystemEnvironment.PATH) then
       j:= 1;
       for i in [1..LENGTH(GAPInfo.SystemEnvironment.PATH)] do
         if GAPInfo.SystemEnvironment.PATH[i] = ':' then
           if i > j then
             ADD_LIST_DEFAULT(GAPInfo.DirectoriesSystemPrograms,
-                  GAPInfo.SystemEnvironment.PATH{[j..i-1]});
+                  MakeImmutable(GAPInfo.SystemEnvironment.PATH{[j..i-1]}));
           fi;
           j := i+1;
         fi;
       od;
       if j <= LENGTH( GAPInfo.SystemEnvironment.PATH ) then
         ADD_LIST_DEFAULT( GAPInfo.DirectoriesSystemPrograms,
-            GAPInfo.SystemEnvironment.PATH{ [ j ..
-                LENGTH( GAPInfo.SystemEnvironment.PATH ) ] } );
+            MakeImmutable(GAPInfo.SystemEnvironment.PATH{ [ j ..
+                LENGTH( GAPInfo.SystemEnvironment.PATH ) ] } ));
       fi;
     fi;
 
@@ -423,12 +466,20 @@ CallAndInstallPostRestore( function()
       od;
 
       PRINT_TO("*errout*",
+       "\n",
        "  Boolean options (b,q,e,r,A,D,E,M,N,T,X,Y) toggle the current value\n",
        "  each time they are called. Default actions are indicated first.\n",
        "\n" );
       QUIT_GAP();
     fi;
 end );
+
+
+if not IsHPCGAP then
+    # undo HACK to silence "Unbound global variable" warnings
+    Unbind(AtomicList);
+    Unbind(AtomicRecord);
+fi;
 
 
 #############################################################################
