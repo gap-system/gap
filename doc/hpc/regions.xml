@@ -479,7 +479,7 @@ locking the target. I.e., for a list, it is equivalent to:
 
 <Example><![CDATA[
 AtomicIncorporateObj := function(target, index, value)
-  atomic value do
+  atomic target, value do
     target[index] := MigrateObj(value, target)
   od;
 end;
