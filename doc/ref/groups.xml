@@ -449,8 +449,9 @@ the series without destroying the properties of the series.
 <#Include Label="IsConjugacyClassSubgroupsRep">
 <#Include Label="ConjugacyClassesSubgroups">
 <#Include Label="ConjugacyClassesMaximalSubgroups">
-<#Include Label="AllSubgroups">
 <#Include Label="MaximalSubgroupClassReps">
+<#Include Label="LowIndexSubgroups">
+<#Include Label="AllSubgroups">
 <#Include Label="MaximalSubgroups">
 <#Include Label="NormalSubgroups">
 <#Include Label="MaximalNormalSubgroups">
