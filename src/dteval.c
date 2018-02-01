@@ -132,7 +132,7 @@ Obj     Evaluation(
     if ( IS_INTOBJ(power)  &&  INT_INTOBJ(power) > 0  &&  
          power < ELM_PLIST(vec, 6)     )
         return INTOBJ_INT(0);
-    prod = binomial(power, ELM_PLIST(vec, 6) );
+    prod = BinomialInt(power, ELM_PLIST(vec, 6) );
     len = LEN_PLIST(vec);
     for (i=7; i < len; i+=2)
     {
@@ -141,7 +141,7 @@ Obj     Evaluation(
              ( INT_INTOBJ(help) == 0                 ||
                ( INT_INTOBJ(help) > 0  &&  help < ELM_PLIST(vec, i+1) )  ) )
             return INTOBJ_INT(0);
-        prod = ProdInt( prod, binomial( help, ELM_PLIST(vec, i+1) ) );
+        prod = ProdInt( prod, BinomialInt(help, ELM_PLIST(vec, i+1) ) );
     }
     return prod;
 }

@@ -639,7 +639,7 @@ Obj    MakeFormulaVector(
                 if ( ELM_PLIST(rel, j) == gen  )
                 {
                     prod = ProdInt(ELM_PLIST(vec, 2),
-                                   binomial(ELM_PLIST(rel, j+1), 
+                                   BinomialInt(ELM_PLIST(rel, j+1), 
                                             INTOBJ_INT(i)        )        );
                     SET_ELM_PLIST(vec,  2, prod);
                     /*  tell gasman that vec has changed                     */
@@ -678,34 +678,6 @@ Obj    FuncMakeFormulaVector(
                         "you can 'return;'");
     return  MakeFormulaVector(tree, pr);
 }
-
-
-/*****************************************************************************
-**
-*F  binomial(<n>, <k>) . . . . . . . . . binomial coefficient of <n> and <k>
-**
-**  'binomial' returns the binomial coefficient of the integers <n> and <k>.
-*/
-Obj  binomial( Obj   n,
-               Obj   k  )
-{
-    UInt    j, kc;
-    Obj     bin, help;
-
-    if ( LtInt( INTOBJ_INT(0), n)  &&  LtInt(n, k)  )
-        return INTOBJ_INT(0);
-    if ( IS_INTOBJ(n)  &&  n == k )
-        return INTOBJ_INT(1);
-    kc = INT_INTOBJ(k);
-    bin = INTOBJ_INT(1);
-    help = DiffInt(n, k);
-    for (j=1; j<=kc; j++)
-        bin = ProdInt( bin, SumInt(help, INTOBJ_INT(j) )  );
-    for (j=1; j<=kc; j++)
-        bin = QuoInt(bin, INTOBJ_INT(j) );
-    return  bin;
-}
-    
 
 
 /****************************************************************************

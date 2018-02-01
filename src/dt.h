@@ -59,11 +59,6 @@ extern Obj    MakeFormulaVector(
                           Obj    pr   );
 
 
-extern Obj  binomial(
-               Obj     n,
-               Obj     k    );
-
-
 extern Int     Leftof(
                 Obj     tree1,
                 Int     index1,
