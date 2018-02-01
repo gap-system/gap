@@ -3053,6 +3053,23 @@ local recog,m,len;
   return m;
 end);
 
+InstallMethod(LowIndexSubgroups,"finite groups, using iterated maximals",
+  true,[IsGroup and IsFinite,IsPosInt],0,
+function(G,n)
+local m,all,m2;
+  m:=[G];
+  all:=[G];
+  while Length(m)>0 do
+    m2:=Concatenation(List(m,MaximalSubgroupClassReps));
+    m2:=Unique(Filtered(m2,x->Index(G,x)<=n));
+    m2:=List(SubgroupsOrbitsAndNormalizers(G,m2,false),x->x.representative);
+    m2:=Filtered(m2,x->ForAll(all,y->RepresentativeAction(G,x,y)=fail));
+    Append(all,m2);
+    m:=Filtered(m2,x->Index(G,x)<=n/2); # otherwise subgroups will have too large index
+  od;
+  return all;
+end);
+
 #############################################################################
 ##
 #F  LowLayerSubgroups( [<act>,] <G>, <lim> [,<cond> [,<dosub>]] )
