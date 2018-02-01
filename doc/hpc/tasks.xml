@@ -87,8 +87,8 @@ Task arguments are generally copied so that both the task that created them and 
 data concurrently without fear of race conditions. To avoid copying, arguments should be made shared or public (see the
 relevant parts of section <Ref Sect="Migrating objects between regions"/> on migrating objects between regions); shared and public arguments will not be copied.
 <P/>
-HPC-GAP currently has multiple implementations of the task API. To enable the reference implementation, set the
-environment variable <C>GAP_STDTASKS</C> to a non-empty value before starting GAP.
+HPC-GAP currently has multiple implementations of the task API. To use an alternative implementation to the one documented here, set the
+environment variable <C>GAP_WORKSTEALING</C> to a non-empty value before starting GAP.
   </Section>
 
   <Section Label="Running tasks">
