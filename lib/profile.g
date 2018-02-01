@@ -759,7 +759,11 @@ BIND_GLOBAL("ProfileOperationsOn",function()
     local   prof;
 
     # Note that the list of operations may have grown since the last call.
-    prof := OPERATIONS;
+    if IsHPCGAP then
+        prof := MakeImmutable(FromAtomicList(OPERATIONS));
+    else
+        prof := OPERATIONS;
+    fi;
     PROFILED_OPERATIONS := prof;
     UnprofileMethods(prof);
     ProfileFunctions( prof );
@@ -818,7 +822,11 @@ end);
 BIND_GLOBAL("ProfileOperationsAndMethodsOn",function()
     local   prof;
 
-    prof := OPERATIONS;
+    if IsHPCGAP then
+        prof := MakeImmutable(FromAtomicList(OPERATIONS));
+    else
+        prof := OPERATIONS;
+    fi;
     PROFILED_OPERATIONS := prof;
     ProfileFunctions( prof );
     ProfileMethods(prof);
@@ -872,6 +880,9 @@ end );
 ##  <#/GAPDoc>
 ##
 PROFILED_GLOBAL_FUNCTIONS := [];
+if IsHPCGAP then
+    MakeThreadLocal("PROFILED_GLOBAL_FUNCTIONS");
+fi;
 
 BIND_GLOBAL( "ProfileGlobalFunctions", function( arg )
     local name, func, funcs;
@@ -879,13 +890,15 @@ BIND_GLOBAL( "ProfileGlobalFunctions", function( arg )
         DisplayProfile( PROFILED_GLOBAL_FUNCTIONS );
     elif arg[1] = true then
         PROFILED_GLOBAL_FUNCTIONS  := [];
-        for name in GLOBAL_FUNCTION_NAMES do
-            if IsBoundGlobal(name) then
-                func := ValueGlobal(name);
-                if IsFunction(func) then
-                    Add(PROFILED_GLOBAL_FUNCTIONS, func);
+        atomic readonly GLOBAL_FUNCTION_NAMES do
+            for name in GLOBAL_FUNCTION_NAMES do
+                if IsBoundGlobal(name) then
+                    func := ValueGlobal(name);
+                    if IsFunction(func) then
+                        Add(PROFILED_GLOBAL_FUNCTIONS, func);
+                    fi;
                 fi;
-            fi;
+            od;
         od;
         ProfileFunctions(PROFILED_GLOBAL_FUNCTIONS);
     elif arg[1] = false then
