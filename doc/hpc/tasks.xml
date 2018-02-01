@@ -220,6 +220,38 @@ identically to <C>WaitAnyTask(task1, ..., taskn)</C>.
         The <Ref Func="TaskResult"/> function returns the result of a task. It implicitly calls <Ref Func="WaitTask"/> if that is
         necessary. Multiple invocations of <Ref Func="TaskResult"/> with the same task argument will not do repeated waits and always
         return the same value.
+        <P/>
+        If the function executed by <A>task</A> encounters an error, <Ref Func="TaskResult"/> returns <K>fail</K>.
+        Whether <A>task</A> encountered an error can be checked via <Ref Func="TaskSuccess"/>.
+        In case of an error, the error message can be retrieved via <Ref Func="TaskError"/>.
+      </Description>
+    </ManSection>
+
+    <ManSection>
+      <Func Name="CullIdleTasks" Arg=''/>
+      <Description>
+        This function terminates unused worker threads.
+      </Description>
+    </ManSection>
+  </Section>
+
+  <Section Label="Information about tasks">
+    <Heading>Information about tasks</Heading>
+    <ManSection>
+      <Func Name="TaskSuccess" Arg='task'/>
+      <Description>
+          <Ref Func="TaskSuccess"/> waits for <A>task</A> and returns
+          <K>true</K> if the it finished without encountering an error.
+          Otherwise the function returns <K>false</K>.
+      </Description>
+    </ManSection>
+
+    <ManSection>
+      <Func Name="TaskError" Arg='task'/>
+      <Description>
+        <Ref Func="TaskError"/> waits for <A>task</A> and returns
+          its error message, if it encountered an error.
+          If it did not encounter an error, the function returns <K>fail</K>.
       </Description>
     </ManSection>
 
@@ -256,13 +288,6 @@ identically to <C>WaitAnyTask(task1, ..., taskn)</C>.
       <Func Name="TaskIsAsync" Arg='task'/>
       <Description>
         This function returns true if the task is asynchronous, true otherwise.
-      </Description>
-    </ManSection>
-
-    <ManSection>
-      <Func Name="CullIdleTasks" Arg=''/>
-      <Description>
-        This function terminates unused worker threads.
       </Description>
     </ManSection>
   </Section>
