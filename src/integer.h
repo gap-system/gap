@@ -349,6 +349,8 @@ extern Obj InverseModInt(Obj base, Obj mod);
 */
 extern Int CLog2Int( Int intnum );
 
+// Compute the binomial coefficient of n and k
+extern Obj BinomialInt(Obj n, Obj k);
 
 /****************************************************************************
 **

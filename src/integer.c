@@ -2255,12 +2255,9 @@ Obj FuncFACTORIAL_INT(Obj self, Obj opN)
 /****************************************************************************
 **
 */
-Obj FuncBINOMIAL_INT(Obj self, Obj n, Obj k)
+Obj BinomialInt(Obj n, Obj k)
 {
     Int negate_result = 0;
-
-    REQUIRE_INT_ARG("Binomial", "n", n);
-    REQUIRE_INT_ARG("Binomial", "k", k);
 
     // deal with k <= 1
     if (k == INTOBJ_INT(0))
@@ -2337,6 +2334,14 @@ Obj FuncBINOMIAL_INT(Obj self, Obj n, Obj k)
     mpz_clear( mpzResult );
 
     return result;
+}
+
+Obj FuncBINOMIAL_INT(Obj self, Obj n, Obj k)
+{
+    REQUIRE_INT_ARG("Binomial", "n", n);
+    REQUIRE_INT_ARG("Binomial", "k", k);
+
+    return BinomialInt(n, k);
 }
 
 
