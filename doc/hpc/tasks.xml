@@ -65,18 +65,27 @@ gap> TaskResult(task);
 
 This is indistinguishable from calling the function directly, but provides the same interface as normal tasks.
 <P/>
-Sometimes it can be useful to ignore the result of a task. The <C>RunAsyncTask</C> provides the necessary functionality.
+If e.g. you want to call a function only for its side-effects, it can be useful to ignore the result of a task. <Ref Func="RunAsyncTask"/> provides the necessary functionality.
+Such a task cannot be waited for and its result (if any) is ignored.
 
 <Example><![CDATA[
 gap> RunAsyncTask(function() Print("Hello, world!\n"); end);;
-Hello, world!
+gap> !list
+--- Thread 0 [0]
+--- Thread 5 [5] (pending output)
+gap> !5
+--- Switching to thread 5
+[5] Hello, world!
+!0
+--- Switching to thread 0
+gap>
 ]]></Example>
 
-Such a task cannot be waited for and its result (if any) is ignored.
+For more information on the multi-threaded user interface, see Chapter <Ref Chap="Console User Interface"/>.
 <P/>
 Task arguments are generally copied so that both the task that created them and the task that uses them can access the
 data concurrently without fear of race conditions. To avoid copying, arguments should be made shared or public (see the
-relevant parts of the section on ); shared and public arguments will not be copied.
+relevant parts of section <Ref Sect="Migrating objects between regions"/> on migrating objects between regions); shared and public arguments will not be copied.
 <P/>
 HPC-GAP currently has multiple implementations of the task API. To enable the reference implementation, set the
 environment variable <C>GAP_STDTASKS</C> to a non-empty value before starting GAP.
