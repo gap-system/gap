@@ -4500,18 +4500,15 @@ DeclareGlobalFunction("GroupEnumeratorByClosure");
 ##  <C>LowIndexSubgroupsFpGroup</C>. In other cases, it uses repeated
 ##  calculation of maximal subgroups.
 ##  <P/>
-##  <P>
 ##  The operation <C>LowLayerSubgroups</C> works similar but does not bound
 ##  the index, but instead considers up to <A>layer</A>-th maximal
 ##  subgroups.
-##  </P>
 ##  <Example><![CDATA[
 ##  gap> g:=TransitiveGroup(18,950);;
 ##  gap> l:=LowIndexSubgroups(g,20);;Collected(List(l,x->Index(g,x)));
 ##  [ [ 1, 1 ], [ 2, 1 ], [ 5, 1 ], [ 6, 1 ], [ 10, 2 ], [ 12, 3 ], [ 15, 1 ], 
 ##    [ 16, 2 ], [ 18, 1 ], [ 20, 9 ] ]
 ##  ]]></Example>
-##  <P/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
