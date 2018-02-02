@@ -1403,6 +1403,17 @@ InstallMethod( Coefficients,
     fi;
     end );
 
+InstallOtherMethod( Coefficients,
+    "for empty basis and empty list",
+    [ IsBasis and IsEmpty, IsEmpty and IsList ], SUM_FLAGS,
+    function( B, v )
+    if v = Zero( UnderlyingLeftModule( B ) ) then
+      return [];
+    else
+      return fail;
+    fi;
+    end );
+
 InstallMethod( LinearCombination,
     "for empty basis and empty list",
     [ IsBasis and IsEmpty, IsList and IsEmpty ], SUM_FLAGS,
