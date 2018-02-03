@@ -86,19 +86,18 @@ Obj TypeBool (
 **
 **  'PrintBool' prints the boolean value <bool>.
 */
-void PrintBool (
-    Obj                 bool )
+void PrintBool(Obj val)
 {
-    if ( bool == True ) {
+    if (val == True) {
         Pr( "true", 0L, 0L );
     }
-    else if ( bool == False ) {
+    else if (val == False) {
         Pr( "false", 0L, 0L );
     }
-    else if ( bool == Fail ) {
+    else if (val == Fail) {
         Pr( "fail", 0L, 0L );
     }
-    else if ( bool == Undefined ) {
+    else if (val == Undefined) {
         Pr( "Undefined", 0L, 0L );
     }
     else {

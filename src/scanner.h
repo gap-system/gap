@@ -264,12 +264,12 @@ typedef UInt            TypSymbolSet;
 /* TL: extern  UInt            NrErrLine; */
 
 
-static inline int IsIdent(char c)
+static inline BOOL IsIdent(char c)
 {
     return IsAlpha(c) || c == '_' || c == '@';
 }
 
-extern int IsKeyword(const char * str);
+extern BOOL IsKeyword(const char * str);
 
 
 /****************************************************************************

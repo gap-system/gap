@@ -33,9 +33,9 @@
 **  vector type must set  it to '2'.  A  package implementing a matrix  type
 **  must set it to '3'.
 */
-extern  Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
+extern BOOL (*IsListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static inline Int IS_LIST(Obj obj)
+static inline BOOL IS_LIST(Obj obj)
 {
     return (*IsListFuncs[TNUM_OBJ(obj)])(obj);
 }
@@ -55,9 +55,9 @@ static inline Int IS_LIST(Obj obj)
 **  instead it will check if the object HasIsSmallList and IsSmallList, or
 **  HasLength in which case Length will be checked
 */
-extern Int (*IsSmallListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
+extern BOOL (*IsSmallListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static inline Int IS_SMALL_LIST(Obj obj)
+static inline BOOL IS_SMALL_LIST(Obj obj)
 {
     return (*IsSmallListFuncs[TNUM_OBJ(obj)])(obj);
 }
@@ -76,11 +76,11 @@ static inline Int IS_SMALL_LIST(Obj obj)
 **  already that the list is dense (e.g. for sets).
 */
 
-extern Int (*IsDenseListFuncs[LAST_REAL_TNUM + 1])(Obj list);
+extern BOOL (*IsDenseListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-extern Int IsDenseListDefault(Obj list);
+extern BOOL IsDenseListDefault(Obj list);
 
-static inline Int IS_DENSE_LIST(Obj list)
+static inline BOOL IS_DENSE_LIST(Obj list)
 {
     return (*IsDenseListFuncs[TNUM_OBJ(list)])(list);
 }
@@ -101,11 +101,11 @@ static inline Int IS_DENSE_LIST(Obj list)
 **  homogeneous (e.g. for sets).
 */
 
-extern Int (*IsHomogListFuncs[LAST_REAL_TNUM + 1])(Obj list);
+extern BOOL (*IsHomogListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-extern Int IsHomogListDefault(Obj list);
+extern BOOL IsHomogListDefault(Obj list);
 
-static inline Int IS_HOMOG_LIST(Obj list)
+static inline BOOL IS_HOMOG_LIST(Obj list)
 {
     return (*IsHomogListFuncs[TNUM_OBJ(list)])(list);
 }
@@ -127,11 +127,11 @@ static inline Int IS_HOMOG_LIST(Obj list)
 **  acceptable (e.g. a range with positive <low> and <high> values).
 */
 
-extern Int (*IsPossListFuncs[LAST_REAL_TNUM + 1])(Obj list);
+extern BOOL (*IsPossListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-extern Int IsPossListDefault(Obj list);
+extern BOOL IsPossListDefault(Obj list);
 
-static inline Int IS_POSS_LIST(Obj list)
+static inline BOOL IS_POSS_LIST(Obj list)
 {
     return (*IsPossListFuncs[TNUM_OBJ(list)])(list);
 }
@@ -189,16 +189,16 @@ static inline Obj LENGTH(Obj list)
 **
 */
 
-extern  Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
+extern BOOL (*IsbListFuncs[LAST_REAL_TNUM + 1])(Obj list, Int pos);
 
-static inline Int ISB_LIST(Obj list, Int pos)
+static inline BOOL ISB_LIST(Obj list, Int pos)
 {
     return (*IsbListFuncs[TNUM_OBJ(list)])(list, pos);
 }
 
-extern Int ISBB_LIST( Obj list, Obj pos );
+extern BOOL ISBB_LIST(Obj list, Obj pos);
 
-extern Int ISB2_LIST(Obj list, Obj pos1, Obj pos2);
+extern BOOL ISB2_LIST(Obj list, Obj pos1, Obj pos2);
 
 
 /****************************************************************************
@@ -587,12 +587,11 @@ extern void AssListObject (
 **  guarantees already that the list has this property.
 */
 
-extern  Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+extern BOOL (*IsTableListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-extern  Int             IsTableListDefault (
-            Obj                 list );
+extern BOOL IsTableListDefault(Obj list);
 
-static inline Int IS_TABLE_LIST(Obj list)
+static inline BOOL IS_TABLE_LIST(Obj list)
 {
     return (*IsTableListFuncs[TNUM_OBJ(list)])(list);
 }
@@ -612,12 +611,11 @@ static inline Int IS_TABLE_LIST(Obj list)
 **  of the list guarantees already that the list is strictly sorted.
 */
 
-extern  Int             (*IsSSortListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+extern BOOL (*IsSSortListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-extern  Int             IsSSortListDefault (
-            Obj                 list );
+extern BOOL IsSSortListDefault(Obj list);
 
-static inline Int IS_SSORT_LIST(Obj list)
+static inline BOOL IS_SSORT_LIST(Obj list)
 {
     return (*IsSSortListFuncs[TNUM_OBJ(list)])(list);
 }

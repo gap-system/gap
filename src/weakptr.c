@@ -316,7 +316,7 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 ** */
 
 
-Int IsBoundElmWPObj( Obj wp, Obj pos)
+BOOL IsBoundElmWPObj(Obj wp, Obj pos)
 {
   if (TNUM_OBJ(wp) != T_WPOBJ)
     {

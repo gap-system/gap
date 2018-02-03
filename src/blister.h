@@ -27,7 +27,7 @@
 **
 *F  IS_BLIST_REP( <list> )  . . . . .  check if <list> is in boolean list rep
 */
-static inline Int IS_BLIST_REP(Obj list)
+static inline BOOL IS_BLIST_REP(Obj list)
 {
     return T_BLIST <= TNUM_OBJ(list) &&
            TNUM_OBJ(list) <= T_BLIST_SSORT + IMMUTABLE;
@@ -42,7 +42,7 @@ static inline Int IS_BLIST_REP(Obj list)
 **  a (little) slower.
 */
 
-static inline Int IS_BLIST_REP_WITH_COPYING(Obj list)
+static inline BOOL IS_BLIST_REP_WITH_COPYING(Obj list)
 {
     UInt tnum = TNUM_OBJ(list);
 #if !defined(USE_THREADSAFE_COPYING)

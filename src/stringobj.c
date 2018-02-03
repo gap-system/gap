@@ -847,9 +847,7 @@ Int LenString (
 **
 **  'IsbString'  is the function in 'IsbListFuncs'  for strings.
 */
-Int IsbString (
-    Obj                 list,
-    Int                 pos )
+BOOL IsbString(Obj list, Int pos)
 {
     /* since strings are dense, this must only test for the length         */
     return (pos <= GET_LEN_STRING(list));
@@ -1148,8 +1146,7 @@ void AsssStringImm (
 **
 **  'IsHomogString' is the function in 'IsHomogListFuncs' for strings.
 */
-Int IsHomogString (
-    Obj                 list )
+BOOL IsHomogString(Obj list)
 {
     return (0 < GET_LEN_STRING(list));
 }
@@ -1164,8 +1161,7 @@ Int IsHomogString (
 **
 **  'IsSSortString' is the function in 'IsSSortListFuncs' for strings.
 */
-Int IsSSortString (
-    Obj                 list )
+BOOL IsSSortString(Obj list)
 {
     Int                 len;
     Int                 i;
@@ -1193,8 +1189,7 @@ Int IsSSortString (
 **
 **  'IsPossString' is the function in 'TabIsPossList' for strings.
 */
-Int IsPossString (
-    Obj                 list )
+BOOL IsPossString(Obj list)
 {
     return GET_LEN_STRING( list ) == 0;
 }
@@ -1294,12 +1289,11 @@ void PlainString (
 **  'IS_STRING' returns 1  if the object <obj>  is a string  and 0 otherwise.
 **  It does not change the representation of <obj>.
 */
-Int (*IsStringFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
+BOOL (*IsStringFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 Obj IsStringFilt;
 
-Int IsStringList (
-    Obj                 list )
+BOOL IsStringList(Obj list)
 {
     Int                 lenList;
     Obj                 elm;
@@ -1321,14 +1315,12 @@ Int IsStringList (
     return (lenList < i);
 }
 
-Int IsStringListHom (
-    Obj                 list )
+BOOL IsStringListHom(Obj list)
 {
     return (TNUM_OBJ( ELM_LIST(list,1) ) == T_CHAR);
 }
 
-Int IsStringObject (
-    Obj                 obj )
+BOOL IsStringObject(Obj obj)
 {
     return (DoFilter( IsStringFilt, obj ) != False);
 }
@@ -1420,8 +1412,7 @@ void ConvString (
 */
 Obj IsStringConvFilt;
 
-Int IsStringConv (
-    Obj                 obj )
+BOOL IsStringConv(Obj obj)
 {
     Int                 res;
 

@@ -172,6 +172,9 @@ typedef Int4     Int;
 typedef UInt4    UInt;
 #endif
 
+typedef UChar BOOL;
+enum { FALSE = 0, TRUE = 1 };
+
 /****************************************************************************
 **
 **  'START_ENUM_RANGE' and 'END_ENUM_RANGE' simplify creating "ranges" of
@@ -848,17 +851,17 @@ enum {
     MODULE_DYNAMIC = GAP_KERNEL_API_VERSION * 10 + 2,
 };
 
-static inline Int IS_MODULE_BUILTIN(UInt type)
+static inline BOOL IS_MODULE_BUILTIN(UInt type)
 {
     return type % 10 == 0;
 }
 
-static inline Int IS_MODULE_STATIC(UInt type)
+static inline BOOL IS_MODULE_STATIC(UInt type)
 {
     return type % 10 == 1;
 }
 
-static inline Int IS_MODULE_DYNAMIC(UInt type)
+static inline BOOL IS_MODULE_DYNAMIC(UInt type)
 {
     return type % 10 == 2;
 }

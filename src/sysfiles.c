@@ -81,6 +81,9 @@ typedef void sig_handler_t ( int );
 #endif
 
 #ifdef SYS_IS_DARWIN
+// Workaround for the fact that TRUE / FALSE area also
+// defined by OS X mach-o headers
+#define ENUM_DYLD_BOOL
 #include <mach-o/dyld.h>
 #endif
 

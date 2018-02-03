@@ -336,9 +336,7 @@ UInt FindPRec( Obj rec, UInt rnam, UInt *pos, int cleanup )
 **  'IsbPRec' returns 1 if the record <rec> has a component with  the  record
 **  name <rnam>, and 0 otherwise.
 */
-Int IsbPRec (
-    Obj                 rec,
-    UInt                rnam )
+BOOL IsbPRec(Obj rec, UInt rnam)
 {
     UInt                i;              /* loop variable                   */
 

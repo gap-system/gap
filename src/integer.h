@@ -59,7 +59,7 @@ extern "C" {
 **  'IS_LARGEINT' returns 1 if 'obj' is large positive or negative integer
 **  object, and 0 for all other kinds of objects.
 */
-static inline Int IS_LARGEINT(Obj obj)
+static inline BOOL IS_LARGEINT(Obj obj)
 {
     UInt tnum = TNUM_OBJ(obj);
     return tnum == T_INTPOS || tnum == T_INTNEG;
@@ -71,7 +71,7 @@ static inline Int IS_LARGEINT(Obj obj)
 **  'IS_INT' returns 1 if 'obj' is either a large or an immediate integer
 **  object, and 0 for all other kinds of objects.
 */
-static inline Int IS_INT(Obj obj)
+static inline BOOL IS_INT(Obj obj)
 {
     return IS_INTOBJ(obj) || IS_LARGEINT(obj);
 }
@@ -111,7 +111,7 @@ static inline UInt SIZE_INT(Obj obj)
 **  IS_NEG_INT' returns 1 if 'obj' is a negative large or immediate
 **  integer object, and 0 for all other kinds of objects.
 */
-static inline Int IS_NEG_INT(Obj obj)
+static inline BOOL IS_NEG_INT(Obj obj)
 {
     if (IS_INTOBJ(obj))
         return (Int)obj < (Int)INTOBJ_INT(0);
@@ -123,7 +123,7 @@ static inline Int IS_NEG_INT(Obj obj)
 **  'IS_POS_INT' returns 1 if 'obj' is a positive large or immediate
 **  integer object, and 0 for all other kinds of objects.
 */
-static inline Int IS_POS_INT(Obj obj)
+static inline BOOL IS_POS_INT(Obj obj)
 {
     if (IS_INTOBJ(obj))
         return (Int)obj > (Int)INTOBJ_INT(0);
@@ -135,7 +135,7 @@ static inline Int IS_POS_INT(Obj obj)
 **  'IS_ODD_INT' returns 1 if 'obj' is an odd large or immediate integer
 **  object, and 0 for all other kinds of objects.
 */
-static inline Int IS_ODD_INT(Obj obj)
+static inline BOOL IS_ODD_INT(Obj obj)
 {
     if (IS_INTOBJ(obj))
         return ((Int)obj & 4) != 0;
@@ -148,7 +148,7 @@ static inline Int IS_ODD_INT(Obj obj)
 **  'IS_EVEN_INT' returns 1 if 'obj' is an even large or immediate integer
 **  object, and 0 for all other kinds of objects.
 */
-static inline Int IS_EVEN_INT(Obj obj)
+static inline BOOL IS_EVEN_INT(Obj obj)
 {
     return !IS_ODD_INT(obj);
 }

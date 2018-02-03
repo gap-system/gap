@@ -59,7 +59,7 @@ void LockCurrentOutput(Int lock)
 */
 
 
-static inline Int IS_CHAR_PUSHBACK_EMPTY(void)
+static inline BOOL IS_CHAR_PUSHBACK_EMPTY(void)
 {
     return STATE(In) != &STATE(Pushback);
 }

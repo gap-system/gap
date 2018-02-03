@@ -3,7 +3,7 @@
 
 #include <src/objects.h>
 
-static inline int IS_PPERM(Obj f)
+static inline BOOL IS_PPERM(Obj f)
 {
     return (TNUM_OBJ(f) == T_PPERM2 || TNUM_OBJ(f) == T_PPERM4);
 }

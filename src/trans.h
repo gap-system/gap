@@ -3,7 +3,7 @@
 
 #include <src/objects.h>
 
-static inline int IS_TRANS(Obj f)
+static inline BOOL IS_TRANS(Obj f)
 {
     return (TNUM_OBJ(f) == T_TRANS2 || TNUM_OBJ(f) == T_TRANS4);
 }

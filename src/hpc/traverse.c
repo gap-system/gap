@@ -224,21 +224,17 @@ void TraverseRegionFrom(TraversalState * traversal,
     SET_LEN_PLIST(traversal->list, traversal->listSize);
 }
 
-// static int IsReadable(Obj obj) {
-//   return CheckReadAccess(obj);
-// }
-
-static int IsSameRegion(Obj obj)
+static BOOL IsSameRegion(Obj obj)
 {
     return REGION(obj) == currentTraversal()->region;
 }
 
-static int IsMutable(Obj obj)
+static BOOL IsMutable(Obj obj)
 {
     return CheckReadAccess(obj) && IS_MUTABLE_OBJ(obj);
 }
 
-static int IsWritableOrImmutable(Obj obj)
+static BOOL IsWritableOrImmutable(Obj obj)
 {
     int writable = CheckExclusiveWriteAccess(obj);
     if (!writable && IS_MUTABLE_OBJ(obj)) {

@@ -76,7 +76,7 @@ static inline void SET_CHAR_VALUE(Obj charObj, UChar c)
 **
 *F  IS_STRING_REP( <list> ) . . . . . . . .  check if <list> is in string rep
 */
-static inline Int IS_STRING_REP(Obj list)
+static inline BOOL IS_STRING_REP(Obj list)
 {
     return (T_STRING <= TNUM_OBJ(list) &&
             TNUM_OBJ(list) <= T_STRING_SSORT + IMMUTABLE);
@@ -274,9 +274,9 @@ extern void PrintString1 (
 **  'IS_STRING' returns 1  if the object <obj>  is a string  and 0 otherwise.
 **  It does not change the representation of <obj>.
 */
-extern  Int             (*IsStringFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
+extern BOOL (*IsStringFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static inline Int IS_STRING(Obj obj)
+static inline BOOL IS_STRING(Obj obj)
 {
     return (*IsStringFuncs[TNUM_OBJ(obj)])(obj);
 }
@@ -289,8 +289,7 @@ static inline Int IS_STRING(Obj obj)
 **  'IsString' returns 1 if the object <obj> is a string and 0 otherwise.  It
 **  does not change the representation of <obj>.
 */
-extern Int IsString (
-            Obj                 obj );
+extern BOOL IsString(Obj obj);
 
 
 /****************************************************************************
@@ -322,8 +321,7 @@ extern void ConvString (
 **  otherwise.   If <obj> is a  string it  changes  its representation to the
 **  string representation.
 */
-extern Int IsStringConv (
-            Obj                 obj );
+extern BOOL IsStringConv(Obj obj);
 
 
 /****************************************************************************

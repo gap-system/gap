@@ -314,7 +314,7 @@ Obj             FuncNameRNam (
 **
 #define IS_REC(obj)     ((*IsRecFuncs[ TNUM_OBJ(obj) ])( obj ))
 */
-Int             (*IsRecFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+BOOL (*IsRecFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 Obj             IsRecFilt;
 
@@ -325,8 +325,7 @@ Obj             IsRecHandler (
     return (IS_REC(obj) ? True : False);
 }
 
-Int             IsRecObject (
-    Obj                 obj )
+BOOL IsRecObject(Obj obj)
 {
     return (DoFilter( IsRecFilt, obj ) == True);
 }
@@ -401,7 +400,7 @@ Obj             ElmRecObject (
 #define ISB_REC(rec,rnam) \
                         ((*IsbRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
 */
-Int             (*IsbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
+BOOL (*IsbRecFuncs[LAST_REAL_TNUM + 1])(Obj rec, UInt rnam);
 
 Obj             IsbRecOper;
 
@@ -413,9 +412,7 @@ Obj             IsbRecHandler (
     return (ISB_REC( rec, INT_INTOBJ(rnam) ) ? True : False);
 }
 
-Int             IsbRecError (
-    Obj                 rec,
-    UInt                rnam )
+BOOL IsbRecError(Obj rec, UInt rnam)
 {
     rec = ErrorReturnObj(
         "IsBound: <rec> must be a record (not a %s)",
@@ -424,9 +421,7 @@ Int             IsbRecError (
     return ISB_REC( rec, rnam );
 }
 
-Int             IsbRecObject (
-    Obj                 obj,
-    UInt                rnam )
+BOOL IsbRecObject(Obj obj, UInt rnam)
 {
     return (DoOperation2Args( IsbRecOper, obj, INTOBJ_INT(rnam) ) == True);
 }

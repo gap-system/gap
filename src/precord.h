@@ -36,7 +36,7 @@ extern Obj NEW_PREC(UInt len);
 **
 *F  IS_PREC( <rec> ) . . . . . . . . .  check if <rec> is in plain record rep
 */
-static inline Int IS_PREC(Obj rec)
+static inline BOOL IS_PREC(Obj rec)
 {
     UInt tnum = TNUM_OBJ(rec);
     return tnum == T_PREC || tnum == T_PREC+IMMUTABLE;
@@ -56,7 +56,7 @@ static inline Int IS_PREC(Obj rec)
 **  (which have the same memory layout as precs), as the precs APIs using it
 **  for assertion checks are in practice invoked on such objects, too.
 */
-static inline Int IS_PREC_OR_COMOBJ(Obj rec)
+static inline BOOL IS_PREC_OR_COMOBJ(Obj rec)
 {
     UInt tnum = TNUM_OBJ(rec);
 #if !defined(USE_THREADSAFE_COPYING)
@@ -205,9 +205,7 @@ extern  Obj             ElmPRec (
 **  'IsbPRec' returns 1 if the record <rec> has a component with  the  record
 **  name <rnam>, and 0 otherwise.
 */
-extern  Int             IsbPRec (
-            Obj                 rec,
-            UInt                rnam );
+extern BOOL IsbPRec(Obj rec, UInt rnam);
 
 
 /****************************************************************************

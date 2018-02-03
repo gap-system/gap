@@ -247,7 +247,7 @@ static inline void SET_LCKS_FUNC(Obj func, Obj locks)
 **  'IsKernelFunction' returns 1 if <func> is a kernel function (i.e.
 **  compiled from C code), and 0 otherwise.
 */
-extern Int IsKernelFunction(Obj func);
+extern BOOL IsKernelFunction(Obj func);
 
 
 #define HDLR_0ARGS(func)        ((ObjFunc_0ARGS)HDLR_FUNC(func,0))

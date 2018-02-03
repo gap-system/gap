@@ -318,9 +318,7 @@ Int             LenRange (
 **
 **  'IsbRange' is the function in 'IsbListFuncs' for ranges.
 */
-Int             IsbRange (
-    Obj                 list,
-    Int                 pos )
+BOOL IsbRange(Obj list, Int pos)
 {
     return (pos <= GET_LEN_RANGE(list));
 }
@@ -599,8 +597,7 @@ void            AsssRangeImm (
 **
 **  'IsPossRange' is the function in 'IsPossListFuncs' for ranges.
 */
-Int             IsPossRange (
-    Obj                 list )
+BOOL IsPossRange(Obj list)
 {
     /* test if the first element is positive                               */
     if ( GET_LOW_RANGE( list ) <= 0 )
@@ -739,8 +736,7 @@ void            PlainRange (
 */
 Obj IsRangeFilt;
 
-Int             IsRange (
-    Obj                 list )
+BOOL IsRange(Obj list)
 {
     Int                 isRange;        /* result of the test              */
     Int                 len;            /* logical length of list          */

@@ -54,7 +54,7 @@
 **
 #define IS_LIST(obj)    (*IsListFuncs[ TNUM_OBJ( (obj) ) ])( obj )
 */
-Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
+BOOL (*IsListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 Obj             IsListFilt;
 
@@ -65,8 +65,7 @@ Obj             FuncIS_LIST (
     return (IS_LIST( obj ) ? True : False);
 }
 
-Int             IsListObject (
-    Obj                 obj )
+BOOL IsListObject(Obj obj)
 {
     return (DoFilter( IsListFilt, obj ) == True);
 }
@@ -87,15 +86,14 @@ Int             IsListObject (
 ** 
 #define IS_SMALL_LIST(obj)    (*IsSmallListFuncs[ TNUM_OBJ( (obj) ) ])( obj )
 */
-Int             (*IsSmallListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
+BOOL (*IsSmallListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 Obj             IsSmallListFilt;
 Obj             HasIsSmallListFilt;
 Obj             LengthAttr;
 Obj             SetIsSmallList;
 
-Int             IsSmallListObject (
-    Obj                 obj )
+BOOL IsSmallListObject(Obj obj)
 {
   Obj len;
   if (DoFilter(IsListFilt, obj) != True)
@@ -301,7 +299,7 @@ Obj LengthInternal (
 #define ISB_LIST(list,pos) \
                         ((*IsbListFuncs[TNUM_OBJ(list)])(list,pos))
 */
-Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
+BOOL (*IsbListFuncs[LAST_REAL_TNUM + 1])(Obj list, Int pos);
 
 static Obj             IsbListOper;
 
@@ -316,9 +314,7 @@ Obj             FuncISB_LIST (
         return ISBB_LIST( list, pos ) ? True : False;
 }
 
-Int             IsbListError (
-    Obj                 list,
-    Int                 pos )
+BOOL IsbListError(Obj list, Int pos)
 {
     list = ErrorReturnObj(
         "IsBound: <list> must be a list (not a %s)",
@@ -327,21 +323,17 @@ Int             IsbListError (
     return ISB_LIST( list, pos );
 }
 
-Int             IsbListObject (
-    Obj                 list,
-    Int                 pos )
+BOOL IsbListObject(Obj list, Int pos)
 {
     return DoOperation2Args( IsbListOper, list, INTOBJ_INT(pos) ) == True;
 }
 
-Int             ISBB_LIST (
-    Obj                 list,
-    Obj                 pos )
+BOOL ISBB_LIST(Obj list, Obj pos)
 {
     return DoOperation2Args( IsbListOper, list, pos ) == True;
 }
 
-Int ISB2_LIST(Obj list, Obj pos1, Obj pos2)
+BOOL ISB2_LIST(Obj list, Obj pos1, Obj pos2)
 {
     return DoOperation3Args( IsbListOper, list, pos1, pos2 ) == True;
 }
@@ -1174,7 +1166,7 @@ Obj FuncASSS_LIST_DEFAULT (
 #define IS_DENSE_LIST(list) \
                         ((*IsDenseListFuncs[TNUM_OBJ(list)])(list))
 */
-Int             (*IsDenseListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+BOOL (*IsDenseListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
 Obj             IsDenseListFilt;
 
@@ -1185,8 +1177,7 @@ Obj             FuncIS_DENSE_LIST (
     return (IS_DENSE_LIST( obj ) ? True : False);
 }
 
-Int             IsDenseListDefault (
-    Obj                 list )
+BOOL IsDenseListDefault(Obj list)
 {
     Int                 lenList;        /* length of <list>                */
     Int                 i;              /* loop variable                   */
@@ -1210,8 +1201,7 @@ Int             IsDenseListDefault (
     return 1L;
 }
 
-Int             IsDenseListObject (
-    Obj                 obj )
+BOOL IsDenseListObject(Obj obj)
 {
     return (DoFilter( IsDenseListFilt, obj ) == True);
 }
@@ -1233,7 +1223,7 @@ Int             IsDenseListObject (
 #define IS_HOMOG_LIST(list) \
                         ((*IsHomogListFuncs[TNUM_OBJ(list)])(list))
 */
-Int             (*IsHomogListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+BOOL (*IsHomogListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
 Obj             IsHomogListFilt;
 
@@ -1244,8 +1234,7 @@ Obj             FuncIS_HOMOG_LIST (
     return (IS_HOMOG_LIST( obj ) ? True : False);
 }
 
-Int             IsHomogListDefault (
-    Obj                 list )
+BOOL IsHomogListDefault(Obj list)
 {
     Int                 lenList;        /* length of <list>                */
     Obj                 elm;            /* one element of <list>           */
@@ -1279,8 +1268,7 @@ Int             IsHomogListDefault (
     return 1L;
 }
 
-Int             IsHomogListObject (
-    Obj                 obj )
+BOOL IsHomogListObject(Obj obj)
 {
     return (DoFilter( IsHomogListFilt, obj ) == True);
 }
@@ -1302,7 +1290,7 @@ Int             IsHomogListObject (
 #define IS_TABLE_LIST(list) \
                         ((*IsTableListFuncs[TNUM_OBJ(list)])(list))
 */
-Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+BOOL (*IsTableListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
 Obj             IsTableListFilt;
 
@@ -1313,8 +1301,7 @@ Obj             FuncIS_TABLE_LIST (
     return (IS_TABLE_LIST( obj ) ? True : False);
 }
 
-Int             IsTableListDefault (
-    Obj                 list )
+BOOL IsTableListDefault(Obj list)
 {
     Int                 lenList;        /* length of <list>                */
     Obj                 elm;            /* one element of <list>           */
@@ -1356,8 +1343,7 @@ Int             IsTableListDefault (
     return 1L;
 }
 
-Int             IsTableListObject (
-    Obj                 obj )
+BOOL IsTableListObject(Obj obj)
 {
     return (DoFilter( IsTableListFilt, obj ) == True);
 }
@@ -1379,7 +1365,7 @@ Int             IsTableListObject (
 #define IS_SSORTED_LIST(list) \
                         ((*IsSSortListFuncs[TNUM_OBJ(list)])(list))
 */
-Int (*IsSSortListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+BOOL (*IsSSortListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
 Obj IsSSortListProp;
 
@@ -1390,8 +1376,7 @@ Obj FuncIS_SSORT_LIST (
     return (IS_SSORT_LIST( obj ) ? True : False);
 }
 
-Int IsSSortListDefault (
-    Obj                 list )
+BOOL IsSSortListDefault(Obj list)
 {
     Int                 lenList;
     Obj                 elm1;
@@ -1427,8 +1412,7 @@ Int IsSSortListDefault (
     return 2L;
 }
 
-Int             IsSSortListObject (
-    Obj                 obj )
+BOOL IsSSortListObject(Obj obj)
 {
     return (DoProperty( IsSSortListProp, obj ) == True);
 }
@@ -1473,7 +1457,7 @@ Obj FuncIS_NSORT_LIST (
 #define IS_POSS_LIST(list) \
                         ((*IsPossListFuncs[TNUM_OBJ(list)])(list))
 */
-Int             (*IsPossListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+BOOL (*IsPossListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
 Obj             IsPossListProp;
 
@@ -1484,8 +1468,7 @@ Obj             FuncIS_POSS_LIST (
     return (IS_POSS_LIST(obj) ? True : False);
 }
 
-Int             IsPossListDefault (
-    Obj                 list )
+BOOL IsPossListDefault(Obj list)
 {
     Int                 lenList;        /* length of <list>                */
     Obj                 elm;            /* one element of <list>           */
@@ -1518,8 +1501,7 @@ Int             IsPossListDefault (
     return 1L;
 }
 
-Int             IsPossListObject (
-    Obj                 obj )
+BOOL IsPossListObject(Obj obj)
 {
     return (DoProperty( IsPossListProp, obj ) == True);
 }

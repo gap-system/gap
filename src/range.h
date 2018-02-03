@@ -53,7 +53,7 @@ static inline Obj NEW_RANGE_SSORT(void)
 **  a range, but  the kernel does not know  this yet.  Use  'IsRange' to test
 **  whether a list is a range.
 */
-static inline Int IS_RANGE(Obj val)
+static inline BOOL IS_RANGE(Obj val)
 {
     return TNUM_OBJ(val) >= T_RANGE_NSORT &&
            TNUM_OBJ(val) <= T_RANGE_SSORT + IMMUTABLE;

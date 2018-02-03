@@ -844,8 +844,7 @@ Obj FuncMakeReadWriteGVar (
 **
 *F  IsReadOnlyGVar( <gvar> ) . . . . . . return status of a global variable
 */
-Int IsReadOnlyGVar (
-    UInt                gvar )
+BOOL IsReadOnlyGVar(UInt gvar)
 {
     return ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(0);
 }
@@ -876,7 +875,7 @@ static Obj FuncIsReadOnlyGVar (
 **
 *F  IsConstantGVar( <gvar> ) . . . . . . return if a variable is a constant
 */
-Int IsConstantGVar(UInt gvar)
+BOOL IsConstantGVar(UInt gvar)
 {
     return INT_INTOBJ(ELM_GVAR_LIST(WriteGVars, gvar)) == -1;
 }
