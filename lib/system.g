@@ -77,7 +77,7 @@ BIND_GLOBAL( "GAPInfo", rec(
            help := [ "set hint for maximal workspace size (GAP may", "allocate more)"] ),
       rec( short:= "K", long := "limitworkspace", default := "0", arg := "<mem>",
            help := [ "set maximal workspace size (GAP never", "allocates more)"] ),
-      rec( short:= "s", default := "4g", arg := "<mem", help := [ "set the initially mapped virtual memory" ] ),
+      rec( short:= "s", default := "4g", arg := "<mem>", help := [ "set the initially mapped virtual memory" ] ),
       rec( short:= "a", default := "0",  arg := "<mem>",help := [ "set amount to pre-malloc-ate",
              "postfix 'k' = *1024, 'm' = *1024*1024,", "'g' = *1024*1024*1024"] ),
       ,
