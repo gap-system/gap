@@ -2806,6 +2806,23 @@ InstallGlobalFunction("SubgroupsTrivialFitting",function(G)
   local s,a,n,fac,iso,types,t,p,i,map,go,gold,nf,tom,sub,len;
 
   n:=DirectFactorsFittingFreeSocle(G);
+
+  # is it almost simple and stored?
+  if Length(n)=1 then
+    tom:=TomDataAlmostSimpleRecognition(G);
+    if tom<>fail and
+	ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
+      Info(InfoPerformance,2,"Using Table of Marks Library");
+      go:=ImagesSource(tom[1]);
+      tom:=tom[2];
+      Info(InfoLattice,1, "Fetching subgroups of simple ",
+	  Identifier(tom)," from table of marks");
+      len:=LengthsTom(tom);
+      sub:=List([1..Length(len)],x->RepresentativeTom(tom,x));
+      return sub;
+    fi;
+  fi;
+
   s:=Socle(G);
 
   a:=TrivialSubgroup(G);
@@ -3244,8 +3261,7 @@ local c,n,deg,ind,core,i,j,sum;
   deg:=List(n,x->[IndexNC(G,x),[Position(c,x)]]); # best known degrees for
     # factors of each of n and how.
 
-  # determine minimal degrees by descending through lattice -- see if core
-  # or intersection with other normals help.
+  # determine minimal degrees by descending through lattice
   for i in [2..Length(c)-1] do # exclude trivial subgroup and whole group
     ind:=IndexNC(G,c[i]);
 
@@ -3253,18 +3269,20 @@ local c,n,deg,ind,core,i,j,sum;
       core:=First([2..Length(n)],x->IsSubset(c[i],n[x])); # position of core
       if ind<deg[core][1] then # new smaller degree from subgroups
         deg[core]:=[ind,[i]];
-      elif ind=IndexNC(G,n[core]) then # subgroup normal, must be in other case
-        for j in [2..core-1] do # Intersect with all prior normals
-          sum:=deg[core][1]+deg[j][1];
-          if sum<deg[Length(n)][1] then # otherwise too big for new optimal
-            ind:=Position(n,Intersection(n[j],n[core])); # intersect of normals
-            if sum<deg[ind][1] then # intersection is better
-              deg[ind]:=[deg[core][1]+deg[j][1],Union(deg[core][2],deg[j][2])];
-            fi;
-          fi;
-        od;
       fi;
+    elif IsNormal(G,c[i]) then # subgroup normal, must be in other case
+      core:=Position(n,c[i]);
+      for j in [2..core-1] do # Intersect with all prior normals
+        sum:=deg[core][1]+deg[j][1];
+        if sum<deg[Length(n)][1] then # otherwise too big for new optimal
+          ind:=Position(n,Intersection(n[j],n[core])); # intersect of normals
+          if sum<deg[ind][1] then # intersection is better
+            deg[ind]:=[deg[core][1]+deg[j][1],Union(deg[core][2],deg[j][2])];
+          fi;
+        fi;
+      od;
     fi;
+
   od;
 
   if ValueOption("representation")<>true then
@@ -3285,3 +3303,4 @@ local c,n,deg,ind,core,i,j,sum;
   return GroupHomomorphismByImages(G,ind,GeneratorsOfGroup(G),sum);
 
 end);
+
