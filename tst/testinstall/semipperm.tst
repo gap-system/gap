@@ -385,7 +385,7 @@ false
 gap> IsSymmetricInverseSemigroup(Semigroup(PartialPerm([])));
 true
 
-# Test NaturalPartialOrder
+# Test NaturalPartialOrder and ReverseNaturalPartialOrder
 gap> S := SymmetricInverseMonoid(3);;
 gap> NaturalPartialOrder(S);
 [ [  ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1, 2, 6 ], [ 1, 2, 7 ], 
@@ -395,13 +395,6 @@ gap> NaturalPartialOrder(S);
   [ 1, 2, 7, 9, 15, 22, 23 ], [ 1, 3, 14 ], [ 1, 3, 16 ], 
   [ 1, 3, 5, 10, 16, 18, 28 ], [ 1, 3, 7, 11, 14, 21, 27 ], [ 1, 4, 14 ], 
   [ 1, 4, 15 ], [ 1, 4, 5, 12, 15, 17, 32 ], [ 1, 4, 6, 13, 14, 19, 31 ] ]
-gap> S := InverseSemigroup([PartialPerm([2, 3, 4], [2, 5, 1]),
-> PartialPerm([2], [2]), PartialPerm([1, 2, 5], [4, 2, 3])]);;
-gap> NaturalPartialOrder(S);
-[ [  ], [ 1 ], [ 1 ], [ 1 ], [ 1 ] ]
-
-# Test ReverseNaturalPartialOrder
-gap> S := SymmetricInverseMonoid(3);;
 gap> ReverseNaturalPartialOrder(S);
 [ [ 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 
       22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34 ], 
@@ -412,8 +405,21 @@ gap> ReverseNaturalPartialOrder(S);
   [ 17, 22, 23, 26, 32, 33 ], [ 18, 20, 24, 25, 28, 29 ], [ 33 ], [ 29 ], 
   [ 34 ], [ 25 ], [ 30 ], [ 26 ], [ 26 ], [ 25 ], [  ], [  ], [ 30 ], [ 29 ], 
   [  ], [  ], [ 34 ], [ 33 ], [  ], [  ] ]
+
+#
+gap> f:=PartialPerm([1,2,3,70000],[1,2,3,100]);
+[70000,100](1)(2)(3)
+gap> T:=InverseSemigroup(List(GeneratorsOfInverseSemigroup(S),x->x*f));;
+gap> NaturalPartialOrder(S) = NaturalPartialOrder(T);
+true
+gap> ReverseNaturalPartialOrder(S) = ReverseNaturalPartialOrder(T);
+true
+
+#
 gap> S := InverseSemigroup([PartialPerm([2, 3, 4], [2, 5, 1]),
 > PartialPerm([2], [2]), PartialPerm([1, 2, 5], [4, 2, 3])]);;
+gap> NaturalPartialOrder(S);
+[ [  ], [ 1 ], [ 1 ], [ 1 ], [ 1 ] ]
 gap> ReverseNaturalPartialOrder(S);
 [ [ 2, 3, 4, 5 ], [  ], [  ], [  ], [  ] ]
 

@@ -31,9 +31,22 @@ true
 gap> f:=EmptyPartialPerm();;
 gap> ImageSetOfPartialPerm(f);
 [  ]
+gap> ImageListOfPartialPerm(f);
+[  ]
 gap> f:=EmptyPartialPerm()^-1;;
 gap> ImageSetOfPartialPerm(f);
 [  ]
+gap> ImageListOfPartialPerm(f);
+[  ]
+
+# test input validation
+gap> DegreeOfPartialPerm(fail);
+Error, usage: the argument should be a partial perm,
+gap> CoDegreeOfPartialPerm(fail);
+Error, usage: the argument should be a partial perm,
+gap> RankOfPartialPerm(fail);
+Error, usage: the argument should be a partial perm,
+gap> 
 
 # SmallestIdempotentPower, IndexPeriodOfPartialPerm, IsIdempotent
 gap> f:=RandomPartialPerm(100000);;
@@ -99,6 +112,14 @@ gap> IndexPeriodOfPartialPerm(f);
 [ 1, 1 ]
 gap> SmallestIdempotentPower(f);
 1
+gap> f:=PartialPerm([2,3,1,5,6,7,8,4,10]);
+[9,10](1,2,3)(4,5,6,7,8)
+gap> SmallestIdempotentPower(f);
+15
+gap> IndexPeriodOfPartialPerm(f);
+[ 2, 15 ]
+gap> IsIdempotent(f);
+false
 
 # ComponentsOfPartialPerm, NrComponentsOfPartialPerm, 
 # ComponentRepsOfPartialPerm and ComponentPartialPermInt
@@ -128,6 +149,14 @@ gap> ComponentRepsOfPartialPerm(f);
 [  ]
 gap> NrComponentsOfPartialPerm(f);
 0
+gap> f:=PartialPerm([2,3,1,5,6,7,8,4,10]);
+[9,10](1,2,3)(4,5,6,7,8)
+gap> ComponentsOfPartialPerm(f);
+[ [ 9, 10 ], [ 1, 2, 3 ], [ 4, 5, 6, 7, 8 ] ]
+gap> ComponentRepsOfPartialPerm(f);
+[ 9, 1, 4 ]
+gap> NrComponentsOfPartialPerm(f);
+3
 
 # FixedPointsOfPartialPerm, MovedPoints, 
 # NrFixedPoints, NrMovedPoints
