@@ -1406,7 +1406,7 @@ Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
     UInt4 * seen;
     UInt    deg, i, pt, dist, pow, len, last_pt;
     Obj     ord, out;
-    Int     s, t, gcd, cyc;
+    Int     cyc;
 
     if (!IS_TRANS(f)) {
         ErrorQuit("IndexPeriodOfTransformation: the argument must be a "
@@ -1464,18 +1464,14 @@ Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
                         seen[pt] = 1;
                     }
 
-                    // compute the gcd of the cycle length with the previous
-                    // order ord
-                    gcd = cyc;
-                    s = INT_INTOBJ(ModInt(ord, INTOBJ_INT(cyc)));
-                    while (s != 0) {
-                        t = s;
-                        s = gcd % s;
-                        gcd = t;
-                    }
-                    ord = ProdInt(ord, INTOBJ_INT(cyc / gcd));
-                    dist = len - cyc + 1;
+                    ord = LcmInt(ord, INTOBJ_INT(cyc));
+
                     // the distance of i from the cycle in its component + 1
+                    dist = len - cyc + 1;
+
+                    // update bag pointers, in case a garbage collection happened
+                    ptf2 = CONST_ADDR_TRANS2(f);
+                    seen = ADDR_TRANS4(TmpTrans);
                 }
                 if (dist > pow) {
                     pow = dist;
@@ -1513,18 +1509,14 @@ Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
                         seen[pt] = 1;
                     }
 
-                    // compute the gcd of the cycle length with the previous
-                    // order ord
-                    gcd = cyc;
-                    s = INT_INTOBJ(ModInt(ord, INTOBJ_INT(cyc)));
-                    while (s != 0) {
-                        t = s;
-                        s = gcd % s;
-                        gcd = t;
-                    }
-                    ord = ProdInt(ord, INTOBJ_INT(cyc / gcd));
-                    dist = len - cyc + 1;
+                    ord = LcmInt(ord, INTOBJ_INT(cyc));
+
                     // the distance of i from the cycle in its component + 1
+                    dist = len - cyc + 1;
+
+                    // update bag pointers, in case a garbage collection happened
+                    ptf4 = CONST_ADDR_TRANS4(f);
+                    seen = ADDR_TRANS4(TmpTrans);
                 }
                 if (dist > pow) {
                     pow = dist;
