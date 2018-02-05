@@ -3585,7 +3585,7 @@ Obj             FuncSMALLEST_IMG_TUP_PERM (
 *F  OnTuplesPerm( <tup>, <perm> )  . . . .  operations on tuples of points
 **
 **  'OnTuplesPerm'  returns  the  image  of  the  tuple  <tup>   under  the
-**  permutation <perm>.  It is called from 'FunOnTuples'.
+**  permutation <perm>.  It is called from 'FuncOnTuples'.
 */
 Obj             OnTuplesPerm (
     Obj                 tup,
@@ -3686,7 +3686,7 @@ Obj             OnTuplesPerm (
 *F  OnSetsPerm( <set>, <perm> ) . . . . . . . .  operations on sets of points
 **
 **  'OnSetsPerm' returns the  image of the  tuple <set> under the permutation
-**  <perm>.  It is called from 'FunOnSets'.
+**  <perm>.  It is called from 'FuncOnSets'.
 */
 Obj             OnSetsPerm (
     Obj                 set,

@@ -50,6 +50,10 @@ gap> Print(permSml * (5,9999), "\n");
 [ (   5,9999), (   2,   3)(   5,9999), (   1,   2)(   5,9999), 
   (   1,   2,   3)(   5,9999), (   1,   3,   2)(   5,9999), 
   (   1,   3)(   5,9999) ]
+gap> Print(permSml * (5,12345), "\n");
+[ (    5,12345), (    2,    3)(    5,12345), (    1,    2)(    5,12345), 
+  (    1,    2,    3)(    5,12345), (    1,    3,    2)(    5,12345), 
+  (    1,    3)(    5,12345) ]
 
 #
 gap> Print(permBig, "\n");
@@ -279,14 +283,39 @@ gap> PermList([1,1,3]);
 fail
 
 # PermList error handling for T_PERM4
-gap> PermList(Concatenation([1..10000],[10001,,10003]));
+gap> PermList(Concatenation([1..70000],[70001,,70003]));
 fail
-gap> PermList(Concatenation([1..10000],[10001,fail,10003]));
+gap> PermList(Concatenation([1..70000],[70001,fail,70003]));
 fail
-gap> PermList(Concatenation([1..10000],[10001,0,10003]));
+gap> PermList(Concatenation([1..70000],[70001,0,70003]));
 fail
-gap> PermList(Concatenation([1..10000],[10001,1,10003]));
+gap> PermList(Concatenation([1..70000],[70001,1,70003]));
 fail
+
+#
+# LARGEST_MOVED_POINT_PERM
+#
+gap> LARGEST_MOVED_POINT_PERM((2,3));
+3
+gap> LARGEST_MOVED_POINT_PERM((2,70000));
+70000
+gap> LARGEST_MOVED_POINT_PERM(fail);
+Error, LargestMovedPointPerm: <perm> must be a permutation (not a boolean or f\
+ail)
+
+#
+# CycleLengthPermInt, CyclePermInt
+#
+gap> Cycles((1,2,3)(4,5)(6,70),[4..7]);
+[ [ 4, 5 ], [ 6, 70 ], [ 7 ] ]
+gap> CycleLengths((1,2,3)(4,5)(6,70),[4..7]);
+[ 2, 2, 1 ]
+
+#
+gap> Cycles((1,2,3)(4,5)(6,70000),[4..7]);
+[ [ 4, 5 ], [ 6, 70000 ], [ 7 ] ]
+gap> CycleLengths((1,2,3)(4,5)(6,70000),[4..7]);
+[ 2, 2, 1 ]
 
 #
 # CycleStructurePerm
@@ -299,12 +328,66 @@ gap> CycleStructurePerm( (1,2)(3,4,5)(10,12,13,14,15,16,17,18)(19,20) );
 [ 2, 1,,,,, 1 ]
 
 #
+# OrderPerm
+#
+gap> List(permSml, Order);
+[ 1, 2, 2, 3, 3, 2 ]
+gap> List(permBig, Order);
+[ 1, 2, 2, 3, 3, 2 ]
+gap> Order( (1,2,3,4)(70,71,72) );
+12
+gap> Order( (1,2,3,4)(70000,71000,72000) );
+12
+gap> ORDER_PERM(fail);
+Error, OrderPerm: <perm> must be a permutation (not a boolean or fail)
+
+#
 # SignPerm
 #
 gap> List(permSml, SignPerm);
 [ 1, -1, -1, 1, 1, -1 ]
 gap> List(permBig, SignPerm);
 [ 1, -1, -1, 1, 1, -1 ]
+gap> SIGN_PERM(fail);
+Error, SignPerm: <perm> must be a permutation (not a boolean or fail)
+
+#
+# DistancePerms
+#
+gap> SetX(permSml, permSml, {x,y} -> DistancePerms(x,y) = NrMovedPoints(x/y));
+[ true ]
+gap> SetX(permSml, permBig, {x,y} -> DistancePerms(x,y) = NrMovedPoints(x/y));
+[ true ]
+gap> SetX(permBig, permSml, {x,y} -> DistancePerms(x,y) = NrMovedPoints(x/y));
+[ true ]
+gap> SetX(permBig, permBig, {x,y} -> DistancePerms(x,y) = NrMovedPoints(x/y));
+[ true ]
+gap> DistancePerms((1,2,3,4,5,6),(1,2,3));
+4
+
+#
+# OnTuples for permutations
+#
+gap> ForAll(permSml, g -> OnTuples([1,2,3],g) = ListPerm(g, 3));
+true
+gap> ForAll(permBig, g -> OnTuples([1,2,3],g) = ListPerm(g, 3));
+true
+gap> OnTuples([,1],());
+Error, OnTuples for perm: list must not contain holes
+gap> OnTuples([,1],(70000,70001));
+Error, OnTuples for perm: list must not contain holes
+
+#
+# OnSets for permutations
+#
+gap> ForAll(permSml, g -> OnSets([1,2,3],g) = [1,2,3]);
+true
+gap> ForAll(permBig, g -> OnSets([1,2,3],g) = [1,2,3]);
+true
+gap> ForAll(permSml, g -> OnSets([1,2,3,2^64],g) = [1,2,3,2^64]);
+true
+gap> ForAll(permBig, g -> OnSets([1,2,3,2^64],g) = [1,2,3,2^64]);
+true
 
 #
 # MappingPermListList
