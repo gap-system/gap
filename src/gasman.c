@@ -116,6 +116,7 @@
 #include <src/gaputils.h>
 #include <src/io.h>
 
+#include <stdio.h>
 
 /****************************************************************************
 **
@@ -298,7 +299,7 @@ void CHANGED_BAG(Bag bag) {
    answer in units of a word (ie sizeof(UInt) bytes), which should
    therefore be small enough not to cause problems. */
 
-static inline UInt SpaceBetweenPointers(Bag * a, Bag * b)
+static inline UInt SpaceBetweenPointers(const Bag * a, const Bag * b)
 {
     GAP_ASSERT(b <= a);
     UInt res = (((UInt)((UInt)(a) - (UInt)(b))) / sizeof(Bag));
@@ -1096,7 +1097,7 @@ Bag NewBag (
     if ( (FreeMptrBags == 0 || SizeAllocationArea < WORDS_BAG(sizeof(BagHeader)+size))
       && CollectBags( size, 0 ) == 0 )
     {
-        return 0;
+        SyAbortBags("cannot extend the workspace any more!!!!");
     }
 
 #ifdef COUNT_BAGS
@@ -1302,9 +1303,9 @@ UInt ResizeBag (
     else if (CONST_PTR_BAG(bag) + WORDS_BAG(old_size) == AllocBags) {
         CLEAR_CANARY();
         // check that enough storage for the new bag is available
-        if (EndBags < CONST_PTR_BAG(bag) + WORDS_BAG(new_size)
+        if (SpaceBetweenPointers(EndBags, CONST_PTR_BAG(bag)) < WORDS_BAG(new_size)
               && CollectBags( new_size-old_size, 0 ) == 0 ) {
-            return 0;
+            SyAbortBags("cannot extend the workspace any more!!!!!");
         }
 
         // update header pointer in case bag moved
@@ -1332,7 +1333,7 @@ UInt ResizeBag (
         /* check that enough storage for the new bag is available          */
         if ( SizeAllocationArea <  WORDS_BAG(sizeof(BagHeader)+new_size)
               && CollectBags( new_size, 0 ) == 0 ) {
-            return 0;
+            SyAbortBags("Cannot extend the workspace any more!!!!!!");
         }
         CLEAR_CANARY();
 
@@ -1951,6 +1952,11 @@ again:
         SizeDeadBags = 0;
 
     /* * * * * * * * * * * * * * * check phase * * * * * * * * * * * * * * */
+
+    // Check if this allocation would even fit into memory
+    if (SIZE_MAX - (size_t)(sizeof(BagHeader) + size) < (size_t)AllocBags) {
+        return 0;
+    }
 
     // store in 'stopBags' where this allocation takes us
     Bag * stopBags = AllocBags + WORDS_BAG(sizeof(BagHeader)+size);
