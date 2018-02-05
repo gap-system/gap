@@ -981,8 +981,6 @@ extern void InitGlobalBag (
 
 #if !defined(BOEHM_GC)
 
-extern Int WarnInitGlobalBag;
-
 extern void SortGlobals( UInt byWhat );
 
 extern Bag * GlobalByCookie(
