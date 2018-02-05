@@ -40,27 +40,11 @@
 #include <assert.h>
 
 
-/****************************************************************************
-**
-*F  EXEC_STAT(<stat>) . . . . . . . . . . . . . . . . . . execute a statement
-**
-**  'EXEC_STAT' executes the statement <stat>.
-**
-**  If   this  causes   the  execution  of   a  return-value-statement,  then
-**  'EXEC_STAT' returns 1, and the return value is stored in 'ReturnObjStat'.
-**  If this causes the execution of a return-void-statement, then 'EXEC_STAT'
-**  returns 2.  If  this causes execution  of a break-statement (which cannot
-**  happen if <stat> is the body of a  function), then 'EXEC_STAT' returns 4.
-**  Similarly, for a continue-statement, EXEC_STAT returns 8
-**  Otherwise 'EXEC_STAT' returns 0.
-**
-**  'EXEC_STAT'  causes  the  execution  of  <stat>  by dispatching   to  the
-**  executor, i.e., to the  function that executes statements  of the type of
-**  <stat>.
-**
-**  'EXEC_STAT' is defined in the declaration part of this package as follows:
-**
-*/
+inline UInt EXEC_STAT(Stat stat)
+{
+    UInt tnum = TNUM_STAT(stat);
+    return (*STATE(CurrExecStatFuncs)[ tnum ]) ( stat );
+}
 
 
 /****************************************************************************
