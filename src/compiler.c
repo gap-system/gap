@@ -1461,7 +1461,7 @@ CVar CompEq (
 
     /* emit the code                                                       */
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
-Emit("%c = ((((Int)%c) == ((Int)%c)) ? True : False);\n", val, left, right);
+        Emit("%c = ((((Int)%c) == ((Int)%c)) ? True : False);\n", val, left, right);
     }
     else {
         Emit( "%c = (EQ( %c, %c ) ? True : False);\n", val, left, right );
@@ -1537,7 +1537,7 @@ CVar CompNe (
 
     /* emit the code                                                       */
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
-Emit("%c = ((((Int)%c) == ((Int)%c)) ? False : True);\n", val, left, right);
+        Emit("%c = ((((Int)%c) == ((Int)%c)) ? False : True);\n", val, left, right);
     }
     else {
         Emit( "%c = (EQ( %c, %c ) ? False : True);\n", val, left, right );
@@ -1613,7 +1613,7 @@ CVar CompLt (
 
     /* emit the code                                                       */
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
-Emit( "%c = ((((Int)%c) < ((Int)%c)) ? True : False);\n", val, left, right );
+        Emit( "%c = ((((Int)%c) < ((Int)%c)) ? True : False);\n", val, left, right );
     }
     else {
         Emit( "%c = (LT( %c, %c ) ? True : False);\n", val, left, right );
@@ -1689,7 +1689,7 @@ CVar CompGe (
 
     /* emit the code                                                       */
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
- Emit("%c = ((((Int)%c) < ((Int)%c)) ? False : True);\n", val, left, right);
+         Emit("%c = ((((Int)%c) < ((Int)%c)) ? False : True);\n", val, left, right);
     }
     else {
         Emit( "%c = (LT( %c, %c ) ? False : True);\n", val, left, right );
@@ -1765,7 +1765,7 @@ CVar CompGt (
 
     /* emit the code                                                       */
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
- Emit("%c = ((((Int)%c) < ((Int)%c)) ? True : False);\n", val, right, left);
+        Emit("%c = ((((Int)%c) < ((Int)%c)) ? True : False);\n", val, right, left);
     }
     else {
         Emit( "%c = (LT( %c, %c ) ? True : False);\n", val, right, left );
@@ -1841,7 +1841,7 @@ CVar CompLe (
 
     /* emit the code                                                       */
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
-Emit("%c = ((((Int)%c) < ((Int)%c)) ?  False : True);\n", val, right, left);
+        Emit("%c = ((((Int)%c) < ((Int)%c)) ?  False : True);\n", val, right, left);
     }
     else {
         Emit( "%c = (LT( %c, %c ) ?  False : True);\n", val, right, left );
