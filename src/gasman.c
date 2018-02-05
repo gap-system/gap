@@ -300,6 +300,7 @@ void CHANGED_BAG(Bag bag) {
 
 static inline UInt SpaceBetweenPointers(Bag * a, Bag * b)
 {
+    GAP_ASSERT(b <= a);
     UInt res = (((UInt)((UInt)(a) - (UInt)(b))) / sizeof(Bag));
     return res;
 }
@@ -311,6 +312,16 @@ static inline UInt SpaceBetweenPointers(Bag * a, Bag * b)
 
 #define SizeAllBagsArea SpaceBetweenPointers(AllocBags, OldBags)
 #define SizeWorkspace SpaceBetweenPointers(EndBags, MptrBags)
+
+#if defined(GAP_KERNEL_DEBUG)
+static int SanityCheckGasmanPointers(void)
+{
+    return MptrBags <= OldBags &&
+           OldBags <= YoungBags &&
+           YoungBags <= AllocBags &&
+           AllocBags <= EndBags;
+}
+#endif
 
 /****************************************************************************
 **
@@ -1032,6 +1043,7 @@ void            InitBags (
     /* Set ChangedBags to a proper initial value */
     ChangedBags = 0;
 
+    GAP_ASSERT(SanityCheckGasmanPointers());
 }
 
 
@@ -1116,6 +1128,8 @@ Bag NewBag (
 
     /* set the masterpointer                                               */
     SET_PTR_BAG(bag, DATA(header));
+
+    GAP_ASSERT(SanityCheckGasmanPointers());
 
     /* return the identifier of the new bag                                */
     return bag;
@@ -1372,6 +1386,7 @@ UInt ResizeBag (
                 sizeof(Obj) * WORDS_BAG(old_size));
     }
 
+    GAP_ASSERT(SanityCheckGasmanPointers());
     /* return success                                                      */
     return 1;
 }
@@ -1650,6 +1665,7 @@ UInt CollectBags (
     UInt                done;           /* do we have to make a full gc    */
     UInt                i;              /* loop variable                   */
 
+    GAP_ASSERT(SanityCheckGasmanPointers());
     CANARY_DISABLE_VALGRIND();
     CLEAR_CANARY();
 #ifdef DEBUG_MASTERPOINTERS
@@ -2091,6 +2107,8 @@ again:
     SyMAdviseFree();
 
     CANARY_ENABLE_VALGRIND();
+
+    GAP_ASSERT(SanityCheckGasmanPointers());
 
     /* return success                                                      */
     return 1;
