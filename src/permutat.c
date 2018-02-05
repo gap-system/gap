@@ -3301,120 +3301,6 @@ Obj             FuncRESTRICTED_PERM (
 
 /****************************************************************************
 **
-*F  FuncSHIFTED_PERM( <self>, <perm>, <shift>)
-**
-**  'FuncSHIFTED_PERM' implements the internal function 'SHIFTED_PERM'.
-**
-**  'SHIFTED_PERM( <perm>, <shift> )'
-**
-**  It returns a new permutation that is obtained by shifting the domain by
-**  <shift>. Points that become negative are ignored. The resulting
-**  permutation has a storage degree changed by `shift'.
-*/
-Obj             FuncSHIFTED_PERM (
-    Obj                 self,
-    Obj                 perm,
-    Obj                 shiftval )
-{
-  Obj new;
-  UInt2 *            ptTo2;
-  const UInt2 *      ptPerm2;
-  UInt4 *            ptTo4;
-  const UInt4 *      ptPerm4;
-  Int shift,odeg,deg,from,to,i,j,a;
-
-  shift=INT_INTOBJ(shiftval);
-  if ( TNUM_OBJ(perm) == T_PERM2 ) 
-    odeg=DEG_PERM2(perm);
-  else
-    odeg=DEG_PERM4(perm);
-  deg=odeg+shift; 
-  if (deg<0) deg=0; /* everything shift away */
-
-  if (deg>65536) {
-    if (deg > MAX_DEG_PERM4)
-      ErrorMayQuit("SHIFTED_PERM: Shift would make permutation degree %i bigger than limit (%i)",
-		   deg, MAX_DEG_PERM4);
-    to=4;
-    new=NEW_PERM4(deg);
-    ptTo2=ADDR_PERM2(new); /* please compiler */
-    ptTo4=ADDR_PERM4(new);
-    if (shift>0) { /* start with `shift' identity points */
-      for (i=0;i<shift;i++) 
-        ptTo4[i]=i;
-    }
-  }
-  else {
-    to=2;
-    new=NEW_PERM2(deg);
-    ptTo2=ADDR_PERM2(new);
-    ptTo4=ADDR_PERM4(new); /* please compiler */
-    if (shift>0) { /* start with `shift' identity points */
-      for (i=0;i<shift;i++) ptTo2[i]=i;
-    }
-  }
-
-  if ( TNUM_OBJ(perm) == T_PERM2 ) from=2;
-  else from=4;
-
-  ptPerm2=CONST_ADDR_PERM2(perm);
-  ptPerm4=CONST_ADDR_PERM4(perm);
-
-  if (shift<0) {
-    i=-shift; /* from index */
-    j=0; /* to index */
-  }
-  else {
-    i=0; /* from index */
-    j=shift; /* to index */
-  }
-
-  if (from==2) {
-    if (to==2) {
-      while (j<deg) {
-	a=(Int)ptPerm2[i]+shift;
-	if (a<0) return Fail;
-	ptTo2[j]=(UInt2)a;
-	i++;
-	j++;
-      }
-    }
-    else {
-      while (j<deg) {
-	a=(Int)ptPerm2[i]+shift;
-	if (a<0) return Fail;
-	ptTo4[j]=(UInt4)a;
-	i++;
-	j++;
-      }
-    }
-  }
-  else {
-    if (to==2) {
-      while (j<deg) {
-	a=(Int)ptPerm4[i]+shift;
-	if (a<0) return Fail;
-	ptTo2[j]=(UInt2)a;
-	i++;
-	j++;
-      }
-    }
-    else {
-      while (j<deg) {
-	a=(Int)ptPerm4[i]+shift;
-	if (a<0) return Fail;
-	ptTo4[j]=(UInt4)a;
-	i++;
-	j++;
-      }
-    }
-  }
-
-  return new;
-}
-
-/****************************************************************************
-**
 *F  FuncTRIM_PERM( <self>, <perm>, <n> ) . . . . . . . . . trim a permutation
 **
 **  'TRIM_PERM' trims a permutation to the first <n> points. This can be
@@ -4601,7 +4487,6 @@ static StructGVarFunc GVarFuncs [] = {
       FuncSmallestGeneratorPerm, "src/permutat.c:SmallestGeneratorPerm" },
 
     GVAR_FUNC(RESTRICTED_PERM, 3, "perm,domain,test"),
-    GVAR_FUNC(SHIFTED_PERM, 2, "perm,shift"),
     GVAR_FUNC(TRIM_PERM, 2, "perm, degree"),
     { "SPLIT_PARTITION", 5, "Ppoints,Qn,j,g,a_b_max",
       FuncSPLIT_PARTITION, "src/permutat.c:SPLIT_PARTITION" },
