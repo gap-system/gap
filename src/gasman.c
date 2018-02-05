@@ -697,8 +697,6 @@ TNumGlobalBags GlobalBags;
 **  it is used by 'CollectBags'. <cookie> is also recorded to allow things to
 **  be matched up after loading a saved workspace.
 */
-Int WarnInitGlobalBag;
-
 static UInt GlobalSortingStatus;
 
 void ClearGlobalBags ( void )
@@ -711,7 +709,6 @@ void ClearGlobalBags ( void )
     }
   GlobalBags.nr = 0;
   GlobalSortingStatus = 0;
-  WarnInitGlobalBag = 0;
 }
 
 void InitGlobalBag (
@@ -735,9 +732,6 @@ void InitGlobalBag (
         }
     }
 
-    if ( WarnInitGlobalBag ) {
-        Pr( "#W  global bag '%s' initialized\n", (Int)cookie, 0L );
-    }
     GlobalBags.addr[GlobalBags.nr] = addr;
     GlobalBags.cookie[GlobalBags.nr] = cookie;
     GlobalBags.nr++;
@@ -996,7 +990,6 @@ void            InitBags (
     UInt                i;              /* loop variable                   */
 
     ClearGlobalBags();
-    WarnInitGlobalBag = 0;
 
     /* install the allocator and the abort function                        */
     ExtraMarkFuncBags = 0;

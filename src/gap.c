@@ -3162,9 +3162,6 @@ void InitializeGap (
 
     /* otherwise call library initialisation                               */
     else {
-#       if !defined(BOEHM_GC)
-            WarnInitGlobalBag = 1;
-#       endif
         CheckAllHandlers();
 
         SyInitializing = 1;    
@@ -3184,9 +3181,6 @@ void InitializeGap (
                 }
             }
         }
-#if     !defined(BOEHM_GC)
-            WarnInitGlobalBag = 0;
-#       endif
     }
 
     /* check initialisation                                                */
