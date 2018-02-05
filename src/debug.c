@@ -118,7 +118,6 @@ VoidFunc debug_func_pointers[] = {
     (VoidFunc)ELMV0_LIST,
     (VoidFunc)ELMW_LIST,
     (VoidFunc)ENVI_FUNC,
-    (VoidFunc)EXEC_STAT,
     (VoidFunc)FEXS_FUNC,
     (VoidFunc)FibHash,
     (VoidFunc)FillInVersion,
