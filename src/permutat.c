@@ -2707,7 +2707,6 @@ Obj             FuncOrderPerm (
     UInt2 *             ptKnown2;       /* pointer to temporary bag        */
     UInt4 *             ptKnown4;       /* pointer to temporary bag        */
     UInt                len;            /* length of one cycle             */
-    UInt                gcd, s, t;      /* gcd( len, ord ), temporaries    */
     UInt                p, q;           /* loop variables                  */
 
     /* check arguments and extract permutation                             */
@@ -2747,13 +2746,11 @@ Obj             FuncOrderPerm (
                     len++;  ptKnown2[q] = 1;
                 }
 
-                /* compute the gcd with the previously order ord           */
-                /* Note that since len is single precision, ord % len is to*/
-                gcd = len;  s = INT_INTOBJ( ModInt( ord, INTOBJ_INT(len) ) );
-                while ( s != 0 ) {
-                    t = s;  s = gcd % s;  gcd = t;
-                }
-                ord = ProdInt( ord, INTOBJ_INT( len / gcd ) );
+                ord = LcmInt( ord, INTOBJ_INT( len ) );
+
+                // update bag pointers, in case a garbage collection happened
+                ptPerm2  = CONST_ADDR_PERM2(perm);
+                ptKnown2 = ADDR_PERM2(TmpPerm);
 
             }
 
@@ -2787,13 +2784,11 @@ Obj             FuncOrderPerm (
                     len++;  ptKnown4[q] = 1;
                 }
 
-                /* compute the gcd with the previously order ord           */
-                /* Note that since len is single precision, ord % len is to*/
-                gcd = len;  s = INT_INTOBJ( ModInt( ord, INTOBJ_INT(len) ) );
-                while ( s != 0 ) {
-                    t = s;  s = gcd % s;  gcd = t;
-                }
-                ord = ProdInt( ord, INTOBJ_INT( len / gcd ) );
+                ord = LcmInt( ord, INTOBJ_INT( len ) );
+
+                // update bag pointers, in case a garbage collection happened
+                ptPerm4  = CONST_ADDR_PERM4(perm);
+                ptKnown4 = ADDR_PERM4(TmpPerm);
 
             }
 

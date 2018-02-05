@@ -617,7 +617,7 @@ Obj FuncPREIMAGE_PPERM_INT(Obj self, Obj f, Obj pt)
 // the least m, r such that f^m=f^m+r
 Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
 {
-    UInt    i, len, j, pow, gcd, rank, k, deg, n;
+    UInt    i, len, j, pow, rank, k, deg, n;
     UInt2 * ptf2;
     UInt4 * ptseen, *ptf4;
     Obj     dom, img, ord, out;
@@ -670,14 +670,9 @@ Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
                     len++;
                     ptseen[k - 1] = 0;
                 }
-                gcd = len;
-                j = INT_INTOBJ(ModInt(ord, INTOBJ_INT(len)));
-                while (j != 0) {
-                    k = j;
-                    j = gcd % j;
-                    gcd = k;
-                }
-                ord = ProdInt(ord, INTOBJ_INT(len / gcd));
+                ord = LcmInt(ord, INTOBJ_INT(len));
+                // update ptseen, in case a garbage collection happened
+                ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
             }
         }
     }
@@ -712,14 +707,9 @@ Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
                     len++;
                     ptseen[k - 1] = 0;
                 }
-                gcd = len;
-                j = INT_INTOBJ(ModInt(ord, INTOBJ_INT(len)));
-                while (j != 0) {
-                    k = j;
-                    j = gcd % j;
-                    gcd = k;
-                }
-                ord = ProdInt(ord, INTOBJ_INT(len / gcd));
+                ord = LcmInt(ord, INTOBJ_INT(len));
+                // update ptseen, in case a garbage collection happened
+                ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
             }
         }
     }

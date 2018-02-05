@@ -328,6 +328,15 @@ extern Obj GcdInt( Obj opL, Obj opR );
 
 /****************************************************************************
 **
+*F  LcmInt( <opL>, <opR> )  . . . . . . .  lcm of two integers
+**
+**  'LcmInt' returns the lcm of the two integers <opL> and <opR>.
+*/
+extern Obj LcmInt( Obj opL, Obj opR );
+
+
+/****************************************************************************
+**
 *F  AInvInt( <op> ) . . . . . . . . . . . . .  additive inverse of an integer
 **
 */
