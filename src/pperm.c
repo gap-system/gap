@@ -614,6 +614,22 @@ Obj FuncPREIMAGE_PPERM_INT(Obj self, Obj f, Obj pt)
     return PreImagePPermInt(pt, f);
 }
 
+// find img(f)
+static UInt4 * FindImg(UInt n, UInt rank, Obj img)
+{
+    UInt i;
+    UInt4 * ptseen;
+
+    ResizeTmpPPerm(n);
+    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
+    memset(ptseen, 0, n * sizeof(UInt4));
+
+    for (i = 1; i <= rank; i++)
+        ptseen[INT_INTOBJ(ELM_PLIST(img, i)) - 1] = 1;
+
+    return ptseen;
+}
+
 // the least m, r such that f^m=f^m+r
 Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
 {
@@ -626,18 +642,9 @@ Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
     ord = INTOBJ_INT(1);
     n = MAX(DEG_PPERM(f), CODEG_PPERM(f));
 
-    ResizeTmpPPerm(n);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-    for (i = 0; i < n; i++)
-        ptseen[i] = 0;
-
     rank = RANK_PPERM(f);
     img = IMG_PPERM(f);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-
-    // find img(f)
-    for (i = 1; i <= rank; i++)
-        ptseen[INT_INTOBJ(ELM_PLIST(img, i)) - 1] = 1;
+    ptseen = FindImg(n, rank, img);
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         deg = DEG_PPERM2(f);
@@ -761,23 +768,13 @@ Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f)
         return out;
     }
 
-    ResizeTmpPPerm(n);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-    for (i = 0; i < n; i++)
-        ptseen[i] = 0;
-
-    rank = RANK_PPERM(f);
-    img = IMG_PPERM(f);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-
-    // find img(f)
-    for (i = 1; i <= rank; i++)
-        ptseen[INT_INTOBJ(ELM_PLIST(img, i)) - 1] = 1;
-
     deg = DEG_PPERM(f);
     nr = 0;
     out = NEW_PLIST(T_PLIST_CYC, deg);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
+
+    rank = RANK_PPERM(f);
+    img = IMG_PPERM(f);
+    ptseen = FindImg(n, rank, img);
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         dom = DOM_PPERM(f);
@@ -846,20 +843,11 @@ Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f)
     Obj     dom, img;
 
     n = MAX(DEG_PPERM(f), CODEG_PPERM(f));
-    ResizeTmpPPerm(n);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-    for (i = 0; i < n; i++)
-        ptseen[i] = 0;
+    nr = 0;
 
     rank = RANK_PPERM(f);
     img = IMG_PPERM(f);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-
-    // find img(f)
-    for (i = 1; i <= rank; i++)
-        ptseen[INT_INTOBJ(ELM_PLIST(img, i)) - 1] = 1;
-
-    nr = 0;
+    ptseen = FindImg(n, rank, img);
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         deg = DEG_PPERM2(f);
@@ -922,7 +910,6 @@ Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f)
 Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
 {
     UInt    i, j, n, rank, k, deg, nr, len;
-    UInt4 * ptseen;
     Obj     dom, img, out;
 
     n = MAX(DEG_PPERM(f), CODEG_PPERM(f));
@@ -933,21 +920,12 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
         return out;
     }
 
-    // init the buffer
-    ResizeTmpPPerm(n);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-    for (i = 0; i < n; i++)
-        ptseen[i] = 0;
+    nr = 0;
 
-    // find img(f)
     rank = RANK_PPERM(f);
     img = IMG_PPERM(f);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-    for (i = 1; i <= rank; i++)
-        ptseen[INT_INTOBJ(ELM_PLIST(img, i)) - 1] = 1;
-
-    nr = 0;
     out = NEW_PLIST(T_PLIST_CYC, rank);
+    FindImg(n, rank, img);
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         deg = DEG_PPERM2(f);
