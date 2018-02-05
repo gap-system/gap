@@ -2068,7 +2068,7 @@ again:
     /* information after the check phase                                   */
     if ( MsgsFuncBags )
       (*MsgsFuncBags)( FullBags, 5,
-                       SpaceBetweenPointers(EndBags, stopBags)/(1024/sizeof(Bag)));
+                       (EndBags - stopBags)/(1024/sizeof(Bag)));
     if ( MsgsFuncBags )
         (*MsgsFuncBags)( FullBags, 6,
                          SizeWorkspace/(1024/sizeof(Bag)));
