@@ -3219,3 +3219,69 @@ local l,N,t,gens,i,c,o,rep,r,sub,gen;
   fi;
 end);
 
+InstallMethod(MinimalFaithfulPermutationDegree,"use lattice",true,
+  [IsGroup and IsFinite],0,
+function(G)
+local c,n,deg,ind,core,i,j,sum;
+  if Size(G)=1 then
+    # option allows to calculate actual representation -- maybe access under
+    # different name
+    if ValueOption("representation")<>true then
+      return 1;
+    else
+      return GroupHomomorphismByImages(G,Group(()),[One(G)],[()]);
+    fi;
+  fi;
+  c:=ConjugacyClassesSubgroups(G);
+  # sort by reversed order to get core by inclusion test
+  c:=ShallowCopy(c); # allow sorting
+  SortBy(c,x->-Size(Representative(x))); 
+  n:=Filtered(c,x->Size(x)=1); # normals
+  n:=List(n,Representative); 
+  c:=List(c,Representative); # reps of classes
+
+
+  deg:=List(n,x->[IndexNC(G,x),[Position(c,x)]]); # best known degrees for
+    # factors of each of n and how.
+
+  # determine minimal degrees by descending through lattice -- see if core
+  # or intersection with other normals help.
+  for i in [2..Length(c)-1] do # exclude trivial subgroup and whole group
+    ind:=IndexNC(G,c[i]);
+
+    if ind<deg[Length(n)][1] then # otherwise degree too big for new optimal
+      core:=First([2..Length(n)],x->IsSubset(c[i],n[x])); # position of core
+      if ind<deg[core][1] then # new smaller degree from subgroups
+        deg[core]:=[ind,[i]];
+      elif ind=IndexNC(G,n[core]) then # subgroup normal, must be in other case
+        for j in [2..core-1] do # Intersect with all prior normals
+          sum:=deg[core][1]+deg[j][1];
+          if sum<deg[Length(n)][1] then # otherwise too big for new optimal
+            ind:=Position(n,Intersection(n[j],n[core])); # intersect of normals
+            if sum<deg[ind][1] then # intersection is better
+              deg[ind]:=[deg[core][1]+deg[j][1],Union(deg[core][2],deg[j][2])];
+            fi;
+          fi;
+        od;
+      fi;
+    fi;
+  od;
+
+  if ValueOption("representation")<>true then
+    return deg[Length(n)][1]; # smallest degree
+  fi;
+  # calculate the representation
+  deg:=deg[Length(n)][2]; # the subgroups needed
+  deg:=List(deg,x->FactorCosetAction(G,c[x]));
+
+  sum:=List(GeneratorsOfGroup(G),x->Image(deg[1],x));
+  for i in [2..Length(deg)] do
+    sum:=SubdirectDiagonalPerms(sum,List(GeneratorsOfGroup(G),
+      x->Image(deg[i],x)));
+  od;
+
+  ind:=Group(sum); SetSize(ind,Size(G));
+
+  return GroupHomomorphismByImages(G,ind,GeneratorsOfGroup(G),sum);
+
+end);
