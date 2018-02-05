@@ -2199,6 +2199,15 @@ Obj LcmInt(Obj opL, Obj opR)
     if (opL == INTOBJ_INT(0) || opR == INTOBJ_INT(0))
         return INTOBJ_INT(0);
 
+    if (IS_INTOBJ(opL) || IS_INTOBJ(opR)) {
+        if (!IS_INTOBJ(opR)) {
+            SWAP(Obj, opL, opR);
+        }
+        Obj gcd = GcdInt(opL, opR);
+        opR = QuoInt(opR, gcd);
+        return AbsInt(ProdInt(opL, opR));
+    }
+
     sizeL = SIZE_INT_OR_INTOBJ(opL);
     sizeR = SIZE_INT_OR_INTOBJ(opR);
 
