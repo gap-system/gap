@@ -2065,14 +2065,17 @@ void            PrintListDefault (
     }
 
     Pr("%2>[ %2>",0L,0L);
-    for ( STATE(PrintObjIndex)=1; STATE(PrintObjIndex)<=LEN_LIST(list); STATE(PrintObjIndex)++ ) {
-        elm = ELMV0_LIST( list, STATE(PrintObjIndex) );
+    for (UInt i = 1; i <= LEN_LIST(list); i++) {
+        elm = ELMV0_LIST(list, i);
         if ( elm != 0 ) {
-            if ( 1 < STATE(PrintObjIndex) )  Pr( "%<,%< %2>", 0L, 0L );
+            if (1 < i)
+                Pr("%<,%< %2>", 0L, 0L);
+            STATE(PrintObjIndex) = i;
             PrintObj( elm );
         }
         else {
-            if ( 1 < STATE(PrintObjIndex) )  Pr( "%2<,%2>", 0L, 0L );
+            if (1 < i)
+                Pr("%2<,%2>", 0L, 0L);
         }
     }
     Pr(" %4<]",0L,0L);
