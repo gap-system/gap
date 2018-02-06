@@ -6,6 +6,10 @@ randomTest := function(collection, method, checkin...)
         checkmethod := checkin[1];
     fi;
 
+    # We do a single call first, to deal with calling Random causing extra attributes
+    # of 'collection' to be set, changing the dispatch
+    method(collection);
+
     # Firstly, we will generate a base list
     Init(GlobalMersenneTwister, 6);
     test1 := List([1..1000], x -> method(collection));
