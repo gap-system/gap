@@ -16,7 +16,8 @@
 ##  value the setter of the attribute is called, to (possibly) store the
 ##  computed value. In special circumstances, this behaviour can be altered
 ##  dynamically on an attribute-by-attribute basis, using the functions
-##  <C>DisableAttributeValueStoring</C> and <C>EnableAttributeValueStoring</C>.
+##  <Ref Func="DisableAttributeValueStoring"/> and
+##  <Ref Func="EnableAttributeValueStoring"/>.
 ##  <P/>
 ##  In general, the code in the library assumes, for efficiency, but not for
 ##  correctness, that attribute values <E>will</E> be stored (in suitable
@@ -34,7 +35,7 @@
 ##  <InfoClass Name="InfoAttributes"/>
 ##
 ##  <Description>
-##  This info class (together with <Ref Func="InfoWarning"/> is  used
+##  This info class (together with <Ref InfoClass="InfoWarning"/> is used
 ##  for messages about attribute storing  being  disabled  (at  level  2)  or
 ##  enabled (level 3). It may be  used  in  the  future  for  other  messages
 ##  concerning changes to attribute behaviour.
@@ -56,7 +57,8 @@ DeclareInfoClass("InfoAttributes");
 ##  <Description>
 ##  enables the usual call of <C>Setter( <A>attr</A> )</C> when  a  method  for  <A>attr</A>
 ##  returns a value. In consequence the  values  may  be  stored.  This  will
-##  usually  have  no  effect   unless   <C>DisableAttributeValueStoring</C>   has
+##  usually have no effect unless
+##  <Ref Func="DisableAttributeValueStoring"/> has
 ##  previously been used for <A>attr</A>. Note that <A>attr</A> must  be  an  attribute
 ##  and <E>not</E> a property.
 ##  <Example><![CDATA[

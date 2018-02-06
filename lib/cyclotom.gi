@@ -1540,7 +1540,8 @@ InstallMethod( GaloisMat,
         for j in [ i+1 .. ncha ] do
           if mat[j] = X then
             galoisfams[j]:= Unknown();
-            InfoWarning( 1, "GaloisMat: row ", i, " is equal to row ", j );
+            Info( InfoWarning, 1,
+                  "GaloisMat: row ", i, " is equal to row ", j );
           fi;
         od;
 
