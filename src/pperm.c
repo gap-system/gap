@@ -614,6 +614,22 @@ Obj FuncPREIMAGE_PPERM_INT(Obj self, Obj f, Obj pt)
     return PreImagePPermInt(pt, f);
 }
 
+// find img(f)
+static UInt4 * FindImg(UInt n, UInt rank, Obj img)
+{
+    UInt i;
+    UInt4 * ptseen;
+
+    ResizeTmpPPerm(n);
+    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
+    memset(ptseen, 0, n * sizeof(UInt4));
+
+    for (i = 1; i <= rank; i++)
+        ptseen[INT_INTOBJ(ELM_PLIST(img, i)) - 1] = 1;
+
+    return ptseen;
+}
+
 // the least m, r such that f^m=f^m+r
 Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
 {
@@ -626,18 +642,9 @@ Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
     ord = INTOBJ_INT(1);
     n = MAX(DEG_PPERM(f), CODEG_PPERM(f));
 
-    ResizeTmpPPerm(n);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-    for (i = 0; i < n; i++)
-        ptseen[i] = 0;
-
     rank = RANK_PPERM(f);
     img = IMG_PPERM(f);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-
-    // find img(f)
-    for (i = 1; i <= rank; i++)
-        ptseen[INT_INTOBJ(ELM_PLIST(img, i)) - 1] = 1;
+    ptseen = FindImg(n, rank, img);
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         deg = DEG_PPERM2(f);
@@ -751,23 +758,13 @@ Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f)
         return out;
     }
 
-    ResizeTmpPPerm(n);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-    for (i = 0; i < n; i++)
-        ptseen[i] = 0;
-
-    rank = RANK_PPERM(f);
-    img = IMG_PPERM(f);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-
-    // find img(f)
-    for (i = 1; i <= rank; i++)
-        ptseen[INT_INTOBJ(ELM_PLIST(img, i)) - 1] = 1;
-
     deg = DEG_PPERM(f);
     nr = 0;
     out = NEW_PLIST(T_PLIST_CYC, deg);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
+
+    rank = RANK_PPERM(f);
+    img = IMG_PPERM(f);
+    ptseen = FindImg(n, rank, img);
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         dom = DOM_PPERM(f);
@@ -836,20 +833,11 @@ Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f)
     Obj     dom, img;
 
     n = MAX(DEG_PPERM(f), CODEG_PPERM(f));
-    ResizeTmpPPerm(n);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-    for (i = 0; i < n; i++)
-        ptseen[i] = 0;
+    nr = 0;
 
     rank = RANK_PPERM(f);
     img = IMG_PPERM(f);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-
-    // find img(f)
-    for (i = 1; i <= rank; i++)
-        ptseen[INT_INTOBJ(ELM_PLIST(img, i)) - 1] = 1;
-
-    nr = 0;
+    ptseen = FindImg(n, rank, img);
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         deg = DEG_PPERM2(f);
@@ -912,7 +900,6 @@ Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f)
 Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
 {
     UInt    i, j, n, rank, k, deg, nr, len;
-    UInt4 * ptseen;
     Obj     dom, img, out;
 
     n = MAX(DEG_PPERM(f), CODEG_PPERM(f));
@@ -923,21 +910,12 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
         return out;
     }
 
-    // init the buffer
-    ResizeTmpPPerm(n);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-    for (i = 0; i < n; i++)
-        ptseen[i] = 0;
+    nr = 0;
 
-    // find img(f)
     rank = RANK_PPERM(f);
     img = IMG_PPERM(f);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-    for (i = 1; i <= rank; i++)
-        ptseen[INT_INTOBJ(ELM_PLIST(img, i)) - 1] = 1;
-
-    nr = 0;
     out = NEW_PLIST(T_PLIST_CYC, rank);
+    FindImg(n, rank, img);
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         deg = DEG_PPERM2(f);
@@ -2633,121 +2611,6 @@ Obj OnePPerm(Obj f)
         SET_CODEG_PPERM4(g, deg);
     }
     return g;
-}
-
-// print a partial perm in disjoint cycle and chain notation
-Obj FuncPrintPPerm2(Obj self, Obj f)
-{
-    UInt    i, j, n, rank, k, deg;
-    UInt4 * ptseen;
-    UInt2 * ptf2;
-    Obj     dom, img;
-
-    deg = DEG_PPERM2(f);
-    if (deg == 0)
-        Pr("<empty partial perm>", 0L, 0L);
-
-    n = MAX(deg, CODEG_PPERM2(f));
-    ResizeTmpPPerm(n);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-    for (i = 0; i < n; i++)
-        ptseen[i] = 0;
-
-    rank = RANK_PPERM2(f);    // finds dom and img too
-    dom = DOM_PPERM(f);
-    img = IMG_PPERM(f);
-
-    ptf2 = ADDR_PPERM2(f);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-    // find img(f)
-    for (i = 1; i <= rank; i++)
-        ptseen[INT_INTOBJ(ELM_PLIST(img, i)) - 1] = 1;
-
-    // find chains
-    for (i = 1; i <= rank; i++) {
-        j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-        if (ptseen[j] == 0) {
-            Pr("%>[%>%d%<", (Int)j + 1, 0L);
-            ptseen[j] = 2;
-            for (k = ptf2[j]; (k <= deg && ptf2[k - 1] != 0);
-                 k = ptf2[k - 1]) {
-                Pr(",%>%d%<", (Int)k, 0L);
-                ptseen[k - 1] = 2;
-            }
-            ptseen[k - 1] = 2;
-            Pr(",%>%d%<%<]", (Int)k, 0L);
-        }
-    }
-
-    // find cycles
-    for (i = 1; i <= rank; i++) {
-        j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-        if (ptseen[j] == 1) {
-            Pr("%>(%>%d%<", (Int)j + 1, 0L);
-            for (k = ptf2[j]; k != j + 1; k = ptf2[k - 1]) {
-                Pr(",%>%d%<", (Int)k, 0L);
-                ptseen[k - 1] = 0;
-            }
-            Pr("%<)", 0L, 0L);
-        }
-    }
-    return 0L;
-}
-
-Obj FuncPrintPPerm4(Obj self, Obj f)
-{
-    UInt   i, j, n, rank, k, deg;
-    UInt4 *ptseen, *ptf4;
-    Obj    dom, img;
-
-    deg = DEG_PPERM4(f);
-    if (deg == 0)
-        Pr("<empty partial perm>", 0L, 0L);
-    n = MAX(deg, CODEG_PPERM4(f));
-    ResizeTmpPPerm(n);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-    for (i = 0; i < n; i++)
-        ptseen[i] = 0;
-
-    rank = RANK_PPERM4(f);    // finds dom and img too
-    dom = DOM_PPERM(f);
-    img = IMG_PPERM(f);
-
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
-    ptf4 = ADDR_PPERM4(f);
-    // find img(f)
-    for (i = 1; i <= rank; i++)
-        ptseen[INT_INTOBJ(ELM_PLIST(img, i)) - 1] = 1;
-
-    // find chains
-    for (i = 1; i <= rank; i++) {
-        j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-        if (ptseen[j] == 0) {
-            Pr("%>[%>%d%<", (Int)j + 1, 0L);
-            ptseen[j] = 2;
-            for (k = ptf4[j]; (k <= deg && ptf4[k - 1] != 0);
-                 k = ptf4[k - 1]) {
-                Pr(",%>%d%<", (Int)k, 0L);
-                ptseen[k - 1] = 2;
-            }
-            ptseen[k - 1] = 2;
-            Pr(",%>%d%<%<]", (Int)k, 0L);
-        }
-    }
-
-    // find cycles
-    for (i = 1; i <= rank; i++) {
-        j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-        if (ptseen[j] == 1) {
-            Pr("%>(%>%d%<", (Int)j + 1, 0L);
-            for (k = ptf4[j]; k != j + 1; k = ptf4[k - 1]) {
-                Pr(",%>%d%<", (Int)k, 0L);
-                ptseen[k - 1] = 0;
-            }
-            Pr("%<)", 0L, 0L);
-        }
-    }
-    return 0L;
 }
 
 /* equality for partial perms */
@@ -6623,8 +6486,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(HAS_DOM_PPERM, 1, "f"),
     GVAR_FUNC(HAS_IMG_PPERM, 1, "f"),
     GVAR_FUNC(OnPosIntSetsPartialPerm, 2, "set, f"),
-    GVAR_FUNC(PrintPPerm2, 1, "f"),
-    GVAR_FUNC(PrintPPerm4, 1, "f"),
     { 0, 0, 0, 0, 0 }
 
 };
