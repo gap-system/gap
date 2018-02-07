@@ -239,7 +239,7 @@ Error, <record> must be a record with components `NextIterator',
 # ConcatenationIterators
 #
 # TODO
-gap> iter:=ConcatenationIterators([Iterator(M1), Iterator([2,3])]);
+gap> iter:=ConcatenationIterators([Iterator(M1), Iterator(M0), Iterator([2,3])]);
 <iterator>
 gap> List(iter);
 [ 1, 2, 3 ]
