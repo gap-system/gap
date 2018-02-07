@@ -740,9 +740,9 @@ local brci,gcd,fam,fc,gc;
   brci:=CIUnivPols(f,g);
   if brci=fail then TryNextMethod();fi;
   # check trivial cases
-  if -1 = DegreeOfLaurentPolynomial(f)  then
+  if -infinity = DegreeOfLaurentPolynomial(f)  then
     return g;
-  elif -1 = DegreeOfLaurentPolynomial(g)  then
+  elif -infinity = DegreeOfLaurentPolynomial(g)  then
     return f;
   elif 0 = DegreeOfLaurentPolynomial(f)
        or 0 = DegreeOfLaurentPolynomial(g)
