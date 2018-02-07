@@ -264,40 +264,8 @@ UInt RANK_TRANS4(Obj f)
     return (IMG_TRANS(f) == NULL ? INIT_TRANS4(f) : LEN_PLIST(IMG_TRANS(f)));
 }
 
-// TODO should this use the newer sorting algorithm by CAJ in PR #609?
-//
-// Retyping is the responsibility of the caller.
-
-static void SORT_PLIST_CYC(Obj res)
-{
-    Obj  tmp;
-    UInt h, i, k, len;
-
-    len = LEN_PLIST(res);
-
-    if (0 < len) {
-        h = 1;
-        while (9 * h + 4 < len) {
-            h = 3 * h + 1;
-        }
-        while (0 < h) {
-            for (i = h + 1; i <= len; i++) {
-                tmp = CONST_ADDR_OBJ(res)[i];
-                k = i;
-                while (h < k && ((Int)tmp < (Int)(CONST_ADDR_OBJ(res)[k - h]))) {
-                    ADDR_OBJ(res)[k] = CONST_ADDR_OBJ(res)[k - h];
-                    k -= h;
-                }
-                ADDR_OBJ(res)[k] = tmp;
-            }
-            h = h / 3;
-        }
-        CHANGED_BAG(res);
-    }
-}
-
 // Retyping is the responsibility of the caller, this should only be called
-// after a call to SORT_PLIST_CYC.
+// after a call to SortPlistByRawObj.
 
 static void REMOVE_DUPS_PLIST_CYC(Obj res)
 {
@@ -1172,9 +1140,8 @@ Obj FuncIMAGE_SET_TRANS(Obj self, Obj f)
     Obj out = FuncUNSORTED_IMAGE_SET_TRANS(self, f);
 
     if (!IS_SSORT_LIST(out)) {
-        SORT_PLIST_CYC(out);
+        SortPlistByRawObj(out);
         RetypeBag(out, T_PLIST_CYC_SSORT + IMMUTABLE);
-        CHANGED_BAG(out);
         return out;
     }
     return out;
@@ -1243,9 +1210,8 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
         }
         SHRINK_PLIST(new, (Int)rank);
         SET_LEN_PLIST(new, (Int)rank);
-        SORT_PLIST_CYC(new);
-        RetypeBag(new, T_PLIST_CYC_SSORT);
-        CHANGED_BAG(new);
+        SortPlistByRawObj(new);
+        RetypeBag(new, T_PLIST_CYC_SSORT + IMMUTABLE);
     }
     else {
         // m > deg and so m is at least 1!
@@ -3884,7 +3850,7 @@ Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
             }
             *ptres = INTOBJ_INT(k);
         }
-        SORT_PLIST_CYC(res);
+        SortPlistByRawObj(res);
         REMOVE_DUPS_PLIST_CYC(res);
         return res;
     }
@@ -3898,7 +3864,7 @@ Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
             }
             *ptres = INTOBJ_INT(k);
         }
-        SORT_PLIST_CYC(res);
+        SortPlistByRawObj(res);
         REMOVE_DUPS_PLIST_CYC(res);
         return res;
     }
@@ -5362,7 +5328,7 @@ Obj OnSetsTrans(Obj set, Obj f)
 
     // sort the result and remove dups
     if (isint) {
-        SORT_PLIST_CYC(res);
+        SortPlistByRawObj(res);
         REMOVE_DUPS_PLIST_CYC(res);
 
         RetypeBag(res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT
