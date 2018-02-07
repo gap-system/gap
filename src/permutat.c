@@ -3566,7 +3566,6 @@ Obj             OnTuplesPerm (
     UInt                lmp;            /* largest moved point             */
     UInt                i, k;           /* loop variables                  */
 
-    tmp = NULL; /* stop compiler from complaining */
     /* make a bag for the result and initialize pointers                   */
     res = NEW_PLIST( IS_MUTABLE_PLIST(tup) ? T_PLIST : T_PLIST + IMMUTABLE,
 		     LEN_LIST(tup) );
@@ -3653,6 +3652,9 @@ Obj             OnTuplesPerm (
 **
 **  'OnSetsPerm' returns the  image of the  tuple <set> under the permutation
 **  <perm>.  It is called from 'FuncOnSets'.
+**
+**  The input <set> must be a set, i.e., dense and strictly sorted. This is
+**  is not verified.
 */
 Obj             OnSetsPerm (
     Obj                 set,
@@ -3776,22 +3778,6 @@ Obj             OnSetsPerm (
                 ADDR_OBJ(res)[k] = tmp;
             }
             h = h / 3;
-        }
-
-        /* remove duplicates, shrink bag if possible                       */
-        if ( 0 < len ) {
-            tmp = CONST_ADDR_OBJ(res)[1];  k = 1;
-            for ( i = 2; i <= len; i++ ) {
-                if ( ! EQ( tmp, CONST_ADDR_OBJ(res)[i] ) ) {
-                    k++;
-                    tmp = CONST_ADDR_OBJ(res)[i];
-                    ADDR_OBJ(res)[k] = tmp;
-                }
-            }
-            if ( k < len ) {
-                ResizeBag( res, (k+1)*sizeof(Obj) );
-                SET_LEN_PLIST(res, k);
-            }
         }
 
     }
