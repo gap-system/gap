@@ -1571,7 +1571,7 @@ InstallMethod( NumberOp,
 
 #############################################################################
 ##
-#M  NumberOp( <C> ) . . . . . . . . . . . count elements that have a property
+#M  NumberOp( <C> ) . . . . . . . . . . . count elements
 ##
 InstallOtherMethod( NumberOp,
     "for a list/collection",
