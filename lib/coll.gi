@@ -615,7 +615,7 @@ InstallGlobalFunction( EnumeratorOfSubset,
     return EnumeratorByFunctions( Fam, rec(
                ElementNumber     := ElementNumber_Subset,
                NumberElement     := NumberElement_Subset,
-               PositionCanonical := NumberElement_Subset,
+               PositionCanonical := PositionCanonical_Subset,
                Length            := Length_Subset,
                AsList            := AsList_Subset,
 
