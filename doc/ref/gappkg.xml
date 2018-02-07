@@ -1580,7 +1580,7 @@ and calling <C>LoadPackage("packagename" : OnlyNeeded );</C>
 finally, together with all other packages using 
 <Ref Func="LoadAllPackages"/> (see below) in four possible combinations
 of starting &GAP; with/without <C>-r -A</C> options and calling 
-<Ref Func="LoadAllPackages"/> with/without <C>Reversed</C> option.
+<Ref Func="LoadAllPackages"/> with/without <C>reversed</C> option.
 </Item>
 </List>
 The test of loading all packages is the most subtle one. Quite often
@@ -1649,7 +1649,7 @@ the &GAP; Support.
 </Subsection>
 
 <ManSection>
-<Func Name="LoadAllPackages" Arg=": Reversed"/>
+<Func Name="LoadAllPackages" Arg=": reversed"/>
 <Description>
 loads all &GAP; packages from their list sorted in alphabetical order 
 (needed and suggested packages will be loaded when required). This is a 
@@ -1657,7 +1657,7 @@ technical function to check packages compatibility, so it should NOT be
 used to run anything except tests; it is known that &GAP; performance is 
 slower if all packages are loaded. To introduce some variations of the 
 order in which packages will be loaded for testing purposes,
-<Ref Func="LoadAllPackages"/> accepts option <C>Reversed</C> to load 
+<Ref Func="LoadAllPackages"/> accepts option <C>reversed</C> to load 
 packages from their list sorted in the reverse alphabetical order.
 </Description>
 </ManSection>
