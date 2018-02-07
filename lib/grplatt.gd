@@ -512,7 +512,6 @@ DeclareSynonym("EmbeddingConjugates",ContainingConjugates);
 ##  gap> MinimalFaithfulPermutationDegree(SmallGroup(96,3));
 ##  12
 ##  ]]></Example>
-##  </P>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -1346,6 +1346,9 @@ DeclareGlobalFunction("ParseRelators");
 ##
 DeclareGlobalFunction("StringFactorizationWord");
 
+# used to test whether abeliniazation can be mapped in GQuotients
+DeclareGlobalFunction("CanMapFiniteAbelianInvariants");
+
 # used in homomorphisms
 DeclareGlobalVariable("TRIVIAL_FP_GROUP");
 

@@ -2200,6 +2200,12 @@ local Fgens,	# generators of F
     fi;
   fi;
 
+  if IsFinite(F) and not IsPerfectGroup(G) and 
+    CanMapFiniteAbelianInvariants(AbelianInvariants(F),
+                                  AbelianInvariants(G))=false then
+    return [];
+  fi;
+
   if IsAbelian(G) then
     fak:=5;
   else
