@@ -3195,9 +3195,6 @@ DeclareFilter( "CanComputeSize" );
 
 InstallTrueMethod( CanComputeSize, HasSize );
 
-# to allow for recusive calls
-DeclareGlobalFunction("JoinRanges");
-
 #############################################################################
 ##
 #E
