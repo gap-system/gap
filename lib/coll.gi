@@ -1049,7 +1049,7 @@ end );
 
 #############################################################################
 ##
-#F  ConcatenationIterators( <iters> ) . . . . . . . .combine list of iterators
+#F  ConcatenationIterators( <iters> ) . . . . . . . combine list of iterators
 ##  to one iterator
 ##  
 BIND_GLOBAL("NextIterator_Concatenation", function(it)
@@ -1105,7 +1105,7 @@ BIND_GLOBAL( "NextIterator_Trivial", function( iter )
     end );
 
 BIND_GLOBAL( "ShallowCopy_Trivial",
-    iter -> rec( element:= iter!.elm, isDone:= iter!.isDone ) );
+    iter -> rec( element:= iter!.element, isDone:= iter!.isDone ) );
 
 InstallGlobalFunction( TrivialIterator, function( elm )
     return IteratorByFunctions( rec(
