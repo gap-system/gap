@@ -1,5 +1,5 @@
 gap> START_TEST("random.tst");
-gap> Read( Filename( DirectoriesLibrary( "tst" ), "testrandom.g" ) );
+gap> ReadGapRoot( "tst/testrandom.g" );
 
 #
 # fields and rings
