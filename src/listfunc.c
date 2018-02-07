@@ -630,6 +630,24 @@ Obj             FuncPOSITION_FIRST_COMPONENT_SORTED (
 
 #include <src/sortbase.h>
 
+// This is a variant of SortDensePlist, which sorts plists by
+// Obj pointer. It works on non-dense plists, and can be
+// used to efficiently sort lists of small integers.
+
+#define SORT_FUNC_NAME SortPlistByRawObj
+#define SORT_FUNC_ARGS Obj list
+#define SORT_ARGS list
+#define SORT_CREATE_LOCAL(name) Obj name;
+#define SORT_LEN_LIST() LEN_PLIST(list)
+#define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELM_PLIST(list, i)
+#define SORT_ASS_LOCAL_TO_LIST(i, j) SET_ELM_PLIST(list, i, j);
+#define SORT_COMP(v, w) ((v) < (w))
+#define SORT_FILTER_CHECKS() \
+    RESET_FILT_LIST(list, FN_IS_NSORT); \
+    RESET_FILT_LIST(list, FN_IS_SSORT);
+
+#include <src/sortbase.h>
+
 /****************************************************************************
 **
 *F  SORT_LISTComp(<list>,<func>)  . . . . . . . . . . . . . . . . sort a list

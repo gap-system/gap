@@ -19,6 +19,7 @@
 #include <src/integer.h>
 #include <src/intfuncs.h>
 #include <src/io.h>
+#include <src/listfunc.h>
 #include <src/lists.h>
 #include <src/opers.h>
 #include <src/permutat.h>
@@ -286,30 +287,12 @@ UInt RANK_PPERM4(Obj f)
     return (IMG_PPERM(f) == NULL ? INIT_PPERM4(f) : LEN_PLIST(IMG_PPERM(f)));
 }
 
-static Obj SORT_PLIST_CYC(Obj res)
+static Obj SORT_PLIST_INTOBJ(Obj res)
 {
-    Obj  tmp;
-    UInt h, i, k, len;
-
-    len = LEN_PLIST(res);
-    if (len == 0)
+    if (LEN_PLIST(res) == 0)
         return res;
 
-    h = 1;
-    while (9 * h + 4 < len)
-        h = 3 * h + 1;
-    while (0 < h) {
-        for (i = h + 1; i <= len; i++) {
-            tmp = CONST_ADDR_OBJ(res)[i];
-            k = i;
-            while (h < k && ((Int)tmp < (Int)(CONST_ADDR_OBJ(res)[k - h]))) {
-                ADDR_OBJ(res)[k] = CONST_ADDR_OBJ(res)[k - h];
-                k -= h;
-            }
-            ADDR_OBJ(res)[k] = tmp;
-        }
-        h = h / 3;
-    }
+    SortPlistByRawObj(res);
     RetypeBag(res, T_PLIST_CYC_SSORT + IMMUTABLE);
     CHANGED_BAG(res);
     return res;
@@ -585,20 +568,20 @@ Obj FuncIMAGE_SET_PPERM(Obj self, Obj f)
     if (TNUM_OBJ(f) == T_PPERM2) {
         if (IMG_PPERM(f) == NULL) {
             INIT_PPERM2(f);
-            return SORT_PLIST_CYC(IMG_PPERM(f));
+            return SORT_PLIST_INTOBJ(IMG_PPERM(f));
         }
         else if (!IS_SSORT_LIST(IMG_PPERM(f))) {
-            return SORT_PLIST_CYC(IMG_PPERM(f));
+            return SORT_PLIST_INTOBJ(IMG_PPERM(f));
         }
         return IMG_PPERM(f);
     }
     else if (TNUM_OBJ(f) == T_PPERM4) {
         if (IMG_PPERM(f) == NULL) {
             INIT_PPERM4(f);
-            return SORT_PLIST_CYC(IMG_PPERM(f));
+            return SORT_PLIST_INTOBJ(IMG_PPERM(f));
         }
         else if (!IS_SSORT_LIST(IMG_PPERM(f))) {
-            return SORT_PLIST_CYC(IMG_PPERM(f));
+            return SORT_PLIST_INTOBJ(IMG_PPERM(f));
         }
         return IMG_PPERM(f);
     }
