@@ -372,6 +372,22 @@ gap> ForAll(permSml, g -> OnTuples([1,2,3],g) = ListPerm(g, 3));
 true
 gap> ForAll(permBig, g -> OnTuples([1,2,3],g) = ListPerm(g, 3));
 true
+gap> ForAll(permSml, g -> OnTuples([1,2,3,70000],g) = Concatenation(ListPerm(g, 3),[70000]));
+true
+gap> ForAll(permBig, g -> OnTuples([1,2,3,70000],g) = Concatenation(ListPerm(g, 3),[70000]));
+true
+gap> OnTuples([1,2,3,70000,70001],(1,2,70000));
+[ 2, 70000, 3, 1, 70001 ]
+
+# action on tuples of permutations
+gap> OnTuples([(1,2),(1,3)],(1,2));
+[ (1,2), (2,3) ]
+gap> OnTuples([(3,4),(1,2)],(1,2,70000));
+[ (3,4), (2,70000) ]
+gap> OnTuples([(1,2),(1,3)],(1,2,70000));
+[ (2,70000), (2,3) ]
+
+#
 gap> OnTuples([,1],());
 Error, OnTuples for perm: list must not contain holes
 gap> OnTuples([,1],(70000,70001));
@@ -388,6 +404,16 @@ gap> ForAll(permSml, g -> OnSets([1,2,3,2^64],g) = [1,2,3,2^64]);
 true
 gap> ForAll(permBig, g -> OnSets([1,2,3,2^64],g) = [1,2,3,2^64]);
 true
+gap> OnSets([1,2,3,70000,70001],(1,2,70000));
+[ 1, 2, 3, 70000, 70001 ]
+
+# action on tuples of permutations
+gap> OnSets([(1,2),(1,3)],(1,2));
+[ (2,3), (1,2) ]
+gap> OnSets([(3,4),(1,2)],(1,2,70000));
+[ (3,4), (2,70000) ]
+gap> OnSets([(1,2),(1,3)],(1,2,70000));
+[ (2,3), (2,70000) ]
 
 #
 # MappingPermListList
