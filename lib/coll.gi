@@ -737,6 +737,7 @@ InstallGlobalFunction( List,
       ErrorNoReturn( "usage: List( <C>[, <func>] )" );
     fi;
     tnum:= TNUM_OBJ( arg[1] );
+    # handle built-in lists directly, to avoid method dispatch overhead
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       C:= arg[1];
       if l = 1 then
@@ -1137,6 +1138,7 @@ InstallGlobalFunction( Sum,
       Error( "usage: Sum( <C>[, <func>][, <init>] )" );
     fi;
     tnum:= TNUM_OBJ( arg[1] );
+    # handle built-in lists directly, to avoid method dispatch overhead
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       C:= arg[1];
       if l = 1 then
@@ -1270,6 +1272,7 @@ InstallGlobalFunction( Product,
       Error( "usage: Product( <C>[, <func>][, <init>] )" );
     fi;
     tnum:= TNUM_OBJ( arg[1] );
+    # handle built-in lists directly, to avoid method dispatch overhead
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       C:= arg[1];
       if l = 1 then
@@ -1414,6 +1417,7 @@ InstallGlobalFunction( Filtered,
     function( C, func )
     local tnum, res, i, elm;
     tnum:= TNUM_OBJ( C );
+    # handle built-in lists directly, to avoid method dispatch overhead
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       # start with empty list of same representation
       res := C{[]};
@@ -1502,6 +1506,7 @@ InstallGlobalFunction( Number,
       Error( "usage: Number( <C>[, <func>] )" );
     fi;
     tnum:= TNUM_OBJ( arg[1] );
+    # handle built-in lists directly, to avoid method dispatch overhead
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       C:= arg[1];
       if l = 1 then
@@ -1614,6 +1619,7 @@ InstallGlobalFunction( ForAll,
     function( C, func )
     local tnum, elm;
     tnum:= TNUM_OBJ( C );
+    # handle built-in lists directly, to avoid method dispatch overhead
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       for elm in C do
           if not func( elm ) then
@@ -1685,6 +1691,7 @@ InstallGlobalFunction( ForAny,
     function( C, func )
     local tnum, elm;
     tnum:= TNUM_OBJ( C );
+    # handle built-in lists directly, to avoid method dispatch overhead
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
       for elm in C do
           if func( elm ) then
