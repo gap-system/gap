@@ -953,26 +953,23 @@ end );
 ##  to one iterator
 ##  
 BIND_GLOBAL("NextIterator_Concatenation", function(it)
-  local it1, res;
-  it1 := it!.iters[it!.i];
+  local i, it1, res;
+  i := it!.i;
+  it1 := it!.iters[i];
   res := NextIterator(it1);
-  if IsDoneIterator(it1) then 
-    if it!.i = Length(it!.iters) then
-      it!.done := true;
-    else
-      it!.i := it!.i+1;
-    fi;
-  fi;
+  while i <= Length(it!.iters) and IsDoneIterator(it!.iters[i]) do
+    i := i+1;
+  od;
+  it!.i := i;
   return res;
 end);
 BIND_GLOBAL("IsDoneIterator_Concatenation", function(it)
-  return it!.done;
+  return it!.i > Length(it!.iters);
 end);
 BIND_GLOBAL("ShallowCopy_Concatenation", function(it)
   return rec(NextIterator := it!.NextIterator,
     IsDoneIterator := it!.IsDoneIterator,
     ShallowCopy := it!.ShallowCopy,
-    done := it!.done,
     i := it!.i,
     iters := List(it!.iters, ShallowCopy)
     );
@@ -989,7 +986,6 @@ BIND_GLOBAL("ConcatenationIterators", function(iters)
     ShallowCopy := ShallowCopy_Concatenation,
     i := i,
     iters := iters,
-    done := i > Length(iters)
             ));
 end);  
 
