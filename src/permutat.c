@@ -318,44 +318,9 @@ Int             EqPerm24 (
     return 1L;
 }
 
-Int             EqPerm42 (
-    Obj                 opL,
-    Obj                 opR )
+Int EqPerm42(Obj opL, Obj opR)
 {
-    UInt                degL;           /* degree of the left operand      */
-    const UInt4 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt2 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* get the degrees                                                     */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM2(opR);
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM4(opL);
-    ptR = CONST_ADDR_PERM2(opR);
-
-    /* search for a difference and return False if you find one          */
-    if ( degL <= degR ) {
-        for ( p = 0; p < degL; p++ )
-            if ( *(ptL++) != *(ptR++) )
-                return 0L;
-        for ( p = degL; p < degR; p++ )
-            if (        p != *(ptR++) )
-                return 0L;
-    }
-    else {
-        for ( p = 0; p < degR; p++ )
-            if ( *(ptL++) != *(ptR++) )
-                return 0L;
-        for ( p = degR; p < degL; p++ )
-            if ( *(ptL++) !=        p )
-                return 0L;
-    }
-
-    /* otherwise they must be equal                                        */
-    return 1L;
+    return EqPerm24(opR, opL);
 }
 
 /****************************************************************************

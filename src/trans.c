@@ -4053,45 +4053,7 @@ Int EqTrans24(Obj f, Obj g)
 
 Int EqTrans42(Obj f, Obj g)
 {
-    UInt    i, def, deg;
-    const UInt4 * ptf;
-    const UInt2 * ptg;
-
-    ptf = CONST_ADDR_TRANS4(f);
-    ptg = CONST_ADDR_TRANS2(g);
-    def = DEG_TRANS4(f);
-    deg = DEG_TRANS2(g);
-
-    if (def <= deg) {
-        // The only transformation created within this file that is of type
-        // T_TRANS4 and that does not have (internal) degree 65537 or greater
-        // is ID_TRANS4.
-
-        for (i = 0; i < def; i++) {
-            if (*(ptf++) != *(ptg++)) {
-                return 0L;
-            }
-        }
-        for (; i < deg; i++) {
-            if (*(ptg++) != i) {
-                return 0L;
-            }
-        }
-    }
-    else {
-        for (i = 0; i < deg; i++) {
-            if (*(ptf++) != *(ptg++)) {
-                return 0L;
-            }
-        }
-        for (; i < def; i++) {
-            if (*(ptf++) != i) {
-                return 0L;
-            }
-        }
-    }
-
-    return 1L;
+    return EqTrans24(g, f);
 }
 
 /*******************************************************************************

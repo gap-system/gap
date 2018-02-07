@@ -2662,33 +2662,7 @@ Int EqPPerm24(Obj f, Obj g)
 
 Int EqPPerm42(Obj f, Obj g)
 {
-    UInt4 * ptf = ADDR_PPERM4(f);
-    UInt2 * ptg = ADDR_PPERM2(g);
-    UInt    deg = DEG_PPERM4(f);
-    UInt    i, j, rank;
-    Obj     dom;
-
-    if (deg != DEG_PPERM2(g) || CODEG_PPERM4(f) != CODEG_PPERM2(g))
-        return 0L;
-
-    if (DOM_PPERM(f) == NULL || DOM_PPERM(g) == NULL) {
-        for (i = 0; i < deg; i++)
-            if (*(ptf++) != *(ptg++))
-                return 0L;
-        return 1L;
-    }
-
-    if (RANK_PPERM4(f) != RANK_PPERM2(g))
-        return 0L;
-    dom = DOM_PPERM(f);
-    rank = RANK_PPERM4(f);
-
-    for (i = 1; i <= rank; i++) {
-        j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-        if (ptf[j] != ptg[j])
-            return 0L;
-    }
-    return 1L;
+    return EqPPerm24(g, f);
 }
 
 Int EqPPerm44(Obj f, Obj g)
