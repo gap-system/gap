@@ -2470,6 +2470,12 @@ InstallGlobalFunction( Intersection, function ( arg )
         fi;
     fi;
 
+    for D in arg do
+        if not IsListOrCollection(D) then
+            Error("Intersection: arguments must be lists or collections");
+        fi;
+    od;
+
     # start with the first domain or list
     I := arg[1];
     copied := false;
