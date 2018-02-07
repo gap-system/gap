@@ -50,6 +50,7 @@ SetString( NonnegativeIntegers, "NonnegativeIntegers" );
 SetSize( NonnegativeIntegers, infinity );
 SetGeneratorsOfSemiringWithZero( NonnegativeIntegers, [ 1 ] );
 SetGeneratorsOfAdditiveMagmaWithZero( NonnegativeIntegers, [ 1 ] );
+SetRepresentativeSmallest( NonnegativeIntegers, 0 );
 SetIsWholeFamily( NonnegativeIntegers, false );
 
 
@@ -67,6 +68,7 @@ SetString( PositiveIntegers, "PositiveIntegers" );
 SetSize( PositiveIntegers, infinity );
 SetGeneratorsOfSemiring( PositiveIntegers, [ 1 ] );
 SetGeneratorsOfAdditiveMagma( PositiveIntegers, [ 1 ] );
+SetRepresentativeSmallest( PositiveIntegers, 1 );
 SetIsWholeFamily( PositiveIntegers, false );
 
 
