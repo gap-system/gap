@@ -204,7 +204,7 @@ function(G,dom,all)
 	t:=ShallowCopy(t.orbit);
       fi;
       if Length(t)>0 and Length(t)*Size(t[1])<10000 and n>40000 then
-	List(t,Elements); # faster in test
+	List(t,AsSet); # faster in test
       fi;
       i:=1;
       while i<=Length(dom) and ll>0 do
