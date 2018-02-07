@@ -1483,15 +1483,6 @@ InstallMethod( FilteredOp,
     return res;
     end );
 
-#T Is this useful compared to the previous method? (FL)
-InstallMethod( FilteredOp,
-    "for an empty list/collection, and a function",
-    [ IsEmpty, IsFunction ], 
-    SUM_FLAGS, # there is nothing to do
-    function( list, func )
-    return [];
-    end );
-
 
 #############################################################################
 ##
@@ -1676,12 +1667,6 @@ InstallMethod( ForAllOp,
     return true;
     end );
 
-InstallOtherMethod( ForAllOp,
-    "for an empty list/collection, and a function",
-    [ IsEmpty, IsFunction ], 
-    SUM_FLAGS, # there is nothing to do
-    ReturnTrue );
-
 
 #############################################################################
 ##
@@ -1748,12 +1733,6 @@ InstallMethod( ForAnyOp,
     od;
     return false;
     end );
-
-InstallOtherMethod( ForAnyOp,
-    "for an empty list/collection, and a function",
-    [ IsEmpty, IsFunction ],
-    SUM_FLAGS, # there is nothing to do
-    ReturnFalse );
 
 
 #############################################################################
