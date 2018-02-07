@@ -3419,17 +3419,14 @@ InstallGlobalFunction("GroupEnumeratorByClosure",function( G )
     return AsSSortedList( H );
 end);
 
-CallFuncList(function(enum)
-    InstallMethod( Enumerator, "generic method for a group",
-            [ IsGroup and IsAttributeStoringRep ],
-            enum );
+InstallMethod( Enumerator, "generic method for a group",
+        [ IsGroup and IsAttributeStoringRep ],
+        GroupEnumeratorByClosure );
 
-    # the element list is only stored in the locally created new group H
-    InstallMethod(AsSSortedListNonstored, "generic method for groups",
-            [ IsGroup ],
-            enum );
-end, [GroupEnumeratorByClosure]);
-
+# the element list is only stored in the locally created new group H
+InstallMethod(AsSSortedListNonstored, "generic method for groups",
+        [ IsGroup ],
+        GroupEnumeratorByClosure );
 
 
 #############################################################################
