@@ -545,7 +545,11 @@ gap> Difference([1,2],[1,Z(2)]);
 gap> Difference([1,2],[1,3]);
 [ 2 ]
 
-# for two collections
+# for two collections in different families
+gap> Difference(M1, c2) = M1;
+true
+
+# for two collections in the same family
 gap> Difference(M2, M1);
 [ 0 ]
 

@@ -2904,7 +2904,12 @@ InstallMethod( Difference,
     end );
 
 InstallMethod( Difference,
-    "for two collections",
+    "for two collections in different families",
+    IsNotIdenticalObj, [ IsCollection, IsCollection ],
+    function( C1, C2 ) return C1; end );
+
+InstallMethod( Difference,
+    "for two collections in the same family",
     IsIdenticalObj, [ IsCollection, IsCollection ],
     function ( C1, C2 )
     local   D, elm;
@@ -2927,7 +2932,7 @@ InstallMethod( Difference,
     end );
 
 InstallMethod( Difference,
-    "for two collections, the first being a list",
+    "for two collections in the same family, the first being a list",
     IsIdenticalObj, [ IsCollection and IsList, IsCollection ],
     function ( C1, C2 )
     local   D, elm;
@@ -2946,7 +2951,7 @@ InstallMethod( Difference,
     end );
 
 InstallMethod( Difference,
-    "for two collections, the second being a list",
+    "for two collections in the same family, the second being a list",
     IsIdenticalObj, [ IsCollection, IsCollection and IsList ],
     function ( C1, C2 )
     local   D;
