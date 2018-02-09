@@ -267,21 +267,23 @@ UInt RANK_TRANS4(Obj f)
 // Retyping is the responsibility of the caller, this should only be called
 // after a call to SortPlistByRawObj.
 
-static void REMOVE_DUPS_PLIST_CYC(Obj res)
+static void REMOVE_DUPS_PLIST_INTOBJ(Obj res)
 {
     Obj  tmp;
     UInt i, k, len;
+    Obj  *data;
 
     len = LEN_PLIST(res);
 
     if (0 < len) {
-        tmp = CONST_ADDR_OBJ(res)[1];
+        data = ADDR_OBJ(res);
+        tmp = data[1];
         k = 1;
         for (i = 2; i <= len; i++) {
-            if (tmp != CONST_ADDR_OBJ(res)[i]) {
+            if (tmp != data[i]) {
                 k++;
-                tmp = CONST_ADDR_OBJ(res)[i];
-                ADDR_OBJ(res)[k] = tmp;
+                tmp = data[i];
+                data[k] = tmp;
             }
         }
         if (k < len) {
@@ -3854,7 +3856,7 @@ Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
             *ptres = INTOBJ_INT(k);
         }
         SortPlistByRawObj(res);
-        REMOVE_DUPS_PLIST_CYC(res);
+        REMOVE_DUPS_PLIST_INTOBJ(res);
         return res;
     }
     else if (TNUM_OBJ(f) == T_TRANS4) {
@@ -3868,7 +3870,7 @@ Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
             *ptres = INTOBJ_INT(k);
         }
         SortPlistByRawObj(res);
-        REMOVE_DUPS_PLIST_CYC(res);
+        REMOVE_DUPS_PLIST_INTOBJ(res);
         return res;
     }
     ErrorQuit("OnPosIntSetsTrans: the argument must be a "
@@ -5302,7 +5304,7 @@ Obj OnSetsTrans(Obj set, Obj f)
     // sort the result and remove dups
     if (isint) {
         SortPlistByRawObj(res);
-        REMOVE_DUPS_PLIST_CYC(res);
+        REMOVE_DUPS_PLIST_INTOBJ(res);
 
         RetypeBag(res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT
                                              : T_PLIST_CYC_SSORT + IMMUTABLE);
