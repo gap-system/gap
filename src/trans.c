@@ -3832,18 +3832,21 @@ Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
     }
 
     PLAIN_LIST(set);
+
+    const UInt len = LEN_PLIST(set);
+
     res = NEW_PLIST(IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT
                                           : T_PLIST_CYC_SSORT + IMMUTABLE,
-                    LEN_LIST(set));
-    ADDR_OBJ(res)[0] = CONST_ADDR_OBJ(set)[0];
+                    len);
+    SET_LEN_PLIST(res, len);
 
-    ptset = CONST_ADDR_OBJ(set) + LEN_LIST(set);
-    ptres = ADDR_OBJ(res) + LEN_LIST(set);
+    ptset = CONST_ADDR_OBJ(set) + len;
+    ptres = ADDR_OBJ(res) + len;
 
     if (TNUM_OBJ(f) == T_TRANS2) {
         ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
-        for (i = LEN_LIST(set); 1 <= i; i--, ptset--, ptres--) {
+        for (i = len; 1 <= i; i--, ptset--, ptres--) {
             k = INT_INTOBJ(*ptset);
             if (k <= deg) {
                 k = ptf2[k - 1] + 1;
@@ -3857,7 +3860,7 @@ Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
     else if (TNUM_OBJ(f) == T_TRANS4) {
         ptf4 = CONST_ADDR_TRANS4(f);
         deg = DEG_TRANS4(f);
-        for (i = LEN_LIST(set); 1 <= i; i--, ptset--, ptres--) {
+        for (i = len; 1 <= i; i--, ptset--, ptres--) {
             k = INT_INTOBJ(*ptset);
             if (k <= deg) {
                 k = ptf4[k - 1] + 1;
@@ -5216,12 +5219,16 @@ Obj PowIntTrans4(Obj i, Obj f)
     return INTOBJ_INT(img);
 }
 
-/*******************************************************************************
-** Apply a transformation to a set or tuple
-*******************************************************************************/
-
-// OnSetsTrans for use in FuncOnSets.
-
+/****************************************************************************
+**
+*F  OnSetsTrans( <set>, <f> ) . . . . . . . . .  operations on sets of points
+**
+**  'OnSetsTrans' returns the  image of the tuple <set> under the
+**  transformation <f>.  It is called from 'FuncOnSets'.
+**
+**  The input <set> must be a non-empty set, i.e., plain, dense and strictly
+**  sorted. This is is not verified.
+*/
 Obj OnSetsTrans(Obj set, Obj f)
 {
     const UInt2 * ptf2;
@@ -5231,19 +5238,23 @@ Obj OnSetsTrans(Obj set, Obj f)
     Obj *   ptres, tmp, res;
     UInt    i, isint, k;
 
+    GAP_ASSERT(IS_PLIST(set));
+    GAP_ASSERT(LEN_PLIST(set) > 0);
+
+    const UInt len = LEN_PLIST(set);
+
     res = NEW_PLIST(IS_MUTABLE_PLIST(set) ? T_PLIST : T_PLIST + IMMUTABLE,
-                    LEN_LIST(set));
+                    len);
+    SET_LEN_PLIST(res, len);
 
-    ADDR_OBJ(res)[0] = CONST_ADDR_OBJ(set)[0];
-
-    ptset = CONST_ADDR_OBJ(set) + LEN_LIST(set);
-    ptres = ADDR_OBJ(res) + LEN_LIST(set);
+    ptset = CONST_ADDR_OBJ(set) + len;
+    ptres = ADDR_OBJ(res) + len;
     if (TNUM_OBJ(f) == T_TRANS2) {
         ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
         // loop over the entries of the tuple
         isint = 1;
-        for (i = LEN_LIST(set); 1 <= i; i--, ptset--, ptres--) {
+        for (i = len; 1 <= i; i--, ptset--, ptres--) {
             if (IS_INTOBJ(*ptset) && 0 < INT_INTOBJ(*ptset)) {
                 k = INT_INTOBJ(*ptset);
                 if (k <= deg) {
@@ -5268,7 +5279,7 @@ Obj OnSetsTrans(Obj set, Obj f)
 
         // loop over the entries of the tuple
         isint = 1;
-        for (i = LEN_LIST(set); 1 <= i; i--, ptset--, ptres--) {
+        for (i = len; 1 <= i; i--, ptset--, ptres--) {
             if (IS_INTOBJ(*ptset) && 0 < INT_INTOBJ(*ptset)) {
                 k = INT_INTOBJ(*ptset);
                 if (k <= deg) {
@@ -5304,8 +5315,16 @@ Obj OnSetsTrans(Obj set, Obj f)
     return res;
 }
 
-// OnTuplesTrans for use in FuncOnTuples
-
+/****************************************************************************
+**
+*F  OnTuplesTrans( <tup>, <f> ) . . . . . . .  operations on tuples of points
+**
+**  'OnTuplesTrans'  returns  the  image  of  the  tuple  <tup>   under  the
+**  transformation <f>.  It is called from 'FuncOnTuples'.
+**
+**  The input <tup> must be a non-empty and dense plain list. This is is not
+**  verified.
+*/
 Obj OnTuplesTrans(Obj tup, Obj f)
 {
     const UInt2 * ptf2;
@@ -5314,20 +5333,24 @@ Obj OnTuplesTrans(Obj tup, Obj f)
     const Obj *   pttup;
     Obj *   ptres, res, tmp;
 
+    GAP_ASSERT(IS_PLIST(tup));
+    GAP_ASSERT(LEN_PLIST(tup) > 0);
+
+    const UInt len = LEN_PLIST(tup);
+
     res = NEW_PLIST(IS_MUTABLE_PLIST(tup) ? T_PLIST : T_PLIST + IMMUTABLE,
-                    LEN_LIST(tup));
+                    len);
+    SET_LEN_PLIST(res, len);
 
-    ADDR_OBJ(res)[0] = CONST_ADDR_OBJ(tup)[0];
-
-    pttup = CONST_ADDR_OBJ(tup) + LEN_LIST(tup);
-    ptres = ADDR_OBJ(res) + LEN_LIST(tup);
+    pttup = CONST_ADDR_OBJ(tup) + len;
+    ptres = ADDR_OBJ(res) + len;
 
     if (TNUM_OBJ(f) == T_TRANS2) {
         ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
 
         // loop over the entries of the tuple
-        for (i = LEN_LIST(tup); 1 <= i; i--, pttup--, ptres--) {
+        for (i = len; 1 <= i; i--, pttup--, ptres--) {
             if (IS_INTOBJ(*pttup) && 0 < INT_INTOBJ(*pttup)) {
                 k = INT_INTOBJ(*pttup);
                 if (k <= deg) {
@@ -5355,7 +5378,7 @@ Obj OnTuplesTrans(Obj tup, Obj f)
         deg = DEG_TRANS4(f);
 
         // loop over the entries of the tuple
-        for (i = LEN_LIST(tup); 1 <= i; i--, pttup--, ptres--) {
+        for (i = len; 1 <= i; i--, pttup--, ptres--) {
             if (IS_INTOBJ(*pttup) && 0 < INT_INTOBJ(*pttup)) {
                 k = INT_INTOBJ(*pttup);
                 if (k <= deg) {
