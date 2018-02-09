@@ -46,6 +46,7 @@
 #include <src/gapstate.h>
 #include <src/integer.h>
 #include <src/io.h>
+#include <src/listfunc.h>
 #include <src/lists.h>
 #include <src/opers.h>
 #include <src/plist.h>
@@ -3552,6 +3553,9 @@ Obj             FuncSMALLEST_IMG_TUP_PERM (
 **
 **  'OnTuplesPerm'  returns  the  image  of  the  tuple  <tup>   under  the
 **  permutation <perm>.  It is called from 'FuncOnTuples'.
+**
+**  The input <tup> must be a non-empty and dense plain list. This is is not
+**  verified.
 */
 Obj             OnTuplesPerm (
     Obj                 tup,
@@ -3566,22 +3570,27 @@ Obj             OnTuplesPerm (
     UInt                lmp;            /* largest moved point             */
     UInt                i, k;           /* loop variables                  */
 
+    GAP_ASSERT(IS_PLIST(tup));
+    GAP_ASSERT(LEN_PLIST(tup) > 0);
+
+    const UInt len = LEN_PLIST(tup);
+
     /* make a bag for the result and initialize pointers                   */
     res = NEW_PLIST( IS_MUTABLE_PLIST(tup) ? T_PLIST : T_PLIST + IMMUTABLE,
-		     LEN_LIST(tup) );
-    ADDR_OBJ(res)[0] = CONST_ADDR_OBJ(tup)[0];
+		     len );
+    SET_LEN_PLIST(res, len);
 
     /* handle small permutations                                           */
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
 
         /* get the pointer                                                 */
-        ptTup = CONST_ADDR_OBJ(tup) + LEN_LIST(tup);
-        ptRes = ADDR_OBJ(res) + LEN_LIST(tup);
+        ptTup = CONST_ADDR_OBJ(tup) + len;
+        ptRes = ADDR_OBJ(res) + len;
         ptPrm2 = CONST_ADDR_PERM2(perm);
         lmp = DEG_PERM2(perm);
 
         /* loop over the entries of the tuple                              */
-        for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup--, ptRes-- ) {
+        for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
             if (IS_INTOBJ(*ptTup) && (0 < INT_INTOBJ(*ptTup))) {
                 k = INT_INTOBJ( *ptTup );
                 if (k > lmp) {
@@ -3610,13 +3619,13 @@ Obj             OnTuplesPerm (
     else {
 
         /* get the pointer                                                 */
-        ptTup = CONST_ADDR_OBJ(tup) + LEN_LIST(tup);
-        ptRes = ADDR_OBJ(res) + LEN_LIST(tup);
+        ptTup = CONST_ADDR_OBJ(tup) + len;
+        ptRes = ADDR_OBJ(res) + len;
         ptPrm4 = CONST_ADDR_PERM4(perm);
         lmp = DEG_PERM4(perm);
 
         /* loop over the entries of the tuple                              */
-        for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup--, ptRes-- ) {
+        for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
             if (IS_INTOBJ(*ptTup) && (0 < INT_INTOBJ(*ptTup))) {
                 k = INT_INTOBJ( *ptTup );
                 if (k > lmp) {
@@ -3653,8 +3662,8 @@ Obj             OnTuplesPerm (
 **  'OnSetsPerm' returns the  image of the  tuple <set> under the permutation
 **  <perm>.  It is called from 'FuncOnSets'.
 **
-**  The input <set> must be a set, i.e., dense and strictly sorted. This is
-**  is not verified.
+**  The input <set> must be a non-empty set, i.e., plain, dense and strictly
+**  sorted. This is is not verified.
 */
 Obj             OnSetsPerm (
     Obj                 set,
@@ -3668,26 +3677,30 @@ Obj             OnSetsPerm (
     Obj                 tmp;            /* temporary handle                */
     UInt                lmp;            /* largest moved point             */
     UInt                isint;          /* <set> only holds integers       */
-    UInt                len;            /* logical length of the list      */
-    UInt                h;              /* gap width in the shellsort      */
     UInt                i, k;           /* loop variables                  */
 
+    GAP_ASSERT(IS_PLIST(set));
+    GAP_ASSERT(LEN_PLIST(set) > 0);
+
+    const UInt len = LEN_PLIST(set);
+
     /* make a bag for the result and initialize pointers                   */
-    res = NEW_PLIST(  IS_MUTABLE_PLIST(set) ? T_PLIST : T_PLIST + IMMUTABLE , LEN_LIST(set) );
-    ADDR_OBJ(res)[0] = CONST_ADDR_OBJ(set)[0];
+    res = NEW_PLIST( IS_MUTABLE_PLIST(set) ? T_PLIST : T_PLIST + IMMUTABLE,
+                     len );
+    SET_LEN_PLIST(res, len);
 
     /* handle small permutations                                           */
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
 
         /* get the pointer                                                 */
-        ptTup = CONST_ADDR_OBJ(set) + LEN_LIST(set);
-        ptRes = ADDR_OBJ(res) + LEN_LIST(set);
+        ptTup = CONST_ADDR_OBJ(set) + len;
+        ptRes = ADDR_OBJ(res) + len;
         ptPrm2 = CONST_ADDR_PERM2(perm);
         lmp = DEG_PERM2(perm);
 
         /* loop over the entries of the tuple                              */
         isint = 1;
-        for ( i = LEN_LIST(set); 1 <= i; i--, ptTup--, ptRes-- ) {
+        for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
             if ( IS_INTOBJ( *ptTup ) && 0 < INT_INTOBJ( *ptTup ) ) {
                 k = INT_INTOBJ( *ptTup );
                 if ( k <= lmp )
@@ -3713,14 +3726,14 @@ Obj             OnSetsPerm (
     else {
 
         /* get the pointer                                                 */
-        ptTup = CONST_ADDR_OBJ(set) + LEN_LIST(set);
-        ptRes = ADDR_OBJ(res) + LEN_LIST(set);
+        ptTup = CONST_ADDR_OBJ(set) + len;
+        ptRes = ADDR_OBJ(res) + len;
         ptPrm4 = CONST_ADDR_PERM4(perm);
         lmp = DEG_PERM4(perm);
 
         /* loop over the entries of the tuple                              */
         isint = 1;
-        for ( i = LEN_LIST(set); 1 <= i; i--, ptTup--, ptRes-- ) {
+        for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
             if ( IS_INTOBJ( *ptTup ) && 0 < INT_INTOBJ( *ptTup ) ) {
                 k = INT_INTOBJ( *ptTup );
                 if ( k <= lmp )
@@ -3742,44 +3755,14 @@ Obj             OnSetsPerm (
 
     }
 
-    /* special case if the result only holds integers                      */
-    if ( isint ) {
-
-        /* sort the set with a shellsort                                   */
-        len = LEN_LIST(res);
-        h = 1;  while ( 9*h + 4 < len )  h = 3*h + 1;
-        while ( 0 < h ) {
-            for ( i = h+1; i <= len; i++ ) {
-                tmp = CONST_ADDR_OBJ(res)[i];  k = i;
-                while ( h < k && ((Int)tmp < (Int)(CONST_ADDR_OBJ(res)[k-h])) ) {
-                    ADDR_OBJ(res)[k] = CONST_ADDR_OBJ(res)[k-h];
-                    k -= h;
-                }
-                ADDR_OBJ(res)[k] = tmp;
-            }
-            h = h / 3;
-        }
-        RetypeBag( res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT : T_PLIST_CYC_SSORT + IMMUTABLE );
+    // sort the result
+    if (isint) {
+        SortPlistByRawObj(res);
+        RetypeBag(res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT
+                                             : T_PLIST_CYC_SSORT + IMMUTABLE);
     }
-
-    /* general case                                                        */
     else {
-
-        /* sort the set with a shellsort                                   */
-        len = LEN_LIST(res);
-        h = 1;  while ( 9*h + 4 < len )  h = 3*h + 1;
-        while ( 0 < h ) {
-            for ( i = h+1; i <= len; i++ ) {
-                tmp = CONST_ADDR_OBJ(res)[i];  k = i;
-                while ( h < k && LT( tmp, CONST_ADDR_OBJ(res)[k-h] ) ) {
-                    ADDR_OBJ(res)[k] = CONST_ADDR_OBJ(res)[k-h];
-                    k -= h;
-                }
-                ADDR_OBJ(res)[k] = tmp;
-            }
-            h = h / 3;
-        }
-
+        SortDensePlist(res);
     }
 
     /* return the result                                                   */

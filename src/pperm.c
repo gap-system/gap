@@ -294,7 +294,6 @@ static Obj SORT_PLIST_INTOBJ(Obj res)
 
     SortPlistByRawObj(res);
     RetypeBag(res, T_PLIST_CYC_SSORT + IMMUTABLE);
-    CHANGED_BAG(res);
     return res;
 }
 
@@ -6063,6 +6062,16 @@ Obj LQuoPPerm44(Obj f, Obj g)
     return lquo;
 }
 
+/****************************************************************************
+**
+*F  OnSetsPPerm( <set>, <f> ) . . . . . . . . .  operations on sets of points
+**
+**  'OnSetsPPerm' returns the  image of the  tuple <set> under the partial
+**  permutation <f>.  It is called from 'FuncOnSets'.
+**
+**  The input <set> must be a non-empty set, i.e., plain, dense and strictly
+**  sorted. This is is not verified.
+*/
 Obj OnSetsPPerm(Obj set, Obj f)
 {
     UInt2 * ptf2;
@@ -6070,30 +6079,33 @@ Obj OnSetsPPerm(Obj set, Obj f)
     UInt    deg;
     const Obj * ptset;
     Obj *   ptres, tmp, res;
-    UInt    i, isint, k, h, len;
+    UInt    i, isint, k, reslen;
 
-    if (LEN_LIST(set) == 0)
-        return set;
+    GAP_ASSERT(IS_PLIST(set));
+    GAP_ASSERT(LEN_PLIST(set) > 0);
+
+    const UInt len = LEN_PLIST(set);
 
     res = NEW_PLIST(IS_MUTABLE_PLIST(set) ? T_PLIST : T_PLIST + IMMUTABLE,
-                    LEN_LIST(set));
+                    len);
 
     /* get the pointer                                                 */
-    ptset = CONST_ADDR_OBJ(set) + LEN_LIST(set);
+    ptset = CONST_ADDR_OBJ(set) + len;
     ptres = ADDR_OBJ(res) + 1;
-    len = 0;
+    reslen = 0;
+    isint = 1;
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         ptf2 = ADDR_PPERM2(f);
         deg = DEG_PPERM2(f);
+
         /* loop over the entries of the tuple                              */
-        isint = 1;
-        for (i = LEN_LIST(set); 1 <= i; i--, ptset--) {
+        for (i = len; 1 <= i; i--, ptset--) {
             if (IS_INTOBJ(*ptset) && 0 < INT_INTOBJ(*ptset)) {
                 k = INT_INTOBJ(*ptset);
                 if (k <= deg && ptf2[k - 1] != 0) {
                     tmp = INTOBJ_INT(ptf2[k - 1]);
-                    len++;
+                    reslen++;
                     *ptres++ = tmp;
                 }
             }
@@ -6108,13 +6120,12 @@ Obj OnSetsPPerm(Obj set, Obj f)
         deg = DEG_PPERM4(f);
 
         /* loop over the entries of the tuple                              */
-        isint = 1;
-        for (i = LEN_LIST(set); 1 <= i; i--, ptset--) {
+        for (i = len; 1 <= i; i--, ptset--) {
             if (IS_INTOBJ(*ptset) && 0 < INT_INTOBJ(*ptset)) {
                 k = INT_INTOBJ(*ptset);
                 if (k <= deg && ptf4[k - 1] != 0) {
                     tmp = INTOBJ_INT(ptf4[k - 1]);
-                    len++;
+                    reslen++;
                     *ptres++ = tmp;
                 }
             }
@@ -6126,40 +6137,37 @@ Obj OnSetsPPerm(Obj set, Obj f)
     }
     // maybe a problem here if the result <res> has length 0, this certainly
     // caused a problem in OnPosIntSetsPPerm...
-    if (len == 0) {
+    if (reslen == 0) {
         RetypeBag(res, IS_MUTABLE_PLIST(set) ? T_PLIST_EMPTY
                                              : T_PLIST_EMPTY + IMMUTABLE);
         return res;
     }
-    ResizeBag(res, (len + 1) * sizeof(Obj));
-    SET_LEN_PLIST(res, len);
+    ResizeBag(res, (reslen + 1) * sizeof(Obj));
+    SET_LEN_PLIST(res, reslen);
 
-    /* sort the result */
-    h = 1;
-    while (9 * h + 4 < len)
-        h = 3 * h + 1;
-    while (0 < h) {
-        for (i = h + 1; i <= len; i++) {
-            tmp = CONST_ADDR_OBJ(res)[i];
-            k = i;
-            while (h < k && ((Int)tmp < (Int)(CONST_ADDR_OBJ(res)[k - h]))) {
-                ADDR_OBJ(res)[k] = CONST_ADDR_OBJ(res)[k - h];
-                k -= h;
-            }
-            ADDR_OBJ(res)[k] = tmp;
-        }
-        h = h / 3;
-    }
-
-    /* retype if we only have integers */
+    // sort the result
     if (isint) {
+        SortPlistByRawObj(res);
         RetypeBag(res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT
                                              : T_PLIST_CYC_SSORT + IMMUTABLE);
+    }
+    else {
+        SortDensePlist(res);
     }
 
     return res;
 }
 
+/****************************************************************************
+**
+*F  OnTuplesPPerm( <tup>, <f> ) . . . . . . .  operations on tuples of points
+**
+**  'OnTuplesPPerm'  returns  the  image  of  the  tuple  <tup>   under  the
+**  partial permutation <f>.  It is called from 'FuncOnTuples'.
+**
+**  The input <tup> must be a non-empty and dense plain list. This is is not
+**  verified.
+*/
 Obj OnTuplesPPerm(Obj tup, Obj f)
 {
     UInt2 * ptf2;
@@ -6167,30 +6175,31 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
     UInt    deg;
     const Obj * pttup;
     Obj *   ptres, res;
-    UInt    i, k, lentup, len;
+    UInt    i, k, reslen;
 
-    if (LEN_LIST(tup) == 0)
-        return tup;
+    GAP_ASSERT(IS_PLIST(tup));
+    GAP_ASSERT(LEN_PLIST(tup) > 0);
+
+    const UInt len = LEN_PLIST(tup);
 
     res = NEW_PLIST(IS_MUTABLE_PLIST(tup) ? T_PLIST_CYC
                                           : T_PLIST_CYC + IMMUTABLE,
-                    LEN_LIST(tup));
+                    len);
 
     /* get the pointer                                                 */
     pttup = CONST_ADDR_OBJ(tup) + 1;
     ptres = ADDR_OBJ(res) + 1;
-    len = 0;
+    reslen = 0;
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         ptf2 = ADDR_PPERM2(f);
         deg = DEG_PPERM2(f);
         /* loop over the entries of the tuple                              */
-        lentup = LEN_LIST(tup);
-        for (i = 1; i <= lentup; i++, pttup++) {
+        for (i = 1; i <= len; i++, pttup++) {
             if (IS_INTOBJ(*pttup) && 0 < INT_INTOBJ(*pttup)) {
                 k = INT_INTOBJ(*pttup);
                 if (k <= deg && ptf2[k - 1] != 0) {
-                    len++;
+                    reslen++;
                     *(ptres++) = INTOBJ_INT(ptf2[k - 1]);
                 }
             }
@@ -6204,12 +6213,11 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
         ptf4 = ADDR_PPERM4(f);
         deg = DEG_PPERM4(f);
         /* loop over the entries of the tuple                              */
-        lentup = LEN_LIST(tup);
-        for (i = 1; i <= lentup; i++, pttup++) {
+        for (i = 1; i <= len; i++, pttup++) {
             if (IS_INTOBJ(*pttup) && 0 < INT_INTOBJ(*pttup)) {
                 k = INT_INTOBJ(*pttup);
                 if (k <= deg && ptf4[k - 1] != 0) {
-                    len++;
+                    reslen++;
                     *(ptres++) = INTOBJ_INT(ptf4[k - 1]);
                 }
             }
@@ -6219,8 +6227,8 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
             }
         }
     }
-    SET_LEN_PLIST(res, (Int)len);
-    SHRINK_PLIST(res, (Int)len);
+    SET_LEN_PLIST(res, (Int)reslen);
+    SHRINK_PLIST(res, (Int)reslen);
 
     return res;
 }
@@ -6232,7 +6240,7 @@ Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
     UInt    deg;
     const Obj * ptset;
     Obj *   ptres, tmp, res;
-    UInt    i, k, h, len;
+    UInt    i, k, reslen;
 
     if (LEN_LIST(set) == 0)
         return set;
@@ -6249,7 +6257,7 @@ Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
     /* get the pointer                                                 */
     ptset = CONST_ADDR_OBJ(set) + LEN_LIST(set);
     ptres = ADDR_OBJ(res) + 1;
-    len = 0;
+    reslen = 0;
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         ptf2 = ADDR_PPERM2(f);
@@ -6259,7 +6267,7 @@ Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
             k = INT_INTOBJ(*ptset);
             if (k <= deg && ptf2[k - 1] != 0) {
                 tmp = INTOBJ_INT(ptf2[k - 1]);
-                len++;
+                reslen++;
                 *ptres++ = tmp;
             }
         }
@@ -6272,38 +6280,24 @@ Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
             k = INT_INTOBJ(*ptset);
             if (k <= deg && ptf4[k - 1] != 0) {
                 tmp = INTOBJ_INT(ptf4[k - 1]);
-                len++;
+                reslen++;
                 *ptres++ = tmp;
             }
         }
     }
-    ResizeBag(res, (len + 1) * sizeof(Obj));
-    SET_LEN_PLIST(res, len);
+    ResizeBag(res, (reslen + 1) * sizeof(Obj));
+    SET_LEN_PLIST(res, reslen);
 
-    if (len == 0) {
+    if (reslen == 0) {
         RetypeBag(res, IS_MUTABLE_PLIST(set) ? T_PLIST_EMPTY
                                              : T_PLIST_EMPTY + IMMUTABLE);
-        return res;
+    }
+    else {
+        SortPlistByRawObj(res);
+        RetypeBag(res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT
+                                             : T_PLIST_CYC_SSORT + IMMUTABLE);
     }
 
-    /* sort the result */
-    h = 1;
-    while (9 * h + 4 < len)
-        h = 3 * h + 1;
-    while (0 < h) {
-        for (i = h + 1; i <= len; i++) {
-            tmp = CONST_ADDR_OBJ(res)[i];
-            k = i;
-            while (h < k && ((Int)tmp < (Int)(CONST_ADDR_OBJ(res)[k - h]))) {
-                ADDR_OBJ(res)[k] = CONST_ADDR_OBJ(res)[k - h];
-                k -= h;
-            }
-            ADDR_OBJ(res)[k] = tmp;
-        }
-        h = h / 3;
-    }
-
-    /* retype if we only have integers */
     return res;
 }
 
