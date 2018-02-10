@@ -2270,6 +2270,14 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
     TestOption( record, "BannerString", IsString, "a string" );
     TestOption( record, "TestFile", IsFilename,
                 "a string denoting a relative path to a readable file" );
+    if not IsBound( record.TestFile ) then
+      Print(
+        "#W  ************************************************************\n",
+        "#W  No 'TestFile' is given but is highly recommended. Package\n",
+        "#W  tests are run for deposited packages as part of the standard\n",
+        "#W  GAP test suite. See '?TestPackage' for more information.\n",
+        "#W  ************************************************************\n" );
+    fi;
     TestOption( record, "PreloadFile", IsFilename,
                 "a string denoting a relative path to a readable file" );
     TestOption( record, "Keywords", IsStringList, "a list of strings" );
