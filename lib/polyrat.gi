@@ -524,9 +524,9 @@ end);
 
 #############################################################################
 ##
-#F  RPGcdModPrime(<R>,<f>,<g>,<p>,<a>,<brci>)  . . gcd mod <p>
+#F  RPGcdModPrime(<f>,<g>,<p>,<a>,<brci>)  . . gcd mod <p>
 ##
-BindGlobal("RPGcdModPrime",function(R,f,g,p,a,brci)
+BindGlobal("RPGcdModPrime",function(f,g,p,a,brci)
 local fam,gcd, u, v, w, val, r, s;
   
   fam:=CoefficientsFamily(FamilyObj(f));
@@ -607,7 +607,7 @@ local min, cf, lf, cg, lg, i, P, m, r, fam;
 end);
 
 
-BindGlobal("RPGcd1",function(R,t,a,f,g)
+BindGlobal("RPGcd1",function(t,a,f,g)
 local G, P, l, m, i;
 
   # <P> will hold the product of primes use so far
@@ -621,7 +621,7 @@ local G, P, l, m, i;
     repeat t.prime := NextPrimeInt(t.prime);  until a mod t.prime <> 0;
 
     # compute modular gcd
-    t.gcd := RPGcdModPrime(R,f,g,t.prime,a,t.brci);
+    t.gcd := RPGcdModPrime(f,g,t.prime,a,t.brci);
     Info(InfoPoly,3,"gcd mod ",t.prime," = ",t.gcd);
 
     # if the degree of <C> is smaller we started with wrong <p>
@@ -637,12 +637,11 @@ local G, P, l, m, i;
        = DegreeOfLaurentPolynomial(G)
     then
       P := G;
-      G := RPGcdCRT(G,t.modulo,t.gcd,t.prime,t.brci);
+      G := RPGcdCRT(t.modulo,t.gcd,t.prime,t.brci);
       t.modulo := t.modulo * t.prime;
       Info(InfoPoly,3,"gcd mod ",t.modulo," = ",G);
       if G = P  then
-        t.correct :=   Quotient(R,f,G)<>fail
-               and Quotient(R,g,G)<>fail;
+        t.correct :=  IsZero(f mod G) and IsZero(g mod G);
         if t.correct  then
           Info(InfoPoly,3,"found correct gcd");
           t.gcd := G;
@@ -667,14 +666,14 @@ local G, P, l, m, i;
   Info(InfoPoly,3,"gcd mod ",t.modulo," = ",G);
 
   # check if <G> is correct but return 'true' in any case
-  t.correct := Quotient(R,f,G) <> fail and Quotient(R,g,G) <> fail;
+  t.correct := IsZero(f mod G) and IsZero(g mod G);
   t.gcd := G;
   return true;
 
 end);
 
 
-BindGlobal("RPIGcd", function(R,f,g)
+BindGlobal("RPIGcd", function(f,g)
 local a,t;
 
   # special case zero:
@@ -698,7 +697,7 @@ local a,t;
     repeat t.prime := NextPrimeInt(t.prime);  until a mod t.prime <> 0;
 
     # compute modular gcd with leading coefficient <a>
-    t.gcd := RPGcdModPrime(R,f,g,t.prime,a,t.brci);
+    t.gcd := RPGcdModPrime(f,g,t.prime,a,t.brci);
     Info(InfoPoly,3,"gcd mod ",t.prime," = ",t.gcd);
 
     # loop until we have success
@@ -707,7 +706,7 @@ local a,t;
         Info(InfoPoly,3,"<f> and <g> are relative prime");
         return One(f);
       fi;
-    until RPGcd1(R,t,a,f,g);
+    until RPGcd1(t,a,f,g);
   until t.correct;
 
   # return the gcd
@@ -719,11 +718,20 @@ end);
 ##
 #F  GcdOp( <R>, <f>, <g> )  . . . . . . . for rational univariate polynomials
 ##
-InstallMethod( GcdOp, "rational univariate polynomials", IsCollsElmsElms,
+InstallRingAgnosticGcdMethod("rational univariate polynomials",
+  IsCollsElmsElms,IsIdenticalObj,
   [IsRationalsPolynomialRing and IsEuclideanRing,
    IsUnivariatePolynomial,IsUnivariatePolynomial],0,
-function(R,f,g)
+function(f,g)
 local brci,gcd,fam,fc,gc;
+
+  fam:=FamilyObj(f);
+
+  if not (IsIdenticalObj(CoefficientsFamily(fam),CyclotomicsFamily) 
+     and ForAll(CoefficientsOfLaurentPolynomial(f)[1],IsRat) 
+     and ForAll(CoefficientsOfLaurentPolynomial(g)[1],IsRat)) then
+    TryNextMethod(); # not applicable as not rational
+  fi;
 
   brci:=CIUnivPols(f,g);
   if brci=fail then TryNextMethod();fi;
@@ -738,7 +746,6 @@ local brci,gcd,fam,fc,gc;
     return One(f);
   fi;
 
-  fam:=FamilyObj(f);
   # convert polynomials into integer polynomials
   f := PrimitivePolynomial(f)[1];
   g := PrimitivePolynomial(g)[1];
@@ -752,12 +759,15 @@ local brci,gcd,fam,fc,gc;
   gcd:=HeuGcdIntPolsCoeffs(fc[1],gc[1]);
   if gcd=fail then
     # fall back to the original version:
-    return StandardAssociate(R,RPIGcd(R,f,g));
+    gcd:=RPIGcd(f,g);
+    if Length(gcd)>0 and not IsOne(gcd[1]) then gcd:=gcd/gcd[1];fi;
+    return gcd;
 
   fi;
   fc:=Minimum(fc[2],gc[2]);
   fc:=fc+RemoveOuterCoeffs(gcd,fam!.zeroCoefficient);
-  return StandardAssociate(R,LaurentPolynomialByExtRepNC(fam,gcd,fc,brci));
+  if Length(gcd)>0 and not IsOne(gcd[1]) then gcd:=gcd/gcd[1];fi;
+  return LaurentPolynomialByExtRepNC(fam,gcd,fc,brci);
 end);
 
 InstallMethod(\mod,"reduction of univariate rational polynomial at a prime",
@@ -795,9 +805,9 @@ end);
 
 #############################################################################
 ##
-#F  RPQuotientModPrime(<R>,<f>,<g>,<p>) . . .  quotient
+#F  RPQuotientModPrime(<f>,<g>,<p>) . . .  quotient
 ##
-BindGlobal("RPQuotientModPrime",function(R,f,g,p)
+BindGlobal("RPQuotientModPrime",function(f,g,p)
 local   m, n, i, k, c, q, val, fc,gc,brci,fam;
 
   # get base ring
@@ -850,9 +860,9 @@ end);
 
 #############################################################################
 ##
-#F  RPGcdRepresentationModPrime(<R>,<f>,<g>,<p>)  . gcd
+#F  RPGcdRepresentationModPrime(<f>,<g>,<p>)  . gcd
 ##
-BindGlobal("RPGcdRepresentationModPrime",function(R,f,g,p)
+BindGlobal("RPGcdRepresentationModPrime",function(f,g,p)
 
   local   val,     # the minimal valuation of <f> and <g>
       s, sx,    # first line of gcd algorithm
@@ -937,7 +947,7 @@ BindGlobal("RPGcdRepresentationModPrime",function(R,f,g,p)
     ReduceCoeffsMod(s,p);
     s := LaurentPolynomialByCoefficients(brci[1],s,0,brci[2]);
     g := LaurentPolynomialByCoefficients(brci[1],g,0,brci[2]);
-    q := RPQuotientModPrime(R,s,g,p);
+    q := RPQuotientModPrime(s,g,p);
     return [ hx,q ];
   fi;
 
@@ -1361,9 +1371,9 @@ end);
 
 #############################################################################
 ##
-#F  RPSquareHensel(<R>,<f>,<t>,<opt>)
+#F  RPSquareHensel(<f>,<t>,<opt>)
 ##
-BindGlobal("RPSquareHensel",function(R,f,t,opt)
+BindGlobal("RPSquareHensel",function(f,t,opt)
 
   local   p,       # prime
       q,       # current modulus
@@ -1404,11 +1414,11 @@ BindGlobal("RPSquareHensel",function(R,f,t,opt)
   # compute a representation of the 1 mod <p>
   Info(InfoPoly,2,"computing gcd representation: ",Runtime());
   prd:=(1/lc * f) mod p;
-  gcd:=RPQuotientModPrime(R,prd,l[1],p);
-  rep:=[ One(R) ];
+  gcd:=RPQuotientModPrime(prd,l[1],p);
+  rep:=[ One(f) ];
   for i  in [ 2 .. Length(l) ]  do
-    dis:=RPQuotientModPrime(R,prd,l[i],p);
-    cor:=RPGcdRepresentationModPrime(R,gcd,dis,p);
+    dis:=RPQuotientModPrime(prd,l[i],p);
+    cor:=RPGcdRepresentationModPrime(gcd,dis,p);
     gcd:=(cor[1] * gcd + cor[2] * dis) mod p;
     rep:=List(rep,z -> z * cor[1] mod p);
     Add(rep,cor[2]);
@@ -1483,12 +1493,12 @@ BindGlobal("RPSquareHensel",function(R,f,t,opt)
 
         # compute new <f>
         prd:=Product(fcn.redFactors) * Product(fcn.irrFactors);
-        f  :=Quotient(R,f,prd);
 
-		if IsBound(fcn.stop) then
-		  res.stop:=true;
-		  return res;
-		fi;
+        f  :=f/prd;
+	if IsBound(fcn.stop) then
+	  res.stop:=true;
+	  return res;
+	fi;
 
         lc :=LeadingCoefficient(f);
         ofb:=2*AbsInt(lc)*OneFactorBound(f);
@@ -1566,11 +1576,11 @@ end);
 
 #############################################################################
 ##
-#F  RPFactorsModPrime(<R>,<f>)   find suitable prime and factor
+#F  RPFactorsModPrime(<f>)   find suitable prime and factor
 ##
 ##  <f> must be squarefree.  We test 3 "small" and 2 "big" primes.
 ##
-BindGlobal("RPFactorsModPrime",function(R,f)
+BindGlobal("RPFactorsModPrime",function(f)
 local i,     # loops
       fc,    # f's coeffs
       lc,    # leading coefficient of <f>
@@ -1684,7 +1694,7 @@ function(R,f,opt)
 local t, h, fac, g, tmp;
 
   # find a suitable prime,if <f> is irreducible return
-  t:=RPFactorsModPrime(R,f);
+  t:=RPFactorsModPrime(f);
   if t.isIrreducible  then return [f];  fi;
   Info(InfoPoly,2,"using prime ",t.prime," for factorization");
 
@@ -1695,7 +1705,7 @@ local t, h, fac, g, tmp;
     end);
 
   # start Hensel
-  h:=RPSquareHensel(R,f,t,opt);
+  h:=RPSquareHensel(f,t,opt);
   
   # combine remaining factors
   fac:=[];
@@ -1785,8 +1795,8 @@ local   fc,ind, v, g, q, s, r, x,shift;
   fi;
 
   # make <f> integral,primitive and square free
-  g:=Gcd(R,f,Derivative(f));
-  q:=PrimitivePolynomial(Quotient(R,f,g))[1];
+  g:=Gcd(f,Derivative(f));
+  q:=PrimitivePolynomial(f/g)[1];
   q:=q * SignInt(LeadingCoefficient(q));
   Info(InfoPoly,3,"factorizing polynomial of degree ",
        DegreeOfLaurentPolynomial(q));
