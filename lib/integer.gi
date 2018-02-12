@@ -1368,19 +1368,6 @@ InstallMethod( Factors,
 
 #############################################################################
 ##
-#M  GcdOp( Integers, <n>, <m> ) . . . . . . . . . . . . . gcd of two integers
-##
-InstallMethod( GcdOp,
-    "for integers",
-    true,
-    [ IsIntegers, IsInt, IsInt ], 0,
-    function ( Integers, n, m )
-    return GcdInt( n, m );
-    end );
-
-
-#############################################################################
-##
 #M  IsIrreducibleRingElement( Integers, <n> )
 ##
 InstallMethod( IsIrreducibleRingElement,

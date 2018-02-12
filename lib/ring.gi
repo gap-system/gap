@@ -1188,7 +1188,12 @@ InstallGlobalFunction( Gcd, function ( arg )
 
     # get and check the arguments (what a pain)
     tested:= false;
-    if   Length(arg) = 0  then
+    if Length(arg)=2 and (not IsRing(arg[1])) and
+     IsIdenticalObj(FamilyObj(arg[1]),FamilyObj(arg[2]))
+      then # quick dispatch for two two ring elements. There is a
+	   # fallback method that still supplies the ring if nothing special
+      return GcdOp(arg[1],arg[2]);
+    elif   Length(arg) = 0  then
         Error("usage: Gcd( [<R>,] <r1>, <r2>... )");
     elif Length(arg) = 1  then
         ns := arg[1];
@@ -1473,6 +1478,15 @@ InstallMethod( \=,
     fi;
     end );
 
+
+# moved here from `integers` to avoid reading order change
+
+#############################################################################
+##
+#M  GcdOp( Integers, <n>, <m> ) . . . . . . . . . . . . . gcd of two integers
+##
+InstallRingAgnosticGcdMethod("integers", true,true,
+    [ IsIntegers, IsInt, IsInt ], 0,GcdInt);
 
 #############################################################################
 ##

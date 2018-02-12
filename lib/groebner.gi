@@ -1163,6 +1163,8 @@ local g;
   return IsZero(p);
 end);
 
+# leave this as-is as it is so costly that the ring determination is
+# basically no cost
 InstallOtherMethod(GcdOp,"multivariate Gcd based on Groebner bases",
   IsCollsElmsElms,[IsPolynomialRing,IsPolynomial,IsPolynomial],0,
 # Input: f, g are multivariate polys in R=F[x1,...,xn]
