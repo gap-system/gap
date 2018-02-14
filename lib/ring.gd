@@ -1324,19 +1324,24 @@ DeclareGlobalFunction( "Gcd" );
 DeclareOperation( "GcdOp",
     [ IsUniqueFactorizationRing, IsRingElement, IsRingElement ] );
 
-# there will be a method for GcdOp on two ring elements that determines the
-# `DefaultRing` and then calls the three-argument version. This
-# determination of the ring can be unneccessarily costly if (as say with
-# polynomials ver a field) the ring is immediately discarded in the Gcd
-# computation. The following function lets us install 2/3 argument methods
-# at the same time that allow us to override the default method
+# The following function allows installing two and three argument methods
+# for GcdOp at the same time. This can be desirable over just installing a
+# three argument version, as a lot of code will invoke the two argument
+# version, which by default uses DefaultRing to construct a ring object,
+# based on the two arguments, and then redispatches to the three argument
+# version. But constructing this ring object can be costly compared to the
+# cost of the actual Gcd computation. By installing a custom two-argument
+# method for GcdOp, we can avoid this and the overhead of the second method
+# dispatch.
 BindGlobal("InstallRingAgnosticGcdMethod",
-function(string,fam3,fam2,required, offset,fun)
-  InstallMethod(GcdOp,Concatenation(string,": with ring"),
-    fam3,required,offset,function(R,a,b) return fun(a,b);end);
-  InstallOtherMethod(GcdOp,Concatenation(string,": no ring"),fam2,
-  required{[2,3]},
-  offset+Maximum(0,RankFilter(required[1])
+function(info,fampred3,fampred2,filters,rank,fun)
+  InstallMethod(GcdOp,Concatenation(info,": with ring"),
+    fampred3,filters,rank,function(R,a,b) return fun(a,b);end);
+  InstallOtherMethod(GcdOp,Concatenation(info,": no ring"),fampred2,
+  filters{[2,3]},
+  # Adjust the method rank by taking the rank of the (omitted) ring argument
+  # into account
+  rank+Maximum(0,RankFilter(filters[1])
                    -RankFilter(IsUniqueFactorizationRing)),fun);
 end);
 
