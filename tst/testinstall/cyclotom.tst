@@ -318,6 +318,35 @@ gap> CycList([1,fail]);
 Error, CycList: each entry must be a rational (not a boolean or fail)
 
 #
+# Some tests for some operations on certain pre-defined infinite collections
+# of cyclotomics, which are implemented using CompareCyclotomicCollectionHelper.
+# For the tests, we exploit that the supported collections can be grouped into
+# two totally ordered chains.
+#
+gap> sets:=[ PositiveIntegers, NonnegativeIntegers, Integers, Rationals, GaussianRationals, Cyclotomics ];;
+gap> r:=[1..Length(sets)];;
+gap> SetX(r, r, {i,j} -> Intersection(sets[i],sets[j]) = sets[Minimum(i,j)]);
+[ true ]
+gap> SetX(r, r, {i,j} -> Union(sets[i],sets[j]) = sets[Maximum(i,j)]);
+[ true ]
+gap> SetX(r, r, {i,j} -> IsSubset(sets[i],sets[j]) = (i>=j));
+[ true ]
+gap> SetX(r, r, {i,j} -> (sets[i]=sets[j]) = (i=j));
+[ true ]
+
+#
+gap> sets:=[ PositiveIntegers, NonnegativeIntegers, Integers, GaussianIntegers, GaussianRationals, Cyclotomics ];;
+gap> r:=[1..Length(sets)];;
+gap> SetX(r, r, {i,j} -> Intersection(sets[i],sets[j]) = sets[Minimum(i,j)]);
+[ true ]
+gap> SetX(r, r, {i,j} -> Union(sets[i],sets[j]) = sets[Maximum(i,j)]);
+[ true ]
+gap> SetX(r, r, {i,j} -> IsSubset(sets[i],sets[j]) = (i>=j));
+[ true ]
+gap> SetX(r, r, {i,j} -> (sets[i]=sets[j]) = (i=j));
+[ true ]
+
+#
 gap> STOP_TEST( "cyclotom.tst", 1);
 
 #############################################################################
