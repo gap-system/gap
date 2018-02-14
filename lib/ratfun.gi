@@ -1309,7 +1309,8 @@ InstallRingAgnosticGcdMethod("test polynomials for univar. and same variable",
   [IsEuclideanRing,IsRationalFunction,IsRationalFunction],0,
 function(f,g)
 
-  if IsUnivariatePolynomial(f) and IsUnivariatePolynomial(g) 
+  if not (HasIsUnivariatePolynomial(f) and HasIsUnivariatePolynomial(g)) 
+    and IsUnivariatePolynomial(f) and IsUnivariatePolynomial(g) 
     and IndeterminateNumberOfUnivariateRationalFunction(f) = 
     IndeterminateNumberOfUnivariateRationalFunction(g) then
     return GcdOp(f,g);

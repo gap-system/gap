@@ -286,7 +286,7 @@ local a,b,c,d;
       Add(b,AbsInt(c[1]/c[2]));
       b:=Maximum(b);
       if b<a then
-	a:=b;
+        a:=b;
       fi;
     fi;
     b:=Sum([1..d-1],i->AbsInt(c[i]-c[i+1]))+AbsInt(c[1]);
@@ -294,8 +294,8 @@ local a,b,c,d;
       a:=b;
     fi;
     b:=1/20+Maximum(List([1..d-1],
-		i->RootInt(Int(AbsInt(c[d-i]/Binomial(d-1,i))+1/2),i)+1))
-		   /(ApproximateRoot(2,d-1)-1)+10^(-10);
+                i->RootInt(Int(AbsInt(c[d-i]/Binomial(d-1,i))+1/2),i)+1))
+                   /(ApproximateRoot(2,d-1)-1)+10^(-10);
     if b<a then
       a:=b;
     fi;
@@ -344,10 +344,10 @@ local bn,bnf,a,b,c,d,bb,bf,bd,step,x,cnt;
       p:=[dis,BombieriNorm(g)];
       Add(bn,p);
       if bb>p[2] then
-	# note record
-	bf:=g;
-	bb:=p[2];
-	bd:=dis;
+        # note record
+        bf:=g;
+        bb:=p[2];
+        bd:=dis;
       fi;
       return p[2];
     else
@@ -375,14 +375,14 @@ local bn,bnf,a,b,c,d,bb,bf,bd,step,x,cnt;
       # stets aufrunden (wir wollen weg)
       a:=step*Int(AbsInt(a)/step+1)*SignInt(a);
       if a=0 then
-	Error("???");
+        Error("???");
       else
-	d:=d+a;
+        d:=d+a;
       fi;
     fi;
   until (a>b and c>b) # no better can be reached
         or cnt>6
-	or ForAll([d-1,d,d+1],i->Filtered(bn,j->j[1]=i)<>[]); #or loop
+        or ForAll([d-1,d,d+1],i->Filtered(bn,j->j[1]=i)<>[]); #or loop
   # best value
   return [bf,bd];
 end);
@@ -870,7 +870,7 @@ BindGlobal("RPGcdRepresentationModPrime",function(f,g,p)
       h, hx,    # temp for swapping lines
       q,       # quotient
       n,m,r,c,  # used in quotient
-      brci,	
+      brci,     
       i,k;       # loops
 
   Info(InfoPoly,3,"f=",f,"g=",g);
@@ -1024,22 +1024,22 @@ local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,lb,bea,polc,ro,rbpow;
     if bea>10^200 or n>1 then
       if rb=0 then
         rb:=RootBound(pol);
-	if rb>1000 and not IsInt(rb) then
-	  rb:=Int(rb+1);
-	fi;
-	rbpow:=[rb];
+        if rb>1000 and not IsInt(rb) then
+          rb:=Int(rb+1);
+        fi;
+        rbpow:=[rb];
         a:=rb;
       fi;
       # now try factor deg k
       bin:=1;
       for j in [1..k] do
         bin:=bin*(k-j+1)/j;
-	if not IsBound(rbpow[j]) then
-	  rbpow[j]:=rbpow[j-1]*rb;
-	  if rbpow[j]>10 and not IsInt(rbpow[j]) then
-	    rbpow[j]:=Int(rbpow[j]+1);
-	  fi;
-	fi;
+        if not IsBound(rbpow[j]) then
+          rbpow[j]:=rbpow[j-1]*rb;
+          if rbpow[j]>10 and not IsInt(rbpow[j]) then
+            rbpow[j]:=Int(rbpow[j]+1);
+          fi;
+        fi;
         w:=bin*rbpow[j];
         if w>a then
           a:=w;
@@ -1152,10 +1152,10 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, cnew, sel, deli,
   alldegs:=t.degrees;
   # <res> contains the irr/reducible factors and the remaining ones
   res:=rec(irreducibles:=[],
-	    irrFactors  :=[],
-	    reducibles  :=[],
-	    redFactors  :=[],
-	    remaining   :=[ 1 .. Length(l) ]);
+            irrFactors  :=[],
+            reducibles  :=[],
+            redFactors  :=[],
+            remaining   :=[ 1 .. Length(l) ]);
 
   # coefficients should be in -<p>/2 and <p>/2
   p2  :=p/2;
@@ -1202,12 +1202,12 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, cnew, sel, deli,
     cnew:=Set(deli{Filtered(sel,i->i>act)});
 
     if ForAny(da,i->NrRestrictedPartitions(i,cnew,step)>0) then
-	# as we have all combinations including < <act>,we can skip them
-	Info(InfoPoly,2,"trying length ",step+1," containing ",act);
-	cnew:=Filtered(sel,i -> i > act);
+        # as we have all combinations including < <act>,we can skip them
+        Info(InfoPoly,2,"trying length ",step+1," containing ",act);
+        cnew:=Filtered(sel,i -> i > act);
     else
-	Info(InfoPoly,2,"length ",step+1," containing ",act," not feasible");
-	cnew:=[];
+        Info(InfoPoly,2,"length ",step+1," containing ",act," not feasible");
+        cnew:=[];
     fi;
 
     mind:=Sum(deli); # the maximum of the possible degrees. We surely
@@ -1216,129 +1216,129 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, cnew, sel, deli,
     lco:=Binomial(Length(cnew),step);
     if 0 = lco  then
     # fix mind to make sure,we don't erroneously eliminate the factor
-	mind:=0;
+        mind:=0;
     else
       Info(InfoPoly,2,lco," combinations");
       i:=1;
       while good and i<=lco  do
 
-	# try combination number i
-	# combi:=CombinationNr(cnew,step,i);
+        # try combination number i
+        # combi:=CombinationNr(cnew,step,i);
 
-	q:=i;
-	d:=Length(cnew); # the remaining Length
-	o:=0;
-	combi:=[];
-	for ii in [step-1,step-2..0] do
-	j:=1;
-	b:=binoli[d][ii+1];
-	while q>b do
-	  q:=q-b;
-	  # compute b:=Binomial(d-(j+1),ii);
-	  b:=b*(d-j-ii)/(d-j);
-	  j:=j+1;
-	od;
-	o:=j+o;
-	d:=d-j;
-	Add(combi,cnew[o]);
-	od;
+        q:=i;
+        d:=Length(cnew); # the remaining Length
+        o:=0;
+        combi:=[];
+        for ii in [step-1,step-2..0] do
+        j:=1;
+        b:=binoli[d][ii+1];
+        while q>b do
+          q:=q-b;
+          # compute b:=Binomial(d-(j+1),ii);
+          b:=b*(d-j-ii)/(d-j);
+          j:=j+1;
+        od;
+        o:=j+o;
+        d:=d-j;
+        Add(combi,cnew[o]);
+        od;
 
-	# check whether this yields a minimal degree
-	d:=Sum(deli{combi});
-	if d<mind then
-	  mind:=d;
-	fi;
+        # check whether this yields a minimal degree
+        d:=Sum(deli{combi});
+        if d<mind then
+          mind:=d;
+        fi;
 
       if d in da then
-	  AddSet(combi,act); # add the 'always' factor
+          AddSet(combi,act); # add the 'always' factor
 
-	  # make sure that the quotient has a chance,compute the
-	  # extremal coefficient of the product:
-	  q:=(ProductMod(List(l{combi},
-	      i->CoefficientsOfLaurentPolynomial(i)[1][1]),
-		   p) * lc) mod p;
-	  if p2 < q  then
-	    q:=q - p;
-	  fi;
+          # make sure that the quotient has a chance,compute the
+          # extremal coefficient of the product:
+          q:=(ProductMod(List(l{combi},
+              i->CoefficientsOfLaurentPolynomial(i)[1][1]),
+                   p) * lc) mod p;
+          if p2 < q  then
+            q:=q - p;
+          fi;
 
-	  # As  we  don't  know  yet  the gcd  of  all the products
-	  # coefficients (to make it  primitive),we do  a slightly
-	  # weaker test:  (test of  leading   coeffs is  first   in
-	  # 'TrialQuotientRPF') this just should  reduce the number of
-	  # 'ProductMod' neccessary.   the  absolute  part  of  the
-	  # product must  divide  the absolute  part of  f  up to a
-	  # divisor of <lc>
-	  q:=CoefficientsOfLaurentPolynomial(f)[1][1] / q * lc;
-	  if not IsInt(q)  then
-	    Info(InfoPoly,3,"ignoring combination ",combi);
-	    q:=fail;
-	  else
-	    Info(InfoPoly,2,"testing combination ",combi);
+          # As  we  don't  know  yet  the gcd  of  all the products
+          # coefficients (to make it  primitive),we do  a slightly
+          # weaker test:  (test of  leading   coeffs is  first   in
+          # 'TrialQuotientRPF') this just should  reduce the number of
+          # 'ProductMod' neccessary.   the  absolute  part  of  the
+          # product must  divide  the absolute  part of  f  up to a
+          # divisor of <lc>
+          q:=CoefficientsOfLaurentPolynomial(f)[1][1] / q * lc;
+          if not IsInt(q)  then
+            Info(InfoPoly,3,"ignoring combination ",combi);
+            q:=fail;
+          else
+            Info(InfoPoly,2,"testing combination ",combi);
 
-	    # compute the product and reduce
-	    prd:=ProductMod(l{combi},p);
-	    prd:=CoefficientsOfUnivariatePolynomial(prd);
-	    cof:=[];
-	    for j  in [ 1 .. Length(prd) ]  do
-	      cof[j]:=(lc*prd[j]) mod p;
-	      if p2 < cof[j]  then
-		cof[j]:=cof[j] - p;
-	      fi;
-	    od;
+            # compute the product and reduce
+            prd:=ProductMod(l{combi},p);
+            prd:=CoefficientsOfUnivariatePolynomial(prd);
+            cof:=[];
+            for j  in [ 1 .. Length(prd) ]  do
+              cof[j]:=(lc*prd[j]) mod p;
+              if p2 < cof[j]  then
+                cof[j]:=cof[j] - p;
+              fi;
+            od;
 
-	    # make the product primitive
-	    cof:=cof * (1/Gcd(cof));
-	    prd:=UnivariatePolynomialByCoefficients(CyclotomicsFamily,
-	      cof,t.ind);
-	    q:=TrialQuotientRPF(f,prd,bounds);
-	  fi;
+            # make the product primitive
+            cof:=cof * (1/Gcd(cof));
+            prd:=UnivariatePolynomialByCoefficients(CyclotomicsFamily,
+              cof,t.ind);
+            q:=TrialQuotientRPF(f,prd,bounds);
+          fi;
 
-	  if q <> fail  then
-	    f:=q;
-	    Info(InfoPoly,2,"found true factor of degree ",
-	         DegreeOfLaurentPolynomial(prd));
-	    if Length(combi)=1 or split  then
-		q:=0;
-	    else
-	      q:=2*lc*OneFactorBound(prd);
-	      if q <= p  then
-		Info(InfoPoly,2,"proven irreducible by 'OneFactorBound'");
-	      fi;
-	    fi;
+          if q <> fail  then
+            f:=q;
+            Info(InfoPoly,2,"found true factor of degree ",
+                 DegreeOfLaurentPolynomial(prd));
+            if Length(combi)=1 or split  then
+                q:=0;
+            else
+              q:=2*lc*OneFactorBound(prd);
+              if q <= p  then
+                Info(InfoPoly,2,"proven irreducible by 'OneFactorBound'");
+              fi;
+            fi;
 
-	    # for some reason,we know,the factor is irred.
-	    if q <= p  then
-	      Append(res.irreducibles,combi);
-	      Add(res.irrFactors,prd);
+            # for some reason,we know,the factor is irred.
+            if q <= p  then
+              Append(res.irreducibles,combi);
+              Add(res.irrFactors,prd);
 
-	      if IsBound(opt.stopdegs) 
-		and DegreeOfLaurentPolynomial(prd) in opt.stopdegs then
-		Info(InfoPoly,2,"hit stopdegree");
-		Add(res.redFactors,f);
-		res.stop:=true;
-		return res;
-	      fi;
+              if IsBound(opt.stopdegs) 
+                and DegreeOfLaurentPolynomial(prd) in opt.stopdegs then
+                Info(InfoPoly,2,"hit stopdegree");
+                Add(res.redFactors,f);
+                res.stop:=true;
+                return res;
+              fi;
 
-	    else
-	      Add(res.reducibles,combi);
-	      Add(res.redFactors,prd);
-	    fi;
-	    SubtractSet(res.remaining,combi);
-	    good:=false;
-	    SubtractSet(sel,combi);
-	  fi;
+            else
+              Add(res.reducibles,combi);
+              Add(res.redFactors,prd);
+            fi;
+            SubtractSet(res.remaining,combi);
+            good:=false;
+            SubtractSet(sel,combi);
+          fi;
 
-	  fi;
-	  i:=i+1;
+          fi;
+          i:=i+1;
 
-	od;
+        od;
     fi;
 
     # we can forget about the actual factor,as any longer combination
     # is too big
     if Length(degs)>1 and deli[act]+mind >= Maximum(degs)  then
-	Info(InfoPoly,2,"factor ",act," can be further neglected");
-	sel:=Difference(sel,[act]);
+        Info(InfoPoly,2,"factor ",act," can be further neglected");
+        sel:=Difference(sel,[act]);
     fi;
 
   fi;
@@ -1459,7 +1459,7 @@ BindGlobal("RPSquareHensel",function(f,t,opt)
           dis:=l[1]^0;
         else
           dis:=UnivariatePolynomialByCoefficients(CyclotomicsFamily,
-	                                          [1],t.ind);
+                                                  [1],t.ind);
           for j in  Difference([1..Length(l)],[i])  do
             dis:=BPolyProd(dis,l[j],l[i],q);
           od;
@@ -1495,10 +1495,10 @@ BindGlobal("RPSquareHensel",function(f,t,opt)
         prd:=Product(fcn.redFactors) * Product(fcn.irrFactors);
 
         f  :=f/prd;
-	if IsBound(fcn.stop) then
-	  res.stop:=true;
-	  return res;
-	fi;
+        if IsBound(fcn.stop) then
+          res.stop:=true;
+          return res;
+        fi;
 
         lc :=LeadingCoefficient(f);
         ofb:=2*AbsInt(lc)*OneFactorBound(f);
@@ -1506,7 +1506,7 @@ BindGlobal("RPSquareHensel",function(f,t,opt)
 
         # degree arguments or OFB arguments prove f irreducible
         if (ForAll(t.degrees,i->i=0 or 2*i>=DegreeOfLaurentPolynomial(f))
-	   or ofb<q) and DegreeOfLaurentPolynomial(f)>0 then
+           or ofb<q) and DegreeOfLaurentPolynomial(f)>0 then
           Add(fcn.irrFactors,f);
           Add(res.irrFactors,f);
           f:=f^0;
@@ -1534,15 +1534,15 @@ BindGlobal("RPSquareHensel",function(f,t,opt)
 
         # reduce <rep>[i] mod <l>[i]
         for i  in [ 1 .. Length(l) ]  do
-	  #rep[i]:=rep[i] mod l[i] mod q;
+          #rep[i]:=rep[i] mod l[i] mod q;
           rep[i]:=CoefficientsOfLaurentPolynomial(rep[i]);
-	  rep[i]:=ShiftedCoeffs(rep[i][1],rep[i][2]);
-	  j:=CoefficientsOfLaurentPolynomial(l[i]);
-	  j:=ReduceCoeffsMod(rep[i],ShiftedCoeffs(j[1],j[2]),q);
-	  # shrink the list rep[i], according to the 'j' value
-	  rep[i]:=rep[i]{[1..j]};
-	  rep[i]:=LaurentPolynomialByCoefficients(
-	            CyclotomicsFamily,rep[i],0,t.ind);
+          rep[i]:=ShiftedCoeffs(rep[i][1],rep[i][2]);
+          j:=CoefficientsOfLaurentPolynomial(l[i]);
+          j:=ReduceCoeffsMod(rep[i],ShiftedCoeffs(j[1],j[2]),q);
+          # shrink the list rep[i], according to the 'j' value
+          rep[i]:=rep[i]{[1..j]};
+          rep[i]:=LaurentPolynomialByCoefficients(
+                    CyclotomicsFamily,rep[i],0,t.ind);
         od;
 
       # if there was a factor,we ought to have found it
@@ -1714,14 +1714,14 @@ local t, h, fac, g, tmp;
   if 0 < Length(h.remaining)  then
     Info(InfoPoly,2,"found ",Length(h.remaining)," remaining terms");
     tmp:=TryCombinations(
-		   h.remPolynomial,
-		   h.lc,
-		   h.remaining,
-		   h.primePower,
-		   t,
-		   h.bounds,
-		   opt,
-		   true,false);
+                   h.remPolynomial,
+                   h.lc,
+                   h.remaining,
+                   h.primePower,
+                   t,
+                   h.bounds,
+                   opt,
+                   true,false);
     Append(fac,tmp.irrFactors);
     Append(fac,tmp.redFactors);
   else
@@ -1739,12 +1739,12 @@ local t, h, fac, g, tmp;
     Info(InfoPoly,2,"found ",Length(h.redFactors)," reducibles");
 
     if not (IsBound(tmp.stop) or IsBound(h.stop)) then
-	# the stopping criterion has not yet been reached
-	for g  in h.redFactors  do
-	  Append(fac,FactorsSquarefree(R,g,opt));
-	od;
+        # the stopping criterion has not yet been reached
+        for g  in h.redFactors  do
+          Append(fac,FactorsSquarefree(R,g,opt));
+        od;
     else
-	Append(fac,h.redFactors);
+        Append(fac,h.redFactors);
     fi;
   fi;
   
@@ -1795,7 +1795,7 @@ local   fc,ind, v, g, q, s, r, x,shift;
   fi;
 
   # make <f> integral,primitive and square free
-  g:=Gcd(f,Derivative(f));
+  g:=Gcd(R,f,Derivative(f));
   q:=PrimitivePolynomial(f/g)[1];
   q:=q * SignInt(LeadingCoefficient(q));
   Info(InfoPoly,3,"factorizing polynomial of degree ",
@@ -1954,14 +1954,14 @@ local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add;
     for i in [1,3..Length(er[k])-1] do
       m:=er[k][i];
       for j in [1,3..Length(m)-1] do
-	p:=Position(x,m[j]);
-	if p=fail then
-	  Add(x,m[j]);
-	  p:=Length(x);
-	  xd[1][p]:=0;
-	  xd[2][p]:=0;
-	fi;
-	xd[k][p]:=Maximum(xd[k][p],m[j+1]);
+        p:=Position(x,m[j]);
+        if p=fail then
+          Add(x,m[j]);
+          p:=Length(x);
+          xd[1][p]:=0;
+          xd[2][p]:=0;
+        fi;
+        xd[k][p]:=Maximum(xd[k][p],m[j+1]);
       od;
     od;
   od;
@@ -1998,60 +1998,60 @@ local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add;
     # and compute their heuristic Gcd
     gamma:=HeuGcdIntPolsExtRep(fam,
               SpecializedExtRepPol(fam,d,x,xi),
-	      SpecializedExtRepPol(fam,e,x,xi) );
+              SpecializedExtRepPol(fam,e,x,xi) );
 
     if gamma<>fail then
       # generate G from xi-adic expansion
       G:=[];
       i:=0;
       if IsInt(gamma) then
-	zero:=Zero(gamma);
+        zero:=Zero(gamma);
       else
         zero:=[];
       fi;
       while gamma<>zero do
-	if IsInt(gamma) then
-	  # gamma is an integer value
-	  g:=gamma mod xi;
-	  if g>xi/2 then
-	    g:=g-xi; # symmetric rep.
-	  fi;
-	  gamma:=(gamma-g)/xi;
-	  if i=0 then
-	    add:=[[],g];
-	  else
-	    add:=[[x,i],g];
-	  fi;
-	else
-	  # gamma is an ext rep 
-	  g:=[];
-	  for j in [2,4..Length(gamma)] do
-	    k:=gamma[j] mod xi;
-	    if k>xi/2 then
-	      k:=k - xi; #symmetric rep
-	    fi;
-	    if k<>0*k then
-	      Add(g,gamma[j-1]);
-	      Add(g,k);
-	    fi;
-	  od;
-	  #gamma:=(gamma-g)/xi in ext rep;
-	  add:=ShallowCopy(g);
-	  add{[2,4..Length(add)]}:=-add{[2,4..Length(add)]}; #-g
-	  gamma:=ZippedSum(gamma,add,0,fam!.zippedSum); # gamma-g
-	  gamma{[2,4..Length(gamma)]}:=gamma{[2,4..Length(gamma)]}/xi; # /xi
-	  #add:=g*xp^i; in extrep
-	  add:=ZippedProduct(g,[[x,i],1],0,fam!.zippedProduct);
-	fi;
-	# G:=G+add in extrep
-	G:=ZippedSum(G,add,0,fam!.zippedSum);
-	i:=i+1;
+        if IsInt(gamma) then
+          # gamma is an integer value
+          g:=gamma mod xi;
+          if g>xi/2 then
+            g:=g-xi; # symmetric rep.
+          fi;
+          gamma:=(gamma-g)/xi;
+          if i=0 then
+            add:=[[],g];
+          else
+            add:=[[x,i],g];
+          fi;
+        else
+          # gamma is an ext rep 
+          g:=[];
+          for j in [2,4..Length(gamma)] do
+            k:=gamma[j] mod xi;
+            if k>xi/2 then
+              k:=k - xi; #symmetric rep
+            fi;
+            if k<>0*k then
+              Add(g,gamma[j-1]);
+              Add(g,k);
+            fi;
+          od;
+          #gamma:=(gamma-g)/xi in ext rep;
+          add:=ShallowCopy(g);
+          add{[2,4..Length(add)]}:=-add{[2,4..Length(add)]}; #-g
+          gamma:=ZippedSum(gamma,add,0,fam!.zippedSum); # gamma-g
+          gamma{[2,4..Length(gamma)]}:=gamma{[2,4..Length(gamma)]}/xi; # /xi
+          #add:=g*xp^i; in extrep
+          add:=ZippedProduct(g,[[x,i],1],0,fam!.zippedProduct);
+        fi;
+        # G:=G+add in extrep
+        G:=ZippedSum(G,add,0,fam!.zippedSum);
+        i:=i+1;
       od;
 
       if Length(G)>0 and Length(G[1])>0 and
          QuotientPolynomialsExtRep(fam,d,G)<>fail and 
          QuotientPolynomialsExtRep(fam,e,G)<>fail then
-	return G;
+        return G;
       fi;
     fi;
     xi:=QuoInt(xi*73794,27011); #square of golden ratio

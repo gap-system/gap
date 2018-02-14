@@ -1016,16 +1016,6 @@ InstallRingAgnosticGcdMethod("univariate polynomials, coeff list",
   IsCollsElmsElms,IsIdenticalObj,[IsEuclideanRing,IsPolynomial,IsPolynomial],0,
   GCD_UPOLY);
 
-#InstallMethod( GcdOp,"univariate polynomials, ring",
-#  IsCollsElmsElms,[IsEuclideanRing,IsPolynomial,IsPolynomial],0,
-#function(R,f,g)
-#  return GCD_UPOLY(f,g);
-#end);
-#
-#InstallOtherMethod( GcdOp,"univariate polynomials",IsIdenticalObj,
-#  [IsPolynomial and IsRationalFunction,IsPolynomial and IsRationalFunction],
-#  0,GCD_UPOLY);
-
 RedispatchOnCondition( GcdOp,IsCollsElmsElms,
   [IsEuclideanRing, IsRationalFunction,IsRationalFunction],
   [, IsUnivariatePolynomial,IsUnivariatePolynomial],0);

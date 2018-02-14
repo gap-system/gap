@@ -1163,8 +1163,11 @@ local g;
   return IsZero(p);
 end);
 
-# leave this as-is as it is so costly that the ring determination is
-# basically no cost
+# We only provide a single GcdOp method (taking three arguments) for the
+# general case, and no specialized two argument version, which we usually
+# provide to avoid costly construction of the polynomial ring object, simply
+# because in this case the cost of Gcd computation dwarfs the cost for
+# creating the polynomial ring.
 InstallOtherMethod(GcdOp,"multivariate Gcd based on Groebner bases",
   IsCollsElmsElms,[IsPolynomialRing,IsPolynomial,IsPolynomial],0,
 # Input: f, g are multivariate polys in R=F[x1,...,xn]
