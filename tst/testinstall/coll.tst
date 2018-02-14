@@ -17,7 +17,7 @@ gap> c1:=ConjugacyClass(F, One(F));;
 gap> IsList(c1); IsCollection(c1);
 false
 true
-gap> c2:=ConjugacyClass(F, F.1);; SetIsFinite(c2, false);
+gap> c2:=ConjugacyClass(F, F.1);;
 gap> IsList(c2); IsCollection(c2);
 false
 true
@@ -96,7 +96,31 @@ Error, cannot test whether <C> contains the family of its elements
 #
 # Size
 #
-# TODO
+
+# immediate method for collections knowing they are infinite
+gap> c2:=ConjugacyClass(F, F.1);;
+gap> HasSize(c2);
+false
+gap> SetIsFinite(c2, false);
+gap> HasSize(c2);
+true
+gap> Size(c2);
+infinity
+
+# immediate method for collections with HasAsList
+gap> M2:=Magma(0, 1);;
+gap> HasSize(M2);
+false
+gap> SetAsList(M2, [0,1]);
+gap> HasSize(M2);
+true
+gap> Size(M2);
+2
+
+# method for collections, by computing length of enumerator
+gap> M2:=Magma(0, 1);;
+gap> Size(M2);
+2
 
 #############################################################################
 #
@@ -141,9 +165,25 @@ Error, <C> must be nonempty to have a representative
 #############################################################################
 #
 # Enumerator
+#
+gap> Enumerator(c1);
+[ <identity ...> ]
+gap> Enumerator(M0);
+[  ]
+gap> enum := Enumerator(M2);;
+gap> TestConsistencyOfEnumeratorByFunctions(enum);
+true
+gap> Size(enum);
+2
+
+#############################################################################
+#
 # EnumeratorSorted
 #
-# TODO
+gap> EnumeratorSorted(M0);
+[  ]
+gap> EnumeratorSorted(M2);
+[ 0, 1 ]
 
 #############################################################################
 #
@@ -182,7 +222,12 @@ gap> AsList(enum);
 #
 # EnumeratorByFunctions
 #
-# TODO
+# Since most other non-list enumerators in GAP are implemented using
+# EnumeratorByFunctions, there is no strong need to test it explicitly
+# by constructing yet another type of enum. It might still be useful to
+# do so at some point, to specifically test some of the more exotic or
+# undocumented aspects, but for now we don't do it.
+#
 gap> EnumeratorByFunctions(1,1);
 Error, <record> must be a record with components `ElementNumber'
 and `NumberElement'
@@ -229,7 +274,6 @@ gap> List(iter);
 #
 # IteratorByFunctions
 #
-# TODO
 gap> IteratorByFunctions(1);
 Error, <record> must be a record with components `NextIterator',
 `IsDoneIterator', and `ShallowCopy'
@@ -238,7 +282,6 @@ Error, <record> must be a record with components `NextIterator',
 #
 # ConcatenationIterators
 #
-# TODO
 gap> iter:=ConcatenationIterators([Iterator(M1), Iterator(M0), Iterator([2,3])]);
 <iterator>
 gap> List(iter);
@@ -259,7 +302,8 @@ gap> List(iter);
 # SortedList
 # SSortedList = Set
 #
-# TODO
+# These functions are already being tested extensively via calls from
+# elsewhere, so we don't bother to add further explicit tests.
 
 #############################################################################
 #
@@ -275,8 +319,6 @@ gap> res:=List([AsList,AsSortedList,AsSet], f -> f(Magma(1)));
 [ [ 1 ], [ 1 ], [ 1 ] ]
 gap> List(res,IsMutable);
 [ false, false, false ]
-
-# TODO
 
 #############################################################################
 #
@@ -405,7 +447,27 @@ Error, usage: Number( <C>[, <func>] )
 # ForAll
 # ForAny
 #
-# TODO
+gap> ForAll([], ReturnTrue);
+true
+gap> ForAll([], ReturnFalse);
+true
+gap> ForAll([1], ReturnTrue);
+true
+gap> ForAll([1], ReturnFalse);
+false
+
+#
+gap> ForAny([], ReturnTrue);
+false
+gap> ForAny([], ReturnFalse);
+false
+gap> ForAny([1], ReturnTrue);
+true
+gap> ForAny([1], ReturnFalse);
+false
+
+# test non-dense argument of the operation (bypassing the special case
+# for all plists in the ForAll and ForAny functions)
 gap> ForAllOp([1,,3], ReturnTrue);
 true
 gap> ForAllOp([1,,3], ReturnFalse);
@@ -422,7 +484,40 @@ false
 # SumX
 # ProductX
 #
-# TODO
+gap> ListX([1..3], [1..3], {a,b}->[a,b]);
+[ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], [ 3, 1 ], 
+  [ 3, 2 ], [ 3, 3 ] ]
+gap> ListX([1..3], n -> [1..n], {a,b}->[a,b]);
+[ [ 1, 1 ], [ 2, 1 ], [ 2, 2 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ] ]
+gap> ListX([1..3], [1..3], \<, {a,b}->[a,b]);
+[ [ 1, 2 ], [ 1, 3 ], [ 2, 3 ] ]
+
+#
+gap> args:=[ [1..3], [1..3], \+ ];;
+gap> CallFuncList(SetX, args) = Set(CallFuncList(ListX, args));
+true
+gap> CallFuncList(SumX, args) = Sum(CallFuncList(ListX, args));
+true
+gap> CallFuncList(ProductX, args) = Product(CallFuncList(ListX, args));
+true
+
+#
+gap> args:=[ [1..3], [1..3], \<, \+ ];;
+gap> CallFuncList(SetX, args) = Set(CallFuncList(ListX, args));
+true
+gap> CallFuncList(SumX, args) = Sum(CallFuncList(ListX, args));
+true
+gap> CallFuncList(ProductX, args) = Product(CallFuncList(ListX, args));
+true
+
+#
+gap> args:=[ [1..3], n -> [1..n], \+ ];;
+gap> CallFuncList(SetX, args) = Set(CallFuncList(ListX, args));
+true
+gap> CallFuncList(SumX, args) = Sum(CallFuncList(ListX, args));
+true
+gap> CallFuncList(ProductX, args) = Product(CallFuncList(ListX, args));
+true
 
 #############################################################################
 #
@@ -517,19 +612,19 @@ gap> Union2([0], [0,1]);
 [ 0, 1 ]
 
 # for two collections, the second being a list
-gap> Union2(M1,[0,1]);
+gap> Union2(M1, [0,1]);
 [ 0, 1 ]
 gap> Union2(c1, AsList(c1)) = c1;
 true
 
 # for two collections, the first being a list
-gap> Union2([0,1],M1);
+gap> Union2([0,1], M1);
 [ 0, 1 ]
 gap> Union2(AsList(c1), c1) = c1;
 true
 
 # for two collections
-gap> Union2(M1,M2);
+gap> Union2(M1, M2);
 [ 0, 1 ]
 
 #############################################################################
