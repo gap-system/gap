@@ -2002,8 +2002,8 @@ BindGlobal("CompareCyclotomicCollectionHelper_Filters", [
 BindGlobal("CompareCyclotomicCollectionHelper_Proxies", [
 	[ 1 ], [ 0, 1 ],
 	[ -1, 0, 1 ], [ -1, 0, 1, E(4) ],
-	[ -1, 0, 1/2, 1 ], [ -1, 0, 1, 1/2, E(4) ],
-	[ -1, 0, 1, 1/2, E(4), E(9) ], fail
+	[ -1, 0, 1/2, 1 ], [ -1, 0, 1/2, 1, E(4), 1/2+E(4) ],
+	[ -1, 0, 1/2, 1, E(4), 1/2+E(4), E(9) ], fail
 ] );
 
 if IsHPCGAP then
@@ -2033,6 +2033,7 @@ function (A,B)
   return ab[1] = ab[2];
 end );
 
+
 InstallMethod( IsSubset, "for certain cyclotomic semirings",
              [IsCyclotomicCollection and IsSemiringWithOne,
               IsCyclotomicCollection and IsSemiringWithOne],
@@ -2054,6 +2055,20 @@ function (A,B)
   # Verify that we recognized both A and B, otherwise give up.
   if fail in ab then TryNextMethod(); fi;
   i := Position( CompareCyclotomicCollectionHelper_Proxies, Intersection2( ab[1], ab[2] ) );
+  return CompareCyclotomicCollectionHelper_Semirings[i];
+end );
+
+
+InstallMethod( Union2, "for certain cyclotomic semirings",
+             [IsCyclotomicCollection and IsSemiringWithOne,
+              IsCyclotomicCollection and IsSemiringWithOne],
+function (A,B)
+  local ab, i;
+  ab := CompareCyclotomicCollectionHelper(A, B);
+  # Verify that we recognized both A and B, otherwise give up.
+  if fail in ab then TryNextMethod(); fi;
+  i := Position( CompareCyclotomicCollectionHelper_Proxies, Union2( ab[1], ab[2] ) );
+  if i = fail then TryNextMethod(); fi;
   return CompareCyclotomicCollectionHelper_Semirings[i];
 end );
 
