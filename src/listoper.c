@@ -480,10 +480,10 @@ Obj FuncZERO_ATTR_MAT( Obj self, Obj mat )
   Obj res;
   len = LEN_LIST(mat);
   if (len == 0)
-    return NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+    return NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
   zrow = ZERO(ELM_LIST(mat,1));
   CheckedMakeImmutable(zrow);
-  res = NEW_PLIST(T_PLIST_TAB_RECT+IMMUTABLE, len);
+  res = NEW_PLIST_IMM(T_PLIST_TAB_RECT, len);
   SET_LEN_PLIST(res,len);
   for (i = 1; i <= len; i++)
     SET_ELM_PLIST(res,i,zrow);

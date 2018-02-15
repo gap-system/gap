@@ -586,7 +586,7 @@ Obj FuncALL_RNAMES (
     Obj                 name;
     const UInt          countRNam = LEN_PLIST(NamesRNam);
 
-    copy = NEW_PLIST( T_PLIST+IMMUTABLE, countRNam );
+    copy = NEW_PLIST_IMM( T_PLIST, countRNam );
     for ( i = 1;  i <= countRNam;  i++ ) {
         name = NAME_OBJ_RNAM( i );
         s = CopyToStringRep(name);

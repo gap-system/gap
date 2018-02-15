@@ -1050,7 +1050,7 @@ Obj FuncIDENTS_GVAR (
     numGVars = INT_INTOBJ(CountGVars);
 #endif
 
-    copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
+    copy = NEW_PLIST_IMM( T_PLIST, numGVars );
     for ( i = 1;  i <= numGVars;  i++ ) {
         /* Copy the string here, because we do not want members of NameGVars
          * accessible to users, as these strings must not be changed */
@@ -1078,7 +1078,7 @@ Obj FuncIDENTS_BOUND_GVARS (
     numGVars = INT_INTOBJ(CountGVars);
 #endif
 
-    copy = NEW_PLIST( T_PLIST+IMMUTABLE, numGVars );
+    copy = NEW_PLIST_IMM( T_PLIST, numGVars );
     for ( i = 1, j = 1;  i <= numGVars;  i++ ) {
         if ( VAL_GVAR_INTERN( i ) || ELM_GVAR_LIST( ExprGVars, i ) ) {
            /* Copy the string here, because we do not want members of

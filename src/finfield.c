@@ -1781,7 +1781,7 @@ Obj INT_FF (
     if ( LEN_PLIST(IntFF) < ff || ELM_PLIST(IntFF,ff) == 0 ) {
         q = SIZE_FF( ff );
         p = CHAR_FF( ff );
-        conv = NEW_PLIST( T_PLIST+IMMUTABLE, p-1 );
+        conv = NEW_PLIST_IMM( T_PLIST, p-1 );
         succ = SUCC_FF( ff );
         SET_LEN_PLIST( conv, p-1 );
         z = 1;

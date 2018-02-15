@@ -299,7 +299,7 @@ Obj FuncTRUES_FLAGS (
     n = COUNT_TRUES_BLOCKS(ptr, nrb);    
 
     /* make the sublist (we now know its size exactly)                    */
-    sub = NEW_PLIST( T_PLIST+IMMUTABLE, n );
+    sub = NEW_PLIST_IMM( T_PLIST, n );
     SET_LEN_PLIST( sub, n );
 
     /* loop over the boolean list and stuff elements into <sub>            */
@@ -1776,8 +1776,7 @@ Obj CallHandleMethodNotFound( Obj oper,
       RNamPrecedence = RNamName("Precedence");
     }
   AssPRec(r,RNamOperation,oper);
-  arglist = NEW_PLIST(nargs ? T_PLIST_DENSE+IMMUTABLE:
-                      T_PLIST_EMPTY+IMMUTABLE, nargs);
+  arglist = NEW_PLIST_IMM(nargs ? T_PLIST_DENSE : T_PLIST_EMPTY, nargs);
   SET_LEN_PLIST(arglist,nargs);
   for (i = 0; i < nargs; i++)
     SET_ELM_PLIST( arglist, i+1, args[i]);
@@ -3775,7 +3774,7 @@ Obj FuncSETTER_FUNCTION (
 
     fname = WRAP_NAME(name, "SetterFunc");
     func = NewFunction( fname, 2, ArglistObjVal, DoSetterFunction );
-    tmp = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
+    tmp = NEW_PLIST_IMM( T_PLIST, 2 );
     SET_LEN_PLIST( tmp, 2 );
     SET_ELM_PLIST( tmp, 1, INTOBJ_INT( RNamObj(name) ) );
     SET_ELM_PLIST( tmp, 2, filter );
@@ -3832,7 +3831,7 @@ Obj FuncOPERS_CACHE_INFO (
     Obj                 list;
     Int                 i;
 
-    list = NEW_PLIST(IMMUTABLE_TNUM(T_PLIST), 15);
+    list = NEW_PLIST_IMM(T_PLIST, 15);
     SET_LEN_PLIST(list, 15);
 #ifdef COUNT_OPERS
     SET_ELM_PLIST(list, 1, INTOBJ_INT(AndFlagsCacheHit));
@@ -3852,15 +3851,15 @@ Obj FuncOPERS_CACHE_INFO (
     /* Now we need to convert the 3d matrix of cache hit counts (by
        precedence, location found and number of arguments) into a three
        dimensional GAP matrix (tensor) */
-    Obj tensor = NEW_PLIST(IMMUTABLE_TNUM(T_PLIST), CACHE_SIZE);
+    Obj tensor = NEW_PLIST_IMM(T_PLIST, CACHE_SIZE);
     SET_LEN_PLIST(tensor, CACHE_SIZE);
     for (i = 1; i <= CACHE_SIZE; i++) {
-        Obj mat = NEW_PLIST(IMMUTABLE_TNUM(T_PLIST), CACHE_SIZE);
+        Obj mat = NEW_PLIST_IMM(T_PLIST, CACHE_SIZE);
         SET_LEN_PLIST(mat, CACHE_SIZE);
         SET_ELM_PLIST(tensor, i, mat);
         CHANGED_BAG(tensor);
         for (Int j = 1; j <= CACHE_SIZE; j++) {
-            Obj vec = NEW_PLIST(IMMUTABLE_TNUM(T_PLIST), 7);
+            Obj vec = NEW_PLIST_IMM(T_PLIST, 7);
             SET_LEN_PLIST(vec, 7);
             SET_ELM_PLIST(mat, j, vec);
             CHANGED_BAG(mat);
@@ -3875,10 +3874,10 @@ Obj FuncOPERS_CACHE_INFO (
 
     /* and similarly the 2D matrix of cache miss information (by
        precedence and number of arguments) */
-    Obj mat = NEW_PLIST(IMMUTABLE_TNUM(T_PLIST), CACHE_SIZE + 1);
+    Obj mat = NEW_PLIST_IMM(T_PLIST, CACHE_SIZE + 1);
     SET_LEN_PLIST(mat, CACHE_SIZE + 1);
     for (Int j = 1; j <= CACHE_SIZE + 1; j++) {
-        Obj vec = NEW_PLIST(IMMUTABLE_TNUM(T_PLIST), 7);
+        Obj vec = NEW_PLIST_IMM(T_PLIST, 7);
         SET_LEN_PLIST(vec, 7);
         SET_ELM_PLIST(mat, j, vec);
         CHANGED_BAG(mat);
@@ -4169,12 +4168,12 @@ static Int InitKernel (
     /* share between uncompleted functions                                 */
     StringFilterSetter = MakeImmString("<<filter-setter>>");
 
-    ArglistObj = NEW_PLIST( T_PLIST+IMMUTABLE, 1 );
+    ArglistObj = NEW_PLIST_IMM( T_PLIST, 1 );
     SET_LEN_PLIST( ArglistObj, 1 );
     SET_ELM_PLIST( ArglistObj, 1, MakeImmString("obj") );
     CHANGED_BAG( ArglistObj );
 
-    ArglistObjVal = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
+    ArglistObjVal = NEW_PLIST_IMM( T_PLIST, 2 );
     SET_LEN_PLIST( ArglistObjVal, 2 );
     SET_ELM_PLIST( ArglistObjVal, 1, MakeImmString("obj") );
     CHANGED_BAG( ArglistObjVal );

@@ -1061,7 +1061,7 @@ Obj FuncCALL_WITH_CATCH( Obj self, Obj func, volatile Obj args )
     currStat = STATE(CurrStat);
     recursionDepth = GetRecursionDepth();
     tilde = STATE(Tilde);
-    res = NEW_PLIST(T_PLIST_DENSE+IMMUTABLE,2);
+    res = NEW_PLIST_IMM(T_PLIST_DENSE,2);
 #ifdef HPCGAP
     int lockSP = RegionLockSP();
     Region *savedRegion = TLS(currentRegion);
@@ -1193,7 +1193,7 @@ Obj CallErrorInner (
   AssPRec(r, RNamName("mayReturnVoid"), mayReturnVoid? True : False);
   AssPRec(r, RNamName("printThisStatement"), printThisStatement? True : False);
   AssPRec(r, RNamName("lateMessage"), lateMessage);
-  l = NEW_PLIST(T_PLIST_HOM+IMMUTABLE, 1);
+  l = NEW_PLIST_IMM(T_PLIST_HOM, 1);
   SET_ELM_PLIST(l,1,EarlyMsg);
   SET_LEN_PLIST(l,1);
   SET_BRK_CALL_TO(STATE(CurrStat));
@@ -1846,11 +1846,11 @@ Obj FuncGASMAN_STATS(Obj self)
   Obj row;
   UInt i,j;
   Int x;
-  res = NEW_PLIST(T_PLIST_TAB_RECT + IMMUTABLE, 2);
+  res = NEW_PLIST_IMM(T_PLIST_TAB_RECT, 2);
   SET_LEN_PLIST(res, 2);
   for (i = 1; i <= 2; i++)
     {
-      row = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, 9);
+      row = NEW_PLIST_IMM(T_PLIST_CYC, 9);
       SET_ELM_PLIST(res, i, row);
       CHANGED_BAG(res);
       SET_LEN_PLIST(row, 9);
@@ -1872,7 +1872,7 @@ Obj FuncGASMAN_MESSAGE_STATUS( Obj self )
 Obj FuncGASMAN_LIMITS( Obj self )
 {
   Obj list;
-  list = NEW_PLIST(T_PLIST_CYC+IMMUTABLE, 3);
+  list = NEW_PLIST_IMM(T_PLIST_CYC, 3);
   SET_LEN_PLIST(list,3);
   SET_ELM_PLIST(list, 1, INTOBJ_INT(SyStorMin));
   SET_ELM_PLIST(list, 2, INTOBJ_INT(SyStorMax));
@@ -2596,7 +2596,7 @@ Obj FuncKERNEL_INFO(Obj self) {
   /* GAP_ROOT_PATH                                                       */
   /* do we need this. Could we rebuild it from the command line in GAP
      if so, should we                                                    */
-  list = NEW_PLIST( T_PLIST+IMMUTABLE, MAX_GAP_DIRS );
+  list = NEW_PLIST_IMM( T_PLIST, MAX_GAP_DIRS );
   for ( i = 0, j = 1;  i < MAX_GAP_DIRS;  i++ ) {
     if ( SyGapRootPaths[i][0] ) {
       tmp = MakeImmString( SyGapRootPaths[i] );
@@ -2616,7 +2616,7 @@ Obj FuncKERNEL_INFO(Obj self) {
     
   /* make command line and environment available to GAP level       */
   for (lenvec=0; SyOriginalArgv[lenvec]; lenvec++);
-  tmp = NEW_PLIST( T_PLIST+IMMUTABLE, lenvec );
+  tmp = NEW_PLIST_IMM( T_PLIST, lenvec );
   SET_LEN_PLIST( tmp, lenvec );
   for (i = 0; i<lenvec; i++) {
     str = MakeImmString( SyOriginalArgv[i] );

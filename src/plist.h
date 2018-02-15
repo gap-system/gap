@@ -33,15 +33,21 @@
 **
 *F  NEW_PLIST(<type>,<plen>)  . . . . . . . . . . . allocate a new plain list
 **
-**  'NEW_PLIST'  allocates    a new plain   list  of  type <type> ('T_PLIST',
-**  'T_SET', 'T_VECTOR') that has room for at least <plen> elements.
+**  'NEW_PLIST'  allocates a new plain list of type <type> that has room for
+**  at least <plen> elements.
 **
 */
 static inline Obj NEW_PLIST(UInt type, Int plen)
 {
     GAP_ASSERT(plen >= 0);
     GAP_ASSERT(plen <= INT_INTOBJ_MAX);
+    GAP_ASSERT(FIRST_PLIST_TNUM <= type && type <= LAST_PLIST_TNUM);
     return NewBag(type, (plen + 1) * sizeof(Obj));
+}
+
+static inline Obj NEW_PLIST_IMM(UInt type, Int plen)
+{
+    return NEW_PLIST(type | IMMUTABLE, plen);
 }
 
 /****************************************************************************

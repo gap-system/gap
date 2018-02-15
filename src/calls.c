@@ -1548,7 +1548,7 @@ Obj FuncCALL_FUNC_LIST_WRAP (
 
     if (retval == 0)
     {
-        retlist = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+        retlist = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
     }
     else
     {

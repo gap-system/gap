@@ -165,7 +165,7 @@ UInt INIT_TRANS2(Obj f)
 
     if (deg == 0) {
         // special case for degree 0
-        img = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+        img = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
         SET_LEN_PLIST(img, 0);
         SET_IMG_TRANS(f, img);
         SET_KER_TRANS(f, img);
@@ -173,8 +173,8 @@ UInt INIT_TRANS2(Obj f)
         return 0;
     }
 
-    img = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, deg);
-    ker = NEW_PLIST(T_PLIST_CYC_NSORT + IMMUTABLE, deg);
+    img = NEW_PLIST_IMM(T_PLIST_CYC, deg);
+    ker = NEW_PLIST_IMM(T_PLIST_CYC_NSORT, deg);
     SET_LEN_PLIST(ker, (Int)deg);
 
     pttmp = ResizeInitTmpTrans(deg);
@@ -218,7 +218,7 @@ UInt INIT_TRANS4(Obj f)
         // T_TRANS4 and that does not have (internal) degree 65537 or greater
         // is ID_TRANS4.
 
-        img = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+        img = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
         SET_LEN_PLIST(img, 0);
         SET_IMG_TRANS(f, img);
         SET_KER_TRANS(f, img);
@@ -226,8 +226,8 @@ UInt INIT_TRANS4(Obj f)
         return 0;
     }
 
-    img = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, deg);
-    ker = NEW_PLIST(T_PLIST_CYC_NSORT + IMMUTABLE, deg);
+    img = NEW_PLIST_IMM(T_PLIST_CYC, deg);
+    ker = NEW_PLIST_IMM(T_PLIST_CYC_NSORT, deg);
     SET_LEN_PLIST(ker, (Int)deg);
 
     pttmp = ResizeInitTmpTrans(deg);
@@ -1179,13 +1179,13 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
         return FuncIMAGE_SET_TRANS(self, f);
     }
     else if (m == 0) {
-        new = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+        new = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
         SET_LEN_PLIST(new, 0);
         return new;
     }
     else if (m < deg) {
         pttmp = ResizeInitTmpTrans(deg);
-        new = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, m);
+        new = NEW_PLIST_IMM(T_PLIST_CYC, m);
         pttmp = ADDR_TRANS4(TmpTrans);
 
         if (TNUM_OBJ(f) == T_TRANS2) {
@@ -1260,12 +1260,12 @@ Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n)
     m = INT_INTOBJ(n);
 
     if (m == 0) {
-        out = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+        out = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
         SET_LEN_PLIST(out, 0);
         return out;
     }
 
-    out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, m);
+    out = NEW_PLIST_IMM(T_PLIST_CYC, m);
 
     if (TNUM_OBJ(f) == T_TRANS2) {
         ptf2 = CONST_ADDR_TRANS2(f);
@@ -1711,11 +1711,11 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
         deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
         if (len >= deg) {
             if (len == 0) {
-                out = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+                out = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
                 SET_LEN_PLIST(out, 0);
                 return out;
             }
-            out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, len);
+            out = NEW_PLIST_IMM(T_PLIST_CYC, len);
             SET_LEN_PLIST(out, len);
             pttmp = ResizeInitTmpTrans(len);
             ptf2 = CONST_ADDR_TRANS2(f);
@@ -1747,11 +1747,11 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
         deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
         if (len >= deg) {
             if (len == 0) {
-                out = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+                out = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
                 SET_LEN_PLIST(out, 0);
                 return out;
             }
-            out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, len);
+            out = NEW_PLIST_IMM(T_PLIST_CYC, len);
             SET_LEN_PLIST(out, len);
             pttmp = ResizeInitTmpTrans(len);
             ptf4 = CONST_ADDR_TRANS4(f);
@@ -3606,12 +3606,12 @@ Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
     len = LEN_LIST(ker);
 
     if (len == 0) {
-        out = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, len);
+        out = NEW_PLIST_IMM(T_PLIST_EMPTY, len);
         SET_LEN_PLIST(out, len);
         return out;
     }
 
-    out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, len);
+    out = NEW_PLIST_IMM(T_PLIST_CYC, len);
     SET_LEN_PLIST(out, len);
 
     ResizeTmpTrans(2 * len);
