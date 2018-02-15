@@ -62,8 +62,7 @@ Obj             SumFFEVecFFE (
 
     /* make the result list                                                */
     len = LEN_PLIST(vecR);
-    vecS = NEW_PLIST(IS_MUTABLE_OBJ(vecR) ?
-                T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    vecS = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecR), T_PLIST_FFE, len);
     SET_LEN_PLIST(vecS, len);
 
     /* to add we need the successor table                                  */
@@ -125,8 +124,7 @@ Obj             SumVecFFEFFE (
 
     /* make the result list                                                */
     len = LEN_PLIST(vecL);
-    vecS = NEW_PLIST(IS_MUTABLE_OBJ(vecL) ?
-                T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    vecS = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL), T_PLIST_FFE, len);
     SET_LEN_PLIST(vecS, len);
 
     /* to add we need the successor table                                  */
@@ -199,8 +197,8 @@ Obj             SumVecFFEVecFFE (
     }
 
     /* make the result list                                                */
-    vecS = NEW_PLIST((IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR)) ?
-                T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    vecS = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR),
+                         T_PLIST_FFE, len);
     SET_LEN_PLIST(vecS, len);
 
     /* to add we need the successor table                                  */
@@ -269,8 +267,7 @@ Obj             DiffFFEVecFFE (
 
     /* make the result list                                                */
     len = LEN_PLIST(vecR);
-    vecD = NEW_PLIST(IS_MUTABLE_OBJ(vecR) ?
-                T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    vecD = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecR), T_PLIST_FFE, len);
     SET_LEN_PLIST(vecD, len);
 
     /* to subtract we need the successor table                             */
@@ -333,8 +330,7 @@ Obj             DiffVecFFEFFE (
 
     /* make the result list                                                */
     len = LEN_PLIST(vecL);
-    vecD = NEW_PLIST(IS_MUTABLE_OBJ(vecL) ?
-                T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    vecD = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL), T_PLIST_FFE, len);
     SET_LEN_PLIST(vecD, len);
 
     /* to subtract we need the successor table                             */
@@ -409,8 +405,8 @@ Obj             DiffVecFFEVecFFE (
     }
 
     /* make the result list                                                */
-    vecD = NEW_PLIST((IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR)) ?
-                T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    vecD = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR),
+                         T_PLIST_FFE, len);
     SET_LEN_PLIST(vecD, len);
 
     /* to subtract we need the successor table                             */
@@ -484,8 +480,7 @@ Obj             ProdFFEVecFFE (
 
     /* make the result list                                                */
     len = LEN_PLIST(vecR);
-    vecP = NEW_PLIST(IS_MUTABLE_OBJ(vecR) ?
-                T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    vecP = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecR), T_PLIST_FFE, len);
     SET_LEN_PLIST(vecP, len);
 
     /* to multiply we need the successor table                             */
@@ -546,8 +541,7 @@ Obj             ProdVecFFEFFE (
 
     /* make the result list                                                */
     len = LEN_PLIST(vecL);
-    vecP = NEW_PLIST(IS_MUTABLE_OBJ(vecL) ?
-                    T_PLIST_FFE : T_PLIST_FFE + IMMUTABLE, len);
+    vecP = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL), T_PLIST_FFE, len);
     SET_LEN_PLIST(vecP, len);
 
     /* to multiply we need the successor table                             */

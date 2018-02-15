@@ -1528,7 +1528,7 @@ Obj FuncLIST_BLIST (
     n = SizeBlist(blist);
 
     /* make the sublist (we now know its size exactly)                    */
-    sub = NEW_PLIST( IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST+IMMUTABLE, n );
+    sub = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(list), T_PLIST, n );
     SET_LEN_PLIST( sub, n );
 
     /* loop over the boolean list and stuff elements into <sub>            */
