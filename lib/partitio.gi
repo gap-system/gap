@@ -411,18 +411,19 @@ end );
 #F  SmallestPrimeDivisor( <size> )  . . . . . . . . .  smallest prime divisor
 ##
 InstallGlobalFunction( SmallestPrimeDivisor, function( size )
-    local   i;
-    
-    i := 0;
+    local p;
+
     if size = 1  then
         return 1;
-    else
-        repeat
-            i := i + 1;
-        until i > Length( Primes )  or  size mod Primes[ i ] = 0;
-        if i > Length( Primes )  then  return FactorsInt( size )[ 1 ];
-                                 else  return Primes[ i ];              fi;
     fi;
+    # first try small divisors
+    for p in Primes do
+        if size mod p = 0 then
+            return p;
+        fi;
+    od;
+    # fall back to factorization
+    return Factors( Integers, size )[ 1 ];
 end );
 
 
