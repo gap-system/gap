@@ -1185,7 +1185,7 @@ Obj             FuncOnPairs (
     }
 
     /* create a new bag for the result                                     */
-    img = NEW_PLIST( IS_MUTABLE_OBJ(pair) ? T_PLIST : T_PLIST+IMMUTABLE, 2 );
+    img = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(pair), T_PLIST, 2 );
     SET_LEN_PLIST( img, 2 );
 
     /* and enter the images of the points into the result bag              */
@@ -1259,7 +1259,7 @@ Obj             FuncOnTuples (
     }
 
     /* create a new bag for the result                                     */
-    img = NEW_PLIST( IS_MUTABLE_OBJ(tuple) ? T_PLIST : T_PLIST+IMMUTABLE, LEN_LIST(tuple) );
+    img = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(tuple), T_PLIST, LEN_LIST(tuple) );
     SET_LEN_PLIST( img, LEN_LIST(tuple) );
 
     /* and enter the images of the points into the result bag              */

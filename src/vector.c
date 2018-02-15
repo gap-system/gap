@@ -215,8 +215,7 @@ Obj             DiffIntVector (
 
     /* make the result list                                                */
     len = LEN_PLIST(vecR);
-    vecD = NEW_PLIST(IS_MUTABLE_OBJ(vecR) ?
-                     T_PLIST_CYC : T_PLIST_CYC + IMMUTABLE, len);
+    vecD = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecR), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecD, len);
 
     /* loop over the elements and subtract                                 */
@@ -388,8 +387,7 @@ Obj             ProdIntVector (
 
     /* make the result list                                                */
     len = LEN_PLIST(vecR);
-    vecP = NEW_PLIST(IS_MUTABLE_OBJ(vecR) ?
-                     T_PLIST_CYC : T_PLIST_CYC + IMMUTABLE, len);
+    vecP = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecR), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecP, len);
 
     /* loop over the entries and multiply                                  */
@@ -437,8 +435,7 @@ Obj             ProdVectorInt (
 
     /* make the result list                                                */
     len = LEN_PLIST(vecL);
-    vecP = NEW_PLIST(IS_MUTABLE_OBJ(vecL) ?
-                     T_PLIST_CYC : T_PLIST_CYC + IMMUTABLE, len);
+    vecP = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecP, len);
 
     /* loop over the entries and multiply                                  */
@@ -563,9 +560,8 @@ Obj             ProdVectorMatrix (
 
     /* make the result list */
 
-    vecP = NEW_PLIST((IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(ELM_PLIST(matR, 1))) ?
-                     T_PLIST_CYC : T_PLIST_CYC + IMMUTABLE,
-    col);
+    vecP = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(ELM_PLIST(matR, 1)),
+                         T_PLIST_CYC, col);
     SET_LEN_PLIST(vecP, col);
     for (i = 1; i <= col; i++)
         SET_ELM_PLIST(vecP, i, INTOBJ_INT(0));
@@ -656,7 +652,7 @@ Obj ZeroVector( Obj vec )
     assert(TNUM_OBJ(vec) >= T_PLIST_CYC && \
     TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT + IMMUTABLE);
     len = LEN_PLIST(vec);
-    res = NEW_PLIST(IS_MUTABLE_OBJ(vec) ? T_PLIST_CYC : T_PLIST_CYC + IMMUTABLE, len);
+    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vec), T_PLIST_CYC, len);
     SET_LEN_PLIST(res, len);
     for (i = 1; i <= len; i++)
         SET_ELM_PLIST(res, i, INTOBJ_INT(0));

@@ -6086,8 +6086,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
 
     const UInt len = LEN_PLIST(set);
 
-    res = NEW_PLIST(IS_MUTABLE_PLIST(set) ? T_PLIST : T_PLIST + IMMUTABLE,
-                    len);
+    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_PLIST(set), T_PLIST, len);
 
     /* get the pointer                                                 */
     ptset = CONST_ADDR_OBJ(set) + len;
@@ -6182,9 +6181,7 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
 
     const UInt len = LEN_PLIST(tup);
 
-    res = NEW_PLIST(IS_MUTABLE_PLIST(tup) ? T_PLIST_CYC
-                                          : T_PLIST_CYC + IMMUTABLE,
-                    len);
+    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_PLIST(tup), T_PLIST_CYC, len);
 
     /* get the pointer                                                 */
     pttup = CONST_ADDR_OBJ(tup) + 1;
@@ -6250,9 +6247,7 @@ Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
     }
 
     PLAIN_LIST(set);
-    res = NEW_PLIST(IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT
-                                          : T_PLIST_CYC_SSORT + IMMUTABLE,
-                    LEN_LIST(set));
+    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_PLIST(set), T_PLIST_CYC_SSORT, LEN_LIST(set));
 
     /* get the pointer                                                 */
     ptset = CONST_ADDR_OBJ(set) + LEN_LIST(set);

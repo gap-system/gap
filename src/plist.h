@@ -50,6 +50,13 @@ static inline Obj NEW_PLIST_IMM(UInt type, Int plen)
     return NEW_PLIST(type | IMMUTABLE, plen);
 }
 
+static inline Obj NEW_PLIST_WITH_MUTABILITY(Int mut, UInt type, Int plen)
+{
+    if (!mut)
+        type |= IMMUTABLE;
+    return NEW_PLIST(type, plen);
+}
+
 /****************************************************************************
 **
 *F  IS_PLIST( <list> )  . . . . . . . . . . . check if <list> is a plain list

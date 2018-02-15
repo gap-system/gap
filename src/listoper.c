@@ -195,8 +195,8 @@ Obj             SumSclList (
 
     /* make the result list                                                */
     len = LEN_LIST( listR );
-    listS = NEW_PLIST( IS_MUTABLE_OBJ(listL) ||  IS_MUTABLE_OBJ(listR) ?
-                       T_PLIST : (T_PLIST + IMMUTABLE), len );
+    listS = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL) ||  IS_MUTABLE_OBJ(listR),
+                           T_PLIST, len );
     SET_LEN_PLIST( listS, len );
 
     /* loop over the entries and add                                       */
@@ -226,8 +226,8 @@ Obj             SumListScl (
 
     /* make the result list                                                */
     len = LEN_LIST( listL );
-    listS = NEW_PLIST( IS_MUTABLE_OBJ(listR) || IS_MUTABLE_OBJ(listL) ?
-                       T_PLIST : T_PLIST+IMMUTABLE, len );
+    listS = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listR) || IS_MUTABLE_OBJ(listL),
+                           T_PLIST, len );
     SET_LEN_PLIST( listS, len );
 
     /* loop over the entries and add                                       */
@@ -261,8 +261,8 @@ Obj             SumListList (
     lenL = LEN_LIST( listL );
     lenR = LEN_LIST( listR );
     lenS = (lenR > lenL) ? lenR : lenL;
-    listS = NEW_PLIST( (IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR)) ?
-                       T_PLIST : T_PLIST+IMMUTABLE, lenS );
+    listS = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR),
+                           T_PLIST, lenS );
     SET_LEN_PLIST( listS, lenS );
 
     /* Sort out mutability */
@@ -348,7 +348,7 @@ Obj             ZeroListDefault (
 
     /* make the result list -- same mutability as argument */
     len = LEN_LIST( list );
-    res = NEW_PLIST( IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST+IMMUTABLE, len );
+    res = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(list), T_PLIST, len );
     SET_LEN_PLIST( res, len );
 
     /* enter zeroes everywhere                                             */
@@ -574,7 +574,7 @@ Obj AInvListDefault (
 
     /* make the result list -- same mutability as input */
     len = LEN_LIST( list );
-    res = NEW_PLIST( IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST+IMMUTABLE , len );
+    res = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(list), T_PLIST, len );
     SET_LEN_PLIST( res, len );
 
     /* enter the additive inverses everywhere                              */
@@ -665,8 +665,8 @@ Obj             DiffSclList (
 
     /* make the result list                                                */
     len = LEN_LIST( listR );
-    listD = NEW_PLIST(IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR) ? T_PLIST :
-                      T_PLIST+IMMUTABLE, len );
+    listD = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR),
+                           T_PLIST, len );
     SET_LEN_PLIST( listD, len );
 
     /* loop over the entries and subtract                                  */
@@ -707,8 +707,8 @@ Obj             DiffListScl (
 
     /* make the result list                                                */
     len = LEN_LIST( listL );
-    listD = NEW_PLIST( IS_MUTABLE_OBJ(listL)|| IS_MUTABLE_OBJ(listR) ? T_PLIST :
-                       T_PLIST+IMMUTABLE, len );
+    listD = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL)|| IS_MUTABLE_OBJ(listR),
+                           T_PLIST, len );
     SET_LEN_PLIST( listD, len );
 
     /* loop over the entries and subtract                                  */
@@ -754,8 +754,8 @@ Obj             DiffListList (
     lenL = LEN_LIST( listL );
     lenR = LEN_LIST( listR );
     lenD = (lenR > lenL) ? lenR : lenL;
-    listD = NEW_PLIST( (IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR)) ?
-                       T_PLIST : T_PLIST+IMMUTABLE, lenD );
+    listD = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR),
+                           T_PLIST, lenD );
     SET_LEN_PLIST( listD, lenD );
 
     /* Sort out mutability */
@@ -886,8 +886,8 @@ Obj             ProdSclList (
 
     /* make the result list                                                */
     len = LEN_LIST( listR );
-    listP = NEW_PLIST( IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR) ?
-                       T_PLIST :T_PLIST+IMMUTABLE, len );
+    listP = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR),
+                           T_PLIST, len );
     SET_LEN_PLIST( listP, len );
 
     /* loop over the entries and multiply                                  */
@@ -926,8 +926,8 @@ Obj             ProdListScl (
 
     /* make the result list                                                */
     len = LEN_LIST( listL );
-    listP = NEW_PLIST( (IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR))
-                       ? T_PLIST :T_PLIST+IMMUTABLE, len );
+    listP = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR),
+                           T_PLIST, len );
     SET_LEN_PLIST( listP, len );
 
     /* loop over the entries and multiply                                  */

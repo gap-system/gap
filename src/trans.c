@@ -3837,9 +3837,7 @@ Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
 
     const UInt len = LEN_PLIST(set);
 
-    res = NEW_PLIST(IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT
-                                          : T_PLIST_CYC_SSORT + IMMUTABLE,
-                    len);
+    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_PLIST(set), T_PLIST_CYC_SSORT, len);
     SET_LEN_PLIST(res, len);
 
     ptset = CONST_ADDR_OBJ(set) + len;
@@ -5245,8 +5243,7 @@ Obj OnSetsTrans(Obj set, Obj f)
 
     const UInt len = LEN_PLIST(set);
 
-    res = NEW_PLIST(IS_MUTABLE_PLIST(set) ? T_PLIST : T_PLIST + IMMUTABLE,
-                    len);
+    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_PLIST(set), T_PLIST, len);
     SET_LEN_PLIST(res, len);
 
     ptset = CONST_ADDR_OBJ(set) + len;
@@ -5340,8 +5337,7 @@ Obj OnTuplesTrans(Obj tup, Obj f)
 
     const UInt len = LEN_PLIST(tup);
 
-    res = NEW_PLIST(IS_MUTABLE_PLIST(tup) ? T_PLIST : T_PLIST + IMMUTABLE,
-                    len);
+    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_PLIST(tup), T_PLIST, len);
     SET_LEN_PLIST(res, len);
 
     pttup = CONST_ADDR_OBJ(tup) + len;
