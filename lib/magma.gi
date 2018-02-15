@@ -1100,9 +1100,10 @@ InstallMethod( Enumerator,
     [ IsMagma and IsAttributeStoringRep ], 0,
     EnumeratorOfMagma );
 
+
 #############################################################################
 ##
-#M  IsCentral( <M>, <N> ) . . . . . . . . . . . . . . . . . .  for two magmas
+#M  IsCentral( <M>, <N> )
 ##
 InstallMethod( IsCentral,
     "for two magmas",
@@ -1110,11 +1111,6 @@ InstallMethod( IsCentral,
     [ IsMagma, IsMagma ], 0,
     IsCentralFromGenerators( GeneratorsOfMagma, GeneratorsOfMagma ) );
 
-
-#############################################################################
-##
-#M  IsCentral( <M>, <N> ) . . . . . . . . . . . . . . for two magmas with one
-##
 InstallMethod( IsCentral,
     "for two magmas-with-one",
     IsIdenticalObj,
@@ -1122,17 +1118,34 @@ InstallMethod( IsCentral,
     IsCentralFromGenerators( GeneratorsOfMagmaWithOne,
                              GeneratorsOfMagmaWithOne ) );
 
-
-#############################################################################
-##
-#M  IsCentral( <M>, <N> ) . . . . . . . . . . .  for two magmas with inverses
-##
 InstallMethod( IsCentral,
     "for two magmas-with-inverses",
     IsIdenticalObj,
     [ IsMagmaWithInverses, IsMagmaWithInverses ], 0,
     IsCentralFromGenerators( GeneratorsOfMagmaWithInverses,
                              GeneratorsOfMagmaWithInverses ) );
+
+#############################################################################
+##
+#M  IsCentral( <M>, <elm> )
+##
+InstallMethod( IsCentral,
+    "for a magma and an element",
+    IsCollsElms,
+    [ IsMagma, IsObject ], 0,
+    IsCentralElementFromGenerators( GeneratorsOfMagma ) );
+
+InstallMethod( IsCentral,
+    "for a magma-with-one and an element",
+    IsCollsElms,
+    [ IsMagmaWithOne, IsObject ], 0,
+    IsCentralElementFromGenerators( GeneratorsOfMagmaWithOne ) );
+
+InstallMethod( IsCentral,
+    "for a magma-with-inverses and an element",
+    IsCollsElms,
+    [ IsMagmaWithInverses, IsObject ], 0,
+    IsCentralElementFromGenerators( GeneratorsOfMagmaWithInverses ) );
 
 
 #############################################################################

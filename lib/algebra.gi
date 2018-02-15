@@ -3280,6 +3280,28 @@ InstallMethod( IsCentral,
     IsCentralFromGenerators( GeneratorsOfAlgebraWithOne,
                              GeneratorsOfAlgebraWithOne ) );
 
+#############################################################################
+##
+#O  IsCentral( <A>, <x> )  . . . . . . . .  test if <x> is centralized by <A>
+##
+InstallMethod( IsCentral,
+    "for an FLMLOR and an element",
+    IsCollsElms,
+    [ IsFLMLOR, IsObject ],
+    IsCentralElementFromGenerators( GeneratorsOfLeftModule ) );
+
+InstallMethod( IsCentral,
+    "for an associative FLMLOR and an element",
+    IsCollsElms,
+    [ IsFLMLOR and IsAssociative, IsObject ],
+    IsCentralElementFromGenerators( GeneratorsOfAlgebra ) );
+
+InstallMethod( IsCentral,
+    "for an associative FLMLOs-with-one and an element",
+    IsCollsElms,
+    [ IsFLMLORWithOne and IsAssociative, IsObject ],
+    IsCentralElementFromGenerators( GeneratorsOfAlgebraWithOne ) );
+
 
 #############################################################################
 ##

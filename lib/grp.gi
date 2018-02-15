@@ -3320,6 +3320,15 @@ InstallMethod( IsCentral,
 
 #############################################################################
 ##
+#M  IsCentral( <G>, <g> ) . . . . . . . is an element centralized by a group?
+##
+InstallMethod( IsCentral,
+    "for a group and an element",
+    IsCollsElms, [ IsGroup, IsMultiplicativeElementWithInverse ],
+    IsCentralElementFromGenerators( GeneratorsOfGroup ) );
+
+#############################################################################
+##
 #M  IsSubset( <G>, <H> ) . . . . . . . . . . . . .  test for subset of groups
 ##
 InstallMethod( IsSubset,

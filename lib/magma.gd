@@ -894,9 +894,9 @@ end );
 ##  <Func Name="IsCentralFromGenerators" Arg='GeneratorsStruct1, GeneratorsStruct2'/>
 ##
 ##  <Description>
-##  is a function that takes two domain arguments <A>D1</A>, <A>D2</A> and checks
-##  whether <C><A>GeneratorsStruct1</A>( <A>D1</A> )</C> and <C><A>GeneratorsStruct2</A>( <A>D2</A> )</C>
-##  commute.
+##  is a function which returns a function that takes two domain arguments <A>D1</A>,
+##  <A>D2</A> and checks whether <C><A>GeneratorsStruct1</A>( <A>D1</A> )</C>
+##  and <C><A>GeneratorsStruct2</A>( <A>D2</A> )</C> commute.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -910,6 +910,34 @@ BindGlobal( "IsCentralFromGenerators",
           return false;
         fi;
       od;
+    od;
+    return true;
+    end;
+end );
+
+
+#############################################################################
+##
+#F  IsCentralElementFromGenerators( <GeneratorsStruct> )
+##
+##  <ManSection>
+##  <Func Name="IsCentralElementFromGenerators" Arg='GeneratorsStruct'/>
+##
+##  <Description>
+##  is a function which returns a function that takes a domain argument
+##  <A>D</A>  and an object <A>obj</A> and checks whether
+##  <C><A>GeneratorsStruct</A>( <A>D</A> )</C> and <A>obj</A> commute.
+##  </Description>
+##  </ManSection>
+##
+BindGlobal( "IsCentralElementFromGenerators",
+    function( GeneratorsStruct )
+    return function( D, obj )
+    local g;
+    for g in GeneratorsStruct( D ) do
+      if g * obj <> obj * g then
+        return false;
+      fi;
     od;
     return true;
     end;
