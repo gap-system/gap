@@ -189,16 +189,32 @@ InstallImmediateMethod( IsZeroMultiplicationRing,
 InstallMethod( IsCentral,
     "for two associative rings",
     IsIdenticalObj,
-    [ IsRing and IsAssociative, IsRing and IsAssociative ], 0,
+    [ IsRing and IsAssociative, IsRing and IsAssociative ],
     IsCentralFromGenerators( GeneratorsOfRing, GeneratorsOfRing ) );
 
 InstallMethod( IsCentral,
     "for two associative rings-with-one",
     IsIdenticalObj,
     [ IsRingWithOne and IsAssociative,
-      IsRingWithOne and IsAssociative ], 0,
+      IsRingWithOne and IsAssociative ],
     IsCentralFromGenerators( GeneratorsOfRingWithOne,
                              GeneratorsOfRingWithOne ) );
+
+#############################################################################
+##
+#M  IsCentral( <R>, <x> )  . . . . . . . .  test if <x> is centralized by <R>
+##
+InstallMethod( IsCentral,
+    "for an associative ring and an element",
+    IsCollsElms,
+    [ IsRing and IsAssociative, IsObject ],
+    IsCentralElementFromGenerators( GeneratorsOfRing ) );
+
+InstallMethod( IsCentral,
+    "for an associative ring-with-one and an element",
+    IsCollsElms,
+    [ IsRingWithOne and IsAssociative, IsObject ],
+    IsCentralElementFromGenerators( GeneratorsOfRingWithOne ) );
 
 
 #############################################################################
