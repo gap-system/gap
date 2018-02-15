@@ -4854,7 +4854,7 @@ Obj MakeShiftedVecs( Obj v, UInt len)
     SetTypeDatObj(vn, type);
 
     /* Now we start to build up the result */
-    shifts = NEW_PLIST(T_PLIST_TAB + IMMUTABLE, elts + 2);
+    shifts = NEW_PLIST_IMM(T_PLIST_TAB, elts + 2);
     SET_ELM_PLIST(shifts, elts + 1, INTOBJ_INT(len));
     SET_ELM_PLIST(shifts, elts + 2, xi);
     SET_LEN_PLIST(shifts, elts + 2);

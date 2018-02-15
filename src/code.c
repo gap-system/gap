@@ -3375,7 +3375,7 @@ static Int InitLibrary (
 #ifdef HPCGAP
     cache = NewAtomicList(T_ALIST, 1);
 #else
-    cache = NEW_PLIST(T_PLIST+IMMUTABLE, 1000L);
+    cache = NEW_PLIST_IMM(T_PLIST, 1000L);
     SET_LEN_PLIST(cache,0);
 #endif
     EAGER_FLOAT_LITERAL_CACHE = cache;

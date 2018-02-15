@@ -2464,7 +2464,7 @@ Obj FuncContentsLVars (Obj self, Obj lvars )
   Obj func = FUNC_LVARS(lvars);
   Obj nams = NAMS_FUNC(func);
   UInt len = (SIZE_BAG(lvars) - 2*sizeof(Obj) - sizeof(UInt))/sizeof(Obj);
-  Obj values = NEW_PLIST(T_PLIST+IMMUTABLE, len);
+  Obj values = NEW_PLIST_IMM(T_PLIST, len);
   if (lvars == STATE(BottomLVars))
     return False;
   AssPRec(contents, RNamName("func"), func);

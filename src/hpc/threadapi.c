@@ -821,7 +821,7 @@ Obj FuncHASH_SYNCHRONIZED_SHARED(Obj self, Obj target, Obj function)
 Obj FuncCREATOR_OF(Obj self, Obj obj)
 {
 #ifdef TRACK_CREATOR
-    Obj result = NEW_PLIST(T_PLIST + IMMUTABLE, 2);
+    Obj result = NEW_PLIST_IMM(T_PLIST, 2);
     SET_LEN_PLIST(result, 2);
     if (!IS_BAG_REF(obj)) {
         SET_ELM_PLIST(result, 1, Fail);

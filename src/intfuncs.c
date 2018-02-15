@@ -653,11 +653,11 @@ Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
     if (starts[nfields] > 8 * sizeof(UInt))
         ErrorMayQuit("MAKE_BITFIELDS: total widths too large", 0, 0);
 
-    Obj  setters = NEW_PLIST(T_PLIST_DENSE + IMMUTABLE, nfields);
-    Obj  getters = NEW_PLIST(T_PLIST_DENSE + IMMUTABLE, nfields);
-    Obj  bsetters = NEW_PLIST(T_PLIST + IMMUTABLE, nfields);
+    Obj  setters = NEW_PLIST_IMM(T_PLIST_DENSE, nfields);
+    Obj  getters = NEW_PLIST_IMM(T_PLIST_DENSE, nfields);
+    Obj  bsetters = NEW_PLIST_IMM(T_PLIST, nfields);
     UInt bslen = 0;
-    Obj  bgetters = NEW_PLIST(T_PLIST + IMMUTABLE, nfields);
+    Obj  bgetters = NEW_PLIST_IMM(T_PLIST, nfields);
     for (UInt i = 1; i <= nfields; i++) {
         UInt mask = (1L << starts[i]) - (1L << starts[i - 1]);
         Obj s = NewFunctionC("<field setter>", 2, "data, val", DoFieldSetter);

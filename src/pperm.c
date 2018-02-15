@@ -189,7 +189,7 @@ static UInt INIT_PPERM2(Obj f)
     deg = DEG_PPERM2(f);
 
     if (deg == 0) {
-        dom = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+        dom = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
         SET_LEN_PLIST(dom, 0);
         SET_DOM_PPERM(f, dom);
         SET_IMG_PPERM(f, dom);
@@ -197,8 +197,8 @@ static UInt INIT_PPERM2(Obj f)
         return deg;
     }
 
-    dom = NEW_PLIST(T_PLIST_CYC_SSORT + IMMUTABLE, deg);
-    img = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, deg);
+    dom = NEW_PLIST_IMM(T_PLIST_CYC_SSORT, deg);
+    img = NEW_PLIST_IMM(T_PLIST_CYC, deg);
 
     /* renew the ptr in case of garbage collection */
     ptf = ADDR_PPERM2(f);
@@ -237,7 +237,7 @@ static UInt INIT_PPERM4(Obj f)
     deg = DEG_PPERM4(f);
 
     if (deg == 0) {
-        dom = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+        dom = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
         SET_LEN_PLIST(dom, 0);
         SET_DOM_PPERM(f, dom);
         SET_IMG_PPERM(f, dom);
@@ -245,8 +245,8 @@ static UInt INIT_PPERM4(Obj f)
         return deg;
     }
 
-    dom = NEW_PLIST(T_PLIST_CYC_SSORT + IMMUTABLE, deg);
-    img = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, deg);
+    dom = NEW_PLIST_IMM(T_PLIST_CYC_SSORT, deg);
+    img = NEW_PLIST_IMM(T_PLIST_CYC, deg);
 
     ptf = ADDR_PPERM4(f);
 
@@ -522,11 +522,11 @@ Obj FuncIMAGE_PPERM(Obj self, Obj f)
         }
         rank = RANK_PPERM2(f);
         if (rank == 0) {
-            out = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+            out = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
             SET_LEN_PLIST(out, 0);
             return out;
         }
-        out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, rank);
+        out = NEW_PLIST_IMM(T_PLIST_CYC, rank);
         SET_LEN_PLIST(out, rank);
         ptf2 = ADDR_PPERM2(f);
         dom = DOM_PPERM(f);
@@ -545,11 +545,11 @@ Obj FuncIMAGE_PPERM(Obj self, Obj f)
         }
         rank = RANK_PPERM4(f);
         if (rank == 0) {
-            out = NEW_PLIST(T_PLIST_EMPTY + IMMUTABLE, 0);
+            out = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
             SET_LEN_PLIST(out, 0);
             return out;
         }
-        out = NEW_PLIST(T_PLIST_CYC + IMMUTABLE, rank);
+        out = NEW_PLIST_IMM(T_PLIST_CYC, rank);
         SET_LEN_PLIST(out, rank);
         ptf4 = ADDR_PPERM4(f);
         dom = DOM_PPERM(f);
