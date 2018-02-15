@@ -35,6 +35,22 @@ gap> Size( G );
 gap> MolienSeries( NaturalCharacter( G ) );
 ( 1 ) / ( (1-z^12)*(1-z^9)*(1-z^6)*(1-z^5)*(1-z^3)*(1-z) )
 
+##  bug 7 for fix 5
+gap> tbl:= CharacterTable( SL(2,3) );;  irr:= Irr( tbl );;
+gap> lin:= Filtered( LinearCharacters( tbl ), x -> Order(x) = 3 );;
+gap> deg3:= First( irr, x -> DegreeOfCharacter( x ) = 3 );;
+gap> MolienSeries( tbl, lin[1] + deg3, lin[2] );
+( 2*z^2+z^3-z^4+z^6 ) / ( (1-z^3)^2*(1-z^2)^2 )
+
+##  bug 4 for fix 6
+gap> tbl:= CharacterTable( SL(2,3) );;  irr:= Irr( tbl );;
+gap> lin := Filtered( LinearCharacters( tbl ), x -> Order(x) = 3 );;
+gap> deg3 := First( irr, x -> DegreeOfCharacter( x ) = 3 );;
+gap> ser := MolienSeries( tbl, lin[1] + deg3, lin[2] );;
+gap> MolienSeriesWithGivenDenominator( ser, [ 6,6,4,4 ] );
+( 2*z^2+z^3+3*z^4+6*z^5+3*z^6+7*z^7+7*z^8+3*z^9+6*z^10+4*z^11+z^12+3*z^13+z^14\
++z^16 ) / ( (1-z^6)^2*(1-z^4)^2 )
+
 #
 # the following test comes from https://github.com/gap-system/gap/issues/300
 # this used to give a wrong value for ValueMolienSeries(m,0) of 26/27 instead
