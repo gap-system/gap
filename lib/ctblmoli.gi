@@ -547,6 +547,7 @@ InstallGlobalFunction( MolienSeries, function( arg )
                          rec( summands    := numers,
                               size        := Size( tbl ),
                               degree      := psi[1],
+                              pol         := pol,
                               numer       := numer,
                               denom       := denom,
                               denominfo   := denominfo,
@@ -636,6 +637,7 @@ InstallGlobalFunction( MolienSeriesWithGivenDenominator,
                               summands:= info.summands,
                               size:= info.size,
                               degree:= info.degree,
+                              pol:= info.pol,
 
                               # These components are new.
                               ratfun:= series,
@@ -683,6 +685,9 @@ InstallGlobalFunction( ValueMolienSeries, function( series, i )
     series:= MolienSeriesInfo( series );
     value:= Sum( series.summands,
                  s -> CoefficientTaylorSeries( s.numer, s.r, s.k, i ), 0 );
+    if i+1 <= Length( series.pol ) then
+      value:=value + series.pol[i+1];
+    fi;
 
     # There is a factor $\frac{(-1)^{\psi(1)}}{\|G\|}$.
     if series.degree mod 2 = 1 then

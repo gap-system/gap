@@ -145,6 +145,11 @@ DeclareGlobalFunction( "MolienSeriesWithGivenDenominator" );
 ##       and <C>k</C>,
 ##       describing the summand <C>numer</C><M> / (1-z^r)^k</M>,
 ##  </Item>
+##  <Mark><C>pol</C></Mark>
+##  <Item>
+##       a list of coefficients, describing a final polynomial which is added
+##       to those described by <C>summands</C>,
+##  </Item>
 ##  <Mark><C>size</C></Mark>
 ##  <Item>
 ##       the order of the underlying matrix group,
@@ -164,7 +169,7 @@ DeclareGlobalFunction( "MolienSeriesWithGivenDenominator" );
 ##  +1, denominfo := [ 5, 1, 3, 1, 2, 2 ], 
 ##    denomstring := "(1-z^5)*(1-z^3)*(1-z^2)^2", 
 ##    numer := -x_1^9+x_1^7+x_1^6-x_1^3-x_1^2+1, 
-##    numerstring := "1-z^2-z^3+z^6+z^7-z^9", 
+##    numerstring := "1-z^2-z^3+z^6+z^7-z^9", pol := [  ], 
 ##    ratfun := ( 1-z^2-z^3+z^6+z^7-z^9 ) / ( (1-z^5)*(1-z^3)*(1-z^2)^2 ),
 ##    size := 60, 
 ##    summands := [ rec( k := 1, numer := [ -24, -12, -24 ], r := 5 ), 
