@@ -3315,27 +3315,8 @@ InstallMethod( \=,
 InstallMethod( IsCentral,
     "generic method for two groups",
     IsIdenticalObj, [ IsGroup, IsGroup ],
-    function ( G, U )
-    local   Ggens,      # group generators of `G'
-            one,        # identity of `U'
-            g,          # one generator of <G>
-            u;          # one generator of <U>
-
-    # test if all generators of <U> are fixed by the generators of <G>
-    Ggens:= GeneratorsOfGroup( G );
-    one:= One( U );
-    for u  in GeneratorsOfGroup( U ) do
-        for g  in Ggens  do
-            if Comm( u, g ) <> one then
-                return false;
-            fi;
-        od;
-    od;
-
-    # all generators of <U> are fixed, return `true'
-    return true;
-    end );
-#T compare method in `mgmgen.g'!
+    IsCentralFromGenerators( GeneratorsOfGroup,
+                             GeneratorsOfGroup ) );
 
 #############################################################################
 ##
