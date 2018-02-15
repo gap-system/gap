@@ -58,14 +58,9 @@ Int VectorWord ( Obj vv, Obj v, Int num )
 
     /* <vv> must be a string                                               */
     if ( TNUM_OBJ(vv) != T_STRING ) {
-        if ( TNUM_OBJ(vv) == IMMUTABLE_TNUM(T_STRING) ) {
-            RetypeBag( vv, T_STRING );
-        }
-        else {
-            ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)TNAM_OBJ(vv), 0L );
-            return -1;
-        }
+        ErrorQuit( "collect vector must be a mutable string not a %s",
+                   (Int)TNAM_OBJ(vv), 0L );
+        return -1;
     }
 
     /* fix the length                                                      */
@@ -500,14 +495,9 @@ Int Solution(
 
     /* <ww> must be a string                                               */
     if ( TNUM_OBJ(ww) != T_STRING ) {
-        if ( TNUM_OBJ(ww) == IMMUTABLE_TNUM(T_STRING) ) {
-            RetypeBag( ww, T_STRING );
-        }
-        else {
-            ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)TNAM_OBJ(ww), 0L );
-            return -1;
-        }
+        ErrorQuit( "collect vector must be a mutable string not a %s",
+                   (Int)TNAM_OBJ(ww), 0L );
+        return -1;
     }
 
     /* fix the length                                                      */
@@ -521,14 +511,9 @@ Int Solution(
 
     /* <uu> must be a string                                               */
     if ( TNUM_OBJ(uu) != T_STRING ) {
-        if ( TNUM_OBJ(uu) == IMMUTABLE_TNUM(T_STRING) ) {
-            RetypeBag( uu, T_STRING );
-        }
-        else {
-            ErrorQuit( "collect vector must be a string not a %s", 
-                       (Int)TNAM_OBJ(uu), 0L );
-            return -1;
-        }
+        ErrorQuit( "collect vector must be a mutable string not a %s",
+                   (Int)TNAM_OBJ(uu), 0L );
+        return -1;
     }
 
     /* fix the length                                                      */
