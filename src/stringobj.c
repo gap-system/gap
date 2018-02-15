@@ -560,9 +560,8 @@ Obj TypeString (
 **
 **  If <list> has not  yet  been copied, it makes   a copy, leaves  a forward
 **  pointer to the copy in  the first entry of  the string, where the size of
-**  the string usually resides,  and copies  all the  entries.  If  the plain
-**  list  has already  been copied, it   returns the value of the  forwarding
-**  pointer.
+**  the string usually resides,  and copies  all the  entries.  If the string
+**  has already been copied, it returns the value of the forwarding pointer.
 **
 **  'CopyString' is the function in 'CopyObjFuncs' for strings.
 **
@@ -1275,13 +1274,6 @@ void PlainString (
     ResizeBag( list, SIZE_OBJ(tmp) );
     RetypeBag( list, TNUM_OBJ(tmp) );
 
-    /*    Why not just copying the data area ? (FL)
-	  SET_LEN_PLIST( list, lenList );
-	  for ( i = 1; i <= lenList; i++ ) {
-	  SET_ELM_PLIST( list, i, ELM_PLIST( tmp, i ) );
-	  CHANGED_BAG( list );
-	  }
-    */
     memcpy(ADDR_OBJ(list), CONST_ADDR_OBJ(tmp), SIZE_OBJ(tmp));
     CHANGED_BAG(list);
 }
