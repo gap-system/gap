@@ -9,25 +9,16 @@
 # This code extracts the examples from manuals chapter-wise and
 # stores them in a file that can be passed to the Test function
 
-pathtodoc := DirectoriesLibrary("doc/ref");
-Read(Filename(pathtodoc, "makedocreldata.g"));
-GAPInfo.ManualDataRef.pathtodoc := DirectoriesLibrary("doc/ref");
-GAPInfo.ManualDataRef.pathtoroot := DirectoriesLibrary("");
-
-exsref := ExtractExamples(
-    GAPInfo.ManualDataRef.pathtodoc,
-    GAPInfo.ManualDataRef.main,
-    GAPInfo.ManualDataRef.files,
-    "Chapter" );
-
-WriteExamplesTst := function(directory)
-    local ch, chname, chapterfiles, i, a, output;
+WriteExamplesTst := function(directory, meta)
+    local examples, ch, chname, chapterfiles, i, a, output;
+    examples := ExtractExamples(meta.pathtodoc, meta.main,
+                                meta.files, "Chapter" );
     chapterfiles := [];
     directory := Directory(directory);
-    for i in [1..Length(exsref)] do
-        ch := exsref[i];
+    for i in [1..Length(examples)] do
+        ch := examples[i];
         if Length(ch) > 0 then
-            chname := STRINGIFY("chapter", i, ".tst");
+            chname := STRINGIFY(meta.bookname, "-chapter", String(1000+i){[2..4]}, ".tst");
             Add(chapterfiles, chname);
 
             # Note that the following truncates the testfile.
@@ -50,8 +41,28 @@ end;
 
 testdir := Filename(DirectoriesLibrary("tst")[1], "testmanuals");
 CreateDir(testdir);
-Print("Extracting manual examples to ", testdir, "...\n");
-WriteExamplesTst( testdir );
+
+#
+# reference manual
+#
+Print("Extracting reference manual examples to ", testdir, "...\n");
+pathtodoc := DirectoriesLibrary("doc/ref");
+Read(Filename(pathtodoc, "makedocreldata.g"));
+GAPInfo.ManualDataRef.pathtodoc := pathtodoc;
+GAPInfo.ManualDataRef.pathtoroot := DirectoriesLibrary("");
+WriteExamplesTst( testdir, GAPInfo.ManualDataRef );
+
+#
+# tutorial
+#
+Print("Extracting tutorial examples to ", testdir, "...\n");
+pathtodoc := DirectoriesLibrary("doc/tut");
+Read(Filename(pathtodoc, "makedocreldata.g"));
+GAPInfo.ManualDataTut.pathtodoc := pathtodoc;
+GAPInfo.ManualDataTut.pathtoroot := DirectoriesLibrary("");
+WriteExamplesTst( testdir, GAPInfo.ManualDataTut );
+
+#
 QUIT_GAP(0);
 
 #############################################################################
