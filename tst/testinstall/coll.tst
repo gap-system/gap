@@ -45,14 +45,14 @@ gap> List(props, p -> p(M0));
 
 # ... immediate methods for a collection which knows its size,
 # applied to trivial (= size 1) collection
-gap> M1:=Magma(1);;
-gap> ForAll(props, prop -> not Tester(prop)(M1));
+gap> N1:=Magma([[[1,0],[0,0]]]);;
+gap> ForAll(props, prop -> not Tester(prop)(N1));
 true
-gap> Size(M1);
+gap> Size(N1);
 1
-gap> ForAll(props, prop -> Tester(prop)(M1));
+gap> ForAll(props, prop -> Tester(prop)(N1));
 true
-gap> List(props, p -> p(M1));
+gap> List(props, p -> p(N1));
 [ false, true, false, true ]
 
 # ... immediate methods for a collection which knows its size,
@@ -126,7 +126,10 @@ gap> Size(M2);
 #
 # Representative
 #
+gap> M1 := Magma(1);;
 gap> Representative([1]);
+1
+gap> Representative(M1);
 1
 gap> Representative([]);
 Error, <list> must be nonempty to have a representative
@@ -233,12 +236,12 @@ Error, <record> must be a record with components `ElementNumber'
 and `NumberElement'
 
 #
-gap> enum:=Enumerator(M1);
-<enumerator of <trivial group with 1 generator>>
+gap> enum:=Enumerator(Magma(0));
+<enumerator of <commutative semigroup with 1 generator>>
 gap> IsEnumeratorByFunctions(enum);
 true
 gap> Print(enum, "\n");
-<enumerator of Semigroup( [ 1 ] )>
+<enumerator of Semigroup( [ 0 ] )>
 
 #############################################################################
 #
