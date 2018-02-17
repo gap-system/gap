@@ -4486,12 +4486,12 @@ DeclareGlobalFunction("GroupEnumeratorByClosure");
 ##
 ##  <#GAPDoc Label="LowIndexSubgroups">
 ##  <ManSection>
-##  <Oper Name="LowIndexSubgroups"
-##   Arg='G, index'/>
 ##  <Oper Name="LowIndexSubgroups" Arg='G, index'/>
+##  <Oper Name="LowLayerSubgroups" Arg='G, layer'/>
 ##
 ##  <Description>
-##  These operations computes representatives of the conjugacy classes of
+##  The operation <C>LowIndexSubgroups</C> computes representatives of the
+##  conjugacy classes of
 ##  subgroups of the group <A>G</A> that 
 ##  index less than or equal to
 ##  <A>index</A>.
@@ -4500,13 +4500,15 @@ DeclareGlobalFunction("GroupEnumeratorByClosure");
 ##  <C>LowIndexSubgroupsFpGroup</C>. In other cases, it uses repeated
 ##  calculation of maximal subgroups.
 ##  <P/>
+##  The operation <C>LowLayerSubgroups</C> works similar but does not bound
+##  the index, but instead considers up to <A>layer</A>-th maximal
+##  subgroups.
 ##  <Example><![CDATA[
 ##  gap> g:=TransitiveGroup(18,950);;
 ##  gap> l:=LowIndexSubgroups(g,20);;Collected(List(l,x->Index(g,x)));
 ##  [ [ 1, 1 ], [ 2, 1 ], [ 5, 1 ], [ 6, 1 ], [ 10, 2 ], [ 12, 3 ], [ 15, 1 ], 
 ##    [ 16, 2 ], [ 18, 1 ], [ 20, 9 ] ]
 ##  ]]></Example>
-##  <P/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
