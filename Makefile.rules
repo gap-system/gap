@@ -322,10 +322,10 @@ endif
 # Name of subdirectories in which the generated dependencies are stored.
 DEPDIRNAME := .deps
 
-# List of all dependency directories. For now, we hardcode this list.
-# TODO: derive this from the value of the SOURCES variable, so that
-#       adding new src/ subdirectories works
-DEPDIRS = $(addsuffix /$(DEPDIRNAME),obj obj/hpc gen gen/hpc)
+# List of all (potential) dependency directories, derived from OBJS
+# and SOURCES (the latter for generated sources, which may also involve
+# dependency tracking)
+DEPDIRS = $(addsuffix $(DEPDIRNAME),$(sort $(dir $(SOURCES) $(OBJS))))
 
 # Include the dependency tracking files.
 -include $(wildcard $(addsuffix /*.d,$(DEPDIRS)))
