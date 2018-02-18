@@ -3208,7 +3208,13 @@ KeyDependentOperation( "PCentralSeries", IsGroup, IsPosInt, "prime" );
 ##  For a prime <M>p</M>, the <E><A>p</A>-rump</E> of a group <A>G</A> is
 ##  the subgroup <M><A>G</A>' <A>G</A>^{<A>p</A>}</M>.
 ##  <P/>
-##  <E>@example missing!@</E>
+##  <Example><![CDATA[
+##  gap> p:=2;;
+##  gap> gp := Group(List(g,elm->elm^p));;
+##  gap> gprime:=DerivedSubgroup(g);;
+##  gap> PRump(g,p) = ClosureGroup(gp,gprime);
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
