@@ -416,6 +416,10 @@ dnl
 AS_IF([test "x$enable_hpcgap" = xyes],
   [GAPARCH="$host-hpcgap${ABI}"],
   [GAPARCH="$host-default${ABI}"])
+AS_IF([test "x$ARCHEXT" != "x"],
+  [GAPARCH="$GAPARCH-$ARCHEXT"])
+AS_IF([test "x$ARCH" != "x"],
+  [GAPARCH="$ARCH"])
 
 AC_DEFINE_UNQUOTED([SYS_ARCH], ["$GAPARCH"], [for backwards compatibility])
 AC_SUBST([GAPARCH])
