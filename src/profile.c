@@ -16,6 +16,8 @@
 #include <src/code.h>
 #include <src/gap.h>
 #include <src/hookintrprtr.h>
+#include <src/io.h>
+#include <src/lists.h>
 #include <src/plist.h>
 #include <src/stringobj.h>
 #include <src/vars.h>
@@ -148,6 +150,27 @@ struct ProfileState
 /* We keep this seperate as it is exported for use in other files */
 UInt profileState_Active;
 
+static inline void outputFilenameIdIfRequired(UInt id)
+{
+    if (id == 0) {
+        return;
+    }
+    if (LEN_PLIST(OutputtedFilenameList) < id ||
+        ELM_PLIST(OutputtedFilenameList, id) != True) {
+        AssPlist(OutputtedFilenameList, id, True);
+        fprintf(profileState.Stream,
+                "{\"Type\":\"S\",\"File\":\"%s\",\"FileId\":%d}\n",
+                CSTR_STRING(ELM_LIST(FilenameCache, id)), (int)id);
+    }
+}
+
+// This function checks gets the filenameId of the current function.
+static inline UInt getFilenameIdOfCurrentFunction(void)
+{
+    Obj func = CURR_FUNC();
+    Obj body = BODY_FUNC(func);
+    return GET_GAPNAMEID_BODY(body);
+}
 
 
 void HookedLineOutput(Obj func, char type)
@@ -162,7 +185,9 @@ void HookedLineOutput(Obj func, char type)
     Obj name = NAME_FUNC(func);
     const Char *name_c = name ? CSTR_STRING(name) : "nameless";
 
-    Obj filename = GET_FILENAME_BODY(BODY_FUNC(func));
+    Obj         filename = GET_FILENAME_BODY(body);
+    UInt        fileID = GET_GAPNAMEID_BODY(body);
+    outputFilenameIdIfRequired(fileID);
     const Char *filename_c = "<missing filename>";
     if(filename != Fail && filename != NULL)
       filename_c = CSTR_STRING(filename);
@@ -174,9 +199,14 @@ void HookedLineOutput(Obj func, char type)
               (int)profileState.lastNotOutputted.fileID);
     }
 
-    fprintf(profileState.Stream,
-            "{\"Type\":\"%c\",\"Fun\":\"%s\",\"Line\":%d,\"EndLine\":%d,\"File\":\"%s\"}\n",
-            type, name_c, (int)startline, (int)endline, filename_c);
+    // We output 'File' here for compatability with
+    // profiling v1.3.0 and earlier, FileId provides the same information
+    // in a more useful and compact form.
+    fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Fun\":\"%s\",\"Line\":%"
+                                 "d,\"EndLine\":%d,\"File\":\"%s\","
+                                 "\"FileId\":%d}\n",
+            type, name_c, (int)startline, (int)endline, filename_c,
+            (int)fileID);
   }
   HashUnlock(&profileState);
 }
@@ -238,31 +268,6 @@ static void fcloseMaybeCompressed(struct ProfileState* ps)
   ps->Stream = 0;
 }
 
-
-/****************************************************************************
-**
-** These functions are only used when profiling is enabled. They output
-** as approriate, and then pass through to the true function
-*/
-
-// This function checks if we have ever printed out the id of stat
-static inline UInt getFilenameId(Stat stat)
-{
-  Obj func = CURR_FUNC();
-  Obj body = BODY_FUNC(func);
-  UInt id = GET_GAPNAMEID_BODY(body);
-  if (id == 0) {
-    return 0;
-  }
-  if (LEN_PLIST(OutputtedFilenameList) < id ||
-      ELM_PLIST(OutputtedFilenameList, id) != True) {
-    AssPlist(OutputtedFilenameList, id, True);
-    fprintf(profileState.Stream, "{\"Type\":\"S\",\"File\":\"%s\",\"FileId\":%d}\n",
-                                  CSTR_STRING(GET_FILENAME_BODY(body)), (int)id);
-  }
-  return id;
-}
-
 static inline Int8 CPUmicroseconds(void)
 {
 #ifdef HAVE_GETRUSAGE
@@ -312,7 +317,8 @@ static inline void outputStat(Stat stat, int exec, int visited)
     return;
   }
 
-  nameid = getFilenameId(stat);
+  nameid = getFilenameIdOfCurrentFunction();
+  outputFilenameIdIfRequired(nameid);
 
   // Statement not attached to a file
   if (nameid == 0) {
