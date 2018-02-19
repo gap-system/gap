@@ -310,7 +310,13 @@ static inline uint64_t rotl64 ( uint64_t x, int8_t r )
 
 FORCE_INLINE uint64_t getblock8 ( const uint64_t * p, int i )
 {
+#ifdef HAVE_ALIGNED_ACCESS_REQUIRED
+  uint64_t val;
+  memcpy(&val, p + i, sizeof(uint64_t));
+  return val;
+#else
   return p[i];
+#endif
 }
 
 //-----------------------------------------------------------------------------
