@@ -118,6 +118,9 @@ dnl
 dnl endianess
 AC_C_BIGENDIAN
 
+dnl aligned access needed 
+AX_CHECK_ALIGNED_ACCESS_REQUIRED
+
 dnl shifts
 AC_MSG_CHECKING([whether right shifts are arithmetic])
 AC_COMPUTE_INT(RIGHTSHIFTMINUSONE, [(-1L >> 1)+1])
