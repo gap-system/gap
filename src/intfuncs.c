@@ -307,6 +307,12 @@ static inline uint64_t rotl64 ( uint64_t x, int8_t r )
 //-----------------------------------------------------------------------------
 // Block read - if your platform needs to do endian-swapping or can only
 // handle aligned reads, do the conversion here
+//
+// The pointer p may not be aligned, which means that directly writing to it can 
+// incur a major performance penalty or even trigger a segfault on certain 
+// architectures (e.g. ARM, SPARC). Thus we use memcpy here, with the implicit
+// hope that on archs which don't need this, the compiler will optimize it back
+// into a direct copy (verified to happen with GCC and clang on x86_64)
 
 FORCE_INLINE uint64_t getblock8 ( const uint64_t * p, int i )
 {
