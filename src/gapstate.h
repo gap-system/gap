@@ -12,7 +12,6 @@
 #define GAP_GAPSTATE_H
 
 #include <src/debug.h>
-#include <src/io.h>
 
 #if defined(HPCGAP)
 #include <src/hpc/tls.h>
@@ -67,24 +66,10 @@ typedef struct GAPState {
     UInt   NrError;
     UInt   NrErrLine;
     UInt   Symbol;
+
     const Char * Prompt;
 
-    TypInputFile *  InputStack[MAX_OPEN_FILES];
-    TypOutputFile * OutputStack[MAX_OPEN_FILES];
-    int             InputStackPointer;
-    int             OutputStackPointer;
-
-    TypInputFile *  Input;
-    Char *          In;
-    TypOutputFile * Output;
-    TypOutputFile * InputLog;
-    TypOutputFile * OutputLog;
-    TypOutputFile * IgnoreStdoutErrout;
-    TypOutputFile   InputLogFileOrStream;
-    TypOutputFile   OutputLogFileOrStream;
-    Int             NoSplitLine;
-    Char            Pushback;
-    Char *          RealIn;
+    Char * In;
 
     /* From stats.c */
     Stat CurrStat;
