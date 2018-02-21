@@ -374,22 +374,12 @@ typedef struct {
 
 /****************************************************************************
 **
-*V  InputFiles[]  . . . . . . . . . . . . .  stack of open input files, local
-*V  Input . . . . . . . . . . . . . . .  pointer to current input file, local
 *V  In  . . . . . . . . . . . . . . . . . pointer to current character, local
-**
-**  'InputFiles' is the stack of the open input  files.  It is represented as
-**  an array of structures of type 'TypInputFile'.
-**
-**  'Input' is a pointer to the current input file.   It points to the top of
-**  the stack 'InputFiles'.
 **
 **  'In' is a  pointer to  the current  input character, i.e.,  '*In' is  the
 **  current input character.  It points into the buffer 'Input->line'.
 */
 
-/* TL: extern TypInputFile    InputFiles [16]; */
-/* TL: extern TypInputFile *  Input; */
 /* TL: extern Char *          In; */
 
 
@@ -413,20 +403,12 @@ extern void SetInputFilenameID(UInt id);
 /****************************************************************************
 **
 *T  TypOutputFiles  . . . . . . . . . structure of an open output file, local
-*V  OutputFiles . . . . . . . . . . . . . . stack of open output files, local
-*V  Output  . . . . . . . . . . . . . . pointer to current output file, local
 **
 **  'TypOutputFile' describes the information stored for open  output  files:
 **  'file' holds the file identifier which is  received  from  'SyFopen'  and
 **  which is passed to  'SyFputs'  and  'SyFclose'  to  identify  this  file.
 **  'line' is a buffer that holds the current output line.
 **  'pos' is the position of the current character on that line.
-**
-**  'OutputFiles' is the stack of open output files.  It  is  represented  as
-**  an array of structures of type 'TypOutputFile'.
-**
-**  'Output' is a pointer to the current output file.  It points to  the  top
-**  of the stack 'OutputFiles'.
 */
 /* the widest allowed screen width */
 #define MAXLENOUTPUTLINE  4096
@@ -505,28 +487,6 @@ extern  void            SPrTo (
             Int                 arg1,
             Int                 arg2 );
 
-
-
-/****************************************************************************
-**
-*V  InputLog  . . . . . . . . . . . . . . . file identifier of logfile, local
-**
-**  'InputLog' is the file identifier of the current input logfile.  If it is
-**  not 0  the    scanner echoes all input   from  the files  '*stdin*'   and
-**  '*errin*' to this file.
-*/
-/* TL: extern TypOutputFile * InputLog; */
-
-
-/****************************************************************************
-**
-*V  OutputLog . . . . . . . . . . . . . . . file identifier of logfile, local
-**
-**  'OutputLog' is the file identifier of  the current output logfile.  If it
-**  is  not  0  the  scanner echoes  all output  to  the files '*stdout*' and
-**  '*errout*' to this file.
-*/
-/* TL: extern TypOutputFile * OutputLog; */
 
 
 /****************************************************************************
