@@ -405,6 +405,10 @@ extern const Char * GetInputLineBuffer(void);
 //
 extern Int GetInputLinePosition(void);
 
+// get or set the filenameid (if any) of the current input
+extern UInt GetInputFilenameID(void);
+extern void SetInputFilenameID(UInt id);
+
 
 /****************************************************************************
 **

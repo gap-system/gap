@@ -126,6 +126,18 @@ Int GetInputLinePosition(void)
     }
 }
 
+UInt GetInputFilenameID(void)
+{
+    GAP_ASSERT(STATE(Input));
+    return STATE(Input)->gapnameid;
+}
+
+void SetInputFilenameID(UInt id)
+{
+    GAP_ASSERT(STATE(Input));
+    STATE(Input)->gapnameid = id;
+}
+
 
 /****************************************************************************
 **

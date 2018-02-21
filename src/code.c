@@ -98,23 +98,25 @@ static inline void PopLoopNesting( void ) {
 
 static inline UInt SetupGapname(void)
 {
-    if (STATE(Input)->gapnameid == 0) {
+    UInt gapnameid = GetInputFilenameID();
+    if (gapnameid == 0) {
         Obj filename = MakeImmString(GetInputFilename());
 #ifdef HPCGAP
         // TODO/FIXME: adjust this code to work more like the corresponding
         // code below for GAP?!?
-        STATE(Input)->gapnameid = AddAList(FilenameCache, filename);
+        gapnameid = AddAList(FilenameCache, filename);
 #else
         Obj pos = POS_LIST(FilenameCache, filename, INTOBJ_INT(1));
         if (pos == Fail) {
-            STATE(Input)->gapnameid = PushPlist(FilenameCache, filename);
+            gapnameid = PushPlist(FilenameCache, filename);
         }
         else {
-            STATE(Input)->gapnameid = INT_INTOBJ(pos);
+            gapnameid = INT_INTOBJ(pos);
         }
 #endif
+        SetInputFilenameID(gapnameid);
     }
-    return STATE(Input)->gapnameid;
+    return gapnameid;
 }
 
 Obj FuncGET_FILENAME_CACHE(Obj self)
