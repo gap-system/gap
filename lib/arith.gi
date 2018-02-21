@@ -535,7 +535,7 @@ InstallOtherMethod( \*,
 
 InstallOtherMethod( \*,
     "negative integer * additive element with inverse",
-    [ IsInt and IsNegRat, IsNearAdditiveElementWithInverse ],
+    [ IsNegInt, IsNearAdditiveElementWithInverse ],
     PROD_INT_OBJ );
 
 
@@ -559,7 +559,7 @@ end);
 
 InstallOtherMethod( \*,
     "additive element with inverse * negative integer",
-    [ IsNearAdditiveElementWithInverse, IsInt and IsNegRat ],
+    [ IsNearAdditiveElementWithInverse, IsNegInt ],
 function(a,b)
   return PROD_INT_OBJ(b,a);
 end);
@@ -584,7 +584,7 @@ InstallMethod( \^,
 
 InstallMethod( \^,
     "for mult. element-with-inverse, and negative integer",
-    [ IsMultiplicativeElementWithInverse, IsInt and IsNegRat ],
+    [ IsMultiplicativeElementWithInverse, IsNegInt ],
     POW_OBJ_INT );
 
 InstallMethod( \^, "catch wrong root taking",

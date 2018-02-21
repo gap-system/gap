@@ -1874,6 +1874,7 @@ Obj FuncDEBUG_TNUM_NAMES(Obj self)
     for (UInt k = 0; k < 256; k++) {
         START_SYMBOLIC_TNUM(FIRST_REAL_TNUM);
         START_SYMBOLIC_TNUM(FIRST_CONSTANT_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_MULT_TNUM);
         START_SYMBOLIC_TNUM(FIRST_IMM_MUT_TNUM);
         START_SYMBOLIC_TNUM(FIRST_RECORD_TNUM);
         START_SYMBOLIC_TNUM(FIRST_LIST_TNUM);
@@ -1891,6 +1892,7 @@ Obj FuncDEBUG_TNUM_NAMES(Obj self)
         const char *name = InfoBags[k].name;
         Pr("%3d: %s", k, (Int)indentStr);
         Pr("%s%s\n", (Int)indentStr, (Int)(name ? name : "."));
+        STOP_SYMBOLIC_TNUM(LAST_MULT_TNUM);
         STOP_SYMBOLIC_TNUM(LAST_CONSTANT_TNUM);
         STOP_SYMBOLIC_TNUM(LAST_RECORD_TNUM);
         STOP_SYMBOLIC_TNUM(LAST_PLIST_TNUM);
@@ -2175,6 +2177,9 @@ static Int InitLibrary (
 
     ExportAsConstantGVar(FIRST_CONSTANT_TNUM);
     ExportAsConstantGVar(LAST_CONSTANT_TNUM);
+
+    ExportAsConstantGVar(FIRST_MULT_TNUM);
+    ExportAsConstantGVar(LAST_MULT_TNUM);
 
     ExportAsConstantGVar(FIRST_IMM_MUT_TNUM);
     ExportAsConstantGVar(LAST_IMM_MUT_TNUM);
