@@ -2829,20 +2829,16 @@ static Int InitKernel ( StructInitInfo * module )
     OneMutFuncs [ t1 ] = OneInt;
   }    
 
-    /* install the default product and power methods                       */
+    /* install the default power methods                                   */
   for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
-    for ( t2 = FIRST_CONSTANT_TNUM;  t2 <= LAST_CONSTANT_TNUM;  t2++ ) {
-      ProdFuncs[ t1 ][ t2 ] = ProdIntObj;
+    for ( t2 = FIRST_MULT_TNUM; t2 <= LAST_MULT_TNUM; t2++ ) {
       PowFuncs [ t2 ][ t1 ] = PowObjInt;
     }
-    for ( t2 = FIRST_RECORD_TNUM;  t2 <= LAST_RECORD_TNUM;  t2++ ) {
-      ProdFuncs[ t1 ][ t2 ] = ProdIntObj;
+    for ( t2 = FIRST_PLIST_TNUM; t2 <= LAST_PLIST_TNUM; t2++ ) {
       PowFuncs [ t2 ][ t1 ] = PowObjInt;
     }
-    for ( t2 = FIRST_LIST_TNUM;    t2 <= LAST_LIST_TNUM;    t2++ ) {
-      ProdFuncs[ t1 ][ t2 ] = ProdIntObj;
-      PowFuncs [ t2 ][ t1 ] = PowObjInt;
-    }
+    PowFuncs [ T_RANGE_NSORT ][ t1 ] = PowObjInt;
+    PowFuncs [ T_RANGE_SSORT ][ t1 ] = PowObjInt;
   }
 
   /* install the binary arithmetic methods                                 */

@@ -139,24 +139,31 @@ enum TNUM {
     START_ENUM_RANGE(FIRST_REAL_TNUM),
 
     START_ENUM_RANGE(FIRST_CONSTANT_TNUM),
-        T_INT,      // immediate
-        T_INTPOS,
-        T_INTNEG,
-        T_RAT,
-        T_CYC,
-        T_FFE,      // immediate
-        T_PERM2,
-        T_PERM4,
-        T_TRANS2,
-        T_TRANS4,
-        T_PPERM2,
-        T_PPERM4,
+
+        // The next range contains all constant TNUMs for which multiplication
+        // with an integer resp. powering by an integer makes sense
+        START_ENUM_RANGE(FIRST_MULT_TNUM),
+            T_INT,      // immediate
+            T_INTPOS,
+            T_INTNEG,
+            T_RAT,
+            T_CYC,
+            T_FFE,      // immediate
+            T_MACFLOAT,
+            T_PERM2,
+            T_PERM4,
+            T_TRANS2,
+            T_TRANS4,
+            T_PPERM2,
+            T_PPERM4,
+        END_ENUM_RANGE(LAST_MULT_TNUM),
+
         T_BOOL,
         T_CHAR,
+
         T_FUNCTION,
         T_BODY,     // the type of function body bags
         T_FLAGS,
-        T_MACFLOAT,
         T_LVARS,
         T_HVARS,
     END_ENUM_RANGE(LAST_CONSTANT_TNUM),
