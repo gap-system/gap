@@ -27,10 +27,26 @@ gap> Float(2/3);
 0.666667
 gap> Float("-4");
 -4.
+gap> Float("4.1");
+4.1
+gap> Float("4.1e-1");
+0.41
+gap> Float(infinity);
+inf
+gap> Float(-infinity);
+-inf
+
+#
+# input floats directly
+#
 gap> 0.6;
 0.6
 gap> -0.7;
 -0.7
+
+#
+# some arithmetic
+#
 gap> 355.0/113.0;
 3.14159
 gap> last = 355.0/113;
@@ -55,9 +71,11 @@ gap> 355/113.0 - 355.0/113;
 0.
 gap> 355/113.0 = 355.0/113;
 true
-gap> 355.0/113.0;
-3.14159
-gap> Rat(last);
+
+#
+# convert floats to other types
+#
+gap> Rat(355.0/113.0);
 355/113
 gap> Int(1.0);
 1
@@ -71,6 +89,10 @@ gap> Rat(0.5);
 1/2
 gap> Rat(0.0);
 0
+
+#
+#
+#
 gap> Sqrt(2.0);
 1.41421
 gap> MinimalPolynomial(Rationals,last);
@@ -135,16 +157,22 @@ gap> Exp(last);
 0.948683
 gap> last^2;
 0.9
+
+#
+# some tests with infinity
+#
 gap> 1.0/0.0;
 inf
 gap> -1.0/0.0;
 -inf
-gap> -Float(infinity) = Float(-infinity);
+gap> List([posinf, neginf, nan, 0.0, 1.0], IsPInfinity);
+[ true, false, false, false, false ]
+gap> List([posinf, neginf, nan, 0.0, 1.0], IsNInfinity);
+[ false, true, false, false, false ]
+gap> -posinf = neginf;
 true
-gap> posinf := Float(infinity);
-inf
-gap> neginf := Float(-infinity);
--inf
+gap> posinf = -neginf;
+true
 gap> neginf < posinf;
 true
 gap> neginf <> posinf;
