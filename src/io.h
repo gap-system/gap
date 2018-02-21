@@ -330,50 +330,6 @@ extern UInt OpenAppend (
 
 /****************************************************************************
 **
-*T  TypInputFile  . . . . . . . . . .  structure of an open input file, local
-**
-**  'TypInputFile' describes the  information stored  for  open input  files:
-**
-**  'isstream' is 'true' if input come from a stream.
-**
-**  'file'  holds the  file identifier  which  is received from 'SyFopen' and
-**  which is passed to 'SyFgets' and 'SyFclose' to identify this file.
-**
-**  'name' is the name of the file, this is only used in error messages.
-**
-**  'line' is a  buffer that holds the  current input  line.  This is  always
-**  terminated by the character '\0'.  Because 'line' holds  only part of the
-**  line for very long lines the last character need not be a <newline>.
-**
-**  'ptr' points to the current character within that line.  This is not used
-**  for the current input file, where 'In' points to the  current  character.
-**
-**  'number' is the number of the current line, is used in error messages.
-**
-**  'stream' is none zero if the input points to a stream.
-**
-**  'sline' contains the next line from the stream as GAP string.
-**
-*/
-typedef struct {
-  UInt        isstream;
-  Int         file;
-  Char        name [256];
-  UInt        gapnameid;
-  Char        line [32768];
-  Char *      ptr;
-  UInt        symbol;
-  Int         number;
-  Obj         stream;
-  UInt        isstringstream;
-  Obj         sline;
-  Int         spos;
-  UInt        echo;
-} TypInputFile;
-
-
-/****************************************************************************
-**
 *V  In  . . . . . . . . . . . . . . . . . pointer to current character, local
 **
 **  'In' is a  pointer to  the current  input character, i.e.,  '*In' is  the
@@ -400,32 +356,9 @@ extern UInt GetInputFilenameID(void);
 extern void SetInputFilenameID(UInt id);
 
 
-/****************************************************************************
-**
-*T  TypOutputFiles  . . . . . . . . . structure of an open output file, local
-**
-**  'TypOutputFile' describes the information stored for open  output  files:
-**  'file' holds the file identifier which is  received  from  'SyFopen'  and
-**  which is passed to  'SyFputs'  and  'SyFclose'  to  identify  this  file.
-**  'line' is a buffer that holds the current output line.
-**  'pos' is the position of the current character on that line.
-*/
 /* the widest allowed screen width */
 #define MAXLENOUTPUTLINE  4096
-/* the maximal number of used line break hints */ 
-#define MAXHINTS 100
-typedef struct {
-    UInt        isstream;
-    UInt        isstringstream;
-    Int         file;
-    Char        line [MAXLENOUTPUTLINE];
-    Int         pos;
-    Int         format;
-    Int         indent;
-    /* each hint is a tripel (position, value, indent) */
-    Int         hints[3*MAXHINTS+1];
-    Obj         stream;
-} TypOutputFile;
+
 
 // Reset the indentation level of the current output to zero. The indentation
 // level can be modified via the '%>' and '%<' formats of 'Pr' resp. 'PrTo'.
@@ -473,12 +406,6 @@ extern  void            Pr (
             Int                 arg1,
             Int                 arg2 );
 
-
-extern  void            PrTo (
-            TypOutputFile *   stream,
-            const Char *    format,
-            Int                 arg1,
-            Int                 arg2 );
 
 extern  void            SPrTo (
 			       Char * buffer,
