@@ -370,7 +370,7 @@ Obj FuncSIGN_MACFLOAT( Obj self, Obj f )
 {
   Double vf = VAL_MACFLOAT(f);
   
-  return vf == 0. ? INTOBJ_INT(0) : vf > 0. ? INTOBJ_INT(1) : INTOBJ_INT(-1);
+  return vf == 0. ? INTOBJ_INT(0) : signbit(vf) ? INTOBJ_INT(-1) : INTOBJ_INT(1);
 }
 
 Obj FuncSIGNBIT_MACFLOAT( Obj self, Obj f )

@@ -4,7 +4,21 @@
 ##
 ##
 gap> START_TEST("float.tst");
+
+# make sure we are testing the built-in machine floats
 gap> SetFloats(IEEE754FLOAT);
+
+# some special values we will use again later on
+gap> posinf := 1.0/0.0;
+inf
+gap> neginf := -1.0/0.0;
+-inf
+gap> nan := 0.0/0.0;
+nan
+
+#
+# Convert things to floats
+#
 gap> Float(3);
 3.
 gap> Float(-4);
@@ -145,6 +159,45 @@ gap> -MakeFloat(1.0, infinity) = neginf;
 true
 gap> MakeFloat(1.0, -infinity) = neginf;
 true
+
+#
+# test sign handling
+#
+gap> SignBit(posinf);
+false
+gap> SignFloat(posinf);
+1
+gap> SignBit(neginf);
+true
+gap> SignFloat(neginf);
+-1
+gap> SignBit(+0.0);
+false
+gap> SignFloat(+0.0);
+0
+gap> SignBit(-0.0);
+true
+gap> SignFloat(-0.0);
+0
+gap> SignBit(42.0);
+false
+gap> SignFloat(42.0);
+1
+gap> SignBit(-42.0);
+true
+gap> SignFloat(-42.0);
+-1
+
+# sign of NaN is machine specific; but we can still test whether
+# SignBit and SignFloat return consistent results
+gap> SignBit(nan) = (SignFloat(nan) = -1);
+true
+gap> SignBit(-nan) = (SignFloat(-nan) = -1);
+true
+
+#
+# test float comparison
+#
 
 #
 gap> EqFloat(1.0, 1.1);
