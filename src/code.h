@@ -692,7 +692,7 @@ extern  void            CodeIfElse ( void );
 
 extern  void            CodeIfBeginBody ( void );
 
-extern  void            CodeIfEndBody (
+extern  Int             CodeIfEndBody (
             UInt                nr );
 
 extern  void            CodeIfEnd (

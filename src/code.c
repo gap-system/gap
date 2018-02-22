@@ -921,13 +921,34 @@ void CodeIfElse ( void )
 
 void CodeIfBeginBody ( void )
 {
+    // get and check the condition
+    Expr cond = PopExpr();
+
+    // if the condition is 'false', ignore the body
+    if (TNUM_EXPR(cond) == T_FALSE_EXPR) {
+        STATE(IntrIgnoring) = 1;
+    }
+    else {
+        // put the condition expression back on the stack
+        PushExpr(cond);
+    }
 }
 
-void CodeIfEndBody (
+Int CodeIfEndBody (
     UInt                nr )
 {
     /* collect the statements in a statement sequence if necessary         */
     PushStat( PopSeqStat( nr ) );
+
+    // get and check the condition
+    Expr cond = PopExpr();
+    PushExpr(cond);
+
+    // if the condition is 'true', ignore other branches of the if-statement
+    if (TNUM_EXPR(cond) == T_TRUE_EXPR) {
+        STATE(IntrIgnoring) = 1;
+    }
+    return 1;
 }
 
 void CodeIfEnd (
@@ -937,51 +958,23 @@ void CodeIfEnd (
     Expr                cond;           /* condition of a branch           */
     UInt                hase;           /* has else branch                 */
     UInt                i;              /* loop variable                   */
-    Expr                cond1 = 0;      /* first condition                 */
-    Expr                cond2 = 0;      /* second condition                */
 
-    /* peek at the last two conditions                                     */
-    cond1 = PopExpr();
-    hase = (TNUM_EXPR(cond1) == T_TRUE_EXPR);
-    if (nr == 2) {
-        cond2 = PopExpr();
-        PushExpr(cond2);
-    }
-    PushExpr(cond1);
-
-    // Some optimisation cases
-    if (nr == 1) {
-        if (TNUM_EXPR(cond1) == T_TRUE_EXPR) {
-            // Leave statement
-            PopExpr();
-            return;
-        }
-        else if (TNUM_EXPR(cond1) == T_FALSE_EXPR) {
-            // Remove entire if statement
-            PopStat();
-            PopExpr();
-            PushStat(NewStat(T_EMPTY, 0));
-            return;
-        }
+    // if all conditions were false, the if-statement is an empty statement
+    if (nr == 0) {
+        PushStat(NewStat(T_EMPTY, 0));
+        return;
     }
 
-    if (nr == 2 && hase) {
-        if (TNUM_EXPR(cond2) == T_TRUE_EXPR) {
-            // Leave 'true' case
-            PopStat();
-            PopExpr();
-            PopExpr();
-            return;
-        }
-        else if (TNUM_EXPR(cond2) == T_FALSE_EXPR) {
-            // Leave 'false' case
-            Stat body = PopStat();
-            PopExpr();
-            PopStat();
-            PopExpr();
-            PushStat(body);
-            return;
-        }
+    // peek at the last condition
+    cond = PopExpr();
+    hase = (TNUM_EXPR(cond) == T_TRUE_EXPR);
+    PushExpr(cond);
+
+    // optimize 'if true then BODY; fi;' to just 'BODY;'
+    if (nr == 1 && hase) {
+        // drop the condition expression, leave the body statement
+        PopExpr();
+        return;
     }
 
     /* allocate the if-statement                                           */

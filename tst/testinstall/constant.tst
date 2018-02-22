@@ -141,21 +141,8 @@ function (  )
     return 3;
     return 5;
     ;
-    if true then
-        return 7;
-    elif 1 = 2 then
-        return 8;
-    else
-        return 9;
-    fi;
-    if false then
-        return 10;
-    elif true then
-        return 11;
-    else
-        return 12;
-    fi;
-    return;
+    return 7;
+    return 11;
 end
 gap> (function() if booltruevar then return 1; fi; return 2; end)();
 1

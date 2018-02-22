@@ -547,6 +547,13 @@ void            IntrIfBegin ( void )
 {
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
+
+    // if IntrIgnoring is positive, increment it, as IntrIgnoring == 1 has a
+    // special meaning when parsing if-statements -- it is used to skip
+    // interpreting or coding branches of the if-statement which never will be
+    // executed, either because a previous branch is always executed (i.e., it
+    // has a 'true' condition), or else because the current branch has a
+    // 'false' condition
     if ( STATE(IntrIgnoring)  > 0 ) { STATE(IntrIgnoring)++; return; }
     if ( STATE(IntrCoding)    > 0 ) { CodeIfBegin(); return; }
 
@@ -597,22 +604,15 @@ void            IntrIfBeginBody ( void )
     }
 }
 
-void            IntrIfEndBody (
+Int            IntrIfEndBody (
     UInt                nr )
 {
     UInt                i;              /* loop variable                   */
 
     /* ignore or code                                                      */
-    if ( STATE(IntrReturning) > 0 ) { return; }
-    if ( STATE(IntrIgnoring)  > 1 ) { STATE(IntrIgnoring)--; return; }
-    if ( STATE(IntrCoding)    > 0 ) { CodeIfEndBody( nr ); return; }
-
-
-    /* if the condition was 'false', the body was ignored                  */
-    if ( STATE(IntrIgnoring) == 1 ) {
-        STATE(IntrIgnoring) = 0;
-        return;
-    }
+    if ( STATE(IntrReturning) > 0 ) { return 0; }
+    if ( STATE(IntrIgnoring)  > 0 ) { STATE(IntrIgnoring)--; return 0; }
+    if ( STATE(IntrCoding)    > 0 ) { return CodeIfEndBody( nr ); }
 
     /* otherwise drop the values for the statements executed in the body   */
     for ( i = nr; 1 <= i; i-- ) {
@@ -621,6 +621,8 @@ void            IntrIfEndBody (
 
     /* one branch of the if-statement was executed, ignore the others      */
     STATE(IntrIgnoring) = 1;
+
+    return 1;
 }
 
 void            IntrIfEnd (
@@ -629,19 +631,15 @@ void            IntrIfEnd (
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 1 ) { STATE(IntrIgnoring)--; return; }
-    if ( STATE(IntrCoding)    > 0 ) { CodeIfEnd( nr ); return; }
 
-
-    /* if one branch was executed (ignoring the others)                    */
+    // if one branch was executed (ignoring the others), reset IntrIgnoring
     if ( STATE(IntrIgnoring) == 1 ) {
         STATE(IntrIgnoring) = 0;
-        PushVoidObj();
     }
 
-    /* if no branch was executed                                           */
-    else {
-        PushVoidObj();
-    }
+    if ( STATE(IntrCoding)    > 0 ) { CodeIfEnd( nr ); return; }
+
+    PushVoidObj();
 }
 
 

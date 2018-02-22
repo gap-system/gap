@@ -168,11 +168,6 @@ fi;
 ##  For HPC-GAP, we want GAPInfo and its members to be accessible from all
 ##  threads, so make members atomic or immutable.
 ##
-if not IsHPCGAP then
-    # HACK to silence "Unbound global variable" warnings
-    AtomicList := fail;
-    AtomicRecord := fail;
-fi;
 if IsHPCGAP then
     MakeReadWriteGVar("GAPInfo");
     GAPInfo := AtomicRecord(GAPInfo);
@@ -473,13 +468,6 @@ CallAndInstallPostRestore( function()
       QUIT_GAP();
     fi;
 end );
-
-
-if not IsHPCGAP then
-    # undo HACK to silence "Unbound global variable" warnings
-    Unbind(AtomicList);
-    Unbind(AtomicRecord);
-fi;
 
 
 #############################################################################
