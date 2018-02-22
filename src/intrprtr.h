@@ -204,7 +204,7 @@ extern  void            IntrIfElse ( void );
 
 extern  void            IntrIfBeginBody ( void );
 
-extern  void            IntrIfEndBody (
+extern  Int             IntrIfEndBody (
             UInt                nr );
 
 extern  void            IntrIfEnd (

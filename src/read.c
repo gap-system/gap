@@ -2124,8 +2124,7 @@ void ReadIf (
     Match( S_THEN, "then", STATBEGIN|S_ELIF|S_ELSE|S_FI|follow );
     TRY_READ { IntrIfBeginBody(); }
     nrs = ReadStats( S_ELIF|S_ELSE|S_FI|follow );
-    TRY_READ { IntrIfEndBody( nrs ); }
-    nrb++;
+    TRY_READ { nrb += IntrIfEndBody( nrs ); }
 
     /* { 'elif' <Expr>  'then' <Statments> }                               */
     while ( STATE(Symbol) == S_ELIF ) {
@@ -2135,8 +2134,7 @@ void ReadIf (
         Match( S_THEN, "then", STATBEGIN|S_ELIF|S_ELSE|S_FI|follow );
         TRY_READ { IntrIfBeginBody(); }
         nrs = ReadStats( S_ELIF|S_ELSE|S_FI|follow );
-        TRY_READ { IntrIfEndBody( nrs ); }
-        nrb++;
+        TRY_READ { nrb += IntrIfEndBody( nrs ); }
     }
 
     /* [ 'else' <Statments> ]                                              */
@@ -2145,8 +2143,7 @@ void ReadIf (
         Match( S_ELSE, "else", follow );
         TRY_READ { IntrIfBeginBody(); }
         nrs = ReadStats( S_FI|follow );
-        TRY_READ { IntrIfEndBody( nrs ); }
-        nrb++;
+        TRY_READ { nrb += IntrIfEndBody( nrs ); }
     }
 
     /* 'fi'                                                                */
