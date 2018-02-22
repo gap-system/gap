@@ -860,6 +860,86 @@ BindGlobal("BHINT", MakeImmutable("\>\<"));
 
 DeclareGlobalFunction("StringOfMemoryAmount");
 
+#############################################################################
+##
+##  <#GAPDoc Label="StringFormatted">
+##  <ManSection>
+##  <Func Name="StringFormatted" Arg='string, data...'/>
+##  <Func Name="PrintFormatted" Arg='string, data...'/>
+##  <Func Name="PrintToFormatted" Arg='stream, string, data...'/>
+##
+##  <Description>
+##  These functions perform a string formatting operation.
+##  They accept a format string, which can contain replacement fields
+##  which are delimited by braces {}.
+##  Each replacement field contains a numeric or positional argument,
+##  describing the element of <A>data</A> to replace the braces with.
+##  <P/>
+##  There are three formatting functions, which differ only in how they
+##  output the formatted string.
+##  <Ref Func="StringFormatted"/> returns the formatted string,
+##  <Ref Func="PrintFormatted"/> prints the formatted string and
+##  <Ref Func="PrintToFormatted"/> appends the formatted string to <A>stream</A>,
+##  which can be either an output stream or a filename.
+##  <P/>
+##  The arguments after <A>string</A> form a list <A>data</A> of values used to
+##  substitute the replacement fields in <A>string</A>, using the following
+##  formatting rules:
+##  <P/>
+##  <A>string</A> is treated as a normal string, except for occurrences
+##  of <C>{</C> and <C>}</C>, which follow special rules, as follows:
+##  <P/>
+##  The contents of <C>{ }</C> is split by a <C>!</C> into <C>{id!format}</C>,
+##  where both <C>id</C> and <C>format</C> are optional. If the <C>!</C> is
+##  ommitted, the bracket is treated as <C>{id}</C> with no <C>format</C>.
+##  <P/>
+##  <C>id</C> is interpreted as follows:
+##  <List>
+##  <Mark>An integer <C>i</C></Mark> <Item>
+##    Take the <C>i</C>th element of <A>data</A>.
+##  </Item>
+##  <Mark>A string <C>str</C></Mark> <Item>
+##    If this is used, the first element of <A>data</A> must be a record <C>r</C>.
+##    In this case, the value <C>r.(str)</C> is taken.
+##  </Item>
+##  <Mark>No id given</Mark> <Item>
+##    Take the <C>j</C>th element of <A>data</A>, where <C>j</C> is the
+##    number of replacement fields with no id in the format string so far.
+##    If any replacement field has no id, then all replacement fields must
+##    have no id.
+##  </Item>
+##  </List>
+##
+##  A single brace can be outputted by doubling, so <C>{{</C> in the format string
+##  produces <C>{</C> and <C>}}</C> produces <C>}</C>.
+##  <P/>
+##  The <C>format</C> decides how the variable is printed. <C>format</C> must be one
+##  of  <C>s</C> (which uses <Ref Oper="String"/>), <C>v</C> (which uses
+##  <Ref Oper="ViewString"/>) or <C>d</C> (which calls <Ref Oper="DisplayString"/>).
+##  The default value for <C>format</C> is <C>s</C>.
+##  </Description>
+##  </ManSection>
+##  <Example><![CDATA[
+##  gap> StringFormatted("I have {} cats and {} dogs", 4, 5);
+##  "I have 4 cats and 5 dogs"
+##  gap> StringFormatted("I have {2} cats and {1} dogs", 4, 5);
+##  "I have 5 cats and 4 dogs"
+##  gap> StringFormatted("I have {cats} cats and {dogs} dogs", rec(cats:=3, dogs:=2));
+##  "I have 3 cats and 2 dogs"
+##  gap> StringFormatted("We use {{ and }} to mark {dogs} dogs", rec(cats:=3, dogs:=2));
+##  "We use { and } to mark 2 dogs"
+##  gap> sym3 := SymmetricGroup(3);;
+##  gap> StringFormatted("String: {1!s}, ViewString: {1!v}", sym3);
+##  "String: SymmetricGroup( [ 1 .. 3 ] ), ViewString: Sym( [ 1 .. 3 ] )"
+##  ]]></Example>
+##  <#/GAPDoc>
+
+
+DeclareGlobalFunction("StringFormatted");
+DeclareGlobalFunction("PrintFormatted");
+DeclareGlobalFunction("PrintToFormatted");
+
+
 
 #############################################################################
 ##
