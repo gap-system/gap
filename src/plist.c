@@ -597,7 +597,9 @@ static Obj TypePlistHomHelper(Obj family, UInt tnum, UInt knr, Obj list)
         type = CALL_4ARGS(TYPE_LIST_HOM, family, isMutable, sort, table);
         ASS_LIST(types, knr, type);
 #ifdef HPCGAP
-        // read back element before returning it, in case another thread raced us
+        // read back element before returning it, in case another thread raced
+        // us (this works because <TYPES_LIST_FAM> returns an atomic list in
+        // HPC-GAP)
         type = ELM0_LIST(types, knr);
 #endif
     }
