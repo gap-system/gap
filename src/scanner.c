@@ -1035,9 +1035,6 @@ void GetSymbol ( void )
   case '*':   STATE(Symbol) = S_MULT;                        GET_NEXT_CHAR();  break;
   case '/':   STATE(Symbol) = S_DIV;                         GET_NEXT_CHAR();  break;
   case '^':   STATE(Symbol) = S_POW;                         GET_NEXT_CHAR();  break;
-#ifdef HPCGAP
-  case '`':   STATE(Symbol) = S_BACKQUOTE;                   GET_NEXT_CHAR();  break;
-#endif
 
   case '"':                                           GetMaybeTripStr();  break;
   case '\'':                                          GetChar();   break;

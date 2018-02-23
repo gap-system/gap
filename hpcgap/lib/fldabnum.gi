@@ -1255,8 +1255,8 @@ InstallMethod( CanonicalBasis,
       # Fill in additional components.
       SetBasisVectors( B, List( lenst,
                                 x -> Sum( List( x, y -> E(N)^y ) ) ) );
-      B!.coeffslist  := `List( lenst, x -> x[1] + 1 );
-      B!.lenstrabase := `lenst;
+      B!.coeffslist  := MakeImmutable(List( lenst, x -> x[1] + 1 ));
+      B!.lenstrabase := MakeImmutable(lenst);
       B!.conductor   := N;
 #T better compute basis vectors only if necessary
 #T (in the case of a normal basis the vectors are of course known ...)
@@ -1518,7 +1518,7 @@ InstallMethod( CanonicalBasis,
       SetIsIntegralBasis( B, true );
 
       # Construct the Zumbroich basis.
-      B!.zumbroichbase := `ZumbroichBase( n, Conductor( subfield ) );
+      B!.zumbroichbase := MakeImmutable(ZumbroichBase( n, Conductor( subfield ) ));
 
     else
 
@@ -1563,8 +1563,8 @@ InstallMethod( CanonicalBasis,
       SetBasisVectors( B, vectors );
       SetIsNormalBasis( B, true );
 
-      B!.zumbroichbase := `(zumb - 1);
-      B!.coeffsmat     := `coeffsmat;
+      B!.zumbroichbase := MakeImmutable(zumb - 1);
+      B!.coeffsmat     := MakeImmutable(coeffsmat);
 
     fi;
 
