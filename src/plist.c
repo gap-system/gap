@@ -575,14 +575,30 @@ Obj TypePlist( Obj list)
   return TypePlistWithKTNum( list, (UInt *) 0);
 }
 
+static Obj TypePlistHomHelper(Obj family, UInt knr)
+{
+    // get the list types of that family
+    Obj types = TYPES_LIST_FAM(family);
+
+    // if the type is not yet known, compute it
+    Obj type = ELM0_LIST(types, knr);
+    if (type == 0) {
+        type = CALL_2ARGS(TYPE_LIST_HOM, family, INTOBJ_INT(knr));
+        ASS_LIST(types, knr, type);
+#ifdef HPCGAP
+        // read back element before returning it, in case another thread raced us
+        type = ELM0_LIST(types, knr);
+#endif
+    }
+    return type;
+}
+
 static Obj TypePlistWithKTNum (
     Obj                 list,
     UInt                *ktnum )
 {
-    Obj                 type;           /* type, result                    */
     Int                 tnum;           /* TNUM of <list>                  */
     Obj                 family;         /* family of elements              */
-    Obj                 types;          /* types list of <family>          */
 
 #ifdef HPCGAP
     if (CheckWriteAccess(list)) {
@@ -631,26 +647,10 @@ static Obj TypePlistWithKTNum (
 
     /* handle homogeneous list                                             */
     if ( family && HasFiltListTNums[tnum][FN_IS_HOMOG] ) {
-
-        /* get the list types of the elements family */
-        types  = TYPES_LIST_FAM( family );
-
 #ifdef HPCGAP
-	if (CheckWriteAccess(types)) {
+        if (CheckWriteAccess(TYPES_LIST_FAM(family)))
 #endif
-            /* if the type is not yet known, compute it                        */
-            type = ELM0_LIST( types, tnum-T_PLIST_HOM+1 );
-            if ( type == 0 ) {
-                type = CALL_2ARGS( TYPE_LIST_HOM,
-                    family, INTOBJ_INT(tnum-T_PLIST_HOM+1) );
-                ASS_LIST( types, tnum-T_PLIST_HOM+1, type );
-            }
-
-            /* return the type                                                 */
-            return type;
-#ifdef HPCGAP
-        }
-#endif
+            return TypePlistHomHelper(family, tnum-T_PLIST_HOM+1);
     }
 
 #ifdef HPCGAP
@@ -741,41 +741,21 @@ Obj TypePlistEmptyImm (
 Obj TypePlistHom (
     Obj                 list )
 {
-    Obj                 type;           /* type, result                    */
     Int                 tnum;           /* TNUM of <list>                  */
     Obj                 family;         /* family of elements              */
-    Obj                 types;          /* types list of <family>          */
 
     /* get the tnum and the family of the elements                         */
     tnum   = KTNumHomPlist( list );
     family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST( list, 1 ) ) );
 
-    /* get the list types of that family                                   */
-    types  = TYPES_LIST_FAM( family );
-
-    /* if the type is not yet known, compute it                            */
-    type = ELM0_LIST( types, tnum-T_PLIST_HOM+1 );
-    if ( type == 0 ) {
-        type = CALL_2ARGS( TYPE_LIST_HOM,
-            family, INTOBJ_INT(tnum-T_PLIST_HOM+1) );
-        ASS_LIST( types, tnum-T_PLIST_HOM+1, type );
-#ifdef HPCGAP
-        // read back element before returning it, in case another thread raced us
-	type = ELM0_LIST( types, tnum-T_PLIST_HOM+1 );
-#endif
-    }
-
-    /* return the type                                                     */
-    return type;
+    return TypePlistHomHelper(family, tnum - T_PLIST_HOM + 1);
 }
 
 Obj TypePlistCyc (
     Obj                 list )
 {
-    Obj                 type;           /* type, result                    */
     Int                 tnum;           /* TNUM of <list>                  */
     Obj                 family;         /* family of elements              */
-    Obj                 types;          /* types list of <family>          */
 
     /* get the tnum and the family of the elements                         */
     tnum   = TNUM_OBJ( list );
@@ -783,54 +763,20 @@ Obj TypePlistCyc (
     /* This had better return the cyclotomics family, could be speeded up */
     family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST( list, 1 ) ) );
 
-    /* get the list types of that family                                   */
-    types  = TYPES_LIST_FAM( family );
-
-    /* if the type is not yet known, compute it                            */
-    type = ELM0_LIST( types, tnum-T_PLIST_CYC+1 );
-    if ( type == 0 ) {
-        type = CALL_2ARGS( TYPE_LIST_HOM,
-            family, INTOBJ_INT(tnum-T_PLIST_CYC+1) );
-        ASS_LIST( types, tnum-T_PLIST_CYC+1, type );
-#ifdef HPCGAP
-        // read back element before returning it, in case another thread raced us
-	type = ELM0_LIST( types, tnum-T_PLIST_CYC+1 );
-#endif
-    }
-
-    /* return the type                                                     */
-    return type;
+    return TypePlistHomHelper(family, tnum - T_PLIST_CYC + 1);
 }
 
 Obj TypePlistFfe (
     Obj                 list )
 {
-    Obj                 type;           /* type, result                    */
     Int                 tnum;           /* TNUM of <list>                  */
     Obj                 family;         /* family of elements              */
-    Obj                 types;          /* types list of <family>          */
 
     /* get the tnum and the family of the elements                         */
     tnum   = TNUM_OBJ( list );
     family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST( list, 1 ) ) );
 
-    /* get the list types of that family                                   */
-    types  = TYPES_LIST_FAM( family );
-
-    /* if the type is not yet known, compute it                            */
-    type = ELM0_LIST( types, tnum-T_PLIST_FFE+1 );
-    if ( type == 0 ) {
-        type = CALL_2ARGS( TYPE_LIST_HOM,
-            family, INTOBJ_INT(tnum-T_PLIST_FFE+1) );
-        ASS_LIST( types, tnum-T_PLIST_FFE+1, type );
-#ifdef HPCGAP
-        // read back element before returning it, in case another thread raced us
-	type = ELM0_LIST( types, tnum-T_PLIST_FFE+1 );
-#endif
-    }
-
-    /* return the type                                                     */
-    return type;
+    return TypePlistHomHelper(family, tnum - T_PLIST_FFE + 1);
 }
 
 /****************************************************************************
