@@ -135,14 +135,14 @@ BindGlobal("CommandLineHistoryHandler", function(l)
       for i in [2..Length(hist)-1] do
         hist[i] := hist[i+1];
       od;
-      hist[Length(hist)] := `l[1];
+      hist[Length(hist)] := MakeImmutable(l[1]);
       if hist[1] > 2 then
         hist[1] := hist[1]-1;
       else
         hist[1] := Length(hist)+1;
       fi;
     else
-      Add(hist, `l[1]);
+      Add(hist, MakeImmutable(l[1]));
     fi;
     LastPosCLH := hist[1];
     hist[1] := Length(hist)+1;
@@ -280,7 +280,7 @@ BindGlobal("ReadCommandLineHistory", function(arg)
       s := s{[Length(s)-n+1..Length(s)]};
     fi;
     hist{[Length(s)+2..Length(s)+Length(hist)]} := hist{[2..Length(hist)]};
-    hist{[2..Length(s)+1]} := `s;
+    hist{[2..Length(s)+1]} := MakeImmutable(s);
   fi;
   hist[1] := Length(hist) + 1;
 

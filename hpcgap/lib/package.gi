@@ -277,7 +277,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
                   elif IsRecord( record.PackageDoc ) then
                     record.PackageDoc:= [ record.PackageDoc ];
                   fi;
-                  Add( GAPInfo.PackagesInfo, `record );
+                  Add( GAPInfo.PackagesInfo, MakeImmutable(record) );
                 fi;
               fi;
             fi;
@@ -294,11 +294,11 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     # Turn the lists into records.
     record:= rec();
     for r in GAPInfo.PackagesInfo do
-      name:= `LowercaseString( r.PackageName );
+      name:= MakeImmutable( LowercaseString( r.PackageName ) );
       if IsBound( record.( name ) ) then
-        record.( name ) := `Concatenation( record.( name ), [ r ] );
+        record.( name ) := MakeImmutable( Concatenation( record.( name ), [ r ] ) );
       else
-        record.( name ):= `[ r ];
+        record.( name ):= MakeImmutable( [ r ] );
       fi;
     od;
     GAPInfo.PackagesInfo:= AtomicRecord(record);
@@ -2315,7 +2315,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
 ##  </ManSection>
 ##
 GAPInfo.PackagesRestrictions := AtomicRecord(rec(
-  anupq := `rec(
+  anupq := MakeImmutable(rec(
     OnInitialization := function( pkginfo )
         if CompareVersionNumbers( pkginfo.Version, "1.3" ) = false then
           return false;
@@ -2333,9 +2333,9 @@ GAPInfo.PackagesRestrictions := AtomicRecord(rec(
               "most recent version, see URL\n",
               "      http://www.math.rwth-aachen.de/~Greg.Gamble/ANUPQ\n" );
         fi;
-        end ),
+        end )),
 
-  autpgrp := `rec(
+  autpgrp := MakeImmutable(rec(
     OnInitialization := function( pkginfo )
         return true;
         end,
@@ -2350,7 +2350,7 @@ GAPInfo.PackagesRestrictions := AtomicRecord(rec(
               "most recent version, see URL\n",
               "      https://www.gap-system.org/Packages/autpgrp.html\n" );
         fi;
-        end ) ));
+        end )) ));
 
 
 #############################################################################
