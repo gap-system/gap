@@ -39,7 +39,7 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BindGlobal( "RandomSourcesFamily", NewFamily( "RandomSourcesFamily" ) );    
+BIND_GLOBAL( "RandomSourcesFamily", NewFamily( "RandomSourcesFamily" ) );
 DeclareCategory( "IsRandomSource", IsComponentObjectRep );
 
 #############################################################################
@@ -71,106 +71,6 @@ DeclareCategory( "IsRandomSource", IsComponentObjectRep );
 ##
 DeclareOperation( "Random", [IsRandomSource, IsListOrCollection] );
 DeclareOperation( "Random", [IsRandomSource, IsInt, IsInt] );
-
-##############################################################################
-##
-##  <#GAPDoc Label="InstallMethodWithRandomSource">
-##  <ManSection>
-##  <Func Name="InstallMethodWithRandomSource"
-##   Arg="opr,info[,famp],args-filts[,val],method"/>
-##  <Func Name="InstallOtherMethodWithRandomSource"
-##   Arg="opr,info[,famp],args-filts[,val],method"/>
-##
-##  <Description>
-##  These functions are designed to simplify adding new methods for
-##  <Ref Oper="Random" Label="for a list or collection"/> and
-##  <Ref Oper="PseudoRandom"/> to GAP which can
-##  be called both with, and without, a random source.
-##  <P/>
-##  They accept the same arguments as <Ref Func="InstallMethod"/> and
-##  <Ref Func="InstallOtherMethod"/>, with
-##  the extra requirement that the first member of <A>args-filts</A> must
-##  be <Ref Filt="IsRandomSource"/>, and the <A>info</A> argument
-##  is compulsory and must begin 'for a random source and'.
-##  <P/>
-##  This function then installs two methods: first it calls
-##  <Ref Func="InstallMethod"/> (or <Ref Func="InstallOtherMethod"/>)
-##  with unchanged arguments.
-##  Then it calls <Ref Func="InstallMethod"/>
-##  (or <Ref Func="InstallOtherMethod"/>) a second time to install
-##  another method which lacks the initial random source argument; this
-##  additional method simply invokes the original method, with
-##  <Ref Var="GlobalMersenneTwister"/> added as first argument.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-(function()
-    local func;
-    func := function(installType)
-        return function(args...)
-            local str, filterpos, filtercopy, argscopy, i, func, info;
-
-            # Check we understand arguments
-            # Second value must be an info string
-            if not IsString(args[2]) then
-                ErrorNoReturn("Second argument must be an info string");
-            fi;
-
-            # Info strings always tend to begin 'for ', and here we want
-            # to be able to edit it, so we check.
-            if args[2]{[1..23]} <> "for a random source and" then
-                ErrorNoReturn("Info string must begin 'for a random source and'");
-            fi;
-
-            # Filters must start with 'IsRandomSource'
-            for i in [1..Length(args)] do
-                if IsList(args[i]) and args[i][1] = IsRandomSource then
-                    filterpos := i;
-                fi;
-            od;
-
-            if not IsBound(filterpos) then
-                ErrorNoReturn("Must use a list of filters beginning 'IsRandomSource'");
-            fi;
-
-            # Last argument must be the actual method
-            if not IsFunction(args[Length(args)]) then
-                ErrorNoReturn("Argument list must end with the method");
-            fi;
-
-            # Install 
-            CallFuncList(installType, args);
-
-            # Install random, wrapping random source argument
-            argscopy := List(args);
-
-            # Remove 'IsRandomSource' from the filter list
-            argscopy[filterpos] := argscopy[filterpos]{[2..Length(argscopy[filterpos])]};
-
-            # Correct info string by removing 'a random source and'
-            info := "for";
-            APPEND_LIST(info, argscopy[2]{[24..Length(argscopy[2])]});
-            argscopy[2] := info;
-
-            func := argscopy[Length(argscopy)];
-            if Length(argscopy[filterpos]) = 1 then
-                argscopy[Length(argscopy)] := x -> func(GlobalMersenneTwister,x);
-            elif Length(argscopy[filterpos]) = 2 then
-                argscopy[Length(argscopy)] :=
-                    function(x,y)
-                        return func(GlobalMersenneTwister,x,y);
-                    end;
-            else
-                Error("Only 2 or 3 argument methods supported");
-            fi;
-
-            CallFuncList(installType, argscopy);
-        end;
-    end;
-    BIND_GLOBAL("InstallMethodWithRandomSource", func(InstallMethod));
-    BIND_GLOBAL("InstallOtherMethodWithRandomSource", func(InstallOtherMethod));
-end)();
 
 #############################################################################
 ##  
@@ -290,12 +190,10 @@ DeclareCategory("IsMersenneTwister", IsRandomSource);
 
 if IsHPCGAP then
     MakeThreadLocal( "GlobalRandomSource" );
-    # this declaration is in coll.gi because it is needed for RandomList
-    # MakeThreadLocal( "GlobalMersenneTwister" );
+    MakeThreadLocal( "GlobalMersenneTwister" );
 else
     DeclareGlobalVariable( "GlobalRandomSource" );
-    # this declaration is in coll.gi because it is needed for RandomList
-    # DeclareGlobalVariable( "GlobalMersenneTwister" );
+    DeclareGlobalVariable( "GlobalMersenneTwister" );
 fi;
 
 #############################################################################
@@ -333,6 +231,106 @@ fi;
 ##
 DeclareOperation( "RandomSource", [IsOperation] );
 DeclareOperation( "RandomSource", [IsOperation, IsObject] );
+
+##############################################################################
+##
+##  <#GAPDoc Label="InstallMethodWithRandomSource">
+##  <ManSection>
+##  <Func Name="InstallMethodWithRandomSource"
+##   Arg="opr,info[,famp],args-filts[,val],method"/>
+##  <Func Name="InstallOtherMethodWithRandomSource"
+##   Arg="opr,info[,famp],args-filts[,val],method"/>
+##
+##  <Description>
+##  These functions are designed to simplify adding new methods for
+##  <Ref Oper="Random" Label="for a list or collection"/> and
+##  <Ref Oper="PseudoRandom"/> to GAP which can
+##  be called both with, and without, a random source.
+##  <P/>
+##  They accept the same arguments as <Ref Func="InstallMethod"/> and
+##  <Ref Func="InstallOtherMethod"/>, with
+##  the extra requirement that the first member of <A>args-filts</A> must
+##  be <Ref Filt="IsRandomSource"/>, and the <A>info</A> argument
+##  is compulsory and must begin 'for a random source and'.
+##  <P/>
+##  This function then installs two methods: first it calls
+##  <Ref Func="InstallMethod"/> (or <Ref Func="InstallOtherMethod"/>)
+##  with unchanged arguments.
+##  Then it calls <Ref Func="InstallMethod"/>
+##  (or <Ref Func="InstallOtherMethod"/>) a second time to install
+##  another method which lacks the initial random source argument; this
+##  additional method simply invokes the original method, with
+##  <Ref Var="GlobalMersenneTwister"/> added as first argument.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+(function()
+    local func;
+    func := function(installType)
+        return function(args...)
+            local str, filterpos, filtercopy, argscopy, i, func, info;
+
+            # Check we understand arguments
+            # Second value must be an info string
+            if not IsString(args[2]) then
+                ErrorNoReturn("Second argument must be an info string");
+            fi;
+
+            # Info strings always tend to begin 'for ', and here we want
+            # to be able to edit it, so we check.
+            if args[2]{[1..23]} <> "for a random source and" then
+                ErrorNoReturn("Info string must begin 'for a random source and'");
+            fi;
+
+            # Filters must start with 'IsRandomSource'
+            for i in [1..Length(args)] do
+                if IsList(args[i]) and args[i][1] = IsRandomSource then
+                    filterpos := i;
+                fi;
+            od;
+
+            if not IsBound(filterpos) then
+                ErrorNoReturn("Must use a list of filters beginning 'IsRandomSource'");
+            fi;
+
+            # Last argument must be the actual method
+            if not IsFunction(args[Length(args)]) then
+                ErrorNoReturn("Argument list must end with the method");
+            fi;
+
+            # Install
+            CallFuncList(installType, args);
+
+            # Install random, wrapping random source argument
+            argscopy := List(args);
+
+            # Remove 'IsRandomSource' from the filter list
+            argscopy[filterpos] := argscopy[filterpos]{[2..Length(argscopy[filterpos])]};
+
+            # Correct info string by removing 'a random source and'
+            info := "for";
+            APPEND_LIST(info, argscopy[2]{[24..Length(argscopy[2])]});
+            argscopy[2] := info;
+
+            func := argscopy[Length(argscopy)];
+            if Length(argscopy[filterpos]) = 1 then
+                argscopy[Length(argscopy)] := x -> func(GlobalMersenneTwister,x);
+            elif Length(argscopy[filterpos]) = 2 then
+                argscopy[Length(argscopy)] :=
+                    function(x,y)
+                        return func(GlobalMersenneTwister,x,y);
+                    end;
+            else
+                Error("Only 2 or 3 argument methods supported");
+            fi;
+
+            CallFuncList(installType, argscopy);
+        end;
+    end;
+    BIND_GLOBAL("InstallMethodWithRandomSource", func(InstallMethod));
+    BIND_GLOBAL("InstallOtherMethodWithRandomSource", func(InstallOtherMethod));
+end)();
 
 #############################################################################
 ##
