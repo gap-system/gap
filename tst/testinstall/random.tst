@@ -1,6 +1,12 @@
 gap> START_TEST("random.tst");
 gap> ReadGapRoot( "tst/testrandom.g" );
 
+# Test RandomList
+gap> randomTest([1,2,3], RandomList);
+gap> randomTest([1..100], RandomList);
+gap> randomTest("abcdef", RandomList);
+gap> randomTestForSizeOneCollection([1], RandomList);
+
 #
 # fields and rings
 #

@@ -1661,7 +1661,7 @@ DeclareOperation( "Random", [ IS_INT, IS_INT ] );
 ##
 ##  <#GAPDoc Label="RandomList">
 ##  <ManSection>
-##  <Func Name="RandomList" Arg='list'/>
+##  <Func Name="RandomList" Arg='[rs,] list'/>
 ##
 ##  <Description>
 ##  <Index>random seed</Index>
@@ -1669,7 +1669,9 @@ DeclareOperation( "Random", [ IS_INT, IS_INT ] );
 ##  <Ref Func="RandomList"/> returns a (pseudo-)random element with equal
 ##  distribution.
 ##  <P/>
-##  This function uses the <Ref Var="GlobalMersenneTwister"/> to produce the
+##  The random source <A>rs</A> is used to choose a random number.
+##  If <A>rs</A> is absent,
+##  this function uses the <Ref Var="GlobalMersenneTwister"/> to produce the
 ##  random elements (a source of high quality random numbers).
 ##  <P/>
 ##  </Description>
