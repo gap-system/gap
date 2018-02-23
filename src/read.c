@@ -348,48 +348,35 @@ void ReadReferenceModifiers( TypSymbolSet follow )
 
 /****************************************************************************
 **
-*F  ReadCallVarAss( <follow>, <mode> )  . . . . . . . . . . . read a variable
+*F  ReadVar( <follow>, <mode> )  . . . . . . . . . . . read a variable
 **
-**  'ReadCallVarAss' reads  a variable.  In  case  of an  error it skips  all
-**  symbols up to one contained in  <follow>.  The <mode>  must be one of the
-**  following:
-**
-**  'i':        check if variable, record component, list entry is bound
-**  'r':        reference to a variable
-**  's':        assignment via ':='
-**  'u':        unbind a variable
-**  'x':        either 'r' or 's' depending on <Symbol>
+**  'ReadVar' reads a variable identifier. In case of an error it skips all
+**  symbols up to one contained in <follow>.
 **
 **  <Ident> :=  a|b|..|z|A|B|..|Z { a|b|..|z|A|B|..|Z|0|..|9|_ }
-**
-**  <Var> := <Ident>
-**        |  <Var> '[' <Expr> [,<Expr>]* ']'
-**        |  <Var> '{' <Expr> '}'
-**        |  <Var> '.' <Ident>
-**        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
 */
-
-void ReadCallVarAss (
+UInt ReadVar(
     TypSymbolSet        follow,
-    Char                mode )
+    volatile Char       *_type,
+    volatile UInt       *_nest0
+    )
 {
-    volatile Char       type = ' ';     /* type of variable                */
-    volatile Obj        nams;           /* list of names of local vars.    */
-    volatile Obj        lvars;          /* environment                     */
-    volatile UInt       nest  = 0;      /* nesting level of a higher var.  */
-    volatile Obj        lvars0;          /* environment                     */
-    volatile UInt       nest0  = 0;      /* nesting level of a higher var.  */
-    volatile UInt       indx  = 0;      /* index of a local variable       */
-    volatile UInt       var   = 0;      /* variable                        */
-    volatile UInt       level = 0;      /* number of '{}' selectors        */
-    volatile UInt       rnam  = 0;      /* record component name           */
-    volatile UInt       narg  = 0;      /* number of arguments             */
-    Char                varname[MAX_VALUE_LEN]; /* copy of variable name   */
+    Char       type = ' ';              /* type of variable                */
+    Obj        nams;                    /* list of names of local vars.    */
+    Obj        lvars;                   /* environment                     */
+    UInt       nest;                    /* nesting level of a higher var.  */
+    Obj        lvars0;                  /* environment                     */
+    UInt       nest0;                   /* nesting level of a higher var.  */
+    UInt       indx;                    /* index of a local variable       */
+    UInt       var;                     /* variable                        */
+    Char       varname[MAX_VALUE_LEN];  /* copy of variable name   */
 
     /* all variables must begin with an identifier                         */
     if ( STATE(Symbol) != S_IDENT ) {
         SyntaxError( "Identifier expected" );
-        return;
+        *_type = 0;
+        *_nest0 = 0;
+        return 0;
     }
 
     // try to look up the variable on the stack of local variables
@@ -459,6 +446,53 @@ void ReadCallVarAss (
     /* match away the identifier, now that we know the variable            */
     Match( S_IDENT, "identifier", follow );
 
+    /* If this isn't a lambda function, look up the name          */
+    if ( STATE(Symbol) != S_MAPTO && type == 'g' ) {
+        var = GVarName( varname );
+    }
+
+    *_type = type;
+    *_nest0 = nest0;
+    return var;
+}
+
+/****************************************************************************
+**
+*F  ReadCallVarAss( <follow>, <mode> )  . . . . . . . . . . . read a variable
+**
+**  'ReadCallVarAss' reads  a variable.  In  case  of an  error it skips  all
+**  symbols up to one contained in  <follow>.  The <mode>  must be one of the
+**  following:
+**
+**  'i':        check if variable, record component, list entry is bound
+**  'r':        reference to a variable
+**  's':        assignment via ':='
+**  'u':        unbind a variable
+**  'x':        either 'r' or 's' depending on <Symbol>
+**
+**  <Ident> :=  a|b|..|z|A|B|..|Z { a|b|..|z|A|B|..|Z|0|..|9|_ }
+**
+**  <Var> := <Ident>
+**        |  <Var> '[' <Expr> [,<Expr>]* ']'
+**        |  <Var> '{' <Expr> '}'
+**        |  <Var> '.' <Ident>
+**        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
+*/
+void ReadCallVarAss (
+    TypSymbolSet        follow,
+    Char                mode )
+{
+    volatile Char       type;     /* type of variable                */
+    volatile UInt       nest0;     /* nesting level of a higher var.  */
+    volatile UInt       var;      /* variable                        */
+    volatile UInt       level;      /* number of '{}' selectors        */
+    volatile UInt       rnam;      /* record component name           */
+    volatile UInt       narg;      /* number of arguments             */
+
+    var = ReadVar(follow, &type, &nest0);
+    if (type == 0)
+        return;
+
     /* if this was actually the beginning of a function literal            */
     /* then we are in the wrong function                                   */
     if ( STATE(Symbol) == S_MAPTO ) {
@@ -471,14 +505,10 @@ void ReadCallVarAss (
         SyntaxError("Function literal in impossible context");
     }
 
-    /* Now we know this isn't a lambda function, look up the name          */
-    if ( type == 'g' ) {
-        var = GVarName( varname );
-
-        // Check if the variable is a constant
-        if (mode != 'i' && mode != 's' &&  mode != 'u'
-          && !(mode == 'x' && STATE(Symbol) == S_ASSIGN)
-          && ValGVar(var) && IsConstantGVar(var)) {
+    // Check if the variable is a constant
+    if ( type == 'g' && ValGVar(var) && IsConstantGVar(var) ) {
+        // deal with references
+        if (mode == 'r' || (mode == 'x' && STATE(Symbol) != S_ASSIGN)) {
             Obj val = ValAutoGVar(var);
             if (val == True)
                 IntrTrueExpr();
@@ -498,7 +528,6 @@ void ReadCallVarAss (
     if (WarnOnUnboundGlobalsRNam == 0)
       WarnOnUnboundGlobalsRNam = RNamName("WarnOnUnboundGlobals");
 
-    assert(countNams == LEN_PLIST(STATE(StackNams)));
     if ( type == 'g'                // Reading a global variable
       && mode != 'i'                // Not inside 'IsBound'
       && LEN_PLIST(STATE(StackNams)) != 0   // Inside a function
