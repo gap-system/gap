@@ -282,205 +282,41 @@ BIND_GLOBAL( "TYPE_BLIST_EMPTY_IMM",
 
 #############################################################################
 ##
-#F  TYPE_LIST_HOM( <family>, <kernel_number> )	. . return the type of a list
+#F  TYPE_LIST_HOM( <family>, <isMutable>, <sort>, <table> )
 ##
 ##  <ManSection>
-##  <Func Name="TYPE_LIST_HOM" Arg='family, kernel_number'/>
+##  <Func Name="TYPE_LIST_HOM" Arg='family, isMutable, sort, table'/>
 ##
 ##  <Description>
-##  For <A>kernel_number</A> see <F>objects.h</F> and <F>plist.c</F>:
-##  <P/>
-##   1: T_PLIST_HOM
-##   2: T_PLIST_HOM       + IMMUTABLE
-##   3: T_PLIST_HOM_NSORT
-##   4: T_PLIST_HOM_NSORT + IMMUTABLE
-##   5: T_PLIST_HOM_SSORT
-##   6: T_PLIST_HOM_SSORT + IMMUTABLE
-##   7: T_PLIST_TAB
-##   8: T_PLIST_TAB       + IMMUTABLE
-##   9: T_PLIST_TAB_NSORT
-##  10: T_PLIST_TAB_NSORT + IMMUTABLE
-##  11: T_PLIST_TAB_SSORT
-##  12: T_PLIST_TAB_SSORT + IMMUTABLE
-##  13: T_PLIST_TAB_RECT
-##  14: T_PLIST_TAB_RECT       + IMMUTABLE
-##  15: T_PLIST_TAB_RECT_NSORT
-##  16: T_PLIST_TAB_RECT_NSORT + IMMUTABLE
-##  17: T_PLIST_TAB_RECT_SSORT
-##  18: T_PLIST_TAB_RECT_SSORT + IMMUTABLE
-##  19: T_PLIST_CYC
-##  20: T_PLIST_CYC       + IMMUTABLE
-##  21: T_PLIST_CYC_NSORT
-##  22: T_PLIST_CYC_NSORT + IMMUTABLE
-##  23: T_PLIST_CYC_SSORT
-##  24: T_PLIST_CYC_SSORT + IMMUTABLE
-##  25: T_PLIST_FFE
-##  26: T_PLIST_FFE + IMMUTABLE
+##  Return the type of a homogenous list whose elements are in <family>, with
+##  additional properties indicated by <isMutable>, <sort> and <table>.
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, knr )
-    local   colls;
+BIND_GLOBAL( "TYPE_LIST_HOM", function ( family, isMutable, sort, table )
+    local   colls, filter;
 
     colls := CollectionsFamily( family );
+    filter := IsPlistRep and IsList and IsDenseList and
+              IsHomogeneousList and IsCollection;
+    if isMutable then
+        filter := filter and IsMutable;
+    fi;
 
-    # The Cyclotomic types behave just like the corresponding
-    # homogenous types
-
-    if knr > 18 then 
-        if knr < 25 then
-            knr := knr -18;
-        # The FFE types behave just like the corresponding
-        # homogenous types
-        else
-            knr := knr -24;
+    if sort <> fail then
+        filter := filter and Tester(IsSSortedList);
+        if sort then
+            filter := filter and IsSSortedList;
         fi;
     fi;
 
-    # T_PLIST_HOM
-    if   knr = 1  then
-        return NewType( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        IsPlistRep );
-
-    # T_PLIST_HOM + IMMUTABLE
-    elif knr = 2  then
-        return NewType( colls,
-                        IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        IsPlistRep );
-
-    # T_PLIST_HOM_NSORT
-    elif knr = 3  then
-        return NewType( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        Tester(IsSSortedList) and
-                        IsPlistRep );
-
-    # T_PLIST_HOM_NSORT + IMMUTABLE
-    elif knr = 4  then
-        return NewType( colls,
-                        IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        Tester(IsSSortedList) and
-                        IsPlistRep );
-
-    # T_PLIST_HOM_SSORT
-    elif knr = 5  then
-        return NewType( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        Tester(IsSSortedList) and
-                        IsSSortedList and
-                        IsPlistRep );
-
-    # T_PLIST_HOM_SSORT + IMMUTABLE
-    elif knr = 6  then
-        return NewType( colls,
-                        IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        Tester(IsSSortedList) and
-                        IsSSortedList and
-                        IsPlistRep );
-
-    # T_PLIST_TAB
-    elif knr = 7  then
-        return NewType( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        IsTable and IsPlistRep );
-
-    # T_PLIST_TAB + IMMUTABLE
-    elif knr = 8  then
-        return NewType( colls,
-                        IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        IsTable and IsPlistRep );
-
-    # T_PLIST_TAB_NSORT
-    elif knr = 9  then
-        return NewType( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        Tester(IsSSortedList) and IsTable
-                        and IsPlistRep );
-
-    # T_PLIST_TAB_NSORT + IMMUTABLE
-    elif knr = 10  then
-        return NewType( colls,
-                        IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        Tester(IsSSortedList) and IsTable
-                        and IsPlistRep );
-
-    # T_PLIST_TAB_SSORT
-    elif knr = 11  then
-        return NewType( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        Tester(IsSSortedList) and
-                        IsSSortedList and IsTable and IsPlistRep );
-
-    # T_PLIST_TAB_SSORT + IMMUTABLE
-    elif knr = 12  then
-        return NewType( colls,
-                        IsList and IsDenseList and IsHomogeneousList
-                        and Tester(IsSSortedList)
-                        and IsCollection and IsSSortedList and IsTable
-                        and IsPlistRep );
-
-    # T_PLIST_TAB_RECT
-    elif knr = 13  then
-        return NewType( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        IsTable and HasIsRectangularTable and IsRectangularTable and IsPlistRep );
-
-    # T_PLIST_TAB_RECT + IMMUTABLE
-    elif knr = 14  then
-        return NewType( colls,
-                        IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        IsTable and HasIsRectangularTable and IsRectangularTable and IsPlistRep );
-
-    # T_PLIST_TAB_RECT_NSORT
-    elif knr = 15  then
-        return NewType( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        Tester(IsSSortedList) and IsTable and HasIsRectangularTable and IsRectangularTable
-                        and IsPlistRep );
-
-    # T_PLIST_TAB_RECT_NSORT + IMMUTABLE
-    elif knr = 16  then
-        return NewType( colls,
-                        IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        Tester(IsSSortedList) and IsTable and HasIsRectangularTable and IsRectangularTable
-                        and IsPlistRep );
-
-    # T_PLIST_TAB_RECT_SSORT
-    elif knr = 17  then
-        return NewType( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        Tester(IsSSortedList) and
-                        IsSSortedList and IsTable and HasIsRectangularTable and IsRectangularTable and IsPlistRep );
-
-    # T_PLIST_TAB_RECT_SSORT + IMMUTABLE
-    elif knr = 18  then
-        return NewType( colls,
-                        IsList and IsDenseList and IsHomogeneousList
-                        and Tester(IsSSortedList)
-                       and IsCollection and IsSSortedList and IsTable and HasIsRectangularTable 
-                       and IsRectangularTable
-                        and IsPlistRep );
-
-    else
-        Error( "what?  Unknown kernel number ", knr );
+    if table = 1 then
+        filter := filter and IsTable;
+    elif table = 2 then
+        filter := filter and IsTable and IsRectangularTable;
     fi;
+
+    return NewType(colls, filter);
 end );
 
 
