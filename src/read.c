@@ -374,8 +374,8 @@ void ReadReferenceModifiers( TypSymbolSet follow )
     else if ( type == ':' ) { IntrElmRecExpr();             level=0; }
     else if ( type == '!' ) { IntrElmComObjName( rnam );    level=0; }
     else if ( type == '|' ) { IntrElmComObjExpr();          level=0; }
-    else if ( type == 'c' || type == 'C' )
-    { IntrFuncCallEnd( 1UL, type == 'C', narg ); level=0; }
+    else if ( type == 'c' ) { IntrFuncCallEnd(1, 0, narg);  level=0; }
+    else if ( type == 'C' ) { IntrFuncCallEnd(1, 1, narg);  level=0; }
     else
       SyntaxError("Parse error in modifiers"); // This should never be reached
     } /* end TRY_READ */
@@ -593,9 +593,10 @@ void ReadCallVarAss (
         else if ( type == ':' ) { IntrElmRecExpr();             level=0; }
         else if ( type == '!' ) { IntrElmComObjName( rnam );    level=0; }
         else if ( type == '|' ) { IntrElmComObjExpr();          level=0; }
-        else if ( type == 'c' || type == 'C' )
-          { IntrFuncCallEnd( 1UL, type == 'C', narg ); level=0; }
+        else if ( type == 'c' ) { IntrFuncCallEnd(1, 0, narg);  level=0; }
+        else if ( type == 'C' ) { IntrFuncCallEnd(1, 1, narg);  level=0; }
         } /* end TRY_READ */
+
         /* <Var> '[' <Expr> ']'  list selector                             */
         if ( STATE(Symbol) == S_LBRACK ) {
             Match( S_LBRACK, "[", follow );
@@ -704,6 +705,7 @@ void ReadCallVarAss (
 
     /* if we need a reference                                              */
     if ( mode == 'r' || (mode == 'x' && STATE(Symbol) != S_ASSIGN) ) {
+        Int needExpr = mode == 'r' || !IS_IN(STATE(Symbol), S_SEMICOLON);
       TRY_READ {
              if ( type == 'l' ) { IntrRefLVar( ref.var );             }
         else if ( type == 'h' ) { IntrRefHVar( ref.var );             }
@@ -721,14 +723,8 @@ void ReadCallVarAss (
         else if ( type == ':' ) { IntrElmRecExpr();               }
         else if ( type == '!' ) { IntrElmComObjName( rnam );      }
         else if ( type == '|' ) { IntrElmComObjExpr();            }
-        else if ( type == 'c' || type == 'C') {
-            if (mode == 'x' && IS_IN(STATE(Symbol), S_SEMICOLON)) {
-                IntrFuncCallEnd( 0UL, type == 'C', narg );
-            }
-            else {
-                IntrFuncCallEnd( 1UL, type == 'C', narg );
-            }
-        }
+        else if ( type == 'c' ) { IntrFuncCallEnd(needExpr, 0, narg); }
+        else if ( type == 'C' ) { IntrFuncCallEnd(needExpr, 1, narg); }
       } /* end TRY_READ */
     }
 
@@ -758,8 +754,8 @@ void ReadCallVarAss (
         else if ( type == ':' ) { IntrAssRecExpr();               }
         else if ( type == '!' ) { IntrAssComObjName( rnam );      }
         else if ( type == '|' ) { IntrAssComObjExpr();            }
-        else if ( type == 'c' || type == 'C' )
-          { IntrFuncCallEnd( 0UL, type == 'C', narg ); }
+        else if ( type == 'c' ) { IntrFuncCallEnd(0, 0, narg); }
+        else if ( type == 'C' ) { IntrFuncCallEnd(0, 1, narg); }
       } /* end TRY_READ */
     }
 
