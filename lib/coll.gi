@@ -246,11 +246,6 @@ InstallMethod( RepresentativeSmallest,
 ##  an enumerator of <C> and selects a random element of this list using the
 ##  function `RandomList', which is a pseudo random number generator.
 ##
-if IsHPCGAP then
-    MakeThreadLocal( "GlobalMersenneTwister" );
-else
-    DeclareGlobalVariable( "GlobalMersenneTwister" );
-fi;
 InstallGlobalFunction( RandomList, function(list)
   return list[Random(GlobalMersenneTwister, 1, Length(list))];
 end );

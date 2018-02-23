@@ -36,6 +36,8 @@ ReadLib( "set.gd"      );
 
 ReadLib( "record.gd"   );
 
+ReadLib( "random.gd"   );
+
 ReadLib( "cache.gi"    );
 ReadLib( "coll.gi"     );
 
@@ -69,8 +71,6 @@ ReadLib( "global.gd"   );
 ReadLib( "info.gi"     );
 ReadLib( "assert.gi"   );
 ReadLib( "global.gi"   );
-
-ReadLib( "random.gd"   );
 
 ReadLib( "options.gd"  );
 ReadLib( "options.gi"  );
