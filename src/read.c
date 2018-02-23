@@ -1622,19 +1622,6 @@ void ReadLiteral (
         ReadRecExpr( follow );
         break;
 
-#ifdef HPCGAP
-    /* `Literal                                                            */
-    case S_BACKQUOTE:
-        Match( S_BACKQUOTE, "`", follow );
-        TRY_READ {
-          IntrRefGVar(GVarName("MakeImmutable"));
-          IntrFuncCallBegin();
-        }
-        ReadAtom( follow, 'r' );
-        TRY_READ { IntrFuncCallEnd(1, 0, 1); }
-        break;
-#endif
-
     /* <Function>                                                          */
     case S_FUNCTION:
     case S_ATOMIC:

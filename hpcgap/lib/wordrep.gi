@@ -1013,10 +1013,10 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     MakeImmutable(expB);
     F!.expBits := expB;
 
-    F!.expBitsInfo := `[ 2^( F!.expBits[1] - 1 ),
+    F!.expBitsInfo := MakeImmutable([ 2^( F!.expBits[1] - 1 ),
                          2^( F!.expBits[2] - 1 ),
                          2^( F!.expBits[3] - 1 ),
-                         infinity          ];
+                         infinity          ]);
 
     # Store the internal types.
     K:= NewType( F, Is8BitsAssocWord and req );
