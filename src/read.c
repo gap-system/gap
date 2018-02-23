@@ -248,26 +248,249 @@ typedef struct {
 /****************************************************************************
 **
 */
+UInt EvalRef(const LHSRef ref, Int needExpr)
+{
+    TRY_READ
+    {
+        switch (ref.type) {
+        case 'l':
+            IntrRefLVar(ref.var);
+            break;
+        case 'h':
+            IntrRefHVar(ref.var);
+            break;
+        case 'd':
+            IntrRefDVar(ref.var, ref.nest0);
+            break;
+        case 'g':
+            IntrRefGVar(ref.var);
+            break;
+        case '[':
+            IntrElmList(ref.narg);
+            break;
+        case ']':
+            IntrElmListLevel(ref.narg, ref.level);
+            break;
+        case '{':
+            IntrElmsList();
+            return ref.level + 1;
+        case '}':
+            IntrElmsListLevel(ref.level);
+            return ref.level + 1;
+        case '<':
+            IntrElmPosObj();
+            break;
+        case '>':
+            IntrElmPosObjLevel(ref.level);
+            break;
+        case '(':
+            IntrElmsPosObj();
+            return ref.level + 1;
+        case ')':
+            IntrElmsPosObjLevel(ref.level);
+            return ref.level + 1;
+        case '.':
+            IntrElmRecName(ref.rnam);
+            break;
+        case ':':
+            IntrElmRecExpr();
+            break;
+        case '!':
+            IntrElmComObjName(ref.rnam);
+            break;
+        case '|':
+            IntrElmComObjExpr();
+            break;
+        case 'c':
+            IntrFuncCallEnd(needExpr, 0, ref.narg);
+            break;
+        case 'C':
+            IntrFuncCallEnd(needExpr, 1, ref.narg);
+            break;
+        default:
+            // This should never be reached
+            SyntaxError("Parse error in EvalRef");
+        }
+    }
+    return 0;
+}
+
+void AssignRef(const LHSRef ref)
+{
+    TRY_READ
+    {
+        switch (ref.type) {
+        case 'l':
+            IntrAssLVar(ref.var);
+            break;
+        case 'h':
+            IntrAssHVar(ref.var);
+            break;
+        case 'd':
+            IntrAssDVar(ref.var, ref.nest0);
+            break;
+        case 'g':
+            IntrAssGVar(ref.var);
+            break;
+        case '[':
+            IntrAssList(ref.narg);
+            break;
+        case ']':
+            IntrAssListLevel(ref.narg, ref.level);
+            break;
+        case '{':
+            IntrAsssList();
+            break;
+        case '}':
+            IntrAsssListLevel(ref.level);
+            break;
+        case '<':
+            IntrAssPosObj();
+            break;
+        case '>':
+            IntrAssPosObjLevel(ref.level);
+            break;
+        case '(':
+            IntrAsssPosObj();
+            break;
+        case ')':
+            IntrAsssPosObjLevel(ref.level);
+            break;
+        case '.':
+            IntrAssRecName(ref.rnam);
+            break;
+        case ':':
+            IntrAssRecExpr();
+            break;
+        case '!':
+            IntrAssComObjName(ref.rnam);
+            break;
+        case '|':
+            IntrAssComObjExpr();
+            break;
+        case 'c':
+            IntrFuncCallEnd(0, 0, ref.narg);
+            break;
+        case 'C':
+            IntrFuncCallEnd(0, 1, ref.narg);
+            break;
+        default:
+            // This should never be reached
+            SyntaxError("Parse error in AssignRef");
+        }
+    }
+}
+
+void UnbindRef(const LHSRef ref)
+{
+    TRY_READ
+    {
+        switch (ref.type) {
+        case 'l':
+            IntrUnbLVar(ref.var);
+            break;
+        case 'h':
+            IntrUnbHVar(ref.var);
+            break;
+        case 'd':
+            IntrUnbDVar(ref.var, ref.nest0);
+            break;
+        case 'g':
+            IntrUnbGVar(ref.var);
+            break;
+        case '[':
+            IntrUnbList(ref.narg);
+            break;
+        case '<':
+            IntrUnbPosObj();
+            break;
+        case '.':
+            IntrUnbRecName(ref.rnam);
+            break;
+        case ':':
+            IntrUnbRecExpr();
+            break;
+        case '!':
+            IntrUnbComObjName(ref.rnam);
+            break;
+        case '|':
+            IntrUnbComObjExpr();
+            break;
+        default:
+            SyntaxError("Illegal operand for 'Unbind'");
+        }
+    }
+}
+
+void IsBoundRef(const LHSRef ref)
+{
+    TRY_READ
+    {
+        switch (ref.type) {
+        case 'l':
+            IntrIsbLVar(ref.var);
+            break;
+        case 'h':
+            IntrIsbHVar(ref.var);
+            break;
+        case 'd':
+            IntrIsbDVar(ref.var, ref.nest0);
+            break;
+        case 'g':
+            IntrIsbGVar(ref.var);
+            break;
+        case '[':
+            IntrIsbList(ref.narg);
+            break;
+        case '<':
+            IntrIsbPosObj();
+            break;
+        case '.':
+            IntrIsbRecName(ref.rnam);
+            break;
+        case ':':
+            IntrIsbRecExpr();
+            break;
+        case '!':
+            IntrIsbComObjName(ref.rnam);
+            break;
+        case '|':
+            IntrIsbComObjExpr();
+            break;
+        default:
+            SyntaxError("Illegal operand for 'IsBound'");
+        }
+    }
+}
+
+
+/****************************************************************************
+**
+*/
 void ReadReferenceModifiers( TypSymbolSet follow )
 {
-    volatile char type = ' ';
-    volatile UInt level = 0;
-    volatile UInt narg = 0;
-    volatile UInt rnam  = 0;
+    volatile LHSRef ref;
+
+    ref.type = ' ';
+    ref.level = 0;
+    ref.narg = 0;
+    ref.rnam  = 0;
+
     /* followed by one or more selectors                                   */
     while ( IS_IN( STATE(Symbol), S_LPAREN|S_LBRACK|S_LBRACE|S_DOT ) ) {
+
         /* <Var> '[' <Expr> ']'  list selector                             */
         if ( STATE(Symbol) == S_LBRACK ) {
             Match( S_LBRACK, "[", follow );
             ReadExpr( S_COMMA|S_RBRACK|follow, 'r' );
-            narg = 1;
+            ref.narg = 1;
             while ( STATE(Symbol) == S_COMMA) {
               Match(S_COMMA,",", follow|S_RBRACK);
               ReadExpr(S_COMMA|S_RBRACK|follow, 'r' );
-              narg++;
+              ref.narg++;
             }
             Match( S_RBRACK, "]", follow );
-            type = (level == 0 ? '[' : ']');
+            ref.type = (ref.level == 0 ? '[' : ']');
         }
 
         /* <Var> '{' <Expr> '}'  sublist selector                          */
@@ -275,7 +498,7 @@ void ReadReferenceModifiers( TypSymbolSet follow )
             Match( S_LBRACE, "{", follow );
             ReadExpr( S_RBRACE|follow, 'r' );
             Match( S_RBRACE, "}", follow );
-            type = (level == 0 ? '{' : '}');
+            ref.type = (ref.level == 0 ? '{' : '}');
         }
 
         /* <Var> '![' <Expr> ']'  list selector                            */
@@ -283,7 +506,7 @@ void ReadReferenceModifiers( TypSymbolSet follow )
             Match( S_BLBRACK, "![", follow );
             ReadExpr( S_RBRACK|follow, 'r' );
             Match( S_RBRACK, "]", follow );
-            type = (level == 0 ? '<' : '>');
+            ref.type = (ref.level == 0 ? '<' : '>');
         }
 
         /* <Var> '!{' <Expr> '}'  sublist selector                         */
@@ -291,95 +514,79 @@ void ReadReferenceModifiers( TypSymbolSet follow )
             Match( S_BLBRACE, "!{", follow );
             ReadExpr( S_RBRACE|follow, 'r' );
             Match( S_RBRACE, "}", follow );
-            type = (level == 0 ? '(' : ')');
+            ref.type = (ref.level == 0 ? '(' : ')');
         }
 
         /* <Var> '.' <Ident>  record selector                              */
         else if ( STATE(Symbol) == S_DOT ) {
             Match( S_DOT, ".", follow );
             if ( STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT ) {
-                rnam = RNamName( STATE(Value) );
+                ref.rnam = RNamName( STATE(Value) );
                 Match( STATE(Symbol), "identifier", follow );
-                type = '.';
+                ref.type = '.';
             }
             else if ( STATE(Symbol) == S_LPAREN ) {
                 Match( S_LPAREN, "(", follow );
                 ReadExpr( S_RPAREN|follow, 'r' );
                 Match( S_RPAREN, ")", follow );
-                type = ':';
+                ref.type = ':';
             }
             else {
                 SyntaxError("Record component name expected");
             }
-            level = 0;
+            ref.level = 0;
         }
 
         /* <Var> '!.' <Ident>  record selector                             */
         else if ( STATE(Symbol) == S_BDOT ) {
             Match( S_BDOT, "!.", follow );
             if ( STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT ) {
-                rnam = RNamName( STATE(Value) );
+                ref.rnam = RNamName( STATE(Value) );
                 Match( STATE(Symbol), "identifier", follow );
-                type = '!';
+                ref.type = '!';
             }
             else if ( STATE(Symbol) == S_LPAREN ) {
                 Match( S_LPAREN, "(", follow );
                 ReadExpr( S_RPAREN|follow, 'r' );
                 Match( S_RPAREN, ")", follow );
-                type = '|';
+                ref.type = '|';
             }
             else {
                 SyntaxError("Record component name expected");
             }
-            level = 0;
+            ref.level = 0;
         }
 
         /* <Var> '(' [ <Expr> { ',' <Expr> } ] ')'  function call          */
         else if ( STATE(Symbol) == S_LPAREN ) {
             Match( S_LPAREN, "(", follow );
             TRY_READ { IntrFuncCallBegin(); }
-            narg = 0;
+            ref.narg = 0;
             if ( STATE(Symbol) != S_RPAREN && STATE(Symbol) != S_COLON) {
                 ReadExpr( S_RPAREN|follow, 'r' );
-                narg++;
+                ref.narg++;
             }
             while ( STATE(Symbol) == S_COMMA ) {
                 Match( S_COMMA, ",", follow );
                 ReadExpr( S_RPAREN|follow, 'r' );
-                narg++;
+                ref.narg++;
             }
-            type = 'c';
+            ref.type = 'c';
             if (STATE(Symbol) == S_COLON ) {
               Match( S_COLON, ":", follow );
               if ( STATE(Symbol) != S_RPAREN ) /* save work for empty options */
                 {
                   ReadFuncCallOptions(S_RPAREN | follow);
-                  type = 'C';
+                  ref.type = 'C';
                 }
             }
             Match( S_RPAREN, ")", follow );
+            ref.level = 0;
         }
 
-    /* so the prefix was a reference                                   */
-    TRY_READ {
-         if ( type == '[' ) { IntrElmList(narg);                     }
-    else if ( type == ']' ) { IntrElmListLevel( narg, level );       }
-    else if ( type == '{' ) { IntrElmsList();               level++; }
-    else if ( type == '}' ) { IntrElmsListLevel( level );   level++; }
-    else if ( type == '<' ) { IntrElmPosObj();                       }
-    else if ( type == '>' ) { IntrElmPosObjLevel( level );           }
-    else if ( type == '(' ) { IntrElmsPosObj();             level++; }
-    else if ( type == ')' ) { IntrElmsPosObjLevel( level ); level++; }
-    else if ( type == '.' ) { IntrElmRecName( rnam );       level=0; }
-    else if ( type == ':' ) { IntrElmRecExpr();             level=0; }
-    else if ( type == '!' ) { IntrElmComObjName( rnam );    level=0; }
-    else if ( type == '|' ) { IntrElmComObjExpr();          level=0; }
-    else if ( type == 'c' ) { IntrFuncCallEnd(1, 0, narg);  level=0; }
-    else if ( type == 'C' ) { IntrFuncCallEnd(1, 1, narg);  level=0; }
-    else
-      SyntaxError("Parse error in modifiers"); // This should never be reached
-    } /* end TRY_READ */
-  }
+        /* so the prefix was a reference                                   */
+        ref.level = EvalRef(ref, 1);
+    }
 }
 
 /****************************************************************************
@@ -507,18 +714,10 @@ LHSRef ReadVar(TypSymbolSet follow)
 **        |  <Var> '.' <Ident>
 **        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
 */
-void ReadCallVarAss (
-    TypSymbolSet        follow,
-    Char                mode )
+void ReadCallVarAss(TypSymbolSet follow, Char mode)
 {
-    volatile Char       type;       /* type of variable                */
-    volatile UInt       level;      /* number of '{}' selectors        */
-    volatile UInt       rnam;      /* record component name           */
-    volatile UInt       narg;      /* number of arguments             */
-
     volatile LHSRef ref = ReadVar(follow);
-    type = ref.type;
-    if (type == ' ')
+    if (ref.type == ' ')
         return;
 
     /* if this was actually the beginning of a function literal            */
@@ -534,7 +733,7 @@ void ReadCallVarAss (
     }
 
     // Check if the variable is a constant
-    if ( type == 'g' && IsConstantGVar(ref.var) && ValGVar(ref.var) ) {
+    if (ref.type == 'g' && IsConstantGVar(ref.var) && ValGVar(ref.var)) {
         // deal with references
         if (mode == 'r' || (mode == 'x' && STATE(Symbol) != S_ASSIGN)) {
             Obj val = ValAutoGVar(ref.var);
@@ -556,7 +755,7 @@ void ReadCallVarAss (
     if (WarnOnUnboundGlobalsRNam == 0)
       WarnOnUnboundGlobalsRNam = RNamName("WarnOnUnboundGlobals");
 
-    if ( type == 'g'            // Reading a global variable
+    if ( ref.type == 'g'            // Reading a global variable
       && mode != 'i'                // Not inside 'IsBound'
       && LEN_PLIST(STATE(StackNams)) != 0   // Inside a function
       && ref.var != STATE(CurrLHSGVar)  // Not LHS of assignment
@@ -576,39 +775,20 @@ void ReadCallVarAss (
     while ( IS_IN( STATE(Symbol), S_LPAREN|S_LBRACK|S_LBRACE|S_DOT ) ) {
 
         /* so the prefix was a reference                                   */
-        TRY_READ {
-             if ( type == 'l' ) { IntrRefLVar( ref.var );           level=0; }
-        else if ( type == 'h' ) { IntrRefHVar( ref.var );           level=0; }
-        else if ( type == 'd' ) { IntrRefDVar( ref.var, ref.nest0 );level=0; }
-        else if ( type == 'g' ) { IntrRefGVar( ref.var );           level=0; }
-        else if ( type == '[' ) { IntrElmList(narg);                     }
-        else if ( type == ']' ) { IntrElmListLevel( narg, level );       }
-        else if ( type == '{' ) { IntrElmsList();               level++; }
-        else if ( type == '}' ) { IntrElmsListLevel( level );   level++; }
-        else if ( type == '<' ) { IntrElmPosObj();                       }
-        else if ( type == '>' ) { IntrElmPosObjLevel( level );           }
-        else if ( type == '(' ) { IntrElmsPosObj();             level++; }
-        else if ( type == ')' ) { IntrElmsPosObjLevel( level ); level++; }
-        else if ( type == '.' ) { IntrElmRecName( rnam );       level=0; }
-        else if ( type == ':' ) { IntrElmRecExpr();             level=0; }
-        else if ( type == '!' ) { IntrElmComObjName( rnam );    level=0; }
-        else if ( type == '|' ) { IntrElmComObjExpr();          level=0; }
-        else if ( type == 'c' ) { IntrFuncCallEnd(1, 0, narg);  level=0; }
-        else if ( type == 'C' ) { IntrFuncCallEnd(1, 1, narg);  level=0; }
-        } /* end TRY_READ */
+        ref.level = EvalRef(ref, 1);
 
         /* <Var> '[' <Expr> ']'  list selector                             */
         if ( STATE(Symbol) == S_LBRACK ) {
             Match( S_LBRACK, "[", follow );
             ReadExpr( S_COMMA|S_RBRACK|follow, 'r' );
-            narg = 1;
+            ref.narg = 1;
             while ( STATE(Symbol) == S_COMMA) {
               Match(S_COMMA,",", follow|S_RBRACK);
               ReadExpr(S_COMMA|S_RBRACK|follow, 'r' );
-              narg++;
+              ref.narg++;
             }
             Match( S_RBRACK, "]", follow );
-            type = (level == 0 ? '[' : ']');
+            ref.type = (ref.level == 0 ? '[' : ']');
         }
 
         /* <Var> '{' <Expr> '}'  sublist selector                          */
@@ -616,7 +796,7 @@ void ReadCallVarAss (
             Match( S_LBRACE, "{", follow );
             ReadExpr( S_RBRACE|follow, 'r' );
             Match( S_RBRACE, "}", follow );
-            type = (level == 0 ? '{' : '}');
+            ref.type = (ref.level == 0 ? '{' : '}');
         }
 
         /* <Var> '![' <Expr> ']'  list selector                            */
@@ -624,7 +804,7 @@ void ReadCallVarAss (
             Match( S_BLBRACK, "![", follow );
             ReadExpr( S_RBRACK|follow, 'r' );
             Match( S_RBRACK, "]", follow );
-            type = (level == 0 ? '<' : '>');
+            ref.type = (ref.level == 0 ? '<' : '>');
         }
 
         /* <Var> '!{' <Expr> '}'  sublist selector                         */
@@ -632,73 +812,74 @@ void ReadCallVarAss (
             Match( S_BLBRACE, "!{", follow );
             ReadExpr( S_RBRACE|follow, 'r' );
             Match( S_RBRACE, "}", follow );
-            type = (level == 0 ? '(' : ')');
+            ref.type = (ref.level == 0 ? '(' : ')');
         }
 
         /* <Var> '.' <Ident>  record selector                              */
         else if ( STATE(Symbol) == S_DOT ) {
             Match( S_DOT, ".", follow );
             if ( STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT ) {
-                rnam = RNamName( STATE(Value) );
+                ref.rnam = RNamName( STATE(Value) );
                 Match( STATE(Symbol), "identifier", follow );
-                type = '.';
+                ref.type = '.';
             }
             else if ( STATE(Symbol) == S_LPAREN ) {
                 Match( S_LPAREN, "(", follow );
                 ReadExpr( S_RPAREN|follow, 'r' );
                 Match( S_RPAREN, ")", follow );
-                type = ':';
+                ref.type = ':';
             }
             else {
                 SyntaxError("Record component name expected");
             }
-            level = 0;
+            ref.level = 0;
         }
 
         /* <Var> '!.' <Ident>  record selector                             */
         else if ( STATE(Symbol) == S_BDOT ) {
             Match( S_BDOT, "!.", follow );
             if ( STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT ) {
-                rnam = RNamName( STATE(Value) );
+                ref.rnam = RNamName( STATE(Value) );
                 Match( STATE(Symbol), "identifier", follow );
-                type = '!';
+                ref.type = '!';
             }
             else if ( STATE(Symbol) == S_LPAREN ) {
                 Match( S_LPAREN, "(", follow );
                 ReadExpr( S_RPAREN|follow, 'r' );
                 Match( S_RPAREN, ")", follow );
-                type = '|';
+                ref.type = '|';
             }
             else {
                 SyntaxError("Record component name expected");
             }
-            level = 0;
+            ref.level = 0;
         }
 
         /* <Var> '(' [ <Expr> { ',' <Expr> } ] ')'  function call          */
         else if ( STATE(Symbol) == S_LPAREN ) {
             Match( S_LPAREN, "(", follow );
             TRY_READ { IntrFuncCallBegin(); }
-            narg = 0;
+            ref.narg = 0;
             if ( STATE(Symbol) != S_RPAREN && STATE(Symbol) != S_COLON) {
                 ReadExpr( S_RPAREN|follow, 'r' );
-                narg++;
+                ref.narg++;
             }
             while ( STATE(Symbol) == S_COMMA ) {
                 Match( S_COMMA, ",", follow );
                 ReadExpr( S_RPAREN|follow, 'r' );
-                narg++;
+                ref.narg++;
             }
-            type = 'c';
+            ref.type = 'c';
             if (STATE(Symbol) == S_COLON ) {
               Match( S_COLON, ":", follow );
               if ( STATE(Symbol) != S_RPAREN ) /* save work for empty options */
                 {
                   ReadFuncCallOptions(S_RPAREN | follow);
-                  type = 'C';
+                  ref.type = 'C';
                 }
             }
             Match( S_RPAREN, ")", follow );
+            ref.level = 0;
         }
 
     }
@@ -706,95 +887,33 @@ void ReadCallVarAss (
     /* if we need a reference                                              */
     if ( mode == 'r' || (mode == 'x' && STATE(Symbol) != S_ASSIGN) ) {
         Int needExpr = mode == 'r' || !IS_IN(STATE(Symbol), S_SEMICOLON);
-      TRY_READ {
-             if ( type == 'l' ) { IntrRefLVar( ref.var );             }
-        else if ( type == 'h' ) { IntrRefHVar( ref.var );             }
-        else if ( type == 'd' ) { IntrRefDVar( ref.var, ref.nest0 );  }
-        else if ( type == 'g' ) { IntrRefGVar( ref.var );             }
-        else if ( type == '[' ) { IntrElmList(narg);              }
-        else if ( type == ']' ) { IntrElmListLevel( narg, level );}
-        else if ( type == '{' ) { IntrElmsList();                 }
-        else if ( type == '}' ) { IntrElmsListLevel( level );     }
-        else if ( type == '<' ) { IntrElmPosObj();                }
-        else if ( type == '>' ) { IntrElmPosObjLevel( level );    }
-        else if ( type == '(' ) { IntrElmsPosObj();               }
-        else if ( type == ')' ) { IntrElmsPosObjLevel( level );   }
-        else if ( type == '.' ) { IntrElmRecName( rnam );         }
-        else if ( type == ':' ) { IntrElmRecExpr();               }
-        else if ( type == '!' ) { IntrElmComObjName( rnam );      }
-        else if ( type == '|' ) { IntrElmComObjExpr();            }
-        else if ( type == 'c' ) { IntrFuncCallEnd(needExpr, 0, narg); }
-        else if ( type == 'C' ) { IntrFuncCallEnd(needExpr, 1, narg); }
-      } /* end TRY_READ */
+        ref.level = EvalRef(ref, needExpr);
     }
 
     /* if we need a statement                                              */
     else if ( mode == 's' || (mode == 'x' && STATE(Symbol) == S_ASSIGN) ) {
-        if ( type != 'c' && type != 'C') {
+        if (ref.type != 'c' && ref.type != 'C') {
             Match( S_ASSIGN, ":=", follow );
             if ( LEN_PLIST(STATE(StackNams)) == 0 || !STATE(IntrCoding) ) {
-              STATE(CurrLHSGVar) = (type == 'g' ? ref.var : 0);
+                STATE(CurrLHSGVar) = (ref.type == 'g' ? ref.var : 0);
             }
             ReadExpr( follow, 'r' );
         }
-      TRY_READ {
-             if ( type == 'l' ) { IntrAssLVar( ref.var );             }
-        else if ( type == 'h' ) { IntrAssHVar( ref.var );             }
-        else if ( type == 'd' ) { IntrAssDVar( ref.var, ref.nest0 );  }
-        else if ( type == 'g' ) { IntrAssGVar( ref.var );             }
-        else if ( type == '[' ) { IntrAssList( narg );            }
-        else if ( type == ']' ) { IntrAssListLevel( narg, level );}
-        else if ( type == '{' ) { IntrAsssList();                 }
-        else if ( type == '}' ) { IntrAsssListLevel( level );     }
-        else if ( type == '<' ) { IntrAssPosObj();                }
-        else if ( type == '>' ) { IntrAssPosObjLevel( level );    }
-        else if ( type == '(' ) { IntrAsssPosObj();               }
-        else if ( type == ')' ) { IntrAsssPosObjLevel( level );   }
-        else if ( type == '.' ) { IntrAssRecName( rnam );         }
-        else if ( type == ':' ) { IntrAssRecExpr();               }
-        else if ( type == '!' ) { IntrAssComObjName( rnam );      }
-        else if ( type == '|' ) { IntrAssComObjExpr();            }
-        else if ( type == 'c' ) { IntrFuncCallEnd(0, 0, narg); }
-        else if ( type == 'C' ) { IntrFuncCallEnd(0, 1, narg); }
-      } /* end TRY_READ */
+        AssignRef(ref);
     }
 
     /*  if we need an unbind                                               */
     else if ( mode == 'u' ) {
-      if (STATE(Symbol) != S_RPAREN) {
-        SyntaxError("'Unbind': argument should be followed by ')'");
-      }
-      TRY_READ {
-             if ( type == 'l' ) { IntrUnbLVar( ref.var );             }
-        else if ( type == 'h' ) { IntrUnbHVar( ref.var );             }
-        else if ( type == 'd' ) { IntrUnbDVar( ref.var, ref.nest0 );  }
-        else if ( type == 'g' ) { IntrUnbGVar( ref.var );             }
-        else if ( type == '[' ) { IntrUnbList( narg );            }
-        else if ( type == '<' ) { IntrUnbPosObj();                }
-        else if ( type == '.' ) { IntrUnbRecName( rnam );         }
-        else if ( type == ':' ) { IntrUnbRecExpr();               }
-        else if ( type == '!' ) { IntrUnbComObjName( rnam );      }
-        else if ( type == '|' ) { IntrUnbComObjExpr();            }
-        else { SyntaxError("Illegal operand for 'Unbind'");       }
-      } /* end TRY_READ */
+        if (STATE(Symbol) != S_RPAREN) {
+            SyntaxError("'Unbind': argument should be followed by ')'");
+        }
+        UnbindRef(ref);
     }
 
 
     /* if we need an isbound                                               */
     else /* if ( mode == 'i' ) */ {
-      TRY_READ {
-             if ( type == 'l' ) { IntrIsbLVar( ref.var );             }
-        else if ( type == 'h' ) { IntrIsbHVar( ref.var );             }
-        else if ( type == 'd' ) { IntrIsbDVar( ref.var, ref.nest0 );  }
-        else if ( type == 'g' ) { IntrIsbGVar( ref.var );             }
-        else if ( type == '[' ) { IntrIsbList( narg );            }
-        else if ( type == '<' ) { IntrIsbPosObj();                }
-        else if ( type == '.' ) { IntrIsbRecName( rnam );         }
-        else if ( type == ':' ) { IntrIsbRecExpr();               }
-        else if ( type == '!' ) { IntrIsbComObjName( rnam );      }
-        else if ( type == '|' ) { IntrIsbComObjExpr();            }
-        else { SyntaxError("Illegal operand for 'IsBound'");      }
-      } /* end TRY_READ */
+        IsBoundRef(ref);
     }
 
 }
