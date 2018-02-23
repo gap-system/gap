@@ -647,10 +647,7 @@ static Obj TypePlistWithKTNum (
 
     /* handle homogeneous list                                             */
     if ( family && HasFiltListTNums[tnum][FN_IS_HOMOG] ) {
-#ifdef HPCGAP
-        if (CheckWriteAccess(TYPES_LIST_FAM(family)))
-#endif
-            return TypePlistHomHelper(family, tnum-T_PLIST_HOM+1);
+        return TypePlistHomHelper(family, tnum - T_PLIST_HOM + 1);
     }
 
 #ifdef HPCGAP
