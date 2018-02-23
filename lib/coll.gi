@@ -246,8 +246,23 @@ InstallMethod( RepresentativeSmallest,
 ##  an enumerator of <C> and selects a random element of this list using the
 ##  function `RandomList', which is a pseudo random number generator.
 ##
-InstallGlobalFunction( RandomList, function(list)
-  return list[Random(GlobalMersenneTwister, 1, Length(list))];
+
+# RandomList is not an operation to avoid the (often expensive) cost of
+# dispatch for lists
+InstallGlobalFunction( RandomList, function(args...)
+  local len, source, list;
+  len := Length(args);
+  if len = 1 then
+    source := GlobalMersenneTwister;
+    list := args[1];
+  elif len = 2 then
+    source := args[1];
+    list := args[2];
+  else
+    Error(" Usage: RandomList([rs], list))");
+  fi;
+
+  return list[Random(source, 1, Length(list))];
 end );
 InstallMethod( Random, "for a (finite) collection",
     [ IsCollection and IsFinite ],
