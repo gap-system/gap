@@ -467,125 +467,133 @@ void IsBoundRef(const LHSRef ref)
 /****************************************************************************
 **
 */
-void ReadReferenceModifiers( TypSymbolSet follow )
+LHSRef ReadSelector(TypSymbolSet follow, UInt level)
 {
     volatile LHSRef ref;
 
     ref.type = ' ';
-    ref.level = 0;
+    ref.level = level;
     ref.narg = 0;
-    ref.rnam  = 0;
+    ref.rnam = 0;
 
-    /* followed by one or more selectors                                   */
-    while ( IS_IN( STATE(Symbol), S_LPAREN|S_LBRACK|S_LBRACE|S_DOT ) ) {
-
-        /* <Var> '[' <Expr> ']'  list selector                             */
-        if ( STATE(Symbol) == S_LBRACK ) {
-            Match( S_LBRACK, "[", follow );
-            ReadExpr( S_COMMA|S_RBRACK|follow, 'r' );
-            ref.narg = 1;
-            while ( STATE(Symbol) == S_COMMA) {
-              Match(S_COMMA,",", follow|S_RBRACK);
-              ReadExpr(S_COMMA|S_RBRACK|follow, 'r' );
-              ref.narg++;
-            }
-            Match( S_RBRACK, "]", follow );
-            ref.type = (ref.level == 0 ? '[' : ']');
+    // <Var> '[' <Expr> ']'  list selector
+    if (STATE(Symbol) == S_LBRACK) {
+        Match(S_LBRACK, "[", follow);
+        ReadExpr(S_COMMA | S_RBRACK | follow, 'r');
+        ref.narg = 1;
+        while (STATE(Symbol) == S_COMMA) {
+            Match(S_COMMA, ",", follow | S_RBRACK);
+            ReadExpr(S_COMMA | S_RBRACK | follow, 'r');
+            ref.narg++;
         }
+        Match(S_RBRACK, "]", follow);
+        ref.type = (ref.level == 0 ? '[' : ']');
+    }
 
-        /* <Var> '{' <Expr> '}'  sublist selector                          */
-        else if ( STATE(Symbol) == S_LBRACE ) {
-            Match( S_LBRACE, "{", follow );
-            ReadExpr( S_RBRACE|follow, 'r' );
-            Match( S_RBRACE, "}", follow );
-            ref.type = (ref.level == 0 ? '{' : '}');
+    // <Var> '{' <Expr> '}'  sublist selector
+    else if (STATE(Symbol) == S_LBRACE) {
+        Match(S_LBRACE, "{", follow);
+        ReadExpr(S_RBRACE | follow, 'r');
+        Match(S_RBRACE, "}", follow);
+        ref.type = (ref.level == 0 ? '{' : '}');
+    }
+
+    // <Var> '![' <Expr> ']'  list selector
+    else if (STATE(Symbol) == S_BLBRACK) {
+        Match(S_BLBRACK, "![", follow);
+        ReadExpr(S_RBRACK | follow, 'r');
+        Match(S_RBRACK, "]", follow);
+        ref.type = (ref.level == 0 ? '<' : '>');
+    }
+
+    // <Var> '!{' <Expr> '}'  sublist selector
+    else if (STATE(Symbol) == S_BLBRACE) {
+        Match(S_BLBRACE, "!{", follow);
+        ReadExpr(S_RBRACE | follow, 'r');
+        Match(S_RBRACE, "}", follow);
+        ref.type = (ref.level == 0 ? '(' : ')');
+    }
+
+    // <Var> '.' <Ident>  record selector
+    else if (STATE(Symbol) == S_DOT) {
+        Match(S_DOT, ".", follow);
+        if (STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT) {
+            ref.rnam = RNamName(STATE(Value));
+            Match(STATE(Symbol), "identifier", follow);
+            ref.type = '.';
         }
-
-        /* <Var> '![' <Expr> ']'  list selector                            */
-        else if ( STATE(Symbol) == S_BLBRACK ) {
-            Match( S_BLBRACK, "![", follow );
-            ReadExpr( S_RBRACK|follow, 'r' );
-            Match( S_RBRACK, "]", follow );
-            ref.type = (ref.level == 0 ? '<' : '>');
+        else if (STATE(Symbol) == S_LPAREN) {
+            Match(S_LPAREN, "(", follow);
+            ReadExpr(S_RPAREN | follow, 'r');
+            Match(S_RPAREN, ")", follow);
+            ref.type = ':';
         }
-
-        /* <Var> '!{' <Expr> '}'  sublist selector                         */
-        else if ( STATE(Symbol) == S_BLBRACE ) {
-            Match( S_BLBRACE, "!{", follow );
-            ReadExpr( S_RBRACE|follow, 'r' );
-            Match( S_RBRACE, "}", follow );
-            ref.type = (ref.level == 0 ? '(' : ')');
+        else {
+            SyntaxError("Record component name expected");
         }
+        ref.level = 0;
+    }
 
-        /* <Var> '.' <Ident>  record selector                              */
-        else if ( STATE(Symbol) == S_DOT ) {
-            Match( S_DOT, ".", follow );
-            if ( STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT ) {
-                ref.rnam = RNamName( STATE(Value) );
-                Match( STATE(Symbol), "identifier", follow );
-                ref.type = '.';
-            }
-            else if ( STATE(Symbol) == S_LPAREN ) {
-                Match( S_LPAREN, "(", follow );
-                ReadExpr( S_RPAREN|follow, 'r' );
-                Match( S_RPAREN, ")", follow );
-                ref.type = ':';
-            }
-            else {
-                SyntaxError("Record component name expected");
-            }
-            ref.level = 0;
+    // <Var> '!.' <Ident>  record selector
+    else if (STATE(Symbol) == S_BDOT) {
+        Match(S_BDOT, "!.", follow);
+        if (STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT) {
+            ref.rnam = RNamName(STATE(Value));
+            Match(STATE(Symbol), "identifier", follow);
+            ref.type = '!';
         }
-
-        /* <Var> '!.' <Ident>  record selector                             */
-        else if ( STATE(Symbol) == S_BDOT ) {
-            Match( S_BDOT, "!.", follow );
-            if ( STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT ) {
-                ref.rnam = RNamName( STATE(Value) );
-                Match( STATE(Symbol), "identifier", follow );
-                ref.type = '!';
-            }
-            else if ( STATE(Symbol) == S_LPAREN ) {
-                Match( S_LPAREN, "(", follow );
-                ReadExpr( S_RPAREN|follow, 'r' );
-                Match( S_RPAREN, ")", follow );
-                ref.type = '|';
-            }
-            else {
-                SyntaxError("Record component name expected");
-            }
-            ref.level = 0;
+        else if (STATE(Symbol) == S_LPAREN) {
+            Match(S_LPAREN, "(", follow);
+            ReadExpr(S_RPAREN | follow, 'r');
+            Match(S_RPAREN, ")", follow);
+            ref.type = '|';
         }
-
-        /* <Var> '(' [ <Expr> { ',' <Expr> } ] ')'  function call          */
-        else if ( STATE(Symbol) == S_LPAREN ) {
-            Match( S_LPAREN, "(", follow );
-            TRY_READ { IntrFuncCallBegin(); }
-            ref.narg = 0;
-            if ( STATE(Symbol) != S_RPAREN && STATE(Symbol) != S_COLON) {
-                ReadExpr( S_RPAREN|follow, 'r' );
-                ref.narg++;
-            }
-            while ( STATE(Symbol) == S_COMMA ) {
-                Match( S_COMMA, ",", follow );
-                ReadExpr( S_RPAREN|follow, 'r' );
-                ref.narg++;
-            }
-            ref.type = 'c';
-            if (STATE(Symbol) == S_COLON ) {
-              Match( S_COLON, ":", follow );
-              if ( STATE(Symbol) != S_RPAREN ) /* save work for empty options */
-                {
-                  ReadFuncCallOptions(S_RPAREN | follow);
-                  ref.type = 'C';
-                }
-            }
-            Match( S_RPAREN, ")", follow );
-            ref.level = 0;
+        else {
+            SyntaxError("Record component name expected");
         }
+        ref.level = 0;
+    }
 
-        /* so the prefix was a reference                                   */
-        ref.level = EvalRef(ref, 1);
+    // <Var> '(' [ <Expr> { ',' <Expr> } ] ')'  function call
+    else if (STATE(Symbol) == S_LPAREN) {
+        Match(S_LPAREN, "(", follow);
+        TRY_READ
+        {
+            IntrFuncCallBegin();
+        }
+        ref.narg = 0;
+        if (STATE(Symbol) != S_RPAREN && STATE(Symbol) != S_COLON) {
+            ReadExpr(S_RPAREN | follow, 'r');
+            ref.narg++;
+        }
+        while (STATE(Symbol) == S_COMMA) {
+            Match(S_COMMA, ",", follow);
+            ReadExpr(S_RPAREN | follow, 'r');
+            ref.narg++;
+        }
+        ref.type = 'c';
+        if (STATE(Symbol) == S_COLON) {
+            Match(S_COLON, ":", follow);
+            if (STATE(Symbol) != S_RPAREN) {    // save work for empty options
+                ReadFuncCallOptions(S_RPAREN | follow);
+                ref.type = 'C';
+            }
+        }
+        Match(S_RPAREN, ")", follow);
+        ref.level = 0;
+    }
+
+    return ref;
+}
+
+void ReadReferenceModifiers(TypSymbolSet follow)
+{
+    UInt level = 0;
+
+    // read one or more selectors
+    while (IS_IN(STATE(Symbol), S_LPAREN | S_LBRACK | S_LBRACE | S_DOT)) {
+        LHSRef ref = ReadSelector(follow, level);
+        level = EvalRef(ref, 1);
     }
 }
 
@@ -775,119 +783,14 @@ void ReadCallVarAss(TypSymbolSet follow, Char mode)
     while ( IS_IN( STATE(Symbol), S_LPAREN|S_LBRACK|S_LBRACE|S_DOT ) ) {
 
         /* so the prefix was a reference                                   */
-        ref.level = EvalRef(ref, 1);
-
-        /* <Var> '[' <Expr> ']'  list selector                             */
-        if ( STATE(Symbol) == S_LBRACK ) {
-            Match( S_LBRACK, "[", follow );
-            ReadExpr( S_COMMA|S_RBRACK|follow, 'r' );
-            ref.narg = 1;
-            while ( STATE(Symbol) == S_COMMA) {
-              Match(S_COMMA,",", follow|S_RBRACK);
-              ReadExpr(S_COMMA|S_RBRACK|follow, 'r' );
-              ref.narg++;
-            }
-            Match( S_RBRACK, "]", follow );
-            ref.type = (ref.level == 0 ? '[' : ']');
-        }
-
-        /* <Var> '{' <Expr> '}'  sublist selector                          */
-        else if ( STATE(Symbol) == S_LBRACE ) {
-            Match( S_LBRACE, "{", follow );
-            ReadExpr( S_RBRACE|follow, 'r' );
-            Match( S_RBRACE, "}", follow );
-            ref.type = (ref.level == 0 ? '{' : '}');
-        }
-
-        /* <Var> '![' <Expr> ']'  list selector                            */
-        else if ( STATE(Symbol) == S_BLBRACK ) {
-            Match( S_BLBRACK, "![", follow );
-            ReadExpr( S_RBRACK|follow, 'r' );
-            Match( S_RBRACK, "]", follow );
-            ref.type = (ref.level == 0 ? '<' : '>');
-        }
-
-        /* <Var> '!{' <Expr> '}'  sublist selector                         */
-        else if ( STATE(Symbol) == S_BLBRACE ) {
-            Match( S_BLBRACE, "!{", follow );
-            ReadExpr( S_RBRACE|follow, 'r' );
-            Match( S_RBRACE, "}", follow );
-            ref.type = (ref.level == 0 ? '(' : ')');
-        }
-
-        /* <Var> '.' <Ident>  record selector                              */
-        else if ( STATE(Symbol) == S_DOT ) {
-            Match( S_DOT, ".", follow );
-            if ( STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT ) {
-                ref.rnam = RNamName( STATE(Value) );
-                Match( STATE(Symbol), "identifier", follow );
-                ref.type = '.';
-            }
-            else if ( STATE(Symbol) == S_LPAREN ) {
-                Match( S_LPAREN, "(", follow );
-                ReadExpr( S_RPAREN|follow, 'r' );
-                Match( S_RPAREN, ")", follow );
-                ref.type = ':';
-            }
-            else {
-                SyntaxError("Record component name expected");
-            }
-            ref.level = 0;
-        }
-
-        /* <Var> '!.' <Ident>  record selector                             */
-        else if ( STATE(Symbol) == S_BDOT ) {
-            Match( S_BDOT, "!.", follow );
-            if ( STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT ) {
-                ref.rnam = RNamName( STATE(Value) );
-                Match( STATE(Symbol), "identifier", follow );
-                ref.type = '!';
-            }
-            else if ( STATE(Symbol) == S_LPAREN ) {
-                Match( S_LPAREN, "(", follow );
-                ReadExpr( S_RPAREN|follow, 'r' );
-                Match( S_RPAREN, ")", follow );
-                ref.type = '|';
-            }
-            else {
-                SyntaxError("Record component name expected");
-            }
-            ref.level = 0;
-        }
-
-        /* <Var> '(' [ <Expr> { ',' <Expr> } ] ')'  function call          */
-        else if ( STATE(Symbol) == S_LPAREN ) {
-            Match( S_LPAREN, "(", follow );
-            TRY_READ { IntrFuncCallBegin(); }
-            ref.narg = 0;
-            if ( STATE(Symbol) != S_RPAREN && STATE(Symbol) != S_COLON) {
-                ReadExpr( S_RPAREN|follow, 'r' );
-                ref.narg++;
-            }
-            while ( STATE(Symbol) == S_COMMA ) {
-                Match( S_COMMA, ",", follow );
-                ReadExpr( S_RPAREN|follow, 'r' );
-                ref.narg++;
-            }
-            ref.type = 'c';
-            if (STATE(Symbol) == S_COLON ) {
-              Match( S_COLON, ":", follow );
-              if ( STATE(Symbol) != S_RPAREN ) /* save work for empty options */
-                {
-                  ReadFuncCallOptions(S_RPAREN | follow);
-                  ref.type = 'C';
-                }
-            }
-            Match( S_RPAREN, ")", follow );
-            ref.level = 0;
-        }
-
+        UInt level = EvalRef(ref, 1);
+        ref = ReadSelector(follow, level);
     }
 
     /* if we need a reference                                              */
     if ( mode == 'r' || (mode == 'x' && STATE(Symbol) != S_ASSIGN) ) {
         Int needExpr = mode == 'r' || !IS_IN(STATE(Symbol), S_SEMICOLON);
-        ref.level = EvalRef(ref, needExpr);
+        EvalRef(ref, needExpr);
     }
 
     /* if we need a statement                                              */
