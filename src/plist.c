@@ -575,15 +575,26 @@ Obj TypePlist( Obj list)
   return TypePlistWithKTNum( list, (UInt *) 0);
 }
 
-static Obj TypePlistHomHelper(Obj family, UInt knr)
+static Obj TypePlistHomHelper(Obj family, UInt tnum, UInt knr, Obj list)
 {
+    GAP_ASSERT(knr <= tnum);
+    knr = tnum - knr + 1;
+
     // get the list types of that family
     Obj types = TYPES_LIST_FAM(family);
 
     // if the type is not yet known, compute it
     Obj type = ELM0_LIST(types, knr);
     if (type == 0) {
-        type = CALL_2ARGS(TYPE_LIST_HOM, family, INTOBJ_INT(knr));
+        Obj isMutable = IS_MUTABLE_OBJ(list) ? True : False;
+        Obj sort = HasFiltListTNums[tnum][FN_IS_SSORT]
+                       ? True
+                       : HasFiltListTNums[tnum][FN_IS_NSORT] ? False : Fail;
+        Obj table = HasFiltListTNums[tnum][FN_IS_RECT]
+                        ? INTOBJ_INT(2)
+                        : HasFiltListTNums[tnum][FN_IS_TABLE] ? INTOBJ_INT(1)
+                                                              : INTOBJ_INT(0);
+        type = CALL_4ARGS(TYPE_LIST_HOM, family, isMutable, sort, table);
         ASS_LIST(types, knr, type);
 #ifdef HPCGAP
         // read back element before returning it, in case another thread raced us
@@ -647,7 +658,7 @@ static Obj TypePlistWithKTNum (
 
     /* handle homogeneous list                                             */
     if ( family && HasFiltListTNums[tnum][FN_IS_HOMOG] ) {
-        return TypePlistHomHelper(family, tnum - T_PLIST_HOM + 1);
+        return TypePlistHomHelper(family, tnum, T_PLIST_HOM, list);
     }
 
 #ifdef HPCGAP
@@ -735,8 +746,7 @@ Obj TypePlistEmptyImm (
     return TYPE_LIST_EMPTY_IMMUTABLE;
 }
 
-Obj TypePlistHom (
-    Obj                 list )
+Obj TypePlistHom(Obj list)
 {
     Int                 tnum;           /* TNUM of <list>                  */
     Obj                 family;         /* family of elements              */
@@ -745,11 +755,10 @@ Obj TypePlistHom (
     tnum   = KTNumHomPlist( list );
     family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST( list, 1 ) ) );
 
-    return TypePlistHomHelper(family, tnum - T_PLIST_HOM + 1);
+    return TypePlistHomHelper(family, tnum, T_PLIST_HOM, list);
 }
 
-Obj TypePlistCyc (
-    Obj                 list )
+Obj TypePlistCyc(Obj list)
 {
     Int                 tnum;           /* TNUM of <list>                  */
     Obj                 family;         /* family of elements              */
@@ -760,11 +769,10 @@ Obj TypePlistCyc (
     /* This had better return the cyclotomics family, could be speeded up */
     family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST( list, 1 ) ) );
 
-    return TypePlistHomHelper(family, tnum - T_PLIST_CYC + 1);
+    return TypePlistHomHelper(family, tnum, T_PLIST_CYC, list);
 }
 
-Obj TypePlistFfe (
-    Obj                 list )
+Obj TypePlistFfe(Obj list)
 {
     Int                 tnum;           /* TNUM of <list>                  */
     Obj                 family;         /* family of elements              */
@@ -773,7 +781,7 @@ Obj TypePlistFfe (
     tnum   = TNUM_OBJ( list );
     family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST( list, 1 ) ) );
 
-    return TypePlistHomHelper(family, tnum - T_PLIST_FFE + 1);
+    return TypePlistHomHelper(family, tnum, T_PLIST_FFE, list);
 }
 
 /****************************************************************************
