@@ -211,7 +211,43 @@ static Obj GAPInfo;
 
 static UInt WarnOnUnboundGlobalsRNam;
 
+/****************************************************************************
+**
+**  type must be one of the following:
+**
+**  'l':    local var with id <var>
+**  'h':    high var with id <var>
+**  'd':    debug var with id <var>, at nesting level <nest0>
+**  'g':    global var with id <var>
+**  '[':    uses <narg>
+**  ']':    uses <narg>, <level>
+**  '{':    uses nothing
+**  '}':    uses <level>
+**  '<':    uses nothing
+**  '>':    uses <level>
+**  '(':    uses nothing
+**  ')':    uses <level>
+**  '.':    record access r.<rnam>
+**  ':':    record access r.(expr)
+**  '!':    com obj access obj.<rnam>
+**  '|':    com obj access obj.(expr)
+**  'c':    function call without options and with <narg> arguments
+**  'C':    function call with options and with <narg> arguments
+*/
+typedef struct {
+    char type;
 
+    UInt var;
+    UInt narg;
+    UInt rnam;
+    UInt nest0;
+    UInt level;
+} LHSRef;
+
+
+/****************************************************************************
+**
+*/
 void ReadReferenceModifiers( TypSymbolSet follow )
 {
     volatile char type = ' ';
@@ -355,28 +391,22 @@ void ReadReferenceModifiers( TypSymbolSet follow )
 **
 **  <Ident> :=  a|b|..|z|A|B|..|Z { a|b|..|z|A|B|..|Z|0|..|9|_ }
 */
-UInt ReadVar(
-    TypSymbolSet        follow,
-    volatile Char       *_type,
-    volatile UInt       *_nest0
-    )
+LHSRef ReadVar(TypSymbolSet follow)
 {
-    Char       type = ' ';              /* type of variable                */
-    Obj        nams;                    /* list of names of local vars.    */
-    Obj        lvars;                   /* environment                     */
-    UInt       nest;                    /* nesting level of a higher var.  */
-    Obj        lvars0;                  /* environment                     */
-    UInt       nest0;                   /* nesting level of a higher var.  */
-    UInt       indx;                    /* index of a local variable       */
-    UInt       var;                     /* variable                        */
-    Char       varname[MAX_VALUE_LEN];  /* copy of variable name   */
+    LHSRef ref = { .type = ' ', .var = 0, .nest0 = 0 };
+
+    Obj  nams;                      // list of names of local vars.
+    Obj  lvars;                     // environment
+    UInt nest;                      // nesting level of a higher var.
+    Obj  lvars0;                    // environment
+    UInt nest0;                     // nesting level of a higher var.
+    UInt indx;                      // index of a local variable
+    Char varname[MAX_VALUE_LEN];    // copy of variable name
 
     /* all variables must begin with an identifier                         */
     if ( STATE(Symbol) != S_IDENT ) {
         SyntaxError( "Identifier expected" );
-        *_type = 0;
-        *_nest0 = 0;
-        return 0;
+        return ref;
     }
 
     // try to look up the variable on the stack of local variables
@@ -394,8 +424,8 @@ UInt ReadVar(
         nams = ELM_PLIST(STATE(StackNams), countNams - nest);
         indx = findValueInNams(nams, 1, LEN_PLIST(nams));
         if (indx != 0) {
-            type = (nest == 0) ? 'l' : 'h';
-            var = (nest << 16) + indx;
+            ref.type = (nest == 0) ? 'l' : 'h';
+            ref.var = (nest << 16) + indx;
             break;
         }
     }
@@ -405,16 +435,17 @@ UInt ReadVar(
     // up the static definition stack for each call function
     lvars0 = STATE(ErrorLVars);
     nest0 = 0;
-    while (type == ' ' && lvars0 != 0 && lvars0 != STATE(BottomLVars)) {
+    while (ref.type == ' ' && lvars0 != 0 && lvars0 != STATE(BottomLVars)) {
         lvars = lvars0;
         nest = 0;
-        while (type == ' ' && lvars != 0 && lvars != STATE(BottomLVars)) {
+        while (ref.type == ' ' && lvars != 0 && lvars != STATE(BottomLVars)) {
             nams = NAMS_FUNC(FUNC_LVARS(lvars));
             if (nams != 0) {
                 indx = findValueInNams(nams, 1, LEN_PLIST(nams));
                 if (indx) {
-                    type = 'd';
-                    var = (nest << 16) + indx;
+                    ref.type = 'd';
+                    ref.var = (nest << 16) + indx;
+                    ref.nest0 = nest0;
                     break;
                 }
             }
@@ -435,25 +466,23 @@ UInt ReadVar(
         nest0++;
     }
 
-    /* get the variable as a global variable                               */
-    if ( type == ' ' ) {
-        type = 'g';
-        /* we do not want to call GVarName on this value until after we
-         * have checked if this is the argument to a lambda function       */
+    // get the variable as a global variable
+    if (ref.type == ' ') {
+        ref.type = 'g';
+        // we do not want to call GVarName on this value until after we
+        // have checked if this is the argument to a lambda function
         strlcpy(varname, STATE(Value), sizeof(varname));
     }
 
-    /* match away the identifier, now that we know the variable            */
+    // match away the identifier, now that we know the variable
     Match( S_IDENT, "identifier", follow );
 
-    /* If this isn't a lambda function, look up the name          */
-    if ( STATE(Symbol) != S_MAPTO && type == 'g' ) {
-        var = GVarName( varname );
+    // If this isn't a lambda function, look up the name
+    if (STATE(Symbol) != S_MAPTO && ref.type == 'g') {
+        ref.var = GVarName(varname);
     }
 
-    *_type = type;
-    *_nest0 = nest0;
-    return var;
+    return ref;
 }
 
 /****************************************************************************
@@ -482,15 +511,14 @@ void ReadCallVarAss (
     TypSymbolSet        follow,
     Char                mode )
 {
-    volatile Char       type;     /* type of variable                */
-    volatile UInt       nest0;     /* nesting level of a higher var.  */
-    volatile UInt       var;      /* variable                        */
+    volatile Char       type;       /* type of variable                */
     volatile UInt       level;      /* number of '{}' selectors        */
     volatile UInt       rnam;      /* record component name           */
     volatile UInt       narg;      /* number of arguments             */
 
-    var = ReadVar(follow, &type, &nest0);
-    if (type == 0)
+    volatile LHSRef ref = ReadVar(follow);
+    type = ref.type;
+    if (type == ' ')
         return;
 
     /* if this was actually the beginning of a function literal            */
@@ -506,10 +534,10 @@ void ReadCallVarAss (
     }
 
     // Check if the variable is a constant
-    if ( type == 'g' && ValGVar(var) && IsConstantGVar(var) ) {
+    if ( type == 'g' && IsConstantGVar(ref.var) && ValGVar(ref.var) ) {
         // deal with references
         if (mode == 'r' || (mode == 'x' && STATE(Symbol) != S_ASSIGN)) {
-            Obj val = ValAutoGVar(var);
+            Obj val = ValAutoGVar(ref.var);
             if (val == True)
                 IntrTrueExpr();
             else if (val == False)
@@ -528,14 +556,14 @@ void ReadCallVarAss (
     if (WarnOnUnboundGlobalsRNam == 0)
       WarnOnUnboundGlobalsRNam = RNamName("WarnOnUnboundGlobals");
 
-    if ( type == 'g'                // Reading a global variable
+    if ( type == 'g'            // Reading a global variable
       && mode != 'i'                // Not inside 'IsBound'
       && LEN_PLIST(STATE(StackNams)) != 0   // Inside a function
-      && var != STATE(CurrLHSGVar)  // Not LHS of assignment
-      && ValGVar(var) == 0          // Not an existing global var
-      && ExprGVar(var) == 0         // Or an auto var
+      && ref.var != STATE(CurrLHSGVar)  // Not LHS of assignment
+      && ValGVar(ref.var) == 0          // Not an existing global var
+      && ExprGVar(ref.var) == 0         // Or an auto var
       && ! STATE(IntrIgnoring)      // Not currently ignoring parsed code
-      && ! GlobalComesFromEnclosingForLoop(var) // Not loop variable
+      && ! GlobalComesFromEnclosingForLoop(ref.var) // Not loop variable
       && (GAPInfo == 0 || !IS_REC(GAPInfo)
           || !ISB_REC(GAPInfo,WarnOnUnboundGlobalsRNam) // Warning enabled
           ||  ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
@@ -549,10 +577,10 @@ void ReadCallVarAss (
 
         /* so the prefix was a reference                                   */
         TRY_READ {
-             if ( type == 'l' ) { IntrRefLVar( var );           level=0; }
-        else if ( type == 'h' ) { IntrRefHVar( var );           level=0; }
-        else if ( type == 'd' ) { IntrRefDVar( var, nest0 - 1 );level=0; }
-        else if ( type == 'g' ) { IntrRefGVar( var );           level=0; }
+             if ( type == 'l' ) { IntrRefLVar( ref.var );           level=0; }
+        else if ( type == 'h' ) { IntrRefHVar( ref.var );           level=0; }
+        else if ( type == 'd' ) { IntrRefDVar( ref.var, ref.nest0 );level=0; }
+        else if ( type == 'g' ) { IntrRefGVar( ref.var );           level=0; }
         else if ( type == '[' ) { IntrElmList(narg);                     }
         else if ( type == ']' ) { IntrElmListLevel( narg, level );       }
         else if ( type == '{' ) { IntrElmsList();               level++; }
@@ -677,10 +705,10 @@ void ReadCallVarAss (
     /* if we need a reference                                              */
     if ( mode == 'r' || (mode == 'x' && STATE(Symbol) != S_ASSIGN) ) {
       TRY_READ {
-             if ( type == 'l' ) { IntrRefLVar( var );             }
-        else if ( type == 'h' ) { IntrRefHVar( var );             }
-        else if ( type == 'd' ) { IntrRefDVar( var, nest0 - 1 );  }
-        else if ( type == 'g' ) { IntrRefGVar( var );             }
+             if ( type == 'l' ) { IntrRefLVar( ref.var );             }
+        else if ( type == 'h' ) { IntrRefHVar( ref.var );             }
+        else if ( type == 'd' ) { IntrRefDVar( ref.var, ref.nest0 );  }
+        else if ( type == 'g' ) { IntrRefGVar( ref.var );             }
         else if ( type == '[' ) { IntrElmList(narg);              }
         else if ( type == ']' ) { IntrElmListLevel( narg, level );}
         else if ( type == '{' ) { IntrElmsList();                 }
@@ -709,15 +737,15 @@ void ReadCallVarAss (
         if ( type != 'c' && type != 'C') {
             Match( S_ASSIGN, ":=", follow );
             if ( LEN_PLIST(STATE(StackNams)) == 0 || !STATE(IntrCoding) ) {
-              STATE(CurrLHSGVar) = (type == 'g' ? var : 0);
+              STATE(CurrLHSGVar) = (type == 'g' ? ref.var : 0);
             }
             ReadExpr( follow, 'r' );
         }
       TRY_READ {
-             if ( type == 'l' ) { IntrAssLVar( var );             }
-        else if ( type == 'h' ) { IntrAssHVar( var );             }
-        else if ( type == 'd' ) { IntrAssDVar( var, nest0 - 1 );  }
-        else if ( type == 'g' ) { IntrAssGVar( var );             }
+             if ( type == 'l' ) { IntrAssLVar( ref.var );             }
+        else if ( type == 'h' ) { IntrAssHVar( ref.var );             }
+        else if ( type == 'd' ) { IntrAssDVar( ref.var, ref.nest0 );  }
+        else if ( type == 'g' ) { IntrAssGVar( ref.var );             }
         else if ( type == '[' ) { IntrAssList( narg );            }
         else if ( type == ']' ) { IntrAssListLevel( narg, level );}
         else if ( type == '{' ) { IntrAsssList();                 }
@@ -741,10 +769,10 @@ void ReadCallVarAss (
         SyntaxError("'Unbind': argument should be followed by ')'");
       }
       TRY_READ {
-             if ( type == 'l' ) { IntrUnbLVar( var );             }
-        else if ( type == 'h' ) { IntrUnbHVar( var );             }
-        else if ( type == 'd' ) { IntrUnbDVar( var, nest0 - 1 );  }
-        else if ( type == 'g' ) { IntrUnbGVar( var );             }
+             if ( type == 'l' ) { IntrUnbLVar( ref.var );             }
+        else if ( type == 'h' ) { IntrUnbHVar( ref.var );             }
+        else if ( type == 'd' ) { IntrUnbDVar( ref.var, ref.nest0 );  }
+        else if ( type == 'g' ) { IntrUnbGVar( ref.var );             }
         else if ( type == '[' ) { IntrUnbList( narg );            }
         else if ( type == '<' ) { IntrUnbPosObj();                }
         else if ( type == '.' ) { IntrUnbRecName( rnam );         }
@@ -759,10 +787,10 @@ void ReadCallVarAss (
     /* if we need an isbound                                               */
     else /* if ( mode == 'i' ) */ {
       TRY_READ {
-             if ( type == 'l' ) { IntrIsbLVar( var );             }
-        else if ( type == 'h' ) { IntrIsbHVar( var );             }
-        else if ( type == 'd' ) { IntrIsbDVar( var, nest0 - 1 );  }
-        else if ( type == 'g' ) { IntrIsbGVar( var );             }
+             if ( type == 'l' ) { IntrIsbLVar( ref.var );             }
+        else if ( type == 'h' ) { IntrIsbHVar( ref.var );             }
+        else if ( type == 'd' ) { IntrIsbDVar( ref.var, ref.nest0 );  }
+        else if ( type == 'g' ) { IntrIsbGVar( ref.var );             }
         else if ( type == '[' ) { IntrIsbList( narg );            }
         else if ( type == '<' ) { IntrIsbPosObj();                }
         else if ( type == '.' ) { IntrIsbRecName( rnam );         }
