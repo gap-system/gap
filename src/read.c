@@ -251,11 +251,16 @@ enum REFTYPE {
 typedef struct {
     enum REFTYPE type;
 
-    UInt var;
-    UInt narg;
-    UInt rnam;
-    UInt nest0;
-    UInt level;
+    union {
+        UInt var;
+        UInt narg;
+        UInt rnam;
+    };
+
+    union {
+        UInt nest0;
+        UInt level;
+    };
 } LHSRef;
 
 
