@@ -215,27 +215,41 @@ static UInt WarnOnUnboundGlobalsRNam;
 **
 **  type must be one of the following:
 **
-**  'l':    local var with id <var>
-**  'h':    high var with id <var>
-**  'd':    debug var with id <var>, at nesting level <nest0>
-**  'g':    global var with id <var>
-**  '[':    uses <narg>
-**  ']':    uses <narg>, <level>
-**  '{':    uses nothing
-**  '}':    uses <level>
-**  '<':    uses nothing
-**  '>':    uses <level>
-**  '(':    uses nothing
-**  ')':    uses <level>
-**  '.':    record access r.<rnam>
-**  ':':    record access r.(expr)
-**  '!':    com obj access obj.<rnam>
-**  '|':    com obj access obj.(expr)
-**  'c':    function call without options and with <narg> arguments
-**  'C':    function call with options and with <narg> arguments
+**  R_LVAR:             local var with id <var>
+**  R_HVAR:             high var with id <var>
+**  R_DVAR:             debug var with id <var>, at nesting level <nest0>
+**  R_GVAR:             global var with id <var>
+**  R_ELM_LIST:         uses <narg>, <level>
+**  R_ELMS_LIST:        uses <level>
+**  R_ELM_POSOBJ:       uses <level>
+**  R_ELMS_POSOBJ:      uses <level>
+**  R_ELM_REC_NAME:     record access r.<rnam>
+**  R_ELM_REC_EXPR      record access r.(expr)
+**  R_ELM_COMOBJ_NAME:  com obj access obj.<rnam>
+**  R_ELM_COMOBJ_EXPR:  com obj access obj.(expr)
+**  R_FUNCCALL          function call without options and with <narg> arguments
+**  R_FUNCCALL_OPTS     function call with options and with <narg> arguments
 */
+enum REFTYPE {
+    R_INVALID,
+    R_LVAR,
+    R_HVAR,
+    R_DVAR,
+    R_GVAR,
+    R_ELM_LIST,
+    R_ELMS_LIST,
+    R_ELM_POSOBJ,
+    R_ELMS_POSOBJ,
+    R_ELM_REC_NAME,
+    R_ELM_REC_EXPR,
+    R_ELM_COMOBJ_NAME,
+    R_ELM_COMOBJ_EXPR,
+    R_FUNCCALL,
+    R_FUNCCALL_OPTS,
+};
+
 typedef struct {
-    char type;
+    enum REFTYPE type;
 
     UInt var;
     UInt narg;
@@ -252,59 +266,59 @@ UInt EvalRef(const LHSRef ref, Int needExpr)
 {
     TRY_READ
     {
-        switch (ref.type) {
-        case 'l':
+        switch ((UInt)ref.type) {
+        case R_LVAR:
             IntrRefLVar(ref.var);
             break;
-        case 'h':
+        case R_HVAR:
             IntrRefHVar(ref.var);
             break;
-        case 'd':
+        case R_DVAR:
             IntrRefDVar(ref.var, ref.nest0);
             break;
-        case 'g':
+        case R_GVAR:
             IntrRefGVar(ref.var);
             break;
-        case '[':
-            IntrElmList(ref.narg);
+        case R_ELM_LIST:
+            if (ref.level == 0)
+                IntrElmList(ref.narg);
+            else
+                IntrElmListLevel(ref.narg, ref.level);
             break;
-        case ']':
-            IntrElmListLevel(ref.narg, ref.level);
+        case R_ELMS_LIST:
+            if (ref.level == 0)
+                IntrElmsList();
+            else
+                IntrElmsListLevel(ref.level);
+            return ref.level + 1;
+        case R_ELM_POSOBJ:
+            if (ref.level == 0)
+                IntrElmPosObj();
+            else
+                IntrElmPosObjLevel(ref.level);
             break;
-        case '{':
-            IntrElmsList();
+        case R_ELMS_POSOBJ:
+            if (ref.level == 0)
+                IntrElmsPosObj();
+            else
+                IntrElmsPosObjLevel(ref.level);
             return ref.level + 1;
-        case '}':
-            IntrElmsListLevel(ref.level);
-            return ref.level + 1;
-        case '<':
-            IntrElmPosObj();
-            break;
-        case '>':
-            IntrElmPosObjLevel(ref.level);
-            break;
-        case '(':
-            IntrElmsPosObj();
-            return ref.level + 1;
-        case ')':
-            IntrElmsPosObjLevel(ref.level);
-            return ref.level + 1;
-        case '.':
+        case R_ELM_REC_NAME:
             IntrElmRecName(ref.rnam);
             break;
-        case ':':
+        case R_ELM_REC_EXPR:
             IntrElmRecExpr();
             break;
-        case '!':
+        case R_ELM_COMOBJ_NAME:
             IntrElmComObjName(ref.rnam);
             break;
-        case '|':
+        case R_ELM_COMOBJ_EXPR:
             IntrElmComObjExpr();
             break;
-        case 'c':
+        case R_FUNCCALL:
             IntrFuncCallEnd(needExpr, 0, ref.narg);
             break;
-        case 'C':
+        case R_FUNCCALL_OPTS:
             IntrFuncCallEnd(needExpr, 1, ref.narg);
             break;
         default:
@@ -319,59 +333,59 @@ void AssignRef(const LHSRef ref)
 {
     TRY_READ
     {
-        switch (ref.type) {
-        case 'l':
+        switch ((UInt)ref.type) {
+        case R_LVAR:
             IntrAssLVar(ref.var);
             break;
-        case 'h':
+        case R_HVAR:
             IntrAssHVar(ref.var);
             break;
-        case 'd':
+        case R_DVAR:
             IntrAssDVar(ref.var, ref.nest0);
             break;
-        case 'g':
+        case R_GVAR:
             IntrAssGVar(ref.var);
             break;
-        case '[':
-            IntrAssList(ref.narg);
+        case R_ELM_LIST:
+            if (ref.level == 0)
+                IntrAssList(ref.narg);
+            else
+                IntrAssListLevel(ref.narg, ref.level);
             break;
-        case ']':
-            IntrAssListLevel(ref.narg, ref.level);
+        case R_ELMS_LIST:
+            if (ref.level == 0)
+                IntrAsssList();
+            else
+                IntrAsssListLevel(ref.level);
             break;
-        case '{':
-            IntrAsssList();
+        case R_ELM_POSOBJ:
+            if (ref.level == 0)
+                IntrAssPosObj();
+            else
+                IntrAssPosObjLevel(ref.level);
             break;
-        case '}':
-            IntrAsssListLevel(ref.level);
+        case R_ELMS_POSOBJ:
+            if (ref.level == 0)
+                IntrAsssPosObj();
+            else
+                IntrAsssPosObjLevel(ref.level);
             break;
-        case '<':
-            IntrAssPosObj();
-            break;
-        case '>':
-            IntrAssPosObjLevel(ref.level);
-            break;
-        case '(':
-            IntrAsssPosObj();
-            break;
-        case ')':
-            IntrAsssPosObjLevel(ref.level);
-            break;
-        case '.':
+        case R_ELM_REC_NAME:
             IntrAssRecName(ref.rnam);
             break;
-        case ':':
+        case R_ELM_REC_EXPR:
             IntrAssRecExpr();
             break;
-        case '!':
+        case R_ELM_COMOBJ_NAME:
             IntrAssComObjName(ref.rnam);
             break;
-        case '|':
+        case R_ELM_COMOBJ_EXPR:
             IntrAssComObjExpr();
             break;
-        case 'c':
+        case R_FUNCCALL:
             IntrFuncCallEnd(0, 0, ref.narg);
             break;
-        case 'C':
+        case R_FUNCCALL_OPTS:
             IntrFuncCallEnd(0, 1, ref.narg);
             break;
         default:
@@ -383,37 +397,41 @@ void AssignRef(const LHSRef ref)
 
 void UnbindRef(const LHSRef ref)
 {
+    volatile enum REFTYPE type = ref.type;
+    if (ref.level > 0)
+        type = R_INVALID;
+
     TRY_READ
     {
-        switch (ref.type) {
-        case 'l':
+        switch ((UInt)type) {
+        case R_LVAR:
             IntrUnbLVar(ref.var);
             break;
-        case 'h':
+        case R_HVAR:
             IntrUnbHVar(ref.var);
             break;
-        case 'd':
+        case R_DVAR:
             IntrUnbDVar(ref.var, ref.nest0);
             break;
-        case 'g':
+        case R_GVAR:
             IntrUnbGVar(ref.var);
             break;
-        case '[':
+        case R_ELM_LIST:
             IntrUnbList(ref.narg);
             break;
-        case '<':
+        case R_ELM_POSOBJ:
             IntrUnbPosObj();
             break;
-        case '.':
+        case R_ELM_REC_NAME:
             IntrUnbRecName(ref.rnam);
             break;
-        case ':':
+        case R_ELM_REC_EXPR:
             IntrUnbRecExpr();
             break;
-        case '!':
+        case R_ELM_COMOBJ_NAME:
             IntrUnbComObjName(ref.rnam);
             break;
-        case '|':
+        case R_ELM_COMOBJ_EXPR:
             IntrUnbComObjExpr();
             break;
         default:
@@ -424,37 +442,41 @@ void UnbindRef(const LHSRef ref)
 
 void IsBoundRef(const LHSRef ref)
 {
+    volatile enum REFTYPE type = ref.type;
+    if (ref.level > 0)
+        type = R_INVALID;
+
     TRY_READ
     {
-        switch (ref.type) {
-        case 'l':
+        switch ((UInt)type) {
+        case R_LVAR:
             IntrIsbLVar(ref.var);
             break;
-        case 'h':
+        case R_HVAR:
             IntrIsbHVar(ref.var);
             break;
-        case 'd':
+        case R_DVAR:
             IntrIsbDVar(ref.var, ref.nest0);
             break;
-        case 'g':
+        case R_GVAR:
             IntrIsbGVar(ref.var);
             break;
-        case '[':
+        case R_ELM_LIST:
             IntrIsbList(ref.narg);
             break;
-        case '<':
+        case R_ELM_POSOBJ:
             IntrIsbPosObj();
             break;
-        case '.':
+        case R_ELM_REC_NAME:
             IntrIsbRecName(ref.rnam);
             break;
-        case ':':
+        case R_ELM_REC_EXPR:
             IntrIsbRecExpr();
             break;
-        case '!':
+        case R_ELM_COMOBJ_NAME:
             IntrIsbComObjName(ref.rnam);
             break;
-        case '|':
+        case R_ELM_COMOBJ_EXPR:
             IntrIsbComObjExpr();
             break;
         default:
@@ -471,7 +493,7 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
 {
     volatile LHSRef ref;
 
-    ref.type = ' ';
+    ref.type = R_INVALID;
     ref.level = level;
     ref.narg = 0;
     ref.rnam = 0;
@@ -487,7 +509,7 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
             ref.narg++;
         }
         Match(S_RBRACK, "]", follow);
-        ref.type = (ref.level == 0 ? '[' : ']');
+        ref.type = R_ELM_LIST;
     }
 
     // <Var> '{' <Expr> '}'  sublist selector
@@ -495,7 +517,7 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
         Match(S_LBRACE, "{", follow);
         ReadExpr(S_RBRACE | follow, 'r');
         Match(S_RBRACE, "}", follow);
-        ref.type = (ref.level == 0 ? '{' : '}');
+        ref.type = R_ELMS_LIST;
     }
 
     // <Var> '![' <Expr> ']'  list selector
@@ -503,7 +525,7 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
         Match(S_BLBRACK, "![", follow);
         ReadExpr(S_RBRACK | follow, 'r');
         Match(S_RBRACK, "]", follow);
-        ref.type = (ref.level == 0 ? '<' : '>');
+        ref.type = R_ELM_POSOBJ;
     }
 
     // <Var> '!{' <Expr> '}'  sublist selector
@@ -511,7 +533,7 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
         Match(S_BLBRACE, "!{", follow);
         ReadExpr(S_RBRACE | follow, 'r');
         Match(S_RBRACE, "}", follow);
-        ref.type = (ref.level == 0 ? '(' : ')');
+        ref.type = R_ELMS_POSOBJ;
     }
 
     // <Var> '.' <Ident>  record selector
@@ -520,13 +542,13 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
         if (STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT) {
             ref.rnam = RNamName(STATE(Value));
             Match(STATE(Symbol), "identifier", follow);
-            ref.type = '.';
+            ref.type = R_ELM_REC_NAME;
         }
         else if (STATE(Symbol) == S_LPAREN) {
             Match(S_LPAREN, "(", follow);
             ReadExpr(S_RPAREN | follow, 'r');
             Match(S_RPAREN, ")", follow);
-            ref.type = ':';
+            ref.type = R_ELM_REC_EXPR;
         }
         else {
             SyntaxError("Record component name expected");
@@ -540,13 +562,13 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
         if (STATE(Symbol) == S_IDENT || STATE(Symbol) == S_INT) {
             ref.rnam = RNamName(STATE(Value));
             Match(STATE(Symbol), "identifier", follow);
-            ref.type = '!';
+            ref.type = R_ELM_COMOBJ_NAME;
         }
         else if (STATE(Symbol) == S_LPAREN) {
             Match(S_LPAREN, "(", follow);
             ReadExpr(S_RPAREN | follow, 'r');
             Match(S_RPAREN, ")", follow);
-            ref.type = '|';
+            ref.type = R_ELM_COMOBJ_EXPR;
         }
         else {
             SyntaxError("Record component name expected");
@@ -571,12 +593,12 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
             ReadExpr(S_RPAREN | follow, 'r');
             ref.narg++;
         }
-        ref.type = 'c';
+        ref.type = R_FUNCCALL;
         if (STATE(Symbol) == S_COLON) {
             Match(S_COLON, ":", follow);
             if (STATE(Symbol) != S_RPAREN) {    // save work for empty options
                 ReadFuncCallOptions(S_RPAREN | follow);
-                ref.type = 'C';
+                ref.type = R_FUNCCALL_OPTS;
             }
         }
         Match(S_RPAREN, ")", follow);
@@ -608,7 +630,7 @@ void ReadReferenceModifiers(TypSymbolSet follow)
 */
 LHSRef ReadVar(TypSymbolSet follow)
 {
-    LHSRef ref = { .type = ' ', .var = 0, .nest0 = 0 };
+    LHSRef ref = { .type = R_INVALID, .var = 0, .nest0 = 0 };
 
     Obj  nams;                      // list of names of local vars.
     Obj  lvars;                     // environment
@@ -639,7 +661,7 @@ LHSRef ReadVar(TypSymbolSet follow)
         nams = ELM_PLIST(STATE(StackNams), countNams - nest);
         indx = findValueInNams(nams, 1, LEN_PLIST(nams));
         if (indx != 0) {
-            ref.type = (nest == 0) ? 'l' : 'h';
+            ref.type = (nest == 0) ? R_LVAR : R_HVAR;
             ref.var = (nest << 16) + indx;
             break;
         }
@@ -650,15 +672,15 @@ LHSRef ReadVar(TypSymbolSet follow)
     // up the static definition stack for each call function
     lvars0 = STATE(ErrorLVars);
     nest0 = 0;
-    while (ref.type == ' ' && lvars0 != 0 && lvars0 != STATE(BottomLVars)) {
+    while (ref.type == R_INVALID && lvars0 != 0 && lvars0 != STATE(BottomLVars)) {
         lvars = lvars0;
         nest = 0;
-        while (ref.type == ' ' && lvars != 0 && lvars != STATE(BottomLVars)) {
+        while (ref.type == R_INVALID && lvars != 0 && lvars != STATE(BottomLVars)) {
             nams = NAMS_FUNC(FUNC_LVARS(lvars));
             if (nams != 0) {
                 indx = findValueInNams(nams, 1, LEN_PLIST(nams));
                 if (indx) {
-                    ref.type = 'd';
+                    ref.type = R_DVAR;
                     ref.var = (nest << 16) + indx;
                     ref.nest0 = nest0;
                     break;
@@ -682,8 +704,8 @@ LHSRef ReadVar(TypSymbolSet follow)
     }
 
     // get the variable as a global variable
-    if (ref.type == ' ') {
-        ref.type = 'g';
+    if (ref.type == R_INVALID) {
+        ref.type = R_GVAR;
         // we do not want to call GVarName on this value until after we
         // have checked if this is the argument to a lambda function
         strlcpy(varname, STATE(Value), sizeof(varname));
@@ -693,7 +715,7 @@ LHSRef ReadVar(TypSymbolSet follow)
     Match( S_IDENT, "identifier", follow );
 
     // If this isn't a lambda function, look up the name
-    if (STATE(Symbol) != S_MAPTO && ref.type == 'g') {
+    if (STATE(Symbol) != S_MAPTO && ref.type == R_GVAR) {
         ref.var = GVarName(varname);
     }
 
@@ -725,7 +747,7 @@ LHSRef ReadVar(TypSymbolSet follow)
 void ReadCallVarAss(TypSymbolSet follow, Char mode)
 {
     volatile LHSRef ref = ReadVar(follow);
-    if (ref.type == ' ')
+    if (ref.type == R_INVALID)
         return;
 
     /* if this was actually the beginning of a function literal            */
@@ -741,7 +763,7 @@ void ReadCallVarAss(TypSymbolSet follow, Char mode)
     }
 
     // Check if the variable is a constant
-    if (ref.type == 'g' && IsConstantGVar(ref.var) && ValGVar(ref.var)) {
+    if (ref.type == R_GVAR && IsConstantGVar(ref.var) && ValGVar(ref.var)) {
         // deal with references
         if (mode == 'r' || (mode == 'x' && STATE(Symbol) != S_ASSIGN)) {
             Obj val = ValAutoGVar(ref.var);
@@ -763,7 +785,7 @@ void ReadCallVarAss(TypSymbolSet follow, Char mode)
     if (WarnOnUnboundGlobalsRNam == 0)
       WarnOnUnboundGlobalsRNam = RNamName("WarnOnUnboundGlobals");
 
-    if ( ref.type == 'g'            // Reading a global variable
+    if ( ref.type == R_GVAR            // Reading a global variable
       && mode != 'i'                // Not inside 'IsBound'
       && LEN_PLIST(STATE(StackNams)) != 0   // Inside a function
       && ref.var != STATE(CurrLHSGVar)  // Not LHS of assignment
@@ -795,10 +817,10 @@ void ReadCallVarAss(TypSymbolSet follow, Char mode)
 
     /* if we need a statement                                              */
     else if ( mode == 's' || (mode == 'x' && STATE(Symbol) == S_ASSIGN) ) {
-        if (ref.type != 'c' && ref.type != 'C') {
+        if (ref.type != R_FUNCCALL && ref.type != R_FUNCCALL_OPTS) {
             Match( S_ASSIGN, ":=", follow );
             if ( LEN_PLIST(STATE(StackNams)) == 0 || !STATE(IntrCoding) ) {
-                STATE(CurrLHSGVar) = (ref.type == 'g' ? ref.var : 0);
+                STATE(CurrLHSGVar) = (ref.type == R_GVAR ? ref.var : 0);
             }
             ReadExpr( follow, 'r' );
         }
