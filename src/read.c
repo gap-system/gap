@@ -271,7 +271,7 @@ UInt EvalRef(const LHSRef ref, Int needExpr)
 {
     TRY_READ
     {
-        switch ((UInt)ref.type) {
+        switch (ref.type) {
         case R_LVAR:
             IntrRefLVar(ref.var);
             break;
@@ -326,6 +326,7 @@ UInt EvalRef(const LHSRef ref, Int needExpr)
         case R_FUNCCALL_OPTS:
             IntrFuncCallEnd(needExpr, 1, ref.narg);
             break;
+        case R_INVALID:
         default:
             // This should never be reached
             SyntaxError("Parse error in EvalRef");
@@ -338,7 +339,7 @@ void AssignRef(const LHSRef ref)
 {
     TRY_READ
     {
-        switch ((UInt)ref.type) {
+        switch (ref.type) {
         case R_LVAR:
             IntrAssLVar(ref.var);
             break;
@@ -393,6 +394,7 @@ void AssignRef(const LHSRef ref)
         case R_FUNCCALL_OPTS:
             IntrFuncCallEnd(0, 1, ref.narg);
             break;
+        case R_INVALID:
         default:
             // This should never be reached
             SyntaxError("Parse error in AssignRef");
@@ -408,7 +410,7 @@ void UnbindRef(const LHSRef ref)
 
     TRY_READ
     {
-        switch ((UInt)type) {
+        switch (type) {
         case R_LVAR:
             IntrUnbLVar(ref.var);
             break;
@@ -439,6 +441,11 @@ void UnbindRef(const LHSRef ref)
         case R_ELM_COMOBJ_EXPR:
             IntrUnbComObjExpr();
             break;
+        case R_INVALID:
+        case R_ELMS_LIST:
+        case R_ELMS_POSOBJ:
+        case R_FUNCCALL:
+        case R_FUNCCALL_OPTS:
         default:
             SyntaxError("Illegal operand for 'Unbind'");
         }
@@ -453,7 +460,7 @@ void IsBoundRef(const LHSRef ref)
 
     TRY_READ
     {
-        switch ((UInt)type) {
+        switch (type) {
         case R_LVAR:
             IntrIsbLVar(ref.var);
             break;
@@ -484,6 +491,11 @@ void IsBoundRef(const LHSRef ref)
         case R_ELM_COMOBJ_EXPR:
             IntrIsbComObjExpr();
             break;
+        case R_INVALID:
+        case R_ELMS_LIST:
+        case R_ELMS_POSOBJ:
+        case R_FUNCCALL:
+        case R_FUNCCALL_OPTS:
         default:
             SyntaxError("Illegal operand for 'IsBound'");
         }
