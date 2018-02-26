@@ -388,13 +388,9 @@ void AssignRef(const LHSRef ref)
         case R_ELM_COMOBJ_EXPR:
             IntrAssComObjExpr();
             break;
-        case R_FUNCCALL:
-            IntrFuncCallEnd(0, 0, ref.narg);
-            break;
-        case R_FUNCCALL_OPTS:
-            IntrFuncCallEnd(0, 1, ref.narg);
-            break;
         case R_INVALID:
+        case R_FUNCCALL:
+        case R_FUNCCALL_OPTS:
         default:
             // This should never be reached
             SyntaxError("Parse error in AssignRef");
@@ -834,14 +830,19 @@ void ReadCallVarAss(TypSymbolSet follow, Char mode)
 
     /* if we need a statement                                              */
     else if ( mode == 's' || (mode == 'x' && STATE(Symbol) == S_ASSIGN) ) {
-        if (ref.type != R_FUNCCALL && ref.type != R_FUNCCALL_OPTS) {
+        if (ref.type == R_FUNCCALL || ref.type == R_FUNCCALL_OPTS) {
+            TRY_READ {
+                IntrFuncCallEnd(0, ref.type == R_FUNCCALL_OPTS, ref.narg);
+            }
+        }
+        else {
             Match( S_ASSIGN, ":=", follow );
             if ( LEN_PLIST(STATE(StackNams)) == 0 || !STATE(IntrCoding) ) {
                 STATE(CurrLHSGVar) = (ref.type == R_GVAR ? ref.var : 0);
             }
             ReadExpr( follow, 'r' );
+            AssignRef(ref);
         }
-        AssignRef(ref);
     }
 
     /*  if we need an unbind                                               */
