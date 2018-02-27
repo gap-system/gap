@@ -198,7 +198,7 @@ void GetIdent ( void )
     isQuoted = 0;
 
     /* read all characters into 'STATE(Value)'                                    */
-    Char c = *STATE(In);
+    Char c = PEEK_CURR_CHAR();
     for ( i=0; IsIdent(c) || IsDigit(c) || c=='\\'; i++ ) {
 
         fetch = 1;
@@ -368,7 +368,7 @@ void GetNumber ( UInt StartingStatus )
   UInt seenADigit = (StartingStatus != 0 && StartingStatus != 2);
   UInt seenExpDigit = (StartingStatus ==5);
 
-  c = *STATE(In);
+  c = PEEK_CURR_CHAR();
   if (StartingStatus  <  2) {
     /* read initial sequence of digits into 'Value'             */
     for (i = 0; !wasEscaped && IsDigit(c) && i < SAFE_VALUE_SIZE-1; i++) {
@@ -606,7 +606,7 @@ void GetNumber ( UInt StartingStatus )
 static inline Char GetOctalDigits( void )
 {
     Char result;
-    Char c = *STATE(In);
+    Char c = PEEK_CURR_CHAR();
     if ( c < '0' || c > '7' )
         SyntaxError("Expecting octal digit");
     result = 8 * (c - '0');
@@ -642,7 +642,7 @@ static inline Char CharHexDigit( Char c )
 Char GetEscapedChar( void )
 {
   Char result = 0;
-  Char c = *STATE(In);
+  Char c = PEEK_CURR_CHAR();
 
   if ( c == 'n'  )       result = '\n';
   else if ( c == 't'  )  result = '\t';
@@ -707,7 +707,7 @@ Char GetEscapedChar( void )
 void GetStr ( void )
 {
   Int                 i = 0, fetch;
-  Char c = *STATE(In);
+  Char c = PEEK_CURR_CHAR();
 
   /* read all characters into 'Value'                                    */
   for ( i = 0; i < SAFE_VALUE_SIZE-1 && c != '"'
@@ -784,7 +784,7 @@ void GetStr ( void )
 void GetTripStr ( void )
 {
   Int                 i = 0;
-  Char c = *STATE(In);
+  Char c = PEEK_CURR_CHAR();
 
   /* print only a partial prompt while reading a triple string           */
   if ( !SyQuiet )
@@ -954,7 +954,7 @@ void GetSymbol ( void )
     }
 
 
-    Char c = *STATE(In);
+    Char c = PEEK_CURR_CHAR();
 
   /* if no character is available then get one                           */
   if ( c == '\0' )
