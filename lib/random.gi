@@ -54,9 +54,6 @@ InstallMethod(Random, [IsRandomSource, IsInt, IsInt], function(rs, a, b)
   fi;
 end);
 
-InstallMethod(Random, [IsRandomSource, IsList], function(rs, list)
-  return list[Random(rs, 1, Length(list))];
-end);
 
 # A print method.
 InstallMethod(PrintObj, [IsRandomSource], function(rs)
@@ -231,13 +228,6 @@ else
 InstallValue(GlobalMersenneTwister, RandomSource(IsMersenneTwister, "1"));
 fi;
 
-# default random method for lists and pairs of integers using the Mersenne
-# twister
-InstallMethod( Random, "for an internal list",
-    [ IsList and IsInternalRep ], 100, function(l) 
-  return l[Random(GlobalMersenneTwister, 1, Length(l))]; 
-end );
-
 InstallMethod( Random,
     "for two integers",
     IsIdenticalObj,
@@ -318,3 +308,8 @@ InstallMethodWithRandomSource( Random, "for a random source and a (finite) colle
     [ IsRandomSource, IsCollection and IsFinite ],
     {} -> -RankFilter(IsCollection and IsFinite),
     {rs, C} -> RandomList(rs, Enumerator( C ) ) );
+
+InstallMethodWithRandomSource( Random,
+    "for a random source and a list",
+    [ IsRandomSource, IsList ],
+    {rs, C} -> C[Random(rs,1,Length(C))]);
