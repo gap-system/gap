@@ -21,8 +21,8 @@
 #include <src/system.h>
 
 
-extern void GET_CHAR(void);
-extern Char PEEK_CHAR(void);
+extern void GET_NEXT_CHAR(void);
+extern Char PEEK_NEXT_CHAR(void);
 
 
 /****************************************************************************
