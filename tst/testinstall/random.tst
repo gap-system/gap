@@ -5,7 +5,8 @@ gap> ReadGapRoot( "tst/testrandom.g" );
 gap> randomTest([1,2,3], RandomList);
 gap> randomTest([1..100], RandomList);
 gap> randomTest("abcdef", RandomList);
-gap> randomTestForSizeOneCollection([1], RandomList);
+gap> randomTest(BlistList([1..100],[1,3..99]), RandomList);
+gap> randomTest([1], RandomList);
 
 #
 # fields and rings
@@ -27,7 +28,7 @@ gap> randomTest(GF(257^2), Random);
 gap> randomTest(GF(2^20), Random);
 
 # ZmodnZ
-gap> randomTestForSizeOneCollection(Integers mod 1, Random);
+gap> randomTest(Integers mod 1, Random);
 gap> randomTest(Integers mod 4, Random);
 gap> randomTest(Integers mod 100, Random);
 
@@ -43,14 +44,14 @@ gap> randomTest(FreeMagma(1), Random);
 gap> randomTest(FreeMagma(2), Random);
 
 #
-gap> randomTestForSizeOneCollection(FreeMonoid(0), Random);
+gap> randomTest(FreeMonoid(0), Random);
 gap> randomTest(FreeMonoid(1), Random);
 gap> randomTest(FreeMonoid(2), Random);
 
 #
 # permutation groups
 #
-gap> randomTestForSizeOneCollection(TrivialGroup(IsPermGroup), Random);
+gap> randomTest(TrivialGroup(IsPermGroup), Random);
 
 #
 gap> randomTest(SymmetricGroup(2), Random);
@@ -71,15 +72,15 @@ gap> randomTest(PrimitiveGroup(5,3)*(1,4,6), Random);
 #
 # pc groups
 #
-gap> randomTestForSizeOneCollection(TrivialGroup(IsPcGroup), Random);
+gap> randomTest(TrivialGroup(IsPcGroup), Random);
 gap> randomTest(AbelianGroup(IsPcGroup, [2]), Random);
 gap> randomTest(AbelianGroup(IsPcGroup, [2,3,4,5]), Random);
 
 #
 # fp groups
 #
-gap> randomTestForSizeOneCollection(TrivialGroup(IsFpGroup), Random);
-gap> randomTestForSizeOneCollection(FreeGroup(0), Random);
+gap> randomTest(TrivialGroup(IsFpGroup), Random);
+gap> randomTest(FreeGroup(0), Random);
 gap> randomTest(FreeGroup(1), Random);
 gap> randomTest(FreeGroup(2), Random);
 gap> randomTest(FreeGroup(infinity), Random);
@@ -88,9 +89,9 @@ gap> randomTest(DihedralGroup(IsFpGroup, 6), Random);
 #
 # matrix groups
 #
-gap> randomTestForSizeOneCollection(CyclicGroup(IsMatrixGroup, GF(2), 1), Random);
-gap> randomTestForSizeOneCollection(CyclicGroup(IsMatrixGroup, GF(9), 1), Random);
-gap> randomTestForSizeOneCollection(CyclicGroup(IsMatrixGroup, Rationals, 1), Random);
+gap> randomTest(CyclicGroup(IsMatrixGroup, GF(2), 1), Random);
+gap> randomTest(CyclicGroup(IsMatrixGroup, GF(9), 1), Random);
+gap> randomTest(CyclicGroup(IsMatrixGroup, Rationals, 1), Random);
 
 #
 gap> randomTest(CyclicGroup(IsMatrixGroup, GF(2), 3), Random);
@@ -114,8 +115,11 @@ gap> randomTest(DoubleCoset(Group(()), (1,2), Group((1,2,3)) ), Random);
 gap> randomTest(DoubleCoset(Group((1,2),(3,4)), (), Group((1,2,3)) ), Random);
 
 #
-gap> randomTestForSizeOneCollection([1], Random);
+gap> randomTest([1], Random);
 gap> randomTest([1..10], Random);
+gap> randomTest([1..2], Random);
+gap> randomTest([0, 10..1000], Random);
+gap> randomTest("cheese", Random);
 gap> randomTest([1,-6,"cheese", Group(())], Random);
 
 #
