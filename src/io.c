@@ -1052,39 +1052,37 @@ static Int GetLine2 (
         if ( input->sline == Fail || ! IS_STRING(input->sline) ) {
             return 0;
         }
-        else {
-            ConvString(input->sline);
-            /* we now allow that input->sline actually contains several lines,
-               e.g., it can be a  string from a string stream  */
-            {
-                /***  probably this can be a bit more optimized  ***/
-                register Char * ptr, * bptr;
-                register UInt count, len, max, cbuf;
-                /* start position in buffer */
-                for(cbuf = 0; buffer[cbuf]; cbuf++);
-                /* copy piece of input->sline into buffer and adjust counters */
-                for(count = input->spos,
-                    ptr = (Char *)CHARS_STRING(input->sline) + count,
-                    len = GET_LEN_STRING(input->sline),
-                    max = length-2,
-                    bptr = buffer + cbuf;
-                    cbuf < max && count < len
-                                  && *ptr != '\n' && *ptr != '\r';
-                    *bptr = *ptr, cbuf++, ptr++, bptr++, count++);
-                /* we also copy an end of line if there is one */
-                if (*ptr == '\n' || *ptr == '\r') {
-                    buffer[cbuf] = *ptr;
-                    cbuf++;
-                    count++;
-                }
-                buffer[cbuf] = '\0';
-                input->spos = count;
-                /* if input->stream is a string stream, we have to adjust the
-                   position counter in the stream object as well */
-                if (input->isstringstream) {
-                    ADDR_OBJ(input->stream)[1] = INTOBJ_INT(count);
-                }
-            }
+
+        ConvString(input->sline);
+        /* we now allow that input->sline actually contains several lines,
+           e.g., it can be a  string from a string stream  */
+
+        /* start position in buffer */
+        Char *bptr = buffer;
+        while (*bptr)
+            bptr++;
+
+        /* copy piece of input->sline into buffer and adjust counters */
+        UInt count = input->spos;
+        Char *ptr = (Char *)CHARS_STRING(input->sline) + count;
+        UInt len = GET_LEN_STRING(input->sline);
+        Char *bend = buffer + length - 2;
+        while (bptr < bend && count < len && *ptr != '\n' && *ptr != '\r') {
+            *bptr++ = *ptr++;
+            count++;
+        }
+        /* we also copy an end of line if there is one */
+        if (*ptr == '\n' || *ptr == '\r') {
+            *bptr++ = *ptr++;
+            count++;
+        }
+        *bptr = '\0';
+        input->spos = count;
+
+        /* if input->stream is a string stream, we have to adjust the
+           position counter in the stream object as well */
+        if (input->isstringstream) {
+            ADDR_OBJ(input->stream)[1] = INTOBJ_INT(count);
         }
     }
     else {
