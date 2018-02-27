@@ -624,13 +624,18 @@ static inline Char GetOctalDigits( void )
 *F  CharHexDigit( <ch> ) . . . . . . . . .  turn a single hex digit into Char
 **
 */
-static inline Char CharHexDigit( const Char ch ) {
-    if (ch >= 'a') {
-        return (ch - 'a' + 10);
-    } else if (ch >= 'A') {
-        return (ch - 'A' + 10);
+static inline Char CharHexDigit( Char c )
+{
+    c = GET_NEXT_CHAR();
+    if (!IsHexDigit(c)) {
+        SyntaxError("Expecting hexadecimal digit");
+    }
+    if (c >= 'a') {
+        return (c - 'a' + 10);
+    } else if (c >= 'A') {
+        return (c - 'A' + 10);
     } else {
-        return (ch - '0');
+        return (c - '0');
     }
 }
 
@@ -654,15 +659,7 @@ Char GetEscapedChar( void )
        octal numbers */
     c = GET_NEXT_CHAR();
     if (c == 'x') {
-        c = GET_NEXT_CHAR();
-        if (!IsHexDigit(c)) {
-            SyntaxError("Expecting hexadecimal digit");
-        }
         result = 16 * CharHexDigit(c);
-        c = GET_NEXT_CHAR();
-        if (!IsHexDigit(c)) {
-            SyntaxError("Expecting hexadecimal digit");
-        }
         result += CharHexDigit(c);
     } else if (c >= '0' && c <= '7' ) {
         result += GetOctalDigits();
