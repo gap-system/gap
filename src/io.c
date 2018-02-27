@@ -176,12 +176,10 @@ void LockCurrentOutput(Int lock)
 
 /****************************************************************************
 **
-*F  GET_CHAR()  . . . . . . . . . . . . . . . . get the next character, local
+*F  GET_NEXT_CHAR()  . . . . . . . . . . . . .  get the next character, local
 **
-**  'GET_CHAR' returns the next character from  the current input file.  This
-**  character is afterwards also available as '*In'.
-**
-**  'GET_CHAR' supports a single character pushback (via 'UNGET_CHAR').
+**  'GET_NEXT_CHAR' returns the next character from  the current input file.
+**  This character is afterwards also available as '*In'.
 */
 
 
@@ -190,7 +188,7 @@ static inline Int IS_CHAR_PUSHBACK_EMPTY(void)
     return STATE(In) != &IO()->Pushback;
 }
 
-void GET_CHAR(void)
+void GET_NEXT_CHAR(void)
 {
     if (STATE(In) == &IO()->Pushback) {
         STATE(In) = IO()->RealIn;
@@ -201,14 +199,14 @@ void GET_CHAR(void)
         GetLine();
 }
 
-Char PEEK_CHAR(void)
+Char PEEK_NEXT_CHAR(void)
 {
     assert(IS_CHAR_PUSHBACK_EMPTY());
     // store the current character
     IO()->Pushback = *STATE(In);
 
     // read next character
-    GET_CHAR();
+    GET_NEXT_CHAR();
 
     // fake insert the previous character
     IO()->RealIn = STATE(In);
