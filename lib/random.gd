@@ -107,7 +107,14 @@ DeclareOperation( "Random", [IsRandomSource, IsInt, IsInt] );
 ##  data which are needed. Optionally, it should allow one to specify a 
 ##  <A>seed</A> for the initial state, as explained for <Ref Oper="Reset"/>.
 ##  <P/>
-##  Most methods for <Ref Oper="Random" Label="for a list or collection"/> 
+##  Random sources should also implement <Ref Oper="Random"
+##  Label="for random source and two integers"/> for a random source and two integers.
+##  All other implementations
+##  of <Ref Oper="Random" BookName="ref"/> call other overloads of
+##  <Ref Oper="Random" BookName="ref"/>, or
+##  <Ref Oper="Random" Label="for random source and two integers"/> for a random source
+##  and two integers.
+##  <P/>
 ##  in the &GAP; library use the 
 ##  <Ref Var="GlobalMersenneTwister"/> as random source. It can be reset 
 ##  into a known state as in the following example.

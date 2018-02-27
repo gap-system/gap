@@ -29,9 +29,11 @@ InstallMethod(Reset, [IsRandomSource], function(rs)
   return Reset(rs, 1);
 end);
 
-# Generic fallback methods, such that it is sufficient to install Random for 
-# lists or for pairs of integers.
-InstallMethod(Random, [IsRandomSource, IsInt, IsInt], function(rs, a, b)
+DeclareGlobalFunction("RANDOM_LARGE_RANGE");
+
+# Generic method to build an arbitary random number generator from a generator
+# which can generate numbers at least in the range [0..2^28].
+InstallGlobalFunction("RANDOM_LARGE_RANGE", function(gen, a, b)
   local  d, x, r, y;
   d := b - a;
   if d < 0  then
@@ -42,18 +44,17 @@ InstallMethod(Random, [IsRandomSource, IsInt, IsInt], function(rs, a, b)
     x := LogInt( d, 2 ) + 1;
     r := 0;
     while 0 < x  do
-        y := Minimum( 10, x );
+        y := Minimum( 28, x );
         x := x - y;
-        r := r * 2 ^ y + Random( rs, [ 0 .. (2 ^ y - 1) ] );
+        r := r * 2 ^ y + gen(2^y-1);
     od;
     if d < r  then
-        return Random( rs, a, b );
+        return RANDOM_LARGE_RANGE( gen, a, b );
     else
         return a + r;
     fi;
   fi;
 end);
-
 
 # A print method.
 InstallMethod(PrintObj, [IsRandomSource], function(rs)
@@ -95,11 +96,11 @@ InstallMethod(Reset, [IsGlobalRandomSource, IsObject], function(rs, seed)
   return old;
 end);
 
-InstallMethod(Random, [IsGlobalRandomSource, IsList], function(rs, l)
-  if Length(l) < 2^28 then
-    return RANDOM_LIST(l);
+InstallMethod(Random, [IsGlobalRandomSource, IsInt, IsInt], function(rs, l, u)
+  if u - l + 1 < 2^28 then
+    return RANDOM_LIST([l..u]);
   else
-    return l[Random(rs, 1, Length(l))];
+    return RANDOM_LARGE_RANGE(x -> RANDOM_LIST([0..x]), l, u);
   fi;
 end);
 
@@ -142,17 +143,22 @@ InstallMethod(Reset, [IsGAPRandomSource, IsObject], function(rs, seed)
   return old;
 end);
 
-InstallMethod(Random, [IsGAPRandomSource, IsList], function(rs, list)
-  local rx, rn;
-  if Length(list) < 2^28 then
+InstallMethod(Random, [IsGAPRandomSource, IsInt, IsInt], function(rs, l, u)
+  local gen; # rx, rn;
+  gen := function(upper)
+    local rx, rn;
     # we need to repeat the code of RANDOM_LIST
     rx := rs!.R_X;
     rn := rs!.R_N mod 55 + 1;
     rs!.R_N := rn;
     rx[rn] := (rx[rn] + rx[(rn+30) mod 55+1]) mod R_228;
-    return list[ QUO_INT( rx[rn] * LEN_LIST(list), -R_228 ) + 1 ];
+    return QUO_INT( rx[rn] * (upper + 1), -R_228 );
+  end;
+
+  if u - l + 1 < 2^28 then
+    return gen(u - l) + l;
   else
-    return list[Random(rs, 1, Length(list))];
+    return RANDOM_LARGE_RANGE(gen, l, u);
   fi;
 end);
 
@@ -198,10 +204,6 @@ InstallMethod(Reset, [IsMersenneTwister, IsObject], function(rs, seed)
   old := State(rs);
   Init(rs, seed);
   return old;
-end);
-
-InstallMethod(Random, [IsMersenneTwister, IsList], function(rs, list)
-  return list[Random(rs, 1, Length(list))];
 end);
 
 InstallMethod(Random, [IsMersenneTwister, IsInt, IsInt], function(rs, a, b)
