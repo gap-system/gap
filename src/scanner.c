@@ -198,42 +198,43 @@ void GetIdent ( void )
     isQuoted = 0;
 
     /* read all characters into 'STATE(Value)'                                    */
-    for ( i=0; IsIdent(*STATE(In)) || IsDigit(*STATE(In)) || *STATE(In)=='\\'; i++ ) {
+    Char c = *STATE(In);
+    for ( i=0; IsIdent(c) || IsDigit(c) || c=='\\'; i++ ) {
 
         fetch = 1;
         /* handle escape sequences                                         */
         /* we ignore '\ newline' by decrementing i, except at the
            very start of the identifier, when we cannot do that
            so we recurse instead                                           */
-        if ( *STATE(In) == '\\' ) {
-            GET_NEXT_CHAR();
-            if      ( *STATE(In) == '\n' && i == 0 )  { GetSymbol();  return; }
-            else if ( *STATE(In) == '\r' )  {
-                GET_NEXT_CHAR();
-                if  ( *STATE(In) == '\n' )  {
+        if ( c == '\\' ) {
+            c = GET_NEXT_CHAR();
+            if      ( c == '\n' && i == 0 )  { GetSymbol();  return; }
+            else if ( c == '\r' )  {
+                c = GET_NEXT_CHAR();
+                if  ( c == '\n' )  {
                      if (i == 0) { GetSymbol();  return; }
                      else i--;
                 }
                 else  {STATE(Value)[i] = '\r'; fetch = 0;}
             }
-            else if ( *STATE(In) == '\n' && i < SAFE_VALUE_SIZE-1 )  i--;
-            else if ( *STATE(In) == 'n'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\n';
-            else if ( *STATE(In) == 't'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\t';
-            else if ( *STATE(In) == 'r'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\r';
-            else if ( *STATE(In) == 'b'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\b';
+            else if ( c == '\n' && i < SAFE_VALUE_SIZE-1 )  i--;
+            else if ( c == 'n'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\n';
+            else if ( c == 't'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\t';
+            else if ( c == 'r'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\r';
+            else if ( c == 'b'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\b';
             else if ( i < SAFE_VALUE_SIZE-1 )  {
-                STATE(Value)[i] = *STATE(In);
+                STATE(Value)[i] = c;
                 isQuoted = 1;
             }
         }
 
         /* put normal chars into 'STATE(Value)' but only if there is room         */
         else {
-            if ( i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = *STATE(In);
+            if ( i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = c;
         }
 
         /* read the next character                                         */
-        if (fetch) GET_NEXT_CHAR();
+        if (fetch) c = GET_NEXT_CHAR();
 
     }
 
@@ -327,15 +328,15 @@ void GetIdent ( void )
 **
 */
 static Char GetCleanedChar( UInt *wasEscaped ) {
-  GET_NEXT_CHAR();
+  Char c = GET_NEXT_CHAR();
   *wasEscaped = 0;
-  if (*STATE(In) == '\\') {
-    GET_NEXT_CHAR();
-    if      ( *STATE(In) == '\n')
+  if (c == '\\') {
+    c = GET_NEXT_CHAR();
+    if      ( c == '\n')
       return GetCleanedChar(wasEscaped);
-    else if ( *STATE(In) == '\r' )  {
+    else if ( c == '\r' )  {
       if ( PEEK_NEXT_CHAR() == '\n' ) {
-        GET_NEXT_CHAR();
+        GET_NEXT_CHAR(); // skip the \n
         return GetCleanedChar(wasEscaped);
       }
       else {
@@ -345,16 +346,16 @@ static Char GetCleanedChar( UInt *wasEscaped ) {
     }
     else {
       *wasEscaped = 1;
-      if ( *STATE(In) == 'n')  return '\n';
-      else if ( *STATE(In) == 't')  return '\t';
-      else if ( *STATE(In) == 'r')  return '\r';
-      else if ( *STATE(In) == 'b')  return '\b';
-      else if ( *STATE(In) == '>')  return '\01';
-      else if ( *STATE(In) == '<')  return '\02';
-      else if ( *STATE(In) == 'c')  return '\03';
+      if ( c == 'n')  return '\n';
+      else if ( c == 't')  return '\t';
+      else if ( c == 'r')  return '\r';
+      else if ( c == 'b')  return '\b';
+      else if ( c == '>')  return '\01';
+      else if ( c == '<')  return '\02';
+      else if ( c == 'c')  return '\03';
     }
   }
-  return *STATE(In);
+  return c;
 }
 
 
@@ -604,17 +605,17 @@ void GetNumber ( UInt StartingStatus )
 */
 static inline Char GetOctalDigits( void )
 {
-    Char c;
-
-    if ( *STATE(In) < '0' || *STATE(In) > '7' )
+    Char result;
+    Char c = *STATE(In);
+    if ( c < '0' || c > '7' )
         SyntaxError("Expecting octal digit");
-    c = 8 * (*STATE(In) - '0');
-    GET_NEXT_CHAR();
-    if ( *STATE(In) < '0' || *STATE(In) > '7' )
+    result = 8 * (c - '0');
+    c = GET_NEXT_CHAR();
+    if ( c < '0' || c > '7' )
         SyntaxError("Expecting octal digit");
-    c = c + (*STATE(In) - '0');
+    result = result + (c - '0');
 
-    return c;
+    return result;
 }
 
 
@@ -635,56 +636,55 @@ static inline Char CharHexDigit( const Char ch ) {
 
 Char GetEscapedChar( void )
 {
-  Char c;
+  Char result = 0;
+  Char c = *STATE(In);
 
-  c = 0;
-
-  if ( *STATE(In) == 'n'  )       c = '\n';
-  else if ( *STATE(In) == 't'  )  c = '\t';
-  else if ( *STATE(In) == 'r'  )  c = '\r';
-  else if ( *STATE(In) == 'b'  )  c = '\b';
-  else if ( *STATE(In) == '>'  )  c = '\01';
-  else if ( *STATE(In) == '<'  )  c = '\02';
-  else if ( *STATE(In) == 'c'  )  c = '\03';
-  else if ( *STATE(In) == '"'  )  c = '"';
-  else if ( *STATE(In) == '\\' )  c = '\\';
-  else if ( *STATE(In) == '\'' )  c = '\'';
-  else if ( *STATE(In) == '0'  ) {
+  if ( c == 'n'  )       result = '\n';
+  else if ( c == 't'  )  result = '\t';
+  else if ( c == 'r'  )  result = '\r';
+  else if ( c == 'b'  )  result = '\b';
+  else if ( c == '>'  )  result = '\01';
+  else if ( c == '<'  )  result = '\02';
+  else if ( c == 'c'  )  result = '\03';
+  else if ( c == '"'  )  result = '"';
+  else if ( c == '\\' )  result = '\\';
+  else if ( c == '\'' )  result = '\'';
+  else if ( c == '0'  ) {
     /* from here we can either read a hex-escape or three digit
        octal numbers */
-    GET_NEXT_CHAR();
-    if (*STATE(In) == 'x') {
-        GET_NEXT_CHAR();
-        if (!IsHexDigit(*STATE(In))) {
+    c = GET_NEXT_CHAR();
+    if (c == 'x') {
+        c = GET_NEXT_CHAR();
+        if (!IsHexDigit(c)) {
             SyntaxError("Expecting hexadecimal digit");
         }
-        c = 16 * CharHexDigit(*STATE(In));
-        GET_NEXT_CHAR();
-        if (!IsHexDigit(*STATE(In))) {
+        result = 16 * CharHexDigit(c);
+        c = GET_NEXT_CHAR();
+        if (!IsHexDigit(c)) {
             SyntaxError("Expecting hexadecimal digit");
         }
-        c += CharHexDigit(*STATE(In));
-    } else if (*STATE(In) >= '0' && *STATE(In) <= '7' ) {
-        c += GetOctalDigits();
+        result += CharHexDigit(c);
+    } else if (c >= '0' && c <= '7' ) {
+        result += GetOctalDigits();
     } else {
         SyntaxError("Expecting hexadecimal escape, or two more octal digits");
     }
-  } else if ( *STATE(In) >= '1' && *STATE(In) <= '7' ) {
+  } else if ( c >= '1' && c <= '7' ) {
     /* escaped three digit octal numbers are allowed in input */
-    c = 64 * (*STATE(In) - '0');
-    GET_NEXT_CHAR();
-    c += GetOctalDigits();
+    result = 64 * (c - '0');
+    c = GET_NEXT_CHAR();
+    result += GetOctalDigits();
   } else {
       /* Following discussions on pull-request #612, this warning is currently
          disabled for backwards compatibility; some code relies on this behaviour
          and tests break with the warning enabled */
       /*
-      if (IsAlpha(*STATE(In)))
+      if (IsAlpha(c))
           SyntaxWarning("Alphabet letter after \\");
       */
-      c = *STATE(In);
+      result = c;
   }
-  return c;
+  return result;
 }
 
 /****************************************************************************
@@ -710,25 +710,25 @@ Char GetEscapedChar( void )
 void GetStr ( void )
 {
   Int                 i = 0, fetch;
-
+  Char c = *STATE(In);
 
   /* read all characters into 'Value'                                    */
-  for ( i = 0; i < SAFE_VALUE_SIZE-1 && *STATE(In) != '"'
-           && *STATE(In) != '\n' && *STATE(In) != '\377'; i++ ) {
+  for ( i = 0; i < SAFE_VALUE_SIZE-1 && c != '"'
+           && c != '\n' && c != '\377'; i++ ) {
 
     fetch = 1;
     /* handle escape sequences                                         */
-    if ( *STATE(In) == '\\' ) {
-      GET_NEXT_CHAR();
+    if ( c == '\\' ) {
+      c = GET_NEXT_CHAR();
       /* if next is another '\\' followed by '\n' it must be ignored */
-      while ( *STATE(In) == '\\' && PEEK_NEXT_CHAR() == '\n' ) {
-          GET_NEXT_CHAR();
-          GET_NEXT_CHAR();
+      while ( c == '\\' && PEEK_NEXT_CHAR() == '\n' ) {
+          c = GET_NEXT_CHAR();   // skip '\\'
+          c = GET_NEXT_CHAR();   // skip '\n'
       }
-      if      ( *STATE(In) == '\n' )  i--;
-      else if ( *STATE(In) == '\r' )  {
-        GET_NEXT_CHAR();
-        if  ( *STATE(In) == '\n' )  i--;
+      if      ( c == '\n' )  i--;
+      else if ( c == '\r' )  {
+        c = GET_NEXT_CHAR();
+        if  ( c == '\n' )  i--;
         else  {STATE(Value)[i] = '\r'; fetch = 0;}
       } else {
           STATE(Value)[i] = GetEscapedChar();
@@ -737,11 +737,11 @@ void GetStr ( void )
 
     /* put normal chars into 'Value' but only if there is room         */
     else {
-      STATE(Value)[i] = *STATE(In);
+      STATE(Value)[i] = c;
     }
 
     /* read the next character                                         */
-    if (fetch) GET_NEXT_CHAR();
+    if (fetch) c = GET_NEXT_CHAR();
 
   }
 
@@ -751,16 +751,16 @@ void GetStr ( void )
   STATE(Value)[i] = '\0';
 
   /* check for error conditions                                          */
-  if ( *STATE(In) == '\n'  )
+  if ( c == '\n'  )
     SyntaxError("String must not include <newline>");
-  if ( *STATE(In) == '\377' )
+  if ( c == '\377' )
     SyntaxError("String must end with \" before end of file");
 
   /* set length of string, set 'Symbol' and skip trailing '"'            */
   STATE(ValueLen) = i;
   if ( i < SAFE_VALUE_SIZE-1 )  {
     STATE(Symbol) = S_STRING;
-    if ( *STATE(In) == '"' )  GET_NEXT_CHAR();
+    if ( c == '"' )  c = GET_NEXT_CHAR();
   }
   else
     STATE(Symbol) = S_PARTIALSTRING;
@@ -787,6 +787,7 @@ void GetStr ( void )
 void GetTripStr ( void )
 {
   Int                 i = 0;
+  Char c = *STATE(In);
 
   /* print only a partial prompt while reading a triple string           */
   if ( !SyQuiet )
@@ -795,14 +796,14 @@ void GetTripStr ( void )
     STATE(Prompt) = "";
   
   /* read all characters into 'Value'                                    */
-  for ( i = 0; i < SAFE_VALUE_SIZE-1 && *STATE(In) != '\377'; i++ ) {
+  for ( i = 0; i < SAFE_VALUE_SIZE-1 && c != '\377'; i++ ) {
     // Only thing to check for is a triple quote.
     
-    if ( *STATE(In) == '"') {
-        GET_NEXT_CHAR();
-        if (*STATE(In) == '"') {
-            GET_NEXT_CHAR();
-            if(*STATE(In) == '"' ) {
+    if ( c == '"') {
+        c = GET_NEXT_CHAR();
+        if (c == '"') {
+            c = GET_NEXT_CHAR();
+            if (c == '"' ) {
                 break;
             }
             STATE(Value)[i] = '"';
@@ -811,11 +812,10 @@ void GetTripStr ( void )
         STATE(Value)[i] = '"';
         i++;
     }
-    STATE(Value)[i] = *STATE(In);
-
+    STATE(Value)[i] = c;
 
     /* read the next character                                         */
-    GET_NEXT_CHAR();
+    c = GET_NEXT_CHAR();
   }
 
   /* XXX although we have ValueLen we need trailing \000 here,
@@ -824,14 +824,14 @@ void GetTripStr ( void )
   STATE(Value)[i] = '\0';
 
   /* check for error conditions                                          */
-  if ( *STATE(In) == '\377' )
+  if ( c == '\377' )
     SyntaxError("String must end with \" before end of file");
 
   /* set length of string, set 'Symbol' and skip trailing '"'            */
   STATE(ValueLen) = i;
   if ( i < SAFE_VALUE_SIZE-1 )  {
     STATE(Symbol) = S_STRING;
-    if ( *STATE(In) == '"' )  GET_NEXT_CHAR();
+    if ( c == '"' ) c = GET_NEXT_CHAR();
   }
   else
     STATE(Symbol) = S_PARTIALTRIPSTRING;
@@ -846,22 +846,24 @@ void GetTripStr ( void )
 */
 void GetMaybeTripStr ( void )
 {
+    Char c = GET_NEXT_CHAR();
+
     /* This is just a normal string! */
-    if ( *STATE(In) != '"' ) {
+    if ( c != '"' ) {
         GetStr();
         return;
     }
     
-    GET_NEXT_CHAR();
+    c = GET_NEXT_CHAR();
     /* This was just an empty string! */
-    if ( *STATE(In) != '"' ) {
+    if ( c != '"' ) {
         STATE(Value)[0] = '\0';
         STATE(ValueLen) = 0;
         STATE(Symbol) = S_STRING;
         return;
     }
     
-    GET_NEXT_CHAR();
+    c = GET_NEXT_CHAR();
     /* Now we know we are reading a triple string */
     GetTripStr();
 }
@@ -882,29 +884,29 @@ void GetMaybeTripStr ( void )
 void GetChar ( void )
 {
   /* skip '\''                                                           */
-  GET_NEXT_CHAR();
+  Char c = GET_NEXT_CHAR();
 
   /* Make sure symbol is set */
   STATE(Symbol) = S_CHAR;
 
   /* handle escape equences                                              */
-  if ( *STATE(In) == '\n' ) {
+  if ( c == '\n' ) {
     SyntaxError("Character literal must not include <newline>");
   } else {
-    if ( *STATE(In) == '\\' ) {
-      GET_NEXT_CHAR();
+    if ( c == '\\' ) {
+      c = GET_NEXT_CHAR();
       STATE(Value)[0] = GetEscapedChar();
     } else {
       /* put normal chars into 'STATE(Value)' */
-      STATE(Value)[0] = *STATE(In);
+      STATE(Value)[0] = c;
     }
 
     /* read the next character */
-    GET_NEXT_CHAR();
+    c = GET_NEXT_CHAR();
 
     /* check for terminating single quote, and skip */
-    if ( *STATE(In) == '\'' ) {
-      GET_NEXT_CHAR();
+    if ( c == '\'' ) {
+      c = GET_NEXT_CHAR();
     } else {
       SyntaxError("Missing single quote in character constant");
     }
@@ -916,14 +918,14 @@ void GetHelp( void )
     Int i = 0;
 
     /* Skip the first ? */
-    GET_NEXT_CHAR();
+    Char c = GET_NEXT_CHAR();
     while (i < SAFE_VALUE_SIZE-1 &&
-           *STATE(In) != '\n' &&
-           *STATE(In) != '\r' &&
-           *STATE(In) != '\377') {
-        STATE(Value)[i] = *STATE(In);
+           c != '\n' &&
+           c != '\r' &&
+           c != '\377') {
+        STATE(Value)[i] = c;
         i++;
-        GET_NEXT_CHAR();
+        c = GET_NEXT_CHAR();
     }
     STATE(Value)[i] = '\0';
     STATE(ValueLen) = i;
@@ -955,41 +957,41 @@ void GetSymbol ( void )
     }
 
 
+    Char c = *STATE(In);
+
   /* if no character is available then get one                           */
-  if ( *STATE(In) == '\0' )
+  if ( c == '\0' )
     { STATE(In)--;
-      GET_NEXT_CHAR();
+      c = GET_NEXT_CHAR();
     }
 
   /* skip over <spaces>, <tabs>, <newlines> and comments                 */
-  while (*STATE(In)==' '||*STATE(In)=='\t'||*STATE(In)=='\n'||*STATE(In)=='\r'||*STATE(In)=='\f'||*STATE(In)=='#') {
-    if ( *STATE(In) == '#' ) {
-      while ( *STATE(In) != '\n' && *STATE(In) != '\r' && *STATE(In) != '\377' )
-        GET_NEXT_CHAR();
+  while (c==' '||c=='\t'||c=='\n'||c=='\r'||c=='\f'||c=='#') {
+    if ( c == '#' ) {
+      while ( c != '\n' && c != '\r' && c != '\377' )
+        c = GET_NEXT_CHAR();
     }
-    GET_NEXT_CHAR();
+    c = GET_NEXT_CHAR();
   }
 
   /* switch according to the character                                   */
-  switch ( *STATE(In) ) {
+  switch ( c ) {
 
-  case '.':   STATE(Symbol) = S_DOT;                         GET_NEXT_CHAR();
-    /*            if ( *STATE(In) == '\\' ) { GET_NEXT_CHAR();
-            if ( *STATE(In) == '\n' ) { GET_NEXT_CHAR(); } }   */
-    if ( *STATE(In) == '.' ) { 
-            STATE(Symbol) = S_DOTDOT; GET_NEXT_CHAR();
-            if ( *STATE(In) == '.') {
-                    STATE(Symbol) = S_DOTDOTDOT; GET_NEXT_CHAR();
+  case '.':   STATE(Symbol) = S_DOT;                         c = GET_NEXT_CHAR();
+    if ( c == '.' ) { 
+            STATE(Symbol) = S_DOTDOT; c = GET_NEXT_CHAR();
+            if ( c == '.') {
+                    STATE(Symbol) = S_DOTDOTDOT; c = GET_NEXT_CHAR();
             }
     }
     break;
 
-  case '!':   STATE(Symbol) = S_ILLEGAL;                     GET_NEXT_CHAR();
-    if ( *STATE(In) == '\\' ) { GET_NEXT_CHAR();
-      if ( *STATE(In) == '\n' ) { GET_NEXT_CHAR(); } }
-    if ( *STATE(In) == '.' ) { STATE(Symbol) = S_BDOT;    GET_NEXT_CHAR();  break; }
-    if ( *STATE(In) == '[' ) { STATE(Symbol) = S_BLBRACK; GET_NEXT_CHAR();  break; }
-    if ( *STATE(In) == '{' ) { STATE(Symbol) = S_BLBRACE; GET_NEXT_CHAR();  break; }
+  case '!':   STATE(Symbol) = S_ILLEGAL;                     c = GET_NEXT_CHAR();
+    if ( c == '\\' ) { c = GET_NEXT_CHAR();
+      if ( c == '\n' ) { c = GET_NEXT_CHAR(); } }
+    if ( c == '.' ) { STATE(Symbol) = S_BDOT;    GET_NEXT_CHAR();  break; }
+    if ( c == '[' ) { STATE(Symbol) = S_BLBRACK; GET_NEXT_CHAR();  break; }
+    if ( c == '{' ) { STATE(Symbol) = S_BLBRACE; GET_NEXT_CHAR();  break; }
     break;
   case '[':   STATE(Symbol) = S_LBRACK;                      GET_NEXT_CHAR();  break;
   case ']':   STATE(Symbol) = S_RBRACK;                      GET_NEXT_CHAR();  break;
@@ -999,39 +1001,39 @@ void GetSymbol ( void )
   case ')':   STATE(Symbol) = S_RPAREN;                      GET_NEXT_CHAR();  break;
   case ',':   STATE(Symbol) = S_COMMA;                       GET_NEXT_CHAR();  break;
 
-  case ':':   STATE(Symbol) = S_COLON;                       GET_NEXT_CHAR();
-    if ( *STATE(In) == '\\' ) {
-      GET_NEXT_CHAR();
-      if ( *STATE(In) == '\n' )
-        { GET_NEXT_CHAR(); }
+  case ':':   STATE(Symbol) = S_COLON;                       c = GET_NEXT_CHAR();
+    if ( c == '\\' ) {
+      c = GET_NEXT_CHAR();
+      if ( c == '\n' )
+        { c = GET_NEXT_CHAR(); }
     }
-    if ( *STATE(In) == '=' ) { STATE(Symbol) = S_ASSIGN;  GET_NEXT_CHAR(); break; }
+    if ( c == '=' ) { STATE(Symbol) = S_ASSIGN;  c = GET_NEXT_CHAR(); break; }
     break;
 
-  case ';':   STATE(Symbol) = S_SEMICOLON;                   GET_NEXT_CHAR();
-    if ( *STATE(In) == ';' ) {
-        STATE(Symbol) = S_DUALSEMICOLON; GET_NEXT_CHAR();
+  case ';':   STATE(Symbol) = S_SEMICOLON;                   c = GET_NEXT_CHAR();
+    if ( c == ';' ) {
+        STATE(Symbol) = S_DUALSEMICOLON; c = GET_NEXT_CHAR();
     }
     break;
 
   case '=':   STATE(Symbol) = S_EQ;                          GET_NEXT_CHAR();  break;
-  case '<':   STATE(Symbol) = S_LT;                          GET_NEXT_CHAR();
-    if ( *STATE(In) == '\\' ) { GET_NEXT_CHAR();
-      if ( *STATE(In) == '\n' ) { GET_NEXT_CHAR(); } }
-    if ( *STATE(In) == '=' ) { STATE(Symbol) = S_LE;      GET_NEXT_CHAR();  break; }
-    if ( *STATE(In) == '>' ) { STATE(Symbol) = S_NE;      GET_NEXT_CHAR();  break; }
+  case '<':   STATE(Symbol) = S_LT;                          c = GET_NEXT_CHAR();
+    if ( c == '\\' ) { c = GET_NEXT_CHAR();
+      if ( c == '\n' ) { c = GET_NEXT_CHAR(); } }
+    if ( c == '=' ) { STATE(Symbol) = S_LE;      c = GET_NEXT_CHAR();  break; }
+    if ( c == '>' ) { STATE(Symbol) = S_NE;      c = GET_NEXT_CHAR();  break; }
     break;
-  case '>':   STATE(Symbol) = S_GT;                          GET_NEXT_CHAR();
-    if ( *STATE(In) == '\\' ) { GET_NEXT_CHAR();
-      if ( *STATE(In) == '\n' ) { GET_NEXT_CHAR(); } }
-    if ( *STATE(In) == '=' ) { STATE(Symbol) = S_GE;      GET_NEXT_CHAR();  break; }
+  case '>':   STATE(Symbol) = S_GT;                          c = GET_NEXT_CHAR();
+    if ( c == '\\' ) { c = GET_NEXT_CHAR();
+      if ( c == '\n' ) { c = GET_NEXT_CHAR(); } }
+    if ( c == '=' ) { STATE(Symbol) = S_GE;      c = GET_NEXT_CHAR();  break; }
     break;
 
   case '+':   STATE(Symbol) = S_PLUS;                        GET_NEXT_CHAR();  break;
-  case '-':   STATE(Symbol) = S_MINUS;                       GET_NEXT_CHAR();
-    if ( *STATE(In) == '\\' ) { GET_NEXT_CHAR();
-      if ( *STATE(In) == '\n' ) { GET_NEXT_CHAR(); } }
-    if ( *STATE(In) == '>' ) { STATE(Symbol)=S_MAPTO;     GET_NEXT_CHAR();  break; }
+  case '-':   STATE(Symbol) = S_MINUS;                       c = GET_NEXT_CHAR();
+    if ( c == '\\' ) { c = GET_NEXT_CHAR();
+      if ( c == '\n' ) { c = GET_NEXT_CHAR(); } }
+    if ( c == '>' ) { STATE(Symbol)=S_MAPTO;     c = GET_NEXT_CHAR();  break; }
     break;
   case '*':   STATE(Symbol) = S_MULT;                        GET_NEXT_CHAR();  break;
   case '/':   STATE(Symbol) = S_DIV;                         GET_NEXT_CHAR();  break;
@@ -1040,7 +1042,7 @@ void GetSymbol ( void )
   case '`':   STATE(Symbol) = S_BACKQUOTE;                   GET_NEXT_CHAR();  break;
 #endif
 
-  case '"':                        GET_NEXT_CHAR(); GetMaybeTripStr();  break;
+  case '"':                                           GetMaybeTripStr();  break;
   case '\'':                                          GetChar();   break;
   case '\\':                                          GetIdent();  break;
   case '_':                                           GetIdent();  break;
@@ -1054,7 +1056,7 @@ void GetSymbol ( void )
 
   case '\377': STATE(Symbol) = S_EOF;                        *STATE(In) = '\0';  break;
 
-  default :   if ( IsAlpha(*STATE(In)) )                   { GetIdent();  break; }
+  default :   if ( IsAlpha(c) )                   { GetIdent();  break; }
     STATE(Symbol) = S_ILLEGAL;                     GET_NEXT_CHAR();  break;
   }
 }
