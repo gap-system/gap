@@ -188,7 +188,7 @@ static inline Int IS_CHAR_PUSHBACK_EMPTY(void)
     return STATE(In) != &IO()->Pushback;
 }
 
-void GET_NEXT_CHAR(void)
+Char GET_NEXT_CHAR(void)
 {
     if (STATE(In) == &IO()->Pushback) {
         STATE(In) = IO()->RealIn;
@@ -197,6 +197,7 @@ void GET_NEXT_CHAR(void)
         STATE(In)++;
     if (!*STATE(In))
         GetLine();
+    return *STATE(In);
 }
 
 Char PEEK_NEXT_CHAR(void)
