@@ -23,6 +23,7 @@
 
 extern Char GET_NEXT_CHAR(void);
 extern Char PEEK_NEXT_CHAR(void);
+extern Char PEEK_CURR_CHAR(void);
 
 
 /****************************************************************************

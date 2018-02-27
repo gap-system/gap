@@ -215,6 +215,10 @@ Char PEEK_NEXT_CHAR(void)
     return *IO()->RealIn;
 }
 
+Char PEEK_CURR_CHAR(void)
+{
+    return *STATE(In);
+}
 
 const Char * GetInputFilename(void)
 {
