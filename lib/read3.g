@@ -59,10 +59,20 @@ ReadLib( "primality.gd");
 ReadLib( "contfrac.gd" );
 ReadLib( "ringsc.gd"   );
 ReadLib( "ringhom.gd"  );
-
 ReadLib( "combinat.gd" );
 
 ReadLib( "ratfun.gd"   );
+
+# family predicates (needed for all 'InstallMethod' and oprt.gd)
+# this references declarations from coll.gd, mapping.gd, liefam.gd
+ReadLib( "fampred.g"   );
+
+ReadLib( "list.gi"     );
+ReadLib( "set.gi"      );
+ReadLib( "wpobj.gi"    );
+
+# random sources
+ReadLib("random.gi");
 
 ReadLib( "field.gd"    );
 ReadLib( "zmodnz.gd"   );
@@ -127,9 +137,6 @@ ReadLib( "grpnames.gd" );
 ReadLib( "quotsys.gd" );
 ReadLib( "pquot.gd" );
 
-# family predicates (needed for all 'InstallMethod' and oprt.gd)
-ReadLib( "fampred.g"   );
-
 ReadLib( "oprt.gd"     );
 ReadLib( "partitio.gd" );
 ReadLib( "stbc.gd"     );
@@ -172,12 +179,6 @@ ReadLib( "ghomfp.gd" );
 ReadLib( "dt.g" );
 
 ReadLib( "integer.gi"  ); # needed for CoefficientsQadic
-ReadLib( "list.gi"     ); # was too early
-ReadLib( "set.gi"      );
-ReadLib( "wpobj.gi"    );
-##  ReadLib( "random.gd"   );
-##  ReadLib( "random.gi"   );
-##  ReadLib( "random.g"    );
 
 # files dealing with nice monomorphism
 # grpnice uses some family predicates, so fampred.g must be known
@@ -247,6 +248,3 @@ ReadLib("proto.gd");
 ReadLib("gasman.gd");
 
 ReadLib("memusage.gd");
-
-# random sources
-ReadLib("random.gi");
