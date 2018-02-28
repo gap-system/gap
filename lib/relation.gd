@@ -95,6 +95,10 @@ DeclareSynonym("IsBinaryRelation",IsEndoGeneralMapping);
 ##  to <A>list</A><C>[1]</C>, <M>2</M> to <A>list</A><C>[2]</C> and so on.
 ##  The first version checks whether the list supplied is valid.
 ##  The the <C>NC</C> version skips this check.
+##  <Example><![CDATA[
+##  gap> R:=BinaryRelationOnPoints([[1,2],[2],[3]]);
+##  Binary Relation on 3 points
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -137,6 +141,14 @@ DeclareGlobalFunction("RandomBinaryRelationOnPoints");
 ##  <M>\{ 1, \ldots, <A>degree</A> \}</M>.
 ##  In the second form, the objects <M>x</M> are from the domain
 ##  <A>domain</A>.
+##  <Example><![CDATA[
+##  gap> IdentityBinaryRelation(5);
+##  <equivalence relation on <object> >
+##  gap> s4:=SymmetricGroup(4);
+##  Sym( [ 1 .. 4 ] )
+##  gap> IdentityBinaryRelation(s4);
+##  IdentityMapping( Sym( [ 1 .. 4 ] ) )
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -156,6 +168,10 @@ DeclareGlobalFunction("IdentityBinaryRelation");
 ##  consisting of the tuples collection <A>elms</A>.
 ##  This construction is similar to <Ref Func="GeneralMappingByElements"/>
 ##  where the source and range are the same set.
+##  <Example><![CDATA[
+##  gap> r:=BinaryRelationByElements(Domain([1..3]),[Tuple([1,2]),Tuple([1,3])]);
+##  <general mapping: <object> -> <object> >
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -178,6 +194,10 @@ DeclareGlobalFunction("BinaryRelationByElements");
 ##  the domain is the set of points <M>\{ 1, \ldots, <A>degree</A> \}</M>.
 ##  In the second form, the domain is that given by the argument
 ##  <A>domain</A>.
+##  <Example><![CDATA[
+##  gap> EmptyBinaryRelation(3) = BinaryRelationOnPoints([ [], [], [] ]);
+##  true
+##  ]]></Example> 
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -214,6 +234,15 @@ DeclareGlobalFunction("EmptyBinaryRelation");
 ##  In the last form, an isomorphic relation on points is constructed
 ##  where the points are indices of the elements of the underlying domain
 ##  in sorted order.
+##  <Example><![CDATA[
+##  gap> t:=Transformation([2,3,1]);;
+##  gap> r1:=AsBinaryRelationOnPoints(t);
+##  Binary Relation on 3 points
+##  gap> r2:=AsBinaryRelationOnPoints((1,2,3));
+##  Binary Relation on 3 points
+##  gap> r1=r2;
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -241,6 +270,11 @@ DeclareGlobalFunction("AsBinaryRelationOnPoints");
 ##  <P/>
 ##  The <Ref Func="Successors"/> of a relation is the adjacency list
 ##  representation of the relation.
+##  <Example><![CDATA[
+##  gap> r1:=BinaryRelationOnPoints([[2],[3],[1]]);;
+##  gap> Successors(r1);
+##  [ [ 2 ], [ 3 ], [ 1 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -259,6 +293,10 @@ DeclareAttribute("Successors", IsBinaryRelation);
 ##  returns the size of the underlying domain of the binary relation
 ##  <A>R</A>.
 ##  This is most natural when working with a binary relation on points.
+##  <Example><![CDATA[
+##  gap> DegreeOfBinaryRelation(r1);
+##  3
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -306,6 +344,12 @@ DeclareSynonym("UnderlyingDomainOfBinaryRelation",Source);
 ##  <P/>
 ##  A reflexive binary relation is necessarily a total endomorphic
 ##  mapping (tested via <Ref Func="IsTotal"/>).
+##  <Example><![CDATA[
+##  gap> IsReflexiveBinaryRelation(BinaryRelationOnPoints([[1,3],[2],[3]]));
+##  true
+##  gap> IsReflexiveBinaryRelation(BinaryRelationOnPoints([[2],[2]]));
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -330,6 +374,12 @@ DeclareProperty("IsReflexiveBinaryRelation", IsBinaryRelation);
 ##  Alternatively, <M>R</M> as a mapping is symmetric
 ##  if for all <M>x \in X</M>, the preimage set of <M>x</M> under <M>R</M>
 ##  equals the image set <M>R(x)</M>.
+##  <Example><![CDATA[
+##  gap> IsSymmetricBinaryRelation(BinaryRelationOnPoints([[2],[1]]));
+##  true
+##  gap> IsSymmetricBinaryRelation(BinaryRelationOnPoints([[2],[2]]));
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -355,6 +405,12 @@ DeclareProperty("IsSymmetricBinaryRelation", IsBinaryRelation);
 ##  Alternatively, <M>R</M> as a mapping is transitive if for all
 ##  <M>x \in X</M>, the image set <M>R(R(x))</M> of the image
 ##  set <M>R(x)</M> of <M>x</M> is a subset of <M>R(x)</M>.
+##  <Example><![CDATA[
+##  gap> IsTransitiveBinaryRelation(BinaryRelationOnPoints([[1,2,3],[2,3],[]]));
+##  true
+##  gap> IsTransitiveBinaryRelation(BinaryRelationOnPoints([[1,2],[2,3],[]]));
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -735,6 +791,12 @@ DeclareAttribute("GeneratorsOfEquivalenceRelationPartition",
 ##  and singletons will be ignored. The <C>NC</C> version will not check
 ##  to see if the lists are pairwise mutually exclusive or that
 ##  they contain only elements of the domain.
+##  <Example><![CDATA[
+##  gap> er:=EquivalenceRelationByPartition(Domain([1..10]),[[1,3,5,7,9],[2,4,6,8,10]]);
+##  <equivalence relation on <object> >
+##  gap> IsEquivalenceRelation(er);
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -867,6 +929,12 @@ DeclareAttribute("EquivalenceClassRelation", IsEquivalenceClass);
 ##  <M>c1</M> and <M>c2</M> we may have <M>c1 = c2</M> without having
 ##  <C>EquivalenceClasses</C><M>( c1 ) =
 ##  </M><C>EquivalenceClasses</C><M>( c2 )</M>.
+##  <Example><![CDATA[
+##  gap> er:=EquivalenceRelationByPartition(Domain([1..10]),[[1,3,5,7,9],[2,4,6,8,10]]);
+##  <equivalence relation on <object> >
+##  gap> classes := EquivalenceClasses(er);
+##  [ {1}, {2} ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -889,6 +957,10 @@ DeclareAttribute("EquivalenceClasses", IsEquivalenceRelation);
 ##  where <A>elt</A> is an element (i.e. a pair) of the domain of <A>rel</A>.
 ##  In the <C>NC</C> form, it is not checked that <A>elt</A> is in the domain
 ##  over which <A>rel</A> is defined.
+##  <Example><![CDATA[
+##  gap> EquivalenceClassOfElement(er,3);
+##  {3}
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
