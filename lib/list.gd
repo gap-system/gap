@@ -985,7 +985,7 @@ DeclareOperation( "PositionsProperty", [ IsList, IsFunction ] );
 ##  <Oper Name="PositionBound" Arg='list'/>
 ##
 ##  <Description>
-##  returns the first index for which an element is bound in the list
+##  returns the first bound position of the list
 ##  <A>list</A>.
 ##  For the empty list it returns <K>fail</K>.
 ##  <P/>
@@ -1000,6 +1000,34 @@ DeclareOperation( "PositionsProperty", [ IsList, IsFunction ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "PositionBound", [ IsList ] );
+
+
+#############################################################################
+##
+#O  PositionsBound( <list> ) . . . . . . . . . positions of all bound entries
+##
+##  <#GAPDoc Label="PositionsBound">
+##  <ManSection>
+##  <Oper Name="PositionsBound" Arg='list'/>
+##
+##  <Description>
+##  returns the set of all bound positions in the list
+##  <A>list</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> PositionsBound([1,2,3]);
+##  [ 1 .. 3 ]
+##  gap> PositionsBound([,1,,3]);
+##  [ 2, 4 ]
+##  gap> PositionsBound([]);
+##  []
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "PositionsBound", [IsList] );
+
 
 
 #############################################################################
