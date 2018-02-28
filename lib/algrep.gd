@@ -169,7 +169,7 @@ DeclareProperty( "IsLeftAlgebraModule", IsLeftModule );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareProperty( "IsRightAlgebraModule", IsLeftModule );
+DeclareProperty( "IsRightAlgebraModule", IsRightModule );
 
 ##############################################################################
 ##
