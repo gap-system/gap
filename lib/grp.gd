@@ -253,9 +253,10 @@ InstallSubsetMaintenance( IsSubsetLocallyFiniteGroup,
 
 #############################################################################
 ##
-#M  IsSubsetLocallyFiniteGroup( <G> ) . . . . . . . . . .  for magmas of FFEs
+#M  IsSubsetLocallyFiniteGroup( <G> ) . . .  for magmas with inverses of FFEs
 ##
-InstallTrueMethod( IsSubsetLocallyFiniteGroup, IsFFECollection and IsMagma );
+InstallTrueMethod( IsSubsetLocallyFiniteGroup,
+    IsFFECollection and IsMagmaWithInverses );
 
 
 #############################################################################
