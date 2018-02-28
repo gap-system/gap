@@ -248,3 +248,70 @@ function(low, high)
   return Random(GlobalMersenneTwister, low, high);
 end );
 
+
+(function()
+    local func;
+    func := function(installType)
+        return function(args...)
+            local str, filterpos, filtercopy, argscopy, i, func, info;
+
+            # Check we understand arguments
+            # Second value must be an info string
+            if not IsString(args[2]) then
+                ErrorNoReturn("Second argument must be an info string");
+            fi;
+
+            # Info strings always tend to begin 'for ', and here we want
+            # to be able to edit it, so we check.
+            if args[2]{[1..23]} <> "for a random source and" then
+                ErrorNoReturn("Info string must begin 'for a random source and'");
+            fi;
+
+            # Filters must start with 'IsRandomSource'
+            for i in [1..Length(args)] do
+                if IsList(args[i]) and args[i][1] = IsRandomSource then
+                    filterpos := i;
+                fi;
+            od;
+
+            if not IsBound(filterpos) then
+                ErrorNoReturn("Must use a list of filters beginning 'IsRandomSource'");
+            fi;
+
+            # Last argument must be the actual method
+            if not IsFunction(args[Length(args)]) then
+                ErrorNoReturn("Argument list must end with the method");
+            fi;
+
+            # Install
+            CallFuncList(installType, args);
+
+            # Install random, wrapping random source argument
+            argscopy := List(args);
+
+            # Remove 'IsRandomSource' from the filter list
+            argscopy[filterpos] := argscopy[filterpos]{[2..Length(argscopy[filterpos])]};
+
+            # Correct info string by removing 'a random source and'
+            info := "for";
+            APPEND_LIST(info, argscopy[2]{[24..Length(argscopy[2])]});
+            argscopy[2] := info;
+
+            func := argscopy[Length(argscopy)];
+            if Length(argscopy[filterpos]) = 1 then
+                argscopy[Length(argscopy)] := x -> func(GlobalMersenneTwister,x);
+            elif Length(argscopy[filterpos]) = 2 then
+                argscopy[Length(argscopy)] :=
+                    function(x,y)
+                        return func(GlobalMersenneTwister,x,y);
+                    end;
+            else
+                Error("Only 2 or 3 argument methods supported");
+            fi;
+
+            CallFuncList(installType, argscopy);
+        end;
+    end;
+    InstallGlobalFunction("InstallMethodWithRandomSource", func(InstallMethod));
+    InstallGlobalFunction("InstallOtherMethodWithRandomSource", func(InstallOtherMethod));
+end)();
