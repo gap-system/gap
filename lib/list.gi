@@ -1694,6 +1694,28 @@ InstallMethod( PositionBound,
 
 #############################################################################
 ##
+#M  PositionsBound( <list> ) . . . . . . . . . positions of all bound entries
+##
+InstallGlobalFunction( PositionsBound, function( list )
+    local i, bound;
+
+    if IsDenseList( list ) then
+        return [ 1 .. Length( list ) ];
+    fi;
+
+    bound := [];
+    for i in [ 1 .. Length( list ) ] do
+        if IsBound( list[i] )  then
+            Add( bound, i );
+        fi;
+    od;
+
+    return bound;
+end );
+
+
+#############################################################################
+##
 #M  PositionSublist( <list>,<sub>[,<ind>] )
 ##
 InstallMethod( PositionSublist,

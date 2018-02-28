@@ -1410,6 +1410,7 @@ The latter can be done also using <Ref Func="ListWithIdenticalEntries"/>.
 <#Include Label="PositionProperty">
 <#Include Label="PositionsProperty">
 <#Include Label="PositionBound">
+<#Include Label="PositionsBound">
 <#Include Label="PositionNot">
 <#Include Label="PositionNonZero">
 <#Include Label="PositionSublist">
