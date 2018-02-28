@@ -253,7 +253,7 @@ end );
     local func;
     func := function(installType)
         return function(args...)
-            local str, filterpos, filtercopy, argscopy, i, func, info;
+            local str, filterpos, filtercopy, i, func, info;
 
             # Check we understand arguments
             # Second value must be an info string
@@ -287,29 +287,25 @@ end );
             CallFuncList(installType, args);
 
             # Install random, wrapping random source argument
-            argscopy := List(args);
 
             # Remove 'IsRandomSource' from the filter list
-            argscopy[filterpos] := argscopy[filterpos]{[2..Length(argscopy[filterpos])]};
+            Remove(args[filterpos], 1);
 
             # Correct info string by removing 'a random source and'
             info := "for";
-            APPEND_LIST(info, argscopy[2]{[24..Length(argscopy[2])]});
-            argscopy[2] := info;
+            APPEND_LIST(info, args[2]{[24..Length(args[2])]});
+            args[2] := info;
 
-            func := argscopy[Length(argscopy)];
-            if Length(argscopy[filterpos]) = 1 then
-                argscopy[Length(argscopy)] := x -> func(GlobalMersenneTwister,x);
-            elif Length(argscopy[filterpos]) = 2 then
-                argscopy[Length(argscopy)] :=
-                    function(x,y)
-                        return func(GlobalMersenneTwister,x,y);
-                    end;
+            func := Remove(args);
+            if Length(args[filterpos]) = 1 then
+                Add(args, x -> func(GlobalMersenneTwister,x));
+            elif Length(args[filterpos]) = 2 then
+                Add(args, {x,y} -> func(GlobalMersenneTwister,x,y));
             else
                 Error("Only 2 or 3 argument methods supported");
             fi;
 
-            CallFuncList(installType, argscopy);
+            CallFuncList(installType, args);
         end;
     end;
     InstallGlobalFunction("InstallMethodWithRandomSource", func(InstallMethod));
