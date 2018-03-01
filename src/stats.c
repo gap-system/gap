@@ -1863,7 +1863,7 @@ void            PrintIf (
 
     /* print the 'if' branch                                               */
     Pr( "if%4> ", 0L, 0L );
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr( "%2< then%2>\n", 0L, 0L );
     PrintStat( ADDR_STAT(stat)[1] );
     Pr( "%4<\n", 0L, 0L );
@@ -1877,7 +1877,7 @@ void            PrintIf (
         }
         else {
             Pr( "elif%4> ", 0L, 0L );
-            PrintExpr( ADDR_STAT(stat)[2*(i-1)] );
+            PrintExpr( ADDR_EXPR(stat)[2*(i-1)] );
             Pr( "%2< then%2>\n", 0L, 0L );
         }
         PrintStat( ADDR_STAT(stat)[2*(i-1)+1] );
@@ -1904,9 +1904,9 @@ void            PrintFor (
     UInt                i;              /* loop variable                   */
 
     Pr( "for%4> ", 0L, 0L );
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr( "%2< in%2> ", 0L, 0L );
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     Pr( "%2< do%2>\n", 0L, 0L );
     for ( i = 2; i <= SIZE_STAT(stat)/sizeof(Stat)-1; i++ ) {
         PrintStat( ADDR_STAT(stat)[i] );
@@ -1931,7 +1931,7 @@ void            PrintWhile (
     UInt                i;              /* loop variable                   */
 
     Pr( "while%4> ", 0L, 0L );
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr( "%2< do%2>\n", 0L, 0L );
     for ( i = 1; i <= SIZE_STAT(stat)/sizeof(Stat)-1; i++ ) {
         PrintStat( ADDR_STAT(stat)[i] );
@@ -1967,10 +1967,10 @@ void            PrintAtomic (
       case 2: Pr("readwrite ",0L,0L);
 	break;
       }
-      PrintExpr(ADDR_STAT(stat)[2*i]);
+      PrintExpr(ADDR_EXPR(stat)[2*i]);
     }
     Pr( "%2< do%2>\n", 0L, 0L );
-    PrintStat( ADDR_STAT(stat)[0]);
+    PrintStat(ADDR_STAT(stat)[0]);
     Pr( "%4<\nod;", 0L, 0L );
 }
 
@@ -1995,7 +1995,7 @@ void            PrintRepeat (
         if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr( "\n", 0L, 0L );
     }
     Pr( "%4<\nuntil%2> ", 0L, 0L );
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr( "%2<;", 0L, 0L );
 }
 
@@ -2082,9 +2082,9 @@ void            PrintAssert2Args (
     Pr("%<( %>",0L,0L);
 
     /* Print the arguments, separated by a comma                           */
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<, %>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
 
     /* print the closing parenthesis                                       */
     Pr(" %2<);",0L,0L);
@@ -2108,11 +2108,11 @@ void            PrintAssert3Args (
     Pr("%<( %>",0L,0L);
 
     /* Print the arguments, separated by commas                            */
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<, %>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     Pr("%<, %>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[2] );
+    PrintExpr( ADDR_EXPR(stat)[2] );
 
     /* print the closing parenthesis                                       */
     Pr(" %2<);",0L,0L);
