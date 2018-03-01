@@ -142,8 +142,6 @@ static Obj DispatchFuncCall( Obj func, Int nargs, Obj arg1, Obj arg2, Obj arg3, 
       SET_ELM_PLIST(arglist,2, arg2);
     case 1:
       SET_ELM_PLIST(arglist,1, arg1);
-    case 0:
-      CHANGED_BAG(arglist);
     }
   } else {
     arglist = arg1;
