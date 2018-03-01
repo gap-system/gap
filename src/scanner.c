@@ -95,7 +95,7 @@ void SyntaxWarning(const Char * msg)
 *F  Match( <symbol>, <msg>, <skipto> )  . match current symbol and fetch next
 **
 **  'Match' is the main  interface between the  scanner and the  parser.   It
-**  performs the  4 most common actions in  the scanner  with  just one call.
+**  performs the four most common actions in the scanner with  just one call.
 **  First it checks that  the current symbol stored  in the variable 'Symbol'
 **  is the expected symbol  as passed in the  argument <symbol>.  If  it  is,
 **  'Match' reads the next symbol from input  and returns.  Otherwise 'Match'
