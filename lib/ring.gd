@@ -748,7 +748,7 @@ InstallFactorMaintenance( IsZeroMultiplicationRing,
 ##  gap> Units( GaussianIntegers );
 ##  [ -1, 1, -E(4), E(4) ]
 ##  gap> Units( GF( 16 ) );
-##  <group with 1 generators>
+##  <group of size 15 with 1 generators>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

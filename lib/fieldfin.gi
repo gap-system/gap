@@ -79,7 +79,14 @@ InstallMethodWithRandomSource( Random,
 InstallMethod( Units,
     "for a finite field",
     [ IsField and IsFinite ],
-    F -> GroupByGenerators( [ PrimitiveRoot( F ) ] ) );
+    function ( F )
+    local G;
+    G := GroupByGenerators( [ PrimitiveRoot( F ) ] );
+    if HasSize( F ) then
+      SetSize( G, Size( F )-1 );
+    fi;
+    return G;
+    end );
 
 
 #############################################################################
