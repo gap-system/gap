@@ -264,12 +264,10 @@ InstallGlobalFunction( RandomList, function(args...)
 
   return list[Random(source, 1, Length(list))];
 end );
-InstallMethod( Random, "for a (finite) collection",
-    [ IsCollection and IsFinite ],
-    C -> RandomList( Enumerator( C ) ) );
+
 
 RedispatchOnCondition(Random,true,[IsCollection],[IsFinite],0);
-
+RedispatchOnCondition(Random,true,[IsRandomSource,IsCollection],[IsFinite],0);
 
 #############################################################################
 ##

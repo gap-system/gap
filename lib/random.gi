@@ -311,3 +311,9 @@ end );
     InstallGlobalFunction("InstallMethodWithRandomSource", func(InstallMethod));
     InstallGlobalFunction("InstallOtherMethodWithRandomSource", func(InstallOtherMethod));
 end)();
+
+# This method must rank below Random(SomeRandomSource, IsList)
+# for any random source SomeRandomSource, to avoid an infinite loop.
+InstallMethodWithRandomSource( Random, "for a random source and a (finite) collection",
+    [ IsRandomSource, IsCollection and IsFinite ], -8,
+    {rs, C} -> RandomList(rs, Enumerator( C ) ) );
