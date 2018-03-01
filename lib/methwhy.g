@@ -280,8 +280,6 @@ end);
 ##  <Example><![CDATA[
 ##  gap> ShowImpliedFilters(IsNilpotentGroup);
 ##  Implies:
-##     IsNilpotentGroup
-##     HasIsNilpotentGroup
 ##     IsSupersolvableGroup
 ##     HasIsSupersolvableGroup
 ##     IsSolvableGroup
@@ -293,57 +291,52 @@ end);
 ##  May imply with:
 ##  +IsFinitelyGeneratedGroup
 ##  +HasIsFinitelyGeneratedGroup
-##     IsFinitelyGeneratedGroup
-##     HasIsFinitelyGeneratedGroup
-##     IsNilpotentGroup
-##     HasIsNilpotentGroup
-##     IsSupersolvableGroup
-##     HasIsSupersolvableGroup
-##     IsSolvableGroup
-##     HasIsSolvableGroup
 ##     IsPolycyclicGroup
 ##     HasIsPolycyclicGroup
-##     IsNilpotentByFinite
-##     HasIsNilpotentByFinite
 ##  
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL("ShowImpliedFilters",function(fil)
-local flags,f,i,j,l,m,n;
-  flags:=FLAGS_FILTER(fil);
+BIND_GLOBAL("ShowImpliedFilters",function(filter)
+local flags, implied, f, extra_implications, implication, name, diff_reqs, diff_impls;
+  flags:=FLAGS_FILTER(filter);
+  implied := WITH_IMPS_FLAGS(flags);
   atomic readonly IMPLICATIONS_SIMPLE do
     f:=Filtered(IMPLICATIONS_SIMPLE, x->IS_SUBSET_FLAGS(x[2],flags));
     Append(f, Filtered(IMPLICATIONS_COMPOSED, x->IS_SUBSET_FLAGS(x[2],flags)));
-    l:=[];
-    m:=[];
-    for i in f do
-      n:=SUB_FLAGS(i[2],flags); # the additional requirements
-      if SIZE_FLAGS(n)=0 then
-        Add(l,i[1]);
-      else
-        Add(m,[n,i[1]]);
+    extra_implications:=[];
+    for implication in f do
+      diff_reqs:=SUB_FLAGS(implication[2],flags); # the additional requirements
+      diff_impls:=SUB_FLAGS(implication[1],implied); # the additional implications
+      diff_impls:=SUB_FLAGS(diff_impls,diff_reqs);
+      if SIZE_FLAGS(diff_reqs) > 0 and SIZE_FLAGS(diff_impls) > 0 then
+        Add(extra_implications, [diff_reqs, diff_impls]);
       fi;
     od;
   od; # end atomic
-  if Length(l)>0 then
+
+  # remove "obvious" implications
+  if IS_ELEMENTARY_FILTER(filter) then
+    implied := SUB_FLAGS(implied, flags);
+  fi;
+
+  if SIZE_FLAGS(implied) > 0 then
     Print("Implies:\n");
-    for i in l do
-      for j in NamesFilter(i) do
-	Print("   ",j,"\n");
-      od;
+    for name in NamesFilter(implied) do
+      Print("   ",name,"\n");
     od;
   fi;
-  if Length(m)>0 then
+
+  if Length(extra_implications) > 0 then
     Print("\n\nMay imply with:\n");
-    for i in m do
-      for j in NamesFilter(i[1]) do
-        Print("+",j,"\n");
+    for implication in extra_implications do
+      for name in NamesFilter(implication[1]) do
+        Print("+",name,"\n");
       od;
-      for j in NamesFilter(i[2]) do
-        Print("   ",j,"\n");
+      for name in NamesFilter(implication[2]) do
+        Print("   ",name,"\n");
       od;
       Print("\n");
     od;
