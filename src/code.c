@@ -298,7 +298,7 @@ Expr            NewExpr (
 
 /* TL: Int CountStat; */
 
-void PushStat (
+static void PushStat (
     Stat                stat )
 {
     /* there must be a stack, it must not be underfull or overfull         */
@@ -315,7 +315,7 @@ void PushStat (
     STATE(CountStat)++;
 }
 
-Stat PopStat ( void )
+static Stat PopStat ( void )
 {
     Stat                stat;
 
@@ -332,7 +332,7 @@ Stat PopStat ( void )
     return stat;
 }
 
-Stat PopSeqStat (
+static Stat PopSeqStat (
     UInt                nr )
 {
     Stat                body;           /* sequence, result                */
