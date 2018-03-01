@@ -529,28 +529,6 @@ enum EXPR_TNUM {
 
 /****************************************************************************
 **
-*F  PushStat(<stat>)  . . . . . . . . . . . . . push statement onto the stack
-*F  PopStat() . . . . . . . . . . . . . . . . .  pop statement from the stack
-**
-**  'StackStat' is the stack of statements that have been coded.
-**
-**  'CountStat'   is the number   of statements  currently on  the statements
-**  stack.
-**
-**  'PushStat'  pushes the statement  <stat> onto the  statements stack.  The
-**  stack is automatically resized if necessary.
-**
-**  'PopStat' returns the  top statement from the  statements  stack and pops
-**  it.  It is an error if the stack is empty.
-*/
-extern void PushStat (
-            Stat                stat );
-
-extern Stat PopStat ( void );
-
-
-/****************************************************************************
-**
 *F * * * * * * * * * * * * *  coder functions * * * * * * * * * * * * * * * *
 */
 
