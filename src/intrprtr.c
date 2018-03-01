@@ -4442,6 +4442,7 @@ void            IntrInfoEnd( UInt narg )
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
+    if ( STATE(IntrIgnoring)  > 1 ) { STATE(IntrIgnoring)--; return; }
     if ( STATE(IntrCoding)    > 0 ) { CodeInfoEnd( narg ); return; }
 
 
@@ -4543,6 +4544,7 @@ void             IntrAssertEnd2Args ( void )
 {
       /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
+    if ( STATE(IntrIgnoring)  > 2 ) { STATE(IntrIgnoring) -= 2; return; }
     if ( STATE(IntrCoding)    > 0 ) { CodeAssertEnd2Args(); return; }
 
 
@@ -4551,8 +4553,8 @@ void             IntrAssertEnd2Args ( void )
     else
       STATE(IntrIgnoring) -= 2;
 
-    if (STATE(IntrIgnoring) == 0)
-      PushVoidObj();
+    GAP_ASSERT(STATE(IntrIgnoring) == 0);
+    PushVoidObj();
 }
 
 
@@ -4561,6 +4563,7 @@ void             IntrAssertEnd3Args ( void )
   Obj message;
   /* ignore or code                                                      */
   if ( STATE(IntrReturning) > 0 ) { return; }
+  if ( STATE(IntrIgnoring)  > 2 ) { STATE(IntrIgnoring) -= 2; return; }
   if ( STATE(IntrCoding)    > 0 ) { CodeAssertEnd3Args(); return; }
 
 
@@ -4575,8 +4578,8 @@ void             IntrAssertEnd3Args ( void )
   } else
       STATE(IntrIgnoring) -= 2;
 
-  if (STATE(IntrIgnoring) == 0)
-      PushVoidObj();
+    GAP_ASSERT(STATE(IntrIgnoring) == 0);
+    PushVoidObj();
 }
 
 
