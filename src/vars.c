@@ -181,7 +181,7 @@ void            PrintAssLVar (
     Pr( "%2>", 0L, 0L );
     Pr( "%I", (Int)NAME_LVAR( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
     Pr( "%< %>:= ", 0L, 0L );
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     Pr( "%2<;", 0L, 0L );
 }
 
@@ -366,7 +366,7 @@ void            PrintAssHVar (
     Pr( "%2>", 0L, 0L );
     Pr( "%I", (Int)NAME_HVAR( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
     Pr( "%< %>:= ", 0L, 0L );
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     Pr( "%2<;", 0L, 0L );
 }
 
@@ -481,7 +481,7 @@ void            PrintAssGVar (
     Pr( "%2>", 0L, 0L );
     Pr( "%I", (Int)NameGVar( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
     Pr( "%< %>:= ", 0L, 0L );
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     Pr( "%2<;", 0L, 0L );
 }
 
@@ -1128,12 +1128,12 @@ void            PrintAssList (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<[",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     Pr("%<]",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[2] );
+    PrintExpr( ADDR_EXPR(stat)[2] );
     Pr("%2<;",0L,0L);
 }
 
@@ -1141,14 +1141,14 @@ void            PrintAss2List (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<[",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     Pr("%<, %>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[2] );
+    PrintExpr( ADDR_EXPR(stat)[2] );
     Pr("%<]",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[3] );
+    PrintExpr( ADDR_EXPR(stat)[3] );
     Pr("%2<;",0L,0L);
 }
 
@@ -1158,16 +1158,16 @@ void            PrintAssXList (
   Int narg = SIZE_STAT(stat)/sizeof(stat) - 2;
   Int i;
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<[",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     for (i = 2; i <= narg; i++) {
       Pr("%<, %>",0L,0L);
-      PrintExpr( ADDR_STAT(stat)[i] );
+      PrintExpr( ADDR_EXPR(stat)[i] );
     }
     Pr("%<]",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[narg + 1] );
+    PrintExpr( ADDR_EXPR(stat)[narg + 1] );
     Pr("%2<;",0L,0L);
 }
 
@@ -1178,12 +1178,12 @@ void            PrintUnbList (
   Int i;
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<[",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     for (i = 2; i <= narg; i++) {
       Pr("%<, %>",0L,0L);
-      PrintExpr(ADDR_STAT(stat)[i]);
+      PrintExpr( ADDR_EXPR(stat)[i]);
     }
     Pr("%<]",0L,0L);
     Pr( " );", 0L, 0L );
@@ -1203,12 +1203,12 @@ void            PrintAsssList (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<{",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     Pr("%<}",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[2] );
+    PrintExpr( ADDR_EXPR(stat)[2] );
     Pr("%2<;",0L,0L);
 }
 
@@ -1551,12 +1551,12 @@ void            PrintAssRecName (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<.",0L,0L);
     Pr("%I",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
     Pr("%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[2] );
+    PrintExpr( ADDR_EXPR(stat)[2] );
     Pr("%2<;",0L,0L);
 }
 
@@ -1565,7 +1565,7 @@ void            PrintUnbRecName (
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<.",0L,0L);
     Pr("%I",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
     Pr("%<",0L,0L);
@@ -1584,12 +1584,12 @@ void            PrintAssRecExpr (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<.(",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     Pr(")%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[2] );
+    PrintExpr( ADDR_EXPR(stat)[2] );
     Pr("%2<;",0L,0L);
 }
 
@@ -1598,9 +1598,9 @@ void            PrintUnbRecExpr (
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<.(",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     Pr(")%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -1905,12 +1905,12 @@ void            PrintAssPosObj (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<![",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     Pr("%<]",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[2] );
+    PrintExpr( ADDR_EXPR(stat)[2] );
     Pr("%2<;",0L,0L);
 }
 
@@ -1919,9 +1919,9 @@ void            PrintUnbPosObj (
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<![",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     Pr("%<]",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -2309,12 +2309,12 @@ void            PrintAssComObjName (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<!.",0L,0L);
     Pr("%I",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
     Pr("%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[2] );
+    PrintExpr( ADDR_EXPR(stat)[2] );
     Pr("%2<;",0L,0L);
 }
 
@@ -2323,7 +2323,7 @@ void            PrintUnbComObjName (
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<!.",0L,0L);
     Pr("%I",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
     Pr("%<",0L,0L);
@@ -2342,12 +2342,12 @@ void            PrintAssComObjExpr (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<!.(",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     Pr(")%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[2] );
+    PrintExpr( ADDR_EXPR(stat)[2] );
     Pr("%2<;",0L,0L);
 }
 
@@ -2356,9 +2356,9 @@ void            PrintUnbComObjExpr (
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[0] );
+    PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<!.(",0L,0L);
-    PrintExpr( ADDR_STAT(stat)[1] );
+    PrintExpr( ADDR_EXPR(stat)[1] );
     Pr(")%<",0L,0L);
     Pr( " );", 0L, 0L );
 }

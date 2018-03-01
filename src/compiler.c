@@ -3904,7 +3904,7 @@ void CompIf (
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
         Emit( "\n/* if " );
-        PrintExpr( ADDR_STAT(stat)[0] );
+        PrintExpr( ADDR_EXPR(stat)[0] );
         Emit( " then */\n" );
     }
 
@@ -3939,7 +3939,7 @@ void CompIf (
         /* print a comment                                                 */
         if ( CompPass == 2 ) {
             Emit( "\n/* elif " );
-            PrintExpr( ADDR_STAT(stat)[2*(i-1)] );
+            PrintExpr( ADDR_EXPR(stat)[2*(i-1)] );
             Emit( " then */\n" );
         }
 
@@ -4048,9 +4048,9 @@ void CompFor (
         /* print a comment                                                 */
         if ( CompPass == 2 ) {
             Emit( "\n/* for " );
-            PrintExpr( ADDR_STAT(stat)[0] );
+            PrintExpr( ADDR_EXPR(stat)[0] );
             Emit( " in " );
-            PrintExpr( ADDR_STAT(stat)[1] );
+            PrintExpr( ADDR_EXPR(stat)[1] );
             Emit( " do */\n" );
         }
 
@@ -4134,9 +4134,9 @@ void CompFor (
         /* print a comment                                                 */
         if ( CompPass == 2 ) {
             Emit( "\n/* for " );
-            PrintExpr( ADDR_STAT(stat)[0] );
+            PrintExpr( ADDR_EXPR(stat)[0] );
             Emit( " in " );
-            PrintExpr( ADDR_STAT(stat)[1] );
+            PrintExpr( ADDR_EXPR(stat)[1] );
             Emit( " do */\n" );
         }
 
@@ -4294,7 +4294,7 @@ void CompWhile (
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
         Emit( "\n/* while " );
-        PrintExpr( ADDR_STAT(stat)[0] );
+        PrintExpr( ADDR_EXPR(stat)[0] );
         Emit( " od */\n" );
     }
 
@@ -4365,7 +4365,7 @@ void CompRepeat (
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
         Emit( "\n/* until " );
-        PrintExpr( ADDR_STAT(stat)[0] );
+        PrintExpr( ADDR_EXPR(stat)[0] );
         Emit( " */\n" );
     }
 
