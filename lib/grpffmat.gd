@@ -30,13 +30,15 @@ DeclareSynonym( "IsFFEMatrixGroup", IsFFECollCollColl and IsMatrixGroup );
 
 #############################################################################
 ##
-#M  IsFinite( <ffe-mat-grp> )
+#M  IsSubsetLocallyFiniteGroup( <ffe-mat-grp> )
+##
+##  As a consequence, any IsFFEMatrixGroup in IsFinitelyGeneratedGroup
+##  automatically is also in IsFinite.
 ##
 ##  *Note:*  The following implication only holds  if  there are no  infinite
 ##  dimensional matrices.
 ##
-InstallTrueMethod( IsFinite,
-    IsFFEMatrixGroup and IsFinitelyGeneratedGroup );
+InstallTrueMethod( IsSubsetLocallyFiniteGroup, IsFFEMatrixGroup );
 
 
 #############################################################################
