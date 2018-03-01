@@ -1551,18 +1551,12 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
 
 static inline Int GetIntObj( Obj list, UInt pos)
 {
-  Obj entry;
-  entry = ELM_PLIST(list, pos);
-  if (!entry)
-    {
-      Pr("panic: internal inconsistency", 0L, 0L);
-      SyExit(1);
-    }
-  if (!IS_INTOBJ(entry))
-    {
+  Obj entry = ELM_PLIST(list, pos);
+  GAP_ASSERT(entry);
+  if (!IS_INTOBJ(entry)) {
       ErrorMayQuit("COPY_LIST_ENTRIES: argument %d  must be a small integer, not a %s",
                    (Int)pos, (Int)TNAM_OBJ(entry));
-    }
+  }
   return INT_INTOBJ(entry);
 }
 
@@ -1581,22 +1575,14 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
   Obj *dptr;
   UInt ct;
 
-  if (!IS_PLIST(args))
-    {
-      Pr("panic: internal inconsistency",0L,0L);
-      SyExit(1);
-    }
+  GAP_ASSERT(IS_PLIST(args));
   if (LEN_PLIST(args) != 7)
     {
       ErrorMayQuit("COPY_LIST_ENTRIES: number of arguments must be 7, not %d",
                    (Int)LEN_PLIST(args), 0L);
     }
   srclist = ELM_PLIST(args,1);
-  if (!srclist)
-    {
-      Pr("panic: internal inconsistency", 0L, 0L);
-      SyExit(1);
-    }
+  GAP_ASSERT(srclist != 0);
   if (!IS_PLIST(srclist))
     {
       ErrorMayQuit("COPY_LIST_ENTRIES: source must be a plain list not a %s",
@@ -1606,11 +1592,7 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
   srcstart = GetIntObj(args,2);
   srcinc = GetIntObj(args,3);
   dstlist = ELM_PLIST(args,4);
-  if (!dstlist)
-    {
-      Pr("panic: internal inconsistency", 0L, 0L);
-      SyExit(1);
-    }
+  GAP_ASSERT(dstlist != 0);
   while (!IS_PLIST(dstlist) || !IS_MUTABLE_OBJ(dstlist))
     {
       ErrorMayQuit("COPY_LIST_ENTRIES: destination must be a mutable plain list not a %s",
