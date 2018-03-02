@@ -3,12 +3,6 @@
 dist: trusty
 language: c
 
-branches:
-  only:
-  - master
-  - /^stable-.*$/
-  - MatrixObj2
-
 env:
   global:
     - CFLAGS="-fprofile-arcs -ftest-coverage -O2"
