@@ -74,14 +74,7 @@ end;
 ##  is currently bound
 ##
 
-InstallGlobalFunction( ValueGlobal, 
-        function (name)
-    local val;
-    CheckGlobalName( name );
-    val := VALUE_GLOBAL(name);
-    Info( InfoGlobal, 3, "ValueGlobal: access to ",name," returned ",val); 
-    return val;
-end);
+InstallGlobalFunction( ValueGlobal, VALUE_GLOBAL );
 
 
 #############################################################################
