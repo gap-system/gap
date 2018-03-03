@@ -11,7 +11,7 @@ Error, no 1st choice method found for `^' on 2 arguments
 gap> 'x' ^ 1;
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `^' on 2 arguments
-gap> "x" ^ 1;
+gap> [true] ^ 1;
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `^' on 2 arguments
 gap> f ^ 1;
@@ -25,7 +25,7 @@ Error, no 1st choice method found for `*' on 2 arguments
 gap> 1 * 'x';
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `*' on 2 arguments
-gap> 1 * "x";
+gap> 1 * [true];
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `*' on 2 arguments
 gap> 1 * f;
@@ -39,7 +39,7 @@ Error, no 1st choice method found for `*' on 2 arguments
 gap> 'x' * 1;
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `*' on 2 arguments
-gap> "x" * 1;
+gap> [true] * 1;
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `*' on 2 arguments
 gap> f * 1;
