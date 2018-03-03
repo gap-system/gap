@@ -198,6 +198,10 @@ if IsHPCGAP then
     MakeThreadLocal("READ_INDENT");
 fi;
 
+## Setting this info class' level to 5 will display information
+## about when `Read` is called. This replaces InfoRead1.
+DeclareInfoClass("InfoRead");
+
 InstallMethod( Read,
     "string",
     [ IsString ],
@@ -208,11 +212,11 @@ function ( name )
 
     readIndent := SHALLOW_COPY_OBJ( READ_INDENT );
     APPEND_LIST_INTR( READ_INDENT, "  " );
-    InfoRead1( "#I", READ_INDENT, "Read( \"", name, "\" )\n" );
+    Info(InfoRead, 5, READ_INDENT, "Read( \"", name, "\" )\n");
     found := (IsReadableFile(name)=true) and READ(name);
     READ_INDENT := readIndent;
     if found and READ_INDENT = ""  then
-        InfoRead1( "#I  Read( \"", name, "\" ) done\n" );
+        Info(InfoRead, 5, READ_INDENT, "Read( \"", name, "\" ) done\n" );
     fi;
     if not found  then
         Error( "file \"", name, "\" must exist and be readable" );
