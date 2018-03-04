@@ -1635,14 +1635,6 @@ static Int InitKernel (
 static Int PostRestore (
     StructInitInfo *    module )
 {
-      UInt var;
-
-    /* library name and other stuff                                        */
-    var = GVarName( "DEBUG_LOADING" );
-    MakeReadWriteGVar(var);
-    AssGVar( var, (SyDebugLoading ? True : False) );
-    MakeReadOnlyGVar(var);
-
     /* construct the `ViewObj' variable                                    */
     ViewObjGVar = GVarName( "ViewObj" ); 
 
