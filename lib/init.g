@@ -142,15 +142,6 @@ end;
 
 #############################################################################
 ##
-#V  InfoRead? . . . . . . . . . . . . . . . . . . . . print what file is read
-##
-if DEBUG_LOADING           then InfoRead1 := Print;   fi;
-if not IsBound(InfoRead1)  then InfoRead1 := Ignore;  fi;
-if not IsBound(InfoRead2)  then InfoRead2 := Ignore;  fi;
-
-
-#############################################################################
-##
 #V  CHECK_INSTALL_METHOD  . . . . . .  check requirements in `INSTALL_METHOD'
 ##
 CHECK_INSTALL_METHOD := true;
@@ -234,20 +225,11 @@ fi;
 
 #############################################################################
 ##
-##  - Unbind `DEBUG_LOADING', since later the `-D' option can be checked.
 ##  - Set or disable break loop according to the `-T' option.
 ##  - Set whether traceback may be suppressed (e.g. by `-T') according to the
 ##    `--alwaystrace' option.
 ##
 CallAndInstallPostRestore( function()
-    if DEBUG_LOADING then
-      InfoRead1:= Print;
-    else
-      InfoRead1:= Ignore;
-    fi;
-    MAKE_READ_WRITE_GLOBAL( "DEBUG_LOADING" );
-    UNBIND_GLOBAL( "DEBUG_LOADING" );
-
     if IsHPCGAP then
       # In HPC-GAP we want to decide how to handle errors on a per thread
       # basis. E.g. the break loop can be disabled in a worker thread that
@@ -269,7 +251,9 @@ CallAndInstallPostRestore( function()
 end);
 
 ReadOrComplete := function(name)
-    InfoRead1( "#I  reading ", name, "\n" );
+    if GAPInfo.CommandLineOptions.D then
+        Print( "#I  reading ", name, "\n" );
+    fi;
     if not READ_GAP_ROOT( name ) then
         Error( "cannot read file ", name );
     fi;

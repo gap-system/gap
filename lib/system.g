@@ -409,11 +409,6 @@ CallAndInstallPostRestore( function()
     GAPInfo.CommandLineOptions:= CommandLineOptions;
     GAPInfo.InitFiles:= InitFiles;
 
-    # Switch on debugging (`-D' option) when GAP is started with a workspace.
-    if GAPInfo.CommandLineOptions.D then
-      InfoRead1:= Print;
-    fi;
-
     padspace := function(strlen, len)
       local i;
       for i in [strlen+1..len] do

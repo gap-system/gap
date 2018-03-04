@@ -224,7 +224,6 @@ DeclareObsoleteSynonym( "ReadPkg", "ReadPackage" );
 #BindGlobal( "VERSION", GAPInfo.Version );
 BindGlobal( "GAP_ARCHITECTURE", GAPInfo.Architecture );
 #BindGlobal( "GAP_ROOT_PATHS", GAPInfo.RootPaths );
-BindGlobal( "DEBUG_LOADING", GAPInfo.CommandLineOptions.D );
 BindGlobal( "BANNER", not GAPInfo.CommandLineOptions.b );
 BindGlobal( "QUIET", GAPInfo.CommandLineOptions.q );
 #BindGlobal( "LOADED_PACKAGES", GAPInfo.PackagesLoaded );
