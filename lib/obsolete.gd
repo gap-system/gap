@@ -681,6 +681,17 @@ DeclareObsoleteSynonym( "RecFields", "RecNames" );
 ##  Not used in any redistributed package (11/2018)
 #DeclareObsoleteSynonym( "SHALLOW_SIZE", "SIZE_OBJ" );
 
+
+#############################################################################
+##
+#V  InfoRead? 
+##
+##  InfoRead used to be used to print when a file is read using `Read()`
+##  
+if GAPInfo.CommandLineOptions.D then InfoRead1 := Print; fi;
+if not IsBound(InfoRead1) then InfoRead1 := Ignore; fi;
+if not IsBound(InfoRead2) then InfoRead2 := Ignore; fi;
+
 #############################################################################
 ##
 #E
