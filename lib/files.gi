@@ -202,23 +202,23 @@ InstallMethod( Read,
     "string",
     [ IsString ],
 function ( name )
-    local   readIndent,  found;
+    local readIndent;
 
-    name := UserHomeExpand(name);
-
-    readIndent := SHALLOW_COPY_OBJ( READ_INDENT );
-    APPEND_LIST_INTR( READ_INDENT, "  " );
     if GAPInfo.CommandLineOptions.D then
-    	Print( "#I", READ_INDENT, "Read( \"", name, "\" )\n" );
+        readIndent := SHALLOW_COPY_OBJ( READ_INDENT );
+        APPEND_LIST_INTR( READ_INDENT, "  " );
+        Print( "#I", READ_INDENT, "Read( \"", name, "\" )\n" );
     fi;
-    found := (IsReadableFile(name)=true) and READ(name);
-    READ_INDENT := readIndent;
-    if GAPInfo.CommandLineOptions.D and
-       found and READ_INDENT = ""  then
-        Print( "#I  Read( \"", name, "\" ) done\n" );
-    fi;
-    if not found  then
+
+    if not READ(UserHomeExpand(name)) then
         Error( "file \"", name, "\" must exist and be readable" );
+    fi;
+
+    if GAPInfo.CommandLineOptions.D then
+        READ_INDENT := readIndent;
+        if READ_INDENT = "" then
+            Print( "#I  Read( \"", name, "\" ) done\n" );
+        fi;
     fi;
 end );
 
