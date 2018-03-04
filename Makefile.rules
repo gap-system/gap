@@ -657,6 +657,8 @@ sysinfo.gap: config.status $(srcdir)/Makefile.rules cnf/GAP-CFLAGS cnf/GAP-CPPFL
 	@echo "# do not edit manually!" >> $@
 	@echo "GAParch=$(GAPARCH)" >> $@
 	@echo "GAP_ABI=$(ABI)" >> $@
+	@echo "GAP_HPCGAP=$(HPCGAP)" >> $@
+	@echo "GAP_ADDGUARDS2=$(ADDGUARDS2)" >> $@
 	@echo "" >> $@
 	@echo "GAP_BIN_DIR=\"$(abs_builddir)\"" >> $@
 	@echo "GAP_LIB_DIR=\"$(abs_srcdir)\"" >> $@
