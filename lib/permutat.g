@@ -481,6 +481,64 @@ end );
 
 #############################################################################
 ##
+#F  CycleFromList( <list> )  . . . . . . . . . . . cycle defined from a list 
+##
+##  <#GAPDoc Label="CycleFromList">
+##  <ManSection>
+##  <Func Name="CycleFromList" Arg='list'/>
+##
+##  <Description>
+##  For the given dense, duplicate-free list of positive integers
+##  <M>[a_1, a_2, ..., a_n]</M>
+##  return the <M>n</M>-cycle <M>(a_1,a_2,...,a_n)</M>. For the empty list
+##  the trivial permutation <M>()</M> is returned.
+##  <P/>
+##  If the given <A>list</A> contains duplicates or holes, return <K>fail</K>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> CycleFromList( [1,2,3,4] );
+##  (1,2,3,4)
+##  gap> CycleFromList( [3,2,6,4,5] );
+##  (2,6,4,5,3)
+##  gap> CycleFromList( [2,3,2] );
+##  fail
+##  gap> CycleFromList( [1,,3] );
+##  fail
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "CycleFromList", function( list )
+    local max, images, set, i;
+
+    # Trivial case
+    if Length(list) = 0 then
+        return ();
+    fi;
+
+    if ForAny( list, i -> not IsPosInt(i) ) then
+        Error("CycleFromList: List must only contain positive integers.");
+    fi;
+
+    set := Set(list);
+    if Length(set) <> Length(list) then
+        # we found duplicates (or list was not dense)
+        return fail;
+    fi;
+    max := Maximum( set );
+    images := [1..max];
+    for i in [1..Length(list)-1] do
+        images[ list[i] ] := list[i+1];
+    od;
+    images[ list[Length(list)] ] := list[1];
+
+    return PermList(images);
+end );
+
+
+#############################################################################
+##
 #O  RestrictedPerm(<perm>,<list>)  restriction of a perm. to an invariant set
 #O  RestrictedPermNC(<perm>,<list>)  restriction of a perm. to an invariant set
 ##
