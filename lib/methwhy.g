@@ -273,7 +273,7 @@ end);
 ##  <Description>
 ##  Displays information about the filters that may be
 ##  implied by <A>filter</A>. They are given by their names.
-##  <C>ShowImpliedFilters</C> first displays the names of all filters
+##  <Ref Func="ShowImpliedFilters"/> first displays the names of all filters
 ##  that are unconditionally implied by <A>filter</A>. It then displays
 ##  implications that require further filters to be present (indicating
 ##  by <C>+</C> the required further filters).
@@ -281,18 +281,13 @@ end);
 ##  gap> ShowImpliedFilters(IsNilpotentGroup);
 ##  Implies:
 ##     IsSupersolvableGroup
-##     HasIsSupersolvableGroup
 ##     IsSolvableGroup
-##     HasIsSolvableGroup
 ##     IsNilpotentByFinite
-##     HasIsNilpotentByFinite
 ##  
 ##  
 ##  May imply with:
 ##  +IsFinitelyGeneratedGroup
-##  +HasIsFinitelyGeneratedGroup
 ##     IsPolycyclicGroup
-##     HasIsPolycyclicGroup
 ##  
 ##  ]]></Example>
 ##  </Description>
@@ -300,7 +295,9 @@ end);
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ShowImpliedFilters",function(filter)
-local flags, implied, f, extra_implications, implication, name, diff_reqs, diff_impls;
+  local flags, implied, f, extra_implications, implication, name, diff_reqs,
+        diff_impls, reduced;
+
   flags:=FLAGS_FILTER(filter);
   implied := WITH_IMPS_FLAGS(flags);
   atomic readonly IMPLICATIONS_SIMPLE do
@@ -322,9 +319,17 @@ local flags, implied, f, extra_implications, implication, name, diff_reqs, diff_
     implied := SUB_FLAGS(implied, flags);
   fi;
 
+  reduced:= function( trues )
+    atomic readonly FILTER_REGION do
+      return Filtered( trues,
+      i -> not ( INFO_FILTERS[i] in FNUM_TPRS
+                 and FLAG1_FILTER( FILTERS[i] ) in trues ) );
+    od;
+  end;
+
   if SIZE_FLAGS(implied) > 0 then
     Print("Implies:\n");
-    for name in NamesFilter(implied) do
+    for name in NamesFilter( reduced( TRUES_FLAGS( implied ) ) ) do
       Print("   ",name,"\n");
     od;
   fi;
@@ -332,10 +337,10 @@ local flags, implied, f, extra_implications, implication, name, diff_reqs, diff_
   if Length(extra_implications) > 0 then
     Print("\n\nMay imply with:\n");
     for implication in extra_implications do
-      for name in NamesFilter(implication[1]) do
+      for name in NamesFilter( reduced( TRUES_FLAGS( implication[1] ) ) ) do
         Print("+",name,"\n");
       od;
-      for name in NamesFilter(implication[2]) do
+      for name in NamesFilter( reduced( TRUES_FLAGS( implication[2] ) ) ) do
         Print("   ",name,"\n");
       od;
       Print("\n");
@@ -393,7 +398,7 @@ BIND_GLOBAL("PageSource", function ( fun, nr... )
       f := Filename(List(GAPInfo.RootPaths, Directory), f);
     fi;
     if f = fail and fun in OPERATIONS then
-      # for operations we show the location(s) of their operation
+      # for operations we show the location(s) of their declaration
       locs := GET_DECLARATION_LOCATIONS(fun);
       if n > Length(locs) then
         Print("Operation ", NameFunction(fun), " has only ",
