@@ -125,6 +125,7 @@ false
 <#Include Label="PermList">
 <#Include Label="MappingPermListList">
 <#Include Label="RestrictedPerm">
+<#Include Label="CycleFromList">
 
 <ManSection>
   <Attr Name="AsPermutation" Arg="f"/>
