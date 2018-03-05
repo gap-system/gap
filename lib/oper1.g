@@ -381,7 +381,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
 
     # Check whether an info string is given,
     # or whether the list of argument filters is given by a list of strings.
-    if IS_STRING_REP( arglist[2] ) then
+    if IS_STRING_REP( arglist[2] ) or arglist[2] = false then
       info:= arglist[2];
       pos:= 3;
     else

@@ -421,7 +421,7 @@ end );
 
 #############################################################################
 ##
-#F  InstallImmediateMethod( <opr>[, <info>], <filter>, <rank>, <method> )
+#F  InstallImmediateMethod( <opr>[, <info>], <filter>[, <rank>], <method> )
 ##
 ##  <#GAPDoc Label="InstallImmediateMethod">
 ##  <ManSection>
@@ -431,7 +431,8 @@ end );
 ##  <Description>
 ##  <Ref Func="InstallImmediateMethod"/> installs <A>method</A> as an
 ##  immediate method for <A>opr</A>, which must be an attribute or a
-##  property, with requirement <A>filter</A> and rank <A>rank</A>.
+##  property, with requirement <A>filter</A> and rank <A>rank</A>
+##  (the rank can be omitted, in which case 0 is used as rank).
 ##  The rank must be an integer value that measures the priority of
 ##  <A>method</A> among the immediate methods for <A>opr</A>.
 ##  If supplied, <A>info</A> should be a short but informative string
@@ -489,25 +490,52 @@ end );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "InstallImmediateMethod", function( arg )
+    local pos, opr, info, filter, rank, method;
 
-    if     LEN_LIST( arg ) = 4
-       and IS_OPERATION( arg[1] )
-       and IsFilter( arg[2] )
-       and IS_RAT( arg[3] )
-       and IS_FUNCTION( arg[4] ) then
-        INSTALL_IMMEDIATE_METHOD( arg[1], false, arg[2], arg[3], arg[4] );
-        INSTALL_METHOD( [ arg[1], [ arg[2] ], arg[4] ], false );
-    elif   LEN_LIST( arg ) = 5
-       and IS_OPERATION( arg[1] )
-       and IS_STRING( arg[2] )
-       and IsFilter( arg[3] )
-       and IS_RAT( arg[4] )
-       and IS_FUNCTION( arg[5] ) then
-        INSTALL_IMMEDIATE_METHOD( arg[1], arg[2], arg[3], arg[4], arg[5] );
-        INSTALL_METHOD( [ arg[1], arg[2], [ arg[3] ], arg[5] ], false );
+    pos := 1;
+
+    if pos <= LEN_LIST( arg ) and IS_OPERATION( arg[pos] ) then
+        opr := arg[pos];
+        pos := pos + 1;
     else
-      Error("usage: InstallImmediateMethod(<opr>,<filter>,<rank>,<method>)");
+        pos := -1;
     fi;
+
+    if pos <= LEN_LIST( arg ) and IS_STRING( arg[pos] ) then
+        info := arg[pos];
+        pos := pos + 1;
+    else
+        info := false;
+    fi;
+
+    if pos <= LEN_LIST( arg ) and IsFilter( arg[pos] ) then
+        filter := arg[pos];
+        pos := pos + 1;
+    else
+        pos := -1;
+    fi;
+
+    if pos <= LEN_LIST( arg ) and IS_RAT( arg[pos] ) then
+        rank := arg[pos];
+        pos := pos + 1;
+    else
+        rank := 0;
+    fi;
+
+    if pos <= LEN_LIST( arg ) and IS_FUNCTION( arg[pos] ) then
+        method := arg[pos];
+        pos := pos + 1;
+    else
+        pos := -1;
+    fi;
+
+    if pos = LEN_LIST( arg ) + 1 then
+        INSTALL_IMMEDIATE_METHOD( opr, info, filter, rank, method );
+        INSTALL_METHOD( [ opr, info, [ filter ], method ], false );
+    else
+        Error("usage: InstallImmediateMethod( <opr>[, <info>], <filter>, <rank>, <method> )");
+    fi;
+
 end );
 
 

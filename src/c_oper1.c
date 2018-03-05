@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "25918424"
+#define FILE_CRC  "452946"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -1336,13 +1336,20 @@ static Obj  HdlrFunc6 (
  }
  /* fi */
  
- /* if IS_STRING_REP( arglist[2] ) then */
- t_3 = GF_IS__STRING__REP;
- C_ELM_LIST_FPL( t_4, a_arglist, INTOBJ_INT(2) )
- t_2 = CALL_1ARGS( t_3, t_4 );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
- t_1 = (Obj)(UInt)(t_2 != False);
+ /* if IS_STRING_REP( arglist[2] ) or arglist[2] = false then */
+ t_4 = GF_IS__STRING__REP;
+ C_ELM_LIST_FPL( t_5, a_arglist, INTOBJ_INT(2) )
+ t_3 = CALL_1ARGS( t_4, t_5 );
+ CHECK_FUNC_RESULT( t_3 )
+ CHECK_BOOL( t_3 )
+ t_2 = (Obj)(UInt)(t_3 != False);
+ t_1 = t_2;
+ if ( ! t_1 ) {
+  C_ELM_LIST_FPL( t_4, a_arglist, INTOBJ_INT(2) )
+  t_5 = False;
+  t_3 = (Obj)(UInt)(EQ( t_4, t_5 ));
+  t_1 = t_3;
+ }
  if ( t_1 ) {
   
   /* info := arglist[2]; */
@@ -3927,7 +3934,7 @@ static Obj  HdlrFunc1 (
       if not IS_OPERATION( opr ) then
           Error( "<opr> is not an operation" );
       fi;
-      if IS_STRING_REP( arglist[2] ) then
+      if IS_STRING_REP( arglist[2] ) or arglist[2] = false then
           info := arglist[2];
           pos := 3;
       else
@@ -4594,7 +4601,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = 25918424,
+ .crc         = 452946,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
