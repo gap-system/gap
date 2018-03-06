@@ -167,7 +167,7 @@ InstallOtherMethod( PowerMapOp,
     fi;
 
     image:= class;
-    for i in FactorsInt( n ) do
+    for i in Factors(Integers, n ) do
       # Here we use that `n' is a small integer.
       if not IsBound( powermap[i] ) then
 
@@ -3368,7 +3368,7 @@ InstallGlobalFunction( ConsiderSmallerPowerMaps, function( arg )
 
     for i in omega do
 
-      factors:= FactorsInt( prime mod tbl_orders[i] );
+      factors:= Factors(Integers, prime mod tbl_orders[i] );
       if factors = [ 1 ] or factors = [ 0 ] then factors:= []; fi;
 
       if ForAll( Set( factors ), x -> IsBound( tbl_powermap[x] ) ) then

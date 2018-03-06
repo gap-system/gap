@@ -3268,7 +3268,7 @@ InstallGlobalFunction( NullspaceModQ, function( E, q )
            j, i,k;
 
     # factorize q
-    facs  := FactorsInt( q );
+    facs  := Factors(Integers, q );
     p     := facs[1];
     n     := Length( facs );
     field := GF(p);

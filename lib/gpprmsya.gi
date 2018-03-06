@@ -346,6 +346,7 @@ local   F,      # free group
     # return the isomorphism to the finitely presented group
     hom:= GroupHomomorphismByImagesNC(G,F,imgs,GeneratorsOfGroup(F));
     SetIsBijective( hom, true );
+    ProcessEpimorphismToNewFpGroup(hom);
     return hom;
 end);
 
@@ -1364,7 +1365,7 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
   if not issym then 
     pg:=AlternatingSubgroup(pg);
   fi;
-  if IsSolvableGroup(pg) then
+  if (Size(pg)/Size(u))>10000 and IsSolvableGroup(pg) then
     perm:=IsomorphismPcGroup(pg);
     pg:=PreImage(perm,Normalizer(Image(perm,pg),Image(perm,u)));
   fi;
@@ -1778,6 +1779,7 @@ local   F,      # free group
     # return the isomorphism to the finitely presented group
     hom:= GroupHomomorphismByImagesNC(G,F,imgs,GeneratorsOfGroup(F));
     SetIsBijective( hom, true );
+    ProcessEpimorphismToNewFpGroup(hom);
     return hom;
 end);
 

@@ -145,7 +145,7 @@ RelatorsCode := function( code, size, gens )
           t, j, z, z2;
 
     # get indices
-    f    := FactorsInt( size );
+    f    := Factors(Integers, size );
     l    := Length( f );
     mi   := Maximum( f ) - 1;
     n    := ShallowCopy( code );
@@ -224,7 +224,7 @@ InstallGlobalFunction( PcGroupCode, function( code, size )
     fi;
 
     # create free group
-    F := FreeGroup(IsSyllableWordsFamily, Length( FactorsInt( size ) ) );
+    F := FreeGroup(IsSyllableWordsFamily, Length( Factors(Integers, size ) ) );
     gens := GeneratorsOfGroup( F );
 
     # usual case

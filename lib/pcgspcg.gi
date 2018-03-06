@@ -1376,7 +1376,7 @@ local   pcgs, g,ord,cord,ppc,q,r,gcd,p1,p2,i,j,e1,pows,exps,rord;
 
   g:=el;
   ppc:=[];
-  cord:=Collected(FactorsInt(ord));
+  cord:=Collected(Factors(Integers,ord));
   for i in [1..Length(cord)-1] do
     q:=cord[i][1]^cord[i][2];
     r:=ord/q;

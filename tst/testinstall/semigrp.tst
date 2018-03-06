@@ -477,7 +477,7 @@ true
 # test the methods for Random
 gap> S := FreeSemigroup(3);;
 gap> Random(S);
-s3*s1
+s1*s2
 gap> Random(GlobalRandomSource, S);
 s3*s2^2
 

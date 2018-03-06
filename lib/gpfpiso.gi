@@ -89,7 +89,9 @@ local l,iso,fp,stbc,gens;
 
   stbc:=StabChainMutable(G);
   gens:=StrongGeneratorsStabChain(stbc);
-  return IsomorphismFpGroupByGeneratorsNC( G, gens, str:chunk );
+  iso:=IsomorphismFpGroupByGeneratorsNC( G, gens, str:chunk );
+  ProcessEpimorphismToNewFpGroup(iso);
+  return iso;
 end);
 
 #############################################################################
@@ -224,6 +226,7 @@ function( G, str )
     iso := GroupHomomorphismByImagesNC( G, F, imgsF, gensF );
     SetIsBijective( iso, true );
     SetKernelOfMultiplicativeGeneralMapping( iso, TrivialSubgroup( G ) );
+    ProcessEpimorphismToNewFpGroup(iso);
     return iso;
 end );
 
@@ -442,6 +445,7 @@ function(g,str,N)
 
   hom!.decompinfo:=MakeImmutable(di);
   SetIsWordDecompHomomorphism(hom,true);
+  ProcessEpimorphismToNewFpGroup(hom);
   return hom;
 end);
 
@@ -719,6 +723,7 @@ function( G, gens, str )
         Length( relators ), " rels of total length ",
         Sum( List( relators, rel -> Length( rel ) ) ) );
     fi;
+    ProcessEpimorphismToNewFpGroup(iso);
     return iso;
 end );
 
@@ -742,6 +747,7 @@ function( G, gens, str )
     fi;
     SetIsBijective( iso, true );
     SetKernelOfMultiplicativeGeneralMapping( iso, TrivialSubgroup(G) );
+    ProcessEpimorphismToNewFpGroup(iso);
     return iso;
 end );
 
@@ -849,6 +855,7 @@ function( G, series, str )
     iso   := GroupHomomorphismByImagesNC( G, F, imgsF, gensF );
     SetIsBijective( iso, true );
     SetKernelOfMultiplicativeGeneralMapping( iso, TrivialSubgroup( G ) );
+    ProcessEpimorphismToNewFpGroup(iso);
     return iso;
 end);
 

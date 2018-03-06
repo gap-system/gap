@@ -286,7 +286,7 @@ IsomorphismSolvableSmallGroups := function( g, h )
    lmin := Length( MinimalGeneratingSet( G ) );
    qual := size ^ lmin;
    poses := fail;
-   i := - Length( FactorsInt( size ) ) * 5 - lcoc * 8 - lmin * 12;
+   i := - Length( Factors(Integers, size ) ) * 5 - lcoc * 8 - lmin * 12;
    Info( InfoRandIso, 3, "testing ", -i, " generating strategies" );
    while poses = fail or i < 0 do
       i := i + 1;

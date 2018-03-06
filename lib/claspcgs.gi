@@ -606,7 +606,7 @@ local  G,  home,  # the group and the home pcgs
     cent:=false;
 
   elif IsPrimePowerInt(Size(G)) then
-    p:=FactorsInt(Size(G))[1];
+    p:=PrimePGroup(G);
     home:=PcgsPCentralSeriesPGroup(G);
     eas:=PCentralNormalSeriesByPcgsPGroup(home);
 
@@ -1107,7 +1107,7 @@ local  G,  home,  # the group and the home pcgs
         (InducedPcgs(home,cl.centralizer), c -> Comm(k, c) in L));
     end;
   elif IsPrimePowerInt(Size(G)) then
-    p:=FactorsInt(Size(G))[1];
+    p:=PrimePGroup(G);
     home:=PcgsPCentralSeriesPGroup(G);
     eas:=PCentralNormalSeriesByPcgsPGroup(home);
 

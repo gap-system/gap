@@ -75,6 +75,7 @@ InstallGlobalFunction( IsomorphismFpGroupByPcgs, function( pcgs, str )
                                         GeneratorsOfGroup( H ) );
 
     SetIsBijective( phi, true );
+    ProcessEpimorphismToNewFpGroup(phi);
     return phi;
     
 end );
@@ -158,7 +159,7 @@ gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n,genu;
 
     # compute pc presentation for the finite quotient
     n := Filtered( diag, x -> x <> 1 );
-    n := Length( Flat( List( n, x -> FactorsInt( x ) ) ) );
+    n := Length( Flat( List( n, x -> Factors(Integers, x ) ) ) );
     A := FreeGroup(IsSyllableWordsFamily, n );
 	gensA := GeneratorsOfGroup( A );
 
@@ -169,7 +170,7 @@ gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n,genu;
 	for i in [ 1..ng ] do
 	    if D[i][i] <> 1 then
 	        index[i] := g;
-	        pf[i] := TransposedMat( Collected( FactorsInt( D[i][i] ) ) );
+	        pf[i] := TransposedMat( Collected( Factors(Integers, D[i][i] ) ) );
             pf[i] := rec( factors := pf[i][1],
                           powers  := pf[i][2] );
 	        for j in [ 1..Length( pf[i].factors ) ] do
@@ -843,7 +844,7 @@ local G, epi, tup, lift, i, found, fac, j, p, iso;
         i := primes / Size( G );
         found := true;
         while i > 1 and found do
-            fac := Collected( FactorsInt( i ) );
+            fac := Collected( Factors(Integers, i ) );
             found := false;
             j := 1;
             while not found and j <= Length( fac ) do

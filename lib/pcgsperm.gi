@@ -79,7 +79,7 @@ InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
             A := A.stabilizer;
             
             f := 1;
-            for p  in FactorsInt( m )  do
+            for p  in Factors(Integers, m )  do
                 if relord <> false  then
                     Add( relord, p, pos );
                 fi;
@@ -203,7 +203,7 @@ InstallGlobalFunction( ExtendSeriesPermGroup, function(
                 ord := gcd;
             fi;
         fi;
-        p := FactorsInt( ord )[ 1 ];
+        p := Factors(Integers, ord )[ 1 ];
     fi;
     
     # Loop over all conjugates of <s>.
@@ -368,14 +368,14 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
         # class of <G> is at most Max( log_p(d)-1 ).
         deg := NrMovedPoints( grp );
         if cent  then
-            bound := Maximum( List( Collected( FactorsInt( deg ) ), p ->
+            bound := Maximum( List( Collected( Factors(Integers, deg ) ), p ->
                              p[ 1 ] ^ ( LogInt( deg, p[ 1 ] ) ) ) );
         else
             bound := Int( LogInt( deg ^ 5, 3 ) / 2 );
         fi;
         if     HasSize( grp )
-           and Length( FactorsInt( Size( grp ) ) ) < bound  then
-            bound := Length( FactorsInt( Size( grp ) ) );
+           and Length( Factors(Integers, Size( grp ) ) ) < bound  then
+            bound := Length( Factors(Integers, Size( grp ) ) );
         fi;
         
         for step  in Reversed( [ 1 .. Length( G ) - 1  ] )  do
@@ -545,8 +545,8 @@ local   grp,  pcgs,  U,  oldlen,  series,  y,  w,
   # class of <G> is at most Max( log_p(d)-1 ).
   deg := NrMovedPoints( grp );
   bound := Int( LogInt( deg ^ 5, 3 ) / 2 );
-  if HasSize( grp ) and Length( FactorsInt( Size( grp ) ) ) < bound  then
-    bound:=Length( FactorsInt( Size( grp ) ) );
+  if HasSize( grp ) and Length( Factors(Integers, Size( grp ) ) ) < bound  then
+    bound:=Length( Factors(Integers, Size( grp ) ) );
   fi;
 
   pcseq:=Reversed(pcseq); # build up
@@ -938,8 +938,8 @@ InstallGlobalFunction( SolvableNormalClosurePermGroup, function( G, H )
     # The derived length of <G> is at most (5 log_3(deg(<G>)))/2 (Dixon).
     bound := Int( LogInt( Maximum(1,NrMovedPoints( G ) ^ 5), 3 ) / 2 );
     if     HasSize( G )
-       and Length( FactorsInt( Size( G ) ) ) < bound  then
-        bound := Length( FactorsInt( Size( G ) ) );
+       and Length( Factors(Integers, Size( G ) ) ) < bound  then
+        bound := Length( Factors(Integers, Size( G ) ) );
     fi;
     
     if IsGroup( H )  then

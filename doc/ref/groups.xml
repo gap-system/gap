@@ -476,6 +476,7 @@ the series without destroying the properties of the series.
 <#Include Label="LowLayerSubgroups">
 <#Include Label="ContainedConjugates">
 <#Include Label="ContainingConjugates">
+<#Include Label="MinimalFaithfulPermutationDegree">
 <#Include Label="RepresentativesPerfectSubgroups">
 <#Include Label="ConjugacyClassesPerfectSubgroups">
 <#Include Label="Zuppos">

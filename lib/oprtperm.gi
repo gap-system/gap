@@ -935,7 +935,7 @@ InstallMethod( Earns, "G, ints, gens, perms, act", true,
 #        fi;
 #    fi;
 
-    fac := FactorsInt( n );  p := fac[ 1 ];  d := Length( fac );
+    fac := Factors(Integers, n );  p := fac[ 1 ];  d := Length( fac );
     alpha := BasePoint( StabChainMutable( G ) );
     G1 := Stabilizer( G, alpha );
 

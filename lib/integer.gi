@@ -474,7 +474,7 @@ InstallGlobalFunction(DivisorsInt,function ( n )
     if n <= Length(DivisorsIntCache)  then 
         return DivisorsIntCache[n];  
     fi;
-    factors := FactorsInt( n );
+    factors := Factors(Integers, n );
 
     # recursive function to compute the divisors
     divs := function ( i, m )

@@ -1542,7 +1542,7 @@ InstallMethod( Socle,"for permgrp", true, [ IsPermGroup ], 0,
     elif deg < 12960000  then
         shortcut := true;
         if deg >= 3125  then
-            coll := Collected( FactorsInt( deg ) );
+            coll := Collected( Factors(Integers, deg ) );
             d := Gcd( List( coll, c -> c[ 2 ] ) );
             if d mod 5 = 0  then
                 m := 1;
@@ -1560,7 +1560,7 @@ InstallMethod( Socle,"for permgrp", true, [ IsPermGroup ], 0,
         fi;
     fi;
     
-    coll := Collected( FactorsInt( Size( G ) ) );
+    coll := Collected( Factors(Integers, Size( G ) ) );
     if deg < 78125  then
         p := coll[ Length( coll ) ][ 1 ];
     else

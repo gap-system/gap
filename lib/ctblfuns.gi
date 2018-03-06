@@ -775,7 +775,7 @@ InstallMethod( CorrespondingPermutations,
           # Note that if we have taken away a union of orbits such that the
           # number of remaining points is smaller than the smallest prime
           # divisor of the order of `g' then all these points must be fixed.
-          min:= FactorsInt( Order( g ) )[1];
+          min:= Factors(Integers, Order( g ) )[1];
           images:= [];
 
           for list in part do
@@ -942,7 +942,7 @@ InstallOtherMethod( CorrespondingPermutations,
           # Note that if we have taken away a union of orbits such that the
           # number of remaining points is smaller than the smallest prime
           # divisor of the order of `g' then all these points must be fixed.
-          min:= FactorsInt( Order( g ) )[1];
+          min:= Factors(Integers, Order( g ) )[1];
           images:= [];
 
           for list in part do

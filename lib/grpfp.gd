@@ -689,9 +689,11 @@ DeclareGlobalFunction("TracedCosetFpGroup");
 ##  <Func Name="SubgroupOfWholeGroupByCosetTable" Arg='fpfam, tab'/>
 ##
 ##  <Description>
-##  takes a family <A>fpfam</A> of an FpGroup and a coset table <A>tab</A>
+##  takes a family <A>fpfam</A> of an FpGroup and a standardized coset
+##  table <A>tab</A>
 ##  and returns the subgroup of <A>fpfam</A><C>!.wholeGroup</C> defined by
-##  this coset table.
+##  this coset table. The function will not check whether the coset table is
+##  standardized.
 ##  See also&nbsp;<Ref Func="CosetTableBySubgroup"/>.
 ##  </Description>
 ##  </ManSection>
@@ -1345,6 +1347,9 @@ DeclareGlobalFunction("ParseRelators");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("StringFactorizationWord");
+
+# used to test whether abeliniazation can be mapped in GQuotients
+DeclareGlobalFunction("CanMapFiniteAbelianInvariants");
 
 # used in homomorphisms
 DeclareGlobalVariable("TRIVIAL_FP_GROUP");

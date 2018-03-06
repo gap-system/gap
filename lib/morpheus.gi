@@ -253,6 +253,18 @@ v, val, o, i, comb, best,actbase;
   if not IsFinite(g) then
     Error("can't do!");
 
+  elif IsFpGroup(g) then
+    # no sane person should work with automorphism groups of fp groups, but
+    # if someone really does this is a shortcut that avoids canonization
+    # issues.
+    c:=Filtered(Elements(g),x->not IsOne(x));
+    hom:=ActionHomomorphism(au,c,
+           function(e,a) return Image(a,e);end,"surjective");
+    SetFilterObj(hom,IsNiceMonomorphism);
+    SetNiceMonomorphism(au,hom);
+    SetIsHandledByNiceMonomorphism(au,true);
+    return;
+
   elif IsAbelian(g) then
 
     SetIsFinite(au,true);
@@ -1486,6 +1498,12 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
       od;
     od;
   od;
+  
+  if IsFpGroup(G) and IsWholeFamily(G) then
+    # rewrite to standard generators
+    gens:=GeneratorsOfGroup(G);
+    au:=List(au,x->GroupHomomorphismByImagesNC(G,G,gens,List(gens,y->Image(x,y))));
+  fi;
 
   for i in au do
     SetIsBijective(i,true);
@@ -2180,6 +2198,12 @@ local Fgens,	# generators of F
       # just map them
       return [GroupHomomorphismByImagesNC(F,G,[u],[h])];
     fi;
+  fi;
+
+  if IsFinite(F) and not IsPerfectGroup(G) and 
+    CanMapFiniteAbelianInvariants(AbelianInvariants(F),
+                                  AbelianInvariants(G))=false then
+    return [];
   fi;
 
   if IsAbelian(G) then

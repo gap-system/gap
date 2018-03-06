@@ -823,7 +823,7 @@ InstallGlobalFunction( ZumbroichBase, function( n, m )
       Error( "<m> must be a divisor of <n>" );
     fi;
 
-    factsn:= FactorsInt( n );
+    factsn:= Factors(Integers, n );
     primes:= Set( factsn );
     exponsn:= List( primes, x -> 0 );   # Product(List( [1..Length(primes)],
                                         #         x->primes[i]^exponsn[i]))=n
@@ -837,7 +837,7 @@ InstallGlobalFunction( ZumbroichBase, function( n, m )
       exponsn[ pos ]:= exponsn[ pos ] + 1;
     od;
 
-    factsm:= FactorsInt( m );
+    factsm:= Factors(Integers, m );
     exponsm:= List( primes, x -> 0 );    # Product(List( [1..Length(primes)],
                                          #         x->primes[i]^exponsm[i]))=m
     if m <> 1 then
@@ -960,7 +960,7 @@ InstallGlobalFunction( LenstraBase, function( n, stabilizer, supergroup, m )
       m:= m / 2;
     fi;
 
-    factors  := FactorsInt( n );
+    factors  := Factors(Integers, n );
     primes   := Set( factors );
     coprimes := Filtered( primes, x -> m mod x <> 0 );
     nprime   := Product( Filtered( factors, x -> m mod x <> 0 ) );

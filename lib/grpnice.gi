@@ -633,6 +633,7 @@ local mon,iso;
     mon:=mon*iso;
     SetIsInjective(mon,true);
     SetIsSurjective(mon,true);
+    ProcessEpimorphismToNewFpGroup(mon);
     return mon;
   fi;
 end);
@@ -653,6 +654,7 @@ local mon,iso;
     iso:=mon*iso;
     SetIsInjective(iso,true);
     SetIsSurjective(iso,true);
+    ProcessEpimorphismToNewFpGroup(iso);
     mon:=MappingGeneratorsImages(iso);
     SetName(iso,Concatenation("<composed isomorphism:",
       String(mon[1]),"->",String(mon[2]),">"));

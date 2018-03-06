@@ -248,7 +248,7 @@ InstallGlobalFunction(StringPP, function( n )
         str := "";
     fi;
 
-    facs := Collected( FactorsInt( n ) );
+    facs := Collected( Factors(Integers, n ) );
     for i in [ 1 .. Length( facs ) ] do
         if i > 1 then Append( str, "*" ); fi;
         Append( str, String( facs[ i ][ 1 ] ) );

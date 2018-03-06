@@ -1251,7 +1251,7 @@ InstallGlobalFunction( CharacterTable_IsNilpotentNormalSubgroup,
     orders:= OrdersClassRepresentatives( tbl );
     ppow:= Filtered( N, i -> IsPrimePowerInt( orders[i] ) );
 
-    for part in Collected( FactorsInt( Sum( classlengths{ N }, 0 ) ) ) do
+    for part in Collected( Factors(Integers, Sum( classlengths{ N }, 0 ) ) ) do
 
       # Check whether the Sylow p subgroup of `N' is normal in `N',
       # i.e., whether the number of elements of p-power is equal to
@@ -2903,7 +2903,7 @@ InstallMethod( PrimeBlocksOp,
         if d = ppart then
           d:= 0;
         else
-          d:= Length( FactorsInt( ppart / d ) );              # the defect
+          d:= Length( Factors(Integers, ppart / d ) );              # the defect
         fi;
         Add( primeblocks.defect, d );
 
@@ -4923,7 +4923,7 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
        elif centralizers = true then
           Print( "\n" );
           for i in [col..col+acol-1] do
-             fak:= FactorsInt( tbl_centralizers[classes[i]] );
+             fak:= Factors(Integers, tbl_centralizers[classes[i]] );
              for prime in Set( fak ) do
                 cen[prime][i]:= Number( fak, x -> x = prime );
              od;
@@ -5279,8 +5279,8 @@ InstallMethod( CharacterTableDirectProduct,
 
     # Compute power maps for all prime divisors of the result order.
     vals_direct:= ComputedPowerMaps( direct );
-    for k in Union( FactorsInt( Size( tbl1 ) ),
-                    FactorsInt( Size( tbl2 ) ) ) do
+    for k in Union( Factors(Integers, Size( tbl1 ) ),
+                    Factors(Integers, Size( tbl2 ) ) ) do
       powermap_k:= [];
       vals1:= PowerMap( tbl1, k );
       vals2:= PowerMap( tbl2, k );

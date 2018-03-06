@@ -264,7 +264,7 @@ InstallGlobalFunction( CoeffsCyc, function( z, N )
         # must be equal, and the negative of this value is put at the
         # position of the $p$-th element of this congruence class.
         if second > 1 then
-          for p in FactorsInt( second ) do
+          for p in Factors(Integers, second ) do
             nn:= n / p;
             newcoeffs:= ListWithIdenticalEntries( nn, 0 );
             for k in [ 1 .. n ] do
@@ -1245,7 +1245,7 @@ InstallGlobalFunction( Quadratic, function( arg )
     fi;
 
     coeffs:= ExtRepOfObj( cyc );
-    facts:= FactorsInt( Length( coeffs ) );
+    facts:= Factors(Integers, Length( coeffs ) );
     factsset:= Set( facts );
     two_part:= Number( facts, x -> x = 2 );
 
