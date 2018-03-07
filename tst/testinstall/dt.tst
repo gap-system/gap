@@ -73,4 +73,53 @@ gap> for i in [1..100] do
 > od;
 
 #
+#
+#
+gap> famG:=ElementsFamily(FamilyObj(G));
+<Family: "MultiplicativeElementsWithInversesFamilyBy8BitsSingleCollector(...)"\
+>
+gap> collG:=famG!.rewritingSystem;
+<<up-to-date single collector, 8 Bits>>
+gap> Rules(collG);
+[ f1^7, f2^7, f3^7, f4^7, f5^7, f6^7, f7^7, f8^7, f9^7, f10^7, 
+  f1^-1*f2*f1*f5^-6*f2^-1, f1^-1*f3*f1*f3^-1, f2^-1*f3*f2*f6^-6*f3^-1, 
+  f1^-1*f4*f1*f4^-1, f2^-1*f4*f2*f4^-1, f3^-1*f4*f3*f7^-6*f4^-1, 
+  f1^-1*f5*f1*f5^-1, f2^-1*f5*f2*f5^-1, f3^-1*f5*f3*f8^-1*f5^-1, 
+  f4^-1*f5*f4*f5^-1, f1^-1*f6*f1*f8^-6*f6^-1, f2^-1*f6*f2*f6^-1, 
+  f3^-1*f6*f3*f6^-1, f4^-1*f6*f4*f9^-1*f6^-1, f5^-1*f6*f5*f6^-1, 
+  f1^-1*f7*f1*f7^-1, f2^-1*f7*f2*f9^-6*f7^-1, f3^-1*f7*f3*f7^-1, 
+  f4^-1*f7*f4*f7^-1, f5^-1*f7*f5*f10^-6*f7^-1, f6^-1*f7*f6*f7^-1, 
+  f1^-1*f8*f1*f8^-1, f2^-1*f8*f2*f8^-1, f3^-1*f8*f3*f8^-1, 
+  f4^-1*f8*f4*f10^-1*f8^-1, f5^-1*f8*f5*f8^-1, f6^-1*f8*f6*f8^-1, 
+  f7^-1*f8*f7*f8^-1, f1^-1*f9*f1*f10^-6*f9^-1, f2^-1*f9*f2*f9^-1, 
+  f3^-1*f9*f3*f9^-1, f4^-1*f9*f4*f9^-1, f5^-1*f9*f5*f9^-1, f6^-1*f9*f6*f9^-1, 
+  f7^-1*f9*f7*f9^-1, f8^-1*f9*f8*f9^-1, f1^-1*f10*f1*f10^-1, 
+  f2^-1*f10*f2*f10^-1, f3^-1*f10*f3*f10^-1, f4^-1*f10*f4*f10^-1, 
+  f5^-1*f10*f5*f10^-1, f6^-1*f10*f6*f10^-1, f7^-1*f10*f7*f10^-1, 
+  f8^-1*f10*f8*f10^-1, f9^-1*f10*f9*f10^-1 ]
+
+#
+gap> famH:=ElementsFamily(FamilyObj(H));
+<Family: "MultiplicativeElementsWithInversesFamilyByPolycyclicCollector(...)">
+gap> collH:=famH!.rewritingSystem;
+<< deep thought collector >>
+gap> Rules(collH);
+[ f1^7, f2^7, f3^7, f4^7, f5^7, f6^7, f7^7, f8^7, f9^7, f10^7, 
+  f1^-1*f2*f1*f5^-6*f2^-1, f1^-1*f3*f1*f3^-1, f2^-1*f3*f2*f6^-6*f3^-1, 
+  f1^-1*f4*f1*f4^-1, f2^-1*f4*f2*f4^-1, f3^-1*f4*f3*f7^-6*f4^-1, 
+  f1^-1*f5*f1*f5^-1, f2^-1*f5*f2*f5^-1, f3^-1*f5*f3*f8^-1*f5^-1, 
+  f4^-1*f5*f4*f5^-1, f1^-1*f6*f1*f8^-6*f6^-1, f2^-1*f6*f2*f6^-1, 
+  f3^-1*f6*f3*f6^-1, f4^-1*f6*f4*f9^-1*f6^-1, f5^-1*f6*f5*f6^-1, 
+  f1^-1*f7*f1*f7^-1, f2^-1*f7*f2*f9^-6*f7^-1, f3^-1*f7*f3*f7^-1, 
+  f4^-1*f7*f4*f7^-1, f5^-1*f7*f5*f10^-6*f7^-1, f6^-1*f7*f6*f7^-1, 
+  f1^-1*f8*f1*f8^-1, f2^-1*f8*f2*f8^-1, f3^-1*f8*f3*f8^-1, 
+  f4^-1*f8*f4*f10^-1*f8^-1, f5^-1*f8*f5*f8^-1, f6^-1*f8*f6*f8^-1, 
+  f7^-1*f8*f7*f8^-1, f1^-1*f9*f1*f10^-6*f9^-1, f2^-1*f9*f2*f9^-1, 
+  f3^-1*f9*f3*f9^-1, f4^-1*f9*f4*f9^-1, f5^-1*f9*f5*f9^-1, f6^-1*f9*f6*f9^-1, 
+  f7^-1*f9*f7*f9^-1, f8^-1*f9*f8*f9^-1, f1^-1*f10*f1*f10^-1, 
+  f2^-1*f10*f2*f10^-1, f3^-1*f10*f3*f10^-1, f4^-1*f10*f4*f10^-1, 
+  f5^-1*f10*f5*f10^-1, f6^-1*f10*f6*f10^-1, f7^-1*f10*f7*f10^-1, 
+  f8^-1*f10*f8*f10^-1, f9^-1*f10*f9*f10^-1 ]
+
+#
 gap> STOP_TEST("dt.tst", 1);

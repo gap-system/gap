@@ -1344,8 +1344,8 @@ void            IntrAnd ( void )
     }
 
     /* handle the 'and' of two filters                                    */
-    else if ( TNUM_OBJ(opL) == T_FUNCTION ) {
-        if ( TNUM_OBJ(opR) == T_FUNCTION ) {
+    else if ( IS_OPERATION(opL) ) {
+        if ( IS_OPERATION(opR) ) {
             PushObj( NewAndFilter( opL, opR ) );
         }
         else {
