@@ -3102,6 +3102,7 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
         i = cpt;
         do {
             AssPlist(out, ++len, INTOBJ_INT(i + 1));
+            ptf2 = CONST_ADDR_TRANS2(f);
             i = ptf2[i];
         } while (i != cpt);
     }
@@ -3116,6 +3117,7 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
         i = cpt;
         do {
             AssPlist(out, ++len, INTOBJ_INT(i + 1));
+            ptf4 = CONST_ADDR_TRANS4(f);
             i = ptf4[i];
         } while (i != cpt);
     }
