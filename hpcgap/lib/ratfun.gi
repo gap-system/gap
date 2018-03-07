@@ -1310,18 +1310,19 @@ end);
 ##  the methods are implemented.
 ##  
 ##
-InstallMethod( GcdOp,"Gcd(Polyring, Pol,Pol)",
-    IsCollsElmsElms,[IsEuclideanRing,
-                IsRationalFunction,IsRationalFunction],0,
-function(R,f,g)
+InstallRingAgnosticGcdMethod("test polynomials for univar. and same variable",
+  IsCollsElmsElms,IsIdenticalObj,
+  [IsEuclideanRing,IsRationalFunction,IsRationalFunction],0,
+function(f,g)
 
-	if IsUnivariatePolynomial(f) and IsUnivariatePolynomial(g) 
-		and IndeterminateNumberOfUnivariateRationalFunction(f) = 
-		IndeterminateNumberOfUnivariateRationalFunction(g) then
-		return GcdOp(R,f,g);
-	fi;
+  if not (HasIsUnivariatePolynomial(f) and HasIsUnivariatePolynomial(g)) 
+    and IsUnivariatePolynomial(f) and IsUnivariatePolynomial(g) 
+    and IndeterminateNumberOfUnivariateRationalFunction(f) = 
+    IndeterminateNumberOfUnivariateRationalFunction(g) then
+    return GcdOp(f,g);
+  fi;
 
-	return fail;
+  return fail;
 end);
 
 #############################################################################

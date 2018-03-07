@@ -975,7 +975,7 @@ function(N)
   od;
   ret:= IsBPSWPseudoPrime(N);
   if ret = false  then return false;
-elif ret = true and N < BPSW_ProvedBound then
+  elif ret = true and N < BPSW_ProvedBound then
     atomic readwrite Primes2 do
     AddSet(Primes2,N);
     od;

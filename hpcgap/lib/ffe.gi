@@ -184,7 +184,7 @@ InstallGlobalFunction( FFEFamily, function( p )
 
         # large characteristic
         atomic readonly FAMS_FFE_LARGE do
-            if p in FAMS_FFE_LARGE[1] then                
+            if p in FAMS_FFE_LARGE[1] then
                 return FAMS_FFE_LARGE[2][ PositionSorted( FAMS_FFE_LARGE[1], p ) ];
             fi;
         od;
@@ -839,7 +839,7 @@ InstallMethod( Order,
     p := Characteristic(z);
     d := DegreeFFE(z);
     ord := p^d-1;
-    facs := Collected(FactorsInt(ord));
+    facs := Collected(Factors(Integers,ord));
     for f in facs do
         for i in [1..f[2]] do
             o := ord/f[1];

@@ -546,7 +546,7 @@ FFECONWAY.WriteOverSmallestField := function(x)
         return x![3];
     fi;
     d := x![2];
-    f := Collected(FactorsInt(d));
+    f := Collected(Factors(Integers,d));
     for fac in f do
         l := fac[1];
         d1 := d/l;
@@ -1385,7 +1385,7 @@ FFECONWAY.DoLogFFE :=
     fi;
     
     # use rho method
-    f:=FactorsInt(q-1:quiet); # Quick factorization, don't stop if its too hard
+    f:=Factors(Integers,q-1:quiet); # Quick factorization, don't stop if its too hard
      return FFECONWAY.DoLogFFERho(y,z,q-1,f,q);
  end;
  
@@ -1422,7 +1422,7 @@ InstallMethod( Order,
     p := Characteristic(z);
     d := DegreeFFE(z);
     ord := p^d-1;
-    facs := Collected(FactorsInt(ord));
+    facs := Collected(Factors(Integers,ord));
     for f in facs do
         for i in [1..f[2]] do
             o := ord/f[1];
