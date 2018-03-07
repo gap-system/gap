@@ -17,6 +17,12 @@ gap> y:=(1,2)^x; TNUM_OBJ(x) = T_PERM4;
 (1,2)
 true
 
+# test error handling parsing of permutations
+gap> (1,2,0);
+Error, Permutation: <expr> must be a positive integer (not a integer)
+gap> (1,2)(1,2);
+Error, Permutation: cycles must be disjoint and duplicate-free
+
 # The GAP kernel implements many functions in multiple variants, e.g. to
 # compare permutations for equality, there are actually four functions in the
 # kernel that deal with the various combinations of types of input arguments.

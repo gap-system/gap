@@ -19,6 +19,88 @@ false
 gap> [] = l;
 false
 
+#
+# assignment / extraction, also with selectors
+#
+gap> a := [ [ [ 1 ] ] ];
+[ [ [ 1 ] ] ]
+gap> a[1];
+[ [ 1 ] ]
+gap> a[1,1];
+[ 1 ]
+gap> a[1,1,1];
+Syntax error: [] only supports 1 or 2 indices in stream:1
+a[1,1,1];
+        ^
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `[]' on 3 arguments
+
+#
+gap> a := [ [ [1, 2], [3, 4] ], [ [5, 6], [7, 8] ] ];
+[ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 5, 6 ], [ 7, 8 ] ] ]
+gap> a{[1]};
+[ [ [ 1, 2 ], [ 3, 4 ] ] ]
+gap> a!{[1]};
+[ [ [ 1, 2 ], [ 3, 4 ] ] ]
+gap> a{[1]}{[1]};
+[ [ [ 1, 2 ] ] ]
+gap> a!{[1]}{[1]};
+[ [ [ 1, 2 ] ] ]
+gap> a{[1]}!{[1]};
+Error, sorry: <lists>{<poss>}!{<poss>} not yet implemented
+gap> a{[1]}{[1]}[1];
+[ [ 1 ] ]
+gap> a{[1]}{[1]}![1];
+Error, sorry: <lists>{<poss>}![<pos>] not yet implemented
+
+#
+gap> a{[1,,2]}:=1;
+Error, List Assignment: <rhss> must be a dense list
+gap> a{[1,,2]}:=[1,2];
+Error, List Assignment: <positions> must be a dense list of positive integers
+
+#
+gap> a{[1]}{[1]}[1] := 42;
+Error, List Assignment: <objs> must be a dense list (not a integer)
+gap> a{[1]}{[1]}[1] := [ 42 ];
+Error, List Assignment: <objs> must be a dense list (not a integer)
+gap> a{[1]}{[1]}![1] := [ [ 42 ] ];
+Error, sorry: <lists>{<poss>}![<pos>] not yet implemented
+gap> a{[1]}{[1]}[1] := [ [ 42 ] ];
+[ [ 42 ] ]
+gap> a;
+[ [ [ 42, 2 ], [ 3, 4 ] ], [ [ 5, 6 ], [ 7, 8 ] ] ]
+
+#
+gap> a{[1]}{[1]} := 19;
+Error, List Assignment: <objs> must be a dense list (not a integer)
+gap> a{[1]}{[1]} := [ 18, 19 ];
+Error, List Assignment: <objs> must have the same length as <lists> (1)
+gap> a{[1]}{[1]} := [ [ 18, 19 ] ] ;
+Error, List Assignments: <objs> must have the same length as <positions> (1)
+gap> a{[1]}{[1,,3]} := [ [ [ 18, 19 ] ] ];
+Error, List Assignment: <positions> must be a dense list of positive integers
+gap> a{[1]}{[1]} := [ [ [ 18, 19 ] ] ];
+[ [ [ 18, 19 ] ] ]
+gap> a!{[1]}{[1]} := [ [ [ 18, 19 ] ] ];
+[ [ [ 18, 19 ] ] ]
+gap> a{[1]}!{[1]} := [ [ [ 18, 19 ] ] ];
+Error, sorry: <lists>{<poss>}!{<poss>} not yet implemented
+gap> a;
+[ [ [ 18, 19 ], [ 3, 4 ] ], [ [ 5, 6 ], [ 7, 8 ] ] ]
+
+#
+gap> a := [ [ [ 1 ] ] ];
+[ [ [ 1 ] ] ]
+gap> a[1] := [ [ 42 ] ];
+[ [ 42 ] ]
+gap> a[1,1] := [ 43 ];
+[ 43 ]
+gap> a[1,1,1] := 44;
+Syntax error: []:= only supports 1 or 2 indices in stream:1
+a[1,1,1] := 44;
+              ^
+
 # ListWithIdenticalEntries: errors
 gap> ListWithIdenticalEntries(fail, true);
 Error, <n> must be a non-negative integer (not a boolean or fail)

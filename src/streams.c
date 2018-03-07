@@ -61,7 +61,7 @@ static Int READ_COMMAND(Obj *evalResult)
     
     /* handle return-value or return-void command                          */
     if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
-        Pr( "'return' must not be used in file read-eval loop", 0L, 0L );
+        Pr( "'return' must not be used in file read-eval loop\n", 0L, 0L );
     }
 
     /* handle quit command                                 */
@@ -225,7 +225,7 @@ static Int READ_INNER ( UInt UseUHQ )
         /* handle return-value or return-void command                      */
         if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
             Pr(
-                "'return' must not be used in file read-eval loop",
+                "'return' must not be used in file read-eval loop\n",
                 0L, 0L );
         }
 
@@ -343,7 +343,7 @@ static void READ_TEST_OR_LOOP(void)
 
         /* handle return-value or return-void command                      */
         else if ( type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
-            Pr( "'return' must not be used in file read-eval loop",
+            Pr( "'return' must not be used in file read-eval loop\n",
                 0L, 0L );
         }
 

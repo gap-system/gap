@@ -53,6 +53,30 @@ gap> ViewString(true); ViewString(false); ViewString(fail);
 "fail"
 gap> TNAM_OBJ(fail);
 "boolean or fail"
+
+# test error handling
+gap> not 1;
+Error, <expr> must be 'true' or 'false' (not a integer)
+gap> false or 1;
+Error, <expr> must be 'true' or 'false' (not a integer)
+gap> 1 or false;
+Error, <expr> must be 'true' or 'false' (not a integer)
+gap> true and 1;
+Error, <expr> must be 'true' or 'false' (not a integer)
+gap> 1 and true;
+Error, <expr> must be 'true' or 'false' (not a integer)
+gap> ReturnTrue and ReturnTrue;
+Error, <expr> must be 'true' or 'false' (not a function)
+gap> ReturnTrue and true;
+Error, <expr> must be 'true' or 'false' (not a function)
+gap> IsAssociative and ReturnTrue;
+Error, <expr> must be 'true' or 'false' (not a function)
+gap> IsAssociative and true;
+Error, <expr> must be 'true' or 'false' (not a function)
+gap> true and IsAssociative;
+Error, <expr> must be 'true' or 'false' (not a function)
+
+#
 gap> STOP_TEST( "boolean.tst", 1);
 
 #############################################################################
