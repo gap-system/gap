@@ -50,6 +50,7 @@ SetString( NonnegativeIntegers, "NonnegativeIntegers" );
 SetSize( NonnegativeIntegers, infinity );
 SetGeneratorsOfSemiringWithZero( NonnegativeIntegers, [ 1 ] );
 SetGeneratorsOfAdditiveMagmaWithZero( NonnegativeIntegers, [ 1 ] );
+SetRepresentativeSmallest( NonnegativeIntegers, 0 );
 SetIsWholeFamily( NonnegativeIntegers, false );
 
 
@@ -67,6 +68,7 @@ SetString( PositiveIntegers, "PositiveIntegers" );
 SetSize( PositiveIntegers, infinity );
 SetGeneratorsOfSemiring( PositiveIntegers, [ 1 ] );
 SetGeneratorsOfAdditiveMagma( PositiveIntegers, [ 1 ] );
+SetRepresentativeSmallest( PositiveIntegers, 1 );
 SetIsWholeFamily( PositiveIntegers, false );
 
 
@@ -465,7 +467,7 @@ end);
 #F  DivisorsInt( <n> )  . . . . . . . . . . . . . . .  divisors of an integer
 ##
 BindGlobal("DivisorsIntCache",
-        List([[1],[1,2],[1,3],[1,2,4],[1,5],[1,2,3,6],[1,7]], Immutable));
+List([[1],[1,2],[1,3],[1,2,4],[1,5],[1,2,3,6],[1,7]], Immutable));
 MakeImmutable(DivisorsIntCache);
 
 InstallGlobalFunction(DivisorsInt,function ( n )
@@ -477,7 +479,7 @@ InstallGlobalFunction(DivisorsInt,function ( n )
     if n <= Length(DivisorsIntCache)  then 
         return DivisorsIntCache[n];  
     fi;
-    factors := FactorsInt( n );
+    factors := Factors(Integers, n );
 
     # recursive function to compute the divisors
     divs := function ( i, m )
@@ -1374,19 +1376,6 @@ InstallMethod( Factors,
     [ IsIntegers, IsInt ], 0,
     function ( Integers, n )
     return FactorsInt( n );
-    end );
-
-
-#############################################################################
-##
-#M  GcdOp( Integers, <n>, <m> ) . . . . . . . . . . . . . gcd of two integers
-##
-InstallMethod( GcdOp,
-    "for integers",
-    true,
-    [ IsIntegers, IsInt, IsInt ], 0,
-    function ( Integers, n, m )
-    return GcdInt( n, m );
     end );
 
 
