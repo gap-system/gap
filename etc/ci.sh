@@ -51,8 +51,6 @@ do
   testpackages)
     cd $SRCDIR/pkg
 
-    # skip carat because building it leads to too much output which floods the log
-    rm -rf carat*
     # skip linboxing because it hasn't compiled for years
     rm -rf linboxing*
     # skip pargap: no MPI present (though we could fix that), and it currently does not

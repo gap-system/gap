@@ -146,46 +146,6 @@ echo_run() {
   "$@"
 }
 
-build_carat() {
-(
-# TODO: FIX Carat
-# Installation of Carat produces a lot of data, maybe you want to leave
-# this out until a user complains.
-# It is not possible to move around compiled binaries because these have the
-# path to some data files burned in.
-zcat carat-2.1b1.tgz | tar pxf -
-# If the symbolic link does not exist then create it.
-# Does not check if bin exists already with some content or as a file, etc.
-# Thus this code is unstable, but should be corrected by package author
-# and not by this script.
-if [[ ! -L ./bin ]]
-then
-  ln -s ./carat-2.1b1/bin ./bin
-fi
-cd carat-2.1b1
-make TOPDIR="$(pwd)"
-chmod -R a+rX .
-cd bin
-# This sets GAParch as it should be.
-# Alternatively, one could check $GAPROOT/bin for all directories instead.
-source "$GAPROOT/sysinfo.gap"
-# If the symbolic link does not exist then create it.
-if [[ ! -L "$GAParch" ]]
-then
-  shopt -s nullglob
-  # We assume that there is only one appropriate directory....
-  for archdir in *
-  do
-    if [[ -d "$archdir" && ! -L "$archdir" ]]
-    then
-      ln -s ./"$archdir" ./"$GAParch"
-    fi
-  done
-  shopt -u nullglob
-fi
-)
-}
-
 build_fail() {
   echo ""
   warning "Failed to build $PKG"
@@ -232,10 +192,6 @@ build_one_package() {
     # some packages that fail to build will not get reported in the logs.
     atlasrep*)
       chmod 1777 datagens dataword
-    ;;
-
-    carat*)
-      build_carat
     ;;
 
     NormalizInterface*)
