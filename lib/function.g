@@ -344,13 +344,23 @@ BIND_GLOBAL( "LocationFunc", function(x)
     if not(IS_FUNCTION(x)) then
         return "";
     fi;
-    nam := FILENAME_FUNC(x);
-    line := STARTLINE_FUNC(x);
     ret := "";
-    if nam <> fail and line <> fail then
+    nam := FILENAME_FUNC(x);
+    if nam = fail then
+        return ret;
+    fi;
+    line := STARTLINE_FUNC(x);
+    if line <> fail then
         APPEND_LIST(ret, nam);
         APPEND_LIST(ret, ":");
         APPEND_LIST(ret, STRING_INT(line));
+        return ret;
+    fi;
+    line := LOCATION_FUNC(x);
+    if line <> fail then
+        APPEND_LIST(ret, nam);
+        APPEND_LIST(ret, ":");
+        APPEND_LIST(ret, line);
     fi;
     return ret;
 end);
