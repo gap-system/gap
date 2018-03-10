@@ -120,7 +120,6 @@ VoidFunc debug_func_pointers[] = {
     (VoidFunc)ENVI_FUNC,
     (VoidFunc)FEXS_FUNC,
     (VoidFunc)FibHash,
-    (VoidFunc)FillInVersion,
     (VoidFunc)FUNC,
 #ifdef HPCGAP
     (VoidFunc)GetTLS,
