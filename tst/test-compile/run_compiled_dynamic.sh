@@ -18,6 +18,8 @@ GAPROOT=$(cd ../..; pwd)
 # Clean any old files around
 rm -rf .libs "$gfile.comp"*
 
+"$gac" "$gfile" -d -C -o "$gfile.dynamic.c" 2>&1 >/dev/null
+
 "$gac" "$gfile" -d -o "$gfile.comp" 2>&1 >/dev/null
 
 echo "LoadDynamicModule(\"./$gfile.comp.so\"); runtest();" |

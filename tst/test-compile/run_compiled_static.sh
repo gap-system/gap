@@ -17,6 +17,8 @@ GAPROOT=$(cd ../..; pwd)
 # Clean any old files around
 rm -rf .libs "$gfile.comp"*
 
+"$gac" "$gfile" -C -o "$gfile.static.c" 2>&1 >/dev/null
+
 "$gac" "$gfile" -o "$gfile.comp" 2>&1 >/dev/null
 
 echo "LOAD_STAT(\"$gfile\",false);; runtest();" |
