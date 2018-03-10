@@ -1147,7 +1147,7 @@ Obj             EvalRangeExpr (
     else {
         /* the length must be a small integer as well */
         if ((high-low) / inc + 1 >= (1L<<NR_SMALL_INT_BITS)) {
-             ErrorQuit("Range: the length of a range must be less than 2^%d.",
+             ErrorQuit("Range: the length of a range must be less than 2^%d",
                         NR_SMALL_INT_BITS, 0L);
         }
         if ( 0 < inc )
