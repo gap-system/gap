@@ -28,12 +28,12 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
 
 # Without the needed packages, GAP does not start.
     Dependencies := rec(
-      NeededOtherPackages := `[
+      NeededOtherPackages := MakeImmutable([
         [ "gapdoc", ">= 1.2" ],
         [ "primgrp", ">= 3.1.0" ],
         [ "smallgrp", ">= 1.0" ],
         [ "transgrp", ">= 1.0" ],
-      ],
+      ]),
     ),
 # There is no SuggestedOtherPackages here because the default value of
 # the user preference PackagesToLoad does the job      
@@ -57,7 +57,7 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
     # if no help string appears then option is not advertised in the help)
     # These options must be kept in sync with those in system.c, so the help output
     # for those options is correct
-    CommandLineOptionData := `[
+    CommandLineOptionData := MakeImmutable([
       rec( short:= "S", default := false, help := ["disable/enable multi-threaded interface"] ),
       rec( short:= "P", default := "0", arg := "<num>", help := ["set number of logical processors"] ),
       rec( short:= "G", default := "0", arg := "<num>", help := ["set number of GC threads"] ),
@@ -114,7 +114,7 @@ BIND_GLOBAL( "GAPInfo", AtomicRecord(rec(
            help := [ "Run ProfileLineByLine(<filename>) with recordMem := true on GAP start"] ),
       rec( long := "cover", default := "", arg := "<file>",
            help := [ "Run CoverageLineByLine(<filename>) on GAP start"] ),
-          ],
+          ]),
     ) ));
 
 
@@ -279,15 +279,15 @@ CallAndInstallPostRestore( function()
         if GAPInfo.SystemEnvironment.PATH[i] = ':' then
           if i > j then
             ADD_LIST_DEFAULT(GAPInfo.DirectoriesSystemPrograms,
-                  `GAPInfo.SystemEnvironment.PATH{[j..i-1]});
+                  MakeImmutable(GAPInfo.SystemEnvironment.PATH{[j..i-1]}));
           fi;
           j := i+1;
         fi;
       od;
       if j <= LENGTH( GAPInfo.SystemEnvironment.PATH ) then
         ADD_LIST_DEFAULT( GAPInfo.DirectoriesSystemPrograms,
-            `GAPInfo.SystemEnvironment.PATH{ [ j ..
-                LENGTH( GAPInfo.SystemEnvironment.PATH ) ] } );
+            MakeImmutable(GAPInfo.SystemEnvironment.PATH{ [ j ..
+                LENGTH( GAPInfo.SystemEnvironment.PATH ) ] } ) );
       fi;
     fi;
 

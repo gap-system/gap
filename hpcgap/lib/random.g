@@ -14,8 +14,8 @@
 ##
 #F  RANDOM_LIST( <list> ) . . . . . . . . return a random element from a list
 ##
-BIND_GLOBAL("_R_N", `"R_N");
-BIND_GLOBAL("_R_X", `"R_X");
+BIND_GLOBAL("_R_N", MakeImmutable("R_N"));
+BIND_GLOBAL("_R_X", MakeImmutable("R_X"));
 
 MakeThreadLocal(_R_N);
 MakeThreadLocal(_R_X);
