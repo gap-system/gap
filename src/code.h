@@ -137,13 +137,13 @@ enum STAT_TNUM {
         T_EMPTY,
 
         // The statement types between FIRST_NON_INTERRUPT_STAT and
-        // LAST_NON_INTERRUPT_STAT will not be interrupted (which may
-        // happen for two reasons: the user interrupted, e.g. via
-        // ctrl-c; or memory run full). They are all statement types
-        // which either contain sub-statements (and hence are not easy
-        // to interpret in backtraces), or else are ephemeral (break,
-        // continue, return)
-        // TODO: what about T_ATOMIC ?
+        // LAST_NON_INTERRUPT_STAT will not be interrupted (which may happen
+        // for two reasons: the user interrupted, e.g. via ctrl-c; or memory
+        // run full). We don't want to compound statements to be interrupted,
+        // relying instead on their sub-statements being interruptible. This
+        // results in a slightly better user experience in break loops, where
+        // the interrupted statement is printed, which works better for single
+        // statements than for compound statements.
         START_ENUM_RANGE(FIRST_NON_INTERRUPT_STAT),
 
             START_ENUM_RANGE(FIRST_COMPOUND_STAT),
@@ -181,16 +181,16 @@ enum STAT_TNUM {
 
             END_ENUM_RANGE(LAST_COMPOUND_STAT),
 
-            START_ENUM_RANGE(FIRST_CONTROL_FLOW_STAT),
+        END_ENUM_RANGE(LAST_NON_INTERRUPT_STAT),
+
+        START_ENUM_RANGE(FIRST_CONTROL_FLOW_STAT),
 
             T_BREAK,
             T_CONTINUE,
             T_RETURN_OBJ,
             T_RETURN_VOID,
 
-            END_ENUM_RANGE(LAST_CONTROL_FLOW_STAT),
-
-        END_ENUM_RANGE(LAST_NON_INTERRUPT_STAT),
+        END_ENUM_RANGE(LAST_CONTROL_FLOW_STAT),
 
         T_ASS_LVAR,
         T_UNB_LVAR,
