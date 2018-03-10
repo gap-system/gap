@@ -16,13 +16,13 @@ for gfile in *.g; do
     echo "Now testing ${gfile}"
 
     echo "  now interpreting ${gfile} ..."
-    if ! diff -b "${gfile}.out" <(./run_interpreted.sh "${gap}" "${gfile}"); then
+    if ! diff -u -b "${gfile}.out" <(./run_interpreted.sh "${gap}" "${gfile}"); then
         echo "ERROR: ${gfile} failed without compiling"
         retvalue=1
     fi;
 
     echo "  now compiling ${gfile} dynamically ..."
-    if ! diff -b "${gfile}.out" <(./run_compiled_dynamic.sh "${gap}" "${gac}" "${gfile}"); then
+    if ! diff -u  -b "${gfile}.out" <(./run_compiled_dynamic.sh "${gap}" "${gac}" "${gfile}"); then
         echo "ERROR: ${gfile} failed with compiling and dynamic linking"
         retvalue=1
     fi;
@@ -32,7 +32,7 @@ for gfile in *.g; do
     fi;
 
     echo "  now compiling ${gfile} statically ..."
-    if ! diff -b "${gfile}.out" <(./run_compiled_static.sh "${gac}" "${gfile}"); then
+    if ! diff -u -b "${gfile}.out" <(./run_compiled_static.sh "${gac}" "${gfile}"); then
         echo "ERROR: ${gfile} failed with compiling and static linking"
         retvalue=1
     fi;
