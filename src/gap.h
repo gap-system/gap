@@ -236,14 +236,6 @@ enum {
 
 /****************************************************************************
 **
-*F  FillInVersion -- obsolete function, only kept for backwards compatibility
-**  with packages using it.
-*/
-static inline void FillInVersion ( StructInitInfo * module ) {}
-
-
-/****************************************************************************
-**
 *F  InitBagNamesFromTable( <table> )  . . . . . . . . .  initialise bag names
 */
 extern void InitBagNamesFromTable (
