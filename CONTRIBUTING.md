@@ -141,6 +141,27 @@ to email the patch to <gap@gap-system.org>.  You can refer to
 [this tutorial](https://burzalodowa.wordpress.com/2013/10/05/how-to-send-patches-with-git-send-email/)
 on how to do this.
 
+## Reviewing code contributions
+
+When reviewing code, you can use the following list as a checklist.
+
+### Before you even run the code (see [here](https://lornajane.net/posts/2015/code-reviews-before-you-even-run-the-code))
+
+* Is it clear what feature / fix the contribution adresses?
+* Does it relate to exactly one issue?
+* Do the changed files look sensible? Use `git log --stat` to discover
+possibly unintentional changes to files.
+* Do the commit messages look good? Should some commits be squashed / broken up?
+
+### Look at the code itself
+
+* Is the code correct?
+* Does the new code fit in with documented behaviour?
+* Are new features documented if necessary?
+* Are there tests if necessary?
+* Double check whether the changes should be included into the release notes.
+If not, label the Issue / PR accordingly.
+
 ## Additional Resources
 
 * [GAP Tutorial](https://www.gap-system.org/Manuals/doc/tut/chap0.html)
@@ -155,3 +176,5 @@ Heavily adapted from the contributing files from the
 [Puppet project](https://github.com/puppetlabs/puppet),
 [Factory Girl Rails](https://github.com/thoughtbot/factory_girl_rails/blob/master/CONTRIBUTING.md),
 and [Idris](https://github.com/idris-lang/Idris-dev).
+The section on reviewing code is partly based on
+[lornajane's blog entry](https://lornajane.net/posts/2015/code-reviews-before-you-even-run-the-code).
