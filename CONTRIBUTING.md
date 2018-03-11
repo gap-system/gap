@@ -152,10 +152,16 @@ When reviewing code, you can use the following list as a checklist.
 * Do the changed files look sensible? Use `git log --stat` to discover
 possibly unintentional changes to files.
 * Do the commit messages look good? Should some commits be squashed / broken up?
+* Eyeball the diff for
+  * Large commented / unused sections of code
+  * Strange variable or function names 
+  * Duplicate code
+
 
 ### Look at the code itself
 
 * Is the code correct?
+* Is the code commented where necessary?
 * Does the new code fit in with documented behaviour?
 * Are new features documented if necessary?
 * Are there tests if necessary?
