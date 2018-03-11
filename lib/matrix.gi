@@ -2949,6 +2949,9 @@ local m;
   return m;
 end);
 
+InstallOtherMethod( TriangulizedMat, "for an empty list", [ IsList and IsEmpty ],
+mat -> []);
+
 #############################################################################
 ##
 #M  UpperSubdiagonal( <mat>, <pos> )
