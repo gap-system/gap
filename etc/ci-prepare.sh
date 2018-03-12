@@ -30,9 +30,6 @@ fi
 "$SRCDIR/configure" $CONFIGFLAGS --enable-Werror
 make V=1 -j4
 
-# check that GAP is at least able to start
-echo 'Print("GAP started successfully\n");QUIT_GAP(0);' | ./gap -q -T
-
 # download packages; instruct wget to retry several times if the
 # connection is refused, to work around intermittent failures
 WGET="wget -N --no-check-certificate --tries=5 --waitretry=5 --retry-connrefused"
@@ -45,6 +42,9 @@ then
 else
     make bootstrap-pkg-full WGET="$WGET"
 fi
+
+# check that GAP is at least able to start
+echo 'Print("GAP started successfully\n");QUIT_GAP(0);' | ./gap -T
 
 # TEMPORARY FIX : factint is not HPC-GAP compatible
 if [[ $HPCGAP = yes ]]
