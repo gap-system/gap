@@ -175,8 +175,10 @@ GAPInput
     [[ $TESTMANUALSPASS = yes ]] || exit 1
 
     # while we are at it, also test the workspace code
-    $GAP --cover $COVDIR/workspace.coverage <<GAPInput
+    $GAP -A --cover $COVDIR/workspace.coverage <<GAPInput
         SetUserPreference("ReproducibleBehaviour", true);
+        # Also test a package banner
+        LoadPackage("polycyclic");
         SaveWorkspace("test.wsp");
         QUIT_GAP(0);
 GAPInput
