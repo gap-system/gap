@@ -1,7 +1,7 @@
 # Contributing to GAP
 
-We invite everyone to contribute by submitting patches, pull requests, and
-bug reports. We would like to make the contributing process as easy as
+We invite everyone to contribute by submitting patches, pull requests,
+bug reports, and code reviews. We would like to make the contributing process as easy as
 possible.
 
 ## Packages versus contributions to the "core" system
@@ -126,6 +126,9 @@ From there you will have to wait on one of the GAP committers to respond to
 the request. This response might be an accept or some
 changes/improvements/alternatives will be suggested.  We do not guarantee
 that all requests will be accepted.
+Feel free to read the section
+[the reviewing process](https://github.com/gap-system/gap/blob/master/CONTRIBUTING.md#the-reviewing-process)
+to make the review of your pull request go smoothly.
 
 ## Making changes without Github account
 
@@ -141,16 +144,39 @@ to email the patch to <gap@gap-system.org>.  You can refer to
 [this tutorial](https://burzalodowa.wordpress.com/2013/10/05/how-to-send-patches-with-git-send-email/)
 on how to do this.
 
-## Reviewing code contributions
+## The reviewing process
 
-When reviewing code, you can use the following list as a checklist.
+Before a change can be incorporated into the code base, our setup requires
+each pull request (PR) to be
+[reviewed](https://help.github.com/articles/about-pull-request-reviews/)
+by at least one GAP developer (i.e. anybody with write access to the
+[gap repository](https://github.com/gap-system/gap/)).
 
-### Before you even run the code (see [here](https://lornajane.net/posts/2015/code-reviews-before-you-even-run-the-code))
+If you don't have write access, you are nevertheless very welcome to submit
+code reviews! Search the
+[pull requests](https://github.com/gap-system/gap/pulls)
+for a PR that you would like to review. Once you have chosen a PR
+(e.g. [PR 2261](https://github.com/gap-system/gap/pull/2261)),
+open the `Files changed` tab
+(e.g. [this](https://github.com/gap-system/gap/pull/2261/files))
+and add your comments or click the green `Review changes` button in the top
+right.
+
+You can use the lists below as checklists for how to write your review.
+Please be careful to criticize constructively and not use dismissive language
+(see e.g. Brian Lee's section on `Rewording Feedback` in his
+[blog post](https://medium.com/unpacking-trunk-club/designing-awesome-code-reviews-5a0d9cd867e3)).
+
+
+### Before you dive into the code (taken from [here](https://lornajane.net/posts/2015/code-reviews-before-you-even-run-the-code))
 
 * Is it clear what feature / fix the contribution adresses?
 * Does it relate to exactly one issue?
-* Do the changed files look sensible? Use `git log --stat` to discover
-possibly unintentional changes to files.
+* Does the list of changed files look sensible?
+  You can check for possibly unintentional changes to files by doing:
+  * On Github, use the `Files changed` tab
+    (and collapse the source diffs if you want).
+  * If you have cloned the PR use `git log --stat`.
 * Do the commit messages look good? Should some commits be squashed / broken up?
 * Eyeball the diff for
   * Large commented / unused sections of code
@@ -158,15 +184,16 @@ possibly unintentional changes to files.
   * Duplicate code
 
 
-### Look at the code itself
+### Dive into the code
 
 * Is the code correct?
+* Do the continious integration tests pass?
 * Is the code commented where necessary?
 * Does the new code fit in with documented behaviour?
 * Are new features documented if necessary?
 * Are there tests if necessary?
 * Double check whether the changes should be included into the release notes.
-If not, label the Issue / PR accordingly.
+  If not, label the issue / PR accordingly.
 
 ## Additional Resources
 
