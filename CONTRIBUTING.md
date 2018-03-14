@@ -127,7 +127,7 @@ the request. This response might be an accept or some
 changes/improvements/alternatives will be suggested.  We do not guarantee
 that all requests will be accepted.
 Feel free to read the section
-[the reviewing process](https://github.com/gap-system/gap/blob/master/CONTRIBUTING.md#the-reviewing-process)
+[the reviewing process](#the-reviewing-process)
 to make the review of your pull request go smoothly.
 
 ## Making changes without Github account
@@ -146,14 +146,19 @@ on how to do this.
 
 ## The reviewing process
 
-Before a change can be incorporated into the code base, our setup requires
-each pull request (PR) to be
-[reviewed](https://help.github.com/articles/about-pull-request-reviews/)
-by at least one GAP developer (i.e. anybody with write access to the
-[gap repository](https://github.com/gap-system/gap/)).
+Before any change is incorporated into the code base, it must undergo a
+mandatory code review.
+Typically, this is done for each pull request (PR) via the
+GitHub code review facilities.
+In order to be mergeable into the code base, a PR must have at least one
+approving code review from a core GAP developer with write access to the
+GAP code repository.
 
-If you don't have write access, you are nevertheless very welcome to submit
-code reviews! Search the
+However, everybody is very welcome to submit code reviews!
+This helps the core developers a lot, and is a step towards becoming one of
+them yourself.
+
+To do so, search
 [pull requests](https://github.com/gap-system/gap/pulls)
 for a PR that you would like to review. Once you have chosen a PR
 (e.g. [PR 2261](https://github.com/gap-system/gap/pull/2261)),
@@ -168,7 +173,9 @@ Please be careful to criticize constructively and not use dismissive language
 [blog post](https://medium.com/unpacking-trunk-club/designing-awesome-code-reviews-5a0d9cd867e3)).
 
 
-### Before you dive into the code (taken from [here](https://lornajane.net/posts/2015/code-reviews-before-you-even-run-the-code))
+### Before you dive into the code
+
+This section is based on [this](https://lornajane.net/posts/2015/code-reviews-before-you-even-run-the-code) article.
 
 * Is it clear what feature / fix the contribution adresses?
 * Does it relate to exactly one issue?
@@ -209,5 +216,3 @@ Heavily adapted from the contributing files from the
 [Puppet project](https://github.com/puppetlabs/puppet),
 [Factory Girl Rails](https://github.com/thoughtbot/factory_girl_rails/blob/master/CONTRIBUTING.md),
 and [Idris](https://github.com/idris-lang/Idris-dev).
-The section on reviewing code is partly based on
-[lornajane's blog entry](https://lornajane.net/posts/2015/code-reviews-before-you-even-run-the-code).
