@@ -44,6 +44,81 @@ gap> for entry in Set( Concatenation( Concatenation( [ sml, equ ] ) ) ) do
 > od;
 gap> ReadPackage("packagename");
 Error, packagename is not a filename in the form 'package/filepath'
+
+#
+# Test the default package banner
+#
+gap> oldTermEncoding := GAPInfo.TermEncoding;;
+gap> GAPInfo.TermEncoding := "ISO-8859-1";; # HACK
+
+#
+gap> Display(DefaultPackageBannerString(rec()));
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+
+
+#
+gap> pkginfo := rec(
+>         PackageName := "TestPkg",
+>         Version := "1.0",
+>         PackageWWWHome := "https://www.gap-system.org",
+>         PackageDoc := [ rec( LongTitle := "A test package" ) ],
+>         Persons := [ rec( IsAuthor := true,
+>                           FirstNames := "Lord",
+>                           LastName := "Vader",
+>                           WWWHome := "https://www.gap-system.org/~darth"
+>                           ) ]);;
+
+#
+gap> Display(DefaultPackageBannerString(pkginfo));
+-----------------------------------------------------------------------------
+Loading  TestPkg 1.0 (A test package)
+by Lord Vader (https://www.gap-system.org/~darth).
+Homepage: https://www.gap-system.org
+-----------------------------------------------------------------------------
+
+
+#
+gap> Add(pkginfo.Persons, rec( IsAuthor := true, FirstNames := "Luke",
+>                           LastName := "Skywalker", Email := "luke.skywalker@gap-system.org" ));
+gap> Display(DefaultPackageBannerString(pkginfo));
+-----------------------------------------------------------------------------
+Loading  TestPkg 1.0 (A test package)
+by Lord Vader (https://www.gap-system.org/~darth) and
+   Luke Skywalker (luke.skywalker@gap-system.org).
+Homepage: https://www.gap-system.org
+-----------------------------------------------------------------------------
+
+
+#
+gap> Add(pkginfo.Persons, rec( IsAuthor := true, FirstNames := "Leia", LastName := "Organa" ));
+gap> Display(DefaultPackageBannerString(pkginfo));
+-----------------------------------------------------------------------------
+Loading  TestPkg 1.0 (A test package)
+by Lord Vader (https://www.gap-system.org/~darth),
+   Luke Skywalker (luke.skywalker@gap-system.org), and
+   Leia Organa.
+Homepage: https://www.gap-system.org
+-----------------------------------------------------------------------------
+
+
+#
+gap> for p in pkginfo.Persons do p.IsAuthor:=false; p.IsMaintainer:=true; od;
+gap> Display(DefaultPackageBannerString(pkginfo));
+-----------------------------------------------------------------------------
+Loading  TestPkg 1.0 (A test package)
+maintained by Lord Vader (https://www.gap-system.org/~darth),
+              Luke Skywalker (luke.skywalker@gap-system.org), and
+              Leia Organa.
+Homepage: https://www.gap-system.org
+-----------------------------------------------------------------------------
+
+
+#
+gap> GAPInfo.TermEncoding := oldTermEncoding;;
+
+#
 gap> STOP_TEST( "package.tst", 1);
 
 #############################################################################

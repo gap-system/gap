@@ -1009,6 +1009,8 @@ InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
     # Start with a row of `-' signs.
     len:= SizeScreen()[1] - 3;
     if GAPInfo.TermEncoding = "UTF-8" then
+      # The unicode character we use takes up 3 bytes in UTF-8 encoding,
+      # hence we must adjust the length accordingly.
       sep:= "─";
       i:= 1;
       while 2 * i <= len do
@@ -1030,7 +1032,7 @@ InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
     fi;
 
     # Add the long title.
-    if IsBound( inforec.PackageDoc[1] ) and
+    if IsBound( inforec.PackageDoc ) and IsBound( inforec.PackageDoc[1] ) and
        IsBound( inforec.PackageDoc[1].LongTitle ) and
        not IsEmpty( inforec.PackageDoc[1].LongTitle ) then
       Append( str, Concatenation(
