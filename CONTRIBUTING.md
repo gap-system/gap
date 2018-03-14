@@ -178,13 +178,13 @@ Please be careful to criticize constructively and not use dismissive language
 This section is based on [this](https://lornajane.net/posts/2015/code-reviews-before-you-even-run-the-code) article.
 
 * Is it clear what feature / fix the contribution adresses?
-* Does it relate to exactly one issue?
+* If based on an issue, does it relate to exactly one issue?
+* Do the commit messages look good? Should some commits be squashed / broken up?
 * Does the list of changed files look sensible?
   You can check for possibly unintentional changes to files by doing:
   * On Github, use the `Files changed` tab
     (and collapse the source diffs if you want).
   * If you have cloned the PR use `git log --stat`.
-* Do the commit messages look good? Should some commits be squashed / broken up?
 * Eyeball the diff for
   * Large commented / unused sections of code
   * Strange variable or function names 
@@ -194,11 +194,11 @@ This section is based on [this](https://lornajane.net/posts/2015/code-reviews-be
 ### Dive into the code
 
 * Is the code correct?
-* Do the continious integration tests pass?
 * Is the code commented where necessary?
+* Do the continious integration tests pass?
+* Are there tests if necessary?
 * Does the new code fit in with documented behaviour?
 * Are new features documented if necessary?
-* Are there tests if necessary?
 * Double check whether the changes should be included into the release notes.
   If not, label the issue / PR accordingly.
 
