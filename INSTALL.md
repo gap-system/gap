@@ -130,16 +130,18 @@ additional information about compilation)
 
 Change to the directory `gap-4.X.Y` (which you just created by unpacking).
 To get started quickly you may simply build GAP with default settings
-by issuing the two commands
+by issuing the commands
 
+    ./autogen.sh
     ./configure
     make
 
 (note that on BSD systems you have to call `gmake` instead of `make`).
 
-Both will produce a lot of text output. You should end up with a shell
-script `bin/gap.sh` which you can use to start GAP. If you want, you can
-copy this script later to a directory that is listed in your search path.
+These commands will produce a lot of text output. You should end up with
+a shell script `bin/gap.sh` which you can use to start GAP. If you want,
+you can copy this script later to a directory that is listed in your search
+path.
 
 OS X users please note that this script must be started from within the
 Terminal Application. It is not possible to start GAP by clicking this
