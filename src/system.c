@@ -1936,6 +1936,7 @@ void InitSystem (
       /*         SyLineEdit   = 1;
                  SyCTRD       = 1; */
         syBuf[2].fp = fileno(stdin);  syBuf[2].echo = fileno(stdout);
+        syBuf[2].isTTY = syBuf[0].isTTY;
         syBuf[3].fp = fileno(stdout);
         syWinPut( 0, "@p", "1." );
     }
