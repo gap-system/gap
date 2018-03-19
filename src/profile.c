@@ -240,10 +240,12 @@ static void fopenMaybeCompressed(char* name, struct ProfileState* ps)
 {
 #ifdef HAVE_POPEN
   char popen_buf[4096];
-  if(endsWithgz(name) && strlen(name) < 3000)
+  // Need space for "gzip < '", ".gz'" and terminating \0.
+  if(endsWithgz(name) && strlen(name) < sizeof(popen_buf) - 8 - 4 - 1)
   {
-    strcpy(popen_buf, "gzip > ");
-    strcat(popen_buf, name);
+    strxcpy(popen_buf, "gzip > '", sizeof(popen_buf));
+    strxcat(popen_buf, name, sizeof(popen_buf));
+    strxcat(popen_buf, "'", sizeof(popen_buf));
     ps->Stream = popen(popen_buf, "w");
     ps->StreamWasPopened = 1;
     return;

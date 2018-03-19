@@ -828,12 +828,14 @@ Int SyFopen (
 
     /* set up <namegz> and <cmd> for pipe command                          */
     namegz[0] = '\0';
-    if (strlen(name) <= 1018) {
+    // Need space for "gunzip < '", ".gz'" and terminating \0.
+    if (strlen(name) <= sizeof(cmd) - 10 - 4 - 1) {
       strxcpy( namegz, name, sizeof(namegz) );
       strxcat( namegz, ".gz", sizeof(namegz) );
 
-      strxcpy( cmd, "gunzip <", sizeof(cmd) );
+      strxcpy( cmd, "gunzip < '", sizeof(cmd) );
       strxcat( cmd, namegz, sizeof(cmd) );
+      strxcat( cmd, "'", sizeof(cmd) );
     }
     if (strncmp( mode, "r", 1 ) == 0)
       flags = O_RDONLY;
