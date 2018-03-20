@@ -294,15 +294,16 @@ function( xset )
   return Orbit(xset,Representative(xset));
 end);
 
-InstallMethod( Random,"for external orbit: via acting domain", true,
-  [ IsExternalOrbit ], 0,
-function( xset )
+InstallMethodWithRandomSource( Random,
+	"for a random source and for an external orbit: via acting domain", true,
+  [ IsRandomSource, IsExternalOrbit ], 0,
+function( rs, xset )
   if HasHomeEnumerator(xset) and not IsPlistRep(HomeEnumerator(xset)) then
     TryNextMethod(); # can't do orbit because the home enumerator might
     # imply a different `PositionCanonical' (and thus equivalence of objects)
     # method.
   fi;
-  return FunctionAction(xset)(Representative(xset),Random(ActingDomain(xset)));
+  return FunctionAction(xset)(Representative(xset),Random(rs, ActingDomain(xset)));
 end);
 
 #############################################################################

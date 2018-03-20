@@ -119,6 +119,21 @@ gap> rm:= FreeMagmaRing( GF(2), a );;
 gap> randomTest(AdditiveCoset(rm, rm.1), Random);
 
 #
+# external orbits
+#
+gap> g:=DihedralGroup(8);; orbs:=ExternalOrbits(g,AsList(g));;
+gap> for orb in orbs do
+> randomTest(orb,Random);
+> od;
+
+#
+gap> g:=SymmetricGroup(4);;
+gap> orbs:=ExternalOrbits(g,[1..4]);;
+gap> for orb in orbs do
+> randomTest(orb,Random);
+> od;
+
+#
 # other stuff
 #
 
