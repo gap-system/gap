@@ -142,11 +142,11 @@ InstallMethod( IsFinite,
 ##
 #M  Random( <A> ) . . . . . . . . . . . . . . . . . . . . for additive cosets
 ##
-InstallMethod( Random,
-    "for an additive coset",
+InstallMethodWithRandomSource( Random,
+    "for a random source and an additive coset",
     true,
-    [ IsAdditiveCoset ], 0,
-    A -> Representative( A ) + Random( AdditivelyActingDomain( A ) ) );
+    [ IsRandomSource, IsAdditiveCoset ], 0,
+    {rs, A} -> Representative( A ) + Random( rs, AdditivelyActingDomain( A ) ) );
 
 
 #############################################################################

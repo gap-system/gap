@@ -106,6 +106,19 @@ gap> randomTest(GL(2,2), Random);
 gap> randomTest(GL(3,3), Random);
 
 #
+# additive cosets
+#
+gap> randomTest(AdditiveCoset(ZmodnZ(1),Identity(ZmodnZ(1))),Random);
+gap> randomTest(AdditiveCoset(Integers,2),Random);
+gap> randomTest(AdditiveCoset(CF(5),-2/3*E(5)-1/2*E(5)^2+1/3*E(5)^4),Random);
+gap> randomTest(AdditiveCoset(GF(17),Z(17)^9),Random);
+gap> R := SmallRing(10,2);;
+gap> randomTest(AdditiveCoset(R,5*R.1),Random);
+gap> a:= Algebra( GF(2), [ [ [ Z(2) ] ] ] );;
+gap> rm:= FreeMagmaRing( GF(2), a );;
+gap> randomTest(AdditiveCoset(rm, rm.1), Random);
+
+#
 # other stuff
 #
 
