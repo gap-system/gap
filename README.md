@@ -2,17 +2,19 @@
 
 # What is GAP?
 
-GAP is a system for computational discrete algebra, with particular emphasis on
-computational group theory. GAP provides a programming language, a library of
-thousands of functions implementing algebraic algorithms written in the GAP
-language as well as large data libraries of algebraic objects. See also the
-[overview](https://www.gap-system.org/Overview/overview.html) and the description of
-the [mathematical capabilities](https://www.gap-system.org/Overview/Capabilities/capabilities.html).
+GAP is a system for computational discrete algebra, with particular emphasis
+on computational group theory. GAP provides a programming language, a library
+of thousands of functions implementing algebraic algorithms written in the GAP
+language as well as large data libraries of algebraic objects. For a more
+detailed overview, see
+  <https://www.gap-system.org/Overview/overview.html>.
+For a description of the mathematical capabilities, see
+  <https://www.gap-system.org/Overview/Capabilities/capabilities.html>.
 
-GAP is used in research and teaching for studying groups and their representations,
-rings, vector spaces, algebras, combinatorial structures, and more.
-The system, including source, is distributed freely. You can study and easily
-modify or extend it for your special use.
+GAP is used in research and teaching for studying groups and their
+representations, rings, vector spaces, algebras, combinatorial structures, and
+more. The system, including source, is distributed freely. You can study and
+easily modify or extend it for your special use.
 
 
 # How to obtain GAP?
@@ -28,10 +30,12 @@ directory.
 
 # Using a GAP development version
 
-Alternatively, you can compile the latest development version of GAP. However, most
-users should instead use the latest official release instead.
+Alternatively, you can compile the latest development version of GAP. However,
+most users should instead use the latest official release instead as described
+in the previous section.
 
-If you want to do so, you can clone the GAP source repository using git:
+If you really want to use a development version of GAP, start by cloning the
+GAP source repository using git:
 
     git clone https://github.com/gap-system/gap
 
