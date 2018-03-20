@@ -19,12 +19,11 @@ modify or extend it for your special use.
 
 ## Download a stable release version
 
-The latest stable release of the GAP system together with all currently redistributed
-[GAP packages](https://www.gap-system.org/Packages/packages.html) can be obtained from our
-[downloads page](https://www.gap-system.org/Releases/index.html).
-For installation instructions see [here](https://www.gap-system.org/Download/install.html).
-
-Afterwards, follow the instructions in the file `INSTALL.md` in the GAP rot directory.
+The latest stable release of the GAP system, including all currently
+redistributed GAP packages, can be obtained from
+  <https://www.gap-system.org/Releases/index.html>.
+Afterwards, follow the instructions in the file `INSTALL.md` in the GAP root
+directory.
 
 
 # Using a GAP development version
