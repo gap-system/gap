@@ -1935,9 +1935,9 @@ void InitSystem (
     if ( SyWindow ) {
       /*         SyLineEdit   = 1;
                  SyCTRD       = 1; */
-        syBuf[2].fp = fileno(stdin);  syBuf[2].echo = fileno(stdout);
+        syBuf[2].fp = syBuf[0].fp;  syBuf[2].echo = syBuf[0].echo;
         syBuf[2].isTTY = syBuf[0].isTTY;
-        syBuf[3].fp = fileno(stdout);
+        syBuf[3].fp = syBuf[1].fp;
         syWinPut( 0, "@p", "1." );
     }
    
