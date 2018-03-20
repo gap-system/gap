@@ -55,11 +55,13 @@ On Ubuntu or Debian, you can install these with the following command:
     sudo apt install build-essential autoconf libtool libgmp-dev libreadline-dev
 
 On OS X, you can install the dependencies in several ways:
+
  * using Homebrew: `brew install autoconf libtool gmp readline`
  * using Fink: `fink install autoconf2.6 libtool2 gmp5 readline7`
  * using MacPorts: `port install autoconf libtool gmp readline`
 
-On other operating systems, you will be able to install the re
+On other operating systems, you will need to figure out equivalent commands
+to install the required dependencies.
 
 
 ## Building GAP
