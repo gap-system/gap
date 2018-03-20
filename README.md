@@ -119,8 +119,8 @@ If everything goes well, you should be able to start GAP by executing
 
     sh bin/gap.sh
 
-You can also find development versions of some of the GAP packages
-on [GitHub](https://github.com/gap-system) and [Bitbucket](https://bitbucket.org/gap-system).
+You can also find development versions of some of the GAP packages on
+<https://github.com/gap-packages> resp. on <http://gap-packages.github.io>.
 
 
 # We welcome contributions
