@@ -2,37 +2,40 @@
 
 # What is GAP?
 
-GAP is a system for computational discrete algebra, with particular emphasis on
-computational group theory. GAP provides a programming language, a library of
-thousands of functions implementing algebraic algorithms written in the GAP
-language as well as large data libraries of algebraic objects. See also the
-[overview](https://www.gap-system.org/Overview/overview.html) and the description of
-the [mathematical capabilities](https://www.gap-system.org/Overview/Capabilities/capabilities.html).
+GAP is a system for computational discrete algebra, with particular emphasis
+on computational group theory. GAP provides a programming language, a library
+of thousands of functions implementing algebraic algorithms written in the GAP
+language as well as large data libraries of algebraic objects. For a more
+detailed overview, see
+  <https://www.gap-system.org/Overview/overview.html>.
+For a description of the mathematical capabilities, see
+  <https://www.gap-system.org/Overview/Capabilities/capabilities.html>.
 
-GAP is used in research and teaching for studying groups and their representations,
-rings, vector spaces, algebras, combinatorial structures, and more.
-The system, including source, is distributed freely. You can study and easily
-modify or extend it for your special use.
+GAP is used in research and teaching for studying groups and their
+representations, rings, vector spaces, algebras, combinatorial structures, and
+more. The system, including source, is distributed freely. You can study and
+easily modify or extend it for your special use.
 
 
 # How to obtain GAP?
 
 ## Download a stable release version
 
-The latest stable release of the GAP system together with all currently redistributed
-[GAP packages](https://www.gap-system.org/Packages/packages.html) can be obtained from our
-[downloads page](https://www.gap-system.org/Releases/index.html).
-For installation instructions see [here](https://www.gap-system.org/Download/install.html).
-
-Afterwards, follow the instructions in the file `INSTALL.md` in the GAP rot directory.
+The latest stable release of the GAP system, including all currently
+redistributed GAP packages, can be obtained from
+  <https://www.gap-system.org/Releases/index.html>.
+Afterwards, follow the instructions in the file `INSTALL.md` in the GAP root
+directory.
 
 
 # Using a GAP development version
 
-Alternatively, you can compile the latest development version of GAP. However, most
-users should instead use the latest official release instead.
+Alternatively, you can compile the latest development version of GAP. However,
+most users should instead use the latest official release instead as described
+in the previous section.
 
-If you want to do so, you can clone the GAP source repository using git:
+If you really want to use a development version of GAP, start by cloning the
+GAP source repository using git:
 
     git clone https://github.com/gap-system/gap
 
@@ -55,11 +58,13 @@ On Ubuntu or Debian, you can install these with the following command:
     sudo apt install build-essential autoconf libtool libgmp-dev libreadline-dev
 
 On OS X, you can install the dependencies in several ways:
+
  * using Homebrew: `brew install autoconf libtool gmp readline`
  * using Fink: `fink install autoconf2.6 libtool2 gmp5 readline7`
  * using MacPorts: `port install autoconf libtool gmp readline`
 
-On other operating systems, you will be able to install the re
+On other operating systems, you will need to figure out equivalent commands
+to install the required dependencies.
 
 
 ## Building GAP
@@ -117,8 +122,8 @@ If everything goes well, you should be able to start GAP by executing
 
     sh bin/gap.sh
 
-You can also find development versions of some of the GAP packages
-on [GitHub](https://github.com/gap-system) and [Bitbucket](https://bitbucket.org/gap-system).
+You can also find development versions of some of the GAP packages on
+<https://github.com/gap-packages> resp. on <http://gap-packages.github.io>.
 
 
 # We welcome contributions
