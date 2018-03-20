@@ -267,7 +267,7 @@ end );
 
 
 RedispatchOnCondition(Random,true,[IsCollection],[IsFinite],0);
-RedispatchOnCondition(Random,true,[IsRandomSource,IsCollection],[IsFinite],0);
+RedispatchOnCondition(Random,true,[IsRandomSource,IsCollection],[,IsFinite],0);
 
 #############################################################################
 ##
