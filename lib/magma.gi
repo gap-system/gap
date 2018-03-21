@@ -652,13 +652,17 @@ InstallOtherMethod( MagmaWithOneByGenerators,
 #M  MagmaWithInversesByGenerators( <gens> ) . . . . . . . .  for a collection
 ##
 MakeMagmaWithInversesByFiniteGenerators:=function(family,gens)
-local M;
+local M, filter;
   if not IsBound(family!.defaultMagmaWithInversesByGeneratorsType) then
+    filter := IsMagmaWithInverses and IsAttributeStoringRep
+                and HasGeneratorsOfMagmaWithInverses;
+    # check if the family implies associativity, and hence that the
+    # final magma is a group
+    if IS_SUBSET_FLAGS(family!.IMP_FLAGS, FLAGS_FILTER(IsAssociativeElementCollection)) then
+       filter := filter and IsFinitelyGeneratedGroup;
+    fi;
     family!.defaultMagmaWithInversesByGeneratorsType :=
-      NewType( FamilyObj( gens ),
-                IsMagmaWithInverses and IsAttributeStoringRep 
-                and HasGeneratorsOfMagmaWithInverses 
-                and IsFinitelyGeneratedGroup);
+      NewType( FamilyObj( gens ), filter );
   fi;
 
   M:=rec();
