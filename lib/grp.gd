@@ -433,6 +433,7 @@ InstallSubsetMaintenance( IsPGroup,
 InstallFactorMaintenance( IsPGroup,
     IsGroup and IsPGroup, IsObject, IsGroup );
 
+InstallTrueMethod( IsFinite, IsPGroup );
 InstallTrueMethod( IsPGroup, IsGroup and IsTrivial );
 InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
 
