@@ -18,9 +18,13 @@
 #M  IsFinitelyGeneratedGroup( <G> ) . . test if a group is finitely generated
 ##
 InstallImmediateMethod( IsFinitelyGeneratedGroup,
-    IsGroup and HasGeneratorsOfGroup, 0,
-    G -> IsFinite( GeneratorsOfGroup( G ) ) );
-
+    IsGroup and HasGeneratorsOfGroup,
+    function( G )
+    if IsFinite( GeneratorsOfGroup( G ) ) then
+      return true;
+    fi;
+    TryNextMethod();
+    end );
 
 #############################################################################
 ##
