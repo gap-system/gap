@@ -657,13 +657,15 @@ local M;
     family!.defaultMagmaWithInversesByGeneratorsType :=
       NewType( FamilyObj( gens ),
                 IsMagmaWithInverses and IsAttributeStoringRep 
-                and HasGeneratorsOfMagmaWithInverses 
-                and IsFinitelyGeneratedGroup);
+                and HasGeneratorsOfMagmaWithInverses);
   fi;
 
   M:=rec();
   ObjectifyWithAttributes( M,family!.defaultMagmaWithInversesByGeneratorsType,
     GeneratorsOfMagmaWithInverses, AsList( gens ) );
+  if HasIsAssociative( M ) and IsAssociative( M ) then
+    SetIsFinitelyGeneratedGroup( M, true );
+  fi;
   return M;
 end;
 
