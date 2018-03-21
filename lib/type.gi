@@ -194,7 +194,11 @@ function(oper)
                 type := "Representation";
             fi;
         fi;
+    elif IsOperation(FLAG1_FILTER(oper)) and IsOperation(FLAG1_FILTER(oper)) then
+        # this is a setter for an and-filter
+        type := "Setter";
     elif FLAG1_FILTER(oper) > 0 then
+        # this is a setter for an elementary filter
         type := "Setter";
     elif Tester(oper) <> false  then
         # oper is an attribute

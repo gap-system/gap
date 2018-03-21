@@ -54,22 +54,36 @@ true
 gap> TypeOfOperation(IsFilter);
 Error, <oper> must be an operation
 
-#
+# elementary filters: property
 gap> TypeOfOperation(IsAbelian);
 "Property"
 gap> TypeOfOperation(HasIsAbelian);
 "Filter"
 gap> TypeOfOperation(SetIsAbelian);
 "Setter"
+
+# and-filters
+gap> TypeOfOperation(IsPGroup and IsAbelian);
+"Property"
+gap> TypeOfOperation(HasIsPGroup and HasIsAbelian);
+"Filter"
+gap> TypeOfOperation(Tester(IsPGroup and IsAbelian));
+"Filter"
+gap> TypeOfOperation(Setter(IsPGroup and IsAbelian));
+"Setter"
+
+# kernel category
 gap> TypeOfOperation(IsMutable);
 "Category"
+gap> TypeOfOperation(Setter(IsMutable));
+"Setter"
+
+# other
 gap> TypeOfOperation(\+);
 "Operation"
 gap> TypeOfOperation(Size);
 "Attribute"
 gap> TypeOfOperation(AbelianGroupCons);
 "Constructor"
-gap> TypeOfOperation(Setter(IS_MUTABLE_OBJ));
-"Setter"
 
 #
