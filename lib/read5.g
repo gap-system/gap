@@ -206,7 +206,6 @@ ReadLib( "fitfree.gi"  );
 ReadLib( "permdeco.gi" );
 ReadLib( "clashom.gi"  );
 ReadLib( "maxsub.gi"   );
-ReadLib( "norad.gi"    );
 
 ReadLib( "autsr.gi"    );
 ReadLib( "morpheus.gi" );
