@@ -4,6 +4,7 @@ We invite everyone to contribute by submitting patches, pull requests,
 bug reports, and code reviews. We would like to make the contributing process as easy as
 possible.
 
+
 ## Packages versus contributions to the "core" system
 
 One way of contributing to GAP is to write a
@@ -17,6 +18,7 @@ control of your code and be recorded as author and maintainer of it.
 Packages are not an appropriate way to release fixes or extremely small
 changes, or to impose your own preferences for, for instance, how things
 should be printed.
+
 
 ## Issue reporting and code contributions
 
@@ -41,6 +43,7 @@ should be printed.
   leave the codebase in better condition than you found it.
   Please clean up any messes that you find, and don't
   leave behind new messes for the next contributor.
+
 
 ## Making Changes
 
@@ -123,12 +126,11 @@ to create a GitHub account, see below for an alternative.
 * Go to GitHub and submit a pull request to GAP.
 
 From there you will have to wait on one of the GAP committers to respond to
-the request. This response might be an accept or some
-changes/improvements/alternatives will be suggested.  We do not guarantee
-that all requests will be accepted.
-Feel free to read the section
-[the reviewing process](#the-reviewing-process)
-to make the review of your pull request go smoothly.
+the request. This response might be an accept or some changes, improvements or
+alternatives will be suggested. We do not guarantee that all requests will be
+accepted. You may want to to read the section discussing the reviewing process
+below to make the review of your pull request go smoothly.
+
 
 ## Making changes without Github account
 
@@ -137,45 +139,38 @@ repository like so:
 
     git clone https://github.com/gap-system/gap.git
 
-
 Make your changes and commits, create a patch containing the commits you
 want to send, and use git's [`send-email` feature](http://git-scm.com/docs/git-send-email)
 to email the patch to <gap@gap-system.org>.  You can refer to
 [this tutorial](https://burzalodowa.wordpress.com/2013/10/05/how-to-send-patches-with-git-send-email/)
 on how to do this.
 
+
 ## The reviewing process
 
 Before any change is incorporated into the code base, it must undergo a
-mandatory code review.
-Typically, this is done for each pull request (PR) via the
-GitHub code review facilities.
-In order to be mergeable into the code base, a PR must have at least one
-approving code review from a core GAP developer with write access to the
-GAP code repository.
+mandatory code review. Typically, this is done for each pull request (PR) via
+the GitHub code review facilities. In order to be mergeable into the code
+base, a PR must have at least one approving code review from a core GAP
+developer with write access to the GAP code repository.
 
-However, everybody is very welcome to submit code reviews!
-This helps the core developers a lot, and is a step towards becoming one of
-them yourself.
+However, everybody is very welcome to submit code reviews! This helps the core
+developers a lot, and is a step towards becoming one of them yourself.
 
-To do so, search
-[pull requests](https://github.com/gap-system/gap/pulls)
-for a PR that you would like to review. Once you have chosen a PR
-(e.g. [PR 2261](https://github.com/gap-system/gap/pull/2261)),
-open the `Files changed` tab
-(e.g. [this](https://github.com/gap-system/gap/pull/2261/files))
-and add your comments or click the green `Review changes` button in the top
-right.
+To review some code, start by browsing the list of open pull requests (PRs) at
+<https://github.com/gap-system/gap/pulls> and look for a PR you would like to
+review. Once you have chosen one, you can comment on its content, and even
+individual lines changed by it, by following the instructions given on
+<https://help.github.com/articles/reviewing-proposed-changes-in-a-pull-request/>
 
 You can use the lists below as checklists for how to write your review.
 Please be careful to criticize constructively and not use dismissive language
 (see e.g. Brian Lee's section on `Rewording Feedback` in his
 [blog post](https://medium.com/unpacking-trunk-club/designing-awesome-code-reviews-5a0d9cd867e3)).
 
-
 ### Before you dive into the code
 
-This section is based on [this](https://lornajane.net/posts/2015/code-reviews-before-you-even-run-the-code) article.
+This section is based on <https://lornajane.net/posts/2015/code-reviews-before-you-even-run-the-code>.
 
 * Is it clear what feature / fix the contribution adresses?
 * If based on an issue, does it relate to exactly one issue?
@@ -190,7 +185,6 @@ This section is based on [this](https://lornajane.net/posts/2015/code-reviews-be
   * Strange variable or function names 
   * Duplicate code
 
-
 ### Dive into the code
 
 * Is the code correct?
@@ -201,6 +195,7 @@ This section is based on [this](https://lornajane.net/posts/2015/code-reviews-be
 * Are new features documented if necessary?
 * Double check whether the changes should be included into the release notes.
   If not, label the issue / PR accordingly.
+
 
 ## Additional Resources
 
