@@ -714,7 +714,8 @@ DeclareOperation( "KnownPropertiesOfObject", [ IsObject ] );
 ##    "IsCompletelyRegularSemigroup", "IsCompletelySimpleSemigroup", 
 ##    "IsGroupAsSemigroup", "IsMonoidAsSemigroup", "IsOrthodoxSemigroup", 
 ##    "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
-##    "KnowsHowToDecompose", "IsNilpotentByFinite" ]
+##    "KnowsHowToDecompose", "IsInfiniteAbelianizationGroup", 
+##    "IsNilpotentByFinite" ]
 ##  gap> Size(g);
 ##  6
 ##  gap> KnownPropertiesOfObject(g);
@@ -727,8 +728,8 @@ DeclareOperation( "KnownPropertiesOfObject", [ IsObject ] );
 ##    "IsGroupAsSemigroup", "IsMonoidAsSemigroup", "IsOrthodoxSemigroup", 
 ##    "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
 ##    "KnowsHowToDecompose", "IsPerfectGroup", "IsSolvableGroup", 
-##    "IsPolycyclicGroup", "IsNilpotentByFinite", "IsTorsionFree", 
-##    "IsFreeAbelian" ]
+##    "IsPolycyclicGroup", "IsInfiniteAbelianizationGroup", 
+##    "IsNilpotentByFinite", "IsTorsionFree", "IsFreeAbelian" ]
 ##  gap> KnownTruePropertiesOfObject(g);
 ##  [ "IsNonTrivial", "IsFinite", "CanEasilyCompareElements", 
 ##    "CanEasilySortElements", "IsDuplicateFree", 
