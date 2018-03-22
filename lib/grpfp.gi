@@ -907,6 +907,10 @@ function(H)
 
 end);
 
+# a free group has infinite abelianization if and only if it is non-trivial
+InstallTrueMethod( IsInfiniteAbelianizationGroup, IsFreeGroup and IsNonTrivial );
+InstallTrueMethod( HasIsInfiniteAbelianizationGroup, IsFreeGroup and IsTrivial );
+
 #############################################################################
 ##
 #M  IsPerfectGroup( <H> )

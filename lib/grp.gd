@@ -857,7 +857,12 @@ DeclareAttribute( "AbelianInvariants", IsGroup );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "IsInfiniteAbelianizationGroup", IsGroup );
+DeclareProperty( "IsInfiniteAbelianizationGroup", IsGroup );
+
+# finite groups never have infinite abelianization
+InstallTrueMethod( HasIsInfiniteAbelianizationGroup, IsGroup and IsFinite );
+
+#InstallTrueMethod( IsInfiniteAbelianizationGroup, IsSolvableGroup and IsTorsionFree );
 
 
 #############################################################################
