@@ -13,53 +13,24 @@
 
 #############################################################################
 ##
-#F  RatPairString( <string> ) . . . . . . . . . . . . . string -> 2 rationals
-##
-RatPairString := function( string )
-    local   p,  x,  y;
-
-    # find ","
-    p := Position( string, ',' );
-    if p = false  then
-        x := Rat(string);
-        y := x;
-    elif p = 1  then
-        x := 1;
-        y := Rat(string{[2..Length(string)]});
-    elif p = Length(string)  then
-        x := Rat(string{[1..p-1]});
-        y := 1;
-    else
-        x := Rat(string{[1..p-1]});
-        y := Rat(string{[p+1..Length(string)]});
-    fi;
-    if x = 0  then x := 1;  fi;
-    if y = 0  then y := 1;  fi;
-    return [ x, y ];
-
-end;
-
-
-#############################################################################
-##
 #F  ParseArguments( <def>, <args>, <pos> )  . . . . parse sequence of options
 ##
 ##  <args>  is a  argument  list and <pos> the   position to start at.  <def>
 ##  describes the arguments, it is a record, whose record names correspond to
-##  paramters, the values describe the possible paramters:
+##  parameters, the values describe the possible parameters:
 ##
-##  "switch"		toggle the switch or set to the optional paramter
+##  "switch"            toggle the switch or set to the optional parameter
 ##  "switch/true"       default is `true'
 ##  "switch/false"      default is `false'
 ##
-##  "string"            set to the mandatory paramter
+##  "string"            set to the mandatory parameter
 ##  "string/default"    default value
 ##
-##  "integer"           set to the mandatory paramter
+##  "integer"           set to the mandatory parameter
 ##  "integer/default"   default value
 ##
-##  "geometry"          set to the two mandatory paramter width/height
-##  "geometry/wxh"	default value
+##  "geometry"          set to the two mandatory parameter width/height
+##  "geometry/wxh"      default value
 ##
 ##  "alias/name"        define an alias
 ##  
@@ -83,7 +54,7 @@ end;
 ##    depth := 10,
 ##    ndepth := 20 )
 ##
-ParseArguments := function( def, args, pos )
+BindGlobal("ParseArguments", function( def, args, pos )
     local   IsMatch,  SplitString,  keys,  type,  val,  key,  tmp,  
             defaultGeometry,  next,  match;
     
@@ -258,7 +229,7 @@ ParseArguments := function( def, args, pos )
     od;
     return val;
 
-end;
+end );
 
 
 #############################################################################
