@@ -260,6 +260,7 @@ InstallGlobalFunction( FreeMonoid, function( arg )
       SetIsTrivial( M, false );
       SetIsFinite( M, false );
       SetIsCommutative(M, false );
+      SetIsFinitelyGeneratedMonoid(M, false);
     fi;
 
     SetIsFreeMonoid( M, true);
