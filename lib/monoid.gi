@@ -304,7 +304,10 @@ end);
 InstallMethod( IsFinitelyGeneratedMonoid, "for a monoid",
                [ IsMonoid and HasGeneratorsOfMonoid ],
 function(M)
-    return IsFinite(GeneratorsOfMonoid(M));
+    if IsFinite(GeneratorsOfMonoid(M)) then
+      return true;
+    fi;
+    TryNextMethod();
 end);
 
 
