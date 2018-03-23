@@ -1316,7 +1316,7 @@ function(f,g)
     return GcdOp(f,g);
   fi;
 
-  return fail;
+  TryNextMethod();
 end);
 
 #############################################################################
