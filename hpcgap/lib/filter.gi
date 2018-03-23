@@ -50,7 +50,11 @@ function(filter)
 end);
 
 BIND_GLOBAL( "IdOfFilterByName",
-             name -> PositionProperty(FILTERS, f -> NAME_FUNC(f) = name) );
+function(name)
+    atomic readonly FILTER_REGION do
+        return PositionProperty(FILTERS, f -> NAME_FUNC(f) = name);
+    od;
+end);
 
 #############################################################################
 ##
