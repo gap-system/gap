@@ -87,7 +87,9 @@ Dependencies := rec(
 
 AvailabilityTest := ReturnTrue,
 
-BannerString := "This is a custom BannerString\n",
+# use an empty banner string, so that we get identical output regardless
+# of whether GAP is started with -q or -b, or not.
+BannerString := "",
 
 TestFile := "tst/testall.g",
 
