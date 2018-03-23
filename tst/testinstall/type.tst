@@ -44,6 +44,16 @@ gap> FilterByName("IsCommutative");
 <Property "IsCommutative">
 gap> CategoryByName("IsMagma");
 <Category "IsMagma">
+gap> IdOfFilter(IsMutable);
+1
+gap> IdOfFilterByName("IsMutable");
+1
+gap> IsNilpotent;
+<Operation "IsNilpotent">
+gap> PrintObj(IsNilpotent); Print("\n");
+<Operation "IsNilpotent">
+gap> IdOfFilter(IsNilpotent);
+fail
 
 #
 gap> atomic readonly FILTER_REGION do filters := Immutable(FILTERS); od;
