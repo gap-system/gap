@@ -202,7 +202,6 @@ gap> GetPackageNameForPrefix("fake");
 
 # instruct GAP to load the package, and record all its declarations
 gap> PackageVariablesInfo("fakepkg", "0.1");;
-This is a custom BannerString
 gap> ShowPackageVariables("fakepkg");
 new global functions:
   fakepkg_GlobalFunction(  )*
