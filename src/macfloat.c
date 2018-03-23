@@ -50,18 +50,39 @@ Obj TypeMacfloat (
 }
 
 
+// helper function for printing a "decimal" representation of a macfloat
+// into a buffer.
+static void PrintMacfloatToBuf(char *buf, size_t bufsize, Double val, int precision)
+{
+    // handle printing of NaN and infinities ourselves, to ensure
+    // they are printed uniformly across all platforms
+    if (isnan(val)) {
+        strcpy(buf, "nan");
+    }
+    else if (isinf(val)) {
+        if (val > 0)
+            strcpy(buf, "inf");
+        else
+            strcpy(buf, "-inf");
+    }
+    else {
+        snprintf(buf, bufsize, "%.*" PRINTFFORMAT, precision, val);
+    }
+}
+
+
 /****************************************************************************
 **
-*F  PrintMacfloat( <macfloat> ) . . . . . . . . . . . . . . . . print a macfloat value
+*F  PrintMacfloat( <macfloat> ) . . . . . . . . . . .  print a macfloat value
 **
 **  'PrintMacfloat' prints the macfloating value <macfloat>.
 */
-void PrintMacfloat (
-    Obj                 x )
+void PrintMacfloat(Obj x)
 {
-  Char buf[32];
-  snprintf(buf, sizeof(buf), "%.16" PRINTFFORMAT, (TOPRINTFFORMAT) VAL_MACFLOAT(x));
-  Pr("%s",(Int)buf, 0);
+    Char buf[32];
+    // TODO: should we use PRINTFDIGITS instead of 16?
+    PrintMacfloatToBuf(buf, sizeof(buf), VAL_MACFLOAT(x), 16);
+    Pr("%s", (Int)buf, 0);
 }
 
 
@@ -418,7 +439,7 @@ Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj gapprec, Obj f)
   int prec = INT_INTOBJ(gapprec);
   if (prec > 40) /* too much anyways, and would risk buffer overrun */
     prec = 40;
-  snprintf(buf, sizeof(buf), "%.*" PRINTFFORMAT, prec, (TOPRINTFFORMAT)VAL_MACFLOAT(f));
+  PrintMacfloatToBuf(buf, sizeof(buf), VAL_MACFLOAT(f), prec);
   str = MakeString(buf);
   return str;
 }

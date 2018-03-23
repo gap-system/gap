@@ -17,14 +17,12 @@
 
 #ifdef VERY_LONG_DOUBLES
 typedef long double /* __float128 */ Double;
-#define TOPRINTFFORMAT long double
 #define PRINTFDIGITS 20
 #define PRINTFFORMAT "Lg"
 #define STRTOD strtold
 #define MATH(name) name##l
 #else
 typedef double Double;
-#define TOPRINTFFORMAT double
 #define PRINTFDIGITS 16
 #define PRINTFFORMAT "g"
 #define STRTOD strtod
