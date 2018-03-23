@@ -211,6 +211,7 @@ static inline Bag *DATA(BagHeader *bag)
 /****************************************************************************
 **
 *V  MptrBags  . . . . . . . . . . . . . . beginning of the masterpointer area
+*V  MptrEndBags  . . . . . . . . . . . . . . .  end of the masterpointer area
 *V  OldBags . . . . . . . . . . . . . . . . .  beginning of the old bags area
 *V  YoungBags . . . . . . . . . . . . . . .  beginning of the young bags area
 *V  AllocBags . . . . . . . . . . . . . . .  beginning of the allocation area
@@ -220,15 +221,21 @@ static inline Bag *DATA(BagHeader *bag)
 **  {\Gasman} manages one large block of storage called the *workspace*.  The
 **  layout of the workspace is as follows{\:}
 **
-**  +-----------------+-----------------+-----------------+-----------------+
-**  |  masterpointer  |    old bags     |   young bags    |   allocation    |
-**  |      area       |      area       |      area       |      area       |
-**  +-----------------+-----------------+-----------------+-----------------+
-**  ^                 ^                 ^                 ^                 ^
-**  MptrBags       OldBags          YoungBags         AllocBags       EndBags
+**  +----------------+----------+----------+-----------------+--------------+
+**  |  masterpointer |  unused  | old bags |   young bags    |  allocation  |
+**  |      area      |   area   |   area   |      area       |     area     |
+**  +----------------+----------+----------+-----------------+--------------+
+**  ^                ^          ^          ^                 ^              ^
+**  MptrBags    MptrEndBags  OldBags   YoungBags         AllocBags    EndBags
 **
 **  The *masterpointer area*  contains  all the masterpointers  of  the bags.
-**  'MptrBags' points to the beginning of this area and 'OldBags' to the end.
+**  'MptrBags' points to the beginning of this area and 'MptrEndBags' to the
+**  end.
+**
+**  Between MptrEndBags and OldBags is an *unused area*. This exists so the
+**  master points, and bags area, can be moved independently. MptrEndBags
+**  will always come earlier in memory than OldBags. GASMAN should not touch
+**  this memory, as it may be used for other purposes.
 **
 **  The *old bags area* contains the bodies of all the  bags that survived at
 **  least one  garbage collection.  This area is  only  scanned for dead bags
@@ -253,6 +260,7 @@ static inline Bag *DATA(BagHeader *bag)
 **  empties the young bags area.
 */
 Bag *                   MptrBags;
+Bag *                   MptrEndBags;
 Bag *                   OldBags;
 Bag *                   YoungBags;
 Bag *                   AllocBags;
@@ -307,7 +315,7 @@ static inline UInt SpaceBetweenPointers(const Bag * a, const Bag * b)
     return res;
 }
 
-#define SizeMptrsArea SpaceBetweenPointers(OldBags, MptrBags)
+#define SizeMptrsArea SpaceBetweenPointers(MptrEndBags, MptrBags)
 #define SizeOldBagsArea SpaceBetweenPointers(YoungBags, OldBags)
 #define SizeYoungBagsArea SpaceBetweenPointers(AllocBags, YoungBags)
 #define SizeAllocationArea SpaceBetweenPointers(EndBags, AllocBags)
@@ -318,7 +326,8 @@ static inline UInt SpaceBetweenPointers(const Bag * a, const Bag * b)
 #if defined(GAP_KERNEL_DEBUG)
 static int SanityCheckGasmanPointers(void)
 {
-    return MptrBags <= OldBags &&
+    return MptrBags <= MptrEndBags &&
+           MptrEndBags <= OldBags &&
            OldBags <= YoungBags &&
            YoungBags <= AllocBags &&
            AllocBags <= EndBags;
@@ -457,7 +466,7 @@ TNumInfoBags            InfoBags [ NTYPES ];
 */
 static inline UInt IS_BAG_ID(void * ptr)
 {
-    return (((void *)MptrBags <= ptr) && (ptr < (void *)OldBags) &&
+    return (((void *)MptrBags <= ptr) && (ptr < (void *)MptrEndBags) &&
             ((UInt)ptr & (sizeof(Bag) - 1)) == 0);
 }
 
@@ -687,7 +696,7 @@ void MarkBagWeakly(Bag bag)
 */
 void CallbackForAllBags(void (*func)(Bag))
 {
-    for (Bag bag = (Bag)MptrBags; bag < (Bag)OldBags; bag++) {
+    for (Bag bag = (Bag)MptrBags; bag < (Bag)MptrEndBags; bag++) {
         if (IS_BAG_BODY(*bag)) {
             (*func)(bag);
         }
@@ -872,6 +881,7 @@ void StartRestoringBags( UInt nBags, UInt maxSize)
       EndBags = MptrBags + target;
     }
   OldBags = MptrBags + nBags + (SizeWorkspace - nBags - maxSize)/8;
+  MptrEndBags = OldBags;
   AllocBags = OldBags;
   NextMptrRestoring = (Bag)MptrBags;
   SizeAllBags = 0;
@@ -891,7 +901,7 @@ Bag NextBagRestoring( UInt type, UInt flags, UInt size )
   header->link = NextMptrRestoring;
   NextMptrRestoring++;
 
-  if ((Bag *)NextMptrRestoring >= OldBags)
+  if ((Bag *)NextMptrRestoring >= MptrEndBags)
     SyAbortBags("Overran Masterpointer area");
 
   for (i = 0; i < WORDS_BAG(size); i++)
@@ -917,7 +927,7 @@ void FinishedRestoringBags( void )
 /*  Bag *ptr; */
   YoungBags = AllocBags;
   FreeMptrBags = NextMptrRestoring;
-  for (p = NextMptrRestoring; p +1 < (Bag)OldBags; p++)
+  for (p = NextMptrRestoring; p +1 < (Bag)MptrEndBags; p++)
     *(Bag *)p = p+1;
   *p = 0;
   NrLiveBags = NrAllBags;
@@ -1032,7 +1042,11 @@ void            InitBags (
     }
 
     /* the rest is for bags                                                */
-    OldBags   = MptrBags + 1024*initial_size/8/sizeof(Bag*);
+    MptrEndBags =  MptrBags + 1024*initial_size/8/sizeof(Bag*);
+    // Add a small gap between the end of the master pointers and OldBags
+    // This is mainly here to ensure we do not break allowing OldBags and
+    // MptrEndBags to differ.
+    OldBags   = MptrEndBags + 10;
     YoungBags = OldBags;
     AllocBags = OldBags;
 
@@ -2007,7 +2021,7 @@ again:
          also reorder the free masterpointer linked list
          to get more locality */
       FreeMptrBags = (Bag)0L;
-      for (p = MptrBags; p < OldBags; p+= SIZE_MPTR_BAGS)
+      for (p = MptrBags; p < MptrEndBags; p+= SIZE_MPTR_BAGS)
         {
           Bag *mptr = (Bag *)*p;
           if ( mptr == OldWeakDeadBagMarker)
@@ -2039,13 +2053,13 @@ again:
         AllocSizeBags = 7*(Endbags - stopBags)/8; */
 
         /* if less than 1/16th is free, prepare for an interrupt           */
-        if (SpaceBetweenPointers(stopBags,OldBags)/15 < SpaceBetweenPointers(EndBags,stopBags) ) {
+        if (SpaceBetweenPointers(stopBags,MptrEndBags)/15 < SpaceBetweenPointers(EndBags,stopBags) ) {
             /*N 1993/05/16 martin must change 'gap.c'                      */
             ;
         }
 
         /* if more than 1/8th is free, give back storage (in 1/2 MBytes)   */
-        while (SpaceBetweenPointers(stopBags,OldBags)/7 <= SpaceBetweenPointers(EndBags,stopBags)-WORDS_BAG(512*1024L)
+        while (SpaceBetweenPointers(stopBags,MptrEndBags)/7 <= SpaceBetweenPointers(EndBags,stopBags)-WORDS_BAG(512*1024L)
                 && SpaceBetweenPointers(EndBags,stopBags) > WORDS_BAG(AllocSizeBags) + WORDS_BAG(512*1024L)
              && SyAllocBags(-512,0) )
             EndBags -= WORDS_BAG(512*1024L);
@@ -2060,26 +2074,26 @@ again:
             SyMemmove(OldBags+i, OldBags, SizeAllBagsArea*sizeof(*OldBags));
 
             /* update the masterpointers                                   */
-            for ( p = MptrBags; p < OldBags; p++ ) {
-              if ( (Bag)OldBags <= *p)
+            for ( p = MptrBags; p < MptrEndBags; p++ ) {
+              if ( (Bag)MptrEndBags <= *p)
                     *p += i;
             }
 
             /* link the new part of the masterpointer area                 */
-            for ( p = OldBags;
-                  p + 2*SIZE_MPTR_BAGS <= OldBags+i;
+            for ( p = MptrEndBags;
+                  p + 2*SIZE_MPTR_BAGS <= MptrEndBags+i;
                   p += SIZE_MPTR_BAGS ) {
                 *p = (Bag)(p + SIZE_MPTR_BAGS);
             }
             *p = (Bag)FreeMptrBags;
-            FreeMptrBags = (Bag)OldBags;
+            FreeMptrBags = (Bag)MptrEndBags;
 
-            /* update 'OldBags', 'YoungBags', 'AllocBags', and 'stopBags'  */
+            /* update 'MptrEndBags', 'OldBags', 'YoungBags', 'AllocBags', and 'stopBags'  */
+            MptrEndBags += i;
             OldBags   += i;
             YoungBags += i;
             AllocBags += i;
             stopBags  += i;
-
         }
 
         /* now we are done                                                 */
@@ -2132,7 +2146,7 @@ void CheckMasterPointers( void )
     Bag bag;
 
     // iterate over all bag identifiers
-    for (Bag * ptr = MptrBags; ptr < OldBags; ptr++) {
+    for (Bag * ptr = MptrBags; ptr < MptrEndBags; ptr++) {
         bag = (Bag)ptr;
 
         // weakly dead bag?
