@@ -79,16 +79,7 @@ matrix:
     - env: TEST_SUITES=testmanuals CONFIGFLAGS="--enable-debug"
 
     # HPC-GAP builds (for efficiency, we don't build all combinations)
-    # FIXME: the 32bit build removes -O2 to avoid an internal compiler error for vecgf2.c
     - env: TEST_SUITES="docomp testinstall" ABI=64 HPCGAP=yes CONFIGFLAGS="--enable-debug"
-    - env: TEST_SUITES="docomp testinstall" ABI=32 HPCGAP=yes BUILDDIR=build CONFIGFLAGS="--with-gmp=builtin" CFLAGS="-fprofile-arcs -ftest-coverage"
-      addons:
-        apt_packages:
-          - gcc-multilib
-          - g++-multilib
-          - libgmp-dev:i386
-          - libreadline-dev:i386
-          - texinfo # for building GMP
 
     # out of tree builds -- these are mainly done to verify that the build
     # system work in this scenario. Since we don't expect the test results to
@@ -101,7 +92,7 @@ matrix:
         apt_packages:
           - gcc-multilib
           - g++-multilib
-          - libgmp-dev:i386
+          #- libgmp-dev:i386    # do not install GMP, to test that GAP can build its own
           - libreadline-dev:i386
 
     # run bugfix regression tests
