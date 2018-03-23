@@ -877,12 +877,12 @@ extern void MarkArrayOfBags(const Bag array[], UInt count);
 #ifdef USE_GASMAN
 
 extern  Bag *                   MptrBags;
-extern  Bag *                   OldBags;
+extern  Bag *                   MptrEndBags;
 extern  Bag *                   AllocBags;
 
 #define IS_WEAK_DEAD_BAG(bag) ( (((UInt)bag & (sizeof(Bag)-1)) == 0) && \
                                 (Bag)MptrBags <= (bag)    &&          \
-                                (bag) < (Bag)OldBags  &&              \
+                                (bag) < (Bag)MptrEndBags  &&              \
                                 (((UInt)*bag) & (sizeof(Bag)-1)) == 1)
 
 #elif defined(USE_BOEHM_GC)

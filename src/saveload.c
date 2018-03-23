@@ -314,8 +314,8 @@ void SaveSubObj( Obj subobj )
     SaveUInt((UInt) subobj);
   else if ((((UInt)subobj & 3) != 0) || 
            subobj < (Bag)MptrBags || 
-           subobj > (Bag)OldBags ||
-           (Bag *)PTR_BAG(subobj) < OldBags)
+           subobj > (Bag)MptrEndBags ||
+           (Bag *)PTR_BAG(subobj) < MptrEndBags)
     {
       Pr("#W bad bag id %d found, 0 saved\n", (Int)subobj, 0L);
       SaveUInt(0);
@@ -553,7 +553,7 @@ static void WriteSaveHeader( void )
       globalcount++;
   SaveUInt(globalcount);
   SaveUInt(NextSaveIndex-1);
-  SaveUInt(AllocBags - OldBags);
+  SaveUInt(AllocBags - MptrEndBags);
   
   SaveCStr("Loaded Modules");
 

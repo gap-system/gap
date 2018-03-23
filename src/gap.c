@@ -1985,7 +1985,7 @@ Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
         return INTOBJ_INT(0);
     }
 #ifdef USE_GASMAN
-    if ((void **) o >= (void **) MptrBags && (void **) o < (void **) OldBags) {
+    if ((void **) o >= (void **) MptrBags && (void **) o < (void **) MptrEndBags) {
         return INTOBJ_INT( ((void **) o - (void **) MptrBags) + 1 );
     } else {
         return INTOBJ_INT( 0 );
