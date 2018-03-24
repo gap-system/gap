@@ -1400,8 +1400,8 @@ void ConvGF2Vec (
 	  /* might be GF(2) elt written over bigger field */
 	  if (EQ(x, GF2One))
 	    block |= bit;
-	  else
-	    assert(EQ(x, GF2Zero));
+	  else if (!EQ(x, GF2Zero))
+	    ErrorMayQuit("COPY_GF2VEC: argument must be a list of GF2 elements", 0L, 0L);
 	}
       
       bit = bit << 1;
@@ -1463,20 +1463,21 @@ Obj NewGF2Vec (
           SetTypeDatObj(res, TYPE_LIST_GF2VEC_IMM);
         return res;
     }
+
+    if (!IS_LIST(list)) {
+        ErrorMayQuit("COPY_GF2VEC: argument must be a list of GF2 elements", 0L, 0L);
+    }
+    if (!IS_PLIST(list)) {
+        list = SHALLOW_COPY_OBJ(list);
+        // TODO: if list is in 8bit rep, we could do better
+        if (IS_VEC8BIT_REP(list))
+            PlainVec8Bit(list);
+        else
+            PLAIN_LIST( list );
+    }
     
     len = LEN_PLIST(list);
     NEW_GF2VEC( res, TYPE_LIST_GF2VEC, len );
-    
-    /* Otherwise make it a plain list so that we will know where it keeps
-       its data -- could do much better in the case of GF(2^n) vectors that actually
-       lie over GF(2)
-       AK: for now, comment this out - these will destroy the argument. 
-       We will just test it on plain lists first 
-    if (IS_VEC8BIT_REP(list))
-      PlainVec8Bit(list);
-    else
-      PLAIN_LIST( list );
-    */
     
     /* now do the work */
     block = 0;
@@ -1490,8 +1491,8 @@ Obj NewGF2Vec (
 	      /* might be GF(2) elt written over bigger field */
 	      if (EQ(x, GF2One))
 	        block |= bit;
-	      else
-	        assert(EQ(x, GF2Zero));
+	      else if (!EQ(x, GF2Zero))
+            ErrorMayQuit("COPY_GF2VEC: argument must be a list of GF2 elements", 0L, 0L);
 	    }
       
       bit = bit << 1;
