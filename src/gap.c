@@ -1177,7 +1177,10 @@ Obj CallErrorInner (
     Obj                 lateMessage,
     UInt                printThisStatement)
 {
-  Obj EarlyMsg;
+  // Must do this before creating any other GAP objects,
+  // as one of the args could be a pointer into a Bag.
+  Obj EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
+
   Obj r = NEW_PREC(0);
   Obj l;
   Int i;
@@ -1186,7 +1189,6 @@ Obj CallErrorInner (
   Region *savedRegion = TLS(currentRegion);
   TLS(currentRegion) = TLS(threadRegion);
 #endif
-  EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
   AssPRec(r, RNamName("context"), STATE(CurrLVars));
   AssPRec(r, RNamName("justQuit"), justQuit? True : False);
   AssPRec(r, RNamName("mayReturnObj"), mayReturnObj? True : False);
