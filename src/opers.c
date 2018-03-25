@@ -3688,7 +3688,7 @@ Obj FuncSET_METHODS_OPERATION (
 
 /****************************************************************************
 **
-*F  FuncSETTER_FUNCTION( <self>, <name> ) . . . . .  default attribute setter
+*F  FuncSETTER_FUNCTION( <self>, <name>, <filter> )  default attribute setter
 */
 Obj DoSetterFunction (
     Obj                 self,
