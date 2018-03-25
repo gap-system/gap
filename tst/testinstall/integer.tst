@@ -39,13 +39,16 @@ gap> last = List([1..10], n->PrimeDivisors(-n));
 true
 
 #
-gap> LoadPackage("factint", false);;
-gap> FactorsInt(2^155-19);
-[ 167, 11824964268989, 53849995530347, 429484354827785909 ]
+gap> n:=(2^31-1)*(2^61-1);;
+gap> PartialFactorization(n);
+[ 2147483647, 2305843009213693951 ]
+gap> FactorsInt(n);
+[ 2147483647, 2305843009213693951 ]
 gap> PartialFactorization(2^155-19);
-[ 167, 11824964268989, 53849995530347, 429484354827785909 ]
-gap> PartialFactorization(2^155-19, 1);
 [ 167, 273484587823896504154881143846609846492502347 ]
+gap> n:=(2^2203-1)*(2^2281-1);;
+gap> PartialFactorization(n) = [ n ];
+true
 
 #
 gap> Filtered([-4..20], IsPrimePowerInt);
