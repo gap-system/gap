@@ -635,7 +635,6 @@ Obj FuncAND_FLAGS (
     Int                 i;
 
 #ifdef AND_FLAGS_HASH_SIZE
-    Obj                 flagsX;
     Obj                 cache;
     Obj                 entry;
 #ifdef HPCGAP
@@ -658,53 +657,41 @@ Obj FuncAND_FLAGS (
             "you can replace <flags2> via 'return <flags2>;'" );
     }
 
+    if (flags1 == flags2)
+        return flags1;
+
     // check the cache
 #   ifdef AND_FLAGS_HASH_SIZE
         // We want to ensure if we calculate 'flags1 and flags2', then
         // later do 'flags2 and flags1', we will get the value from the cache.
         // Therefore we just compare the location of the Bag masterpointers
         // for both flags (which doesn't change), and use the cache of the
-        // smaller.
-        if ( flags1 < flags2 ) {
-            flagsX = flags2;
-#           ifdef HPCGAP
-                if (!PreThreadCreation) {
-                    locked = flags1;
-                    HashLock(locked);
-                }
-#           endif
-            cache  = AND_CACHE_FLAGS(flags1);
-            if ( cache == 0 ) {
-                cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
-                MakeBagPublic(cache);
-                SET_AND_CACHE_FLAGS( flags1, cache );
-                CHANGED_BAG(flags1);
-            }
+        // smaller. To this end, ensure flags1 is the smaller one.
+        if ( flags1 > flags2 ) {
+            SWAP(Obj, flags1, flags2);
         }
-        else {
-            flagsX = flags1;
-#           ifdef HPCGAP
-                if (!PreThreadCreation) {
-                    locked = flags2;
-                    HashLock(locked);
-                }
-#           endif
-            cache  = AND_CACHE_FLAGS(flags2);
-            if ( cache == 0 ) {
-                cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
-                MakeBagPublic(cache);
-                SET_AND_CACHE_FLAGS( flags2, cache );
-                CHANGED_BAG(flags2);
+
+#       ifdef HPCGAP
+            if (!PreThreadCreation) {
+                locked = flags1;
+                HashLock(locked);
             }
+#       endif
+        cache  = AND_CACHE_FLAGS(flags1);
+        if ( cache == 0 ) {
+            cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
+            MakeBagPublic(cache);
+            SET_AND_CACHE_FLAGS( flags1, cache );
+            CHANGED_BAG(flags1);
         }
-        hash = (UInt)flagsX;
+        hash = (UInt)flags2;
         for ( i = 0;  i < 24;  i++ ) {
             hash2 = (hash + 97*i) % AND_FLAGS_HASH_SIZE;
             entry = ELM_PLIST( cache, 2*hash2+1 );
             if ( entry == 0 ) {
                 break;
             }
-            if ( entry == flagsX ) {
+            if ( entry == flags2 ) {
 #               ifdef COUNT_OPERS
                     AndFlagsCacheHit++;
 #               endif
@@ -777,7 +764,7 @@ Obj FuncAND_FLAGS (
                     AndFlagsCacheLost++;
             }
 #       endif
-        SET_ELM_PLIST( cache, 2*hash+1, flagsX );
+        SET_ELM_PLIST( cache, 2*hash+1, flags2 );
         SET_ELM_PLIST( cache, 2*hash+2, flags  );
         CHANGED_BAG(cache);
 #       ifdef HPCGAP
