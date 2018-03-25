@@ -100,12 +100,7 @@ SOURCES += src/vecgf2.c
 SOURCES += src/vector.c
 SOURCES += src/weakptr.c
 
-# TODO: Change the following to check for a new USE_BOEHM flag
-ifeq ($(HPCGAP),yes)
-  SOURCES += src/boehm_gc.c
-else
-  SOURCES += src/gasman.c
-endif
+SOURCES += $(GC_SOURCES)
 
 ifeq ($(GAPMPI),yes)
   SOURCES += src/hpc/gapmpi.c

@@ -21,6 +21,9 @@ ABI_CFLAGS = @ABI_CFLAGS@
 HPCGAP = @HPCGAP@
 ADDGUARDS2 = @ADDGUARDS2@
 
+# garbage collector source files
+GC_SOURCES = @GC_SOURCES@
+
 # compatibility mode
 COMPAT_MODE = @COMPAT_MODE@
 GAPARCH = @GAPARCH@
