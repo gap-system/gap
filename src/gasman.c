@@ -119,6 +119,10 @@
 
 #include <stdio.h>
 
+#ifdef GAP_MEM_CHECK
+#include <sys/mman.h>
+#endif
+
 /****************************************************************************
 **
 *F  WORDS_BAG( <size> ) . . . . . . . . . . words used by a bag of given size
@@ -973,6 +977,113 @@ void            InitCollectFuncBags (
     AfterCollectFuncBags  = after_func;
 }
 
+/***************************************************************
+ * GAP_MEM_CHECK
+ *
+ * One of the hardest categories of bugs to fix in GAP are where
+ * a reference to the internals of a GAP object are kept across
+ * a garbage collection (which moves GAP objects around).
+ *
+ * GAP_MEM_CHECK provides a method of detecting such problems, at
+ * the cost of GREATLY decreased performance (Starting GAP in
+ * --enableMemCheck mode takes days, rather than seconds).
+ *
+ * The fundamental idea behind GAP_MEM_CHECK is, whenever NewBag
+ * or ResizeBag is called, then the contents of every Bag in
+ * GAP is moved, and the memory previously being used is marked
+ * as not readable or writable using 'mprotect'.
+ *
+ * Actually copying all GAP's memory space would be extremely
+ * expensive, so instead we use 'mmap' to set up a set of copies
+ * of the GAP memory space, which are represented by the same
+ * underlying physical memory.
+ *
+ * The 0th such copy (which we also ensure is the one at the
+ * lowest memory address) is special -- this is where we
+ * reference the master pointers (which can't move). We do not
+ * 'mprotect' any of this memory.
+ *
+ * Every time we call 'NewBag' or 'ResizeBag', we change which
+ * copy of the GASMAN memory space the master pointers point
+ * to, disabling access to the previous copy, and enabling access
+ * to the new one.
+ *
+ * We never use the master pointers in any copy other than the
+ * 0th, and we never refer to the Bag area in the 0th copy. However,
+ * it simplifies things to not try to seperate the master pointer
+ * and Bag areas, because the master pointer area can grow as GAP
+ * runs.
+ *
+ * Because this code is VERY slow, it can be turned on and off.
+ * At run time, call GASMAN_MEM_CHECK(1) to enable, and
+ * GASMAN_MEM_CHECK(0) to disable. Start GAP with --enableMemCheck
+ * to enable from when GAP starts.
+ */
+
+#ifdef GAP_MEM_CHECK
+
+Int EnableMemCheck = 0;
+
+Int enableMemCheck(Char ** argv, void * dummy)
+{
+    SyFputs( "# Warning: --enableMemCheck causes SEVERE slowdowns. Starting GAP may take several days!\n", 3 );
+    EnableMemCheck = 1;
+    return 1;
+}
+
+static void MoveBagMemory(char * oldbase, char * newbase)
+{
+    Int moveSize = (newbase - oldbase) / sizeof(Bag);
+    // update the masterpointers
+    for (Bag * p = MptrBags; p < MptrEndBags; p++) {
+        if ((Bag)MptrEndBags <= *p)
+            *p += moveSize;
+    }
+
+    // update 'OldBags', 'YoungBags', 'AllocBags', and 'EndBags'
+    OldBags += moveSize;
+    YoungBags += moveSize;
+    AllocBags += moveSize;
+    EndBags += moveSize;
+}
+
+static void MaybeMoveBags(void)
+{
+    static Int oldBase = 0;
+
+    if (!EnableMemCheck)
+        return;
+
+    Int newBase = oldBase + 1;
+    // Memory buffer 0 is special, as we use that
+    // copy for the master pointers. Therefore never
+    // block access to it, and skip it when cycling.
+    if (newBase >= GetMembufCount())
+        newBase = 1;
+
+    // call the before function (if any)
+    if (BeforeCollectFuncBags != 0)
+        (*BeforeCollectFuncBags)();
+
+    MoveBagMemory(GetMembuf(oldBase), GetMembuf(newBase));
+
+    // Enable access to new memory
+    mprotect(GetMembuf(newBase), GetMembufSize(), PROT_READ | PROT_WRITE);
+    // Block access to old memory (except block 0, which will only occur
+    // on the first call).
+    if (oldBase != 0) {
+        mprotect(GetMembuf(oldBase), GetMembufSize(), PROT_NONE);
+    }
+
+    // call the after function (if any)
+    if (AfterCollectFuncBags != 0)
+        (*AfterCollectFuncBags)();
+
+
+    oldBase = newBase;
+}
+
+#endif
 
 /****************************************************************************
 **
@@ -1032,17 +1143,24 @@ void            InitBags (
         SyAbortBags("cannot get storage for the initial workspace.");
     EndBags = MptrBags + 1024*(initial_size / sizeof(Bag*));
 
+    // In GAP_MEM_CHECK we want as few master pointers as possible, as we
+    // have to loop over them very frequently.
+#ifdef GAP_MEM_CHECK
+    UInt initialBagCount = 100000;
+#else
+    UInt initialBagCount = 1024*initial_size/8/sizeof(Bag*);
+#endif
     /* 1/8th of the storage goes into the masterpointer area               */
     FreeMptrBags = (Bag)MptrBags;
     for ( p = MptrBags;
-          p + 2*(SIZE_MPTR_BAGS) <= MptrBags+1024*initial_size/8/sizeof(Bag*);
+          p + 2*(SIZE_MPTR_BAGS) <= MptrBags+initialBagCount;
           p += SIZE_MPTR_BAGS )
     {
         *p = (Bag)(p + SIZE_MPTR_BAGS);
     }
 
     /* the rest is for bags                                                */
-    MptrEndBags =  MptrBags + 1024*initial_size/8/sizeof(Bag*);
+    MptrEndBags = MptrBags + initialBagCount;
     // Add a small gap between the end of the master pointers and OldBags
     // This is mainly here to ensure we do not break allowing OldBags and
     // MptrEndBags to differ.
@@ -1103,6 +1221,10 @@ Bag NewBag (
     UInt                size )
 {
     Bag                 bag;            /* identifier of the new bag       */
+
+#ifdef GAP_MEM_CHECK
+    MaybeMoveBags();
+#endif
 
 #ifdef TREMBLE_HEAP
     CollectBags(0,0);
@@ -1269,6 +1391,11 @@ UInt ResizeBag (
     Bag                 bag,
     UInt                new_size )
 {
+
+#ifdef GAP_MEM_CHECK
+    MaybeMoveBags();
+#endif
+
 #ifdef TREMBLE_HEAP
     CollectBags(0,0);
 #endif
@@ -2064,12 +2191,15 @@ again:
              && SyAllocBags(-512,0) )
             EndBags -= WORDS_BAG(512*1024L);
 
+#ifdef GAP_MEM_CHECK
+        UInt SpareMasterPointers = 100000;
+#else
+        UInt SpareMasterPointers = SpaceBetweenPointers(EndBags, stopBags)/7;
+#endif
         /* if we want to increase the masterpointer area                   */
-        if ( SizeMptrsArea-NrLiveBags < SpaceBetweenPointers(EndBags,stopBags)/7 ) {
-
+        if ( SizeMptrsArea-NrLiveBags < SpareMasterPointers ) {
             /* this is how many new masterpointers we want                 */
-            i = SpaceBetweenPointers(EndBags,stopBags)/7 - (SizeMptrsArea-NrLiveBags);
-
+            i = SpareMasterPointers - (SizeMptrsArea-NrLiveBags);
             /* move the bags area                                          */
             SyMemmove(OldBags+i, OldBags, SizeAllBagsArea*sizeof(*OldBags));
 

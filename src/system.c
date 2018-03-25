@@ -739,6 +739,97 @@ void *     POOL = NULL;
 UInt * * * syWorkspace = NULL;
 UInt       syWorksize = 0;
 
+#ifdef GAP_MEM_CHECK
+
+/***************************************************************
+ *  GAP_MEM_CHECK
+ *
+ * The following code is used by GAP_MEM_CHECK support, which is
+ * documented in gasman.c
+ */
+
+#if !defined(HAVE_MADVISE) || !defined(SYS_IS_64_BIT)
+#error GAP_MEM_CHECK requires MADVISE and 64-bit OS
+#endif
+
+void SyMAdviseFree(void)
+{
+}
+
+
+enum { membufcount = 64 };
+static void * membufs[membufcount];
+static UInt   membufSize;
+
+UInt GetMembufCount(void)
+{
+    return membufcount;
+}
+
+void * GetMembuf(UInt i)
+{
+    return membufs[i];
+}
+
+UInt GetMembufSize(void)
+{
+    return membufSize;
+}
+
+static int order_pointers(const void * a, const void * b)
+{
+    void * const * pa = a;
+    void * const * pb = b;
+    if (*pa < *pb) {
+        return -1;
+    }
+    else if (*pa > *pb) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+void * SyAnonMMap(size_t size)
+{
+    size = SyRoundUpToPagesize(size);
+    membufSize = size;
+
+    unlink("/dev/shm/gapmem");
+    int fd = open("/dev/shm/gapmem", O_RDWR | O_CREAT | O_EXCL, 0600);
+    if (fd < 0) {
+        fputs("Fatal error setting up multiheap\n", stderr);
+        SyExit(2);
+    }
+
+    if (ftruncate(fd, size) < 0) {
+        fputs("Fatal error setting up multiheap!\n", stderr);
+        SyExit(2);
+    }
+
+    for (int i = 0; i < membufcount; ++i) {
+        membufs[i] =
+            mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+        if (membufs[i] == MAP_FAILED) {
+            fputs("Fatal error setting up multiheap!!\n", stderr);
+            SyExit(2);
+        }
+    }
+
+    // Sort the membufs, so membufs[0] is the first in memory.
+    // We will always refer to the copy of the master pointers in
+    // membufs[0].
+    qsort(membufs, membufcount, sizeof(void *), order_pointers);
+    return membufs[0];
+}
+
+int SyTryToIncreasePool(void)
+{
+    return -1;
+}
+
+#else
 
 #ifdef HAVE_MADVISE
 #ifndef MAP_ANONYMOUS
@@ -859,6 +950,7 @@ int SyTryToIncreasePool(void)
     return -1;   /* Refuse */
 }
 
+#endif
 #endif
 
 int halvingsdone = 0;
@@ -1676,6 +1768,18 @@ static Int setGapRootPath( Char **argv, void *Dummy)
 }
 
 
+#ifndef GAP_MEM_CHECK
+// Provide stub with helpful error message
+
+static Int enableMemCheck(Char ** argv, void * dummy)
+{
+    SyFputs( "# Error: --enableMemCheck not supported by this copy of GAP\n", 3);
+    SyFputs( "  pass --enable-memory-checking to ./configure\n", 3 );
+    SyExit(2);
+}
+#endif
+
+
 static Int preAllocAmount;
 
 /* These are just the options that need kernel processing. Additional options will be 
@@ -1715,6 +1819,7 @@ struct optInfo options[] = {
   { 0  , "memprof", enableMemoryProfilingAtStartup, 0, 1 }, /* enable memory profiling at startup */
   { 0  , "cover", enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup */
   { 0  , "quitonbreak", toggle, &SyQuitOnBreak, 0}, /* Quit GAP if we enter the break loop */
+  { 0  , "enableMemCheck", enableMemCheck, 0, 0 },
   { 0, "", 0, 0, 0}};
 
 
