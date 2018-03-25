@@ -3989,7 +3989,7 @@ Obj FuncTRACE_METHODS (
     Obj                 oper )
 {
     /* check the argument                                                  */
-    if ( TNUM_OBJ(oper) != T_FUNCTION || SIZE_OBJ(oper) != sizeof(OperBag) ) {
+    if (!IS_OPERATION(oper)) {
         ErrorQuit( "<oper> must be an operation", 0L, 0L );
         return 0;
     }
@@ -4012,7 +4012,7 @@ Obj FuncUNTRACE_METHODS (
 {
 
     /* check the argument                                                  */
-    if ( TNUM_OBJ(oper) != T_FUNCTION || SIZE_OBJ(oper) != sizeof(OperBag) ) {
+    if (!IS_OPERATION(oper)) {
         ErrorQuit( "<oper> must be an operation", 0L, 0L );
         return 0;
     }
