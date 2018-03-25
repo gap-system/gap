@@ -739,6 +739,11 @@ size_t strxncat (
 *F * * * * * * * * * * * * * * gasman interface * * * * * * * * * * * * * * *
 */
 
+#ifdef GAP_MEM_CHECK
+UInt   GetMembufCount(void);
+void * GetMembuf(UInt i);
+UInt GetMembufSize(void);
+#endif
 
 /****************************************************************************
 **

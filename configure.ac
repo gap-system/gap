@@ -238,6 +238,14 @@ AC_ARG_ENABLE([debug],
 AC_MSG_CHECKING([whether to enable debug mode])
 AC_MSG_RESULT([$enable_debug])
 
+AC_ARG_ENABLE([memory-checking],
+    [AS_HELP_STRING([--enable-memory-checking], [enable memory checking])],
+    [AC_DEFINE([GAP_MEM_CHECK], [1], [define if building with memory checking])],
+    [enable_memory_checking=no]
+    )
+AC_MSG_CHECKING([whether to enable memory checking])
+AC_MSG_RESULT([$enable_memory_checking])
+
 dnl
 dnl User setting: Enable -Werror (off by default)
 dnl

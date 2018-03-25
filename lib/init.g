@@ -560,6 +560,9 @@ BindGlobal( "ShowKernelInformation", function()
   if GAPInfo.KernelInfo.KernelDebug then
     Add( config, "KernelDebug" );
   fi;
+  if GAPInfo.KernelInfo.MemCheck then
+    Add(config, "MemCheck");
+  fi;
   if config <> [] then
     print_info( " Configuration:  ", config, "\n" );
   fi;

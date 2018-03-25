@@ -1882,6 +1882,18 @@ Obj FuncGASMAN_LIMITS( Obj self )
   return list;
 }
 
+#ifdef GAP_MEM_CHECK
+
+extern Int EnableMemCheck;
+
+Obj FuncGASMAN_MEM_CHECK(Obj self, Obj newval)
+{
+    EnableMemCheck = INT_INTOBJ(newval);
+    return 0;
+}
+
+#endif
+
 /****************************************************************************
 **
 *F  FuncTotalMemoryAllocated( <self> ) .expert function 'TotalMemoryAllocated'
@@ -2674,6 +2686,13 @@ Obj FuncKERNEL_INFO(Obj self) {
   AssPRec(res, r, False);
 #endif
 
+  r = RNamName("MemCheck");
+#ifdef GAP_MEM_CHECK
+  AssPRec(res, r, True);
+#else
+  AssPRec(res, r, False);
+#endif
+
   MakeImmutable(res);
   
   return res;
@@ -2769,7 +2788,7 @@ void ThreadedInterpreter(void *funcargs) {
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(Runtime, 0, ""),
     GVAR_FUNC(RUNTIMES, 0, ""),
@@ -2790,6 +2809,9 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(GASMAN_STATS, 0, ""),
     GVAR_FUNC(GASMAN_MESSAGE_STATUS, 0, ""),
     GVAR_FUNC(GASMAN_LIMITS, 0, ""),
+#ifdef GAP_MEM_CHECK
+    GVAR_FUNC(GASMAN_MEM_CHECK, 1, "int"),
+#endif
     GVAR_FUNC(TotalMemoryAllocated, 0, ""),
     GVAR_FUNC(SIZE_OBJ, 1, "object"),
     GVAR_FUNC(TNUM_OBJ, 1, "object"),
@@ -2804,7 +2826,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(QUIT_GAP, -1, "args"),
     GVAR_FUNC(FORCE_QUIT_GAP, -1, "args"),
     GVAR_FUNC(SHOULD_QUIT_ON_BREAK, 0, ""),
-    GVAR_FUNC(SHELL, -1, "context, canReturnVoid, canReturnObj, lastDepth, setTime, prompt, promptHook, infile, outfile"),
+    GVAR_FUNC(SHELL, -1, "context, canReturnVoid, canReturnObj, lastDepth, "
+                         "setTime, prompt, promptHook, infile, outfile"),
     GVAR_FUNC(CALL_WITH_CATCH, 2, "func, args"),
     GVAR_FUNC(JUMP_TO_CATCH, 1, "payload"),
     GVAR_FUNC(KERNEL_INFO, 0, ""),

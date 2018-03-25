@@ -1144,4 +1144,9 @@ extern void CallbackForAllBags( void (*func)(Bag) );
 void *AllocateMemoryBlock(UInt size);
 #endif
 
+
+#ifdef GAP_MEM_CHECK
+Int enableMemCheck(Char ** argv, void * dummy);
+#endif
+
 #endif // GAP_GASMAN_H
