@@ -885,7 +885,7 @@ static Int InitKernel (
      * more space-efficient for the Boehm GC and does not incur a
      * speed penalty.
      */
-#ifndef BOEHM_GC
+#ifdef USE_GASMAN
     InitMarkFuncBags( T_RAT, MarkTwoSubBags );
 #else
     InitMarkFuncBags( T_RAT, MarkAllSubBags );

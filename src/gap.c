@@ -1727,7 +1727,7 @@ again:
                "you can replace <cmd> via 'return <cmd>;'" );
        }
 
-#ifdef BOEHM_GC
+#if !defined(USE_GASMAN)
         if ( strcmp( CSTR_STRING(cmd), "collect" ) == 0 ) {
             CollectBags(0,1);
         }
@@ -1738,7 +1738,7 @@ again:
             goto again;
         }
 
-#else // BOEHM_GC
+#else
 
         /* if request display the statistics                               */
         if ( strcmp( CSTR_STRING(cmd), "display" ) == 0 ) {
@@ -1835,7 +1835,7 @@ again:
                 "you can replace <cmd> via 'return <cmd>;'" );
             goto again;
         }
-#endif // ! BOEHM_GC
+#endif // USE_GASMAN
     }
 
     /* return nothing, this function is a procedure                        */
@@ -1984,14 +1984,14 @@ Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
     if (IS_INTOBJ(o) || IS_FFE(o)) {
         return INTOBJ_INT(0);
     }
-#ifdef HPCGAP
-    return ObjInt_UInt((UInt)o / sizeof(Obj));
-#else
+#ifdef USE_GASMAN
     if ((void **) o >= (void **) MptrBags && (void **) o < (void **) OldBags) {
         return INTOBJ_INT( ((void **) o - (void **) MptrBags) + 1 );
     } else {
         return INTOBJ_INT( 0 );
     }
+#else
+    return ObjInt_UInt((UInt)o / sizeof(Obj));
 #endif
 }
 
@@ -3020,7 +3020,7 @@ void RecordLoadedModule (
 **  general    `InitLibrary'  will  create    all objects    and  then  calls
 **  `PostRestore'.  This function is only used when restoring.
 */
-#ifndef BOEHM_GC
+#ifdef USE_GASMAN
 extern TNumMarkFuncBags TabMarkFuncBags [ 256 ];
 #endif
 
@@ -3042,7 +3042,7 @@ void InitializeGap (
     /* Initialise memory  -- have to do this here to make sure we are at top of C stack */
     InitBags( SyStorMin,
               0, (Bag*)(((UInt)pargc/C_STACK_ALIGN)*C_STACK_ALIGN), C_STACK_ALIGN );
-#if !defined(BOEHM_GC)
+#ifdef USE_GASMAN
     InitMsgsFuncBags( SyMsgsBags );
 #endif
 
@@ -3127,7 +3127,7 @@ void InitializeGap (
     }
 #endif
 
-#ifndef BOEHM_GC
+#ifdef USE_GASMAN
     /* and now for a special hack                                          */
     for ( i = LAST_CONSTANT_TNUM+1; i <= LAST_REAL_TNUM; i++ ) {
       if (TabMarkFuncBags[i + COPYING] == MarkAllSubBagsDefault)
