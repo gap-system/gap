@@ -3226,34 +3226,25 @@ Obj DoUninstalledGlobalFunction (
 
 /****************************************************************************
 **
-*F  NewGlobalFunction( <name>, <nargs>, <nams> )
+*F  NewGlobalFunction( <name>, <nams> )
 */
 Obj NewGlobalFunction (
     Obj                 name,
-    Int                 narg,
     Obj                 nams )
 {
     Obj                 func;
     Obj                 namobj;
 
     /* create the function                                                 */
-    func = NewFunction( name, narg, nams, DoUninstalledGlobalFunction );
-
-    /* check the number of args                                            */
-    if ( narg == -1 ) {
-        SET_HDLR_FUNC(func, 0, DoUninstalledGlobalFunction);
-        SET_HDLR_FUNC(func, 1, DoUninstalledGlobalFunction);
-        SET_HDLR_FUNC(func, 2, DoUninstalledGlobalFunction);
-        SET_HDLR_FUNC(func, 3, DoUninstalledGlobalFunction);
-        SET_HDLR_FUNC(func, 4, DoUninstalledGlobalFunction);
-        SET_HDLR_FUNC(func, 5, DoUninstalledGlobalFunction);
-        SET_HDLR_FUNC(func, 6, DoUninstalledGlobalFunction);
-        SET_HDLR_FUNC(func, 7, DoUninstalledGlobalFunction);
-    }
-    else {
-        ErrorQuit("number of args must be -1 in `NewGlobalFunction'",0L,0L);
-        return 0;
-    }
+    func = NewFunction( name, -1, nams, DoUninstalledGlobalFunction );
+    SET_HDLR_FUNC(func, 0, DoUninstalledGlobalFunction);
+    SET_HDLR_FUNC(func, 1, DoUninstalledGlobalFunction);
+    SET_HDLR_FUNC(func, 2, DoUninstalledGlobalFunction);
+    SET_HDLR_FUNC(func, 3, DoUninstalledGlobalFunction);
+    SET_HDLR_FUNC(func, 4, DoUninstalledGlobalFunction);
+    SET_HDLR_FUNC(func, 5, DoUninstalledGlobalFunction);
+    SET_HDLR_FUNC(func, 6, DoUninstalledGlobalFunction);
+    SET_HDLR_FUNC(func, 7, DoUninstalledGlobalFunction);
 
     /* added the name                                                      */
     namobj = CopyObj( name, 0 );
@@ -3520,7 +3511,7 @@ Obj FuncNEW_GLOBAL_FUNCTION (
     SET_LEN_PLIST( list, 1 );
     SET_ELM_PLIST( list, 1, args );
     CHANGED_BAG( list );
-    return NewGlobalFunction( name, -1, list );
+    return NewGlobalFunction( name, list );
 }
 
 
