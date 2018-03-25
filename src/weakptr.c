@@ -29,7 +29,7 @@
 #include <src/hpc/traverse.h>
 #endif
 
-#ifdef BOEHM_GC
+#ifdef USE_BOEHM_GC
 # ifdef HPCGAP
 #  define GC_THREADS
 # endif
@@ -116,7 +116,7 @@ Int GrowWPObj (
     if ( need < good ) { plen = good; }
     else               { plen = need; }
 
-#ifndef BOEHM_GC
+#ifndef USE_BOEHM_GC
     /* resize the plain list                                               */
     ResizeBag( wp, ((plen)+1)*sizeof(Obj) );
 #else
@@ -154,7 +154,7 @@ Obj FuncWeakPointerObj( Obj self, Obj list ) {
   Obj wp; 
   Int i;
   Int len; 
-#ifdef BOEHM_GC
+#ifdef USE_BOEHM_GC
   /* We need to make sure that the list stays live until
    * after REGISTER_WP(); on architectures that pass
    * arguments in registers (x86_64, SPARC, etc), the
@@ -169,7 +169,7 @@ Obj FuncWeakPointerObj( Obj self, Obj list ) {
   STORE_LEN_WPOBJ(wp,len); 
   for (i = 1; i <= len ; i++) 
     { 
-#ifdef BOEHM_GC
+#ifdef USE_BOEHM_GC
       Obj tmp = ELM0_LIST(list2, i);
       ELM_WPOBJ(wp,i) = tmp;
       if (IS_BAG_REF(tmp))
@@ -208,7 +208,7 @@ Int LengthWPObj(Obj wp)
     return len;
 #endif
 
-#ifndef BOEHM_GC
+#ifndef USE_BOEHM_GC
   Obj elm;
   while (len > 0 && 
          (!(elm = ELM_WPOBJ(wp,len)) ||
@@ -279,7 +279,7 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
       ErrorMayQuit("SetElmWPObj: Position must be a positive integer",0L,0L);
     }
 
-#ifdef BOEHM_GC
+#ifdef USE_BOEHM_GC
   /* Ensure reference remains visible to GC in case val is
    * stored in a register and the register is reused before
    * REGISTER_WP() is called.
@@ -291,7 +291,7 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
       GROW_WPOBJ(wp, ipos);
       STORE_LEN_WPOBJ(wp,ipos);
     }
-#ifdef BOEHM_GC
+#ifdef USE_BOEHM_GC
   volatile Obj tmp = ELM_WPOBJ(wp, ipos);
   MEMBAR_READ();
   if (IS_BAG_REF(tmp) && ELM_WPOBJ(wp, ipos))
@@ -336,7 +336,7 @@ Int IsBoundElmWPObj( Obj wp, Obj pos)
       ErrorMayQuit("IsBoundElmWPObj: Position must be a positive integer",0L,0L);
     }
 
-#ifdef BOEHM_GC
+#ifdef USE_BOEHM_GC
   volatile
 #endif
   Obj elm;
@@ -345,7 +345,7 @@ Int IsBoundElmWPObj( Obj wp, Obj pos)
       return 0;
     }
   elm = ELM_WPOBJ(wp,ipos);
-#ifdef BOEHM_GC
+#ifdef USE_BOEHM_GC
   MEMBAR_READ();
   if (elm == 0 || ELM_WPOBJ(wp, ipos) == 0)
       return 0;
@@ -405,7 +405,7 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 
   Int len = LengthWPObj(wp);
   if ( ipos <= len ) {
-#ifndef BOEHM_GC
+#ifndef USE_BOEHM_GC
     ELM_WPOBJ( wp, ipos) =  0;
 #else
     /* Ensure the result is visible on the stack in case a garbage
@@ -454,11 +454,11 @@ Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
       return def;
 #endif
 
-#ifdef BOEHM_GC
+#ifdef USE_BOEHM_GC
   volatile
 #endif
   Obj elm = ELM_WPOBJ(wp,ipos);
-#ifdef BOEHM_GC
+#ifdef USE_BOEHM_GC
   MEMBAR_READ();
   if (elm == 0 || ELM_WPOBJ(wp, ipos) == 0)
       return def;
@@ -534,7 +534,7 @@ Obj FuncIsWPObj( Obj self, Obj wp)
 **  pointers can be reclaimed.  
 */
 
-#if !defined(BOEHM_GC)
+#if !defined(USE_BOEHM_GC)
 
 static void MarkWeakPointerObj( Obj wp) 
 {
@@ -661,7 +661,7 @@ void MakeImmutableWPObj( Obj obj )
 {
   UInt i;
   
-#ifndef BOEHM_GC
+#ifndef USE_BOEHM_GC
   /* remove any weak dead bags */
   for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++)
     {
@@ -750,7 +750,7 @@ void CleanObjWPObjCopy (
 *F  FinalizeWeapPointerObj( <wpobj> )
 */
 
-#if defined(HPCGAP) && !defined(BOEHM_GC)
+#if defined(HPCGAP) && !defined(USE_BOEHM_GC)
 void FinalizeWeakPointerObj( Obj wpobj )
 {
     volatile Obj keep = wpobj;
@@ -859,7 +859,7 @@ static Int InitKernel (
     InfoBags[ T_WPOBJ +COPYING ].name = "object (weakptr, copied)";
 #endif
 
-#ifdef BOEHM_GC
+#ifdef USE_BOEHM_GC
     /* force atomic allocation of these pointers */
     InitMarkFuncBags ( T_WPOBJ,          MarkNoSubBags   );
   #if !defined(USE_THREADSAFE_COPYING)

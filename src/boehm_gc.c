@@ -22,7 +22,7 @@
 #include <src/vars.h>
 #endif
 
-#ifndef BOEHM_GC
+#ifndef USE_BOEHM_GC
 #error This file can only be used when the Boehm GC collector is enabled
 #endif
 

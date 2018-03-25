@@ -216,11 +216,12 @@ AS_CASE([$with_gc],
     [boehm],    [AS_IF([test "x$enable_hpcgap" = xno],
                     [AC_MSG_ERROR([Boehm GC can only be used with HPC-GAP])])
                  AC_SUBST([GC_SOURCES], [src/boehm_gc.c])
-                 AC_DEFINE([BOEHM_GC],  [1], [define as 1 if Boehm GC is used])
+                 AC_DEFINE([USE_BOEHM_GC],  [1], [define as 1 if Boehm GC is used])
                 ],
     [gasman],   [AS_IF([test "x$enable_hpcgap" = xyes],
                     [AC_MSG_ERROR([GASMAN can not be used with HPC-GAP])])
                  AC_SUBST([GC_SOURCES], [src/gasman.c])
+                 AC_DEFINE([USE_GASMAN],    [1], [define as 1 if GASMAN is used])
                 ],
     [*],        [AC_MSG_ERROR([Invalid gc method '$with_gc', use default|none|gasman|boehm])],
     )
