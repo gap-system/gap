@@ -361,6 +361,8 @@ extern void InitHandlerFunc (
      ObjFunc            hdlr,
      const Char *       cookie );
 
+#ifdef USE_GASMAN
+
 extern const Char * CookieOfHandler(
      ObjFunc            hdlr );
 
@@ -371,6 +373,7 @@ extern void SortHandlers( UInt byWhat );
 
 extern void CheckAllHandlers(void);
 
+#endif
 
 /****************************************************************************
 **

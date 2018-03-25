@@ -3169,7 +3169,9 @@ void InitializeGap (
 
     /* otherwise call library initialisation                               */
     else {
+#ifdef USE_GASMAN
         CheckAllHandlers();
+#endif
 
         SyInitializing = 1;    
         for ( i = 0;  i < NrBuiltinModules;  i++ ) {

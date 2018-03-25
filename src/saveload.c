@@ -341,34 +341,6 @@ Obj LoadSubObj( void )
 #endif
 }
 
-void SaveHandler( ObjFunc hdlr )
-{
-  const Char * cookie;
-  if (hdlr == (ObjFunc)0)
-    SaveCStr("");
-  else
-    {
-      cookie = CookieOfHandler(hdlr);
-      if (!cookie)
-	{
-	  Pr("No cookie for Handler -- workspace will be corrupt\n",0,0);
-	  SaveCStr("");
-	}
-      SaveCStr(cookie);
-    }
-}
-
-
-ObjFunc LoadHandler( void )
-{
-  Char buf[256];
-  LoadCStr(buf, 256);
-  if (buf[0] == '\0')
-    return (ObjFunc) 0;
-  else
-    return HandlerOfCookie(buf);
-}
-
 
 /***************************************************************************
 **
@@ -475,6 +447,8 @@ static void CheckEndiannessMarker( void )
 **  FuncBagStats
 */
 
+#ifdef USE_GASMAN
+
 static FILE *file;
 
 static void report( Bag bag)
@@ -490,6 +464,9 @@ Obj FuncBagStats(Obj self, Obj filename)
   return (Obj) 0;
 }
 
+#endif
+
+
 /***************************************************************************
 **
 **  Find Bags -- a useful debugging tool -- scan for a bag of specified
@@ -498,6 +475,7 @@ Obj FuncBagStats(Obj self, Obj filename)
 **  a functions body.
 */
 
+#ifdef USE_GASMAN
 
 static UInt fb_minsize, fb_maxsize, fb_tnum;
 static Bag hit;
@@ -520,6 +498,8 @@ Obj FuncFindBag( Obj self, Obj minsize, Obj maxsize, Obj tnum )
   CallbackForAllBags(ScanBag);
   return (hit != (Bag) 0) ? hit : Fail;
 }
+
+#endif
 
 
 /***************************************************************************
@@ -942,8 +922,10 @@ static StructGVarFunc GVarFuncs [] = {
 
     GVAR_FUNC(SaveWorkspace, 1, "fname"),
     GVAR_FUNC(DumpWorkspace, 1, "fname"),
+#ifdef USE_GASMAN
     GVAR_FUNC(FindBag, 3, "minsize, maxsize, tnum"),
     GVAR_FUNC(BagStats, 1, "filename"),
+#endif
     { 0, 0, 0, 0, 0 }
 
 };

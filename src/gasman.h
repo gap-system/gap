@@ -1135,9 +1135,9 @@ extern void FinishBags( void );
 ** collection, by simply  walking the masterpointer area. Not terribly safe
 ** 
 */
-
-extern void CallbackForAllBags(
-     void (*func)(Bag) );
+#ifdef USE_GASMAN
+extern void CallbackForAllBags( void (*func)(Bag) );
+#endif
 
 
 #if !defined(USE_GASMAN)

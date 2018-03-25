@@ -962,6 +962,8 @@ void InitHandlerFunc (
 **
 *f  CheckHandlersBag( <bag> ) . . . . . . check that handlers are initialised
 */
+#ifdef USE_GASMAN
+
 static void CheckHandlersBag(
     Bag         bag )
 {
@@ -1096,8 +1098,9 @@ ObjFunc HandlerOfCookie(
       return (ObjFunc)0L;
     }
 }
-                                      
-                       
+
+#endif
+
 
 /****************************************************************************
 **
@@ -1924,6 +1927,8 @@ Int IsKernelFunction(Obj func)
            (SIZE_OBJ(BODY_FUNC(func)) == sizeof(BodyHeader));
 }
 
+#ifdef USE_GASMAN
+
 Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
 {
   Int narg;
@@ -1939,6 +1944,34 @@ Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
   cookie = CookieOfHandler(hdlr);
   cookieStr = MakeString(cookie);
   return cookieStr;
+}
+
+static void SaveHandler( ObjFunc hdlr )
+{
+  const Char * cookie;
+  if (hdlr == (ObjFunc)0)
+    SaveCStr("");
+  else
+    {
+      cookie = CookieOfHandler(hdlr);
+      if (!cookie)
+	{
+	  Pr("No cookie for Handler -- workspace will be corrupt\n",0,0);
+	  SaveCStr("");
+	}
+      SaveCStr(cookie);
+    }
+}
+
+
+static ObjFunc LoadHandler( void )
+{
+  Char buf[256];
+  LoadCStr(buf, 256);
+  if (buf[0] == '\0')
+    return (ObjFunc) 0;
+  else
+    return HandlerOfCookie(buf);
 }
 
 /****************************************************************************
@@ -1984,6 +2017,8 @@ void LoadFunction ( Obj func )
   if (SIZE_OBJ(func) != sizeof(FuncBag))
     LoadOperationExtras( func );
 }
+
+#endif
 
 
 /****************************************************************************
@@ -2033,7 +2068,9 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(PROFILE_FUNC, 1, "func"),
     GVAR_FUNC(UNPROFILE_FUNC, 1, "func"),
     GVAR_FUNC(IsKernelFunction, 1, "func"),
+#ifdef USE_GASMAN
     GVAR_FUNC(HandlerCookieOfFunction, 1, "func"),
+#endif
     GVAR_FUNC(FILENAME_FUNC, 1, "func"),
     GVAR_FUNC(LOCATION_FUNC, 1, "func"),
     GVAR_FUNC(STARTLINE_FUNC, 1, "func"),
@@ -2068,9 +2105,11 @@ static Int InitKernel (
     InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
 
+#ifdef USE_GASMAN
     /* and the saving function                                             */
     SaveObjFuncs[ T_FUNCTION ] = SaveFunction;
     LoadObjFuncs[ T_FUNCTION ] = LoadFunction;
+#endif
 
     /* install the printer                                                 */
     InitFopyGVar( "PRINT_OPERATION", &PrintOperation );

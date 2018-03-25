@@ -6,10 +6,6 @@
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
 static Obj  GF_NAME__FUNC;
-static GVar G_IsType;
-static Obj  GF_IsType;
-static GVar G_FLUSH__ALL__METHOD__CACHES;
-static Obj  GF_FLUSH__ALL__METHOD__CACHES;
 static GVar G_IS__REC;
 static Obj  GF_IS__REC;
 static GVar G_IS__LIST;
@@ -79,8 +75,6 @@ static GVar G_GETTER__FUNCTION;
 static Obj  GF_GETTER__FUNCTION;
 static GVar G_IS__AND__FILTER;
 static Obj  GF_IS__AND__FILTER;
-static GVar G_COMPACT__TYPE__IDS;
-static Obj  GF_COMPACT__TYPE__IDS;
 static GVar G_fail;
 static Obj  GC_fail;
 static GVar G_LEN__LIST;
@@ -166,6 +160,10 @@ static GVar G_NEW__TYPE__NEXT__ID;
 static Obj  GC_NEW__TYPE__NEXT__ID;
 static GVar G_NEW__TYPE__ID__LIMIT;
 static Obj  GC_NEW__TYPE__ID__LIMIT;
+static GVar G_FLUSH__ALL__METHOD__CACHES;
+static Obj  GF_FLUSH__ALL__METHOD__CACHES;
+static GVar G_COMPACT__TYPE__IDS;
+static Obj  GF_COMPACT__TYPE__IDS;
 static GVar G_POS__NUMB__TYPE;
 static Obj  GC_POS__NUMB__TYPE;
 static GVar G_NEW__TYPE;
@@ -178,6 +176,8 @@ static GVar G_TypeOfTypes;
 static Obj  GC_TypeOfTypes;
 static GVar G_NewType4;
 static Obj  GF_NewType4;
+static GVar G_IsType;
+static Obj  GF_IsType;
 static GVar G_Subtype2;
 static Obj  GF_Subtype2;
 static GVar G_Subtype3;
@@ -4417,8 +4417,6 @@ static Int PostRestore ( StructInitInfo * module )
  
  /* global variables used in handlers */
  G_NAME__FUNC = GVarName( "NAME_FUNC" );
- G_IsType = GVarName( "IsType" );
- G_FLUSH__ALL__METHOD__CACHES = GVarName( "FLUSH_ALL_METHOD_CACHES" );
  G_IS__REC = GVarName( "IS_REC" );
  G_IS__LIST = GVarName( "IS_LIST" );
  G_ADD__LIST = GVarName( "ADD_LIST" );
@@ -4453,7 +4451,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_SETTER__FUNCTION = GVarName( "SETTER_FUNCTION" );
  G_GETTER__FUNCTION = GVarName( "GETTER_FUNCTION" );
  G_IS__AND__FILTER = GVarName( "IS_AND_FILTER" );
- G_COMPACT__TYPE__IDS = GVarName( "COMPACT_TYPE_IDS" );
  G_fail = GVarName( "fail" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
  G_SET__FILTER__LIST = GVarName( "SET_FILTER_LIST" );
@@ -4496,12 +4493,15 @@ static Int PostRestore ( StructInitInfo * module )
  G_POS__FIRST__FREE__TYPE = GVarName( "POS_FIRST_FREE_TYPE" );
  G_NEW__TYPE__NEXT__ID = GVarName( "NEW_TYPE_NEXT_ID" );
  G_NEW__TYPE__ID__LIMIT = GVarName( "NEW_TYPE_ID_LIMIT" );
+ G_FLUSH__ALL__METHOD__CACHES = GVarName( "FLUSH_ALL_METHOD_CACHES" );
+ G_COMPACT__TYPE__IDS = GVarName( "COMPACT_TYPE_IDS" );
  G_POS__NUMB__TYPE = GVarName( "POS_NUMB_TYPE" );
  G_NEW__TYPE = GVarName( "NEW_TYPE" );
  G_IsFamily = GVarName( "IsFamily" );
  G_NewType3 = GVarName( "NewType3" );
  G_TypeOfTypes = GVarName( "TypeOfTypes" );
  G_NewType4 = GVarName( "NewType4" );
+ G_IsType = GVarName( "IsType" );
  G_Subtype2 = GVarName( "Subtype2" );
  G_Subtype3 = GVarName( "Subtype3" );
  G_SupType2 = GVarName( "SupType2" );
@@ -4581,8 +4581,6 @@ static Int InitKernel ( StructInitInfo * module )
  
  /* global variables used in handlers */
  InitFopyGVar( "NAME_FUNC", &GF_NAME__FUNC );
- InitFopyGVar( "IsType", &GF_IsType );
- InitFopyGVar( "FLUSH_ALL_METHOD_CACHES", &GF_FLUSH__ALL__METHOD__CACHES );
  InitFopyGVar( "IS_REC", &GF_IS__REC );
  InitFopyGVar( "IS_LIST", &GF_IS__LIST );
  InitFopyGVar( "ADD_LIST", &GF_ADD__LIST );
@@ -4618,7 +4616,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "SETTER_FUNCTION", &GF_SETTER__FUNCTION );
  InitFopyGVar( "GETTER_FUNCTION", &GF_GETTER__FUNCTION );
  InitFopyGVar( "IS_AND_FILTER", &GF_IS__AND__FILTER );
- InitFopyGVar( "COMPACT_TYPE_IDS", &GF_COMPACT__TYPE__IDS );
  InitCopyGVar( "fail", &GC_fail );
  InitFopyGVar( "LEN_LIST", &GF_LEN__LIST );
  InitFopyGVar( "SET_FILTER_LIST", &GF_SET__FILTER__LIST );
@@ -4662,12 +4659,15 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "POS_FIRST_FREE_TYPE", &GC_POS__FIRST__FREE__TYPE );
  InitCopyGVar( "NEW_TYPE_NEXT_ID", &GC_NEW__TYPE__NEXT__ID );
  InitCopyGVar( "NEW_TYPE_ID_LIMIT", &GC_NEW__TYPE__ID__LIMIT );
+ InitFopyGVar( "FLUSH_ALL_METHOD_CACHES", &GF_FLUSH__ALL__METHOD__CACHES );
+ InitFopyGVar( "COMPACT_TYPE_IDS", &GF_COMPACT__TYPE__IDS );
  InitCopyGVar( "POS_NUMB_TYPE", &GC_POS__NUMB__TYPE );
  InitFopyGVar( "NEW_TYPE", &GF_NEW__TYPE );
  InitFopyGVar( "IsFamily", &GF_IsFamily );
  InitFopyGVar( "NewType3", &GF_NewType3 );
  InitCopyGVar( "TypeOfTypes", &GC_TypeOfTypes );
  InitFopyGVar( "NewType4", &GF_NewType4 );
+ InitFopyGVar( "IsType", &GF_IsType );
  InitFopyGVar( "Subtype2", &GF_Subtype2 );
  InitFopyGVar( "Subtype3", &GF_Subtype3 );
  InitFopyGVar( "SupType2", &GF_SupType2 );
