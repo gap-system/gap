@@ -169,6 +169,11 @@ Obj FuncELM_FLAGS (
             (Int)TNAM_OBJ(flags), 0L,
             "you can replace <flags> via 'return <flags>;'" );
     }
+    while ( ! IS_POS_INTOBJ(pos) ) {
+        pos = ErrorReturnObj( "<pos> must be a small positive integer (not a %s)",
+            (Int)TNAM_OBJ(pos), 0L,
+            "you can replace <pos> via 'return <pos>;'" );
+    }
 
     /* select and return the element                                       */
     return ELM_FLAGS( flags, INT_INTOBJ(pos) );
