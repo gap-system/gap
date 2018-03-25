@@ -20,7 +20,7 @@ rm -rf .libs "$gfile.comp"*
 
 "$gac" "$gfile" -d -C -o "$gfile.dynamic.c" 2>&1 >/dev/null
 
-"$gac" "$gfile" -d -o "$gfile.comp" 2>&1 >/dev/null
+"$gac" "$gfile" -p "$CFLAGS" -P "$LDFLAGS" -d -o "$gfile.comp" 2>&1 >/dev/null
 
 echo "LoadDynamicModule(\"./$gfile.comp.so\"); runtest();" |
     "$gap" -r -A -q -b -x 200 2>&1 |
