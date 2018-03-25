@@ -95,7 +95,10 @@ then
   fi
 
   # Compile io and profiling packages
-  "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR" io* profiling*
+  # we deliberately reset CFLAGS and LDFLAGS to prevent them from being
+  # compiled with coverage gathering, because otherwise gcov may confuse
+  # IO's src/io.c with GAP's.
+  CFLAGS= LDFLAGS= "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR" io* profiling*
 
   popd
 
