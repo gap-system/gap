@@ -844,6 +844,14 @@ static Int WITH_HIDDEN_IMPS_HIT=0;
 #endif
 Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 {
+    /* do some trivial checks - we have to do this so we can use
+     * UncheckedIS_SUBSET_FLAGS                                              */
+    while ( TNUM_OBJ(flags) != T_FLAGS ) {
+            flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags), 0L,
+            "you can replace <flags> via 'return <flags>;'" );
+    }
+
     Int changed, i, lastand, stop;
     Int hidden_imps_length = LEN_PLIST(HIDDEN_IMPS) / 2;
     Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % HIDDEN_IMPS_CACHE_LENGTH;
@@ -854,13 +862,6 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
     Int old_moving;
     Obj with = flags;
     
-    /* do some trivial checks - we have to do this so we can use
-     * UncheckedIS_SUBSET_FLAGS                                              */
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
-            flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags), 0L,
-            "you can replace <flags> via 'return <flags>;'" );
-    }
 #ifdef HPCGAP
     RegionWriteLock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
 #endif
@@ -972,6 +973,14 @@ static Int WITH_IMPS_FLAGS_HIT=0;
 #endif
 Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 {
+    /* do some trivial checks - we have to do this so we can use
+     * UncheckedIS_SUBSET_FLAGS                                              */
+    while ( TNUM_OBJ(flags) != T_FLAGS ) {
+            flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags), 0L,
+            "you can replace <flags> via 'return <flags>;'" );
+    }
+
     Int changed, lastand, i, j, stop, imps_length;
     Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % IMPS_CACHE_LENGTH;
     Int hash = base_hash;
@@ -983,13 +992,6 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
     Obj imp;
     Obj trues;
     
-    /* do some trivial checks - we have to do this so we can use
-     * UncheckedIS_SUBSET_FLAGS                                              */
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
-            flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags), 0L,
-            "you can replace <flags> via 'return <flags>;'" );
-    }
 #ifdef HPCGAP
     RegionWriteLock(REGION(IMPLICATIONS_SIMPLE));
 #endif
