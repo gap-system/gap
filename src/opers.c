@@ -362,12 +362,9 @@ Obj FuncSIZE_FLAGS (
 
 /****************************************************************************
 **
-*F  FuncIS_EQUAL_FLAGS( <self>, <flags1>, <flags2> )  equality of flags lists
+*F  EqFlags( <flags1>, <flags2> ) . . . . . . . . . . equality of flags lists
 */
-Obj FuncIS_EQUAL_FLAGS (
-    Obj                 self,
-    Obj                 flags1,
-    Obj                 flags2 )
+Int EqFlags(Obj flags1, Obj flags2)
 {
     Int                 len1;
     Int                 len2;
@@ -375,6 +372,52 @@ Obj FuncIS_EQUAL_FLAGS (
     UInt  *             ptr2;
     Int                 i;
 
+    if ( flags1 == flags2 ) {
+        return 1;
+    }
+
+    // do the real work
+    len1 = NRB_FLAGS(flags1);
+    len2 = NRB_FLAGS(flags2);
+    ptr1 = BLOCKS_FLAGS(flags1);
+    ptr2 = BLOCKS_FLAGS(flags2);
+    if ( len1 <= len2 ) {
+        for ( i = 1; i <= len1; i++ ) {
+            if ( *ptr1 != *ptr2 )
+                return 0;
+            ptr1++;  ptr2++;
+        }
+        for ( ; i <= len2; i++ ) {
+            if ( 0 != *ptr2 )
+                return 0;
+            ptr2++;
+        }
+    }
+    else {
+        for ( i = 1; i <= len2; i++ ) {
+            if ( *ptr1 != *ptr2 )
+                return 0;
+            ptr1++;  ptr2++;
+        }
+        for ( ; i <= len1; i++ ) {
+            if ( *ptr1 != 0 )
+                return 0;
+            ptr1++;
+        }
+    }
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  FuncIS_EQUAL_FLAGS( <self>, <flags1>, <flags2> )  equality of flags lists
+*/
+Obj FuncIS_EQUAL_FLAGS (
+    Obj                 self,
+    Obj                 flags1,
+    Obj                 flags2 )
+{
     /* do some trivial checks                                              */
     while ( TNUM_OBJ(flags1) != T_FLAGS ) {
         flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
@@ -386,40 +429,8 @@ Obj FuncIS_EQUAL_FLAGS (
             (Int)TNAM_OBJ(flags2), 0L,
             "you can replace <flags2> via 'return <flags2>;'" );
     }
-    if ( flags1 == flags2 ) {
-        return True;
-    }
 
-    /* do the real work                                                    */
-    len1 = NRB_FLAGS(flags1);
-    len2 = NRB_FLAGS(flags2);
-    ptr1 = BLOCKS_FLAGS(flags1);
-    ptr2 = BLOCKS_FLAGS(flags2);
-    if ( len1 <= len2 ) {
-        for ( i = 1; i <= len1; i++ ) {
-            if ( *ptr1 != *ptr2 )
-                return False;
-            ptr1++;  ptr2++;
-        }
-        for ( ; i <= len2; i++ ) {
-            if ( 0 != *ptr2 )
-                return False;
-            ptr2++;
-        }
-    }
-    else {
-        for ( i = 1; i <= len2; i++ ) {
-            if ( *ptr1 != *ptr2 )
-                return False;
-            ptr1++;  ptr2++;
-        }
-        for ( ; i <= len1; i++ ) {
-            if ( *ptr1 != 0 )
-                return False;
-            ptr1++;
-        }
-    }
-    return True;
+    return EqFlags(flags1, flags2) ? True : False;
 }
 
 
@@ -4402,6 +4413,9 @@ static Int postRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
+    // HACK: move this here, instead of InitKernel, to avoid ariths.c overwriting it
+    EqFuncs[T_FLAGS][T_FLAGS] = EqFlags;
+
     HIDDEN_IMPS = NEW_PLIST(T_PLIST, 0);
     SET_LEN_PLIST(HIDDEN_IMPS, 0);
     WITH_HIDDEN_IMPS_FLAGS_CACHE = NEW_PLIST(T_PLIST, HIDDEN_IMPS_CACHE_LENGTH * 2);
