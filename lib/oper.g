@@ -1771,7 +1771,7 @@ end );
 BIND_GLOBAL( "UntraceMethods", function( arg )
     local   fun;
     if LEN_LIST( arg ) = 0 then
-      Error("`TraceMethods' require at least one argument");
+      Error("`UntraceMethods' require at least one argument");
     fi;
     if IS_LIST(arg[1])  then
         arg := arg[1];
