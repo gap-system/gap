@@ -1799,6 +1799,8 @@ Obj CallHandleMethodNotFound( Obj oper,
 **
 */
 
+#ifdef USE_GASMAN
+
 static Obj FLUSH_ALL_METHOD_CACHES;
 
 static Int NextTypeID;
@@ -1821,6 +1823,8 @@ Obj FuncCOMPACT_TYPE_IDS( Obj self )
   CALL_0ARGS(FLUSH_ALL_METHOD_CACHES);
   return INTOBJ_INT(NextTypeID);
 }
+
+#endif
 
 /****************************************************************************
 **
@@ -4142,7 +4146,9 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(DO_NOTHING_SETTER, 2, "obj, val"),
     GVAR_FUNC(IS_AND_FILTER, 1, "filter"),
     GVAR_FUNC(IS_CONSTRUCTOR, 1, "x"),
+#ifdef USE_GASMAN
     GVAR_FUNC(COMPACT_TYPE_IDS, 0, ""),
+#endif
     GVAR_FUNC(OPER_TO_ATTRIBUTE, 1, "oper"),
     GVAR_FUNC(OPER_TO_MUTABLE_ATTRIBUTE, 1, "oper"),
     { 0, 0, 0, 0, 0 }
@@ -4158,7 +4164,6 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
 
-    NextTypeID = 0;
     CountFlags = 0;
 
     InitGlobalBag( &StringFilterSetter, "src/opers.c:StringFilterSetter" );
@@ -4333,9 +4338,11 @@ static Int InitKernel (
     ImportFuncFromLibrary( "RESET_FILTER_OBJ", &RESET_FILTER_OBJ );
     
     ImportFuncFromLibrary( "HANDLE_METHOD_NOT_FOUND", &HandleMethodNotFound );
-    ImportGVarFromLibrary( "IsType", &IsType );
 
+#ifdef USE_GASMAN
+    ImportGVarFromLibrary( "IsType", &IsType );
     ImportFuncFromLibrary( "FLUSH_ALL_METHOD_CACHES", &FLUSH_ALL_METHOD_CACHES );
+#endif
 
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );
