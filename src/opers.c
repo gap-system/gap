@@ -1212,28 +1212,6 @@ Obj TesterFilter (
 **
 *F  TestAndFilter( <getter> )  . . . . . . . .tester of a concatenated filter
 */
-Obj DoTestAndFilter (
-    Obj                 self,
-    Obj                 obj )
-{
-    Obj                 val;
-    Obj                 op;
-    
-    /* call the first 'and'-ed function                                    */
-    op = FLAG1_FILT( self );
-    val = CALL_1ARGS( op, obj );
-    if ( val != True )  return False;
-    
-    /* call the second 'and'-ed function                                   */
-    op = FLAG2_FILT( self );
-    val = CALL_1ARGS( op, obj );
-    if ( val != True )  return False;
-    
-    /* return 'true'                                                       */
-    return True;
-}
-
-
 Obj TesterAndFilter (
     Obj                 getter )
 {
