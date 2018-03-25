@@ -1504,7 +1504,6 @@ Obj FuncNEW_FILTER (
     /* check the argument                                                  */
     if ( ! IsStringConv(name) ) {
         ErrorQuit("usage: NewFilter( <name> )",0L,0L);
-        return 0;
     }
 
     /* make the new operation                                              */
@@ -1524,7 +1523,6 @@ Obj FuncFLAG1_FILTER (
 
     if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
     }
     flag1 = FLAG1_FILT( oper );
     if ( flag1 == 0 )
@@ -1544,7 +1542,6 @@ Obj FuncSET_FLAG1_FILTER (
 {
     if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
     }
     SET_FLAG1_FILT(oper, flag1);
     return 0;
@@ -1563,7 +1560,6 @@ Obj FuncFLAG2_FILTER (
 
     if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
     }
     flag2 = FLAG2_FILT( oper );
     if ( flag2 == 0 )
@@ -1583,7 +1579,6 @@ Obj FuncSET_FLAG2_FILTER (
 {
     if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
     }
     SET_FLAG2_FILT(oper, flag2);
     return 0;
@@ -1602,7 +1597,6 @@ Obj FuncFLAGS_FILTER (
 
     if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
     }
     flags = FLAGS_FILT( oper );
     if ( flags == 0 )
@@ -1622,7 +1616,6 @@ Obj FuncSET_FLAGS_FILTER (
 {
     if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
     }
     SET_FLAGS_FILT(oper, flags);
     return 0;
@@ -1641,7 +1634,6 @@ Obj FuncSETTER_FILTER (
 
     if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
     }
     setter = SetterFilter( oper );
     if ( setter == 0 )  setter = False;
@@ -1660,7 +1652,6 @@ Obj FuncSET_SETTER_FILTER (
 {
     if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
     }
     SET_SETTR_FILT(oper, setter);
     return 0;
@@ -1679,7 +1670,6 @@ Obj FuncTESTER_FILTER (
 
     if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
     }
     tester = TesterFilter( oper );
     if ( tester == 0 )  tester = False;
@@ -1698,7 +1688,6 @@ Obj FuncSET_TESTER_FILTER (
 {
     if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
     }
     if ( SIZE_OBJ(oper) != sizeof(OperBag) ) {
         ResizeBag( oper, sizeof(OperBag) );
@@ -3365,7 +3354,6 @@ Obj FuncNEW_OPERATION (
     /* check the argument                                                  */
     if ( ! IsStringConv(name) ) {
         ErrorQuit("usage: NewOperation( <name> )",0L,0L);
-        return 0;
     }
 
     /* make the new operation                                              */
@@ -3384,7 +3372,6 @@ Obj FuncNEW_CONSTRUCTOR (
     /* check the argument                                                  */
     if ( ! IsStringConv(name) ) {
         ErrorQuit("usage: NewConstructor( <name> )",0L,0L);
-        return 0;
     }
 
     /* make the new constructor                                            */
@@ -3407,7 +3394,6 @@ Obj FuncNEW_ATTRIBUTE (
     /* check the argument                                                  */
     if ( ! IsStringConv(name) ) {
         ErrorQuit("usage: NewAttribute( <name> )",0L,0L);
-        return 0;
     }
 
     /* make the new operation                                              */
@@ -3424,7 +3410,6 @@ Obj FuncOPER_TO_ATTRIBUTE (
     /* check the argument                                                  */
   if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("usage: OPER_TO_ATTRIBUTE( <oper> )",0L,0L);
-        return 0;
     }
 
     /* make the new operation                                              */
@@ -3443,7 +3428,6 @@ Obj FuncOPER_TO_MUTABLE_ATTRIBUTE (
     /* check the argument                                                  */
   if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("usage: OPER_TO_MUTABLE_ATTRIBUTE( <oper> )",0L,0L);
-        return 0;
     }
 
     /* make the new operation                                              */
@@ -3463,7 +3447,6 @@ Obj FuncNEW_MUTABLE_ATTRIBUTE (
     /* check the argument                                                  */
     if ( ! IsStringConv(name) ) {
         ErrorQuit("usage: NewMutableAttribute( <name> )",0L,0L);
-        return 0;
     }
 
     /* make the new operation                                              */
@@ -3482,7 +3465,6 @@ Obj FuncNEW_PROPERTY (
     /* check the argument                                                  */
     if ( ! IsStringConv(name) ) {
         ErrorQuit("usage: NewProperty( <name> )",0L,0L);
-        return 0;
     }
 
     /* make the new operation                                              */
@@ -3504,7 +3486,6 @@ Obj FuncNEW_GLOBAL_FUNCTION (
     /* check the argument                                                  */
     if ( ! IsStringConv(name) ) {
         ErrorQuit( "usage: NewGlobalFunction( <name> )", 0L, 0L );
-        return 0;
     }
 
     /* make the new operation                                              */
@@ -3537,16 +3518,13 @@ Obj FuncINSTALL_GLOBAL_FUNCTION (
          (HDLR_FUNC(oper,0) != (ObjFunc)DoUninstalledGlobalFunction) ) {
         ErrorQuit( "operation already installed",
                    0L, 0L );
-        return 0;
     }
     if ( ! IS_FUNC(func) ) {
         ErrorQuit( "<func> must be a function (not a %s)",
                    (Int)TNAM_OBJ(func), 0L );
-        return 0;
     }
     if ( IS_OPERATION(func) ) {
         ErrorQuit( "<func> must not be an operation", 0L, 0L );
-        return 0;
     }
 
     /* install the new method                                              */
@@ -3606,11 +3584,9 @@ Obj FuncMETHODS_OPERATION (
 
     if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
     }
     if ( !IS_INTOBJ(narg) || INT_INTOBJ(narg) < 0 ) {
         ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
-        return 0;
     }
     n = INT_INTOBJ( narg );
     meth = MethsOper( oper, (UInt)n );
@@ -3637,16 +3613,13 @@ Obj FuncCHANGED_METHODS_OPERATION (
 
     if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
     }
     if ( !IS_INTOBJ(narg) || INT_INTOBJ(narg) < 0 ) {
         ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
-        return 0;
     }
 #ifdef HPCGAP
     if (!PreThreadCreation) {
         ErrorQuit("Methods may only be changed before thread creation",0L,0L);
-        return 0;
     }
 #endif
     n = INT_INTOBJ( narg );
@@ -3673,11 +3646,9 @@ Obj FuncSET_METHODS_OPERATION (
 
     if ( ! IS_OPERATION(oper) ) {
         ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
     }
     if ( !IS_INTOBJ(narg) || INT_INTOBJ(narg) < 0 ) {
         ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
-        return 0;
     }
     n = INT_INTOBJ( narg );
 #ifdef HPCGAP
@@ -3993,7 +3964,6 @@ Obj FuncTRACE_METHODS (
     /* check the argument                                                  */
     if (!IS_OPERATION(oper)) {
         ErrorQuit( "<oper> must be an operation", 0L, 0L );
-        return 0;
     }
 
     /* install trace handler                                               */
@@ -4016,7 +3986,6 @@ Obj FuncUNTRACE_METHODS (
     /* check the argument                                                  */
     if (!IS_OPERATION(oper)) {
         ErrorQuit( "<oper> must be an operation", 0L, 0L );
-        return 0;
     }
 
     /* install trace handler                                               */
