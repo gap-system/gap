@@ -442,10 +442,9 @@ static Int IsSubsetFlagsCalls2;
 
 /****************************************************************************
 **
-*F  UncheckedIS_SUBSET_FLAGS( <flags1>, <flags2> ) subset test with
-*F                                                         no safety check
+*F  IS_SUBSET_FLAGS( <flags1>, <flags2> ) .  subset test with no safety check
 */
-static Obj UncheckedIS_SUBSET_FLAGS(Obj flags1, Obj flags2)
+static Obj IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
 {
     Int    len1;
     Int    len2;
@@ -543,7 +542,7 @@ Obj FuncIS_SUBSET_FLAGS (
             "you can replace <flags2> via 'return <flags2>;'" );
     }
     
-    return UncheckedIS_SUBSET_FLAGS(flags1, flags2);
+    return IS_SUBSET_FLAGS(flags1, flags2);
 }
 
 /****************************************************************************
@@ -844,8 +843,7 @@ static Int WITH_HIDDEN_IMPS_HIT=0;
 #endif
 Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 {
-    /* do some trivial checks - we have to do this so we can use
-     * UncheckedIS_SUBSET_FLAGS                                              */
+    // do some trivial checks, so we can use IS_SUBSET_FLAGS
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
             flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
@@ -891,8 +889,8 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
       changed = 0;
       for (i = hidden_imps_length, stop = lastand; i > stop; i--)
       {
-        if( UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2)) == True &&
-           UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) != True )
+        if( IS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2)) == True &&
+           IS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) != True )
         {
           with = FuncAND_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1));
           changed = 1;
@@ -973,8 +971,7 @@ static Int WITH_IMPS_FLAGS_HIT=0;
 #endif
 Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 {
-    /* do some trivial checks - we have to do this so we can use
-     * UncheckedIS_SUBSET_FLAGS                                              */
+    // do some trivial checks, so we can use IS_SUBSET_FLAGS
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
             flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
@@ -1021,8 +1018,8 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
         if (j <= LEN_PLIST(IMPLICATIONS_SIMPLE)
             && ELM_PLIST(IMPLICATIONS_SIMPLE, j)) {
            imp = ELM_PLIST(IMPLICATIONS_SIMPLE, j);
-           if( UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(imp, 2)) == True &&
-              UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) != True )
+           if( IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 2)) == True &&
+              IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) != True )
            {
              with = FuncAND_FLAGS(0, with, ELM_PLIST(imp, 1));
            }
@@ -1039,8 +1036,8 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
       for (i = 1, stop = lastand; i < stop; i++)
       {
         imp = ELM_PLIST(IMPLICATIONS_COMPOSED, i);
-        if( UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(imp, 2)) == True &&
-           UncheckedIS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) != True )
+        if( IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 2)) == True &&
+           IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) != True )
         {
           with = FuncAND_FLAGS(0, with, ELM_PLIST(imp, 1));
           changed = 1;
