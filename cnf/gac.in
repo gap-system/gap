@@ -317,7 +317,6 @@ make_compstat () {
         echo     "#include <src/compiled.h>"
 
         echo     "#ifndef AVOID_PRECOMPILED"
-        echo     "extern StructInitInfo * Init__methsel1 ( void );"
         echo     "extern StructInitInfo * Init__type1 ( void );"
         echo     "extern StructInitInfo * Init__oper1( void );"
         echo     "#endif"
@@ -328,7 +327,6 @@ make_compstat () {
 
         echo     "InitInfoFunc CompInitFuncs [] = {"
         echo     "#ifndef AVOID_PRECOMPILED"
-        echo     "    Init__methsel1,"
         echo     "    Init__type1,"
         echo     "    Init__oper1,"
         echo     "#endif"

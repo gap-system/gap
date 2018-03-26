@@ -10,7 +10,6 @@ ReadLib( "oper1.g"     );
 ReadLib( "type.g"      );
 ReadLib( "type1.g"     );
 ReadLib( "methsel.g"   );
-ReadLib( "methsel1.g"  );
 ReadLib( "methsel2.g"  );
 
 ReadLib( "random.g"    );
