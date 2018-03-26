@@ -960,7 +960,7 @@ end);
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("DisplayCacheStats",function()
-    local   cache,  names,  pos,  i;
+    local   cache,  names,  i;
 
     cache := ShallowCopy(OPERS_CACHE_INFO());
 
@@ -978,11 +978,11 @@ BIND_GLOBAL("DisplayCacheStats",function()
         "AND_FLAGS cache miss",
         "AND_FLAGS cache losses",
         "Operation L1 cache hits",
+        "Operation TryNextMethod",
         "Operation cache misses",
         "IS_SUBSET_FLAGS calls",
         "IS_SUBSET_FLAGS less trues",
         "IS_SUBSET_FLAGS few trues",
-        "Operation TryNextMethod",
         "WITH_HIDDEN_IMPS hits",
         "WITH_HIDDEN_IMPS misses",
         "WITH_IMPS hits",
@@ -991,16 +991,11 @@ BIND_GLOBAL("DisplayCacheStats",function()
         "NEW_TYPE misses",
     ];
 
-    pos := [ 1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15 ];
-
-    if Length(pos) <> Length(names)  then
-        Error( "<pos> and <names> have different lengths" );
-    fi;
-    if Length(pos) <> Length(cache)  then
-        Error( "<pos> and <cache> have different lengths" );
+    if Length(names) <> Length(cache)  then
+        Error( "<names> and <cache> have different lengths" );
     fi;
 
-    for i  in pos  do
+    for i  in [1..Length(cache)]  do
         Print( String( Concatenation(names[i],":"), -30 ),
                String( String(cache[i]), 12 ), "\n" );
     od;
