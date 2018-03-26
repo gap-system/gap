@@ -3809,11 +3809,11 @@ Obj FuncOPERS_CACHE_INFO (
     SET_ELM_PLIST(list, 2, INTOBJ_INT(AndFlagsCacheMiss));
     SET_ELM_PLIST(list, 3, INTOBJ_INT(AndFlagsCacheLost));
     SET_ELM_PLIST(list, 4, INTOBJ_INT(OperationHit));
-    SET_ELM_PLIST(list, 5, INTOBJ_INT(OperationMiss));
-    SET_ELM_PLIST(list, 6, INTOBJ_INT(IsSubsetFlagsCalls));
-    SET_ELM_PLIST(list, 7, INTOBJ_INT(IsSubsetFlagsCalls1));
-    SET_ELM_PLIST(list, 8, INTOBJ_INT(IsSubsetFlagsCalls2));
-    SET_ELM_PLIST(list, 9, INTOBJ_INT(OperationNext));
+    SET_ELM_PLIST(list, 5, INTOBJ_INT(OperationNext));
+    SET_ELM_PLIST(list, 6, INTOBJ_INT(OperationMiss));
+    SET_ELM_PLIST(list, 7, INTOBJ_INT(IsSubsetFlagsCalls));
+    SET_ELM_PLIST(list, 8, INTOBJ_INT(IsSubsetFlagsCalls1));
+    SET_ELM_PLIST(list, 9, INTOBJ_INT(IsSubsetFlagsCalls2));
     SET_ELM_PLIST(list, 10, INTOBJ_INT(WITH_HIDDEN_IMPS_HIT));
     SET_ELM_PLIST(list, 11, INTOBJ_INT(WITH_HIDDEN_IMPS_MISS));
     SET_ELM_PLIST(list, 12, INTOBJ_INT(WITH_IMPS_FLAGS_HIT));
