@@ -421,7 +421,7 @@ Obj FuncSHELL (Obj self, Obj args)
     ErrorMayQuit("SHELL: 8th argument (infile) must be a string",0,0);
 
   outfile = ELM_PLIST(args,9);
-  if (!IsStringConv(infile))
+  if (!IsStringConv(outfile))
     ErrorMayQuit("SHELL: 9th argument (outfile) must be a string",0,0);
 
   if (ELM_PLIST(args,10) == True)
