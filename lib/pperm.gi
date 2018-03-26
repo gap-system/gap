@@ -113,13 +113,13 @@ InstallMethod(RightOne, "for a partial perm",
 
 InstallMethod(PreImagePartialPerm,
 "for a partial perm and positive integer",
-[IsPartialPerm, IsPosInt], PREIMAGE_PPERM_INT);
+[IsPartialPerm, IsPosInt and IsSmallIntRep], PREIMAGE_PPERM_INT);
 
 #
 
 InstallMethod(ComponentPartialPermInt,
 "for a partial perm and positive integer",
-[IsPartialPerm, IsPosInt], COMPONENT_PPERM_INT);
+[IsPartialPerm, IsPosInt and IsSmallIntRep], COMPONENT_PPERM_INT);
 
 #
 
@@ -191,7 +191,8 @@ InstallMethod(AsPartialPerm, "for a perm and a list",
 [IsPerm, IsList], 
 function(p, list)
   
-  if not IsSSortedList(list) or not ForAll(list, IsPosInt) then 
+  if not IsSSortedList(list) 
+      or not ForAll(list, x -> IsSmallIntRep(x) and IsPosInt(x)) then 
     ErrorNoReturn("usage: the second argument must be a set of positive integers,");
   fi;
 
@@ -206,7 +207,7 @@ InstallMethod(AsPartialPerm, "for a perm",
 #
 
 InstallMethod(AsPartialPerm, "for a perm and pos int",
-[IsPerm, IsPosInt], 
+[IsPerm, IsPosInt and IsSmallIntRep], 
 function(p, n)
   return AS_PPERM_PERM(p, [1..n]);
 end);
@@ -225,7 +226,8 @@ InstallMethod(AsPartialPerm, "for a transformation and list",
 [IsTransformation, IsList], 
 function(f, list)
   
-  if not IsSSortedList(list) or not ForAll(list, IsPosInt) then 
+  if not IsSSortedList(list)
+      or not ForAll(list, x -> IsSmallIntRep(x) and IsPosInt(x)) then 
     ErrorNoReturn("usage: the second argument must be a set of positive ",
                   "integers,"); 
   elif not IsInjectiveListTrans(list, f) then 
@@ -238,14 +240,14 @@ end);
 #
 
 InstallMethod(AsPartialPerm, "for a transformation and positive int",
-[IsTransformation, IsPosInt], 
+[IsTransformation, IsPosInt and IsSmallIntRep], 
 function(f, n)
   return AsPartialPerm(f, [1..n]);
 end);
 
 # n is image of undefined points 
 InstallMethod(AsTransformation, "for a partial perm and positive integer",
-[IsPartialPerm, IsPosInt],
+[IsPartialPerm, IsPosInt and IsSmallIntRep],
 function(f, n)
   local deg, out, i;
   
@@ -277,7 +279,8 @@ InstallMethod(RestrictedPartialPerm, "for a partial perm",
 [IsPartialPerm, IsList],
 function(f, list)
 
-  if not IsSSortedList(list) or not ForAll(list, IsPosInt) then 
+  if not IsSSortedList(list)
+      or not ForAll(list, x -> IsSmallIntRep(x) and IsPosInt(x)) then 
     ErrorNoReturn("usage: the second argument must be a set of positive integers,");
   fi;
 
@@ -462,12 +465,12 @@ function(arg)
   local source, min, max, n, out, seen, j, dom, img, out1, out2, i;
 
   if Length(arg)=1 then 
-    if IsPosInt(arg[1]) then 
+    if IsSmallIntRep(arg[1]) and IsPosInt(arg[1]) then 
       source:=[1..arg[1]];
       min:=0;
       max:=arg[1];
-    elif IsCyclotomicCollection(arg[1]) and IsSSortedList(arg[1]) and
-     ForAll(arg[1], IsPosInt) then 
+    elif IsCyclotomicCollection(arg[1]) and IsSSortedList(arg[1]) 
+        and ForAll(arg[1], x -> IsSmallIntRep(x) and IsPosInt(x)) then 
       source:=arg[1];
       n:=Length(source);
       min:=Minimum(source)-1;
@@ -490,8 +493,9 @@ function(arg)
     return DensePartialPermNC(out);
   # for a domain and image
   elif Length(arg)=2 and IsCyclotomicCollColl(arg) 
-   and ForAll(arg, IsSSortedList) and ForAll(arg[1], IsPosInt) 
-   and ForAll(arg[2], IsPosInt) then 
+      and ForAll(arg, IsSSortedList)
+      and ForAll(arg[1], x -> IsSmallIntRep(x) and IsPosInt(x)) 
+      and ForAll(arg[2], x -> IsSmallIntRep(x) and IsPosInt(x)) then 
     
     dom:=arg[1]; img:=arg[2];
     out1:=EmptyPlist(Length(dom));
@@ -536,7 +540,7 @@ InstallGlobalFunction(PartialPerm,
 function(arg) 
    
   if Length(arg)=1 then  
-    if ForAll(arg[1], i-> i=0 or IsPosInt(i)) and 
+    if ForAll(arg[1], i -> IsSmallIntRep(i) and i >= 0) and 
       IsDuplicateFreeList(Filtered(arg[1], x-> x<>0)) then 
       return DensePartialPermNC(arg[1]);
     else
@@ -544,8 +548,8 @@ function(arg)
       "and the non-zero elements must be duplicate-free,");
     fi;
   elif Length(arg)=2 then  
-    if IsSSortedList(arg[1]) and ForAll(arg[1], IsPosInt) and
-     IsDuplicateFreeList(arg[2]) and ForAll(arg[2], IsPosInt) and
+    if IsSSortedList(arg[1]) and ForAll(arg[1], IsSmallIntRep) and
+     IsDuplicateFreeList(arg[2]) and ForAll(arg[2], IsSmallIntRep) and
      Length(arg[1]) = Length(arg[2]) then 
       return SparsePartialPermNC(arg[1], arg[2]); 
     else
