@@ -34,7 +34,6 @@ SOURCES =
 SOURCES += src/ariths.c
 SOURCES += src/blister.c
 SOURCES += src/bool.c
-SOURCES += src/c_methsel1.c
 SOURCES += src/c_oper1.c
 SOURCES += src/c_type1.c
 SOURCES += src/calls.c
@@ -420,7 +419,6 @@ else
 DOCOMP_PREFIX = $(abs_srcdir)
 endif
 docomp: #gap$(EXEEXT)
-	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(abs_srcdir)/lib $(abs_srcdir)/src methsel1 ./gap$(EXEEXT)
 	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(abs_srcdir)/lib $(DOCOMP_PREFIX)/src oper1 ./gap$(EXEEXT)
 	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(abs_srcdir)/lib $(DOCOMP_PREFIX)/src type1 ./gap$(EXEEXT)
 
