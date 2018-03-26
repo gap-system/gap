@@ -963,6 +963,11 @@ BIND_GLOBAL("DisplayCacheStats",function()
     local   cache,  names,  pos,  i;
 
     cache := ShallowCopy(OPERS_CACHE_INFO());
+
+    # remove two last entries (currently not supported)
+    Remove(cache); Remove(cache);
+
+    # add type cache data
     Append( cache, [
         NEW_TYPE_CACHE_HIT,
         NEW_TYPE_CACHE_MISS,
