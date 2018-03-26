@@ -49,7 +49,7 @@ Error, usage: the argument should be a partial perm,
 gap> 
 
 # SmallestIdempotentPower, IndexPeriodOfPartialPerm, IsIdempotent
-gap> f:=RandomPartialPerm(100000);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
 gap> IsIdempotent(f^SmallestIdempotentPower(f));
 true
 gap> x:=IndexPeriodOfPartialPerm(f);;
@@ -57,7 +57,7 @@ gap> f^x[1]=f^(x[1]+x[2]);
 true
 gap> RankOfPartialPerm(f^(x[1]-1))>RankOfPartialPerm(f^x[1]);
 true
-gap> f:=RandomPartialPerm(100000);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
 gap> IsIdempotent(f^SmallestIdempotentPower(f));
 true
 gap> x:=IndexPeriodOfPartialPerm(f);;
@@ -65,7 +65,7 @@ gap> f^x[1]=f^(x[1]+x[2]);
 true
 gap> RankOfPartialPerm(f^(x[1]-1))>RankOfPartialPerm(f^x[1]);
 true
-gap> f:=RandomPartialPerm(1000);;
+gap> f:=PartialPerm([1, 1000], [1000, 2]);;
 gap> IsIdempotent(f^SmallestIdempotentPower(f));
 true
 gap> x:=IndexPeriodOfPartialPerm(f);;
@@ -123,7 +123,7 @@ false
 
 # ComponentsOfPartialPerm, NrComponentsOfPartialPerm, 
 # ComponentRepsOfPartialPerm and ComponentPartialPermInt
-gap> f:=RandomPartialPerm(100000);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
 gap> NrComponentsOfPartialPerm(f)=Length(ComponentsOfPartialPerm(f));
 true
 gap> Union(ComponentsOfPartialPerm(f))=Union(DomainOfPartialPerm(f), 
@@ -132,7 +132,7 @@ true
 gap> List(ComponentRepsOfPartialPerm(f), i-> ComponentPartialPermInt(f, i))
 > =ComponentsOfPartialPerm(f);
 true
-gap> f:=RandomPartialPerm(100);;
+gap> f:=PartialPerm([1, 100], [100, 2]);;
 gap> NrComponentsOfPartialPerm(f)=Length(ComponentsOfPartialPerm(f));
 true
 gap> Union(ComponentsOfPartialPerm(f))=Union(DomainOfPartialPerm(f), 
@@ -160,7 +160,7 @@ gap> NrComponentsOfPartialPerm(f);
 
 # FixedPointsOfPartialPerm, MovedPoints, 
 # NrFixedPoints, NrMovedPoints
-gap> f:=RandomPartialPerm(100000);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
 gap> FixedPointsOfPartialPerm(f)=
 > Filtered([1..DegreeOfPartialPerm(f)], i-> i^f=i);
 true
@@ -168,16 +168,18 @@ gap> f:=PartialPermNC([1..100000]);
 <partial perm on 100000 pts with degree 100000, codegree 100000>
 gap> FixedPointsOfPartialPerm(f)=[1..100000];
 true
-gap> f:=RandomPartialPerm(20);;
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );;
 gap> FixedPointsOfPartialPerm(f)=
 > Filtered([1..DegreeOfPartialPerm(f)], i-> i^f=i);
 true
-gap> f:=RandomPartialPerm(20);;
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );;
 gap> DomainOfPartialPerm(f);;
 gap> FixedPointsOfPartialPerm(f)=
 > Filtered([1..DegreeOfPartialPerm(f)], i-> i^f=i);
 true
-gap> f:=RandomPartialPerm(100000);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
 gap> NrMovedPoints(f)+NrFixedPoints(f)=
 > RankOfPartialPerm(f);
 true
@@ -186,7 +188,7 @@ gap> Union(MovedPoints(f), FixedPointsOfPartialPerm(f))=
 true
 gap> Intersection(MovedPoints(f), FixedPointsOfPartialPerm(f));
 [  ]
-gap> f:=RandomPartialPerm(100);;
+gap> f:=PartialPerm([1, 100], [100, 2]);;
 gap> NrMovedPoints(f)+NrFixedPoints(f)=
 > RankOfPartialPerm(f);
 true
@@ -197,19 +199,19 @@ gap> Intersection(MovedPoints(f), FixedPointsOfPartialPerm(f));
 [  ]
 
 # LargestMovedPoint, SmallestMovedPoint
-gap> f:=RandomPartialPerm(100000);; DomainOfPartialPerm(f);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
 gap> i:=LargestMovedPoint(f);;
 gap> i^f<>i;
 true
-gap> f:=RandomPartialPerm(100000);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
 gap> i:=LargestMovedPoint(f);;
 gap> i^f<>i;
 true
-gap> f:=RandomPartialPerm(100);;   DomainOfPartialPerm(f);;
+gap> f:=PartialPerm([1, 100], [100, 2]);;   DomainOfPartialPerm(f);;
 gap> i:=LargestMovedPoint(f);;
 gap> i^f<>i;
 true
-gap> f:=RandomPartialPerm(100);;
+gap> f:=PartialPerm([1, 100], [100, 2]);;
 gap> i:=LargestMovedPoint(f);;
 gap> i^f<>i;
 true
@@ -237,19 +239,19 @@ gap> f:=PartialPermNC([1..100000]);
 <partial perm on 100000 pts with degree 100000, codegree 100000>
 gap> LargestMovedPoint(f);
 0
-gap> f:=RandomPartialPerm(100000);; DomainOfPartialPerm(f);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
 gap> i:=SmallestMovedPoint(f);;
 gap> i^f<>i;
 true
-gap> f:=RandomPartialPerm(100000);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
 gap> i:=SmallestMovedPoint(f);;
 gap> i^f<>i;
 true
-gap> f:=RandomPartialPerm(100);;   DomainOfPartialPerm(f);;
+gap> f:=PartialPerm([1, 100], [100, 2]);;   DomainOfPartialPerm(f);;
 gap> i:=SmallestMovedPoint(f);;
 gap> i^f<>i;
 true
-gap> f:=RandomPartialPerm(100);;
+gap> f:=PartialPerm([1, 100], [100, 2]);;
 gap> i:=SmallestMovedPoint(f);;
 gap> i^f<>i;
 true
@@ -300,7 +302,7 @@ gap> IsPPerm2Rep(h);
 true
 
 # LeftOne
-gap> f:=RandomPartialPerm(10);; DomainOfPartialPerm(f);;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; DomainOfPartialPerm(f);;
 gap> e:=LeftOne(f);;
 gap> IsIdempotent(e);
 true
@@ -310,7 +312,7 @@ gap> DomainOfPartialPerm(e)=DomainOfPartialPerm(f);
 true
 gap> ImageListOfPartialPerm(e)=DomainOfPartialPerm(f);
 true
-gap> f:=RandomPartialPerm(10);;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
 gap> e:=LeftOne(f);;
 gap> IsIdempotent(e);
 true
@@ -320,7 +322,7 @@ gap> DomainOfPartialPerm(e)=DomainOfPartialPerm(f);
 true
 gap> ImageListOfPartialPerm(e)=DomainOfPartialPerm(f);
 true
-gap> f:=RandomPartialPerm(100000);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
 gap> e:=LeftOne(f);;
 gap> IsIdempotent(e);
 true
@@ -330,7 +332,7 @@ gap> DomainOfPartialPerm(e)=DomainOfPartialPerm(f);
 true
 gap> ImageListOfPartialPerm(e)=DomainOfPartialPerm(f);
 true
-gap> f:=RandomPartialPerm(100000);; DomainOfPartialPerm(f);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
 gap> e:=LeftOne(f);;
 gap> IsIdempotent(e);
 true
@@ -354,7 +356,7 @@ gap> e*f=f;
 true
 
 #RightOne
-gap> f:=RandomPartialPerm(10);; ImageSetOfPartialPerm(f);;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; ImageSetOfPartialPerm(f);;
 gap> e:=RightOne(f);;
 gap> IsIdempotent(e);
 true
@@ -364,7 +366,7 @@ gap> ImageListOfPartialPerm(e)=ImageSetOfPartialPerm(f);
 true
 gap> DomainOfPartialPerm(e)=ImageSetOfPartialPerm(f);
 true
-gap> f:=RandomPartialPerm(10);; 
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; 
 gap> e:=RightOne(f);;
 gap> IsIdempotent(e);
 true
@@ -374,7 +376,7 @@ gap> ImageListOfPartialPerm(e)=ImageSetOfPartialPerm(f);
 true
 gap> DomainOfPartialPerm(e)=ImageSetOfPartialPerm(f);
 true
-gap> f:=RandomPartialPerm(100000);; ImageSetOfPartialPerm(f);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);; ImageSetOfPartialPerm(f);;
 gap> e:=RightOne(f);;
 gap> IsIdempotent(e);
 true
@@ -384,7 +386,7 @@ gap> ImageListOfPartialPerm(e)=ImageSetOfPartialPerm(f);
 true
 gap> DomainOfPartialPerm(e)=ImageSetOfPartialPerm(f);
 true
-gap> f:=RandomPartialPerm(100000);; 
+gap> f:=PartialPerm([1, 100000], [100000, 2]);; 
 gap> e:=RightOne(f);;
 gap> IsIdempotent(e);
 true
@@ -682,14 +684,14 @@ gap> f:=PartialPermNC( [ 1, 2, 3, 4, 5, 8, 10 ], [ 7, 1, 4, 3, 2, 6, 5 ] );;
 gap> g:=PartialPermNC( [ 1, 2, 3, 4, 5, 8, 10 ], [ 3, 1, 4, 2, 5, 6, 7 ] );;
 gap> MeetOfPartialPerms(f,g);
 [2,1][3,4][8,6]
-gap> f:=RandomPartialPerm(1000);;
+gap> f:=PartialPerm([1, 1000], [1000, 2]);;
 gap> g:=JoinOfPartialPerms(f, PartialPermNC([1001..2000], [1001..2000]));;
 gap> f=MeetOfPartialPerms(f, g);
 true
 gap> g:=JoinOfPartialPerms(f, PartialPermNC([1001..100000], [1001..100000]));;
 gap> f=MeetOfPartialPerms(f, g);
 true
-gap> g:=RandomPartialPerm(1000);;
+gap> g:=PartialPerm([1, 1000], [1000, 2]);;
 gap> f:=JoinOfPartialPerms(g, PartialPermNC([1001..100000], [1001..100000]));;
 gap> g=MeetOfPartialPerms(f, g);
 true
@@ -747,13 +749,13 @@ gap> f:=RestrictedPartialPerm(f, [2..10]);
 <identity partial perm on [ 2, 3, 4, 5 ]>
 gap> AsPermutation(f);
 ()
-gap> f:=RandomPartialPerm(1000);;
+gap> f:=PartialPerm([1, 1000], [1000, 2]);;
 gap> x:=IndexPeriodOfPartialPerm(f);;
 gap> g:=f^x[1];;
 gap> OnTuples(DomainOfPartialPerm(g),AsPermutation(g))=
 > OnTuples(DomainOfPartialPerm(g), g);
 true
-gap> f:=RandomPartialPerm(100000);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
 gap> x:=IndexPeriodOfPartialPerm(f);;
 gap> g:=f^x[1];;
 gap> OnTuples(DomainOfPartialPerm(g),AsPermutation(g))=
@@ -763,12 +765,13 @@ gap> AsPermutation(f);
 fail
 
 # PermLeftQuoPartialPerm
-gap> f:=RandomPartialPerm(100);;
-gap> p:=Random(SymmetricGroup(ImageSetOfPartialPerm(f)));;
+gap> f := PartialPerm([1, 100], [100, 2]);;
+gap> p := (2, 100);;
 gap> g:=f*p;;
 gap> PermLeftQuoPartialPerm(f, g)=p;
 true
-gap> h:=RandomPartialPerm([101..100000]);;
+gap> h := PartialPerm([200, 300, 400, 1900, 10 ^ 6], 
+>                     [101, 113, 131, 450, 10 ^ 6]);;
 gap> h:=JoinOfPartialPerms(h, PartialPermNC([1..100], [1..100]));;
 gap> g=g*h;
 true
@@ -813,7 +816,7 @@ gap> PermLeftQuoPartialPerm(g, f);
 # Kernel level functions
 #
 # OnePPerm
-gap> f:=RandomPartialPerm(100000);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
 gap> e:=One(f);;
 gap> e*f=f;
 true
@@ -825,7 +828,7 @@ true
 gap> Union(DomainOfPartialPerm(f), ImageSetOfPartialPerm(f))=
 > ImageSetOfPartialPerm(e);
 true
-gap> f:=RandomPartialPerm(10000);;
+gap> f:=PartialPerm([1, 10000], [10000, 2]);;
 gap> e:=One(f);;
 gap> e*f=f;    
 true
@@ -862,8 +865,8 @@ gap> f=f*p;
 true
 
 # ProdPPerm2Perm2, Case 1 of 6: codeg(f)<=deg(p), domain known
-gap> f:=RandomPartialPerm(10);; DomainOfPartialPerm(f);;
-gap> p:=Random(SymmetricGroup(100));;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; DomainOfPartialPerm(f);;
+gap> p:=(7, 100);;
 gap> g:=f*p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
@@ -873,8 +876,8 @@ gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 
 # QuoPPerm2Perm2, Case 1 of 6: codeg(f)<=deg(p), domain known
-gap> f:=RandomPartialPerm(10);; DomainOfPartialPerm(f);;
-gap> p:=Random(SymmetricGroup(100));;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; DomainOfPartialPerm(f);;
+gap> p:=(7, 100);;
 gap> g:=f/p;;
 gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
 true
@@ -884,15 +887,15 @@ gap> f/p=f*p^-1;
 true
 
 # ProdPPerm2Perm2, Case 2 of 6: codeg(f)<=deg(p), domain not known
-gap> f:=RandomPartialPerm(10);;
-gap> p:=Random(SymmetricGroup(100));;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
+gap> p:=(7, 100);;
 gap> g:=f*p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
 true
-gap> f:=RandomPartialPerm(10);;
-gap> p:=Random(SymmetricGroup(100));;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
+gap> p:=(7, 100);;
 gap> g:=f*p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
@@ -902,8 +905,8 @@ gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 
 # QuoPPerm2Perm2, Case 2 of 6: codeg(f)<=deg(p), domain not known
-gap> f:=RandomPartialPerm(10);;
-gap> p:=Random(SymmetricGroup(100));;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
+gap> p:=(7, 100);;
 gap> g:=f/p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
@@ -911,8 +914,8 @@ gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
 true
 gap> f/p=f*p^-1;
 true
-gap> f:=RandomPartialPerm(10);;
-gap> p:=Random(SymmetricGroup(100));;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
+gap> p:=(7, 100);;
 gap> g:=f/p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
@@ -924,8 +927,8 @@ gap> f/p=f*p^-1;
 true
 
 # ProdPPerm2Perm2, Case 3 of 6: codeg(f)>deg(p), domain known
-gap> f:=RandomPartialPerm(100);; DomainOfPartialPerm(f);;
-gap> p:=Random(SymmetricGroup(10));;
+gap> f:=PartialPerm([1, 100], [100, 2]);; DomainOfPartialPerm(f);;
+gap> p:=(7, 10);;
 gap> g:=f*p;;
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
 true
@@ -933,8 +936,8 @@ gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
-gap> f:=RandomPartialPerm(65535);;
-gap> p:=Random(SymmetricGroup(10000));;
+gap> f:=PartialPerm([1, 65535], [65535, 2]);;
+gap> p:=(17, 10000);;
 gap> g:=f*p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
@@ -944,8 +947,8 @@ gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 
 # QuoPPerm2Perm2, Case 3 of 6: codeg(f)>deg(p), domain known
-gap> f:=RandomPartialPerm(100);; DomainOfPartialPerm(f);;
-gap> p:=Random(SymmetricGroup(10));;
+gap> f:=PartialPerm([1, 100], [100, 2]);; DomainOfPartialPerm(f);;
+gap> p:=(7, 10);;
 gap> g:=f/p;;
 gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
 true
@@ -955,8 +958,8 @@ gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 gap> f/p=f*p^-1;
 true
-gap> f:=RandomPartialPerm(65535);;
-gap> p:=Random(SymmetricGroup(10000));;
+gap> f:=PartialPerm([1, 65535], [65535, 2]);;
+gap> p:=(17, 10000);;
 gap> g:=f/p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
@@ -968,8 +971,8 @@ gap> f/p=f*p^-1;
 true
 
 # ProdPPerm2Perm2, Case 4 of 6: codeg(f)>deg(p), domain not known
-gap> f:=RandomPartialPerm(100);;
-gap> p:=Random(SymmetricGroup(10));;   
+gap> f:=PartialPerm([1, 100], [100, 2]);;
+gap> p:=(7, 10);;   
 gap> g:=f*p;;                       
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
@@ -977,8 +980,8 @@ gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
 true
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
-gap> f:=RandomPartialPerm(10000);;
-gap> p:=Random(SymmetricGroup(1000));; 
+gap> f:=PartialPerm([1, 10000], [10000, 2]);;
+gap> p:=(13, 1000);; 
 gap> g:=f*p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
@@ -988,8 +991,8 @@ gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 
 # QuoPPerm2Perm2, Case 4 of 6: codeg(f)>deg(p), domain not known
-gap> f:=RandomPartialPerm(100);;
-gap> p:=Random(SymmetricGroup(10));;   
+gap> f:=PartialPerm([1, 100], [100, 2]);;
+gap> p:=(7, 10);;   
 gap> g:=f/p;;                       
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
@@ -999,8 +1002,8 @@ gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 gap> f/p=f*p^-1;
 true
-gap> f:=RandomPartialPerm(10000);;
-gap> p:=Random(SymmetricGroup(1000));; 
+gap> f:=PartialPerm([1, 10000], [10000, 2]);;
+gap> p:=(13, 1000);; 
 gap> g:=f/p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
@@ -1013,7 +1016,7 @@ true
 
 # ProdPPerm2Perm2, Case 5 of 6: deg(p)=65536, domain not known
 gap> p:=(1,65536);;
-gap> f:=RandomPartialPerm(10000);;
+gap> f:=PartialPerm([1, 10000], [10000, 2]);;
 gap> g:=f*p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
@@ -1024,7 +1027,7 @@ true
 
 # QuoPPerm2Perm2, Case 5 of 6: deg(p)=65536, domain not known
 gap> p:=(1,65536,123);;
-gap> f:=RandomPartialPerm(10000);;
+gap> f:=PartialPerm([1, 10000], [10000, 2]);;
 gap> g:=f/p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
@@ -1036,7 +1039,7 @@ gap> f/p=f*p^-1;
 true
 
 # ProdPPerm2Perm2, Case 6 of 6: deg(p)=65536, domain known
-gap> f:=RandomPartialPerm(10000);; DomainOfPartialPerm(f);;
+gap> f:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
 gap> p:=(1,65536);;
 gap> g:=f*p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
@@ -1047,7 +1050,7 @@ gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 
 # QuoPPerm2Perm2, Case 6 of 6: deg(p)=65536, domain known
-gap> f:=RandomPartialPerm(10000);; DomainOfPartialPerm(f);;
+gap> f:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
 gap> p:=(1,65536,123);;
 gap> g:=f/p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
@@ -1060,7 +1063,7 @@ gap> f/p=f*p^-1;
 true
 
 # ProdPPerm2Perm4, Case 1 of 2: domain known
-gap> f:=RandomPartialPerm(10);; DomainOfPartialPerm(f);;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; DomainOfPartialPerm(f);;
 gap> p:=(1,100000);;
 gap> g:=f*p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
@@ -1071,7 +1074,7 @@ gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 
 # QuoPPerm2Perm4, Case 1 of 2: domain known
-gap> f:=RandomPartialPerm(10);; DomainOfPartialPerm(f);;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; DomainOfPartialPerm(f);;
 gap> p:=(1,100000,123);;
 gap> g:=f/p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
@@ -1084,7 +1087,7 @@ gap> f/p=f*p^-1;
 true
 
 # ProdPPerm2Perm4, Case 2 of 2: domain not known
-gap> f:=RandomPartialPerm(1000);;
+gap> f:=PartialPerm([1, 1000], [1000, 2]);;
 gap> p:=(1,100000);;
 gap> g:=f*p;;
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
@@ -1095,7 +1098,7 @@ gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 
 # QuoPPerm2Perm4, Case 2 of 2: domain not known
-gap> f:=RandomPartialPerm(1000);;
+gap> f:=PartialPerm([1, 1000], [1000, 2]);;
 gap> p:=(1,100000,123);;
 gap> g:=f/p;;
 gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
@@ -1283,8 +1286,8 @@ gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 gap> ImageSetOfPartialPerm(f)=ImageSetOfPartialPerm(g);
 true
-gap> f:=RandomPartialPerm(10000);;
-gap> p:=Random(SymmetricGroup(9000));;
+gap> f:=PartialPerm([1, 10000], [10000, 2]);;
+gap> p:=(13, 9000);;
 gap> g:=p*f;;
 gap> OnSets(DomainOfPartialPerm(f), p^-1)=DomainOfPartialPerm(g);
 true
@@ -1313,8 +1316,8 @@ gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 gap> ImageSetOfPartialPerm(f)=ImageSetOfPartialPerm(g);
 true
-gap> f:=RandomPartialPerm(1000);;
-gap> p:=Random(SymmetricGroup(2000));;
+gap> f:=PartialPerm([1, 1000], [1000, 2]);;
+gap> p:=(13, 2000);;
 gap> g:=p*f;;
 gap> OnSets(DomainOfPartialPerm(f), p^-1)=DomainOfPartialPerm(g);
 true
@@ -1521,13 +1524,13 @@ gap> f:=PartialPermNC([100000], [1]);
 [100000,1]
 gap> IsPPerm2Rep(f);
 true
-gap> p:=Random(SymmetricGroup(100000));;
+gap> p := (17, 100000);;
 gap> f^p=p^-1*f*p;
 true
 
 # PowPPerm2Perm4, Case 2 of 2, deg(f)<=deg(p) and codeg(f)<=deg(p)
-gap> f:=PartialPermNC( [ 1, 2, 3, 4, 5, 6 ], [ 2, 5, 8, 1, 3, 4 ] );;
-gap> p:=Random(SymmetricGroup(100000));;
+gap> f := PartialPermNC([1, 2, 3, 4, 5, 6], [2, 5, 8, 1, 3, 4]);;
+gap> p := (17, 100000);;
 gap> f^p=p^-1*f*p;               
 true
 
@@ -1537,15 +1540,14 @@ gap> f:=PartialPermNC([100000], [100000]);
 gap> p:=(1,3,2,10)(5,7)(6,9,8);;
 gap> f^p;
 <identity partial perm on [ 100000 ]>
-gap> f:=RandomPartialPerm(100000);;        
-gap> p:=Random(SymmetricGroup(50000));;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;        
+gap> p:=(17, 50000);;
 gap> f^p=p^-1*f*p;
 true
 
 # PowPPerm4Perm2, Case 2 of 4, deg(f)>deg(p) and codeg(f)<=deg(p)
 gap> f:=PartialPermNC([100000], [1]);     
 [100000,1]
-gap> p:=Random(SymmetricGroup(10));;   
 gap> p:=(1,10)(3,8)(4,7,5,9);;
 gap> f^p;
 [100000,10]
@@ -1589,8 +1591,8 @@ gap> p^-1*f*p;
 [1,3,4,5](6,10)
 
 # PowPPerm4Perm4, Case 1 of 4, deg(f)>deg(p) and codeg(f)>deg(p)
-gap> f:=RandomPartialPerm(100000);; 
-gap> p:=Random(SymmetricGroup(65538));;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);; 
+gap> p:=(17, 65538);;
 gap> IsPPerm4Rep(f); IsPerm4Rep(p);
 true
 true
@@ -1599,7 +1601,7 @@ true
 
 # PowPPerm4Perm4, Case 2 of 4, deg(f)>deg(p) and codeg(f)<=deg(p)
 gap> f:=PartialPermNC([100000], [65536]);;
-gap> p:=Random(SymmetricGroup(70000));;
+gap> p:=(17, 70000);;
 gap> f^p=p^-1*f*p;
 true
 
@@ -1610,8 +1612,8 @@ gap> f^p=p^-1*f*p;
 true
 
 # PowPPerm4Perm4, Case 4 of 4, deg(f)<=deg(p) and codeg(f)<=deg(p)
-gap> f:=RandomPartialPerm(66000);; 
-gap> p:=Random(SymmetricGroup(70000));;
+gap> f:=PartialPerm([1, 66000], [66000, 2]);; 
+gap> p:=(17, 70000);;
 gap> f^p=p^-1*f*p;
 true
 
@@ -1626,8 +1628,8 @@ gap> f*g^-1;
 [4,2,3][5,1](9)(10)
 gap> f*g^-1=f/g;
 true
-gap> f:=RandomPartialPerm(10000);; DomainOfPartialPerm(f);;
-gap> g:=RandomPartialPerm(10000);; DomainOfPartialPerm(g);;
+gap> f:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(g);;
 gap> f/g=f*g^-1;
 true
 gap> f:=PartialPermNC([100000], [1]);
@@ -1645,8 +1647,8 @@ gap> f*g^-1;
 [4,10,3,5](6)(7)
 gap> f/g=f*g^-1;
 true
-gap> f:=RandomPartialPerm(10000);;
-gap> g:=RandomPartialPerm(10000);; DomainOfPartialPerm(g);;
+gap> f:=PartialPerm([1, 10000], [10000, 2]);;
+gap> g:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(g);;
 gap> f/g=f*g^-1;
 true
 
@@ -1658,8 +1660,8 @@ gap> f/g;
 [5,3,10,4](6)(7)
 gap> f*g^-1;
 [5,3,10,4](6)(7)
-gap> f:=RandomPartialPerm(10000);; DomainOfPartialPerm(f);;
-gap> g:=RandomPartialPerm(10000);;
+gap> f:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 10000], [10000, 2]);;
 gap> f/g=f*g^-1;
 true
 
@@ -1668,80 +1670,88 @@ gap> f:=PartialPermNC([ 1, 8, 10, 0, 4, 3, 7, 0, 0, 2 ]);;
 gap> g:=PartialPermNC([5,9,4,2,0,3,7,6,0,10]);;
 gap> f/g=f*g^-1;
 true
-gap> f:=RandomPartialPerm(10000);;                          
-gap> g:=RandomPartialPerm(10000);;
+gap> f:=PartialPerm([1, 10000], [10000, 2]);;                          
+gap> g:=PartialPerm([1, 10000], [10000, 2]);;
 gap> f/g=f*g^-1;
 true
 
 # QuoPPerm24, Case 1 of 4, dom(f) known,   dom(g) known
-gap> f:=RandomPartialPerm(20);; DomainOfPartialPerm(f);;
-gap> g:=RandomPartialPerm(100000);; DomainOfPartialPerm(g);;
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;
 gap> f/g=f*g^-1;
 true
 
 # QuoPPerm24, Case 2 of 4, dom(f) known,   dom(g) unknown
-gap> f:=RandomPartialPerm(20);; DomainOfPartialPerm(f);;
-gap> g:=RandomPartialPerm(100000);;                         
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 100000], [100000, 2]);;                         
 gap> f/g=f*g^-1;
 true
 
 # QuoPPerm24, Case 3 of 4, dom(f) unknown, dom(g) known
-gap> f:=RandomPartialPerm(20);;                         
-gap> g:=RandomPartialPerm(100000);; DomainOfPartialPerm(g);;
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );;                         
+gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;
 gap> f/g=f*g^-1;
 true
 
 # QuoPPerm24, Case 4 of 4, dom(f) unknown, dom(g) unknown
-gap> f:=RandomPartialPerm(20);;                             
-gap> g:=RandomPartialPerm(100000);;                         
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );;                             
+gap> g:=PartialPerm([1, 100000], [100000, 2]);;                         
 gap> f/g=f*g^-1;
 true
 
 # QuoPPerm42, Case 1 of 4, dom(f) known,   dom(g) known
-gap> f:=RandomPartialPerm(100000);; DomainOfPartialPerm(f);;
-gap> g:=RandomPartialPerm(20);; DomainOfPartialPerm(g);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; DomainOfPartialPerm(g);;
 gap> f/g=f*g^-1;
 true
 
 # QuoPPerm42, Case 2 of 4, dom(f) known,   dom(g) unknown
-gap> f:=RandomPartialPerm(100000);; DomainOfPartialPerm(f);;
-gap> g:=RandomPartialPerm(20);; 
+gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; 
 gap> f/g=f*g^-1;
 true
 
 # QuoPPerm42, Case 3 of 4, dom(f) unknown, dom(g) known
-gap> f:=RandomPartialPerm(100000);;
-gap> g:=RandomPartialPerm(20);; DomainOfPartialPerm(g);;                     
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
+gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; DomainOfPartialPerm(g);;                     
 gap> f/g=f*g^-1;
 true
 
 # QuoPPerm42, Case 4 of 4, dom(f) unknown, dom(g) unknown
-gap> f:=RandomPartialPerm(100000);;                         
-gap> g:=RandomPartialPerm(20);;                             
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;                         
+gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );;                             
 gap> f/g=f*g^-1;
 true
 
 # QuoPPerm44, Case 1 of 4, dom(f) known,   dom(g) known
-gap> f:=RandomPartialPerm(100000);; DomainOfPartialPerm(f);;
-gap> g:=RandomPartialPerm(100000);; DomainOfPartialPerm(g);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;
 gap> f/g=f*g^-1;
 true
 
 # QuoPPerm44, Case 2 of 4, dom(f) known,   dom(g) unknown
-gap> f:=RandomPartialPerm(100000);; DomainOfPartialPerm(f);;
-gap> g:=RandomPartialPerm(100000);; 
+gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 100000], [100000, 2]);; 
 gap> f/g=f*g^-1;
 true
 
 # QuoPPerm44, Case 3 of 4, dom(f) unknown, dom(g) known
-gap> f:=RandomPartialPerm(100000);;
-gap> g:=RandomPartialPerm(100000);; DomainOfPartialPerm(g);;                     
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
+gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;                     
 gap> f/g=f*g^-1;
 true
 
 # QuoPPerm44, Case 4 of 4, dom(f) unknown, dom(g) unknown
-gap> f:=RandomPartialPerm(100000);;                         
-gap> g:=RandomPartialPerm(100000);;                             
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;                         
+gap> g:=PartialPerm([1, 100000], [100000, 2]);;                             
 gap> f/g=f*g^-1;
 true
 
@@ -1787,32 +1797,32 @@ gap> p^-1*f;
 [5,8][7,10][13,2][16,3][17,1](4,6,9)
 gap> last=last2;
 true
-gap> f:=RandomPartialPerm(65535);;
-gap> p:=Random(SymmetricGroup(65536));;
+gap> f:=PartialPerm([1, 65535], [65535, 2]);;
+gap> p:=(17, 65536);;
 gap> LQUO(p, f)=p^-1*f;
 true
 
 # LQuoPerm2PPerm4, Case 1 of 4, deg(p)<deg(f),  dom(f) unknown
-gap> f:=RandomPartialPerm(65536);;
-gap> p:=Random(SymmetricGroup(60000));;
+gap> f:=PartialPerm([1, 65536], [65536, 2]);;
+gap> p:=(17, 60000);;
 gap> LQUO(p, f)=p^-1*f; 
 true
 
 # LQuoPerm2PPerm4, Case 2 of 4, deg(p)<deg(f),  dom(f) known
-gap> f:=RandomPartialPerm(65536);; DomainOfPartialPerm(f);;
-gap> p:=Random(SymmetricGroup(60000));;
+gap> f:=PartialPerm([1, 65536], [65536, 2]);; DomainOfPartialPerm(f);;
+gap> p:=(17, 60000);;
 gap> LQUO(p, f)=p^-1*f; 
 true
 
 # LQuoPerm2PPerm4, Case 3 of 4, deg(p)>=deg(f), dom(f) unknown
-gap> f:=RandomPartialPerm(65536);;                         
-gap> p:=Random(SymmetricGroup(70000));;
+gap> f:=PartialPerm([1, 65536], [65536, 2]);;                         
+gap> p:=(17, 70000);;
 gap> LQUO(p, f)=p^-1*f;
 true
 
 # LQuoPerm2PPerm4, Case 4 of 4, deg(p)>=deg(f), dom(f) known
-gap> f:=RandomPartialPerm(65536);; DomainOfPartialPerm(f);;
-gap> p:=Random(SymmetricGroup(60000));;
+gap> f:=PartialPerm([1, 65536], [65536, 2]);; DomainOfPartialPerm(f);;
+gap> p:=(17, 60000);;
 gap> LQUO(p, f)=p^-1*f;
 true
 
@@ -1820,7 +1830,7 @@ true
 gap> f:=PartialPermNC( [ 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 15, 17, 19 ], 
 > [ 19, 7, 17, 14, 8, 5, 3, 18, 15, 13, 2, 12, 10, 20 ] );;
 gap> f:=JoinOfPartialPerms(f, PartialPermNC([100000], [1]));;
-gap> p:=Random(SymmetricGroup(70000));;
+gap> p:=(17, 70000);;
 gap> LQUO(p, f)=p^-1*f;
 true
 
@@ -1829,7 +1839,7 @@ gap> f:=PartialPermNC( [ 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 15, 17, 19 ],
 > [ 19, 7, 17, 14, 8, 5, 3, 18, 15, 13, 2, 12, 10, 20 ] );;
 gap> f:=JoinOfPartialPerms(f, PartialPermNC([100000], [1]));;
 gap> DomainOfPartialPerm(f);;
-gap> p:=Random(SymmetricGroup(70000));;
+gap> p:=(17, 70000);;
 gap> LQUO(p, f)=p^-1*f;
 true
 
@@ -1837,7 +1847,7 @@ true
 gap> f:=PartialPermNC( [ 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 15, 17, 19 ], 
 > [ 19, 7, 17, 14, 8, 5, 3, 18, 15, 13, 2, 12, 10, 20 ] );;
 gap> f:=JoinOfPartialPerms(f, PartialPermNC([10000], [1]));;
-gap> p:=Random(SymmetricGroup(70000));;
+gap> p:=(17, 70000);;
 gap> LQUO(p, f)=p^-1*f;
 true
 
@@ -1846,33 +1856,33 @@ gap> f:=PartialPermNC( [ 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 15, 17, 19 ],
 > [ 19, 7, 17, 14, 8, 5, 3, 18, 15, 13, 2, 12, 10, 20 ] );;
 gap> f:=JoinOfPartialPerms(f, PartialPermNC([10000], [1]));;
 gap> DomainOfPartialPerm(f);;
-gap> p:=Random(SymmetricGroup(70000));;
+gap> p:=(17, 70000);;
 gap> LQUO(p, f)=p^-1*f;
 true
 
 # LQuoPerm4PPerm4, Case 1 of 4, deg(p)<deg(f),  dom(f) unknown
-gap> f:=RandomPartialPerm(70000);;
-gap> p:=Random(SymmetricGroup(66000));;
+gap> f:=PartialPerm([1, 70000], [70000, 2]);;
+gap> p:=(17, 66000);;
 gap> LQUO(p, f)=p^-1*f;
 true
 
 # LQuoPerm4PPerm4, Case 2 of 4, deg(p)<deg(f),  dom(f) known
-gap> f:=RandomPartialPerm(70000);;
+gap> f:=PartialPerm([1, 70000], [70000, 2]);;
 gap> DomainOfPartialPerm(f);;
-gap> p:=Random(SymmetricGroup(66000));;
+gap> p:=(17, 66000);;
 gap> LQUO(p, f)=p^-1*f;
 true
 
 # LQuoPerm4PPerm4, Case 3 of 4, deg(p)>=deg(f), dom(f) unknown
-gap> f:=RandomPartialPerm(66000);;
-gap> p:=Random(SymmetricGroup(70000));;
+gap> f:=PartialPerm([1, 66000], [66000, 2]);;
+gap> p:=(17, 70000);;
 gap> LQUO(p, f)=p^-1*f;
 true
 
 # LQuoPerm4PPerm4, Case 4 of 4, deg(p)>=deg(f), dom(f) known
-gap> f:=RandomPartialPerm(66000);;
+gap> f:=PartialPerm([1, 66000], [66000, 2]);;
 gap> DomainOfPartialPerm(f);;
-gap> p:=Random(SymmetricGroup(70000));;
+gap> p:=(17, 70000);;
 gap> LQUO(p, f)=p^-1*f;
 true
 
@@ -1887,8 +1897,8 @@ gap> f^-1*g;
 [2,11,4,5][10,7][12,1][15,20][19,3,13](8,18,14)(9)
 gap> last=last2;
 true
-gap> f:=RandomPartialPerm(10000);;                             
-gap> g:=RandomPartialPerm(9000);; 
+gap> f:=PartialPerm([1, 10000], [10000, 2]);;                             
+gap> g:=PartialPerm([1, 9000], [9000, 2]);; 
 gap> LQUO(f, g)=f^-1*g;
 true
 
@@ -1901,72 +1911,72 @@ gap> LQUO(f, g)=f^-1*g;
 true
 gap> LQUO(f, g);
 [8,12][16,2][18,1,9,5][19,11,10][20,7]
-gap> f:=RandomPartialPerm(9000);; DomainOfPartialPerm(f);;
-gap> g:=RandomPartialPerm(10000);; DomainOfPartialPerm(g);;
+gap> f:=PartialPerm([1, 9000], [9000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(g);;
 gap> LQUO(f, g)=f^-1*g;
 true
 
 # LQuoPPerm22, Case 3 of 3, dom(g) known, deg(g)<=deg(f)
-gap> f:=RandomPartialPerm(10000);; DomainOfPartialPerm(f);;
-gap> g:=RandomPartialPerm(9000);; DomainOfPartialPerm(g);;
+gap> f:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 9000], [9000, 2]);; DomainOfPartialPerm(g);;
 gap> LQUO(f, g)=f^-1*g; 
 true
 
 # LQuoPPerm24, Case 1 of 3, dom(g) unknown
-gap> f:=RandomPartialPerm(100);;
-gap> g:=RandomPartialPerm(100000);;
+gap> f:=PartialPerm([1, 100], [100, 2]);;
+gap> g:=PartialPerm([1, 100000], [100000, 2]);;
 gap> LQUO(f, g)=f^-1*g;
 true
 
 # LQuoPPerm24, Case 2 of 3, dom(g) known, deg(g)>deg(f)
-gap> f:=RandomPartialPerm(100);;
-gap> g:=RandomPartialPerm(100000);; DomainOfPartialPerm(g);;
+gap> f:=PartialPerm([1, 100], [100, 2]);;
+gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;
 gap> LQUO(f, g)=f^-1*g;
 true
 
 # LQuoPPerm24, Case 3 of 3, dom(g) known, deg(g)<=deg(f)
-gap> f:=RandomPartialPerm(9000);;
-gap> g:=RandomPartialPerm(100);;  
+gap> f:=PartialPerm([1, 9000], [9000, 2]);;
+gap> g:=PartialPerm([1, 100], [100, 2]);;  
 gap> g:=JoinOfPartialPerms(g, PartialPermNC([101], [100000]));;
 gap> DomainOfPartialPerm(g);;
 gap> LQUO(f, g)=f^-1*g;
 true
 
 # LQuoPPerm42, Case 1 of 3, dom(g) unknown
-gap> f:=RandomPartialPerm(100000);;
-gap> g:=RandomPartialPerm(100);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
+gap> g:=PartialPerm([1, 100], [100, 2]);;
 gap> LQUO(f, g)=f^-1*g;
 true
 
 # LQuoPPerm42, Case 2 of 3, dom(g) known, deg(g)>deg(f)
-gap> f:=RandomPartialPerm(100000);;
-gap> g:=RandomPartialPerm(100);; 
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
+gap> g:=PartialPerm([1, 100], [100, 2]);; 
 gap> g:=JoinOfPartialPerms(g, PartialPermNC([100001],[101]));;
 gap> DomainOfPartialPerm(g);;
 gap> LQUO(f, g)=f^-1*g;
 true
 
 # LQuoPPerm42, Case 3 of 3, dom(g) known, deg(g)<=deg(f)
-gap> f:=RandomPartialPerm(100000);;
-gap> g:=RandomPartialPerm(100);; DomainOfPartialPerm(g);;
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
+gap> g:=PartialPerm([1, 100], [100, 2]);; DomainOfPartialPerm(g);;
 gap> LQUO(f, g)=f^-1*g;
 true
 
 # LQuoPPerm44, Case 1 of 3, dom(g) unknown
-gap> f:=RandomPartialPerm(65536);;
-gap> g:=RandomPartialPerm(65536);;
+gap> f:=PartialPerm([1, 65536], [65536, 2]);;
+gap> g:=PartialPerm([1, 65536], [65536, 2]);;
 gap> LQUO(f, g)=f^-1*g;
 true
 
 # LQuoPPerm44, Case 2 of 3, dom(g) known, deg(g)>deg(f)
-gap> f:=RandomPartialPerm(65536);;
-gap> g:=RandomPartialPerm(66000);; DomainOfPartialPerm(g);;
+gap> f:=PartialPerm([1, 65536], [65536, 2]);;
+gap> g:=PartialPerm([1, 66000], [66000, 2]);; DomainOfPartialPerm(g);;
 gap> LQUO(f, g)=f^-1*g;
 true
 
 # LQuoPPerm44, Case 3 of 3, dom(g) known, deg(g)<=deg(f)
-gap> f:=RandomPartialPerm(66000);;
-gap> g:=RandomPartialPerm(66553);; DomainOfPartialPerm(g);;
+gap> f:=PartialPerm([1, 66000], [66000, 2]);;
+gap> g:=PartialPerm([1, 66553], [66553, 2]);; DomainOfPartialPerm(g);;
 gap> LQUO(f, g)=f^-1*g;
 true
 
@@ -1981,8 +1991,8 @@ gap> f^g;
 [1,12][4,2,11][13,8,21](5,25)(22)(24)
 gap> g^-1*f*g;
 [1,12][4,2,11][13,8,21](5,25)(22)(24)
-gap> f:=RandomPartialPerm(20000);; 
-gap> g:=RandomPartialPerm(30000);;
+gap> f:=PartialPerm([1, 20000], [20000, 2]);; 
+gap> g:=PartialPerm([1, 30000], [30000, 2]);;
 gap> f^g=g^-1*f*g;
 true
 
@@ -2022,8 +2032,8 @@ gap> g^-1*f*g;
 [18,9][20,8](11)(14)
 gap> last=last2;
 true
-gap> f:=RandomPartialPerm(50000);;
-gap> g:=RandomPartialPerm(40000);;
+gap> f:=PartialPerm([1, 50000], [50000, 2]);;
+gap> g:=PartialPerm([1, 40000], [40000, 2]);;
 gap> f^g=g^-1*f*g;
 true
 
@@ -2051,16 +2061,18 @@ gap> g^-1*f*g;
 [4,6][10,1][17,13](19)
 
 # PowPPerm24, Case 1 of 6, dom(f) not known, codeg(f)<=deg(g)
-gap> f:=RandomPartialPerm(10);;                           
-gap> g:=RandomPartialPerm(65536);;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;                           
+gap> g:=PartialPerm([1, 65536], [65536, 2]);;
 gap> f^g=g^-1*f*g;
 true
 
 # PowPPerm24, Case 2 of 6, dom(f) not known, codeg(f)> deg(g)
-gap> f:=RandomPartialPerm(10);;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
 gap> f:=JoinOfPartialPerms(f, PartialPermNC([11], [100]));;
 gap> g:=PartialPermNC([10], [65536]);;
-gap> g:=JoinOfPartialPerms(g, RandomPartialPerm(9));;
+gap> g:=JoinOfPartialPerms(g, 
+>                          PartialPerm([1, 2, 3, 4, 5, 6, 7], 
+>                                      [8, 3, 6, 1, 5, 7, 2]));;
 gap> f^g=g^-1*f*g;
 true
 
@@ -2069,7 +2081,7 @@ gap> f:=PartialPerm( [ 1, 2, 4, 6, 7 ], [ 6, 9, 8, 5, 7 ] );;
 gap> f:=JoinOfPartialPerms(f, PartialPermNC([11], [100]));;
 gap> f:=f^-1;; DomainOfPartialPerm(f);;
 gap> g:=PartialPermNC([20], [65536]);;              
-gap> g:=JoinOfPartialPerms(g, RandomPartialPerm(9));;
+gap> g:=JoinOfPartialPerms(g, PartialPerm( [ 1, 2, 3, 4, 5, 6, 7 ], [ 8, 3, 6, 1, 5, 7, 2 ] ));;
 gap> DegreeOfPartialPerm(f)>DegreeOfPartialPerm(g);
 true
 gap> CodegreeOfPartialPerm(f)<=DegreeOfPartialPerm(g);
@@ -2078,7 +2090,10 @@ gap> f^g = g^-1*f*g;
 true
 
 # PowPPerm24, Case 4 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)> deg(g)
-gap> f:=RandomPartialPerm(30);; DomainOfPartialPerm(f);;
+gap> f:=PartialPerm(
+> [ 1, 2, 3, 4, 5, 6, 8, 9, 14, 15, 16, 17, 18, 19, 21, 24, 25, 26, 27 ],
+> [ 14, 11, 12, 22, 18, 8, 4, 5, 1, 23, 29, 6, 17, 21, 30, 9, 15, 2, 7 ] );;
+> DomainOfPartialPerm(f);;
 gap> DegreeOfPartialPerm(f)>DegreeOfPartialPerm(g);
 true
 gap> CoDegreeOfPartialPerm(f)>DegreeOfPartialPerm(g);
@@ -2087,8 +2102,10 @@ gap> f^g=g^-1*f*g;
 true
 
 # PowPPerm24, Case 5 of 6, dom(f)     known, deg(f)<=deg(g),  codeg(f)<=deg(g)
-gap> f:=RandomPartialPerm(30);; DomainOfPartialPerm(f);;
-gap> g:=RandomPartialPerm(65536);;                  
+gap> f:=PartialPerm(
+> [ 1, 2, 3, 4, 5, 6, 8, 9, 14, 15, 16, 17, 18, 19, 21, 24, 25, 26, 27 ],
+> [ 14, 11, 12, 22, 18, 8, 4, 5, 1, 23, 29, 6, 17, 21, 30, 9, 15, 2, 7 ] );; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 65536], [65536, 2]);;                  
 gap> f^g=g^-1*f*g;
 true
 
@@ -2139,15 +2156,15 @@ gap> g^-1*f*g=last;
 true
 
 # PowPPerm42, Case 4 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)> deg(g)
-gap> f:=RandomPartialPerm(70000);; DomainOfPartialPerm(f);;
-gap> g:=RandomPartialPerm(10);;                                                
+gap> f:=PartialPerm([1, 70000], [70000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;                                                
 gap> f^g=g^-1*f*g;
 true
 
 # PowPPerm42, Case 5 of 6, dom(f)     known, deg(f)<=deg(g),  codeg(f)<=deg(g)
 gap> g:=PartialPermNC( [ 1, 2, 3, 4, 5, 9, 100000 ],
 > [ 9, 3, 8, 2, 10, 7, 11 ] );;
-gap> f:=RandomPartialPerm(70000);; DomainOfPartialPerm(f);;
+gap> f:=PartialPerm([1, 70000], [70000, 2]);; DomainOfPartialPerm(f);;
 gap> f^g=g^-1*f*g;
 true
 
@@ -2198,15 +2215,15 @@ gap> g^-1*f*g=last;
 true
 
 # PowPPerm44, Case 4 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)> deg(g)
-gap> f:=RandomPartialPerm(70000);;                                             
+gap> f:=PartialPerm([1, 70000], [70000, 2]);;                                             
 gap> DomainOfPartialPerm(f);;
-gap> g:=RandomPartialPerm(66000);;
+gap> g:=PartialPerm([1, 66000], [66000, 2]);;
 gap> f^g=g^-1*f*g;
 true
 
 # PowPPerm44, Case 5 of 6, dom(f)     known, deg(f)<=deg(g),  codeg(f)<=deg(g)
-gap> f:=RandomPartialPerm(66000);; DomainOfPartialPerm(f);;
-gap> g:=RandomPartialPerm(70000);;
+gap> f:=PartialPerm([1, 66000], [66000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 70000], [70000, 2]);;
 gap> f^g=g^-1*f*g;
 true
 
@@ -2275,7 +2292,7 @@ gap> f[4]^10;
 gap> f[4]^-4; 
 [8,3](2)(7)
 gap> 
-gap> f:=RandomPartialPerm(10000);;
+gap> f:=PartialPerm([1, 10000], [10000, 2]);;
 gap> g:=f^-1;;
 gap> ForAll(DomainOfPartialPerm(f), i-> (i^f)^g=i);
 true
