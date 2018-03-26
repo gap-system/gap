@@ -442,9 +442,9 @@ static Int IsSubsetFlagsCalls2;
 
 /****************************************************************************
 **
-*F  IS_SUBSET_FLAGS( <flags1>, <flags2> ) .  subset test with no safety check
+*F  IS_SUBSET_FLAGS( <flags1>, <flags2> ) . subset test with no safety check
 */
-static Obj IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
+static Int IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
 {
     Int    len1;
     Int    len2;
@@ -467,11 +467,11 @@ static Obj IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
 #ifdef COUNT_OPERS
                 IsSubsetFlagsCalls1++;
 #endif
-                return False;
+                return 0;
             }
         }
         if (len2 == 0) {
-            return True;
+            return 1;
         }
 
         /* If flags2 has only a "few" set bits then the best way is to
@@ -484,14 +484,14 @@ static Obj IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
             IsSubsetFlagsCalls2++;
 #endif
             if (LEN_FLAGS(flags1) < INT_INTOBJ(ELM_PLIST(trues, len2))) {
-                return False;
+                return 0;
             }
             for (i = len2; 0 < i; i--) {
                 if (!C_ELM_FLAGS(flags1, INT_INTOBJ(ELM_PLIST(trues, i)))) {
-                    return False;
+                    return 0;
                 }
             }
-            return True;
+            return 1;
         }
     }
 
@@ -503,22 +503,22 @@ static Obj IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
     if (len1 < len2) {
         for (i = len2 - 1; i >= len1; i--) {
             if (ptr2[i] != 0)
-                return False;
+                return 0;
         }
         for (i = len1 - 1; i >= 0; i--) {
             UInt x = ptr2[i];
             if ((x & ptr1[i]) != x)
-                return False;
+                return 0;
         }
     }
     else {
         for (i = len2 - 1; i >= 0; i--) {
             UInt x = ptr2[i];
             if ((x & ptr1[i]) != x)
-                return False;
+                return 0;
         }
     }
-    return True;
+    return 1;
 }
 
 /****************************************************************************
@@ -542,7 +542,7 @@ Obj FuncIS_SUBSET_FLAGS (
             "you can replace <flags2> via 'return <flags2>;'" );
     }
     
-    return IS_SUBSET_FLAGS(flags1, flags2);
+    return IS_SUBSET_FLAGS(flags1, flags2) ? True : False;
 }
 
 /****************************************************************************
@@ -889,8 +889,8 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
       changed = 0;
       for (i = hidden_imps_length, stop = lastand; i > stop; i--)
       {
-        if( IS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2)) == True &&
-           IS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) != True )
+        if( IS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2)) &&
+           !IS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) )
         {
           with = FuncAND_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1));
           changed = 1;
@@ -1018,8 +1018,8 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
         if (j <= LEN_PLIST(IMPLICATIONS_SIMPLE)
             && ELM_PLIST(IMPLICATIONS_SIMPLE, j)) {
            imp = ELM_PLIST(IMPLICATIONS_SIMPLE, j);
-           if( IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 2)) == True &&
-              IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) != True )
+           if( IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 2)) &&
+              !IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) )
            {
              with = FuncAND_FLAGS(0, with, ELM_PLIST(imp, 1));
            }
@@ -1036,8 +1036,8 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
       for (i = 1, stop = lastand; i < stop; i++)
       {
         imp = ELM_PLIST(IMPLICATIONS_COMPOSED, i);
-        if( IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 2)) == True &&
-           IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) != True )
+        if( IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 2)) &&
+           !IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) )
         {
           with = FuncAND_FLAGS(0, with, ELM_PLIST(imp, 1));
           changed = 1;
