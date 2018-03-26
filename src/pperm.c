@@ -182,6 +182,8 @@ static inline void SET_DOM_PPERM(Obj f, Obj dom)
 
 static UInt INIT_PPERM2(Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+
     UInt    deg, rank, i;
     UInt2 * ptf;
     Obj     img, dom;
@@ -230,6 +232,8 @@ static UInt INIT_PPERM2(Obj f)
 
 static UInt INIT_PPERM4(Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+
     UInt    deg, rank, i;
     UInt4 * ptf;
     Obj     img, dom;
@@ -289,6 +293,7 @@ UInt RANK_PPERM4(Obj f)
 
 static Obj SORT_PLIST_INTOBJ(Obj res)
 {
+    GAP_ASSERT(IS_PLIST(res));
     if (LEN_PLIST(res) == 0)
         return res;
 
@@ -299,6 +304,9 @@ static Obj SORT_PLIST_INTOBJ(Obj res)
 
 static Obj PreImagePPermInt(Obj pt, Obj f)
 {
+    GAP_ASSERT(IS_INTOBJ(pt));
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt2 * ptf2;
     UInt4 * ptf4;
     UInt    i, cpt, deg;
@@ -342,6 +350,8 @@ Obj FuncEmptyPartialPerm(Obj self)
 /* method for creating a partial perm */
 Obj FuncDensePartialPermNC(Obj self, Obj img)
 {
+    GAP_ASSERT(IS_LIST(img));
+
     UInt    deg, i, j, codeg;
     UInt2 * ptf2;
     UInt4 * ptf4;
@@ -392,6 +402,10 @@ Obj FuncDensePartialPermNC(Obj self, Obj img)
 /* assumes that dom is a set and that img is duplicatefree */
 Obj FuncSparsePartialPermNC(Obj self, Obj dom, Obj img)
 {
+    GAP_ASSERT(IS_LIST(dom));
+    GAP_ASSERT(IS_LIST(img));
+    GAP_ASSERT(LEN_LIST(dom) == LEN_LIST(img));
+
     UInt    rank, deg, i, j, codeg;
     Obj     f;
     UInt2 * ptf2;
@@ -494,6 +508,8 @@ Obj FuncRankOfPartialPerm(Obj self, Obj f)
 /* domain of a partial perm */
 Obj FuncDOMAIN_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     if (DOM_PPERM(f) == NULL) {
         if (TNUM_OBJ(f) == T_PPERM2) {
             INIT_PPERM2(f);
@@ -508,6 +524,8 @@ Obj FuncDOMAIN_PPERM(Obj self, Obj f)
 /* image list of pperm */
 Obj FuncIMAGE_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt2 * ptf2;
     UInt4 * ptf4;
     UInt    i, rank;
@@ -599,6 +617,8 @@ Obj FuncPREIMAGE_PPERM_INT(Obj self, Obj f, Obj pt)
 // find img(f)
 static UInt4 * FindImg(UInt n, UInt rank, Obj img)
 {
+    GAP_ASSERT(IS_PLIST(img));
+
     UInt i;
     UInt4 * ptseen;
 
@@ -615,6 +635,8 @@ static UInt4 * FindImg(UInt n, UInt rank, Obj img)
 // the least m, r such that f^m=f^m+r
 Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt    i, len, j, pow, rank, k, deg, n;
     UInt2 * ptf2;
     UInt4 * ptseen, *ptf4;
@@ -712,6 +734,8 @@ Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
 // the least power of <f> which is an idempotent
 Obj FuncSMALLEST_IDEM_POW_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     Obj x, ind, per, pow;
 
     x = FuncINDEX_PERIOD_PPERM(self, f);
@@ -727,6 +751,8 @@ Obj FuncSMALLEST_IDEM_POW_PPERM(Obj self, Obj f)
  * there exists <j> in <out> and a pos int <k> such that <j^(f^k)=i>. */
 Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt    i, j, rank, k, deg, nr, n;
     UInt2 * ptf2;
     UInt4 * ptseen, *ptf4;
@@ -809,6 +835,8 @@ Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f)
 /* the number of components of a partial perm (as a functional digraph) */
 Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt    i, j, n, rank, k, deg, nr;
     UInt2 * ptf2;
     UInt4 * ptseen, *ptf4;
@@ -881,6 +909,8 @@ Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f)
 /* the components of a partial perm (as a functional digraph) */
 Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt    i, j, n, rank, k, deg, nr, len;
     Obj     dom, img, out;
 
@@ -992,6 +1022,9 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
 // the points that can be obtained from <pt> by successively applying <f>.
 Obj FuncCOMPONENT_PPERM_INT(Obj self, Obj f, Obj pt)
 {
+    GAP_ASSERT(IS_PPERM(f));
+    GAP_ASSERT(IS_INTOBJ(pt));
+
     UInt i, j, deg, len;
     Obj  out;
 
@@ -1041,6 +1074,8 @@ Obj FuncCOMPONENT_PPERM_INT(Obj self, Obj f, Obj pt)
 // the fixed points of a partial perm
 Obj FuncFIXED_PTS_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt    len, i, j, deg, rank;
     Obj     out, dom;
     UInt2 * ptf2;
@@ -1106,6 +1141,8 @@ Obj FuncFIXED_PTS_PPERM(Obj self, Obj f)
 
 Obj FuncNR_FIXED_PTS_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt    nr, i, j, deg, rank;
     Obj     dom;
     UInt2 * ptf2;
@@ -1154,6 +1191,8 @@ Obj FuncNR_FIXED_PTS_PPERM(Obj self, Obj f)
 // the moved points of a partial perm
 Obj FuncMOVED_PTS_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt    len, i, j, deg, rank;
     Obj     out, dom;
     UInt2 * ptf2;
@@ -1217,6 +1256,8 @@ Obj FuncMOVED_PTS_PPERM(Obj self, Obj f)
 
 Obj FuncNR_MOVED_PTS_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt    nr, i, j, deg, rank;
     Obj     dom;
     UInt2 * ptf2;
@@ -1264,6 +1305,8 @@ Obj FuncNR_MOVED_PTS_PPERM(Obj self, Obj f)
 
 Obj FuncLARGEST_MOVED_PT_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt    i, j, deg;
     Obj     dom;
     UInt2 * ptf2;
@@ -1310,6 +1353,8 @@ Obj FuncLARGEST_MOVED_PT_PPERM(Obj self, Obj f)
 
 Obj FuncSMALLEST_MOVED_PT_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt    i, j, deg, rank;
     Obj     dom;
     UInt2 * ptf2;
@@ -1359,6 +1404,8 @@ Obj FuncSMALLEST_MOVED_PT_PPERM(Obj self, Obj f)
 // convert a T_PPERM4 with codeg<65536 to a T_PPERM2
 Obj FuncTRIM_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt    deg, i;
     UInt4 * ptf;
 
@@ -1403,6 +1450,8 @@ Obj FuncHASH_FUNC_FOR_PPERM(Obj self, Obj f, Obj data) {
 // test if a partial perm is an idempotent
 Obj FuncIS_IDEM_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt2 * ptf2;
     UInt4 * ptf4;
     UInt    deg, i, j, rank;
@@ -1452,6 +1501,8 @@ Obj FuncIS_IDEM_PPERM(Obj self, Obj f)
 /* an idempotent partial perm <e> with ker(e)=ker(f) */
 Obj FuncLEFT_ONE_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     Obj     dom, g;
     UInt    deg, i, j, rank;
     UInt2 * ptg2;
@@ -1497,6 +1548,8 @@ Obj FuncLEFT_ONE_PPERM(Obj self, Obj f)
 // an idempotent partial perm <e> with im(e)=im(f)
 Obj FuncRIGHT_ONE_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     Obj     g, img;
     UInt    i, j, codeg, rank;
     UInt2 * ptg2;
@@ -1546,6 +1599,9 @@ Obj FuncRIGHT_ONE_PPERM(Obj self, Obj f)
 // f<=g if and only if f is a restriction of g
 Obj FuncNaturalLeqPartialPerm(Obj self, Obj f, Obj g)
 {
+    GAP_ASSERT(IS_PPERM(f));
+    GAP_ASSERT(IS_PPERM(g));
+
     UInt   def, deg, i, j, rank;
     UInt2 *ptf2, *ptg2;
     UInt4 *ptf4, *ptg4;
@@ -1656,6 +1712,9 @@ Obj FuncNaturalLeqPartialPerm(Obj self, Obj f, Obj g)
 // could add use of rank to improve things here. JDM
 Obj FuncJOIN_IDEM_PPERMS(Obj self, Obj f, Obj g)
 {
+    GAP_ASSERT(IS_PPERM(f));
+    GAP_ASSERT(IS_PPERM(g));
+
     UInt   def, deg, dej, i;
     Obj    join;
     UInt2 *ptjoin2, *ptf2, *ptg2;
@@ -1765,6 +1824,9 @@ Obj FuncJOIN_IDEM_PPERMS(Obj self, Obj f, Obj g)
 // the union of f and g where this defines an injective function
 Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
 {
+    GAP_ASSERT(IS_PPERM(f));
+    GAP_ASSERT(IS_PPERM(g));
+
     UInt   deg, i, j, degf, degg, codeg, rank;
     UInt2 *ptf2, *ptg2, *ptjoin2;
     UInt4 *ptf4, *ptg4, *ptjoin4, *ptseen;
@@ -2028,6 +2090,9 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
 
 Obj FuncMEET_PPERMS(Obj self, Obj f, Obj g)
 {
+    GAP_ASSERT(IS_PPERM(f));
+    GAP_ASSERT(IS_PPERM(g));
+
     UInt   deg, i, j, degf, degg, codeg;
     UInt2 *ptf2, *ptg2, *ptmeet2;
     UInt4 *ptf4, *ptg4, *ptmeet4;
@@ -2152,6 +2217,9 @@ Obj FuncMEET_PPERMS(Obj self, Obj f, Obj g)
 // restricted partial perm where set is assumed to be a set of positive ints
 Obj FuncRESTRICTED_PPERM(Obj self, Obj f, Obj set)
 {
+    GAP_ASSERT(IS_PPERM(f));
+    GAP_ASSERT(IS_LIST(set));
+
     UInt   i, j, n, codeg, deg;
     UInt2 *ptf2, *ptg2;
     UInt4 *ptf4, *ptg4;
@@ -2217,6 +2285,9 @@ Obj FuncRESTRICTED_PPERM(Obj self, Obj f, Obj set)
 // a set of positive integers
 Obj FuncAS_PPERM_PERM(Obj self, Obj p, Obj set)
 {
+    GAP_ASSERT(IS_PERM2(p) || IS_PERM4(p));
+    GAP_ASSERT(IS_LIST(set));
+
     UInt   i, j, n, deg, codeg, dep;
     UInt2 *ptf2, *ptp2;
     UInt4 *ptf4, *ptp4;
@@ -2323,6 +2394,8 @@ Obj FuncAS_PPERM_PERM(Obj self, Obj p, Obj set)
 // for a partial perm with equal dom and img
 Obj FuncAS_PERM_PPERM(Obj self, Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt2 *ptf2, *ptp2;
     UInt4 *ptf4, *ptp4;
     UInt   deg, i, j, rank;
@@ -2369,6 +2442,9 @@ Obj FuncAS_PERM_PPERM(Obj self, Obj f)
 // and dom(f)=dom(g), no checking
 Obj FuncPERM_LEFT_QUO_PPERM_NC(Obj self, Obj f, Obj g)
 {
+    GAP_ASSERT(IS_PPERM(f));
+    GAP_ASSERT(IS_PPERM(g));
+
     UInt   deg, i, j, rank;
     Obj    perm, dom;
     UInt2 *ptf2, *ptp2, *ptg2;
@@ -2552,6 +2628,8 @@ Obj FuncHAS_IMG_PPERM(Obj self, Obj f)
 // an idempotent partial perm on the union of the domain and image
 Obj OnePPerm(Obj f)
 {
+    GAP_ASSERT(IS_PPERM(f));
+
     Obj     g, img, dom;
     UInt    i, j, deg, rank;
     UInt2 * ptg2;
@@ -2598,6 +2676,9 @@ Obj OnePPerm(Obj f)
 /* equality for partial perms */
 Int EqPPerm22(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+
     UInt2 * ptf = ADDR_PPERM2(f);
     UInt2 * ptg = ADDR_PPERM2(g);
     UInt    deg = DEG_PPERM2(f);
@@ -2630,6 +2711,9 @@ Int EqPPerm22(Obj f, Obj g)
 
 Int EqPPerm24(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
+
     UInt2 * ptf = ADDR_PPERM2(f);
     UInt4 * ptg = ADDR_PPERM4(g);
     UInt    deg = DEG_PPERM2(f);
@@ -2666,6 +2750,9 @@ Int EqPPerm42(Obj f, Obj g)
 
 Int EqPPerm44(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
+
     UInt4 * ptf = ADDR_PPERM4(f);
     UInt4 * ptg = ADDR_PPERM4(g);
     UInt    i, j, rank;
@@ -2699,6 +2786,9 @@ Int EqPPerm44(Obj f, Obj g)
 // beware this is different than it used to be...
 Int LtPPerm22(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+
     UInt2 * ptf = ADDR_PPERM2(f);
     UInt2 * ptg = ADDR_PPERM2(g);
     UInt    deg, i;
@@ -2726,6 +2816,9 @@ Int LtPPerm22(Obj f, Obj g)
 
 Int LtPPerm24(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
+
     UInt2 * ptf = ADDR_PPERM2(f);
     UInt4 * ptg = ADDR_PPERM4(g);
     UInt    deg, i;
@@ -2753,6 +2846,9 @@ Int LtPPerm24(Obj f, Obj g)
 
 Int LtPPerm42(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+
     UInt4 * ptf = ADDR_PPERM4(f);
     UInt2 * ptg = ADDR_PPERM2(g);
     UInt    deg, i;
@@ -2780,6 +2876,9 @@ Int LtPPerm42(Obj f, Obj g)
 
 Int LtPPerm44(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
+
     UInt4 * ptf = ADDR_PPERM4(f);
     UInt4 * ptg = ADDR_PPERM4(g);
     UInt    deg, i;
@@ -2808,6 +2907,9 @@ Int LtPPerm44(Obj f, Obj g)
 /* product of partial perm and partial perm */
 Obj ProdPPerm22(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+
     UInt   deg, degg, i, j, rank;
     UInt2 *ptf, *ptg, *ptfg, codeg;
     Obj    fg, dom;
@@ -2865,6 +2967,9 @@ Obj ProdPPerm22(Obj f, Obj g)
 // the product is always pperm2
 Obj ProdPPerm42(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+
     UInt    deg, degg, i, j, rank;
     UInt4 * ptf;
     UInt2 * ptg, *ptfg, codeg;
@@ -2921,6 +3026,9 @@ Obj ProdPPerm42(Obj f, Obj g)
 // it is possible that f*g could be represented as a PPERM2
 Obj ProdPPerm44(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
+
     UInt   deg, degg, codeg, i, j, rank;
     UInt4 *ptf, *ptg, *ptfg;
     Obj    fg, dom;
@@ -2982,6 +3090,9 @@ Obj ProdPPerm44(Obj f, Obj g)
 // it is possible that f*g could be represented as a PPERM2
 Obj ProdPPerm24(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
+
     UInt    deg, degg, i, j, codeg, rank;
     UInt2 * ptf;
     UInt4 * ptg, *ptfg;
@@ -3046,6 +3157,9 @@ Obj ProdPPerm24(Obj f, Obj g)
 // compose partial perms and perms
 Obj ProdPPerm2Perm2(Obj f, Obj p)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
+
     UInt2 * ptf, *ptp, *ptfp2;
     UInt4 * ptfp4;
     Obj     fp, dom;
@@ -3143,6 +3257,9 @@ Obj ProdPPerm2Perm2(Obj f, Obj p)
 
 Obj ProdPPerm4Perm4(Obj f, Obj p)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
+
     UInt4 *ptf, *ptp, *ptfp;
     Obj    fp, dom;
     UInt   codeg, dep, deg, i, j, rank;
@@ -3206,6 +3323,9 @@ Obj ProdPPerm4Perm4(Obj f, Obj p)
 
 Obj ProdPPerm2Perm4(Obj f, Obj p)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
+
     UInt2 * ptf;
     UInt4 * ptp, *ptfp;
     Obj     fp, dom;
@@ -3243,6 +3363,9 @@ Obj ProdPPerm2Perm4(Obj f, Obj p)
 
 Obj ProdPPerm4Perm2(Obj f, Obj p)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
+
     UInt4 *ptf, *ptfp;
     UInt2 *ptp, dep;
     Obj    fp, dom;
@@ -3282,6 +3405,9 @@ Obj ProdPPerm4Perm2(Obj f, Obj p)
 // product of a perm and a partial perm
 Obj ProdPerm2PPerm2(Obj p, Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+
     UInt2 deg, *ptp, *ptf, *ptpf;
     UInt  degf, i;
     Obj   pf;
@@ -3324,6 +3450,9 @@ Obj ProdPerm2PPerm2(Obj p, Obj f)
 
 Obj ProdPerm4PPerm4(Obj p, Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+
     UInt4 deg, *ptp, *ptf, *ptpf;
     UInt  degf, i;
     Obj   pf;
@@ -3366,6 +3495,9 @@ Obj ProdPerm4PPerm4(Obj p, Obj f)
 
 Obj ProdPerm4PPerm2(Obj p, Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+
     UInt4  deg, *ptp;
     UInt2 *ptf, *ptpf;
     UInt   degf, i;
@@ -3409,6 +3541,9 @@ Obj ProdPerm4PPerm2(Obj p, Obj f)
 
 Obj ProdPerm2PPerm4(Obj p, Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+
     UInt2 * ptp;
     UInt4 * ptf, *ptpf;
     UInt    deg, degf, i;
@@ -3453,6 +3588,8 @@ Obj ProdPerm2PPerm4(Obj p, Obj f)
 // the inverse of a partial perm
 Obj InvPPerm2(Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+
     UInt    deg, codeg, i, j, rank;
     UInt2 * ptf, *ptinv2;
     UInt4 * ptinv4;
@@ -3504,6 +3641,8 @@ Obj InvPPerm2(Obj f)
 
 Obj InvPPerm4(Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+
     UInt    deg, codeg, i, j, rank;
     UInt2 * ptinv2;
     UInt4 * ptf, *ptinv4;
@@ -3558,6 +3697,9 @@ Obj InvPPerm4(Obj f)
 // JDM
 Obj PowPPerm2Perm2(Obj f, Obj p)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
+
     UInt   deg, rank, degconj, i, j, k, codeg;
     UInt2 *ptf, *ptp, *ptconj, dep;
     Obj    conj, dom;
@@ -3614,6 +3756,9 @@ Obj PowPPerm2Perm2(Obj f, Obj p)
 
 Obj PowPPerm2Perm4(Obj f, Obj p)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
+
     UInt    deg, rank, degconj, i, j, k, codeg;
     UInt2 * ptf;
     UInt4 * ptp, *ptconj, dep;
@@ -3660,6 +3805,9 @@ Obj PowPPerm2Perm4(Obj f, Obj p)
 
 Obj PowPPerm4Perm2(Obj f, Obj p)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
+
     UInt    deg, rank, degconj, i, j, k, codeg;
     UInt4 * ptf, *ptconj, dep;
     UInt2 * ptp;
@@ -3716,6 +3864,9 @@ Obj PowPPerm4Perm2(Obj f, Obj p)
 
 Obj PowPPerm4Perm4(Obj f, Obj p)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
+
     UInt   deg, rank, degconj, i, j, k, codeg;
     UInt4 *ptf, *ptp, *ptconj, dep;
     Obj    conj, dom;
@@ -3775,6 +3926,9 @@ Obj PowPPerm4Perm4(Obj f, Obj p)
 // JDM not sure this is worth it...
 Obj PowPPerm22(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+
     UInt2 *ptg, *ptf, *ptconj, img;
     UInt   i, j, def, deg, dec, codeg, codec, min, len;
     Obj    dom, conj;
@@ -3993,6 +4147,9 @@ Obj PowPPerm22(Obj f, Obj g)
 
 Obj PowPPerm24(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
+
     UInt4 * ptg, *ptconj;
     UInt2 * ptf;
     UInt    i, j, def, deg, dec, codeg, codec, min, img, len;
@@ -4212,6 +4369,9 @@ Obj PowPPerm24(Obj f, Obj g)
 
 Obj PowPPerm42(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+
     UInt4 * ptf, *ptconj;
     UInt2 * ptg;
     UInt    i, j, def, deg, dec, codeg, codec, min, img, len;
@@ -4431,6 +4591,9 @@ Obj PowPPerm42(Obj f, Obj g)
 
 Obj PowPPerm44(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
+
     UInt4 *ptg, *ptf, *ptconj, img;
     UInt   i, j, def, deg, dec, codeg, codec, min, len;
     Obj    dom, conj;
@@ -4650,6 +4813,9 @@ Obj PowPPerm44(Obj f, Obj g)
 // f*p^-1
 Obj QuoPPerm2Perm2(Obj f, Obj p)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
+
     UInt2 *ptf, *ptp, *ptquo2;
     UInt4 *ptquo4, *pttmp;
     Obj    quo, dom;
@@ -4763,6 +4929,9 @@ Obj QuoPPerm2Perm2(Obj f, Obj p)
 
 Obj QuoPPerm4Perm4(Obj f, Obj p)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
+
     UInt4 *ptf, *ptp, *ptquo, *pttmp;
     Obj    quo, dom;
     UInt   codeg, lmp, deg, i, j, rank;
@@ -4845,6 +5014,9 @@ Obj QuoPPerm4Perm4(Obj f, Obj p)
 
 Obj QuoPPerm2Perm4(Obj f, Obj p)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
+
     UInt4 * ptp, *ptquo, *pttmp;
     UInt2 * ptf;
     Obj     quo, dom;
@@ -4904,6 +5076,9 @@ Obj QuoPPerm2Perm4(Obj f, Obj p)
 
 Obj QuoPPerm4Perm2(Obj f, Obj p)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
+
     UInt4 * ptf, *ptquo, *pttmp;
     UInt2 * ptp;
     Obj     quo, dom;
@@ -4961,6 +5136,9 @@ Obj QuoPPerm4Perm2(Obj f, Obj p)
 // f*g^-1 for partial perms
 Obj QuoPPerm22(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+
     UInt   deg, i, j, deginv, codeg, rank;
     UInt2 *ptf, *ptg;
     UInt4 *ptquo, *pttmp;
@@ -5039,6 +5217,9 @@ Obj QuoPPerm22(Obj f, Obj g)
 
 Obj QuoPPerm24(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
+
     UInt    deg, i, j, deginv, codeg, rank;
     UInt2 * ptf;
     UInt4 * ptg, *ptquo, *pttmp;
@@ -5124,6 +5305,9 @@ Obj QuoPPerm24(Obj f, Obj g)
 
 Obj QuoPPerm42(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+
     UInt    deg, i, j, deginv, codeg, rank;
     UInt2 * ptg;
     UInt4 * ptf, *ptquo, *pttmp;
@@ -5209,6 +5393,9 @@ Obj QuoPPerm42(Obj f, Obj g)
 
 Obj QuoPPerm44(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
+
     UInt   deg, i, j, deginv, codeg, rank;
     UInt4 *ptf, *ptg, *ptquo, *pttmp;
     Obj    quo, dom;
@@ -5287,6 +5474,7 @@ Obj QuoPPerm44(Obj f, Obj g)
 // i^f
 Obj PowIntPPerm2(Obj i, Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
 
     if (!IS_INTOBJ(i) || INT_INTOBJ(i) <= 0) {
         ErrorQuit("usage: the first argument should be a positive integer,",
@@ -5299,6 +5487,7 @@ Obj PowIntPPerm2(Obj i, Obj f)
 
 Obj PowIntPPerm4(Obj i, Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
 
     if (!IS_INTOBJ(i) || INT_INTOBJ(i) <= 0) {
         ErrorQuit("usage: the first argument should be a positive integer,",
@@ -5312,6 +5501,9 @@ Obj PowIntPPerm4(Obj i, Obj f)
 // p^-1*f
 Obj LQuoPerm2PPerm2(Obj p, Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+
     UInt2 *ptp, *ptf, *ptlquo, dep;
     UInt   def, i, j, del, len;
     Obj    dom, lquo;
@@ -5393,6 +5585,9 @@ Obj LQuoPerm2PPerm2(Obj p, Obj f)
 
 Obj LQuoPerm2PPerm4(Obj p, Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+
     UInt2 *ptp, dep;
     UInt4 *ptf, *ptlquo;
     UInt   def, i, j, del, len;
@@ -5474,6 +5669,9 @@ Obj LQuoPerm2PPerm4(Obj p, Obj f)
 
 Obj LQuoPerm4PPerm2(Obj p, Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+
     UInt4 *ptp, dep;
     UInt2 *ptf, *ptlquo;
     UInt   def, i, j, del, len;
@@ -5556,6 +5754,9 @@ Obj LQuoPerm4PPerm2(Obj p, Obj f)
 
 Obj LQuoPerm4PPerm4(Obj p, Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+
     UInt4 *ptp, *ptf, *ptlquo, dep;
     UInt   def, i, j, del, len;
     Obj    dom, lquo;
@@ -5638,6 +5839,9 @@ Obj LQuoPerm4PPerm4(Obj p, Obj f)
 // f^-1*g
 Obj LQuoPPerm22(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+
     UInt2 *ptg, *ptf, *ptlquo;
     UInt   i, j, def, deg, del, codef, codel, min, len;
     Obj    dom, lquo;
@@ -5744,6 +5948,9 @@ Obj LQuoPPerm22(Obj f, Obj g)
 
 Obj LQuoPPerm24(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
+
     UInt4 * ptg, *ptlquo;
     UInt2 * ptf;
     UInt    i, j, def, deg, del, codef, codel, min, len;
@@ -5851,6 +6058,9 @@ Obj LQuoPPerm24(Obj f, Obj g)
 
 Obj LQuoPPerm42(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+
     UInt2 * ptg, *ptlquo;
     UInt4 * ptf;
     UInt    i, j, def, deg, del, codef, codel, min, len;
@@ -5958,6 +6168,9 @@ Obj LQuoPPerm42(Obj f, Obj g)
 
 Obj LQuoPPerm44(Obj f, Obj g)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
+
     UInt4 *ptg, *ptf, *ptlquo;
     UInt   i, j, def, deg, del, codef, codel, min, len;
     Obj    dom, lquo;
@@ -6083,6 +6296,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
 
     GAP_ASSERT(IS_PLIST(set));
     GAP_ASSERT(LEN_PLIST(set) > 0);
+    GAP_ASSERT(IS_PPERM(f));
 
     const UInt len = LEN_PLIST(set);
 
@@ -6178,6 +6392,7 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
 
     GAP_ASSERT(IS_PLIST(tup));
     GAP_ASSERT(LEN_PLIST(tup) > 0);
+    GAP_ASSERT(IS_PPERM(f));
 
     const UInt len = LEN_PLIST(tup);
 
@@ -6232,6 +6447,9 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
 
 Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
 {
+    GAP_ASSERT(IS_LIST(set));
+    GAP_ASSERT(IS_PPERM(f));
+
     UInt2 * ptf2;
     UInt4 * ptf4;
     UInt    deg;
@@ -6304,6 +6522,8 @@ Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
 /* Save and load */
 void SavePPerm2(Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+
     UInt2 * ptr;
     UInt    len, i;
     len = DEG_PPERM2(f);
@@ -6314,6 +6534,8 @@ void SavePPerm2(Obj f)
 
 void LoadPPerm2(Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+
     UInt2 * ptr;
     UInt    len, i;
     len = DEG_PPERM2(f);
@@ -6324,6 +6546,8 @@ void LoadPPerm2(Obj f)
 
 void SavePPerm4(Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+
     UInt4 * ptr;
     UInt    len, i;
     len = DEG_PPERM4(f);
@@ -6334,6 +6558,8 @@ void SavePPerm4(Obj f)
 
 void LoadPPerm4(Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
+
     UInt4 * ptr;
     UInt    len, i;
     len = DEG_PPERM4(f);
@@ -6346,6 +6572,7 @@ Obj TYPE_PPERM2;
 
 Obj TypePPerm2(Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
     return TYPE_PPERM2;
 }
 
@@ -6353,6 +6580,7 @@ Obj TYPE_PPERM4;
 
 Obj TypePPerm4(Obj f)
 {
+    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
     return TYPE_PPERM4;
 }
 
