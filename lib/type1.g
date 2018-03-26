@@ -294,10 +294,17 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
     # get next type id
     NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID + 1;
     if NEW_TYPE_NEXT_ID >= NEW_TYPE_ID_LIMIT then
-        GASMAN("collect");
-        FLUSH_ALL_METHOD_CACHES();
-        NEW_TYPE_NEXT_ID := COMPACT_TYPE_IDS();
-        #Print("#I Compacting type IDs: ",NEW_TYPE_NEXT_ID+2^28," in use\n");
+        if IsHPCGAP then
+            # We cannot renumber types in HPC-GAP. However, HPC-GAP is
+            # only supported in 64bit mode, so we should not really run
+            # out of them anyway.
+            Error("No more type ids available");
+        else
+            GASMAN("collect");
+            FLUSH_ALL_METHOD_CACHES();
+            NEW_TYPE_NEXT_ID := COMPACT_TYPE_IDS();
+            #Print("#I Compacting type IDs: ",NEW_TYPE_NEXT_ID+2^28," in use\n");
+        fi;
     fi;
 
     # make the new type
