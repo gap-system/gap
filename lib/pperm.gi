@@ -545,12 +545,13 @@ function(arg)
     fi;
   elif Length(arg)=2 then  
     if IsSSortedList(arg[1]) and ForAll(arg[1], IsPosInt) and
-     IsDuplicateFreeList(arg[2]) and ForAll(arg[2], IsPosInt) then 
+     IsDuplicateFreeList(arg[2]) and ForAll(arg[2], IsPosInt) and
+     Length(arg[1]) = Length(arg[2]) then 
       return SparsePartialPermNC(arg[1], arg[2]); 
     else
       ErrorNoReturn("usage: the 1st argument must be a set of positive integers ",
       "and the 2nd argument must be a duplicate-free list of positive ",
-      "integers");
+      "integers of equal length to the first");
     fi;
   fi; 
  
