@@ -337,9 +337,7 @@ gap> TaskResult(task);
       <Func Name="OnTaskCancellationReturn" Arg='value'/>
       <Description>
         <Ref Func="OnTaskCancellationReturn"/> is a convenience function that does the same as:
-<Example><![CDATA[
-OnTaskCancellation(function() return value; end);
-]]></Example>
+        <C>OnTaskCancellation(function() return value; end);</C>
       </Description>
     </ManSection>
 
