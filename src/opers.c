@@ -2028,7 +2028,7 @@ static Obj NEXT_VMETHOD_PRINT_INFO;
 //
 // If <constructor> is non-zero, then <oper> is a constructor, leading
 // to <types[0]> being treated differently.
-static ALWAYS_INLINE Obj GetMethodUncached_NEW(
+static ALWAYS_INLINE Obj GetMethodUncached(
     UInt verbose, UInt constructor, UInt n, Obj oper, Int prec, Obj types[])
 {
     Obj methods = METHS_OPER(oper, n);
@@ -2127,90 +2127,6 @@ static ALWAYS_INLINE Obj GetMethodUncached_NEW(
     return Fail;
 }
 
-/* These will contain the GAP method selection functions */
-static Obj MethodSelectors[2][7];
-static Obj VerboseMethodSelectors[2][7];
-
-static ALWAYS_INLINE Obj
-GetMethodUncached(UInt n, Obj oper, Int prec, Obj types[], Obj selectors[][7])
-{
-    Obj  margs;
-    Obj  method = 0;
-    UInt i;
-    if (prec == 0) {
-        switch (n) {
-        case 0:
-            method = CALL_1ARGS(selectors[0][0], oper);
-            break;
-        case 1:
-            method = CALL_2ARGS(selectors[0][1], oper, types[0]);
-            break;
-        case 2:
-            method = CALL_3ARGS(selectors[0][2], oper, types[0], types[1]);
-            break;
-        case 3:
-            method = CALL_4ARGS(selectors[0][3], oper, types[0], types[1],
-                                types[2]);
-            break;
-        case 4:
-            method = CALL_5ARGS(selectors[0][4], oper, types[0], types[1],
-                                types[2], types[3]);
-            break;
-        case 5:
-            method = CALL_6ARGS(selectors[0][5], oper, types[0], types[1],
-                                types[2], types[3], types[4]);
-            break;
-        case 6:
-            margs = NEW_PLIST(T_PLIST, n + 1);
-            SET_ELM_PLIST(margs, 1, oper);
-            for (i = 0; i < n; i++)
-                SET_ELM_PLIST(margs, 2 + i, types[i]);
-            SET_LEN_PLIST(margs, n + 1);
-            method = CALL_XARGS(selectors[0][6], margs);
-            break;
-        default:
-            GAP_ASSERT(0);
-        }
-    }
-    else {
-        switch (n) {
-        case 0:
-            method = CALL_2ARGS(selectors[1][0], oper, INTOBJ_INT(prec));
-            break;
-        case 1:
-            method =
-                CALL_3ARGS(selectors[1][1], oper, INTOBJ_INT(prec), types[0]);
-            break;
-        case 2:
-            method = CALL_4ARGS(selectors[1][2], oper, INTOBJ_INT(prec),
-                                types[0], types[1]);
-            break;
-        case 3:
-            method = CALL_5ARGS(selectors[1][3], oper, INTOBJ_INT(prec),
-                                types[0], types[1], types[2]);
-            break;
-        case 4:
-            method = CALL_6ARGS(selectors[1][4], oper, INTOBJ_INT(prec),
-                                types[0], types[1], types[2], types[3]);
-            break;
-        case 5:
-        case 6:
-
-            margs = NEW_PLIST(T_PLIST, n + 2);
-            SET_ELM_PLIST(margs, 1, oper);
-            SET_ELM_PLIST(margs, 2, INTOBJ_INT(prec));
-            for (i = 0; i < n; i++)
-                SET_ELM_PLIST(margs, 3 + i, types[i]);
-            SET_LEN_PLIST(margs, n + 2);
-            method = CALL_XARGS(selectors[1][n], margs);
-            break;
-        default:
-            GAP_ASSERT(0);
-        }
-    }
-    return method;
-}
-
 #ifdef COUNT_OPERS
 static Int OperationHit;
 static Int OperationMiss;
@@ -2220,7 +2136,6 @@ static Int OperationNext;
 
 static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
                  UInt n,
-                 Obj  selectors[2][7],
                  UInt verbose,
                  UInt constructor,
                  Obj  arg1,
@@ -2298,14 +2213,8 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
 
         /* otherwise try to find one in the list of methods */
         if (!method) {
-            method = GetMethodUncached(n, oper, prec, types, selectors);
-            Obj meth2 = GetMethodUncached_NEW(verbose, constructor, n, oper,
+            method = GetMethodUncached(verbose, constructor, n, oper,
                                               prec, types);
-            if (method != meth2) {
-                FPUTS_TO_STDERR(
-                    "panic: new and old method dispatch disagree\n");
-                SyExit(1);
-            }
             /* update the cache */
             if (!verbose && method)
                 CacheMethod(oper, n, prec, ids, method);
@@ -2378,44 +2287,44 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
 
 Obj DoOperation0Args(Obj oper)
 {
-    return DoOperationNArgs(oper, 0, MethodSelectors, 0, 0, 0, 0, 0, 0, 0, 0);
+    return DoOperationNArgs(oper, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 Obj DoOperation1Args(Obj oper, Obj arg1)
 {
-    return DoOperationNArgs(oper, 1, MethodSelectors, 0, 0, arg1, 0, 0, 0, 0,
+    return DoOperationNArgs(oper, 1, 0, 0, arg1, 0, 0, 0, 0,
                             0);
 }
 
 Obj DoOperation2Args(Obj oper, Obj arg1, Obj arg2)
 {
-    return DoOperationNArgs(oper, 2, MethodSelectors, 0, 0, arg1, arg2, 0, 0,
+    return DoOperationNArgs(oper, 2, 0, 0, arg1, arg2, 0, 0,
                             0, 0);
 }
 
 Obj DoOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
 {
-    return DoOperationNArgs(oper, 3, MethodSelectors, 0, 0, arg1, arg2, arg3,
+    return DoOperationNArgs(oper, 3, 0, 0, arg1, arg2, arg3,
                             0, 0, 0);
 }
 
 Obj DoOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-    return DoOperationNArgs(oper, 4, MethodSelectors, 0, 0, arg1, arg2, arg3,
+    return DoOperationNArgs(oper, 4, 0, 0, arg1, arg2, arg3,
                             arg4, 0, 0);
 }
 
 Obj DoOperation5Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-    return DoOperationNArgs(oper, 5, MethodSelectors, 0, 0, arg1, arg2, arg3,
+    return DoOperationNArgs(oper, 5, 0, 0, arg1, arg2, arg3,
                             arg4, arg5, 0);
 }
 
 Obj DoOperation6Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-    return DoOperationNArgs(oper, 6, MethodSelectors, 0, 0, arg1, arg2, arg3,
+    return DoOperationNArgs(oper, 6, 0, 0, arg1, arg2, arg3,
                             arg4, arg5, arg6);
 }
 
@@ -2438,45 +2347,45 @@ Obj DoOperationXArgs(Obj self, Obj args)
 */
 Obj DoVerboseOperation0Args(Obj oper)
 {
-    return DoOperationNArgs(oper, 0, VerboseMethodSelectors, 1, 0, 0, 0, 0, 0,
+    return DoOperationNArgs(oper, 0, 1, 0, 0, 0, 0, 0,
                             0, 0);
 }
 
 Obj DoVerboseOperation1Args(Obj oper, Obj arg1)
 {
-    return DoOperationNArgs(oper, 1, VerboseMethodSelectors, 1, 0, arg1, 0, 0,
+    return DoOperationNArgs(oper, 1, 1, 0, arg1, 0, 0,
                             0, 0, 0);
 }
 
 Obj DoVerboseOperation2Args(Obj oper, Obj arg1, Obj arg2)
 {
-    return DoOperationNArgs(oper, 2, VerboseMethodSelectors, 1, 0, arg1, arg2,
+    return DoOperationNArgs(oper, 2, 1, 0, arg1, arg2,
                             0, 0, 0, 0);
 }
 
 Obj DoVerboseOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
 {
-    return DoOperationNArgs(oper, 3, VerboseMethodSelectors, 1, 0, arg1, arg2,
+    return DoOperationNArgs(oper, 3, 1, 0, arg1, arg2,
                             arg3, 0, 0, 0);
 }
 
 Obj DoVerboseOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-    return DoOperationNArgs(oper, 4, VerboseMethodSelectors, 1, 0, arg1, arg2,
+    return DoOperationNArgs(oper, 4, 1, 0, arg1, arg2,
                             arg3, arg4, 0, 0);
 }
 
 Obj DoVerboseOperation5Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-    return DoOperationNArgs(oper, 5, VerboseMethodSelectors, 1, 0, arg1, arg2,
+    return DoOperationNArgs(oper, 5, 1, 0, arg1, arg2,
                             arg3, arg4, arg5, 0);
 }
 
 Obj DoVerboseOperation6Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-    return DoOperationNArgs(oper, 6, VerboseMethodSelectors, 1, 0, arg1, arg2,
+    return DoOperationNArgs(oper, 6, 1, 0, arg1, arg2,
                             arg3, arg4, arg5, arg6);
 }
 
@@ -2533,14 +2442,6 @@ Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr)
 
 
 /****************************************************************************
- **
- *F  DoConstructor( <name> ) . . . . . . . . . . . . .  make a new constructor
- */
-
-Obj ConstructorSelectors[2][7];
-Obj VerboseConstructorSelectors[2][7];
-
-/****************************************************************************
 **
 **  DoConstructor0Args( <oper> )
 **
@@ -2550,45 +2451,45 @@ Obj VerboseConstructorSelectors[2][7];
 
 Obj DoConstructor0Args(Obj oper)
 {
-    return DoOperationNArgs(oper, 0, ConstructorSelectors, 0, 1, 0, 0, 0, 0,
+    return DoOperationNArgs(oper, 0, 0, 1, 0, 0, 0, 0,
                             0, 0);
 }
 
 Obj DoConstructor1Args(Obj oper, Obj arg1)
 {
-    return DoOperationNArgs(oper, 1, ConstructorSelectors, 0, 1, arg1, 0, 0,
+    return DoOperationNArgs(oper, 1, 0, 1, arg1, 0, 0,
                             0, 0, 0);
 }
 
 Obj DoConstructor2Args(Obj oper, Obj arg1, Obj arg2)
 {
-    return DoOperationNArgs(oper, 2, ConstructorSelectors, 0, 1, arg1, arg2,
+    return DoOperationNArgs(oper, 2, 0, 1, arg1, arg2,
                             0, 0, 0, 0);
 }
 
 Obj DoConstructor3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
 {
-    return DoOperationNArgs(oper, 3, ConstructorSelectors, 0, 1, arg1, arg2,
+    return DoOperationNArgs(oper, 3, 0, 1, arg1, arg2,
                             arg3, 0, 0, 0);
 }
 
 Obj DoConstructor4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-    return DoOperationNArgs(oper, 4, ConstructorSelectors, 0, 1, arg1, arg2,
+    return DoOperationNArgs(oper, 4, 0, 1, arg1, arg2,
                             arg3, arg4, 0, 0);
 }
 
 Obj DoConstructor5Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-    return DoOperationNArgs(oper, 5, ConstructorSelectors, 0, 1, arg1, arg2,
+    return DoOperationNArgs(oper, 5, 0, 1, arg1, arg2,
                             arg3, arg4, arg5, 0);
 }
 
 Obj DoConstructor6Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-    return DoOperationNArgs(oper, 6, ConstructorSelectors, 0, 1, arg1, arg2,
+    return DoOperationNArgs(oper, 6, 0, 1, arg1, arg2,
                             arg3, arg4, arg5, arg6);
 }
 
@@ -2610,46 +2511,46 @@ Obj DoConstructorXArgs(Obj self, Obj args)
 
 Obj DoVerboseConstructor0Args(Obj oper)
 {
-    return DoOperationNArgs(oper, 0, VerboseConstructorSelectors, 1, 1, 0, 0,
+    return DoOperationNArgs(oper, 0, 1, 1, 0, 0,
                             0, 0, 0, 0);
 }
 
 Obj DoVerboseConstructor1Args(Obj oper, Obj arg1)
 {
-    return DoOperationNArgs(oper, 1, VerboseConstructorSelectors, 1, 1, arg1,
+    return DoOperationNArgs(oper, 1, 1, 1, arg1,
                             0, 0, 0, 0, 0);
 }
 
 Obj DoVerboseConstructor2Args(Obj oper, Obj arg1, Obj arg2)
 {
-    return DoOperationNArgs(oper, 2, VerboseConstructorSelectors, 1, 1, arg1,
+    return DoOperationNArgs(oper, 2, 1, 1, arg1,
                             arg2, 0, 0, 0, 0);
 }
 
 Obj DoVerboseConstructor3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
 {
-    return DoOperationNArgs(oper, 3, VerboseConstructorSelectors, 1, 1, arg1,
+    return DoOperationNArgs(oper, 3, 1, 1, arg1,
                             arg2, arg3, 0, 0, 0);
 }
 
 Obj DoVerboseConstructor4Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-    return DoOperationNArgs(oper, 4, VerboseConstructorSelectors, 1, 1, arg1,
+    return DoOperationNArgs(oper, 4, 1, 1, arg1,
                             arg2, arg3, arg4, 0, 0);
 }
 
 Obj DoVerboseConstructor5Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-    return DoOperationNArgs(oper, 5, VerboseConstructorSelectors, 1, 1, arg1,
+    return DoOperationNArgs(oper, 5, 1, 1, arg1,
                             arg2, arg3, arg4, arg5, 0);
 }
 
 Obj DoVerboseConstructor6Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-    return DoOperationNArgs(oper, 6, VerboseConstructorSelectors, 1, 1, arg1,
+    return DoOperationNArgs(oper, 6, 1, 1, arg1,
                             arg2, arg3, arg4, arg5, arg6);
 }
 
@@ -4326,71 +4227,6 @@ static Int InitKernel (
     /* install the (function) copies of global variables                   */
     /*for the inside-out (kernel to library) interface                    */
     InitGlobalBag( &TRY_NEXT_METHOD, "src/opers.c:TRY_NEXT_METHOD" );
-    
-    ImportFuncFromLibrary( "METHOD_0ARGS", &(MethodSelectors[0][0]) );
-    ImportFuncFromLibrary( "METHOD_1ARGS", &(MethodSelectors[0][1]) );
-    ImportFuncFromLibrary( "METHOD_2ARGS", &(MethodSelectors[0][2]) );
-    ImportFuncFromLibrary( "METHOD_3ARGS", &(MethodSelectors[0][3]) );
-    ImportFuncFromLibrary( "METHOD_4ARGS", &(MethodSelectors[0][4]) );
-    ImportFuncFromLibrary( "METHOD_5ARGS", &(MethodSelectors[0][5]) );
-    ImportFuncFromLibrary( "METHOD_6ARGS", &(MethodSelectors[0][6]) );
-
-    ImportFuncFromLibrary( "NEXT_METHOD_0ARGS", &(MethodSelectors[1][0]) );
-    ImportFuncFromLibrary( "NEXT_METHOD_1ARGS", &(MethodSelectors[1][1]) );
-    ImportFuncFromLibrary( "NEXT_METHOD_2ARGS", &(MethodSelectors[1][2]) );
-    ImportFuncFromLibrary( "NEXT_METHOD_3ARGS", &(MethodSelectors[1][3]) );
-    ImportFuncFromLibrary( "NEXT_METHOD_4ARGS", &(MethodSelectors[1][4]) );
-    ImportFuncFromLibrary( "NEXT_METHOD_5ARGS", &(MethodSelectors[1][5]) );
-    ImportFuncFromLibrary( "NEXT_METHOD_6ARGS", &(MethodSelectors[1][6]) );
-
-    ImportFuncFromLibrary( "VMETHOD_0ARGS", &(VerboseMethodSelectors[0][0]) );
-    ImportFuncFromLibrary( "VMETHOD_1ARGS", &(VerboseMethodSelectors[0][1]) );
-    ImportFuncFromLibrary( "VMETHOD_2ARGS", &(VerboseMethodSelectors[0][2]) );
-    ImportFuncFromLibrary( "VMETHOD_3ARGS", &(VerboseMethodSelectors[0][3]) );
-    ImportFuncFromLibrary( "VMETHOD_4ARGS", &(VerboseMethodSelectors[0][4]) );
-    ImportFuncFromLibrary( "VMETHOD_5ARGS", &(VerboseMethodSelectors[0][5]) );
-    ImportFuncFromLibrary( "VMETHOD_6ARGS", &(VerboseMethodSelectors[0][6]) );
-
-    ImportFuncFromLibrary( "NEXT_VMETHOD_0ARGS", &(VerboseMethodSelectors[1][0]) );
-    ImportFuncFromLibrary( "NEXT_VMETHOD_1ARGS", &(VerboseMethodSelectors[1][1]) );
-    ImportFuncFromLibrary( "NEXT_VMETHOD_2ARGS", &(VerboseMethodSelectors[1][2]) );
-    ImportFuncFromLibrary( "NEXT_VMETHOD_3ARGS", &(VerboseMethodSelectors[1][3]) );
-    ImportFuncFromLibrary( "NEXT_VMETHOD_4ARGS", &(VerboseMethodSelectors[1][4]) );
-    ImportFuncFromLibrary( "NEXT_VMETHOD_5ARGS", &(VerboseMethodSelectors[1][5]) );
-    ImportFuncFromLibrary( "NEXT_VMETHOD_6ARGS", &(VerboseMethodSelectors[1][6]) );
-
-
-    ImportFuncFromLibrary( "CONSTRUCTOR_0ARGS", &(ConstructorSelectors[0][0]) );
-    ImportFuncFromLibrary( "CONSTRUCTOR_1ARGS", &(ConstructorSelectors[0][1]) );
-    ImportFuncFromLibrary( "CONSTRUCTOR_2ARGS", &(ConstructorSelectors[0][2]) );
-    ImportFuncFromLibrary( "CONSTRUCTOR_3ARGS", &(ConstructorSelectors[0][3]) );
-    ImportFuncFromLibrary( "CONSTRUCTOR_4ARGS", &(ConstructorSelectors[0][4]) );
-    ImportFuncFromLibrary( "CONSTRUCTOR_5ARGS", &(ConstructorSelectors[0][5]) );
-    ImportFuncFromLibrary( "CONSTRUCTOR_6ARGS", &(ConstructorSelectors[0][6]) );
-
-    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_0ARGS", &(ConstructorSelectors[1][0]) );
-    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_1ARGS", &(ConstructorSelectors[1][1]) );
-    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_2ARGS", &(ConstructorSelectors[1][2]) );
-    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_3ARGS", &(ConstructorSelectors[1][3]) );
-    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_4ARGS", &(ConstructorSelectors[1][4]) );
-    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_5ARGS", &(ConstructorSelectors[1][5]) );
-    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_6ARGS", &(ConstructorSelectors[1][6]) );
-
-    ImportFuncFromLibrary( "VCONSTRUCTOR_0ARGS", &(VerboseConstructorSelectors[0][0]) );
-    ImportFuncFromLibrary( "VCONSTRUCTOR_1ARGS", &(VerboseConstructorSelectors[0][1]) );
-    ImportFuncFromLibrary( "VCONSTRUCTOR_2ARGS", &(VerboseConstructorSelectors[0][2]) );
-    ImportFuncFromLibrary( "VCONSTRUCTOR_3ARGS", &(VerboseConstructorSelectors[0][3]) );
-    ImportFuncFromLibrary( "VCONSTRUCTOR_4ARGS", &(VerboseConstructorSelectors[0][4]) );
-    ImportFuncFromLibrary( "VCONSTRUCTOR_5ARGS", &(VerboseConstructorSelectors[0][5]) );
-    ImportFuncFromLibrary( "VCONSTRUCTOR_6ARGS", &(VerboseConstructorSelectors[0][6]) );
-
-    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_0ARGS", &(VerboseConstructorSelectors[1][0]) );
-    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_1ARGS", &(VerboseConstructorSelectors[1][1]) );
-    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_2ARGS", &(VerboseConstructorSelectors[1][2]) );
-    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_3ARGS", &(VerboseConstructorSelectors[1][3]) );
-    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_4ARGS", &(VerboseConstructorSelectors[1][4]) );
-    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_5ARGS", &(VerboseConstructorSelectors[1][5]) );
-    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_6ARGS", &(VerboseConstructorSelectors[1][6]) );
 
     ImportFuncFromLibrary("ReturnTrue", &ReturnTrue);
     ImportFuncFromLibrary("VMETHOD_PRINT_INFO", &VMETHOD_PRINT_INFO);
