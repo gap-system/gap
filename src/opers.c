@@ -1799,7 +1799,7 @@ Obj CallHandleMethodNotFound( Obj oper,
 **
 */
 
-#ifdef USE_GASMAN
+#if !defined(HPCGAP)
 
 static Obj FLUSH_ALL_METHOD_CACHES;
 
@@ -4146,7 +4146,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(DO_NOTHING_SETTER, 2, "obj, val"),
     GVAR_FUNC(IS_AND_FILTER, 1, "filter"),
     GVAR_FUNC(IS_CONSTRUCTOR, 1, "x"),
-#ifdef USE_GASMAN
+#if !defined(HPCGAP)
     GVAR_FUNC(COMPACT_TYPE_IDS, 0, ""),
 #endif
     GVAR_FUNC(OPER_TO_ATTRIBUTE, 1, "oper"),
@@ -4339,7 +4339,7 @@ static Int InitKernel (
     
     ImportFuncFromLibrary( "HANDLE_METHOD_NOT_FOUND", &HandleMethodNotFound );
 
-#ifdef USE_GASMAN
+#if !defined(HPCGAP)
     ImportGVarFromLibrary( "IsType", &IsType );
     ImportFuncFromLibrary( "FLUSH_ALL_METHOD_CACHES", &FLUSH_ALL_METHOD_CACHES );
 #endif

@@ -1898,6 +1898,7 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
     od;
 end );
 
+if not IsHPCGAP then
 
 BIND_GLOBAL( "FLUSH_ALL_METHOD_CACHES", function()
     local oper,j;
@@ -1907,7 +1908,8 @@ BIND_GLOBAL( "FLUSH_ALL_METHOD_CACHES", function()
         od;
     od;
 end);
-        
+
+fi;
 
 #############################################################################
 ##
