@@ -405,6 +405,9 @@ InstallMethod( IsNilpotentGroup,
         SetIsPGroup( G, true );
         SetPrimePGroup( G, SmallestRootInt( s ) );
         return true;
+    elif s = 1 then
+        SetIsPGroup( G, true );
+        return true;
     else
         SetIsPGroup( G, false );
     fi;
