@@ -951,7 +951,16 @@ InstallGlobalFunction( IsPrimePowerInt, function(n)
             i := i + 1;
             k := Primes[i];
         else
+            # need more primes...
             k := NextPrimeInt( k );
+            # since we are now beyond the primes in Primes, for which we
+            # checked whether they divide n, we might now just as well
+            # test if k divides n, too
+            r := PVALUATION_INT(n, k);
+            if r > 0 then
+                if s = -1 and IsEvenInt(r) then return false; fi;
+                return n = k^r;
+            fi;
         fi;
     od;
 
