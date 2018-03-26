@@ -2015,6 +2015,118 @@ CacheMethod(Obj oper, UInt n, Int prec, Obj * ids, Obj method)
     CHANGED_BAG(cacheBag);
 }
 
+static Obj ReturnTrue;
+static Obj VMETHOD_PRINT_INFO;
+static Obj NEXT_VMETHOD_PRINT_INFO;
+
+// This function searches through the methods of operation <oper> with
+// arity <n>, looking for those matching the given <types>. Among these,
+// the <prec>-th is selected (<prec> starts at 0).
+//
+// If <verbose> is non-zero, the matching method are printed by calling
+// 'VMETHOD_PRINT_INFO' resp. 'NEXT_VMETHOD_PRINT_INFO'.
+//
+// If <constructor> is non-zero, then <oper> is a constructor, leading
+// to <types[0]> being treated differently.
+static ALWAYS_INLINE Obj GetMethodUncached_NEW(
+    UInt verbose, UInt constructor, UInt n, Obj oper, Int prec, Obj types[])
+{
+    Obj methods = METHS_OPER(oper, n);
+    if (methods == 0)
+        return Fail;
+
+    const UInt len = LEN_PLIST(methods);
+    UInt       j = 0;
+    for (UInt pos = 0; pos < len; pos += n + 4) {
+        // each method comprises n+4 entries in the 'methods' list:
+        // entry 1 is the family predicated;
+        // entries 2 till n+1 are the n argument filters
+        // entry n+2 is the actual method
+        // entry n+3 is the rank
+        // entry n+4 is the info text
+
+        // check argument filters against the given types
+        Obj filter;
+        int k = 1;
+        if (constructor) {
+            filter = ELM_PLIST(methods, pos + k + 1);
+            GAP_ASSERT(TNUM_OBJ(filter) == T_FLAGS);
+            if (!IS_SUBSET_FLAGS(filter, types[0]))
+                continue;
+            k++;
+        }
+        for (; k <= n; ++k) {
+            filter = ELM_PLIST(methods, pos + k + 1);
+            GAP_ASSERT(TNUM_OBJ(filter) == T_FLAGS);
+            if (!IS_SUBSET_FLAGS(FLAGS_TYPE(types[k - 1]), filter))
+                break;
+        }
+
+        // if some filter did not match, go to next method
+        if (k <= n)
+            continue;
+
+        // check family predicate, with a hot path for the very
+        // common trivial predicate 'ReturnTrue'
+        Obj fampred = ELM_PLIST(methods, pos + 1);
+        if (fampred != ReturnTrue) {
+            Obj res = 0;
+            switch (n) {
+            case 0:
+                res = CALL_0ARGS(fampred);
+                break;
+            case 1:
+                res = CALL_1ARGS(fampred, FAMILY_TYPE(types[0]));
+                break;
+            case 2:
+                res = CALL_2ARGS(fampred, FAMILY_TYPE(types[0]),
+                                 FAMILY_TYPE(types[1]));
+                break;
+            case 3:
+                res =
+                    CALL_3ARGS(fampred, FAMILY_TYPE(types[0]),
+                               FAMILY_TYPE(types[1]), FAMILY_TYPE(types[2]));
+                break;
+            case 4:
+                res = CALL_4ARGS(fampred, FAMILY_TYPE(types[0]),
+                                 FAMILY_TYPE(types[1]), FAMILY_TYPE(types[2]),
+                                 FAMILY_TYPE(types[3]));
+                break;
+            case 5:
+                res =
+                    CALL_5ARGS(fampred, FAMILY_TYPE(types[0]),
+                               FAMILY_TYPE(types[1]), FAMILY_TYPE(types[2]),
+                               FAMILY_TYPE(types[3]), FAMILY_TYPE(types[4]));
+                break;
+            case 6:
+                res = CALL_6ARGS(fampred, FAMILY_TYPE(types[0]),
+                                 FAMILY_TYPE(types[1]), FAMILY_TYPE(types[2]),
+                                 FAMILY_TYPE(types[3]), FAMILY_TYPE(types[4]),
+                                 FAMILY_TYPE(types[5]));
+                break;
+            default:
+                ErrorMayQuit("not supported yet", 0, 0);
+            }
+
+            if (res != True)
+                continue;
+        }
+
+        // we have a match; is it the right one?
+        if (prec == j) {
+            if (verbose) {
+                CALL_3ARGS(prec == 0 ? VMETHOD_PRINT_INFO : NEXT_VMETHOD_PRINT_INFO, methods,
+                           INTOBJ_INT(pos / (n + 4) + 1), INTOBJ_INT(n));
+
+            }
+            Obj meth = ELM_PLIST(methods, pos + n + 2);
+            return meth;
+        }
+        j++;
+    }
+    return Fail;
+}
+
 /* These will contain the GAP method selection functions */
 static Obj MethodSelectors[2][7];
 static Obj VerboseMethodSelectors[2][7];
@@ -2187,6 +2299,13 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
         /* otherwise try to find one in the list of methods */
         if (!method) {
             method = GetMethodUncached(n, oper, prec, types, selectors);
+            Obj meth2 = GetMethodUncached_NEW(verbose, constructor, n, oper,
+                                              prec, types);
+            if (method != meth2) {
+                FPUTS_TO_STDERR(
+                    "panic: new and old method dispatch disagree\n");
+                SyExit(1);
+            }
             /* update the cache */
             if (!verbose && method)
                 CacheMethod(oper, n, prec, ids, method);
@@ -4273,6 +4392,9 @@ static Int InitKernel (
     ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_5ARGS", &(VerboseConstructorSelectors[1][5]) );
     ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_6ARGS", &(VerboseConstructorSelectors[1][6]) );
 
+    ImportFuncFromLibrary("ReturnTrue", &ReturnTrue);
+    ImportFuncFromLibrary("VMETHOD_PRINT_INFO", &VMETHOD_PRINT_INFO);
+    ImportFuncFromLibrary("NEXT_VMETHOD_PRINT_INFO", &NEXT_VMETHOD_PRINT_INFO);
 
     ImportFuncFromLibrary( "SET_FILTER_OBJ",   &SET_FILTER_OBJ );
     ImportFuncFromLibrary( "RESET_FILTER_OBJ", &RESET_FILTER_OBJ );
@@ -4304,6 +4426,7 @@ static Int InitKernel (
 
     /* import copy of REREADING */
     ImportGVarFromLibrary( "REREADING", &REREADING );
+
 
 #ifdef HPCGAP
     /* initialize cache mutex */
