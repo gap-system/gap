@@ -2440,6 +2440,12 @@ gap> MultiplicativeZeroOp(x);
 gap> MultiplicativeZero(x);
 <empty partial perm>
 
+# Test PartialPerm (for sparse incorrect arg)
+gap> PartialPerm([1,2,8],[3,4,1,2]);
+Error, usage: the 1st argument must be a set of positive integers and the 2nd \
+argument must be a duplicate-free list of positive integers of equal length to\
+ the first
+
 #
 gap> SetUserPreference("PartialPermDisplayLimit", display);;
 gap> SetUserPreference("NotationForPartialPerm", notationpp);;
