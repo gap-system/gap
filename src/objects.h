@@ -28,7 +28,7 @@
 
 /****************************************************************************
 **
-*T  Obj . . . . . . . . . . . . . . . . . . . . . . . . . . . type of objects
+*t  Obj . . . . . . . . . . . . . . . . . . . . . . . . . . . type of objects
 **
 **  'Obj' is the type of objects.
 **
@@ -337,7 +337,7 @@ static inline void CLEAR_OBJ_FLAG(Obj obj, uint8_t flag)
 
 /****************************************************************************
 **
-** Object flags for use with SET_OBJ_FLAG() etc.
+**  Object flags for use with SET_OBJ_FLAG() etc.
 **
 */
 enum {
@@ -539,17 +539,17 @@ extern Int IsInternallyMutableObj(Obj obj);
 
 /****************************************************************************
 **
-*V  SaveObjFuncs (<type>) . . . . . . . . . . . . . functions to save objects
+*V  SaveObjFuncs[ <type> ]  . . . . . . . . . . . . functions to save objects
 **
-** 'SaveObjFuncs' is the dispatch table that  contains, for every type
+**  'SaveObjFuncs' is the dispatch table that  contains, for every type
 **  of  objects, a pointer to the saving function for objects of that type
 **  These should not handle the file directly, but should work via the
 **  functions 'SaveObjRef', 'SaveUInt<n>' (<n> = 1,2,4 or 8), and others
 **  to be determined. Their role is to identify the C types of the various
 **  parts of the bag, and perhaps to leave out some information that does
 **  not need to be saved. By the time this function is called, the bag
-**  size and type have already been saved
-**  No saving function may allocate any bag
+**  size and type have already been saved.
+**  No saving function may allocate any bag.
 */
 
 extern void (*SaveObjFuncs[256]) ( Obj obj );
@@ -559,17 +559,17 @@ extern void SaveObjError( Obj obj );
 
 /****************************************************************************
 **
-*V  LoadObjFuncs (<type>) . . . . . . . . . . . . . functions to load objects
+*V  LoadObjFuncs[ <type> ]  . . . . . . . . . . . . functions to load objects
 **
-** 'LoadObjFuncs' is the dispatch table that  contains, for every type
+**  'LoadObjFuncs' is the dispatch table that  contains, for every type
 **  of  objects, a pointer to the loading function for objects of that type
 **  These should not handle the file directly, but should work via the
 **  functions 'LoadObjRef', 'LoadUInt<n>' (<n> = 1,2,4 or 8), and others
 **  to be determined. Their role is to reinstall the information in the bag
 **  and reconstruct anything that was left out. By the time this function is
 **  called, the bag size and type have already been loaded and the bag argument
-**  contains the bag in question
-**  No loading function may allocate any bag
+**  contains the bag in question.
+**  No loading function may allocate any bag.
 */
 
 extern void (*LoadObjFuncs[256]) ( Obj obj );

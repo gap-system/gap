@@ -15,9 +15,9 @@
 **  and the compact representation of strings.
 **
 **  Strings in compact representation  can be accessed and handled through
-**  the  macros     'NEW_STRING',   `CHARS_STRING'  (and   'CSTR_STRING'),
-**  'GET_LEN_STRING',   `SET_LEN_STRING', `GROW_STRING',  'GET_ELM_STRING'
-**  and `SET_ELM_STRING'.
+**  the  macros     'NEW_STRING',   'CHARS_STRING'  (and   'CSTR_STRING'),
+**  'GET_LEN_STRING',   'SET_LEN_STRING', 'GROW_STRING',  'GET_ELM_STRING'
+**  and 'SET_ELM_STRING'.
 **  
 **  This  package also contains the   list  function  for ranges, which   are
 **  installed in the appropriate tables by 'InitString'.
@@ -251,7 +251,8 @@ static inline void COPY_CHARS(Obj str, UChar * pnt, Int n)
 **  'PrintString' prints the string with the handle <list>.
 **
 **  No  linebreaks are allowed,  if one must be  inserted  anyhow, it must be
-** escaped by a backslash '\', which is done in 'Pr'.  */
+**  escaped by a backslash '\', which is done in 'Pr'.
+*/
 extern void PrintString (
     Obj                 list );
 
@@ -377,11 +378,12 @@ Obj ConvImmString(Obj str);
 **
 *F  C_NEW_STRING_DYN( <string>, <cstring> ) . . . . . . . . create GAP string
 **
-** The cstring is assumed to be allocated on the heap, hence its length
-** is dynamic and must be computed during runtime using strlen.
+**  The cstring is assumed to be allocated on the heap, hence its length
+**  is dynamic and must be computed during runtime using strlen.
 **
-** This macro is provided for backwards compatibility of packages.
-** MakeString and MakeImmString are as efficient and should be used instead.
+**  This macro is provided for backwards compatibility of packages.
+**  'MakeString' and 'MakeImmString' are as efficient and should be used
+**  instead.
 */
 #define C_NEW_STRING_DYN(string,cstr) \
   C_NEW_STRING(string, strlen(cstr), cstr)

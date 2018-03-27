@@ -51,7 +51,7 @@ extern Obj ValGVar(UInt gvar);
 *V  ErrorMustEvalToFuncFunc . . . . . . . . .  function that signals an error
 **
 **  'ErrorMustEvalToFuncFunc' is a (variable number of  args)  function  that
-**  signals the error ``Function: <func> be a function''.
+**  signals the error ``Function Calls: <func> must be a function''.
 */
 extern Obj ErrorMustEvalToFuncFunc;
 

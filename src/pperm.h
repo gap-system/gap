@@ -96,9 +96,9 @@ extern Obj OnSetsPPerm(Obj set, Obj f);
 
 /****************************************************************************
 **
-*F HashFuncForPPerm( <f>) . . . hash pperm
+*F  HashFuncForPPerm( <f> ) . . . hash pperm
 **
-** Returns a hash value for a partial permutation
+**  Returns a hash value for a partial permutation
 */
 
 Int HashFuncForPPerm(Obj f);

@@ -43,12 +43,12 @@ typedef struct {
 
 /****************************************************************************
 **
-** Function body headers
+**  Function body headers
 **
-** 'FILENAME_BODY' is a string containing the file of a function
-** 'STARTLINE_BODY' is the line number where a function starts.
-** 'ENDLINE_BODY' is the line number where a function ends.
-** 'LOCATION_BODY' is a string describing the location of a function.
+**  'FILENAME_BODY' is a string containing the file of a function.
+**  'STARTLINE_BODY' is the line number where a function starts.
+**  'ENDLINE_BODY' is the line number where a function ends.
+**  'LOCATION_BODY' is a string describing the location of a function.
 **  Typically this will be the name of a C function implementing it.
 **
 **  These each have a 'GET' and a 'SET' variant, to read or set the value.

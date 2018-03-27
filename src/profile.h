@@ -22,7 +22,7 @@
 
 /****************************************************************************
 **
-*F  InitInfoStats() . . . . . . . . . . . . . . . . . table of init functions
+*F  InitInfoProfile() . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoProfile ( void );
 

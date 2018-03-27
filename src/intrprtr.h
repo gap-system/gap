@@ -347,7 +347,7 @@ enum {
 *F  IntrRepeatEndBody(<nr>) . . . . . interpret repeat-statement, end of body
 *F  IntrRepeatEnd() . . . . . .  interpret repeat-statement, end of statement
 **
-**  'IntrRepeatBegin"  is an action to interpret  a  repeat-statement.  It is
+**  'IntrRepeatBegin'  is an action to interpret  a  repeat-statement.  It is
 **  called when the read encounters the 'repeat'.
 **
 **  'IntrRepeatBeginBody' is an action  to interpret a  repeat-statement.  It
@@ -918,7 +918,7 @@ extern void             IntrEmpty ( void );
 *F  IntrInfoBegin() . . . . . . . . .  start interpretation of Info statement
 *F  IntrInfoMiddle() . . . . . . .  shift to interpreting printable arguments
 *F  IntrInfoEnd( <narg> ) . . Info statement complete, <narg> things to print
-*V  InfoCheckLevel(<selectors>,<level>) . . . . . check if Info should output
+*F  InfoCheckLevel( <selectors>, <level> )  . . . check if Info should output
 */
 
 extern void             IntrInfoBegin ( void );

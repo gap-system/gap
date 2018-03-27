@@ -26,10 +26,10 @@ typedef struct {
     // an operation is a T_FUNCTION with additional data
     FuncBag func;
 
-    // flag 1 list of an `and' filter
+    // flag 1 list of an 'and' filter
     Obj flag1;
 
-    // flag 2 list of an `and' filter
+    // flag 2 list of an 'and' filter
     Obj flag2;
 
     // flags of a filter
@@ -54,7 +54,7 @@ typedef struct {
 
 /****************************************************************************
 **
-*V  TRY_NEXT_METHOD . . . . . . . . . . . . . . . . . `TRY_NEXT_MESSAGE' flag
+*V  TRY_NEXT_METHOD . . . . . . . . . . . . . . . . .  'TRY_NEXT_METHOD' flag
 */
 extern Obj TRY_NEXT_METHOD;
 
@@ -88,7 +88,7 @@ static inline const OperBag * CONST_OPER(Obj oper)
 
 /****************************************************************************
 **
-*F  FLAG1_FILT( <oper> )  . . . . . . . . . .  flag 1 list of an `and' filter
+*F  FLAG1_FILT( <oper> )  . . . . . . . . . .  flag 1 list of an 'and' filter
 */
 static inline Obj FLAG1_FILT(Obj oper)
 {
@@ -103,7 +103,7 @@ static inline void SET_FLAG1_FILT(Obj oper, Obj x)
 
 /****************************************************************************
 **
-*F  FLAG2_FILT( <oper> )  . . . . . . . . . .  flag 2 list of an `and' filter
+*F  FLAG2_FILT( <oper> )  . . . . . . . . . .  flag 2 list of an 'and' filter
 */
 static inline Obj FLAG2_FILT(Obj oper)
 {
@@ -287,14 +287,14 @@ static inline void SET_ENABLED_ATTR(Obj oper, Int x)
 
 /****************************************************************************
 **
-*F  AND_CACHE_FLAGS( <flags> )  . . . . . . . . . `and' cache of a flags list
+*F  AND_CACHE_FLAGS( <flags> )  . . . . . . . . . 'and' cache of a flags list
 */
 #define AND_CACHE_FLAGS(list)           (CONST_ADDR_OBJ(list)[3])
 
 
 /****************************************************************************
 **
-*F  SET_AND_CACHE_FLAGS( <flags>, <len> ) set the `and' cache of a flags list
+*F  SET_AND_CACHE_FLAGS( <flags>, <len> ) set the 'and' cache of a flags list
 */
 #define SET_AND_CACHE_FLAGS(flags,andc)  (ADDR_OBJ(flags)[3]=(andc))
 
@@ -333,8 +333,9 @@ static inline void SET_ENABLED_ATTR(Obj oper, Int x)
 **
 *F  MASK_POS_FLAGS( <pos> ) . . .  . .  bit mask for position of a flags list
 **
-**  MASK_POS_FLAGS(<pos>) returns  a UInt with a  single set  bit in position
-**  (pos-1) % BIPEB, useful for accessing the pos'th element of a FLAGS
+**  'MASK_POS_FLAGS(<pos>)' returns a UInt with a single set  bit in position
+**  '(<pos>-1) % BIPEB',
+**  useful for accessing the <pos>-th element of a 'FLAGS' list.
 **
 **  Note that 'MASK_POS_FLAGS'  is a macro, so  do not call it with arguments
 **  that have side effects.
@@ -353,7 +354,7 @@ static inline void SET_ENABLED_ATTR(Obj oper, Int x)
 **  Note that 'ELM_FLAGS' is a macro, so do not call it  with arguments  that
 **  have side effects.
 **
-**  C_ELM_FLAGS returns a result which it is better to use inside the kernel
+**  'C_ELM_FLAGS' returns a result which it is better to use inside the kernel
 **  since the C compiler can't know that True != False. Using C_ELM_FLAGS
 **  gives slightly nicer C code and potential for a little more optimisation.
 */

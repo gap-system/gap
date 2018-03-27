@@ -432,9 +432,9 @@ extern Obj NewFunctionCT (
 **
 *F  ArgStringToList( <nams_c> )
 **
-** 'ArgStringToList' takes a C string <nams_c> containing a list of comma
-** separated argument names, and turns it into a plist of strings, ready
-** to be passed to 'NewFunction' as <nams>.
+**  'ArgStringToList' takes a C string <nams_c> containing a list of comma
+**  separated argument names, and turns it into a plist of strings, ready
+**  to be passed to 'NewFunction' as <nams>.
 */
 extern Obj ArgStringToList(const Char *nams_c);
 

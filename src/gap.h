@@ -67,14 +67,14 @@ extern void ViewObjHandler ( Obj obj );
 
 /****************************************************************************
 **
-*F RegisterBreakloopObserver( <func> )
+*F  RegisterBreakloopObserver( <func> )
 **
-** Register a function which will be called when the break loop is entered
-** and left. Function should take a single Int argument which will be 1 when
-** break loop is entered, 0 when leaving.
+**  Register a function which will be called when the break loop is entered
+**  and left. Function should take a single Int argument which will be 1 when
+**  break loop is entered, 0 when leaving.
 **
-** Note that it is also possible to leave the break loop (or any GAP code)
-** by longjmping. This should be tracked with RegisterSyLongjmpObserver.
+**  Note that it is also possible to leave the break loop (or any GAP code)
+**  by longjmping. This should be tracked with RegisterSyLongjmpObserver.
 */
 
 typedef void (*intfunc)(Int);

@@ -127,9 +127,9 @@ Int EqPermTrans44(UInt degL, UInt degR, const UInt4 * ptLstart, const UInt4 * pt
 
 /****************************************************************************
 **
-*F HashFuncForTrans( <f>) . . . hash transformation
+*F  HashFuncForTrans( <f> ) . . . hash transformation
 **
-** Returns a hash value for a transformation
+**  Returns a hash value for a transformation
 */
 
 Int HashFuncForTrans(Obj f);
