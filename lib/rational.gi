@@ -127,15 +127,6 @@ InstallMethod( Coefficients,
     end );
 
 
-#T ############################################################################
-#T ##
-#T #M  Denominator( <rat> )
-#T #M  Numerator( <rat> )
-#T ##
-#T InstallMethod( Denominator, true, [ IsRat ], 0, DenominatorRat );
-#T InstallMethod( Numerator, true, [ IsRat ], 0, NumeratorRat );
-
-
 ############################################################################
 ##
 #M  Iterator( Rationals )
