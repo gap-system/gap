@@ -1808,16 +1808,15 @@ Obj FuncCOMPACT_TYPE_IDS( Obj self )
 **  This code has been refactored to reduce repetition. Its efficiency now
 **  depends on the C compiler inlining some quite large functions and then
 **  doing constant folding to effectively produce a specialised version of
-**  the main function
+**  the main function. This is why several functions below have been
+**  marked with 'ALWAYS_INLINE'.
 */
 
-
-/* This avoids a function call in the case of external objects with a
-   stored type */
-
-static inline Obj TYPE_OBJ_FEO (
-                Obj obj
-        )
+// Helper function to quickly get the type of an object, avoiding
+// indirection in the case of external objects with a stored type I.e.,
+// the compiler can inline TYPE_COMOBJ etc., while it cannot inline
+// TYPE_OBJ
+static inline Obj TYPE_OBJ_FEO(Obj obj)
 {
 #ifdef HPCGAP
     /* TODO: We need to be able to automatically derive this. */
@@ -1929,14 +1928,16 @@ static inline Obj CacheOper(Obj oper, UInt i)
 
 #endif
 
-/* This function actually searches the cache. Normally it should be called
-   with n a compile-time constant to allow the optimiser to tidy things up */
-
 #ifdef COUNT_OPERS
 static UInt CacheHitStatistics[CACHE_SIZE][CACHE_SIZE][7];
 static UInt CacheMissStatistics[CACHE_SIZE + 1][7];
 #endif
 
+
+// This function actually searches the cache. Normally it should be
+// called with n a compile-time constant to allow the optimiser to tidy
+// things up.
+// It is also marked with 'ALWAYS_INLINE' for this reason (see above).
 static ALWAYS_INLINE Obj GetMethodCached(Obj  oper,
                                          UInt n,
                                          Int  prec,
@@ -2027,6 +2028,9 @@ static Obj NEXT_VMETHOD_PRINT_INFO;
 //
 // If <constructor> is non-zero, then <oper> is a constructor, leading
 // to <types[0]> being treated differently.
+//
+// Use of 'ALWAYS_INLINE' is critical for performance, see discussion
+// earlier in this file.
 static ALWAYS_INLINE Obj GetMethodUncached(
     UInt verbose, UInt constructor, UInt n, Obj oper, Int prec, Obj types[])
 {
@@ -2133,6 +2137,8 @@ static Int OperationNext;
 #endif
 
 
+// Use of 'ALWAYS_INLINE' is critical for performance, see discussion
+// earlier in this file.
 static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
                  UInt n,
                  UInt verbose,
