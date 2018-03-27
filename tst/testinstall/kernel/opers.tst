@@ -301,13 +301,46 @@ gap> TraceMethods( [ Size ] );
 gap> Size(g);
 #I  Size: system getter
 6
+gap> UntraceMethods( [ Size ] );
+
+# temporarily override (NEXT_)VMETHOD_PRINT_INFO to avoid system
+# specific paths in the output
+gap> MakeReadWriteGlobal("VMETHOD_PRINT_INFO");
+gap> MakeReadWriteGlobal("NEXT_VMETHOD_PRINT_INFO");
+gap> old1:=VMETHOD_PRINT_INFO;;
+gap> old2:=NEXT_VMETHOD_PRINT_INFO;;
+gap> VMETHOD_PRINT_INFO := function(methods, i, arity)
+>     Print("#I  ", methods[(arity+4)*i], "\n");
+> end;;
+gap> NEXT_VMETHOD_PRINT_INFO := function(methods, i, arity)
+>     Print("#I Trying next: ", methods[(arity+4)*i], "\n");
+> end;;
+
+#
+gap> TraceMethods( [ IsCyclic ] );
+gap> g:= Group( (1,2,3), (1,2) );;
+gap> IsCyclic(g);
+#I  IsCyclic
+#I Trying next: IsCyclic: generic method for groups
+false
+gap> g:= Group( (1,2,3), (1,3,2) );;
+gap> IsCyclic(g);
+#I  IsCyclic
+#I Trying next: IsCyclic: generic method for groups
+true
+
+# restore PRINT_INFO functions
+gap> VMETHOD_PRINT_INFO:=old1;;
+gap> NEXT_VMETHOD_PRINT_INFO:=old2;;
+gap> MakeReadOnlyGlobal("VMETHOD_PRINT_INFO");
+gap> MakeReadOnlyGlobal("NEXT_VMETHOD_PRINT_INFO");
 
 #
 gap> UntraceMethods();
 Error, `UntraceMethods' require at least one argument
 gap> UntraceMethods([ 1 ]);
 Error, <oper> must be an operation
-gap> UntraceMethods( [ Size ] );
+gap> UntraceMethods( [ IsCyclic ] );
 
 #
 gap> STOP_TEST("kernel/opers.tst", 1);
