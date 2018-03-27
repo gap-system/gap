@@ -1058,7 +1058,19 @@ InstallMethod( \^, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
 end );
 InstallMethod( \^, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
         function ( x, y ) return x ^ MakeFloat(x,y); end );
-        
+
+
+InstallMethod( IsGeneratorsOfMagmaWithInverses,
+    "for a collection of floats (return false)",
+    [ IsFloatCollection ],
+    SUM_FLAGS, # override everything else
+    function( gens )
+    Info( InfoWarning, 1,
+          "no groups of floats allowed because of incompatible ^" );
+    return false;
+    end );
+
+
 #############################################################################
 ##
 #E
