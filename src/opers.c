@@ -1810,7 +1810,6 @@ Obj FuncCOMPACT_TYPE_IDS( Obj self )
 **  doing constant folding to effectively produce a specialised version of
 **  the main function
 */
-/* TL: UInt CacheIndex; */
 
 
 /* This avoids a function call in the case of external objects with a

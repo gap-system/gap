@@ -98,7 +98,6 @@ typedef struct GAPState {
     Obj * MethodCacheItems;
     UInt  MethodCacheSize;
 #endif
-    UInt  CacheIndex;
 
     /* From gap.c */
     Obj  ThrownObject;
