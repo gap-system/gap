@@ -1397,14 +1397,14 @@ void PrintFunction (
                 Obj body = BODY_FUNC(func);
                 if ( GET_FILENAME_BODY(body) ) {
                     if ( GET_LOCATION_BODY(body) ) {
-                        Pr("<<kernel code from %s:%s>>",
-                            (Int)CSTR_STRING(GET_FILENAME_BODY(body)),
-                            (Int)CSTR_STRING(GET_LOCATION_BODY(body)));
+                        Pr("<<kernel code from %g:%g>>",
+                            (Int)GET_FILENAME_BODY(body),
+                            (Int)GET_LOCATION_BODY(body));
                             outputtedfunc = 1;
                     }
                     else if ( GET_STARTLINE_BODY(body) ) {
-                        Pr("<<compiled GAP code from %s:%d>>",
-                            (Int)CSTR_STRING(GET_FILENAME_BODY(body)),
+                        Pr("<<compiled GAP code from %g:%d>>",
+                            (Int)GET_FILENAME_BODY(body),
                             GET_STARTLINE_BODY(body));
                             outputtedfunc = 1;
                     }

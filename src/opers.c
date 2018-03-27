@@ -3231,8 +3231,8 @@ Obj DoUninstalledGlobalFunction (
     Obj                 oper,
     Obj                 args )
 {
-    ErrorQuit( "%s: function is not yet defined",
-               (Int)CSTR_STRING(NAME_FUNC(oper)), 0L );
+    ErrorQuit( "%g: function is not yet defined",
+               (Int)NAME_FUNC(oper), 0L );
     return 0;
 }
 
