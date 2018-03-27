@@ -38,6 +38,8 @@ gap> ImageSetOfPartialPerm(f);
 [  ]
 gap> ImageListOfPartialPerm(f);
 [  ]
+gap> IMAGE_SET_PPERM(fail);
+Error, usage: the argument must be a partial perm,
 
 # test input validation
 gap> DegreeOfPartialPerm(fail);
@@ -120,6 +122,12 @@ gap> IndexPeriodOfPartialPerm(f);
 [ 2, 15 ]
 gap> IsIdempotent(f);
 false
+gap> IndexPeriodOfPartialPerm(PartialPerm([1, 2, 10 ^ 5], [2, 10 ^ 5, 1]));
+[ 1, 3 ]
+gap> IsIdempotent(PartialPerm([2,3,1,5,6,7,8,4,10]));
+false
+gap> IsIdempotent(PartialPermNC([1 .. 70000] + 1));
+false
 
 # ComponentsOfPartialPerm, NrComponentsOfPartialPerm, 
 # ComponentRepsOfPartialPerm and ComponentPartialPermInt
@@ -157,6 +165,24 @@ gap> ComponentRepsOfPartialPerm(f);
 [ 9, 1, 4 ]
 gap> NrComponentsOfPartialPerm(f);
 3
+gap> ComponentRepsOfPartialPerm(PartialPerm([1, 2, 10 ^ 5], [2, 10 ^ 5, 1]));
+[ 1 ]
+gap> NrComponentsOfPartialPerm(PartialPerm([1, 2, 10 ^ 5], [2, 10 ^ 5, 1]));
+1
+gap> ComponentsOfPartialPerm(PartialPerm([1, 2, 10 ^ 5], [2, 10 ^ 5, 1]));
+[ [ 1, 2, 100000 ] ]
+gap> ComponentPartialPermInt(PartialPerm([1, 2, 10 ^ 5], [2, 10 ^ 5, 1]),
+>                              100000);
+[ 100000, 1, 2 ]
+gap> ComponentPartialPermInt(PartialPerm([1, 2, 10 ^ 5], [2, 10 ^ 5, 1]),
+>                              1000);
+[  ]
+gap> ComponentPartialPermInt(PartialPerm([1, 3], [3, 1]),
+>                              1000);
+[  ]
+gap> ComponentPartialPermInt(PartialPerm([1, 2], [2, 1]),
+>                              2);
+[ 2, 1 ]
 
 # FixedPointsOfPartialPerm, MovedPoints, 
 # NrFixedPoints, NrMovedPoints
@@ -179,6 +205,8 @@ gap> DomainOfPartialPerm(f);;
 gap> FixedPointsOfPartialPerm(f)=
 > Filtered([1..DegreeOfPartialPerm(f)], i-> i^f=i);
 true
+gap> NrFixedPoints(f);
+0
 gap> f:=PartialPerm([1, 100000], [100000, 2]);;
 gap> NrMovedPoints(f)+NrFixedPoints(f)=
 > RankOfPartialPerm(f);
@@ -196,6 +224,89 @@ gap> Union(MovedPoints(f), FixedPointsOfPartialPerm(f))=
 > DomainOfPartialPerm(f);
 true
 gap> Intersection(MovedPoints(f), FixedPointsOfPartialPerm(f));
+[  ]
+gap> f := PartialPerm(List([69950 .. 70000], function(x) 
+>   if IsEvenInt(x) then 
+>     return 0;
+>   else
+>     return x;
+>   fi;
+> end));;
+gap> FixedPointsOfPartialPerm(f);
+[  ]
+gap> NrFixedPoints(f);
+0
+gap> MovedPoints(f);
+[ 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 
+  42, 44, 46, 48, 50 ]
+gap> NrMovedPoints(f);
+25
+gap> im := ListWithIdenticalEntries(70000, 0);;
+gap> im[65536] := 65536;
+65536
+gap> f := PartialPerm(im);;
+gap> FixedPointsOfPartialPerm(f);
+[ 65536 ]
+gap> NrFixedPoints(f);
+1
+gap> MovedPoints(f);
+[  ]
+gap> NrMovedPoints(f);
+0
+gap> f := PartialPerm(List([7950 .. 8000], function(x) 
+>   if IsEvenInt(x) then 
+>     return 0;
+>   else
+>     return x;
+>   fi;
+> end));;
+gap> FixedPointsOfPartialPerm(f);
+[  ]
+gap> NrFixedPoints(f);
+0
+gap> MovedPoints(f);
+[ 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 
+  42, 44, 46, 48, 50 ]
+gap> NrMovedPoints(f);
+25
+gap> f := PartialPerm(List([1 .. 100], function(x) 
+>   if IsEvenInt(x) then 
+>     return 0;
+>   else
+>     return x;
+>   fi;
+> end));;
+gap> FixedPointsOfPartialPerm(f);
+[ 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 
+  41, 43, 45, 47, 49, 51, 53, 55, 57, 59, 61, 63, 65, 67, 69, 71, 73, 75, 77, 
+  79, 81, 83, 85, 87, 89, 91, 93, 95, 97, 99 ]
+gap> NrFixedPoints(f);
+50
+gap> MovedPoints(f);
+[  ]
+gap> NrMovedPoints(f);
+0
+gap> f := PartialPerm([1, 3 .. 99], [1, 3 .. 99]);;
+gap> FixedPointsOfPartialPerm(f);
+[ 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 
+  41, 43, 45, 47, 49, 51, 53, 55, 57, 59, 61, 63, 65, 67, 69, 71, 73, 75, 77, 
+  79, 81, 83, 85, 87, 89, 91, 93, 95, 97, 99 ]
+gap> NrFixedPoints(f);
+50
+gap> MovedPoints(f);
+[  ]
+gap> NrMovedPoints(f);
+0
+gap> f := PartialPerm([70001, 70003 .. 70099], [70001, 70003 .. 70099]);;
+gap> FixedPointsOfPartialPerm(f);
+[ 70001, 70003, 70005, 70007, 70009, 70011, 70013, 70015, 70017, 70019, 
+  70021, 70023, 70025, 70027, 70029, 70031, 70033, 70035, 70037, 70039, 
+  70041, 70043, 70045, 70047, 70049, 70051, 70053, 70055, 70057, 70059, 
+  70061, 70063, 70065, 70067, 70069, 70071, 70073, 70075, 70077, 70079, 
+  70081, 70083, 70085, 70087, 70089, 70091, 70093, 70095, 70097, 70099 ]
+gap> NrFixedPoints(f);
+50
+gap> MovedPoints(f);
 [  ]
 
 # LargestMovedPoint, SmallestMovedPoint
@@ -275,13 +386,24 @@ gap> SmallestMovedPoint(f);
 gap> f:=PartialPermNC(Concatenation([100001], [2..100000]));;
 gap> SmallestMovedPoint(f);
 1
-gap> f:=PartialPermNC([1..100000]);                          
-<partial perm on 100000 pts with degree 100000, codegree 100000>
+gap> f:=PartialPermNC([1..70000]);;
 gap> SmallestMovedPoint(f);
+infinity
+gap> LargestMovedPoint(f);
+0
+gap> f := PartialPermNC([1 .. 10]);;
+gap> SmallestMovedPoint(f);
+infinity
+gap> f := PartialPermNC([1 .. 10], [1 .. 10]);;
+gap> SmallestMovedPoint(f);
+infinity
+gap> SmallestMovedPoint(PartialPerm([69999, 70001], [69999, 70001]));
 infinity
 
 # TRIM_PPERM
 gap> f:=PartialPermNC([65536]); 
+[1,65536]
+gap> TRIM_PPERM(f);
 [1,65536]
 gap> g:=PartialPermNC([2,65536], [70000,1]);           
 [2,70000][65536,1]
@@ -301,8 +423,34 @@ gap> TRIM_PPERM(h); h;
 gap> IsPPerm2Rep(h);
 true
 
+# HashFuncForPPerm and HASH_FUNC_FOR_PPERM
+gap> f := PartialPerm([65536]);;
+gap> HASH_FUNC_FOR_PPERM(f, 10 ^ 6);
+260581
+gap> f := PartialPermNC([65535]);;
+gap> HASH_FUNC_FOR_PPERM(f, 10 ^ 6);
+354405
+gap> f := PartialPermNC([65535]);;
+gap> HASH_FUNC_FOR_PPERM(f, 10 ^ 6);
+354405
+gap> f := PartialPerm([1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19],
+> [2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9]);;
+gap> HASH_FUNC_FOR_PPERM(f, 10 ^ 6);
+773594
+gap> f := PartialPermNC([65536]);;
+gap> g := PartialPermNC([2, 65536], [70000, 1]);;
+gap> h := f * g;
+<identity partial perm on [ 1 ]>
+gap> IsPPerm4Rep(h);
+true
+gap> HASH_FUNC_FOR_PPERM(h, 10 ^ 6);
+567548
+gap> IsPPerm2Rep(h);
+true
+
 # LeftOne
-gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; DomainOfPartialPerm(f);;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
+> DomainOfPartialPerm(f);;
 gap> e:=LeftOne(f);;
 gap> IsIdempotent(e);
 true
@@ -543,6 +691,10 @@ true
 gap> g:=PartialPerm( [ 1, 3 ], [ 3, 1 ] );;     
 gap> NaturalLeqPartialPerm(f,g);
 false
+gap> NaturalLeqPartialPerm(fail, f);
+Error, usage: the arguments must be partial perms,
+gap> NaturalLeqPartialPerm(EmptyPartialPerm(), f);
+true
 
 # AsPartialPerm
 gap> p:=(1,2,7,5)(3,9)(6,10,8);;
@@ -577,6 +729,22 @@ gap> AsPartialPerm(p,9);
 gap> p:=(1,9)(10,100000);;
 gap> AsPartialPerm(p,9);
 (1,9)(2)(3)(4)(5)(6)(7)(8)
+gap> AsPartialPerm((1,2), [1, 2, 2 ^ 61]);
+Error, usage: the second argument must be a set of positive integers,
+gap> AsPartialPerm((1,2), [1, 3, 2]);
+Error, usage: the second argument must be a set of positive integers,
+gap> AsPartialPerm((1,2), [1, "a", 2]);
+Error, usage: the second argument must be a set of positive integers,
+gap> AsPartialPerm((1,2), 0);
+<empty partial perm>
+gap> AsPartialPerm(Transformation([10, 8, 4, 6, 4, 5, 3, 8, 8, 2]), [1 .. 4]);
+[1,10][2,8][3,4,6]
+gap> AsPartialPerm(Transformation([10, 8, 4, 6, 4, 5, 3, 8, 8, 2]), [1 .. 5]);
+Error, usage: the first argument must be injective on the second,
+gap> AsPartialPerm(Transformation([10, 8, 4, 6, 4, 5, 3, 8, 8, 2]), [1, 2, 2, 3]);
+Error, usage: the second argument must be a set of positive integers,
+gap> AsPartialPerm(Transformation([10, 8, 4, 6, 4, 5, 3, 8, 8, 2]), 4);
+[1,10][2,8][3,4,6]
 
 # JoinOfPartialPerms
 gap> f:=PartialPermNC([1],[2]);;
@@ -622,6 +790,10 @@ gap> g:=PartialPermNC([0,100000]);
 [2,100000]
 gap> JoinOfPartialPerms(f,g);
 [1,2,100000]
+gap> JoinOfPartialPerms([f, g]);
+[1,2,100000]
+gap> JoinOfPartialPerms(1, 2);
+Error, usage: the argument should be a collection of partial perms,
 gap> JoinOfPartialPerms(last, PartialPermNC([100000],[1]));
 (1,2,100000)
 gap> g:=PartialPermNC([0,100000]);;
@@ -674,6 +846,24 @@ gap> g:=PartialPermNC([8],[100000]);
 [8,100000]
 gap> JoinOfPartialPerms(f, g);
 [6,1,5,3][8,100000](4,7)
+
+# JOIN_IDEM_PPERMS
+gap> JOIN_IDEM_PPERMS(PartialPerm([1 .. 5]), 
+>                     PartialPerm([3 .. 10], [3 .. 10]));
+<identity partial perm on [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]>
+gap> JOIN_IDEM_PPERMS(PartialPerm([3 .. 10], [3 .. 10]),
+>                     PartialPerm([1 .. 5]));
+<identity partial perm on [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]>
+gap> JOIN_IDEM_PPERMS(PartialPerm([3 .. 10], [3 .. 10]),
+>                     PartialPerm([65536 .. 65538], [65536 .. 65538]));
+<identity partial perm on [ 3, 4, 5, 6, 7, 8, 9, 10, 65536, 65537, 65538 ]>
+gap> JOIN_IDEM_PPERMS(PartialPerm([70000 .. 70010], [70000 .. 70010]),
+>                     PartialPerm([65536 .. 65538], [65536 .. 65538]));
+<identity partial perm on 
+[ 65536, 65537, 65538, 70000, 70001, 70002, 70003, 70004, 70005, 70006, 70007,\
+ 70008, 70009, 70010 ]>
+gap> JoinOfIdempotentPartialPermsNC(1, 2);
+Error, usage: the argument should be a collection of partial perms,
 
 # MeetOfPartialPerms
 gap> f:=PartialPermNC([2]);;
@@ -739,6 +929,10 @@ gap> g:=RestrictedPartialPerm(f, [10]);
 <empty partial perm>
 gap> g:=RestrictedPartialPerm(f, [5]); 
 <identity partial perm on [ 5 ]>
+gap> RestrictedPartialPerm(f, [2, 1, 3]);
+Error, usage: the second argument must be a set of positive integers,
+gap> RestrictedPartialPerm(f, [1, 2, 2 ^ 61]);
+Error, usage: the second argument must be a set of positive integers,
 
 # AsPermutation
 gap> f:=PartialPermNC([10,2,3,4,5]);      
@@ -812,6 +1006,8 @@ gap> PermLeftQuoPartialPerm(f, g);
 (1,2)
 gap> PermLeftQuoPartialPerm(g, f);
 (1,2)
+gap> PermLeftQuoPartialPerm(PartialPerm([1]), PartialPerm([2]));
+Error, usage: the arguments must be partial perms with equal image sets,
 
 # Kernel level functions
 #
@@ -2337,6 +2533,10 @@ gap> AsTransformation(f);
 <transformation: 9,11,10,5,7,2,11,11,8,11>
 gap> AsTransformation(f);
 <transformation: 9,11,10,5,7,2,11,11,8,11>
+gap> AsTransformation(PartialPerm([1, 2, 3, 5, 6, 9, 10],
+>                                 [3, 5, 8, 4, 1, 9, 7]), 
+>                     3);
+Error, usage: the 2nd argument must not be a moved point of the 1st argument,
 gap> OnTuples([1..DegreeOfPartialPerm(f)], f);
 [ 9, 10, 5, 7, 2, 8 ]
 gap> g:=PartialPermNC([ 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 19 ],
@@ -2462,6 +2662,182 @@ gap> PartialPerm([1,2,8],[3,4,1,2]);
 Error, usage: the 1st argument must be a set of positive integers and the 2nd \
 argument must be a duplicate-free list of positive integers of equal length to\
  the first
+
+# New tests
+gap> x := PartialPerm([0, 0, 0]);
+<empty partial perm>
+
+# PreImagePPermInt
+gap> 1 / EmptyPartialPerm();
+fail
+gap> 1 / PartialPerm([1, 2, 4, 7, 9], [5, 3, 7, 4, 9]);
+fail
+gap> 3 / PartialPerm([1, 2, 4, 7, 9], [5, 3, 7, 4, 9]);
+2
+gap> 3 / PartialPerm([10 ^ 5], [3]);
+100000
+gap> 1 / PartialPerm([10 ^ 5], [3]);
+fail
+gap> 3 / PartialPerm([10 ^ 5], [10 ^ 5 + 1]);
+fail
+gap> (10 ^ 5 + 1) / PartialPerm([10 ^ 5], [10 ^ 5 + 1]);
+100000
+gap> PreImagePartialPerm(PartialPerm([1, 2, 4, 7, 9], [5, 3, 7, 4, 9]), 1);
+fail
+gap> PreImagePartialPerm(PartialPerm([10 ^ 5], [3]), 3);
+100000
+
+# IsGeneratorsOfMagmaWithInverses
+gap> IsGeneratorsOfMagmaWithInverses([PartialPerm([2]), PartialPerm([1])]);
+false
+gap> IsGeneratorsOfMagmaWithInverses([PartialPerm([2, 1]), PartialPerm([1])]);
+false
+gap> IsGeneratorsOfMagmaWithInverses([PartialPerm([2, 1]), PartialPerm([1, 2])]);
+true
+
+# LargestImageOfMovedPoint
+gap> LargestImageOfMovedPoint(EmptyPartialPerm());
+0
+
+# SmallestImageOfMovedPoint
+gap> SmallestImageOfMovedPoint(EmptyPartialPerm());
+infinity
+gap> SmallestImageOfMovedPoint(PartialPerm([1, 2, 4, 7, 9], [1, 2, 7, 4, 9]));
+4
+
+# PartialPermOp/NC
+gap> f := Transformation([9, 10, 4, 2, 10, 5, 9, 10, 9, 6]);;
+gap> PartialPermOp(f, [6 .. 8], OnPoints);
+[1,4][2,5][3,6]
+gap> f := Transformation([9, 10, 4, 2, 10, 5, 9, 10, 9, 6]);;
+gap> PartialPermOp(f, [8, 6, 7], OnPoints);
+[1,5][2,6][3,4]
+gap> PartialPermOp(f, [8, 6, 7, 6], OnPoints);
+fail
+gap> PartialPermOp(f, [7, 9], OnPoints);
+fail
+gap> PartialPermOp(f, [10, 11, 12], OnPoints);
+[1,4](2)(3)
+gap> PartialPermOp(f, [10, 11, 12]);
+[1,4](2)(3)
+gap> PartialPermOp(f, [10, 11, 12], function(x, f)
+> if x > 10 then return 100; else return x ^ f; fi; end);
+fail
+gap> PartialPermOp(PartialPerm([1]), SymmetricInverseMonoid(2), OnRight);
+fail
+gap> PartialPermOp(PartialPerm([1]), SymmetricInverseMonoid(1), OnRight);
+<identity partial perm on [ 1, 2 ]>
+gap> PartialPermOp(PartialPerm([1]), SymmetricInverseMonoid(1));
+<identity partial perm on [ 1, 2 ]>
+gap> f := Transformation([9, 10, 4, 2, 10, 5, 9, 10, 9, 6]);;
+gap> PartialPermOpNC(f, [6 .. 8], OnPoints);
+[1,4][2,5][3,6]
+gap> f := Transformation([9, 10, 4, 2, 10, 5, 9, 10, 9, 6]);;
+gap> PartialPermOpNC(f, [8, 6, 7], OnPoints);
+[1,5][2,6][3,4]
+gap> PartialPermOpNC(f, [10, 11, 12], OnPoints);
+[1,4](2)(3)
+gap> PartialPermOpNC(f, [10, 11, 12]);
+[1,4](2)(3)
+gap> PartialPermOpNC(f, [10, 11, 12], function(x, f)
+> if x > 10 then return 100; else return x ^ f; fi; end);
+[1,4][2,5][3,6]
+gap> PartialPermOpNC(PartialPerm([1]), SymmetricInverseMonoid(1), OnRight);
+<identity partial perm on [ 1, 2 ]>
+gap> PartialPermOpNC(PartialPerm([1]), SymmetricInverseMonoid(1));
+<identity partial perm on [ 1, 2 ]>
+
+# RandomPartialPerm
+gap> RandomPartialPerm(4);;
+gap> RandomPartialPerm(2 ^ 60);
+Error, usage: the argument must be a positive integer, a set, or 2 sets, of po\
+sitive integers,
+gap> f := RandomPartialPerm([4 .. 10]);;
+gap> IsSubset([4 .. 10], DomainOfPartialPerm(f));
+true
+gap> IsSubset([4 .. 10], ImageSetOfPartialPerm(f));
+true
+gap> f := RandomPartialPerm([6 .. 10], [1 .. 5]);;
+gap> IsSubset([6 .. 10], DomainOfPartialPerm(f));
+true
+gap> IsSubset([1 .. 5], ImageSetOfPartialPerm(f));
+true
+gap> f := RandomPartialPerm([1, 2 ^ 60]);
+Error, usage: the argument must be a positive integer, a set, or 2 sets, of po\
+sitive integers,
+gap> f := RandomPartialPerm([3, 1, 2]);
+Error, usage: the argument must be a positive integer, a set, or 2 sets, of po\
+sitive integers,
+gap> f := RandomPartialPerm([1 .. 3], [3, 1, 2]);
+Error, usage: the argument must be a positive integer, a set, or 2 sets, of po\
+sitive integers,
+gap> f := RandomPartialPerm([3, 1, 2], [1 .. 3]);
+Error, usage: the argument must be a positive integer, a set, or 2 sets, of po\
+sitive integers,
+gap> f := RandomPartialPerm([3, 1, 2], [1, 3, 2 ^ 60]);
+Error, usage: the argument must be a positive integer, a set, or 2 sets, of po\
+sitive integers,
+
+# PartialPermNC
+gap> PartialPermNC(1, 2, 3);
+Error, usage: there should be one or two arguments,
+gap> PartialPerm(1, 2, 3);
+Error, usage: there should be one or two arguments,
+gap> PartialPerm([1, 2, 2 ^ 60]);
+Error, usage: the argument must be a list of non-negative integers and the non\
+-zero elements must be duplicate-free,
+gap> PartialPerm([1, 2, 2]);
+Error, usage: the argument must be a list of non-negative integers and the non\
+-zero elements must be duplicate-free,
+
+# String etc
+gap> EvalString(String(PartialPerm([1, 2, 4, 7, 9], [5, 3, 7, 4, 9]))) 
+> = PartialPerm([1, 2, 4, 7, 9], [5, 3, 7, 4, 9]);
+true
+gap> PrintString(PartialPerm([1, 2, 4, 7, 9], [5, 3, 7, 4, 9]));
+"PartialPerm( \>[ 1, 2, 4, 7, 9 ], \<\>[ 5, 3, 7, 4, 9 ]\<\> )\<"
+gap> PrintObj(PartialPerm([1, 2, 4, 7, 9], [5, 3, 7, 4, 9])); 
+> "this string allows us to test the PrintObj method";
+PartialPerm( [ 1, 2, 4, 7, 9 ], [ 5, 3, 7, 4, 9 ]
+  )"this string allows us to test the PrintObj method"
+gap> SetUserPreference("NotationForPartialPerms", "domainimage");;
+gap> PartialPerm( [ 1, 2, 4, 7, 9 ], [ 5, 3, 7, 4, 9 ]);
+[ 1, 2, 4, 7, 9 ] -> [ 5, 3, 7, 4, 9 ]
+gap> PartialPerm([1, 2, 3]);
+<identity partial perm on [ 1, 2, 3 ]>
+gap> SetUserPreference("NotationForPartialPerms", notationpp);;
+gap> SetUserPreference("NotationForPartialPerms", "input");;
+gap> PartialPerm( [ 1, 2, 4, 7, 9 ], [ 5, 3, 7, 4, 9 ]);
+PartialPerm( [ 1, 2, 4, 7, 9 ], [ 5, 3, 7, 4, 9 ] )
+gap> SetUserPreference("NotationForPartialPerms", notationpp);;
+
+# Collections
+gap> coll := [PartialPerm([1, 2, 4, 7, 9], [5, 3, 7, 4, 9]), 
+>             PartialPerm([1, 2, 4, 5, 6, 7], [1, 8, 9, 7, 5, 3])];;
+gap> DegreeOfPartialPermCollection(coll);
+9
+gap> CodegreeOfPartialPermCollection(coll);
+9
+gap> RankOfPartialPermCollection(coll);
+7
+gap> ImageOfPartialPermCollection(coll);
+[ 1, 3, 4, 5, 7, 8, 9 ]
+gap> FixedPointsOfPartialPerm(coll);
+[ 1, 9 ]
+gap> MovedPoints(coll);
+[ 1, 2, 4, 5, 6, 7 ]
+gap> NrFixedPoints(coll);
+2
+gap> NrMovedPoints(coll);
+6
+gap> LargestMovedPoint(coll);
+7
+gap> LargestImageOfMovedPoint(coll);
+9
+gap> SmallestMovedPoint(coll);
+1
+gap> SmallestImageOfMovedPoint(coll);
+3
 
 #
 gap> SetUserPreference("PartialPermDisplayLimit", display);;

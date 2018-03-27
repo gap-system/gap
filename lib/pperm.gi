@@ -80,10 +80,13 @@ end);
 InstallMethod(SmallestMovedPoint, "for a partial perm", 
 [IsPartialPerm], 
 function(f)
-  if IsOne(f) then
+  local m;
+  m := SMALLEST_MOVED_PT_PPERM(f);
+  if m = fail then 
     return infinity;
+  else 
+    return m;
   fi;
-  return SMALLEST_MOVED_PT_PPERM(f);
 end);
 
 InstallMethod(SmallestImageOfMovedPoint, "for a partial perm",
@@ -329,7 +332,6 @@ function(f, D, act)
       D:=ShallowCopy(D);
       perm:=Sortex(D);
       D:=Immutable(D);
-      SetIsSSortedList(D, true);
     fi;
   fi;
   
@@ -402,7 +404,6 @@ function(f, D, act)
       D:=ShallowCopy(D);
       perm:=Sortex(D);
       D:=Immutable(D);
-      SetIsSSortedList(D, true);
     fi;
   fi;
   
@@ -567,7 +568,7 @@ end);
 InstallMethod(String, "for a partial perm", 
 [IsPartialPerm], 
 function(f)
-  return STRINGIFY("PartialPermNC( ", DomainOfPartialPerm(f), ", ",
+  return STRINGIFY("PartialPerm( ", DomainOfPartialPerm(f), ", ",
    ImageListOfPartialPerm(f), " )");
 end);
 
@@ -576,7 +577,7 @@ end);
 InstallMethod(PrintString, "for a partial perm",
 [IsPartialPerm], 
 function(f)
-  return PRINT_STRINGIFY("PartialPermNC( ",
+  return PRINT_STRINGIFY("PartialPerm( ",
     Concatenation(PrintString(DomainOfPartialPerm(f)), ", "),
      ImageListOfPartialPerm(f), " )");
 end);
