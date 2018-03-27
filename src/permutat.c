@@ -1168,6 +1168,8 @@ Obj             PowPerm2Int (
 
     /* compute the power by raising the cycles individually for large exps */
     else if ( TNUM_OBJ(opR) == T_INTNEG ) {
+        /* do negation first as it can cause a garbage collection          */
+        opR = AInvInt(opR);
 
         /* make sure that the buffer bag is large enough                   */
         UseTmpPerm(SIZE_OBJ(opL));
@@ -1178,7 +1180,6 @@ Obj             PowPerm2Int (
             ptKnown[p] = 0;
 
         /* get pointer to the permutation and the power                    */
-        opR = ProdInt( INTOBJ_INT(-1), opR );
         ptL = CONST_ADDR_PERM2(opL);
         ptP = ADDR_PERM2(pow);
 
@@ -1430,6 +1431,8 @@ Obj             PowPerm4Int (
 
     /* compute the power by raising the cycles individually for large exps */
     else if ( TNUM_OBJ(opR) == T_INTNEG ) {
+        /* do negation first as it can cause a garbage collection          */
+        opR = AInvInt(opR);
 
         /* make sure that the buffer bag is large enough                   */
         UseTmpPerm(SIZE_OBJ(opL));
@@ -1440,7 +1443,6 @@ Obj             PowPerm4Int (
             ptKnown[p] = 0;
 
         /* get pointer to the permutation and the power                    */
-        opR = ProdInt( INTOBJ_INT(-1), opR );
         ptL = CONST_ADDR_PERM4(opL);
         ptP = ADDR_PERM4(pow);
 
