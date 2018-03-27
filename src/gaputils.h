@@ -21,7 +21,7 @@
 
 /****************************************************************************
 **
-** Compute the number of elements of a given C array.
+**  Compute the number of elements of a given C array.
 **/
 #define ARRAY_SIZE(arr)     ( sizeof(arr) / sizeof((arr)[0]) )
 

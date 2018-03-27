@@ -262,9 +262,9 @@ static inline Obj ELM_DEFAULT_LIST(Obj list, Int pos, Obj def)
 *V  Elmv0ListFuncs[ <type> ]  . . . . . . . . .  table of selection functions
 **
 **  A package implementing  a lists type  <type> must provide a function  for
-**  'ELMV0_LIST' and install it  in 'Elmv0ListFuncs[<type>]'.   This function
-**  need not test   whether <pos> is less  than   or equal to  the  length of
-**  <list>.
+**  'ELMV0_LIST( <list>, <pos> )' and install it in 'Elmv0ListFuncs[<type>]'.
+**  This function need not test whether <pos> is less than or equal to the
+**  length of <list>.
 */
 extern  Obj (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
@@ -290,9 +290,9 @@ static inline Obj ELMV0_LIST(Obj list, Int pos)
 *V  ElmListFuncs[ <type> ]  . . . . . . . . . .  table of selection functions
 **
 **  A package implementing a  list  type <type> must  provide a  function for
-**  'ELM_LIST' and install it  in 'ElmListFuncs[<type>]'.  This function must
-**  signal an error if <pos> is larger than the length of <list> or if <list>
-**  has no assigned object at <pos>.
+**  'ELM_LIST( <list>, <pos> )' and install it in 'ElmListFuncs[<type>]'.
+**  This function must signal an error if <pos> is larger than the length of
+**  <list> or if <list> has no assigned object at <pos>.
 */
 extern Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
@@ -308,8 +308,8 @@ extern Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  is the responsibility  of the caller to  ensure that <pos>  is a positive
 **  integer.
 **
-**  The difference between ELM_LIST and ELMB_LIST is that ELMB_LIST accepts
-**  an object as the second argument
+**  The difference between 'ELM_LIST' and 'ELMB_LIST' is that 'ELMB_LIST'
+**  accepts an object as the second argument.
 **  It is intended as an interface for access to elements of large external
 **  lists, on the rare occasions when the kernel needs to do this.
 */
@@ -431,7 +431,7 @@ static inline Obj ELMS_LIST(Obj list, Obj poss)
 
 /****************************************************************************
 **
-*F  ElmsListDefault( <list>, <poss> ) . . .  default function for `ELMS_LIST'
+*F  ElmsListDefault( <list>, <poss> ) . . .  default function for 'ELMS_LIST'
 */
 extern Obj ElmsListDefault (
             Obj                 list,
@@ -440,7 +440,7 @@ extern Obj ElmsListDefault (
 
 /****************************************************************************
 **
-*F  ElmsListCheck( <list>, <poss> ) . . . . . . . . .  `ELMS_LIST' with check
+*F  ElmsListCheck( <list>, <poss> ) . . . . . . . . .  'ELMS_LIST' with check
 */
 extern Obj ElmsListCheck (
     Obj                 list,
@@ -449,7 +449,7 @@ extern Obj ElmsListCheck (
 
 /****************************************************************************
 **
-*F  ElmsListLevelCheck( <lists>, <poss>, <level> ) `ElmsListLevel' with check
+*F  ElmsListLevelCheck( <lists>, <poss>, <level> ) 'ElmsListLevel' with check
 */
 extern void ElmsListLevelCheck (
     Obj                 lists,
@@ -807,31 +807,31 @@ extern  Obj             TYPES_LIST_FAM (
 */
 
 enum {
-    /** filter number for `IsEmpty' */
+    /** filter number for 'IsEmpty' */
     FN_IS_EMPTY,
 
-    /** filter number for `IsSSortedList' */
+    /** filter number for 'IsSSortedList' */
     FN_IS_SSORT,
 
-    /** filter number for `IsNSortedList' */
+    /** filter number for 'IsNSortedList' */
     FN_IS_NSORT,
 
-    /** filter number for `IsDenseList' */
+    /** filter number for 'IsDenseList' */
     FN_IS_DENSE,
 
-    /** filter number for `IsNDenseList' */
+    /** filter number for 'IsNDenseList' */
     FN_IS_NDENSE,
 
-    /** filter number for `IsHomogeneousList' */
+    /** filter number for 'IsHomogeneousList' */
     FN_IS_HOMOG,
 
-    /** filter number for `IsNonHomogeneousList' */
+    /** filter number for 'IsNonHomogeneousList' */
     FN_IS_NHOMOG,
 
-    /** filter number for `IsTable' */
+    /** filter number for 'IsTable' */
     FN_IS_TABLE,
 
-    /** filter number for `IsRectangularTable' */
+    /** filter number for 'IsRectangularTable' */
     FN_IS_RECT,
 
     LAST_FN = FN_IS_RECT
@@ -845,9 +845,9 @@ enum {
 **  If a list  with type number <tnum>  gains  the filter  with filter number
 **  <fnum>, then the new type number is stored in:
 **
-**  `SetFiltListTNums[<tnum>][<fnum>]'
+**  'SetFiltListTNums[<tnum>][<fnum>]'
 **
-**  The macro  `SET_FILT_LIST' is  used  to  set  the filter  for a  list  by
+**  The macro  'SET_FILT_LIST' is  used  to  set  the filter  for a  list  by
 **  changing its type number.
 */
 extern UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
@@ -882,9 +882,9 @@ extern Obj FuncSET_FILTER_LIST ( Obj self, Obj list, Obj filter );
 **  If a list  with type number <tnum>  loses  the filter  with filter number
 **  <fnum>, then the new type number is stored in:
 **
-**  `ResetFiltListTNums[<tnum>][<fnum>]'
+**  'ResetFiltListTNums[<tnum>][<fnum>]'
 **
-**  The macro `RESET_FILT_LIST' is used  to  set  the filter  for a  list  by
+**  The macro 'RESET_FILT_LIST' is used  to  set  the filter  for a  list  by
 **  changing its type number.
 */
 extern UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
@@ -928,9 +928,9 @@ extern Int HasFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 **  The type  number without any  known properties  of a  list of type number
 **  <tnum> is stored in:
 **
-**  `ClearPropsTNums[<tnum>]'
+**  'ClearPropsTNums[<tnum>]'
 **
-**  The macro `CLEAR_PROPS_LIST' is used to clear all properties of a list.
+**  The macro 'CLEAR_PROPS_LIST' is used to clear all properties of a list.
 */
 extern UInt ClearFiltsTNums [ LAST_REAL_TNUM ];
 

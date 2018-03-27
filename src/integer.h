@@ -97,7 +97,7 @@ static inline const mp_limb_t * CONST_ADDR_INT(Obj obj)
 
 /**************************************************************************
 **
-**  'SIZE_INT returns the number of limbs in a large integer object.
+**  'SIZE_INT' returns the number of limbs in a large integer object.
 */
 static inline UInt SIZE_INT(Obj obj)
 {
@@ -108,7 +108,7 @@ static inline UInt SIZE_INT(Obj obj)
 
 /**************************************************************************
 **
-**  IS_NEG_INT' returns 1 if 'obj' is a negative large or immediate
+**  'IS_NEG_INT' returns 1 if 'obj' is a negative large or immediate
 **  integer object, and 0 for all other kinds of objects.
 */
 static inline Int IS_NEG_INT(Obj obj)
@@ -156,9 +156,9 @@ static inline Int IS_EVEN_INT(Obj obj)
 
 /**************************************************************************
 **
-** The following functions convert Int, UInt or Int8 respectively into
-** a GAP integer, either an immediate, small integer if possible or 
-** otherwise a new GAP bag with TNUM T_INTPOS or T_INTNEG.
+**  The following functions convert Int, UInt or Int8 respectively into
+**  a GAP integer, either an immediate, small integer if possible or 
+**  otherwise a new GAP bag with TNUM T_INTPOS or T_INTNEG.
 */
 extern Obj ObjInt_Int(Int i);
 extern Obj ObjInt_UInt(UInt i);
@@ -167,8 +167,8 @@ extern Obj ObjInt_UInt8(UInt8 i);
 
 /**************************************************************************
 **
-** The following functions convert a GAP integer into an Int, UInt,
-** Int8 or UInt8 if it is in range. Otherwise it gives an error.
+**  The following functions convert a GAP integer into an Int, UInt,
+**  Int8 or UInt8 if it is in range. Otherwise it gives an error.
 */
 extern Int Int_ObjInt(Obj i);    
 extern UInt UInt_ObjInt(Obj i);    
@@ -178,10 +178,10 @@ extern UInt8 UInt8_ObjInt(Obj i);
     
 /****************************************************************************
 **
-** Reduce and normalize the given large integer object if necessary.
+**  Reduce and normalize the given large integer object if necessary.
 **
-** TODO: This is an internal implementation detail and ideally should not
-** be exported; unfortunately, FuncNUMBER_GF2VEC currently needs this.
+**  TODO: This is an internal implementation detail and ideally should not
+**  be exported; unfortunately, FuncNUMBER_GF2VEC currently needs this.
 */
 extern Obj GMP_REDUCE( Obj gmp );
 extern Obj GMP_NORMALIZE( Obj gmp );
@@ -353,8 +353,8 @@ extern Obj InverseModInt(Obj base, Obj mod);
 
 /****************************************************************************
 **
-** Compute log2 of the absolute value of an Int, i.e. the index of the highest
-** set bit. For input 0, return -1.
+**  Compute log2 of the absolute value of an Int, i.e. the index of the highest
+**  set bit. For input 0, return -1.
 */
 extern Int CLog2Int( Int intnum );
 

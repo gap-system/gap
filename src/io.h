@@ -200,8 +200,8 @@ extern UInt CloseInputLog ( void );
  *V  EndLineHook . . . . . . . . . . . function called at end of command line
  **  
  **  These functions can be set on GAP-level. If they are not bound  the 
- **  default is: Instead of `PrintPromptHook' the `Prompt' is printed and
- **  instead of `EndLineHook' nothing is done.
+ **  default is: Instead of 'PrintPromptHook' the 'Prompt' is printed and
+ **  instead of 'EndLineHook' nothing is done.
  */
 /* TL: extern Obj  PrintPromptHook; */
 extern Obj  EndLineHook;

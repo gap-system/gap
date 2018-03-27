@@ -225,10 +225,10 @@ static inline Obj * BASE_PTR_PLIST(Obj list)
 **
 *F  IS_DENSE_PLIST( <list> )  . . . . . check if <list> is a dense plain list
 **
-** Note that this only checks for plists that are known to be dense.  This is
-** very fast.  If you want  to also handle plists  for which it  is now known
-** whether they  are dense or not  (i.e. of type T_PLIST),  use IS_DENSE_LIST
-** instead.
+**  Note that this only checks for plists that are known to be dense. This is
+**  very fast.  If you want  to also handle plists  for which it is now known
+**  whether they are dense or not (i.e. of type 'T_PLIST'),
+**  use 'IS_DENSE_LIST' instead.
 */
 static inline Int IS_DENSE_PLIST(Obj list)
 {

@@ -142,12 +142,12 @@ static inline UInt TNUM_BAG(Bag bag) {
 **  To test that all of them are set, compare the result to the original
 **  flags, e.g.
 **
-** 	if (TEST_BAG_FLAG(obj, FLAG1 | FLAG2 ) == (FLAG1 | FLAG2)) ...
+**  	if (TEST_BAG_FLAG(obj, FLAG1 | FLAG2 ) == (FLAG1 | FLAG2)) ...
 **
 **  Similary, if you wish to test that FLAG1 is set and FLAG2 is not set,
 **  use:
 **
-** 	if (TEST_BAG_FLAG(obj, FLAG1 | FLAG2 ) == FLAG1) ...
+**  	if (TEST_BAG_FLAG(obj, FLAG1 | FLAG2 ) == FLAG1) ...
 **
 **  Each flag must be a an integer with exactly one bit set, e.g. a value
 **  of the form (1 << i). Currently, 'i' must be in the range from 0 to
@@ -1053,9 +1053,9 @@ extern  void            InitCollectFuncBags (
 
 /****************************************************************************
 **
-*F  CheckMasterPointers() . . . . . . . . . . . . .do some consistency checks
+*F  CheckMasterPointers() . . . . . . . . . . . .  do some consistency checks
 **
-**  'CheckMasterPointers()' tests for masterpoinetrs which are not one of the
+**  'CheckMasterPointers' tests for masterpointers which are not one of the
 **  following:
 **
 **  0                       denoting the end of the free chain
@@ -1130,9 +1130,9 @@ extern void FinishBags( void );
 **
 *F  CallbackForAllBags( <func> ) call a C function on all non-zero mptrs
 **
-** This calls a   C  function on every    bag, including ones  that  are  not
-** reachable from    the root, and    will  be deleted  at the   next garbage
-** collection, by simply  walking the masterpointer area. Not terribly safe
+**  This calls a   C  function on every   bag, including ones  that  are  not
+**  reachable from    the root, and   will  be deleted  at the   next garbage
+**  collection, by simply  walking the masterpointer area. Not terribly safe.
 ** 
 */
 #ifdef USE_GASMAN

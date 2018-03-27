@@ -103,7 +103,8 @@
 *F  MASK_POS_GF2VEC( <pos> )  . . . . bit mask for position of a Boolean list
 **
 **  MASK_POS_GF2VEC(<pos>) returns a UInt with  a single set bit in  position
-**  (pos-1) % BIPEB, useful for accessing the pos'th element of a blist
+**  '(<pos>-1) % BIPEB',
+**  useful for accessing the <pos>-th element of a blist.
 **
 **  Note that 'MASK_POS_GF2VEC' is a  macro, so do not call it with arguments
 **  that have side effects.

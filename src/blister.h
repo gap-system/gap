@@ -164,8 +164,9 @@ static inline const UInt * CONST_BLOCK_ELM_BLIST_PTR(Obj list, UInt pos)
 **
 *F  MASK_POS_BLIST( <pos> )  . . . .  bit mask for position of a Boolean list
 **
-**  MASK_POS_BLIST(<pos>) returns a UInt with   a single set bit in  position
-**  (pos-1) % BIPEB, useful for accessing the pos'th element of a blist
+**  'MASK_POS_BLIST(<pos>)' returns a UInt with a single set bit in  position
+**  '(<pos>-1) % BIPEB',
+**  useful for accessing the <pos>-th element of a blist.
 */
 static inline UInt MASK_POS_BLIST(UInt pos)
 {
@@ -221,7 +222,7 @@ static inline void CLEAR_BIT_BLIST(Obj list, UInt pos)
 **
 *F  COUNT_TRUES_BLOCK( <block> ) . . . . . . . . . . .  count number of trues
 **
-** 'COUNT_TRUES_BLOCK( <block> )' returns the number of 1 bits in the
+**  'COUNT_TRUES_BLOCK( <block> )' returns the number of 1 bits in the
 **  UInt <block>. Two implementations are included below. One uses the
 **  gcc builtin __builtin_popcount which usually generates the popcntl
 **  or popcntq instruction on sufficiently recent CPUs. The other uses
@@ -353,7 +354,7 @@ extern void AssBlist (
 **
 *F  ConvBlist( <list> ) . . . . . . . . .  convert a list into a boolean list
 **
-**  `ConvBlist' changes the representation of boolean  lists into the compact
+**  'ConvBlist' changes the representation of boolean  lists into the compact
 **  representation of type 'T_BLIST' described above.
 */
 extern void ConvBlist (
@@ -365,7 +366,7 @@ extern void ConvBlist (
 *F  CopyBits( <fromblock>, <from-starting-bit>, <toblock>, <to-starting-bit>,
 **            <numbits> )
 **
-**  `CopyBits' copies <numbits> bits (numbering bits within a UInt
+**  'CopyBits' copies <numbits> bits (numbering bits within a UInt
 **   from the least significant to the most significant) starting with
 **   bit number <from-starting-bit> of UInt *<fromblock> to a destination
 **   starting at bit <to-starting-bit> of *<toblock>. The source and 

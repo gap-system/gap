@@ -173,13 +173,14 @@ static inline Obj GET_ELM_PREC(Obj rec, UInt i)
 
 /****************************************************************************
 **
-*F FindPRec( <rec>, <rnam>, <pos>, <cleanup> )
-**   . . . . . . . . . . . . . . . . . find a component name by binary search
+*F  FindPRec( <rec>, <rnam>, <pos>, <cleanup> )
+*F   . . . . . . . . . . . . . . . . . find a component name by binary search
 **
-** Searches rnam in rec, sets pos to the position where it is found (return
-** value 1) or where it should be inserted if it is not found (return val 0).
-** If cleanup is nonzero, a dirty record is automatically cleaned up.
-** If cleanup is 0, this does not happen.
+**  Searches <rnam> in <rec>, sets <pos> to the position where it is found
+**  (return value 1) or where it should be inserted if it is not found
+**  (return value 0).
+**  If <cleanup> is nonzero, a dirty record is automatically cleaned up.
+**  If <cleanup> is 0, this does not happen.
 **/
 
 extern UInt FindPRec( Obj rec, UInt rnam, UInt *pos, int cleanup );

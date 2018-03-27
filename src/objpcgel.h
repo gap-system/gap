@@ -44,7 +44,7 @@
 
 /****************************************************************************
 **
-*V  COLLECTOR_PCWORD( <obj> ) . . . . . . . . . . . . . .  collector of <obj>
+*F  COLLECTOR_PCWORD( <obj> ) . . . . . . . . . . . . . .  collector of <obj>
 */
 #define COLLECTOR_PCWORD(obj) \
     ( ELM_PLIST( TYPE_DATOBJ(obj), PCWP_COLLECTOR ) )

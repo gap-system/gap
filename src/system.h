@@ -203,7 +203,9 @@ typedef UInt4    UInt;
 
 /****************************************************************************
 **
-*T  Bag . . . . . . . . . . . . . . . . . . . type of the identifier of a bag
+*t  Bag . . . . . . . . . . . . . . . . . . . type of the identifier of a bag
+**
+**  (The documentation of 'Bag' is contained in 'gasman.h'.)
 */
 typedef UInt * *        Bag;
 
@@ -280,7 +282,7 @@ extern const Char * SyArchitecture;
 *V  SyBuildVersion . . . . . . . . . . . . . . . . .  kernel version number
 *V  SyBuildDateTime  . . . . . . . . . . . . . . . .  kernel build time
 **
-** SyBuildVersion will replace SyKernelVersion
+**  'SyBuildVersion' will replace 'SyKernelVersion'.
 */
 extern const Char * SyKernelVersion;
 extern const Char * SyBuildVersion;
@@ -463,7 +465,7 @@ extern UInt SyQuitOnBreak;
 **
 *V  SyRestoring . . . . . . . . . . . . . . . . . . . . restoring a workspace
 **
-**  `SyRestoring' determines whether GAP is restoring a workspace or not.  If
+**  'SyRestoring' determines whether GAP is restoring a workspace or not.  If
 **  it is zero no restoring should take place otherwise it holds the filename
 **  of a workspace to restore.
 **
@@ -474,7 +476,7 @@ extern Char * SyRestoring;
 **
 *V  SyInitializing                               set to 1 during library init
 **
-**  `SyInitializing' is set to 1 during the library intialization phase of
+**  'SyInitializing' is set to 1 during the library intialization phase of
 **  startup. It supresses some behaviours that may not be possible so early
 **  such as homogeneity tests in the plist code.
 */
@@ -631,15 +633,16 @@ extern UInt SyTimeChildrenSys ( void );
 **
 *F  strlcpy( <dst>, <src>, <len> )
 **
-** Copy src to buffer dst of size len.  At most len-1 characters will be
-** copied. Afterwards, dst is always NUL terminated (unless len == 0).
+**  Copy <src> to buffer <dst> of size <len>. At most <len>-1 characters will
+**  be copied. Afterwards, <dst> is always 'NUL' terminated
+**  (unless <len> == 0).
 **
-** Returns strlen(src); hence if the return value is greater or equal
-** than len, truncation occurred.
+**  Returns 'strlen( <src> )'; hence if the return value is greater or equal
+**  than <len>, truncation occurred.
 **
-** This function is provided by some systems (e.g. OpenBSD, Mac OS X),
-** but not by all, so we provide a fallback implementation for those
-** systems that lack it.
+**  This function is provided by some systems (e.g. OpenBSD, Mac OS X),
+**  but not by all, so we provide a fallback implementation for those
+**  systems that lack it.
 */
 #ifndef HAVE_STRLCPY
 size_t strlcpy (
@@ -652,16 +655,17 @@ size_t strlcpy (
 **
 *F  strlcat( <dst>, <src>, <len> )
 **
-** Appends src to buffer dst of size len (unlike strncat, len is the full
-** size of dst, not space left). At most len-1 characters will be copied.
-** Afterwards, dst is always NUL terminated (unless len == 0).
+**  Appends <src> to buffer <dst> of size <len> (unlike 'strncat', <len> is
+**  the full size of <dst>, not space left).
+**  At most <len>-1 characters will be copied.
+**  Afterwards, <dst> is always 'NUL' terminated (unless <len> == 0).
 **
-** Returns initial length of dst plus strlen(src); hence if the return value
-** is greater or equal than len, truncation occurred.
+**  Returns initial length of <dst> plus 'strlen(<src>)'; hence if the return
+**  value is greater or equal than <len>, truncation occurred.
 **
-** This function is provided by some systems (e.g. OpenBSD, Mac OS X),
-** but not by all, so we provide a fallback implementation for those
-** systems that lack it.
+**  This function is provided by some systems (e.g. OpenBSD, Mac OS X),
+**  but not by all, so we provide a fallback implementation for those
+**  systems that lack it.
 */
 #ifndef HAVE_STRLCAT
 size_t strlcat (
@@ -674,12 +678,13 @@ size_t strlcat (
 **
 *F  strlncat( <dst>, <src>, <len>, <n> )
 **
-** Append at most n characters from src to buffer dst of size len. At most
-** len-1 characters will be copied. Afterwards, dst is always NUL terminated
-** (unless len == 0).
+**  Append at most <n> characters from <src> to buffer <dst> of size <len>.
+**  At most <len>-1 characters will be copied.
+**  Afterwards, <dst> is always 'NUL' terminated (unless <len> == 0).
 **
-** Returns initial length of dst plus the minimum of n and strlen(src); hence
-** if the return value is greater or equal than len, truncation occurred.
+**  Returns initial length of <dst> plus the minimum of <n> and
+**  'strlen(<src>)'; hence if the return value is greater or equal than
+**  <len>, truncation occurred.
 */
 size_t strlncat (
     char *dst,
@@ -691,11 +696,11 @@ size_t strlncat (
 **
 *F  strxcpy( <dst>, <src>, <len> )
 **
-** Copy src to buffer dst of size len. If an overflow would occur, trigger
-** an assertion.
+**  Copy <src> to buffer <dst> of size <len>.
+**  If an overflow would occur, trigger an assertion.
 **
-** This should be used with caution; in general, proper error handling is
-** preferable.
+**  This should be used with caution; in general, proper error handling is
+**  preferable.
 **/
 size_t strxcpy (
     char *dst,
@@ -706,11 +711,11 @@ size_t strxcpy (
 **
 *F  strxcat( <dst>, <src>, <len> )
 **
-** Append src to buffer dst of size len. If an overflow would occur, trigger
-** an assertion.
+**  Append <src> to buffer <dst> of size <len>.
+**  If an overflow would occur, trigger an assertion.
 **
-** This should be used with caution; in general, proper error handling is
-** preferable.
+**  This should be used with caution; in general, proper error handling is
+**  preferable.
 **/
 size_t strxcat (
     char *dst,
@@ -721,11 +726,12 @@ size_t strxcat (
 **
 *F  strxncat( <dst>, <src>, <len>, <n> )
 **
-** Append not more than n characters from src to buffer dst of size len.
-** If an overflow would occur, trigger an assertion.
+**  Append not more than <n> characters from <src> to buffer <dst> of size
+**  <len>.
+**  If an overflow would occur, trigger an assertion.
 **
-** This should be used with caution; in general, proper error handling is
-** preferable.
+**  This should be used with caution; in general, proper error handling is
+**  preferable.
 **/
 size_t strxncat (
     char *dst,
@@ -811,24 +817,31 @@ extern void SyAbortBags(const Char * msg) NORETURN;
 **
 *F * * * * * * * * * * * * * loading of modules * * * * * * * * * * * * * * *
 **
-** GAP_KERNEL_API_VERSION gives the version of the GAP kernel. This value
-** is used to check if kernel modules were built with a compatible kernel.
-** This version is not the same as, and not connected to, the GAP version.
+*/
+
+/****************************************************************************
 **
-** This is stored as GAP_KERNEL_MAJOR_VERSION*1000 + GAP_KERNEL_MINOR_VERSION
+*V  GAP_KERNEL_API_VERSION
 **
-** The algorithm used is the following:
+**  'GAP_KERNEL_API_VERSION' gives the version of the GAP kernel. This value
+**  is used to check if kernel modules were built with a compatible kernel.
+**  This version is not the same as, and not connected to, the GAP version.
 **
-** The kernel will not load a module compiled for a newer kernel.
+**  This is stored as
+**  'GAP_KERNEL_MAJOR_VERSION*1000 + GAP_KERNEL_MINOR_VERSION'.
 **
-** The kernel will not load a module compiled for a different major version.
+**  The algorithm used is the following:
 **
-** The minor version should be incremented when new backwards-compatible
-** functionality is added. The major version should be incremented when
-** a backwards-incompatible change is made.
+**  The kernel will not load a module compiled for a newer kernel.
 **
-** The kernel version is a macro so it can be used by packages
-** to optionally compile support for new functionality.
+**  The kernel will not load a module compiled for a different major version.
+**
+**  The minor version should be incremented when new backwards-compatible
+**  functionality is added. The major version should be incremented when
+**  a backwards-incompatible change is made.
+**
+**  The kernel version is a macro so it can be used by packages
+**  to optionally compile support for new functionality.
 **
 */
 
@@ -1065,12 +1078,12 @@ extern void SySleep( UInt secs );
 extern void SyUSleep( UInt msecs );
 
 /****************************************************************************
- **
- *F    sySetjmp( <jump buffer> )
- *F    syLongjmp( <jump buffer>, <value>)
- ** 
- **   macros and functions, defining our selected longjump mechanism
- */
+**
+*F  sySetjmp( <jump buffer> )
+*F  syLongjmp( <jump buffer>, <value> )
+** 
+**  macros and functions, defining our selected longjump mechanism
+*/
 
 #if defined(HAVE_SIGSETJMP)
 #define sySetjmp( buff ) (sigsetjmp( (buff), 0))
@@ -1090,8 +1103,9 @@ void syLongjmp(syJmp_buf* buf, int val) NORETURN;
 
 /****************************************************************************
 **
-*F RegisterSyLongjmpObserver : register a function to be called before
-**                   longjmp is called.
+*F  RegisterSyLongjmpObserver( <func> )
+**
+**  register a function to be called before longjmp is called.
 */
 
 typedef void (*voidfunc)(void);
