@@ -16,6 +16,25 @@ gap> SetUserPreference("PartialPermDisplayLimit", 100);;
 gap> SetUserPreference("NotationForPartialPerms", "component");;
 gap> SetUserPreference("NotationForTransformations", "fr");;
 
+# Some helper functions
+gap> PPerm4 := function(arg)
+>   local out, e;
+>   if Length(arg) = 1 then 
+>     e := LeftOne(PartialPerm(arg[1]));
+>     Add(arg[1], 65536);
+>     return e * PartialPerm(arg[1]);
+>   else 
+>     Add(arg[2], 65536 + Length(arg[1]));
+>     out := PartialPerm(arg[1], [65536 .. 65536 + Length(arg[1]) - 1]) * 
+>            PartialPerm([65536 .. 65536 + Length(arg[1])], arg[2]);
+>     DomainOfPartialPerm(out);
+>     return out;
+>   fi;
+> end;;
+gap> Perm4 := function(p)
+> return p * ((1, 65537) * (1, 65537));
+> end;;
+
 # GAP-level functions
 #
 gap> f:=PartialPerm( [ 4, 5, 7, 8 ], [ 5, 4, 1, 6 ] );
@@ -425,26 +444,27 @@ true
 
 # HashFuncForPPerm and HASH_FUNC_FOR_PPERM
 gap> f := PartialPerm([65536]);;
-gap> HASH_FUNC_FOR_PPERM(f, 10 ^ 6);
-260581
+gap> GAPInfo.BytesPerVariable = 8 and HASH_FUNC_FOR_PPERM(f, 10 ^ 6) = 260581
+> or GAPInfo.BytesPerVariable = 4 and HASH_FUNC_FOR_PPERM(f, 10 ^ 6) = 953600;
+true
 gap> f := PartialPermNC([65535]);;
-gap> HASH_FUNC_FOR_PPERM(f, 10 ^ 6);
-354405
-gap> f := PartialPermNC([65535]);;
-gap> HASH_FUNC_FOR_PPERM(f, 10 ^ 6);
-354405
+gap> GAPInfo.BytesPerVariable = 8 and HASH_FUNC_FOR_PPERM(f, 10 ^ 6) = 354405
+> or GAPInfo.BytesPerVariable = 4 and HASH_FUNC_FOR_PPERM(f, 10 ^ 6) = 287798;
+true
 gap> f := PartialPerm([1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19],
-> [2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9]);;
-gap> HASH_FUNC_FOR_PPERM(f, 10 ^ 6);
-773594
+>                     [2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9]);;
+gap> GAPInfo.BytesPerVariable = 8 and HASH_FUNC_FOR_PPERM(f, 10 ^ 6) = 773594
+> or GAPInfo.BytesPerVariable = 4 and HASH_FUNC_FOR_PPERM(f, 10 ^ 6) = 982764;
+true
 gap> f := PartialPermNC([65536]);;
 gap> g := PartialPermNC([2, 65536], [70000, 1]);;
 gap> h := f * g;
 <identity partial perm on [ 1 ]>
 gap> IsPPerm4Rep(h);
 true
-gap> HASH_FUNC_FOR_PPERM(h, 10 ^ 6);
-567548
+gap> GAPInfo.BytesPerVariable = 8 and HASH_FUNC_FOR_PPERM(h, 10 ^ 6) = 567548
+> or GAPInfo.BytesPerVariable = 4 and HASH_FUNC_FOR_PPERM(h, 10 ^ 6) = 464636;
+true
 gap> IsPPerm2Rep(h);
 true
 
@@ -745,107 +765,151 @@ gap> AsPartialPerm(Transformation([10, 8, 4, 6, 4, 5, 3, 8, 8, 2]), [1, 2, 2, 3]
 Error, usage: the second argument must be a set of positive integers,
 gap> AsPartialPerm(Transformation([10, 8, 4, 6, 4, 5, 3, 8, 8, 2]), 4);
 [1,10][2,8][3,4,6]
+gap> AsPartialPerm((), []);
+<empty partial perm>
 
 # JoinOfPartialPerms
-gap> f:=PartialPermNC([1],[2]);;
-gap> g:=PartialPermNC([1,2,3],[2,4,1]);;
+gap> f := PartialPermNC([1], [2]);;
+gap> g := PartialPermNC([1, 2, 3], [2, 4, 1]);;
 gap> JoinOfPartialPerms(f, g);
 [3,1,2,4]
-gap> f:=PartialPermNC([1],[2]);
+gap> JoinOfPartialPerms(g, f);
+[3,1,2,4]
+gap> f := PartialPermNC([1], [2]);
 [1,2]
-gap> g:=PartialPermNC([2],[3]);    
+gap> g := PartialPermNC([2], [3]);    
 [2,3]
 gap> JoinOfPartialPerms(f, g);
 [1,2,3]
-gap> g:=PartialPermNC([2],[1]);
+gap> JoinOfPartialPerms(g, f);
+[1,2,3]
+gap> g := PartialPermNC([2], [1]);
 [2,1]
 gap> JoinOfPartialPerms(f, g);
 (1,2)
-gap> g:=PartialPermNC([1],[3]);
+gap> JoinOfPartialPerms(g, f);
+(1,2)
+gap> g := PartialPermNC([1], [3]);
 [1,3]
 gap> JoinOfPartialPerms(f, g);
 fail
-gap> f:=PartialPermNC([2]);;
-gap> g:=PartialPermNC([3]);;
+gap> JoinOfPartialPerms(g, f);
+fail
+gap> f := PartialPermNC([2]);;
+gap> g := PartialPermNC([3]);;
 gap> JoinOfPartialPerms(f, g);
 fail
-gap> f:=PartialPermNC([2]);;
-gap> g:=PartialPermNC([0,3]);;
+gap> JoinOfPartialPerms(g, f);
+fail
+gap> f := PartialPermNC([2]);;
+gap> g := PartialPermNC([0, 3]);;
 gap> JoinOfPartialPerms(f, g);
 [1,2,3]
-gap> f:=PartialPermNC([2]); 
+gap> JoinOfPartialPerms(g, f);
+[1,2,3]
+gap> f := PartialPermNC([2]); 
 [1,2]
-gap> g:=PartialPermNC([0,3]);;
+gap> g := PartialPermNC([0, 3]);;
 gap> JoinOfPartialPerms(f, g);
 [1,2,3]
-gap> f:=PartialPermNC([2]);;
-gap> g:=PartialPermNC([0,3]); 
+gap> JoinOfPartialPerms(g, f);
+[1,2,3]
+gap> f := PartialPermNC([2]);;
+gap> g := PartialPermNC([0, 3]); 
 [2,3]
 gap> JoinOfPartialPerms(f, g);
 [1,2,3]
-gap> f:=PartialPermNC([2]);;
-gap> f:=PartialPermNC([2]); 
+gap> JoinOfPartialPerms(g, f);
+[1,2,3]
+gap> f := PartialPermNC([2]); 
 [1,2]
-gap> g:=PartialPermNC([0,100000]);
+gap> g := PartialPermNC([0, 100000]);
 [2,100000]
-gap> JoinOfPartialPerms(f,g);
+gap> JoinOfPartialPerms(f, g);
+[1,2,100000]
+gap> JoinOfPartialPerms(g, f);
 [1,2,100000]
 gap> JoinOfPartialPerms([f, g]);
 [1,2,100000]
+gap> JoinOfPartialPerms([g, f]);
+[1,2,100000]
 gap> JoinOfPartialPerms(1, 2);
 Error, usage: the argument should be a collection of partial perms,
-gap> JoinOfPartialPerms(last, PartialPermNC([100000],[1]));
+gap> JoinOfPartialPerms(last, PartialPermNC([100000], [1]));
 (1,2,100000)
-gap> g:=PartialPermNC([0,100000]);;
-gap> JoinOfPartialPerms(f,g);                              
+gap> JoinOfPartialPerms(PartialPermNC([100000], [1]), JoinOfPartialPerms([g, f]));
+(1,2,100000)
+gap> g := PartialPermNC([0, 100000]);;
+gap> JoinOfPartialPerms(f, g);                              
 [1,2,100000]
-gap> f:=PartialPermNC([2]);;
-gap> g:=PartialPermNC([0,100000]); 
+gap> f := PartialPermNC([2]);;
+gap> g := PartialPermNC([0, 100000]); 
 [2,100000]
-gap> JoinOfPartialPerms(f,g);
+gap> JoinOfPartialPerms(f, g);
 [1,2,100000]
-gap> f:=PartialPermNC([2]);;
-gap> g:=PartialPermNC([0,100000]);;
-gap> JoinOfPartialPerms(f,g);
+gap> JoinOfPartialPerms(g, f);
 [1,2,100000]
-gap> last^2;
+gap> f := PartialPermNC([2]);;
+gap> g := PartialPermNC([0, 100000]);;
+gap> JoinOfPartialPerms(f, g);
+[1,2,100000]
+gap> JoinOfPartialPerms(g, f);
+[1,2,100000]
+gap> last ^ 2;
 [1,100000]
-gap> f:=PartialPermNC([2]);;
-gap> f:=PartialPermNC([0,100000]);;
-gap> g:=PartialPermNC([2]);;       
-gap> JoinOfPartialPerms(f,g);
+gap> f := PartialPermNC([0, 100000]);;
+gap> g := PartialPermNC([2]);;       
+gap> JoinOfPartialPerms(f, g);
 [1,2,100000]
-gap> f:=PartialPermNC([0,100000]);;
-gap> g:=PartialPermNC([0,100000,4]);;
-gap> JoinOfPartialPerms(f,g);
+gap> JoinOfPartialPerms(g, f);
+[1,2,100000]
+gap> f := PartialPermNC([0, 100000]);;
+gap> g := PartialPermNC([0, 100000, 4]);;
+gap> JoinOfPartialPerms(f, g);
 [2,100000][3,4]
-gap> g:=PartialPermNC([0,0,4]);;     
-gap> JoinOfPartialPerms(f,g);
+gap> JoinOfPartialPerms(g, f);
 [2,100000][3,4]
-gap> g:=PartialPermNC([0,0,4]); 
+gap> g := PartialPermNC([0, 0, 4]);;     
+gap> JoinOfPartialPerms(f, g);
+[2,100000][3,4]
+gap> JoinOfPartialPerms(g, f);
+[2,100000][3,4]
+gap> g := PartialPermNC([0, 0, 4]); 
 [3,4]
-gap> JoinOfPartialPerms(f,g);
+gap> JoinOfPartialPerms(f, g);
 [2,100000][3,4]
-gap> f:=PartialPermNC([0,100000]); 
+gap> JoinOfPartialPerms(g, f);
+[2,100000][3,4]
+gap> f := PartialPermNC([0, 100000]); 
 [2,100000]
-gap> JoinOfPartialPerms(f,g);
+gap> JoinOfPartialPerms(f, g);
 [2,100000][3,4]
-gap> g:=PartialPermNC([0,0,4]);;
-gap> JoinOfPartialPerms(f,g);
+gap> JoinOfPartialPerms(g, f);
 [2,100000][3,4]
-gap> f:=PartialPermNC( [ 1, 2, 4, 5, 6, 7 ], [ 5, 100000, 7, 3, 1, 4 ] )*
-> PartialPermNC([1..99999]);
+gap> g := PartialPermNC([0, 0, 4]);;
+gap> JoinOfPartialPerms(f, g);
+[2,100000][3,4]
+gap> JoinOfPartialPerms(g, f);
+[2,100000][3,4]
+gap> f := PartialPermNC([1, 2, 4, 5, 6, 7], [5, 100000, 7, 3, 1, 4])
+>  * PartialPermNC([1 .. 99999]);
 [6,1,5,3](4,7)
 gap> IsPPerm4Rep(f);
 true
-gap> g:=PartialPermNC([8,100000],[100000,1]);
+gap> g := PartialPermNC([8, 100000], [100000, 1]);
 [8,100000,1]
 gap> JoinOfPartialPerms(f, g);
 fail
-gap> g:=PartialPermNC([8],[100000]);         
+gap> JoinOfPartialPerms(g, f);
+fail
+gap> g := PartialPermNC([8], [100000]);         
 [8,100000]
 gap> JoinOfPartialPerms(f, g);
 [6,1,5,3][8,100000](4,7)
+gap> JoinOfPartialPerms(g, f);
+[6,1,5,3][8,100000](4,7)
+gap> JoinOfPartialPerms(f, f);
+[6,1,5,3](4,7)
 
 # JOIN_IDEM_PPERMS
 gap> JOIN_IDEM_PPERMS(PartialPerm([1 .. 5]), 
@@ -898,7 +962,7 @@ gap> MeetOfPartialPerms(PartialPerm([1]), PartialPerm([2]));
 gap> MeetOfPartialPerms(PartialPerm([1]), PartialPerm([1, 2]));
 <identity partial perm on [ 1 ]>
 gap> MeetOfPartialPerms([]);
-Error, usage: the argument should be a collection of partial perms, 
+Error, usage: the argument should be a collection of partial perms,
 gap> MeetOfPartialPerms([PartialPerm([1]), PartialPerm([1, 2])]);
 <identity partial perm on [ 1 ]>
 gap> MeetOfPartialPerms(SymmetricInverseMonoid(3));
@@ -933,6 +997,8 @@ gap> RestrictedPartialPerm(f, [2, 1, 3]);
 Error, usage: the second argument must be a set of positive integers,
 gap> RestrictedPartialPerm(f, [1, 2, 2 ^ 61]);
 Error, usage: the second argument must be a set of positive integers,
+gap> RESTRICTED_PPERM("a", [1, 2, 3]);
+fail
 
 # AsPermutation
 gap> f:=PartialPermNC([10,2,3,4,5]);      
@@ -957,6 +1023,9 @@ gap> OnTuples(DomainOfPartialPerm(g),AsPermutation(g))=
 true
 gap> AsPermutation(f);
 fail
+gap> f := PartialPerm([1, 70000], [70000, 1]);;
+gap> AsPermutation(f);
+(1,70000)
 
 # PermLeftQuoPartialPerm
 gap> f := PartialPerm([1, 100], [100, 2]);;
@@ -1046,22 +1115,121 @@ true
 gap> IsPPerm4Rep(f);
 true
 
-# EqPPerm24 and EqPPerm42
-gap> f:=PartialPermNC([1..100], [2..101]);
-<partial perm on 100 pts with degree 100, codegree 101>
-gap> p:=(1,100000);
-(1,100000)
-gap> IsPPerm2Rep(f); 
+# EqPPerm22
+gap> PartialPerm([1, 2]) = PartialPerm([2, 1]);
+false
+gap> PartialPerm([1, 2], [2, 1]) = PartialPerm([1, 2], [1, 2]);
+false
+gap> PartialPerm([2], [2]) = PartialPermNC([1 .. 2], [1 .. 2]);
+false
+gap> PartialPerm([1, 2]) = PartialPerm([1, 2]);
 true
-gap> IsPPerm4Rep(f*p);
+gap> PartialPerm([1, 2], [1, 2]) = PartialPerm([1, 2], [1, 2]);
 true
-gap> f*p=f;
+
+# EqPPerm24
+gap> PartialPerm([1, 2]) = PPerm4([2, 1]);
+false
+gap> PartialPerm([1, 2], [2, 1]) = PPerm4([1, 2], [1, 2]);
+false
+gap> PartialPerm([2], [2]) = PPerm4([1 .. 2], [1 .. 2]);
+false
+gap> PartialPerm([1, 2]) = PPerm4([1, 2]);
 true
-gap> f=f*p;
+gap> PartialPerm([1, 2], [1, 2]) = PPerm4([1, 2], [1, 2]);
+true
+
+# EqPPerm42
+gap> PPerm4([1, 2]) = PartialPerm([2, 1]);
+false
+gap> PPerm4([1, 2], [2, 1]) = PartialPerm([1, 2], [1, 2]);
+false
+gap> PPerm4([2], [2]) = PartialPermNC([1 .. 2], [1 .. 2]);
+false
+gap> PPerm4([1, 2]) = PartialPerm([1, 2]);
+true
+gap> PPerm4([1, 2], [1, 2]) = PartialPerm([1, 2], [1, 2]);
+true
+
+# EqPPerm44
+gap> PartialPerm([1, 70000]) = PartialPerm([70000, 1]);
+false
+gap> PartialPerm([1, 70000], [70000, 1]) = PartialPerm([1, 70000], [1, 70000]);
+false
+gap> PartialPerm([70000], [70000]) = PartialPermNC([1 .. 70000], [1 .. 70000]);
+false
+gap> PartialPerm([1, 70000]) = PartialPerm([1, 70000]);
+true
+gap> PartialPerm([1, 70000], [1, 70000]) = PartialPerm([1, 70000], [1, 70000]);
+true
+
+# LtPPerm22
+gap> PartialPerm([1, 20]) < PartialPerm([20, 1]);
+true
+gap> PartialPerm([1, 20], [20, 1]) < PartialPerm([1, 20], [1, 20]);
+false
+gap> PartialPerm([20], [20]) < PartialPermNC([1 .. 20], [1 .. 20]);
+true
+gap> PartialPerm([1, 20]) < PartialPerm([1, 20]);
+false
+gap> PartialPerm([1, 20], [1, 20]) < PartialPerm([1, 20], [1, 20]);
+false
+gap> PartialPerm([1, 21], [1, 21]) < PartialPerm([1, 20], [1, 20]);
+false
+gap> PartialPerm([1, 21], [1, 21]) < PartialPerm([1, 22], [1, 22]);
+true
+
+# LtPPerm24
+gap> PartialPerm([1, 20]) < PPerm4([20, 1]);
+true
+gap> PartialPerm([1, 20], [20, 1]) < PPerm4([1, 20], [1, 20]);
+false
+gap> PartialPerm([20], [20]) < PPerm4([1 .. 20], [1 .. 20]);
+true
+gap> PartialPerm([1, 20]) < PPerm4([1, 20]);
+false
+gap> PartialPerm([1, 20], [1, 20]) < PPerm4([1, 20], [1, 20]);
+false
+gap> PartialPerm([1, 21], [1, 21]) < PPerm4([1, 20], [1, 20]);
+false
+gap> PartialPerm([1, 21], [1, 21]) < PPerm4([1, 22], [1, 22]);
+true
+
+# LtPPerm42
+gap> PPerm4([1, 20]) < PartialPerm([20, 1]);
+true
+gap> PPerm4([1, 20], [20, 1]) < PartialPerm([1, 20], [1, 20]);
+false
+gap> PPerm4([20], [20]) < PartialPerm([1 .. 20], [1 .. 20]);
+true
+gap> PPerm4([1, 20]) < PartialPerm([1, 20]);
+false
+gap> PPerm4([1, 20], [1, 20]) < PartialPerm([1, 20], [1, 20]);
+false
+gap> PPerm4([1, 21], [1, 21]) < PartialPerm([1, 20], [1, 20]);
+false
+gap> PPerm4([1, 21], [1, 21]) < PartialPerm([1, 22], [1, 22]);
+true
+
+# LtPPerm44
+gap> PartialPerm([1, 70000]) < PartialPerm([70000, 1]);
+true
+gap> PartialPerm([1, 70000], [70000, 1]) < PartialPerm([1, 70000], [1, 70000]);
+false
+gap> PartialPerm([70000], [70000]) < PartialPermNC([1 .. 70000], [1 .. 70000]);
+true
+gap> PartialPerm([1, 70000]) < PartialPerm([1, 70000]);
+false
+gap> PartialPerm([1, 70000], [1, 70000]) < PartialPerm([1, 70000], [1, 70000]);
+false
+gap> PartialPerm([1, 70001], [1, 70001]) < PartialPerm([1, 70000], [1, 70000]);
+false
+gap> PartialPerm([1, 70001], [1, 70001]) < PartialPerm([1, 70002], [1, 70002]);
 true
 
 # ProdPPerm2Perm2, Case 1 of 6: codeg(f)<=deg(p), domain known
-gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; DomainOfPartialPerm(f);;
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
+> DomainOfPartialPerm(f);;
 gap> p:=(7, 100);;
 gap> g:=f*p;;
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
@@ -1070,17 +1238,10 @@ gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
 true
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
-
-# QuoPPerm2Perm2, Case 1 of 6: codeg(f)<=deg(p), domain known
-gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; DomainOfPartialPerm(f);;
-gap> p:=(7, 100);;
-gap> g:=f/p;;
-gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
-true
-gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-gap> f/p=f*p^-1;
-true
+gap> f := PartialPerm([1, 2, 3, 6, 10]);;
+gap> p := (7, 65536);;
+gap> f * p;
+[4,6][5,10](1)(2)(3)
 
 # ProdPPerm2Perm2, Case 2 of 6: codeg(f)<=deg(p), domain not known
 gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
@@ -1098,28 +1259,6 @@ true
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
 true
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-
-# QuoPPerm2Perm2, Case 2 of 6: codeg(f)<=deg(p), domain not known
-gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
-gap> p:=(7, 100);;
-gap> g:=f/p;;
-gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
-true
-gap> f/p=f*p^-1;
-true
-gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
-gap> p:=(7, 100);;
-gap> g:=f/p;;
-gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
-true
-gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-gap> f/p=f*p^-1;
 true
 
 # ProdPPerm2Perm2, Case 3 of 6: codeg(f)>deg(p), domain known
@@ -1142,30 +1281,6 @@ true
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 
-# QuoPPerm2Perm2, Case 3 of 6: codeg(f)>deg(p), domain known
-gap> f:=PartialPerm([1, 100], [100, 2]);; DomainOfPartialPerm(f);;
-gap> p:=(7, 10);;
-gap> g:=f/p;;
-gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
-true
-gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-gap> f/p=f*p^-1;
-true
-gap> f:=PartialPerm([1, 65535], [65535, 2]);;
-gap> p:=(17, 10000);;
-gap> g:=f/p;;
-gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
-true
-gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-gap> f/p=f*p^-1;
-true
-
 # ProdPPerm2Perm2, Case 4 of 6: codeg(f)>deg(p), domain not known
 gap> f:=PartialPerm([1, 100], [100, 2]);;
 gap> p:=(7, 10);;   
@@ -1186,30 +1301,6 @@ true
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 
-# QuoPPerm2Perm2, Case 4 of 6: codeg(f)>deg(p), domain not known
-gap> f:=PartialPerm([1, 100], [100, 2]);;
-gap> p:=(7, 10);;   
-gap> g:=f/p;;                       
-gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
-true
-gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-gap> f/p=f*p^-1;
-true
-gap> f:=PartialPerm([1, 10000], [10000, 2]);;
-gap> p:=(13, 1000);; 
-gap> g:=f/p;;
-gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
-true
-gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-gap> f/p=f*p^-1;
-true
-
 # ProdPPerm2Perm2, Case 5 of 6: deg(p)=65536, domain not known
 gap> p:=(1,65536);;
 gap> f:=PartialPerm([1, 10000], [10000, 2]);;
@@ -1219,19 +1310,6 @@ true
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
 true
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-
-# QuoPPerm2Perm2, Case 5 of 6: deg(p)=65536, domain not known
-gap> p:=(1,65536,123);;
-gap> f:=PartialPerm([1, 10000], [10000, 2]);;
-gap> g:=f/p;;
-gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
-true
-gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-gap> f/p=f*p^-1;
 true
 
 # ProdPPerm2Perm2, Case 6 of 6: deg(p)=65536, domain known
@@ -1245,19 +1323,6 @@ true
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 
-# QuoPPerm2Perm2, Case 6 of 6: deg(p)=65536, domain known
-gap> f:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
-gap> p:=(1,65536,123);;
-gap> g:=f/p;;
-gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
-true
-gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-gap> f/p=f*p^-1;
-true
-
 # ProdPPerm2Perm4, Case 1 of 2: domain known
 gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; DomainOfPartialPerm(f);;
 gap> p:=(1,100000);;
@@ -1267,19 +1332,6 @@ true
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
 true
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-
-# QuoPPerm2Perm4, Case 1 of 2: domain known
-gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; DomainOfPartialPerm(f);;
-gap> p:=(1,100000,123);;
-gap> g:=f/p;;
-gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
-true
-gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-gap> f/p=f*p^-1;
 true
 
 # ProdPPerm2Perm4, Case 2 of 2: domain not known
@@ -1293,23 +1345,23 @@ true
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 
-# QuoPPerm2Perm4, Case 2 of 2: domain not known
-gap> f:=PartialPerm([1, 1000], [1000, 2]);;
-gap> p:=(1,100000,123);;
-gap> g:=f/p;;
-gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
+# ProdPPerm4Perm4, Case 1 of 4: deg(p)>codeg(f) domain not known
+gap> p:=(1,100000);;
+gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,70000]));;
+gap> g:=f*p;                  
+[65536,100000][65537,70000]
+gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
 true
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
-gap> f/p=f*p^-1;
-true
 
-# ProdPPerm4Perm4, Case 1 of 4: deg(p)>codeg(f) domain not known
+# ProdPPerm4Perm4, Case 2 of 4: deg(p)>codeg(f) domain known
+gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,70000]));
+[65536,1][65537,70000]
 gap> p:=(1,100000);;
-gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,70000]));;
-gap> g:=f*p;                  
+gap> g:=f*p;
 [65536,100000][65537,70000]
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
 true
@@ -1332,19 +1384,6 @@ true
 gap> f/p=f*p^-1;
 true
 
-# ProdPPerm4Perm4, Case 2 of 4: deg(p)>codeg(f) domain known
-gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,70000]));
-[65536,1][65537,70000]
-gap> p:=(1,100000);;
-gap> g:=f*p;
-[65536,100000][65537,70000]
-gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
-true
-gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-
 # QuoPPerm4Perm4, Case 2 of 4: deg(p)>codeg(f) domain known
 gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,70000]));
 [65536,1][65537,70000]
@@ -1360,18 +1399,6 @@ true
 gap> f/p=f*p^-1;
 true
 
-# ProdPPerm4Perm4, Case 3 of 4: deg(p)<=codeg(f) domain not known
-gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,100001]));;
-gap> p:=(1,100000);;
-gap> g:=f*p;
-[65536,100000][65537,100001]
-gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
-true
-gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-
 # QuoPPerm4Perm4, Case 3 of 4: deg(p)<=codeg(f) domain not known
 gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,100001]));;
 gap> p:=(1,100000,123);;
@@ -1384,19 +1411,6 @@ true
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 gap> f/p=f*p^-1;
-true
-
-# ProdPPerm4Perm4, Case 4 of 4: deg(p)<=codeg(f) domain known
-gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,100001]));
-[65536,1][65537,100001]
-gap> p:=(1,100000);;
-gap> g:=f*p;
-[65536,100000][65537,100001]
-gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);  
-true
-gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 
 # QuoPPerm4Perm4, Case 4 of 4: deg(p)<=codeg(f) domain known
@@ -1414,6 +1428,183 @@ true
 gap> f/p=f*p^-1;
 true
 
+# QuoPPerm4Perm4: Corner cases
+gap> EMPTY_PPERM4 / ((1, 65537) * (1, 65537));
+<empty partial perm>
+gap> PPerm4([1]) / ((1, 65537) * (1, 65537));
+<identity partial perm on [ 1 ]>
+
+# QuoPPerm2Perm2, Case 1 of 4: deg(p) > codeg(f) domain not known
+gap> p := (1, 10, 12);;
+gap> f := PartialPermNC(Concatenation(List([1 .. 65], x -> 0), [1, 70]));;
+gap> g := f / p;                  
+[66,12][67,70]
+gap> OnTuples(ImageListOfPartialPerm(f), p ^ -1) = ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g) = Maximum(ImageSetOfPartialPerm(g));
+true
+gap> DomainOfPartialPerm(g) = DomainOfPartialPerm(f);
+true
+gap> f / p = f * p ^ -1;
+true
+
+# QuoPPerm2Perm2, Case 2 of 4: deg(p) > codeg(f) domain known
+gap> p := (1, 10, 12);;
+gap> f := PartialPermNC(Concatenation(List([1 .. 65], x -> 0), [1, 70]));;
+gap> DomainOfPartialPerm(f);
+[ 66, 67 ]
+gap> g := f / p;
+[66,12][67,70]
+gap> OnTuples(ImageListOfPartialPerm(f), p ^ -1) = ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g) = Maximum(ImageSetOfPartialPerm(g));
+true
+gap> DomainOfPartialPerm(g) = DomainOfPartialPerm(f);
+true
+gap> f / p = f * p ^ -1;
+true
+
+# QuoPPerm2Perm2, Case 3 of 4: deg(p) <= codeg(f) domain not known
+gap> p := (1, 10, 12);;
+gap> f := PartialPermNC(Concatenation(List([1 .. 65], x -> 0), [1, 70]));;
+gap> g := f / p;
+[66,12][67,70]
+gap> OnTuples(ImageListOfPartialPerm(f), p ^ -1) = ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g) = Maximum(ImageSetOfPartialPerm(g));
+true
+gap> DomainOfPartialPerm(g) = DomainOfPartialPerm(f);
+true
+gap> f / p = f * p ^ -1;
+true
+
+# QuoPPerm2Perm2, Case 4 of 4: deg(p) <= codeg(f) domain known
+gap> p := (1, 10, 12);;
+gap> f := PartialPermNC(Concatenation(List([1 .. 65], x -> 0), [1, 70]));;
+gap> DomainOfPartialPerm(f);;
+gap> g := f / p;
+[66,12][67,70]
+gap> OnTuples(ImageListOfPartialPerm(f), p ^ -1) = ImageListOfPartialPerm(g);  
+true
+gap> CodegreeOfPartialPerm(g) = Maximum(ImageSetOfPartialPerm(g));
+true
+gap> DomainOfPartialPerm(g) = DomainOfPartialPerm(f);
+true
+gap> f / p = f * p ^ -1;
+true
+
+# QuoPPerm2Perm2: Corner cases
+gap> EmptyPartialPerm() / ((1, 10) * (1, 10));
+<empty partial perm>
+gap> PartialPerm([1]) / ((1, 10) * (1, 10));
+<identity partial perm on [ 1 ]>
+gap> p := (1, 65535);;
+gap> f := PartialPermNC(Concatenation(List([1 .. 65], x -> 0), [1, 70]));;
+gap> f / p;
+[66,65535][67,70]
+
+# QuoPPerm4Perm2, Case 1 of 4: deg(p) > codeg(f) domain not known
+gap> p := (1, 10, 12);;
+gap> f := PPerm4(Concatenation(List([1 .. 65], x -> 0), [1, 70]));;
+gap> g := f / p;                  
+[66,12][67,70]
+gap> OnTuples(ImageListOfPartialPerm(f), p ^ -1) = ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g) = Maximum(ImageSetOfPartialPerm(g));
+true
+gap> DomainOfPartialPerm(g) = DomainOfPartialPerm(f);
+true
+gap> f / p = f * p ^ -1;
+true
+
+# QuoPPerm4Perm2, Case 2 of 4: deg(p) > codeg(f) domain known
+gap> p := (1, 10, 12);;
+gap> f := PPerm4(Concatenation(List([1 .. 65], x -> 0), [1, 70]));;
+gap> DomainOfPartialPerm(f);
+[ 66, 67 ]
+gap> g := f / p;
+[66,12][67,70]
+gap> OnTuples(ImageListOfPartialPerm(f), p ^ -1) = ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g) = Maximum(ImageSetOfPartialPerm(g));
+true
+gap> DomainOfPartialPerm(g) = DomainOfPartialPerm(f);
+true
+gap> f / p = f * p ^ -1;
+true
+
+# QuoPPerm4Perm2, Case 3 of 4: deg(p) <= codeg(f) domain not known
+gap> p := (1, 10, 12);;
+gap> f := PPerm4(Concatenation(List([1 .. 65], x -> 0), [1, 70]));;
+gap> g := f / p;
+[66,12][67,70]
+gap> OnTuples(ImageListOfPartialPerm(f), p ^ -1) = ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g) = Maximum(ImageSetOfPartialPerm(g));
+true
+gap> DomainOfPartialPerm(g) = DomainOfPartialPerm(f);
+true
+gap> f / p = f * p ^ -1;
+true
+
+# QuoPPerm4Perm2, Case 4 of 4: deg(p) <= codeg(f) domain known
+gap> p := (1, 10, 12);;
+gap> f := PPerm4(Concatenation(List([1 .. 65], x -> 0), [1, 70]));;
+gap> DomainOfPartialPerm(f);;
+gap> g := f / p;
+[66,12][67,70]
+gap> OnTuples(ImageListOfPartialPerm(f), p ^ -1) = ImageListOfPartialPerm(g);  
+true
+gap> CodegreeOfPartialPerm(g) = Maximum(ImageSetOfPartialPerm(g));
+true
+gap> DomainOfPartialPerm(g) = DomainOfPartialPerm(f);
+true
+gap> f / p = f * p ^ -1;
+true
+
+# QuoPPerm4Perm2: Corner cases
+gap> EMPTY_PPERM4 / ((1, 10) * (1, 10));
+<empty partial perm>
+gap> PPerm4([1]) / ((1, 10) * (1, 10));
+<identity partial perm on [ 1 ]>
+gap> p := (1, 65536);;
+gap> f := PPerm4(Concatenation(List([1 .. 65], x -> 0), [1, 70]));;
+gap> f / p;
+[66,65536][67,70]
+
+# QuoPPerm2Perm4
+gap> EmptyPartialPerm() / (1, 65537);
+<empty partial perm>
+gap> PartialPerm([1]) / ((1, 65537) * (1, 65537));
+<identity partial perm on [ 1 ]>
+gap> PartialPerm([1]) / (1, 65537);
+[1,65537]
+
+# ProdPPerm4Perm4, Case 3 of 4: deg(p)<=codeg(f) domain not known
+gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,100001]));;
+gap> p:=(1,100000);;
+gap> g:=f*p;
+[65536,100000][65537,100001]
+gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
+true
+gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
+true
+
+# ProdPPerm4Perm4, Case 4 of 4: deg(p)<=codeg(f) domain known
+gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,100001]));
+[65536,1][65537,100001]
+gap> p:=(1,100000);;
+gap> g:=f*p;
+[65536,100000][65537,100001]
+gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);  
+true
+gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
+true
+gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
+true
+
 # ProdPPerm4Perm2, Case 1 of 2: domain not known
 gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,100001]));;
 gap> p:=(1,2);;
@@ -1424,20 +1615,6 @@ true
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-
-# QuoPPerm4Perm2, Case 1 of 2: domain not known
-gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,100001]));;
-gap> p:=(1,2,4);;
-gap> g:=f/p;
-[65536,4][65537,100001]
-gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);  
-true
-gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-gap> f/p=f*p^-1;
 true
 
 # ProdPPerm4Perm2, Case 2 of 2: domain known
@@ -1451,21 +1628,6 @@ true
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-
-# QuoPPerm4Perm2, Case 2 of 2: domain known
-gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,100001])); 
-[65536,1][65537,100001]
-gap> p:=(1,2,4);;
-gap> g:=f/p;
-[65536,4][65537,100001]
-gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
-true
-gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
-true
-gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
-true
-gap> f/p=f*p^-1;
 true
 
 # ProdPerm2PPerm2, Case 1 of 2: deg(p)<=deg(f)
@@ -1559,6 +1721,8 @@ gap> g:=p*f;
 [65538,1]
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
+gap> (1, 65537) * EmptyPartialPerm();
+<empty partial perm>
 
 # ProdPerm2PPerm4, Case 1 of 2: deg(p)<=deg(f)
 gap> p:=(1,10000);;
@@ -1665,6 +1829,8 @@ gap> p^-1*f*p;
 [5,18,4,8][7,6,14][10,17,20][16,1,2,12,15](3,11)(9)(19)
 gap> f^p=p^-1*f*p;
 true
+gap> EmptyPartialPerm() ^ ();
+<empty partial perm>
 
 # PowPPerm2Perm2, Case 2 of 4, deg(f)>deg(p) and codeg(f)<=deg(p)
 gap> f:=PartialPermNC( [ 11, 12, 13, 14, 15, 18, 19, 20 ], 
@@ -1723,6 +1889,10 @@ true
 gap> p := (17, 100000);;
 gap> f^p=p^-1*f*p;
 true
+gap> EmptyPartialPerm() ^ (1, 65537);
+<empty partial perm>
+gap> PartialPerm([1, 10, 3]) ^ ((1, 65537) * (1, 65537));
+[2,10](1)(3)
 
 # PowPPerm2Perm4, Case 2 of 2, deg(f)<=deg(p) and codeg(f)<=deg(p)
 gap> f := PartialPermNC([1, 2, 3, 4, 5, 6], [2, 5, 8, 1, 3, 4]);;
@@ -1785,6 +1955,16 @@ gap> f^p;
 [1,3,4,5](6,10)
 gap> p^-1*f*p;
 [1,3,4,5](6,10)
+
+# PowPPerm4Perm2
+gap> EMPTY_PPERM4 ^ ();
+<empty partial perm>
+gap> EMPTY_PPERM4 ^ (1, 65537);
+<empty partial perm>
+gap> () * EMPTY_PPERM4;
+<empty partial perm>
+
+#
 
 # PowPPerm4Perm4, Case 1 of 4, deg(f)>deg(p) and codeg(f)>deg(p)
 gap> f:=PartialPerm([1, 100000], [100000, 2]);; 
@@ -1871,85 +2051,211 @@ gap> g:=PartialPerm([1, 10000], [10000, 2]);;
 gap> f/g=f*g^-1;
 true
 
-# QuoPPerm24, Case 1 of 4, dom(f) known,   dom(g) known
-gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
-> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; DomainOfPartialPerm(f);;
-gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;
+# QuoPPerm22: corner cases
+gap> PartialPermNC([1, 8, 10, 0, 4, 3, 7, 0, 0, 2]) / EmptyPartialPerm();
+<empty partial perm>
+gap> EmptyPartialPerm() / PartialPermNC([1, 8, 10, 0, 4, 3, 7, 0, 0, 2]);
+<empty partial perm>
+gap> PartialPerm([1, 2, 3]) / PartialPerm([4, 5, 6]);
+<empty partial perm>
+
+# QuoPPerm42, Case 1 of 4, dom(g) known,   dom(f) known
+gap> f:=PPerm4( [ 1, 2, 4, 5, 6, 9, 10 ], [ 8, 7, 9, 5, 10, 6, 1 ] );;
+gap> g:=PartialPermNC( [ 1, 2, 3, 4, 5, 6, 9, 10 ], 
+> [ 5, 9, 7, 4, 2, 3, 6, 1 ] );
+[10,1,5,2,9,6,3,7](4)
+gap> f/g;
+[4,2,3][5,1](9)(10)
+gap> f*g^-1;
+[4,2,3][5,1](9)(10)
+gap> f*g^-1=f/g;
+true
+gap> f:=PPerm4([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(g);;
+gap> f/g=f*g^-1;
+true
+gap> f:=PPerm4([100000], [1]);
+[100000,1]
+gap> f/f;
+<identity partial perm on [ 100000 ]>
+
+# QuoPPerm42, Case 2 of 4, dom(g) known,   dom(f) unknown
+gap> f:=PPerm4([5,9,4,2,0,3,7,6,0,10]);;
+gap> g:=PartialPermNC( [ 1, 2, 3, 5, 6, 7, 10 ], [ 1, 8, 10, 4, 3, 7, 2 ] );
+[5,4][6,3,10,2,8](1)(7)
+gap> f/g;
+[4,10,3,5](6)(7)
+gap> f*g^-1;
+[4,10,3,5](6)(7)
+gap> f/g=f*g^-1;
+true
+gap> f:=PPerm4([1, 10000], [10000, 2]);;
+gap> g:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(g);;
 gap> f/g=f*g^-1;
 true
 
-# QuoPPerm24, Case 2 of 4, dom(f) known,   dom(g) unknown
-gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
-> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; DomainOfPartialPerm(f);;
-gap> g:=PartialPerm([1, 100000], [100000, 2]);;                         
+# QuoPPerm42, Case 3 of 4, dom(g) unknown, dom(f) known
+gap> g:=PartialPermNC([5,9,4,2,0,3,7,6,0,10]);;
+gap> f:=PPerm4( [ 1, 2, 3, 5, 6, 7, 10 ], [ 1, 8, 10, 4, 3, 7, 2 ] );
+[5,4][6,3,10,2,8](1)(7)
+gap> f/g;
+[5,3,10,4](6)(7)
+gap> f*g^-1;
+[5,3,10,4](6)(7)
+gap> f:=PPerm4([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 10000], [10000, 2]);;
 gap> f/g=f*g^-1;
 true
 
-# QuoPPerm24, Case 3 of 4, dom(f) unknown, dom(g) known
-gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
-> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );;                         
-gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;
+# QuoPPerm42, Case 4 of 4, dom(g) unknown, dom(f) unknown
+gap> f:=PPerm4([ 1, 8, 10, 0, 4, 3, 7, 0, 0, 2 ]);;
+gap> g:=PartialPermNC([5,9,4,2,0,3,7,6,0,10]);;
+gap> f/g=f*g^-1;
+true
+gap> f:=PPerm4([1, 10000], [10000, 2]);;                          
+gap> g:=PartialPerm([1, 10000], [10000, 2]);;
 gap> f/g=f*g^-1;
 true
 
-# QuoPPerm24, Case 4 of 4, dom(f) unknown, dom(g) unknown
-gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
-> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );;                             
-gap> g:=PartialPerm([1, 100000], [100000, 2]);;                         
+# QuoPPerm42: corner cases
+gap> PPerm4([1, 8, 10, 0, 4, 3, 7, 0, 0, 2]) / EmptyPartialPerm();
+<empty partial perm>
+gap> EMPTY_PPERM4 / PartialPermNC([1, 8, 10, 0, 4, 3, 7, 0, 0, 2]);
+<empty partial perm>
+gap> PPerm4([1, 2, 3]) / PartialPerm([4, 5, 6]);
+<empty partial perm>
+
+# QuoPPerm24, Case 1 of 4, dom(g) known,   dom(f) known
+gap> f:=PartialPerm( [ 1, 2, 4, 5, 6, 9, 10 ], [ 8, 7, 9, 5, 10, 6, 1 ] );;
+gap> g:=PPerm4( [ 1, 2, 3, 4, 5, 6, 9, 10 ], 
+> [ 5, 9, 7, 4, 2, 3, 6, 1 ] );
+[10,1,5,2,9,6,3,7](4)
+gap> f/g;
+[4,2,3][5,1](9)(10)
+gap> f*g^-1;
+[4,2,3][5,1](9)(10)
+gap> f*g^-1=f/g;
+true
+gap> f:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PPerm4([1, 10000], [10000, 2]);; DomainOfPartialPerm(g);;
+gap> f/g=f*g^-1;
+true
+gap> f:=PartialPerm([100000], [1]);
+[100000,1]
+gap> f/f;
+<identity partial perm on [ 100000 ]>
+
+# QuoPPerm24, Case 2 of 4, dom(g) known,   dom(f) unknown
+gap> f:=PartialPerm([5,9,4,2,0,3,7,6,0,10]);;
+gap> g:=PPerm4( [ 1, 2, 3, 5, 6, 7, 10 ], [ 1, 8, 10, 4, 3, 7, 2 ] );
+[5,4][6,3,10,2,8](1)(7)
+gap> f/g;
+[4,10,3,5](6)(7)
+gap> f*g^-1;
+[4,10,3,5](6)(7)
+gap> f/g=f*g^-1;
+true
+gap> f:=PartialPerm([1, 10000], [10000, 2]);;
+gap> g:=PPerm4([1, 10000], [10000, 2]);; DomainOfPartialPerm(g);;
 gap> f/g=f*g^-1;
 true
 
-# QuoPPerm42, Case 1 of 4, dom(f) known,   dom(g) known
-gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
-gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
-> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; DomainOfPartialPerm(g);;
+# QuoPPerm24, Case 3 of 4, dom(g) unknown, dom(f) known
+gap> g:=PPerm4([5,9,4,2,0,3,7,6,0,10]);;
+gap> f:=PartialPerm( [ 1, 2, 3, 5, 6, 7, 10 ], [ 1, 8, 10, 4, 3, 7, 2 ] );
+[5,4][6,3,10,2,8](1)(7)
+gap> f/g;
+[5,3,10,4](6)(7)
+gap> f*g^-1;
+[5,3,10,4](6)(7)
+gap> f:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PPerm4([1, 10000], [10000, 2]);;
 gap> f/g=f*g^-1;
 true
 
-# QuoPPerm42, Case 2 of 4, dom(f) known,   dom(g) unknown
-gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
-gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
-> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; 
+# QuoPPerm24, Case 4 of 4, dom(g) unknown, dom(f) unknown
+gap> f:=PartialPerm([ 1, 8, 10, 0, 4, 3, 7, 0, 0, 2 ]);;
+gap> g:=PPerm4([5,9,4,2,0,3,7,6,0,10]);;
+gap> f/g=f*g^-1;
+true
+gap> f:=PartialPerm([1, 10000], [10000, 2]);;                          
+gap> g:=PPerm4([1, 10000], [10000, 2]);;
 gap> f/g=f*g^-1;
 true
 
-# QuoPPerm42, Case 3 of 4, dom(f) unknown, dom(g) known
-gap> f:=PartialPerm([1, 100000], [100000, 2]);;
-gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
-> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; DomainOfPartialPerm(g);;                     
+# QuoPPerm24: corner cases
+gap> PartialPerm([1, 8, 10, 0, 4, 3, 7, 0, 0, 2]) / EMPTY_PPERM4;
+<empty partial perm>
+gap> EMPTY_PPERM4 / PPerm4([1, 8, 10, 0, 4, 3, 7, 0, 0, 2]);
+<empty partial perm>
+gap> PartialPerm([1, 2, 3]) / PPerm4([4, 5, 6]);
+<empty partial perm>
+
+# QuoPPerm44, Case 1 of 4, dom(g) known,   dom(f) known
+gap> f:=PPerm4( [ 1, 2, 4, 5, 6, 9, 10 ], [ 8, 7, 9, 5, 10, 6, 1 ] );;
+gap> g:=PPerm4( [ 1, 2, 3, 4, 5, 6, 9, 10 ], 
+> [ 5, 9, 7, 4, 2, 3, 6, 1 ] );
+[10,1,5,2,9,6,3,7](4)
+gap> f/g;
+[4,2,3][5,1](9)(10)
+gap> f*g^-1;
+[4,2,3][5,1](9)(10)
+gap> f*g^-1=f/g;
+true
+gap> f:=PPerm4([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PPerm4([1, 10000], [10000, 2]);; DomainOfPartialPerm(g);;
+gap> f/g=f*g^-1;
+true
+gap> f:=PPerm4([100000], [1]);
+[100000,1]
+gap> f/f;
+<identity partial perm on [ 100000 ]>
+
+# QuoPPerm44, Case 2 of 4, dom(g) known,   dom(f) unknown
+gap> f:=PPerm4([5,9,4,2,0,3,7,6,0,10]);;
+gap> g:=PPerm4( [ 1, 2, 3, 5, 6, 7, 10 ], [ 1, 8, 10, 4, 3, 7, 2 ] );
+[5,4][6,3,10,2,8](1)(7)
+gap> f/g;
+[4,10,3,5](6)(7)
+gap> f*g^-1;
+[4,10,3,5](6)(7)
+gap> f/g=f*g^-1;
+true
+gap> f:=PPerm4([1, 10000], [10000, 2]);;
+gap> g:=PPerm4([1, 10000], [10000, 2]);; DomainOfPartialPerm(g);;
 gap> f/g=f*g^-1;
 true
 
-# QuoPPerm42, Case 4 of 4, dom(f) unknown, dom(g) unknown
-gap> f:=PartialPerm([1, 100000], [100000, 2]);;                         
-gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
-> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );;                             
+# QuoPPerm44, Case 3 of 4, dom(g) unknown, dom(f) known
+gap> g:=PPerm4([5,9,4,2,0,3,7,6,0,10]);;
+gap> f:=PPerm4( [ 1, 2, 3, 5, 6, 7, 10 ], [ 1, 8, 10, 4, 3, 7, 2 ] );
+[5,4][6,3,10,2,8](1)(7)
+gap> f/g;
+[5,3,10,4](6)(7)
+gap> f*g^-1;
+[5,3,10,4](6)(7)
+gap> f:=PPerm4([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PPerm4([1, 10000], [10000, 2]);;
 gap> f/g=f*g^-1;
 true
 
-# QuoPPerm44, Case 1 of 4, dom(f) known,   dom(g) known
-gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
-gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;
+# QuoPPerm44, Case 4 of 4, dom(g) unknown, dom(f) unknown
+gap> f:=PPerm4([ 1, 8, 10, 0, 4, 3, 7, 0, 0, 2 ]);;
+gap> g:=PPerm4([5,9,4,2,0,3,7,6,0,10]);;
+gap> f/g=f*g^-1;
+true
+gap> f:=PPerm4([1, 10000], [10000, 2]);;                          
+gap> g:=PPerm4([1, 10000], [10000, 2]);;
 gap> f/g=f*g^-1;
 true
 
-# QuoPPerm44, Case 2 of 4, dom(f) known,   dom(g) unknown
-gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
-gap> g:=PartialPerm([1, 100000], [100000, 2]);; 
-gap> f/g=f*g^-1;
-true
-
-# QuoPPerm44, Case 3 of 4, dom(f) unknown, dom(g) known
-gap> f:=PartialPerm([1, 100000], [100000, 2]);;
-gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;                     
-gap> f/g=f*g^-1;
-true
-
-# QuoPPerm44, Case 4 of 4, dom(f) unknown, dom(g) unknown
-gap> f:=PartialPerm([1, 100000], [100000, 2]);;                         
-gap> g:=PartialPerm([1, 100000], [100000, 2]);;                             
-gap> f/g=f*g^-1;
-true
+# QuoPPerm44: corner cases
+gap> PPerm4([1, 8, 10, 0, 4, 3, 7, 0, 0, 2]) / EMPTY_PPERM4;
+<empty partial perm>
+gap> EMPTY_PPERM4 / PPerm4([1, 8, 10, 0, 4, 3, 7, 0, 0, 2]);
+<empty partial perm>
+gap> PPerm4([1, 2, 3]) / PPerm4([4, 5, 6]);
+<empty partial perm>
 
 # LQuoPerm2PPerm2, Case 1 of 4, deg(p)<deg(f),  dom(f) unknown
 gap> f:=PartialPermNC(
@@ -1998,89 +2304,124 @@ gap> p:=(17, 65536);;
 gap> LQUO(p, f)=p^-1*f;
 true
 
-# LQuoPerm2PPerm4, Case 1 of 4, deg(p)<deg(f),  dom(f) unknown
-gap> f:=PartialPerm([1, 65536], [65536, 2]);;
-gap> p:=(17, 60000);;
-gap> LQUO(p, f)=p^-1*f; 
+# LQuoPerm2PPerm2, corner cases
+gap> LQUO(p, EmptyPartialPerm());
+<empty partial perm>
+
+# LQuoPerm2PPerm4, Case 1 of 4, deg(p) < deg(f), dom(f) unknown
+gap> f := PPerm4(
+> [11, 12, 9, 13, 20, 0, 2, 14, 18, 0, 7, 3, 19, 0, 0, 0, 0, 0, 5, 16]);;
+gap> p:=(1,7,10,4,9,8)(3,6,5);;
+gap> LQUO(p, f);
+[1,14][6,9,13,19,5][8,18][10,2,12,3,20,16](7,11)
+gap> p ^ -1 * f;
+[1,14][6,9,13,19,5][8,18][10,2,12,3,20,16](7,11)
+gap> last = last2;
 true
 
 # LQuoPerm2PPerm4, Case 2 of 4, deg(p)<deg(f),  dom(f) known
-gap> f:=PartialPerm([1, 65536], [65536, 2]);; DomainOfPartialPerm(f);;
-gap> p:=(17, 60000);;
-gap> LQUO(p, f)=p^-1*f; 
+gap> f:=PPerm4( [ 1, 2, 3, 4, 6, 8, 9, 10, 12, 13, 15, 16, 18 ], 
+> [ 13, 9, 18, 1, 5, 7, 3, 10, 2, 12, 14, 11, 16 ] );;
+gap> p:=(1,5,8,4,6,3)(2,9,10);;
+gap> LQUO(p, f);
+[4,7][6,1,18,16,11][15,14](2,10,3,5,13,12)(9)
+gap> p^-1*f;
+[4,7][6,1,18,16,11][15,14](2,10,3,5,13,12)(9)
+gap> last=last2;
 true
 
 # LQuoPerm2PPerm4, Case 3 of 4, deg(p)>=deg(f), dom(f) unknown
-gap> f:=PartialPerm([1, 65536], [65536, 2]);;                         
-gap> p:=(17, 70000);;
-gap> LQUO(p, f)=p^-1*f;
+gap> f:=PPerm4([ 7, 0, 10, 0, 4, 8, 9, 0, 0, 6 ]);;
+gap> p:=(1,16,4,12,6,20,13,9,19,3,7,17,10,14,11,15,2);;
+gap> LQUO(p, f);
+[5,4][14,6][16,7,10][17,9][20,8]
+gap> p^-1*f;
+[5,4][14,6][16,7,10][17,9][20,8]
+gap> last=last2;
 true
 
 # LQuoPerm2PPerm4, Case 4 of 4, deg(p)>=deg(f), dom(f) known
-gap> f:=PartialPerm([1, 65536], [65536, 2]);; DomainOfPartialPerm(f);;
-gap> p:=(17, 60000);;
+gap> f := PPerm4([1, 2, 3, 4, 5, 6, 7, 10], 
+>                [2, 3, 8, 9, 10, 6, 1, 4]);;
+gap> p:=(1,13,15,3,5,7,17)(2,16,12,11,19,18,14,8,10,9,20)(4,6);;
+gap> LQUO(p, f);
+[5,8][7,10][13,2][16,3][17,1](4,6,9)
+gap> p^-1*f;                       
+[5,8][7,10][13,2][16,3][17,1](4,6,9)
+gap> last=last2;
+true
+gap> f:=PartialPerm([1, 65535], [65535, 2]);;
+gap> p:=(17, 65536);;
 gap> LQUO(p, f)=p^-1*f;
 true
 
-# LQuoPerm4PPerm2, Case 1 of 4, deg(p)<deg(f),  dom(f) unknown
-gap> f:=PartialPermNC( [ 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 15, 17, 19 ], 
-> [ 19, 7, 17, 14, 8, 5, 3, 18, 15, 13, 2, 12, 10, 20 ] );;
-gap> f:=JoinOfPartialPerms(f, PartialPermNC([100000], [1]));;
-gap> p:=(17, 70000);;
-gap> LQUO(p, f)=p^-1*f;
-true
+# LQuoPerm2PPerm4, corner cases
+gap> p:=(2, 17);;
+gap> LQUO(p, EMPTY_PPERM4);
+<empty partial perm>
 
-# LQuoPerm4PPerm2, Case 2 of 4, deg(p)<deg(f),  dom(f) known
-gap> f:=PartialPermNC( [ 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 15, 17, 19 ], 
-> [ 19, 7, 17, 14, 8, 5, 3, 18, 15, 13, 2, 12, 10, 20 ] );;
-gap> f:=JoinOfPartialPerms(f, PartialPermNC([100000], [1]));;
-gap> DomainOfPartialPerm(f);;
-gap> p:=(17, 70000);;
-gap> LQUO(p, f)=p^-1*f;
-true
+# LQuoPerm4PPerm2
+gap> p:=(17, 65537);;
+gap> LQUO(p, EmptyPartialPerm());
+<empty partial perm>
+gap> LQUO(p, EMPTY_PPERM4);
+<empty partial perm>
 
-# LQuoPerm4PPerm2, Case 3 of 4, deg(p)>=deg(f), dom(f) unknown
-gap> f:=PartialPermNC( [ 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 15, 17, 19 ], 
-> [ 19, 7, 17, 14, 8, 5, 3, 18, 15, 13, 2, 12, 10, 20 ] );;
-gap> f:=JoinOfPartialPerms(f, PartialPermNC([10000], [1]));;
-gap> p:=(17, 70000);;
-gap> LQUO(p, f)=p^-1*f;
+# LQuoPerm4PPerm4, Case 1 of 4, deg(p) < deg(f), dom(f) unknown
+gap> f := PPerm4(
+> [11, 12, 9, 13, 20, 0, 2, 14, 18, 0, 7, 3, 19, 0, 0, 0, 0, 0, 5, 16]);;
+gap> p := Perm4((1, 7, 10, 4, 9, 8)(3, 6, 5));;
+gap> LQUO(p, f);
+[1,14][6,9,13,19,5][8,18][10,2,12,3,20,16](7,11)
+gap> p ^ -1 * f;
+[1,14][6,9,13,19,5][8,18][10,2,12,3,20,16](7,11)
+gap> last = last2;
 true
-
-# LQuoPerm4PPerm2, Case 4 of 4, deg(p)>=deg(f), dom(f) known
-gap> f:=PartialPermNC( [ 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 15, 17, 19 ], 
-> [ 19, 7, 17, 14, 8, 5, 3, 18, 15, 13, 2, 12, 10, 20 ] );;
-gap> f:=JoinOfPartialPerms(f, PartialPermNC([10000], [1]));;
-gap> DomainOfPartialPerm(f);;
-gap> p:=(17, 70000);;
-gap> LQUO(p, f)=p^-1*f;
-true
-
-# LQuoPerm4PPerm4, Case 1 of 4, deg(p)<deg(f),  dom(f) unknown
-gap> f:=PartialPerm([1, 70000], [70000, 2]);;
-gap> p:=(17, 66000);;
-gap> LQUO(p, f)=p^-1*f;
-true
+gap> f := PartialPermNC([1 .. 70000]);;
+gap> p := (1, 65537);;
+gap> LQUO(p, f);
+<partial perm on 70000 pts with degree 70000, codegree 70000>
 
 # LQuoPerm4PPerm4, Case 2 of 4, deg(p)<deg(f),  dom(f) known
-gap> f:=PartialPerm([1, 70000], [70000, 2]);;
-gap> DomainOfPartialPerm(f);;
-gap> p:=(17, 66000);;
-gap> LQUO(p, f)=p^-1*f;
+gap> f := PPerm4([1, 2, 3, 4, 6, 8, 9, 10, 12, 13, 15, 16, 18], 
+> [13, 9, 18, 1, 5, 7, 3, 10, 2, 12, 14, 11, 16]);;
+gap> p := Perm4((1, 5, 8, 4, 6, 3)(2, 9, 10));;
+gap> LQUO(p, f);
+[4,7][6,1,18,16,11][15,14](2,10,3,5,13,12)(9)
+gap> p^-1*f;
+[4,7][6,1,18,16,11][15,14](2,10,3,5,13,12)(9)
+gap> last=last2;
 true
 
 # LQuoPerm4PPerm4, Case 3 of 4, deg(p)>=deg(f), dom(f) unknown
-gap> f:=PartialPerm([1, 66000], [66000, 2]);;
-gap> p:=(17, 70000);;
-gap> LQUO(p, f)=p^-1*f;
+gap> f:=PPerm4([ 7, 0, 10, 0, 4, 8, 9, 0, 0, 6 ]);;
+gap> p:=Perm4((1,16,4,12,6,20,13,9,19,3,7,17,10,14,11,15,2));;
+gap> LQUO(p, f);
+[5,4][14,6][16,7,10][17,9][20,8]
+gap> p^-1*f;
+[5,4][14,6][16,7,10][17,9][20,8]
+gap> last=last2;
 true
 
 # LQuoPerm4PPerm4, Case 4 of 4, deg(p)>=deg(f), dom(f) known
-gap> f:=PartialPerm([1, 66000], [66000, 2]);;
-gap> DomainOfPartialPerm(f);;
-gap> p:=(17, 70000);;
+gap> f := PPerm4([1, 2, 3, 4, 5, 6, 7, 10], 
+>                [2, 3, 8, 9, 10, 6, 1, 4]);;
+gap> p:=Perm4((1,13,15,3,5,7,17)(2,16,12,11,19,18,14,8,10,9,20)(4,6));;
+gap> LQUO(p, f);
+[5,8][7,10][13,2][16,3][17,1](4,6,9)
+gap> p^-1*f;                       
+[5,8][7,10][13,2][16,3][17,1](4,6,9)
+gap> last=last2;
+true
+gap> f:=PartialPerm([1, 65535], [65535, 2]);;
+gap> p:=(17, 65536);;
 gap> LQUO(p, f)=p^-1*f;
 true
+
+# LQuoPerm4PPerm4, corner cases
+gap> p:=(17, 65536);;
+gap> LQUO(p, EMPTY_PPERM4);
+<empty partial perm>
 
 # LQuoPPerm22, Case 1 of 3, dom(g) unknown
 gap> f:=PartialPermNC( [ 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19 ], 
@@ -2118,81 +2459,166 @@ gap> g:=PartialPerm([1, 9000], [9000, 2]);; DomainOfPartialPerm(g);;
 gap> LQUO(f, g)=f^-1*g; 
 true
 
-# LQuoPPerm24, Case 1 of 3, dom(g) unknown
-gap> f:=PartialPerm([1, 100], [100, 2]);;
-gap> g:=PartialPerm([1, 100000], [100000, 2]);;
-gap> LQUO(f, g)=f^-1*g;
-true
-
-# LQuoPPerm24, Case 2 of 3, dom(g) known, deg(g)>deg(f)
-gap> f:=PartialPerm([1, 100], [100, 2]);;
-gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;
-gap> LQUO(f, g)=f^-1*g;
-true
-
-# LQuoPPerm24, Case 3 of 3, dom(g) known, deg(g)<=deg(f)
-gap> f:=PartialPerm([1, 9000], [9000, 2]);;
-gap> g:=PartialPerm([1, 100], [100, 2]);;  
-gap> g:=JoinOfPartialPerms(g, PartialPermNC([101], [100000]));;
-gap> DomainOfPartialPerm(g);;
-gap> LQUO(f, g)=f^-1*g;
-true
+# LQuoPPerm22, corner cases
+gap> LQUO(EmptyPartialPerm(), PartialPerm([1]));
+<empty partial perm>
+gap> LQUO(PartialPerm([1]), EmptyPartialPerm());
+<empty partial perm>
 
 # LQuoPPerm42, Case 1 of 3, dom(g) unknown
-gap> f:=PartialPerm([1, 100000], [100000, 2]);;
-gap> g:=PartialPerm([1, 100], [100, 2]);;
-gap> LQUO(f, g)=f^-1*g;
+gap> f := PPerm4([1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19], 
+>                [3, 12, 14, 4, 11, 18, 17, 2, 9, 5, 15, 8, 20, 10, 19]);;
+gap> g := PartialPerm(
+> [13, 1, 8, 5, 4, 14, 0, 11, 12, 9, 0, 20, 0, 2, 0, 18, 0, 7, 3, 19]);;
+gap> LQUO(f, g);
+[2,11,4,5][10,7][12,1][15,20][19,3,13](8,18,14)(9)
+gap> f ^ -1 * g;
+[2,11,4,5][10,7][12,1][15,20][19,3,13](8,18,14)(9)
+gap> last = last2;
+true
+gap> f := PPerm4([1, 10000], [10000, 2]);;                             
+gap> g := PartialPerm([1, 9000], [9000, 2]);; 
+gap> LQUO(f, g) = f ^ -1 * g;
 true
 
 # LQuoPPerm42, Case 2 of 3, dom(g) known, deg(g)>deg(f)
-gap> f:=PartialPerm([1, 100000], [100000, 2]);;
-gap> g:=PartialPerm([1, 100], [100, 2]);; 
-gap> g:=JoinOfPartialPerms(g, PartialPermNC([100001],[101]));;
-gap> DomainOfPartialPerm(g);;
-gap> LQUO(f, g)=f^-1*g;
+gap> f := PPerm4([1, 2, 3, 5, 6, 7, 8, 11, 12, 16, 19], 
+>                [9, 18, 20, 11, 5, 16, 8, 19, 14, 13, 1]);;
+gap> g := PartialPermNC([1, 2, 3, 4, 5, 7, 8, 10, 11, 13, 18, 19, 20], 
+>                       [5, 1, 7, 3, 10, 2, 12, 14, 11, 16, 6, 9, 15]);;
+gap> LQUO(f, g) = f ^ -1 * g;
+true
+gap> LQUO(f, g);
+[8,12][16,2][18,1,9,5][19,11,10][20,7]
+gap> f := PPerm4([1, 9000], [9000, 2]);; DomainOfPartialPerm(f);;
+gap> g := PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(g);;
+gap> LQUO(f, g) = f ^ -1 * g;
 true
 
 # LQuoPPerm42, Case 3 of 3, dom(g) known, deg(g)<=deg(f)
-gap> f:=PartialPerm([1, 100000], [100000, 2]);;
-gap> g:=PartialPerm([1, 100], [100, 2]);; DomainOfPartialPerm(g);;
-gap> LQUO(f, g)=f^-1*g;
+gap> f := PPerm4([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
+gap> g := PartialPerm([1, 9000], [9000, 2]);; DomainOfPartialPerm(g);;
+gap> LQUO(f, g) = f ^ -1 * g; 
 true
 
+# LQuoPPerm42, corner cases
+gap> LQUO(EMPTY_PPERM4, PartialPerm([1]));
+<empty partial perm>
+gap> LQUO(PPerm4([1]), EmptyPartialPerm());
+<empty partial perm>
+
+# LQuoPPerm24, Case 1 of 3, dom(g) unknown
+gap> f := PartialPerm([1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19], 
+>                [3, 12, 14, 4, 11, 18, 17, 2, 9, 5, 15, 8, 20, 10, 19]);;
+gap> g := PPerm4(
+> [13, 1, 8, 5, 4, 14, 0, 11, 12, 9, 0, 20, 0, 2, 0, 18, 0, 7, 3, 19]);;
+gap> LQUO(f, g);
+[2,11,4,5][10,7][12,1][15,20][19,3,13](8,18,14)(9)
+gap> f ^ -1 * g;
+[2,11,4,5][10,7][12,1][15,20][19,3,13](8,18,14)(9)
+gap> last = last2;
+true
+gap> f := PartialPerm([1, 10000], [10000, 2]);;                             
+gap> g := PPerm4([1, 9000], [9000, 2]);; 
+gap> LQUO(f, g) = f ^ -1 * g;
+true
+
+# LQuoPPerm24, Case 2 of 3, dom(g) known, deg(g)>deg(f)
+gap> f := PartialPerm([1, 2, 3, 5, 6, 7, 8, 11, 12, 16, 19], 
+>                [9, 18, 20, 11, 5, 16, 8, 19, 14, 13, 1]);;
+gap> g := PPerm4([1, 2, 3, 4, 5, 7, 8, 10, 11, 13, 18, 19, 20], 
+>                       [5, 1, 7, 3, 10, 2, 12, 14, 11, 16, 6, 9, 15]);;
+gap> LQUO(f, g) = f ^ -1 * g;
+true
+gap> LQUO(f, g);
+[8,12][16,2][18,1,9,5][19,11,10][20,7]
+gap> f := PartialPerm([1, 9000], [9000, 2]);; DomainOfPartialPerm(f);;
+gap> g := PPerm4([1, 10000], [10000, 2]);; DomainOfPartialPerm(g);;
+gap> LQUO(f, g) = f ^ -1 * g;
+true
+
+# LQuoPPerm24, Case 3 of 3, dom(g) known, deg(g)<=deg(f)
+gap> f := PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
+gap> g := PPerm4([1, 9000], [9000, 2]);; DomainOfPartialPerm(g);;
+gap> LQUO(f, g) = f ^ -1 * g; 
+true
+
+# LQuoPPerm24, corner cases
+gap> LQUO(EmptyPartialPerm(), PPerm4([1]));
+<empty partial perm>
+gap> LQUO(PartialPerm([1]), EMPTY_PPERM4);
+<empty partial perm>
+
 # LQuoPPerm44, Case 1 of 3, dom(g) unknown
-gap> f:=PartialPerm([1, 65536], [65536, 2]);;
-gap> g:=PartialPerm([1, 65536], [65536, 2]);;
-gap> LQUO(f, g)=f^-1*g;
+gap> f := PPerm4([1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19], 
+>                [3, 12, 14, 4, 11, 18, 17, 2, 9, 5, 15, 8, 20, 10, 19]);;
+gap> g := PPerm4(
+> [13, 1, 8, 5, 4, 14, 0, 11, 12, 9, 0, 20, 0, 2, 0, 18, 0, 7, 3, 19]);;
+gap> LQUO(f, g);
+[2,11,4,5][10,7][12,1][15,20][19,3,13](8,18,14)(9)
+gap> f ^ -1 * g;
+[2,11,4,5][10,7][12,1][15,20][19,3,13](8,18,14)(9)
+gap> last = last2;
+true
+gap> f := PPerm4([1, 10000], [10000, 2]);;                             
+gap> g := PPerm4([1, 9000], [9000, 2]);; 
+gap> LQUO(f, g) = f ^ -1 * g;
 true
 
 # LQuoPPerm44, Case 2 of 3, dom(g) known, deg(g)>deg(f)
-gap> f:=PartialPerm([1, 65536], [65536, 2]);;
-gap> g:=PartialPerm([1, 66000], [66000, 2]);; DomainOfPartialPerm(g);;
-gap> LQUO(f, g)=f^-1*g;
+gap> f := PPerm4([1, 2, 3, 5, 6, 7, 8, 11, 12, 16, 19], 
+>                [9, 18, 20, 11, 5, 16, 8, 19, 14, 13, 1]);;
+gap> g := PPerm4([1, 2, 3, 4, 5, 7, 8, 10, 11, 13, 18, 19, 20], 
+>                       [5, 1, 7, 3, 10, 2, 12, 14, 11, 16, 6, 9, 15]);;
+gap> LQUO(f, g) = f ^ -1 * g;
+true
+gap> LQUO(f, g);
+[8,12][16,2][18,1,9,5][19,11,10][20,7]
+gap> f := PPerm4([1, 9000], [9000, 2]);; DomainOfPartialPerm(f);;
+gap> g := PPerm4([1, 10000], [10000, 2]);; DomainOfPartialPerm(g);;
+gap> LQUO(f, g) = f ^ -1 * g;
 true
 
 # LQuoPPerm44, Case 3 of 3, dom(g) known, deg(g)<=deg(f)
-gap> f:=PartialPerm([1, 66000], [66000, 2]);;
-gap> g:=PartialPerm([1, 66553], [66553, 2]);; DomainOfPartialPerm(g);;
-gap> LQUO(f, g)=f^-1*g;
+gap> f := PPerm4([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
+gap> g := PPerm4([1, 9000], [9000, 2]);; DomainOfPartialPerm(g);;
+gap> LQUO(f, g) = f ^ -1 * g; 
 true
 
-# PowPPerm22, Case 1 of 6, dom(f) not known, codeg(f)<=deg(g)
-gap> f:=PartialPermNC(
-> [ 3, 12, 14, 4, 11, 18, 17, 2, 0, 9, 5, 15, 0, 0, 0, 8, 20, 10, 19]);;
-gap> g:=PartialPermNC( 
-> [ 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 16, 18, 19, 21, 22, 
->  23, 25, 29, 30 ], [ 13, 1, 8, 24, 5, 4, 14, 11, 25, 12, 9, 21, 20, 2, 22, 
->  23, 18, 30, 7, 3, 19 ] );;
-gap> f^g;
-[1,12][4,2,11][13,8,21](5,25)(22)(24)
-gap> g^-1*f*g;
-[1,12][4,2,11][13,8,21](5,25)(22)(24)
-gap> f:=PartialPerm([1, 20000], [20000, 2]);; 
-gap> g:=PartialPerm([1, 30000], [30000, 2]);;
-gap> f^g=g^-1*f*g;
-true
+# LQuoPPerm44, corner cases
+gap> LQUO(EMPTY_PPERM4, PPerm4([1]));
+<empty partial perm>
+gap> LQUO(PPerm4([1]), EMPTY_PPERM4);
+<empty partial perm>
 
-# PowPPerm22, Case 2 of 6, dom(f) not known, codeg(f)> deg(g)
+# PowPPerm22, Case 1 of 6, dom(f) not known, codeg(f) <= deg(g)
+gap> f:=PartialPerm(
+> [3, 12, 14, 4, 11, 18, 17, 2, 0, 9, 5, 15, 0, 0, 0, 8, 20, 10, 19]);;
+gap> g := PartialPerm(
+> [1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 16, 18, 19, 21, 22], 
+> [13, 1, 8, 24, 5, 4, 14, 11, 25, 12, 9, 21, 20, 2, 22, 7, 39]);;
+gap> f ^ g;
+[1,12][4,2,11][13,8,21](5,25)(22)(24)
+gap> g ^ -1 * f * g;
+[1,12][4,2,11][13,8,21](5,25)(22)(24)
+gap> f ^ f;
+[3,14][8,2,12,15][17,20][18,10,9](4)(5,11)(19)
+gap> g ^ g;
+[2,1,13,9][4,24][11,25][22,39](5)(7,14,21)(12)
+gap> f ^ g;
+[1,12][4,2,11][13,8,21](5,25)(22)(24)
+gap> f := PartialPerm([10]);;
+gap> g := PartialPerm([11, 12]);;
+gap> f ^ g;
+<empty partial perm>
+gap> g ^ f;
+<empty partial perm>
+gap> f ^ f;
+<empty partial perm>
+gap> g ^ g;
+<empty partial perm>
+
+# PowPPerm22, Case 2 of 6, dom(f) not known, codeg(f) > deg(g)
 gap> f:=PartialPermNC(
 > [ 28, 4, 16, 6, 14, 9, 17, 0, 19, 22, 0, 12, 0, 7, 23, 25, 15, 0, 0, 0, 0, 0, 
 >   26, 0, 0, 24, 0, 0, 0, 5 ]);;
@@ -2201,7 +2627,7 @@ gap> g:=PartialPermNC( [ 1, 2, 3, 4, 5, 6, 8, 9, 10, 15, 16, 17, 19, 20 ],
 gap> f^g=g^-1*f*g;
 true
 
-# PowPPerm22, Case 3 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)<=deg(g)
+# PowPPerm22, Case 3 of 6, dom(f) known, deg(f) > deg(g), codeg(f) <= deg(g)
 gap> f:= 
 > PartialPermNC( [ 1, 2, 3, 4, 8, 10, 100 ], [ 5, 10, 4, 3, 6, 1, 9 ] );;
 gap> g:=
@@ -2210,7 +2636,7 @@ gap> g:=
 gap> f^g=g^-1*f*g;
 true
 
-# PowPPerm22, Case 4 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)> deg(g)
+# PowPPerm22, Case 4 of 6, dom(f) known, deg(f) > deg(g), codeg(f) > deg(g)
 gap> f:=PartialPermNC( [ 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 16, 18, 19,
 > 21, 22, 23, 25, 29, 30 ], [ 13, 1, 8, 24, 5, 4, 14, 11, 25, 12, 9, 21, 20, 2,
 > 22, 23, 18, 30, 7, 3, 19 ] );;
@@ -2233,7 +2659,7 @@ gap> g:=PartialPerm([1, 40000], [40000, 2]);;
 gap> f^g=g^-1*f*g;
 true
 
-# PowPPerm22, Case 5 of 6, dom(f)     known, deg(f)<=deg(g),  codeg(f)<=deg(g)
+# PowPPerm22, Case 5 of 6, dom(f) known, deg(f)<=deg(g),  codeg(f)<=deg(g)
 gap> f:=
 > PartialPermNC( [ 1, 2, 3, 4, 5, 9, 10 ], [ 3, 6, 4, 2, 1, 10, 7 ] );;
 gap> g:=
@@ -2245,7 +2671,7 @@ gap> f^g;
 gap> g^-1*f*g;
 [3,4,2]
 
-# PowPPerm22, Case 6 of 6, dom(f)     known, deg(f)<=deg(g),  codeg(f)> deg(g)
+# PowPPerm22, Case 6 of 6, dom(f) known, deg(f) <= deg(g), codeg(f) > deg(g)
 gap> f:=
 > PartialPermNC( [ 1, 2, 3, 6, 7, 8, 9, 10 ], [ 5, 8, 2, 4, 7, 3, 1, 100 ] );;
 gap> g:=
@@ -2256,183 +2682,290 @@ gap> f^g;
 gap> g^-1*f*g;
 [4,6][10,1][17,13](19)
 
-# PowPPerm24, Case 1 of 6, dom(f) not known, codeg(f)<=deg(g)
-gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;                           
-gap> g:=PartialPerm([1, 65536], [65536, 2]);;
-gap> f^g=g^-1*f*g;
-true
-
-# PowPPerm24, Case 2 of 6, dom(f) not known, codeg(f)> deg(g)
-gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
-gap> f:=JoinOfPartialPerms(f, PartialPermNC([11], [100]));;
-gap> g:=PartialPermNC([10], [65536]);;
-gap> g:=JoinOfPartialPerms(g, 
->                          PartialPerm([1, 2, 3, 4, 5, 6, 7], 
->                                      [8, 3, 6, 1, 5, 7, 2]));;
-gap> f^g=g^-1*f*g;
-true
-
-# PowPPerm24, Case 3 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)<=deg(g)
-gap> f:=PartialPerm( [ 1, 2, 4, 6, 7 ], [ 6, 9, 8, 5, 7 ] );;                            
-gap> f:=JoinOfPartialPerms(f, PartialPermNC([11], [100]));;
-gap> f:=f^-1;; DomainOfPartialPerm(f);;
-gap> g:=PartialPermNC([20], [65536]);;              
-gap> g:=JoinOfPartialPerms(g, PartialPerm( [ 1, 2, 3, 4, 5, 6, 7 ], [ 8, 3, 6, 1, 5, 7, 2 ] ));;
-gap> DegreeOfPartialPerm(f)>DegreeOfPartialPerm(g);
-true
-gap> CodegreeOfPartialPerm(f)<=DegreeOfPartialPerm(g);
-true
-gap> f^g = g^-1*f*g;
-true
-
-# PowPPerm24, Case 4 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)> deg(g)
+# PowPPerm24, Case 1 of 6, dom(f) not known, codeg(f) <= deg(g)
 gap> f:=PartialPerm(
-> [ 1, 2, 3, 4, 5, 6, 8, 9, 14, 15, 16, 17, 18, 19, 21, 24, 25, 26, 27 ],
-> [ 14, 11, 12, 22, 18, 8, 4, 5, 1, 23, 29, 6, 17, 21, 30, 9, 15, 2, 7 ] );;
-> DomainOfPartialPerm(f);;
-gap> DegreeOfPartialPerm(f)>DegreeOfPartialPerm(g);
-true
-gap> CoDegreeOfPartialPerm(f)>DegreeOfPartialPerm(g);
-true
-gap> f^g=g^-1*f*g;
-true
+> [3, 12, 14, 4, 11, 18, 17, 2, 0, 9, 5, 15, 0, 0, 0, 8, 20, 10, 19]);;
+gap> g := PPerm4(
+> [1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 16, 18, 19, 21, 22], 
+> [13, 1, 8, 24, 5, 4, 14, 11, 25, 12, 9, 21, 20, 2, 22, 7, 39]);;
+gap> f ^ g;
+[1,12][4,2,11][13,8,21](5,25)(22)(24)
+gap> g ^ -1 * f * g;
+[1,12][4,2,11][13,8,21](5,25)(22)(24)
+gap> f ^ f;
+[3,14][8,2,12,15][17,20][18,10,9](4)(5,11)(19)
+gap> g ^ g;
+[2,1,13,9][4,24][11,25][22,39](5)(7,14,21)(12)
+gap> f ^ g;
+[1,12][4,2,11][13,8,21](5,25)(22)(24)
+gap> f := PartialPerm([10]);;
+gap> g := PPerm4([11, 12]);;
+gap> f ^ g;
+<empty partial perm>
+gap> g ^ f;
+<empty partial perm>
+gap> f ^ f;
+<empty partial perm>
+gap> g ^ g;
+<empty partial perm>
+gap> EmptyPartialPerm() ^ g;
+<empty partial perm>
+gap> g ^ EmptyPartialPerm();
+<empty partial perm>
 
-# PowPPerm24, Case 5 of 6, dom(f)     known, deg(f)<=deg(g),  codeg(f)<=deg(g)
+# PowPPerm24, Case 2 of 6, dom(f) not known, codeg(f) > deg(g)
 gap> f:=PartialPerm(
-> [ 1, 2, 3, 4, 5, 6, 8, 9, 14, 15, 16, 17, 18, 19, 21, 24, 25, 26, 27 ],
-> [ 14, 11, 12, 22, 18, 8, 4, 5, 1, 23, 29, 6, 17, 21, 30, 9, 15, 2, 7 ] );; DomainOfPartialPerm(f);;
-gap> g:=PartialPerm([1, 65536], [65536, 2]);;                  
+> [ 28, 4, 16, 6, 14, 9, 17, 0, 19, 22, 0, 12, 0, 7, 23, 25, 15, 0, 0, 0, 0, 0, 
+>   26, 0, 0, 24, 0, 0, 0, 5 ]);;
+gap> g:=PPerm4( [ 1, 2, 3, 4, 5, 6, 8, 9, 10, 15, 16, 17, 19, 20 ], 
+> [ 9, 3, 15, 17, 20, 2, 12, 10, 18, 11, 6, 7, 8, 4 ] );;
 gap> f^g=g^-1*f*g;
 true
 
-# PowPPerm24, Case 6 of 6, dom(f)     known, deg(f)<=deg(g),  codeg(f)> deg(g)
-gap> g:=PartialPermNC([20], [65536]);;              
-gap> g:=JoinOfPartialPerms(g, PartialPerm( [ 1, 2, 6, 7, 9 ], [ 6, 3, 9, 1, 8 ] ));;
-gap> f:=PartialPermNC( [ 10] , [22]);;
+# PowPPerm24, Case 3 of 6, dom(f) known, deg(f) > deg(g), codeg(f) <= deg(g)
+gap> f:= 
+> PartialPerm( [ 1, 2, 3, 4, 8, 10, 100 ], [ 5, 10, 4, 3, 6, 1, 9 ] );;
+gap> g:=
+> PPerm4( [ 1, 2, 3, 5, 7, 9, 11, 14, 15, 16, 17, 18 ], 
+> [ 4, 14, 2, 3, 17, 7, 9, 16, 15, 10, 11, 1 ] );;
+gap> f^g=g^-1*f*g;
+true
+
+# PowPPerm24, Case 4 of 6, dom(f) known, deg(f) > deg(g), codeg(f) > deg(g)
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 16, 18, 19,
+> 21, 22, 23, 25, 29, 30 ], [ 13, 1, 8, 24, 5, 4, 14, 11, 25, 12, 9, 21, 20, 2,
+> 22, 23, 18, 30, 7, 3, 19 ] );;
+gap> g:=PPerm4( [ 1, 2, 3, 5, 6, 7, 8, 11, 12, 16, 19 ], 
+> [ 9, 18, 20, 11, 5, 16, 8, 19, 14, 13, 1 ] );;
+gap> DegreeOfPartialPerm(f); DegreeOfPartialPerm(g);
+30
+19
+gap> CodegreeOfPartialPerm(f); CodegreeOfPartialPerm(g);
+30
+20
 gap> f^g;
-<empty partial perm>
+[18,9][20,8](11)(14)
+gap> g^-1*f*g;                    
+[18,9][20,8](11)(14)
+gap> last=last2;
+true
+gap> f:=PartialPerm([1, 50000], [50000, 2]);;
+gap> g:=PPerm4([1, 40000], [40000, 2]);;
+gap> f^g=g^-1*f*g;
+true
+
+# PowPPerm24, Case 5 of 6, dom(f) known, deg(f)<=deg(g),  codeg(f)<=deg(g)
+gap> f:=
+> PartialPerm( [ 1, 2, 3, 4, 5, 9, 10 ], [ 3, 6, 4, 2, 1, 10, 7 ] );;
+gap> g:=
+> PPerm4( [ 1, 2, 3, 5, 7, 9, 11, 14, 15, 16, 17, 18 ], 
+> [ 4, 14, 2, 3, 17, 7, 9, 16, 15, 10, 11, 1 ] );
+[5,3,2,14,16,10][18,1,4](7,17,11,9)(15)
+gap> f^g;
+[3,4,2]
 gap> g^-1*f*g;
-<empty partial perm>
-gap> f:=JoinOfPartialPerms(f, PartialPerm( [ 1, 2, 3, 4 ], [ 7, 6, 4, 5 ] ));; 
-gap> DomainOfPartialPerm(f);;
-gap> f^g=g^-1*f*g;
-true
+[3,4,2]
 
-# PowPPerm42, Case 1 of 6, dom(f) not known, codeg(f)<=deg(g)
-gap> f:=PartialPermNC([ 2, 6, 7, 0, 0, 9, 0, 1, 0, 5, 100000 ]);;
-gap> g:=PartialPermNC( [ 1, 2, 3, 4, 6, 7, 8, 10, 100001 ], 
-> [ 3, 8, 1, 9, 4, 10, 5, 6, 11 ] );;
-gap> f^g=g^-1*f*g;
-true
-
-# PowPPerm42, Case 2 of 6, dom(f) not known, codeg(f)> deg(g)
-gap> g:=PartialPermNC( [ 1, 2, 3, 4, 6, 7, 8, 9, 11, 13, 14, 15, 17, 18 ], 
-> [ 19, 14, 20, 16, 13, 9, 18, 1, 5, 7, 3, 10, 2, 12 ] );;
+# PowPPerm24, Case 6 of 6, dom(f) known, deg(f) <= deg(g), codeg(f) > deg(g)
+gap> f:=
+> PartialPerm( [ 1, 2, 3, 6, 7, 8, 9, 10 ], [ 5, 8, 2, 4, 7, 3, 1, 100 ] );;
+gap> g:=
+> PPerm4( [ 1, 2, 3, 4, 5, 6, 7, 10, 11, 13, 15, 16, 17, 18, 19 ], 
+> [ 17, 1, 10, 6, 13, 4, 19, 11, 7, 12, 16, 2, 9, 8, 20 ] );;
 gap> f^g;
-[18,19,14,13,1][20,9]
-gap> f^g=g^-1*f*g;
-true
-
-# PowPPerm42, Case 3 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)<=deg(g)
-gap> f:=PartialPermNC( [ 1, 2, 4, 5, 8, 10, 100002 ], 
-> [ 6, 2, 7, 8, 10, 4, 70000 ] );; DomainOfPartialPerm(f);;
-gap> g:=PartialPermNC( [ 1, 2, 3, 4, 5, 9, 100000 ], 
-> [ 9, 3, 8, 2, 10, 7, 11 ] );;
-gap> DegreeOfPartialPerm(f);
-100002
-gap> DegreeOfPartialPerm(g);
-100000
-gap> CodegreeOfPartialPerm(f);
-70000
-gap> IsPPerm2Rep(g);
-true
-gap> f^g;
-<identity partial perm on [ 3 ]>
-gap> g^-1*f*g=last;
-true
-
-# PowPPerm42, Case 4 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)> deg(g)
-gap> f:=PartialPerm([1, 70000], [70000, 2]);; DomainOfPartialPerm(f);;
-gap> g:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;                                                
-gap> f^g=g^-1*f*g;
-true
-
-# PowPPerm42, Case 5 of 6, dom(f)     known, deg(f)<=deg(g),  codeg(f)<=deg(g)
-gap> g:=PartialPermNC( [ 1, 2, 3, 4, 5, 9, 100000 ],
-> [ 9, 3, 8, 2, 10, 7, 11 ] );;
-gap> f:=PartialPerm([1, 70000], [70000, 2]);; DomainOfPartialPerm(f);;
-gap> f^g=g^-1*f*g;
-true
-
-# PowPPerm42, Case 6 of 6, dom(f)     known, deg(f)<=deg(g),  codeg(f)> deg(g)
-gap> f:=PartialPermNC( [ 1, 2, 3, 4, 5, 8, 10, 11 ], 
-> [ 4, 3, 7, 6, 5, 9, 2, 70000 ] );; DomainOfPartialPerm(f);;
-gap> g:=PartialPermNC( [ 1, 2, 3, 4, 5, 6, 7, 8, 11, 15, 16, 19 ], 
-> [ 10, 2, 18, 17, 16, 5, 13, 20, 15, 11, 4, 6 ] );;
-gap> f^g;
-[2,18,13][10,17,5](16)
-gap> g^-1*f*g=last;             
-true
-
-# PowPPerm44, Case 1 of 6, dom(f) not known, codeg(f)<=deg(g)
-gap> f:=PartialPermNC( [ 1, 2, 3, 6, 8, 10, 11 ], 
-> [ 2, 6, 7, 9, 1, 5, 100000 ] );;
-gap> g:=PartialPermNC( [ 1, 2, 3, 4, 6, 7, 8, 10, 21, 100001 ], 
-> [ 3, 8, 1, 9, 4, 10, 5, 6, 100000, 11 ] );;
-gap> f^g;
-[1,10][5,3,8,4]
-gap> g^-1*f*g=last;
-true
-
-# PowPPerm44, Case 2 of 6, dom(f) not known, codeg(f)> deg(g)
-gap> f:=PartialPermNC( [ 1, 2, 3, 6, 8, 10, 11 ], 
-> [ 2, 6, 7, 9, 1, 5, 100000 ] );;
-gap> g:=PartialPermNC( [ 1, 2, 3, 4, 6, 7, 8, 9, 11, 13, 14, 15, 17, 18, 21 ], 
-> [ 19, 14, 20, 16, 13, 9, 18, 1, 5, 7, 3, 10, 2, 12, 100000 ] );;
+[4,6][10,1][17,13](19)
 gap> g^-1*f*g;
-[18,19,14,13,1][20,9]
-gap> f^g=last;
-true
+[4,6][10,1][17,13](19)
 
-# PowPPerm44, Case 3 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)<=deg(g)
-gap> f:=PartialPermNC( [ 1, 2, 4, 5, 8, 10, 100002 ], 
-> [ 6, 2, 7, 8, 10, 4, 70000 ] );; DomainOfPartialPerm(f);;
-gap> g:=PartialPermNC( [ 1, 2, 3, 4, 6, 7, 8, 10, 21, 100001 ], 
-> [ 3, 8, 1, 9, 4, 10, 5, 6, 100000, 11 ] );;
-gap> DegreeOfPartialPerm(f);
-100002
-gap> DegreeOfPartialPerm(g);
-100001
-gap> CodegreeOfPartialPerm(f);
-70000
-gap> f^g;                   
-[3,4][5,6,9,10](8)
-gap> g^-1*f*g=last;
-true
+# PowPPerm42, Case 1 of 6, dom(f) not known, codeg(f) <= deg(g)
+gap> f:=PPerm4(
+> [3, 12, 14, 4, 11, 18, 17, 2, 0, 9, 5, 15, 0, 0, 0, 8, 20, 10, 19]);;
+gap> g := PartialPerm(
+> [1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 16, 18, 19, 21, 22], 
+> [13, 1, 8, 24, 5, 4, 14, 11, 25, 12, 9, 21, 20, 2, 22, 7, 39]);;
+gap> f ^ g;
+[1,12][4,2,11][13,8,21](5,25)(22)(24)
+gap> g ^ -1 * f * g;
+[1,12][4,2,11][13,8,21](5,25)(22)(24)
+gap> f ^ f;
+[3,14][8,2,12,15][17,20][18,10,9](4)(5,11)(19)
+gap> g ^ g;
+[2,1,13,9][4,24][11,25][22,39](5)(7,14,21)(12)
+gap> f ^ g;
+[1,12][4,2,11][13,8,21](5,25)(22)(24)
+gap> f := PPerm4([10]);;
+gap> g := PartialPerm([11, 12]);;
+gap> f ^ g;
+<empty partial perm>
+gap> g ^ f;
+<empty partial perm>
+gap> f ^ f;
+<empty partial perm>
+gap> g ^ g;
+<empty partial perm>
+gap> EMPTY_PPERM4 ^ g;
+<empty partial perm>
+gap> g ^ EMPTY_PPERM4; 
+<empty partial perm>
 
-# PowPPerm44, Case 4 of 6, dom(f)     known, deg(f)>deg(g),   codeg(f)> deg(g)
-gap> f:=PartialPerm([1, 70000], [70000, 2]);;                                             
-gap> DomainOfPartialPerm(f);;
-gap> g:=PartialPerm([1, 66000], [66000, 2]);;
+# PowPPerm42, Case 2 of 6, dom(f) not known, codeg(f) > deg(g)
+gap> f:=PPerm4(
+> [ 28, 4, 16, 6, 14, 9, 17, 0, 19, 22, 0, 12, 0, 7, 23, 25, 15, 0, 0, 0, 0, 0, 
+>   26, 0, 0, 24, 0, 0, 0, 5 ]);;
+gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 8, 9, 10, 15, 16, 17, 19, 20 ], 
+> [ 9, 3, 15, 17, 20, 2, 12, 10, 18, 11, 6, 7, 8, 4 ] );;
 gap> f^g=g^-1*f*g;
 true
 
-# PowPPerm44, Case 5 of 6, dom(f)     known, deg(f)<=deg(g),  codeg(f)<=deg(g)
-gap> f:=PartialPerm([1, 66000], [66000, 2]);; DomainOfPartialPerm(f);;
-gap> g:=PartialPerm([1, 70000], [70000, 2]);;
+# PowPPerm42, Case 3 of 6, dom(f) known, deg(f) > deg(g), codeg(f) <= deg(g)
+gap> f:= 
+> PPerm4( [ 1, 2, 3, 4, 8, 10, 100 ], [ 5, 10, 4, 3, 6, 1, 9 ] );;
+gap> g:=
+> PartialPerm( [ 1, 2, 3, 5, 7, 9, 11, 14, 15, 16, 17, 18 ], 
+> [ 4, 14, 2, 3, 17, 7, 9, 16, 15, 10, 11, 1 ] );;
 gap> f^g=g^-1*f*g;
 true
 
-# PowPPerm44, Case 6 of 6, dom(f)     known, deg(f)<=deg(g),  codeg(f)> deg(g)
-gap> f:=PartialPermNC( [ 1, 2, 3, 4, 5, 8, 10, 11 ], 
-> [ 4, 3, 7, 6, 5, 9, 2, 70000 ] );; DomainOfPartialPerm(f);;
-gap> g:=PartialPermNC( [ 1, 2, 3, 4, 5, 6, 7, 8, 11, 15, 16, 19 ], 
-> [ 10, 2, 18, 17, 16, 5, 13, 20, 15, 11, 4, 6 ] );;
-gap> g:=JoinOfPartialPerms(g, PartialPerm([65536], [65536]));;
+# PowPPerm42, Case 4 of 6, dom(f) known, deg(f) > deg(g), codeg(f) > deg(g)
+gap> f:=PPerm4( [ 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 16, 18, 19,
+> 21, 22, 23, 25, 29, 30 ], [ 13, 1, 8, 24, 5, 4, 14, 11, 25, 12, 9, 21, 20, 2,
+> 22, 23, 18, 30, 7, 3, 19 ] );;
+gap> g:=PartialPerm( [ 1, 2, 3, 5, 6, 7, 8, 11, 12, 16, 19 ], 
+> [ 9, 18, 20, 11, 5, 16, 8, 19, 14, 13, 1 ] );;
+gap> DegreeOfPartialPerm(f); DegreeOfPartialPerm(g);
+30
+19
+gap> CodegreeOfPartialPerm(f); CodegreeOfPartialPerm(g);
+30
+20
 gap> f^g;
-[2,18,13][10,17,5](16)
-gap> g^-1*f*g=last;             
+[18,9][20,8](11)(14)
+gap> g^-1*f*g;                    
+[18,9][20,8](11)(14)
+gap> last=last2;
 true
+gap> f:=PPerm4([1, 50000], [50000, 2]);;
+gap> g:=PartialPerm([1, 40000], [40000, 2]);;
+gap> f^g=g^-1*f*g;
+true
+
+# PowPPerm42, Case 5 of 6, dom(f) known, deg(f)<=deg(g),  codeg(f)<=deg(g)
+gap> f:=
+> PPerm4( [ 1, 2, 3, 4, 5, 9, 10 ], [ 3, 6, 4, 2, 1, 10, 7 ] );;
+gap> g:=
+> PartialPerm( [ 1, 2, 3, 5, 7, 9, 11, 14, 15, 16, 17, 18 ], 
+> [ 4, 14, 2, 3, 17, 7, 9, 16, 15, 10, 11, 1 ] );
+[5,3,2,14,16,10][18,1,4](7,17,11,9)(15)
+gap> f^g;
+[3,4,2]
+gap> g^-1*f*g;
+[3,4,2]
+
+# PowPPerm42, Case 6 of 6, dom(f) known, deg(f) <= deg(g), codeg(f) > deg(g)
+gap> f:=
+> PPerm4( [ 1, 2, 3, 6, 7, 8, 9, 10 ], [ 5, 8, 2, 4, 7, 3, 1, 100 ] );;
+gap> g:=
+> PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 10, 11, 13, 15, 16, 17, 18, 19 ], 
+> [ 17, 1, 10, 6, 13, 4, 19, 11, 7, 12, 16, 2, 9, 8, 20 ] );;
+gap> f^g;
+[4,6][10,1][17,13](19)
+gap> g^-1*f*g;
+[4,6][10,1][17,13](19)
+
+# PowPPerm44, Case 1 of 6, dom(f) not known, codeg(f) <= deg(g)
+gap> f:=PPerm4(
+> [3, 12, 14, 4, 11, 18, 17, 2, 0, 9, 5, 15, 0, 0, 0, 8, 20, 10, 19]);;
+gap> g := PPerm4(
+> [1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 16, 18, 19, 21, 22], 
+> [13, 1, 8, 24, 5, 4, 14, 11, 25, 12, 9, 21, 20, 2, 22, 7, 39]);;
+gap> f ^ g;
+[1,12][4,2,11][13,8,21](5,25)(22)(24)
+gap> g ^ -1 * f * g;
+[1,12][4,2,11][13,8,21](5,25)(22)(24)
+gap> f ^ f;
+[3,14][8,2,12,15][17,20][18,10,9](4)(5,11)(19)
+gap> g ^ g;
+[2,1,13,9][4,24][11,25][22,39](5)(7,14,21)(12)
+gap> f ^ g;
+[1,12][4,2,11][13,8,21](5,25)(22)(24)
+gap> f := PPerm4([10]);;
+gap> g := PPerm4([11, 12]);;
+gap> f ^ g;
+<empty partial perm>
+gap> g ^ f;
+<empty partial perm>
+gap> f ^ f;
+<empty partial perm>
+gap> g ^ g;
+<empty partial perm>
+gap> g ^ EMPTY_PPERM4;
+<empty partial perm>
+gap> EMPTY_PPERM4 ^ g;
+<empty partial perm>
+
+# PowPPerm44, Case 2 of 6, dom(f) not known, codeg(f) > deg(g)
+gap> f:=PPerm4(
+> [ 28, 4, 16, 6, 14, 9, 17, 0, 19, 22, 0, 12, 0, 7, 23, 25, 15, 0, 0, 0, 0, 0, 
+>   26, 0, 0, 24, 0, 0, 0, 5 ]);;
+gap> g:=PPerm4( [ 1, 2, 3, 4, 5, 6, 8, 9, 10, 15, 16, 17, 19, 20 ], 
+> [ 9, 3, 15, 17, 20, 2, 12, 10, 18, 11, 6, 7, 8, 4 ] );;
+gap> f^g=g^-1*f*g;
+true
+
+# PowPPerm44, Case 3 of 6, dom(f) known, deg(f) > deg(g), codeg(f) <= deg(g)
+gap> f:= 
+> PPerm4( [ 1, 2, 3, 4, 8, 10, 100 ], [ 5, 10, 4, 3, 6, 1, 9 ] );;
+gap> g:=
+> PPerm4( [ 1, 2, 3, 5, 7, 9, 11, 14, 15, 16, 17, 18 ], 
+> [ 4, 14, 2, 3, 17, 7, 9, 16, 15, 10, 11, 1 ] );;
+gap> f^g=g^-1*f*g;
+true
+
+# PowPPerm44, Case 4 of 6, dom(f) known, deg(f) > deg(g), codeg(f) > deg(g)
+gap> f:=PPerm4( [ 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 16, 18, 19,
+> 21, 22, 23, 25, 29, 30 ], [ 13, 1, 8, 24, 5, 4, 14, 11, 25, 12, 9, 21, 20, 2,
+> 22, 23, 18, 30, 7, 3, 19 ] );;
+gap> g:=PPerm4( [ 1, 2, 3, 5, 6, 7, 8, 11, 12, 16, 19 ], 
+> [ 9, 18, 20, 11, 5, 16, 8, 19, 14, 13, 1 ] );;
+gap> DegreeOfPartialPerm(f); DegreeOfPartialPerm(g);
+30
+19
+gap> CodegreeOfPartialPerm(f); CodegreeOfPartialPerm(g);
+30
+20
+gap> f^g;
+[18,9][20,8](11)(14)
+gap> g^-1*f*g;                    
+[18,9][20,8](11)(14)
+gap> last=last2;
+true
+gap> f:=PPerm4([1, 50000], [50000, 2]);;
+gap> g:=PPerm4([1, 40000], [40000, 2]);;
+gap> f^g=g^-1*f*g;
+true
+
+# PowPPerm44, Case 5 of 6, dom(f) known, deg(f)<=deg(g),  codeg(f)<=deg(g)
+gap> f:=
+> PPerm4( [ 1, 2, 3, 4, 5, 9, 10 ], [ 3, 6, 4, 2, 1, 10, 7 ] );;
+gap> g:=
+> PPerm4( [ 1, 2, 3, 5, 7, 9, 11, 14, 15, 16, 17, 18 ], 
+> [ 4, 14, 2, 3, 17, 7, 9, 16, 15, 10, 11, 1 ] );
+[5,3,2,14,16,10][18,1,4](7,17,11,9)(15)
+gap> f^g;
+[3,4,2]
+gap> g^-1*f*g;
+[3,4,2]
+
+# PowPPerm44, Case 6 of 6, dom(f) known, deg(f) <= deg(g), codeg(f) > deg(g)
+gap> f:=
+> PPerm4( [ 1, 2, 3, 6, 7, 8, 9, 10 ], [ 5, 8, 2, 4, 7, 3, 1, 100 ] );;
+gap> g:=
+> PPerm4( [ 1, 2, 3, 4, 5, 6, 7, 10, 11, 13, 15, 16, 17, 18, 19 ], 
+> [ 17, 1, 10, 6, 13, 4, 19, 11, 7, 12, 16, 2, 9, 8, 20 ] );;
+gap> f^g;
+[4,6][10,1][17,13](19)
+gap> g^-1*f*g;
+[4,6][10,1][17,13](19)
 
 # from Semigroups...
 gap> f:=PartialPermNC([0,1,0,20]);
@@ -2560,6 +3093,9 @@ gap> OnSets(DomainOfPartialPerm(f), f)=ImageListOfPartialPerm(f);
 false
 gap> OnSets(DomainOfPartialPerm(f), f)=ImageSetOfPartialPerm(f);
 true
+gap> OnPosIntSetsPartialPerm(DomainOfPartialPerm(f), f) 
+> = ImageSetOfPartialPerm(f);
+true
 gap> OnTuples(DomainOfPartialPerm(f), f)=ImageSetOfPartialPerm(f);
 false
 gap> OnTuples(DomainOfPartialPerm(f), f)=ImageListOfPartialPerm(f);   
@@ -2568,15 +3104,61 @@ gap> OnTuples(ImageListOfPartialPerm(f), f^-1)=DomainOfPartialPerm(f);
 true
 gap> OnSets(ImageSetOfPartialPerm(f), f^-1)=DomainOfPartialPerm(f);
 true
+gap> OnPosIntSetsPartialPerm(ImageSetOfPartialPerm(f), f ^ -1)
+> = DomainOfPartialPerm(f);
+true
 gap> OnSets(ImageSetOfPartialPerm(g), g^-1)=DomainOfPartialPerm(g);
+true
+gap> OnTuples(ImageListOfPartialPerm(g), g^-1)=DomainOfPartialPerm(f);
+false
+gap> OnPosIntSetsPartialPerm(ImageSetOfPartialPerm(g), g ^ -1) 
+> = DomainOfPartialPerm(g);
+true
+gap> OnTuples(ImageListOfPartialPerm(g), g^-1)=DomainOfPartialPerm(g);
+true
+gap> OnSets([10 .. 20], f);
+[  ]
+gap> OnPosIntSetsPartialPerm([10 .. 20], f);
+[  ]
+gap> OnPosIntSetsPartialPerm([0], f) = ImageSetOfPartialPerm(f);
+true
+gap> f := PPerm4([1, 3, 4, 5, 6, 9], [9, 10, 5, 7, 2, 8]);;
+gap> g := PPerm4([1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 19],
+>                [3, 17, 12, 13, 6, 1, 2, 20, 9, 16, 4, 15, 8]);;
+gap> OnSets(DomainOfPartialPerm(f), f)=ImageListOfPartialPerm(f);
+false
+gap> OnSets(DomainOfPartialPerm(f), f)=ImageSetOfPartialPerm(f);
+true
+gap> OnPosIntSetsPartialPerm(DomainOfPartialPerm(f), f) 
+> = ImageSetOfPartialPerm(f);
+true
+gap> OnTuples(DomainOfPartialPerm(f), f)=ImageSetOfPartialPerm(f);
+false
+gap> OnTuples(DomainOfPartialPerm(f), f)=ImageListOfPartialPerm(f);   
+true
+gap> OnTuples(ImageListOfPartialPerm(f), f^-1)=DomainOfPartialPerm(f);
+true
+gap> OnSets(ImageSetOfPartialPerm(f), f^-1)=DomainOfPartialPerm(f);
+true
+gap> OnPosIntSetsPartialPerm(ImageSetOfPartialPerm(f), f ^ -1)
+> = DomainOfPartialPerm(f);
+true
+gap> OnSets(ImageSetOfPartialPerm(g), g^-1)=DomainOfPartialPerm(g);
+true
+gap> OnPosIntSetsPartialPerm(ImageSetOfPartialPerm(g), g ^ -1) 
+> = DomainOfPartialPerm(g);
 true
 gap> OnTuples(ImageListOfPartialPerm(g), g^-1)=DomainOfPartialPerm(f);
 false
 gap> OnTuples(ImageListOfPartialPerm(g), g^-1)=DomainOfPartialPerm(g);
 true
+gap> OnSets([10 .. 20], f);
+[  ]
+gap> OnPosIntSetsPartialPerm([0], f) = ImageSetOfPartialPerm(f);
+true
+gap> OnPosIntSetsPartialPerm([], f) = [];
+true
 
-#gap> f:=ReadSemigroups(file, 6)[1];   
-#<partial perm on 31542 pts>
 #
 gap> f:=PartialPermNC([ 1, 2, 3, 4, 5, 6, 7, 11, 12, 13, 14, 19 ],
 > [ 5, 13, 7, 6, 10, 15, 9, 14, 4, 20, 19, 2 ]);
@@ -2751,7 +3333,7 @@ gap> PartialPermOpNC(PartialPerm([1]), SymmetricInverseMonoid(1));
 gap> RandomPartialPerm(4);;
 gap> RandomPartialPerm(2 ^ 60);
 Error, usage: the argument must be a positive integer, a set, or 2 sets, of po\
-sitive integers,
+sitive integers, 
 gap> f := RandomPartialPerm([4 .. 10]);;
 gap> IsSubset([4 .. 10], DomainOfPartialPerm(f));
 true
@@ -2764,25 +3346,25 @@ gap> IsSubset([1 .. 5], ImageSetOfPartialPerm(f));
 true
 gap> f := RandomPartialPerm([1, 2 ^ 60]);
 Error, usage: the argument must be a positive integer, a set, or 2 sets, of po\
-sitive integers,
+sitive integers, 
 gap> f := RandomPartialPerm([3, 1, 2]);
 Error, usage: the argument must be a positive integer, a set, or 2 sets, of po\
-sitive integers,
+sitive integers, 
 gap> f := RandomPartialPerm([1 .. 3], [3, 1, 2]);
 Error, usage: the argument must be a positive integer, a set, or 2 sets, of po\
-sitive integers,
+sitive integers, 
 gap> f := RandomPartialPerm([3, 1, 2], [1 .. 3]);
 Error, usage: the argument must be a positive integer, a set, or 2 sets, of po\
-sitive integers,
+sitive integers, 
 gap> f := RandomPartialPerm([3, 1, 2], [1, 3, 2 ^ 60]);
 Error, usage: the argument must be a positive integer, a set, or 2 sets, of po\
-sitive integers,
+sitive integers, 
 
 # PartialPermNC
 gap> PartialPermNC(1, 2, 3);
 Error, usage: there should be one or two arguments,
 gap> PartialPerm(1, 2, 3);
-Error, usage: there should be one or two arguments,
+Error, usage: there should be one or two arguments, 
 gap> PartialPerm([1, 2, 2 ^ 60]);
 Error, usage: the argument must be a list of non-negative integers and the non\
 -zero elements must be duplicate-free,
@@ -2838,6 +3420,555 @@ gap> SmallestMovedPoint(coll);
 1
 gap> SmallestImageOfMovedPoint(coll);
 3
+
+# ShortLexLeqPartialPerm
+gap> f := PartialPerm([1, 2, 3], [70000, 3, 4]);
+[1,70000][2,3,4]
+gap> ShortLexLeqPartialPerm(f, f);
+false
+gap> g := PartialPerm([1, 2, 4, 7, 9], [5, 3, 7, 4, 9]);;
+gap> ShortLexLeqPartialPerm(f, g);
+true
+gap> ShortLexLeqPartialPerm(g, f);
+false
+gap> ShortLexLeqPartialPerm(g, g);
+false
+gap> ShortLexLeqPartialPerm(EmptyPartialPerm(), g);
+true
+gap> ShortLexLeqPartialPerm(g, EmptyPartialPerm());
+false
+gap> ShortLexLeqPartialPerm(EmptyPartialPerm(), f);
+true
+gap> ShortLexLeqPartialPerm(f, EmptyPartialPerm());
+false
+gap> g := PartialPerm([2, 4, 5], [5, 3, 7]);;
+gap> ShortLexLeqPartialPerm(f, g);
+true
+gap> ShortLexLeqPartialPerm(g, f);
+false
+gap> g := PartialPerm([1, 2, 4], [5, 3, 7]);;
+gap> ShortLexLeqPartialPerm(f, g);
+false
+gap> ShortLexLeqPartialPerm(g, f);
+true
+gap> ShortLexLeqPartialPerm(g, g);
+false
+gap> ShortLexLeqPartialPerm(g ^ -1, g);
+false
+gap> ShortLexLeqPartialPerm(g, g ^ -1);
+true
+gap> ShortLexLeqPartialPerm(f ^ -1, f);
+false
+gap> ShortLexLeqPartialPerm(f, f ^ -1);
+true
+gap> g := PartialPerm([1, 2, 3], [5, 3, 7]);;
+gap> ShortLexLeqPartialPerm(f, g);
+false
+gap> ShortLexLeqPartialPerm(g, f);
+true
+gap> ShortLexLeqPartialPerm(f, g);
+false
+gap> f := PartialPerm([1, 2, 3], [5, 3, 8]);;
+gap> g := PartialPerm([1, 2, 3], [5, 3, 7]);;
+gap> ShortLexLeqPartialPerm(f, g);
+false
+gap> ShortLexLeqPartialPerm(g, f);
+true
+gap> f := PartialPerm([1], [70000]);
+[1,70000]
+gap> g := PartialPerm([2], [70000]);
+[2,70000]
+gap> ShortLexLeqPartialPerm(f, g);
+true
+gap> ShortLexLeqPartialPerm(g, f);
+false
+gap> f := PartialPerm([1], [70000]);
+[1,70000]
+gap> g := PartialPerm([1], [70001]);
+[1,70001]
+gap> ShortLexLeqPartialPerm(f, g);
+true
+gap> ShortLexLeqPartialPerm(g, f);
+false
+gap> f := PartialPerm([1, 2, 3], [70000, 3, 4]);;
+gap> f := f * f ^ -1;
+<identity partial perm on [ 1, 2, 3 ]>
+gap> ShortLexLeqPartialPerm(f, PartialPerm([1, 2, 3]));
+false
+gap> ShortLexLeqPartialPerm(PartialPerm([1, 2, 3]), f);
+false
+gap> f := PartialPermNC([65536]) * PartialPermNC([2, 65536], [70000, 1]);
+<identity partial perm on [ 1 ]>
+gap> ShortLexLeqPartialPerm(f, PartialPerm([1]));
+false
+gap> ShortLexLeqPartialPerm(PartialPerm([1]), f);
+false
+gap> ShortLexLeqPartialPerm(1, f);
+Error, usage: the arguments must be partial perms,
+gap> ShortLexLeqPartialPerm(f, 1);
+Error, usage: the arguments must be partial perms,
+gap> ShortLexLeqPartialPerm(2, 1);
+Error, usage: the arguments must be partial perms,
+
+# CodegreeOfPartialPerm
+gap> CodegreeOfPartialPerm(ID_PPERM2);
+1
+gap> CodegreeOfPartialPerm(ID_PPERM4);
+1
+gap> DomainOfPartialPerm(EMPTY_PPERM4);
+[  ]
+gap> ImageSetOfPartialPerm(EMPTY_PPERM4);
+[  ]
+gap> ImageListOfPartialPerm(EMPTY_PPERM4);
+[  ]
+gap> NaturalLeqPartialPerm(EMPTY_PPERM4, ID_PPERM4);
+true
+gap> ShortLexLeqPartialPerm(EMPTY_PPERM4, ID_PPERM4);
+true
+gap> ShortLexLeqPartialPerm(ID_PPERM4, EMPTY_PPERM4);
+false
+gap> () * EmptyPartialPerm();
+<empty partial perm>
+gap> (1, 65537) * EMPTY_PPERM4;
+<empty partial perm>
+
+# ProdPPerm42
+gap> PartialPermNC([65536]) * EmptyPartialPerm();
+<empty partial perm>
+
+# ProdPPerm44
+gap> PartialPermNC([65536]) * EMPTY_PPERM4;
+<empty partial perm>
+gap> EMPTY_PPERM4 * PartialPermNC([65536]);
+<empty partial perm>
+
+# ProdPPerm42
+gap> PartialPermNC([1]) * EMPTY_PPERM4;
+<empty partial perm>
+gap> EMPTY_PPERM4 * PartialPermNC([1]);
+<empty partial perm>
+
+# PowIntPPerm2
+gap> (-1) ^ PartialPerm([1]);
+Error, usage: the first argument should be a positive integer,
+gap> "a" ^ PartialPerm([1]);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `^' on 2 arguments
+gap> (2 ^ 100) ^ PartialPerm([1]);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `^' on 2 arguments
+
+# PowIntPPerm2
+gap> (-1) ^ PPerm4([1]);
+Error, usage: the first argument should be a positive integer,
+gap> "a" ^ PPerm4([1]);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `^' on 2 arguments
+gap> (2 ^ 100) ^ PPerm4([1]);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `^' on 2 arguments
+
+# LQuoPerm4PPerm2, Case 1 of 4, deg(p)<deg(f),  dom(f) unknown
+gap> f:=PartialPermNC( [ 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 15, 17, 19 ], 
+> [ 19, 7, 17, 14, 8, 5, 3, 18, 15, 13, 2, 12, 10, 20 ] );;
+gap> f:=JoinOfPartialPerms(f, PartialPermNC([100000], [1]));;
+gap> p:=(17, 70000);;
+gap> LQUO(p, f)=p^-1*f;
+true
+
+# LQuoPerm4PPerm2, Case 2 of 4, deg(p)<deg(f),  dom(f) known
+gap> f:=PartialPermNC( [ 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 15, 17, 19 ], 
+> [ 19, 7, 17, 14, 8, 5, 3, 18, 15, 13, 2, 12, 10, 20 ] );;
+gap> f:=JoinOfPartialPerms(f, PartialPermNC([100000], [1]));;
+gap> DomainOfPartialPerm(f);;
+gap> p:=(17, 70000);;
+gap> LQUO(p, f)=p^-1*f;
+true
+
+# LQuoPerm4PPerm2, Case 3 of 4, deg(p)>=deg(f), dom(f) unknown
+gap> f:=PartialPermNC( [ 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 15, 17, 19 ], 
+> [ 19, 7, 17, 14, 8, 5, 3, 18, 15, 13, 2, 12, 10, 20 ] );;
+gap> f:=JoinOfPartialPerms(f, PartialPermNC([10000], [1]));;
+gap> p:=(17, 70000);;
+gap> LQUO(p, f)=p^-1*f;
+true
+
+# LQuoPerm4PPerm2, Case 4 of 4, deg(p)>=deg(f), dom(f) known
+gap> f:=PartialPermNC( [ 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 15, 17, 19 ], 
+> [ 19, 7, 17, 14, 8, 5, 3, 18, 15, 13, 2, 12, 10, 20 ] );;
+gap> f:=JoinOfPartialPerms(f, PartialPermNC([10000], [1]));;
+gap> DomainOfPartialPerm(f);;
+gap> p:=(17, 70000);;
+gap> LQUO(p, f)=p^-1*f;
+true
+
+# QuoPPerm2Perm2, Case 1 of 6: codeg(f)<=deg(p), domain known
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; DomainOfPartialPerm(f);;
+gap> p:=(7, 100);;
+gap> g:=f/p;;
+gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
+true
+gap> f/p=f*p^-1;
+true
+
+# QuoPPerm2Perm2, Case 2 of 6: codeg(f)<=deg(p), domain not known
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
+gap> p:=(7, 100);;
+gap> g:=f/p;;
+gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
+true
+gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
+true
+gap> f/p=f*p^-1;
+true
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
+gap> p:=(7, 100);;
+gap> g:=f/p;;
+gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
+true
+gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
+true
+gap> f/p=f*p^-1;
+true
+
+# QuoPPerm2Perm2, Case 3 of 6: codeg(f)>deg(p), domain known
+gap> f:=PartialPerm([1, 100], [100, 2]);; DomainOfPartialPerm(f);;
+gap> p:=(7, 10);;
+gap> g:=f/p;;
+gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
+true
+gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
+true
+gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
+true
+gap> f/p=f*p^-1;
+true
+gap> f:=PartialPerm([1, 65535], [65535, 2]);;
+gap> p:=(17, 10000);;
+gap> g:=f/p;;
+gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
+true
+gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
+true
+gap> f/p=f*p^-1;
+true
+
+# QuoPPerm2Perm2, Case 4 of 6: codeg(f)>deg(p), domain not known
+gap> f:=PartialPerm([1, 100], [100, 2]);;
+gap> p:=(7, 10);;   
+gap> g:=f/p;;                       
+gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
+true
+gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
+true
+gap> f/p=f*p^-1;
+true
+gap> f:=PartialPerm([1, 10000], [10000, 2]);;
+gap> p:=(13, 1000);; 
+gap> g:=f/p;;
+gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
+true
+gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
+true
+gap> f/p=f*p^-1;
+true
+
+# QuoPPerm2Perm2, Case 5 of 6: deg(p)=65536, domain not known
+gap> p:=(1,65536,123);;
+gap> f:=PartialPerm([1, 10000], [10000, 2]);;
+gap> g:=f/p;;
+gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
+true
+gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
+true
+gap> f/p=f*p^-1;
+true
+
+# QuoPPerm2Perm2, Case 6 of 6: deg(p)=65536, domain known
+gap> f:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
+gap> p:=(1,65536,123);;
+gap> g:=f/p;;
+gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
+true
+gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
+true
+gap> f/p=f*p^-1;
+true
+
+# QuoPPerm2Perm4, Case 1 of 2: domain known
+gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; DomainOfPartialPerm(f);;
+gap> p:=(1,100000,123);;
+gap> g:=f/p;;
+gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
+true
+gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
+true
+gap> f/p=f*p^-1;
+true
+
+# QuoPPerm2Perm4, Case 2 of 2: domain not known
+gap> f:=PartialPerm([1, 1000], [1000, 2]);;
+gap> p:=(1,100000,123);;
+gap> g:=f/p;;
+gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
+true
+gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
+true
+gap> f/p=f*p^-1;
+true
+
+# QuoPPerm4Perm2, Case 1 of 2: domain not known
+gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,100001]));;
+gap> p:=(1,2,4);;
+gap> g:=f/p;
+[65536,4][65537,100001]
+gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);  
+true
+gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
+true
+gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
+true
+gap> f/p=f*p^-1;
+true
+
+# QuoPPerm4Perm2, Case 2 of 2: domain known
+gap> f:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,100001])); 
+[65536,1][65537,100001]
+gap> p:=(1,2,4);;
+gap> g:=f/p;
+[65536,4][65537,100001]
+gap> OnTuples(ImageListOfPartialPerm(f), p^-1)=ImageListOfPartialPerm(g);
+true
+gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
+true
+gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
+true
+gap> f/p=f*p^-1;
+true
+
+# QuoPPerm24, Case 1 of 4, dom(f) known,   dom(g) known
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;
+gap> f/g=f*g^-1;
+true
+
+# QuoPPerm24, Case 2 of 4, dom(f) known,   dom(g) unknown
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 100000], [100000, 2]);;                         
+gap> f/g=f*g^-1;
+true
+
+# QuoPPerm24, Case 3 of 4, dom(f) unknown, dom(g) known
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );;                         
+gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;
+gap> f/g=f*g^-1;
+true
+
+# QuoPPerm24, Case 4 of 4, dom(f) unknown, dom(g) unknown
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );;                             
+gap> g:=PartialPerm([1, 100000], [100000, 2]);;                         
+gap> f/g=f*g^-1;
+true
+
+# QuoPPerm42, Case 1 of 4, dom(f) known,   dom(g) known
+gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; DomainOfPartialPerm(g);;
+gap> f/g=f*g^-1;
+true
+
+# QuoPPerm42, Case 2 of 4, dom(f) known,   dom(g) unknown
+gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; 
+gap> f/g=f*g^-1;
+true
+
+# QuoPPerm42, Case 3 of 4, dom(f) unknown, dom(g) known
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
+gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );; DomainOfPartialPerm(g);;                     
+gap> f/g=f*g^-1;
+true
+
+# QuoPPerm42, Case 4 of 4, dom(f) unknown, dom(g) unknown
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;                         
+gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19 ],
+> [ 2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9 ] );;                             
+gap> f/g=f*g^-1;
+true
+
+# QuoPPerm44, Case 1 of 4, dom(f) known,   dom(g) known
+gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;
+gap> f/g=f*g^-1;
+true
+
+# QuoPPerm44, Case 2 of 4, dom(f) known,   dom(g) unknown
+gap> f:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(f);;
+gap> g:=PartialPerm([1, 100000], [100000, 2]);; 
+gap> f/g=f*g^-1;
+true
+
+# QuoPPerm44, Case 3 of 4, dom(f) unknown, dom(g) known
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
+gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;                     
+gap> f/g=f*g^-1;
+true
+
+# QuoPPerm44, Case 4 of 4, dom(f) unknown, dom(g) unknown
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;                         
+gap> g:=PartialPerm([1, 100000], [100000, 2]);;                             
+gap> f/g=f*g^-1;
+true
+
+# LQuoPerm2PPerm4, Case 1 of 4, deg(p)<deg(f),  dom(f) unknown
+gap> f:=PartialPerm([1, 65536], [65536, 2]);;
+gap> p:=(17, 60000);;
+gap> LQUO(p, f)=p^-1*f; 
+true
+
+# LQuoPerm2PPerm4, Case 2 of 4, deg(p)<deg(f),  dom(f) known
+gap> f:=PartialPerm([1, 65536], [65536, 2]);; DomainOfPartialPerm(f);;
+gap> p:=(17, 60000);;
+gap> LQUO(p, f)=p^-1*f; 
+true
+
+# LQuoPerm2PPerm4, Case 3 of 4, deg(p)>=deg(f), dom(f) unknown
+gap> f:=PartialPerm([1, 65536], [65536, 2]);;                         
+gap> p:=(17, 70000);;
+gap> LQUO(p, f)=p^-1*f;
+true
+
+# LQuoPerm2PPerm4, Case 4 of 4, deg(p)>=deg(f), dom(f) known
+gap> f:=PartialPerm([1, 65536], [65536, 2]);; DomainOfPartialPerm(f);;
+gap> p:=(17, 60000);;
+gap> LQUO(p, f)=p^-1*f;
+true
+
+# LQuoPerm4PPerm4, Case 1 of 4, deg(p)<deg(f),  dom(f) unknown
+gap> f:=PartialPerm([1, 70000], [70000, 2]);;
+gap> p:=(17, 66000);;
+gap> LQUO(p, f)=p^-1*f;
+true
+
+# LQuoPerm4PPerm4, Case 2 of 4, deg(p)<deg(f),  dom(f) known
+gap> f:=PartialPerm([1, 70000], [70000, 2]);;
+gap> DomainOfPartialPerm(f);;
+gap> p:=(17, 66000);;
+gap> LQUO(p, f)=p^-1*f;
+true
+
+# LQuoPerm4PPerm4, Case 3 of 4, deg(p)>=deg(f), dom(f) unknown
+gap> f:=PartialPerm([1, 66000], [66000, 2]);;
+gap> p:=(17, 70000);;
+gap> LQUO(p, f)=p^-1*f;
+true
+
+# LQuoPerm4PPerm4, Case 4 of 4, deg(p)>=deg(f), dom(f) known
+gap> f:=PartialPerm([1, 66000], [66000, 2]);;
+gap> DomainOfPartialPerm(f);;
+gap> p:=(17, 70000);;
+gap> LQUO(p, f)=p^-1*f;
+true
+
+# LQuoPPerm24, Case 1 of 3, dom(g) unknown
+gap> f:=PartialPerm([1, 100], [100, 2]);;
+gap> g:=PartialPerm([1, 100000], [100000, 2]);;
+gap> LQUO(f, g)=f^-1*g;
+true
+
+# LQuoPPerm24, Case 2 of 3, dom(g) known, deg(g)>deg(f)
+gap> f:=PartialPerm([1, 100], [100, 2]);;
+gap> g:=PartialPerm([1, 100000], [100000, 2]);; DomainOfPartialPerm(g);;
+gap> LQUO(f, g)=f^-1*g;
+true
+
+# LQuoPPerm24, Case 3 of 3, dom(g) known, deg(g)<=deg(f)
+gap> f:=PartialPerm([1, 9000], [9000, 2]);;
+gap> g:=PartialPerm([1, 100], [100, 2]);;  
+gap> g:=JoinOfPartialPerms(g, PartialPermNC([101], [100000]));;
+gap> DomainOfPartialPerm(g);;
+gap> LQUO(f, g)=f^-1*g;
+true
+
+# LQuoPPerm42, Case 1 of 3, dom(g) unknown
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
+gap> g:=PartialPerm([1, 100], [100, 2]);;
+gap> LQUO(f, g)=f^-1*g;
+true
+
+# LQuoPPerm42, Case 2 of 3, dom(g) known, deg(g)>deg(f)
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
+gap> g:=PartialPerm([1, 100], [100, 2]);; 
+gap> g:=JoinOfPartialPerms(g, PartialPermNC([100001],[101]));;
+gap> DomainOfPartialPerm(g);;
+gap> LQUO(f, g)=f^-1*g;
+true
+
+# LQuoPPerm42, Case 3 of 3, dom(g) known, deg(g)<=deg(f)
+gap> f:=PartialPerm([1, 100000], [100000, 2]);;
+gap> g:=PartialPerm([1, 100], [100, 2]);; DomainOfPartialPerm(g);;
+gap> LQUO(f, g)=f^-1*g;
+true
+
+# LQuoPPerm44, Case 1 of 3, dom(g) unknown
+gap> f:=PartialPerm([1, 65536], [65536, 2]);;
+gap> g:=PartialPerm([1, 65536], [65536, 2]);;
+gap> LQUO(f, g)=f^-1*g;
+true
+
+# LQuoPPerm44, Case 2 of 3, dom(g) known, deg(g)>deg(f)
+gap> f:=PartialPerm([1, 65536], [65536, 2]);;
+gap> g:=PartialPerm([1, 66000], [66000, 2]);; DomainOfPartialPerm(g);;
+gap> LQUO(f, g)=f^-1*g;
+true
+
+# LQuoPPerm44, Case 3 of 3, dom(g) known, deg(g)<=deg(f)
+gap> f:=PartialPerm([1, 66000], [66000, 2]);;
+gap> g:=PartialPerm([1, 66553], [66553, 2]);; DomainOfPartialPerm(g);;
+gap> LQUO(f, g)=f^-1*g;
+true
+
+# OnSets and OnTuples
+gap> OnSets([2 ^ 60], PartialPerm([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
+Error, <set> must be a list of small integers
+gap> OnTuples([2 ^ 60], PartialPerm([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
+Error, <tup> must be a list of small integers
+gap> OnSets(["a"], PartialPerm([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
+Error, <set> must be a list of small integers
+gap> OnTuples(["a"], PartialPerm([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
+Error, <tup> must be a list of small integers
+gap> OnSets([2 ^ 60], PPerm4([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
+Error, <set> must be a list of small integers
+gap> OnTuples([2 ^ 60], PPerm4([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
+Error, <tup> must be a list of small integers
+gap> OnSets(["a"], PPerm4([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
+Error, <set> must be a list of small integers
+gap> OnTuples(["a"], PPerm4([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
+Error, <tup> must be a list of small integers
 
 #
 gap> SetUserPreference("PartialPermDisplayLimit", display);;
