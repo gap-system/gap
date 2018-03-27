@@ -2907,8 +2907,8 @@ void            IntrRefGVar (
     /* get and check the value                                             */
     if ( (val = ValAutoGVar( gvar )) == 0 ) {
         ErrorQuit(
-            "Variable: '%s' must have a value",
-            (Int)NameGVar(gvar), 0L );
+            "Variable: '%g' must have a value",
+            (Int)NameGVarObj(gvar), 0L );
     }
 
     /* push the value                                                      */
