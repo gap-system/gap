@@ -688,7 +688,9 @@ Obj             Cyclotomic (
             res[0] = cof;
         else {
             CHANGED_BAG( ResultCyc );
-            res[0] = DIFF( INTOBJ_INT(0), cof );
+            Obj negcof = DIFF( INTOBJ_INT(0), cof );
+            res = BASE_PTR_PLIST(ResultCyc);
+            res[0] = negcof;
         }
         n = 1;
     }
