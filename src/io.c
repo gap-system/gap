@@ -1530,6 +1530,10 @@ void ResetOutputIndent(void)
 **          character string which is printed.
 **  '%S'    the corresponding argument is the address of  a  null  terminated
 **          character string which is printed with escapes.
+**  '%g'    the corresponding argument is the address of an Obj which points
+**          to a string in STRING_REP format which is printed in '%s' format
+**  '%G'    the corresponding argument is the address of an Obj which points
+**          to a string in STRING_REP format which is printed in '%S' format
 **  '%C'    the corresponding argument is the address of  a  null  terminated
 **          character string which is printed with C escapes.
 **  '%d'    the corresponding argument is a signed integer, which is printed.
@@ -1551,6 +1555,7 @@ static inline void FormatOutput(
     void *state, const Char *format, Int arg1, Int arg2 )
 {
   const Char *        p;
+  Obj                 arg1obj;
   Int                 prec,  n;
   Char                fill;
 
@@ -1612,8 +1617,19 @@ static inline void FormatOutput(
       arg1 = arg2;
     }
 
-    /* '%s' print a string                                         */
-    else if ( *p == 's' ) {
+    /* '%s' or '%g' print a string                               */
+    else if ( *p == 's' || *p == 'g') {
+
+      // If arg is a GAP obj, get out the contained sting, and
+      // set arg1obj so we can re-evaluate after any possible GC
+      // which occurs in put_a_char
+      if (*p == 'g') {
+        arg1obj = (Obj)arg1;
+        arg1 = (Int)CSTR_STRING(arg1obj);
+      }
+      else {
+        arg1obj = 0;
+      }
 
       /* compute how many characters this identifier requires    */
       for ( Char * q = (Char *)arg1; *q != '\0' && prec > 0; q++ ) {
@@ -1623,10 +1639,15 @@ static inline void FormatOutput(
       /* if wanted push an appropriate number of <space>-s       */
       while ( prec-- > 0 )  put_a_char(state, ' ');
 
+      if (arg1obj) {
+          arg1 = (Int)CSTR_STRING(arg1obj);
+      }
+
       /* print the string                                        */
       /* must be careful that line breaks don't go inside
          escaped sequences \n or \123 or similar */
-      for ( Char * q = (Char *)arg1; *q != '\0'; q++ ) {
+      for ( Int i = 0; ((Char *)arg1)[i] != '\0'; i++ ) {
+          Char* q = ((Char *)arg1) + i;
           if (*q == '\\' && IO()->NoSplitLine == 0) {
               if (*(q + 1) < '8' && *(q + 1) >= '0')
                   IO()->NoSplitLine = 3;
@@ -1636,14 +1657,30 @@ static inline void FormatOutput(
         else if (IO()->NoSplitLine > 0)
             IO()->NoSplitLine--;
         put_a_char(state, *q);
+
+        if (arg1obj) {
+          arg1 = (Int)CSTR_STRING(arg1obj);
+        }
       }
 
       /* on to the next argument                                 */
       arg1 = arg2;
     }
 
-    /* '%S' print a string with the necessary escapes              */
-    else if ( *p == 'S' ) {
+    /* '%S' or '%G' print a string with the necessary escapes    */
+    else if ( *p == 'S' || *p == 'G' ) {
+
+      // If arg is a GAP obj, get out the contained sting, and
+      // set arg1obj so we can re-evaluate after any possible GC
+      // which occurs in put_a_char
+      if (*p == 'G') {
+        arg1obj = (Obj)arg1;
+        arg1 = (Int)CSTR_STRING(arg1obj);
+      }
+      else {
+        arg1obj = 0;
+      }
+
 
       /* compute how many characters this identifier requires    */
       for ( Char * q = (Char *)arg1; *q != '\0' && prec > 0; q++ ) {
@@ -1662,8 +1699,13 @@ static inline void FormatOutput(
       /* if wanted push an appropriate number of <space>-s       */
       while ( prec-- > 0 )  put_a_char(state, ' ');
 
+      if (arg1obj) {
+          arg1 = (Int)CSTR_STRING(arg1obj);
+      }
+
       /* print the string                                        */
-      for ( Char * q = (Char *)arg1; *q != '\0'; q++ ) {
+      for ( Int i = 0; ((Char *)arg1)[i] != '\0'; i++ ) {
+        Char* q = ((Char *)arg1) + i;
         if      ( *q == '\n'  ) { put_a_char(state, '\\'); put_a_char(state, 'n');  }
         else if ( *q == '\t'  ) { put_a_char(state, '\\'); put_a_char(state, 't');  }
         else if ( *q == '\r'  ) { put_a_char(state, '\\'); put_a_char(state, 'r');  }
@@ -1674,6 +1716,10 @@ static inline void FormatOutput(
         else if ( *q == '"'   ) { put_a_char(state, '\\'); put_a_char(state, '"');  }
         else if ( *q == '\\'  ) { put_a_char(state, '\\'); put_a_char(state, '\\'); }
         else                    { put_a_char(state, *q);               }
+
+        if (arg1obj) {
+          arg1 = (Int)CSTR_STRING(arg1obj);
+        }
       }
 
       /* on to the next argument                                 */
