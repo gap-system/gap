@@ -313,32 +313,6 @@ InstallMethod( Factors,
     return facs;
     end );
 
-
-#T #############################################################################
-#T ##
-#T #F  GaussianRationalsOps.CharPol(<GaussRat>,<x>)  . .  characteristic polynom
-#T #F                                                     of a Gaussian rational
-#T ##
-#T GaussianRationalsOps.CharPol := function ( GaussRat, x )
-#T     return [ x * GaloisCyc(x,-1), -x-GaloisCyc(x,-1), 1 ];
-#T end;
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #F  GaussianRationalsOps.MinPol(<GaussRat>,<x>) . . . . . . . minimal polynom
-#T #F                                                     of a Gaussian rational
-#T ##
-#T GaussianRationalsOps.MinPol := function ( GaussRat, x )
-#T     if IsRat( x )  then
-#T         return [ -x, 1 ];
-#T     else
-#T         return [ x * GaloisCyc(x,-1), -x-GaloisCyc(x,-1), 1 ];
-#T     fi;
-#T end;
-
-
 #############################################################################
 ##
 #E
-
