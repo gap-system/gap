@@ -5,7 +5,6 @@
 ##
 #Y  Copyright (C) 2016
 ##
-
 gap> START_TEST("invsgp.tst");
 
 # Test String method for inverse semigroup with generators as a semigroup
@@ -43,16 +42,16 @@ true
 # Test string method for inverse monoid with inverse monoid generators
 gap> S := InverseMonoid(PartialPerm([1, 2, 3]), PartialPerm([1], [2]));;
 gap> String(S);
-"InverseMonoid( [ PartialPermNC( [ 1, 2, 3 ], [ 1, 2, 3 ] ), PartialPermNC( [ \
-1 ], [ 2 ] ) ] )"
+"InverseMonoid( [ PartialPerm( [ 1, 2, 3 ], [ 1, 2, 3 ] ), PartialPerm( [ 1 ],\
+ [ 2 ] ) ] )"
 gap> S = EvalString(String(S));
 true
 
 # Test string method for inverse semigroup with inverse semigroup generators
 gap> S := InverseSemigroup(PartialPerm([1, 2, 3]), PartialPerm([1], [2]));;
 gap> String(S);
-"InverseMonoid( [ PartialPermNC( [ 1, 2, 3 ], [ 1, 2, 3 ] ), PartialPermNC( [ \
-1 ], [ 2 ] ) ] )"
+"InverseMonoid( [ PartialPerm( [ 1, 2, 3 ], [ 1, 2, 3 ] ), PartialPerm( [ 1 ],\
+ [ 2 ] ) ] )"
 gap> S = EvalString(String(S));
 true
 
