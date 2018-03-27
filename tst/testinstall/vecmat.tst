@@ -307,4 +307,59 @@ gap> m[4,1];
 Error, row index 4 exceeds 3, the number of rows
 
 #
+# some tests for GF(2) rep
+#
+gap> F := GF(2);;
+gap> m := ImmutableMatrix( F, IdentityMat( 3, F ) );
+<an immutable 3x3 matrix over GF2>
+gap> v := ImmutableVector( F, [1,0,1] * One(F) );
+<an immutable GF2 vector of length 3>
+gap> m * v = v;
+true
+gap> v * m = v;
+true
+gap> v * v;
+0*Z(2)
+gap> m * m = m;
+true
+
+# test greased matrix mult
+gap> m := ImmutableMatrix( F, IdentityMat( 150, F ) );
+<an immutable 150x150 matrix over GF2>
+gap> m * m = m;
+true
+gap> PROD_GF2MAT_GF2MAT_SIMPLE(m,m) = m;
+true
+gap> PROD_GF2MAT_GF2MAT_ADVANCED(m,m,8,1) = m;
+true
+
+#
+#
+#
+gap> F:=GF(3);;
+gap> v:=[ Z(3)^0, Z(3), Z(3)^0, 0*Z(3), Z(3)^0, Z(3)^0, Z(3)^0, Z(3)^0 ];;
+gap> vecs:=[ 
+>   [ Z(3)^0, 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ], 
+>   [ 0*Z(3), Z(3)^0, 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ], 
+>   [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+>   [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+>   [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>   [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), Z(3)^0 ] ];;
+gap> AClosestVectorCombinationsMatFFEVecFFE(vecs,F,v,1,1);
+[ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), Z(3)^0 ]
+gap> AClosestVectorCombinationsMatFFEVecFFECoords(vecs,F,v,1,1);
+[ [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), Z(3)^0 ], 
+  [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ]
+gap> DistancesDistributionMatFFEVecFFE(vecs,F,v);
+[ 0, 4, 6, 60, 109, 216, 192, 112, 30 ]
+gap> DistancesDistributionVecFFEsVecFFE(vecs,v);
+[ 0, 0, 0, 0, 0, 4, 0, 1, 1 ]
+
+#
+gap> v1:=[ Z(3)^0, Z(3), Z(3)^0, 0*Z(3), Z(3)^0, Z(3)^0, Z(3)^0, Z(3)^0 ];;
+gap> v2:=[ Z(3), Z(3)^0, Z(3)^0, 0*Z(3), Z(3)^0, Z(3)^0, Z(3)^0, Z(3)^0 ];;
+gap> DistanceVecFFE(v1,v2);
+2
+
+#
 gap> STOP_TEST("vecmat.tst");
