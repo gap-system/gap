@@ -1170,8 +1170,8 @@ Obj FuncVAL_GVAR (
     val = ValAutoGVar( GVarName( CSTR_STRING(gvar) ) );
 
     while (val == (Obj) 0)
-      val = ErrorReturnObj("VAL_GVAR: No value bound to %s",
-                           (Int)CSTR_STRING(gvar), (Int) 0,
+      val = ErrorReturnObj("VAL_GVAR: No value bound to %g",
+                           (Int)gvar, (Int) 0,
                            "you can return a value" );
     return val;
 }

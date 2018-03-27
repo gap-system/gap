@@ -1455,7 +1455,7 @@ Obj FuncLOAD_DYN (
     /* try to read the module                                              */
     res = SyLoadModule( CSTR_STRING(filename), &init );
     if ( res == 1 )
-        ErrorQuit( "module '%s' not found", (Int)CSTR_STRING(filename), 0L );
+        ErrorQuit( "module '%g' not found", (Int)filename, 0L );
     else if ( res == 3 )
         ErrorQuit( "symbol 'Init_Dynamic' not found", 0L, 0L );
     else if ( res == 5 )
@@ -1560,8 +1560,8 @@ Obj FuncLOAD_STAT (
     }
     if ( CompInitFuncs[k] == 0 ) {
         if ( SyDebugLoading ) {
-            Pr( "#I  LOAD_STAT: no module named '%s' found\n",
-                (Int)CSTR_STRING(filename), 0L );
+            Pr( "#I  LOAD_STAT: no module named '%g' found\n",
+                (Int)filename, 0L );
         }
         return False;
     }

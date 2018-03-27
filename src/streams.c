@@ -521,8 +521,8 @@ Obj FuncLOG_TO (
             "you can replace <filename> via 'return <filename>;'" );
     }
     if ( ! OpenLog( CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid( "LogTo: cannot log to %s",
-                         (Int)CSTR_STRING(filename), 0L,
+        ErrorReturnVoid( "LogTo: cannot log to %g",
+                         (Int)filename, 0L,
                          "you can 'return;'" );
         return False;
     }
@@ -593,8 +593,8 @@ Obj FuncINPUT_LOG_TO (
             "you can replace <filename> via 'return <filename>;'" );
     }
     if ( ! OpenInputLog( CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid( "InputLogTo: cannot log to %s",
-                         (Int)CSTR_STRING(filename), 0L,
+        ErrorReturnVoid( "InputLogTo: cannot log to %g",
+                         (Int)filename, 0L,
                          "you can 'return;'" );
         return False;
     }
@@ -665,8 +665,8 @@ Obj FuncOUTPUT_LOG_TO (
             "you can replace <filename> via 'return <filename>;'" );
     }
     if ( ! OpenOutputLog( CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid( "OutputLogTo: cannot log to %s",
-                         (Int)CSTR_STRING(filename), 0L,
+        ErrorReturnVoid( "OutputLogTo: cannot log to %g",
+                         (Int)filename, 0L,
                          "you can 'return;'" );
         return False;
     }
@@ -754,8 +754,8 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
     i = append ? OpenAppend( CSTR_STRING(filename) )
                : OpenOutput( CSTR_STRING(filename) );
     if ( ! i ) {
-        ErrorQuit( "%s: cannot open '%s' for output",
-                   (Int)funcname, (Int)CSTR_STRING(filename) );
+        ErrorQuit( "%s: cannot open '%g' for output",
+                   (Int)funcname, (Int)filename );
         return 0;
     }
 
@@ -914,15 +914,15 @@ Obj FuncSET_OUTPUT (
     if ( IsStringConv(file) ) {
         if ( append != False ) {
           if ( ! OpenAppend( CSTR_STRING(file) ) ) {
-             ErrorQuit( "SET_OUTPUT: cannot open '%s' for appending",
-                                  (Int)CSTR_STRING(file), 0L );
+             ErrorQuit( "SET_OUTPUT: cannot open '%g' for appending",
+                                  (Int)file, 0L );
           } else {
              return 0;
           }
         } else {
           if ( ! OpenOutput( CSTR_STRING(file) ) ) {
-             ErrorQuit( "SET_OUTPUT: cannot open '%s' for output",
-                                  (Int)CSTR_STRING(file), 0L );
+             ErrorQuit( "SET_OUTPUT: cannot open '%g' for output",
+                                  (Int)file, 0L );
           } else {
             return 0;
           }
