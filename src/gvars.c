@@ -320,15 +320,15 @@ void            AssGVar (
 
     // Make certain variable is not constant
     if (writeval == INTOBJ_INT(-1)) {
-        ErrorMayQuit("Variable: '%s' is constant", (Int)NameGVar(gvar), 0L);
+        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVarObj(gvar), 0L);
     }
 
     /* make certain that the variable is not read only                     */
     while ( (REREADING != True) &&
             (ELM_GVAR_LIST( WriteGVars, gvar ) == INTOBJ_INT(0)) ) {
         ErrorReturnVoid(
-            "Variable: '%s' is read only",
-            (Int)NameGVar(gvar), 0L,
+            "Variable: '%g' is read only",
+            (Int)NameGVarObj(gvar), 0L,
             "you can 'return;' after making it writable" );
     }
 
@@ -694,7 +694,7 @@ void MakeReadOnlyGVar (
     UInt                gvar )
 {
     if (ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(-1)) {
-        ErrorMayQuit("Variable: '%s' is constant", (Int)NameGVar(gvar), 0L);
+        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVarObj(gvar), 0L);
     }
     SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(0) );
     CHANGED_GVAR_LIST( WriteGVars, gvar );
@@ -709,8 +709,8 @@ void MakeConstantGVar(UInt gvar)
     Obj val = ValGVar(gvar);
     if (!IS_INTOBJ(val) && val != True && val != False) {
         ErrorMayQuit(
-            "Variable: '%s' must be assigned a small integer, true or false",
-            (Int)NameGVar(gvar), 0L);
+            "Variable: '%g' must be assigned a small integer, true or false",
+            (Int)NameGVarObj(gvar), 0L);
     }
     SET_ELM_GVAR_LIST(WriteGVars, gvar, INTOBJ_INT(-1));
     CHANGED_GVAR_LIST(WriteGVars, gvar);
@@ -803,7 +803,7 @@ void MakeReadWriteGVar (
     UInt                gvar )
 {
     if (ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(-1)) {
-        ErrorMayQuit("Variable: '%s' is constant", (Int)NameGVar(gvar), 0L);
+        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVarObj(gvar), 0L);
     }
     SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(1) );
     CHANGED_GVAR_LIST( WriteGVars, gvar );

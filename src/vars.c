@@ -447,8 +447,8 @@ Obj             EvalRefGVar (
     /* get and check the value of the global variable                      */
     while ( (val = ValAutoGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
         ErrorReturnVoid(
-            "Variable: '%s' must have an assigned value",
-            (Int)NameGVar( (UInt)(ADDR_EXPR(expr)[0]) ), 0L,
+            "Variable: '%g' must have an assigned value",
+            (Int)NameGVarObj( (UInt)(ADDR_EXPR(expr)[0]) ), 0L,
             "you can 'return;' after assigning a value" );
     }
 
