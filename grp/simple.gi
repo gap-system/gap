@@ -349,7 +349,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
 	SetIsSimpleGroup(g,true);
 	return g;
       else
-        Error("Illegal Parameter for Alternating groups");
+        Error("illegal parameter for alternating groups");
       fi;
 
     elif (str="M" and Length(param)=0) or str="FG" then
@@ -362,7 +362,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
 	SetName(g,Concatenation("M",String(param[1])));
 	return g;
       else
-        Error("Illegal Parameter for Mathieu groups");
+        Error("illegal parameter for Mathieu groups");
       fi;
 
     elif str="J" or str="JANKO" then
@@ -378,7 +378,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
 	SetIsSimpleGroup(g,true);
 	return g;
       else
-        Error("Illegal Parameter for Janko groups");
+        Error("illegal parameter for Janko groups");
       fi;
 
     elif str="CO" or str="." or str="CONWAY" then
@@ -393,7 +393,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
 	SetIsSimpleGroup(g,true);
 	return g;
       else
-        Error("Illegal Parameter for Conway groups");
+        Error("illegal parameter for Conway groups");
       fi;
 
     elif str="FI" or str="FISCHER" then
@@ -404,7 +404,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
 	SetIsSimpleGroup(g,true);
 	return g;
       else
-        Error("Illegal Parameter for Fischer groups");
+        Error("illegal parameter for Fischer groups");
       fi;
     elif str="SUZ" or str="SZ" or str="SUZUKI" then
       if Length(param)=0 and str="SUZ" then
@@ -418,7 +418,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
 	SetIsSimpleGroup(g,true);
 	return g;
       else
-        Error("Illegal Parameter for Suzuki groups");
+        Error("illegal parameter for Suzuki groups");
       fi;
     elif str="R" or str="REE" or str="2G" then
       if Length(param)=1 and param[1]>26 and
@@ -428,27 +428,21 @@ local brg,str,p,a,param,g,s,small,plus,sets;
 	SetIsSimpleGroup(g,true);
 	return g;
       else
-        Error("Illegal Parameter for Ree groups");
+        Error("illegal parameter for Ree groups");
       fi;
 
     elif str="ON" then
       return DoAtlasrepGroup(["ON"]);
     elif str="HE" then
       return PrimitiveGroup(2058,1);
-      SetIsSimpleGroup(g,true);
-      return g;
     elif str="HS" then
       return PrimitiveGroup(100,3);
-      SetIsSimpleGroup(g,true);
-      return g;
     elif str="HN" then
       return DoAtlasrepGroup(["HN"]);
     elif str="LY" then
       return DoAtlasrepGroup(["Ly"]);
     elif str="MC" or str="MCL" then
       return PrimitiveGroup(275,1);
-      SetIsSimpleGroup(g,true);
-      return g;
     elif str="TH" then
       return DoAtlasrepGroup(["Th"]);
     elif str="RU" then
@@ -474,18 +468,30 @@ local brg,str,p,a,param,g,s,small,plus,sets;
   small:=false;
   s:=fail;
   if str="L" or str="SL" or str="PSL" then
+    if param = [2,2] or param = [2,3] then
+        Error("illegal parameter for linear groups");
+    fi;
     g:=PSL(param[1],param[2]);
     s:=Concatenation("PSL(",String(param[1]),",",String(param[2]),")");
   elif str="U" or str="SU" or str="PSU" then
+    if param in [ [2,2], [2,3], [3,2] ] then
+      Error("illegal parameter for unitary groups");
+    fi;
     g:=PSU(param[1],param[2]);
     s:=Concatenation("PSU(",String(param[1]),",",String(param[2]),")");
     small:=true;
   elif str="S" or str="SP" or str="PSP" then
+    if param in [ [2,2], [2,3], [4,2] ] then
+      Error("illegal parameter for symplectic groups");
+    fi;
     g:=PSp(param[1],param[2]);
     s:=Concatenation("PSp(",String(param[1]),",",String(param[2]),")");
     small:=true;
   elif str="O" or str="SO" or str="PSO" then
     if Length(param)=2 and IsOddInt(param[1]) then
+      if param[1] < 3 or (param[1] = 3 and param[2] <= 3) then
+        Error("illegal parameter for orthogonal groups");
+      fi;
       g:=SO(param[1],param[2]);
       g:=Action(g,NormedRowVectors(GF(param[2])^param[1]),OnLines);
       s:=DerivedSubgroup(g);
@@ -499,12 +505,18 @@ local brg,str,p,a,param,g,s,small,plus,sets;
       s:=Concatenation("O(",String(param[1]),",",String(param[2]),")");
       small:=true;
     elif Length(param)=3 and param[1]=1 and IsEvenInt(param[2]) then
+      if param[2] < 6 then
+        Error("illegal parameter for orthogonal groups");
+      fi;
       g:=SO(1,param[2],param[3]);
       g:=Action(g,NormedRowVectors(GF(param[3])^param[2]),OnLines);
       g:=DerivedSubgroup(g);
       s:=Concatenation("O+(",String(param[2]),",",String(param[3]),")");
       small:=true;
     elif Length(param)=3 and param[1]=-1 and IsEvenInt(param[2]) then
+      if param[2] < 4 then
+        Error("illegal parameter for orthogonal groups");
+      fi;
       g:=SO(-1,param[2],param[3]);
       g:=Action(g,NormedRowVectors(GF(param[3])^param[2]),OnLines);
       g:=DerivedSubgroup(g);
@@ -568,7 +580,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
 
   elif str="2E" then
     if Length(param)>1 and param[1]<>6 then
-      Error("3D(n,q) needs n=4");
+      Error("2E(n,q) needs n=6");
     fi;
     a:=param[Length(param)];
     s:=Concatenation("2E6(",String(a),")");
