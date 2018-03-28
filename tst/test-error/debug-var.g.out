@@ -77,4 +77,43 @@ gap> x;
 gap> y;
 Error, Variable: 'y' must have a value
 not in any function at *stdin*:16
-gap> QUIT;
+gap> 
+gap> h:=function(p)
+>   local q;
+>   Error("foobar");
+>   return p;
+> end;
+function( p ) ... end
+gap> f(1);
+Error, breakpoint at *stdin*:9 called from
+g( 10 ) at *stdin*:12 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *stdin*:23
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> h(2);
+Error, foobar at *stdin*:20 called from
+Error( "breakpoint" ); at *stdin*:9 called from
+g( 10 ) at *stdin*:12 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:1
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk_2> 
+brk_2> y; # access higher local as debug var
+2
+brk_2> Unbind(y);
+brk_2> y:=100;
+100
+brk_2> IsBound(y);
+true
+brk_2> unbound_higher;
+Error, Variable: <debug-variable-64-4> must have a value in
+  <corrupted statement>  called from 
+Error( "breakpoint" ); at *stdin*:9 called from
+g( 10 ) at *stdin*:12 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:6
+brk_2> quit;
+brk> 
+brk> QUIT;

@@ -35,3 +35,19 @@ quit;
 return;
 x;
 y;
+
+h:=function(p)
+  local q;
+  Error("foobar");
+  return p;
+end;
+f(1);
+h(2);
+
+y; # access higher local as debug var
+Unbind(y);
+y:=100;
+IsBound(y);
+unbound_higher;
+quit;
+
