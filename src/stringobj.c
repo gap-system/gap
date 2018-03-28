@@ -754,23 +754,7 @@ void PrintString (
 void PrintString1 (
     Obj                 list )
 {
-  char PrStrBuf[10007];	/* 7 for a \c\123 at the end */
-  UInt len = GET_LEN_STRING(list);
-  UInt scanout, off = 0;
-  UInt1  *p;
-
-  while (off < len)    {
-    for (p = CHARS_STRING(list), scanout=0; 
-         p[off] && off<len && scanout<10000; 
-         off++, scanout++) {
-      PrStrBuf[scanout] = p[off];
-    }
-    PrStrBuf[scanout] = '\0';
-    Pr( "%s", (Int)PrStrBuf, 0L );
-    for (; off<len && CHARS_STRING(list)[off]==0; off++) {
-      Pr("%c", 0L, 0L);
-    }
-  }
+  Pr("%g", (Int)list, 0L);
 }
 
 
