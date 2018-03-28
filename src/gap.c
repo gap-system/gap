@@ -2028,8 +2028,7 @@ Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
 **
 *F  InitBagNamesFromTable( <table> )  . . . . . . . . .  initialise bag names
 */
-void InitBagNamesFromTable (
-    StructBagNames *            tab )
+void InitBagNamesFromTable(const StructBagNames * tab)
 {
     Int                         i;
 
@@ -2043,8 +2042,7 @@ void InitBagNamesFromTable (
 **
 *F  InitClearFiltsTNumsFromTable( <tab> ) . . .  initialise clear filts tnums
 */
-void InitClearFiltsTNumsFromTable (
-    Int *               tab )
+void InitClearFiltsTNumsFromTable(const Int * tab)
 {
     Int                 i;
 
@@ -2059,8 +2057,7 @@ void InitClearFiltsTNumsFromTable (
 **
 *F  InitHasFiltListTNumsFromTable( <tab> )  . . initialise tester filts tnums
 */
-void InitHasFiltListTNumsFromTable (
-    Int *               tab )
+void InitHasFiltListTNumsFromTable(const Int * tab)
 {
     Int                 i;
 
@@ -2075,8 +2072,7 @@ void InitHasFiltListTNumsFromTable (
 **
 *F  InitSetFiltListTNumsFromTable( <tab> )  . . initialise setter filts tnums
 */
-void InitSetFiltListTNumsFromTable (
-    Int *               tab )
+void InitSetFiltListTNumsFromTable(const Int * tab)
 {
     Int                 i;
 
@@ -2091,8 +2087,7 @@ void InitSetFiltListTNumsFromTable (
 **
 *F  InitResetFiltListTNumsFromTable( <tab> )  initialise unsetter filts tnums
 */
-void InitResetFiltListTNumsFromTable (
-    Int *               tab )
+void InitResetFiltListTNumsFromTable(const Int * tab)
 {
     Int                 i;
 
@@ -2116,8 +2111,7 @@ static Obj ValidatedArgList(const char *name, int nargs, const char *argStr)
 **
 *F  InitGVarFiltsFromTable( <tab> ) . . . . . . . . . . . . . . . new filters
 */
-void InitGVarFiltsFromTable (
-    StructGVarFilt *    tab )
+void InitGVarFiltsFromTable(const StructGVarFilt * tab)
 {
     Int                 i;
 
@@ -2134,8 +2128,7 @@ void InitGVarFiltsFromTable (
 **
 *F  InitGVarAttrsFromTable( <tab> ) . . . . . . . . . . . . .  new attributes
 */
-void InitGVarAttrsFromTable (
-    StructGVarAttr *    tab )
+void InitGVarAttrsFromTable(const StructGVarAttr * tab)
 {
     Int                 i;
 
@@ -2151,8 +2144,7 @@ void InitGVarAttrsFromTable (
 **
 *F  InitGVarPropsFromTable( <tab> ) . . . . . . . . . . . . .  new properties
 */
-void InitGVarPropsFromTable (
-    StructGVarProp *    tab )
+void InitGVarPropsFromTable(const StructGVarProp * tab)
 {
     Int                 i;
 
@@ -2169,8 +2161,7 @@ void InitGVarPropsFromTable (
 **
 *F  InitGVarOpersFromTable( <tab> ) . . . . . . . . . . . . .  new operations
 */
-void InitGVarOpersFromTable (
-    StructGVarOper *    tab )
+void InitGVarOpersFromTable(const StructGVarOper * tab)
 {
     Int                 i;
 
@@ -2220,8 +2211,7 @@ static void SetupFuncInfo(Obj func, const Char* cookie)
 **
 *F  InitGVarFuncsFromTable( <tab> ) . . . . . . . . . . . . . . new functions
 */
-void InitGVarFuncsFromTable (
-    StructGVarFunc *    tab )
+void InitGVarFuncsFromTable(const StructGVarFunc * tab)
 {
     Int                 i;
 
@@ -2240,8 +2230,7 @@ void InitGVarFuncsFromTable (
 **
 *F  InitHdlrFiltsFromTable( <tab> ) . . . . . . . . . . . . . . . new filters
 */
-void InitHdlrFiltsFromTable (
-    StructGVarFilt *    tab )
+void InitHdlrFiltsFromTable(const StructGVarFilt * tab)
 {
     Int                 i;
 
@@ -2256,8 +2245,7 @@ void InitHdlrFiltsFromTable (
 **
 *F  InitHdlrAttrsFromTable( <tab> ) . . . . . . . . . . . . .  new attributes
 */
-void InitHdlrAttrsFromTable (
-    StructGVarAttr *    tab )
+void InitHdlrAttrsFromTable(const StructGVarAttr * tab)
 {
     Int                 i;
 
@@ -2272,8 +2260,7 @@ void InitHdlrAttrsFromTable (
 **
 *F  InitHdlrPropsFromTable( <tab> ) . . . . . . . . . . . . .  new properties
 */
-void InitHdlrPropsFromTable (
-    StructGVarProp *    tab )
+void InitHdlrPropsFromTable(const StructGVarProp * tab)
 {
     Int                 i;
 
@@ -2288,8 +2275,7 @@ void InitHdlrPropsFromTable (
 **
 *F  InitHdlrOpersFromTable( <tab> ) . . . . . . . . . . . . .  new operations
 */
-void InitHdlrOpersFromTable (
-    StructGVarOper *    tab )
+void InitHdlrOpersFromTable(const StructGVarOper * tab)
 {
     Int                 i;
 
@@ -2304,8 +2290,7 @@ void InitHdlrOpersFromTable (
 **
 *F  InitHdlrFuncsFromTable( <tab> ) . . . . . . . . . . . . . . new functions
 */
-void InitHdlrFuncsFromTable (
-    StructGVarFunc *    tab )
+void InitHdlrFuncsFromTable(const StructGVarFunc * tab)
 {
     Int                 i;
 

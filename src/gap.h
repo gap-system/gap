@@ -233,120 +233,105 @@ enum {
 **
 *F  InitBagNamesFromTable( <table> )  . . . . . . . . .  initialise bag names
 */
-extern void InitBagNamesFromTable (
-    StructBagNames *            tab );
+extern void InitBagNamesFromTable(const StructBagNames * tab);
 
 
 /****************************************************************************
 **
 *F  InitClearFiltsTNumsFromTable( <tab> ) . . .  initialise clear filts tnums
 */
-extern void InitClearFiltsTNumsFromTable (
-    Int *               tab );
+extern void InitClearFiltsTNumsFromTable(const Int * tab);
 
 
 /****************************************************************************
 **
 *F  InitHasFiltListTNumsFromTable( <tab> )  . . initialise tester filts tnums
 */
-extern void InitHasFiltListTNumsFromTable (
-    Int *               tab );
+extern void InitHasFiltListTNumsFromTable(const Int * tab);
 
 
 /****************************************************************************
 **
 *F  InitSetFiltListTNumsFromTable( <tab> )  . . initialise setter filts tnums
 */
-extern void InitSetFiltListTNumsFromTable (
-    Int *               tab );
+extern void InitSetFiltListTNumsFromTable(const Int * tab);
 
 
 /****************************************************************************
 **
 *F  InitResetFiltListTNumsFromTable( <tab> )  initialise unsetter filts tnums
 */
-extern void InitResetFiltListTNumsFromTable (
-    Int *               tab );
+extern void InitResetFiltListTNumsFromTable(const Int * tab);
 
 
 /****************************************************************************
 **
 *F  InitGVarFiltsFromTable( <tab> ) . . . . . . . . . . . . . . . new filters
 */
-extern void InitGVarFiltsFromTable (
-    StructGVarFilt *    tab );
+extern void InitGVarFiltsFromTable(const StructGVarFilt * tab);
 
 
 /****************************************************************************
 **
 *F  InitGVarAttrsFromTable( <tab> ) . . . . . . . . . . . . .  new attributes
 */
-extern void InitGVarAttrsFromTable (
-    StructGVarAttr *    tab );
+extern void InitGVarAttrsFromTable(const StructGVarAttr * tab);
 
 
 /****************************************************************************
 **
 *F  InitGVarPropsFromTable( <tab> ) . . . . . . . . . . . . .  new properties
 */
-extern void InitGVarPropsFromTable (
-    StructGVarProp *    tab );
+extern void InitGVarPropsFromTable(const StructGVarProp * tab);
 
 
 /****************************************************************************
 **
 *F  InitGVarOpersFromTable( <tab> ) . . . . . . . . . . . . .  new operations
 */
-extern void InitGVarOpersFromTable (
-    StructGVarOper *    tab );
+extern void InitGVarOpersFromTable(const StructGVarOper * tab);
 
 
 /****************************************************************************
 **
 *F  InitGVarFuncsFromTable( <tab> ) . . . . . . . . . . . . . .  new function
 */
-extern void InitGVarFuncsFromTable (
-    StructGVarFunc *    tab );
+extern void InitGVarFuncsFromTable(const StructGVarFunc * tab);
 
 
 /****************************************************************************
 **
 *F  InitHdlrFiltsFromTable( <tab> ) . . . . . . . . . . . . . . . new filters
 */
-extern void InitHdlrFiltsFromTable (
-    StructGVarFilt *    tab );
+extern void InitHdlrFiltsFromTable(const StructGVarFilt * tab);
 
 
 /****************************************************************************
 **
 *F  InitHdlrAttrsFromTable( <tab> ) . . . . . . . . . . . . .  new attributes
 */
-extern void InitHdlrAttrsFromTable (
-    StructGVarAttr *    tab );
+extern void InitHdlrAttrsFromTable(const StructGVarAttr * tab);
 
 
 /****************************************************************************
 **
 *F  InitHdlrPropsFromTable( <tab> ) . . . . . . . . . . . . .  new properties
 */
-extern void InitHdlrPropsFromTable (
-    StructGVarProp *    tab );
+extern void InitHdlrPropsFromTable(const StructGVarProp * tab);
 
 
 /****************************************************************************
 **
 *F  InitHdlrOpersFromTable( <tab> ) . . . . . . . . . . . . .  new operations
 */
-extern void InitHdlrOpersFromTable (
-    StructGVarOper *    tab );
+extern void InitHdlrOpersFromTable(const StructGVarOper * tab);
 
 
 /****************************************************************************
 **
 *F  InitHdlrFuncsFromTable( <tab> ) . . . . . . . . . . . . . . new functions
 */
-extern void InitHdlrFuncsFromTable (
-    StructGVarFunc *    tab );
+extern void InitHdlrFuncsFromTable(const StructGVarFunc * tab);
 
 
 /****************************************************************************
