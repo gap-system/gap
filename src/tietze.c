@@ -240,7 +240,7 @@ Obj FuncTzSortC (
         SET_LEN_PLIST( rels,  i );  SHRINK_PLIST( rels,  i );
         SET_LEN_PLIST( lens,  i );  SHRINK_PLIST( lens,  i );
         SET_LEN_PLIST( flags, i );  SHRINK_PLIST( flags, i );
-        ptTietze[TZ_NUMRELS] = INTOBJ_INT(i);
+        SET_ELM_PLIST( tietze, TZ_NUMRELS, INTOBJ_INT(i) );
         CHANGED_BAG(tietze);
     }
 
@@ -517,7 +517,6 @@ Obj FuncTzSubstituteGen (
     alen=20;
     Idx=NEW_PLIST( T_PLIST, alen );
     SET_LEN_PLIST(Idx,alen);
-    ptIdx=ADDR_OBJ(Idx);
 
     /* allocate a bag for the inverse of the replacing word                */
     iwrd   = NEW_PLIST( T_PLIST, wleng );
@@ -526,6 +525,7 @@ Obj FuncTzSubstituteGen (
     ptInvs = ADDR_OBJ( invs ) + (numgens + 1);
     ptWrd  = ADDR_OBJ( word );
     ptIwrd = ADDR_OBJ( iwrd );
+    ptIdx  = ADDR_OBJ( Idx );
 
     /* invert the replacing word                                           */
     SET_LEN_PLIST( iwrd, wleng );
