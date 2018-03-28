@@ -386,12 +386,12 @@ Obj FuncSHELL (Obj self, Obj args)
   lastDepth = INT_INTOBJ(ELM_PLIST(args,4));
   if (lastDepth < 0 )
     {
-      Pr("#W SHELL: negative last depth treated as zero",0,0);
+      Pr("#W SHELL: negative last depth treated as zero\n",0,0);
       lastDepth = 0;
     }
   else if (lastDepth > 3 )
     {
-      Pr("#W SHELL: last depth greater than 3 treated as 3",0,0);
+      Pr("#W SHELL: last depth greater than 3 treated as 3\n",0,0);
       lastDepth = 3;
     }
 
@@ -920,7 +920,6 @@ Obj FuncDownEnv (
   }
   else {
     ErrorQuit( "usage: DownEnv( [ <depth> ] )", 0L, 0L );
-    return (Obj)0;
   }
   if ( STATE(ErrorLVars) == STATE(BottomLVars) ) {
     Pr( "not in any function\n", 0L, 0L );
@@ -944,7 +943,6 @@ Obj FuncUpEnv (
   }
   else {
     ErrorQuit( "usage: UpEnv( [ <depth> ] )", 0L, 0L );
-    return (Obj)0;
   }
   if ( STATE(ErrorLVars) == STATE(BottomLVars) ) {
     Pr( "not in any function\n", 0L, 0L );
@@ -2543,7 +2541,6 @@ Obj FuncQUIT_GAP( Obj self, Obj args )
   else if ( LEN_LIST(args) != 1 
             || !SetExitValue(ELM_PLIST(args, 1) ) ) {
     ErrorQuit( "usage: QUIT_GAP( [ <return value> ] )", 0L, 0L );
-    return (Obj)0;
   }
   STATE(UserHasQUIT) = 1;
   ReadEvalError();
@@ -2565,7 +2562,6 @@ Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
   else if ( LEN_LIST(args) != 1 
             || !SetExitValue(ELM_PLIST(args, 1) ) ) {
     ErrorQuit( "usage: FORCE_QUIT_GAP( [ <return value> ] )", 0L, 0L );
-    return (Obj)0;
   }
   SyExit(SystemErrorCode);
 }
