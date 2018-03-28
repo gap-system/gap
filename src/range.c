@@ -1434,12 +1434,6 @@ static Int InitKernel (
     PlainListFuncs  [ T_RANGE_SSORT            ] = PlainRange;
     PlainListFuncs  [ T_RANGE_SSORT +IMMUTABLE ] = PlainRange;
 
-    /* initialise list tables                                              */
-    InitClearFiltsTNumsFromTable   ( ClearFiltsTab );
-    InitHasFiltListTNumsFromTable  ( HasFiltTab    );
-    InitSetFiltListTNumsFromTable  ( SetFiltTab    );
-    InitResetFiltListTNumsFromTable( ResetFiltTab  );
-
     /* return success                                                      */
     return 0;
 }
