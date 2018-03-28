@@ -9,9 +9,12 @@ GAPDIR=${GAPDIR:-../..}
 retvalue=0
 gap="$GAPDIR/bin/gap.sh"
 for gfile in *.g; do
-    if ! diff -b "${gfile}.out" <(./run_gap.sh "${gap}" "${gfile}"); then
+    ./run_gap.sh "${gap}" "${gfile}" "${gfile}.bad"
+    if ! diff -b "${gfile}.out" "${gfile}.bad"; then
         echo "${gfile}" failed
         retvalue=1
+    else
+        rm -f "${gfile}.bad"
     fi;
 done;
 exit ${retvalue}

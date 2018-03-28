@@ -1,1 +1,3 @@
+gap> Print("All is well\n");
 All is well
+gap> QUIT;

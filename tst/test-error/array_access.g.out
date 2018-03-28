@@ -1,3 +1,6 @@
+gap> a := false;;
+gap> a{{1..1}};
 Syntax error: identifier expected
 a{{1..1}};
    ^
+gap> QUIT;

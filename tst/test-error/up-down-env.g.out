@@ -1,29 +1,46 @@
+gap> f:=lvl -> 1/lvl + f(lvl-1);
 function( lvl ) ... end
+gap> f(7);
 Error, Rational operations: <divisor> must not be zero in
-  return 1 / lvl + f( (lvl - 1) ); at *stdin*:1 called from 
-f( lvl - 1 ) at *stdin*:1 called from
-f( lvl - 1 ) at *stdin*:1 called from
-f( lvl - 1 ) at *stdin*:1 called from
-f( lvl - 1 ) at *stdin*:1 called from
-f( lvl - 1 ) at *stdin*:1 called from
-...  at *stdin*:2
+  return 1 / lvl + f( (lvl - 1) ); at *stdin*:2 called from 
+f( lvl - 1 ) at *stdin*:2 called from
+f( lvl - 1 ) at *stdin*:2 called from
+f( lvl - 1 ) at *stdin*:2 called from
+f( lvl - 1 ) at *stdin*:2 called from
+f( lvl - 1 ) at *stdin*:2 called from
+...  at *stdin*:3
 you can replace <divisor> via 'return <divisor>;'
-brk> 0
-brk> 1
-brk> 2
-brk> 1
-brk> 7
-brk> 6
-brk> 3
-brk> 5
-brk> All is well
-brk> 5
-brk> Error, foo called from
+brk> UpEnv(1); lvl;
+0
+brk> DownEnv(1); lvl;
+1
+brk> DownEnv(1); lvl;
+2
+brk> UpEnv(1); lvl;
+1
+brk> DownEnv(10); lvl;
+7
+brk> UpEnv(1); lvl;
+6
+brk> UpEnv(3); lvl;
+3
+brk> DownEnv(2); lvl;
+5
+brk> Read("good.g");
+All is well
+brk> lvl;
+5
+brk> Read("top-level-error.g");
+Error, foo called from
 not in any function at top-level-error.g:1
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
-brk_2> not in any function at *errin*:1
-brk_2> Error, Variable: 'lvl' must have a value
+brk_2> Where(20);
+not in any function at *errin*:1
+brk_2> lvl;
+Error, Variable: 'lvl' must have a value
 not in any function at *errin*:2
-brk_2> brk> 5
-brk> 
+brk_2> quit;
+brk> lvl;
+5
+brk> QUIT;
