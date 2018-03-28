@@ -73,6 +73,12 @@ do
       rm -rf NormalizInterface-0.9.8
     fi
 
+    # reset CFLAGS and LDFLAGS before compiling packages, to prevent
+    # them from being compiled with coverage gathering, because
+    # otherwise gcov may confuse IO's src/io.c, or anupq's src/read.c,
+    # with GAP kernel files with the same name
+    unset CFLAGS
+    unset LDFLAGS
     if ! "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR"
     then
         echo "Some packages failed to build:"
