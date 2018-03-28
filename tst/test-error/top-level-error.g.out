@@ -1,5 +1,6 @@
+gap> Error("foo");
 Error, foo called from
-not in any function at *stdin*:1
+not in any function at *stdin*:2
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
-brk> brk> 
+brk> QUIT;
