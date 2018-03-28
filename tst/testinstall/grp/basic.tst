@@ -117,6 +117,11 @@ gap> QuaternionGroup(IsPermGroup,8);
 Group([ (1,5,3,7)(2,8,4,6), (1,2,3,4)(5,6,7,8) ])
 gap> QuaternionGroup(IsFpGroup,8);
 <fp group of size 8 on the generators [ r, s ]>
+gap> G:=QuaternionGroup(IsMatrixGroup, 8);
+<matrix group of size 8 with 2 generators>
+gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
+Rationals
+4
 gap> G:=QuaternionGroup(IsMatrixGroup, GF(3), 8);
 <matrix group of size 8 with 2 generators>
 gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);

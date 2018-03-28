@@ -101,7 +101,7 @@ function( filter, fld, n )
     cyc := E( n / 2 );
     bas := CanonicalBasis( Field( fld, [ cyc ]  ) );
     one := 1;
-  elif 0 = n mod Characteristic( fld )
+  elif Characteristic( fld ) = 0 or (0 = n mod Characteristic( fld ))
   then # XXX: regular rep is not minimal
     grp := QuaternionGroup( IsPermGroup, n );
     grp := Group( List( GeneratorsOfGroup( grp ), prm -> PermutationMat( prm, NrMovedPoints( grp ), fld ) ) );
@@ -115,11 +115,6 @@ function( filter, fld, n )
     bas := CanonicalBasis( GF( Size( fld ), OrderMod( Size( fld ), n/2 ) ) );
     cyc := Z( Size( Field( bas ) ) )^( ( Size( Field( bas ) ) - 1 ) / (n/2) );
     one := One( fld );
-  elif Characteristic( fld ) = 0
-  then
-    bas := CanonicalBasis( CF( n / 2 ) );
-    cyc := E( n / 2 );
-    one := 1;
   else
     bas := CanonicalBasis( GF( Characteristic( fld ), OrderMod( Characteristic( fld ), n/2 ) ) );
     cyc := Z( Size( Field( bas ) ) )^( ( Size( Field( bas ) ) - 1 ) / (n/2) );
@@ -352,7 +347,6 @@ CallFuncList( function()
   local 
     SylowSubgroupOfWreathProduct,
     MaximalUnipotentSubgroupOfNaturalGL,
-    TorusOfNaturalGL,
     SylowSubgroupOfTorusOfNaturalGL,
     SylowSubgroupOfNaturalGL;
 
@@ -405,33 +399,6 @@ MaximalUnipotentSubgroupOfNaturalGL := function( gl )
   SetIsPGroup( u, true );
   SetPrimePGroup( u, Characteristic(q) );
   return u;
-end;
-
-# The conjugacy classes of maximal tori of GL are indexed by conjugacy classes
-# of Weyl group elements.  For a given permutation, return a corresponding
-# torus.
-TorusOfNaturalGL := function( gl, pi )
-  local n, q, gfq, one, orbs, gens, sub;
-  n := DimensionOfMatrixGroup( gl );
-  q := Size( DefaultFieldOfMatrixGroup( gl ) );
-  if SizeGL( n, q ) <> Size( gl ) then
-    q := Size( FieldOfMatrixGroup( gl ) );
-  fi;
-  gfq := GF(q);
-  one := IdentityMat( n, gfq );
-  orbs := Cycles( pi, [1..n] );
-  gens := List( orbs, function( orb )
-    local mat;
-    mat := MutableCopyMat( one );
-    # XXX: Asks GAP to compute ConwayPolynomial, but could make do with much less
-    mat{orb}{orb} := CompanionMat( MinimalPolynomial( gfq, Z(q^Size(orb)) ) );
-    return ImmutableMatrix( gfq, mat, true );
-  end );
-  sub := Subgroup( gl, gens );
-  SetIsAbelian( sub, true );
-  SetAbelianInvariants( sub, AbelianInvariantsOfList( List( orbs, orb -> q^Size(orb)-1 ) ) );
-  SetSize( sub, Product( AbelianInvariants( sub ) ) );
-  return sub;
 end;
 
 # The Sylow p-subgroup of a direct product of cyclic groups is quite easy to
