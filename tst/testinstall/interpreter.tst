@@ -111,6 +111,66 @@ gap> r;
 rec(  )
 
 #
+# lists and posobj
+#
+gap> l:=[1,2,3];
+[ 1, 2, 3 ]
+
+#
+gap> l[1] := 42;
+42
+gap> l[1];
+42
+gap> IsBound(l[1]);
+true
+gap> Unbind(l[1]);
+gap> l;
+[ , 2, 3 ]
+
+#
+gap> l![1] := 42;
+42
+gap> l![1];
+42
+gap> IsBound(l![1]);
+true
+gap> Unbind(l![1]);
+gap> l;
+[ , 2, 3 ]
+
+#
+gap> l{[1,3]} := [42, 23];
+[ 42, 23 ]
+gap> l{[3,1]};
+[ 23, 42 ]
+gap> IsBound(l{[1,3]});
+Syntax error: Illegal operand for 'IsBound' in stream:1
+IsBound(l{[1,3]});
+                ^
+gap> Unbind(l{[1,3]});
+Syntax error: Illegal operand for 'Unbind' in stream:1
+Unbind(l{[1,3]});
+               ^
+gap> l;
+[ 42, 2, 23 ]
+
+#
+gap> l!{[1,3]} := [42, 23];
+[ 42, 23 ]
+gap> l!{[3,1]};
+[ 23, 42 ]
+gap> IsBound(l!{[1,3]});
+Syntax error: Illegal operand for 'IsBound' in stream:1
+IsBound(l!{[1,3]});
+                 ^
+gap> Unbind(l!{[1,3]});
+Syntax error: Illegal operand for 'Unbind' in stream:1
+Unbind(l!{[1,3]});
+                ^
+gap> l;
+[ 42, 2, 23 ]
+
+#
 # assertions
 #
 gap> Assert(0, true);
