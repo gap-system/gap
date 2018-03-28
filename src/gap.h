@@ -88,7 +88,7 @@ Int RegisterBreakloopObserver(intfunc func);
 extern void ErrorQuit (
             const Char *        msg,
             Int                 arg1,
-            Int                 arg2 );
+            Int                 arg2 ) NORETURN;
 
 /****************************************************************************
 **
@@ -98,7 +98,7 @@ extern void ErrorQuit (
 extern void ErrorMayQuit (
             const Char *        msg,
             Int                 arg1,
-            Int                 arg2 );
+            Int                 arg2 ) NORETURN;
 
 
 /****************************************************************************
@@ -113,46 +113,41 @@ extern void ErrorQuitBound (
 **
 *F  ErrorQuitFuncResult() . . . . . . . . . . . . . . . . must return a value
 */
-extern void ErrorQuitFuncResult ( void );
+extern void ErrorQuitFuncResult ( void ) NORETURN;
 
 
 /****************************************************************************
 **
 *F  ErrorQuitIntSmall( <obj> )  . . . . . . . . . . . . . not a small integer
 */
-extern void ErrorQuitIntSmall (
-    Obj                 obj );
+extern void ErrorQuitIntSmall(Obj obj) NORETURN;
 
 
 /****************************************************************************
 **
 *F  ErrorQuitIntSmallPos( <obj> ) . . . . . . .  not a positive small integer
 */
-extern void ErrorQuitIntSmallPos (
-    Obj                 obj );
+extern void ErrorQuitIntSmallPos(Obj obj) NORETURN;
 
 /****************************************************************************
 **
 *F  ErrorQuitIntPos( <obj> ) . . . . . . .  not a positive  integer
 */
-extern void ErrorQuitIntPos (
-    Obj                 obj );
+extern void ErrorQuitIntPos(Obj obj) NORETURN;
 
 
 /****************************************************************************
 **
 *F  ErrorQuitBool( <obj> )  . . . . . . . . . . . . . . . . . . not a boolean
 */
-extern void ErrorQuitBool (
-    Obj                 obj );
+extern void ErrorQuitBool(Obj obj) NORETURN;
 
 
 /****************************************************************************
 **
 *F  ErrorQuitFunc( <obj> )  . . . . . . . . . . . . . . . . .  not a function
 */
-extern void ErrorQuitFunc (
-    Obj                 obj );
+extern void ErrorQuitFunc(Obj obj) NORETURN;
 
 
 /****************************************************************************
@@ -161,7 +156,7 @@ extern void ErrorQuitFunc (
 */
 extern void ErrorQuitNrArgs (
     Int                 narg,
-    Obj                 args );
+    Obj                 args ) NORETURN;
 
 /****************************************************************************
 **
@@ -169,7 +164,7 @@ extern void ErrorQuitNrArgs (
 */
 extern void ErrorQuitNrAtLeastArgs (
     Int                 narg,
-    Obj                 args );
+    Obj                 args ) NORETURN;
 
 /****************************************************************************
 **
@@ -178,7 +173,7 @@ extern void ErrorQuitNrAtLeastArgs (
 extern void ErrorQuitRange3 (
     Obj                 first,
     Obj                 second,
-    Obj                 last);
+    Obj                 last) NORETURN;
 
 
 /****************************************************************************
