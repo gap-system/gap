@@ -1551,7 +1551,6 @@ static inline void FormatOutput(
     void *state, const Char *format, Int arg1, Int arg2 )
 {
   const Char *        p;
-  Char *              q;
   Int                 prec,  n;
   Char                fill;
 
@@ -1617,7 +1616,7 @@ static inline void FormatOutput(
     else if ( *p == 's' ) {
 
       /* compute how many characters this identifier requires    */
-      for ( q = (Char*)arg1; *q != '\0' && prec > 0; q++ ) {
+      for ( Char * q = (Char *)arg1; *q != '\0' && prec > 0; q++ ) {
         prec--;
       }
 
@@ -1627,7 +1626,7 @@ static inline void FormatOutput(
       /* print the string                                        */
       /* must be careful that line breaks don't go inside
          escaped sequences \n or \123 or similar */
-      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+      for ( Char * q = (Char *)arg1; *q != '\0'; q++ ) {
           if (*q == '\\' && IO()->NoSplitLine == 0) {
               if (*(q + 1) < '8' && *(q + 1) >= '0')
                   IO()->NoSplitLine = 3;
@@ -1647,7 +1646,7 @@ static inline void FormatOutput(
     else if ( *p == 'S' ) {
 
       /* compute how many characters this identifier requires    */
-      for ( q = (Char*)arg1; *q != '\0' && prec > 0; q++ ) {
+      for ( Char * q = (Char *)arg1; *q != '\0' && prec > 0; q++ ) {
         if      ( *q == '\n'  ) { prec -= 2; }
         else if ( *q == '\t'  ) { prec -= 2; }
         else if ( *q == '\r'  ) { prec -= 2; }
@@ -1664,7 +1663,7 @@ static inline void FormatOutput(
       while ( prec-- > 0 )  put_a_char(state, ' ');
 
       /* print the string                                        */
-      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+      for ( Char * q = (Char *)arg1; *q != '\0'; q++ ) {
         if      ( *q == '\n'  ) { put_a_char(state, '\\'); put_a_char(state, 'n');  }
         else if ( *q == '\t'  ) { put_a_char(state, '\\'); put_a_char(state, 't');  }
         else if ( *q == '\r'  ) { put_a_char(state, '\\'); put_a_char(state, 'r');  }
@@ -1685,7 +1684,7 @@ static inline void FormatOutput(
     else if ( *p == 'C' ) {
 
       /* compute how many characters this identifier requires    */
-      for ( q = (Char*)arg1; *q != '\0' && prec > 0; q++ ) {
+      for ( Char * q = (Char *)arg1; *q != '\0' && prec > 0; q++ ) {
         if      ( *q == '\n'  ) { prec -= 2; }
         else if ( *q == '\t'  ) { prec -= 2; }
         else if ( *q == '\r'  ) { prec -= 2; }
@@ -1702,7 +1701,7 @@ static inline void FormatOutput(
       while ( prec-- > 0 )  put_a_char(state, ' ');
 
       /* print the string                                        */
-      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+      for ( Char * q = (Char *)arg1; *q != '\0'; q++ ) {
         if      ( *q == '\n'  ) { put_a_char(state, '\\'); put_a_char(state, 'n');  }
         else if ( *q == '\t'  ) { put_a_char(state, '\\'); put_a_char(state, 't');  }
         else if ( *q == '\r'  ) { put_a_char(state, '\\'); put_a_char(state, 'r');  }
@@ -1727,14 +1726,13 @@ static inline void FormatOutput(
       int found_keyword = 0;
 
       /* check if q matches a keyword    */
-      q = (Char*)arg1;
-      found_keyword = IsKeyword(q);
+      found_keyword = IsKeyword((Char *)arg1);
 
       /* compute how many characters this identifier requires    */
       if (found_keyword) {
         prec--;
       }
-      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+      for ( Char * q = (Char *)arg1; *q != '\0'; q++ ) {
         if ( !IsIdent(*q) && !IsDigit(*q) ) {
           prec--;
         }
@@ -1748,7 +1746,7 @@ static inline void FormatOutput(
       if ( found_keyword ) {
         put_a_char(state, '\\');
       }
-      for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+      for ( Char * q = (Char *)arg1; *q != '\0'; q++ ) {
         if ( !IsIdent(*q) && !IsDigit(*q) ) {
           put_a_char(state, '\\');
         }
