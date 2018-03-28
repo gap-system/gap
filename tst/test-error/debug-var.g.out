@@ -1,0 +1,80 @@
+gap> x:=1;;
+gap> f:=function(a)
+>   local g, y, unbound_higher;
+>   y:=2;
+>   g := function(b)
+>      local z, unbound_local;
+>      z:=3;
+>      Error("breakpoint");
+>      return a+b+z;
+>   end;
+>   return g(10) + y;
+> end;;
+gap> f(1);
+Error, breakpoint at *stdin*:9 called from
+g( 10 ) at *stdin*:12 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *stdin*:14
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> 
+brk> x; # access global
+1
+brk> Unbind(x);
+brk> x:=42;
+Syntax warning: Unbound global variable in *errin*:4
+x:=42;
+  ^
+42
+brk> IsBound(x);
+true
+brk> unbound_global;
+Syntax warning: Unbound global variable in *errin*:6
+unbound_global;
+              ^
+Error, Variable: 'unbound_global' must have a value in
+  <corrupted statement>  called from 
+g( 10 ) at *stdin*:12 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:6
+brk> 
+brk> y; # access higher local
+2
+brk> Unbind(y);
+brk> y:=100;
+100
+brk> IsBound(y);
+true
+brk> unbound_higher;
+Error, Variable: 'unbound_higher' must have an assigned value in
+  <corrupted statement>  called from 
+g( 10 ) at *stdin*:12 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:12
+you can 'return;' after assigning a value
+brk_2> quit;
+brk> 
+brk> z; # access local
+3
+brk> Unbind(z);
+brk> z:=1000;
+1000
+brk> IsBound(z);
+true
+brk> unbound_local;
+Error, Variable: 'unbound_local' must have an assigned value in
+  <corrupted statement>  called from 
+g( 10 ) at *stdin*:12 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:17
+you can 'return;' after assigning a value
+brk_2> quit;
+brk> 
+brk> return;
+1111
+gap> x;
+42
+gap> y;
+Error, Variable: 'y' must have a value
+not in any function at *stdin*:16
+gap> QUIT;
