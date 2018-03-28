@@ -239,52 +239,68 @@ void            PrintCyc (
 {
     UInt                n;              /* order of the field              */
     UInt                len;            /* number of terms                 */
-    const Obj *         cfs;            /* pointer to the coefficients     */
-    const UInt4 *       exs;            /* pointer to the exponents        */
     UInt                i;              /* loop variable                   */
 
     n   = INT_INTOBJ( NOF_CYC(cyc) );
     len = SIZE_CYC(cyc);
     Pr("%>",0L,0L);
     for ( i = 1; i < len; i++ ) {
-        /* get pointers, they can change during Pr */
-        cfs = CONST_COEFS_CYC(cyc);
-        exs = CONST_EXPOS_CYC(cyc,len);
-        if (      cfs[i]==INTOBJ_INT(1)    && exs[i]==0 )
+        // Store value in local variable, as they can change during Pr
+        const Obj *   cfs = CONST_COEFS_CYC(cyc);
+        const UInt4 * exs = CONST_EXPOS_CYC(cyc, len);
+        Obj           cfsi = cfs[i];
+        UInt4         exsi = exs[i];
+
+        if (cfsi == INTOBJ_INT(1) && exsi == 0)
             Pr("1",0L,0L);
-        else if ( cfs[i]==INTOBJ_INT(1)    && exs[i]==1 && i==1 )
+        else if (cfsi == INTOBJ_INT(1) && exsi == 1 && i == 1)
             Pr("%>E(%d%<)",n,0L);
-        else if ( cfs[i]==INTOBJ_INT(1)    && exs[i]==1 )
+        else if (cfsi == INTOBJ_INT(1) && exsi == 1)
             Pr("%>+E(%d%<)",n,0L);
-        else if ( cfs[i]==INTOBJ_INT(1)                       && i==1 )
-            Pr("%>E(%d)%>^%2<%d",n,(Int)exs[i]);
-        else if ( cfs[i]==INTOBJ_INT(1) )
-            Pr("%>+E(%d)%>^%2<%d",n,(Int)exs[i]);
-        else if ( LT(INTOBJ_INT(0),cfs[i]) && exs[i]==0 )
-            PrintObj(cfs[i]);
-        else if ( LT(INTOBJ_INT(0),cfs[i]) && exs[i]==1 && i==1 ) {
-            Pr("%>",0L,0L); PrintObj(cfs[i]); Pr("%>*%<E(%d%<)",n,0L); }
-        else if ( LT(INTOBJ_INT(0),cfs[i]) && exs[i]==1 ) {
-            Pr("%>+",0L,0L); PrintObj(cfs[i]); Pr("%>*%<E(%d%<)",n,0L); }
-        else if ( LT(INTOBJ_INT(0),cfs[i])              && i==1 ) {
-            Pr("%>",0L,0L); PrintObj(cfs[i]);
-            Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]); }
-        else if ( LT(INTOBJ_INT(0),cfs[i]) ) {
-            Pr("%>+",0L,0L); PrintObj(cfs[i]);
-            Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]); }
-        else if ( cfs[i]==INTOBJ_INT(-1)   && exs[i]==0 )
+        else if (cfsi == INTOBJ_INT(1) && i == 1)
+            Pr("%>E(%d)%>^%2<%d", n, (Int)exsi);
+        else if (cfsi == INTOBJ_INT(1))
+            Pr("%>+E(%d)%>^%2<%d", n, (Int)exsi);
+        else if (LT(INTOBJ_INT(0), cfsi) && exsi == 0)
+            PrintObj(cfsi);
+        else if (LT(INTOBJ_INT(0), cfsi) && exsi == 1 && i == 1) {
+            Pr("%>", 0L, 0L);
+            PrintObj(cfsi);
+            Pr("%>*%<E(%d%<)", n, 0L);
+        }
+        else if (LT(INTOBJ_INT(0), cfsi) && exsi == 1) {
+            Pr("%>+", 0L, 0L);
+            PrintObj(cfsi);
+            Pr("%>*%<E(%d%<)", n, 0L);
+        }
+        else if (LT(INTOBJ_INT(0), cfsi) && i == 1) {
+            Pr("%>", 0L, 0L);
+            PrintObj(cfsi);
+            Pr("%>*%<E(%d)%>^%2<%d", n, (Int)exsi);
+        }
+        else if (LT(INTOBJ_INT(0), cfsi)) {
+            Pr("%>+", 0L, 0L);
+            PrintObj(cfsi);
+            Pr("%>*%<E(%d)%>^%2<%d", n, (Int)exsi);
+        }
+        else if (cfsi == INTOBJ_INT(-1) && exsi == 0)
             Pr("%>-%<1",0L,0L);
-        else if ( cfs[i]==INTOBJ_INT(-1)   && exs[i]==1 )
+        else if (cfsi == INTOBJ_INT(-1) && exsi == 1)
             Pr("%>-E(%d%<)",n,0L);
-        else if ( cfs[i]==INTOBJ_INT(-1) )
-            Pr("%>-E(%d)%>^%2<%d",n,(Int)exs[i]);
-        else if (                             exs[i]==0 )
-            PrintObj(cfs[i]);
-        else if (                             exs[i]==1 ) {
-            Pr("%>",0L,0L); PrintObj(cfs[i]); Pr("%>*%<E(%d%<)",n,0L); }
+        else if (cfsi == INTOBJ_INT(-1))
+            Pr("%>-E(%d)%>^%2<%d", n, (Int)exsi);
+        else if (exsi == 0)
+            PrintObj(cfsi);
+        else if (exsi == 1) {
+            Pr("%>", 0L, 0L);
+            PrintObj(cfsi);
+            Pr("%>*%<E(%d%<)", n, 0L);
+        }
         else {
-            Pr("%>",0L,0L); PrintObj(cfs[i]);
-            Pr("%>*%<E(%d)%>^%2<%d",n,(Int)exs[i]); }
+            Pr("%>", 0L, 0L);
+            PrintObj(cfsi);
+            Pr("%>*%<E(%d)%>^%2<%d", n, (Int)exsi);
+        }
     }
     Pr("%<",0L,0L);
 }
