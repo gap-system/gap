@@ -180,7 +180,7 @@ BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
         elif LEN_LIST(arg) = 5  then
             rep := arg[5];
         else
-            Error("usage:DeclareRepresentation(<name>,<super>,<slots>[,<req>])");
+            Error("usage: DeclareRepresentation( <name>, <super>, <slots> [, <req> ] )");
         fi;
         ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
         FILTERS[ FLAG1_FILTER( rep ) ]       := rep;
@@ -268,7 +268,7 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     elif LEN_LIST(arg) = 4  then
         rep := NEW_FILTER( arg[1] );
     else
-        Error("usage:NewRepresentation(<name>,<super>,<slots>[,<req>])");
+        Error("usage: NewRepresentation( <name>, <super>, <slots> [, <req> ] )");
     fi;
 
     # Do some administrational work.

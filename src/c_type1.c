@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "-114907653"
+#define FILE_CRC  "127455113"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
@@ -911,9 +911,9 @@ static Obj  HdlrFunc10 (
     /* else */
     else {
      
-     /* Error( "usage: NewFamily( <name>, [ <req> [, <imp> ]] )" ); */
+     /* Error( "usage: NewFamily( <name> [, <req> [, <imp> [, <famfilter> ] ] ] )" ); */
      t_1 = GF_Error;
-     t_2 = MakeString( "usage: NewFamily( <name>, [ <req> [, <imp> ]] )" );
+     t_2 = MakeString( "usage: NewFamily( <name> [, <req> [, <imp> [, <famfilter> ] ] ] )" );
      CALL_1ARGS( t_1, t_2 );
      
     }
@@ -3501,7 +3501,7 @@ static Obj  HdlrFunc1 (
       elif LEN_LIST( arg ) = 4 then
           return NewFamily5( TypeOfFamilies, arg[1], arg[2], arg[3], arg[4] );
       else
-          Error( "usage: NewFamily( <name>, [ <req> [, <imp> ]] )" );
+          Error( "usage: NewFamily( <name> [, <req> [, <imp> [, <famfilter> ] ] ] )" );
       fi;
       return;
   end ); */
@@ -4502,7 +4502,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/type1.g",
- .crc         = -114907653,
+ .crc         = 127455113,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
