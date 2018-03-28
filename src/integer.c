@@ -703,8 +703,6 @@ static inline UInt AbsOfSmallInt(Obj x)
 **
 **  'PrintInt' prints the GMP integer <gmp> in the usual decimal
 **  notation.
-**
-**  cf PrintInt in integer.c
 */
 void PrintInt ( Obj op )
 {

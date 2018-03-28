@@ -691,7 +691,7 @@ Obj Func8Bits_Power (
         pr = (UInt1*)DATA_WORD(obj) + (nl-1);
         sl = nl;
 
-        /* exponents are symmtric, so we cannot get an overflow            */
+        /* exponents are symmetric, so we cannot get an overflow            */
         while ( 0 < sl-- ) {
             *pr-- = ( *pl++ ^ invm ) + 1;
         }
@@ -1649,7 +1649,7 @@ Obj Func16Bits_Power (
         pr = (UInt2*)DATA_WORD(obj) + (nl-1);
         sl = nl;
 
-        /* exponents are symmtric, so we cannot get an overflow            */
+        /* exponents are symmetric, so we cannot get an overflow            */
         while ( 0 < sl-- ) {
             *pr-- = ( *pl++ ^ invm ) + 1;
         }
@@ -2607,7 +2607,7 @@ Obj Func32Bits_Power (
         pr = (UInt4*)DATA_WORD(obj) + (nl-1);
         sl = nl;
 
-        /* exponents are symmtric, so we cannot get an overflow            */
+        /* exponents are symmetric, so we cannot get an overflow            */
         while ( 0 < sl-- ) {
             *pr-- = ( *pl++ ^ invm ) + 1;
         }

@@ -278,9 +278,6 @@ static inline UInt SIZE_BAG_CONTENTS(const void *ptr) {
 **  example, into the  data area of another  bag, 'old' in the above example,
 **  the application  must inform {\Gasman}  that it  has changed  the bag, by
 **  calling 'CHANGED_BAG(old)' in the above example (see "CHANGED_BAG").
-**
-**  Note that 'PTR_BAG' is a macro, so  do  not call it with  arguments  that
-**  have side effects.
 */
 static inline Bag *PTR_BAG(Bag bag)
 {
@@ -337,9 +334,6 @@ static inline void SET_PTR_BAG(Bag bag, Bag *val)
 **
 **  Note that  writing 'PTR_BAG(mat)[i] = NewBag( T_ROW, n\*\ sizeof(Bag) );'
 **  is incorrect as mentioned in the section for 'PTR_BAG' (see "PTR_BAG").
-**
-**  Note that 'CHANGED_BAG' is a macro, so do not call it with arguments that
-**  have side effects.
 */
 
 #if !defined(USE_GASMAN)

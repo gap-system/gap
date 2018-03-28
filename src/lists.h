@@ -141,9 +141,6 @@ static inline Int IS_POSS_LIST(Obj list)
 *F  LEN_LIST(<list>)  . . . . . . . . . . . . . . . . . . .  length of a list
 *V  LenListFuncs[<type>]  . . . . . . . . . . . . . table of length functions
 **
-**  Note that  'LEN_LIST' is a  macro, so do  not call it with arguments that
-**  have side effects.
-**
 **  A package  implementing a list type <type>  must  provide such a function
 **  and install it in 'LenListFuncs[<type>]'.
 */

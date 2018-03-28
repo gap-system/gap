@@ -278,8 +278,7 @@ typedef UInt2           FFV;
 **  'unsigned short'.
 **
 **  Note  that 'POW_FFV' is a macro,  so do not call  it  with arguments that
-**  have side effects.  For optimal performance  put the operands in registers
-**  before calling 'POW_FFV'.
+**  have side effects.
 **
 **  If the finite field element is 0 the power is also 0, otherwise  we  have
 **  $a^n ~ (z^{a-1})^n = z^{(a-1)*n} = z^{(a-1)*n % (o-1)} ~ (a-1)*n % (o-1)$
