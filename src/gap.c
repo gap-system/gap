@@ -1216,7 +1216,9 @@ void ErrorQuit (
     Int                 arg1,
     Int                 arg2 )
 {
-  CallErrorInner(msg, arg1, arg2, 1, 0, 0, False, 1);
+    CallErrorInner(msg, arg1, arg2, 1, 0, 0, False, 1);
+    FPUTS_TO_STDERR("panic: ErrorQuit must not return\n");
+    SyExit(1);
 }
 
 
@@ -1391,9 +1393,10 @@ void ErrorMayQuit (
     Int                 arg1,
     Int                 arg2)
 {
-  Obj LateMsg = MakeString("type 'quit;' to quit to outer loop");
-  CallErrorInner(msg, arg1, arg2, 0, 0, 0, LateMsg, 1);
- 
+    Obj LateMsg = MakeString("type 'quit;' to quit to outer loop");
+    CallErrorInner(msg, arg1, arg2, 0, 0, 0, LateMsg, 1);
+    FPUTS_TO_STDERR("panic: ErrorMayQuit must not return\n");
+    SyExit(1);
 }
 
 
