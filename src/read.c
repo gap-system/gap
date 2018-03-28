@@ -401,7 +401,7 @@ void AssignRef(const LHSRef ref)
 void UnbindRef(const LHSRef ref)
 {
     volatile enum REFTYPE type = ref.type;
-    if (ref.level > 0)
+    if (type != R_DVAR && ref.level > 0)
         type = R_INVALID;
 
     TRY_READ
@@ -451,7 +451,7 @@ void UnbindRef(const LHSRef ref)
 void IsBoundRef(const LHSRef ref)
 {
     volatile enum REFTYPE type = ref.type;
-    if (ref.level > 0)
+    if (type != R_DVAR && ref.level > 0)
         type = R_INVALID;
 
     TRY_READ
