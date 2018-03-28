@@ -1994,8 +1994,8 @@ UInt            ExecAssComObjName (
         if (GetRegionOf(rhs) == STATE(threadRegion)) {
             if (strcmp(NAME_RNAM(rnam), "buffer") != 0
              && strcmp(NAME_RNAM(rnam), "state") != 0) {
-                ErrorReturnObj("Warning: thread local assignment of '%s'",
-                               (Int)NAME_RNAM(rnam), 0L,
+                ErrorReturnObj("Warning: thread local assignment of '%g'",
+                               (Int)NAME_OBJ_RNAM(rnam), 0L,
                                "type 'return <value>; to continue'");
             }
 
