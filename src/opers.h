@@ -395,13 +395,6 @@ extern Obj FuncIS_SUBSET_FLAGS( Obj self, Obj flags1, Obj flags2 );
 
 /****************************************************************************
 **
-*V  CountFlags  . . . . . . . . . . . . . . . . . . . . next free flag number
-*/
-extern Int CountFlags;
-
-
-/****************************************************************************
-**
 *V  SET_FILTER_OBJ  . . . . . . . . . . . .  library function to set a filter
 */
 extern Obj SET_FILTER_OBJ;

@@ -74,7 +74,7 @@ void PrintFlags (
 **
 *F  TypeFlags( <flags> )  . . . . . . . . . . . . . . .  type of a flags list
 */
-Obj TYPE_FLAGS;
+static Obj TYPE_FLAGS;
 
 Obj TypeFlags (
     Obj                 flags )
@@ -1107,7 +1107,7 @@ Obj FuncWITH_IMPS_FLAGS_STAT(Obj self)
 **
 *V  Countlags  . . . . . . . . . . . . . . . . . . . . next free flag number
 */
-Int CountFlags;
+static Int CountFlags;
 
 
 /****************************************************************************
@@ -1773,7 +1773,7 @@ Obj CallHandleMethodNotFound( Obj oper,
 static Obj FLUSH_ALL_METHOD_CACHES;
 
 static Int NextTypeID;
-Obj IsType;
+static Obj IsType;
 
 static void FixTypeIDs( Bag b ) {
   if ( (TNUM_OBJ( b )  == T_POSOBJ) &&
@@ -3559,7 +3559,7 @@ Obj FuncINSTALL_GLOBAL_FUNCTION (
 **
 *F  FuncIS_OPERATION( <self>, <obj> ) . . . . . . . . . is <obj> an operation
 */
-Obj IsOperationFilt;
+static Obj IsOperationFilt;
 
 Obj FuncIS_OPERATION (
     Obj                 self,
