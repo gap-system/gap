@@ -49,10 +49,6 @@
 **
 **  'IS_LIST' only calls the function pointed  to  by  'IsListFuncs[<type>]',
 **  passing <obj> as argument.
-**
-**  'IS_LIST' is defined in the declaration part of this package as follows
-**
-#define IS_LIST(obj)    (*IsListFuncs[ TNUM_OBJ( (obj) ) ])( obj )
 */
 Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
@@ -80,12 +76,8 @@ Int             IsListObject (
 **  'IS_SMALL_LIST' only calls the function pointed  to  by  'IsListFuncs[<type>]',
 **  passing <obj> as argument.
 **
-**  'IS_SMALL_LIST' is defined in the declaration part of this package as follows
-**
 **  This is, in some sense, a workaround for the not yet implemented features
 **  below (see LENGTH).
-** 
-#define IS_SMALL_LIST(obj)    (*IsSmallListFuncs[ TNUM_OBJ( (obj) ) ])( obj )
 */
 Int             (*IsSmallListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
@@ -188,10 +180,6 @@ Obj FuncLENGTH (
 **  'LenListFuncs[<type>]'  points to  'LenListError', which  just signals an
 **  error.
 **
-**  'LEN_LIST' is defined in the declaration part of this package as follows
-**
-#define LEN_LIST(list)  ((*LenListFuncs[ TNUM_OBJ((list)) ])( (list) ))
-**
 **  At the  moment  this also handles external    types but this   is a hack,
 **  because external  lists can have large  length or even  be infinite.  See
 **  'FuncLENGTH'.
@@ -248,13 +236,8 @@ Int LenListObject (
 **  'LENGTH' returns the logical length of the list <list>  as a GAP object
 **  An error is signalled if <list> is not a list.
 **
-**  Note that  'LENGTH' is a  macro, so do  not call it with arguments that
-**  have side effects.
-**
 **  A package  implementing a list type <type>  must  provide such a function
 **  and install it in 'LengthFuncs[<type>]'.
-
-#define LENGTH(list)  ((*LengthFuncs[ TNUM_OBJ(list) ])( list )) 
 */
 
 Obj             (*LengthFuncs[LAST_REAL_TNUM+1]) ( Obj list );
@@ -950,10 +933,6 @@ void UNB2_LIST(Obj list, Obj pos1, Obj pos2)
 **  of  a list, then 'AssListFuncs[<type>]'  points to 'AssListError',  which
 **  just signals an error.
 **
-**  'ASS_LIST' is defined in the declaration part of this package as follows.
-**
-#define ASS_LIST(list,pos,obj) \
-                        ((*AssListFuncs[TNUM_OBJ(list)])(list,pos,obj))
 */
 void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, Obj obj );
 
@@ -1227,11 +1206,6 @@ Int             IsDenseListObject (
 **  the type of a list, then 'IsHomogListFuncs[<type>]' points to
 **  'AlwaysNo', which just returns 0.
 **
-**  'IS_HOMOG_LIST' is defined in the declaration part  of  this  package  as
-**  follows
-**
-#define IS_HOMOG_LIST(list) \
-                        ((*IsHomogListFuncs[TNUM_OBJ(list)])(list))
 */
 Int             (*IsHomogListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
@@ -1295,12 +1269,6 @@ Int             IsHomogListObject (
 **  'IsTableListFuncs[<type>]', passing <list> as argument.  If <type> is not
 **  the type of a list, then 'IsTableListFuncs[<type>]' points to
 **  'AlwaysNo', which just returns 0.
-**
-**  'IS_TABLE_LIST' is defined in the declaration part  of  this  package  as
-**  follows
-**
-#define IS_TABLE_LIST(list) \
-                        ((*IsTableListFuncs[TNUM_OBJ(list)])(list))
 */
 Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
@@ -1373,11 +1341,6 @@ Int             IsTableListObject (
 **  If <type> is not the type of a list, then 'IsSSortListFuncs[<type>]'
 **  points to 'AlwaysNo', which just returns 0.
 **
-**  'IS_SSORTED_LIST'  is defined in the  declaration part of this package as
-**  follows
-**
-#define IS_SSORTED_LIST(list) \
-                        ((*IsSSortListFuncs[TNUM_OBJ(list)])(list))
 */
 Int (*IsSSortListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
@@ -1542,11 +1505,6 @@ Obj FuncIS_POSS_LIST_DEFAULT (
 **  passing <list>, <obj>,  and <start> as arguments.  If  <type>  is not the
 **  type  of  a list, then  'PosListFuncs[<type>]'  points to 'PosListError',
 **  which just signals an error.
-**
-**  'POS_LIST' is defined in the declaration part of this package as follows
-**
-#define POS_LIST(list,obj,start) \
-                        ((*PosListFuncs[TNUM_OBJ(list)])(list,obj,start))
 */
 Obj             (*PosListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj obj, Obj start );
 

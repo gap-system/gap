@@ -40,7 +40,7 @@
 
 /****************************************************************************
 **
-*V  TRY_NEXT_METHOD . . . . . . . . . . . . . . . . . `TRY_NEXT_MESSAGE' flag
+*V  TRY_NEXT_METHOD . . . . . . . . . . . . . . . . .  'TRY_NEXT_METHOD' flag
 */
 Obj TRY_NEXT_METHOD;
 

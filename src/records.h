@@ -70,8 +70,8 @@ extern  UInt            RNamObj (
 **  'IS_REC' returns a nonzero value if the object <obj> is a  record  and  0
 **  otherwise.
 **
-**  Note that 'IS_REC' is a record, so do not call  it  with  arguments  that
-**  side effects.
+**  Note that 'IS_REC' is a macro, so do not call  it  with  arguments  that
+**  have side effects.
 */
 #define IS_REC(obj)     ((*IsRecFuncs[ TNUM_OBJ(obj) ])( obj ))
 
