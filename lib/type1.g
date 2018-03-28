@@ -195,7 +195,7 @@ BIND_GLOBAL( "NewFamily", function ( arg )
 
     # signal error
     else
-        Error( "usage: NewFamily( <name>, [ <req> [, <imp> ]] )" );
+        Error( "usage: NewFamily( <name> [, <req> [, <imp> [, <famfilter> ] ] ] )" );
     fi;
 
 end );
