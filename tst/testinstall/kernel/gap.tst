@@ -11,6 +11,12 @@ gap> SHELL(lvars,true,3,4,5,6,7,8,9,10);
 Error, SHELL: 3rd argument (can return object) should be true or false
 gap> SHELL(lvars,true,true,fail,5,6,7,8,9,10);
 Error, SHELL: 4th argument (last depth) should be a small integer
+gap> SHELL(lvars,true,true,-1,5,6,7,8,9,10);
+#W SHELL: negative last depth treated as zero
+Error, SHELL: 5th argument (set time) should be true or false
+gap> SHELL(lvars,true,true,4,5,6,7,8,9,10);
+#W SHELL: last depth greater than 3 treated as 3
+Error, SHELL: 5th argument (set time) should be true or false
 gap> SHELL(lvars,true,true,0,5,6,7,8,9,10);
 Error, SHELL: 5th argument (set time) should be true or false
 gap> SHELL(lvars,true,true,0,false,6,7,8,9,10);
@@ -60,6 +66,8 @@ gap> WindowCmd(["abc",fail]);
 Error, 2. argument must be a string or integer (not a boolean or fail)
 gap> WindowCmd(["abc"]);
 Error, window system: No Window Handler Present
+gap> WindowCmd(["abc",1,"foo"]);
+Error, window system: No Window Handler Present
 
 #
 gap> DownEnv();
@@ -80,6 +88,13 @@ gap> UpEnv(1,2);
 Error, usage: UpEnv( [ <depth> ] )
 gap> UpEnv(fail);
 Error, usage: UpEnv( [ <depth> ] )
+
+#
+gap> CURRENT_STATEMENT_LOCATION(GetCurrentLVars());
+fail
+gap> PRINT_CURRENT_STATEMENT(GetCurrentLVars());
+gap> f:=function() PRINT_CURRENT_STATEMENT(GetCurrentLVars()); Print("\n"); end;; f();
+PRINT_CURRENT_STATEMENT( GetCurrentLVars(  ) ); at stream:1
 
 #
 gap> CALL_WITH_CATCH(fail,fail);
@@ -147,6 +162,7 @@ fail
 gap> Sleep(fail);
 Error, <secs> must be a small integer
 gap> Sleep(0);
+gap> Sleep(1);
 
 #
 gap>    MicroSleep(fail);
