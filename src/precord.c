@@ -364,8 +364,8 @@ Obj ElmPRec (
         return GET_ELM_PREC( rec, i );
     else {
         ErrorReturnVoid(
-            "Record: '<rec>.%s' must have an assigned value",
-            (Int)NAME_RNAM(rnam), 0L,
+            "Record: '<rec>.%g' must have an assigned value",
+            (Int)NAME_OBJ_RNAM(rnam), 0L,
             "you can 'return;' after assigning a value" );
         return ELM_REC( rec, rnam );
     }
