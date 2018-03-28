@@ -66,15 +66,13 @@
 #include <src/hpc/aobjects.h>
 #endif
 
+Obj SuccFF;
 
-Obj             SuccFF;
+Obj TypeFF;
+Obj TypeFF0;
 
-
-Obj             TypeFF;
-Obj             TypeFF0;
-
-Obj             TYPE_FFE;
-Obj             TYPE_FFE0;
+static Obj TYPE_FFE;
+static Obj TYPE_FFE0;
 
 
 /****************************************************************************
@@ -85,7 +83,7 @@ Obj             TYPE_FFE0;
 **  entries are the  proper prime powers,  odd entries are the  corresponding
 **  conway polynomials.
 */
-unsigned long   PolsFF [] = {
+unsigned long PolsFF[] = {
        4, 1+2,
        8, 1+2,
       16, 1+2,
@@ -679,7 +677,7 @@ void            PrFFE (
 **  'SumFFEFFE' just does the conversions mentioned  above and then calls the
 **  macro 'SUM_FFV' to do the actual addition.
 */
-Obj             SUM_FFE_LARGE;
+static Obj SUM_FFE_LARGE;
 
 Obj             SumFFEFFE (
     Obj                 opL,
@@ -847,7 +845,7 @@ Obj             AInvFFE (
 **  'DiffFFEFFE' just does the conversions mentioned above and then calls the
 **  macros 'NEG_FFV' and 'SUM_FFV' to do the actual subtraction.
 */
-Obj             DIFF_FFE_LARGE;
+static Obj DIFF_FFE_LARGE;
 
 Obj             DiffFFEFFE (
     Obj                 opL,
@@ -977,7 +975,7 @@ Obj             DiffIntFFE (
 **  'ProdFFEFFE' just does the conversions mentioned above and then calls the
 **  macro 'PROD_FFV' to do the actual multiplication.
 */
-Obj             PROD_FFE_LARGE;
+static Obj PROD_FFE_LARGE;
 
 Obj             ProdFFEFFE (
     Obj                 opL,
@@ -1146,7 +1144,7 @@ Obj             InvFFE (
 **  'QuoFFEFFE' just does the conversions mentioned  above and then calls the
 **  macro 'QUO_FFV' to do the actual division.
 */
-Obj             QUO_FFE_LARGE;
+static Obj QUO_FFE_LARGE;
 
 Obj             QuoFFEFFE (
     Obj                 opL,

@@ -483,7 +483,7 @@ Obj DoFailXargs (
 **  'TimeDone' is  the amount of time spent  for all function calls that have
 **  already been completed.
 */
-UInt TimeDone;
+static UInt TimeDone;
 
 
 /****************************************************************************
@@ -493,7 +493,7 @@ UInt TimeDone;
 **  'StorDone' is the amount of storage spent for all function call that have
 **  already been completed.
 */
-UInt8 StorDone;
+static UInt8 StorDone;
 
 
 /****************************************************************************
@@ -1293,8 +1293,8 @@ Obj ArgStringToList(const Char *nams_c) {
 **
 **  'TypeFunction' is the function in 'TypeObjFuncs' for functions.
 */
-Obj TYPE_FUNCTION;
-Obj TYPE_OPERATION;
+static Obj TYPE_FUNCTION;
+static Obj TYPE_OPERATION;
 
 Obj TypeFunction (
     Obj                 func )
@@ -1310,7 +1310,7 @@ Obj TypeFunction (
 **
 */
 
-Obj PrintOperation;
+static Obj PrintOperation;
 
 void PrintFunction (
     Obj                 func )
@@ -1438,7 +1438,7 @@ void PrintFunction (
 **  'IsFunction' returns   'true'  if  <func>   is a function    and  'false'
 **  otherwise.
 */
-Obj IsFunctionFilt;
+static Obj IsFunctionFilt;
 
 Obj FuncIS_FUNCTION (
     Obj                 self,
@@ -1468,7 +1468,7 @@ Obj FuncIS_FUNCTION (
 **  i.e., it is equivalent to '<func>( <list>[1], <list>[2]... )'.
 */
 Obj CallFuncListOper;
-Obj CallFuncListWrapOper;
+static Obj CallFuncListWrapOper;
 
 Obj CallFuncList ( Obj func, Obj list )
 {
@@ -1572,8 +1572,8 @@ Obj FuncCALL_FUNC_LIST_WRAP (
 **
 *F  FuncNAME_FUNC( <self>, <func> ) . . . . . . . . . . .  name of a function
 */
-Obj NAME_FUNC_Oper;
-Obj SET_NAME_FUNC_Oper;
+static Obj NAME_FUNC_Oper;
+static Obj SET_NAME_FUNC_Oper;
 
 Obj FuncNAME_FUNC (
     Obj                 self,
@@ -1617,7 +1617,7 @@ Obj FuncSET_NAME_FUNC(
 **
 *F  FuncNARG_FUNC( <self>, <func> ) . . . . number of arguments of a function
 */
-Obj NARG_FUNC_Oper;
+static Obj NARG_FUNC_Oper;
 
 Obj FuncNARG_FUNC (
     Obj                 self,
@@ -1636,7 +1636,7 @@ Obj FuncNARG_FUNC (
 **
 *F  FuncNAMS_FUNC( <self>, <func> ) . . . . names of local vars of a function
 */
-Obj NAMS_FUNC_Oper;
+static Obj NAMS_FUNC_Oper;
 
 Obj FuncNAMS_FUNC (
     Obj                 self,
@@ -1657,7 +1657,7 @@ Obj FuncNAMS_FUNC (
 *F  FuncLOCKS_FUNC( <self>, <func> ) . . . . locking status of a possibly
 **                                           atomic function
 */
-Obj LOCKS_FUNC_Oper;
+static Obj LOCKS_FUNC_Oper;
 
 Obj FuncLOCKS_FUNC(Obj self, Obj func)
 {
@@ -1683,7 +1683,7 @@ Obj FuncLOCKS_FUNC(Obj self, Obj func)
 **
 *F  FuncPROF_FUNC( <self>, <func> ) . . . . . .  profiling info of a function
 */
-Obj PROF_FUNC_Oper;
+static Obj PROF_FUNC_Oper;
 
 Obj FuncPROF_FUNC (
     Obj                 self,

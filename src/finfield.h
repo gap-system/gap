@@ -137,9 +137,6 @@ extern  Obj             SuccFF;
 extern  Obj             TypeFF;
 extern  Obj             TypeFF0;
 
-extern  Obj             TYPE_FFE;
-extern  Obj             TYPE_FFE0;
-
 
 /****************************************************************************
 **
