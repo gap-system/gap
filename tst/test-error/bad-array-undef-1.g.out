@@ -1,7 +1,13 @@
+gap> f := function()
+>     local l,m;
+>     l := [];
+>     return l[m];
+> end;
 function(  ) ... end
+gap> f();
 Error, Variable: 'm' must have an assigned value in
-  return l[m]; at *stdin*:4 called from 
+  return l[m]; at *stdin*:5 called from 
 <function "f">( <arguments> )
- called from read-eval loop at *stdin*:6
+ called from read-eval loop at *stdin*:7
 you can 'return;' after assigning a value
-brk> 
+brk> QUIT;

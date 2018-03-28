@@ -1,7 +1,11 @@
+gap> f := function()
+>     return 1[1];
+> end;
 function(  ) ... end
+gap> f();
 Error, List Element: <list> must be a list (not a integer) in
-  return 1[1]; at *stdin*:2 called from 
+  return 1[1]; at *stdin*:3 called from 
 <function "f">( <arguments> )
- called from read-eval loop at *stdin*:4
+ called from read-eval loop at *stdin*:5
 you can replace <list> via 'return <list>;'
-brk> 
+brk> QUIT;
