@@ -2690,6 +2690,7 @@ Obj FuncMOVED_PTS_TRANS(Obj self, Obj f)
         for (i = 0; i < deg; i++) {
             if (ptf2[i] != i) {
                 AssPlist(out, ++len, INTOBJ_INT(i + 1));
+                ptf2 = CONST_ADDR_TRANS2(f);
             }
         }
     }
@@ -2700,6 +2701,7 @@ Obj FuncMOVED_PTS_TRANS(Obj self, Obj f)
         for (i = 0; i < deg; i++) {
             if (ptf4[i] != i) {
                 AssPlist(out, ++len, INTOBJ_INT(i + 1));
+                ptf4 = CONST_ADDR_TRANS4(f);
             }
         }
     }
