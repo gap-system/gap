@@ -42,10 +42,14 @@ gap> G:=GL(4,Integers mod 4);
 GL(4,Z/4Z)
 gap> CheckGeneratorsInvertible(G);
 true
+
+#
 gap> H:=SL(4,Integers mod 4);
 SL(4,Z/4Z)
 gap> CheckGeneratorsSpecial(H);
 true
+
+#
 gap> K:=Sp(4,Integers mod 4);
 Sp(4,Z/4Z)
 gap> CheckGeneratorsSpecial(K) and CheckBilinearForm(K);
@@ -68,6 +72,25 @@ gap> Size(G); Size(H); Size(K);
 660602880
 737280
 
+# test over non-prime-power rings
+gap> GL(4,Integers mod 6); CheckGeneratorsInvertible(last);
+GL(4,Z/6Z)
+true
+gap> SL(4,Integers mod 6); CheckGeneratorsSpecial(last);
+SL(4,Z/6Z)
+true
+gap> Sp(4,Integers mod 6);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 2nd choice method found for `SymplecticGroupCons' on 3 arguments
+gap> GO(3,Integers mod 6);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 2nd choice method found for `GeneralOrthogonalGroupCons' on 4 argume\
+nts
+gap> SO(3,Integers mod 6);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 2nd choice method found for `SpecialOrthogonalGroupCons' on 4 argume\
+nts
+
 #
 gap> K:=Sp(4,Integers mod 9);
 Sp(4,Z/9Z)
@@ -79,6 +102,10 @@ gap> CheckGeneratorsSpecial(K) and CheckBilinearForm(K);
 true
 
 #
+gap> K:=GO(3,Integers mod 4);  # not (yet?) supported
+fail
+gap> K:=GO(3,Integers mod 25); # use separate code path 'transpose'
+GO(3,Z/25Z)
 gap> K:=GO(3,Integers mod 9);
 GO(3,Z/9Z)
 gap> CheckGeneratorsInvertible(K) and CheckBilinearForm(K);
