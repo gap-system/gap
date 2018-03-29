@@ -137,7 +137,7 @@ end );
 ##  Moved to obsoletes in May 2003.
 ##
 ##  not used in any redistributed package (01/2016)
-DeclareGlobalFunction( "DiagonalizeIntMatNormDriven" );
+#DeclareGlobalFunction( "DiagonalizeIntMatNormDriven" );
 
 
 #############################################################################
@@ -167,7 +167,7 @@ BindGlobal( "DeclareAutoPackage", Ignore );
 BindGlobal( "DeclarePackageAutoDocumentation", Ignore );
 # 03/2018: still used in itc
 
-BindGlobal( "DeclarePackageDocumentation", Ignore );
+#BindGlobal( "DeclarePackageDocumentation", Ignore );
 # 03/2018: not used in any redistributed package
 
 DeclareObsoleteSynonym( "ReadPkg", "ReadPackage" );
@@ -193,21 +193,21 @@ DeclareObsoleteSynonym( "RequirePackage", "LoadPackage" );
 ##  Up to GAP 4.3,
 ##  these global variables were used instead of the record `GAPInfo'.
 ##
-BindGlobal( "KERNEL_VERSION", GAPInfo.KernelVersion );
+#BindGlobal( "KERNEL_VERSION", GAPInfo.KernelVersion );
 BindGlobal( "VERSION", GAPInfo.Version );
 BindGlobal( "GAP_ARCHITECTURE", GAPInfo.Architecture );
-BindGlobal( "GAP_ROOT_PATHS", GAPInfo.RootPaths );
+#BindGlobal( "GAP_ROOT_PATHS", GAPInfo.RootPaths );
 BindGlobal( "DEBUG_LOADING", GAPInfo.CommandLineOptions.D );
 BindGlobal( "BANNER", not GAPInfo.CommandLineOptions.b );
 BindGlobal( "QUIET", GAPInfo.CommandLineOptions.q );
-BindGlobal( "LOADED_PACKAGES", GAPInfo.PackagesLoaded );
+#BindGlobal( "LOADED_PACKAGES", GAPInfo.PackagesLoaded );
 
 #############################################################################
 ##
 #V  PACKAGES_VERSIONS - not used in any redistributed package (11/2017)
 #V  Revision          - still used by HAPcryst, pargap, polymaking, rds,
 #V                      singular, tomlib (03/2018)
-BindGlobal( "PACKAGES_VERSIONS", rec() );
+#BindGlobal( "PACKAGES_VERSIONS", rec() );
 BindGlobal( "Revision", rec() );
 
 #############################################################################
@@ -285,7 +285,7 @@ DeclareObsoleteSynonym( "FormattedString", "String" );
 #F  IsTuple( ... ) - not used in any redistributed package (11/2017)
 #F  Tuple( ... ) - still used by cubefree, groupoids, modisom, sonata (03/2018)
 ##
-DeclareObsoleteSynonym( "IsTuple", "IsDirectProductElement" );
+#DeclareObsoleteSynonym( "IsTuple", "IsDirectProductElement" );
 DeclareObsoleteSynonym( "Tuple", "DirectProductElement" );
 
 ##  from GAPs "classical" random number generator:
@@ -339,21 +339,21 @@ DeclareObsoleteSynonym( "Tuple", "DirectProductElement" );
 ##  (We also keep the global variables R_N and R_X within the 
 ##  'GlobalRandomSource' because they were documented.)
 ##  
-BindGlobal( "StateRandom", function()
-  return State(GlobalRandomSource);
-end);
-
-BindGlobal( "RestoreStateRandom", function(seed)
-  Reset(GlobalRandomSource, seed);
-end);
+# BindGlobal( "StateRandom", function()
+#   return State(GlobalRandomSource);
+# end);
+# 
+# BindGlobal( "RestoreStateRandom", function(seed)
+#   Reset(GlobalRandomSource, seed);
+# end);
 
 # older documentation referred to `StatusRandom'. 
-DeclareObsoleteSynonym( "StatusRandom", "StateRandom" );
+#DeclareObsoleteSynonym( "StatusRandom", "StateRandom" );
 
 # synonym formerly declared in factgrp.gd.
 # Moved to obsoletes in October 2011
 # not used in any redistributed package (11/2017)
-DeclareObsoleteSynonym( "FactorCosetOperation", "FactorCosetAction" );
+#DeclareObsoleteSynonym( "FactorCosetOperation", "FactorCosetAction" );
 
 # synonym retained for backwards compatibility with GAP 4.4.
 # Moved to obsoletes in April 2012. Still used by hap (03/2018)
@@ -382,7 +382,7 @@ DeclareObsoleteSynonym( "Complementclasses", "ComplementClassesRepresentatives" 
 ##  </ManSection>
 ##
 ##  not used in any redistributed package (11/2017)
-DeclareOperation( "ShrinkCoeffs", [ IsMutable and IsList ] );
+#DeclareOperation( "ShrinkCoeffs", [ IsMutable and IsList ] );
 
 
 #############################################################################
@@ -392,12 +392,12 @@ DeclareOperation( "ShrinkCoeffs", [ IsMutable and IsList ] );
 ##  was supported until GAP 4.4, obsolescent in GAP 4.5.
 ##
 ##  not used in any redistributed package (01/2016)
-BindGlobal( "ExcludeFromAutoload", function( arg )
-    Info( InfoWarning, 1,
-          "the function `ExcludeFromAutoload' is not supported anymore,\n",
-          "#I  use the component `ExcludeFromAutoload' in `gap.ini'\n",
-          "#I  instead" );
-    end );
+# BindGlobal( "ExcludeFromAutoload", function( arg )
+#     Info( InfoWarning, 1,
+#           "the function `ExcludeFromAutoload' is not supported anymore,\n",
+#           "#I  use the component `ExcludeFromAutoload' in `gap.ini'\n",
+#           "#I  instead" );
+#     end );
 
 
 #############################################################################
@@ -465,7 +465,7 @@ DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
 ##  instead of `ConnectGroupAndCharacterTable'.
 ##
 ##  not used in any redistributed package (01/2016)
-DeclareGlobalFunction( "ConnectGroupAndCharacterTable" );
+#DeclareGlobalFunction( "ConnectGroupAndCharacterTable" );
 
 
 #############################################################################
@@ -535,7 +535,7 @@ DeclareObsoleteSynonym( "MutableNullMat", "NullMat" );
 ##  <#/GAPDoc>
 ##
 ##  not used in any redistributed packages (11/2017)
-DeclareSynonymAttr( "IsSemilatticeAsSemigroup", IsSemilattice );
+#DeclareSynonymAttr( "IsSemilatticeAsSemigroup", IsSemilattice );
 
 #############################################################################
 ##
@@ -543,9 +543,9 @@ DeclareSynonymAttr( "IsSemilatticeAsSemigroup", IsSemilattice );
 ##
 ##  NO LONGER SUPPORTED IN GAP >= 4.5 
 ##
-BindGlobal( "CreateCompletionFiles", function()
-  Print("CreateCompletionFiles: Completion files are no longer supported by GAP.\n");
-end);
+# BindGlobal( "CreateCompletionFiles", function()
+#   Print("CreateCompletionFiles: Completion files are no longer supported by GAP.\n");
+# end);
 
 
 #############################################################################
@@ -557,7 +557,7 @@ end);
 ##
 ## Deprecated in GAP >= 4.8
 ## Not used in any redistributed packages (11/2017)
-DeclareOperation( "PositionFirstComponent", [IsList,IsObject] );
+#DeclareOperation( "PositionFirstComponent", [IsList,IsObject] );
 
 #############################################################################
 ##
