@@ -127,12 +127,9 @@ local f,M2,o,e,MM,i;
 end);
 
 BindGlobal("SPRingGeneric",function(n,ring)
-local t,geni,m,slmats,gens,f,rels,i,j,k,l,mat,mat1,mats,id,nh,g;
+local geni,m,slmats,gens,f,rels,i,j,k,l,mat,mat1,mats,id,nh,g;
   nh:=n;
   n:=2*n;
-  t:=function(i,j)
-    return slmats[geni[i][j]];
-  end;
   geni:=List([1..n],x->[]);
   mats:=[];
   slmats:=[];
