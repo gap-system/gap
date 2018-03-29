@@ -609,7 +609,7 @@ $(BOEHM_GC_FILES):
 	LDFLAGS=$(ABI_CFLAGS) \
 	ATOMIC_OPS_CFLAGS=$(LIBATOMIC_OPS_CPPFLAGS) \
 	ATOMIC_OPS_LIBS=$(LIBATOMIC_OPS_LDFLAGS) \
-	$(srcdir)/cnf/build-extern.sh gc "$(abs_srcdir)/hpcgap/extern/gc" --disable-static --enable-shared
+	$(srcdir)/cnf/build-extern.sh gc "$(abs_srcdir)/hpcgap/extern/gc" --disable-static --enable-shared --enable-large-config
 
 ifeq ($(BUILD_LIBATOMIC_OPS),yes)
 $(BOEHM_GC_FILES): $(LIBATOMIC_OPS_FILES)
