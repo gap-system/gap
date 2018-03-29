@@ -232,11 +232,12 @@ typedef struct {
 
 } StructInitInfoExt;
 
-extern StructInitInfoExt Modules [];
-extern UInt NrModules;
-extern UInt NrBuiltinModules;
 
+extern void SaveModules(void);
+extern void LoadModules(void);
 
+extern Int ModulesPreSave(void);
+extern Int ModulesPostSave(void);
 
 
 /****************************************************************************
