@@ -34,35 +34,28 @@ Int RegisterBreakloopObserver(intfunc func);
 **
 *F  ErrorQuit( <msg>, <arg1>, <arg2> )  . . . . . . . . . . .  print and quit
 */
-extern void ErrorQuit (
-            const Char *        msg,
-            Int                 arg1,
-            Int                 arg2 ) NORETURN;
+extern void ErrorQuit(const Char * msg, Int arg1, Int arg2) NORETURN;
 
 /****************************************************************************
 **
 *F  ErrorMayQuit( <msg>, <arg1>, <arg2> )  . print, enter break loop and quit
 **                                           no option to return anything.
 */
-extern void ErrorMayQuit (
-            const Char *        msg,
-            Int                 arg1,
-            Int                 arg2 ) NORETURN;
+extern void ErrorMayQuit(const Char * msg, Int arg1, Int arg2) NORETURN;
 
 
 /****************************************************************************
 **
 *F  ErrorQuitBound( <name> )  . . . . . . . . . . . . . . .  unbound variable
 */
-extern void ErrorQuitBound (
-    const Char *        name );
+extern void ErrorQuitBound(const Char * name);
 
 
 /****************************************************************************
 **
 *F  ErrorQuitFuncResult() . . . . . . . . . . . . . . . . must return a value
 */
-extern void ErrorQuitFuncResult ( void ) NORETURN;
+extern void ErrorQuitFuncResult(void) NORETURN;
 
 
 /****************************************************************************
@@ -103,48 +96,35 @@ extern void ErrorQuitFunc(Obj obj) NORETURN;
 **
 *F  ErrorQuitNrArgs( <narg>, <args> ) . . . . . . . wrong number of arguments
 */
-extern void ErrorQuitNrArgs (
-    Int                 narg,
-    Obj                 args ) NORETURN;
+extern void ErrorQuitNrArgs(Int narg, Obj args) NORETURN;
 
 /****************************************************************************
 **
 *F  ErrorQuitNrAtLeastArgs( <narg>, <args> ) . . . . . . not enough arguments
 */
-extern void ErrorQuitNrAtLeastArgs (
-    Int                 narg,
-    Obj                 args ) NORETURN;
+extern void ErrorQuitNrAtLeastArgs(Int narg, Obj args) NORETURN;
 
 /****************************************************************************
 **
 *F  ErrorQuitRange3( <first>, <second>, <last> ) . . .divisibility rules
 */
-extern void ErrorQuitRange3 (
-    Obj                 first,
-    Obj                 second,
-    Obj                 last) NORETURN;
+extern void ErrorQuitRange3(Obj first, Obj second, Obj last) NORETURN;
 
 
 /****************************************************************************
 **
 *F  ErrorReturnObj( <msg>, <arg1>, <arg2>, <msg2> ) . .  print and return obj
 */
-extern Obj ErrorReturnObj (
-            const Char *        msg,
-            Int                 arg1,
-            Int                 arg2,
-            const Char *        msg2 );
+extern Obj
+ErrorReturnObj(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 
 
 /****************************************************************************
 **
 *F  ErrorReturnVoid( <msg>, <arg1>, <arg2>, <msg2> )  . . .  print and return
 */
-extern void ErrorReturnVoid (
-            const Char *        msg,
-            Int                 arg1,
-            Int                 arg2,
-            const Char *        msg2 );
+extern void
+ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 
 
 /****************************************************************************
@@ -156,7 +136,7 @@ extern void ErrorReturnVoid (
 **
 *F  InitInfoError() . . . . . . . . . . . . . . . . . table of init functions
 */
-StructInitInfo * InitInfoError( void );
+StructInitInfo * InitInfoError(void);
 
 
-#endif // GAP_ERROR_H
+#endif    // GAP_ERROR_H
