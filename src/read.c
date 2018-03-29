@@ -941,25 +941,28 @@ void ReadPerm (
 **
 */
 
-static UInt appendToString(Obj string, UInt len)
+static void appendToString(Obj string, const char * val)
 {
-       UInt len1 = strlen(STATE(Value));
-       GROW_STRING(string, len+len1+1);
-       memcpy(CHARS_STRING(string) + len, STATE(Value), len1+1);
-       SET_LEN_STRING(string, len+len1);
-       return len + len1;
+    const UInt len = GET_LEN_STRING(string);
+    const UInt len1 = strlen(val);
+
+    // ensure enough memory is allocated (GROW_STRING automatically
+    // reserves extra space for the terminating zero byte)
+    GROW_STRING(string, len + len1);
+    SET_LEN_STRING(string, len + len1);
+
+    // copy the data, including the terminator byte
+    memcpy(CHARS_STRING(string) + len, val, len1 + 1);
 }
 
 void ReadLongNumber(
       TypSymbolSet        follow )
 {
      Obj  string;
-     UInt len;
      UInt status;
      UInt done;
 
      /* string in which to accumulate number */
-     len = strlen(STATE(Value));
      string = MakeString(STATE(Value));
      done = 0;
 
@@ -973,14 +976,14 @@ void ReadLongNumber(
        case S_PARTIALINT:
          switch (STATE(Symbol)) {
          case S_INT:
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            Match(S_INT, "integer", follow);
            IntrLongIntExpr(string);
            done = 1;
            break;
 
          case S_PARTIALINT:
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            /*      Match(S_PARTIALINT, "integer", follow);*/
            break;
 
@@ -993,12 +996,12 @@ void ReadLongNumber(
          case S_PARTIALFLOAT3:
          case S_PARTIALFLOAT4:
            status = STATE(Symbol);
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            /* Match(STATE(Symbol), "float", follow); */
            break;
 
          case S_FLOAT:
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            Match(S_FLOAT, "float", follow);
            IntrLongFloatExpr(string);
            done = 1;
@@ -1008,7 +1011,7 @@ void ReadLongNumber(
            SyntaxError("Identifier over 1024 characters");
 
          default:
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            IntrLongIntExpr(string);
            done = 1;
          }
@@ -1028,12 +1031,12 @@ void ReadLongNumber(
          case S_PARTIALFLOAT3:
          case S_PARTIALFLOAT4:
            status = STATE(Symbol);
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            /* Match(STATE(Symbol), "float", follow); */
            break;
 
          case S_FLOAT:
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            Match(S_FLOAT, "float", follow);
            IntrLongFloatExpr(string);
            done = 1;
@@ -1058,12 +1061,12 @@ void ReadLongNumber(
          case S_PARTIALFLOAT3:
          case S_PARTIALFLOAT4:
            status = STATE(Symbol);
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            /* Match(STATE(Symbol), "float", follow); */
            break;
 
          case S_FLOAT:
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            Match(S_FLOAT, "float", follow);
            IntrLongFloatExpr(string);
            done = 1;
@@ -1074,7 +1077,7 @@ void ReadLongNumber(
            SyntaxError("Badly Formed Number");
 
          default:
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            IntrLongFloatExpr(string);
            done = 1;
          }
@@ -1094,12 +1097,12 @@ void ReadLongNumber(
 
          case S_PARTIALFLOAT4:
            status = STATE(Symbol);
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            /* Match(STATE(Symbol), "float", follow); */
            break;
 
          case S_FLOAT:
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            Match(S_FLOAT, "float", follow);
            IntrLongFloatExpr(string);
            done = 1;
@@ -1125,12 +1128,12 @@ void ReadLongNumber(
 
          case S_PARTIALFLOAT4:
            status = STATE(Symbol);
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            /* Match(STATE(Symbol), "float", follow); */
            break;
 
          case S_FLOAT:
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            Match(S_FLOAT, "float", follow);
            IntrLongFloatExpr(string);
            done = 1;
@@ -1140,7 +1143,7 @@ void ReadLongNumber(
            SyntaxError("Badly Formed Number");
 
          default:
-           len = appendToString(string, len);
+           appendToString(string, STATE(Value));
            IntrLongFloatExpr(string);
            done = 1;
 
