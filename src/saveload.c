@@ -639,7 +639,6 @@ void LoadWorkspace( Char * fname )
 {
 #ifndef USE_GASMAN
   Pr("LoadWorkspace is only supported when GASMAN is in use",0,0);
-  return;
 
 #else
   UInt nGlobs, nBags, i, maxSize;
@@ -759,10 +758,10 @@ void LoadWorkspace( Char * fname )
 
   FinishedRestoringBags();
 
-  /* Post restore methods are called elsewhere */
-  
   CloseAfterLoad();
 #endif
+
+    ModulesPostRestore();
 }
 
 static void PrSavedObj( UInt x)
