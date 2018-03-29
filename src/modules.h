@@ -79,40 +79,40 @@ static inline Int IS_MODULE_DYNAMIC(UInt type)
 typedef struct init_info {
 
     /* type of the module: MODULE_BUILTIN, MODULE_STATIC, MODULE_DYNAMIC   */
-    UInt             type;               
+    UInt type;
 
     /* name of the module: filename with ".c" or library filename          */
-    const Char *     name;
+    const Char * name;
 
     /* revision entry of c file for MODULE_BUILTIN                         */
-    const Char *     revision_c;
+    const Char * revision_c;
 
     /* revision entry of h file for MODULE_BUILTIN                         */
-    const Char *     revision_h;
+    const Char * revision_h;
 
     /* version number for MODULE_BUILTIN                                   */
-    UInt             version;
+    UInt version;
 
     /* CRC value for MODULE_STATIC or MODULE_DYNAMIC                       */
-    Int              crc;
+    Int crc;
 
     /* initialise kernel data structures                                   */
-    Int              (* initKernel)(struct init_info *);
+    Int (*initKernel)(struct init_info *);
 
     /* initialise library data structures                                  */
-    Int              (* initLibrary)(struct init_info *);
+    Int (*initLibrary)(struct init_info *);
 
     /* sanity check                                                        */
-    Int              (* checkInit)(struct init_info *);
+    Int (*checkInit)(struct init_info *);
 
     /* function to call before saving workspace                            */
-    Int              (* preSave)(struct init_info *);
+    Int (*preSave)(struct init_info *);
 
     /* function to call after saving workspace                             */
-    Int              (* postSave)(struct init_info *);
+    Int (*postSave)(struct init_info *);
 
     /* function to call after restoring workspace                          */
-    Int              (* postRestore)(struct init_info *);
+    Int (*postRestore)(struct init_info *);
 
 } StructInitInfo;
 
@@ -122,8 +122,8 @@ typedef struct init_info {
 *T  StructBagNames  . . . . . . . . . . . . . . . . . . . . . tnums and names
 */
 typedef struct {
-    Int             tnum;
-    const Char *    name;
+    Int          tnum;
+    const Char * name;
 } StructBagNames;
 
 
@@ -132,17 +132,19 @@ typedef struct {
 *T  StructGVarFilt  . . . . . . . . . . . . . . . . . . . . . exported filter
 */
 typedef struct {
-    const Char *    name;
-    const Char *    argument;
-    Obj *           filter;
-    Obj             (* handler)(/*arguments*/);
-    const Char *    cookie;
+    const Char * name;
+    const Char * argument;
+    Obj *        filter;
+    Obj (*handler)(/*arguments*/);
+    const Char * cookie;
 } StructGVarFilt;
 
 // GVAR_FILTER a helper macro for quickly creating table entries in
 // StructGVarFilt, StructGVarAttr and StructGVarProp arrays
-#define GVAR_FILTER(name, argument, filter) \
-  { #name, argument, filter, Func ## name, __FILE__ ":" #name }
+#define GVAR_FILTER(name, argument, filter)                                  \
+    {                                                                        \
+        #name, argument, filter, Func##name, __FILE__ ":" #name              \
+    }
 
 
 /****************************************************************************
@@ -150,11 +152,11 @@ typedef struct {
 *T  StructGVarAttr  . . . . . . . . . . . . . . . . . . .  exported attribute
 */
 typedef struct {
-    const Char *    name;
-    const Char *    argument;
-    Obj *           attribute;
-    Obj             (* handler)(/*arguments*/);
-    const Char *    cookie;
+    const Char * name;
+    const Char * argument;
+    Obj *        attribute;
+    Obj (*handler)(/*arguments*/);
+    const Char * cookie;
 } StructGVarAttr;
 
 
@@ -163,11 +165,11 @@ typedef struct {
 *T  StructGVarProp  . . . . . . . . . . . . . . . . . . . . exported property
 */
 typedef struct {
-    const Char *    name;
-    const Char *    argument;
-    Obj *           property;
-    Obj             (* handler)(/*arguments*/);
-    const Char *    cookie;
+    const Char * name;
+    const Char * argument;
+    Obj *        property;
+    Obj (*handler)(/*arguments*/);
+    const Char * cookie;
 } StructGVarProp;
 
 
@@ -176,18 +178,20 @@ typedef struct {
 *T  StructGVarOper  . . . . . . . . . . . . . . . . . . .  exported operation
 */
 typedef struct {
-    const Char *    name;
-    Int             nargs;
-    const Char *    args;
-    Obj *           operation;
-    Obj             (* handler)(/*arguments*/);
-    const Char *    cookie;
+    const Char * name;
+    Int          nargs;
+    const Char * args;
+    Obj *        operation;
+    Obj (*handler)(/*arguments*/);
+    const Char * cookie;
 } StructGVarOper;
 
 // GVAR_OPER is a helper macro for quickly creating table entries in
 // StructGVarOper arrays
-#define GVAR_OPER(name, nargs, args, operation) \
-  { #name, nargs, args, operation, Func ## name, __FILE__ ":" #name }
+#define GVAR_OPER(name, nargs, args, operation)                              \
+    {                                                                        \
+        #name, nargs, args, operation, Func##name, __FILE__ ":" #name        \
+    }
 
 
 /****************************************************************************
@@ -195,17 +199,19 @@ typedef struct {
 *T  StructGVarFunc  . . . . . . . . . . . . . . . . . . . . exported function
 */
 typedef struct {
-    const Char *    name;
-    Int             nargs;
-    const Char *    args;
-    Obj             (* handler)(/*arguments*/);
-    const Char *    cookie;
+    const Char * name;
+    Int          nargs;
+    const Char * args;
+    Obj (*handler)(/*arguments*/);
+    const Char * cookie;
 } StructGVarFunc;
 
 // GVAR_FUNC is a helper macro for quickly creating table entries in
 // StructGVarFunc arrays
-#define GVAR_FUNC(name, nargs, args) \
-  { #name, nargs, args, Func ## name, __FILE__ ":" #name }
+#define GVAR_FUNC(name, nargs, args)                                         \
+    {                                                                        \
+        #name, nargs, args, Func##name, __FILE__ ":" #name                   \
+    }
 
 
 /****************************************************************************
@@ -317,18 +323,14 @@ extern void InitHdlrFuncsFromTable(const StructGVarFunc * tab);
 **
 *F  ImportGVarFromLibrary( <name>, <address> )  . . .  import global variable
 */
-extern void ImportGVarFromLibrary(
-            const Char *        name,
-            Obj *               address );
+extern void ImportGVarFromLibrary(const Char * name, Obj * address);
 
 
 /****************************************************************************
 **
 *F  ImportFuncFromLibrary( <name>, <address> )  . . .  import global function
 */
-extern void ImportFuncFromLibrary(
-            const Char *        name,
-            Obj *               address );
+extern void ImportFuncFromLibrary(const Char * name, Obj * address);
 
 
 /****************************************************************************
@@ -341,10 +343,10 @@ typedef struct {
     StructInitInfo * info;
 
     // filename relative to GAP_ROOT or absolute
-    Char *           filename;
+    Char * filename;
 
     // true if the filename is GAP_ROOT relative
-    Int              isGapRootRelative;
+    Int isGapRootRelative;
 
 } StructInitInfoExt;
 
@@ -368,10 +370,9 @@ extern void ModulesPostRestore(void);
 **  The filename argument is a C string. A copy of it is taken in some
 **   private space and added to the module info.
 */
-extern void RecordLoadedModule (
-    StructInitInfo *        module,
-    Int                     isGapRootRelative,
-    const Char *            filename );
+extern void RecordLoadedModule(StructInitInfo * module,
+                               Int              isGapRootRelative,
+                               const Char *     filename);
 
 
 /****************************************************************************
@@ -386,4 +387,4 @@ extern void RecordLoadedModule (
 StructInitInfo * InitInfoModules(void);
 
 
-#endif // GAP_MODULES_H
+#endif    // GAP_MODULES_H

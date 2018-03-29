@@ -56,19 +56,19 @@ UInt              NrBuiltinModules;
 
 
 typedef struct {
-    const Char *                name;
-    Obj *                       address;
+    const Char * name;
+    Obj *        address;
 } StructImportedGVars;
 
 #ifndef MAX_IMPORTED_GVARS
-#define MAX_IMPORTED_GVARS      1024
+#define MAX_IMPORTED_GVARS 1024
 #endif
 
 static StructImportedGVars ImportedGVars[MAX_IMPORTED_GVARS];
-static Int NrImportedGVars;
+static Int                 NrImportedGVars;
 
 static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
-static Int NrImportedFuncs;
+static Int                 NrImportedFuncs;
 
 
 /*************************************************************************
@@ -81,20 +81,17 @@ static Int NrImportedFuncs;
 **
 *F  FuncGAP_CRC( <self>, <name> ) . . . . . . . create a crc value for a file
 */
-Obj FuncGAP_CRC (
-    Obj                 self,
-    Obj                 filename )
+Obj FuncGAP_CRC(Obj self, Obj filename)
 {
     /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
+    while (!IsStringConv(filename)) {
         filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
+            "<filename> must be a string (not a %s)", (Int)TNAM_OBJ(filename),
+            0L, "you can replace <filename> via 'return <filename>;'");
     }
 
     /* compute the crc value                                               */
-    return INTOBJ_INT( SyGAPCRC( CSTR_STRING(filename) ) );
+    return INTOBJ_INT(SyGAPCRC(CSTR_STRING(filename)));
 }
 
 
@@ -102,51 +99,47 @@ Obj FuncGAP_CRC (
 **
 *F  FuncLOAD_DYN( <self>, <name>, <crc> ) . . .  try to load a dynamic module
 */
-Obj FuncLOAD_DYN (
-    Obj                 self,
-    Obj                 filename,
-    Obj                 crc )
+Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
 {
-    StructInitInfo *    info;
-    Obj                 crc1;
-    Int                 res;
-    InitInfoFunc        init;
+    StructInitInfo * info;
+    Obj              crc1;
+    Int              res;
+    InitInfoFunc     init;
 
     /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
+    while (!IsStringConv(filename)) {
         filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
+            "<filename> must be a string (not a %s)", (Int)TNAM_OBJ(filename),
+            0L, "you can replace <filename> via 'return <filename>;'");
     }
-    while ( ! IS_INTOBJ(crc) && crc != False ) {
+    while (!IS_INTOBJ(crc) && crc != False) {
         crc = ErrorReturnObj(
             "<crc> must be a small integer or 'false' (not a %s)",
             (Int)TNAM_OBJ(crc), 0L,
-            "you can replace <crc> via 'return <crc>;'" );
+            "you can replace <crc> via 'return <crc>;'");
     }
 
     /* try to read the module                                              */
-    res = SyLoadModule( CSTR_STRING(filename), &init );
-    if ( res == 1 )
-        ErrorQuit( "module '%g' not found", (Int)filename, 0L );
-    else if ( res == 3 )
-        ErrorQuit( "symbol 'Init_Dynamic' not found", 0L, 0L );
-    else if ( res == 5 )
-        ErrorQuit( "forget symbol failed", 0L, 0L );
+    res = SyLoadModule(CSTR_STRING(filename), &init);
+    if (res == 1)
+        ErrorQuit("module '%g' not found", (Int)filename, 0L);
+    else if (res == 3)
+        ErrorQuit("symbol 'Init_Dynamic' not found", 0L, 0L);
+    else if (res == 5)
+        ErrorQuit("forget symbol failed", 0L, 0L);
 
     /* no dynamic library support                                          */
-    else if ( res == 7 ) {
-        if ( SyDebugLoading ) {
-            Pr( "#I  LOAD_DYN: no support for dynamical loading\n", 0L, 0L );
+    else if (res == 7) {
+        if (SyDebugLoading) {
+            Pr("#I  LOAD_DYN: no support for dynamical loading\n", 0L, 0L);
         }
-        return False; 
+        return False;
     }
 
     /* get the description structure                                       */
     info = (*init)();
-    if ( info == 0 )
-        ErrorQuit( "call to init function failed", 0L, 0L );
+    if (info == 0)
+        ErrorQuit("call to init function failed", 0L, 0L);
 
     // info->type should not be larger than kernel version
     if (info->type / 10 > GAP_KERNEL_API_VERSION)
@@ -165,15 +158,15 @@ Obj FuncLOAD_DYN (
         ErrorMayQuit("LOAD_DYN: Invalid kernel module", 0L, 0L);
 
     /* check the crc value                                                 */
-    if ( crc != False ) {
-        crc1 = INTOBJ_INT( info->crc );
-        if ( ! EQ( crc, crc1 ) ) {
-            if ( SyDebugLoading ) {
-                Pr( "#I  LOAD_DYN: crc values do not match, gap ", 0L, 0L );
-                PrintInt( crc );
-                Pr( ", dyn ", 0L, 0L );
-                PrintInt( crc1 );
-                Pr( "\n", 0L, 0L );
+    if (crc != False) {
+        crc1 = INTOBJ_INT(info->crc);
+        if (!EQ(crc, crc1)) {
+            if (SyDebugLoading) {
+                Pr("#I  LOAD_DYN: crc values do not match, gap ", 0L, 0L);
+                PrintInt(crc);
+                Pr(", dyn ", 0L, 0L);
+                PrintInt(crc1);
+                Pr("\n", 0L, 0L);
             }
             return False;
         }
@@ -185,11 +178,11 @@ Obj FuncLOAD_DYN (
 
     /* Start a new executor to run the outer function of the module
        in global context */
-    ExecBegin( STATE(BottomLVars) );
+    ExecBegin(STATE(BottomLVars));
     res = res || (info->initLibrary)(info);
     ExecEnd(res ? STATUS_ERROR : STATUS_END);
-    if ( res ) {
-        Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
+    if (res) {
+        Pr("#W  init functions returned non-zero exit code\n", 0L, 0L);
     }
     RecordLoadedModule(info, 0, CSTR_STRING(filename));
 
@@ -201,55 +194,51 @@ Obj FuncLOAD_DYN (
 **
 *F  FuncLOAD_STAT( <self>, <name>, <crc> )  . . . . try to load static module
 */
-Obj FuncLOAD_STAT (
-    Obj                 self,
-    Obj                 filename,
-    Obj                 crc )
+Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
 {
-    StructInitInfo *    info = 0;
-    Obj                 crc1;
-    Int                 res;
-    Int                 k;
+    StructInitInfo * info = 0;
+    Obj              crc1;
+    Int              res;
+    Int              k;
 
     /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
+    while (!IsStringConv(filename)) {
         filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
+            "<filename> must be a string (not a %s)", (Int)TNAM_OBJ(filename),
+            0L, "you can replace <filename> via 'return <filename>;'");
     }
-    while ( ! IS_INTOBJ(crc) && crc != False ) {
+    while (!IS_INTOBJ(crc) && crc != False) {
         crc = ErrorReturnObj(
             "<crc> must be a small integer or 'false' (not a %s)",
             (Int)TNAM_OBJ(crc), 0L,
-            "you can replace <crc> via 'return <crc>;'" );
+            "you can replace <crc> via 'return <crc>;'");
     }
 
     /* try to find the module                                              */
-    for ( k = 0;  CompInitFuncs[k];  k++ ) {
+    for (k = 0; CompInitFuncs[k]; k++) {
         info = (*(CompInitFuncs[k]))();
-        if ( info && ! strcmp( CSTR_STRING(filename), info->name ) ) {
+        if (info && !strcmp(CSTR_STRING(filename), info->name)) {
             break;
         }
     }
-    if ( CompInitFuncs[k] == 0 ) {
-        if ( SyDebugLoading ) {
-            Pr( "#I  LOAD_STAT: no module named '%g' found\n",
-                (Int)filename, 0L );
+    if (CompInitFuncs[k] == 0) {
+        if (SyDebugLoading) {
+            Pr("#I  LOAD_STAT: no module named '%g' found\n", (Int)filename,
+               0L);
         }
         return False;
     }
 
     /* check the crc value                                                 */
-    if ( crc != False ) {
-        crc1 = INTOBJ_INT( info->crc );
-        if ( ! EQ( crc, crc1 ) ) {
-            if ( SyDebugLoading ) {
-                Pr( "#I  LOAD_STAT: crc values do not match, gap ", 0L, 0L );
-                PrintInt( crc );
-                Pr( ", stat ", 0L, 0L );
-                PrintInt( crc1 );
-                Pr( "\n", 0L, 0L );
+    if (crc != False) {
+        crc1 = INTOBJ_INT(info->crc);
+        if (!EQ(crc, crc1)) {
+            if (SyDebugLoading) {
+                Pr("#I  LOAD_STAT: crc values do not match, gap ", 0L, 0L);
+                PrintInt(crc);
+                Pr(", stat ", 0L, 0L);
+                PrintInt(crc1);
+                Pr("\n", 0L, 0L);
             }
             return False;
         }
@@ -261,11 +250,11 @@ Obj FuncLOAD_STAT (
 
     /* Start a new executor to run the outer function of the module
        in global context */
-    ExecBegin( STATE(BottomLVars) );
+    ExecBegin(STATE(BottomLVars));
     res = res || (info->initLibrary)(info);
     ExecEnd(res ? STATUS_ERROR : STATUS_END);
-    if ( res ) {
-        Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
+    if (res) {
+        Pr("#W  init functions returned non-zero exit code\n", 0L, 0L);
     }
     RecordLoadedModule(info, 0, CSTR_STRING(filename));
 
@@ -277,39 +266,38 @@ Obj FuncLOAD_STAT (
 **
 *F  FuncSHOW_STAT() . . . . . . . . . . . . . . . . . . . show static modules
 */
-Obj FuncSHOW_STAT (
-    Obj                 self )
+Obj FuncSHOW_STAT(Obj self)
 {
-    Obj                 modules;
-    Obj                 name;
-    StructInitInfo *    info;
-    Int                 k;
-    Int                 im;
+    Obj              modules;
+    Obj              name;
+    StructInitInfo * info;
+    Int              k;
+    Int              im;
 
     /* count the number of install modules                                 */
-    for ( k = 0,  im = 0;  CompInitFuncs[k];  k++ ) {
+    for (k = 0, im = 0; CompInitFuncs[k]; k++) {
         info = (*(CompInitFuncs[k]))();
-        if ( info == 0 ) {
+        if (info == 0) {
             continue;
         }
         im++;
     }
 
     /* make a list of modules with crc values                              */
-    modules = NEW_PLIST( T_PLIST, 2*im );
-    SET_LEN_PLIST( modules, 2*im );
+    modules = NEW_PLIST(T_PLIST, 2 * im);
+    SET_LEN_PLIST(modules, 2 * im);
 
-    for ( k = 0,  im = 1;  CompInitFuncs[k];  k++ ) {
+    for (k = 0, im = 1; CompInitFuncs[k]; k++) {
         info = (*(CompInitFuncs[k]))();
-        if ( info == 0 ) {
+        if (info == 0) {
             continue;
         }
         name = MakeImmString(info->name);
 
-        SET_ELM_PLIST( modules, im, name );
+        SET_ELM_PLIST(modules, im, name);
 
         /* compute the crc value                                           */
-        SET_ELM_PLIST( modules, im+1, INTOBJ_INT( info->crc ) );
+        SET_ELM_PLIST(modules, im + 1, INTOBJ_INT(info->crc));
         im += 2;
     }
 
@@ -321,43 +309,42 @@ Obj FuncSHOW_STAT (
 **
 *F  FuncLoadedModules( <self> ) . . . . . . . . . . . list all loaded modules
 */
-Obj FuncLoadedModules (
-    Obj                 self )
+Obj FuncLoadedModules(Obj self)
 {
-    Int                 i;
-    StructInitInfo *    m;
-    Obj                 str;
-    Obj                 list;
+    Int              i;
+    StructInitInfo * m;
+    Obj              str;
+    Obj              list;
 
     /* create a list                                                       */
-    list = NEW_PLIST( T_PLIST, NrModules * 3 );
-    SET_LEN_PLIST( list, NrModules * 3 );
-    for ( i = 0;  i < NrModules;  i++ ) {
+    list = NEW_PLIST(T_PLIST, NrModules * 3);
+    SET_LEN_PLIST(list, NrModules * 3);
+    for (i = 0; i < NrModules; i++) {
         m = Modules[i].info;
         if (IS_MODULE_BUILTIN(m->type)) {
-            SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'b'] );
+            SET_ELM_PLIST(list, 3 * i + 1, ObjsChar[(Int)'b']);
             CHANGED_BAG(list);
-            str = MakeImmString( m->name );
-            SET_ELM_PLIST( list, 3*i+2, str );
-            SET_ELM_PLIST( list, 3*i+3, INTOBJ_INT(m->version) );
+            str = MakeImmString(m->name);
+            SET_ELM_PLIST(list, 3 * i + 2, str);
+            SET_ELM_PLIST(list, 3 * i + 3, INTOBJ_INT(m->version));
         }
         else if (IS_MODULE_DYNAMIC(m->type)) {
-            SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'d'] );
+            SET_ELM_PLIST(list, 3 * i + 1, ObjsChar[(Int)'d']);
             CHANGED_BAG(list);
-            str = MakeImmString( m->name );
-            SET_ELM_PLIST( list, 3*i+2, str );
+            str = MakeImmString(m->name);
+            SET_ELM_PLIST(list, 3 * i + 2, str);
             CHANGED_BAG(list);
-            str = MakeImmString( Modules[i].filename );
-            SET_ELM_PLIST( list, 3*i+3, str );
+            str = MakeImmString(Modules[i].filename);
+            SET_ELM_PLIST(list, 3 * i + 3, str);
         }
         else if (IS_MODULE_STATIC(m->type)) {
-            SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'s'] );
+            SET_ELM_PLIST(list, 3 * i + 1, ObjsChar[(Int)'s']);
             CHANGED_BAG(list);
-            str = MakeImmString( m->name );
-            SET_ELM_PLIST( list, 3*i+2, str );
+            str = MakeImmString(m->name);
+            SET_ELM_PLIST(list, 3 * i + 2, str);
             CHANGED_BAG(list);
-            str = MakeImmString( Modules[i].filename );
-            SET_ELM_PLIST( list, 3*i+3, str );
+            str = MakeImmString(Modules[i].filename);
+            SET_ELM_PLIST(list, 3 * i + 3, str);
         }
     }
     return list;
@@ -376,9 +363,9 @@ Obj FuncLoadedModules (
 */
 void InitBagNamesFromTable(const StructBagNames * tab)
 {
-    Int                         i;
+    Int i;
 
-    for ( i = 0;  tab[i].tnum != -1;  i++ ) {
+    for (i = 0; tab[i].tnum != -1; i++) {
         InfoBags[tab[i].tnum].name = tab[i].name;
     }
 }
@@ -390,11 +377,11 @@ void InitBagNamesFromTable(const StructBagNames * tab)
 */
 void InitClearFiltsTNumsFromTable(const Int * tab)
 {
-    Int                 i;
+    Int i;
 
-    for ( i = 0;  tab[i] != -1;  i += 2 ) {
-        ClearFiltsTNums[tab[i]] = tab[i+1];
-        ClearFiltsTNums[tab[i] | IMMUTABLE] = tab[i+1] | IMMUTABLE;
+    for (i = 0; tab[i] != -1; i += 2) {
+        ClearFiltsTNums[tab[i]] = tab[i + 1];
+        ClearFiltsTNums[tab[i] | IMMUTABLE] = tab[i + 1] | IMMUTABLE;
     }
 }
 
@@ -405,11 +392,11 @@ void InitClearFiltsTNumsFromTable(const Int * tab)
 */
 void InitHasFiltListTNumsFromTable(const Int * tab)
 {
-    Int                 i;
+    Int i;
 
-    for ( i = 0;  tab[i] != -1;  i += 3 ) {
-        HasFiltListTNums[tab[i]][tab[i+1]] = tab[i+2];
-        HasFiltListTNums[tab[i] | IMMUTABLE][tab[i+1]] = tab[i+2];
+    for (i = 0; tab[i] != -1; i += 3) {
+        HasFiltListTNums[tab[i]][tab[i + 1]] = tab[i + 2];
+        HasFiltListTNums[tab[i] | IMMUTABLE][tab[i + 1]] = tab[i + 2];
     }
 }
 
@@ -420,11 +407,12 @@ void InitHasFiltListTNumsFromTable(const Int * tab)
 */
 void InitSetFiltListTNumsFromTable(const Int * tab)
 {
-    Int                 i;
+    Int i;
 
-    for ( i = 0;  tab[i] != -1;  i += 3 ) {
-        SetFiltListTNums[tab[i]][tab[i+1]] = tab[i+2];
-        SetFiltListTNums[tab[i] | IMMUTABLE][tab[i+1]] = tab[i+2] | IMMUTABLE;
+    for (i = 0; tab[i] != -1; i += 3) {
+        SetFiltListTNums[tab[i]][tab[i + 1]] = tab[i + 2];
+        SetFiltListTNums[tab[i] | IMMUTABLE][tab[i + 1]] =
+            tab[i + 2] | IMMUTABLE;
     }
 }
 
@@ -435,21 +423,24 @@ void InitSetFiltListTNumsFromTable(const Int * tab)
 */
 void InitResetFiltListTNumsFromTable(const Int * tab)
 {
-    Int                 i;
+    Int i;
 
-    for ( i = 0;  tab[i] != -1;  i += 3 ) {
-        ResetFiltListTNums[tab[i]][tab[i+1]] = tab[i+2];
-        ResetFiltListTNums[tab[i] | IMMUTABLE][tab[i+1]] = tab[i+2] | IMMUTABLE;
+    for (i = 0; tab[i] != -1; i += 3) {
+        ResetFiltListTNums[tab[i]][tab[i + 1]] = tab[i + 2];
+        ResetFiltListTNums[tab[i] | IMMUTABLE][tab[i + 1]] =
+            tab[i + 2] | IMMUTABLE;
     }
 }
 
-static Obj ValidatedArgList(const char *name, int nargs, const char *argStr)
+static Obj ValidatedArgList(const char * name, int nargs, const char * argStr)
 {
     Obj args = ArgStringToList(argStr);
     int len = LEN_PLIST(args);
     if (nargs >= 0 && len != nargs)
-        fprintf(stderr, "#W %s takes %d arguments, but argument string is '%s'"
-          " which implies %d arguments\n", name, nargs, argStr, len);
+        fprintf(stderr,
+                "#W %s takes %d arguments, but argument string is '%s'"
+                " which implies %d arguments\n",
+                name, nargs, argStr, len);
     return args;
 }
 
@@ -459,13 +450,13 @@ static Obj ValidatedArgList(const char *name, int nargs, const char *argStr)
 */
 void InitGVarFiltsFromTable(const StructGVarFilt * tab)
 {
-    Int                 i;
+    Int i;
 
-    for ( i = 0;  tab[i].name != 0;  i++ ) {
-        UInt gvar = GVarName( tab[i].name );
-        Obj name = NameGVarObj( gvar );
-        Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
-        AssReadOnlyGVar( gvar, NewFilter( name, 1, args, tab[i].handler ) );
+    for (i = 0; tab[i].name != 0; i++) {
+        UInt gvar = GVarName(tab[i].name);
+        Obj  name = NameGVarObj(gvar);
+        Obj  args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
+        AssReadOnlyGVar(gvar, NewFilter(name, 1, args, tab[i].handler));
     }
 }
 
@@ -476,13 +467,13 @@ void InitGVarFiltsFromTable(const StructGVarFilt * tab)
 */
 void InitGVarAttrsFromTable(const StructGVarAttr * tab)
 {
-    Int                 i;
+    Int i;
 
-    for ( i = 0;  tab[i].name != 0;  i++ ) {
-        UInt gvar = GVarName( tab[i].name );
-        Obj name = NameGVarObj( gvar );
-        Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
-        AssReadOnlyGVar( gvar, NewAttribute( name, 1, args, tab[i].handler ) );
+    for (i = 0; tab[i].name != 0; i++) {
+        UInt gvar = GVarName(tab[i].name);
+        Obj  name = NameGVarObj(gvar);
+        Obj  args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
+        AssReadOnlyGVar(gvar, NewAttribute(name, 1, args, tab[i].handler));
     }
 }
 
@@ -492,13 +483,13 @@ void InitGVarAttrsFromTable(const StructGVarAttr * tab)
 */
 void InitGVarPropsFromTable(const StructGVarProp * tab)
 {
-    Int                 i;
+    Int i;
 
-    for ( i = 0;  tab[i].name != 0;  i++ ) {
-        UInt gvar = GVarName( tab[i].name );
-        Obj name = NameGVarObj( gvar );
-        Obj args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
-        AssReadOnlyGVar( gvar, NewProperty( name, 1, args, tab[i].handler ) );
+    for (i = 0; tab[i].name != 0; i++) {
+        UInt gvar = GVarName(tab[i].name);
+        Obj  name = NameGVarObj(gvar);
+        Obj  args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
+        AssReadOnlyGVar(gvar, NewProperty(name, 1, args, tab[i].handler));
     }
 }
 
@@ -509,42 +500,43 @@ void InitGVarPropsFromTable(const StructGVarProp * tab)
 */
 void InitGVarOpersFromTable(const StructGVarOper * tab)
 {
-    Int                 i;
+    Int i;
 
-    for ( i = 0;  tab[i].name != 0;  i++ ) {
-        UInt gvar = GVarName( tab[i].name );
-        Obj name = NameGVarObj( gvar );
-        Obj args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
-        AssReadOnlyGVar( gvar, NewOperation( name, tab[i].nargs, args, tab[i].handler ) );
+    for (i = 0; tab[i].name != 0; i++) {
+        UInt gvar = GVarName(tab[i].name);
+        Obj  name = NameGVarObj(gvar);
+        Obj  args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
+        AssReadOnlyGVar(
+            gvar, NewOperation(name, tab[i].nargs, args, tab[i].handler));
     }
 }
 
-static void SetupFuncInfo(Obj func, const Char* cookie)
+static void SetupFuncInfo(Obj func, const Char * cookie)
 {
     // The string <cookie> usually has the form "PATH/TO/FILE.c:FUNCNAME".
     // We check if that is the case, and if so, split it into the parts before
     // and after the colon. In addition, the file path is cut to only contain
     // the last two '/'-separated components.
-    const Char* pos = strchr(cookie, ':');
-    if ( pos ) {
-        Obj location = MakeImmString(pos+1);
+    const Char * pos = strchr(cookie, ':');
+    if (pos) {
+        Obj location = MakeImmString(pos + 1);
 
-        Obj filename;
+        Obj  filename;
         char buffer[512];
-        Int len = 511<(pos-cookie) ? 511 : pos-cookie;
+        Int  len = 511 < (pos - cookie) ? 511 : pos - cookie;
         memcpy(buffer, cookie, len);
         buffer[len] = 0;
 
-        Char* start = strrchr(buffer, '/');
+        Char * start = strrchr(buffer, '/');
         if (start) {
-            while (start > buffer && *(start-1) != '/')
+            while (start > buffer && *(start - 1) != '/')
                 start--;
         }
         else
             start = buffer;
         filename = MakeImmString(start);
 
-        Obj body_bag = NewBag( T_BODY, sizeof(BodyHeader) );
+        Obj body_bag = NewBag(T_BODY, sizeof(BodyHeader));
         SET_FILENAME_BODY(body_bag, filename);
         SET_LOCATION_BODY(body_bag, location);
         SET_BODY_FUNC(func, body_bag);
@@ -559,15 +551,15 @@ static void SetupFuncInfo(Obj func, const Char* cookie)
 */
 void InitGVarFuncsFromTable(const StructGVarFunc * tab)
 {
-    Int                 i;
+    Int i;
 
-    for ( i = 0;  tab[i].name != 0;  i++ ) {
-        UInt gvar = GVarName( tab[i].name );
-        Obj name = NameGVarObj( gvar );
-        Obj args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
-        Obj func = NewFunction( name, tab[i].nargs, args, tab[i].handler );
-        SetupFuncInfo( func, tab[i].cookie );
-        AssReadOnlyGVar( gvar, func );
+    for (i = 0; tab[i].name != 0; i++) {
+        UInt gvar = GVarName(tab[i].name);
+        Obj  name = NameGVarObj(gvar);
+        Obj  args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
+        Obj  func = NewFunction(name, tab[i].nargs, args, tab[i].handler);
+        SetupFuncInfo(func, tab[i].cookie);
+        AssReadOnlyGVar(gvar, func);
     }
 }
 
@@ -578,11 +570,11 @@ void InitGVarFuncsFromTable(const StructGVarFunc * tab)
 */
 void InitHdlrFiltsFromTable(const StructGVarFilt * tab)
 {
-    Int                 i;
+    Int i;
 
-    for ( i = 0;  tab[i].name != 0;  i++ ) {
-        InitHandlerFunc( tab[i].handler, tab[i].cookie );
-        InitFopyGVar( tab[i].name, tab[i].filter );
+    for (i = 0; tab[i].name != 0; i++) {
+        InitHandlerFunc(tab[i].handler, tab[i].cookie);
+        InitFopyGVar(tab[i].name, tab[i].filter);
     }
 }
 
@@ -593,11 +585,11 @@ void InitHdlrFiltsFromTable(const StructGVarFilt * tab)
 */
 void InitHdlrAttrsFromTable(const StructGVarAttr * tab)
 {
-    Int                 i;
+    Int i;
 
-    for ( i = 0;  tab[i].name != 0;  i++ ) {
-        InitHandlerFunc( tab[i].handler, tab[i].cookie );
-        InitFopyGVar( tab[i].name, tab[i].attribute );
+    for (i = 0; tab[i].name != 0; i++) {
+        InitHandlerFunc(tab[i].handler, tab[i].cookie);
+        InitFopyGVar(tab[i].name, tab[i].attribute);
     }
 }
 
@@ -608,11 +600,11 @@ void InitHdlrAttrsFromTable(const StructGVarAttr * tab)
 */
 void InitHdlrPropsFromTable(const StructGVarProp * tab)
 {
-    Int                 i;
+    Int i;
 
-    for ( i = 0;  tab[i].name != 0;  i++ ) {
-        InitHandlerFunc( tab[i].handler, tab[i].cookie );
-        InitFopyGVar( tab[i].name, tab[i].property );
+    for (i = 0; tab[i].name != 0; i++) {
+        InitHandlerFunc(tab[i].handler, tab[i].cookie);
+        InitFopyGVar(tab[i].name, tab[i].property);
     }
 }
 
@@ -623,11 +615,11 @@ void InitHdlrPropsFromTable(const StructGVarProp * tab)
 */
 void InitHdlrOpersFromTable(const StructGVarOper * tab)
 {
-    Int                 i;
+    Int i;
 
-    for ( i = 0;  tab[i].name != 0;  i++ ) {
-        InitHandlerFunc( tab[i].handler, tab[i].cookie );
-        InitFopyGVar( tab[i].name, tab[i].operation );
+    for (i = 0; tab[i].name != 0; i++) {
+        InitHandlerFunc(tab[i].handler, tab[i].cookie);
+        InitFopyGVar(tab[i].name, tab[i].operation);
     }
 }
 
@@ -638,10 +630,10 @@ void InitHdlrOpersFromTable(const StructGVarOper * tab)
 */
 void InitHdlrFuncsFromTable(const StructGVarFunc * tab)
 {
-    Int                 i;
+    Int i;
 
-    for ( i = 0;  tab[i].name != 0;  i++ ) {
-        InitHandlerFunc( tab[i].handler, tab[i].cookie );
+    for (i = 0; tab[i].name != 0; i++) {
+        InitHandlerFunc(tab[i].handler, tab[i].cookie);
     }
 }
 
@@ -652,20 +644,18 @@ void InitHdlrFuncsFromTable(const StructGVarFunc * tab)
 */
 
 
-void ImportGVarFromLibrary(
-    const Char *        name,
-    Obj *               address )
+void ImportGVarFromLibrary(const Char * name, Obj * address)
 {
-    if ( NrImportedGVars == 1024 ) {
-        Pr( "#W  warning: too many imported GVars\n", 0L, 0L );
+    if (NrImportedGVars == 1024) {
+        Pr("#W  warning: too many imported GVars\n", 0L, 0L);
     }
     else {
-        ImportedGVars[NrImportedGVars].name    = name;
+        ImportedGVars[NrImportedGVars].name = name;
         ImportedGVars[NrImportedGVars].address = address;
         NrImportedGVars++;
     }
-    if ( address != 0 ) {
-        InitCopyGVar( name, address );
+    if (address != 0) {
+        InitCopyGVar(name, address);
     }
 }
 
@@ -676,20 +666,18 @@ void ImportGVarFromLibrary(
 */
 
 
-void ImportFuncFromLibrary(
-    const Char *        name,
-    Obj *               address )
+void ImportFuncFromLibrary(const Char * name, Obj * address)
 {
-    if ( NrImportedFuncs == 1024 ) {
-        Pr( "#W  warning: too many imported Funcs\n", 0L, 0L );
+    if (NrImportedFuncs == 1024) {
+        Pr("#W  warning: too many imported Funcs\n", 0L, 0L);
     }
     else {
-        ImportedFuncs[NrImportedFuncs].name    = name;
+        ImportedFuncs[NrImportedFuncs].name = name;
         ImportedFuncs[NrImportedFuncs].address = address;
         NrImportedFuncs++;
     }
-    if ( address != 0 ) {
-        InitFopyGVar( name, address );
+    if (address != 0) {
+        InitFopyGVar(name, address);
     }
 }
 
@@ -698,62 +686,60 @@ void ImportFuncFromLibrary(
 **
 *F  FuncExportToKernelFinished( <self> )  . . . . . . . . . . check functions
 */
-Obj FuncExportToKernelFinished (
-    Obj             self )
+Obj FuncExportToKernelFinished(Obj self)
 {
-    UInt            i;
-    Int             errs = 0;
-    Obj             val;
+    UInt i;
+    Int  errs = 0;
+    Obj  val;
 
     SyInitializing = 0;
-    for ( i = 0;  i < NrImportedGVars;  i++ ) {
-        if ( ImportedGVars[i].address == 0 ) {
+    for (i = 0; i < NrImportedGVars; i++) {
+        if (ImportedGVars[i].address == 0) {
             val = ValAutoGVar(GVarName(ImportedGVars[i].name));
-            if ( val == 0 ) {
+            if (val == 0) {
                 errs++;
-                if ( ! SyQuiet ) {
-                    Pr( "#W  global variable '%s' has not been defined\n",
-                        (Int)ImportedFuncs[i].name, 0L );
+                if (!SyQuiet) {
+                    Pr("#W  global variable '%s' has not been defined\n",
+                       (Int)ImportedFuncs[i].name, 0L);
                 }
             }
         }
-        else if ( *ImportedGVars[i].address == 0 ) {
+        else if (*ImportedGVars[i].address == 0) {
             errs++;
-            if ( ! SyQuiet ) {
-                Pr( "#W  global variable '%s' has not been defined\n",
-                    (Int)ImportedGVars[i].name, 0L );
+            if (!SyQuiet) {
+                Pr("#W  global variable '%s' has not been defined\n",
+                   (Int)ImportedGVars[i].name, 0L);
             }
         }
         else {
             MakeReadOnlyGVar(GVarName(ImportedGVars[i].name));
         }
     }
-    
-    for ( i = 0;  i < NrImportedFuncs;  i++ ) {
-        if (  ImportedFuncs[i].address == 0 ) {
+
+    for (i = 0; i < NrImportedFuncs; i++) {
+        if (ImportedFuncs[i].address == 0) {
             val = ValAutoGVar(GVarName(ImportedFuncs[i].name));
-            if ( val == 0 || ! IS_FUNC(val) ) {
+            if (val == 0 || !IS_FUNC(val)) {
                 errs++;
-                if ( ! SyQuiet ) {
-                    Pr( "#W  global function '%s' has not been defined\n",
-                        (Int)ImportedFuncs[i].name, 0L );
+                if (!SyQuiet) {
+                    Pr("#W  global function '%s' has not been defined\n",
+                       (Int)ImportedFuncs[i].name, 0L);
                 }
             }
         }
-        else if ( *ImportedFuncs[i].address == ErrorMustEvalToFuncFunc
-          || *ImportedFuncs[i].address == ErrorMustHaveAssObjFunc )
-        {
+        else if (*ImportedFuncs[i].address == ErrorMustEvalToFuncFunc ||
+                 *ImportedFuncs[i].address == ErrorMustHaveAssObjFunc) {
             errs++;
-            if ( ! SyQuiet ) {
-                Pr( "#W  global function '%s' has not been defined\n",
-                    (Int)ImportedFuncs[i].name, 0L );
+            if (!SyQuiet) {
+                Pr("#W  global function '%s' has not been defined\n",
+                   (Int)ImportedFuncs[i].name, 0L);
             }
         }
         else {
             MakeReadOnlyGVar(GVarName(ImportedFuncs[i].name));
         }
     }
-    
+
     return errs == 0 ? True : False;
 }
 
@@ -763,25 +749,24 @@ Obj FuncExportToKernelFinished (
 *F  RecordLoadedModule( <module> )  . . . . . . . . store module in <Modules>
 */
 
-void RecordLoadedModule (
-    StructInitInfo *        info,
-    Int                     isGapRootRelative,
-    const Char *            filename )
+void RecordLoadedModule(StructInitInfo * info,
+                        Int              isGapRootRelative,
+                        const Char *     filename)
 {
     UInt len;
-    if ( NrModules == MAX_MODULES ) {
-        Pr( "panic: no room to record module\n", 0L, 0L );
+    if (NrModules == MAX_MODULES) {
+        Pr("panic: no room to record module\n", 0L, 0L);
     }
     len = strlen(filename);
-    if (NextLoadedModuleFilename + len + 1
-        > LoadedModuleFilenames+MAX_MODULE_FILENAMES) {
-      Pr( "panic: no room for module filename\n", 0L, 0L );
+    if (NextLoadedModuleFilename + len + 1 >
+        LoadedModuleFilenames + MAX_MODULE_FILENAMES) {
+        Pr("panic: no room for module filename\n", 0L, 0L);
     }
     *NextLoadedModuleFilename = '\0';
-    memcpy(NextLoadedModuleFilename, filename, len+1);
+    memcpy(NextLoadedModuleFilename, filename, len + 1);
     Modules[NrModules].info = info;
     Modules[NrModules].filename = NextLoadedModuleFilename;
-    NextLoadedModuleFilename += len +1;
+    NextLoadedModuleFilename += len + 1;
     Modules[NrModules].isGapRootRelative = isGapRootRelative;
     NrModules++;
 }
