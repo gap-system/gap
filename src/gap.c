@@ -54,6 +54,29 @@ static UInt SystemErrorCode;
 
 /****************************************************************************
 **
+*F  Modules . . . . . . . . . . . . . . . . . . . . . . . . . list of modules
+*/
+#ifndef MAX_MODULES
+#define MAX_MODULES 1000
+#endif
+
+
+#ifndef MAX_MODULE_FILENAMES
+#define MAX_MODULE_FILENAMES (MAX_MODULES * 50)
+#endif
+
+Char   LoadedModuleFilenames[MAX_MODULE_FILENAMES];
+Char * NextLoadedModuleFilename = LoadedModuleFilenames;
+
+extern const InitInfoFunc InitFuncsBuiltinModules[];
+
+StructInitInfoExt Modules[MAX_MODULES];
+UInt              NrModules;
+UInt              NrBuiltinModules;
+
+
+/****************************************************************************
+**
 *V  Last  . . . . . . . . . . . . . . . . . . . . . . global variable  'last'
 **
 **  'Last',  'Last2', and 'Last3'  are the  global variables 'last', 'last2',
@@ -2951,29 +2974,6 @@ StructInitInfo * InitInfoGap ( void )
     return &module;
 }
 
-extern const InitInfoFunc InitFuncsBuiltinModules[];
-
-/****************************************************************************
-**
-*F  Modules . . . . . . . . . . . . . . . . . . . . . . . . . list of modules
-*/
-#ifndef MAX_MODULES
-#define MAX_MODULES     1000
-#endif
-
-
-#ifndef MAX_MODULE_FILENAMES
-#define MAX_MODULE_FILENAMES (MAX_MODULES*50)
-#endif
-
-Char LoadedModuleFilenames[MAX_MODULE_FILENAMES];
-Char *NextLoadedModuleFilename = LoadedModuleFilenames;
-
-
-StructInitInfoExt Modules [ MAX_MODULES ];
-UInt NrModules;
-UInt NrBuiltinModules;
-
 
 /****************************************************************************
 **
@@ -3240,4 +3240,104 @@ void InitializeGap (
         /*         } */
     }
 
+}
+
+
+void SaveModules(void)
+{
+    SaveUInt(NrModules - NrBuiltinModules);
+    for (UInt i = NrBuiltinModules; i < NrModules; i++) {
+        SaveUInt(Modules[i].info->type);
+        SaveUInt(Modules[i].isGapRootRelative);
+        SaveCStr(Modules[i].filename);
+    }
+}
+
+void LoadModules(void)
+{
+    Char buf[256];
+    UInt nMods = LoadUInt();
+    for (UInt i = 0; i < nMods; i++) {
+        UInt type = LoadUInt();
+        UInt isGapRootRelative = LoadUInt();
+        LoadCStr(buf, 256);
+        if (isGapRootRelative)
+            READ_GAP_ROOT(buf);
+        else {
+            StructInitInfo * info = NULL;
+            /* Search for user module static case first */
+            if (IS_MODULE_STATIC(type)) {
+                UInt k;
+                for (k = 0; CompInitFuncs[k]; k++) {
+                    info = (*(CompInitFuncs[k]))();
+                    if (info == 0) {
+                        continue;
+                    }
+                    if (!strcmp(buf, info->name)) {
+                        break;
+                    }
+                }
+                if (CompInitFuncs[k] == 0) {
+                    Pr("Static module %s not found in loading kernel\n",
+                       (Int)buf, 0L);
+                    SyExit(1);
+                }
+            }
+            else {
+                /* and dynamic case */
+                InitInfoFunc init;
+
+                Int res = SyLoadModule(buf, &init);
+
+                if (res != 0) {
+                    Pr("Failed to load needed dynamic module %s, error code "
+                       "%d\n",
+                       (Int)buf, res);
+                    SyExit(1);
+                }
+                info = (*init)();
+                if (info == 0) {
+                    Pr("Failed to init needed dynamic module %s, error code "
+                       "%d\n",
+                       (Int)buf, (Int)info);
+                    SyExit(1);
+                }
+            }
+            /* link and init me */
+            (info->initKernel)(info);
+            RecordLoadedModule(info, 0, buf);
+        }
+    }
+}
+
+
+Int ModulesPreSave(void)
+{
+    StructInitInfo * info;
+    for (UInt i = 0; i < NrModules; i++) {
+        info = Modules[i].info;
+        if (info->preSave != NULL && info->preSave(info)) {
+            Pr("Failed to save workspace -- problem reported in %s\n",
+               (Int)info->name, 0L);
+            // roll back all save preparations
+            while (i--) {
+                info = Modules[i].info;
+                info->postSave(info);
+            }
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
+Int ModulesPostSave(void)
+{
+    StructInitInfo * info;
+    for (UInt i = 0; i < NrModules; i++) {
+        info = Modules[i].info;
+        if (info->postSave != NULL)
+            info->postSave(info);
+    }
+    return 0;
 }

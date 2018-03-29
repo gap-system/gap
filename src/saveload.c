@@ -547,22 +547,15 @@ static void WriteSaveHeader( void )
   WriteEndiannessMarker();
   
   SaveCStr("Counts and Sizes");
-  SaveUInt(NrModules - NrBuiltinModules);
   for (i = 0; i < GlobalBags.nr; i++)
     if (GlobalBags.cookie[i] != NULL)
       globalcount++;
   SaveUInt(globalcount);
   SaveUInt(NextSaveIndex-1);
   SaveUInt(AllocBags - MptrEndBags);
-  
-  SaveCStr("Loaded Modules");
 
-  for ( i = NrBuiltinModules; i < NrModules; i++)
-    {
-      SaveUInt(Modules[i].info->type);
-      SaveUInt(Modules[i].isGapRootRelative);
-      SaveCStr(Modules[i].filename);
-    }
+  SaveCStr("Loaded Modules");
+  SaveModules();
 
   SaveCStr("Kernel to WS refs");
   for (i = 0; i < GlobalBags.nr; i++)
@@ -583,25 +576,15 @@ Obj SaveWorkspace( Obj fname )
   return Fail;
 
 #else
-  Int i;
   Obj fullname;
-  StructInitInfo * info;
 
   if (!IsStringConv(fname))
     ErrorQuit("usage: SaveWorkspace( <filename> )",0,0);
   /* maybe expand fname starting with ~/...   */
   fullname = Call1ArgsInNewReader(userHomeExpand, fname);
   
-  for (i = 0; i < NrModules; i++) {
-    info = Modules[i].info;
-    if (info->preSave != NULL && info->preSave(info)) {
-        Pr("Failed to save workspace -- problem reported in %s\n",
-           (Int)info->name, 0L);
-        for ( i--; i >= 0; i--)
-          info->postSave(info);
-        return Fail;
-    }
-  }
+  if (ModulesPreSave())
+    return Fail;
 
   /* Do a full garbage collection */
   CollectBags( 0, 1);
@@ -624,11 +607,7 @@ Obj SaveWorkspace( Obj fname )
   CallbackForAllBags( RemoveSaveIndex );
   
   /* Restore situation by calling all post-save methods */
-  for (i = 0; i < NrModules; i++) {
-    info = Modules[i].info;
-    if (info->postSave != NULL)
-      info->postSave(info);
-  }
+  ModulesPostSave();
 
   return True;
 #endif
@@ -663,11 +642,10 @@ void LoadWorkspace( Char * fname )
   return;
 
 #else
-  UInt nMods, nGlobs, nBags, i, maxSize;
+  UInt nGlobs, nBags, i, maxSize;
   UInt globalcount = 0;
   Char buf[256];
   Obj * glob;
-  Int res;
 
   /* Open saved workspace  */
   OpenForLoad( fname );
@@ -713,7 +691,6 @@ void LoadWorkspace( Char * fname )
       SyExit(1);
     }
   
-  nMods = LoadUInt();
   nGlobs = LoadUInt();
   nBags = LoadUInt();
   maxSize = LoadUInt();
@@ -730,61 +707,7 @@ void LoadWorkspace( Char * fname )
       Pr("Bad divider\n",0L,0L);
       SyExit(1);
     }
-
-  for (i = 0; i < nMods; i++)
-    {
-      UInt type = LoadUInt();
-      UInt isGapRootRelative = LoadUInt();
-      LoadCStr(buf,256);
-      if (isGapRootRelative)
-        READ_GAP_ROOT( buf);
-      else
-	{
-	  StructInitInfo *info = NULL;
- 	  /* Search for user module static case first */
-          if (IS_MODULE_STATIC(type)) {
-              UInt k;
-              for (k = 0; CompInitFuncs[k]; k++) {
-                  info = (*(CompInitFuncs[k]))();
-                  if (info == 0) {
-                      continue;
-                  }
-                  if (!strcmp(buf, info->name)) {
-                      break;
-                  }
-              }
-              if (CompInitFuncs[k] == 0) {
-                  Pr("Static module %s not found in loading kernel\n",
-                     (Int)buf, 0L);
-                  SyExit(1);
-              }
-	
-	  } else {
-	    /* and dynamic case */
-	    InitInfoFunc init; 
-	
-	    res = SyLoadModule(buf, &init);
-	    
-	    if (res != 0)
-	      {
-		Pr("Failed to load needed dynamic module %s, error code %d\n",
-		   (Int)buf, res);
-		SyExit(1);
-	      }
-	    info = (*init)();
-	     if (info == 0 )
-	       {
-		Pr("Failed to init needed dynamic module %s, error code %d\n",
-		   (Int)buf, (Int) info);
-		SyExit(1);
-	       }
-	  }
-	/* link and init me                                                    */
-	(info->initKernel)(info);
-	RecordLoadedModule(info, 0, buf);
-      }
-      
-    }
+  LoadModules();
 
   /* Now the kernel variables that point into the workspace */
   LoadCStr(buf,256);
