@@ -110,6 +110,7 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoIOStream,
 
     /* main module                                                         */
+    InitInfoModules,
     InitInfoGap,
     InitInfoError,
 

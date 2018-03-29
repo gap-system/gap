@@ -351,8 +351,14 @@ typedef struct {
 
 extern void SaveModules(void);
 extern void LoadModules(void);
-extern Int ModulesPreSave(void);
-extern Int ModulesPostSave(void);
+
+extern void ModulesSetup(void);
+extern void ModulesInitKernel(void);
+extern void ModulesInitLibrary(void);
+extern void ModulesCheckInit(void);
+extern Int  ModulesPreSave(void);
+extern void ModulesPostSave(void);
+extern void ModulesPostRestore(void);
 
 
 /****************************************************************************
@@ -367,6 +373,17 @@ extern void RecordLoadedModule (
     Int                     isGapRootRelative,
     const Char *            filename );
 
+
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+*F  InitInfoModules() . . . . . . . . . . . . . . . . table of init functions
+*/
+StructInitInfo * InitInfoModules(void);
 
 
 #endif // GAP_MODULES_H
