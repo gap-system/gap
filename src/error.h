@@ -146,5 +146,17 @@ extern void ErrorReturnVoid (
             Int                 arg2,
             const Char *        msg2 );
 
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+*F  InitInfoError() . . . . . . . . . . . . . . . . . table of init functions
+*/
+StructInitInfo * InitInfoError( void );
+
 
 #endif // GAP_ERROR_H

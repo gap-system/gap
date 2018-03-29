@@ -111,6 +111,7 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
 
     /* main module                                                         */
     InitInfoGap,
+    InitInfoError,
 
     // objsets / objmaps
     InitInfoObjSets,
