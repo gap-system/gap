@@ -335,32 +335,28 @@ extern void ImportFuncFromLibrary(const Char * name, Obj * address);
 
 /****************************************************************************
 **
-*F  Modules . . . . . . . . . . . . . . . . . . . . . . . . . list of modules
+*F  ModulesSetup() . . . . . . . . . . . . . . . . .  instantiate all modules
 */
-typedef struct {
-
-    // pointer to the actual StructInitInfo
-    StructInitInfo * info;
-
-    // filename relative to GAP_ROOT or absolute
-    Char * filename;
-
-    // true if the filename is GAP_ROOT relative
-    Int isGapRootRelative;
-
-} StructInitInfoExt;
-
-
-extern void SaveModules(void);
-extern void LoadModules(void);
-
 extern void ModulesSetup(void);
+
+/****************************************************************************
+**
+*F  ModulesInitKernel() . . . . . . . . . . call 'initKernel' for all modules
+*F  ModulesInitLibrary() . . . . . . . . . call 'initLibrary' for all modules
+*F  ModulesCheckInit() . . . . . . . . . . . call 'checkInit' for all modules
+*F  ModulesPreSave() . . . . . . . . . . . . . call 'preSave' for all modules
+*F  ModulesPostSave() . . . . . . . . . . . . call 'postSave' for all modules
+*F  ModulesPostRestore() . . . . . . . . . call 'postRestore' for all modules
+*/
 extern void ModulesInitKernel(void);
 extern void ModulesInitLibrary(void);
 extern void ModulesCheckInit(void);
 extern Int  ModulesPreSave(void);
 extern void ModulesPostSave(void);
 extern void ModulesPostRestore(void);
+
+extern void SaveModules(void);
+extern void LoadModules(void);
 
 
 /****************************************************************************
