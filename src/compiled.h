@@ -35,6 +35,7 @@ extern "C" {
 #include <src/integer.h>
 #include <src/intrprtr.h>
 #include <src/io.h>
+#include <src/iostream.h>
 #include <src/listfunc.h>
 #include <src/listoper.h>
 #include <src/lists.h>
