@@ -225,7 +225,7 @@ InstallMethod( DihedralGroupCons,
     elif 2n = 4 then
       D := GroupByGenerators( [ (1,2), (3,4) ] );
     elif 2n mod 2 = 1 then
-      Error( "<2n> must be an even integer" );
+      TryNextMethod();
     else
       g:= PermList( Concatenation( [ 2 .. 2n/2 ], [ 1 ] ) );
       h:= PermList( Concatenation( [ 1 ], Reversed( [ 2 .. 2n/2 ] ) ) );
