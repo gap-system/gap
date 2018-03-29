@@ -763,16 +763,14 @@ void ReadCallVarAss(TypSymbolSet follow, Char mode)
     if (ref.type == R_INVALID)
         return;
 
-    /* if this was actually the beginning of a function literal            */
-    /* then we are in the wrong function                                   */
-    if ( STATE(Symbol) == S_MAPTO ) {
-      if (mode == 'r' || mode == 'x')
-        {
-          ReadFuncExprAbbrevSingle( follow );
-          return;
-        }
-      else
-        SyntaxError("Function literal in impossible context");
+    // if this was actually the beginning of a function literal, then we are
+    // in the wrong function
+    if (STATE(Symbol) == S_MAPTO) {
+        if (mode == 'r' || mode == 'x')
+            ReadFuncExprAbbrevSingle(follow);
+        else
+            SyntaxError("Function literal in impossible context");
+        return;
     }
 
     // Check if the variable is a constant
