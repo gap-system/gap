@@ -12,13 +12,18 @@
 #include <src/error.h>
 
 #include <src/bool.h>
+#include <src/code.h>
+#include <src/exprs.h>
+#include <src/funcs.h>
 #include <src/gapstate.h>
 #include <src/gaputils.h>
 #include <src/io.h>
+#include <src/lists.h>
 #include <src/modules.h>
 #include <src/plist.h>
 #include <src/precord.h>
 #include <src/records.h>
+#include <src/stats.h>
 #include <src/stringobj.h>
 #include <src/vars.h>
 
@@ -30,6 +35,254 @@
 
 
 static Obj ErrorInner;
+
+
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * * error functions * * * * * * * * * * * * * * *
+*/
+
+
+
+/****************************************************************************
+**
+*F  FuncDownEnv( <self>, <level> )  . . . . . . . . .  change the environment
+*/
+
+void DownEnvInner( Int depth )
+{
+  /* if we are asked to go up ... */
+  if ( depth < 0 ) {
+    /* ... we determine which level we are supposed to end up on ... */
+    depth = STATE(ErrorLLevel) + depth;
+    if (depth < 0) {
+      depth = 0;
+    }
+    /* ... then go back to the top, and later go down to the appropriate level. */
+    STATE(ErrorLVars) = STATE(BaseShellContext);
+    STATE(ErrorLLevel) = 0;
+    STATE(ShellContext) = STATE(BaseShellContext);
+  }
+  
+  /* now go down */
+  while ( 0 < depth
+          && STATE(ErrorLVars) != STATE(BottomLVars)
+          && PARENT_LVARS(STATE(ErrorLVars)) != STATE(BottomLVars) ) {
+    STATE(ErrorLVars) = PARENT_LVARS(STATE(ErrorLVars));
+    STATE(ErrorLLevel)++;
+    STATE(ShellContext) = PARENT_LVARS(STATE(ShellContext));
+    depth--;
+  }
+}
+
+Obj FuncDownEnv (
+                 Obj                 self,
+                 Obj                 args )
+{
+  Int                 depth;
+
+  if ( LEN_LIST(args) == 0 ) {
+    depth = 1;
+  }
+  else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
+    depth = INT_INTOBJ( ELM_PLIST( args, 1 ) );
+  }
+  else {
+    ErrorQuit( "usage: DownEnv( [ <depth> ] )", 0L, 0L );
+  }
+  if ( STATE(ErrorLVars) == STATE(BottomLVars) ) {
+    Pr( "not in any function\n", 0L, 0L );
+    return (Obj)0;
+  }
+
+  DownEnvInner( depth);
+  return (Obj)0;
+}
+
+Obj FuncUpEnv (
+               Obj                 self,
+               Obj                 args )
+{
+  Int                 depth;
+  if ( LEN_LIST(args) == 0 ) {
+    depth = 1;
+  }
+  else if ( LEN_LIST(args) == 1 && IS_INTOBJ( ELM_PLIST(args,1) ) ) {
+    depth = INT_INTOBJ( ELM_PLIST( args, 1 ) );
+  }
+  else {
+    ErrorQuit( "usage: UpEnv( [ <depth> ] )", 0L, 0L );
+  }
+  if ( STATE(ErrorLVars) == STATE(BottomLVars) ) {
+    Pr( "not in any function\n", 0L, 0L );
+    return (Obj)0;
+  }
+
+  DownEnvInner(-depth);
+  return (Obj)0;
+}
+
+Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
+{
+    if (context == STATE(BottomLVars))
+        return Fail;
+
+    Obj func = FUNC_LVARS(context);
+    GAP_ASSERT(func);
+    Stat call = STAT_LVARS(context);
+    if (IsKernelFunction(func)) {
+        return Fail;
+    }
+    Obj body = BODY_FUNC(func);
+    if (call < OFFSET_FIRST_STAT || call > SIZE_BAG(body) - sizeof(StatHeader)) {
+        return Fail;
+    }
+
+    Obj currLVars = STATE(CurrLVars);
+    SWITCH_TO_OLD_LVARS(context);
+    GAP_ASSERT(call == BRK_CALL_TO());
+
+    Obj retlist = Fail;
+    Int type = TNUM_STAT(call);
+    if ((FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) ||
+        (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM)) {
+        Int line = LINE_STAT(call);
+        Obj filename = GET_FILENAME_BODY(body);
+        retlist = NEW_PLIST(T_PLIST, 2);
+        SET_LEN_PLIST(retlist, 2);
+        SET_ELM_PLIST(retlist, 1, filename);
+        SET_ELM_PLIST(retlist, 2, INTOBJ_INT(line));
+        CHANGED_BAG(retlist);
+    }
+    SWITCH_TO_OLD_LVARS(currLVars);
+    return retlist;
+}
+
+Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj context)
+{
+    if (context == STATE(BottomLVars))
+        return 0;
+
+    Obj func = FUNC_LVARS(context);
+    GAP_ASSERT(func);
+    Stat call = STAT_LVARS(context);
+    if (IsKernelFunction(func)) {
+        Pr("<compiled statement> ", 0L, 0L);
+        return 0;
+    }
+    Obj body = BODY_FUNC(func);
+    if (call < OFFSET_FIRST_STAT || call > SIZE_BAG(body) - sizeof(StatHeader)) {
+        Pr("<corrupted statement> ", 0L, 0L);
+        return 0;
+    }
+
+    Obj currLVars = STATE(CurrLVars);
+    SWITCH_TO_OLD_LVARS(context);
+    GAP_ASSERT(call == BRK_CALL_TO());
+
+    Int type = TNUM_STAT(call);
+    Obj filename = GET_FILENAME_BODY(body);
+    if (FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) {
+        PrintStat(call);
+        Pr(" at %s:%d", (UInt)CSTR_STRING(filename), LINE_STAT(call));
+    }
+    else if (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM) {
+        PrintExpr(call);
+        Pr(" at %s:%d", (UInt)CSTR_STRING(filename), LINE_STAT(call));
+    }
+    SWITCH_TO_OLD_LVARS(currLVars);
+    return 0;
+}    
+
+/****************************************************************************
+**
+*F  FuncCALL_WITH_CATCH( <self>, <func> )
+**
+*/
+Obj FuncCALL_WITH_CATCH( Obj self, Obj func, volatile Obj args )
+{
+    volatile syJmp_buf readJmpError;
+    volatile Obj res;
+    volatile Obj currLVars;
+    volatile Obj tilde;
+    volatile Int recursionDepth;
+    volatile Stat currStat;
+
+    if (!IS_FUNC(func))
+      ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <func> must be a function",0,0);
+    if (!IS_LIST(args))
+      ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <args> must be a list",0,0);
+#ifdef HPCGAP
+    if (!IS_PLIST(args)) {
+      args = SHALLOW_COPY_OBJ(args);
+      PLAIN_LIST(args);
+    }
+#endif
+
+    memcpy((void *)&readJmpError, (void *)&STATE(ReadJmpError), sizeof(syJmp_buf));
+    currLVars = STATE(CurrLVars);
+    currStat = STATE(CurrStat);
+    recursionDepth = GetRecursionDepth();
+    tilde = STATE(Tilde);
+    res = NEW_PLIST_IMM(T_PLIST_DENSE,2);
+#ifdef HPCGAP
+    int lockSP = RegionLockSP();
+    Region *savedRegion = TLS(currentRegion);
+#endif
+    if (sySetjmp(STATE(ReadJmpError))) {
+      SET_LEN_PLIST(res,2);
+      SET_ELM_PLIST(res,1,False);
+      SET_ELM_PLIST(res,2,STATE(ThrownObject));
+      CHANGED_BAG(res);
+      STATE(ThrownObject) = 0;
+      SET_CURR_LVARS(currLVars);
+      STATE(CurrStat) = currStat;
+      SetRecursionDepth(recursionDepth);
+#ifdef HPCGAP
+      STATE(Tilde) = tilde;
+      PopRegionLocks(lockSP);
+      TLS(currentRegion) = savedRegion;
+      if (TLS(CurrentHashLock))
+        HashUnlock(TLS(CurrentHashLock));
+#else
+      STATE(Tilde) = tilde;
+#endif
+    } else {
+      Obj result = CallFuncList(func, args);
+#ifdef HPCGAP
+      /* There should be no locks to pop off the stack, but better safe than sorry. */
+      PopRegionLocks(lockSP);
+      TLS(currentRegion) = savedRegion;
+#endif
+      SET_ELM_PLIST(res,1,True);
+      if (result) {
+        SET_LEN_PLIST(res,2);
+        SET_ELM_PLIST(res,2,result);
+        CHANGED_BAG(res);
+      } else
+        SET_LEN_PLIST(res,1);
+    }
+    memcpy((void *)&STATE(ReadJmpError), (void *)&readJmpError, sizeof(syJmp_buf));
+    return res;
+}
+
+Obj FuncJUMP_TO_CATCH(Obj self, Obj payload)
+{
+    STATE(ThrownObject) = payload;
+    if (STATE(JumpToCatchCallback) != 0) {
+        (*STATE(JumpToCatchCallback))();
+    }
+    syLongjmp(&(STATE(ReadJmpError)), 1);
+    return 0;
+}
+
+Obj FuncSetUserHasQuit( Obj Self, Obj value)
+{
+  STATE(UserHasQuit) = INT_INTOBJ(value);
+  if (STATE(UserHasQuit))
+    SetRecursionDepth(0);
+  return 0;
+}
 
 
 /****************************************************************************
@@ -312,14 +565,54 @@ void ErrorMayQuit (
 
 /****************************************************************************
 **
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs[] = {
+
+    GVAR_FUNC(DownEnv, -1, "args"),
+    GVAR_FUNC(UpEnv, -1, "args"),
+
+    GVAR_FUNC(CALL_WITH_CATCH, 2, "func, args"),
+    GVAR_FUNC(JUMP_TO_CATCH, 1, "payload"),
+
+    GVAR_FUNC(PRINT_CURRENT_STATEMENT, 1, "context"),
+    GVAR_FUNC(CURRENT_STATEMENT_LOCATION, 1, "context"),
+
+    GVAR_FUNC(SetUserHasQuit, 1, "value"),
+
+    { 0, 0, 0, 0, 0 }
+
+};
+
+
+/****************************************************************************
+**
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel ( StructInitInfo *    module )
 {
+    // init filters and functions
+    InitHdlrFuncsFromTable( GVarFuncs );
+
     ImportFuncFromLibrary(  "ErrorInner", &ErrorInner );
   
-  /* return success                                                        */
-  return 0;
+    // return success
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+*/
+static Int InitLibrary (
+    StructInitInfo *    module )
+{
+    // init filters and functions
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    // return success
+    return 0;
 }
 
 
@@ -333,9 +626,10 @@ static StructInitInfo module = {
     .type = MODULE_BUILTIN,
     .name = "error",
     .initKernel = InitKernel,
+    .initLibrary = InitLibrary,
 };
 
 StructInitInfo * InitInfoError ( void )
 {
-  return &module;
+    return &module;
 }
