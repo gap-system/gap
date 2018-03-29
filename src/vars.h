@@ -335,7 +335,7 @@ extern Char * NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar);
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
 

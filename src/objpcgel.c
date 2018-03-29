@@ -554,7 +554,7 @@ Obj Func32Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
 

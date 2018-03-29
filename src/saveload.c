@@ -833,7 +833,7 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
 

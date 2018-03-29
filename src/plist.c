@@ -2740,7 +2740,7 @@ Obj FuncIsRectangularTablePlist( Obj self, Obj plist)
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
 

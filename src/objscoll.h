@@ -116,7 +116,7 @@ extern Obj FuncFinPowConjCol_ReducedQuotient ( Obj, Obj, Obj, Obj );
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
 

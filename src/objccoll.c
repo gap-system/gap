@@ -47,7 +47,7 @@
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 **
 **  This module does  not   need much initialisation  because  all  necessary
 **  initialisations are done in the single collector module.
