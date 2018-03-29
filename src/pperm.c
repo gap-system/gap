@@ -1,14 +1,14 @@
 /*****************************************************************************
-*
-* A partial perm is of the form:
-*
-* [image set, domain, codegree, entries of image list]
-*
-* An element of the internal rep of a partial perm in T_PPERM2 must be
-* at most 65535 and be of UInt2. The <codegree> is just the degree of
-* the inverse or equivalently the maximum element of the image.
-*
-*****************************************************************************/
+ *
+ * A partial perm is of the form:
+ *
+ * [image set, domain, codegree, entries of image list]
+ *
+ * An element of the internal rep of a partial perm in T_PPERM2 must be
+ * at most 65535 and be of UInt2. The <codegree> is just the degree of
+ * the inverse or equivalently the maximum element of the image.
+ *
+ *****************************************************************************/
 
 #include <src/pperm.h>
 
@@ -40,19 +40,19 @@ static ModuleStateOffset PPermStateOffset = -1;
 
 typedef struct {
 
-/**************************************************************************
-*
-*V TmpPPerm . . . . . . . handle of the buffer bag of the pperm package
-*
-* 'TmpPPerm' is the handle of a bag of type 'T_PPERM4', which is
-* created at initialization time of this package.  Functions in this
-* package can use this bag for  whatever purpose they want.  They have
-* to make sure of course that it is large enough.
-*
-* The buffer is *not* guaranteed to have any particular value, routines
-* that require a zero-initialization need to do this at the start.
-*/
-Obj TmpPPerm;
+    /**************************************************************************
+     *
+     *V TmpPPerm . . . . . . . handle of the buffer bag of the pperm package
+     *
+     * 'TmpPPerm' is the handle of a bag of type 'T_PPERM4', which is
+     * created at initialization time of this package.  Functions in this
+     * package can use this bag for  whatever purpose they want.  They have
+     * to make sure of course that it is large enough.
+     *
+     * The buffer is *not* guaranteed to have any particular value, routines
+     * that require a zero-initialization need to do this at the start.
+     */
+    Obj TmpPPerm;
 
 } PPermModuleState;
 
@@ -72,8 +72,8 @@ static inline void ResizeTmpPPerm(UInt len)
 }
 
 /*****************************************************************************
-* Static functions for partial perms
-*****************************************************************************/
+ * Static functions for partial perms
+ *****************************************************************************/
 
 static inline UInt GET_CODEG_PPERM2(Obj f)
 {
@@ -91,16 +91,16 @@ UInt CODEG_PPERM2(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
     if (GET_CODEG_PPERM2(f) != 0) {
-      return GET_CODEG_PPERM2(f);
+        return GET_CODEG_PPERM2(f);
     }
     // The following is only ever entered by the EmptyPartialPerm.
-    UInt codeg = 0;
-    UInt i;
-    UInt2* ptf = ADDR_PPERM2(f);
+    UInt    codeg = 0;
+    UInt    i;
+    UInt2 * ptf = ADDR_PPERM2(f);
     for (i = 0; i < DEG_PPERM2(f); i++) {
-      if (ptf[i] > codeg) {
-        codeg = ptf[i];
-      }
+        if (ptf[i] > codeg) {
+            codeg = ptf[i];
+        }
     }
     SET_CODEG_PPERM2(f, codeg);
     return codeg;
@@ -122,16 +122,16 @@ UInt CODEG_PPERM4(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
     if (GET_CODEG_PPERM4(f) != 0) {
-      return GET_CODEG_PPERM4(f);
+        return GET_CODEG_PPERM4(f);
     }
     // The following is only ever entered by the EmptyPartialPerm.
-    UInt codeg = 0;
-    UInt i;
-    UInt4* ptf = ADDR_PPERM4(f);
+    UInt    codeg = 0;
+    UInt    i;
+    UInt4 * ptf = ADDR_PPERM4(f);
     for (i = 0; i < DEG_PPERM4(f); i++) {
-      if (ptf[i] > codeg) {
-        codeg = ptf[i];
-      }
+        if (ptf[i] > codeg) {
+            codeg = ptf[i];
+        }
     }
     SET_CODEG_PPERM4(f, codeg);
     return codeg;
@@ -216,7 +216,7 @@ static UInt INIT_PPERM2(Obj f)
             SET_ELM_PLIST(img, rank, INTOBJ_INT(ptf[i]));
         }
     }
-    GAP_ASSERT(rank != 0); // rank = 0 => deg = 0, so this is not allowed
+    GAP_ASSERT(rank != 0);    // rank = 0 => deg = 0, so this is not allowed
 
     SHRINK_PLIST(img, (Int)rank);
     SET_LEN_PLIST(img, (Int)rank);
@@ -261,7 +261,7 @@ static UInt INIT_PPERM4(Obj f)
             SET_ELM_PLIST(img, rank, INTOBJ_INT(ptf[i]));
         }
     }
-    GAP_ASSERT(rank != 0); // rank = 0 => deg = 0, so this is not allowed
+    GAP_ASSERT(rank != 0);    // rank = 0 => deg = 0, so this is not allowed
 
     SHRINK_PLIST(img, (Int)rank);
     SET_LEN_PLIST(img, (Int)rank);
@@ -333,8 +333,8 @@ static Obj PreImagePPermInt(Obj pt, Obj f)
 }
 
 /*****************************************************************************
-* GAP functions for partial perms
-*****************************************************************************/
+ * GAP functions for partial perms
+ *****************************************************************************/
 
 Obj FuncEmptyPartialPerm(Obj self)
 {
@@ -613,7 +613,7 @@ static UInt4 * FindImg(UInt n, UInt rank, Obj img)
 {
     GAP_ASSERT(IS_PLIST(img));
 
-    UInt i;
+    UInt    i;
     UInt4 * ptseen;
 
     ResizeTmpPPerm(n);
@@ -905,8 +905,8 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
 {
     GAP_ASSERT(IS_PPERM(f));
 
-    UInt    i, j, n, rank, k, deg, nr, len;
-    Obj     dom, img, out;
+    UInt i, j, n, rank, k, deg, nr, len;
+    Obj  dom, img, out;
 
     n = MAX(DEG_PPERM(f), CODEG_PPERM(f));
 
@@ -1437,7 +1437,8 @@ Int HashFuncForPPerm(Obj f)
                           (int)2 * DEG_PPERM2(f));
 }
 
-Obj FuncHASH_FUNC_FOR_PPERM(Obj self, Obj f, Obj data) {
+Obj FuncHASH_FUNC_FOR_PPERM(Obj self, Obj f, Obj data)
+{
     return INTOBJ_INT(HashFuncForPPerm(f) % INT_INTOBJ(data) + 1);
 }
 
@@ -2217,8 +2218,8 @@ Obj FuncRESTRICTED_PPERM(Obj self, Obj f, Obj set)
     return Fail;
 }
 
-// convert a permutation <p> to a partial perm on <set>, which is assumed to be
-// a set of positive integers
+// convert a permutation <p> to a partial perm on <set>, which is assumed to
+// be a set of positive integers
 Obj FuncAS_PPERM_PERM(Obj self, Obj p, Obj set)
 {
     GAP_ASSERT(IS_PERM2(p) || IS_PERM4(p));
@@ -6176,12 +6177,12 @@ Obj LQuoPPerm44(Obj f, Obj g)
 */
 Obj OnSetsPPerm(Obj set, Obj f)
 {
-    UInt2 * ptf2;
-    UInt4 * ptf4;
-    UInt    deg;
+    UInt2 *     ptf2;
+    UInt4 *     ptf4;
+    UInt        deg;
     const Obj * ptset;
-    Obj *   ptres, tmp, res;
-    UInt    i, isint, k, reslen;
+    Obj *       ptres, tmp, res;
+    UInt        i, isint, k, reslen;
 
     GAP_ASSERT(IS_PLIST(set));
     GAP_ASSERT(LEN_PLIST(set) > 0);
@@ -6280,12 +6281,12 @@ Obj OnSetsPPerm(Obj set, Obj f)
 */
 Obj OnTuplesPPerm(Obj tup, Obj f)
 {
-    UInt2 * ptf2;
-    UInt4 * ptf4;
-    UInt    deg;
+    UInt2 *     ptf2;
+    UInt4 *     ptf4;
+    UInt        deg;
     const Obj * pttup;
-    Obj *   ptres, res;
-    UInt    i, k, reslen;
+    Obj *       ptres, res;
+    UInt        i, k, reslen;
 
     GAP_ASSERT(IS_PLIST(tup));
     GAP_ASSERT(LEN_PLIST(tup) > 0);
@@ -6357,12 +6358,12 @@ Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
     GAP_ASSERT(IS_LIST(set));
     GAP_ASSERT(IS_PPERM(f));
 
-    UInt2 * ptf2;
-    UInt4 * ptf4;
-    UInt    deg;
+    UInt2 *     ptf2;
+    UInt4 *     ptf4;
+    UInt        deg;
     const Obj * ptset;
-    Obj *   ptres, tmp, res;
-    UInt    i, k, reslen;
+    Obj *       ptres, tmp, res;
+    UInt        i, k, reslen;
 
     if (LEN_LIST(set) == 0)
         return set;
@@ -6525,8 +6526,8 @@ static StructGVarFilt GVarFilts[] = {
 };
 
 /****************************************************************************
-*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
-*/
+ *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+ */
 static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(EmptyPartialPerm, 0, ""),
@@ -6574,8 +6575,8 @@ static StructGVarFunc GVarFuncs[] = {
 
 
 /****************************************************************************
-*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
-*/
+ *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+ */
 static Int InitKernel(StructInitInfo * module)
 {
 
