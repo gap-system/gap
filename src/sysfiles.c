@@ -3673,7 +3673,7 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
 /* NB Should probably do some checks preSave for open files etc and refuse to save

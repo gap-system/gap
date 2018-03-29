@@ -5802,7 +5802,7 @@ Obj FuncSET_MAT_ELM_MAT8BIT( Obj self, Obj mat, Obj row, Obj col, Obj elm )
 
 /****************************************************************************
 **
-*f * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * * */
+*f * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * * */
 
 
 

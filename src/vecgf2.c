@@ -4453,7 +4453,7 @@ Obj FuncSET_MAT_ELM_GF2MAT( Obj self, Obj mat, Obj row, Obj col, Obj elm )
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
 

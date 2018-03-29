@@ -4043,7 +4043,7 @@ Obj FuncDO_NOTHING_SETTER( Obj self, Obj obj, Obj val)
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
 

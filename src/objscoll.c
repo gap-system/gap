@@ -700,7 +700,7 @@ Obj FuncSET_SCOBJ_MAX_STACK_SIZE ( Obj self, Obj size )
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
 

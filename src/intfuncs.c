@@ -708,7 +708,7 @@ Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
 

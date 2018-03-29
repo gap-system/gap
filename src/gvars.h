@@ -307,7 +307,7 @@ extern void SetGVar(GVarDescriptor *gvar, Obj obj);
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
 

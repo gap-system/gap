@@ -21,7 +21,7 @@
 
 int CheckChildStatusChanged(int childPID, int status);
 
-/*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+/*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************
