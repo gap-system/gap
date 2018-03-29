@@ -18,6 +18,7 @@
 
 #include <src/intobj.h>
 #include <src/gapstate.h>
+#include <src/modules.h>
 #include <src/objfgelm.h>
 #include <src/objscoll.h>
 
