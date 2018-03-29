@@ -8,14 +8,13 @@
 ##############################################################################
 ###
 
-
 DeclareUserPreference(rec(
-  name:=["PartialPermDisplayLimit", "NotationForPartialPerms"],
-  description:=["options for the display of partial perms"],
-  default:=[100, "component"],
-  check:=function(a, b) 
-  return IsPosInt(a) 
-  or (IsString(b) and b in ["component", "domainimage", "input"]); 
+  name := ["PartialPermDisplayLimit", "NotationForPartialPerms"],
+  description := ["options for the display of partial perms"],
+  default := [100, "component"],
+  check := function(a, b)
+    return IsPosInt(a)
+           or (IsString(b) and b in ["component", "domainimage", "input"]);
   end));
 
 DeclareGlobalFunction("ComponentStringOfPartialPerm");
@@ -52,7 +51,7 @@ DeclareAttribute("SmallestImageOfMovedPoint", IsPartialPerm);
 DeclareAttribute("SmallestImageOfMovedPoint", IsPartialPermCollection);
 
 # operations
-DeclareOperation("PreImagePartialPerm",[IsPartialPerm, IsPosInt]);
+DeclareOperation("PreImagePartialPerm", [IsPartialPerm, IsPosInt]);
 DeclareOperation("ComponentPartialPermInt", [IsPartialPerm, IsPosInt]);
 DeclareOperation("AsPartialPerm", [IsAssociativeElement, IsList]);
 DeclareOperation("AsPartialPerm", [IsAssociativeElement]);
