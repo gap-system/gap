@@ -1802,7 +1802,6 @@ void InitializeGap (
     /* if we are restoring, load the workspace and call the post restore   */
     if ( SyRestoring ) {
         LoadWorkspace(SyRestoring);
-        ModulesPostRestore();
         SyRestoring = NULL;
 
 
