@@ -1,13 +1,10 @@
 gap> START_TEST("SimpleGroup.tst");
 
 #
-gap> SimpleGroup("Alt(5)"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
+gap> SimpleGroup("Alt(5)"); Size(last); IsAlternatingGroup(last2);
 A5
 60
-rec( 
-  name := "A(5) ~ A(1,4) = L(2,4) ~ B(1,4) = O(3,4) ~ C(1,4) = S(2,4) ~ 2A(1,4\
-) = U(2,4) ~ A(1,5) = L(2,5) ~ B(1,5) = O(3,5) ~ C(1,5) = S(2,5) ~ 2A(1,5) = U\
-(2,5)", parameter := 5, series := "A", shortname := "A5" )
+true
 gap> SimpleGroup("A6"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
 A6
 360
@@ -133,13 +130,10 @@ gap> SimpleGroup("L(2,2)");
 Error, illegal parameter for linear groups
 gap> SimpleGroup("L(2,3)");
 Error, illegal parameter for linear groups
-gap> SimpleGroup("L(2,4)"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
+gap> SimpleGroup("L(2,4)"); Size(last); IsAlternatingGroup(last2);
 PSL(2,4)
 60
-rec( 
-  name := "A(5) ~ A(1,4) = L(2,4) ~ B(1,4) = O(3,4) ~ C(1,4) = S(2,4) ~ 2A(1,4\
-) = U(2,4) ~ A(1,5) = L(2,5) ~ B(1,5) = O(3,5) ~ C(1,5) = S(2,5) ~ 2A(1,5) = U\
-(2,5)", parameter := 5, series := "A", shortname := "A5" )
+true
 gap> SimpleGroup("L(3,2)"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
 PSL(3,2)
 168
@@ -176,13 +170,10 @@ gap> SimpleGroup("Sp(2,2)");
 Error, illegal parameter for symplectic groups
 gap> SimpleGroup("S(2,3)");
 Error, illegal parameter for symplectic groups
-gap> SimpleGroup("PSp(2,4)"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
+gap> SimpleGroup("PSp(2,4)"); Size(last); IsAlternatingGroup(last2);
 PSp(2,4)
 60
-rec( 
-  name := "A(5) ~ A(1,4) = L(2,4) ~ B(1,4) = O(3,4) ~ C(1,4) = S(2,4) ~ 2A(1,4\
-) = U(2,4) ~ A(1,5) = L(2,5) ~ B(1,5) = O(3,5) ~ C(1,5) = S(2,5) ~ 2A(1,5) = U\
-(2,5)", parameter := 5, series := "A", shortname := "A5" )
+true
 gap> SimpleGroup("S(3,2)");
 Error, the dimension <d> must be even
 gap> SimpleGroup("Sp(4,2)");
@@ -197,15 +188,29 @@ rec(
 #
 # orthogonal groups
 #
+
+# test input validation: sign does not match parity of dimension
 gap> SimpleGroup("O-(5,2)");
 Error, wrong dimension/parity for O
 gap> SimpleGroup("O(+,5,2)");
 Error, wrong dimension/parity for O
 gap> SimpleGroup("O(8,2)");
 Error, wrong dimension/parity for O
-gap> SimpleGroup("O+(2,23)");
+
+# odd dimension
+gap> SimpleGroup("O(1,23)");
 Error, illegal parameter for orthogonal groups
-gap> SimpleGroup("O-(2,29)");
+gap> SimpleGroup("O(3,2)");
+Error, illegal parameter for orthogonal groups
+gap> SimpleGroup("O(3,3)");
+Error, illegal parameter for orthogonal groups
+gap> SimpleGroup("O(3,5)"); Size(last); IsAlternatingGroup(last2);
+O(3,5)
+60
+true
+
+# even dimension, plus type
+gap> SimpleGroup("O+(2,23)");
 Error, illegal parameter for orthogonal groups
 gap> SimpleGroup("O(+,4,17)");
 Error, illegal parameter for orthogonal groups
@@ -214,15 +219,31 @@ O+(6,2)
 20160
 rec( name := "A(8) ~ A(3,2) = L(4,2) ~ D(3,2) = O+(6,2)", parameter := 8, 
   series := "A", shortname := "A8" )
-gap> SimpleGroup("O(-,4,2)"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
+gap> SimpleGroup("O(1,8,3)"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
+O+(8,3)
+4952179814400
+rec( name := "D(4,3) = O+(8,3)", parameter := [ 4, 3 ], series := "D", 
+  shortname := "O8+(3)" )
+
+# even dimension, minus type
+gap> SimpleGroup("O-(2,29)");
+Error, illegal parameter for orthogonal groups
+gap> SimpleGroup("O(-,4,2)"); Size(last); IsAlternatingGroup(last2);
 O-(4,2)
 60
-rec( 
-  name := "A(5) ~ A(1,4) = L(2,4) ~ B(1,4) = O(3,4) ~ C(1,4) = S(2,4) ~ 2A(1,4\
-) = U(2,4) ~ A(1,5) = L(2,5) ~ B(1,5) = O(3,5) ~ C(1,5) = S(2,5) ~ 2A(1,5) = U\
-(2,5)", parameter := 5, series := "A", shortname := "A5" )
+true
 gap> SimpleGroup("O-(4,2)");
 O-(4,2)
+gap> SimpleGroup("O-(6,5)"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
+O-(6,5)
+14742000000
+rec( name := "2A(3,5) = U(4,5) ~ 2D(3,5) = O-(6,5)", parameter := [ 3, 5 ], 
+  series := "2A", shortname := "U4(5)" )
+gap> SimpleGroup("O-(8,2)"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
+O-(8,2)
+197406720
+rec( name := "2D(4,2) = O-(8,2)", parameter := [ 4, 2 ], series := "2D", 
+  shortname := "O8-(2)" )
 
 #
 # exceptional groups
