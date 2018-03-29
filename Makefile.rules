@@ -45,6 +45,7 @@ SOURCES += src/cyclotom.c
 SOURCES += src/debug.c
 SOURCES += src/dt.c
 SOURCES += src/dteval.c
+SOURCES += src/error.c
 SOURCES += src/exprs.c
 SOURCES += src/ffdata.c
 SOURCES += src/finfield.c
