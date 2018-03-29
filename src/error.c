@@ -78,10 +78,10 @@ Obj FuncDownEnv(Obj self, Obj args)
 {
     Int depth;
 
-    if (LEN_LIST(args) == 0) {
+    if (LEN_PLIST(args) == 0) {
         depth = 1;
     }
-    else if (LEN_LIST(args) == 1 && IS_INTOBJ(ELM_PLIST(args, 1))) {
+    else if (LEN_PLIST(args) == 1 && IS_INTOBJ(ELM_PLIST(args, 1))) {
         depth = INT_INTOBJ(ELM_PLIST(args, 1));
     }
     else {
@@ -99,10 +99,10 @@ Obj FuncDownEnv(Obj self, Obj args)
 Obj FuncUpEnv(Obj self, Obj args)
 {
     Int depth;
-    if (LEN_LIST(args) == 0) {
+    if (LEN_PLIST(args) == 0) {
         depth = 1;
     }
-    else if (LEN_LIST(args) == 1 && IS_INTOBJ(ELM_PLIST(args, 1))) {
+    else if (LEN_PLIST(args) == 1 && IS_INTOBJ(ELM_PLIST(args, 1))) {
         depth = INT_INTOBJ(ELM_PLIST(args, 1));
     }
     else {
