@@ -48,6 +48,8 @@ local   f,g,i,j,rels,gfam,fam;
 
   if ForAll(ints,IsPosInt) then
     SetSize( g, Product(ints) );
+  else
+    SetSize( g, infinity );
   fi;
 
   fam:=FamilyObj(One(f));
