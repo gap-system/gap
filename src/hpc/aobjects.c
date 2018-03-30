@@ -1161,8 +1161,8 @@ static Obj FuncSET_ATOMIC_RECORD(Obj self, Obj record, Obj field, Obj value)
   fieldname = RNamName(CSTR_STRING(field));
   result = SetARecordField(record, fieldname, value);
   if (!result)
-    ErrorQuit("SET_ATOMIC_RECORD: Field '%s' already exists",
-      (UInt) CSTR_STRING(field), 0L);
+    ErrorQuit("SET_ATOMIC_RECORD: Field '%g' already exists",
+      (UInt)field, 0L);
   return result;
 }
 
