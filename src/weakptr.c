@@ -19,8 +19,9 @@
 #include <src/weakptr.h>
 
 #include <src/bool.h>
-#include <src/gap.h>
+#include <src/error.h>
 #include <src/lists.h>
+#include <src/modules.h>
 #include <src/plist.h>
 #include <src/saveload.h>
 

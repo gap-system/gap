@@ -42,12 +42,13 @@
 
 #include <src/ariths.h>
 #include <src/bool.h>
-#include <src/gap.h>
+#include <src/error.h>
 #include <src/gapstate.h>
 #include <src/integer.h>
 #include <src/io.h>
 #include <src/listfunc.h>
 #include <src/lists.h>
+#include <src/modules.h>
 #include <src/opers.h>
 #include <src/plist.h>
 #include <src/precord.h>

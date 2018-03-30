@@ -19,13 +19,14 @@
 #include <src/bool.h>
 #include <src/calls.h>
 #include <src/code.h>
+#include <src/error.h>
 #include <src/exprs.h>
-#include <src/gap.h>
 #include <src/gvars.h>
 #include <src/hookintrprtr.h>
 #include <src/intrprtr.h>
 #include <src/io.h>
 #include <src/lists.h>
+#include <src/modules.h>
 #include <src/plist.h>
 #include <src/precord.h>
 #include <src/records.h>

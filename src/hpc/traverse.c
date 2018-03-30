@@ -4,9 +4,10 @@
 #include <src/hpc/traverse.h>
 
 #include <src/bool.h>
+#include <src/error.h>
 #include <src/fibhash.h>
-#include <src/gap.h>
 #include <src/gaputils.h>
+#include <src/modules.h>
 #include <src/plist.h>
 
 #include <src/hpc/guards.h>

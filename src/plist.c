@@ -41,12 +41,13 @@
 #include <src/blister.h>
 #include <src/bool.h>
 #include <src/calls.h>
+#include <src/error.h>
 #include <src/finfield.h>
 #include <src/funcs.h>
-#include <src/gap.h>
 #include <src/gaputils.h>
 #include <src/io.h>
 #include <src/lists.h>
+#include <src/modules.h>
 #include <src/range.h>
 #include <src/saveload.h>
 

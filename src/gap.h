@@ -15,8 +15,6 @@
 
 #include <src/system.h>
 
-#include <src/error.h>
-#include <src/modules.h>
 
 /****************************************************************************
 **

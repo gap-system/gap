@@ -14,10 +14,11 @@
 #include <src/bool.h>
 #include <src/calls.h>
 #include <src/code.h>
-#include <src/gap.h>
+#include <src/error.h>
 #include <src/hookintrprtr.h>
 #include <src/io.h>
 #include <src/lists.h>
+#include <src/modules.h>
 #include <src/plist.h>
 #include <src/stringobj.h>
 #include <src/vars.h>

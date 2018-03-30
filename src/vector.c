@@ -20,7 +20,7 @@
 #include <src/vector.h>
 
 #include <src/ariths.h>
-#include <src/gap.h>
+#include <src/modules.h>
 #include <src/plist.h>
 
 #define IS_IMM_PLIST(list)  ((TNUM_OBJ(list) - T_PLIST) % 2)

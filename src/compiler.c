@@ -18,12 +18,13 @@
 #include <src/bool.h>
 #include <src/calls.h>
 #include <src/code.h>
+#include <src/error.h>
 #include <src/exprs.h>
-#include <src/gap.h>
 #include <src/gvars.h>
 #include <src/integer.h>
 #include <src/io.h>
 #include <src/lists.h>
+#include <src/modules.h>
 #include <src/plist.h>
 #include <src/records.h>
 #include <src/stats.h>

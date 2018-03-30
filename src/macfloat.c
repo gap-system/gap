@@ -24,8 +24,9 @@
 
 #include <src/ariths.h>
 #include <src/bool.h>
-#include <src/gap.h>
+#include <src/error.h>
 #include <src/io.h>
+#include <src/modules.h>
 #include <src/plist.h>
 #include <src/saveload.h>
 #include <src/stringobj.h>

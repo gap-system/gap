@@ -12,12 +12,13 @@
 #include <src/objset.h>
 
 #include <src/bool.h>
-#include <src/gap.h>
+#include <src/error.h>
 #include <src/fibhash.h>
 #include <src/gaputils.h>
 #include <src/gvars.h>
 #include <src/io.h>
 #include <src/lists.h>
+#include <src/modules.h>
 #include <src/plist.h>
 #include <src/saveload.h>
 

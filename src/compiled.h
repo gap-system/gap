@@ -25,6 +25,7 @@ extern "C" {
 #include <src/cyclotom.h>
 #include <src/dt.h>
 #include <src/dteval.h>
+#include <src/error.h>
 #include <src/exprs.h>
 #include <src/finfield.h>
 #include <src/funcs.h>
@@ -40,6 +41,7 @@ extern "C" {
 #include <src/listoper.h>
 #include <src/lists.h>
 #include <src/macfloat.h>
+#include <src/modules.h>
 #include <src/objcftl.h>
 #include <src/objects.h>
 #include <src/objfgelm.h>
