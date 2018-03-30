@@ -94,8 +94,8 @@ Obj             ObjLVar (
     Obj                 val;            /* value result                    */
     while ( (val = OBJ_LVAR(lvar)) == 0 ) {
         ErrorReturnVoid(
-            "Variable: '%s' must have an assigned value",
-            (Int)NAME_LVAR( lvar ), 0L,
+            "Variable: '%g' must have an assigned value",
+            (Int)NAME_OBJ_LVAR( lvar ), 0L,
             "you can 'return;' after assigning a value" );
     }
     return val;
@@ -237,6 +237,11 @@ Obj OBJ_HVAR(UInt hvar)
     return OBJ_HVAR_WITH_CONTEXT(STATE(CurrLVars), hvar);
 }
 
+Obj NAME_OBJ_HVAR(UInt hvar)
+{
+    return NAME_OBJ_HVAR_WITH_CONTEXT(STATE(CurrLVars), hvar);
+}
+
 Char * NAME_HVAR(UInt hvar)
 {
     return NAME_HVAR_WITH_CONTEXT(STATE(CurrLVars), hvar);
@@ -270,13 +275,18 @@ Obj OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
 
 Char * NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
 {
+    return CSTR_STRING(NAME_OBJ_HVAR_WITH_CONTEXT(context, hvar));
+}
+
+Obj NAME_OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
+{
     // walk up the environment chain to the correct values bag
     for (UInt i = 1; i <= (hvar >> 16); i++) {
         context = ENVI_FUNC(FUNC_LVARS(context));
     }
 
     // get the name
-    Char * name = NAME_LVAR_WITH_CONTEXT(context, hvar & 0xFFFF);
+    Obj name = NAME_OBJ_LVAR_WITH_CONTEXT(context, hvar & 0xFFFF);
 
     // return the name
     return name;
@@ -331,8 +341,8 @@ Obj             EvalRefHVar (
     if ( (val = OBJ_HVAR( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
         while ( (val = OBJ_HVAR( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
             ErrorReturnVoid(
-                "Variable: '%s' must have an assigned value",
-                (Int)NAME_HVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L,
+                "Variable: '%g' must have an assigned value",
+                (Int)NAME_OBJ_HVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L,
                 "you can 'return;' after assigning a value" );
         }
     }
