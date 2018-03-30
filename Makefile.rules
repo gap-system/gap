@@ -91,6 +91,7 @@ SOURCES += src/stats.c
 SOURCES += src/streams.c
 SOURCES += src/stringobj.c
 SOURCES += src/sysfiles.c
+SOURCES += src/sysmem.c
 SOURCES += src/system.c
 SOURCES += src/tietze.c
 SOURCES += src/trans.c

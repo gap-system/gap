@@ -32,6 +32,7 @@
 #include <src/records.h>
 #include <src/stringobj.h>
 #include <src/sysfiles.h>
+#include <src/sysmem.h>
 #include <src/vars.h>
 
 #ifdef HPCGAP
