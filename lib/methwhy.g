@@ -301,18 +301,29 @@ BIND_GLOBAL("ShowImpliedFilters",function(filter)
   flags:=FLAGS_FILTER(filter);
   implied := WITH_IMPS_FLAGS(flags);
   atomic readonly IMPLICATIONS_SIMPLE do
+    # select all implications which involved <filter> in the requirements
     f:=Filtered(IMPLICATIONS_SIMPLE, x->IS_SUBSET_FLAGS(x[2],flags));
     Append(f, Filtered(IMPLICATIONS_COMPOSED, x->IS_SUBSET_FLAGS(x[2],flags)));
-    extra_implications:=[];
-    for implication in f do
-      diff_reqs:=SUB_FLAGS(implication[2],flags); # the additional requirements
-      diff_impls:=SUB_FLAGS(implication[1],implied); # the additional implications
-      diff_impls:=SUB_FLAGS(diff_impls,diff_reqs);
-      if SIZE_FLAGS(diff_reqs) > 0 and SIZE_FLAGS(diff_impls) > 0 then
-        Add(extra_implications, [diff_reqs, diff_impls]);
-      fi;
-    od;
   od; # end atomic
+
+  extra_implications:=[];
+  for implication in f do
+    # the additional requirements
+    diff_reqs:=SUB_FLAGS(implication[2],flags);
+    if SIZE_FLAGS(diff_reqs) = 0 then
+      Assert(0, IS_SUBSET_FLAGS(implied,implication[1]));
+      continue;
+    fi;
+    # the combined implications...
+    diff_impls:=implication[1];
+    # ... minus those implications that already follow from <filter>
+    diff_impls:=SUB_FLAGS(diff_impls,implied);
+    # ... minus those implications that already follow from diff_reqs
+    diff_impls:=SUB_FLAGS(diff_impls,WITH_IMPS_FLAGS(diff_reqs));
+    if SIZE_FLAGS(diff_impls) > 0 then
+      Add(extra_implications, [diff_reqs, diff_impls]);
+    fi;
+  od;
 
   # remove "obvious" implications
   if IS_ELEMENTARY_FILTER(filter) then
