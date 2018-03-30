@@ -116,6 +116,7 @@
 #include <src/gaputils.h>
 #include <src/io.h>
 #include <src/sysfiles.h>
+#include <src/sysmem.h>
 
 #include <stdio.h>
 

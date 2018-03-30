@@ -12,6 +12,7 @@
 #include <src/gapstate.h>
 #include <src/gasman.h>
 #include <src/objects.h>
+#include <src/sysmem.h>
 
 #include <src/hpc/misc.h>
 #include <src/hpc/thread.h>
