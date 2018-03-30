@@ -282,6 +282,8 @@ G_2(5)
 rec( name := "G(2,5)", parameter := 5, series := "G", shortname := "G2(5)" )
 
 #
+gap> SimpleGroup("3D(3,4)");
+Error, 3D(n,q) needs n=4
 gap> SimpleGroup("3D(4,2)"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
 3D(4, 2)
 211341312
