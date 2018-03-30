@@ -11,9 +11,9 @@
 #include <src/objpcgel.h>
 
 #include <src/bool.h>
-#include <src/gap.h>
 #include <src/gvars.h>
 #include <src/lists.h>
+#include <src/modules.h>
 #include <src/objscoll.h>
 #include <src/plist.h>
 

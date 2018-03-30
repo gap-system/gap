@@ -13,9 +13,9 @@
 
 #include <src/code.h>
 #include <src/exprs.h>
-#include <src/gap.h>
 #include <src/gapstate.h>
 #include <src/gaputils.h>
+#include <src/modules.h>
 #include <src/stats.h>
 
 #include <src/hpc/thread.h>

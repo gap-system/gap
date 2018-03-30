@@ -14,7 +14,8 @@
 #include <src/ariths.h>
 
 #include <src/bool.h>
-#include <src/gap.h>
+#include <src/error.h>
+#include <src/modules.h>
 #include <src/opers.h>
 
 

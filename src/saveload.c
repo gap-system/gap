@@ -17,10 +17,11 @@
 #include <src/bool.h>
 #include <src/calls.h>
 #include <src/compstat.h>
+#include <src/error.h>
 #include <src/finfield.h>
-#include <src/gap.h>
 #include <src/gvars.h>
 #include <src/io.h>
+#include <src/modules.h>
 #include <src/read.h>
 #include <src/streams.h>
 #include <src/stringobj.h>

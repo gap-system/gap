@@ -2,9 +2,10 @@
 
 #include <src/bool.h>
 #include <src/calls.h>
-#include <src/gap.h>
+#include <src/error.h>
 #include <src/gapstate.h>
 #include <src/gvars.h>
+#include <src/modules.h>
 #include <src/objset.h>
 #include <src/plist.h>
 #include <src/precord.h>

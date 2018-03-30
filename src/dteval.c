@@ -27,8 +27,8 @@
 #include <src/dteval.h>
 
 #include <src/dt.h>
-#include <src/gap.h>
 #include <src/integer.h>
+#include <src/modules.h>
 #include <src/objcftl.h>
 #include <src/plist.h>
 #include <src/precord.h>

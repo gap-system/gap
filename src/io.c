@@ -19,10 +19,11 @@
 
 #include <src/bool.h>
 #include <src/calls.h>
-#include <src/gap.h>
+#include <src/error.h>
 #include <src/gapstate.h>
 #include <src/gaputils.h>
 #include <src/gvars.h>
+#include <src/modules.h>
 #include <src/read.h>
 #include <src/scanner.h>
 #include <src/stringobj.h>

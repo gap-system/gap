@@ -22,13 +22,14 @@
 #include <src/bool.h>
 #include <src/calls.h>
 #include <src/code.h>
+#include <src/error.h>
 #include <src/funcs.h>
-#include <src/gap.h>
 #include <src/gapstate.h>
 #include <src/gvars.h>
 #include <src/integer.h>
 #include <src/io.h>
 #include <src/lists.h>
+#include <src/modules.h>
 #include <src/opers.h>
 #include <src/permutat.h>
 #include <src/plist.h>

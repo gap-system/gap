@@ -18,9 +18,9 @@
 
 #include <src/ariths.h>
 #include <src/calls.h>
-#include <src/gap.h>
 #include <src/gvars.h>
 #include <src/io.h>
+#include <src/modules.h>
 #include <src/opers.h>
 
 

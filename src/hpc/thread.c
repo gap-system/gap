@@ -1,8 +1,8 @@
 #include <src/hpc/thread.h>
 
 #include <src/code.h>
+#include <src/error.h>
 #include <src/fibhash.h>
-#include <src/gap.h>
 #include <src/gapstate.h>
 #include <src/gvars.h>
 #include <src/plist.h>

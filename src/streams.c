@@ -15,11 +15,13 @@
 #include <src/streams.h>
 
 #include <src/bool.h>
+#include <src/error.h>
 #include <src/funcs.h>
 #include <src/gap.h>
 #include <src/gapstate.h>
 #include <src/gvars.h>
 #include <src/lists.h>
+#include <src/modules.h>
 #include <src/io.h>
 #include <src/plist.h>
 #include <src/precord.h>

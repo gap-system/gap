@@ -16,8 +16,9 @@
 #include <src/records.h>
 
 #include <src/bool.h>
-#include <src/gap.h>
+#include <src/error.h>
 #include <src/gaputils.h>
+#include <src/modules.h>
 #include <src/opers.h>
 #include <src/plist.h>
 #include <src/stringobj.h>
