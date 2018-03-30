@@ -36,9 +36,9 @@ gap> AbelianGroup(IsFpGroup,[2,3]);
 
 #
 gap> AbelianGroup([2,0]);
-<fp group on the generators [ f1, f2 ]>
+<fp group of size infinity on the generators [ f1, f2 ]>
 gap> AbelianGroup([2,infinity]);
-<fp group on the generators [ f1, f2 ]>
+<fp group of size infinity on the generators [ f1, f2 ]>
 gap> AbelianGroup(IsPcGroup,[2,0]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 2nd choice method found for `AbelianGroupCons' on 2 arguments
@@ -46,7 +46,7 @@ gap> AbelianGroup(IsPermGroup,[2,0]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 2nd choice method found for `AbelianGroupCons' on 2 arguments
 gap> AbelianGroup(IsFpGroup,[2,0]);
-<fp group on the generators [ f1, f2 ]>
+<fp group of size infinity on the generators [ f1, f2 ]>
 
 #
 gap> AbelianGroup(2,3);

@@ -129,7 +129,7 @@ DeclareConstructor( "AbelianGroupCons", [ IsGroup, IsList ] );
 ##  gap> AbelianGroup([1,2,3]);
 ##  <pc group of size 6 with 3 generators>
 ##  gap> G:=AbelianGroup([0,3]);
-##  <fp group on the generators [ f1, f2 ]>
+##  <fp group of size infinity on the generators [ f1, f2 ]>
 ##  gap> AbelianInvariants(G);
 ##  [ 0, 3 ]
 ##  ]]></Example>
@@ -485,7 +485,7 @@ DeclareConstructor( "FreeAbelianGroupCons", [ IsGroup, IsInt ] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> FreeAbelianGroup(4);
-##  <fp group on the generators [ f1, f2, f3, f4 ]>
+##  <fp group of size infinity on the generators [ f1, f2, f3, f4 ]>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
