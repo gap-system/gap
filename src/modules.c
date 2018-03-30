@@ -4,7 +4,7 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002-2018 The GAP Group
 **
-**  This files declares APIs for GAP modules, including builtin modules,
+**  This files implements APIs for GAP modules, including builtin modules,
 **  or static and dynamic modules used by packages and end users to provide
 **  kernel extensions.
 */
