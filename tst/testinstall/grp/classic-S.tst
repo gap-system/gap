@@ -78,6 +78,8 @@ gap> Sp(4,5);
 Sp(4,5)
 gap> last = Sp(4,GF(5));
 true
+gap> Sp(IsPermGroup,4,5);
+Perm_Sp(4,5)
 gap> Sp(3,5);
 Error, the dimension <d> must be even
 gap> Sp(4);
@@ -92,6 +94,8 @@ gap> SigmaL(3,9);
 SigmaL(3,9)
 gap> Size(last) / Size(SL(3,9));
 2
+gap> SigmaL(IsPermGroup,3,9);
+Perm_SigmaL(3,9)
 gap> SigmaL(3);
 Error, usage: SpecialSemilinearGroup( [<filter>, ]<d>, <q> )
 gap> SigmaL(3,6);
