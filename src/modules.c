@@ -194,7 +194,7 @@ Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
        in global context */
     ExecBegin(STATE(BottomLVars));
     res = res || (info->initLibrary)(info);
-    ExecEnd(res ? STATUS_ERROR : STATUS_END);
+    ExecEnd(res);
     if (res) {
         Pr("#W  init functions returned non-zero exit code\n", 0L, 0L);
     }
@@ -266,7 +266,7 @@ Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
        in global context */
     ExecBegin(STATE(BottomLVars));
     res = res || (info->initLibrary)(info);
-    ExecEnd(res ? STATUS_ERROR : STATUS_END);
+    ExecEnd(res);
     if (res) {
         Pr("#W  init functions returned non-zero exit code\n", 0L, 0L);
     }
