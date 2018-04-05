@@ -316,17 +316,17 @@ static Obj PreImagePPermInt(Obj pt, Obj f)
     if (TNUM_OBJ(f) == T_PPERM2) {
         ptf2 = ADDR_PPERM2(f);
         deg = DEG_PPERM2(f);
-        while (ptf2[i] != cpt && i < deg)
+        while (i < deg && ptf2[i] != cpt)
             i++;
-        if (ptf2[i] != cpt)
+        if (i == deg || ptf2[i] != cpt)
             return Fail;
     }
     else {
         ptf4 = ADDR_PPERM4(f);
         deg = DEG_PPERM4(f);
-        while (ptf4[i] != cpt && i < deg)
+        while (i < deg && ptf4[i] != cpt)
             i++;
-        if (ptf4[i] != cpt)
+        if (i == deg || ptf4[i] != cpt)
             return Fail;
     }
     return INTOBJ_INT(i + 1);
