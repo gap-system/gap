@@ -74,7 +74,7 @@ static inline Int IS_PREC_OR_COMOBJ(Obj rec)
 **  'CAPACITY_PREC' returns the maximum capacity of a PREC.
 **
 */
-static inline Int CAPACITY_PREC(Obj rec)
+static inline UInt CAPACITY_PREC(Obj rec)
 {
     return SIZE_OBJ(rec) / (2 * sizeof(Obj)) - 1;
 }

@@ -206,7 +206,7 @@ static inline Obj GET_ELM_STRING(Obj list, Int pos)
 {
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(pos > 0);
-    GAP_ASSERT(pos <= GET_LEN_STRING(list));
+    GAP_ASSERT((UInt) pos <= GET_LEN_STRING(list));
     UChar c = CHARS_STRING(list)[pos - 1];
     return ObjsChar[c];
 }
@@ -222,7 +222,7 @@ static inline void SET_ELM_STRING(Obj list, Int pos, Obj val)
 {
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(pos > 0);
-    GAP_ASSERT(pos <= GET_LEN_STRING(list));
+    GAP_ASSERT((UInt) pos <= GET_LEN_STRING(list));
     GAP_ASSERT(TNUM_OBJ(val) == T_CHAR);
     UChar * ptr = CHARS_STRING(list) + (pos - 1);
     *ptr = CHAR_VALUE(val);
