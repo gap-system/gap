@@ -181,11 +181,11 @@ Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj context)
     Obj filename = GET_FILENAME_BODY(body);
     if (FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) {
         PrintStat(call);
-        Pr(" at %s:%d", (UInt)CSTR_STRING(filename), LINE_STAT(call));
+        Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
     }
     else if (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM) {
         PrintExpr(call);
-        Pr(" at %s:%d", (UInt)CSTR_STRING(filename), LINE_STAT(call));
+        Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
     }
     SWITCH_TO_OLD_LVARS(currLVars);
     return 0;
