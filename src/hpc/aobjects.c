@@ -585,7 +585,7 @@ static void PrintTLRecord(Obj obj)
   if (record) {
     for (i = 1; i <= LEN_PREC(record); i++) {
       Obj val = GET_ELM_PREC(record, i);
-      Pr("%I", (Int)NAME_RNAM(labs((Int)GET_RNAM_PREC(record, i))), 0L);
+      Pr("%H", (Int)NAME_OBJ_RNAM(labs((Int)GET_RNAM_PREC(record, i))), 0L);
       Pr ("%< := %>", 0L, 0L);
       if (val)
 	PrintObj(val);
@@ -606,7 +606,7 @@ static void PrintTLRecord(Obj obj)
     if (key && (!record || !FindPRec(record, key, &dummy, 0))) {
       if (comma)
 	Pr("%2<, %2>", 0L, 0L);
-      Pr("%I", (Int)(NAME_RNAM(key)), 0L);
+      Pr("%H", (Int)(NAME_OBJ_RNAM(key)), 0L);
       Pr ("%< := %>", 0L, 0L);
       PrintObj(CopyTraversed(value));
       comma = 1;

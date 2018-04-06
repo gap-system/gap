@@ -476,7 +476,7 @@ void            PrintAssGVar (
     Stat                stat )
 {
     Pr( "%2>", 0L, 0L );
-    Pr( "%I", (Int)NameGVar( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
+    Pr( "%H", (Int)NameGVarObj( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
     Pr( "%< %>:= ", 0L, 0L );
     PrintExpr( ADDR_EXPR(stat)[1] );
     Pr( "%2<;", 0L, 0L );
@@ -486,7 +486,7 @@ void            PrintUnbGVar (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
-    Pr( "%I", (Int)NameGVar( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
+    Pr( "%H", (Int)NameGVarObj( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
     Pr( " );", 0L, 0L );
 }
 
@@ -500,14 +500,14 @@ void            PrintUnbGVar (
 void            PrintRefGVar (
     Expr                expr )
 {
-    Pr( "%I", (Int)NameGVar( (UInt)(ADDR_STAT(expr)[0]) ), 0L );
+    Pr( "%H", (Int)NameGVarObj( (UInt)(ADDR_STAT(expr)[0]) ), 0L );
 }
 
 void            PrintIsbGVar (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
-    Pr( "%I", (Int)NameGVar( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
+    Pr( "%H", (Int)NameGVarObj( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
     Pr( " )", 0L, 0L );
 }
 
@@ -1550,7 +1550,7 @@ void            PrintAssRecName (
     Pr("%4>",0L,0L);
     PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<.",0L,0L);
-    Pr("%I",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
+    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
     Pr("%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
     PrintExpr( ADDR_EXPR(stat)[2] );
@@ -1564,7 +1564,7 @@ void            PrintUnbRecName (
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<.",0L,0L);
-    Pr("%I",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
+    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
     Pr("%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -1616,7 +1616,7 @@ void            PrintElmRecName (
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<.",0L,0L);
-    Pr("%I",(Int)NAME_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
+    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
     Pr("%<",0L,0L);
 }
 
@@ -1627,7 +1627,7 @@ void            PrintIsbRecName (
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<.",0L,0L);
-    Pr("%I",(Int)NAME_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
+    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
     Pr("%<",0L,0L);
     Pr( " )", 0L, 0L );
 }
@@ -2308,7 +2308,7 @@ void            PrintAssComObjName (
     Pr("%4>",0L,0L);
     PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<!.",0L,0L);
-    Pr("%I",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
+    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
     Pr("%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
     PrintExpr( ADDR_EXPR(stat)[2] );
@@ -2322,7 +2322,7 @@ void            PrintUnbComObjName (
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<!.",0L,0L);
-    Pr("%I",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
+    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
     Pr("%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -2374,7 +2374,7 @@ void            PrintElmComObjName (
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<!.",0L,0L);
-    Pr("%I",(Int)NAME_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
+    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
     Pr("%<",0L,0L);
 }
 
@@ -2385,7 +2385,7 @@ void            PrintIsbComObjName (
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<!.",0L,0L);
-    Pr("%I",(Int)NAME_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
+    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
     Pr("%<",0L,0L);
     Pr( " )", 0L, 0L );
 }
