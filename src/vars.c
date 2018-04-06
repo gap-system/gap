@@ -1989,10 +1989,11 @@ UInt            ExecAssComObjName (
       case T_ACOMOBJ:
 #ifdef CHECK_TL_ASSIGNS
         if (GetRegionOf(rhs) == STATE(threadRegion)) {
-            if (strcmp(NAME_RNAM(rnam), "buffer") != 0
-             && strcmp(NAME_RNAM(rnam), "state") != 0) {
+            Obj name = NAME_OBJ_RNAM(rnam);
+            if (strcmp(CSTR_STRING(name)), "buffer") != 0
+             && strcmp(CSTR_STRING(name)), "state") != 0) {
                 ErrorReturnObj("Warning: thread local assignment of '%g'",
-                               (Int)NAME_OBJ_RNAM(rnam), 0L,
+                               (Int)name, 0L,
                                "type 'return <value>; to continue'");
             }
 
