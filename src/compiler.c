@@ -694,22 +694,18 @@ void            Emit (
                 Pr( "%d", dint, 0L );
             }
 
-            /* emit a string                                               */
-            else if ( *p == 's' ) {
+            // emit a C string
+            else if ( *p == 's' || *p == 'S' || *p == 'C' ) {
+                const Char f[] = { '%', *p, 0 };
                 string = va_arg( ap, Char* );
-                Pr( "%s", (Int)string, 0L );
+                Pr( f, (Int)string, 0L );
             }
 
-            /* emit a string                                               */
-            else if ( *p == 'S' ) {
-                string = va_arg( ap, Char* );
-                Pr( "%S", (Int)string, 0L );
-            }
-
-            /* emit a string                                               */
-            else if ( *p == 'C' ) {
-                string = va_arg( ap, Char* );
-                Pr( "%C", (Int)string, 0L );
+            // emit a GAP string
+            else if ( *p == 'g' || *p == 'G' ) { 
+                const Char f[] = { '%', *p, 0 };
+                Obj str = va_arg( ap, Obj );
+                Pr( f, (Int)str, 0L );
             }
 
             /* emit a name                                                 */
@@ -819,7 +815,7 @@ void CompCheckBound (
 {
     if ( ! HasInfoCVar( obj, W_BOUND ) ) {
         if ( CompCheckTypes ) {
-            Emit( "CHECK_BOUND( %c, \"%s\" )\n", obj, CSTR_STRING(name) );
+            Emit( "CHECK_BOUND( %c, \"%g\" )\n", obj, name );
         }
         SetInfoCVar( obj, W_BOUND );
     }
@@ -5618,22 +5614,22 @@ Int CompileFunc (
     Emit( "\n/* global variables used in handlers */\n" );
     for ( i = 1; i < SIZE_OBJ(CompInfoGVar)/sizeof(UInt); i++ ) {
         if ( CompGetUseGVar( i ) ) {
-            Emit( "G_%n = GVarName( \"%s\" );\n",
-                   NameGVarObj(i), NameGVar(i) );
+            Emit( "G_%n = GVarName( \"%g\" );\n",
+                   NameGVarObj(i), NameGVarObj(i) );
         }
     }
     Emit( "\n/* record names used in handlers */\n" );
     for ( i = 1; i < SIZE_OBJ(CompInfoRNam)/sizeof(UInt); i++ ) {
         if ( CompGetUseRNam( i ) ) {
-            Emit( "R_%n = RNamName( \"%s\" );\n",
-                  NAME_OBJ_RNAM(i), NAME_RNAM(i) );
+            Emit( "R_%n = RNamName( \"%g\" );\n",
+                  NAME_OBJ_RNAM(i), NAME_OBJ_RNAM(i) );
         }
     }
     Emit( "\n/* information for the functions */\n" );
     for ( i = 1; i <= compFunctionsNr; i++ ) {
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
         if ( n != 0 && IsStringConv(n) ) {
-            Emit( "NameFunc[%d] = MakeImmString(\"%S\");\n", i, CSTR_STRING(n) );
+            Emit( "NameFunc[%d] = MakeImmString(\"%G\");\n", i, n );
         }
         else {
             Emit( "NameFunc[%d] = 0;\n", i );
@@ -5651,12 +5647,12 @@ Int CompileFunc (
     Emit( "\n/* global variables used in handlers */\n" );
     for ( i = 1; i < SIZE_OBJ(CompInfoGVar)/sizeof(UInt); i++ ) {
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_COPY ) {
-            Emit( "InitCopyGVar( \"%s\", &GC_%n );\n",
-                  NameGVar(i), NameGVarObj(i) );
+            Emit( "InitCopyGVar( \"%g\", &GC_%n );\n",
+                  NameGVarObj(i), NameGVarObj(i) );
         }
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_FOPY ) {
-            Emit( "InitFopyGVar( \"%s\", &GF_%n );\n",
-                  NameGVar(i), NameGVarObj(i) );
+            Emit( "InitFopyGVar( \"%g\", &GF_%n );\n",
+                  NameGVarObj(i), NameGVarObj(i) );
         }
     }
     Emit( "\n/* information for the functions */\n" );
