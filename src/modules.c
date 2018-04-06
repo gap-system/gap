@@ -468,7 +468,7 @@ void InitGVarFiltsFromTable(const StructGVarFilt * tab)
 
     for (i = 0; tab[i].name != 0; i++) {
         UInt gvar = GVarName(tab[i].name);
-        Obj  name = NameGVarObj(gvar);
+        Obj  name = NameGVar(gvar);
         Obj  args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
         AssReadOnlyGVar(gvar, NewFilter(name, 1, args, tab[i].handler));
     }
@@ -485,7 +485,7 @@ void InitGVarAttrsFromTable(const StructGVarAttr * tab)
 
     for (i = 0; tab[i].name != 0; i++) {
         UInt gvar = GVarName(tab[i].name);
-        Obj  name = NameGVarObj(gvar);
+        Obj  name = NameGVar(gvar);
         Obj  args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
         AssReadOnlyGVar(gvar, NewAttribute(name, 1, args, tab[i].handler));
     }
@@ -501,7 +501,7 @@ void InitGVarPropsFromTable(const StructGVarProp * tab)
 
     for (i = 0; tab[i].name != 0; i++) {
         UInt gvar = GVarName(tab[i].name);
-        Obj  name = NameGVarObj(gvar);
+        Obj  name = NameGVar(gvar);
         Obj  args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
         AssReadOnlyGVar(gvar, NewProperty(name, 1, args, tab[i].handler));
     }
@@ -518,7 +518,7 @@ void InitGVarOpersFromTable(const StructGVarOper * tab)
 
     for (i = 0; tab[i].name != 0; i++) {
         UInt gvar = GVarName(tab[i].name);
-        Obj  name = NameGVarObj(gvar);
+        Obj  name = NameGVar(gvar);
         Obj  args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
         AssReadOnlyGVar(
             gvar, NewOperation(name, tab[i].nargs, args, tab[i].handler));
@@ -569,7 +569,7 @@ void InitGVarFuncsFromTable(const StructGVarFunc * tab)
 
     for (i = 0; tab[i].name != 0; i++) {
         UInt gvar = GVarName(tab[i].name);
-        Obj  name = NameGVarObj(gvar);
+        Obj  name = NameGVar(gvar);
         Obj  args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
         Obj  func = NewFunction(name, tab[i].nargs, args, tab[i].handler);
         SetupFuncInfo(func, tab[i].cookie);

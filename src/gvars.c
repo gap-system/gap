@@ -320,7 +320,7 @@ void            AssGVar (
 
     // Make certain variable is not constant
     if (writeval == INTOBJ_INT(-1)) {
-        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVarObj(gvar), 0L);
+        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0L);
     }
 
     /* make certain that the variable is not read only                     */
@@ -328,7 +328,7 @@ void            AssGVar (
             (ELM_GVAR_LIST( WriteGVars, gvar ) == INTOBJ_INT(0)) ) {
         ErrorReturnVoid(
             "Variable: '%g' is read only",
-            (Int)NameGVarObj(gvar), 0L,
+            (Int)NameGVar(gvar), 0L,
             "you can 'return;' after making it writable" );
     }
 
@@ -394,7 +394,7 @@ void            AssGVar (
     if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
 #endif
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
-        onam = CopyToStringRep(NameGVarObj(gvar));
+        onam = CopyToStringRep(NameGVar(gvar));
         MakeImmutableString(onam);
         SET_NAME_FUNC(val, onam);
         CHANGED_BAG(val);
@@ -441,7 +441,7 @@ Obj             ValAutoGVar (
         while ( (val = ValGVar(gvar)) == 0 ) {
             ErrorReturnVoid(
        "Variable: automatic variable '%g' must get a value by function call",
-                (Int)NameGVarObj(gvar), 0L,
+                (Int)NameGVar(gvar), 0L,
                 "you can 'return;' after assigning a value" );
         }
 
@@ -502,7 +502,7 @@ Obj NewGVarBucket(void) {
 }
 #endif
 
-Obj NameGVarObj ( UInt gvar )
+Obj NameGVar ( UInt gvar )
 {
     return ELM_GVAR_LIST( NameGVars, gvar );
 }
@@ -578,7 +578,7 @@ UInt GVarName (
     sizeGVars = LEN_PLIST(TableGVars);
     pos = (hash % sizeGVars) + 1;
     while ( (gvar = ELM_PLIST( TableGVars, pos )) != 0
-         && strncmp( CSTR_STRING( NameGVarObj( INT_INTOBJ(gvar) ) ), name, 1023 ) ) {
+         && strncmp( CSTR_STRING( NameGVar( INT_INTOBJ(gvar) ) ), name, 1023 ) ) {
         pos = (pos % sizeGVars) + 1;
     }
 
@@ -592,7 +592,7 @@ UInt GVarName (
         sizeGVars = LEN_PLIST(TableGVars);
         pos = (hash % sizeGVars) + 1;
         while ( (gvar = ELM_PLIST( TableGVars, pos )) != 0
-             && strncmp( CSTR_STRING( NameGVarObj( INT_INTOBJ(gvar) ) ), name, 1023 ) ) {
+             && strncmp( CSTR_STRING( NameGVar( INT_INTOBJ(gvar) ) ), name, 1023 ) ) {
             pos = (pos % sizeGVars) + 1;
         }
     }
@@ -655,7 +655,7 @@ UInt GVarName (
             for ( i = 1; i <= (sizeGVars-1)/2; i++ ) {
                 gvar2 = ELM_PLIST( table, i );
                 if ( gvar2 == 0 )  continue;
-                pos = HashString( CSTR_STRING( NameGVarObj( INT_INTOBJ(gvar2) ) ) );
+                pos = HashString( CSTR_STRING( NameGVar( INT_INTOBJ(gvar2) ) ) );
                 pos = (pos % sizeGVars) + 1;
                 while ( ELM_PLIST( TableGVars, pos ) != 0 ) {
                     pos = (pos % sizeGVars) + 1;
@@ -682,7 +682,7 @@ void MakeReadOnlyGVar (
     UInt                gvar )
 {
     if (ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(-1)) {
-        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVarObj(gvar), 0L);
+        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0L);
     }
     SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(0) );
     CHANGED_GVAR_LIST( WriteGVars, gvar );
@@ -698,7 +698,7 @@ void MakeConstantGVar(UInt gvar)
     if (!IS_INTOBJ(val) && val != True && val != False) {
         ErrorMayQuit(
             "Variable: '%g' must be assigned a small integer, true or false",
-            (Int)NameGVarObj(gvar), 0L);
+            (Int)NameGVar(gvar), 0L);
     }
     SET_ELM_GVAR_LIST(WriteGVars, gvar, INTOBJ_INT(-1));
     CHANGED_GVAR_LIST(WriteGVars, gvar);
@@ -791,7 +791,7 @@ void MakeReadWriteGVar (
     UInt                gvar )
 {
     if (ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(-1)) {
-        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVarObj(gvar), 0L);
+        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0L);
     }
     SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(1) );
     CHANGED_GVAR_LIST( WriteGVars, gvar );
@@ -976,7 +976,7 @@ UInt            iscomplete_gvar (
 
     numGVars = INT_INTOBJ(CountGVars);
     for ( i = 1; i <= numGVars; i++ ) {
-        curr = CSTR_STRING( NameGVarObj( i ) );
+        curr = CSTR_STRING( NameGVar( i ) );
         for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
         if ( k == len && curr[k] == '\0' )  return 1;
     }
@@ -997,7 +997,7 @@ UInt            completion_gvar (
     for ( i = 1; i <= numGVars; i++ ) {
         /* consider only variables which are currently bound for completion */
         if ( VAL_GVAR_INTERN( i ) || ELM_GVAR_LIST( ExprGVars, i )) {
-            curr = CSTR_STRING( NameGVarObj( i ) );
+            curr = CSTR_STRING( NameGVar( i ) );
             for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
             if ( k < len || curr[k] <= name[k] )  continue;
             if ( next != 0 ) {
@@ -1042,7 +1042,7 @@ Obj FuncIDENTS_GVAR (
     for ( i = 1;  i <= numGVars;  i++ ) {
         /* Copy the string here, because we do not want members of NameGVars
          * accessible to users, as these strings must not be changed */
-        strcopy = CopyToStringRep( NameGVarObj( i ) );
+        strcopy = CopyToStringRep( NameGVar( i ) );
         SET_ELM_PLIST( copy, i, strcopy );
         CHANGED_BAG( copy );
     }
@@ -1072,7 +1072,7 @@ Obj FuncIDENTS_BOUND_GVARS (
            /* Copy the string here, because we do not want members of
             * NameGVars accessible to users, as these strings must not be
             * changed */
-           strcopy = CopyToStringRep( NameGVarObj( i ) );
+           strcopy = CopyToStringRep( NameGVar( i ) );
            SET_ELM_PLIST( copy, j, strcopy );
            CHANGED_BAG( copy );
            j++;
