@@ -608,7 +608,7 @@ void PrintPathPRec (
     Obj                 rec,
     Int                 indx )
 {
-    Pr( ".%I", (Int)NAME_RNAM( labs((Int)(GET_RNAM_PREC(rec,indx))) ), 0L );
+    Pr( ".%H", (Int)NAME_OBJ_RNAM( labs((Int)(GET_RNAM_PREC(rec,indx))) ), 0L );
 }
 
 /****************************************************************************
