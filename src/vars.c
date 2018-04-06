@@ -1550,7 +1550,7 @@ void            PrintAssRecName (
     Pr("%4>",0L,0L);
     PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<.",0L,0L);
-    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
+    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
     Pr("%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
     PrintExpr( ADDR_EXPR(stat)[2] );
@@ -1564,7 +1564,7 @@ void            PrintUnbRecName (
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<.",0L,0L);
-    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
+    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
     Pr("%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -1616,7 +1616,7 @@ void            PrintElmRecName (
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<.",0L,0L);
-    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
+    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
     Pr("%<",0L,0L);
 }
 
@@ -1627,7 +1627,7 @@ void            PrintIsbRecName (
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<.",0L,0L);
-    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
+    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
     Pr("%<",0L,0L);
     Pr( " )", 0L, 0L );
 }
@@ -1989,7 +1989,7 @@ UInt            ExecAssComObjName (
       case T_ACOMOBJ:
 #ifdef CHECK_TL_ASSIGNS
         if (GetRegionOf(rhs) == STATE(threadRegion)) {
-            Obj name = NAME_OBJ_RNAM(rnam);
+            Obj name = NAME_RNAM(rnam);
             if (strcmp(CSTR_STRING(name)), "buffer") != 0
              && strcmp(CSTR_STRING(name)), "state") != 0) {
                 ErrorReturnObj("Warning: thread local assignment of '%g'",
@@ -2309,7 +2309,7 @@ void            PrintAssComObjName (
     Pr("%4>",0L,0L);
     PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<!.",0L,0L);
-    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
+    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
     Pr("%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
     PrintExpr( ADDR_EXPR(stat)[2] );
@@ -2323,7 +2323,7 @@ void            PrintUnbComObjName (
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(stat)[0] );
     Pr("%<!.",0L,0L);
-    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
+    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
     Pr("%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -2375,7 +2375,7 @@ void            PrintElmComObjName (
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<!.",0L,0L);
-    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
+    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
     Pr("%<",0L,0L);
 }
 
@@ -2386,7 +2386,7 @@ void            PrintIsbComObjName (
     Pr("%2>",0L,0L);
     PrintExpr( ADDR_EXPR(expr)[0] );
     Pr("%<!.",0L,0L);
-    Pr("%H",(Int)NAME_OBJ_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
+    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
     Pr("%<",0L,0L);
     Pr( " )", 0L, 0L );
 }
