@@ -1946,7 +1946,7 @@ static void PrintRegion(Obj obj)
     Obj      name = GetRegionName(region);
 
     if (name) {
-        Pr("<region: %s", (Int)(CSTR_STRING(name)), 0L);
+        Pr("<region: %g", (Int)name, 0L);
     }
     else {
         snprintf(buffer, 32, "<region %p", (void *)GetRegionOf(obj));

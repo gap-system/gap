@@ -925,8 +925,8 @@ Obj ElmARecord(Obj record, UInt rnam)
     result = GetARecordField(record, rnam);
     if (result)
       return result;
-    ErrorReturnVoid("Record: '<atomic record>.%s' must have an assigned value",
-      (UInt)NAME_RNAM(rnam), 0L,
+    ErrorReturnVoid("Record: '<atomic record>.%g' must have an assigned value",
+      (UInt)NAME_OBJ_RNAM(rnam), 0L,
       "you can 'return;' after assigning a value" );
   }
 }
@@ -935,8 +935,8 @@ void AssARecord(Obj record, UInt rnam, Obj value)
 {
    Obj result = SetARecordField(record, rnam, value);
    if (!result)
-     ErrorReturnVoid("Record: '<atomic record>.%s' already has an assigned value",
-       (UInt)NAME_RNAM(rnam), 0L,
+     ErrorReturnVoid("Record: '<atomic record>.%g' already has an assigned value",
+       (UInt)NAME_OBJ_RNAM(rnam), 0L,
        "you can 'return';");
 
 }
@@ -1070,8 +1070,8 @@ Obj ElmTLRecord(Obj record, UInt rnam)
     result = GetTLRecordField(record, rnam);
     if (result)
       return result;
-    ErrorReturnVoid("Record: '<thread-local record>.%s' must have an assigned value",
-      (UInt)NAME_RNAM(rnam), 0L,
+    ErrorReturnVoid("Record: '<thread-local record>.%g' must have an assigned value",
+      (UInt)NAME_OBJ_RNAM(rnam), 0L,
       "you can 'return;' after assigning a value" );
   }
 }
