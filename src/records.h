@@ -20,13 +20,10 @@
 
 /****************************************************************************
 **
-*F  NAME_RNAM(<rnam>) . . . . . . . . . .  name for a record name as C string
 *F  NAME_OBJ_RNAM(<rnam>) . . . . . . . . .  name for a record name as an Obj
 **
-**  'NAME_RNAM' returns the name (as a C string) for the record name <rnam>.
 **  'NAME_OBJ_RNAM' returns the name (as an Obj) for the record name <rnam>.
 */
-extern const Char *NAME_RNAM(UInt rnam);
 extern Obj NAME_OBJ_RNAM(UInt rnam);
 
 

@@ -785,8 +785,8 @@ Obj FuncLT_PREC (
         /* The sense of this comparison is determined by the rule that
            unbound entries compare less than bound ones                    */
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
-            res = ( strcmp( NAME_RNAM( labs((Int)(GET_RNAM_PREC(left,i))) ),
-                   NAME_RNAM( labs((Int)(GET_RNAM_PREC(right,i))) ) ) > 0 );
+            res = !LT( NAME_OBJ_RNAM( labs((Int)(GET_RNAM_PREC(left,i))) ),
+                   NAME_OBJ_RNAM( labs((Int)(GET_RNAM_PREC(right,i))) ) );
             break;
         }
 

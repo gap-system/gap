@@ -32,11 +32,6 @@ static Obj HashRNam;
 
 static Obj NamesRNam;
 
-inline const Char *NAME_RNAM(UInt rnam)
-{
-    return CSTR_STRING(ELM_PLIST(NamesRNam, rnam));
-}
-
 inline extern Obj NAME_OBJ_RNAM(UInt rnam)
 {
     return ELM_PLIST(NamesRNam, rnam);
@@ -117,7 +112,7 @@ UInt            RNamName (
     sizeRNam = LEN_PLIST(HashRNam);
     pos = (hash % sizeRNam) + 1;
     while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
-         && strncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
+         && strncmp( CSTR_STRING( NAME_OBJ_RNAM( INT_INTOBJ(rnam) ) ), name, 1023 ) ) {
         pos = (pos % sizeRNam) + 1;
     }
     if (rnam != 0) {
@@ -134,7 +129,7 @@ UInt            RNamName (
       sizeRNam = LEN_PLIST(HashRNam);
       pos = (hash % sizeRNam) + 1;
       while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
-           && strncmp( NAME_RNAM( INT_INTOBJ(rnam) ), name, 1023 ) ) {
+           && strncmp( CSTR_STRING( NAME_OBJ_RNAM( INT_INTOBJ(rnam) ) ), name, 1023 ) ) {
           pos = (pos % sizeRNam) + 1;
       }
     }
@@ -168,7 +163,7 @@ UInt            RNamName (
         for ( i = 1; i <= (sizeRNam-1)/2; i++ ) {
             rnam2 = ELM_PLIST( table, i );
             if ( rnam2 == 0 )  continue;
-            pos = HashString( NAME_RNAM( INT_INTOBJ(rnam2) ) );
+            pos = HashString( CSTR_STRING( NAME_OBJ_RNAM( INT_INTOBJ(rnam2) ) ) );
             pos = (pos % sizeRNam) + 1;
             while ( ELM_PLIST( HashRNam, pos ) != 0 ) {
                 pos = (pos % sizeRNam) + 1;
@@ -541,7 +536,7 @@ UInt            iscomplete_rnam (
     const UInt          countRNam = LEN_PLIST(NamesRNam);
 
     for ( i = 1; i <= countRNam; i++ ) {
-        curr = NAME_RNAM( i );
+        curr = CSTR_STRING( NAME_OBJ_RNAM( i ) );
         for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
         if ( k == len && curr[k] == '\0' )  return 1;
     }
@@ -559,7 +554,7 @@ UInt            completion_rnam (
 
     next = 0;
     for ( i = 1; i <= countRNam; i++ ) {
-        curr = NAME_RNAM( i );
+        curr = CSTR_STRING( NAME_OBJ_RNAM( i ) );
         for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
         if ( k < len || curr[k] <= name[k] )  continue;
         if ( next != 0 ) {
