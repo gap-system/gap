@@ -1541,7 +1541,8 @@ void ResetOutputIndent(void)
 **          the width of a field in which the integer is right justified.  If
 **          the first character is '0' 'Pr' pads with '0' instead of <space>.
 **  '%i'    is a synonym of %d, in line with recent C library developements
-**  '%I'    print an identifier
+**  '%I'    print an identifier, given as a null terminated character string.
+**  '%H'    print an identifier, given as GAP string in STRING_REP
 **  '%>'    increment the indentation level.
 **  '%<'    decrement the indentation level.
 **  '%%'    can be used to print a single '%' character. No argument is used.
@@ -1620,7 +1621,7 @@ static inline void FormatOutput(
     /* '%s' or '%g' print a string                               */
     else if ( *p == 's' || *p == 'g') {
 
-      // If arg is a GAP obj, get out the contained sting, and
+      // If arg is a GAP obj, get out the contained string, and
       // set arg1obj so we can re-evaluate after any possible GC
       // which occurs in put_a_char
       if (*p == 'g') {
@@ -1670,7 +1671,7 @@ static inline void FormatOutput(
     /* '%S' or '%G' print a string with the necessary escapes    */
     else if ( *p == 'S' || *p == 'G' ) {
 
-      // If arg is a GAP obj, get out the contained sting, and
+      // If arg is a GAP obj, get out the contained string, and
       // set arg1obj so we can re-evaluate after any possible GC
       // which occurs in put_a_char
       if (*p == 'G') {
@@ -1768,8 +1769,19 @@ static inline void FormatOutput(
     }
 
     /* '%I' print an identifier                                    */
-    else if ( *p == 'I' ) {
+    else if ( *p == 'I' || *p =='H' ) {
       int found_keyword = 0;
+
+      // If arg is a GAP obj, get out the contained string, and
+      // set arg1obj so we can re-evaluate after any possible GC
+      // which occurs in put_a_char
+      if (*p == 'H') {
+        arg1obj = (Obj)arg1;
+        arg1 = (Int)CSTR_STRING(arg1obj);
+      }
+      else {
+        arg1obj = 0;
+      }
 
       /* check if q matches a keyword    */
       found_keyword = IsKeyword((Char *)arg1);
@@ -1792,11 +1804,17 @@ static inline void FormatOutput(
       if ( found_keyword ) {
         put_a_char(state, '\\');
       }
-      for ( Char * q = (Char *)arg1; *q != '\0'; q++ ) {
-        if ( !IsIdent(*q) && !IsDigit(*q) ) {
+
+      for ( Int i = 0; ((Char *)arg1)[i] != '\0'; i++ ) {
+        Char c = ((Char *)arg1)[i];
+
+        if ( !IsIdent(c) && !IsDigit(c) ) {
           put_a_char(state, '\\');
         }
-        put_a_char(state, *q);
+        put_a_char(state, c);
+        if (arg1obj) {
+          arg1 = (Int)CSTR_STRING(arg1obj);
+        }
       }
 
       /* on to the next argument                                 */
