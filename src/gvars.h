@@ -105,12 +105,12 @@ extern  Obj             ValGVarTL (
 
 /****************************************************************************
 **
-*F  NameGVarObj(<gvar>)  . . . . . . . . . . . . .  name of a global variable
+*F  NameGVar(<gvar>)  . . . . . . . . . . . . . . . name of a global variable
 **
-**  'NameGVarObj' returns the name of the global variable <gvar> as a GAP
+**  'NameGVar' returns the name of the global variable <gvar> as a GAP
 **  string.
 */
-extern  Obj            NameGVarObj (
+extern  Obj            NameGVar (
             UInt                gvar );
 
 

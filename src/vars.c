@@ -445,7 +445,7 @@ Obj             EvalRefGVar (
     while ( (val = ValAutoGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
         ErrorReturnVoid(
             "Variable: '%g' must have an assigned value",
-            (Int)NameGVarObj( (UInt)(ADDR_EXPR(expr)[0]) ), 0L,
+            (Int)NameGVar( (UInt)(ADDR_EXPR(expr)[0]) ), 0L,
             "you can 'return;' after assigning a value" );
     }
 
@@ -476,7 +476,7 @@ void            PrintAssGVar (
     Stat                stat )
 {
     Pr( "%2>", 0L, 0L );
-    Pr( "%H", (Int)NameGVarObj( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
+    Pr( "%H", (Int)NameGVar( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
     Pr( "%< %>:= ", 0L, 0L );
     PrintExpr( ADDR_EXPR(stat)[1] );
     Pr( "%2<;", 0L, 0L );
@@ -486,7 +486,7 @@ void            PrintUnbGVar (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
-    Pr( "%H", (Int)NameGVarObj( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
+    Pr( "%H", (Int)NameGVar( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
     Pr( " );", 0L, 0L );
 }
 
@@ -500,14 +500,14 @@ void            PrintUnbGVar (
 void            PrintRefGVar (
     Expr                expr )
 {
-    Pr( "%H", (Int)NameGVarObj( (UInt)(ADDR_STAT(expr)[0]) ), 0L );
+    Pr( "%H", (Int)NameGVar( (UInt)(ADDR_STAT(expr)[0]) ), 0L );
 }
 
 void            PrintIsbGVar (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
-    Pr( "%H", (Int)NameGVarObj( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
+    Pr( "%H", (Int)NameGVar( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
     Pr( " )", 0L, 0L );
 }
 

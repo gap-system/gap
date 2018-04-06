@@ -2908,7 +2908,7 @@ void            IntrRefGVar (
     if ( (val = ValAutoGVar( gvar )) == 0 ) {
         ErrorQuit(
             "Variable: '%g' must have a value",
-            (Int)NameGVarObj(gvar), 0L );
+            (Int)NameGVar(gvar), 0L );
     }
 
     /* push the value                                                      */

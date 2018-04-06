@@ -2990,10 +2990,10 @@ CVar CompRefGVar (
     val = CVAR_TEMP( NewTemp( "val" ) );
 
     /* emit the code to get the value                                      */
-    Emit( "%c = GC_%n;\n", val, NameGVarObj(gvar) );
+    Emit( "%c = GC_%n;\n", val, NameGVar(gvar) );
 
     /* emit the code to check that the variable has a value                */
-    CompCheckBound( val, NameGVarObj(gvar) );
+    CompCheckBound( val, NameGVar(gvar) );
 
     /* return the value                                                    */
     return val;
@@ -3018,7 +3018,7 @@ CVar CompRefGVarFopy (
     val = CVAR_TEMP( NewTemp( "val" ) );
 
     /* emit the code to get the value                                      */
-    Emit( "%c = GF_%n;\n", val, NameGVarObj(gvar) );
+    Emit( "%c = GF_%n;\n", val, NameGVar(gvar) );
 
     /* we know that the object in a function copy is a function            */
     SetInfoCVar( val, W_FUNC );
@@ -3048,7 +3048,7 @@ CVar CompIsbGVar (
     val = CVAR_TEMP( NewTemp( "val" ) );
 
     /* emit the code to get the value                                      */
-    Emit( "%c = GC_%n;\n", val, NameGVarObj(gvar) );
+    Emit( "%c = GC_%n;\n", val, NameGVar(gvar) );
 
     /* emit the code to check that the variable has a value                */
     Emit( "%c = ((%c != 0) ? True : False);\n", isb, val );
@@ -4229,7 +4229,7 @@ void CompFor (
         }
         else if ( vart == 'g' ) {
             Emit( "AssGVar( G_%n, %c );\n",
-                  NameGVarObj(var), elm );
+                  NameGVar(var), elm );
         }
 
         /* set what we know about the loop variable                        */
@@ -4588,7 +4588,7 @@ void CompAssGVar (
     /* emit the code for the assignment                                    */
     gvar = (GVar)(ADDR_STAT(stat)[0]);
     CompSetUseGVar( gvar, COMP_USE_GVAR_ID );
-    Emit( "AssGVar( G_%n, %c );\n", NameGVarObj(gvar), rhs );
+    Emit( "AssGVar( G_%n, %c );\n", NameGVar(gvar), rhs );
 
     /* free the temporary                                                  */
     if ( IS_TEMP_CVAR( rhs ) )  FreeTemp( TEMP_CVAR( rhs ) );
@@ -4612,7 +4612,7 @@ void            CompUnbGVar (
     /* emit the code for the assignment                                    */
     gvar = (GVar)(ADDR_STAT(stat)[0]);
     CompSetUseGVar( gvar, COMP_USE_GVAR_ID );
-    Emit( "AssGVar( G_%n, 0 );\n", NameGVarObj(gvar) );
+    Emit( "AssGVar( G_%n, 0 );\n", NameGVar(gvar) );
 }
 
 
@@ -5580,13 +5580,13 @@ Int CompileFunc (
     Emit( "\n/* global variables used in handlers */\n" );
     for ( i = 1; i < SIZE_OBJ(CompInfoGVar)/sizeof(UInt); i++ ) {
         if ( CompGetUseGVar( i ) ) {
-            Emit( "static GVar G_%n;\n", NameGVarObj(i) );
+            Emit( "static GVar G_%n;\n", NameGVar(i) );
         }
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_COPY ) {
-            Emit( "static Obj  GC_%n;\n", NameGVarObj(i) );
+            Emit( "static Obj  GC_%n;\n", NameGVar(i) );
         }
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_FOPY ) {
-            Emit( "static Obj  GF_%n;\n", NameGVarObj(i) );
+            Emit( "static Obj  GF_%n;\n", NameGVar(i) );
         }
     }
 
@@ -5615,7 +5615,7 @@ Int CompileFunc (
     for ( i = 1; i < SIZE_OBJ(CompInfoGVar)/sizeof(UInt); i++ ) {
         if ( CompGetUseGVar( i ) ) {
             Emit( "G_%n = GVarName( \"%g\" );\n",
-                   NameGVarObj(i), NameGVarObj(i) );
+                   NameGVar(i), NameGVar(i) );
         }
     }
     Emit( "\n/* record names used in handlers */\n" );
@@ -5648,11 +5648,11 @@ Int CompileFunc (
     for ( i = 1; i < SIZE_OBJ(CompInfoGVar)/sizeof(UInt); i++ ) {
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_COPY ) {
             Emit( "InitCopyGVar( \"%g\", &GC_%n );\n",
-                  NameGVarObj(i), NameGVarObj(i) );
+                  NameGVar(i), NameGVar(i) );
         }
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_FOPY ) {
             Emit( "InitFopyGVar( \"%g\", &GF_%n );\n",
-                  NameGVarObj(i), NameGVarObj(i) );
+                  NameGVar(i), NameGVar(i) );
         }
     }
     Emit( "\n/* information for the functions */\n" );
