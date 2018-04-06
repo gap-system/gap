@@ -365,7 +365,7 @@ Obj ElmPRec (
     else {
         ErrorReturnVoid(
             "Record: '<rec>.%g' must have an assigned value",
-            (Int)NAME_OBJ_RNAM(rnam), 0L,
+            (Int)NAME_RNAM(rnam), 0L,
             "you can 'return;' after assigning a value" );
         return ELM_REC( rec, rnam );
     }
@@ -608,7 +608,7 @@ void PrintPathPRec (
     Obj                 rec,
     Int                 indx )
 {
-    Pr( ".%H", (Int)NAME_OBJ_RNAM( labs((Int)(GET_RNAM_PREC(rec,indx))) ), 0L );
+    Pr( ".%H", (Int)NAME_RNAM( labs((Int)(GET_RNAM_PREC(rec,indx))) ), 0L );
 }
 
 /****************************************************************************
@@ -639,7 +639,7 @@ Obj InnerRecNames( Obj rec )
     for ( i = 1; i <= LEN_PREC(rec); i++ ) {
         rnam = -(Int)(GET_RNAM_PREC( rec, i ));
         /* could have been moved by garbage collection */
-        name = NAME_OBJ_RNAM( rnam );
+        name = NAME_RNAM( rnam );
         string = CopyToStringRep( name );
         SET_ELM_PLIST( list, i, string );
         CHANGED_BAG( list );
@@ -785,8 +785,8 @@ Obj FuncLT_PREC (
         /* The sense of this comparison is determined by the rule that
            unbound entries compare less than bound ones                    */
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
-            res = !LT( NAME_OBJ_RNAM( labs((Int)(GET_RNAM_PREC(left,i))) ),
-                   NAME_OBJ_RNAM( labs((Int)(GET_RNAM_PREC(right,i))) ) );
+            res = !LT( NAME_RNAM( labs((Int)(GET_RNAM_PREC(left,i))) ),
+                   NAME_RNAM( labs((Int)(GET_RNAM_PREC(right,i))) ) );
             break;
         }
 

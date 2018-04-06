@@ -1791,7 +1791,7 @@ void            PrintRecExpr1 (
         /* print an ordinary record name                                   */
         tmp = ADDR_EXPR(expr)[2*i-2];
         if ( IS_INTEXPR(tmp) ) {
-            Pr( "%H", (Int)NAME_OBJ_RNAM( INT_INTEXPR(tmp) ), 0L );
+            Pr( "%H", (Int)NAME_RNAM( INT_INTEXPR(tmp) ), 0L );
         }
 
         /* print an evaluating record name                                 */

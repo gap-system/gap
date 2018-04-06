@@ -20,11 +20,11 @@
 
 /****************************************************************************
 **
-*F  NAME_OBJ_RNAM(<rnam>) . . . . . . . . .  name for a record name as an Obj
+*F  NAME_RNAM(<rnam>) . . . . . . . . . . .  name for a record name as an Obj
 **
-**  'NAME_OBJ_RNAM' returns the name (as an Obj) for the record name <rnam>.
+**  'NAME_RNAM' returns the name (as an Obj) for the record name <rnam>.
 */
-extern Obj NAME_OBJ_RNAM(UInt rnam);
+extern Obj NAME_RNAM(UInt rnam);
 
 
 /****************************************************************************
