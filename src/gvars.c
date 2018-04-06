@@ -491,18 +491,6 @@ Obj FuncIsThreadLocalGVar( Obj self, Obj name) {
 #endif
 
 
-/****************************************************************************
-**
-*F  NameGVar(<gvar>)  . . . . . . . . . . . . . . . name of a global variable
-**
-**  'NameGVar' returns the name of the global variable <gvar> as a C string.
-*/
-Char *          NameGVar (
-    UInt                gvar )
-{
-    return CSTR_STRING( ELM_GVAR_LIST( NameGVars, gvar ) );
-}
-
 #ifdef USE_GVAR_BUCKETS
 Obj NewGVarBucket(void) {
     Obj result = NEW_PLIST(T_PLIST, GVAR_BUCKET_SIZE);
@@ -590,7 +578,7 @@ UInt GVarName (
     sizeGVars = LEN_PLIST(TableGVars);
     pos = (hash % sizeGVars) + 1;
     while ( (gvar = ELM_PLIST( TableGVars, pos )) != 0
-         && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
+         && strncmp( CSTR_STRING( NameGVarObj( INT_INTOBJ(gvar) ) ), name, 1023 ) ) {
         pos = (pos % sizeGVars) + 1;
     }
 
@@ -604,7 +592,7 @@ UInt GVarName (
         sizeGVars = LEN_PLIST(TableGVars);
         pos = (hash % sizeGVars) + 1;
         while ( (gvar = ELM_PLIST( TableGVars, pos )) != 0
-             && strncmp( NameGVar( INT_INTOBJ(gvar) ), name, 1023 ) ) {
+             && strncmp( CSTR_STRING( NameGVarObj( INT_INTOBJ(gvar) ) ), name, 1023 ) ) {
             pos = (pos % sizeGVars) + 1;
         }
     }
@@ -667,7 +655,7 @@ UInt GVarName (
             for ( i = 1; i <= (sizeGVars-1)/2; i++ ) {
                 gvar2 = ELM_PLIST( table, i );
                 if ( gvar2 == 0 )  continue;
-                pos = HashString( NameGVar( INT_INTOBJ(gvar2) ) );
+                pos = HashString( CSTR_STRING( NameGVarObj( INT_INTOBJ(gvar2) ) ) );
                 pos = (pos % sizeGVars) + 1;
                 while ( ELM_PLIST( TableGVars, pos ) != 0 ) {
                     pos = (pos % sizeGVars) + 1;
@@ -988,7 +976,7 @@ UInt            iscomplete_gvar (
 
     numGVars = INT_INTOBJ(CountGVars);
     for ( i = 1; i <= numGVars; i++ ) {
-        curr = NameGVar( i );
+        curr = CSTR_STRING( NameGVarObj( i ) );
         for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
         if ( k == len && curr[k] == '\0' )  return 1;
     }
@@ -1009,7 +997,7 @@ UInt            completion_gvar (
     for ( i = 1; i <= numGVars; i++ ) {
         /* consider only variables which are currently bound for completion */
         if ( VAL_GVAR_INTERN( i ) || ELM_GVAR_LIST( ExprGVars, i )) {
-            curr = NameGVar( i );
+            curr = CSTR_STRING( NameGVarObj( i ) );
             for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
             if ( k < len || curr[k] <= name[k] )  continue;
             if ( next != 0 ) {

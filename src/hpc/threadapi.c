@@ -2324,7 +2324,7 @@ Obj FuncMakeThreadLocal(Obj self, Obj var)
             "MakeThreadLocal: Argument must be a variable name");
     name = CSTR_STRING(var);
     gvar = GVarName(name);
-    name = NameGVar(gvar); /* to apply namespace scopes where needed. */
+    name = CSTR_STRING(NameGVarObj(gvar)); /* to apply namespace scopes where needed. */
     MakeThreadLocalVar(gvar, RNamName(name));
     return (Obj)0;
 }
