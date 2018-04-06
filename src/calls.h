@@ -154,7 +154,7 @@ static inline Obj NAMS_FUNC(Obj func)
     return CONST_FUNC(func)->namesOfLocals;
 }
 
-extern Char * NAMI_FUNC(Obj func, Int i);
+extern Obj NAMI_FUNC(Obj func, Int i);
 
 static inline Obj PROF_FUNC(Obj func)
 {

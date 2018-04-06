@@ -57,9 +57,9 @@ void SET_NAME_FUNC(Obj func, Obj name)
     FUNC(func)->name = name;
 }
 
-Char * NAMI_FUNC(Obj func, Int i)
+Obj NAMI_FUNC(Obj func, Int i)
 {
-    return CSTR_STRING(ELM_LIST(NAMS_FUNC(func),i));
+    return ELM_LIST(NAMS_FUNC(func),i);
 }
 
 
@@ -1364,7 +1364,7 @@ void PrintFunction (
         }
 #endif
         if ( NAMS_FUNC(func) != 0 )
-            Pr( "%I", (Int)NAMI_FUNC( func, (Int)i ), 0L );
+            Pr( "%H", (Int)NAMI_FUNC( func, (Int)i ), 0L );
         else
             Pr( "<<arg-%d>>", (Int)i, 0L );
         if(isvarg && i == narg) {
@@ -1382,7 +1382,7 @@ void PrintFunction (
             Pr("%>local ",0L,0L);
             for ( i = 1; i <= nloc; i++ ) {
                 if ( NAMS_FUNC(func) != 0 )
-                    Pr( "%I", (Int)NAMI_FUNC( func, (Int)(narg+i) ), 0L );
+                    Pr( "%H", (Int)NAMI_FUNC( func, (Int)(narg+i) ), 0L );
                 else
                     Pr( "<<loc-%d>>", (Int)i, 0L );
                 if ( i != nloc )  Pr("%<, %>",0L,0L);

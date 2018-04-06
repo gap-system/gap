@@ -743,10 +743,10 @@ void            Emit (
                     Pr( "t_%d", TEMP_CVAR(cvar), 0L );
                 }
                 else if ( LVAR_CVAR(cvar) <= narg ) {
-                    Emit( "a_%n", NAME_LVAR( LVAR_CVAR(cvar) ) );
+                    Emit( "a_%n", CSTR_STRING( NAME_LVAR( LVAR_CVAR(cvar) ) ) );
                 }
                 else {
-                    Emit( "l_%n", NAME_LVAR( LVAR_CVAR(cvar) ) );
+                    Emit( "l_%n", CSTR_STRING( NAME_LVAR( LVAR_CVAR(cvar) ) ) );
                 }
             }
 
@@ -760,10 +760,10 @@ void            Emit (
                     Pr( "INT_INTOBJ(t_%d)", TEMP_CVAR(cvar), 0L );
                 }
                 else if ( LVAR_CVAR(cvar) <= narg ) {
-                    Emit( "INT_INTOBJ(a_%n)", NAME_LVAR( LVAR_CVAR(cvar) ) );
+                    Emit( "INT_INTOBJ(a_%n)", CSTR_STRING( NAME_LVAR( LVAR_CVAR(cvar) ) ) );
                 }
                 else {
-                    Emit( "INT_INTOBJ(l_%n)", NAME_LVAR( LVAR_CVAR(cvar) ) );
+                    Emit( "INT_INTOBJ(l_%n)", CSTR_STRING( NAME_LVAR( LVAR_CVAR(cvar) ) ) );
                 }
             }
 
@@ -814,11 +814,11 @@ void            Emit (
 */
 void CompCheckBound (
     CVar                obj,
-    Char *              name )
+    Obj                 name )
 {
     if ( ! HasInfoCVar( obj, W_BOUND ) ) {
         if ( CompCheckTypes ) {
-            Emit( "CHECK_BOUND( %c, \"%s\" )\n", obj, name );
+            Emit( "CHECK_BOUND( %c, \"%s\" )\n", obj, CSTR_STRING(name) );
         }
         SetInfoCVar( obj, W_BOUND );
     }
@@ -2996,7 +2996,7 @@ CVar CompRefGVar (
     Emit( "%c = GC_%n;\n", val, NameGVar(gvar) );
 
     /* emit the code to check that the variable has a value                */
-    CompCheckBound( val, NameGVar(gvar) );
+    CompCheckBound( val, NameGVarObj(gvar) );
 
     /* return the value                                                    */
     return val;
