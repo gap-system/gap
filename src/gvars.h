@@ -105,16 +105,6 @@ extern  Obj             ValGVarTL (
 
 /****************************************************************************
 **
-*F  NameGVar(<gvar>)  . . . . . . . . . . . . . . . name of a global variable
-**
-**  'NameGVar' returns the name of the global variable <gvar> as a C string.
-*/
-extern  Char *          NameGVar (
-            UInt                gvar );
-
-
-/****************************************************************************
-**
 *F  NameGVarObj(<gvar>)  . . . . . . . . . . . . .  name of a global variable
 **
 **  'NameGVarObj' returns the name of the global variable <gvar> as a GAP
