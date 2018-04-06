@@ -129,7 +129,7 @@ static Int compilerMagic1;
 **
 *V  compilerMagic2  . . . . . . . . . . . . . . . . . . . . .  current magic2
 */
-static Char * compilerMagic2;
+static Obj compilerMagic2;
 
 
 /****************************************************************************
@@ -5533,11 +5533,11 @@ void CompFunc (
 *F  CompileFunc( <output>, <func>, <name>, <magic1>, <magic2> ) . . . compile
 */
 Int CompileFunc (
-    Char *              output,
+    Obj                 output,
     Obj                 func,
-    Char *              name,
+    Obj                 name,
     Int                 magic1,
-    Char *              magic2 )
+    Obj                 magic2 )
 {
     Int                 i;              /* loop variable                   */
     Obj                 n;              /* temporary                       */
@@ -5545,7 +5545,7 @@ Int CompileFunc (
     UInt                compFunctionsNr;
 
     /* open the output file                                                */
-    if ( ! OpenOutput( output ) ) {
+    if ( ! OpenOutput( CSTR_STRING(output) ) ) {
         return 0;
     }
     col = SyNrCols;
@@ -5656,12 +5656,12 @@ Int CompileFunc (
         }
     }
     Emit( "\n/* information for the functions */\n" );
-    Emit( "InitGlobalBag( &FileName, \"%s:FileName(\"FILE_CRC\")\" );\n",
+    Emit( "InitGlobalBag( &FileName, \"%g:FileName(\"FILE_CRC\")\" );\n",
           magic2 );
     for ( i = 1; i <= compFunctionsNr; i++ ) {
-        Emit( "InitHandlerFunc( HdlrFunc%d, \"%s:HdlrFunc%d(\"FILE_CRC\")\" );\n",
+        Emit( "InitHandlerFunc( HdlrFunc%d, \"%g:HdlrFunc%d(\"FILE_CRC\")\" );\n",
               i, compilerMagic2, i );
-        Emit( "InitGlobalBag( &(NameFunc[%d]), \"%s:NameFunc[%d](\"FILE_CRC\")\" );\n", 
+        Emit( "InitGlobalBag( &(NameFunc[%d]), \"%g:NameFunc[%d](\"FILE_CRC\")\" );\n", 
                i, magic2, i );
         n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
     }
@@ -5677,7 +5677,7 @@ Int CompileFunc (
     Emit( "Obj body1;\n" );
     Emit( "\n/* Complete Copy/Fopy registration */\n" );
     Emit( "UpdateCopyFopyInfo();\n" );
-    Emit( "FileName = MakeImmString( \"%s\" );\n", magic2 );
+    Emit( "FileName = MakeImmString( \"%g\" );\n", magic2 );
     Emit( "PostRestore(module);\n" );
     Emit( "\n/* create all the functions defined in this module */\n" );
     Emit( "func1 = NewFunction(NameFunc[1],%d,0,HdlrFunc1);\n", NARG_FUNC(ELM_PLIST(CompFunctions,1)) );
@@ -5694,20 +5694,20 @@ Int CompileFunc (
     /* emit the initialization code                                        */
     Emit( "\n/* <name> returns the description of this module */\n" );
     Emit( "static StructInitInfo module = {\n" );
-    if ( ! strcmp( "Init_Dynamic", name ) ) {
+    if ( ! strcmp( "Init_Dynamic", CSTR_STRING(name) ) ) {
         Emit( ".type        = MODULE_DYNAMIC,\n" );
     }
     else {
         Emit( ".type        = MODULE_STATIC,\n" );
     }
-    Emit( ".name        = \"%C\",\n", magic2 );
+    Emit( ".name        = \"%g\",\n", magic2 );
     Emit( ".crc         = %d,\n",     magic1 );
     Emit( ".initKernel  = InitKernel,\n" );
     Emit( ".initLibrary = InitLibrary,\n" );
     Emit( ".postRestore = PostRestore,\n" );
     Emit( "};\n" );
     Emit( "\n" );
-    Emit( "StructInitInfo * %n ( void )\n", MakeImmString(name) );
+    Emit( "StructInitInfo * %n ( void )\n", name );
     Emit( "{\n" );
     Emit( "return &module;\n" );
     Emit( "}\n" );
@@ -5797,8 +5797,8 @@ Obj FuncCOMPILE_FUNC (
     
     /* compile the function                                                */
     nr = CompileFunc(
-        CSTR_STRING(output), func, CSTR_STRING(name),
-        INT_INTOBJ(magic1), CSTR_STRING(magic2) );
+        output, func, name,
+        INT_INTOBJ(magic1), magic2 );
 
 
     /* return the result                                                   */
