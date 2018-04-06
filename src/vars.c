@@ -94,7 +94,7 @@ Obj             ObjLVar (
     Obj                 val;            /* value result                    */
     while ( (val = OBJ_LVAR(lvar)) == 0 ) {
         ErrorReturnVoid(
-            "Variable: '%s' must have an assigned value",
+            "Variable: '%g' must have an assigned value",
             (Int)NAME_LVAR( lvar ), 0L,
             "you can 'return;' after assigning a value" );
     }
@@ -179,7 +179,7 @@ void            PrintAssLVar (
     Stat                stat )
 {
     Pr( "%2>", 0L, 0L );
-    Pr( "%I", (Int)NAME_LVAR( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
+    Pr( "%H", (Int)NAME_LVAR( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
     Pr( "%< %>:= ", 0L, 0L );
     PrintExpr( ADDR_EXPR(stat)[1] );
     Pr( "%2<;", 0L, 0L );
@@ -189,7 +189,7 @@ void            PrintUnbLVar (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
-    Pr( "%I", (Int)NAME_LVAR( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
+    Pr( "%H", (Int)NAME_LVAR( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
     Pr( " );", 0L, 0L );
 }
 
@@ -203,14 +203,14 @@ void            PrintUnbLVar (
 void            PrintRefLVar (
     Expr                expr )
 {
-    Pr( "%I", (Int)NAME_LVAR( LVAR_REFLVAR(expr) ), 0L );
+    Pr( "%H", (Int)NAME_LVAR( LVAR_REFLVAR(expr) ), 0L );
 }
 
 void            PrintIsbLVar (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
-    Pr( "%I", (Int)NAME_LVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
+    Pr( "%H", (Int)NAME_LVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
     Pr( " )", 0L, 0L );
 }
 
@@ -225,7 +225,7 @@ void            PrintIsbLVar (
 **
 **  'OBJ_HVAR' returns the value of the higher variable <hvar>.
 **
-**  'NAME_HVAR' returns the name of the higher variable <hvar> as a C string.
+**  'NAME_HVAR' returns the name of the higher variable <hvar>.
 */
 void ASS_HVAR(UInt hvar, Obj val)
 {
@@ -237,7 +237,7 @@ Obj OBJ_HVAR(UInt hvar)
     return OBJ_HVAR_WITH_CONTEXT(STATE(CurrLVars), hvar);
 }
 
-Char * NAME_HVAR(UInt hvar)
+Obj NAME_HVAR(UInt hvar)
 {
     return NAME_HVAR_WITH_CONTEXT(STATE(CurrLVars), hvar);
 }
@@ -268,7 +268,7 @@ Obj OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
     return val;
 }
 
-Char * NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
+Obj NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
 {
     // walk up the environment chain to the correct values bag
     for (UInt i = 1; i <= (hvar >> 16); i++) {
@@ -276,10 +276,7 @@ Char * NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
     }
 
     // get the name
-    Char * name = NAME_LVAR_WITH_CONTEXT(context, hvar & 0xFFFF);
-
-    // return the name
-    return name;
+    return NAME_LVAR_WITH_CONTEXT(context, hvar & 0xFFFF);
 }
 
 
@@ -331,7 +328,7 @@ Obj             EvalRefHVar (
     if ( (val = OBJ_HVAR( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
         while ( (val = OBJ_HVAR( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
             ErrorReturnVoid(
-                "Variable: '%s' must have an assigned value",
+                "Variable: '%g' must have an assigned value",
                 (Int)NAME_HVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L,
                 "you can 'return;' after assigning a value" );
         }
@@ -364,7 +361,7 @@ void            PrintAssHVar (
     Stat                stat )
 {
     Pr( "%2>", 0L, 0L );
-    Pr( "%I", (Int)NAME_HVAR( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
+    Pr( "%H", (Int)NAME_HVAR( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
     Pr( "%< %>:= ", 0L, 0L );
     PrintExpr( ADDR_EXPR(stat)[1] );
     Pr( "%2<;", 0L, 0L );
@@ -374,7 +371,7 @@ void            PrintUnbHVar (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
-    Pr( "%I", (Int)NAME_HVAR( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
+    Pr( "%H", (Int)NAME_HVAR( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
     Pr( " );", 0L, 0L );
 }
 
@@ -388,14 +385,14 @@ void            PrintUnbHVar (
 void            PrintRefHVar (
     Expr                expr )
 {
-    Pr( "%I", (Int)NAME_HVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
+    Pr( "%H", (Int)NAME_HVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
 }
 
 void            PrintIsbHVar (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
-    Pr( "%I", (Int)NAME_HVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
+    Pr( "%H", (Int)NAME_HVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
     Pr( " )", 0L, 0L );
 }
 
