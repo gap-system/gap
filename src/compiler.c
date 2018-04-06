@@ -663,7 +663,6 @@ void            Emit (
     CVar                cvar;           /* C variable argument             */
     Char *              string;         /* string argument                 */
     const Char *        p;              /* loop variable                   */
-    Char *              q;              /* loop variable                   */
     const Char *        hex = "0123456789ABCDEF";
 
     /* are we in pass 2?                                                   */
@@ -715,16 +714,18 @@ void            Emit (
 
             /* emit a name                                                 */
             else if ( *p == 'n' ) {
-                string = va_arg( ap, Char* );
-                for ( q = string; *q != '\0'; q++ ) {
-                    if ( IsAlpha(*q) || IsDigit(*q) ) {
-                        Pr( "%c", (Int)(*q), 0L );
+                Obj str = va_arg( ap, Obj );
+                UInt i = 0;
+                Char c;
+                while ((c = CSTR_STRING(str)[i++])) {
+                    if ( IsAlpha(c) || IsDigit(c) ) {
+                        Pr( "%c", (Int)c, 0L );
                     }
-                    else if ( *q == '_' ) {
+                    else if ( c == '_' ) {
                         Pr( "__", 0L, 0L );
                     }
                     else {
-                        Pr("_%c%c",hex[((UInt)*q)/16],hex[((UInt)*q)%16]);
+                        Pr("_%c%c",hex[((UInt)c)/16],hex[((UInt)c)%16]);
                     }
                 }
             }
@@ -743,10 +744,10 @@ void            Emit (
                     Pr( "t_%d", TEMP_CVAR(cvar), 0L );
                 }
                 else if ( LVAR_CVAR(cvar) <= narg ) {
-                    Emit( "a_%n", CSTR_STRING( NAME_LVAR( LVAR_CVAR(cvar) ) ) );
+                    Emit( "a_%n", NAME_LVAR( LVAR_CVAR(cvar) ) );
                 }
                 else {
-                    Emit( "l_%n", CSTR_STRING( NAME_LVAR( LVAR_CVAR(cvar) ) ) );
+                    Emit( "l_%n", NAME_LVAR( LVAR_CVAR(cvar) ) );
                 }
             }
 
@@ -760,10 +761,10 @@ void            Emit (
                     Pr( "INT_INTOBJ(t_%d)", TEMP_CVAR(cvar), 0L );
                 }
                 else if ( LVAR_CVAR(cvar) <= narg ) {
-                    Emit( "INT_INTOBJ(a_%n)", CSTR_STRING( NAME_LVAR( LVAR_CVAR(cvar) ) ) );
+                    Emit( "INT_INTOBJ(a_%n)", NAME_LVAR( LVAR_CVAR(cvar) ) );
                 }
                 else {
-                    Emit( "INT_INTOBJ(l_%n)", CSTR_STRING( NAME_LVAR( LVAR_CVAR(cvar) ) ) );
+                    Emit( "INT_INTOBJ(l_%n)", NAME_LVAR( LVAR_CVAR(cvar) ) );
                 }
             }
 
@@ -2790,7 +2791,7 @@ void            CompRecExpr2 (
         if ( IS_INTEXPR(tmp) ) {
             CompSetUseRNam( (UInt)INT_INTEXPR(tmp), COMP_USE_RNAM_ID );
             Emit( "%c = (Obj)R_%n;\n",
-                  rnam, NAME_RNAM((UInt)INT_INTEXPR(tmp)) );
+                  rnam, NAME_OBJ_RNAM((UInt)INT_INTEXPR(tmp)) );
         }
         else {
             sub = CompExpr( tmp );
@@ -2993,7 +2994,7 @@ CVar CompRefGVar (
     val = CVAR_TEMP( NewTemp( "val" ) );
 
     /* emit the code to get the value                                      */
-    Emit( "%c = GC_%n;\n", val, NameGVar(gvar) );
+    Emit( "%c = GC_%n;\n", val, NameGVarObj(gvar) );
 
     /* emit the code to check that the variable has a value                */
     CompCheckBound( val, NameGVarObj(gvar) );
@@ -3021,7 +3022,7 @@ CVar CompRefGVarFopy (
     val = CVAR_TEMP( NewTemp( "val" ) );
 
     /* emit the code to get the value                                      */
-    Emit( "%c = GF_%n;\n", val, NameGVar(gvar) );
+    Emit( "%c = GF_%n;\n", val, NameGVarObj(gvar) );
 
     /* we know that the object in a function copy is a function            */
     SetInfoCVar( val, W_FUNC );
@@ -3051,7 +3052,7 @@ CVar CompIsbGVar (
     val = CVAR_TEMP( NewTemp( "val" ) );
 
     /* emit the code to get the value                                      */
-    Emit( "%c = GC_%n;\n", val, NameGVar(gvar) );
+    Emit( "%c = GC_%n;\n", val, NameGVarObj(gvar) );
 
     /* emit the code to check that the variable has a value                */
     Emit( "%c = ((%c != 0) ? True : False);\n", isb, val );
@@ -3270,7 +3271,7 @@ CVar CompElmRecName (
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* emit the code to select the element of the record                   */
-    Emit( "%c = ELM_REC( %c, R_%n );\n", elm, record, NAME_RNAM(rnam) );
+    Emit( "%c = ELM_REC( %c, R_%n );\n", elm, record, NAME_OBJ_RNAM(rnam) );
 
     /* we know that we have a value                                        */
     SetInfoCVar( elm, W_BOUND );
@@ -3341,7 +3342,7 @@ CVar CompIsbRecName (
 
     /* emit the code to test the element                                   */
     Emit( "%c = (ISB_REC( %c, R_%n ) ? True : False);\n",
-          isb, record, NAME_RNAM(rnam) );
+          isb, record, NAME_OBJ_RNAM(rnam) );
 
     /* we know that the result is boolean                                  */
     SetInfoCVar( isb, W_BOOL );
@@ -3535,13 +3536,13 @@ CVar CompElmComObjName (
 
     /* emit the code to select the element of the record                   */
     Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
-    Emit( "%c = ElmPRec( %c, R_%n );\n", elm, record, NAME_RNAM(rnam) );
+    Emit( "%c = ElmPRec( %c, R_%n );\n", elm, record, NAME_OBJ_RNAM(rnam) );
     Emit( "#ifdef HPCGAP\n" );
     Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ) {\n", record );
-    Emit( "%c = ElmARecord( %c, R_%n );\n", elm, record, NAME_RNAM(rnam) );
+    Emit( "%c = ElmARecord( %c, R_%n );\n", elm, record, NAME_OBJ_RNAM(rnam) );
     Emit( "#endif\n" );
     Emit( "}\nelse {\n" );
-    Emit( "%c = ELM_REC( %c, R_%n );\n", elm, record, NAME_RNAM(rnam) );
+    Emit( "%c = ELM_REC( %c, R_%n );\n", elm, record, NAME_OBJ_RNAM(rnam) );
     Emit( "}\n" );
 
     /* we know that we have a value                                        */
@@ -3623,15 +3624,15 @@ CVar CompIsbComObjName (
     /* emit the code to test the element                                   */
     Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
     Emit( "%c = (IsbPRec( %c, R_%n ) ? True : False);\n",
-          isb, record, NAME_RNAM(rnam) );
+          isb, record, NAME_OBJ_RNAM(rnam) );
     Emit( "#ifdef HPCGAP\n" );
     Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
     Emit( "%c = (IsbARecord( %c, R_%n ) ? True : False);\n",
-                isb, record, NAME_RNAM(rnam) );
+                isb, record, NAME_OBJ_RNAM(rnam) );
     Emit( "#endif\n" );
     Emit( "}\nelse {\n" );
     Emit( "%c = (ISB_REC( %c, R_%n ) ? True : False);\n",
-          isb, record, NAME_RNAM(rnam) );
+          isb, record, NAME_OBJ_RNAM(rnam) );
     Emit( "}\n" );
 
     /* we know that the result is boolean                                  */
@@ -4232,7 +4233,7 @@ void CompFor (
         }
         else if ( vart == 'g' ) {
             Emit( "AssGVar( G_%n, %c );\n",
-                  NameGVar(var), elm );
+                  NameGVarObj(var), elm );
         }
 
         /* set what we know about the loop variable                        */
@@ -4591,7 +4592,7 @@ void CompAssGVar (
     /* emit the code for the assignment                                    */
     gvar = (GVar)(ADDR_STAT(stat)[0]);
     CompSetUseGVar( gvar, COMP_USE_GVAR_ID );
-    Emit( "AssGVar( G_%n, %c );\n", NameGVar(gvar), rhs );
+    Emit( "AssGVar( G_%n, %c );\n", NameGVarObj(gvar), rhs );
 
     /* free the temporary                                                  */
     if ( IS_TEMP_CVAR( rhs ) )  FreeTemp( TEMP_CVAR( rhs ) );
@@ -4615,7 +4616,7 @@ void            CompUnbGVar (
     /* emit the code for the assignment                                    */
     gvar = (GVar)(ADDR_STAT(stat)[0]);
     CompSetUseGVar( gvar, COMP_USE_GVAR_ID );
-    Emit( "AssGVar( G_%n, 0 );\n", NameGVar(gvar) );
+    Emit( "AssGVar( G_%n, 0 );\n", NameGVarObj(gvar) );
 }
 
 
@@ -4838,7 +4839,7 @@ void CompAssRecName (
     rhs = CompExpr( ADDR_STAT(stat)[2] );
 
     /* emit the code for the assignment                                    */
-    Emit( "ASS_REC( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
+    Emit( "ASS_REC( %c, R_%n, %c );\n", record, NAME_OBJ_RNAM(rnam), rhs );
 
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( rhs    ) )  FreeTemp( TEMP_CVAR( rhs    ) );
@@ -4904,7 +4905,7 @@ void CompUnbRecName (
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* emit the code for the assignment                                    */
-    Emit( "UNB_REC( %c, R_%n );\n", record, NAME_RNAM(rnam) );
+    Emit( "UNB_REC( %c, R_%n );\n", record, NAME_OBJ_RNAM(rnam) );
 
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
@@ -5105,13 +5106,13 @@ void CompAssComObjName (
 
     /* emit the code for the assignment                                    */
     Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
-    Emit( "AssPRec( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
+    Emit( "AssPRec( %c, R_%n, %c );\n", record, NAME_OBJ_RNAM(rnam), rhs );
     Emit( "#ifdef HPCGAP\n" );
     Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
-    Emit( "AssARecord( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
+    Emit( "AssARecord( %c, R_%n, %c );\n", record, NAME_OBJ_RNAM(rnam), rhs );
     Emit( "#endif\n" );
     Emit( "}\nelse {\n" );
-    Emit( "ASS_REC( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
+    Emit( "ASS_REC( %c, R_%n, %c );\n", record, NAME_OBJ_RNAM(rnam), rhs );
     Emit( "}\n" );
 
     /* free the temporaries                                                */
@@ -5187,13 +5188,13 @@ void CompUnbComObjName (
 
     /* emit the code for the assignment                                    */
     Emit( "if ( TNUM_OBJ(%c) == T_COMOBJ ) {\n", record );
-    Emit( "UnbPRec( %c, R_%n );\n", record, NAME_RNAM(rnam) );
+    Emit( "UnbPRec( %c, R_%n );\n", record, NAME_OBJ_RNAM(rnam) );
     Emit( "#ifdef HPCGAP\n" );
     Emit( "} else if ( TNUM_OBJ(%c) == T_ACOMOBJ ) {\n", record );
-    Emit( "UnbARecord( %c, R_%n );\n", record, NAME_RNAM(rnam) );
+    Emit( "UnbARecord( %c, R_%n );\n", record, NAME_OBJ_RNAM(rnam) );
     Emit( "#endif\n" );
     Emit( "}\nelse {\n" );
-    Emit( "UNB_REC( %c, R_%n );\n", record, NAME_RNAM(rnam) );
+    Emit( "UNB_REC( %c, R_%n );\n", record, NAME_OBJ_RNAM(rnam) );
     Emit( "}\n" );
 
     /* free the temporaries                                                */
@@ -5583,13 +5584,13 @@ Int CompileFunc (
     Emit( "\n/* global variables used in handlers */\n" );
     for ( i = 1; i < SIZE_OBJ(CompInfoGVar)/sizeof(UInt); i++ ) {
         if ( CompGetUseGVar( i ) ) {
-            Emit( "static GVar G_%n;\n", NameGVar(i) );
+            Emit( "static GVar G_%n;\n", NameGVarObj(i) );
         }
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_COPY ) {
-            Emit( "static Obj  GC_%n;\n", NameGVar(i) );
+            Emit( "static Obj  GC_%n;\n", NameGVarObj(i) );
         }
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_FOPY ) {
-            Emit( "static Obj  GF_%n;\n", NameGVar(i) );
+            Emit( "static Obj  GF_%n;\n", NameGVarObj(i) );
         }
     }
 
@@ -5597,7 +5598,7 @@ Int CompileFunc (
     Emit( "\n/* record names used in handlers */\n" );
     for ( i = 1; i < SIZE_OBJ(CompInfoRNam)/sizeof(UInt); i++ ) {
         if ( CompGetUseRNam( i ) ) {
-            Emit( "static RNam R_%n;\n", NAME_RNAM(i) );
+            Emit( "static RNam R_%n;\n", NAME_OBJ_RNAM(i) );
         }
     }
 
@@ -5618,14 +5619,14 @@ Int CompileFunc (
     for ( i = 1; i < SIZE_OBJ(CompInfoGVar)/sizeof(UInt); i++ ) {
         if ( CompGetUseGVar( i ) ) {
             Emit( "G_%n = GVarName( \"%s\" );\n",
-                   NameGVar(i), NameGVar(i) );
+                   NameGVarObj(i), NameGVar(i) );
         }
     }
     Emit( "\n/* record names used in handlers */\n" );
     for ( i = 1; i < SIZE_OBJ(CompInfoRNam)/sizeof(UInt); i++ ) {
         if ( CompGetUseRNam( i ) ) {
             Emit( "R_%n = RNamName( \"%s\" );\n",
-                  NAME_RNAM(i), NAME_RNAM(i) );
+                  NAME_OBJ_RNAM(i), NAME_RNAM(i) );
         }
     }
     Emit( "\n/* information for the functions */\n" );
@@ -5651,11 +5652,11 @@ Int CompileFunc (
     for ( i = 1; i < SIZE_OBJ(CompInfoGVar)/sizeof(UInt); i++ ) {
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_COPY ) {
             Emit( "InitCopyGVar( \"%s\", &GC_%n );\n",
-                  NameGVar(i), NameGVar(i) );
+                  NameGVar(i), NameGVarObj(i) );
         }
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_FOPY ) {
             Emit( "InitFopyGVar( \"%s\", &GF_%n );\n",
-                  NameGVar(i), NameGVar(i) );
+                  NameGVar(i), NameGVarObj(i) );
         }
     }
     Emit( "\n/* information for the functions */\n" );
@@ -5710,7 +5711,7 @@ Int CompileFunc (
     Emit( ".postRestore = PostRestore,\n" );
     Emit( "};\n" );
     Emit( "\n" );
-    Emit( "StructInitInfo * %n ( void )\n", name );
+    Emit( "StructInitInfo * %n ( void )\n", MakeImmString(name) );
     Emit( "{\n" );
     Emit( "return &module;\n" );
     Emit( "}\n" );
