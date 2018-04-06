@@ -21,11 +21,11 @@
 *F  CompileFunc(<output>,<func>,<name>,<magic1>,<magic2>) . . . . . . compile
 */
 extern Int CompileFunc (
-            Char *              output,
+            Obj                 output,
             Obj                 func,
-            Char *              name,
+            Obj                 name,
             Int                 magic1,
-            Char *              magic2 );
+            Obj                 magic2 );
 
 
 /****************************************************************************

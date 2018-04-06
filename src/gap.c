@@ -438,11 +438,11 @@ int realmain( int argc, char * argv[], char * environ[] )
       func = READ_AS_FUNC();
       crc  = SyGAPCRC(SyCompileInput);
       type = CompileFunc(
-                         SyCompileOutput,
+                         MakeImmString(SyCompileOutput),
                          func,
-                         SyCompileName,
+                         MakeImmString(SyCompileName),
                          crc,
-                         SyCompileMagic1 );
+                         MakeImmString(SyCompileMagic1) );
       if ( type == 0 )
         SyExit( 1 );
       SyExit( 0 );
