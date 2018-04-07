@@ -19,7 +19,7 @@ rm -rf .libs "$gfile.comp"*
 
 "$gac" "$gfile" -C -o "$gfile.static.c" 2>&1 >/dev/null
 
-"$gac" "$gfile" -o "$gfile.comp" 2>&1 >/dev/null
+"$gac" "$gfile" -p "$CFLAGS" -P "$LDFLAGS" -o "$gfile.comp" 2>&1 >/dev/null
 
 echo "LOAD_STAT(\"$gfile\",false);; runtest();" |
     "./$gfile.comp" -l "$GAPROOT" -r -A -q -b -x 200 2>&1 |
