@@ -3002,8 +3002,8 @@ Obj FuncNBits_NumberSyllables (
 /**************************************************************************
 * letter rep arithmetic */
 /**************************************************************************
-*F  FuncMultWorLettrep( <self>, <a>,<b> ) */
-Obj FuncMultWorLettrep (
+*F  FuncMULT_WOR_LETTREP( <self>, <a>,<b> ) */
+Obj FuncMULT_WOR_LETTREP (
     Obj         self,
     Obj         a,
     Obj         b)
@@ -3116,8 +3116,8 @@ Obj FuncMultWorLettrep (
   return n;
 }
 
-/*F  FuncMultBytLettrep( <self>, <a>,<b> ) */
-Obj FuncMultBytLettrep (
+/*F  FuncMULT_BYT_LETTREP( <self>, <a>,<b> ) */
+Obj FuncMULT_BYT_LETTREP (
     Obj         self,
     Obj         a,
     Obj         b)
@@ -3236,7 +3236,7 @@ Obj FuncMultBytLettrep (
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(8Bits_Equal, 2, "8_bits_word, 8_bits_word"),
     GVAR_FUNC(8Bits_ExponentSums1, 1, "8_bits_word"),
@@ -3289,11 +3289,9 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(32Bits_Product, 2, "32_bits_word, 32_bits_word"),
     GVAR_FUNC(32Bits_Quotient, 2, "32_bits_word, 32_bits_word"),
     GVAR_FUNC(32Bits_LengthWord, 1, "32_bits_word"),
-    { "MULT_WOR_LETTREP", 2, "list,list",
-      FuncMultWorLettrep, "src/objfgelm.c:MULT_WOR_LETTREP" },
 
-    { "MULT_BYT_LETTREP", 2, "string,string",
-      FuncMultBytLettrep, "src/objfgelm.c:MULT_BYT_LETTREP" },
+    GVAR_FUNC(MULT_WOR_LETTREP, 2, "list,list"),
+    GVAR_FUNC(MULT_BYT_LETTREP, 2, "string,string"),
 
     { 0, 0, 0, 0, 0 }
 
