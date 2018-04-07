@@ -353,57 +353,6 @@ local fam,l,m,i,j;
   fi;
 end);
 
-MUL_BYT_LETTREP:=function(a,b)
-local l,m,i,j,as,ae,bs,be;
-  #/* Find overlap */
-  l:=Length(a);
-  if l=0 then
-    return b;
-  fi;
-  m:=Length(b);
-  if m=0 then
-    return a;
-  fi;
-  #/* now we know both lists are length >0 */
-
-  i:=l;
-  j:=1;
-  while i>=1 and j<=m and SINT_CHAR(a[i])=-SINT_CHAR(b[j]) do
-    i:=i-1; 
-    j:=j+1;
-  od; 
-  if i=0 then
-    if j>m then
-      #/* full cancellation */
-      return false;
-    fi;
-    as:=1;
-    ae:=0;
-    bs:=j;
-    be:=m;
-  elif j>m then
-    as:=1;
-    ae:=i;
-    bs:=1;
-    be:=0;
-  else
-    as:=1;
-    ae:=i;
-    bs:=j;
-    be:=m;
-  fi;
-  #/* make the new list */
-  l:="";
-  for i in [as..ae] do
-    Add(l,a[i]);
-  od;
-  for i in [bs..be] do
-    Add(l,b[i]);
-  od;
-  IS_STRING_CONV(l);
-  return l;
-end;
-
 # operations for two associative words
 InstallMethod(\*,"assoc words in B letter rep",IsIdenticalObj,
   [IsAssocWord and IsBLetterAssocWordRep,

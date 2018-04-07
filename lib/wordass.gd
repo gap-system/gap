@@ -1018,14 +1018,6 @@ DeclareGlobalFunction( "AssocWord" );
 DeclareGlobalFunction( "ObjByVector" );
 
 
-# is not used anywhere
-# #############################################################################
-# ##
-# #O  CyclicReducedWordList( <word>, <gens> )
-# ##
-# DeclareOperation( "CyclicReducedWordList", [ IsAssocWord, IsList ] );
-
-
 #############################################################################
 ##
 #F  StoreInfoFreeMagma( <F>, <names>, <req> )
