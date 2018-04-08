@@ -135,22 +135,22 @@ Obj NewMonitor(void)
     return monitorBag;
 }
 
-void LockThread(ThreadLocalStorage * thread)
+static void LockThread(ThreadLocalStorage * thread)
 {
     pthread_mutex_lock(thread->threadLock);
 }
 
-void UnlockThread(ThreadLocalStorage * thread)
+static void UnlockThread(ThreadLocalStorage * thread)
 {
     pthread_mutex_unlock(thread->threadLock);
 }
 
-void SignalThread(ThreadLocalStorage * thread)
+static void SignalThread(ThreadLocalStorage * thread)
 {
     pthread_cond_signal(thread->threadSignal);
 }
 
-void WaitThreadSignal(void)
+static void WaitThreadSignal(void)
 {
     int id = TLS(threadID);
     if (!UpdateThreadState(id, TSTATE_RUNNING, TSTATE_BLOCKED))
@@ -323,22 +323,18 @@ UInt WaitForAnyMonitor(UInt count, Monitor ** monitors)
 
 void SignalMonitor(Monitor * monitor)
 {
-    struct WaitList *    queue;
-    ThreadLocalStorage * thread = NULL;
-    queue = monitor->head;
-    if (queue != NULL) {
-        do {
-            thread = queue->thread;
-            LockThread(thread);
-            if (!thread->acquiredMonitor) {
-                thread->acquiredMonitor = monitor;
-                SignalThread(thread);
-                UnlockThread(thread);
-                break;
-            }
+    struct WaitList * queue = monitor->head;
+    while (queue != NULL) {
+        ThreadLocalStorage * thread = queue->thread;
+        LockThread(thread);
+        if (!thread->acquiredMonitor) {
+            thread->acquiredMonitor = monitor;
+            SignalThread(thread);
             UnlockThread(thread);
-            queue = queue->next;
-        } while (queue != NULL);
+            break;
+        }
+        UnlockThread(thread);
+        queue = queue->next;
     }
 }
 
