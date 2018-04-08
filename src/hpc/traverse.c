@@ -182,11 +182,13 @@ void QueueForTraversal(Obj obj)
     ADDR_OBJ(traversal->list)[++traversal->listSize] = obj;
 }
 
-void TraverseRegionFrom(TraversalState * traversal,
+static void TraverseRegionFrom(TraversalState * traversal,
                         Obj              obj,
                         int (*traversalCheck)(Obj))
 {
-    if (!IS_BAG_REF(obj) || !REGION(obj) || !CheckReadAccess(obj)) {
+    GAP_ASSERT(IS_BAG_REF(obj));
+    GAP_ASSERT(REGION(obj) != NULL);
+    if (!CheckReadAccess(obj)) {
         traversal->list = NewList(0);
         return;
     }
