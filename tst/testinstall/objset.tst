@@ -1,4 +1,6 @@
 gap> START_TEST("objset.tst");
+
+# basic constructor
 gap> OBJ_SET([]);
 OBJ_SET([  ])
 gap> OBJ_SET([1]);
@@ -11,12 +13,16 @@ gap> b := OBJ_SET([(1,2),(1,2),(1,2),(1,2)]);
 OBJ_SET([ (1,2), (1,2), (1,2), (1,2) ])
 gap> c := OBJ_SET([1,2,1,2,1,2,1]);
 OBJ_SET([ 1, 2 ])
+
+#
 gap> OBJ_SET_VALUES(a);
 [ (1,2) ]
 gap> OBJ_SET_VALUES(b);
 [ (1,2), (1,2), (1,2), (1,2) ]
 gap> OBJ_SET_VALUES(c);
 [ 1, 2 ]
+
+#
 gap> p := (1,2);;
 gap> FIND_OBJ_SET(b, p);
 false
@@ -40,9 +46,11 @@ gap> b;
 OBJ_SET([  ])
 gap> FIND_OBJ_SET(b, p);
 false
+
+#
 gap> x := OBJ_SET();
 OBJ_SET([  ])
-gap> setvals := 10;;
+gap> setvals := 1000;;
 gap> for i in [1..setvals] do
 > ADD_OBJ_SET(x, i);
 > if not ForAll([1..i], z -> FIND_OBJ_SET(x, z)) then
