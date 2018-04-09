@@ -1068,26 +1068,30 @@ static Int GetLine2 (
             bptr++;
 
         /* copy piece of input->sline into buffer and adjust counters */
-        UInt count = input->spos;
-        Char *ptr = (Char *)CHARS_STRING(input->sline) + count;
-        UInt len = GET_LEN_STRING(input->sline);
-        Char *bend = buffer + length - 2;
-        while (bptr < bend && count < len && *ptr != '\n' && *ptr != '\r') {
-            *bptr++ = *ptr++;
-            count++;
-        }
-        /* we also copy an end of line if there is one */
-        if (*ptr == '\n' || *ptr == '\r') {
-            *bptr++ = *ptr++;
-            count++;
+        Char *ptr = CSTR_STRING(input->sline) + input->spos;
+        const Char * const end = CSTR_STRING(input->sline) + GET_LEN_STRING(input->sline);
+        const Char * const bend = buffer + length - 2;
+        while (bptr < bend && ptr < end) {
+            Char c = *ptr++;
+
+            // ignore CR, so that a Window CR+LF line terminator looks
+            // to us the same as a Unix LF line terminator
+            if (c == '\r')
+                continue;
+
+            *bptr++ = c;
+
+            // check for line end
+            if (c == '\n')
+                break;
         }
         *bptr = '\0';
-        input->spos = count;
+        input->spos = ptr - (Char *)CHARS_STRING(input->sline);
 
         /* if input->stream is a string stream, we have to adjust the
            position counter in the stream object as well */
         if (input->isstringstream) {
-            ADDR_OBJ(input->stream)[1] = INTOBJ_INT(count);
+            ADDR_OBJ(input->stream)[1] = INTOBJ_INT(input->spos);
         }
     }
     else {
