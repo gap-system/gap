@@ -622,7 +622,7 @@ static inline Char CharHexDigit( Char c )
 static Char GetEscapedChar(void)
 {
   Char result = 0;
-  Char c = PEEK_CURR_CHAR();
+  Char c = GET_NEXT_CHAR();
 
   if ( c == 'n'  )       result = '\n';
   else if ( c == 't'  )  result = '\t';
@@ -695,7 +695,6 @@ static void GetStr(void)
 
     /* handle escape sequences                                         */
     if ( c == '\\' ) {
-      c = GET_NEXT_CHAR();
       STATE(Value)[i] = GetEscapedChar();
     }
 
@@ -858,7 +857,6 @@ static void GetChar(void)
     SyntaxError("Character literal must not include <newline>");
   } else {
     if ( c == '\\' ) {
-      c = GET_NEXT_CHAR();
       STATE(Value)[0] = GetEscapedChar();
     } else {
       /* put normal chars into 'STATE(Value)' */
