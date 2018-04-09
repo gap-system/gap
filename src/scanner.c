@@ -207,20 +207,19 @@ static void GetIdent(void)
            so we recurse instead                                           */
         if ( c == '\\' ) {
             c = GET_NEXT_CHAR();
-            if ( c == 'n'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\n';
-            else if ( c == 't'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\t';
-            else if ( c == 'r'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\r';
-            else if ( c == 'b'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\b';
-            else if ( i < SAFE_VALUE_SIZE-1 )  {
-                STATE(Value)[i] = c;
+            switch(c) {
+            case 'n': c = '\n'; break;
+            case 't': c = '\t'; break;
+            case 'r': c = '\r'; break;
+            case 'b': c = '\b'; break;
+            default:
                 isQuoted = 1;
             }
         }
 
-        /* put normal chars into 'STATE(Value)' but only if there is room         */
-        else {
-            if ( i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = c;
-        }
+        /// put char into 'STATE(Value)' but only if there is room
+        if (i < SAFE_VALUE_SIZE - 1)
+            STATE(Value)[i] = c;
 
         /* read the next character                                         */
         c = GET_NEXT_CHAR();
@@ -228,14 +227,16 @@ static void GetIdent(void)
     }
 
     /* terminate the identifier and lets assume that it is not a keyword   */
-    if ( i < SAFE_VALUE_SIZE-1 )
-        STATE(Value)[i] = '\0';
-    else {
+    if (i >= SAFE_VALUE_SIZE-1) {
         SyntaxError("Identifiers in GAP must consist of less than 1023 characters.");
-        i =  SAFE_VALUE_SIZE-1;
-        STATE(Value)[i] = '\0';
+        i = SAFE_VALUE_SIZE-1;
     }
+    STATE(Value)[i] = '\0';
     STATE(Symbol) = S_IDENT;
+
+    // if it is quoted then it is an identifier
+    if (isQuoted)
+        return;
 
     /* now check if 'STATE(Value)' holds a keyword                                */
     switch ( 256*STATE(Value)[0]+STATE(Value)[i-1] ) {
@@ -279,11 +280,6 @@ static void GetIdent(void)
 
     default: ;
     }
-
-    /* if it is quoted it is an identifier                                 */
-    if ( isQuoted )  STATE(Symbol) = S_IDENT;
-
-
 }
 
 
