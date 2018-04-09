@@ -45,7 +45,6 @@ do
     GAPDIR=$BUILDDIR ./run_error_tests.sh
     cd ../test-compile
     GAPDIR=$BUILDDIR ./run_all.sh
-    exit 0
     ;;
 
   testpackages)
@@ -137,10 +136,6 @@ GAPInput
         fi
 
     fi
-
-    # TODO: actually run package tests
-
-    exit 0
     ;;
 
   docomp)
@@ -207,3 +202,5 @@ GAPInput
     ;;
   esac
 done
+
+exit 0
