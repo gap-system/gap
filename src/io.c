@@ -220,6 +220,14 @@ Char PEEK_CURR_CHAR(void)
     return *STATE(In);
 }
 
+void IGNORE_REST_OF_LINE(void)
+{
+    Char c = *STATE(In);
+    while (c != '\n' && c != '\r' && c != '\377')
+        c = GET_NEXT_CHAR();
+}
+
+
 const Char * GetInputFilename(void)
 {
     GAP_ASSERT(IO()->Input);

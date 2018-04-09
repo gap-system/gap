@@ -970,10 +970,8 @@ void GetSymbol ( void )
 
   /* skip over <spaces>, <tabs>, <newlines> and comments                 */
   while (c==' '||c=='\t'||c=='\n'||c=='\r'||c=='\f'||c=='#') {
-    if ( c == '#' ) {
-      while ( c != '\n' && c != '\r' && c != '\377' )
-        c = GET_NEXT_CHAR();
-    }
+    if ( c == '#' )
+      IGNORE_REST_OF_LINE();
     c = GET_NEXT_CHAR();
   }
 
