@@ -221,6 +221,13 @@ Char GET_NEXT_CHAR(void)
             // if we see a backlash without a line terminator after it, stop
             break;
         }
+
+        // if we get here, we saw a line continuation; change the prompt to a
+        // partial prompt from now on
+        if (!SyQuiet)
+            STATE(Prompt) = "> ";
+        else
+            STATE(Prompt) = "";
     }
 
     return *STATE(In);
