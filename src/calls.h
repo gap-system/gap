@@ -85,6 +85,9 @@ typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5,
 **
 **  'NAMI_FUNC(<func>,<i>)' is the name of the <i>-th local variable.
 **
+**  'NAMI_OBJ_FUNC(<func>,<i>)' is the name of the <i>-th local variable
+**                              as a GAP string
+**
 **  'PROF_FUNC(<func>)' is the profiling information bag.
 **
 **  'NLOC_FUNC(<func>)' is the number of local variables of  the  interpreted
@@ -155,6 +158,7 @@ static inline Obj NAMS_FUNC(Obj func)
 }
 
 extern Char * NAMI_FUNC(Obj func, Int i);
+extern Obj NAMI_OBJ_FUNC(Obj func, Int i);
 
 static inline Obj PROF_FUNC(Obj func)
 {

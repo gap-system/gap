@@ -2609,8 +2609,8 @@ void            IntrRefLVar (
     else {
         while ((val = OBJ_LVAR(lvar))==0) {
             ErrorReturnVoid(
-                            "Variable: '%s' must have an assigned value",
-                            (Int)NAME_LVAR( (UInt)( lvar )), 0L,
+                            "Variable: '%g' must have an assigned value",
+                            (Int)NAME_OBJ_LVAR( (UInt)( lvar )), 0L,
                             "you can 'return;' after assigning a value" );
 
         }
@@ -2696,8 +2696,8 @@ void            IntrRefHVar (
     else {
         while ((val = OBJ_HVAR(hvar))==0) {
             ErrorReturnVoid(
-                            "Variable: '%s' must have an assigned value",
-                            (Int)NAME_HVAR( (UInt)( hvar )), 0L,
+                            "Variable: '%g' must have an assigned value",
+                            (Int)NAME_OBJ_HVAR( (UInt)( hvar )), 0L,
                             "you can 'return;' after assigning a value" );
 
         }

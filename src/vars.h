@@ -295,11 +295,15 @@ static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 /****************************************************************************
 **
 *F  NAME_LVAR( <lvar> ) . . . . . . . . . . . . . . .  name of local variable
+*F  NAME_OBJ_LVAR( <lvar> ) . . . . . .  name of local variable as GAP string
 **
 **  'NAME_LVAR' returns the name of the local variable <lvar> as a C string.
+**  'NAME_OBJ_LVAR' acts like 'NAME_LVAR' but returns a GAP string.
 */
 #define NAME_LVAR(lvar)         NAMI_FUNC( CURR_FUNC(), lvar )
+#define NAME_OBJ_LVAR(lvar)         NAMI_OBJ_FUNC( CURR_FUNC(), lvar )
 #define NAME_LVAR_WITH_CONTEXT(context,lvar)         NAMI_FUNC( FUNC_LVARS(context), lvar )
+#define NAME_OBJ_LVAR_WITH_CONTEXT(context,lvar) NAMI_OBJ_FUNC( FUNC_LVARS(context), lvar )
 
 
 /****************************************************************************
@@ -317,20 +321,25 @@ extern  Obj             ObjLVar (
 *F  ASS_HVAR(<hvar>,<val>)  . . . . . . . . . . . assign to a higher variable
 *F  OBJ_HVAR(<hvar>)  . . . . . . . . . . . . . .  value of a higher variable
 *F  NAME_HVAR(<hvar>) . . . . . . . . . . . . . . . name of a higher variable
+*F  NAME_OBJ_HVAR(<hvar>) . . . . . name of a higher variable as a GAP string
 **
 **  'ASS_HVAR' assigns the value <val> to the higher variable <hvar>.
 **
 **  'OBJ_HVAR' returns the value of the higher variable <hvar>.
 **
 **  'NAME_HVAR' returns the name of the higher variable <hvar> as a C string.
+**  'NAME_OBJ_HVAR' returns the name of the higher variable <hvar> as a GAP
+**  string.
 */
 extern void   ASS_HVAR(UInt hvar, Obj val);
 extern Obj    OBJ_HVAR(UInt hvar);
+extern Obj    NAME_OBJ_HVAR(UInt hvar);
 extern Char * NAME_HVAR(UInt hvar);
 
 extern void   ASS_HVAR_WITH_CONTEXT(Obj context, UInt hvar, Obj val);
 extern Obj    OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar);
 extern Char * NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar);
+extern Obj    NAME_OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar);
 
 
 /****************************************************************************

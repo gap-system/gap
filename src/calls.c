@@ -57,9 +57,14 @@ void SET_NAME_FUNC(Obj func, Obj name)
     FUNC(func)->name = name;
 }
 
+Obj NAMI_OBJ_FUNC(Obj func, Int i)
+{
+    return ELM_LIST(NAMS_FUNC(func),i);
+}
+
 Char * NAMI_FUNC(Obj func, Int i)
 {
-    return CSTR_STRING(ELM_LIST(NAMS_FUNC(func),i));
+    return CSTR_STRING(NAMI_OBJ_FUNC(func, i));
 }
 
 

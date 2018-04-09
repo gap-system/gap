@@ -440,8 +440,8 @@ Obj             ValAutoGVar (
         /* if this is still an automatic variable, this is an error        */
         while ( (val = ValGVar(gvar)) == 0 ) {
             ErrorReturnVoid(
-       "Variable: automatic variable '%s' must get a value by function call",
-                (Int)NameGVar(gvar), 0L,
+       "Variable: automatic variable '%g' must get a value by function call",
+                (Int)NameGVarObj(gvar), 0L,
                 "you can 'return;' after assigning a value" );
         }
 
