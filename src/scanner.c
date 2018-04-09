@@ -597,10 +597,7 @@ void GetNumber ( UInt StartingStatus )
 
 /****************************************************************************
 **
-*F  GetEscapedChar() . . . . . . . . . . . . . . . . get an escaped character
-**
-**  'GetEscapedChar' reads an escape sequence from the current input file
-**  into the variable *dst.
+*F  GetOctalDigits()
 **
 */
 static inline Char GetOctalDigits( void )
@@ -639,6 +636,15 @@ static inline Char CharHexDigit( Char c )
     }
 }
 
+
+/****************************************************************************
+**
+*F  GetEscapedChar() . . . . . . . . . . . . . . . . get an escaped character
+**
+**  'GetEscapedChar' reads an escape sequence from the current input file
+**  into the variable *dst.
+**
+*/
 Char GetEscapedChar( void )
 {
   Char result = 0;
