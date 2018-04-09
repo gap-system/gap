@@ -195,14 +195,57 @@ Char GET_NEXT_CHAR(void)
     }
     else
         STATE(In)++;
+
+    // handle line continuation, i.e., backslash followed by new line; and
+    // also the case when we run out of buffered data
+    while (*STATE(In) == '\\' || *STATE(In) == 0) {
+
+        // if we run out of data, get more, and try again
+        if (*STATE(In) == 0) {
+            GetLine();
+            continue;
+        }
+
+        // we have seen a backslash; so check now if it starts a
+        // line continuation, i.e., whether it is followed by a line terminator
+        if (STATE(In)[1] == '\n') {
+            // LF is the line terminator used in Unix and its relatives
+            STATE(In) += 2;
+        }
+        else if (STATE(In)[1] == '\r' && STATE(In)[2] == '\n') {
+            // CR+LF is the line terminator used by Windows
+            STATE(In) += 3;
+        }
+        else {
+            // if we see a backlash without a line terminator after it, stop
+            break;
+        }
+    }
+
+    return *STATE(In);
+}
+
+// GET_NEXT_CHAR_NO_LC is like GET_NEXT_CHAR, but does not handle
+// line continuations. This is used when skipping to the end of the
+// current line, when handling comment lines.
+static Char GET_NEXT_CHAR_NO_LC(void)
+{
+    if (STATE(In) == &IO()->Pushback) {
+        STATE(In) = IO()->RealIn;
+    }
+    else
+        STATE(In)++;
+
     if (!*STATE(In))
         GetLine();
+
     return *STATE(In);
 }
 
 Char PEEK_NEXT_CHAR(void)
 {
     assert(IS_CHAR_PUSHBACK_EMPTY());
+
     // store the current character
     IO()->Pushback = *STATE(In);
 
@@ -220,11 +263,11 @@ Char PEEK_CURR_CHAR(void)
     return *STATE(In);
 }
 
-void IGNORE_REST_OF_LINE(void)
+void SKIP_TO_END_OF_LINE(void)
 {
     Char c = *STATE(In);
     while (c != '\n' && c != '\r' && c != '\377')
-        c = GET_NEXT_CHAR();
+        c = GET_NEXT_CHAR_NO_LC();
 }
 
 
