@@ -8,11 +8,17 @@ gap> START_TEST("linecontinuation.tst");
 gap> x:="foo\
 > bar";
 "foobar"
+gap> "foo\
+> bar";
+"foobar"
 
 # in triple quoted string
-gap> x:="""haha\
-> !""";
-"haha!"
+gap> x:="""foo\
+> bar""";
+"foobar"
+gap> """foo\
+> bar""";
+"foobar"
 
 # break keywords and operators like :=, <=, >= etc. in the middle
 gap> 1 m\
@@ -34,6 +40,19 @@ function( x... ) ... end
 gap> {x.\
 > ..}->x;
 function( x... ) ... end
+
+# inside float expressions
+gap> 1.2e\
+> 0;
+1.2
+gap> 1.1\
+> ;
+1.1
+
+# inside integer expressions
+gap> 12\
+> 3;
+123
 
 # however, in comments, you cannot use line continuations:
 gap> # 1234\
