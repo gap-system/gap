@@ -189,7 +189,7 @@ void Match (
 **  'GetIdent' can decide with one string comparison if 'STATE(Value)' holds
 **  a keyword or not.
 */
-void GetIdent ( void )
+static void GetIdent(void)
 {
     Int                 i, fetch;
     Int                 isQuoted;
@@ -359,7 +359,7 @@ static Char GetCleanedChar( UInt *wasEscaped ) {
 }
 
 
-void GetNumber ( UInt StartingStatus )
+static void GetNumber(UInt StartingStatus)
 {
   Int                 i=0;
   Char                c;
@@ -645,7 +645,7 @@ static inline Char CharHexDigit( Char c )
 **  into the variable *dst.
 **
 */
-Char GetEscapedChar( void )
+static Char GetEscapedChar(void)
 {
   Char result = 0;
   Char c = PEEK_CURR_CHAR();
@@ -710,7 +710,7 @@ Char GetEscapedChar( void )
 **  the string is  complete or not to decide  between Symbol=S_STRING or
 **  S_PARTIALSTRING.
 */
-void GetStr ( void )
+static void GetStr(void)
 {
   Int                 i = 0, fetch;
   Char c = PEEK_CURR_CHAR();
@@ -787,7 +787,7 @@ void GetStr ( void )
 **  the string is  complete or not to decide  between Symbol=S_STRING or
 **  S_PARTIALTRIPLESTRING.
 */
-void GetTripStr ( void )
+static void GetTripStr(void)
 {
   Int                 i = 0;
   Char c = PEEK_CURR_CHAR();
@@ -847,7 +847,7 @@ void GetTripStr ( void )
 **  'GetMaybeTripStr' decides if we are reading a single quoted string,
 **  or a triple quoted string.
 */
-void GetMaybeTripStr ( void )
+static void GetMaybeTripStr(void)
 {
     Char c = GET_NEXT_CHAR();
 
@@ -884,7 +884,7 @@ void GetMaybeTripStr ( void )
 **  must not  be '\'' or <newline>, but  the escape  sequences '\\\'' or '\n'
 **  can be used instead.
 */
-void GetChar ( void )
+static void GetChar(void)
 {
   /* skip '\''                                                           */
   Char c = GET_NEXT_CHAR();
@@ -916,7 +916,7 @@ void GetChar ( void )
   }
 }
 
-void GetHelp( void )
+static void GetHelp(void)
 {
     Int i = 0;
 
