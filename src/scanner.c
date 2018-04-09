@@ -191,7 +191,7 @@ void Match (
 */
 static void GetIdent(void)
 {
-    Int                 i, fetch;
+    Int                 i;
     Int                 isQuoted;
 
     /* initially it could be a keyword                                     */
@@ -201,24 +201,13 @@ static void GetIdent(void)
     Char c = PEEK_CURR_CHAR();
     for ( i=0; IsIdent(c) || IsDigit(c) || c=='\\'; i++ ) {
 
-        fetch = 1;
         /* handle escape sequences                                         */
         /* we ignore '\ newline' by decrementing i, except at the
            very start of the identifier, when we cannot do that
            so we recurse instead                                           */
         if ( c == '\\' ) {
             c = GET_NEXT_CHAR();
-            if      ( c == '\n' && i == 0 )  { GetSymbol();  return; }
-            else if ( c == '\r' )  {
-                c = GET_NEXT_CHAR();
-                if  ( c == '\n' )  {
-                     if (i == 0) { GetSymbol();  return; }
-                     else i--;
-                }
-                else  {STATE(Value)[i] = '\r'; fetch = 0;}
-            }
-            else if ( c == '\n' && i < SAFE_VALUE_SIZE-1 )  i--;
-            else if ( c == 'n'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\n';
+            if ( c == 'n'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\n';
             else if ( c == 't'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\t';
             else if ( c == 'r'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\r';
             else if ( c == 'b'  && i < SAFE_VALUE_SIZE-1 )  STATE(Value)[i] = '\b';
@@ -234,7 +223,7 @@ static void GetIdent(void)
         }
 
         /* read the next character                                         */
-        if (fetch) c = GET_NEXT_CHAR();
+        c = GET_NEXT_CHAR();
 
     }
 
@@ -327,35 +316,24 @@ static void GetIdent(void)
 **  exponent digit.
 **
 */
-static Char GetCleanedChar( UInt *wasEscaped ) {
-  Char c = GET_NEXT_CHAR();
-  *wasEscaped = 0;
-  if (c == '\\') {
-    c = GET_NEXT_CHAR();
-    if      ( c == '\n')
-      return GetCleanedChar(wasEscaped);
-    else if ( c == '\r' )  {
-      if ( PEEK_NEXT_CHAR() == '\n' ) {
-        GET_NEXT_CHAR(); // skip the \n
-        return GetCleanedChar(wasEscaped);
-      }
-      else {
+static Char GetCleanedChar(UInt * wasEscaped)
+{
+    Char c = GET_NEXT_CHAR();
+    *wasEscaped = 0;
+    if (c == '\\') {
+        c = GET_NEXT_CHAR();
         *wasEscaped = 1;
-        return '\r';
-      }
+        switch (c) {
+        case 'n':  return '\n';
+        case 't':  return '\t';
+        case 'r':  return '\r';
+        case 'b':  return '\b';
+        case '>':  return '\01';
+        case '<':  return '\02';
+        case 'c':  return '\03';
+        }
     }
-    else {
-      *wasEscaped = 1;
-      if ( c == 'n')  return '\n';
-      else if ( c == 't')  return '\t';
-      else if ( c == 'r')  return '\r';
-      else if ( c == 'b')  return '\b';
-      else if ( c == '>')  return '\01';
-      else if ( c == '<')  return '\02';
-      else if ( c == 'c')  return '\03';
-    }
-  }
-  return c;
+    return c;
 }
 
 
@@ -712,30 +690,17 @@ static Char GetEscapedChar(void)
 */
 static void GetStr(void)
 {
-  Int                 i = 0, fetch;
+  Int                 i = 0;
   Char c = PEEK_CURR_CHAR();
 
   /* read all characters into 'Value'                                    */
   for ( i = 0; i < SAFE_VALUE_SIZE-1 && c != '"'
            && c != '\n' && c != '\377'; i++ ) {
 
-    fetch = 1;
     /* handle escape sequences                                         */
     if ( c == '\\' ) {
       c = GET_NEXT_CHAR();
-      /* if next is another '\\' followed by '\n' it must be ignored */
-      while ( c == '\\' && PEEK_NEXT_CHAR() == '\n' ) {
-          c = GET_NEXT_CHAR();   // skip '\\'
-          c = GET_NEXT_CHAR();   // skip '\n'
-      }
-      if      ( c == '\n' )  i--;
-      else if ( c == '\r' )  {
-        c = GET_NEXT_CHAR();
-        if  ( c == '\n' )  i--;
-        else  {STATE(Value)[i] = '\r'; fetch = 0;}
-      } else {
-          STATE(Value)[i] = GetEscapedChar();
-      }
+      STATE(Value)[i] = GetEscapedChar();
     }
 
     /* put normal chars into 'Value' but only if there is room         */
@@ -744,7 +709,7 @@ static void GetStr(void)
     }
 
     /* read the next character                                         */
-    if (fetch) c = GET_NEXT_CHAR();
+    c = GET_NEXT_CHAR();
 
   }
 
@@ -971,7 +936,7 @@ void GetSymbol ( void )
   /* skip over <spaces>, <tabs>, <newlines> and comments                 */
   while (c==' '||c=='\t'||c=='\n'||c=='\r'||c=='\f'||c=='#') {
     if ( c == '#' )
-      IGNORE_REST_OF_LINE();
+      SKIP_TO_END_OF_LINE();
     c = GET_NEXT_CHAR();
   }
 
@@ -988,8 +953,6 @@ void GetSymbol ( void )
     break;
 
   case '!':   STATE(Symbol) = S_ILLEGAL;                     c = GET_NEXT_CHAR();
-    if ( c == '\\' ) { c = GET_NEXT_CHAR();
-      if ( c == '\n' ) { c = GET_NEXT_CHAR(); } }
     if ( c == '.' ) { STATE(Symbol) = S_BDOT;    GET_NEXT_CHAR();  break; }
     if ( c == '[' ) { STATE(Symbol) = S_BLBRACK; GET_NEXT_CHAR();  break; }
     if ( c == '{' ) { STATE(Symbol) = S_BLBRACE; GET_NEXT_CHAR();  break; }
@@ -1003,11 +966,6 @@ void GetSymbol ( void )
   case ',':   STATE(Symbol) = S_COMMA;                       GET_NEXT_CHAR();  break;
 
   case ':':   STATE(Symbol) = S_COLON;                       c = GET_NEXT_CHAR();
-    if ( c == '\\' ) {
-      c = GET_NEXT_CHAR();
-      if ( c == '\n' )
-        { c = GET_NEXT_CHAR(); }
-    }
     if ( c == '=' ) { STATE(Symbol) = S_ASSIGN;  c = GET_NEXT_CHAR(); break; }
     break;
 
@@ -1019,21 +977,15 @@ void GetSymbol ( void )
 
   case '=':   STATE(Symbol) = S_EQ;                          GET_NEXT_CHAR();  break;
   case '<':   STATE(Symbol) = S_LT;                          c = GET_NEXT_CHAR();
-    if ( c == '\\' ) { c = GET_NEXT_CHAR();
-      if ( c == '\n' ) { c = GET_NEXT_CHAR(); } }
     if ( c == '=' ) { STATE(Symbol) = S_LE;      c = GET_NEXT_CHAR();  break; }
     if ( c == '>' ) { STATE(Symbol) = S_NE;      c = GET_NEXT_CHAR();  break; }
     break;
   case '>':   STATE(Symbol) = S_GT;                          c = GET_NEXT_CHAR();
-    if ( c == '\\' ) { c = GET_NEXT_CHAR();
-      if ( c == '\n' ) { c = GET_NEXT_CHAR(); } }
     if ( c == '=' ) { STATE(Symbol) = S_GE;      c = GET_NEXT_CHAR();  break; }
     break;
 
   case '+':   STATE(Symbol) = S_PLUS;                        GET_NEXT_CHAR();  break;
   case '-':   STATE(Symbol) = S_MINUS;                       c = GET_NEXT_CHAR();
-    if ( c == '\\' ) { c = GET_NEXT_CHAR();
-      if ( c == '\n' ) { c = GET_NEXT_CHAR(); } }
     if ( c == '>' ) { STATE(Symbol)=S_MAPTO;     c = GET_NEXT_CHAR();  break; }
     break;
   case '*':   STATE(Symbol) = S_MULT;                        GET_NEXT_CHAR();  break;

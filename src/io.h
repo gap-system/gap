@@ -25,8 +25,9 @@ extern Char GET_NEXT_CHAR(void);
 extern Char PEEK_NEXT_CHAR(void);
 extern Char PEEK_CURR_CHAR(void);
 
-// skip the rest of the current line
-extern void IGNORE_REST_OF_LINE(void);
+// skip the rest of the current line, ignoring line continuations
+// (used to handle comments)
+extern void SKIP_TO_END_OF_LINE(void);
 
 /****************************************************************************
 **

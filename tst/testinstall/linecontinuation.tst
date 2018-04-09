@@ -12,7 +12,7 @@ gap> x:="foo\
 # in triple quoted string
 gap> x:="""haha\
 > !""";
-"haha\\\n!"
+"haha!"
 
 # break keywords and operators like :=, <=, >= etc. in the middle
 gap> 1 m\
@@ -21,6 +21,19 @@ gap> 1 m\
 gap> x :\
 > =1;
 1
+
+# inside range expressions
+gap> [1.\
+> .4];
+[ 1 .. 4 ]
+
+# inside triple dots
+gap> {x..\
+> .}->x;
+function( x... ) ... end
+gap> {x.\
+> ..}->x;
+function( x... ) ... end
 
 # however, in comments, you cannot use line continuations:
 gap> # 1234\
