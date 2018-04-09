@@ -5,8 +5,8 @@ language: c
 
 env:
   global:
-    - CFLAGS="-fprofile-arcs -ftest-coverage -O2"
-    - LDFLAGS="-fprofile-arcs"
+    - CFLAGS="--coverage -O2"
+    - LDFLAGS="--coverage"
 
 addons:
   apt_packages:
