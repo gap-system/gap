@@ -921,10 +921,10 @@ void GetSymbol ( void )
 
     Char c = PEEK_CURR_CHAR();
 
-  /* if no character is available then get one                           */
-  if ( c == '\0' )
-    { STATE(In)--;
-      c = GET_NEXT_CHAR();
+    // if no character is available then get one
+    if ( c == '\0' ) {
+        STATE(In)--;
+        c = GET_NEXT_CHAR();
     }
 
   /* skip over <spaces>, <tabs>, <newlines> and comments                 */
@@ -934,74 +934,73 @@ void GetSymbol ( void )
     c = GET_NEXT_CHAR();
   }
 
-  /* switch according to the character                                   */
-  switch ( c ) {
+  // switch according to the character
+  if (IsAlpha(c)) {
+      GetIdent();
+      return;
+  }
 
-  case '.':   STATE(Symbol) = S_DOT;                         c = GET_NEXT_CHAR();
-    if ( c == '.' ) { 
-            STATE(Symbol) = S_DOTDOT; c = GET_NEXT_CHAR();
-            if ( c == '.') {
-                    STATE(Symbol) = S_DOTDOTDOT; c = GET_NEXT_CHAR();
-            }
+  switch (c) {
+  case '.':         STATE(Symbol) = S_DOT;       c = GET_NEXT_CHAR();
+    if (c == '.') { STATE(Symbol) = S_DOTDOT;    c = GET_NEXT_CHAR();
+        if (c == '.') { STATE(Symbol) = S_DOTDOTDOT;
+                                                 c = GET_NEXT_CHAR();
+        }
     }
     break;
 
-  case '!':   STATE(Symbol) = S_ILLEGAL;                     c = GET_NEXT_CHAR();
-    if ( c == '.' ) { STATE(Symbol) = S_BDOT;    GET_NEXT_CHAR();  break; }
-    if ( c == '[' ) { STATE(Symbol) = S_BLBRACK; GET_NEXT_CHAR();  break; }
-    if ( c == '{' ) { STATE(Symbol) = S_BLBRACE; GET_NEXT_CHAR();  break; }
+  case '!':         STATE(Symbol) = S_ILLEGAL;   c = GET_NEXT_CHAR();
+    if (c == '.') { STATE(Symbol) = S_BDOT;          GET_NEXT_CHAR(); break; }
+    if (c == '[') { STATE(Symbol) = S_BLBRACK;       GET_NEXT_CHAR(); break; }
+    if (c == '{') { STATE(Symbol) = S_BLBRACE;       GET_NEXT_CHAR(); break; }
     break;
-  case '[':   STATE(Symbol) = S_LBRACK;                      GET_NEXT_CHAR();  break;
-  case ']':   STATE(Symbol) = S_RBRACK;                      GET_NEXT_CHAR();  break;
-  case '{':   STATE(Symbol) = S_LBRACE;                      GET_NEXT_CHAR();  break;
-  case '}':   STATE(Symbol) = S_RBRACE;                      GET_NEXT_CHAR();  break;
-  case '(':   STATE(Symbol) = S_LPAREN;                      GET_NEXT_CHAR();  break;
-  case ')':   STATE(Symbol) = S_RPAREN;                      GET_NEXT_CHAR();  break;
-  case ',':   STATE(Symbol) = S_COMMA;                       GET_NEXT_CHAR();  break;
+  case '[':         STATE(Symbol) = S_LBRACK;        GET_NEXT_CHAR(); break;
+  case ']':         STATE(Symbol) = S_RBRACK;        GET_NEXT_CHAR(); break;
+  case '{':         STATE(Symbol) = S_LBRACE;        GET_NEXT_CHAR(); break;
+  case '}':         STATE(Symbol) = S_RBRACE;        GET_NEXT_CHAR(); break;
+  case '(':         STATE(Symbol) = S_LPAREN;        GET_NEXT_CHAR(); break;
+  case ')':         STATE(Symbol) = S_RPAREN;        GET_NEXT_CHAR(); break;
+  case ',':         STATE(Symbol) = S_COMMA;         GET_NEXT_CHAR(); break;
 
-  case ':':   STATE(Symbol) = S_COLON;                       c = GET_NEXT_CHAR();
-    if ( c == '=' ) { STATE(Symbol) = S_ASSIGN;  c = GET_NEXT_CHAR(); break; }
-    break;
-
-  case ';':   STATE(Symbol) = S_SEMICOLON;                   c = GET_NEXT_CHAR();
-    if ( c == ';' ) {
-        STATE(Symbol) = S_DUALSEMICOLON; c = GET_NEXT_CHAR();
-    }
+  case ':':         STATE(Symbol) = S_COLON;     c = GET_NEXT_CHAR();
+    if (c == '=') { STATE(Symbol) = S_ASSIGN;        GET_NEXT_CHAR(); break; }
     break;
 
-  case '=':   STATE(Symbol) = S_EQ;                          GET_NEXT_CHAR();  break;
-  case '<':   STATE(Symbol) = S_LT;                          c = GET_NEXT_CHAR();
-    if ( c == '=' ) { STATE(Symbol) = S_LE;      c = GET_NEXT_CHAR();  break; }
-    if ( c == '>' ) { STATE(Symbol) = S_NE;      c = GET_NEXT_CHAR();  break; }
-    break;
-  case '>':   STATE(Symbol) = S_GT;                          c = GET_NEXT_CHAR();
-    if ( c == '=' ) { STATE(Symbol) = S_GE;      c = GET_NEXT_CHAR();  break; }
+  case ';':         STATE(Symbol) = S_SEMICOLON; c = GET_NEXT_CHAR();
+    if (c == ';') { STATE(Symbol) = S_DUALSEMICOLON; GET_NEXT_CHAR(); break; }
     break;
 
-  case '+':   STATE(Symbol) = S_PLUS;                        GET_NEXT_CHAR();  break;
-  case '-':   STATE(Symbol) = S_MINUS;                       c = GET_NEXT_CHAR();
-    if ( c == '>' ) { STATE(Symbol)=S_MAPTO;     c = GET_NEXT_CHAR();  break; }
+  case '=':         STATE(Symbol) = S_EQ;            GET_NEXT_CHAR(); break;
+  case '<':         STATE(Symbol) = S_LT;        c = GET_NEXT_CHAR();
+    if (c == '=') { STATE(Symbol) = S_LE;            GET_NEXT_CHAR(); break; }
+    if (c == '>') { STATE(Symbol) = S_NE;            GET_NEXT_CHAR(); break; }
     break;
-  case '*':   STATE(Symbol) = S_MULT;                        GET_NEXT_CHAR();  break;
-  case '/':   STATE(Symbol) = S_DIV;                         GET_NEXT_CHAR();  break;
-  case '^':   STATE(Symbol) = S_POW;                         GET_NEXT_CHAR();  break;
+  case '>':         STATE(Symbol) = S_GT;        c = GET_NEXT_CHAR();
+    if (c == '=') { STATE(Symbol) = S_GE;            GET_NEXT_CHAR(); break; }
+    break;
 
-  case '"':                                           GetMaybeTripStr();  break;
-  case '\'':                                          GetChar();   break;
-  case '\\':                                          GetIdent();  break;
-  case '_':                                           GetIdent();  break;
-  case '@':                                           GetIdent();  break;
-  case '~':   STATE(Symbol) = S_TILDE;                GET_NEXT_CHAR();  break;
-  case '?':   STATE(Symbol) = S_HELP;                 GetHelp();   break;
+  case '+':         STATE(Symbol) = S_PLUS;          GET_NEXT_CHAR(); break;
+  case '-':         STATE(Symbol) = S_MINUS;     c = GET_NEXT_CHAR();
+    if (c == '>') { STATE(Symbol) = S_MAPTO;         GET_NEXT_CHAR(); break; }
+    break;
+  case '*':         STATE(Symbol) = S_MULT;          GET_NEXT_CHAR(); break;
+  case '/':         STATE(Symbol) = S_DIV;           GET_NEXT_CHAR(); break;
+  case '^':         STATE(Symbol) = S_POW;           GET_NEXT_CHAR(); break;
+
+  case '~':         STATE(Symbol) = S_TILDE;         GET_NEXT_CHAR(); break;
+  case '?':         STATE(Symbol) = S_HELP;          GetHelp(); break;
+  case '"':                                          GetMaybeTripStr(); break;
+  case '\'':                                         GetChar(); break;
+  case '\\':                                         GetIdent(); break;
+  case '_':                                          GetIdent(); break;
+  case '@':                                          GetIdent(); break;
 
   case '0': case '1': case '2': case '3': case '4':
-  case '5': case '6': case '7': case '8': case '9':
-    GetNumber(0);    break;
+  case '5': case '6': case '7': case '8': case '9':  GetNumber(0); break;
 
-  case '\377': STATE(Symbol) = S_EOF;                        *STATE(In) = '\0';  break;
+  case '\377':      STATE(Symbol) = S_EOF;           *STATE(In) = '\0'; break;
 
-  default :   if ( IsAlpha(c) )                   { GetIdent();  break; }
-    STATE(Symbol) = S_ILLEGAL;                     GET_NEXT_CHAR();  break;
+  default:          STATE(Symbol) = S_ILLEGAL;       GET_NEXT_CHAR(); break;
   }
 }
 
