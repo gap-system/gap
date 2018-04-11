@@ -1185,9 +1185,8 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
         return new;
     }
     else if (m < deg) {
-        pttmp = ResizeInitTmpTrans(deg);
         new = NEW_PLIST_IMM(T_PLIST_CYC, m);
-        pttmp = ADDR_TRANS4(TmpTrans);
+        pttmp = ResizeInitTmpTrans(deg);
 
         if (TNUM_OBJ(f) == T_TRANS2) {
             ptf2 = CONST_ADDR_TRANS2(f);
@@ -2900,8 +2899,8 @@ Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
         return out;
     }
 
-    seen = ResizeInitTmpTrans(deg);
     out = NEW_PLIST(T_PLIST, 1);
+    seen = ResizeInitTmpTrans(deg);
     nr = 0;
 
     if (TNUM_OBJ(f) == T_TRANS2) {
