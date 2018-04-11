@@ -6,8 +6,8 @@ gap> LocationFunc(f);
 "stream:1"
 
 # GAP function which was compiled to C code by gac
-gap> LocationFunc(RunImmediateMethods);
-"GAPROOT/lib/oper1.g:26"
+gap> LocationFunc(INSTALL_METHOD_FLAGS);
+"GAPROOT/lib/oper1.g:137"
 
 # proper kernel function
 gap> LocationFunc(APPEND_LIST_INTR);
