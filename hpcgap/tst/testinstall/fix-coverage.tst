@@ -15,16 +15,9 @@ Error, Object not in a readable region
 # threadapi.c:
 #  - fluctuation in SignalMonitor: need to get to queue = queue->next;
 #  - fluctuation in SyncRead
-#  - fluctuation in ExpandChannel:  need to grow a full channel 
-#  - fluctuation in RetrieveFromChannel : need full channel (?), with channel->head == channel->capacity
-#  - add test for TallyChannel
-#  - need SendChannel test for full channel
-
 
 # stdtasks.g:
 #   FireTrigger:    if trigger.done then return; fi   at start
-
-# objset.c:249   `hash=0` line in AddObjSetNew()
 
 # funcs.c:540: ReadEvalError call in EvalFunccall2args
 #  -> once we can trigger this, trigger it for 0-6 and X args, for better coverage
