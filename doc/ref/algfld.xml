@@ -96,6 +96,15 @@ gap> m^2;
 <#Include Label="IsAlgebraicElement">
 
 </Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Finding Subfields">
+<Heading>Finding Subfields</Heading>
+
+<#Include Label="IdealDecompositionsOfPolynomial">
+
+</Section>
 </Chapter>
 
 

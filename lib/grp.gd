@@ -4543,7 +4543,8 @@ DeclareOperation( "LowIndexSubgroups",
 ##  provided only as a separate function, and not as method for the operation
 ##  <C>Normalizer</C>, as it can often be slower than other built-in routines.
 ##  In certain hard cases (non-solvable groups with nontrivial radical), however
-##  its performance is substantially superior.  The function thus provided as a
+##  its performance is substantially superior.
+##  The function thus is provided as a
 ##  non-automated tool for advanced users.
 ##  <Example><![CDATA[
 ##  gap> g:=TransitiveGroup(30,2030);;
@@ -4551,6 +4552,8 @@ DeclareOperation( "LowIndexSubgroups",
 ##  gap> Size(NormalizerViaRadical(g,s));
 ##  28800
 ##  ]]></Example>
+##  Note that this example only demonstrates usage, but that in this case
+##  in fact the ordinary <C>Normalizer</C> routine performs faster.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
