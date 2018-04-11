@@ -81,9 +81,9 @@ gap> Display(RETURN_FIRST);
 function ( object... )
     <<kernel code from src/gap.c:RETURN_FIRST>>
 end
-gap> Print(RunImmediateMethods,"\n");
-function ( <<arg-1>>, <<arg-2>> )
-    <<compiled GAP code from GAPROOT/lib/oper1.g:26>>
+gap> Print(INSTALL_METHOD_FLAGS,"\n");
+function ( <<arg-1>>, <<arg-2>>, <<arg-3>>, <<arg-4>>, <<arg-5>>, <<arg-6>> )
+    <<compiled GAP code from GAPROOT/lib/oper1.g:137>>
 end
 gap> Display(InstallMethod);
 function ( <<arg-1>>... )
