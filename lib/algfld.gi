@@ -172,7 +172,8 @@ if Length(extra)>0 and IsString(extra[1]) then
   SetCharacteristic(fam,Characteristic(f));
   fam!.indeterminateName:=nam;
   colf:=CollectionsFamily(fam);
-  e:=Objectify(NewType(colf,IsAlgebraicExtensionDefaultRep),
+  e:=Objectify(NewType(colf,
+      IsAlgebraicExtensionDefaultRep and IsAlgebraicExtension),
                rec());
 
   fam!.wholeField:=e;
@@ -2193,13 +2194,14 @@ end);
 
 #############################################################################
 ##
-#F  DecomPoly( <f> [,"all"] )  finds (all) ideal decompositions of rational f
+#F  DecomPoly( <f> [,"onlyone"] )  finds ideal decompositions of rational f
 ##                       This is equivalent to finding subfields of K(alpha).
 ##
-DecomPoly := function(arg)
-local f,n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
-      gut,avoid,blocks,g,m,decom,z,R,scale,allowed,hp,hpc,a,kfam;
-  f:=arg[1];
+InstallGlobalFunction(DecomPoly,function(f)
+local n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
+      gut,avoid,blocks,g,m,decom,z,R,scale,allowed,hp,hpc,a,kfam,only;
+
+  only:=ValueOption("onlyone")=true;
   n:=DegreeOfUnivariateLaurentPolynomial(f);
   if IsPrime(n) then
     return [];
@@ -2255,9 +2257,9 @@ local f,n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
     fft:=ff{combi};
     ffp:=List(fft,i->AlgebraicPolynomialModP(kfam,i,fm[1],p));
     roots:=Filtered(fm,i->ForAny(ffp,j->Value(j,i)=Zero(k)));
-  if Length(roots)<>Sum(ffd{combi}) then
-    Error("serious error");
-  fi;
+    if Length(roots)<>Sum(ffd{combi}) then
+      Error("serious error");
+    fi;
     allroots:=Union(roots,[fm[1]]);
     gut:=true;
     j:=1;
@@ -2270,9 +2272,7 @@ local f,n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
     if gut then
       Info(InfoPoly,2,"block found");
       Add(blocks,combi);
-      if Length(arg)>1 then
-        gut:=false;
-      fi;
+      if only<>true then gut:=false; fi;
     fi;
     h:=h+1;
   od;
@@ -2328,15 +2328,12 @@ local f,n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
       #h:=Value(h,X(Rationals)*z);
       Add(decom,[g,h]);
     od;
-    if Length(arg)=1 then
-      decom:=decom[1];
-    fi;
     return decom;
   else
     Info(InfoPoly,2,"primitive");
     return [];
   fi;
-end;
+end);
 
 #############################################################################
 ##
