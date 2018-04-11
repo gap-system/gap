@@ -1001,17 +1001,16 @@ static void WaitChannel(Channel * channel)
 static void ExpandChannel(Channel * channel)
 {
     /* Growth ratio should be less than the golden ratio */
-    UInt oldCapacity = channel->capacity;
-    UInt newCapacity = ((oldCapacity * 25 / 16) | 1) + 1;
+    const UInt oldCapacity = channel->capacity;
+    const UInt newCapacity = ((oldCapacity * 25 / 16) | 1) + 1;
+    GAP_ASSERT(newCapacity > oldCapacity);
+
     UInt i, tail;
     Obj  newqueue;
-    if (newCapacity == oldCapacity)
-        newCapacity += 2;
     newqueue = NEW_PLIST(T_PLIST, newCapacity);
     SET_LEN_PLIST(newqueue, newCapacity);
     REGION(newqueue) = REGION(channel->queue);
     channel->capacity = newCapacity;
-    /* assert(channel->head == channel->tail); */
     for (i = channel->head; i < oldCapacity; i++)
         ADDR_OBJ(newqueue)[i + 1] = ADDR_OBJ(channel->queue)[i + 1];
     for (i = 0; i < channel->tail; i++) {
@@ -1312,12 +1311,11 @@ static Obj MultiReceiveChannel(Channel * channel, UInt max)
 
 static Obj InspectChannel(Channel * channel)
 {
-    Obj result;
-    int i, p;
     LockChannel(channel);
-    result = NEW_PLIST(T_PLIST, channel->size / 2);
-    SET_LEN_PLIST(result, channel->size / 2);
-    for (i = 0, p = channel->head; i < channel->size; i++) {
+    const UInt count = channel->size / 2;
+    Obj result = NEW_PLIST(T_PLIST, count);
+    SET_LEN_PLIST(result, count);
+    for (UInt i = 0, p = channel->head; i < count; i++) {
         SET_ELM_PLIST(result, i + 1, ELM_PLIST(channel->queue, p + 1));
         p += 2;
         if (p == channel->capacity)
