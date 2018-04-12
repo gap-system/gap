@@ -79,42 +79,6 @@ end );
 
 #############################################################################
 ##
-#F  WreathProductOfMatrixGroup( <M>, <P> )  . . . . . . . . .  wreath product
-##
-BindGlobal( "WreathProductOfMatrixGroup", function( M, P )
-    local   m,  d,  id,  gens,  b,  ran,  raN,  mat,  gen,  G;
-
-    m := DimensionOfMatrixGroup( M );
-    d := LargestMovedPoint( P );
-    id := IdentityMat( m * d, DefaultFieldOfMatrixGroup( M ) );
-    gens := [  ];
-    for b  in [ 1 .. d ]  do
-        ran := ( b - 1 ) * m + [ 1 .. m ];
-        for mat  in GeneratorsOfGroup( M )  do
-            gen := StructuralCopy( id );
-            gen{ ran }{ ran } := mat;
-            Add( gens, gen );
-        od;
-    od;
-    for gen  in GeneratorsOfGroup( P )  do
-        mat := StructuralCopy( id );
-        for b  in [ 1 .. d ]  do
-            ran := ( b - 1 ) * m + [ 1 .. m ];
-            raN := ( b^gen - 1 ) * m + [ 1 .. m ];
-            mat{ ran } := id{ raN };
-        od;
-        Add( gens, mat );
-    od;
-    G := GroupWithGenerators( gens );
-    if HasName( M )  and  HasName( P )  then
-        SetName( G, Concatenation( Name( M ), " wr ", Name( P ) ) );
-    fi;
-    return G;
-end );
-
-
-#############################################################################
-##
 #F  TensorWreathProductOfMatrixGroup( <M>, <P> )  . . . tensor wreath product
 ##
 BindGlobal( "TensorWreathProductOfMatrixGroup", function( M, P )
