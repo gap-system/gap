@@ -1,4 +1,7 @@
-# Test("../../hpcgap/tst/testinstall/hpc/channels.tst");
+# Tests for HPC-GAP channels
+#
+# TODO: right now these tests are all using a single thread; add some which
+# use multiple threads, and also non-dynamic (i.e., blocking) channels.
 #
 # create a dynamic channel
 gap> ch := CreateChannel();;
