@@ -60,15 +60,15 @@ This second method is also called the <E>system getter</E>.
 are called <E>operations</E>,
 so <Ref Func="Size" BookName="ref"/> is an example of an operation.
 <P/>
-<Example><![CDATA[
+<Log><![CDATA[
 gap> G := Group(List([1..3], i-> Random(SymmetricGroup(53))));;
-gap> Size( G ); time > 0; # the time may of course vary on your machine
+gap> Size( G ); time; # the time may of course vary on your machine
 4274883284060025564298013753389399649690343788366813724672000000000000
-true
+196
 gap> Size( G ); time;
 4274883284060025564298013753389399649690343788366813724672000000000000
 0
-]]></Example>
+]]></Log>
 <P/>
 The convenient thing  for the user  is that  &GAP; automatically chooses
 the right method  for the getter, i.e.,  it calls a real-work getter at
