@@ -1001,17 +1001,16 @@ static void WaitChannel(Channel * channel)
 static void ExpandChannel(Channel * channel)
 {
     /* Growth ratio should be less than the golden ratio */
-    UInt oldCapacity = channel->capacity;
-    UInt newCapacity = ((oldCapacity * 25 / 16) | 1) + 1;
+    const UInt oldCapacity = channel->capacity;
+    const UInt newCapacity = ((oldCapacity * 25 / 16) | 1) + 1;
+    GAP_ASSERT(newCapacity > oldCapacity);
+
     UInt i, tail;
     Obj  newqueue;
-    if (newCapacity == oldCapacity)
-        newCapacity += 2;
     newqueue = NEW_PLIST(T_PLIST, newCapacity);
     SET_LEN_PLIST(newqueue, newCapacity);
     REGION(newqueue) = REGION(channel->queue);
     channel->capacity = newCapacity;
-    /* assert(channel->head == channel->tail); */
     for (i = channel->head; i < oldCapacity; i++)
         ADDR_OBJ(newqueue)[i + 1] = ADDR_OBJ(channel->queue)[i + 1];
     for (i = 0; i < channel->tail; i++) {
@@ -1080,32 +1079,19 @@ static Int TallyChannel(Channel * channel)
     return result;
 }
 
-static void SendChannel(Channel * channel, Obj obj)
+static void SendChannel(Channel * channel, Obj obj, int migrate)
 {
     LockChannel(channel);
     if (channel->size == channel->capacity && channel->dynamic)
         ExpandChannel(channel);
     while (channel->size == channel->capacity)
         WaitChannel(channel);
-    AddToChannel(channel, obj, 1);
+    AddToChannel(channel, obj, migrate);
     SignalChannel(channel);
     UnlockChannel(channel);
 }
 
-static void TransmitChannel(Channel * channel, Obj obj)
-{
-    LockChannel(channel);
-    if (channel->size == channel->capacity && channel->dynamic)
-        ExpandChannel(channel);
-    while (channel->size == channel->capacity)
-        WaitChannel(channel);
-    AddToChannel(channel, obj, 0);
-    SignalChannel(channel);
-    UnlockChannel(channel);
-}
-
-
-static void MultiSendChannel(Channel * channel, Obj list)
+static void MultiSendChannel(Channel * channel, Obj list, int migrate)
 {
     int listsize = LEN_LIST(list);
     int i;
@@ -1117,31 +1103,13 @@ static void MultiSendChannel(Channel * channel, Obj list)
         while (channel->size == channel->capacity)
             WaitChannel(channel);
         obj = ELM_LIST(list, i);
-        AddToChannel(channel, obj, 1);
+        AddToChannel(channel, obj, migrate);
     }
     SignalChannel(channel);
     UnlockChannel(channel);
 }
 
-static void MultiTransmitChannel(Channel * channel, Obj list)
-{
-    int listsize = LEN_LIST(list);
-    int i;
-    Obj obj;
-    LockChannel(channel);
-    for (i = 1; i <= listsize; i++) {
-        if (channel->size == channel->capacity && channel->dynamic)
-            ExpandChannel(channel);
-        while (channel->size == channel->capacity)
-            WaitChannel(channel);
-        obj = ELM_LIST(list, i);
-        AddToChannel(channel, obj, 0);
-    }
-    SignalChannel(channel);
-    UnlockChannel(channel);
-}
-
-static int TryMultiSendChannel(Channel * channel, Obj list)
+static int TryMultiSendChannel(Channel * channel, Obj list, int migrate)
 {
     int result = 0;
     int listsize = LEN_LIST(list);
@@ -1154,7 +1122,7 @@ static int TryMultiSendChannel(Channel * channel, Obj list)
         if (channel->size == channel->capacity)
             break;
         obj = ELM_LIST(list, i);
-        AddToChannel(channel, obj, 1);
+        AddToChannel(channel, obj, migrate);
         result++;
     }
     SignalChannel(channel);
@@ -1162,28 +1130,7 @@ static int TryMultiSendChannel(Channel * channel, Obj list)
     return result;
 }
 
-static int TryMultiTransmitChannel(Channel * channel, Obj list)
-{
-    int result = 0;
-    int listsize = LEN_LIST(list);
-    int i;
-    Obj obj;
-    LockChannel(channel);
-    for (i = 1; i <= listsize; i++) {
-        if (channel->size == channel->capacity && channel->dynamic)
-            ExpandChannel(channel);
-        if (channel->size == channel->capacity)
-            break;
-        obj = ELM_LIST(list, i);
-        AddToChannel(channel, obj, 0);
-        result++;
-    }
-    SignalChannel(channel);
-    UnlockChannel(channel);
-    return result;
-}
-
-static int TrySendChannel(Channel * channel, Obj obj)
+static int TrySendChannel(Channel * channel, Obj obj, int migrate)
 {
     LockChannel(channel);
     if (channel->size == channel->capacity && channel->dynamic)
@@ -1192,22 +1139,7 @@ static int TrySendChannel(Channel * channel, Obj obj)
         UnlockChannel(channel);
         return 0;
     }
-    AddToChannel(channel, obj, 1);
-    SignalChannel(channel);
-    UnlockChannel(channel);
-    return 1;
-}
-
-static int TryTransmitChannel(Channel * channel, Obj obj)
-{
-    LockChannel(channel);
-    if (channel->size == channel->capacity && channel->dynamic)
-        ExpandChannel(channel);
-    if (channel->size == channel->capacity) {
-        UnlockChannel(channel);
-        return 0;
-    }
-    AddToChannel(channel, obj, 0);
+    AddToChannel(channel, obj, migrate);
     SignalChannel(channel);
     UnlockChannel(channel);
     return 1;
@@ -1312,12 +1244,11 @@ static Obj MultiReceiveChannel(Channel * channel, UInt max)
 
 static Obj InspectChannel(Channel * channel)
 {
-    Obj result;
-    int i, p;
     LockChannel(channel);
-    result = NEW_PLIST(T_PLIST, channel->size / 2);
-    SET_LEN_PLIST(result, channel->size / 2);
-    for (i = 0, p = channel->head; i < channel->size; i++) {
+    const UInt count = channel->size / 2;
+    Obj result = NEW_PLIST(T_PLIST, count);
+    SET_LEN_PLIST(result, count);
+    for (UInt i = 0, p = channel->head; i < count; i++) {
         SET_ELM_PLIST(result, i + 1, ELM_PLIST(channel->queue, p + 1));
         p += 2;
         if (p == channel->capacity)
@@ -1413,7 +1344,7 @@ Obj FuncSendChannel(Obj self, Obj channel, Obj obj)
 {
     if (!IsChannel(channel))
         return ArgumentError("SendChannel: First argument must be a channel");
-    SendChannel(ObjPtr(channel), obj);
+    SendChannel(ObjPtr(channel), obj, 1);
     return (Obj)0;
 }
 
@@ -1422,7 +1353,7 @@ Obj FuncTransmitChannel(Obj self, Obj channel, Obj obj)
     if (!IsChannel(channel))
         return ArgumentError(
             "TransmitChannel: First argument must be a channel");
-    TransmitChannel(ObjPtr(channel), obj);
+    SendChannel(ObjPtr(channel), obj, 0);
     return (Obj)0;
 }
 
@@ -1434,7 +1365,7 @@ Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list)
     if (!IS_DENSE_LIST(list))
         return ArgumentError(
             "MultiSendChannel: Second argument must be a dense list");
-    MultiSendChannel(ObjPtr(channel), list);
+    MultiSendChannel(ObjPtr(channel), list, 1);
     return (Obj)0;
 }
 
@@ -1446,7 +1377,7 @@ Obj FuncMultiTransmitChannel(Obj self, Obj channel, Obj list)
     if (!IS_DENSE_LIST(list))
         return ArgumentError(
             "MultiTransmitChannel: Second argument must be a dense list");
-    MultiTransmitChannel(ObjPtr(channel), list);
+    MultiSendChannel(ObjPtr(channel), list, 0);
     return (Obj)0;
 }
 
@@ -1458,7 +1389,7 @@ Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list)
     if (!IS_DENSE_LIST(list))
         return ArgumentError(
             "TryMultiSendChannel: Second argument must be a dense list");
-    return INTOBJ_INT(TryMultiSendChannel(ObjPtr(channel), list));
+    return INTOBJ_INT(TryMultiSendChannel(ObjPtr(channel), list, 1));
 }
 
 
@@ -1470,7 +1401,7 @@ Obj FuncTryMultiTransmitChannel(Obj self, Obj channel, Obj list)
     if (!IS_DENSE_LIST(list))
         return ArgumentError(
             "TryMultiTransmitChannel: Second argument must be a dense list");
-    return INTOBJ_INT(TryMultiTransmitChannel(ObjPtr(channel), list));
+    return INTOBJ_INT(TryMultiSendChannel(ObjPtr(channel), list, 0));
 }
 
 
@@ -1478,14 +1409,14 @@ Obj FuncTrySendChannel(Obj self, Obj channel, Obj obj)
 {
     if (!IsChannel(channel))
         return ArgumentError("TrySendChannel: Argument is not a channel");
-    return TrySendChannel(ObjPtr(channel), obj) ? True : False;
+    return TrySendChannel(ObjPtr(channel), obj, 1) ? True : False;
 }
 
 Obj FuncTryTransmitChannel(Obj self, Obj channel, Obj obj)
 {
     if (!IsChannel(channel))
         return ArgumentError("TryTransmitChannel: Argument is not a channel");
-    return TryTransmitChannel(ObjPtr(channel), obj) ? True : False;
+    return TrySendChannel(ObjPtr(channel), obj, 0) ? True : False;
 }
 
 Obj FuncReceiveChannel(Obj self, Obj channel)
