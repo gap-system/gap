@@ -183,7 +183,7 @@ UInt LastNCyc;
 
 }; // end of struct CycModuleState
 
-static inline struct CycModuleState *CycState(void)
+extern inline struct CycModuleState *CycState(void)
 {
     return (struct CycModuleState *)StateSlotsAtOffset(CycStateOffset);
 }

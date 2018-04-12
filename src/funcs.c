@@ -46,7 +46,7 @@ struct FuncsModuleState {
     Obj ExecState;
 };
 
-static inline struct FuncsModuleState *FuncsState(void)
+extern inline struct FuncsModuleState *FuncsState(void)
 {
     return (struct FuncsModuleState *)StateSlotsAtOffset(FuncsStateOffset);
 }
