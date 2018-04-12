@@ -157,16 +157,10 @@ struct IOModuleState {
     Char * RealIn;
 };
 
-static inline struct IOModuleState * IO(void)
+// for debugging from GDB / lldb, we mark this as extern inline
+extern inline struct IOModuleState * IO(void)
 {
     return (struct IOModuleState *)StateSlotsAtOffset(IOStateOffset);
-}
-
-// for debugging from GDB / lldb, provide non-inline access to
-// the IO state
-struct IOModuleState * GetIO(void)
-{
-    return IO();
 }
 
 void LockCurrentOutput(Int lock)
