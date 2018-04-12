@@ -378,7 +378,7 @@ local expandvec,bassrc,basimg,transl,getbasimg,gettransl,myact2;
 end);
 
 # main normalizer routine
-BindGlobal("NormalizerViaRadical",function(G,U)
+InstallGlobalFunction(NormalizerViaRadical,function(G,U)
 local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
   central,f,ngm,npm,no2pcgs,part,stb,mods,famo,part0,nopcgs,uff,ufg,prev,
   famo2,ufr,dims,vecs,ovecs,vecsz,l,prop,properties,clusters,clusterspaces,
