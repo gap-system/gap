@@ -1047,7 +1047,7 @@ Obj FuncPLAIN_VEC8BIT (
     /* check whether <list> is an 8bit vector                                */
     while (! IS_VEC8BIT_REP(list)) {
         list = ErrorReturnObj(
-            "CONV_BLIST: <list> must be an 8bit vector (not a %s)",
+            "PLAIN_VEC8BIT: <list> must be an 8bit vector (not a %s)",
             (Int)TNAM_OBJ(list), 0L,
             "you can replace <list> via 'return <list>;'");
     }
