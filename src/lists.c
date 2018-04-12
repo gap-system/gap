@@ -11,11 +11,11 @@
 **
 **  This package provides a uniform   interface to the functions that  access
 **  lists and their elements  for the other packages  in the GAP kernel.  For
-**  example, 'ExecFor' can loop over the elements  in a list using the macros
-**  'LEN_LIST' and 'ELM_LIST' independently of the type of the list.
+**  example, 'ExecFor' can loop over the elements  in a list using  'LEN_LIST'
+**  and 'ELM_LIST' independently of the type of the list.
 **
 **  This package uses plain lists (of type 'T_PLIST') and  assumes that it is
-**  possible to put values of any type into plain  lists.  It uses the macros
+**  possible to put values of any type into these. It uses the functions
 **  'LEN_PLIST', 'SET_LEN_PLIST',   'ELM_PLIST', and 'SET_ELM_PLIST' exported
 **  by the plain list package to access and modify plain lists.
 */
@@ -278,12 +278,6 @@ Obj LengthInternal (
 **  passing <list> and <pos> as arguments.  If <type> is not the  type  of  a
 **  list, then 'IsbListFuncs[<type>]' points to 'IsbListError', which signals
 **  the error.
-**
-**  'ISB_LIST' is defined in  the declaration  part of this
-**  package as follows
-**
-#define ISB_LIST(list,pos) \
-                        ((*IsbListFuncs[TNUM_OBJ(list)])(list,pos))
 */
 Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
@@ -1025,12 +1019,6 @@ void ASS2_LIST(Obj list, Obj pos1, Obj pos2, Obj obj)
 **  'AsssListFuncs[<type>]', passing <list>, <poss>, and <objs> as arguments.
 **  If <type> is not the type of  a list, then 'AsssListFuncs[<type>]' points
 **  to 'AsssListError', which just signals an error.
-**
-**  'ASSS_LIST'  is  defined in the  declaration  part  of  this  package  as
-**  follows
-**
-#define ASSS_LIST(list,poss,objs) \
-                        ((*AsssListFuncs[TNUM_OBJ(list)])(list,poss,objs))
 */
 void            (*AsssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss, Obj objs );
 
@@ -1147,12 +1135,6 @@ Obj FuncASSS_LIST_DEFAULT (
 **  'IsDenseListFuncs[<type>]', passing <list> as argument.  If <type> is not
 **  the   type  of  a    list,  then  'IsDenseListFuncs[<type>]'  points   to
 **  'AlwaysNo', which just returns 0.
-**
-**  'IS_DENSE_LIST'  is defined in the declaration  part  of this  package as
-**  follows
-**
-#define IS_DENSE_LIST(list) \
-                        ((*IsDenseListFuncs[TNUM_OBJ(list)])(list))
 */
 Int             (*IsDenseListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
@@ -1430,12 +1412,6 @@ Obj FuncIS_NSORT_LIST (
 **  'IsPossListFuncs[<type>]', passing <list> as  argument.  If <type> is not
 **  the   type    of a   list,    then  'IsPossListFuncs[<type>]'   points to
 **  'NotIsPossList', which just returns 0.
-**
-**  'IS_POSS_LIST' is  defined  in the  declaration  part of this  package as
-**  follows
-**
-#define IS_POSS_LIST(list) \
-                        ((*IsPossListFuncs[TNUM_OBJ(list)])(list))
 */
 Int             (*IsPossListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
@@ -1962,12 +1938,6 @@ void            AsssListLevel (
 **  'PlainListFuncs[<type>]', passing <list>  as argument.  If  <type> is not
 **  the     type of   a    list,  then    'PlainListFuncs[<type>]'  points to
 **  'PlainListError', which just signals an error.
-**
-**  'PLAIN_LIST'  is defined in  the  declaration  part  of  this  package as
-**  follows
-**
-#define PLAIN_LIST(list) \
-                        ((*PlainListFuncs[TNUM_OBJ(list)])(list))
 */
 void            (*PlainListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 

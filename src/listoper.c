@@ -336,9 +336,6 @@ Obj FuncSUM_LIST_LIST_DEFAULT (
 **
 **  'ZeroListDefault' is a generic function for the zero.
 */
-
-
-
 Obj             ZeroListDefault (
     Obj                 list )
 {
