@@ -587,7 +587,6 @@ see <Cite Key="BJR87"/>.
 
 </Section>
 
-
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Tests for the Availability of Methods">
 <Heading>Tests for the Availability of Methods</Heading>
@@ -600,6 +599,14 @@ see <Cite Key="BJR87"/>.
 <#Include Label="CanComputeIndex">
 <#Include Label="CanComputeIsSubset">
 <#Include Label="KnowsHowToDecompose">
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Specific functions for Normalizer calculation">
+<Heading>Specific functions for Normalizer calculation</Heading>
+
+<#Include Label="NormalizerViaRadical">
 
 </Section>
 </Chapter>
