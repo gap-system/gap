@@ -161,20 +161,6 @@ DeclareOperation("MaxNumeratorCoeffAlgElm",[IsScalar]);
 
 #############################################################################
 ##
-#F  DefectApproximation( <K> ) . . . . . . . approximation for defect K, i.e.
-#F                                      denominators of integer elements in K
-##
-##  <ManSection>
-##  <Func Name="DefectApproximation" Arg='K'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareAttribute("DefectApproximation",IsAlgebraicExtension);
-
-#############################################################################
-##
 #F  AlgExtEmbeddedPol(<ext>,<pol>)
 ##
 ##  <ManSection>
