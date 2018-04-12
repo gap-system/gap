@@ -4530,5 +4530,34 @@ DeclareOperation( "LowIndexSubgroups",
 
 #############################################################################
 ##
+#F  NormalizerViaRadical(<G>,<S>)
+##
+##  <#GAPDoc Label="NormalizerViaRadical">
+##  <ManSection>
+##  <Func Name="NormalizerViaRadical" Arg='G,S'/>
+##
+##  <Description>
+##  This function implements a particular approach, following the
+##  SolvableRadical paradigm, for calculating the
+##  normalizer of a subgroup <A>S</A> in <A>G</A>. It is at the moment
+##  provided only as a separate function, and not as method for the operation
+##  <C>Normalizer</C>, as it can often be slower than other built-in routines.
+##  In certain hard cases (non-solvable groups with nontrivial radical), however
+##  its performance is substantially superior.  The function thus provided as a
+##  non-automated tool for advanced users.
+##  <Example><![CDATA[
+##  gap> g:=TransitiveGroup(30,2030);;
+##  gap> s:=SylowSubgroup(g,5);;
+##  gap> Size(NormalizerViaRadical(g,s));
+##  28800
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("NormalizerViaRadical");
+
+#############################################################################
+##
 #E
 
