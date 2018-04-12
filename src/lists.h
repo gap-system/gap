@@ -11,8 +11,8 @@
 **
 **  This package provides a uniform   interface to the functions that  access
 **  lists and their elements  for the other packages  in the GAP kernel.  For
-**  example, 'ExecFor' can loop over the elements  in a list using the macros
-**  'LEN_LIST' and 'ELM_LIST' independently of the type of the list.
+**  example, 'ExecFor' can loop over the elements  in a list using 'LEN_LIST'
+**  and 'ELM_LIST' independently of the type of the list.
 */
 
 #ifndef GAP_LISTS_H
