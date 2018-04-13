@@ -654,22 +654,6 @@ void AssBlist (
 
 /****************************************************************************
 **
-*F  AssBlistImm( <list>, <pos>, <val> ) . assign to an immutable boolean list
-*/
-void AssBlistImm (
-    Obj                 list,
-    Int                 pos,
-    Obj                 val )
-{
-    ErrorReturnVoid(
-        "Lists Assignment: <list> must be a mutable list",
-        0L, 0L,
-        "you can 'return;' and ignore the assignment" );
-}
-
-
-/****************************************************************************
-**
 *F  AsssBlist( <list>, <poss>, <vals> ) .  assign several elements to a blist
 **
 **  'AsssBlist' assignes the values  from  the list  <vals> at the  positions
@@ -698,22 +682,6 @@ void AsssBlist (     /*  currently not used */
       val = ELMW_LIST(vals, i);
       ASS_LIST( list, pos, val);
     }
-}
-
-
-/****************************************************************************
-**
-*F  AsssBlistImm( <list>, <poss>, <vals> )  . .  assign to an immutable blist
-*/
-void AsssBlistImm (
-    Obj                 list,
-    Obj                 poss,
-    Obj                 val )
-{
-    ErrorReturnVoid(
-        "Lists Assignments: <list> must be a mutable list",
-        0L, 0L,
-        "you can 'return;' and ignore the assignment" );
 }
 
 
@@ -2478,9 +2446,7 @@ static Int InitKernel (
         ElmsListFuncs   [ t1            ] = ElmsBlist;
         ElmsListFuncs   [ t1 +IMMUTABLE ] = ElmsBlist;
         AssListFuncs    [ t1            ] = AssBlist;
-        AssListFuncs    [ t1 +IMMUTABLE ] = AssBlistImm;
         AsssListFuncs   [ t1            ] = AsssListDefault;
-        AsssListFuncs   [ t1 +IMMUTABLE ] = AsssBlistImm;
         IsDenseListFuncs[ t1            ] = AlwaysYes;
         IsDenseListFuncs[ t1 +IMMUTABLE ] = AlwaysYes;
         IsHomogListFuncs[ t1            ] = IsHomogBlist;

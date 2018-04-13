@@ -1072,17 +1072,6 @@ void AssString (
   }
 }    
 
-void AssStringImm (
-    Obj                 list,
-    Int                 pos,
-    Obj                 val )
-{
-    ErrorReturnVoid(
-        "Lists Assignment: <list> must be a mutable list",
-        0L, 0L,
-        "you can 'return;' and ignore the assignment" );
-}
-
 
 /****************************************************************************
 **
@@ -1109,17 +1098,6 @@ void AsssString (
   for (i = 1; i <= len; i++) {
     ASS_LIST(list, INT_INTOBJ(ELM_LIST(poss, i)), ELM_LIST(vals, i));
   }
-}
-
-void AsssStringImm (
-    Obj                 list,
-    Obj                 poss,
-    Obj                 val )
-{
-    ErrorReturnVoid(
-        "Lists Assignments: <list> must be a mutable list",
-        0L, 0L,
-        "you can 'return;' and ignore the assignment" );
 }
 
 
@@ -2402,9 +2380,7 @@ static Int InitKernel (
         ElmsListFuncs   [ t1            ] = ElmsString;
         ElmsListFuncs   [ t1 +IMMUTABLE ] = ElmsString;
         AssListFuncs    [ t1            ] = AssString;
-        AssListFuncs    [ t1 +IMMUTABLE ] = AssStringImm;
         AsssListFuncs   [ t1            ] = AsssString;
-        AsssListFuncs   [ t1 +IMMUTABLE ] = AsssStringImm;
         IsDenseListFuncs[ t1            ] = AlwaysYes;
         IsDenseListFuncs[ t1 +IMMUTABLE ] = AlwaysYes;
         IsHomogListFuncs[ t1            ] = IsHomogString;

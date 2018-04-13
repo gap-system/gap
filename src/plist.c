@@ -1878,18 +1878,6 @@ void AssPlistHomog (
 }
 
 
-void            AssPlistImm (
-    Obj                 list,
-    Int                 pos,
-    Obj                 val )
-{
-    ErrorReturnVoid(
-        "Lists Assignment: <list> must be a mutable list",
-        0L, 0L,
-        "you can 'return;' and ignore the assignment" );
-}
-
-
 /****************************************************************************
 **
 *F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list
@@ -2063,17 +2051,6 @@ void            AsssPlistXXX (
 
     /* and delegate                                                        */
     AsssPlist( list, poss, vals );
-}
-
-void            AsssPlistImm (
-    Obj                 list,
-    Obj                 poss,
-    Obj                 val )
-{
-    ErrorReturnVoid(
-        "Lists Assignments: <list> must be a mutable list",
-        0L, 0L,
-        "you can 'return;' and ignore the assignment" );
 }
 
 
@@ -3886,40 +3863,28 @@ static Int InitKernel (
 
     /* install the list assignment methods                                 */
     AssListFuncs    [ T_PLIST           ] = AssPlist;
-    AssListFuncs    [ T_PLIST+IMMUTABLE ] = AssPlistImm;
     AssListFuncs    [ T_PLIST_NDENSE           ] = AssPlistXXX;
-    AssListFuncs    [ T_PLIST_NDENSE+IMMUTABLE ] = AssPlistImm;
     AssListFuncs    [ T_PLIST_DENSE           ] = AssPlistDense;
-    AssListFuncs    [ T_PLIST_DENSE+IMMUTABLE ] = AssPlistImm;
     AssListFuncs    [ T_PLIST_DENSE_NHOM           ] = AssPlistDense;
-    AssListFuncs    [ T_PLIST_DENSE_NHOM+IMMUTABLE ] = AssPlistImm;
     AssListFuncs    [ T_PLIST_DENSE_NHOM_SSORT           ] = AssPlistDense;
-    AssListFuncs    [ T_PLIST_DENSE_NHOM_SSORT+IMMUTABLE ] = AssPlistImm;
     AssListFuncs    [ T_PLIST_DENSE_NHOM_NSORT           ] = AssPlistDense;
-    AssListFuncs    [ T_PLIST_DENSE_NHOM_NSORT+IMMUTABLE ] = AssPlistImm;
     AssListFuncs    [ T_PLIST_EMPTY           ] = AssPlistEmpty;
-    AssListFuncs    [ T_PLIST_EMPTY+IMMUTABLE ] = AssPlistImm;
     
     
     for ( t1 = T_PLIST_HOM; t1 < T_PLIST_CYC; t1 += 2 ) {
       AssListFuncs[ t1                ] = AssPlistHomog;
-      AssListFuncs[ t1+IMMUTABLE      ] = AssPlistImm;
     }
 
     for ( t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {
       AssListFuncs[ t1                ] = AssPlistCyc;
-      AssListFuncs[ t1+IMMUTABLE      ] = AssPlistImm;
     }
 
     AssListFuncs[ T_PLIST_FFE           ] = AssPlistFfe;
-    AssListFuncs[ T_PLIST_FFE+IMMUTABLE ] = AssPlistImm;
 
     /* install the list assignments methods                                */
     AsssListFuncs   [ T_PLIST            ] = AsssPlist;
-    AsssListFuncs   [ T_PLIST +IMMUTABLE ] = AsssPlistImm;
     for ( t1 = T_PLIST_NDENSE; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         AsssListFuncs   [ t1             ] = AsssPlistXXX;
-        AsssListFuncs   [ t1 +IMMUTABLE  ] = AsssPlistImm;
     }
 
 
