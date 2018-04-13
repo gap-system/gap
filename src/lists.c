@@ -2613,10 +2613,8 @@ static Int InitKernel (
     }
 
 
-    /* install the generic mutability test function                        */
+    /* install tests for being copyable                                    */
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type += 2 ) {
-        IsMutableObjFuncs[  type           ] = AlwaysYes;
-        IsMutableObjFuncs[  type+IMMUTABLE ] = AlwaysNo;
         IsCopyableObjFuncs[ type           ] = AlwaysYes;
         IsCopyableObjFuncs[ type+IMMUTABLE ] = AlwaysYes;
     }

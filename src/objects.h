@@ -518,10 +518,17 @@ extern void CheckedMakeImmutable( Obj obj );
 **  'IS_MUTABLE_OBJ' returns   1 if the object  <obj> is mutable   (i.e., can
 **  change due to assignments), and 0 otherwise.
 */
-#define IS_MUTABLE_OBJ(obj) \
-                        ((*IsMutableObjFuncs[ TNUM_OBJ(obj) ])( obj ))
-
 extern Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+static inline Int IS_MUTABLE_OBJ(Obj obj)
+{
+    UInt tnum = TNUM_OBJ(obj);
+    if (/*FIRST_CONSTANT_TNUM <= tnum &&*/ tnum <= LAST_CONSTANT_TNUM)
+        return 0;
+    if (FIRST_IMM_MUT_TNUM <= tnum && tnum <= LAST_IMM_MUT_TNUM)
+        return !(tnum & IMMUTABLE);
+    return ((*IsMutableObjFuncs[tnum])(obj));
+}
+
 
 /****************************************************************************
 **

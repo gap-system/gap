@@ -1037,11 +1037,6 @@ static Int InitKernel (
   PrintObjFuncs[ T_OBJSET+IMMUTABLE ] = PrintObjSet;
   PrintObjFuncs[ T_OBJMAP           ] = PrintObjMap;
   PrintObjFuncs[ T_OBJMAP+IMMUTABLE ] = PrintObjMap;
-  /* install mutability functions */
-  IsMutableObjFuncs [ T_OBJSET           ] = AlwaysYes;
-  IsMutableObjFuncs [ T_OBJSET+IMMUTABLE ] = AlwaysNo;
-  IsMutableObjFuncs [ T_OBJMAP           ] = AlwaysYes;
-  IsMutableObjFuncs [ T_OBJMAP+IMMUTABLE ] = AlwaysNo;
 
 #ifdef USE_THREADSAFE_COPYING
   SetTraversalMethod(T_OBJSET, TRAVERSE_BY_FUNCTION, TraverseObjSet, CopyObjSet);
