@@ -378,6 +378,14 @@ void UnbPRec (
     UInt                len;            /* length of <rec>                 */
     UInt                i;              /* loop variable                   */
 
+    // Accept T_PREC and T_COMOBJ, reject T_PREC+IMMUTABLE
+    if (TNUM_OBJ(rec) == T_PREC+IMMUTABLE) {
+        ErrorReturnVoid(
+            "Record Unbind: <rec> must be a mutable record",
+            0L, 0L,
+            "you can 'return;' and ignore the unbind" );
+    }
+
     if (FindPRec( rec, rnam, &i, 1 )) {
         /* otherwise move everything forward                               */
         len = LEN_PREC( rec );
@@ -397,16 +405,6 @@ void UnbPRec (
         return;
 }
 
-void            UnbPRecImm (
-    Obj                 rec,
-    UInt                rnam )
-{
-    ErrorReturnVoid(
-        "Record Unbind: <rec> must be a mutable record",
-        0L, 0L,
-        "you can 'return;' and ignore the unbind" );
-}
-
 
 /****************************************************************************
 **
@@ -422,6 +420,14 @@ void AssPRec (
 {
     UInt                len;            /* length of <rec>                 */
     UInt                i;              /* loop variable                   */
+
+    // Accept T_PREC and T_COMOBJ, reject T_PREC+IMMUTABLE
+    if (TNUM_OBJ(rec) == T_PREC+IMMUTABLE) {
+        ErrorReturnVoid(
+            "Records Assignment: <rec> must be a mutable record",
+            0L, 0L,
+            "you can 'return;' and ignore the assignment" );
+    }
 
     /* get the length of the record                                        */
     len = LEN_PREC( rec );
@@ -442,17 +448,6 @@ void AssPRec (
     /* assign the value to the component                                   */
     SET_ELM_PREC( rec, i, val );
     CHANGED_BAG( rec );
-}
-
-void            AssPRecImm (
-    Obj                 rec,
-    UInt                rnam,
-    Obj                 val )
-{
-    ErrorReturnVoid(
-        "Records Assignment: <rec> must be a mutable record",
-        0L, 0L,
-        "you can 'return;' and ignore the assignment" );
 }
 
 /****************************************************************************
@@ -902,9 +897,9 @@ static Int InitKernel (
     IsbRecFuncs[ T_PREC            ] = IsbPRec;
     IsbRecFuncs[ T_PREC +IMMUTABLE ] = IsbPRec;
     AssRecFuncs[ T_PREC            ] = AssPRec;
-    AssRecFuncs[ T_PREC +IMMUTABLE ] = AssPRecImm;
+    AssRecFuncs[ T_PREC +IMMUTABLE ] = AssPRec;
     UnbRecFuncs[ T_PREC            ] = UnbPRec;
-    UnbRecFuncs[ T_PREC +IMMUTABLE ] = UnbPRecImm;
+    UnbRecFuncs[ T_PREC +IMMUTABLE ] = UnbPRec;
 
     /* install tests for being copyable                                    */
     IsCopyableObjFuncs[ T_PREC            ] = AlwaysYes;
