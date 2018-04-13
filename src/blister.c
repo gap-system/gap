@@ -231,12 +231,6 @@ Obj DoCopyBlist(Obj list, Int mut)
 
 #if !defined(USE_THREADSAFE_COPYING)
 
-Obj CopyBlistImm(Obj list, Int mut)
-{
-    GAP_ASSERT(!IS_MUTABLE_OBJ(list));
-    return list;
-}
-
 Obj CopyBlist (
     Obj                 list,
     Int                 mut )
@@ -244,10 +238,9 @@ Obj CopyBlist (
     Obj copy;
     Obj tmp;
 
-    /* immutable objects should never end up here, because
-     * they have their own handler defined above
-     */
-    GAP_ASSERT(IS_MUTABLE_OBJ(list));
+    if (!IS_MUTABLE_OBJ(list)) {
+        return list;
+    }
 
     copy = DoCopyBlist(list, mut);
     /* leave a forwarding pointer */
@@ -2447,7 +2440,7 @@ static Int InitKernel (
     for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
 #if !defined(USE_THREADSAFE_COPYING)
         CopyObjFuncs [ t1                     ] = CopyBlist;
-        CopyObjFuncs [ t1 +IMMUTABLE          ] = CopyBlistImm;
+        CopyObjFuncs [ t1 +IMMUTABLE          ] = CopyBlist;
         CopyObjFuncs [ t1            +COPYING ] = CopyBlistCopy;
         CopyObjFuncs [ t1 +IMMUTABLE +COPYING ] = CopyBlistCopy;
         CleanObjFuncs[ t1                     ] = CleanBlist;
