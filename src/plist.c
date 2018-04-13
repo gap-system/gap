@@ -142,12 +142,12 @@ Int             GrowPlist (
 **
 **  There are 10 functions entered in TypeObjFuncs:
 **      1. TypePlist
-**      2. TypePlistNDenseMut/Imm
-**      3. TypePlistDenseMut/Imm
-**      4. TypePlistDenseNHomMut/Imm
-**      5. TypePlistDenseNHomSSortMut/Imm
-**      6. TypePlistDenseNHomNSortMut/Imm
-**      7. TypePlistEmptyMut/Imm
+**      2. TypePlistNDense
+**      3. TypePlistDense
+**      4. TypePlistDenseNHom
+**      5. TypePlistDenseNHomSSort
+**      6. TypePlistDenseNHomNSort
+**      7. TypePlistEmpty
 **      8. TypePlistHom     -- also handles Tab and RectTab
 **      9. TypePlistCyc
 **      10.TypePlistFfe
@@ -688,65 +688,46 @@ static Obj TypePlistWithKTNum (
 #endif
 }
 
-Obj TypePlistNDenseMut (
-    Obj                 list )
+Obj TypePlistNDense(Obj list)
 {
-    return TYPE_LIST_NDENSE_MUTABLE;
+    if (IS_MUTABLE_PLAIN_OBJ(list))
+        return TYPE_LIST_NDENSE_MUTABLE;
+    else
+        return TYPE_LIST_NDENSE_IMMUTABLE;
 }
 
-Obj TypePlistNDenseImm (
-    Obj                 list )
+#define         TypePlistDense       TypePlist
+
+Obj TypePlistDenseNHom(Obj list)
 {
-    return TYPE_LIST_NDENSE_IMMUTABLE;
+    if (IS_MUTABLE_PLAIN_OBJ(list))
+        return TYPE_LIST_DENSE_NHOM_MUTABLE;
+    else
+        return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
 }
 
-#define         TypePlistDenseMut       TypePlist
-#define         TypePlistDenseImm       TypePlist
-
-Obj TypePlistDenseNHomMut (
-    Obj                 list )
+Obj TypePlistDenseNHomSSort(Obj list)
 {
-    return TYPE_LIST_DENSE_NHOM_MUTABLE;
+    if (IS_MUTABLE_PLAIN_OBJ(list))
+        return TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE;
+    else
+        return TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE;
 }
 
-Obj TypePlistDenseNHomImm (
-    Obj                 list )
+Obj TypePlistDenseNHomNSort(Obj list)
 {
-    return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
-}
-Obj TypePlistDenseNHomSSortMut (
-    Obj                 list )
-{
-    return TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE;
+    if (IS_MUTABLE_PLAIN_OBJ(list))
+        return TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE;
+    else
+        return TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE;
 }
 
-Obj TypePlistDenseNHomSSortImm (
-    Obj                 list )
+Obj TypePlistEmpty(Obj list)
 {
-    return TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE;
-}
-Obj TypePlistDenseNHomNSortMut (
-    Obj                 list )
-{
-    return TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE;
-}
-
-Obj TypePlistDenseNHomNSortImm (
-    Obj                 list )
-{
-    return TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE;
-}
-
-Obj TypePlistEmptyMut (
-    Obj                 list )
-{
-    return TYPE_LIST_EMPTY_MUTABLE;
-}
-
-Obj TypePlistEmptyImm (
-    Obj                 list )
-{
-    return TYPE_LIST_EMPTY_IMMUTABLE;
+    if (IS_MUTABLE_PLAIN_OBJ(list))
+        return TYPE_LIST_EMPTY_MUTABLE;
+    else
+        return TYPE_LIST_EMPTY_IMMUTABLE;
 }
 
 Obj TypePlistHom(Obj list)
@@ -3753,18 +3734,18 @@ static Int InitKernel (
     /* install the type methods                                            */
     TypeObjFuncs[ T_PLIST                       ] = TypePlist;
     TypeObjFuncs[ T_PLIST            +IMMUTABLE ] = TypePlist;
-    TypeObjFuncs[ T_PLIST_NDENSE                ] = TypePlistNDenseMut;
-    TypeObjFuncs[ T_PLIST_NDENSE     +IMMUTABLE ] = TypePlistNDenseImm;
-    TypeObjFuncs[ T_PLIST_DENSE                 ] = TypePlistDenseMut;
-    TypeObjFuncs[ T_PLIST_DENSE      +IMMUTABLE ] = TypePlistDenseImm;
-    TypeObjFuncs[ T_PLIST_DENSE_NHOM            ] = TypePlistDenseNHomMut;
-    TypeObjFuncs[ T_PLIST_DENSE_NHOM +IMMUTABLE ] = TypePlistDenseNHomImm;
-    TypeObjFuncs[ T_PLIST_DENSE_NHOM_SSORT      ] = TypePlistDenseNHomSSortMut;
-    TypeObjFuncs[ T_PLIST_DENSE_NHOM_SSORT+IMMUTABLE ] = TypePlistDenseNHomSSortImm;
-    TypeObjFuncs[ T_PLIST_DENSE_NHOM_NSORT      ] = TypePlistDenseNHomNSortMut;
-    TypeObjFuncs[ T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE ] = TypePlistDenseNHomNSortImm;
-    TypeObjFuncs[ T_PLIST_EMPTY                 ] = TypePlistEmptyMut;
-    TypeObjFuncs[ T_PLIST_EMPTY      +IMMUTABLE ] = TypePlistEmptyImm;
+    TypeObjFuncs[ T_PLIST_NDENSE                ] = TypePlistNDense;
+    TypeObjFuncs[ T_PLIST_NDENSE     +IMMUTABLE ] = TypePlistNDense;
+    TypeObjFuncs[ T_PLIST_DENSE                 ] = TypePlistDense;
+    TypeObjFuncs[ T_PLIST_DENSE      +IMMUTABLE ] = TypePlistDense;
+    TypeObjFuncs[ T_PLIST_DENSE_NHOM            ] = TypePlistDenseNHom;
+    TypeObjFuncs[ T_PLIST_DENSE_NHOM +IMMUTABLE ] = TypePlistDenseNHom;
+    TypeObjFuncs[ T_PLIST_DENSE_NHOM_SSORT            ] = TypePlistDenseNHomSSort;
+    TypeObjFuncs[ T_PLIST_DENSE_NHOM_SSORT +IMMUTABLE ] = TypePlistDenseNHomSSort;
+    TypeObjFuncs[ T_PLIST_DENSE_NHOM_NSORT            ] = TypePlistDenseNHomNSort;
+    TypeObjFuncs[ T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE ] = TypePlistDenseNHomNSort;
+    TypeObjFuncs[ T_PLIST_EMPTY                 ] = TypePlistEmpty;
+    TypeObjFuncs[ T_PLIST_EMPTY      +IMMUTABLE ] = TypePlistEmpty;
 
     for ( t1 = T_PLIST;  t1 <= LAST_PLIST_TNUM;  t1 += 2 ) {
         SetTypeObjFuncs[ t1 ] = SetTypePlistToPosObj;
