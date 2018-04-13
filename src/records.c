@@ -414,7 +414,7 @@ Int             IsbRecError (
     UInt                rnam )
 {
     rec = ErrorReturnObj(
-        "IsBound: <rec> must be a record (not a %s)",
+        "Record IsBound: <rec> must be a record (not a %s)",
         (Int)TNAM_OBJ(rec), 0L,
         "you can replace <rec> via 'return <rec>;'" );
     return ISB_REC( rec, rnam );
@@ -509,7 +509,7 @@ void            UnbRecError (
     UInt                rnam )
 {
     rec = ErrorReturnObj(
-        "Unbind: <rec> must be a record (not a %s)",
+        "Record Unbind: <rec> must be a record (not a %s)",
         (Int)TNAM_OBJ(rec), 0L,
         "you can replace <rec> via 'return <rec>;'" );
     UNB_REC( rec, rnam );
