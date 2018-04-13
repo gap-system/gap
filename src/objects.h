@@ -532,6 +532,22 @@ static inline Int IS_MUTABLE_OBJ(Obj obj)
 
 /****************************************************************************
 **
+*F  IS_MUTABLE_PLAIN_OBJ( <obj> ) . . . . . .  is an object plain and mutable
+**
+**  'IS_MUTABLE_PLAIN_OBJ' returns 1 if the object <obj> is a plain object
+**  (i.e., built into GAP), and mutable (i.e., can change due to assignments),
+**  and 0 otherwise.
+*/
+static inline Int IS_MUTABLE_PLAIN_OBJ(Obj obj)
+{
+    UInt type = TNUM_OBJ(obj);
+    return (FIRST_IMM_MUT_TNUM <= type) && (type <= LAST_IMM_MUT_TNUM)
+            && !(type & IMMUTABLE);
+}
+
+
+/****************************************************************************
+**
 *F  IsInternallyMutableObj( <obj> ) . . . does an object have a mutable state
 **
 **  This function returns   1 if the object  <obj> has a mutable state, i.e.
