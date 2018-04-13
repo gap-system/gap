@@ -188,3 +188,45 @@ DeclareGlobalFunction("AlgExtEmbeddedPol");
 
 DeclareGlobalFunction("AlgExtSquareHensel");
 
+#############################################################################
+##
+#F  DecomPoly( <f> [:"onlyone"] )  finds ideal decompositions of rational f
+##
+##  <#GAPDoc Label="DecomPoly">
+##  <ManSection>
+##  <Func Name="DecomPoly" Arg='pol'/>
+##
+##  <Description>
+##  Let <M>f</M> be a univariate, rational, irreducible, polynomial. A
+##  pair <M>g</M>,<M>h</M> of polynomials of degree strictly
+##  smaller than that of <M>f</M>, such that <M>f(x)|g(h(x))</M> is
+##  called an ideal decomposition. In the context of field
+##  extensions, if <M>\alpha</M> is a root of <M>f</M> in a suitable extension
+##  and <M>Q</M> the field of rational numbers, such a decomposition corresponds
+##  to (proper) subfields <M>Q\lt Q(\beta)\lt Q(\alpha)</M>, where <M>g</M> is the
+##  minimal polynomial of <M>\beta</M>.
+##  This function determines such decompositions up to equality of the subfields
+##  <M>Q(\beta)</M>, thus determining subfields of a given algebraic extension.
+##  It returns a list of pairs <M>[g,h]</M> (and an empty list if no such
+##  decomposition exists). If the option <A>onlyone</A> is given it returns at
+##  most one such decomposition (and performs faster).
+##  <Example><![CDATA[
+##  gap> x:=X(Rationals,"x");;pol:=x^8-24*x^6+144*x^4-288*x^2+144;;
+##  gap> l:=DecomPoly(pol);
+##  [ [ x^2+72*x+144, x^6-20*x^4+60*x^2-36 ],
+##    [ x^2-48*x+144, x^6-21*x^4+84*x^2-48 ],
+##    [ x^2+288*x+17280, x^6-24*x^4+132*x^2-288 ],
+##    [ x^4-24*x^3+144*x^2-288*x+144, x^2 ] ]
+##  gap> List(l,x->Value(x[1],x[2])/pol);
+##  [ x^4-16*x^2-8, x^4-18*x^2+33, x^4-24*x^2+120, 1 ]
+##  gap> DecomPoly(pol:onlyone);
+##  [ [ x^2+72*x+144, x^6-20*x^4+60*x^2-36 ] ]
+##  ]]></Example>
+##  In this example the given polynomial is regular with Galois group
+##  <M>Q_8</M>, thus exposing the four proper subfields.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("DecomPoly");
+
