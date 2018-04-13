@@ -66,65 +66,38 @@
 
 /****************************************************************************
 **
-*F  TypeRangeNSortImmutable( <range> )  . . . . . . . . . . . type of a range
+*F  TypeRangeNSort( <range> ) . . . . . . . . . . . . . . . . type of a range
 **
-**  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for immutable
-**  ranges which are not strictly sorted.
+**  'TypeRangeNSort' is the  function in 'TypeObjFuncs' for ranges which are
+**  not strictly sorted.
 */
 Obj TYPE_RANGE_NSORT_IMMUTABLE;
-
-Obj TypeRangeNSortImmutable (
-    Obj                 list )
-{
-    return TYPE_RANGE_NSORT_IMMUTABLE;
-}
-    
-/****************************************************************************
-**
-*F  TypeRangeNSortMutable( <range> )  . . . . . . . . . . . . type of a range
-**
-**  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for   mutable
-**  ranges which are not strictly sorted.
-*/
 Obj TYPE_RANGE_NSORT_MUTABLE;
 
-Obj TypeRangeNSortMutable (
-    Obj                 list )
+Obj TypeRangeNSort(Obj list)
 {
-    return TYPE_RANGE_NSORT_MUTABLE;
+    return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_RANGE_NSORT_MUTABLE
+                                      : TYPE_RANGE_NSORT_IMMUTABLE;
 }
+
     
 /****************************************************************************
 **
-*F  TypeRangeSSortImmutable( <range> )  . . . . . . . . . . . type of a range
+*F  TypeRangeSSort( <range> ) . . . . . . . . . . . . . . . . type of a range
 **
-**  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for immutable
-**  ranges which are strictly sorted.
+**  'TypeRangeSSort' is the function in 'TypeObjFuncs' for ranges which are
+**  strictly sorted.
 */
 Obj TYPE_RANGE_SSORT_IMMUTABLE;
-
-Obj TypeRangeSSortImmutable (
-    Obj                 list )
-{
-    return TYPE_RANGE_SSORT_IMMUTABLE;
-}
-
-
-/****************************************************************************
-**
-*F  TypeRangeSSortMutable( <range> )  . . . . . . . . . . . . type of a range
-**
-**  'TypeRangeNSortMutable' is the   function in 'TypeObjFuncs' for   mutable
-**  ranges which are strictly sorted.
-*/
 Obj TYPE_RANGE_SSORT_MUTABLE;
 
-Obj TypeRangeSSortMutable (
-    Obj                 list )
+Obj TypeRangeSSort(Obj list)
 {
-    return TYPE_RANGE_SSORT_MUTABLE;
+    return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_RANGE_SSORT_MUTABLE
+                                      : TYPE_RANGE_SSORT_IMMUTABLE;
 }
-    
+
+
 #if !defined(USE_THREADSAFE_COPYING)
 
 /****************************************************************************
@@ -1304,10 +1277,10 @@ static Int InitKernel (
     ImportGVarFromLibrary( "TYPE_RANGE_SSORT_IMMUTABLE",
                            &TYPE_RANGE_SSORT_IMMUTABLE );
 
-    TypeObjFuncs[ T_RANGE_NSORT            ] = TypeRangeNSortMutable;
-    TypeObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = TypeRangeNSortImmutable;
-    TypeObjFuncs[ T_RANGE_SSORT            ] = TypeRangeSSortMutable;
-    TypeObjFuncs[ T_RANGE_SSORT +IMMUTABLE ] = TypeRangeSSortImmutable;
+    TypeObjFuncs[ T_RANGE_NSORT            ] = TypeRangeNSort;
+    TypeObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = TypeRangeNSort;
+    TypeObjFuncs[ T_RANGE_SSORT            ] = TypeRangeSSort;
+    TypeObjFuncs[ T_RANGE_SSORT +IMMUTABLE ] = TypeRangeSSort;
 
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );
