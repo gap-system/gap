@@ -1056,26 +1056,6 @@ Obj FuncIS_BLIST_CONV (
 
 /****************************************************************************
 **
-*F  FuncCONV_BLIST( <self>, <blist> ) . . . . convert into a boolean list rep
-*/
-Obj FuncCONV_BLIST (
-    Obj                 self,
-    Obj                 blist )
-{
-    /* check whether <blist> is a boolean list                             */
-    while ( ! IsBlistConv(blist) ) {
-        blist = ErrorReturnObj(
-            "CONV_BLIST: <blist> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(blist), 0L,
-            "you can replace <blist> via 'return <blist>;'" );
-    }
-
-    /* return nothing                                                      */
-    return 0;
-}
-
-/****************************************************************************
-**
 **
 *F  FuncIS_BLIST_REP( <self>, <obj> ) . . test if value is a boolean list rep
 */
@@ -1423,56 +1403,6 @@ Obj FuncLIST_BLIST (
             nn++;
         }
     }
-
-    /* return the sublist                                                  */
-    return sub;
-}
-
-
-/****************************************************************************
-**
-*F  FuncPositionsTrueBlist( <self>, <blist> ) . . . true positions in a blist
-**
-*N  1992/12/15 martin this depends on 'BIPEB' being 32
-*N  Fix up for 64 bit SL
-*/
-Obj FuncPositionsTrueBlist (
-    Obj                 self,
-    Obj                 blist )
-{
-    Obj                 sub;            /* handle of the result            */
-    UInt                n;              /* number of bits in blist         */
-    UInt                len;            
-    UInt                nn;
-    UInt                i;              /* loop variable                   */
-
-    /* get and check the first argument                                    */
-    while ( ! IsBlistConv( blist ) ) {
-        blist = ErrorReturnObj(
-            "ListBlist: <blist> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(blist), 0L,
-            "you can replace <blist> via 'return <blist>;'" );
-    }
-
-    /* compute the number of 'true'-s just as in 'FuncSIZE_BLIST'            */
-    n = SizeBlist(blist);
-
-    /* make the sublist (we now know its size exactly)                    */
-    sub = NEW_PLIST( T_PLIST, n );
-    SET_LEN_PLIST( sub, n );
-
-    /* loop over the boolean list and stuff elements into <sub>            */
-    /* This could be a bit quicker for sparse blists by skipping whole empty
-       blocks as we go past                  SL  9/1/97                    */
-    len = LEN_BLIST( blist );
-    nn  = 1;
-    for ( i = 1; nn <= n && i <= len;  i++ ) {
-        if (TEST_BIT_BLIST(blist, i)) {
-            SET_ELM_PLIST( sub, nn, INTOBJ_INT(i) );
-            nn++;
-        }
-    }
-    CHANGED_BAG(sub);
 
     /* return the sublist                                                  */
     return sub;
@@ -2240,7 +2170,6 @@ static StructGVarFilt GVarFilts [] = {
 static StructGVarFunc GVarFuncs [] = {
 
     GVAR_FUNC(IS_BLIST_CONV, 1, "obj"),
-    GVAR_FUNC(CONV_BLIST, 1, "blist"),
     GVAR_FUNC(BLIST_LIST, 2, "list, sub"),
     GVAR_FUNC(LIST_BLIST, 2, "list, blist"),
     GVAR_FUNC(SIZE_BLIST, 1, "blist"),
@@ -2251,7 +2180,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(SUBTR_BLIST, 2, "blist1, blist2"),
     GVAR_FUNC(MEET_BLIST, 2, "blist1, blist2"),
     GVAR_FUNC(PositionNthTrueBlist, 2, "blist, nth"),
-    GVAR_FUNC(PositionsTrueBlist, 1, "blist"),
     { 0, 0, 0, 0, 0 }
 
 };
