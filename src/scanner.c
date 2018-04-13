@@ -167,16 +167,15 @@ void Match (
 **  If the characters make up a keyword 'GetIdent' will set 'Symbol' to the
 **  corresponding value. The parser will ignore 'STATE(Value)' in this case.
 **
-**  An  identifier consists of a letter  followed by more letters, digits and
-**  underscores '_'.  An identifier is terminated by the first  character not
-**  in this  class.  The escape sequence '\<newline>'  is ignored,  making it
-**  possible to split  long identifiers  over multiple lines.  The  backslash
-**  '\' can be used  to include special characters like  '('  in identifiers.
-**  For example 'G\(2\,5\)' is an identifier not a call to a function 'G'.
+**  An identifier consists of a letter followed by more letters, digits and
+**  underscores '_'. An identifier is terminated by the first character not
+**  in this class. The backslash '\' can be used to include special
+**  characters like '(' in identifiers. For example 'G\(2\,5\)' is an
+**  identifier not a call to a function 'G'.
 **
 **  The size of 'STATE(Value)' limits the number of significant characters in
-**  an identifier. If an identifier has more characters 'GetIdent' will
-**  silently truncate it.
+**  an identifier. If an identifier has more characters 'GetIdent' truncates
+**  it and signal a syntax error.
 **
 **  After reading the identifier 'GetIdent'  looks at the  first and the last
 **  character of 'STATE(Value)' to see if it could possibly be a keyword. For
