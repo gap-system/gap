@@ -654,39 +654,6 @@ void AssBlist (
 
 /****************************************************************************
 **
-*F  AsssBlist( <list>, <poss>, <vals> ) .  assign several elements to a blist
-**
-**  'AsssBlist' assignes the values  from  the list  <vals> at the  positions
-**  given  in the  list  <poss>  to the   boolean  list  <list>.  It is   the
-**  responsibility of the caller to ensure that  <poss> is dense and contains
-**  only positive integers, that <poss> and <vals>  have the same length, and
-**  that <vals> is dense.
-**
-**  'AsssBlist' is intended as function in 'AsssListFuncs' for boolean lists.
-**  Note that currently, we use AsssListDefault instead. This ensures 
-**  automatically that <list> remains a blist if possible.
-**
-*/
-void AsssBlist (     /*  currently not used */
-    Obj                 list,
-    Obj                 poss,
-    Obj                 vals )
-{
-   Int   i, len, pos;
-   Obj   val;
-
-   len = LEN_LIST(poss);
-   for (i=1; i <= len; i++) {
-      /* use generic macros because list might be unpacked */
-      pos = INT_INTOBJ(ELMW_LIST(poss, i));
-      val = ELMW_LIST(vals, i);
-      ASS_LIST( list, pos, val);
-    }
-}
-
-
-/****************************************************************************
-**
 *F  PosBlist( <list>, <val>, <start> )   position of an elm in a boolean list
 **
 **  'PosBlist' returns the   position of  the first  occurrence  of the  value
