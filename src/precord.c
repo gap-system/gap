@@ -61,20 +61,11 @@
 **  'TypePRec' is the function in 'TypeObjFuncs' for plain records.
 */
 Obj TYPE_PREC_MUTABLE;
-
-Obj TypePRecMut (
-    Obj                 prec )
-{
-    return TYPE_PREC_MUTABLE;
-}
-
-
 Obj TYPE_PREC_IMMUTABLE;
 
-Obj TypePRecImm (
-    Obj                 prec )
+Obj TypePRec(Obj prec)
 {
-    return TYPE_PREC_IMMUTABLE;
+    return IS_MUTABLE_PLAIN_OBJ(prec) ? TYPE_PREC_MUTABLE : TYPE_PREC_IMMUTABLE;
 }
 
 /****************************************************************************
@@ -944,8 +935,8 @@ static Int InitKernel (
     ImportGVarFromLibrary( "TYPE_PREC_MUTABLE",   &TYPE_PREC_MUTABLE   );
     ImportGVarFromLibrary( "TYPE_PREC_IMMUTABLE", &TYPE_PREC_IMMUTABLE );
 
-    TypeObjFuncs[ T_PREC            ] = TypePRecMut;
-    TypeObjFuncs[ T_PREC +IMMUTABLE ] = TypePRecImm;
+    TypeObjFuncs[ T_PREC            ] = TypePRec;
+    TypeObjFuncs[ T_PREC +IMMUTABLE ] = TypePRec;
 
     SetTypeObjFuncs[ T_PREC ] = SetTypePRecToComObj;
 
