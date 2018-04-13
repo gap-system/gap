@@ -963,9 +963,8 @@ Int IsBlistConv (
         /* test that all elements are bound and either 'true' or 'false'   */
         len = LEN_LIST( list );
         for ( i = 1;  i <= len;  i++ ) {
-            if ( ELMV0_LIST( list, (Int)i ) == 0
-              || (ELMW_LIST( list, (Int)i ) != True
-               && ELMW_LIST( list, (Int)i ) != False) ) {
+            Obj elm = ELMV0_LIST( list, (Int)i );
+            if ( elm == 0 || (elm != True && elm != False) ) {
                 break;
             }
         }
