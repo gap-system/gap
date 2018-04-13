@@ -189,17 +189,14 @@ void Match (
 **  'GetIdent' can decide with one string comparison if 'STATE(Value)' holds
 **  a keyword or not.
 */
-static void GetIdent(void)
+static void GetIdent(Int i)
 {
-    Int                 i;
-    Int                 isQuoted;
-
-    /* initially it could be a keyword                                     */
-    isQuoted = 0;
+    // initially it could be a keyword
+    Int isQuoted = 0;
 
     /* read all characters into 'STATE(Value)'                                    */
     Char c = PEEK_CURR_CHAR();
-    for ( i=0; IsIdent(c) || IsDigit(c) || c=='\\'; i++ ) {
+    for ( ; IsIdent(c) || IsDigit(c) || c=='\\'; i++ ) {
 
         /* handle escape sequences                                         */
         /* we ignore '\ newline' by decrementing i, except at the
@@ -344,29 +341,18 @@ static void GetNumber(UInt StartingStatus)
 
   c = PEEK_CURR_CHAR();
   if (StartingStatus  <  2) {
-    /* read initial sequence of digits into 'Value'             */
-    for (i = 0; !wasEscaped && IsDigit(c) && i < SAFE_VALUE_SIZE-1; i++) {
-      STATE(Value)[i] = c;
+    // read initial sequence of digits into 'Value'
+    while (IsDigit(c) && i < SAFE_VALUE_SIZE-1) {
+      STATE(Value)[i++] = c;
       seenADigit = 1;
-      c = GetCleanedChar(&wasEscaped);
+      c = GET_NEXT_CHAR();
     }
 
     /* So why did we run off the end of that loop */
     /* maybe we saw an identifier character and realised that this is an identifier we are reading */
-    if (wasEscaped || IsIdent(c)) {
-      /* Now we know we have an identifier read the rest of it */
-      STATE(Value)[i++] = c;
-      c = GetCleanedChar(&wasEscaped);
-      for (; wasEscaped || IsIdent(c) || IsDigit(c); i++) {
-        if (i < SAFE_VALUE_SIZE -1)
-          STATE(Value)[i] = c;
-        c = GetCleanedChar(&wasEscaped);
-      }
-      if (i < SAFE_VALUE_SIZE -1)
-        STATE(Value)[i] = '\0';
-      else
-        STATE(Value)[SAFE_VALUE_SIZE-1] = '\0';
-      STATE(Symbol) = S_IDENT;
+    if (IsIdent(c) || c == '\\') {
+      // Now we know we have an identifier, read the rest of it
+      GetIdent(i);
       return;
     }
 
@@ -936,7 +922,7 @@ void GetSymbol ( void )
 
   // switch according to the character
   if (IsAlpha(c)) {
-      GetIdent();
+      GetIdent(0);
       return;
   }
 
@@ -991,9 +977,9 @@ void GetSymbol ( void )
   case '?':         STATE(Symbol) = S_HELP;          GetHelp(); break;
   case '"':                                          GetMaybeTripStr(); break;
   case '\'':                                         GetChar(); break;
-  case '\\':                                         GetIdent(); break;
-  case '_':                                          GetIdent(); break;
-  case '@':                                          GetIdent(); break;
+  case '\\':                                         GetIdent(0); break;
+  case '_':                                          GetIdent(0); break;
+  case '@':                                          GetIdent(0); break;
 
   case '0': case '1': case '2': case '3': case '4':
   case '5': case '6': case '7': case '8': case '9':  GetNumber(0); break;
