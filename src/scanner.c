@@ -194,12 +194,12 @@ static void GetIdent(Int i)
     // initially it could be a keyword
     Int isQuoted = 0;
 
-    /* read all characters into 'STATE(Value)'                                    */
+    // read all characters into 'STATE(Value)'
     Char c = PEEK_CURR_CHAR();
-    for ( ; IsIdent(c) || IsDigit(c) || c=='\\'; i++ ) {
+    for (; IsIdent(c) || IsDigit(c) || c == '\\'; i++) {
 
         // handle escape sequences
-        if ( c == '\\' ) {
+        if (c == '\\') {
             c = GET_NEXT_CHAR();
             switch(c) {
             case 'n': c = '\n'; break;
@@ -215,12 +215,11 @@ static void GetIdent(Int i)
         if (i < SAFE_VALUE_SIZE - 1)
             STATE(Value)[i] = c;
 
-        /* read the next character                                         */
+        // read the next character
         c = GET_NEXT_CHAR();
-
     }
 
-    /* terminate the identifier and lets assume that it is not a keyword   */
+    // terminate the identifier and lets assume that it is not a keyword
     if (i >= SAFE_VALUE_SIZE-1) {
         SyntaxError("Identifiers in GAP must consist of less than 1023 characters.");
         i = SAFE_VALUE_SIZE-1;
@@ -232,7 +231,7 @@ static void GetIdent(Int i)
     if (isQuoted)
         return;
 
-    /* now check if 'STATE(Value)' holds a keyword                                */
+    // now check if 'STATE(Value)' holds a keyword
     switch ( 256*STATE(Value)[0]+STATE(Value)[i-1] ) {
     case 256*'a'+'d': if(!strcmp(STATE(Value),"and"))     STATE(Symbol)=S_AND;     break;
     case 256*'a'+'c': if(!strcmp(STATE(Value),"atomic"))  STATE(Symbol)=S_ATOMIC;  break;
