@@ -511,17 +511,6 @@ void            AssRange (
     CHANGED_BAG( list );
 }
 
-void            AssRangeImm (
-    Obj                 list,
-    Int                 pos,
-    Obj                 val )
-{
-    ErrorReturnVoid(
-        "Lists Assignment: <list> must be a mutable list",
-        0L, 0L,
-        "you can 'return;' and ignore the assignment" );
-}
-
 
 /****************************************************************************
 **
@@ -550,17 +539,6 @@ void            AsssRange (
 
     /* and delegate                                                        */
     ASSS_LIST( list, poss, vals );
-}
-
-void            AsssRangeImm (
-    Obj                 list,
-    Obj                 poss,
-    Obj                 val )
-{
-    ErrorReturnVoid(
-        "Lists Assignments: <list> must be a mutable list",
-        0L, 0L,
-        "you can 'return;' and ignore the assignment" );
 }
 
 
@@ -1376,13 +1354,9 @@ static Int InitKernel (
     ElmsListFuncs   [ T_RANGE_SSORT            ] = ElmsRange;
     ElmsListFuncs   [ T_RANGE_SSORT +IMMUTABLE ] = ElmsRange;
     AssListFuncs    [ T_RANGE_NSORT            ] = AssRange;
-    AssListFuncs    [ T_RANGE_NSORT +IMMUTABLE ] = AssRangeImm;
     AssListFuncs    [ T_RANGE_SSORT            ] = AssRange;
-    AssListFuncs    [ T_RANGE_SSORT +IMMUTABLE ] = AssRangeImm;
     AsssListFuncs   [ T_RANGE_NSORT            ] = AsssRange;
-    AsssListFuncs   [ T_RANGE_NSORT +IMMUTABLE ] = AsssRangeImm;
     AsssListFuncs   [ T_RANGE_SSORT            ] = AsssRange;
-    AsssListFuncs   [ T_RANGE_SSORT +IMMUTABLE ] = AsssRangeImm;
     IsDenseListFuncs[ T_RANGE_NSORT            ] = AlwaysYes;
     IsDenseListFuncs[ T_RANGE_NSORT +IMMUTABLE ] = AlwaysYes;
     IsDenseListFuncs[ T_RANGE_SSORT            ] = AlwaysYes;

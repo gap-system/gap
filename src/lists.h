@@ -18,6 +18,7 @@
 #ifndef GAP_LISTS_H
 #define GAP_LISTS_H
 
+#include <src/error.h>
 #include <src/objects.h>
 
 /****************************************************************************
@@ -510,6 +511,12 @@ static inline void ASS_LIST(Obj list, Int pos, Obj obj)
 {
     GAP_ASSERT(pos > 0);
     GAP_ASSERT(obj != 0);
+    UInt tnum = TNUM_OBJ(list);
+    if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_IMM_MUT_TNUM &&
+        (tnum & IMMUTABLE)) {
+        ErrorReturnVoid("List Assignment: <list> must be a mutable list", 0,
+                        0, "you can 'return;' and ignore the assignment");
+    }
     (*AssListFuncs[TNUM_OBJ(list)])(list, pos, obj);
 }
 
@@ -556,6 +563,12 @@ static inline void ASSS_LIST(Obj list, Obj poss, Obj objs)
     GAP_ASSERT(IS_POSS_LIST(poss));
     GAP_ASSERT(IS_DENSE_LIST(objs));
     GAP_ASSERT(LEN_LIST(poss) == LEN_LIST(objs));
+    UInt tnum = TNUM_OBJ(list);
+    if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_IMM_MUT_TNUM &&
+        (tnum & IMMUTABLE)) {
+        ErrorReturnVoid("List Assignments: <list> must be a mutable list", 0,
+                        0, "you can 'return;' and ignore the assignment");
+    }
     (*AsssListFuncs[TNUM_OBJ(list)])(list, poss, objs);
 }
 
