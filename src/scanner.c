@@ -198,10 +198,7 @@ static void GetIdent(Int i)
     Char c = PEEK_CURR_CHAR();
     for ( ; IsIdent(c) || IsDigit(c) || c=='\\'; i++ ) {
 
-        /* handle escape sequences                                         */
-        /* we ignore '\ newline' by decrementing i, except at the
-           very start of the identifier, when we cannot do that
-           so we recurse instead                                           */
+        // handle escape sequences
         if ( c == '\\' ) {
             c = GET_NEXT_CHAR();
             switch(c) {
