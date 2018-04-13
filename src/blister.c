@@ -1546,7 +1546,7 @@ Obj FuncPositionNthTrueBlist (
 **
 **  'IsSubsetBlist' returns 'true' if the boolean list <list2> is a subset of
 **  the  boolean  list <list1>, which must  have  equal length.  <list2> is a
-**  subset if <list1> if '<list2>[<i>] >= <list1>[<i>]' for all <i>.
+**  subset of <list1> if '<list2>[<i>] >= <list1>[<i>]' for all <i>.
 */
 Obj FuncIS_SUB_BLIST (
     Obj                 self,
@@ -1649,7 +1649,7 @@ Obj FuncUNITE_BLIST (
 **
 *F  FuncUNITE_BLIST_LIST( <self>, <list>,<blist>, <sub> )
 **
-**  'FuncUNITE_BLIST_LIST' implements the internal function 'BlistList'.
+**  'FuncUNITE_BLIST_LIST' implements the internal function 'UniteBlistList'.
 **
 **  'UniteBlistList( <list>,<blist>, <sub> )'
 **
@@ -2027,7 +2027,7 @@ Obj FuncSUBTR_BLIST (
 **
 *F  FuncMEET_BLIST( <self>, <list1>, <list2> ) . . . 
 **
-**  'FuncSUBTR_BLIST' implements the internal function 'MeetBlist'.
+**  'FuncMEET_BLIST' implements the internal function 'MeetBlist'.
 **
 **  'MeetBlist( <list1>, <list2> )'
 **
