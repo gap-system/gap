@@ -10,9 +10,9 @@ rec( x := 2 )
 gap> Unbind(x.x);
 Error, Record Unbind: <rec> must be a mutable record
 gap> x.y := 2;
-Error, Records Assignment: <rec> must be a mutable record
+Error, Record Assignment: <rec> must be a mutable record
 gap> x.x := 2;
-Error, Records Assignment: <rec> must be a mutable record
+Error, Record Assignment: <rec> must be a mutable record
 gap> r := rec(x := 2, y := 3);
 rec( x := 2, y := 3 )
 gap> r.x;

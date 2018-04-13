@@ -91,7 +91,7 @@ gap> Info(InfoWarning, 1000, f());
 gap> r.(f());
 Error, Function call: <func> must return a value
 gap> r.(g());
-Error, Record: '<rec>.2' must have an assigned value
+Error, Record Element: '<rec>.2' must have an assigned value
 gap> (function() end)();
 gap> (function() return 2; end)();
 2
