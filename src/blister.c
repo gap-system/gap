@@ -105,69 +105,39 @@ Obj TYPE_BLIST_SSORT_IMM;
 Obj TYPE_BLIST_EMPTY_MUT;
 Obj TYPE_BLIST_EMPTY_IMM;
 
-Obj TypeBlistMut (
-    Obj                 list )
+Obj TypeBlist(Obj list)
 {
     /* special case for the empty blist                                    */
     if ( LEN_BLIST(list) == 0 ) {
-        return TYPE_BLIST_EMPTY_MUT;
+        return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_BLIST_EMPTY_MUT
+                                          : TYPE_BLIST_EMPTY_IMM;
     } else {
-        return TYPE_BLIST_MUT;
+        return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_BLIST_MUT
+                                          : TYPE_BLIST_IMM;
     }
 }
 
-Obj TypeBlistImm (
-    Obj                 list )
+Obj TypeBlistNSort(Obj list)
 {
     /* special case for the empty blist                                    */
     if ( LEN_BLIST(list) == 0 ) {
-        return TYPE_BLIST_EMPTY_IMM;
+        return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_BLIST_EMPTY_MUT
+                                          : TYPE_BLIST_EMPTY_IMM;
     } else {
-        return TYPE_BLIST_IMM;
+        return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_BLIST_NSORT_MUT
+                                          : TYPE_BLIST_NSORT_IMM;
     }
 }
 
-Obj TypeBlistNSortMut (
-    Obj                 list )
+Obj TypeBlistSSort(Obj list)
 {
     /* special case for the empty blist                                    */
     if ( LEN_BLIST(list) == 0 ) {
-        return TYPE_BLIST_EMPTY_MUT;
+        return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_BLIST_EMPTY_MUT
+                                          : TYPE_BLIST_EMPTY_IMM;
     } else {
-        return TYPE_BLIST_NSORT_MUT;
-    }
-}
-
-Obj TypeBlistNSortImm (
-    Obj                 list )
-{
-    /* special case for the empty blist                                    */
-    if ( LEN_BLIST(list) == 0 ) {
-        return TYPE_BLIST_EMPTY_IMM;
-    } else {
-        return TYPE_BLIST_NSORT_IMM;
-    }
-}
-
-Obj TypeBlistSSortMut (
-    Obj                 list )
-{
-    /* special case for the empty blist                                    */
-    if ( LEN_BLIST(list) == 0 ) {
-        return TYPE_BLIST_EMPTY_MUT;
-    } else {
-        return TYPE_BLIST_SSORT_MUT;
-    }
-}
-
-Obj TypeBlistSSortImm (
-    Obj                 list )
-{
-    /* special case for the empty blist                                    */
-    if ( LEN_BLIST(list) == 0 ) {
-        return TYPE_BLIST_EMPTY_IMM;
-    } else {
-        return TYPE_BLIST_SSORT_IMM;
+        return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_BLIST_SSORT_MUT
+                                          : TYPE_BLIST_SSORT_IMM;
     }
 }
 
@@ -2452,12 +2422,12 @@ static Int InitKernel (
     }
 
     /* install the type methods                                            */
-    TypeObjFuncs[ T_BLIST ] = TypeBlistMut;
-    TypeObjFuncs[ T_BLIST +IMMUTABLE ] = TypeBlistImm;
-    TypeObjFuncs[ T_BLIST_NSORT ] = TypeBlistNSortMut;
-    TypeObjFuncs[ T_BLIST_NSORT +IMMUTABLE ] = TypeBlistNSortImm;
-    TypeObjFuncs[ T_BLIST_SSORT ] = TypeBlistSSortMut;
-    TypeObjFuncs[ T_BLIST_SSORT +IMMUTABLE ] = TypeBlistSSortImm;
+    TypeObjFuncs[ T_BLIST            ] = TypeBlist;
+    TypeObjFuncs[ T_BLIST +IMMUTABLE ] = TypeBlist;
+    TypeObjFuncs[ T_BLIST_NSORT            ] = TypeBlistNSort;
+    TypeObjFuncs[ T_BLIST_NSORT +IMMUTABLE ] = TypeBlistNSort;
+    TypeObjFuncs[ T_BLIST_SSORT            ] = TypeBlistSSort;
+    TypeObjFuncs[ T_BLIST_SSORT +IMMUTABLE ] = TypeBlistSSort;
 
     /* initialise list tables                                              */
     InitClearFiltsTNumsFromTable   ( ClearFiltsTab );
