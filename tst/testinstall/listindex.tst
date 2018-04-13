@@ -272,7 +272,7 @@ gap> l[2,1];
 Error, List Element: <list>[2] must have an assigned value
 gap> MakeImmutable(l[1]);;
 gap> l[1,1] := 2;;
-Error, Lists Assignment: <list> must be a mutable list
+Error, List Assignment: <list> must be a mutable list
 gap> l;
 [ [ 3, 4 ] ]
 

@@ -85,7 +85,7 @@ void            AddPlist3 (
 
     if ( ! IS_MUTABLE_PLIST(list) ) {
         list = ErrorReturnObj(
-                "Lists Assignment: <list> must be a mutable list",
+                "List Assignment: <list> must be a mutable list",
                 0L, 0L,
                 "you may replace <list> via 'return <list>;'" );
         FuncADD_LIST( 0, list, obj );

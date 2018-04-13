@@ -1026,7 +1026,7 @@ gap> l := [1,2,4];
 gap> MakeImmutable(l);
 [ 1, 2, 4 ]
 gap> l[3] := 5;
-Error, Lists Assignment: <list> must be a mutable list
+Error, List Assignment: <list> must be a mutable list
 ]]></Example>
 <P/>
 For external objects, the situation is different. An external object which

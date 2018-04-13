@@ -342,7 +342,7 @@ gap> list[3][5] := 'w';; list; copy;
 [ 1, 2, "threw", [ 4 ] ]
 [ 1, 2, "three", [ 4 ] ]
 gap> copy[3][5] := 'w';
-Lists Assignment: <list> must be a mutable list
+List Assignment: <list> must be a mutable list
 not in any function
 Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
