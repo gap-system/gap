@@ -1933,7 +1933,7 @@ Obj FuncASS_GF2VEC (
     /* check that <list> is mutable                                        */
     if ( ! IS_MUTABLE_OBJ(list) ) {
         ErrorReturnVoid(
-            "Lists Assignment: <list> must be a mutable list",
+            "List Assignment: <list> must be a mutable list",
             0L, 0L,
             "you can 'return;' and ignore the assignment" );
         return 0;
@@ -2016,7 +2016,7 @@ Obj FuncASS_GF2MAT (
     /* check that <list> is mutable                                        */
     if ( ! IS_MUTABLE_OBJ(list) ) {
         ErrorReturnVoid(
-            "Lists Assignment: <list> must be a mutable list",
+            "List Assignment: <list> must be a mutable list",
             0L, 0L,
             "you can 'return;' and ignore the assignment" );
         return 0;
@@ -2098,9 +2098,9 @@ Obj FuncUNB_GF2VEC (
     /* check that <list> is mutable                                        */
     if ( ! IS_MUTABLE_OBJ(list) ) {
         ErrorReturnVoid(
-            "Unbind: <list> must be a mutable list",
+            "List Unbind: <list> must be a mutable list",
             0L, 0L,
-            "you can 'return;' and ignore the operation" );
+            "you can 'return;' and ignore the unbind" );
         return 0;
     }
 
@@ -2153,9 +2153,9 @@ Obj FuncUNB_GF2MAT (
     /* check that <list> is mutable                                        */
     if ( ! IS_MUTABLE_OBJ(list) ) {
         ErrorReturnVoid(
-            "Lists Assignment: <list> must be a mutable list",
+            "List Unbind: <list> must be a mutable list",
             0L, 0L,
-            "you can 'return;' and ignore the assignment" );
+            "you can 'return;' and ignore the unbind" );
         return 0;
     }
 

@@ -34,7 +34,7 @@ gap> Length( z );  DimensionsMat( z );
 gap> m1[3];
 [ 0, 0, 0, 1, 0, 0, 0, 0 ]
 gap> m1[3][4] := 4;
-Error, Lists Assignment: <list> must be a mutable list
+Error, List Assignment: <list> must be a mutable list
 gap> m1[3];
 [ 0, 0, 0, 1, 0, 0, 0, 0 ]
 gap> z[2];

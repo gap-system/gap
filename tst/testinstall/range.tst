@@ -80,7 +80,7 @@ Error, List Elements: <list>[7] must have an assigned value
 gap> [-5,-3..5]{[1..6]};
 [ -5, -3 .. 5 ]
 gap> Immutable([-5,-3..5])[3] := 2;
-Error, Lists Assignment: <list> must be a mutable list
+Error, List Assignment: <list> must be a mutable list
 gap> x := [-5,-3..5];
 [ -5, -3 .. 5 ]
 gap> x[2] := 7;
@@ -88,7 +88,7 @@ gap> x[2] := 7;
 gap> x;
 [ -5, 7, -1, 1, 3, 5 ]
 gap> Immutable([-5,-3..5]){[2,4]} := [2..3];
-Error, Lists Assignments: <list> must be a mutable list
+Error, List Assignments: <list> must be a mutable list
 gap> x := [-5,-3..5];
 [ -5, -3 .. 5 ]
 gap> x{[2,5,3]};
@@ -100,7 +100,7 @@ gap> x;
 gap> x{[2,4]} := [2..4];
 Error, List Assignment: <rhss> must have the same length as <positions> (2)
 gap> Immutable([-5,-3..5]){[2..3]} := [2..3];
-Error, Lists Assignments: <list> must be a mutable list
+Error, List Assignments: <list> must be a mutable list
 gap> x := [-5,-3..5];
 [ -5, -3 .. 5 ]
 gap> x{[2..3]};
