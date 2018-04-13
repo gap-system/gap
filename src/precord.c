@@ -915,9 +915,7 @@ static Int InitKernel (
     UnbRecFuncs[ T_PREC            ] = UnbPRec;
     UnbRecFuncs[ T_PREC +IMMUTABLE ] = UnbPRecImm;
 
-    /* install mutability test                                             */
-    IsMutableObjFuncs[  T_PREC            ] = AlwaysYes;
-    IsMutableObjFuncs[  T_PREC +IMMUTABLE ] = AlwaysNo;
+    /* install tests for being copyable                                    */
     IsCopyableObjFuncs[ T_PREC            ] = AlwaysYes;
     IsCopyableObjFuncs[ T_PREC +IMMUTABLE ] = AlwaysYes;
 
