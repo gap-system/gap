@@ -1678,12 +1678,22 @@ Obj FuncUNITE_BLIST_LIST (
             (Int)TNAM_OBJ(list), 0L,
             "you can replace <list> via 'return <list>;'" );
     }
+
+    lenList  = LEN_LIST( list );
+
     while ( ! IsBlistConv( blist ) ) {
         blist = ErrorReturnObj(
             "UniteBlistList: <blist> must be a boolean list (not a %s)",
             (Int)TNAM_OBJ(blist), 0L,
             "you can replace <blist> via 'return <blist>;'" );
     }
+    while ( LEN_BLIST(blist) != lenList ) {
+        blist = ErrorReturnObj(
+          "UniteBlistList: <blist> must have the same length as <list> (%d)",
+            lenList, 0L,
+            "you can replace <blist> via 'return <blist>;'" );
+    }
+
     while ( ! IS_SMALL_LIST(sub) ) {
         sub = ErrorReturnObj(
             "UniteBlistList: <sub> must be a small list (not a %s)",
@@ -1691,22 +1701,12 @@ Obj FuncUNITE_BLIST_LIST (
             "you can replace <sub> via 'return <sub>;'" );
     }
 
+    lenSub   = LEN_LIST( sub );
+
     /* for a range as subset of a range, it is extremely easy               */
     if ( IS_RANGE(list) && IS_RANGE(sub) && GET_INC_RANGE( list ) == 1
           && GET_INC_RANGE( sub ) == 1) {
 
-        /* allocate the boolean list and get pointer                       */
-        lenList  = GET_LEN_RANGE( list );
-
-        /* check length */
-        while ( LEN_BLIST(blist) != lenList ) {
-            blist = ErrorReturnObj(
-              "UniteBlistList: <blist> must have the same length as <list> (%d)",
-                lenList, 0L,
-                "you can replace <blist> via 'return <blist>;'" );
-        }
-
-        lenSub   = GET_LEN_RANGE( sub );
         ptrBlist = BLOCKS_BLIST(blist);
 
         /* get the bounds of the subset with respect to the boolean list   */
@@ -1732,18 +1732,6 @@ Obj FuncUNITE_BLIST_LIST (
     else if ( IS_RANGE(list) && GET_INC_RANGE( list) == 1
           && IS_PLIST(sub) ) {
 
-        /* allocate the boolean list and get pointer                       */
-        lenList  = GET_LEN_RANGE( list );
-
-        /* check length */
-        while ( LEN_BLIST(blist) != lenList ) {
-            blist = ErrorReturnObj(
-              "UniteBlistList: <blist> must have the same length as <list> (%d)",
-                lenList, 0L,
-                "you can replace <blist> via 'return <blist>;'" );
-        }
-
-        lenSub   = LEN_LIST( sub );
         ptrBlist = BLOCKS_BLIST(blist);
         ptrSub = CONST_ADDR_OBJ(sub);
 
@@ -1768,18 +1756,8 @@ Obj FuncUNITE_BLIST_LIST (
 
         /* get the length of <list> and its logarithm                      */
         lenList = LEN_PLIST( list );
-
-        /* check length */
-        while ( LEN_BLIST(blist) != lenList ) {
-            blist = ErrorReturnObj(
-              "UniteBlistList: <blist> must have the same length as <list> (%d)",
-                lenList, 0L,
-                "you can replace <blist> via 'return <blist>;'" );
-        }
-
         for ( i = lenList, l = 0; i != 0; i >>= 1, l++ ) ;
         PLAIN_LIST( sub );
-        lenSub = LEN_LIST( sub );
 
         /* if <sub> is small, we loop over <sub> and use binary search     */
         if ( l * lenSub < 2 * lenList ) {
@@ -1857,17 +1835,6 @@ Obj FuncUNITE_BLIST_LIST (
 
         /* turn <sub> into a set for faster searching                      */
         if ( ! IsSet( sub ) )  sub = SetList( sub );
-
-        /* allocate the boolean list and get pointer                       */
-        lenList  = LEN_LIST( list );
-
-        /* check length */
-        while ( LEN_BLIST(blist) != lenList ) {
-            blist = ErrorReturnObj(
-              "UniteBlistList: <blist> must have the same length as <list> (%d)",
-                lenList, 0L,
-                "you can replace <blist> via 'return <blist>;'" );
-        }
 
         lenSub   = LEN_PLIST( sub );
 
