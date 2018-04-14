@@ -1741,7 +1741,7 @@ static Int InitKernel (
         assert(ZeroMutFuncs[t1] == 0);
         ZeroMutFuncs[t1] = ZeroMutObject;
     }
-    InstallZeroObject(0);
+    InstallZeroMutObject(0);
 
     /* make and install the 'AINV' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
