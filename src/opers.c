@@ -3943,10 +3943,16 @@ void ChangeDoOperations (
     if ( oper == PowOper  )  { InstallPowObject(verb);  }
     if ( oper == CommOper )  { InstallCommObject(verb); }
     if ( oper == ModOper  )  { InstallModObject(verb);  }
+
     if ( oper == InvOp  )  { InstallInvObject(verb);  }
     if ( oper == OneOp  )  { InstallOneObject(verb);  }
     if ( oper == AInvOp )  { InstallAinvObject(verb); }
-    if ( oper == ZeroOp )  { InstallZeroObject(verb); }
+    if ( oper == ZEROOp )  { InstallZeroObject(verb); }
+
+    if ( oper == InvMutOp  )  { InstallInvMutObject(verb);  }
+    if ( oper == OneMutOp  )  { InstallOneMutObject(verb);  }
+    if ( oper == AdditiveInverseOp )  { InstallAinvMutObject(verb); }
+    if ( oper == ZeroOp )  { InstallZeroMutObject(verb); }
 
     /* be verbose                                                          */
     if ( verb ) {

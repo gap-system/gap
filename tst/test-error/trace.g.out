@@ -1,0 +1,16 @@
+gap> m:=ImmutableMatrix(GF(2),IdentityMat(2,GF(2)));;
+gap> 
+gap> InverseMutable(m);
+<a 2x2 matrix over GF2>
+gap> TraceMethods(InverseMutable);
+gap> InverseMutable(m);
+#I  InverseMutable: for GF2 matrix at src/vecgf2.c:fail
+<a 2x2 matrix over GF2>
+gap> 
+gap> AdditiveInverseMutable(m);
+<a 2x2 matrix over GF2>
+gap> TraceMethods(AdditiveInverseMutable);
+gap> AdditiveInverseMutable(m);
+#I  AdditiveInverseMutable: for GF2 matrix at GAPROOT/lib/vecmat.gi:763
+<a 2x2 matrix over GF2>
+gap> QUIT;
