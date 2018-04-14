@@ -623,21 +623,6 @@ Obj             PosRange (
         }
     }
 
- /* I have no idea how a record can ever be equal to an integer. I'll leave
-  * the code in comments for a while, in case someone digs out what this is
-  * good for. FL
-  * */
-    /* for a record compare every entry                                    */
-/*    else if ( TNUM_OBJ(val) == T_PREC ) {
-        for ( k = istart+1; k <= lenList; k++ ) {
-            if ( EQ( INTOBJ_INT( low + (k-1) * inc ), val ) )
-                break;
-        }
-        if ( lenList < k ) {
-            k = 0;
-        }
-    }  */
-
     /* otherwise it can not be an element of the range                     */
     else {
         k = 0;
