@@ -31,17 +31,6 @@ typedef struct SerializeModuleState {
 #define DESERIALIZER                                                         \
     ((DeserializerInterface *)(MODULE_STATE(Serialize).dispatcher))
 
-/**
- *  `POS_NUMB_TYPE`
- *  ---------------
- *
- *  The constant `POS_NUMB_TYPE` must match the definition in lib/type1.g; it
- *  is the offset at which a type's unique numeric id is stored within the
- *  type object.
- */
-
-#define POS_NUMB_TYPE 4
-
 
 #ifndef WARD_ENABLED
 
