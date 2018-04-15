@@ -291,9 +291,7 @@ DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 ##  (also avoiding the indeterminates in <A>avoid</A> if given).
 ##  <P/>
 ##  <Ref Oper="X" Label="for a ring (and a number)"/> is simply a synonym for
-##  <Ref Oper="Indeterminate" Label="for a ring (and a number)"/>. However, 
-##  we do not recommend to use this synonym which is supported only for the
-##  backwards compatibility.
+##  <Ref Oper="Indeterminate" Label="for a ring (and a number)"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> x:=Indeterminate(GF(3),"x");
