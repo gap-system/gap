@@ -80,8 +80,6 @@ void InstallZeroObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         ZeroFuncs[t1] = func;
     }
-    ZeroFuncs[ T_PREC            ] = func;
-    ZeroFuncs[ T_PREC +IMMUTABLE ] = func;
 }
 
 
@@ -152,8 +150,6 @@ void InstallZeroMutObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         ZeroMutFuncs[t1] = func;
     }
-    ZeroMutFuncs[ T_PREC            ] = func;
-    ZeroMutFuncs[ T_PREC +IMMUTABLE ] = func;
 }
 
 
@@ -226,8 +222,6 @@ void InstallAinvObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         AInvFuncs[t1] = func;
     }
-    AInvFuncs[ T_PREC            ] = func;
-    AInvFuncs[ T_PREC +IMMUTABLE ] = func;
 }
 
 
@@ -289,8 +283,6 @@ void InstallAinvMutObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         AInvMutFuncs[t1] = func;
     }
-    AInvMutFuncs[ T_PREC            ] = func;
-    AInvMutFuncs[ T_PREC +IMMUTABLE ] = func;
 }
 
 
@@ -360,8 +352,6 @@ void InstallOneObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         OneFuncs[t1] = func;
     }
-    OneFuncs[ T_PREC            ] = func;
-    OneFuncs[ T_PREC +IMMUTABLE ] = func;
 }
 
 
@@ -430,8 +420,6 @@ void InstallOneMutObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         OneMutFuncs[t1] = func;
     }
-    OneMutFuncs[ T_PREC            ] = func;
-    OneMutFuncs[ T_PREC +IMMUTABLE ] = func;
 }
 
 
@@ -501,8 +489,6 @@ void InstallInvObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         InvFuncs[t1] = func;
     }
-    InvFuncs[ T_PREC            ] = func;
-    InvFuncs[ T_PREC +IMMUTABLE ] = func;
 }
 
 
@@ -572,8 +558,6 @@ void InstallInvMutObject ( Int verb )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         InvMutFuncs[t1] = func;
     }
-    InvMutFuncs[ T_PREC            ] = func;
-    InvMutFuncs[ T_PREC +IMMUTABLE ] = func;
 }
 
 
@@ -656,13 +640,6 @@ void InstallEqObject ( Int verb )
             EqFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-
-        EqFuncs[ t2 ][ T_PREC            ] = func;
-        EqFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-        EqFuncs[ T_PREC            ][ t2 ] = func;
-        EqFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
-    }
 }
 
 
@@ -735,13 +712,6 @@ void InstallLtObject ( Int verb )
             LtFuncs[t1][t2] = func;
             LtFuncs[t2][t1] = func;
         }
-    }
-    for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-
-        LtFuncs[ t2 ][ T_PREC            ] = func;
-        LtFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-        LtFuncs[ T_PREC            ][ t2 ] = func;
-        LtFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 
@@ -825,11 +795,6 @@ void InstallInObject ( Int verb )
             InFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-
-        InFuncs[ t2 ][ T_PREC            ] = func;
-        InFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-    }
 }
 
 
@@ -910,13 +875,6 @@ void InstallSumObject ( Int verb )
             SumFuncs[t1][t2] = func;
             SumFuncs[t2][t1] = func;
         }
-    }
-    for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM; t2++ ) {
-
-        SumFuncs[ t2 ][ T_PREC            ] = func;
-        SumFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-        SumFuncs[ T_PREC            ][ t2 ] = func;
-        SumFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 
@@ -1009,13 +967,6 @@ void InstallDiffObject ( Int verb )
             DiffFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_REAL_TNUM; t2++ ) {
-
-        DiffFuncs[ t2 ][ T_PREC            ] = func;
-        DiffFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-        DiffFuncs[ T_PREC            ][ t2 ] = func;
-        DiffFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
-    }
 }
 
 
@@ -1107,13 +1058,6 @@ void InstallProdObject ( Int verb )
             ProdFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_REAL_TNUM; t2++ ) {
-
-        ProdFuncs[ t2 ][ T_PREC            ] = func;
-        ProdFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-        ProdFuncs[ T_PREC            ][ t2 ] = func;
-        ProdFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
-    }
 }
 
 
@@ -1203,13 +1147,6 @@ void InstallQuoObject ( Int verb )
             QuoFuncs[t1][t2] = func;
             QuoFuncs[t2][t1] = func;
         }
-    }
-    for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-
-        QuoFuncs[ t2 ][ T_PREC            ] = func;
-        QuoFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-        QuoFuncs[ T_PREC            ][ t2 ] = func;
-        QuoFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 
@@ -1316,12 +1253,6 @@ void InstallLQuoObject ( Int verb )
             LQuoFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_REAL_TNUM; t2++ ) {
-        LQuoFuncs[ t2 ][ T_PREC            ] = func;
-        LQuoFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-        LQuoFuncs[ T_PREC            ][ t2 ] = func;
-        LQuoFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
-    }
 }
 
 
@@ -1427,13 +1358,6 @@ void InstallPowObject ( Int verb )
             PowFuncs[t1][t2] = func;
             PowFuncs[t2][t1] = func;
         }
-    }
-    for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_REAL_TNUM; t2++ ) {
-
-        PowFuncs[ t2 ][ T_PREC            ] = func;
-        PowFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-        PowFuncs[ T_PREC            ][ t2 ] = func;
-        PowFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 
@@ -1542,13 +1466,6 @@ void InstallCommObject ( Int verb )
             CommFuncs[t2][t1] = func;
         }
     }
-    for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-
-        CommFuncs[ t2 ][ T_PREC            ] = func;
-        CommFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-        CommFuncs[ T_PREC            ][ t2 ] = func;
-        CommFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
-    }
 }
 
 
@@ -1640,13 +1557,6 @@ void InstallModObject ( Int verb )
             ModFuncs[t1][t2] = func;
             ModFuncs[t2][t1] = func;
         }
-    }
-    for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_REAL_TNUM; t2++ ) {
-
-        ModFuncs[ t2 ][ T_PREC            ] = func;
-        ModFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
-        ModFuncs[ T_PREC            ][ t2 ] = func;
-        ModFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
 }
 
