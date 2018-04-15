@@ -40,8 +40,8 @@
 **
 */
 
-#define GAP_KERNEL_MAJOR_VERSION 1
-#define GAP_KERNEL_MINOR_VERSION 1
+#define GAP_KERNEL_MAJOR_VERSION 2
+#define GAP_KERNEL_MINOR_VERSION 0
 #define GAP_KERNEL_API_VERSION                                               \
     ((GAP_KERNEL_MAJOR_VERSION)*1000 + (GAP_KERNEL_MINOR_VERSION))
 
