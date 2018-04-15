@@ -9,6 +9,7 @@
 #include <src/objset.h>
 #include <src/plist.h>
 #include <src/precord.h>
+#include <src/rational.h>
 #include <src/records.h>
 #include <src/stringobj.h>
 
@@ -347,6 +348,24 @@ Obj DeserializeInt(UInt tnum)
             DeserializationError();
         return ReadImmediateObj();
     }
+}
+
+void SerializeRat(Obj obj)
+{
+    WriteTNum(TNUM_OBJ(obj));
+    SerializeObj(NUM_RAT(obj));
+    SerializeObj(DEN_RAT(obj));
+}
+
+Obj DeserializeRat(UInt tnum)
+{
+    Obj result, n, d;
+    n = DeserializeObj();
+    d = DeserializeObj();
+    result = NewBag(tnum, 2 * sizeof(Obj));
+    SET_NUM_RAT(result, n);
+    SET_DEN_RAT(result, d);
+    return result;
 }
 
 void SerializeFFE(Obj obj)
@@ -1096,7 +1115,7 @@ static Int InitKernel(StructInitInfo * module)
     UInt                 i;
     static const unsigned char binary_serializable_tnums[] = {
         // FIXME: add T_TRANS2/4, T_PPERM2/4
-        T_INTPOS, T_INTNEG, T_RAT, T_PERM2, T_PERM4, T_MACFLOAT
+        T_INTPOS, T_INTNEG, T_PERM2, T_PERM4, T_MACFLOAT
     };
     static const unsigned char typed_serializable_tnums[] = {
         T_DATOBJ, T_POSOBJ, T_COMOBJ, T_APOSOBJ, T_ACOMOBJ
@@ -1109,6 +1128,7 @@ static Int InitKernel(StructInitInfo * module)
                                     SerializeBinary, DeserializeBinary);
     }
     RegisterSerializerFunctions(T_INT, SerializeInt, DeserializeInt);
+    RegisterSerializerFunctions(T_RAT, SerializeRat, DeserializeRat);
     RegisterSerializerFunctions(T_FFE, SerializeFFE, DeserializeFFE);
     RegisterSerializerFunctions(T_BOOL, SerializeBool, DeserializeBool);
     RegisterSerializerFunctions(T_CHAR, SerializeChar, DeserializeChar);
