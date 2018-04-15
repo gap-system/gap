@@ -135,18 +135,6 @@ InstallMethod( ViewObj,
     Print(" \<\<\<\<)");
 end);
 
-InstallMethod( \=,
-               "record = record",
-               IsIdenticalObj,
-               [ IsRecord, IsRecord ],
-               EQ_PREC );
-
-InstallMethod( \<,
-               "record < record",
-               IsIdenticalObj,
-               [ IsRecord, IsRecord ],
-               LT_PREC );
-
 
 # methods to catch error cases
 

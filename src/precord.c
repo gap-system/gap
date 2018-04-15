@@ -682,25 +682,23 @@ Obj FuncREC_NAMES_COMOBJ (
 
 /****************************************************************************
 **
+*F  EqPRec( <self>, <left>, <right> ) . . . . . . . comparison of two records
 *F  FuncEQ_PREC( <self>, <left>, <right> )  . . . . comparison of two records
 **
-**  'EqRec' returns '1L'  if the two  operands <left> and <right> are equal
+**  'EqPRec' returns '1L'  if the two  operands <left> and <right> are equal
 **  and '0L' otherwise.  At least one operand must be a plain record.
 */
-Obj FuncEQ_PREC (
-    Obj                 self,
-    Obj                 left,
-    Obj                 right )
+Int EqPRec(Obj left, Obj right)
 {
     UInt                i;              /* loop variable                   */
 
     /* quick first checks                                                  */
     if ( ! IS_PREC(left) )
-        return False;
+        return 0;
     if ( ! IS_PREC(right) )
-        return False;
+        return 0;
     if ( LEN_PREC(left) != LEN_PREC(right) )
-        return False;
+        return 0;
 
     /* ensure records are sorted by their RNam */
     SortPRecRNam(left,0);
@@ -714,42 +712,46 @@ Obj FuncEQ_PREC (
         /* compare the names                                               */
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
             DecRecursionDepth();
-            return False;
+            return 0;
         }
 
         /* compare the values                                              */
         if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
             DecRecursionDepth();
-            return False;
+            return 0;
         }
     }
 
     /* the records are equal                                               */
     DecRecursionDepth();
-    return True;
+    return 1;
+}
+
+
+Obj FuncEQ_PREC(Obj self, Obj left, Obj right)
+{
+    return EqPRec(left, right) ? True : False;
 }
 
 
 /****************************************************************************
 **
-*F  FuncLT_PREC( <self>, <left>, <right> )   . . .  comparison of two records
+*F  LtPRec( <self>, <left>, <right> ) . . . . . . . comparison of two records
+*F  FuncLT_PREC( <self>, <left>, <right> )  . . . . comparison of two records
 **
-**  'LtRec' returns '1L'  if the operand  <left> is  less than the  operand
+**  'LtPRec' returns '1L'  if the operand  <left> is  less than the  operand
 **  <right>, and '0L'  otherwise.  At least  one operand  must be a  plain
 **  record.
 */
-Obj FuncLT_PREC (
-    Obj                 self,
-    Obj                 left,
-    Obj                 right )
+Int LtPRec(Obj left, Obj right)
 {
     UInt                i;              /* loop variable                   */
     Int                 res;            /* result of comparison            */
 
     /* quick first checks                                                  */
     if ( ! IS_PREC(left) || ! IS_PREC(right) ) {
-        if ( TNUM_OBJ(left ) < TNUM_OBJ(right) )  return True;
-        if ( TNUM_OBJ(left ) > TNUM_OBJ(right) )  return False;
+        if ( TNUM_OBJ(left ) < TNUM_OBJ(right) )  return 1;
+        if ( TNUM_OBJ(left ) > TNUM_OBJ(right) )  return 0;
     }
 
     /* ensure records are sorted by their RNam */
@@ -787,7 +789,13 @@ Obj FuncLT_PREC (
 
     /* the records are equal or the right is a prefix of the left          */
     DecRecursionDepth();
-    return res ? True : False;
+    return res;
+}
+
+
+Obj FuncLT_PREC(Obj self, Obj left, Obj right)
+{
+    return LtPRec(left, right) ? True : False;
 }
 
 
@@ -925,6 +933,14 @@ static Int InitKernel (
     PrintObjFuncs[  T_PREC +IMMUTABLE ] = PrintPRec;
     PrintPathFuncs[ T_PREC            ] = PrintPathPRec;
     PrintPathFuncs[ T_PREC +IMMUTABLE ] = PrintPathPRec;
+
+    // install the comparison methods
+    for (UInt t1 = T_PREC; t1 <= T_PREC + IMMUTABLE; t1++) {
+        for (UInt t2 = T_PREC; t2 <= T_PREC + IMMUTABLE; t2++) {
+            EqFuncs[t1][t2] = EqPRec;
+            LtFuncs[t1][t2] = LtPRec;
+        }
+    }
 
     /* install the type functions                                          */
     ImportGVarFromLibrary( "TYPE_PREC_MUTABLE",   &TYPE_PREC_MUTABLE   );
