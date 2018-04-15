@@ -231,8 +231,8 @@ enum TNUM {
         T_DATOBJ,
         T_WPOBJ,
 #ifdef HPCGAP
-        T_APOSOBJ,
         T_ACOMOBJ,
+        T_APOSOBJ,
 #endif
 
         // package TNUMs, for use by kernel extensions
