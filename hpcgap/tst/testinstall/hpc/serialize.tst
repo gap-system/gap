@@ -35,6 +35,18 @@ gap> for i in [8190, 8191, 8192, 8193, 2^30, 2^60, 2^100] do
 gap> CheckSerialization(1/2);
 gap> CheckSerialization(-1/2);
 
+# verify numerator and denominator are stored correctly; in particular,
+# that serialization didn't just encode the pointers, which of course
+# would be invalid when deserializing in a different GAP session
+# (previous versions of the serialization code had this bug).
+gap> r1:=3^130/2^130;;
+gap> str:=SerializeToNativeString(r1);;
+gap> r2:=DeserializeNativeString(str);;
+gap> IsIdenticalObj(NumeratorRat(r1), NumeratorRat(r2));
+false
+gap> IsIdenticalObj(DenominatorRat(r1), DenominatorRat(r2));
+false
+
 #
 # cyclotomics
 #
