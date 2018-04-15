@@ -80,10 +80,16 @@ gap> CheckSerialization((1,65537)^2); # identity as T_PERM4
 #
 # TODO: transformations
 #
+gap> t:=Transformation( [ 10, 11 ],[ 11, 12 ] );;
+gap> SerializeToNativeString(t);
+Error, Cannot serialize object of type transformation (small)
 
 #
 # TODO: partial permutations
 #
+gap> p:=PartialPerm([1,5],[20,2]);;
+gap> SerializeToNativeString(p);
+Error, Cannot serialize object of type partial perm (small)
 
 #
 # booleans
@@ -152,6 +158,12 @@ gap> CheckSerialization(OBJ_SET([false, 0, true, 1]));
 #
 # TODO: positional object
 #
+gap> x := ZmodnZObj(1,6);;
+gap> TNAM_OBJ(x);
+"object (positional)"
+gap> SerializeToNativeString(x);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `SerializableRepresentation' on 1 arguments
 
 #
 # data object
@@ -179,7 +191,25 @@ true
 #
 # TODO: atomic component object
 #
+gap> G:=SymmetricGroup(3);;
+gap> TNAM_OBJ(G);
+"atomic component object"
+gap> SerializeToNativeString(G);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `SerializableRepresentation' on 1 arguments
 
 #
 # TODO: atomic positional object
 #
+
+#
+# input validation
+#
+gap> DeserializeNativeString("");
+Error, Bad deserialization input
+gap> DeserializeNativeString("\000");
+Error, Bad deserialization input
+gap> DeserializeNativeString("\000\377");
+Error, Bad deserialization input
+gap> DeserializeNativeString("\000\205");
+1
