@@ -24,17 +24,17 @@ TASKS := AtomicRecord( rec (
       WaitSemaphore(context.semaphore);
       atomic context.task_container do
         task := context.task_container.task;
-	context.task_container.task := fail;
+        context.task_container.task := fail;
       od;
       if not IsIdenticalObj(task, fail) then
-	CURRENT_TASK := task;
-	TASKS.ExecuteTask(task, context);
-	CURRENT_TASK := fail;
-	atomic TASK_QUEUE do
-	  PushQueue(TASK_QUEUE.workers, context);
-	  TASK_QUEUE.active_count := TASK_QUEUE.active_count - 1;
-	od;
-	TASKS.WakeWorker();
+        CURRENT_TASK := task;
+        TASKS.ExecuteTask(task, context);
+        CURRENT_TASK := fail;
+        atomic TASK_QUEUE do
+          PushQueue(TASK_QUEUE.workers, context);
+          TASK_QUEUE.active_count := TASK_QUEUE.active_count - 1;
+        od;
+        TASKS.WakeWorker();
       fi;
     od;
   end,
@@ -44,23 +44,23 @@ TASKS := AtomicRecord( rec (
     atomic TASK_QUEUE do
       while TASK_QUEUE.active_count < TASK_QUEUE.max_active and
             not EmptyQueue(TASK_QUEUE.ready_tasks) do
-	task := PopQueue(TASK_QUEUE.ready_tasks);
-	atomic task do
-	  if IsIdenticalObj(task.worker, fail) then
-	    if not EmptyQueue(TASK_QUEUE.workers) then
-	      task.worker := PopQueue(TASK_QUEUE.workers);
-	    else
-	      task.worker := TASKS.NewWorker();
-	    fi;
-	    atomic task.worker.task_container do
-	      task.worker.task_container.task := task;
-	    od;
-	  fi;
-	  if not IsIdenticalObj(task.body, fail) then
-	    TASK_QUEUE.active_count := TASK_QUEUE.active_count + 1;
-	  fi;
-	  SignalSemaphore(task.worker.semaphore);
-	od;
+        task := PopQueue(TASK_QUEUE.ready_tasks);
+        atomic task do
+          if IsIdenticalObj(task.worker, fail) then
+            if not EmptyQueue(TASK_QUEUE.workers) then
+              task.worker := PopQueue(TASK_QUEUE.workers);
+            else
+              task.worker := TASKS.NewWorker();
+            fi;
+            atomic task.worker.task_container do
+              task.worker.task_container.task := task;
+            od;
+          fi;
+          if not IsIdenticalObj(task.body, fail) then
+            TASK_QUEUE.active_count := TASK_QUEUE.active_count + 1;
+          fi;
+          SignalSemaphore(task.worker.semaphore);
+        od;
       od;
     od;
   end,
@@ -71,11 +71,11 @@ TASKS := AtomicRecord( rec (
       task.started := true;
       async := task.async;
       atomic task.region do
-	for i in [1..Length(task.adopt)] do
-	  if task.adopt[i] then
-	    AdoptObj(task.args[i]);
-	  fi;
-	od;
+        for i in [1..Length(task.adopt)] do
+          if task.adopt[i] then
+            AdoptObj(task.args[i]);
+          fi;
+        od;
       od;
       body := task.body;
       args := ShallowCopy(task.args);
@@ -94,15 +94,15 @@ TASKS := AtomicRecord( rec (
         result := task.result;
       fi;
       if not async then
-	if IsThreadLocal(result) then
-	  atomic task.region do
-	    task.result := MigrateObj(result, task.region);
-	  od;
-	  task.adopt_result := true;
-	else
-	  task.result := result;
-	  task.adopt_result := false;
-	fi;
+        if IsThreadLocal(result) then
+          atomic task.region do
+            task.result := MigrateObj(result, task.region);
+          od;
+          task.adopt_result := true;
+        else
+          task.result := result;
+          task.adopt_result := false;
+        fi;
       fi;
       if error then
         task.error := LastErrorMessage;
@@ -149,10 +149,10 @@ TASKS := AtomicRecord( rec (
     for arg in args do
       if IsThreadLocal(arg) then
         Add(task.args, LockAndMigrateObj(CopyRegion(arg), task.region));
-	Add(task.adopt, true);
+        Add(task.adopt, true);
       else
         Add(task.args, arg);
-	Add(task.adopt, false);
+        Add(task.adopt, false);
       fi;
     od;
     return task;
@@ -222,41 +222,41 @@ TASKS := AtomicRecord( rec (
         return;
       fi;
       if trigger.is_conjunction then
-	done := true;
-	for cond in trigger.conditions do
-	  atomic readonly cond do
-	    if not cond.complete then
-	      done := false;
-	      break;
-	    fi;
-	  od;
-	od;
+        done := true;
+        for cond in trigger.conditions do
+          atomic readonly cond do
+            if not cond.complete then
+              done := false;
+              break;
+            fi;
+          od;
+        od;
       else
-	done := false;
-	for cond in trigger.conditions do
-	  atomic readonly cond do
-	    if cond.complete then
-	      done := true;
-	      break;
-	    fi;
-	  od;
-	od;
+        done := false;
+        for cond in trigger.conditions do
+          atomic readonly cond do
+            if cond.complete then
+              done := true;
+              break;
+            fi;
+          od;
+        od;
       fi;
       trigger.done := done;
       if not done then
-	return;
+        return;
       fi;
       task := trigger.task;
     od;
     atomic task, TASK_QUEUE do
       if IsIdenticalObj(task.worker, fail) then
-	PushQueue(TASK_QUEUE.ready_tasks, task);
-	TASKS.WakeWorker();
+        PushQueue(TASK_QUEUE.ready_tasks, task);
+        TASKS.WakeWorker();
       else
-	tasks := [ task ];
-	MigrateSingleObj(tasks, TASK_QUEUE);
+        tasks := [ task ];
+        MigrateSingleObj(tasks, TASK_QUEUE);
         PushQueueFront(TASK_QUEUE.ready_tasks, task);
-	TASKS.WakeWorker();
+        TASKS.WakeWorker();
       fi;
     od;
   end,
@@ -266,10 +266,10 @@ TASKS := AtomicRecord( rec (
     atomic trigger do
       for cond in trigger.conditions do
         atomic cond do
-	  if not cond.complete then
-	    Add(cond.notify, trigger);
-	  fi;
-	od;
+          if not cond.complete then
+            Add(cond.notify, trigger);
+          fi;
+        od;
       od;
     od;
     # Recheck conditions, because they may have fired
@@ -282,15 +282,15 @@ TASKS := AtomicRecord( rec (
     atomic task, TASK_QUEUE do
       if Length(task.conditions) = 0 then
         PushQueue(TASK_QUEUE.ready_tasks, task);
-	TASKS.WakeWorker();
-	return;
+        TASKS.WakeWorker();
+        return;
       else
         trigger := TASKS.BuildTrigger(task, true);
-	if trigger.done then
-	  PushQueue(TASK_QUEUE.ready_tasks, task);
-	  TASKS.WakeWorker();
-	  return;
-	fi;
+        if trigger.done then
+          PushQueue(TASK_QUEUE.ready_tasks, task);
+          TASKS.WakeWorker();
+          return;
+        fi;
       fi;
     od;
     # We get here if we have a triggered task with
@@ -438,8 +438,8 @@ BindGlobal("WAIT_TASK", function(conditions, is_conjunction)
       # are we dealing with a delayed task?
       if IsBound(cond.started) and not cond.started then
         if Length(cond.conditions) = 0 then
-	  Add(pending, cond);
-	fi;
+          Add(pending, cond);
+        fi;
       fi;
     od;
   od;
@@ -455,7 +455,7 @@ BindGlobal("WAIT_TASK", function(conditions, is_conjunction)
   if not trigger.done then
     if suspend then
       atomic TASK_QUEUE do
-	TASK_QUEUE.active_count := TASK_QUEUE.active_count - 1;
+        TASK_QUEUE.active_count := TASK_QUEUE.active_count - 1;
       od;
     fi;
     ShareSpecialObj(trigger);
@@ -465,8 +465,8 @@ BindGlobal("WAIT_TASK", function(conditions, is_conjunction)
       WaitSemaphore(semaphore);
       atomic readonly trigger do
         if trigger.done then
-	  return;
-	fi;
+          return;
+        fi;
       od;
     od;
   fi;
@@ -605,7 +605,7 @@ BindGlobal("OnTaskCancellation", function(exit)
     result := CALL_WITH_CATCH(exit, []);
     if result[1] and IsBound(result[2]) then
       atomic task do
-	task.result := result[2];
+        task.result := result[2];
       od;
     fi;
     JUMP_TO_CATCH(0);
