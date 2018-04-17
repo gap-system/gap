@@ -41,7 +41,7 @@ BindGlobal("InstallTypeSerializationTagList", function(typelist, basetag)
   atomic SERIALIZATION_TAG_REGION do
     for type in typelist do
       InstallTypeSerializationTag(type,
-	basetag + SERIALIZATION_TAG_BASE * i);
+        basetag + SERIALIZATION_TAG_BASE * i);
       i := i + 1;
     od;
   od;
@@ -51,9 +51,9 @@ BindGlobal("SERIALIZATION_UPDATE_TAGS", function()
   atomic SERIALIZATION_TAG_REGION do
     if SERIALIZATION_TAGS_NEED_UPDATE then
       DESERIALIZATION_TAG_INT :=
-	MakeReadOnlyObj(StructuralCopy(DESERIALIZATION_TAG_INT_NEW));
+        MakeReadOnlyObj(StructuralCopy(DESERIALIZATION_TAG_INT_NEW));
       SERIALIZATION_TAG :=
-	MakeReadOnlyObj(StructuralCopy(SERIALIZATION_TAG_NEW));
+        MakeReadOnlyObj(StructuralCopy(SERIALIZATION_TAG_NEW));
       SERIALIZATION_TAGS_NEED_UPDATE := false;
     fi;
   od;

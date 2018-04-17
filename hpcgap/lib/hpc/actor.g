@@ -11,8 +11,8 @@ BindGlobal("ACTOR_HANDLER", function(actor_state, func)
     # migrate objects in the same (thread-local) region.
     atomic queue do
       Add(queue, MakeReadOnlySingleObj(rec(
-	func := func,
-	args := MigrateObj(CopyRegion(arg), queue)
+        func := func,
+        args := MigrateObj(CopyRegion(arg), queue)
       )) );
     od;
     SignalSemaphore(actor_state.semaphore);
@@ -32,7 +32,7 @@ BIND_GLOBAL("ACTOR_LOOP", function(actor_state)
     atomic queue do
       if Length(queue) > 0 then
         msg := Remove(queue, 1);
-	msg.args := AdoptObj(msg.args);
+        msg.args := AdoptObj(msg.args);
       else
         msg := fail;
       fi;
@@ -43,10 +43,10 @@ BIND_GLOBAL("ACTOR_LOOP", function(actor_state)
       CALL_FUNC_LIST(msg.func, AdoptObj(msg.args));
       if actor_state.terminated then
         if IsBound(handlers._AtExit) then
-	  handlers._AtExit();
-	fi;
-	CURRENT_ACTOR := rec();
-	return;
+          handlers._AtExit();
+        fi;
+        CURRENT_ACTOR := rec();
+        return;
       fi;
     fi;
   od;

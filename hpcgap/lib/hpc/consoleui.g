@@ -118,14 +118,14 @@ BindGlobal("FindThread@", function(id)
     else
       for i in [1..Length(id)] do
         if id[i] < '0' or id[i] > '9' then
-	  return fail;
-	fi;
+          return fail;
+        fi;
       od;
       id := SMALLINT_STR(id);
       if IsBound(ThreadName@[id+1]) then
-	return id+1;
+        return id+1;
       else
-	return fail;
+        return fail;
       fi;
     fi;
   fi;
@@ -190,15 +190,15 @@ BindGlobal("SetupDefaultStreams@", function()
   BindGlobal("DEFAULT_INPUT_STREAM", function()
     if not IsBound(InputStream@) then
       if ControlThread@ <> false then
-	InputStream@ := InputTextNone();
+        InputStream@ := InputTextNone();
       else
-	if not IsBound(ThreadInfo@) then
-	  ThreadInfo@ := NewThreadInfo@();
-	  RegisterThread@();
-	  AtThreadExit(UnregisterBackgroundThread@);
-	fi;
-	InputStream@ :=
-	  ChannelInputStream@(ThreadInfo@.InputChannel);
+        if not IsBound(ThreadInfo@) then
+          ThreadInfo@ := NewThreadInfo@();
+          RegisterThread@();
+          AtThreadExit(UnregisterBackgroundThread@);
+        fi;
+        InputStream@ :=
+          ChannelInputStream@(ThreadInfo@.InputChannel);
       fi;
     fi;
     return InputStream@;
@@ -208,15 +208,15 @@ BindGlobal("SetupDefaultStreams@", function()
   BindGlobal("DEFAULT_OUTPUT_STREAM", function()
     if not IsBound(OutputStream@) then
       if ControlThread@ then
-	OutputStream@ := DirectChannelOutputStream@();
+        OutputStream@ := DirectChannelOutputStream@();
       else
-	if not IsBound(ThreadInfo@) then
-	  ThreadInfo@ := NewThreadInfo@();
-	  RegisterThread@();
-	  AtThreadExit(UnregisterBackgroundThread@);
-	fi;
-	OutputStream@ :=
-	  ChannelOutputStream@();
+        if not IsBound(ThreadInfo@) then
+          ThreadInfo@ := NewThreadInfo@();
+          RegisterThread@();
+          AtThreadExit(UnregisterBackgroundThread@);
+        fi;
+        OutputStream@ :=
+          ChannelOutputStream@();
       fi;
     fi;
     return OutputStream@;
@@ -324,7 +324,7 @@ BindGlobal("AddOutput@", function(threadid, text, is_prompt, deferred)
   if not deferred then
     if threadid = ActiveThread@ or ShowBackgroundOutput@[threadid] then
       SendChannel(OutputChannel@,
-	[ threadid, OutputPrefix@[threadid], text ] );
+        [ threadid, OutputPrefix@[threadid], text ] );
       CullHistory@(threadid);
       ShownOutput@[threadid] := Length(history);
       PendingOutput@[threadid] := false;
@@ -348,7 +348,7 @@ BindGlobal("AddOutputCommand@", function(threadid, text)
   if threadid = ActiveThread@ then
     if OutputHistoryIncompleteLine@[threadid] then
       SendChannel(OutputChannel@,
-	[ threadid, OutputPrefix@[threadid], 0 ]);
+        [ threadid, OutputPrefix@[threadid], 0 ]);
     fi;
     OutputHistoryIncompleteLine@[threadid] := false;
     CullHistory@(threadid);
@@ -410,9 +410,9 @@ BindGlobal("GetArg@", function(string)
       arg := string{[1..i-1]};
       while i <= Length(string) do
         ch := string[i];
-	if ch <> ' ' and ch <> '\t' then
-	  return [arg, string{[i..Length(string)]}];
-	fi;
+        if ch <> ' ' and ch <> '\t' then
+          return [arg, string{[i..Length(string)]}];
+        fi;
         i := i + 1;
       od;
       return [arg, ""];
@@ -468,7 +468,7 @@ BindGlobal("CommandList@", function(line)
         pending := " (pending output)";
       fi;
       SystemMessage@("Thread ", ThreadName@[threadid],
-	" [", threadid-1, "]", pending);
+        " [", threadid-1, "]", pending);
     fi;
   od;
 end);
@@ -733,9 +733,9 @@ BindGlobal("CommandSource@", function(line)
       command := Chomp(command);
       if not StartsWith(command, "#") then
         while StartsWith(command, " ") or StartsWith(command, "\t") do
-	  command := command{[2..Length(command)]};
-	od;
-	RunCommandQuietly@(command);
+          command := command{[2..Length(command)]};
+        od;
+        RunCommandQuietly@(command);
       fi;
     od;
   fi;
@@ -748,27 +748,27 @@ BindGlobal("CommandAlias@", function(line)
     if values[1] = "" then
       header := false;
       for alias in SortedList(ListKeyEnumerator(AliasTable@)) do
-	if not header then
-	  SystemMessage@("Aliases:");
-	  header := true;
-	fi;
-	SystemMessage@("  ", alias, " = ",
-	  LookupDictionary(AliasTable@, alias));
+        if not header then
+          SystemMessage@("Aliases:");
+          header := true;
+        fi;
+        SystemMessage@("  ", alias, " = ",
+          LookupDictionary(AliasTable@, alias));
       od;
       if not header then
-	SystemMessage@("No aliases have been defined.");
+        SystemMessage@("No aliases have been defined.");
       fi;
     elif values[2] = "" then
       if KnowsDictionary(AliasTable@, values[1]) then
-	SystemMessage@("Alias: ", values[1], " = ",
-	  LookupDictionary(AliasTable@, values[1]));
+        SystemMessage@("Alias: ", values[1], " = ",
+          LookupDictionary(AliasTable@, values[1]));
       else
-	SystemMessage@("Unknown alias: ", values[1]);
+        SystemMessage@("Unknown alias: ", values[1]);
       fi;
     else
       RemoveDictionary(AliasTable@, values[1]);
       WITH_TARGET_REGION(AliasTable@, function()
-	AddDictionary(AliasTable@, values[1], MakeImmutable(values[2]));
+        AddDictionary(AliasTable@, values[1], MakeImmutable(values[2]));
       end);
       SystemMessage@("Alias: ", values[1], " = ", values[2]);
     fi;
@@ -869,18 +869,18 @@ InstallGlobalFunction("RunCommandWithAliases@", function(string, aliases)
   atomic Region@ do
     for c in ListKeyEnumerator(CommandTable@) do
       if StartsWith(c, command) then
-	AddSet(choices, c);
-	func := LookupDictionary(CommandTable@, c);
+        AddSet(choices, c);
+        func := LookupDictionary(CommandTable@, c);
       fi;
     od;
     for c in ListKeyEnumerator(AliasTable@) do
       if StartsWith(c, command) then
         if c in aliases then
-	  recursive := true;
-	else
-	  AddSet(choices, c);
-	  func := LookupDictionary(AliasTable@, c);
-	fi;
+          recursive := true;
+        else
+          AddSet(choices, c);
+          func := LookupDictionary(AliasTable@, c);
+        fi;
       fi;
     od;
   od;
@@ -900,7 +900,7 @@ InstallGlobalFunction("RunCommandWithAliases@", function(string, aliases)
       Append(command, func);
       if arguments <> "" then
         Add(command, ' ');
-	Append(command, arguments);
+        Append(command, arguments);
       fi;
       RunCommandWithAliases@(command, aliases);
       RemoveSet(aliases, choices[1]);
@@ -947,11 +947,11 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
       if StartsWith(data, "!") then
         RunCommand@(Chomp(data));
       else
-	if IsBound(ThreadInputChannel@[ActiveThread@]) then
+        if IsBound(ThreadInputChannel@[ActiveThread@]) then
           SendChannel(ThreadInputChannel@[ActiveThread@], data);
-	else
-	  SystemMessage@("Attempting to send input to dead background thread");
-	fi;
+        else
+          SystemMessage@("Attempting to send input to dead background thread");
+        fi;
       fi;
     elif command = EXPECT_INPUT@ then
       AddOutput@(threadid, data, true, false);
@@ -960,15 +960,15 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
     elif command = UNREGISTER_THREAD@ then
       if data then
         # shell thread
-	NumShellThreads@ := NumShellThreads@ - 1;
-	Unbind(ThreadNameToID@.(ThreadName@[threadid]));
-	Unbind(ThreadName@[threadid]);
+        NumShellThreads@ := NumShellThreads@ - 1;
+        Unbind(ThreadNameToID@.(ThreadName@[threadid]));
+        Unbind(ThreadName@[threadid]);
       else
-	if OutputHistoryIncompleteLine@[threadid] then
-	  AddOutput@(threadid, "\n", false, false);
-	fi;
+        if OutputHistoryIncompleteLine@[threadid] then
+          AddOutput@(threadid, "\n", false, false);
+        fi;
         AddOutput@(threadid,
-	  "### Background thread terminated. ###\n", false, false);
+          "### Background thread terminated. ###\n", false, false);
       fi;
       # enable garbage collector to collect channels
       Unbind(ThreadControlChannel@[threadid]);
@@ -980,12 +980,12 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
       fi;
       if NumShellThreads@ = 0 then
         # say goodnight, Gracie
-	AcknowledgeHandShake(ProgramShutdown@, true);
-	return;
+        AcknowledgeHandShake(ProgramShutdown@, true);
+        return;
       fi;
       if threadid = ActiveThread@ then
         CommandNext@("");
-	WritePrompt@();
+        WritePrompt@();
       fi;
     else
       # should never get here
