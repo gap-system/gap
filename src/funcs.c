@@ -124,290 +124,116 @@ UInt ExecProccallOpts(
 **  resulting from the procedure call, which in fact is always 0.
 */
 
-static Obj DispatchFuncCall( Obj func, Int nargs, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
-{ 
-  Obj arglist;
-  if (nargs != -1) {
-    arglist = NEW_PLIST(T_PLIST_DENSE, nargs);
-    SET_LEN_PLIST(arglist, nargs);
-    switch(nargs) {
-    case 6: 
-      SET_ELM_PLIST(arglist,6, arg6);
-    case 5:
-      SET_ELM_PLIST(arglist,5, arg5);
-    case 4: 
-      SET_ELM_PLIST(arglist,4, arg4);
-    case 3:
-      SET_ELM_PLIST(arglist,3, arg3);
-    case 2: 
-      SET_ELM_PLIST(arglist,2, arg2);
-    case 1:
-      SET_ELM_PLIST(arglist,1, arg1);
-    }
-  } else {
-    arglist = arg1;
-  }
-  return DoOperation2Args(CallFuncListOper, func, arglist);
-}
-
-
-UInt            ExecProccall0args (
-    Stat                call )
+static ALWAYS_INLINE UInt ExecProccall(UInt nr, Stat call)
 {
-    Obj                 func;           /* function                        */
+    Obj func;
+    Obj a[6] = { 0 };
+    Obj args = 0;
 
-    /* evaluate the function                                               */
-    SET_BRK_CURR_STAT( call );
-    func = EVAL_EXPR( FUNC_CALL( call ) );
-
-    /* call the function                                                   */
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION)
-      DispatchFuncCall(func, 0, (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);
-    else {
-      CALL_0ARGS( func );
-    }
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt            ExecProccall1args (
-    Stat                call )
-{
-    Obj                 func;           /* function                        */
-    Obj                 arg1;           /* first  argument                 */
-
-    /* evaluate the function                                               */
-    SET_BRK_CURR_STAT( call );
-    func = EVAL_EXPR( FUNC_CALL( call ) );
-  
-    /* evaluate the arguments                                              */
-    arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
- 
-    /* call the function                                                   */
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION)
-      DispatchFuncCall(func, 1, (Obj) arg1,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);
-    else {
-      CALL_1ARGS( func, arg1 );
-    } 
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt            ExecProccall2args (
-    Stat                call )
-{
-    Obj                 func;           /* function                        */
-    Obj                 arg1;           /* first  argument                 */
-    Obj                 arg2;           /* second argument                 */
-
-    /* evaluate the function                                               */
+    // evaluate the function
     SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
  
-    /* evaluate the arguments                                              */
-    arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
-    arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
-
-    /* call the function                                                   */
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION)
-      DispatchFuncCall(func, 2, (Obj) arg1,  (Obj) arg2,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);
+    // evaluate the arguments
+    if (nr <= 6 && TNUM_OBJ(func) == T_FUNCTION) {
+        for (UInt i = 1; i <= nr; i++) {
+            a[i - 1] = EVAL_EXPR(ARGI_CALL(call, i));
+        }
+    }
     else {
-      CALL_2ARGS( func, arg1, arg2 );
-    }
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt            ExecProccall3args (
-    Stat                call )
-{
-    Obj                 func;           /* function                        */
-    Obj                 arg1;           /* first  argument                 */
-    Obj                 arg2;           /* second argument                 */
-    Obj                 arg3;           /* third  argument                 */
-
-    /* evaluate the function                                               */
-    SET_BRK_CURR_STAT( call );
-    func = EVAL_EXPR( FUNC_CALL( call ) );
- 
-    /* evaluate the arguments                                              */
-    arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
-    arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
-    arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
-
-    /* call the function                                                   */
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION)
-      DispatchFuncCall(func, 3, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) 0L,  (Obj) 0L,  (Obj) 0L);
-    else {
-      CALL_3ARGS( func, arg1, arg2, arg3 );
-    }
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt            ExecProccall4args (
-    Stat                call )
-{
-    Obj                 func;           /* function                        */
-    Obj                 arg1;           /* first  argument                 */
-    Obj                 arg2;           /* second argument                 */
-    Obj                 arg3;           /* third  argument                 */
-    Obj                 arg4;           /* fourth argument                 */
-
-    /* evaluate the function                                               */
-    SET_BRK_CURR_STAT( call );
-    func = EVAL_EXPR( FUNC_CALL( call ) );
- 
-    /* evaluate the arguments                                              */
-    arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
-    arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
-    arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
-    arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
-
-    /* call the function                                                   */
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION)
-      DispatchFuncCall(func, 4, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) 0,  (Obj) 0);
-    else {
-      CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
-    }
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt            ExecProccall5args (
-    Stat                call )
-{
-    Obj                 func;           /* function                        */
-    Obj                 arg1;           /* first  argument                 */
-    Obj                 arg2;           /* second argument                 */
-    Obj                 arg3;           /* third  argument                 */
-    Obj                 arg4;           /* fourth argument                 */
-    Obj                 arg5;           /* fifth  argument                 */
-
-    /* evaluate the function                                               */
-    SET_BRK_CURR_STAT( call );
-    func = EVAL_EXPR( FUNC_CALL( call ) );
-
-    /* evaluate the arguments                                              */
-    arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
-    arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
-    arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
-    arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
-    arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
-
-    /* call the function                                                   */
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION)
-      DispatchFuncCall(func, 5, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) arg5,  (Obj) 0L);
-    else {
-      CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
-    }
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt            ExecProccall6args (
-    Stat                call )
-{
-    Obj                 func;           /* function                        */
-    Obj                 arg1;           /* first  argument                 */
-    Obj                 arg2;           /* second argument                 */
-    Obj                 arg3;           /* third  argument                 */
-    Obj                 arg4;           /* fourth argument                 */
-    Obj                 arg5;           /* fifth  argument                 */
-    Obj                 arg6;           /* sixth  argument                 */
-
-    /* evaluate the function                                               */
-    SET_BRK_CURR_STAT( call );
-    func = EVAL_EXPR( FUNC_CALL( call ) );
- 
-    /* evaluate the arguments                                              */
-    arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
-    arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
-    arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
-    arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
-    arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
-    arg6 = EVAL_EXPR( ARGI_CALL( call, 6 ) );
-
-    /* call the function                                                   */
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION)
-      DispatchFuncCall(func, 6, (Obj) arg1,  (Obj) arg2,  (Obj) arg3,  (Obj) arg4,  (Obj) arg5,  (Obj) arg6);
-    else {
-      CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
-    }
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt            ExecProccallXargs (
-    Stat                call )
-{
-    Obj                 func;           /* function                        */
-    Obj                 args;           /* argument list                   */
-    Obj                 argi;           /* <i>-th argument                 */
-    UInt                i;              /* loop variable                   */
-
-    /* evaluate the function                                               */
-    SET_BRK_CURR_STAT( call );
-    func = EVAL_EXPR( FUNC_CALL( call ) );
- 
-    /* evaluate the arguments                                              */
-    args = NEW_PLIST( T_PLIST, NARG_SIZE_CALL(SIZE_STAT(call)) );
-    SET_LEN_PLIST( args, NARG_SIZE_CALL(SIZE_STAT(call)) );
-    for ( i = 1; i <= NARG_SIZE_CALL(SIZE_STAT(call)); i++ ) {
-        argi = EVAL_EXPR( ARGI_CALL( call, i ) );
-        SET_ELM_PLIST( args, i, argi );
-        CHANGED_BAG( args );
+        UInt realNr = NARG_SIZE_CALL(SIZE_STAT(call));
+        args = NEW_PLIST(T_PLIST, realNr);
+        SET_LEN_PLIST(args, realNr);
+        for (UInt i = 1; i <= realNr; i++) {
+            Obj argi = EVAL_EXPR(ARGI_CALL(call, i));
+            SET_ELM_PLIST(args, i, argi);
+            CHANGED_BAG(args);
+        }
     }
 
-    /* call the function                                                   */
+    // call the function
     SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
-      DoOperation2Args(CallFuncListOper, func, args);
-    } else {
-      CALL_XARGS( func, args );
+        DoOperation2Args(CallFuncListOper, func, args);
+    }
+    else {
+        switch (nr) {
+        case 0:
+            CALL_0ARGS(func);
+            break;
+        case 1:
+            CALL_1ARGS(func, a[0]);
+            break;
+        case 2:
+            CALL_2ARGS(func, a[0], a[1]);
+            break;
+        case 3:
+            CALL_3ARGS(func, a[0], a[1], a[2]);
+            break;
+        case 4:
+            CALL_4ARGS(func, a[0], a[1], a[2], a[3]);
+            break;
+        case 5:
+            CALL_5ARGS(func, a[0], a[1], a[2], a[3], a[4]);
+            break;
+        case 6:
+            CALL_6ARGS(func, a[0], a[1], a[2], a[3], a[4], a[5]);
+            break;
+        default:
+            CALL_XARGS(func, args);
+        }
+    }
+    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) {
+        // the procedure must have called READ() and the user quit from
+        // a break loop inside it
+        ReadEvalError();
     }
 
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    /* return 0 (to indicate that no leave-statement was executed)         */
+    // return 0 (to indicate that no leave-statement was executed)
     return 0;
+}
+
+UInt ExecProccall0args(Stat call)
+{
+    return ExecProccall(0, call);
+}
+
+UInt ExecProccall1args(Stat call)
+{
+    return ExecProccall(1, call);
+}
+
+UInt ExecProccall2args(Stat call)
+{
+    return ExecProccall(2, call);
+}
+
+UInt ExecProccall3args(Stat call)
+{
+    return ExecProccall(3, call);
+}
+
+UInt ExecProccall4args(Stat call)
+{
+    return ExecProccall(4, call);
+}
+
+UInt ExecProccall5args(Stat call)
+{
+    return ExecProccall(5, call);
+}
+
+UInt ExecProccall6args(Stat call)
+{
+    return ExecProccall(6, call);
+}
+
+UInt ExecProccallXargs(Stat call)
+{
+    // pass in 7 (instead of NARG_SIZE_CALL(SIZE_STAT(call)))
+    // to allow the compiler to perform better optimizations
+    // (as we know that the number of arguments is >= 7 here)
+    return ExecProccall(7, call);
 }
 
 /****************************************************************************
@@ -452,302 +278,122 @@ Obj EvalFunccallOpts(
 **  'ARGI_CALL(<call>,<i>)'.  It returns the value returned by the function.
 */
 
-Obj             EvalFunccall0args (
-    Expr                call )
+static ALWAYS_INLINE Obj EvalFunccall(UInt nr, Stat call)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 func;           /* function                        */
+    Obj func;
+    Obj a[6] = { 0 };
+    Obj args = 0;
+    Obj result;
 
-    /* evaluate the function                                               */
+    // evaluate the function
     func = EVAL_EXPR( FUNC_CALL( call ) );
+ 
+    // evaluate the arguments
+    if (nr <= 6 && TNUM_OBJ(func) == T_FUNCTION) {
+        for (UInt i = 1; i <= nr; i++) {
+            a[i - 1] = EVAL_EXPR(ARGI_CALL(call, i));
+        }
+    }
+    else {
+        UInt realNr = NARG_SIZE_CALL(SIZE_EXPR(call));
+        args = NEW_PLIST(T_PLIST, realNr);
+        SET_LEN_PLIST(args, realNr);
+        for (UInt i = 1; i <= realNr; i++) {
+            Obj argi = EVAL_EXPR(ARGI_CALL(call, i));
+            SET_ELM_PLIST(args, i, argi);
+            CHANGED_BAG(args);
+        }
+    }
 
-    /* call the function and return the result                             */
+    // call the function
     SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
-      result = DispatchFuncCall(func, 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
-    } else {
-      result = CALL_0ARGS( func );
+        result = DoOperation2Args(CallFuncListOper, func, args);
     }
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
+    else {
+        switch (nr) {
+        case 0:
+            result = CALL_0ARGS(func);
+            break;
+        case 1:
+            result = CALL_1ARGS(func, a[0]);
+            break;
+        case 2:
+            result = CALL_2ARGS(func, a[0], a[1]);
+            break;
+        case 3:
+            result = CALL_3ARGS(func, a[0], a[1], a[2]);
+            break;
+        case 4:
+            result = CALL_4ARGS(func, a[0], a[1], a[2], a[3]);
+            break;
+        case 5:
+            result = CALL_5ARGS(func, a[0], a[1], a[2], a[3], a[4]);
+            break;
+        case 6:
+            result = CALL_6ARGS(func, a[0], a[1], a[2], a[3], a[4], a[5]);
+            break;
+        default:
+            result = CALL_XARGS(func, args);
+        }
+    }
+    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) {
+        // the function must have called READ() and the user quit from
+        // a break loop inside it
+        ReadEvalError();
+    }
+
+    while (result == 0) {
+        result =
+            ErrorReturnObj("Function Calls: <func> must return a value", 0, 0,
+                           "you can supply one by 'return <value>;'");
     }
     return result;
 }
 
-Obj             EvalFunccall1args (
-    Expr                call )
+Obj EvalFunccall0args(Expr call)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 func;           /* function                        */
-    Obj                 arg1;           /* first  argument                 */
-
-    /* evaluate the function                                               */
-    func = EVAL_EXPR( FUNC_CALL( call ) );
-      /* evaluate the arguments                                              */
-    arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
-
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      result = DispatchFuncCall(func, 1, (Obj) arg1, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
-    } else {
-      result = CALL_1ARGS( func, arg1 );
-    }
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
-    }
-    return result;
+    return EvalFunccall(0, call);
 }
 
-Obj             EvalFunccall2args (
-    Expr                call )
+Obj EvalFunccall1args(Expr call)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 func;           /* function                        */
-    Obj                 arg1;           /* first  argument                 */
-    Obj                 arg2;           /* second argument                 */
-
-    /* evaluate the function                                               */
-    func = EVAL_EXPR( FUNC_CALL( call ) );
-
-    /* evaluate the arguments                                              */
-    arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
-    arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
-
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      result = DispatchFuncCall(func, 2, (Obj) arg1, (Obj) arg2, (Obj) 0, (Obj) 0, (Obj) 0, (Obj) 0 );
-    } else {
-      result = CALL_2ARGS( func, arg1, arg2 );
-    }
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
-    }
-    return result;
+    return EvalFunccall(1, call);
 }
 
-Obj             EvalFunccall3args (
-    Expr                call )
+Obj EvalFunccall2args(Expr call)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 func;           /* function                        */
-    Obj                 arg1;           /* first  argument                 */
-    Obj                 arg2;           /* second argument                 */
-    Obj                 arg3;           /* third  argument                 */
-
-    /* evaluate the function                                               */
-    func = EVAL_EXPR( FUNC_CALL( call ) );
-
-    /* evaluate the arguments                                              */
-    arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
-    arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
-    arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
-
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      result = DispatchFuncCall(func, 3, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) 0, (Obj) 0, (Obj) 0 );
-    } else {
-      result = CALL_3ARGS( func, arg1, arg2, arg3 );
-    }
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
-    }
-    return result;
+    return EvalFunccall(2, call);
 }
 
-Obj             EvalFunccall4args (
-    Expr                call )
+Obj EvalFunccall3args(Expr call)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 func;           /* function                        */
-    Obj                 arg1;           /* first  argument                 */
-    Obj                 arg2;           /* second argument                 */
-    Obj                 arg3;           /* third  argument                 */
-    Obj                 arg4;           /* fourth argument                 */
-
-    /* evaluate the function                                               */
-    func = EVAL_EXPR( FUNC_CALL( call ) );
-    /* evaluate the arguments                                              */
-    arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
-    arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
-    arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
-    arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
-
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      result = DispatchFuncCall(func, 4, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) 0, (Obj) 0 );
-    } else {
-      result = CALL_4ARGS( func, arg1, arg2, arg3, arg4 );
-    }
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
-    }
-    return result;
+    return EvalFunccall(3, call);
 }
 
-Obj             EvalFunccall5args (
-    Expr                call )
+Obj EvalFunccall4args(Expr call)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 func;           /* function                        */
-    Obj                 arg1;           /* first  argument                 */
-    Obj                 arg2;           /* second argument                 */
-    Obj                 arg3;           /* third  argument                 */
-    Obj                 arg4;           /* fourth argument                 */
-    Obj                 arg5;           /* fifth  argument                 */
-
-    /* evaluate the function                                               */
-    func = EVAL_EXPR( FUNC_CALL( call ) );
-
-    /* evaluate the arguments                                              */
-    arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
-    arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
-    arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
-    arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
-    arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
-
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      result = DispatchFuncCall(func, 5, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) 0 );
-    } else {
-      result = CALL_5ARGS( func, arg1, arg2, arg3, arg4, arg5 );
-    }
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
-    }
-    return result;
+    return EvalFunccall(4, call);
 }
 
-Obj             EvalFunccall6args (
-    Expr                call )
+Obj EvalFunccall5args(Expr call)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 func;           /* function                        */
-    Obj                 arg1;           /* first  argument                 */
-    Obj                 arg2;           /* second argument                 */
-    Obj                 arg3;           /* third  argument                 */
-    Obj                 arg4;           /* fourth argument                 */
-    Obj                 arg5;           /* fifth  argument                 */
-    Obj                 arg6;           /* sixth  argument                 */
-
-    /* evaluate the function                                               */
-    func = EVAL_EXPR( FUNC_CALL( call ) );
-
-    /* evaluate the arguments                                              */
-    arg1 = EVAL_EXPR( ARGI_CALL( call, 1 ) );
-    arg2 = EVAL_EXPR( ARGI_CALL( call, 2 ) );
-    arg3 = EVAL_EXPR( ARGI_CALL( call, 3 ) );
-    arg4 = EVAL_EXPR( ARGI_CALL( call, 4 ) );
-    arg5 = EVAL_EXPR( ARGI_CALL( call, 5 ) );
-    arg6 = EVAL_EXPR( ARGI_CALL( call, 6 ) );
-
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      result = DispatchFuncCall(func, 6, (Obj) arg1, (Obj) arg2, (Obj) arg3, (Obj) arg4, (Obj) arg5, (Obj) arg6 );
-    } else {
-      result = CALL_6ARGS( func, arg1, arg2, arg3, arg4, arg5, arg6 );
-    }
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
-    }
-    return result;
+    return EvalFunccall(5, call);
 }
 
-Obj             EvalFunccallXargs (
-    Expr                call )
+Obj EvalFunccall6args(Expr call)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 func;           /* function                        */
-    Obj                 args;           /* argument list                   */
-    Obj                 argi;           /* <i>-th argument                 */
-    UInt                i;              /* loop variable                   */
-
-    /* evaluate the function                                               */
-    func = EVAL_EXPR( FUNC_CALL( call ) );
-
-    /* evaluate the arguments                                              */
-    args = NEW_PLIST( T_PLIST, NARG_SIZE_CALL(SIZE_EXPR(call)) );
-    SET_LEN_PLIST( args, NARG_SIZE_CALL(SIZE_EXPR(call)) );
-    for ( i = 1; i <= NARG_SIZE_CALL(SIZE_EXPR(call)); i++ ) {
-        argi = EVAL_EXPR( ARGI_CALL( call, i ) );
-        SET_ELM_PLIST( args, i, argi );
-        CHANGED_BAG( args );
-    }
-
-    /* call the function and return the result                             */
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-      result = DoOperation2Args(CallFuncListOper, func, args);
-    } else {
-      result = CALL_XARGS( func, args );
-    }
-
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) /* the procedure must have called
-                                       READ() and the user quit from a break
-                                       loop inside it */
-      ReadEvalError();
-    while ( result == 0 ) {
-        result = ErrorReturnObj(
-            "Function Calls: <func> must return a value",
-            0L, 0L,
-            "you can supply one by 'return <value>;'" );
-    }
-    return result;
+    return EvalFunccall(6, call);
 }
+
+Obj EvalFunccallXargs(Expr call)
+{
+    // pass in 7 (instead of NARG_SIZE_CALL(SIZE_EXPR(call)))
+    // to allow the compiler to perform better optimizations
+    // (as we know that the number of arguments is >= 7 here)
+    return EvalFunccall(7, call);
+}
+
 
 
 /****************************************************************************
