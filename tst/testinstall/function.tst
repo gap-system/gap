@@ -188,4 +188,18 @@ gap> InstallGlobalFunction("CheeseCakeFunction123123", function() end);
 Error, global function `CheeseCakeFunction123123' is not declared yet
 
 #
+# test that the arguments in a function call are evaluated in the right order.
+#
+gap> makeCounter:= function() local n; n:=0; return function() n:=n+1; return n; end; end;;
+gap> f:=makeCounter();;
+gap> Print(f(), f(), f(), "\n");
+123
+gap> g:=function(x,y,z) return [x,y,z]; end;;
+gap> g(f(), f(), f());
+[ 4, 5, 6 ]
+gap> h:=function() return g(f(), f(), f()); end;;
+gap> h();
+[ 7, 8, 9 ]
+
+#
 gap> STOP_TEST("function.tst", 1);
