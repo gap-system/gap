@@ -180,7 +180,7 @@ int in stream:1
 .q;
 ^
 gap> .0n;
-fail
+Error, failed to convert float literal
 gap> .0q;
 Syntax error: Badly Formed Number: need at least one digit in the exponent in \
 stream:1
