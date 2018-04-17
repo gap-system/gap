@@ -124,14 +124,16 @@ UInt ExecProccallOpts(
 **  resulting from the procedure call, which in fact is always 0.
 */
 
-static ALWAYS_INLINE UInt ExecProccall(UInt nr, Stat call)
+static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call)
 {
     Obj func;
     Obj a[6] = { 0 };
     Obj args = 0;
+    Obj result;
 
     // evaluate the function
-    SET_BRK_CURR_STAT( call );
+    if (ignoreResult)
+        SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
  
     // evaluate the arguments
@@ -142,160 +144,6 @@ static ALWAYS_INLINE UInt ExecProccall(UInt nr, Stat call)
     }
     else {
         UInt realNr = NARG_SIZE_CALL(SIZE_STAT(call));
-        args = NEW_PLIST(T_PLIST, realNr);
-        SET_LEN_PLIST(args, realNr);
-        for (UInt i = 1; i <= realNr; i++) {
-            Obj argi = EVAL_EXPR(ARGI_CALL(call, i));
-            SET_ELM_PLIST(args, i, argi);
-            CHANGED_BAG(args);
-        }
-    }
-
-    // call the function
-    SET_BRK_CALL_TO( call );
-    if (TNUM_OBJ(func) != T_FUNCTION) {
-        DoOperation2Args(CallFuncListOper, func, args);
-    }
-    else {
-        switch (nr) {
-        case 0:
-            CALL_0ARGS(func);
-            break;
-        case 1:
-            CALL_1ARGS(func, a[0]);
-            break;
-        case 2:
-            CALL_2ARGS(func, a[0], a[1]);
-            break;
-        case 3:
-            CALL_3ARGS(func, a[0], a[1], a[2]);
-            break;
-        case 4:
-            CALL_4ARGS(func, a[0], a[1], a[2], a[3]);
-            break;
-        case 5:
-            CALL_5ARGS(func, a[0], a[1], a[2], a[3], a[4]);
-            break;
-        case 6:
-            CALL_6ARGS(func, a[0], a[1], a[2], a[3], a[4], a[5]);
-            break;
-        default:
-            CALL_XARGS(func, args);
-        }
-    }
-    if (STATE(UserHasQuit) || STATE(UserHasQUIT)) {
-        // the procedure must have called READ() and the user quit from
-        // a break loop inside it
-        ReadEvalError();
-    }
-
-    // return 0 (to indicate that no leave-statement was executed)
-    return 0;
-}
-
-UInt ExecProccall0args(Stat call)
-{
-    return ExecProccall(0, call);
-}
-
-UInt ExecProccall1args(Stat call)
-{
-    return ExecProccall(1, call);
-}
-
-UInt ExecProccall2args(Stat call)
-{
-    return ExecProccall(2, call);
-}
-
-UInt ExecProccall3args(Stat call)
-{
-    return ExecProccall(3, call);
-}
-
-UInt ExecProccall4args(Stat call)
-{
-    return ExecProccall(4, call);
-}
-
-UInt ExecProccall5args(Stat call)
-{
-    return ExecProccall(5, call);
-}
-
-UInt ExecProccall6args(Stat call)
-{
-    return ExecProccall(6, call);
-}
-
-UInt ExecProccallXargs(Stat call)
-{
-    // pass in 7 (instead of NARG_SIZE_CALL(SIZE_STAT(call)))
-    // to allow the compiler to perform better optimizations
-    // (as we know that the number of arguments is >= 7 here)
-    return ExecProccall(7, call);
-}
-
-/****************************************************************************
-**
-*F EvalFunccallOpts( <call> ). . evaluate a function call with options
-**
-** Calls with options are wrapped in an outer statement, which is
-** handled here
-*/
-
-Obj EvalFunccallOpts(
-    Expr                call )
-{
-  Obj opts;
-  Obj res;
-  
-  
-  opts = EVAL_EXPR( ADDR_STAT(call)[0] );
-  CALL_1ARGS(PushOptions, opts);
-
-  res = EVAL_EXPR( ADDR_STAT( call )[1]);
-
-  CALL_0ARGS(PopOptions);
-  
-  return res;
-}
-
-
-/****************************************************************************
-**
-*F  EvalFunccall0args(<call>)  . . execute a function call with 0    arguments
-*F  EvalFunccall1args(<call>)  . . execute a function call with 1    arguments
-*F  EvalFunccall2args(<call>)  . . execute a function call with 2    arguments
-*F  EvalFunccall3args(<call>)  . . execute a function call with 3    arguments
-*F  EvalFunccall4args(<call>)  . . execute a function call with 4    arguments
-*F  EvalFunccall5args(<call>)  . . execute a function call with 5    arguments
-*F  EvalFunccall6args(<call>)  . . execute a function call with 6    arguments
-*F  EvalFunccallXargs(<call>)  . . execute a function call with more arguments
-**
-**  'EvalFunccall<i>args'  executes  a     function call   to   the  function
-**  'FUNC_CALL(<call>)'    with  the   arguments    'ARGI_CALL(<call>,1)'  to
-**  'ARGI_CALL(<call>,<i>)'.  It returns the value returned by the function.
-*/
-
-static ALWAYS_INLINE Obj EvalFunccall(UInt nr, Stat call)
-{
-    Obj func;
-    Obj a[6] = { 0 };
-    Obj args = 0;
-    Obj result;
-
-    // evaluate the function
-    func = EVAL_EXPR( FUNC_CALL( call ) );
- 
-    // evaluate the arguments
-    if (nr <= 6 && TNUM_OBJ(func) == T_FUNCTION) {
-        for (UInt i = 1; i <= nr; i++) {
-            a[i - 1] = EVAL_EXPR(ARGI_CALL(call, i));
-        }
-    }
-    else {
-        UInt realNr = NARG_SIZE_CALL(SIZE_EXPR(call));
         args = NEW_PLIST(T_PLIST, realNr);
         SET_LEN_PLIST(args, realNr);
         for (UInt i = 1; i <= realNr; i++) {
@@ -343,6 +191,10 @@ static ALWAYS_INLINE Obj EvalFunccall(UInt nr, Stat call)
         ReadEvalError();
     }
 
+    if (ignoreResult) {
+        return 0;
+    }
+
     while (result == 0) {
         result =
             ErrorReturnObj("Function Calls: <func> must return a value", 0, 0,
@@ -351,39 +203,150 @@ static ALWAYS_INLINE Obj EvalFunccall(UInt nr, Stat call)
     return result;
 }
 
+
+
+UInt ExecProccall0args(Stat call)
+{
+    EvalOrExecCall(1, 0, call);
+
+    // return 0 (to indicate that no leave-statement was executed)
+    return 0;
+}
+
+UInt ExecProccall1args(Stat call)
+{
+    EvalOrExecCall(1, 1, call);
+
+    // return 0 (to indicate that no leave-statement was executed)
+    return 0;
+}
+
+UInt ExecProccall2args(Stat call)
+{
+    EvalOrExecCall(1, 2, call);
+
+    // return 0 (to indicate that no leave-statement was executed)
+    return 0;
+}
+
+UInt ExecProccall3args(Stat call)
+{
+    EvalOrExecCall(1, 3, call);
+
+    // return 0 (to indicate that no leave-statement was executed)
+    return 0;
+}
+
+UInt ExecProccall4args(Stat call)
+{
+    EvalOrExecCall(1, 4, call);
+
+    // return 0 (to indicate that no leave-statement was executed)
+    return 0;
+}
+
+UInt ExecProccall5args(Stat call)
+{
+    EvalOrExecCall(1, 5, call);
+
+    // return 0 (to indicate that no leave-statement was executed)
+    return 0;
+}
+
+UInt ExecProccall6args(Stat call)
+{
+    EvalOrExecCall(1, 6, call);
+
+    // return 0 (to indicate that no leave-statement was executed)
+    return 0;
+}
+
+UInt ExecProccallXargs(Stat call)
+{
+    // pass in 7 (instead of NARG_SIZE_CALL(SIZE_STAT(call)))
+    // to allow the compiler to perform better optimizations
+    // (as we know that the number of arguments is >= 7 here)
+    EvalOrExecCall(1, 7, call);
+
+    // return 0 (to indicate that no leave-statement was executed)
+    return 0;
+}
+
+/****************************************************************************
+**
+*F EvalFunccallOpts( <call> ). . evaluate a function call with options
+**
+** Calls with options are wrapped in an outer statement, which is
+** handled here
+*/
+
+Obj EvalFunccallOpts(
+    Expr                call )
+{
+  Obj opts;
+  Obj res;
+  
+  
+  opts = EVAL_EXPR( ADDR_STAT(call)[0] );
+  CALL_1ARGS(PushOptions, opts);
+
+  res = EVAL_EXPR( ADDR_STAT( call )[1]);
+
+  CALL_0ARGS(PopOptions);
+  
+  return res;
+}
+
+
+/****************************************************************************
+**
+*F  EvalFunccall0args(<call>)  . . execute a function call with 0    arguments
+*F  EvalFunccall1args(<call>)  . . execute a function call with 1    arguments
+*F  EvalFunccall2args(<call>)  . . execute a function call with 2    arguments
+*F  EvalFunccall3args(<call>)  . . execute a function call with 3    arguments
+*F  EvalFunccall4args(<call>)  . . execute a function call with 4    arguments
+*F  EvalFunccall5args(<call>)  . . execute a function call with 5    arguments
+*F  EvalFunccall6args(<call>)  . . execute a function call with 6    arguments
+*F  EvalFunccallXargs(<call>)  . . execute a function call with more arguments
+**
+**  'EvalFunccall<i>args'  executes  a     function call   to   the  function
+**  'FUNC_CALL(<call>)'    with  the   arguments    'ARGI_CALL(<call>,1)'  to
+**  'ARGI_CALL(<call>,<i>)'.  It returns the value returned by the function.
+*/
+
 Obj EvalFunccall0args(Expr call)
 {
-    return EvalFunccall(0, call);
+    return EvalOrExecCall(0, 0, call);
 }
 
 Obj EvalFunccall1args(Expr call)
 {
-    return EvalFunccall(1, call);
+    return EvalOrExecCall(0, 1, call);
 }
 
 Obj EvalFunccall2args(Expr call)
 {
-    return EvalFunccall(2, call);
+    return EvalOrExecCall(0, 2, call);
 }
 
 Obj EvalFunccall3args(Expr call)
 {
-    return EvalFunccall(3, call);
+    return EvalOrExecCall(0, 3, call);
 }
 
 Obj EvalFunccall4args(Expr call)
 {
-    return EvalFunccall(4, call);
+    return EvalOrExecCall(0, 4, call);
 }
 
 Obj EvalFunccall5args(Expr call)
 {
-    return EvalFunccall(5, call);
+    return EvalOrExecCall(0, 5, call);
 }
 
 Obj EvalFunccall6args(Expr call)
 {
-    return EvalFunccall(6, call);
+    return EvalOrExecCall(0, 6, call);
 }
 
 Obj EvalFunccallXargs(Expr call)
@@ -391,7 +354,7 @@ Obj EvalFunccallXargs(Expr call)
     // pass in 7 (instead of NARG_SIZE_CALL(SIZE_EXPR(call)))
     // to allow the compiler to perform better optimizations
     // (as we know that the number of arguments is >= 7 here)
-    return EvalFunccall(7, call);
+    return EvalOrExecCall(0, 7, call);
 }
 
 
