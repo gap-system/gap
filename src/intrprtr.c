@@ -1804,7 +1804,10 @@ static Obj ConvertFloatLiteralEager(Obj str)
         SET_LEN_STRING(str, len - 2);
         chars[len - 2] = '\0';
     }
-    return CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(UInt)mark]);
+    Obj res = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(UInt)mark]);
+    if (res == Fail)
+        ErrorQuit("failed to convert float literal", 0, 0);
+    return res;
 }
 
 void            IntrFloatExpr (
