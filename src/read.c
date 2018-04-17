@@ -778,14 +778,16 @@ void ReadCallVarAss(TypSymbolSet follow, Char mode)
         // deal with references
         if (mode == 'r' || (mode == 'x' && STATE(Symbol) != S_ASSIGN)) {
             Obj val = ValAutoGVar(ref.var);
-            if (val == True)
-                IntrTrueExpr();
-            else if (val == False)
-                IntrFalseExpr();
-            else if (IS_INTOBJ(val))
-                IntrIntObjExpr(val);
-            else
-                SyntaxError("Invalid constant variable");
+            TRY_READ {
+                if (val == True)
+                    IntrTrueExpr();
+                else if (val == False)
+                    IntrFalseExpr();
+                else if (IS_INTOBJ(val))
+                    IntrIntObjExpr(val);
+                else
+                    SyntaxError("Invalid constant variable");
+            }
             return;
         }
     }
@@ -976,7 +978,7 @@ void ReadLongNumber(
          case S_INT:
            appendToString(string, STATE(Value));
            Match(S_INT, "integer", follow);
-           IntrLongIntExpr(string);
+           TRY_READ { IntrLongIntExpr(string); }
            done = 1;
            break;
 
@@ -1001,7 +1003,7 @@ void ReadLongNumber(
          case S_FLOAT:
            appendToString(string, STATE(Value));
            Match(S_FLOAT, "float", follow);
-           IntrLongFloatExpr(string);
+           TRY_READ { IntrLongFloatExpr(string); }
            done = 1;
            break;
 
@@ -1010,7 +1012,7 @@ void ReadLongNumber(
 
          default:
            appendToString(string, STATE(Value));
-           IntrLongIntExpr(string);
+           TRY_READ { IntrLongIntExpr(string); }
            done = 1;
          }
          break;
@@ -1036,7 +1038,7 @@ void ReadLongNumber(
          case S_FLOAT:
            appendToString(string, STATE(Value));
            Match(S_FLOAT, "float", follow);
-           IntrLongFloatExpr(string);
+           TRY_READ { IntrLongFloatExpr(string); }
            done = 1;
            break;
 
@@ -1066,7 +1068,7 @@ void ReadLongNumber(
          case S_FLOAT:
            appendToString(string, STATE(Value));
            Match(S_FLOAT, "float", follow);
-           IntrLongFloatExpr(string);
+           TRY_READ { IntrLongFloatExpr(string); }
            done = 1;
            break;
 
@@ -1076,7 +1078,7 @@ void ReadLongNumber(
 
          default:
            appendToString(string, STATE(Value));
-           IntrLongFloatExpr(string);
+           TRY_READ { IntrLongFloatExpr(string); }
            done = 1;
          }
          break;
@@ -1102,7 +1104,7 @@ void ReadLongNumber(
          case S_FLOAT:
            appendToString(string, STATE(Value));
            Match(S_FLOAT, "float", follow);
-           IntrLongFloatExpr(string);
+           TRY_READ { IntrLongFloatExpr(string); }
            done = 1;
            break;
 
@@ -1133,7 +1135,7 @@ void ReadLongNumber(
          case S_FLOAT:
            appendToString(string, STATE(Value));
            Match(S_FLOAT, "float", follow);
-           IntrLongFloatExpr(string);
+           TRY_READ { IntrLongFloatExpr(string); }
            done = 1;
            break;
 
@@ -1142,7 +1144,7 @@ void ReadLongNumber(
 
          default:
            appendToString(string, STATE(Value));
-           IntrLongFloatExpr(string);
+           TRY_READ { IntrLongFloatExpr(string); }
            done = 1;
 
          }
@@ -1185,7 +1187,7 @@ void ReadString(
      SET_LEN_STRING(string, len);
      /* ensure trailing zero for interpretation as C-string */
      *(CHARS_STRING(string) + len) = 0;
-     IntrStringExpr( string );
+     TRY_READ { IntrStringExpr( string ); }
 }
 
 /****************************************************************************
@@ -2047,7 +2049,7 @@ void ReadQualifiedExpr (
     TypSymbolSet        follow,
     Char                mode )
 {
-  UInt access  = 0;
+  volatile UInt access  = 0;
   if (STATE(Symbol) == S_READWRITE) 
     {
       Match( S_READWRITE, "readwrite", follow | EXPRBEGIN );
@@ -2058,9 +2060,9 @@ void ReadQualifiedExpr (
       Match( S_READONLY, "readonly", follow | EXPRBEGIN );
       access = 1;
     }
-  IntrQualifiedExprBegin(access);
+  TRY_READ { IntrQualifiedExprBegin(access); }
   ReadExpr(follow,mode);
-  IntrQualifiedExprEnd();
+  TRY_READ { IntrQualifiedExprEnd(); }
 }
 
 
