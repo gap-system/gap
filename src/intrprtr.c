@@ -1790,19 +1790,21 @@ void IntrLongIntExpr(Obj string)
 
 static Obj CONVERT_FLOAT_LITERAL_EAGER;
 
-static Obj ConvertFloatLiteralEager(Obj str) {
-  Char *chars = (Char *)CHARS_STRING(str);
-  UInt len = GET_LEN_STRING(str);
-  Char mark = '\0';
-  if (chars[len-1] == '_') {
-    SET_LEN_STRING(str, len-1);
-    chars[len-1] = '\0';
-  } else if (chars[len-2] == '_') {
-    mark = chars[len-1];
-    SET_LEN_STRING(str, len-2);
-    chars[len-2] = '\0';
-  }
-  return CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(UInt)mark]);
+static Obj ConvertFloatLiteralEager(Obj str)
+{
+    Char * chars = (Char *)CHARS_STRING(str);
+    UInt   len = GET_LEN_STRING(str);
+    Char   mark = '\0';
+    if (chars[len - 1] == '_') {
+        SET_LEN_STRING(str, len - 1);
+        chars[len - 1] = '\0';
+    }
+    else if (chars[len - 2] == '_') {
+        mark = chars[len - 1];
+        SET_LEN_STRING(str, len - 2);
+        chars[len - 2] = '\0';
+    }
+    return CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(UInt)mark]);
 }
 
 void            IntrFloatExpr (
