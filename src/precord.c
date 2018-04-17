@@ -683,7 +683,6 @@ Obj FuncREC_NAMES_COMOBJ (
 /****************************************************************************
 **
 *F  EqPRec( <self>, <left>, <right> ) . . . . . . . comparison of two records
-*F  FuncEQ_PREC( <self>, <left>, <right> )  . . . . comparison of two records
 **
 **  'EqPRec' returns '1L'  if the two  operands <left> and <right> are equal
 **  and '0L' otherwise.  At least one operand must be a plain record.
@@ -728,16 +727,9 @@ Int EqPRec(Obj left, Obj right)
 }
 
 
-Obj FuncEQ_PREC(Obj self, Obj left, Obj right)
-{
-    return EqPRec(left, right) ? True : False;
-}
-
-
 /****************************************************************************
 **
 *F  LtPRec( <self>, <left>, <right> ) . . . . . . . comparison of two records
-*F  FuncLT_PREC( <self>, <left>, <right> )  . . . . comparison of two records
 **
 **  'LtPRec' returns '1L'  if the operand  <left> is  less than the  operand
 **  <right>, and '0L'  otherwise.  At least  one operand  must be a  plain
@@ -790,12 +782,6 @@ Int LtPRec(Obj left, Obj right)
     /* the records are equal or the right is a prefix of the left          */
     DecRecursionDepth();
     return res;
-}
-
-
-Obj FuncLT_PREC(Obj self, Obj left, Obj right)
-{
-    return LtPRec(left, right) ? True : False;
 }
 
 
@@ -863,8 +849,6 @@ static StructGVarFunc GVarFuncs [] = {
 
     GVAR_FUNC(REC_NAMES, 1, "rec"),
     GVAR_FUNC(REC_NAMES_COMOBJ, 1, "rec"),
-    GVAR_FUNC(EQ_PREC, 2, "left, right"),
-    GVAR_FUNC(LT_PREC, 2, "left, right"),
     { 0, 0, 0, 0, 0 }
 
 };

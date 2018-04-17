@@ -46,14 +46,6 @@ gap> REC_NAMES( () );
 Error, RecNames: <rec> must be a record (not a permutation (small))
 gap> REC_NAMES_COMOBJ( () );
 Error, RecNames: <rec> must be a component object (not a permutation (small))
-gap> EQ_PREC( rec(), () );
-false
-gap> EQ_PREC( (), rec() );
-false
-gap> LT_PREC( rec(), () );
-false
-gap> LT_PREC( (), rec() );
-true
 gap> rec() < rec(x := 1);
 true
 gap> rec(x := 1) = rec(x := 2);
