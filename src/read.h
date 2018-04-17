@@ -35,9 +35,15 @@
 **    }
 **
 **  Then, if the reader encounters an error, or if the interpretation of an
-**  expression or statement leads to an error, then 'ReadEvalError' is
-**  invoked which in turn calls 'longjmp' to return to right after the block
+**  expression or statement leads to an error, 'ReadEvalError' is invoked,
+**  which in turn calls 'longjmp' to return to right after the block
 **  following TRY_READ.
+**
+**  A second effect of 'TRY_READ' is that it prevents the execution of the
+**  code it wraps if 'STATE(NrError)' is non-zero, i.e. if any errors
+**  occurred. This is key for enabling graceful error recovery in the reader,
+**  and for this reason it is crucial that all calls from the reader into
+**  the interpreter are wrapped into 'TRY_READ' blocks.
 **
 **  Note that while you can in principle nest TRY_READ constructs, to do this
 **  correctly, you must backup ReadJmpError before TRY_READ, and restore it
