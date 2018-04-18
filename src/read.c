@@ -76,10 +76,10 @@
 
 /****************************************************************************
 **
-**  The constructs <Expr> and <Statments> may have themself as subpart, e.g.,
-**  '<Var>( <Expr> )'  is  <Expr> and 'if   <Expr> then <Statments> fi;'   is
-**  <Statments>.  The  functions 'ReadExpr' and  'ReadStats' must therefor be
-**  declared forward.
+**  The constructs <Expr> and <Statements> may have themselves as subpart,
+**  e.g., '<Var>( <Expr> )' is <Expr> and 'if <Expr> then <Statements> fi;'
+**  is <Statements>. The functions 'ReadExpr' and 'ReadStats' must therefore
+**  be declared forward.
 */
 void            ReadExpr (
     TypSymbolSet        follow,
@@ -1505,7 +1505,7 @@ static void ReadFuncExprBody(
         if (nrError == 0)
             SET_LCKS_FUNC(CURR_FUNC(), args.locks);
 #endif
-        // <Statments>
+        // <Statements>
         nr = ReadStats(S_END | follow);
     }
 
@@ -1514,7 +1514,7 @@ static void ReadFuncExprBody(
         IntrFuncExprEnd(nr);
     }
     CATCH_READ_ERROR {
-        // an error has occured *after* the 'IntrFuncExprEnd'
+        // an error has occurred *after* the 'IntrFuncExprEnd'
         if (nrError == 0 && STATE(IntrCoding)) {
             CodeEnd(1);
             STATE(IntrCoding)--;
@@ -1536,7 +1536,7 @@ static void ReadFuncExprBody(
 **
 **  <Function> := 'function (' <ArgList> ')'
 **                             [ 'local'  <Ident> {',' <Ident>} ';' ]
-**                             <Statments>
+**                             <Statements>
 **                'end'
 */
 void ReadFuncExpr (
@@ -1621,7 +1621,7 @@ void ReadFuncExprAbbrevMulti(TypSymbolSet follow)
 **
 *F  ReadFuncExprAbbrevSingle(<follow>) .  read single-arg abbrev. func. expr.
 **
-**  'ReadFuncExprAbbrevSingle' reads a single-argumnt abbreviated function
+**  'ReadFuncExprAbbrevSingle' reads a single-argument abbreviated function
 **  literal expression. In case of an error it skips all symbols up to one
 **  contained in <follow>.
 **
@@ -2032,11 +2032,11 @@ void ReadAnd (
 
 /****************************************************************************
 **
-*F  ReadQualifiedExpr( <follow>, <mode> )  . . . . .  read an expression which
-**                may be qualified with readonly or readwrite
+*F  ReadQualifiedExpr( <follow>, <mode> )  . . . . . read an expression which
+**                                may be qualified with readonly or readwrite
 **
-**  'ReadQualifiedExpr' reads a qualifed expression.  In case of an error it skips all symbols
-**  up to one contained in <follow>.
+**  'ReadQualifiedExpr' reads a qualified expression. In case of an error it
+**  skips all symbols up to one contained in <follow>.
 **
 **  <QualifiedExpr> := ['readonly' | 'readwrite' ] <Expr>
 **
@@ -2109,7 +2109,7 @@ void ReadExpr (
 **  'ReadUnbind' reads an unbind statement.  In case of an error it skips all
 **  symbols up to one contained in <follow>.
 **
-**  <Statment> := 'Unbind' '(' <Var> ')' ';'
+**  <Statement> := 'Unbind' '(' <Var> ')' ';'
 */
 void ReadUnbind (
     TypSymbolSet        follow )
@@ -2127,7 +2127,7 @@ void ReadUnbind (
 **
 **  'ReadEmpty' reads  an empty statement.  The argument is actually ignored
 **
-**  <Statment> :=  ';'
+**  <Statement> :=  ';'
 */
 void ReadEmpty (
     TypSymbolSet        follow )
@@ -2137,17 +2137,17 @@ void ReadEmpty (
 
 /****************************************************************************
 **
-*F  ReadInfo( <follow> )  . . . . . . . . . . . . . .  read an info statement
+*F  ReadInfo( <follow> ) . . . . . . . . . . . . . . . read an info statement
 **
 **  'ReadInfo' reads  an info statement.  In  case of an  error  it skips all
 **  symbols up to one contained in <follow>.
 **
-**  <Statment> := 'Info' '(' <Expr> ',' <Expr> { ',' <Expr> } ')' ';'
+**  <Statement> := 'Info' '(' <Expr> ',' <Expr> { ',' <Expr> } ')' ';'
 */
 void ReadInfo (
     TypSymbolSet        follow )
 {
-    volatile UInt       narg;     /* numer of arguments to print (or not)  */
+    volatile UInt       narg;     /* number of arguments to print (or not)  */
 
     TRY_READ { IntrInfoBegin(); }
     Match( S_INFO, "Info", follow );
@@ -2169,12 +2169,12 @@ void ReadInfo (
 
 /****************************************************************************
 **
-*F  ReadAssert( <follow> )  . . . . . . . . . . . . .read an assert statement
+*F  ReadAssert( <follow> ) . . . . . . . . . . . . . read an assert statement
 **
 **  'ReadAssert' reads an assert statement.  In case of an error it skips all
 **  symbols up to one contained in <follow>.
 **
-**  <Statment> := 'Assert' '(' <Expr> ',' <Expr> [ ',' <Expr> ]  ')' ';'
+**  <Statement> := 'Assert' '(' <Expr> ',' <Expr> [ ',' <Expr> ]  ')' ';'
 */
 void ReadAssert (
     TypSymbolSet        follow )
@@ -2208,9 +2208,9 @@ void ReadAssert (
 **  'ReadIf' reads an if-statement.  In case of an error it skips all symbols
 **  up to one contained in <follow>.
 **
-**  <Statement> := 'if'   <Expr> 'then' <Statments>
-**                 { 'elif' <Expr> 'then' <Statments> }
-**                 [ 'else'               <Statments> ]
+**  <Statement> := 'if'   <Expr> 'then' <Statements>
+**                 { 'elif' <Expr> 'then' <Statements> }
+**                 [ 'else'               <Statements> ]
 **                 'fi' ';'
 */
 void ReadIf (
@@ -2219,7 +2219,7 @@ void ReadIf (
     volatile UInt       nrb;            /* number of branches              */
     volatile UInt       nrs;            /* number of statements in a body  */
 
-    /* 'if' <Expr>  'then' <Statments>                                     */
+    /* 'if' <Expr>  'then' <Statements>                                     */
     nrb = 0;
     TRY_READ { IntrIfBegin(); }
     Match( S_IF, "if", follow );
@@ -2229,7 +2229,7 @@ void ReadIf (
     nrs = ReadStats( S_ELIF|S_ELSE|S_FI|follow );
     TRY_READ { nrb += IntrIfEndBody( nrs ); }
 
-    /* { 'elif' <Expr>  'then' <Statments> }                               */
+    /* { 'elif' <Expr>  'then' <Statements> }                               */
     while ( STATE(Symbol) == S_ELIF ) {
         TRY_READ { IntrIfElif(); }
         Match( S_ELIF, "elif", follow );
@@ -2240,7 +2240,7 @@ void ReadIf (
         TRY_READ { nrb += IntrIfEndBody( nrs ); }
     }
 
-    /* [ 'else' <Statments> ]                                              */
+    /* [ 'else' <Statements> ]                                              */
     if ( STATE(Symbol) == S_ELSE ) {
         TRY_READ { IntrIfElse(); }
         Match( S_ELSE, "else", follow );
@@ -2263,7 +2263,7 @@ void ReadIf (
 **  to one contained in <follow>.
 **
 **  <Statement> := 'for' <Var>  'in' <Expr>  'do'
-**                     <Statments>
+**                     <Statements>
 **                 'od' ';'
 */
 
@@ -2291,7 +2291,7 @@ void ReadFor (
     TRY_READ { IntrForIn(); }
     ReadExpr( S_DO|S_OD|follow, 'r' );
 
-    /* 'do' <Statments>                                                    */
+    /* 'do' <Statements>                                                    */
     Match( S_DO, "do", STATBEGIN|S_OD|follow );
     TRY_READ { IntrForBeginBody(); }
     nrs = ReadStats( S_OD|follow );
@@ -2303,7 +2303,7 @@ void ReadFor (
         IntrForEnd();
     }
     CATCH_READ_ERROR {
-        /* an error has occured *after* the 'IntrForEndBody'               */
+        /* an error has occurred *after* the 'IntrForEndBody'               */
         /* If we hadn't actually come out of coding the body, we need
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
@@ -2324,7 +2324,7 @@ void ReadFor (
 **  up to one contained in <follow>.
 **
 **  <Statement> := 'while' <Expr>  'do'
-**                     <Statments>
+**                     <Statements>
 **                 'od' ';'
 */
 void ReadWhile (
@@ -2344,7 +2344,7 @@ void ReadWhile (
     ReadExpr( S_DO|S_OD|follow, 'r' );
     Match( S_DO, "do", STATBEGIN|S_DO|follow );
 
-    /*     <Statments>                                                     */
+    //     <Statements>
     TRY_READ { IntrWhileBeginBody(); }
     nrs = ReadStats( S_OD|follow );
     TRY_READ { IntrWhileEndBody( nrs ); }
@@ -2355,7 +2355,7 @@ void ReadWhile (
         IntrWhileEnd();
     }
     CATCH_READ_ERROR {
-        /* an error has occured *after* the 'IntrWhileEndBody'             */
+        /* an error has occurred *after* the 'IntrWhileEndBody'             */
         /* If we hadn't actually come out of coding the body, we need
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
@@ -2422,7 +2422,7 @@ void ReadAtomic (
 
     Match( S_DO, "do or comma", STATBEGIN|S_DO|follow );
 
-    /*     <Statments>                                                     */
+    //     <Statements>
     TRY_READ { IntrAtomicBeginBody(nexprs); }
     nrs = ReadStats( S_OD|follow );
     TRY_READ { IntrAtomicEndBody( nrs ); }
@@ -2433,7 +2433,7 @@ void ReadAtomic (
         IntrAtomicEnd();
     }
     CATCH_READ_ERROR {
-        /* an error has occured *after* the 'IntrAtomicEndBody'            */
+        /* an error has occurred *after* the 'IntrAtomicEndBody'            */
         /* If we hadn't actually come out of coding the body, we need
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
@@ -2459,15 +2459,15 @@ void ReadAtomic (
 **  symbols up to one contained in <follow>.
 **
 ** <Statement> := 'repeat'
-**                    <Statments>
+**                    <Statements>
 **                'until' <Expr> ';'
 */
 void ReadRepeat (
     TypSymbolSet        follow )
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>        */
+    volatile UInt       nrError;        /* copy of <STATE(NrError)>        */
+    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>      */
 
     /* remember the current variables in case of an error                  */
     currLVars = STATE(CurrLVars);
@@ -2477,7 +2477,7 @@ void ReadRepeat (
     TRY_READ { IntrRepeatBegin(); }
     Match( S_REPEAT, "repeat", follow );
 
-    /*  <Statments>                                                        */
+    //  <Statements>
     TRY_READ { IntrRepeatBeginBody(); }
     nrs = ReadStats( S_UNTIL|follow );
     TRY_READ { IntrRepeatEndBody( nrs ); }
@@ -2489,7 +2489,7 @@ void ReadRepeat (
         IntrRepeatEnd();
     }
     CATCH_READ_ERROR {
-        /* an error has occured *after* the 'IntrRepeatEnd'                */
+        /* an error has occurred *after* the 'IntrRepeatEndBody'            */
         /* If we hadn't actually come out of coding the body, we need
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
@@ -2552,7 +2552,7 @@ void ReadContinue (
 **  <Statement> := 'return' [ <Expr> ] ';'
 **
 **  It is still legal to use parenthesis but they  are  no  longer  required,
-**  a return statememt is not a function call and should not look  like  one.
+**  a return statement is not a function call and should not look  like  one.
 */
 void ReadReturn (
     TypSymbolSet        follow )
@@ -2580,7 +2580,7 @@ void ReadReturn (
 **  'ReadTryNext' reads a try-next-method statement.  In case of an error  it
 **  skips all symbols up to one contained in <follow>.
 **
-**  <Statment> := 'TryNextMethod' '(' ')' ';'
+**  <Statement> := 'TryNextMethod' '(' ')' ';'
 */
 void ReadTryNext (
     TypSymbolSet        follow )
@@ -2648,17 +2648,17 @@ void            ReadQUIT (
 **  'ReadStats' reads a statement sequence.  In case of an error it skips all
 **  symbols up to one contained in <follow>.
 **
-**  <Statments> := { <Statment> }
+**  <Statements> := { <Statement> }
 **
-**  <Statment>  := <Var> ':=' <Expr> ';'
+**  <Statement>  := <Var> ':=' <Expr> ';'
 **              |  <Var> '(' [ <Expr> { ',' <Expr> } ] ')' ';'
 **              |  'Unbind' '(' <Var> ')' ';'
-**              |  'if'   <Expr>  'then' <Statments>
-**                 { 'elif' <Expr>  'then' <Statments> }
-**                 [ 'else'                <Statments> ] 'fi' ';'
-**              |  'for' <Var> 'in' <Expr> 'do' <Statments> 'od' ';'
-**              |  'while' <Expr>  'do' <Statments>  'od' ';'
-**              |  'repeat' <Statments>  'until' <Expr> ';'
+**              |  'if'   <Expr>  'then' <Statements>
+**                 { 'elif' <Expr>  'then' <Statements> }
+**                 [ 'else'                <Statements> ] 'fi' ';'
+**              |  'for' <Var> 'in' <Expr> 'do' <Statements> 'od' ';'
+**              |  'while' <Expr>  'do' <Statements>  'od' ';'
+**              |  'repeat' <Statements>  'until' <Expr> ';'
 **              |  'break' ';'
 **              |  'return' [ <Expr> ] ';'
 **              |  'atomic' <QualifiedExpression> { ',' <QualifiedExpression> } 'do' <Statements> 'od' ';'
@@ -2777,7 +2777,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     currLHSGVar = STATE(CurrLHSGVar);
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 
-    /* intialize everything and begin an interpreter                       */
+    // initialize everything and begin an interpreter
     STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
     STATE(ReadTop)     = 0;
     STATE(ReadTilde)   = 0;
@@ -2904,7 +2904,7 @@ UInt ReadEvalFile(Obj *evalResult)
 #endif
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 
-    /* intialize everything and begin an interpreter                       */
+    // initialize everything and begin an interpreter
     STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
     STATE(ReadTop)     = 0;
     STATE(ReadTilde)   = 0;
@@ -3080,7 +3080,7 @@ Obj Call0ArgsInNewReader(Obj f)
   /* remember the old reader context                                     */
   SaveReaderState(&s);
 
-  /* intialize everything and begin an interpreter                       */
+  // initialize everything and begin an interpreter
   ClearReaderState();
   IntrBegin( STATE(BottomLVars) );
 
@@ -3119,7 +3119,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
 
   SaveReaderState(&s);
 
-  /* intialize everything and begin an interpreter                       */
+  // initialize everything and begin an interpreter
   ClearReaderState();
   IntrBegin( STATE(BottomLVars) );
 
