@@ -340,35 +340,11 @@ static void GetIdent(Int i)
 **  exponent digit.
 **
 */
-static Char GetCleanedChar(UInt * wasEscaped)
-{
-    Char c = GET_NEXT_CHAR();
-    *wasEscaped = 0;
-    if (c == '\\') {
-        c = GET_NEXT_CHAR();
-        *wasEscaped = 1;
-        switch (c) {
-        case 'n':  return '\n';
-        case 't':  return '\t';
-        case 'r':  return '\r';
-        case 'b':  return '\b';
-        case '>':  return '\01';
-        case '<':  return '\02';
-        case 'c':  return '\03';
-        }
-    }
-    return c;
-}
-
-
-static void GetNumber(UInt StartingStatus)
+static void GetNumber(const UInt StartingStatus)
 {
   Int                 i=0;
   Char                c;
-  UInt seenExp = 0;
-  UInt wasEscaped = 0;
   UInt seenADigit = (StartingStatus != 0 && StartingStatus != 2);
-  UInt seenExpDigit = (StartingStatus ==5);
 
   c = PEEK_CURR_CHAR();
   if (StartingStatus  <  2) {
@@ -420,7 +396,7 @@ static void GetNumber(UInt StartingStatus)
       /* Now the . must be part of our number
          store it and move on */
       STATE(Value)[i++] = '.';
-      c = GetCleanedChar(&wasEscaped);
+      c = GET_NEXT_CHAR();
     }
 
     else {
@@ -444,60 +420,61 @@ static void GetNumber(UInt StartingStatus)
        possibly some digits, a . and possibly some more digits, but not an e,E,d,D,q or Q */
 
     /* read digits */
-    for (; !wasEscaped && IsDigit(c) && i < SAFE_VALUE_SIZE-1; i++) {
-      STATE(Value)[i] = c;
+    while (IsDigit(c) && i < SAFE_VALUE_SIZE-1) {
+      STATE(Value)[i++] = c;
       seenADigit = 1;
-      c = GetCleanedChar(&wasEscaped);
+      c = GET_NEXT_CHAR();
     }
+    if (!seenADigit)
+      SyntaxError("Badly formed number: need a digit before or after the decimal point");
+    if (c == '\\')
+      SyntaxError("Badly Formed Number");
     /* If we found an identifier type character in this context could be an error
       or the start of one of the allowed trailing marker sequences */
-    if (wasEscaped || (IsIdent(c)  && c != 'e' && c != 'E' && c != 'D' && c != 'q' &&
-                       c != 'd' && c != 'Q')) {
+    if (IsIdent(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' && c != 'q' && c != 'Q') {
 
-      if (!seenADigit)
-        SyntaxError("Badly formed number: need a digit before or after the decimal point");
-      /* We allow one letter on the end of the numbers -- could be an i,
-       C99 style */
-      if (!wasEscaped) {
-        if (IsAlpha(c)) {
-          STATE(Value)[i++] = c;
-          c = GetCleanedChar(&wasEscaped);
-        }
-        /* independently of that, we allow an _ signalling immediate conversion */
-        if (c == '_') {
-          STATE(Value)[i++] = c;
-          c = GetCleanedChar(&wasEscaped);
-          /* After which there may be one character signifying the conversion style */
-          if (IsAlpha(c)) {
-            STATE(Value)[i++] = c;
-            c = GetCleanedChar(&wasEscaped);
-          }
-        }
-        /* Now if the next character is alphanumerical, or an identifier type symbol then we
-           really do have an error, otherwise we return a result */
-        if (!IsIdent(c) && !IsDigit(c)) {
-          STATE(Value)[i] = '\0';
-          STATE(Symbol) = S_FLOAT;
-          return;
-        }
-      }
-      SyntaxError("Badly formed number");
+       // Allow one letter on the end of the numbers -- could be an i, C99 style
+       if (IsAlpha(c)) {
+         STATE(Value)[i++] = c;
+         c = GET_NEXT_CHAR();
+       }
+       /* independently of that, we allow an _ signalling immediate conversion */
+       if (c == '_') {
+         STATE(Value)[i++] = c;
+         c = GET_NEXT_CHAR();
+         /* After which there may be one character signifying the conversion style */
+         if (IsAlpha(c)) {
+           STATE(Value)[i++] = c;
+           c = GET_NEXT_CHAR();
+         }
+       }
+       /* Now if the next character is alphanumerical, or an identifier type symbol then we
+          really do have an error, otherwise we return a result */
+       if (IsIdent(c) || IsDigit(c)) {
+         SyntaxError("Badly formed number");
+       }
+       else {
+         STATE(Value)[i] = '\0';
+         STATE(Symbol) = S_FLOAT;
+         return;
+       }
     }
+
     /* If the next thing is the start of the exponential notation,
        read it now -- we have left enough space at the end of the buffer even if we
        left the previous loop because of overflow */
+    UInt seenExp = 0;
     if (IsAlpha(c)) {
         if (!seenADigit)
           SyntaxError("Badly formed number: need a digit before or after the decimal point");
         seenExp = 1;
         STATE(Value)[i++] = c;
-        c = GetCleanedChar(&wasEscaped);
-        if (!wasEscaped && (c == '+' || c == '-'))
-          {
+        c = GET_NEXT_CHAR();
+        if (c == '+' || c == '-') {
             STATE(Value)[i++] = c;
-            c = GetCleanedChar(&wasEscaped);
-          }
-      }
+            c = GET_NEXT_CHAR();
+        }
+    }
 
     /* Now deal with full buffer case */
     if (i >= SAFE_VALUE_SIZE -1) {
@@ -512,19 +489,18 @@ static void GetNumber(UInt StartingStatus)
       if (!seenADigit)
         SyntaxError("Badly formed number: need a digit before or after the decimal point");
       /* Might be a conversion marker */
-      if (!wasEscaped) {
         if (IsAlpha(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' && c != 'q' && c != 'Q') {
           STATE(Value)[i++] = c;
-          c = GetCleanedChar(&wasEscaped);
+          c = GET_NEXT_CHAR();
         }
         /* independently of that, we allow an _ signalling immediate conversion */
         if (c == '_') {
           STATE(Value)[i++] = c;
-          c = GetCleanedChar(&wasEscaped);
+          c = GET_NEXT_CHAR();
           /* After which there may be one character signifying the conversion style */
           if (IsAlpha(c))
             STATE(Value)[i++] = c;
-          c = GetCleanedChar(&wasEscaped);
+          c = GET_NEXT_CHAR();
         }
         /* Now if the next character is alphanumerical, or an identifier type symbol then we
            really do have an error, otherwise we return a result */
@@ -533,7 +509,6 @@ static void GetNumber(UInt StartingStatus)
           STATE(Symbol) = S_FLOAT;
           return;
         }
-      }
       SyntaxError("Badly Formed Number");
     }
 
@@ -541,10 +516,12 @@ static void GetNumber(UInt StartingStatus)
 
   /* Here we are into the unsigned exponent of a number
      in scientific notation, so we just read digits */
-  for (; !wasEscaped && IsDigit(c) && i < SAFE_VALUE_SIZE-1; i++) {
-    STATE(Value)[i] = c;
+  UInt seenExpDigit = (StartingStatus == 5);
+
+  while (IsDigit(c) && i < SAFE_VALUE_SIZE-1) {
+    STATE(Value)[i++] = c;
     seenExpDigit = 1;
-    c = GetCleanedChar(&wasEscaped);
+    c = GET_NEXT_CHAR();
   }
 
   /* Look out for a single alphabetic character on the end
@@ -552,18 +529,18 @@ static void GetNumber(UInt StartingStatus)
   if (seenExpDigit) {
     if (IsAlpha(c)) {
       STATE(Value)[i] = c;
-      c = GetCleanedChar(&wasEscaped);
+      c = GET_NEXT_CHAR();
       STATE(Value)[i+1] = '\0';
       STATE(Symbol) = S_FLOAT;
       return;
     }
     if (c == '_') {
       STATE(Value)[i++] = c;
-      c = GetCleanedChar(&wasEscaped);
+      c = GET_NEXT_CHAR();
       /* After which there may be one character signifying the conversion style */
       if (IsAlpha(c)) {
         STATE(Value)[i++] = c;
-        c = GetCleanedChar(&wasEscaped);
+        c = GET_NEXT_CHAR();
       }
       STATE(Value)[i] = '\0';
       STATE(Symbol) = S_FLOAT;
