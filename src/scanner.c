@@ -346,6 +346,10 @@ static void GetNumber(const UInt StartingStatus)
   Char                c;
   UInt seenADigit = (StartingStatus != 0 && StartingStatus != 2);
 
+  if (StartingStatus == 2) {
+    STATE(Value)[i++] = '.';
+  }
+
   c = PEEK_CURR_CHAR();
   if (StartingStatus  <  2) {
     // read initial sequence of digits into 'Value'
@@ -562,6 +566,12 @@ static void GetNumber(const UInt StartingStatus)
   STATE(Value)[i] = '\0';
 }
 
+void ScanForFloatAfterDotHACK(void)
+{
+    // A decimal point only, but in a context where we know it's the start of
+    // a number
+    GetNumber(2);
+}
 
 /****************************************************************************
 **
@@ -906,7 +916,6 @@ static void NextSymbol(void)
     /* special case if reading of a long token is not finished */
     switch (STATE(Symbol)) {
     case S_PARTIALINT:        GetNumber(STATE(Value)[0] == '\0' ? 0 : 1); return;
-    case S_PARTIALFLOAT1:     GetNumber(2); return;
     case S_PARTIALFLOAT2:     GetNumber(3); return;
     case S_PARTIALFLOAT3:     GetNumber(4); return;
     case S_PARTIALFLOAT4:     GetNumber(5); return;

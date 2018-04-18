@@ -987,11 +987,6 @@ void ReadLongNumber(
            /*      Match(S_PARTIALINT, "integer", follow);*/
            break;
 
-         case S_PARTIALFLOAT1:
-           assert(0);
-           Pr("Parsing error, this should never happen", 0L, 0L);
-           SyExit(2);
-
          case S_PARTIALFLOAT2:
          case S_PARTIALFLOAT3:
          case S_PARTIALFLOAT4:
@@ -1017,41 +1012,10 @@ void ReadLongNumber(
          }
          break;
 
-       case S_PARTIALFLOAT1:
-         switch (STATE(Symbol)) {
-         case S_INT:
-         case S_PARTIALINT:
-         case S_PARTIALFLOAT1:
-           assert(0);
-           Pr("Parsing error, this should never happen", 0L, 0L);
-           SyExit(2);
-
-
-         case S_PARTIALFLOAT2:
-         case S_PARTIALFLOAT3:
-         case S_PARTIALFLOAT4:
-           status = STATE(Symbol);
-           appendToString(string, STATE(Value));
-           /* Match(STATE(Symbol), "float", follow); */
-           break;
-
-         case S_FLOAT:
-           appendToString(string, STATE(Value));
-           Match(S_FLOAT, "float", follow);
-           TRY_READ { IntrLongFloatExpr(string); }
-           done = 1;
-           break;
-
-         default:
-           SyntaxError("Badly Formed Number");
-         }
-         break;
-
        case S_PARTIALFLOAT2:
          switch (STATE(Symbol)) {
          case S_INT:
          case S_PARTIALINT:
-         case S_PARTIALFLOAT1:
            assert(0);
            Pr("Parsing error, this should never happen", 0L, 0L);
            SyExit(2);
@@ -1087,7 +1051,6 @@ void ReadLongNumber(
          switch (STATE(Symbol)) {
          case S_INT:
          case S_PARTIALINT:
-         case S_PARTIALFLOAT1:
          case S_PARTIALFLOAT2:
          case S_PARTIALFLOAT3:
            assert(0);
@@ -1118,7 +1081,6 @@ void ReadLongNumber(
          switch (STATE(Symbol)) {
          case S_INT:
          case S_PARTIALINT:
-         case S_PARTIALFLOAT1:
          case S_PARTIALFLOAT2:
          case S_PARTIALFLOAT3:
            assert(0);
@@ -1661,6 +1623,13 @@ static void ReadLiteral (
     TypSymbolSet        follow,
     Char mode)
 {
+    if (STATE(Symbol) == S_DOT) {
+        // HACK: The only way a dot could turn up here is in a floating point
+        // literal that starts with '.'. Call back to the scanner to deal
+        // with this.
+        ScanForFloatAfterDotHACK();
+    }
+
     switch (STATE(Symbol)) {
 
     /* <Int>                                                               */
@@ -1677,7 +1646,6 @@ static void ReadLiteral (
 
     /* partial Int */
     case S_PARTIALINT:
-    case S_PARTIALFLOAT1:
     case S_PARTIALFLOAT2:
         ReadLongNumber( follow );
         break;
@@ -1729,18 +1697,6 @@ static void ReadLiteral (
     case S_FUNCTION:
     case S_ATOMIC:
         ReadFuncExpr( follow, mode );
-        break;
-
-    case S_DOT:
-        /* HACK: The only way a dot could turn up here is in a floating point
-           literal that starts with .. So, change the token to a partial float
-           of the right kind to end with a . and an associated value and dive
-           into the long float literal handler in the parser
-         */
-        STATE(Symbol) = S_PARTIALFLOAT1;
-        STATE(Value)[0] = '.';
-        STATE(Value)[1] = '\0';
-        ReadLongNumber( follow );
         break;
 
     case S_LBRACE:
