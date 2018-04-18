@@ -237,7 +237,7 @@ BIND_GLOBAL("ErrorInner",
         prompt := "brk> ";
     fi;
     if not justQuit then
-        res := SHELL(context,mayReturnVoid,mayReturnObj,1,false,prompt,false,"*errin*","*errout*",false);
+        res := SHELL(context,mayReturnVoid,mayReturnObj,3,false,prompt,false,"*errin*","*errout*",false);
     else
         res := fail;
     fi;
