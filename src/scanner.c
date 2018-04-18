@@ -232,6 +232,7 @@ static void GetIdent(Int i)
 
     // read all characters into 'STATE(Value)'
     Char c = PEEK_CURR_CHAR();
+    Char * buf = STATE(Value);
     for (; IsIdent(c) || IsDigit(c) || c == '\\'; i++) {
 
         // handle escape sequences
@@ -249,7 +250,7 @@ static void GetIdent(Int i)
 
         /// put char into 'STATE(Value)' but only if there is room
         if (i < SAFE_VALUE_SIZE - 1)
-            STATE(Value)[i] = c;
+            buf[i] = c;
 
         // read the next character
         c = GET_NEXT_CHAR();
@@ -260,7 +261,7 @@ static void GetIdent(Int i)
         SyntaxError("Identifiers in GAP must consist of less than 1023 characters.");
         i = SAFE_VALUE_SIZE-1;
     }
-    STATE(Value)[i] = '\0';
+    buf[i] = '\0';
     STATE(Symbol) = S_IDENT;
 
     // if it is quoted then it is an identifier
@@ -268,44 +269,42 @@ static void GetIdent(Int i)
         return;
 
     // now check if 'STATE(Value)' holds a keyword
-    switch ( 256*STATE(Value)[0]+STATE(Value)[i-1] ) {
-    case 256*'a'+'d': if(!strcmp(STATE(Value),"and"))     STATE(Symbol)=S_AND;     break;
-    case 256*'a'+'c': if(!strcmp(STATE(Value),"atomic"))  STATE(Symbol)=S_ATOMIC;  break;
-    case 256*'b'+'k': if(!strcmp(STATE(Value),"break"))   STATE(Symbol)=S_BREAK;   break;
-    case 256*'c'+'e': if(!strcmp(STATE(Value),"continue"))   STATE(Symbol)=S_CONTINUE;   break;
-    case 256*'d'+'o': if(!strcmp(STATE(Value),"do"))      STATE(Symbol)=S_DO;      break;
-    case 256*'e'+'f': if(!strcmp(STATE(Value),"elif"))    STATE(Symbol)=S_ELIF;    break;
-    case 256*'e'+'e': if(!strcmp(STATE(Value),"else"))    STATE(Symbol)=S_ELSE;    break;
-    case 256*'e'+'d': if(!strcmp(STATE(Value),"end"))     STATE(Symbol)=S_END;     break;
-    case 256*'f'+'e': if(!strcmp(STATE(Value),"false"))   STATE(Symbol)=S_FALSE;   break;
-    case 256*'f'+'i': if(!strcmp(STATE(Value),"fi"))      STATE(Symbol)=S_FI;      break;
-    case 256*'f'+'r': if(!strcmp(STATE(Value),"for"))     STATE(Symbol)=S_FOR;     break;
-    case 256*'f'+'n': if(!strcmp(STATE(Value),"function"))STATE(Symbol)=S_FUNCTION;break;
-    case 256*'i'+'f': if(!strcmp(STATE(Value),"if"))      STATE(Symbol)=S_IF;      break;
-    case 256*'i'+'n': if(!strcmp(STATE(Value),"in"))      STATE(Symbol)=S_IN;      break;
-    case 256*'l'+'l': if(!strcmp(STATE(Value),"local"))   STATE(Symbol)=S_LOCAL;   break;
-    case 256*'m'+'d': if(!strcmp(STATE(Value),"mod"))     STATE(Symbol)=S_MOD;     break;
-    case 256*'n'+'t': if(!strcmp(STATE(Value),"not"))     STATE(Symbol)=S_NOT;     break;
-    case 256*'o'+'d': if(!strcmp(STATE(Value),"od"))      STATE(Symbol)=S_OD;      break;
-    case 256*'o'+'r': if(!strcmp(STATE(Value),"or"))      STATE(Symbol)=S_OR;      break;
-    case 256*'r'+'e': if(!strcmp(STATE(Value),"readwrite")) STATE(Symbol)=S_READWRITE;     break;
-    case 256*'r'+'y': if(!strcmp(STATE(Value),"readonly"))  STATE(Symbol)=S_READONLY;     break;
-    case 256*'r'+'c': if(!strcmp(STATE(Value),"rec"))     STATE(Symbol)=S_REC;     break;
-    case 256*'r'+'t': if(!strcmp(STATE(Value),"repeat"))  STATE(Symbol)=S_REPEAT;  break;
-    case 256*'r'+'n': if(!strcmp(STATE(Value),"return"))  STATE(Symbol)=S_RETURN;  break;
-    case 256*'t'+'n': if(!strcmp(STATE(Value),"then"))    STATE(Symbol)=S_THEN;    break;
-    case 256*'t'+'e': if(!strcmp(STATE(Value),"true"))    STATE(Symbol)=S_TRUE;    break;
-    case 256*'u'+'l': if(!strcmp(STATE(Value),"until"))   STATE(Symbol)=S_UNTIL;   break;
-    case 256*'w'+'e': if(!strcmp(STATE(Value),"while"))   STATE(Symbol)=S_WHILE;   break;
-    case 256*'q'+'t': if(!strcmp(STATE(Value),"quit"))    STATE(Symbol)=S_QUIT;    break;
-    case 256*'Q'+'T': if(!strcmp(STATE(Value),"QUIT"))    STATE(Symbol)=S_QQUIT;   break;
-
-    case 256*'I'+'d': if(!strcmp(STATE(Value),"IsBound")) STATE(Symbol)=S_ISBOUND; break;
-    case 256*'U'+'d': if(!strcmp(STATE(Value),"Unbind"))  STATE(Symbol)=S_UNBIND;  break;
-    case 256*'T'+'d': if(!strcmp(STATE(Value),"TryNextMethod"))
-                                                     STATE(Symbol)=S_TRYNEXT; break;
-    case 256*'I'+'o': if(!strcmp(STATE(Value),"Info"))    STATE(Symbol)=S_INFO;    break;
-    case 256*'A'+'t': if(!strcmp(STATE(Value),"Assert"))  STATE(Symbol)=S_ASSERT;  break;
+    switch ( 256*buf[0]+buf[i-1] ) {
+    case 256*'a'+'d': if(!strcmp(buf,"and"))           STATE(Symbol)=S_AND;       break;
+    case 256*'a'+'c': if(!strcmp(buf,"atomic"))        STATE(Symbol)=S_ATOMIC;    break;
+    case 256*'b'+'k': if(!strcmp(buf,"break"))         STATE(Symbol)=S_BREAK;     break;
+    case 256*'c'+'e': if(!strcmp(buf,"continue"))      STATE(Symbol)=S_CONTINUE;  break;
+    case 256*'d'+'o': if(!strcmp(buf,"do"))            STATE(Symbol)=S_DO;        break;
+    case 256*'e'+'f': if(!strcmp(buf,"elif"))          STATE(Symbol)=S_ELIF;      break;
+    case 256*'e'+'e': if(!strcmp(buf,"else"))          STATE(Symbol)=S_ELSE;      break;
+    case 256*'e'+'d': if(!strcmp(buf,"end"))           STATE(Symbol)=S_END;       break;
+    case 256*'f'+'e': if(!strcmp(buf,"false"))         STATE(Symbol)=S_FALSE;     break;
+    case 256*'f'+'i': if(!strcmp(buf,"fi"))            STATE(Symbol)=S_FI;        break;
+    case 256*'f'+'r': if(!strcmp(buf,"for"))           STATE(Symbol)=S_FOR;       break;
+    case 256*'f'+'n': if(!strcmp(buf,"function"))      STATE(Symbol)=S_FUNCTION;  break;
+    case 256*'i'+'f': if(!strcmp(buf,"if"))            STATE(Symbol)=S_IF;        break;
+    case 256*'i'+'n': if(!strcmp(buf,"in"))            STATE(Symbol)=S_IN;        break;
+    case 256*'l'+'l': if(!strcmp(buf,"local"))         STATE(Symbol)=S_LOCAL;     break;
+    case 256*'m'+'d': if(!strcmp(buf,"mod"))           STATE(Symbol)=S_MOD;       break;
+    case 256*'n'+'t': if(!strcmp(buf,"not"))           STATE(Symbol)=S_NOT;       break;
+    case 256*'o'+'d': if(!strcmp(buf,"od"))            STATE(Symbol)=S_OD;        break;
+    case 256*'o'+'r': if(!strcmp(buf,"or"))            STATE(Symbol)=S_OR;        break;
+    case 256*'r'+'e': if(!strcmp(buf,"readwrite"))     STATE(Symbol)=S_READWRITE; break;
+    case 256*'r'+'y': if(!strcmp(buf,"readonly"))      STATE(Symbol)=S_READONLY;  break;
+    case 256*'r'+'c': if(!strcmp(buf,"rec"))           STATE(Symbol)=S_REC;       break;
+    case 256*'r'+'t': if(!strcmp(buf,"repeat"))        STATE(Symbol)=S_REPEAT;    break;
+    case 256*'r'+'n': if(!strcmp(buf,"return"))        STATE(Symbol)=S_RETURN;    break;
+    case 256*'t'+'n': if(!strcmp(buf,"then"))          STATE(Symbol)=S_THEN;      break;
+    case 256*'t'+'e': if(!strcmp(buf,"true"))          STATE(Symbol)=S_TRUE;      break;
+    case 256*'u'+'l': if(!strcmp(buf,"until"))         STATE(Symbol)=S_UNTIL;     break;
+    case 256*'w'+'e': if(!strcmp(buf,"while"))         STATE(Symbol)=S_WHILE;     break;
+    case 256*'q'+'t': if(!strcmp(buf,"quit"))          STATE(Symbol)=S_QUIT;      break;
+    case 256*'Q'+'T': if(!strcmp(buf,"QUIT"))          STATE(Symbol)=S_QQUIT;     break;
+    case 256*'I'+'d': if(!strcmp(buf,"IsBound"))       STATE(Symbol)=S_ISBOUND;   break;
+    case 256*'U'+'d': if(!strcmp(buf,"Unbind"))        STATE(Symbol)=S_UNBIND;    break;
+    case 256*'T'+'d': if(!strcmp(buf,"TryNextMethod")) STATE(Symbol)=S_TRYNEXT;   break;
+    case 256*'I'+'o': if(!strcmp(buf,"Info"))          STATE(Symbol)=S_INFO;      break;
+    case 256*'A'+'t': if(!strcmp(buf,"Assert"))        STATE(Symbol)=S_ASSERT;    break;
 
     default: ;
     }
