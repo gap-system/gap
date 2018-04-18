@@ -769,7 +769,7 @@ static void GetTripStr(void)
 
   /* check for error conditions                                          */
   if ( c == '\377' )
-    SyntaxError("String must end with \" before end of file");
+    SyntaxError("String must end with \"\"\" before end of file");
 
   /* set length of string, set 'Symbol' and skip trailing '"'            */
   STATE(ValueLen) = i;
