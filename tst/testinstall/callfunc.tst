@@ -1,6 +1,12 @@
 gap> START_TEST("callfunc.tst");
 
-# Union([1]) = 1 :(
+#
+gap> CallFuncList(1,2);
+Error, CallFuncList: <list> must be a small list
+gap> CallFuncListWrap(1,2);
+Error, CallFuncListWrap: <list> must be a small list
+
+#
 gap> ForAll([0,2..100], x -> [1..x] = CallFuncList(Union, List([1..x], y -> [y]) ) );
 true
 gap> CallFuncList(Group, [ (1,2) ]) = Group((1,2));
@@ -84,22 +90,22 @@ gap> f := function() o(1,2,3,4,5,6); return result; end;; f();
 gap> f := function() o(1,2,3,4,5,6,7); return result; end;; f();
 [ 1, 2, 3, 4, 5, 6, 7 ]
 
-# test dispatch through CALL_FUNC_LIST
-gap> CALL_FUNC_LIST(o, []);
+# test dispatch through CallFuncList
+gap> CallFuncList(o, []);
 [  ]
-gap> CALL_FUNC_LIST(o, [1]);
+gap> CallFuncList(o, [1]);
 [ 1 ]
-gap> CALL_FUNC_LIST(o, [1,2]);
+gap> CallFuncList(o, [1,2]);
 [ 1, 2 ]
-gap> CALL_FUNC_LIST(o, [1,2,3]);
+gap> CallFuncList(o, [1,2,3]);
 [ 1, 2, 3 ]
-gap> CALL_FUNC_LIST(o, [1,2,3,4]);
+gap> CallFuncList(o, [1,2,3,4]);
 [ 1, 2, 3, 4 ]
-gap> CALL_FUNC_LIST(o, [1,2,3,4,5]);
+gap> CallFuncList(o, [1,2,3,4,5]);
 [ 1, 2, 3, 4, 5 ]
-gap> CALL_FUNC_LIST(o, [1,2,3,4,5,6]);
+gap> CallFuncList(o, [1,2,3,4,5,6]);
 [ 1, 2, 3, 4, 5, 6 ]
-gap> CALL_FUNC_LIST(o, [1,2,3,4,5,6,7]);
+gap> CallFuncList(o, [1,2,3,4,5,6,7]);
 [ 1, 2, 3, 4, 5, 6, 7 ]
 
 # test overloading CallFuncList with a procedure call
