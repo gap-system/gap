@@ -542,17 +542,20 @@ extern  void            IntrPow ( void );
 
 /****************************************************************************
 **
+*F  IntrIntObjExpr(<val>)
+*/
+extern void IntrIntObjExpr(Obj val);
+
+
+/****************************************************************************
+**
 *F  IntrIntExpr(<str>)  . . . . . . . .  interpret literal integer expression
 **
 **  'IntrIntExpr' is the action  to  interpret a literal  integer expression.
 **  <str> is the integer as a (null terminated) C character string.
 */
+extern void IntrIntExpr(Obj string, Char * str);
 
-extern void             IntrIntObjExpr(Obj val);
-extern  void            IntrIntExpr (
-            Char *              str );
-extern  void            IntrLongIntExpr (
-            Obj                 string );
 
 /****************************************************************************
 **
@@ -561,10 +564,8 @@ extern  void            IntrLongIntExpr (
 **  'IntrFloatExpr' is the action  to  interpret a literal  float expression.
 **  <str> is the float as a (null terminated) C character string.
 */
-extern  void            IntrFloatExpr (
-            Char *              str );
-extern  void            IntrLongFloatExpr (
-            Obj                 string );
+extern void IntrFloatExpr(Obj string, Char * str);
+
 
 /****************************************************************************
 **
