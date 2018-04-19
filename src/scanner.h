@@ -55,20 +55,8 @@ enum SCANNER_SYMBOLS {
     S_READONLY          = (1UL<< 9)+4,
     S_DOTDOTDOT         = (1UL<< 9)+5,
 
-    S_PARTIALINT        = (1UL<<10)+0, // Some digits
-    S_INT               = (1UL<<10)+1,
-    S_FLOAT             = (1UL<<10)+2,
-
-    // Some digits and a decimal point
-    S_PARTIALFLOAT2     = (1UL<<10)+4,
-
-    // Some digits and a decimal point and an exponent indicator and maybe a
-    // sign, but no digits
-    S_PARTIALFLOAT3     = (1UL<<10)+5,
-
-    // Some digits and a decimal point and an exponent indicator and maybe a
-    // sign, and at least one digit
-    S_PARTIALFLOAT4     = (1UL<<10)+6,
+    S_INT               = (1UL<<10)+0,
+    S_FLOAT             = (1UL<<10)+1,
 
     S_TRUE              = (1UL<<11)+0,
     S_FALSE             = (1UL<<11)+1,
