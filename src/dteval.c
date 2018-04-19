@@ -769,7 +769,7 @@ void     ReduceWord( Obj      x,
     powers = ELM_PLIST(pcp, PC_POWERS);
     exponent = ELM_PLIST(pcp, PC_EXPONENTS);
     deepthoughtpols = ELM_PLIST(pcp, PC_DEEP_THOUGHT_POLS);
-    len = **deepthoughtpols;
+    len = LEN_PLIST(deepthoughtpols);
     lenexp = LEN_PLIST(exponent);
     lenpow = LEN_PLIST(powers);
     GROW_PLIST(x, 2*len );
