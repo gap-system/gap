@@ -1,0 +1,16 @@
+gap> 1;2;3;[last,last2,last3];
+1
+2
+3
+[ 3, 2, 1 ]
+gap> Error("err");
+Error, err called from
+not in any function at *stdin*:3
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> 1;2;3;[last,last2,last3];
+1
+2
+3
+[ 3, 2, 1 ]
+brk> QUIT;
