@@ -1,6 +1,7 @@
 #
 # Tests for functions defined in src/read.c
 #
+gap> START_TEST("kernel/read.tst");
 
 #
 # ReadFuncCallOption
@@ -62,3 +63,6 @@ gap> rec("a":=1);
 Syntax error: Identifier expected in stream:1
 rec("a":=1);
       ^
+
+#
+gap> STOP_TEST("kernel/read.tst", 1);
