@@ -1159,39 +1159,6 @@ void ReadLongNumber(
 
 /****************************************************************************
 **
-*F  ReadString( <follow> )  . . . . . . . . . . . . . . read a (long) string
-**
-**  A string is  read by copying parts of `STATE(Value)'  (see scanner.c) given
-**  by `STATE(ValueLen)' into  a string GAP object. This is  repeated until the
-**  end of the string is reached.
-**
-*/
-void ReadString(
-      TypSymbolSet        follow )
-{
-     Obj  string;
-     UInt len;
-
-     C_NEW_STRING( string, STATE(ValueLen), STATE(Value) );
-     len = STATE(ValueLen);
-
-     while (STATE(Symbol) == S_PARTIALSTRING || STATE(Symbol) == S_PARTIALTRIPSTRING) {
-         Match(STATE(Symbol), "", follow);
-         GROW_STRING(string, len + STATE(ValueLen));
-         memcpy(CHARS_STRING(string) + len, STATE(Value),
-                                        STATE(ValueLen));
-         len += STATE(ValueLen);
-     }
-
-     Match(S_STRING, "", follow);
-     SET_LEN_STRING(string, len);
-     /* ensure trailing zero for interpretation as C-string */
-     *(CHARS_STRING(string) + len) = 0;
-     TRY_READ { IntrStringExpr( string ); }
-}
-
-/****************************************************************************
-**
 *F  ReadListExpr( <follow> )  . . . . . . . . . . . . . . . . . . read a list
 **
 **  'ReadListExpr'  reads a list literal expression.   In case of an error it
@@ -1723,11 +1690,12 @@ void ReadLiteral (
         Match( S_CHAR, "character", follow );
         break;
 
-    /* (partial) string */
+    /* string */
     case S_STRING:
-    case S_PARTIALSTRING:
-    case S_PARTIALTRIPSTRING:
-        ReadString( follow );
+        GAP_ASSERT(STATE(ValueObj) != 0);
+        TRY_READ { IntrStringExpr(STATE(ValueObj)); }
+        Match(S_STRING, "", follow);
+        STATE(ValueObj) = 0;
         break;
 
     /* <List>                                                              */
