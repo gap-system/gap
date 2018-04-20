@@ -63,7 +63,6 @@ typedef struct GAPState {
     /* From scanner.c */
     Obj    ValueObj;
     Char   Value[MAX_VALUE_LEN];
-    UInt   ValueLen;
     UInt   NrError;
     UInt   NrErrLine;
     UInt   Symbol;

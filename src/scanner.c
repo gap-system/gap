@@ -887,20 +887,30 @@ static void GetChar(void)
 
 static void GetHelp(void)
 {
-    Int i = 0;
+    Obj  string = 0;
+    Char buf[1024];
+    UInt i;
 
-    /* Skip the first ? */
+    // Skip the leading '?'
     Char c = GET_NEXT_CHAR();
-    while (i < SAFE_VALUE_SIZE-1 &&
-           c != '\n' &&
-           c != '\r' &&
-           c != '\377') {
-        STATE(Value)[i] = c;
-        i++;
+
+    for (i = 0; c != '\n' && c != '\r' && c != '\377'; i++) {
+        // if 'buf' is full, copy it into 'string' and then reset it
+        if (i >= sizeof(buf)) {
+            string = AppendBufToString(string, buf, i);
+            i = 0;
+        }
+        buf[i] = c;
         c = GET_NEXT_CHAR();
     }
-    STATE(Value)[i] = '\0';
-    STATE(ValueLen) = i;
+    string = AppendBufToString(string, buf, i);
+
+    // ensure that the string has a terminator
+    const UInt len = GET_LEN_STRING(string);
+    CSTR_STRING(string)[len] = '\0';
+
+    STATE(ValueObj) = string;
+    STATE(Symbol) = S_HELP;
 }
 
 /****************************************************************************
@@ -996,7 +1006,7 @@ static void NextSymbol(void)
   case '^':         STATE(Symbol) = S_POW;           GET_NEXT_CHAR(); break;
 
   case '~':         STATE(Symbol) = S_TILDE;         GET_NEXT_CHAR(); break;
-  case '?':         STATE(Symbol) = S_HELP;          GetHelp(); break;
+  case '?':                                          GetHelp(); break;
   case '"':                                          GetMaybeTripStr(); break;
   case '\'':                                         GetChar(); break;
   case '\\':                                         GetIdent(0); break;

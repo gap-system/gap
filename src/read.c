@@ -2569,10 +2569,8 @@ void ReadTryNext (
 
 void ReadHelp(TypSymbolSet follow)
 {
-    Obj topic;
-
-    C_NEW_STRING(topic, STATE(ValueLen), (void *)STATE(Value));
-    TRY_READ { IntrHelp(topic); };
+    TRY_READ { IntrHelp(STATE(ValueObj)); }
+    STATE(ValueObj) = 0;
 }
 
 /****************************************************************************
