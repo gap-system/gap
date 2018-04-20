@@ -1892,10 +1892,20 @@ end);
 InstallMethod(SmallGeneratingSet,"random and generators subset, randsims",true,
   [IsPermGroup],0,
 function (G)
-local  i, j, U, gens,o,v,a,sel,min;
+local  i, j, U, gens,o,v,a,sel,min,orb,orp,ok;
+
+  gens := ShallowCopy(Set(GeneratorsOfGroup(G)));
+
+  # try pc methods first. The solvability test should not exceed cost, nor
+  # the number of points.
+  if #Length(MovedPoints(G))<50000 and 
+   #((HasIsSolvableGroup(G) and IsSolvableGroup(G)) or IsAbelian(G))
+      IsSolvableGroup(G) 
+      and Length(gens)>3 then
+    return MinimalGeneratingSet(G);
+  fi;
 
   # remove obvious redundancies
-  gens := ShallowCopy(Set(GeneratorsOfGroup(G)));
   o:=List(gens,Order);
   SortParallel(o,gens,function(a,b) return a>b;end);
   sel:=Filtered([1..Length(gens)],x->o[x]>1);
@@ -1920,26 +1930,32 @@ local  i, j, U, gens,o,v,a,sel,min;
   od;
   gens:=gens{sel};
 
-  # try pc methods first
-  if Length(MovedPoints(G))<1000 and HasIsSolvableGroup(G) 
-     and IsSolvableGroup(G) and Length(gens)>3 then
-    return MinimalGeneratingSet(G);
-  fi;
-
+  # store orbit data
+  orb:=Set(List(Orbits(G,MovedPoints(G)),Set));
+  orp:=Filtered([1..Length(orb)],x->IsPrimitive(Action(G,orb[x])));
 
   min:=2;
   if Length(gens)>2 then
   # minimal: AbelianInvariants
     min:=Maximum(List(Collected(Factors(Size(G)/Size(DerivedSubgroup(G)))),x->x[2]));
+    if min=Length(GeneratorsOfGroup(G)) then return GeneratorsOfGroup(G);fi;
     i:=Maximum(2,min);
     while i<=min+1 and i<Length(gens) do
       # try to find a small generating system by random search
       j:=1;
       while j<=5 and i<Length(gens) do
         U:=Subgroup(G,List([1..i],j->Random(G)));
+        ok:=true;
+        # first test orbits
+        if ok then
+          ok:=Length(orb)=Length(Orbits(U,MovedPoints(U))) and
+              ForAll(orp,x->IsPrimitive(U,orb[x]));
+        fi;
+
+
 	StabChainOptions(U).random:=100; # randomized size
 #Print("A:",i,",",j," ",Size(G)/Size(U),"\n");
-        if Size(U)=Size(G) then
+        if ok and Size(U)=Size(G) then
           gens:=Set(GeneratorsOfGroup(U));
         fi;
         j:=j+1;
@@ -1955,6 +1971,14 @@ local  i, j, U, gens,o,v,a,sel,min;
   while i <= Length(gens) and Length(gens)>min do
     # random did not improve much, try subsets
     U:=Subgroup(G,gens{Difference([1..Length(gens)],[i])});
+
+    ok:=true;
+    # first test orbits
+    if ok then
+      ok:=Length(orb)=Length(Orbits(U,MovedPoints(U))) and
+          ForAll(orp,x->IsPrimitive(U,orb[x]));
+    fi;
+
     StabChainOptions(U).random:=100; # randomized size
 #Print("B:",i," ",Size(G)/Size(U),"\n");
     if Size(U)<Size(G) then
