@@ -25,6 +25,9 @@
 #include <src/stringobj.h>
 
 
+static void GetSymbol(void);
+
+
 /****************************************************************************
 **
 *F  SyntaxErrorOrWarning( <msg> ) . . . . . . raise a syntax error or warning
@@ -887,13 +890,13 @@ static void GetHelp(void)
 **
 **  'GetSymbol' reads  the  next symbol from   the  input,  storing it in the
 **  variable 'Symbol'.  If 'Symbol' is  'S_IDENT', 'S_INT' or 'S_STRING'  the
-**  value of the symbol is stored in the variable 'STATE(Value)'.  'GetSymbol' first
+**  value of the symbol is stored in 'STATE(Value)'.  'GetSymbol' first
 **  skips all <space>, <tab> and <newline> characters and comments.
 **
 **  After reading  a  symbol the current  character   is the first  character
 **  beyond that symbol.
 */
-void GetSymbol ( void )
+static void GetSymbol(void)
 {
     /* special case if reading of a long token is not finished */
     switch (STATE(Symbol)) {

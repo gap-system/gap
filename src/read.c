@@ -1418,17 +1418,17 @@ ArgList ReadFuncArgList(
     start:
         lockmode = 0;
         switch (STATE(Symbol)) {
-            case S_READWRITE:
+        case S_READWRITE:
             if (!is_atomic) {
                 SyntaxError("'readwrite' argument of non-atomic function");
-                GetSymbol();
+                Match(S_READWRITE, "readwrite", follow);
                 break;
             }
             lockmode++;
-            case S_READONLY:
+        case S_READONLY:
             if (!is_atomic) {
                 SyntaxError("'readonly' argument of non-atomic function");
-                GetSymbol();
+                Match(S_READONLY, "readonly", follow);
                 break;
             }
             lockmode++;
@@ -1437,7 +1437,10 @@ ArgList ReadFuncArgList(
             SET_LEN_STRING(locks, narg+1);
             CHARS_STRING(locks)[narg] = lockmode;
 #endif
-            GetSymbol();
+            if (STATE(Symbol) == S_READWRITE)
+                Match(S_READWRITE, "readwrite", follow);
+            else
+                Match(S_READONLY, "readonly", follow);
         }
         if (STATE(Symbol) == S_IDENT && findValueInNams(nams, 1, narg)) {
             SyntaxError("Name used for two arguments");
@@ -1453,7 +1456,7 @@ ArgList ReadFuncArgList(
         }
         if(STATE(Symbol) == S_DOTDOTDOT) {
             isvarg = 1;
-            GetSymbol();
+            Match(S_DOTDOTDOT, "...", follow);
         }
     }
     Match( symbol, symbolstr, S_LOCAL|STATBEGIN|S_END|follow );
