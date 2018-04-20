@@ -2511,10 +2511,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     if ( STATE(Symbol) == S_EOF )  { return STATUS_EOF; }
 
     /* print only a partial prompt from now on                             */
-    if ( !SyQuiet )
-      STATE(Prompt) = "> ";
-    else
-      STATE(Prompt) = "";
+    STATE(Prompt) = SyQuiet ? "" : "> ";
 
     /* remember the old reader context                                     */
     stackNams   = STATE(StackNams);
@@ -2635,10 +2632,7 @@ UInt ReadEvalFile(Obj *evalResult)
     if ( STATE(Symbol) == S_EOF )  { return STATUS_EOF; }
 
     /* print only a partial prompt from now on                             */
-    if ( !SyQuiet )
-      STATE(Prompt) = "> ";
-    else
-      STATE(Prompt) = "";
+    STATE(Prompt) = SyQuiet ? "" : "> ";
 
     /* remember the old reader context                                     */
     stackNams   = STATE(StackNams);
