@@ -78,10 +78,8 @@ enum SCANNER_SYMBOLS {
     S_FALSE             = (1UL<<11)+1,
     S_CHAR              = (1UL<<11)+2,
     S_STRING            = (1UL<<11)+3,
-    S_PARTIALSTRING     = (1UL<<11)+4,
-    S_PARTIALTRIPSTRING = (1UL<<11)+5,
-    S_TILDE             = (1UL<<11)+6,
-    S_HELP              = (1UL<<11)+7,
+    S_TILDE             = (1UL<<11)+4,
+    S_HELP              = (1UL<<11)+5,
 
     S_REC               = (1UL<<12)+0,
 
@@ -210,22 +208,24 @@ typedef UInt            TypSymbolSet;
 
 /****************************************************************************
 **
-*V  Value . . . . . . . . . . . .  value of the identifier, integer or string
+*V  Value . . . . . . . . . . . . , value of the identifier, float or integer
+*V  ValueObj . . . . . . . . . . . . . . . . . . . . . .  value of the string
 **
-**  If 'Symbol' is 'S_IDENT', 'S_INT' or 'S_STRING' the variable 'Value' holds
-**  the name of the identifier, the digits of the integer or the value of the
-**  string constant.
+**  If 'STATE(Symbol)' is 'S_IDENT', 'S_INT' or 'S_FLOAT' the variable
+**  'STATE(Value)' holds the name of the identifier, the digits of the
+**  integer or float literal as a C string. If the symbol is 'S_STRING', then
+**  instead the variable 'STATE(ValueObj)' holds the string literal as a GAP
+**  string object.
 **
 **  Note  that  the  size  of  'Value'  limits  the  maximal  number  of
 **  significant  characters of  an identifier.  'GetIdent' truncates  an
 **  identifier after that many characters.
 **
-**  The  only other  symbols  which  may not  fit  into  Value are  long
-**  integers  or strings.  Therefore we  have  to check  in 'GetInt'  and
-**  'GetStr' if  the symbols is  not yet  completely read when  Value is
-**  filled.
+**  The only other symbols which may not fit into Value are long integers or
+**  floats. Therefore we have to check in 'GetNumber' if the symbols is not
+**  yet completely read when 'Value' is filled.
 **
-**  We only fill Value up to SAFE_VALUE_SIZE normally. The last few
+**  We only fill 'Value' up to SAFE_VALUE_SIZE normally. The last few
 **  bytes are used in the floating point parsing code to ensure that we don't
 **  stop the scan just before a non-digit (., E, +,-, etc.) which would make
 **  it hard for the scanner to carry on correctly.

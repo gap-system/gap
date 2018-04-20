@@ -61,6 +61,7 @@ typedef struct GAPState {
     UInt      CurrentGlobalForLoopDepth;
 
     /* From scanner.c */
+    Obj    ValueObj;
     Char   Value[MAX_VALUE_LEN];
     UInt   ValueLen;
     UInt   NrError;

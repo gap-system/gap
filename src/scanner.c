@@ -102,6 +102,33 @@ void SyntaxWarning(const Char * msg)
 
 /****************************************************************************
 **
+*F  AppendBufToString()
+**
+**  Append 'bufLen' bytes from the string buffer 'buf' to the string object
+**  'string'. If 'string' is 0, then a new string object is allocated first.
+**
+**  The string object is returned at the end, regardless of whether it was
+**  given as an argument, or created from scratch.
+**
+*/
+static Obj AppendBufToString(Obj string, const char * buf, UInt bufLen)
+{
+    if (string == 0) {
+        string = NEW_STRING(bufLen);
+        memcpy(CSTR_STRING(string), buf, bufLen);
+    }
+    else {
+        const UInt len = GET_LEN_STRING(string);
+        GROW_STRING(string, len + bufLen);
+        SET_LEN_STRING(string, len + bufLen);
+        memcpy(CSTR_STRING(string) + len, buf, bufLen);
+    }
+    return string;
+}
+
+
+/****************************************************************************
+**
 *F  Match( <symbol>, <msg>, <skipto> )  . match current symbol and fetch next
 **
 **  'Match' is the main  interface between the  scanner and the  parser.   It
@@ -655,13 +682,14 @@ static Char GetEscapedChar(void)
   return result;
 }
 
+
 /****************************************************************************
 **
 *F  GetStr()  . . . . . . . . . . . . . . . . . . . . .  get a string, local
 **
 **  'GetStr' reads  a  string from the  current input file into  the variable
-**  'STATE(Value)' and sets 'Symbol'   to  'S_STRING'.  The opening double quote '"'
-**  of the string is the current character pointed to by 'In'.
+**  'STATE(ValueObj)' and sets 'Symbol' to  'S_STRING'. The opening double
+**  quote '"' of the string is the current character pointed to by 'In'.
 **
 **  A string is a sequence of characters delimited  by double quotes '"'.  It
 **  must not include  '"' or <newline>  characters, but the  escape sequences
@@ -670,59 +698,53 @@ static Char GetEscapedChar(void)
 **
 **  An error is raised if the string includes a <newline> character or if the
 **  file ends before the closing '"'.
-**
-**  When STATE(Value) is  completely filled we have to check  if the reading of
-**  the string is  complete or not to decide  between Symbol=S_STRING or
-**  S_PARTIALSTRING.
 */
 static void GetStr(void)
 {
-  Int                 i = 0;
-  Char c = PEEK_CURR_CHAR();
+    Obj  string = 0;
+    Char buf[1024];
+    UInt i;
+    Char c = PEEK_CURR_CHAR();
 
-  /* read all characters into 'Value'                                    */
-  for ( i = 0; i < SAFE_VALUE_SIZE-1 && c != '"'
-           && c != '\n' && c != '\377'; i++ ) {
+    for (i = 0; c != '"' && c != '\n' && c != '\377'; i++) {
+        // if 'buf' is full, copy it into 'string' and then reset it
+        if (i >= sizeof(buf)) {
+            string = AppendBufToString(string, buf, i);
+            i = 0;
+        }
+        if (c == '\\') {
+            c = GetEscapedChar();
+        }
+        buf[i] = c;
 
-    /* handle escape sequences                                         */
-    if ( c == '\\' ) {
-      STATE(Value)[i] = GetEscapedChar();
+        // read the next character
+        c = GET_NEXT_CHAR();
     }
 
-    /* put normal chars into 'Value' but only if there is room         */
-    else {
-      STATE(Value)[i] = c;
-    }
+    // append any remaining data to 'string'
+    string = AppendBufToString(string, buf, i);
 
-    /* read the next character                                         */
-    c = GET_NEXT_CHAR();
+    // ensure that the string has a terminator
+    const UInt len = GET_LEN_STRING(string);
+    CSTR_STRING(string)[len] = '\0';
 
-  }
+    // check for error conditions
+    if (c == '\n')
+        SyntaxError("String must not include <newline>");
+    if (c == '\377')
+        SyntaxError("String must end with \" before end of file");
 
-  /* XXX although we have ValueLen we need trailing \000 here,
-     in gap.c, function FuncMAKE_INIT this is still used as C-string
-     and long integers and strings are not yet supported!    */
-  STATE(Value)[i] = '\0';
-
-  /* check for error conditions                                          */
-  if ( c == '\n'  )
-    SyntaxError("String must not include <newline>");
-  if ( c == '\377' )
-    SyntaxError("String must end with \" before end of file");
-
-  /* set length of string, set 'Symbol' and skip trailing '"'            */
-  STATE(ValueLen) = i;
-  if ( i < SAFE_VALUE_SIZE-1 )  {
+    STATE(ValueObj) = string;
     STATE(Symbol) = S_STRING;
-    if ( c == '"' )  c = GET_NEXT_CHAR();
-  }
-  else
-    STATE(Symbol) = S_PARTIALSTRING;
+
+    // skip trailing '"'
+    if (c == '"')
+        c = GET_NEXT_CHAR();
 }
 
 /****************************************************************************
 **
-*F  GetTripStr()  . . . . . . . . . . . . .get a triple quoted string, local
+*F  GetTripStr() . . . . . . . . . . . . .  get a triple quoted string, local
 **
 **  'GetTripStr' reads a triple-quoted string from the  current input file
 **  into  the variable 'Value' and sets 'Symbol'   to  'S_STRING'.
@@ -733,62 +755,60 @@ static void GetStr(void)
 **  by """. No escaping is performed.
 **
 **  An error is raised if the file ends before the closing """.
-**
-**  When Value is  completely filled we have to check  if the reading of
-**  the string is  complete or not to decide  between Symbol=S_STRING or
-**  S_PARTIALTRIPLESTRING.
 */
 static void GetTripStr(void)
 {
-  Int                 i = 0;
-  Char c = PEEK_CURR_CHAR();
+    Obj  string = 0;
+    Char buf[1024];
+    UInt i;
+    Char c = PEEK_CURR_CHAR();
 
-  /* print only a partial prompt while reading a triple string           */
-  if ( !SyQuiet )
-    STATE(Prompt) = "> ";
-  else
-    STATE(Prompt) = "";
-  
-  /* read all characters into 'Value'                                    */
-  for ( i = 0; i < SAFE_VALUE_SIZE-1 && c != '\377'; i++ ) {
-    // Only thing to check for is a triple quote.
-    
-    if ( c == '"') {
-        c = GET_NEXT_CHAR();
+    // print only a partial prompt while reading a triple string
+    STATE(Prompt) = SyQuiet ? "" : "> ";
+
+    for (i = 0; c != '\377'; i++) {
+        // if 'buf' is full, copy it into 'string' and then reset it;
+        // take into account that we may add up to three chars below
+        if (i + 2 >= sizeof(buf)) {
+            string = AppendBufToString(string, buf, i);
+            i = 0;
+        }
+
+        // Only thing to check for is a triple quote.
         if (c == '"') {
             c = GET_NEXT_CHAR();
-            if (c == '"' ) {
-                break;
+            if (c == '"') {
+                c = GET_NEXT_CHAR();
+                if (c == '"') {
+                    break;
+                }
+                buf[i++] = '"';
             }
-            STATE(Value)[i] = '"';
-            i++;
+            buf[i++] = '"';
         }
-        STATE(Value)[i] = '"';
-        i++;
+        buf[i] = c;
+
+        // read the next character
+        c = GET_NEXT_CHAR();
     }
-    STATE(Value)[i] = c;
 
-    /* read the next character                                         */
-    c = GET_NEXT_CHAR();
-  }
+    // append any remaining data to 'string'
+    string = AppendBufToString(string, buf, i);
 
-  /* XXX although we have ValueLen we need trailing \000 here,
-     in gap.c, function FuncMAKE_INIT this is still used as C-string
-     and long integers and strings are not yet supported!    */
-  STATE(Value)[i] = '\0';
+    // ensure that the string has a terminator
+    const UInt len = GET_LEN_STRING(string);
+    CSTR_STRING(string)[len] = '\0';
 
-  /* check for error conditions                                          */
-  if ( c == '\377' )
-    SyntaxError("String must end with \"\"\" before end of file");
+    // check for error conditions
+    if (c == '\377')
+        SyntaxError("String must end with \"\"\" before end of file");
 
-  /* set length of string, set 'Symbol' and skip trailing '"'            */
-  STATE(ValueLen) = i;
-  if ( i < SAFE_VALUE_SIZE-1 )  {
+    STATE(ValueObj) = string;
     STATE(Symbol) = S_STRING;
-    if ( c == '"' ) c = GET_NEXT_CHAR();
-  }
-  else
-    STATE(Symbol) = S_PARTIALTRIPSTRING;
+
+    // skip trailing '"'
+    if (c == '"')
+        c = GET_NEXT_CHAR();
 }
 
 /****************************************************************************
@@ -811,8 +831,7 @@ static void GetMaybeTripStr(void)
     c = GET_NEXT_CHAR();
     /* This was just an empty string! */
     if ( c != '"' ) {
-        STATE(Value)[0] = '\0';
-        STATE(ValueLen) = 0;
+        STATE(ValueObj) = NEW_STRING(0);
         STATE(Symbol) = S_STRING;
         return;
     }
@@ -900,8 +919,6 @@ static void NextSymbol(void)
 {
     /* special case if reading of a long token is not finished */
     switch (STATE(Symbol)) {
-    case S_PARTIALSTRING:     GetStr();     return;
-    case S_PARTIALTRIPSTRING: GetTripStr(); return;
     case S_PARTIALINT:        GetNumber(STATE(Value)[0] == '\0' ? 0 : 1); return;
     case S_PARTIALFLOAT1:     GetNumber(2); return;
     case S_PARTIALFLOAT2:     GetNumber(3); return;
