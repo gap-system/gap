@@ -231,7 +231,6 @@ typedef UInt            TypSymbolSet;
 **  it hard for the scanner to carry on correctly.
 */
 /* TL: extern  Char            Value [1030]; */
-/* TL: extern  UInt            ValueLen; */
 
 #define         SAFE_VALUE_SIZE 1024
 
