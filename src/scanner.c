@@ -25,7 +25,7 @@
 #include <src/stringobj.h>
 
 
-static void GetSymbol(void);
+static void NextSymbol(void);
 
 
 /****************************************************************************
@@ -152,7 +152,7 @@ void Match (
 
     // if 'STATE(Symbol)' is the expected symbol match it away
     if ( symbol == STATE(Symbol) ) {
-        GetSymbol();
+        NextSymbol();
     }
 
     /* else generate an error message and skip to a symbol in <skipto>     */
@@ -161,7 +161,7 @@ void Match (
         strlcat( errmsg, " expected", sizeof(errmsg) );
         SyntaxError( errmsg );
         while ( ! IS_IN( STATE(Symbol), skipto ) )
-            GetSymbol();
+            NextSymbol();
     }
 }
 
@@ -886,17 +886,17 @@ static void GetHelp(void)
 
 /****************************************************************************
 **
-*F  GetSymbol() . . . . . . . . . . . . . . . . .  get the next symbol, local
+*F  NextSymbol() . . . . . . . . . . . . . . . . . get the next symbol, local
 **
-**  'GetSymbol' reads  the  next symbol from   the  input,  storing it in the
+**  'NextSymbol' reads  the  next symbol from  the  input,  storing it in the
 **  variable 'Symbol'.  If 'Symbol' is  'S_IDENT', 'S_INT' or 'S_STRING'  the
-**  value of the symbol is stored in 'STATE(Value)'.  'GetSymbol' first
+**  value of the symbol is stored in 'STATE(Value)'.  'NextSymbol' first
 **  skips all <space>, <tab> and <newline> characters and comments.
 **
 **  After reading  a  symbol the current  character   is the first  character
 **  beyond that symbol.
 */
-static void GetSymbol(void)
+static void NextSymbol(void)
 {
     /* special case if reading of a long token is not finished */
     switch (STATE(Symbol)) {
