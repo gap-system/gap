@@ -25,7 +25,14 @@
 #include <src/stringobj.h>
 
 
-void SyntaxErrorOrWarning(const Char * msg, UInt error)
+/****************************************************************************
+**
+*F  SyntaxErrorOrWarning( <msg> ) . . . . . . raise a syntax error or warning
+**
+**  Helper function used by 'SyntaxError' and 'SyntaxWarning'.
+**
+*/
+static void SyntaxErrorOrWarning(const Char * msg, UInt error)
 {
     // open error output
     OpenOutput("*errout*");
@@ -71,7 +78,7 @@ void SyntaxErrorOrWarning(const Char * msg, UInt error)
 
 /****************************************************************************
 **
-*F  SyntaxError( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
+*F  SyntaxError( <msg> ) . . . . . . . . . . . . . . . . raise a syntax error
 **
 */
 void SyntaxError(const Char * msg)
@@ -81,7 +88,7 @@ void SyntaxError(const Char * msg)
 
 /****************************************************************************
 **
-*F  SyntaxWarning( <msg> )  . . . . . . . . . . . . . . raise a syntax warning
+*F  SyntaxWarning( <msg> ) . . . . . . . . . . . . . . raise a syntax warning
 **
 */
 void SyntaxWarning(const Char * msg)

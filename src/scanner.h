@@ -286,8 +286,8 @@ extern void GetSymbol ( void );
 
 /****************************************************************************
 **
-*F  SyntaxError( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
-*F  SyntaxWarning( <msg> ) ..................display a syntax warning
+*F  SyntaxError( <msg> ) . . . . . . . . . . . . . . . . raise a syntax error
+*F  SyntaxWarning( <msg> ) . . . . . . . . . . . . . . raise a syntax warning
 **
 **  'SyntaxError' prints the current line, followed by the error message:
 **
@@ -311,8 +311,12 @@ extern void GetSymbol ( void );
 **  probabely  just reflect the  fact  that the parser has not resynchronized
 **  yet.  'NrErrLine' is reset to 0 if a new line is read in 'GetLine'.
 ** 
-**  'SyntaxWarning' displays in the same way but does not increase NrError or 
-**  NrErrLine
+**  'SyntaxWarning' displays in the same way but does not increase 'NrError'
+**  or 'NrErrLine'.
+**
+**  Note that unlike 'ErrorQuit', neither function raises an actual error,
+**  so execution continues as normal. Thus you must make sure that subsequent
+**  code can safely recover from the indicated error.
 **
 */
 extern  void            SyntaxError (
