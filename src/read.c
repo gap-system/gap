@@ -1513,18 +1513,19 @@ static UInt ReadLocals(TypSymbolSet follow, Obj nams, UInt narg)
         /* init to avoid strange message in case of empty string */
         STATE(Value)[0] = '\0';
         Match( S_COMMA, ",", follow );
-        if (findValueInNams(nams, narg + 1, narg + nloc)) {
-            SyntaxError("Name used for two locals");
-        }
+        if (STATE(Symbol) == S_IDENT) {
+            if (findValueInNams(nams, narg + 1, narg + nloc)) {
+                SyntaxError("Name used for two locals");
+            }
     start:
-        if (STATE(Symbol) == S_IDENT &&
-            findValueInNams(nams, 1, narg)) {
-            SyntaxError("Name used for argument and local");
-        }
-        nloc += 1;
-        PushPlist(nams, MakeImmString(STATE(Value)));
-        if (LEN_PLIST(nams) >= 65536) {
-            SyntaxError("Too many function arguments and locals");
+            if (findValueInNams(nams, 1, narg)) {
+                SyntaxError("Name used for argument and local");
+            }
+            nloc += 1;
+            PushPlist(nams, MakeImmString(STATE(Value)));
+            if (LEN_PLIST(nams) >= 65536) {
+                SyntaxError("Too many function arguments and locals");
+            }
         }
         Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
     }
