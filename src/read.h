@@ -123,8 +123,6 @@ extern void PushGlobalForLoopVariable( UInt var);
 
 extern void PopGlobalForLoopVariable( void );
 
-extern UInt GlobalComesFromEnclosingForLoop (UInt var);
-
 
 /****************************************************************************
 **
