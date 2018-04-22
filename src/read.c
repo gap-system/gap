@@ -2499,6 +2499,8 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     int                 lockSP;
 #endif
 
+    STATE(NrError) = 0;
+
     /* get the first symbol from the input                                 */
     Match( STATE(Symbol), "", 0UL );
 
@@ -2624,6 +2626,8 @@ UInt ReadEvalFile(Obj *evalResult)
 #ifdef HPCGAP
     volatile int        lockSP;
 #endif
+
+    STATE(NrError) = 0;
 
     /* get the first symbol from the input                                 */
     Match( STATE(Symbol), "", 0UL );

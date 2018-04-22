@@ -1769,9 +1769,6 @@ void ClearError ( void )
           Pr("the maximum is now enlarged to %d kB.\n", (Int)SyStorMax, 0L);
         }
     }
-
-    /* reset <STATE(NrError)>                                                */
-    STATE(NrError) = 0;
 }
 
 /****************************************************************************
