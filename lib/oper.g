@@ -554,9 +554,10 @@ end );
 ##  <Ref Func="UntraceImmediateMethods"/>, or <Ref Func="TraceImmediateMethods"/>
 ##  with <A>flag</A> equal <K>false</K> turns tracing off.
 ##  (There is no facility to trace <E>specific</E> immediate methods.)
-##  <Example><![CDATA[
+##  <Log><![CDATA[
 ##  gap> TraceImmediateMethods( );
 ##  gap> g:= Group( (1,2,3), (1,2) );;
+##  #I RunImmediateMethods
 ##  #I  immediate: Size
 ##  #I  immediate: IsCyclic
 ##  #I  immediate: IsCommutative
@@ -574,7 +575,7 @@ end );
 ##  6
 ##  gap> UntraceImmediateMethods( );
 ##  gap> UntraceMethods( [ Size ] );
-##  ]]></Example>
+##  ]]></Log>
 ##  <P/>
 ##  This example gives an explanation for the two calls of the
 ##  <Q>system getter</Q> for <Ref Func="Size"/>.
