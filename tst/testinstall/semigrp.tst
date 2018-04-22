@@ -376,7 +376,7 @@ gap> GeneratorsOfInverseSemigroup(S);
 gap> GeneratorsOfInverseMonoid(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> S := Group(IdentityTransformation);
-<transformation group of degree 0 with 1 generator>
+<trivial transformation group of degree 0 with 1 generator>
 gap> GeneratorsOfSemigroup(S);
 [ IdentityTransformation ]
 gap> GeneratorsOfMonoid(S);
@@ -474,12 +474,11 @@ true
 gap> Semigroup(Idempotents(S)) = S;
 true
 
-# test the methods for Random
+# test the methods for Random, but do not test for the values of random
+# elements
 gap> S := FreeSemigroup(3);;
-gap> Random(S);
-s1*s2
-gap> Random(GlobalRandomSource, S);
-s3*s2^2
+gap> Random(S);;
+gap> Random(GlobalRandomSource, S);;
 
 #T# Test DisplaySemigroup
 gap> DisplaySemigroup(FullTransformationSemigroup(1));
