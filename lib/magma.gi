@@ -119,8 +119,8 @@ InstallImmediateMethod( IsTrivial,
     fi;
     end );
 
-InstallImmediateMethod( IsTrivial,
-    IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses, 0,
+InstallMethod( IsTrivial,
+    [IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses], 0,
     function( M )
     if IsEmpty( GeneratorsOfMagmaWithInverses( M ) ) then
       return true;
@@ -184,9 +184,11 @@ InstallImmediateMethod( IsCommutative,
     fi;
     end );
 
-InstallImmediateMethod( IsCommutative,
-    IsMagmaWithInverses and IsAssociative
-                        and HasGeneratorsOfMagmaWithInverses, 0,
+#  This used to be an immediate method. It was replaced by an ordinary
+#  method, as the filter is now set when creating groups.
+InstallMethod( IsCommutative,true,
+    [IsMagmaWithInverses and IsAssociative
+                        and HasGeneratorsOfMagmaWithInverses], 0,
     function( M )
     if Length( GeneratorsOfMagmaWithInverses( M ) ) = 1 then
       return true;
@@ -652,17 +654,19 @@ InstallOtherMethod( MagmaWithOneByGenerators,
 #M  MagmaWithInversesByGenerators( <gens> ) . . . . . . . .  for a collection
 ##
 MakeMagmaWithInversesByFiniteGenerators:=function(family,gens)
-local M;
-  if not IsBound(family!.defaultMagmaWithInversesByGeneratorsType) then
-    family!.defaultMagmaWithInversesByGeneratorsType :=
-      NewType( FamilyObj( gens ),
-                IsMagmaWithInverses and IsAttributeStoringRep 
-                and HasGeneratorsOfMagmaWithInverses);
-  fi;
+local M,typ,id,fam;
+
+  typ:=MakeGroupyType(FamilyObj(gens),
+            IsMagmaWithInverses and IsAttributeStoringRep 
+              and HasGeneratorsOfMagmaWithInverses
+              and HasIsEmpty,
+              gens,fail,false);
 
   M:=rec();
-  ObjectifyWithAttributes( M,family!.defaultMagmaWithInversesByGeneratorsType,
-    GeneratorsOfMagmaWithInverses, AsList( gens ) );
+
+  ObjectifyWithAttributes( M,typ,
+    GeneratorsOfMagmaWithInverses, AsList( gens ));
+
   if HasIsAssociative( M ) and IsAssociative( M ) then
     SetIsFinitelyGeneratedGroup( M, true );
   fi;

@@ -38,6 +38,7 @@ ReadLib( "record.gd"   );
 ReadLib( "random.gd"   );
 
 ReadLib( "cache.gi"    );
+ReadLib( "assert.gd"   );
 ReadLib( "coll.gi"     );
 
 ReadLib( "flag.g"      );
@@ -54,7 +55,6 @@ ReadLib( "filter.gi"   );
 ReadLib( "object.gi"   );
 ReadLib( "listcoef.gd" );
 ReadLib( "info.gd"     );
-ReadLib( "assert.gd"   );
 ReadLib( "files.gd"    );
 ReadLib( "streams.gd"  );
 

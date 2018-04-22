@@ -693,8 +693,7 @@ DeclareOperation( "ObjByExtRep", [ IsFamily, IsObject ] );
 ##  gap> KnownAttributesOfObject(g);
 ##  [ "Size", "OneImmutable", "NrMovedPoints", "MovedPoints", 
 ##    "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", 
-##    "HomePcgs", "Pcgs", "GeneralizedPcgs", "StabChainMutable", 
-##    "StabChainOptions" ]
+##    "HomePcgs", "Pcgs", "StabChainMutable", "StabChainOptions" ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -735,28 +734,29 @@ DeclareOperation( "KnownPropertiesOfObject", [ IsObject ] );
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2),(1,2,3));;
 ##  gap> KnownPropertiesOfObject(g);
-##  [ "IsFinite", "CanEasilyCompareElements", "CanEasilySortElements", 
-##    "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses", 
-##    "IsAssociative", "IsGeneratorsOfSemigroup", "IsSimpleSemigroup", 
-##    "IsRegularSemigroup", "IsInverseSemigroup", 
-##    "IsCompletelyRegularSemigroup", "IsCompletelySimpleSemigroup", 
-##    "IsGroupAsSemigroup", "IsMonoidAsSemigroup", "IsOrthodoxSemigroup", 
-##    "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
-##    "KnowsHowToDecompose", "IsInfiniteAbelianizationGroup", 
-##    "IsNilpotentByFinite" ]
+##  [ "IsEmpty", "IsTrivial", "IsNonTrivial", "IsFinite",
+##    "CanEasilyCompareElements", "CanEasilySortElements",
+##    "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses",
+##    "IsAssociative", "IsGeneratorsOfSemigroup", "IsSimpleSemigroup",
+##    "IsRegularSemigroup", "IsInverseSemigroup",
+##    "IsCompletelyRegularSemigroup", "IsCompletelySimpleSemigroup",
+##    "IsGroupAsSemigroup", "IsMonoidAsSemigroup", "IsOrthodoxSemigroup",
+##    "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup",
+##    "KnowsHowToDecompose", "IsInfiniteAbelianizationGroup",
+##    "IsNilpotentByFinite", "IsTorsionFree", "IsFreeAbelian" ]
 ##  gap> Size(g);
 ##  6
 ##  gap> KnownPropertiesOfObject(g);
-##  [ "IsEmpty", "IsTrivial", "IsNonTrivial", "IsFinite", 
-##    "CanEasilyCompareElements", "CanEasilySortElements", 
-##    "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses", 
-##    "IsAssociative", "IsGeneratorsOfSemigroup", "IsSimpleSemigroup", 
-##    "IsRegularSemigroup", "IsInverseSemigroup", 
-##    "IsCompletelyRegularSemigroup", "IsCompletelySimpleSemigroup", 
-##    "IsGroupAsSemigroup", "IsMonoidAsSemigroup", "IsOrthodoxSemigroup", 
-##    "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
-##    "KnowsHowToDecompose", "IsPerfectGroup", "IsSolvableGroup", 
-##    "IsPolycyclicGroup", "IsInfiniteAbelianizationGroup", 
+##  [ "IsEmpty", "IsTrivial", "IsNonTrivial", "IsFinite",
+##    "CanEasilyCompareElements", "CanEasilySortElements",
+##    "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses",
+##    "IsAssociative", "IsGeneratorsOfSemigroup", "IsSimpleSemigroup",
+##    "IsRegularSemigroup", "IsInverseSemigroup",
+##    "IsCompletelyRegularSemigroup", "IsCompletelySimpleSemigroup",
+##    "IsGroupAsSemigroup", "IsMonoidAsSemigroup", "IsOrthodoxSemigroup",
+##    "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup",
+##    "KnowsHowToDecompose", "IsPerfectGroup", "IsSolvableGroup",
+##    "IsPolycyclicGroup", "IsInfiniteAbelianizationGroup",
 ##    "IsNilpotentByFinite", "IsTorsionFree", "IsFreeAbelian" ]
 ##  gap> KnownTruePropertiesOfObject(g);
 ##  [ "IsNonTrivial", "IsFinite", "CanEasilyCompareElements", 

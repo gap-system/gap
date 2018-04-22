@@ -30,7 +30,9 @@ InstallImmediateMethod( IsFinitelyGeneratedGroup,
 ##
 #M  IsCyclic( <G> ) . . . . . . . . . . . . . . . . test if a group is cyclic
 ##
-InstallImmediateMethod( IsCyclic, IsGroup and HasGeneratorsOfGroup, 0,
+#  This used to be an immediate method. It was replaced by an ordinary
+#  method since the flag is typically set when creating the group.
+InstallMethod( IsCyclic, true, [IsGroup and HasGeneratorsOfGroup], 0,
     function( G )
     if Length( GeneratorsOfGroup( G ) ) = 1 then
       return true;
@@ -43,10 +45,14 @@ InstallMethod( IsCyclic,
     "generic method for groups",
     [ IsGroup ],
     function ( G )
+    local a;
 
     # if <G> has a generator list of length 1 then <G> is cyclic
     if HasGeneratorsOfGroup( G ) and Length( GeneratorsOfGroup(G) ) = 1 then
-      SetMinimalGeneratingSet(G,GeneratorsOfGroup(G));
+      a:=GeneratorsOfGroup(G)[1];
+      if CanEasilyCompareElements(a) and not IsOne(a) then
+        SetMinimalGeneratingSet(G,GeneratorsOfGroup(G));
+      fi;
       return true;
 
     # if <G> is not commutative it is certainly not cyclic
@@ -433,11 +439,6 @@ InstallMethod( IsNilpotentGroup,
 ##
 #M  IsPerfectGroup( <G> ) . . . . . . . . . . . .  test if a group is perfect
 ##
-InstallImmediateMethod( IsPerfectGroup,
-    IsSolvableGroup and HasIsTrivial,
-    0,
-    IsTrivial );
-
 InstallImmediateMethod( IsPerfectGroup,
     IsGroup and HasIsAbelian and IsSimpleGroup,
     0,
@@ -4297,6 +4298,39 @@ local s,b;
   return s;
 end );
 
+#F  MakeGroupyType( <fam>, <filt>, <gens>, <id>, <isgroup> )
+# type creator function to incorporate basic deductions so immediate methods
+# are not needed. Parameters are family, filter to start with, generator
+# list, is it indeed a group (or only magma)?
+InstallGlobalFunction(MakeGroupyType,
+function(fam,filt,gens,id,isgroup)
+
+  if IsFinite(gens) then
+    if isgroup then
+      filt:=filt and IsFinitelyGeneratedGroup;
+    fi;
+
+    if Length(gens)>0 and CanEasilyCompareElements(gens) then
+      if id=false then
+        id:=One(gens[1]);
+      fi;
+      if id<>fail then # cannot do identity in magma
+        if ForAny(gens,x->x<>id) then
+          filt:=filt and HasIsTrivial and IsNonTrivial;
+          if isgroup and Length(gens)<=1 then # cyclic not for magmas
+            filt:=filt and IsCyclic;
+          fi;
+        else
+          filt:=filt and IsTrivial and HasIsNonTrivial;
+        fi;
+      fi;
+    elif isgroup and Length(gens)<=1 then # cyclic not for magmas
+      filt:=filt and IsCyclic;
+    fi;
+  fi;
+  return NewType(fam,filt);
+end);
+
 #############################################################################
 ##
 #M  GroupWithGenerators( <gens> ) . . . . . . . . group with given generators
@@ -4305,86 +4339,57 @@ end );
 InstallMethod( GroupWithGenerators,
     "generic method for collection",
     [ IsCollection ],
-    function( gens )
-    local G,fam,typ;
+function( gens )
+local G,typ;
 
-    fam:=FamilyObj(gens);
-    if IsFinite(gens) then
-      if not IsBound(fam!.defaultFinitelyGeneratedGroupType) then
-        fam!.defaultFinitelyGeneratedGroupType:=
-          NewType(fam,IsGroup and IsAttributeStoringRep
-                      and HasGeneratorsOfMagmaWithInverses
-                      and IsFinitelyGeneratedGroup);
-      fi;
-      typ:=fam!.defaultFinitelyGeneratedGroupType;
-    else
-      if not IsBound(fam!.defaultGroupType) then
-        fam!.defaultGroupType:=
-          NewType(fam,IsGroup and IsAttributeStoringRep
-                      and HasGeneratorsOfMagmaWithInverses);
-      fi;
-      typ:=fam!.defaultGroupType;
-    fi;
+  typ:=MakeGroupyType(FamilyObj(gens),
+          IsGroup and IsAttributeStoringRep 
+          and HasIsEmpty and HasGeneratorsOfMagmaWithInverses,
+          gens,false,true);
 
-    G:=rec();
-    ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens));
+  G:=rec();
+  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens));
 
-    return G;
-    end );
+  return G;
+end );
 
 InstallMethod( GroupWithGenerators,
     "generic method for collection and identity element",
     IsCollsElms, [ IsCollection, IsMultiplicativeElementWithInverse ],
-    function( gens, id )
-    local G,fam,typ;
+function( gens, id )
+local G,typ;
 
-    fam:=FamilyObj(gens);
-    if IsFinite(gens) then
-      if not IsBound(fam!.defaultFinitelyGeneratedGroupWithOneType) then
-        fam!.defaultFinitelyGeneratedGroupWithOneType:=
-          NewType(fam,IsGroup and IsAttributeStoringRep
-                      and HasGeneratorsOfMagmaWithInverses
-                      and IsFinitelyGeneratedGroup and HasOne);
-      fi;
-      typ:=fam!.defaultFinitelyGeneratedGroupWithOneType;
-    else
-      if not IsBound(fam!.defaultGroupWithOneType) then
-        fam!.defaultGroupWithOneType:=
-          NewType(fam,IsGroup and IsAttributeStoringRep
-                      and HasGeneratorsOfMagmaWithInverses and HasOne);
-      fi;
-      typ:=fam!.defaultGroupWithOneType;
-    fi;
+  typ:=MakeGroupyType(FamilyObj(gens),
+          IsGroup and IsAttributeStoringRep 
+            and HasIsEmpty and HasGeneratorsOfMagmaWithInverses and HasOne,
+            gens,id,true);
 
-    G:=rec();
-    ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens),
-                            One,id);
+  G:=rec();
+  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens),
+                          One,id);
 
-    return G;
+  return G;
 end );
 
-InstallMethod( GroupWithGenerators,
-    "method for empty list and element",
-    [ IsList and IsEmpty, IsMultiplicativeElementWithInverse ],
-    function( empty, id )
-    local G,fam,typ;
+InstallMethod( GroupWithGenerators,"method for empty list and element",
+  [ IsList and IsEmpty, IsMultiplicativeElementWithInverse ],
+  function( empty, id )
+local G,fam,typ;
 
-    fam:= CollectionsFamily( FamilyObj( id ) );
-    if not IsBound( fam!.defaultFinitelyGeneratedGroupWithOneType ) then
-      fam!.defaultFinitelyGeneratedGroupWithOneType:=
-        NewType( fam, IsGroup and IsAttributeStoringRep
-                      and HasGeneratorsOfMagmaWithInverses
-                      and IsFinitelyGeneratedGroup and HasOne );
-    fi;
-    typ:= fam!.defaultFinitelyGeneratedGroupWithOneType;
+  fam:= CollectionsFamily( FamilyObj( id ) );
 
-    G:= rec();
-    ObjectifyWithAttributes( G, typ,
-                             GeneratorsOfMagmaWithInverses, empty,
-                             One, id );
+  typ:=IsGroup and IsAttributeStoringRep
+        and HasGeneratorsOfMagmaWithInverses and HasOne and IsTrivial and
+        HasIsEmpty and HasIsNonTrivial;
+  typ:=NewType(fam,typ);
 
-    return G;
-    end );
+  G:= rec();
+  ObjectifyWithAttributes( G, typ,
+                            GeneratorsOfMagmaWithInverses, empty,
+                            One, id );
+
+  return G;
+end );
 
 
 #############################################################################

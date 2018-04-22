@@ -411,18 +411,17 @@ end);
 InstallOtherMethod(DoubleCoset,"with size",true,
   [IsGroup,IsObject,IsGroup,IsPosInt],0,
 function(U,g,V,sz)
-local d,fam;
+local d,fam,typ;
   fam:=FamilyObj(U);
-  if not IsBound(fam!.doubleCosetsDefaultSizeType) then
-    fam!.doubleCosetsDefaultSizeType:=NewType(fam,IsDoubleCosetDefaultRep
-	  and HasSize and HasIsFinite and IsFinite
+  typ:=NewType(fam,IsDoubleCosetDefaultRep
+	  and HasIsFinite and IsFinite
           and HasLeftActingGroup and HasRightActingGroup
 	  and HasRepresentative);
-  fi;
   d:=rec();
-  ObjectifyWithAttributes(d,fam!.doubleCosetsDefaultSizeType,
-    LeftActingGroup,U,RightActingGroup,V,Representative,g,
-    Size,sz);
+  ObjectifyWithAttributes(d,typ,
+    LeftActingGroup,U,RightActingGroup,V,Representative,g);
+  SetSize(d,sz); # Size has private setter which will cause problems with
+  # HasSize triggering an immediate method.
   return d;
 end);
 
@@ -574,21 +573,25 @@ end);
 InstallMethod(RightCoset,"use subgroup size",IsCollsElms,
   [IsGroup and HasSize,IsObject],0,
 function(U,g)
-local d,fam;
+local d,fam,typ;
   # noch tests...
 
   fam:=FamilyObj(U);
-  if not IsBound(fam!.rightCosetsDefaultSizeType) then
-    fam!.rightCosetsDefaultSizeType:=NewType(fam,IsRightCosetDefaultRep and
-          HasActingDomain and HasFunctionAction and HasRepresentative and
-	  HasSize and HasCanonicalRepresentativeDeterminatorOfExternalSet);
-  fi;
+  typ:=NewType(fam,IsRightCosetDefaultRep and
+          HasActingDomain and HasFunctionAction and HasRepresentative
+	  and HasCanonicalRepresentativeDeterminatorOfExternalSet);
 
   d:=rec();
-  ObjectifyWithAttributes(d,fam!.rightCosetsDefaultSizeType,
+  ObjectifyWithAttributes(d,typ,
     ActingDomain,U,FunctionAction,OnLeftInverse,Representative,g,
-    Size,Size(U),CanonicalRepresentativeDeterminatorOfExternalSet,
+    CanonicalRepresentativeDeterminatorOfExternalSet,
     RightCosetCanonicalRepresentativeDeterminator);
+  # We cannot set the size in the previous ObjectifyWithAttributes as there is
+  # a custom setter method (the one added in this commit). In such a case
+  # ObjectifyWith Attributes just does `Objectify` and calls all setters
+  # separately which is what we want to avoid here.
+  SetSize(d,Size(U)); 
+
   return d;
 end);
 

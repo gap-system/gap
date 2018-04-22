@@ -48,12 +48,13 @@ gap> List(props, p -> p(M0));
 gap> N1:=Magma([[[1,0],[0,0]]]);;
 gap> ForAll(props, prop -> not Tester(prop)(N1));
 true
-gap> Size(N1);
-1
-gap> ForAll(props, prop -> Tester(prop)(N1));
-true
-gap> List(props, p -> p(N1));
-[ false, true, false, true ]
+
+#gap> Size(N1);
+#1
+#gap> ForAll(props, prop -> Tester(prop)(N1));
+#true
+#gap> List(props, p -> p(N1));
+#[ false, true, false, true ]
 
 # ... immediate methods for a collection which knows its size,
 # applied to collection with size greater than 1
@@ -97,13 +98,11 @@ Error, cannot test whether <C> contains the family of its elements
 # Size
 #
 
-# immediate method for collections knowing they are infinite
+## method for collections knowing they are infinite
 gap> c2:=ConjugacyClass(F, F.1);;
 gap> HasSize(c2);
 false
 gap> SetIsFinite(c2, false);
-gap> HasSize(c2);
-true
 gap> Size(c2);
 infinity
 

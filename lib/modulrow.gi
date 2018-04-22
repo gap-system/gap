@@ -21,26 +21,36 @@
 #F  FullRowModule( <R>, <n> )
 ##
 InstallGlobalFunction( FullRowModule, function( R, n )
-    local M;   # the free module record, result
+local M,typ;   # the free module record, result
 
     if not ( IsRing( R ) and IsInt( n ) and 0 <= n ) then
       Error( "usage: FullRowModule( <R>, <n> ) for ring <R>" );
     fi;
 
+    typ:=IsFreeLeftModule and IsFullRowModule and IsAttributeStoringRep
+         and HasIsEmpty;
+
     if IsDivisionRing( R ) then
-      M:= Objectify( NewType( CollectionsFamily( FamilyObj( R ) ),
-                                  IsFreeLeftModule
-                              and IsGaussianSpace
-                              and IsFullRowModule
-                              and IsAttributeStoringRep ),
-                     rec() );
-    else
-      M:= Objectify( NewType( CollectionsFamily( FamilyObj( R ) ),
-                                  IsFreeLeftModule
-                              and IsFullRowModule
-                              and IsAttributeStoringRep ),
-                     rec() );
+      typ:=typ and IsGaussianSpace;
     fi;
+
+    if n=0 then
+      typ:=typ and IsTrivial and HasIsNonTrivial and IsFinite;
+    else
+      typ:=typ and HasIsTrivial and IsNonTrivial;
+    fi;
+
+    if n<>infinity and HasIsFinite(R) and IsFinite(R) then
+      typ:=typ and IsFinite;
+    elif n<>0 and HasIsFinite(R) and not IsFinite(R) then
+      typ:=typ and HasIsFinite;
+    fi;
+
+
+    M:= Objectify( NewType( CollectionsFamily( FamilyObj( R ) ),
+                            typ ),
+                    rec() );
+
     SetLeftActingDomain( M, R );
     SetDimensionOfVectors( M, n );
 

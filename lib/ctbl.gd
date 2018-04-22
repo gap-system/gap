@@ -3584,6 +3584,8 @@ DeclareGlobalVariable( "CharacterTableDisplayDefaults" );
 ##  tbl:=rec();
 ##  tbl.Irr:=
 ##  [ [ 1, 1 ], [ 1, -1 ] ];
+##  tbl.IsFinite:=
+##  true;
 ##  tbl.NrConjugacyClasses:=
 ##  2;
 ##  tbl.Size:=

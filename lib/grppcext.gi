@@ -526,6 +526,7 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
       # If this is the first time we use it,
       # copy group to avoid carrying too much cruft later.
       ag:=Group(GeneratorsOfGroup(ag),One(ag));
+      SetIsGroupOfAutomorphismsFiniteGroup(ag,true);
       SetSize(ag,s);
     fi;
     IsGroupOfAutomorphismsFiniteGroup(ag);
@@ -953,6 +954,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 	fi;
       fi;
       tmp:=SubgroupNC(Range(triso),genimgs);
+      SetIsGroupOfAutomorphismsFiniteGroup(tmp,true);
       SetSize(tmp,l);
       # cache the faithful permutation representation in case we need it
       # later

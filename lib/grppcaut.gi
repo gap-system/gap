@@ -1804,6 +1804,7 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
         Add( autos, new );
     od;
     B := GroupByGenerators( autos );
+    SetIsGroupOfAutomorphismsFiniteGroup(B,true);
     SetSize( B, Size(A) );
     PopOptions(); # undo the added `fail'
     return B;
@@ -1906,6 +1907,7 @@ InstallGlobalFunction(AutomorphismGroupFrattFreeGroup,function( G )
 
     # create automorphism group
     B := GroupByGenerators( full, IdentityMapping( G ) );
+    SetIsGroupOfAutomorphismsFiniteGroup(B,true);
     SetSize( B, size );
 
     return B;
@@ -1960,7 +1962,6 @@ InstallGlobalFunction(AutomorphismGroupNilpotentGroup,function(G)
 	autG := Group( gensAutG, IdentityMapping(G) );
 	SetIsAutomorphismGroup(autG, true);
 	SetIsGroupOfAutomorphismsFiniteGroup(autG, true);
-	SetIsFinite(autG,true);
 
 	return autG;
 end );
