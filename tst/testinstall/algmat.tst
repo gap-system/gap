@@ -256,8 +256,7 @@ gap> n:= NullAlgebra( GF(3) );
 <algebra over GF(3)>
 gap> Dimension( n );
 0
-gap> b:= Basis( n );
-SemiEchelonBasis( <algebra of dimension 0 over GF(3)>, [  ] )
+gap> b:= Basis( n );;
 gap> BasisVectors( b );
 [  ]
 gap> zero:= Zero( n );

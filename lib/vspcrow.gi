@@ -54,21 +54,30 @@ InstallMethod( LeftModuleByGenerators,
     IsElmsColls,
     [ IsDivisionRing, IsMatrix ],
     function( F, mat )
-    local V;
+    local V,typ;
 
+    typ:=IsAttributeStoringRep and HasIsEmpty and IsFiniteDimensional;
     if ForAll( mat, row -> IsSubset( F, row ) ) then
-      V:= Objectify( NewType( FamilyObj( mat ),
-                                  IsGaussianRowSpace
-                              and IsAttributeStoringRep ),
-                     rec() );
+      typ:=typ and IsGaussianRowSpace;
     else
-      V:= Objectify( NewType( FamilyObj( mat ),
-                                  IsVectorSpace
-                              and IsNonGaussianRowSpace
-                              and IsRowModule
-                              and IsAttributeStoringRep ),
-                     rec() );
+      typ:=typ and IsVectorSpace and IsRowModule and IsNonGaussianRowSpace;
     fi;
+
+    if Length(mat)>0 and ForAny(mat,x->not IsZero(x)) then
+      typ:=typ and HasIsTrivial and IsNonTrivial;
+    else
+      typ:=typ and IsTrivial and HasIsNonTrivial;
+    fi;
+
+    if HasIsFinite(F) then
+      if IsFinite(F) then
+        typ:=typ and IsFinite;
+      else
+        typ:=typ and HasIsFinite; # i.e. not finite
+      fi;
+    fi;
+
+    V:= Objectify( NewType( FamilyObj( mat ), typ), rec() );
 
     SetLeftActingDomain( V, F );
     SetGeneratorsOfLeftModule( V, AsList( mat ) );
@@ -81,7 +90,7 @@ InstallMethod( LeftModuleByGenerators,
     "for division ring, empty list, and row vector",
     [ IsDivisionRing, IsList and IsEmpty, IsRowVector ],
     function( F, empty, zero )
-    local V;
+    local V,typ;
 
     # Check whether this method is the right one.
     if not IsIdenticalObj( FamilyObj( F ), FamilyObj( zero ) ) then
@@ -89,9 +98,11 @@ InstallMethod( LeftModuleByGenerators,
     fi;
 #T explicit 2nd argument above!
 
-    V:= Objectify( NewType( CollectionsFamily( FamilyObj( F ) ),
-                                IsGaussianRowSpace
-                            and IsAttributeStoringRep ),
+    typ:=IsAttributeStoringRep and HasIsEmpty and IsFiniteDimensional
+         and IsGaussianRowSpace and IsTrivial and HasIsNonTrivial and
+         IsFinite;
+
+    V:= Objectify( NewType( CollectionsFamily( FamilyObj( F ) ),typ),
                    rec() );
     SetLeftActingDomain( V, F );
     SetGeneratorsOfLeftModule( V, empty );
@@ -105,7 +116,7 @@ InstallMethod( LeftModuleByGenerators,
     "for division ring, matrix over it, and row vector",
     [ IsDivisionRing, IsMatrix, IsRowVector ],
     function( F, mat, zero )
-    local V;
+    local V,typ;
 
     # Check whether this method is the right one.
     if not IsElmsColls( FamilyObj( F ), FamilyObj( mat ) ) then
@@ -113,19 +124,28 @@ InstallMethod( LeftModuleByGenerators,
     fi;
 #T explicit 2nd argument above!
 
+    typ:=IsAttributeStoringRep and HasIsEmpty and IsFiniteDimensional;
     if ForAll( mat, row -> IsSubset( F, row ) ) then
-      V:= Objectify( NewType( FamilyObj( mat ),
-                                  IsGaussianRowSpace
-                              and IsAttributeStoringRep ),
-                     rec() );
+      typ:=typ and IsGaussianRowSpace;
     else
-      V:= Objectify( NewType( FamilyObj( mat ),
-                                  IsVectorSpace
-                              and IsNonGaussianRowSpace
-                              and IsRowModule
-                              and IsAttributeStoringRep ),
-                     rec() );
+      typ:=typ and IsVectorSpace and IsRowModule and IsNonGaussianRowSpace;
     fi;
+
+    if Length(mat)>0 and ForAny(mat,x->not IsZero(x)) then
+      typ:=typ and HasIsTrivial and IsNonTrivial;
+    else
+      typ:=typ and IsTrivial and HasIsNonTrivial;
+    fi;
+
+    if HasIsFinite(F) then
+      if IsFinite(F) then
+        typ:=typ and IsFinite;
+      else
+        typ:=typ and HasIsFinite; # i.e. not finite
+      fi;
+    fi;
+
+    V:= Objectify( NewType( FamilyObj( mat ), typ), rec() );
 
     SetLeftActingDomain( V, F );
     SetGeneratorsOfLeftModule( V, AsList( mat ) );

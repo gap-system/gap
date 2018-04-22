@@ -141,7 +141,7 @@ gap> S := Group(Transformation([2,1,3]));
 gap> DegreeOfTransformationSemigroup(S);
 2
 gap> S := Group(IdentityTransformation);
-<transformation group of degree 0 with 1 generator>
+<trivial transformation group of degree 0 with 1 generator>
 gap> GeneratorsOfGroup(S);
 [ IdentityTransformation ]
 gap> S := Semigroup(IdentityTransformation);

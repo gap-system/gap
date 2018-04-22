@@ -955,6 +955,11 @@ local iso,hom,u;
   if HasIsAbelian(G) and IsAbelian(G) then
     return TrivialSubgroup(G);
   elif Size(Image(hom))=infinity then
+    # test a special case -- one generator
+    if Length(GeneratorsOfGroup(G))=1 then
+      SetIsAbelian(G,true);
+      return TrivialSubgroup(G);
+    fi;
     Error("Derived subgroup has infinite index, cannot represent");
   elif Size(Range(hom))=1 then
     return G; # this is needed because the trivial quotient is represented
@@ -1539,7 +1544,7 @@ end );
 #M  FactorFreeGroupByRelators(<F>,<rels>) .  factor of free group by relators
 ##
 BindGlobal( "FactorFreeGroupByRelators", function( F, rels )
-    local G, fam, gens;
+    local G, fam, gens,typ;
 
     # Create a new family.
     fam := NewFamily( "FamilyElementsFpGroup", IsElementOfFpGroup );
@@ -1549,12 +1554,14 @@ BindGlobal( "FactorFreeGroupByRelators", function( F, rels )
 
     fam!.freeGroup := F;
     fam!.relators := Immutable( rels );
+    typ:=IsSubgroupFpGroup and IsWholeFamily and IsAttributeStoringRep;
+    if IsFinitelyGeneratedGroup(F) then
+      typ:=typ and IsFinitelyGeneratedGroup;
+    fi;
 
     # Create the group.
     G := Objectify(
-        NewType( CollectionsFamily( fam ),
-            IsSubgroupFpGroup and IsWholeFamily and IsAttributeStoringRep ),
-        rec() );
+        NewType( CollectionsFamily( fam ), typ ), rec() );
 
     # Mark <G> to be the 'whole group' of its later subgroups.
     FamilyObj( G )!.wholeGroup := G;
