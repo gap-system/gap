@@ -88,11 +88,19 @@ typedef void sig_handler_t ( int );
 /* utility to check return value of 'write'  */
 ssize_t echoandcheck(int fid, const char *buf, size_t count) {
   int ret;
+  if (syBuf[fid].type == gzip_socket) {
+      ret = gzwrite(syBuf[fid].gzfp, buf, count);
+      ErrorQuit("Cannot write to compressed file, see 'LastSystemError();'\n",
+                0L, 0L);
+  }
+  else {
+      ret = write(syBuf[fid].echo, buf, count);
+      if (ret < 0)
+          ErrorQuit("Cannot write to file descriptor %d, see "
+                    "'LastSystemError();'\n",
+                    syBuf[fid].fp, 0L);
+  }
 
-  ret = write(syBuf[fid].echo, buf, count);
-  if (ret < 0)
-    ErrorQuit("Cannot write to file descriptor %d, see 'LastSystemError();'\n",
-               fid, 0L);
   return ret;
 }
 
@@ -593,7 +601,7 @@ void syWinPut (
     Char *              t;              /* pointer into the temporary      */
 
     /* if not running under a window handler, don't do anything            */
-    if ( ! SyWindow || 4 <= fid )
+    if (!SyWindow || 4 <= fid || syBuf[fid].type == gzip_socket)
         return;
 
     /* print the cmd                                                       */
@@ -867,24 +875,34 @@ Int SyFopen (
 #endif
     /* try to open the file                                                */
     if ( 0 <= (syBuf[fid].fp = open(name,flags, 0644)) ) {
-        syBuf[fid].pipe = 0;
+        syBuf[fid].type = raw_socket;
         syBuf[fid].echo = syBuf[fid].fp;
         syBuf[fid].ateof = 0;
         syBuf[fid].crlast = 0;
         syBuf[fid].bufno = -1;
         syBuf[fid].isTTY = 0;
     }
+#ifdef HAVE_LIBZ
+    else if (strncmp(mode, "r", 1) == 0 && SyIsReadableFile(namegz) == 0 &&
+             (syBuf[fid].gzfp = gzopen(namegz, mode))) {
+        syBuf[fid].type = gzip_socket;
+        syBuf[fid].ateof = 0;
+        syBuf[fid].crlast = 0;
+        syBuf[fid].bufno = -1;
+        syBuf[fid].isTTY = 0;
+    }
+#endif
 #ifdef HAVE_POPEN
    else if ( strncmp(mode,"r",1) == 0
            && SyIsReadableFile(namegz) == 0
              && ( (syBuf[fid].pipehandle = popen(cmd,"r"))
                ) ) {
-        syBuf[fid].pipe = 1;
-        syBuf[fid].fp = fileno(syBuf[fid].pipehandle);
-        syBuf[fid].ateof = 0;
-        syBuf[fid].crlast = 0;
-        syBuf[fid].bufno = -1;
-        syBuf[fid].isTTY = 0;
+       syBuf[fid].type = pipe_socket;
+       syBuf[fid].fp = fileno(syBuf[fid].pipehandle);
+       syBuf[fid].ateof = 0;
+       syBuf[fid].crlast = 0;
+       syBuf[fid].bufno = -1;
+       syBuf[fid].isTTY = 0;
     }
 #endif
     else {
@@ -955,13 +973,12 @@ Int SyFclose (
     }
     HashLock(&syBuf);
     /* try to close the file                                               */
-    if ( (syBuf[fid].pipe == 0 && close( syBuf[fid].fp ) == EOF)
-      || (syBuf[fid].pipe == 1 && pclose( syBuf[fid].pipehandle ) == -1
+    if ((syBuf[fid].type == raw_socket && close(syBuf[fid].fp) == EOF) ||
+        (syBuf[fid].type == pipe_socket && pclose(syBuf[fid].pipehandle) == -1
 #ifdef ECHILD
-          && errno != ECHILD
+         && errno != ECHILD
 #endif
-          ) )
-    {
+         )) {
         fputs("gap: 'SyFclose' cannot close file, ",stderr);
         fputs("maybe your file system is full?\n",stderr);
         SyMarkBufUnused(fid);
@@ -1409,7 +1426,7 @@ void SyFputs (
 
     /* otherwise, write it to the output file                              */
     else
-        echoandcheck( fid, line, i );
+        SyWriteandcheck(fid, line, i);
 }
 
 
@@ -1434,8 +1451,8 @@ Int SyFtell (
         return -1;
     }
 
-    /* cannot seek in a pipe                                               */
-    if ( syBuf[fid].pipe ) {
+    /* cannot seek in a pipe or gziped file                                */
+    if (syBuf[fid].type != raw_socket) {
         return -1;
     }
 
@@ -1462,8 +1479,8 @@ Int SyFseek (
         return -1;
     }
 
-    /* cannot seek in a pipe                                               */
-    if ( syBuf[fid].pipe ) {
+    /* cannot seek in a pipe or gziped file                                */
+    if (syBuf[fid].type != raw_socket) {
         return -1;
     }
 
@@ -1507,6 +1524,45 @@ Int SyFseek (
 #  define LINE_END_HACK 1
 #endif
 
+Int SyRead(Int fid, void * ptr, size_t len)
+{
+    if (syBuf[fid].type == gzip_socket) {
+        return gzread(syBuf[fid].gzfp, ptr, len);
+    }
+    else {
+        return read(syBuf[fid].fp, ptr, len);
+    }
+}
+
+Int SyWrite(Int fid, const void * ptr, size_t len)
+{
+    if (syBuf[fid].type == gzip_socket) {
+        return gzwrite(syBuf[fid].gzfp, ptr, len);
+    }
+    else {
+        return write(syBuf[fid].echo, ptr, len);
+    }
+}
+
+ssize_t SyWriteandcheck(Int fid, const void * buf, size_t count)
+{
+    int ret;
+    if (syBuf[fid].type == gzip_socket) {
+        ret = gzwrite(syBuf[fid].gzfp, buf, count);
+        ErrorQuit(
+            "Cannot write to compressed file, see 'LastSystemError();'\n", 0L,
+            0L);
+    }
+    else {
+        ret = write(syBuf[fid].fp, buf, count);
+        if (ret < 0)
+            ErrorQuit("Cannot write to file descriptor %d, see "
+                      "'LastSystemError();'\n",
+                      syBuf[fid].fp, 0L);
+    }
+
+    return ret;
+}
 
 Int syGetchTerm (
     Int                 fid )
@@ -1520,30 +1576,33 @@ Int syGetchTerm (
 #ifdef LINE_END_HACK
  tryagain:
 #endif
-    while ( (ret = read( syBuf[fid].fp, &ch, 1 )) == -1 && errno == EAGAIN )
-        ;
-    if (ret <= 0) return EOF;
+     while ((ret = SyRead(fid, &ch, 1)) == -1 && errno == EAGAIN)
+         ;
+     if (ret <= 0)
+         return EOF;
 
-    /* if running under a window handler, handle special characters        */
-    if ( SyWindow && ch == '@' ) {
-        do {
-            while ( (ret = read(syBuf[fid].fp, &ch, 1)) == -1 &&
-                    errno == EAGAIN ) ;
-            if (ret <= 0) return EOF;
-        } while ( ch < '@' || 'z' < ch );
-        if ( ch == 'y' ) {
-            do {
-                while ( (ret = read(syBuf[fid].fp, &ch, 1)) == -1 &&
-                        errno == EAGAIN );
-                if (ret <= 0) return EOF;
-            } while ( ch < '@' || 'z' < ch );
-            str[0] = ch;
-            str[1] = 0;
-            syWinPut( syBuf[fid].echo, "@s", str );
-            ch = syGetchTerm(fid);
-        }
-        else if ( 'A' <= ch && ch <= 'Z' )
-            ch = CTR(ch);
+     /* if running under a window handler, handle special characters        */
+     if (SyWindow && ch == '@') {
+         do {
+             while ((ret = SyRead(fid, &ch, 1)) == -1 && errno == EAGAIN)
+                 ;
+             if (ret <= 0)
+                 return EOF;
+         } while (ch < '@' || 'z' < ch);
+         if (ch == 'y') {
+             do {
+                 while ((ret = SyRead(fid, &ch, 1)) == -1 && errno == EAGAIN)
+                     ;
+                 if (ret <= 0)
+                     return EOF;
+             } while (ch < '@' || 'z' < ch);
+             str[0] = ch;
+             str[1] = 0;
+             syWinPut(syBuf[fid].echo, "@s", str);
+             ch = syGetchTerm(fid);
+         }
+         else if ('A' <= ch && ch <= 'Z')
+             ch = CTR(ch);
     }
 
 #ifdef LINE_END_HACK
@@ -1582,18 +1641,18 @@ Int syGetchNonTerm (
  tryagain:
 #endif
     if (syBuf[fid].bufno < 0)
-        while ( (ret = read( syBuf[fid].fp, &ch, 1 )) == -1 && errno == EAGAIN)
-           ;
+        while ((ret = SyRead(fid, &ch, 1)) == -1 && errno == EAGAIN)
+            ;
     else {
         bufno = syBuf[fid].bufno;
         if (syBuffers[bufno].bufstart < syBuffers[bufno].buflen) {
             ch = syBuffers[bufno].buf[syBuffers[bufno].bufstart++];
             ret = 1;
         } else {
-            while ( (ret = read( syBuf[fid].fp,
-                                 syBuffers[bufno].buf,
-                                 SYS_FILE_BUF_SIZE )) == -1 && errno == EAGAIN)
-              ;
+            while ((ret = SyRead(fid, syBuffers[bufno].buf,
+                                 SYS_FILE_BUF_SIZE)) == -1 &&
+                   errno == EAGAIN)
+                ;
             if (ret > 0) {
                 ch = syBuffers[bufno].buf[0];
                 syBuffers[bufno].bufstart = 1;
@@ -3523,7 +3582,7 @@ Obj SyReadStringFile(Int fid)
     str = NEW_STRING(0);
     len = 0;
     do {
-        ret = read( syBuf[fid].fp , buf, 32768);
+        ret = SyRead(fid, buf, 32768);
         if (ret < 0) {
             SySetErrorNo();
             return Fail;
@@ -3569,7 +3628,7 @@ Obj SyReadStringFileStat(Int fid)
         ptr = CSTR_STRING(str);
         while (len > 0) {
             l = (len > 1048576) ? 1048576 : len;
-            ret = read( syBuf[fid].fp, ptr, l);
+            ret = SyRead(fid, ptr, l);
             if (ret == -1) {
                 SySetErrorNo();
                 return Fail;
@@ -3587,7 +3646,7 @@ Obj SyReadStringFileStat(Int fid)
 
 Obj SyReadStringFid(Int fid)
 {
-    if(syBuf[fid].pipe == 1) {
+    if (syBuf[fid].type != raw_socket) {
         return SyReadStringFile(fid);
     } else {
         return SyReadStringFileStat(fid);

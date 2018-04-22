@@ -1737,8 +1737,8 @@ Obj FuncREAD_ALL_FILE (
 	{
 	  do {
 	    csize = (ilim == -1 || (ilim- len) > 20000) ? 20000 : ilim - len;
-	    lstr = read(syBuf[ifid].fp, buf, csize);
-	  } while (lstr == -1 && errno == EAGAIN);
+            lstr = read(ifid, buf, csize);
+          } while (lstr == -1 && errno == EAGAIN);
 	}
       if (lstr <= 0)
 	{
