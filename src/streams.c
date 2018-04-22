@@ -307,7 +307,13 @@ Obj READ_AS_FUNC ( void )
 }
 
 
-static void READ_TEST_OR_LOOP(void)
+/****************************************************************************
+**
+*F  READ_LOOP() . . . . . . . . . .  read current input as read-eval-view loop
+**
+**  Read the current input as read-eval-view loop and close the input stream.
+*/
+static void READ_LOOP ( void )
 {
     UInt                type;
     UInt                oldtime;
@@ -356,18 +362,6 @@ static void READ_TEST_OR_LOOP(void)
         // FIXME: what about other types? e.g. STATUS_ERROR and STATUS_QQUIT
 
     }
-}
-
-
-/****************************************************************************
-**
-*F  READ_LOOP() . . . . . . . . . .  read current input as read-eval-view loop
-**
-**  Read the current input as read-eval-view loop and close the input stream.
-*/
-static void READ_LOOP ( void )
-{
-    READ_TEST_OR_LOOP();
 
     /* close the input file again, and return 'true'                       */
     if ( ! CloseInput() ) {
