@@ -180,7 +180,9 @@ local oper,narg,args,skip,verbos,fams,flags,i,j,methods,flag,flag2,
     oper:=methods[offset+narg+2];
     if verbos>1 then
       Print("#I  Method ",i,": ``",nam,"''");
-      if LocationFunc(oper) <> "" then
+      if BASE_SIZE_METHODS_OPER_ENTRY >= 5 then
+        Print(" at ", methods[offset+narg+5][1], ":", methods[offset+narg+5][2]);
+      elif LocationFunc(oper) <> "" then
         Print(" at ",LocationFunc(oper));
       fi;
       Print(", value: ");
@@ -214,7 +216,9 @@ local oper,narg,args,skip,verbos,fams,flags,i,j,methods,flag,flag2,
 	oper:=methods[offset+j+1];
 	if verbos=1 then
 	  Print("#I  Method ",i,": ``",nam,"''");
-	  if LocationFunc(oper) <> "" then
+          if BASE_SIZE_METHODS_OPER_ENTRY >= 5 then
+            Print(" at ", methods[offset+narg+5][1], ":", methods[offset+narg+5][2]);
+	  elif LocationFunc(oper) <> "" then
 	    Print(" at ",LocationFunc(oper));
 	  fi;
 	  Print(" , value: ");

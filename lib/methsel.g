@@ -58,7 +58,9 @@ VMETHOD_PRINT_INFO := function ( methods, i, arity)
     local offset;
     offset := (arity+BASE_SIZE_METHODS_OPER_ENTRY)*(i-1)+arity;
     Print("#I  ", methods[offset+4]);
-    if FILENAME_FUNC(methods[offset+2]) <> fail then
+    if BASE_SIZE_METHODS_OPER_ENTRY >= 5 then
+        Print(" at ", methods[offset+5][1], ":", methods[offset+5][2]);
+    elif FILENAME_FUNC(methods[offset+2]) <> fail then
         Print(" at ",
               FILENAME_FUNC(methods[offset+2]), ":",
               STARTLINE_FUNC(methods[offset+2]));
@@ -74,7 +76,9 @@ NEXT_VMETHOD_PRINT_INFO := function ( methods, i, arity)
     local offset;
     offset := (arity+BASE_SIZE_METHODS_OPER_ENTRY)*(i-1)+arity;
     Print("#I Trying next: ", methods[offset+4]);
-    if FILENAME_FUNC(methods[offset+2]) <> fail then
+    if BASE_SIZE_METHODS_OPER_ENTRY >= 5 then
+        Print(" at ", methods[offset+5][1], ":", methods[offset+5][2]);
+    elif FILENAME_FUNC(methods[offset+2]) <> fail then
         Print(" at ",
               FILENAME_FUNC(methods[offset+2]), ":",
               STARTLINE_FUNC(methods[offset+2]));
