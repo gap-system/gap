@@ -5,7 +5,6 @@
 # * We can do Sort or SortParallel
 # * We specialise for plain lists
 # Most of these checks are generate a whole bunch of random tests
-
 gap> START_TEST("sort.tst");
 gap> lowAlpha := Immutable(SSortedList("abcdefghijklmnopqrstuvwxyz"));;
 gap> CheckSort := function(list, sorted)

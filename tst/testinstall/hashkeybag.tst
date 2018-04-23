@@ -22,4 +22,3 @@ true
 gap> HashKeyBag((1,2),0,0,1) <> HashKeyBag((1,2),1,0,2);
 true
 gap> STOP_TEST("hashkeybag.tst");
-

@@ -7,6 +7,7 @@
 ##  excluded from 'testinstall.g' as it takes considerable time
 ##
 
+#
 gap> START_TEST( "ctblpope.tst" );
 
 ##
@@ -57,8 +58,3 @@ gap> if IsPackageMarkedForLoading( "ctbllib", "" ) then
 
 ##
 gap> STOP_TEST( "ctblpope.tst", 1 );
-
-#############################################################################
-##
-#E
-

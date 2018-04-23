@@ -8,7 +8,6 @@
 ##  This produces the text version of each help section which can be reached
 ##  from GAPs help system.
 ##
-
 gap> START_TEST("helpsys.tst");
 gap> SetUserPreference("Browse", "SelectHelpMatches", false); # needed only for compatibility with the Browse package
 gap> SetHelpViewer("screen");;
@@ -24,8 +23,3 @@ gap> PAGER_EXTERNAL:=savepager;;
 gap> MakeReadOnlyGlobal("PAGER_EXTERNAL");
 gap> SetUserPreference("Pager",savepagerprefs);
 gap> STOP_TEST( "helpsys.tst", 1);
-
-#############################################################################
-##
-#E
-

@@ -74,7 +74,3 @@ gap> CallAsTask(LLLReducedBasis,[ [ 0, 0 ], [ 0, 0 ] ], "linearcomb" );
 rec( B := [  ], basis := [  ], mue := [  ], 
   relations := [ [ 1, 0 ], [ 0, 1 ] ], transformation := [  ] )
 gap> STOP_TEST( "task.tst", 1 );
-#############################################################################
-##
-#E
-

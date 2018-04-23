@@ -6,9 +6,9 @@
 ##
 #Y  Copyright (C)  2016
 ##
-## Warning: Later tests need more than the default memory allocation
+##  Warning: Later tests need more than the default memory allocation
 
-
+#
 gap> START_TEST("grpauto.tst");
 
 #

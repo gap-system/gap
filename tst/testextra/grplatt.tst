@@ -196,7 +196,3 @@ gap> Length(ConjugacyClassesSubgroups(SymmetricGroup(7):NoPrecomputedData));
 
 # thats all, folks
 gap> STOP_TEST( "grplatt.tst", 1);
-
-#############################################################################
-##
-#E

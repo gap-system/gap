@@ -73,4 +73,3 @@ Syntax error: Identifiers in GAP must consist of less than 1023 characters. in\
 aaaxyz := 1; # 1024 chars
      ^
 gap> STOP_TEST( "recordname.tst", 1);
-

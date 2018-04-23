@@ -9,7 +9,6 @@
 # We check StableSort implements Sort correctly
 # and also have a special 'stability' check.
 
-
 # We check stability in two ways, by building pairs, and also
 # by using a comparator. We need this second case to ensure we
 # check some non-plists. Also need to test with and without comparators.
