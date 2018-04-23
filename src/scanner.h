@@ -55,24 +55,8 @@ enum SCANNER_SYMBOLS {
     S_READONLY          = (1UL<< 9)+4,
     S_DOTDOTDOT         = (1UL<< 9)+5,
 
-    S_PARTIALINT        = (1UL<<10)+0, // Some digits
-    S_INT               = (1UL<<10)+1,
-    S_FLOAT             = (1UL<<10)+2,
-
-    // A decimal point only, but in a context where we know it's the start of
-    // a number
-    S_PARTIALFLOAT1     = (1UL<<10)+3,
-
-    // Some digits and a decimal point
-    S_PARTIALFLOAT2     = (1UL<<10)+4,
-
-    // Some digits and a decimal point and an exponent indicator and maybe a
-    // sign, but no digits
-    S_PARTIALFLOAT3     = (1UL<<10)+5,
-
-    // Some digits and a decimal point and an exponent indicator and maybe a
-    // sign, and at least one digit
-    S_PARTIALFLOAT4     = (1UL<<10)+6,
+    S_INT               = (1UL<<10)+0,
+    S_FLOAT             = (1UL<<10)+1,
 
     S_TRUE              = (1UL<<11)+0,
     S_FALSE             = (1UL<<11)+1,
@@ -315,7 +299,7 @@ extern  void            SyntaxWarning (
 *F  Match( <symbol>, <msg>, <skipto> )  . match current symbol and fetch next
 **
 **  'Match' is the main  interface between the  scanner and the  parser.   It
-**  performs the  4 most common actions in  the scanner  with  just one call.
+**  performs the four most common actions in the scanner with  just one call.
 **  First it checks that  the current symbol stored  in the variable 'Symbol'
 **  is the expected symbol  as passed in the  argument <symbol>.  If  it  is,
 **  'Match' reads the next symbol from input  and returns.  Otherwise 'Match'
@@ -347,7 +331,7 @@ extern  void            SyntaxWarning (
 **  'else' or 'fi' symbol, or a symbol that is  contained in the set <follow>
 **  which is passed to 'ReadIf' and contains all symbols allowing  one of the
 **  calling functions  to resynchronize,  for example 'S_OD' if 'ReadIf'  has
-**  been called from 'ReadFor'.  <follow> always contain 'S_EOF', which 'Read'
+**  been called from 'ReadFor'. <follow> always contain 'S_EOF', which 'Read'
 **  uses to resynchronise.
 **
 **  If 'Match' needs to  read a  new line from  '*stdin*' or '*errin*' to get
@@ -358,6 +342,13 @@ extern void Match (
             const Char *        msg,
             TypSymbolSet        skipto );
 
+
+/****************************************************************************
+**
+*F  ScanForFloatAfterDotHACK()
+**
+*/
+extern void ScanForFloatAfterDotHACK(void);
 
 /****************************************************************************
 **

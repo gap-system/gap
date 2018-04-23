@@ -1956,6 +1956,7 @@ void CodeLongFloatExpr(Obj s)
         CodeEagerFloatExpr(s, mark);
     }
     else {
+        // FIXME: this is not GC safe
         CodeLazyFloatExpr(str, l);
     }
 }

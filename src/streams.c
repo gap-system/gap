@@ -222,8 +222,8 @@ static Int READ_INNER ( UInt UseUHQ )
         ClearError();
         Obj evalResult;
         ExecStatus status = ReadEvalCommand(STATE(BottomLVars), &evalResult, 0);
-	if (STATE(UserHasQuit) || STATE(UserHasQUIT))
-	  break;
+        if (STATE(UserHasQuit) || STATE(UserHasQUIT))
+          break;
         /* handle return-value or return-void command                      */
         if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
             Pr(
@@ -307,7 +307,13 @@ Obj READ_AS_FUNC ( void )
 }
 
 
-static void READ_TEST_OR_LOOP(void)
+/****************************************************************************
+**
+*F  READ_LOOP() . . . . . . . . . .  read current input as read-eval-view loop
+**
+**  Read the current input as read-eval-view loop and close the input stream.
+*/
+static void READ_LOOP ( void )
 {
     UInt                type;
     UInt                oldtime;
@@ -356,18 +362,6 @@ static void READ_TEST_OR_LOOP(void)
         // FIXME: what about other types? e.g. STATUS_ERROR and STATUS_QQUIT
 
     }
-}
-
-
-/****************************************************************************
-**
-*F  READ_LOOP() . . . . . . . . . .  read current input as read-eval-view loop
-**
-**  Read the current input as read-eval-view loop and close the input stream.
-*/
-static void READ_LOOP ( void )
-{
-    READ_TEST_OR_LOOP();
 
     /* close the input file again, and return 'true'                       */
     if ( ! CloseInput() ) {
@@ -1708,9 +1702,9 @@ Obj FuncREAD_ALL_FILE (
 
     while ( ! IS_INTOBJ(limit) ) {
       limit = ErrorReturnObj(
-			     "<limit> must be a small integer (not a %s)",
-			     (Int)TNAM_OBJ(limit), 0L,
-			     "you can replace limit via 'return <limit>;'" );
+                             "<limit> must be a small integer (not a %s)",
+                             (Int)TNAM_OBJ(limit), 0L,
+                             "you can replace limit via 'return <limit>;'" );
     }
     ilim = INT_INTOBJ(limit);
 
@@ -1723,55 +1717,55 @@ Obj FuncREAD_ALL_FILE (
 
     if (syBuf[ifid].bufno >= 0)
       {
-	UInt bufno = syBuf[ifid].bufno;
+        UInt bufno = syBuf[ifid].bufno;
 
-	/* first drain the buffer */
-	lstr = syBuffers[bufno].buflen - syBuffers[bufno].bufstart;
-	if (ilim != -1)
-	  {
-	    if (lstr > ilim)
-	      lstr = ilim;
-	    ilim -= lstr;
-	  }
-	GROW_STRING(str, lstr);
-	memcpy(CHARS_STRING(str), syBuffers[bufno].buf + syBuffers[bufno].bufstart, lstr);
-	len = lstr;
-	SET_LEN_STRING(str, len);
-	syBuffers[bufno].bufstart += lstr;
+        /* first drain the buffer */
+        lstr = syBuffers[bufno].buflen - syBuffers[bufno].bufstart;
+        if (ilim != -1)
+          {
+            if (lstr > ilim)
+              lstr = ilim;
+            ilim -= lstr;
+          }
+        GROW_STRING(str, lstr);
+        memcpy(CHARS_STRING(str), syBuffers[bufno].buf + syBuffers[bufno].bufstart, lstr);
+        len = lstr;
+        SET_LEN_STRING(str, len);
+        syBuffers[bufno].bufstart += lstr;
       }
 #ifdef SYS_IS_CYGWIN32
  getmore:
 #endif
     while (ilim == -1 || len < ilim ) {
       if ( len > 0 && !HasAvailableBytes(ifid))
-	break;
+        break;
       if (syBuf[ifid].isTTY)
-	{
-	  if (ilim == -1)
-	    {
-	      Pr("#W Warning -- reading to  end of input tty will never end\n",0,0);
-	      csize = 20000;
-	    }
-	  else
-	      csize = ((ilim- len) > 20000) ? 20000 : ilim - len;
-	    
-	  if (SyFgetsSemiBlock(buf, csize, ifid))
-	    lstr = strlen(buf);
-	  else  
-	    lstr = 0;
-	}
+        {
+          if (ilim == -1)
+            {
+              Pr("#W Warning -- reading to  end of input tty will never end\n",0,0);
+              csize = 20000;
+            }
+          else
+              csize = ((ilim- len) > 20000) ? 20000 : ilim - len;
+            
+          if (SyFgetsSemiBlock(buf, csize, ifid))
+            lstr = strlen(buf);
+          else  
+            lstr = 0;
+        }
       else
-	{
-	  do {
-	    csize = (ilim == -1 || (ilim- len) > 20000) ? 20000 : ilim - len;
-	    lstr = read(syBuf[ifid].fp, buf, csize);
-	  } while (lstr == -1 && errno == EAGAIN);
-	}
+        {
+          do {
+            csize = (ilim == -1 || (ilim- len) > 20000) ? 20000 : ilim - len;
+            lstr = read(syBuf[ifid].fp, buf, csize);
+          } while (lstr == -1 && errno == EAGAIN);
+        }
       if (lstr <= 0)
-	{
-	  syBuf[ifid].ateof = 1;
-	  break;
-	}
+        {
+          syBuf[ifid].ateof = 1;
+          break;
+        }
       GROW_STRING( str, len+lstr );
       memcpy(CHARS_STRING(str)+len, buf, lstr);
       len += lstr;
@@ -1785,23 +1779,23 @@ Obj FuncREAD_ALL_FILE (
     {
       UInt i = 0,j = 0;
       while ( i < len )
-	{
-	  if (CHARS_STRING(str)[i] == '\r')
-	    {
-	      if (i < len -1 && CHARS_STRING(str)[i+1] == '\n')
-		{
-		  i++;
-		  continue;
-		}
-	      else
-		CHARS_STRING(str)[i] = '\n';
-	    }
-	  CHARS_STRING(str)[j++] = CHARS_STRING(str)[i++];
-	}
+        {
+          if (CHARS_STRING(str)[i] == '\r')
+            {
+              if (i < len -1 && CHARS_STRING(str)[i+1] == '\n')
+                {
+                  i++;
+                  continue;
+                }
+              else
+                CHARS_STRING(str)[i] = '\n';
+            }
+          CHARS_STRING(str)[j++] = CHARS_STRING(str)[i++];
+        }
       len = j;
       SET_LEN_STRING(str, len);
       if (ilim != -1 && len < ilim)
-	goto getmore;
+        goto getmore;
       
     }
 #endif
@@ -2287,18 +2281,13 @@ static Int InitLibrary (
 *F  InitInfoStreams() . . . . . . . . . . . . . . . . table of init functions
 */
 static StructInitInfo module = {
-    MODULE_BUILTIN,                     /* type                           */
-    "streams" ,                         /* name                           */
-    0,                                  /* revision entry of c file       */
-    0,                                  /* revision entry of h file       */
-    0,                                  /* version                        */
-    0,                                  /* crc                            */
-    InitKernel,                         /* initKernel                     */
-    InitLibrary,                        /* initLibrary                    */
-    0,                                  /* checkInit                      */
-    0,                                  /* preSave                        */
-    0,                                  /* postSave                       */
-    PostRestore                         /* postRestore                    */
+    // init struct using C99 designated initializers; for a full list of
+    // fields, please refer to the definition of StructInitInfo
+    .type = MODULE_BUILTIN,
+    .name = "streams",
+    .initKernel = InitKernel,
+    .initLibrary = InitLibrary,
+    .postRestore = PostRestore,
 };
 
 StructInitInfo * InitInfoStreams ( void )
