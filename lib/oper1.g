@@ -20,6 +20,7 @@
 ##  have been discovered recently.
 ##  So possible consequences of other filters are not checked.
 ##
+RUN_IMMEDIATE_METHODS_RUNS   := 0;
 RUN_IMMEDIATE_METHODS_CHECKS := 0;
 RUN_IMMEDIATE_METHODS_HITS   := 0;
 
@@ -31,7 +32,9 @@ BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
             j,          # loop over `flagspos'
             imm,        # immediate methods for filter `j'
             i,          # loop over `imm'
+            meth,
             res,        # result of an immediate method
+            loc,
             newflags;   # newly  found filters
 
     # Avoid recursive calls from inside a setter,
@@ -49,6 +52,11 @@ BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
     type     := TYPE_OBJ( obj );
     flags    := type![2];
 
+    RUN_IMMEDIATE_METHODS_RUNS := RUN_IMMEDIATE_METHODS_RUNS + 1;
+    if TRACE_IMMEDIATE_METHODS  then
+        Print( "#I RunImmediateMethods\n");
+    fi;
+
     # Check the immediate methods for all in `flagspos'.
     # (Note that new information is handled via appending to that list.)
     for j  in flagspos  do
@@ -63,7 +71,7 @@ BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
         if IsBound( IMMEDIATES[j] ) then
 #T  the `if' statement can disappear when `IMM_FLAGS' is improved ...
             imm := IMMEDIATES[j];
-            for i  in [ 0, 7 .. LEN_LIST(imm)-7 ]  do
+            for i  in [ 0, SIZE_IMMEDIATE_METHOD_ENTRY .. LEN_LIST(imm)-SIZE_IMMEDIATE_METHOD_ENTRY ]  do
 
                 if        IS_SUBSET_FLAGS( flags, imm[i+4] )
                   and not IS_SUBSET_FLAGS( flags, imm[i+3] )
@@ -71,16 +79,17 @@ BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
                 then
 
                     # Call the method, and store that it was used.
-                    res := IMMEDIATE_METHODS[ imm[i+6] ]( obj );
+                    meth := IMMEDIATE_METHODS[ imm[i+6] ];
+                    res := meth( obj );
                     ADD_LIST( tried, imm[i+6] );
                     RUN_IMMEDIATE_METHODS_CHECKS :=
                         RUN_IMMEDIATE_METHODS_CHECKS+1;
                     if TRACE_IMMEDIATE_METHODS  then
-                        if imm[i+7] = false then
-                            Print( "#I  immediate: ", NAME_FUNC( imm[i+1] ), "\n");
-                        else
-                            Print( "#I  immediate: ", NAME_FUNC( imm[i+1] ), ": ", imm[i+7], "\n" );
+                        Print( "#I  immediate: ", NAME_FUNC( imm[i+1] ));
+                        if imm[i+7] <> false then
+                            Print( ": ", imm[i+7] );
                         fi;
+                        Print(" at ", imm[i+8][1], ":", imm[i+8][2], "\n");
                     fi;
 
                     if res <> TRY_NEXT_METHOD  then

@@ -13,4 +13,12 @@ gap> TraceMethods(AdditiveInverseMutable);
 gap> AdditiveInverseMutable(m);
 #I  AdditiveInverseMutable: for GF2 matrix at GAPROOT/lib/vecmat.gi:774
 <a 2x2 matrix over GF2>
+gap> 
+gap> g:= Group( (1,2,3), (1,2) );;  Size( g );
+6
+gap> TraceMethods( [ Size ] );
+gap> Size(g);
+#I  Size: system getter at GAPROOT/lib/coll.gd:1473
+6
+gap> UntraceMethods( [ Size ] );
 gap> QUIT;

@@ -256,6 +256,7 @@ IGNORE_IMMEDIATE_METHODS := false;
 ##  </Description>
 ##  </ManSection>
 ##
+BIND_CONSTANT("SIZE_IMMEDIATE_METHOD_ENTRY", 8);
 BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     function( oper, info, filter, rank, method )
 
@@ -377,7 +378,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       fi;
       i := 0;
       while i < LEN_LIST(imm) and rank < imm[i+5]  do
-          i := i + 7;
+          i := i + SIZE_IMMEDIATE_METHOD_ENTRY;
       od;
 
       # Now is a good time to see if the method is already there 
@@ -391,13 +392,13 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
                   i := k;
                   break;
               fi;
-              k := k+7;
+              k := k+SIZE_IMMEDIATE_METHOD_ENTRY;
           od;
       fi;
       
       # push the other functions back
       if not REREADING or not replace then
-          imm{[i+8..7+LEN_LIST(imm)]} := imm{[i+1..LEN_LIST(imm)]};
+          imm{[SIZE_IMMEDIATE_METHOD_ENTRY+i+1..SIZE_IMMEDIATE_METHOD_ENTRY+LEN_LIST(imm)]} := imm{[i+1..LEN_LIST(imm)]};
       fi;
 
       # install the new method
@@ -408,6 +409,9 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       imm[i+5] := rank;
       imm[i+6] := pos;
       imm[i+7] := IMMUTABLE_COPY_OBJ(info);
+      if SIZE_IMMEDIATE_METHOD_ENTRY >= 8 then
+          imm[i+8] := MakeImmutable([INPUT_FILENAME(), INPUT_LINENUMBER()]);
+      fi;
 
       if IsHPCGAP then
           IMMEDIATES[j]:=MakeImmutable(imm);
@@ -553,9 +557,10 @@ end );
 ##  <Ref Func="UntraceImmediateMethods"/>, or <Ref Func="TraceImmediateMethods"/>
 ##  with <A>flag</A> equal <K>false</K> turns tracing off.
 ##  (There is no facility to trace <E>specific</E> immediate methods.)
-##  <Example><![CDATA[
+##  <Log><![CDATA[
 ##  gap> TraceImmediateMethods( );
 ##  gap> g:= Group( (1,2,3), (1,2) );;
+##  #I RunImmediateMethods
 ##  #I  immediate: Size
 ##  #I  immediate: IsCyclic
 ##  #I  immediate: IsCommutative
@@ -573,7 +578,7 @@ end );
 ##  6
 ##  gap> UntraceImmediateMethods( );
 ##  gap> UntraceMethods( [ Size ] );
-##  ]]></Example>
+##  ]]></Log>
 ##  <P/>
 ##  This example gives an explanation for the two calls of the
 ##  <Q>system getter</Q> for <Ref Func="Size"/>.
