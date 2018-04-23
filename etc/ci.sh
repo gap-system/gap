@@ -97,14 +97,6 @@ do
         # also skip itc because it requires xgap
         rm -rf itc*
 
-        if [[ x"$ABI" != "x32" ]]
-        then
-          # HACK: disable some packages in 64bit mode for now. Otherwise they
-          # builds, but loading fails with an "undefined symbol: atexit" error
-          rm -rf digraphs*
-          rm -rf float*
-        fi
-
         cd ..
         # Load GAP (without packages) and save workspace to speed up test.
         # Also, save names of all packages into a file to be able to iterate over them
