@@ -25,7 +25,7 @@ InstallAttributeFunction(
         GETTER_FUNCTION(name) );
     end );
 
-LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + 6;
+LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + (BASE_SIZE_METHODS_OPER_ENTRY+2);
 
 InstallAttributeFunction(
     function ( name, filter, getter, setter, tester, mutflag )

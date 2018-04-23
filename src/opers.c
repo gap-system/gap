@@ -2032,6 +2032,9 @@ static Obj NEXT_VMETHOD_PRINT_INFO;
 //
 // Use of 'ALWAYS_INLINE' is critical for performance, see discussion
 // earlier in this file.
+enum {
+    BASE_SIZE_METHODS_OPER_ENTRY = 4,
+};
 static ALWAYS_INLINE Obj GetMethodUncached(
     UInt verbose, UInt constructor, UInt n, Obj oper, Int prec, Obj types[])
 {
@@ -2041,9 +2044,10 @@ static ALWAYS_INLINE Obj GetMethodUncached(
 
     const UInt len = LEN_PLIST(methods);
     UInt       j = 0;
-    for (UInt pos = 0; pos < len; pos += n + 4) {
-        // each method comprises n+4 entries in the 'methods' list:
-        // entry 1 is the family predicated;
+    for (UInt pos = 0; pos < len; pos += n + BASE_SIZE_METHODS_OPER_ENTRY) {
+        // each method comprises n + BASE_SIZE_METHODS_OPER_ENTRY
+        // entries in the 'methods' list:
+        // entry 1 is the family predicate;
         // entries 2 till n+1 are the n argument filters
         // entry n+2 is the actual method
         // entry n+3 is the rank
@@ -2120,7 +2124,8 @@ static ALWAYS_INLINE Obj GetMethodUncached(
         if (prec == j) {
             if (verbose) {
                 CALL_3ARGS(prec == 0 ? VMETHOD_PRINT_INFO : NEXT_VMETHOD_PRINT_INFO, methods,
-                           INTOBJ_INT(pos / (n + 4) + 1), INTOBJ_INT(n));
+                           INTOBJ_INT(pos / (n + BASE_SIZE_METHODS_OPER_ENTRY) + 1),
+                           INTOBJ_INT(n));
 
             }
             Obj meth = ELM_PLIST(methods, pos + n + 2);
@@ -4310,6 +4315,8 @@ static Int InitLibrary (
 {
     // HACK: move this here, instead of InitKernel, to avoid ariths.c overwriting it
     EqFuncs[T_FLAGS][T_FLAGS] = EqFlags;
+
+    ExportAsConstantGVar(BASE_SIZE_METHODS_OPER_ENTRY);
 
     HIDDEN_IMPS = NEW_PLIST(T_PLIST, 0);
     SET_LEN_PLIST(HIDDEN_IMPS, 0);

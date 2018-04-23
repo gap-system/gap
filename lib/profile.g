@@ -668,7 +668,7 @@ BIND_GLOBAL("ProfileMethods",function( arg )
         for i  in [ 0 .. 6 ]  do
             meth := METHODS_OPERATION( op, i );
             if meth <> fail  then
-                for j  in [ 0, (4+i) .. Length(meth)-(4+i) ]  do
+                for j  in [ 0, (BASE_SIZE_METHODS_OPER_ENTRY+i) .. Length(meth)-(BASE_SIZE_METHODS_OPER_ENTRY+i) ]  do
                     Add( funcs, meth[j+(2+i)] );
                     if name = meth[j+(4+i)]  then
                         Add( names, [ "Meth(", name, ")" ] );
@@ -718,7 +718,7 @@ BIND_GLOBAL("UnprofileMethods",function( arg )
         for i  in [ 0 .. 6 ]  do
             meth := METHODS_OPERATION( op, i );
             if meth <> fail  then
-                for j  in [ 0, (4+i) .. Length(meth)-(4+i) ]  do
+                for j  in [ 0, (BASE_SIZE_METHODS_OPER_ENTRY+i) .. Length(meth)-(BASE_SIZE_METHODS_OPER_ENTRY+i) ]  do
                     Add( funcs, meth[j+(2+i)] );
                 od;
             fi;

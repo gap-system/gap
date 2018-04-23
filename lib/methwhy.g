@@ -169,7 +169,7 @@ local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
     Print("#I  Searching Method for ",NameFunction(oper)," with ",l,
 	  " arguments:\n");
   fi;
-  lent:=4+l; #length of one entry
+  lent:=BASE_SIZE_METHODS_OPER_ENTRY+l; #length of one entry
   if verbos > 0 then 
     Print("#I  Total: ", Length(methods)/lent," entries\n");
   fi;
