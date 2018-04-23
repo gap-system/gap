@@ -57,7 +57,3 @@ true
 gap> atomic readwrite a do Print(a = [taskssum,0],"\n"); od;
 true
 gap> STOP_TEST( "threads.tst", 1 );
-#############################################################################
-##
-#E
-

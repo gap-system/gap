@@ -5,7 +5,6 @@
 ##
 #############################################################################
 ##
-
 gap> START_TEST("fpmon.tst");
 
 # Test that the inverse of an isomorphism from an fp monoid to an fp semigroup

@@ -61,4 +61,3 @@ gap> 5;
 
 #
 gap> STOP_TEST("linecontinuation.tst", 1);
-

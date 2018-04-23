@@ -10,4 +10,3 @@ gap> f := function(t)
 gap> f(t);
 true
 gap> STOP_TEST( "nanoseconds.tst", 1 );
-

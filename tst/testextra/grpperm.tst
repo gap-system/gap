@@ -256,7 +256,3 @@ gap> NrMovedPoints(Source(sm));
 gap> NrMovedPoints(Range(sm))<200;
 true
 gap> STOP_TEST( "grpperm.tst", 1);
-
-#############################################################################
-##
-#E

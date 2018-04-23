@@ -3,6 +3,7 @@
 # 1) Do we correctly handle if the swapped objects are young or old?
 # 2) Do we correctly handle objects allocated before, between, and after the objects?
 
+#
 gap> START_TEST("mptr.tst");
 gap> checkswap := function(switches)
 >     local l1,l2,l3,x,y,i,check;
