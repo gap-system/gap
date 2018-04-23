@@ -400,13 +400,9 @@ void AssignRef(const LHSRef ref)
 
 void UnbindRef(const LHSRef ref)
 {
-    volatile enum REFTYPE type = ref.type;
-    if (type != R_DVAR && ref.level > 0)
-        type = R_INVALID;
-
     TRY_READ
     {
-        switch (type) {
+        switch (ref.type) {
         case R_LVAR:
             IntrUnbLVar(ref.var);
             break;
@@ -450,13 +446,9 @@ void UnbindRef(const LHSRef ref)
 
 void IsBoundRef(const LHSRef ref)
 {
-    volatile enum REFTYPE type = ref.type;
-    if (type != R_DVAR && ref.level > 0)
-        type = R_INVALID;
-
     TRY_READ
     {
-        switch (type) {
+        switch (ref.type) {
         case R_LVAR:
             IntrIsbLVar(ref.var);
             break;
@@ -507,9 +499,6 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
     volatile LHSRef ref;
 
     ref.type = R_INVALID;
-    ref.level = level;
-    ref.narg = 0;
-    ref.rnam = 0;
 
     // <Var> '[' <Expr> ']'  list selector
     if (STATE(Symbol) == S_LBRACK) {
@@ -523,6 +512,7 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
         }
         Match(S_RBRACK, "]", follow);
         ref.type = R_ELM_LIST;
+        ref.level = level;
     }
 
     // <Var> '{' <Expr> '}'  sublist selector
@@ -531,6 +521,7 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
         ReadExpr(S_RBRACE | follow, 'r');
         Match(S_RBRACE, "}", follow);
         ref.type = R_ELMS_LIST;
+        ref.level = level;
     }
 
     // <Var> '![' <Expr> ']'  list selector
@@ -539,6 +530,7 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
         ReadExpr(S_RBRACK | follow, 'r');
         Match(S_RBRACK, "]", follow);
         ref.type = R_ELM_POSOBJ;
+        ref.level = level;
     }
 
     // <Var> '!{' <Expr> '}'  sublist selector
@@ -547,6 +539,7 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
         ReadExpr(S_RBRACE | follow, 'r');
         Match(S_RBRACE, "}", follow);
         ref.type = R_ELMS_POSOBJ;
+        ref.level = level;
     }
 
     // <Var> '.' <Ident>  record selector
@@ -566,7 +559,6 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
         else {
             SyntaxError("Record component name expected");
         }
-        ref.level = 0;
     }
 
     // <Var> '!.' <Ident>  record selector
@@ -586,7 +578,6 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
         else {
             SyntaxError("Record component name expected");
         }
-        ref.level = 0;
     }
 
     // <Var> '(' [ <Expr> { ',' <Expr> } ] ')'  function call
@@ -615,7 +606,6 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
             }
         }
         Match(S_RPAREN, ")", follow);
-        ref.level = 0;
     }
 
     return ref;
