@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "452946"
+#define FILE_CRC  "-3929700"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -94,6 +94,8 @@ static GVar G_UNLOCK;
 static Obj  GF_UNLOCK;
 static GVar G_MakeReadOnlySingleObj;
 static Obj  GF_MakeReadOnlySingleObj;
+static GVar G_RUN__IMMEDIATE__METHODS__RUNS;
+static Obj  GC_RUN__IMMEDIATE__METHODS__RUNS;
 static GVar G_RUN__IMMEDIATE__METHODS__CHECKS;
 static Obj  GC_RUN__IMMEDIATE__METHODS__CHECKS;
 static GVar G_RUN__IMMEDIATE__METHODS__HITS;
@@ -104,12 +106,16 @@ static GVar G_IGNORE__IMMEDIATE__METHODS;
 static Obj  GC_IGNORE__IMMEDIATE__METHODS;
 static GVar G_IMM__FLAGS;
 static Obj  GC_IMM__FLAGS;
+static GVar G_TRACE__IMMEDIATE__METHODS;
+static Obj  GC_TRACE__IMMEDIATE__METHODS;
 static GVar G_IMMEDIATES;
 static Obj  GC_IMMEDIATES;
 static GVar G_IMMEDIATE__METHODS;
 static Obj  GC_IMMEDIATE__METHODS;
-static GVar G_TRACE__IMMEDIATE__METHODS;
-static Obj  GC_TRACE__IMMEDIATE__METHODS;
+static GVar G_LocationFunc;
+static Obj  GC_LocationFunc;
+static GVar G_VALUE__GLOBAL;
+static Obj  GF_VALUE__GLOBAL;
 static GVar G_NewSpecialRegion;
 static Obj  GF_NewSpecialRegion;
 static GVar G_METHODS__OPERATION__REGION;
@@ -160,8 +166,6 @@ static GVar G_IsPrimeInt;
 static Obj  GF_IsPrimeInt;
 static GVar G_DeclareOperation;
 static Obj  GF_DeclareOperation;
-static GVar G_VALUE__GLOBAL;
-static Obj  GF_VALUE__GLOBAL;
 static GVar G_DeclareAttribute;
 static Obj  GF_DeclareAttribute;
 static GVar G_InstallMethod;
@@ -190,7 +194,9 @@ static Obj  HdlrFunc2 (
  Obj l_j = 0;
  Obj l_imm = 0;
  Obj l_i = 0;
+ Obj l_meth = 0;
  Obj l_res = 0;
+ Obj l_loc = 0;
  Obj l_newflags = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
@@ -215,7 +221,9 @@ static Obj  HdlrFunc2 (
  (void)l_j;
  (void)l_imm;
  (void)l_i;
+ (void)l_meth;
  (void)l_res;
+ (void)l_loc;
  (void)l_newflags;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
@@ -289,6 +297,27 @@ static Obj  HdlrFunc2 (
  /* flags := type![2]; */
  C_ELM_POSOBJ_NLE( t_1, l_type, 2 );
  a_flags = t_1;
+ 
+ /* RUN_IMMEDIATE_METHODS_RUNS := RUN_IMMEDIATE_METHODS_RUNS + 1; */
+ t_2 = GC_RUN__IMMEDIATE__METHODS__RUNS;
+ CHECK_BOUND( t_2, "RUN_IMMEDIATE_METHODS_RUNS" )
+ C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
+ AssGVar( G_RUN__IMMEDIATE__METHODS__RUNS, t_1 );
+ 
+ /* if TRACE_IMMEDIATE_METHODS then */
+ t_2 = GC_TRACE__IMMEDIATE__METHODS;
+ CHECK_BOUND( t_2, "TRACE_IMMEDIATE_METHODS" )
+ CHECK_BOOL( t_2 )
+ t_1 = (Obj)(UInt)(t_2 != False);
+ if ( t_1 ) {
+  
+  /* Print( "#I RunImmediateMethods\n" ); */
+  t_1 = GF_Print;
+  t_2 = MakeString( "#I RunImmediateMethods\n" );
+  CALL_1ARGS( t_1, t_2 );
+  
+ }
+ /* fi */
  
  /* for j in flagspos do */
  t_4 = l_flagspos;
@@ -387,16 +416,19 @@ static Obj  HdlrFunc2 (
     }
     if ( t_9 ) {
      
-     /* res := IMMEDIATE_METHODS[imm[i + 6]]( obj ); */
-     t_11 = GC_IMMEDIATE__METHODS;
-     CHECK_BOUND( t_11, "IMMEDIATE_METHODS" )
-     C_SUM_FIA( t_13, l_i, INTOBJ_INT(6) )
-     CHECK_INT_POS( t_13 )
-     C_ELM_LIST_FPL( t_12, l_imm, t_13 )
+     /* meth := IMMEDIATE_METHODS[imm[i + 6]]; */
+     t_10 = GC_IMMEDIATE__METHODS;
+     CHECK_BOUND( t_10, "IMMEDIATE_METHODS" )
+     C_SUM_FIA( t_12, l_i, INTOBJ_INT(6) )
      CHECK_INT_POS( t_12 )
-     C_ELM_LIST_FPL( t_10, t_11, t_12 )
-     CHECK_FUNC( t_10 )
-     t_9 = CALL_1ARGS( t_10, a_obj );
+     C_ELM_LIST_FPL( t_11, l_imm, t_12 )
+     CHECK_INT_POS( t_11 )
+     C_ELM_LIST_FPL( t_9, t_10, t_11 )
+     l_meth = t_9;
+     
+     /* res := meth( obj ); */
+     CHECK_FUNC( l_meth )
+     t_9 = CALL_1ARGS( l_meth, a_obj );
      CHECK_FUNC_RESULT( t_9 )
      l_res = t_9;
      
@@ -420,49 +452,91 @@ static Obj  HdlrFunc2 (
      t_9 = (Obj)(UInt)(t_10 != False);
      if ( t_9 ) {
       
-      /* if imm[i + 7] = false then */
+      /* Print( "#I  immediate: ", NAME_FUNC( imm[i + 1] ) ); */
+      t_9 = GF_Print;
+      t_10 = MakeString( "#I  immediate: " );
+      t_12 = GF_NAME__FUNC;
+      C_SUM_FIA( t_14, l_i, INTOBJ_INT(1) )
+      CHECK_INT_POS( t_14 )
+      C_ELM_LIST_FPL( t_13, l_imm, t_14 )
+      t_11 = CALL_1ARGS( t_12, t_13 );
+      CHECK_FUNC_RESULT( t_11 )
+      CALL_2ARGS( t_9, t_10, t_11 );
+      
+      /* if imm[i + 7] <> false then */
       C_SUM_FIA( t_11, l_i, INTOBJ_INT(7) )
       CHECK_INT_POS( t_11 )
       C_ELM_LIST_FPL( t_10, l_imm, t_11 )
       t_11 = False;
-      t_9 = (Obj)(UInt)(EQ( t_10, t_11 ));
+      t_9 = (Obj)(UInt)( ! EQ( t_10, t_11 ));
       if ( t_9 ) {
        
-       /* Print( "#I  immediate: ", NAME_FUNC( imm[i + 1] ), "\n" ); */
+       /* Print( ": ", imm[i + 7] ); */
        t_9 = GF_Print;
-       t_10 = MakeString( "#I  immediate: " );
-       t_12 = GF_NAME__FUNC;
-       C_SUM_FIA( t_14, l_i, INTOBJ_INT(1) )
-       CHECK_INT_POS( t_14 )
-       C_ELM_LIST_FPL( t_13, l_imm, t_14 )
-       t_11 = CALL_1ARGS( t_12, t_13 );
-       CHECK_FUNC_RESULT( t_11 )
-       t_12 = MakeString( "\n" );
-       CALL_3ARGS( t_9, t_10, t_11, t_12 );
-       
-      }
-      
-      /* else */
-      else {
-       
-       /* Print( "#I  immediate: ", NAME_FUNC( imm[i + 1] ), ": ", imm[i + 7], "\n" ); */
-       t_9 = GF_Print;
-       t_10 = MakeString( "#I  immediate: " );
-       t_12 = GF_NAME__FUNC;
-       C_SUM_FIA( t_14, l_i, INTOBJ_INT(1) )
-       CHECK_INT_POS( t_14 )
-       C_ELM_LIST_FPL( t_13, l_imm, t_14 )
-       t_11 = CALL_1ARGS( t_12, t_13 );
-       CHECK_FUNC_RESULT( t_11 )
-       t_12 = MakeString( ": " );
-       C_SUM_FIA( t_14, l_i, INTOBJ_INT(7) )
-       CHECK_INT_POS( t_14 )
-       C_ELM_LIST_FPL( t_13, l_imm, t_14 )
-       t_14 = MakeString( "\n" );
-       CALL_5ARGS( t_9, t_10, t_11, t_12, t_13, t_14 );
+       t_10 = MakeString( ": " );
+       C_SUM_FIA( t_12, l_i, INTOBJ_INT(7) )
+       CHECK_INT_POS( t_12 )
+       C_ELM_LIST_FPL( t_11, l_imm, t_12 )
+       CALL_2ARGS( t_9, t_10, t_11 );
        
       }
       /* fi */
+      
+      /* if IsBound( LocationFunc ) then */
+      t_11 = GC_LocationFunc;
+      t_10 = ((t_11 != 0) ? True : False);
+      t_9 = (Obj)(UInt)(t_10 != False);
+      if ( t_9 ) {
+       
+       /* loc := VALUE_GLOBAL( "LocationFunc" )( meth ); */
+       t_11 = GF_VALUE__GLOBAL;
+       t_12 = MakeString( "LocationFunc" );
+       t_10 = CALL_1ARGS( t_11, t_12 );
+       CHECK_FUNC_RESULT( t_10 )
+       CHECK_FUNC( t_10 )
+       t_9 = CALL_1ARGS( t_10, l_meth );
+       CHECK_FUNC_RESULT( t_9 )
+       l_loc = t_9;
+       
+       /* if loc <> "" then */
+       t_10 = MakeString( "" );
+       t_9 = (Obj)(UInt)( ! EQ( l_loc, t_10 ));
+       if ( t_9 ) {
+        
+        /* Print( " at ", loc ); */
+        t_9 = GF_Print;
+        t_10 = MakeString( " at " );
+        CALL_2ARGS( t_9, t_10, l_loc );
+        
+       }
+       /* fi */
+       
+      }
+      /* fi */
+      
+      /* if NAME_FUNC( meth ) <> "unknown" then */
+      t_11 = GF_NAME__FUNC;
+      t_10 = CALL_1ARGS( t_11, l_meth );
+      CHECK_FUNC_RESULT( t_10 )
+      t_11 = MakeString( "unknown" );
+      t_9 = (Obj)(UInt)( ! EQ( t_10, t_11 ));
+      if ( t_9 ) {
+       
+       /* Print( " via ", NAME_FUNC( meth ) ); */
+       t_9 = GF_Print;
+       t_10 = MakeString( " via " );
+       t_12 = GF_NAME__FUNC;
+       t_11 = CALL_1ARGS( t_12, l_meth );
+       CHECK_FUNC_RESULT( t_11 )
+       CALL_2ARGS( t_9, t_10, t_11 );
+       
+      }
+      /* fi */
+      
+      /* Print( "\n" ); */
+      t_9 = GF_Print;
+      t_10 = MakeString( "\n" );
+      CALL_1ARGS( t_9, t_10 );
       
      }
      /* fi */
@@ -2514,8 +2588,8 @@ static Obj  HdlrFunc7 (
    t_6 = NewFunction( NameFunc[8], 1, 0, HdlrFunc8 );
    SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
    t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
-   SET_STARTLINE_BODY(t_7, 622);
-   SET_ENDLINE_BODY(t_7, 640);
+   SET_STARTLINE_BODY(t_7, 640);
+   SET_ENDLINE_BODY(t_7, 658);
    SET_FILENAME_BODY(t_7, FileName);
    SET_BODY_FUNC(t_6, t_7);
    CHANGED_BAG( STATE(CurrLVars) );
@@ -3118,8 +3192,8 @@ static Obj  HdlrFunc11 (
   t_1 = NewFunction( NameFunc[12], 1, 0, HdlrFunc12 );
   SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
   t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
-  SET_STARTLINE_BODY(t_2, 819);
-  SET_ENDLINE_BODY(t_2, 823);
+  SET_STARTLINE_BODY(t_2, 837);
+  SET_ENDLINE_BODY(t_2, 841);
   SET_FILENAME_BODY(t_2, FileName);
   SET_BODY_FUNC(t_1, t_2);
   CHANGED_BAG( STATE(CurrLVars) );
@@ -3198,8 +3272,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[13], 1, 0, HdlrFunc13 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 840);
- SET_ENDLINE_BODY(t_7, 840);
+ SET_STARTLINE_BODY(t_7, 858);
+ SET_ENDLINE_BODY(t_7, 858);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3273,8 +3347,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[14], 2, 0, HdlrFunc14 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 862);
- SET_ENDLINE_BODY(t_7, 885);
+ SET_STARTLINE_BODY(t_7, 880);
+ SET_ENDLINE_BODY(t_7, 903);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3322,8 +3396,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[15], 2, 0, HdlrFunc15 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 895);
- SET_ENDLINE_BODY(t_7, 903);
+ SET_STARTLINE_BODY(t_7, 913);
+ SET_ENDLINE_BODY(t_7, 921);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3384,8 +3458,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[16], 3, 0, HdlrFunc16 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 912);
- SET_ENDLINE_BODY(t_7, 925);
+ SET_STARTLINE_BODY(t_7, 930);
+ SET_ENDLINE_BODY(t_7, 943);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3758,8 +3832,8 @@ static Obj  HdlrFunc17 (
  t_4 = NewFunction( NameFunc[18], -1, 0, HdlrFunc18 );
  SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
  t_5 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_5, 991);
- SET_ENDLINE_BODY(t_5, 1007);
+ SET_STARTLINE_BODY(t_5, 1009);
+ SET_ENDLINE_BODY(t_5, 1025);
  SET_FILENAME_BODY(t_5, FileName);
  SET_BODY_FUNC(t_4, t_5);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3794,6 +3868,9 @@ static Obj  HdlrFunc1 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
+ /* RUN_IMMEDIATE_METHODS_RUNS := 0; */
+ AssGVar( G_RUN__IMMEDIATE__METHODS__RUNS, INTOBJ_INT(0) );
+ 
  /* RUN_IMMEDIATE_METHODS_CHECKS := 0; */
  AssGVar( G_RUN__IMMEDIATE__METHODS__CHECKS, INTOBJ_INT(0) );
  
@@ -3801,7 +3878,7 @@ static Obj  HdlrFunc1 (
  AssGVar( G_RUN__IMMEDIATE__METHODS__HITS, INTOBJ_INT(0) );
  
  /* BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
-      local flagspos, tried, type, j, imm, i, res, newflags;
+      local flagspos, tried, type, j, imm, i, meth, res, loc, newflags;
       if IGNORE_IMMEDIATE_METHODS then
           return;
       fi;
@@ -3813,20 +3890,34 @@ static Obj  HdlrFunc1 (
       tried := [  ];
       type := TYPE_OBJ( obj );
       flags := type![2];
+      RUN_IMMEDIATE_METHODS_RUNS := RUN_IMMEDIATE_METHODS_RUNS + 1;
+      if TRACE_IMMEDIATE_METHODS then
+          Print( "#I RunImmediateMethods\n" );
+      fi;
       for j in flagspos do
           if IsBound( IMMEDIATES[j] ) then
               imm := IMMEDIATES[j];
               for i in [ 0, 7 .. LEN_LIST( imm ) - 7 ] do
                   if IS_SUBSET_FLAGS( flags, imm[i + 4] ) and not IS_SUBSET_FLAGS( flags, imm[i + 3] ) and not imm[i + 6] in tried then
-                      res := IMMEDIATE_METHODS[imm[i + 6]]( obj );
+                      meth := IMMEDIATE_METHODS[imm[i + 6]];
+                      res := meth( obj );
                       ADD_LIST( tried, imm[i + 6] );
                       RUN_IMMEDIATE_METHODS_CHECKS := RUN_IMMEDIATE_METHODS_CHECKS + 1;
                       if TRACE_IMMEDIATE_METHODS then
-                          if imm[i + 7] = false then
-                              Print( "#I  immediate: ", NAME_FUNC( imm[i + 1] ), "\n" );
-                          else
-                              Print( "#I  immediate: ", NAME_FUNC( imm[i + 1] ), ": ", imm[i + 7], "\n" );
+                          Print( "#I  immediate: ", NAME_FUNC( imm[i + 1] ) );
+                          if imm[i + 7] <> false then
+                              Print( ": ", imm[i + 7] );
                           fi;
+                          if IsBound( LocationFunc ) then
+                              loc := VALUE_GLOBAL( "LocationFunc" )( meth );
+                              if loc <> "" then
+                                  Print( " at ", loc );
+                              fi;
+                          fi;
+                          if NAME_FUNC( meth ) <> "unknown" then
+                              Print( " via ", NAME_FUNC( meth ) );
+                          fi;
+                          Print( "\n" );
                       fi;
                       if res <> TRY_NEXT_METHOD then
                           IGNORE_IMMEDIATE_METHODS := true;
@@ -3852,8 +3943,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[2], 2, 0, HdlrFunc2 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 26);
- SET_ENDLINE_BODY(t_4, 117);
+ SET_STARTLINE_BODY(t_4, 27);
+ SET_ENDLINE_BODY(t_4, 135);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3961,8 +4052,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[3], 6, 0, HdlrFunc3 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 137);
- SET_ENDLINE_BODY(t_4, 261);
+ SET_STARTLINE_BODY(t_4, 155);
+ SET_ENDLINE_BODY(t_4, 279);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3977,8 +4068,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[4], -1, 0, HdlrFunc4 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 308);
- SET_ENDLINE_BODY(t_4, 310);
+ SET_STARTLINE_BODY(t_4, 326);
+ SET_ENDLINE_BODY(t_4, 328);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3993,8 +4084,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[5], -1, 0, HdlrFunc5 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 335);
- SET_ENDLINE_BODY(t_4, 337);
+ SET_STARTLINE_BODY(t_4, 353);
+ SET_ENDLINE_BODY(t_4, 355);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4147,8 +4238,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[6], 2, 0, HdlrFunc6 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 348);
- SET_ENDLINE_BODY(t_4, 559);
+ SET_STARTLINE_BODY(t_4, 366);
+ SET_ENDLINE_BODY(t_4, 577);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4207,8 +4298,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[7], 6, 0, HdlrFunc7 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_3, 578);
- SET_ENDLINE_BODY(t_3, 644);
+ SET_STARTLINE_BODY(t_3, 596);
+ SET_ENDLINE_BODY(t_3, 662);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4222,8 +4313,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[9], 6, 0, HdlrFunc9 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_3, 647);
- SET_ENDLINE_BODY(t_3, 653);
+ SET_STARTLINE_BODY(t_3, 665);
+ SET_ENDLINE_BODY(t_3, 671);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4251,8 +4342,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[10], 2, 0, HdlrFunc10 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 666);
- SET_ENDLINE_BODY(t_4, 690);
+ SET_STARTLINE_BODY(t_4, 684);
+ SET_ENDLINE_BODY(t_4, 708);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4336,8 +4427,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[11], 4, 0, HdlrFunc11 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 815);
- SET_ENDLINE_BODY(t_4, 926);
+ SET_STARTLINE_BODY(t_4, 833);
+ SET_ENDLINE_BODY(t_4, 944);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4388,8 +4479,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[17], -1, 0, HdlrFunc17 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 961);
- SET_ENDLINE_BODY(t_4, 1008);
+ SET_STARTLINE_BODY(t_4, 979);
+ SET_ENDLINE_BODY(t_4, 1026);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4472,14 +4563,17 @@ static Int PostRestore ( StructInitInfo * module )
  G_READ__LOCK = GVarName( "READ_LOCK" );
  G_UNLOCK = GVarName( "UNLOCK" );
  G_MakeReadOnlySingleObj = GVarName( "MakeReadOnlySingleObj" );
+ G_RUN__IMMEDIATE__METHODS__RUNS = GVarName( "RUN_IMMEDIATE_METHODS_RUNS" );
  G_RUN__IMMEDIATE__METHODS__CHECKS = GVarName( "RUN_IMMEDIATE_METHODS_CHECKS" );
  G_RUN__IMMEDIATE__METHODS__HITS = GVarName( "RUN_IMMEDIATE_METHODS_HITS" );
  G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
  G_IGNORE__IMMEDIATE__METHODS = GVarName( "IGNORE_IMMEDIATE_METHODS" );
  G_IMM__FLAGS = GVarName( "IMM_FLAGS" );
+ G_TRACE__IMMEDIATE__METHODS = GVarName( "TRACE_IMMEDIATE_METHODS" );
  G_IMMEDIATES = GVarName( "IMMEDIATES" );
  G_IMMEDIATE__METHODS = GVarName( "IMMEDIATE_METHODS" );
- G_TRACE__IMMEDIATE__METHODS = GVarName( "TRACE_IMMEDIATE_METHODS" );
+ G_LocationFunc = GVarName( "LocationFunc" );
+ G_VALUE__GLOBAL = GVarName( "VALUE_GLOBAL" );
  G_NewSpecialRegion = GVarName( "NewSpecialRegion" );
  G_METHODS__OPERATION__REGION = GVarName( "METHODS_OPERATION_REGION" );
  G_RankFilter = GVarName( "RankFilter" );
@@ -4505,7 +4599,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_Tester = GVarName( "Tester" );
  G_IsPrimeInt = GVarName( "IsPrimeInt" );
  G_DeclareOperation = GVarName( "DeclareOperation" );
- G_VALUE__GLOBAL = GVarName( "VALUE_GLOBAL" );
  G_DeclareAttribute = GVarName( "DeclareAttribute" );
  G_InstallMethod = GVarName( "InstallMethod" );
  G_PositionSortedOddPositions = GVarName( "PositionSortedOddPositions" );
@@ -4590,14 +4683,17 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "READ_LOCK", &GF_READ__LOCK );
  InitFopyGVar( "UNLOCK", &GF_UNLOCK );
  InitFopyGVar( "MakeReadOnlySingleObj", &GF_MakeReadOnlySingleObj );
+ InitCopyGVar( "RUN_IMMEDIATE_METHODS_RUNS", &GC_RUN__IMMEDIATE__METHODS__RUNS );
  InitCopyGVar( "RUN_IMMEDIATE_METHODS_CHECKS", &GC_RUN__IMMEDIATE__METHODS__CHECKS );
  InitCopyGVar( "RUN_IMMEDIATE_METHODS_HITS", &GC_RUN__IMMEDIATE__METHODS__HITS );
  InitFopyGVar( "BIND_GLOBAL", &GF_BIND__GLOBAL );
  InitCopyGVar( "IGNORE_IMMEDIATE_METHODS", &GC_IGNORE__IMMEDIATE__METHODS );
  InitCopyGVar( "IMM_FLAGS", &GC_IMM__FLAGS );
+ InitCopyGVar( "TRACE_IMMEDIATE_METHODS", &GC_TRACE__IMMEDIATE__METHODS );
  InitCopyGVar( "IMMEDIATES", &GC_IMMEDIATES );
  InitCopyGVar( "IMMEDIATE_METHODS", &GC_IMMEDIATE__METHODS );
- InitCopyGVar( "TRACE_IMMEDIATE_METHODS", &GC_TRACE__IMMEDIATE__METHODS );
+ InitCopyGVar( "LocationFunc", &GC_LocationFunc );
+ InitFopyGVar( "VALUE_GLOBAL", &GF_VALUE__GLOBAL );
  InitFopyGVar( "NewSpecialRegion", &GF_NewSpecialRegion );
  InitCopyGVar( "METHODS_OPERATION_REGION", &GC_METHODS__OPERATION__REGION );
  InitFopyGVar( "RankFilter", &GF_RankFilter );
@@ -4623,7 +4719,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "Tester", &GF_Tester );
  InitFopyGVar( "IsPrimeInt", &GF_IsPrimeInt );
  InitFopyGVar( "DeclareOperation", &GF_DeclareOperation );
- InitFopyGVar( "VALUE_GLOBAL", &GF_VALUE__GLOBAL );
  InitFopyGVar( "DeclareAttribute", &GF_DeclareAttribute );
  InitFopyGVar( "InstallMethod", &GF_InstallMethod );
  InitFopyGVar( "PositionSortedOddPositions", &GF_PositionSortedOddPositions );
@@ -4702,7 +4797,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = 452946,
+ .crc         = -3929700,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
