@@ -298,9 +298,6 @@ Error, `TraceMethods' require at least one argument
 gap> TraceMethods([ 1 ]);
 Error, <oper> must be an operation
 gap> TraceMethods( [ Size ] );
-gap> Size(g);
-#I  Size: system getter
-6
 gap> UntraceMethods( [ Size ] );
 
 # temporarily override (NEXT_)VMETHOD_PRINT_INFO to avoid system
@@ -310,10 +307,14 @@ gap> MakeReadWriteGlobal("NEXT_VMETHOD_PRINT_INFO");
 gap> old1:=VMETHOD_PRINT_INFO;;
 gap> old2:=NEXT_VMETHOD_PRINT_INFO;;
 gap> VMETHOD_PRINT_INFO := function(methods, i, arity)
->     Print("#I  ", methods[(arity+4)*i], "\n");
+>     local offset;
+>     offset := (arity+BASE_SIZE_METHODS_OPER_ENTRY)*(i-1)+arity;
+>     Print("#I  ", methods[offset+4], "\n");
 > end;;
 gap> NEXT_VMETHOD_PRINT_INFO := function(methods, i, arity)
->     Print("#I Trying next: ", methods[(arity+4)*i], "\n");
+>     local offset;
+>     offset := (arity+BASE_SIZE_METHODS_OPER_ENTRY)*(i-1)+arity;
+>     Print("#I Trying next: ", methods[offset+4], "\n");
 > end;;
 
 #

@@ -250,6 +250,9 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     methods[i+(narg+3)] := rank;
 
     methods[i+(narg+4)] := IMMUTABLE_COPY_OBJ(info);
+    if BASE_SIZE_METHODS_OPER_ENTRY >= 5 then
+        methods[i+(narg+5)] := MakeImmutable([INPUT_FILENAME(), INPUT_LINENUMBER()]);
+    fi;
 
     # flush the cache
     if IsHPCGAP then
