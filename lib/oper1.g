@@ -174,7 +174,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     # find the place to put the new method
     i := 0;
     while i < LEN_LIST(methods) and rank < methods[i+(narg+3)]  do
-        i := i + (narg+4);
+        i := i + (narg+BASE_SIZE_METHODS_OPER_ENTRY);
     od;
 
     # Now is a good time to see if the method is already there
@@ -196,12 +196,12 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
                     break;
                 fi;
             fi;
-            k := k+narg+4;
+            k := k+narg+BASE_SIZE_METHODS_OPER_ENTRY;
         od;
     fi;
     # push the other functions back
     if not REREADING or not replace then
-        methods{[narg+4+i+1..narg+4+LEN_LIST(methods)]}
+        methods{[narg+BASE_SIZE_METHODS_OPER_ENTRY+i+1..narg+BASE_SIZE_METHODS_OPER_ENTRY+LEN_LIST(methods)]}
           := methods{[i+1..LEN_LIST(methods)]};
     fi;
 
@@ -572,7 +572,7 @@ end );
 ##
 ##  The default setter method does nothing.
 ##
-LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + 6;  # one method
+LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + (BASE_SIZE_METHODS_OPER_ENTRY+2);  # one method
 
 InstallAttributeFunction(
     function ( name, filter, getter, setter, tester, mutflag )
