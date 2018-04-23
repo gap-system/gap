@@ -119,14 +119,14 @@ end);
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ApplicableMethodTypes",function(arg)
-local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
-      lent,nam,val,erg,has,need,isconstructor;
+local oper,narg,args,skip,verbos,fams,flags,i,j,methods,flag,flag2,
+      lent,offset,nam,val,erg,has,need,isconstructor;
   if Length(arg)<2 or not IsList(arg[2]) or not IsFunction(arg[1]) then
     Error("usage: ApplicableMethodTypes(<opr>,<arglist>[,<verbosity>[,<nr>]])");
   fi;
   oper:=arg[1];
   isconstructor:=IS_CONSTRUCTOR(oper);
-  obj:=arg[2];
+  args:=arg[2];
   if Length(arg)>2 then
     verbos:=arg[3];
   else
@@ -142,12 +142,12 @@ local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
   else
     skip:=0;
   fi;
-  l:=Length(obj);
+  narg:=Length(args);
 
   # get families and filters
   flags:=[];
   fams:=[];
-  for i in obj do
+  for i in args do
     if IsFilter(i) then
       Add(flags,FLAGS_FILTER(i));
       Add(fams,fail);
@@ -164,19 +164,20 @@ local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
     Info(InfoWarning,1,"Family predicate cannot be tested");
   fi;
 
-  methods:=METHODS_OPERATION(oper,l);
+  methods:=METHODS_OPERATION(oper,narg);
   if verbos > 0 then
-    Print("#I  Searching Method for ",NameFunction(oper)," with ",l,
+    Print("#I  Searching Method for ",NameFunction(oper)," with ",narg,
 	  " arguments:\n");
   fi;
-  lent:=BASE_SIZE_METHODS_OPER_ENTRY+l; #length of one entry
+  lent:=BASE_SIZE_METHODS_OPER_ENTRY+narg; #length of one entry
   if verbos > 0 then 
     Print("#I  Total: ", Length(methods)/lent," entries\n");
   fi;
   for i in [1..Length(methods)/lent] do
-    nam:=methods[lent*(i-1)+l+4];
-    val:=methods[lent*(i-1)+l+3];
-    oper:=methods[lent*(i-1)+l+2];
+    offset:=lent*(i-1);
+    nam:=methods[offset+narg+4];
+    val:=methods[offset+narg+3];
+    oper:=methods[offset+narg+2];
     if verbos>1 then
       Print("#I  Method ",i,": ``",nam,"''");
       if LocationFunc(oper) <> "" then
@@ -188,15 +189,15 @@ local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
     fi;
     flag:=true;
     j:=1;
-    while j<=l and (flag or verbos>3) do
+    while j<=narg and (flag or verbos>3) do
       if j=1 and isconstructor then
-	flag2:=IS_SUBSET_FLAGS(methods[lent*(i-1)+1+j],flags[j]);
+	flag2:=IS_SUBSET_FLAGS(methods[offset+1+j],flags[j]);
       else
-	flag2:=IS_SUBSET_FLAGS(flags[j],methods[lent*(i-1)+1+j]);
+	flag2:=IS_SUBSET_FLAGS(flags[j],methods[offset+1+j]);
       fi;
       flag:=flag and flag2;
       if flag2=false and verbos>2 then
-	need:=NamesFilter(methods[lent*(i-1)+1+j]);
+	need:=NamesFilter(methods[offset+1+j]);
 	if j=1 and isconstructor then
 	  Print("#I   - ",Ordinal(j)," argument must be ",
 		need,"\n");
@@ -209,8 +210,8 @@ local oper,l,obj,skip,verbos,fams,flags,i,j,methods,flag,flag2,
       j:=j+1;
     od;
     if flag then
-      if fams=fail or CallFuncList(methods[lent*(i-1)+1],fams) then
-	oper:=methods[lent*(i-1)+j+1];
+      if fams=fail or CallFuncList(methods[offset+1],fams) then
+	oper:=methods[offset+j+1];
 	if verbos=1 then
 	  Print("#I  Method ",i,": ``",nam,"''");
 	  if LocationFunc(oper) <> "" then
