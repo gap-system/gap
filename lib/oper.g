@@ -361,15 +361,22 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
 #T (This would make an if statement in `RunImmediateMethods' unnecessary!)
 
       # Find the place to put the new method.
-      if not IsBound( IMMEDIATES[j] ) then
-          if IsHPCGAP then
-              IMMEDIATES[j]:= MakeImmutable([]);
+      if not IsHPCGAP then
+          if IsBound( IMMEDIATES[j] ) then
+              imm := IMMEDIATES[j];
           else
-              IMMEDIATES[j]:= [];
+              imm := [];
+              IMMEDIATES[j] := imm;
+          fi;
+      else
+          if IsBound( IMMEDIATES[j] ) then
+              imm := SHALLOW_COPY_OBJ(IMMEDIATES[j]);
+          else
+              imm := [];
           fi;
       fi;
       i := 0;
-      while i < LEN_LIST(IMMEDIATES[j]) and rank < IMMEDIATES[j][i+5]  do
+      while i < LEN_LIST(imm) and rank < imm[i+5]  do
           i := i + 7;
       od;
 
@@ -377,11 +384,9 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       if REREADING then
           replace := false;
           k := i;
-          while k < LEN_LIST(IMMEDIATES[j]) and 
-            rank = IMMEDIATES[j][k+5] do
-              if info = IMMEDIATES[j][k+7] and
-                 oper = IMMEDIATES[j][k+1] and
-                 FLAGS_FILTER( filter ) = IMMEDIATES[j][k+4] then
+          while k < LEN_LIST(imm) and rank = imm[k+5] do
+              if info = imm[k+7] and oper = imm[k+1] and
+                 FLAGS_FILTER( filter ) = imm[k+4] then
                   replace := true;
                   i := k;
                   break;
@@ -391,12 +396,6 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       fi;
       
       # push the other functions back
-      imm:=IMMEDIATES[j];
-      if IsHPCGAP then
-          # ShallowCopy is not bound yet, so we take a sublist
-          imm:=imm{[1..LEN_LIST(IMMEDIATES[j])]};
-      fi;
-
       if not REREADING or not replace then
           imm{[i+8..7+LEN_LIST(imm)]} := imm{[i+1..LEN_LIST(imm)]};
       fi;
