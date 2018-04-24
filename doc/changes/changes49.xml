@@ -1,0 +1,1209 @@
+<Chapter Label="ChangesGAP48toGAP49"> 
+<Heading>Changes between &GAP; 4.8 and &GAP; 4.9</Heading>
+
+This chapter contains an overview of the most important changes
+introduced in &GAP; 4.9.1 release (the 1st public release of &GAP; 4.9).
+Later it will also contain information about subsequent update 
+releases for &GAP; 4.9.
+<P/>
+
+These changes are also listed on the Wiki page
+<URL>https://github.com/gap-system/GAP/wiki/gap-4.9-release-notes</URL>.
+
+<Section Label="GAP491">
+<Heading>&GAP; 4.9.1 (May 2018)</Heading>
+
+<Subsection Label="Changes in the core GAP49 system"> 
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.9</Heading>
+
+Major changes:
+
+<List>
+<Item>
+Merged &HPCGAP; into &GAP;. For details, please refer to Subsection
+<Ref Label="HPC-GAP-WIP"/> at the end of these release notes.
+</Item>
+<Item>
+&GAP; has a new build system, which resolves many quirks and issues with the
+old system, and will be easier to maintain. For regular users, the usual 
+<C>./configure &amp;&amp; make</C> should work fine as before.
+If you are interested in technical details on the new build system,
+take a look at <File>README.buildsys.md</File>.
+</Item>
+<Item>
+The guidelines for developing &GAP; packages were revised and moved from the
+Example package to <Ref BookName="ref" Label="Using and Developing GAP Packages"/>
+(<URL><LinkText>&Hash;484</LinkText><Link>https://github.com/gap-system/gap/pull/484</Link></URL>).
+</Item>
+<Item>
+In addition to supporting single argument lambda functions like 
+<C>a -> a+1</C>, &GAP; now supports lambdas with fewer or more than
+one argument, or even a variable number. E.g. <C>{a,b} -> a+b</C>
+is a shorthand for <C>function(a,b) return a+b; end</C>. For details
+on how to use this, see <Ref BookName="ref" Sect="Function"/>.
+For technical details, e.g. why we did not choose the syntax
+<C>(a,b) -> a+b</C>, see
+<URL><LinkText>&Hash;490</LinkText><Link>https://github.com/gap-system/gap/pull/490</Link></URL>.
+</Item>
+<Item>
+Function calls, list accesses and records accesses now can be nested.
+For example, you can now write <C>y := f().x;</C> (essentially equivalent to
+<C>y := f();; y := y.x;</C>), which previously would have resulted in
+an error; see <URL><LinkText>&Hash;457</LinkText><Link>https://github.com/gap-system/gap/issues/457</Link></URL>
+and <URL><LinkText>&Hash;462</LinkText><Link>https://github.com/gap-system/gap/pull/462</Link></URL>).
+</Item>
+<Item>
+The libraries of small, primitive and transitive groups which previously
+were an integral part of &GAP; were split into three separate packages
+<URL Text="PrimgGrp">http://gap-packages.github.io/primgrp/</URL>,
+<URL Text="SmallGrp">https://gap-packages.github.io/smallgrp/</URL> and
+<URL Text="TransGrp">http://www.math.colostate.edu/~hulpke/transgrp/</URL>.
+For backwards compatibility, these are required packages in &GAP; 4.9 (i.e.,
+&GAP; will not start without them). We plan to change this for &GAP; 4.10
+(see <URL><LinkText>&Hash;2434</LinkText><Link>https://github.com/gap-system/gap/pull/2434</Link></URL>),
+once all packages which currently implicitly rely on these
+new packages had time to add explicit dependencies on them
+(<URL><LinkText>&Hash;1650</LinkText><Link>https://github.com/gap-system/gap/pull/1650</Link></URL>,
+<URL><LinkText>&Hash;1714</LinkText><Link>https://github.com/gap-system/gap/pull/1714</Link></URL>).
+</Item>
+<Item>
+The performance of &GAP;'s sorting functions (such as
+<Ref BookName="ref" Oper="Sort"/>, <Ref BookName="ref" Oper="SortParallel"/>,
+etc.) has been substantially improved, in some examples by more than
+a factor of four: as a trivial example, compare the timing for
+<C>Sort([1..100000000] * 0)</C>. As a side effect, the result
+of sorting lists with equal entries may produce
+different answers compared to previous &GAP; versions.
+If you would like to make your code independant of the exact
+employed sorting algorithm, you can use the newly added
+<Ref BookName="ref" Oper="StableSort"/>, <Ref BookName="ref" Oper="StableSortBy"/>
+and <Ref BookName="ref" Oper="StableSortParallel"/>. (For some technical details,
+see <URL><LinkText>&Hash;609</LinkText><Link>https://github.com/gap-system/gap/pull/609</Link></URL>).
+</Item>
+<Item>
+We removed our old home-grown big integer code, and instead always use the
+GMP based big integer code. This means that the GMP library now is a
+required dependency, not just an optional one. 
+Note that GAP has been using GMP big integer arithmetic for a long time
+by default, and we also have been bundling GMP with GAP. So this change
+mostly removed code that was never in use for most users.
+</Item>
+<Item>
+A number of improvements have been made to <Ref BookName="ref" Oper="Random"/>. 
+These may lead to different sequences of numbers being created.
+On the up side, many more methods for <Ref BookName="ref" Oper="Random"/>
+(and other <C>RandomXYZ</C> operations) now optionally take an explicit
+<Ref BookName="ref" Oper="RandomSource"/> as first argument
+(but not yet all: help with issue
+<URL><LinkText>&Hash;1098</LinkText><Link>https://github.com/gap-system/gap/pull/1098</Link></URL>
+is welcome). Some relevant pull requests:
+<List>
+<Item>
+    Allow creating random permutations using a random source
+   (<URL><LinkText>&Hash;1165</LinkText><Link>https://github.com/gap-system/gap/pull/1165</Link></URL>)
+</Item>
+<Item>
+    Let more <Ref BookName="ref" Oper="Random"/> methods use an alternative source
+    (<URL><LinkText>&Hash;1168</LinkText><Link>https://github.com/gap-system/gap/pull/1168</Link></URL>)
+</Item>
+<Item>
+    Help <Ref BookName="ref" Oper="Random"/> methods to
+    use <Ref BookName="ref" Oper="RandomSource"/>
+    (<URL><LinkText>&Hash;810</LinkText><Link>https://github.com/gap-system/gap/pull/810</Link></URL>)
+</Item>
+<Item>
+    Remove uses of old random generator
+    (<URL><LinkText>&Hash;808</LinkText><Link>https://github.com/gap-system/gap/pull/808</Link></URL>)
+</Item>
+<Item>
+    Fix <Ref BookName="ref" Oper="Random"/> on long (>2^28) lists
+    (<URL><LinkText>&Hash;781</LinkText><Link>https://github.com/gap-system/gap/pull/781</Link></URL>)
+</Item>
+<Item>
+    Fix <Ref BookName="ref" Func="RandomUnimodularMat"/>
+    (<URL><LinkText>&Hash;1511</LinkText><Link>https://github.com/gap-system/gap/pull/1511</Link></URL>)
+</Item>
+<Item>
+    Use <Ref BookName="ref" Oper="RandomSource"/> in a few more places
+    (<URL><LinkText>&Hash;1599</LinkText><Link>https://github.com/gap-system/gap/pull/1599</Link></URL>)
+</Item>
+</List>
+</Item>
+<Item>
+The output and behaviour of the profiling system has been substantially improved:
+<List>
+<Item>
+    Make profiling correctly handle the same file being opened multiple times
+    (<URL><LinkText>&Hash;1069</LinkText><Link>https://github.com/gap-system/gap/pull/1069</Link></URL>)
+</Item>
+<Item>
+    Do not profile the <C>return</C> statements
+    (<Ref BookName="ref" Label="return"/>) inserted into the end of functions
+    (<URL><LinkText>&Hash;1073</LinkText><Link>https://github.com/gap-system/gap/pull/1073</Link></URL>)
+</Item>
+<Item>
+    Ensure we reset <C>OutputtedFilenameList</C>
+    in profiling when a workspace is restored
+    (<URL><LinkText>&Hash;1164</LinkText><Link>https://github.com/gap-system/gap/pull/1164</Link></URL>)
+</Item>
+<Item>
+    Better tracking of amounts of memory allocated and time spent
+    in the garbage collector
+    (<URL><LinkText>&Hash;1806</LinkText><Link>https://github.com/gap-system/gap/pull/1806</Link></URL>)
+</Item>
+<Item>
+    Allow profiling of memory usage
+    (<URL><LinkText>&Hash;1808</LinkText><Link>https://github.com/gap-system/gap/pull/1808</Link></URL>)
+</Item>
+<Item>
+    Remove profiling limit on files with &lt;= 2^16 lines
+    (<URL><LinkText>&Hash;1913</LinkText><Link>https://github.com/gap-system/gap/pull/1913</Link></URL>)
+</Item>
+</List>
+</Item>
+<Item>
+In many cases &GAP; now outputs the filename and location of functions in
+helpful places, e.g. in error messages or when displaying compiled functions.
+We also try to always use the format <C>FILENAME:LINE</C>, which various
+utilities already know how to parse (e.g. in <Package>iTerm2</Package>,
+cmd-clicking on such a string can be configured to open an editor
+for the file at the indicated line). For some technical details,
+see <URL><LinkText>&Hash;469</LinkText><Link>https://github.com/gap-system/gap/pull/469</Link></URL>,
+<URL><LinkText>&Hash;755</LinkText><Link>https://github.com/gap-system/gap/pull/755)</Link></URL>,
+<URL><LinkText>&Hash;1058</LinkText><Link>https://github.com/gap-system/gap/pull/1058</Link></URL>.
+</Item>
+<Item>
+&GAP; now supports constant variables, whose value cannot
+change anymore during runtime; code using such constants can
+then be slightly optimized by &GAP;. E.g. if <C>foo</C> is turned
+into a constant variable bound to the value <K>false</K>, then &GAP;
+can optimize <C>if foo then ... fi;</C> blocks completely away.
+For details, see <Ref BookName="ref" Func="MakeConstantGlobal"/> in
+<Ref BookName="ref" Sect="More About Global Variables"/>.
+(<URL><LinkText>&Hash;1682</LinkText><Link>https://github.com/gap-system/gap/pull/1682</Link></URL>,
+<URL><LinkText>&Hash;1770</LinkText><Link>https://github.com/gap-system/gap/pull/1770</Link></URL>)
+</Item>
+</List>
+
+Other changes:
+<List>
+<Item>
+Enhance <Ref BookName="ref" Attr="StructureDescription"/> with a major rewrite, 
+enhancing <C>DirectFactorsOfGroup"</C> and adding 
+<C>SemidirectDecompositions</C>;
+the core algorithm now also works for infinite abelian groups. Further,
+it became faster by quickly finding abelian direct factors and recognizing
+several cases where the group is direct indecomposable.
+(<URL><LinkText>&Hash;379</LinkText><Link>https://github.com/gap-system/gap/pull/379</Link></URL>, 
+<URL><LinkText>&Hash;763</LinkText><Link>https://github.com/gap-system/gap/pull/763</Link></URL>, 
+<URL><LinkText>&Hash;985</LinkText><Link>https://github.com/gap-system/gap/pull/985</Link></URL>)
+</Item>
+<Item>
+Mark <Ref BookName="ref" Attr="FittingSubgroup"/> and
+<Ref BookName="ref" Attr="FrattiniSubgroup"/> as nilpotent
+(<URL><LinkText>&Hash;400</LinkText><Link>https://github.com/gap-system/gap/pull/400</Link></URL>)
+</Item>
+<Item>
+Add method for <Ref BookName="ref" Attr="Socle"/> for finite nilpotent groups
+(<URL><LinkText>&Hash;402</LinkText><Link>https://github.com/gap-system/gap/pull/402</Link></URL>)
+</Item>
+<Item>
+Change <Ref BookName="ref" Oper="ViewString"/> and
+<Ref BookName="ref" Attr="String"/> methods for various
+inverse semigroups and monoids
+(<URL><LinkText>&Hash;438</LinkText><Link>https://github.com/gap-system/gap/pull/438</Link></URL>, 
+<URL><LinkText>&Hash;880</LinkText><Link>https://github.com/gap-system/gap/pull/880</Link></URL>,
+<URL><LinkText>&Hash;882</LinkText><Link>https://github.com/gap-system/gap/pull/882</Link></URL>)
+</Item>
+<Item>
+Enhance some nilpotent and <M>p</M>-group attributes
+(<URL><LinkText>&Hash;442</LinkText><Link>https://github.com/gap-system/gap/pull/442</Link></URL>)
+</Item>
+<Item>
+Improve <Ref BookName="ref" Func="Union"/> for a list with many ranges
+(<URL><LinkText>&Hash;444</LinkText><Link>https://github.com/gap-system/gap/pull/444</Link></URL>)
+</Item>
+<Item>
+Add <Ref BookName="ref" Func="UserHomeExpand"/>, a function
+to expand <C>~</C> in filenames.
+(<URL><LinkText>&Hash;447</LinkText><Link>https://github.com/gap-system/gap/pull/447</Link></URL>)
+</Item>
+<Item>
+Extra hint in <Q>No Method Found</Q> error message 
+if one of the arguments is <K>fail</K>
+(<URL><LinkText>&Hash;460</LinkText><Link>https://github.com/gap-system/gap/pull/460</Link></URL>)
+</Item>
+<Item>
+Tell Sylow subgroups of natural <M>A_n</M> or <M>S_n</M>
+their size when we make them
+(<URL><LinkText>&Hash;529</LinkText><Link>https://github.com/gap-system/gap/pull/529</Link></URL>)
+</Item>
+<Item>
+Some small enhancements on Sylow and Hall subgroup computations,
+mostly for nilpotent groups.
+(<URL><LinkText>&Hash;535</LinkText><Link>https://github.com/gap-system/gap/pull/535</Link></URL>)
+</Item>
+<Item>
+Remove <File>.zoo</File> archive related tools
+(<URL><LinkText>&Hash;540</LinkText><Link>https://github.com/gap-system/gap/pull/540</Link></URL>)
+</Item>
+<Item>
+Add new <Ref BookName="ref" Attr="FrattiniSubgroup"/>,
+<Ref BookName="ref" Attr="MaximalNormalSubgroups"/>, 
+<Ref BookName="ref" Attr="MinimalNormalSubgroups"/> and
+<Ref BookName="ref" Attr="Socle"/> methods for abelian and/or
+solvable groups, even infinite ones. The new methods are only
+triggered if the group already knows that it is abelian and/or solvable.
+(<URL><LinkText>&Hash;552</LinkText><Link>https://github.com/gap-system/gap/pull/552</Link></URL>,
+<URL><LinkText>&Hash;583</LinkText><Link>https://github.com/gap-system/gap/pull/583</Link></URL>,
+<URL><LinkText>&Hash;606</LinkText><Link>https://github.com/gap-system/gap/pull/606</Link></URL>)
+</Item>
+<Item>
+New attribute <C>NormalHallSubgroups</C>,
+returning a list of all normal Hall subgroups of a group.
+(<URL><LinkText>&Hash;561</LinkText><Link>https://github.com/gap-system/gap/pull/561</Link></URL>)
+</Item>
+<Item>
+Add <Ref BookName="ref" Oper="ComplementClassesRepresentatives"/>
+fallback method for arbitrary groups
+(<URL><LinkText>&Hash;563</LinkText><Link>https://github.com/gap-system/gap/pull/563</Link></URL>)
+</Item>
+<Item>
+(<URL><LinkText>&Hash;612</LinkText><Link>https://github.com/gap-system/gap/pull/612</Link></URL>)
+Add parsing of hex literals in strings, e.g. <C>"\0x61"</C> is 
+turned into <C>"a"</C>
+(<URL><LinkText>&Hash;612</LinkText><Link>https://github.com/gap-system/gap/pull/612</Link></URL>)
+</Item>
+<Item>
+Collection of enhancements
+(<URL><LinkText>&Hash;683</LinkText><Link>https://github.com/gap-system/gap/pull/683</Link></URL>)
+</Item>
+<Item>
+Various speed improvements to polynomial factorisation and the &GAP; MeatAxe
+(<URL><LinkText>&Hash;720</LinkText><Link>https://github.com/gap-system/gap/pull/720</Link></URL>,
+<URL><LinkText>&Hash;1027</LinkText><Link>https://github.com/gap-system/gap/pull/1027</Link></URL>)
+</Item>
+<Item>
+The code and documentation for transformations is improved and
+corrected in many instances
+(<URL><LinkText>&Hash;727</LinkText><Link>https://github.com/gap-system/gap/pull/727</Link></URL>,
+<URL><LinkText>&Hash;732</LinkText><Link>https://github.com/gap-system/gap/pull/732</Link></URL>)
+</Item>
+<Item>
+Change <C>RootFFE</C> to optionally takes a field or
+field size as first argument, from which the roots will be taken
+(<URL><LinkText>&Hash;761</LinkText><Link>https://github.com/gap-system/gap/pull/761</Link></URL>)
+</Item>
+<Item>
+Change <Ref BookName="ref" Attr="Permanent"/> from a global
+function to an attribute
+(<URL><LinkText>&Hash;777</LinkText><Link>https://github.com/gap-system/gap/pull/777</Link></URL>)
+</Item>
+<Item>
+Add <Ref BookName="ref" Oper="CallFuncListWrap"/> to wrap return value to
+allow distinguishing between functions which return and functions which don't
+(<URL><LinkText>&Hash;824</LinkText><Link>https://github.com/gap-system/gap/pull/824</Link></URL>)
+</Item>
+<Item>
+Allow repeated use of same <Ref BookName="ref" Func="DeclareSynonym"/> call
+(<URL><LinkText>&Hash;835</LinkText><Link>https://github.com/gap-system/gap/pull/835</Link></URL>)
+</Item>
+<Item>
+New implementation of modified Todd-Coxeter (the old one had bugs,
+see <URL><LinkText>&Hash;302</LinkText><Link>https://github.com/gap-system/gap/issues/302</Link></URL>),
+<URL><LinkText>&Hash;843</LinkText><Link>https://github.com/gap-system/gap/pull/843</Link></URL>)
+</Item>
+<Item>
+New functionality: Cannon/Holt automorphisms and others
+(<URL><LinkText>&Hash;878</LinkText><Link>https://github.com/gap-system/gap/pull/878</Link></URL>)
+</Item>
+<Item>
+Add <Ref BookName="ref" Prop="IsPowerfulPGroup"/> property,
+and a <Ref BookName="ref" Attr="FrattiniSubgroup"/> method for
+powerful <M>p</M>-groups
+(<URL><LinkText>&Hash;894</LinkText><Link>https://github.com/gap-system/gap/pull/894</Link></URL>)
+</Item>
+<Item>
+Improve performance for group isomorphism/automorphisms
+(<URL><LinkText>&Hash;896</LinkText><Link>https://github.com/gap-system/gap/pull/896</Link></URL>,
+<URL><LinkText>&Hash;968</LinkText><Link>https://github.com/gap-system/gap/pull/968</Link></URL>)
+</Item>
+<Item>
+Make <Ref BookName="ref" Func="ListX"/>,
+<Ref BookName="ref" Func="SetX"/>,
+<Ref BookName="ref" Func="SumX"/> and 
+<Ref BookName="ref" Func="ProductX"/>
+support lists which are not collections
+(<URL><LinkText>&Hash;903</LinkText><Link>https://github.com/gap-system/gap/pull/903</Link></URL>)
+</Item>
+<Item>
+Some improvements for <Ref BookName="ref" Func="LatticeByCyclicExtension"/>
+(<URL><LinkText>&Hash;905</LinkText><Link>https://github.com/gap-system/gap/pull/905</Link></URL>)
+</Item>
+<Item>
+Add helpers to retrieve information about operations and filters:
+<Ref BookName="ref" Func="CategoryByName"/>,
+<Ref BookName="ref" Func="TypeOfOperation"/>, 
+<Ref BookName="ref" Func="FilterByName"/>,
+<Ref BookName="ref" Oper="FiltersObj"/>,
+<Ref BookName="ref" Oper="FiltersType"/>,
+<C>IdOfFilter</C>,
+<C>IdOfFilterByName</C>,
+<Ref BookName="ref" Func="IsAttribute"/>,
+<Ref BookName="ref" Func="IsCategory"/>,
+<Ref BookName="ref" Func="IsProperty"/>,
+<Ref BookName="ref" Func="IsRepresentation"/>
+(<URL><LinkText>&Hash;925</LinkText><Link>https://github.com/gap-system/gap/pull/925</Link></URL>,
+<URL><LinkText>&Hash;1593</LinkText><Link>https://github.com/gap-system/gap/pull/1593</Link></URL>)
+</Item>
+<Item>
+Add case-insensitive autocomplete
+(<URL><LinkText>&Hash;928</LinkText><Link>https://github.com/gap-system/gap/pull/928</Link></URL>)
+</Item>
+<Item>
+Give better error message if a help file is missing
+(<URL><LinkText>&Hash;939</LinkText><Link>https://github.com/gap-system/gap/pull/939</Link></URL>)
+</Item>
+<Item>
+Add <Ref BookName="ref" Func="LowercaseChar"/> and
+<Ref BookName="ref" Func="UppercaseChar"/>
+(<URL><LinkText>&Hash;952</LinkText><Link>https://github.com/gap-system/gap/pull/952</Link></URL>)
+</Item>
+<Item>
+Add <Ref BookName="ref" Func="PositionMaximum"/> and
+<Ref BookName="ref" Func="PositionMinimum"/>
+(<URL><LinkText>&Hash;956</LinkText><Link>https://github.com/gap-system/gap/pull/956</Link></URL>)
+</Item>
+<Item>
+Switching default command history length from infinity to 1000
+(<URL><LinkText>&Hash;960</LinkText><Link>https://github.com/gap-system/gap/pull/960</Link></URL>)
+</Item>
+<Item>
+Allow conversion of <C>-infinity</C> to float via
+<Ref BookName="ref" Constr="NewFloat"/> and 
+<Ref BookName="ref" Oper="MakeFloat"/>
+(<URL><LinkText>&Hash;961</LinkText><Link>https://github.com/gap-system/gap/pull/961</Link></URL>)
+</Item>
+<Item>
+Add option <C>NoPrecomputedData</C> to avoid use of data libraries
+in certain computations (useful if one wants to verify the
+content of these data libraries)
+(<URL><LinkText>&Hash;986</LinkText><Link>https://github.com/gap-system/gap/pull/986</Link></URL>)
+</Item>
+<Item>
+Remove one-argument version of <Ref BookName="ref" Oper="AsPartialPerm"/>
+for a transformation
+(<URL><LinkText>&Hash;1036</LinkText><Link>https://github.com/gap-system/gap/pull/1036</Link></URL>)
+</Item>
+<Item>
+Partial perms now have a <Ref BookName="ref" Attr="MultiplicativeZero"/>
+rather than a <Ref BookName="ref" Attr="Zero"/>, since they are
+multiplicative rather than additive elements
+(<URL><LinkText>&Hash;1040</LinkText><Link>https://github.com/gap-system/gap/pull/1040</Link></URL>)
+</Item>
+<Item>
+Various enhancements:
+(<URL><LinkText>&Hash;1046</LinkText><Link>https://github.com/gap-system/gap/pull/1046</Link></URL>)
+<List>
+<Item>
+A bugfix in <Ref BookName="ref" Oper="NaturalHomomorphismByIdeal"/>
+for polynomial rings
+</Item>
+<Item>
+Improvements in handling solvable permutation groups
+</Item>
+<Item>
+The trivial group now is a member of the perfect groups library
+</Item>
+<Item>
+Improvements in using tabulated data for maximal subgroups
+</Item>
+</List>    
+</Item>
+<Item>
+New tests for group constructors and some fixes
+(e.g. <C>GO(1,4,5)</C> used to trigger an error)
+(<URL><LinkText>&Hash;1053</LinkText><Link>https://github.com/gap-system/gap/pull/1053</Link></URL>)
+</Item>
+<Item>
+Make <C>HasSolvableFactorGroup</C> slightly more efficient
+(<URL><LinkText>&Hash;1062</LinkText><Link>https://github.com/gap-system/gap/pull/1062</Link></URL>)
+</Item>
+<Item>
+Enhance <C>HasXXFactorGroup</C>
+(<URL><LinkText>&Hash;1066</LinkText><Link>https://github.com/gap-system/gap/pull/1066</Link></URL>)
+</Item>
+<Item>
+Remove GAP4stones from tests
+(<URL><LinkText>&Hash;1072</LinkText><Link>https://github.com/gap-system/gap/pull/1072</Link></URL>)
+</Item>
+<Item>
+<Ref BookName="ref" Oper="AsMonoid"/> and
+<Ref BookName="ref" Oper="AsSemigroup"/> are now operations, and various bugs
+were resolved related to isomorphisms of semigroups and monoids
+(<URL><LinkText>&Hash;1112</LinkText><Link>https://github.com/gap-system/gap/pull/1112</Link></URL>)
+</Item>
+<Item>
+Mark isomorphisms between trivial groups as bijective
+(<URL><LinkText>&Hash;1116</LinkText><Link>https://github.com/gap-system/gap/pull/1116</Link></URL>)
+</Item>
+<Item>
+Speed up <Ref BookName="ref" Func="RootMod"/> and
+<Ref BookName="ref" Oper="RootsMod"/> for moduli with large
+prime factors; also add <C>IS_PROBAB_PRIME_INT</C> kernel function
+(<URL><LinkText>&Hash;1141</LinkText><Link>https://github.com/gap-system/gap/pull/1141</Link></URL>)
+</Item>
+<Item>
+The search for the documentation of system setters and testers
+now returns corresponding attributes and properties
+(<URL><LinkText>&Hash;1144</LinkText><Link>https://github.com/gap-system/gap/pull/1144</Link></URL>)
+</Item>
+<Item>
+Remove command line options <C>-c</C>, <C>-U</C>, <C>-i</C>
+and <C>-X</C>, add <C>--quitonbreak</C>
+(<URL><LinkText>&Hash;1192</LinkText><Link>https://github.com/gap-system/gap/pull/1192</Link></URL>,
+<URL><LinkText>&Hash;1265</LinkText><Link>https://github.com/gap-system/gap/pull/1265</Link></URL>,
+<URL><LinkText>&Hash;1421</LinkText><Link>https://github.com/gap-system/gap/pull/1421</Link></URL>,
+<URL><LinkText>&Hash;1448</LinkText><Link>https://github.com/gap-system/gap/pull/1448</Link></URL>)
+</Item>
+<Item>
+Remove Itanium support
+(<URL><LinkText>&Hash;1163</LinkText><Link>https://github.com/gap-system/gap/pull/1163</Link></URL>)
+</Item>
+<Item>
+Adding two strings now shows a more helpful error message
+(<URL><LinkText>&Hash;1314</LinkText><Link>https://github.com/gap-system/gap/pull/1314</Link></URL>)
+</Item>
+<Item>
+Suppress <C>Unbound global variable</C> warning in
+<Ref BookName="ref" Func="IsBound" Label="for a global variable"/>
+(<URL><LinkText>&Hash;1334</LinkText><Link>https://github.com/gap-system/gap/pull/1334</Link></URL>)
+</Item>
+<Item>
+Increase warning level for Conway polynomial
+(<URL><LinkText>&Hash;1363</LinkText><Link>https://github.com/gap-system/gap/pull/1363</Link></URL>)
+</Item>
+<Item>
+Performance improvements to maximal and intermediate subgroups,
+fix of <Ref BookName="ref" Func="RepresentativeAction"/>
+(<URL><LinkText>&Hash;1390</LinkText><Link>https://github.com/gap-system/gap/pull/1390</Link></URL>)
+</Item>
+<Item>
+Revise Chapter 52 of the reference manual (fp semigroups and monoids)
+(<URL><LinkText>&Hash;1441</LinkText><Link>https://github.com/gap-system/gap/pull/1441</Link></URL>)
+</Item>
+<Item>
+Improve the performance of the <C>Info</C>
+(<Ref BookName="ref" Label="Info"/>) statement
+(<URL><LinkText>&Hash;1464</LinkText><Link>https://github.com/gap-system/gap/pull/1464</Link></URL>,
+<URL><LinkText>&Hash;1770</LinkText><Link>https://github.com/gap-system/gap/pull/1770</Link></URL>)
+</Item>
+<Item>
+When printing function bodies, avoid some redundant spaces
+(<URL><LinkText>&Hash;1498</LinkText><Link>https://github.com/gap-system/gap/pull/1498</Link></URL>)
+</Item>
+<Item>
+Add kernel functions for directly accessing entries of GF2/8bit compressed matrices
+(<URL><LinkText>&Hash;1585</LinkText><Link>https://github.com/gap-system/gap/pull/1585</Link></URL>)
+</Item>
+<Item>
+Add <Ref BookName="ref" Attr="String"/> method for functions
+(<URL><LinkText>&Hash;1591</LinkText><Link>https://github.com/gap-system/gap/pull/1591</Link></URL>)
+</Item>
+<Item>
+Check modules were compiled with the same version of &GAP; when loading them
+(<URL><LinkText>&Hash;1600</LinkText><Link>https://github.com/gap-system/gap/pull/1600</Link></URL>)
+</Item>
+<Item>
+When printing function, reproduce <C>TryNextMethod()</C> correctly
+(<URL><LinkText>&Hash;1613</LinkText><Link>https://github.com/gap-system/gap/pull/1613</Link></URL>)
+</Item>
+<Item>
+New <Q>Bitfields</Q> feature (<Ref BookName="ref" Label="Bitfields"/>)
+providing efficient support for packing multiple data items into a single
+word for cache and memory efficiency
+(<URL><LinkText>&Hash;1616</LinkText><Link>https://github.com/gap-system/gap/pull/1616</Link></URL>)
+</Item>
+<Item>
+Improved <File>bin/BuildPackages.sh</File>, in particular
+    added option to abort upon failure
+    (<URL><LinkText>&Hash;2022</LinkText><Link>https://github.com/gap-system/gap/pull/2022</Link></URL>) 
+</Item>
+<Item>
+Rewrote integer code (GMP) for better performance of certain
+large integer operations, and added kernel implementations of
+various functions, including these:
+<List>
+<Item>
+    Add kernel implementations of <Ref BookName="ref" Func="AbsInt"/>,
+    <Ref BookName="ref" Func="SignInt"/>; 
+    add new kernel functions <C>ABS_RAT</C>, <C>SIGN_RAT</C>; 
+    and speed up <Ref BookName="ref" Label="mod"/>,
+    <Ref BookName="ref" Func="RemInt"/>,
+    <Ref BookName="ref" Func="QuoInt"/>
+    for divisors which are small powers of 2
+    (<URL><LinkText>&Hash;1045</LinkText><Link>https://github.com/gap-system/gap/pull/1045</Link></URL>)
+</Item>
+<Item>
+    Add kernel implementations of <Ref BookName="ref" Func="Jacobi"/>,
+    <Ref BookName="ref" Func="PowerModInt"/>,
+    <Ref BookName="ref" Oper="Valuation"/> (for integers),
+    <Ref BookName="ref" Func="PValuation"/> (for integers)
+    (<URL><LinkText>&Hash;1075</LinkText><Link>https://github.com/gap-system/gap/pull/1045</Link></URL>)
+</Item>
+<Item>
+    Add kernel implementation of <Ref BookName="ref" Func="Factorial"/>
+    (<URL><LinkText>&Hash;1969</LinkText><Link>https://github.com/gap-system/gap/pull/1969</Link></URL>)
+</Item>
+<Item>
+    Add kernel implementation of <Ref BookName="ref" Func="Binomial"/>
+    (<URL><LinkText>&Hash;1921</LinkText><Link>https://github.com/gap-system/gap/pull/1921</Link></URL>)
+</Item>
+<Item>
+    Add kernel implementation of <Ref BookName="ref" Func="LcmInt"/>
+    (<URL><LinkText>&Hash;2019</LinkText><Link>https://github.com/gap-system/gap/pull/2019</Link></URL>)
+</Item>
+</List>    
+</Item>
+<Item>
+Check version of kernel for package versions
+(<URL><LinkText>&Hash;1600</LinkText><Link>https://github.com/gap-system/gap/pull/1600</Link></URL>)
+</Item>
+<Item>
+Add new <Ref BookName="ref" Oper="AlgebraicExtensionNC"/> operation
+(<URL><LinkText>&Hash;1665</LinkText><Link>https://github.com/gap-system/gap/pull/1665</Link></URL>)
+</Item>
+<Item>
+Add <C>NumberColumns</C> and <C>NumberRows</C> to <C>MatrixObj</C> interface
+(<URL><LinkText>&Hash;1657</LinkText><Link>https://github.com/gap-system/gap/pull/1657</Link></URL>)
+</Item>
+<Item>
+<Ref BookName="ref" Attr="MinimalGeneratingSet"/> returns an answer for
+non-cyclic groups that already have a generating set of size 2 (which
+hence is minimal)
+(<URL><LinkText>&Hash;1755</LinkText><Link>https://github.com/gap-system/gap/pull/1755</Link></URL>)
+</Item>
+<Item>
+Add <Ref BookName="ref" Oper="GetWithDefault"/> which returns the <M>n</M>-th
+element of the list if it is bound, and the default value otherwise
+(<URL><LinkText>&Hash;1762</LinkText><Link>https://github.com/gap-system/gap/pull/1762</Link></URL>)
+</Item>
+<Item>
+Fast method for <C>ElmsBlist</C> when positions are a range with increment 1
+(<URL><LinkText>&Hash;1773</LinkText><Link>https://github.com/gap-system/gap/pull/1773</Link></URL>)
+</Item>
+<Item>
+Make permutations remember their inverses
+(<URL><LinkText>&Hash;1831</LinkText><Link>https://github.com/gap-system/gap/pull/1831</Link></URL>)
+</Item>
+<Item>
+Add invariant forms for <C>GU(1,q)</C> and <C>SU(1,q)</C>
+(<URL><LinkText>&Hash;1874</LinkText><Link>https://github.com/gap-system/gap/pull/1874</Link></URL>)
+</Item>
+<Item>
+Implement <Ref BookName="ref" Oper="StandardAssociate"/> and
+<Ref BookName="ref" Oper="StandardAssociateUnit"/>
+for <Ref BookName="ref" Func="ZmodnZ"/>, clarify documentation
+for <Ref BookName="ref" Filt="IsEuclideanRing"/>
+(<URL><LinkText>&Hash;1990</LinkText><Link>https://github.com/gap-system/gap/pull/1990</Link></URL>)
+</Item>
+<Item>
+Improve documentation and interface for floats
+(<URL><LinkText>&Hash;2016</LinkText><Link>https://github.com/gap-system/gap/pull/2016</Link></URL>)
+</Item>
+<Item>
+Add <Ref BookName="ref" Oper="PositionsProperty"/> method for non-dense lists
+(<URL><LinkText>&Hash;2021</LinkText><Link>https://github.com/gap-system/gap/pull/2021</Link></URL>)
+</Item>
+<Item>
+Add <C>TrivialGroup(IsFpGroup)</C>
+(<URL><LinkText>&Hash;2037</LinkText><Link>https://github.com/gap-system/gap/pull/2037</Link></URL>)
+</Item>
+<Item>
+Change <Ref BookName="ref" Func="ObjectifyWithAttributes"/> to
+return the new objects
+(<URL><LinkText>&Hash;2098</LinkText><Link>https://github.com/gap-system/gap/pull/2098</Link></URL>)
+</Item>
+<Item>
+Removed a never released undocumented &HPCGAP; syntax extension which allowed to
+use a backtick/backquote as alias for <Ref BookName="ref" Func="MakeImmutable"/>.
+(<URL><LinkText>&Hash;2202</LinkText><Link>https://github.com/gap-system/gap/pull/2202</Link></URL>).
+</Item>
+<Item>
+Various changes (<URL><LinkText>&Hash;2253</LinkText><Link>https://github.com/gap-system/gap/pull/2253</Link></URL>):
+<List>
+<Item>
+    Improve performance and memory usage of <C>ImageKernelBlocksHomomorphism"</C>
+</Item>
+<Item>
+    Document <Ref BookName="ref" Oper="LowIndexSubgroups"/>
+</Item>
+<Item>
+    Correct <Ref BookName="ref" Func="ClassesSolvableGroup"/> documentation to clarify that it requires, but does not test membership
+</Item>
+<Item>
+    fix <Ref BookName="ref" Filt="IsNaturalGL"/> for trivial matrix groups with empty generating set
+</Item>
+</List>  
+</Item>
+<Item>
+Make it possible to interrupt <C>repeat continue; until false;</C> and
+similar tight loops with <Q>Ctrl-C</Q>
+(<URL><LinkText>&Hash;2259</LinkText><Link>https://github.com/gap-system/gap/pull/2259</Link></URL>).
+</Item>
+<Item>
+Improved &GAP; testing infrastructure, extended &GAP; test suite,
+and increased code coverage
+</Item>
+<Item>
+Countless other tweaks, improvements, fixes were applied
+to the &GAP; library, kernel and manual
+</Item>
+</List>
+
+Fixed bugs:
+<List>
+<Item>
+Fix bugs in <Ref BookName="ref" Attr="NormalSubgroups"/> and
+<Ref BookName="ref" Func="PrintCSV"/>
+(<URL><LinkText>&Hash;433</LinkText><Link>https://github.com/gap-system/gap/pull/433</Link></URL>)
+</Item>
+<Item>
+Fix nice monomorphism dispatch for <Ref BookName="ref" Attr="HallSubgroup"/>
+(e.g. fixes <C>HallSubgroup(GL(3,4), [2,3])</C>)
+(<URL><LinkText>&Hash;559</LinkText><Link>https://github.com/gap-system/gap/pull/559</Link></URL>)
+</Item>
+<Item>
+Check for permutations whose degree would exceed the internal limit,
+and document that limit
+(<URL><LinkText>&Hash;581</LinkText><Link>https://github.com/gap-system/gap/pull/581</Link></URL>)
+</Item>
+<Item>
+Fix segfault after quitting from the break loop in certain cases
+(<URL><LinkText>&Hash;709</LinkText><Link>https://github.com/gap-system/gap/pull/709</Link></URL> which
+fixes <URL><LinkText>&Hash;397</LinkText><Link>https://github.com/gap-system/gap/issues/397</Link></URL>)
+</Item>
+<Item>
+Fix rankings for <Ref BookName="ref" Attr="Socle"/> and
+<Ref BookName="ref" Attr="MinimalNormalSubgroups"/>
+(<URL><LinkText>&Hash;711</LinkText><Link>https://github.com/gap-system/gap/pull/711</Link></URL>)
+</Item>
+<Item>
+Make key and attribute values immutable
+(<URL><LinkText>&Hash;714</LinkText><Link>https://github.com/gap-system/gap/pull/714</Link></URL>)
+</Item>
+<Item>
+Make <C>OnTuples([-1], (1,2))</C> return an error
+(<URL><LinkText>&Hash;718</LinkText><Link>https://github.com/gap-system/gap/pull/718</Link></URL>)
+</Item>
+<Item>
+Fix bug in <Ref BookName="ref" Attr="NewmanInfinityCriterion"/>
+which could corrupt the <Ref BookName="ref" Attr="PCentralSeries"/> attribute
+(<URL><LinkText>&Hash;719</LinkText><Link>https://github.com/gap-system/gap/pull/719</Link></URL>)
+</Item>
+<Item>
+The length of the list returned by <C>OnSetsPerm</C> is now properly set
+(<URL><LinkText>&Hash;731</LinkText><Link>https://github.com/gap-system/gap/pull/731</Link></URL>)
+</Item>
+<Item>
+Fix <Ref BookName="ref" Oper="Remove"/> misbehaving when
+last member of list with gaps in it is removed
+(<URL><LinkText>&Hash;766</LinkText><Link>https://github.com/gap-system/gap/pull/766</Link></URL>)
+</Item>
+<Item>
+Fix bugs in various methods for Rees (0-)matrix semigroups:
+<Ref BookName="ref" Prop="IsFinite"/>,
+<Ref BookName="ref" Prop="IsOne"/>,
+<Ref BookName="ref" Attr="Enumerator"/>,
+<Ref BookName="ref" Prop="IsReesMatrixSemigroup"/> and
+<Ref BookName="ref" Prop="IsReesZeroMatrixSemigroup"/>
+(<URL><LinkText>&Hash;768</LinkText><Link>https://github.com/gap-system/gap/pull/768</Link></URL>,
+<URL><LinkText>&Hash;1676</LinkText><Link>https://github.com/gap-system/gap/pull/1676</Link></URL>)
+</Item>
+<Item>
+Fix <Ref BookName="ref" Prop="IsFullTransformationSemigroup"/>
+to work correctly for the full transformation semigroup of degree 0
+(<URL><LinkText>&Hash;769</LinkText><Link>https://github.com/gap-system/gap/pull/769</Link></URL>)
+</Item>
+<Item>
+Fix printing very large (> 2^28 points) permutations
+(<URL><LinkText>&Hash;782</LinkText><Link>https://github.com/gap-system/gap/pull/782</Link></URL>)
+</Item>
+<Item>
+Fix <C>Intersection([])</C>
+(<URL><LinkText>&Hash;854</LinkText><Link>https://github.com/gap-system/gap/pull/854</Link></URL>)
+</Item>
+<Item>
+Fix crash in <C>IsKernelFunction</C> for some inputs
+(<URL><LinkText>&Hash;876</LinkText><Link>https://github.com/gap-system/gap/pull/876</Link></URL>)
+</Item>
+<Item>
+Fix bug in <Ref BookName="ref" Func="ShortestVectors"/> which could cause
+<Ref BookName="ref" Func="OrthogonalEmbeddings"/> to enter a break loop
+(<URL><LinkText>&Hash;941</LinkText><Link>https://github.com/gap-system/gap/pull/941</Link></URL>)
+</Item>
+<Item>
+Fix crash in some methods involving partial perms
+(<URL><LinkText>&Hash;948</LinkText><Link>https://github.com/gap-system/gap/pull/948</Link></URL>)
+</Item>
+<Item>
+<C>FreeMonoid(0)</C> no longer satisfies <Ref BookName="ref" Filt="IsGroup"/>
+(<URL><LinkText>&Hash;950</LinkText><Link>https://github.com/gap-system/gap/pull/950</Link></URL>)
+</Item>
+<Item>
+Fix crash when invoking weak pointer functions on invalid arguments
+(<URL><LinkText>&Hash;1009</LinkText><Link>https://github.com/gap-system/gap/pull/1009</Link></URL>)
+</Item>
+<Item>
+Fix a bug parsing character constants
+(<URL><LinkText>&Hash;1015</LinkText><Link>https://github.com/gap-system/gap/pull/1015</Link></URL>)
+</Item>
+<Item>
+Fix several bugs and crashes in <C>Z(p,d)</C> for invalid arguments,
+e.g. <C>Z(4,5)</C>, <C>Z(6,3)</C>
+(<URL><LinkText>&Hash;1029</LinkText><Link>https://github.com/gap-system/gap/pull/1029</Link></URL>,
+<URL><LinkText>&Hash;1059</LinkText><Link>https://github.com/gap-system/gap/pull/1059</Link></URL>,
+<URL><LinkText>&Hash;1383</LinkText><Link>https://github.com/gap-system/gap/pull/1383</Link></URL>,
+<URL><LinkText>&Hash;1573</LinkText><Link>https://github.com/gap-system/gap/pull/1573</Link></URL>)
+</Item>
+<Item>
+Fix starting &GAP; on systems with large inodes
+(<URL><LinkText>&Hash;1033</LinkText><Link>https://github.com/gap-system/gap/pull/1033</Link></URL>)
+</Item>
+<Item>
+Fix <Ref BookName="ref" Attr="NrFixedPoints"/> and
+<Ref BookName="ref" Attr="FixedPointsOfPartialPerm"/> for a partial
+perm and a partial perm semigroup (they used to return the moved
+points rather than the fixed points)
+(<URL><LinkText>&Hash;1034</LinkText><Link>https://github.com/gap-system/gap/pull/1034</Link></URL>)
+</Item>
+<Item>
+Fix <Ref BookName="ref" Func="MeetOfPartialPerms"/>
+when given a collection of 1 or 0 partial perms
+(<URL><LinkText>&Hash;1035</LinkText><Link>https://github.com/gap-system/gap/pull/1035</Link></URL>)
+</Item>
+<Item>
+The behaviour of <Ref BookName="ref" Oper="AsPartialPerm"
+Label="for a transformation and a set of positive integer"/>
+for a transformation and a list is corrected
+(<URL><LinkText>&Hash;1036</LinkText><Link>https://github.com/gap-system/gap/pull/1036</Link></URL>)
+</Item>
+<Item>
+<Ref BookName="ref" Attr="IsomorphismReesZeroMatrixSemigroup"/>
+for a 0-simple semigroup is now defined on the zero of the source
+and range semigroups
+(<URL><LinkText>&Hash;1038</LinkText><Link>https://github.com/gap-system/gap/pull/1038</Link></URL>)
+</Item>
+<Item>
+Fix isomorphisms from finitely-presented monoids to
+finitely-presented semigroups, and allow isomorphisms
+from semigroups to fp-monoids
+(<URL><LinkText>&Hash;1039</LinkText><Link>https://github.com/gap-system/gap/pull/1039</Link></URL>)
+</Item>
+<Item>
+Fix <Ref BookName="ref" Attr="One"/> for a partial permutation semigroup
+without generators
+(<URL><LinkText>&Hash;1040</LinkText><Link>https://github.com/gap-system/gap/pull/1040</Link></URL>)
+</Item>
+<Item>
+Fix <Ref BookName="ref" Func="MemoryUsage"/> for positional
+and component objects
+(<URL><LinkText>&Hash;1044</LinkText><Link>https://github.com/gap-system/gap/pull/1044</Link></URL>)
+</Item>
+<Item>
+Fix <C>PlainString</C> causing immutable strings to become mutable
+(<URL><LinkText>&Hash;1096</LinkText><Link>https://github.com/gap-system/gap/pull/1096</Link></URL>)
+</Item>
+<Item>
+Restore support for sparc64
+(<URL><LinkText>&Hash;1124</LinkText><Link>https://github.com/gap-system/gap/pull/1124</Link></URL>)
+</Item>
+<Item>
+Fix a problem with `&lt;` for transformations, which could give incorrect results
+(<URL><LinkText>&Hash;1130</LinkText><Link>https://github.com/gap-system/gap/pull/1130</Link></URL>)
+</Item>
+<Item>
+Fix crash when comparing recursive data structures such as <C>[~] = [~]</C>
+(<URL><LinkText>&Hash;1151</LinkText><Link>https://github.com/gap-system/gap/pull/1151</Link></URL>)
+</Item>
+<Item>
+Ensure output of <C>TrivialGroup(IsPermGroup)</C> has zero generators
+(<URL><LinkText>&Hash;1247</LinkText><Link>https://github.com/gap-system/gap/pull/1247</Link></URL>)
+</Item>
+<Item>
+Fix for applying the <Ref BookName="ref" Attr="InverseGeneralMapping"/>
+of an <Ref BookName="ref" Attr="IsomorphismFpSemigroup"/>
+(<URL><LinkText>&Hash;1259</LinkText><Link>https://github.com/gap-system/gap/pull/1259</Link></URL>)
+</Item>
+<Item>
+Collection of improvements and fixes:
+(<URL><LinkText>&Hash;1294</LinkText><Link>https://github.com/gap-system/gap/pull/1294</Link></URL>)
+<List>
+<Item>
+A fix for quotient rings of rings by structure constants
+</Item>
+<Item>
+Generic routine for transformation matrix to rational canonical form
+</Item>
+<Item>
+Speed improvements to block homomorphisms
+</Item>
+<Item>
+New routines for conjugates or subgroups with desired containment
+</Item>
+<Item>
+Performance improvement for conjugacy classes in groups with a huge
+number of classes, giving significant improvements to
+<Ref BookName="ref" Oper="IntermediateSubgroups"/> (e.g. 7-Sylow subgroup
+in <M>PSL(7,2)</M>), ascending chain and thus in turn double coset
+calculations and further routines that rely on it
+</Item>
+</List>          
+</Item>
+<Item>
+Fix <Ref BookName="ref" Oper="EqFloat"/> to return correct results,
+instead of always returning <K>false</K>
+(<URL><LinkText>&Hash;1370</LinkText><Link>https://github.com/gap-system/gap/pull/1370</Link></URL>)
+</Item>
+<Item>
+Various changes, including fixes for <Ref BookName="ref" Func="CallFuncList"/>
+(<URL><LinkText>&Hash;1417</LinkText><Link>https://github.com/gap-system/gap/pull/1417</Link></URL>)
+</Item>
+<Item>
+Better define the result of <Ref BookName="ref" Func="MappingPermListList"/>
+(<URL><LinkText>&Hash;1432</LinkText><Link>https://github.com/gap-system/gap/pull/1432</Link></URL>)
+</Item>
+<Item>
+Check the arguments to <Ref BookName="ref" Func="IsInjectiveListTrans"/>
+to prevent crashes
+(<URL><LinkText>&Hash;1435</LinkText><Link>https://github.com/gap-system/gap/pull/1435</Link></URL>)
+</Item>
+<Item>
+Change <Ref BookName="ref" Func="BlownUpMat"/> to return fail
+for certain invalid inputs
+(<URL><LinkText>&Hash;1488</LinkText><Link>https://github.com/gap-system/gap/pull/1488</Link></URL>)
+</Item>
+<Item>
+Fixes for creating Green's classes of semigroups
+(<URL><LinkText>&Hash;1492</LinkText><Link>https://github.com/gap-system/gap/pull/1492</Link></URL>,
+<URL><LinkText>&Hash;1771</LinkText><Link>https://github.com/gap-system/gap/pull/1771</Link></URL>)
+</Item>
+<Item>
+Fix <C>DoImmutableMatrix</C> for finite fields
+(<URL><LinkText>&Hash;1504</LinkText><Link>https://github.com/gap-system/gap/pull/1504</Link></URL>)
+</Item>
+<Item>
+Make structural copy handle boolean lists properly
+(<URL><LinkText>&Hash;1514</LinkText><Link>https://github.com/gap-system/gap/pull/1514</Link></URL>)
+</Item>
+<Item>
+Minimal fix for algebraic extensions over finite fields of order > 256
+(<URL><LinkText>&Hash;1569</LinkText><Link>https://github.com/gap-system/gap/pull/1569</Link></URL>)
+</Item>
+<Item>
+Fix for computing quotients of certain algebra modules
+(<URL><LinkText>&Hash;1669</LinkText><Link>https://github.com/gap-system/gap/pull/1669</Link></URL>)
+</Item>
+<Item>
+Fix an error in the default method for <Ref BookName="ref" Oper="PositionNot"/>
+(<URL><LinkText>&Hash;1672</LinkText><Link>https://github.com/gap-system/gap/pull/1672</Link></URL>)
+</Item>
+<Item>
+Improvements to Rees matrix semigroups code and new tests
+(<URL><LinkText>&Hash;1676</LinkText><Link>https://github.com/gap-system/gap/pull/1676</Link></URL>)
+</Item>
+<Item>
+Fix <Ref BookName="ref" Func="CodePcGroup"/>
+for the trivial polycyclic group
+(<URL><LinkText>&Hash;1679</LinkText><Link>https://github.com/gap-system/gap/pull/1679</Link></URL>)
+</Item>
+<Item>
+Fix <C>FroidurePinExtendedAlg</C> for partial permutation monoids
+(<URL><LinkText>&Hash;1697</LinkText><Link>https://github.com/gap-system/gap/pull/1697</Link></URL>)
+</Item>
+<Item>
+Fix computing the radical of a zero dimensional associative algebra
+(<URL><LinkText>&Hash;1701</LinkText><Link>https://github.com/gap-system/gap/pull/1701</Link></URL>)
+</Item>
+<Item>
+Fix a bug in <Ref BookName="ref" Attr="RadicalOfAlgebra"/>
+which could cause a break loop for some associative algebras
+(<URL><LinkText>&Hash;1716</LinkText><Link>https://github.com/gap-system/gap/pull/1716</Link></URL>)
+</Item>
+<Item>
+Fix a recursion depth trap error when repeatedly calling
+<Ref BookName="ref" Func="Test"/>
+(<URL><LinkText>&Hash;1753</LinkText><Link>https://github.com/gap-system/gap/pull/1753</Link></URL>)
+</Item>
+<Item>
+Fix bugs in <Ref BookName="ref" Attr="PrimePGroup"/> for direct products
+of <M>p</M>-groups
+(<URL><LinkText>&Hash;1754</LinkText><Link>https://github.com/gap-system/gap/pull/1754</Link></URL>)
+</Item>
+<Item>
+Fix <Ref BookName="ref" Func="UpEnv"/> (available in break loops)
+when at the bottom of the backtrace
+(<URL><LinkText>&Hash;1780</LinkText><Link>https://github.com/gap-system/gap/pull/1780</Link></URL>)
+</Item>
+<Item>
+Fix <Ref BookName="ref" Attr="IsomorphismPartialPermSemigroup"/> and
+<Ref BookName="ref" Attr="IsomorphismPartialPermMonoid"/> for permutation
+groups with 0 generators
+(<URL><LinkText>&Hash;1784</LinkText><Link>https://github.com/gap-system/gap/pull/1784</Link></URL>)
+</Item>
+<Item>
+Fix <Ref BookName="ref" Oper="DisplaySemigroup"/> for transformation semigroups
+(<URL><LinkText>&Hash;1785</LinkText><Link>https://github.com/gap-system/gap/pull/1785</Link></URL>)
+</Item>
+<Item>
+Fix <Q>no method found</Q> errors in <Ref BookName="ref" Func="MagmaWithOne"/>
+and <Ref BookName="ref" Func="MagmaWithInverses"/>
+(<URL><LinkText>&Hash;1798</LinkText><Link>https://github.com/gap-system/gap/pull/1798</Link></URL>)
+</Item>
+<Item>
+Fix an error computing kernel of group homomorphism from fp group
+into permutation group
+(<URL><LinkText>&Hash;1809</LinkText><Link>https://github.com/gap-system/gap/pull/1809</Link></URL>)
+</Item>
+<Item>
+Fix an error in MTC losing components when copying a new augmented coset table
+(<URL><LinkText>&Hash;1809</LinkText><Link>https://github.com/gap-system/gap/pull/1809</Link></URL>)
+</Item>
+<Item>
+Fix output of <Ref BookName="ref" Func="Where"/> in a break loop,
+which pointed at the wrong code line in some cases
+(<URL><LinkText>&Hash;1814</LinkText><Link>https://github.com/gap-system/gap/pull/1814</Link></URL>)
+</Item>
+<Item>
+Fix the interaction of signals in &GAP; and the <Package>IO</Package> package
+(<URL><LinkText>&Hash;1851</LinkText><Link>https://github.com/gap-system/gap/pull/1851</Link></URL>)
+</Item>
+<Item>
+Make line editing resilient to <C>LineEditKeyHandler</C> failure
+(in particular, don't crash)
+(<URL><LinkText>&Hash;1856</LinkText><Link>https://github.com/gap-system/gap/pull/1856</Link></URL>)
+</Item>
+<Item>
+Omit non-characters from <Ref BookName="ref" Func="PermChars"/> results
+(<URL><LinkText>&Hash;1867</LinkText><Link>https://github.com/gap-system/gap/pull/1867</Link></URL>)
+</Item>
+<Item>
+Fix <Ref BookName="ref" Oper="ExteriorPower"/> when exterior power
+is 0-dimensional (used to return a 1-dimensional result)
+(<URL><LinkText>&Hash;1872</LinkText><Link>https://github.com/gap-system/gap/pull/1872</Link></URL>)
+</Item>
+<Item>
+Fix recursion depth trap and other improvements for quotients of fp groups
+(<URL><LinkText>&Hash;1884</LinkText><Link>https://github.com/gap-system/gap/pull/1884</Link></URL>)
+</Item>
+<Item>
+Fix a bug in the computation of a permutation group isomorphic
+to a group of automorphisms
+(<URL><LinkText>&Hash;1907</LinkText><Link>https://github.com/gap-system/gap/pull/1907</Link></URL>)
+</Item>
+<Item>
+Fix bug in <Ref BookName="ref" Func="InstallFlushableValueFromFunction"/>
+(<URL><LinkText>&Hash;1920</LinkText><Link>https://github.com/gap-system/gap/pull/1920</Link></URL>)
+</Item>
+<Item>
+Fix <Ref BookName="ref" Attr="ONanScottType"/> and introduce
+<Ref BookName="ref" Attr="RestrictedInverseGeneralMapping"/>
+(<URL><LinkText>&Hash;1937</LinkText><Link>https://github.com/gap-system/gap/pull/1937</Link></URL>)
+</Item>
+<Item>
+Fix <Ref BookName="ref" Oper="QuotientMod"/> documentation, and the integer
+implementation. This partially reverts changes made in version 4.7.8 in 2013.
+The documentation is now correct (resp. consistent again), and several corner
+cases, e.g. <C>QuotientMod(0,0,m)</C> now work correctly
+(<URL><LinkText>&Hash;1991</LinkText><Link>https://github.com/gap-system/gap/pull/1991</Link></URL>)
+</Item>
+<Item>
+Fix <Ref BookName="ref" Oper="PositionProperty"/> with <A>from</A> &lt; 1
+(<URL><LinkText>&Hash;2056</LinkText><Link>https://github.com/gap-system/gap/pull/2056</Link></URL>)
+</Item>
+<Item>
+Fix inefficiency when dealing with certain algebra modules
+(<URL><LinkText>&Hash;2058</LinkText><Link>https://github.com/gap-system/gap/pull/2058</Link></URL>)
+</Item>
+<Item>
+Restrict capacity of plain lists to <M>2^28</M> in 32-bit
+and <M>2^60</M> in 64-bit builds
+(<URL><LinkText>&Hash;2064</LinkText><Link>https://github.com/gap-system/gap/pull/2064</Link></URL>)
+</Item>
+<Item>
+Fix crashes with very large heaps (> 2 GB) on 32 bit systems, and work around 
+a bug in <C>memmove</C> in 32-bit glibc versions which could corrupt memory
+(affects most current Linux distributions)
+(<URL><LinkText>&Hash;2166</LinkText><Link>https://github.com/gap-system/gap/pull/2166</Link></URL>).
+</Item>
+<Item>
+Fix name of the <C>reversed</C> option in documentation of
+<Ref BookName="ref" Func="LoadAllPackages"/>
+(<URL><LinkText>&Hash;2167</LinkText><Link>https://github.com/gap-system/gap/pull/2167</Link></URL>).
+</Item>
+<Item>
+Fix <C>TriangulizedMat([])</C> (see <Ref BookName="ref" Oper="TriangulizedMat"/>
+to return an empty list instead of producing an error
+(<URL><LinkText>&Hash;2260</LinkText><Link>https://github.com/gap-system/gap/pull/2260</Link></URL>).
+</Item>
+<Item>
+Fix several potential (albeit rare) crashes related to garbage collection
+(<URL><LinkText>&Hash;2321</LinkText><Link>https://github.com/gap-system/gap/pull/2321</Link></URL>,
+<URL><LinkText>&Hash;2313</LinkText><Link>https://github.com/gap-system/gap/pull/2313</Link></URL>,
+<URL><LinkText>&Hash;2320</LinkText><Link>https://github.com/gap-system/gap/pull/2320</Link></URL>).
+</Item>
+</List>
+
+
+Removed or obsolete functionality:
+<List>
+<Item>
+Make <C>SetUserPreferences</C> obsolete 
+(use <Ref BookName="ref" Func="SetUserPreference"/> instead)
+(<URL><LinkText>&Hash;512</LinkText><Link>https://github.com/gap-system/gap/pull/512</Link></URL>)
+</Item>
+<Item>
+Remove undocumented <C>NameIsomorphismClass</C>
+(<URL><LinkText>&Hash;597</LinkText><Link>https://github.com/gap-system/gap/pull/597</Link></URL>)
+</Item>
+<Item>
+Remove unused code for rational classes of permutation groups
+(<URL><LinkText>&Hash;886</LinkText><Link>https://github.com/gap-system/gap/pull/886</Link></URL>)
+</Item>
+<Item>
+Remove unused and undocumented <C>Randomizer</C> and <C>CheapRandomizer</C>
+(<URL><LinkText>&Hash;1113</LinkText><Link>https://github.com/gap-system/gap/pull/1113</Link></URL>)
+</Item>
+<Item>
+Remove <File>install-tools.sh</File> script and documentation mentioning it
+(<URL><LinkText>&Hash;1305</LinkText><Link>https://github.com/gap-system/gap/pull/1305</Link></URL>)
+</Item>
+<Item>
+Withdraw <C>CallWithTimeout</C> and <C>CallWithTimeoutList</C>
+(<URL><LinkText>&Hash;1324</LinkText><Link>https://github.com/gap-system/gap/pull/1324</Link></URL>)
+</Item>
+<Item>
+Make <C>RecFields</C> obsolete
+(use <Ref BookName="ref" Attr="RecNames"/> instead)
+(<URL><LinkText>&Hash;1331</LinkText><Link>https://github.com/gap-system/gap/pull/1331</Link></URL>)
+</Item>
+<Item>
+Remove undocumented <C>SuPeRfail</C> and <C>READ_COMMAND</C>
+(<URL><LinkText>&Hash;1374</LinkText><Link>https://github.com/gap-system/gap/pull/1374</Link></URL>)
+</Item>
+<Item>
+Remove unused <File>oldmatint.gi</File> (old methods for functions
+that compute Hermite and Smith normal forms of integer matrices)
+(<URL><LinkText>&Hash;1765</LinkText><Link>https://github.com/gap-system/gap/pull/1765</Link></URL>)
+</Item>
+<Item>
+Make <C>TRANSDEGREES</C> obsolete
+(<URL><LinkText>&Hash;1852</LinkText><Link>https://github.com/gap-system/gap/pull/1852</Link></URL>)
+</Item>
+</List>
+
+</Subsection>
+
+<Subsection Label="HPC-GAP-WIP"> 
+<Heading>&HPCGAP;</Heading>
+
+&GAP; includes experimental code to support multithreaded programming in &GAP;,
+dubbed &HPCGAP; (where HPC stands for "high performance computing"). &GAP; and
+&HPCGAP; codebases diverged during the project, and we are currently working
+on unifying the codebases and incorporating the &HPCGAP; code back into the
+mainstream &GAP; versions.
+<P/>
+
+This is work in progress, and &HPCGAP; as it is included with &GAP; right now
+still suffers from various limitations and problems, which we are actively
+working on to resolve. However, including it with &GAP; (disabled by default)
+considerably simplifies development of &HPCGAP;. It also means that you can
+very easily get a (rough!) sneak peak of &HPCGAP;. It comes together with the
+new manual book called "&HPCGAP; Reference Manual" and located in the `doc/hpc`
+directory.
+<P/>
+
+Users interested in experimenting with shared memory parallel programming in
+&GAP; can build &HPCGAP; by following the instructions from
+<URL>https://github.com/gap-system/gap/wiki/Building-HPC-GAP</URL>. While it is possible
+to build &HPCGAP; from a release version of &GAP; you downloaded from the &GAP;
+website, due to the ongoing development of &HPCGAP;, we recommend that you
+instead build &HPCGAP; from the latest development version available in the
+&GAP; repository at GitHub, i.e. <URL>https://github.com/gap-system/gap</URL>.
+
+</Subsection>
+
+
+<Subsection Label="New and updated packages since GAP 4.8.10"> 
+<Heading>New and updated packages since &GAP; 4.8.10</Heading>
+
+There were 132 packages redistributed together with &GAP; 4.8.10.
+The &GAP; 4.9.1 distribution includes 134 packages, including numerous
+updates of previously redistributed packages, and some major changes
+outlined below.
+<P/>
+
+The libraries of small, primitive and transitive groups which previously
+were an integral part of &GAP; were split into three separate packages
+<URL Text="PrimgGrp">http://gap-packages.github.io/primgrp/</URL>,
+<URL Text="SmallGrp">https://gap-packages.github.io/smallgrp/</URL> and
+<URL Text="TransGrp">http://www.math.colostate.edu/~hulpke/transgrp/</URL>:
+<List>
+<Item>
+The <Package>PrimGrp</Package> package by Alexander Hulpke, Colva M. Roney-Dougal
+and Christopher Russell provides the library of primitive permutation
+groups which includes, up to permutation isomorphism (i.e., up to conjugacy
+in the corresponding symmetric group), all primitive permutation groups of
+degree &lt; 4096.
+</Item>
+<Item>
+The <Package>SmallGrp</Package> package by Bettina Eick, Hans Ulrich Besche and
+Eamonn O’Brien provides the library of groups of certain <Q>small</Q>
+orders. The groups are sorted by their orders and they are listed up to
+isomorphism; that is, for each of the available orders a complete and
+irredundant list of isomorphism type representatives of groups is given.
+</Item>
+<Item>
+The <Package>TransGrp</Package> package by Alexander Hulpke provides
+the library of transitive groups, with an optional download of the
+library of transitive groups of degree 32.
+</Item>
+</List>
+For backwards compatibility, these are required packages in &GAP; 4.9 (i.e.,
+&GAP; will not start without them). We plan to change this for &GAP; 4.10
+(see <URL><LinkText>&Hash;2434</LinkText><Link>https://github.com/gap-system/gap/pull/2434</Link></URL>),
+once all packages which currently implicitly rely on these
+new packages had time to add explicit dependencies on them
+(<URL><LinkText>&Hash;1650</LinkText><Link>https://github.com/gap-system/gap/pull/1650</Link></URL>,
+<URL><LinkText>&Hash;1714</LinkText><Link>https://github.com/gap-system/gap/pull/1714</Link></URL>).
+<P/>
+
+The new <Package>ZeroMQInterface</Package> package by Markus Pfeiffer
+and Reimer Behrends has been added for the redistribution. It
+provides both low-level bindings as well as some higher level interfaces
+for the <URL Text="ZeroMQ">http://zeromq.org/</URL> message passing
+library for &GAP; and &HPCGAP; enabling lightweight distributed
+computation.
+<P/>
+
+The <Package>HAPprime</Package> package by Paul Smith is no longer 
+redistributed with &GAP;. Part of the code has been incorporated into
+the <Package>HAP</Package> package. Its source code repository, containing
+the code of the last distributed version, can still be found at
+<URL>https://github.com/gap-packages/happrime</URL>.
+<P/>
+
+Also, the <Package>ParGAP</Package> package by Gene Cooperman is no longer
+redistributed with &GAP; because it no longer can be compiled with &GAP; 4.9
+(see <URL Text="this announcement">https://mail.gap-system.org/pipermail/gap/2018-March/001082.html</URL>).
+Its source code repository, containing the code of the last distributed
+version, plus some first fixes needed for compatibility for GAP 4.9, can still
+be found at <URL>https://github.com/gap-packages/pargap</URL>. If somebody
+is interested in repairing this package and taking over its maintenance,
+so that it can be distributed again, please contact the &GAP; team.
+
+</Subsection>
+
+</Section>
+
+</Chapter>
