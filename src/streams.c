@@ -1581,8 +1581,6 @@ Obj FuncPOSITION_FILE (
     Obj             self,
     Obj             fid )
 {
-    Int             ret;
-
     /* check the argument                                                  */
     while ( ! IS_INTOBJ(fid) ) {
         fid = ErrorReturnObj(
@@ -1590,9 +1588,22 @@ Obj FuncPOSITION_FILE (
             (Int)TNAM_OBJ(fid), 0L,
             "you can replace <fid> via 'return <fid>;'" );
     }
-    
-    ret = SyFtell( INT_INTOBJ(fid) );
-    return ret == -1 ? Fail : INTOBJ_INT(ret);
+
+    Int ifid = INT_INTOBJ(fid);
+    Int ret = SyFtell(ifid);
+
+    // Return if failed
+    if (ret == -1) {
+        return Fail;
+    }
+
+    // Need to account for characters in buffer
+    if (syBuf[ifid].bufno >= 0) {
+        UInt bufno = syBuf[ifid].bufno;
+        ret -= syBuffers[bufno].buflen - syBuffers[bufno].bufstart;
+    }
+
+    return INTOBJ_INT(ret);
 }
 
 
