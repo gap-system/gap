@@ -81,17 +81,17 @@
 **  is <Statements>. The functions 'ReadExpr' and 'ReadStats' must therefore
 **  be declared forward.
 */
-void            ReadExpr (
+static void            ReadExpr (
     TypSymbolSet        follow,
     Char                mode );
 
-UInt            ReadStats (
+static UInt            ReadStats (
     TypSymbolSet        follow );
 
-void            ReadFuncExprAbbrevSingle (
+static void            ReadFuncExprAbbrevSingle (
     TypSymbolSet        follow );
 
-void ReadAtom (
+static void ReadAtom (
     TypSymbolSet        follow,
     Char                mode );
 
@@ -111,7 +111,7 @@ void PopGlobalForLoopVariable( void )
   STATE(CurrentGlobalForLoopDepth)--;
 }
 
-UInt GlobalComesFromEnclosingForLoop (UInt var)
+static UInt GlobalComesFromEnclosingForLoop (UInt var)
 {
   UInt i;
   for (i = 0; i < STATE(CurrentGlobalForLoopDepth); i++)
@@ -161,7 +161,7 @@ static UInt findValueInNams(Obj nams, UInt start, UInt end)
 
    empty options lists are handled further up
 */
-void ReadFuncCallOption( TypSymbolSet follow )
+static void ReadFuncCallOption( TypSymbolSet follow )
 {
   volatile UInt       rnam;           /* record component name           */
   if ( STATE(Symbol) == S_IDENT ) {
@@ -190,7 +190,7 @@ void ReadFuncCallOption( TypSymbolSet follow )
     }
 }
 
-void ReadFuncCallOptions( TypSymbolSet follow )
+static void ReadFuncCallOptions( TypSymbolSet follow )
 {
   volatile UInt nr;
   TRY_READ { IntrFuncCallOptionsBegin( ); }
@@ -267,7 +267,7 @@ typedef struct {
 /****************************************************************************
 **
 */
-UInt EvalRef(const LHSRef ref, Int needExpr)
+static UInt EvalRef(const LHSRef ref, Int needExpr)
 {
     TRY_READ
     {
@@ -335,7 +335,7 @@ UInt EvalRef(const LHSRef ref, Int needExpr)
     return 0;
 }
 
-void AssignRef(const LHSRef ref)
+static void AssignRef(const LHSRef ref)
 {
     TRY_READ
     {
@@ -398,7 +398,7 @@ void AssignRef(const LHSRef ref)
     }
 }
 
-void UnbindRef(const LHSRef ref)
+static void UnbindRef(const LHSRef ref)
 {
     TRY_READ
     {
@@ -444,7 +444,7 @@ void UnbindRef(const LHSRef ref)
     }
 }
 
-void IsBoundRef(const LHSRef ref)
+static void IsBoundRef(const LHSRef ref)
 {
     TRY_READ
     {
@@ -494,7 +494,7 @@ void IsBoundRef(const LHSRef ref)
 /****************************************************************************
 **
 */
-LHSRef ReadSelector(TypSymbolSet follow, UInt level)
+static LHSRef ReadSelector(TypSymbolSet follow, UInt level)
 {
     volatile LHSRef ref;
 
@@ -611,7 +611,7 @@ LHSRef ReadSelector(TypSymbolSet follow, UInt level)
     return ref;
 }
 
-void ReadReferenceModifiers(TypSymbolSet follow)
+static void ReadReferenceModifiers(TypSymbolSet follow)
 {
     UInt level = 0;
 
@@ -631,7 +631,7 @@ void ReadReferenceModifiers(TypSymbolSet follow)
 **
 **  <Ident> :=  a|b|..|z|A|B|..|Z { a|b|..|z|A|B|..|Z|0|..|9|_ }
 */
-LHSRef ReadVar(TypSymbolSet follow)
+static LHSRef ReadVar(TypSymbolSet follow)
 {
     LHSRef ref = { .type = R_INVALID, .var = 0, .nest0 = 0 };
 
@@ -747,7 +747,7 @@ LHSRef ReadVar(TypSymbolSet follow)
 **        |  <Var> '.' <Ident>
 **        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
 */
-void ReadCallVarAss(TypSymbolSet follow, Char mode)
+static void ReadCallVarAss(TypSymbolSet follow, Char mode)
 {
     volatile LHSRef ref = ReadVar(follow);
     if (ref.type == R_INVALID)
@@ -861,7 +861,7 @@ void ReadCallVarAss(TypSymbolSet follow, Char mode)
 **
 **  <Atom> := 'IsBound' '(' <Var> ')'
 */
-void            ReadIsBound (
+static void            ReadIsBound (
     TypSymbolSet        follow )
 {
     Match( S_ISBOUND, "IsBound", follow );
@@ -885,7 +885,7 @@ void            ReadIsBound (
 **  <Perm> :=  ( <Expr> {, <Expr>} ) { ( <Expr> {, <Expr>} ) }
 **
 */
-void ReadPerm (
+static void ReadPerm (
     TypSymbolSet        follow )
 {
     volatile UInt       nrc;            /* number of cycles                */
@@ -1157,7 +1157,7 @@ void ReadLongNumber(
 **  <List> := '[' [ <Expr> ] {',' [ <Expr> ] } ']'
 **         |  '[' <Expr> [',' <Expr>] '..' <Expr> ']'
 */
-void ReadListExpr (
+static void ReadListExpr (
     TypSymbolSet        follow )
 {
     volatile UInt       pos;            /* actual position of element      */
@@ -1243,7 +1243,7 @@ void ReadListExpr (
 **
 **  <Record> := 'rec( [ <Ident>:=<Expr> {, <Ident>:=<Expr> } ] )'
 */
-void ReadRecExpr (
+static void ReadRecExpr (
     TypSymbolSet        follow )
 {
     volatile UInt       rnam;           /* record component name           */
@@ -1339,7 +1339,7 @@ typedef struct {
 **  responsible for reading the closing bracket.
 */
 
-ArgList ReadFuncArgList(
+static ArgList ReadFuncArgList(
     TypSymbolSet        follow,
     Int is_atomic,
     UInt symbol,
@@ -1540,7 +1540,7 @@ static UInt ReadLocals(TypSymbolSet follow, Obj nams)
 **                             <Statements>
 **                'end'
 */
-void ReadFuncExpr (
+static void ReadFuncExpr (
     TypSymbolSet        follow,
     Char mode)
 {
@@ -1585,7 +1585,7 @@ void ReadFuncExpr (
 **
 **      <Function>      := '{' <ArgList> '}' '->' <Expr>
 */
-void ReadFuncExprAbbrevMulti(TypSymbolSet follow)
+static void ReadFuncExprAbbrevMulti(TypSymbolSet follow)
 {
     Match( S_LBRACE, "{", follow );
 
@@ -1607,7 +1607,7 @@ void ReadFuncExprAbbrevMulti(TypSymbolSet follow)
 **
 **      <Function>      := <Var> '->' <Expr>
 */
-void ReadFuncExprAbbrevSingle(TypSymbolSet follow)
+static void ReadFuncExprAbbrevSingle(TypSymbolSet follow)
 {
     /* make and push the new local variables list                          */
     Obj nams = NEW_PLIST(T_PLIST, 1);
@@ -1651,7 +1651,7 @@ void ReadFuncExprAbbrevSingle(TypSymbolSet follow)
 **
 **  <String>  := " { <any character> } "
 */
-void ReadLiteral (
+static void ReadLiteral (
     TypSymbolSet        follow,
     Char mode)
 {
@@ -1765,7 +1765,7 @@ static const UInt LiteralExprStateMask =
                           S_TILDE|S_REC|S_FUNCTION|
                           S_ATOMIC|S_FLOAT|S_DOT|S_MAPTO;
 
-void ReadAtom (
+static void ReadAtom (
     TypSymbolSet        follow,
     Char                mode )
 {
@@ -1817,7 +1817,7 @@ void ReadAtom (
 **
 **  <Factor> := {'+'|'-'} <Atom> [ '^' {'+'|'-'} <Atom> ]
 */
-void ReadFactor (
+static void ReadFactor (
     TypSymbolSet        follow,
     Char                mode )
 {
@@ -1881,7 +1881,7 @@ void ReadFactor (
 **
 **  <Term> := <Factor> { '*'|'/'|'mod' <Factor> }
 */
-void ReadTerm (
+static void ReadTerm (
     TypSymbolSet        follow,
     Char                mode )
 {
@@ -1914,7 +1914,7 @@ void ReadTerm (
 **
 **  <Arith> := <Term> { '+'|'-' <Term> }
 */
-void ReadAri (
+static void ReadAri (
     TypSymbolSet        follow,
     Char                mode )
 {
@@ -1945,7 +1945,7 @@ void ReadAri (
 **
 **  <Rel> := { 'not' } <Arith> { '=|<>|<|>|<=|>=|in' <Arith> }
 */
-void ReadRel (
+static void ReadRel (
     TypSymbolSet        follow,
     Char                mode )
 {
@@ -1994,7 +1994,7 @@ void ReadRel (
 **
 **  <And> := <Rel> { 'and' <Rel> }
 */
-void ReadAnd (
+static void ReadAnd (
     TypSymbolSet        follow,
     Char                mode )
 {
@@ -2024,7 +2024,7 @@ void ReadAnd (
 **  These functions only do something meaningful inside HPC-GAP; in plain GAP,
 **  they are simply placeholders.
 */
-void ReadQualifiedExpr (
+static void ReadQualifiedExpr (
     TypSymbolSet        follow,
     Char                mode )
 {
@@ -2066,7 +2066,7 @@ void ReadQualifiedExpr (
 **
 **
 */
-void ReadExpr (
+static void ReadExpr (
     TypSymbolSet        follow,
     Char                mode )
 {
@@ -2092,7 +2092,7 @@ void ReadExpr (
 **
 **  <Statement> := 'Unbind' '(' <Var> ')' ';'
 */
-void ReadUnbind (
+static void ReadUnbind (
     TypSymbolSet        follow )
 {
     Match( S_UNBIND, "Unbind", follow );
@@ -2110,7 +2110,7 @@ void ReadUnbind (
 **
 **  <Statement> :=  ';'
 */
-void ReadEmpty (
+static void ReadEmpty (
     TypSymbolSet        follow )
 {
   IntrEmpty();
@@ -2125,7 +2125,7 @@ void ReadEmpty (
 **
 **  <Statement> := 'Info' '(' <Expr> ',' <Expr> { ',' <Expr> } ')' ';'
 */
-void ReadInfo (
+static void ReadInfo (
     TypSymbolSet        follow )
 {
     volatile UInt       narg;     /* number of arguments to print (or not)  */
@@ -2157,7 +2157,7 @@ void ReadInfo (
 **
 **  <Statement> := 'Assert' '(' <Expr> ',' <Expr> [ ',' <Expr> ]  ')' ';'
 */
-void ReadAssert (
+static void ReadAssert (
     TypSymbolSet        follow )
 {
     TRY_READ { IntrAssertBegin(); }
@@ -2194,7 +2194,7 @@ void ReadAssert (
 **                 [ 'else'               <Statements> ]
 **                 'fi' ';'
 */
-void ReadIf (
+static void ReadIf (
     TypSymbolSet        follow )
 {
     volatile UInt       nrb;            /* number of branches              */
@@ -2249,7 +2249,7 @@ void ReadIf (
 */
 
 
-void ReadFor (
+static void ReadFor (
     TypSymbolSet        follow )
 {
     volatile UInt       nrs;            /* number of statements in body    */
@@ -2308,7 +2308,7 @@ void ReadFor (
 **                     <Statements>
 **                 'od' ';'
 */
-void ReadWhile (
+static void ReadWhile (
     TypSymbolSet        follow )
 {
     volatile UInt       nrs;            /* number of statements in body    */
@@ -2360,7 +2360,7 @@ void ReadWhile (
 **  These functions only do something meaningful inside HPC-GAP; in plain GAP,
 **  they are simply placeholders.
 */
-void ReadAtomic (
+static void ReadAtomic (
     TypSymbolSet        follow )
 {
     volatile UInt       nrs;            /* number of statements in body    */
@@ -2443,7 +2443,7 @@ void ReadAtomic (
 **                    <Statements>
 **                'until' <Expr> ';'
 */
-void ReadRepeat (
+static void ReadRepeat (
     TypSymbolSet        follow )
 {
     volatile UInt       nrs;            /* number of statements in body    */
@@ -2492,7 +2492,7 @@ void ReadRepeat (
 **
 **  <Statement> := 'break' ';'
 */
-void ReadBreak (
+static void ReadBreak (
     TypSymbolSet        follow )
 {
     /* skip the break symbol                                               */
@@ -2511,7 +2511,7 @@ void ReadBreak (
 **
 **  <Statement> := 'continue' ';'
 */
-void ReadContinue (
+static void ReadContinue (
     TypSymbolSet        follow )
 {
     /* skip the continue symbol                                               */
@@ -2535,7 +2535,7 @@ void ReadContinue (
 **  It is still legal to use parenthesis but they  are  no  longer  required,
 **  a return statement is not a function call and should not look  like  one.
 */
-void ReadReturn (
+static void ReadReturn (
     TypSymbolSet        follow )
 {
     /* skip the return symbol                                              */
@@ -2563,7 +2563,7 @@ void ReadReturn (
 **
 **  <Statement> := 'TryNextMethod' '(' ')' ';'
 */
-void ReadTryNext (
+static void ReadTryNext (
     TypSymbolSet        follow )
 {
     Match( S_TRYNEXT, "TryNextMethod", follow );
@@ -2575,7 +2575,7 @@ void ReadTryNext (
     }
 }
 
-void ReadHelp(TypSymbolSet follow)
+static void ReadHelp(TypSymbolSet follow)
 {
     TRY_READ { IntrHelp(STATE(ValueObj)); }
     STATE(ValueObj) = 0;
@@ -2590,7 +2590,7 @@ void ReadHelp(TypSymbolSet follow)
 **
 **  <Statement> := 'quit' ';'
 */
-void            ReadQuit (
+static void            ReadQuit (
     TypSymbolSet        follow )
 {
     /* skip the quit symbol                                                */
@@ -2609,7 +2609,7 @@ void            ReadQuit (
 **
 **  <Statement> := 'QUIT' ';'
 */
-void            ReadQUIT (
+static void            ReadQUIT (
     TypSymbolSet        follow )
 {
     /* skip the quit symbol                                                */
@@ -2643,7 +2643,7 @@ void            ReadQUIT (
 **              |  'atomic' <QualifiedExpression> { ',' <QualifiedExpression> } 'do' <Statements> 'od' ';'
 **              |  ';'
 */
-UInt ReadStats (
+static UInt ReadStats (
     TypSymbolSet        follow )
 {
     UInt               nr;            /* number of statements            */
@@ -2695,7 +2695,7 @@ UInt ReadStats (
 **
 */
 
-void RecreateStackNams( Obj context )
+static void RecreateStackNams( Obj context )
 {
     Obj lvars = context;
     while (lvars != STATE(BottomLVars) && lvars != (Obj)0)  {
