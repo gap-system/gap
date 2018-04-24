@@ -458,16 +458,62 @@ static Obj PopReturnObjStat(void)
     return returnObjStat;
 }
 
-Obj DoExecFunc0args (
-    Obj                 func )
+#ifdef HPCGAP
+
+static void LockFuncArgs(Obj func, Int narg, const Obj * args)
+{
+    Int i;
+    int count = 0;
+    int *mode = alloca(narg * sizeof(int));
+    UChar *locks = CHARS_STRING(LCKS_FUNC(func));
+    Obj *objects = alloca(narg * sizeof(Obj));
+    for (i=0; i<narg; i++) {
+      Obj obj = args[i];
+      switch (locks[i]) {
+        case 1:
+          if (CheckReadAccess(obj))
+            break;
+          mode[count] = 0;
+          objects[count] = obj;
+          count++;
+          break;
+        case 2:
+          if (CheckWriteAccess(obj))
+            break;
+          mode[count] = 1;
+          objects[count] = obj;
+          count++;
+          break;
+      }
+    }
+    if (count && LockObjects(count, objects, mode) < 0)
+      ErrorMayQuit("Cannot lock arguments of atomic function", 0L, 0L );
+    /* Push at least one region so that we can tell that we are inside
+     * an atomic function. */
+    if (!count)
+      PushRegionLock((Region *) 0);
+}
+
+#endif
+
+static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg, Int isAtomic)
 {
     Bag                 oldLvars;       /* old values bag                  */
     REMEMBER_LOCKSTACK();
-
+#ifdef HPCGAP
+    if (isAtomic)
+        LockFuncArgs(func, narg, arg);
+#else
+    (void)isAtomic; // unused
+#endif
     CHECK_RECURSION_BEFORE
 
     /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, 0, NLOC_FUNC(func), oldLvars );
+    SWITCH_TO_NEW_LVARS( func, narg, NLOC_FUNC(func), oldLvars );
+
+    /* enter the arguments                                                 */
+    for (Int i = 0; i < narg; i++)
+        ASS_LVAR( i+1, arg[i] );
 
     /* execute the statement sequence                                      */
     ExecFuncHelper();
@@ -477,37 +523,23 @@ Obj DoExecFunc0args (
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
-    
+
     /* return the result                                                   */
     return PopReturnObjStat();
+}
+
+Obj DoExecFunc0args (
+    Obj                 func )
+{
+    return DoExecFunc(func, 0, 0, 0);
 }
 
 Obj             DoExecFunc1args (
     Obj                 func,
     Obj                 arg1 )
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-
-    CHECK_RECURSION_BEFORE
-
-    /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, 1, NLOC_FUNC(func), oldLvars );
-
-    /* enter the arguments                                                 */
-    ASS_LVAR( 1, arg1 );
-
-    /* execute the statement sequence                                      */
-    ExecFuncHelper();
-    CLEAR_LOCK_STACK();
-
-    /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    CHECK_RECURSION_AFTER
-
-    /* return the result                                                   */
-    return PopReturnObjStat();
+    Obj arg[] = { arg1 };
+    return DoExecFunc(func, 1, arg, 0);
 }
 
 Obj             DoExecFunc2args (
@@ -515,29 +547,8 @@ Obj             DoExecFunc2args (
     Obj                 arg1,
     Obj                 arg2 )
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-
-    CHECK_RECURSION_BEFORE
-
-    /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, 2, NLOC_FUNC(func), oldLvars );
-
-    /* enter the arguments                                                 */
-    ASS_LVAR( 1, arg1 );
-    ASS_LVAR( 2, arg2 );
-
-    /* execute the statement sequence                                      */
-    ExecFuncHelper();
-    CLEAR_LOCK_STACK();
-
-    /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    CHECK_RECURSION_AFTER
-
-    /* return the result                                                   */
-    return PopReturnObjStat();
+    Obj arg[] = { arg1, arg2 };
+    return DoExecFunc(func, 2, arg, 0);
 }
 
 Obj             DoExecFunc3args (
@@ -546,30 +557,8 @@ Obj             DoExecFunc3args (
     Obj                 arg2,
     Obj                 arg3 )
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-
-    CHECK_RECURSION_BEFORE
-
-    /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, 3, NLOC_FUNC(func), oldLvars );
-
-    /* enter the arguments                                                 */
-    ASS_LVAR( 1, arg1 );
-    ASS_LVAR( 2, arg2 );
-    ASS_LVAR( 3, arg3 );
-
-    /* execute the statement sequence                                      */
-    ExecFuncHelper();
-    CLEAR_LOCK_STACK();
-
-    /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    CHECK_RECURSION_AFTER
-
-    /* return the result                                                   */
-    return PopReturnObjStat();
+    Obj arg[] = { arg1, arg2, arg3 };
+    return DoExecFunc(func, 3, arg, 0);
 }
 
 Obj             DoExecFunc4args (
@@ -579,31 +568,8 @@ Obj             DoExecFunc4args (
     Obj                 arg3,
     Obj                 arg4 )
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-
-    CHECK_RECURSION_BEFORE
-
-    /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, 4, NLOC_FUNC(func), oldLvars );
-
-    /* enter the arguments                                                 */
-    ASS_LVAR( 1, arg1 );
-    ASS_LVAR( 2, arg2 );
-    ASS_LVAR( 3, arg3 );
-    ASS_LVAR( 4, arg4 );
-
-    /* execute the statement sequence                                      */
-    ExecFuncHelper();
-    CLEAR_LOCK_STACK();
-
-    /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    CHECK_RECURSION_AFTER
-
-    /* return the result                                                   */
-    return PopReturnObjStat();
+    Obj arg[] = { arg1, arg2, arg3, arg4 };
+    return DoExecFunc(func, 4, arg, 0);
 }
 
 Obj             DoExecFunc5args (
@@ -614,32 +580,8 @@ Obj             DoExecFunc5args (
     Obj                 arg4,
     Obj                 arg5 )
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-
-    CHECK_RECURSION_BEFORE
-
-    /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, 5, NLOC_FUNC(func), oldLvars );
-
-    /* enter the arguments                                                 */
-    ASS_LVAR( 1, arg1 );
-    ASS_LVAR( 2, arg2 );
-    ASS_LVAR( 3, arg3 );
-    ASS_LVAR( 4, arg4 );
-    ASS_LVAR( 5, arg5 );
-
-    /* execute the statement sequence                                      */
-    ExecFuncHelper();
-    CLEAR_LOCK_STACK();
-
-    /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    CHECK_RECURSION_AFTER
-
-    /* return the result                                                   */
-    return PopReturnObjStat();
+    Obj arg[] = { arg1, arg2, arg3, arg4, arg5 };
+    return DoExecFunc(func, 5, arg, 0);
 }
 
 Obj             DoExecFunc6args (
@@ -651,33 +593,8 @@ Obj             DoExecFunc6args (
     Obj                 arg5,
     Obj                 arg6 )
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-
-    CHECK_RECURSION_BEFORE
-
-    /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, 6, NLOC_FUNC(func), oldLvars );
-
-    /* enter the arguments                                                 */
-    ASS_LVAR( 1, arg1 );
-    ASS_LVAR( 2, arg2 );
-    ASS_LVAR( 3, arg3 );
-    ASS_LVAR( 4, arg4 );
-    ASS_LVAR( 5, arg5 );
-    ASS_LVAR( 6, arg6 );
-
-    /* execute the statement sequence                                      */
-    ExecFuncHelper();
-    CLEAR_LOCK_STACK();
-
-    /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    CHECK_RECURSION_AFTER
-
-    /* return the result                                                   */
-    return PopReturnObjStat();
+    Obj arg[] = { arg1, arg2, arg3, arg4, arg5, arg6 };
+    return DoExecFunc(func, 6, arg, 0);
 }
 
 Obj             DoExecFuncXargs (
@@ -725,96 +642,18 @@ Obj             DoExecFuncXargs (
 
 #ifdef HPCGAP
 
-static void LockFuncArgs(Obj func, const Obj * args)
-{
-    Int nargs = NARG_FUNC(func);
-    Int i;
-    int count = 0;
-    int *mode = alloca(nargs * sizeof(int));
-    UChar *locks = CHARS_STRING(LCKS_FUNC(func));
-    Obj *objects = alloca(nargs * sizeof(Obj));
-    for (i=0; i<nargs; i++) {
-      Obj obj = args[i];
-      switch (locks[i]) {
-        case 1:
-          if (CheckReadAccess(obj))
-            break;
-          mode[count] = 0;
-          objects[count] = obj;
-          count++;
-          break;
-        case 2:
-          if (CheckWriteAccess(obj))
-            break;
-          mode[count] = 1;
-          objects[count] = obj;
-          count++;
-          break;
-      }
-    }
-    if (count && LockObjects(count, objects, mode) < 0)
-      ErrorMayQuit("Cannot lock arguments of atomic function", 0L, 0L );
-    /* Push at least one region so that we can tell that we are inside
-     * an atomic function. */
-    if (!count)
-      PushRegionLock((Region *) 0);
-}
-
 Obj             DoExecFunc0argsL (
     Obj                 func )
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-    Obj                 args[1];
-    LockFuncArgs(func, args);
-
-    CHECK_RECURSION_BEFORE
-
-    /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, 1, NLOC_FUNC(func), oldLvars );
-
-    /* execute the statement sequence                                      */
-    ExecFuncHelper();
-    CLEAR_LOCK_STACK();
-
-    /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    CHECK_RECURSION_AFTER
-
-    /* return the result                                                   */
-    return PopReturnObjStat();
+    return DoExecFunc(func, 0, 0, 1);
 }
 
 Obj             DoExecFunc1argsL (
     Obj                 func,
     Obj                 arg1 )
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-    Obj                 args[1];
-    args[0] = arg1;
-    LockFuncArgs(func, args);
-
-    CHECK_RECURSION_BEFORE
-
-    /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, 1, NLOC_FUNC(func), oldLvars );
-
-    /* enter the arguments                                                 */
-    ASS_LVAR( 1, arg1 );
-
-    /* execute the statement sequence                                      */
-    ExecFuncHelper();
-    CLEAR_LOCK_STACK();
-
-    /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    CHECK_RECURSION_AFTER
-
-    /* return the result                                                   */
-    return PopReturnObjStat();
+    Obj arg[] = { arg1 };
+    return DoExecFunc(func, 1, arg, 1);
 }
 
 Obj             DoExecFunc2argsL (
@@ -822,33 +661,8 @@ Obj             DoExecFunc2argsL (
     Obj                 arg1,
     Obj                 arg2 )
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-    Obj                 args[2];
-    args[0] = arg1;
-    args[1] = arg2;
-    LockFuncArgs(func, args);
-
-    CHECK_RECURSION_BEFORE
-
-    /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, 2, NLOC_FUNC(func), oldLvars );
-
-    /* enter the arguments                                                 */
-    ASS_LVAR( 1, arg1 );
-    ASS_LVAR( 2, arg2 );
-
-    /* execute the statement sequence                                      */
-    ExecFuncHelper();
-    CLEAR_LOCK_STACK();
-
-    /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    CHECK_RECURSION_AFTER
-
-    /* return the result                                                   */
-    return PopReturnObjStat();
+    Obj arg[] = { arg1, arg2 };
+    return DoExecFunc(func, 2, arg, 1);
 }
 
 Obj             DoExecFunc3argsL (
@@ -857,36 +671,8 @@ Obj             DoExecFunc3argsL (
     Obj                 arg2,
     Obj                 arg3 )
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-    Obj                 args[3];
-    args[0] = arg1;
-    args[1] = arg2;
-    args[2] = arg3;
-    LockFuncArgs(func, args);
-
-
-    CHECK_RECURSION_BEFORE
-
-    /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, 3, NLOC_FUNC(func), oldLvars );
-
-    /* enter the arguments                                                 */
-    ASS_LVAR( 1, arg1 );
-    ASS_LVAR( 2, arg2 );
-    ASS_LVAR( 3, arg3 );
-
-    /* execute the statement sequence                                      */
-    ExecFuncHelper();
-    CLEAR_LOCK_STACK();
-
-    /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    CHECK_RECURSION_AFTER
-
-    /* return the result                                                   */
-    return PopReturnObjStat();
+    Obj arg[] = { arg1, arg2, arg3 };
+    return DoExecFunc(func, 3, arg, 1);
 }
 
 Obj             DoExecFunc4argsL (
@@ -896,37 +682,8 @@ Obj             DoExecFunc4argsL (
     Obj                 arg3,
     Obj                 arg4 )
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-    Obj                 args[4];
-    args[0] = arg1;
-    args[1] = arg2;
-    args[2] = arg3;
-    args[3] = arg4;
-    LockFuncArgs(func, args);
-
-    CHECK_RECURSION_BEFORE
-
-    /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, 4, NLOC_FUNC(func), oldLvars );
-
-    /* enter the arguments                                                 */
-    ASS_LVAR( 1, arg1 );
-    ASS_LVAR( 2, arg2 );
-    ASS_LVAR( 3, arg3 );
-    ASS_LVAR( 4, arg4 );
-
-    /* execute the statement sequence                                      */
-    ExecFuncHelper();
-    CLEAR_LOCK_STACK();
-
-    /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    CHECK_RECURSION_AFTER
-
-    /* return the result                                                   */
-    return PopReturnObjStat();
+    Obj arg[] = { arg1, arg2, arg3, arg4 };
+    return DoExecFunc(func, 4, arg, 1);
 }
 
 Obj             DoExecFunc5argsL (
@@ -937,39 +694,8 @@ Obj             DoExecFunc5argsL (
     Obj                 arg4,
     Obj                 arg5 )
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-    Obj                 args[5];
-    args[0] = arg1;
-    args[1] = arg2;
-    args[2] = arg3;
-    args[3] = arg4;
-    args[4] = arg5;
-    LockFuncArgs(func, args);
-
-    CHECK_RECURSION_BEFORE
-
-    /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, 5, NLOC_FUNC(func), oldLvars );
-
-    /* enter the arguments                                                 */
-    ASS_LVAR( 1, arg1 );
-    ASS_LVAR( 2, arg2 );
-    ASS_LVAR( 3, arg3 );
-    ASS_LVAR( 4, arg4 );
-    ASS_LVAR( 5, arg5 );
-
-    /* execute the statement sequence                                      */
-    ExecFuncHelper();
-    CLEAR_LOCK_STACK();
-
-    /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    CHECK_RECURSION_AFTER
-
-    /* return the result                                                   */
-    return PopReturnObjStat();
+    Obj arg[] = { arg1, arg2, arg3, arg4, arg5 };
+    return DoExecFunc(func, 5, arg, 1);
 }
 
 Obj             DoExecFunc6argsL (
@@ -981,41 +707,8 @@ Obj             DoExecFunc6argsL (
     Obj                 arg5,
     Obj                 arg6 )
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-    Obj                 args[6];
-    args[0] = arg1;
-    args[1] = arg2;
-    args[2] = arg3;
-    args[3] = arg4;
-    args[4] = arg5;
-    args[5] = arg6;
-    LockFuncArgs(func, args);
-
-    CHECK_RECURSION_BEFORE
-
-    /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, 6, NLOC_FUNC(func), oldLvars );
-
-    /* enter the arguments                                                 */
-    ASS_LVAR( 1, arg1 );
-    ASS_LVAR( 2, arg2 );
-    ASS_LVAR( 3, arg3 );
-    ASS_LVAR( 4, arg4 );
-    ASS_LVAR( 5, arg5 );
-    ASS_LVAR( 6, arg6 );
-
-    /* execute the statement sequence                                      */
-    ExecFuncHelper();
-    CLEAR_LOCK_STACK();
-
-    /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    CHECK_RECURSION_AFTER
-
-    /* return the result                                                   */
-    return PopReturnObjStat();
+    Obj arg[] = { arg1, arg2, arg3, arg4, arg5, arg6 };
+    return DoExecFunc(func, 6, arg, 1);
 }
 
 Obj             DoExecFuncXargsL (
@@ -1039,7 +732,7 @@ Obj             DoExecFuncXargsL (
         PLAIN_LIST( args );
     }
 
-    LockFuncArgs(func, CONST_ADDR_OBJ(args) + 1);
+    LockFuncArgs(func, len, CONST_ADDR_OBJ(args) + 1);
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, len, NLOC_FUNC(func), oldLvars );
