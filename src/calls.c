@@ -332,7 +332,8 @@ Obj DoWrap6args (
 /* Pull this out to avoid repetition, since it gets a little more complex in 
    the presence of partially variadic functions */
 
-Obj NargError( Obj func, Int actual) {
+Obj NargError(Obj func, Int actual)
+{
   Int narg = NARG_FUNC(func);
 
   if (narg >= 0) {
@@ -507,8 +508,16 @@ static UInt8 StorDone;
 **  function.  'DoProf<i>args' are  the primary  handlers  for all  functions
 **  when profiling is requested.
 */
-Obj DoProf0args (
-    Obj                 self )
+static ALWAYS_INLINE Obj DoProfNNNargs (
+    Obj                 self,
+    Int                 n,
+    Obj                 arg1,
+    Obj                 arg2,
+    Obj                 arg3,
+    Obj                 arg4,
+    Obj                 arg5,
+    Obj                 arg6 )
+
 {
     Obj                 result;         /* value of function call, result  */
     Obj                 prof;           /* profiling bag                   */
@@ -529,7 +538,16 @@ Obj DoProf0args (
     storCurr = SizeAllBags - StorDone;
 
     /* call the real function                                              */
-    result = CALL_0ARGS_PROF( self );
+    switch (n) {
+    case  0: result = CALL_0ARGS_PROF( self ); break;
+    case  1: result = CALL_1ARGS_PROF( self, arg1 ); break;
+    case  2: result = CALL_2ARGS_PROF( self, arg1, arg2 ); break;
+    case  3: result = CALL_3ARGS_PROF( self, arg1, arg2, arg3 ); break;
+    case  4: result = CALL_4ARGS_PROF( self, arg1, arg2, arg3, arg4 ); break;
+    case  5: result = CALL_5ARGS_PROF( self, arg1, arg2, arg3, arg4, arg5 ); break;
+    case  6: result = CALL_6ARGS_PROF( self, arg1, arg2, arg3, arg4, arg5, arg6 ); break;
+    case -1: result = CALL_XARGS_PROF( self, arg1 ); break;
+    }
 
     /* number of invocation of this function                               */
     SET_COUNT_PROF( prof, COUNT_PROF(prof) + 1 );
@@ -548,6 +566,12 @@ Obj DoProf0args (
 
     /* return the result from the function                                 */
     return result;
+}
+
+static Obj DoProf0args (
+    Obj                 self )
+{
+    return DoProfNNNargs(self, 0, 0, 0, 0, 0, 0, 0);
 }
 
 
@@ -555,48 +579,11 @@ Obj DoProf0args (
 **
 *F  DoProf1args( <self>, <arg1>)  . . . . profile a function with 1 arguments
 */
-Obj DoProf1args (
+static Obj DoProf1args (
     Obj                 self,
     Obj                 arg1 )
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 prof;           /* profiling bag                   */
-    UInt                timeElse;       /* time    spent elsewhere         */
-    UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt8               storElse;       /* storage spent elsewhere         */
-    UInt8               storCurr;       /* storage spent in current funcs. */ 
-
-    /* get the profiling bag                                               */
-    prof = PROF_FUNC( PROF_FUNC( self ) );
-
-    /* time and storage spent so far while this function what not active   */
-    timeElse = SyTime() - TIME_WITH_PROF(prof);
-    storElse = SizeAllBags - STOR_WITH_PROF(prof);
-
-    /* time and storage spent so far by all currently suspended functions  */
-    timeCurr = SyTime() - TimeDone;
-    storCurr = SizeAllBags - StorDone;
-
-    /* call the real function                                              */
-    result = CALL_1ARGS_PROF( self, arg1 );
-
-    /* number of invocation of this function                               */
-    SET_COUNT_PROF( prof, COUNT_PROF(prof) + 1 );
-
-    /* time and storage spent in this function and its children            */
-    SET_TIME_WITH_PROF( prof, SyTime() - timeElse );
-    SET_STOR_WITH_PROF( prof, SizeAllBags - storElse );
-
-    /* time and storage spent by this invocation of this function          */
-    timeCurr = SyTime() - TimeDone - timeCurr;
-    SET_TIME_WOUT_PROF( prof, TIME_WOUT_PROF(prof) + timeCurr );
-    TimeDone += timeCurr;
-    storCurr = SizeAllBags - StorDone - storCurr;
-    SET_STOR_WOUT_PROF( prof, STOR_WOUT_PROF(prof) + storCurr );
-    StorDone += storCurr;
-
-    /* return the result from the function                                 */
-    return result;
+    return DoProfNNNargs(self, 1, arg1, 0, 0, 0, 0, 0);
 }
 
 
@@ -604,49 +591,12 @@ Obj DoProf1args (
 **
 *F  DoProf2args( <self>, <arg1>, ... )  . profile a function with 2 arguments
 */
-Obj DoProf2args (
+static Obj DoProf2args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2 )
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 prof;           /* profiling bag                   */
-    UInt                timeElse;       /* time    spent elsewhere         */
-    UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt8               storElse;       /* storage spent elsewhere         */
-    UInt8               storCurr;       /* storage spent in current funcs. */ 
-
-    /* get the profiling bag                                               */
-    prof = PROF_FUNC( PROF_FUNC( self ) );
-
-    /* time and storage spent so far while this function what not active   */
-    timeElse = SyTime() - TIME_WITH_PROF(prof);
-    storElse = SizeAllBags - STOR_WITH_PROF(prof);
-
-    /* time and storage spent so far by all currently suspended functions  */
-    timeCurr = SyTime() - TimeDone;
-    storCurr = SizeAllBags - StorDone;
-
-    /* call the real function                                              */
-    result = CALL_2ARGS_PROF( self, arg1, arg2 );
-
-    /* number of invocation of this function                               */
-    SET_COUNT_PROF( prof, COUNT_PROF(prof) + 1 );
-
-    /* time and storage spent in this function and its children             */
-    SET_TIME_WITH_PROF( prof, SyTime() - timeElse );
-    SET_STOR_WITH_PROF( prof, SizeAllBags - storElse );
-
-    /* time and storage spent by this invocation of this function           */
-    timeCurr = SyTime() - TimeDone - timeCurr;
-    SET_TIME_WOUT_PROF( prof, TIME_WOUT_PROF(prof) + timeCurr );
-    TimeDone += timeCurr;
-    storCurr = SizeAllBags - StorDone - storCurr;
-    SET_STOR_WOUT_PROF( prof, STOR_WOUT_PROF(prof) + storCurr );
-    StorDone += storCurr;
-
-    /* return the result from the function                                 */
-    return result;
+    return DoProfNNNargs(self, 2, arg1, arg2, 0, 0, 0, 0);
 }
 
 
@@ -654,50 +604,13 @@ Obj DoProf2args (
 **
 *F  DoProf3args( <self>, <arg1>, ... )  . profile a function with 3 arguments
 */
-Obj DoProf3args (
+static Obj DoProf3args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
     Obj                 arg3 )
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 prof;           /* profiling bag                   */
-    UInt                timeElse;       /* time    spent elsewhere         */
-    UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt8               storElse;       /* storage spent elsewhere         */
-    UInt8               storCurr;       /* storage spent in current funcs. */ 
-
-    /* get the profiling bag                                               */
-    prof = PROF_FUNC( PROF_FUNC( self ) );
-
-    /* time and storage spent so far while this function what not active   */
-    timeElse = SyTime() - TIME_WITH_PROF(prof);
-    storElse = SizeAllBags - STOR_WITH_PROF(prof);
-
-    /* time and storage spent so far by all currently suspended functions  */
-    timeCurr = SyTime() - TimeDone;
-    storCurr = SizeAllBags - StorDone;
-
-    /* call the real function                                              */
-    result = CALL_3ARGS_PROF( self, arg1, arg2, arg3 );
-
-    /* number of invocation of this function                               */
-    SET_COUNT_PROF( prof, COUNT_PROF(prof) + 1 );
-
-    /* time and storage spent in this function and its children            */
-    SET_TIME_WITH_PROF( prof, SyTime() - timeElse );
-    SET_STOR_WITH_PROF( prof, SizeAllBags - storElse );
-
-    /* time and storage spent by this invocation of this function          */
-    timeCurr = SyTime() - TimeDone - timeCurr;
-    SET_TIME_WOUT_PROF( prof, TIME_WOUT_PROF(prof) + timeCurr );
-    TimeDone += timeCurr;
-    storCurr = SizeAllBags - StorDone - storCurr;
-    SET_STOR_WOUT_PROF( prof, STOR_WOUT_PROF(prof) + storCurr );
-    StorDone += storCurr;
-
-    /* return the result from the function                                 */
-    return result;
+    return DoProfNNNargs(self, 3, arg1, arg2, arg3, 0, 0, 0);
 }
 
 
@@ -705,51 +618,14 @@ Obj DoProf3args (
 **
 *F  DoProf4args( <self>, <arg1>, ... )  . profile a function with 4 arguments
 */
-Obj DoProf4args (
+static Obj DoProf4args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
     Obj                 arg3,
     Obj                 arg4 )
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 prof;           /* profiling bag                   */
-    UInt                timeElse;       /* time    spent elsewhere         */
-    UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt8               storElse;       /* storage spent elsewhere         */
-    UInt8               storCurr;       /* storage spent in current funcs. */ 
-
-    /* get the profiling bag                                               */
-    prof = PROF_FUNC( PROF_FUNC( self ) );
-
-    /* time and storage spent so far while this function what not active   */
-    timeElse = SyTime() - TIME_WITH_PROF(prof);
-    storElse = SizeAllBags - STOR_WITH_PROF(prof);
-
-    /* time and storage spent so far by all currently suspended functions  */
-    timeCurr = SyTime() - TimeDone;
-    storCurr = SizeAllBags - StorDone;
-
-    /* call the real function                                              */
-    result = CALL_4ARGS_PROF( self, arg1, arg2, arg3, arg4 );
-
-    /* number of invocation of this function                               */
-    SET_COUNT_PROF( prof, COUNT_PROF(prof) + 1 );
-
-    /* time and storage spent in this function and its children            */
-    SET_TIME_WITH_PROF( prof, SyTime() - timeElse );
-    SET_STOR_WITH_PROF( prof, SizeAllBags - storElse );
-
-    /* time and storage spent by this invocation of this function          */
-    timeCurr = SyTime() - TimeDone - timeCurr;
-    SET_TIME_WOUT_PROF( prof, TIME_WOUT_PROF(prof) + timeCurr );
-    TimeDone += timeCurr;
-    storCurr = SizeAllBags - StorDone - storCurr;
-    SET_STOR_WOUT_PROF( prof, STOR_WOUT_PROF(prof) + storCurr );
-    StorDone += storCurr;
-
-    /* return the result from the function                                 */
-    return result;
+    return DoProfNNNargs(self, 4, arg1, arg2, arg3, arg4, 0, 0);
 }
 
 
@@ -757,7 +633,7 @@ Obj DoProf4args (
 **
 *F  DoProf5args( <self>, <arg1>, ... )  . profile a function with 5 arguments
 */
-Obj DoProf5args (
+static Obj DoProf5args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
@@ -765,44 +641,7 @@ Obj DoProf5args (
     Obj                 arg4,
     Obj                 arg5 )
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 prof;           /* profiling bag                   */
-    UInt                timeElse;       /* time    spent elsewhere         */
-    UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt8               storElse;       /* storage spent elsewhere         */
-    UInt8               storCurr;       /* storage spent in current funcs. */ 
-
-    /* get the profiling bag                                               */
-    prof = PROF_FUNC( PROF_FUNC( self ) );
-
-    /* time and storage spent so far while this function what not active   */
-    timeElse = SyTime() - TIME_WITH_PROF(prof);
-    storElse = SizeAllBags - STOR_WITH_PROF(prof);
-
-    /* time and storage spent so far by all currently suspended functions  */
-    timeCurr = SyTime() - TimeDone;
-    storCurr = SizeAllBags - StorDone;
-
-    /* call the real function                                              */
-    result = CALL_5ARGS_PROF( self, arg1, arg2, arg3, arg4, arg5 );
-
-    /* number of invocation of this function                               */
-    SET_COUNT_PROF( prof, COUNT_PROF(prof) + 1 );
-
-    /* time and storage spent in this function and its children            */
-    SET_TIME_WITH_PROF( prof, SyTime() - timeElse );
-    SET_STOR_WITH_PROF( prof, SizeAllBags - storElse );
-
-    /* time and storage spent by this invocation of this function          */
-    timeCurr = SyTime() - TimeDone - timeCurr;
-    SET_TIME_WOUT_PROF( prof, TIME_WOUT_PROF(prof) + timeCurr );
-    TimeDone += timeCurr;
-    storCurr = SizeAllBags - StorDone - storCurr;
-    SET_STOR_WOUT_PROF( prof, STOR_WOUT_PROF(prof) + storCurr );
-    StorDone += storCurr;
-
-    /* return the result from the function                                 */
-    return result;
+    return DoProfNNNargs(self, 5, arg1, arg2, arg3, arg4, arg5, 0);
 }
 
 
@@ -810,7 +649,7 @@ Obj DoProf5args (
 **
 *F  DoProf6args( <self>, <arg1>, ... )  . profile a function with 6 arguments
 */
-Obj DoProf6args (
+static Obj DoProf6args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
@@ -819,44 +658,7 @@ Obj DoProf6args (
     Obj                 arg5,
     Obj                 arg6 )
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 prof;           /* profiling bag                   */
-    UInt                timeElse;       /* time    spent elsewhere         */
-    UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt8               storElse;       /* storage spent elsewhere         */
-    UInt8               storCurr;       /* storage spent in current funcs. */ 
-
-    /* get the profiling bag                                               */
-    prof = PROF_FUNC( PROF_FUNC( self ) );
-
-    /* time and storage spent so far while this function what not active   */
-    timeElse = SyTime() - TIME_WITH_PROF(prof);
-    storElse = SizeAllBags - STOR_WITH_PROF(prof);
-
-    /* time and storage spent so far by all currently suspended functions  */
-    timeCurr = SyTime() - TimeDone;
-    storCurr = SizeAllBags - StorDone;
-
-    /* call the real function                                              */
-    result = CALL_6ARGS_PROF( self, arg1, arg2, arg3, arg4, arg5, arg6 );
-
-    /* number of invocation of this function                               */
-    SET_COUNT_PROF( prof, COUNT_PROF(prof) + 1 );
-
-    /* time and storage spent in this function and its children            */
-    SET_TIME_WITH_PROF( prof, SyTime() - timeElse );
-    SET_STOR_WITH_PROF( prof, SizeAllBags - storElse );
-
-    /* time and storage spent by this invocation of this function          */
-    timeCurr = SyTime() - TimeDone - timeCurr;
-    SET_TIME_WOUT_PROF( prof, TIME_WOUT_PROF(prof) + timeCurr );
-    TimeDone += timeCurr;
-    storCurr = SizeAllBags - StorDone - storCurr;
-    SET_STOR_WOUT_PROF( prof, STOR_WOUT_PROF(prof) + storCurr );
-    StorDone += storCurr;
-
-    /* return the result from the function                                 */
-    return result;
+    return DoProfNNNargs(self, 6, arg1, arg2, arg3, arg4, arg5, arg6);
 }
 
 
@@ -864,48 +666,11 @@ Obj DoProf6args (
 **
 *F  DoProfXargs( <self>, <args> ) . . . . profile a function with X arguments
 */
-Obj DoProfXargs (
+static Obj DoProfXargs (
     Obj                 self,
     Obj                 args )
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 prof;           /* profiling bag                   */
-    UInt                timeElse;       /* time    spent elsewhere         */
-    UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt8               storElse;       /* storage spent elsewhere         */
-    UInt8               storCurr;       /* storage spent in current funcs. */ 
-
-    /* get the profiling bag                                               */
-    prof = PROF_FUNC( PROF_FUNC( self ) );
-
-    /* time and storage spent so far while this function what not active   */
-    timeElse = SyTime() - TIME_WITH_PROF(prof);
-    storElse = SizeAllBags - STOR_WITH_PROF(prof);
-
-    /* time and storage spent so far by all currently suspended functions  */
-    timeCurr = SyTime() - TimeDone;
-    storCurr = SizeAllBags - StorDone;
-
-    /* call the real function                                              */
-    result = CALL_XARGS_PROF( self, args );
-
-    /* number of invocation of this function                               */
-    SET_COUNT_PROF( prof, COUNT_PROF(prof) + 1 );
-
-    /* time and storage spent in this function and its children            */
-    SET_TIME_WITH_PROF( prof, SyTime() - timeElse );
-    SET_STOR_WITH_PROF( prof, SizeAllBags - storElse );
-
-    /* time and storage spent by this invocation of this function          */
-    timeCurr = SyTime() - TimeDone - timeCurr;
-    SET_TIME_WOUT_PROF( prof, TIME_WOUT_PROF(prof) + timeCurr );
-    TimeDone += timeCurr;
-    storCurr = SizeAllBags - StorDone - storCurr;
-    SET_STOR_WOUT_PROF( prof, STOR_WOUT_PROF(prof) + storCurr );
-    StorDone += storCurr;
-
-    /* return the result from the function                                 */
-    return result;
+    return DoProfNNNargs(self, -1, args, 0, 0, 0, 0, 0);
 }
 
 
