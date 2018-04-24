@@ -4,7 +4,9 @@
 
 <!DOCTYPE Book SYSTEM "gapdoc.dtd"
    [ <!ENTITY ATLAS "<Package>Atlas</Package>">
+     <!ENTITY HPCGAP "<Package>HPC-GAP</Package>">
      <!ENTITY mdash "<Alt Only='HTML'>&#8212;</Alt><Alt Not='HTML'>---</Alt>">
+     <!ENTITY Hash  "<Alt Only='LaTeX'>\#</Alt><Alt Not='LaTeX'>#</Alt>">
 <#Include SYSTEM "../versiondata">
    ]>
 
@@ -55,6 +57,8 @@
 <Body>
 
 <#Include SYSTEM "preface.xml">
+
+<#Include SYSTEM "changes49.xml">
 
 <#Include SYSTEM "changes48.xml">
 
