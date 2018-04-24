@@ -1491,6 +1491,45 @@ static void ReadFuncExprBody(
 
 /****************************************************************************
 **
+*F  ReadLocals( <follow> )
+*/
+static UInt ReadLocals(TypSymbolSet follow, Obj nams)
+{
+    UInt narg = LEN_PLIST(nams);
+    UInt nloc = 0;
+
+    Match(S_LOCAL, "local", follow);
+
+    while (1) {
+        if (STATE(Symbol) == S_IDENT) {
+            if (findValueInNams(nams, narg + 1, narg + nloc)) {
+                SyntaxError("Name used for two locals");
+            }
+            if (findValueInNams(nams, 1, narg)) {
+                SyntaxError("Name used for argument and local");
+            }
+            nloc += 1;
+            PushPlist(nams, MakeImmString(STATE(Value)));
+            if (LEN_PLIST(nams) >= 65536) {
+                SyntaxError("Too many function arguments and locals");
+            }
+        }
+        Match(S_IDENT, "identifier", STATBEGIN | S_END | follow);
+
+        if (STATE(Symbol) != S_COMMA)
+            break;
+
+        // init to avoid strange message in case of empty string
+        STATE(Value)[0] = '\0';
+        Match(S_COMMA, ",", follow);
+    }
+    MatchSemicolon(STATBEGIN | S_END | follow);
+
+    return nloc;
+}
+
+/****************************************************************************
+**
 *F  ReadFuncExpr( <follow> )  . . . . . . . . . .  read a function definition
 **
 **  'ReadFuncExpr' reads a function literal expression.  In  case of an error
@@ -1505,10 +1544,10 @@ void ReadFuncExpr (
     TypSymbolSet        follow,
     Char mode)
 {
-    volatile Int        startLine;      /* line number of function keyword */
-    volatile int        is_atomic = 0;  /* is this an atomic function?      */
-    volatile UInt       nloc = 0;       /* number of locals                */
-    volatile ArgList    args;
+    Int     startLine;        // line number of function keyword
+    int     is_atomic = 0;    // is this an atomic function?
+    UInt    nloc = 0;         // number of locals
+    ArgList args;
 
     /* begin the function               */
     startLine = GetInputLineNumber();
@@ -1526,28 +1565,7 @@ void ReadFuncExpr (
     args = ReadFuncArgList(follow, is_atomic, S_RPAREN, ")");
 
     if ( STATE(Symbol) == S_LOCAL ) {
-        Match( S_LOCAL, "local", follow );
-        goto start;
-        while ( STATE(Symbol) == S_COMMA ) {
-            /* init to avoid strange message in case of empty string */
-            STATE(Value)[0] = '\0';
-            Match( S_COMMA, ",", follow );
-            if (findValueInNams(args.nams, args.narg + 1, args.narg + nloc)) {
-                SyntaxError("Name used for two locals");
-            }
-        start:
-            if (STATE(Symbol) == S_IDENT &&
-                findValueInNams(args.nams, 1, args.narg)) {
-                SyntaxError("Name used for argument and local");
-            }
-            nloc += 1;
-            PushPlist(args.nams, MakeImmString(STATE(Value)));
-            if (LEN_PLIST(args.nams) >= 65536) {
-                SyntaxError("Too many function arguments and locals");
-            }
-            Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
-        }
-        MatchSemicolon(STATBEGIN | S_END | follow);
+        nloc = ReadLocals(follow, args.nams);
     }
 
     ReadFuncExprBody(follow, 0, nloc, args, startLine);
@@ -2879,24 +2897,7 @@ UInt ReadEvalFile(Obj *evalResult)
     PushPlist( STATE(StackNams), nams );
     nloc = 0;
     if ( STATE(Symbol) == S_LOCAL ) {
-        Match( S_LOCAL, "local", 0L );
-        nloc += 1;
-        PushPlist(nams, MakeImmString(STATE(Value)));
-        Match( S_IDENT, "identifier", STATBEGIN|S_END );
-        while ( STATE(Symbol) == S_COMMA ) {
-            STATE(Value)[0] = '\0';
-            Match( S_COMMA, ",", 0L );
-            if (findValueInNams(nams, 1, nloc)) {
-                SyntaxError("Name used for two locals");
-            }
-            nloc += 1;
-            PushPlist(nams, MakeImmString(STATE(Value)));
-            if (LEN_PLIST(nams) >= 65536) {
-                SyntaxError("Too many locals");
-            }
-            Match( S_IDENT, "identifier", STATBEGIN|S_END );
-        }
-        MatchSemicolon(STATBEGIN | S_END);
+        nloc = ReadLocals(0, nams);
     }
 
     /* fake the 'function ()'                                              */
