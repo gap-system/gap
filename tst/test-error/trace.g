@@ -1,14 +1,93 @@
-m:=ImmutableMatrix(GF(2),IdentityMat(2,GF(2)));;
+#
+# tracing of operations
+#
 
-InverseMutable(m);
-TraceMethods(InverseMutable);
-InverseMutable(m);
+# create a dummy operation
+o:=NewOperation("dummy",[]);
+InstallOtherMethod(o,[],{}->[]);
+InstallOtherMethod(o,[IsInt],{arg...}->arg);
+InstallOtherMethod(o,[IsInt,IsInt],{arg...}->arg);
+InstallOtherMethod(o,[IsInt,IsInt],{arg...}->arg);
+InstallOtherMethod(o,[IsInt,IsInt,IsInt],{arg...}->arg);
+InstallOtherMethod(o,[IsInt,IsInt,IsInt,IsInt],{arg...}->arg);
+InstallOtherMethod(o,[IsInt,IsInt,IsInt,IsInt,IsInt],{arg...}->arg);
+InstallOtherMethod(o,[IsInt,IsInt,IsInt,IsInt,IsInt,IsInt],{arg...}->arg);
 
-AdditiveInverseMutable(m);
-TraceMethods(AdditiveInverseMutable);
-AdditiveInverseMutable(m);
+# without tracing
+o();
+o(1);
+o(1,2);
+o(1,2,3);
+o(1,2,3,4);
+o(1,2,3,4,5);
+o(1,2,3,4,5,6);
+o(1,2,3,4,5,6,7); # not (yet?) supported
 
-g:= Group( (1,2,3), (1,2) );;  Size( g );
-TraceMethods( [ Size ] );
-Size(g);
-UntraceMethods( [ Size ] );
+# with tracing
+TraceMethods( o );
+o();
+o(1);
+o(1,2);
+o(1,2,3);
+o(1,2,3,4);
+o(1,2,3,4,5);
+o(1,2,3,4,5,6);
+o(1,2,3,4,5,6,7);
+UntraceMethods( o ); # not (yet?) supported
+
+# again without tracing
+o();
+o(1);
+o(1,2);
+o(1,2,3);
+o(1,2,3,4);
+o(1,2,3,4,5);
+o(1,2,3,4,5,6);
+o(1,2,3,4,5,6,7); # not (yet?) supported
+
+#
+# tracing of constructors
+#
+
+# create a dummy constructor
+o:=NewConstructor("foobar",[]);
+InstallOtherMethod(o,[],{}->[]);
+InstallOtherMethod(o,[IsInt],{arg...}->arg);
+InstallOtherMethod(o,[IsInt,IsInt],{arg...}->arg);
+InstallOtherMethod(o,[IsInt,IsInt],{arg...}->arg);
+InstallOtherMethod(o,[IsInt,IsInt,IsInt],{arg...}->arg);
+InstallOtherMethod(o,[IsInt,IsInt,IsInt,IsInt],{arg...}->arg);
+InstallOtherMethod(o,[IsInt,IsInt,IsInt,IsInt,IsInt],{arg...}->arg);
+InstallOtherMethod(o,[IsInt,IsInt,IsInt,IsInt,IsInt,IsInt],{arg...}->arg);
+
+# without tracing
+#o(); # ???
+o(IsInt);
+o(IsInt,2);
+o(IsInt,2,3);
+o(IsInt,2,3,4);
+o(IsInt,2,3,4,5);
+o(IsInt,2,3,4,5,6);
+o(IsInt,2,3,4,5,6,7); # not (yet?) supported
+
+# with tracing
+TraceMethods( o );
+#o(); # ???
+o(IsInt);
+o(IsInt,2);
+o(IsInt,2,3);
+o(IsInt,2,3,4);
+o(IsInt,2,3,4,5);
+o(IsInt,2,3,4,5,6);
+o(IsInt,2,3,4,5,6,7); # not (yet?) supported
+UntraceMethods( o );
+
+# again without tracing
+#o(); # ???
+o(IsInt);
+o(IsInt,2);
+o(IsInt,2,3);
+o(IsInt,2,3,4);
+o(IsInt,2,3,4,5);
+o(IsInt,2,3,4,5,6);
+o(IsInt,2,3,4,5,6,7); # not (yet?) supported
