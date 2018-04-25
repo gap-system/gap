@@ -54,7 +54,7 @@ gap> o(1,2,3,4,5,6);
 gap> o(1,2,3,4,5,6,7);
 [ 1, 2, 3, 4, 5, 6, 7 ]
 
-# test dispatch through executor / DispatchFuncCall, as function call
+# test dispatch through executor / EvalOrExecCall, as function call
 gap> f := function() return o(); end;; f();
 [  ]
 gap> f := function() return o(1); end;; f();
@@ -72,7 +72,7 @@ gap> f := function() return o(1,2,3,4,5,6); end;; f();
 gap> f := function() return o(1,2,3,4,5,6,7); end;; f();
 [ 1, 2, 3, 4, 5, 6, 7 ]
 
-# test dispatch through executor / DispatchFuncCall, as procedure call
+# test dispatch through executor / EvalOrExecCall, as procedure call
 gap> f := function() o(); return result; end;; f();
 [  ]
 gap> f := function() o(1); return result; end;; f();
