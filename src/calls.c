@@ -1930,23 +1930,6 @@ Int IsKernelFunction(Obj func)
 
 #ifdef USE_GASMAN
 
-Obj FuncHandlerCookieOfFunction(Obj self, Obj func)
-{
-  Int narg;
-  ObjFunc hdlr;
-  const Char *cookie;
-  Obj cookieStr;
-  if (!IS_FUNC(func))
-    return Fail;
-  narg = NARG_FUNC(func);
-  if (narg == -1)
-    narg = 7;
-  hdlr = HDLR_FUNC(func, narg);
-  cookie = CookieOfHandler(hdlr);
-  cookieStr = MakeString(cookie);
-  return cookieStr;
-}
-
 static void SaveHandler( ObjFunc hdlr )
 {
   const Char * cookie;
@@ -2069,9 +2052,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(PROFILE_FUNC, 1, "func"),
     GVAR_FUNC(UNPROFILE_FUNC, 1, "func"),
     GVAR_FUNC(IsKernelFunction, 1, "func"),
-#ifdef USE_GASMAN
-    GVAR_FUNC(HandlerCookieOfFunction, 1, "func"),
-#endif
     GVAR_FUNC(FILENAME_FUNC, 1, "func"),
     GVAR_FUNC(LOCATION_FUNC, 1, "func"),
     GVAR_FUNC(STARTLINE_FUNC, 1, "func"),
