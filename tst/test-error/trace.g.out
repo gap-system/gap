@@ -1,24 +1,160 @@
-gap> m:=ImmutableMatrix(GF(2),IdentityMat(2,GF(2)));;
+gap> #
+gap> # tracing of operations
+gap> #
 gap> 
-gap> InverseMutable(m);
-<a 2x2 matrix over GF2>
-gap> TraceMethods(InverseMutable);
-gap> InverseMutable(m);
-#I  InverseMutable: for GF2 matrix at GAPROOT/lib/vecmat.gi:832
-<a 2x2 matrix over GF2>
+gap> # create a dummy operation
+gap> o:=NewOperation("dummy",[]);
+<Operation "dummy">
+gap> InstallOtherMethod(o,[],{}->[]);
+gap> InstallOtherMethod(o,[IsInt],{arg...}->arg);
+gap> InstallOtherMethod(o,[IsInt,IsInt],{arg...}->arg);
+gap> InstallOtherMethod(o,[IsInt,IsInt],{arg...}->arg);
+gap> InstallOtherMethod(o,[IsInt,IsInt,IsInt],{arg...}->arg);
+gap> InstallOtherMethod(o,[IsInt,IsInt,IsInt,IsInt],{arg...}->arg);
+gap> InstallOtherMethod(o,[IsInt,IsInt,IsInt,IsInt,IsInt],{arg...}->arg);
+gap> InstallOtherMethod(o,[IsInt,IsInt,IsInt,IsInt,IsInt,IsInt],{arg...}->arg);
 gap> 
-gap> AdditiveInverseMutable(m);
-<a 2x2 matrix over GF2>
-gap> TraceMethods(AdditiveInverseMutable);
-gap> AdditiveInverseMutable(m);
-#I  AdditiveInverseMutable: for GF2 matrix at GAPROOT/lib/vecmat.gi:774
-<a 2x2 matrix over GF2>
+gap> # without tracing
+gap> o();
+[  ]
+gap> o(1);
+[ 1 ]
+gap> o(1,2);
+[ 1, 2 ]
+gap> o(1,2,3);
+[ 1, 2, 3 ]
+gap> o(1,2,3,4);
+[ 1, 2, 3, 4 ]
+gap> o(1,2,3,4,5);
+[ 1, 2, 3, 4, 5 ]
+gap> o(1,2,3,4,5,6);
+[ 1, 2, 3, 4, 5, 6 ]
+gap> o(1,2,3,4,5,6,7); # not (yet?) supported
+Error, sorry: cannot yet have X argument operations
+not in any function at *stdin*:25
 gap> 
-gap> g:= Group( (1,2,3), (1,2) );;  Size( g );
-6
-gap> TraceMethods( [ Size ] );
-gap> Size(g);
-#I  Size: system getter at GAPROOT/lib/coll.gd:1473
-6
-gap> UntraceMethods( [ Size ] );
+gap> # with tracing
+gap> TraceMethods( o );
+gap> o();
+#I  dummy at *stdin*:8
+[  ]
+gap> o(1);
+#I  dummy at *stdin*:9
+[ 1 ]
+gap> o(1,2);
+#I  dummy at *stdin*:11
+[ 1, 2 ]
+gap> o(1,2,3);
+#I  dummy at *stdin*:12
+[ 1, 2, 3 ]
+gap> o(1,2,3,4);
+#I  dummy at *stdin*:13
+[ 1, 2, 3, 4 ]
+gap> o(1,2,3,4,5);
+#I  dummy at *stdin*:14
+[ 1, 2, 3, 4, 5 ]
+gap> o(1,2,3,4,5,6);
+#I  dummy at *stdin*:15
+[ 1, 2, 3, 4, 5, 6 ]
+gap> o(1,2,3,4,5,6,7);
+Error, sorry: cannot yet have X argument operations
+not in any function at *stdin*:36
+gap> UntraceMethods( o ); # not (yet?) supported
+gap> 
+gap> # again without tracing
+gap> o();
+[  ]
+gap> o(1);
+[ 1 ]
+gap> o(1,2);
+[ 1, 2 ]
+gap> o(1,2,3);
+[ 1, 2, 3 ]
+gap> o(1,2,3,4);
+[ 1, 2, 3, 4 ]
+gap> o(1,2,3,4,5);
+[ 1, 2, 3, 4, 5 ]
+gap> o(1,2,3,4,5,6);
+[ 1, 2, 3, 4, 5, 6 ]
+gap> o(1,2,3,4,5,6,7); # not (yet?) supported
+Error, sorry: cannot yet have X argument operations
+not in any function at *stdin*:47
+gap> 
+gap> #
+gap> # tracing of constructors
+gap> #
+gap> 
+gap> # create a dummy constructor
+gap> o:=NewConstructor("foobar",[]);
+<Constructor "foobar">
+gap> InstallOtherMethod(o,[],{}->[]);
+gap> InstallOtherMethod(o,[IsInt],{arg...}->arg);
+gap> InstallOtherMethod(o,[IsInt,IsInt],{arg...}->arg);
+gap> InstallOtherMethod(o,[IsInt,IsInt],{arg...}->arg);
+gap> InstallOtherMethod(o,[IsInt,IsInt,IsInt],{arg...}->arg);
+gap> InstallOtherMethod(o,[IsInt,IsInt,IsInt,IsInt],{arg...}->arg);
+gap> InstallOtherMethod(o,[IsInt,IsInt,IsInt,IsInt,IsInt],{arg...}->arg);
+gap> InstallOtherMethod(o,[IsInt,IsInt,IsInt,IsInt,IsInt,IsInt],{arg...}->arg);
+gap> 
+gap> # without tracing
+gap> #o(); # ???
+gap> o(IsInt);
+[ <Category "IsInt"> ]
+gap> o(IsInt,2);
+[ <Category "IsInt">, 2 ]
+gap> o(IsInt,2,3);
+[ <Category "IsInt">, 2, 3 ]
+gap> o(IsInt,2,3,4);
+[ <Category "IsInt">, 2, 3, 4 ]
+gap> o(IsInt,2,3,4,5);
+[ <Category "IsInt">, 2, 3, 4, 5 ]
+gap> o(IsInt,2,3,4,5,6);
+[ <Category "IsInt">, 2, 3, 4, 5, 6 ]
+gap> o(IsInt,2,3,4,5,6,7); # not (yet?) supported
+Error, sorry: cannot yet have X argument constructors
+not in any function at *stdin*:72
+gap> 
+gap> # with tracing
+gap> TraceMethods( o );
+gap> #o(); # ???
+gap> o(IsInt);
+#I  foobar at *stdin*:56
+[ <Category "IsInt"> ]
+gap> o(IsInt,2);
+#I  foobar at *stdin*:58
+[ <Category "IsInt">, 2 ]
+gap> o(IsInt,2,3);
+#I  foobar at *stdin*:59
+[ <Category "IsInt">, 2, 3 ]
+gap> o(IsInt,2,3,4);
+#I  foobar at *stdin*:60
+[ <Category "IsInt">, 2, 3, 4 ]
+gap> o(IsInt,2,3,4,5);
+#I  foobar at *stdin*:61
+[ <Category "IsInt">, 2, 3, 4, 5 ]
+gap> o(IsInt,2,3,4,5,6);
+#I  foobar at *stdin*:62
+[ <Category "IsInt">, 2, 3, 4, 5, 6 ]
+gap> o(IsInt,2,3,4,5,6,7); # not (yet?) supported
+Error, sorry: cannot yet have X argument constructors
+not in any function at *stdin*:83
+gap> UntraceMethods( o );
+gap> 
+gap> # again without tracing
+gap> #o(); # ???
+gap> o(IsInt);
+[ <Category "IsInt"> ]
+gap> o(IsInt,2);
+[ <Category "IsInt">, 2 ]
+gap> o(IsInt,2,3);
+[ <Category "IsInt">, 2, 3 ]
+gap> o(IsInt,2,3,4);
+[ <Category "IsInt">, 2, 3, 4 ]
+gap> o(IsInt,2,3,4,5);
+[ <Category "IsInt">, 2, 3, 4, 5 ]
+gap> o(IsInt,2,3,4,5,6);
+[ <Category "IsInt">, 2, 3, 4, 5, 6 ]
+gap> o(IsInt,2,3,4,5,6,7); # not (yet?) supported
+Error, sorry: cannot yet have X argument constructors
+not in any function at *stdin*:94
 gap> QUIT;
