@@ -93,18 +93,6 @@ gap> G:=Group((1,3,8,21,37,43,36,35)(2,6,15,30,41,29,19,4)(5,7,18,34,46,
 gap> Size(AutomorphismGroup(G)); 
 2880000
 
-#
-# hard-iso4
-#
-gap> G:=PcGroupCode(
-> 741231213963541373679312045151639276850536621925972119311,11664);;
-gap> H:=PcGroupCode(
-> 888658311993669104086576972570546890038187728096037768975,11664);;
-gap> IsomorphismGroups(G,H);
-fail
-gap> IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))=fail;
-false
-
 # permutation example
 gap> gp1:=Group(
 > (1,23,6,64,38)(2,42,18,19,11)(3,7,30,49,50)(4,14,20,45,46)(5,9,21,41,58,34, 
