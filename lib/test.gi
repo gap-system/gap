@@ -131,14 +131,13 @@ InstallGlobalFunction(RunTests, function(arg)
     s := InputTextString(inp[i]);
     res := "";
     fres := OutputTextString(res, false);
-    SET_OUTPUT(fres, true);
     t := Runtime();
-    READ_STREAM_LOOP(s, true);
-    SET_PREVIOUS_OUTPUT();
+    READ_STREAM_LOOP(s, fres);
+    t := Runtime() - t;
     CloseStream(fres);
     CloseStream(s);
     Add(cmp, res);
-    Add(times, Runtime()-t);
+    Add(times, t);
   od;
   if opts.showProgress = "some" then
     Print("\r                                    \c\r"); # clear the line
