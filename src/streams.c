@@ -356,25 +356,7 @@ static void READ_TEST_OR_LOOP(void)
         // FIXME: what about other types? e.g. STATUS_ERROR and STATUS_QQUIT
 
     }
-}
 
-
-/****************************************************************************
-**
-*F  READ_LOOP() . . . . . . . . . .  read current input as read-eval-view loop
-**
-**  Read the current input as read-eval-view loop and close the input stream.
-*/
-static void READ_LOOP ( void )
-{
-    READ_TEST_OR_LOOP();
-
-    /* close the input file again, and return 'true'                       */
-    if ( ! CloseInput() ) {
-        ErrorQuit(
-            "Panic: ReadLoop cannot close input, this should not happen",
-            0L, 0L );
-    }
     ClearError();
 }
 
@@ -387,8 +369,6 @@ static void READ_LOOP ( void )
 **  search all   directories given   in 'SyGapRootPaths',  check  dynamically
 **  loadable modules and statically linked modules.
 */
-
-
 Int READ_GAP_ROOT ( const Char * filename )
 {
     TypGRF_Data         result;
@@ -907,51 +887,6 @@ Obj FuncAPPEND_TO_STREAM (
     return PRINT_OR_APPEND_TO_STREAM(args, 1);
 }
 
-Obj FuncSET_OUTPUT (
-    Obj                 self,
-    Obj                 file,
-    Obj                 append    )
-{
-    
-    if ( IsStringConv(file) ) {
-        if ( append != False ) {
-          if ( ! OpenAppend( CSTR_STRING(file) ) ) {
-             ErrorQuit( "SET_OUTPUT: cannot open '%g' for appending",
-                                  (Int)file, 0L );
-          } else {
-             return 0;
-          }
-        } else {
-          if ( ! OpenOutput( CSTR_STRING(file) ) ) {
-             ErrorQuit( "SET_OUTPUT: cannot open '%g' for output",
-                                  (Int)file, 0L );
-          } else {
-            return 0;
-          }
-        }
-    } else {  /* an open stream */
-        if ( ! OpenOutputStream( file ) ) {
-          if ( append != False ) {
-             ErrorQuit( "SET_OUTPUT: cannot open stream for appending", 0L, 0L );
-          } else {
-             ErrorQuit( "SET_OUTPUT: cannot open stream for output", 0L, 0L );
-          }
-        } else {
-          return 0;
-        }
-    }
-    return 0;
-}
-
-Obj FuncSET_PREVIOUS_OUTPUT( Obj self ) {
-    /* close the current output stream, and return nothing  */
-
-    if ( ! CloseOutput() ) {
-        ErrorQuit( "SET_PREVIOUS_OUTPUT: cannot close output", 0L, 0L );
-        return 0;
-    }
-    return 0;
-}
 
 /****************************************************************************
 **
@@ -1035,23 +970,39 @@ Obj FuncREAD_STREAM (
 
 /****************************************************************************
 **
-*F  FuncREAD_STREAM_LOOP( <self>, <stream>, <catcherrstdout> ) . read a stream
+*F  FuncREAD_STREAM_LOOP( <self>, <instream>, <outstream> ) . . read a stream
+**
+**  Read data from <instream> in a read-eval-view loop and write all output
+**  to <outstream>.
 */
 Obj FuncREAD_STREAM_LOOP (
     Obj                 self,
-    Obj                 stream,
-    Obj                 catcherrstdout )
+    Obj                 instream,
+    Obj                 outstream )
 {
-    /* try to open the file                                                */
-    if (!OpenInputStream(stream, 0)) {
+    Int res;
+
+    if (!OpenInputStream(instream, 0)) {
         return False;
     }
 
-    /* read the test file                                                  */
-    LockCurrentOutput(catcherrstdout == True);
-    READ_LOOP();
+    if (!OpenOutputStream(outstream)) {
+        res = CloseInput();
+        GAP_ASSERT(res);
+        return False;
+    }
+
+    LockCurrentOutput(1);
+    READ_TEST_OR_LOOP();
     LockCurrentOutput(0);
-    return True;
+
+    res = CloseInput();
+    GAP_ASSERT(res);
+
+    res &= CloseOutput();
+    GAP_ASSERT(res);
+
+    return res ? True : False;
 }
 
 
@@ -2203,8 +2154,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(PRINT_TO_STREAM, -1, "args"),
     GVAR_FUNC(APPEND_TO, -1, "args"),
     GVAR_FUNC(APPEND_TO_STREAM, -1, "args"),
-    GVAR_FUNC(SET_OUTPUT, 2, "file, app"),
-    GVAR_FUNC(SET_PREVIOUS_OUTPUT, 0, ""),
     GVAR_FUNC(TmpName, 0, ""),
     GVAR_FUNC(TmpDirectory, 0, ""),
     GVAR_FUNC(RemoveFile, 1, "filename"),
