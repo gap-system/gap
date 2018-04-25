@@ -1174,7 +1174,7 @@ void InitSystem (
     setbuf(stderr, (char *)0);
 
     for (i = 4; i < ARRAY_SIZE(syBuf); i++)
-        syBuf[i].fp = -1;
+        SyMarkBufUnused(i);
 
     for (i = 0; i < ARRAY_SIZE(syBuffers); i++)
         syBuffers[i].inuse = 0;

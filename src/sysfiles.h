@@ -173,6 +173,10 @@ extern SYS_SY_BUFFER syBuffers[32];
 
 extern UInt SySetBuffering( UInt fid );
 
+extern void SyMarkBufUnused(Int i);
+
+extern Int SyBufInUse(Int i);
+
 /****************************************************************************
 **
 *F  SyFileno( <fid> ) . . . . . . . . . . . . . . get operating system fileno

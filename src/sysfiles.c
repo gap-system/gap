@@ -749,6 +749,22 @@ SYS_SY_BUF syBuf [256];
 
 SYS_SY_BUFFER syBuffers [ 32];
 
+// Mark a member of syBuf as unused
+void SyMarkBufUnused(Int i)
+{
+    GAP_ASSERT(i >= 0 && i < 256);
+    syBuf[i].fp = -1;
+}
+
+// There is no explicit method to mark syBufs as used,
+// they are marked as used when created.
+
+// Check if a member of syBuf is in use
+Int SyBufInUse(Int i)
+{
+    GAP_ASSERT(i >= 0 && i < 256);
+    return syBuf[i].fp != -1;
+}
 
 /****************************************************************************
 **
@@ -800,7 +816,7 @@ Int SyFopen (
     else if ( strcmp( name, "*errin*" ) == 0 ) {
         if ( strcmp( mode, "r" ) != 0 )
           return -1;
-        else if ( syBuf[2].fp == -1 )
+        else if ( !SyBufInUse( 2 ) )
           return -1;
         else
           return 2;
@@ -815,7 +831,7 @@ Int SyFopen (
     HashLock(&syBuf);
     /* try to find an unused file identifier                               */
     for ( fid = 4; fid < ARRAY_SIZE(syBuf); ++fid )
-        if ( syBuf[fid].fp == -1 )
+        if ( !SyBufInUse(fid) )
           break;
 
     if ( fid == ARRAY_SIZE(syBuf) ) {
@@ -892,7 +908,7 @@ UInt SySetBuffering( UInt fid )
 {
   UInt bufno;
 
-  if (syBuf[fid].fp == -1)
+  if (!SyBufInUse(fid))
     ErrorQuit("Can't set buffering for a closed stream", 0, 0);
   if (syBuf[fid].bufno >= 0)
     return 1;
@@ -929,7 +945,7 @@ Int SyFclose (
         fputs("gap: panic 'SyFclose' asked to close illegal fid!\n",stderr);
         return -1;
     }
-    if ( syBuf[fid].fp == -1 ) {
+    if ( !SyBufInUse(fid) ) {
         fputs("gap: panic 'SyFclose' asked to close closed file!\n",stderr);
         return -1;
     }
@@ -949,7 +965,7 @@ Int SyFclose (
     {
         fputs("gap: 'SyFclose' cannot close file, ",stderr);
         fputs("maybe your file system is full?\n",stderr);
-        syBuf[fid].fp = -1;
+        SyMarkBufUnused(fid);
         HashUnlock(&syBuf);
         return -1;
     }
@@ -957,7 +973,7 @@ Int SyFclose (
     /* mark the buffer as unused                                           */
     if (syBuf[fid].bufno >= 0)
       syBuffers[syBuf[fid].bufno].inuse = 0;
-    syBuf[fid].fp = -1;
+    SyMarkBufUnused(fid);
     HashUnlock(&syBuf);
     return 0;
 }
@@ -974,7 +990,7 @@ Int SyIsEndOfFile (
     if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
         return -1;
     }
-    if ( syBuf[fid].fp == -1 ) {
+    if ( !SyBufInUse(fid) ) {
         return -1;
     }
 
@@ -1318,7 +1334,7 @@ Int SyEchoch (
     if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
         return -1;
     }
-    if ( syBuf[fid].fp == -1 ) {
+    if ( !SyBufInUse(fid) ) {
         return -1;
     }
     syEchoch(ch,fid);
@@ -1415,7 +1431,7 @@ Int SyFtell (
     if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
         return -1;
     }
-    if ( syBuf[fid].fp == -1 ) {
+    if ( !SyBufInUse(fid) ) {
         return -1;
     }
 
@@ -1443,7 +1459,7 @@ Int SyFseek (
     if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
         return -1;
     }
-    if ( syBuf[fid].fp == -1 ) {
+    if ( !SyBufInUse(fid) ) {
         return -1;
     }
 
@@ -1648,7 +1664,7 @@ Int SyGetch (
     }
         /* on the Mac, syBuf[fid].fp is -1 for stdin, stdout, errin, errout
            the other cases are handled by syGetch */
-    if ( syBuf[fid].fp == -1 ) {
+    if ( !SyBufInUse(fid) ) {
         return -1;
     }
 
@@ -1894,7 +1910,7 @@ Int HasAvailableBytes( UInt fid )
 #endif
   UInt bufno;
   if (fid > ARRAY_SIZE(syBuf) ||
-      syBuf[fid].fp == -1)
+      !SyBufInUse(fid))
     return -1;
 
   if (syBuf[fid].bufno >= 0)
@@ -2285,7 +2301,7 @@ Char * syFgets (
     if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
         return (Char*)0;
     }
-    if ( syBuf[fid].fp == -1 ) {
+    if ( !SyBufInUse(fid) ) {
         return (Char*)0;
     }
 
