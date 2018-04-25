@@ -198,26 +198,12 @@ Error, <oper> must be an operation
 gap> if not IsHPCGAP then COMPACT_TYPE_IDS(); fi;
 
 #
-# ensure at least some of the "verbose" profiling code path is hit
 #
-gap> opers:=[IsAbelian,Size,SylowSubgroup,NthRootsInGroup,AbelianGroupCons];;
-gap> ProfileFunctions(opers);
-gap> G := Group( (1,2,3), (4,5,6));;
-gap> Size(G);
-9
-gap> SylowSubgroup(G, 3) = G;
-true
-gap> NthRootsInGroup(G, G.1, 3);
-[  ]
-gap> IsAbelian(G);
-true
-gap> G = AbelianGroupCons(IsPermGroup, [3,3]);
-true
-gap> UnprofileFunctions(opers);
+#
 
-#
-#
-#
+# DoOperationNArgs
+gap> SymmetricGroupCons(1,2);
+Error, Constructor: the first argument must be a filter not a integer
 
 #
 gap> NEW_OPERATION(fail);

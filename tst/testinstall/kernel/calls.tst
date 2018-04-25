@@ -3,7 +3,26 @@
 #
 gap> START_TEST("kernel/calls.tst");
 
-# test error for wrong number of arguments
+# test DoWrap0args, DoWrap1args, ...
+gap> o:={l...} -> l;;
+gap> o();
+[  ]
+gap> o(1);
+[ 1 ]
+gap> o(1,2);
+[ 1, 2 ]
+gap> o(1,2,3);
+[ 1, 2, 3 ]
+gap> o(1,2,3,4);
+[ 1, 2, 3, 4 ]
+gap> o(1,2,3,4,5);
+[ 1, 2, 3, 4, 5 ]
+gap> o(1,2,3,4,5,6);
+[ 1, 2, 3, 4, 5, 6 ]
+gap> o(1,2,3,4,5,6,7);
+[ 1, 2, 3, 4, 5, 6, 7 ]
+
+# test DoFail0args, DoFail1args, ...
 gap> f:={}->1;;
 gap> f(1);
 Error, Function: number of arguments must be 0 (not 1)
@@ -25,6 +44,27 @@ Error, Function: number of arguments must be 1 (not 0)
 gap> f:={x,y,z...}->x;;
 gap> f();
 Error, Function: number of arguments must be at least 2 (not 0)
+
+# test DoProf0args, DoProf1args, ...
+gap> o:={l...} -> l;;
+gap> ProfileFunctions([o]);
+gap> o();
+[  ]
+gap> o(1);
+[ 1 ]
+gap> o(1,2);
+[ 1, 2 ]
+gap> o(1,2,3);
+[ 1, 2, 3 ]
+gap> o(1,2,3,4);
+[ 1, 2, 3, 4 ]
+gap> o(1,2,3,4,5);
+[ 1, 2, 3, 4, 5 ]
+gap> o(1,2,3,4,5,6);
+[ 1, 2, 3, 4, 5, 6 ]
+gap> o(1,2,3,4,5,6,7);
+[ 1, 2, 3, 4, 5, 6, 7 ]
+gap> UnprofileFunctions([o]);
 
 #
 gap> PROF_FUNC(1);
