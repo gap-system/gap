@@ -71,7 +71,7 @@ end;
 ##  its `PackageInfo.g' file) and reads this file. The output of all tests 
 ##  is collected in the files <outfile>.<packagename>
 ##  GAP} is started as <gap> (including all command line options).
-##  <other> may be true, false or "auto" to specify whether all available
+##  <other> may be "true", "false" or "auto" to specify whether all available
 ##  packages are loaded, not loaded or only autoloaded packages. This mode
 ##  is actually managed in the Makefile, and is passed to this function 
 ##  just to be printed in the information messages.
@@ -135,7 +135,7 @@ BindGlobal( "CreatePackageTestsInput", function( scriptfile, outfile, gap, other
 ##
 ##  loads the package <pkgname> in version <version>,
 ##  and reads the file <testfile> (a path relative to the package directory).
-##  If <other> is `true' then all other available packages are also loaded.
+##  If <other> is "true" then all other available packages are also loaded.
 ##
 ##  The file <testfile> can either be a file that contains 
 ##  `Test' statements and therefore must be read with `Read',
@@ -155,7 +155,7 @@ BindGlobal( "RunPackageTests", function( pkgname, version, testfile, other )
       LoadAllPackages();
     fi;
     PKGTSTHDR := Concatenation( "\"", pkgname, "\", \"", version, "\", \"",
-           testfile, "\", ", other );
+           testfile, "\", \"", other, "\"" );
     Print( "#I  RunPackageTests(", PKGTSTHDR, ");\n" );
     ShowSystemInformation();
     file:= Filename( DirectoriesPackageLibrary( pkgname, "" ), testfile );
