@@ -498,8 +498,8 @@ install-headers:
 	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
 	$(QUIET_INSTALL)$(INSTALL) -m 0644 $(srcdir)/src/*.h $(DESTDIR)$(includedir)/gap
 	$(QUIET_INSTALL)$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
-	sed -i -E -e 's;#include <src/([^>]+)>;#include "\1";' $(DESTDIR)$(includedir)/gap/*.h
-	sed -i -E -e 's;#include <src/([^>]+)>;#include "\1";' $(DESTDIR)$(includedir)/gap/hpc/*.h
+	sed -i -e -E 's;#include <src/([^>]+)>;#include "\1";' $(DESTDIR)$(includedir)/gap/*.h
+	sed -i -e -E 's;#include <src/([^>]+)>;#include "\1";' $(DESTDIR)$(includedir)/gap/hpc/*.h
 	# TODO: take care of config.h
 
 install-libgap: libgap.la
