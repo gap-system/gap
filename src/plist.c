@@ -3644,8 +3644,8 @@ static Int InitKernel (
     InitBagNamesFromTable( BagNames );
 
     for ( t1 = T_PLIST;  t1 < T_PLIST_FFE ;  t1 += 2 ) {
-        InitMarkFuncBags( t1                     , MarkAllSubBags );
-        InitMarkFuncBags( t1 +IMMUTABLE          , MarkAllSubBags );
+        InitMarkFuncBags( t1                     , MarkAllButFirstSubBags );
+        InitMarkFuncBags( t1 +IMMUTABLE          , MarkAllButFirstSubBags );
 #if !defined(USE_THREADSAFE_COPYING)
         InitMarkFuncBags( t1            +COPYING , MarkAllSubBags );
         InitMarkFuncBags( t1 +IMMUTABLE +COPYING , MarkAllSubBags );
