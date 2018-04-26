@@ -239,8 +239,8 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
     hash  := HASH_FLAGS(flags) mod family!.HASH_SIZE + 1;
     if IsBound( cache[hash] ) then
         cached := cache[hash];
-        if IS_EQUAL_FLAGS( flags, cached![2] )  then
-            flags := cached![2];
+        if IS_EQUAL_FLAGS( flags, cached![POS_FLAGS_TYPE] )  then
+            flags := cached![POS_FLAGS_TYPE];
             if    IS_IDENTICAL_OBJ(  data,  cached![ POS_DATA_TYPE ] )
               and IS_IDENTICAL_OBJ(  typeOfTypes, TYPE_OBJ(cached) )
             then
@@ -334,7 +334,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
         fi;
         ncl := 3*family!.HASH_SIZE+1;
         for t in cache do
-            ncache[ HASH_FLAGS(t![2]) mod ncl + 1] := t;
+            ncache[ HASH_FLAGS(t![POS_FLAGS_TYPE]) mod ncl + 1] := t;
         od;
         family!.HASH_SIZE := ncl;
         family!.TYPES := ncache;
@@ -413,9 +413,9 @@ end );
 ##
 BIND_GLOBAL( "Subtype2", function ( type, filter )
     return NEW_TYPE( TypeOfTypes,
-                     type![1],
+                     type![POS_FAMILY_TYPE],
                      WITH_IMPS_FLAGS( AND_FLAGS(
-                        type![2],
+                        type![POS_FLAGS_TYPE],
                         FLAGS_FILTER( filter ) ) ),
                      type![ POS_DATA_TYPE ], type );
 end );
@@ -423,9 +423,9 @@ end );
 
 BIND_GLOBAL( "Subtype3", function ( type, filter, data )
     return NEW_TYPE( TypeOfTypes,
-                     type![1],
+                     type![POS_FAMILY_TYPE],
                      WITH_IMPS_FLAGS( AND_FLAGS(
-                        type![2],
+                        type![POS_FLAGS_TYPE],
                         FLAGS_FILTER( filter ) ) ),
                      data, type );
 end );
@@ -470,9 +470,9 @@ end );
 ##
 BIND_GLOBAL( "SupType2", function ( type, filter )
     return NEW_TYPE( TypeOfTypes,
-                     type![1],
+                     type![POS_FAMILY_TYPE],
                      SUB_FLAGS(
-                        type![2],
+                        type![POS_FLAGS_TYPE],
                         FLAGS_FILTER( filter ) ),
                      type![ POS_DATA_TYPE ], type );
 end );
@@ -480,9 +480,9 @@ end );
 
 BIND_GLOBAL( "SupType3", function ( type, filter, data )
     return NEW_TYPE( TypeOfTypes,
-                     type![1],
+                     type![POS_FAMILY_TYPE],
                      SUB_FLAGS(
-                        type![2],
+                        type![POS_FLAGS_TYPE],
                         FLAGS_FILTER( filter ) ),
                      data, type );
 end );
@@ -516,7 +516,7 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "FamilyType", K -> K![1] );
+BIND_GLOBAL( "FamilyType", K -> K![POS_FAMILY_TYPE] );
 
 
 #############################################################################
@@ -530,7 +530,7 @@ BIND_GLOBAL( "FamilyType", K -> K![1] );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "FlagsType", K -> K![2] );
+BIND_GLOBAL( "FlagsType", K -> K![POS_FLAGS_TYPE] );
 
 
 #############################################################################
@@ -715,7 +715,7 @@ BIND_GLOBAL( "Objectify", function ( type, obj )
         SET_TYPE_COMOBJ( obj, type );
     fi;
     if not IsNoImmediateMethodsObject(obj) then
-      RunImmediateMethods( obj, type![2] );
+      RunImmediateMethods( obj, type![POS_FLAGS_TYPE] );
     fi;
     if IsHPCGAP then
       if IsReadOnlyPositionalObjectRep(obj) then
@@ -754,7 +754,7 @@ local type, newtype;
       SET_TYPE_POSOBJ( obj, newtype );
       if not ( IGNORE_IMMEDIATE_METHODS
                or IsNoImmediateMethodsObject(obj) ) then
-        RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
+        RunImmediateMethods( obj, SUB_FLAGS( newtype![POS_FLAGS_TYPE], type![POS_FLAGS_TYPE] ) );
       fi;
     elif IS_COMOBJ( obj ) then
       type:= TYPE_OBJ( obj );
@@ -762,7 +762,7 @@ local type, newtype;
       SET_TYPE_COMOBJ( obj, newtype );
       if not ( IGNORE_IMMEDIATE_METHODS
                or IsNoImmediateMethodsObject(obj) ) then
-        RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
+        RunImmediateMethods( obj, SUB_FLAGS( newtype![POS_FLAGS_TYPE], type![POS_FLAGS_TYPE] ) );
       fi;
     elif IS_DATOBJ( obj ) then
       type:= TYPE_OBJ( obj );
@@ -770,7 +770,7 @@ local type, newtype;
       SET_TYPE_DATOBJ( obj, newtype );
       if not ( IGNORE_IMMEDIATE_METHODS
                or IsNoImmediateMethodsObject(obj) ) then
-        RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
+        RunImmediateMethods( obj, SUB_FLAGS( newtype![POS_FLAGS_TYPE], type![POS_FLAGS_TYPE] ) );
       fi;
     elif IS_PLIST_REP( obj )  then
         SET_FILTER_LIST( obj, filter );

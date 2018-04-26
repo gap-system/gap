@@ -2292,6 +2292,13 @@ static Int InitLibrary (
     ExportAsConstantGVar(T_TLREC_INNER);
 #endif
 
+    // export positions of data in type objects
+    ExportAsConstantGVar(POS_FAMILY_TYPE);
+    ExportAsConstantGVar(POS_FLAGS_TYPE);
+    ExportAsConstantGVar(POS_DATA_TYPE);
+    ExportAsConstantGVar(POS_NUMB_TYPE);
+    ExportAsConstantGVar(POS_FIRST_FREE_TYPE);
+
     /* return success                                                      */
     return 0;
 }
