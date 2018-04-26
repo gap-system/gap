@@ -14,28 +14,6 @@
 
 #############################################################################
 ##
-#V  POS_DATA_TYPE . . . . . . . . position where the data of a type is stored
-#V  POS_NUMB_TYPE . . . . . . . position where the number of a type is stored
-#V  POS_FIRST_FREE_TYPE . . . . .  first position that has no overall meaning
-##
-##  <ManSection>
-##  <Var Name="POS_DATA_TYPE"/>
-##  <Var Name="POS_NUMB_TYPE"/>
-##  <Var Name="POS_FIRST_FREE_TYPE"/>
-##
-##  <Description>
-##  Note that the family and the flags list are stored at positions 1 and 2,
-##  respectively.
-##  </Description>
-##  </ManSection>
-##
-BIND_CONSTANT( "POS_DATA_TYPE", 3 );
-BIND_CONSTANT( "POS_NUMB_TYPE", 4 );
-BIND_CONSTANT( "POS_FIRST_FREE_TYPE", 5 );
-
-
-#############################################################################
-##
 #F  NEW_TYPE_NEXT_ID  . . . . . . . . . . . . GAP integer numbering the types
 ##
 ##  <ManSection>
@@ -600,8 +578,8 @@ InstallOtherMethod( PRINT_OBJ,
 function ( type )
     local  family, flags, data;
 
-    family := type![1];
-    flags  := type![2];
+    family := type![ POS_FAMILY_TYPE ];
+    flags  := type![ POS_FLAGS_TYPE ];
     data   := type![ POS_DATA_TYPE ];
     Print( "NewType( ", family );
     if flags <> [] or data <> false then

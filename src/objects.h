@@ -406,11 +406,28 @@ static inline const Obj *CONST_ADDR_OBJ(Obj obj)
 
 /****************************************************************************
 **
+*S  POS_FAMILY_TYPE . . . . . . position where the family of a type is stored
+*S  POS_FLAGS_TYPE . . . . . .  position where the flags of a type are stored
+*S  POS_DATA_TYPE . . . . . . . . position where the data of a type is stored
+*S  POS_NUMB_TYPE . . . . . . . position where the number of a type is stored
+*S  POS_FIRST_FREE_TYPE . . . . .  first position that has no overall meaning
+*/
+enum {
+    POS_FAMILY_TYPE = 1,
+    POS_FLAGS_TYPE = 2,
+    POS_DATA_TYPE = 3,
+    POS_NUMB_TYPE = 4,
+    POS_FIRST_FREE_TYPE = 5,
+};
+
+
+/****************************************************************************
+**
 *F  FAMILY_TYPE( <type> ) . . . . . . . . . . . . . . . . .  family of a type
 **
 **  'FAMILY_TYPE' returns the family of the type <type>.
 */
-#define FAMILY_TYPE(type)       ELM_PLIST( type, 1 )
+#define FAMILY_TYPE(type)       ELM_PLIST( type, POS_FAMILY_TYPE )
 
 
 /****************************************************************************
@@ -426,7 +443,7 @@ static inline const Obj *CONST_ADDR_OBJ(Obj obj)
 **
 **  'FLAGS_TYPE' returns the flags boolean list of the type <type>.
 */
-#define FLAGS_TYPE(type)        ELM_PLIST( type, 2 )
+#define FLAGS_TYPE(type)        ELM_PLIST( type, POS_FLAGS_TYPE )
 
 
 /****************************************************************************
@@ -436,7 +453,7 @@ static inline const Obj *CONST_ADDR_OBJ(Obj obj)
 **  'DATA_TYPE' returns the shared data of the type <type>.
 **  Not used by the GAP kernel right now, but useful for kernel extensions.
 */
-#define DATA_TYPE(type)       ELM_PLIST( type, 3 )
+#define DATA_TYPE(type)       ELM_PLIST( type, POS_DATA_TYPE )
 
 
 /****************************************************************************
@@ -447,8 +464,8 @@ static inline const Obj *CONST_ADDR_OBJ(Obj obj)
 **  will renumber all IDs.  Therefore the  corresponding routine must excatly
 **  know where such numbers are stored.
 */
-#define ID_TYPE(type) ELM_PLIST(type, 4)
-#define SET_ID_TYPE(type, val) SET_ELM_PLIST(type, 4, val)
+#define ID_TYPE(type) ELM_PLIST(type, POS_NUMB_TYPE)
+#define SET_ID_TYPE(type, val) SET_ELM_PLIST(type, POS_NUMB_TYPE, val)
 
 
 /****************************************************************************

@@ -16,7 +16,7 @@
 ##  Return list of filters set in the given type.
 ##
 InstallMethod(FiltersType, "for a type", [ IsType ],
-    type -> FILTERS{ TRUES_FLAGS(type![2]) });
+    type -> FILTERS{ TRUES_FLAGS(type![POS_FLAGS_TYPE]) });
 
 #############################################################################
 ##
@@ -101,11 +101,11 @@ function ( type )
     local  res, family, flags, data, fnams;
 
     res := "<Type: (";
-    family := type![1];
+    family := type![POS_FAMILY_TYPE];
     Append(res, family!.NAME);
     Append(res, ", ");
 
-    flags := type![2];
+    flags := type![POS_FLAGS_TYPE];
     Append(res, NamesFilterShort(flags, 3) );
     Append(res, ")");
 
@@ -130,8 +130,8 @@ function ( type )
     local  res, family, flags, data, fnams;
 
     res := "";
-    family := type![1];
-    flags := type![2];
+    family := type![POS_FAMILY_TYPE];
+    flags := type![POS_FLAGS_TYPE];
     data := type![POS_DATA_TYPE];
 
     Append(res, STRINGIFY("family:\n    ", family!.NAME));
