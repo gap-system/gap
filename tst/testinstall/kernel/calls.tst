@@ -44,6 +44,12 @@ Error, Function: number of arguments must be 1 (not 0)
 gap> f:={x,y,z...}->x;;
 gap> f();
 Error, Function: number of arguments must be at least 2 (not 0)
+gap> f:={a1,a2,a3,a4,a5,a6,a7,a8}->a1;;
+gap> f();
+Error, Function: number of arguments must be 8 (not 0)
+gap> f:={a1,a2,a3,a4,a5,a6,a7,a8,rest...}->a1;;
+gap> f();
+Error, Function: number of arguments must be at least 8 (not 0)
 
 # test DoProf0args, DoProf1args, ...
 gap> o:={l...} -> l;;
@@ -83,17 +89,29 @@ false
 
 #
 gap> f:=x->x;;
+gap> FILENAME_FUNC(fail);
+Error, <func> must be a function
+gap> FILENAME_FUNC(f);
+"stream"
+gap> FILENAME_FUNC(IS_OBJECT);
+fail
 gap> STARTLINE_FUNC(fail);
 Error, <func> must be a function
 gap> STARTLINE_FUNC(f);
 1
+gap> STARTLINE_FUNC(IS_OBJECT);
+fail
 gap> ENDLINE_FUNC(fail);
 Error, <func> must be a function
 gap> ENDLINE_FUNC(f);
 1
+gap> ENDLINE_FUNC(IS_OBJECT);
+fail
 gap> LOCATION_FUNC(fail);
 Error, <func> must be a function
 gap> LOCATION_FUNC(f);
+fail
+gap> LOCATION_FUNC(IS_OBJECT);
 fail
 
 #
