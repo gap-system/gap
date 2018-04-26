@@ -3313,22 +3313,22 @@ void InstallGlobalFunction (
 void SaveOperationExtras (
     Obj         oper )
 {
-    UInt        i;
+    const OperBag * header = CONST_OPER(oper);
 
-    SaveSubObj(FLAG1_FILT(oper));
-    SaveSubObj(FLAG2_FILT(oper));
-    SaveSubObj(FLAGS_FILT(oper));
-    SaveSubObj(SETTR_FILT(oper));
-    SaveSubObj(TESTR_FILT(oper));
-    SaveUInt(ENABLED_ATTR(oper));
-    for (i = 0; i <= 7; i++)
-        SaveSubObj(METHS_OPER(oper,i));
+    SaveSubObj(header->flag1);
+    SaveSubObj(header->flag2);
+    SaveSubObj(header->flags);
+    SaveSubObj(header->setter);
+    SaveSubObj(header->tester);
+    SaveSubObj(header->enabled);
+    for (UInt i = 0; i <= 7; i++)
+        SaveSubObj(header->methods[i]);
 #ifdef HPCGAP
     // FIXME: We probably don't want to save/restore the cache?
     // (and that would include "normal" GAP, too...)
 #else
-    for (i = 0; i <= 7; i++)
-        SaveSubObj(CACHE_OPER(oper,i));
+    for (UInt i = 0; i <= 7; i++)
+        SaveSubObj(header->cache[i]);
 #endif
 }
 
@@ -3344,23 +3344,22 @@ void SaveOperationExtras (
 void LoadOperationExtras (
     Obj         oper )
 {
-    UInt        i;
+    OperBag * header = OPER(oper);
 
-    SET_FLAG1_FILT(oper, LoadSubObj());
-    SET_FLAG2_FILT(oper, LoadSubObj());
-    SET_FLAGS_FILT(oper, LoadSubObj());
-    SET_SETTR_FILT(oper, LoadSubObj());
-    SET_TESTR_FILT(oper, LoadSubObj());
-    i = LoadUInt();
-    SET_ENABLED_ATTR(oper,i);
-    for (i = 0; i <= 7; i++)
-        SET_METHS_OPER(oper, i, LoadSubObj());
+    header->flag1 = LoadSubObj();
+    header->flag2 = LoadSubObj();
+    header->flags = LoadSubObj();
+    header->setter = LoadSubObj();
+    header->tester = LoadSubObj();
+    header->enabled = LoadSubObj();
+    for (UInt i = 0; i <= 7; i++)
+        header->methods[i] = LoadSubObj();
 #ifdef HPCGAP
     // FIXME: We probably don't want to save/restore the cache?
     // (and that would include "normal" GAP, too...)
 #else
-    for (i = 0; i <= 7; i++)
-        SET_CACHE_OPER(oper, i, LoadSubObj());
+    for (UInt i = 0; i <= 7; i++)
+        header->cache[i] = LoadSubObj();
 #endif
 }
 

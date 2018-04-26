@@ -107,10 +107,10 @@ typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5,
 typedef struct {
     ObjFunc handlers[8];
     Obj name;
-    Int nargs;
+    Obj nargs;
     Obj namesOfLocals;
     Obj prof;
-    UInt nloc;
+    Obj nloc;
     Obj body;
     Obj envi;
     Obj fexs;
@@ -146,7 +146,7 @@ static inline Obj NAME_FUNC(Obj func)
 
 static inline Int NARG_FUNC(Obj func)
 {
-    return CONST_FUNC(func)->nargs;
+    return INT_INTOBJ(CONST_FUNC(func)->nargs);
 }
 
 static inline Obj NAMS_FUNC(Obj func)
@@ -163,7 +163,7 @@ static inline Obj PROF_FUNC(Obj func)
 
 static inline UInt NLOC_FUNC(Obj func)
 {
-    return CONST_FUNC(func)->nloc;
+    return INT_INTOBJ(CONST_FUNC(func)->nloc);
 }
 
 static inline Obj BODY_FUNC(Obj func)
@@ -199,7 +199,7 @@ extern void SET_NAME_FUNC(Obj func, Obj name);
 
 static inline void SET_NARG_FUNC(Obj func, Int nargs)
 {
-    FUNC(func)->nargs = nargs;
+    FUNC(func)->nargs = INTOBJ_INT(nargs);
 }
 
 static inline void SET_NAMS_FUNC(Obj func, Obj namesOfLocals)
@@ -214,7 +214,7 @@ static inline void SET_PROF_FUNC(Obj func, Obj prof)
 
 static inline void SET_NLOC_FUNC(Obj func, UInt nloc)
 {
-    FUNC(func)->nloc = nloc;
+    FUNC(func)->nloc = INTOBJ_INT(nloc);
 }
 
 static inline void SET_BODY_FUNC(Obj func, Obj body)
