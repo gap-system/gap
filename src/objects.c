@@ -2009,14 +2009,14 @@ static Int InitKernel (
 
     /* install the marking methods                                         */
     InfoBags[         T_COMOBJ          ].name = "object (component)";
-    InitMarkFuncBags( T_COMOBJ          , MarkAllSubBags  );
+    InitMarkFuncBags( T_COMOBJ          , MarkPRecSubBags );
     InfoBags[         T_POSOBJ          ].name = "object (positional)";
     InitMarkFuncBags( T_POSOBJ          , MarkAllSubBags  );
     InfoBags[         T_DATOBJ          ].name = "object (data)";
     InitMarkFuncBags( T_DATOBJ          , MarkOneSubBags  );
 #if !defined(USE_THREADSAFE_COPYING)
     InfoBags[         T_COMOBJ +COPYING ].name = "object (component,copied)";
-    InitMarkFuncBags( T_COMOBJ +COPYING , MarkAllSubBags  );
+    InitMarkFuncBags( T_COMOBJ +COPYING , MarkPRecSubBags );
     InfoBags[         T_POSOBJ +COPYING ].name = "object (positional,copied)";
     InitMarkFuncBags( T_POSOBJ +COPYING , MarkAllSubBags  );
     InfoBags[         T_DATOBJ +COPYING ].name = "object (data,copied)";

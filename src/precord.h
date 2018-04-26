@@ -260,6 +260,10 @@ extern void CopyPRecord(Obj copy, Obj original);
 #endif
 
 
+
+extern void MarkPRecSubBags(Obj bag);
+
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
