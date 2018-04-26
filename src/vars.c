@@ -102,25 +102,51 @@ Obj             ObjLVar (
     return val;
 }
 
-Bag NewLVarsBag(UInt slots) {
-  Bag result;
-  if (slots < ARRAY_SIZE(STATE(LVarsPool))) {
-    result = STATE(LVarsPool)[slots];
-    if (result) {
-      STATE(LVarsPool)[slots] = CONST_ADDR_OBJ(result)[0];
-      return result;
+
+/****************************************************************************
+**
+*F  NewLVarsBag(<slots>) . . . . . . . . . . . . . . allocate a new LVars bag
+**
+**  'NewLVarsBag' allocates a new 'T_LVAR' bag, with the given number of
+**  local variable <slots>. It tries to satisfy the request from a pool of
+**  available LVars with up to 16 slots. If the request cannot be satisfied
+**  from a pool, a new bag is allocated instead.
+**
+**  The pools are stored as single linked lists, for which 'PARENT_LVARS'
+**  is abused.
+*/
+Bag NewLVarsBag(UInt slots)
+{
+    Bag result;
+    if (slots < ARRAY_SIZE(STATE(LVarsPool))) {
+        result = STATE(LVarsPool)[slots];
+        if (result) {
+            STATE(LVarsPool)[slots] = PARENT_LVARS(result);
+            return result;
+        }
     }
-  }
-  return NewBag(T_LVARS, sizeof(Obj) * ( 3 + slots ) );
+    return NewBag(T_LVARS, sizeof(LVarsHeader) + sizeof(Obj) * slots);
 }
 
-void FreeLVarsBag(Bag bag) {
-  UInt slots = SIZE_BAG(bag) / sizeof(Obj) - 3;
-  if (slots < ARRAY_SIZE(STATE(LVarsPool))) {
-    memset(PTR_BAG(bag), 0, SIZE_BAG(bag));
-    ADDR_OBJ(bag)[0] = STATE(LVarsPool)[slots];
-    STATE(LVarsPool)[slots] = bag;
-  }
+
+/****************************************************************************
+**
+*F  FreeLVarsBag(<slots>) . . . . . . . . . . . . . . . . . free an LVars bag
+**
+**  'FreeLVarsBag' returns an unused 'T_LVAR' bag to one of the 'LVarsPool',
+**  assuming its size (resp. number of local variable slots) is not too big.
+*/
+void FreeLVarsBag(Bag bag)
+{
+    GAP_ASSERT(TNUM_OBJ(STATE(CurrLVars)) == T_LVARS);
+    UInt slots = (SIZE_BAG(bag) - sizeof(LVarsHeader)) / sizeof(Obj);
+    if (slots < ARRAY_SIZE(STATE(LVarsPool))) {
+        // clean the bag
+        memset(PTR_BAG(bag), 0, SIZE_BAG(bag));
+        // put it into the linked list of available LVars bags
+        PARENT_LVARS(bag) = STATE(LVarsPool)[slots];
+        STATE(LVarsPool)[slots] = bag;
+    }
 }
 
 
@@ -2590,9 +2616,9 @@ static Int InitKernel (
 
     /* install the marking functions for local variables bag               */
     InfoBags[ T_LVARS ].name = "values bag";
-    InitMarkFuncBags( T_LVARS, MarkAllSubBags );
+    InitMarkFuncBags( T_LVARS, MarkAllButFirstSubBags );
     InfoBags[ T_HVARS ].name = "high variables bag";
-    InitMarkFuncBags( T_HVARS, MarkAllSubBags );
+    InitMarkFuncBags( T_HVARS, MarkAllButFirstSubBags );
 
 #ifdef HPCGAP
     /* Make T_LVARS bags public */
