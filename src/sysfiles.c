@@ -87,12 +87,13 @@ typedef void sig_handler_t ( int );
 
 
 /* utility to check return value of 'write'  */
-ssize_t writeandcheck(int fd, const char *buf, size_t count) {
+ssize_t echoandcheck(int fid, const char *buf, size_t count) {
   int ret;
-  ret = write(fd, buf, count);
+
+  ret = write(syBuf[fid].echo, buf, count);
   if (ret < 0)
     ErrorQuit("Cannot write to file descriptor %d, see 'LastSystemError();'\n",
-               fd, 0L);
+               fid, 0L);
   return ret;
 }
 
@@ -588,7 +589,6 @@ void syWinPut (
     const Char *        cmd,
     const Char *        str )
 {
-    Int                 fd;             /* file descriptor                 */
     Char                tmp [130];      /* temporary buffer                */
     const Char *        s;              /* pointer into the string         */
     Char *              t;              /* pointer into the temporary      */
@@ -597,12 +597,8 @@ void syWinPut (
     if ( ! SyWindow || 4 <= fid )
         return;
 
-    /* get the file descriptor                                             */
-    if ( fid == 0 || fid == 2 )  fd = syBuf[fid].echo;
-    else                         fd = syBuf[fid].fp;
-
     /* print the cmd                                                       */
-    writeandcheck( fd, cmd, strlen(cmd) );
+    echoandcheck( fid, cmd, strlen(cmd) );
 
     /* print the output line, duplicate '@' and handle <ctr>-<chr>         */
     s = str;  t = tmp;
@@ -617,12 +613,12 @@ void syWinPut (
             *t++ = *s++;
         }
         if ( 128 <= t-tmp ) {
-            writeandcheck( fd, tmp, t-tmp );
+            echoandcheck( fid, tmp, t-tmp );
             t = tmp;
         }
     }
     if ( 0 < t-tmp ) {
-        writeandcheck( fd, tmp, t-tmp );
+        echoandcheck( fid, tmp, t-tmp );
     }
 }
 
@@ -1301,12 +1297,12 @@ void syEchoch (
 
     /* write the character to the associate echo output device             */
     ch2 = ch;
-    writeandcheck( syBuf[fid].echo, (char*)&ch2, 1 );
+    echoandcheck( fid, (char*)&ch2, 1 );
 
     /* if running under a window handler, duplicate '@'                    */
     if ( SyWindow && ch == '@' ) {
         ch2 = ch;
-        writeandcheck( syBuf[fid].echo, (char*)&ch2, 1 );
+        echoandcheck( fid, (char*)&ch2, 1 );
     }
 }
 
@@ -1351,7 +1347,7 @@ void syEchos (
 
     /* otherwise, write it to the associate echo output device             */
     else
-        writeandcheck( syBuf[fid].echo, str, strlen(str) );
+        echoandcheck(fid, str, strlen(str) );
 }
 
 
@@ -1398,7 +1394,7 @@ void SyFputs (
 
     /* otherwise, write it to the output file                              */
     else
-        writeandcheck( syBuf[fid].fp, line, i );
+        echoandcheck( fid, line, i );
 }
 
 
