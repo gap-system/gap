@@ -660,6 +660,12 @@ void MarkAllSubBagsDefault(Bag bag)
     MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag));
 }
 
+#ifdef DEBUG_GASMAN_MARKING
+UInt BadMarksCounter = 0;
+Int DisableMarkBagValidation = 0;
+#endif
+
+
 // We define MarkBag as a inline function here so that
 // the compiler can optimize the marking functions using it in the
 // "current translation unit", i.e. inside gasman.c.
@@ -676,6 +682,13 @@ inline void MarkBag(Bag bag)
         LINK_BAG(bag) = MarkedBags;
         MarkedBags = bag;
     }
+#ifdef DEBUG_GASMAN_MARKING
+    else if (!DisableMarkBagValidation) {
+        if (bag != 0 && !((UInt)bag & 3) && !IS_BAG_ID(bag)) {
+            BadMarksCounter++;
+        }
+    }
+#endif
 }
 
 void MarkBagWeakly(Bag bag)
@@ -1755,6 +1768,10 @@ void GenStackFuncBags ( void )
     Bag *               p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
 
+#ifdef DEBUG_GASMAN_MARKING
+    DisableMarkBagValidation = 1;
+#endif
+
     top = (Bag*)((void*)&top);
     if ( StackBottomBags < top ) {
         for ( i = 0; i < sizeof(Bag*); i += StackAlignBags ) {
@@ -1775,6 +1792,9 @@ void GenStackFuncBags ( void )
           p++ )
         MarkBag( *p );
 
+#ifdef DEBUG_GASMAN_MARKING
+    DisableMarkBagValidation = 0;
+#endif
 }
 
 UInt FullBags;
