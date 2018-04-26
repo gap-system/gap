@@ -1165,7 +1165,7 @@ void InitSystem (
     }
 
     // set up errout
-    syBuf[3].fp = fileno(stderr);
+    syBuf[3].echo = syBuf[3].fp = fileno(stderr);
     syBuf[3].bufno = -1;
 
     // turn off buffering
