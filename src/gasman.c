@@ -613,41 +613,35 @@ static inline Bag UNMARKED_HALFDEAD(Bag x)
 }
 
 
+inline void MarkArrayOfBags(const Bag array[], UInt count)
+{
+    for (UInt i = 0; i < count; i++) {
+        MarkBag(array[i]);
+    }
+}
+
 void MarkNoSubBags(Bag bag)
 {
 }
 
 void MarkOneSubBags(Bag bag)
 {
-    MarkBag(CONST_PTR_BAG(bag)[0]);
+    MarkArrayOfBags(CONST_PTR_BAG(bag), 1);
 }
 
 void MarkTwoSubBags(Bag bag)
 {
-    MarkBag(CONST_PTR_BAG(bag)[0]);
-    MarkBag(CONST_PTR_BAG(bag)[1]);
+    MarkArrayOfBags(CONST_PTR_BAG(bag), 2);
 }
 
 void MarkThreeSubBags(Bag bag)
 {
-    MarkBag(CONST_PTR_BAG(bag)[0]);
-    MarkBag(CONST_PTR_BAG(bag)[1]);
-    MarkBag(CONST_PTR_BAG(bag)[2]);
+    MarkArrayOfBags(CONST_PTR_BAG(bag), 3);
 }
 
 void MarkFourSubBags(Bag bag)
 {
-    MarkBag(CONST_PTR_BAG(bag)[0]);
-    MarkBag(CONST_PTR_BAG(bag)[1]);
-    MarkBag(CONST_PTR_BAG(bag)[2]);
-    MarkBag(CONST_PTR_BAG(bag)[3]);
-}
-
-inline void MarkArrayOfBags(const Bag array[], UInt count)
-{
-    for (UInt i = 0; i < count; i++) {
-        MarkBag(array[i]);
-    }
+    MarkArrayOfBags(CONST_PTR_BAG(bag), 4);
 }
 
 void MarkAllSubBags(Bag bag)
