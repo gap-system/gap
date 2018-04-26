@@ -142,8 +142,10 @@ extern const Char * SyWinCmd (
 **  otherwise confuse Gasman.
 */
 typedef struct {
-  int         fp;          /* file descriptor for this file */
-  int         echo;        /* file descriptor for the echo */
+  int         fp;          /* file descriptor for this file. This is used
+                              for input */
+  int         echo;        /* file descriptor for the echo. This is used
+                              for output. Is set to 0 if read-only file */
   UInt        pipe;        /* file is really a pipe */
   FILE       *pipehandle;  /* for pipes we need to remember the file handle */
   UInt        ateof;       /* set to 1 by any read operation that hits eof
