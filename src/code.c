@@ -294,9 +294,10 @@ Expr            NewExpr (
 **  'PopStat' returns the  top statement from the  statements  stack and pops
 **  it.  It is an error if the stack is empty.
 */
-/* TL: Bag StackStat; */
-
-/* TL: Int CountStat; */
+static inline UInt CapacityStatStack(void)
+{
+    return SIZE_BAG(STATE(StackStat))/sizeof(Stat);
+}
 
 static void PushStat (
     Stat                stat )
@@ -304,14 +305,17 @@ static void PushStat (
     /* there must be a stack, it must not be underfull or overfull         */
     assert( STATE(StackStat) != 0 );
     assert( 0 <= STATE(CountStat) );
-    assert( STATE(CountStat) <= SIZE_BAG(STATE(StackStat))/sizeof(Stat) );
+    assert( STATE(CountStat) <= CapacityStatStack() );
     assert( stat != 0 );
 
-    /* count up and put the statement onto the stack                       */
-    if ( STATE(CountStat) == SIZE_BAG(STATE(StackStat))/sizeof(Stat) ) {
+    // count up and put the statement onto the stack
+    if ( STATE(CountStat) == CapacityStatStack() ) {
         ResizeBag( STATE(StackStat), 2*STATE(CountStat)*sizeof(Stat) );
     }
-    ((Stat*)PTR_BAG(STATE(StackStat)))[STATE(CountStat)] = stat;
+
+    // put
+    Stat * data = (Stat *)PTR_BAG(STATE(StackStat));
+    data[STATE(CountStat)] = stat;
     STATE(CountStat)++;
 }
 
@@ -322,11 +326,12 @@ static Stat PopStat ( void )
     /* there must be a stack, it must not be underfull/empty or overfull   */
     assert( STATE(StackStat) != 0 );
     assert( 1 <= STATE(CountStat) );
-    assert( STATE(CountStat) <= SIZE_BAG(STATE(StackStat))/sizeof(Stat) );
+    assert( STATE(CountStat) <= CapacityStatStack() );
 
     /* get the top statement from the stack, and count down                */
     STATE(CountStat)--;
-    stat = ((Stat*)PTR_BAG(STATE(StackStat)))[STATE(CountStat)];
+    Stat * data = (Stat *)PTR_BAG(STATE(StackStat));
+    stat = data[STATE(CountStat)];
 
     /* return the popped statement                                         */
     return stat;
@@ -415,39 +420,42 @@ static inline Stat PopLoopStat(UInt baseType, UInt extra, UInt nr)
 **  'PopExpr' returns the top expressions from the expressions stack and pops
 **  it.  It is an error if the stack is empty.
 */
-/* TL: Bag StackExpr; */
+static inline UInt CapacityStackExpr(void)
+{
+    return SIZE_BAG(STATE(StackExpr))/sizeof(Expr);
+}
 
-/* TL: Int CountExpr; */
-
-void PushExpr (
-    Expr                expr )
+static void PushExpr(Expr expr)
 {
     /* there must be a stack, it must not be underfull or overfull         */
     assert( STATE(StackExpr) != 0 );
     assert( 0 <= STATE(CountExpr) );
-    assert( STATE(CountExpr) <= SIZE_BAG(STATE(StackExpr))/sizeof(Expr) );
+    assert( STATE(CountExpr) <= CapacityStackExpr() );
     assert( expr != 0 );
 
     /* count up and put the expression onto the stack                      */
-    if ( STATE(CountExpr) == SIZE_BAG(STATE(StackExpr))/sizeof(Expr) ) {
+    if ( STATE(CountExpr) == CapacityStackExpr() ) {
         ResizeBag( STATE(StackExpr), 2*STATE(CountExpr)*sizeof(Expr) );
     }
-    ((Expr*)PTR_BAG(STATE(StackExpr)))[STATE(CountExpr)] = expr;
+
+    Expr * data = (Expr *)PTR_BAG(STATE(StackExpr));
+    data[STATE(CountExpr)] = expr;
     STATE(CountExpr)++;
 }
 
-Expr PopExpr ( void )
+static Expr PopExpr(void)
 {
     Expr                expr;
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
     assert( STATE(StackExpr) != 0 );
     assert( 1 <= STATE(CountExpr) );
-    assert( STATE(CountExpr) <= SIZE_BAG(STATE(StackExpr))/sizeof(Expr) );
+    assert( STATE(CountExpr) <= CapacityStackExpr() );
 
     /* get the top expression from the stack, and count down               */
     STATE(CountExpr)--;
-    expr = ((Expr*)PTR_BAG(STATE(StackExpr)))[STATE(CountExpr)];
+    Expr * data = (Expr *)PTR_BAG(STATE(StackExpr));
+    expr = data[STATE(CountExpr)];
 
     /* return the popped expression                                        */
     return expr;
@@ -3401,8 +3409,6 @@ static Int PostRestore (
 static Int PreSave (
     StructInitInfo *    module )
 {
-  UInt i;
-
   /* Can't save in mid-parsing */
   if (STATE(CountExpr) || STATE(CountStat))
     return 1;
@@ -3411,10 +3417,9 @@ static Int PreSave (
   AssGVar(GVarName("SavedFloatIndex"), INTOBJ_INT(NextFloatExprNumber));
 
   /* clean any old data out of the statement and expression stacks */
-  for (i = 0; i < SIZE_BAG(STATE(StackStat))/sizeof(UInt); i++)
-    ADDR_OBJ(STATE(StackStat))[i] = (Obj)0;
-  for (i = 0; i < SIZE_BAG(STATE(StackExpr))/sizeof(UInt); i++)
-    ADDR_OBJ(STATE(StackExpr))[i] = (Obj)0;
+  memset(ADDR_OBJ(STATE(StackStat)), 0, SIZE_BAG(STATE(StackStat)));
+  memset(ADDR_OBJ(STATE(StackExpr)), 0, SIZE_BAG(STATE(StackExpr)));
+
   /* return success                                                      */
   return 0;
 }
