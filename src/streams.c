@@ -736,6 +736,17 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
     i = append ? OpenAppend( CSTR_STRING(filename) )
                : OpenOutput( CSTR_STRING(filename) );
     if ( ! i ) {
+        if (strcmp(CSTR_STRING(filename), "*errout*")) {
+            // When trying to print an error opening *errout* failed,
+            // We exit GAP after trying to print an error.
+            // First try printing an error to stderr
+            int ret = fputs("gap: panic, could not open *errout*!\n", stderr);
+            // If that failed, try printing to stdout
+            if(ret == EOF) {
+                fputs("gap: panic, could not open *errout*!\n", stdout);
+            }
+            SyExit(1);
+        }
         ErrorQuit( "%s: cannot open '%g' for output",
                    (Int)funcname, (Int)filename );
         return 0;
