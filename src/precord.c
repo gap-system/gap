@@ -823,6 +823,29 @@ void LoadPRec( Obj prec )
 
 /****************************************************************************
 **
+*F  MarkPRecSubBags( <bag> ) . . . . marking function for precs and com. objs
+**
+**  'MarkPRecSubBags' is the marking function for bags of type 'T_PREC' or
+**  'T_COMOBJ'.
+*/
+void MarkPRecSubBags(Obj bag)
+{
+    const Bag * data = CONST_PTR_BAG(bag);
+    const UInt count = SIZE_BAG(bag) / sizeof(Bag);
+
+    // while data[0] is unused for regular precords, it used during copying
+    // to store a pointer to the copy; moreover, this mark function is also
+    // used for component objects, which store their type in slot 0
+    MarkBag(data[0]);
+
+    for (UInt i = 3; i < count; i += 2) {
+        MarkBag(data[i]);
+    }
+}
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
@@ -864,11 +887,11 @@ static Int InitKernel (
     /* GASMAN marking functions and GASMAN names                           */
     InitBagNamesFromTable( BagNames );
 
-    InitMarkFuncBags( T_PREC                     , MarkAllSubBags );
-    InitMarkFuncBags( T_PREC +IMMUTABLE          , MarkAllSubBags );
+    InitMarkFuncBags( T_PREC                     , MarkPRecSubBags );
+    InitMarkFuncBags( T_PREC +IMMUTABLE          , MarkPRecSubBags );
 #if !defined(USE_THREADSAFE_COPYING)
-    InitMarkFuncBags( T_PREC            +COPYING , MarkAllSubBags );
-    InitMarkFuncBags( T_PREC +IMMUTABLE +COPYING , MarkAllSubBags );
+    InitMarkFuncBags( T_PREC            +COPYING , MarkPRecSubBags );
+    InitMarkFuncBags( T_PREC +IMMUTABLE +COPYING , MarkPRecSubBags );
 #endif
 
     /* Immutable records are public                                        */
