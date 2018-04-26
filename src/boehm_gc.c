@@ -625,6 +625,10 @@ void MarkAllSubBags(Bag bag)
 {
 }
 
+void MarkAllButFirstSubBags(Bag bag)
+{
+}
+
 void MarkArrayOfBags(const Bag array[], UInt count)
 {
 }

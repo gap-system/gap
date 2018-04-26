@@ -649,6 +649,11 @@ void MarkAllSubBags(Bag bag)
     MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag));
 }
 
+void MarkAllButFirstSubBags(Bag bag)
+{
+    MarkArrayOfBags(CONST_PTR_BAG(bag) + 1, SIZE_BAG(bag) / sizeof(Bag) - 1);
+}
+
 void MarkAllSubBagsDefault(Bag bag)
 {
     MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag));
