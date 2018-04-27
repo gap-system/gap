@@ -4606,6 +4606,8 @@ static Int InitKernel (
     InitGlobalBag( &STATE(IntrResult), "src/intrprtr.c:IntrResult" );
     InitGlobalBag( &STATE(IntrState),  "src/intrprtr.c:IntrState"  );
     InitGlobalBag( &STATE(StackObj),   "src/intrprtr.c:StackObj"   );
+    InitGlobalBag( &STATE(ErrorLVars), "STATE(ErrorLVars)"         );
+
 
     /* Ensure that the value in '~' does not get garbage collected         */
     InitGlobalBag( &STATE(Tilde), "STATE(Tilde)" );

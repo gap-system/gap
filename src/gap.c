@@ -1597,6 +1597,9 @@ static Int InitKernel (
     /* list of exit functions                                              */
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
 
+    InitGlobalBag( &STATE(ShellContext), "STATE(ShellContext)" );
+    InitGlobalBag( &STATE(BaseShellContext), "STATE(BaseShellContext)" );
+
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 

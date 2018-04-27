@@ -1084,6 +1084,8 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     InitHdlrFuncsFromTable( GVarFuncs );
+
+    InitGlobalBag( &STATE(ValueObj), "STATE(ValueObj)");
     return 0;
 }
 
