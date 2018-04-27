@@ -1209,6 +1209,9 @@ InstallMethod( AsMagma,
     D := AsSSortedList( D );
     L := ShallowCopy( D );
     M := Submagma( MagmaByGenerators( D ), [] );
+    if IsGroup(M) then
+      M:=Submagma(MagmaByGenerators(D),[One(ElementsFamily(FamilyObj(D)))]);
+    fi;
     SubtractSet( L, AsSSortedList( M ) );
     while not IsEmpty(L)  do
         M := ClosureMagmaDefault( M, L[1] );
