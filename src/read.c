@@ -1468,8 +1468,12 @@ static void ReadFuncExprBody(
             SET_LCKS_FUNC(CURR_FUNC(), args.locks);
 #endif
         // <Statements>
+        UInt oldLoopNesting = STATE(LoopNesting);
+        STATE(LoopNesting) = 0;
         nr = ReadStats(S_END | follow);
+        STATE(LoopNesting) = oldLoopNesting;
     }
+
 
     // end interpreting the function expression
     TRY_READ {
@@ -2274,9 +2278,11 @@ static void ReadFor (
 
     /* 'do' <Statements>                                                    */
     Match( S_DO, "do", STATBEGIN|S_OD|follow );
+    STATE(LoopNesting)++;
     TRY_READ { IntrForBeginBody(); }
     nrs = ReadStats( S_OD|follow );
     TRY_READ { IntrForEndBody( nrs ); }
+    STATE(LoopNesting)--;
 
     /* 'od'                                                                */
     Match( S_OD, "od", follow );
@@ -2326,9 +2332,11 @@ static void ReadWhile (
     Match( S_DO, "do", STATBEGIN|S_DO|follow );
 
     //     <Statements>
+    STATE(LoopNesting)++;
     TRY_READ { IntrWhileBeginBody(); }
     nrs = ReadStats( S_OD|follow );
     TRY_READ { IntrWhileEndBody( nrs ); }
+    STATE(LoopNesting)--;
 
     /* 'od'                                                                */
     Match( S_OD, "od", follow );
@@ -2459,9 +2467,11 @@ static void ReadRepeat (
     Match( S_REPEAT, "repeat", follow );
 
     //  <Statements>
+    STATE(LoopNesting)++;
     TRY_READ { IntrRepeatBeginBody(); }
     nrs = ReadStats( S_UNTIL|follow );
     TRY_READ { IntrRepeatEndBody( nrs ); }
+    STATE(LoopNesting)--;
 
     /* 'until' <Expr>                                                      */
     Match( S_UNTIL, "until", EXPRBEGIN|follow );
@@ -2495,6 +2505,9 @@ static void ReadRepeat (
 static void ReadBreak (
     TypSymbolSet        follow )
 {
+    if (!STATE(LoopNesting))
+        SyntaxError("'break' statement not enclosed in a loop");
+
     /* skip the break symbol                                               */
     Match( S_BREAK, "break", follow );
 
@@ -2514,6 +2527,9 @@ static void ReadBreak (
 static void ReadContinue (
     TypSymbolSet        follow )
 {
+    if (!STATE(LoopNesting))
+        SyntaxError("'continue' statement not enclosed in a loop");
+
     /* skip the continue symbol                                               */
     Match( S_CONTINUE, "continue", follow );
 
@@ -2771,6 +2787,8 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 
     AssGVar(GVarName("READEVALCOMMAND_LINENUMBER"), INTOBJ_INT(GetInputLineNumber()));
 
+    GAP_ASSERT(STATE(LoopNesting) == 0);
+
     IntrBegin( context );
 
     /* read an expression or an assignment or a procedure call             */
@@ -2819,6 +2837,8 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
             HashUnlock(TLS(CurrentHashLock));
 #endif
     }
+
+    GAP_ASSERT(STATE(LoopNesting) == 0);
 
     /* switch back to the old reader context                               */
     memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
@@ -2893,6 +2913,8 @@ UInt ReadEvalFile(Obj *evalResult)
     STATE(CurrLHSGVar) = 0;
     IntrBegin(STATE(BottomLVars));
 
+    GAP_ASSERT(STATE(LoopNesting) == 0);
+
     /* check for local variables                                           */
     nams = NEW_PLIST(T_PLIST, 0);
     SET_LEN_PLIST(nams, 0);
@@ -2906,7 +2928,14 @@ UInt ReadEvalFile(Obj *evalResult)
     IntrFuncExprBegin(0, nloc, nams, GetInputLineNumber());
 
     /* read the statements                                                 */
-    nr = ReadStats( S_SEMICOLON | S_EOF );
+    {
+        UInt oldLoopNesting = STATE(LoopNesting);
+        STATE(LoopNesting) = 0;
+        nr = ReadStats(S_SEMICOLON | S_EOF);
+        STATE(LoopNesting) = oldLoopNesting;
+    }
+
+    GAP_ASSERT(STATE(LoopNesting) == 0);
 
     /* we now want to be at <end-of-file>                                  */
     if ( STATE(Symbol) != S_EOF ) {

@@ -28,7 +28,6 @@
 #include <src/read.h>
 #include <src/records.h>
 #include <src/saveload.h>
-#include <src/scanner.h>
 #include <src/stringobj.h>
 #include <src/vars.h>
 
@@ -76,10 +75,6 @@ Obj FilenameCache;
 /* TL: Stat OffsBodyStack[1024]; */
 /* TL: UInt OffsBodyCount = 0; */
 
-/* TL: UInt LoopNesting = 0; */
-/* TL: UInt LoopStack[MAX_FUNC_EXPR_NESTING]; */
-/* TL: UInt LoopStackCount = 0; */
-
 static inline void PushOffsBody( void ) {
   assert(STATE(OffsBodyCount) <= MAX_FUNC_EXPR_NESTING-1);
   STATE(OffsBodyStack)[STATE(OffsBodyCount)++] = STATE(OffsBody);
@@ -88,16 +83,6 @@ static inline void PushOffsBody( void ) {
 static inline void PopOffsBody( void ) {
   assert(STATE(OffsBodyCount));
   STATE(OffsBody) = STATE(OffsBodyStack)[--STATE(OffsBodyCount)];
-}
-
-static inline void PushLoopNesting( void ) {
-  assert(STATE(LoopStackCount) <= MAX_FUNC_EXPR_NESTING-1);
-  STATE(LoopStack)[STATE(LoopStackCount)++] = STATE(LoopNesting);
-}
-
-static inline void PopLoopNesting( void ) {
-  assert(STATE(LoopStackCount));
-  STATE(LoopNesting) = STATE(LoopStack)[--STATE(LoopStackCount)];
 }
 
 static inline UInt SetupGapname(void)
@@ -764,9 +749,6 @@ void CodeFuncExprBegin (
     /* remember the current offset                                         */
     PushOffsBody();
 
-    /* and the loop nesting depth */
-    PushLoopNesting();
-    
     /* create a function expression                                        */
     fexp = NewBag( T_FUNCTION, sizeof(FuncBag) );
     SET_NARG_FUNC( fexp, narg );
@@ -792,7 +774,6 @@ void CodeFuncExprBegin (
     SET_GAPNAMEID_BODY(body, SetupGapname());
     SET_STARTLINE_BODY(body, startLine);
     STATE(OffsBody) = sizeof(BodyHeader);
-    STATE(LoopNesting) = 0;
 
     /* give it an environment                                              */
     SET_ENVI_FUNC( fexp, STATE(CurrLVars) );
@@ -819,7 +800,6 @@ void CodeFuncExprEnd(UInt nr)
 
     /* get the function expression                                         */
     fexp = CURR_FUNC();
-    assert(!STATE(LoopNesting));
     
     /* get the body of the function                                        */
     /* push an additional return-void-statement if neccessary              */
@@ -866,9 +846,6 @@ void CodeFuncExprEnd(UInt nr)
     /* switch back to the previous function                                */
     SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
 
-    /* restore loop nesting info */
-    PopLoopNesting();
-    
     /* restore the remembered offset                                       */
     PopOffsBody();
 
@@ -1061,7 +1038,6 @@ void CodeForIn ( void )
 
 void CodeForBeginBody ( void )
 {
-  STATE(LoopNesting)++;
 }
 
 void CodeForEndBody (
@@ -1101,9 +1077,6 @@ void CodeForEndBody (
 
     /* push the for-statement                                              */
     PushStat( stat );
-
-    /* decrement loop nesting count */
-    STATE(LoopNesting)--;
 }
 
 void CodeForEnd ( void )
@@ -1240,7 +1213,6 @@ void CodeWhileBegin ( void )
 
 void CodeWhileBeginBody ( void )
 {
-  STATE(LoopNesting)++;
 }
 
 void CodeWhileEndBody (
@@ -1256,9 +1228,6 @@ void CodeWhileEndBody (
     cond = PopExpr();
     ADDR_STAT(stat)[0] = cond;
 
-    /* decrmement loop nesting */
-    STATE(LoopNesting)--;
-    
     /* push the while-statement                                            */
     PushStat( stat );
 }
@@ -1297,7 +1266,6 @@ void CodeRepeatBegin ( void )
 
 void CodeRepeatBeginBody ( void )
 {
-  STATE(LoopNesting)++;
 }
 
 void CodeRepeatEndBody (
@@ -1305,7 +1273,6 @@ void CodeRepeatEndBody (
 {
     /* leave the number of statements in the body on the expression stack  */
     PushExpr( INTEXPR_INT(nr) );
-    STATE(LoopNesting)--;
 }
 
 void CodeRepeatEnd ( void )
@@ -1345,9 +1312,8 @@ void            CodeBreak ( void )
 {
     Stat                stat;           /* break-statement, result         */
 
-    if (!STATE(LoopNesting))
-      SyntaxError("'break' statement not enclosed in a loop");
-    
+    GAP_ASSERT(STATE(LoopNesting) != 0);
+
     /* allocate the break-statement                                        */
     stat = NewStat( T_BREAK, 0 * sizeof(Expr) );
 
@@ -1366,8 +1332,7 @@ void            CodeContinue ( void )
 {
     Stat                stat;           /* continue-statement, result         */
 
-    if (!STATE(LoopNesting))
-      SyntaxError("'continue' statement not enclosed in a loop");
+    GAP_ASSERT(STATE(LoopNesting) != 0);
 
     /* allocate the continue-statement                                        */
     stat = NewStat( T_CONTINUE, 0 * sizeof(Expr) );
@@ -3434,8 +3399,6 @@ static Int PreSave (
 static void InitModuleState(ModuleStateOffset offset)
 {
     STATE(OffsBodyCount) = 0;
-    STATE(LoopNesting) = 0;
-    STATE(LoopStackCount) = 0;
 
     // allocate the statements and expressions stacks
     STATE(StackStat) = NewBag(T_DATOBJ, sizeof(Obj) + 64*sizeof(Stat));
@@ -3445,12 +3408,9 @@ static void InitModuleState(ModuleStateOffset offset)
 
 #ifdef HPCGAP
     STATE(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
-    STATE(LoopStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(UInt));
 #else
     static Stat MainOffsBodyStack[MAX_FUNC_EXPR_NESTING];
-    static UInt MainLoopStack[MAX_FUNC_EXPR_NESTING];
     STATE(OffsBodyStack) = MainOffsBodyStack;
-    STATE(LoopStack) = MainLoopStack;
 #endif
 }
 
