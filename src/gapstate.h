@@ -59,6 +59,7 @@ typedef struct GAPState {
     UInt      CurrLHSGVar;
     UInt      CurrentGlobalForLoopVariables[100];
     UInt      CurrentGlobalForLoopDepth;
+    UInt      LoopNesting;
 
     /* From scanner.c */
     Obj    ValueObj;
@@ -81,9 +82,6 @@ typedef struct GAPState {
     Stat   OffsBody;
     Stat * OffsBodyStack;
     UInt   OffsBodyCount;
-    UInt   LoopNesting;
-    UInt * LoopStack;
-    UInt   LoopStackCount;
 
     Obj CodeResult;
     Bag StackStat;
