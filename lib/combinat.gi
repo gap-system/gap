@@ -805,8 +805,11 @@ BindGlobal( "ShallowCopy_Cartesian",
 BindGlobal( "IteratorOfCartesianProduct2",
     function( listsets )
     local s, n, x;
-    if not ForAll( listsets, IsCollection ) and ForAll( listsets, IsFinite ) then
-      Error( "Each arguments must be a finite collection" );
+    if not ForAll( listsets, IsListOrCollection ) and ForAll( listsets, IsFinite ) then
+      Error( "Each argument must be a finite list or collection" );
+    fi;
+    if ForAny( listsets, IsEmpty ) then
+      return Iterator( [] );
     fi;
     s := List( listsets, Set );
     n := Length( s );
