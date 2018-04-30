@@ -10,7 +10,7 @@
 ##  that they need to be in function.g
 ##
 
-InstallMethod( ViewString, "for a function", true, [IsFunction], 0,
+InstallMethod( ViewString, "for a function", [IsFunction and IsInternalRep],
 function(func)
     local  locks, nams, narg, i, isvarg, result;
     result := "";
@@ -60,7 +60,7 @@ function(func)
     return result;
 end);
 
-InstallMethod(DisplayString, "for a function, using string stream", [IsFunction],
+InstallMethod(DisplayString, "for a function, using string stream", [IsFunction and IsInternalRep],
 function(fun)
     local  s, stream;
     s := "";
@@ -71,7 +71,7 @@ function(fun)
     return MakeImmutable(s);
 end);
 
-InstallMethod(String, "for a function, with whitespace reduced", [IsFunction],
+InstallMethod(String, "for a function, with whitespace reduced", [IsFunction and IsInternalRep],
 function(fun)
     local  s, str;
     s := ShallowCopy(DisplayString(fun));
