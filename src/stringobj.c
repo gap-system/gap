@@ -770,15 +770,14 @@ Int EqString (
     Obj                 listL,
     Obj                 listR )
 {
-  UInt lL, lR, i;
+  UInt lL, lR;
   UInt1 *pL, *pR;
   lL = GET_LEN_STRING(listL);
   lR = GET_LEN_STRING(listR);
   if (lR != lL) return 0;
   pL = CHARS_STRING(listL);
   pR = CHARS_STRING(listR);
-  for (i=0; i<lL && pL[i] == pR[i]; i++);
-  return (i == lL);
+  return memcmp(pL, pR, lL) == 0;
 }
 
 
@@ -793,16 +792,25 @@ Int LtString (
     Obj                 listL,
     Obj                 listR )
 {
-  UInt lL, lR, i;
+  UInt lL, lR;
   UInt1 *pL, *pR;
   lL = GET_LEN_STRING(listL);
   lR = GET_LEN_STRING(listR);
   pL = CHARS_STRING(listL);
   pR = CHARS_STRING(listR);
-  for (i=0; i<lL && i<lR && pL[i] == pR[i]; i++);
-  if (i == lL) return (lR > lL);
-  if (i == lR) return 0;
-  return pL[i] < pR[i];
+
+  Int res;
+  if (lL <= lR) {
+    res = memcmp(pL, pR, lL);
+    if (res == 0)
+      return lL < lR;
+  }
+  else {
+    res = memcmp(pL, pR, lR);
+    if (res == 0)
+      return 0;
+  }
+  return res < 0;
 }
 
 
