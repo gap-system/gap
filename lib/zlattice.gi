@@ -37,8 +37,7 @@ end );
 ##
 #M  InverseMatMod( <intmat>, <prime> )
 ##
-#T  Is this method really good?
-#T  (There is a generic method in `matrix.gi' that looks nicer.)
+##  This method is much faster than the generic method in `matrix.gi'
 ##
 InstallMethod( InverseMatMod,
     "method for a matrix, and an integer",
@@ -49,36 +48,12 @@ InstallMethod( InverseMatMod,
           n,                    # dimension
           intmatq, intmatqinv,  # matrix & inverse modulo p
           x,                    # solution of one iteration
-          zline,                # help-line for exchange
-          mult,                 # multiplication table of the field
-          inverse;              # list of inverses of field elements
+          zline;                # help-line for exchange
 
     n:= Length( intmat );
 
-    # inverses modulo `p'; we have `inverse[x] * x = 1'
-    inverse:= [ 1 ];
-    for i in [ 2 .. p-1 ] do
-      inverse[i]:= Inverse( i ) mod p;
-#T better?
-    od;
-
-    # multiplication table; we have `mult[i][j]' congruent `i*j' mod `p'
-    mult:= [];
-    for i in [ 1 .. p-1 ] do
-      mult[i]:= [];
-      for j in [ 1 .. p-1 ] do
-        mult[i][j]:= ( i*j ) mod p;
-      od;
-    od;
-
     # `intmatq': `intmat' reduced mod `p'
-    intmatq := [];
-    for i in [ 1 .. n ] do
-      intmatq[i] := [];
-      for j in [ 1 .. n ] do
-        intmatq[i][j]:= intmat[i][j] mod p;
-      od;
-    od;
+    intmatq := intmat mod p;
     intmatqinv := IdentityMat( n );
 
     for i in [ 1 .. n ] do
@@ -105,17 +80,17 @@ InstallMethod( InverseMatMod,
         # normalize line `i'
         zline:= intmatq[i];
         if zline[i] <> 1 then
-          x:= mult[ inverse[ zline[i] ] ];
+          x:= (1/zline[i]) mod p;
           zline[i]:= 1;
           for k in [ i+1 .. n ] do
             if zline[k] <> 0 then
-              zline[k]:= x[ zline[k] ];
+              zline[k]:= (x * zline[k]) mod p;
             fi;
           od;
           zline:= intmatqinv[i];
           for k in [1 .. n] do
             if zline[k] <> 0 then
-              zline[k]:= x[ zline[k] ];
+              zline[k]:= (x * zline[k]) mod p;
             fi;
           od;
         fi;
@@ -123,15 +98,15 @@ InstallMethod( InverseMatMod,
         # elimination in column `i'
         for j in [ 1 .. n ] do
           if j <> i and intmatq[j][i] <> 0 then
-            x:= mult[ intmatq[j][i] ];
+            x:= intmatq[j][i];
             for k in [ 1 .. n ] do
               if intmatqinv[i][k] <> 0 then
                 intmatqinv[j][k]:=
-                    (intmatqinv[j][k] - x[ intmatqinv[i][k] ] ) mod p;
+                    (intmatqinv[j][k] - x * intmatqinv[i][k] ) mod p;
               fi;
               if intmatq[i][k] <> 0 then
                 intmatq[j][k]:=
-                     (intmatq[j][k] - x[ intmatq[i][k] ] ) mod p;
+                     (intmatq[j][k] - x * intmatq[i][k] ) mod p;
               fi;
             od;
           fi;
