@@ -29,12 +29,25 @@ gap> ForAll([0..100], x -> CallFuncListWrap(swallow, List([1..x], y -> [y]) ) = 
 true
 
 # test overloading CallFuncList
-gap> fam := NewFamily("XYZsFamily");;
-gap> cat := NewCategory("IsXYZ",IsObject);;
+gap> fam := NewFamily("CustomFunctionFamily");;
+gap> cat := NewCategory("IsCustomFunction", IsFunction);;
 gap> type := NewType(fam, cat and IsPositionalObjectRep);;
 gap> result := fail;;
 gap> InstallMethod(CallFuncList,[cat,IsList],function(func,args) result:=args; return args; end);
-gap> o := Objectify(type,[]);;
+gap> InstallMethod(NameFunction, [cat], f -> f![1]);
+gap> InstallMethod(NamesLocalVariablesFunction, [cat], f -> ["arg"]);
+gap> InstallMethod(NumberArgumentsFunction, [cat], f -> -1);
+
+#
+gap> o := Objectify(type,["myName"]);;
+gap> Display(o);
+<object>
+gap> NameFunction(o);
+"myName"
+gap> NamesLocalVariablesFunction(o);
+[ "arg" ]
+gap> NumberArgumentsFunction(o);
+-1
 
 # test dispatch through interpreter / IntrFuncCallEnd
 gap> o();
@@ -109,7 +122,7 @@ gap> CallFuncList(o, [1,2,3,4,5,6,7]);
 [ 1, 2, 3, 4, 5, 6, 7 ]
 
 # test overloading CallFuncList with a procedure call
-gap> cat2 := NewCategory("IsXYZ2",IsObject);;
+gap> cat2 := NewCategory("IsCustomFunction2",IsFunction);;
 gap> type2 := NewType(fam, cat2 and IsPositionalObjectRep);;
 gap> InstallMethod(CallFuncList,[cat2,IsList],function(func,args) result:=args; end);
 gap> o2 := Objectify(type2,[]);;
