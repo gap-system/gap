@@ -833,6 +833,9 @@ Obj             EvalPermExpr (
     for ( i = 1; i <= SIZE_EXPR(expr)/sizeof(Expr); i++ ) {
         cycle = ADDR_EXPR(expr)[i-1];
 
+        // Need to inform profiling this cycle expression is executed, as
+        // we never call EVAL_EXPR on it.
+        VisitStatIfHooked(cycle);
         /* loop over the entries of the cycle                              */
         c = p = l = 0;
         for ( j = SIZE_EXPR(cycle)/sizeof(Expr); 1 <= j; j-- ) {
