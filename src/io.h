@@ -355,9 +355,11 @@ extern const Char * GetInputLineBuffer(void);
 //
 extern Int GetInputLinePosition(void);
 
-// get or set the filenameid (if any) of the current input
+// get the filenameid (if any) of the current input
 extern UInt GetInputFilenameID(void);
-extern void SetInputFilenameID(UInt id);
+
+// get the filename (as GAP string object) with the given id
+extern Obj GetCachedFilename(UInt id);
 
 
 /* the widest allowed screen width */

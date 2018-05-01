@@ -1356,14 +1356,6 @@ extern  void            CodeAssertEnd3Args ( void );
 /*  CodeContinue() .  . . . . . . . . . . . .  code continue-statement */
 extern  void            CodeContinue ( void );
 
-/****************************************************************************
-**
-*V  FilenameCache . . . . . . . . . . . . . . . . . . list of filenames
-**
-**  'FilenameCache' is a list of previously opened filenames.
-*/
-extern Obj FilenameCache;
-
 
 /****************************************************************************
 **
