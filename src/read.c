@@ -2769,6 +2769,8 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     lockSP = RegionLockSP();
 #endif
 
+    AssGVar(GVarName("READEVALCOMMAND_LINENUMBER"), INTOBJ_INT(GetInputLineNumber()));
+
     IntrBegin( context );
 
     /* read an expression or an assignment or a procedure call             */

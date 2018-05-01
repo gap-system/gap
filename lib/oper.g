@@ -152,7 +152,7 @@ function(oper, flags)
   fi;
   info := OPER_FLAGS.(nr);
   ADD_LIST(info[2], MakeImmutable(flags));
-  ADD_LIST(info[3], MakeImmutable([INPUT_FILENAME(), INPUT_LINENUMBER()]));
+  ADD_LIST(info[3], MakeImmutable([INPUT_FILENAME(), READEVALCOMMAND_LINENUMBER, INPUT_LINENUMBER()]));
 end);
 
 BIND_GLOBAL( "GET_OPER_FLAGS", function(oper)
@@ -410,7 +410,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
       imm[i+6] := pos;
       imm[i+7] := IMMUTABLE_COPY_OBJ(info);
       if SIZE_IMMEDIATE_METHOD_ENTRY >= 8 then
-          imm[i+8] := MakeImmutable([INPUT_FILENAME(), INPUT_LINENUMBER()]);
+          imm[i+8] := MakeImmutable([INPUT_FILENAME(), READEVALCOMMAND_LINENUMBER, INPUT_LINENUMBER()]);
       fi;
 
       if IsHPCGAP then
