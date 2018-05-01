@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "-121710233"
+#define FILE_CRC  "-126023111"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -126,6 +126,8 @@ static GVar G_RankFilter;
 static Obj  GF_RankFilter;
 static GVar G_CHECK__INSTALL__METHOD;
 static Obj  GC_CHECK__INSTALL__METHOD;
+static GVar G_READEVALCOMMAND__LINENUMBER;
+static Obj  GC_READEVALCOMMAND__LINENUMBER;
 static GVar G_INSTALL__METHOD;
 static Obj  GF_INSTALL__METHOD;
 static GVar G_DeclareGlobalFunction;
@@ -1230,22 +1232,26 @@ static Obj  HdlrFunc3 (
  t_1 = (Obj)(UInt)(((Int)INTOBJ_INT(5)) >= ((Int)INTOBJ_INT(5)));
  if ( t_1 ) {
   
-  /* methods[i + (narg + 5)] := MakeImmutable( [ INPUT_FILENAME(  ), INPUT_LINENUMBER(  ) ] ); */
+  /* methods[i + (narg + 5)] := MakeImmutable( [ INPUT_FILENAME(  ), READEVALCOMMAND_LINENUMBER, INPUT_LINENUMBER(  ) ] ); */
   C_SUM_INTOBJS( t_2, l_narg, INTOBJ_INT(5) )
   C_SUM_FIA( t_1, l_i, t_2 )
   CHECK_INT_POS( t_1 )
   t_3 = GF_MakeImmutable;
-  t_4 = NEW_PLIST( T_PLIST, 2 );
-  SET_LEN_PLIST( t_4, 2 );
+  t_4 = NEW_PLIST( T_PLIST, 3 );
+  SET_LEN_PLIST( t_4, 3 );
   t_6 = GF_INPUT__FILENAME;
   t_5 = CALL_0ARGS( t_6 );
   CHECK_FUNC_RESULT( t_5 )
   SET_ELM_PLIST( t_4, 1, t_5 );
   CHANGED_BAG( t_4 );
+  t_5 = GC_READEVALCOMMAND__LINENUMBER;
+  CHECK_BOUND( t_5, "READEVALCOMMAND_LINENUMBER" )
+  SET_ELM_PLIST( t_4, 2, t_5 );
+  CHANGED_BAG( t_4 );
   t_6 = GF_INPUT__LINENUMBER;
   t_5 = CALL_0ARGS( t_6 );
   CHECK_FUNC_RESULT( t_5 )
-  SET_ELM_PLIST( t_4, 2, t_5 );
+  SET_ELM_PLIST( t_4, 3, t_5 );
   CHANGED_BAG( t_4 );
   t_2 = CALL_1ARGS( t_3, t_4 );
   CHECK_FUNC_RESULT( t_2 )
@@ -4030,7 +4036,7 @@ static Obj  HdlrFunc1 (
       methods[i + (narg + 3)] := rank;
       methods[i + (narg + 4)] := IMMUTABLE_COPY_OBJ( info );
       if 5 >= 5 then
-          methods[i + (narg + 5)] := MakeImmutable( [ INPUT_FILENAME(  ), INPUT_LINENUMBER(  ) ] );
+          methods[i + (narg + 5)] := MakeImmutable( [ INPUT_FILENAME(  ), READEVALCOMMAND_LINENUMBER, INPUT_LINENUMBER(  ) ] );
       fi;
       SET_METHODS_OPERATION( opr, narg, MakeReadOnlySingleObj( methods ) );
       UNLOCK( lk );
@@ -4569,6 +4575,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_METHODS__OPERATION__REGION = GVarName( "METHODS_OPERATION_REGION" );
  G_RankFilter = GVarName( "RankFilter" );
  G_CHECK__INSTALL__METHOD = GVarName( "CHECK_INSTALL_METHOD" );
+ G_READEVALCOMMAND__LINENUMBER = GVarName( "READEVALCOMMAND_LINENUMBER" );
  G_INSTALL__METHOD = GVarName( "INSTALL_METHOD" );
  G_DeclareGlobalFunction = GVarName( "DeclareGlobalFunction" );
  G_OPERATIONS__REGION = GVarName( "OPERATIONS_REGION" );
@@ -4691,6 +4698,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "METHODS_OPERATION_REGION", &GC_METHODS__OPERATION__REGION );
  InitFopyGVar( "RankFilter", &GF_RankFilter );
  InitCopyGVar( "CHECK_INSTALL_METHOD", &GC_CHECK__INSTALL__METHOD );
+ InitCopyGVar( "READEVALCOMMAND_LINENUMBER", &GC_READEVALCOMMAND__LINENUMBER );
  InitFopyGVar( "INSTALL_METHOD", &GF_INSTALL__METHOD );
  InitFopyGVar( "DeclareGlobalFunction", &GF_DeclareGlobalFunction );
  InitCopyGVar( "OPERATIONS_REGION", &GC_OPERATIONS__REGION );
@@ -4791,7 +4799,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = -121710233,
+ .crc         = -126023111,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
