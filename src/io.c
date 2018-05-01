@@ -23,11 +23,17 @@
 #include <src/gapstate.h>
 #include <src/gaputils.h>
 #include <src/gvars.h>
+#include <src/lists.h>
 #include <src/modules.h>
+#include <src/plist.h>
 #include <src/read.h>
 #include <src/scanner.h>
 #include <src/stringobj.h>
 #include <src/sysfiles.h>
+
+#ifdef HPCGAP
+#include <src/hpc/aobjects.h>
+#endif
 
 
 /****************************************************************************
@@ -110,6 +116,14 @@ static Obj IsStringStream;
 static Obj PrintPromptHook = 0;
 Obj EndLineHook = 0;
 static Obj PrintFormattingStatus;
+
+/****************************************************************************
+**
+*V  FilenameCache . . . . . . . . . . . . . . . . . . list of filenames
+**
+**  'FilenameCache' is a list of previously opened filenames.
+*/
+Obj FilenameCache;
 
 /* TODO: Eliminate race condition in HPC-GAP */
 static Char promptBuf[81];
@@ -311,13 +325,30 @@ Int GetInputLinePosition(void)
 UInt GetInputFilenameID(void)
 {
     GAP_ASSERT(IO()->Input);
-    return IO()->Input->gapnameid;
+    UInt gapnameid = IO()->Input->gapnameid;
+    if (gapnameid == 0) {
+        Obj filename = MakeImmString(GetInputFilename());
+#ifdef HPCGAP
+        // TODO/FIXME: adjust this code to work more like the corresponding
+        // code below for GAP?!?
+        gapnameid = AddAList(FilenameCache, filename);
+#else
+        Obj pos = POS_LIST(FilenameCache, filename, INTOBJ_INT(1));
+        if (pos == Fail) {
+            gapnameid = PushPlist(FilenameCache, filename);
+        }
+        else {
+            gapnameid = INT_INTOBJ(pos);
+        }
+#endif
+        IO()->Input->gapnameid = gapnameid;
+    }
+    return gapnameid;
 }
 
-void SetInputFilenameID(UInt id)
+Obj GetCachedFilename(UInt id)
 {
-    GAP_ASSERT(IO()->Input);
-    IO()->Input->gapnameid = id;
+    return ELM_LIST(FilenameCache, id);
 }
 
 
@@ -1958,21 +1989,22 @@ void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 }
 
 
-Obj FuncINPUT_FILENAME( Obj self) {
-  Obj s;
-  if (IO()->Input) {
-      s = MakeString(IO()->Input->name);
-  } else {
-      s = MakeString("*defin*");
-  }
-  return s;
+Obj FuncINPUT_FILENAME( Obj self)
+{
+    if (IO()->Input == 0)
+        return MakeImmString("*defin*");
+
+    UInt gapnameid = GetInputFilenameID();
+    return GetCachedFilename(gapnameid);
 }
 
-Obj FuncINPUT_LINENUMBER( Obj self) {
+Obj FuncINPUT_LINENUMBER( Obj self)
+{
     return INTOBJ_INT(IO()->Input ? IO()->Input->number : 0);
 }
 
-Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val) {
+Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val)
+{
     IO()->OutputStack[1]->format = (val != False);
     return val;
 }
@@ -1993,6 +2025,11 @@ Obj FuncIS_OUTPUT_TTY(Obj self)
     return syBuf[IO()->Output->file].isTTY ? True : False;
 }
 
+Obj FuncGET_FILENAME_CACHE(Obj self)
+{
+  return CopyObj(FilenameCache, 1);
+}
+
 static StructGVarFunc GVarFuncs [] = {
 
     GVAR_FUNC(ToggleEcho, 0, ""),
@@ -2003,6 +2040,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(SET_PRINT_FORMATTING_STDOUT, 1, "format"),
     GVAR_FUNC(IS_INPUT_TTY, 0, ""),
     GVAR_FUNC(IS_OUTPUT_TTY, 0, ""),
+    GVAR_FUNC(GET_FILENAME_CACHE, 0, ""),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -2014,6 +2052,12 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitLibrary (
     StructInitInfo *    module )
 {
+#ifdef HPCGAP
+    FilenameCache = NewAtomicList(T_ALIST, 0);
+#else
+    FilenameCache = NEW_PLIST(T_PLIST, 0);
+#endif
+
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
@@ -2044,6 +2088,8 @@ static Int InitKernel (
 
     OpenInput("*stdin*");
     OpenOutput("*stdout*");
+
+    InitGlobalBag( &FilenameCache, "FilenameCache" );
 
 #ifdef HPCGAP
     /* Initialize default stream functions */

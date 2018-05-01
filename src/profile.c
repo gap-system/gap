@@ -161,7 +161,7 @@ static inline void outputFilenameIdIfRequired(UInt id)
         AssPlist(OutputtedFilenameList, id, True);
         fprintf(profileState.Stream,
                 "{\"Type\":\"S\",\"File\":\"%s\",\"FileId\":%d}\n",
-                CSTR_STRING(ELM_LIST(FilenameCache, id)), (int)id);
+                CSTR_STRING(GetCachedFilename(id)), (int)id);
     }
 }
 

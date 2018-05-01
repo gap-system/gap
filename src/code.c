@@ -56,14 +56,6 @@ static Obj TYPE_KERNEL_OBJECT;
 
 /****************************************************************************
 **
-*V  FilenameCache . . . . . . . . . . . . . . . . . . list of filenames
-**
-**  'FilenameCache' is a list of previously opened filenames.
-*/
-Obj FilenameCache;
-
-/****************************************************************************
-**
 *V  OffsBody  . . . . . . . . . . . . . . . . . . . .  offset in current body
 **
 **  'OffsBody' is the  offset in the current   body.  It is  only valid while
@@ -85,34 +77,6 @@ static inline void PopOffsBody( void ) {
   STATE(OffsBody) = STATE(OffsBodyStack)[--STATE(OffsBodyCount)];
 }
 
-static inline UInt SetupGapname(void)
-{
-    UInt gapnameid = GetInputFilenameID();
-    if (gapnameid == 0) {
-        Obj filename = MakeImmString(GetInputFilename());
-#ifdef HPCGAP
-        // TODO/FIXME: adjust this code to work more like the corresponding
-        // code below for GAP?!?
-        gapnameid = AddAList(FilenameCache, filename);
-#else
-        Obj pos = POS_LIST(FilenameCache, filename, INTOBJ_INT(1));
-        if (pos == Fail) {
-            gapnameid = PushPlist(FilenameCache, filename);
-        }
-        else {
-            gapnameid = INT_INTOBJ(pos);
-        }
-#endif
-        SetInputFilenameID(gapnameid);
-    }
-    return gapnameid;
-}
-
-Obj FuncGET_FILENAME_CACHE(Obj self)
-{
-  return CopyObj(FilenameCache, 1);
-}
-
 // filename
 
 Obj GET_FILENAME_BODY(Obj body)
@@ -120,7 +84,7 @@ Obj GET_FILENAME_BODY(Obj body)
     Obj val = BODY_HEADER(body)->filename_or_id;
     if (IS_INTOBJ(val)) {
         UInt gapnameid = INT_INTOBJ(val);
-        val = ELM_LIST(FilenameCache, gapnameid);
+        val = GetCachedFilename(gapnameid);
     }
 
     return val;
@@ -771,7 +735,7 @@ void CodeFuncExprBegin (
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
-    SET_GAPNAMEID_BODY(body, SetupGapname());
+    SET_GAPNAMEID_BODY(body, GetInputFilenameID());
     SET_STARTLINE_BODY(body, startLine);
     STATE(OffsBody) = sizeof(BodyHeader);
 
@@ -3280,17 +3244,6 @@ void LoadBody ( Obj body )
 */
 
 /****************************************************************************
- **
- *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
- */
-static StructGVarFunc GVarFuncs [] = {
-
-  GVAR_FUNC(GET_FILENAME_CACHE, 0, ""),
-  { 0, 0, 0, 0, 0 }
-
-};
-
-/****************************************************************************
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
@@ -3312,8 +3265,6 @@ static Int InitKernel (
     InitGlobalBag( &STATE(CodeResult), "CodeResult" );
 #endif
 
-    InitGlobalBag( &FilenameCache, "FilenameCache" );
-
     /* allocate the statements and expressions stacks                      */
     InitGlobalBag( &STATE(StackStat), "STATE(StackStat)" );
     InitGlobalBag( &STATE(StackExpr), "STATE(StackExpr)" );
@@ -3321,8 +3272,6 @@ static Int InitKernel (
     /* some functions and globals needed for float conversion */
     InitGlobalBag( &EAGER_FLOAT_LITERAL_CACHE, "EAGER_FLOAT_LITERAL_CACHE" );
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
-
-    InitHdlrFuncsFromTable( GVarFuncs );
 
     ImportGVarFromLibrary( "TYPE_KERNEL_OBJECT", &TYPE_KERNEL_OBJECT );
 
@@ -3341,21 +3290,12 @@ static Int InitLibrary (
     Obj cache;
 
 #ifdef HPCGAP
-    FilenameCache = NewAtomicList(T_ALIST, 0);
-#else
-    FilenameCache = NEW_PLIST(T_PLIST, 0);
-#endif
-
-#ifdef HPCGAP
     cache = NewAtomicList(T_ALIST, 1);
 #else
     cache = NEW_PLIST_IMM(T_PLIST, 1000L);
     SET_LEN_PLIST(cache,0);
 #endif
     EAGER_FLOAT_LITERAL_CACHE = cache;
-
-    /* init filters and functions                                          */
-    InitGVarFuncsFromTable( GVarFuncs );
 
     /* return success                                                      */
     return 0;
