@@ -2953,9 +2953,7 @@ void            IntrAssList ( Int narg )
     Obj                 pos;            /* position                        */
     Obj                 rhs;            /* right hand side                 */
 
-    if (narg != 1 && narg != 2) {
-      SyntaxError("[]:= only supports 1 or 2 indices");
-    }
+    GAP_ASSERT(narg == 1 || narg == 2);
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -3114,9 +3112,7 @@ void            IntrUnbList ( Int narg )
     Obj                 list;           /* list                            */
     Obj                 pos;            /* position                        */
 
-    if (narg != 1 && narg != 2) {
-      SyntaxError("Unbind[] only supports 1 or 2 indices");
-    }
+    GAP_ASSERT(narg == 1 || narg == 2);
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -3164,9 +3160,7 @@ void            IntrElmList ( Int narg )
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
 
-    if (narg != 1 && narg != 2) {
-      SyntaxError("[] only supports 1 or 2 indices");
-    }
+    GAP_ASSERT(narg == 1 || narg == 2);
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
@@ -3308,9 +3302,7 @@ void            IntrIsbList ( Int narg )
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, right operand         */
 
-    if (narg != 1 && narg != 2) {
-      SyntaxError("IsBound[] only supports 1 or 2 indices");
-    }
+    GAP_ASSERT(narg == 1 || narg == 2);
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
