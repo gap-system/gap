@@ -79,8 +79,8 @@ InstallMethod( SymplecticGroupCons,
             fi;
         fi;
 
-	mat1:=ImmutableMatrix(f,mat1,true);
-	mat2:=ImmutableMatrix(f,mat2,true);
+        mat1:=ImmutableMatrix(f,mat1,true);
+        mat2:=ImmutableMatrix(f,mat2,true);
         # avoid to call 'Group' because this would check invertibility ...
         g := GroupWithGenerators( [ mat1, mat2 ] );
         SetName( g, Concatenation("Sp(",String(d),",",String(q),")") );
@@ -600,9 +600,9 @@ BindGlobal( "OpmOdd", function( s, d, q )
         g := GroupWithGenerators( [
                     [[1,0,0,0],[0,1,2,1],[2,0,2,0],[1,0,0,1]]*One( f ),
                     [[0,2,2,2],[0,1,1,2],[1,0,2,0],[1,2,2,0]]*One( f ) ] );
-	SetInvariantBilinearForm( g, rec( matrix:= ImmutableMatrix( f,
+        SetInvariantBilinearForm( g, rec( matrix:= ImmutableMatrix( f,
           [[0,1,0,0],[1,0,0,0],[0,0,1,0],[0,0,0,2]]*One( f ), true ) ) );
-	SetInvariantQuadraticForm( g, rec( matrix:= ImmutableMatrix( f,
+        SetInvariantQuadraticForm( g, rec( matrix:= ImmutableMatrix( f,
           [[0,1,0,0],[0,0,0,0],[0,0,2,0],[0,0,0,1]]*One( f ), true ) ) );
         SetSize( g, 1152 );
         return g;
@@ -610,9 +610,9 @@ BindGlobal( "OpmOdd", function( s, d, q )
         g := GroupWithGenerators( [
                     [[0,2,0,0],[2,1,0,1],[0,2,0,1],[0,0,1,0]]*One( f ),
                     [[2,0,0,0],[1,2,0,2],[1,0,0,1],[0,0,1,0]]*One( f ) ] );
-	SetInvariantBilinearForm( g, rec( matrix:= ImmutableMatrix( f,
+        SetInvariantBilinearForm( g, rec( matrix:= ImmutableMatrix( f,
           [[0,1,0,0],[1,0,0,0],[0,0,2,0],[0,0,0,2]]*One( f ), true ) ) );
-	SetInvariantQuadraticForm( g, rec( matrix:= ImmutableMatrix( f,
+        SetInvariantQuadraticForm( g, rec( matrix:= ImmutableMatrix( f,
           [[0,1,0,0],[0,0,0,0],[0,0,1,0],[0,0,0,1]]*One( f ), true ) ) );
         SetSize( g, 1440 );
         return g;
