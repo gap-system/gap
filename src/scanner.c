@@ -25,7 +25,7 @@
 #include "stringobj.h"
 
 
-static void NextSymbol(void);
+static UInt NextSymbol(void);
 
 
 /****************************************************************************
@@ -179,7 +179,7 @@ void Match (
 
     // if 'STATE(Symbol)' is the expected symbol match it away
     if ( symbol == STATE(Symbol) ) {
-        NextSymbol();
+        STATE(Symbol) = NextSymbol();
     }
 
     /* else generate an error message and skip to a symbol in <skipto>     */
@@ -188,7 +188,7 @@ void Match (
         strlcat( errmsg, " expected", sizeof(errmsg) );
         SyntaxError( errmsg );
         while ( ! IS_IN( STATE(Symbol), skipto ) )
-            NextSymbol();
+            STATE(Symbol) = NextSymbol();
     }
 }
 
@@ -225,7 +225,7 @@ void Match (
 **  'GetIdent' can decide with one string comparison if 'STATE(Value)' holds
 **  a keyword or not.
 */
-static void GetIdent(Int i)
+static UInt GetIdent(Int i)
 {
     // initially it could be a keyword
     Int isQuoted = 0;
@@ -261,54 +261,52 @@ static void GetIdent(Int i)
         i = SAFE_VALUE_SIZE-1;
     }
     STATE(Value)[i] = '\0';
-    STATE(Symbol) = S_IDENT;
 
     // if it is quoted then it is an identifier
     if (isQuoted)
-        return;
+        return S_IDENT;
 
     // now check if 'STATE(Value)' holds a keyword
-    switch ( 256*STATE(Value)[0]+STATE(Value)[i-1] ) {
-    case 256*'a'+'d': if(!strcmp(STATE(Value),"and"))     STATE(Symbol)=S_AND;     break;
-    case 256*'a'+'c': if(!strcmp(STATE(Value),"atomic"))  STATE(Symbol)=S_ATOMIC;  break;
-    case 256*'b'+'k': if(!strcmp(STATE(Value),"break"))   STATE(Symbol)=S_BREAK;   break;
-    case 256*'c'+'e': if(!strcmp(STATE(Value),"continue"))   STATE(Symbol)=S_CONTINUE;   break;
-    case 256*'d'+'o': if(!strcmp(STATE(Value),"do"))      STATE(Symbol)=S_DO;      break;
-    case 256*'e'+'f': if(!strcmp(STATE(Value),"elif"))    STATE(Symbol)=S_ELIF;    break;
-    case 256*'e'+'e': if(!strcmp(STATE(Value),"else"))    STATE(Symbol)=S_ELSE;    break;
-    case 256*'e'+'d': if(!strcmp(STATE(Value),"end"))     STATE(Symbol)=S_END;     break;
-    case 256*'f'+'e': if(!strcmp(STATE(Value),"false"))   STATE(Symbol)=S_FALSE;   break;
-    case 256*'f'+'i': if(!strcmp(STATE(Value),"fi"))      STATE(Symbol)=S_FI;      break;
-    case 256*'f'+'r': if(!strcmp(STATE(Value),"for"))     STATE(Symbol)=S_FOR;     break;
-    case 256*'f'+'n': if(!strcmp(STATE(Value),"function"))STATE(Symbol)=S_FUNCTION;break;
-    case 256*'i'+'f': if(!strcmp(STATE(Value),"if"))      STATE(Symbol)=S_IF;      break;
-    case 256*'i'+'n': if(!strcmp(STATE(Value),"in"))      STATE(Symbol)=S_IN;      break;
-    case 256*'l'+'l': if(!strcmp(STATE(Value),"local"))   STATE(Symbol)=S_LOCAL;   break;
-    case 256*'m'+'d': if(!strcmp(STATE(Value),"mod"))     STATE(Symbol)=S_MOD;     break;
-    case 256*'n'+'t': if(!strcmp(STATE(Value),"not"))     STATE(Symbol)=S_NOT;     break;
-    case 256*'o'+'d': if(!strcmp(STATE(Value),"od"))      STATE(Symbol)=S_OD;      break;
-    case 256*'o'+'r': if(!strcmp(STATE(Value),"or"))      STATE(Symbol)=S_OR;      break;
-    case 256*'r'+'e': if(!strcmp(STATE(Value),"readwrite")) STATE(Symbol)=S_READWRITE;     break;
-    case 256*'r'+'y': if(!strcmp(STATE(Value),"readonly"))  STATE(Symbol)=S_READONLY;     break;
-    case 256*'r'+'c': if(!strcmp(STATE(Value),"rec"))     STATE(Symbol)=S_REC;     break;
-    case 256*'r'+'t': if(!strcmp(STATE(Value),"repeat"))  STATE(Symbol)=S_REPEAT;  break;
-    case 256*'r'+'n': if(!strcmp(STATE(Value),"return"))  STATE(Symbol)=S_RETURN;  break;
-    case 256*'t'+'n': if(!strcmp(STATE(Value),"then"))    STATE(Symbol)=S_THEN;    break;
-    case 256*'t'+'e': if(!strcmp(STATE(Value),"true"))    STATE(Symbol)=S_TRUE;    break;
-    case 256*'u'+'l': if(!strcmp(STATE(Value),"until"))   STATE(Symbol)=S_UNTIL;   break;
-    case 256*'w'+'e': if(!strcmp(STATE(Value),"while"))   STATE(Symbol)=S_WHILE;   break;
-    case 256*'q'+'t': if(!strcmp(STATE(Value),"quit"))    STATE(Symbol)=S_QUIT;    break;
-    case 256*'Q'+'T': if(!strcmp(STATE(Value),"QUIT"))    STATE(Symbol)=S_QQUIT;   break;
-
-    case 256*'I'+'d': if(!strcmp(STATE(Value),"IsBound")) STATE(Symbol)=S_ISBOUND; break;
-    case 256*'U'+'d': if(!strcmp(STATE(Value),"Unbind"))  STATE(Symbol)=S_UNBIND;  break;
-    case 256*'T'+'d': if(!strcmp(STATE(Value),"TryNextMethod"))
-                                                     STATE(Symbol)=S_TRYNEXT; break;
-    case 256*'I'+'o': if(!strcmp(STATE(Value),"Info"))    STATE(Symbol)=S_INFO;    break;
-    case 256*'A'+'t': if(!strcmp(STATE(Value),"Assert"))  STATE(Symbol)=S_ASSERT;  break;
-
-    default: ;
+    const Char *v = STATE(Value);
+    switch ( 256*v[0]+v[i-1] ) {
+    case 256*'a'+'d': if(!strcmp(v,"and"))           return S_AND;
+    case 256*'a'+'c': if(!strcmp(v,"atomic"))        return S_ATOMIC;
+    case 256*'b'+'k': if(!strcmp(v,"break"))         return S_BREAK;
+    case 256*'c'+'e': if(!strcmp(v,"continue"))      return S_CONTINUE;
+    case 256*'d'+'o': if(!strcmp(v,"do"))            return S_DO;
+    case 256*'e'+'f': if(!strcmp(v,"elif"))          return S_ELIF;
+    case 256*'e'+'e': if(!strcmp(v,"else"))          return S_ELSE;
+    case 256*'e'+'d': if(!strcmp(v,"end"))           return S_END;
+    case 256*'f'+'e': if(!strcmp(v,"false"))         return S_FALSE;
+    case 256*'f'+'i': if(!strcmp(v,"fi"))            return S_FI;
+    case 256*'f'+'r': if(!strcmp(v,"for"))           return S_FOR;
+    case 256*'f'+'n': if(!strcmp(v,"function"))      return S_FUNCTION;
+    case 256*'i'+'f': if(!strcmp(v,"if"))            return S_IF;
+    case 256*'i'+'n': if(!strcmp(v,"in"))            return S_IN;
+    case 256*'l'+'l': if(!strcmp(v,"local"))         return S_LOCAL;
+    case 256*'m'+'d': if(!strcmp(v,"mod"))           return S_MOD;
+    case 256*'n'+'t': if(!strcmp(v,"not"))           return S_NOT;
+    case 256*'o'+'d': if(!strcmp(v,"od"))            return S_OD;
+    case 256*'o'+'r': if(!strcmp(v,"or"))            return S_OR;
+    case 256*'r'+'e': if(!strcmp(v,"readwrite"))     return S_READWRITE;
+    case 256*'r'+'y': if(!strcmp(v,"readonly"))      return S_READONLY;
+    case 256*'r'+'c': if(!strcmp(v,"rec"))           return S_REC;
+    case 256*'r'+'t': if(!strcmp(v,"repeat"))        return S_REPEAT;
+    case 256*'r'+'n': if(!strcmp(v,"return"))        return S_RETURN;
+    case 256*'t'+'n': if(!strcmp(v,"then"))          return S_THEN;
+    case 256*'t'+'e': if(!strcmp(v,"true"))          return S_TRUE;
+    case 256*'u'+'l': if(!strcmp(v,"until"))         return S_UNTIL;
+    case 256*'w'+'e': if(!strcmp(v,"while"))         return S_WHILE;
+    case 256*'q'+'t': if(!strcmp(v,"quit"))          return S_QUIT;
+    case 256*'Q'+'T': if(!strcmp(v,"QUIT"))          return S_QQUIT;
+    case 256*'I'+'d': if(!strcmp(v,"IsBound"))       return S_ISBOUND;
+    case 256*'U'+'d': if(!strcmp(v,"Unbind"))        return S_UNBIND;
+    case 256*'T'+'d': if(!strcmp(v,"TryNextMethod")) return S_TRYNEXT;
+    case 256*'I'+'o': if(!strcmp(v,"Info"))          return S_INFO;
+    case 256*'A'+'t': if(!strcmp(v,"Assert"))        return S_ASSERT;
     }
+
+    return S_IDENT;
 }
 
 
@@ -345,8 +343,9 @@ static UInt AddCharToValue(UInt i, Char c)
     return i;
 }
 
-static void GetNumber(Int readDecimalPoint)
+static UInt GetNumber(Int readDecimalPoint)
 {
+  UInt symbol = S_ILLEGAL;
   UInt i = 0;
   Char c;
   UInt seenADigit = 0;
@@ -376,8 +375,7 @@ static void GetNumber(Int readDecimalPoint)
         STATE(ValueObj) = 0;
       }
       // this looks like an identifier, scan the rest of it
-      GetIdent(i);
-      return;
+      return GetIdent(i);
     }
 
     // Or maybe we saw a '.' which could indicate one of two things: a
@@ -389,7 +387,7 @@ static void GetNumber(Int readDecimalPoint)
       // a nested record element expression, so don't look for a float.
       // This is a bit fragile
       if (STATE(Symbol) == S_DOT || STATE(Symbol) == S_BDOT) {
-        STATE(Symbol) = S_INT;
+        symbol = S_INT;
         goto finish;
       }
 
@@ -397,7 +395,7 @@ static void GetNumber(Int readDecimalPoint)
       if (PEEK_NEXT_CHAR() == '.') {
         // It was '.', so this looks like '..' and we are probably
         // inside a range expression.
-        STATE(Symbol) = S_INT;
+        symbol = S_INT;
         goto finish;
       }
 
@@ -408,7 +406,7 @@ static void GetNumber(Int readDecimalPoint)
 
     else {
       // Anything else we see tells us that the token is done
-      STATE(Symbol) = S_INT;
+      symbol = S_INT;
       goto finish;
     }
   }
@@ -457,7 +455,7 @@ static void GetNumber(Int readDecimalPoint)
         SyntaxError("Badly formed number");
       }
       else {
-        STATE(Symbol) = S_FLOAT;
+        symbol = S_FLOAT;
         goto finish;
       }
     }
@@ -502,7 +500,7 @@ static void GetNumber(Int readDecimalPoint)
       // Now if the next character is alphanumerical, or an identifier type
       // symbol then we really do have an error, otherwise we return a result
       if (!IsIdent(c) && !IsDigit(c)) {
-        STATE(Symbol) = S_FLOAT;
+        symbol = S_FLOAT;
         goto finish;
       }
       SyntaxError("Badly formed number");
@@ -524,7 +522,7 @@ static void GetNumber(Int readDecimalPoint)
     if (IsAlpha(c)) {
       i = AddCharToValue(i, c);
       c = GET_NEXT_CHAR();
-      STATE(Symbol) = S_FLOAT;
+      symbol = S_FLOAT;
       goto finish;
     }
     if (c == '_') {
@@ -536,7 +534,7 @@ static void GetNumber(Int readDecimalPoint)
         i = AddCharToValue(i, c);
         c = GET_NEXT_CHAR();
       }
-      STATE(Symbol) = S_FLOAT;
+      symbol = S_FLOAT;
       goto finish;
     }
   }
@@ -545,7 +543,7 @@ static void GetNumber(Int readDecimalPoint)
   if (!seenExpDigit)
     SyntaxError(
         "Badly formed number: need at least one digit in the exponent");
-  STATE(Symbol) = S_FLOAT;
+  symbol = S_FLOAT;
 
 finish:
   i = AddCharToValue(i, '\0');
@@ -553,6 +551,7 @@ finish:
     // flush buffer
     AppendBufToString(STATE(ValueObj), STATE(Value), i - 1);
   }
+  return symbol;
 }
 
 
@@ -563,7 +562,7 @@ finish:
 */
 void ScanForFloatAfterDotHACK(void)
 {
-    GetNumber(1);
+    STATE(Symbol) = GetNumber(1);
 }
 
 
@@ -717,7 +716,6 @@ static void GetStr(void)
     }
 
     STATE(ValueObj) = string;
-    STATE(Symbol) = S_STRING;
 
     // skip trailing '"'
     if (c == '"')
@@ -788,7 +786,6 @@ static void GetTripStr(void)
     }
 
     STATE(ValueObj) = string;
-    STATE(Symbol) = S_STRING;
 
     // skip trailing '"'
     if (c == '"')
@@ -816,7 +813,6 @@ static void GetMaybeTripStr(void)
     /* This was just an empty string! */
     if ( c != '"' ) {
         STATE(ValueObj) = NEW_STRING(0);
-        STATE(Symbol) = S_STRING;
         return;
     }
     
@@ -842,9 +838,6 @@ static void GetChar(void)
 {
   /* skip '\''                                                           */
   Char c = GET_NEXT_CHAR();
-
-  /* Make sure symbol is set */
-  STATE(Symbol) = S_CHAR;
 
   /* handle escape equences                                              */
   if ( c == '\n' ) {
@@ -894,7 +887,6 @@ static void GetHelp(void)
     CSTR_STRING(string)[len] = '\0';
 
     STATE(ValueObj) = string;
-    STATE(Symbol) = S_HELP;
 }
 
 /****************************************************************************
@@ -909,91 +901,92 @@ static void GetHelp(void)
 **  After reading  a  symbol the current  character   is the first  character
 **  beyond that symbol.
 */
-static void NextSymbol(void)
+static UInt NextSymbol(void)
 {
     Char c = PEEK_CURR_CHAR();
 
     // if no character is available then get one
-    if ( c == '\0' ) {
+    if (c == '\0') {
         STATE(In)--;
         c = GET_NEXT_CHAR();
     }
 
-  /* skip over <spaces>, <tabs>, <newlines> and comments                 */
-  while (c==' '||c=='\t'||c=='\n'||c=='\r'||c=='\f'||c=='#') {
-    if ( c == '#' )
-      SKIP_TO_END_OF_LINE();
-    c = GET_NEXT_CHAR();
-  }
-
-  // switch according to the character
-  if (IsAlpha(c)) {
-      GetIdent(0);
-      return;
-  }
-
-  switch (c) {
-  case '.':         STATE(Symbol) = S_DOT;       c = GET_NEXT_CHAR();
-    if (c == '.') { STATE(Symbol) = S_DOTDOT;    c = GET_NEXT_CHAR();
-        if (c == '.') { STATE(Symbol) = S_DOTDOTDOT;
-                                                 c = GET_NEXT_CHAR();
-        }
+    // skip over <spaces>, <tabs>, <newlines> and comments
+    while (c == ' ' || c == '\t' || c== '\n' || c== '\r' || c == '\f' || c=='#') {
+        if (c == '#')
+            SKIP_TO_END_OF_LINE();
+        c = GET_NEXT_CHAR();
     }
-    break;
 
-  case '!':         STATE(Symbol) = S_ILLEGAL;   c = GET_NEXT_CHAR();
-    if (c == '.') { STATE(Symbol) = S_BDOT;          GET_NEXT_CHAR(); break; }
-    if (c == '[') { STATE(Symbol) = S_BLBRACK;       GET_NEXT_CHAR(); break; }
-    if (c == '{') { STATE(Symbol) = S_BLBRACE;       GET_NEXT_CHAR(); break; }
-    break;
-  case '[':         STATE(Symbol) = S_LBRACK;        GET_NEXT_CHAR(); break;
-  case ']':         STATE(Symbol) = S_RBRACK;        GET_NEXT_CHAR(); break;
-  case '{':         STATE(Symbol) = S_LBRACE;        GET_NEXT_CHAR(); break;
-  case '}':         STATE(Symbol) = S_RBRACE;        GET_NEXT_CHAR(); break;
-  case '(':         STATE(Symbol) = S_LPAREN;        GET_NEXT_CHAR(); break;
-  case ')':         STATE(Symbol) = S_RPAREN;        GET_NEXT_CHAR(); break;
-  case ',':         STATE(Symbol) = S_COMMA;         GET_NEXT_CHAR(); break;
+    // switch according to the character
+    if (IsAlpha(c)) {
+        return GetIdent(0);
+    }
 
-  case ':':         STATE(Symbol) = S_COLON;     c = GET_NEXT_CHAR();
-    if (c == '=') { STATE(Symbol) = S_ASSIGN;        GET_NEXT_CHAR(); break; }
-    break;
+    UInt symbol;
 
-  case ';':         STATE(Symbol) = S_SEMICOLON; c = GET_NEXT_CHAR();
-    if (c == ';') { STATE(Symbol) = S_DUALSEMICOLON; GET_NEXT_CHAR(); break; }
-    break;
+    switch (c) {
+    case '.':         symbol = S_DOT;           c = GET_NEXT_CHAR();
+      if (c == '.') { symbol = S_DOTDOT;        c = GET_NEXT_CHAR();
+          if (c == '.') { symbol = S_DOTDOTDOT; c = GET_NEXT_CHAR(); }
+      }
+      break;
 
-  case '=':         STATE(Symbol) = S_EQ;            GET_NEXT_CHAR(); break;
-  case '<':         STATE(Symbol) = S_LT;        c = GET_NEXT_CHAR();
-    if (c == '=') { STATE(Symbol) = S_LE;            GET_NEXT_CHAR(); break; }
-    if (c == '>') { STATE(Symbol) = S_NE;            GET_NEXT_CHAR(); break; }
-    break;
-  case '>':         STATE(Symbol) = S_GT;        c = GET_NEXT_CHAR();
-    if (c == '=') { STATE(Symbol) = S_GE;            GET_NEXT_CHAR(); break; }
-    break;
+    case '!':         symbol = S_ILLEGAL;       c = GET_NEXT_CHAR();
+      if (c == '.') { symbol = S_BDOT;              GET_NEXT_CHAR(); break; }
+      if (c == '[') { symbol = S_BLBRACK;           GET_NEXT_CHAR(); break; }
+      if (c == '{') { symbol = S_BLBRACE;           GET_NEXT_CHAR(); break; }
+      break;
+    case '[':         symbol = S_LBRACK;            GET_NEXT_CHAR(); break;
+    case ']':         symbol = S_RBRACK;            GET_NEXT_CHAR(); break;
+    case '{':         symbol = S_LBRACE;            GET_NEXT_CHAR(); break;
+    case '}':         symbol = S_RBRACE;            GET_NEXT_CHAR(); break;
+    case '(':         symbol = S_LPAREN;            GET_NEXT_CHAR(); break;
+    case ')':         symbol = S_RPAREN;            GET_NEXT_CHAR(); break;
+    case ',':         symbol = S_COMMA;             GET_NEXT_CHAR(); break;
 
-  case '+':         STATE(Symbol) = S_PLUS;          GET_NEXT_CHAR(); break;
-  case '-':         STATE(Symbol) = S_MINUS;     c = GET_NEXT_CHAR();
-    if (c == '>') { STATE(Symbol) = S_MAPTO;         GET_NEXT_CHAR(); break; }
-    break;
-  case '*':         STATE(Symbol) = S_MULT;          GET_NEXT_CHAR(); break;
-  case '/':         STATE(Symbol) = S_DIV;           GET_NEXT_CHAR(); break;
-  case '^':         STATE(Symbol) = S_POW;           GET_NEXT_CHAR(); break;
+    case ':':         symbol = S_COLON;         c = GET_NEXT_CHAR();
+      if (c == '=') { symbol = S_ASSIGN;            GET_NEXT_CHAR(); break; }
+      break;
 
-  case '~':         STATE(Symbol) = S_TILDE;         GET_NEXT_CHAR(); break;
-  case '?':                                          GetHelp(); break;
-  case '"':                                          GetMaybeTripStr(); break;
-  case '\'':                                         GetChar(); break;
-  case '\\':                                         GetIdent(0); break;
-  case '_':                                          GetIdent(0); break;
-  case '@':                                          GetIdent(0); break;
+    case ';':         symbol = S_SEMICOLON;     c = GET_NEXT_CHAR();
+      if (c == ';') { symbol = S_DUALSEMICOLON;     GET_NEXT_CHAR(); break; }
+      break;
 
-  case '0': case '1': case '2': case '3': case '4':
-  case '5': case '6': case '7': case '8': case '9':  GetNumber(0); break;
+    case '=':         symbol = S_EQ;                GET_NEXT_CHAR(); break;
+    case '<':         symbol = S_LT;            c = GET_NEXT_CHAR();
+      if (c == '=') { symbol = S_LE;                GET_NEXT_CHAR(); break; }
+      if (c == '>') { symbol = S_NE;                GET_NEXT_CHAR(); break; }
+      break;
+    case '>':         symbol = S_GT;            c = GET_NEXT_CHAR();
+      if (c == '=') { symbol = S_GE;                GET_NEXT_CHAR(); break; }
+      break;
 
-  case '\377':      STATE(Symbol) = S_EOF;           *STATE(In) = '\0'; break;
+    case '+':         symbol = S_PLUS;              GET_NEXT_CHAR(); break;
+    case '-':         symbol = S_MINUS;         c = GET_NEXT_CHAR();
+      if (c == '>') { symbol = S_MAPTO;             GET_NEXT_CHAR(); break; }
+      break;
+    case '*':         symbol = S_MULT;              GET_NEXT_CHAR(); break;
+    case '/':         symbol = S_DIV;               GET_NEXT_CHAR(); break;
+    case '^':         symbol = S_POW;               GET_NEXT_CHAR(); break;
 
-  default:          STATE(Symbol) = S_ILLEGAL;       GET_NEXT_CHAR(); break;
-  }
+    case '~':         symbol = S_TILDE;             GET_NEXT_CHAR(); break;
+    case '?':         symbol = S_HELP;              GetHelp(); break;
+    case '"':         symbol = S_STRING;            GetMaybeTripStr(); break;
+    case '\'':        symbol = S_CHAR;              GetChar(); break;
+    case '\\':        return GetIdent(0);
+    case '_':         return GetIdent(0);
+    case '@':         return GetIdent(0);
+
+    case '0': case '1': case '2': case '3': case '4':
+    case '5': case '6': case '7': case '8': case '9':
+                      return GetNumber(0);
+
+    case '\377':      symbol = S_EOF;           *STATE(In) = '\0'; break;
+
+    default:          symbol = S_ILLEGAL;       GET_NEXT_CHAR(); break;
+    }
+    return symbol;
 }
 
 static const char * AllKeywords[] = {
