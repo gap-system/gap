@@ -302,6 +302,9 @@ extern int IsKeyword(const char * str);
 **  so execution continues as normal. Thus you must make sure that subsequent
 **  code can safely recover from the indicated error.
 **
+**  Both functions should only be called from the scanner or reader, but not
+**  from e.g. the interpreter or coder, let alone any other parts of GAP.
+**
 */
 extern  void            SyntaxError (
             const Char *        msg );
