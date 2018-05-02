@@ -635,8 +635,8 @@ DeclareConstructor( "OmegaCons", [ IsGroup, IsInt, IsPosInt, IsPosInt ] );
 ##  (see&nbsp;<Ref Func="InvariantQuadraticForm"/>) specified by <A>e</A>,
 ##  and that have square spinor norm in odd characteristic
 ##  or Dickson invariant <M>0</M> in even characteristic, respectively,
-##  in the category given by the filter <A>filt</A>.
-##  This group has always index two in the corresponding special orthogonal group,
+##  in the category given by the filter <A>filt</A>. For odd <A>q</A>,
+##  this group has always index two in the corresponding special orthogonal group,
 ##  which will be conjugate in <M>GL(d,q)</M> to the group returned by SO( <A>e</A>, <A>d</A>, <A>q</A> ),
 ##  see <Ref Func="SpecialOrthogonalGroup"/>, but may fix a different form (see <Ref Sect="Classical Groups"/>).
 ##  <P/>
