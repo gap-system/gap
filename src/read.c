@@ -2669,22 +2669,25 @@ static UInt ReadStats (
     while ( IS_IN( STATE(Symbol), STATBEGIN|S_SEMICOLON ) ) {
 
         /* read a statement                                                */
-        if      ( STATE(Symbol) == S_IDENT  ) ReadCallVarAss(follow,'s');
-        else if ( STATE(Symbol) == S_UNBIND ) ReadUnbind(    follow    );
-        else if ( STATE(Symbol) == S_INFO   ) ReadInfo(      follow    );
-        else if ( STATE(Symbol) == S_ASSERT ) ReadAssert(    follow    );
-        else if ( STATE(Symbol) == S_IF     ) ReadIf(        follow    );
-        else if ( STATE(Symbol) == S_FOR    ) ReadFor(       follow    );
-        else if ( STATE(Symbol) == S_WHILE  ) ReadWhile(     follow    );
-        else if ( STATE(Symbol) == S_REPEAT ) ReadRepeat(    follow    );
-        else if ( STATE(Symbol) == S_BREAK  ) ReadBreak(     follow    );
-        else if ( STATE(Symbol) == S_CONTINUE) ReadContinue(     follow    );
-        else if ( STATE(Symbol) == S_RETURN ) ReadReturn(    follow    );
-        else if ( STATE(Symbol) == S_TRYNEXT) ReadTryNext(   follow    );
-        else if ( STATE(Symbol) == S_QUIT   ) ReadQuit(      follow    );
-        else if ( STATE(Symbol) == S_ATOMIC ) ReadAtomic(    follow    );
-        else if ( STATE(Symbol) == S_HELP   ) ReadHelp(      follow    );
-        else                           ReadEmpty(     follow    );
+        switch (STATE(Symbol)) {
+        case S_IDENT:     ReadCallVarAss(follow,'s'); break;
+        case S_UNBIND:    ReadUnbind(    follow    ); break;
+        case S_INFO:      ReadInfo(      follow    ); break;
+        case S_ASSERT:    ReadAssert(    follow    ); break;
+        case S_IF:        ReadIf(        follow    ); break;
+        case S_FOR:       ReadFor(       follow    ); break;
+        case S_WHILE:     ReadWhile(     follow    ); break;
+        case S_REPEAT:    ReadRepeat(    follow    ); break;
+        case S_BREAK:     ReadBreak(     follow    ); break;
+        case S_CONTINUE:  ReadContinue(  follow    ); break;
+        case S_RETURN:    ReadReturn(    follow    ); break;
+        case S_TRYNEXT:   ReadTryNext(   follow    ); break;
+        case S_ATOMIC:    ReadAtomic(    follow    ); break;
+        case S_SEMICOLON: ReadEmpty(     follow    ); break;
+        case S_QUIT:      ReadQuit(      follow    ); break;
+        case S_HELP:      ReadHelp(      follow    ); break;
+        default:          ReadEmpty(     follow    ); break;
+        }
         nr++;
         MatchSemicolon(follow);
     }
@@ -2791,29 +2794,31 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 
     IntrBegin( context );
 
+    switch (STATE(Symbol)) {
     /* read an expression or an assignment or a procedure call             */
-    if      (STATE(Symbol) == S_IDENT   ) { ReadExpr(    S_SEMICOLON|S_EOF, 'x' ); }
+    case S_IDENT:     ReadExpr(    S_SEMICOLON|S_EOF, 'x' ); break;
 
     /* otherwise read a statement                                          */
-    else if (STATE(Symbol)==S_UNBIND    ) { ReadUnbind(  S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_INFO      ) { ReadInfo(    S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_ASSERT    ) { ReadAssert(  S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_IF        ) { ReadIf(      S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_FOR       ) { ReadFor(     S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_WHILE     ) { ReadWhile(   S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_REPEAT    ) { ReadRepeat(  S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_BREAK     ) { ReadBreak(   S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_CONTINUE  ) { ReadContinue(S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_RETURN    ) { ReadReturn(  S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_TRYNEXT   ) { ReadTryNext( S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_QUIT      ) { ReadQuit(    S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_QQUIT     ) { ReadQUIT(    S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_SEMICOLON ) { ReadEmpty(   S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_ATOMIC    ) { ReadAtomic(  S_SEMICOLON|S_EOF      ); }
-    else if (STATE(Symbol)==S_HELP      ) { ReadHelp(    S_SEMICOLON|S_EOF      ); }
+    case S_UNBIND:    ReadUnbind(  S_SEMICOLON|S_EOF      ); break;
+    case S_INFO:      ReadInfo(    S_SEMICOLON|S_EOF      ); break;
+    case S_ASSERT:    ReadAssert(  S_SEMICOLON|S_EOF      ); break;
+    case S_IF:        ReadIf(      S_SEMICOLON|S_EOF      ); break;
+    case S_FOR:       ReadFor(     S_SEMICOLON|S_EOF      ); break;
+    case S_WHILE:     ReadWhile(   S_SEMICOLON|S_EOF      ); break;
+    case S_REPEAT:    ReadRepeat(  S_SEMICOLON|S_EOF      ); break;
+    case S_BREAK:     ReadBreak(   S_SEMICOLON|S_EOF      ); break;
+    case S_CONTINUE:  ReadContinue(S_SEMICOLON|S_EOF      ); break;
+    case S_RETURN:    ReadReturn(  S_SEMICOLON|S_EOF      ); break;
+    case S_TRYNEXT:   ReadTryNext( S_SEMICOLON|S_EOF      ); break;
+    case S_ATOMIC:    ReadAtomic(  S_SEMICOLON|S_EOF      ); break;
+    case S_SEMICOLON: ReadEmpty(   S_SEMICOLON|S_EOF      ); break;
+    case S_QUIT:      ReadQuit(    S_SEMICOLON|S_EOF      ); break;
+    case S_QQUIT:     ReadQUIT(    S_SEMICOLON|S_EOF      ); break;
+    case S_HELP:      ReadHelp(    S_SEMICOLON|S_EOF      ); break;
     /* otherwise try to read an expression                                 */
     /* Unless the statement is empty, in which case do nothing             */
-    else                           { ReadExpr(    S_SEMICOLON|S_EOF, 'r' ); }
+    default:          ReadExpr(    S_SEMICOLON|S_EOF, 'r' ); break;
+    }
 
     /* every statement must be terminated by a semicolon                  */
     if (!IS_IN(STATE(Symbol), S_SEMICOLON) && STATE(Symbol) != S_HELP) {
