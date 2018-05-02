@@ -510,6 +510,9 @@ static LHSRef ReadSelector(TypSymbolSet follow, UInt level)
             ReadExpr(S_COMMA | S_RBRACK | follow, 'r');
             ref.narg++;
         }
+        if (ref.narg > 2) {
+          SyntaxError("[] only supports 1 or 2 indices");
+        }
         Match(S_RBRACK, "]", follow);
         ref.type = R_ELM_LIST;
         ref.level = level;

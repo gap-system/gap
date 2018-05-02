@@ -31,9 +31,7 @@ gap> a[1,1];
 gap> a[1,1,1];
 Syntax error: [] only supports 1 or 2 indices in stream:1
 a[1,1,1];
-        ^
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `[]' on 3 arguments
+       ^
 
 #
 gap> a := [ [ [1, 2], [3, 4] ], [ [5, 6], [7, 8] ] ];
@@ -97,8 +95,16 @@ gap> a[1] := [ [ 42 ] ];
 gap> a[1,1] := [ 43 ];
 [ 43 ]
 gap> a[1,1,1] := 44;
-Syntax error: []:= only supports 1 or 2 indices in stream:1
+Syntax error: [] only supports 1 or 2 indices in stream:1
 a[1,1,1] := 44;
+       ^
+gap> IsBound(a[1,1,1]);
+Syntax error: [] only supports 1 or 2 indices in stream:1
+IsBound(a[1,1,1]);
+               ^
+gap> Unbind(a[1,1,1]);
+Syntax error: [] only supports 1 or 2 indices in stream:1
+Unbind(a[1,1,1]);
               ^
 
 # ListWithIdenticalEntries: errors
