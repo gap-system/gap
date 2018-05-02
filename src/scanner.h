@@ -59,10 +59,6 @@ enum SCANNER_SYMBOLS {
     S_INT               = (1UL<<10)+1,
     S_FLOAT             = (1UL<<10)+2,
 
-    // A decimal point only, but in a context where we know it's the start of
-    // a number
-    S_PARTIALFLOAT1     = (1UL<<10)+3,
-
     // Some digits and a decimal point
     S_PARTIALFLOAT2     = (1UL<<10)+4,
 
@@ -361,6 +357,18 @@ extern void Match (
             const Char *        msg,
             TypSymbolSet        skipto );
 
+
+/****************************************************************************
+**
+*F  ScanForFloatAfterDotHACK()
+**
+**  This function is called by 'ReadLiteral' if it encounters a single dot in
+**  form the of the symbol 'S_DOT'. The only legal way this could happen is
+**  if the dot is the start of a float literal like '.123'. As the scanner
+**  cannot detect this without being context aware, we must provide this
+**  function to allow the reader to signal to the scanner about this.
+*/
+extern void ScanForFloatAfterDotHACK(void);
 
 /****************************************************************************
 **
