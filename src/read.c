@@ -2687,8 +2687,9 @@ static UInt ReadStats (
         case S_TRYNEXT:   ReadTryNext(   follow    ); break;
         case S_ATOMIC:    ReadAtomic(    follow    ); break;
         case S_SEMICOLON: ReadEmpty(     follow    ); break;
-        case S_QUIT:      ReadQuit(      follow    ); break;
-        case S_HELP:      ReadHelp(      follow    ); break;
+        case S_QUIT:      SyntaxError("'quit;' cannot be used in this context"); break;
+        case S_QQUIT:     SyntaxError("'QUIT;' cannot be used in this context"); break;
+        case S_HELP:      SyntaxError("'?' cannot be used in this context"); break;
         default:          ReadEmpty(     follow    ); break;
         }
         nr++;

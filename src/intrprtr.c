@@ -37,7 +37,6 @@
 #include <src/range.h>
 #include <src/read.h>
 #include <src/records.h>
-#include <src/scanner.h>
 #include <src/stringobj.h>
 #include <src/vars.h>
 
@@ -1124,15 +1123,11 @@ void            IntrQuit ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* 'quit' is not allowed in functions (by the reader)                  */
-    /* assert( STATE(IntrCoding) == 0 ); */
-    if ( STATE(IntrCoding) > 0 ) {
-      SyntaxError("'quit;' cannot be used in this context");
-    }
+    assert( STATE(IntrCoding) == 0 );
 
     /* empty the values stack and push the void value                      */
     SET_LEN_PLIST( STATE(StackObj), 0 );
     PushVoidObj();
-
 
     /* indicate that a quit-statement was interpreted                      */
     STATE(IntrReturning) = STATUS_QUIT;
@@ -1151,15 +1146,14 @@ void            IntrQUIT ( void )
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
-    /* 'quit' is not allowed in functions (by the reader)                  */
+    /* 'QUIT' is not allowed in functions (by the reader)                  */
     assert( STATE(IntrCoding) == 0 );
 
     /* empty the values stack and push the void value                      */
     SET_LEN_PLIST( STATE(StackObj), 0 );
     PushVoidObj();
 
-
-    /* indicate that a quit-statement was interpreted                      */
+    /* indicate that a QUIT-statement was interpreted                      */
     STATE(IntrReturning) = STATUS_QQUIT;
 }
 
@@ -1181,10 +1175,9 @@ void IntrHelp(Obj topic)
     if (STATE(IntrIgnoring) > 0) {
         return;
     }
-    if (STATE(IntrCoding) > 0) {
-        SyntaxError("'?' cannot be used in this context");
-        return;
-    }
+
+    // '?' is not allowed in functions (by the reader)
+    assert( STATE(IntrCoding) == 0 );
 
     /* FIXME: Hard coded function name */
     hgvar = GVarName("HELP");

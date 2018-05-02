@@ -17,7 +17,7 @@ Error, <expr> must be 'true' or 'false' (not a integer)
 gap> function() quit; end;
 Syntax error: 'quit;' cannot be used in this context in stream:1
 function() quit; end;
-               ^
+              ^
 
 #
 # return is not allowed in interpreter

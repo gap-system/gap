@@ -45,6 +45,43 @@ for i in [1..5] do List([1..5], function(x) continue; return 1; end); od;
                                                    ^
 
 #
+#
+gap> if true then quit; fi;
+Syntax error: 'quit;' cannot be used in this context in stream:1
+if true then quit; fi;
+                ^
+gap> if false then quit; fi;
+Syntax error: 'quit;' cannot be used in this context in stream:1
+if false then quit; fi;
+                 ^
+gap> f := function() quit; end;
+Syntax error: 'quit;' cannot be used in this context in stream:1
+f := function() quit; end;
+                   ^
+gap> for i in [1..5] do quit; od;
+Syntax error: 'quit;' cannot be used in this context in stream:1
+for i in [1..5] do quit; od;
+                      ^
+
+#
+gap> if true then QUIT; fi;
+Syntax error: 'QUIT;' cannot be used in this context in stream:1
+if true then QUIT; fi;
+                ^
+gap> if false then QUIT; fi;
+Syntax error: 'QUIT;' cannot be used in this context in stream:1
+if false then QUIT; fi;
+                 ^
+gap> f := function() QUIT; end;
+Syntax error: 'QUIT;' cannot be used in this context in stream:1
+f := function() QUIT; end;
+                   ^
+gap> for i in [1..5] do QUIT; od;
+Syntax error: 'QUIT;' cannot be used in this context in stream:1
+for i in [1..5] do QUIT; od;
+                      ^
+
+#
 gap> f := function() local i; for i in [1..5] do continue; od; end;;
 gap> f();
 gap> f := function() local i; for i in [1..5] do break; od; end;;
