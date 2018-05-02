@@ -31,8 +31,12 @@ gap> AbelianGroup(IsPcGroup,[2,3]);
 <pc group of size 6 with 2 generators>
 gap> AbelianGroup(IsPermGroup,[2,3]);
 Group([ (1,2), (3,4,5) ])
-gap> AbelianGroup(IsFpGroup,[2,3]);
+gap> A:=AbelianGroup(IsFpGroup,[2,3]);
 <fp group of size 6 on the generators [ f1, f2 ]>
+gap> A.1^-1;
+f1
+gap> A.2^-1;
+f2^2
 
 #
 gap> AbelianGroup([2,0]);
@@ -45,8 +49,10 @@ Error, no 2nd choice method found for `AbelianGroupCons' on 2 arguments
 gap> AbelianGroup(IsPermGroup,[2,0]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 2nd choice method found for `AbelianGroupCons' on 2 arguments
-gap> AbelianGroup(IsFpGroup,[2,0]);
+gap> A:=AbelianGroup(IsFpGroup,[2,0]);
 <fp group of size infinity on the generators [ f1, f2 ]>
+gap> A.1*A.2^-3*A.1*A.2^4;
+f2
 
 #
 gap> AbelianGroup(2,3);
@@ -121,6 +127,11 @@ gap> CyclicGroup(IsPermGroup,1);
 Group(())
 gap> CyclicGroup(IsFpGroup,1);
 <fp group of size 1 on the generators [ a ]>
+gap> G:=CyclicGroup(IsMatrixGroup, 1);
+Group([ [ [ 1 ] ] ])
+gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
+Rationals
+1
 gap> G:=CyclicGroup(IsMatrixGroup, GF(2), 1);
 Group([ <an immutable 1x1 matrix over GF2> ])
 gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
@@ -136,11 +147,16 @@ gap> CyclicGroup(IsPermGroup,4);
 Group([ (1,2,3,4) ])
 gap> CyclicGroup(IsFpGroup,4);
 <fp group of size 4 on the generators [ a ]>
-gap> G:=CyclicGroup(IsMatrixGroup, GF(2), 12);
-<matrix group of size 12 with 1 generators>
+gap> G:=CyclicGroup(IsMatrixGroup, 6);
+<matrix group of size 6 with 1 generators>
+gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
+Rationals
+6
+gap> G:=CyclicGroup(IsMatrixGroup, GF(2), 6);
+<matrix group of size 6 with 1 generators>
 gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
 GF(2)
-12
+6
 
 #
 gap> CyclicGroup(2,3);
@@ -148,6 +164,12 @@ Error, usage: CyclicGroup( [<filter>, ]<size> )
 gap> CyclicGroup(IsRing,3);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CyclicGroupCons' on 2 arguments
+gap> CyclicGroup(0);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CyclicGroupCons' on 2 arguments
+gap> CyclicGroup(IsFpGroup,0);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 2nd choice method found for `CyclicGroupCons' on 2 arguments
 
 #
 # dihedral groups
@@ -205,6 +227,10 @@ Error, no 2nd choice method found for `DihedralGroupCons' on 2 arguments
 #
 # quaternion groups
 #
+gap> IdGroup(QuaternionGroup(4));
+[ 4, 1 ]
+gap> IdGroup(QuaternionGroup(IsFpGroup,4));
+[ 4, 1 ]
 gap> QuaternionGroup(8);
 <pc group of size 8 with 3 generators>
 gap> QuaternionGroup(IsPcGroup,8);
@@ -218,10 +244,21 @@ gap> G:=QuaternionGroup(IsMatrixGroup, 8);
 gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
 Rationals
 4
+gap> G:=QuaternionGroup(IsMatrixGroup, GF(2), 8);
+<matrix group of size 8 with 2 generators>
+gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
+GF(2)
+8
 gap> G:=QuaternionGroup(IsMatrixGroup, GF(3), 8);
 <matrix group of size 8 with 2 generators>
 gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
 GF(3)
+4
+gap> F:=FunctionField(GF(3),["t"]);
+FunctionField(...,[ t ])
+gap> G:=QuaternionGroup(IsMatrixGroup, F, 8);
+<matrix group of size 8 with 2 generators>
+gap> DimensionOfMatrixGroup(G);
 4
 
 #
@@ -230,6 +267,15 @@ Error, usage: QuaternionGroup( [<filter>, ]<size> )
 gap> QuaternionGroup(IsRing,3);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `QuaternionGroupCons' on 2 arguments
+gap> QuaternionGroup(0);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `QuaternionGroupCons' on 2 arguments
+gap> QuaternionGroup(1);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 2nd choice method found for `QuaternionGroupCons' on 2 arguments
+gap> QuaternionGroup(IsFpGroup,1);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 2nd choice method found for `QuaternionGroupCons' on 2 arguments
 
 #
 # elementary abelian groups
