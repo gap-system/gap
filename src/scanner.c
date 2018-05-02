@@ -371,6 +371,10 @@ static void GetNumber(UInt StartingStatus)
   UInt seenADigit = (StartingStatus != 0 && StartingStatus != 2);
   UInt seenExpDigit = (StartingStatus ==5);
 
+  if (StartingStatus == 2) {
+    STATE(Value)[i++] = '.';
+  }
+
   c = PEEK_CURR_CHAR();
   if (StartingStatus  <  2) {
     // read initial sequence of digits into 'Value'
@@ -584,6 +588,17 @@ static void GetNumber(UInt StartingStatus)
     SyntaxError("Badly Formed Number: need at least one digit in the exponent");
   STATE(Symbol) = S_FLOAT;
   STATE(Value)[i] = '\0';
+}
+
+
+/****************************************************************************
+**
+*F  ScanForFloatAfterDotHACK()
+**
+*/
+void ScanForFloatAfterDotHACK(void)
+{
+    GetNumber(2);
 }
 
 
@@ -930,7 +945,6 @@ static void NextSymbol(void)
     /* special case if reading of a long token is not finished */
     switch (STATE(Symbol)) {
     case S_PARTIALINT:        GetNumber(STATE(Value)[0] == '\0' ? 0 : 1); return;
-    case S_PARTIALFLOAT1:     GetNumber(2); return;
     case S_PARTIALFLOAT2:     GetNumber(3); return;
     case S_PARTIALFLOAT3:     GetNumber(4); return;
     case S_PARTIALFLOAT4:     GetNumber(5); return;
