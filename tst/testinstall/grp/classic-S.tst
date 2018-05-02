@@ -4,6 +4,13 @@
 gap> START_TEST("classic-S.tst");
 
 #
+gap> SL(0,5);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `SpecialLinearGroupCons' on 3 arguments
+gap> SL(1,5);
+SL(1,5)
+gap> ForAll([2,3,4,5,7,9,11], q -> IsTrivial(SL(1,q)));
+true
 gap> SL(2,5);
 SL(2,5)
 gap> last = SL(2,GF(5));

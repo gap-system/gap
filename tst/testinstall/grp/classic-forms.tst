@@ -19,6 +19,12 @@ gap> CheckBilinearForm := function(G)
 >   return ForAll(GeneratorsOfGroup(G),
 >               g -> g*M*TransposedMat(g) = M);
 > end;;
+gap> CheckQuadraticForm := function(G)
+>   local M, Q;
+>   M := InvariantBilinearForm(G).matrix;
+>   Q := InvariantQuadraticForm(G).matrix;
+>   return Q+TransposedMat(Q) = M;
+> end;;
 gap> frob := function(g,aut)
 >   return List(g,row->List(row,x->x^aut));
 > end;;
@@ -43,6 +49,8 @@ gap> ForAll(grps, CheckGeneratorsInvertible);
 true
 gap> ForAll(grps, CheckBilinearForm);
 true
+gap> ForAll(grps, CheckQuadraticForm);
+true
 
 # even-dimensional general orthogonal groups
 gap> grps:=[];;
@@ -56,6 +64,8 @@ gap> ForAll(grps, CheckGeneratorsInvertible);
 true
 gap> ForAll(grps, CheckBilinearForm);
 true
+gap> ForAll(grps, CheckQuadraticForm);
+true
 
 # odd-dimensional special orthogonal groups
 gap> grps:=[];;
@@ -67,6 +77,8 @@ gap> for d in [3,5,7] do
 gap> ForAll(grps, CheckGeneratorsSpecial);
 true
 gap> ForAll(grps, CheckBilinearForm);
+true
+gap> ForAll(grps, CheckQuadraticForm);
 true
 
 # even-dimensional special orthogonal groups
@@ -81,7 +93,44 @@ gap> ForAll(grps, CheckGeneratorsSpecial);
 true
 gap> ForAll(grps, CheckBilinearForm);
 true
+gap> ForAll(grps, CheckQuadraticForm);
+true
 
+#
+# Omega subgroups of special orthogonal groups
+#
+# TODO: add forms to Omega, check them here
+
+# odd-dimensional
+gap> grps:=[];;
+gap> for d in [3,5,7] do
+>   for q in [2,3,4,5,7,8,9] do
+>     Add(grps, Omega(d,q));
+>   od;
+> od;
+gap> ForAll(grps, CheckGeneratorsSpecial);
+true
+
+#gap> ForAll(grps, CheckBilinearForm);
+#true
+#gap> ForAll(grps, CheckQuadraticForm);
+#true
+
+# even-dimensional
+gap> grps:=[];;
+gap> for d in [2,4,6,8] do
+>   for q in [2,3,4,5,7,8,9] do
+>     Add(grps, Omega(+1,d,q));
+>     if d <> 2 then Add(grps, Omega(-1,d,q)); fi;
+>   od;
+> od;
+gap> ForAll(grps, CheckGeneratorsSpecial);
+true
+
+#gap> ForAll(grps, CheckBilinearForm);
+#true
+#gap> ForAll(grps, CheckQuadraticForm);
+#true
 #
 # unitary groups
 #
@@ -108,6 +157,20 @@ gap> for d in [1..6] do
 gap> ForAll(grps, CheckGeneratorsInvertible);
 true
 gap> ForAll(grps, CheckSesquilinearForm);
+true
+
+#
+# symplectic groups
+#
+gap> grps:=[];;
+gap> for d in [2,4,6,8] do
+>   for q in [2,3,4,5,7,8,9] do
+>     Add(grps, Sp(d,q));
+>   od;
+> od;
+gap> ForAll(grps, CheckGeneratorsSpecial);
+true
+gap> ForAll(grps, CheckBilinearForm);
 true
 
 #
