@@ -137,52 +137,6 @@ void LoadFlags(
 
 /****************************************************************************
 **
-*F  FuncLEN_FLAGS( <self>, <flags> )  . . . . . . . .  length of a flags list
-**
-*/
-Obj FuncLEN_FLAGS (
-    Obj                 self,
-    Obj                 flags )
-{
-    /* do some trivial checks                                              */
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
-        flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags), 0L,
-            "you can replace <flags> via 'return <flags>;'" );
-    }
-
-    return INTOBJ_INT( LEN_FLAGS(flags) );
-}
-
-
-/****************************************************************************
-**
-*F  FuncELM_FLAGS( <self>, <flags>, <pos> ) . . . . . element of a flags list
-*/
-Obj FuncELM_FLAGS (
-    Obj                 self,
-    Obj                 flags,
-    Obj                 pos )
-{
-    /* do some trivial checks                                              */
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
-        flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags), 0L,
-            "you can replace <flags> via 'return <flags>;'" );
-    }
-    while ( ! IS_POS_INTOBJ(pos) ) {
-        pos = ErrorReturnObj( "<pos> must be a small positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <pos> via 'return <pos>;'" );
-    }
-
-    /* select and return the element                                       */
-    return ELM_FLAGS( flags, INT_INTOBJ(pos) );
-}
-
-
-/****************************************************************************
-**
 *F  FuncHASH_FLAGS( <self>, <flags> ) . . . . . .  hash value of a flags list
 **
 **  The hash value is independent of the size of a machine word (32 or 64).
@@ -4090,8 +4044,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(IS_SUBSET_FLAGS, 2, "flags1, flags2"),
     GVAR_FUNC(TRUES_FLAGS, 1, "flags"),
     GVAR_FUNC(SIZE_FLAGS, 1, "flags"),
-    GVAR_FUNC(LEN_FLAGS, 1, "flags"),
-    GVAR_FUNC(ELM_FLAGS, 2, "flags, pos"),
     GVAR_FUNC(FLAG1_FILTER, 1, "oper"),
     GVAR_FUNC(SET_FLAG1_FILTER, 2, "oper, flag1"),
     GVAR_FUNC(FLAG2_FILTER, 1, "oper"),
