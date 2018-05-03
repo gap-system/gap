@@ -96,7 +96,6 @@ void SaveFlags (
 
     SaveSubObj(TRUES_FLAGS(flags));
     SaveSubObj(HASH_FLAGS(flags));
-    SaveSubObj(CONST_ADDR_OBJ(flags)[2]); /* length, as an object */
     SaveSubObj(AND_CACHE_FLAGS(flags));
 
     len = NRB_FLAGS(flags);
@@ -119,7 +118,6 @@ void LoadFlags(
 
     sub = LoadSubObj();  SET_TRUES_FLAGS( flags, sub );
     sub = LoadSubObj();  SET_HASH_FLAGS( flags, sub );
-    ADDR_OBJ(flags)[2] = LoadSubObj(); /* length, as an object */
     sub = LoadSubObj();  SET_AND_CACHE_FLAGS( flags, sub );
     
     len = NRB_FLAGS(flags);
