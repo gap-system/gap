@@ -2104,6 +2104,8 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
             CacheMissStatistics[(prec >= CACHE_SIZE) ? CACHE_SIZE : prec]
                                [n]++;
         }
+        if (prec > 0)
+            OperationNext++;
 #endif
 
         /* otherwise try to find one in the list of methods */
