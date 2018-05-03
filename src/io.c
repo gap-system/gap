@@ -246,7 +246,7 @@ static Char GET_NEXT_CHAR_NO_LC(void)
 
 Char PEEK_NEXT_CHAR(void)
 {
-    assert(IS_CHAR_PUSHBACK_EMPTY());
+    GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
 
     // store the current character
     IO()->Pushback = *STATE(In);

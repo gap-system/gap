@@ -128,7 +128,7 @@
 
 static void PushObj(Obj val)
 {
-    assert( val != 0 );
+    GAP_ASSERT( val != 0 );
     PushPlist( STATE(StackObj), val );
 }
 
@@ -162,7 +162,7 @@ static Obj PopObj(void)
     }
 
     // return the popped value (which must be non-void)
-    assert( val != 0 );
+    GAP_ASSERT( val != 0 );
     return val;
 }
 
@@ -181,7 +181,7 @@ static Obj PopVoidObj(void)
 
 static inline void StartFakeFuncExpr(Int startLine)
 {
-    assert(STATE(IntrCoding) == 0);
+    GAP_ASSERT(STATE(IntrCoding) == 0);
 
     // switch to coding mode now
     CodeBegin();
@@ -205,7 +205,7 @@ static inline void StartFakeFuncExpr(Int startLine)
 
 static inline void FinishAndCallFakeFuncExpr(void)
 {
-    assert(STATE(IntrCoding) == 0);
+    GAP_ASSERT(STATE(IntrCoding) == 0);
 
     // code a function expression (with one statement in the body)
     CodeFuncExprEnd(1);
@@ -265,8 +265,8 @@ void IntrBegin ( Obj frame )
     SET_LEN_PLIST( STATE(StackObj), 0 );
 
     /* must be in immediate (non-ignoring, non-coding) mode                */
-    assert( STATE(IntrIgnoring) == 0 );
-    assert( STATE(IntrCoding)   == 0 );
+    GAP_ASSERT( STATE(IntrIgnoring) == 0 );
+    GAP_ASSERT( STATE(IntrCoding)   == 0 );
 
     /* no return-statement was yet interpreted                             */
     STATE(IntrReturning) = 0;
@@ -291,11 +291,11 @@ ExecStatus IntrEnd (
         STATE(IntrReturning) = 0;
 
         /* must be back in immediate (non-ignoring, non-coding) mode       */
-        assert( STATE(IntrIgnoring) == 0 );
-        assert( STATE(IntrCoding)   == 0 );
+        GAP_ASSERT( STATE(IntrIgnoring) == 0 );
+        GAP_ASSERT( STATE(IntrCoding)   == 0 );
 
         /* and the stack must contain the result value (which may be void) */
-        assert( LEN_PLIST(STATE(StackObj)) == 1 );
+        GAP_ASSERT( LEN_PLIST(STATE(StackObj)) == 1 );
         STATE(IntrResult) = PopVoidObj();
 
     }
@@ -494,7 +494,7 @@ void IntrFuncExprEnd(UInt nr)
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert(STATE(IntrCoding) > 0);
+    GAP_ASSERT(STATE(IntrCoding) > 0);
 
     STATE(IntrCoding)--;
     CodeFuncExprEnd(nr);
@@ -697,7 +697,7 @@ void IntrForIn ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( STATE(IntrCoding) > 0 );
+    GAP_ASSERT( STATE(IntrCoding) > 0 );
     CodeForIn();
 }
 
@@ -708,7 +708,7 @@ void IntrForBeginBody ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( STATE(IntrCoding) > 0 );
+    GAP_ASSERT( STATE(IntrCoding) > 0 );
     CodeForBeginBody();
 }
 
@@ -720,7 +720,7 @@ void IntrForEndBody (
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert(STATE(IntrCoding) > 0);
+    GAP_ASSERT(STATE(IntrCoding) > 0);
     CodeForEndBody(nr);
 }
 
@@ -731,7 +731,7 @@ void IntrForEnd ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( STATE(IntrCoding) > 0 );
+    GAP_ASSERT( STATE(IntrCoding) > 0 );
 
     STATE(IntrCoding)--;
     CodeForEnd();
@@ -789,7 +789,7 @@ void            IntrWhileBeginBody ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( STATE(IntrCoding) > 0 );
+    GAP_ASSERT( STATE(IntrCoding) > 0 );
     CodeWhileBeginBody();
 }
 
@@ -801,7 +801,7 @@ void            IntrWhileEndBody (
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( STATE(IntrCoding) > 0 );
+    GAP_ASSERT( STATE(IntrCoding) > 0 );
     CodeWhileEndBody( nr );
 }
 
@@ -812,7 +812,7 @@ void            IntrWhileEnd ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( STATE(IntrCoding) > 0 );
+    GAP_ASSERT( STATE(IntrCoding) > 0 );
 
     STATE(IntrCoding)--;
     CodeWhileEnd();
@@ -896,7 +896,7 @@ void            IntrAtomicBeginBody ( UInt nrexprs )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert(STATE(IntrCoding) > 0);
+    GAP_ASSERT(STATE(IntrCoding) > 0);
     CodeAtomicBeginBody(nrexprs);
 }
 
@@ -908,7 +908,7 @@ void            IntrAtomicEndBody (
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     // must be coding
-    assert(STATE(IntrCoding) > 0);
+    GAP_ASSERT(STATE(IntrCoding) > 0);
     CodeAtomicEndBody(nrstats);
 }
 
@@ -919,7 +919,7 @@ void            IntrAtomicEnd ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert(STATE(IntrCoding) > 0);
+    GAP_ASSERT(STATE(IntrCoding) > 0);
 
     STATE(IntrCoding)--;
     CodeAtomicEnd();
@@ -977,7 +977,7 @@ void            IntrRepeatBeginBody ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( STATE(IntrCoding) > 0 );
+    GAP_ASSERT( STATE(IntrCoding) > 0 );
     CodeRepeatBeginBody();
 }
 
@@ -989,7 +989,7 @@ void            IntrRepeatEndBody (
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( STATE(IntrCoding) > 0 );
+    GAP_ASSERT( STATE(IntrCoding) > 0 );
     CodeRepeatEndBody( nr );
 }
 
@@ -1000,7 +1000,7 @@ void            IntrRepeatEnd ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( STATE(IntrCoding) > 0 );
+    GAP_ASSERT( STATE(IntrCoding) > 0 );
 
     STATE(IntrCoding)--;
     CodeRepeatEnd();
@@ -1124,7 +1124,7 @@ void            IntrQuit ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* 'quit' is not allowed in functions (by the reader)                  */
-    /* assert( STATE(IntrCoding) == 0 ); */
+    /* GAP_ASSERT( STATE(IntrCoding) == 0 ); */
     if ( STATE(IntrCoding) > 0 ) {
       SyntaxError("'quit;' cannot be used in this context");
     }
@@ -1152,7 +1152,7 @@ void            IntrQUIT ( void )
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
 
     /* 'quit' is not allowed in functions (by the reader)                  */
-    assert( STATE(IntrCoding) == 0 );
+    GAP_ASSERT( STATE(IntrCoding) == 0 );
 
     /* empty the values stack and push the void value                      */
     SET_LEN_PLIST( STATE(StackObj), 0 );

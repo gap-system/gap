@@ -1651,7 +1651,7 @@ static inline Int BreakLoopPending(void)
 
 static void UnInterruptExecStat(void)
 {
-    assert(STATE(CurrExecStatFuncs) != ExecStatFuncs);
+    GAP_ASSERT(STATE(CurrExecStatFuncs) != ExecStatFuncs);
     STATE(CurrExecStatFuncs) = ExecStatFuncs;
 }
 

@@ -241,7 +241,7 @@ static int MonitorsAreSorted(UInt count, Monitor ** monitors)
 void LockMonitors(UInt count, Monitor ** monitors)
 {
     UInt i;
-    assert(MonitorsAreSorted(count, monitors));
+    GAP_ASSERT(MonitorsAreSorted(count, monitors));
     for (i = 0; i < count; i++)
         LockMonitor(monitors[i]);
 }
@@ -277,7 +277,7 @@ UInt WaitForAnyMonitor(UInt count, Monitor ** monitors)
     Monitor *         monitor;
     UInt              i;
     Int               result;
-    assert(MonitorsAreSorted(count, monitors));
+    GAP_ASSERT(MonitorsAreSorted(count, monitors));
     nodes = alloca(sizeof(struct WaitList) * count);
     for (i = 0; i < count; i++)
         nodes[i].thread = GetTLS();

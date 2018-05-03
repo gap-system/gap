@@ -75,7 +75,7 @@ static void MergeSortRecurse(char * data,
                              int (*lessThan)(const void * a, const void *))
 {
     UInt nleft, nright;
-    /* assert(count > 1); */
+    /* GAP_ASSERT(count > 1); */
     if (count == 2) {
         if (!lessThan(data, data + width)) {
             memcpy(aux, data, width);

@@ -193,7 +193,7 @@ Obj Func8Bits_ExponentSums3 (
             /* this will not cause a garbage collection                    */
             exp = exp + (Int) ELM_PLIST( sums, pos-start+1 );
             SET_ELM_PLIST( sums, pos-start+1, (Obj) exp );
-            assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
+            GAP_ASSERT( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
         }
     }
 
@@ -304,7 +304,7 @@ Obj Func8Bits_ExtRepOfObj (
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT(((*ptr)&expm)-exps) );
         else
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT((*ptr)&expm) );
-        assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
+        GAP_ASSERT( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(lst);
 
@@ -564,7 +564,7 @@ Obj Func8Bits_AssocWord (
         }
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
-        assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
+        GAP_ASSERT( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -625,7 +625,7 @@ Obj Func8Bits_ObjByVector (
         vexp = ELMW_LIST( data, j );
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((j-1) << ebits) | nexp;
-        assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
+        GAP_ASSERT( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -1172,7 +1172,7 @@ Obj Func16Bits_ExponentSums3 (
             /* this will not cause a garbage collection                    */
             exp = exp + (Int) ELM_PLIST( sums, pos-start+1 );
             SET_ELM_PLIST( sums, pos-start+1, (Obj) exp );
-            assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
+            GAP_ASSERT( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
         }
     }
 
@@ -1283,7 +1283,7 @@ Obj Func16Bits_ExtRepOfObj (
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT(((*ptr)&expm)-exps) );
         else
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT((*ptr)&expm) );
-        assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
+        GAP_ASSERT( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(lst);
 
@@ -1522,7 +1522,7 @@ Obj Func16Bits_AssocWord (
         }
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
-        assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
+        GAP_ASSERT( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -1583,7 +1583,7 @@ Obj Func16Bits_ObjByVector (
         vexp = ELMW_LIST( data, j );
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((j-1) << ebits) | nexp;
-        assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
+        GAP_ASSERT( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -2130,7 +2130,7 @@ Obj Func32Bits_ExponentSums3 (
             /* this will not cause a garbage collection                    */
             exp = exp + (Int) ELM_PLIST( sums, pos-start+1 );
             SET_ELM_PLIST( sums, pos-start+1, (Obj) exp );
-            assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
+            GAP_ASSERT( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
         }
     }
 
@@ -2241,7 +2241,7 @@ Obj Func32Bits_ExtRepOfObj (
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT(((*ptr)&expm)-exps) );
         else
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT((*ptr)&expm) );
-        assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
+        GAP_ASSERT( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(lst);
 
@@ -2480,7 +2480,7 @@ Obj Func32Bits_AssocWord (
         }
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
-        assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
+        GAP_ASSERT( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -2541,7 +2541,7 @@ Obj Func32Bits_ObjByVector (
         vexp = ELMW_LIST( data, j );
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((j-1) << ebits) | nexp;
-        assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
+        GAP_ASSERT( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 

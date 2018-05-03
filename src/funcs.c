@@ -1014,7 +1014,7 @@ void            ExecEnd (
     if ( ! error ) {
 
         /* the state must be primal again                                  */
-        assert( STATE(CurrStat)  == 0 );
+        GAP_ASSERT( STATE(CurrStat)  == 0 );
 
     }
 

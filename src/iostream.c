@@ -245,7 +245,7 @@ static void ChildStatusChanged(int whichsig)
     UInt i;
     int  status;
     int  retcode;
-    assert(whichsig == SIGCHLD);
+    GAP_ASSERT(whichsig == SIGCHLD);
     HashLock(PtyIOStreams);
     for (i = 0; i < MAX_PTYS; i++) {
         if (PtyIOStreams[i].inuse) {

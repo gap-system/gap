@@ -254,7 +254,7 @@ void LoadCStr( Char *buf, UInt maxsize)
 {
   UInt nread = 0;
   UInt1 c = 1;
-  assert(maxsize > 0);
+  GAP_ASSERT(maxsize > 0);
   while (c != '\0' && nread < maxsize )
     {
       c = LOAD_BYTE();

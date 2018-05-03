@@ -1855,14 +1855,14 @@ Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     if (k == name) {                                                         \
         Pr("%3d: %s", k, (Int)indentStr);                                    \
         Pr("%s" #name "\n", (Int)indentStr, 0);                              \
-        assert(indentLvl + 1 < sizeof(indentStr));                           \
+        GAP_ASSERT(indentLvl + 1 < sizeof(indentStr));                           \
         indentStr[indentLvl++] = ' ';                                        \
         indentStr[indentLvl] = 0;                                            \
     }
 
 #define STOP_SYMBOLIC_TNUM(name)                                             \
     if (k == name) {                                                         \
-        assert(indentLvl > 0);                                               \
+        GAP_ASSERT(indentLvl > 0);                                               \
         indentStr[--indentLvl] = 0;                                          \
         Pr("%3d: %s", k, (Int)indentStr);                                    \
         Pr("%s" #name "\n", (Int)indentStr, 0);                              \
@@ -2024,7 +2024,7 @@ static Int InitKernel (
 #endif
 
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
-        assert(TypeObjFuncs[ t ] == 0);
+        GAP_ASSERT(TypeObjFuncs[ t ] == 0);
         TypeObjFuncs[ t ] = TypeObjError;
         SetTypeObjFuncs [ t] = SetTypeObjError;
     }
@@ -2049,7 +2049,7 @@ static Int InitKernel (
 
     /* make and install the 'IS_MUTABLE_OBJ' filter                        */
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
-        assert(IsMutableObjFuncs[ t ] == 0);
+        GAP_ASSERT(IsMutableObjFuncs[ t ] == 0);
         IsMutableObjFuncs[ t ] = IsMutableObjError;
     }
     for ( t = FIRST_CONSTANT_TNUM; t <= LAST_CONSTANT_TNUM; t++ )
@@ -2059,7 +2059,7 @@ static Int InitKernel (
 
     /* make and install the 'IS_COPYABLE_OBJ' filter                       */
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
-        assert(IsCopyableObjFuncs[ t ] == 0);
+        GAP_ASSERT(IsCopyableObjFuncs[ t ] == 0);
         IsCopyableObjFuncs[ t ] = IsCopyableObjError;
     }
     for ( t = FIRST_CONSTANT_TNUM; t <= LAST_CONSTANT_TNUM; t++ )
@@ -2069,7 +2069,7 @@ static Int InitKernel (
 
     /* make and install the 'SHALLOW_COPY_OBJ' operation                   */
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
-        assert(ShallowCopyObjFuncs[ t ] == 0);
+        GAP_ASSERT(ShallowCopyObjFuncs[ t ] == 0);
         ShallowCopyObjFuncs[ t ] = ShallowCopyObjError;
     }
     for ( t = FIRST_CONSTANT_TNUM; t <= LAST_CONSTANT_TNUM; t++ )
@@ -2088,9 +2088,9 @@ static Int InitKernel (
 #else
     /* make and install the 'COPY_OBJ' function                            */
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
-        assert(CopyObjFuncs [ t ] == 0);
+        GAP_ASSERT(CopyObjFuncs [ t ] == 0);
         CopyObjFuncs [ t ] = CopyObjError;
-        assert(CleanObjFuncs[ t ] == 0);
+        GAP_ASSERT(CleanObjFuncs[ t ] == 0);
         CleanObjFuncs[ t ] = CleanObjError;
     }
     for ( t = FIRST_CONSTANT_TNUM; t <= LAST_CONSTANT_TNUM; t++ ) {
@@ -2113,21 +2113,21 @@ static Int InitKernel (
 
     /* make and install the 'PRINT_OBJ' operation                          */
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
-        assert(PrintObjFuncs[ t ] == 0);
+        GAP_ASSERT(PrintObjFuncs[ t ] == 0);
         PrintObjFuncs[ t ] = PrintObjObject;
     }
 
     /* enter 'PrintUnknownObj' in the dispatching tables                   */
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
-        assert(PrintPathFuncs[ t ] == 0);
+        GAP_ASSERT(PrintPathFuncs[ t ] == 0);
         PrintPathFuncs[ t ] = PrintPathError;
     }
 
     /* enter 'SaveObjError' and 'LoadObjError' for all types initially     */
     for ( t = FIRST_REAL_TNUM;  t <= LAST_REAL_TNUM;  t++ ) {
-        assert(SaveObjFuncs[ t ] == 0);
+        GAP_ASSERT(SaveObjFuncs[ t ] == 0);
         SaveObjFuncs[ t ] = SaveObjError;
-        assert(LoadObjFuncs[ t ] == 0);
+        GAP_ASSERT(LoadObjFuncs[ t ] == 0);
         LoadObjFuncs[ t ] = LoadObjError;
     }
   
@@ -2142,7 +2142,7 @@ static Int InitKernel (
     LoadObjFuncs[ T_DATOBJ ] = LoadDatObj;
 
     for (t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
-        assert(MakeImmutableObjFuncs[ t ] == 0);
+        GAP_ASSERT(MakeImmutableObjFuncs[ t ] == 0);
         MakeImmutableObjFuncs[t] = MakeImmutableError;
     }
     

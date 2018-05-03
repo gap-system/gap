@@ -107,7 +107,7 @@ void PushGlobalForLoopVariable( UInt var)
 
 void PopGlobalForLoopVariable( void )
 {
-  assert(STATE(CurrentGlobalForLoopDepth));
+  GAP_ASSERT(STATE(CurrentGlobalForLoopDepth));
   STATE(CurrentGlobalForLoopDepth)--;
 }
 

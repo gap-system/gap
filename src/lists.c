@@ -2351,7 +2351,7 @@ static Int InitKernel (
 
     /* make and install the 'IS_LIST' filter                               */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(IsListFuncs[ type ] == 0);
+        GAP_ASSERT(IsListFuncs[ type ] == 0);
         IsListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
@@ -2364,7 +2364,7 @@ static Int InitKernel (
     /* make and install the 'IS_SMALL_LIST' filter                   */
     /* non-lists are not small lists */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(IsSmallListFuncs[ type ] == 0);
+        GAP_ASSERT(IsSmallListFuncs[ type ] == 0);
         IsSmallListFuncs[ type ] = AlwaysNo;
     }
     /* internal lists ARE small lists */
@@ -2379,7 +2379,7 @@ static Int InitKernel (
 
     /* make and install the 'LEN_LIST' function                            */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(LenListFuncs[ type ] == 0);
+        GAP_ASSERT(LenListFuncs[ type ] == 0);
         LenListFuncs[ type ] = LenListError;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
@@ -2388,7 +2388,7 @@ static Int InitKernel (
 
     /* make and install the 'LENGTH' function                            */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(LengthFuncs[ type ] == 0);
+        GAP_ASSERT(LengthFuncs[ type ] == 0);
         LengthFuncs[ type ] = LengthError;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
@@ -2409,9 +2409,9 @@ static Int InitKernel (
 
     /* make and install the 'ELM0_LIST' operation                          */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(Elm0ListFuncs[  type ] == 0);
+        GAP_ASSERT(Elm0ListFuncs[  type ] == 0);
         Elm0ListFuncs[  type ] = Elm0ListError;
-        assert(Elm0vListFuncs[ type ] == 0);
+        GAP_ASSERT(Elm0vListFuncs[ type ] == 0);
         Elm0vListFuncs[ type ] = Elm0ListError;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
@@ -2432,11 +2432,11 @@ static Int InitKernel (
 
     /* make and install the 'ELM_LIST' operation                           */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(ElmListFuncs[  type ] == 0);
+        GAP_ASSERT(ElmListFuncs[  type ] == 0);
         ElmListFuncs[  type ] = ElmListError;
-        assert(ElmvListFuncs[ type ] == 0);
+        GAP_ASSERT(ElmvListFuncs[ type ] == 0);
         ElmvListFuncs[ type ] = ElmListError;
-        assert(ElmwListFuncs[ type ] == 0);
+        GAP_ASSERT(ElmwListFuncs[ type ] == 0);
         ElmwListFuncs[ type ] = ElmListError;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
@@ -2448,7 +2448,7 @@ static Int InitKernel (
 
     /* make and install the 'ELMS_LIST' operation                          */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(ElmsListFuncs[ type ] == 0);
+        GAP_ASSERT(ElmsListFuncs[ type ] == 0);
         ElmsListFuncs[ type ] = ElmsListError;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
@@ -2461,7 +2461,7 @@ static Int InitKernel (
 
     /* make and install the 'UNB_LIST' operation                           */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(UnbListFuncs[ type ] == 0);
+        GAP_ASSERT(UnbListFuncs[ type ] == 0);
         UnbListFuncs[ type ] = UnbListError;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
@@ -2474,7 +2474,7 @@ static Int InitKernel (
 
     /* make and install the 'ASS_LIST' operation                           */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(AssListFuncs[ type ] == 0);
+        GAP_ASSERT(AssListFuncs[ type ] == 0);
         AssListFuncs[ type ] = AssListError;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
@@ -2487,7 +2487,7 @@ static Int InitKernel (
 
     /* make and install the 'ASSS_LIST' operation                          */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(AsssListFuncs[ type ] == 0);
+        GAP_ASSERT(AsssListFuncs[ type ] == 0);
         AsssListFuncs[ type ] = AsssListError;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
@@ -2500,7 +2500,7 @@ static Int InitKernel (
 
     /* make and install the 'IS_DENSE_LIST' filter                         */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(IsDenseListFuncs[ type ] == 0);
+        GAP_ASSERT(IsDenseListFuncs[ type ] == 0);
         IsDenseListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
@@ -2513,7 +2513,7 @@ static Int InitKernel (
 
     /* make and install the 'IS_HOMOG_LIST' filter                         */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(IsHomogListFuncs[ type ] == 0);
+        GAP_ASSERT(IsHomogListFuncs[ type ] == 0);
         IsHomogListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
@@ -2526,7 +2526,7 @@ static Int InitKernel (
 
     /* make and install the 'IS_TABLE_LIST' filter                         */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(IsTableListFuncs[ type ] == 0);
+        GAP_ASSERT(IsTableListFuncs[ type ] == 0);
         IsTableListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
@@ -2539,7 +2539,7 @@ static Int InitKernel (
 
     /* make and install the 'IS_SSORT_LIST' property                       */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(IsSSortListFuncs[ type ] == 0);
+        GAP_ASSERT(IsSSortListFuncs[ type ] == 0);
         IsSSortListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
@@ -2552,7 +2552,7 @@ static Int InitKernel (
 
     /* make and install the 'IS_POSS_LIST' property                        */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(IsPossListFuncs[ type ] == 0);
+        GAP_ASSERT(IsPossListFuncs[ type ] == 0);
         IsPossListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
@@ -2565,7 +2565,7 @@ static Int InitKernel (
 
     /* make and install the 'POS_LIST' operation                           */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(PosListFuncs[ type ] == 0);
+        GAP_ASSERT(PosListFuncs[ type ] == 0);
         PosListFuncs[ type ] = PosListError;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
@@ -2578,7 +2578,7 @@ static Int InitKernel (
 
     /* install the error functions into the other tables                   */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(PlainListFuncs [ type ] == 0);
+        GAP_ASSERT(PlainListFuncs [ type ] == 0);
         PlainListFuncs [ type ] = PlainListError;
     }
 

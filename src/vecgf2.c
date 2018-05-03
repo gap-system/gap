@@ -3853,7 +3853,7 @@ void AddShiftedVecGF2VecGF2( Obj vec1, Obj vec2, UInt len2, UInt off )
 	  *ptr1++ ^= block << shift1;
 	  if (len2 % BIPEB + off % BIPEB > BIPEB)
 	    {
-	      assert(ptr1 < BLOCKS_GF2VEC(vec1) + (LEN_GF2VEC(vec1) + BIPEB -1)/BIPEB);
+	      GAP_ASSERT(ptr1 < BLOCKS_GF2VEC(vec1) + (LEN_GF2VEC(vec1) + BIPEB -1)/BIPEB);
 	      *ptr1 ^= block >> shift2;
 	    }
 	}
@@ -3994,7 +3994,7 @@ void ReduceCoeffsGF2Vec( Obj vec1, Obj vec2, UInt len2, Obj quotient )
 	  if (qptr)
 	    qptr[(j-1)/BIPEB] |= MASK_POS_GF2VEC(j);
 	}
-      assert(!(*ptr & ((UInt)1<<e)));
+      GAP_ASSERT(!(*ptr & ((UInt)1<<e)));
       if (e == 0)
 	{
 	  e = BIPEB -1;

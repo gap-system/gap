@@ -76,12 +76,12 @@ Obj FilenameCache;
 /* TL: UInt OffsBodyCount = 0; */
 
 static inline void PushOffsBody( void ) {
-  assert(STATE(OffsBodyCount) <= MAX_FUNC_EXPR_NESTING-1);
+  GAP_ASSERT(STATE(OffsBodyCount) <= MAX_FUNC_EXPR_NESTING-1);
   STATE(OffsBodyStack)[STATE(OffsBodyCount)++] = STATE(OffsBody);
 }
 
 static inline void PopOffsBody( void ) {
-  assert(STATE(OffsBodyCount));
+  GAP_ASSERT(STATE(OffsBodyCount));
   STATE(OffsBody) = STATE(OffsBodyStack)[--STATE(OffsBodyCount)];
 }
 
@@ -292,10 +292,10 @@ static void PushStat (
     Stat                stat )
 {
     /* there must be a stack, it must not be underfull or overfull         */
-    assert( STATE(StackStat) != 0 );
-    assert( 0 <= STATE(CountStat) );
-    assert( STATE(CountStat) <= CapacityStatStack() );
-    assert( stat != 0 );
+    GAP_ASSERT( STATE(StackStat) != 0 );
+    GAP_ASSERT( 0 <= STATE(CountStat) );
+    GAP_ASSERT( STATE(CountStat) <= CapacityStatStack() );
+    GAP_ASSERT( stat != 0 );
 
     // count up and put the statement onto the stack
     if ( STATE(CountStat) == CapacityStatStack() ) {
@@ -313,9 +313,9 @@ static Stat PopStat ( void )
     Stat                stat;
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
-    assert( STATE(StackStat) != 0 );
-    assert( 1 <= STATE(CountStat) );
-    assert( STATE(CountStat) <= CapacityStatStack() );
+    GAP_ASSERT( STATE(StackStat) != 0 );
+    GAP_ASSERT( 1 <= STATE(CountStat) );
+    GAP_ASSERT( STATE(CountStat) <= CapacityStatStack() );
 
     /* get the top statement from the stack, and count down                */
     STATE(CountStat)--;
@@ -417,10 +417,10 @@ static inline UInt CapacityStackExpr(void)
 static void PushExpr(Expr expr)
 {
     /* there must be a stack, it must not be underfull or overfull         */
-    assert( STATE(StackExpr) != 0 );
-    assert( 0 <= STATE(CountExpr) );
-    assert( STATE(CountExpr) <= CapacityStackExpr() );
-    assert( expr != 0 );
+    GAP_ASSERT( STATE(StackExpr) != 0 );
+    GAP_ASSERT( 0 <= STATE(CountExpr) );
+    GAP_ASSERT( STATE(CountExpr) <= CapacityStackExpr() );
+    GAP_ASSERT( expr != 0 );
 
     /* count up and put the expression onto the stack                      */
     if ( STATE(CountExpr) == CapacityStackExpr() ) {
@@ -437,9 +437,9 @@ static Expr PopExpr(void)
     Expr                expr;
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
-    assert( STATE(StackExpr) != 0 );
-    assert( 1 <= STATE(CountExpr) );
-    assert( STATE(CountExpr) <= CapacityStackExpr() );
+    GAP_ASSERT( STATE(StackExpr) != 0 );
+    GAP_ASSERT( 1 <= STATE(CountExpr) );
+    GAP_ASSERT( STATE(CountExpr) <= CapacityStackExpr() );
 
     /* get the top expression from the stack, and count down               */
     STATE(CountExpr)--;
@@ -597,8 +597,8 @@ void            CodeFuncCallOptionsEnd ( UInt nr )
 void CodeBegin ( void )
 {
     /* the stacks must be empty                                            */
-    assert( STATE(CountStat) == 0 );
-    assert( STATE(CountExpr) == 0 );
+    GAP_ASSERT( STATE(CountStat) == 0 );
+    GAP_ASSERT( STATE(CountExpr) == 0 );
 
     /* remember the current frame                                          */
     STATE(CodeLVars) = STATE(CurrLVars);
@@ -614,11 +614,11 @@ UInt CodeEnd (
     if ( ! error ) {
 
         /* the stacks must be empty                                        */
-        assert( STATE(CountStat) == 0 );
-        assert( STATE(CountExpr) == 0 );
+        GAP_ASSERT( STATE(CountStat) == 0 );
+        GAP_ASSERT( STATE(CountExpr) == 0 );
 
         /* we must be back to 'STATE(CurrLVars)'                                  */
-        assert( STATE(CurrLVars) == STATE(CodeLVars) );
+        GAP_ASSERT( STATE(CurrLVars) == STATE(CodeLVars) );
 
         /* 'CodeFuncExprEnd' left the function already in 'STATE(CodeResult)'     */
     }
@@ -786,7 +786,11 @@ void CodeFuncExprBegin (
 
     /* allocate the top level statement sequence                           */
     stat1 = NewStat( T_SEQ_STAT, 8*sizeof(Stat) );
-    assert( stat1 == OFFSET_FIRST_STAT );
+
+    /* Cast to void to avoid warning when asserts are disabled             */
+    (void)stat1;
+
+    GAP_ASSERT( stat1 == OFFSET_FIRST_STAT );
 }
 
 void CodeFuncExprEnd(UInt nr)
@@ -800,6 +804,7 @@ void CodeFuncExprEnd(UInt nr)
 
     /* get the function expression                                         */
     fexp = CURR_FUNC();
+    GAP_ASSERT(!STATE(LoopNesting));
     
     /* get the body of the function                                        */
     /* push an additional return-void-statement if neccessary              */
@@ -1791,7 +1796,7 @@ static UInt getNextFloatExprNumber(void)
 {
     UInt next;
     HashLock(&NextFloatExprNumber);
-    assert(NextFloatExprNumber < MAX_FLOAT_INDEX);
+    GAP_ASSERT(NextFloatExprNumber < MAX_FLOAT_INDEX);
     next = NextFloatExprNumber++;
     HashUnlock(&NextFloatExprNumber);
     return next;
@@ -1826,7 +1831,7 @@ static UInt CheckForCommonFloat(Char * str)
     if (IsDigit(*str))
         return 0;
     /* must now be an exponent character */
-    assert(IsAlpha(*str));
+    GAP_ASSERT(IsAlpha(*str));
     /* skip it */
     str++;
     /*skip + and - in exponent */
@@ -1869,12 +1874,12 @@ static void CodeEagerFloatExpr(Obj str, Char mark)
     Expr fl = NewExpr(T_FLOAT_EXPR_EAGER, sizeof(UInt) * 3 + l + 1);
     Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
     UInt ix;
-    assert(EAGER_FLOAT_LITERAL_CACHE);
+    GAP_ASSERT(EAGER_FLOAT_LITERAL_CACHE);
 #ifdef HPCGAP
-    assert(TNUM_OBJ(EAGER_FLOAT_LITERAL_CACHE) == T_ALIST);
+    GAP_ASSERT(TNUM_OBJ(EAGER_FLOAT_LITERAL_CACHE) == T_ALIST);
     ix = AddAList(EAGER_FLOAT_LITERAL_CACHE, v);
 #else
-    assert(IS_PLIST(EAGER_FLOAT_LITERAL_CACHE));
+    GAP_ASSERT(IS_PLIST(EAGER_FLOAT_LITERAL_CACHE));
     ix = PushPlist(EAGER_FLOAT_LITERAL_CACHE, v);
 #endif
     ADDR_EXPR(fl)[0] = ix;

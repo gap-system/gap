@@ -337,13 +337,13 @@ Obj NargError(Obj func, Int actual)
   Int narg = NARG_FUNC(func);
 
   if (narg >= 0) {
-    assert(narg != actual);
+    GAP_ASSERT(narg != actual);
     return ErrorReturnObj(
 			  "Function: number of arguments must be %d (not %d)",
 			  narg, actual,
 			  "you can replace the argument list <args> via 'return <args>;'" );
   } else {
-    assert(-narg-1 > actual);
+    GAP_ASSERT(-narg-1 > actual);
     return ErrorReturnObj(
         "Function: number of arguments must be at least %d (not %d)",
         -narg-1, actual,
