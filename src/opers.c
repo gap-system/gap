@@ -437,8 +437,6 @@ Obj FuncIS_EQUAL_FLAGS (
 
 #ifdef COUNT_OPERS
 static Int IsSubsetFlagsCalls;
-static Int IsSubsetFlagsCalls1;
-static Int IsSubsetFlagsCalls2;
 #endif
 
 /****************************************************************************
@@ -452,49 +450,10 @@ static Int IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
     UInt * ptr1;
     UInt * ptr2;
     Int    i;
-    Obj    trues;
 
-/* do the real work                                                    */
 #ifdef COUNT_OPERS
     IsSubsetFlagsCalls++;
 #endif
-
-    /* first check the trues                                               */
-    trues = TRUES_FLAGS(flags2);
-    if (trues != 0) {
-        len2 = LEN_PLIST(trues);
-        if (TRUES_FLAGS(flags1) != 0) {
-            if (LEN_PLIST(TRUES_FLAGS(flags1)) < len2) {
-#ifdef COUNT_OPERS
-                IsSubsetFlagsCalls1++;
-#endif
-                return 0;
-            }
-        }
-        if (len2 == 0) {
-            return 1;
-        }
-
-        /* If flags2 has only a "few" set bits then the best way is to
-           simply check if those bits are set in flags1. The optimal
-           value of "few" depends on compilers, hardware and the
-           length of flags1. Experiments in 2017 suggest that it is
-           somewhere between 10 and 20 for current setups. */
-        if (len2 < 16) {
-#ifdef COUNT_OPERS
-            IsSubsetFlagsCalls2++;
-#endif
-            if (LEN_FLAGS(flags1) < INT_INTOBJ(ELM_PLIST(trues, len2))) {
-                return 0;
-            }
-            for (i = len2; 0 < i; i--) {
-                if (!C_ELM_FLAGS(flags1, INT_INTOBJ(ELM_PLIST(trues, i)))) {
-                    return 0;
-                }
-            }
-            return 1;
-        }
-    }
 
     /* compare the bit lists                                               */
     len1 = NRB_FLAGS(flags1);
@@ -3808,8 +3767,8 @@ Obj FuncOPERS_CACHE_INFO (
     Obj                 list;
     Int                 i;
 
-    list = NEW_PLIST_IMM(T_PLIST, 15);
-    SET_LEN_PLIST(list, 15);
+    list = NEW_PLIST_IMM(T_PLIST, 13);
+    SET_LEN_PLIST(list, 13);
 #ifdef COUNT_OPERS
     SET_ELM_PLIST(list, 1, INTOBJ_INT(AndFlagsCacheHit));
     SET_ELM_PLIST(list, 2, INTOBJ_INT(AndFlagsCacheMiss));
@@ -3818,12 +3777,10 @@ Obj FuncOPERS_CACHE_INFO (
     SET_ELM_PLIST(list, 5, INTOBJ_INT(OperationNext));
     SET_ELM_PLIST(list, 6, INTOBJ_INT(OperationMiss));
     SET_ELM_PLIST(list, 7, INTOBJ_INT(IsSubsetFlagsCalls));
-    SET_ELM_PLIST(list, 8, INTOBJ_INT(IsSubsetFlagsCalls1));
-    SET_ELM_PLIST(list, 9, INTOBJ_INT(IsSubsetFlagsCalls2));
-    SET_ELM_PLIST(list, 10, INTOBJ_INT(WITH_HIDDEN_IMPS_HIT));
-    SET_ELM_PLIST(list, 11, INTOBJ_INT(WITH_HIDDEN_IMPS_MISS));
-    SET_ELM_PLIST(list, 12, INTOBJ_INT(WITH_IMPS_FLAGS_HIT));
-    SET_ELM_PLIST(list, 13, INTOBJ_INT(WITH_IMPS_FLAGS_MISS));
+    SET_ELM_PLIST(list, 8, INTOBJ_INT(WITH_HIDDEN_IMPS_HIT));
+    SET_ELM_PLIST(list, 9, INTOBJ_INT(WITH_HIDDEN_IMPS_MISS));
+    SET_ELM_PLIST(list, 10, INTOBJ_INT(WITH_IMPS_FLAGS_HIT));
+    SET_ELM_PLIST(list, 11, INTOBJ_INT(WITH_IMPS_FLAGS_MISS));
     
     /* Now we need to convert the 3d matrix of cache hit counts (by
        precedence, location found and number of arguments) into a three
@@ -3846,7 +3803,7 @@ Obj FuncOPERS_CACHE_INFO (
                     INTOBJ_INT(CacheHitStatistics[i - 1][j - 1][k]));
         }
     }
-    SET_ELM_PLIST(list, 14, tensor);
+    SET_ELM_PLIST(list, 12, tensor);
     CHANGED_BAG(list);
 
     /* and similarly the 2D matrix of cache miss information (by
@@ -3862,10 +3819,10 @@ Obj FuncOPERS_CACHE_INFO (
             SET_ELM_PLIST(vec, k + 1,
                           INTOBJ_INT(CacheMissStatistics[j - 1][k]));
     }
-    SET_ELM_PLIST(list, 15, mat);
+    SET_ELM_PLIST(list, 13, mat);
     CHANGED_BAG(list);
 #else
-    for (i = 1; i <= 15; i++)
+    for (i = 1; i <= 13; i++)
         SET_ELM_PLIST(list, i, INTOBJ_INT(0));
 #endif
     return list;
@@ -3886,8 +3843,6 @@ Obj FuncCLEAR_CACHE_INFO (
     OperationHit = 0;
     OperationMiss = 0;
     IsSubsetFlagsCalls = 0;
-    IsSubsetFlagsCalls1 = 0;
-    IsSubsetFlagsCalls2 = 0;
     OperationNext = 0;
     WITH_HIDDEN_IMPS_HIT = 0;
     WITH_HIDDEN_IMPS_MISS = 0;

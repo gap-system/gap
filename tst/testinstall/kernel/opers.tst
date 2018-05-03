@@ -272,7 +272,7 @@ Error, <obj> must be a component object
 #
 gap> CLEAR_CACHE_INFO();
 gap> OPERS_CACHE_INFO();
-[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
 
 #
 # method tracing
