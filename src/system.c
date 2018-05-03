@@ -20,6 +20,7 @@
 */
 
 #include <src/system.h>
+#include <src/debug.h>
 
 #include <src/gaputils.h>
 #ifdef GAP_MEM_CHECK
@@ -477,7 +478,7 @@ size_t strxcpy (
     size_t len)
 {
     size_t res = strlcpy(dst, src, len);
-    assert(res < len);
+    GAP_ASSERT(res < len);
     return res;
 }
 
@@ -487,7 +488,7 @@ size_t strxcat (
     size_t len)
 {
     size_t res = strlcat(dst, src, len);
-    assert(res < len);
+    GAP_ASSERT(res < len);
     return res;
 }
 
@@ -498,7 +499,7 @@ size_t strxncat (
     size_t n)
 {
     size_t res = strlncat(dst, src, len, n);
-    assert(res < len);
+    GAP_ASSERT(res < len);
     return res;
 }
 

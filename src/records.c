@@ -670,7 +670,7 @@ static Int InitKernel (
 
     /* make and install the 'IS_REC' filter                                */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(IsRecFuncs[ type ] == 0);
+        GAP_ASSERT(IsRecFuncs[ type ] == 0);
         IsRecFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_RECORD_TNUM; type <= LAST_RECORD_TNUM; type++ ) {
@@ -683,7 +683,7 @@ static Int InitKernel (
 
     /* make and install the 'ELM_REC' operations                           */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(ElmRecFuncs[ type ] == 0);
+        GAP_ASSERT(ElmRecFuncs[ type ] == 0);
         ElmRecFuncs[ type ] = ElmRecError;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
@@ -693,7 +693,7 @@ static Int InitKernel (
 
     /* make and install the 'ISB_REC' operation                            */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(IsbRecFuncs[ type ] == 0);
+        GAP_ASSERT(IsbRecFuncs[ type ] == 0);
         IsbRecFuncs[ type ] = IsbRecError;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
@@ -703,7 +703,7 @@ static Int InitKernel (
 
     /* make and install the 'ASS_REC' operation                            */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(AssRecFuncs[ type ] == 0);
+        GAP_ASSERT(AssRecFuncs[ type ] == 0);
         AssRecFuncs[ type ] = AssRecError;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
@@ -713,7 +713,7 @@ static Int InitKernel (
 
     /* make and install the 'UNB_REC' operation                            */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
-        assert(UnbRecFuncs[ type ] == 0);
+        GAP_ASSERT(UnbRecFuncs[ type ] == 0);
         UnbRecFuncs[ type ] = UnbRecError;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {

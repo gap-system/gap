@@ -1218,7 +1218,7 @@ Obj             EvalFloatExprLazy (
                MAX_FLOAT_LITERAL_CACHE_SIZE == INTOBJ_INT(0) ||
                ix <= INT_INTOBJ(MAX_FLOAT_LITERAL_CACHE_SIZE))) {
       cache = FLOAT_LITERAL_CACHE;
-      assert(cache);
+      GAP_ASSERT(cache);
       fl = ELM0_LIST(cache, ix);
       if (fl)
         return fl;

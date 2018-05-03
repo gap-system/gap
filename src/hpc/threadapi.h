@@ -33,7 +33,7 @@ StructInitInfo *InitInfoThreadAPI(void);
 
 static inline Monitor *MonitorPtr(Obj obj)
 {
-  assert(TNUM_OBJ(obj) == T_MONITOR);
+  GAP_ASSERT(TNUM_OBJ(obj) == T_MONITOR);
   return (Monitor *)(PTR_BAG(obj));
 }
 Obj NewMonitor(void);

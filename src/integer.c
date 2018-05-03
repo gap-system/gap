@@ -386,7 +386,7 @@ static inline void UPDATE_FAKEMPZ( fake_mpz_t fake )
 /* some extra debugging tools for FAKMPZ objects */
 #if DEBUG_GMP
 #define CHECK_FAKEMPZ(fake) \
-    assert( ((fake)->v->_mp_d == ((fake)->obj ? ADDR_INT((fake)->obj) : &(fake)->tmp )) \
+    GAP_ASSERT( ((fake)->v->_mp_d == ((fake)->obj ? ADDR_INT((fake)->obj) : &(fake)->tmp )) \
         &&  (fake->v->_mp_alloc == ((fake)->obj ? SIZE_INT((fake)->obj) : 1 )) )
 #else
 #define CHECK_FAKEMPZ(fake)  do { } while(0);
@@ -545,7 +545,7 @@ Obj ObjInt_Int8( Int8 i )
   }
 
   /* we need two limbs to store this integer */
-  assert( sizeof(mp_limb_t) == 4 );
+  GAP_ASSERT( sizeof(mp_limb_t) == 4 );
   Obj gmp;
   if (i >= 0) {
      gmp = NewBag( T_INTPOS, 2 * sizeof(mp_limb_t) );
@@ -571,7 +571,7 @@ Obj ObjInt_UInt8( UInt8 i )
   }
 
   /* we need two limbs to store this integer */
-  assert( sizeof(mp_limb_t) == 4 );
+  GAP_ASSERT( sizeof(mp_limb_t) == 4 );
   Obj gmp = NewBag( T_INTPOS, 2 * sizeof(mp_limb_t) );
   mp_limb_t *ptr = ADDR_INT(gmp);
   ptr[0] = (UInt4)i;
@@ -1808,7 +1808,7 @@ Obj ModInt(Obj opL, Obj opR)
       else
         mod = SumOrDiffInt( opL, opR, -1 );
 #if DEBUG_GMP
-      assert( !IS_NEG_INT(mod) );
+      GAP_ASSERT( !IS_NEG_INT(mod) );
 #endif
       CHECK_INT(mod);
       return mod;
@@ -1840,7 +1840,7 @@ Obj ModInt(Obj opL, Obj opR)
   
   /* return the result                                                     */
 #if DEBUG_GMP
-  assert( !IS_NEG_INT(mod) );
+  GAP_ASSERT( !IS_NEG_INT(mod) );
 #endif
   CHECK_INT(mod);
   return mod;

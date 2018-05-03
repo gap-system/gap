@@ -491,7 +491,7 @@ void MakeFieldInfo8Bit( UInt q)
 Obj GetFieldInfo8Bit( UInt q)
 {
     Obj info;
-    assert(2 < q && q <= 256);
+    GAP_ASSERT(2 < q && q <= 256);
 #ifdef HPCGAP
     info = ATOMIC_ELM_PLIST(FieldInfo8Bit, q);
     if (info == 0) {
@@ -538,7 +538,7 @@ void RewriteVec8Bit( Obj vec, UInt q)
 
     if (q1 == q)
         return;
-    assert(q > q1);
+    GAP_ASSERT(q > q1);
 
     if (DoFilter(IsLockedRepresentationVector, vec) == True) {
         ErrorMayQuit("You cannot convert a locked vector compressed over GF(%i) to GF(%i)",
@@ -550,8 +550,8 @@ void RewriteVec8Bit( Obj vec, UInt q)
     len = LEN_VEC8BIT(vec);
     info = GetFieldInfo8Bit(q);
     info1 = GetFieldInfo8Bit(q1);
-    assert(P_FIELDINFO_8BIT(info) == P_FIELDINFO_8BIT(info1));
-    assert(!(D_FIELDINFO_8BIT(info) % D_FIELDINFO_8BIT(info1)));
+    GAP_ASSERT(P_FIELDINFO_8BIT(info) == P_FIELDINFO_8BIT(info1));
+    GAP_ASSERT(!(D_FIELDINFO_8BIT(info) % D_FIELDINFO_8BIT(info1)));
     els = ELS_BYTE_FIELDINFO_8BIT(info);
     els1 = ELS_BYTE_FIELDINFO_8BIT(info1);
 
@@ -573,7 +573,7 @@ void RewriteVec8Bit( Obj vec, UInt q)
     byte = 0;
     i = len - 1;
 
-    assert(((q - 1) % (q1 - 1)) == 0);
+    GAP_ASSERT(((q - 1) % (q1 - 1)) == 0);
     mult = (q - 1) / (q1 - 1);
     while (i >= 0) {
         val = VAL_FFE(convtab1[ gettab1[byte1 + 256 * (i % els1)]]);
@@ -614,7 +614,7 @@ void RewriteGF2Vec( Obj vec, UInt q )
     Int i;
     Obj type;
 
-    assert(q % 2 == 0);
+    GAP_ASSERT(q % 2 == 0);
 
     if (DoFilter(IsLockedRepresentationVector, vec) == True) {
         ErrorMayQuit("You cannot convert a locked vector compressed over GF(2) to GF(%i)",
@@ -737,8 +737,8 @@ void ConvVec8Bit (
     ptr = BYTES_VEC8BIT(list);
     for (i = 1;  i <= len;  i++) {
         elt = (i <= 3) ? firstthree[i - 1] : ELM_LIST(list, i);
-        assert(CHAR_FF(FLD_FFE(elt)) == p);
-        assert(d % DegreeFFE(elt) == 0);
+        GAP_ASSERT(CHAR_FF(FLD_FFE(elt)) == p);
+        GAP_ASSERT(d % DegreeFFE(elt) == 0);
         val = VAL_FFE(elt);
         if (val != 0 && FLD_FFE(elt) != f) {
             val = 1 + (val - 1) * (q - 1) / (SIZE_FF(FLD_FFE(elt)) - 1);
@@ -907,8 +907,8 @@ Obj NewVec8Bit (
     ptr = BYTES_VEC8BIT(res);
     for ( i = 1;  i <= len;  i++ ) {
       elt = ELM_LIST(list,i);
-      assert(CHAR_FF(FLD_FFE(elt)) == p);
-      assert( d % DegreeFFE(elt) == 0);
+      GAP_ASSERT(CHAR_FF(FLD_FFE(elt)) == p);
+      GAP_ASSERT( d % DegreeFFE(elt) == 0);
       val = VAL_FFE(elt);
       if (val != 0 && FLD_FFE(elt) != f)
 	{
@@ -1130,11 +1130,11 @@ void  AddVec8BitVec8BitInner( Obj sum,
     if (!stop)
         return;
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(sum));
-    assert(Q_FIELDINFO_8BIT(info) == FIELD_VEC8BIT(vl));
-    assert(Q_FIELDINFO_8BIT(info) == FIELD_VEC8BIT(vr));
-    assert(LEN_VEC8BIT(sum) >= stop);
-    assert(LEN_VEC8BIT(vl) >= stop);
-    assert(LEN_VEC8BIT(vr) >= stop);
+    GAP_ASSERT(Q_FIELDINFO_8BIT(info) == FIELD_VEC8BIT(vl));
+    GAP_ASSERT(Q_FIELDINFO_8BIT(info) == FIELD_VEC8BIT(vr));
+    GAP_ASSERT(LEN_VEC8BIT(sum) >= stop);
+    GAP_ASSERT(LEN_VEC8BIT(vl) >= stop);
+    GAP_ASSERT(LEN_VEC8BIT(vr) >= stop);
     p = P_FIELDINFO_8BIT(info);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     /* Convert from 1 based to zero based addressing */
@@ -1252,7 +1252,7 @@ Obj FuncSUM_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
         UInt p, newq;
         UInt i;
         p = P_FIELDINFO_8BIT(infol);
-        assert(p == P_FIELDINFO_8BIT(infor));
+        GAP_ASSERT(p == P_FIELDINFO_8BIT(infor));
         newq = 1;
         for (i = 0; i < newd; i++)
             newq *= p;
@@ -1320,10 +1320,10 @@ void MultVec8BitFFEInner( Obj prod,
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(prod));
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
 
-    assert(Q_FIELDINFO_8BIT(info) == FIELD_VEC8BIT(vec));
-    assert(LEN_VEC8BIT(prod) >= stop);
-    assert(LEN_VEC8BIT(vec) >= stop);
-    assert(Q_FIELDINFO_8BIT(info) == SIZE_FF(FLD_FFE(scal)));
+    GAP_ASSERT(Q_FIELDINFO_8BIT(info) == FIELD_VEC8BIT(vec));
+    GAP_ASSERT(LEN_VEC8BIT(prod) >= stop);
+    GAP_ASSERT(LEN_VEC8BIT(vec) >= stop);
+    GAP_ASSERT(Q_FIELDINFO_8BIT(info) == SIZE_FF(FLD_FFE(scal)));
 
 
     /* convert to 0 based addressing */
@@ -1429,7 +1429,7 @@ Obj FuncPROD_VEC8BIT_FFE( Obj self, Obj vec, Obj ffe)
     d = D_FIELDINFO_8BIT(info);
 
     /* family predicate should have handled this */
-    assert(CHAR_FF(FLD_FFE(ffe)) == P_FIELDINFO_8BIT(info));
+    GAP_ASSERT(CHAR_FF(FLD_FFE(ffe)) == P_FIELDINFO_8BIT(info));
 
     /* check for field compatibility */
     if (d % DEGR_FF(FLD_FFE(ffe))) {
@@ -1715,8 +1715,8 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_5( Obj self, Obj vl, Obj vr, Obj mul, Obj from, O
         d0 = LcmDegree(d, d1);
         d0 = LcmDegree(d0, d2);
         p = P_FIELDINFO_8BIT(info);
-        assert(p == P_FIELDINFO_8BIT(info1));
-        assert(p == CHAR_FF(FLD_FFE(mul)));
+        GAP_ASSERT(p == P_FIELDINFO_8BIT(info1));
+        GAP_ASSERT(p == CHAR_FF(FLD_FFE(mul)));
         q0 = 1;
         for (i = 0; i < d0; i++)
             q0 *= p;
@@ -1777,8 +1777,8 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_3( Obj self, Obj vl, Obj vr, Obj mul)
         d0 = LcmDegree(d, d1);
         d0 = LcmDegree(d0, d2);
         p = P_FIELDINFO_8BIT(info);
-        assert(p == P_FIELDINFO_8BIT(info1));
-        assert(p == CHAR_FF(FLD_FFE(mul)));
+        GAP_ASSERT(p == P_FIELDINFO_8BIT(info1));
+        GAP_ASSERT(p == CHAR_FF(FLD_FFE(mul)));
         q0 = 1;
         for (i = 0; i < d0; i++)
             q0 *= p;
@@ -1835,7 +1835,7 @@ Obj FuncADD_ROWVECTOR_VEC8BITS_2( Obj self, Obj vl, Obj vr)
         d1 = D_FIELDINFO_8BIT(info1);
         d0 = LcmDegree(d, d1);
         p = P_FIELDINFO_8BIT(info);
-        assert(p == P_FIELDINFO_8BIT(info1));
+        GAP_ASSERT(p == P_FIELDINFO_8BIT(info1));
         q0 = 1;
         for (i = 0; i < d0; i++)
             q0 *= p;
@@ -1954,7 +1954,7 @@ Obj FuncDIFF_VEC8BIT_VEC8BIT( Obj self, Obj vl, Obj vr)
         UInt p, newq;
         UInt i;
         p = P_FIELDINFO_8BIT(infol);
-        assert(p == P_FIELDINFO_8BIT(infor));
+        GAP_ASSERT(p == P_FIELDINFO_8BIT(infor));
         newq = 1;
         for (i = 0; i < newd; i++)
             newq *= p;
@@ -1999,7 +1999,7 @@ Int CmpVec8BitVec8Bit( Obj vl, Obj vr )
     UInt1 *gettab;
     Obj *ffe_elt;
     UInt len;
-    assert(FIELD_VEC8BIT(vl) == FIELD_VEC8BIT(vr));
+    GAP_ASSERT(FIELD_VEC8BIT(vl) == FIELD_VEC8BIT(vr));
     q = FIELD_VEC8BIT(vl);
     info = GetFieldInfo8Bit(q);
     lenl = LEN_VEC8BIT(vl);
@@ -2090,7 +2090,7 @@ Obj ScalarProductVec8Bits( Obj vl, Obj vr )
     if (len > LEN_VEC8BIT(vr))
         len = LEN_VEC8BIT(vr);
     q = FIELD_VEC8BIT(vl);
-    assert(q == FIELD_VEC8BIT(vr));
+    GAP_ASSERT(q == FIELD_VEC8BIT(vr));
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
 
@@ -2152,8 +2152,8 @@ UInt DistanceVec8Bits( Obj vl, Obj vr )
 
     len = LEN_VEC8BIT(vl);
     q = FIELD_VEC8BIT(vl);
-    assert(q == FIELD_VEC8BIT(vr));
-    assert(len == LEN_VEC8BIT(vr));
+    GAP_ASSERT(q == FIELD_VEC8BIT(vr));
+    GAP_ASSERT(len == LEN_VEC8BIT(vr));
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
 
@@ -3034,7 +3034,7 @@ Obj FuncASS_VEC8BIT (
             /* may need to promote the element to a bigger field
                or restrict it to a smaller one */
             if (v != 0 && q != SIZE_FF(FLD_FFE(elm))) {
-                assert(((v - 1) * (q - 1)) % (SIZE_FF(FLD_FFE(elm)) - 1) == 0);
+                GAP_ASSERT(((v - 1) * (q - 1)) % (SIZE_FF(FLD_FFE(elm)) - 1) == 0);
                 v = 1 + (v - 1) * (q - 1) / (SIZE_FF(FLD_FFE(elm)) - 1);
             }
 
@@ -3443,7 +3443,7 @@ Obj ProdVec8BitMat8Bit( Obj vec, Obj mat )
     len = LEN_VEC8BIT(vec);
     lenm = LEN_MAT8BIT(mat);
     row1 = ELM_MAT8BIT(mat, 1);
-    assert(q == FIELD_VEC8BIT(row1));
+    GAP_ASSERT(q == FIELD_VEC8BIT(row1));
     len1 = LEN_VEC8BIT(row1);
     res = ZeroVec8Bit(q, len1, IS_MUTABLE_OBJ(vec) || IS_MUTABLE_OBJ(row1));
 
@@ -3540,7 +3540,7 @@ Obj ProdMat8BitVec8Bit( Obj mat, Obj vec)
     len = LEN_MAT8BIT(mat);
     q = FIELD_VEC8BIT(vec);
     row1 = ELM_MAT8BIT(mat, 1);
-    assert(q = FIELD_VEC8BIT(row1));
+    GAP_ASSERT(q = FIELD_VEC8BIT(row1));
     res = ZeroVec8Bit(q, len, IS_MUTABLE_OBJ(row1) || IS_MUTABLE_OBJ(vec));
     info = GetFieldInfo8Bit(q);
     settab = SETELT_FIELDINFO_8BIT(info);
@@ -3619,8 +3619,8 @@ Obj ProdMat8BitMat8Bit( Obj matl, Obj matr)
     len = LEN_MAT8BIT(matl);
     q = FIELD_VEC8BIT(ELM_MAT8BIT(matl, 1));
 
-    assert(q == FIELD_VEC8BIT(ELM_MAT8BIT(matr, 1)));
-    assert(LEN_MAT8BIT(matr) == LEN_VEC8BIT(ELM_MAT8BIT(matl, 1)));
+    GAP_ASSERT(q == FIELD_VEC8BIT(ELM_MAT8BIT(matr, 1)));
+    GAP_ASSERT(LEN_MAT8BIT(matr) == LEN_VEC8BIT(ELM_MAT8BIT(matl, 1)));
 
     prod = NewBag(T_POSOBJ, sizeof(Obj) * (len + 2));
     SET_LEN_MAT8BIT(prod, len);
@@ -3697,7 +3697,7 @@ Obj InverseMat8Bit( Obj mat, UInt mut)
     row = ELM_MAT8BIT(mat, 1);
     q = FIELD_VEC8BIT(row);
     len = LEN_MAT8BIT(mat);
-    assert(len == LEN_VEC8BIT(row));
+    GAP_ASSERT(len == LEN_VEC8BIT(row));
     inv = NEW_PLIST(T_PLIST, len + 1);
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
@@ -4024,10 +4024,10 @@ Obj SumMat8BitMat8Bit( Obj ml, Obj mr)
     /* Now sort out the size of the result */
     if (ll > lr) {
         ls = ll;
-        assert(wl > wr);
+        GAP_ASSERT(wl > wr);
     } else {
         ls = lr;
-        assert(wr >= wl);
+        GAP_ASSERT(wr >= wl);
     }
 
     q = FIELD_VEC8BIT(ELM_MAT8BIT(ml, 1));
@@ -4103,10 +4103,10 @@ Obj DiffMat8BitMat8Bit( Obj ml, Obj mr)
     /* Now sort out the size of the result */
     if (ll > lr) {
         ld = ll;
-        assert(wl > wr);
+        GAP_ASSERT(wl > wr);
     } else {
         ld = lr;
-        assert(wr >= wl);
+        GAP_ASSERT(wr >= wl);
     }
     q = FIELD_VEC8BIT(ELM_MAT8BIT(ml, 1));
 
@@ -4434,8 +4434,8 @@ Obj FuncADD_COEFFS_VEC8BIT_3( Obj self, Obj vec1, Obj vec2, Obj mult )
         d0 = LcmDegree(d, d1);
         d0 = LcmDegree(d0, d2);
         p = P_FIELDINFO_8BIT(info);
-        assert(p == P_FIELDINFO_8BIT(info1));
-        assert(p == CHAR_FF(FLD_FFE(mult)));
+        GAP_ASSERT(p == P_FIELDINFO_8BIT(info1));
+        GAP_ASSERT(p == CHAR_FF(FLD_FFE(mult)));
         q0 = 1;
         for (i = 0; i < d0; i++)
             q0 *= p;
@@ -4493,7 +4493,7 @@ Obj FuncADD_COEFFS_VEC8BIT_2( Obj self, Obj vec1, Obj vec2 )
         d1 = D_FIELDINFO_8BIT(info1);
         d0 = LcmDegree(d, d1);
         p = P_FIELDINFO_8BIT(info);
-        assert(p == P_FIELDINFO_8BIT(info1));
+        GAP_ASSERT(p == P_FIELDINFO_8BIT(info1));
         q0 = 1;
         for (i = 0; i < d0; i++)
             q0 *= p;
@@ -4522,7 +4522,7 @@ Obj FuncADD_COEFFS_VEC8BIT_2( Obj self, Obj vec1, Obj vec2 )
 Obj FuncSHIFT_VEC8BIT_LEFT( Obj self, Obj vec, Obj amount)
 {
     /* should be checked in method selection */
-    assert(IS_MUTABLE_OBJ(vec));
+    GAP_ASSERT(IS_MUTABLE_OBJ(vec));
     while (!IS_INTOBJ(amount) || INT_INTOBJ(amount) < 0) {
         amount = ErrorReturnObj("SHIFT_VEC8BIT_LEFT: <amount> must be a non-negative small integer",
                                 0, 0,
@@ -4540,7 +4540,7 @@ Obj FuncSHIFT_VEC8BIT_LEFT( Obj self, Obj vec, Obj amount)
 
 Obj FuncSHIFT_VEC8BIT_RIGHT( Obj self, Obj vec, Obj amount, Obj zero)
 {
-    assert(IS_MUTABLE_OBJ(vec));
+    GAP_ASSERT(IS_MUTABLE_OBJ(vec));
     while (!IS_INTOBJ(amount) || INT_INTOBJ(amount) < 0) {
         amount = ErrorReturnObj("SHIFT_VEC8BIT_RIGHT: <amount> must be a non-negative small integer",
                                 0, 0,
@@ -4603,11 +4603,11 @@ void ProdCoeffsVec8Bit ( Obj res, Obj vl, UInt ll, Obj vr, UInt lr )
     UInt1 * gettab, *settab;
     UInt1 partl = 0, partr = 0;
     q = FIELD_VEC8BIT(vl);
-    assert(q == FIELD_VEC8BIT(vr));
-    assert(q == FIELD_VEC8BIT(res));
-    assert(ll <= LEN_VEC8BIT(vl));
-    assert(lr <= LEN_VEC8BIT(vr));
-    assert(ll + lr - 1 <= LEN_VEC8BIT(res));
+    GAP_ASSERT(q == FIELD_VEC8BIT(vr));
+    GAP_ASSERT(q == FIELD_VEC8BIT(res));
+    GAP_ASSERT(ll <= LEN_VEC8BIT(vl));
+    GAP_ASSERT(lr <= LEN_VEC8BIT(vr));
+    GAP_ASSERT(ll + lr - 1 <= LEN_VEC8BIT(res));
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     p = P_FIELDINFO_8BIT(info);
@@ -4763,7 +4763,7 @@ Obj FuncPROD_COEFFS_VEC8BIT( Obj self, Obj vl, Obj ll, Obj vr, Obj lr  )
         d1 = D_FIELDINFO_8BIT(info1);
         d0 = LcmDegree(d, d1);
         p = P_FIELDINFO_8BIT(info);
-        assert(p == P_FIELDINFO_8BIT(info1));
+        GAP_ASSERT(p == P_FIELDINFO_8BIT(info1));
         q0 = 1;
         for (i = 0; i < d0; i++)
             q0 *= p;
@@ -4827,7 +4827,7 @@ Obj MakeShiftedVecs( Obj v, UInt len)
     Obj type;
 
     q = FIELD_VEC8BIT(v);
-    assert(len <= LEN_VEC8BIT(v));
+    GAP_ASSERT(len <= LEN_VEC8BIT(v));
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
 
@@ -4848,7 +4848,7 @@ Obj MakeShiftedVecs( Obj v, UInt len)
     ffefelt = FFE_FELT_FIELDINFO_8BIT(info);
 
     x = gettab[BYTES_VEC8BIT(vn)[(len - 1) / elts] + 256 * ((len - 1) % elts)];
-    assert(x != 0);
+    GAP_ASSERT(x != 0);
     xi = INV(ffefelt[x]);
     MultVec8BitFFEInner(vn, vn,  xi , 1, len);
     type = TypeVec8Bit(q, 0);
@@ -4957,7 +4957,7 @@ void ReduceCoeffsVec8Bit ( Obj vl, Obj vrshifted, Obj quot )
                 ptrl1--;
                 ptrr--;
             }
-            assert(! gettab[ptrl[i / elts] + 256 * (i % elts)]);
+            GAP_ASSERT(! gettab[ptrl[i / elts] + 256 * (i % elts)]);
         }
     }
     if (quot) {

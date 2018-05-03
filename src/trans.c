@@ -1025,7 +1025,7 @@ Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
     pttmp = ResizeInitTmpTrans(nr);
 
     // RANK_TRANS(f) should install KER_TRANS(f)
-    assert(KER_TRANS(f) != NULL);
+    GAP_ASSERT(KER_TRANS(f) != NULL);
 
     nr = 0;
     // read off flat kernel
@@ -1697,8 +1697,8 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
     UInt    deg, i, j, rank, len;
     Obj     out;
 
-    assert(IS_LIST(ker));
-    assert(IS_INTOBJ(n));
+    GAP_ASSERT(IS_LIST(ker));
+    GAP_ASSERT(IS_INTOBJ(n));
 
     len = LEN_LIST(ker);
     if (len == 1 && INT_INTOBJ(ELM_LIST(ker, 1)) == 0) {
@@ -1873,7 +1873,7 @@ Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg)
     else {    // dep >= def > 65536
         f = NEW_TRANS4(def);
         ptf4 = ADDR_TRANS4(f);
-        assert(TNUM_OBJ(p) == T_PERM4);
+        GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
         ptp4 = CONST_ADDR_PERM4(p);
         for (i = 0; i < min; i++) {
             ptf4[i] = ptp4[i];
@@ -2003,7 +2003,7 @@ Obj FuncPermutationOfImage(Obj self, Obj f)
 
         ptf2 = CONST_ADDR_TRANS2(f);
         img = IMG_TRANS(f);
-        assert(img != NULL);    // should be installed by RANK_TRANS2
+        GAP_ASSERT(img != NULL);    // should be installed by RANK_TRANS2
 
         for (i = 0; i < rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(img, i + 1)) - 1;
@@ -2031,7 +2031,7 @@ Obj FuncPermutationOfImage(Obj self, Obj f)
 
         ptf4 = CONST_ADDR_TRANS4(f);
         img = IMG_TRANS(f);
-        assert(img != NULL);    // should be installed by RANK_TRANS2
+        GAP_ASSERT(img != NULL);    // should be installed by RANK_TRANS2
 
         for (i = 0; i < rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(img, i + 1)) - 1;

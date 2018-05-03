@@ -466,12 +466,12 @@ Int KTNumHomPlist (
     lenList = LEN_PLIST(list);
 
     /* special case for empty list                                         */
-    assert(lenList);
+    GAP_ASSERT(lenList);
 
     /* look at the first element                                           */
     elm = ELM_PLIST( list, 1 );
-    assert(elm);
-    assert(!TEST_OBJ_FLAG(elm, TESTING));
+    GAP_ASSERT(elm);
+    GAP_ASSERT(!TEST_OBJ_FLAG(elm, TESTING));
 
     isSSort = HAS_FILT_LIST(list, FN_IS_SSORT );
     isNSort = HAS_FILT_LIST(list, FN_IS_NSORT );
@@ -527,8 +527,8 @@ Int KTNumHomPlist (
 	/* loop over the list */
 	for ( i = 2; isTable && i <= lenList; i++ ) {
 	  elm = ELM_PLIST( list, i );
-	  assert(elm);
-          assert(!TEST_OBJ_FLAG(elm, TESTING));
+	  GAP_ASSERT(elm);
+          GAP_ASSERT(!TEST_OBJ_FLAG(elm, TESTING));
           isTable = isTable && IS_LIST(elm); /* (isTable && IS_SMALL_LIST(elm) && LEN_LIST(elm) == len);*/
 	  isRect = isRect && IS_PLIST(elm) && LEN_PLIST(elm) == len;
 	}
@@ -2467,7 +2467,7 @@ Obj             PosPlistDense (
 
         /* select one element from <list>                                  */
         elm = ELM_PLIST( list, i );
-        assert(elm);
+        GAP_ASSERT(elm);
 
         /* compare with <val>                                              */
         if ( EQ( elm, val ) )
@@ -2672,9 +2672,9 @@ Obj FuncIsRectangularTablePlist( Obj self, Obj plist)
   UInt hasMut = 0;
   Obj elm;
   
-  assert(!HAS_FILT_LIST(plist, FN_IS_RECT));
+  GAP_ASSERT(!HAS_FILT_LIST(plist, FN_IS_RECT));
   lenlist = LEN_PLIST(plist);
-  assert(lenlist);
+  GAP_ASSERT(lenlist);
   if (lenlist == 1)
     {
       if (!IS_MUTABLE_OBJ(ELM_PLIST(plist,1)))

@@ -225,7 +225,7 @@ static void TLAllocatorInit(void)
 **/
 void * AllocateBagMemory(int gc_type, int type, UInt size)
 {
-    assert(gc_type >= -1);
+    GAP_ASSERT(gc_type >= -1);
     void * result = NULL;
     if (size <= TL_GC_SIZE) {
         UInt alloc_seg, alloc_size;

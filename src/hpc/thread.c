@@ -489,7 +489,7 @@ void HashUnlockShared(void * object)
 void RegionWriteLock(Region * region)
 {
     int result = 0;
-    assert(region->owner != GetTLS());
+    GAP_ASSERT(region->owner != GetTLS());
 
     if (region->count_active || TLS(CountActive)) {
         result = !pthread_rwlock_trywrlock(region->lock);
@@ -518,7 +518,7 @@ void RegionWriteLock(Region * region)
 int RegionTryWriteLock(Region * region)
 {
     int result;
-    assert(region->owner != GetTLS());
+    GAP_ASSERT(region->owner != GetTLS());
     result = !pthread_rwlock_trywrlock(region->lock);
 
     if (result) {
@@ -539,7 +539,7 @@ int RegionTryWriteLock(Region * region)
 
 void RegionWriteUnlock(Region * region)
 {
-    assert(region->owner == GetTLS());
+    GAP_ASSERT(region->owner == GetTLS());
     region->owner = NULL;
     pthread_rwlock_unlock(region->lock);
 }
@@ -547,8 +547,8 @@ void RegionWriteUnlock(Region * region)
 void RegionReadLock(Region * region)
 {
     int result = 0;
-    assert(region->owner != GetTLS());
-    assert(region->readers[TLS(threadID)] == 0);
+    GAP_ASSERT(region->owner != GetTLS());
+    GAP_ASSERT(region->readers[TLS(threadID)] == 0);
 
     if (region->count_active || TLS(CountActive)) {
         result = !pthread_rwlock_rdlock(region->lock);
@@ -576,8 +576,8 @@ void RegionReadLock(Region * region)
 int RegionTryReadLock(Region * region)
 {
     int result = !pthread_rwlock_rdlock(region->lock);
-    assert(region->owner != GetTLS());
-    assert(region->readers[TLS(threadID)] == 0);
+    GAP_ASSERT(region->owner != GetTLS());
+    GAP_ASSERT(region->readers[TLS(threadID)] == 0);
 
     if (result) {
         if (region->count_active)
@@ -597,14 +597,14 @@ int RegionTryReadLock(Region * region)
 
 void RegionReadUnlock(Region * region)
 {
-    assert(region->readers[TLS(threadID)]);
+    GAP_ASSERT(region->readers[TLS(threadID)]);
     region->readers[TLS(threadID)] = 0;
     pthread_rwlock_unlock(region->lock);
 }
 
 void RegionUnlock(Region * region)
 {
-    assert(region->owner == GetTLS() || region->readers[TLS(threadID)]);
+    GAP_ASSERT(region->owner == GetTLS() || region->readers[TLS(threadID)]);
     if (region->owner == GetTLS())
         region->owner = NULL;
     region->readers[TLS(threadID)] = 0;

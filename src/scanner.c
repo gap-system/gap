@@ -390,7 +390,7 @@ static void GetNumber(UInt StartingStatus)
 
     /* Or maybe we just ran out of space */
     if (IsDigit(c)) {
-      assert(i >= SAFE_VALUE_SIZE-1);
+      GAP_ASSERT(i >= SAFE_VALUE_SIZE-1);
       STATE(Symbol) = S_PARTIALINT;
       STATE(Value)[SAFE_VALUE_SIZE-1] = '\0';
       return;

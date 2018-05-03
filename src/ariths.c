@@ -1641,56 +1641,56 @@ static Int InitKernel (
 
     /* make and install the 'ZERO' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
-        assert(ZeroFuncs[t1] == 0);
+        GAP_ASSERT(ZeroFuncs[t1] == 0);
         ZeroFuncs[t1] = ZeroObject;
     }
     InstallZeroObject(0);
 
     /* make and install the 'ZERO_MUT' arithmetic operation                */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
-        assert(ZeroMutFuncs[t1] == 0);
+        GAP_ASSERT(ZeroMutFuncs[t1] == 0);
         ZeroMutFuncs[t1] = ZeroMutObject;
     }
     InstallZeroMutObject(0);
 
     /* make and install the 'AINV' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
-        assert(AInvFuncs[t1] == 0);
+        GAP_ASSERT(AInvFuncs[t1] == 0);
         AInvFuncs[t1] = AInvObject;
     }
     InstallAinvObject(0);
 
     /* make and install the 'AINV_MUT' arithmetic operation                */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
-        assert(AInvMutFuncs[t1] == 0);
+        GAP_ASSERT(AInvMutFuncs[t1] == 0);
         AInvMutFuncs[t1] = AInvMutObject;
     }
     InstallAinvMutObject(0);
 
     /* make and install the 'ONE' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
-        assert(OneFuncs[t1] == 0);
+        GAP_ASSERT(OneFuncs[t1] == 0);
         OneFuncs[t1] = OneObject;
     }
     InstallOneObject(0);
 
     /* make and install the 'ONE' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
-        assert(OneMutFuncs[t1] == 0);
+        GAP_ASSERT(OneMutFuncs[t1] == 0);
         OneMutFuncs[t1] = OneMutObject;
     }
     InstallOneMutObject(0);
 
     /* make and install the 'INV' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
-        assert(InvFuncs[t1] == 0);
+        GAP_ASSERT(InvFuncs[t1] == 0);
         InvFuncs[t1] = InvObject;
     }
     InstallInvObject(0);
 
     /* make and install the 'INV' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
-        assert(InvMutFuncs[t1] == 0);
+        GAP_ASSERT(InvMutFuncs[t1] == 0);
         InvMutFuncs[t1] = InvMutObject;
     }
     InstallInvMutObject(0);
@@ -1698,7 +1698,7 @@ static Int InitKernel (
     /* make and install the 'EQ' comparison operation                      */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-            assert(EqFuncs[t1][t2] == 0);
+            GAP_ASSERT(EqFuncs[t1][t2] == 0);
             EqFuncs[t1][t2] = EqNot;
         }
     }
@@ -1707,7 +1707,7 @@ static Int InitKernel (
     /* make and install the 'LT' comparison operation                      */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-            assert(LtFuncs[t1][t2] == 0);
+            GAP_ASSERT(LtFuncs[t1][t2] == 0);
             LtFuncs[t1][t2] = LtObject;
         }
     }
@@ -1716,7 +1716,7 @@ static Int InitKernel (
     /* make and install the 'IN' comparison operation                      */
     for ( t1 = FIRST_REAL_TNUM; t1 <= LAST_REAL_TNUM; t1++ ) {
         for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_REAL_TNUM; t2++ ) {
-            assert(InFuncs[t1][t2] == 0);
+            GAP_ASSERT(InFuncs[t1][t2] == 0);
             InFuncs[t1][t2] = InUndefined;
         }
     }
@@ -1725,7 +1725,7 @@ static Int InitKernel (
     /* make and install the 'SUM' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-            assert(SumFuncs[t1][t2] == 0);
+            GAP_ASSERT(SumFuncs[t1][t2] == 0);
             SumFuncs[t1][t2] = SumObject;
         }
     }
@@ -1734,7 +1734,7 @@ static Int InitKernel (
     /* make and install the 'DIFF' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-            assert(DiffFuncs[t1][t2] == 0);
+            GAP_ASSERT(DiffFuncs[t1][t2] == 0);
             DiffFuncs[t1][t2] = DiffDefault;
         }
     }
@@ -1743,7 +1743,7 @@ static Int InitKernel (
     /* make and install the 'PROD' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-            assert(ProdFuncs[t1][t2] == 0);
+            GAP_ASSERT(ProdFuncs[t1][t2] == 0);
             ProdFuncs[t1][t2] = ProdObject;
         }
     }
@@ -1752,7 +1752,7 @@ static Int InitKernel (
     /* make and install the 'QUO' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-            assert(QuoFuncs[t1][t2] == 0);
+            GAP_ASSERT(QuoFuncs[t1][t2] == 0);
             QuoFuncs[t1][t2] = QuoDefault;
         }
     }
@@ -1761,7 +1761,7 @@ static Int InitKernel (
     /* make and install the 'LQUO' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-            assert(LQuoFuncs[t1][t2] == 0);
+            GAP_ASSERT(LQuoFuncs[t1][t2] == 0);
             LQuoFuncs[t1][t2] = LQuoDefault;
         }
     }
@@ -1770,7 +1770,7 @@ static Int InitKernel (
     /* make and install the 'POW' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-            assert(PowFuncs[t1][t2] == 0);
+            GAP_ASSERT(PowFuncs[t1][t2] == 0);
             PowFuncs[t1][t2] = PowObject;
         }
     }
@@ -1779,7 +1779,7 @@ static Int InitKernel (
     /* make and install the 'COMM' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-            assert(CommFuncs[t1][t2] == 0);
+            GAP_ASSERT(CommFuncs[t1][t2] == 0);
             CommFuncs[t1][t2] = CommDefault;
         }
     }
@@ -1788,7 +1788,7 @@ static Int InitKernel (
     /* make and install the 'MOD' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
-            assert(ModFuncs[t1][t2] == 0);
+            GAP_ASSERT(ModFuncs[t1][t2] == 0);
             ModFuncs[t1][t2] = ModObject;
         }
     }

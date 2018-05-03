@@ -420,7 +420,7 @@ static Int InitKernel ( StructInitInfo * module )
 {
     int i;
     for (i = FIRST_REAL_TNUM; i <= LAST_REAL_TNUM; i++) {
-        assert(TraversalMethod[i] == 0);
+        GAP_ASSERT(TraversalMethod[i] == 0);
         TraversalMethod[i] = TRAVERSE_NONE;
     }
 

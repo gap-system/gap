@@ -2410,7 +2410,7 @@ static Int InitKernel (
 
     /* install the `IsString' functions                                    */
     for ( t1 = FIRST_REAL_TNUM; t1 <= LAST_REAL_TNUM; t1++ ) {
-        assert(IsStringFuncs[ t1 ] == 0);
+        GAP_ASSERT(IsStringFuncs[ t1 ] == 0);
         IsStringFuncs[ t1 ] = AlwaysNo;
     }
 
