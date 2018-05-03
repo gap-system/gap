@@ -266,7 +266,7 @@ Obj FuncTRUES_FLAGS (
     len = LEN_FLAGS( flags );
     nn  = 1;
     for ( i = 1; nn <= n && i <= len;  i++ ) {
-        if ( ELM_FLAGS( flags, i ) == True ) {
+        if ( C_ELM_FLAGS( flags, i ) ) {
             SET_ELM_PLIST( sub, nn, INTOBJ_INT(i) );
             nn++;
         }
@@ -1145,21 +1145,11 @@ Obj DoSetFilter (
     flags = FLAGS_TYPE( type );
     
     /* return the value of the feature                                     */
-    if ( flag1 <= LEN_FLAGS( flags ) ) {
-        if ( val != ELM_FLAGS( flags, flag1 ) ) {
-            ErrorReturnVoid(
-                "value feature is already set the other way",
-                0L, 0L,
-                "you can 'return;' and ignore it" );
-        }
-    }
-    else {
-        if ( val != False ) {
-            ErrorReturnVoid(
-                "value feature is already set the other way",
-                0L, 0L,
-                "you can 'return;' and ignore it" );
-        }
+    if ( val != SAFE_ELM_FLAGS( flags, flag1 ) ) {
+        ErrorReturnVoid(
+            "value feature is already set the other way",
+            0L, 0L,
+            "you can 'return;' and ignore it" );
     }
 
     /* return 'void'                                                       */
@@ -1198,12 +1188,7 @@ Obj DoFilter (
     flags = FLAGS_TYPE( type );
     
     /* return the value of the feature                                     */
-    if ( flag1 <= LEN_FLAGS( flags ) ) {
-        val = ELM_FLAGS( flags, flag1 );
-    }
-    else {
-        val = False;
-    }
+    val = SAFE_ELM_FLAGS( flags, flag1 );
     
     /* return the value                                                    */
     return val;
@@ -2544,13 +2529,8 @@ Obj DoTestAttribute (
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the attribute is already known, return 'true'        */
-    if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
-        return True;
-    }
-    
-    /* otherwise return 'false'                                            */
-    return False;
+    /* return whether the value of the attribute is already known          */
+    return SAFE_ELM_FLAGS( flags, flag2 );
 }
 
 
@@ -2577,7 +2557,7 @@ Obj DoAttribute (
     flags = FLAGS_TYPE( type );
 
     /* if the value of the attribute is already known, simply return it     */
-    if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
+    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return DoOperation1Args( self, obj );
     }
     
@@ -2632,7 +2612,7 @@ Obj DoVerboseAttribute (
     flags = FLAGS_TYPE( type );
 
     /* if the value of the attribute is already known, simply return it     */
-    if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
+    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return DoVerboseOperation1Args( self, obj );
     }
     
@@ -2680,7 +2660,7 @@ Obj DoMutableAttribute (
     flags = FLAGS_TYPE( type );
 
     /* if the value of the attribute is already known, simply return it     */
-    if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
+    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return DoOperation1Args( self, obj );
     }
     
@@ -2727,7 +2707,7 @@ Obj DoVerboseMutableAttribute (
     flags = FLAGS_TYPE( type );
 
     /* if the value of the attribute is already known, simply return it     */
-    if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
+    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return DoVerboseOperation1Args( self, obj );
     }
     
@@ -2932,7 +2912,7 @@ Obj DoSetProperty (
     flags = FLAGS_TYPE( type );
 
     /* if the value of the property is already known, compare it           */
-    if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
+    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         if ( val == ELM_FLAGS( flags, flag1 ) ) {
             return 0;
         }
@@ -3000,7 +2980,7 @@ Obj DoProperty (
     flags = FLAGS_TYPE( type );
 
     /* if the value of the property is already known, simply return it     */
-    if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
+    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return ELM_FLAGS( flags, flag1 );
     }
 
@@ -3056,7 +3036,7 @@ Obj DoVerboseProperty (
     flags = FLAGS_TYPE( type );
 
     /* if the value of the property is already known, simply return it     */
-    if ( flag2 <= LEN_FLAGS( flags ) && ELM_FLAGS( flags, flag2 ) == True ) {
+    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return ELM_FLAGS( flags, flag1 );
     }
 
@@ -3628,7 +3608,7 @@ Obj DoSetterFunction (
     flag2  = INT_INTOBJ( FLAG2_FILT(tester) );
     type   = TYPE_OBJ_FEO(obj);
     flags  = FLAGS_TYPE(type);
-    if ( flag2 <= LEN_FLAGS(flags) && ELM_FLAGS(flags,flag2) == True ) {
+    if ( SAFE_C_ELM_FLAGS(flags,flag2) ) {
         return 0;
     }
 
