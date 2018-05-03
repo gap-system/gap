@@ -226,19 +226,15 @@ static inline void SET_ENABLED_ATTR(Obj oper, Int x)
 
 /****************************************************************************
 **
-*F  NEW_FLAGS( <flags>, <size> )  . . . . . . . . . . . . . .  new flags list
+*F  NEW_FLAGS( <flags>, <len> ) . . . . . . . . . . . . . . .  new flags list
 */
-#define NEW_FLAGS( flags, size ) \
-    ( flags = NewBag( T_FLAGS, SIZE_PLEN_FLAGS(size) ) )
-
-
-/****************************************************************************
-**
-*F  SIZE_PLEN_FLAGS( <plen> ) . .  size for a flags list with physical length
-*/
-#define SIZE_PLEN_FLAGS(plen) \
-  (4*sizeof(Obj)+(((plen)+BIPEB-1) >> LBIPEB)*sizeof(Obj))
-
+static inline Obj NEW_FLAGS(UInt len)
+{
+    UInt size = (4 + ((len+BIPEB-1) >> LBIPEB)) * sizeof(Obj);
+    Obj flags = NewBag(T_FLAGS, size);
+    ADDR_OBJ(flags)[2] = INTOBJ_INT(len);
+    return flags;
+}
 
 
 /****************************************************************************
@@ -276,13 +272,6 @@ static inline void SET_ENABLED_ATTR(Obj oper, Int x)
 *F  LEN_FLAGS( <flags> )  . . . . . . . . . . . . . .  length of a flags list
 */
 #define LEN_FLAGS(list)                 (INT_INTOBJ(CONST_ADDR_OBJ(list)[2]))
-
-
-/****************************************************************************
-**
-*F  SET_LEN_FLAGS( <flags>, <len> ) . . . . .  set the length of a flags list
-*/
-#define SET_LEN_FLAGS(flags,len)        (ADDR_OBJ(flags)[2]=INTOBJ_INT(len))
 
 
 /****************************************************************************
