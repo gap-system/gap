@@ -352,6 +352,13 @@ static inline Obj NEW_FLAGS(UInt len)
 
 #define ELM_FLAGS(list, pos) (C_ELM_FLAGS(list, pos) ? True : False)
 
+static inline Int SAFE_C_ELM_FLAGS(Obj flags, UInt pos)
+{
+    return (pos <= LEN_FLAGS(flags)) ? C_ELM_FLAGS(flags, pos) : 0;
+}
+
+#define SAFE_ELM_FLAGS(list, pos) (SAFE_C_ELM_FLAGS(list, pos) ? True : False)
+
 
 /****************************************************************************
 **
