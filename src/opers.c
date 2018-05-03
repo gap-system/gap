@@ -570,6 +570,10 @@ Obj FuncAND_FLAGS (
 
     if (flags1 == flags2)
         return flags1;
+    if (LEN_FLAGS(flags2) == 0)
+        return flags1;
+    if (LEN_FLAGS(flags1) == 0)
+        return flags2;
 
     // check the cache
 #   ifdef AND_FLAGS_HASH_SIZE
@@ -631,20 +635,7 @@ Obj FuncAND_FLAGS (
     size1  = NRB_FLAGS(flags1);
     len2   = LEN_FLAGS(flags2);
     size2  = NRB_FLAGS(flags2);
-    if ( len1 == 0 ) {
-#       if defined(HPCGAP) && defined(AND_FLAGS_HASH_SIZE)
-            if (locked)
-                HashUnlock(locked);
-#       endif
-        return flags2;
-    }
-    if ( len2 == 0 ) {
-#       if defined(HPCGAP) && defined(AND_FLAGS_HASH_SIZE)
-            if (locked)
-                HashUnlock(locked);
-#       endif
-        return flags1;
-    }
+
     if ( len1 < len2 ) {
         flags = NEW_FLAGS( len2 );
         ptr1 = BLOCKS_FLAGS(flags1);
