@@ -10,24 +10,6 @@ gap> flags2 := FLAGS_FILTER(IsPGroup and IsMutable);
 <flag list>
 
 #
-gap> LEN_FLAGS(fail);
-Error, <flags> must be a flags list (not a boolean or fail)
-gap> LEN_FLAGS(flags);
-1
-
-#
-gap> ELM_FLAGS(fail,1);
-Error, <flags> must be a flags list (not a boolean or fail)
-gap> ELM_FLAGS(flags,0);
-Error, <pos> must be a small positive integer (not a integer)
-gap> ELM_FLAGS(flags,fail);
-Error, <pos> must be a small positive integer (not a boolean or fail)
-gap> ELM_FLAGS(flags,1);
-true
-gap> ELM_FLAGS(flags,2);
-false
-
-#
 gap> HASH_FLAGS(fail);
 Error, <flags> must be a flags list (not a boolean or fail)
 gap> HASH_FLAGS(flags);
