@@ -230,9 +230,8 @@ static inline void SET_ENABLED_ATTR(Obj oper, Int x)
 */
 static inline Obj NEW_FLAGS(UInt len)
 {
-    UInt size = (4 + ((len+BIPEB-1) >> LBIPEB)) * sizeof(Obj);
+    UInt size = (3 + ((len+BIPEB-1) >> LBIPEB)) * sizeof(Obj);
     Obj flags = NewBag(T_FLAGS, size);
-    ADDR_OBJ(flags)[2] = INTOBJ_INT(len);
     return flags;
 }
 
@@ -271,36 +270,40 @@ static inline Obj NEW_FLAGS(UInt len)
 **
 *F  LEN_FLAGS( <flags> )  . . . . . . . . . . . . . .  length of a flags list
 */
-#define LEN_FLAGS(list)                 (INT_INTOBJ(CONST_ADDR_OBJ(list)[2]))
-
+static inline UInt LEN_FLAGS(Obj flags)
+{
+    return (SIZE_OBJ(flags) / sizeof(Obj) - 3) << LBIPEB;
+};
 
 /****************************************************************************
 **
 *F  AND_CACHE_FLAGS( <flags> )  . . . . . . . . . 'and' cache of a flags list
 */
-#define AND_CACHE_FLAGS(list)           (CONST_ADDR_OBJ(list)[3])
+#define AND_CACHE_FLAGS(list)           (CONST_ADDR_OBJ(list)[2])
 
 
 /****************************************************************************
 **
 *F  SET_AND_CACHE_FLAGS( <flags>, <len> ) set the 'and' cache of a flags list
 */
-#define SET_AND_CACHE_FLAGS(flags,andc)  (ADDR_OBJ(flags)[3]=(andc))
+#define SET_AND_CACHE_FLAGS(flags,andc)  (ADDR_OBJ(flags)[2]=(andc))
 
 
 /****************************************************************************
 **
 *F  NRB_FLAGS( <flags> )  . . . . . .  number of basic blocks of a flags list
 */
-#define NRB_FLAGS(flags)                ((LEN_FLAGS(flags)+BIPEB-1) >> LBIPEB)
-
+static inline UInt NRB_FLAGS(Obj flags)
+{
+    return SIZE_OBJ(flags) / sizeof(Obj) - 3;
+};
 
 
 /****************************************************************************
 **
 *F  BLOCKS_FLAGS( <flags> ) . . . . . . . . . . . . data area of a flags list
 */
-#define BLOCKS_FLAGS(flags)             ((UInt*)(ADDR_OBJ(flags)+4))
+#define BLOCKS_FLAGS(flags)             ((UInt*)(ADDR_OBJ(flags)+3))
 
 
 /****************************************************************************
