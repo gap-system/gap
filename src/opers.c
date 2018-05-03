@@ -496,8 +496,7 @@ Obj FuncSUB_FLAGS (
     len2   = LEN_FLAGS(flags2);
     size2  = NRB_FLAGS(flags2);
     if ( len1 < len2 ) {
-        NEW_FLAGS( flags, len1 );
-        SET_LEN_FLAGS( flags, len1 );
+        flags = NEW_FLAGS( len1 );
         ptr1 = BLOCKS_FLAGS(flags1);
         ptr2 = BLOCKS_FLAGS(flags2);
         ptr  = BLOCKS_FLAGS(flags);
@@ -505,8 +504,7 @@ Obj FuncSUB_FLAGS (
             *ptr++ = *ptr1++ & ~ *ptr2++;
     }
     else {
-        NEW_FLAGS( flags, len1 );
-        SET_LEN_FLAGS( flags, len1 );
+        flags = NEW_FLAGS( len1 );
         ptr1 = BLOCKS_FLAGS(flags1);
         ptr2 = BLOCKS_FLAGS(flags2);
         ptr  = BLOCKS_FLAGS(flags);
@@ -648,8 +646,7 @@ Obj FuncAND_FLAGS (
         return flags1;
     }
     if ( len1 < len2 ) {
-        NEW_FLAGS( flags, len2 );
-        SET_LEN_FLAGS( flags, len2 );
+        flags = NEW_FLAGS( len2 );
         ptr1 = BLOCKS_FLAGS(flags1);
         ptr2 = BLOCKS_FLAGS(flags2);
         ptr  = BLOCKS_FLAGS(flags);
@@ -659,8 +656,7 @@ Obj FuncAND_FLAGS (
             *ptr++ =           *ptr2++;
     }
     else {
-        NEW_FLAGS( flags, len1 );
-        SET_LEN_FLAGS( flags, len1 );
+        flags = NEW_FLAGS( len1 );
         ptr1 = BLOCKS_FLAGS(flags1);
         ptr2 = BLOCKS_FLAGS(flags2);
         ptr  = BLOCKS_FLAGS(flags);
@@ -1230,8 +1226,7 @@ Obj NewFilter (
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoFilter) );
     SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(getter, INTOBJ_INT(0));
-    NEW_FLAGS( flags, flag1 );
-    SET_LEN_FLAGS( flags, flag1 );
+    flags = NEW_FLAGS( flag1 );
     SET_ELM_FLAGS( flags, flag1, True );
     SET_FLAGS_FILT(getter, flags);
     CHANGED_BAG(getter);
@@ -1381,8 +1376,7 @@ Obj NewReturnTrueFilter ( void )
         DoReturnTrueFilter );
     SET_FLAG1_FILT(getter, INTOBJ_INT(0));
     SET_FLAG2_FILT(getter, INTOBJ_INT(0));
-    NEW_FLAGS( flags, 0 );
-    SET_LEN_FLAGS( flags, 0 );
+    flags = NEW_FLAGS( 0 );
     SET_FLAGS_FILT(getter, flags);
     CHANGED_BAG(getter);
 
@@ -2828,8 +2822,7 @@ static Obj MakeTester( Obj name, Int flag1, Int flag2)
                            DoTestAttribute );
     SET_FLAG1_FILT(tester, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(tester, INTOBJ_INT(flag2));
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
+    flags = NEW_FLAGS( flag2 );
     SET_ELM_FLAGS( flags, flag2, True );
     SET_FLAGS_FILT(tester, flags);
     SET_SETTR_FILT(tester, 0);
@@ -3117,8 +3110,7 @@ Obj NewProperty (
 
     SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(getter, INTOBJ_INT(flag2));
-    NEW_FLAGS( flags, flag2 );
-    SET_LEN_FLAGS( flags, flag2 );
+    flags = NEW_FLAGS( flag2 );
     SET_ELM_FLAGS( flags, flag2, True );
     SET_ELM_FLAGS( flags, flag1, True );
     SET_FLAGS_FILT(getter, flags);
