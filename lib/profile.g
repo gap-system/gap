@@ -981,8 +981,6 @@ BIND_GLOBAL("DisplayCacheStats",function()
         "Operation TryNextMethod",
         "Operation cache misses",
         "IS_SUBSET_FLAGS calls",
-        "IS_SUBSET_FLAGS less trues",
-        "IS_SUBSET_FLAGS few trues",
         "WITH_HIDDEN_IMPS hits",
         "WITH_HIDDEN_IMPS misses",
         "WITH_IMPS hits",
