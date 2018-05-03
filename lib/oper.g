@@ -521,8 +521,6 @@ end );
 ##  #I  immediate: IsPerfectGroup
 ##  #I  immediate: IsNonTrivial
 ##  #I  immediate: Size
-##  #I  immediate: IsFreeAbelian
-##  #I  immediate: IsTorsionFree
 ##  #I  immediate: IsNonTrivial
 ##  #I  immediate: IsPerfectGroup
 ##  #I  immediate: GeneralizedPcgs
