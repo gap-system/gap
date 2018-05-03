@@ -602,14 +602,12 @@ InstallAttributeFunction(
             # to replace the explicit locking and unlocking here.
             lk := READ_LOCK(FILTER_REGION);
         fi;
-        for i in [ 1 .. LEN_FLAGS( flags ) ] do
-            if ELM_FLAGS( flags, i ) then
-                if INFO_FILTERS[i] in FNUM_CATS_AND_REPS  then
-                    cats := cats and FILTERS[i];
-                    rank := rank - RankFilter( FILTERS[i] );
-                elif INFO_FILTERS[i] in FNUM_PROS  then
-                    ADD_LIST( props, FILTERS[i] );
-                fi;
+        for i in TRUES_FLAGS( flags ) do
+            if INFO_FILTERS[i] in FNUM_CATS_AND_REPS  then
+                cats := cats and FILTERS[i];
+                rank := rank - RankFilter( FILTERS[i] );
+            elif INFO_FILTERS[i] in FNUM_PROS  then
+                ADD_LIST( props, FILTERS[i] );
             fi;
         od;
         if IsHPCGAP then

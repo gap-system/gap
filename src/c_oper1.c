@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "-126023111"
+#define FILE_CRC  "-110560148"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -56,10 +56,6 @@ static GVar G_IS__SUBSET__FLAGS;
 static Obj  GF_IS__SUBSET__FLAGS;
 static GVar G_TRUES__FLAGS;
 static Obj  GF_TRUES__FLAGS;
-static GVar G_LEN__FLAGS;
-static Obj  GF_LEN__FLAGS;
-static GVar G_ELM__FLAGS;
-static Obj  GF_ELM__FLAGS;
 static GVar G_FLAG1__FILTER;
 static Obj  GF_FLAG1__FILTER;
 static GVar G_FLAGS__FILTER;
@@ -2348,6 +2344,8 @@ static Obj  HdlrFunc7 (
  Obj t_5 = 0;
  Obj t_6 = 0;
  Obj t_7 = 0;
+ Obj t_8 = 0;
+ Obj t_9 = 0;
  (void)l_flags;
  (void)l_rank;
  (void)l_cats;
@@ -2392,89 +2390,94 @@ static Obj  HdlrFunc7 (
   SET_LEN_PLIST( t_1, 0 );
   ASS_LVAR( 2, t_1 );
   
-  /* for i in [ 1 .. LEN_FLAGS( flags ) ] do */
-  t_3 = GF_LEN__FLAGS;
-  t_2 = CALL_1ARGS( t_3, l_flags );
-  CHECK_FUNC_RESULT( t_2 )
-  CHECK_INT_SMALL( t_2 )
-  for ( t_1 = INTOBJ_INT(1);
-        ((Int)t_1) <= ((Int)t_2);
-        t_1 = (Obj)(((UInt)t_1)+4) ) {
-   l_i = t_1;
-   
-   /* if ELM_FLAGS( flags, i ) then */
-   t_5 = GF_ELM__FLAGS;
-   t_4 = CALL_2ARGS( t_5, l_flags, l_i );
-   CHECK_FUNC_RESULT( t_4 )
-   CHECK_BOOL( t_4 )
-   t_3 = (Obj)(UInt)(t_4 != False);
+  /* for i in TRUES_FLAGS( flags ) do */
+  t_5 = GF_TRUES__FLAGS;
+  t_4 = CALL_1ARGS( t_5, l_flags );
+  CHECK_FUNC_RESULT( t_4 )
+  if ( IS_SMALL_LIST(t_4) ) {
+   t_3 = (Obj)(UInt)1;
+   t_1 = INTOBJ_INT(1);
+  }
+  else {
+   t_3 = (Obj)(UInt)0;
+   t_1 = CALL_1ARGS( GF_ITERATOR, t_4 );
+  }
+  while ( 1 ) {
    if ( t_3 ) {
+    if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
+    t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+    t_1 = (Obj)(((UInt)t_1)+4);
+    if ( t_2 == 0 )  continue;
+   }
+   else {
+    if ( CALL_1ARGS( GF_IS_DONE_ITER, t_1 ) != False )  break;
+    t_2 = CALL_1ARGS( GF_NEXT_ITER, t_1 );
+   }
+   l_i = t_2;
+   
+   /* if INFO_FILTERS[i] in FNUM_CATS_AND_REPS then */
+   t_7 = GC_INFO__FILTERS;
+   CHECK_BOUND( t_7, "INFO_FILTERS" )
+   CHECK_INT_POS( l_i )
+   C_ELM_LIST_FPL( t_6, t_7, l_i )
+   t_7 = GC_FNUM__CATS__AND__REPS;
+   CHECK_BOUND( t_7, "FNUM_CATS_AND_REPS" )
+   t_5 = (Obj)(UInt)(IN( t_6, t_7 ));
+   if ( t_5 ) {
     
-    /* if INFO_FILTERS[i] in FNUM_CATS_AND_REPS then */
-    t_5 = GC_INFO__FILTERS;
-    CHECK_BOUND( t_5, "INFO_FILTERS" )
-    C_ELM_LIST_FPL( t_4, t_5, l_i )
-    t_5 = GC_FNUM__CATS__AND__REPS;
-    CHECK_BOUND( t_5, "FNUM_CATS_AND_REPS" )
-    t_3 = (Obj)(UInt)(IN( t_4, t_5 ));
-    if ( t_3 ) {
-     
-     /* cats := cats and FILTERS[i]; */
-     if ( l_cats == False ) {
-      t_3 = l_cats;
-     }
-     else if ( l_cats == True ) {
-      t_5 = GC_FILTERS;
-      CHECK_BOUND( t_5, "FILTERS" )
-      C_ELM_LIST_FPL( t_4, t_5, l_i )
-      CHECK_BOOL( t_4 )
-      t_3 = t_4;
-     }
-     else {
-      CHECK_FUNC( l_cats )
-      t_6 = GC_FILTERS;
-      CHECK_BOUND( t_6, "FILTERS" )
-      C_ELM_LIST_FPL( t_5, t_6, l_i )
-      CHECK_FUNC( t_5 )
-      t_3 = NewAndFilter( l_cats, t_5 );
-     }
-     l_cats = t_3;
-     
-     /* rank := rank - RankFilter( FILTERS[i] ); */
-     t_5 = GF_RankFilter;
+    /* cats := cats and FILTERS[i]; */
+    if ( l_cats == False ) {
+     t_5 = l_cats;
+    }
+    else if ( l_cats == True ) {
      t_7 = GC_FILTERS;
      CHECK_BOUND( t_7, "FILTERS" )
      C_ELM_LIST_FPL( t_6, t_7, l_i )
-     t_4 = CALL_1ARGS( t_5, t_6 );
-     CHECK_FUNC_RESULT( t_4 )
-     C_DIFF_FIA( t_3, l_rank, t_4 )
-     l_rank = t_3;
+     CHECK_BOOL( t_6 )
+     t_5 = t_6;
+    }
+    else {
+     CHECK_FUNC( l_cats )
+     t_8 = GC_FILTERS;
+     CHECK_BOUND( t_8, "FILTERS" )
+     C_ELM_LIST_FPL( t_7, t_8, l_i )
+     CHECK_FUNC( t_7 )
+     t_5 = NewAndFilter( l_cats, t_7 );
+    }
+    l_cats = t_5;
+    
+    /* rank := rank - RankFilter( FILTERS[i] ); */
+    t_7 = GF_RankFilter;
+    t_9 = GC_FILTERS;
+    CHECK_BOUND( t_9, "FILTERS" )
+    C_ELM_LIST_FPL( t_8, t_9, l_i )
+    t_6 = CALL_1ARGS( t_7, t_8 );
+    CHECK_FUNC_RESULT( t_6 )
+    C_DIFF_FIA( t_5, l_rank, t_6 )
+    l_rank = t_5;
+    
+   }
+   
+   /* elif INFO_FILTERS[i] in FNUM_PROS then */
+   else {
+    t_7 = GC_INFO__FILTERS;
+    CHECK_BOUND( t_7, "INFO_FILTERS" )
+    C_ELM_LIST_FPL( t_6, t_7, l_i )
+    t_7 = GC_FNUM__PROS;
+    CHECK_BOUND( t_7, "FNUM_PROS" )
+    t_5 = (Obj)(UInt)(IN( t_6, t_7 ));
+    if ( t_5 ) {
+     
+     /* ADD_LIST( props, FILTERS[i] ); */
+     t_5 = GF_ADD__LIST;
+     t_6 = OBJ_LVAR( 2 );
+     CHECK_BOUND( t_6, "props" )
+     t_8 = GC_FILTERS;
+     CHECK_BOUND( t_8, "FILTERS" )
+     C_ELM_LIST_FPL( t_7, t_8, l_i )
+     CALL_2ARGS( t_5, t_6, t_7 );
      
     }
-    
-    /* elif INFO_FILTERS[i] in FNUM_PROS then */
-    else {
-     t_5 = GC_INFO__FILTERS;
-     CHECK_BOUND( t_5, "INFO_FILTERS" )
-     C_ELM_LIST_FPL( t_4, t_5, l_i )
-     t_5 = GC_FNUM__PROS;
-     CHECK_BOUND( t_5, "FNUM_PROS" )
-     t_3 = (Obj)(UInt)(IN( t_4, t_5 ));
-     if ( t_3 ) {
-      
-      /* ADD_LIST( props, FILTERS[i] ); */
-      t_3 = GF_ADD__LIST;
-      t_4 = OBJ_LVAR( 2 );
-      CHECK_BOUND( t_4, "props" )
-      t_6 = GC_FILTERS;
-      CHECK_BOUND( t_6, "FILTERS" )
-      C_ELM_LIST_FPL( t_5, t_6, l_i )
-      CALL_2ARGS( t_3, t_4, t_5 );
-      
-     }
-    }
-    /* fi */
-    
    }
    /* fi */
    
@@ -2526,8 +2529,8 @@ static Obj  HdlrFunc7 (
    t_6 = NewFunction( NameFunc[8], 1, 0, HdlrFunc8 );
    SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
    t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
-   SET_STARTLINE_BODY(t_7, 634);
-   SET_ENDLINE_BODY(t_7, 652);
+   SET_STARTLINE_BODY(t_7, 632);
+   SET_ENDLINE_BODY(t_7, 650);
    SET_FILENAME_BODY(t_7, FileName);
    SET_BODY_FUNC(t_6, t_7);
    CHANGED_BAG( STATE(CurrLVars) );
@@ -3130,8 +3133,8 @@ static Obj  HdlrFunc11 (
   t_1 = NewFunction( NameFunc[12], 1, 0, HdlrFunc12 );
   SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
   t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
-  SET_STARTLINE_BODY(t_2, 831);
-  SET_ENDLINE_BODY(t_2, 835);
+  SET_STARTLINE_BODY(t_2, 829);
+  SET_ENDLINE_BODY(t_2, 833);
   SET_FILENAME_BODY(t_2, FileName);
   SET_BODY_FUNC(t_1, t_2);
   CHANGED_BAG( STATE(CurrLVars) );
@@ -3210,8 +3213,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[13], 1, 0, HdlrFunc13 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 852);
- SET_ENDLINE_BODY(t_7, 852);
+ SET_STARTLINE_BODY(t_7, 850);
+ SET_ENDLINE_BODY(t_7, 850);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3273,8 +3276,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[14], 2, 0, HdlrFunc14 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 874);
- SET_ENDLINE_BODY(t_7, 897);
+ SET_STARTLINE_BODY(t_7, 872);
+ SET_ENDLINE_BODY(t_7, 895);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3322,8 +3325,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[15], 2, 0, HdlrFunc15 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 907);
- SET_ENDLINE_BODY(t_7, 915);
+ SET_STARTLINE_BODY(t_7, 905);
+ SET_ENDLINE_BODY(t_7, 913);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3384,8 +3387,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[16], 3, 0, HdlrFunc16 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_7, 924);
- SET_ENDLINE_BODY(t_7, 937);
+ SET_STARTLINE_BODY(t_7, 922);
+ SET_ENDLINE_BODY(t_7, 935);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3758,8 +3761,8 @@ static Obj  HdlrFunc17 (
  t_4 = NewFunction( NameFunc[18], -1, 0, HdlrFunc18 );
  SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
  t_5 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_5, 1003);
- SET_ENDLINE_BODY(t_5, 1019);
+ SET_STARTLINE_BODY(t_5, 1001);
+ SET_ENDLINE_BODY(t_5, 1017);
  SET_FILENAME_BODY(t_5, FileName);
  SET_BODY_FUNC(t_4, t_5);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4170,14 +4173,12 @@ static Obj  HdlrFunc1 (
           cats := IS_OBJECT;
           props := [  ];
           ;
-          for i in [ 1 .. LEN_FLAGS( flags ) ] do
-              if ELM_FLAGS( flags, i ) then
-                  if INFO_FILTERS[i] in FNUM_CATS_AND_REPS then
-                      cats := cats and FILTERS[i];
-                      rank := rank - RankFilter( FILTERS[i] );
-                  elif INFO_FILTERS[i] in FNUM_PROS then
-                      ADD_LIST( props, FILTERS[i] );
-                  fi;
+          for i in TRUES_FLAGS( flags ) do
+              if INFO_FILTERS[i] in FNUM_CATS_AND_REPS then
+                  cats := cats and FILTERS[i];
+                  rank := rank - RankFilter( FILTERS[i] );
+              elif INFO_FILTERS[i] in FNUM_PROS then
+                  ADD_LIST( props, FILTERS[i] );
               fi;
           od;
           ;
@@ -4210,7 +4211,7 @@ static Obj  HdlrFunc1 (
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_3, 590);
- SET_ENDLINE_BODY(t_3, 656);
+ SET_ENDLINE_BODY(t_3, 654);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4224,8 +4225,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[9], 6, 0, HdlrFunc9 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_3, 659);
- SET_ENDLINE_BODY(t_3, 665);
+ SET_STARTLINE_BODY(t_3, 657);
+ SET_ENDLINE_BODY(t_3, 663);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4253,8 +4254,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[10], 2, 0, HdlrFunc10 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 678);
- SET_ENDLINE_BODY(t_4, 702);
+ SET_STARTLINE_BODY(t_4, 676);
+ SET_ENDLINE_BODY(t_4, 700);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4338,8 +4339,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[11], 4, 0, HdlrFunc11 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 827);
- SET_ENDLINE_BODY(t_4, 938);
+ SET_STARTLINE_BODY(t_4, 825);
+ SET_ENDLINE_BODY(t_4, 936);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4390,8 +4391,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[17], -1, 0, HdlrFunc17 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 973);
- SET_ENDLINE_BODY(t_4, 1020);
+ SET_STARTLINE_BODY(t_4, 971);
+ SET_ENDLINE_BODY(t_4, 1018);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4455,8 +4456,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_WITH__HIDDEN__IMPS__FLAGS = GVarName( "WITH_HIDDEN_IMPS_FLAGS" );
  G_IS__SUBSET__FLAGS = GVarName( "IS_SUBSET_FLAGS" );
  G_TRUES__FLAGS = GVarName( "TRUES_FLAGS" );
- G_LEN__FLAGS = GVarName( "LEN_FLAGS" );
- G_ELM__FLAGS = GVarName( "ELM_FLAGS" );
  G_FLAG1__FILTER = GVarName( "FLAG1_FILTER" );
  G_FLAGS__FILTER = GVarName( "FLAGS_FILTER" );
  G_METHODS__OPERATION = GVarName( "METHODS_OPERATION" );
@@ -4570,8 +4569,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "WITH_HIDDEN_IMPS_FLAGS", &GF_WITH__HIDDEN__IMPS__FLAGS );
  InitFopyGVar( "IS_SUBSET_FLAGS", &GF_IS__SUBSET__FLAGS );
  InitFopyGVar( "TRUES_FLAGS", &GF_TRUES__FLAGS );
- InitFopyGVar( "LEN_FLAGS", &GF_LEN__FLAGS );
- InitFopyGVar( "ELM_FLAGS", &GF_ELM__FLAGS );
  InitFopyGVar( "FLAG1_FILTER", &GF_FLAG1__FILTER );
  InitFopyGVar( "FLAGS_FILTER", &GF_FLAGS__FILTER );
  InitFopyGVar( "METHODS_OPERATION", &GF_METHODS__OPERATION );
@@ -4698,7 +4695,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = -126023111,
+ .crc         = -110560148,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
