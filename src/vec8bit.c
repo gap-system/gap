@@ -3536,7 +3536,7 @@ Obj ProdMat8BitVec8Bit( Obj mat, Obj vec)
     len = LEN_MAT8BIT(mat);
     q = FIELD_VEC8BIT(vec);
     row1 = ELM_MAT8BIT(mat, 1);
-    assert(q = FIELD_VEC8BIT(row1));
+    assert(q == FIELD_VEC8BIT(row1));
     res = ZeroVec8Bit(q, len, IS_MUTABLE_OBJ(row1) || IS_MUTABLE_OBJ(vec));
     info = GetFieldInfo8Bit(q);
     settab = SETELT_FIELDINFO_8BIT(info);
