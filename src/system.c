@@ -1507,6 +1507,8 @@ static void SySetInitialGapRootPaths(void)
 *F RegisterSyLongjmpObserver( <func> )
 ** Register a function to be called before longjmp is called.
 ** returns 1 on success, 0 if the table of functions is already full.
+** This function is idempotent -- if a function is passed multiple times
+** it is still only registered once.
 */
 
 enum { signalSyLongjmpFuncsLen = 16 };
@@ -1517,6 +1519,9 @@ Int RegisterSyLongjmpObserver(voidfunc func)
 {
     Int i;
     for (i = 0; i < signalSyLongjmpFuncsLen; ++i) {
+        if (signalSyLongjmpFuncs[i] == func) {
+            return 1;
+        }
         if (signalSyLongjmpFuncs[i] == 0) {
             signalSyLongjmpFuncs[i] = func;
             return 1;
