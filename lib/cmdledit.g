@@ -504,8 +504,60 @@ end;
 GAPInfo.CommandLineEditFunctions.Functions.0 := 
                        GAPInfo.CommandLineEditFunctions.Functions.AddHistory;
 
-##  C-p: previous line starting like current before point
+# For those more used to the default readline history behavior
+##  C-p: previous history
 GAPInfo.CommandLineEditFunctions.Functions.BackwardHistory := function(l)
+  local hist, n;
+  if UserPreference("HistoryMaxLines") <= 0 then
+    return [];
+  fi;
+
+  hist := GAPInfo.History.Lines;
+  n := GAPInfo.History.Pos;
+
+  if n > 1 then
+    n := n - 1;
+    GAPInfo.History.Pos := n;
+    GAPInfo.History.Last := n;
+
+    return [1,Length(l[3]) + 1, hist[n], Length(hist[n])+1];
+  else
+    return [100];
+  fi;
+end;
+# bind to C-p
+GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('P') mod 32) :=
+                GAPInfo.CommandLineEditFunctions.Functions.BackwardHistory;
+BindKeysToGAPHandler("\020");
+
+##  C-n: next history
+GAPInfo.CommandLineEditFunctions.Functions.ForwardHistory := function(l)
+  local hist, n;
+  if UserPreference("HistoryMaxLines") <= 0 then
+    return [];
+  fi;
+
+  hist := GAPInfo.History.Lines;
+  n := GAPInfo.History.Pos;
+
+  if n < Length(hist) then
+    n := n + 1;
+    GAPInfo.History.Pos := n;
+    GAPInfo.History.Last := n;
+
+    return [1,Length(l[3]) + 1, hist[n], Length(hist[n])+1];
+  else
+    GAPInfo.History.Pos := n + 1;
+    return [1,Length(l[3]) + 1 , "", 1];
+  fi;
+end;
+# bind to C-n
+GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('N') mod 32) :=
+                GAPInfo.CommandLineEditFunctions.Functions.ForwardHistory;
+BindKeysToGAPHandler("\016");
+
+##  C-r: previous line starting like current before point
+GAPInfo.CommandLineEditFunctions.Functions.BackwardHistorySearch := function(l)
   local hist, n, start;
   if UserPreference("HistoryMaxLines") <= 0 then
     return [];
@@ -534,15 +586,13 @@ GAPInfo.CommandLineEditFunctions.Functions.BackwardHistory := function(l)
     return [false, l[4], Length(l[3])+1];
   fi;
 end;
-# bind to C-p and map Up-key
-GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('P') mod 32) := 
-                GAPInfo.CommandLineEditFunctions.Functions.BackwardHistory;
-BindKeysToGAPHandler("\020");
-ReadlineInitLine("\"\\eOA\": \"\\C-p\"");
-ReadlineInitLine("\"\\e[A\": \"\\C-p\"");
+# bind to C-r
+GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('R') mod 32) :=
+                GAPInfo.CommandLineEditFunctions.Functions.BackwardHistorySearch;
+BindKeysToGAPHandler("\022");
 
-##  C-n: next line starting like current before point
-GAPInfo.CommandLineEditFunctions.Functions.ForwardHistory := function(l)
+##  C-t: next line starting like current before point
+GAPInfo.CommandLineEditFunctions.Functions.ForwardHistorySearch := function(l)
   local hist, n, start;
   if UserPreference("HistoryMaxLines") <= 0 then
     return [];
@@ -581,12 +631,16 @@ GAPInfo.CommandLineEditFunctions.Functions.ForwardHistory := function(l)
     return [false, l[4], Length(l[3])+1];
   fi;
 end;
-# bind to C-n and map Down-key
-GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('N') mod 32) := 
-                GAPInfo.CommandLineEditFunctions.Functions.ForwardHistory;
-BindKeysToGAPHandler("\016");
-ReadlineInitLine("\"\\eOB\": \"\\C-n\"");
-ReadlineInitLine("\"\\e[B\": \"\\C-n\"");
+# bind to C-t
+GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('T') mod 32) :=
+                GAPInfo.CommandLineEditFunctions.Functions.ForwardHistorySearch;
+BindKeysToGAPHandler("\024");
+
+# up & down key, set to search for compatibility
+ReadlineInitLine("\"\\eOA\": \"\\C-r\"");
+ReadlineInitLine("\"\\e[A\": \"\\C-r\"");
+ReadlineInitLine("\"\\eOB\": \"\\C-t\"");
+ReadlineInitLine("\"\\e[B\": \"\\C-t\"");
 
 ##  ESC <:  beginning of history
 GAPInfo.CommandLineEditFunctions.Functions.BeginHistory := function(l)
