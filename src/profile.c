@@ -14,6 +14,7 @@
 #include "bool.h"
 #include "calls.h"
 #include "code.h"
+#include "funcs.h"
 #include "error.h"
 #include "hookintrprtr.h"
 #include "io.h"
@@ -94,7 +95,6 @@
 **  never marked as executed.
 */
 
-
 /****************************************************************************
 **
 ** Store the current state of the profiler
@@ -145,10 +145,55 @@ struct ProfileState
   ** clear */
   UInt profiledPreviously;
 
+  Int LongJmpOccurred;
+
+  // We store the value of RecursionDepth each time we enter a function.
+  // This is the only way to detect if GAP has left a function by performing
+  // a longjmp.
+  // We need to store the actual values, as RecursionDepth can increase
+  // by more than one when a GAP function is called
+  Obj visitedDepths;
 } profileState;
 
 /* We keep this seperate as it is exported for use in other files */
 UInt profileState_Active;
+
+
+static void ProfileRegisterLongJmpOccurred(void)
+{
+    profileState.LongJmpOccurred = 1;
+}
+
+// This function is called when we detect a longjmp occurred, and
+// outputs a 'return' into the profile for any function which was
+// jumped over.
+// It is fine for this function to be called when a longjmp has not
+// occurred, or when no function was longjmped over.
+static void CheckLeaveFunctionsAfterLongjmp(void)
+{
+    if (!profileState.LongJmpOccurred)
+        return;
+
+#ifdef HPCGAP
+    if (profileState.profiledThread != TLS(threadID))
+        return;
+#endif
+
+    profileState.LongJmpOccurred = 0;
+
+    Int pos = LEN_PLIST(profileState.visitedDepths);
+    Int depth = GetRecursionDepth();
+
+    while (pos > 0 && INT_INTOBJ(ELM_PLIST(profileState.visitedDepths, pos)) > depth) {
+        // Give dummy values if we do not know
+        fprintf(profileState.Stream,
+                "{\"Type\":\"O\",\"Fun\":\"nameless\",\"Line\":-1,"
+                "\"EndLine\":-1,\"File\":\"<missing filename>\","
+                "\"FileId\":-1}\n");
+        PopPlist(profileState.visitedDepths);
+        pos--;
+    }
+}
 
 static inline void outputFilenameIdIfRequired(UInt id)
 {
@@ -212,10 +257,32 @@ void HookedLineOutput(Obj func, char type)
 }
 
 void enterFunction(Obj func)
-{ HookedLineOutput(func, 'I'); }
+{
+#ifdef HPCGAP
+    if (profileState.profiledThread != TLS(threadID))
+      return;
+#endif
+    CheckLeaveFunctionsAfterLongjmp();
+    PushPlist(profileState.visitedDepths, INTOBJ_INT(GetRecursionDepth()));
+    HookedLineOutput(func, 'I');
+}
 
 void leaveFunction(Obj func)
-{ HookedLineOutput(func, 'O'); }
+{
+#ifdef HPCGAP
+    if (profileState.profiledThread != TLS(threadID))
+      return;
+#endif
+    // Do not crash if we exit the function in which
+    // Profile was originally called. The profiling
+    // package can handle such profiles.
+    if (LEN_PLIST(profileState.visitedDepths) > 0) {
+        PopPlist(profileState.visitedDepths);
+    }
+    CheckLeaveFunctionsAfterLongjmp();
+
+    HookedLineOutput(func, 'O');
+}
 
 /****************************************************************************
 **
@@ -304,6 +371,8 @@ static inline void outputStat(Stat stat, int exec, int visited)
 {
   UInt line;
   int nameid;
+
+  CheckLeaveFunctionsAfterLongjmp();
 
   Int8 ticks = 0, newticks = 0;
 
@@ -458,6 +527,7 @@ void enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
     ActivateHooks(&profileHooks);
 
     profileState_Active = 1;
+    RegisterSyLongjmpObserver(ProfileRegisterLongJmpOccurred);
     profileState.profiledPreviously = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
@@ -519,7 +589,10 @@ Obj FuncACTIVATE_PROFILING(Obj self,
         return Fail;
     }
 
+    memset(&profileState, 0, sizeof(profileState));
+
     OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
+    profileState.visitedDepths = NEW_PLIST(T_PLIST, 0);
 
     if ( ! IsStringConv( filename ) ) {
         ErrorMayQuit("<filename> must be a string",0,0);
@@ -587,6 +660,7 @@ Obj FuncACTIVATE_PROFILING(Obj self,
     }
 
     profileState_Active = 1;
+    RegisterSyLongjmpObserver(ProfileRegisterLongJmpOccurred);
     profileState.profiledPreviously = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
@@ -785,6 +859,7 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
+    profileState.visitedDepths = NEW_PLIST(T_PLIST, 0);
     OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
     /* return success                                                      */
     return 0;
@@ -799,6 +874,7 @@ static Int InitKernel (
 {
     InitHdlrFuncsFromTable( GVarFuncs );
     InitGlobalBag(&OutputtedFilenameList, "src/profile.c:OutputtedFileList");
+    InitGlobalBag(&profileState.visitedDepths, "src/profile.c:visitedDepths");
     return 0;
 }
 
