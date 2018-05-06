@@ -29,7 +29,7 @@ gap> a[1];
 gap> a[1,1];
 [ 1 ]
 gap> a[1,1,1];
-Syntax error: [] only supports 1 or 2 indices in stream:1
+Syntax error: '[]' only supports 1 or 2 indices in stream:1
 a[1,1,1];
        ^
 
@@ -95,15 +95,15 @@ gap> a[1] := [ [ 42 ] ];
 gap> a[1,1] := [ 43 ];
 [ 43 ]
 gap> a[1,1,1] := 44;
-Syntax error: [] only supports 1 or 2 indices in stream:1
+Syntax error: '[]' only supports 1 or 2 indices in stream:1
 a[1,1,1] := 44;
        ^
 gap> IsBound(a[1,1,1]);
-Syntax error: [] only supports 1 or 2 indices in stream:1
+Syntax error: '[]' only supports 1 or 2 indices in stream:1
 IsBound(a[1,1,1]);
                ^
 gap> Unbind(a[1,1,1]);
-Syntax error: [] only supports 1 or 2 indices in stream:1
+Syntax error: '[]' only supports 1 or 2 indices in stream:1
 Unbind(a[1,1,1]);
               ^
 
