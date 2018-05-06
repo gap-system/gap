@@ -2713,8 +2713,9 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     /* get the first symbol from the input                                 */
     Match( STATE(Symbol), "", 0UL );
 
-    /* using TRY_READ sets the jump buffer and mucks up the interpreter    */
+    // if scanning the first symbol produced a syntax error, abort
     if (STATE(NrError)) {
+        FlushRestOfInputLine();
         return STATUS_ERROR;
     }
 
