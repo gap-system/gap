@@ -2733,6 +2733,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     readTilde   = STATE(ReadTilde);
     tilde       = STATE(Tilde);
     currLHSGVar = STATE(CurrLHSGVar);
+    errorLVars  = STATE(ErrorLVars);
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 
     // initialize everything and begin an interpreter
@@ -2741,9 +2742,8 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     STATE(ReadTilde)   = 0;
     STATE(Tilde)       = 0;
     STATE(CurrLHSGVar) = 0;
+    STATE(ErrorLVars)  = context;
     RecreateStackNams(context);
-    errorLVars = STATE(ErrorLVars);
-    STATE(ErrorLVars) = context;
 #ifdef HPCGAP
     lockSP = RegionLockSP();
 #endif
@@ -2812,7 +2812,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     STATE(ReadTilde)   = readTilde;
     STATE(Tilde)       = tilde;
     STATE(CurrLHSGVar) = currLHSGVar;
-    STATE(ErrorLVars) = errorLVars;
+    STATE(ErrorLVars)  = errorLVars;
 
     /* copy the result (if any)                                            */
     *evalResult = STATE(IntrResult);
