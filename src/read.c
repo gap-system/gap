@@ -511,7 +511,7 @@ static LHSRef ReadSelector(TypSymbolSet follow, UInt level)
             ref.narg++;
         }
         if (ref.narg > 2) {
-          SyntaxError("[] only supports 1 or 2 indices");
+          SyntaxError("'[]' only supports 1 or 2 indices");
         }
         Match(S_RBRACK, "]", follow);
         ref.type = R_ELM_LIST;
@@ -2362,7 +2362,7 @@ static void ReadAtomic (
       nexprs ++;
 #ifdef HPCGAP
       if (nexprs > MAX_ATOMIC_OBJS) {
-        SyntaxError("atomic statement can have at most 256 objects to lock");
+        SyntaxError("'atomic' statement can have at most 256 objects to lock");
         return;
       }
 #endif
