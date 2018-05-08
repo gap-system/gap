@@ -5,11 +5,7 @@ Error, no 1st choice method found for `+' on 2 arguments at GAPROOT/lib/methsel2
 a + a at *stdin*:3 called from
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:3
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+type 'quit;' to quit to outer loop
 brk> return;
-Error, no method returned in
-  return a + a; at *stdin*:3 called from 
-<function "f">( <arguments> )
- called from read-eval loop at *stdin*:3
-gap> QUIT;
+'return' cannot be used in this read-eval-print loop
+brk> QUIT;

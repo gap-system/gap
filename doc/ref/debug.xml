@@ -41,11 +41,10 @@ error as in the following example occurs and a break loop is entered:
 <Log><![CDATA[
 gap> IsNormal(2,2);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `IsNormal' on 2 arguments called from
-<function>( <arguments> ) called from read-eval-loop
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+Error, no 1st choice method found for `IsNormal' on 2 arguments at GAPROOT/lib/methsel2.g:250 called from
+<function "HANDLE_METHOD_NOT_FOUND">( <arguments> )
+ called from read-eval loop at *stdin*:1
+type 'quit;' to quit to outer loop
 brk> 
 ]]></Log>
 <P/>

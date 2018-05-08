@@ -8,6 +8,5 @@ Error, no 1st choice method found for `[]' on 3 arguments at GAPROOT/lib/methsel
 <corrupted statement>  called from
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:5
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+type 'quit;' to quit to outer loop
 brk> QUIT;

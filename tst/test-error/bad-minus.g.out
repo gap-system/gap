@@ -10,6 +10,5 @@ AdditiveInverseAttr( elm ) at GAPROOT/lib/arith.gi:213 called from
 1 - "abc" at *stdin*:3 called from
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:5
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+type 'quit;' to quit to outer loop
 brk> QUIT;
