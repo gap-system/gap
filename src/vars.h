@@ -87,8 +87,15 @@ typedef struct {
 *F  FUNC_LVARS . . . . . . . . . . . function to which the given lvars belong
 **
 */
-#define FUNC_LVARS_PTR(lvars_ptr)   (((LVarsHeader *)lvars_ptr)->func)
-#define FUNC_LVARS(lvars_obj)       FUNC_LVARS_PTR(ADDR_OBJ(lvars_obj))
+static inline Obj FUNC_LVARS_PTR(void * lvars_ptr)
+{
+    return ((LVarsHeader *)lvars_ptr)->func;
+}
+
+static inline Obj FUNC_LVARS(Obj lvars_obj)
+{
+    return FUNC_LVARS_PTR(ADDR_OBJ(lvars_obj));
+}
 
 
 /****************************************************************************
@@ -96,8 +103,15 @@ typedef struct {
 *F  STAT_LVARS . . . . . . . current statement in function of the given lvars
 **
 */
-#define STAT_LVARS_PTR(lvars_ptr)   (((LVarsHeader *)lvars_ptr)->stat)
-#define STAT_LVARS(lvars_obj)       STAT_LVARS_PTR(ADDR_OBJ(lvars_obj))
+static inline Expr STAT_LVARS_PTR(void * lvars_ptr)
+{
+    return ((LVarsHeader *)lvars_ptr)->stat;
+}
+
+static inline Expr STAT_LVARS(Obj lvars_obj)
+{
+    return STAT_LVARS_PTR(ADDR_OBJ(lvars_obj));
+}
 
 
 /****************************************************************************
@@ -105,8 +119,15 @@ typedef struct {
 *F  PARENT_LVARS . . . . . . . . . . . . . .  parent lvars of the given lvars
 **
 */
-#define PARENT_LVARS_PTR(lvars_ptr) (((LVarsHeader *)lvars_ptr)->parent)
-#define PARENT_LVARS(lvars_obj)     PARENT_LVARS_PTR(ADDR_OBJ(lvars_obj))
+static inline Obj PARENT_LVARS_PTR(void * lvars_ptr)
+{
+    return ((LVarsHeader *)lvars_ptr)->parent;
+}
+
+static inline Obj PARENT_LVARS(Obj lvars_obj)
+{
+    return PARENT_LVARS_PTR(ADDR_OBJ(lvars_obj));
+}
 
 
 /****************************************************************************
@@ -145,7 +166,7 @@ static inline void SetBrkCallTo( Expr expr, const char * file, int line ) {
             (int)expr, (int)STATE(CurrLVars), file, line);
   }
 #endif
-  STAT_LVARS_PTR(STATE(PtrLVars)) = expr;
+  ((LVarsHeader *)STATE(PtrLVars))->stat = expr;
 }
 
 #ifndef NO_BRK_CALLS
@@ -213,8 +234,9 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 
   // create new lvars (may cause garbage collection)
   Obj new_lvars = NewLVarsBag( narg+nloc );
-  FUNC_LVARS(new_lvars) = func;
-  PARENT_LVARS(new_lvars) = old;
+  LVarsHeader * hdr = (LVarsHeader *)ADDR_OBJ(new_lvars);
+  hdr->func = func;
+  hdr->parent = old;
 
   // switch to new lvars
   SET_CURR_LVARS(new_lvars);
@@ -259,7 +281,7 @@ static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 {
   // remove the link to the calling function, in case this values bag stays
   // alive due to higher variable reference
-  PARENT_LVARS_PTR(STATE(PtrLVars)) = 0;
+  ((LVarsHeader *)STATE(PtrLVars))->parent = 0;
 
   if (STATE(CurrLVars) != old && TNUM_OBJ(STATE(CurrLVars)) == T_LVARS)
     FreeLVarsBag(STATE(CurrLVars));
@@ -278,8 +300,15 @@ static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 **
 **  'ASS_LVAR' assigns the value <val> to the local variable <lvar>.
 */
-#define ASS_LVAR(lvar,val)      (STATE(PtrLVars)[(lvar)+2] = (val))
-#define ASS_LVAR_WITH_CONTEXT(context,lvar,val)      (ADDR_OBJ(context)[(lvar)+2] = (val))
+static inline void ASS_LVAR(UInt lvar, Obj val)
+{
+    STATE(PtrLVars)[lvar + 2] = val;
+}
+
+static inline void ASS_LVAR_WITH_CONTEXT(Obj context, UInt lvar, Obj val)
+{
+    ADDR_OBJ(context)[lvar + 2] = val;
+}
 
 
 /****************************************************************************
@@ -288,8 +317,15 @@ static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 **
 **  'OBJ_LVAR' returns the value of the local variable <lvar>.
 */
-#define OBJ_LVAR(lvar)          (STATE(PtrLVars)[(lvar)+2])
-#define OBJ_LVAR_WITH_CONTEXT(context,lvar)          (CONST_ADDR_OBJ(context)[(lvar)+2])
+static inline Obj OBJ_LVAR(UInt lvar)
+{
+    return STATE(PtrLVars)[lvar + 2];
+}
+
+static inline Obj OBJ_LVAR_WITH_CONTEXT(Obj context, UInt lvar)
+{
+    return CONST_ADDR_OBJ(context)[lvar + 2];
+}
 
 
 /****************************************************************************
@@ -298,8 +334,15 @@ static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
 **
 **  'NAME_LVAR' returns the name of the local variable <lvar>.
 */
-#define NAME_LVAR(lvar)         NAMI_FUNC( CURR_FUNC(), lvar )
-#define NAME_LVAR_WITH_CONTEXT(context,lvar)         NAMI_FUNC( FUNC_LVARS(context), lvar )
+static inline Obj NAME_LVAR(UInt lvar)
+{
+    return NAMI_FUNC(CURR_FUNC(), lvar);
+}
+
+static inline Obj NAME_LVAR_WITH_CONTEXT(Obj context, UInt lvar)
+{
+    return NAMI_FUNC(FUNC_LVARS(context), lvar);
+}
 
 
 /****************************************************************************

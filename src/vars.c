@@ -144,7 +144,8 @@ void FreeLVarsBag(Bag bag)
         // clean the bag
         memset(PTR_BAG(bag), 0, SIZE_BAG(bag));
         // put it into the linked list of available LVars bags
-        PARENT_LVARS(bag) = STATE(LVarsPool)[slots];
+        LVarsHeader * hdr = (LVarsHeader *)ADDR_OBJ(bag);
+        hdr->parent = STATE(LVarsPool)[slots];
         STATE(LVarsPool)[slots] = bag;
     }
 }
@@ -2554,9 +2555,10 @@ void LoadLVars( Obj lvars )
 {
   UInt len,i;
   Obj *ptr;
-  FUNC_LVARS(lvars) = LoadSubObj();
-  STAT_LVARS(lvars) = LoadUInt();
-  PARENT_LVARS(lvars) = LoadSubObj();
+  LVarsHeader * hdr = (LVarsHeader *)ADDR_OBJ(lvars);
+  hdr->func = LoadSubObj();
+  hdr->stat = LoadUInt();
+  hdr->parent = LoadSubObj();
   len = (SIZE_OBJ(lvars) - (2*sizeof(Obj)+sizeof(UInt)))/sizeof(Obj);
   ptr = ADDR_OBJ(lvars)+3;
   for (i = 0; i < len; i++)
@@ -2797,8 +2799,10 @@ static void InitModuleState(ModuleStateOffset offset)
 
     STATE(BottomLVars) = NewBag(T_HVARS, 3 * sizeof(Obj));
     tmpFunc = NewFunctionC( "bottom", 0, "", 0 );
-    FUNC_LVARS( STATE(BottomLVars) ) = tmpFunc;
-    PARENT_LVARS(STATE(BottomLVars)) = Fail;
+
+    LVarsHeader * hdr = (LVarsHeader *)ADDR_OBJ(STATE(BottomLVars));
+    hdr->func = tmpFunc;
+    hdr->parent = Fail;
     tmpBody = NewBag( T_BODY, sizeof(BodyHeader) );
     SET_BODY_FUNC( tmpFunc, tmpBody );
 
