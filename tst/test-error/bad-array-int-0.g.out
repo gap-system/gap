@@ -10,6 +10,5 @@ Error, no 1st choice method found for `[]' on 2 arguments at GAPROOT/lib/methsel
 l[0] at *stdin*:5 called from
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:7
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+type 'quit;' to quit to outer loop
 brk> QUIT;

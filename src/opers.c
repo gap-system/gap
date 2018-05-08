@@ -1584,12 +1584,12 @@ Obj FuncSET_TESTER_FILTER (
 
 /****************************************************************************
 **
-*F  CallHandleMethodNotFound( <oper>, <nargs>, <args>, <verbose>, <constructor>)
-**
+*F  HandleMethodNotFound( <oper>, <nargs>, <args>, <verbose>, <constructor>,
+**                        <precedence> )
 **
 **  This enables the special error handling for Method Not Found Errors.
-**  It assembles all the necessary information into a form where it can be 
-**  conveniently accessed from GAP
+**  It assembles all the necessary information into a form where it can be
+**  conveniently accessed from GAP.
 **
 */
 
@@ -1598,14 +1598,14 @@ static UInt RNamArguments;
 static UInt RNamIsVerbose;
 static UInt RNamIsConstructor;
 static UInt RNamPrecedence;
-static Obj HandleMethodNotFound;
+static Obj  HANDLE_METHOD_NOT_FOUND;
 
-Obj CallHandleMethodNotFound( Obj oper,
-                              Int nargs,
-                              Obj *args,
-                              UInt verbose,
-                              UInt constructor,
-                              Obj precedence)
+static void HandleMethodNotFound(Obj   oper,
+                                 Int   nargs,
+                                 Obj * args,
+                                 UInt  verbose,
+                                 UInt  constructor,
+                                 Int   precedence)
 {
   Obj r;
   Obj arglist;
@@ -1635,13 +1635,13 @@ Obj CallHandleMethodNotFound( Obj oper,
   AssPRec(r,RNamArguments,arglist);
   AssPRec(r,RNamIsVerbose,verbose ? True : False);
   AssPRec(r,RNamIsConstructor,constructor ? True : False);
-  AssPRec(r,RNamPrecedence,precedence);
+  AssPRec(r,RNamPrecedence,INTOBJ_INT(precedence));
   SortPRecRNam(r,0);
-  r = CALL_1ARGS(HandleMethodNotFound, r);
+  CALL_1ARGS(HANDLE_METHOD_NOT_FOUND, r);
 #ifdef HPCGAP
   TLS(currentRegion) = savedRegion;
 #endif
-  return r;
+  ErrorQuit("panic, HANDLE_METHOD_NOT_FOUND should not return", 0, 0);
 }
 
 /****************************************************************************
@@ -2120,8 +2120,7 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
         if (method == Fail) {
             Obj args[n];
             /* It is intentional that each case in this case statement except
-               0
-               drops through */
+               0 drops through */
             switch (n) {
             case 6:
                 args[5] = arg6;
@@ -2140,9 +2139,7 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
             default:
                 GAP_ASSERT(0);
             }
-            while (method == Fail)
-                method = CallHandleMethodNotFound(oper, n, (Obj *)args,
-                                                  verbose, constructor, INTOBJ_INT(prec));
+            HandleMethodNotFound(oper, n, args, verbose, constructor, prec);
         }
 
         if (!method) {
@@ -4121,8 +4118,9 @@ static Int InitKernel (
 
     ImportFuncFromLibrary( "SET_FILTER_OBJ",   &SET_FILTER_OBJ );
     ImportFuncFromLibrary( "RESET_FILTER_OBJ", &RESET_FILTER_OBJ );
-    
-    ImportFuncFromLibrary( "HANDLE_METHOD_NOT_FOUND", &HandleMethodNotFound );
+
+    ImportFuncFromLibrary("HANDLE_METHOD_NOT_FOUND",
+                          &HANDLE_METHOD_NOT_FOUND);
 
 #if !defined(HPCGAP)
     ImportGVarFromLibrary( "IsType", &IsType );
