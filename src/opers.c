@@ -2204,10 +2204,6 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
                 CacheMethod(oper, n, prec, ids, method);
         }
 
-        if (!method) {
-            ErrorQuit("no method returned", 0L, 0L);
-        }
-
         /* If there was no method found, then pass the information needed
            for the error reporting. This function rarely returns */
         if (method == Fail) {
@@ -2236,6 +2232,10 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
             while (method == Fail)
                 method = CallHandleMethodNotFound(oper, n, (Obj *)args,
                                                   verbose, constructor, INTOBJ_INT(prec));
+        }
+
+        if (!method) {
+            ErrorQuit("no method returned", 0L, 0L);
         }
 
         /* call this method */
