@@ -439,6 +439,8 @@ DeclareGlobalFunction("TomDataSubgroupsAlmostSimple");
 ##  returned. If also a function <A>dosub</A> is given, maximal subgroups
 ##  are only attempted if this function returns true (this is separated for
 ##  performance reasons).
+##  In the example below, the result would be the same with leaving out the
+##  fourth function, but calculation this way is slightly faster.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
