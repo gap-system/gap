@@ -1,8 +1,12 @@
 gap> START_TEST("perfectgroups.tst");
 
 #
+gap> NumberPerfectGroups(1);
+1
 gap> NumberPerfectGroups(30);
 0
+gap> NumberPerfectGroups(60);
+1
 gap> NumberPerfectGroups(60^6);
 fail
 gap> NumberPerfectLibraryGroups(60^6);
@@ -77,6 +81,8 @@ gap> List(SizesPerfectGroups(), NrPerfectGroups);
   3, 1, 7, 6, 4, 1, 23, 8, 2, 21, 3, 8, 1, 2, 1, 12, 1, 20, 1, 1, 4, fail, 1 ]
 
 #
+gap> DisplayInformationPerfectGroups(1);
+#I Perfect group 1:  trivial group
 gap> DisplayInformationPerfectGroups(60);
 #I Perfect group 60:  simple group  A5
 #I   size = 2^2*3*5  orbit size = 5
@@ -88,6 +94,10 @@ gap> DisplayInformationPerfectGroups(960);
 #I Perfect group 960.2:  A5 2^4'
 #I   size = 2^6*3*5  orbit size = 10
 #I   Holt-Plesken class 1 (4,2) (occurs also in class 7)
+gap> DisplayInformationPerfectGroups(3420);
+#I Perfect group 3420:  simple group  L2(19)
+#I   size = 2^2*3^2*5*19  orbit size = 20
+#I   Holt-Plesken class 22
 gap> DisplayInformationPerfectGroups(3840,1);
 #I Perfect group 3840:  A5 ( 2^4 E 2^1 A ) C 2^1 I
 #I   centre = 4  size = 2^8*3*5  orbit size = 64
@@ -96,6 +106,15 @@ gap> DisplayInformationPerfectGroups([3840,2]);
 #I Perfect group 3840:  A5 ( 2^4 E 2^1 A ) C 2^1 II
 #I   centre = 4  size = 2^8*3*5  orbit size = 64
 #I   Holt-Plesken class 1 (6,2)
+gap> DisplayInformationPerfectGroups(61440);
+#I  no information known about size 61440
+gap> DisplayInformationPerfectGroups(86016);
+#I  no information available about size 86016
+gap> DisplayInformationPerfectGroups(967680,4);
+#I Perfect group 
+967680:  quasisimple group  L3(4) 3^1 x ( 2^1 A 2^1 ) x ( 2^1 A 2^1 )
+#I   centre = 48  size = 2^10*3^3*5*7  orbit sizes = 63 + 224 + 224
+#I   Holt-Plesken class 27 (4,1)
 
 #
 gap> SizeNumbersPerfectGroups("A8");
@@ -115,6 +134,8 @@ gap> PerfectIdentification(AlternatingGroup(5));
 [ 60, 1 ]
 gap> PerfectIdentification(AlternatingGroup(4));
 fail
+gap> PerfectIdentification(AlternatingGroup(8));
+[ 20160, 4 ]
 
 #
 # construct some perfect groups which exercise the different construction methods
@@ -127,6 +148,20 @@ gap> PerfectGroup(56448, 2);
 ( L3(2) x L3(2) ) 2^1 [2]
 gap> PerfectGroup(77760, 1);
 A5 # 2^4 3^4 [1]
+gap> PerfectGroup(IsPermGroup, 48000, 1);
+A5 # 2^5 5^2 [1]
+
+#
+# alternate constructors
+#
+gap> g:=PerfectGroup(IsPermGroup, 60, 1);
+A5
+gap> IsPermGroup(g);
+true
+gap> g:=PerfectGroup(IsSubgroupFpGroup, 60, 1);
+A5
+gap> IsFpGroup(g);
+true
 
 #
 # construct all perfect groups, to verify this works
@@ -137,6 +172,30 @@ gap> for n in SizesPerfectGroups() do
 >     PerfectGroup(n, i);
 >   od;
 > od;
+
+#
+# test PerfGrpConst directly for some corner cases
+#
+gap> PerfGrpConst(IsPermGroup, []);
+Group(())
+gap> PerfGrpConst(IsSubgroupFpGroup, []);
+<fp group on the generators [ f1 ]>
+gap> PerfGrpConst(IsPermGroup, [[5]]);
+Error, not supported
+gap> PerfGrpConst(IsSubgroupFpGroup, [[5]]);
+Error, not supported
+
+#
+# test error handling
+#
+gap> PerfectGroup(1,2);
+Error, PerfectGroup(1,2) does not exist !
+gap> PerfectGroup(30,1);
+Error, PerfectGroup(30,1) does not exist !
+gap> PerfectGroup(61440, 1);
+Error, Perfect groups of size 61440 not known
+gap> PerfectGroup(86016, 1);
+Error, Perfect groups of size 86016 not available
 
 #
 gap> STOP_TEST("perfectgroups.tst", 1);
