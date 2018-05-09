@@ -2320,6 +2320,8 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
     fi;
   od;
 
+  Info(InfoPerformance,2,"Using Primitive Groups Library");
+
   # type (f): Almost simple
   if not PrimitiveGroupsAvailable(n) then
     Error("tables missing");
