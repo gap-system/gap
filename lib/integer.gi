@@ -744,7 +744,7 @@ end);
 ##
 #F  PrimeDivisors( <n> ) . . . . . . . . . . . . . . list of prime divisors
 ##  
-##  delegating to FactorsInt
+##  delegating to Factors
 ##  
 InstallMethod( PrimeDivisors, "for integer", [ IsInt ], function(n)
   if n = 0 then
@@ -756,7 +756,7 @@ InstallMethod( PrimeDivisors, "for integer", [ IsInt ], function(n)
   if n = 1 then
     return [];
   fi;
-  return Set(FactorsInt(n));
+  return Set(Factors(Integers,n));
 end);
 
 
@@ -1090,7 +1090,7 @@ InstallGlobalFunction(PrimePowersInt,function( n )
     elif n < 0  then
     	n := -1 * n;
     fi;
-    return Flat(Collected(FactorsInt(n)));
+    return Flat(Collected(Factors(Integers,n)));
 
 end);
 
