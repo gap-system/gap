@@ -93,6 +93,13 @@ InstallOtherMethod( Length,
     [ IsElementOfFpGroup and IsPackedElementDefaultRep ],0,
   x->Length(UnderlyingElement(x)));
 
+InstallOtherMethod(Subword,"for an element of an f.p. group (default repres.)",true,
+    [ IsElementOfFpGroup and IsPackedElementDefaultRep, IsInt, IsInt ],0,
+function(word,a,b)
+  return ElementOfFpGroup(FamilyObj(word),Subword(UnderlyingElement(word),a,b));
+end);
+
+
 #############################################################################
 ##
 #M  InverseOp( <elm> )  . . . . . . . . . . . . . . for element of f.p. group
