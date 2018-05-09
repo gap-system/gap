@@ -850,6 +850,13 @@ end);
 AttributeMethodByNiceMonomorphism( Size,
     [ IsGroup ] );
 
+#############################################################################
+##
+#M  StructureDescription( <G> )
+##
+AttributeMethodByNiceMonomorphism( StructureDescription,
+    [ IsGroup ] );
+
 
 #############################################################################
 ##
