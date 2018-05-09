@@ -495,7 +495,7 @@ end);
 InstallGlobalFunction( CompatiblePairs, function( arg )
 local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
   K2, f, tmp, Ggens, pcgs, l, idx, u, tup,Dos,elmlist,preimlist,pows,
-  baspt,newimgs,i,j,basicact;
+  baspt,newimgs,i,j,basicact,neu;
 
     # catch arguments
     G := arg[1];
@@ -694,24 +694,34 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 	tmp:=List(genimgs,x->x[1]);
 	preimlist:=List(tmp,x->[x,List(Ggens,y->PreImagesRepresentative(x,y))]);
 
-	# ensure wa also account for action
+	# ensure we also account for action
 	u:=Group(tup);
 	elmlist:=AsSSortedList(u);
-	tmp:=GeneratorsOfGroup(u);
+	tmp:=SmallGeneratingSet(u);
 	i:=1;
 	while elmlist<>fail and i<=Length(tmp) do
-	  for j in genimgs do
-	    if elmlist<>fail and not tmp[i]^j[2] in elmlist then
-	      u:=ClosureGroup(u,tmp[i]^j[2]);
+	  j:=1;
+	  while j<=Length(genimgs) do
+	    neu:=tmp[i]^genimgs[j][2];
+	    if elmlist<>fail and not neu in elmlist then
+	      u:=ClosureGroup(u,neu);
 	      if Size(u)>50000 then
 		# catch cases of too many elements.
 	        elmlist:=fail;
 		f:=basicact;
+		j:=Length(genimgs)+1;
 	      else
 		elmlist:=AsSSortedList(u);
-		tmp:=GeneratorsOfGroup(u);
+		if Length(SmallGeneratingSet(u))<Length(tmp) then
+		  tmp:=SmallGeneratingSet(u);
+		  i:=0;
+		  j:=Length(genimgs)+1; # force loop reset
+		else
+		  tmp:=Concatenation(tmp,[neu]);
+		fi;
 	      fi;
 	    fi;
+	    j:=j+1;
 	  od;
 	  i:=i+1;
 	od;
