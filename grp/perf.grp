@@ -529,7 +529,8 @@ local size,i,nr,n,leng,sizenum,hpnum,description,centre,orbsize;
     # print a message if the group is simple or quaqsisimple.
     if centre = -1 then
 	if size = 1 then
-	    Print( "trivial group  " );
+	    Print( "trivial group\n" );
+	    return;
 	else
 	    Print( "simple group  " );
 	fi;
