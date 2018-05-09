@@ -1519,7 +1519,7 @@ end );
 ##
 #M  Socle( <G> )  . . . . . . . . . . .  socle of primitive permutation group
 ##
-InstallMethod( Socle,"for permgrp", true, [ IsPermGroup ], 0,
+InstallMethod( Socle,"test primitive", true, [ IsPermGroup ], 0,
     function( G )
     local   Omega,  deg,  shortcut,  coll,  d,  m,  c,  ds,  L,  z,  ord,
             p,  i;
@@ -1539,25 +1539,27 @@ InstallMethod( Socle,"for permgrp", true, [ IsPermGroup ], 0,
     deg := Length( Omega );
     if deg >= 6103515625  then
         TryNextMethod();
-    elif deg < 12960000  then
-        shortcut := true;
-        if deg >= 3125  then
-            coll := Collected( Factors(Integers, deg ) );
-            d := Gcd( List( coll, c -> c[ 2 ] ) );
-            if d mod 5 = 0  then
-                m := 1;
-                for c  in coll  do
-                    m := m * c[ 1 ] ^ ( c[ 2 ] / d );
-                od;
-                if m >= 5  then
-                    shortcut := false;
-                fi;
-            fi;
-        fi;
-        if shortcut  then
-            ds := DerivedSeriesOfGroup( G );
-            return ds[ Length( ds ) ];
-        fi;
+    # the normal closure actually seems to be faster than derived series, so
+    # this is not really a shortcut
+    #elif deg < 12960000  then
+    #    shortcut := true;
+    #    if deg >= 3125  then
+    #        coll := Collected( Factors( deg ) );
+    #        d := Gcd( List( coll, c -> c[ 2 ] ) );
+    #        if d mod 5 = 0  then
+    #            m := 1;
+    #            for c  in coll  do
+    #                m := m * c[ 1 ] ^ ( c[ 2 ] / d );
+    #            od;
+    #            if m >= 5  then
+    #                shortcut := false;
+    #            fi;
+    #        fi;
+    #    fi;
+    #    if shortcut  then
+    #        ds := DerivedSeriesOfGroup( G );
+    #        return ds[ Length( ds ) ];
+    #    fi;
     fi;
     
     coll := Collected( Factors(Integers, Size( G ) ) );
@@ -1577,7 +1579,10 @@ InstallMethod( Socle,"for permgrp", true, [ IsPermGroup ], 0,
         until ord mod p = 0;
         z := z ^ ( ord / p );
     until Index( G, Centralizer( G, z ) ) mod p <> 0;
-    L := NormalClosure( G, SubgroupNC( G, [ z ] ) );
+
+    # immediately add conjugate as this will be needed anyhow and seems to
+    # speed up the closure process
+    L := NormalClosure( G, SubgroupNC( G, [ z,z^Random(G) ] ) );
     if deg >= 78125  then
         ds := DerivedSeriesOfGroup( L );
         L := ds[ Length( ds ) ];
