@@ -1209,6 +1209,14 @@ InstallMethod( AsMagma,
     D := AsSSortedList( D );
     L := ShallowCopy( D );
     M := Submagma( MagmaByGenerators( D ), [] );
+    # the following is a workaround for a bug in the magma code: If the
+    # elements family of $M$ is associative, what is returned is not the
+    # empty magma, but the trivial magma.
+    # If this is the case (which is indicated by M being a group) rather
+    # create this trivial magma properly.
+    if IsGroup(M) then
+      M:=Submagma(MagmaByGenerators(D),[One(ElementsFamily(FamilyObj(D)))]);
+    fi;
     SubtractSet( L, AsSSortedList( M ) );
     while not IsEmpty(L)  do
         M := ClosureMagmaDefault( M, L[1] );
