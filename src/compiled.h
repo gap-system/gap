@@ -119,54 +119,25 @@ typedef UInt    RNam;
 #define SWITCH_TO_NEW_FRAME     SWITCH_TO_NEW_LVARS
 #define SWITCH_TO_OLD_FRAME     SWITCH_TO_OLD_LVARS
 
-#define CURR_FRAME              STATE(CurrLVars)
-#define CURR_FRAME_1UP          ENVI_FUNC( FUNC_LVARS( CURR_FRAME     ) )
-#define CURR_FRAME_2UP          ENVI_FUNC( FUNC_LVARS( CURR_FRAME_1UP ) )
-#define CURR_FRAME_3UP          ENVI_FUNC( FUNC_LVARS( CURR_FRAME_2UP ) )
-#define CURR_FRAME_4UP          ENVI_FUNC( FUNC_LVARS( CURR_FRAME_3UP ) )
-#define CURR_FRAME_5UP          ENVI_FUNC( FUNC_LVARS( CURR_FRAME_4UP ) )
-#define CURR_FRAME_6UP          ENVI_FUNC( FUNC_LVARS( CURR_FRAME_5UP ) )
-#define CURR_FRAME_7UP          ENVI_FUNC( FUNC_LVARS( CURR_FRAME_6UP ) )
+#define OBJ_LVAR_0UP(lvar)      OBJ_LVAR(lvar)
+#define OBJ_LVAR_1UP(lvar)      OBJ_HVAR((1<<16) | lvar)
+#define OBJ_LVAR_2UP(lvar)      OBJ_HVAR((2<<16) | lvar)
+#define OBJ_LVAR_3UP(lvar)      OBJ_HVAR((3<<16) | lvar)
+#define OBJ_LVAR_4UP(lvar)      OBJ_HVAR((4<<16) | lvar)
+#define OBJ_LVAR_5UP(lvar)      OBJ_HVAR((5<<16) | lvar)
+#define OBJ_LVAR_6UP(lvar)      OBJ_HVAR((6<<16) | lvar)
+#define OBJ_LVAR_7UP(lvar)      OBJ_HVAR((7<<16) | lvar)
+#define OBJ_LVAR_8UP(lvar)      OBJ_HVAR((8<<16) | lvar)
 
-/* #define OBJ_LVAR(lvar)  STATE(PtrLVars)[(lvar)+2] */
-#define OBJ_LVAR_0UP(lvar) \
-    OBJ_LVAR(lvar)
-#define OBJ_LVAR_1UP(lvar) \
-    PTR_BAG(CURR_FRAME_1UP)[(lvar)+2]
-#define OBJ_LVAR_2UP(lvar) \
-    PTR_BAG(CURR_FRAME_2UP)[(lvar)+2]
-#define OBJ_LVAR_3UP(lvar) \
-    PTR_BAG(CURR_FRAME_3UP)[(lvar)+2]
-#define OBJ_LVAR_4UP(lvar) \
-    PTR_BAG(CURR_FRAME_4UP)[(lvar)+2]
-#define OBJ_LVAR_5UP(lvar) \
-    PTR_BAG(CURR_FRAME_5UP)[(lvar)+2]
-#define OBJ_LVAR_6UP(lvar) \
-    PTR_BAG(CURR_FRAME_6UP)[(lvar)+2]
-#define OBJ_LVAR_7UP(lvar) \
-    PTR_BAG(CURR_FRAME_7UP)[(lvar)+2]
-#define OBJ_LVAR_8UP(lvar) \
-    PTR_BAG(CURR_FRAME_8UP)[(lvar)+2]
-
-/* #define ASS_LVAR(lvar,obj) do { STATE(PtrLVars)[(lvar)+2] = (obj); } while ( 0 ) */
-#define ASS_LVAR_0UP(lvar,obj) \
-    ASS_LVAR(lvar,obj)
-#define ASS_LVAR_1UP(lvar,obj) \
-    do { PTR_BAG(CURR_FRAME_1UP)[(lvar)+2] = (obj); CHANGED_BAG(CURR_FRAME_1UP); } while ( 0 )
-#define ASS_LVAR_2UP(lvar,obj) \
-    do { PTR_BAG(CURR_FRAME_2UP)[(lvar)+2] = (obj); CHANGED_BAG(CURR_FRAME_2UP); } while ( 0 )
-#define ASS_LVAR_3UP(lvar,obj) \
-    do { PTR_BAG(CURR_FRAME_3UP)[(lvar)+2] = (obj); CHANGED_BAG(CURR_FRAME_3UP); } while ( 0 )
-#define ASS_LVAR_4UP(lvar,obj) \
-    do { PTR_BAG(CURR_FRAME_4UP)[(lvar)+2] = (obj); CHANGED_BAG(CURR_FRAME_4UP); } while ( 0 )
-#define ASS_LVAR_5UP(lvar,obj) \
-    do { PTR_BAG(CURR_FRAME_5UP)[(lvar)+2] = (obj); CHANGED_BAG(CURR_FRAME_5UP); } while ( 0 )
-#define ASS_LVAR_6UP(lvar,obj) \
-    do { PTR_BAG(CURR_FRAME_6UP)[(lvar)+2] = (obj); CHANGED_BAG(CURR_FRAME_6UP); } while ( 0 )
-#define ASS_LVAR_7UP(lvar,obj) \
-    do { PTR_BAG(CURR_FRAME_7UP)[(lvar)+2] = (obj); CHANGED_BAG(CURR_FRAME_7UP); } while ( 0 )
-#define ASS_LVAR_8UP(lvar,obj) \
-    do { PTR_BAG(CURR_FRAME_8UP)[(lvar)+2] = (obj); CHANGED_BAG(CURR_FRAME_8UP); } while ( 0 )
+#define ASS_LVAR_0UP(lvar,obj)  ASS_LVAR(lvar, obj)
+#define ASS_LVAR_1UP(lvar,obj)  ASS_HVAR((1<<16) | lvar, obj);
+#define ASS_LVAR_2UP(lvar,obj)  ASS_HVAR((2<<16) | lvar, obj);
+#define ASS_LVAR_3UP(lvar,obj)  ASS_HVAR((3<<16) | lvar, obj);
+#define ASS_LVAR_4UP(lvar,obj)  ASS_HVAR((4<<16) | lvar, obj);
+#define ASS_LVAR_5UP(lvar,obj)  ASS_HVAR((5<<16) | lvar, obj);
+#define ASS_LVAR_6UP(lvar,obj)  ASS_HVAR((6<<16) | lvar, obj);
+#define ASS_LVAR_7UP(lvar,obj)  ASS_HVAR((7<<16) | lvar, obj);
+#define ASS_LVAR_8UP(lvar,obj)  ASS_HVAR((8<<16) | lvar, obj);
 
 
 /* objects, should into 'objects.c'  * * * * * * * * * * * * * * * * * * * */
