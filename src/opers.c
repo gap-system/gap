@@ -126,6 +126,32 @@ void LoadFlags(
 
 /****************************************************************************
 **
+*F  C_ELM_FLAGS( <list>, <pos> )  . . . . . . . . . . . element of a flags list
+**
+**
+**  returns 1 if the flags list <list> contains the filter <pos>, else 0
+*/
+UInt C_ELM_FLAGS(Obj list, UInt pos) {
+    UInt len = INT_INTOBJ(SIZE_FLAGS(list));
+    Int hi = len -1;
+    Int lo = 0;
+    while (hi >= lo) {
+        Int mid = (hi + lo)/2;
+        UInt2 x = TRUE_FLAGS(list, mid);
+        if (x == pos)
+            return 1;
+        if (x < pos) {
+            lo = mid+1;
+        } else {
+            hi = mid -1;
+        }
+    }
+    return 0;
+}
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * *  GAP flags functions * * * * * * * * * * * * * *
 */
 
@@ -388,7 +414,7 @@ Obj FuncSUB_FLAGS (
 
     len1 = INT_INTOBJ(SIZE_FLAGS(flags1));
     len2 = INT_INTOBJ(SIZE_FLAGS(flags2));
-    NEW_FLAGS(flags, len1);
+    flags = NEW_FLAGS(len1);
     i = 0;
     j = 0;
     k = 0;
@@ -464,9 +490,9 @@ Obj FuncAND_FLAGS (
 
     if (flags1 == flags2)
         return flags1;
-    if (LEN_FLAGS(flags2) == 0)
+    if (SIZE_FLAGS(flags2) == INTOBJ_INT(0))
         return flags1;
-    if (LEN_FLAGS(flags1) == 0)
+    if (SIZE_FLAGS(flags1) == INTOBJ_INT(0))
         return flags2;
 
     // check the cache
@@ -526,7 +552,7 @@ Obj FuncAND_FLAGS (
     /* do the real work                                                    */
     len1 = INT_INTOBJ(SIZE_FLAGS(flags1));
     len2 = INT_INTOBJ(SIZE_FLAGS(flags2));
-    NEW_FLAGS(flags, len1+len2);
+    flags = NEW_FLAGS(len1+len2);
     i = 0;
     j = 0;
     k = 0;
@@ -1101,7 +1127,7 @@ Obj NewFilter (
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoFilter) );
     SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(getter, INTOBJ_INT(0));
-    NEW_FLAGS( flags, 1 );
+    flags = NEW_FLAGS( 1 );
     SET_SIZE_FLAGS( flags, INTOBJ_INT(1) );
     SET_TRUE_FLAGS( flags, 0, flag1);
     SET_FLAGS_FILT(getter, flags);
@@ -1252,7 +1278,7 @@ Obj NewReturnTrueFilter ( void )
         DoReturnTrueFilter );
     SET_FLAG1_FILT(getter, INTOBJ_INT(0));
     SET_FLAG2_FILT(getter, INTOBJ_INT(0));
-    NEW_FLAGS( flags, 0 );
+    flags = NEW_FLAGS( 0 );
     SET_SIZE_FLAGS( flags, INTOBJ_INT(0) );
     SET_FLAGS_FILT(getter, flags);
     CHANGED_BAG(getter);
@@ -2692,7 +2718,7 @@ static Obj MakeTester( Obj name, Int flag1, Int flag2)
                            DoTestAttribute );
     SET_FLAG1_FILT(tester, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(tester, INTOBJ_INT(flag2));
-    NEW_FLAGS( flags, flag2 );
+    flags = NEW_FLAGS( 1 );
     SET_SIZE_FLAGS( flags, INTOBJ_INT(1) );
     SET_TRUE_FLAGS( flags, 0, flag2);
     SET_FLAGS_FILT(tester, flags);
@@ -2981,7 +3007,7 @@ Obj NewProperty (
 
     SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(getter, INTOBJ_INT(flag2));
-    NEW_FLAGS( flags, flag2 );
+    flags = NEW_FLAGS( 2 );
     SET_SIZE_FLAGS( flags, INTOBJ_INT(2) );
     SET_TRUE_FLAGS(flags, 0, flag1);
     SET_TRUE_FLAGS(flags, 1, flag2);
@@ -3863,7 +3889,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(IS_SUBSET_FLAGS, 2, "flags1, flags2"),
     GVAR_FUNC(TRUES_FLAGS, 1, "flags"),
     GVAR_FUNC(SIZE_FLAGS, 1, "flags"),
-    GVAR_FUNC(ELM_FLAGS, 2, "flags, pos"),
+    //    GVAR_FUNC(ELM_FLAGS, 2, "flags, pos"),
     GVAR_FUNC(FLAG1_FILTER, 1, "oper"),
     GVAR_FUNC(SET_FLAG1_FILTER, 2, "oper, flag1"),
     GVAR_FUNC(FLAG2_FILTER, 1, "oper"),
