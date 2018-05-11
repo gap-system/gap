@@ -1650,7 +1650,7 @@ static void HandleMethodNotFound(Obj   oper,
 **
 */
 
-#if !defined(HPCGAP)
+#ifdef GASMAN
 
 static Obj FLUSH_ALL_METHOD_CACHES;
 
@@ -1666,16 +1666,23 @@ static void FixTypeIDs( Bag b ) {
     } 
 }
 
+#endif
 
 Obj FuncCOMPACT_TYPE_IDS( Obj self )
 {
+#ifdef GASMAN
   NextTypeID = INT_INTOBJ_MIN;
   CallbackForAllBags( FixTypeIDs );
   CALL_0ARGS(FLUSH_ALL_METHOD_CACHES);
   return INTOBJ_INT(NextTypeID);
-}
-
+#else
+  // in general garbage collectors, we cannot iterate over
+  // all bags ever allocated, so we can't implement this function;
+  // however, with 64 bit versions of GAP, we also should never
+  // run out of type ids, so this is of little concern
+  ErrorQuit("panic, COMPACT_TYPE_IDS is not available", 0, 0);
 #endif
+}
 
 /****************************************************************************
 **
@@ -3990,9 +3997,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(DO_NOTHING_SETTER, 2, "obj, val"),
     GVAR_FUNC(IS_AND_FILTER, 1, "filter"),
     GVAR_FUNC(IS_CONSTRUCTOR, 1, "x"),
-#if !defined(HPCGAP)
     GVAR_FUNC(COMPACT_TYPE_IDS, 0, ""),
-#endif
     GVAR_FUNC(OPER_TO_ATTRIBUTE, 1, "oper"),
     GVAR_FUNC(OPER_TO_MUTABLE_ATTRIBUTE, 1, "oper"),
     { 0, 0, 0, 0, 0 }
@@ -4122,7 +4127,7 @@ static Int InitKernel (
     ImportFuncFromLibrary("HANDLE_METHOD_NOT_FOUND",
                           &HANDLE_METHOD_NOT_FOUND);
 
-#if !defined(HPCGAP)
+#ifdef GASMAN
     ImportGVarFromLibrary( "IsType", &IsType );
     ImportFuncFromLibrary( "FLUSH_ALL_METHOD_CACHES", &FLUSH_ALL_METHOD_CACHES );
 #endif

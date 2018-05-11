@@ -170,16 +170,6 @@ gap> SET_TESTER_FILTER(fail, 1);
 Error, <oper> must be an operation
 
 #
-# COMPACT_TYPE_IDS is called when we run out of type ids, it removes
-# unused type ids and renumbers the remaining ons. On a 64bit system, it
-# is probably never called under normal circumstances. In any case, just
-# calling it, w/o any further checks (other than GAP not crashing) is
-# already a pretty good check. However, on HPC-GAP, this function is not
-# available.
-#
-gap> if not IsHPCGAP then COMPACT_TYPE_IDS(); fi;
-
-#
 #
 #
 

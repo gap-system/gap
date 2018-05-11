@@ -1,15 +1,11 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include <src/compiled.h>
-#define FILE_CRC  "132228056"
+#define FILE_CRC  "-43167549"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
 static Obj  GF_NAME__FUNC;
-static GVar G_IsType;
-static Obj  GF_IsType;
-static GVar G_FLUSH__ALL__METHOD__CACHES;
-static Obj  GF_FLUSH__ALL__METHOD__CACHES;
 static GVar G_IS__REC;
 static Obj  GF_IS__REC;
 static GVar G_IS__LIST;
@@ -128,6 +124,8 @@ static GVar G_NEW__TYPE__NEXT__ID;
 static Obj  GC_NEW__TYPE__NEXT__ID;
 static GVar G_NEW__TYPE__ID__LIMIT;
 static Obj  GC_NEW__TYPE__ID__LIMIT;
+static GVar G_FLUSH__ALL__METHOD__CACHES;
+static Obj  GF_FLUSH__ALL__METHOD__CACHES;
 static GVar G_NEW__TYPE;
 static Obj  GF_NEW__TYPE;
 static GVar G_IsFamily;
@@ -138,6 +136,8 @@ static GVar G_TypeOfTypes;
 static Obj  GC_TypeOfTypes;
 static GVar G_NewType4;
 static Obj  GF_NewType4;
+static GVar G_IsType;
+static Obj  GF_IsType;
 static GVar G_Subtype2;
 static Obj  GF_Subtype2;
 static GVar G_Subtype3;
@@ -3569,7 +3569,7 @@ static Obj  HdlrFunc1 (
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, 229);
- SET_ENDLINE_BODY(t_4, 353);
+ SET_ENDLINE_BODY(t_4, 346);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3583,8 +3583,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[12], 3, 0, HdlrFunc12 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 357);
- SET_ENDLINE_BODY(t_4, 364);
+ SET_STARTLINE_BODY(t_4, 350);
+ SET_ENDLINE_BODY(t_4, 357);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3598,8 +3598,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[13], 4, 0, HdlrFunc13 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 367);
- SET_ENDLINE_BODY(t_4, 374);
+ SET_STARTLINE_BODY(t_4, 360);
+ SET_ENDLINE_BODY(t_4, 367);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3624,8 +3624,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[14], -1, 0, HdlrFunc14 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 377);
- SET_ENDLINE_BODY(t_4, 401);
+ SET_STARTLINE_BODY(t_4, 370);
+ SET_ENDLINE_BODY(t_4, 394);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3639,8 +3639,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[15], 2, 0, HdlrFunc15 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 414);
- SET_ENDLINE_BODY(t_4, 421);
+ SET_STARTLINE_BODY(t_4, 407);
+ SET_ENDLINE_BODY(t_4, 414);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3654,8 +3654,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[16], 3, 0, HdlrFunc16 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 424);
- SET_ENDLINE_BODY(t_4, 431);
+ SET_STARTLINE_BODY(t_4, 417);
+ SET_ENDLINE_BODY(t_4, 424);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3683,8 +3683,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[17], -1, 0, HdlrFunc17 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 435);
- SET_ENDLINE_BODY(t_4, 457);
+ SET_STARTLINE_BODY(t_4, 428);
+ SET_ENDLINE_BODY(t_4, 450);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3698,8 +3698,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[18], 2, 0, HdlrFunc18 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 471);
- SET_ENDLINE_BODY(t_4, 478);
+ SET_STARTLINE_BODY(t_4, 464);
+ SET_ENDLINE_BODY(t_4, 471);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3713,8 +3713,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[19], 3, 0, HdlrFunc19 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 481);
- SET_ENDLINE_BODY(t_4, 488);
+ SET_STARTLINE_BODY(t_4, 474);
+ SET_ENDLINE_BODY(t_4, 481);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3736,8 +3736,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[20], -1, 0, HdlrFunc20 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 491);
- SET_ENDLINE_BODY(t_4, 505);
+ SET_STARTLINE_BODY(t_4, 484);
+ SET_ENDLINE_BODY(t_4, 498);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3751,8 +3751,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[21], 1, 0, HdlrFunc21 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 519);
- SET_ENDLINE_BODY(t_4, 519);
+ SET_STARTLINE_BODY(t_4, 512);
+ SET_ENDLINE_BODY(t_4, 512);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3766,8 +3766,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[22], 1, 0, HdlrFunc22 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 533);
- SET_ENDLINE_BODY(t_4, 533);
+ SET_STARTLINE_BODY(t_4, 526);
+ SET_ENDLINE_BODY(t_4, 526);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3781,8 +3781,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[23], 1, 0, HdlrFunc23 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 549);
- SET_ENDLINE_BODY(t_4, 549);
+ SET_STARTLINE_BODY(t_4, 542);
+ SET_ENDLINE_BODY(t_4, 542);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3797,8 +3797,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[24], 2, 0, HdlrFunc24 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 551);
- SET_ENDLINE_BODY(t_4, 557);
+ SET_STARTLINE_BODY(t_4, 544);
+ SET_ENDLINE_BODY(t_4, 550);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3826,8 +3826,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[25], 1, 0, HdlrFunc25 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 656);
- SET_ENDLINE_BODY(t_4, 656);
+ SET_STARTLINE_BODY(t_4, 649);
+ SET_ENDLINE_BODY(t_4, 649);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3841,8 +3841,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[26], 1, 0, HdlrFunc26 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 670);
- SET_ENDLINE_BODY(t_4, 670);
+ SET_STARTLINE_BODY(t_4, 663);
+ SET_ENDLINE_BODY(t_4, 663);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3900,8 +3900,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[27], 2, 0, HdlrFunc27 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 691);
- SET_ENDLINE_BODY(t_4, 726);
+ SET_STARTLINE_BODY(t_4, 684);
+ SET_ENDLINE_BODY(t_4, 719);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3951,8 +3951,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[28], 2, 0, HdlrFunc28 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 748);
- SET_ENDLINE_BODY(t_4, 786);
+ SET_STARTLINE_BODY(t_4, 741);
+ SET_ENDLINE_BODY(t_4, 779);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3993,8 +3993,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[29], 2, 0, HdlrFunc29 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 808);
- SET_ENDLINE_BODY(t_4, 830);
+ SET_STARTLINE_BODY(t_4, 801);
+ SET_ENDLINE_BODY(t_4, 823);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4020,8 +4020,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[30], 3, 0, HdlrFunc30 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 846);
- SET_ENDLINE_BODY(t_4, 852);
+ SET_STARTLINE_BODY(t_4, 839);
+ SET_ENDLINE_BODY(t_4, 845);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4099,8 +4099,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[31], -1, 0, HdlrFunc31 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 900);
- SET_ENDLINE_BODY(t_4, 966);
+ SET_STARTLINE_BODY(t_4, 893);
+ SET_ENDLINE_BODY(t_4, 959);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -4123,8 +4123,6 @@ static Int PostRestore ( StructInitInfo * module )
  
  /* global variables used in handlers */
  G_NAME__FUNC = GVarName( "NAME_FUNC" );
- G_IsType = GVarName( "IsType" );
- G_FLUSH__ALL__METHOD__CACHES = GVarName( "FLUSH_ALL_METHOD_CACHES" );
  G_IS__REC = GVarName( "IS_REC" );
  G_IS__LIST = GVarName( "IS_LIST" );
  G_ADD__LIST = GVarName( "ADD_LIST" );
@@ -4183,11 +4181,13 @@ static Int PostRestore ( StructInitInfo * module )
  G_NEW__TYPE__CACHE__HIT = GVarName( "NEW_TYPE_CACHE_HIT" );
  G_NEW__TYPE__NEXT__ID = GVarName( "NEW_TYPE_NEXT_ID" );
  G_NEW__TYPE__ID__LIMIT = GVarName( "NEW_TYPE_ID_LIMIT" );
+ G_FLUSH__ALL__METHOD__CACHES = GVarName( "FLUSH_ALL_METHOD_CACHES" );
  G_NEW__TYPE = GVarName( "NEW_TYPE" );
  G_IsFamily = GVarName( "IsFamily" );
  G_NewType3 = GVarName( "NewType3" );
  G_TypeOfTypes = GVarName( "TypeOfTypes" );
  G_NewType4 = GVarName( "NewType4" );
+ G_IsType = GVarName( "IsType" );
  G_Subtype2 = GVarName( "Subtype2" );
  G_Subtype3 = GVarName( "Subtype3" );
  G_SupType2 = GVarName( "SupType2" );
@@ -4265,8 +4265,6 @@ static Int InitKernel ( StructInitInfo * module )
  
  /* global variables used in handlers */
  InitFopyGVar( "NAME_FUNC", &GF_NAME__FUNC );
- InitFopyGVar( "IsType", &GF_IsType );
- InitFopyGVar( "FLUSH_ALL_METHOD_CACHES", &GF_FLUSH__ALL__METHOD__CACHES );
  InitFopyGVar( "IS_REC", &GF_IS__REC );
  InitFopyGVar( "IS_LIST", &GF_IS__LIST );
  InitFopyGVar( "ADD_LIST", &GF_ADD__LIST );
@@ -4327,11 +4325,13 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "NEW_TYPE_CACHE_HIT", &GC_NEW__TYPE__CACHE__HIT );
  InitCopyGVar( "NEW_TYPE_NEXT_ID", &GC_NEW__TYPE__NEXT__ID );
  InitCopyGVar( "NEW_TYPE_ID_LIMIT", &GC_NEW__TYPE__ID__LIMIT );
+ InitFopyGVar( "FLUSH_ALL_METHOD_CACHES", &GF_FLUSH__ALL__METHOD__CACHES );
  InitFopyGVar( "NEW_TYPE", &GF_NEW__TYPE );
  InitFopyGVar( "IsFamily", &GF_IsFamily );
  InitFopyGVar( "NewType3", &GF_NewType3 );
  InitCopyGVar( "TypeOfTypes", &GC_TypeOfTypes );
  InitFopyGVar( "NewType4", &GF_NewType4 );
+ InitFopyGVar( "IsType", &GF_IsType );
  InitFopyGVar( "Subtype2", &GF_Subtype2 );
  InitFopyGVar( "Subtype3", &GF_Subtype3 );
  InitFopyGVar( "SupType2", &GF_SupType2 );
@@ -4455,7 +4455,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/type1.g",
- .crc         = 132228056,
+ .crc         = -43167549,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
