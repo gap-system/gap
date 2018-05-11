@@ -118,17 +118,17 @@ Syntax error: ; expected in stream:2
 
 # errors in the middle of parsing a float literal
 gap> 12.34\56;
-Syntax error: Badly formed number in stream:1
+Syntax error: Badly Formed Number in stream:1
 12.34\56;
-     ^
+    ^
 gap> 12.34\a56;
-Syntax error: Badly formed number in stream:1
+Syntax error: Badly Formed Number in stream:1
 12.34\a56;
-     ^
+    ^
 gap> 12.34\56a;
-Syntax error: Badly formed number in stream:1
+Syntax error: Badly Formed Number in stream:1
 12.34\56a;
-     ^
+    ^
 
 #
 gap> STOP_TEST("kernel/read.tst", 1);
