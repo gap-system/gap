@@ -1780,7 +1780,7 @@ void InitializeGap (
             Pr( "#W  %36s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
-            for ( i = 0;  i < 256;  i++ ) {
+            for ( Int i = 0;  i < 256;  i++ ) {
                 if ( InfoBags[i].name != 0 && InfoBags[i].nrAll != 0 ) {
                     char    buf[41];
 
