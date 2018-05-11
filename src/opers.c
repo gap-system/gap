@@ -319,16 +319,18 @@ static Int IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
         return 1;
     UInt i = 0;
     UInt j = 0;
-    UInt2 x = TRUE_FLAGS(flags1,i);
-    UInt2 y = TRUE_FLAGS(flags2,j);
+    UInt2 x,y;
     while (i < len1 && j < len2) {
+        x = TRUE_FLAGS(flags1,i);
+        y = TRUE_FLAGS(flags2,j);
         if (x == y) {
+            i++;
             j++;
-            if (j < len2) y = TRUE_FLAGS(flags2,j);
-        } else if (y < x)
+        } else if (y < x) {
             return 0;
-        i++;
-        if (i < len1) x = TRUE_FLAGS(flags1,i);        
+        } else {
+            i++;
+        }
     }
     return (j == len2);   
 }
@@ -385,27 +387,23 @@ Obj FuncSUB_FLAGS (
     }
 
     len1 = INT_INTOBJ(SIZE_FLAGS(flags1));
-    len2 = INT_INTOBJ(SIZE_FLAGS(flags1));
+    len2 = INT_INTOBJ(SIZE_FLAGS(flags2));
     NEW_FLAGS(flags, len1);
     i = 0;
     j = 0;
     k = 0;
-    x = TRUE_FLAGS(flags1,i);
-    y = TRUE_FLAGS(flags2,j);
     while ( i < len1 && j < len2) {
+        x = TRUE_FLAGS(flags1,i);
+        y = TRUE_FLAGS(flags2,j);
         if (x == y) {
             i++;
             j++;
-            if (i < len1) x = TRUE_FLAGS(flags1,i);
-            if (j < len2) y = TRUE_FLAGS(flags2,j);
         } else if (x < y) {
             SET_TRUE_FLAGS(flags, k, x);
             k++;
             i++;
-            if (i < len1) x = TRUE_FLAGS(flags1,i);
         } else {
             j++;
-            if (j < len2) y = TRUE_FLAGS(flags2,j);
         }
     }
     while (i < len1) {
@@ -439,7 +437,7 @@ Obj FuncAND_FLAGS (
     Int                 len1;
     Int                 len2;
     Int                 i,j,k;
-    UInt2               x,y;
+    UInt2               x,y,z;
 
 #ifdef AND_FLAGS_HASH_SIZE
     Obj                 cache;
@@ -532,25 +530,23 @@ Obj FuncAND_FLAGS (
     i = 0;
     j = 0;
     k = 0;
-    x = TRUE_FLAGS(flags1,i);
-    y = TRUE_FLAGS(flags2,j);
     while ( i < len1 && j < len2) {
+        x = TRUE_FLAGS(flags1,i);
+        y = TRUE_FLAGS(flags2,j);
         if (x == y) {
             i++;
             j++;
-            SET_TRUE_FLAGS(flags, k++, x);
-            if (i < len1) x = TRUE_FLAGS(flags1,i);
-            if (j < len2) y = TRUE_FLAGS(flags2,j);
+            z = x;
         } else if (x < y) {
-            SET_TRUE_FLAGS(flags, k++, x);
             i++;
-            if (i < len1) x = TRUE_FLAGS(flags1,i);
+            z = x;
         } else {
-            SET_TRUE_FLAGS(flags, k++, y);
             j++;
-            if (j < len2) y = TRUE_FLAGS(flags2,j);
+            z = y;
         }
+        SET_TRUE_FLAGS(flags, k++, z);
     }
+    /* Only one of these two loops will go round > 0 times */
     while (i < len1) {
         SET_TRUE_FLAGS(flags, k++, TRUE_FLAGS(flags1, i++) );
     }
