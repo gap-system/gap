@@ -230,15 +230,22 @@ static inline void SET_ENABLED_ATTR(Obj oper, Int x)
 ** Set positions (array of UInt2).
 */
 
+/****************************************************************************
+**
+*F  SIZE_PLEN_FLAGS( <fsize> ) . .  bag size for a flags list with <fsize> trues
+*/
+static inline UInt SIZE_PLEN_FLAGS(UInt fsize) {
+    return 3*sizeof(Obj) + 2*fsize;
+}
 
 /****************************************************************************
 **
 *F  NEW_FLAGS( <flags>, <len> ) . . . . . . . . . . . . . . .  new flags list
 */
+
 static inline Obj NEW_FLAGS(UInt len)
-{p
-    UInt size = (3 + ((len+BIPEB-1) >> LBIPEB)) * sizeof(Obj);
-    Obj flags = NewBag(T_FLAGS, size);
+{
+    Obj flags = NewBag(T_FLAGS, SIZE_PLEN_FLAGS(len));
     return flags;
 }
 
@@ -273,33 +280,37 @@ static inline void SET_SIZE_FLAGS(Obj flags, Obj size) {
 **
 *F  HASH_FLAGS( <flags> ) . . . . . . . . . . . .  hash value of <flags> or 0
 */
-static inline UInt LEN_FLAGS(Obj flags)
+static inline Obj HASH_FLAGS(Obj flags)
 {
-    return (SIZE_OBJ(flags) / sizeof(Obj) - 3) << LBIPEB;
-};
+    return CONST_ADDR_OBJ(flags)[1];
+}
+
+/****************************************************************************
+**
+*F  SET_HASH_FLAGS( <flags> ) . . . . . . . . . .  set  hash value of <flags>
+*/
+static inline void SET_HASH_FLAGS(Obj flags, Obj hash)
+{
+    ADDR_OBJ(flags)[1] = hash;
+}
 
 /****************************************************************************
 **
 *F  AND_CACHE_FLAGS( <flags> )  . . . . . . . . . 'and' cache of a flags list
 */
-#define AND_CACHE_FLAGS(list)           (CONST_ADDR_OBJ(list)[2])
+static inline Obj AND_CACHE_FLAGS(Obj flags) {
+    return CONST_ADDR_OBJ(flags)[2];
+}
 
 
 /****************************************************************************
 **
 *F  SET_AND_CACHE_FLAGS( <flags>, <len> ) set the 'and' cache of a flags list
 */
-#define SET_AND_CACHE_FLAGS(flags,andc)  (ADDR_OBJ(flags)[2]=(andc))
+static inline void SET_AND_CACHE_FLAGS(Obj flags, Obj andc) {
+    ADDR_OBJ(flags)[2]=(andc);
+}
 
-
-/****************************************************************************
-**
-*F  NRB_FLAGS( <flags> )  . . . . . .  number of basic blocks of a flags list
-*/
-static inline UInt NRB_FLAGS(Obj flags)
-{
-    return SIZE_OBJ(flags) / sizeof(Obj) - 3;
-};
 
 
 /****************************************************************************
@@ -307,7 +318,6 @@ static inline UInt NRB_FLAGS(Obj flags)
 *F  TRUE_FLAGS( <flags>, <ix> )  the <ix>th set position in flags
 **                               caller is responsible for <ix> being in range
 */
-#define BLOCKS_FLAGS(flags)             ((UInt*)(ADDR_OBJ(flags)+3))
 
 static inline UInt TRUE_FLAGS(Obj flags, UInt ix) {
     return (UInt) ((const UInt2 *)(CONST_ADDR_OBJ(flags) + 3))[ix];
