@@ -4138,7 +4138,7 @@ static Int InitKernel (
 
     /* install the marking function                                        */
     InfoBags[T_FLAGS].name = "flags list";
-    InitMarkFuncBags( T_FLAGS, MarkFourSubBags );
+    InitMarkFuncBags( T_FLAGS, MarkThreeSubBags );
 
     /* install the printing function                                       */
     PrintObjFuncs[ T_FLAGS ] = PrintFlags;
