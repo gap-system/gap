@@ -319,8 +319,8 @@ static inline UInt TRUE_FLAGS(Obj flags, UInt ix) {
 **                               caller is responsible for <ix> being in range
 */
 
-static inline void SET_TRUE_FLAGS(Obj flags, UInt ix, UInt filt) {
-    ((UInt2 *)(ADDR_OBJ(flags) +3))[ix] = (UInt2) filt ;
+static inline void SET_TRUE_FLAGS(Obj flags, UInt ix, UInt2 filt) {
+    ((UInt2 *)(ADDR_OBJ(flags) +3))[ix] = filt ;
 }
 
 /****************************************************************************
