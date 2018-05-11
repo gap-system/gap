@@ -4479,6 +4479,74 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
+#M  ViewString( <tbl> ) . . . . . . . . . . . . . . . . for a character table
+##
+InstallMethod( ViewString,
+    "for an ordinary table",
+    [ IsOrdinaryTable ],
+    function( tbl )
+    if HasUnderlyingGroup( tbl ) then
+      return Concatenation( "CharacterTable( ",
+                 ViewString( UnderlyingGroup( tbl ) ), " )" );
+    else
+      return Concatenation( "CharacterTable( \"", Identifier( tbl ),
+                 "\" )" );
+    fi;
+    end );
+
+InstallMethod( ViewString,
+    "for a Brauer table",
+    [ IsBrauerTable ],
+    function( tbl )
+    local ordtbl;
+    ordtbl:= OrdinaryCharacterTable( tbl );
+    if HasUnderlyingGroup( ordtbl ) then
+      return Concatenation( "BrauerTable( ",
+                 ViewString( UnderlyingGroup( ordtbl ) ), ", ",
+                 String( UnderlyingCharacteristic( tbl ) ), " )" );
+    else
+      return Concatenation( "BrauerTable( \"", Identifier( ordtbl ),
+                 "\", ", String( UnderlyingCharacteristic( tbl ) ), " )" );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  PrintString( <tbl> )  . . . . . . . . . . . . . . . for a character table
+##
+InstallMethod( PrintString,
+    "for an ordinary table",
+    [ IsOrdinaryTable ],
+    function( tbl )
+    if HasUnderlyingGroup( tbl ) then
+      return Concatenation( "CharacterTable( \"",
+                 PrintString( UnderlyingGroup( tbl ) ), " )" );
+    else
+      return Concatenation( "CharacterTable( \"", Identifier( tbl ),
+                 "\" )" );
+    fi;
+    end );
+
+InstallMethod( PrintString,
+    "for a Brauer table",
+    [ IsBrauerTable ],
+    function( tbl )
+    local ordtbl;
+    ordtbl:= OrdinaryCharacterTable( tbl );
+    if HasUnderlyingGroup( ordtbl ) then
+      return Concatenation( "BrauerTable( ",
+                 PrintString( UnderlyingGroup( ordtbl ) ), ", ",
+                 String( UnderlyingCharacteristic( tbl ) ), " )" );
+    else
+      return Concatenation( "BrauerTable( \"", Identifier( ordtbl ),
+                 "\", ", String( UnderlyingCharacteristic( tbl ) ), " )" );
+    fi;
+    end );
+
+
+#############################################################################
+##
 #F  CharacterTableDisplayStringEntryDefault( <entry>, <data> )
 ##
 BindGlobal( "CharacterTableDisplayStringEntryDefault",
