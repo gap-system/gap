@@ -2610,6 +2610,7 @@ static Int InitKernel (
         }
     }
 
+    SetupFlagsListsAsLists();
     /* return success                                                      */
     return 0;
 }

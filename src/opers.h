@@ -224,11 +224,16 @@ static inline void SET_ENABLED_ATTR(Obj oper, Int x)
 *F * * * * * * * * * * * * internal flags functions * * * * * * * * * * * * *
 **
 ** Attempting change April 2018. Flags will be stored as 
-** Size (INTOBJ)  -- could possibly be a UInt2 instead
-** Hash (INTOBJ)
 ** AND_CACHE -- Obj
+** Size (UInt)  -- could possibly be a UInt2 instead
+** Hash (Uint)
 ** Set positions (array of UInt2).
 */
+
+static inline UInt IS_FLAGS(Obj f) {
+    GAP_ASSERT(TNUM_OBJ(f) != T_FLAGS);
+    return TNUM_OBJ(f) == T_FLAGS + IMMUTABLE;
+}
 
 /****************************************************************************
 **
@@ -245,7 +250,7 @@ static inline UInt SIZE_PLEN_FLAGS(UInt fsize) {
 
 static inline Obj NEW_FLAGS(UInt len)
 {
-    Obj flags = NewBag(T_FLAGS, SIZE_PLEN_FLAGS(len));
+    Obj flags = NewBag(T_FLAGS + IMMUTABLE, SIZE_PLEN_FLAGS(len));
     return flags;
 }
 
@@ -264,34 +269,34 @@ extern Obj TRUES_FLAGS( Obj flags );
 **
 *F  SIZE_FLAGS( <flags> ) . . . . . . . . . . .number of true of <flags> 
 */
-static inline Obj SIZE_FLAGS(Obj flags) {
-    return CONST_ADDR_OBJ(flags)[0];
+static inline UInt SIZE_FLAGS(Obj flags) {
+    return ((const UInt *)CONST_ADDR_OBJ(flags))[1];
 }
 
 /****************************************************************************
 **
-*F  SET_SIZE_FLAGS( <flags>, <hash> ) . . . . . . . . . . . . . . .  set size
+*F  SET_SIZE_FLAGS( <flags>, <size> ) . . . . . . . . . . . . . . .  set size
 */
-static inline void SET_SIZE_FLAGS(Obj flags, Obj size) {
-    ADDR_OBJ(flags)[0] = size;
+static inline void SET_SIZE_FLAGS(Obj flags, UInt size) {
+    ((UInt *)ADDR_OBJ(flags))[1] = size;
 }
 
 /****************************************************************************
 **
 *F  HASH_FLAGS( <flags> ) . . . . . . . . . . . .  hash value of <flags> or 0
 */
-static inline Obj HASH_FLAGS(Obj flags)
+static inline UInt HASH_FLAGS(Obj flags)
 {
-    return CONST_ADDR_OBJ(flags)[1];
+    return ((const UInt *)CONST_ADDR_OBJ(flags))[2];
 }
 
 /****************************************************************************
 **
-*F  SET_HASH_FLAGS( <flags> ) . . . . . . . . . .  set  hash value of <flags>
+*F  SET_HASH_FLAGS( <flags>, <hash> )  . . . . . .  set  hash value of <flags>
 */
-static inline void SET_HASH_FLAGS(Obj flags, Obj hash)
+static inline void SET_HASH_FLAGS(Obj flags, UInt hash)
 {
-    ADDR_OBJ(flags)[1] = hash;
+    ((UInt *)ADDR_OBJ(flags))[2] = hash;
 }
 
 /****************************************************************************
@@ -299,7 +304,7 @@ static inline void SET_HASH_FLAGS(Obj flags, Obj hash)
 *F  AND_CACHE_FLAGS( <flags> )  . . . . . . . . . 'and' cache of a flags list
 */
 static inline Obj AND_CACHE_FLAGS(Obj flags) {
-    return CONST_ADDR_OBJ(flags)[2];
+    return CONST_ADDR_OBJ(flags)[0];
 }
 
 
@@ -308,7 +313,7 @@ static inline Obj AND_CACHE_FLAGS(Obj flags) {
 *F  SET_AND_CACHE_FLAGS( <flags>, <len> ) set the 'and' cache of a flags list
 */
 static inline void SET_AND_CACHE_FLAGS(Obj flags, Obj andc) {
-    ADDR_OBJ(flags)[2]=(andc);
+    ADDR_OBJ(flags)[0]=andc;
 }
 
 
@@ -684,6 +689,8 @@ extern void LoadOperationExtras( Obj oper );
 **
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
+
+extern void SetupFlagsListsAsLists( void );
 
 
 /****************************************************************************

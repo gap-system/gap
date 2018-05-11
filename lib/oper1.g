@@ -35,6 +35,7 @@ BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
             meth,
             res,        # result of an immediate method
             loc,
+            flag,
             newflags;   # newly  found filters
 
     # Avoid recursive calls from inside a setter,
@@ -47,7 +48,10 @@ BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
     if IS_SUBSET_FLAGS( IMM_FLAGS, flags ) then return; fi;
     flags := SUB_FLAGS( flags, IMM_FLAGS );
 
-    flagspos := SHALLOW_COPY_OBJ(TRUES_FLAGS(flags));
+    flagspos := [];
+    for flag in flags do
+        ADD_LIST(flagspos,flag);
+    od;    
     tried    := [];
     type     := TYPE_OBJ( obj );
     flags    := type![2];
@@ -111,9 +115,9 @@ BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
 
                           newflags := SUB_FLAGS( type![2], IMM_FLAGS );
                           newflags := SUB_FLAGS( newflags, flags );
-                          APPEND_LIST_INTR( flagspos,
-                                            TRUES_FLAGS( newflags ) );
-
+                          for flag in newflags do
+                              ADD_LIST(flagspos, flag);
+                          od;
                           flags := type![2];
 
                         fi;

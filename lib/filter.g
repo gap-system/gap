@@ -310,23 +310,16 @@ end );
 ##
 #F  NamesFilter( <flags> )  . . . . . list of names of the filters in <flags>
 ##
+
 BIND_GLOBAL( "NamesFilter", function( flags )
     local  bn,  i;
-
-    if IS_FUNCTION(flags)  then
-        flags := FLAGS_FILTER(flags);
-    fi;
-    if IS_LIST(flags)  then
-        bn := SHALLOW_COPY_OBJ(flags);
-    else
-        bn := SHALLOW_COPY_OBJ(TRUES_FLAGS(flags));
-    fi;
+    bn := [];    
     atomic readonly FILTER_REGION do
-      for i  in  [ 1 .. LEN_LIST(bn) ]  do
-          if not IsBound(FILTERS[ bn[i] ])  then
-              bn[i] := STRING_INT( bn[i] );
+      for i  in  [ 1 .. LEN_LIST(flags) ]  do
+          if not IsBound(FILTERS[ flags[i] ])  then
+              bn[i] := STRING_INT( flags[i] );
           else
-              bn[i] := NAME_FUNC(FILTERS[ bn[i] ]);
+              bn[i] := NAME_FUNC(FILTERS[ flags[i] ]);
           fi;
       od;
     od;
