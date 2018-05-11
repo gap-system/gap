@@ -561,17 +561,10 @@ UInt ResizeBag(Bag bag, UInt new_size)
         header->flags = flags;
         header->size = new_size;
 
-        /* set the masterpointer                                           */
+        // copy data and update the masterpointer
         src = PTR_BAG(bag);
+        memcpy(DATA(header), src, old_size < new_size ? old_size : new_size);
         SET_PTR_BAG(bag, DATA(header));
-
-        if (DATA(header) != src) {
-            memcpy(DATA(header), src,
-                   old_size < new_size ? old_size : new_size);
-        }
-        else if (new_size < old_size) {
-            memset(DATA(header) + new_size, 0, old_size - new_size);
-        }
     }
     /* return success                                                      */
     return 1;
