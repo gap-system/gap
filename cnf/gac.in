@@ -314,7 +314,7 @@ make_compstat () {
     temps_c="${temps_c} ${gactmp}/$$compstat.c"
     (
         echo     "/* made by 'gac', can be thrown away */"
-        echo     "#include <src/compiled.h>"
+        echo     "#include \"compiled.h\""
 
         echo     "#ifndef AVOID_PRECOMPILED"
         echo     "extern StructInitInfo * Init__type1 ( void );"
