@@ -29,7 +29,7 @@
 #ifndef GAP_GVARS_H
 #define GAP_GVARS_H
 
-#include <src/objects.h>
+#include "objects.h"
 
 /****************************************************************************
 **

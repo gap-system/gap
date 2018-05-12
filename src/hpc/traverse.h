@@ -1,7 +1,7 @@
 #ifndef GAP_TRAVERSE_H
 #define GAP_TRAVERSE_H
 
-#include <src/system.h>
+#include "system.h"
 
 /*
  * Functionality to traverse nested object structures.

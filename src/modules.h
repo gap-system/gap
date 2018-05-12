@@ -12,7 +12,7 @@
 #ifndef GAP_MODULES_H
 #define GAP_MODULES_H
 
-#include <src/system.h>
+#include "system.h"
 
 /****************************************************************************
 **

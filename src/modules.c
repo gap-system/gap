@@ -9,27 +9,27 @@
 **  kernel extensions.
 */
 
-#include <src/modules.h>
+#include "modules.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/code.h>
-#include <src/compstat.h>
-#include <src/error.h>
-#include <src/funcs.h>
-#include <src/integer.h>
-#include <src/gap.h>
-#include <src/gapstate.h>
-#include <src/gvars.h>
-#include <src/intobj.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/opers.h>
-#include <src/plist.h>
-#include <src/saveload.h>
-#include <src/streams.h>
-#include <src/stringobj.h>
-#include <src/sysfiles.h>
+#include "ariths.h"
+#include "bool.h"
+#include "code.h"
+#include "compstat.h"
+#include "error.h"
+#include "funcs.h"
+#include "integer.h"
+#include "gap.h"
+#include "gapstate.h"
+#include "gvars.h"
+#include "intobj.h"
+#include "io.h"
+#include "lists.h"
+#include "opers.h"
+#include "plist.h"
+#include "saveload.h"
+#include "streams.h"
+#include "stringobj.h"
+#include "sysfiles.h"
 
 
 /****************************************************************************

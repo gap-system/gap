@@ -24,18 +24,18 @@
 **  is 0 if also the polynomials f_{m1},...,f_{mn} for (m > i) are trivial .
 */
 
-#include <src/dteval.h>
+#include "dteval.h"
 
-#include <src/dt.h>
-#include <src/integer.h>
-#include <src/modules.h>
-#include <src/objcftl.h>
-#include <src/plist.h>
-#include <src/precord.h>
-#include <src/records.h>
+#include "dt.h"
+#include "integer.h"
+#include "modules.h"
+#include "objcftl.h"
+#include "plist.h"
+#include "precord.h"
+#include "records.h"
 
 #ifdef HPCGAP
-#include <src/hpc/guards.h>
+#include "hpc/guards.h"
 #endif
 
 #define   CELM(list, pos)      (  INT_INTOBJ( ELM_PLIST(list, pos) ) )

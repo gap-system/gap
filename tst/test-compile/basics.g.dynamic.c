@@ -1,5 +1,5 @@
 /* C file produced by GAC */
-#include <src/compiled.h>
+#include "compiled.h"
 #define FILE_CRC  "-35519163"
 
 /* global variables used in handlers */

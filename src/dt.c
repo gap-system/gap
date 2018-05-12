@@ -52,14 +52,14 @@
 **  for pos( <b> ) for all trees <b> which are represented by <a>.
 */
 
-#include <src/dt.h>
+#include "dt.h"
 
-#include <src/calls.h>
-#include <src/error.h>
-#include <src/gvars.h>
-#include <src/integer.h>
-#include <src/modules.h>
-#include <src/plist.h>
+#include "calls.h"
+#include "error.h"
+#include "gvars.h"
+#include "integer.h"
+#include "modules.h"
+#include "plist.h"
 
 
 /****************************************************************************

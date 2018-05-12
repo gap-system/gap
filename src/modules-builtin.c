@@ -1,20 +1,20 @@
-#include <src/compiled.h>
-#include <src/gap.h>
-#include <src/hookintrprtr.h>
-#include <src/intfuncs.h>
-#include <src/iostream.h>
-#include <src/objccoll.h>
-#include <src/objset.h>
-#include <src/profile.h>
-#include <src/vec8bit.h>
-#include <src/vecffe.h>
-#include <src/vecgf2.h>
+#include "compiled.h"
+#include "gap.h"
+#include "hookintrprtr.h"
+#include "intfuncs.h"
+#include "iostream.h"
+#include "objccoll.h"
+#include "objset.h"
+#include "profile.h"
+#include "vec8bit.h"
+#include "vecffe.h"
+#include "vecgf2.h"
 
 #ifdef HPCGAP
-#include <src/hpc/aobjects.h>
-#include <src/hpc/serialize.h>
-#include <src/hpc/threadapi.h>
-#include <src/hpc/traverse.h>
+#include "hpc/aobjects.h"
+#include "hpc/serialize.h"
+#include "hpc/threadapi.h"
+#include "hpc/traverse.h"
 #endif
 
 extern StructInitInfo * InitInfoGap ( void );

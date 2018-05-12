@@ -9,31 +9,31 @@
 **  This file contains the GAP interface for thread primitives.
 */
 
-#include <src/hpc/threadapi.h>
+#include "hpc/threadapi.h"
 
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/code.h>
-#include <src/error.h>
-#include <src/funcs.h>
-#include <src/gapstate.h>
-#include <src/gvars.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/objects.h>
-#include <src/plist.h>
-#include <src/read.h>
-#include <src/records.h>
-#include <src/set.h>
-#include <src/stringobj.h>
+#include "bool.h"
+#include "calls.h"
+#include "code.h"
+#include "error.h"
+#include "funcs.h"
+#include "gapstate.h"
+#include "gvars.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "objects.h"
+#include "plist.h"
+#include "read.h"
+#include "records.h"
+#include "set.h"
+#include "stringobj.h"
 
-#include <src/hpc/guards.h>
-#include <src/hpc/misc.h>
-#include <src/hpc/region.h>
-#include <src/hpc/thread.h>
-#include <src/hpc/tls.h>
-#include <src/hpc/traverse.h>
+#include "hpc/guards.h"
+#include "hpc/misc.h"
+#include "hpc/region.h"
+#include "hpc/thread.h"
+#include "hpc/tls.h"
+#include "hpc/traverse.h"
 
 #include <stdio.h>
 #include <signal.h>

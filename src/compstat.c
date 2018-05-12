@@ -8,8 +8,8 @@
 *Y  Copyright (C) 2002 The GAP Group
 */
 
-#include <src/system.h>
-#include <src/compstat.h>
+#include "system.h"
+#include "compstat.h"
 
 // #define AVOID_PRECOMPILED
 

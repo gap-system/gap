@@ -9,10 +9,10 @@
 **
 */
 
-#include <src/sysmem.h>
+#include "sysmem.h"
 
-#include <src/stats.h>
-#include <src/sysfiles.h>
+#include "stats.h"
+#include "sysfiles.h"
 
 #ifdef GAP_MEM_CHECK
 #include <fcntl.h>

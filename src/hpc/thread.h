@@ -1,7 +1,7 @@
 #ifndef GAP_THREAD_H
 #define GAP_THREAD_H
 
-#include <src/system.h>
+#include "system.h"
 
 #if !defined(HPCGAP)
 
@@ -16,8 +16,8 @@
 
 #else
 
-#include <src/hpc/tlsconfig.h>
-#include <src/hpc/region.h>
+#include "hpc/tlsconfig.h"
+#include "hpc/region.h"
 
 /* Maximum number of threads excluding the main thread */
 #define MAX_THREADS 1023

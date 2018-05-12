@@ -1,4 +1,4 @@
-#include <src/hpc/misc.h>
+#include "hpc/misc.h"
 
 #include <string.h>
 

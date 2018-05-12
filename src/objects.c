@@ -10,31 +10,31 @@
 **  This file contains the functions of the objects package.
 */
 
-#include <src/objects.h>
+#include "objects.h"
 
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/error.h>
-#include <src/gapstate.h>
-#include <src/gvars.h>
-#include <src/io.h>
-#include <src/modules.h>
-#include <src/opers.h>
-#include <src/plist.h>
-#include <src/precord.h>
-#include <src/saveload.h>
-#include <src/stringobj.h>
-#include <src/sysfiles.h>
+#include "bool.h"
+#include "calls.h"
+#include "error.h"
+#include "gapstate.h"
+#include "gvars.h"
+#include "io.h"
+#include "modules.h"
+#include "opers.h"
+#include "plist.h"
+#include "precord.h"
+#include "saveload.h"
+#include "stringobj.h"
+#include "sysfiles.h"
 
 #ifdef HPCGAP
-#include <src/hpc/aobjects.h>
-#include <src/hpc/guards.h>
-#include <src/hpc/thread.h>
-#include <src/hpc/traverse.h>
+#include "hpc/aobjects.h"
+#include "hpc/guards.h"
+#include "hpc/thread.h"
+#include "hpc/traverse.h"
 #endif
 
 #if defined(USE_THREADSAFE_COPYING)
-#include <src/hpc/traverse.h>
+#include "hpc/traverse.h"
 #endif
 
 

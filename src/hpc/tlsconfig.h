@@ -1,7 +1,7 @@
 #ifndef GAP_TLSCONFIG_H
 #define GAP_TLSCONFIG_H
 
-#include <src/system.h>
+#include "system.h"
 
 #ifdef HPCGAP
 

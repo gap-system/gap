@@ -13,17 +13,17 @@
 ** large integer representation in use. See integer.c for other things.
 */
 
-#include <src/intfuncs.h>
+#include "intfuncs.h"
 
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/error.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/precord.h>
-#include <src/records.h>
-#include <src/stringobj.h>
+#include "bool.h"
+#include "calls.h"
+#include "error.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "precord.h"
+#include "records.h"
+#include "stringobj.h"
 
 
 /****************************************************************************

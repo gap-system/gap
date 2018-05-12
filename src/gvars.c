@@ -27,23 +27,23 @@
 **  Otherwise the internal copies reference functions that signal an error.
 */
 
-#include <src/gvars.h>
+#include "gvars.h"
 
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/error.h>
-#include <src/gapstate.h>
-#include <src/integer.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/stringobj.h>
+#include "bool.h"
+#include "calls.h"
+#include "error.h"
+#include "gapstate.h"
+#include "integer.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "stringobj.h"
 
 #ifdef HPCGAP
-#include <src/hpc/aobjects.h>
-#include <src/hpc/guards.h>
-#include <src/hpc/thread.h>
+#include "hpc/aobjects.h"
+#include "hpc/guards.h"
+#include "hpc/thread.h"
 #include <pthread.h>
 #endif
 

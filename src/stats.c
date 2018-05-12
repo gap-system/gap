@@ -13,30 +13,30 @@
 **  statements for their effects and prints statements.
 */
 
-#include <src/stats.h>
+#include "stats.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/code.h>
-#include <src/error.h>
-#include <src/exprs.h>
-#include <src/gvars.h>
-#include <src/hookintrprtr.h>
-#include <src/intrprtr.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/precord.h>
-#include <src/records.h>
-#include <src/stringobj.h>
-#include <src/sysfiles.h>
-#include <src/sysmem.h>
-#include <src/vars.h>
+#include "ariths.h"
+#include "bool.h"
+#include "calls.h"
+#include "code.h"
+#include "error.h"
+#include "exprs.h"
+#include "gvars.h"
+#include "hookintrprtr.h"
+#include "intrprtr.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "precord.h"
+#include "records.h"
+#include "stringobj.h"
+#include "sysfiles.h"
+#include "sysmem.h"
+#include "vars.h"
 
 #ifdef HPCGAP
-#include <src/hpc/thread.h>
+#include "hpc/thread.h"
 #endif
 
 #include <assert.h>

@@ -9,21 +9,21 @@
 **  This file contains the GAP interface for thread primitives.
 */
 
-#include <src/objset.h>
+#include "objset.h"
 
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/fibhash.h>
-#include <src/gaputils.h>
-#include <src/gvars.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/saveload.h>
+#include "bool.h"
+#include "error.h"
+#include "fibhash.h"
+#include "gaputils.h"
+#include "gvars.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "saveload.h"
 
 #ifdef HPCGAP
-#include <src/hpc/traverse.h>
+#include "hpc/traverse.h"
 #endif
 
 Obj TYPE_OBJSET;

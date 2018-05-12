@@ -10,23 +10,23 @@
  *
  *****************************************************************************/
 
-#include <src/pperm.h>
+#include "pperm.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/gapstate.h>
-#include <src/gvars.h>
-#include <src/integer.h>
-#include <src/intfuncs.h>
-#include <src/io.h>
-#include <src/listfunc.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/opers.h>
-#include <src/permutat.h>
-#include <src/plist.h>
-#include <src/saveload.h>
+#include "ariths.h"
+#include "bool.h"
+#include "error.h"
+#include "gapstate.h"
+#include "gvars.h"
+#include "integer.h"
+#include "intfuncs.h"
+#include "io.h"
+#include "listfunc.h"
+#include "lists.h"
+#include "modules.h"
+#include "opers.h"
+#include "permutat.h"
+#include "plist.h"
+#include "saveload.h"
 
 
 #define MAX(a, b) (a < b ? b : a)

@@ -1,7 +1,7 @@
 #ifndef GAP_TRANS_H
 #define GAP_TRANS_H
 
-#include <src/objects.h>
+#include "objects.h"
 
 static inline int IS_TRANS(Obj f)
 {

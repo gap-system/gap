@@ -9,26 +9,26 @@
 **
 */
 
-#include <src/error.h>
+#include "error.h"
 
-#include <src/bool.h>
-#include <src/code.h>
-#include <src/exprs.h>
-#include <src/funcs.h>
-#include <src/gapstate.h>
-#include <src/gaputils.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/precord.h>
-#include <src/records.h>
-#include <src/stats.h>
-#include <src/stringobj.h>
-#include <src/vars.h>
+#include "bool.h"
+#include "code.h"
+#include "exprs.h"
+#include "funcs.h"
+#include "gapstate.h"
+#include "gaputils.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "precord.h"
+#include "records.h"
+#include "stats.h"
+#include "stringobj.h"
+#include "vars.h"
 
 #ifdef HPCGAP
-#include <src/hpc/thread.h>
+#include "hpc/thread.h"
 #endif
 
 #include <stdio.h>

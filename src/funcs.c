@@ -16,27 +16,27 @@
 **  It uses the function call mechanism defined by the calls package.
 */
 
-#include <src/funcs.h>
+#include "funcs.h"
 
-#include <src/calls.h>
-#include <src/code.h>
-#include <src/error.h>
-#include <src/exprs.h>
-#include <src/gapstate.h>
-#include <src/hookintrprtr.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/opers.h>
-#include <src/plist.h>
-#include <src/read.h>
-#include <src/stats.h>
-#include <src/stringobj.h>
-#include <src/vars.h>
+#include "calls.h"
+#include "code.h"
+#include "error.h"
+#include "exprs.h"
+#include "gapstate.h"
+#include "hookintrprtr.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "opers.h"
+#include "plist.h"
+#include "read.h"
+#include "stats.h"
+#include "stringobj.h"
+#include "vars.h"
 
 #ifdef HPCGAP
-#include <src/hpc/guards.h>
-#include <src/hpc/thread.h>
+#include "hpc/guards.h"
+#include "hpc/thread.h"
 #endif
 
 static ModuleStateOffset FuncsStateOffset = -1;

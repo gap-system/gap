@@ -14,14 +14,14 @@
 **  True and Fail.
 */
 
-#include <src/bool.h>
+#include "bool.h"
 
-#include <src/ariths.h>
-#include <src/calls.h>
-#include <src/gvars.h>
-#include <src/io.h>
-#include <src/modules.h>
-#include <src/opers.h>
+#include "ariths.h"
+#include "calls.h"
+#include "gvars.h"
+#include "io.h"
+#include "modules.h"
+#include "opers.h"
 
 
 /****************************************************************************

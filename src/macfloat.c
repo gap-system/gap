@@ -20,16 +20,16 @@
 
 #include <math.h>
 
-#include <src/macfloat.h>
+#include "macfloat.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/io.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/saveload.h>
-#include <src/stringobj.h>
+#include "ariths.h"
+#include "bool.h"
+#include "error.h"
+#include "io.h"
+#include "modules.h"
+#include "plist.h"
+#include "saveload.h"
+#include "stringobj.h"
 
 #include <stdio.h>
 

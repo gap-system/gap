@@ -11,10 +11,10 @@
 #ifndef GAP_GAPSTATE_H
 #define GAP_GAPSTATE_H
 
-#include <src/debug.h>
+#include "debug.h"
 
 #if defined(HPCGAP)
-#include <src/hpc/tls.h>
+#include "hpc/tls.h"
 #endif
 
 enum {

@@ -14,13 +14,13 @@
 **
 */
 
-#include <src/objccoll.h>
+#include "objccoll.h"
 
-#include <src/intobj.h>
-#include <src/gapstate.h>
-#include <src/modules.h>
-#include <src/objfgelm.h>
-#include <src/objscoll.h>
+#include "intobj.h"
+#include "gapstate.h"
+#include "modules.h"
+#include "objfgelm.h"
+#include "objscoll.h"
 
 
 #define AddWordIntoExpVec   C8Bits_AddWordIntoExpVec
@@ -28,21 +28,21 @@
 #define AddPartIntoExpVec   C8Bits_AddPartIntoExpVec
 #define CombiCollectWord    C8Bits_CombiCollectWord
 #define UIntN       UInt1
-#include <src/objccoll-impl.h>
+#include "objccoll-impl.h"
 
 #define AddWordIntoExpVec   C16Bits_AddWordIntoExpVec
 #define AddCommIntoExpVec   C16Bits_AddCommIntoExpVec
 #define AddPartIntoExpVec   C16Bits_AddPartIntoExpVec
 #define CombiCollectWord    C16Bits_CombiCollectWord
 #define UIntN       UInt2
-#include <src/objccoll-impl.h>
+#include "objccoll-impl.h"
 
 #define AddWordIntoExpVec   C32Bits_AddWordIntoExpVec
 #define AddCommIntoExpVec   C32Bits_AddCommIntoExpVec
 #define AddPartIntoExpVec   C32Bits_AddPartIntoExpVec
 #define CombiCollectWord    C32Bits_CombiCollectWord
 #define UIntN       UInt4
-#include <src/objccoll-impl.h>
+#include "objccoll-impl.h"
 
 
 /****************************************************************************

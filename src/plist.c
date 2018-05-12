@@ -35,25 +35,25 @@
 **  functions called from the generic lists package.
 */
 
-#include <src/plist.h>
+#include "plist.h"
 
-#include <src/ariths.h>
-#include <src/blister.h>
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/error.h>
-#include <src/finfield.h>
-#include <src/funcs.h>
-#include <src/gaputils.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/range.h>
-#include <src/saveload.h>
+#include "ariths.h"
+#include "blister.h"
+#include "bool.h"
+#include "calls.h"
+#include "error.h"
+#include "finfield.h"
+#include "funcs.h"
+#include "gaputils.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "range.h"
+#include "saveload.h"
 
 #ifdef HPCGAP
-#include <src/hpc/guards.h>
-#include <src/hpc/traverse.h>
+#include "hpc/guards.h"
+#include "hpc/traverse.h"
 #endif
 
 

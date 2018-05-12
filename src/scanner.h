@@ -17,7 +17,7 @@
 #ifndef GAP_SCANNER_H
 #define GAP_SCANNER_H
 
-#include <src/system.h>
+#include "system.h"
 
 /****************************************************************************
 **

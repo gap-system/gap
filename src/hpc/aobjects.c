@@ -9,28 +9,28 @@
 **  This file contains the GAP interface for thread primitives.
 */
 
-#include <src/hpc/aobjects.h>
+#include "hpc/aobjects.h"
 
-#include <src/hpc/guards.h>
-#include <src/hpc/thread.h>
-#include <src/hpc/traverse.h>
+#include "hpc/guards.h"
+#include "hpc/thread.h"
+#include "hpc/traverse.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/error.h>
-#include <src/fibhash.h>
-#include <src/gaputils.h>
-#include <src/gapstate.h>
-#include <src/gvars.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/objects.h>
-#include <src/plist.h>
-#include <src/precord.h>
-#include <src/records.h>
-#include <src/stringobj.h>
+#include "ariths.h"
+#include "bool.h"
+#include "calls.h"
+#include "error.h"
+#include "fibhash.h"
+#include "gaputils.h"
+#include "gapstate.h"
+#include "gvars.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "objects.h"
+#include "plist.h"
+#include "precord.h"
+#include "records.h"
+#include "stringobj.h"
 
 
 Obj TYPE_ALIST;

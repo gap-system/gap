@@ -13,15 +13,15 @@
 **  This file contains the functions of for coset tables.
 */
 
-#include <src/costab.h>
+#include "costab.h"
 
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/integer.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
+#include "bool.h"
+#include "error.h"
+#include "integer.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
 
 
 /****************************************************************************

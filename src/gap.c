@@ -11,37 +11,37 @@
 **  This file contains the various read-eval-print loops and  related  stuff.
 */
 
-#include <src/gap.h>
+#include "gap.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/compiler.h>
-#include <src/error.h>
-#include <src/funcs.h>
-#include <src/gapstate.h>
-#include <src/gvars.h>
-#include <src/integer.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/precord.h>
-#include <src/records.h>
-#include <src/read.h>
-#include <src/saveload.h>
-#include <src/stats.h>   // for ClearError
-#include <src/streams.h>
-#include <src/stringobj.h>
-#include <src/sysfiles.h>
-#include <src/sysmem.h>
-#include <src/vars.h>
+#include "ariths.h"
+#include "bool.h"
+#include "calls.h"
+#include "compiler.h"
+#include "error.h"
+#include "funcs.h"
+#include "gapstate.h"
+#include "gvars.h"
+#include "integer.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "precord.h"
+#include "records.h"
+#include "read.h"
+#include "saveload.h"
+#include "stats.h"   // for ClearError
+#include "streams.h"
+#include "stringobj.h"
+#include "sysfiles.h"
+#include "sysmem.h"
+#include "vars.h"
 
 #ifdef HPCGAP
-#include <src/intrprtr.h>
-#include <src/hpc/misc.h>
-#include <src/hpc/thread.h>
-#include <src/hpc/threadapi.h>
+#include "intrprtr.h"
+#include "hpc/misc.h"
+#include "hpc/thread.h"
+#include "hpc/threadapi.h"
 #endif
 
 

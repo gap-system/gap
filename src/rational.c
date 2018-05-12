@@ -43,16 +43,16 @@
 **  'SumInt', 'ProdInt' or 'GcdInt'.
 */
 
-#include <src/rational.h>
+#include "rational.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/integer.h>
-#include <src/io.h>
-#include <src/modules.h>
-#include <src/opers.h>
-#include <src/saveload.h>
+#include "ariths.h"
+#include "bool.h"
+#include "error.h"
+#include "integer.h"
+#include "io.h"
+#include "modules.h"
+#include "opers.h"
+#include "saveload.h"
 
 
 #if defined(DEBUG_RATIONALS)

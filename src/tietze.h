@@ -13,7 +13,7 @@
 #ifndef GAP_TIETZE_H
 #define GAP_TIETZE_H
 
-#include <src/system.h>
+#include "system.h"
 
 /****************************************************************************
 **

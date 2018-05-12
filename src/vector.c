@@ -17,11 +17,11 @@
 **  vector flag and the compact representation of vectors over finite fields.
 */
 
-#include <src/vector.h>
+#include "vector.h"
 
-#include <src/ariths.h>
-#include <src/modules.h>
-#include <src/plist.h>
+#include "ariths.h"
+#include "modules.h"
+#include "plist.h"
 
 #define IS_IMM_PLIST(list)  ((TNUM_OBJ(list) - T_PLIST) % 2)
 

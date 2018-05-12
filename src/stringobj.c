@@ -51,22 +51,22 @@
 **  string, and if so converts it into the above format.
 */
 
-#include <src/stringobj.h>
+#include "stringobj.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/gaputils.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/opers.h>
-#include <src/plist.h>
-#include <src/range.h>
-#include <src/saveload.h>
+#include "ariths.h"
+#include "bool.h"
+#include "error.h"
+#include "gaputils.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "opers.h"
+#include "plist.h"
+#include "range.h"
+#include "saveload.h"
 
 #ifdef HPCGAP
-#include <src/hpc/guards.h>
+#include "hpc/guards.h"
 #endif
 
 

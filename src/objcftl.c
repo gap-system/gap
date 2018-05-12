@@ -15,14 +15,14 @@
 **  code here.                                                                    
 */
 
-#include <src/objcftl.h>
+#include "objcftl.h"
 
-#include <src/ariths.h>
-#include <src/error.h>
-#include <src/gvars.h>
-#include <src/integer.h>
-#include <src/modules.h>
-#include <src/plist.h>
+#include "ariths.h"
+#include "error.h"
+#include "gvars.h"
+#include "integer.h"
+#include "modules.h"
+#include "plist.h"
 
 
 #define IS_INT_ZERO( n )  ((n) == INTOBJ_INT(0))

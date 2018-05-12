@@ -16,18 +16,18 @@
 **  in some other kind of object). 
 */
 
-#include <src/weakptr.h>
+#include "weakptr.h"
 
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/saveload.h>
+#include "bool.h"
+#include "error.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "saveload.h"
 
 #ifdef HPCGAP
-#include <src/hpc/guards.h>
-#include <src/hpc/traverse.h>
+#include "hpc/guards.h"
+#include "hpc/traverse.h"
 #endif
 
 #ifdef USE_BOEHM_GC

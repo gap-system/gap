@@ -20,9 +20,9 @@
 #ifndef GAP_VARS_H
 #define GAP_VARS_H
 
-#include <src/calls.h>
-#include <src/gapstate.h>
-#include <src/objects.h>
+#include "calls.h"
+#include "gapstate.h"
+#include "objects.h"
 
 
 /****************************************************************************

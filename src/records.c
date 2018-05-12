@@ -13,18 +13,18 @@
 **  records and the elements for the other packages in the GAP kernel.
 */
 
-#include <src/records.h>
+#include "records.h"
 
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/gaputils.h>
-#include <src/modules.h>
-#include <src/opers.h>
-#include <src/plist.h>
-#include <src/stringobj.h>
+#include "bool.h"
+#include "error.h"
+#include "gaputils.h"
+#include "modules.h"
+#include "opers.h"
+#include "plist.h"
+#include "stringobj.h"
 
 #ifdef HPCGAP
-#include <src/hpc/thread.h>
+#include "hpc/thread.h"
 #include <pthread.h>
 #endif
 

@@ -1,4 +1,4 @@
-#include <src/gapstate.h>
+#include "gapstate.h"
 
 #ifdef HAVE_NATIVE_TLS
 

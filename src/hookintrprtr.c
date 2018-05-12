@@ -9,16 +9,16 @@
 **
 */
 
-#include <src/hookintrprtr.h>
+#include "hookintrprtr.h"
 
-#include <src/code.h>
-#include <src/exprs.h>
-#include <src/gapstate.h>
-#include <src/gaputils.h>
-#include <src/modules.h>
-#include <src/stats.h>
+#include "code.h"
+#include "exprs.h"
+#include "gapstate.h"
+#include "gaputils.h"
+#include "modules.h"
+#include "stats.h"
 
-#include <src/hpc/thread.h>
+#include "hpc/thread.h"
 
 
 /* List of active hooks */

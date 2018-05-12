@@ -15,7 +15,7 @@
 #ifndef GAP_INTEGER_H
 #define GAP_INTEGER_H
 
-#include <src/objects.h>
+#include "objects.h"
 
 // GMP must be included outside of 'extern C'
 #ifdef GAP_IN_EXTERN_C

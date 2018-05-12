@@ -1,13 +1,13 @@
 #ifndef GAP_REGION_H
 #define GAP_REGION_H
 
-#include <src/system.h>
+#include "system.h"
 
 #ifndef HPCGAP
 #error This header is only meant to be used with HPC-GAP
 #endif
 
-#include <src/hpc/atomic.h>
+#include "hpc/atomic.h"
 
 typedef struct
 {

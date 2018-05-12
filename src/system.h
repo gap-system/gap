@@ -24,7 +24,7 @@
 **
 *V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
 */
-#include <gen/config.h>
+#include "config.h"
 
 #include <ctype.h>
 #include <limits.h>

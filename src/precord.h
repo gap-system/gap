@@ -13,7 +13,7 @@
 #ifndef GAP_PRECORD_H
 #define GAP_PRECORD_H
 
-#include <src/objects.h>
+#include "objects.h"
 
 /****************************************************************************
 **

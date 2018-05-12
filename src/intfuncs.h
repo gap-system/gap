@@ -15,7 +15,7 @@
 #ifndef GAP_INTFUNCS_H
 #define GAP_INTFUNCS_H
 
-#include <src/system.h>
+#include "system.h"
 
 /* link between Mersenne Twister randim numbers and
    representation specific large integer codes */

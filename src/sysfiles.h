@@ -16,7 +16,7 @@
 #ifndef GAP_SYSFILES_H
 #define GAP_SYSFILES_H
 
-#include <src/system.h>
+#include "system.h"
 
 #include <stdio.h>  // for FILE
 

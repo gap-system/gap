@@ -26,7 +26,7 @@
 #ifndef GAP_STRINGOBJ_H
 #define GAP_STRINGOBJ_H
 
-#include <src/objects.h>
+#include "objects.h"
 
 
 /****************************************************************************

@@ -1,11 +1,11 @@
 #ifndef GAP_TLS_H
 #define GAP_TLS_H
 
-#include <src/system.h>
+#include "system.h"
 
 #ifdef HPCGAP
 
-#include <src/hpc/tlsconfig.h>
+#include "hpc/tlsconfig.h"
 
 typedef struct ThreadLocalStorage
 {

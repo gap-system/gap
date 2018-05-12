@@ -111,12 +111,12 @@
 **  already dead.
 */
 
-#include <src/gasman.h>
+#include "gasman.h"
 
-#include <src/gaputils.h>
-#include <src/io.h>
-#include <src/sysfiles.h>
-#include <src/sysmem.h>
+#include "gaputils.h"
+#include "io.h"
+#include "sysfiles.h"
+#include "sysmem.h"
 
 #include <stdio.h>
 

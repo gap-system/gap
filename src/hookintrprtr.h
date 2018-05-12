@@ -12,7 +12,7 @@
 #ifndef GAP_HOOKINTRPRTR_H
 #define GAP_HOOKINTRPRTR_H
 
-#include <src/system.h>
+#include "system.h"
 
 void InstallEvalBoolFunc(Int, Obj (*)(Expr));
 void InstallEvalExprFunc(Int, Obj (*)(Expr));

@@ -66,19 +66,19 @@
 **  GMP_NORMALIZE and GMP_REDUCE can be used to ensure this.
 */
 
-#include <src/integer.h>
+#include "integer.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/error.h>
-#include <src/intfuncs.h>
-#include <src/io.h>
-#include <src/modules.h>
-#include <src/opers.h>
-#include <src/saveload.h>
-#include <src/stats.h>
-#include <src/stringobj.h>
+#include "ariths.h"
+#include "bool.h"
+#include "calls.h"
+#include "error.h"
+#include "intfuncs.h"
+#include "io.h"
+#include "modules.h"
+#include "opers.h"
+#include "saveload.h"
+#include "stats.h"
+#include "stringobj.h"
 
 #include <stdio.h>
 

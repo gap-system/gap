@@ -12,25 +12,25 @@
 **  stuff.  The system depend part is in "sysfiles.c".
 */
 
-#include <src/streams.h>
+#include "streams.h"
 
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/funcs.h>
-#include <src/gap.h>
-#include <src/gapstate.h>
-#include <src/gvars.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/io.h>
-#include <src/plist.h>
-#include <src/precord.h>
-#include <src/read.h>
-#include <src/records.h>
-#include <src/stats.h>
-#include <src/stringobj.h>
-#include <src/sysfiles.h>
-#include <src/vars.h>
+#include "bool.h"
+#include "error.h"
+#include "funcs.h"
+#include "gap.h"
+#include "gapstate.h"
+#include "gvars.h"
+#include "lists.h"
+#include "modules.h"
+#include "io.h"
+#include "plist.h"
+#include "precord.h"
+#include "read.h"
+#include "records.h"
+#include "stats.h"
+#include "stringobj.h"
+#include "sysfiles.h"
+#include "vars.h"
 
 #include <dirent.h>
 #include <errno.h>

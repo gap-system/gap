@@ -10,7 +10,7 @@
 #ifndef GAP_OBJCCOLL_H
 #define GAP_OBJCCOLL_H
 
-#include <src/system.h>
+#include "system.h"
 
 /****************************************************************************
 **
