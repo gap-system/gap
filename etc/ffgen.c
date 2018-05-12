@@ -59,7 +59,7 @@ void emit_code(int header)
         printf("#endif // GAP_FFDATA_H\n");
     }
     else {
-        printf("#include <src/ffdata.h>\n");
+        printf("#include \"ffdata.h\"\n");
         printf("\n");
         printf("/* Entries are ordered by value of p^d; can use binary search\n");
         printf(" * to find them. Indices start at 1.\n");

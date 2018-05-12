@@ -5574,7 +5574,7 @@ Int CompileFunc (
 
     /* emit code to include the interface files                            */
     Emit( "/* C file produced by GAC */\n" );
-    Emit( "#include <src/compiled.h>\n" );
+    Emit( "#include \"compiled.h\"\n" );
     Emit( "#define FILE_CRC  \"%d\"\n", magic1 );
 
     /* emit code for global variables                                      */
