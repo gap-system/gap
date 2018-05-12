@@ -312,7 +312,7 @@ static Obj  HdlrFunc4 (
  SET_BRK_CURR_STAT(0);
  
  /* obj!.(name) := val; */
- t_1 = OBJ_LVAR_1UP( 1 );
+ t_1 = OBJ_HVAR( (1 << 16) | 1 );
  CHECK_BOUND( t_1, "name" )
  if ( TNUM_OBJ(a_obj) == T_COMOBJ ) {
   AssPRec( a_obj, RNamObj(t_1), a_val );
@@ -327,7 +327,7 @@ static Obj  HdlrFunc4 (
  
  /* SetFilterObj( obj, tester ); */
  t_1 = GF_SetFilterObj;
- t_2 = OBJ_LVAR_1UP( 2 );
+ t_2 = OBJ_HVAR( (1 << 16) | 2 );
  CHECK_BOUND( t_2, "tester" )
  CALL_2ARGS( t_1, a_obj, t_2 );
  

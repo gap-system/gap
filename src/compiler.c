@@ -2925,7 +2925,7 @@ CVar CompRefHVar (
     val = CVAR_TEMP( NewTemp( "val" ) );
 
     /* emit the code to get the value                                      */
-    Emit( "%c = OBJ_LVAR_%dUP( %d );\n",
+    Emit( "%c = OBJ_HVAR( (%d << 16) | %d );\n",
           val, GetLevlHVar(hvar), GetIndxHVar(hvar) );
 
     /* emit the code to check that the variable has a value                */
@@ -2956,7 +2956,7 @@ CVar CompIsbHVar (
     isb = CVAR_TEMP( NewTemp( "isb" ) );
 
     /* emit the code to get the value                                      */
-    Emit( "%c = OBJ_LVAR_%dUP( %d );\n",
+    Emit( "%c = OBJ_HVAR( (%d << 16) | %d );\n",
           val, GetLevlHVar(hvar), GetIndxHVar(hvar) );
 
     /* emit the code to check that the variable has a value                */
@@ -4225,7 +4225,7 @@ void CompFor (
                   GetIndxHVar(var), elm );
         }
         else if ( vart == 'h' ) {
-            Emit( "ASS_LVAR_%dUP( %d, %c );\n",
+            Emit( "ASS_HVAR( (%d << 16) | %d, %c );\n",
                   GetLevlHVar(var), GetIndxHVar(var), elm );
         }
         else if ( vart == 'g' ) {
@@ -4538,7 +4538,7 @@ void CompAssHVar (
     /* emit the code for the assignment                                    */
     hvar = (HVar)(ADDR_STAT(stat)[0]);
     CompSetUseHVar( hvar );
-    Emit( "ASS_LVAR_%dUP( %d, %c );\n",
+    Emit( "ASS_HVAR( (%d << 16) | %d, %c );\n",
           GetLevlHVar(hvar), GetIndxHVar(hvar), rhs );
 
     /* free the temporary                                                  */
@@ -4563,7 +4563,7 @@ void CompUnbHVar (
     /* emit the code for the assignment                                    */
     hvar = (HVar)(ADDR_STAT(stat)[0]);
     CompSetUseHVar( hvar );
-    Emit( "ASS_LVAR_%dUP( %d, 0 );\n",
+    Emit( "ASS_HVAR( (%d << 16) | %d, 0 );\n",
           GetLevlHVar(hvar), GetIndxHVar(hvar) );
 }
 

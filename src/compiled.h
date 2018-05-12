@@ -119,26 +119,6 @@ typedef UInt    RNam;
 #define SWITCH_TO_NEW_FRAME     SWITCH_TO_NEW_LVARS
 #define SWITCH_TO_OLD_FRAME     SWITCH_TO_OLD_LVARS
 
-#define OBJ_LVAR_0UP(lvar)      OBJ_LVAR(lvar)
-#define OBJ_LVAR_1UP(lvar)      OBJ_HVAR((1<<16) | lvar)
-#define OBJ_LVAR_2UP(lvar)      OBJ_HVAR((2<<16) | lvar)
-#define OBJ_LVAR_3UP(lvar)      OBJ_HVAR((3<<16) | lvar)
-#define OBJ_LVAR_4UP(lvar)      OBJ_HVAR((4<<16) | lvar)
-#define OBJ_LVAR_5UP(lvar)      OBJ_HVAR((5<<16) | lvar)
-#define OBJ_LVAR_6UP(lvar)      OBJ_HVAR((6<<16) | lvar)
-#define OBJ_LVAR_7UP(lvar)      OBJ_HVAR((7<<16) | lvar)
-#define OBJ_LVAR_8UP(lvar)      OBJ_HVAR((8<<16) | lvar)
-
-#define ASS_LVAR_0UP(lvar,obj)  ASS_LVAR(lvar, obj)
-#define ASS_LVAR_1UP(lvar,obj)  ASS_HVAR((1<<16) | lvar, obj);
-#define ASS_LVAR_2UP(lvar,obj)  ASS_HVAR((2<<16) | lvar, obj);
-#define ASS_LVAR_3UP(lvar,obj)  ASS_HVAR((3<<16) | lvar, obj);
-#define ASS_LVAR_4UP(lvar,obj)  ASS_HVAR((4<<16) | lvar, obj);
-#define ASS_LVAR_5UP(lvar,obj)  ASS_HVAR((5<<16) | lvar, obj);
-#define ASS_LVAR_6UP(lvar,obj)  ASS_HVAR((6<<16) | lvar, obj);
-#define ASS_LVAR_7UP(lvar,obj)  ASS_HVAR((7<<16) | lvar, obj);
-#define ASS_LVAR_8UP(lvar,obj)  ASS_HVAR((8<<16) | lvar, obj);
-
 
 /* objects, should into 'objects.c'  * * * * * * * * * * * * * * * * * * * */
 
