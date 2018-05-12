@@ -6,6 +6,10 @@
 #Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 gap> START_TEST("ffe.tst");
+
+#
+#
+#
 gap> GaloisField( 13 );
 GF(13)
 gap> GaloisField( 5^3 );
@@ -38,6 +42,14 @@ gap> f2:= GF( 2, Z(2) * [1,1,1,0,0,0,0,1,1] );
 GF(2^8)
 gap> f3:= GF( 2, Z(2) * [1,0,1,1,1,0,0,0,1] );
 GF(2^8)
+
+#
+gap> GF(1,2,3);
+Error, usage: GF( <subfield>, <extension> )
+gap> GF(1,2);
+Error, <subfield> must be a prime or a finite field
+
+#
 gap> DefiningPolynomial( f1 );
 x_1^8+x_1^4+x_1^3+x_1^2+Z(2)^0
 gap> DefiningPolynomial( f2 );
@@ -117,6 +129,62 @@ gap> Subfields( GF(81) );
 [ GF(3), GF(3^2), GF(3^4) ]
 gap> Subfields( GF(2^6) );
 [ GF(2), GF(2^2), GF(2^3), GF(2^6) ]
+
+#
+# test + and * with FFEs and rationals
+#
+gap> odds:=[5/3, 5, (5/3)^100, 5^100];;
+gap> evens:=[4/3, 4, (4/3)^100, 4^100];;
+
+#
+gap> ForAll(odds, x -> x + Z(2) = 0*Z(2));
+true
+gap> ForAll(odds, x -> Z(2) + x = 0*Z(2));
+true
+gap> ForAll(evens, x -> x + Z(2) = Z(2));
+true
+gap> ForAll(evens, x -> Z(2) + x = Z(2));
+true
+
+#
+gap> ForAll(odds, x -> x * Z(2) = Z(2));
+true
+gap> ForAll(odds, x -> Z(2) * x = Z(2));
+true
+gap> ForAll(evens, x -> x * Z(2) = 0*Z(2));
+true
+gap> ForAll(evens, x -> Z(2) * x = 0*Z(2));
+true
+
+#
+gap> LargeGaloisField(4,1);
+Error, LargeGaloisField: Characteristic must be prime
+gap> p:=NextPrimeInt(2^60);
+1152921504606847009
+gap> LargeGaloisField(p);
+GF(1152921504606847009)
+gap> F:=LargeGaloisField(p,2);
+GF(1152921504606847009^2)
+gap> z:=PrimitiveElement(F);
+z
+gap> 5^100*z;
+879649375121325624z
+gap> z*5^100;
+879649375121325624z
+gap> 5^100 mod p;
+879649375121325624
+gap> (5^100 + 5^100*z)/5^100;
+1+z
+
+#
+gap> DegreeFFE( [Z(2), Z(4)]);
+2
+gap> DegreeFFE( [[Z(2),Z(8)],[Z(2), Z(4)]]);
+6
+
+#
+gap> n:=LogFFE(Z(25)^3, Z(25)^7);; (Z(25)^7)^n;
+Z(5^2)^3
 
 # RootFFE
 gap> Rochambeau:=function(F)
