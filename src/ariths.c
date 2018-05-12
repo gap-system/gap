@@ -11,12 +11,12 @@
 **  This file contains the functions of the  arithmetic  operations  package.
 */
 
-#include <src/ariths.h>
+#include "ariths.h"
 
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/modules.h>
-#include <src/opers.h>
+#include "bool.h"
+#include "error.h"
+#include "modules.h"
+#include "opers.h"
 
 
 /****************************************************************************

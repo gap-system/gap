@@ -15,7 +15,7 @@
 #ifndef GAP_COSTAB_H
 #define GAP_COSTAB_H
 
-#include <src/system.h>
+#include "system.h"
 
 /****************************************************************************
 **

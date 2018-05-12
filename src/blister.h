@@ -20,8 +20,8 @@
 #ifndef GAP_BLISTER_H
 #define GAP_BLISTER_H
 
-#include <src/bool.h>
-#include <src/objects.h>
+#include "bool.h"
+#include "objects.h"
 
 /****************************************************************************
 **

@@ -17,9 +17,9 @@
 #ifndef GAP_OBJECTS_H
 #define GAP_OBJECTS_H
 
-#include <src/debug.h>
-#include <src/intobj.h>
-#include <src/gasman.h>
+#include "debug.h"
+#include "intobj.h"
+#include "gasman.h"
 
 #ifdef HPCGAP
 #define USE_THREADSAFE_COPYING

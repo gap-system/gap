@@ -72,17 +72,17 @@
 **    returns the result type
 */
 
-#include <src/objfgelm.h>
+#include "objfgelm.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/gvars.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/opers.h>
-#include <src/plist.h>
-#include <src/stringobj.h>
+#include "ariths.h"
+#include "bool.h"
+#include "error.h"
+#include "gvars.h"
+#include "lists.h"
+#include "modules.h"
+#include "opers.h"
+#include "plist.h"
+#include "stringobj.h"
 
 
 /****************************************************************************

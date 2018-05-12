@@ -70,19 +70,19 @@
 *N  1992/12/16 martin should have 'LtBlist'
 */
 
-#include <src/blister.h>
+#include "blister.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/gaputils.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/range.h>
-#include <src/saveload.h>
-#include <src/set.h>
+#include "ariths.h"
+#include "bool.h"
+#include "error.h"
+#include "gaputils.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "range.h"
+#include "saveload.h"
+#include "set.h"
 
 
 /****************************************************************************

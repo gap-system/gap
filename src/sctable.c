@@ -37,13 +37,13 @@
 **        can fool around with SCTables as s/he likes. 
 */
 
-#include <src/sctable.h>
+#include "sctable.h"
 
-#include <src/ariths.h>
-#include <src/error.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
+#include "ariths.h"
+#include "error.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
 
 
 /****************************************************************************

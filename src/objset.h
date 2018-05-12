@@ -1,7 +1,7 @@
 #ifndef GAP_OBJSET_H
 #define GAP_OBJSET_H
 
-#include <src/system.h>
+#include "system.h"
 
 #define OBJSET_HDRSIZE 4
 

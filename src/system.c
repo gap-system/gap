@@ -19,17 +19,17 @@
 **  The following labels determine which operating system is actually used.
 */
 
-#include <src/system.h>
+#include "system.h"
 
-#include <src/gaputils.h>
+#include "gaputils.h"
 #ifdef GAP_MEM_CHECK
-#include <src/gasman.h>
+#include "gasman.h"
 #endif
-#include <src/sysfiles.h>
-#include <src/sysmem.h>
+#include "sysfiles.h"
+#include "sysmem.h"
 
 #ifdef HPCGAP
-#include <src/hpc/misc.h>
+#include "hpc/misc.h"
 #endif
 
 #include <assert.h>
@@ -56,7 +56,7 @@
 
 /****************************************************************************
 **  The following function is from profile.c. We put a prototype here
-**  Rather than #include <src/profile.h> to avoid pulling in large chunks
+**  Rather than #include "profile.h" to avoid pulling in large chunks
 **  of the GAP type system
 */    
 Int enableProfilingAtStartup( Char **argv, void * dummy);

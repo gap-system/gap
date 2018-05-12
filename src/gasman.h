@@ -36,8 +36,8 @@
 #ifndef GAP_GASMAN_H
 #define GAP_GASMAN_H
 
-#include <src/system.h>
-#include <src/debug.h>
+#include "system.h"
+#include "debug.h"
 
 
 /****************************************************************************

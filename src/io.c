@@ -15,24 +15,24 @@
 **  dependent module 'system.c' for the low level input/output.
 */
 
-#include <src/io.h>
+#include "io.h"
 
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/error.h>
-#include <src/gapstate.h>
-#include <src/gaputils.h>
-#include <src/gvars.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/read.h>
-#include <src/scanner.h>
-#include <src/stringobj.h>
-#include <src/sysfiles.h>
+#include "bool.h"
+#include "calls.h"
+#include "error.h"
+#include "gapstate.h"
+#include "gaputils.h"
+#include "gvars.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "read.h"
+#include "scanner.h"
+#include "stringobj.h"
+#include "sysfiles.h"
 
 #ifdef HPCGAP
-#include <src/hpc/aobjects.h>
+#include "hpc/aobjects.h"
 #endif
 
 

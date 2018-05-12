@@ -53,8 +53,8 @@
 #ifndef GAP_FINFIELD_H
 #define GAP_FINFIELD_H
 
-#include <src/ffdata.h>
-#include <src/system.h>
+#include "ffdata.h"
+#include "system.h"
 
 /****************************************************************************
 **

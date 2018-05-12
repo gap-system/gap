@@ -26,24 +26,24 @@
 **
 */
 
-#include <src/precord.h>
+#include "precord.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/funcs.h>
-#include <src/gaputils.h>
-#include <src/io.h>
-#include <src/modules.h>
-#include <src/opers.h>
-#include <src/plist.h>
-#include <src/records.h>
-#include <src/saveload.h>
-#include <src/stringobj.h>
+#include "ariths.h"
+#include "bool.h"
+#include "error.h"
+#include "funcs.h"
+#include "gaputils.h"
+#include "io.h"
+#include "modules.h"
+#include "opers.h"
+#include "plist.h"
+#include "records.h"
+#include "saveload.h"
+#include "stringobj.h"
 
 #ifdef HPCGAP
-#include <src/hpc/aobjects.h>
-#include <src/hpc/traverse.h>
+#include "hpc/aobjects.h"
+#include "hpc/traverse.h"
 #endif
 
 /****************************************************************************

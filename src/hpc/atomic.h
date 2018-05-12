@@ -1,7 +1,7 @@
 #ifndef GAP_ATOMIC_H
 #define GAP_ATOMIC_H
 
-#include <src/system.h>
+#include "system.h"
 
 #ifndef HPCGAP
 #error This header is only meant to be used with HPC-GAP

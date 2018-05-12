@@ -9,21 +9,21 @@
 **
 */
 
-#include <src/profile.h>
+#include "profile.h"
 
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/code.h>
-#include <src/error.h>
-#include <src/hookintrprtr.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/stringobj.h>
-#include <src/vars.h>
+#include "bool.h"
+#include "calls.h"
+#include "code.h"
+#include "error.h"
+#include "hookintrprtr.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "stringobj.h"
+#include "vars.h"
 
-#include <src/hpc/thread.h>
+#include "hpc/thread.h"
 
 #include <stdio.h>
 #include <sys/time.h>                   // for gettimeofday

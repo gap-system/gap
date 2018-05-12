@@ -14,15 +14,15 @@
 **  that make up integers are hidden from the rest of GAP.
 */
 
-#include <src/scanner.h>
+#include "scanner.h"
 
-#include <src/gapstate.h>
-#include <src/gaputils.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/stringobj.h>
+#include "gapstate.h"
+#include "gaputils.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "stringobj.h"
 
 
 static void NextSymbol(void);

@@ -1,7 +1,7 @@
 #ifndef GAP_PPERM_H
 #define GAP_PPERM_H
 
-#include <src/objects.h>
+#include "objects.h"
 
 static inline int IS_PPERM(Obj f)
 {

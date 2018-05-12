@@ -5,7 +5,7 @@
  **
  */
 
-#include <src/gapstate.h>
+#include "gapstate.h"
 
 #include <assert.h>
 

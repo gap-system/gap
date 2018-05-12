@@ -38,25 +38,25 @@
 *N  13-Jan-91 martin should add 'CyclesPerm', 'CycleLengthsPerm'
 */
 
-#include <src/permutat.h>
+#include "permutat.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/gapstate.h>
-#include <src/integer.h>
-#include <src/io.h>
-#include <src/listfunc.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/opers.h>
-#include <src/plist.h>
-#include <src/precord.h>
-#include <src/range.h>
-#include <src/records.h>
-#include <src/saveload.h>
-#include <src/sysfiles.h>
-#include <src/trans.h>
+#include "ariths.h"
+#include "bool.h"
+#include "error.h"
+#include "gapstate.h"
+#include "integer.h"
+#include "io.h"
+#include "listfunc.h"
+#include "lists.h"
+#include "modules.h"
+#include "opers.h"
+#include "plist.h"
+#include "precord.h"
+#include "range.h"
+#include "records.h"
+#include "saveload.h"
+#include "sysfiles.h"
+#include "trans.h"
 
 /****************************************************************************
 **

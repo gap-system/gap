@@ -20,17 +20,17 @@
 **  union, intersection, or difference of two sets.
 */
 
-#include <src/set.h>
+#include "set.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/io.h>
-#include <src/listfunc.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/sysfiles.h>
+#include "ariths.h"
+#include "bool.h"
+#include "error.h"
+#include "io.h"
+#include "listfunc.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "sysfiles.h"
 
 
 /****************************************************************************

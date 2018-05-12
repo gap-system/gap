@@ -14,8 +14,8 @@
 #ifndef GAP_OPERS_H
 #define GAP_OPERS_H
 
-#include <src/system.h>
-#include <src/calls.h>
+#include "system.h"
+#include "calls.h"
 
 
 /****************************************************************************

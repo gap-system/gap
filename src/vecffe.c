@@ -8,18 +8,18 @@
 **
 */
 
-#include <src/vecffe.h>
+#include "vecffe.h"
 
-#include <src/ariths.h>
-#include <src/calls.h>
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/finfield.h>
-#include <src/gvars.h>
-#include <src/listoper.h>
-#include <src/modules.h>
-#include <src/opers.h>
-#include <src/plist.h>
+#include "ariths.h"
+#include "calls.h"
+#include "bool.h"
+#include "error.h"
+#include "finfield.h"
+#include "gvars.h"
+#include "listoper.h"
+#include "modules.h"
+#include "opers.h"
+#include "plist.h"
 
 
 /****************************************************************************

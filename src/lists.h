@@ -18,8 +18,8 @@
 #ifndef GAP_LISTS_H
 #define GAP_LISTS_H
 
-#include <src/error.h>
-#include <src/objects.h>
+#include "error.h"
+#include "objects.h"
 
 /****************************************************************************
 **

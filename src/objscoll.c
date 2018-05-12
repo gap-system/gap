@@ -22,18 +22,18 @@
 **  assume that the vectors are cleared.
 */
 
-#include <src/objscoll.h>
+#include "objscoll.h"
 
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/gapstate.h>
-#include <src/gvars.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/objccoll.h>
-#include <src/objfgelm.h>
-#include <src/plist.h>
-#include <src/stringobj.h>
+#include "bool.h"
+#include "error.h"
+#include "gapstate.h"
+#include "gvars.h"
+#include "lists.h"
+#include "modules.h"
+#include "objccoll.h"
+#include "objfgelm.h"
+#include "plist.h"
+#include "stringobj.h"
 
 /****************************************************************************
 **
@@ -76,7 +76,7 @@ typedef struct {
 #define SingleCollectWord   C8Bits_SingleCollectWord
 #define Solution            C8Bits_Solution
 #define UIntN               UInt1
-#include <src/objscoll-impl.h>
+#include "objscoll-impl.h"
 
 /****************************************************************************
 **
@@ -98,7 +98,7 @@ FinPowConjCol C8Bits_SingleCollector = {
 #define SingleCollectWord   C16Bits_SingleCollectWord
 #define Solution            C16Bits_Solution
 #define UIntN               UInt2
-#include <src/objscoll-impl.h>
+#include "objscoll-impl.h"
 
 /****************************************************************************
 **
@@ -120,7 +120,7 @@ FinPowConjCol C16Bits_SingleCollector = {
 #define SingleCollectWord   C32Bits_SingleCollectWord
 #define Solution            C32Bits_Solution
 #define UIntN               UInt4
-#include <src/objscoll-impl.h>
+#include "objscoll-impl.h"
 
 /****************************************************************************
 **

@@ -13,7 +13,7 @@
 #ifndef GAP_READ_H
 #define GAP_READ_H
 
-#include <src/system.h>
+#include "system.h"
 
 /****************************************************************************
 **

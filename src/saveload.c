@@ -12,20 +12,20 @@
 **  throughout the kernel
 */
 
-#include <src/saveload.h>
+#include "saveload.h"
 
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/compstat.h>
-#include <src/error.h>
-#include <src/finfield.h>
-#include <src/gvars.h>
-#include <src/io.h>
-#include <src/modules.h>
-#include <src/read.h>
-#include <src/streams.h>
-#include <src/stringobj.h>
-#include <src/sysfiles.h>
+#include "bool.h"
+#include "calls.h"
+#include "compstat.h"
+#include "error.h"
+#include "finfield.h"
+#include "gvars.h"
+#include "io.h"
+#include "modules.h"
+#include "read.h"
+#include "streams.h"
+#include "stringobj.h"
+#include "sysfiles.h"
 
 #include <unistd.h>
 

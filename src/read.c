@@ -10,26 +10,26 @@
 **  This module contains the functions to read expressions and statements.
 */
 
-#include <src/read.h>
+#include "read.h"
 
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/code.h>
-#include <src/funcs.h>
-#include <src/gapstate.h>
-#include <src/gvars.h>
-#include <src/intrprtr.h>
-#include <src/io.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/records.h>
-#include <src/scanner.h>
-#include <src/stats.h>
-#include <src/stringobj.h>
-#include <src/vars.h>
+#include "bool.h"
+#include "calls.h"
+#include "code.h"
+#include "funcs.h"
+#include "gapstate.h"
+#include "gvars.h"
+#include "intrprtr.h"
+#include "io.h"
+#include "modules.h"
+#include "plist.h"
+#include "records.h"
+#include "scanner.h"
+#include "stats.h"
+#include "stringobj.h"
+#include "vars.h"
 
 #ifdef HPCGAP
-#include <src/hpc/thread.h>
+#include "hpc/thread.h"
 #endif
 
 /****************************************************************************

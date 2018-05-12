@@ -14,7 +14,7 @@
 #ifndef GAP_PERMUTAT_H
 #define GAP_PERMUTAT_H
 
-#include <src/objects.h>
+#include "objects.h"
 
 /****************************************************************************
 **

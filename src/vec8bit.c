@@ -6,29 +6,29 @@
 *Y  Copyright (C)  1997,  St Andrews
 */
 
-#include <src/vec8bit.h>
+#include "vec8bit.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/error.h>
-#include <src/finfield.h>
-#include <src/gvars.h>
-#include <src/integer.h>
-#include <src/io.h>
-#include <src/listoper.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/opers.h>
-#include <src/plist.h>
-#include <src/precord.h>
-#include <src/range.h>
-#include <src/records.h>
-#include <src/stats.h>
-#include <src/vecgf2.h>
+#include "ariths.h"
+#include "bool.h"
+#include "calls.h"
+#include "error.h"
+#include "finfield.h"
+#include "gvars.h"
+#include "integer.h"
+#include "io.h"
+#include "listoper.h"
+#include "lists.h"
+#include "modules.h"
+#include "opers.h"
+#include "plist.h"
+#include "precord.h"
+#include "range.h"
+#include "records.h"
+#include "stats.h"
+#include "vecgf2.h"
 
 #ifdef HPCGAP
-#include <src/hpc/aobjects.h>
+#include "hpc/aobjects.h"
 #endif
 
 /****************************************************************************

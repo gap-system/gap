@@ -1,19 +1,19 @@
-#include <src/hpc/serialize.h>
+#include "hpc/serialize.h"
 
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/error.h>
-#include <src/gapstate.h>
-#include <src/gvars.h>
-#include <src/modules.h>
-#include <src/objset.h>
-#include <src/plist.h>
-#include <src/precord.h>
-#include <src/rational.h>
-#include <src/records.h>
-#include <src/stringobj.h>
+#include "bool.h"
+#include "calls.h"
+#include "error.h"
+#include "gapstate.h"
+#include "gvars.h"
+#include "modules.h"
+#include "objset.h"
+#include "plist.h"
+#include "precord.h"
+#include "rational.h"
+#include "records.h"
+#include "stringobj.h"
 
-#include <src/hpc/aobjects.h>
+#include "hpc/aobjects.h"
 
 #include <stdio.h>
 

@@ -20,27 +20,27 @@
 **  by the plain list package to access and modify plain lists.
 */
 
-#include <src/lists.h>
+#include "lists.h"
 
-#include <src/ariths.h>
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/error.h>
-#include <src/gapstate.h>
-#include <src/gaputils.h>
-#include <src/integer.h>
-#include <src/io.h>
-#include <src/modules.h>
-#include <src/opers.h>
-#include <src/plist.h>
-#include <src/precord.h>
-#include <src/range.h>
-#include <src/records.h>
-#include <src/stringobj.h>
+#include "ariths.h"
+#include "bool.h"
+#include "calls.h"
+#include "error.h"
+#include "gapstate.h"
+#include "gaputils.h"
+#include "integer.h"
+#include "io.h"
+#include "modules.h"
+#include "opers.h"
+#include "plist.h"
+#include "precord.h"
+#include "range.h"
+#include "records.h"
+#include "stringobj.h"
 
 #ifdef HPCGAP
-#include <src/hpc/aobjects.h>
-#include <src/hpc/guards.h>
+#include "hpc/aobjects.h"
+#include "hpc/guards.h"
 #endif
 
 /****************************************************************************

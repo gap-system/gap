@@ -16,25 +16,25 @@
 **  are described in "system.c".
 */
 
-#include <src/sysfiles.h>
+#include "sysfiles.h"
 
-#include <src/bool.h>
-#include <src/calls.h>
-#include <src/compstat.h>
-#include <src/error.h>
-#include <src/gapstate.h>
-#include <src/gaputils.h>
-#include <src/gvars.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/read.h>
-#include <src/records.h>
-#include <src/stats.h>
-#include <src/stringobj.h>
+#include "bool.h"
+#include "calls.h"
+#include "compstat.h"
+#include "error.h"
+#include "gapstate.h"
+#include "gaputils.h"
+#include "gvars.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "read.h"
+#include "records.h"
+#include "stats.h"
+#include "stringobj.h"
 
-#include <src/hpc/thread.h>
+#include "hpc/thread.h"
 
 #ifdef HAVE_LIBREADLINE
 #include <readline/readline.h>

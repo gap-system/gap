@@ -10,7 +10,7 @@
 #ifndef GAP_OBJCFTL_H
 #define GAP_OBJCFTL_H
 
-#include <src/system.h>
+#include "system.h"
 
 #define PC_NUMBER_OF_GENERATORS      1
 #define PC_GENERATORS                2

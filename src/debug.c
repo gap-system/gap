@@ -1,9 +1,9 @@
-#include <src/system.h>
+#include "system.h"
 
-#include <src/compiled.h>
-#include <src/hookintrprtr.h>
-#include <src/calls.h>
-#include <src/fibhash.h>
+#include "compiled.h"
+#include "hookintrprtr.h"
+#include "calls.h"
+#include "fibhash.h"
 
 #if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
 #include <execinfo.h>

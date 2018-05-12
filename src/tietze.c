@@ -11,15 +11,15 @@
 **  This file contains the functions for computing with finite presentations.
 */
 
-#include <src/tietze.h>
+#include "tietze.h"
 
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/plist.h>
-#include <src/stats.h>
-#include <src/stringobj.h>
+#include "bool.h"
+#include "error.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "stats.h"
+#include "stringobj.h"
 
 
 /****************************************************************************

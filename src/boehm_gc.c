@@ -8,19 +8,19 @@
 **  where the non-boehm versions of these methods live.
 **/
 
-#include <src/system.h>
-#include <src/gapstate.h>
-#include <src/gasman.h>
-#include <src/objects.h>
-#include <src/sysmem.h>
+#include "system.h"
+#include "gapstate.h"
+#include "gasman.h"
+#include "objects.h"
+#include "sysmem.h"
 
-#include <src/hpc/misc.h>
-#include <src/hpc/thread.h>
-#include <src/hpc/guards.h>
+#include "hpc/misc.h"
+#include "hpc/thread.h"
+#include "hpc/guards.h"
 
 #ifdef TRACK_CREATOR
-#include <src/calls.h>
-#include <src/vars.h>
+#include "calls.h"
+#include "vars.h"
 #endif
 
 #ifndef USE_BOEHM_GC

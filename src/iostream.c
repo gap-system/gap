@@ -21,16 +21,16 @@
 **
 */
 
-#include <src/iostream.h>
+#include "iostream.h"
 
-#include <src/bool.h>
-#include <src/error.h>
-#include <src/io.h>
-#include <src/lists.h>
-#include <src/modules.h>
-#include <src/stringobj.h>
+#include "bool.h"
+#include "error.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "stringobj.h"
 
-#include <src/hpc/thread.h>
+#include "hpc/thread.h"
 
 #include <errno.h>
 #include <fcntl.h>

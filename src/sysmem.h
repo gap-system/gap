@@ -12,7 +12,7 @@
 #ifndef GAP_SYSMEM_H
 #define GAP_SYSMEM_H
 
-#include <src/system.h>
+#include "system.h"
 
 
 /****************************************************************************

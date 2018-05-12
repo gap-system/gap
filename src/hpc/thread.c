@@ -1,17 +1,17 @@
-#include <src/hpc/thread.h>
+#include "hpc/thread.h"
 
-#include <src/code.h>
-#include <src/error.h>
-#include <src/fibhash.h>
-#include <src/gapstate.h>
-#include <src/gvars.h>
-#include <src/plist.h>
-#include <src/stats.h>
-#include <src/stringobj.h>
+#include "code.h"
+#include "error.h"
+#include "fibhash.h"
+#include "gapstate.h"
+#include "gvars.h"
+#include "plist.h"
+#include "stats.h"
+#include "stringobj.h"
 
-#include <src/hpc/guards.h>
-#include <src/hpc/misc.h>
-#include <src/hpc/threadapi.h>
+#include "hpc/guards.h"
+#include "hpc/misc.h"
+#include "hpc/threadapi.h"
 
 #include <errno.h>
 #include <pthread.h>

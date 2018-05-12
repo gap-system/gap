@@ -18,7 +18,7 @@
 #ifndef GAP_IO_H
 #define GAP_IO_H
 
-#include <src/system.h>
+#include "system.h"
 
 
 extern Char GET_NEXT_CHAR(void);

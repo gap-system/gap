@@ -12,7 +12,7 @@
 #ifndef GAP_ERROR_H
 #define GAP_ERROR_H
 
-#include <src/system.h>
+#include "system.h"
 
 /****************************************************************************
 **
