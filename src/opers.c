@@ -92,16 +92,14 @@ Obj TypeFlags (
 void SaveFlags (
     Obj         flags )
 {
-    UInt        i, len, *ptr;
-
-    SaveSubObj(TRUES_FLAGS(flags));
-    SaveSubObj(HASH_FLAGS(flags));
+    UInt        i, len;
+  
+    SaveUInt(SIZE_FLAGS(flags));
+    SaveUInt(HASH_FLAGS(flags));
     SaveSubObj(AND_CACHE_FLAGS(flags));
-
-    len = NRB_FLAGS(flags);
-    ptr = BLOCKS_FLAGS(flags);
-    for ( i = 1;  i <= len;  i++ )
-        SaveUInt(*ptr++);
+    len = SIZE_FLAGS(flags);
+    for ( i = 0;  i < len; i++)
+        SaveUInt2(TRUE_FLAGS(flags,i));
 }
 
 
@@ -114,16 +112,42 @@ void LoadFlags(
     Obj         flags )
 {
     Obj         sub;
-    UInt        i, len, *ptr;
+    UInt x;
+    UInt        i, len;
 
-    sub = LoadSubObj();  SET_TRUES_FLAGS( flags, sub );
-    sub = LoadSubObj();  SET_HASH_FLAGS( flags, sub );
+    x = LoadUInt();  SET_SIZE_FLAGS( flags, x );
+    x = LoadUInt();  SET_HASH_FLAGS( flags, x );
     sub = LoadSubObj();  SET_AND_CACHE_FLAGS( flags, sub );
     
-    len = NRB_FLAGS(flags);
-    ptr = BLOCKS_FLAGS(flags);
-    for ( i = 1;  i <= len;  i++ )
-        *ptr++ = LoadUInt();
+    len = SIZE_FLAGS(flags);
+    for ( i = 0;  i < len;  i++ )
+        SET_TRUE_FLAGS(flags, i, LoadUInt2());
+}
+
+
+/****************************************************************************
+**
+*F  C_ELM_FLAGS( <list>, <pos> )  . . . . . . . . . . . element of a flags list
+**
+**
+**  returns 1 if the flags list <list> contains the filter <pos>, else 0
+*/
+UInt C_ELM_FLAGS(Obj list, UInt pos) {
+    UInt len = SIZE_FLAGS(list);
+    Int hi = len -1;
+    Int lo = 0;
+    while (hi >= lo) {
+        Int mid = (hi + lo)/2;
+        UInt2 x = TRUE_FLAGS(list, mid);
+        if (x == pos)
+            return 1;
+        if (x < pos) {
+            lo = mid+1;
+        } else {
+            hi = mid -1;
+        }
+    }
+    return 0;
 }
 
 
@@ -146,80 +170,38 @@ void LoadFlags(
 **  the lower addressed half-word is the less significant
 **
 */
-#define HASH_FLAGS_SIZE (Int4)67108879L
+#define fnvp 1099511628211ULL
+#define fnvob 14695981039346656037ULL
 
 Obj FuncHASH_FLAGS (
     Obj                 self,
     Obj                 flags )
 {
-    Int4                 hash;
-    Int4                 x;
-    Int                  len;
-    UInt4 *              ptr;
-    Int                  i;
 
     /* do some trivial checks                                              */
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
+    while ( !IS_FLAGS(flags) ) {
             flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
             "you can replace <flags> via 'return <flags>;'" );
     }
     if ( HASH_FLAGS(flags) != 0 ) {
-        return HASH_FLAGS(flags);
+        return INTOBJ_INT(HASH_FLAGS(flags));
     }
 
     /* do the real work*/
-#ifndef SYS_IS_64_BIT
 
-    /* 32 bit case  -- this is the "defining" case, others are
-     adjusted to comply with this */
-    len = NRB_FLAGS(flags);
-    ptr = (UInt4 *)BLOCKS_FLAGS(flags);
-    hash = 0;
-    x    = 1;
-    for ( i = len; i >= 1; i-- ) {
-        hash = (hash + (*ptr % HASH_FLAGS_SIZE) * x) % HASH_FLAGS_SIZE;
-        x    = ((8*sizeof(UInt4)-1) * x) % HASH_FLAGS_SIZE;
-        ptr++;
+
+    UInt8 h = fnvob;
+    UInt len = SIZE_FLAGS(flags);
+    for (UInt i = 0; i < len; i++) {
+        UInt2 pos = TRUE_FLAGS(flags, i);
+        h = (h*fnvp) ^ (pos & 0xFF);
+        h = (h*fnvp) ^ (pos >>8);
     }
-#else
-#ifdef WORDS_BIGENDIAN
+    UInt hash = (h & 0xFFFFFFFUL);
 
-    /* This is the hardest case */
-    len = NRB_FLAGS(flags);
-    ptr = (UInt4 *)BLOCKS_FLAGS(flags);
-    hash = 0;
-    x    = 1;
-    for ( i = len; i >= 1; i-- ) {
-
-        /* least significant 32 bits first */
-        hash = (hash + (ptr[1] % HASH_FLAGS_SIZE) * x) % HASH_FLAGS_SIZE;
-        x    = ((8*sizeof(UInt4)-1) * x) % HASH_FLAGS_SIZE;
-        /* now the more significant */
-        hash = (hash + (*ptr % HASH_FLAGS_SIZE) * x) % HASH_FLAGS_SIZE;
-        x    = ((8*sizeof(UInt4)-1) * x) % HASH_FLAGS_SIZE;
-        
-        ptr+= 2;
-    }
-#else
-
-    /* and the middle case -- for DEC alpha, the 32 bit chunks are
-       in the right order, and we merely have to be sure to process them as
-       32 bit chunks */
-    len = NRB_FLAGS(flags)*(sizeof(UInt)/sizeof(UInt4));
-    ptr = (UInt4 *)BLOCKS_FLAGS(flags);
-    hash = 0;
-    x    = 1;
-    for ( i = len; i >= 1; i-- ) {
-        hash = (hash + (*ptr % HASH_FLAGS_SIZE) * x) % HASH_FLAGS_SIZE;
-        x    = ((8*sizeof(UInt4)-1) * x) % HASH_FLAGS_SIZE;
-        ptr++;
-    }
-#endif
-#endif
-    SET_HASH_FLAGS( flags, INTOBJ_INT((UInt)hash+1) );
-    CHANGED_BAG(flags);
-    return HASH_FLAGS(flags);
+    SET_HASH_FLAGS( flags, hash+1 );
+    return INTOBJ_INT(HASH_FLAGS(flags));
 }
 
 
@@ -227,54 +209,34 @@ Obj FuncHASH_FLAGS (
 **
 *F  FuncTRUES_FLAGS( <self>, <flags> )  . . .  true positions of a flags list
 **
-**  see 'FuncPositionsTruesBlist' in "blister.c" for information.
 */
+
+/* Obj TRUES_FLAGS( Obj flags) { */
+/*     UInt len = SIZE_FLAGS(flags); */
+/*     if (len == 0) { */
+/*         Obj trues = NEW_PLIST_IMM(T_PLIST_EMPTY,0); */
+/*         SET_LEN_PLIST(trues, 0); */
+/*         return trues; */
+/*     } */
+/*     Obj trues = NEW_PLIST_IMM(T_PLIST_CYC_SSORT, len); */
+/*     for (UInt i = 0; i < len; i++) */
+/*         SET_ELM_PLIST(trues, i+1, INTOBJ_INT(TRUE_FLAGS(flags, i))); */
+/*     SET_LEN_PLIST(trues, len); */
+/*     return trues; */
+/* } */
+
 Obj FuncTRUES_FLAGS (
     Obj                 self,
     Obj                 flags )
 {
-    Obj                 sub;            /* handle of the result            */
-    Int                 len;            /* logical length of the list      */
-    UInt *              ptr;            /* pointer to flags                */
-    UInt                nrb;            /* number of blocks in flags       */
-    UInt                n;              /* number of bits in flags         */
-    UInt                nn;
-    UInt                i;              /* loop variable                   */
 
     /* get and check the first argument                                    */
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
+    while ( !IS_FLAGS(flags) ) {
         flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
             "you can replace <flags> via 'return <flags>;'" );
     }
-    if ( TRUES_FLAGS(flags) != 0 ) {
-        return TRUES_FLAGS(flags);
-    }
-
-    /* compute the number of 'true'-s just as in 'FuncSizeBlist'            */
-    nrb = NRB_FLAGS(flags);
-    ptr = (UInt*)BLOCKS_FLAGS(flags);
-    n = COUNT_TRUES_BLOCKS(ptr, nrb);    
-
-    /* make the sublist (we now know its size exactly)                    */
-    sub = NEW_PLIST_IMM( T_PLIST, n );
-    SET_LEN_PLIST( sub, n );
-
-    /* loop over the boolean list and stuff elements into <sub>            */
-    len = LEN_FLAGS( flags );
-    nn  = 1;
-    for ( i = 1; nn <= n && i <= len;  i++ ) {
-        if ( C_ELM_FLAGS( flags, i ) ) {
-            SET_ELM_PLIST( sub, nn, INTOBJ_INT(i) );
-            nn++;
-        }
-    }
-    CHANGED_BAG(sub);
-
-    /* return the sublist                                                  */
-    SET_TRUES_FLAGS( flags, sub );
-    CHANGED_BAG(flags);
-    return sub;
+    return flags;
 }
 
 
@@ -284,34 +246,58 @@ Obj FuncTRUES_FLAGS (
 **
 **  see 'FuncSIZE_FLAGS'
 */
+Int SizeFlags ( Obj flags ) {
+    return SIZE_FLAGS(flags);
+}
+
+Obj ObjSizeFlags(Obj flags) {
+    return INTOBJ_INT(SIZE_FLAGS(flags));
+}
+
 Obj FuncSIZE_FLAGS (
     Obj                 self,
     Obj                 flags )
 {
-    UInt *              ptr;            /* pointer to flags                */
-    UInt                nrb;            /* number of blocks in flags       */
-    UInt                n;              /* number of bits in flags         */
 
     /* get and check the first argument                                    */
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
+    while ( !IS_FLAGS(flags)) {
         flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
             "you can replace <flags> via 'return <flags>;'" );
     }
-    if ( TRUES_FLAGS(flags) != 0 ) {
-        return INTOBJ_INT( LEN_PLIST( TRUES_FLAGS(flags) ) );
-    }
-
-    /* get the number of blocks and a pointer                              */
-    nrb = NRB_FLAGS(flags);
-    ptr = BLOCKS_FLAGS(flags);
-
-    n = COUNT_TRUES_BLOCKS(ptr, nrb);
-
-    /* return the number of bits                                           */
-    return INTOBJ_INT( n );
+    return ObjSizeFlags(flags);
 }
 
+
+Int IsBoundFlags(Obj flags, Int pos) {
+    return pos < SIZE_FLAGS(flags);
+}
+
+Obj Elm0Flags(Obj flags, Int pos) {
+    return pos <= SIZE_FLAGS(flags) ? INTOBJ_INT(TRUE_FLAGS(flags, pos-1)) : 0;
+}
+
+Obj Elm0vFlags(Obj flags, Int pos) {
+    return INTOBJ_INT(TRUE_FLAGS(flags, pos-1));    
+}
+
+Obj ElmFlags(Obj flags, Int pos) {
+    if (pos > SIZE_FLAGS(flags))
+        ErrorMayQuit("Index out of range in access to flags list",0,0);
+    return INTOBJ_INT(TRUE_FLAGS(flags, pos-1));    
+}
+
+void UnbListImm(Obj list, Int pos) {
+    ErrorMayQuit("Unbind: list must be mutable",0,0);
+}
+
+void AssListImm(Obj list, Int pos, Obj val) {
+    ErrorMayQuit("List Assignment: list must be mutable",0,0);
+}
+
+void AsssListImm(Obj list, Obj poss, Obj vals) {
+    ErrorMayQuit("List Assignment: list must be mutable",0,0);
+}
 
 /****************************************************************************
 **
@@ -319,52 +305,37 @@ Obj FuncSIZE_FLAGS (
 */
 Int EqFlags(Obj flags1, Obj flags2)
 {
-    Int                 len1;
-    Int                 len2;
-    UInt  *             ptr1;
-    UInt  *             ptr2;
+    Int                 len;
     Int                 i;
 
     if ( flags1 == flags2 ) {
         return 1;
     }
 
+    if (SIZE_FLAGS(flags1) != SIZE_FLAGS(flags2))
+        return 0;
+
+    
+    UInt h1 = HASH_FLAGS(flags1);
+    if (h1 != 0) {
+        UInt h2 = HASH_FLAGS(flags1);
+        if (h2 != 0 && h2 != h1)
+            return 0;
+    }
+    
     // do the real work
-    len1 = NRB_FLAGS(flags1);
-    len2 = NRB_FLAGS(flags2);
-    ptr1 = BLOCKS_FLAGS(flags1);
-    ptr2 = BLOCKS_FLAGS(flags2);
-    if ( len1 <= len2 ) {
-        for ( i = 1; i <= len1; i++ ) {
-            if ( *ptr1 != *ptr2 )
-                return 0;
-            ptr1++;  ptr2++;
-        }
-        for ( ; i <= len2; i++ ) {
-            if ( 0 != *ptr2 )
-                return 0;
-            ptr2++;
-        }
-    }
-    else {
-        for ( i = 1; i <= len2; i++ ) {
-            if ( *ptr1 != *ptr2 )
-                return 0;
-            ptr1++;  ptr2++;
-        }
-        for ( ; i <= len1; i++ ) {
-            if ( *ptr1 != 0 )
-                return 0;
-            ptr1++;
-        }
-    }
+    
+    len = SIZE_FLAGS(flags1);
+    for (i = 0; i < len; i++)
+        if (TRUE_FLAGS(flags1,i) != TRUE_FLAGS(flags2,i))
+            return 0;
     return 1;
 }
 
 
 /****************************************************************************
 **
-*F  FuncIS_EQUAL_FLAGS( <self>, <flags1>, <flags2> )  equality of flags lists
+*f  FuncIS_EQUAL_FLAGS( <self>, <flags1>, <flags2> )  equality of flags lists
 */
 Obj FuncIS_EQUAL_FLAGS (
     Obj                 self,
@@ -372,12 +343,12 @@ Obj FuncIS_EQUAL_FLAGS (
     Obj                 flags2 )
 {
     /* do some trivial checks                                              */
-    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
+    while ( !IS_FLAGS(flags1) ) {
         flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags1), 0L,
             "you can replace <flags1> via 'return <flags1>;'" );
     }
-    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
+    while ( !IS_FLAGS(flags2) ) {
         flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags2), 0L,
             "you can replace <flags2> via 'return <flags2>;'" );
@@ -394,43 +365,43 @@ static Int IsSubsetFlagsCalls;
 /****************************************************************************
 **
 *F  IS_SUBSET_FLAGS( <flags1>, <flags2> ) . subset test with no safety check
+** checks is <flags2> is a subset of <flags1>
 */
 static Int IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
 {
     Int    len1;
     Int    len2;
-    UInt * ptr1;
-    UInt * ptr2;
-    Int    i;
-
+    
+/* do the real work                                                    */
 #ifdef COUNT_OPERS
     IsSubsetFlagsCalls++;
 #endif
 
-    /* compare the bit lists                                               */
-    len1 = NRB_FLAGS(flags1);
-    len2 = NRB_FLAGS(flags2);
-    ptr1 = BLOCKS_FLAGS(flags1);
-    ptr2 = BLOCKS_FLAGS(flags2);
-    if (len1 < len2) {
-        for (i = len2 - 1; i >= len1; i--) {
-            if (ptr2[i] != 0)
-                return 0;
-        }
-        for (i = len1 - 1; i >= 0; i--) {
-            UInt x = ptr2[i];
-            if ((x & ptr1[i]) != x)
-                return 0;
+    len1 = SIZE_FLAGS(flags1);
+    len2 = SIZE_FLAGS(flags2);
+    if (len2 > len1)
+        return 0;
+    if (len2== 0)
+        return 1;
+    UInt i = 0;
+    UInt j = 0;
+    UInt2 x,y;
+    UInt2 *trues1, *trues2;
+    trues1 = (UInt2*)(CONST_ADDR_OBJ(flags1) + 3);
+    trues2 = (UInt2*)(CONST_ADDR_OBJ(flags2) + 3);
+    while (i < len1 && j < len2) {
+        x = trues1[i];
+        y = trues2[j];
+        if (x == y) {
+            i++;
+            j++;
+        } else if (y < x) {
+            return 0;
+        } else {
+            i++;
         }
     }
-    else {
-        for (i = len2 - 1; i >= 0; i--) {
-            UInt x = ptr2[i];
-            if ((x & ptr1[i]) != x)
-                return 0;
-        }
-    }
-    return 1;
+    return (j == len2);   
 }
 
 /****************************************************************************
@@ -443,12 +414,12 @@ Obj FuncIS_SUBSET_FLAGS (
     Obj                 flags2 )
 {
     /* do some correctness checks                                            */
-    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
+    while ( !IS_FLAGS(flags1) ) {
         flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags1), 0L,
             "you can replace <flags1> via 'return <flags1>;'" );
     }
-    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
+    while ( !IS_FLAGS(flags2) ) {
         flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags2), 0L,
             "you can replace <flags2> via 'return <flags2>;'" );
@@ -469,49 +440,47 @@ Obj FuncSUB_FLAGS (
     Obj                 flags;
     Int                 len1;
     Int                 len2;
-    Int                 size1;
-    Int                 size2;
-    UInt *              ptr;
-    UInt *              ptr1;
-    UInt *              ptr2;
-    Int                 i;
+    Int                 i,j,k;
+    UInt2               x,y;
 
     /* do some trivial checks                                              */
-    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
+    while ( !IS_FLAGS(flags1) ) {
         flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags1), 0L,
             "you can replace <flags1> via 'return <flags1>;'" );
     }
-    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
+    while ( !IS_FLAGS(flags2) ) {
         flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags2), 0L,
             "you can replace <flags2> via 'return <flags2>;'" );
     }
 
-    /* do the real work                                                    */
-    len1   = LEN_FLAGS(flags1);
-    size1  = NRB_FLAGS(flags1);
-    len2   = LEN_FLAGS(flags2);
-    size2  = NRB_FLAGS(flags2);
-    if ( len1 < len2 ) {
-        flags = NEW_FLAGS( len1 );
-        ptr1 = BLOCKS_FLAGS(flags1);
-        ptr2 = BLOCKS_FLAGS(flags2);
-        ptr  = BLOCKS_FLAGS(flags);
-        for ( i = 1; i <= size1; i++ )
-            *ptr++ = *ptr1++ & ~ *ptr2++;
+    len1 = SIZE_FLAGS(flags1);
+    len2 = SIZE_FLAGS(flags2);
+    flags = NEW_FLAGS(len1);
+    i = 0;
+    j = 0;
+    k = 0;
+    while ( i < len1 && j < len2) {
+        x = TRUE_FLAGS(flags1,i);
+        y = TRUE_FLAGS(flags2,j);
+        if (x == y) {
+            i++;
+            j++;
+        } else if (x < y) {
+            SET_TRUE_FLAGS(flags, k, x);
+            k++;
+            i++;
+        } else {
+            j++;
+        }
     }
-    else {
-        flags = NEW_FLAGS( len1 );
-        ptr1 = BLOCKS_FLAGS(flags1);
-        ptr2 = BLOCKS_FLAGS(flags2);
-        ptr  = BLOCKS_FLAGS(flags);
-        for ( i = 1; i <= size2; i++ )
-            *ptr++ = *ptr1++ & ~ *ptr2++;
-        for (      ; i <= size1; i++ )
-            *ptr++ = *ptr1++;
-    }        
-
+    while (i < len1) {
+        SET_TRUE_FLAGS(flags, k++, TRUE_FLAGS(flags1, i++) );
+    }
+    
+    SET_SIZE_FLAGS(flags, k);
+    
     return flags;
 }
 
@@ -536,12 +505,8 @@ Obj FuncAND_FLAGS (
     Obj                 flags;
     Int                 len1;
     Int                 len2;
-    Int                 size1;
-    Int                 size2;
-    UInt *              ptr;
-    UInt *              ptr1;
-    UInt *              ptr2;
-    Int                 i;
+    Int                 i,j,k;
+    UInt2               x,y,z;
 
 #ifdef AND_FLAGS_HASH_SIZE
     Obj                 cache;
@@ -555,12 +520,12 @@ Obj FuncAND_FLAGS (
 #endif
 
     /* do some trivial checks                                              */
-    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
+    while ( !IS_FLAGS(flags1) ) {
         flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags1), 0L,
             "you can replace <flags1> via 'return <flags1>;'" );
     }
-    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
+    while ( !IS_FLAGS(flags2) ) {
         flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags2), 0L,
             "you can replace <flags2> via 'return <flags2>;'" );
@@ -568,9 +533,9 @@ Obj FuncAND_FLAGS (
 
     if (flags1 == flags2)
         return flags1;
-    if (LEN_FLAGS(flags2) == 0)
+    if (SIZE_FLAGS(flags2) == 0)
         return flags1;
-    if (LEN_FLAGS(flags1) == 0)
+    if (SIZE_FLAGS(flags1) == 0)
         return flags2;
 
     // check the cache
@@ -627,33 +592,43 @@ Obj FuncAND_FLAGS (
 #       endif
 #   endif
 
-
     /* do the real work                                                    */
-    len1   = LEN_FLAGS(flags1);
-    size1  = NRB_FLAGS(flags1);
-    len2   = LEN_FLAGS(flags2);
-    size2  = NRB_FLAGS(flags2);
-
-    if ( len1 < len2 ) {
-        flags = NEW_FLAGS( len2 );
-        ptr1 = BLOCKS_FLAGS(flags1);
-        ptr2 = BLOCKS_FLAGS(flags2);
-        ptr  = BLOCKS_FLAGS(flags);
-        for ( i = 1; i <= size1; i++ )
-            *ptr++ = *ptr1++ | *ptr2++;
-        for (      ; i <= size2; i++ )
-            *ptr++ =           *ptr2++;
+    len1 = SIZE_FLAGS(flags1);
+    len2 = SIZE_FLAGS(flags2);
+    flags = NEW_FLAGS(len1+len2);
+    i = 0;
+    j = 0;
+    k = 0;
+    UInt2 * trues1, *trues2, *trues;
+    trues1 = (UInt2*)(CONST_ADDR_OBJ(flags1)+3);
+    trues2 = (UInt2*)(CONST_ADDR_OBJ(flags2)+3);
+    trues = (UInt2*)(ADDR_OBJ(flags)+3);
+    while ( i < len1 && j < len2) {
+        x = trues1[i];
+        y = trues2[j];
+        if (x == y) {
+            i++;
+            j++;
+            z = x;
+        } else if (x < y) {
+            i++;
+            z = x;
+        } else {
+            j++;
+            z = y;
+        }
+        trues[k++] = z;
     }
-    else {
-        flags = NEW_FLAGS( len1 );
-        ptr1 = BLOCKS_FLAGS(flags1);
-        ptr2 = BLOCKS_FLAGS(flags2);
-        ptr  = BLOCKS_FLAGS(flags);
-        for ( i = 1; i <= size2; i++ )
-            *ptr++ = *ptr1++ | *ptr2++;
-        for (      ; i <= size1; i++ )
-            *ptr++ = *ptr1++;
-    }        
+    /* Only one of these two loops will go round > 0 times */
+    while (i < len1) {
+        trues[k++] = trues1[i++];
+    }
+    while (j < len2) {
+        trues[k++] = trues2[j++];
+    }
+    
+    SET_SIZE_FLAGS(flags, k);
+
 
     /* store result in the cache                                           */
 #   ifdef AND_FLAGS_HASH_SIZE
@@ -743,7 +718,7 @@ static Int WITH_HIDDEN_IMPS_HIT=0;
 Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 {
     // do some trivial checks, so we can use IS_SUBSET_FLAGS
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
+    while ( !IS_FLAGS(flags) ) {
             flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
             "you can replace <flags> via 'return <flags>;'" );
@@ -871,7 +846,7 @@ static Int WITH_IMPS_FLAGS_HIT=0;
 Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 {
     // do some trivial checks, so we can use IS_SUBSET_FLAGS
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
+    while ( !IS_FLAGS(flags) ) {
             flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
             "you can replace <flags> via 'return <flags>;'" );
@@ -886,7 +861,6 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
     Int old_moving;
     Obj with = flags;
     Obj imp;
-    Obj trues;
     
 #ifdef HPCGAP
     RegionWriteLock(REGION(IMPLICATIONS_SIMPLE));
@@ -911,9 +885,9 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
     WITH_IMPS_FLAGS_MISS++;
 #endif
     /* first implications from simple filters (need only be checked once) */
-    trues = FuncTRUES_FLAGS(0, flags);
-    for (i=1; i<=LEN_PLIST(trues); i++) {
-        j = INT_INTOBJ(ELM_PLIST(trues, i));
+    //    trues = FuncTRUES_FLAGS(0, flags);
+    for (i=0; i<SIZE_FLAGS(flags); i++) {
+        j = TRUE_FLAGS(flags,i);
         if (j <= LEN_PLIST(IMPLICATIONS_SIMPLE)
             && ELM_PLIST(IMPLICATIONS_SIMPLE, j)) {
            imp = ELM_PLIST(IMPLICATIONS_SIMPLE, j);
@@ -1134,11 +1108,11 @@ Obj DoSetFilter (
     flags = FLAGS_TYPE( type );
     
     /* return the value of the feature                                     */
-    if ( val != SAFE_ELM_FLAGS( flags, flag1 ) ) {
+    if ( val != ELM_FLAGS( flags, flag1 ) ) {
         ErrorReturnVoid(
-            "value feature is already set the other way",
-            0L, 0L,
-            "you can 'return;' and ignore it" );
+                        "value feature is already set the other way",
+                        0L, 0L,
+                        "you can 'return;' and ignore it" );
     }
 
     /* return 'void'                                                       */
@@ -1164,7 +1138,6 @@ Obj DoFilter (
     Obj                 self,
     Obj                 obj )
 {
-    Obj                 val;
     Int                 flag1;
     Obj                 type;
     Obj                 flags;
@@ -1176,11 +1149,7 @@ Obj DoFilter (
     type  = TYPE_OBJ( obj );
     flags = FLAGS_TYPE( type );
     
-    /* return the value of the feature                                     */
-    val = SAFE_ELM_FLAGS( flags, flag1 );
-    
-    /* return the value                                                    */
-    return val;
+    return ELM_FLAGS( flags, flag1 );
 }
 
 
@@ -1196,12 +1165,17 @@ Obj NewFilter (
     Obj                 flags;
     
     flag1 = ++CountFlags;
+    if (flag1 >= (1<<16)) {
+        FPUTS_TO_STDERR("#E Too many filters, fatal error\n");
+        SyExit(2);
+    }
 
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoFilter) );
     SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(getter, INTOBJ_INT(0));
-    flags = NEW_FLAGS( flag1 );
-    SET_ELM_FLAGS( flags, flag1, True );
+    flags = NEW_FLAGS( 1 );
+    SET_SIZE_FLAGS( flags, 1 );
+    SET_TRUE_FLAGS( flags, 0, flag1);
     SET_FLAGS_FILT(getter, flags);
     CHANGED_BAG(getter);
 
@@ -1351,6 +1325,7 @@ Obj NewReturnTrueFilter ( void )
     SET_FLAG1_FILT(getter, INTOBJ_INT(0));
     SET_FLAG2_FILT(getter, INTOBJ_INT(0));
     flags = NEW_FLAGS( 0 );
+    SET_SIZE_FLAGS( flags, 0 );
     SET_FLAGS_FILT(getter, flags);
     CHANGED_BAG(getter);
 
@@ -1940,14 +1915,14 @@ static ALWAYS_INLINE Obj GetMethodUncached(
         int k = 1;
         if (constructor) {
             filter = ELM_PLIST(methods, pos + k + 1);
-            GAP_ASSERT(TNUM_OBJ(filter) == T_FLAGS);
+            GAP_ASSERT(IS_FLAGS(filter));
             if (!IS_SUBSET_FLAGS(filter, types[0]))
                 continue;
             k++;
         }
         for (; k <= n; ++k) {
             filter = ELM_PLIST(methods, pos + k + 1);
-            GAP_ASSERT(TNUM_OBJ(filter) == T_FLAGS);
+            GAP_ASSERT(IS_FLAGS(filter));
             if (!IS_SUBSET_FLAGS(FLAGS_TYPE(types[k - 1]), filter))
                 break;
         }
@@ -2517,8 +2492,7 @@ Obj DoTestAttribute (
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* return whether the value of the attribute is already known          */
-    return SAFE_ELM_FLAGS( flags, flag2 );
+    return ELM_FLAGS(flags, flag2);
 }
 
 
@@ -2545,7 +2519,7 @@ Obj DoAttribute (
     flags = FLAGS_TYPE( type );
 
     /* if the value of the attribute is already known, simply return it     */
-    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
+    if ( C_ELM_FLAGS( flags, flag2 ) ) {
         return DoOperation1Args( self, obj );
     }
     
@@ -2600,7 +2574,7 @@ Obj DoVerboseAttribute (
     flags = FLAGS_TYPE( type );
 
     /* if the value of the attribute is already known, simply return it     */
-    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
+    if ( C_ELM_FLAGS( flags, flag2 )) {
         return DoVerboseOperation1Args( self, obj );
     }
     
@@ -2648,7 +2622,7 @@ Obj DoMutableAttribute (
     flags = FLAGS_TYPE( type );
 
     /* if the value of the attribute is already known, simply return it     */
-    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
+    if ( C_ELM_FLAGS( flags, flag2 ) ) {
         return DoOperation1Args( self, obj );
     }
     
@@ -2695,7 +2669,7 @@ Obj DoVerboseMutableAttribute (
     flags = FLAGS_TYPE( type );
 
     /* if the value of the attribute is already known, simply return it     */
-    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
+    if ( C_ELM_FLAGS( flags, flag2 ) ) {
         return DoVerboseOperation1Args( self, obj );
     }
     
@@ -2790,8 +2764,9 @@ static Obj MakeTester( Obj name, Int flag1, Int flag2)
                            DoTestAttribute );
     SET_FLAG1_FILT(tester, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(tester, INTOBJ_INT(flag2));
-    flags = NEW_FLAGS( flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
+    flags = NEW_FLAGS( 1 );
+    SET_SIZE_FLAGS( flags, 1 );
+    SET_TRUE_FLAGS( flags, 0, flag2);
     SET_FLAGS_FILT(tester, flags);
     SET_SETTR_FILT(tester, 0);
     SET_TESTR_FILT(tester, ReturnTrueFilter);
@@ -2900,7 +2875,7 @@ Obj DoSetProperty (
     flags = FLAGS_TYPE( type );
 
     /* if the value of the property is already known, compare it           */
-    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
+    if ( C_ELM_FLAGS( flags, flag2 )) {
         if ( val == ELM_FLAGS( flags, flag1 ) ) {
             return 0;
         }
@@ -2968,7 +2943,7 @@ Obj DoProperty (
     flags = FLAGS_TYPE( type );
 
     /* if the value of the property is already known, simply return it     */
-    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
+    if ( C_ELM_FLAGS( flags, flag2 ) ) {
         return ELM_FLAGS( flags, flag1 );
     }
 
@@ -3024,7 +2999,7 @@ Obj DoVerboseProperty (
     flags = FLAGS_TYPE( type );
 
     /* if the value of the property is already known, simply return it     */
-    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
+    if ( C_ELM_FLAGS( flags, flag2 )) {
         return ELM_FLAGS( flags, flag1 );
     }
 
@@ -3078,9 +3053,10 @@ Obj NewProperty (
 
     SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(getter, INTOBJ_INT(flag2));
-    flags = NEW_FLAGS( flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
-    SET_ELM_FLAGS( flags, flag1, True );
+    flags = NEW_FLAGS( 2 );
+    SET_SIZE_FLAGS( flags, 2 );
+    SET_TRUE_FLAGS(flags, 0, flag1);
+    SET_TRUE_FLAGS(flags, 1, flag2);
     SET_FLAGS_FILT(getter, flags);
     SET_SETTR_FILT(getter, setter);
     SET_TESTR_FILT(getter, tester);
@@ -3596,7 +3572,7 @@ Obj DoSetterFunction (
     flag2  = INT_INTOBJ( FLAG2_FILT(tester) );
     type   = TYPE_OBJ_FEO(obj);
     flags  = FLAGS_TYPE(type);
-    if ( SAFE_C_ELM_FLAGS(flags,flag2) ) {
+    if ( C_ELM_FLAGS(flags,flag2)) {
         return 0;
     }
 
@@ -3959,6 +3935,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(IS_SUBSET_FLAGS, 2, "flags1, flags2"),
     GVAR_FUNC(TRUES_FLAGS, 1, "flags"),
     GVAR_FUNC(SIZE_FLAGS, 1, "flags"),
+    //    GVAR_FUNC(ELM_FLAGS, 2, "flags, pos"),
     GVAR_FUNC(FLAG1_FILTER, 1, "oper"),
     GVAR_FUNC(SET_FLAG1_FILTER, 2, "oper, flag1"),
     GVAR_FUNC(FLAG2_FILTER, 1, "oper"),
@@ -3998,6 +3975,77 @@ static StructGVarFunc GVarFuncs [] = {
     { 0, 0, 0, 0, 0 }
 
 };
+
+void SetupFlagsListsAsLists( void ) {    
+    /* make a flags list behave like its own TRUES_FLAGS */
+    InfoBags[T_FLAGS].name = "flags list (mutable -- bug)";
+    InfoBags[T_FLAGS + IMMUTABLE ].name = "flags list";
+
+    IsSmallListFuncs[T_FLAGS] = AlwaysYes;
+    IsDenseListFuncs[T_FLAGS] = AlwaysYes;
+    IsHomogListFuncs[T_FLAGS] = AlwaysYes;
+    IsPossListFuncs[T_FLAGS] = AlwaysYes;
+    LenListFuncs[T_FLAGS] = SizeFlags;
+    LengthFuncs[T_FLAGS] = ObjSizeFlags;
+    IsbListFuncs[T_FLAGS] = IsBoundFlags;
+    Elm0ListFuncs[T_FLAGS] = Elm0Flags;
+    Elm0vListFuncs[T_FLAGS] = Elm0vFlags;
+    ElmListFuncs[T_FLAGS] = ElmFlags;
+    ElmwListFuncs[T_FLAGS] = Elm0vFlags;
+    ElmsListFuncs[T_FLAGS] = ElmsListDefault;
+    UnbListFuncs[T_FLAGS] = UnbListImm;
+    AssListFuncs[T_FLAGS] = AssListImm;
+    AsssListFuncs[T_FLAGS] = AsssListImm;
+    IsSSortListFuncs[T_FLAGS] = AlwaysYes;
+    IsSmallListFuncs[T_FLAGS + IMMUTABLE] = AlwaysYes;
+    IsDenseListFuncs[T_FLAGS + IMMUTABLE] = AlwaysYes;
+    IsHomogListFuncs[T_FLAGS + IMMUTABLE] = AlwaysYes;
+    IsPossListFuncs[T_FLAGS + IMMUTABLE] = AlwaysYes;
+    LenListFuncs[T_FLAGS + IMMUTABLE] = SizeFlags;
+    LengthFuncs[T_FLAGS + IMMUTABLE] = ObjSizeFlags;
+    IsbListFuncs[T_FLAGS + IMMUTABLE] = IsBoundFlags;
+    Elm0ListFuncs[T_FLAGS + IMMUTABLE] = Elm0Flags;
+    Elm0vListFuncs[T_FLAGS + IMMUTABLE] = Elm0vFlags;
+    ElmListFuncs[T_FLAGS + IMMUTABLE] = ElmFlags;
+    ElmwListFuncs[T_FLAGS + IMMUTABLE] = Elm0vFlags;
+    ElmsListFuncs[T_FLAGS + IMMUTABLE] = ElmsListDefault;
+    UnbListFuncs[T_FLAGS + IMMUTABLE] = UnbListImm;
+    AssListFuncs[T_FLAGS + IMMUTABLE] = AssListImm;
+    AsssListFuncs[T_FLAGS + IMMUTABLE] = AsssListImm;
+    IsSSortListFuncs[T_FLAGS] = AlwaysYes;
+    for (UInt i = 0 ; i < LAST_FN+1; i++) {
+        SetFiltListTNums[T_FLAGS][i] = T_FLAGS;
+        SetFiltListTNums[T_FLAGS + IMMUTABLE][i] = T_FLAGS + IMMUTABLE;
+        ResetFiltListTNums[T_FLAGS][i] = T_FLAGS;
+        ResetFiltListTNums[T_FLAGS + IMMUTABLE][i] = T_FLAGS + IMMUTABLE;
+    }
+    ClearFiltsTNums[T_FLAGS] = T_FLAGS;
+    ClearFiltsTNums[T_FLAGS + IMMUTABLE] = T_FLAGS + IMMUTABLE;
+    HasFiltListTNums[T_FLAGS][FN_IS_EMPTY] = 0;
+    HasFiltListTNums[T_FLAGS][FN_IS_SSORT] = 1;
+    HasFiltListTNums[T_FLAGS][FN_IS_NSORT] = 0;
+    HasFiltListTNums[T_FLAGS][FN_IS_DENSE] = 1;
+    HasFiltListTNums[T_FLAGS][FN_IS_NDENSE] = 0;
+    HasFiltListTNums[T_FLAGS][FN_IS_HOMOG] = 1;
+    HasFiltListTNums[T_FLAGS][FN_IS_NHOMOG] = 0;
+    HasFiltListTNums[T_FLAGS][FN_IS_TABLE] = 0;
+    HasFiltListTNums[T_FLAGS][FN_IS_RECT] = 0;
+    HasFiltListTNums[T_FLAGS + IMMUTABLE][FN_IS_EMPTY] = 0;
+    HasFiltListTNums[T_FLAGS + IMMUTABLE][FN_IS_SSORT] = 1;
+    HasFiltListTNums[T_FLAGS + IMMUTABLE][FN_IS_NSORT] = 0;
+    HasFiltListTNums[T_FLAGS + IMMUTABLE][FN_IS_DENSE] = 1;
+    HasFiltListTNums[T_FLAGS + IMMUTABLE][FN_IS_NDENSE] = 0;
+    HasFiltListTNums[T_FLAGS + IMMUTABLE][FN_IS_HOMOG] = 1;
+    HasFiltListTNums[T_FLAGS + IMMUTABLE][FN_IS_NHOMOG] = 0;
+    HasFiltListTNums[T_FLAGS + IMMUTABLE][FN_IS_TABLE] = 0;
+    HasFiltListTNums[T_FLAGS + IMMUTABLE][FN_IS_RECT] = 0;
+
+        /* install the printing function                                       */
+    PrintObjFuncs[ T_FLAGS ] = PrintFlags;
+    PrintObjFuncs[ T_FLAGS + IMMUTABLE ] = PrintFlags;
+
+}    
+
 
 
 /****************************************************************************
@@ -4094,6 +4142,7 @@ static Int InitKernel (
     /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_FLAGS", &TYPE_FLAGS );
     TypeObjFuncs[ T_FLAGS ] = TypeFlags;
+    TypeObjFuncs[ T_FLAGS + IMMUTABLE ] = TypeFlags;
 
     
     /* set up hidden implications                                          */
@@ -4132,18 +4181,29 @@ static Int InitKernel (
     InitHdlrFuncsFromTable( GVarFuncs );
 
     /* install the marking function                                        */
-    InfoBags[T_FLAGS].name = "flags list";
-    InitMarkFuncBags( T_FLAGS, MarkFourSubBags );
+    InitMarkFuncBags( T_FLAGS, MarkOneSubBags );
+    InitMarkFuncBags( T_FLAGS + IMMUTABLE, MarkOneSubBags );
 
-    /* install the printing function                                       */
-    PrintObjFuncs[ T_FLAGS ] = PrintFlags;
 
     /* and the saving function */
     SaveObjFuncs[ T_FLAGS ] = SaveFlags;
     LoadObjFuncs[ T_FLAGS ] = LoadFlags;
+    SaveObjFuncs[ T_FLAGS + IMMUTABLE ] = SaveFlags;
+    LoadObjFuncs[ T_FLAGS + IMMUTABLE ] = LoadFlags;
 
+    /* mutability */
+    IsMutableObjFuncs[ T_FLAGS] = AlwaysNo;
+    IsMutableObjFuncs[ T_FLAGS + IMMUTABLE] = AlwaysNo;
+    
+    
     /* flags are public objects by default */
     MakeBagTypePublic(T_FLAGS);
+    MakeBagTypePublic(T_FLAGS + IMMUTABLE);
+
+
+
+    
+    
 
     /* import copy of REREADING */
     ImportGVarFromLibrary( "REREADING", &REREADING );
@@ -4183,6 +4243,9 @@ static Int InitLibrary (
 {
     // HACK: move this here, instead of InitKernel, to avoid ariths.c overwriting it
     EqFuncs[T_FLAGS][T_FLAGS] = EqFlags;
+    EqFuncs[T_FLAGS+IMMUTABLE][T_FLAGS] = EqFlags;
+    EqFuncs[T_FLAGS][T_FLAGS+IMMUTABLE] = EqFlags;
+    EqFuncs[T_FLAGS+IMMUTABLE][T_FLAGS+IMMUTABLE] = EqFlags;
 
     ExportAsConstantGVar(BASE_SIZE_METHODS_OPER_ENTRY);
 

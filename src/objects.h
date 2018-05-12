@@ -163,7 +163,6 @@ enum TNUM {
 
         T_FUNCTION,
         T_BODY,     // the type of function body bags
-        T_FLAGS,
         T_LVARS,
         T_HVARS,
     END_ENUM_RANGE(LAST_CONSTANT_TNUM),
@@ -212,6 +211,7 @@ enum TNUM {
             NEXT_ENUM_EVEN(T_STRING),
             NEXT_ENUM_EVEN(T_STRING_NSORT),
             NEXT_ENUM_EVEN(T_STRING_SSORT),
+    NEXT_ENUM_EVEN(T_FLAGS),
 
         END_ENUM_RANGE_ODD(LAST_LIST_TNUM),
 
@@ -251,7 +251,7 @@ enum TNUM {
 #ifdef HPCGAP
         LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 153,
 #else
-        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 50,
+        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 48,
 #endif
 
     END_ENUM_RANGE(LAST_EXTERNAL_TNUM),

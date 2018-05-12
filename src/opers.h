@@ -16,6 +16,7 @@
 
 #include <src/system.h>
 #include <src/calls.h>
+#include <src/bool.h>
 
 
 /****************************************************************************
@@ -221,17 +222,35 @@ static inline void SET_ENABLED_ATTR(Obj oper, Int x)
 /****************************************************************************
 **
 *F * * * * * * * * * * * * internal flags functions * * * * * * * * * * * * *
+**
+** Attempting change April 2018. Flags will be stored as 
+** AND_CACHE -- Obj
+** Size (UInt)  -- could possibly be a UInt2 instead
+** Hash (Uint)
+** Set positions (array of UInt2).
 */
 
+static inline UInt IS_FLAGS(Obj f) {
+    GAP_ASSERT(TNUM_OBJ(f) != T_FLAGS);
+    return TNUM_OBJ(f) == T_FLAGS + IMMUTABLE;
+}
+
+/****************************************************************************
+**
+*F  SIZE_PLEN_FLAGS( <fsize> ) . .  bag size for a flags list with <fsize> trues
+*/
+static inline UInt SIZE_PLEN_FLAGS(UInt fsize) {
+    return 3*sizeof(Obj) + 2*fsize;
+}
 
 /****************************************************************************
 **
 *F  NEW_FLAGS( <flags>, <len> ) . . . . . . . . . . . . . . .  new flags list
 */
+
 static inline Obj NEW_FLAGS(UInt len)
 {
-    UInt size = (3 + ((len+BIPEB-1) >> LBIPEB)) * sizeof(Obj);
-    Obj flags = NewBag(T_FLAGS, size);
+    Obj flags = NewBag(T_FLAGS + IMMUTABLE, SIZE_PLEN_FLAGS(len));
     return flags;
 }
 
@@ -242,98 +261,82 @@ static inline Obj NEW_FLAGS(UInt len)
 **
 **  returns the list of trues of <flags> or 0 if the list is not known yet.
 */
-#define TRUES_FLAGS(flags)              (CONST_ADDR_OBJ(flags)[0])
+
+extern Obj TRUES_FLAGS( Obj flags );
 
 
 /****************************************************************************
 **
-*F  SET_TRUES_FLAGS( <flags>, <trues> ) . set number of trues of a flags list
+*F  SIZE_FLAGS( <flags> ) . . . . . . . . . . .number of true of <flags> 
 */
-#define SET_TRUES_FLAGS(flags,trues)    (ADDR_OBJ(flags)[0] = trues)
+static inline UInt SIZE_FLAGS(Obj flags) {
+    return ((const UInt *)CONST_ADDR_OBJ(flags))[1];
+}
 
+/****************************************************************************
+**
+*F  SET_SIZE_FLAGS( <flags>, <size> ) . . . . . . . . . . . . . . .  set size
+*/
+static inline void SET_SIZE_FLAGS(Obj flags, UInt size) {
+    ((UInt *)ADDR_OBJ(flags))[1] = size;
+}
 
 /****************************************************************************
 **
 *F  HASH_FLAGS( <flags> ) . . . . . . . . . . . .  hash value of <flags> or 0
 */
-#define HASH_FLAGS(flags)               (CONST_ADDR_OBJ(flags)[1])
-
-
-/****************************************************************************
-**
-*F  SET_HASH_FLAGS( <flags>, <hash> ) . . . . . . . . . . . . . . .  set hash
-*/
-#define SET_HASH_FLAGS(flags,hash)      (ADDR_OBJ(flags)[1] = hash)
-
-
-/****************************************************************************
-**
-*F  LEN_FLAGS( <flags> )  . . . . . . . . . . . . . .  length of a flags list
-*/
-static inline UInt LEN_FLAGS(Obj flags)
+static inline UInt HASH_FLAGS(Obj flags)
 {
-    return (SIZE_OBJ(flags) / sizeof(Obj) - 3) << LBIPEB;
-};
+    return ((const UInt *)CONST_ADDR_OBJ(flags))[2];
+}
+
+/****************************************************************************
+**
+*F  SET_HASH_FLAGS( <flags>, <hash> )  . . . . . .  set  hash value of <flags>
+*/
+static inline void SET_HASH_FLAGS(Obj flags, UInt hash)
+{
+    ((UInt *)ADDR_OBJ(flags))[2] = hash;
+}
 
 /****************************************************************************
 **
 *F  AND_CACHE_FLAGS( <flags> )  . . . . . . . . . 'and' cache of a flags list
 */
-#define AND_CACHE_FLAGS(list)           (CONST_ADDR_OBJ(list)[2])
+static inline Obj AND_CACHE_FLAGS(Obj flags) {
+    return CONST_ADDR_OBJ(flags)[0];
+}
 
 
 /****************************************************************************
 **
 *F  SET_AND_CACHE_FLAGS( <flags>, <len> ) set the 'and' cache of a flags list
 */
-#define SET_AND_CACHE_FLAGS(flags,andc)  (ADDR_OBJ(flags)[2]=(andc))
+static inline void SET_AND_CACHE_FLAGS(Obj flags, Obj andc) {
+    ADDR_OBJ(flags)[0]=andc;
+}
 
-
-/****************************************************************************
-**
-*F  NRB_FLAGS( <flags> )  . . . . . .  number of basic blocks of a flags list
-*/
-static inline UInt NRB_FLAGS(Obj flags)
-{
-    return SIZE_OBJ(flags) / sizeof(Obj) - 3;
-};
 
 
 /****************************************************************************
 **
-*F  BLOCKS_FLAGS( <flags> ) . . . . . . . . . . . . data area of a flags list
+*F  TRUE_FLAGS( <flags>, <ix> )  the <ix>th set position in flags
+**                               caller is responsible for <ix> being in range
 */
-#define BLOCKS_FLAGS(flags)             ((UInt*)(ADDR_OBJ(flags)+3))
 
+static inline UInt TRUE_FLAGS(Obj flags, UInt ix) {
+    return (UInt) ((const UInt2 *)(CONST_ADDR_OBJ(flags) + 3))[ix];
+}
 
 /****************************************************************************
 **
-*F  BLOCK_ELM_FLAGS( <list>, <pos> )  . . . . . . . .  block  of a flags list
-**
-**  'BLOCK_ELM_FLAGS' return the block containing the <pos>-th element of the
-**  flags list <list> as a UInt value, which is also a  valid left hand side.
-**  <pos>  must be a positive  integer  less than or  equal  to the length of
-**  <list>.
-**
-**  Note that 'BLOCK_ELM_FLAGS' is a macro, so do not call it  with arguments
-**  that have side effects.
+*F  SET_TRUE_FLAGS( <flags>, <ix>, <filt> )  the <ix>th set position in flags
+**                               caller is responsible for <ix> being in range
 */
-#define BLOCK_ELM_FLAGS(list, pos)      (BLOCKS_FLAGS(list)[((pos)-1) >> LBIPEB])
 
-
-/****************************************************************************
-**
-*F  MASK_POS_FLAGS( <pos> ) . . .  . .  bit mask for position of a flags list
-**
-**  'MASK_POS_FLAGS(<pos>)' returns a UInt with a single set  bit in position
-**  '(<pos>-1) % BIPEB',
-**  useful for accessing the <pos>-th element of a 'FLAGS' list.
-**
-**  Note that 'MASK_POS_FLAGS'  is a macro, so  do not call it with arguments
-**  that have side effects.
-*/
-#define MASK_POS_FLAGS(pos)             (((UInt) 1)<<(((pos)-1) & (BIPEB-1)))
-
+static inline void SET_TRUE_FLAGS(Obj flags, UInt ix, UInt2 filt) {
+    ((UInt2 *)(ADDR_OBJ(flags) +3))[ix] = filt ;
+}
 
 /****************************************************************************
 **
@@ -350,14 +353,13 @@ static inline UInt NRB_FLAGS(Obj flags)
 **  since the C compiler can't know that True != False. Using C_ELM_FLAGS
 **  gives slightly nicer C code and potential for a little more optimisation.
 */
-#define C_ELM_FLAGS(list, pos)                                               \
-    ((BLOCK_ELM_FLAGS(list, pos) & MASK_POS_FLAGS(pos)) ? 1 : 0)
+extern UInt C_ELM_FLAGS(Obj list, UInt pos);
 
 #define ELM_FLAGS(list, pos) (C_ELM_FLAGS(list, pos) ? True : False)
 
 static inline Int SAFE_C_ELM_FLAGS(Obj flags, UInt pos)
 {
-    return (pos <= LEN_FLAGS(flags)) ? C_ELM_FLAGS(flags, pos) : 0;
+    return C_ELM_FLAGS(flags, pos);
 }
 
 #define SAFE_ELM_FLAGS(list, pos) (SAFE_C_ELM_FLAGS(list, pos) ? True : False)
@@ -687,6 +689,8 @@ extern void LoadOperationExtras( Obj oper );
 **
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
+
+extern void SetupFlagsListsAsLists( void );
 
 
 /****************************************************************************

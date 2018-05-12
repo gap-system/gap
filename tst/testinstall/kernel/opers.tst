@@ -13,7 +13,7 @@ gap> flags2 := FLAGS_FILTER(IsPGroup and IsMutable);
 gap> HASH_FLAGS(fail);
 Error, <flags> must be a flags list (not a boolean or fail)
 gap> HASH_FLAGS(flags);
-2
+82538043
 
 #
 gap> TRUES_FLAGS(fail);
