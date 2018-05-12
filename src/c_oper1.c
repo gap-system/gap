@@ -2206,7 +2206,7 @@ static Obj  HdlrFunc8 (
  l_found = t_1;
  
  /* for prop in props do */
- t_4 = OBJ_LVAR_1UP( 2 );
+ t_4 = OBJ_HVAR( (1 << 16) | 2 );
  CHECK_BOUND( t_4, "props" )
  if ( IS_SMALL_LIST(t_4) ) {
   t_3 = (Obj)(UInt)1;
@@ -2287,7 +2287,7 @@ static Obj  HdlrFunc8 (
  if ( t_1 ) {
   
   /* return getter( obj ); */
-  t_2 = OBJ_LVAR_1UP( 1 );
+  t_2 = OBJ_HVAR( (1 << 16) | 1 );
   CHECK_BOUND( t_2, "getter" )
   CHECK_FUNC( t_2 )
   t_1 = CALL_1ARGS( t_2, a_obj );
@@ -2731,7 +2731,7 @@ static Obj  HdlrFunc12 (
   
   /* Error( name, ": <p> must be a prime" ); */
   t_1 = GF_Error;
-  t_2 = OBJ_LVAR_1UP( 1 );
+  t_2 = OBJ_HVAR( (1 << 16) | 1 );
   CHECK_BOUND( t_2, "name" )
   t_3 = MakeString( ": <p> must be a prime" );
   CALL_2ARGS( t_1, t_2, t_3 );
@@ -2803,13 +2803,13 @@ static Obj  HdlrFunc14 (
  SET_BRK_CURR_STAT(0);
  
  /* keytest( key ); */
- t_1 = OBJ_LVAR_1UP( 2 );
+ t_1 = OBJ_HVAR( (1 << 16) | 2 );
  CHECK_BOUND( t_1, "keytest" )
  CHECK_FUNC( t_1 )
  CALL_1ARGS( t_1, a_key );
  
  /* known := attr( D ); */
- t_2 = OBJ_LVAR_1UP( 4 );
+ t_2 = OBJ_HVAR( (1 << 16) | 4 );
  CHECK_BOUND( t_2, "attr" )
  CHECK_FUNC( t_2 )
  t_1 = CALL_1ARGS( t_2, a_D );
@@ -2837,7 +2837,7 @@ static Obj  HdlrFunc14 (
  if ( t_1 ) {
   
   /* erg := oper( D, key ); */
-  t_2 = OBJ_LVAR_1UP( 3 );
+  t_2 = OBJ_HVAR( (1 << 16) | 3 );
   CHECK_BOUND( t_2, "oper" )
   CHECK_FUNC( t_2 )
   t_1 = CALL_2ARGS( t_2, a_D, a_key );
@@ -2937,13 +2937,13 @@ static Obj  HdlrFunc15 (
  SET_BRK_CURR_STAT(0);
  
  /* keytest( key ); */
- t_1 = OBJ_LVAR_1UP( 2 );
+ t_1 = OBJ_HVAR( (1 << 16) | 2 );
  CHECK_BOUND( t_1, "keytest" )
  CHECK_FUNC( t_1 )
  CALL_1ARGS( t_1, a_key );
  
  /* known := attr( D ); */
- t_2 = OBJ_LVAR_1UP( 4 );
+ t_2 = OBJ_HVAR( (1 << 16) | 4 );
  CHECK_BOUND( t_2, "attr" )
  CHECK_FUNC( t_2 )
  t_1 = CALL_1ARGS( t_2, a_D );
@@ -3012,13 +3012,13 @@ static Obj  HdlrFunc16 (
  SET_BRK_CURR_STAT(0);
  
  /* keytest( key ); */
- t_1 = OBJ_LVAR_1UP( 2 );
+ t_1 = OBJ_HVAR( (1 << 16) | 2 );
  CHECK_BOUND( t_1, "keytest" )
  CHECK_FUNC( t_1 )
  CALL_1ARGS( t_1, a_key );
  
  /* known := attr( D ); */
- t_2 = OBJ_LVAR_1UP( 4 );
+ t_2 = OBJ_HVAR( (1 << 16) | 4 );
  CHECK_BOUND( t_2, "attr" )
  CHECK_FUNC( t_2 )
  t_1 = CALL_1ARGS( t_2, a_D );
@@ -3438,11 +3438,11 @@ static Obj  HdlrFunc18 (
  
  /* re := false; */
  t_1 = False;
- ASS_LVAR_1UP( 4, t_1 );
+ ASS_HVAR( (1 << 16) | 4, t_1 );
  
  /* for i in [ 1 .. LEN_LIST( reqs ) ] do */
  t_6 = GF_LEN__LIST;
- t_7 = OBJ_LVAR_1UP( 2 );
+ t_7 = OBJ_HVAR( (1 << 16) | 2 );
  CHECK_BOUND( t_7, "reqs" )
  t_5 = CALL_1ARGS( t_6, t_7 );
  CHECK_FUNC_RESULT( t_5 )
@@ -3466,18 +3466,18 @@ static Obj  HdlrFunc18 (
    if ( CALL_1ARGS( GF_IS_DONE_ITER, t_1 ) != False )  break;
    t_2 = CALL_1ARGS( GF_NEXT_ITER, t_1 );
   }
-  ASS_LVAR_1UP( 5, t_2 );
+  ASS_HVAR( (1 << 16) | 5, t_2 );
   
   /* re := re or IsBound( cond[i] ) and not Tester( cond[i] )( arg[i] ) and cond[i]( arg[i] ) and Tester( cond[i] )( arg[i] ); */
-  t_7 = OBJ_LVAR_1UP( 4 );
+  t_7 = OBJ_HVAR( (1 << 16) | 4 );
   CHECK_BOUND( t_7, "re" )
   CHECK_BOOL( t_7 )
   t_6 = (Obj)(UInt)(t_7 != False);
   t_5 = (t_6 ? True : False);
   if ( t_5 == False ) {
-   t_12 = OBJ_LVAR_1UP( 3 );
+   t_12 = OBJ_HVAR( (1 << 16) | 3 );
    CHECK_BOUND( t_12, "cond" )
-   t_13 = OBJ_LVAR_1UP( 5 );
+   t_13 = OBJ_HVAR( (1 << 16) | 5 );
    CHECK_BOUND( t_13, "i" )
    CHECK_INT_POS( t_13 )
    t_11 = C_ISB_LIST( t_12, t_13 );
@@ -3485,16 +3485,16 @@ static Obj  HdlrFunc18 (
    t_9 = t_10;
    if ( t_9 ) {
     t_15 = GF_Tester;
-    t_17 = OBJ_LVAR_1UP( 3 );
+    t_17 = OBJ_HVAR( (1 << 16) | 3 );
     CHECK_BOUND( t_17, "cond" )
-    t_18 = OBJ_LVAR_1UP( 5 );
+    t_18 = OBJ_HVAR( (1 << 16) | 5 );
     CHECK_BOUND( t_18, "i" )
     CHECK_INT_POS( t_18 )
     C_ELM_LIST_FPL( t_16, t_17, t_18 )
     t_14 = CALL_1ARGS( t_15, t_16 );
     CHECK_FUNC_RESULT( t_14 )
     CHECK_FUNC( t_14 )
-    t_16 = OBJ_LVAR_1UP( 5 );
+    t_16 = OBJ_HVAR( (1 << 16) | 5 );
     CHECK_BOUND( t_16, "i" )
     CHECK_INT_POS( t_16 )
     C_ELM_LIST_FPL( t_15, a_arg, t_16 )
@@ -3507,14 +3507,14 @@ static Obj  HdlrFunc18 (
    }
    t_8 = t_9;
    if ( t_8 ) {
-    t_13 = OBJ_LVAR_1UP( 3 );
+    t_13 = OBJ_HVAR( (1 << 16) | 3 );
     CHECK_BOUND( t_13, "cond" )
-    t_14 = OBJ_LVAR_1UP( 5 );
+    t_14 = OBJ_HVAR( (1 << 16) | 5 );
     CHECK_BOUND( t_14, "i" )
     CHECK_INT_POS( t_14 )
     C_ELM_LIST_FPL( t_12, t_13, t_14 )
     CHECK_FUNC( t_12 )
-    t_14 = OBJ_LVAR_1UP( 5 );
+    t_14 = OBJ_HVAR( (1 << 16) | 5 );
     CHECK_BOUND( t_14, "i" )
     CHECK_INT_POS( t_14 )
     C_ELM_LIST_FPL( t_13, a_arg, t_14 )
@@ -3527,16 +3527,16 @@ static Obj  HdlrFunc18 (
    t_7 = t_8;
    if ( t_7 ) {
     t_12 = GF_Tester;
-    t_14 = OBJ_LVAR_1UP( 3 );
+    t_14 = OBJ_HVAR( (1 << 16) | 3 );
     CHECK_BOUND( t_14, "cond" )
-    t_15 = OBJ_LVAR_1UP( 5 );
+    t_15 = OBJ_HVAR( (1 << 16) | 5 );
     CHECK_BOUND( t_15, "i" )
     CHECK_INT_POS( t_15 )
     C_ELM_LIST_FPL( t_13, t_14, t_15 )
     t_11 = CALL_1ARGS( t_12, t_13 );
     CHECK_FUNC_RESULT( t_11 )
     CHECK_FUNC( t_11 )
-    t_13 = OBJ_LVAR_1UP( 5 );
+    t_13 = OBJ_HVAR( (1 << 16) | 5 );
     CHECK_BOUND( t_13, "i" )
     CHECK_INT_POS( t_13 )
     C_ELM_LIST_FPL( t_12, a_arg, t_13 )
@@ -3548,13 +3548,13 @@ static Obj  HdlrFunc18 (
    }
    t_5 = (t_7 ? True : False);
   }
-  ASS_LVAR_1UP( 4, t_5 );
+  ASS_HVAR( (1 << 16) | 4, t_5 );
   
  }
  /* od */
  
  /* if re then */
- t_2 = OBJ_LVAR_1UP( 4 );
+ t_2 = OBJ_HVAR( (1 << 16) | 4 );
  CHECK_BOUND( t_2, "re" )
  CHECK_BOOL( t_2 )
  t_1 = (Obj)(UInt)(t_2 != False);
@@ -3562,7 +3562,7 @@ static Obj  HdlrFunc18 (
   
   /* return CallFuncList( oper, arg ); */
   t_2 = GF_CallFuncList;
-  t_3 = OBJ_LVAR_1UP( 1 );
+  t_3 = OBJ_HVAR( (1 << 16) | 1 );
   CHECK_BOUND( t_3, "oper" )
   t_1 = CALL_2ARGS( t_2, t_3, a_arg );
   CHECK_FUNC_RESULT( t_1 )
