@@ -14,6 +14,7 @@ outfile="$3"
 # 3) Rewrite the root of gap with the string GAPROOT,
 #    so the output is usable on other machines
 GAPROOT=$(cd ../..; pwd)
-( echo "LogTo(\"$outfile\");" ; cat "$gfile" ; echo "QUIT;" ) |
+( echo "LogTo(\"${outfile}.tmp\");" ; cat "$gfile" ; echo "QUIT;" ) |
     "$gap" -r -A -b -x 200 2>/dev/null >/dev/null
-sed -i -e "s:${GAPROOT//:/\\:}:GAPROOT:g" "$outfile"
+sed "s:${GAPROOT//:/\\:}:GAPROOT:g" < "${outfile}.tmp" >"${outfile}"
+rm "${outfile}.tmp"
