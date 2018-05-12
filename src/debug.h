@@ -24,6 +24,7 @@
 
 // Enable various GAP debugging features
 #define COUNT_BAGS
+#define COUNT_OPERS
 #else
 #define GAP_ASSERT(x)
 #endif
