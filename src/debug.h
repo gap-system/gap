@@ -21,6 +21,9 @@
 
 #ifdef GAP_KERNEL_DEBUG
 #define GAP_ASSERT(x) assert(x)
+
+// Enable various GAP debugging features
+#define COUNT_BAGS
 #else
 #define GAP_ASSERT(x)
 #endif
