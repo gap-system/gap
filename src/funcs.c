@@ -807,8 +807,8 @@ Obj STEVES_TRACING;
 #endif
 
 #define CHECK_RECURSION_BEFORE \
-            CheckRecursionBefore(); \
-            HookedLineIntoFunction(func);
+            HookedLineIntoFunction(func); \
+            CheckRecursionBefore();
 
 #define CHECK_RECURSION_AFTER \
             DecRecursionDepth(); \
