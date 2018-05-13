@@ -1050,6 +1050,10 @@ void            AsssListDefault (
     Obj                 obj;            /* one element from <objs>         */
     Int                 i;              /* loop variable                   */
 
+    CheckIsPossList("List Assignment", poss);
+    CheckIsDenseList("List Assignment", "rhss", objs);
+    CheckSameLength("List Assignment", "rhss", "positions", objs, poss);
+
     /* general code                                                        */
     if ( ! IS_RANGE(poss) ) {
 
