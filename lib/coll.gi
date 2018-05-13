@@ -876,9 +876,15 @@ InstallOtherMethod( NextIterator,
 ##
 #F  IteratorByFunctions( <record> )
 ##
+if IsHPCGAP then
+DeclareRepresentation( "IsIteratorByFunctionsRep", IsNonAtomicComponentObjectRep,
+    [ "NextIterator", "IsDoneIterator", "ShallowCopy",
+    , "ViewObj", "PrintObj"] );
+else
 DeclareRepresentation( "IsIteratorByFunctionsRep", IsComponentObjectRep,
     [ "NextIterator", "IsDoneIterator", "ShallowCopy",
     , "ViewObj", "PrintObj"] );
+fi;
 
 DeclareSynonym( "IsIteratorByFunctions",
     IsIteratorByFunctionsRep and IsIterator );
