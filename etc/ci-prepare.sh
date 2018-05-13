@@ -87,16 +87,11 @@ then
   # reports; and also the IO package, as the profiling package depends on it.
   pushd "$SRCDIR/pkg"
 
-  # On OS X, we only install a minimal set of packages, so clone missing
-  # packages directly from their repositories
-  if [[ ! -d io* ]]
-  then
-    time git clone https://github.com/gap-packages/io
-  fi
-  if [[ ! -d profiling* ]]
-  then
-    time git clone https://github.com/gap-packages/profiling
-  fi
+  rm -rf io*
+  time git clone https://github.com/gap-packages/io
+
+  rm -rf profiling-*
+  time git clone https://github.com/gap-packages/profiling
 
   # Compile io and profiling packages
   # we deliberately reset CFLAGS and LDFLAGS to prevent them from being
