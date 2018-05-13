@@ -692,7 +692,6 @@ Obj ElmsListDefault (
     Int                 pos;            /* <position> as integer           */
     Int                 inc;            /* increment in a range            */
     Int                 i;              /* loop variable                   */
-    Obj                 p;
 
     /* general code                                                        */
     if ( ! IS_RANGE(poss) ) {
@@ -712,14 +711,15 @@ Obj ElmsListDefault (
         for ( i = 1; i <= lenPoss; i++ ) {
 
             /* get <position>                                              */
-          p = ELMW_LIST( poss, i);
-          while (!IS_INTOBJ(p))
-            {
-              p = ErrorReturnObj("List Elements: position is too large for this type of list",
-                                 0L, 0L, 
-                                 "you can supply a new position <pos> via 'return <pos>;'" );
+            Obj p = ELMW_LIST(poss, i);
+            while (!IS_INTOBJ(p)) {
+                p = ErrorReturnObj("List Elements: position is too large for "
+                                   "this type of list",
+                                   0L, 0L,
+                                   "you can supply a new position <pos> via "
+                                   "'return <pos>;'");
             }
-            pos = INT_INTOBJ( p );
+            pos = INT_INTOBJ(p);
 
             /* select the element                                          */
             elm = ELM0_LIST( list, pos );
