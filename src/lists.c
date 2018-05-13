@@ -671,7 +671,7 @@ Obj FuncELMS_LIST (
     Obj                 list,
     Obj                 poss )
 {
-    return ELMS_LIST( list, poss );
+    return ElmsListCheck( list, poss );
 }
 
 
@@ -1022,7 +1022,7 @@ Obj             FuncASSS_LIST (
     Obj                 poss,
     Obj                 objs )
 {
-    ASSS_LIST( list, poss, objs );
+    AsssListCheck( list, poss, objs );
     return 0;
 }
 
