@@ -682,12 +682,7 @@ UInt            ExecAsssList (
 
     /* evaluate and check the positions                                    */
     poss = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    while ( ! IS_POSS_LIST( poss ) ) {
-        poss = ErrorReturnObj(
-    "List Assignment: <positions> must be a dense list of positive integers",
-            0L, 0L,
-        "you can replace <positions> via 'return <positions>;'" );
-    }
+    CheckIsPossList("List Assignment", poss);
 
     /* evaluate and check right hand sides                                 */
     rhss = EVAL_EXPR( ADDR_STAT(stat)[2] );
@@ -795,12 +790,7 @@ UInt            ExecAsssListLevel (
 
     /* evaluate and check the positions                                    */
     poss = EVAL_EXPR( ADDR_EXPR(stat)[1] );
-    while ( ! IS_POSS_LIST( poss ) ) {
-        poss = ErrorReturnObj(
-    "List Assignment: <positions> must be a dense list of positive integers",
-            0L, 0L,
-        "you can replace <positions> via 'return <positions>;'" );
-    }
+    CheckIsPossList("List Assignment", poss);
 
     /* evaluate right hand sides (checking is done by 'AsssListLevel')     */
     rhss = EVAL_EXPR( ADDR_STAT(stat)[2] );
@@ -995,12 +985,7 @@ Obj             EvalElmsList (
 
     /* evaluate and check the positions                                    */
     poss = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-    while ( ! IS_POSS_LIST( poss ) ) {
-        poss = ErrorReturnObj(
-      "List Elements: <positions> must be a dense list of positive integers",
-            0L, 0L,
-        "you can replace <positions> via 'return <positions>;'" );
-    }
+    CheckIsPossList("List Elements", poss);
 
     /* select several elements from the list                               */
     elms = ELMS_LIST( list, poss );
@@ -1082,12 +1067,7 @@ Obj             EvalElmsListLevel (
 
     /* evaluate and check the positions                                    */
     poss = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-    while ( ! IS_POSS_LIST( poss ) ) {
-        poss = ErrorReturnObj(
-      "List Elements: <positions> must be a dense list of positive integers",
-            0L, 0L,
-        "you can replace <positions> via 'return <positions>;'" );
-    }
+    CheckIsPossList("List Elements", poss);
 
     /* get the level                                                       */
     level = (Int)(ADDR_EXPR(expr)[2]);

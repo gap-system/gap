@@ -824,11 +824,7 @@ Obj ElmsListCheck (
     Obj                 list,
     Obj                 poss )
 {
-    if ( ! IS_POSS_LIST(poss) ) {
-        ErrorQuit(
-      "List Elements: <positions> must be a dense list of positive integers",
-            0L, 0L );
-    }
+    CheckIsPossList("List Elements", poss);
     return ELMS_LIST( list, poss );
 }
 
@@ -845,11 +841,7 @@ void ElmsListLevelCheck (
     Obj                 poss,
     Int                 level )
 {
-    if ( ! IS_POSS_LIST(poss) ) {
-        ErrorQuit(
-      "List Elements: <positions> must be a dense list of positive integers",
-            0L, 0L );
-    }
+    CheckIsPossList("List Elements", poss);
     ElmsListLevel( lists, poss, level );
 }
 
@@ -2162,11 +2154,7 @@ void AsssListCheck (
     Obj                 poss,
     Obj                 rhss )
 {
-    if ( ! IS_POSS_LIST(poss) ) {
-        ErrorQuit(
-    "List Assignment: <positions> must be a dense list of positive integers",
-            0L, 0L );
-    }
+    CheckIsPossList("List Assignment", poss);
     if ( ! IS_DENSE_LIST(rhss) ) {
         ErrorQuit(
             "List Assignment: <rhss> must be a dense list",
@@ -2190,11 +2178,7 @@ void AsssPosObjCheck (
     Obj                 poss,
     Obj                 rhss )
 {
-    if ( ! IS_POSS_LIST(poss) ) {
-        ErrorQuit(
-    "List Assignment: <positions> must be a dense list of positive integers",
-            0L, 0L );
-    }
+    CheckIsPossList("List Assignment", poss);
     if ( ! IS_DENSE_LIST(rhss) ) {
         ErrorQuit(
             "List Assignment: <rhss> must be a dense list",
@@ -2224,11 +2208,7 @@ void AsssListLevelCheck (
     Obj                 rhss,
     Int                 level )
 {
-    if ( ! IS_POSS_LIST(poss) ) {
-        ErrorQuit(
-    "List Assignment: <positions> must be a dense list of positive integers",
-            0L, 0L );
-    }
+    CheckIsPossList("List Assignment", poss);
     AsssListLevel( lists, poss, rhss, level );
 }
 

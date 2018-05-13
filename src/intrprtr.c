@@ -3006,11 +3006,7 @@ void            IntrAsssList ( void )
 
     /* get and check the positions                                         */
     poss = PopObj();
-    if ( ! IS_POSS_LIST( poss ) ) {
-        ErrorQuit(
-    "List Assignment: <positions> must be a dense list of positive integers",
-               0L, 0L );
-    }
+    CheckIsPossList("List Assignment", poss);
     if ( LEN_LIST( poss ) != LEN_LIST( rhss ) ) {
         ErrorQuit(
      "List Assignment: <rhss> must have the same length as <positions> (%d)",
@@ -3083,11 +3079,7 @@ void            IntrAsssListLevel (
 
     /* get and check the positions                                         */
     poss = PopObj();
-    if ( ! IS_POSS_LIST( poss ) ) {
-        ErrorQuit(
-    "List Assignment: <positions> must be a dense list of positive integers",
-            0L, 0L );
-    }
+    CheckIsPossList("List Assignment", poss);
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
     /* checking it is nested <level>+1 deep is done by 'AsssListLevel')    */
@@ -3201,11 +3193,7 @@ void            IntrElmsList ( void )
 
     /* get and check the positions                                         */
     poss = PopObj();
-    if ( ! IS_POSS_LIST( poss ) ) {
-        ErrorQuit(
-      "List Elements: <positions> must be a dense list of positive integers",
-            0L, 0L );
-    }
+    CheckIsPossList("List Elements", poss);
 
     /* get the list (checking is done by 'ELMS_LIST')                      */
     list = PopObj();
@@ -3272,11 +3260,7 @@ void            IntrElmsListLevel (
 
     /* get and check the positions                                         */
     poss = PopObj();
-    if ( ! IS_POSS_LIST( poss ) ) {
-        ErrorQuit(
-      "List Elements: <positions> must be a dense list of positive integers",
-            0L, 0L );
-    }
+    CheckIsPossList("List Elements", poss);
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
     /* checking it is nested <level>+1 deep is done by 'ElmsListLevel')    */
@@ -3619,11 +3603,7 @@ void            IntrAsssPosObj ( void )
 
     /* get and check the positions                                         */
     poss = PopObj();
-    if ( ! IS_POSS_LIST( poss ) ) {
-        ErrorQuit(
-    "PosObj Assignment: <positions> must be a dense list of positive integers",
-               0L, 0L );
-    }
+    CheckIsPossList("PosObj Assignment", poss);
     if ( LEN_LIST( poss ) != LEN_LIST( rhss ) ) {
         ErrorQuit(
      "PosObj Assignment: <rhss> must have the same length as <positions> (%d)",
@@ -3698,11 +3678,7 @@ void            IntrAsssPosObjLevel (
 
     /* get and check the positions                                         */
     poss = PopObj();
-    if ( ! IS_POSS_LIST( poss ) ) {
-        ErrorQuit(
-    "PosObj Assignment: <positions> must be a dense list of positive integers",
-            0L, 0L );
-    }
+    CheckIsPossList("PosObj Assignment", poss);
 
     /* assign the right hand sides to several elements of several lists    */
     ErrorQuit(
@@ -3852,11 +3828,7 @@ void            IntrElmsPosObj ( void )
 
     /* get and check the positions                                         */
     poss = PopObj();
-    if ( ! IS_POSS_LIST( poss ) ) {
-        ErrorQuit(
-      "PosObj Elements: <positions> must be a dense list of positive integers",
-            0L, 0L );
-    }
+    CheckIsPossList("PosObj Elements", poss);
 
     /* get the list (checking is done by 'ELMS_LIST')                      */
     list = PopObj();
@@ -3925,11 +3897,7 @@ void            IntrElmsPosObjLevel (
 
     /* get and check the positions                                         */
     poss = PopObj();
-    if ( ! IS_POSS_LIST( poss ) ) {
-        ErrorQuit(
-      "PosObj Elements: <positions> must be a dense list of positive integers",
-            0L, 0L );
-    }
+    CheckIsPossList("PosObj Elements", poss);
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
     /* checking it is nested <level>+1 deep is done by 'ElmsPosObjLevel')    */
