@@ -1752,20 +1752,8 @@ void            AssListLevel (
     Obj pos,pos1,pos2;
 
     /* check <objs>                                                        */
-    while ( ! IS_DENSE_LIST(objs) || LEN_LIST(lists) != LEN_LIST(objs) ) {
-        if ( ! IS_DENSE_LIST(objs) ) {
-            objs = ErrorReturnObj(
-                "List Assignment: <objs> must be a dense list (not a %s)",
-                (Int)TNAM_OBJ(objs), 0L,
-                "you can replace <objs> via 'return <objs>;'" );
-        }
-        if ( LEN_LIST(lists) != LEN_LIST(objs) ) {
-            objs = ErrorReturnObj(
-         "List Assignment: <objs> must have the same length as <lists> (%d)",
-                LEN_LIST(lists), 0L,
-                "you can replace <objs> via 'return <objs>;'" );
-        }
-    }
+    CheckIsDenseList("List Assignment", "objs", objs);
+    CheckSameLength("List Assignment", "objs", "lists", objs, lists);
 
     /* if <level> is one, perform the assignments                          */
     if ( level == 1 ) {
@@ -1847,20 +1835,8 @@ void            AsssListLevel (
     Int                 i;              /* loop variable                   */
 
     /* check <objs>                                                        */
-    while ( ! IS_DENSE_LIST(objs) || LEN_LIST(lists) != LEN_LIST(objs) ) {
-        if ( ! IS_DENSE_LIST(objs) ) {
-            objs = ErrorReturnObj(
-                "List Assignment: <objs> must be a dense list (not a %s)",
-                (Int)TNAM_OBJ(objs), 0L,
-                "you can replace <objs> via 'return <objs>;'" );
-        }
-        if ( LEN_LIST(lists) != LEN_LIST(objs) ) {
-            objs = ErrorReturnObj(
-         "List Assignment: <objs> must have the same length as <lists> (%d)",
-                LEN_LIST(lists), 0L,
-                "you can replace <objs> via 'return <objs>;'" );
-        }
-    }
+    CheckIsDenseList("List Assignment", "objs", objs);
+    CheckSameLength("List Assignment", "objs", "lists", objs, lists);
 
     /* if <lev> is one, loop over all the lists and assign the value       */
     if ( lev == 1 ) {
@@ -1874,21 +1850,8 @@ void            AsssListLevel (
 
             /* select the elements to assign                               */
             obj = ELMW_LIST( objs, i );
-            while ( ! IS_DENSE_LIST( obj )
-                 || LEN_LIST( poss ) != LEN_LIST( obj ) ) {
-                if ( ! IS_DENSE_LIST( obj ) ) {
-                    obj = ErrorReturnObj(
-                  "List Assignments: <objs> must be a dense list (not a %s)",
-                        (Int)TNAM_OBJ(obj), 0L,
-                        "you can replace <objs> via 'return <objs>;'" );
-                }
-                if ( LEN_LIST( poss ) != LEN_LIST( obj ) ) {
-                    obj = ErrorReturnObj(
-     "List Assignments: <objs> must have the same length as <positions> (%d)",
-                        LEN_LIST( poss ), 0L,
-                        "you can replace <objs> via 'return <objs>;'" );
-                }
-            }
+            CheckIsDenseList("List Assignments", "objs", obj);
+            CheckSameLength("List Assignments", "objs", "positions", obj, poss);
 
             /* assign the elements                                         */
             ASSS_LIST( list, poss, obj );
@@ -2155,16 +2118,8 @@ void AsssListCheck (
     Obj                 rhss )
 {
     CheckIsPossList("List Assignment", poss);
-    if ( ! IS_DENSE_LIST(rhss) ) {
-        ErrorQuit(
-            "List Assignment: <rhss> must be a dense list",
-            0L, 0L );
-    }
-    if ( LEN_LIST( poss ) != LEN_LIST( rhss ) ) {
-        ErrorQuit(
-     "List Assignment: <rhss> must have the same length as <positions> (%d)",
-            (Int)LEN_LIST(poss), 0L );
-    }
+    CheckIsDenseList("List Assignment", "rhss", rhss);
+    CheckSameLength("List Assignment", "rhss", "positions", rhss, poss);
     ASSS_LIST( list, poss, rhss );
 }
 
@@ -2179,16 +2134,8 @@ void AsssPosObjCheck (
     Obj                 rhss )
 {
     CheckIsPossList("List Assignment", poss);
-    if ( ! IS_DENSE_LIST(rhss) ) {
-        ErrorQuit(
-            "List Assignment: <rhss> must be a dense list",
-            0L, 0L );
-    }
-    if ( LEN_LIST( poss ) != LEN_LIST( rhss ) ) {
-        ErrorQuit(
-     "List Assignment: <rhss> must have the same length as <positions> (%d)",
-            (Int)LEN_LIST(poss), 0L );
-    }
+    CheckIsDenseList("List Assignment", "rhss", rhss);
+    CheckSameLength("List Assignment", "rhss", "positions", rhss, poss);
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
         ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
     }

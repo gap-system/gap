@@ -1362,9 +1362,7 @@ Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list)
     if (!IsChannel(channel))
         return ArgumentError(
             "MultiSendChannel: First argument must be a channel");
-    if (!IS_DENSE_LIST(list))
-        return ArgumentError(
-            "MultiSendChannel: Second argument must be a dense list");
+    CheckIsDenseList("MultiSendChannel", "list", list);
     MultiSendChannel(ObjPtr(channel), list, 1);
     return (Obj)0;
 }
@@ -1374,9 +1372,7 @@ Obj FuncMultiTransmitChannel(Obj self, Obj channel, Obj list)
     if (!IsChannel(channel))
         return ArgumentError(
             "MultiTransmitChannel: First argument must be a channel");
-    if (!IS_DENSE_LIST(list))
-        return ArgumentError(
-            "MultiTransmitChannel: Second argument must be a dense list");
+    CheckIsDenseList("MultiTransmitChannel", "list", list);
     MultiSendChannel(ObjPtr(channel), list, 0);
     return (Obj)0;
 }
@@ -1386,9 +1382,7 @@ Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list)
     if (!IsChannel(channel))
         return ArgumentError(
             "TryMultiSendChannel: First argument must be a channel");
-    if (!IS_DENSE_LIST(list))
-        return ArgumentError(
-            "TryMultiSendChannel: Second argument must be a dense list");
+    CheckIsDenseList("TryMultiSendChannel", "list", list);
     return INTOBJ_INT(TryMultiSendChannel(ObjPtr(channel), list, 1));
 }
 
@@ -1398,9 +1392,7 @@ Obj FuncTryMultiTransmitChannel(Obj self, Obj channel, Obj list)
     if (!IsChannel(channel))
         return ArgumentError(
             "TryMultiTransmitChannel: First argument must be a channel");
-    if (!IS_DENSE_LIST(list))
-        return ArgumentError(
-            "TryMultiTransmitChannel: Second argument must be a dense list");
+    CheckIsDenseList("TryMultiTransmitChannel", "list", list);
     return INTOBJ_INT(TryMultiSendChannel(ObjPtr(channel), list, 0));
 }
 

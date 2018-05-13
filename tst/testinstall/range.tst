@@ -98,7 +98,8 @@ gap> x{[2,5,3]} := [7,8,9];
 gap> x;
 [ -5, 7, 9, 1, 8, 5 ]
 gap> x{[2,4]} := [2..4];
-Error, List Assignment: <rhss> must have the same length as <positions> (2)
+Error, List Assignment: <rhss> must have the same length as <positions> (not 3\
+ and 2)
 gap> Immutable([-5,-3..5]){[2..3]} := [2..3];
 Error, List Assignments: <list> must be a mutable list
 gap> x := [-5,-3..5];

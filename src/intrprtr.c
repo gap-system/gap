@@ -2998,20 +2998,12 @@ void            IntrAsssList ( void )
 
     /* get the right hand sides                                            */
     rhss = PopObj();
-    if ( ! IS_DENSE_LIST( rhss ) ) {
-        ErrorQuit(
-            "List Assignment: <rhss> must be a dense list",
-            0L, 0L );
-    }
+    CheckIsDenseList("List Assignment", "rhss", rhss);
 
     /* get and check the positions                                         */
     poss = PopObj();
     CheckIsPossList("List Assignment", poss);
-    if ( LEN_LIST( poss ) != LEN_LIST( rhss ) ) {
-        ErrorQuit(
-     "List Assignment: <rhss> must have the same length as <positions> (%d)",
-            (Int)LEN_LIST(poss), 0L );
-    }
+    CheckSameLength("List Assignment", "rhss", "positions", rhss, poss);
 
     /* get the list (checking is done by 'ASSS_LIST')                      */
     list = PopObj();
@@ -3595,20 +3587,12 @@ void            IntrAsssPosObj ( void )
 
     /* get the right hand sides                                            */
     rhss = PopObj();
-    if ( ! IS_DENSE_LIST( rhss ) ) {
-        ErrorQuit(
-            "PosObj Assignment: <rhss> must be a dense list",
-            0L, 0L );
-    }
+    CheckIsDenseList("PosObj Assignment", "rhss", rhss);
 
     /* get and check the positions                                         */
     poss = PopObj();
     CheckIsPossList("PosObj Assignment", poss);
-    if ( LEN_LIST( poss ) != LEN_LIST( rhss ) ) {
-        ErrorQuit(
-     "PosObj Assignment: <rhss> must have the same length as <positions> (%d)",
-            (Int)LEN_LIST(poss), 0L );
-    }
+    CheckSameLength("List Assignment", "rhss", "positions", rhss, poss);
 
     /* get the list (checking is done by 'ASSS_LIST')                      */
     list = PopObj();

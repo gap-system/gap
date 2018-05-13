@@ -136,6 +136,20 @@ void CheckIsPossList(const Char * desc, Obj poss);
 
 /****************************************************************************
 **
+*F  CheckIsDenseList( <desc>, <listName>, <list> ) . . . check for dense list
+*/
+void CheckIsDenseList(const Char * desc, const Char * listName, Obj list);
+
+
+/****************************************************************************
+**
+*F  CheckSameLength
+*/
+void CheckSameLength(const Char * desc, const Char *leftName, const Char *rightName, Obj left, Obj right);
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * *
 */
 

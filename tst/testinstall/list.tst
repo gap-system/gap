@@ -59,9 +59,9 @@ Error, List Assignment: <positions> must be a dense list of positive integers
 
 #
 gap> a{[1]}{[1]}[1] := 42;
-Error, List Assignment: <objs> must be a dense list (not a integer)
+Error, List Assignment: <objs> must be a dense list
 gap> a{[1]}{[1]}[1] := [ 42 ];
-Error, List Assignment: <objs> must be a dense list (not a integer)
+Error, List Assignment: <objs> must be a dense list
 gap> a{[1]}{[1]}![1] := [ [ 42 ] ];
 Error, sorry: <lists>{<poss>}![<pos>] not yet implemented
 gap> a{[1]}{[1]}[1] := [ [ 42 ] ];
@@ -71,11 +71,13 @@ gap> a;
 
 #
 gap> a{[1]}{[1]} := 19;
-Error, List Assignment: <objs> must be a dense list (not a integer)
+Error, List Assignment: <objs> must be a dense list
 gap> a{[1]}{[1]} := [ 18, 19 ];
-Error, List Assignment: <objs> must have the same length as <lists> (1)
+Error, List Assignment: <objs> must have the same length as <lists> (not 2 and\
+ 1)
 gap> a{[1]}{[1]} := [ [ 18, 19 ] ] ;
-Error, List Assignments: <objs> must have the same length as <positions> (1)
+Error, List Assignments: <objs> must have the same length as <positions> (not \
+2 and 1)
 gap> a{[1]}{[1,,3]} := [ [ [ 18, 19 ] ] ];
 Error, List Assignment: <positions> must be a dense list of positive integers
 gap> a{[1]}{[1]} := [ [ [ 18, 19 ] ] ];
