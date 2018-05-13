@@ -353,6 +353,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
                             profileState.minimumProfileTick;
             }
             ticks -= ticksDone;
+            outputFilenameIdIfRequired(nameid);
             fprintf(
                 profileState.Stream,
                 "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"FileId\":%d}\n",
@@ -369,6 +370,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
       }
     }
     else {
+      outputFilenameIdIfRequired(nameid);
       fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Line\":%d,\"FileId\":%d}\n",
               exec ? 'E' : 'R', (int)line, (int)nameid);
       profileState.lastOutputted.line = line;
