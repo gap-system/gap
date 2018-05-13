@@ -529,6 +529,17 @@ void ErrorMayQuit(const Char * msg, Int arg1, Int arg2)
     SyExit(1);
 }
 
+/****************************************************************************
+**
+*F  CheckIsPossList( <desc>, <poss> ) . . . . . . . . . . check for poss list
+*/
+void CheckIsPossList(const Char * desc, Obj poss)
+{
+    if ( ! IS_POSS_LIST( poss ) ) {
+        ErrorQuit("%s: <positions> must be a dense list of positive integers",
+            (Int)desc, 0 );
+    }
+}
 
 /****************************************************************************
 **

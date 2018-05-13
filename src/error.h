@@ -129,6 +129,13 @@ ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 
 /****************************************************************************
 **
+*F  CheckIsPossList( <desc>, <poss> ) . . . . . . . . . . check for poss list
+*/
+void CheckIsPossList(const Char * desc, Obj poss);
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * *
 */
 
