@@ -543,6 +543,33 @@ void CheckIsPossList(const Char * desc, Obj poss)
 
 /****************************************************************************
 **
+*F  CheckIsDenseList( <desc>, <listName>, <list> ) . . . check for dense list
+*/
+void CheckIsDenseList(const Char * desc, const Char * listName, Obj list)
+{
+    if (!IS_DENSE_LIST(list)) {
+        ErrorQuit("%s: <%s> must be a dense list", (Int)desc, (Int)listName);
+    }
+}
+
+/****************************************************************************
+**
+*F  CheckSameLength
+*/
+void CheckSameLength(const Char * desc, const Char *leftName, const Char *rightName, Obj left, Obj right)
+{
+    UInt ll = LEN_LIST(left);
+    UInt lr = LEN_LIST(right);
+    if ( ll != lr ) {
+        Char message[1024];
+        snprintf(message, sizeof(message), "%s: <%s> must have the same length as <%s> (not %d and %d)",
+            desc, leftName, rightName, (int)ll, (int)lr);
+        ErrorQuit(message, 0, 0);
+    }
+}
+
+/****************************************************************************
+**
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs[] = {

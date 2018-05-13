@@ -686,21 +686,8 @@ UInt            ExecAsssList (
 
     /* evaluate and check right hand sides                                 */
     rhss = EVAL_EXPR( ADDR_STAT(stat)[2] );
-    while ( ! IS_DENSE_LIST( rhss )
-         || LEN_LIST( poss ) != LEN_LIST( rhss ) ) {
-        if ( ! IS_DENSE_LIST( rhss ) ) {
-            rhss = ErrorReturnObj(
-                "List Assignment: <rhss> must be a dense list (not a %s)",
-                (Int)TNAM_OBJ(rhss), 0L,
-                "you can replace <rhss> via 'return <rhss>;'" );
-        }
-        else /* if ( LEN_LIST( poss ) != LEN_LIST( rhss ) ) */ {
-            rhss = ErrorReturnObj(
-     "List Assignment: <rhss> must be a list with the same length as <positions> (%d)",
-                (Int)LEN_LIST( poss ), 0L,
-                "you can replace <rhss> via 'return <rhss>;'" );
-        }
-    }
+    CheckIsDenseList("List Assignment", "rhss", rhss);
+    CheckSameLength("List Assignment", "rhss", "positions", rhss, poss);
 
     /* assign the right hand sides to several elements of the list         */
     ASSS_LIST( list, poss, rhss );

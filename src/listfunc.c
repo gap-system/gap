@@ -1017,13 +1017,7 @@ Obj FuncSORT_PARA_LIST (
     /* check the first two arguments                                       */
     CheckIsSmallList(list, "SORT_PARA_LIST");
     CheckIsSmallList(shadow, "SORT_PARA_LIST");
-
-    if( LEN_LIST( list ) != LEN_LIST( shadow ) ) {
-        ErrorMayQuit( 
-            "SORT_PARA_LIST: lists must have the same length (not %d and %d)",
-            (Int)LEN_LIST( list ),
-            (Int)LEN_LIST( shadow ));
-    }
+    CheckSameLength("SORT_PARA_LIST", "list", "shadow", list, shadow);
 
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
@@ -1046,13 +1040,7 @@ Obj FuncSTABLE_SORT_PARA_LIST (
     /* check the first two arguments                                       */
     CheckIsSmallList(list, "STABLE_SORT_PARA_LIST");
     CheckIsSmallList(shadow, "STABLE_SORT_PARA_LIST");
-
-    if( LEN_LIST( list ) != LEN_LIST( shadow ) ) {
-        ErrorMayQuit( 
-            "STABLE_SORT_PARA_LIST: lists must have the same length (not %d and %d)",
-            (Int)LEN_LIST( list ),
-            (Int)LEN_LIST( shadow ));
-    }
+    CheckSameLength("STABLE_SORT_PARA_LIST", "list", "shadow", list, shadow);
 
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
@@ -1081,13 +1069,7 @@ Obj FuncSORT_PARA_LIST_COMP (
     /* check the first two arguments                                       */
     CheckIsSmallList(list, "SORT_PARA_LIST_COMP");
     CheckIsSmallList(shadow, "SORT_PARA_LIST_COMP");
-
-    if( LEN_LIST( list ) != LEN_LIST( shadow ) ) {
-        ErrorMayQuit( 
-            "SORT_PARA_LIST_COMP: lists must have the same length (not %d and %d)",
-            (Int)LEN_LIST( list ),
-            (Int)LEN_LIST( shadow ));
-    }
+    CheckSameLength("SORT_PARA_LIST_COMP", "list", "shadow", list, shadow);
 
     /* check the third argument                                            */
     CheckIsFunction(func, "SORT_PARA_LIST_COMP");
@@ -1113,13 +1095,7 @@ Obj FuncSTABLE_SORT_PARA_LIST_COMP (
     /* check the first two arguments                                       */
     CheckIsSmallList(list, "SORT_PARA_LIST_COMP");
     CheckIsSmallList(shadow, "SORT_PARA_LIST_COMP");
-
-    if( LEN_LIST( list ) != LEN_LIST( shadow ) ) {
-        ErrorMayQuit( 
-            "SORT_PARA_LIST_COMP: lists must have the same length (not %d and %d)",
-            (Int)LEN_LIST( list ),
-            (Int)LEN_LIST( shadow ));
-    }
+    CheckSameLength("SORT_PARA_LIST_COMP", "list", "shadow", list, shadow);
 
     /* check the third argument                                            */
     CheckIsFunction(func, "SORT_PARA_LIST_COMP");
