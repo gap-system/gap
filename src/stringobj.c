@@ -947,7 +947,6 @@ Obj ElmsString (
     Int                 pos;            /* <position> as integer           */
     Int                 inc;            /* increment in a range            */
     Int                 i;              /* loop variable                   */
-    UInt1               *p, *pn;        /* loop pointer                    */
 
     /* general code                                                        */
     if ( ! IS_RANGE(poss) ) {
@@ -965,7 +964,17 @@ Obj ElmsString (
         for ( i = 1; i <= lenPoss; i++ ) {
 
             /* get <position>                                              */
-            pos = INT_INTOBJ( ELMW_LIST( poss, i ) );
+            Obj p = ELMW_LIST(poss, i);
+            while (!IS_INTOBJ(p)) {
+                p = ErrorReturnObj("List Elements: position is too large for "
+                                   "this type of list",
+                                   0L, 0L,
+                                   "you can supply a new position <pos> via "
+                                   "'return <pos>;'");
+            }
+            pos = INT_INTOBJ(p);
+
+            /* select the element                                          */
             if ( lenList < pos ) {
                 ErrorReturnVoid(
                     "List Elements: <list>[%d] must have an assigned value",
@@ -1015,10 +1024,10 @@ Obj ElmsString (
         elms = NEW_STRING( lenPoss );
 
         /* loop over the entries of <positions> and select                 */
-	p = CHARS_STRING(list);
-	pn = CHARS_STRING(elms);
+        UInt1 * p = CHARS_STRING(list);
+        UInt1 * pn = CHARS_STRING(elms);
         for ( i = 1; i <= lenPoss; i++, pos += inc ) {
-	  pn[i-1] = p[pos-1];
+            pn[i - 1] = p[pos - 1];
         }
 
     }

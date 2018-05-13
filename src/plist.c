@@ -1477,7 +1477,17 @@ Obj             ElmsPlistDense (
         for ( i = 1; i <= lenPoss; i++ ) {
 
             /* get <position>                                              */
-            pos = INT_INTOBJ( ELMW_LIST( poss, i ) );
+            Obj p = ELMW_LIST(poss, i);
+            while (!IS_INTOBJ(p)) {
+                p = ErrorReturnObj("List Elements: position is too large for "
+                                   "this type of list",
+                                   0L, 0L,
+                                   "you can supply a new position <pos> via "
+                                   "'return <pos>;'");
+            }
+            pos = INT_INTOBJ(p);
+
+            /* select the element                                          */
             if ( lenList < pos ) {
                 ErrorReturnVoid(
                     "List Elements: <list>[%d] must have an assigned value",
