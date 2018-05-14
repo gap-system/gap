@@ -224,9 +224,9 @@ static inline void SET_ENABLED_ATTR(Obj oper, Int x)
 *F * * * * * * * * * * * * internal flags functions * * * * * * * * * * * * *
 **
 ** Attempting change April 2018. Flags will be stored as 
-** Size (INTOBJ)  -- could possibly be a UInt2 instead
-** Hash (INTOBJ)
-** AND_CACHE -- Obj
+** AND_CACHE -- Obj (put this first for GASMAN's convenience) 
+** Size (UInt)  -- could possibly be a UInt2 instead
+** Hash (UInt)
 ** Set positions (array of UInt2).
 */
 
@@ -252,46 +252,36 @@ static inline Obj NEW_FLAGS(UInt len)
 
 /****************************************************************************
 **
-*F  TRUES_FLAGS( <flags> )  . . . . . . . . . . list of trues of a flags list
-**
-**  returns the list of trues of <flags> or 0 if the list is not known yet.
-*/
-
-extern Obj TRUES_FLAGS( Obj flags );
-
-
-/****************************************************************************
-**
 *F  SIZE_FLAGS( <flags> ) . . . . . . . . . . .number of true of <flags> 
 */
-static inline Obj SIZE_FLAGS(Obj flags) {
-    return CONST_ADDR_OBJ(flags)[0];
+static inline UInt SIZE_FLAGS(Obj flags) {
+    return ((const UInt *)CONST_ADDR_OBJ(flags))[1];
 }
 
 /****************************************************************************
 **
 *F  SET_SIZE_FLAGS( <flags>, <hash> ) . . . . . . . . . . . . . . .  set size
 */
-static inline void SET_SIZE_FLAGS(Obj flags, Obj size) {
-    ADDR_OBJ(flags)[0] = size;
+static inline void SET_SIZE_FLAGS(Obj flags, UInt size) {
+    ((UInt *)ADDR_OBJ(flags))[1] = size;
 }
 
 /****************************************************************************
 **
 *F  HASH_FLAGS( <flags> ) . . . . . . . . . . . .  hash value of <flags> or 0
 */
-static inline Obj HASH_FLAGS(Obj flags)
+static inline UInt HASH_FLAGS(Obj flags)
 {
-    return CONST_ADDR_OBJ(flags)[1];
+    return ((const UInt *)CONST_ADDR_OBJ(flags))[2];
 }
 
 /****************************************************************************
 **
 *F  SET_HASH_FLAGS( <flags> ) . . . . . . . . . .  set  hash value of <flags>
 */
-static inline void SET_HASH_FLAGS(Obj flags, Obj hash)
+static inline void SET_HASH_FLAGS(Obj flags, UInt hash)
 {
-    ADDR_OBJ(flags)[1] = hash;
+    ((UInt *)ADDR_OBJ(flags))[2] = hash;
 }
 
 /****************************************************************************
@@ -299,7 +289,7 @@ static inline void SET_HASH_FLAGS(Obj flags, Obj hash)
 *F  AND_CACHE_FLAGS( <flags> )  . . . . . . . . . 'and' cache of a flags list
 */
 static inline Obj AND_CACHE_FLAGS(Obj flags) {
-    return CONST_ADDR_OBJ(flags)[2];
+    return CONST_ADDR_OBJ(flags)[0];
 }
 
 
@@ -308,7 +298,7 @@ static inline Obj AND_CACHE_FLAGS(Obj flags) {
 *F  SET_AND_CACHE_FLAGS( <flags>, <len> ) set the 'and' cache of a flags list
 */
 static inline void SET_AND_CACHE_FLAGS(Obj flags, Obj andc) {
-    ADDR_OBJ(flags)[2]=(andc);
+    ADDR_OBJ(flags)[0]=andc;
 }
 
 
@@ -347,6 +337,8 @@ static inline void SET_TRUE_FLAGS(Obj flags, UInt ix, UInt2 filt) {
 **  'C_ELM_FLAGS' returns a result which it is better to use inside the kernel
 **  since the C compiler can't know that True != False. Using C_ELM_FLAGS
 **  gives slightly nicer C code and potential for a little more optimisation.
+**
+*T revisit this to reflect appropriate names and usage
 */
 extern UInt C_ELM_FLAGS(Obj list, UInt pos);
 
@@ -360,25 +352,12 @@ static inline Int SAFE_C_ELM_FLAGS(Obj flags, UInt pos)
 #define SAFE_ELM_FLAGS(list, pos) (SAFE_C_ELM_FLAGS(list, pos) ? True : False)
 
 
-/****************************************************************************
-**
-*F  SET_ELM_FLAGS( <list>, <pos>, <val> ) . .  set an element of a flags list
-**
-**  'SET_ELM_FLAGS' sets  the element at position <pos>   in the flags list
-**  <list> to the value <val>.  <pos> must be a positive integer less than or
-**  equal to the length of <hdList>.  <val> must be either 'true' or 'false'.
-**
-**  Note that  'SET_ELM_FLAGS' is  a macro, so do not  call it with arguments
-**  that have side effects.
-*/
-#define SET_ELM_FLAGS(list,pos,val)  \
- ((val) == True ? \
-  (BLOCK_ELM_FLAGS(list, pos) |= MASK_POS_FLAGS(pos)) : \
-  (BLOCK_ELM_FLAGS(list, pos) &= ~MASK_POS_FLAGS(pos)))
 
 /****************************************************************************
 **
 *F  FuncIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) . . . . . . subset test
+**
+*T  export a proper function, rather than a handler
 */
 
 extern Obj FuncIS_SUBSET_FLAGS( Obj self, Obj flags1, Obj flags2 );

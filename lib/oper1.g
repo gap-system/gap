@@ -47,7 +47,7 @@ BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
     if IS_SUBSET_FLAGS( IMM_FLAGS, flags ) then return; fi;
     flags := SUB_FLAGS( flags, IMM_FLAGS );
 
-    flagspos := SHALLOW_COPY_OBJ(TRUES_FLAGS(flags));
+    flagspos := TRUES_FLAGS(flags);
     tried    := [];
     type     := TYPE_OBJ( obj );
     flags    := type![2];
@@ -111,8 +111,7 @@ BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
 
                           newflags := SUB_FLAGS( type![2], IMM_FLAGS );
                           newflags := SUB_FLAGS( newflags, flags );
-                          APPEND_LIST_INTR( flagspos,
-                                            TRUES_FLAGS( newflags ) );
+                          APPEND_TRUES_FLAGS( flagspos, newflags );
 
                           flags := type![2];
 
@@ -589,7 +588,7 @@ LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + (BASE_SIZE_METHODS_OPER_ENT
 InstallAttributeFunction(
     function ( name, filter, getter, setter, tester, mutflag )
 
-    local flags, rank, cats, props, i, lk;
+    local flags, rank, cats, props, i, j, lk;
 
     if not IS_IDENTICAL_OBJ( filter, IS_OBJECT ) then
 
@@ -602,7 +601,8 @@ InstallAttributeFunction(
             # to replace the explicit locking and unlocking here.
             lk := READ_LOCK(FILTER_REGION);
         fi;
-        for i in TRUES_FLAGS( flags ) do
+        for j in [1..SIZE_FLAGS(flags)] do
+            i := TRUE_FLAGS(flags,j);
             if INFO_FILTERS[i] in FNUM_CATS_AND_REPS  then
                 cats := cats and FILTERS[i];
                 rank := rank - RankFilter( FILTERS[i] );

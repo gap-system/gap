@@ -270,7 +270,8 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
             k,
             replace,
             pos,
-            imm;
+            imm, 
+            x;
 
     # Check whether <oper> really is an operation.
     if not IS_OPERATION(oper)  then
@@ -285,14 +286,15 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     fi;
 
     # Find the requirements.
-    flags := TRUES_FLAGS( FLAGS_FILTER( filter ) );
-    if LEN_LIST( flags ) = 0 then
+    flags := FLAGS_FILTER( filter ) ;
+    if SIZE_FLAGS( flags ) = 0 then
         Error( "no immediate methods without requirements!" );
-    elif FLAG1_FILTER( IS_MUTABLE_OBJ ) in flags  then
+    elif FLAGS_CONTAINS_FILTER( flags, FLAG1_FILTER(IS_MUTABLE_OBJ) )  then
         Error( "no immediate methods for mutable objects!" );
     fi;
     relev := [];
-    for i  in flags  do
+    for j in [1..SIZE_FLAGS(flags)] do
+        i := TRUE_FLAGS(flags,j);
         if not INFO_FILTERS[i] in FNUM_CATS_AND_REPS  then
             ADD_LIST( relev, i );
         fi;
@@ -301,7 +303,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     # All requirements are categories/representations.
     # Install the method for one of them.
     if LEN_LIST( relev ) = 0  then
-        relev:= [ flags[1] ];
+        relev:= [ TRUE_FLAGS(flags,1) ];
     fi;
     flags:= relev;
 
@@ -312,7 +314,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     # to another one with a bigger number.)
     relev  := [];
     rflags := [];
-    for i  in flags  do
+    for i in flags do
 
       # Get the implications of this filter.
       wif:= WITH_IMPS_FLAGS( FLAGS_FILTER( FILTERS[i] ) );
