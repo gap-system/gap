@@ -2000,7 +2000,7 @@ again:
         else if (GET_MARK_BITS(header->link) == DEAD) {
 #ifdef DEBUG_MASTERPOINTERS
             if (CONST_PTR_BAG(UNMARKED_DEAD(header->link)) != DATA(header)) {
-                Panic("incorrectly marked bag");
+                Panic("incorrectly marked DEAD bag");
             }
 #endif
 
@@ -2033,7 +2033,7 @@ again:
         else if (GET_MARK_BITS(header->link) == HALFDEAD) {
 #ifdef DEBUG_MASTERPOINTERS
             if (CONST_PTR_BAG(UNMARKED_HALFDEAD(header->link)) != DATA(header)) {
-                Panic("incorrectly marked bag");
+                Panic("incorrectly marked HALFDEAD bag");
             }
 #endif
 
@@ -2063,7 +2063,7 @@ again:
         else if (GET_MARK_BITS(header->link) == ALIVE) {
 #ifdef DEBUG_MASTERPOINTERS
             if (CONST_PTR_BAG(UNMARKED_ALIVE(header->link)) != DATA(header)) {
-                Panic("incorrectly marked bag");
+                Panic("incorrectly marked ALIVE bag");
             }
 #endif
 
