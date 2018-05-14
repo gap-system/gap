@@ -123,24 +123,22 @@ void LoadFlags(Obj flags)
 
 /****************************************************************************
 **
-*F  C_ELM_FLAGS( <list>, <pos> )  . . . . . . . . . . . element of a flags
-*list
+*F  FILT_IN_FLAGS( <flags>, <filt> )  . . . . . . . . . . . test
 **
 **
-**  returns 1 if the flags list <list> contains the filter <pos>, else 0
-*T Rename
+**  returns 1 if the flags list <list> contains the filter <filt>, else 0
 */
-UInt C_ELM_FLAGS(Obj list, UInt pos)
+UInt FILT_IN_FLAGS(Obj flags, UInt filt)
 {
-    UInt len = SIZE_FLAGS(list);
+    UInt len = SIZE_FLAGS(flags);
     Int  hi = len - 1;
     Int  lo = 0;
     while (hi >= lo) {
         Int   mid = (hi + lo) / 2;
-        UInt2 x = TRUE_FLAGS(list, mid);
-        if (x == pos)
+        UInt2 x = TRUE_FLAGS(flags, mid);
+        if (x == filt)
             return 1;
-        if (x < pos) {
+        if (x < filt) {
             lo = mid + 1;
         }
         else {
@@ -174,7 +172,7 @@ Obj FuncFLAGS_CONTAINS_FILTER(Obj self, Obj flags, Obj filter)
     Int filt = INT_INTOBJ(filter);
     if (filt < 0)
         ErrorMayQuit("FLAGS_CONTAINS_FILTER: <filter> must be non-negative", 0L, 0L);
-    return C_ELM_FLAGS(flags, filt) ? True: False;    
+    return FILT_IN_FLAGS(flags, filt) ? True: False;    
 }
     
 
@@ -1078,7 +1076,7 @@ Obj DoSetFilter(Obj self, Obj obj, Obj val)
     flags = FLAGS_TYPE(type);
 
     /* return the value of the feature                                     */
-    if (val != ELM_FLAGS(flags, flag1)) {
+    if ((val == True) != FILT_IN_FLAGS(flags, flag1)) {
         ErrorReturnVoid("value feature is already set the other way", 0L, 0L,
                         "you can 'return;' and ignore it");
     }
@@ -1113,7 +1111,7 @@ Obj DoFilter(Obj self, Obj obj)
     type = TYPE_OBJ(obj);
     flags = FLAGS_TYPE(type);
 
-    return ELM_FLAGS(flags, flag1);
+    return FILT_IN_FLAGS(flags, flag1) ? True: False;
 }
 
 
@@ -2399,7 +2397,7 @@ Obj DoTestAttribute(Obj self, Obj obj)
     type = TYPE_OBJ_FEO(obj);
     flags = FLAGS_TYPE(type);
 
-    return ELM_FLAGS(flags, flag2);
+    return FILT_IN_FLAGS(flags, flag2) ? True : False;
 }
 
 
@@ -2424,7 +2422,7 @@ Obj DoAttribute(Obj self, Obj obj)
     flags = FLAGS_TYPE(type);
 
     /* if the value of the attribute is already known, simply return it     */
-    if (C_ELM_FLAGS(flags, flag2)) {
+    if (FILT_IN_FLAGS(flags, flag2)) {
         return DoOperation1Args(self, obj);
     }
 
@@ -2477,7 +2475,7 @@ Obj DoVerboseAttribute(Obj self, Obj obj)
     flags = FLAGS_TYPE(type);
 
     /* if the value of the attribute is already known, simply return it     */
-    if (C_ELM_FLAGS(flags, flag2)) {
+    if (FILT_IN_FLAGS(flags, flag2)) {
         return DoVerboseOperation1Args(self, obj);
     }
 
@@ -2523,7 +2521,7 @@ Obj DoMutableAttribute(Obj self, Obj obj)
     flags = FLAGS_TYPE(type);
 
     /* if the value of the attribute is already known, simply return it     */
-    if (C_ELM_FLAGS(flags, flag2)) {
+    if (FILT_IN_FLAGS(flags, flag2)) {
         return DoOperation1Args(self, obj);
     }
 
@@ -2568,7 +2566,7 @@ Obj DoVerboseMutableAttribute(Obj self, Obj obj)
     flags = FLAGS_TYPE(type);
 
     /* if the value of the attribute is already known, simply return it     */
-    if (C_ELM_FLAGS(flags, flag2)) {
+    if (FILT_IN_FLAGS(flags, flag2)) {
         return DoVerboseOperation1Args(self, obj);
     }
 
@@ -2767,8 +2765,8 @@ Obj DoSetProperty(Obj self, Obj obj, Obj val)
     flags = FLAGS_TYPE(type);
 
     /* if the value of the property is already known, compare it           */
-    if (C_ELM_FLAGS(flags, flag2)) {
-        if (val == ELM_FLAGS(flags, flag1)) {
+    if (FILT_IN_FLAGS(flags, flag2)) {
+        if ((val == True) == FILT_IN_FLAGS(flags, flag1)) {
             return 0;
         }
         else {
@@ -2829,8 +2827,8 @@ Obj DoProperty(Obj self, Obj obj)
     flags = FLAGS_TYPE(type);
 
     /* if the value of the property is already known, simply return it     */
-    if (C_ELM_FLAGS(flags, flag2)) {
-        return ELM_FLAGS(flags, flag1);
+    if (FILT_IN_FLAGS(flags, flag2)) {
+        return FILT_IN_FLAGS(flags, flag1) ? True : False;
     }
 
     /* call the operation to compute the value                             */
@@ -2882,8 +2880,8 @@ Obj DoVerboseProperty(Obj self, Obj obj)
     flags = FLAGS_TYPE(type);
 
     /* if the value of the property is already known, simply return it     */
-    if (C_ELM_FLAGS(flags, flag2)) {
-        return ELM_FLAGS(flags, flag1);
+    if (FILT_IN_FLAGS(flags, flag2)) {
+        return FILT_IN_FLAGS(flags, flag1) ? True: False;
     }
 
     /* call the operation to compute the value                             */
@@ -3409,7 +3407,7 @@ Obj DoSetterFunction(Obj self, Obj obj, Obj value)
     flag2 = INT_INTOBJ(FLAG2_FILT(tester));
     type = TYPE_OBJ_FEO(obj);
     flags = FLAGS_TYPE(type);
-    if (C_ELM_FLAGS(flags, flag2)) {
+    if (FILT_IN_FLAGS(flags, flag2)) {
         return 0;
     }
 
@@ -4006,7 +4004,7 @@ static Int InitKernel(StructInitInfo * module)
 
     /* install the marking function                                        */
     InfoBags[T_FLAGS].name = "flags list";
-    InitMarkFuncBags( T_FLAGS, MarkThreeSubBags );
+    InitMarkFuncBags( T_FLAGS, MarkOneSubBags );
 
     /* install the printing function                                       */
     PrintObjFuncs[T_FLAGS] = PrintFlags;

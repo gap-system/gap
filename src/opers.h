@@ -48,7 +48,8 @@ typedef struct {
     // cache of an operation
     Obj cache[8];
 
-    // 1 if the operation is an attribute and storing is enabled (default) else 0
+    // 1 if the operation is an attribute and storing is enabled (default)
+    // else 0
     Obj enabled;
 } OperBag;
 
@@ -210,7 +211,7 @@ static inline Int ENABLED_ATTR(Obj oper)
 
 /****************************************************************************
 **
-*F  SET_ENABLED_ATTR( <oper>, <new> )  . set a new value that records whether 
+*F  SET_ENABLED_ATTR( <oper>, <new> )  . set a new value that records whether
 **                                       storing is enabled for an operation
 */
 static inline void SET_ENABLED_ATTR(Obj oper, Int x)
@@ -223,19 +224,30 @@ static inline void SET_ENABLED_ATTR(Obj oper, Int x)
 **
 *F * * * * * * * * * * * * internal flags functions * * * * * * * * * * * * *
 **
-** Attempting change April 2018. Flags will be stored as 
-** AND_CACHE -- Obj (put this first for GASMAN's convenience) 
+** Attempting change April 2018. Flags will be stored as
+** AND_CACHE -- Obj (put this first for GASMAN's convenience)
 ** Size (UInt)  -- could possibly be a UInt2 instead
 ** Hash (UInt)
-** Set positions (array of UInt2).
+** Sorted (increasing) array of filter numbers, stored as UInt2s
 */
+
+typedef struct {
+    Obj andCache;     // cache for AND_FLAGS results (or 0 if no cache
+                      // allocated yet)
+    UInt  size;       // number of filters set in flag
+    UInt  hash;       // hash value of flag if computed (or 0)
+    UInt2 trues[];    // filter numbers in increasing order
+} FlagsHeader;
+
 
 /****************************************************************************
 **
-*F  SIZE_PLEN_FLAGS( <fsize> ) . .  bag size for a flags list with <fsize> trues
+*F  SIZE_PLEN_FLAGS( <fsize> ) . .  bag size for a flags list with <fsize>
+*trues
 */
-static inline UInt SIZE_PLEN_FLAGS(UInt fsize) {
-    return 3*sizeof(Obj) + 2*fsize;
+static inline UInt SIZE_PLEN_FLAGS(UInt fsize)
+{
+    return sizeof(FlagsHeader) + 2 * fsize;
 }
 
 /****************************************************************************
@@ -249,21 +261,35 @@ static inline Obj NEW_FLAGS(UInt len)
     return flags;
 }
 
+/****************************************************************************
+**
+*F  HEADER_FLAGS( <flags> ) . . . . . . . . . . . address of header struct
+*/
+
+static inline FlagsHeader* HEADER_FLAGS(Obj flags) {
+    return (FlagsHeader *)ADDR_OBJ(flags);
+}
+
+static inline const FlagsHeader* CONST_HEADER_FLAGS(Obj flags) {
+    return (FlagsHeader *)CONST_ADDR_OBJ(flags);
+}
 
 /****************************************************************************
 **
-*F  SIZE_FLAGS( <flags> ) . . . . . . . . . . .number of true of <flags> 
+*F  SIZE_FLAGS( <flags> ) . . . . . . . . . . .number of true of <flags>
 */
-static inline UInt SIZE_FLAGS(Obj flags) {
-    return ((const UInt *)CONST_ADDR_OBJ(flags))[1];
+static inline UInt SIZE_FLAGS(Obj flags)
+{    
+    return CONST_HEADER_FLAGS(flags)->size;
 }
 
 /****************************************************************************
 **
 *F  SET_SIZE_FLAGS( <flags>, <hash> ) . . . . . . . . . . . . . . .  set size
 */
-static inline void SET_SIZE_FLAGS(Obj flags, UInt size) {
-    ((UInt *)ADDR_OBJ(flags))[1] = size;
+static inline void SET_SIZE_FLAGS(Obj flags, UInt size)
+{
+    HEADER_FLAGS(flags)->size = size;
 }
 
 /****************************************************************************
@@ -272,7 +298,7 @@ static inline void SET_SIZE_FLAGS(Obj flags, UInt size) {
 */
 static inline UInt HASH_FLAGS(Obj flags)
 {
-    return ((const UInt *)CONST_ADDR_OBJ(flags))[2];
+    return CONST_HEADER_FLAGS(flags)->hash;
 }
 
 /****************************************************************************
@@ -281,15 +307,16 @@ static inline UInt HASH_FLAGS(Obj flags)
 */
 static inline void SET_HASH_FLAGS(Obj flags, UInt hash)
 {
-    ((UInt *)ADDR_OBJ(flags))[2] = hash;
+    HEADER_FLAGS(flags)->hash = hash;
 }
 
 /****************************************************************************
 **
 *F  AND_CACHE_FLAGS( <flags> )  . . . . . . . . . 'and' cache of a flags list
 */
-static inline Obj AND_CACHE_FLAGS(Obj flags) {
-    return CONST_ADDR_OBJ(flags)[0];
+static inline Obj AND_CACHE_FLAGS(Obj flags)
+{
+    return CONST_HEADER_FLAGS(flags)->andCache;
 }
 
 
@@ -297,10 +324,10 @@ static inline Obj AND_CACHE_FLAGS(Obj flags) {
 **
 *F  SET_AND_CACHE_FLAGS( <flags>, <len> ) set the 'and' cache of a flags list
 */
-static inline void SET_AND_CACHE_FLAGS(Obj flags, Obj andc) {
-    ADDR_OBJ(flags)[0]=andc;
+static inline void SET_AND_CACHE_FLAGS(Obj flags, Obj andc)
+{
+    HEADER_FLAGS(flags)->andCache = andc;
 }
-
 
 
 /****************************************************************************
@@ -309,8 +336,9 @@ static inline void SET_AND_CACHE_FLAGS(Obj flags, Obj andc) {
 **                               caller is responsible for <ix> being in range
 */
 
-static inline UInt TRUE_FLAGS(Obj flags, UInt ix) {
-    return (UInt) ((const UInt2 *)(CONST_ADDR_OBJ(flags) + 3))[ix];
+static inline UInt TRUE_FLAGS(Obj flags, UInt ix)
+{
+    return (UInt)(CONST_HEADER_FLAGS(flags)->trues[ix]);
 }
 
 /****************************************************************************
@@ -319,38 +347,18 @@ static inline UInt TRUE_FLAGS(Obj flags, UInt ix) {
 **                               caller is responsible for <ix> being in range
 */
 
-static inline void SET_TRUE_FLAGS(Obj flags, UInt ix, UInt2 filt) {
-    ((UInt2 *)(ADDR_OBJ(flags) +3))[ix] = filt ;
+static inline void SET_TRUE_FLAGS(Obj flags, UInt ix, UInt2 filt)
+{
+    HEADER_FLAGS(flags)->trues[ix] = filt;
 }
 
 /****************************************************************************
 **
-*F  ELM_FLAGS( <list>, <pos> )  . . . . . . . . . . . element of a flags list
+*F  FILT_IN_FLAGS( <list>, <filt> )  . . whether flags includes a filter
 **
-**  'ELM_FLAGS' return the <pos>-th element of the flags list <list>, which
-**  is either 'true' or 'false'.  <pos> must  be a positive integer less than
-**  or equal to the length of <hdList>.
-**
-**  Note that 'ELM_FLAGS' is a macro, so do not call it  with arguments  that
-**  have side effects.
-**
-**  'C_ELM_FLAGS' returns a result which it is better to use inside the kernel
-**  since the C compiler can't know that True != False. Using C_ELM_FLAGS
-**  gives slightly nicer C code and potential for a little more optimisation.
-**
-*T revisit this to reflect appropriate names and usage
+** returns 1 or 0
 */
-extern UInt C_ELM_FLAGS(Obj list, UInt pos);
-
-#define ELM_FLAGS(list, pos) (C_ELM_FLAGS(list, pos) ? True : False)
-
-static inline Int SAFE_C_ELM_FLAGS(Obj flags, UInt pos)
-{
-    return C_ELM_FLAGS(flags, pos);
-}
-
-#define SAFE_ELM_FLAGS(list, pos) (SAFE_C_ELM_FLAGS(list, pos) ? True : False)
-
+extern UInt FILT_IN_FLAGS(Obj list, UInt filt);
 
 
 /****************************************************************************
@@ -360,8 +368,8 @@ static inline Int SAFE_C_ELM_FLAGS(Obj flags, UInt pos)
 *T  export a proper function, rather than a handler
 */
 
-extern Obj FuncIS_SUBSET_FLAGS( Obj self, Obj flags1, Obj flags2 );
-     
+extern Obj FuncIS_SUBSET_FLAGS(Obj self, Obj flags1, Obj flags2);
+
 /****************************************************************************
 **
 *F * * * * * * * * * * *  internal filter functions * * * * * * * * * * * * *
@@ -382,87 +390,62 @@ extern Obj SET_FILTER_OBJ;
 extern Obj RESET_FILTER_OBJ;
 
 
-
 /****************************************************************************
 **
 *F  SetterFilter( <oper> )  . . . . . . . . . . . . . . .  setter of a filter
 */
-extern Obj SetterFilter (
-    Obj                 oper );
+extern Obj SetterFilter(Obj oper);
 
 
 /****************************************************************************
 **
 *F  SetterAndFilter( <getter> )  . . . . . .  setter of a concatenated filter
 */
-extern Obj DoSetAndFilter (
-    Obj                 self,
-    Obj                 obj,
-    Obj                 val );
+extern Obj DoSetAndFilter(Obj self, Obj obj, Obj val);
 
-extern Obj SetterAndFilter (
-    Obj                 getter );
-        
+extern Obj SetterAndFilter(Obj getter);
+
 
 /****************************************************************************
 **
 *F  TesterFilter( <oper> )  . . . . . . . . . . . . . . .  tester of a filter
 */
-extern Obj TesterFilter (
-    Obj                 oper );
+extern Obj TesterFilter(Obj oper);
 
 
 /****************************************************************************
 **
 *F  TestAndFilter( <getter> )  . . . . . . . .tester of a concatenated filter
 */
-extern Obj DoTestAndFilter (
-    Obj                 self,
-    Obj                 obj );
+extern Obj DoTestAndFilter(Obj self, Obj obj);
 
-extern Obj TesterAndFilter (
-    Obj                 getter );
+extern Obj TesterAndFilter(Obj getter);
 
 
 /****************************************************************************
 **
 *F  NewFilter( <name>, <narg>, <nams>, <hdlr> )  . . . . .  make a new filter
 */
-extern Obj NewTesterFilter (
-    Obj                 getter );
+extern Obj NewTesterFilter(Obj getter);
 
-extern Obj DoSetFilter (
-    Obj                 self,
-    Obj                 obj,
-    Obj                 val );
+extern Obj DoSetFilter(Obj self, Obj obj, Obj val);
 
-extern Obj NewSetterFilter (
-    Obj                 getter );
+extern Obj NewSetterFilter(Obj getter);
 
-extern Obj DoFilter (
-    Obj                 self,
-    Obj                 obj );
+extern Obj DoFilter(Obj self, Obj obj);
 
-extern Obj NewFilter (
-    Obj                 name,
-    Int                 narg,
-    Obj                 nams,
-    ObjFunc             hdlr );
+extern Obj NewFilter(Obj name, Int narg, Obj nams, ObjFunc hdlr);
 
 
-extern Obj DoTestAttribute( Obj self, Obj obj);
+extern Obj DoTestAttribute(Obj self, Obj obj);
 
 /****************************************************************************
 **
 *F  NewAndFilter( <filt1>, <filt2> ) . . . . . make a new concatenated filter
 */
-extern Obj DoAndFilter (
-    Obj                 self,
-    Obj                 obj );
+extern Obj DoAndFilter(Obj self, Obj obj);
 
-extern Obj NewAndFilter (
-    Obj                 oper1,
-    Obj                 oper2 );
+extern Obj NewAndFilter(Obj oper1, Obj oper2);
 
 
 /****************************************************************************
@@ -482,136 +465,63 @@ extern Obj ReturnTrueFilter;
 **
 *F  NewOperation( <name> )  . . . . . . . . . . . . . .  make a new operation
 */
-extern Obj DoOperation0Args (
-            Obj                 oper );
+extern Obj DoOperation0Args(Obj oper);
 
-extern Obj DoOperation1Args (
-            Obj                 oper,
-            Obj                 arg1 );
+extern Obj DoOperation1Args(Obj oper, Obj arg1);
 
-extern Obj DoOperation2Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2 );
+extern Obj DoOperation2Args(Obj oper, Obj arg1, Obj arg2);
 
-extern Obj DoOperation3Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3 );
+extern Obj DoOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3);
 
-extern Obj DoOperation4Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4 );
+extern Obj DoOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4);
 
-extern Obj DoOperation5Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4,
-            Obj                 arg5 );
+extern Obj
+DoOperation5Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5);
 
-extern Obj DoOperation6Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4,
-            Obj                 arg5,
-            Obj                 arg6 );
+extern Obj DoOperation6Args(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6);
 
-extern Obj DoOperationXArgs (
-            Obj                 self,
-            Obj                 args );
+extern Obj DoOperationXArgs(Obj self, Obj args);
 
-extern Obj DoVerboseOperation0Args (
-            Obj                 oper );
+extern Obj DoVerboseOperation0Args(Obj oper);
 
-extern Obj DoVerboseOperation1Args (
-            Obj                 oper,
-            Obj                 arg1 );
+extern Obj DoVerboseOperation1Args(Obj oper, Obj arg1);
 
-extern Obj DoVerboseOperation2Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2 );
+extern Obj DoVerboseOperation2Args(Obj oper, Obj arg1, Obj arg2);
 
-extern Obj DoVerboseOperation3Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3 );
+extern Obj DoVerboseOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3);
 
-extern Obj DoVerboseOperation4Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4 );
+extern Obj
+DoVerboseOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4);
 
-extern Obj DoVerboseOperation5Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4,
-            Obj                 arg5 );
+extern Obj DoVerboseOperation5Args(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5);
 
-extern Obj DoVerboseOperation6Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4,
-            Obj                 arg5,
-            Obj                 arg6 );
+extern Obj DoVerboseOperation6Args(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6);
 
-extern Obj DoVerboseOperationXArgs (
-            Obj                 self,
-            Obj                 args );
+extern Obj DoVerboseOperationXArgs(Obj self, Obj args);
 
-extern Obj NewOperation (
-            Obj                 name,
-            Int                 narg,
-            Obj                 nams,
-            ObjFunc             hdlr );
+extern Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr);
 
 
 /****************************************************************************
 **
 *F  NewAttribute( <name> )  . . . . . . . . . . . . . .  make a new attribute
 */
-extern  Obj DoAttribute (
-            Obj                 self,
-            Obj                 obj );
+extern Obj DoAttribute(Obj self, Obj obj);
 
-extern  Obj DoVerboseAttribute (
-            Obj                 self,
-            Obj                 obj );
+extern Obj DoVerboseAttribute(Obj self, Obj obj);
 
-extern  Obj NewAttribute (
-            Obj                 name,
-            Int                 narg,
-            Obj                 nams,
-            ObjFunc             hdlr );
+extern Obj NewAttribute(Obj name, Int narg, Obj nams, ObjFunc hdlr);
 
 /****************************************************************************
 **
 *F  NewProperty( <name> ) . . . . . . . . . . . . . . . . make a new property
 */
-extern Obj DoProperty (
-            Obj                 self,
-            Obj                 obj );
+extern Obj DoProperty(Obj self, Obj obj);
 
-extern Obj NewProperty (
-            Obj                 name,
-            Int                 narg,
-            Obj                 nams,
-            ObjFunc             hdlr );
+extern Obj NewProperty(Obj name, Int narg, Obj nams, ObjFunc hdlr);
 
 /****************************************************************************
 **
@@ -621,18 +531,14 @@ extern Obj NewProperty (
 **  only   the orignal and not  the  clone will be  completed.  Therefore the
 **  clone must postpone the real cloning.
 */
-extern void InstallMethodArgs (
-    Obj                 oper,
-    Obj                 func );
+extern void InstallMethodArgs(Obj oper, Obj func);
 
 
 /****************************************************************************
 **
 *F  ChangeDoOperations( <oper>, <verb> )
 */
-extern void ChangeDoOperations (
-            Obj                 oper,
-            Int                 verb );
+extern void ChangeDoOperations(Obj oper, Int verb);
 
 /****************************************************************************
 **
@@ -644,7 +550,7 @@ extern void ChangeDoOperations (
 **
 */
 
-extern void SaveOperationExtras( Obj oper );
+extern void SaveOperationExtras(Obj oper);
 
 /****************************************************************************
 **
@@ -656,7 +562,7 @@ extern void SaveOperationExtras( Obj oper );
 **
 */
 
-extern void LoadOperationExtras( Obj oper );
+extern void LoadOperationExtras(Obj oper);
 
 
 /****************************************************************************
@@ -669,7 +575,7 @@ extern void LoadOperationExtras( Obj oper );
 **
 *F  InitInfoOpers() . . . . . . . . . . . . . . . . . table of init functions
 */
-StructInitInfo * InitInfoOpers ( void );
+StructInitInfo * InitInfoOpers(void);
 
 
-#endif // GAP_OPERS_H
+#endif    // GAP_OPERS_H
