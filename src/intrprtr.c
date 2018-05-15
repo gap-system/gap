@@ -1730,13 +1730,13 @@ void            IntrPow ( void )
 **  'IntrIntExpr' is the action  to  interpret a literal  integer expression.
 **  <str> is the integer as a (null terminated) C character string.
 */
-void IntrIntExpr(Char * str)
+void IntrIntExpr(Obj string, Char * str)
 {
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
     
-    Obj val = IntStringInternal(0, str);
+    Obj val = IntStringInternal(string, str);
     GAP_ASSERT(val != Fail);
 
     if (STATE(IntrCoding) > 0) {
@@ -1748,30 +1748,6 @@ void IntrIntExpr(Char * str)
     }
 }
 
-
-/****************************************************************************
-**
-*F  IntrLongIntExpr(<str>)   .  .  interpret literal long integer expression
-**
-**  'IntrLongIntExpr' is the action to  interpret a long literal integer
-**  expression whose digits are stored in a string GAP object.
-*/
-void IntrLongIntExpr(Obj string)
-{
-    if ( STATE(IntrReturning) > 0 ) { return; }
-    if ( STATE(IntrIgnoring)  > 0 ) { return; }
-
-    Obj val = IntStringInternal(string, 0);
-    GAP_ASSERT(val != Fail);
-
-    if (STATE(IntrCoding) > 0) {
-        CodeIntExpr(val);
-    }
-    else {
-        // push the integer value
-        PushObj(val);
-    }
-}
 
 /****************************************************************************
 **
@@ -1803,38 +1779,24 @@ static Obj ConvertFloatLiteralEager(Obj str)
     return res;
 }
 
-void            IntrFloatExpr (
-    Char *              str )
-{
-    Obj                 val;
-
-    /* ignore or code                                                      */
-    if ( STATE(IntrReturning) > 0 ) { return; }
-    if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) {  CodeFloatExpr( str );   return; }
-
-    val = MakeString(str);
-    PushObj(ConvertFloatLiteralEager(val));
-}
-
-
-/****************************************************************************
-**
-*F  IntrLongFloatExpr(<str>)   .  .  interpret literal long float expression
-**
-**  'IntrLongFloatExpr' is the action to  interpret a long literal float
-**  expression whose digits are stored in a string GAP object.
-*/
-void            IntrLongFloatExpr (
-    Obj               string )
+void IntrFloatExpr(Obj string, Char * str)
 {
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { return; }
-    if ( STATE(IntrCoding)    > 0 ) { CodeLongFloatExpr( string );  return; }
+    if ( STATE(IntrCoding)    > 0 ) {
+        if (string)
+            CodeLongFloatExpr(string);
+        else
+            CodeFloatExpr( str );
+        return;
+    }
 
+    if (string == 0)
+        string = MakeString(str);
     PushObj(ConvertFloatLiteralEager(string));
 }
+
 
 /****************************************************************************
 **
