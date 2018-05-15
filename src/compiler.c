@@ -249,7 +249,7 @@ void            SetInfoCVar (
         TNUM_TEMP_INFO( info, TEMP_CVAR(cvar) ) = type;
     }
 
-    /* set the type of a lvar (but do not change if its a higher variable) */
+    /* set the type of a lvar (but do not change if it is a higher variable) */
     else if ( IS_LVAR_CVAR(cvar)
            && TNUM_LVAR_INFO( info, LVAR_CVAR(cvar) ) != W_HIGHER ) {
         TNUM_LVAR_INFO( info, LVAR_CVAR(cvar) ) = type;

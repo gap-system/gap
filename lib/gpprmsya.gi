@@ -2226,7 +2226,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
     m:=ClosureGroup(m,PermList(List(v,i->Position(v,i+k))));
     if Size(m)<Size(S) then
       if SignPermGroup(m)=1 then
-	#its a subgroup of A_n, but there are two classes
+	# it's a subgroup of A_n, but there are two classes
 	# (the normalizer in S_n cannot increase)
 	if not issn then
 	  Add(max,m);
