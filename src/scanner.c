@@ -256,8 +256,8 @@ static void GetIdent(Int i)
     }
 
     // terminate the identifier and lets assume that it is not a keyword
-    if (i >= SAFE_VALUE_SIZE-1) {
-        SyntaxError("Identifiers in GAP must consist of less than 1023 characters.");
+    if (i > SAFE_VALUE_SIZE-1) {
+        SyntaxError("Identifiers in GAP must consist of at most 1023 characters.");
         i = SAFE_VALUE_SIZE-1;
     }
     STATE(Value)[i] = '\0';

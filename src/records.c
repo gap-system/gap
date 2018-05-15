@@ -96,9 +96,9 @@ UInt            RNamName (
     UInt                i;              /* loop variable                   */
     UInt                sizeRNam;
 
-    if (strlen(name) >= 1023) {
+    if (strlen(name) > 1023) {
         // Note: We can't pass 'name' here, as it might get moved by garbage collection
-        ErrorQuit("Record names must consist of less than 1023 characters", 0, 0);
+        ErrorQuit("Record names must consist of at most 1023 characters", 0, 0);
         return 0;
     }
 
