@@ -27,13 +27,34 @@
 #define PC_DEEP_THOUGHT_BOUND       13
 #define PC_ORDERS                   14
 
+// TODO: the following stack related positions are not
+// used anymore by CollectPolycyc, and will not be used
+// anymore in future releases of the polycyclic package.
+// We should phase them out for GAP 4.10.
 #define PC_WORD_STACK               15
 #define PC_STACK_SIZE               16
 #define PC_WORD_EXPONENT_STACK      17
 #define PC_SYLLABLE_STACK           18
 #define PC_EXPONENT_STACK           19
 #define PC_STACK_POINTER            20
+// TODO: end obsolete
+
 #define PC_DEFAULT_TYPE             21
+
+/* the following are defined in polycyclic:
+
+#define PC_PCP_ELEMENTS_FAMILY          22
+#define PC_PCP_ELEMENTS_TYPE            23
+
+#define PC_COMMUTATORS                  24
+#define PC_INVERSECOMMUTATORS           25
+#define PC_COMMUTATORSINVERSE           26
+#define PC_INVERSECOMMUTATORSINVERSE    27
+
+#define PC_NILPOTENT_COMMUTE            28
+#define PC_WEIGHTS                      29
+#define PC_ABELIAN_START                30
+*/
 
 /****************************************************************************
 **

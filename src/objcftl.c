@@ -18,11 +18,28 @@
 #include "objcftl.h"
 
 #include "ariths.h"
+#include "bool.h"
 #include "error.h"
+#include "gapstate.h"
 #include "gvars.h"
 #include "integer.h"
 #include "modules.h"
 #include "plist.h"
+
+
+static ModuleStateOffset CFTLStateOffset = -1;
+
+struct CFTLModuleState {
+    Obj WORD_STACK;
+    Obj WORD_EXPONENT_STACK;
+    Obj SYLLABLE_STACK;
+    Obj EXPONENT_STACK;
+};
+
+extern inline struct CFTLModuleState *CFTLState(void)
+{
+    return (struct CFTLModuleState *)StateSlotsAtOffset(CFTLStateOffset);
+}
 
 
 #define IS_INT_ZERO( n )  ((n) == INTOBJ_INT(0))
@@ -46,6 +63,10 @@
 
 #define PUSH_STACK( word, exp ) {  \
   st++; \
+  GROW_PLIST( wst,  st ); \
+  GROW_PLIST( west, st ); \
+  GROW_PLIST( sst,  st ); \
+  GROW_PLIST( est,  st ); \
   SET_ELM_PLIST( wst,  st, word ); \
   SET_ELM_PLIST( west, st, exp );  \
   SET_ELM_PLIST( sst,  st, INTOBJ_INT(1) ); \
@@ -87,14 +108,14 @@ Obj CollectPolycyc (
     Obj    ipow    = ADDR_OBJ(pcp)[ PC_INVERSEPOWERS ];
     Obj    exp     = ADDR_OBJ(pcp)[ PC_EXPONENTS ];
 
-    Obj    wst  = ADDR_OBJ(pcp)[ PC_WORD_STACK ];
-    Obj    west = ADDR_OBJ(pcp)[ PC_WORD_EXPONENT_STACK ];
-    Obj    sst  = ADDR_OBJ(pcp)[ PC_SYLLABLE_STACK ];
-    Obj    est  = ADDR_OBJ(pcp)[ PC_EXPONENT_STACK ];
+    Obj    wst  = CFTLState()->WORD_STACK;
+    Obj    west = CFTLState()->WORD_EXPONENT_STACK;
+    Obj    sst  = CFTLState()->SYLLABLE_STACK;
+    Obj    est  = CFTLState()->EXPONENT_STACK;
 
     Obj    conj=0, iconj=0;   /*QQ initialize to please compiler */
 
-    Int    st, bottom = INT_INTOBJ( ADDR_OBJ(pcp)[ PC_STACK_POINTER ] );
+    Int    st;
 
     Int    g, syl, h, hh;
 
@@ -113,16 +134,16 @@ Obj CollectPolycyc (
         return (Obj)0;
     }
 
-    st = bottom;
+    st = 0;
     PUSH_STACK( word, INTOBJ_INT(1) );
 
-    while( st > bottom ) {
+    while( st > 0 ) {
 
       w   = ELM_PLIST( wst, st );
       syl = INT_INTOBJ( ELM_PLIST( sst, st ) );
       g   = INT_INTOBJ( ELM_PLIST( w, syl )  );
 
-      if( st > bottom+1 && syl==1 && g == GET_COMMUTE(g) ) {
+      if( st > 1 && syl==1 && g == GET_COMMUTE(g) ) {
         /* Collect word^exponent in one go. */
 
         e = ELM_PLIST( west, st );
@@ -275,7 +296,7 @@ Obj CollectPolycyc (
         if( y != (Obj)0 ) PUSH_STACK( y, ge );
       }
 
-      while( st > bottom && IS_INT_ZERO( ELM_PLIST( est, st ) ) ) {
+      while( st > 0 && IS_INT_ZERO( ELM_PLIST( est, st ) ) ) {
         w   = ELM_PLIST( wst, st );
         syl = INT_INTOBJ( ELM_PLIST( sst, st ) ) + 2;
         if( syl > LEN_PLIST( w ) ) {
@@ -296,7 +317,6 @@ Obj CollectPolycyc (
       }
     }
 
-    ADDR_OBJ(pcp)[ PC_STACK_POINTER ] = INTOBJ_INT( bottom );
     return (Obj)0;
 }
 
@@ -387,6 +407,10 @@ static Int InitLibrary (
     ExportAsConstantGVar(PC_STACK_POINTER);
     ExportAsConstantGVar(PC_DEFAULT_TYPE);
 
+    // signal to polycyclic that 'CollectPolycyclic' does not use resp.
+    // require stacks inside the collector objects
+    AssConstantGVar(GVarName("NO_STACKS_INSIDE_COLLECTORS"), True);
+
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
@@ -394,6 +418,18 @@ static Int InitLibrary (
     return 0;
 }
 
+static void InitModuleState(ModuleStateOffset offset)
+{
+    InitGlobalBag( &CFTLState()->WORD_STACK, "WORD_STACK" );
+    InitGlobalBag( &CFTLState()->WORD_EXPONENT_STACK, "WORD_EXPONENT_STACK" );
+    InitGlobalBag( &CFTLState()->SYLLABLE_STACK, "SYLLABLE_STACK" );
+    InitGlobalBag( &CFTLState()->EXPONENT_STACK, "EXPONENT_STACK" );
+
+    CFTLState()->WORD_STACK = NEW_PLIST( T_PLIST, 4096 );
+    CFTLState()->WORD_EXPONENT_STACK = NEW_PLIST( T_PLIST, 4096 );
+    CFTLState()->SYLLABLE_STACK = NEW_PLIST( T_PLIST, 4096 );
+    CFTLState()->EXPONENT_STACK = NEW_PLIST( T_PLIST, 4096 );
+}
 
 /****************************************************************************
 **
@@ -411,5 +447,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoPcc ( void )
 {
+    CFTLStateOffset = RegisterModuleState(sizeof(struct CFTLModuleState), InitModuleState, 0);
     return &module;
 }
