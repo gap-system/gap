@@ -40,6 +40,8 @@
 *F * * * * * * * * * * * * local defines and typedefs * * * * * * * * * * * *
 */
 
+static Obj TYPE_KERNEL_OBJECT;
+
 /****************************************************************************
 **
 *T  FinPowConjCol
@@ -724,19 +726,6 @@ static StructGVarFunc GVarFuncs [] = {
 };
 
 
-/*
- * Allocate a Plist of the given length, pre-allocating
- * the number of entries given by 'reserved'.
- */
-static inline Obj NewPlist( UInt tnum, UInt len, UInt reserved )
-{
-    Obj obj;
-    obj = NEW_PLIST( tnum, reserved );
-    SET_LEN_PLIST( obj, len );
-    return obj;
-}
-
-
 /****************************************************************************
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
@@ -746,6 +735,8 @@ static Int InitKernel (
 {
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
+
+    ImportGVarFromLibrary( "TYPE_KERNEL_OBJECT", &TYPE_KERNEL_OBJECT );
 
     /* return success                                                      */
     return 0;
@@ -810,11 +801,19 @@ static void InitModuleState(ModuleStateOffset offset)
 #endif
 
     const UInt maxStackSize = 256;
-    STATE(SC_NW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
-    STATE(SC_LW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
-    STATE(SC_PW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
-    STATE(SC_EW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
-    STATE(SC_GE_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
+    const UInt desiredStackSize = sizeof(Obj) * (maxStackSize + 2);
+    STATE(SC_NW_STACK) = NewBag(T_DATOBJ, desiredStackSize);
+    STATE(SC_LW_STACK) = NewBag(T_DATOBJ, desiredStackSize);
+    STATE(SC_PW_STACK) = NewBag(T_DATOBJ, desiredStackSize);
+    STATE(SC_EW_STACK) = NewBag(T_DATOBJ, desiredStackSize);
+    STATE(SC_GE_STACK) = NewBag(T_DATOBJ, desiredStackSize);
+
+    SET_TYPE_DATOBJ(STATE(SC_NW_STACK), TYPE_KERNEL_OBJECT);
+    SET_TYPE_DATOBJ(STATE(SC_LW_STACK), TYPE_KERNEL_OBJECT);
+    SET_TYPE_DATOBJ(STATE(SC_PW_STACK), TYPE_KERNEL_OBJECT);
+    SET_TYPE_DATOBJ(STATE(SC_EW_STACK), TYPE_KERNEL_OBJECT);
+    SET_TYPE_DATOBJ(STATE(SC_GE_STACK), TYPE_KERNEL_OBJECT);
+
     STATE(SC_CW_VECTOR) = NEW_STRING(0);
     STATE(SC_CW2_VECTOR) = NEW_STRING(0);
     STATE(SC_MAX_STACK_SIZE) = maxStackSize;
