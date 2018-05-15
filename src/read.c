@@ -926,194 +926,6 @@ static void ReadPerm (
 
 /****************************************************************************
 **
-*F  ReadLongNumber( <follow> )  . . . . . . . . . . . . . . . read a long integer
-**
-**  A `long integer' here means one whose digits don't fit into `STATE(Value)',
-**  see scanner.c.  This function copies repeatedly  digits from `STATE(Value)'
-**  into a GAP string until the full integer is read.
-**
-*/
-
-static void appendToString(Obj string, const char * val)
-{
-    const UInt len = GET_LEN_STRING(string);
-    const UInt len1 = strlen(val);
-
-    // ensure enough memory is allocated (GROW_STRING automatically
-    // reserves extra space for the terminating zero byte)
-    GROW_STRING(string, len + len1);
-    SET_LEN_STRING(string, len + len1);
-
-    // copy the data, including the terminator byte
-    memcpy(CHARS_STRING(string) + len, val, len1 + 1);
-}
-
-void ReadLongNumber(
-      TypSymbolSet        follow )
-{
-     Obj  string;
-     UInt status;
-     UInt done;
-
-     /* string in which to accumulate number */
-     string = MakeString(STATE(Value));
-     done = 0;
-
-     while (!done) {
-       /* remember the current symbol and get the next one */
-       status = STATE(Symbol);
-       Match(STATE(Symbol), "partial number", follow);
-
-       /* Now there are just lots of cases */
-       switch (status) {
-       case S_PARTIALINT:
-         switch (STATE(Symbol)) {
-         case S_INT:
-           appendToString(string, STATE(Value));
-           Match(S_INT, "integer", follow);
-           TRY_READ { IntrLongIntExpr(string); }
-           done = 1;
-           break;
-
-         case S_PARTIALINT:
-           appendToString(string, STATE(Value));
-           /*      Match(S_PARTIALINT, "integer", follow);*/
-           break;
-
-         case S_PARTIALFLOAT2:
-         case S_PARTIALFLOAT3:
-         case S_PARTIALFLOAT4:
-           status = STATE(Symbol);
-           appendToString(string, STATE(Value));
-           /* Match(STATE(Symbol), "float", follow); */
-           break;
-
-         case S_FLOAT:
-           appendToString(string, STATE(Value));
-           Match(S_FLOAT, "float", follow);
-           TRY_READ { IntrLongFloatExpr(string); }
-           done = 1;
-           break;
-
-         case S_IDENT:
-           SyntaxError("Identifier over 1024 characters");
-
-         default:
-           appendToString(string, STATE(Value));
-           TRY_READ { IntrLongIntExpr(string); }
-           done = 1;
-         }
-         break;
-
-       case S_PARTIALFLOAT2:
-         switch (STATE(Symbol)) {
-         case S_INT:
-         case S_PARTIALINT:
-           assert(0);
-           Pr("Parsing error, this should never happen", 0L, 0L);
-           SyExit(2);
-
-
-         case S_PARTIALFLOAT2:
-         case S_PARTIALFLOAT3:
-         case S_PARTIALFLOAT4:
-           status = STATE(Symbol);
-           appendToString(string, STATE(Value));
-           /* Match(STATE(Symbol), "float", follow); */
-           break;
-
-         case S_FLOAT:
-           appendToString(string, STATE(Value));
-           Match(S_FLOAT, "float", follow);
-           TRY_READ { IntrLongFloatExpr(string); }
-           done = 1;
-           break;
-
-
-         case S_IDENT:
-           SyntaxError("Badly Formed Number");
-
-         default:
-           appendToString(string, STATE(Value));
-           TRY_READ { IntrLongFloatExpr(string); }
-           done = 1;
-         }
-         break;
-
-       case S_PARTIALFLOAT3:
-         switch (STATE(Symbol)) {
-         case S_INT:
-         case S_PARTIALINT:
-         case S_PARTIALFLOAT2:
-         case S_PARTIALFLOAT3:
-           assert(0);
-           Pr("Parsing error, this should never happen", 0L, 0L);
-           SyExit(2);
-
-
-         case S_PARTIALFLOAT4:
-           status = STATE(Symbol);
-           appendToString(string, STATE(Value));
-           /* Match(STATE(Symbol), "float", follow); */
-           break;
-
-         case S_FLOAT:
-           appendToString(string, STATE(Value));
-           Match(S_FLOAT, "float", follow);
-           TRY_READ { IntrLongFloatExpr(string); }
-           done = 1;
-           break;
-
-
-         default:
-           SyntaxError("Badly Formed Number");
-
-         }
-         break;
-       case S_PARTIALFLOAT4:
-         switch (STATE(Symbol)) {
-         case S_INT:
-         case S_PARTIALINT:
-         case S_PARTIALFLOAT2:
-         case S_PARTIALFLOAT3:
-           assert(0);
-           Pr("Parsing error, this should never happen", 0L, 0L);
-           SyExit(2);
-
-
-         case S_PARTIALFLOAT4:
-           status = STATE(Symbol);
-           appendToString(string, STATE(Value));
-           /* Match(STATE(Symbol), "float", follow); */
-           break;
-
-         case S_FLOAT:
-           appendToString(string, STATE(Value));
-           Match(S_FLOAT, "float", follow);
-           TRY_READ { IntrLongFloatExpr(string); }
-           done = 1;
-           break;
-
-         case S_IDENT:
-           SyntaxError("Badly Formed Number");
-
-         default:
-           appendToString(string, STATE(Value));
-           TRY_READ { IntrLongFloatExpr(string); }
-           done = 1;
-
-         }
-         break;
-       default:
-         assert(0);
-         Pr("Parsing error, this should never happen", 0L, 0L);
-         SyExit(2);
-       }
-     }
-}
-
-/****************************************************************************
-**
 *F  ReadListExpr( <follow> )  . . . . . . . . . . . . . . . . . . read a list
 **
 **  'ReadListExpr'  reads a list literal expression.   In case of an error it
@@ -1635,20 +1447,24 @@ static void ReadLiteral (
 
     /* <Int>                                                               */
     case S_INT:
-        TRY_READ { IntrIntExpr( STATE(Value) ); }
+        TRY_READ {
+            if (STATE(ValueObj))
+                IntrLongIntExpr(STATE(ValueObj));
+            else
+                IntrIntExpr(STATE(Value));
+        }
         Match( S_INT, "integer", follow );
         break;
 
     /* <Float> */
     case S_FLOAT:
-        TRY_READ { IntrFloatExpr( STATE(Value) ); }
+        TRY_READ {
+            if (STATE(ValueObj))
+                IntrLongFloatExpr(STATE(ValueObj));
+            else
+                IntrFloatExpr(STATE(Value));
+        }
         Match( S_FLOAT, "float", follow );
-        break;
-
-    /* partial Int */
-    case S_PARTIALINT:
-    case S_PARTIALFLOAT2:
-        ReadLongNumber( follow );
         break;
 
     /* 'true'                                                              */

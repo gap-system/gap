@@ -317,254 +317,242 @@ static void GetIdent(Int i)
 *F  GetNumber()  . . . . . . . . . . . . . .  get an integer or float literal
 **
 **  'GetNumber' reads a number from the current input file into the variable
-**  'STATE(Value)' and sets 'Symbol' to 'S_INT', 'S_PARTIALINT', 'S_FLOAT' or
-**  'S_PARTIALFLOAT'. The first character of the number is the current
-**  character pointed to by 'In'.
+**  'STATE(Value)' or 'STATE(ValueObj)' and sets 'STATE(Symbol)' to 'S_INT' or
+**  'S_FLOAT'. The first character of the number is the current character
+**  pointed to by 'In'.
 **
 **  If the sequence contains characters which do not match the regular
 **  expression [0-9]+.?[0-9]*([edqEDQ][+-]?[0-9]+)? 'GetNumber'  will
-**  interpret the sequence as an identifier and set 'Symbol' to 'S_IDENT'.
+**  interpret the sequence as an identifier by delegating to 'GetIdent'.
 **
 **  As we read, we keep track of whether we have seen a . or exponent
-**  notation and so whether we will return S_[PARTIAL]INT or
-**  S_[PARTIAL]FLOAT.
+**  notation and so whether we will return 'S_INT' or 'S_FLOAT'.
 **
-**  When STATE(Value) is completely filled we have to check if the reading of
-**  the number is complete or not to decide whether to return a PARTIAL type.
+**  When 'STATE(Value)' is completely filled, then a GAP string object is
+**  created in 'STATE(ValueObj)' and all data is stored there.
 **
-**  The argument reflects how far we are through reading a possibly very long
-**  number literal. 0 indicates that nothing has been read. 1 that at least
-**  one digit has been read, but no decimal point. 2 that a decimal point has
-**  been read with no digits before or after it. 3 a decimal point and at
-**  least one digit, but no exponential indicator 4 an exponential indicator
-**  but no exponent digits and 5 an exponential indicator and at least one
-**  exponent digit.
+**  The argument is used to signal if a decimal point was already read,
+**  or whether we are starting from scratch..
 **
 */
-static void GetNumber(const UInt StartingStatus)
+static UInt AddCharToValue(UInt i, Char c)
 {
-  Int                 i=0;
-  Char                c;
-  UInt seenADigit = (StartingStatus != 0 && StartingStatus != 2);
+    if (i >= SAFE_VALUE_SIZE - 1) {
+        STATE(ValueObj) = AppendBufToString(STATE(ValueObj), STATE(Value), i);
+        i = 0;
+    }
+    STATE(Value)[i++] = c;
+    return i;
+}
 
-  if (StartingStatus == 2) {
-    STATE(Value)[i++] = '.';
-  }
+static void GetNumber(Int readDecimalPoint)
+{
+  UInt i = 0;
+  Char c;
+  UInt seenADigit = 0;
+
+  STATE(ValueObj) = 0;
 
   c = PEEK_CURR_CHAR();
-  if (StartingStatus  <  2) {
+  if (readDecimalPoint) {
+    STATE(Value)[i++] = '.';
+  }
+  else {
     // read initial sequence of digits into 'Value'
-    while (IsDigit(c) && i < SAFE_VALUE_SIZE-1) {
-      STATE(Value)[i++] = c;
+    while (IsDigit(c)) {
+      i = AddCharToValue(i, c);
       seenADigit = 1;
       c = GET_NEXT_CHAR();
     }
 
-    /* So why did we run off the end of that loop */
-    /* maybe we saw an identifier character and realised that this is an identifier we are reading */
+    // maybe we saw an identifier character and realised that this is an
+    // identifier we are reading
     if (IsIdent(c) || c == '\\') {
-      // Now we know we have an identifier, read the rest of it
+      // if necessary, copy back from STATE(ValueObj) to STATE(Value)
+      if (STATE(ValueObj)) {
+        i = GET_LEN_STRING(STATE(ValueObj));
+        GAP_ASSERT(i >= SAFE_VALUE_SIZE-1);
+        memcpy(STATE(Value), CSTR_STRING(STATE(ValueObj)), SAFE_VALUE_SIZE);
+        STATE(ValueObj) = 0;
+      }
+      // this looks like an identifier, scan the rest of it
       GetIdent(i);
       return;
     }
 
-    /* Or maybe we just ran out of space */
-    if (IsDigit(c)) {
-      assert(i >= SAFE_VALUE_SIZE-1);
-      STATE(Symbol) = S_PARTIALINT;
-      STATE(Value)[SAFE_VALUE_SIZE-1] = '\0';
-      return;
-    }
-
-    /* Or maybe we saw a . which could indicate one of two things:
-       a float literal or .. */
+    // Or maybe we saw a '.' which could indicate one of two things: a
+    // float literal or S_DOT, i.e., '.' used to access a record entry.
     if (c == '.') {
-      /* If the symbol before this integer was S_DOT then 
-         we must be in a nested record element expression, so don't 
-         look for a float.
+      GAP_ASSERT(i < SAFE_VALUE_SIZE - 1);
 
-      This is a bit fragile  */
+      // If the symbol before this integer was S_DOT then we must be in
+      // a nested record element expression, so don't look for a float.
+      // This is a bit fragile
       if (STATE(Symbol) == S_DOT || STATE(Symbol) == S_BDOT) {
-        STATE(Value)[i]  = '\0';
         STATE(Symbol) = S_INT;
-        return;
-      }
-      
-      /* peek ahead to decide which */
-      if (PEEK_NEXT_CHAR() == '.') {
-        /* It was .. */
-        STATE(Symbol) = S_INT;
-        STATE(Value)[i] = '\0';
-        return;
+        goto finish;
       }
 
-      /* Now the . must be part of our number
-         store it and move on */
-      STATE(Value)[i++] = '.';
+      // peek ahead to decide which
+      if (PEEK_NEXT_CHAR() == '.') {
+        // It was '.', so this looks like '..' and we are probably
+        // inside a range expression.
+        STATE(Symbol) = S_INT;
+        goto finish;
+      }
+
+      // Now the '.' must be part of our number; store it and move on
+      i = AddCharToValue(i, '.');
       c = GET_NEXT_CHAR();
     }
 
     else {
-      /* Anything else we see tells us that the token is done */
-      STATE(Value)[i]  = '\0';
+      // Anything else we see tells us that the token is done
       STATE(Symbol) = S_INT;
-      return;
+      goto finish;
     }
   }
 
 
+  // When we get here we have read possibly some digits, a . and possibly
+  // some more digits, but not an e,E,d,D,q or Q
 
-  /* The only case in which we fall through to here is when
-     we have read zero or more digits, followed by . which is not part of a .. token
-     or we were called with StartingStatus >= 2 so we read at least that much in
-     a previous token */
-
-
-  if (StartingStatus< 4) {
-    /* When we get here we have read (either in this token or a previous S_PARTIALFLOAT*)
-       possibly some digits, a . and possibly some more digits, but not an e,E,d,D,q or Q */
-
-    /* read digits */
-    while (IsDigit(c) && i < SAFE_VALUE_SIZE-1) {
-      STATE(Value)[i++] = c;
+    // read digits
+    while (IsDigit(c)) {
+      i = AddCharToValue(i, c);
       seenADigit = 1;
       c = GET_NEXT_CHAR();
     }
     if (!seenADigit)
-      SyntaxError("Badly formed number: need a digit before or after the decimal point");
+      SyntaxError("Badly formed number: need a digit before or after the "
+                  "decimal point");
     if (c == '\\')
       SyntaxError("Badly Formed Number");
-    /* If we found an identifier type character in this context could be an error
-      or the start of one of the allowed trailing marker sequences */
-    if (IsIdent(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' && c != 'q' && c != 'Q') {
 
-       // Allow one letter on the end of the numbers -- could be an i, C99 style
-       if (IsAlpha(c)) {
-         STATE(Value)[i++] = c;
-         c = GET_NEXT_CHAR();
-       }
-       /* independently of that, we allow an _ signalling immediate conversion */
-       if (c == '_') {
-         STATE(Value)[i++] = c;
-         c = GET_NEXT_CHAR();
-         /* After which there may be one character signifying the conversion style */
-         if (IsAlpha(c)) {
-           STATE(Value)[i++] = c;
-           c = GET_NEXT_CHAR();
-         }
-       }
-       /* Now if the next character is alphanumerical, or an identifier type symbol then we
-          really do have an error, otherwise we return a result */
-       if (IsIdent(c) || IsDigit(c)) {
-         SyntaxError("Badly formed number");
-       }
-       else {
-         STATE(Value)[i] = '\0';
-         STATE(Symbol) = S_FLOAT;
-         return;
-       }
+    // If we found an identifier type character in this context could be an
+    // error or the start of one of the allowed trailing marker sequences
+    if (IsIdent(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' &&
+        c != 'q' && c != 'Q') {
+
+      // Allow one letter on the end of the numbers -- could be an i, C99
+      // style
+      if (IsAlpha(c)) {
+        i = AddCharToValue(i, c);
+        c = GET_NEXT_CHAR();
+      }
+      // independently of that, we allow an _ signalling immediate conversion
+      if (c == '_') {
+        i = AddCharToValue(i, c);
+        c = GET_NEXT_CHAR();
+        // After which there may be one character signifying the
+        // conversion style
+        if (IsAlpha(c)) {
+          i = AddCharToValue(i, c);
+          c = GET_NEXT_CHAR();
+        }
+      }
+      // Now if the next character is alphanumerical, or an identifier type
+      // symbol then we really do have an error, otherwise we return a result
+      if (IsIdent(c) || IsDigit(c)) {
+        SyntaxError("Badly formed number");
+      }
+      else {
+        STATE(Symbol) = S_FLOAT;
+        goto finish;
+      }
     }
 
-    /* If the next thing is the start of the exponential notation,
-       read it now -- we have left enough space at the end of the buffer even if we
-       left the previous loop because of overflow */
+    // If the next thing is the start of the exponential notation, read it now.
     UInt seenExp = 0;
     if (IsAlpha(c)) {
-        if (!seenADigit)
-          SyntaxError("Badly formed number: need a digit before or after the decimal point");
-        seenExp = 1;
-        STATE(Value)[i++] = c;
+      if (!seenADigit)
+        SyntaxError("Badly formed number: need a digit before or after "
+                    "the decimal point");
+      seenExp = 1;
+      i = AddCharToValue(i, c);
+      c = GET_NEXT_CHAR();
+      if (c == '+' || c == '-') {
+        i = AddCharToValue(i, c);
         c = GET_NEXT_CHAR();
-        if (c == '+' || c == '-') {
-            STATE(Value)[i++] = c;
-            c = GET_NEXT_CHAR();
-        }
+      }
     }
 
-    /* Now deal with full buffer case */
-    if (i >= SAFE_VALUE_SIZE -1) {
-      STATE(Symbol) = seenExp ? S_PARTIALFLOAT3 : S_PARTIALFLOAT2;
-      STATE(Value)[i] = '\0';
-      return;
-    }
-
-    /* Either we saw an exponent indicator, or we hit end of token
-       deal with the end of token case */
+    // Either we saw an exponent indicator, or we hit end of token deal with
+    // the end of token case
     if (!seenExp) {
       if (!seenADigit)
-        SyntaxError("Badly formed number: need a digit before or after the decimal point");
-      /* Might be a conversion marker */
-        if (IsAlpha(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' && c != 'q' && c != 'Q') {
-          STATE(Value)[i++] = c;
-          c = GET_NEXT_CHAR();
-        }
-        /* independently of that, we allow an _ signalling immediate conversion */
-        if (c == '_') {
-          STATE(Value)[i++] = c;
-          c = GET_NEXT_CHAR();
-          /* After which there may be one character signifying the conversion style */
-          if (IsAlpha(c))
-            STATE(Value)[i++] = c;
-          c = GET_NEXT_CHAR();
-        }
-        /* Now if the next character is alphanumerical, or an identifier type symbol then we
-           really do have an error, otherwise we return a result */
-        if (!IsIdent(c) && !IsDigit(c)) {
-          STATE(Value)[i] = '\0';
-          STATE(Symbol) = S_FLOAT;
-          return;
-        }
+        SyntaxError("Badly formed number: need a digit before or after "
+                    "the decimal point");
+      // Might be a conversion marker
+      if (IsAlpha(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' &&
+          c != 'q' && c != 'Q') {
+        i = AddCharToValue(i, c);
+        c = GET_NEXT_CHAR();
+      }
+      // independently of that, we allow an _ signalling immediate conversion
+      if (c == '_') {
+        i = AddCharToValue(i, c);
+        c = GET_NEXT_CHAR();
+        // After which there may be one character signifying the
+        // conversion style
+        if (IsAlpha(c))
+          i = AddCharToValue(i, c);
+        c = GET_NEXT_CHAR();
+      }
+      // Now if the next character is alphanumerical, or an identifier type
+      // symbol then we really do have an error, otherwise we return a result
+      if (!IsIdent(c) && !IsDigit(c)) {
+        STATE(Symbol) = S_FLOAT;
+        goto finish;
+      }
       SyntaxError("Badly Formed Number");
     }
 
-  }
+  // Here we are into the unsigned exponent of a number in scientific
+  // notation, so we just read digits
+  UInt seenExpDigit = 0;
 
-  /* Here we are into the unsigned exponent of a number
-     in scientific notation, so we just read digits */
-  UInt seenExpDigit = (StartingStatus == 5);
-
-  while (IsDigit(c) && i < SAFE_VALUE_SIZE-1) {
-    STATE(Value)[i++] = c;
+  while (IsDigit(c)) {
+    i = AddCharToValue(i, c);
     seenExpDigit = 1;
     c = GET_NEXT_CHAR();
   }
 
-  /* Look out for a single alphabetic character on the end
-     which could be a conversion marker */
+  // Look out for a single alphabetic character on the end
+  // which could be a conversion marker
   if (seenExpDigit) {
     if (IsAlpha(c)) {
-      STATE(Value)[i] = c;
+      i = AddCharToValue(i, c);
       c = GET_NEXT_CHAR();
-      STATE(Value)[i+1] = '\0';
       STATE(Symbol) = S_FLOAT;
-      return;
+      goto finish;
     }
     if (c == '_') {
-      STATE(Value)[i++] = c;
+      i = AddCharToValue(i, c);
       c = GET_NEXT_CHAR();
-      /* After which there may be one character signifying the conversion style */
+      // After which there may be one character signifying the
+      // conversion style
       if (IsAlpha(c)) {
-        STATE(Value)[i++] = c;
+        i = AddCharToValue(i, c);
         c = GET_NEXT_CHAR();
       }
-      STATE(Value)[i] = '\0';
       STATE(Symbol) = S_FLOAT;
-      return;
+      goto finish;
     }
   }
 
-  /* If we ran off the end */
-  if (i >= SAFE_VALUE_SIZE -1) {
-    STATE(Symbol) = seenExpDigit ? S_PARTIALFLOAT4 : S_PARTIALFLOAT3;
-    STATE(Value)[i] = '\0';
-    return;
-  }
-
-  /* Otherwise this is the end of the token */
+  // Otherwise this is the end of the token
   if (!seenExpDigit)
-    SyntaxError("Badly Formed Number: need at least one digit in the exponent");
+    SyntaxError(
+        "Badly Formed Number: need at least one digit in the exponent");
   STATE(Symbol) = S_FLOAT;
-  STATE(Value)[i] = '\0';
+
+finish:
+  i = AddCharToValue(i, '\0');
+  if (STATE(ValueObj)) {
+    // flush buffer
+    AppendBufToString(STATE(ValueObj), STATE(Value), i - 1);
+  }
 }
 
 
@@ -575,7 +563,7 @@ static void GetNumber(const UInt StartingStatus)
 */
 void ScanForFloatAfterDotHACK(void)
 {
-    GetNumber(2);
+    GetNumber(1);
 }
 
 
@@ -919,15 +907,6 @@ static void GetHelp(void)
 */
 static void NextSymbol(void)
 {
-    /* special case if reading of a long token is not finished */
-    switch (STATE(Symbol)) {
-    case S_PARTIALINT:        GetNumber(STATE(Value)[0] == '\0' ? 0 : 1); return;
-    case S_PARTIALFLOAT2:     GetNumber(3); return;
-    case S_PARTIALFLOAT3:     GetNumber(4); return;
-    case S_PARTIALFLOAT4:     GetNumber(5); return;
-    }
-
-
     Char c = PEEK_CURR_CHAR();
 
     // if no character is available then get one
