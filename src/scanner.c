@@ -427,7 +427,7 @@ static void GetNumber(Int readDecimalPoint)
       SyntaxError("Badly formed number: need a digit before or after the "
                   "decimal point");
     if (c == '\\')
-      SyntaxError("Badly Formed Number");
+      SyntaxError("Badly formed number");
 
     // If we found an identifier type character in this context could be an
     // error or the start of one of the allowed trailing marker sequences
@@ -505,7 +505,7 @@ static void GetNumber(Int readDecimalPoint)
         STATE(Symbol) = S_FLOAT;
         goto finish;
       }
-      SyntaxError("Badly Formed Number");
+      SyntaxError("Badly formed number");
     }
 
   // Here we are into the unsigned exponent of a number in scientific
@@ -544,7 +544,7 @@ static void GetNumber(Int readDecimalPoint)
   // Otherwise this is the end of the token
   if (!seenExpDigit)
     SyntaxError(
-        "Badly Formed Number: need at least one digit in the exponent");
+        "Badly formed number: need at least one digit in the exponent");
   STATE(Symbol) = S_FLOAT;
 
 finish:
