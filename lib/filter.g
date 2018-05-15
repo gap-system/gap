@@ -85,6 +85,15 @@ BIND_GLOBAL( "FNUM_CATS_AND_REPS", MakeImmutable([ 1 .. 4 ]) );
 IMM_FLAGS := FLAGS_FILTER( IS_OBJECT );
 #T EMPTY_FLAGS not yet defined !
 
+#############################################################################
+##
+#V  TRUES_FLAGS 
+##
+## This was a kernel function, but APPEND_TRUES_FLAGS has superceded it
+## included here for backwards compatibilty
+##
+
+BIND_GLOBAL( "TRUES_FLAGS", flags -> APPEND_TRUES_FLAGS([], flags));
 
 #############################################################################
 ##
@@ -161,7 +170,7 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
         if IS_AND_FILTER(from) then
           ADD_LIST( IMPLICATIONS_COMPOSED, imp );
         else
-          IMPLICATIONS_SIMPLE[ TRUES_FLAGS( imp[2] )[1] ]:= imp;
+          IMPLICATIONS_SIMPLE[ TRUE_FLAGS( imp[2], 1) ]:= imp;
         fi;
       fi;
     od;
@@ -401,6 +410,7 @@ BIND_GLOBAL("NICE_FLAGS",QUO_INT(SUM_FLAGS,30));
 BIND_GLOBAL( "CANONICAL_BASIS_FLAGS", QUO_INT(SUM_FLAGS,5) );
 
 
+
 #############################################################################
 ##
 #F  RankFilter( <filter> )  . . . . . . . . . . . . . . . .  rank of a filter
@@ -408,7 +418,7 @@ BIND_GLOBAL( "CANONICAL_BASIS_FLAGS", QUO_INT(SUM_FLAGS,5) );
 ##  Compute the rank including the hidden implications.
 ##
 BIND_GLOBAL( "RankFilter", function( filter )
-    local   rank,  flags,  i;
+    local   rank,  flags,  flags1, i, j;
 
     rank  := 0;
     if IS_FUNCTION(filter)  then
@@ -416,7 +426,9 @@ BIND_GLOBAL( "RankFilter", function( filter )
     else
         flags := filter;
     fi;
-    for i  in TRUES_FLAGS(WITH_HIDDEN_IMPS_FLAGS(flags))  do
+    flags1 := WITH_HIDDEN_IMPS_FLAGS(flags);    
+    for j in [1..SIZE_FLAGS(flags1)] do
+        i := TRUE_FLAGS(flags1, j);
         if IsBound(RANK_FILTERS[i])  then
             rank := rank + RANK_FILTERS[i];
         else
