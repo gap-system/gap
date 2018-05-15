@@ -1576,6 +1576,22 @@ static void ReadAtom (
     ReadReferenceModifiers(follow);
 }
 
+/****************************************************************************
+**
+*F  ReadSign( <follow> )  . . . . . . . . . . . . . . read a sign, or nothing
+*/
+static Int ReadSign(TypSymbolSet follow)
+{
+    if (STATE(Symbol) == S_PLUS) {
+        Match(S_PLUS, "unary +", follow);
+        return +1;
+    }
+    if (STATE(Symbol) == S_MINUS) {
+        Match(S_MINUS, "unary -", follow);
+        return -1;
+    }
+    return 0;
+}
 
 /****************************************************************************
 **
@@ -1594,12 +1610,7 @@ static void ReadFactor (
     volatile Int        sign2;
 
     /* { '+'|'-' }  leading sign                                           */
-    sign1 = 0;
-    if ( STATE(Symbol) == S_MINUS  || STATE(Symbol) == S_PLUS ) {
-        if ( sign1 == 0 )  sign1 = 1;
-        if ( STATE(Symbol) == S_MINUS ) { sign1 = -sign1; }
-        Match( STATE(Symbol), "unary + or -", follow );
-    }
+    sign1 = ReadSign(follow);
 
     /* <Atom>                                                              */
     ReadAtom( follow, (sign1 == 0 ? mode : 'r') );
@@ -1611,12 +1622,7 @@ static void ReadFactor (
         Match( S_POW, "^", follow );
 
         /* { '+'|'-' }  leading sign                                       */
-        sign2 = 0;
-        if ( STATE(Symbol) == S_MINUS  || STATE(Symbol) == S_PLUS ) {
-            if ( sign2 == 0 )  sign2 = 1;
-            if ( STATE(Symbol) == S_MINUS ) { sign2 = -sign2; }
-            Match( STATE(Symbol), "unary + or -", follow );
-        }
+        sign2 = ReadSign(follow);
 
         /* ['^' <Atom>]                                                    */
         ReadAtom( follow, 'r' );
