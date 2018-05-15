@@ -124,7 +124,7 @@ DeclareProperty( "IsWordDecompHomomorphism",IsGroupGeneralMappingByImages);
 ##  <C>.secondaryImages</C> of this table will give the images of all (primary
 ##  and secondary) subgroup generators under <A>hom</A>.
 ##  <P/>
-##  As we might want to add further entries to the table, its a mutable
+##  As we might want to add further entries to the table, it is a mutable
 ##  attribute.
 ##  </Description>
 ##  </ManSection>

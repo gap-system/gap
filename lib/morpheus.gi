@@ -1205,7 +1205,7 @@ local G,cl,lcl,len,comb,combc,com,a,cnt,s,alltwo;
     com:=0;
     while com<Length(comb) do
       com:=com+1;
-      # don't try only order 2 generators unless its a 2-group
+      # don't try only order 2 generators unless it's a 2-group
       if Set(List(Flat(combc[com]),i->Order(Representative(i))))<>[2] or
 	alltwo then
 	a:=MorClassLoop(G,combc[com],rec(to:=G),4);

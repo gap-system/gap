@@ -60,13 +60,13 @@ Int IsSet (
     /* if <list> is a plain list                                           */
     if ( IS_PLIST( list ) ) {
 
-        /* if <list> is the empty list, its a set (:-)                     */
+        /* if <list> is the empty list, it is a set (:-)                     */
         if ( LEN_PLIST(list) == 0 ) {
             SET_FILT_LIST( list, FN_IS_EMPTY );
             isSet = 1;
         }
 
-        /* if <list>  strictly sorted, its a set            */
+        /* if <list>  strictly sorted, it is a set            */
         else if ( IS_SSORT_LIST(list) ) {
             isSet = 1;
         }
@@ -81,14 +81,14 @@ Int IsSet (
     /* if it is another small list                                         */
     else if ( IS_SMALL_LIST(list) ) {
 
-        /* if <list> is the empty list, its a set (:-)                     */
+        /* if <list> is the empty list, it is a set (:-)                     */
         if ( LEN_LIST(list) == 0 ) {
             PLAIN_LIST( list );
             SET_FILT_LIST( list, FN_IS_EMPTY );
             isSet = 1;
         }
 
-        /* if <list> strictly sorted, its a set            */
+        /* if <list> strictly sorted, it is a set            */
         else if (  IS_SSORT_LIST(list) ) {
             PLAIN_LIST( list );
             /* SET_FILT_LIST( list, FN_IS_HOMOG ); */
