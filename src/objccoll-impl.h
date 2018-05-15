@@ -204,40 +204,36 @@ Int CombiCollectWord ( Obj sc, Obj vv, Obj w )
     max = STATE(SC_MAX_STACK_SIZE);
 
     /* ensure that the stacks are large enough                             */
-    if ( SIZE_OBJ(vnw)/sizeof(Obj) < max+1 ) {
-        ResizeBag( vnw, sizeof(Obj)*(max+1) );
-        RetypeBag( vnw, T_STRING );
+    const UInt desiredStackSize = sizeof(Obj) * (max + 2);
+    if ( SIZE_OBJ(vnw) < desiredStackSize ) {
+        ResizeBag( vnw, desiredStackSize );
         resized = 1;
     }
-    if ( SIZE_OBJ(vlw)/sizeof(Obj) < max+1 ) {
-        ResizeBag( vlw, sizeof(Obj)*(max+1) );
-        RetypeBag( vlw, T_STRING );
+    if ( SIZE_OBJ(vlw) < desiredStackSize ) {
+        ResizeBag( vlw, desiredStackSize );
         resized = 1;
     }
-    if ( SIZE_OBJ(vpw)/sizeof(Obj) < max+1 ) {
-        ResizeBag( vpw, sizeof(Obj)*(max+1) );
-        RetypeBag( vpw, T_STRING );
+    if ( SIZE_OBJ(vpw) < desiredStackSize ) {
+        ResizeBag( vpw, desiredStackSize );
         resized = 1;
     }
-    if ( SIZE_OBJ(vew)/sizeof(Obj) < max+1 ) {
-        ResizeBag( vew, sizeof(Obj)*(max+1) );
-        RetypeBag( vew, T_STRING );
+    if ( SIZE_OBJ(vew) < desiredStackSize ) {
+        ResizeBag( vew, desiredStackSize );
         resized = 1;
     }
-    if ( SIZE_OBJ(vge)/sizeof(Obj) < max+1 ) {
-        ResizeBag( vge, sizeof(Obj)*(max+1) );
-        RetypeBag( vge, T_STRING );
+    if ( SIZE_OBJ(vge) < desiredStackSize ) {
+        ResizeBag( vge, desiredStackSize );
         resized = 1;
     }
     if( resized ) return -1;
 
     /* from now on we use addresses instead of handles most of the time    */
     v  = (Int*)ADDR_OBJ(vv);
-    nw = (UIntN**)ADDR_OBJ(vnw);
-    lw = (UIntN**)ADDR_OBJ(vlw);
-    pw = (UIntN**)ADDR_OBJ(vpw);
-    ew = (UIntN*)ADDR_OBJ(vew);
-    ge = (Int*)ADDR_OBJ(vge);
+    nw = (UIntN**)(ADDR_OBJ(vnw)+1);
+    lw = (UIntN**)(ADDR_OBJ(vlw)+1);
+    pw = (UIntN**)(ADDR_OBJ(vpw)+1);
+    ew = (UIntN*)(ADDR_OBJ(vew)+1);
+    ge = (Int*)(ADDR_OBJ(vge)+1);
 
     /* conjugates, powers, order, generators, avector, inverses            */
     vpow = SC_POWERS(sc);
