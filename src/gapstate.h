@@ -23,7 +23,7 @@ enum {
 
     MAX_OPEN_FILES = 16,
 
-    MAX_VALUE_LEN = 1030,
+    MAX_VALUE_LEN = 1024,
 };
 
 typedef struct GAPState {
