@@ -799,16 +799,6 @@ static Int InitLibrary (
 
 static void InitModuleState(ModuleStateOffset offset)
 {
-    const UInt maxStackSize = 256;
-    STATE(SC_NW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
-    STATE(SC_LW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
-    STATE(SC_PW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
-    STATE(SC_EW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
-    STATE(SC_GE_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
-    STATE(SC_CW_VECTOR) = NEW_STRING(0);
-    STATE(SC_CW2_VECTOR) = NEW_STRING(0);
-    STATE(SC_MAX_STACK_SIZE) = maxStackSize;
-
 #ifndef HPCGAP
     InitGlobalBag( &STATE(SC_NW_STACK), "SC_NW_STACK" );
     InitGlobalBag( &STATE(SC_LW_STACK), "SC_LW_STACK" );
@@ -818,6 +808,16 @@ static void InitModuleState(ModuleStateOffset offset)
     InitGlobalBag( &STATE(SC_CW_VECTOR), "SC_CW_VECTOR" );
     InitGlobalBag( &STATE(SC_CW2_VECTOR), "SC_CW2_VECTOR" );
 #endif
+
+    const UInt maxStackSize = 256;
+    STATE(SC_NW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
+    STATE(SC_LW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
+    STATE(SC_PW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
+    STATE(SC_EW_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
+    STATE(SC_GE_STACK) = NewPlist(T_PLIST_EMPTY, 0, maxStackSize);
+    STATE(SC_CW_VECTOR) = NEW_STRING(0);
+    STATE(SC_CW2_VECTOR) = NEW_STRING(0);
+    STATE(SC_MAX_STACK_SIZE) = maxStackSize;
 }
 
 /****************************************************************************
