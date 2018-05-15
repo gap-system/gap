@@ -1447,23 +1447,13 @@ static void ReadLiteral (
 
     /* <Int>                                                               */
     case S_INT:
-        TRY_READ {
-            if (STATE(ValueObj))
-                IntrLongIntExpr(STATE(ValueObj));
-            else
-                IntrIntExpr(STATE(Value));
-        }
+        TRY_READ { IntrIntExpr(STATE(ValueObj), STATE(Value)); }
         Match( S_INT, "integer", follow );
         break;
 
     /* <Float> */
     case S_FLOAT:
-        TRY_READ {
-            if (STATE(ValueObj))
-                IntrLongFloatExpr(STATE(ValueObj));
-            else
-                IntrFloatExpr(STATE(Value));
-        }
+        TRY_READ { IntrFloatExpr(STATE(ValueObj), STATE(Value)); }
         Match( S_FLOAT, "float", follow );
         break;
 
