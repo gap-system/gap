@@ -182,12 +182,12 @@ int in stream:1
 gap> .0n;
 Error, failed to convert float literal
 gap> .0q;
-Syntax error: Badly Formed Number: need at least one digit in the exponent in \
+Syntax error: Badly formed number: need at least one digit in the exponent in \
 stream:1
 .0q;
   ^
 gap> .0qn;
-Syntax error: Badly Formed Number: need at least one digit in the exponent in \
+Syntax error: Badly formed number: need at least one digit in the exponent in \
 stream:1
 .0qn;
   ^
