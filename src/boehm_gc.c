@@ -581,11 +581,6 @@ void InitGlobalBag(Bag * addr, const Char * cookie)
 {
 }
 
-void InitCollectFuncBags(TNumCollectFuncBags before_func,
-                         TNumCollectFuncBags after_func)
-{
-}
-
 void SwapMasterPoint(Bag bag1, Bag bag2)
 {
     Obj * ptr1 = PTR_BAG(bag1);

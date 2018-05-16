@@ -915,6 +915,7 @@ extern  Bag *                   AllocBags;
 **  unchanged and this is done particularly quickly 
 */
 
+#ifdef USE_GASMAN
 typedef void            (* TNumSweepFuncBags ) (
             Bag  *               src,
             Bag *                dst,
@@ -923,7 +924,7 @@ typedef void            (* TNumSweepFuncBags ) (
 extern  void            InitSweepFuncBags (
             UInt                tnum,
             TNumSweepFuncBags    sweep_func );
- 
+#endif
 
 /****************************************************************************
 **
@@ -1040,11 +1041,13 @@ extern  void            InitFreeFuncBag (
 **  you do not have to update that pointer after every operation that might
 **  cause a garbage collection.
 */
+#ifdef USE_GASMAN
 typedef void            (* TNumCollectFuncBags) ( void );
 
 extern  void            InitCollectFuncBags (
             TNumCollectFuncBags before_func,
             TNumCollectFuncBags after_func );
+#endif
 
 
 /****************************************************************************
@@ -1062,8 +1065,10 @@ extern  void            InitCollectFuncBags (
 **  a pointer into the bags area            a real object
 **
 */
-
+#ifdef USE_GASMAN
 extern void CheckMasterPointers( void );
+#endif
+
 
 /****************************************************************************
 **

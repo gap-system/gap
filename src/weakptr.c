@@ -535,7 +535,7 @@ Obj FuncIsWPObj( Obj self, Obj wp)
 **  pointers can be reclaimed.  
 */
 
-#if !defined(USE_BOEHM_GC)
+#if defined(USE_GASMAN)
 
 static void MarkWeakPointerObj( Obj wp) 
 {
@@ -860,13 +860,13 @@ static Int InitKernel (
     InfoBags[ T_WPOBJ +COPYING ].name = "object (weakptr, copied)";
 #endif
 
-#ifdef USE_BOEHM_GC
+#if defined(USE_BOEHM_GC)
     /* force atomic allocation of these pointers */
     InitMarkFuncBags ( T_WPOBJ,          MarkNoSubBags   );
   #if !defined(USE_THREADSAFE_COPYING)
     InitMarkFuncBags ( T_WPOBJ +COPYING, MarkNoSubBags   );
   #endif
-#else
+#elif defined(USE_GASMAN)
     InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
     InitSweepFuncBags( T_WPOBJ,          SweepWeakPointerObj  );
   #if !defined(USE_THREADSAFE_COPYING)
@@ -877,6 +877,8 @@ static Int InitKernel (
     InitFreeFuncBag( T_WPOBJ, FinalizeWeakPointerObj );
     InitFreeFuncBag( T_WPOBJ+COPYING, FinalizeWeakPointerObj );
   #endif
+#else
+#error Unknown garbage collector implementation, no weak pointer object implemention available
 #endif
 
     /* typing method                                                       */
