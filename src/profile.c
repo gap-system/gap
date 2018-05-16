@@ -25,7 +25,6 @@
 
 #include "hpc/thread.h"
 
-#include <stdio.h>
 #include <sys/time.h>                   // for gettimeofday
 #ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>               // definition of 'struct rusage'

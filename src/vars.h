@@ -156,7 +156,6 @@ static inline Obj CURR_FUNC(void)
 #ifdef TRACEFRAMES
 extern Obj STEVES_TRACING;
 extern Obj True;
-#include <stdio.h>
 #endif
 
 static inline void SetBrkCallTo( Expr expr, const char * file, int line ) {

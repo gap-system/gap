@@ -118,8 +118,6 @@
 #include "sysfiles.h"
 #include "sysmem.h"
 
-#include <stdio.h>
-
 #ifdef GAP_MEM_CHECK
 #include <sys/mman.h>
 #endif

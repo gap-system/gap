@@ -80,8 +80,6 @@
 #include "stats.h"
 #include "stringobj.h"
 
-#include <stdio.h>
-
 
 /* TODO: Remove after Ward2 */
 #ifndef WARD_ENABLED
