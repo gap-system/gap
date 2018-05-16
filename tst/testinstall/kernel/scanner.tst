@@ -120,4 +120,27 @@ a.x111111111111111111111111111111111111111111111111111111111111111111111111111\
            ^
 
 #
+# test EOF inside a string literal
+#
+gap> EvalString("\"123");
+Syntax error: String must end with " before end of file in stream:1
+^
+Syntax error: ; expected in stream:1
+^
+Error, Could not evaluate string.
+
+gap> EvalString("\"\"\"123");
+Syntax error: String must end with """ before end of file in stream:1
+^
+Syntax error: ; expected in stream:1
+^
+Error, Could not evaluate string.
+
+gap> obj := """
+Syntax error: String must end with """ before end of file in stream:2
+^
+Syntax error: ; expected in stream:2
+^
+
+#
 gap> STOP_TEST("kernel/scanner.tst", 1);
