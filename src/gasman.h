@@ -820,13 +820,8 @@ extern void MarkAllButFirstSubBags( Bag bag );
 **  bags  area.  If it is not,  then 'MarkBag' does nothing,  so there is no
 **  harm in  calling 'MarkBag' for  something   that is not actually  a  bag
 **  identifier.
-
 */
-#ifdef USE_GASMAN
 extern void MarkBag( Bag bag );
-#else
-static inline void MarkBag( Bag bag ) {}
-#endif
 
 
 /****************************************************************************
