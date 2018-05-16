@@ -129,8 +129,13 @@ DeclareCategory( "IsMagmaWithInverses",
         IsMagmaWithInversesIfNonzero
     and IsMultiplicativeElementWithInverseCollection );
 
+# FIXME: this is wrong for empty magmas
+# InstallTrueMethod( IsMagmaWithInverses,
+#     IsFiniteOrderElementCollection and IsMagma );
+
 InstallTrueMethod( IsMagmaWithInverses,
-    IsFiniteOrderElementCollection and IsMagma );
+    IsFiniteOrderElementCollection and IsMagmaWithOne );
+
 
 #############################################################################
 ##

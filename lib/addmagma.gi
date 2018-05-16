@@ -175,7 +175,7 @@ InstallGlobalFunction( SubadditiveMagmaNC, function( M, gens )
     if IsEmpty( gens ) then
       K:= NewType( FamilyObj(M),
                        IsAdditiveMagma
-                   and IsTrivial
+                   and IsEmpty
                    and IsAttributeStoringRep );
       S:= Objectify( K, rec() );
       SetGeneratorsOfAdditiveMagma( S, [] );
