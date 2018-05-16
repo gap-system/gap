@@ -8,8 +8,6 @@
 #if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
 #include <execinfo.h>
 #include <signal.h>
-#include <stdlib.h>
-#include <stdio.h>
 
 static void BacktraceHandler(int sig) NORETURN;
 

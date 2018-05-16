@@ -439,8 +439,6 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 **  collection.
 */
 
-#include <stdio.h>
-
 // Provide implementation of ElmDefListFuncs
 Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
 {

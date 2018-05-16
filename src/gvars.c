@@ -47,8 +47,6 @@
 #include <pthread.h>
 #endif
 
-#include <stdio.h>
-
 
 #ifdef HPCGAP
 #define USE_GVAR_BUCKETS

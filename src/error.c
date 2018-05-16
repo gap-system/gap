@@ -31,8 +31,6 @@
 #include "hpc/thread.h"
 #endif
 
-#include <stdio.h>
-
 
 static Obj ErrorInner;
 

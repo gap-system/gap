@@ -28,9 +28,6 @@
 #endif
 
 #include <pthread.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 
 #define LARGE_GC_SIZE (8192 * sizeof(UInt))
 #define TL_GC_SIZE (256 * sizeof(UInt))
