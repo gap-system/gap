@@ -589,6 +589,10 @@ void SwapMasterPoint(Bag bag1, Bag bag2)
     SET_PTR_BAG(bag2, ptr1);
 }
 
+void MarkBag(Bag bag)
+{
+}
+
 void MarkNoSubBags(Bag bag)
 {
 }
