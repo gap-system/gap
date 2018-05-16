@@ -711,8 +711,10 @@ static void GetStr(void)
     // check for error conditions
     if (c == '\n')
         SyntaxError("String must not include <newline>");
-    if (c == '\377')
+    if (c == '\377') {
+        *STATE(In) = '\0';
         SyntaxError("String must end with \" before end of file");
+    }
 
     STATE(ValueObj) = string;
     STATE(Symbol) = S_STRING;
@@ -780,8 +782,10 @@ static void GetTripStr(void)
     CSTR_STRING(string)[len] = '\0';
 
     // check for error conditions
-    if (c == '\377')
+    if (c == '\377') {
+        *STATE(In) = '\0';
         SyntaxError("String must end with \"\"\" before end of file");
+    }
 
     STATE(ValueObj) = string;
     STATE(Symbol) = S_STRING;
