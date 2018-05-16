@@ -1228,8 +1228,7 @@ Char GetLine ( void )
     }
 
     /* bump the line number                                                */
-    if (IO()->Input->line < STATE(In) &&
-        (*(STATE(In) - 1) == '\n' || *(STATE(In) - 1) == '\r')) {
+    if (IO()->Input->line < STATE(In) && *(STATE(In) - 1) == '\n') {
         IO()->Input->number++;
     }
 
