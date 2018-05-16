@@ -2477,6 +2477,8 @@ Obj FuncContentsLVars (Obj self, Obj lvars )
 *F  VarsBeforeCollectBags() . . . . . . . . actions before garbage collection
 *F  VarsAfterCollectBags()  . . . . . . . .  actions after garbage collection
 */
+#ifdef USE_GASMAN
+
 void VarsBeforeCollectBags ( void )
 {
   if (STATE(CurrLVars))
@@ -2492,6 +2494,8 @@ void VarsAfterCollectBags ( void )
     }
   GVarsAfterCollectBags();
 }
+
+#endif
 
 /****************************************************************************
 **
@@ -2717,8 +2721,10 @@ static Int InitKernel (
     InstallPrintExprFunc( T_ISB_COMOBJ_NAME  , PrintIsbComObjName);
     InstallPrintExprFunc( T_ISB_COMOBJ_EXPR  , PrintIsbComObjExpr);
 
+#ifdef USE_GASMAN
     /* install before and after actions for garbage collections            */
     InitCollectFuncBags( VarsBeforeCollectBags, VarsAfterCollectBags );
+#endif
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
