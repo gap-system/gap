@@ -350,220 +350,7 @@ Obj             NEXT_ITER;
 
 Obj             STD_ITER;
 
-UInt            ExecFor (
-    Stat                stat )
-{
-    UInt                var;            /* variable                        */
-    UInt                vart;           /* variable type                   */
-    Obj                 list;           /* list to loop over               */
-    Obj                 elm;            /* one element of the list         */
-    Stat                body;           /* body of loop                    */
-    UInt                i;              /* loop variable                   */
-    Obj                 nfun, dfun;     /* functions for NextIterator and
-                                           IsDoneIterator                  */  
-
-    /* get the variable (initialize them first to please 'lint')           */
-    if ( IS_REFLVAR( ADDR_STAT(stat)[0] ) ) {
-        var = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
-        vart = 'l';
-    }
-    else if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
-        var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
-        vart = 'h';
-    }
-    else /* if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_GVAR ) */ {
-        var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
-        vart = 'g';
-    }
-
-    /* evaluate the list                                                   */
-    SET_BRK_CURR_STAT( stat );
-    list = EVAL_EXPR( ADDR_STAT(stat)[1] );
-
-    /* get the body                                                        */
-    body = ADDR_STAT(stat)[2];
-
-    /* special case for lists                                              */
-    if ( IS_SMALL_LIST( list ) ) {
-
-        /* loop over the list, skipping unbound entries                    */
-        i = 1;
-        while ( i <= LEN_LIST(list) ) {
-
-            /* get the element and assign it to the variable               */
-            elm = ELMV0_LIST( list, i );
-            i++;
-            if ( elm == 0 )  continue;
-            if      ( vart == 'l' )  ASS_LVAR( var, elm );
-            else if ( vart == 'h' )  ASS_HVAR( var, elm );
-            else if ( vart == 'g' )  AssGVar(  var, elm );
-
-#if !defined(HAVE_SIGNAL)
-            /* test for an interrupt                                       */
-            if ( HaveInterrupt() ) {
-                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-            }
-#endif
-
-            /* execute the statements in the body                          */
-            EXEC_STAT_IN_LOOP(body);
-
-        }
-
-    }
-
-    /* general case                                                        */
-    else {
-
-        /* get the iterator                                                */
-        list = CALL_1ARGS( ITERATOR, list );
-
-        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC(list) ) {
-            /* this can avoid method selection overhead on iterator        */
-            dfun = ElmPRec( list, RNamName("IsDoneIterator") );
-            nfun = ElmPRec( list, RNamName("NextIterator") );
-        } else {
-            dfun = IS_DONE_ITER;
-            nfun = NEXT_ITER;
-        }
-
-        /* loop over the iterator                                          */
-        while ( CALL_1ARGS( dfun, list ) == False ) {
-
-            /* get the element and assign it to the variable               */
-            elm = CALL_1ARGS( nfun, list );
-            if      ( vart == 'l' )  ASS_LVAR( var, elm );
-            else if ( vart == 'h' )  ASS_HVAR( var, elm );
-            else if ( vart == 'g' )  AssGVar(  var, elm );
-
-#if !defined(HAVE_SIGNAL)
-            /* test for an interrupt                                       */
-            if ( HaveInterrupt() ) {
-                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-            }
-#endif
-
-            /* execute the statements in the body                          */
-            EXEC_STAT_IN_LOOP(body);
-
-        }
-
-    }
-
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt            ExecFor2 (
-    Stat                stat )
-{
-    UInt                var;            /* variable                        */
-    UInt                vart;           /* variable type                   */
-    Obj                 list;           /* list to loop over               */
-    Obj                 elm;            /* one element of the list         */
-    Stat                body1;          /* first  stat. of body of loop    */
-    Stat                body2;          /* second stat. of body of loop    */
-    UInt                i;              /* loop variable                   */
-    Obj                 nfun, dfun;     /* functions for NextIterator and
-                                           IsDoneIterator                  */  
-
-    /* get the variable (initialize them first to please 'lint')           */
-    if ( IS_REFLVAR( ADDR_STAT(stat)[0] ) ) {
-        var = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
-        vart = 'l';
-    }
-    else if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
-        var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
-        vart = 'h';
-    }
-    else /* if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_GVAR ) */ {
-        var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
-        vart = 'g';
-    }
-
-    /* evaluate the list                                                   */
-    SET_BRK_CURR_STAT( stat );
-    list = EVAL_EXPR( ADDR_STAT(stat)[1] );
-
-    /* get the body                                                        */
-    body1 = ADDR_STAT(stat)[2];
-    body2 = ADDR_STAT(stat)[3];
-
-    /* special case for lists                                              */
-    if ( IS_SMALL_LIST( list ) ) {
-
-        /* loop over the list, skipping unbound entries                    */
-        i = 1;
-        while ( i <= LEN_LIST(list) ) {
-
-            /* get the element and assign it to the variable               */
-            elm = ELMV0_LIST( list, i );
-            i++;
-            if ( elm == 0 )  continue;
-            if      ( vart == 'l' )  ASS_LVAR( var, elm );
-            else if ( vart == 'h' )  ASS_HVAR( var, elm );
-            else if ( vart == 'g' )  AssGVar(  var, elm );
-
-#if !defined(HAVE_SIGNAL)
-            /* test for an interrupt                                       */
-            if ( HaveInterrupt() ) {
-                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-            }
-#endif
-
-            /* execute the statements in the body                          */
-            EXEC_STAT_IN_LOOP(body1);
-            EXEC_STAT_IN_LOOP(body2);
-
-        }
-
-    }
-
-    /* general case                                                        */
-    else {
-
-        /* get the iterator                                                */
-        list = CALL_1ARGS( ITERATOR, list );
-
-        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC(list) ) {
-            /* this can avoid method selection overhead on iterator        */
-            dfun = ElmPRec( list, RNamName("IsDoneIterator") );
-            nfun = ElmPRec( list, RNamName("NextIterator") );
-        } else {
-            dfun = IS_DONE_ITER;
-            nfun = NEXT_ITER;
-        }
-
-        /* loop over the iterator                                          */
-        while ( CALL_1ARGS( dfun, list ) == False ) {
-
-            /* get the element and assign it to the variable               */
-            elm = CALL_1ARGS( nfun, list );
-            if      ( vart == 'l' )  ASS_LVAR( var, elm );
-            else if ( vart == 'h' )  ASS_HVAR( var, elm );
-            else if ( vart == 'g' )  AssGVar(  var, elm );
-
-#if !defined(HAVE_SIGNAL)
-            /* test for an interrupt                                       */
-            if ( HaveInterrupt() ) {
-                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-            }
-#endif
-
-            /* execute the statements in the body                          */
-            EXEC_STAT_IN_LOOP(body1);
-            EXEC_STAT_IN_LOOP(body2);
-
-        }
-
-    }
-
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt            ExecFor3 (
-    Stat                stat )
+static ALWAYS_INLINE UInt ExecForHelper(Stat stat, UInt nr)
 {
     UInt                var;            /* variable                        */
     UInt                vart;           /* variable type                   */
@@ -576,6 +363,8 @@ UInt            ExecFor3 (
     Obj                 nfun, dfun;     /* functions for NextIterator and
                                            IsDoneIterator                  */  
 
+    GAP_ASSERT(1 <= nr && nr <= 3);
+
     /* get the variable (initialize them first to please 'lint')           */
     if ( IS_REFLVAR( ADDR_STAT(stat)[0] ) ) {
         var = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
@@ -596,8 +385,10 @@ UInt            ExecFor3 (
 
     /* get the body                                                        */
     body1 = ADDR_STAT(stat)[2];
-    body2 = ADDR_STAT(stat)[3];
-    body3 = ADDR_STAT(stat)[4];
+    if (nr >= 2)
+        body2 = ADDR_STAT(stat)[3];
+    if (nr >= 3)
+        body3 = ADDR_STAT(stat)[4];
 
     /* special case for lists                                              */
     if ( IS_SMALL_LIST( list ) ) {
@@ -623,9 +414,10 @@ UInt            ExecFor3 (
 
             /* execute the statements in the body                          */
             EXEC_STAT_IN_LOOP(body1);
-            EXEC_STAT_IN_LOOP(body2);
-            EXEC_STAT_IN_LOOP(body3);
-
+            if (nr >= 2)
+                EXEC_STAT_IN_LOOP(body2);
+            if (nr >= 3)
+                EXEC_STAT_IN_LOOP(body3);
         }
 
     }
@@ -663,15 +455,32 @@ UInt            ExecFor3 (
 
             /* execute the statements in the body                          */
             EXEC_STAT_IN_LOOP(body1);
-            EXEC_STAT_IN_LOOP(body2);
-            EXEC_STAT_IN_LOOP(body3);
-
+            if (nr >= 2)
+                EXEC_STAT_IN_LOOP(body2);
+            if (nr >= 3)
+                EXEC_STAT_IN_LOOP(body3);
         }
 
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
+}
+
+UInt ExecFor(Stat stat)
+{
+    return ExecForHelper(stat, 1);
+}
+
+
+UInt ExecFor2(Stat stat)
+{
+    return ExecForHelper(stat, 2);
+}
+
+UInt ExecFor3(Stat stat)
+{
+    return ExecForHelper(stat, 3);
 }
 
 
@@ -698,129 +507,7 @@ UInt            ExecFor3 (
 **  assignment   bag  for  the  loop  variable,   the second    subbag is the
 **  list-expression, and the remaining subbags are the statements.
 */
-UInt            ExecForRange (
-    Stat                stat )
-{
-    UInt                lvar;           /* local variable                  */
-    Int                 first;          /* first value of range            */
-    Int                 last;           /* last value of range             */
-    Obj                 elm;            /* one element of the list         */
-    Stat                body;           /* body of the loop                */
-    Int                 i;              /* loop variable                   */
-
-    /* get the variable (initialize them first to please 'lint')           */
-    lvar = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
-
-    /* evaluate the range                                                  */
-    SET_BRK_CURR_STAT( stat );
-    VisitStatIfHooked(ADDR_STAT(stat)[1]);
-    elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[0] );
-    while ( ! IS_INTOBJ(elm) ) {
-        elm = ErrorReturnObj(
-            "Range: <first> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(elm), 0L,
-            "you can replace <first> via 'return <first>;'" );
-    }
-    first = INT_INTOBJ(elm);
-    elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[1] );
-    while ( ! IS_INTOBJ(elm) ) {
-        elm = ErrorReturnObj(
-            "Range: <last> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(elm), 0L,
-            "you can replace <last> via 'return <last>;'" );
-    }
-    last  = INT_INTOBJ(elm);
-
-    /* get the body                                                        */
-    body = ADDR_STAT(stat)[2];
-
-    /* loop over the range                                                 */
-    for ( i = first; i <= last; i++ ) {
-
-        /* get the element and assign it to the variable                   */
-        elm = INTOBJ_INT( i );
-        ASS_LVAR( lvar, elm );
-
-#if !defined(HAVE_SIGNAL)
-        /* test for an interrupt                                           */
-        if ( HaveInterrupt() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-        }
-#endif
-
-        /* execute the statements in the body                              */
-        EXEC_STAT_IN_LOOP(body);
-
-    }
-
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt            ExecForRange2 (
-    Stat                stat )
-{
-    UInt                lvar;           /* local variable                  */
-    Int                 first;          /* first value of range            */
-    Int                 last;           /* last value of range             */
-    Obj                 elm;            /* one element of the list         */
-    Stat                body1;          /* first  stat. of body of loop    */
-    Stat                body2;          /* second stat. of body of loop    */
-    Int                 i;              /* loop variable                   */
-
-    /* get the variable (initialize them first to please 'lint')           */
-    lvar = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
-
-    /* evaluate the range                                                  */
-    SET_BRK_CURR_STAT( stat );
-    VisitStatIfHooked(ADDR_STAT(stat)[1]);
-    elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[0] );
-    while ( ! IS_INTOBJ(elm) ) {
-        elm = ErrorReturnObj(
-            "Range: <first> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(elm), 0L,
-            "you can replace <first> via 'return <first>;'" );
-    }
-    first = INT_INTOBJ(elm);
-    elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[1] );
-    while ( ! IS_INTOBJ(elm) ) {
-        elm = ErrorReturnObj(
-            "Range: <last> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(elm), 0L,
-            "you can replace <last> via 'return <last>;'" );
-    }
-    last  = INT_INTOBJ(elm);
-
-    /* get the body                                                        */
-    body1 = ADDR_STAT(stat)[2];
-    body2 = ADDR_STAT(stat)[3];
-
-    /* loop over the range                                                 */
-    for ( i = first; i <= last; i++ ) {
-
-        /* get the element and assign it to the variable                   */
-        elm = INTOBJ_INT( i );
-        ASS_LVAR( lvar, elm );
-
-#if !defined(HAVE_SIGNAL)
-        /* test for an interrupt                                           */
-        if ( HaveInterrupt() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-        }
-#endif
-
-        /* execute the statements in the body                              */
-        EXEC_STAT_IN_LOOP(body1);
-        EXEC_STAT_IN_LOOP(body2);
-
-    }
-
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt            ExecForRange3 (
-    Stat                stat )
+static ALWAYS_INLINE UInt ExecForRangeHelper(Stat stat, UInt nr)
 {
     UInt                lvar;           /* local variable                  */
     Int                 first;          /* first value of range            */
@@ -831,6 +518,8 @@ UInt            ExecForRange3 (
     Stat                body3;          /* third  stat. of body of loop    */
     Int                 i;              /* loop variable                   */
 
+    GAP_ASSERT(1 <= nr && nr <= 3);
+
     /* get the variable (initialize them first to please 'lint')           */
     lvar = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
 
@@ -856,8 +545,10 @@ UInt            ExecForRange3 (
 
     /* get the body                                                        */
     body1 = ADDR_STAT(stat)[2];
-    body2 = ADDR_STAT(stat)[3];
-    body3 = ADDR_STAT(stat)[4];
+    if (nr >= 2)
+        body2 = ADDR_STAT(stat)[3];
+    if (nr >= 3)
+        body3 = ADDR_STAT(stat)[4];
 
     /* loop over the range                                                 */
     for ( i = first; i <= last; i++ ) {
@@ -875,13 +566,29 @@ UInt            ExecForRange3 (
 
         /* execute the statements in the body                              */
         EXEC_STAT_IN_LOOP(body1);
-        EXEC_STAT_IN_LOOP(body2);
-        EXEC_STAT_IN_LOOP(body3);
-
+        if (nr >= 2)
+            EXEC_STAT_IN_LOOP(body2);
+        if (nr >= 3)
+            EXEC_STAT_IN_LOOP(body3);
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
+}
+
+UInt ExecForRange(Stat stat)
+{
+    return ExecForRangeHelper(stat, 1);
+}
+
+UInt ExecForRange2(Stat stat)
+{
+    return ExecForRangeHelper(stat, 2);
+}
+
+UInt ExecForRange3(Stat stat)
+{
+    return ExecForRangeHelper(stat, 3);
 }
 
 /****************************************************************************
@@ -971,86 +678,22 @@ UInt ExecAtomic(
 **  the second subbag is the first statement,  the third subbag is the second
 **  statement, and so on.
 */
-UInt ExecWhile (
-    Stat                stat )
-{
-    Expr                cond;           /* condition                       */
-    Stat                body;           /* body of loop                    */
-
-    /* get the condition and the body                                      */
-    cond = ADDR_STAT(stat)[0];
-    body = ADDR_STAT(stat)[1];
-
-    /* while the condition evaluates to 'true', execute the body           */
-    SET_BRK_CURR_STAT( stat );
-    while ( EVAL_BOOL_EXPR( cond ) != False ) {
-
-#if !defined(HAVE_SIGNAL)
-        /* test for an interrupt                                           */
-        if ( HaveInterrupt() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-        }
-#endif
-
-        /* execute the body                                                */
-        EXEC_STAT_IN_LOOP(body);
-
-        SET_BRK_CURR_STAT( stat );
-
-    }
-
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt ExecWhile2 (
-    Stat                stat )
-{
-    Expr                cond;           /* condition                       */
-    Stat                body1;          /* first  stat. of body of loop    */
-    Stat                body2;          /* second stat. of body of loop    */
-
-    /* get the condition and the body                                      */
-    cond = ADDR_STAT(stat)[0];
-    body1 = ADDR_STAT(stat)[1];
-    body2 = ADDR_STAT(stat)[2];
-
-    /* while the condition evaluates to 'true', execute the body           */
-    SET_BRK_CURR_STAT( stat );
-    while ( EVAL_BOOL_EXPR( cond ) != False ) {
-
-#if !defined(HAVE_SIGNAL)
-        /* test for an interrupt                                           */
-        if ( HaveInterrupt() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-        }
-#endif
-
-        /* execute the body                                                */
-        EXEC_STAT_IN_LOOP(body1);
-        EXEC_STAT_IN_LOOP(body2);
-
-        SET_BRK_CURR_STAT( stat );
-
-    }
-
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt ExecWhile3 (
-    Stat                stat )
+static ALWAYS_INLINE UInt ExecWhileHelper(Stat stat, UInt nr)
 {
     Expr                cond;           /* condition                       */
     Stat                body1;          /* first  stat. of body of loop    */
     Stat                body2;          /* second stat. of body of loop    */
     Stat                body3;          /* third  stat. of body of loop    */
 
+    GAP_ASSERT(1 <= nr && nr <= 3);
+
     /* get the condition and the body                                      */
     cond = ADDR_STAT(stat)[0];
     body1 = ADDR_STAT(stat)[1];
-    body2 = ADDR_STAT(stat)[2];
-    body3 = ADDR_STAT(stat)[3];
+    if (nr >= 2)
+        body2 = ADDR_STAT(stat)[2];
+    if (nr >= 3)
+        body3 = ADDR_STAT(stat)[3];
 
     /* while the condition evaluates to 'true', execute the body           */
     SET_BRK_CURR_STAT( stat );
@@ -1065,8 +708,10 @@ UInt ExecWhile3 (
 
         /* execute the body                                                */
         EXEC_STAT_IN_LOOP(body1);
-        EXEC_STAT_IN_LOOP(body2);
-        EXEC_STAT_IN_LOOP(body3);
+        if (nr >= 2)
+            EXEC_STAT_IN_LOOP(body2);
+        if (nr >= 3)
+            EXEC_STAT_IN_LOOP(body3);
 
         SET_BRK_CURR_STAT( stat );
 
@@ -1074,6 +719,21 @@ UInt ExecWhile3 (
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
+}
+
+UInt ExecWhile(Stat stat)
+{
+    return ExecWhileHelper(stat, 1);
+}
+
+UInt ExecWhile2(Stat stat)
+{
+    return ExecWhileHelper(stat, 2);
+}
+
+UInt ExecWhile3(Stat stat)
+{
+    return ExecWhileHelper(stat, 3);
 }
 
 
@@ -1096,75 +756,7 @@ UInt ExecWhile3 (
 **  the second subbag is the first statement, the  third subbag is the second
 **  statement, and so on.
 */
-UInt ExecRepeat (
-    Stat                stat )
-{
-    Expr                cond;           /* condition                       */
-    Stat                body;           /* body of loop                    */
-
-    /* get the condition and the body                                      */
-    cond = ADDR_STAT(stat)[0];
-    body = ADDR_STAT(stat)[1];
-
-    /* execute the body until the condition evaluates to 'true'            */
-    SET_BRK_CURR_STAT( stat );
-    do {
-
-#if !defined(HAVE_SIGNAL)
-        /* test for an interrupt                                           */
-        if ( HaveInterrupt() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-        }
-#endif
-
-        /* execute the body                                                */
-        EXEC_STAT_IN_LOOP(body);
-
-        SET_BRK_CURR_STAT( stat );
-
-    } while ( EVAL_BOOL_EXPR( cond ) == False );
-
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt ExecRepeat2 (
-    Stat                stat )
-{
-    Expr                cond;           /* condition                       */
-    Stat                body1;          /* first  stat. of body of loop    */
-    Stat                body2;          /* second stat. of body of loop    */
-
-    /* get the condition and the body                                      */
-    cond = ADDR_STAT(stat)[0];
-    body1 = ADDR_STAT(stat)[1];
-    body2 = ADDR_STAT(stat)[2];
-
-    /* execute the body until the condition evaluates to 'true'            */
-    SET_BRK_CURR_STAT( stat );
-    do {
-
-#if !defined(HAVE_SIGNAL)
-        /* test for an interrupt                                           */
-        if ( HaveInterrupt() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-        }
-#endif
-
-        /* execute the body                                                */
-        EXEC_STAT_IN_LOOP(body1);
-        EXEC_STAT_IN_LOOP(body2);
-
-        SET_BRK_CURR_STAT( stat );
-
-    } while ( EVAL_BOOL_EXPR( cond ) == False );
-
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
-
-UInt ExecRepeat3 (
-    Stat                stat )
+static ALWAYS_INLINE UInt ExecRepeatHelper(Stat stat, UInt nr)
 {
     Expr                cond;           /* condition                       */
     Stat                body1;          /* first  stat. of body of loop    */
@@ -1174,8 +766,10 @@ UInt ExecRepeat3 (
     /* get the condition and the body                                      */
     cond = ADDR_STAT(stat)[0];
     body1 = ADDR_STAT(stat)[1];
-    body2 = ADDR_STAT(stat)[2];
-    body3 = ADDR_STAT(stat)[3];
+    if (nr >= 2)
+        body2 = ADDR_STAT(stat)[2];
+    if (nr >= 3)
+        body3 = ADDR_STAT(stat)[3];
 
     /* execute the body until the condition evaluates to 'true'            */
     SET_BRK_CURR_STAT( stat );
@@ -1190,8 +784,10 @@ UInt ExecRepeat3 (
 
         /* execute the body                                                */
         EXEC_STAT_IN_LOOP(body1);
-        EXEC_STAT_IN_LOOP(body2);
-        EXEC_STAT_IN_LOOP(body3);
+        if (nr >= 2)
+            EXEC_STAT_IN_LOOP(body2);
+        if (nr >= 3)
+            EXEC_STAT_IN_LOOP(body3);
 
         SET_BRK_CURR_STAT( stat );
 
@@ -1199,6 +795,21 @@ UInt ExecRepeat3 (
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
+}
+
+UInt ExecRepeat(Stat stat)
+{
+    return ExecRepeatHelper(stat, 1);
+}
+
+UInt ExecRepeat2(Stat stat)
+{
+    return ExecRepeatHelper(stat, 2);
+}
+
+UInt ExecRepeat3(Stat stat)
+{
+    return ExecRepeatHelper(stat, 3);
 }
 
 
