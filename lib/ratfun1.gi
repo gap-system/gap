@@ -86,6 +86,17 @@ local coefs, ind, extrep, i, shift,fam;
   
 end;
 
+INDETS_POLY_EXTREP:=function(extrep)
+local indets, i, j;
+  indets:=[];
+  for i in [1,3..Length(extrep)-1] do
+    for j in [1,3..Length(extrep[i])-1] do
+      AddSet(indets, extrep[i][j]);
+    od;
+  od;
+  return indets;
+end;
+
 UNIVARTEST_RATFUN:=function(f)
 local fam,notuniv,cannot,num,den,hasden,indn,col,dcol,val,i,j,nud,pos;
   fam:=FamilyObj(f);
@@ -102,6 +113,14 @@ local fam,notuniv,cannot,num,den,hasden,indn,col,dcol,val,i,j,nud,pos;
   else
     num := ExtRepNumeratorRatFun(f);
     den := ExtRepDenominatorRatFun(f);
+  fi;
+
+  # if the symmetric difference of the indeterminates of the numerator and
+  # denominator contains more than one element, can't be univariate
+  i:=INDETS_POLY_EXTREP(num);
+  j:=INDETS_POLY_EXTREP(den);
+  if Size(Union(i,j)) > Size(Intersection(i,j))+1 then
+    return notuniv;
   fi;
 
   if Length(den[1])> 0 then
