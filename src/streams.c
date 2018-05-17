@@ -15,6 +15,7 @@
 #include "streams.h"
 
 #include "bool.h"
+#include "calls.h"
 #include "error.h"
 #include "funcs.h"
 #include "gap.h"
@@ -23,6 +24,7 @@
 #include "lists.h"
 #include "modules.h"
 #include "io.h"
+#include "opers.h"
 #include "plist.h"
 #include "precord.h"
 #include "read.h"
@@ -80,69 +82,113 @@ static Int READ_COMMAND(Obj *evalResult)
     return 1;
 }
 
-
-/*
- * This function reads all code from the stream and returns either `fail` if the stream
- * cannot be opened, or executes all statements in the stream and returns a list of lists,
- * each entry of which reflects the result of the execution of one statement.
- *
- * The results are returned as lists with at most three bound positions.
- *
- * If the first entry is `true`, then the second entry is bound to the result of
- * the statement if there was one, and unbound otherwise, and the third entry
- * reflects whether the statement ended in a dual semicolon,
- * if the first entry is `false', an error occurred during the execution of a statement,
- * and no other positions of the list are bound.
- *
- * This function is currently used in interactive tools such as the GAP Jupyter kernel to
- * execute cells and is likely to be replaced by a function that can read a single command
- * from a stream without losing the rest of its content.
- */
-Obj FuncREAD_ALL_COMMANDS( Obj self, Obj stream, Obj echo )
+/****************************************************************************
+**
+*F  FuncREAD_ALL_COMMANDS( <self>, <instream>, <echo>, <outputFunc> )
+**
+**  FuncREAD_ALL_COMMANDS reads all code from <instream> and returns either
+**  fail if the stream cannot be opened, or executes all statements in the
+**  stream and returns a list of lists, each entry of which reflects the
+**  result of the execution of one statement.
+**
+**  The results are returned as lists of length three if <outputFunc> is
+**  false, or five, if <outputFunc> is a function.
+**
+**  If the first entry is true, then the second entry is bound to the result
+**  of the statement if there was one, and unbound otherwise, and the third
+**  entry reflects whether the statement ended in a dual semicolon. If the
+**  first entry is false, an error occurred during the execution of a
+**  statement. In this case, if <outputFunc> is false, only the first entry
+**  is set. If <outputFunc> is a function, only the first and the fifth entry
+**  are set. If <outputFunc> is a function, the fourth entry of the list is
+**  <outputFunc> applied to the result, if there was one, and if the
+**  statement did not end in a dual semicolon. Furthermore, if <outputFunc>
+**  is not false, the fifth entry contains a string of all output printed
+**  while the corresponding statement was executed. If <outputFunc> is false,
+**  all intermediate output is discarded.
+**
+**  This function is currently used in interactive tools such as the GAP
+**  Jupyter kernel to execute cells and is likely to be replaced by a
+**  function that can read a single command from a stream without losing the
+**  rest of its content.
+*/
+Obj FuncREAD_ALL_COMMANDS(Obj self, Obj instream, Obj echo, Obj outputFunc)
 {
     ExecStatus status;
-    Int resultCount, resultCapacity;
-    UInt dualSemicolon;
-    Obj result, resultList;
-    Obj evalResult;
+    UInt       dualSemicolon;
+    Obj        result, resultList;
+    Obj        evalResult;
+    Obj        outstream = 0;
+    Obj        outstreamString = 0;
 
-    /* try to open the stream */
-    if (!OpenInputStream(stream, echo == True)) {
+    /* try to open the streams */
+    if (!OpenInputStream(instream, echo == True)) {
         return Fail;
     }
 
-    resultCount = 0;
-    resultCapacity = 16;
-    resultList = NEW_PLIST( T_PLIST, resultCapacity );
-    SET_LEN_PLIST(resultList, resultCount);
+
+    if (outputFunc != False) {
+        outstreamString = NEW_STRING(0);
+        outstream = DoOperation2Args(ValGVar(GVarName("OutputTextString")),
+                                     outstreamString, True);
+    }
+    if (outstream && !OpenOutputStream(outstream)) {
+        CloseInput();
+        return Fail;
+    }
+
+    resultList = NEW_PLIST(T_PLIST, 16);
 
     do {
         ClearError();
-        status = ReadEvalCommand(STATE(BottomLVars), &evalResult, &dualSemicolon);
 
-        if(!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))) {
-            resultCount++;
-            if (resultCount > resultCapacity) {
-                resultCapacity += 16;
-                GROW_PLIST(resultList, resultCapacity);
+        if (outstream) {
+            // Clean in case Callback function had output
+            SET_LEN_STRING(outstreamString, 0);
+        }
+
+        status =
+            ReadEvalCommand(STATE(BottomLVars), &evalResult, &dualSemicolon);
+
+        if (!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))) {
+            if (outputFunc != False) {
+                Obj copy = CopyToStringRep(outstreamString);
+                SET_LEN_STRING(outstreamString, 0);
+                result = NEW_PLIST(T_PLIST, 5);
+                SET_LEN_PLIST(result, 5);
+                SET_ELM_PLIST(result, 5, copy);
+                CHANGED_BAG(result);
             }
-            result = NEW_PLIST( T_PLIST, 3 );
-            SET_LEN_PLIST(result, 1);
-            SET_ELM_PLIST(result, 1, False);
-            SET_ELM_PLIST(resultList, resultCount, result );
-            SET_LEN_PLIST(resultList, resultCount );
-
-            if(!(status & STATUS_ERROR)) {
+            else {
+                result = NEW_PLIST(T_PLIST, 3);
                 SET_LEN_PLIST(result, 3);
+            }
+            SET_ELM_PLIST(result, 1, False);
+            PushPlist(resultList, result);
+
+            if (!(status & STATUS_ERROR)) {
                 SET_ELM_PLIST(result, 1, True);
                 SET_ELM_PLIST(result, 3, dualSemicolon ? True : False);
 
                 if (evalResult) {
                     SET_ELM_PLIST(result, 2, evalResult);
+                    CHANGED_BAG(result);
+                }
+
+                if (evalResult && outputFunc != False && !dualSemicolon) {
+                    Obj tmp = CALL_1ARGS(outputFunc, evalResult);
+                    SET_ELM_PLIST(result, 4, tmp);
+                    CHANGED_BAG(result);
                 }
             }
+            else {
+                SET_LEN_PLIST(result, 1);
+            }
         }
-    } while(!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT)));
+    } while (!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT)));
+
+    if (outstream)
+        CloseOutput();
     CloseInput();
     ClearError();
 
@@ -2133,7 +2179,7 @@ static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(READ, 1, "filename"),
     GVAR_FUNC(READ_NORECOVERY, 1, "filename"),
-    GVAR_FUNC(READ_ALL_COMMANDS, 2, "stream, echo"),
+    GVAR_FUNC(READ_ALL_COMMANDS, 3, "instream, echo, outputFunc"),
     GVAR_FUNC(READ_COMMAND_REAL, 2, "stream, echo"),
     GVAR_FUNC(READ_STREAM, 1, "stream"),
     GVAR_FUNC(READ_STREAM_LOOP, 2, "stream, catchstderrout"),
@@ -2184,7 +2230,8 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(RAW_MODE_FILE, 2, "fid, bool"),
 #endif
 #ifdef HAVE_SELECT
-    GVAR_FUNC(UNIXSelect, 5, "inlist, outlist, exclist, timeoutsec, timeoutusec"),
+    GVAR_FUNC(
+        UNIXSelect, 5, "inlist, outlist, exclist, timeoutsec, timeoutusec"),
 #endif
     GVAR_FUNC(ExecuteProcess, 5, "dir, prg, in, out, args"),
     { 0, 0, 0, 0, 0 }
