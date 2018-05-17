@@ -3611,36 +3611,6 @@ static StructGVarFunc GVarFuncs [] = {
 
 };
 
-
-/****************************************************************************
-**
-*V  SweepAndCheckNonDensePlist
-*/
-
-void SweepAndCheckNonDensePlist ( Bag * src,
-				  Bag *dest,
-				  UInt baglength )
-{
-  UInt holeseen=0;
-  UInt listlength = (UInt)(*src);
-  UInt i;
-  if (listlength > baglength - 1)
-    Pr("#W Plain list with length %d in bag of size only %d\n", listlength, baglength);
-  *(UInt *)dest = listlength;
-  if (listlength == 0)
-    Pr("#W Plain non-dense list length 0\n", 0, 0);
-  for (i = 1; i < listlength; i++)
-    if (!(dest[i] = src[i]))
-      holeseen = 1;
-  if (!(dest[listlength] = src[listlength]))
-    Pr("#W plain list length %d with final entry unbound\n", listlength, 0);
-  if (!holeseen)
-    Pr("#W plain non-dense list length %d contains no hole\n", listlength, 0);
-  for (i = listlength+1; i < baglength; i++)
-    dest[i] = (Bag)0;  
-}
-			  
-
 /****************************************************************************
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
@@ -3667,11 +3637,6 @@ static Int InitKernel (
 #if !defined(USE_THREADSAFE_COPYING)
     InitMarkFuncBags( T_PLIST_FFE            +COPYING , MarkNoSubBags );
     InitMarkFuncBags( T_PLIST_FFE +IMMUTABLE +COPYING , MarkNoSubBags );
-#endif
-
-#ifdef CHECK_NDENSE_BAGS
-    InitSweepFuncBags( T_PLIST_NDENSE, SweepAndCheckNonDensePlist);
-    InitSweepFuncBags( T_PLIST_NDENSE + IMMUTABLE, SweepAndCheckNonDensePlist);
 #endif
     
     /* If T_PLIST_FFE is not the last PLIST type then some more
