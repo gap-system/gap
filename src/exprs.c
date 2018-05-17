@@ -920,8 +920,8 @@ Obj             EvalPermExpr (
 **  'EvalListExpr'  just  calls 'ListExpr1'  and  'ListExpr2' to evaluate the
 **  list expression.
 */
-Obj             ListExpr1 ( Expr expr );
-void            ListExpr2 ( Obj list, Expr expr );
+Obj             ListExpr1(Expr expr, Int tildeInUse);
+void            ListExpr2(Obj list, Expr expr, Int tildeInUse);
 Obj             RecExpr1 ( Expr expr );
 void            RecExpr2 ( Obj rec, Expr expr );
 
@@ -931,8 +931,8 @@ Obj             EvalListExpr (
     Obj                 list;         /* list value, result                */
 
     /* evaluate the list expression                                         */
-    list = ListExpr1( expr );
-    ListExpr2( list, expr );
+    list = ListExpr1(expr, 0);
+    ListExpr2(list, expr, 0);
 
     /* return the result                                                   */
     return list;
@@ -964,13 +964,13 @@ Obj             EvalListTildeExpr (
     tilde = STATE( Tilde );
 
     /* create the list value                                               */
-    list = ListExpr1( expr );
+    list = ListExpr1(expr, 1);
 
     /* assign the list to '~'                                              */
     STATE(Tilde) = list;
 
     /* evaluate the subexpressions into the list value                     */
-    ListExpr2( list, expr );
+    ListExpr2(list, expr, 1);
 
     /* restore old value of '~'                                            */
     STATE(Tilde) = tilde;
@@ -982,8 +982,8 @@ Obj             EvalListTildeExpr (
 
 /****************************************************************************
 **
-*F  ListExpr1(<expr>) . . . . . . . . . . . make a list for a list expression
-*F  ListExpr2(<list>,<expr>)  . . .  enter the sublists for a list expression
+*F  ListExpr1(<expr>,<tildeInUse>) . . . .  make a list for a list expression
+*F  ListExpr2(<list>,<expr>,<tildeInUse>)  enter the sublists for a list expr
 **
 **  'ListExpr1' and 'ListExpr2'  together evaluate the list expression <expr>
 **  into the list <list>.
@@ -998,9 +998,15 @@ Obj             EvalListTildeExpr (
 **  This two step allocation  is necessary, because  list expressions such as
 **  '[ [1], ~[1] ]'  requires that the value of  one subexpression is entered
 **  into the list value before the next subexpression is evaluated.
+**
+**  'tildeInUse' is 1 when this list is part of the value of ~.
+**
+**  When 'tildeInUse' is 1, use a slower code path which ensures the list is
+**  in a valid state after each element is added and handles the elements
+**  and TNUM of the list changing whenever a new element is constructed.
+**
 */
-Obj ListExpr1 (
-    Expr                expr )
+ALWAYS_INLINE Obj ListExpr1(Expr expr, Int tildeInUse)
 {
     Obj                 list;           /* list value, result              */
     Int                 len;            /* logical length of the list      */
@@ -1015,15 +1021,14 @@ Obj ListExpr1 (
     else {
         list = NEW_PLIST( T_PLIST, len );
     }
-    SET_LEN_PLIST( list, len );
+
+    SET_LEN_PLIST(list, tildeInUse ? 0 : len);
 
     /* return the list                                                     */
     return list;
 }
 
-void ListExpr2 (
-    Obj                 list,
-    Expr                expr )
+ALWAYS_INLINE void ListExpr2(Obj list, Expr expr, Int tildeInUse)
 {
     Obj                 sub;            /* value of a subexpression        */
     Int                 len;            /* logical length of the list      */
@@ -1053,18 +1058,27 @@ void ListExpr2 (
           {
             if (posshole == 1)
               {
-                SET_FILT_LIST(list, FN_IS_NDENSE);
+                if (!tildeInUse) {
+                    SET_FILT_LIST(list, FN_IS_NDENSE);
+                }
                 posshole = 2;
               }
             sub = EVAL_EXPR( ADDR_EXPR(expr)[i-1] );
-            SET_ELM_PLIST( list, i, sub );
+            if (tildeInUse) {
+                ASS_LIST(list, i, sub);
+            }
+            else {
+                SET_ELM_PLIST(list, i, sub);
+            }
             CHANGED_BAG( list );
           }
 
     }
-    if (!posshole)
-      SET_FILT_LIST(list, FN_IS_DENSE);
 
+    // If tildeInUse = 1, elements of 'list' may have been removed
+    if (!posshole && !tildeInUse) {
+        SET_FILT_LIST(list, FN_IS_DENSE);
+    }
 }
 
 
