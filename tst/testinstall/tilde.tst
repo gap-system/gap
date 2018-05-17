@@ -85,4 +85,15 @@ true
 gap> i := InputTextString( "local a; a := 10; return rec(a := a*10, b := ~);" );;
 gap> r := rec(a := ~, b := ReadAsFunction(i)(), c := ~.b.a);
 rec( a := ~, b := rec( a := 100, b := ~.b ), c := 100 )
+gap> [Length(~),Length(~),Length(~)];
+[ 0, 1, 2 ]
+gap> (function() return [Length(~),Length(~),Length(~)]; end)();
+[ 0, 1, 2 ]
+gap> rem := function(l) Remove(l); return 1; end;;
+gap> [2,rem(~),rem(~),rem(~)];
+[ ,,, 1 ]
+gap> [2,rem(~),3,4,rem(~),5,6,rem(~)];
+[ , 1, 3,, 1, 5,, 1 ]
+gap> (function() return  [2,rem(~),3,4,rem(~),5,6,rem(~)]; end)();
+[ , 1, 3,, 1, 5,, 1 ]
 gap> STOP_TEST( "tilde.tst", 1);
