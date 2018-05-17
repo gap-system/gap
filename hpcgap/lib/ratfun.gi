@@ -249,6 +249,26 @@ function(o)
   fi;
 end);
 
+InstallOtherMethod(IsConstantRationalFunction,"fallback for non-ratfun",true,
+  [IsObject],0,
+function(o)
+  if IsRationalFunction(o) then
+    TryNextMethod();
+  else
+    return false;
+  fi;
+end);
+
+InstallOtherMethod(IsUnivariateRationalFunction,"fallback for non-ratfun",true,
+  [IsObject],0,
+function(o)
+  if IsRationalFunction(o) then
+    TryNextMethod();
+  else
+    return false;
+  fi;
+end);
+
 #############################################################################
 ##
 #M  ExtRepPolynomialRatFun(<ulaurent>)
@@ -1030,6 +1050,19 @@ InstallMethod( \*, "rat-fun * coeff", IsElmsCoeffs,
 function(r, c)
   return ProdCoefRatfun(c,r);
 end);
+
+InstallMethod( \*, "ratfun * rat", true,
+    [ IsPolynomialFunction, IsRat ],-RankFilter(IsRat),
+function( left, right )
+  return left * (right*FamilyObj(left)!.oneCoefficient);
+end );
+
+InstallMethod( \*, "rat * ratfun ", true,
+    [ IsRat, IsPolynomialFunction], -RankFilter(IsRat),
+function( left, right )
+  return (left*FamilyObj(right)!.oneCoefficient) * right;
+end);
+
 
 #############################################################################
 ##

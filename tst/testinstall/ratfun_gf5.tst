@@ -5,19 +5,18 @@
 ##
 #Y  (C) 1998 School Math. and Comp. Sci., University of St Andrews, Scotland
 ##
-gap> START_TEST("ratfun.tst");
+gap> START_TEST("ratfun_gf5.tst");
 
 #
-gap> t:=Indeterminate(Rationals,100);;
+gap> t:=Indeterminate(GF(5),100);;
 gap> SetName(t,"t");;
-gap> u:=Indeterminate(Rationals,101);;
+gap> u:=Indeterminate(GF(5),101);;
 gap> SetName(u,"u");;
 
 #
 # test basic properties
 #
-gap> data := [ 0*t, t^0, t, t+1, 1/t, 1/(t+1), t+u, t/u, t/(u+1), 0, 1/2 ];
-[ 0, 1, t, t+1, t^-1, (1)/(t+1), t+u, t/u, t/(u+1), 0, 1/2 ]
+gap> data := [ 0*t, t^0, t, t+1, 1/t, 1/(t+1), t+u, t/u, t/(u+1), 0, 1/2 ];;
 gap> List(data, IsRat);
 [ false, false, false, false, false, false, false, false, false, true, true ]
 gap> List(data, IsRationalFunction);
@@ -38,31 +37,19 @@ gap> List(data, IsLaurentPolynomial);
 #
 
 # multiplication
-gap> List(data, x -> x * Zero(t));
-[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-gap> ForAll(last,IsUnivariatePolynomial and IsZero);
+gap> ForAll(List(data, x -> x * Zero(t)), IsUnivariatePolynomial and IsZero);
 true
-gap> List(data, x -> Zero(t) * x);
-[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-gap> ForAll(last,IsUnivariatePolynomial and IsZero);
+gap> ForAll(List(data, x -> Zero(t) * x), IsUnivariatePolynomial and IsZero);
 true
-gap> List(data, x -> One(t) * x);
-[ 0, 1, t, t+1, t^-1, (1)/(t+1), t+u, t/u, t/(u+1), 0, 1/2 ]
-gap> last = data*t^0;
+gap> ForAll(List(data, x -> One(t) * x) - data, IsUnivariatePolynomial and IsZero);
 true
-gap> List(data, x -> x * One(t));
-[ 0, 1, t, t+1, t^-1, (1)/(t+1), t+u, t/u, t/(u+1), 0, 1/2 ]
-gap> last = data*t^0;
+gap> ForAll(List(data, x -> x * One(t)) - data, IsUnivariatePolynomial and IsZero);
 true
 
 # addition
-gap> List(data, x -> x + Zero(t));
-[ 0, 1, t, t+1, t^-1, (1)/(t+1), t+u, t/u, t/(u+1), 0, 1/2 ]
-gap> last = data*t^0;
+gap> ForAll(List(data, x -> Zero(t) + x) - data, IsUnivariatePolynomial and IsZero);
 true
-gap> List(data, x -> Zero(t) + x);
-[ 0, 1, t, t+1, t^-1, (1)/(t+1), t+u, t/u, t/(u+1), 0, 1/2 ]
-gap> last = data*t^0;
+gap> ForAll(List(data, x -> x + Zero(t)) - data, IsUnivariatePolynomial and IsZero);
 true
 
 # commutative
@@ -85,11 +72,11 @@ gap> SetX(data, data, data, {x,y,z} -> (x+y)*z = x*z+y*z);
 gap> Value(0*t,1);
 0
 gap> Value(t^0,1);
-1
+Z(5)^0
 gap> Value(t^0,-1);
-1
+Z(5)^0
 gap> Value(t,-1);
--1
+Z(5)^2
 
 #
 gap> y1:=Indeterminate(Rationals,1);;
@@ -104,11 +91,13 @@ gap> 1/( y1*y2 );
 
 #
 gap> Factors(t^24-1);
-[ t-1, t+1, t^2-t+1, t^2+1, t^2+t+1, t^4-t^2+1, t^4+1, t^8-t^4+1 ]
+[ t+Z(5)^0, t+Z(5), t-Z(5)^0, t+Z(5)^3, t^2+Z(5), t^2+Z(5)^3, t^2+t+Z(5)^0, 
+  t^2+t+Z(5), t^2+Z(5)*t-Z(5)^0, t^2+Z(5)*t+Z(5)^3, t^2-t+Z(5)^0, t^2-t+Z(5), 
+  t^2+Z(5)^3*t-Z(5)^0, t^2+Z(5)^3*t+Z(5)^3 ]
 gap> (t^24-1)/(t^16-1);
-(t^16+t^8+1)/(t^8+1)
+(t^16+t^8+Z(5)^0)/(t^8+Z(5)^0)
 gap> (t^24-1)/(t^-16-1);
-(t^32+t^24+t^16)/(-t^8-1)
+(t^32+t^24+t^16)/(-t^8-Z(5)^0)
 
 #
 # multivariate
@@ -119,9 +108,11 @@ gap> f:=u*(t^24-1);; g:=u^2*(t^16-1);;
 gap> f/g;
 (t^24*u-u)/(t^16*u^2-u^2)
 gap> Factors(f);
-[ u, t-1, t+1, t^2+1, t^2-t+1, t^2+t+1, t^4+1, t^4-t^2+1, t^8-t^4+1 ]
+[ u, t+Z(5)^0, t+Z(5), t-Z(5)^0, t+Z(5)^3, t^2+Z(5), t^2+Z(5)^3, 
+  t^2+t+Z(5)^0, t^2+t+Z(5), t^2+Z(5)*t-Z(5)^0, t^2+Z(5)*t+Z(5)^3, 
+  t^2-t+Z(5)^0, t^2-t+Z(5), t^2+Z(5)^3*t-Z(5)^0, t^2+Z(5)^3*t+Z(5)^3 ]
 gap> Factors(t^4-u^4);
-[ t-u, t+u, t^2+u^2 ]
+[ t+u, t+Z(5)*u, t-u, t+Z(5)^3*u ]
 
 # multivariate gcd
 gap> Gcd(DefaultRing(f),f,g);
@@ -130,4 +121,4 @@ gap> Gcd(f,g);
 t^8*u-u
 
 #
-gap> STOP_TEST( "ratfun.tst", 1);
+gap> STOP_TEST( "ratfun_gf5.tst", 1);
