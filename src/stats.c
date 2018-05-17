@@ -142,115 +142,56 @@ UInt HaveInterrupt( void ) {
 **  'T_SEQ_STAT' with  <n> subbags.  The first  is  the  first statement, the
 **  second is the second statement, and so on.
 */
-UInt            ExecSeqStat (
-    Stat                stat )
+static ALWAYS_INLINE UInt ExecSeqStatHelper(Stat stat, UInt nr)
 {
-    UInt                leave;          /* a leave-statement was executed  */
-    UInt                nr;             /* number of statements            */
-    UInt                i;              /* loop variable                   */
-
-    /* get the number of statements                                        */
-    nr = SIZE_STAT( stat ) / sizeof(Stat);
-
-    /* loop over the statements                                            */
-    for ( i = 1; i <= nr; i++ ) {
-
-        /* execute the <i>-th statement                                    */
-        if ( (leave = EXEC_STAT( ADDR_STAT(stat)[i-1] )) != 0 ) {
+    // loop over the statements
+    for (UInt i = 1; i <= nr; i++) {
+        // execute the <i>-th statement
+        UInt leave = EXEC_STAT( ADDR_STAT(stat)[i-1] );
+        if ( leave != 0 ) {
             return leave;
         }
-
     }
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
+    // return 0 (to indicate that no leave-statement was executed)
     return 0;
 }
 
-UInt            ExecSeqStat2 (
-    Stat                stat )
+UInt ExecSeqStat(Stat stat)
 {
-    UInt                leave;          /* a leave-statement was executed  */
-
-    /* execute the statements                                              */
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[0] )) != 0 ) { return leave; }
-
-    /* execute the last statement                                          */
-    return EXEC_STAT( ADDR_STAT(stat)[1] );
+    // get the number of statements
+    UInt nr = SIZE_STAT( stat ) / sizeof(Stat);
+    return ExecSeqStatHelper(stat, nr);
 }
 
-UInt            ExecSeqStat3 (
-    Stat                stat )
+UInt ExecSeqStat2(Stat stat)
 {
-    UInt                leave;          /* a leave-statement was executed  */
-
-    /* execute the statements                                              */
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[0] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[1] )) != 0 ) { return leave; }
-
-    /* execute the last statement                                          */
-    return EXEC_STAT( ADDR_STAT(stat)[2] );
+    return ExecSeqStatHelper(stat, 2);
 }
 
-UInt            ExecSeqStat4 (
-    Stat                stat )
+UInt ExecSeqStat3(Stat stat)
 {
-    UInt                leave;          /* a leave-statement was executed  */
-
-    /* execute the statements                                              */
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[0] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[1] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[2] )) != 0 ) { return leave; }
-
-    /* execute the last statement                                          */
-    return EXEC_STAT( ADDR_STAT(stat)[3] );
+    return ExecSeqStatHelper(stat, 3);
 }
 
-UInt            ExecSeqStat5 (
-    Stat                stat )
+UInt ExecSeqStat4(Stat stat)
 {
-    UInt                leave;          /* a leave-statement was executed  */
-
-    /* execute the statements                                              */
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[0] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[1] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[2] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[3] )) != 0 ) { return leave; }
-
-    /* execute the last statement                                          */
-    return EXEC_STAT( ADDR_STAT(stat)[4] );
+    return ExecSeqStatHelper(stat, 4);
 }
 
-UInt            ExecSeqStat6 (
-    Stat                stat )
+UInt ExecSeqStat5(Stat stat)
 {
-    UInt                leave;          /* a leave-statement was executed  */
-
-    /* execute the statements                                              */
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[0] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[1] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[2] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[3] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[4] )) != 0 ) { return leave; }
-
-    /* execute the last statement                                          */
-    return EXEC_STAT( ADDR_STAT(stat)[5] );
+    return ExecSeqStatHelper(stat, 5);
 }
 
-UInt            ExecSeqStat7 (
-    Stat                stat )
+UInt ExecSeqStat6(Stat stat)
 {
-    UInt                leave;          /* a leave-statement was executed  */
+    return ExecSeqStatHelper(stat, 6);
+}
 
-    /* execute the statements                                              */
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[0] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[1] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[2] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[3] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[4] )) != 0 ) { return leave; }
-    if ( (leave = EXEC_STAT( ADDR_STAT(stat)[5] )) != 0 ) { return leave; }
-
-    /* execute the last statement                                          */
-    return EXEC_STAT( ADDR_STAT(stat)[6] );
+UInt ExecSeqStat7(Stat stat)
+{
+    return ExecSeqStatHelper(stat, 7);
 }
 
 
