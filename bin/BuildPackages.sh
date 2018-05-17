@@ -214,6 +214,10 @@ build_one_package() {
     ;;
 
     simpcomp*)
+      chmod a+x configure depcomp install-sh missing && \
+      echo_run ./configure && \
+      echo_run "$MAKE" && \
+      mkdir -p bin && test -x bin/bistellar || mv bistellar bin
     ;;
 
     *)
