@@ -49,6 +49,16 @@ inline UInt EXEC_STAT(Stat stat)
 }
 
 
+#define EXEC_STAT_IN_LOOP(stat) \
+    { \
+        UInt status = EXEC_STAT(stat); \
+        if (status != 0) { \
+            if (status == STATUS_CONTINUE) \
+                continue; \
+            return (status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID)); \
+        } \
+    }
+
 /****************************************************************************
 **
 *V  ExecStatFuncs[<type>] . . . . . .  executor for statements of type <type>
@@ -402,7 +412,6 @@ Obj             STD_ITER;
 UInt            ExecFor (
     Stat                stat )
 {
-    UInt                leave;          /* a leave-statement was executed  */
     UInt                var;            /* variable                        */
     UInt                vart;           /* variable type                   */
     Obj                 list;           /* list to loop over               */
@@ -456,11 +465,7 @@ UInt            ExecFor (
 #endif
 
             /* execute the statements in the body                          */
-            if ( (leave = EXEC_STAT( body )) != 0 ) {
-                if (leave == STATUS_CONTINUE)
-                    continue;
-                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-            }
+            EXEC_STAT_IN_LOOP(body);
 
         }
 
@@ -498,11 +503,7 @@ UInt            ExecFor (
 #endif
 
             /* execute the statements in the body                          */
-            if ( (leave = EXEC_STAT( body )) != 0 ) {
-                if (leave == STATUS_CONTINUE)
-                    continue;
-                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-            }
+            EXEC_STAT_IN_LOOP(body);
 
         }
 
@@ -515,7 +516,6 @@ UInt            ExecFor (
 UInt            ExecFor2 (
     Stat                stat )
 {
-    UInt                leave;          /* a leave-statement was executed  */
     UInt                var;            /* variable                        */
     UInt                vart;           /* variable type                   */
     Obj                 list;           /* list to loop over               */
@@ -571,16 +571,8 @@ UInt            ExecFor2 (
 #endif
 
             /* execute the statements in the body                          */
-            if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-                if (leave == STATUS_CONTINUE)
-                    continue;
-                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-            }
-            if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-                if (leave == STATUS_CONTINUE)
-                    continue;
-                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-            }
+            EXEC_STAT_IN_LOOP(body1);
+            EXEC_STAT_IN_LOOP(body2);
 
         }
 
@@ -618,16 +610,8 @@ UInt            ExecFor2 (
 #endif
 
             /* execute the statements in the body                          */
-            if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-                if (leave == STATUS_CONTINUE)
-                    continue;
-                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-            }
-            if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-                if (leave == STATUS_CONTINUE)
-                    continue;
-                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-            }
+            EXEC_STAT_IN_LOOP(body1);
+            EXEC_STAT_IN_LOOP(body2);
 
         }
 
@@ -640,7 +624,6 @@ UInt            ExecFor2 (
 UInt            ExecFor3 (
     Stat                stat )
 {
-    UInt                leave;          /* a leave-statement was executed  */
     UInt                var;            /* variable                        */
     UInt                vart;           /* variable type                   */
     Obj                 list;           /* list to loop over               */
@@ -698,22 +681,9 @@ UInt            ExecFor3 (
 #endif
 
             /* execute the statements in the body                          */
-            if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-                if (leave == STATUS_CONTINUE)
-                    continue;
-                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-            }
-            if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-                if (leave == STATUS_CONTINUE)
-                    continue;
-                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-            }
-            if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-                if (leave == STATUS_CONTINUE)
-                    continue;
-                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-            }
-
+            EXEC_STAT_IN_LOOP(body1);
+            EXEC_STAT_IN_LOOP(body2);
+            EXEC_STAT_IN_LOOP(body3);
 
         }
 
@@ -751,22 +721,9 @@ UInt            ExecFor3 (
 #endif
 
             /* execute the statements in the body                          */
-            if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-                if (leave == STATUS_CONTINUE)
-                    continue;
-                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-            }
-            if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-                if (leave == STATUS_CONTINUE)
-                    continue;
-                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-            }
-            if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-                if (leave == STATUS_CONTINUE)
-                    continue;
-                return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-            }
-
+            EXEC_STAT_IN_LOOP(body1);
+            EXEC_STAT_IN_LOOP(body2);
+            EXEC_STAT_IN_LOOP(body3);
 
         }
 
@@ -803,7 +760,6 @@ UInt            ExecFor3 (
 UInt            ExecForRange (
     Stat                stat )
 {
-    UInt                leave;          /* a leave-statement was executed  */
     UInt                lvar;           /* local variable                  */
     Int                 first;          /* first value of range            */
     Int                 last;           /* last value of range             */
@@ -852,11 +808,7 @@ UInt            ExecForRange (
 #endif
 
         /* execute the statements in the body                              */
-        if ( (leave = EXEC_STAT( body )) != 0 ) {
-          if (leave == STATUS_CONTINUE)
-            continue;
-          return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
+        EXEC_STAT_IN_LOOP(body);
 
     }
 
@@ -867,7 +819,6 @@ UInt            ExecForRange (
 UInt            ExecForRange2 (
     Stat                stat )
 {
-    UInt                leave;          /* a leave-statement was executed  */
     UInt                lvar;           /* local variable                  */
     Int                 first;          /* first value of range            */
     Int                 last;           /* last value of range             */
@@ -918,16 +869,8 @@ UInt            ExecForRange2 (
 #endif
 
         /* execute the statements in the body                              */
-        if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
-        if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
+        EXEC_STAT_IN_LOOP(body1);
+        EXEC_STAT_IN_LOOP(body2);
 
     }
 
@@ -938,7 +881,6 @@ UInt            ExecForRange2 (
 UInt            ExecForRange3 (
     Stat                stat )
 {
-    UInt                leave;          /* a leave-statement was executed  */
     UInt                lvar;           /* local variable                  */
     Int                 first;          /* first value of range            */
     Int                 last;           /* last value of range             */
@@ -991,21 +933,9 @@ UInt            ExecForRange3 (
 #endif
 
         /* execute the statements in the body                              */
-        if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
-        if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
-        if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
+        EXEC_STAT_IN_LOOP(body1);
+        EXEC_STAT_IN_LOOP(body2);
+        EXEC_STAT_IN_LOOP(body3);
 
     }
 
@@ -1103,7 +1033,6 @@ UInt ExecAtomic(
 UInt ExecWhile (
     Stat                stat )
 {
-    UInt                leave;          /* a leave-statement was executed  */
     Expr                cond;           /* condition                       */
     Stat                body;           /* body of loop                    */
 
@@ -1123,11 +1052,8 @@ UInt ExecWhile (
 #endif
 
         /* execute the body                                                */
-        if ( (leave = EXEC_STAT( body )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
+        EXEC_STAT_IN_LOOP(body);
+
         SET_BRK_CURR_STAT( stat );
 
     }
@@ -1139,7 +1065,6 @@ UInt ExecWhile (
 UInt ExecWhile2 (
     Stat                stat )
 {
-    UInt                leave;          /* a leave-statement was executed  */
     Expr                cond;           /* condition                       */
     Stat                body1;          /* first  stat. of body of loop    */
     Stat                body2;          /* second stat. of body of loop    */
@@ -1161,16 +1086,9 @@ UInt ExecWhile2 (
 #endif
 
         /* execute the body                                                */
-        if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
-        if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
+        EXEC_STAT_IN_LOOP(body1);
+        EXEC_STAT_IN_LOOP(body2);
+
         SET_BRK_CURR_STAT( stat );
 
     }
@@ -1182,7 +1100,6 @@ UInt ExecWhile2 (
 UInt ExecWhile3 (
     Stat                stat )
 {
-    UInt                leave;          /* a leave-statement was executed  */
     Expr                cond;           /* condition                       */
     Stat                body1;          /* first  stat. of body of loop    */
     Stat                body2;          /* second stat. of body of loop    */
@@ -1206,21 +1123,10 @@ UInt ExecWhile3 (
 #endif
 
         /* execute the body                                                */
-        if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
-        if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
-        if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
+        EXEC_STAT_IN_LOOP(body1);
+        EXEC_STAT_IN_LOOP(body2);
+        EXEC_STAT_IN_LOOP(body3);
+
         SET_BRK_CURR_STAT( stat );
 
     }
@@ -1252,7 +1158,6 @@ UInt ExecWhile3 (
 UInt ExecRepeat (
     Stat                stat )
 {
-    UInt                leave;          /* a leave-statement was executed  */
     Expr                cond;           /* condition                       */
     Stat                body;           /* body of loop                    */
 
@@ -1272,11 +1177,8 @@ UInt ExecRepeat (
 #endif
 
         /* execute the body                                                */
-        if ( (leave = EXEC_STAT( body )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
+        EXEC_STAT_IN_LOOP(body);
+
         SET_BRK_CURR_STAT( stat );
 
     } while ( EVAL_BOOL_EXPR( cond ) == False );
@@ -1288,7 +1190,6 @@ UInt ExecRepeat (
 UInt ExecRepeat2 (
     Stat                stat )
 {
-    UInt                leave;          /* a leave-statement was executed  */
     Expr                cond;           /* condition                       */
     Stat                body1;          /* first  stat. of body of loop    */
     Stat                body2;          /* second stat. of body of loop    */
@@ -1310,16 +1211,9 @@ UInt ExecRepeat2 (
 #endif
 
         /* execute the body                                                */
-        if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
-        if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
+        EXEC_STAT_IN_LOOP(body1);
+        EXEC_STAT_IN_LOOP(body2);
+
         SET_BRK_CURR_STAT( stat );
 
     } while ( EVAL_BOOL_EXPR( cond ) == False );
@@ -1331,7 +1225,6 @@ UInt ExecRepeat2 (
 UInt ExecRepeat3 (
     Stat                stat )
 {
-    UInt                leave;          /* a leave-statement was executed  */
     Expr                cond;           /* condition                       */
     Stat                body1;          /* first  stat. of body of loop    */
     Stat                body2;          /* second stat. of body of loop    */
@@ -1355,21 +1248,10 @@ UInt ExecRepeat3 (
 #endif
 
         /* execute the body                                                */
-        if ( (leave = EXEC_STAT( body1 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
-        if ( (leave = EXEC_STAT( body2 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
-        if ( (leave = EXEC_STAT( body3 )) != 0 ) {
-            if (leave == STATUS_CONTINUE)
-                continue;
-            return (leave & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));
-        }
+        EXEC_STAT_IN_LOOP(body1);
+        EXEC_STAT_IN_LOOP(body2);
+        EXEC_STAT_IN_LOOP(body3);
+
         SET_BRK_CURR_STAT( stat );
 
     } while ( EVAL_BOOL_EXPR( cond ) == False );
