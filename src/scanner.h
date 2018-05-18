@@ -302,7 +302,7 @@ extern  void            SyntaxWarning (
 *F  Match( <symbol>, <msg>, <skipto> )  . match current symbol and fetch next
 **
 **  'Match' is the main  interface between the  scanner and the  parser.   It
-**  performs the  4 most common actions in  the scanner  with  just one call.
+**  performs the four most common actions in the scanner with  just one call.
 **  First it checks that  the current symbol stored  in the variable 'Symbol'
 **  is the expected symbol  as passed in the  argument <symbol>.  If  it  is,
 **  'Match' reads the next symbol from input  and returns.  Otherwise 'Match'
@@ -334,7 +334,7 @@ extern  void            SyntaxWarning (
 **  'else' or 'fi' symbol, or a symbol that is  contained in the set <follow>
 **  which is passed to 'ReadIf' and contains all symbols allowing  one of the
 **  calling functions  to resynchronize,  for example 'S_OD' if 'ReadIf'  has
-**  been called from 'ReadFor'.  <follow> always contain 'S_EOF', which 'Read'
+**  been called from 'ReadFor'. <follow> always contain 'S_EOF', which 'Read'
 **  uses to resynchronise.
 **
 **  If 'Match' needs to  read a  new line from  '*stdin*' or '*errin*' to get
