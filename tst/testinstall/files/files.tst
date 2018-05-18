@@ -95,7 +95,7 @@ gap> testRead := function(testName, openFunc, lines, supportsPosition)
 >  CloseStream(file);
 > od;
 > end;;
-gap> dir := DirectoriesLibrary("tst/teststandard/files");;
+gap> dir := DirectoriesLibrary("tst/testinstall/files");;
 gap> lines := ["here is line 1\n", "\n", "here is line 2\n"];;
 gap> testRead("example.txt", {} -> InputTextFile(Filename(dir, "example.txt")),
 > lines, true);
