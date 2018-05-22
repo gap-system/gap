@@ -23,7 +23,7 @@
 **  list, and so on.  If  the physical length  of a list  is greater than the
 **  logical, there will be unused entries at the end  of the list, comtaining
 **  0.  The physical length  might be greater than  the logical,  because the
-**  physical size of a  list is increased by at  least 12.5\%, to avoid doing
+**  physical size of a  list is increased by at  least 25\%, to avoid doing
 **  this too often.
 **
 **  This representation  is encoded by  the macros 'NEW_PLIST', 'GROW_PLIST',
@@ -62,7 +62,7 @@
 *F  GROW_PLIST(<list>,<plen>) . . . .  make sure a plain list is large enough
 **
 */
-Int             GrowPlist (
+void             GrowPlist (
     Obj                 list,
     UInt                need )
 {
@@ -83,9 +83,6 @@ Int             GrowPlist (
 
     /* resize the plain list                                               */
     ResizeBag( list, ((plen)+1)*sizeof(Obj) );
-
-    /* return something (to please some C compilers)                       */
-    return 0L;
 }
 
 
