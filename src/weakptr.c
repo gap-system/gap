@@ -746,26 +746,6 @@ void CleanObjWPObjCopy (
 
 /****************************************************************************
 **
-*F  FinalizeWeapPointerObj( <wpobj> )
-*/
-
-#if defined(HPCGAP) && !defined(USE_BOEHM_GC)
-void FinalizeWeakPointerObj( Obj wpobj )
-{
-    volatile Obj keep = wpobj;
-    UInt i, len;
-    len = STORED_LEN_WPOBJ(wpobj);
-    for (i = 1; i <= len; i++) {
-      volatile Obj tmp = ELM_WPOBJ(wpobj, i);
-      MEMBAR_READ();
-      if (IS_BAG_REF(tmp) && ELM_WPOBJ(wpobj, i))
-        FORGET_WP(&ELM_WPOBJ(wpobj, i));
-    }
-}
-#endif
-
-/****************************************************************************
-**
 *F  SaveWPObj( <wpobj> )
 */
 
@@ -870,10 +850,6 @@ static Int InitKernel (
   #if !defined(USE_THREADSAFE_COPYING)
     InitMarkFuncBags ( T_WPOBJ +COPYING, MarkWeakPointerObj   );
     InitSweepFuncBags( T_WPOBJ +COPYING, SweepWeakPointerObj  );
-  #endif
-  #ifdef HPCGAP
-    InitFreeFuncBag( T_WPOBJ, FinalizeWeakPointerObj );
-    InitFreeFuncBag( T_WPOBJ+COPYING, FinalizeWeakPointerObj );
   #endif
 #else
 #error Unknown garbage collector implementation, no weak pointer object implemention available
