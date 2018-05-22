@@ -104,7 +104,7 @@ static inline Int CAPACITY_PLIST(Obj list)
     return SIZE_OBJ(list) / sizeof(Obj) - 1;
 }
 
-extern  Int             GrowPlist (
+extern  void             GrowPlist (
             Obj                 list,
             UInt                need );
 
