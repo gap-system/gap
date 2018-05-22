@@ -582,7 +582,9 @@ void CopyWPObj(Obj copy, Obj original)
         MEMBAR_READ();
         if (IS_BAG_REF(tmp) && IS_BAG_REF(*ptr)) {
             *copyptr = ReplaceByCopy(tmp);
+#ifdef USE_BOEHM_GC
             REGISTER_WP(copyptr, tmp);
+#endif
         }
         ptr++;
         copyptr++;
