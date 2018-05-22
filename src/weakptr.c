@@ -20,6 +20,9 @@
 
 #include "bool.h"
 #include "error.h"
+#ifdef USE_GASMAN
+#include "gasman_intern.h"
+#endif
 #include "lists.h"
 #include "modules.h"
 #include "plist.h"
@@ -35,6 +38,28 @@
 #  define GC_THREADS
 # endif
 # include <gc/gc.h>
+#endif
+
+/****************************************************************************
+**
+*F
+*/
+
+#ifdef USE_GASMAN
+
+#define IS_WEAK_DEAD_BAG(bag) ( (((UInt)bag & (sizeof(Bag)-1)) == 0) && \
+                                (Bag)MptrBags <= (bag)    &&          \
+                                (bag) < (Bag)MptrEndBags  &&              \
+                                (((UInt)*bag) & (sizeof(Bag)-1)) == 1)
+
+#elif defined(USE_BOEHM_GC)
+
+#define IS_WEAK_DEAD_BAG(bag) (!(bag))
+#define REGISTER_WP(loc, obj) \
+	GC_general_register_disappearing_link((void **)(loc), (obj))
+#define FORGET_WP(loc) \
+	GC_unregister_disappearing_link((void **)(loc))
+
 #endif
 
 

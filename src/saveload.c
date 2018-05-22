@@ -19,6 +19,9 @@
 #include "compstat.h"
 #include "error.h"
 #include "finfield.h"
+#ifdef USE_GASMAN
+#include "gasman_intern.h"
+#endif
 #include "gvars.h"
 #include "io.h"
 #include "modules.h"

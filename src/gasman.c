@@ -112,6 +112,7 @@
 */
 
 #include "gasman.h"
+#include "gasman_intern.h"
 
 #include "gaputils.h"
 #include "io.h"

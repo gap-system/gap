@@ -20,6 +20,9 @@
 #include "calls.h"
 #include "error.h"
 #include "gapstate.h"
+#ifdef USE_GASMAN
+#include "gasman_intern.h"
+#endif
 #include "gvars.h"
 #include "io.h"
 #include "lists.h"
@@ -1650,7 +1653,7 @@ static void HandleMethodNotFound(Obj   oper,
 **
 */
 
-#ifdef GASMAN
+#ifdef USE_GASMAN
 
 static Obj FLUSH_ALL_METHOD_CACHES;
 
@@ -1670,7 +1673,7 @@ static void FixTypeIDs( Bag b ) {
 
 Obj FuncCOMPACT_TYPE_IDS( Obj self )
 {
-#ifdef GASMAN
+#ifdef USE_GASMAN
   NextTypeID = INT_INTOBJ_MIN;
   CallbackForAllBags( FixTypeIDs );
   CALL_0ARGS(FLUSH_ALL_METHOD_CACHES);
