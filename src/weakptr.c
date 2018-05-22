@@ -170,13 +170,14 @@ Int GrowWPObj (
 
 /****************************************************************************
 **
-*F  FuncWeakPointerObj( <self>, <list> ) . . . . . .make a weak pointer object
+*F  FuncWeakPointerObj( <self>, <list> ) . . . . . make a weak pointer object
 **
-** Handler  for the GAP function  WeakPointerObject(<list>), which makes a new
-** WP object 
+**  Handler for the GAP function WeakPointerObject(<list>), which makes a new
+**  WP object.
 */
 
-Obj FuncWeakPointerObj( Obj self, Obj list ) { 
+Obj FuncWeakPointerObj(Obj self, Obj list)
+{
   Obj wp; 
   Int i;
   Int len; 
@@ -234,22 +235,16 @@ Int LengthWPObj(Obj wp)
     return len;
 #endif
 
-#ifndef USE_BOEHM_GC
   Obj elm;
-  while (len > 0 && 
-         (!(elm = ELM_WPOBJ(wp,len)) ||
-          IS_WEAK_DEAD_BAG(elm))) {
+  while (len > 0) {
+    elm = ELM_WPOBJ(wp, len);
+    if (elm && !IS_WEAK_DEAD_BAG(elm))
+        break;
     changed = 1;
     if (elm)
-      ELM_WPOBJ(wp,len) = 0;
+      ELM_WPOBJ(wp, len) = 0;
     len--;
   }
-#else
-  while (len > 0 && !ELM_WPOBJ(wp, len)) {
-    changed = 1;
-    len--;
-  }
-#endif
   if (changed)
     STORE_LEN_WPOBJ(wp,len);
   return len;
@@ -376,13 +371,13 @@ Int IsBoundElmWPObj( Obj wp, Obj pos)
   if (elm == 0 || ELM_WPOBJ(wp, ipos) == 0)
       return 0;
 #else
+  if (elm == 0)
+      return 0;
   if (IS_WEAK_DEAD_BAG(elm))
     {
       ELM_WPOBJ(wp,ipos) = 0;
       return 0;
     }
-  if (elm == 0)
-      return 0;
 #endif
   return 1;
 }
