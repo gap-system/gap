@@ -142,10 +142,7 @@ Int GrowWPObj (
     if ( need < good ) { plen = good; }
     else               { plen = need; }
 
-#ifndef USE_BOEHM_GC
-    /* resize the plain list                                               */
-    ResizeBag( wp, ((plen)+1)*sizeof(Obj) );
-#else
+#ifdef USE_BOEHM_GC
     Obj copy = NewBag(T_WPOBJ, (plen+1) * sizeof(Obj));
     STORE_LEN_WPOBJ(copy, STORED_LEN_WPOBJ(wp));
 
@@ -161,6 +158,9 @@ Int GrowWPObj (
       ELM_WPOBJ(copy, i) = tmp;
     }
     SET_PTR_BAG(wp, PTR_BAG(copy));
+#else
+    // resize the weak pointer object
+    ResizeBag( wp, ((plen)+1)*sizeof(Obj) );
 #endif
 
     /* return something (to please some C compilers)                       */
@@ -426,9 +426,7 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 
   Int len = LengthWPObj(wp);
   if ( ipos <= len ) {
-#ifndef USE_BOEHM_GC
-    ELM_WPOBJ( wp, ipos) =  0;
-#else
+#ifdef USE_BOEHM_GC
     /* Ensure the result is visible on the stack in case a garbage
      * collection happens after the read.
      */
@@ -439,6 +437,8 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
         FORGET_WP( &ELM_WPOBJ(wp, ipos));
       ELM_WPOBJ( wp, ipos) =  0;
     }
+#else
+    ELM_WPOBJ( wp, ipos) =  0;
 #endif
   }
   return 0;
@@ -682,17 +682,7 @@ void MakeImmutableWPObj( Obj obj )
 {
   UInt i;
   
-#ifndef USE_BOEHM_GC
-  /* remove any weak dead bags */
-  for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++)
-    {
-      Obj elm = ELM_WPOBJ(obj,i);
-      if (elm != 0 && IS_WEAK_DEAD_BAG(elm)) 
-        ELM_WPOBJ(obj,i) = 0;
-    }
-  /* Change the type */
-  RetypeBag( obj, T_PLIST+IMMUTABLE);
-#else
+#ifdef USE_BOEHM_GC
   UInt len = 0;
   Obj copy = NewBag(T_PLIST+IMMUTABLE, SIZE_BAG(obj));
   for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++) {
@@ -710,6 +700,15 @@ void MakeImmutableWPObj( Obj obj )
   }
   SET_LEN_PLIST(copy, len);
   SET_PTR_BAG(obj, PTR_BAG(copy));
+#else
+  /* remove any weak dead bags */
+  for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++) {
+      Obj elm = ELM_WPOBJ(obj,i);
+      if (elm != 0 && IS_WEAK_DEAD_BAG(elm))
+        ELM_WPOBJ(obj,i) = 0;
+  }
+  /* Change the type */
+  RetypeBag( obj, T_PLIST+IMMUTABLE);
 #endif
 }
 
