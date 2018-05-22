@@ -39,6 +39,9 @@
 #include "bool.h"
 #include "code.h"
 #include "error.h"
+#ifdef USE_GASMAN
+#include "gasman_intern.h"
+#endif
 #include "gvars.h"
 #include "integer.h"
 #include "io.h"

@@ -20,6 +20,9 @@
 #include "error.h"
 #include "funcs.h"
 #include "gapstate.h"
+#ifdef USE_GASMAN
+#include "gasman_intern.h"
+#endif
 #include "gvars.h"
 #include "integer.h"
 #include "io.h"
