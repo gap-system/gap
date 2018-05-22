@@ -117,25 +117,24 @@
 
 /****************************************************************************
 **
-*F  GROW_WPOBJ(<wp>,<plen>) . make sure a weak pointer object is large enough
+*F  GROW_WPOBJ(<wp>,<need>) . make sure a weak pointer object is large enough
 **
 **  'GROW_WPOBJ' grows the weak pointer   object <wp> if necessary  to
-**  ensure that it has room for at least <plen> elements.
-**
-**  Note that 'GROW_WPOBJ' is a macro, so do not call it with arguments that
-**  have side effects.  */
+**  ensure that it has room for at least <need> elements.
+*/
 
-#define GROW_WPOBJ(wp,plen)   ((plen) < SIZE_OBJ(wp)/sizeof(Obj) ? \
-                                 0L : GrowWPObj(wp,plen) )
-
-Int GrowWPObj (
-               Obj                 wp,
-               UInt                need )
+static inline void GROW_WPOBJ(Obj wp, UInt need)
 {
   UInt                plen;           /* new physical length             */
   UInt                good;           /* good new physical length        */
 
-    /* find out how large the object should become                     */
+    // if there is already enough space, do nothing
+    if (need < SIZE_OBJ(wp)/sizeof(Obj))
+        return;
+
+    // find out how large the object should become at least (we grow by
+    // at least 25%, like plain lists)
+    /* find out how large the plain list should become                     */
     good = 5 * (SIZE_OBJ(wp)/sizeof(Obj)-1) / 4 + 4;
 
     /* but maybe we need more                                              */
@@ -162,9 +161,6 @@ Int GrowWPObj (
     // resize the weak pointer object
     ResizeBag( wp, ((plen)+1)*sizeof(Obj) );
 #endif
-
-    /* return something (to please some C compilers)                       */
-    return 0L;
 }
 
 
@@ -452,7 +448,7 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 **  GAP handler for access to WP Object. If the entry is not bound, then fail
 **  is  returned. It would not be  correct to return  an error, because there
 **  would be no  way  to  safely access  an  element, which  might  evaporate
-**  between a  call   to Isbound and the    access. This, of  course,  causes
+**  between a  call   to IsBound and the    access. This, of  course,  causes
 **  possible  confusion  with a WP  object which  does have  a  value of fail
 **  stored in  it. This, however  can be  checked  with a subsequent  call to
 **  IsBound, relying on the fact  that fail can never  dissapear in a garbage
