@@ -22,6 +22,17 @@ gap> List( irr, x -> InertiaSubgroup( S4, x ) );
   Group([ (1,4,3,2), (1,4)(2,3) ]), Group([ (3,4), (1,4)(2,3) ]) ]
 gap> List( last, Size );
 [ 24, 8, 8, 8 ]
+gap> l:=List( AllSmallGroups(12), CharacterTable );;
+gap> List( l, ConjugacyClasses );;
+gap> List( l, SizesConjugacyClasses );;
+gap> List( l, OrdersClassRepresentatives );;
+gap> List( l, Irr );;
+gap> ForAll( l, IsInternallyConsistent);
+true
+gap> ForAll(AllSmallGroups(12),g -> IsInternallyConsistent(CharacterTable(g) mod 2));
+true
+gap> ForAll(AllSmallGroups(12),g -> IsInternallyConsistent(TableOfMarks(g)));
+true
 gap> STOP_TEST( "ctblfuns.tst", 1);
 
 #############################################################################
