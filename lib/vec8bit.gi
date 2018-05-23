@@ -78,7 +78,6 @@ end);
 ##  doesn't really say anything, because there are no applicable operations.
 ##
 
-
 InstallValue( TYPE_FIELDINFO_8BIT, TYPE_KERNEL_OBJECT);
 
 
