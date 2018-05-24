@@ -1158,8 +1158,9 @@ DeclareAttribute( "ConjugacyClasses", IsGroup );
 ##  <Ref Func="MaximalSubgroupClassReps"/>.
 ##  <Example><![CDATA[
 ##  gap> ConjugacyClassesMaximalSubgroups(g);
-##  [ AlternatingGroup( [ 1 .. 4 ] )^G, Group( [ (1,2,3), (1,2) ] )^G, 
-##    Group( [ (1,2), (3,4), (1,3)(2,4) ] )^G ]
+##  [ Group( [ (2,4,3), (1,4)(2,3), (1,3)(2,4) ] )^G,
+##    Group( [ (3,4), (1,4)(2,3), (1,3)(2,4) ] )^G,
+##    Group( [ (3,4), (2,4,3) ] )^G ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1205,8 +1206,8 @@ DeclareAttribute( "MaximalSubgroups", IsGroup );
 ##  of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> MaximalSubgroupClassReps(g);
-##  [ Alt( [ 1 .. 4 ] ), Group([ (1,2,3), (1,2) ]), Group([ (1,2), (3,4),
-##      (1,3)(2,4) ]) ]
+##  [ Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), Group([ (3,4), (1,4)
+##    (2,3), (1,3)(2,4) ]), Group([ (3,4), (2,4,3) ]) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1214,7 +1215,11 @@ DeclareAttribute( "MaximalSubgroups", IsGroup );
 ##
 DeclareAttribute("MaximalSubgroupClassReps",IsGroup);
 
+# utility attribute: Allow use with limiting options, so could hold `fail'.
+DeclareAttribute("TryMaximalSubgroupClassReps",IsGroup,"mutable");
+
 # utility function in maximal subgroups code
+DeclareGlobalFunction("TryMaxSubgroupTainter");
 DeclareGlobalFunction("DoMaxesTF");
 DeclareGlobalFunction("MaxesAlmostSimple");
 
