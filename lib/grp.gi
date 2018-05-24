@@ -1332,6 +1332,53 @@ end);
 ##
 #M  MaximalSubgroups( <G> )
 ##
+InstallMethod(MaximalSubgroupClassReps,"default, catch dangerous options",
+  true,[IsGroup],0,
+function(G)
+local H,a,m,i,l;
+  # easy case, go without options
+  if not HasTryMaximalSubgroupClassReps(G) then
+    return TryMaximalSubgroupClassReps(G:
+           # as if options were unset
+           cheap:=fail,intersize:=fail,inmax:=fail,nolattice:=fail);
+  fi;
+
+  # hard case -- `Try` is stored
+  if not IsBound(G!.maxsubtrytaint) or G!.maxsubtrytaint=false then
+    # stored and untainted, just go on
+    return TryMaximalSubgroupClassReps(G); 
+  fi;
+
+  # compute anew for new group to avoid taint
+  H:=Group(GeneratorsOfGroup(G));
+  for i in [Size,IsNaturalAlternatingGroup,IsNaturalSymmetricGroup] do
+    if Tester(i)(G) then Setter(i)(H,i(G));fi;
+  od;
+  m:=TryMaximalSubgroupClassReps(H:
+          cheap:=false,intersize:=false,inmax:=false,nolattice:=false);
+  l:=[];
+  for i in m do
+    a:=SubgroupNC(G,GeneratorsOfGroup(i));
+    if HasSize(i) then SetSize(a,Size(i));fi;
+    Add(l,a);
+  od;
+
+  # now we know list is untained, store 
+  SetTryMaximalSubgroupClassReps(G,l);
+  return l;
+
+end);
+
+InstallMethod(TryMaximalSubgroupClassReps,"fetch known correct data",true,
+    [IsGroup and HasMaximalSubgroupClassReps],SUM_FLAGS,
+    MaximalSubgroupClassReps);
+
+InstallGlobalFunction(TryMaxSubgroupTainter,function(G)
+  if ForAny(["cheap","intersize","inmax","nolattice"],
+       x->not ValueOption(x) in [fail,false]) then
+       G!.maxsubtrytaint:=true;
+  fi;
+end);
 
 #############################################################################
 ##

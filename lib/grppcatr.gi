@@ -369,6 +369,7 @@ end;
 MAXSUBS_BY_PCGS:=function( G )
     local spec, first, max, i, new;
 
+    TryMaxSubgroupTainter(G);
     spec  := SpecialPcgs(G);
     first := LGFirst( spec );
     max   := [];
@@ -384,7 +385,7 @@ end;
 ##
 #M  MaximalSubgroupClassReps( <G> )
 ##
-InstallMethod( MaximalSubgroupClassReps,
+InstallMethod( TryMaximalSubgroupClassReps,
     "pcgs computable groups using special pcgs",
     true, 
     [ IsGroup and CanEasilyComputePcgs and IsFinite ],
@@ -392,7 +393,7 @@ InstallMethod( MaximalSubgroupClassReps,
     MAXSUBS_BY_PCGS);
 
 #fallback
-InstallMethod( MaximalSubgroupClassReps,
+InstallMethod( TryMaximalSubgroupClassReps,
     "pcgs computable groups using special pcgs",
     true, 
     [ IsGroup and IsSolvableGroup and IsFinite ],

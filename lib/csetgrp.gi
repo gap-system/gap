@@ -209,7 +209,7 @@ end);
 ##  the operation of G on the Right Cosets of U.
 ##
 InstallGlobalFunction( IntermediateGroup, function(G,U)
-local o,b,img,G1,c,m,hardlimit,gens,t,k,intersize;
+local o,b,img,G1,c,m,mt,hardlimit,gens,t,k,intersize;
 
   if U=G then
     return fail;
@@ -221,34 +221,38 @@ local o,b,img,G1,c,m,hardlimit,gens,t,k,intersize;
     return fail; # avoid infinite recursion
   fi;
 
-  # use maximals
-  m:=MaximalSubgroupClassReps(G:cheap,intersize:=intersize);
+  # use maximals, use `Try` as we call with limiting options
+  IsNaturalAlternatingGroup(G);
+  IsNaturalSymmetricGroup(G);
+  m:=TryMaximalSubgroupClassReps(G:cheap,intersize:=intersize,nolattice);
+  if m<>fail and Length(m)>0 then
 
-  m:=Filtered(m,x->Size(x) mod Size(U)=0 and Size(x)>Size(U));
-  SortBy(m,x->Size(G)/Size(x));
-  
-  gens:=SmallGeneratingSet(U);
-  for c in m do
-    if Index(G,c)<50000 then
-      t:=RightTransversal(G,c:noascendingchain); # conjugates
-      for k in t do
-        if ForAll(gens,x->k*x/k in c) then
-	  Info(InfoCoset,2,"Found Size ",Size(c),"\n");
-          # U is contained in c^k
-          return c^k;
+    m:=Filtered(m,x->Size(x) mod Size(U)=0 and Size(x)>Size(U));
+    SortBy(m,x->Size(G)/Size(x));
+    
+    gens:=SmallGeneratingSet(U);
+    for c in m do
+      if Index(G,c)<50000 then
+        t:=RightTransversal(G,c:noascendingchain); # conjugates
+        for k in t do
+          if ForAll(gens,x->k*x/k in c) then
+            Info(InfoCoset,2,"Found Size ",Size(c),"\n");
+            # U is contained in c^k
+            return c^k;
+          fi;
+        od;
+      else
+        t:=DoConjugateInto(G,c,U,true:intersize:=intersize,onlyone:=true);
+        if t<>fail and t<>[] then 
+          Info(InfoCoset,2,"Found Size ",Size(c),"\n");
+          return c^(Inverse(t));
         fi;
-      od;
-    else
-      t:=DoConjugateInto(G,c,U,true:intersize:=intersize,onlyone:=true);
-      if t<>fail and t<>[] then 
-	Info(InfoCoset,2,"Found Size ",Size(c),"\n");
-        return c^(Inverse(t));
       fi;
-    fi;
-  od;
+    od;
 
-  Info(InfoCoset,2,"Found no intermediate subgroup ",Size(G)," ",Size(U));
-  return fail;
+    Info(InfoCoset,2,"Found no intermediate subgroup ",Size(G)," ",Size(U));
+    return fail;
+  fi;
 
   # old code -- obsolete
 
@@ -821,7 +825,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
 	fi;
       end;
 
-      for i in MaximalSubgroupClassReps(G:cheap) do
+      for i in TryMaximalSubgroupClassReps(G:cheap) do
 	if Index(G,i)<maxidx(c) and Index(G,i)<badlimit then
 	  p:=Intersection(a,i);
 	  if Index(a,p)<uplimit then
@@ -843,7 +847,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
     
     if maxidx(c)>10*actlimit then
 
-      r:=ShallowCopy(MaximalSubgroupClassReps(a:cheap));
+      r:=ShallowCopy(TryMaximalSubgroupClassReps(a:cheap));
       r:=Filtered(r,x->Index(a,x)<uplimit);
 
       Sort(r,function(a,b) return Size(a)<Size(b);end);

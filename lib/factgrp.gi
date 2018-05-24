@@ -753,7 +753,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
 	  # only affine ones are needed, rest will have wrong kernel
 	  max:=DoMaxesTF(u,["1"]:inmax,cheap);
 	else
-	  max:=MaximalSubgroupClassReps(u:inmax,cheap);
+	  max:=TryMaximalSubgroupClassReps(u:inmax,cheap);
 	fi;
         max:=Filtered(max,x->IndexNC(G,x)<knowi and IsSubset(x,N)); 
         for i in max do

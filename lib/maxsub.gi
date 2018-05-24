@@ -795,6 +795,7 @@ local G,types,ff,maxes,lmax,q,d,dorb,dorbt,i,dorbc,dorba,dn,act,comb,smax,soc,
   a1emb,a2emb,anew,wnew,e1,e2,emb,a1,a2,mm;
 
   G:=arg[1];
+  TryMaxSubgroupTainter(G);
 
   # which kinds of maxes do we want to get
   if Length(arg)>1 then
@@ -980,6 +981,9 @@ end);
 #F  MaximalSubgroupClassReps(<G>) . . . . TF method
 ##
 InstallMethod(MaximalSubgroupClassReps,"TF method",true,
+  [IsGroup and IsFinite and CanComputeFittingFree],OVERRIDENICE,DoMaxesTF);
+
+InstallMethod(TryMaximalSubgroupClassReps,"TF method",true,
   [IsGroup and IsFinite and CanComputeFittingFree],OVERRIDENICE,DoMaxesTF);
 
 #InstallMethod(MaximalSubgroupClassReps,"perm group",true,

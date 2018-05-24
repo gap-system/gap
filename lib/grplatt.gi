@@ -1769,10 +1769,12 @@ end);
 #F  MaximalSubgroupClassReps(<G>) . . . . reps of conjugacy classes of
 #F                                                          maximal subgroups
 ##
-InstallMethod(MaximalSubgroupClassReps,"using lattice",true,[IsGroup],0,
+InstallMethod(TryMaximalSubgroupClassReps,"using lattice",true,[IsGroup],0,
 function (G)
     local   maxs,lat;
 
+    TryMaxSubgroupTainter(G);
+    if ValueOption("nolattice")=true then return fail;fi;
     #AH special AG treatment
     if not HasIsSolvableGroup(G) and IsSolvableGroup(G) then
       return MaximalSubgroupClassReps(G);
@@ -2347,6 +2349,7 @@ InstallMethod(IntermediateSubgroups,"using maximal subgroups",
   1, # better than previous if index larger
 function(G,U)
 local uind,subs,incl,i,j,k,m,gens,t,c,p,conj,bas,basl,r;
+
   if (not IsFinite(G)) and Index(G,U)=infinity then
     TryNextMethod();
   fi;
@@ -2361,11 +2364,13 @@ local uind,subs,incl,i,j,k,m,gens,t,c,p,conj,bas,basl,r;
   gens:=SmallGeneratingSet(U);
   while i<=Length(subs) do
     if conj[i]<>fail then
-      m:=MaximalSubgroupClassReps(subs[conj[i][1]]); # fetch attribute
+      m:=TryMaximalSubgroupClassReps(subs[conj[i][1]]:nolattice); # fetch
+      if m=fail then TryNextMethod();fi;
       m:=List(m,x->x^conj[i][2]);
     else
       # find all maximals containing U
-      m:=MaximalSubgroupClassReps(subs[i]);
+      m:=TryMaximalSubgroupClassReps(subs[i]:nolattice);
+      if m=fail then TryNextMethod();fi;
     fi;
     m:=Filtered(m,x->IndexNC(subs[i],U) mod IndexNC(subs[i],x)=0);
     
