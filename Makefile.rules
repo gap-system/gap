@@ -355,13 +355,13 @@ COMPILE=$(LIBTOOL) --mode=compile $(CC)
 # Disabled for HPC-GAP, to ensure we always use the output of ward
 # and not the original source files
 ifeq ($(HPCGAP),no)
-obj/%.lo: src/%.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS
+obj/%.lo: src/%.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS libtool
 	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
 	$(QUIET_CC)$(COMPILE) $(DEPFLAGS) $(GAP_CFLAGS) $(GAP_CPPFLAGS) -c $< -o $@
 endif
 
 # Build rule for generated C source files
-obj/%.lo: gen/%.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS
+obj/%.lo: gen/%.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS libtool
 	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
 	$(QUIET_CC)$(COMPILE) $(DEPFLAGS) $(GAP_CFLAGS) $(GAP_CPPFLAGS) -c $< -o $@
 
@@ -1141,6 +1141,9 @@ $(srcdir)/src/config.h.in: $(configure_deps)
 	touch $@
 
 GNUmakefile: $(srcdir)/GNUmakefile.in config.status
+	$(SHELL) ./config.status $@
+
+libtool: config.status
 	$(SHELL) ./config.status $@
 
 doc/make_doc: $(srcdir)/doc/make_doc.in config.status
