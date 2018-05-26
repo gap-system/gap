@@ -75,11 +75,10 @@ static void CloseAfterSave( void )
       SyExit(2);
     }
 
-  if (write(syBuf[SaveFile].fp, LoadBuffer, LBPointer-LoadBuffer) < 0)
-    ErrorQuit("Cannot write to file descriptor %d, see 'LastSystemError();'\n",
-               syBuf[SaveFile].fp, 0L);
-  SyFclose(SaveFile);
-  SaveFile = -1;
+    if (SyWrite(SaveFile, LoadBuffer, LBPointer - LoadBuffer) < 0)
+        ErrorQuit("Cannot write to file, see 'LastSystemError();'\n", 0L, 0L);
+    SyFclose(SaveFile);
+    SaveFile = -1;
 }
 
 #endif
@@ -113,11 +112,10 @@ static void CloseAfterLoad( void )
 
 void SAVE_BYTE_BUF( void )
 {
-  if (write(syBuf[SaveFile].fp, LoadBuffer, LBEnd-LoadBuffer) < 0)
-    ErrorQuit("Cannot write to file descriptor %d, see 'LastSystemError();'\n",
-               syBuf[SaveFile].fp, 0L);
-  LBPointer = LoadBuffer;
-  return;
+    if (SyWrite(SaveFile, LoadBuffer, LBEnd - LoadBuffer) < 0)
+        ErrorQuit("Cannot write to file, see 'LastSystemError();'\n", 0L, 0L);
+    LBPointer = LoadBuffer;
+    return;
 }
 
 #define SAVE_BYTE(byte) {if (LBPointer >= LBEnd) {SAVE_BYTE_BUF();} \
@@ -128,7 +126,7 @@ const Char * LoadByteErrorMessage = "Unexpected End of File in Load\n";
 UInt1 LOAD_BYTE_BUF( void )
 {
   Int ret;
-  ret = read(syBuf[LoadFile].fp, LoadBuffer, 100000);
+  ret = SyRead(LoadFile, LoadBuffer, 100000);
   if (ret <= 0)
     {
       Pr(LoadByteErrorMessage, 0L, 0L );

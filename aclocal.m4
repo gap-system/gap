@@ -1,4 +1,5 @@
 # Make sure to include any M4 files needed by configure.ac here
+m4_include([cnf/m4/m4_ax_check_zlib.m4])
 m4_include([cnf/m4/ax_append_compile_flags.m4])
 m4_include([cnf/m4/ax_append_flag.m4])
 m4_include([cnf/m4/ax_check_compile_flag.m4])
