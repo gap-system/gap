@@ -1118,8 +1118,6 @@ void FinishBags( void )
 **  in global variables. It also allocates the initial workspace, and sets up
 **  the linked list of available masterpointer.
 */
-TNumStackFuncBags       StackFuncBags;
-
 TNumExtraMarkFuncBags   ExtraMarkFuncBags;
 
 static Bag * StackBottomBags;
@@ -1128,7 +1126,6 @@ static UInt StackAlignBags;
 
 void            InitBags (
     UInt                initial_size,
-    TNumStackFuncBags   stack_func,
     Bag *               stack_bottom,
     UInt                stack_align )
 {
@@ -1140,8 +1137,7 @@ void            InitBags (
     /* install the allocator and the abort function                        */
     ExtraMarkFuncBags = 0;
 
-    /* install the stack marking function and values                       */
-    StackFuncBags   = stack_func;
+    // install the stack values
     StackBottomBags = stack_bottom;
     StackAlignBags  = stack_align;
 
@@ -1886,16 +1882,11 @@ again:
     }
 
     /* mark from the stack                                                 */
-    if ( StackFuncBags ) {
-        (*StackFuncBags)();
-    }
-    else {
-      sySetjmp( RegsBags );
+    sySetjmp( RegsBags );
 #if defined(SPARC)
-        SparcStackFuncBags();
+    SparcStackFuncBags();
 #endif
-        GenStackFuncBags();
-    }
+    GenStackFuncBags();
 
     /* mark the subbags of the changed old bags                            */
     while ( ChangedBags != 0 ) {

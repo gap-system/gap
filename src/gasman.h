@@ -970,51 +970,31 @@ extern  void            InitCollectFuncBags (
 **
 *F  InitBags(...) . . . . . . . . . . . . . . . . . . . . . initialize Gasman
 **
-**  InitBags( <alloc-func>, <initial-size>,
-**            <stack-func>, <stack-start>, <stack-align>,
-**            <abort-func> )
+**  InitBags( <initialSize>, <stackStart>, <stackAlign> )
 **
 **  'InitBags'  initializes {\Gasman}.  It  must be called from a application
 **  using {\Gasman} before any bags can be allocated.
 **
-**  <initial-size> must be the size of  the initial workspace that 'InitBags'
+**  <initialSize> must be the size of  the initial workspace that 'InitBags'
 **  should allocate.  This   value is automatically rounded   up to the  next
 **  multiple of 1/2 MByte by 'InitBags'.
 **
-**  <stack-func>  must be   a    function    that  applies  'MarkBag'   (see
-**  "InitMarkFuncBags") to each possible bag identifier on the application\'s
-**  stack, i.e., the stack where the applications local variables  are saved.
-**  This should be a function of no  arguments  and return type 'void'.  This
-**  function   is  called  from  'CollectBags'  to  mark   all bags  that are
-**  accessible from  local variables.   There  is a generic function for this
-**  purpose, which is called  when the application passes  0 as <stack-func>,
-**  which will work all right on most machines, but *may* fail on some of the
-**  more exotic machines.
+**  <stackStart> must be the start of the stack. Note that the start of the
+**  stack is either the bottom or the top of the stack, depending on whether
+**  the stack grows upward or downward. A value that usually works is the
+**  address of the argument 'argc' of the 'main' function of the application,
+**  i.e., '(Bag\*)\&argc'.
 **
-**  If the application passes 0 as value for <stack-func>, <stack-start> must
-**  be the start of the stack.   Note that the  start of the  stack is either
-**  the bottom or the top of the stack, depending  on whether the stack grows
-**  upward  or downward.  A  value that usually works is  the address  of the
-**  argument  'argc'   of the  'main' function    of the  application,  i.e.,
-**  '(Bag\*)\&argc'.  If  the application   provides  another   <stack-func>,
-**  <stack-start> is ignored.
-**
-**  If the application passes 0 as value for <stack-func>, <stack-align> must
-**  be  the alignment  of items  of  type 'Bag' on the  stack.   It must be a
-**  divisor of 'sizeof(Bag)'.  The addresses of  all identifiers on the stack
-**  must be a multiple  of <stack-align>.  So if  it is 1, identifiers may be
-**  anywhere on the stack, and  if it is  'sizeof(Bag)', identifiers may only
-**  be at addresses that are a multiple of 'sizeof(Bag)'.  This value depends
-**  on  the   machine,  the  operating system,   and   the compiler.   If the
-**  application provides another <stack-func>, <stack-align> is ignored.
+**  <stackAlign> must be the alignment of items of type 'Bag' on the stack.
+**  It must be a divisor of 'sizeof(Bag)'. The addresses of all identifiers
+**  on the stack must be a multiple of <stackAlign>. If it is 1, identifiers
+**  may be anywhere on the stack, and if it is 'sizeof(Bag)', identifiers may
+**  only be at addresses that are a multiple of 'sizeof(Bag)'. This value
+**  depends on the machine, the operating system, and the compiler.
 */
-typedef void (*TNumStackFuncBags)(void);
 typedef void (*TNumExtraMarkFuncBags)(void);
 
-extern void InitBags(UInt              initial_size,
-                     TNumStackFuncBags stack_func,
-                     Bag *             stack_bottom,
-                     UInt              stack_align);
+extern void InitBags(UInt initialSize, Bag * stackStart, UInt stackAlign);
 
 /****************************************************************************
 **
