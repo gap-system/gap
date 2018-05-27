@@ -1746,8 +1746,9 @@ void InitializeGap (
     InitSystem( *pargc, argv );
 
     /* Initialise memory  -- have to do this here to make sure we are at top of C stack */
-    InitBags( SyStorMin,
-              0, (Bag*)(((UInt)pargc/C_STACK_ALIGN)*C_STACK_ALIGN), C_STACK_ALIGN );
+    InitBags(SyStorMin,
+             (Bag *)(((UInt)pargc / C_STACK_ALIGN) * C_STACK_ALIGN),
+             C_STACK_ALIGN);
 #ifdef USE_GASMAN
     InitMsgsFuncBags( SyMsgsBags );
 #endif

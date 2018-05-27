@@ -314,7 +314,6 @@ void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
 }
 
 void InitBags(UInt              initial_size,
-              TNumStackFuncBags stack_func,
               Bag *             stack_bottom,
               UInt              stack_align)
 {
