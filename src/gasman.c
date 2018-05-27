@@ -354,7 +354,7 @@ static int SanityCheckGasmanPointers(void)
 **  collection  its  masterpointer  is  added   to  the  list  of   available
 **  masterpointers again.
 */
-Bag FreeMptrBags;
+static Bag FreeMptrBags;
 
 
 /****************************************************************************
@@ -435,7 +435,7 @@ Bag                     ChangedBags;
 **  'CollectBags' will   mark the bags   in a  depth-first  order.   This  is
 **  probably good to improve the locality of reference.
 */
-Bag                     MarkedBags;
+static Bag MarkedBags;
 
 
 /****************************************************************************
@@ -491,7 +491,7 @@ static inline UInt IS_BAG_BODY(void * ptr)
 **  'InitMsgsFuncBags'  simply  stores  the  printing  function  in a  global
 **  variable.
 */
-TNumMsgsFuncBags        MsgsFuncBags;
+static TNumMsgsFuncBags MsgsFuncBags;
 
 void            InitMsgsFuncBags (
     TNumMsgsFuncBags    msgs_func )
@@ -505,7 +505,7 @@ void            InitMsgsFuncBags (
 *F  InitSweepFuncBags(<type>,<mark-func>)  . . . .  install sweeping function
 */
 
-TNumSweepFuncBags TabSweepFuncBags [ NTYPES ];
+static TNumSweepFuncBags TabSweepFuncBags[NTYPES];
 
 
 void InitSweepFuncBags (
@@ -659,8 +659,8 @@ void MarkAllSubBagsDefault(Bag bag)
 }
 
 #ifdef DEBUG_GASMAN_MARKING
-UInt BadMarksCounter = 0;
-Int DisableMarkBagValidation = 0;
+static UInt BadMarksCounter = 0;
+static Int  DisableMarkBagValidation = 0;
 #endif
 
 
@@ -961,7 +961,7 @@ void FinishedRestoringBags( void )
 **
 **  'InitFreeFuncBag' is really too simple for an explanation.
 */
-TNumFreeFuncBags        TabFreeFuncBags [ 256 ];
+static TNumFreeFuncBags TabFreeFuncBags[256];
 
 void            InitFreeFuncBag (
     UInt                type,
@@ -977,9 +977,9 @@ void            InitFreeFuncBag (
 **
 **  'InitCollectFuncBags' is really too simple for an explanation.
 */
-TNumCollectFuncBags     BeforeCollectFuncBags;
+static TNumCollectFuncBags BeforeCollectFuncBags;
 
-TNumCollectFuncBags     AfterCollectFuncBags;
+static TNumCollectFuncBags AfterCollectFuncBags;
 
 void            InitCollectFuncBags (
     TNumCollectFuncBags before_func,
@@ -1122,9 +1122,9 @@ TNumStackFuncBags       StackFuncBags;
 
 TNumExtraMarkFuncBags   ExtraMarkFuncBags;
 
-Bag *                   StackBottomBags;
+static Bag * StackBottomBags;
 
-UInt                    StackAlignBags;
+static UInt StackAlignBags;
 
 void            InitBags (
     UInt                initial_size,
