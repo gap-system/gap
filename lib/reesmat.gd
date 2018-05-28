@@ -51,7 +51,9 @@ DeclareSynonymAttr("IsReesZeroMatrixSubsemigroup",
   IsSemigroup and IsReesZeroMatrixSemigroupElementCollection);
 
 DeclareProperty("IsReesMatrixSemigroup", IsSemigroup); 
+InstallTrueMethod(IsSemigroup, IsReesMatrixSemigroup);
 DeclareProperty("IsReesZeroMatrixSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsReesZeroMatrixSemigroup);
 
 InstallTrueMethod(IsReesMatrixSemigroup, 
   IsReesMatrixSubsemigroup and IsWholeFamily);

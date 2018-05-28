@@ -48,8 +48,11 @@ DeclareSynonym("SemigroupIdealByGenerators", MagmaIdealByGenerators );
 ##  <#/GAPDoc>
 ##
 DeclareProperty("IsLeftSemigroupIdeal", IsLeftMagmaIdeal );
+InstallTrueMethod( IsLeftMagmaIdeal, IsLeftSemigroupIdeal );
 DeclareProperty("IsRightSemigroupIdeal", IsRightMagmaIdeal );
+InstallTrueMethod( IsRightMagmaIdeal, IsRightSemigroupIdeal );
 DeclareProperty("IsSemigroupIdeal", IsMagmaIdeal );
+InstallTrueMethod( IsMagmaIdeal, IsSemigroupIdeal );
 
 
 #############################################################################

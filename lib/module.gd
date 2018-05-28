@@ -681,8 +681,8 @@ InstallTrueMethod( IsRowModule, IsFullRowModule );
 ##
 DeclareProperty( "IsMatrixModule", IsFreeLeftModule );
 
+InstallTrueMethod( IsFreeLeftModule, IsMatrixModule );
 InstallTrueMethod( IsMatrixModule, IsFullMatrixModule );
-
 
 #############################################################################
 ##

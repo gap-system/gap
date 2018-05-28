@@ -66,13 +66,14 @@ DeclareProperty( "IsNaturalAlternatingGroup", IsPermGroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsAlternatingGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsAlternatingGroup );
 
 
 #############################################################################
 ##
 #M  IsAlternatingGroup( <nat-alt-grp> )
 ##
-InstallTrueMethod( IsAlternatingGroup, IsNaturalAlternatingGroup );
+InstallTrueMethod( IsAlternatingGroup and IsPermGroup, IsNaturalAlternatingGroup );
 
 
 #############################################################################
@@ -91,13 +92,13 @@ InstallTrueMethod( IsAlternatingGroup, IsNaturalAlternatingGroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsSymmetricGroup", IsGroup );
-
+InstallTrueMethod( IsGroup, IsSymmetricGroup );
 
 #############################################################################
 ##
 #M  IsSymmetricGroup( <nat-sym-grp> )
 ##
-InstallTrueMethod( IsSymmetricGroup, IsNaturalSymmetricGroup );
+InstallTrueMethod( IsSymmetricGroup and IsPermGroup, IsNaturalSymmetricGroup );
 
 
 #############################################################################

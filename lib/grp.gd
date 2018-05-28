@@ -433,6 +433,7 @@ DeclareOperation( "KnowsHowToDecompose", [ IsGroup, IsList ] );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsPGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsPGroup );
 
 InstallSubsetMaintenance( IsPGroup,
     IsGroup and IsPGroup, IsGroup );
@@ -468,6 +469,7 @@ InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsPowerfulPGroup", IsGroup );
+InstallTrueMethod( IsPGroup, IsPowerfulPGroup );
 
 #Quotients of powerful of powerful p groups are powerful
 InstallFactorMaintenance( IsPowerfulPGroup,
@@ -595,6 +597,7 @@ InstallTrueMethod( IsNilpotentGroup, IsGroup and IsPGroup and IsFinite );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsPerfectGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsPerfectGroup );
 
 InstallFactorMaintenance( IsPerfectGroup,
     IsGroup and IsPerfectGroup, IsObject, IsGroup );
@@ -645,6 +648,7 @@ InstallIsomorphismMaintenance( IsSporadicSimpleGroup,
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsSimpleGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsSimpleGroup );
 
 InstallIsomorphismMaintenance( IsSimpleGroup,
     IsGroup and IsSimpleGroup, IsGroup );
@@ -776,6 +780,7 @@ InstallTrueMethod( IsMonomialGroup, IsSupersolvableGroup and IsFinite );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsSolvableGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsSolvableGroup );
 
 InstallSubsetMaintenance( IsSolvableGroup,
     IsGroup and IsSolvableGroup, IsGroup );
@@ -893,7 +898,7 @@ InstallTrueMethod( HasIsInfiniteAbelianizationGroup, IsGroup and IsFinite );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "AsGroup", IsCollection );
+DeclareAttribute( "AsGroup", IsListOrCollection );
 
 
 #############################################################################
@@ -2430,7 +2435,7 @@ DeclareOperation( "AsSubgroup", [ IsGroup, IsGroup ] );
 DeclareOperation( "ClassMultiplicationCoefficient",
     [ IsGroup, IsPosInt, IsPosInt, IsPosInt ] );
 DeclareOperation( "ClassMultiplicationCoefficient",
-    [ IsGroup, IsCollection, IsCollection, IsCollection ] );
+    [ IsGroup, IsListOrCollection, IsListOrCollection, IsListOrCollection ] );
 
 
 #############################################################################
@@ -3545,9 +3550,9 @@ DeclareOperation( "GrowthFunctionOfGroup",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "GroupByGenerators", [ IsCollection ] );
+DeclareOperation( "GroupByGenerators", [ IsListOrCollection ] );
 DeclareOperation( "GroupByGenerators",
-    [ IsCollection, IsMultiplicativeElementWithInverse ] );
+    [ IsListOrCollection, IsMultiplicativeElementWithInverse ] );
 
 
 #############################################################################
@@ -3569,9 +3574,9 @@ DeclareOperation( "GroupByGenerators",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "GroupWithGenerators", [ IsCollection ] );
+DeclareOperation( "GroupWithGenerators", [ IsListOrCollection ] );
 DeclareOperation( "GroupWithGenerators",
-    [ IsCollection, IsMultiplicativeElementWithInverse ] );
+    [ IsListOrCollection, IsMultiplicativeElementWithInverse ] );
 
 
 #############################################################################
@@ -3725,7 +3730,7 @@ DeclareGlobalFunction( "SubgroupShell" );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareCategory("IsRightTransversal",IsCollection);
+DeclareCategory("IsRightTransversal",IsListOrCollection);
 DeclareCategoryCollections("IsRightTransversal");
 
 #############################################################################

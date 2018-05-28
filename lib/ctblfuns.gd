@@ -1140,6 +1140,7 @@ DeclareOperation( "IsCharacter", [ IsCharacterTable, IsHomogeneousList ] );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsVirtualCharacter", IsClassFunction );
+InstallTrueMethod( IsClassFunction, IsVirtualCharacter );
 DeclareOperation( "IsVirtualCharacter",
     [ IsCharacterTable, IsHomogeneousList ] );
 

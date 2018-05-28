@@ -40,6 +40,7 @@ DeclareInfoClass( "InfoQuotientSystem" );
 ##  installed. 
 ##
 DeclareProperty( "IsPQuotientSystem", IsQuotientSystem );
+InstallTrueMethod( IsQuotientSystem, IsPQuotientSystem );
 
 
 #############################################################################

@@ -405,6 +405,7 @@ DeclareGlobalFunction( "FreeSemigroup" );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsZeroGroup", IsSemigroup );
+InstallTrueMethod( IsSemigroup, IsZeroGroup );
 
 #############################################################################
 ##
@@ -422,7 +423,7 @@ DeclareProperty( "IsZeroGroup", IsSemigroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsSimpleSemigroup", IsSemigroup );
-
+InstallTrueMethod( IsSemigroup, IsSimpleSemigroup );
 
 #############################################################################
 ##
@@ -441,6 +442,7 @@ DeclareProperty( "IsSimpleSemigroup", IsSemigroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsZeroSimpleSemigroup", IsSemigroup );
+InstallTrueMethod( IsSemigroup, IsZeroSimpleSemigroup );
 
 
 ############################################################################
@@ -475,6 +477,7 @@ DeclareAttribute("ANonReesCongruenceOfSemigroup",IsSemigroup);
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsReesCongruenceSemigroup", IsSemigroup );
+InstallTrueMethod( IsSemigroup, IsReesCongruenceSemigroup );
 
 
 #############################################################################
@@ -558,6 +561,7 @@ DeclareOperation("IsRegularSemigroupElement", [IsSemigroup,
 ##  <#/GAPDoc>
 ##
 DeclareProperty("IsRegularSemigroup", IsSemigroup);
+InstallTrueMethod( IsSemigroup, IsRegularSemigroup );
 
 
 #############################################################################
@@ -589,7 +593,7 @@ DeclareProperty("IsRegularSemigroup", IsSemigroup);
 ##  <#/GAPDoc>
 ##
 DeclareProperty("IsInverseSemigroup", IsSemigroup);
-
+InstallTrueMethod( IsSemigroup, IsInverseSemigroup );
 
 #############################################################################
 ##

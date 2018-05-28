@@ -541,7 +541,7 @@ DeclareProperty( "IsSortedList", IsList);
 DeclarePropertyKernel( "IsSSortedList", IsList, IS_SSORT_LIST );
 DeclareSynonym( "IsSet", IsSSortedList );
 
-InstallTrueMethod( IsSortedList, IsSSortedList );
+InstallTrueMethod( IsList and IsSortedList, IsSSortedList );
 InstallTrueMethod( IsSSortedList, IsList and IsEmpty );
 
 
