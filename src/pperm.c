@@ -618,7 +618,7 @@ static UInt4 * FindImg(UInt n, UInt rank, Obj img)
     UInt4 * ptseen;
 
     ResizeTmpPPerm(n);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
+    ptseen = ADDR_PPERM4(TmpPPerm);
     memset(ptseen, 0, n * sizeof(UInt4));
 
     for (i = 1; i <= rank; i++)
@@ -678,7 +678,7 @@ Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
                 }
                 ord = LcmInt(ord, INTOBJ_INT(len));
                 // update ptseen, in case a garbage collection happened
-                ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
+                ptseen = ADDR_PPERM4(TmpPPerm);
             }
         }
     }
@@ -715,7 +715,7 @@ Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
                 }
                 ord = LcmInt(ord, INTOBJ_INT(len));
                 // update ptseen, in case a garbage collection happened
-                ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
+                ptseen = ADDR_PPERM4(TmpPPerm);
             }
         }
     }
@@ -931,14 +931,14 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
         // find chains
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i));
-            if (((const UInt4 *)(CONST_ADDR_OBJ(TmpPPerm)))[j - 1] == 0) {
+            if (CONST_ADDR_PPERM4(TmpPPerm)[j - 1] == 0) {
                 SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
                 CHANGED_BAG(out);
                 len = 0;
                 k = j;
                 do {
                     AssPlist(ELM_PLIST(out, nr), ++len, INTOBJ_INT(k));
-                    ((UInt4 *)(ADDR_OBJ(TmpPPerm)))[k - 1] = 2;
+                    ADDR_PPERM4(TmpPPerm)[k - 1] = 2;
                     k = IMAGEPP(k, ADDR_PPERM2(f), deg);
                 } while (k != 0);
                 SHRINK_PLIST(ELM_PLIST(out, nr), len);
@@ -950,14 +950,14 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
         // find cycles
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i));
-            if (((const UInt4 *)(CONST_ADDR_OBJ(TmpPPerm)))[j - 1] == 1) {
+            if (CONST_ADDR_PPERM4(TmpPPerm)[j - 1] == 1) {
                 SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
                 CHANGED_BAG(out);
                 len = 0;
                 k = j;
                 do {
                     AssPlist(ELM_PLIST(out, nr), ++len, INTOBJ_INT(k));
-                    ((UInt4 *)(ADDR_OBJ(TmpPPerm)))[k - 1] = 0;
+                    ADDR_PPERM4(TmpPPerm)[k - 1] = 0;
                     k = ADDR_PPERM2(f)[k - 1];
                 } while (k != j);
                 SHRINK_PLIST(ELM_PLIST(out, nr), len);
@@ -973,14 +973,14 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
         // find chains
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i));
-            if (((const UInt4 *)(CONST_ADDR_OBJ(TmpPPerm)))[j - 1] == 0) {
+            if (CONST_ADDR_PPERM4(TmpPPerm)[j - 1] == 0) {
                 SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
                 CHANGED_BAG(out);
                 len = 0;
                 k = j;
                 do {
                     AssPlist(ELM_PLIST(out, nr), ++len, INTOBJ_INT(k));
-                    ((UInt4 *)(ADDR_OBJ(TmpPPerm)))[k - 1] = 2;
+                    ADDR_PPERM4(TmpPPerm)[k - 1] = 2;
                     k = IMAGEPP(k, ADDR_PPERM4(f), deg);
                 } while (k != 0);
                 SHRINK_PLIST(ELM_PLIST(out, nr), len);
@@ -992,14 +992,14 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
         // find cycles
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i));
-            if (((const UInt4 *)(CONST_ADDR_OBJ(TmpPPerm)))[j - 1] == 1) {
+            if (CONST_ADDR_PPERM4(TmpPPerm)[j - 1] == 1) {
                 SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
                 CHANGED_BAG(out);
                 len = 0;
                 k = j;
                 do {
                     AssPlist(ELM_PLIST(out, nr), ++len, INTOBJ_INT(k));
-                    ((UInt4 *)(ADDR_OBJ(TmpPPerm)))[k - 1] = 0;
+                    ADDR_PPERM4(TmpPPerm)[k - 1] = 0;
                     k = ADDR_PPERM4(f)[k - 1];
                 } while (k != j);
                 SHRINK_PLIST(ELM_PLIST(out, nr), len);
@@ -1778,7 +1778,7 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
     // init the buffer
     codeg = MAX(CODEG_PPERM(f), CODEG_PPERM(g));
     ResizeTmpPPerm(codeg);
-    ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
+    ptseen = ADDR_PPERM4(TmpPPerm);
     for (i = 0; i < codeg; i++)
         ptseen[i] = 0;
 
@@ -1792,7 +1792,7 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
         ptjoin4 = ADDR_PPERM4(join);
         ptf4 = ADDR_PPERM4(f);
         ptg4 = ADDR_PPERM4(g);
-        ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
+        ptseen = ADDR_PPERM4(TmpPPerm);
 
         if (DOM_PPERM(f) != NULL) {
             dom = DOM_PPERM(f);
@@ -1872,7 +1872,7 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
         ptjoin4 = ADDR_PPERM4(join);
         ptf4 = ADDR_PPERM4(f);
         ptg2 = ADDR_PPERM2(g);
-        ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
+        ptseen = ADDR_PPERM4(TmpPPerm);
 
         if (DOM_PPERM(f) != NULL) {
             dom = DOM_PPERM(f);
@@ -1955,7 +1955,7 @@ Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
         ptjoin2 = ADDR_PPERM2(join);
         ptf2 = ADDR_PPERM2(f);
         ptg2 = ADDR_PPERM2(g);
-        ptseen = (UInt4 *)(ADDR_OBJ(TmpPPerm));
+        ptseen = ADDR_PPERM4(TmpPPerm);
 
         if (DOM_PPERM(f) != NULL) {
             dom = DOM_PPERM(f);
@@ -4737,7 +4737,7 @@ Obj QuoPPerm2Perm2(Obj f, Obj p)
 
     // invert the permutation into the buffer bag
     ResizeTmpPPerm(lmp);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     ptp = ADDR_PERM2(p);
     for (i = 0; i < lmp; i++)
         pttmp[*ptp++] = i;
@@ -4750,7 +4750,7 @@ Obj QuoPPerm2Perm2(Obj f, Obj p)
     if (lmp < 65536) {
         quo = NEW_PPERM2(deg);
         ptf = ADDR_PPERM2(f);
-        pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+        pttmp = ADDR_PPERM4(TmpPPerm);
         ptquo2 = ADDR_PPERM2(quo);
         if (codeg <= lmp) {
             codeg = 0;
@@ -4797,7 +4797,7 @@ Obj QuoPPerm2Perm2(Obj f, Obj p)
         quo = NEW_PPERM4(deg);
         ptquo4 = ADDR_PPERM4(quo);
         ptf = ADDR_PPERM2(f);
-        pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+        pttmp = ADDR_PPERM4(TmpPPerm);
         ptquo4 = ADDR_PPERM4(quo);
         codeg = 0;
         if (DOM_PPERM(f) == NULL) {
@@ -4846,7 +4846,7 @@ Obj QuoPPerm4Perm4(Obj f, Obj p)
 
     // invert the permutation into the buffer bag
     ResizeTmpPPerm(lmp);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     ptp = ADDR_PERM4(p);
     for (i = 0; i < lmp; i++)
         pttmp[*ptp++] = i;
@@ -4858,7 +4858,7 @@ Obj QuoPPerm4Perm4(Obj f, Obj p)
 
     // renew pointers
     ptf = ADDR_PPERM4(f);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     ptquo = ADDR_PPERM4(quo);
 
     // multiply the partial perm with the inverse
@@ -4928,7 +4928,7 @@ Obj QuoPPerm2Perm4(Obj f, Obj p)
 
     // invert the permutation into the buffer bag
     ResizeTmpPPerm(lmp);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     ptp = ADDR_PERM4(p);
     for (i = 0; i < lmp; i++)
         pttmp[*ptp++] = i;
@@ -4939,7 +4939,7 @@ Obj QuoPPerm2Perm4(Obj f, Obj p)
 
     // renew pointers
     ptf = ADDR_PPERM2(f);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     ptquo = ADDR_PPERM4(quo);
 
     // multiply the partial perm with the inverse
@@ -4990,7 +4990,7 @@ Obj QuoPPerm4Perm2(Obj f, Obj p)
 
     // invert the permutation into the buffer bag
     ResizeTmpPPerm(lmp);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     ptp = ADDR_PERM2(p);
     for (i = 0; i < lmp; i++)
         pttmp[*ptp++] = i;
@@ -5001,7 +5001,7 @@ Obj QuoPPerm4Perm2(Obj f, Obj p)
 
     // renew pointers
     ptf = ADDR_PPERM4(f);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     ptquo = ADDR_PPERM4(quo);
 
     // multiply the partial perm with the inverse
@@ -5042,7 +5042,7 @@ Obj QuoPPerm22(Obj f, Obj g)
     // init the buffer bag
     deginv = CODEG_PPERM2(g);
     ResizeTmpPPerm(deginv);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     for (i = 0; i < deginv; i++)
         pttmp[i] = 0;
 
@@ -5076,7 +5076,7 @@ Obj QuoPPerm22(Obj f, Obj g)
     quo = NEW_PPERM4(deg);
     ptquo = ADDR_PPERM4(quo);
     ptf = ADDR_PPERM2(f);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     codeg = 0;
 
     // compose f with g^-1 in rank operations
@@ -5123,7 +5123,7 @@ Obj QuoPPerm24(Obj f, Obj g)
     // init the buffer bag
     deginv = CODEG_PPERM4(g);
     ResizeTmpPPerm(deginv);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     for (i = 0; i < deginv; i++)
         pttmp[i] = 0;
 
@@ -5164,7 +5164,7 @@ Obj QuoPPerm24(Obj f, Obj g)
     quo = NEW_PPERM4(deg);
     ptquo = ADDR_PPERM4(quo);
     ptf = ADDR_PPERM2(f);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     codeg = 0;
 
     // compose f with g^-1 in rank operations
@@ -5211,7 +5211,7 @@ Obj QuoPPerm42(Obj f, Obj g)
     // init the buffer bag
     deginv = CODEG_PPERM2(g);
     ResizeTmpPPerm(deginv);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     for (i = 0; i < deginv; i++)
         pttmp[i] = 0;
 
@@ -5252,7 +5252,7 @@ Obj QuoPPerm42(Obj f, Obj g)
     quo = NEW_PPERM4(deg);
     ptquo = ADDR_PPERM4(quo);
     ptf = ADDR_PPERM4(f);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     codeg = 0;
 
     // compose f with g^-1 in rank operations
@@ -5298,7 +5298,7 @@ Obj QuoPPerm44(Obj f, Obj g)
     // init the buffer bag
     deginv = CODEG_PPERM4(g);
     ResizeTmpPPerm(deginv);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     for (i = 0; i < deginv; i++)
         pttmp[i] = 0;
 
@@ -5332,7 +5332,7 @@ Obj QuoPPerm44(Obj f, Obj g)
     quo = NEW_PPERM4(deg);
     ptquo = ADDR_PPERM4(quo);
     ptf = ADDR_PPERM4(f);
-    pttmp = ((UInt4 *)ADDR_OBJ(TmpPPerm));
+    pttmp = ADDR_PPERM4(TmpPPerm);
     codeg = 0;
 
     // compose f with g^-1 in rank operations
