@@ -94,7 +94,7 @@ InstallMethod( PrintObj,
 ##
 InstallImmediateMethod( IsEmpty,
     IsCollection and HasSize, 0,
-    C -> Size( C ) = 0 );
+    C->Size( C ) = 0);
 
 InstallMethod( IsEmpty,
     "for a collection",
@@ -120,8 +120,8 @@ InstallMethod( IsTrivial,
     [ IsCollection ],
     C -> Size( C ) = 1 );
 
-InstallImmediateMethod( IsTrivial,
-    IsCollection and HasIsNonTrivial, 0,
+InstallMethod( IsTrivial,
+    [IsCollection and HasIsNonTrivial], 0,
     C -> not IsNonTrivial( C ) );
 
 
@@ -129,8 +129,8 @@ InstallImmediateMethod( IsTrivial,
 ##
 #M  IsNonTrivial( <C> ) . . . . . . . . .  test if a collection is nontrivial
 ##
-InstallImmediateMethod( IsNonTrivial,
-    IsCollection and HasIsTrivial, 0,
+InstallMethod( IsNonTrivial,
+    [IsCollection and HasIsTrivial], 0,
     C -> not IsTrivial( C ) );
 
 InstallMethod( IsNonTrivial,
@@ -169,8 +169,12 @@ InstallMethod( IsWholeFamily,
 ##
 #M  Size( <C> ) . . . . . . . . . . . . . . . . . . . .  size of a collection
 ##
-InstallImmediateMethod( Size,
-    IsCollection and HasIsFinite and IsAttributeStoringRep, 0,
+#  This used to be an immediate method. It was replaced by an ordinary
+#  method, as the immediate method would get called for every group that
+#  knows it is finite but does not know its size -- e.g.  permutation, pc.
+#  The benefit of this is minimal beyond showing off a feature.
+InstallMethod( Size,true, [IsCollection and HasIsFinite], 
+  100, # rank above object-specific methods
     function ( C )
     if IsFinite( C ) then
         TryNextMethod();
@@ -3048,6 +3052,36 @@ end);
 
 InstallMethod( CanComputeIsSubset,"default: no, unless identical",
   [IsObject,IsObject],IsIdenticalObj);
+
+# This setter method is installed to implement filter settings in response
+# to an objects size as part of setting the size. This used to be handled
+# instead by immediate methods, but in a situation as here it would trigger
+# multiple immediate methods, several of which could apply and each changing
+# the type of the object. Doing so can be costly and thus should be
+# avoided.
+InstallOtherMethod(SetSize,true,[IsObject and IsAttributeStoringRep,IsObject],
+  100, # override system setter
+function(obj,sz)
+local filt;
+  if HasSize(obj) and Size(obj)<>sz then
+    if AssertionLevel()>2 then
+      # Make this an ordinary error (not ErrorNoReturn as suggested) to
+      # preserve all debugging options -- even use `return` to investigate
+      # what would have happened before this methods was introduced.
+      Error("size of ",obj," already set to ",Size(obj),
+        ", cannot be changed to ",sz);
+    fi;
+    return;
+  fi;
+  if sz=0 then filt:=IsEmpty and IsNonTrivial; # IsNonTrivial hold
+  elif sz=1 then filt:=IsTrivial;
+  elif sz=infinity then filt:=IsNonTrivial and HasIsFinite;
+  else filt:=IsNonTrivial and IsFinite;
+  fi;
+  filt:=filt and HasSize;
+  obj!.Size:=sz;
+  SetFilterObj(obj,filt);
+end);
 
 #############################################################################
 ##

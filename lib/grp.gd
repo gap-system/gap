@@ -599,6 +599,7 @@ DeclareProperty( "IsPerfectGroup", IsGroup );
 InstallFactorMaintenance( IsPerfectGroup,
     IsGroup and IsPerfectGroup, IsObject, IsGroup );
 
+InstallTrueMethod( IsPerfectGroup, IsGroup and IsTrivial );
 
 #############################################################################
 ##
@@ -789,6 +790,8 @@ InstallFactorMaintenance( IsSolvableGroup,
 ##  we need the direct implication from supersolvability to solvability.
 InstallTrueMethod( IsSolvableGroup, IsMonomialGroup );
 InstallTrueMethod( IsSolvableGroup, IsSupersolvableGroup );
+
+InstallTrueMethod( HasIsPerfectGroup, IsGroup and IsSolvableGroup and IsNonTrivial );
 
 
 #############################################################################
@@ -3572,6 +3575,11 @@ DeclareOperation( "GroupByGenerators",
 DeclareOperation( "GroupWithGenerators", [ IsCollection ] );
 DeclareOperation( "GroupWithGenerators",
     [ IsCollection, IsMultiplicativeElementWithInverse ] );
+
+#F  MakeGroupyType( <fam>, <filt>, <gens>, <isgroup> )
+# type creator function to incorporate basic deductions so immediate methods
+# are not needed
+DeclareGlobalFunction("MakeGroupyType");
 
 
 #############################################################################
