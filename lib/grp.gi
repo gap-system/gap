@@ -550,10 +550,24 @@ InstallMethod( IsAlmostSimpleGroup,
 ##
 #M  IsSolvableGroup( <G> )  . . . . . . . . . . . test if a group is solvable
 ##
+##  By the Feit–Thompson odd order theorem, every group of odd order is
+##  solvable.
+##
+##  Now suppose G is a group of order 2m, with m odd. Let G act on itself from
+##  the right, yielding a monomorphism \phi:G \to Sym(G). G contains an
+##  involution h; then \phi(h) decomposes into a product of m disjoint
+##  transpositions, hence sign(\phi(h)) = -1. Hence the kernel N of the
+##  composition x \mapsto sign(\phi(x)) is a normal subgroup of G of index 2,
+##  hence |N| = m.
+##
+##  By the odd order theorem, N is solvable, and so is G. Thus the order of
+##  any non-solvable finite group is a multiple of 4.
+##
 InstallImmediateMethod( IsSolvableGroup, IsGroup and HasSize, 10,
     function( G )
-    G:= Size( G );
-    if IsInt( G ) and G mod 2 = 1 then
+    local size;
+    size := Size( G );
+    if IsInt( size ) and size mod 4 <> 0 then
       return true;
     fi;
     TryNextMethod();
