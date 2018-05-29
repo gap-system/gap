@@ -680,6 +680,7 @@ InstallTrueMethod( IsRowModule, IsFullRowModule );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsMatrixModule", IsFreeLeftModule );
+InstallTrueMethod( IsFreeLeftModule, IsMatrixModule );
 
 InstallTrueMethod( IsMatrixModule, IsFullMatrixModule );
 

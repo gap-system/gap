@@ -149,6 +149,7 @@ DeclareSynonym( "IsFiniteBasisDefault",
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsCanonicalBasis", IsBasis );
+InstallTrueMethod( IsBasis, IsCanonicalBasis );
 
 
 #############################################################################
