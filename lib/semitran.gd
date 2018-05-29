@@ -16,6 +16,8 @@ DeclareSynonym("IsTransformationMonoid", IsMonoid and
 IsTransformationCollection);
 
 DeclareProperty("IsFullTransformationSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsFullTransformationSemigroup);
+
 DeclareSynonym("IsFullTransformationMonoid", IsFullTransformationSemigroup);
 
 DeclareGlobalFunction("FullTransformationSemigroup");
