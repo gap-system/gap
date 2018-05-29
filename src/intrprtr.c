@@ -1168,6 +1168,7 @@ void IntrHelp(Obj topic)
 {
     UInt hgvar;
     Obj  help;
+    Obj  res;
 
     if (STATE(IntrReturning) > 0) {
         return;
@@ -1191,8 +1192,11 @@ void IntrHelp(Obj topic)
                    0L, 0L );
     }
 
-    CALL_1ARGS(help, topic);
-    PushVoidObj();
+    res = CALL_1ARGS(help, topic);
+    if (res)
+        PushObj(res);
+    else
+        PushVoidObj();
 }
 
 
