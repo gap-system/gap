@@ -830,7 +830,7 @@ DeclareOperation( "ImagesRepresentative", [ IsGeneralMapping, IsObject ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ImagesSet", [ IsGeneralMapping, IsCollection ] );
+DeclareOperation( "ImagesSet", [ IsGeneralMapping, IsListOrCollection ] );
 
 
 #############################################################################
@@ -1052,7 +1052,7 @@ DeclareOperation( "PreImagesRepresentative",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "PreImagesSet", [ IsGeneralMapping, IsCollection ] );
+DeclareOperation( "PreImagesSet", [ IsGeneralMapping, IsListOrCollection ] );
 
 
 #############################################################################
