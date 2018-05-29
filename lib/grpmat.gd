@@ -220,6 +220,8 @@ DeclareGlobalFunction("NaturalActedSpace");
 DeclareProperty( "IsGeneralLinearGroup", IsGroup );
 DeclareSynonymAttr( "IsGL", IsGeneralLinearGroup );
 
+InstallTrueMethod( IsGroup, IsGeneralLinearGroup );
+
 
 #############################################################################
 ##
@@ -264,6 +266,7 @@ InstallTrueMethod(IsGeneralLinearGroup,IsNaturalGL);
 DeclareProperty( "IsSpecialLinearGroup", IsGroup );
 DeclareSynonymAttr( "IsSL", IsSpecialLinearGroup );
 
+InstallTrueMethod( IsGroup, IsSpecialLinearGroup );
 
 #############################################################################
 ##
@@ -348,6 +351,7 @@ DeclareAttribute( "InvariantBilinearForm", IsMatrixGroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsFullSubgroupGLorSLRespectingBilinearForm", IsMatrixGroup );
+InstallTrueMethod( IsGroup, IsFullSubgroupGLorSLRespectingBilinearForm );
 
 
 #############################################################################
@@ -396,6 +400,7 @@ DeclareAttribute( "InvariantSesquilinearForm", IsMatrixGroup );
 ##
 DeclareProperty( "IsFullSubgroupGLorSLRespectingSesquilinearForm",
   IsMatrixGroup );
+InstallTrueMethod( IsGroup, IsFullSubgroupGLorSLRespectingSesquilinearForm );
 
 
 #############################################################################
@@ -491,6 +496,7 @@ DeclareAttribute( "InvariantQuadraticForm", IsMatrixGroup );
 ##
 DeclareProperty( "IsFullSubgroupGLorSLRespectingQuadraticForm",
     IsMatrixGroup );
+InstallTrueMethod( IsGroup, IsFullSubgroupGLorSLRespectingQuadraticForm );
 
 #############################################################################
 ##

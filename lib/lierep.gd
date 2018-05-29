@@ -272,6 +272,7 @@ DeclareOperation( "Coboundaries", [ IsAlgebraModule, IS_INT ] );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsWeylGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsWeylGroup );
 
 ############################################################################
 ##

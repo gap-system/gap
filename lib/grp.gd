@@ -215,6 +215,7 @@ InstallTrueMethod( IsCommutative, IsGroup and IsElementaryAbelian );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsFinitelyGeneratedGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsFinitelyGeneratedGroup );
 
 InstallFactorMaintenance( IsFinitelyGeneratedGroup,
     IsGroup and IsFinitelyGeneratedGroup, IsObject, IsGroup );
@@ -433,6 +434,7 @@ DeclareOperation( "KnowsHowToDecompose", [ IsGroup, IsList ] );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsPGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsPGroup );
 
 InstallSubsetMaintenance( IsPGroup,
     IsGroup and IsPGroup, IsGroup );
@@ -468,6 +470,7 @@ InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsPowerfulPGroup", IsGroup );
+InstallTrueMethod( IsPGroup, IsPowerfulPGroup );
 
 #Quotients of powerful of powerful p groups are powerful
 InstallFactorMaintenance( IsPowerfulPGroup,
@@ -567,6 +570,7 @@ DeclareAttribute( "RankPGroup", IsPGroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsNilpotentGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsNilpotentGroup );
 
 InstallSubsetMaintenance( IsNilpotentGroup,
     IsGroup and IsNilpotentGroup, IsGroup );
@@ -577,7 +581,6 @@ InstallFactorMaintenance( IsNilpotentGroup,
 InstallTrueMethod( IsNilpotentGroup, IsGroup and IsCommutative );
 
 InstallTrueMethod( IsNilpotentGroup, IsGroup and IsPGroup and IsFinite );
-
 
 #############################################################################
 ##
@@ -595,10 +598,10 @@ InstallTrueMethod( IsNilpotentGroup, IsGroup and IsPGroup and IsFinite );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsPerfectGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsPerfectGroup );
 
 InstallFactorMaintenance( IsPerfectGroup,
     IsGroup and IsPerfectGroup, IsObject, IsGroup );
-
 
 #############################################################################
 ##
@@ -624,10 +627,10 @@ InstallFactorMaintenance( IsPerfectGroup,
 ##  </ManSection>
 ##
 DeclareProperty( "IsSporadicSimpleGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsSporadicSimpleGroup );
 
 InstallIsomorphismMaintenance( IsSporadicSimpleGroup,
     IsGroup and IsSporadicSimpleGroup, IsGroup );
-
 
 #############################################################################
 ##
@@ -645,12 +648,12 @@ InstallIsomorphismMaintenance( IsSporadicSimpleGroup,
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsSimpleGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsSimpleGroup );
 
 InstallIsomorphismMaintenance( IsSimpleGroup,
     IsGroup and IsSimpleGroup, IsGroup );
 
-InstallTrueMethod( IsSimpleGroup, IsGroup and IsSporadicSimpleGroup );
-
+InstallTrueMethod( IsSimpleGroup, IsSporadicSimpleGroup );
 
 #############################################################################
 ##
@@ -703,6 +706,7 @@ InstallTrueMethod( IsSimpleGroup, IsGroup and IsSporadicSimpleGroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsAlmostSimpleGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsAlmostSimpleGroup );
 
 
 #############################################################################
@@ -721,6 +725,7 @@ DeclareProperty( "IsAlmostSimpleGroup", IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsSupersolvableGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsSupersolvableGroup );
 
 InstallSubsetMaintenance( IsSupersolvableGroup,
     IsGroup and IsSupersolvableGroup, IsGroup );
@@ -747,6 +752,7 @@ InstallTrueMethod( IsSupersolvableGroup, IsNilpotentGroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsMonomialGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsMonomialGroup );
 
 InstallFactorMaintenance( IsMonomialGroup,
     IsGroup and IsMonomialGroup, IsObject, IsGroup );
@@ -776,6 +782,7 @@ InstallTrueMethod( IsMonomialGroup, IsSupersolvableGroup and IsFinite );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsSolvableGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsSolvableGroup );
 
 InstallSubsetMaintenance( IsSolvableGroup,
     IsGroup and IsSolvableGroup, IsGroup );
@@ -808,6 +815,7 @@ InstallTrueMethod( IsSolvableGroup, IsSupersolvableGroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsPolycyclicGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsPolycyclicGroup );
 InstallTrueMethod( IsSolvableGroup, IsPolycyclicGroup );
 InstallTrueMethod( IsPolycyclicGroup, IsSolvableGroup and IsFinite );
 InstallTrueMethod( IsPolycyclicGroup, 
