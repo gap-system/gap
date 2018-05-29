@@ -266,6 +266,7 @@ DeclareAttribute( "AsGroupGeneralMappingByImages", IsGroupGeneralMapping );
 ##  </ManSection>
 ##
 DeclareAttribute( "MappingOfWhichItIsAsGGMBI", IsGroupGeneralMapping );
+InstallTrueMethod( IsGroupGeneralMapping, MappingOfWhichItIsAsGGMBI );
 
 InstallAttributeMethodByGroupGeneralMappingByImages :=
   function( attr, value_filter )

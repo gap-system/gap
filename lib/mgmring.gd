@@ -501,6 +501,7 @@ DeclareSynonym( "IsFreeMagmaRingWithOne",
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsGroupRing", IsFreeMagmaRing );
+InstallTrueMethod( IsRing, IsGroupRing );
 
 
 #############################################################################

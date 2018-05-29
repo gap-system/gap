@@ -110,6 +110,7 @@ InstallTrueMethod( IsConstantTimeAccessList, IsList and IsInternalRep );
 ##  </ManSection>
 ##
 DeclareProperty( "IsSmallList", IsList );
+InstallTrueMethod( IsList, IsSmallList );
 
 InstallTrueMethod( IsSmallList, IsList and IsInternalRep );
 InstallTrueMethod( IsFinite, IsList and IsSmallList );
@@ -500,6 +501,8 @@ InstallTrueMethod( IsFinite, IsHomogeneousList and IsInternalRep );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsSortedList", IsList);
+
+InstallTrueMethod( IsList, IsSortedList );
 
 
 #############################################################################
