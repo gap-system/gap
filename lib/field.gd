@@ -121,6 +121,7 @@ DeclareAttribute( "PrimeField", IsDivisionRing );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsPrimeField", IsDivisionRing );
+InstallTrueMethod( IsField, IsPrimeField );
 
 InstallIsomorphismMaintenance( IsPrimeField,
     IsField and IsPrimeField, IsField );

@@ -75,6 +75,7 @@
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsNumberField", IsField );
+InstallTrueMethod( IsField, IsNumberField );
 
 InstallSubsetMaintenance( IsNumberField,
     IsField and IsNumberField, IsField );
