@@ -51,6 +51,10 @@ DeclareProperty("IsLeftSemigroupIdeal", IsLeftMagmaIdeal );
 DeclareProperty("IsRightSemigroupIdeal", IsRightMagmaIdeal );
 DeclareProperty("IsSemigroupIdeal", IsMagmaIdeal );
 
+InstallTrueMethod(IsLeftMagmaIdeal, IsLeftSemigroupIdeal);
+InstallTrueMethod(IsRightMagmaIdeal, IsRightSemigroupIdeal);
+InstallTrueMethod(IsMagmaIdeal, IsSemigroupIdeal);
+
 
 #############################################################################
 ##
