@@ -66,6 +66,7 @@ DeclareAttribute("AutomorphismGroup",IsDomain);
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsGroupOfAutomorphisms", IsGroup );
+InstallTrueMethod( IsGroup, IsGroupOfAutomorphisms );
 
 #############################################################################
 ##
@@ -82,6 +83,7 @@ DeclareProperty( "IsGroupOfAutomorphisms", IsGroup );
 ##  </ManSection>
 ##
 DeclareProperty( "IsGroupOfAutomorphismsFiniteGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsGroupOfAutomorphismsFiniteGroup );
 
 InstallTrueMethod( IsGroupOfAutomorphisms,IsGroupOfAutomorphismsFiniteGroup);
 InstallTrueMethod( IsFinite,IsGroupOfAutomorphismsFiniteGroup);
@@ -143,7 +145,6 @@ DeclareAttribute( "AutomorphismDomain", IsGroupOfAutomorphisms );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsAutomorphismGroup", IsGroupOfAutomorphisms );
-
 InstallTrueMethod( IsGroupOfAutomorphisms,IsAutomorphismGroup );
 
 #############################################################################

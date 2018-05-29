@@ -448,6 +448,8 @@ DeclareSynonym( "DecompositionTypes", DecompositionTypesOfGroup );
 DeclareProperty( "IsDihedralGroup", IsGroup );
 DeclareAttribute( "DihedralGenerators", IsGroup );
 
+InstallTrueMethod( IsGroup, IsDihedralGroup );
+
 #############################################################################
 ##
 #P  IsQuaternionGroup( <G> )
@@ -468,6 +470,8 @@ DeclareAttribute( "DihedralGenerators", IsGroup );
 ##
 DeclareProperty( "IsQuaternionGroup", IsGroup );
 DeclareAttribute( "QuaternionGenerators", IsGroup );
+
+InstallTrueMethod( IsGroup, IsQuaternionGroup );
 
 #############################################################################
 ##
@@ -490,6 +494,8 @@ DeclareAttribute( "QuaternionGenerators", IsGroup );
 DeclareProperty( "IsQuasiDihedralGroup", IsGroup );
 DeclareAttribute( "QuasiDihedralGenerators", IsGroup );
 
+InstallTrueMethod( IsGroup, IsQuasiDihedralGroup );
+
 #############################################################################
 ##
 #P  IsPSL( <G> )
@@ -506,6 +512,7 @@ DeclareAttribute( "QuasiDihedralGenerators", IsGroup );
 ##  </ManSection>
 ##
 DeclareProperty( "IsPSL", IsGroup );
+InstallTrueMethod( IsGroup, IsPSL );
 
 #############################################################################
 ##

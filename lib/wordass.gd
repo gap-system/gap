@@ -352,7 +352,7 @@ DeclareProperty("IsFreeSemigroup", IsAssocWordCollection and IsSemigroup);
 DeclareProperty("IsFreeMonoid", IsAssocWordWithOneCollection and IsMonoid);
 DeclareSynonym( "IsFreeGroup",
     IsAssocWordWithInverseCollection and IsGroup );
-
+InstallTrueMethod(IsGroup, IsFreeGroup);
 
 #############################################################################
 ##

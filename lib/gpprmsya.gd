@@ -46,8 +46,10 @@
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsNaturalSymmetricGroup", IsPermGroup );
+InstallTrueMethod( IsPermGroup, IsNaturalSymmetricGroup );
 
 DeclareProperty( "IsNaturalAlternatingGroup", IsPermGroup );
+InstallTrueMethod( IsPermGroup, IsNaturalAlternatingGroup );
 
 
 #############################################################################
@@ -66,6 +68,7 @@ DeclareProperty( "IsNaturalAlternatingGroup", IsPermGroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsAlternatingGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsAlternatingGroup );
 
 
 #############################################################################
@@ -91,6 +94,7 @@ InstallTrueMethod( IsAlternatingGroup, IsNaturalAlternatingGroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsSymmetricGroup", IsGroup );
+InstallTrueMethod( IsGroup, IsSymmetricGroup );
 
 
 #############################################################################
