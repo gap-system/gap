@@ -1395,7 +1395,7 @@ DeclareProperty( "IsNonTrivial", IsCollection );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareProperty( "IsFinite", IsCollection );
+DeclareProperty( "IsFinite", IsListOrCollection );
 
 InstallSubsetMaintenance( IsFinite,
     IsCollection and IsFinite, IsCollection );

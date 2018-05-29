@@ -3555,7 +3555,7 @@ DeclareOperation( "GrowthFunctionOfGroup",
 ##
 DeclareOperation( "GroupByGenerators", [ IsCollection ] );
 DeclareOperation( "GroupByGenerators",
-    [ IsCollection, IsMultiplicativeElementWithInverse ] );
+    [ IsListOrCollection, IsMultiplicativeElementWithInverse ] );
 
 
 #############################################################################
@@ -3579,7 +3579,7 @@ DeclareOperation( "GroupByGenerators",
 ##
 DeclareOperation( "GroupWithGenerators", [ IsCollection ] );
 DeclareOperation( "GroupWithGenerators",
-    [ IsCollection, IsMultiplicativeElementWithInverse ] );
+    [ IsListOrCollection, IsMultiplicativeElementWithInverse ] );
 
 
 #############################################################################
