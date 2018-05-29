@@ -144,6 +144,7 @@ DeclareCategoryCollections( "IsRightAlgebraModuleElement" );
 ##  </ManSection>
 ##
 DeclareProperty( "IsAlgebraModule", IsLeftModule );
+InstallTrueMethod( IsLeftModule, IsAlgebraModule );
 
 ##############################################################################
 ##
@@ -157,6 +158,7 @@ DeclareProperty( "IsAlgebraModule", IsLeftModule );
 ##  </ManSection>
 ##
 DeclareProperty( "IsLeftAlgebraModule", IsLeftModule );
+InstallTrueMethod( IsLeftModule, IsLeftAlgebraModule );
 
 ##############################################################################
 ##
