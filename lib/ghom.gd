@@ -274,7 +274,7 @@ InstallAttributeMethodByGroupGeneralMappingByImages :=
             [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages ], 0,
             hom -> attr( AsGroupGeneralMappingByImages( hom ) ) );
     InstallMethod( attr, "get delayed set attribute values", true,
-            [ HasMappingOfWhichItIsAsGGMBI ],
+            [ IsGroupGeneralMapping and HasMappingOfWhichItIsAsGGMBI ],
 	    SUM_FLAGS-1, # we want to do this before doing any calculations
 	    function(hom)
               hom:=MappingOfWhichItIsAsGGMBI( hom );
