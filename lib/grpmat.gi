@@ -868,9 +868,7 @@ local G,fam,typ,f;
 
   if not IsFinite(gens) then TryNextMethod(); fi;
   typ:=MakeGroupyType(FamilyObj([id]), IsGroup and IsAttributeStoringRep 
-            and HasGeneratorsOfMagmaWithInverses and IsFinitelyGeneratedGroup
-            and HasIsEmpty and IsFinite and HasOne
-            and IsTrivial and HasIsNonTrivial,
+            and HasGeneratorsOfMagmaWithInverses and HasOne and IsTrivial,
             gens,id,true);
 
   f:=DefaultScalarDomainOfMatrixList([id]);

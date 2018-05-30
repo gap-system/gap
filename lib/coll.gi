@@ -3079,7 +3079,7 @@ local filt;
     fi;
     return;
   fi;
-  if sz=0 then filt:=IsEmpty and IsNonTrivial; # IsNonTrivial hold
+  if sz=0 then filt:=IsEmpty;
   elif sz=1 then filt:=IsTrivial;
   elif sz=infinity then filt:=IsNonTrivial and HasIsFinite;
   else filt:=IsNonTrivial and IsFinite;

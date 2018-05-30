@@ -412,10 +412,7 @@ local G,fam,typ,pcgs;
 
   # pc groups are always finite and gens is finite.
   typ:=IsGroup and IsAttributeStoringRep 
-        and HasGeneratorsOfMagmaWithInverses and HasOne
-        and IsFinite and IsFinitelyGeneratedGroup
-        and IsTrivial and HasIsNonTrivial
-        and HasIsEmpty and IsSolvableGroup
+        and HasGeneratorsOfMagmaWithInverses and HasOne and IsTrivial
         and HasFamilyPcgs and HasHomePcgs and HasGeneralizedPcgs;
   typ:=NewType(fam,typ);
 

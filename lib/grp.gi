@@ -4316,12 +4316,12 @@ function(fam,filt,gens,id,isgroup)
       fi;
       if id<>fail then # cannot do identity in magma
         if ForAny(gens,x->x<>id) then
-          filt:=filt and HasIsTrivial and IsNonTrivial;
+          filt:=filt and IsNonTrivial;
           if isgroup and Length(gens)<=1 then # cyclic not for magmas
             filt:=filt and IsCyclic;
           fi;
         else
-          filt:=filt and IsTrivial and HasIsNonTrivial;
+          filt:=filt and IsTrivial;
         fi;
       fi;
     elif isgroup and Length(gens)<=1 then # cyclic not for magmas
@@ -4379,8 +4379,7 @@ local G,fam,typ;
   fam:= CollectionsFamily( FamilyObj( id ) );
 
   typ:=IsGroup and IsAttributeStoringRep
-        and HasGeneratorsOfMagmaWithInverses and HasOne and IsTrivial and
-        HasIsEmpty and HasIsNonTrivial;
+        and HasGeneratorsOfMagmaWithInverses and HasOne and IsTrivial;
   typ:=NewType(fam,typ);
 
   G:= rec();

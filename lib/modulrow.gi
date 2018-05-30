@@ -35,9 +35,9 @@ local M,typ;   # the free module record, result
     fi;
 
     if n=0 then
-      typ:=typ and IsTrivial and HasIsNonTrivial and IsFinite;
+      typ:=typ and IsTrivial;
     else
-      typ:=typ and HasIsTrivial and IsNonTrivial;
+      typ:=typ and IsNonTrivial;
     fi;
 
     if n<>infinity and HasIsFinite(R) and IsFinite(R) then
