@@ -133,9 +133,10 @@ UInt FILT_IN_FLAGS(Obj flags, UInt filt)
     UInt len = SIZE_FLAGS(flags);
     Int  hi = len - 1;
     Int  lo = 0;
+    const UInt2 *trues = ADDR_TRUES_FLAGS(flags);
     while (hi >= lo) {
         Int   mid = (hi + lo) / 2;
-        UInt2 x = TRUE_FLAGS(flags, mid);
+        UInt2 x = trues[mid];
         if (x == filt)
             return 1;
         if (x < filt) {
@@ -384,9 +385,12 @@ static Int IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
     Int   i = len1 - 1;
     Int   j = len2 - 1;
     UInt2 x, y;
+    const UInt2 *trues1, *trues2;
+    trues1 = ADDR_TRUES_FLAGS(flags1);
+    trues2 = ADDR_TRUES_FLAGS(flags2);
     while (i >= 0 && j >= 0) {
-        x = TRUE_FLAGS(flags1, i);
-        y = TRUE_FLAGS(flags2, j);
+        x = trues1[i];
+        y = trues2[j];
         if (x == y) {
             i--;
             j--;

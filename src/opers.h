@@ -271,7 +271,7 @@ static inline FlagsHeader* HEADER_FLAGS(Obj flags) {
 }
 
 static inline const FlagsHeader* CONST_HEADER_FLAGS(Obj flags) {
-    return (FlagsHeader *)CONST_ADDR_OBJ(flags);
+    return (const FlagsHeader *)CONST_ADDR_OBJ(flags);
 }
 
 /****************************************************************************
@@ -329,6 +329,10 @@ static inline void SET_AND_CACHE_FLAGS(Obj flags, Obj andc)
     HEADER_FLAGS(flags)->andCache = andc;
 }
 
+static inline const UInt2* ADDR_TRUES_FLAGS(Obj flags)
+{
+    return &(HEADER_FLAGS(flags)->trues[0]);
+}
 
 /****************************************************************************
 **
