@@ -64,9 +64,9 @@ InstallMethod( LeftModuleByGenerators,
     fi;
 
     if Length(mat)>0 and ForAny(mat,x->not IsZero(x)) then
-      typ:=typ and HasIsTrivial and IsNonTrivial;
+      typ:=typ and IsNonTrivial;
     else
-      typ:=typ and IsTrivial and HasIsNonTrivial;
+      typ:=typ and IsTrivial;
     fi;
 
     if HasIsFinite(F) then
@@ -98,9 +98,7 @@ InstallMethod( LeftModuleByGenerators,
     fi;
 #T explicit 2nd argument above!
 
-    typ:=IsAttributeStoringRep and HasIsEmpty and IsFiniteDimensional
-         and IsGaussianRowSpace and IsTrivial and HasIsNonTrivial and
-         IsFinite;
+    typ:=IsAttributeStoringRep and IsGaussianRowSpace and IsTrivial;
 
     V:= Objectify( NewType( CollectionsFamily( FamilyObj( F ) ),typ),
                    rec() );
@@ -132,9 +130,9 @@ InstallMethod( LeftModuleByGenerators,
     fi;
 
     if Length(mat)>0 and ForAny(mat,x->not IsZero(x)) then
-      typ:=typ and HasIsTrivial and IsNonTrivial;
+      typ:=typ and IsNonTrivial;
     else
-      typ:=typ and IsTrivial and HasIsNonTrivial;
+      typ:=typ and IsTrivial;
     fi;
 
     if HasIsFinite(F) then
