@@ -159,7 +159,7 @@ Obj Func8Bits_ExponentSums3 (
 
     /* <end> must be at least <start>                                      */
     if ( end < start ) {
-        sums = NEW_PLIST( T_PLIST_CYC, 0 );
+        sums = NEW_PLIST( T_PLIST_EMPTY, 0 );
         SET_LEN_PLIST( sums, 0 );
         return sums;
     }
@@ -1138,7 +1138,7 @@ Obj Func16Bits_ExponentSums3 (
 
     /* <end> must be at least <start>                                      */
     if ( end < start ) {
-        sums = NEW_PLIST( T_PLIST_CYC, 0 );
+        sums = NEW_PLIST( T_PLIST_EMPTY, 0 );
         SET_LEN_PLIST( sums, 0 );
         return sums;
     }
@@ -2096,7 +2096,7 @@ Obj Func32Bits_ExponentSums3 (
 
     /* <end> must be at least <start>                                      */
     if ( end < start ) {
-        sums = NEW_PLIST( T_PLIST_CYC, 0 );
+        sums = NEW_PLIST( T_PLIST_EMPTY, 0 );
         SET_LEN_PLIST( sums, 0 );
         return sums;
     }
