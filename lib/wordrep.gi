@@ -1013,48 +1013,48 @@ InstallGlobalFunction( StoreInfoFreeMagma, function( F, names, req )
     MakeImmutable(expB);
     F!.expBits := expB;
 
-    F!.expBitsInfo := [ 2^( F!.expBits[1] - 1 ),
-                        2^( F!.expBits[2] - 1 ),
-                        2^( F!.expBits[3] - 1 ),
-                        infinity          ];
+    F!.expBitsInfo := MakeImmutable([ 2^( F!.expBits[1] - 1 ),
+                         2^( F!.expBits[2] - 1 ),
+                         2^( F!.expBits[3] - 1 ),
+                         infinity          ]);
 
     # Store the internal types.
     K:= NewType( F, Is8BitsAssocWord and req );
-    K![ AWP_PURE_TYPE    ]      := K;
-    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[1];
-    K![ AWP_NR_GENS      ]      := rank;
-    K![ AWP_NR_BITS_PAIR ]      := 8;
-    K![ AWP_FUN_OBJ_BY_VECTOR ] := 8Bits_ObjByVector;
-    K![ AWP_FUN_ASSOC_WORD    ] := 8Bits_AssocWord;
+    StrictBindOnce(K, AWP_PURE_TYPE        , K);
+    StrictBindOnce(K, AWP_NR_BITS_EXP      , F!.expBits[1]);
+    StrictBindOnce(K, AWP_NR_GENS          , rank);
+    StrictBindOnce(K, AWP_NR_BITS_PAIR     , 8);
+    StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 8Bits_ObjByVector);
+    StrictBindOnce(K, AWP_FUN_ASSOC_WORD   , 8Bits_AssocWord);
     typesList[1]:= K;
 
     K:= NewType( F, Is16BitsAssocWord and req );
-    K![ AWP_PURE_TYPE    ]      := K;
-    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[2];
-    K![ AWP_NR_GENS      ]      := rank;
-    K![ AWP_NR_BITS_PAIR ]      := 16;
-    K![ AWP_FUN_OBJ_BY_VECTOR ] := 16Bits_ObjByVector;
-    K![ AWP_FUN_ASSOC_WORD    ] := 16Bits_AssocWord;
+    StrictBindOnce(K, AWP_PURE_TYPE        , K);
+    StrictBindOnce(K, AWP_NR_BITS_EXP      , F!.expBits[2]);
+    StrictBindOnce(K, AWP_NR_GENS          , rank);
+    StrictBindOnce(K, AWP_NR_BITS_PAIR     , 16);
+    StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 16Bits_ObjByVector);
+    StrictBindOnce(K, AWP_FUN_ASSOC_WORD   , 16Bits_AssocWord);
     typesList[2]:= K;
 
     K:= NewType( F, Is32BitsAssocWord and req );
-    K![ AWP_PURE_TYPE    ]      := K;
-    K![ AWP_NR_BITS_EXP  ]      := F!.expBits[3];
-    K![ AWP_NR_GENS      ]      := rank;
-    K![ AWP_NR_BITS_PAIR ]      := 32;
-    K![ AWP_FUN_OBJ_BY_VECTOR ] := 32Bits_ObjByVector;
-    K![ AWP_FUN_ASSOC_WORD    ] := 32Bits_AssocWord;
+    StrictBindOnce(K, AWP_PURE_TYPE        , K);
+    StrictBindOnce(K, AWP_NR_BITS_EXP      , F!.expBits[3]);
+    StrictBindOnce(K, AWP_NR_GENS          , rank);
+    StrictBindOnce(K, AWP_NR_BITS_PAIR     , 32);
+    StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR, 32Bits_ObjByVector);
+    StrictBindOnce(K, AWP_FUN_ASSOC_WORD   , 32Bits_AssocWord);
     typesList[3]:= K;
 
   fi;
 
   K:= NewType( F, IsInfBitsAssocWord and req );
-  K![ AWP_PURE_TYPE    ]      := K;
-  K![ AWP_NR_BITS_EXP  ]      := infinity;
-  K![ AWP_NR_GENS      ]      := Length( names );
-  K![ AWP_NR_BITS_PAIR ]      := infinity;
-  K![ AWP_FUN_OBJ_BY_VECTOR ] := InfBits_ObjByVector;
-  K![ AWP_FUN_ASSOC_WORD    ] := InfBits_AssocWord;
+  StrictBindOnce(K, AWP_PURE_TYPE         , K);
+  StrictBindOnce(K, AWP_NR_BITS_EXP       , infinity);
+  StrictBindOnce(K, AWP_NR_GENS           , Length( names ));
+  StrictBindOnce(K, AWP_NR_BITS_PAIR      , infinity);
+  StrictBindOnce(K, AWP_FUN_OBJ_BY_VECTOR , InfBits_ObjByVector);
+  StrictBindOnce(K, AWP_FUN_ASSOC_WORD    , InfBits_AssocWord);
   typesList[4]:= K;
 
   F!.types := MakeImmutable(typesList);
@@ -1186,6 +1186,9 @@ InstallGlobalFunction( InfiniteListOfNames, function( arg )
                       [ string, init ] );
     SetIsFinite( list, false );
     SetIsEmpty( list, false );
+    if IsHPCGAP then
+      MakeReadOnlyObj( list );    
+    fi;
     SetLength( list, infinity );
 #T meaningless since not attribute storing!
     return list;
@@ -1320,6 +1323,9 @@ InstallGlobalFunction( InfiniteListOfGenerators, function( arg )
                       [ F, init ] );
     SetIsFinite( list, false );
     SetIsEmpty( list, false );
+    if IsHPCGAP then
+      MakeReadOnlyObj( list );    
+    fi;
     SetLength( list, infinity );
 #T meaningless since not attribute storing!
     return list;
