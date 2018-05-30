@@ -309,6 +309,8 @@ DeclareRepresentation( "IsPositionalObjectRep", IS_OBJECT, [], IS_OBJECT );
 DeclareRepresentation( "IsComponentObjectRep", IS_OBJECT, [], IS_OBJECT );
 DeclareRepresentation( "IsDataObjectRep", IS_OBJECT, [], IS_OBJECT );
 
+# the following are for HPC-GAP, but we also provide them in plain GAP, to
+# make it easier to write code which works in both.
 DeclareRepresentation( "IsNonAtomicComponentObjectRep",
         IsComponentObjectRep, [], IS_OBJECT); 
 DeclareRepresentation( "IsReadOnlyPositionalObjectRep",
