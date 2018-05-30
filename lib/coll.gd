@@ -193,6 +193,9 @@ DeclareAttribute( "ElementsFamily", IsFamily );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "CATEGORIES_COLLECTIONS", [] );
+if IsHPCGAP then
+  ShareSpecialObj(CATEGORIES_COLLECTIONS, "CATEGORIES_COLLECTIONS");
+fi;
 
 
 #############################################################################
@@ -227,15 +230,34 @@ BIND_GLOBAL( "CATEGORIES_COLLECTIONS", [] );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "CategoryCollections", function ( elms_filter )
-    local    pair, super, flags, name, coll_filter;
-
+    local    pair, super, flags, name, coll_filter, len;
+    
+    # check once with read lock -- common case 
+    atomic readonly CATEGORIES_COLLECTIONS do
     # Check whether the collections category is already defined.
     for pair in CATEGORIES_COLLECTIONS do
       if IsIdenticalObj( pair[1], elms_filter ) then
         return pair[2];
       fi;
     od;
-
+    if IsHPCGAP then
+      len := LENGTH(CATEGORIES_COLLECTIONS);
+    fi;
+    od; # end atomic
+    
+    # that failed, so get exclusive lock as we may need to modify
+    atomic readwrite CATEGORIES_COLLECTIONS do
+    if IsHPCGAP then
+      # Check whether in the meantime another thread defined the collections category
+      if LENGTH(CATEGORIES_COLLECTIONS) > len then
+        for pair in CATEGORIES_COLLECTIONS do
+          if IsIdenticalObj( pair[1], elms_filter ) then
+            return pair[2];
+          fi;
+        od;
+      fi;
+    fi;
+    
     # Find the super category among the known collections categories.
     super := IsCollection;
     flags := WITH_IMPS_FLAGS( FLAGS_FILTER( elms_filter ) );
@@ -255,6 +277,7 @@ BIND_GLOBAL( "CategoryCollections", function ( elms_filter )
     coll_filter:= NewCategory( name, super );
     ADD_LIST( CATEGORIES_COLLECTIONS, MakeImmutable([ elms_filter, coll_filter ]) );
     return coll_filter;
+    od; # end atomic
 end );
 
 
@@ -431,6 +454,9 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "SUBSET_MAINTAINED_INFO", [ [], [] ] );
+if IsHPCGAP then
+  ShareSpecialObj(SUBSET_MAINTAINED_INFO, "SUBSET_MAINTAINED_INFO");
+fi;
 
 
 #############################################################################
@@ -480,11 +506,13 @@ InstallMethod( UseSubsetRelation,
 
     local entry;
 
+    atomic readonly SUBSET_MAINTAINED_INFO do
     for entry in SUBSET_MAINTAINED_INFO[1] do
       if entry[1]( super ) and entry[2]( sub ) and not entry[4]( sub ) then
         entry[5]( sub, entry[3]( super ) );
       fi;
     od;
+    od; # end atomic
 
     return true;
     end );
@@ -552,6 +580,7 @@ BIND_GLOBAL( "InstallSubsetMaintenance",
     # (We must not call `SUBTR_SET' here because the lists types may be
     # not yet defined.)
     filtssub:= [];
+    atomic readwrite SUBSET_MAINTAINED_INFO do
     for flag in TRUES_FLAGS( FLAGS_FILTER( sub_req ) ) do
       if not INFO_FILTERS[flag] in FNUM_CATS_AND_REPS then
         ADD_LIST_DEFAULT( filtssub, flag );
@@ -632,6 +661,7 @@ BIND_GLOBAL( "InstallSubsetMaintenance",
                       SetFeatureObj( sub, operation, val );
                   end ]);
     fi;
+    od; # end atomic
 
 #T missing in new implementation!
 #     # Install the method.
@@ -699,6 +729,9 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "ISOMORPHISM_MAINTAINED_INFO", [] );
+if IsHPCGAP then
+  ShareSpecialObj(ISOMORPHISM_MAINTAINED_INFO, "ISOMORPHISM_MAINTAINED_INFO");
+fi;
 
 
 #############################################################################
@@ -748,11 +781,13 @@ InstallMethod( UseIsomorphismRelation,
     function( old, new )
     local entry;
 
+    atomic readonly ISOMORPHISM_MAINTAINED_INFO do
     for entry in ISOMORPHISM_MAINTAINED_INFO do
       if entry[1]( old ) and entry[2]( new ) and not entry[4]( new ) then
         entry[5]( new, entry[3]( old ) );
       fi;
     od;
+    od; # end atomic
 
     return true;
     end );
@@ -792,6 +827,7 @@ BIND_GLOBAL( "InstallIsomorphismMaintenance",
 
     tester:= Tester( opr );
 
+    atomic ISOMORPHISM_MAINTAINED_INFO do
     ADD_LIST( ISOMORPHISM_MAINTAINED_INFO, MakeImmutable(
         [ IsCollection and Tester( old_req ) and old_req and tester,
           IsCollection and Tester( new_req ) and new_req,
@@ -800,6 +836,7 @@ BIND_GLOBAL( "InstallIsomorphismMaintenance",
           Setter( opr ),
           old_req,
           new_req ] ) );
+    od; # end atomic
 end );
 
 
@@ -847,6 +884,9 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "FACTOR_MAINTAINED_INFO", [] );
+if IsHPCGAP then
+  ShareSpecialObj(FACTOR_MAINTAINED_INFO, "FACTOR_MAINTAINED_INFO");
+fi;
 
 
 #############################################################################
@@ -906,12 +946,14 @@ InstallMethod( UseFactorRelation,
 
     local entry;
 
+    atomic readonly FACTOR_MAINTAINED_INFO do
     for entry in FACTOR_MAINTAINED_INFO do
       if entry[1]( num ) and entry[2]( den ) and entry[3]( fac )
                          and not entry[5]( fac ) then
         entry[6]( fac, entry[4]( num ) );
       fi;
     od;
+    od; # end atomic
 
     return true;
     end );
@@ -968,6 +1010,7 @@ BIND_GLOBAL( "InstallFactorMaintenance",
 
     tester:= Tester( opr );
 
+    atomic FACTOR_MAINTAINED_INFO do
     ADD_LIST( FACTOR_MAINTAINED_INFO, MakeImmutable(
         [ IsCollection and Tester( numer_req ) and numer_req and tester,
           Tester( denom_req ) and denom_req,
@@ -975,6 +1018,7 @@ BIND_GLOBAL( "InstallFactorMaintenance",
           opr,
           tester,
           Setter( opr ) ] ) );
+    od; # end atomic
 
 #T not yet available in the new implementation
 #     if     FLAGS_FILTER( opr ) <> false
