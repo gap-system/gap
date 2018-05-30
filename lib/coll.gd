@@ -1415,9 +1415,10 @@ InstallFactorMaintenance( IsTrivial,
 ##
 DeclareProperty( "IsNonTrivial", IsCollection );
 
-# true methods to avoid immediate methods 
-InstallTrueMethod(HasIsTrivial,IsNonTrivial);
-InstallTrueMethod(HasIsNonTrivial,IsTrivial);
+InstallTrueMethod( IsNonTrivial, IsEmpty );
+InstallTrueMethod( HasIsTrivial, IsNonTrivial );
+InstallTrueMethod( HasIsEmpty, IsTrivial );
+InstallTrueMethod( HasIsNonTrivial, IsTrivial );
 
 
 #############################################################################
@@ -1451,6 +1452,7 @@ InstallFactorMaintenance( IsFinite,
     IsCollection and IsFinite, IsObject, IsCollection );
 
 InstallTrueMethod( IsFinite, IsTrivial );
+InstallTrueMethod( IsFinite, IsEmpty );
 
 
 #############################################################################
