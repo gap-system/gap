@@ -228,3 +228,27 @@ BIND_GLOBAL("AddAtomicList", function(list, elm)
   ADD_LIST(list, elm);
   return LEN_LIST(list);
 end);
+
+
+BIND_GLOBAL("BindOnce", function(obj, index, new)
+  if not IsBound(obj![index]) then
+    obj![index] := new;
+  fi;
+  return obj![index];
+end);
+
+BIND_GLOBAL("StrictBindOnce", function(obj, index, new)
+  if IsBound(obj![index]) then
+    Error("Element already initialized");
+  fi;
+  obj![index] := new;
+  return new;
+end);
+
+BIND_GLOBAL("TestBindOnce", function(obj, index, new)
+  if IsBound(obj![index]) then
+    return true;
+  fi;
+  obj![index] := new;
+  return false;
+end);
