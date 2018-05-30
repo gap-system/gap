@@ -874,6 +874,10 @@ InstallMethod( ExponentSums,
 InfBits_ExponentSums3 := function( obj, from, to )
     local expvec, i;
 
+    if from < 1 then Error("<from> must be a positive integer"); fi;
+    if to < 1 then Error("<to> must be a positive integer"); fi;
+    if from > to then return []; fi;
+
     expvec:=ListWithIdenticalEntries(TypeObj( obj )![ AWP_NR_GENS ],0);
 
     # the syllable representation is a sparse representation
@@ -883,7 +887,7 @@ InfBits_ExponentSums3 := function( obj, from, to )
             expvec[ obj[i] ]:= expvec[ obj[i] ] + obj[ i+1 ];
         fi;
     od;
-    return expvec;
+    return expvec{[from..to]};
 end;
 InstallOtherMethod( ExponentSums,
     "for an inf. bits assoc. word, and two integers",
