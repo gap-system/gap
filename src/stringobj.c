@@ -434,7 +434,6 @@ Obj FuncSTRING_SINTLIST (
 
   }
 
-  CHANGED_BAG(n);
   return n;
 }
 
@@ -464,12 +463,10 @@ Obj FuncREVNEG_STRING (
   q=CHARS_STRING(n);
   j=l-1;
   for (i=1;i<=l;i++) {
-    /* *q++=CHAR_SINT(-SINT_CHAR(p[j])); */
     *q++=-p[j];
     j--;
   }
 
-  CHANGED_BAG(n);
   return n;
 }
 
@@ -1084,8 +1081,6 @@ void AssString (
 
     /* now perform the assignment and return the assigned value            */
     SET_ELM_STRING( list, pos, val ); 
-    /*    CHARS_STRING(list)[pos-1] = CHAR_VALUE(val); */
-    CHANGED_BAG( list );
   }
 }    
 
@@ -1377,7 +1372,6 @@ void ConvString (
     ResizeBag( string, SIZEBAG_STRINGLEN(lenString) );
     /* copy data area from tmp */
     memcpy(ADDR_OBJ(string), CONST_ADDR_OBJ(tmp), SIZE_OBJ(tmp));
-    CHANGED_BAG(string);
 }
 
 
