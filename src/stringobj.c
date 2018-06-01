@@ -1425,27 +1425,9 @@ Obj MakeString2(const Char *cstr1, const Char *cstr2)
   return result;
 }
 
-Obj MakeString3(const Char *cstr1, const Char *cstr2, const Char *cstr3)
-{
-  Obj result;
-  size_t len1 = strlen(cstr1), len2 = strlen(cstr2), len3 = strlen(cstr3);
-  result = NEW_STRING(len1 + len2 + len3);
-  memcpy(CSTR_STRING(result), cstr1, len1);
-  memcpy(CSTR_STRING(result)+len1, cstr2, len2);
-  memcpy(CSTR_STRING(result)+len1+len2, cstr3, len3);
-  return result;
-}
-
 Obj MakeImmString2(const Char *cstr1, const Char *cstr2)
 {
   Obj result = MakeString2(cstr1, cstr2);
-  MakeImmutableString(result);
-  return result;
-}
-
-Obj MakeImmString3(const Char *cstr1, const Char *cstr2, const Char *cstr3)
-{
-  Obj result = MakeString3(cstr1, cstr2, cstr3);
   MakeImmutableString(result);
   return result;
 }
