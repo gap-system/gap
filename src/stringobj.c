@@ -406,19 +406,22 @@ Obj FuncSTRING_SINTLIST (
    * integers ? */
 
   /* general code */
-  if (! IS_RANGE(val) ) {
-    if (! IS_PLIST(val)) {
+  while (!IS_RANGE(val) && !IS_PLIST(val)) {
+again:
        val = ErrorReturnObj(
-           "<val> must be a plain list or range, not a %s)",
+           "<val> must be a plain list of small integers or a range, not a %s",
            (Int)TNAM_OBJ(val), 0L,
            "you can replace <val> via 'return <val>;'" );
-    }
-       
+  }
+  if (! IS_RANGE(val) ) {
     l=LEN_PLIST(val);
     n=NEW_STRING(l);
     p=CHARS_STRING(n);
     for (i=1;i<=l;i++) {
-      *p++=CHAR_SINT(INT_INTOBJ(ELM_PLIST(val,i)));
+      Obj x = ELM_PLIST(val,i);
+      if (!IS_INTOBJ(x))
+        goto again;
+      *p++=CHAR_SINT(INT_INTOBJ(x));
     }
   }
   else {
@@ -1487,12 +1490,11 @@ Obj FuncCONV_STRING (
     Obj                 string )
 {
     /* check whether <string> is a string                                  */
-    if ( ! IS_STRING( string ) ) {
+    while ( ! IS_STRING( string ) ) {
         string = ErrorReturnObj(
             "ConvString: <string> must be a string (not a %s)",
             (Int)TNAM_OBJ(string), 0L,
             "you can replace <string> via 'return <string>;'" );
-        return FuncCONV_STRING( self, string );
     }
 
     /* convert to the string representation                                */
@@ -1525,12 +1527,11 @@ Obj FuncCOPY_TO_STRING_REP (
     Obj                 obj )
 {
     /* check whether <obj> is a string                                  */
-    if (!IS_STRING(obj)) {
+    while (!IS_STRING(obj)) {
         obj = ErrorReturnObj(
             "CopyToStringRep: <string> must be a string (not a %s)",
             (Int)TNAM_OBJ(obj), 0L,
             "you can replace <string> via 'return <string>;'" );
-        return FuncCOPY_TO_STRING_REP( self, obj );
     }
     return CopyToStringRep(obj);
 }
@@ -1621,12 +1622,11 @@ Obj FuncNormalizeWhitespace (
   Int i, j, len, white;
 
   /* check whether <string> is a string                                  */
-  if ( ! IsStringConv( string ) ) {
+  while ( ! IsStringConv( string ) ) {
     string = ErrorReturnObj(
 	     "NormalizeWhitespace: <string> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(string), 0L,
 	     "you can replace <string> via 'return <string>;'" );
-    return FuncNormalizeWhitespace( self, string );
   }
   
   len = GET_LEN_STRING(string);
@@ -1677,21 +1677,19 @@ Obj FuncREMOVE_CHARACTERS (
   UInt1 REMCHARLIST[256] = {0};
 
   /* check whether <string> is a string                                  */
-  if ( ! IsStringConv( string ) ) {
+  while ( ! IsStringConv( string ) ) {
     string = ErrorReturnObj(
 	     "RemoveCharacters: first argument <string> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(string), 0L,
 	     "you can replace <string> via 'return <string>;'" );
-    return FuncREMOVE_CHARACTERS( self, string, rem );
   }
   
   /* check whether <rem> is a string                                  */
-  if ( ! IsStringConv( rem ) ) {
+  while ( ! IsStringConv( rem ) ) {
     rem = ErrorReturnObj(
 	     "RemoveCharacters: second argument <rem> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(rem), 0L,
 	     "you can replace <rem> via 'return <rem>;'" );
-    return FuncREMOVE_CHARACTERS( self, string, rem );
   }
   
   /* set REMCHARLIST by setting positions of characters in rem to 1 */
@@ -1733,32 +1731,28 @@ Obj FuncTranslateString (
   Int j, len;
 
   /* check whether <string> is a string                                  */
-  if ( ! IsStringConv( string ) ) {
+  while ( ! IsStringConv( string ) ) {
     string = ErrorReturnObj(
 	     "TranslateString: first argument <string> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(string), 0L,
 	     "you can replace <string> via 'return <string>;'" );
-    return FuncTranslateString( self, string, trans );
   }
   
-  /* check whether <trans> is a string                                  */
-  if ( ! IsStringConv( trans ) ) {
-    trans = ErrorReturnObj(
-	     "TranslateString: second argument <trans> must be a string (not a %s)",
-	     (Int)TNAM_OBJ(trans), 0L,
-	     "you can replace <trans> via 'return <trans>;'" );
-    return FuncTranslateString( self, string, trans );
+  // check whether <trans> is a string of length at least 256
+  while ( ! IsStringConv( trans ) || GET_LEN_STRING( trans ) < 256 ) {
+    if ( ! IsStringConv( trans ) ) {
+      trans = ErrorReturnObj(
+           "TranslateString: second argument <trans> must be a string (not a %s)",
+           (Int)TNAM_OBJ(trans), 0L,
+           "you can replace <trans> via 'return <trans>;'" );
+    } else if ( GET_LEN_STRING( trans ) < 256 ) {
+      trans = ErrorReturnObj(
+           "TranslateString: second argument <trans> must have length >= 256",
+           0L, 0L,
+           "you can replace <trans> via 'return <trans>;'" );
+    }
   }
- 
-  /* check if string has length at least 256 */
-  if ( GET_LEN_STRING( trans ) < 256 ) {
-    trans = ErrorReturnObj(
-	     "TranslateString: second argument <trans> must have length >= 256",
-	     0L, 0L,
-	     "you can replace <trans> via 'return <trans>;'" );
-    return FuncTranslateString( self, string, trans );
-  }
-  
+
   /* now change string in place */
   len = GET_LEN_STRING(string);
   s = CHARS_STRING(string);
@@ -1792,30 +1786,27 @@ Obj FuncSplitStringInternal (
   UInt1 SPLITSTRINGWSPACE[256] = { 0 };
 
   /* check whether <string> is a string                                  */
-  if ( ! IsStringConv( string ) ) {
+  while ( ! IsStringConv( string ) ) {
     string = ErrorReturnObj(
 	     "SplitString: first argument <string> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(string), 0L,
 	     "you can replace <string> via 'return <string>;'" );
-    return FuncSplitStringInternal( self, string, seps, wspace );
   }
   
   /* check whether <seps> is a string                                  */
-  if ( ! IsStringConv( seps ) ) {
+  while ( ! IsStringConv( seps ) ) {
     seps = ErrorReturnObj(
 	     "SplitString: second argument <seps> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(seps), 0L,
 	     "you can replace <seps> via 'return <seps>;'" );
-    return FuncSplitStringInternal( self, string, seps, wspace );
   }
   
   /* check whether <wspace> is a string                                  */
-  if ( ! IsStringConv( wspace ) ) {
+  while ( ! IsStringConv( wspace ) ) {
     wspace = ErrorReturnObj(
 	     "SplitString: third argument <wspace> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(wspace), 0L,
 	     "you can replace <wspace> via 'return <wspace>;'" );
-    return FuncSplitStringInternal( self, string, seps, wspace );
   }
   
   /* set SPLITSTRINGSEPS by setting positions of characters in rem to 1 */
