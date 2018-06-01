@@ -198,10 +198,10 @@ void LoadChar( Obj c )
 
 /****************************************************************************
 **
-*F  FuncEmptyString( <self>, <len> ) . . . . . . . empty string with space
-*
-* Returns an empty string, but with space for len characters preallocated.
-*
+*F  FuncEmptyString( <self>, <len> ) . . . . . . . .  empty string with space
+**
+**  Returns an empty string, but with space for len characters preallocated.
+**
 */
 Obj    FuncEmptyString( Obj self, Obj len )
 {
@@ -220,11 +220,11 @@ Obj    FuncEmptyString( Obj self, Obj len )
 
 /****************************************************************************
 **
-*F  FuncShrinkAllocationString( <self>, <str> )  . . give back unneeded memory
-*
-*  Shrinks the bag of <str> to minimal possible size (possibly converts to 
-*  compact representation).
-*
+*F  FuncShrinkAllocationString( <self>, <str> ) . . give back unneeded memory
+**
+**  Shrinks the bag of <str> to minimal possible size (possibly converts to
+**  compact representation).
+**
 */
 Obj   FuncShrinkAllocationString( Obj self, Obj str )
 {
@@ -1551,7 +1551,7 @@ Obj FuncCOPY_TO_STRING_REP (
     /* check whether <obj> is a string                                  */
     if (!IS_STRING(obj)) {
         obj = ErrorReturnObj(
-            "ConvString: <string> must be a string (not a %s)",
+            "CopyToStringRep: <string> must be a string (not a %s)",
             (Int)TNAM_OBJ(obj), 0L,
             "you can replace <string> via 'return <string>;'" );
         return FuncCOPY_TO_STRING_REP( self, obj );
@@ -1759,7 +1759,7 @@ Obj FuncTranslateString (
   /* check whether <string> is a string                                  */
   if ( ! IsStringConv( string ) ) {
     string = ErrorReturnObj(
-	     "RemoveCharacters: first argument <string> must be a string (not a %s)",
+	     "TranslateString: first argument <string> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(string), 0L,
 	     "you can replace <string> via 'return <string>;'" );
     return FuncTranslateString( self, string, trans );
@@ -1768,7 +1768,7 @@ Obj FuncTranslateString (
   /* check whether <trans> is a string                                  */
   if ( ! IsStringConv( trans ) ) {
     trans = ErrorReturnObj(
-	     "RemoveCharacters: second argument <trans> must be a string (not a %s)",
+	     "TranslateString: second argument <trans> must be a string (not a %s)",
 	     (Int)TNAM_OBJ(trans), 0L,
 	     "you can replace <trans> via 'return <trans>;'" );
     return FuncTranslateString( self, string, trans );
@@ -1777,7 +1777,7 @@ Obj FuncTranslateString (
   /* check if string has length at least 256 */
   if ( GET_LEN_STRING( trans ) < 256 ) {
     trans = ErrorReturnObj(
-	     "RemoveCharacters: second argument <trans> must have length >= 256",
+	     "TranslateString: second argument <trans> must have length >= 256",
 	     0L, 0L,
 	     "you can replace <trans> via 'return <trans>;'" );
     return FuncTranslateString( self, string, trans );
