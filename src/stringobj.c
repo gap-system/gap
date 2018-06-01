@@ -206,9 +206,9 @@ void LoadChar( Obj c )
 Obj    FuncEmptyString( Obj self, Obj len )
 {
     Obj                 new;
-    while ( ! IS_INTOBJ(len) ) {
+    while ( ! IS_NONNEG_INTOBJ(len) ) {
         len = ErrorReturnObj(
-            "<len> must be an integer (not a %s)",
+            "<len> must be an non-negative integer (not a %s)",
             (Int)TNAM_OBJ(len), 0L,
             "you can replace <len> via 'return <len>;'" );
     }
