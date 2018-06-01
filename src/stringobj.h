@@ -367,10 +367,8 @@ static inline Obj MakeImmString(const Char * cstr)
 
 
 Obj MakeString2(const Char *cstr1, const Char *cstr2);
-Obj MakeString3(const Char *cstr1, const Char *cstr2, const Char *cstr3);
 
 Obj MakeImmString2(const Char *cstr1, const Char *cstr2);
-Obj MakeImmString3(const Char *cstr1, const Char *cstr2, const Char *cstr3);
 Obj ConvImmString(Obj str);
 
 
