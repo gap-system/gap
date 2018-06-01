@@ -66,6 +66,12 @@ gap> INPUT_TEXT_FILE(fail);
 Error, <filename> must be a string (not a boolean or fail)
 gap> IS_END_OF_FILE(fail);
 Error, <fid> must be an integer (not a boolean or fail)
+gap> IS_END_OF_FILE(-1);
+fail
+gap> IS_END_OF_FILE(0);
+false
+gap> IS_END_OF_FILE(254);
+fail
 gap> OUTPUT_TEXT_FILE(fail, fail);
 Error, <filename> must be a string (not a boolean or fail)
 gap> OUTPUT_TEXT_FILE("test", fail);
@@ -74,8 +80,20 @@ Error, <append> must be a boolean (not a boolean or fail)
 #
 gap> POSITION_FILE(fail);
 Error, <fid> must be an integer (not a boolean or fail)
+gap> POSITION_FILE(-1);
+fail
+gap> IsInt(POSITION_FILE(4));
+true
+gap> POSITION_FILE(254);
+fail
+
+#
 gap> READ_BYTE_FILE(fail);
 Error, <fid> must be an integer (not a boolean or fail)
+gap> READ_BYTE_FILE(-1);
+fail
+
+#
 gap> READ_LINE_FILE(fail);
 Error, <fid> must be an integer (not a boolean or fail)
 gap> READ_ALL_FILE(fail,fail);
@@ -86,10 +104,20 @@ gap> SEEK_POSITION_FILE(fail,fail);
 Error, <fid> must be an integer (not a boolean or fail)
 gap> SEEK_POSITION_FILE(1,fail);
 Error, <pos> must be an integer (not a boolean or fail)
+
+#
 gap> WRITE_BYTE_FILE(fail,fail);
 Error, <fid> must be an integer (not a boolean or fail)
 gap> WRITE_BYTE_FILE(1,fail);
 Error, <ch> must be an integer (not a boolean or fail)
+gap> WRITE_BYTE_FILE(-1,65);
+fail
+gap> WRITE_BYTE_FILE(0,65);
+true
+gap> WRITE_BYTE_FILE(254,65);
+fail
+
+#
 gap> READ_STRING_FILE(fail);
 Error, <fid> must be an integer (not a boolean or fail)
 
