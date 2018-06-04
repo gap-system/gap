@@ -11,6 +11,12 @@
 ## and the actual help books.
 ##  
 
+if IsHPCGAP then
+  HELP_REGION:=NewSpecialRegion("HELP_REGION");
+else
+  HELP_REGION:=fail; # dummy placeholder
+fi;
+
 #############################################################################
 ##  
 #F  # # # # # internal utility functions dealing with strings  # # # # # # #
@@ -484,6 +490,9 @@ end);
 #                 [short name, long name, 
 #                  directory containing the manual.six file] 
 InstallValue(HELP_KNOWN_BOOKS, [[],[]]);
+if IsHPCGAP then
+  LockAndMigrateObj(HELP_KNOWN_BOOKS,HELP_REGION);
+fi;
 
 # if book with normalized name is already installed, we overwrite, if dir
 # is the same (so short and long can be changed)
@@ -587,6 +596,9 @@ end);
 ##  more details on the interfaces of each of these functions.
 ##  
 InstallValue(HELP_BOOK_HANDLER, rec(default:=rec()));
+if IsHPCGAP then
+  LockAndMigrateObj(HELP_BOOK_HANDLER,HELP_REGION);
+fi;
 
 #############################################################################
 ##  
@@ -617,6 +629,9 @@ InstallValue(HELP_BOOK_HANDLER, rec(default:=rec()));
 ##  documentation and the corresponding handler functions.
 ##  
 InstallValue(HELP_BOOKS_INFO, rec());
+if IsHPCGAP then
+  LockAndMigrateObj(HELP_BOOKS_INFO,HELP_REGION);
+fi;
 
 #############################################################################
 ##  
@@ -1148,8 +1163,14 @@ HELP_RING_IDX :=  0;
 HELP_RING_SIZE := 16;
 InstallValue(HELP_BOOK_RING, ListWithIdenticalEntries( HELP_RING_SIZE, 
                                              ["tutorial"] ));
+if IsHPCGAP then
+  LockAndMigrateObj(HELP_BOOK_RING,HELP_REGION);
+fi;
 InstallValue(HELP_TOPIC_RING, ListWithIdenticalEntries( HELP_RING_SIZE, 
                                              "welcome to gap" ));
+if IsHPCGAP then
+  LockAndMigrateObj(HELP_TOPIC_RING,HELP_REGION);
+fi;
 # here we store the last shown topic, initialized with 0 (leading to
 # show "Tutorial: Help", see below)
 InstallValue(HELP_LAST, rec(MATCH := 0, BOOK := 0, 
