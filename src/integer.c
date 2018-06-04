@@ -2866,8 +2866,10 @@ static Int InitKernel ( StructInitInfo * module )
   TypeObjFuncs[ T_INTPOS ] = TypeIntLargePos;
   TypeObjFuncs[ T_INTNEG ] = TypeIntLargeNeg;
 
+#ifdef HPCGAP
   MakeBagTypePublic( T_INTPOS );
   MakeBagTypePublic( T_INTNEG );
+#endif
   
   /* return success                                                        */
   return 0;

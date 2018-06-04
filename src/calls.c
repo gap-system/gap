@@ -961,7 +961,9 @@ Obj NewFunctionT (
     SET_NARG_FUNC(func, narg);
     SET_NAMS_FUNC(func, nams);
     SET_NLOC_FUNC(func, 0);
+#ifdef HPCGAP
     if (nams) MakeBagPublic(nams);
+#endif
     CHANGED_BAG(func);
 
     /* enter the profiling bag                                             */
@@ -1858,8 +1860,10 @@ static Int InitKernel (
     InfoBags[ T_FUNCTION ].name = "function";
     InitMarkFuncBags(T_FUNCTION, MarkFunctionSubBags);
 
+#ifdef HPCGAP
     /* Allocate functions in the public region */
     MakeBagTypePublic(T_FUNCTION);
+#endif
 
     /* install the type functions                                          */
     ImportGVarFromLibrary( "TYPE_FUNCTION",  &TYPE_FUNCTION  );

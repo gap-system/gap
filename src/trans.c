@@ -5577,8 +5577,10 @@ static Int InitKernel(StructInitInfo * module)
     InitMarkFuncBags(T_TRANS2, MarkThreeSubBags);
     InitMarkFuncBags(T_TRANS4, MarkThreeSubBags);
 
+#ifdef HPCGAP
     MakeBagTypePublic(T_TRANS2);
     MakeBagTypePublic(T_TRANS4);
+#endif
 
     /* install the type functions                                          */
     ImportGVarFromLibrary("TYPE_TRANS2", &TYPE_TRANS2);

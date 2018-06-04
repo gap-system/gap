@@ -6587,8 +6587,10 @@ static Int InitKernel(StructInitInfo * module)
     InitMarkFuncBags(T_PPERM2, MarkTwoSubBags);
     InitMarkFuncBags(T_PPERM4, MarkTwoSubBags);
 
+#ifdef HPCGAP
     MakeBagTypePublic(T_PPERM2);
     MakeBagTypePublic(T_PPERM4);
+#endif
 
     /* install the type function                                           */
     ImportGVarFromLibrary("TYPE_PPERM2", &TYPE_PPERM2);

@@ -478,7 +478,9 @@ void MakeFieldInfo8Bit( UInt q)
     }
 
 
+#ifdef HPCGAP
     MakeBagReadOnly(info);
+#endif
     /* remember the result */
 #ifdef HPCGAP
     ATOMIC_SET_ELM_PLIST_ONCE(FieldInfo8Bit, q, info);
@@ -4892,9 +4894,11 @@ Obj MakeShiftedVecs( Obj v, UInt len)
                 ptrs[elts - 1 - (i % elts)] ++;
         }
     }
+#ifdef HPCGAP
     for (i=1; i <= elts; i++)
       MakeBagReadOnly(ELM_PLIST(shifts, i));
     MakeBagReadOnly(shifts);
+#endif
     return shifts;
 }
 
@@ -5954,7 +5958,9 @@ static Int InitLibrary (
     FieldInfo8Bit = NEW_PLIST(T_PLIST_NDENSE, 257);
     SET_ELM_PLIST(FieldInfo8Bit, 257, INTOBJ_INT(1));
     SET_LEN_PLIST(FieldInfo8Bit, 257);
+#ifdef HPCGAP
     MakeBagPublic(FieldInfo8Bit);
+#endif
     /* init filters and functions                                          */
     InitGVarFuncsFromTable(GVarFuncs);
 

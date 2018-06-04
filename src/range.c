@@ -1233,9 +1233,11 @@ static Int InitKernel (
     InitMarkFuncBags(   T_RANGE_SSORT +IMMUTABLE +COPYING , MarkAllSubBags );
 #endif
 
+#ifdef HPCGAP
     /* Make immutable bags public                                          */
     MakeBagTypePublic( T_RANGE_NSORT + IMMUTABLE );
     MakeBagTypePublic( T_RANGE_SSORT + IMMUTABLE );
+#endif
 
     /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_RANGE_NSORT_MUTABLE",

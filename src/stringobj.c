@@ -2261,11 +2261,13 @@ static Int InitKernel (
         InitMarkFuncBags( t1 +COPYING +IMMUTABLE , MarkNoSubBags );
 #endif
     }
+
+#ifdef HPCGAP
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
       MakeBagTypePublic( t1 + IMMUTABLE );
     }
-
     MakeBagTypePublic(T_CHAR);
+#endif
 
     /* make all the character constants once and for all                   */
     for ( i = 0; i < 256; i++ ) {

@@ -3257,8 +3257,10 @@ static Int InitKernel (
     SaveObjFuncs[ T_BODY ] = SaveBody;
     LoadObjFuncs[ T_BODY ] = LoadBody;
 
+#ifdef HPCGAP
     /* Allocate function bodies in the public data space */
     MakeBagTypePublic(T_BODY);
+#endif
 
 #if !defined(HPCGAP)
     /* make the result variable known to Gasman                            */

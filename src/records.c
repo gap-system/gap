@@ -735,12 +735,16 @@ static Int InitLibrary (
     /* make the list of names of record names                              */
     NamesRNam = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( NamesRNam, 0 );
+#ifdef HPCGAP
     MakeBagPublic(NamesRNam);
+#endif
 
     /* make the hash list of record names                                  */
     HashRNam = NEW_PLIST( T_PLIST, 14033 );
     SET_LEN_PLIST( HashRNam, 14033 );
+#ifdef HPCGAP
     MakeBagPublic(HashRNam);
+#endif
 
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );

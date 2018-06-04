@@ -596,7 +596,9 @@ Obj FuncAND_FLAGS (
         cache  = AND_CACHE_FLAGS(flags1);
         if ( cache == 0 ) {
             cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
+#ifdef HPCGAP
             MakeBagPublic(cache);
+#endif
             SET_AND_CACHE_FLAGS( flags1, cache );
             CHANGED_BAG(flags1);
         }
@@ -3478,7 +3480,9 @@ Obj MethsOper (
     methods = METHS_OPER( oper, i );
     if ( methods == 0 ) {
         methods = NEW_PLIST( T_PLIST, 0 );
+#ifdef HPCGAP
         MakeBagReadOnly(methods);
+#endif
         SET_METHS_OPER(oper, i, methods);
         CHANGED_BAG( oper );
     }
@@ -4150,8 +4154,10 @@ static Int InitKernel (
     SaveObjFuncs[ T_FLAGS ] = SaveFlags;
     LoadObjFuncs[ T_FLAGS ] = LoadFlags;
 
+#ifdef HPCGAP
     /* flags are public objects by default */
     MakeBagTypePublic(T_FLAGS);
+#endif
 
     /* import copy of REREADING */
     ImportGVarFromLibrary( "REREADING", &REREADING );
