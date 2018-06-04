@@ -349,6 +349,8 @@ static UInt GetNumber(Int readDecimalPoint)
   UInt i = 0;
   Char c;
   UInt seenADigit = 0;
+  UInt seenExp = 0;
+  UInt seenExpDigit = 0;
 
   STATE(ValueObj) = 0;
 
@@ -461,7 +463,7 @@ static UInt GetNumber(Int readDecimalPoint)
     }
 
     // If the next thing is the start of the exponential notation, read it now.
-    UInt seenExp = 0;
+
     if (IsAlpha(c)) {
       if (!seenADigit)
         SyntaxError("Badly formed number: need a digit before or after "
@@ -508,7 +510,6 @@ static UInt GetNumber(Int readDecimalPoint)
 
   // Here we are into the unsigned exponent of a number in scientific
   // notation, so we just read digits
-  UInt seenExpDigit = 0;
 
   while (IsDigit(c)) {
     i = AddCharToValue(i, c);
