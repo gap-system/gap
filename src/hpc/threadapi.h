@@ -5,6 +5,10 @@
 
 #include <pthread.h>
 
+#if !defined(HPCGAP)
+#error This header is only meant to be used with HPC-GAP
+#endif
+
 
 enum ThreadObjectStatus {
     THREAD_TERMINATED   = 1,

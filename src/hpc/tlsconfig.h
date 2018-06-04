@@ -3,7 +3,10 @@
 
 #include "system.h"
 
-#ifdef HPCGAP
+#if !defined(HPCGAP)
+#error This header is only meant to be used with HPC-GAP
+#endif
+
 
 #ifndef HAVE_NATIVE_TLS
 
@@ -19,7 +22,5 @@
 #endif
 
 #endif // HAVE_NATIVE_TLS
-
-#endif // HPCGAP
 
 #endif // GAP_TLSCONFIG_H
