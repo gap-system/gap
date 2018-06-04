@@ -2226,7 +2226,9 @@ static Int InitKernel (
     ProdFuncs[ T_CYC    ][ T_RAT    ] = ProdCycInt;
     PowFuncs[  T_CYC    ][ T_INT    ] = PowCyc;
 
+#ifdef HPCGAP
     MakeBagTypePublic(T_CYC);
+#endif
     /* return success                                                      */
     return 0;
 }

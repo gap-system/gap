@@ -393,7 +393,9 @@ static Int InitKernel (
     EqFuncs[ T_BOOL ][ T_BOOL ] = EqBool;
     LtFuncs[ T_BOOL ][ T_BOOL ] = LtBool;
 
+#ifdef HPCGAP
     MakeBagTypePublic(T_BOOL);
+#endif
     /* return success                                                      */
     return 0;
 }

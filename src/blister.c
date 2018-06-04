@@ -2222,9 +2222,11 @@ static Int InitKernel (
     }
 
     /* Make immutable blists public					   */
+#ifdef HPCGAP
     for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
         MakeBagTypePublic( t1 + IMMUTABLE );
     }
+#endif
 
     /* install the type methods                                            */
     TypeObjFuncs[ T_BLIST            ] = TypeBlist;

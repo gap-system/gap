@@ -985,7 +985,9 @@ static Int InitKernel (
     PowFuncs [ T_RAT    ][ T_INTPOS ] = PowRat;
     PowFuncs [ T_RAT    ][ T_INTNEG ] = PowRat;
 
+#ifdef HPCGAP
     MakeBagTypePublic(T_RAT);
+#endif
 
     /* return success                                                      */
     return 0;

@@ -4438,8 +4438,10 @@ static Int InitKernel (
     InfoBags[           T_PERM4         ].name = "permutation (large)";
     InitMarkFuncBags(T_PERM4, MarkOneSubBags);
 
+#ifdef HPCGAP
     MakeBagTypePublic( T_PERM2);
     MakeBagTypePublic( T_PERM4);
+#endif
 
     ImportGVarFromLibrary("PERM_INVERSE_THRESHOLD", &PERM_INVERSE_THRESHOLD);
 
