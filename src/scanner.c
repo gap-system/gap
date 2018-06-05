@@ -113,16 +113,19 @@ void SyntaxWarning(const Char * msg)
 */
 static Obj AppendBufToString(Obj string, const char * buf, UInt bufLen)
 {
+    char *s;
     if (string == 0) {
         string = NEW_STRING(bufLen);
-        memcpy(CSTR_STRING(string), buf, bufLen);
+        s = CSTR_STRING(string);
     }
     else {
         const UInt len = GET_LEN_STRING(string);
         GROW_STRING(string, len + bufLen);
         SET_LEN_STRING(string, len + bufLen);
-        memcpy(CSTR_STRING(string) + len, buf, bufLen);
+        s = CSTR_STRING(string) + len;
     }
+    memcpy(s, buf, bufLen);
+    s[bufLen] = '\0';
     return string;
 }
 
@@ -333,14 +336,19 @@ static UInt GetIdent(Int i)
 **  or whether we are starting from scratch..
 **
 */
-static UInt AddCharToValue(UInt i, Char c)
+static UInt AddCharToBuf(Obj * string, Char * buf, UInt bufsize, UInt pos, Char c)
 {
-    if (i >= SAFE_VALUE_SIZE - 1) {
-        STATE(ValueObj) = AppendBufToString(STATE(ValueObj), STATE(Value), i);
-        i = 0;
+    if (pos >= bufsize) {
+        *string = AppendBufToString(*string, buf, pos);
+        pos = 0;
     }
-    STATE(Value)[i++] = c;
-    return i;
+    buf[pos++] = c;
+    return pos;
+}
+
+static UInt AddCharToValue(UInt pos, Char c)
+{
+    return AddCharToBuf(&STATE(ValueObj), STATE(Value), SAFE_VALUE_SIZE - 1, pos, c);
 }
 
 static UInt GetNumber(Int readDecimalPoint)
@@ -867,27 +875,18 @@ static void GetHelp(void)
 {
     Obj  string = 0;
     Char buf[1024];
-    UInt i;
+    UInt i = 0;
 
     // Skip the leading '?'
     Char c = GET_NEXT_CHAR();
 
-    for (i = 0; c != '\n' && c != '\r' && c != '\377'; i++) {
-        // if 'buf' is full, copy it into 'string' and then reset it
-        if (i >= sizeof(buf)) {
-            string = AppendBufToString(string, buf, i);
-            i = 0;
-        }
-        buf[i] = c;
+    while (c != '\n' && c != '\r' && c != '\377') {
+        i = AddCharToBuf(&string, buf, sizeof(buf), i, c);
         c = GET_NEXT_CHAR();
     }
-    string = AppendBufToString(string, buf, i);
 
-    // ensure that the string has a terminator
-    const UInt len = GET_LEN_STRING(string);
-    CSTR_STRING(string)[len] = '\0';
-
-    STATE(ValueObj) = string;
+    // append any remaining data to STATE(ValueObj)
+    STATE(ValueObj) = AppendBufToString(string, buf, i);
 }
 
 /****************************************************************************
