@@ -691,44 +691,29 @@ static void GetStr(void)
 {
     Obj  string = 0;
     Char buf[1024];
-    UInt i;
+    UInt i = 0;
     Char c = PEEK_CURR_CHAR();
 
-    for (i = 0; c != '"' && c != '\n' && c != '\377'; i++) {
-        // if 'buf' is full, copy it into 'string' and then reset it
-        if (i >= sizeof(buf)) {
-            string = AppendBufToString(string, buf, i);
-            i = 0;
-        }
+    while (c != '"' && c != '\n' && c != '\377') {
         if (c == '\\') {
             c = GetEscapedChar();
         }
-        buf[i] = c;
+        i = AddCharToBuf(&string, buf, sizeof(buf), i, c);
 
         // read the next character
         c = GET_NEXT_CHAR();
     }
 
-    // append any remaining data to 'string'
-    string = AppendBufToString(string, buf, i);
+    // append any remaining data to STATE(ValueObj)
+    STATE(ValueObj) = AppendBufToString(string, buf, i);
 
-    // ensure that the string has a terminator
-    const UInt len = GET_LEN_STRING(string);
-    CSTR_STRING(string)[len] = '\0';
-
-    // check for error conditions
     if (c == '\n')
         SyntaxError("String must not include <newline>");
+
     if (c == '\377') {
         *STATE(In) = '\0';
         SyntaxError("String must end with \" before end of file");
     }
-
-    STATE(ValueObj) = string;
-
-    // skip trailing '"'
-    if (c == '"')
-        c = GET_NEXT_CHAR();
 }
 
 /****************************************************************************
@@ -749,21 +734,14 @@ static void GetTripStr(void)
 {
     Obj  string = 0;
     Char buf[1024];
-    UInt i;
+    UInt i = 0;
     Char c = PEEK_CURR_CHAR();
 
     // print only a partial prompt while reading a triple string
     STATE(Prompt) = SyQuiet ? "" : "> ";
 
-    for (i = 0; c != '\377'; i++) {
-        // if 'buf' is full, copy it into 'string' and then reset it;
-        // take into account that we may add up to three chars below
-        if (i + 2 >= sizeof(buf)) {
-            string = AppendBufToString(string, buf, i);
-            i = 0;
-        }
-
-        // Only thing to check for is a triple quote.
+    while (c != '\377') {
+        // only thing to check for is a triple quote
         if (c == '"') {
             c = GET_NEXT_CHAR();
             if (c == '"') {
@@ -771,63 +749,63 @@ static void GetTripStr(void)
                 if (c == '"') {
                     break;
                 }
-                buf[i++] = '"';
+                i = AddCharToBuf(&string, buf, sizeof(buf), i, '"');
             }
-            buf[i++] = '"';
+            i = AddCharToBuf(&string, buf, sizeof(buf), i, '"');
         }
-        buf[i] = c;
+        i = AddCharToBuf(&string, buf, sizeof(buf), i, c);
 
         // read the next character
         c = GET_NEXT_CHAR();
     }
 
-    // append any remaining data to 'string'
-    string = AppendBufToString(string, buf, i);
+    // append any remaining data to STATE(ValueObj)
+    STATE(ValueObj) = AppendBufToString(string, buf, i);
 
-    // ensure that the string has a terminator
-    const UInt len = GET_LEN_STRING(string);
-    CSTR_STRING(string)[len] = '\0';
-
-    // check for error conditions
     if (c == '\377') {
         *STATE(In) = '\0';
         SyntaxError("String must end with \"\"\" before end of file");
     }
-
-    STATE(ValueObj) = string;
-
-    // skip trailing '"'
-    if (c == '"')
-        c = GET_NEXT_CHAR();
 }
 
 /****************************************************************************
 **
-*F  GetMaybeTripStr()  . . . . . . . . . . . . . . . . . get a string, local
+*F  GetString()  . . . . . . . . . . . . . . . . . . . .  get a string, local
 **
-**  'GetMaybeTripStr' decides if we are reading a single quoted string,
-**  or a triple quoted string.
+**  'GetString' decides if we are reading a single quoted string, or a triple
+**  quoted string, and then reads it. The opening quote '"' of the string is
+**  the current character pointed to by 'In'.
 */
-static void GetMaybeTripStr(void)
+static void GetString(void)
 {
+    Int  isTripleQuoted = 0;
     Char c = GET_NEXT_CHAR();
 
-    /* This is just a normal string! */
-    if ( c != '"' ) {
+    if (c == '"') {
+        c = GET_NEXT_CHAR();
+        if (c == '"') {
+            isTripleQuoted = 1;
+            c = GET_NEXT_CHAR();
+        }
+        else {
+            // we read two '"' followed by something else, so this was
+            // just an empty string!
+            STATE(ValueObj) = NEW_STRING(0);
+            return;
+        }
+    }
+
+    if (isTripleQuoted)
+        GetTripStr();
+    else
         GetStr();
-        return;
-    }
-    
-    c = GET_NEXT_CHAR();
-    /* This was just an empty string! */
-    if ( c != '"' ) {
-        STATE(ValueObj) = NEW_STRING(0);
-        return;
-    }
-    
-    c = GET_NEXT_CHAR();
-    /* Now we know we are reading a triple string */
-    GetTripStr();
+
+    c = PEEK_CURR_CHAR();
+
+
+    // skip trailing '"'
+    if (c == '"')
+        c = GET_NEXT_CHAR();
 }
 
 
@@ -973,7 +951,7 @@ static UInt NextSymbol(void)
 
     case '~':         symbol = S_TILDE;             GET_NEXT_CHAR(); break;
     case '?':         symbol = S_HELP;              GetHelp(); break;
-    case '"':         symbol = S_STRING;            GetMaybeTripStr(); break;
+    case '"':         symbol = S_STRING;            GetString(); break;
     case '\'':        symbol = S_CHAR;              GetChar(); break;
     case '\\':        return GetIdent(0);
     case '_':         return GetIdent(0);
