@@ -1375,8 +1375,9 @@ void            IntrNot ( void )
     Obj                 op;             /* operand                         */
 
     /* ignore or code                                                      */
-    if ( STATE(IntrIgnoring) > 0 ) { return; }
-    if ( STATE(IntrCoding)   > 0 ) { CodeNot(); return; }
+    if ( STATE(IntrReturning) > 0 ) { return; }
+    if ( STATE(IntrIgnoring)  > 0 ) { return; }
+    if ( STATE(IntrCoding)    > 0 ) { CodeNot(); return; }
 
 
     /* get and check the operand                                           */
