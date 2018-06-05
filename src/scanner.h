@@ -207,7 +207,6 @@ typedef UInt            TypSymbolSet;
 **  'GetIdent' truncates an identifier after that many characters.
 */
 
-#define         SAFE_VALUE_SIZE 1024
 
 /****************************************************************************
 **

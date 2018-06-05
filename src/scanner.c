@@ -251,7 +251,7 @@ static UInt GetIdent(Int i)
         }
 
         /// put char into 'STATE(Value)' but only if there is room
-        if (i < SAFE_VALUE_SIZE - 1)
+        if (i < MAX_VALUE_LEN - 1)
             STATE(Value)[i] = c;
 
         // read the next character
@@ -259,9 +259,9 @@ static UInt GetIdent(Int i)
     }
 
     // terminate the identifier and lets assume that it is not a keyword
-    if (i > SAFE_VALUE_SIZE-1) {
+    if (i > MAX_VALUE_LEN - 1) {
         SyntaxError("Identifiers in GAP must consist of at most 1023 characters.");
-        i = SAFE_VALUE_SIZE-1;
+        i = MAX_VALUE_LEN - 1;
     }
     STATE(Value)[i] = '\0';
 
@@ -348,7 +348,7 @@ static UInt AddCharToBuf(Obj * string, Char * buf, UInt bufsize, UInt pos, Char 
 
 static UInt AddCharToValue(UInt pos, Char c)
 {
-    return AddCharToBuf(&STATE(ValueObj), STATE(Value), SAFE_VALUE_SIZE - 1, pos, c);
+    return AddCharToBuf(&STATE(ValueObj), STATE(Value), MAX_VALUE_LEN - 1, pos, c);
 }
 
 static UInt GetNumber(Int readDecimalPoint)
@@ -380,8 +380,8 @@ static UInt GetNumber(Int readDecimalPoint)
       // if necessary, copy back from STATE(ValueObj) to STATE(Value)
       if (STATE(ValueObj)) {
         i = GET_LEN_STRING(STATE(ValueObj));
-        GAP_ASSERT(i >= SAFE_VALUE_SIZE-1);
-        memcpy(STATE(Value), CSTR_STRING(STATE(ValueObj)), SAFE_VALUE_SIZE);
+        GAP_ASSERT(i >= MAX_VALUE_LEN - 1);
+        memcpy(STATE(Value), CSTR_STRING(STATE(ValueObj)), MAX_VALUE_LEN);
         STATE(ValueObj) = 0;
       }
       // this looks like an identifier, scan the rest of it
@@ -391,7 +391,7 @@ static UInt GetNumber(Int readDecimalPoint)
     // Or maybe we saw a '.' which could indicate one of two things: a
     // float literal or S_DOT, i.e., '.' used to access a record entry.
     if (c == '.') {
-      GAP_ASSERT(i < SAFE_VALUE_SIZE - 1);
+      GAP_ASSERT(i < MAX_VALUE_LEN - 1);
 
       // If the symbol before this integer was S_DOT then we must be in
       // a nested record element expression, so don't look for a float.
