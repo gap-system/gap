@@ -83,7 +83,7 @@ Furthermore, the global variable <C>PACKAGES_VERSIONS</C> is no longer needed,
 since this information is now contained in the <C>GAPInfo.PackagesInfo</C> record
 (see <Ref Subsect="GAPInfo"/>). The global variable <C>Revisions</C> is also
 no longer needed, since the function <C>DisplayRevision</C> was made obsolete in
-&GAP;&nbsp;4.5.
+&GAP;&nbsp;4.5 and removed in &GAP;&nbsp;4.7.
 <P/>
 
 The following function names were changed.
