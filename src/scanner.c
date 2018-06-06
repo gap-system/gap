@@ -8,10 +8,10 @@
 *Y  Copyright (C) 2002 The GAP Group
 **
 **  This file contains the functions of the scanner, which provides a very
-**  abstractions, namely the concept that an input file is a stream of
-**  symbols, such nasty things as <space>, <tab>, <newline> characters or
-**  comments (they are worst :-), characters making up identifiers or digits
-**  that make up integers are hidden from the rest of GAP.
+**  important abstraction, namely the concept that an input file is a stream
+**  of symbols, while it hides such nasty things as <space>, <tab>, <newline>
+**  characters, comments (they are worst :-), characters making up
+**  identifiers or digits that make up integers from the rest of GAP.
 */
 
 #include "scanner.h"
@@ -895,9 +895,10 @@ static void GetHelp(void)
 *F  NextSymbol() . . . . . . . . . . . . . . . . . get the next symbol, local
 **
 **  'NextSymbol' reads  the  next symbol from  the  input,  storing it in the
-**  variable 'Symbol'.  If 'Symbol' is  'S_IDENT', 'S_INT' or 'S_STRING'  the
-**  value of the symbol is stored in 'STATE(Value)'.  'NextSymbol' first
-**  skips all <space>, <tab> and <newline> characters and comments.
+**  variable 'STATE(Symbol)'. If 'STATE(Symbol)' is 'S_IDENT', 'S_INT',
+**  'S_FLOAT' or 'S_STRING' the value of the symbol is stored in
+**  'STATE(Value)' or  'STATE(ValueObj)'. 'NextSymbol' first skips all
+**  <space>, <tab> and <newline> characters and comments.
 **
 **  After reading  a  symbol the current  character   is the first  character
 **  beyond that symbol.

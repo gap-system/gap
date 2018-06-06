@@ -119,7 +119,6 @@ enum SCANNER_SYMBOLS {
 
     S_EOF               = (1UL<<31),
 };
-/* TL: extern  UInt            Symbol; */
 
 
 /****************************************************************************
@@ -145,7 +144,7 @@ enum SCANNER_SYMBOLS {
 **  unsigned long integers, which is typedef-ed to 'TypSymbolSet'.
 **
 **  The classes are as follows, all other symbols are in a class themself:
-**      identifiers, IsBound, UnBind, Info, Assert
+**      identifiers, IsBound, Unbind, Info, Assert
 **      if, for, repeat, while, return
 **      elif, else
 **      not, and, or
@@ -164,9 +163,9 @@ typedef UInt            TypSymbolSet;
 *F  IS_IN( <symbol>, <set> )  . . . . . . . . is a symbol in a set of symbols
 **
 **  'IS_IN' returns non-zero if the symbol <symbol> is in the symbol set
-**  <set> and 0
-**  otherwise.  Due to the grouping into classes some symbol sets may contain
-**  more than mentioned, for  example 'IS_IN(S_POW,S_MULT|S_DIV|S_MOD)' is 1.
+**  <set> and 0 otherwise. Due to the grouping into classes some symbol sets
+**  may contain more than mentioned.
+**  For example 'IS_IN(S_POW,S_MULT|S_DIV|S_MOD)' is 1.
 **
 **  'IS_IN' is defined in the definition file of this package as follows:
 */
@@ -180,7 +179,7 @@ typedef UInt            TypSymbolSet;
 **
 **  'EXPRBEGIN'  is the  set  of  symbols   that might  start  an expression.
 **
-**  'STATBEGIN' is the set of symbols that might start a stament.
+**  'STATBEGIN' is the set of symbols that might start a statement.
 */
 #define EXPRBEGIN  (S_IDENT|S_ISBOUND|S_INT|S_TRUE|S_FALSE|S_TILDE \
                     |S_CHAR|S_STRING|S_LBRACK|S_REC|S_FUNCTION \
@@ -195,26 +194,18 @@ typedef UInt            TypSymbolSet;
 *V  Value . . . . . . . . . . . . , value of the identifier, float or integer
 *V  ValueObj . . . . . . . . . . . . . . . . . . . . . .  value of the string
 **
-**  If 'STATE(Symbol)' is 'S_IDENT', 'S_INT' or 'S_FLOAT' the variable
-**  'STATE(Value)' holds the name of the identifier, the digits of the
-**  integer or float literal as a C string. If the symbol is 'S_STRING', then
-**  instead the variable 'STATE(ValueObj)' holds the string literal as a GAP
-**  string object.
+**  If 'STATE(Symbol)' is 'S_IDENT', 'S_INT' or 'S_FLOAT' then normally the
+**  variable 'STATE(Value)' holds the name of the identifier, the digits of
+**  the integer or float literal as a C string. For large integer or float
+**  literals that do not fit into 'STATE(Value)', instead 'STATE(ValueObj)'
+**  holds the the literal as a GAP string object. If the symbol is 'S_STRING'
+**  or 'S_HELP', the string literal or help text is always stored in
+**  'STATE(ValueObj)' as a GAP string object.
 **
-**  Note  that  the  size  of  'Value'  limits  the  maximal  number  of
-**  significant  characters of  an identifier.  'GetIdent' truncates  an
-**  identifier after that many characters.
-**
-**  The only other symbols which may not fit into Value are long integers or
-**  floats. Therefore we have to check in 'GetNumber' if the symbols is not
-**  yet completely read when 'Value' is filled.
-**
-**  We only fill 'Value' up to SAFE_VALUE_SIZE normally. The last few
-**  bytes are used in the floating point parsing code to ensure that we don't
-**  stop the scan just before a non-digit (., E, +,-, etc.) which would make
-**  it hard for the scanner to carry on correctly.
+**  Note that the size of identifiers in GAP is limited to 1023 characters,
+**  hence identifiers are always stored in 'STATE(Value)'. For this reason,
+**  'GetIdent' truncates an identifier after that many characters.
 */
-/* TL: extern  Char            Value [1030]; */
 
 #define         SAFE_VALUE_SIZE 1024
 
