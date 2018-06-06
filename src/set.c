@@ -594,7 +594,6 @@ Obj FuncREM_SET (
 
 /****************************************************************************
 **
-*V  TmpUnion  . . . . . . . . . . . . . . . . . . buffer for the union, local
 *F  FuncUNITE_SET( <self>, <set1>, <set2> ) . . .  unite one set with another
 **
 **  'FuncUNITE_SET' implements the internal function 'UniteSet'.
@@ -610,11 +609,6 @@ Obj FuncREM_SET (
 **  'FuncUNITE_SET' merges <set1> and <set2> into a  buffer that is allocated
 **  at initialization time.
 **
-**  'TmpUnion' is the global  bag that serves as  temporary bag for the union.
-**  It is created in 'InitSet' and is resized when necessary.
-**
-**   This doesn't work, because UniteSet calls EQ, which can result in a nested call to
-** UniteSet, which must accordingly be re-entrant.
 */
 
 Obj FuncUNITE_SET (
@@ -650,7 +644,6 @@ Obj FuncUNITE_SET (
     len1 = LEN_PLIST( set1 );
     len2 = LEN_PLIST( set2 );
     TmpUnion = NEW_PLIST(T_PLIST,len1+len2);
-    /*     GROW_PLIST( TmpUnion, len1 + len2 );*/
     lenr = 0;
     i1 = 1;
     i2 = 1;
@@ -1074,9 +1067,6 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* create the temporary union bag                                      */
-  /*    InitGlobalBag( &TmpUnion, "src/set.c:TmpUnion" ); */
-
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
@@ -1092,10 +1082,6 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* create the temporary union bag                                      */
-  /*     TmpUnion = NEW_PLIST( T_PLIST, 1024 );
-	 SET_LEN_PLIST( TmpUnion, 1024 ); */
-
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
