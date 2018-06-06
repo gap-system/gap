@@ -19,6 +19,7 @@
 /extern/build/
 /extern/install/
 
+/ffgen
 /gac
 /gap
 /sysinfo.gap
