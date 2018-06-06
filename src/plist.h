@@ -280,8 +280,11 @@ static inline UInt PushPlist(Obj list, Obj val)
 *F  PopPlist( <list> ) . . . . . . . . .  remove last element of a plain list
 **
 **  Also returns the removed element. Caller is responsible for ensuring that
-**  the list is non-empty. Otherwise, an assertion may be raised, or the plist
+**  the list is non-empty. Otherwise an assertion may be raised or the plist
 **  be left in an invalid state.
+**
+**  Also clear the slot used by the pop'ed object, to avoid stale references
+**  preventing the garbage collector from collecting the pop'ed object.
 **
 */
 static inline Obj PopPlist(Obj list)
