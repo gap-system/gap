@@ -247,16 +247,10 @@ static inline void FinishAndCallFakeFuncExpr(void)
 */
 void IntrBegin ( Obj frame )
 {
-    Obj                 intrState;      /* old interpreter state           */
-
     /* remember old interpreter state                                      */
-    /* This bag cannot exist at the top-most loop, which is the only
-       place from which we might call SaveWorkspace */
-    intrState = NEW_PLIST( T_PLIST, 2 );
-    SET_LEN_PLIST( intrState, 2 );
-    SET_ELM_PLIST( intrState, 1, STATE(IntrState) );
-    SET_ELM_PLIST( intrState, 2, STATE(StackObj) );
-    STATE(IntrState) = intrState;
+    if (!STATE(IntrState))
+        STATE(IntrState) = NEW_PLIST(T_PLIST, 16);
+    PushPlist(STATE(IntrState), STATE(StackObj));
 
     /* allocate a new values stack                                         */
     STATE(StackObj) = NEW_PLIST( T_PLIST, 64 );
@@ -320,8 +314,7 @@ ExecStatus IntrEnd (
     }
 
     // switch back to the old state
-    STATE(StackObj)  = ELM_PLIST(STATE(IntrState), 2);
-    STATE(IntrState) = ELM_PLIST(STATE(IntrState), 1);
+    STATE(StackObj) = PopPlist(STATE(IntrState));
 
     /* indicate whether a return-statement was interpreted                 */
     return intrReturning;
