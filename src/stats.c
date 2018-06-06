@@ -1620,13 +1620,7 @@ static Int InitKernel (
     UInt                i;              /* loop variable                   */
 
     /* make the global bags known to Gasman                                */
-    /* 'InitGlobalBag( &CurrStat );' is not really needed, since we are in */
-    /* for a lot of trouble if 'CurrStat' ever becomes the last reference. */
-    /* furthermore, statements are no longer bags                          */
-    /* InitGlobalBag( &CurrStat );                                         */
-#if !defined HPCGAP
     InitGlobalBag( &STATE(ReturnObjStat), "src/stats.c:ReturnObjStat" );
-#endif
 
     /* connect to external functions                                       */
     ImportFuncFromLibrary( "Iterator",       &ITERATOR );
