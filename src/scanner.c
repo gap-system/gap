@@ -104,28 +104,28 @@ void SyntaxWarning(const Char * msg)
 **
 *F  AppendBufToString()
 **
-**  Append 'bufLen' bytes from the string buffer 'buf' to the string object
+**  Append 'bufsize' bytes from the string buffer 'buf' to the string object
 **  'string'. If 'string' is 0, then a new string object is allocated first.
 **
 **  The string object is returned at the end, regardless of whether it was
 **  given as an argument, or created from scratch.
 **
 */
-static Obj AppendBufToString(Obj string, const char * buf, UInt bufLen)
+static Obj AppendBufToString(Obj string, const char * buf, UInt bufsize)
 {
     char *s;
     if (string == 0) {
-        string = NEW_STRING(bufLen);
+        string = NEW_STRING(bufsize);
         s = CSTR_STRING(string);
     }
     else {
         const UInt len = GET_LEN_STRING(string);
-        GROW_STRING(string, len + bufLen);
-        SET_LEN_STRING(string, len + bufLen);
+        GROW_STRING(string, len + bufsize);
+        SET_LEN_STRING(string, len + bufsize);
         s = CSTR_STRING(string) + len;
     }
-    memcpy(s, buf, bufLen);
-    s[bufLen] = '\0';
+    memcpy(s, buf, bufsize);
+    s[bufsize] = '\0';
     return string;
 }
 
