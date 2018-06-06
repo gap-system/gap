@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "65425009"
+#define FILE_CRC  "96238222"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -601,7 +601,7 @@ static Obj  HdlrFunc3 (
  Obj  a_info,
  Obj  a_rel,
  Obj  a_flags,
- Obj  a_rank,
+ Obj  a_baserank,
  Obj  a_method )
 {
  Obj l_methods = 0;
@@ -613,7 +613,7 @@ static Obj  HdlrFunc3 (
  Obj l_match = 0;
  Obj l_j = 0;
  Obj l_lk = 0;
- Obj l_ranknow = 0;
+ Obj l_rank = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -631,7 +631,7 @@ static Obj  HdlrFunc3 (
  (void)l_match;
  (void)l_j;
  (void)l_lk;
- (void)l_ranknow;
+ (void)l_rank;
  Bag oldFrame;
  OLD_BRK_CURR_STAT
  
@@ -640,27 +640,27 @@ static Obj  HdlrFunc3 (
  REM_BRK_CURR_STAT();
  SET_BRK_CURR_STAT(0);
  
- /* if IS_FUNCTION( rank ) then */
+ /* if IS_FUNCTION( baserank ) then */
  t_3 = GF_IS__FUNCTION;
- t_2 = CALL_1ARGS( t_3, a_rank );
+ t_2 = CALL_1ARGS( t_3, a_baserank );
  CHECK_FUNC_RESULT( t_2 )
  CHECK_BOOL( t_2 )
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
-  /* ranknow := rank(  ); */
-  CHECK_FUNC( a_rank )
-  t_1 = CALL_0ARGS( a_rank );
+  /* rank := baserank(  ); */
+  CHECK_FUNC( a_baserank )
+  t_1 = CALL_0ARGS( a_baserank );
   CHECK_FUNC_RESULT( t_1 )
-  l_ranknow = t_1;
+  l_rank = t_1;
   
  }
  
  /* else */
  else {
   
-  /* ranknow := rank; */
-  l_ranknow = a_rank;
+  /* rank := baserank; */
+  l_rank = a_baserank;
   
  }
  /* fi */
@@ -680,13 +680,13 @@ static Obj  HdlrFunc3 (
   t_1 = (Obj)(UInt)(LT( INTOBJ_INT(0), t_2 ));
   if ( t_1 ) {
    
-   /* ranknow := ranknow - RankFilter( flags[1] ); */
+   /* rank := rank - RankFilter( flags[1] ); */
    t_3 = GF_RankFilter;
    C_ELM_LIST_FPL( t_4, a_flags, INTOBJ_INT(1) )
    t_2 = CALL_1ARGS( t_3, t_4 );
    CHECK_FUNC_RESULT( t_2 )
-   C_DIFF_FIA( t_1, l_ranknow, t_2 )
-   l_ranknow = t_1;
+   C_DIFF_FIA( t_1, l_rank, t_2 )
+   l_rank = t_1;
    
   }
   /* fi */
@@ -719,12 +719,12 @@ static Obj  HdlrFunc3 (
    }
    l_i = t_2;
    
-   /* ranknow := ranknow + RankFilter( i ); */
+   /* rank := rank + RankFilter( i ); */
    t_7 = GF_RankFilter;
    t_6 = CALL_1ARGS( t_7, l_i );
    CHECK_FUNC_RESULT( t_6 )
-   C_SUM_FIA( t_5, l_ranknow, t_6 )
-   l_ranknow = t_5;
+   C_SUM_FIA( t_5, l_rank, t_6 )
+   l_rank = t_5;
    
   }
   /* od */
@@ -791,7 +791,7 @@ static Obj  HdlrFunc3 (
  /* i := 0; */
  l_i = INTOBJ_INT(0);
  
- /* while i < LEN_LIST( methods ) and ranknow < methods[i + (narg + 3)] od */
+ /* while i < LEN_LIST( methods ) and rank < methods[i + (narg + 3)] od */
  while ( 1 ) {
   t_4 = GF_LEN__LIST;
   t_3 = CALL_1ARGS( t_4, l_methods );
@@ -803,7 +803,7 @@ static Obj  HdlrFunc3 (
    C_SUM_FIA( t_5, l_i, t_6 )
    CHECK_INT_POS( t_5 )
    C_ELM_LIST_FPL( t_4, l_methods, t_5 )
-   t_3 = (Obj)(UInt)(LT( l_ranknow, t_4 ));
+   t_3 = (Obj)(UInt)(LT( l_rank, t_4 ));
    t_1 = t_3;
   }
   if ( ! t_1 ) break;
@@ -830,7 +830,7 @@ static Obj  HdlrFunc3 (
   /* k := i; */
   l_k = l_i;
   
-  /* while k < LEN_LIST( methods ) and ranknow = methods[k + narg + 3] od */
+  /* while k < LEN_LIST( methods ) and rank = methods[k + narg + 3] od */
   while ( 1 ) {
    t_4 = GF_LEN__LIST;
    t_3 = CALL_1ARGS( t_4, l_methods );
@@ -842,7 +842,7 @@ static Obj  HdlrFunc3 (
     C_SUM_FIA( t_5, t_6, INTOBJ_INT(3) )
     CHECK_INT_POS( t_5 )
     C_ELM_LIST_FPL( t_4, l_methods, t_5 )
-    t_3 = (Obj)(UInt)(EQ( l_ranknow, t_4 ));
+    t_3 = (Obj)(UInt)(EQ( l_rank, t_4 ));
     t_1 = t_3;
    }
    if ( ! t_1 ) break;
@@ -1208,11 +1208,11 @@ static Obj  HdlrFunc3 (
  }
  /* fi */
  
- /* methods[i + (narg + 3)] := ranknow; */
+ /* methods[i + (narg + 3)] := rank; */
  C_SUM_INTOBJS( t_2, l_narg, INTOBJ_INT(3) )
  C_SUM_FIA( t_1, l_i, t_2 )
  CHECK_INT_POS( t_1 )
- C_ASS_LIST_FPL( l_methods, t_1, l_ranknow )
+ C_ASS_LIST_FPL( l_methods, t_1, l_rank )
  
  /* methods[i + (narg + 4)] := IMMUTABLE_COPY_OBJ( info ); */
  C_SUM_INTOBJS( t_2, l_narg, INTOBJ_INT(4) )
@@ -1256,11 +1256,11 @@ static Obj  HdlrFunc3 (
   t_1 = (Obj)(UInt)(((Int)INTOBJ_INT(6)) >= ((Int)INTOBJ_INT(6)));
   if ( t_1 ) {
    
-   /* methods[i + (narg + 6)] := rank; */
+   /* methods[i + (narg + 6)] := baserank; */
    C_SUM_INTOBJS( t_2, l_narg, INTOBJ_INT(6) )
    C_SUM_FIA( t_1, l_i, t_2 )
    CHECK_INT_POS( t_1 )
-   C_ASS_LIST_FPL( l_methods, t_1, a_rank )
+   C_ASS_LIST_FPL( l_methods, t_1, a_baserank )
    
   }
   /* fi */
@@ -4066,21 +4066,21 @@ static Obj  HdlrFunc1 (
  CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* BIND_GLOBAL( "INSTALL_METHOD_FLAGS", function ( opr, info, rel, flags, rank, method )
-      local methods, narg, i, k, tmp, replace, match, j, lk, ranknow;
+ /* BIND_GLOBAL( "INSTALL_METHOD_FLAGS", function ( opr, info, rel, flags, baserank, method )
+      local methods, narg, i, k, tmp, replace, match, j, lk, rank;
       ;
-      if IS_FUNCTION( rank ) then
-          ranknow := rank(  );
+      if IS_FUNCTION( baserank ) then
+          rank := baserank(  );
       else
-          ranknow := rank;
+          rank := baserank;
       fi;
       if IS_CONSTRUCTOR( opr ) then
           if 0 < LEN_LIST( flags ) then
-              ranknow := ranknow - RankFilter( flags[1] );
+              rank := rank - RankFilter( flags[1] );
           fi;
       else
           for i in flags do
-              ranknow := ranknow + RankFilter( i );
+              rank := rank + RankFilter( i );
           od;
       fi;
       narg := LEN_LIST( flags );
@@ -4096,13 +4096,13 @@ static Obj  HdlrFunc1 (
           CONV_STRING( info );
       fi;
       i := 0;
-      while i < LEN_LIST( methods ) and ranknow < methods[i + (narg + 3)] do
+      while i < LEN_LIST( methods ) and rank < methods[i + (narg + 3)] do
           i := i + (narg + 6);
       od;
       replace := false;
       if REREADING then
           k := i;
-          while k < LEN_LIST( methods ) and ranknow = methods[k + narg + 3] do
+          while k < LEN_LIST( methods ) and rank = methods[k + narg + 3] do
               if info = methods[k + narg + 4] then
                   match := false;
                   for j in [ 1 .. narg ] do
@@ -4153,12 +4153,12 @@ static Obj  HdlrFunc1 (
       else
           Error( NAME_FUNC( opr ), ": <method> must be a function, `true', or `false'" );
       fi;
-      methods[i + (narg + 3)] := ranknow;
+      methods[i + (narg + 3)] := rank;
       methods[i + (narg + 4)] := IMMUTABLE_COPY_OBJ( info );
       if 6 >= 5 then
           methods[i + (narg + 5)] := MakeImmutable( [ INPUT_FILENAME(  ), READEVALCOMMAND_LINENUMBER, INPUT_LINENUMBER(  ) ] );
           if 6 >= 6 then
-              methods[i + (narg + 6)] := rank;
+              methods[i + (narg + 6)] := baserank;
           fi;
       fi;
       CHANGED_METHODS_OPERATION( opr, narg );
@@ -4919,7 +4919,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = 65425009,
+ .crc         = 96238222,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

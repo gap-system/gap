@@ -143,8 +143,8 @@ fi;
 #F  INSTALL_METHOD_FLAGS( <opr>, <info>, <rel>, <flags>, <rank>, <method> ) .
 ##
 BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
-    function( opr, info, rel, flags, rank, method )
-    local   methods,  narg,  i,  k,  tmp, replace, match, j, lk, ranknow;
+    function( opr, info, rel, flags, baserank, method )
+    local   methods,  narg,  i,  k,  tmp, replace, match, j, lk, rank;
 
     if IsHPCGAP then
         # TODO: once the GAP compiler supports 'atomic', use that
@@ -152,18 +152,18 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
         lk := WRITE_LOCK(METHODS_OPERATION_REGION);
     fi;
     # add the number of filters required for each argument
-    if IS_FUNCTION(rank) then
-        ranknow := rank();
+    if IS_FUNCTION(baserank) then
+        rank := baserank();
     else 
-        ranknow := rank;
+        rank := baserank;
     fi;    
     if IS_CONSTRUCTOR(opr) then
         if 0 < LEN_LIST(flags)  then
-            ranknow := ranknow - RankFilter( flags[ 1 ] );
+            rank := rank - RankFilter( flags[ 1 ] );
         fi;
     else
         for i  in flags  do
-            ranknow := ranknow + RankFilter( i );
+            rank := rank + RankFilter( i );
         od;
     fi;
 
@@ -187,7 +187,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
 
     # find the place to put the new method
     i := 0;
-    while i < LEN_LIST(methods) and ranknow < methods[i+(narg+3)]  do
+    while i < LEN_LIST(methods) and rank < methods[i+(narg+3)]  do
         i := i + (narg+BASE_SIZE_METHODS_OPER_ENTRY);
     od;
 
@@ -196,7 +196,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     if REREADING then
         k := i;
         while k < LEN_LIST(methods) and
-          ranknow = methods[k+narg+3] do
+          rank = methods[k+narg+3] do
             if info = methods[k+narg+4] then
 
                 # ForAll not available
@@ -261,13 +261,13 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
         Error(NAME_FUNC(opr),
               ": <method> must be a function, `true', or `false'" );
     fi;
-    methods[i+(narg+3)] := ranknow;
+    methods[i+(narg+3)] := rank;
 
     methods[i+(narg+4)] := IMMUTABLE_COPY_OBJ(info);
     if BASE_SIZE_METHODS_OPER_ENTRY >= 5 then
         methods[i+(narg+5)] := MakeImmutable([INPUT_FILENAME(), READEVALCOMMAND_LINENUMBER, INPUT_LINENUMBER()]);
         if BASE_SIZE_METHODS_OPER_ENTRY >= 6 then
-            methods[i+(narg+6)] := rank;
+            methods[i+(narg+6)] := baserank;
         fi;        
     fi;
 

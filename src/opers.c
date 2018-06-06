@@ -1909,7 +1909,7 @@ static Obj NEXT_VMETHOD_PRINT_INFO;
 // Use of 'ALWAYS_INLINE' is critical for performance, see discussion
 // earlier in this file.
 enum {
-    BASE_SIZE_METHODS_OPER_ENTRY = 5,
+    BASE_SIZE_METHODS_OPER_ENTRY = 6,
 };
 static ALWAYS_INLINE Obj GetMethodUncached(
     UInt verbose, UInt constructor, UInt n, Obj methods, Int prec, Obj types[])
@@ -1928,6 +1928,9 @@ static ALWAYS_INLINE Obj GetMethodUncached(
         // entry n+3 is the rank
         // entry n+4 is the info text
         // entry n+5 is, if set, the location where the method was installed
+        // entry n+6 is, if set, the relative rank that was supplied when
+        //                       the method was installed, either as a small integer or a function
+        //                       of no arguments
 
         // check argument filters against the given types
         Obj filter;

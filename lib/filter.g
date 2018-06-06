@@ -214,10 +214,42 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+
+#
+# Function is defined in oper.g
+#
+RECALCULATE_ALL_METHOD_RANKS := fail;
+ 
+REORDER_METHODS_SUSPENSION_LEVEL := 1;
+
+BIND_GLOBAL( "SuspendMethodReordering", function()
+    REORDER_METHODS_SUSPENSION_LEVEL := REORDER_METHODS_SUSPENSION_LEVEL + 1;    
+end);
+
+
+BIND_GLOBAL( "ResumeMethodReordering", function()
+    REORDER_METHODS_SUSPENSION_LEVEL := REORDER_METHODS_SUSPENSION_LEVEL - 1;    
+    if REORDER_METHODS_SUSPENSION_LEVEL = 0 then
+        RECALCULATE_ALL_METHOD_RANKS();
+    fi;    
+end);
+
+BIND_GLOBAL( "ResetMethodReordering", function()
+    REORDER_METHODS_SUSPENSION_LEVEL := 0;
+    RECALCULATE_ALL_METHOD_RANKS();
+end);
+
+
+
+
 BIND_GLOBAL( "InstallTrueMethod", function ( tofilt, from )
 
     InstallTrueMethodNewFilter( tofilt, from );
-
+    
+    if REORDER_METHODS_SUSPENSION_LEVEL = 0 then
+        RECALCULATE_ALL_METHOD_RANKS();
+    fi;
+    
     # clear the caches because we do not know if filter <from> is new
     CLEAR_HIDDEN_IMP_CACHE( from );
     CLEAR_IMP_CACHE();
