@@ -927,6 +927,17 @@ BindGlobal ("ShowSystemInformation", function ()
     ShowPackageInformation();
 end );
 
+
+#############################################################################
+##
+## Initialize the IsLIBGAP variable (if not done before). If this variable
+## is false, an interactive session will be started.
+## Otherwise no interactive session is started.
+##
+if not IsBound( IsLIBGAP ) then
+  BIND_CONSTANT( "IsLIBGAP", false );
+fi;
+
 #############################################################################
 ##
 ##  Finally, deal with the lists of global variables.
@@ -1016,7 +1027,9 @@ InstallAndCallPostRestore( function()
     od;
 end );
 
-if IsHPCGAP and THREAD_UI() then
+if IsLIBGAP then
+  # GAP is used as a library, do not start an interactive session
+elif IsHPCGAP and THREAD_UI() then
   ReadLib("hpc/consoleui.g");
   MULTI_SESSION();
 else
