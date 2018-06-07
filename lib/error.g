@@ -50,17 +50,17 @@ BIND_GLOBAL("WHERE", function( context, depth, outercontext)
     bottom := GetBottomLVars();
     lastcontext := outercontext;
     while depth > 0  and context <> bottom do
-        PRINT_CURRENT_STATEMENT(context);
-        Print(" called from\n");
+        PRINT_CURRENT_STATEMENT("*errout*", context);
+        PrintTo("*errout*", " called from\n");
         lastcontext := context;
         context := ParentLVars(context);
         depth := depth-1;
     od;
     if depth = 0 then 
-        Print("...  ");
+        PrintTo("*errout*", "...  ");
     else
         f := ContentsLVars(lastcontext).func;
-        Print("<function \"",NAME_FUNC(f)
+        PrintTo("*errout*", "<function \"",NAME_FUNC(f)
               ,"\">( <arguments> )\n called from read-eval loop ");
     fi;
 end);
@@ -75,11 +75,11 @@ BIND_GLOBAL("Where", function(arg)
     fi;
     
     if ErrorLVars = fail or ErrorLVars = GetBottomLVars() then
-        Print("not in any function ");
+        PrintTo("*errout*", "not in any function ");
     else
         WHERE(ParentLVars(ErrorLVars),depth, ErrorLVars);
     fi;
-    Print("at ",INPUT_FILENAME(),":",INPUT_LINENUMBER(),"\n");
+    PrintTo("*errout*", "at ",INPUT_FILENAME(),":",INPUT_LINENUMBER(),"\n");
 end);
 
 OnBreak := Where;
@@ -177,7 +177,7 @@ BIND_GLOBAL("ErrorInner",
         
     earlyMessage := arg[2];
     if Length(arg) <> 2 then
-        PrintTo("*errout*","ErrorInner: new format takes exactly two arguments\n");
+        PrintTo("*errout*", "ErrorInner: new format takes exactly two arguments\n");
         LEAVE_ALL_NAMESPACES();
         JUMP_TO_CATCH(1);
     fi;
@@ -186,35 +186,35 @@ BIND_GLOBAL("ErrorInner",
     ERROR_COUNT := ERROR_COUNT+1;
     errorLVars := ErrorLVars;
     ErrorLVars := context;
+    # BreakOnError is defined by the `-T` command line flag in init.g
     if QUITTING or not BreakOnError then
-        PrintTo("*errout*","Error, ");
+        PrintTo("*errout*", "Error, ");
         for x in earlyMessage do
-            PrintTo("*errout*",x);
+            PrintTo("*errout*", x);
         od;
-        PrintTo("*errout*","\n");
+        PrintTo("*errout*", "\n");
         ErrorLevel := ErrorLevel-1;
         ErrorLVars := errorLVars;
         if ErrorLevel = 0 then LEAVE_ALL_NAMESPACES(); fi;
         JUMP_TO_CATCH(0);
     fi;
-    PrintTo("*errout*","Error, ");
+    PrintTo("*errout*", "Error, ");
     for x in earlyMessage do
-        PrintTo("*errout*",x);
+        PrintTo("*errout*", x);
     od;
     if printThisStatement then 
         if context <> GetBottomLVars() then
-            PrintTo("*errout*"," in\n  \c");
-            PRINT_CURRENT_STATEMENT(context);
-            Print("\c");
-            PrintTo("*errout*"," called from \n");
+            PrintTo("*errout*", " in\n  ");
+            PRINT_CURRENT_STATEMENT("*errout*", context);
+            PrintTo("*errout*", " called from \n");
         else
-            PrintTo("*errout*","\c\n");
+            PrintTo("*errout*", "\n");
         fi;
     else
         location := CURRENT_STATEMENT_LOCATION(context);
         if location <> fail then          PrintTo("*errout*", " at ", location[1], ":", location[2]);
         fi;
-        PrintTo("*errout*"," called from\c\n");
+        PrintTo("*errout*", " called from\n");
     fi;
 
     if SHOULD_QUIT_ON_BREAK() then
@@ -225,7 +225,7 @@ BIND_GLOBAL("ErrorInner",
         OnBreak();
     fi;
     if IsString(lateMessage) then
-        PrintTo("*errout*",lateMessage,"\n");
+        PrintTo("*errout*", lateMessage,"\n");
     elif lateMessage then
         if IsBound(OnBreakMessage) and IsFunction(OnBreakMessage) then
             OnBreakMessage();

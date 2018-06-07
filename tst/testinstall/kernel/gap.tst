@@ -92,9 +92,9 @@ Error, usage: UpEnv( [ <depth> ] )
 #
 gap> CURRENT_STATEMENT_LOCATION(GetCurrentLVars());
 fail
-gap> PRINT_CURRENT_STATEMENT(GetCurrentLVars());
-gap> f:=function() PRINT_CURRENT_STATEMENT(GetCurrentLVars()); Print("\n"); end;; f();
-PRINT_CURRENT_STATEMENT( GetCurrentLVars(  ) ); at stream:1
+gap> PRINT_CURRENT_STATEMENT("*errout*", GetCurrentLVars());
+gap> f:=function() PRINT_CURRENT_STATEMENT("*errout*", GetCurrentLVars()); Print("\n"); end;; f();
+PRINT_CURRENT_STATEMENT( "*errout*", GetCurrentLVars(  ) ); at stream:1
 
 #
 gap> CALL_WITH_CATCH(fail,fail);

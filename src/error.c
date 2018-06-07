@@ -152,22 +152,38 @@ Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
     return retlist;
 }
 
-Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj context)
+Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
 {
     if (context == STATE(BottomLVars))
         return 0;
+
+    /* HACK: we want to redirect output */
+    /* Try to print the output to stream. Use *errout* as a fallback. */
+    if ((IsStringConv(stream) && !OpenOutput(CSTR_STRING(stream))) ||
+        (!IS_STRING(stream) && !OpenOutputStream(stream))) {
+        if (OpenOutput("*errout*")) {
+            Pr("PRINT_CURRENT_STATEMENT: failed to open error stream\n", 0, 0);
+        }
+        else {
+            Panic("gap: failed to open *errout*!\n");
+        }
+    }
 
     Obj func = FUNC_LVARS(context);
     GAP_ASSERT(func);
     Stat call = STAT_LVARS(context);
     if (IsKernelFunction(func)) {
         Pr("<compiled statement> ", 0L, 0L);
+        /* HACK: close the output again */
+        CloseOutput();
         return 0;
     }
     Obj body = BODY_FUNC(func);
     if (call < OFFSET_FIRST_STAT ||
         call > SIZE_BAG(body) - sizeof(StatHeader)) {
         Pr("<corrupted statement> ", 0L, 0L);
+        /* HACK: close the output again */
+        CloseOutput();
         return 0;
     }
 
@@ -186,6 +202,8 @@ Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj context)
         Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
     }
     SWITCH_TO_OLD_LVARS(currLVars);
+    /* HACK: close the output again */
+    CloseOutput();
     return 0;
 }
 
@@ -579,7 +597,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(CALL_WITH_CATCH, 2, "func, args"),
     GVAR_FUNC(JUMP_TO_CATCH, 1, "payload"),
 
-    GVAR_FUNC(PRINT_CURRENT_STATEMENT, 1, "context"),
+    GVAR_FUNC(PRINT_CURRENT_STATEMENT, 2, "stream, context"),
     GVAR_FUNC(CURRENT_STATEMENT_LOCATION, 1, "context"),
 
     GVAR_FUNC(SetUserHasQuit, 1, "value"),
