@@ -419,6 +419,11 @@ InstallGlobalFunction("Test", function(arg)
   
   # split input into GAP input, GAP output and comments
   pf := ParseTestInput(full, opts.ignoreComments);
+
+  # Warn if we have not found any tests in the file
+  if IsEmpty(pf[1]) then
+    Info(InfoWarning, 1, "Test: File does not contain any tests!");
+  fi;
   
   # run the GAP inputs and collect the outputs and the timings
   RunTests(pf, rec(breakOnError := opts.breakOnError, 
