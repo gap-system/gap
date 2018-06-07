@@ -979,11 +979,11 @@ SMTX_IrreducibilityTest:=function( module )
    rt0:=Runtime();
    Info(InfoMeatAxe,1,"Calling MeatAxe. All times will be in milliseconds");
    if not SMTX.IsMTXModule(module) then
-      return Error("Argument of IsIrreducible is not a module.");
+      Error("Argument of IsIrreducible is not a module.");
    fi;
 
    if not module.IsOverFiniteField then
-      return Error("Argument of IsIrreducible is not over a finite field.");
+      Error("Argument of IsIrreducible is not over a finite field.");
    fi;
    matrices:=ShallowCopy(module.generators);
    dim:=SMTX.Dimension(module);

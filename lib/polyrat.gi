@@ -1847,7 +1847,7 @@ local   fc,ind, v, g, q, s, r, x,shift;
   Append(s,List([1..v],f->x));
   Sort(s);
 
-  if not IsBound(opt.stopdegs) and Sum(s,DegreeOfLaurentPolynomial)<>DegreeOfLaurentPolynomial(f)+v then
+  if not (IsBound(opt.stopdegs) or IsBound(opt.onlydegs)) and Sum(s,DegreeOfLaurentPolynomial)<>DegreeOfLaurentPolynomial(f)+v then
     Error("degree discrepancy!");
   fi;
 
