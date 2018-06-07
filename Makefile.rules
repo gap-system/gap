@@ -16,7 +16,7 @@
 all: gap$(EXEEXT) gac
 .PHONY: all
 
-libgap: libgap.la
+libgap: libgap.la sysinfo.gap symlinks
 .PHONY: libgap
 
 # Backwards compatibility: add "default" target as alias for "all"
@@ -412,6 +412,10 @@ gap$(EXEEXT): $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 
 endif
 
+ifeq ($(BUILD_LIBGAP),yes)
+libgap.so: $(OBJS)
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) -shared $(OBJS) $(GAP_LIBS) -o $@
+endif
 
 ########################################################################
 # The "docomp" target regenerates the various src/c_*.c files, and
