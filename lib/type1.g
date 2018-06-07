@@ -340,6 +340,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
         MakeReadOnlySingleObj(type);
         UNLOCK(lock);
     fi;
+    MakeImmutable(type);
 
     # return the type
     return type;
