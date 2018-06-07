@@ -228,6 +228,17 @@ AS_CASE([$with_gc],
 AC_MSG_RESULT([$with_gc])
 
 dnl
+dnl User setting: dynamic library mode (off by default)
+dnl
+AC_ARG_ENABLE([libgap],
+    [AS_HELP_STRING([--enable-libgap], [enable building of dynamic library])],
+    [AC_DEFINE([BUILD_LIBGAP], [1], [define if building libgap])],
+    [enable_libgap=no]
+)
+AC_MSG_CHECKING([whether to enable dynamic library mode])
+AC_MSG_RESULT([$enable_libgap])
+
+dnl
 dnl User setting: Debug mode (off by default)
 dnl
 AC_ARG_ENABLE([debug],
