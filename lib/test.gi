@@ -20,19 +20,18 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
   ign := [];
   i := 1;
   while i <= Length(lines) do
-    if i = 1 and  Length(lines[1]) > 0 and lines[1][1] = '#' then
+    if i = 1 and (Length(lines[1]) = 0 or lines[1][1] = '#') then
       if ignorecomments = true then
-        # ignore comment lines at beginning of file
-        while i <= Length(lines) and Length(lines[i]) > 0 and
-              lines[i][1] = '#' do
+        # ignore comment lines and empty lines at beginning of file
+        while i <= Length(lines) and (Length(lines[i]) = 0 or lines[i][1] = '#')
+        do
           Add(ign, i);
           i := i+1;
         od;
       else
         Add(inp, "\n");
         i := 2;
-        while i <= Length(lines) and Length(lines[i]) > 0 and 
-              lines[i][1] = '#' do
+        while i <= Length(lines) and (Length(lines[i]) = 0 or lines[i][1] = '#') do
           i := i+1;
         od;
         Add(outp, JoinStringsWithSeparator(lines{[1..i-1]}, "\n"));
@@ -191,8 +190,8 @@ end;
 ##  continued over several lines. <Br/>
 ##  To allow for comments in <Arg>fname</Arg> the following lines are ignored
 ##  by default: lines at the beginning of <Arg>fname</Arg> that start with
-##  <C>"#"</C>, and one empty line together with one or more lines starting 
-##  with <C>"#"</C>.<Br/>
+##  <C>"#"</C> or are empty, and one empty line together with one or more
+##  lines starting with <C>"#"</C>.<Br/>
 ##  All other lines are considered as &GAP; output from the
 ##  preceding &GAP; input.
 ##  <P/>
