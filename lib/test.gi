@@ -62,7 +62,7 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
       Add(outp[Length(outp)], '\n');
       i := i+1;
     else
-      Error("Invalid data in test file");
+      Error("Invalid data at line ", i, " of test file");
       i := i+1;
     fi;
   od;
