@@ -1387,9 +1387,7 @@ InstallMethod( CompositionMapping2,
   [ IsGeneralMapping and IsOne, IsGeneralMapping ],
   SUM_FLAGS + 1,  # should be higher than the rank for a zero mapping
 function( id, map )
-  if    not IsSubset(Source(id),Range(map))
-    and not IsSubset(Source(id),ImagesSource(map))
-  then
+  if not IsSubset(Source(id),Range(map)) then
     # if the identity is defined on something smaller, we need to take a
     # true `CompositionMapping'.
     TryNextMethod();
