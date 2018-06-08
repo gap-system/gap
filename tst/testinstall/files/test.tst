@@ -4,7 +4,7 @@ gap> Test(Filename(dir,"empty.txt"));
 #I  Test: File does not contain any tests!
 true
 gap> Test(Filename(dir,"invalidtestfile.txt"));
-Error, Invalid data in test file
+Error, Invalid data at line 7 of test file
 gap> Test(Filename(dir, "tinytest.txt"));
 true
 gap> STOP_TEST("test.tst");
