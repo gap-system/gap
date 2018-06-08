@@ -941,7 +941,11 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
     u:=ClosureGroup(i,K);
     v:=ClosureGroup(i,L);
     if u<>v then
-      gens:=SmallGeneratingSet(api);
+      if IsSolvableGroup(api) then
+        gens:=Pcgs(api);
+      else
+        gens:=SmallGeneratingSet(api);
+      fi;
       pre:=List(gens,x->PreImagesRepresentative(iso,x));
       map:=RepresentativeAction(SubgroupNC(a,pre),u,v,asAutomorphism);
       if map=fail then
