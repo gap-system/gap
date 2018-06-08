@@ -262,6 +262,15 @@ gap> fname := Filename(tmpdir, "output.csv");;
 gap> PrintCSV( fname, s );
 gap> s = ReadCSV( fname );
 true
+gap> s[2].emil:="\"Alas, poor Yorick\", the call went";;
+gap> s[3].empty:="";;
+gap> PrintCSV(fname,s);
+gap> ReadCSV(fname,true);
+[ rec( field1 := "emil", field2 := "empty", field3 := "f", field4 := "f1", 
+      field5 := "f 2" ), rec( field3 := 2, field4 := 1, field5 := 3 ), 
+  rec( field1 := "\"Alas, poor Yorick\", the call went", field4 := 4, 
+      field5 := 6 ), rec( field4 := 7 ), rec( field3 := 11, field5 := 12 ), 
+  rec( field3 := "yy", field4 := "x", field5 := "zzz" ) ]
 
 # Long Strings
 # All these strings are 2000 or 3000 characters long, to make sure we fill the string buffer at least once or twice
