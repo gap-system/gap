@@ -11,7 +11,7 @@
 #ifndef GAP_GAPSTATE_H
 #define GAP_GAPSTATE_H
 
-#include "debug.h"
+#include "system.h"
 
 #if defined(HPCGAP)
 #include "hpc/tls.h"
