@@ -2254,21 +2254,21 @@ CVar CompPow (
 /****************************************************************************
 **
 *F  CompIntExpr( <expr> ) . . . . . . . . . . . . . . .  T_INTEXPR/T_INT_EXPR
-*
-* This is complicated by the need to produce code that will compile correctly
-* in 32 or 64 bit and with or without GMP.
-*
-* The problem is that when we compile the code, we know the integer representation
-* of the stored literal in the compiling process
-* but NOT the representation which will apply to the compiled code or the endianness
-*
-* The solution to this is macros: C_MAKE_INTEGER_BAG( size, type) 
-*                                 C_SET_LIMB4(bag, limbnumber, value)
-*                                 C_SET_LIMB8(bag, limbnumber, value)
-*
-* we compile using the one appropriate for the compiling system, but their
-* definition depends on the limb size of the target system.
-*
+**
+**  This is complicated by the need to produce code that will compile
+**  correctly in 32 or 64 bit and with or without GMP.
+**
+**  The problem is that when we compile the code, we know the integer
+**  representation of the stored literal in the compiling process but NOT the
+**  representation which will apply to the compiled code or the endianness
+**
+**  The solution to this is macros: C_MAKE_INTEGER_BAG( size, type)
+**                                  C_SET_LIMB4(bag, limbnumber, value)
+**                                  C_SET_LIMB8(bag, limbnumber, value)
+**
+**  we compile using the one appropriate for the compiling system, but their
+**  definition depends on the limb size of the target system.
+**
 */
 
 CVar CompIntExpr (
