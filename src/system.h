@@ -74,6 +74,11 @@
 # error Something is wrong with this GAP installation: SIZEOF_VOID_P not defined
 #endif
 
+// check that the pointer size detected by configure matches that of the
+// current compiler; this helps prevent kernel extensions from being
+// compiled with the wrong ABI
+GAP_STATIC_ASSERT(sizeof(void *) == SIZEOF_VOID_P, "sizeof(void *) is wrong");
+
 
 #ifndef HAVE_DOTGAPRC
 /* define as 1 if the user resource file is ".gaprc" */
@@ -174,6 +179,10 @@ typedef UInt8    UInt;
 typedef Int4     Int;
 typedef UInt4    UInt;
 #endif
+
+GAP_STATIC_ASSERT(sizeof(void *) == sizeof(Int), "sizeof(Int) is wrong");
+GAP_STATIC_ASSERT(sizeof(void *) == sizeof(UInt), "sizeof(UInt) is wrong");
+
 
 /****************************************************************************
 **
