@@ -37,11 +37,12 @@ static UInt NextSymbol(void);
 */
 static void SyntaxErrorOrWarning(const Char * msg, UInt error)
 {
-    // open error output
-    OpenOutput("*errout*");
-
     // do not print a message if we found one already on the current line
     if (STATE(NrErrLine) == 0) {
+
+        // open error output
+        OpenOutput("*errout*");
+
         // print the message ...
         if (error)
             Pr("Syntax error: %s", (Int)msg, 0);
@@ -66,6 +67,9 @@ static void SyntaxErrorOrWarning(const Char * msg, UInt error)
                 Pr(" ", 0, 0);
         }
         Pr("^\n", 0, 0);
+
+        // close error output
+        CloseOutput();
     }
 
     if (error) {
@@ -73,9 +77,6 @@ static void SyntaxErrorOrWarning(const Char * msg, UInt error)
         STATE(NrError)++;
         STATE(NrErrLine)++;
     }
-
-    // close error output
-    CloseOutput();
 }
 
 
