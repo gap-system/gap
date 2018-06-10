@@ -16,7 +16,6 @@
 #ifndef GAP_CODE_H
 #define GAP_CODE_H
 
-#include "debug.h"
 #include "objects.h"
 
 /****************************************************************************

@@ -26,7 +26,6 @@
 #ifndef GAP_PLIST_H
 #define GAP_PLIST_H
 
-#include "debug.h"
 #include "objects.h"
 
 /****************************************************************************

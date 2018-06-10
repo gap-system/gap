@@ -33,7 +33,6 @@ a
 #define GAP_INTOBJ_H
 
 #include "system.h"
-#include "debug.h"
 
 #ifdef SYS_IS_64_BIT
 #define NR_SMALL_INT_BITS  (64 - 4)
