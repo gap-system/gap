@@ -385,14 +385,16 @@ Int READ_GAP_ROOT ( const Char * filename )
         return 0;
     }
 
-    /* dynamically or statically linked                                    */
-    else if ( res == 1 || res == 2 ) {
-        // This code section covers loading of GAC compiled code; in contrast
-        // to FuncLOAD_STAT and FuncLOAD_DYN, which are typically used by
-        // kernel extensions to load C/C++ code.
+    // statically linked
+    else if (res == 2) {
+        // This code section covers transparently loading GAC compiled
+        // versions of GAP source files, by running code similar to that in
+        // FuncLOAD_STAT. For example, lib/oper1.g is compiled into C code
+        // which is stored in src/c_oper1.c; when reading lib/oper1.g, we
+        // instead will load its compiled version.
         if ( SyDebugLoading ) {
-            const char *s = (res == 1) ? "dynamically" : "statically";
-            Pr( "#I  READ_GAP_ROOT: loading '%s' %s\n", (Int)filename, (Int)s );
+            Pr("#I  READ_GAP_ROOT: loading '%s' statically\n", (Int)filename,
+               0);
         }
         info = result.module_info;
         res  = info->initKernel(info);
