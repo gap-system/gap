@@ -147,7 +147,6 @@ Obj DoWrap0args (
 
     /* make the arguments list                                             */
     args = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( args, 0 );
 
     /* call the variable number of arguments function                      */
     result = CALL_XARGS( self, args );

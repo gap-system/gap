@@ -1102,14 +1102,11 @@ Obj SemiEchelonListGF2Vecs( Obj mat, UInt TransformationsNeeded )
   heads = NEW_PLIST(T_PLIST_CYC, ncols);
   SET_LEN_PLIST(heads, ncols);
   vectors = NEW_PLIST(T_PLIST_TAB_RECT, nrows);
-  SET_LEN_PLIST(vectors, 0);
   nvecs = 0;
   if (TransformationsNeeded)
     {
       coeffs = NEW_PLIST(T_PLIST_TAB_RECT, nrows);
-      SET_LEN_PLIST(coeffs, 0);
       relns  = NEW_PLIST(T_PLIST_TAB_RECT, nrows);
-      SET_LEN_PLIST(relns, 0);
       nrels = 0;
     }
   for (i = 1; i <= ncols; i++)

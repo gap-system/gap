@@ -331,11 +331,9 @@ Obj      Power(
     if ( IS_NEG_INT(n) )
     {
         y = NEW_PLIST( T_PLIST, 0);
-        SET_LEN_PLIST(y, 0);
         return  Power( Solution(x, y, dtpols), AInvInt(n), dtpols );
     }
     res = NEW_PLIST(T_PLIST, 2);
-    SET_LEN_PLIST(res, 0);
     if ( n == INTOBJ_INT(0) )
         return res;
     /* now use the russian peasant rule to get the result               */
@@ -981,7 +979,6 @@ Obj       FuncDTQuotient( Obj      self,
     if  ( LEN_PLIST(y) == 0 )
         return x;
     help = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST(help, 0);
     res = Solutionred(y, help, pcp);
     res = Multiplyboundred(x, res, 1, LEN_PLIST(res), pcp);
     ReduceWord(res, pcp);

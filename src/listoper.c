@@ -2070,7 +2070,6 @@ static Obj  FuncZIPPED_SUM_LISTS( Obj self, Obj z1, Obj  z2, Obj zero, Obj f ) {
   cmpfun=ELM_LIST(f,1);
   sumfun=ELM_LIST(f,2);
   sum=NEW_PLIST(T_PLIST,0);
-  SET_LEN_PLIST(sum,0);
   i1=1;
   i2=1;
   while ((i1<=l1) && (i2<=l2)) {
@@ -2144,7 +2143,6 @@ static Obj  FuncMONOM_PROD( Obj self, Obj m1, Obj m2 ) {
    Obj e,f,c,prod;
 
    prod=NEW_PLIST(T_PLIST,0);
-   SET_LEN_PLIST(prod,0);
    l1=LEN_LIST(m1);
    l2=LEN_LIST(m2);
    i1=1;

@@ -187,7 +187,6 @@ static inline void StartFakeFuncExpr(Int startLine)
 
     // code a function expression (with no arguments and locals)
     Obj nams = NEW_PLIST(T_PLIST, 0);
-    SET_LEN_PLIST(nams, 0);
 
     // If we are in the break loop, then a local variable context may well
     // exist, and we have to create an empty local variable names list to
@@ -261,7 +260,6 @@ void IntrBegin ( Obj frame )
 
     /* allocate a new values stack                                         */
     STATE(StackObj) = NEW_PLIST( T_PLIST, 64 );
-    SET_LEN_PLIST( STATE(StackObj), 0 );
 
     /* must be in immediate (non-ignoring, non-coding) mode                */
     assert( STATE(IntrIgnoring) == 0 );
@@ -2075,7 +2073,6 @@ void            IntrListExprBegin (
 
     /* allocate the new list                                               */
     list = NEW_PLIST( T_PLIST_EMPTY, 0 );
-    SET_LEN_PLIST( list, 0 );
 
     /* if this is an outmost list, save it for reference in '~'            */
     /* (and save the old value of '~' on the values stack)                 */
@@ -2210,7 +2207,6 @@ void            IntrListExprEnd (
         /* if <low> is larger than <high> the range is empty               */
         if ( (0 < inc && high < low) || (inc < 0 && low < high) ) {
             list = NEW_PLIST( T_PLIST_EMPTY, 0 );
-            SET_LEN_PLIST( list, 0 );
         }
 
         /* if <low> is equal to <high> the range is a singleton list       */

@@ -828,7 +828,6 @@ Obj    FuncEmptyPlist( Obj self, Obj len )
     }
 
     new = NEW_PLIST(T_PLIST_EMPTY, INT_INTOBJ(len));
-    SET_LEN_PLIST(new, 0);
     return new;
 }
 

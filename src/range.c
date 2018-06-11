@@ -841,7 +841,6 @@ Obj Range2Check (
     l = INT_INTOBJ(last);
     if ( f > l ) {
         range = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( range, 0 );
     }
     else if ( f == l ) {
         range = NEW_PLIST( T_PLIST, 1 );
@@ -899,7 +898,6 @@ Obj Range3Check (
     }
     if ( (0 < i && f > l) || (i < 0 && f < l) ) {
         range = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( range, 0 );
     }
     else if ( f == l ) {
         range = NEW_PLIST( T_PLIST, 1 );
