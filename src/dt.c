@@ -450,7 +450,6 @@ Obj    Mark2(
 
     /*  initialize <list>                                                 */
     list = NEW_PLIST(T_PLIST, 0);
-    SET_LEN_PLIST(list, 0);
     i = index1;
     len = index1 + DT_LENGTH(tree, index1) - 1;
     refgen = DT_GEN(reftree, index2);
@@ -821,8 +820,6 @@ void    GetPols(
 
     lreps = NEW_PLIST(T_PLIST, 2);
     rreps = NEW_PLIST(T_PLIST, 2);
-    SET_LEN_PLIST(lreps, 0);
-    SET_LEN_PLIST(rreps, 0);
     /*  get the representatives that are represented by <list>[1] and those
     **  which are represented by <list>[2].                                 */
     GetReps( ELM_PLIST(list, 1), lreps );
@@ -911,8 +908,6 @@ void    GetReps(
     }
     lreps = NEW_PLIST(T_PLIST, 2);
     rreps = NEW_PLIST(T_PLIST, 2);
-    SET_LEN_PLIST(lreps, 0);
-    SET_LEN_PLIST(rreps, 0);
     /* now get all representatives which are represented by <list>[1] and
     ** all representatives which are represented by <list>[2].           */
     GetReps( ELM_PLIST(list, 1), lreps );

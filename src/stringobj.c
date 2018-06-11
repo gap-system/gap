@@ -1821,7 +1821,6 @@ Obj FuncSplitStringInternal (
  
   /* create the result (list of strings) */
   res = NEW_PLIST(T_PLIST, 2);
-  SET_LEN_PLIST(res, 0);
   pos = 0;
 
   /* now do the splitting */

@@ -4231,15 +4231,6 @@ void ResizeVec8Bit( Obj vec, UInt newlen, UInt knownclean )
         return;
     }
 
-    /*
-    if (newlen == 0)
-      {
-        RetypeBag(vec, T_PLIST_EMPTY);
-        SET_LEN_PLIST(vec,0);
-        SHRINK_PLIST(vec,0);
-        return;
-      }
-    */
     q = FIELD_VEC8BIT(vec);
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
@@ -5101,13 +5092,10 @@ Obj SemiEchelonListVec8Bits( Obj mat, UInt TransformationsNeeded )
     heads = NEW_PLIST(T_PLIST_CYC, ncols);
     SET_LEN_PLIST(heads, ncols);
     vectors = NEW_PLIST(T_PLIST_TAB_RECT, nrows);
-    SET_LEN_PLIST(vectors, 0);
     nvecs = 0;
     if (TransformationsNeeded) {
         coeffs = NEW_PLIST(T_PLIST_TAB_RECT, nrows);
-        SET_LEN_PLIST(coeffs, 0);
         relns  = NEW_PLIST(T_PLIST_TAB_RECT, nrows);
-        SET_LEN_PLIST(relns, 0);
         nrels = 0;
     }
     for (i = 1; i <= ncols; i++)

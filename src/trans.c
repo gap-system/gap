@@ -167,7 +167,6 @@ UInt INIT_TRANS2(Obj f)
     if (deg == 0) {
         // special case for degree 0
         img = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(img, 0);
         SET_IMG_TRANS(f, img);
         SET_KER_TRANS(f, img);
         CHANGED_BAG(f);
@@ -220,7 +219,6 @@ UInt INIT_TRANS4(Obj f)
         // is ID_TRANS4.
 
         img = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(img, 0);
         SET_IMG_TRANS(f, img);
         SET_KER_TRANS(f, img);
         CHANGED_BAG(f);
@@ -911,7 +909,6 @@ Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
         }
         else if (m == 0) {
             new = NEW_PLIST(T_PLIST_EMPTY, 0);
-            SET_LEN_PLIST(new, 0);
             return new;
         }
         else {
@@ -952,7 +949,6 @@ Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
         }
         else if (m == 0) {
             new = NEW_PLIST(T_PLIST_EMPTY, 0);
-            SET_LEN_PLIST(new, 0);
             return new;
         }
         else {
@@ -1012,7 +1008,6 @@ Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
     // special case for the identity
     if (m == 0) {
         ker = NEW_PLIST(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(ker, 0);
         return ker;
     }
 
@@ -1181,7 +1176,6 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
     }
     else if (m == 0) {
         new = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(new, 0);
         return new;
     }
     else if (m < deg) {
@@ -1261,7 +1255,6 @@ Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n)
 
     if (m == 0) {
         out = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(out, 0);
         return out;
     }
 
@@ -1712,7 +1705,6 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
         if (len >= deg) {
             if (len == 0) {
                 out = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
-                SET_LEN_PLIST(out, 0);
                 return out;
             }
             out = NEW_PLIST_IMM(T_PLIST_CYC, len);
@@ -1748,7 +1740,6 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
         if (len >= deg) {
             if (len == 0) {
                 out = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
-                SET_LEN_PLIST(out, 0);
                 return out;
             }
             out = NEW_PLIST_IMM(T_PLIST_CYC, len);
@@ -2701,7 +2692,6 @@ Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
 
     if (deg == 0) {
         out = NEW_PLIST(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(out, 0);
         return out;
     }
 
@@ -2895,7 +2885,6 @@ Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
 
     if (deg == 0) {
         out = NEW_PLIST(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(out, 0);
         return out;
     }
 
@@ -3147,7 +3136,6 @@ Obj FuncCYCLES_TRANS(Obj self, Obj f)
 
     if (deg == 0) {
         out = NEW_PLIST(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(out, 0);
         return out;
     }
 
@@ -3248,7 +3236,6 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
 
     if (LEN_LIST(list) == 0) {
         out = NEW_PLIST(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(out, 0);
         return out;
     }
 

@@ -1138,7 +1138,6 @@ static ArgList ReadFuncArgList(
     /* make and push the new local variables list (args and locals)        */
     narg = 0;
     nams = NEW_PLIST(T_PLIST, 0);
-    SET_LEN_PLIST(nams, 0);
     if ( STATE(Symbol) != symbol ) {
         goto start;
     }
@@ -1392,7 +1391,6 @@ static void ReadFuncExprAbbrevSingle(TypSymbolSet follow)
 {
     /* make and push the new local variables list                          */
     Obj nams = NEW_PLIST(T_PLIST, 1);
-    SET_LEN_PLIST( nams, 0 );
     PushPlist(nams, MakeImmString(STATE(Value)));
 
     ArgList args;
@@ -2689,7 +2687,6 @@ UInt ReadEvalFile(Obj *evalResult)
 
     /* check for local variables                                           */
     nams = NEW_PLIST(T_PLIST, 0);
-    SET_LEN_PLIST(nams, 0);
     PushPlist( STATE(StackNams), nams );
     nloc = 0;
     if ( STATE(Symbol) == S_LOCAL ) {

@@ -1211,7 +1211,6 @@ Obj             FuncOnTuples (
     if ( HAS_FILT_LIST( tuple, FN_IS_EMPTY )) {
       if (IS_MUTABLE_OBJ(tuple)) {
         img = NEW_PLIST(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(img,0);
         return img;
       } else {
         return tuple;
@@ -1283,7 +1282,6 @@ Obj             FuncOnSets (
     if ( HAS_FILT_LIST( set, FN_IS_EMPTY )) {
       if (IS_MUTABLE_OBJ(set)) {
         img = NEW_PLIST(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(img,0);
         return img;
       } else {
         return set;
@@ -1434,9 +1432,7 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
     }
   val = NewBag(T_DATOBJ, (n+1)*sizeof(UInt));
   stack = NEW_PLIST(T_PLIST_CYC, n);
-  SET_LEN_PLIST(stack, 0);
   comps = NEW_PLIST(T_PLIST_TAB, n);
-  SET_LEN_PLIST(comps, 0);
   frames = NewBag(T_DATOBJ, (4*n+1)*sizeof(UInt));  
   for (k = 1; k <= n; k++)
     {

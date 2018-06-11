@@ -5562,7 +5562,6 @@ Int CompileFunc (
 
     /* create the list to collection the function expressions              */
     CompFunctions = NEW_PLIST( T_PLIST, 8 );
-    SET_LEN_PLIST( CompFunctions, 0 );
 
     /* first collect information about variables                           */
     CompPass = 1;

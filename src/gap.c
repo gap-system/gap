@@ -315,7 +315,6 @@ Obj Shell ( Obj context,
   if (status & STATUS_RETURN_VOID)
     {
       res = NEW_PLIST(T_PLIST_EMPTY,0);
-      SET_LEN_PLIST(res,0);
       return res;
     }
   if (status & STATUS_RETURN_VAL)
@@ -637,7 +636,6 @@ Obj FuncSizeScreen (
   /* get the arguments                                                   */
   if ( LEN_LIST(args) == 0 ) {
     size = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( size, 0 );
   }
 
   /* otherwise check the argument                                        */
@@ -809,7 +807,6 @@ Obj FuncWindowCmd (
 
   /* now convert result back into a list                                 */
   list = NEW_PLIST( T_PLIST, 11 );
-  SET_LEN_PLIST( list, 0 );
   i = 1;
   while ( 0 < len ) {
     if ( *inptr == 'I' ) {

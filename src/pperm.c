@@ -196,7 +196,6 @@ static UInt INIT_PPERM2(Obj f)
 
     if (deg == 0) {
         dom = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(dom, 0);
         SET_DOM_PPERM(f, dom);
         SET_IMG_PPERM(f, dom);
         CHANGED_BAG(f);
@@ -242,7 +241,6 @@ static UInt INIT_PPERM4(Obj f)
 
     if (deg == 0) {
         dom = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(dom, 0);
         SET_DOM_PPERM(f, dom);
         SET_IMG_PPERM(f, dom);
         CHANGED_BAG(f);
@@ -536,7 +534,6 @@ Obj FuncIMAGE_PPERM(Obj self, Obj f)
         rank = RANK_PPERM2(f);
         if (rank == 0) {
             out = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
-            SET_LEN_PLIST(out, 0);
             return out;
         }
         out = NEW_PLIST_IMM(T_PLIST_CYC, rank);
@@ -559,7 +556,6 @@ Obj FuncIMAGE_PPERM(Obj self, Obj f)
         rank = RANK_PPERM4(f);
         if (rank == 0) {
             out = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
-            SET_LEN_PLIST(out, 0);
             return out;
         }
         out = NEW_PLIST_IMM(T_PLIST_CYC, rank);
@@ -757,7 +753,6 @@ Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f)
 
     if (n == 0) {
         out = NEW_PLIST(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(out, 0);
         return out;
     }
 
@@ -913,7 +908,6 @@ Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
 
     if (n == 0) {
         out = NEW_PLIST(T_PLIST_EMPTY, 0);
-        SET_LEN_PLIST(out, 0);
         return out;
     }
 
@@ -1030,7 +1024,6 @@ Obj FuncCOMPONENT_PPERM_INT(Obj self, Obj f, Obj pt)
 
         if (i > deg || (ADDR_PPERM2(f))[i - 1] == 0) {
             out = NEW_PLIST(T_PLIST_EMPTY, 0);
-            SET_LEN_PLIST(out, 0);
             return out;
         }
 
@@ -1048,7 +1041,6 @@ Obj FuncCOMPONENT_PPERM_INT(Obj self, Obj f, Obj pt)
 
         if (i > deg || (ADDR_PPERM4(f))[i - 1] == 0) {
             out = NEW_PLIST(T_PLIST_EMPTY, 0);
-            SET_LEN_PLIST(out, 0);
             return out;
         }
 

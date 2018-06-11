@@ -717,10 +717,8 @@ Obj FuncTzOccurrences (
         ADDR_OBJ(cnts)[k] = INTOBJ_INT(0);
 
     mins = NEW_PLIST( T_PLIST, numgens );
-    SET_LEN_PLIST( mins, 0 );
 
     lens = NEW_PLIST( T_PLIST, numgens );
-    SET_LEN_PLIST( lens, 0 );
     
     res = NEW_PLIST( T_PLIST, 3 );
     SET_LEN_PLIST( res, 3 );

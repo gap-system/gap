@@ -2508,7 +2508,6 @@ Obj             FuncCYCLE_STRUCT_PERM (
 	if (deg==0) {
 	  /* special treatment of identity */
 	  list = NEW_PLIST( T_PLIST, 0 );
-	  SET_LEN_PLIST( list, 0 );
 	  return list;
 	}
 
@@ -2584,7 +2583,6 @@ Obj             FuncCYCLE_STRUCT_PERM (
 	if (deg==0) {
 	  /* special treatment of identity */
 	  list = NEW_PLIST( T_PLIST, 0 );
-	  SET_LEN_PLIST( list, 0 );
 	  return list;
 	}
 
@@ -4143,7 +4141,6 @@ Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
     } else {
         /* Version with intermediate objects: */
         tabsrc = NEW_PLIST(T_PLIST,d);
-        SET_LEN_PLIST(tabsrc,0);
         /* No garbage collection from here ... */
         for (i = 1;i <= l;i++) {
             Int val = INT_INTOBJ(ELM_LIST(src, i));
@@ -4159,7 +4156,6 @@ Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
         }
         /* ... to here! No CHANGED_BAG needed since this is a new object! */
         tabdst = NEW_PLIST(T_PLIST,d);
-        SET_LEN_PLIST(tabdst,0);
         /* No garbage collection from here ... */
         for (i = 1;i <= l;i++) {
             int val = INT_INTOBJ(ELM_LIST(dst, i));

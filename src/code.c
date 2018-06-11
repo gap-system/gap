@@ -725,7 +725,6 @@ void CodeFuncExprBegin (
 
     /* give it a functions expressions list                                */
     fexs = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( fexs, 0 );
     SET_FEXS_FUNC( fexp, fexs );
     CHANGED_BAG( fexp );
 
@@ -3295,7 +3294,6 @@ static Int InitLibrary (
     cache = NewAtomicList(T_ALIST, 1);
 #else
     cache = NEW_PLIST_IMM(T_PLIST, 1000L);
-    SET_LEN_PLIST(cache,0);
 #endif
     EAGER_FLOAT_LITERAL_CACHE = cache;
 

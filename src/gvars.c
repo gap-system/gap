@@ -1711,22 +1711,11 @@ static Int InitLibrary (
 #if !defined(USE_GVAR_BUCKETS)
     /* make the lists for global variables                                 */
     ValGVars = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( ValGVars, 0 );
-
     NameGVars = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( NameGVars, 0 );
-
     WriteGVars = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( WriteGVars, 0 );
-
     ExprGVars = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( ExprGVars, 0 );
-
     CopiesGVars = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( CopiesGVars, 0 );
-
     FopiesGVars = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST( FopiesGVars, 0 );
 #endif
 
     /* make the list of global variables                                   */
