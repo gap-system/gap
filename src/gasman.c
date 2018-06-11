@@ -914,6 +914,10 @@ Bag NextBagRestoring( UInt type, UInt flags, UInt size )
   header->flags = flags;
   header->size = size;
   header->link = NextMptrRestoring;
+#if SIZEOF_VOID_P == 4
+  header->reserved = 0;
+#endif
+
   NextMptrRestoring++;
 
   if ((Bag *)NextMptrRestoring >= MptrEndBags)
@@ -1267,6 +1271,9 @@ Bag NewBag (
     header->type = type;
     header->flags = 0;
     header->size = size;
+#if SIZEOF_VOID_P == 4
+    header->reserved = 0;
+#endif
 
     /* enter link word                                                     */
     header->link = bag;
@@ -1411,6 +1418,9 @@ UInt ResizeBag (
     UInt type     = header->type;
     UInt flags    = header->flags;
     UInt old_size = header->size;
+#if SIZEOF_VOID_P == 4
+    GAP_ASSERT(header->reserved == 0);
+#endif
 
 #ifdef COUNT_BAGS
     /* update the statistics                                               */
@@ -1446,6 +1456,9 @@ UInt ResizeBag (
         }
 
         header->size = new_size;
+#if SIZEOF_VOID_P == 4
+        GAP_ASSERT(header->reserved == 0);
+#endif
     }
 
     // if the last bag is enlarged ...
@@ -1474,6 +1487,9 @@ UInt ResizeBag (
         ADD_CANARY();
 
         header->size = new_size;
+#if SIZEOF_VOID_P == 4
+        GAP_ASSERT(header->reserved == 0);
+#endif
     }
 
     // if the bag is enlarged ...
@@ -1493,6 +1509,9 @@ UInt ResizeBag (
         header->type = 255;
         header->flags = 0;
         header->size = sizeof(BagHeader) + (WORDS_BAG(old_size) - 1) * sizeof(Bag);
+#if SIZEOF_VOID_P == 4
+        GAP_ASSERT(header->reserved == 0);
+#endif
 
         /* allocate the storage for the bag                                */
         BagHeader * newHeader = (BagHeader *)AllocBags;
@@ -1502,6 +1521,10 @@ UInt ResizeBag (
         newHeader->type = type;
         newHeader->flags = flags;
         newHeader->size = new_size;
+#if SIZEOF_VOID_P == 4
+        GAP_ASSERT(newHeader->reserved == 0);
+#endif
+
 
 #ifdef COUNT_BAGS
         InfoBags[type].sizeAll  += new_size;
