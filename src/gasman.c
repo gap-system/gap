@@ -1951,7 +1951,12 @@ again:
         // extract the head from the linked list
         first = MarkedBags;
         MarkedBags = LINK_BAG(first);
-        LINK_BAG(first) = MARKED_ALIVE(first);
+        if (CONST_PTR_BAG(first) > YoungBags) {
+            LINK_BAG(first) = MARKED_ALIVE(first);
+        }
+        else {
+            LINK_BAG(first) = first;
+        }
 
         // mark subbags
         (*TabMarkFuncBags[TNUM_BAG(first)])( first );
@@ -2323,6 +2328,10 @@ void CheckMasterPointers( void )
         // otherwise, error out
         if (!IS_BAG_BODY(*ptr))
             Panic("Bad master pointer detected");
+
+        if (GET_MARK_BITS(LINK_BAG(bag))) {
+            Panic("Master pointer with Mark bits detected");
+        }
 
         // sanity check: the link pointer must either point back; or else
         // this bag must be part of the chain of changed bags (which thus
