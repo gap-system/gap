@@ -507,7 +507,7 @@ extern Int SyLoadSystemInitFile;
 
 /****************************************************************************
 **
-*V  SyUseModule . . . . . check for dynamic/static modules in 'READ_GAP_ROOT'
+*V  SyUseModule . . . . . . . . . check for static modules in 'READ_GAP_ROOT'
 */
 extern int SyUseModule;
 
