@@ -425,7 +425,7 @@ Int READ_GAP_ROOT ( const Char * filename )
             Pr( "#I  READ_GAP_ROOT: loading '%s' as GAP file\n",
                 (Int)filename, 0L );
         }
-        if ( OpenInput(result.pathname) ) {
+        if ( OpenInput(result.path) ) {
             while ( 1 ) {
                 ClearError();
                 Obj evalResult;

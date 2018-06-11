@@ -36,13 +36,13 @@
 **  The function returns:
 **
 **  0: no file or module was found
-**  2: if a statically linked module was found
-**  3: if only a GAP file was found; its path is stored in  <result->pathname>
+**  2: a statically linked module was found
+**  3: only a GAP file was found; its path is stored in  <result->path>
 */
 
 typedef union {
-  Char pathname[GAP_PATH_MAX];
-  StructInitInfo * module_info;
+    Char             path[GAP_PATH_MAX];
+    StructInitInfo * module_info;
 } TypGRF_Data;
 
 extern Int SyFindOrLinkGapRootFile (
