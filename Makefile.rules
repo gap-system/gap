@@ -418,13 +418,13 @@ endif
 # replaces the old "etc/docomp" script.
 ########################################################################
 ifeq ($(HPCGAP),yes)
-DOCOMP_PREFIX = $(abs_srcdir)/hpcgap
+DOCOMP_PREFIX = $(abs_srcdir)/src/hpc
 else
-DOCOMP_PREFIX = $(abs_srcdir)
+DOCOMP_PREFIX = $(abs_srcdir)/src
 endif
 docomp: #gap$(EXEEXT)
-	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(abs_srcdir)/lib $(DOCOMP_PREFIX)/src oper1 ./gap$(EXEEXT)
-	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(abs_srcdir)/lib $(DOCOMP_PREFIX)/src type1 ./gap$(EXEEXT)
+	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(abs_srcdir)/lib $(DOCOMP_PREFIX) oper1 ./gap$(EXEEXT)
+	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(abs_srcdir)/lib $(DOCOMP_PREFIX) type1 ./gap$(EXEEXT)
 
 .PHONY: docomp
 
