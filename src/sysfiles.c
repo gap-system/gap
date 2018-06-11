@@ -115,63 +115,38 @@ ssize_t echoandcheck(int fid, const char *buf, size_t count) {
 **  The function returns:
 **
 **  0: no file or module was found
-**  2: if a statically linked module was found
-**  3: if only a GAP file was found; its path is stored in  <result->pathname>
+**  2: a statically linked module was found
+**  3: only a GAP file was found; its path is stored in  <result->path>
 */
-Int SyFindOrLinkGapRootFile (
-    const Char *        filename,
-    TypGRF_Data *       result )
+Int SyFindOrLinkGapRootFile(const Char * filename, TypGRF_Data * result)
 {
-    Int                 found_gap = 0;
-    Int                 found_sta = 0;
-    Char                module[GAP_PATH_MAX];
+    // find the GAP file
+    Int found_gap =
+        SyFindGapRootFile(filename, result->path, sizeof(result->path)) != 0;
 
-    StructInitInfo *    info_sta = 0;
-    Int                 k;
+    if (SyUseModule) {
+        // search for a statically linked module matching the given filename
+        Char module[GAP_PATH_MAX];
+        strxcpy(module, "GAPROOT/", sizeof(module));
+        strxcat(module, filename, sizeof(module));
+        for (Int k = 0; CompInitFuncs[k]; k++) {
+            StructInitInfo * info = (*(CompInitFuncs[k]))();
+            if (info && !strcmp(module, info->name)) {
+                // found a matching statically linked module; if there is also
+                // a GAP file, compare their CRC
+                if (found_gap && info->crc != SyGAPCRC(result->path)) {
+                    Pr("#W Static module %s has CRC mismatch, ignoring\n",
+                       (Int)filename, 0);
+                    break;
+                }
 
-
-    /* find the GAP file                                                   */
-    result->pathname[0] = '\0';
-    if ( SyFindGapRootFile(filename, result->pathname, sizeof(result->pathname)) ) {
-        found_gap = 1;
-    }
-    if ( ! SyUseModule ) {
-        return ( found_gap ? 3 : 0 );
-    }
-
-    /* try to find any statically link module                              */
-    strxcpy( module, "GAPROOT/", sizeof(module) );
-    strxcat( module, filename, sizeof(module) );
-    for ( k = 0;  CompInitFuncs[k];  k++ ) {
-        info_sta = (*(CompInitFuncs[k]))();
-        if ( info_sta == 0 ) {
-            continue;
-        }
-        if ( ! strcmp( module, info_sta->name ) ) {
-            found_sta = 1;
-            break;
+                result->module_info = info;
+                return 2;
+            }
         }
     }
 
-    /* if there is both a GAP and a statically linked module, check CRC    */
-    if ( found_gap && found_sta ) {
-        if ( info_sta->crc != SyGAPCRC(result->pathname) ) {
-            Pr("#W Static module %s has CRC mismatch, ignoring\n", (Int)filename, 0);
-            found_sta = 0;
-        }
-    }
-    if ( found_gap && found_sta ) {
-        result->module_info = info_sta;
-        return 2;
-    }
-    if ( found_gap ) {
-        return 3;
-    }
-    if ( found_sta ) {
-        result->module_info = info_sta;
-        return 2;
-    }
-    return 0;
+    return found_gap ? 3 : 0;
 }
 
 
