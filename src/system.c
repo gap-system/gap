@@ -273,7 +273,7 @@ Int SyLoadSystemInitFile = 1;
 
 /****************************************************************************
 **
-*V  SyUseModule . . . . . check for dynamic/static modules in 'READ_GAP_ROOT'
+*V  SyUseModule . . . . . . . . . check for static modules in 'READ_GAP_ROOT'
 */
 int SyUseModule;
 

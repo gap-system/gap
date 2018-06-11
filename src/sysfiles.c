@@ -108,16 +108,15 @@ ssize_t echoandcheck(int fid, const char *buf, size_t count) {
 *F  SyFindOrLinkGapRootFile( <filename>, <result> ) . . . . . .  load or link
 **
 **  'SyFindOrLinkGapRootFile'  tries to find a GAP  file in the root area and
-**  check  if   there is a corresponding    statically  or dynamically linked
-**  module.  If the CRC matches this module  is loaded otherwise the filename
-**  is returned.
+**  check if there is a corresponding statically linked module. If the CRC
+**  matches the statically linked module is loaded, and <result->module_info>
+**  is set to point to its StructInitInfo instance.
 **
 **  The function returns:
 **
 **  0: no file or module was found
-**  1: if a dynamically linked module was found
 **  2: if a statically linked module was found
-**  3: a GAP file was found
+**  3: if only a GAP file was found; its path is stored in  <result->pathname>
 */
 Int SyFindOrLinkGapRootFile (
     const Char *        filename,
