@@ -690,7 +690,7 @@ size_t strxncat (
     size_t n);
 
 
-typedef struct init_info StructInitInfo;
+typedef const struct init_info StructInitInfo;
 typedef StructInitInfo* (*InitInfoFunc)(void);
 
 

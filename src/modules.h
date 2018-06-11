@@ -76,7 +76,7 @@ static inline Int IS_MODULE_DYNAMIC(UInt type)
 **
 *T  StructInitInfo  . . . . . . . . . . . . . . . . . module init information
 */
-typedef struct init_info {
+struct init_info {
 
     /* type of the module: MODULE_BUILTIN, MODULE_STATIC, MODULE_DYNAMIC   */
     UInt type;
@@ -97,24 +97,24 @@ typedef struct init_info {
     Int crc;
 
     /* initialise kernel data structures                                   */
-    Int (*initKernel)(struct init_info *);
+    Int (*initKernel)(StructInitInfo *);
 
     /* initialise library data structures                                  */
-    Int (*initLibrary)(struct init_info *);
+    Int (*initLibrary)(StructInitInfo *);
 
     /* sanity check                                                        */
-    Int (*checkInit)(struct init_info *);
+    Int (*checkInit)(StructInitInfo *);
 
     /* function to call before saving workspace                            */
-    Int (*preSave)(struct init_info *);
+    Int (*preSave)(StructInitInfo *);
 
     /* function to call after saving workspace                             */
-    Int (*postSave)(struct init_info *);
+    Int (*postSave)(StructInitInfo *);
 
     /* function to call after restoring workspace                          */
-    Int (*postRestore)(struct init_info *);
+    Int (*postRestore)(StructInitInfo *);
 
-} StructInitInfo;
+};
 
 
 /****************************************************************************
