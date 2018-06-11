@@ -34,8 +34,13 @@ SOURCES =
 SOURCES += src/ariths.c
 SOURCES += src/blister.c
 SOURCES += src/bool.c
+ifeq ($(HPCGAP),yes)
+SOURCES += src/hpc/c_oper1.c
+SOURCES += src/hpc/c_type1.c
+else
 SOURCES += src/c_oper1.c
 SOURCES += src/c_type1.c
+endif
 SOURCES += src/calls.c
 SOURCES += src/code.c
 SOURCES += src/compiler.c
@@ -217,11 +222,7 @@ GAP_LIBS += $(LIBS)
 # HPC-GAP: transform code using ward
 #
 # For HPC-GAP, we must use ward as a preprocessor before invoking the C
-# compiler. Moreover, some source files come in two versions: One which is
-# located in src/, and another in hpcgap/src/, which is to be used instead
-# when building in HPC-GAP mode.
-#
-# The following build rules achieve this.
+# compiler. The following build rules achieve this.
 ########################################################################
 ifeq ($(HPCGAP),yes)
 
@@ -229,27 +230,12 @@ ifeq ($(HPCGAP),yes)
 ORIGINAL_SOURCES := $(SOURCES)
 SOURCES := $(patsubst src/%,gen/%,$(ORIGINAL_SOURCES))
 
-# Determine which sources have a version in "hpcgap/src".
-# This uses the fact that "wildcard" only returns paths which refer
-# to existing files.
-HPCGAP_SOURCES := $(wildcard $(addprefix $(srcdir)/hpcgap/,$(ORIGINAL_SOURCES)))
-HPCGAP_SOURCES := $(subst $(srcdir)/hpcgap/src/,,$(HPCGAP_SOURCES))
-HPCGAP_SOURCES := $(addprefix gen/,$(HPCGAP_SOURCES))
-
-# static pattern rule for sources with an HPCGAP-version
-# (note that ward needs to parse the sources, hence gen/config.h must already be made)
-$(HPCGAP_SOURCES): gen/%.c: hpcgap/src/%.c gen/config.h
-	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
-	@echo "$@: $<" > $(DEPFILE)
-	@echo "$<:" >> $(DEPFILE)
-	$(QUIET_WARD) CPP="$(CPP)" $(ADDGUARDS2) -cpp $(GAP_CPPFLAGS) -- $< > $@
-
-# static pattern rule for sources without an HPCGAP-version
+# static pattern rule for translating sources via ward
 # (note that ward needs to parse the sources, hence gen/config.h must already be made)
 gen/%.c: src/%.c gen/config.h
 	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
-	@echo "$@: $<" > $(DEPFILE)
-	@echo "$<:" >> $(DEPFILE)
+	@echo "$@: $<" > $(DEPFILE)       # add dependency from gen/*.c to src/*.c
+	@echo "$<:" >> $(DEPFILE)         # add empty rule for src/*.c, to avoid errors if a source file is renamed or removed
 	$(QUIET_WARD) CPP="$(CPP)" $(ADDGUARDS2) -cpp $(GAP_CPPFLAGS) -- $< > $@
 
 # Normally, GNU make deletes intermediate build files, such as the gen/*.c
