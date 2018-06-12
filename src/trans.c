@@ -3139,9 +3139,10 @@ Obj FuncCYCLES_TRANS(Obj self, Obj f)
         return out;
     }
 
-    seen = ResizeInitTmpTrans(deg);
     out = NEW_PLIST(T_PLIST, 0);
     nr = 0;
+
+    seen = ResizeInitTmpTrans(deg);
 
     if (TNUM_OBJ(f) == T_TRANS2) {
         ptf2 = CONST_ADDR_TRANS2(f);
