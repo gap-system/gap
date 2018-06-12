@@ -755,8 +755,7 @@ void InitGlobalBag (
 {
 
     if ( GlobalBags.nr == NR_GLOBAL_BAGS ) {
-        SyAbortBags(
-            "Panic: Gasman cannot handle so many global variables" );
+        Panic("Panic: Gasman cannot handle so many global variables");
     }
 
     if (cookie != 0) {
@@ -784,7 +783,7 @@ static Int IsLessGlobal (
 {
   if (byWhat != 2)
     {
-      SyAbortBags("can only sort globals by cookie");
+      Panic("can only sort globals by cookie");
     }
   if (cookie1 == 0L && cookie2 == 0L)
     return 0;
@@ -804,7 +803,7 @@ void SortGlobals( UInt byWhat )
   UInt len, h, i, k;
   if (byWhat != 2)
     {
-      SyAbortBags("can only sort globals by cookie");
+      Panic("can only sort globals by cookie");
     }
   if (GlobalSortingStatus == byWhat)
     return;
@@ -918,13 +917,13 @@ Bag NextBagRestoring( UInt type, UInt flags, UInt size )
   NextMptrRestoring++;
 
   if ((Bag *)NextMptrRestoring >= MptrEndBags)
-    SyAbortBags("Overran Masterpointer area");
+    Panic("Overran Masterpointer area");
 
   for (i = 0; i < WORDS_BAG(size); i++)
     *AllocBags++ = (Bag)0;
 
   if (AllocBags > EndBags)
-    SyAbortBags("Overran data area");
+    Panic("Overran data area");
 
 #ifdef COUNT_BAGS
   InfoBags[type].nrLive   += 1;
@@ -1142,13 +1141,13 @@ void            InitBags (
     StackAlignBags  = stack_align;
 
     if ( sizeof(BagHeader) % sizeof(Bag) != 0 )
-        SyAbortBags("BagHeader size is not a multiple of word size.");
+        Panic("BagHeader size is not a multiple of word size.");
 
     /* first get some storage from the operating system                    */
     initial_size    = (initial_size + 511) & ~(511);
     MptrBags = SyAllocBags( initial_size, 1 );
     if ( MptrBags == 0 )
-        SyAbortBags("cannot get storage for the initial workspace.");
+        Panic("cannot get storage for the initial workspace.");
     EndBags = MptrBags + 1024*(initial_size / sizeof(Bag*));
 
     // In GAP_MEM_CHECK we want as few master pointers as possible, as we
@@ -1242,7 +1241,7 @@ Bag NewBag (
     if ( (FreeMptrBags == 0 || SizeAllocationArea < WORDS_BAG(sizeof(BagHeader)+size))
       && CollectBags( size, 0 ) == 0 )
     {
-        SyAbortBags("cannot extend the workspace any more!!!!");
+        Panic("cannot extend the workspace any more!!!!");
     }
 
 #ifdef COUNT_BAGS
@@ -1455,7 +1454,7 @@ UInt ResizeBag (
         // check that enough storage for the new bag is available
         if (SpaceBetweenPointers(EndBags, CONST_PTR_BAG(bag)) < WORDS_BAG(new_size)
               && CollectBags( new_size-old_size, 0 ) == 0 ) {
-            SyAbortBags("cannot extend the workspace any more!!!!!");
+            Panic("cannot extend the workspace any more!!!!!");
         }
 
         // update header pointer in case bag moved
@@ -1483,7 +1482,7 @@ UInt ResizeBag (
         /* check that enough storage for the new bag is available          */
         if ( SizeAllocationArea <  WORDS_BAG(sizeof(BagHeader)+new_size)
               && CollectBags( new_size, 0 ) == 0 ) {
-            SyAbortBags("Cannot extend the workspace any more!!!!!!");
+            Panic("Cannot extend the workspace any more!!!!!!");
         }
         CLEAR_CANARY();
 
@@ -1973,7 +1972,7 @@ again:
         else if (GET_MARK_BITS(header->link) == DEAD) {
 #ifdef DEBUG_MASTERPOINTERS
             if (CONST_PTR_BAG(UNMARKED_DEAD(header->link)) != DATA(header)) {
-                SyAbortBags("incorrectly marked bag");
+                Panic("incorrectly marked bag");
             }
 #endif
 
@@ -2006,7 +2005,7 @@ again:
         else if (GET_MARK_BITS(header->link) == HALFDEAD) {
 #ifdef DEBUG_MASTERPOINTERS
             if (CONST_PTR_BAG(UNMARKED_HALFDEAD(header->link)) != DATA(header)) {
-                SyAbortBags("incorrectly marked bag");
+                Panic("incorrectly marked bag");
             }
 #endif
 
@@ -2022,7 +2021,7 @@ again:
 
             /* don't free the identifier                                   */
             if (((UInt)UNMARKED_HALFDEAD(header->link)) % 4 != 0)
-              SyAbortBags("align error in halfdead bag");
+                Panic("align error in halfdead bag");
 
             *(Bag**)(UNMARKED_HALFDEAD(header->link)) = NewWeakDeadBagMarker;
             nrHalfDeadBags ++;
@@ -2036,7 +2035,7 @@ again:
         else if (GET_MARK_BITS(header->link) == ALIVE) {
 #ifdef DEBUG_MASTERPOINTERS
             if (CONST_PTR_BAG(UNMARKED_ALIVE(header->link)) != DATA(header)) {
-                SyAbortBags("incorrectly marked bag");
+                Panic("incorrectly marked bag");
             }
 #endif
 
@@ -2075,9 +2074,7 @@ again:
 
         /* oops                                                            */
         else {
-
-            SyAbortBags("Panic: Gasman found a bogus header");
-
+            Panic("Panic: Gasman found a bogus header");
         }
 
     }
@@ -2302,20 +2299,20 @@ void CheckMasterPointers( void )
         // none of the above, so it must be an active master pointer
         // otherwise, error out
         if (!IS_BAG_BODY(*ptr))
-            SyAbortBags("Bad master pointer detected");
+            Panic("Bad master pointer detected");
 
         // sanity check: the link pointer must either point back; or else
         // this bag must be part of the chain of changed bags (which thus
         // must be non-empty)
         if (ChangedBags == 0 && LINK_BAG(bag) != bag) {
-            SyAbortBags("Master pointer with bad link word detected");
+            Panic("Master pointer with bad link word detected");
         }
 
 #if SIZEOF_VOID_P == 4
         // sanity check: reserved bits must be unused
         if (BAG_HEADER(bag)->reserved != 0) {
-            SyAbortBags("Master pointer with non-zero reserved bits "
-                             "detected");
+            Panic("Master pointer with non-zero reserved bits "
+                  "detected");
         }
 #endif
     }
@@ -2324,7 +2321,7 @@ void CheckMasterPointers( void )
     bag = FreeMptrBags;
     while (bag != 0) {
         if (!IS_BAG_ID(bag))
-            SyAbortBags("Bad chain of free master pointers detected");
+            Panic("Bad chain of free master pointers detected");
         bag = (Bag)*bag;
     }
 }

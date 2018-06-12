@@ -710,8 +710,7 @@ void InitHandlerFunc (
     const Char *        cookie )
 {
     if ( NHandlerFuncs >= MAX_HANDLERS ) {
-        Pr( "No room left for function handler\n", 0L, 0L );
-        SyExit(1);
+        Panic("No room left for function handler");
     }
 
     for (UInt i = 0; i < NHandlerFuncs; i++)

@@ -136,14 +136,4 @@ extern UInt * * * SyAllocBags (
             UInt                need );
 
 
-/****************************************************************************
-**
-*F  SyAbortBags(<msg>)  . . . . . . . . . . abort GAP in case of an emergency
-**
-**  'SyAbortBags' is the function called by Gasman in case of an emergency.
-*/
-extern void SyAbortBags(const Char * msg) NORETURN;
-
-
-
 #endif // GAP_SYSMEM_H

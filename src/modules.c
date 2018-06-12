@@ -860,8 +860,7 @@ void ModulesSetup(void)
     NrModules = 0;
     for (UInt i = 0; InitFuncsBuiltinModules[i]; i++) {
         if (NrModules == MAX_MODULES) {
-            FPUTS_TO_STDERR("panic: too many builtin modules\n");
-            SyExit(1);
+            Panic("panic: too many builtin modules");
         }
         StructInitInfo * info = InitFuncsBuiltinModules[i]();
         Modules[NrModules++].info = info;

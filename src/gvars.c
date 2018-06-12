@@ -1241,8 +1241,7 @@ void InitCopyGVar (
 #ifdef HPCGAP
         UnlockGVars();
 #endif
-        Pr( "Panic, no room to record CopyGVar\n", 0L, 0L );
-        SyExit(1);
+        Panic("Panic, no room to record CopyGVar");
     }
     CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
     CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 0;
@@ -1279,8 +1278,7 @@ void InitFopyGVar (
 #ifdef HPCGAP
         UnlockGVars();
 #endif
-        Pr( "Panic, no room to record FopyGVar\n", 0L, 0L );
-        SyExit(1);
+        Panic("Panic, no room to record FopyGVar");
     }
     CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
     CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 1;
