@@ -309,8 +309,7 @@ UInt SyTime ( void )
     struct rusage       buf;
 
     if ( getrusage( RUSAGE_SELF, &buf ) ) {
-        fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
-        SyExit( 1 );
+        Panic("gap: panic 'SyTime' cannot get time!");
     }
     return buf.ru_utime.tv_sec*1000 + buf.ru_utime.tv_usec/1000;
 }
@@ -319,8 +318,7 @@ UInt SyTimeSys ( void )
     struct rusage       buf;
 
     if ( getrusage( RUSAGE_SELF, &buf ) ) {
-        fputs("gap: panic 'SyTimeSys' cannot get time!\n",stderr);
-        SyExit( 1 );
+        Panic("gap: panic 'SyTimeSys' cannot get time!");
     }
     return buf.ru_stime.tv_sec*1000 + buf.ru_stime.tv_usec/1000;
 }
@@ -329,8 +327,7 @@ UInt SyTimeChildren ( void )
     struct rusage       buf;
 
     if ( getrusage( RUSAGE_CHILDREN, &buf ) ) {
-        fputs("gap: panic 'SyTimeChildren' cannot get time!\n",stderr);
-        SyExit( 1 );
+        Panic("gap: panic 'SyTimeChildren' cannot get time!");
     }
     return buf.ru_utime.tv_sec*1000 + buf.ru_utime.tv_usec/1000;
 }
@@ -339,8 +336,7 @@ UInt SyTimeChildrenSys ( void )
     struct rusage       buf;
 
     if ( getrusage( RUSAGE_CHILDREN, &buf ) ) {
-        fputs("gap: panic 'SyTimeChildrenSys' cannot get time!\n",stderr);
-        SyExit( 1 );
+        Panic("gap: panic 'SyTimeChildrenSys' cannot get time!");
     }
     return buf.ru_stime.tv_sec*1000 + buf.ru_stime.tv_usec/1000;
 }
@@ -551,6 +547,19 @@ void SyExit (
 {
         exit( (int)ret );
 }
+
+
+/****************************************************************************
+**
+*F  Panic( <msg> )
+*/
+extern void Panic(const char * msg)
+{
+    fputs(msg, stderr);
+    fputs("\n", stderr);
+    exit(1);
+}
+
 
 /****************************************************************************
 **

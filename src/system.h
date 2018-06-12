@@ -724,6 +724,13 @@ extern void SyExit(UInt ret) NORETURN;
 
 /****************************************************************************
 **
+*F  Panic( <msg> )
+*/
+extern void Panic(const char * msg) NORETURN;
+
+
+/****************************************************************************
+**
 *F  SyNanosecondsSinceEpoch()
 **
 **  'SyNanosecondsSinceEpoch' returns a 64-bit integer which represents the

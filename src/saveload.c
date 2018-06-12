@@ -71,8 +71,7 @@ static void CloseAfterSave( void )
 {
   if (SaveFile == -1)
     {
-      Pr("Internal error -- this should never happen",0L,0L);
-      SyExit(2);
+      Panic("Internal error -- this should never happen");
     }
 
   if (SyWrite(SaveFile, LoadBuffer, LBPointer - LoadBuffer) < 0)
@@ -87,8 +86,7 @@ static void OpenForLoad( Char *fname )
 {
   if (LoadFile != -1)
     {
-      Pr("Internal error -- this should never happen\n",0L,0L);
-      SyExit(2);
+      Panic("Internal error -- this should never happen");
     }
   LoadFile = SyFopen(fname, "rb");
   if (LoadFile == -1)
@@ -103,8 +101,7 @@ static void CloseAfterLoad( void )
 {
   if (!LoadFile)
     {
-      Pr("Internal error -- this should never happen\n",0L,0L);
-      SyExit(2);
+      Panic("Internal error -- this should never happen");
     }
   SyFclose(LoadFile);
   LoadFile = -1;
@@ -264,8 +261,7 @@ void LoadCStr( Char *buf, UInt maxsize)
     }
   if (c != '\0')
     {
-      Pr("Buffer overflow reading workspace\n",0L,0L);
-      SyExit(1);
+      Panic("Buffer overflow reading workspace");
     }
 }
 
@@ -438,8 +434,7 @@ static void CheckEndiannessMarker( void )
   if (x != 0x01020304L)
 #endif  
     {
-      Pr("Saved workspace with incompatible byte order\n",0L,0L);
-      SyExit(1);
+      Panic("Saved workspace with incompatible byte order");
     }
 }
 
@@ -688,8 +683,7 @@ void LoadWorkspace( Char * fname )
   LoadCStr(buf,256);
   if (strcmp(buf,"Counts and Sizes") != 0)
     {
-      Pr("Bad divider\n",0L,0L);
-      SyExit(1);
+      Panic("Bad divider");
     }
   
   nGlobs = LoadUInt();
@@ -705,8 +699,7 @@ void LoadWorkspace( Char * fname )
   LoadCStr(buf,256);
   if (strcmp(buf,"Loaded Modules") != 0)
     {
-      Pr("Bad divider\n",0L,0L);
-      SyExit(1);
+      Panic("Bad divider");
     }
   LoadModules();
 
@@ -714,8 +707,7 @@ void LoadWorkspace( Char * fname )
   LoadCStr(buf,256);
   if (strcmp(buf,"Kernel to WS refs") != 0)
     {
-      Pr("Bad divider\n",0L,0L);
-       SyExit(1);
+      Panic("Bad divider");
     }
   SortGlobals(2);               /* globals by cookie for quick
                                  lookup */
@@ -750,8 +742,7 @@ void LoadWorkspace( Char * fname )
   LoadCStr(buf,256);
   if (strcmp(buf,"Bag data") != 0)
     {
-      Pr("Bad divider\n",0L,0L);
-      SyExit(1);
+      Panic("Bad divider");
     }
   
   SortHandlers(2);

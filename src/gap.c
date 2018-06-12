@@ -1842,7 +1842,6 @@ void InitializeGap (
     if ( SyLoadSystemInitFile ) {
       TRY_READ {
         if ( READ_GAP_ROOT("lib/init.g") == 0 ) {
-          /*             if ( ! SyQuiet ) { */
                 Pr( "gap: hmm, I cannot find 'lib/init.g' maybe",
                     0L, 0L );
                 Pr( " use option '-l <gaproot>'?\n If you ran the GAP"
@@ -1850,12 +1849,10 @@ void InitializeGap (
                     " script instead.", 0L, 0L );
             }
       }
-      CATCH_READ_ERROR
-        {
-          Pr("Caught error at top-most level, probably quit from library loading",0L,0L);
-          SyExit(1);
-        }
-        /*         } */
+      CATCH_READ_ERROR {
+          Panic("Caught error at top-most level, probably quit from "
+                "library loading");
+      }
     }
 
 }

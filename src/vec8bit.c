@@ -4208,8 +4208,7 @@ UInt RightMostNonZeroVec8Bit( Obj vec)
         if (gettab[256 * i]  != 0)
             return (elts * (ptr - ptrS) + i + 1);
     }
-    Pr("panic: this should never happen\n", 0, 0);
-    SyExit(1);
+    Panic("panic: this should never happen");
 }
 
 void ResizeVec8Bit( Obj vec, UInt newlen, UInt knownclean )
