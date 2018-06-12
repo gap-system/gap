@@ -2592,14 +2592,14 @@ UInt CosetLeadersInner8Bits( Obj veclis,
                 return found;
         }
 
-        settab = SETELT_FIELDINFO_8BIT(info);
-        feltffe = FELT_FFE_FIELDINFO_8BIT(info);
         vp = ELM_PLIST(veclis, pos);
         for (i = 1; i < q; i++) {
             u = ELM_PLIST(vp, i);
             AddVec8BitVec8BitInner(w, w, u, 1, lenw);
             ptr = BYTES_VEC8BIT(v) + (pos - 1) / elts;
             x = ELM_PLIST(felts, i + 1);
+            settab = SETELT_FIELDINFO_8BIT(info);
+            feltffe = FELT_FFE_FIELDINFO_8BIT(info);
             *ptr = settab[*ptr + 256 * (elts * feltffe[VAL_FFE(x)] + ((pos - 1) % elts))];
             found += CosetLeadersInner8Bits(veclis, v, w, weight - 1, pos + 1, leaders, tofind - found, felts);
             if (found == tofind)
