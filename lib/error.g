@@ -41,6 +41,7 @@ BIND_GLOBAL("AncestorLVars", function(lv, depth)
 end);
 
 ErrorLVars := fail;
+ErrorLVarsOld := fail;
 
 BIND_GLOBAL("WHERE", function( context, depth, outercontext)
     local   bottom,  lastcontext,  f;
@@ -110,7 +111,7 @@ Unbind(ErrorInner);
 BIND_GLOBAL("ErrorInner",
         function( arg )
     local   context, mayReturnVoid,  mayReturnObj,  lateMessage,  earlyMessage,  
-            x,  prompt,  res, errorLVars, justQuit, printThisStatement,
+            x,  prompt,  res, justQuit, printThisStatement,
             location;
 
 	context := arg[1].context;
@@ -184,7 +185,7 @@ BIND_GLOBAL("ErrorInner",
         
     ErrorLevel := ErrorLevel+1;
     ERROR_COUNT := ERROR_COUNT+1;
-    errorLVars := ErrorLVars;
+    ErrorLVarsOld := ErrorLVars;
     ErrorLVars := context;
     if QUITTING or not BreakOnError then
         PrintTo("*errout*","Error, ");
@@ -193,7 +194,7 @@ BIND_GLOBAL("ErrorInner",
         od;
         PrintTo("*errout*","\n");
         ErrorLevel := ErrorLevel-1;
-        ErrorLVars := errorLVars;
+        ErrorLVars := ErrorLVarsOld;
         if ErrorLevel = 0 then LEAVE_ALL_NAMESPACES(); fi;
         JUMP_TO_CATCH(0);
     fi;
@@ -242,7 +243,7 @@ BIND_GLOBAL("ErrorInner",
         res := fail;
     fi;
     ErrorLevel := ErrorLevel-1;
-    ErrorLVars := errorLVars;
+    ErrorLVars := ErrorLVarsOld;
     if res = fail then
         if IsBound(OnQuit) and IsFunction(OnQuit) then
             OnQuit();
