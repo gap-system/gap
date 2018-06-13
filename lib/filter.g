@@ -456,11 +456,7 @@ BIND_GLOBAL( "RankFilter", function( filter )
       all := WITH_IMPS_FLAGS(flags);
     fi;
     for i  in TRUES_FLAGS(all)  do
-        if IsBound(RANK_FILTERS[i])  then
             rank := rank + RANK_FILTERS[i];
-        else
-            rank := rank + 1;
-        fi;
     od;
     return rank;
 end );
