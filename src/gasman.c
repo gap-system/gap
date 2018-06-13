@@ -1951,6 +1951,13 @@ again:
         // extract the head from the linked list
         first = MarkedBags;
         MarkedBags = LINK_BAG(first);
+        // Gasman in some places treats as bag where
+        // CONST_PTR_BAG(bag) == YoungBags as a young bag, and in other
+        // places as an old bag. However, this is not a problem because
+        // it is not possible for such a bag to exist. Sanity check
+        // this condition.
+        GAP_ASSERT(CONST_PTR_BAG(first) != YoungBags);
+
         if (CONST_PTR_BAG(first) > YoungBags) {
             LINK_BAG(first) = MARKED_ALIVE(first);
         }
