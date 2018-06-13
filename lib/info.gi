@@ -385,20 +385,6 @@ fi;
 DeclareInfoClass( "InfoPerformance" );
 SetInfoLevel( InfoPerformance, 1 );
 
-#############################################################################
-##
-#V  InfoTeaching
-##
-##  This info class has a default level of 1.
-##  Warnings can be switched off by setting its level to zero
-##
-if not IsBound(InfoTeaching) then
-  DeclareInfoClass( "InfoTeaching" );
-  if not TEACHING_MODE then
-    SetInfoLevel( InfoTeaching, 1 );
-  fi;
-fi;
-
 LAST_COMPLETIONBAR_STRING:=fail;
 LAST_COMPLETIONBAR_VAL:=0;
 

@@ -246,9 +246,6 @@ CallAndInstallPostRestore( function()
     MAKE_READ_WRITE_GLOBAL( "DEBUG_LOADING" );
     UNBIND_GLOBAL( "DEBUG_LOADING" );
 
-    MAKE_READ_WRITE_GLOBAL( "TEACHING_MODE" );
-    UNBIND_GLOBAL( "TEACHING_MODE" );
-    BIND_GLOBAL( "TEACHING_MODE", GAPInfo.CommandLineOptions.T );
     if IsHPCGAP then
       BindThreadLocal( "BreakOnError", not GAPInfo.CommandLineOptions.T );
       BindThreadLocal( "SilentErrors", false );
