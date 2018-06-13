@@ -669,7 +669,7 @@ Obj FuncAND_FLAGS (
 
 Obj HIDDEN_IMPS;
 Obj WITH_HIDDEN_IMPS_FLAGS_CACHE;
-enum { HIDDEN_IMPS_CACHE_LENGTH = 2003 };
+enum { HIDDEN_IMPS_CACHE_LENGTH = 20003 };
 
 /* Forward declaration of FuncFLAGS_FILTER */
 Obj FuncFLAGS_FILTER(Obj self, Obj oper);
@@ -829,7 +829,7 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 static Obj IMPLICATIONS_SIMPLE;
 static Obj IMPLICATIONS_COMPOSED;
 static Obj WITH_IMPS_FLAGS_CACHE;
-enum { IMPS_CACHE_LENGTH = 11001 };
+enum { IMPS_CACHE_LENGTH = 21001 };
 
 /****************************************************************************
 **
