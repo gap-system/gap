@@ -380,7 +380,8 @@ option.
 <C>-T</C></Mark>
 <Item>
 suppresses the usual break loop behaviour of  &GAP;.  With  this  option
-&GAP; behaves as if the user <K>quit</K> immediately from every  break  loop.
+&GAP; behaves as if the user <K>quit</K> immediately from every  break  loop,
+and also suppresses displaying any error backtrace.
 This is intended for automated testing of &GAP;. This option may be 
 repeated to toggle this behavior on and off.
 </Item>
