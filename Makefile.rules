@@ -156,11 +156,13 @@ GAP_PKG_CPPFLAGS += $(DEFS)
 
 # Add flags for dependencies
 GAP_CPPFLAGS += $(GMP_CPPFLAGS)
+GAP_CPPFLAGS += $(ZLIB_CPPFLAGS)
 GAP_CPPFLAGS += $(READLINE_CPPFLAGS)
 GAP_CPPFLAGS += $(BOEHM_GC_CPPFLAGS)
 GAP_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
 
 GAP_PKG_CPPFLAGS += $(GMP_CPPFLAGS)
+GAP_PKG_CPPFLAGS += $(ZLIB_CPPFLAGS)
 GAP_PKG_CPPFLAGS += $(READLINE_CPPFLAGS)
 GAP_PKG_CPPFLAGS += $(BOEHM_GC_CPPFLAGS)
 GAP_PKG_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
@@ -193,6 +195,7 @@ GAP_LDFLAGS = $(ABI_CFLAGS)
 
 # Add flags for dependencies
 GAP_LDFLAGS += $(GMP_LDFLAGS)
+GAP_LDFLAGS += $(ZLIB_LDFLAGS)
 GAP_LDFLAGS += $(READLINE_LDFLAGS)
 GAP_LDFLAGS += $(BOEHM_GC_LDFLAGS)
 GAP_LDFLAGS += $(LIBATOMIC_OPS_LDFLAGS)
@@ -210,6 +213,7 @@ GAP_LIBS =
 
 # Add flags for dependencies
 GAP_LIBS += $(GMP_LIBS)
+GAP_LIBS += $(ZLIB_LIBS)
 GAP_LIBS += $(READLINE_LIBS)
 GAP_LIBS += $(BOEHM_GC_LIBS)
 GAP_LIBS += $(LIBATOMIC_OPS_LIBS)
@@ -538,6 +542,36 @@ gmp:
 	echo "Using external GMP, nothing to do be done"
 
 endif # BUILD_GMP
+
+
+#
+# ZLIB
+#
+ifeq ($(BUILD_ZLIB),yes)
+
+ZLIB_BUILDDIR := extern/build/zlib
+ZLIB_PREFIX := extern/install/zlib
+# ZLIB_PREREQ := $(ZLIB_BUILDDIR)/config.status
+ZLIB_FILES := $(ZLIB_PREFIX)/include/zlib.h
+
+EXTERN_FILES += $(ZLIB_FILES)
+
+zlib: $(ZLIB_FILES)
+$(ZLIB_FILES):
+	MAKE=$(MAKE) CFLAGS="$(CFLAGS) $(ABI_CFLAGS)" $(srcdir)/cnf/build-extern.sh zlib "$(abs_srcdir)/extern/zlib"
+
+.PHONY: zlib
+
+# TODO: add clean, distclean, check targets?
+# TODO: pass on cachfile?
+# TODO: pass on certain *FLAGS ?
+
+else
+
+zlib:
+	echo "Using external zlib, nothing to do be done"
+
+endif # BUILD_ZLIB
 
 
 #
