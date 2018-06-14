@@ -334,6 +334,11 @@ extern void SyFputs (
             Int                 fid );
 
 
+Int SyRead(Int fid, void * ptr, size_t len);
+Int SyWrite(Int fid, const void * ptr, size_t len);
+
+ssize_t SyWriteandcheck(Int fid, const void * buf, size_t count);
+
 /****************************************************************************
 **
 *F  SyIsIntr()  . . . . . . . . . . . . . . . . check wether user hit <ctr>-C
