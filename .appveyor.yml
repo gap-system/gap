@@ -28,7 +28,7 @@ cache:
   - packages-master.tar.gz
 
 install:
-  - '%CYG_ROOT%\setup-%CYG_ARCH%.exe -qnNdO -R %CYG_ROOT% -s http://cygwin.mirror.constant.com -l %CYG_ROOT%/var/cache/setup -P libgmp-devel'
+  - '%CYG_ROOT%\setup-%CYG_ARCH%.exe -qnNdO -R %CYG_ROOT% -s http://cygwin.mirror.constant.com -l %CYG_ROOT%/var/cache/setup -P libgmp-devel,zlib-devel'
 
 # scripts that run after cloning repository
 build_script:
