@@ -349,6 +349,61 @@ dnl remove this eventually.
 AC_DEFINE([USE_GMP], [1], [for backwards compatibility])
 
 
+dnl Find zlib
+AC_ARG_WITH([zlib],
+  [AS_HELP_STRING([--with-zlib@<:@=builtin|PREFIX@:>@],
+    [prefix of zlib installation. e.g. /usr/local; specify `builtin' to let GAP builds its own version of zlib])],
+    [],[with_zlib=yes])
+
+BUILD_ZLIB=no
+ZLIB_CPPFLAGS=
+ZLIB_LDFLAGS=
+ZLIB_LIBS="-lz"
+AS_CASE([$with_zlib],
+  [builtin],[
+    # user explicitly requested to use builtin zlib
+    BUILD_ZLIB=yes
+    AC_MSG_NOTICE([Using bundled zlib])
+  ],
+  [no],[
+    AC_MSG_ERROR([Building without zlib is not supported])
+  ],
+  [system],[with_zlib=yes],  dnl supported for backwards compatibility with old build system
+  [yes],[],
+  [*],[
+    ZLIB_CPPFLAGS="-I${with_zlib}/include"
+    ZLIB_LDFLAGS="-L${with_zlib}/lib"
+  ]
+)
+
+AS_IF([test $BUILD_ZLIB = no],
+  [
+    # try to link against zlib
+    AX_CHECK_LIBRARY([ZLIB], [zlib.h], [z], [inflateEnd])
+    AS_IF([test $ax_cv_have_ZLIB = no],[
+        AS_IF([test "x$with_zlib" = "xyes"],[
+          BUILD_ZLIB=yes
+          AC_MSG_NOTICE([No usable zlib found, switching to included zlib])
+        ],
+        [AC_MSG_ERROR([zlib not found at prefix $with_zlib])]
+        )
+    ])
+  ])
+
+# Use bundled zlib if requested
+AS_IF([test x$BUILD_ZLIB = xyes],[
+  BUILD_ZLIB=yes
+  ZLIB_CPPFLAGS='-I${abs_builddir}/extern/install/zlib/include'
+  ZLIB_LDFLAGS='-L${abs_builddir}/extern/install/zlib/lib -lz'
+  ZLIB_LIBS=
+])
+
+AC_SUBST([BUILD_ZLIB])
+AC_SUBST([ZLIB_CPPFLAGS])
+AC_SUBST([ZLIB_LDFLAGS])
+AC_SUBST([ZLIB_LIBS])
+
+
 dnl Find GNU readline
 AC_ARG_WITH([readline],
   [AS_HELP_STRING([--with-readline@<:@=PREFIX@:>@],
