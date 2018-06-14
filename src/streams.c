@@ -1736,7 +1736,7 @@ Obj FuncREAD_ALL_FILE (
           do {
               csize =
                   (ilim == -1 || (ilim - len) > 20000) ? 20000 : ilim - len;
-              lstr = read(syBuf[ifid].fp, buf, csize);
+              lstr = SyRead(ifid, buf, csize);
           } while (lstr == -1 && errno == EAGAIN);
       }
       if (lstr <= 0) {
@@ -1859,7 +1859,7 @@ Obj FuncWRITE_STRING_FILE_NC (
     ptr = CSTR_STRING(str);
     while (len > 0) {
       l = (len > 1048576) ? 1048576 : len;
-      ret = write( syBuf[INT_INTOBJ(fid)].echo, ptr, l);
+      ret = SyWrite(INT_INTOBJ(fid), ptr, l);
       if (ret == -1) {
         SySetErrorNo();
         return Fail;

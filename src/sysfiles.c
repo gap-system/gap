@@ -1409,7 +1409,7 @@ void SyFputs (
 
     /* otherwise, write it to the output file                              */
     else
-        echoandcheck( fid, line, i );
+        SyWriteandcheck(fid, line, i);
 }
 
 
@@ -1541,20 +1541,20 @@ Int syGetchTerm (
 #ifdef LINE_END_HACK
  tryagain:
 #endif
-    while ( (ret = read( syBuf[fid].fp, &ch, 1 )) == -1 && errno == EAGAIN )
+    while ( (ret = SyRead( fid, &ch, 1 )) == -1 && errno == EAGAIN )
         ;
     if (ret <= 0) return EOF;
 
     /* if running under a window handler, handle special characters        */
     if ( SyWindow && ch == '@' ) {
         do {
-            while ( (ret = read(syBuf[fid].fp, &ch, 1)) == -1 &&
+            while ( (ret = SyRead(fid, &ch, 1)) == -1 &&
                     errno == EAGAIN ) ;
             if (ret <= 0) return EOF;
         } while ( ch < '@' || 'z' < ch );
         if ( ch == 'y' ) {
             do {
-                while ( (ret = read(syBuf[fid].fp, &ch, 1)) == -1 &&
+                while ( (ret = SyRead(fid, &ch, 1)) == -1 &&
                         errno == EAGAIN );
                 if (ret <= 0) return EOF;
             } while ( ch < '@' || 'z' < ch );
@@ -1603,18 +1603,18 @@ Int syGetchNonTerm (
  tryagain:
 #endif
     if (syBuf[fid].bufno < 0)
-        while ( (ret = read( syBuf[fid].fp, &ch, 1 )) == -1 && errno == EAGAIN)
-           ;
+        while ((ret = SyRead(fid, &ch, 1)) == -1 && errno == EAGAIN)
+            ;
     else {
         bufno = syBuf[fid].bufno;
         if (syBuffers[bufno].bufstart < syBuffers[bufno].buflen) {
             ch = syBuffers[bufno].buf[syBuffers[bufno].bufstart++];
             ret = 1;
         } else {
-            while ( (ret = read( syBuf[fid].fp,
-                                 syBuffers[bufno].buf,
-                                 SYS_FILE_BUF_SIZE )) == -1 && errno == EAGAIN)
-              ;
+            while ((ret = SyRead(fid, syBuffers[bufno].buf,
+                                 SYS_FILE_BUF_SIZE)) == -1 &&
+                   errno == EAGAIN)
+                ;
             if (ret > 0) {
                 ch = syBuffers[bufno].buf[0];
                 syBuffers[bufno].bufstart = 1;
@@ -3544,7 +3544,7 @@ Obj SyReadStringFile(Int fid)
     str = NEW_STRING(0);
     len = 0;
     do {
-        ret = read( syBuf[fid].fp , buf, 32768);
+        ret = SyRead(fid, buf, 32768);
         if (ret < 0) {
             SySetErrorNo();
             return Fail;
@@ -3590,7 +3590,7 @@ Obj SyReadStringFileStat(Int fid)
         ptr = CSTR_STRING(str);
         while (len > 0) {
             l = (len > 1048576) ? 1048576 : len;
-            ret = read( syBuf[fid].fp, ptr, l);
+            ret = SyRead(fid, ptr, l);
             if (ret == -1) {
                 SySetErrorNo();
                 return Fail;
