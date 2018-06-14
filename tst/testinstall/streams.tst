@@ -92,5 +92,15 @@ gap> ReadAllLine(stream, false, line -> 0 < Length(line) and line[Length(line)] 
 gap> ReadAllLine(stream);
 fail
 
+# Invalid files
+gap> PrintTo("/", "out");
+Error, PrintTo: cannot open '/' for output
+gap> OutputTextFile("/", true);
+fail
+
+# Assume this file does not exist
+gap> InputTextFile("/filewhichdoesnotexist/lspdsiodfsjfdsjofdsjkfd/fdsjkfds");
+fail
+
 #
 gap> STOP_TEST( "streams.tst", 1);

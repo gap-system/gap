@@ -737,7 +737,7 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
     i = append ? OpenAppend( CSTR_STRING(filename) )
                : OpenOutput( CSTR_STRING(filename) );
     if ( ! i ) {
-        if (strcmp(CSTR_STRING(filename), "*errout*")) {
+        if (strcmp(CSTR_STRING(filename), "*errout*") == 0) {
             // When trying to print an error opening *errout* failed,
             // We exit GAP after trying to print an error.
             // First try printing an error to stderr
