@@ -626,7 +626,8 @@ DeclareOperation( "InputTextString", [ IsString ] );
 ##  <Description>
 ##  <C>InputTextFile( <A>filename</A> )</C> returns an input stream in the category
 ##  <Ref Filt="IsInputTextStream"/> that delivers the characters from the file
-##  <A>filename</A>.
+##  <A>filename</A>. If <A>filename</A> ends in <C>.gz</C> and the file is
+##  a valid gzipped file, then the file will be transparently uncompressed.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -725,6 +726,8 @@ DeclareOperation( "OutputTextString", [ IsList, IsBool ] );
 ##  category <C>IsOutputTextFile</C> that writes received characters to the file
 ##  <A>filename</A>.  If <A>append</A> is <K>false</K>, then the file is emptied first,
 ##  otherwise received characters are added at the end of the file.
+##  If <A>filename</A> ends in <C>.gz</C> then the file will be
+##  written with gzip compression.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> # use a temporary directory
