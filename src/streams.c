@@ -1890,8 +1890,6 @@ Obj FuncREAD_STRING_FILE (
 */
 Obj FuncFD_OF_FILE(Obj self,Obj fid)
 {
-  Int fd;
-  int fdi;
   while (fid == (Obj) 0 || !(IS_INTOBJ(fid))) {
     fid = ErrorReturnObj(
            "<fid> must be a small integer (not a %s)",
@@ -1899,8 +1897,13 @@ Obj FuncFD_OF_FILE(Obj self,Obj fid)
            "you can replace <fid> via 'return <fid>;'" );
   }
 
-  fd = INT_INTOBJ(fid);
-  fdi = syBuf[fd].fp;
+  Int fd = INT_INTOBJ(fid);
+
+  // gzipped files don't have a fd
+  if (syBuf[fd].type == gzip_socket)
+      return INTOBJ_INT(-1);
+
+  Int fdi = syBuf[fd].fp;
   return INTOBJ_INT(fdi);
 }
 

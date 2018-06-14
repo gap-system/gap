@@ -139,23 +139,36 @@ extern const Char * SyWinCmd (
 **  routines  from   allocating their  buffers  using  'malloc',  which would
 **  otherwise confuse Gasman.
 */
+
+// The type of file stored in a 'SYS_SY_BUF'
+typedef enum {
+    unused_socket,  // Socket is free
+    raw_socket,     // Plain UNIX socket stored in 'fp'
+    pipe_socket,    // UNIX socket attached to a pipe stored in 'fp'
+    gzip_socket     // A gzFile handled by zlib stored in 'gzfp'
+} GAPSocketType;
+
 typedef struct {
-  int         fp;          /* file descriptor for this file. This is used
-                              for input */
-  int         echo;        /* file descriptor for the echo. This is used
-                              for output. Is set to 0 if read-only file */
-  UInt        pipe;        /* file is really a pipe */
-  FILE       *pipehandle;  /* for pipes we need to remember the file handle */
-  UInt        ateof;       /* set to 1 by any read operation that hits eof
+    /* gzfp is used if type == gzip_socket
+    ** Stored as a void* to avoid including zlib.h */
+    void * gzfp;
+
+    /* fp and echo are used if type == raw_socket or type == pipe_socket */
+    int fp;   /* file descriptor for this file */
+    int echo; /* file descriptor for the echo */
+
+    GAPSocketType type; /* file is either a plain descriptor, pipe or gzipped */
+    FILE *     pipehandle; /* for pipes we need to remember the file handle */
+    UInt       ateof;      /* set to 1 by any read operation that hits eof
                               reset to 0 by a subsequent successful read */
-  UInt        crlast;      /* records that last character read was \r for
+    UInt crlast;           /* records that last character read was \r for
                               cygwin and othger systems that need end-of-line
                               hackery */
-  Int         bufno;       /* if non-negative then this file has a buffer in
+    Int bufno;             /* if non-negative then this file has a buffer in
                               syBuffers[bufno]; If negative, this file may not
                               be buffered */
-  UInt        isTTY;       /* set in Fopen when this fid is a *stdin* or *errin*
-                              and really is a tty*/
+    UInt isTTY; /* set in Fopen when this fid is a *stdin* or *errin*
+                   and really is a tty*/
 } SYS_SY_BUF;
 
 #define SYS_FILE_BUF_SIZE 20000
