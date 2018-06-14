@@ -2016,10 +2016,10 @@ BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
                 meths{[1 + (k-1)*(n+BASE_SIZE_METHODS_OPER_ENTRY)..
                        k*(n+BASE_SIZE_METHODS_OPER_ENTRY)]} := l;
             od;
+            if changed then
+                CHANGED_METHODS_OPERATION(oper,n);
+            fi;
         od;
-        if changed then
-            CHANGED_METHODS_OPERATION(oper,n);
-        fi;
     od;
 end );
 

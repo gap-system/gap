@@ -228,8 +228,10 @@ end);
 
 
 BIND_GLOBAL( "ResumeMethodReordering", function()
-    REORDER_METHODS_SUSPENSION_LEVEL := REORDER_METHODS_SUSPENSION_LEVEL - 1;    
-    if REORDER_METHODS_SUSPENSION_LEVEL = 0 then
+    if REORDER_METHODS_SUSPENSION_LEVEL > 0 then
+        REORDER_METHODS_SUSPENSION_LEVEL := REORDER_METHODS_SUSPENSION_LEVEL - 1;    
+    fi;    
+    if REORDER_METHODS_SUSPENSION_LEVEL <= 0 then
         RECALCULATE_ALL_METHOD_RANKS();
     fi;    
 end);
@@ -246,13 +248,15 @@ BIND_GLOBAL( "InstallTrueMethod", function ( tofilt, from )
 
     InstallTrueMethodNewFilter( tofilt, from );
     
+    # clear the caches because we do not know if filter <from> is new
+    CLEAR_HIDDEN_IMP_CACHE( from );
+    CLEAR_IMP_CACHE();
+    
+    # maybe rerank methods to take account of new implication
     if REORDER_METHODS_SUSPENSION_LEVEL = 0 then
         RECALCULATE_ALL_METHOD_RANKS();
     fi;
     
-    # clear the caches because we do not know if filter <from> is new
-    CLEAR_HIDDEN_IMP_CACHE( from );
-    CLEAR_IMP_CACHE();
 end );
 
 
