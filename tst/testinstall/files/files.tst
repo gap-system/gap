@@ -90,7 +90,7 @@ gap> testRead := function(testName, openFunc, lines, supportsPosition)
 >    PrintFormatted("Unexpected extra byte in {}\n", testName);
 >  fi;
 >  if not IsEndOfStream(file) then
->    PrintFormatted("Exepected end of stream in {}\n", testName);
+>    PrintFormatted("Expected end of stream in {}\n", testName);
 >  fi;
 >  CloseStream(file);
 > od;
@@ -101,8 +101,8 @@ gap> testRead("example.txt", {} -> InputTextFile(Filename(dir, "example.txt")),
 > lines, true);
 
 # Test automatic gzip detection
-gap> testRead("example.txt", {} -> InputTextFile(Filename(dir, "examplegz.txt")),
-> lines, false);
+gap> testRead("examplegz.txt", {} -> InputTextFile(Filename(dir, "examplegz.txt")),
+> lines, true);
 gap> testRead("empty.txt", {} -> InputTextFile(Filename(dir, "empty.txt")),
 > [], true);
 gap> testRead("lines string", {} -> InputTextString(Concatenation(lines)), lines, true);
