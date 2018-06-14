@@ -1141,6 +1141,7 @@ void InitSystem (
     fstat(fileno(stderr), &stat_err);
 
     // set up stdin
+    syBuf[0].type = raw_socket;
     syBuf[0].fp = fileno(stdin);
     syBuf[0].echo = fileno(stdout);
     syBuf[0].bufno = -1;
@@ -1153,11 +1154,13 @@ void InitSystem (
     }
 
     // set up stdout
+    syBuf[1].type = raw_socket;
     syBuf[1].echo = syBuf[1].fp = fileno(stdout); 
     syBuf[1].bufno = -1;
     syBuf[1].isTTY = isatty(fileno(stdout));
 
     // set up errin (defaults to stdin, unless stderr is on a terminal)
+    syBuf[2].type = raw_socket;
     syBuf[2].fp = fileno(stdin);
     syBuf[2].echo = fileno(stderr);
     syBuf[2].bufno = -1;
@@ -1170,6 +1173,7 @@ void InitSystem (
     }
 
     // set up errout
+    syBuf[3].type = raw_socket;
     syBuf[3].echo = syBuf[3].fp = fileno(stderr);
     syBuf[3].bufno = -1;
 

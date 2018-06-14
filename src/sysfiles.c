@@ -84,15 +84,27 @@ typedef void sig_handler_t ( int );
 #include <mach-o/dyld.h>
 #endif
 
+#include <zlib.h>
+
 
 /* utility to check return value of 'write'  */
 ssize_t echoandcheck(int fid, const char *buf, size_t count) {
   int ret;
+  if (syBuf[fid].type == gzip_socket) {
+      ret = gzwrite(syBuf[fid].gzfp, buf, count);
+      if (ret < 0)
+          ErrorQuit(
+              "Could not write to compressed file, see 'LastSystemError();'\n",
+              0L, 0L);
+  }
+  else {
+      ret = write(syBuf[fid].echo, buf, count);
+      if (ret < 0)
+          ErrorQuit("Could not write to file descriptor %d, see "
+                    "'LastSystemError();'\n",
+                    syBuf[fid].fp, 0L);
+  }
 
-  ret = write(syBuf[fid].echo, buf, count);
-  if (ret < 0)
-    ErrorQuit("Cannot write to file descriptor %d, see 'LastSystemError();'\n",
-               fid, 0L);
   return ret;
 }
 
@@ -593,7 +605,7 @@ void syWinPut (
     Char *              t;              /* pointer into the temporary      */
 
     /* if not running under a window handler, don't do anything            */
-    if ( ! SyWindow || 4 <= fid )
+    if (!SyWindow || 4 <= fid || syBuf[fid].type == gzip_socket)
         return;
 
     /* print the cmd                                                       */
@@ -752,7 +764,8 @@ SYS_SY_BUFFER syBuffers [ 32];
 void SyMarkBufUnused(Int i)
 {
     GAP_ASSERT(i >= 0 && i < 256);
-    syBuf[i].fp = -1;
+    memset(&(syBuf[i]), 0, sizeof(syBuf[i]));
+    syBuf[i].type = unused_socket;
 }
 
 // There is no explicit method to mark syBufs as used,
@@ -762,7 +775,7 @@ void SyMarkBufUnused(Int i)
 Int SyBufInUse(Int i)
 {
     GAP_ASSERT(i >= 0 && i < 256);
-    return syBuf[i].fp != -1;
+    return syBuf[i].type != unused_socket;
 }
 
 /****************************************************************************
@@ -865,26 +878,26 @@ Int SyFopen (
     if(strlen(mode) >= 2 && mode[1] == 'b')
        flags |= O_BINARY;
 #endif
+
     /* try to open the file                                                */
     if ( 0 <= (syBuf[fid].fp = open(name,flags, 0644)) ) {
-        syBuf[fid].pipe = 0;
+        syBuf[fid].type = raw_socket;
         syBuf[fid].echo = syBuf[fid].fp;
-        syBuf[fid].ateof = 0;
-        syBuf[fid].crlast = 0;
         syBuf[fid].bufno = -1;
-        syBuf[fid].isTTY = 0;
+    }
+    else if (strncmp(mode, "r", 1) == 0 && SyIsReadableFile(namegz) == 0 &&
+             (syBuf[fid].gzfp = gzopen(namegz, mode))) {
+        syBuf[fid].type = gzip_socket;
+        syBuf[fid].bufno = -1;
     }
 #ifdef HAVE_POPEN
    else if ( strncmp(mode,"r",1) == 0
            && SyIsReadableFile(namegz) == 0
              && ( (syBuf[fid].pipehandle = popen(cmd,"r"))
                ) ) {
-        syBuf[fid].pipe = 1;
+        syBuf[fid].type = pipe_socket;
         syBuf[fid].fp = fileno(syBuf[fid].pipehandle);
-        syBuf[fid].ateof = 0;
-        syBuf[fid].crlast = 0;
         syBuf[fid].bufno = -1;
-        syBuf[fid].isTTY = 0;
     }
 #endif
     else {
@@ -955,18 +968,23 @@ Int SyFclose (
     }
     HashLock(&syBuf);
     /* try to close the file                                               */
-    if ( (syBuf[fid].pipe == 0 && close( syBuf[fid].fp ) == EOF)
-      || (syBuf[fid].pipe == 1 && pclose( syBuf[fid].pipehandle ) == -1
+    if ((syBuf[fid].type == raw_socket && close(syBuf[fid].fp) == EOF) ||
+        (syBuf[fid].type == pipe_socket && pclose(syBuf[fid].pipehandle) == -1
 #ifdef ECHILD
-          && errno != ECHILD
+         && errno != ECHILD
 #endif
-          ) )
-    {
+         )) {
         fputs("gap: 'SyFclose' cannot close file, ",stderr);
         fputs("maybe your file system is full?\n",stderr);
         SyMarkBufUnused(fid);
         HashUnlock(&syBuf);
         return -1;
+    }
+
+    if (syBuf[fid].type == gzip_socket) {
+        if (gzclose(syBuf[fid].gzfp) < 0) {
+            fputs("gap: 'SyFclose' cannot close compressed file", stderr);
+        }
     }
 
     /* mark the buffer as unused                                           */
@@ -1434,15 +1452,14 @@ Int SyFtell (
         return -1;
     }
 
-    /* cannot seek in a pipe                                               */
-    if ( syBuf[fid].pipe ) {
+    switch (syBuf[fid].type) {
+    case raw_socket:
+        return (Int)lseek(syBuf[fid].fp, 0, SEEK_CUR);
+    case gzip_socket:
+        return (Int)gzseek(syBuf[fid].gzfp, 0, SEEK_CUR);
+    default:
         return -1;
     }
-
-    /* get the position
-     */
-
-    return (Int) lseek(syBuf[fid].fp, 0, SEEK_CUR);
 }
 
 
@@ -1462,14 +1479,14 @@ Int SyFseek (
         return -1;
     }
 
-    /* cannot seek in a pipe                                               */
-    if ( syBuf[fid].pipe ) {
+    switch (syBuf[fid].type) {
+    case raw_socket:
+        return (Int)lseek(syBuf[fid].fp, pos, SEEK_SET);
+    case gzip_socket:
+        return (Int)gzseek(syBuf[fid].gzfp, pos, SEEK_SET);
+    default:
         return -1;
     }
-
-    /* get the position                                                    */
-    lseek( syBuf[fid].fp, pos, SEEK_SET );
-    return 0;
 }
 
 
@@ -1509,22 +1526,41 @@ Int SyFseek (
 
 Int SyRead(Int fid, void * ptr, size_t len)
 {
-    return read(syBuf[fid].fp, ptr, len);
+    if (syBuf[fid].type == gzip_socket) {
+        return gzread(syBuf[fid].gzfp, ptr, len);
+    }
+    else {
+        return read(syBuf[fid].fp, ptr, len);
+    }
 }
 
 Int SyWrite(Int fid, const void * ptr, size_t len)
 {
-    return write(syBuf[fid].echo, ptr, len);
+    if (syBuf[fid].type == gzip_socket) {
+        return gzwrite(syBuf[fid].gzfp, ptr, len);
+    }
+    else {
+        return write(syBuf[fid].echo, ptr, len);
+    }
 }
 
 ssize_t SyWriteandcheck(Int fid, const void * buf, size_t count)
 {
     int ret;
-    ret = write(syBuf[fid].fp, buf, count);
-    if (ret < 0)
-        ErrorQuit("Cannot write to file descriptor %d, see "
-                    "'LastSystemError();'\n",
-                    syBuf[fid].fp, 0L);
+    if (syBuf[fid].type == gzip_socket) {
+        ret = gzwrite(syBuf[fid].gzfp, buf, count);
+        if (ret < 0)
+            ErrorQuit(
+                "Cannot write to compressed file, see 'LastSystemError();'\n",
+                0L, 0L);
+    }
+    else {
+        ret = write(syBuf[fid].fp, buf, count);
+        if (ret < 0)
+            ErrorQuit("Cannot write to file descriptor %d, see "
+                      "'LastSystemError();'\n",
+                      syBuf[fid].fp, 0L);
+    }
 
     return ret;
 }
@@ -3577,6 +3613,8 @@ Obj SyReadStringFileStat(Int fid)
     char            *ptr;
     struct stat     fstatbuf;
 
+    GAP_ASSERT(syBuf[fid].type != gzip_socket);
+
     if( fstat( syBuf[fid].fp, &fstatbuf) == 0 ) {
         if((off_t)(Int)fstatbuf.st_size != fstatbuf.st_size) {
             ErrorMayQuit(
@@ -3608,7 +3646,7 @@ Obj SyReadStringFileStat(Int fid)
 
 Obj SyReadStringFid(Int fid)
 {
-    if(syBuf[fid].pipe == 1) {
+    if (syBuf[fid].type != raw_socket) {
         return SyReadStringFile(fid);
     } else {
         return SyReadStringFileStat(fid);
