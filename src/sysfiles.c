@@ -1507,6 +1507,27 @@ Int SyFseek (
 #  define LINE_END_HACK 1
 #endif
 
+Int SyRead(Int fid, void * ptr, size_t len)
+{
+    return read(syBuf[fid].fp, ptr, len);
+}
+
+Int SyWrite(Int fid, const void * ptr, size_t len)
+{
+    return write(syBuf[fid].echo, ptr, len);
+}
+
+ssize_t SyWriteandcheck(Int fid, const void * buf, size_t count)
+{
+    int ret;
+    ret = write(syBuf[fid].fp, buf, count);
+    if (ret < 0)
+        ErrorQuit("Cannot write to file descriptor %d, see "
+                    "'LastSystemError();'\n",
+                    syBuf[fid].fp, 0L);
+
+    return ret;
+}
 
 Int syGetchTerm (
     Int                 fid )
