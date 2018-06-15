@@ -14,6 +14,7 @@
 #include <src/bool.h>
 #include <src/calls.h>
 #include <src/code.h>
+#include <src/funcs.h>
 #include <src/gap.h>
 #include <src/hookintrprtr.h>
 #include <src/io.h>
