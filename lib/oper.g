@@ -1926,6 +1926,7 @@ end);
 
 fi;
 
+
 if BASE_SIZE_METHODS_OPER_ENTRY <> 6 then
     Error("MethodsOperation must be updated for new BASE_SIZE_METHODS_OPER_ENTRY");
 fi;
@@ -1956,6 +1957,22 @@ BIND_GLOBAL("MethodsOperation", function(oper, nargs)
     od;
     return result;
 end );
+
+#############################################################################
+##
+#F RECALCULATE_ALL_METHOD_RANKS() . . reorder methods after new implications
+##
+## Installing new implications (including hidden implications) can change the
+## rank of existing filters, and so of existing methods for operations.
+##
+## This function recalculates all such ranks and adjusts the method ordering
+## where needed. If the ordering changes, the relevant caches are flushed.
+##
+## If PRINT_REORDERED_METHODS is true, it prints some diagnostics (this is a
+## bit too low-level for Info).
+##
+##
+
 
 #
 # We had to install a placeholder for this in filter.g
