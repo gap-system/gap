@@ -2014,7 +2014,10 @@ BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
                 if i = 1 or rank <= meths[base-BASE_SIZE_METHODS_OPER_ENTRY+3] then
                     continue;
                 fi;
-               
+                
+                if IsBound(HPCGAP) and HPCGAP and not changed then 
+                    meths := SHALLOW_COPY_OBJ(meths);
+                fi;
                 changed := true;
                 k := i-2;
                 while k > 1 and meths[(k-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n) + n + 3] < rank do
@@ -2034,7 +2037,11 @@ BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
                        k*(n+BASE_SIZE_METHODS_OPER_ENTRY)]} := l;
             od;
             if changed then
-                CHANGED_METHODS_OPERATION(oper,n);
+                if IsBound(HPCGAP) and HPCGAP then
+                    SET_METHODS_OPERATION(oper,n,meths);                    
+                else                   
+                    CHANGED_METHODS_OPERATION(oper,n);
+                fi;                
             fi;
         od;
     od;
