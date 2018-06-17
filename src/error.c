@@ -249,6 +249,9 @@ Obj FuncCALL_WITH_CATCH(Obj self, Obj func, volatile Obj args)
     }
     else {
         Obj result = CallFuncList(func, args);
+        // Make an explicit check if an interrupt occurred
+        // in case func was a kernel function.
+        TakeInterrupt();
 #ifdef HPCGAP
         /* There should be no locks to pop off the stack, but better safe than
          * sorry. */
