@@ -377,7 +377,10 @@ extern void LoadModules(void);
 *F  RecordLoadedModule( <module> )  . . . . . . . . store module in <Modules>
 **
 **  The filename argument is a C string. A copy of it is taken in some
-**   private space and added to the module info.
+**  private space and added to the module info.
+**
+**  This function triggers no garbage collection, so it OK to pass a pointer
+**  to the content of a GAP string object as filename.
 */
 extern void RecordLoadedModule(StructInitInfo * module,
                                Int              isGapRootRelative,
