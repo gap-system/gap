@@ -852,8 +852,8 @@ void LoadModules(void)
                     SyExit(1);
                 }
             }
-            /* link and init me */
-            (info->initKernel)(info);
+
+            ActivateModule(info);
             RecordLoadedModule(info, 0, buf);
         }
     }
