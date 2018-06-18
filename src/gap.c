@@ -975,9 +975,10 @@ again:
         /* or display information about global bags                        */
         else if ( strcmp( CSTR_STRING(cmd), "global" ) == 0 ) {
             for ( i = 0;  i < GlobalBags.nr;  i++ ) {
-                if ( *(GlobalBags.addr[i]) != 0 ) {
-                    Pr( "%50s: %12d bytes\n", (Int)GlobalBags.cookie[i], 
-                        (Int)SIZE_BAG(*(GlobalBags.addr[i])) );
+                Bag bag = *(GlobalBags.addr[i]);
+                if (bag != 0) {
+                    const UInt sz = ((Int)bag & 3) ? 0 : SIZE_BAG(bag);
+                    Pr("%50s: %12d bytes\n", (Int)GlobalBags.cookie[i], sz);
                 }
             }
         }
