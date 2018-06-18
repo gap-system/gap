@@ -30,9 +30,6 @@ Obj ElmAList(Obj list, Int pos);
 Obj Elm0AList(Obj list, Int pos);
 Obj LengthAList(Obj list);
 
-void InitAObjectsState();
-void DestroyAObjectsState();
-
 
 /*****************************************************************************
 **

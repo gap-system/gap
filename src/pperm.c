@@ -6708,9 +6708,12 @@ static Int InitLibrary(StructInitInfo * module)
 }
 
 
-static void InitModuleState(ModuleStateOffset offset)
+static Int InitModuleState(void)
 {
     TmpPPerm = 0;
+
+    // return success
+    return 0;
 }
 
 

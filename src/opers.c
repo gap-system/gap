@@ -4240,7 +4240,7 @@ static Int InitLibrary (
     return 0;
 }
 
-static void InitModuleState(ModuleStateOffset offset)
+static Int InitModuleState(void)
 {
 #ifdef HPCGAP
     STATE(MethodCache) = NEW_PLIST(T_PLIST, 1);
@@ -4248,6 +4248,9 @@ static void InitModuleState(ModuleStateOffset offset)
     STATE(MethodCacheSize) = 1;
     SET_LEN_PLIST(STATE(MethodCache), 1);
 #endif
+
+    // return success
+    return 0;
 }
 
 /****************************************************************************

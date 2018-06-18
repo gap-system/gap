@@ -1035,10 +1035,6 @@ static Int InitKernel (
     return 0;
 }
 
-static void InitModuleState(ModuleStateOffset offset)
-{
-}
-
 /****************************************************************************
 **
 *F  InitInfoScanner() . . . . . . . . . . . . . . . . table of init functions
@@ -1054,6 +1050,5 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoScanner ( void )
 {
-    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

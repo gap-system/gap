@@ -1714,7 +1714,7 @@ static Int InitKernel (
     return 0;
 }
 
-static void InitModuleState(ModuleStateOffset offset)
+static Int InitModuleState(void)
 {
     STATE(CurrExecStatFuncs) = ExecStatFuncs;
 #ifdef HPCGAP
@@ -1724,6 +1724,9 @@ static void InitModuleState(ModuleStateOffset offset)
         STATE(CurrExecStatFuncs) = IntrExecStatFuncs;
     }
 #endif
+
+    // return success
+    return 0;
 }
 
 /****************************************************************************

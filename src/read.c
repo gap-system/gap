@@ -2924,7 +2924,7 @@ static Int InitKernel (
 }
 
 
-static void InitModuleState(ModuleStateOffset offset)
+static Int InitModuleState(void)
 {
     STATE(ErrorLVars) = (UInt **)0;
     STATE(StackNams) = NEW_PLIST(T_PLIST, 16);
@@ -2932,6 +2932,9 @@ static void InitModuleState(ModuleStateOffset offset)
     STATE(ReadTilde) = 0;
     STATE(CurrLHSGVar) = 0;
     STATE(CurrentGlobalForLoopDepth) = 0;
+
+    // return success
+    return 0;
 }
 
 

@@ -788,7 +788,7 @@ static Int InitLibrary (
     return 0;
 }
 
-static void InitModuleState(ModuleStateOffset offset)
+static Int InitModuleState(void)
 {
 #ifndef HPCGAP
     InitGlobalBag( &STATE(SC_NW_STACK), "SC_NW_STACK" );
@@ -817,6 +817,9 @@ static void InitModuleState(ModuleStateOffset offset)
     STATE(SC_CW_VECTOR) = NEW_STRING(0);
     STATE(SC_CW2_VECTOR) = NEW_STRING(0);
     STATE(SC_MAX_STACK_SIZE) = maxStackSize;
+
+    // return success
+    return 0;
 }
 
 /****************************************************************************

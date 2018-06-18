@@ -4553,10 +4553,13 @@ static Int InitLibrary (
 }
 
 
-static void InitModuleState(ModuleStateOffset offset)
+static Int InitModuleState(void)
 {
     /* make the buffer bag                                                 */
     TmpPerm = 0;
+
+    // return success
+    return 0;
 }
 
 

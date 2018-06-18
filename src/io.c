@@ -2131,10 +2131,6 @@ static Int InitKernel (
     return 0;
 }
 
-static void InitModuleState(ModuleStateOffset offset)
-{
-}
-
 /****************************************************************************
 **
 *F  InitInfoIO() . . . . . . . . . . . . . . . . table of init functions
@@ -2150,7 +2146,6 @@ static StructInitInfo module = {
 
 StructInitInfo * InitInfoIO ( void )
 {
-    IOStateOffset =
-        RegisterModuleState(sizeof(struct IOModuleState), InitModuleState, 0);
+    IOStateOffset = RegisterModuleState(sizeof(struct IOModuleState), 0, 0);
     return &module;
 }
