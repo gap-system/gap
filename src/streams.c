@@ -375,7 +375,6 @@ Int READ_GAP_ROOT ( const Char * filename )
     TypGRF_Data         result;
     Int                 res;
     UInt                type;
-    StructInitInfo *    info;
 
     /* try to find the file                                                */
     res = SyFindOrLinkGapRootFile( filename, &result );
@@ -396,16 +395,8 @@ Int READ_GAP_ROOT ( const Char * filename )
             Pr("#I  READ_GAP_ROOT: loading '%s' statically\n", (Int)filename,
                0);
         }
-        info = result.module_info;
-        res  = info->initKernel(info);
-        if (!SyRestoring) {
-          UpdateCopyFopyInfo();
-          res  = res || info->initLibrary(info);
-        }
-        if ( res ) {
-            Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
-        }
-        RecordLoadedModule(info, 1, filename);
+        ActivateModule(result.module_info);
+        RecordLoadedModule(result.module_info, 1, filename);
         return 1;
     }
 

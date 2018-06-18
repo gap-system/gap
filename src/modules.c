@@ -113,19 +113,22 @@ Obj FuncGAP_CRC(Obj self, Obj filename)
 **
 *F  ActivateModule( <info> )
 */
-static void ActivateModule(StructInitInfo * info)
+void ActivateModule(StructInitInfo * info)
 {
     Int              res;
 
-    /* link and init me                                                    */
     res = (info->initKernel)(info);
-    UpdateCopyFopyInfo();
 
-    /* Start a new executor to run the outer function of the module
-       in global context */
-    ExecBegin(STATE(BottomLVars));
-    res = res || (info->initLibrary)(info);
-    ExecEnd(res);
+    if (!SyRestoring) {
+        UpdateCopyFopyInfo();
+
+        // Start a new executor to run the outer function of the module in
+        // global context
+        ExecBegin(STATE(BottomLVars));
+        res = res || info->initLibrary(info);
+        ExecEnd(res);
+    }
+
     if (res) {
         Pr("#W  init functions returned non-zero exit code\n", 0L, 0L);
     }
