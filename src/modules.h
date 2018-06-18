@@ -374,6 +374,13 @@ extern void LoadModules(void);
 
 /****************************************************************************
 **
+*F  ActivateModule( <info> )
+*/
+extern void ActivateModule(StructInitInfo * info);
+
+
+/****************************************************************************
+**
 *F  RecordLoadedModule( <module> )  . . . . . . . . store module in <Modules>
 **
 **  The filename argument is a C string. A copy of it is taken in some
