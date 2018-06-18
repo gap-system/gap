@@ -346,6 +346,9 @@ Obj             ZeroListDefault (
 
     /* make the result list -- same mutability as argument */
     len = LEN_LIST( list );
+    if (len == 0) {
+        return NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(list), T_PLIST_EMPTY, 0);
+    }
     res = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(list), T_PLIST, len );
     SET_LEN_PLIST( res, len );
 
@@ -362,9 +365,7 @@ Obj             ZeroListDefault (
       }
     /* Now adjust the result TNUM info */
 
-    if (len == 0)
-      SET_FILT_LIST( res, FN_IS_EMPTY );
-    else if (IS_PLIST( list ))
+    if (IS_PLIST( list ))
       {
         if (TNUM_OBJ(list) == T_PLIST_FFE ||
             TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
@@ -412,6 +413,9 @@ Obj             ZeroListMutDefault (
 
     /* make the result list -- always mutable */
     len = LEN_LIST( list );
+    if (len == 0) {
+        return NEW_PLIST(T_PLIST_EMPTY, 0);
+    }
     res = NEW_PLIST(  T_PLIST ,len );
     SET_LEN_PLIST( res, len );
 
@@ -428,9 +432,7 @@ Obj             ZeroListMutDefault (
       }
     /* Now adjust the result TNUM info */
 
-    if (len == 0)
-      SET_FILT_LIST( res, FN_IS_EMPTY );
-    else if (IS_PLIST( list ))
+    if (IS_PLIST( list ))
       {
         if (TNUM_OBJ(list) == T_PLIST_FFE ||
             TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
@@ -513,6 +515,9 @@ Obj AInvMutListDefault (
     /* make the result list -- always mutable, since this might be a method for
        AdditiveInverseOp */
     len = LEN_LIST( list );
+    if (len == 0) {
+        return NEW_PLIST(T_PLIST_EMPTY, 0);
+    }
     res = NEW_PLIST( T_PLIST , len );
     SET_LEN_PLIST( res, len );
 
@@ -528,10 +533,7 @@ Obj AInvMutListDefault (
 
     /* Now adjust the result TNUM info */
 
-    if (len == 0)
-      SET_FILT_LIST( res, FN_IS_EMPTY );
-    else if (IS_PLIST( list ))
-      {
+    if (IS_PLIST(list)) {
         if (TNUM_OBJ(list) == T_PLIST_FFE ||
             TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
           RetypeBag(res, T_PLIST_FFE);
@@ -572,6 +574,9 @@ Obj AInvListDefault (
 
     /* make the result list -- same mutability as input */
     len = LEN_LIST( list );
+    if (len == 0) {
+        return NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(list), T_PLIST_EMPTY, 0);
+    }
     res = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(list), T_PLIST, len );
     SET_LEN_PLIST( res, len );
 
@@ -587,10 +592,7 @@ Obj AInvListDefault (
 
     /* Now adjust the result TNUM info */
 
-    if (len == 0)
-      SET_FILT_LIST( res, FN_IS_EMPTY );
-    else if (IS_PLIST( list ))
-      {
+    if (IS_PLIST(list)) {
         if (TNUM_OBJ(list) == T_PLIST_FFE ||
             TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
           RetypeBag(res, TNUM_OBJ(list));
@@ -660,11 +662,15 @@ Obj             DiffSclList (
     Obj                 elmR;           /* one element of right operand    */
     Int                 len;            /* length                          */
     Int                 i;              /* loop variable                   */
+    Int                 mut;
 
     /* make the result list                                                */
     len = LEN_LIST( listR );
-    listD = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR),
-                           T_PLIST, len );
+    mut = IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR);
+    if (len == 0) {
+        return NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST_EMPTY, 0);
+    }
+    listD = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, len);
     SET_LEN_PLIST( listD, len );
 
     /* loop over the entries and subtract                                  */
@@ -680,9 +686,7 @@ Obj             DiffSclList (
 
     /* Now adjust the result TNUM info */
 
-    if (len == 0)
-      SET_FILT_LIST( listD, FN_IS_EMPTY );
-    else if (IS_PLIST( listR ))
+    if (IS_PLIST( listR ))
       {
          if (HAS_FILT_LIST(listR, FN_IS_DENSE))
            SET_FILT_LIST( listD, FN_IS_DENSE );
@@ -702,11 +706,15 @@ Obj             DiffListScl (
     Obj                 elmL;           /* one element of left operand     */
     Int                 len;            /* length                          */
     Int                 i;              /* loop variable                   */
+    Int                 mut;
 
     /* make the result list                                                */
     len = LEN_LIST( listL );
-    listD = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL)|| IS_MUTABLE_OBJ(listR),
-                           T_PLIST, len );
+    mut = IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR);
+    if (len == 0) {
+        return NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST_EMPTY, 0);
+    }
+    listD = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, len);
     SET_LEN_PLIST( listD, len );
 
     /* loop over the entries and subtract                                  */
@@ -723,9 +731,7 @@ Obj             DiffListScl (
 
     /* Now adjust the result TNUM info */
 
-    if (len == 0)
-      SET_FILT_LIST( listD, FN_IS_EMPTY );
-    else if (IS_PLIST( listL ))
+    if (IS_PLIST( listL ))
       {
          if (HAS_FILT_LIST(listL, FN_IS_DENSE))
            SET_FILT_LIST( listD, FN_IS_DENSE );
@@ -744,16 +750,19 @@ Obj             DiffListList (
     Obj                 elmD;           /* one element of the difference   */
     Obj                 elmL;           /* one element of the left list    */
     Obj                 elmR;           /* one element of the right list   */
-    Int                 lenL,lenR,lenD; /* length                          */
     Int                 i;              /* loop variable                   */
     UInt                mutD;
+    Int                 mut;
 
     /* get and check the length                                            */
-    lenL = LEN_LIST( listL );
-    lenR = LEN_LIST( listR );
-    lenD = (lenR > lenL) ? lenR : lenL;
-    listD = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR),
-                           T_PLIST, lenD );
+    const UInt lenL = LEN_LIST(listL);
+    const UInt lenR = LEN_LIST(listR);
+    const UInt lenD = (lenR > lenL) ? lenR : lenL;
+    mut = IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR);
+    if (lenD == 0) {
+        return NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST_EMPTY, 0);
+    }
+    listD = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, lenD);
     SET_LEN_PLIST( listD, lenD );
 
     /* Sort out mutability */
@@ -807,9 +816,7 @@ Obj             DiffListList (
     /* Now adjust the result TNUM info. There's not so much we
        can say here with total reliability */
 
-    if (lenD == 0)
-      SET_FILT_LIST( listD, FN_IS_EMPTY );
-    else if (IS_PLIST( listR ) && IS_PLIST(listL) &&
+    if (IS_PLIST( listR ) && IS_PLIST(listL) &&
              HAS_FILT_LIST(listR, FN_IS_DENSE) &&
              HAS_FILT_LIST(listL, FN_IS_DENSE))
       SET_FILT_LIST( listD, FN_IS_DENSE );
@@ -881,11 +888,15 @@ Obj             ProdSclList (
     Obj                 elmR;           /* one element of right operand    */
     Int                 len;            /* length                          */
     Int                 i;              /* loop variable                   */
+    Int                 mut;
 
     /* make the result list                                                */
     len = LEN_LIST( listR );
-    listP = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR),
-                           T_PLIST, len );
+    mut = IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR);
+    if (len == 0) {
+        return NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST_EMPTY, 0);
+    }
+    listP = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, len);
     SET_LEN_PLIST( listP, len );
 
     /* loop over the entries and multiply                                  */
@@ -898,9 +909,7 @@ Obj             ProdSclList (
             CHANGED_BAG( listP );
           }
     }
-    if (len == 0)
-      SET_FILT_LIST( listP, FN_IS_EMPTY );
-    else if (IS_PLIST( listR ))
+    if (IS_PLIST( listR ))
       {
          if (HAS_FILT_LIST(listR, FN_IS_DENSE))
            SET_FILT_LIST( listP, FN_IS_DENSE );
@@ -921,11 +930,15 @@ Obj             ProdListScl (
     Obj                 elmL;           /* one element of left operand     */
     Int                 len;            /* length                          */
     Int                 i;              /* loop variable                   */
+    Int                 mut;
 
     /* make the result list                                                */
     len = LEN_LIST( listL );
-    listP = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR),
-                           T_PLIST, len );
+    mut = IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR);
+    if (len == 0) {
+        return NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST_EMPTY, 0);
+    }
+    listP = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, len);
     SET_LEN_PLIST( listP, len );
 
     /* loop over the entries and multiply                                  */
@@ -938,9 +951,7 @@ Obj             ProdListScl (
         }
     }
 
-    if (len == 0)
-      SET_FILT_LIST( listP, FN_IS_EMPTY );
-    else if (IS_PLIST( listL ))
+    if (IS_PLIST( listL ))
       {
          if (HAS_FILT_LIST(listL, FN_IS_DENSE))
            SET_FILT_LIST( listP, FN_IS_DENSE );

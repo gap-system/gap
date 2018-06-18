@@ -1208,7 +1208,7 @@ Obj             FuncOnTuples (
     }
 
     /* special case for the empty list */
-    if (HAS_FILT_LIST(tuple, FN_IS_EMPTY) || LEN_LIST(tuple) == 0) {
+    if (LEN_LIST(tuple) == 0) {
       if (IS_MUTABLE_OBJ(tuple)) {
         img = NEW_PLIST(T_PLIST_EMPTY, 0);
         return img;
@@ -1279,7 +1279,7 @@ Obj             FuncOnSets (
     }
 
     /* special case for the empty list */
-    if (HAS_FILT_LIST(set, FN_IS_EMPTY) || LEN_LIST(set) == 0) {
+    if (LEN_LIST(set) == 0) {
       if (IS_MUTABLE_OBJ(set)) {
         img = NEW_PLIST(T_PLIST_EMPTY, 0);
         return img;
