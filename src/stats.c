@@ -1740,10 +1740,10 @@ static StructInitInfo module = {
     .name = "stats",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
+    .initModuleState = InitModuleState,
 };
 
 StructInitInfo * InitInfoStats ( void )
 {
-    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

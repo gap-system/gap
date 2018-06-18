@@ -2795,11 +2795,11 @@ static StructInitInfo module = {
     .name = "vars",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
-    .postRestore = PostRestore
+    .postRestore = PostRestore,
+    .initModuleState = InitModuleState,
 };
 
 StructInitInfo * InitInfoVars ( void )
 {
-    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

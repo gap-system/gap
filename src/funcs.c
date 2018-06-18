@@ -1193,10 +1193,13 @@ static StructInitInfo module = {
     .name = "funcs",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
+
+    .moduleStateSize = sizeof(struct FuncsModuleState),
+    .moduleStateOffsetPtr = &FuncsStateOffset,
+    .initModuleState = InitModuleState,
 };
 
 StructInitInfo * InitInfoFuncs ( void )
 {
-    FuncsStateOffset = RegisterModuleState(sizeof(struct FuncsModuleState), InitModuleState, 0);
     return &module;
 }

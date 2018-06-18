@@ -6728,11 +6728,13 @@ static StructInitInfo module = {
     .name = "pperm",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
+
+    .moduleStateSize = sizeof(PPermModuleState),
+    .moduleStateOffsetPtr = &PPermStateOffset,
+    .initModuleState = InitModuleState,
 };
 
 StructInitInfo * InitInfoPPerm(void)
 {
-    PPermStateOffset =
-        RegisterModuleState(sizeof(PPermModuleState), InitModuleState, 0);
     return &module;
 }

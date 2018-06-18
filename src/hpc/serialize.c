@@ -1201,12 +1201,13 @@ static StructInitInfo module = {
     .name = "serialize",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
+
+    .moduleStateSize = sizeof(SerializeModuleState),
+    .moduleStateOffsetPtr = &SerializeStateOffset,
 };
 
 StructInitInfo * InitInfoSerialize(void)
 {
-    SerializeStateOffset =
-        RegisterModuleState(sizeof(SerializeModuleState), 0, 0);
     return &module;
 }
 

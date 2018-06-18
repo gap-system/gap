@@ -2142,10 +2142,12 @@ static StructInitInfo module = {
     .name = "scanner",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
+
+    .moduleStateSize = sizeof(struct IOModuleState),
+    .moduleStateOffsetPtr = &IOStateOffset,
 };
 
 StructInitInfo * InitInfoIO ( void )
 {
-    IOStateOffset = RegisterModuleState(sizeof(struct IOModuleState), 0, 0);
     return &module;
 }

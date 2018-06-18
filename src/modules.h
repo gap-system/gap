@@ -40,7 +40,7 @@
 **
 */
 
-#define GAP_KERNEL_MAJOR_VERSION 2
+#define GAP_KERNEL_MAJOR_VERSION 3
 #define GAP_KERNEL_MINOR_VERSION 0
 #define GAP_KERNEL_API_VERSION                                               \
     ((GAP_KERNEL_MAJOR_VERSION)*1000 + (GAP_KERNEL_MINOR_VERSION))
@@ -113,6 +113,19 @@ struct init_info {
 
     /* function to call after restoring workspace                          */
     Int (*postRestore)(StructInitInfo *);
+
+    // number of bytes this module needs for its per-thread module state
+    UInt moduleStateSize;
+
+    // if this is not zero, then the module state offset is stored into
+    // the address this points at
+    Int * moduleStateOffsetPtr;
+
+    // initialize thread local module state
+    Int (*initModuleState)(void);
+
+    // destroy thread local module state
+    Int (*destroyModuleState)(void);
 
 };
 

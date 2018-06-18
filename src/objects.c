@@ -2315,10 +2315,12 @@ static StructInitInfo module = {
     .name = "objects",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
+
+    .moduleStateSize = sizeof(ObjectsModuleState),
+    .moduleStateOffsetPtr = &ObjectsStateOffset,
 };
 
 StructInitInfo * InitInfoObjects ( void )
 {
-    ObjectsStateOffset = RegisterModuleState(sizeof(ObjectsModuleState), 0, 0);
     return &module;
 }

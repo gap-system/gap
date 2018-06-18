@@ -869,6 +869,16 @@ void ModulesSetup(void)
             FPUTS_TO_STDERR(info->name);
             FPUTS_TO_STDERR(")\n");
         }
+
+        // register module state if necessary
+        if (info->moduleStateSize || info->initModuleState ||
+            info->destroyModuleState) {
+            UInt offset = RegisterModuleState(info->moduleStateSize,
+                                              info->initModuleState,
+                                              info->destroyModuleState);
+            if (info->moduleStateOffsetPtr)
+                *info->moduleStateOffsetPtr = offset;
+        }
     }
     NrBuiltinModules = NrModules;
 }
