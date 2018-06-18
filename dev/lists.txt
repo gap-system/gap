@@ -424,7 +424,6 @@ check if filter <fnum> is known for <list>
 
 filter numbers
 --------------
-FN_IS_EMPTY:            empty list
 FN_IS_SSORT:            strictly sorted
 FN_IS_NSORT:            not strictly sorted
 FN_IS_DENSE:            dense

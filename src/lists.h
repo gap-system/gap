@@ -817,9 +817,6 @@ extern  Obj             TYPES_LIST_FAM (
 */
 
 enum {
-    /** filter number for 'IsEmpty' */
-    FN_IS_EMPTY,
-
     /** filter number for 'IsSSortedList' */
     FN_IS_SSORT,
 
