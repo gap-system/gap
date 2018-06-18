@@ -63,7 +63,7 @@ void RunModuleConstructors(GAPState *state)
     for (i = 0; i < StateDescriptorCount; i++) {
         StateDescriptor * handler = StateDescriptors + i;
         if (handler->constructor)
-            handler->constructor(handler->offset);
+            handler->constructor();
     }
 }
 

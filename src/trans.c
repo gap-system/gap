@@ -5669,9 +5669,12 @@ static Int InitLibrary(StructInitInfo * module)
     return 0;
 }
 
-static void InitModuleState(ModuleStateOffset offset)
+static Int InitModuleState(void)
 {
     TmpTrans = 0;
+
+    // return success
+    return 0;
 }
 
 /****************************************************************************

@@ -418,7 +418,7 @@ static Int InitLibrary (
     return 0;
 }
 
-static void InitModuleState(ModuleStateOffset offset)
+static Int InitModuleState(void)
 {
     InitGlobalBag( &CFTLState()->WORD_STACK, "WORD_STACK" );
     InitGlobalBag( &CFTLState()->WORD_EXPONENT_STACK, "WORD_EXPONENT_STACK" );
@@ -429,6 +429,9 @@ static void InitModuleState(ModuleStateOffset offset)
     CFTLState()->WORD_EXPONENT_STACK = NEW_PLIST( T_PLIST, 4096 );
     CFTLState()->SYLLABLE_STACK = NEW_PLIST( T_PLIST, 4096 );
     CFTLState()->EXPONENT_STACK = NEW_PLIST( T_PLIST, 4096 );
+
+    // return success
+    return 0;
 }
 
 /****************************************************************************

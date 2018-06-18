@@ -2764,7 +2764,7 @@ static Int InitLibrary (
 }
 
 
-static void InitModuleState(ModuleStateOffset offset)
+static Int InitModuleState(void)
 {
     Obj tmpFunc, tmpBody;
 
@@ -2778,6 +2778,9 @@ static void InitModuleState(ModuleStateOffset offset)
     SET_BODY_FUNC( tmpFunc, tmpBody );
 
     STATE(CurrLVars) = STATE(BottomLVars);
+
+    // return success
+    return 0;
 }
 
 

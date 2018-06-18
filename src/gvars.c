@@ -1753,11 +1753,14 @@ static Int CheckInit (
 }
 
 
-static void InitModuleState(ModuleStateOffset offset)
+static Int InitModuleState(void)
 {
     /* Create the current namespace: */
     STATE(CurrNamespace) = NEW_STRING(0);
     SET_LEN_STRING(STATE(CurrNamespace), 0);
+
+    // return success
+    return 0;
 }
 
 

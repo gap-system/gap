@@ -2255,11 +2255,14 @@ static Int InitLibrary (
 }
 
 
-static void InitModuleState(ModuleStateOffset offset)
+static Int InitModuleState(void)
 {
     ResultCyc = 0;
     LastECyc = 0;
     LastNCyc = 0;
+
+    // return success
+    return 0;
 }
 
 

@@ -1558,12 +1558,13 @@ void UnbAList(Obj list, Int pos)
   HashUnlockShared(list);
 }
 
-void InitAObjectsState(ModuleStateOffset offset)
+Int InitAObjectsState(void)
 {
     TLS(tlRecords) = (Obj)0;
+    return 0;
 }
 
-void DestroyAObjectsState(void)
+Int DestroyAObjectsState(void)
 {
     Obj  records;
     UInt i, len;
@@ -1573,6 +1574,7 @@ void DestroyAObjectsState(void)
         for (i = 1; i <= len; i++)
             UpdateThreadRecord(ELM_PLIST(records, i), (Obj)0);
     }
+    return 0;
 }
 
 #endif /* WARD_ENABLED */

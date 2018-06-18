@@ -3336,7 +3336,7 @@ static Int PreSave (
   return 0;
 }
 
-static void InitModuleState(ModuleStateOffset offset)
+static Int InitModuleState(void)
 {
     STATE(OffsBodyCount) = 0;
 
@@ -3352,6 +3352,9 @@ static void InitModuleState(ModuleStateOffset offset)
     static Stat MainOffsBodyStack[MAX_FUNC_EXPR_NESTING];
     STATE(OffsBodyStack) = MainOffsBodyStack;
 #endif
+
+    // return success
+    return 0;
 }
 
 /****************************************************************************

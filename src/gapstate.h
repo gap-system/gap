@@ -155,8 +155,8 @@ static inline GAPState * ActiveGAPState(void)
 
 // Offset into StateSlots
 typedef Int ModuleStateOffset;
-typedef void (*ModuleConstructor)(ModuleStateOffset offset);
-typedef void (*ModuleDestructor)();
+typedef Int (*ModuleConstructor)(void);
+typedef Int (*ModuleDestructor)(void);
 
 static inline void *StateSlotsAtOffset(ModuleStateOffset offset)
 {
