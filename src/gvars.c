@@ -1778,11 +1778,11 @@ static StructInitInfo module = {
     .checkInit = CheckInit,
     .preSave = PreSave,
     .postSave = PostSave,
-    .postRestore = PostRestore
+    .postRestore = PostRestore,
+    .initModuleState = InitModuleState,
 };
 
 StructInitInfo * InitInfoGVars ( void )
 {
-    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

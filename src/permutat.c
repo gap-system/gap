@@ -4574,10 +4574,13 @@ static StructInitInfo module = {
     .name = "permutat",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
+
+    .moduleStateSize = sizeof(PermutatModuleState),
+    .moduleStateOffsetPtr = &PermutatStateOffset,
+    .initModuleState = InitModuleState,
 };
 
 StructInitInfo * InitInfoPermutat ( void )
 {
-    PermutatStateOffset = RegisterModuleState(sizeof(PermutatModuleState), InitModuleState, 0);
     return &module;
 }

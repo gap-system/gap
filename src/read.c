@@ -2948,10 +2948,10 @@ static StructInitInfo module = {
     .type = MODULE_BUILTIN,
     .name = "read",
     .initKernel = InitKernel,
+    .initModuleState = InitModuleState,
 };
 
 StructInitInfo * InitInfoRead ( void )
 {
-    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

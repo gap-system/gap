@@ -4264,11 +4264,11 @@ static StructInitInfo module = {
     .name = "opers",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
-    .postRestore = postRestore
+    .postRestore = postRestore,
+    .initModuleState = InitModuleState,
 };
 
 StructInitInfo * InitInfoOpers ( void )
 {
-    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

@@ -833,10 +833,10 @@ static StructInitInfo module = {
     .name = "objscoll",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
+    .initModuleState = InitModuleState,
 };
 
 StructInitInfo * InitInfoSingleCollector ( void )
 {
-    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

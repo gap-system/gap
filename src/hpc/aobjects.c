@@ -2075,10 +2075,11 @@ static StructInitInfo module = {
     .name = "aobjects",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
+    .initModuleState = InitAObjectsState,
+    .destroyModuleState = DestroyAObjectsState,
 };
 
 StructInitInfo * InitInfoAObjects ( void )
 {
-    RegisterModuleState(0, InitAObjectsState, DestroyAObjectsState);
     return &module;
 }

@@ -445,11 +445,14 @@ static StructInitInfo module = {
     .name = "objcftl",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
-    .postRestore = PostRestore
+    .postRestore = PostRestore,
+
+    .moduleStateSize = sizeof(struct CFTLModuleState),
+    .moduleStateOffsetPtr = &CFTLStateOffset,
+    .initModuleState = InitModuleState,
 };
 
 StructInitInfo * InitInfoPcc ( void )
 {
-    CFTLStateOffset = RegisterModuleState(sizeof(struct CFTLModuleState), InitModuleState, 0);
     return &module;
 }

@@ -2277,10 +2277,13 @@ static StructInitInfo module = {
     .name = "cyclotom",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
+
+    .moduleStateSize = sizeof(struct CycModuleState),
+    .moduleStateOffsetPtr = &CycStateOffset,
+    .initModuleState = InitModuleState,
 };
 
 StructInitInfo * InitInfoCyc ( void )
 {
-    CycStateOffset = RegisterModuleState(sizeof(struct CycModuleState), InitModuleState, 0);
     return &module;
 }

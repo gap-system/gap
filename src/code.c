@@ -3369,11 +3369,11 @@ static StructInitInfo module = {
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
     .preSave = PreSave,
-    .postRestore = PostRestore
+    .postRestore = PostRestore,
+    .initModuleState = InitModuleState,
 };
 
 StructInitInfo * InitInfoCode ( void )
 {
-    RegisterModuleState(0, InitModuleState, 0);
     return &module;
 }

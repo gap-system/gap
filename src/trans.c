@@ -5688,10 +5688,12 @@ static StructInitInfo module = {
     .name = "trans",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
+    .moduleStateSize = sizeof(TransModuleState),
+    .moduleStateOffsetPtr = &TransStateOffset,
+    .initModuleState = InitModuleState,
 };
 
 StructInitInfo * InitInfoTrans(void)
 {
-    TransStateOffset = RegisterModuleState(sizeof(TransModuleState), InitModuleState, 0);
     return &module;
 }
