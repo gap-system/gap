@@ -111,6 +111,28 @@ Obj FuncGAP_CRC(Obj self, Obj filename)
 
 /****************************************************************************
 **
+*F  ActivateModule( <info> )
+*/
+static void ActivateModule(StructInitInfo * info)
+{
+    Int              res;
+
+    /* link and init me                                                    */
+    res = (info->initKernel)(info);
+    UpdateCopyFopyInfo();
+
+    /* Start a new executor to run the outer function of the module
+       in global context */
+    ExecBegin(STATE(BottomLVars));
+    res = res || (info->initLibrary)(info);
+    ExecEnd(res);
+    if (res) {
+        Pr("#W  init functions returned non-zero exit code\n", 0L, 0L);
+    }
+}
+
+/****************************************************************************
+**
 *F  FuncLOAD_DYN( <self>, <name>, <crc> ) . . .  try to load a dynamic module
 */
 Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
@@ -186,18 +208,7 @@ Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
         }
     }
 
-    /* link and init me                                                    */
-    res = (info->initKernel)(info);
-    UpdateCopyFopyInfo();
-
-    /* Start a new executor to run the outer function of the module
-       in global context */
-    ExecBegin(STATE(BottomLVars));
-    res = res || (info->initLibrary)(info);
-    ExecEnd(res);
-    if (res) {
-        Pr("#W  init functions returned non-zero exit code\n", 0L, 0L);
-    }
+    ActivateModule(info);
     RecordLoadedModule(info, 0, CSTR_STRING(filename));
 
     return True;
@@ -212,7 +223,6 @@ Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
 {
     StructInitInfo * info = 0;
     Obj              crc1;
-    Int              res;
     Int              k;
 
     /* check the argument                                                  */
@@ -258,18 +268,7 @@ Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
         }
     }
 
-    /* link and init me                                                    */
-    res = (info->initKernel)(info);
-    UpdateCopyFopyInfo();
-
-    /* Start a new executor to run the outer function of the module
-       in global context */
-    ExecBegin(STATE(BottomLVars));
-    res = res || (info->initLibrary)(info);
-    ExecEnd(res);
-    if (res) {
-        Pr("#W  init functions returned non-zero exit code\n", 0L, 0L);
-    }
+    ActivateModule(info);
     RecordLoadedModule(info, 0, CSTR_STRING(filename));
 
     return True;
