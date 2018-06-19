@@ -1,6 +1,6 @@
 gap> START_TEST("method-reordering.tst");
 gap> CheckReorder := function(explicit)
->    local  f1, f2, f3, myOp, fam, t, o;
+>    local  f1, f2, f3, myOp, fam, t, o, myC;
 >    f1 := NewFilter("filter1",100);
 >    f2 := NewFilter("filter1",10);
 >    f3 := NewFilter("filter1",1);

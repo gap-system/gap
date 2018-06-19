@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "96238222"
+#define FILE_CRC  "72319008"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -82,6 +82,8 @@ static GVar G_LEN__LIST;
 static Obj  GF_LEN__LIST;
 static GVar G_APPEND__LIST__INTR;
 static Obj  GF_APPEND__LIST__INTR;
+static GVar G_COPY__LIST__ENTRIES;
+static Obj  GF_COPY__LIST__ENTRIES;
 static GVar G_CONV__STRING;
 static Obj  GF_CONV__STRING;
 static GVar G_Print;
@@ -942,23 +944,31 @@ static Obj  HdlrFunc3 (
  }
  if ( t_1 ) {
   
-  /* methods{[ narg + 6 + i + 1 .. narg + 6 + LEN_LIST( methods ) ]} := methods{[ i + 1 .. LEN_LIST( methods ) ]}; */
-  C_SUM_FIA( t_4, l_narg, INTOBJ_INT(6) )
-  C_SUM_FIA( t_3, t_4, l_i )
-  C_SUM_FIA( t_2, t_3, INTOBJ_INT(1) )
-  C_SUM_FIA( t_4, l_narg, INTOBJ_INT(6) )
-  t_6 = GF_LEN__LIST;
-  t_5 = CALL_1ARGS( t_6, l_methods );
-  CHECK_FUNC_RESULT( t_5 )
-  C_SUM_FIA( t_3, t_4, t_5 )
-  t_1 = Range2Check( t_2, t_3 );
-  C_SUM_FIA( t_4, l_i, INTOBJ_INT(1) )
-  t_6 = GF_LEN__LIST;
-  t_5 = CALL_1ARGS( t_6, l_methods );
-  CHECK_FUNC_RESULT( t_5 )
-  t_3 = Range2Check( t_4, t_5 );
-  t_2 = ElmsListCheck( l_methods, t_3 );
-  AsssListCheck( l_methods, t_1, t_2 );
+  /* COPY_LIST_ENTRIES( methods, i + 1, 1, methods, narg + 6 + i + 1, 1, LEN_LIST( methods ) - i ); */
+  t_1 = GF_COPY__LIST__ENTRIES;
+  t_2 = NEW_PLIST( T_PLIST, 7 );
+  SET_LEN_PLIST( t_2, 7 );
+  SET_ELM_PLIST( t_2, 1, l_methods );
+  CHANGED_BAG( t_2 );
+  C_SUM_FIA( t_3, l_i, INTOBJ_INT(1) )
+  SET_ELM_PLIST( t_2, 2, t_3 );
+  CHANGED_BAG( t_2 );
+  SET_ELM_PLIST( t_2, 3, INTOBJ_INT(1) );
+  SET_ELM_PLIST( t_2, 4, l_methods );
+  CHANGED_BAG( t_2 );
+  C_SUM_FIA( t_5, l_narg, INTOBJ_INT(6) )
+  C_SUM_FIA( t_4, t_5, l_i )
+  C_SUM_FIA( t_3, t_4, INTOBJ_INT(1) )
+  SET_ELM_PLIST( t_2, 5, t_3 );
+  CHANGED_BAG( t_2 );
+  SET_ELM_PLIST( t_2, 6, INTOBJ_INT(1) );
+  t_5 = GF_LEN__LIST;
+  t_4 = CALL_1ARGS( t_5, l_methods );
+  CHECK_FUNC_RESULT( t_4 )
+  C_DIFF_FIA( t_3, t_4, l_i )
+  SET_ELM_PLIST( t_2, 7, t_3 );
+  CHANGED_BAG( t_2 );
+  CALL_XARGS( t_1, t_2 );
   
  }
  /* fi */
@@ -4118,7 +4128,7 @@ static Obj  HdlrFunc1 (
           od;
       fi;
       if not REREADING or not replace then
-          methods{[ narg + 6 + i + 1 .. narg + 6 + LEN_LIST( methods ) ]} := methods{[ i + 1 .. LEN_LIST( methods ) ]};
+          COPY_LIST_ENTRIES( methods, i + 1, 1, methods, narg + 6 + i + 1, 1, LEN_LIST( methods ) - i );
       fi;
       if rel = true then
           methods[i + 1] := RETURN_TRUE;
@@ -4689,6 +4699,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_RETURN__FALSE = GVarName( "RETURN_FALSE" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
  G_APPEND__LIST__INTR = GVarName( "APPEND_LIST_INTR" );
+ G_COPY__LIST__ENTRIES = GVarName( "COPY_LIST_ENTRIES" );
  G_CONV__STRING = GVarName( "CONV_STRING" );
  G_Print = GVarName( "Print" );
  G_ViewObj = GVarName( "ViewObj" );
@@ -4805,6 +4816,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "RETURN_FALSE", &GC_RETURN__FALSE );
  InitFopyGVar( "LEN_LIST", &GF_LEN__LIST );
  InitFopyGVar( "APPEND_LIST_INTR", &GF_APPEND__LIST__INTR );
+ InitFopyGVar( "COPY_LIST_ENTRIES", &GF_COPY__LIST__ENTRIES );
  InitFopyGVar( "CONV_STRING", &GF_CONV__STRING );
  InitFopyGVar( "Print", &GF_Print );
  InitCopyGVar( "ViewObj", &GC_ViewObj );
@@ -4919,7 +4931,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = 96238222,
+ .crc         = 72319008,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

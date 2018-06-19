@@ -215,8 +215,8 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     fi;
     # push the other functions back
     if not REREADING or not replace then
-        methods{[narg+BASE_SIZE_METHODS_OPER_ENTRY+i+1..narg+BASE_SIZE_METHODS_OPER_ENTRY+LEN_LIST(methods)]}
-          := methods{[i+1..LEN_LIST(methods)]};
+       COPY_LIST_ENTRIES(methods, i+1, 1, methods, narg+BASE_SIZE_METHODS_OPER_ENTRY+i+1,1,
+                LEN_LIST(methods)-i);        
     fi;
 
     # install the new method
