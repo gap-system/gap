@@ -5,6 +5,7 @@
 #include "fibhash.h"
 #include "gapstate.h"
 #include "gvars.h"
+#include "modules.h"
 #include "plist.h"
 #include "stats.h"
 #include "stringobj.h"
@@ -296,7 +297,7 @@ void * DispatchThread(void * arg)
 #ifndef DISABLE_GC
     AddGCRoots();
 #endif
-    InitGAPState(ActiveGAPState());
+    ModulesInitModuleState();
     TLS(CountActive) = 1;
     TLS(currentRegion) = region = NewRegion();
     TLS(threadRegion) = TLS(currentRegion);
@@ -322,7 +323,7 @@ void * DispatchThread(void * arg)
     thread->status |= THREAD_TERMINATED;
     region->fixed_owner = 0;
     RegionWriteUnlock(region);
-    DestroyGAPState(ActiveGAPState());
+    ModulesDestroyModuleState();
     memset(ActiveGAPState(), 0, sizeof(GAPState));
 #ifndef DISABLE_GC
     RemoveGCRoots();

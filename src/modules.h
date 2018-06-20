@@ -368,6 +368,9 @@ extern Int  ModulesPreSave(void);
 extern void ModulesPostSave(void);
 extern void ModulesPostRestore(void);
 
+extern void ModulesInitModuleState(void);
+extern void ModulesDestroyModuleState(void);
+
 extern void SaveModules(void);
 extern void LoadModules(void);
 

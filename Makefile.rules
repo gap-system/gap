@@ -57,7 +57,6 @@ SOURCES += src/finfield.c
 SOURCES += src/funcs.c
 SOURCES += src/gap.c
 SOURCES += gen/gap_version.c	# generated source file
-SOURCES += src/gapstate.c
 SOURCES += src/gvars.c
 SOURCES += src/hookintrprtr.c
 SOURCES += src/integer.c
