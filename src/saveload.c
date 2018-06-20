@@ -874,9 +874,6 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* Create dummy variable, to support tab-completion */
-    (void)GVarName("SaveWorkspace");
-
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
