@@ -670,16 +670,6 @@ static StructGVarFunc GVarFuncs[] = {
 
 /****************************************************************************
 **
-*F  postResore( <module> ) . . . . . . .re-initialise library data structures
-*/
-static Int postRestore(StructInitInfo * module)
-{
-    /* return success                                                      */
-    return 0;
-}
-
-/****************************************************************************
-**
 *F  InitKernel( <module> ) . . . . . . .  initialise kernel data structures
 */
 static Int InitKernel(StructInitInfo * module)
@@ -713,7 +703,7 @@ static Int InitLibrary(StructInitInfo * module)
     /* init filters and functions                                          */
     InitGVarFuncsFromTable(GVarFuncs);
 
-    return postRestore(module);
+    return 0;
 }
 
 /****************************************************************************
@@ -727,7 +717,6 @@ static StructInitInfo module = {
     .name = "iostream",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
-    .postRestore = postRestore
 };
 
 StructInitInfo * InitInfoIOStream(void)
