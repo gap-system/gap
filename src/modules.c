@@ -139,6 +139,8 @@ void ActivateModule(StructInitInfo * info)
 {
     Int res = 0;
 
+    RegisterModuleState(info);
+
     if (info->initKernel) {
         res = info->initKernel(info);
     }
@@ -158,6 +160,9 @@ void ActivateModule(StructInitInfo * info)
     if (res) {
         Pr("#W  init functions returned non-zero exit code\n", 0L, 0L);
     }
+
+    if (info->initModuleState)
+        res = res || (info->initModuleState)();
 }
 
 /****************************************************************************
