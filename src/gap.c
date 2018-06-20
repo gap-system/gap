@@ -1774,7 +1774,6 @@ void InitializeGap (
 #ifdef HPCGAP
     InitMainThread();
 #endif
-    ModulesInitModuleState();
 
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);
@@ -1813,9 +1812,9 @@ void InitializeGap (
 
     /* if we are restoring, load the workspace and call the post restore   */
     if ( SyRestoring ) {
+        ModulesInitModuleState();
         LoadWorkspace(SyRestoring);
         SyRestoring = NULL;
-
 
         /* Call POST_RESTORE which is a GAP function that now takes control, 
            calls the post restore functions and then runs a GAP session */
@@ -1836,6 +1835,8 @@ void InitializeGap (
 
         SyInitializing = 1;
         ModulesInitLibrary();
+        ModulesInitModuleState();
+
     }
 
     /* check initialisation                                                */
