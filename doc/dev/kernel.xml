@@ -1272,7 +1272,7 @@ collection)
 <P/> *  Type determination
 <P/> *  Copying (and MakeImmutable)
 <P/> *  List access, length, and associated functions
-<P/> *  Initialize GVar copies and fopies abd imports
+<P/> *  Initialize GVar copies and fopies and imports
 <P/> *  Add entries to various tables used by the list machinery
 <P/> *  DO NOT create ANY bags in the workspace (they would be lost in a 
 restore workspace)
