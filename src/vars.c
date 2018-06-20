@@ -2771,7 +2771,7 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
 
     /* return success                                                      */
-    return PostRestore( module );
+    return 0;
 }
 
 
@@ -2789,6 +2789,7 @@ static Int InitModuleState(void)
     SET_BODY_FUNC( tmpFunc, tmpBody );
 
     STATE(CurrLVars) = STATE(BottomLVars);
+    SWITCH_TO_OLD_LVARS( STATE(BottomLVars) );
 
     // return success
     return 0;
