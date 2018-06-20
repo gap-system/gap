@@ -84,6 +84,28 @@ static Int                 NrImportedGVars;
 static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
 static Int                 NrImportedFuncs;
 
+static Int StateNextFreeOffset = 0; // Start of next free memory area (as offset into GAPState.StateSlots)
+
+static void RegisterModuleState(StructInitInfo * info)
+{
+    UInt size = info->moduleStateSize;
+    if (size == 0)
+        return;
+
+    // using moduleStateSize without moduleStateOffsetPtr makes no sense
+    GAP_ASSERT(info->moduleStateOffsetPtr);
+
+    // check that we have enough free space
+    assert((STATE_SLOTS_SIZE - StateNextFreeOffset) >= size);
+
+    // record start offset of this module's state
+    *info->moduleStateOffsetPtr = StateNextFreeOffset;
+
+    // ... and 'allocate' the requested amount of storage
+    StateNextFreeOffset += size;
+    StateNextFreeOffset = (StateNextFreeOffset + sizeof(Obj)-1) & ~(sizeof(Obj)-1);
+}
+
 
 /*************************************************************************
 **
@@ -876,15 +898,7 @@ void ModulesSetup(void)
             FPUTS_TO_STDERR(")\n");
         }
 
-        // register module state if necessary
-        if (info->moduleStateSize || info->initModuleState ||
-            info->destroyModuleState) {
-            UInt offset = RegisterModuleState(info->moduleStateSize,
-                                              info->initModuleState,
-                                              info->destroyModuleState);
-            if (info->moduleStateOffsetPtr)
-                *info->moduleStateOffsetPtr = offset;
-        }
+        RegisterModuleState(info);
     }
     NrBuiltinModules = NrModules;
 }
@@ -948,6 +962,47 @@ void ModulesCheckInit(void)
         }
     }
 }
+
+void ModulesInitModuleState(void)
+{
+    for (UInt i = 0; i < NrModules; i++) {
+        StructInitInfo * info = Modules[i].info;
+        if (info->initModuleState) {
+            if (SyDebugLoading) {
+                FPUTS_TO_STDERR("#I  InitModuleState(");
+                FPUTS_TO_STDERR(info->name);
+                FPUTS_TO_STDERR(")\n");
+            }
+            Int ret = info->initModuleState();
+            if (ret) {
+                FPUTS_TO_STDERR("#I  InitModuleState(");
+                FPUTS_TO_STDERR(info->name);
+                FPUTS_TO_STDERR(") returned non-zero value\n");
+            }
+        }
+    }
+}
+
+void ModulesDestroyModuleState(void)
+{
+    for (UInt i = 0; i < NrModules; i++) {
+        StructInitInfo * info = Modules[i].info;
+        if (info->destroyModuleState) {
+            if (SyDebugLoading) {
+                FPUTS_TO_STDERR("#I  DestroyModuleState(");
+                FPUTS_TO_STDERR(info->name);
+                FPUTS_TO_STDERR(")\n");
+            }
+            Int ret = info->destroyModuleState();
+            if (ret) {
+                FPUTS_TO_STDERR("#I  DestroyModuleState(");
+                FPUTS_TO_STDERR(info->name);
+                FPUTS_TO_STDERR(") returned non-zero value\n");
+            }
+        }
+    }
+}
+
 
 Int ModulesPreSave(void)
 {

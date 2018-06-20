@@ -100,6 +100,11 @@ UInt Time;
 UInt MemoryAllocated;
 
 
+#ifndef HPCGAP
+GAPState MainGAPState;
+#endif
+
+
 /****************************************************************************
 **
 *F  ViewObjHandler  . . . . . . . . . handler to view object and catch errors
@@ -1772,7 +1777,7 @@ void InitializeGap (
 #ifdef HPCGAP
     InitMainThread();
 #endif
-    InitGAPState(ActiveGAPState());
+    ModulesInitModuleState();
 
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);

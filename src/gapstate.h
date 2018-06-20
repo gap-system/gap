@@ -1,13 +1,13 @@
-/***********************************************************************
- **
- *W  gapstate.h      GAP source                 Markus Pfeiffer
- **
- **
- ** This file declares a struct that contains variables that are
- ** global state in GAP, but in HPC-GAP an instance of it exists
- ** for every thread.
- **
- */
+/****************************************************************************
+**
+*W  gapstate.h      GAP source                 Markus Pfeiffer
+**
+**
+**  This file declares a struct that contains variables that are global
+**  state in GAP, but in HPC-GAP an instance of it exists for every thread.
+**
+*/
+
 #ifndef GAP_GAPSTATE_H
 #define GAP_GAPSTATE_H
 
@@ -155,10 +155,8 @@ static inline GAPState * ActiveGAPState(void)
 
 // Offset into StateSlots
 typedef Int ModuleStateOffset;
-typedef Int (*ModuleConstructor)(void);
-typedef Int (*ModuleDestructor)(void);
 
-static inline void *StateSlotsAtOffset(ModuleStateOffset offset)
+static inline void * StateSlotsAtOffset(ModuleStateOffset offset)
 {
     GAP_ASSERT(0 <= offset && offset < STATE_SLOTS_SIZE);
     return &STATE(StateSlots)[offset];
@@ -167,35 +165,5 @@ static inline void *StateSlotsAtOffset(ModuleStateOffset offset)
 /* Access a module's registered state */
 #define MODULE_STATE(module) \
     (*(module ## ModuleState *)StateSlotsAtOffset(module ## StateOffset))
-
-/*
- * Register global state for a module.
- *
- * size - how much memory (in bytes) the module would like to reserve in
- *        GAPState.StateSlots
- * constructor and destructor - function pointers. These functions are called
- *        whenever a module is instantiated or freed, respectively.
- *        In GAP this only happens once at startup (and exit).
- *        In HPC-GAP every thread creation and destruction triggers
- *        construction, or destruction resp.
- *        Constructor and destructor receive the offset (in bytes) into
- *        StateSlots where they are free to use the memory area of size
- *        "size", which is aligned to a multiple of sizeof(Obj).
- *
- * Normally the module would store the offset that is returned by
- * RegisterModuleState and use the MODULE_STATE macro to access
- * its own state after that.
- */
-ModuleStateOffset RegisterModuleState(UInt              size,
-                                      ModuleConstructor constructor,
-                                      ModuleDestructor  destructor);
-
-void RunModuleConstructors(GAPState * state);
-void RunModuleDestructors(GAPState * state);
-
-void InitMainGAPState(void);
-
-void InitGAPState(GAPState * state);
-void DestroyGAPState(GAPState * state);
 
 #endif    // GAP_GAPSTATE_H
