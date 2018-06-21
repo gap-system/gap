@@ -1778,11 +1778,17 @@ DeclareGlobalFunction( "RandomMat" );
 ##  returns a new random mutable <A>m</A><M>\times</M><A>m</A> matrix with integer
 ##  entries that is invertible over the integers.
 ##  Optionally, a random source <A>rs</A> can be supplied.
+##  If the option <A>domain</A> is given, random selection is made from <A>domain</A>, otherwise
+##  from <A>Integers</A>
 ##  <Example><![CDATA[
 ##  gap> m := RandomUnimodularMat(3);
 ##  [ [ -5, 1, 0 ], [ 12, -2, -1 ], [ -14, 3, 0 ] ]
 ##  gap> m^-1;
 ##  [ [ -3, 0, 1 ], [ -14, 0, 5 ], [ -8, -1, 2 ] ]
+##  gap> RandomUnimodularMat(3:domain:=[-1000..1000]);
+##  [ [ 312330173, 15560030349, -125721926670 ],
+##  [ -307290, -15309014, 123693281 ],
+##  [ -684293792, -34090949551, 275448039848 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
