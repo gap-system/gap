@@ -170,8 +170,18 @@ DeclareGlobalFunction(
 ##  It returns a list of representatives up to <A>G</A>-conjugacy.
 ##  <P/>
 ##  The optional argument <A>opt</A> is a record, which may
-##  be used to put restrictions on the subgroups computed. The following record
-##  components of <A>opt</A> are recognized and have the following effects:
+##  be used to suggest restrictions on the subgroups computed.
+##  The following record
+##  components of <A>opt</A> are recognized and have the following effects.
+##  Note that all of the following
+##  restrictions to subgroups with particular properties are
+##  only used to speed up the calculation, but the result might still contain
+##  subgroups (that had to be computed in any case) that do not satisfy the
+##  properties. If this is not desired, the calculation must be followed by an
+##  explicit test for the desired properties (which is not done by default, as
+##  it would be a general slowdown).
+##  The function guarantees that representatives of all subgroups that
+##  satisfy the properties are found, i.e. there can be only false positives.
 ##  <List>
 ##  <Mark><C>actions</C></Mark>
 ##  <Item>
