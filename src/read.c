@@ -2428,41 +2428,46 @@ static void            ReadQUIT (
 **              |  'atomic' <QualifiedExpression> { ',' <QualifiedExpression> } 'do' <Statements> 'od' ';'
 **              |  ';'
 */
+static Int TryReadStatement(TypSymbolSet follow)
+{
+    switch (STATE(Symbol)) {
+    case S_IDENT:     ReadCallVarAss(follow,'s'); break;
+    case S_UNBIND:    ReadUnbind(    follow    ); break;
+    case S_INFO:      ReadInfo(      follow    ); break;
+    case S_ASSERT:    ReadAssert(    follow    ); break;
+    case S_IF:        ReadIf(        follow    ); break;
+    case S_FOR:       ReadFor(       follow    ); break;
+    case S_WHILE:     ReadWhile(     follow    ); break;
+    case S_REPEAT:    ReadRepeat(    follow    ); break;
+    case S_BREAK:     ReadBreak(     follow    ); break;
+    case S_CONTINUE:  ReadContinue(  follow    ); break;
+    case S_RETURN:    ReadReturn(    follow    ); break;
+    case S_TRYNEXT:   ReadTryNext(   follow    ); break;
+    case S_ATOMIC:    ReadAtomic(    follow    ); break;
+    case S_SEMICOLON: ReadEmpty(     follow    ); break;
+    case S_QUIT:      SyntaxError("'quit;' cannot be used in this context"); break;
+    case S_QQUIT:     SyntaxError("'QUIT;' cannot be used in this context"); break;
+    case S_HELP:      SyntaxError("'?' cannot be used in this context"); break;
+    default:         return 0;
+    }
+    return 1;
+}
+
 static UInt ReadStats (
     TypSymbolSet        follow )
 {
-    UInt               nr;            /* number of statements            */
+    UInt nr = 0;    // number of statements
 
-    /* read the statements                                                 */
-    nr = 0;
+    // read the statements
     while ( IS_IN( STATE(Symbol), STATBEGIN|S_SEMICOLON ) ) {
-
-        /* read a statement                                                */
-        switch (STATE(Symbol)) {
-        case S_IDENT:     ReadCallVarAss(follow,'s'); break;
-        case S_UNBIND:    ReadUnbind(    follow    ); break;
-        case S_INFO:      ReadInfo(      follow    ); break;
-        case S_ASSERT:    ReadAssert(    follow    ); break;
-        case S_IF:        ReadIf(        follow    ); break;
-        case S_FOR:       ReadFor(       follow    ); break;
-        case S_WHILE:     ReadWhile(     follow    ); break;
-        case S_REPEAT:    ReadRepeat(    follow    ); break;
-        case S_BREAK:     ReadBreak(     follow    ); break;
-        case S_CONTINUE:  ReadContinue(  follow    ); break;
-        case S_RETURN:    ReadReturn(    follow    ); break;
-        case S_TRYNEXT:   ReadTryNext(   follow    ); break;
-        case S_ATOMIC:    ReadAtomic(    follow    ); break;
-        case S_SEMICOLON: ReadEmpty(     follow    ); break;
-        case S_QUIT:      SyntaxError("'quit;' cannot be used in this context"); break;
-        case S_QQUIT:     SyntaxError("'QUIT;' cannot be used in this context"); break;
-        case S_HELP:      SyntaxError("'?' cannot be used in this context"); break;
-        default:          ReadEmpty(     follow    ); break;
+        if (!TryReadStatement(follow)) {
+            SyntaxError("statement expected");
         }
         nr++;
         MatchSemicolon(follow);
     }
 
-    /* return the number of statements                                     */
+    // return the number of statements
     return nr;
 }
 
@@ -2566,26 +2571,18 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     /* read an expression or an assignment or a procedure call             */
     case S_IDENT:     ReadExpr(    S_SEMICOLON|S_EOF, 'x' ); break;
 
-    /* otherwise read a statement                                          */
-    case S_UNBIND:    ReadUnbind(  S_SEMICOLON|S_EOF      ); break;
-    case S_INFO:      ReadInfo(    S_SEMICOLON|S_EOF      ); break;
-    case S_ASSERT:    ReadAssert(  S_SEMICOLON|S_EOF      ); break;
-    case S_IF:        ReadIf(      S_SEMICOLON|S_EOF      ); break;
-    case S_FOR:       ReadFor(     S_SEMICOLON|S_EOF      ); break;
-    case S_WHILE:     ReadWhile(   S_SEMICOLON|S_EOF      ); break;
-    case S_REPEAT:    ReadRepeat(  S_SEMICOLON|S_EOF      ); break;
-    case S_BREAK:     ReadBreak(   S_SEMICOLON|S_EOF      ); break;
-    case S_CONTINUE:  ReadContinue(S_SEMICOLON|S_EOF      ); break;
-    case S_RETURN:    ReadReturn(  S_SEMICOLON|S_EOF      ); break;
-    case S_TRYNEXT:   ReadTryNext( S_SEMICOLON|S_EOF      ); break;
-    case S_ATOMIC:    ReadAtomic(  S_SEMICOLON|S_EOF      ); break;
-    case S_SEMICOLON: ReadEmpty(   S_SEMICOLON|S_EOF      ); break;
+    // otherwise read a statement -- first handle some which are different on
+    // the top level than inside a function, if/else or loop
     case S_QUIT:      ReadQuit(    S_SEMICOLON|S_EOF      ); break;
     case S_QQUIT:     ReadQUIT(    S_SEMICOLON|S_EOF      ); break;
     case S_HELP:      ReadHelp(    S_SEMICOLON|S_EOF      ); break;
-    /* otherwise try to read an expression                                 */
-    /* Unless the statement is empty, in which case do nothing             */
-    default:          ReadExpr(    S_SEMICOLON|S_EOF, 'r' ); break;
+
+    // otherwise try to read a generic statement
+    default:
+        if (!TryReadStatement(S_SEMICOLON | S_EOF)) {
+            // not a statement, but perhaps it is an expression
+            ReadExpr(S_SEMICOLON | S_EOF, 'r');
+        }
     }
 
     /* every statement must be terminated by a semicolon                  */
