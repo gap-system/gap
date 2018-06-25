@@ -15,4 +15,4 @@ Syntax error: ) expected in stream:4
                     ^
 Syntax error: end expected in stream:5
 od;
- ^
+^^

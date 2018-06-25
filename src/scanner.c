@@ -59,14 +59,23 @@ static void SyntaxErrorOrWarning(const Char * msg, UInt error)
         Pr("%s", (Int)line, 0);
 
         // print a '^' pointing to the current position
+        Int startPos = STATE(SymbolStartPos);
         Int pos = GetInputLinePosition();
-        for (Int i = 0; i < pos; i++) {
-            if (line[i] == '\t')
-                Pr("\t", 0, 0);
-            else
-                Pr(" ", 0, 0);
+        if (STATE(SymbolStartLine) != GetInputLineNumber())
+            startPos = 0;
+        if (startPos <= pos) {
+            Int i;
+            for (i = 0; i <= startPos; i++) {
+                if (line[i] == '\t')
+                    Pr("\t", 0, 0);
+                else
+                    Pr(" ", 0, 0);
+            }
+
+            for (; i <= pos; i++)
+                Pr("^", 0, 0);
+            Pr("\n", 0, 0);
         }
-        Pr("^\n", 0, 0);
 
         // close error output
         CloseOutput();
@@ -883,6 +892,9 @@ static void GetHelp(void)
 */
 static UInt NextSymbol(void)
 {
+    STATE(SymbolStartLine) = GetInputLineNumber();
+    STATE(SymbolStartPos) = GetInputLinePosition();
+
     Char c = PEEK_CURR_CHAR();
 
     // if no character is available then get one
@@ -897,6 +909,9 @@ static UInt NextSymbol(void)
             SKIP_TO_END_OF_LINE();
         c = GET_NEXT_CHAR();
     }
+
+  STATE(SymbolStartLine) = GetInputLineNumber();
+  STATE(SymbolStartPos) = GetInputLinePosition();
 
     // switch according to the character
     if (IsAlpha(c)) {

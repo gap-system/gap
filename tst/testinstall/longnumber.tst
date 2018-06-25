@@ -185,12 +185,12 @@ gap> .0q;
 Syntax error: Badly formed number: need at least one digit in the exponent in \
 stream:1
 .0q;
-  ^
+^^^
 gap> .0qn;
 Syntax error: Badly formed number: need at least one digit in the exponent in \
 stream:1
 .0qn;
-  ^
+^^^
 gap> Unbind(x);
 gap> STOP_TEST( "longnumber.tst", 1);
 

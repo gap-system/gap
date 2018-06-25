@@ -67,6 +67,8 @@ typedef struct GAPState {
     UInt   NrError;
     UInt   NrErrLine;
     UInt   Symbol;
+    UInt   SymbolStartPos;
+    UInt   SymbolStartLine;
 
     const Char * Prompt;
 

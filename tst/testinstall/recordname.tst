@@ -68,5 +68,5 @@ gap> aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 Syntax error: Identifiers in GAP must consist of at most 1023 characters. in s\
 tream:2
 aaaxyz := 1; # 1024 chars
-     ^
+ ^^^^^
 gap> STOP_TEST( "recordname.tst", 1);

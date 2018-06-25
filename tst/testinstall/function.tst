@@ -143,7 +143,7 @@ gap> f(2,3);
 gap> f := ({x,y..} -> [x,y]);
 Syntax error: Three dots required for variadic argument list in stream:1
 f := ({x,y..} -> [x,y]);
-           ^
+          ^^
 gap> f := ({x,y...} -> [x,y]);
 function( x, y... ) ... end
 gap> f(2,3);

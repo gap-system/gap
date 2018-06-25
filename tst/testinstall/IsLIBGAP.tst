@@ -9,4 +9,3 @@ gap> START_TEST("IsLIBGAP.tst");
 gap> IsBound( IsLIBGAP );
 true
 gap> STOP_TEST( "IsLIBGAP.tst", 1);
-
