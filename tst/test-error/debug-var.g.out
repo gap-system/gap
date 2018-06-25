@@ -24,7 +24,7 @@ brk> Unbind(x);
 brk> x:=42;
 Syntax warning: Unbound global variable in *errin*:4
 x:=42;
-  ^
+ ^^
 42
 brk> IsBound(x);
 true

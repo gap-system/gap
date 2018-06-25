@@ -247,11 +247,11 @@ gap> 1.1_;
 gap> 1.x1;
 Syntax error: Badly formed number in stream:1
 1.x1;
-  ^
+^^^
 gap> 1.1xx;
 Syntax error: Badly formed number in stream:1
 1.1xx;
-   ^
+^^^^
 
 # The following is potentially correct, *if* there is a conversion handler for
 # 'x' installed, which normally isn't the case.
