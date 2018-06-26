@@ -35,6 +35,15 @@ extern Obj ReplaceByCopy(Obj obj);
 Obj ReachableObjectsFrom(Obj obj);
 Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm);
 Obj CopyTraversed(Obj traversed);
+
+//
+// PreMakeImmutableCheck checks whether the given object <obj> can be
+// made immutable by the active thread, by traversing <obj> and all its
+// subobjects and checking that they are either already immutable, or
+// that the active thread has exclusive write access.
+//
+// Called by CheckedMakeImmutable().
+//
 int PreMakeImmutableCheck(Obj obj);
 
 
