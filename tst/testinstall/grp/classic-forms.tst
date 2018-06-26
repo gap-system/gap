@@ -4,7 +4,7 @@
 #
 gap> START_TEST("classic-forms.tst");
 
-#
+# verify that the generators are invertible / have determinant 1
 gap> CheckGeneratorsInvertible := function(G)
 >   return ForAll(GeneratorsOfGroup(G),
 >               g -> not IsZero(Determinant(g)));
@@ -13,6 +13,8 @@ gap> CheckGeneratorsSpecial := function(G)
 >   return ForAll(GeneratorsOfGroup(G),
 >               g -> IsOne(Determinant(g)));
 > end;;
+
+# verify that forms are given and preserved
 gap> CheckBilinearForm := function(G)
 >   local M;
 >   M := InvariantBilinearForm(G).matrix;
@@ -38,6 +40,14 @@ gap> CheckSesquilinearForm := function(G)
 >               g -> g*M*TransposedMat(frob(g,aut)) = M);
 > end;;
 
+# verify group size if the underlying module is small
+gap> CheckSize := function(g)
+>    if Size(FieldOfMatrixGroup(g))^DimensionOfMatrixGroup(g) < 1000 then
+>        return Size(g) = Size(Group(GeneratorsOfGroup(g)));
+>    fi;
+>    return true;
+> end;;
+
 # odd-dimensional general orthogonal groups
 gap> grps:=[];;
 gap> for d in [3,5,7] do
@@ -50,6 +60,8 @@ true
 gap> ForAll(grps, CheckBilinearForm);
 true
 gap> ForAll(grps, CheckQuadraticForm);
+true
+gap> ForAll(grps, CheckSize);
 true
 
 # even-dimensional general orthogonal groups
@@ -66,6 +78,8 @@ gap> ForAll(grps, CheckBilinearForm);
 true
 gap> ForAll(grps, CheckQuadraticForm);
 true
+gap> ForAll(grps, CheckSize);
+true
 
 # odd-dimensional special orthogonal groups
 gap> grps:=[];;
@@ -79,6 +93,8 @@ true
 gap> ForAll(grps, CheckBilinearForm);
 true
 gap> ForAll(grps, CheckQuadraticForm);
+true
+gap> ForAll(grps, CheckSize);
 true
 
 # even-dimensional special orthogonal groups
@@ -94,6 +110,8 @@ true
 gap> ForAll(grps, CheckBilinearForm);
 true
 gap> ForAll(grps, CheckQuadraticForm);
+true
+gap> ForAll(grps, CheckSize);
 true
 
 #
@@ -115,6 +133,8 @@ true
 #true
 #gap> ForAll(grps, CheckQuadraticForm);
 #true
+gap> ForAll(grps, CheckSize);
+true
 
 # even-dimensional
 gap> grps:=[];;
@@ -131,6 +151,9 @@ true
 #true
 #gap> ForAll(grps, CheckQuadraticForm);
 #true
+gap> ForAll(grps, CheckSize);
+true
+
 #
 # unitary groups
 #
@@ -146,6 +169,8 @@ gap> ForAll(grps, CheckGeneratorsInvertible);
 true
 gap> ForAll(grps, CheckSesquilinearForm);
 true
+gap> ForAll(grps, CheckSize);
+true
 
 # special unitary groups
 gap> grps:=[];;
@@ -157,6 +182,8 @@ gap> for d in [1..6] do
 gap> ForAll(grps, CheckGeneratorsInvertible);
 true
 gap> ForAll(grps, CheckSesquilinearForm);
+true
+gap> ForAll(grps, CheckSize);
 true
 
 #
@@ -171,6 +198,8 @@ gap> for d in [2,4,6,8] do
 gap> ForAll(grps, CheckGeneratorsSpecial);
 true
 gap> ForAll(grps, CheckBilinearForm);
+true
+gap> ForAll(grps, CheckSize);
 true
 
 #
