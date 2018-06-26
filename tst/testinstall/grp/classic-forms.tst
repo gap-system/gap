@@ -1,6 +1,5 @@
 #
 # Tests invariant forms of classic groups
-# TODO: also test quadratic forms
 #
 gap> START_TEST("classic-forms.tst");
 
@@ -117,7 +116,6 @@ true
 #
 # Omega subgroups of special orthogonal groups
 #
-# TODO: add forms to Omega, check them here
 
 # odd-dimensional
 gap> grps:=[];;
@@ -129,10 +127,16 @@ gap> for d in [3,5,7] do
 gap> ForAll(grps, CheckGeneratorsSpecial);
 true
 
-#gap> ForAll(grps, CheckBilinearForm);
-#true
-#gap> ForAll(grps, CheckQuadraticForm);
-#true
+# FIXME: forms are not implemented for odd d, even q
+# gap> ForAll(grps, CheckBilinearForm);
+# true
+# gap> ForAll(grps, CheckQuadraticForm);
+# true
+#
+gap> ForAll(Filtered(grps, g -> Characteristic(g)<>2), CheckBilinearForm);
+true
+gap> ForAll(Filtered(grps, g -> Characteristic(g)<>2), CheckQuadraticForm);
+true
 gap> ForAll(grps, CheckSize);
 true
 
@@ -146,11 +150,10 @@ gap> for d in [2,4,6,8] do
 > od;
 gap> ForAll(grps, CheckGeneratorsSpecial);
 true
-
-#gap> ForAll(grps, CheckBilinearForm);
-#true
-#gap> ForAll(grps, CheckQuadraticForm);
-#true
+gap> ForAll(grps, CheckBilinearForm);
+true
+gap> ForAll(grps, CheckQuadraticForm);
+true
 gap> ForAll(grps, CheckSize);
 true
 

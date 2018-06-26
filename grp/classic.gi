@@ -1589,11 +1589,18 @@ BindGlobal( "OmegaZero", function( d, q )
     fi;
     SetSize( g, q^(m^2) * s );
 
-    # construct the bilinear form
-#T add the form!
-
-    # and the quadratic form
-#T add the form!
+    # construct the forms
+      if q mod 2 = 0 then
+      # FIXME: add forms for even characteristic, if that is possible at all
+      # (it doesn't seem to be)
+    else
+      x:= NullMat( d, d, f );
+      for i in [ 1 .. m ] do
+        x[i,d-i+1] := o;
+      od;
+      x[m+1,m+1] := (Characteristic(f)+1)/4*o;
+      SetInvariantQuadraticFormFromMatrix(g, ImmutableMatrix( f, x, true ) );
+    fi;
 
     # and return
     return g;
@@ -1700,11 +1707,13 @@ BindGlobal( "OmegaPlus", function( d, q )
     fi;
     SetSize( g, q^(m*(m-1)) * (q^m-1) * s );
 
-    # construct the bilinear form
-#T add the form!
-
-    # and the quadratic form
-#T add the form!
+    # construct the forms
+    x:= NullMat( d, d, f );
+    for i in [ 1 .. m ] do
+      x[i,d-i+1] := o;
+    od;
+    x:= ImmutableMatrix( f, x, true );
+    SetInvariantQuadraticFormFromMatrix( g, x );
 
     # and return
     return g;
@@ -1783,11 +1792,18 @@ BindGlobal( "OmegaMinus", function( d, q )
     fi;
     SetSize( g, q^(m*(m-1)) * (q^m+1) * s );
 
-    # construct the bilinear form
-#T add the form!
-
-    # and the quadratic form
-#T add the form!
+    # construct the forms
+    x:= NullMat( d, d, f );
+    for i in [ 1 .. m-1 ] do
+      x[i,d-i+1] := o;
+    od;
+    x[m,d-m+1] := -nu - nubar;
+    if q mod 2 = 1 then
+      x[m,d-m] := -o;
+      x[m+1,d-m+1] := xi^( (q+1)/2 );
+    fi;
+    x:= ImmutableMatrix( f, x, true );
+    SetInvariantQuadraticFormFromMatrix( g, x );
 
     # and return
     return g;
