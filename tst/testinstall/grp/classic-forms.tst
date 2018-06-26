@@ -51,7 +51,7 @@ gap> CheckSize := function(g)
 # odd-dimensional general orthogonal groups
 gap> grps:=[];;
 gap> for d in [3,5,7] do
->   for q in [2,3,4,5,7,8,9] do
+>   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, GO(d,q));
 >   od;
 > od;
@@ -67,7 +67,7 @@ true
 # even-dimensional general orthogonal groups
 gap> grps:=[];;
 gap> for d in [2,4,6,8] do
->   for q in [2,3,4,5,7,8,9] do
+>   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, GO(+1,d,q));
 >     Add(grps, GO(-1,d,q));
 >   od;
@@ -84,7 +84,7 @@ true
 # odd-dimensional special orthogonal groups
 gap> grps:=[];;
 gap> for d in [3,5,7] do
->   for q in [2,3,4,5,7,8,9] do
+>   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, SO(d,q));
 >   od;
 > od;
@@ -100,7 +100,7 @@ true
 # even-dimensional special orthogonal groups
 gap> grps:=[];;
 gap> for d in [2,4,6,8] do
->   for q in [2,3,4,5,7,8,9] do
+>   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, SO(+1,d,q));
 >     Add(grps, SO(-1,d,q));
 >   od;
@@ -122,7 +122,7 @@ true
 # odd-dimensional
 gap> grps:=[];;
 gap> for d in [3,5,7] do
->   for q in [2,3,4,5,7,8,9] do
+>   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, Omega(d,q));
 >   od;
 > od;
@@ -139,7 +139,7 @@ true
 # even-dimensional
 gap> grps:=[];;
 gap> for d in [2,4,6,8] do
->   for q in [2,3,4,5,7,8,9] do
+>   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, Omega(+1,d,q));
 >     if d <> 2 then Add(grps, Omega(-1,d,q)); fi;
 >   od;
@@ -161,7 +161,7 @@ true
 # general unitary groups
 gap> grps:=[];;
 gap> for d in [1..6] do
->   for q in [2,3,4,5,7,8,9] do
+>   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, GU(d,q));
 >   od;
 > od;
@@ -175,7 +175,7 @@ true
 # special unitary groups
 gap> grps:=[];;
 gap> for d in [1..6] do
->   for q in [2,3,4,5,7,8,9] do
+>   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, SU(d,q));
 >   od;
 > od;
@@ -191,7 +191,7 @@ true
 #
 gap> grps:=[];;
 gap> for d in [2,4,6,8] do
->   for q in [2,3,4,5,7,8,9] do
+>   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, Sp(d,q));
 >   od;
 > od;
