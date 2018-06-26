@@ -1665,7 +1665,7 @@ BindGlobal( "OmegaZero", function( d, q )
 
 #############################################################################
 ##
-#F  OmegaPlus( <d>, <q> ) . . . . . . . . . . . . . . . . \Omega^-_{<d>}(<q>)
+#F  OmegaPlus( <d>, <q> ) . . . . . . . . . . . . . . . . \Omega^+_{<d>}(<q>)
 ##
 BindGlobal( "OmegaPlus", function( d, q )
     local f, o, m, xi, g, a, mo, n, i, x1, x2, x, h, s, q2, q2i;
