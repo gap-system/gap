@@ -71,6 +71,7 @@ BindGlobal("POST_RESTORE", function()
         fi;
     od;
     SESSION();
+    PROGRAM_CLEAN_UP();
 end);
 
 if IsHPCGAP then
