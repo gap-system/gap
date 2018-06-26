@@ -1616,6 +1616,7 @@ end );
 #F  InstallAtExit( <func> ) . . . . . . . . . . function to call when exiting
 ##
 BIND_GLOBAL( "InstallAtExit", function( func )
+    local f;
     if not IS_FUNCTION(func)  then
         Error( "<func> must be a function" );
     fi;
@@ -1624,6 +1625,13 @@ BIND_GLOBAL( "InstallAtExit", function( func )
             Error( "<func> must accept zero arguments" );
         fi;
     fi;
+    # Return if function has already been installed
+    # Use this long form to support both List and AtomicList
+    for f in GAPInfo.AtExitFuncs do
+        if f = func then
+            return;
+        fi;
+    od;
     ADD_LIST( GAPInfo.AtExitFuncs, func );
 end );
 
