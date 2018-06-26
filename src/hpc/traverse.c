@@ -202,7 +202,7 @@ static void TraverseRegionFrom(TraversalState * traversal,
     while (traversal->listCurrent < traversal->listSize) {
         Obj current = ADDR_OBJ(traversal->list)[++traversal->listCurrent];
         int tnum = TNUM_BAG(current);
-        const TraversalMethodEnum method = TraversalMethod[TNUM_BAG(current)];
+        const TraversalMethodEnum method = TraversalMethod[tnum];
         int                       size;
         Obj *                     ptr;
         switch (method) {
@@ -260,7 +260,6 @@ Obj ReachableObjectsFrom(Obj obj)
     if (!IS_BAG_REF(obj) || REGION(obj) == NULL)
         return NewList(0);
     BeginTraversal(&traversal);
-    traversal.traversalCheck = IsSameRegion;
     TraverseRegionFrom(&traversal, obj, IsSameRegion);
     EndTraversal();
     return traversal.list;
