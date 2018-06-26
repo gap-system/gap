@@ -305,10 +305,8 @@ int PreMakeImmutableCheck(Obj obj)
         return 1;
     if (!CheckExclusiveWriteAccess(obj))
         return 0;
-    switch (TNUM_OBJ(obj)) {
-    case T_STRING:
+    if (TraversalMethod[TNUM_OBJ(obj)] == TRAVERSE_NONE)
         return 1;
-    }
     BeginTraversal(&traversal);
     traversal.border = 0;
     TraverseRegionFrom(&traversal, obj, IsWritableOrImmutable);
