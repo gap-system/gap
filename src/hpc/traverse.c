@@ -53,6 +53,9 @@ static UInt FindTraversedObj(Obj);
 
 inline Obj ReplaceByCopy(Obj obj)
 {
+    if (!IS_BAG_REF(obj))
+        return obj;
+
     TraversalState * traversal = currentTraversal();
     UInt             found = FindTraversedObj(obj);
     if (found)
