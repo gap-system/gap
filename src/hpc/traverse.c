@@ -314,6 +314,13 @@ int PreMakeImmutableCheck(Obj obj)
     return !traversal.border;
 }
 
+static Obj WrappedInList(Obj obj)
+{
+    Obj list = NewList(1);
+    SET_ELM_PLIST(list, 1, obj);
+    return list;
+}
+
 Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
 {
     Obj            copyList;
@@ -326,22 +333,14 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
             ErrorQuit("atomic objects cannot be copied", 0, 0);
         }
 
-        if (asList) {
-            copyList = NewList(1);
-            SET_ELM_PLIST(copyList, 1, obj);
-            return copyList;
-        }
-        else
-            return obj;
+        return asList ? WrappedInList(obj) : obj;
     }
+    if (imm && !IS_MUTABLE_OBJ(obj))
+        return asList ? WrappedInList(obj) : obj;
+
     BeginTraversal(&traversal);
-    if (imm) {
-        if (!IS_MUTABLE_OBJ(obj))
-            return obj;
-        TraverseRegionFrom(&traversal, obj, IsMutable);
-    }
-    else
-        TraverseRegionFrom(&traversal, obj, IsSameRegion);
+    TraverseRegionFrom(&traversal, obj, imm ? IsMutable : IsSameRegion);
+
     const Obj * traversed = CONST_ADDR_OBJ(traversal.list);
     len = LEN_PLIST(traversal.list);
     copyList = NewList(len);
@@ -349,8 +348,10 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
     traversal.border = delimited;
     if (len == 0) {
         EndTraversal();
-        if (delimited)
+        if (delimited) {
+            // FIXME: honor asList
             return GetRegionOf(obj)->obj;
+        }
         ErrorQuit("Object not in a readable region", 0L, 0L);
     }
     traversal.copyMap = NewList(LEN_PLIST(traversal.hashTable));
