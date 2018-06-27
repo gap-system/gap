@@ -47,6 +47,8 @@
 #include "hpc/threadapi.h"
 #endif
 
+#include <gmp.h>
+
 
 static Obj Error;
 

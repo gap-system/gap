@@ -17,40 +17,11 @@
 
 #include "objects.h"
 
-// GMP must be included outside of 'extern C'
-#ifdef GAP_IN_EXTERN_C
-}
-#endif
-#include <gmp.h>
-#ifdef GAP_IN_EXTERN_C
-extern "C" {
-#endif
-
-// TODO: Instead of hardcoding the values below, use
-//   GMP_LIMB_BITS etc. directly.
-//
-// To safeguard against bugs like compiling GAP against one version of
-// GMP and a plugin against another, we may want to add some checks.
-// E.g. add to config.h another #define GAP_GMP_LIMB_BITS and compare
-// that during compile time with GMP_LIMB_BITS.
-
 
 #ifdef SYS_IS_64_BIT
 #define INTEGER_UNIT_SIZE 8
 #else
 #define INTEGER_UNIT_SIZE 4
-#endif
-
-#if (GMP_LIMB_BITS != INTEGER_UNIT_SIZE * 8)
-#error Aborting compile: unexpected GMP limb size
-#endif
-#if GMP_NAIL_BITS != 0
-#error Aborting compile: GAP does not support non-zero GMP nail size
-#endif
-#if !defined(__GNU_MP_RELEASE)
- #if __GMP_MP_RELEASE < 50002
- #error Aborting compile: GAP requires GMP 5.0.2 or newer
- #endif
 #endif
 
 
@@ -82,16 +53,16 @@ static inline Int IS_INT(Obj obj)
 **  'ADDR_INT' returns a pointer to the limbs of the large integer 'obj'.
 **  'CONST_ADDR_INT' does the same, but returns a const pointer.
 */
-static inline mp_limb_t * ADDR_INT(Obj obj)
+static inline UInt * ADDR_INT(Obj obj)
 {
     GAP_ASSERT(IS_LARGEINT(obj));
-    return (mp_limb_t *)ADDR_OBJ(obj);
+    return (UInt *)ADDR_OBJ(obj);
 }
 
-static inline const mp_limb_t * CONST_ADDR_INT(Obj obj)
+static inline const UInt * CONST_ADDR_INT(Obj obj)
 {
     GAP_ASSERT(IS_LARGEINT(obj));
-    return (const mp_limb_t *)CONST_ADDR_OBJ(obj);
+    return (const UInt *)CONST_ADDR_OBJ(obj);
 }
 
 
@@ -102,7 +73,7 @@ static inline const mp_limb_t * CONST_ADDR_INT(Obj obj)
 static inline UInt SIZE_INT(Obj obj)
 {
     GAP_ASSERT(IS_LARGEINT(obj));
-    return SIZE_OBJ(obj) / sizeof(mp_limb_t);
+    return SIZE_OBJ(obj) / sizeof(UInt);
 }
 
 

@@ -84,13 +84,18 @@
 /* TODO: Remove after Ward2 */
 #ifndef WARD_ENABLED
 
-// GMP must be included outside of 'extern C'
-#ifdef GAP_IN_EXTERN_C
-}
-#endif
 #include <gmp.h>
-#ifdef GAP_IN_EXTERN_C
-extern "C" {
+
+#if (GMP_LIMB_BITS != INTEGER_UNIT_SIZE * 8)
+#error Aborting compile: unexpected GMP limb size
+#endif
+#if GMP_NAIL_BITS != 0
+#error Aborting compile: GAP does not support non-zero GMP nail size
+#endif
+#if !defined(__GNU_MP_RELEASE)
+ #if __GMP_MP_RELEASE < 50002
+ #error Aborting compile: GAP requires GMP 5.0.2 or newer
+ #endif
 #endif
 
 
@@ -131,7 +136,7 @@ static Obj ObjInt_UIntInv( UInt i );
                          (Int)TNAM_OBJ(op), 0L ); \
     }
 
-GAP_STATIC_ASSERT( sizeof(mp_limb_t) == sizeof(Int), "gmp limb size incompatible with GAP word size");
+GAP_STATIC_ASSERT( sizeof(mp_limb_t) == sizeof(UInt), "gmp limb size incompatible with GAP word size");
 
     
 /* for fallbacks to library */
@@ -212,7 +217,7 @@ Obj FuncIS_INT ( Obj self, Obj val )
 */
 void SaveInt( Obj gmp )
 {
-  const mp_limb_t *ptr = CONST_ADDR_INT(gmp);
+  const UInt *ptr = CONST_ADDR_INT(gmp);
   for (UInt i = 0; i < SIZE_INT(gmp); i++)
       SaveUInt(*ptr++);
   return;
@@ -227,7 +232,7 @@ void SaveInt( Obj gmp )
 */
 void LoadInt( Obj gmp )
 {
-  mp_limb_t *ptr = ADDR_INT(gmp);
+  UInt *ptr = ADDR_INT(gmp);
   for (UInt i = 0; i < SIZE_INT(gmp); i++)
       *ptr++ = LoadUInt();
   return;
@@ -378,13 +383,13 @@ static Obj GMPorINTOBJ_MPZ( mpz_t v )
 /* UPDATE_FAKEMPZ is a helper function for the MPZ_FAKEMPZ macro */
 static inline void UPDATE_FAKEMPZ( fake_mpz_t fake )
 {
-  fake->v->_mp_d = fake->obj ? ADDR_INT(fake->obj) : &fake->tmp;
+  fake->v->_mp_d = fake->obj ? (mp_ptr)ADDR_INT(fake->obj) : &fake->tmp;
 }
 
 /* some extra debugging tools for FAKMPZ objects */
 #if DEBUG_GMP
 #define CHECK_FAKEMPZ(fake) \
-    assert( ((fake)->v->_mp_d == ((fake)->obj ? ADDR_INT((fake)->obj) : &(fake)->tmp )) \
+    assert( ((fake)->v->_mp_d == ((fake)->obj ? (mp_ptr)ADDR_INT((fake)->obj) : &(fake)->tmp )) \
         &&  (fake->v->_mp_alloc == ((fake)->obj ? SIZE_INT((fake)->obj) : 1 )) )
 #else
 #define CHECK_FAKEMPZ(fake)  do { } while(0);
@@ -552,7 +557,7 @@ Obj ObjInt_Int8( Int8 i )
      i = -i;
   }
 
-  mp_limb_t *ptr = ADDR_INT(gmp);
+  UInt *ptr = ADDR_INT(gmp);
   ptr[0] = (UInt4)i;
   ptr[1] = ((UInt8)i) >> 32;
   return gmp;
@@ -571,7 +576,7 @@ Obj ObjInt_UInt8( UInt8 i )
   /* we need two limbs to store this integer */
   assert( sizeof(mp_limb_t) == 4 );
   Obj gmp = NewBag( T_INTPOS, 2 * sizeof(mp_limb_t) );
-  mp_limb_t *ptr = ADDR_INT(gmp);
+  UInt *ptr = ADDR_INT(gmp);
   ptr[0] = (UInt4)i;
   ptr[1] = ((UInt8)i) >> 32;
   return gmp;
@@ -597,11 +602,12 @@ Int Int_ObjInt(Obj i)
                      (Int)TNAM_OBJ(i), 0);
     if (SIZE_BAG(i) != sizeof(mp_limb_t))
         ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
+
+    // now check if val is small enough to fit in the signed Int type
+    // that has a range from -2^N to 2^N-1 so we need to check both ends
+    // Since -2^N is the same bit pattern as the UInt 2^N (N is 31 or 63)
+    // we can do it as below which avoids some compiler warnings
     UInt val = ADDR_INT(i)[0];
-// now check if val is small enough to fit in the signed Int type
-// that has a range from -2^N to 2^N-1 so we need to check both ends
-// Since -2^N is the same bit pattern as the UInt 2^N (N is 31 or 63)
-// we can do it as below which avoids some compiler warnings
 #ifdef SYS_IS_64_BIT
     if ((!sign && (val > INT64_MAX)) || (sign && (val > (UInt)INT64_MIN)))
 #else
@@ -724,7 +730,7 @@ void PrintInt ( Obj op )
     mpz_t v;
     v->_mp_alloc = SIZE_INT(op);
     v->_mp_size = IS_INTPOS(op) ? v->_mp_alloc : -v->_mp_alloc;
-    v->_mp_d = ADDR_INT(op);
+    v->_mp_d = (mp_ptr)ADDR_INT(op);
     mpz_get_str(buf, 10, v);
 
     /* print the buffer, %> means insert '\' before a linebreak            */
@@ -844,7 +850,7 @@ Obj FuncIntHexString( Obj self,  Obj str )
   Int  i, len, sign, nd;
   mp_limb_t n;
   UInt1 *p;
-  mp_limb_t *limbs;
+  UInt *limbs;
 
   if (! IsStringConv(str))
     ErrorMayQuit("IntHexString: argument must be string (not a %s)",
@@ -1128,7 +1134,7 @@ Int EqInt ( Obj gmpL, Obj gmpR )
        || SIZE_INT(gmpL) != SIZE_INT(gmpR) )
     return 0L;
 
-  if ( mpn_cmp( CONST_ADDR_INT(gmpL), CONST_ADDR_INT(gmpR), SIZE_INT(gmpL) ) == 0 ) 
+  if ( mpn_cmp( (mp_srcptr)CONST_ADDR_INT(gmpL), (mp_srcptr)CONST_ADDR_INT(gmpR), SIZE_INT(gmpL) ) == 0 ) 
     return 1L;
   else
     return 0L;
@@ -1165,7 +1171,7 @@ Int LtInt ( Obj gmpL, Obj gmpR )
   else if ( SIZE_INT(gmpL) > SIZE_INT(gmpR) )
     res = 0;
   else
-    res = mpn_cmp( CONST_ADDR_INT(gmpL), CONST_ADDR_INT(gmpR), SIZE_INT(gmpL) ) < 0;
+    res = mpn_cmp( (mp_srcptr)CONST_ADDR_INT(gmpL), (mp_srcptr)CONST_ADDR_INT(gmpR), SIZE_INT(gmpL) ) < 0;
 
   /* if both arguments are negative, flip the result */
   if ( IS_INTNEG(gmpL) )
@@ -1780,7 +1786,7 @@ Obj ModInt(Obj opL, Obj opR)
     
     /* otherwise use the gmp function to divide                            */
     else {
-      c = mpn_mod_1( CONST_ADDR_INT(opL), SIZE_INT(opL), i );
+      c = mpn_mod_1( (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL), i );
     }
     
     // now c is the absolute value of the actual result. Thus, if the left
@@ -1818,9 +1824,9 @@ Obj ModInt(Obj opL, Obj opR)
                    (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
 
     /* and let gmp do the work                                             */
-    mpn_tdiv_qr( ADDR_INT(quo), ADDR_INT(mod), 0,
-                 CONST_ADDR_INT(opL), SIZE_INT(opL),
-                 CONST_ADDR_INT(opR), SIZE_INT(opR)    );
+    mpn_tdiv_qr( (mp_ptr)ADDR_INT(quo), (mp_ptr)ADDR_INT(mod), 0,
+                 (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL),
+                 (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opR)    );
       
     /* reduce to small integer if possible, otherwise shrink bag           */
     mod = GMP_NORMALIZE( mod );
@@ -1923,8 +1929,8 @@ Obj QuoInt(Obj opL, Obj opR)
     if ( k < 0 ) k = -k;
 
     /* use gmp function for dividing by a 1-limb number                    */
-    mpn_divrem_1( ADDR_INT(quo), 0,
-                  CONST_ADDR_INT(opL), SIZE_INT(opL),
+    mpn_divrem_1( (mp_ptr)ADDR_INT(quo), 0,
+                  (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL),
                   k );
   }
   
@@ -1946,9 +1952,9 @@ Obj QuoInt(Obj opL, Obj opR)
       quo = NewBag( T_INTNEG,
                     (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
 
-    mpn_tdiv_qr( ADDR_INT(quo), ADDR_INT(rem), 0,
-                 CONST_ADDR_INT(opL), SIZE_INT(opL),
-                 CONST_ADDR_INT(opR), SIZE_INT(opR) );
+    mpn_tdiv_qr( (mp_ptr)ADDR_INT(quo), (mp_ptr)ADDR_INT(rem), 0,
+                 (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL),
+                 (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opR) );
   }
   
   /* normalize and return the result                                       */
@@ -2050,7 +2056,7 @@ Obj RemInt(Obj opL, Obj opR)
     
     /* otherwise use the gmp function to divide                            */
     else {
-      c = mpn_mod_1( CONST_ADDR_INT(opL), SIZE_INT(opL), i );
+      c = mpn_mod_1( (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL), i );
     }
 
     // adjust c for the sign of the left operand
@@ -2074,9 +2080,9 @@ Obj RemInt(Obj opL, Obj opR)
                   (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
     
     /* and let gmp do the work                                             */
-    mpn_tdiv_qr( ADDR_INT(quo), ADDR_INT(rem), 0,
-                 CONST_ADDR_INT(opL), SIZE_INT(opL),
-                 CONST_ADDR_INT(opR), SIZE_INT(opR)    );
+    mpn_tdiv_qr( (mp_ptr)ADDR_INT(quo),  (mp_ptr)ADDR_INT(rem), 0,
+                 (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL),
+                 (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opR)    );
     
     /* reduce to small integer if possible, otherwise shrink bag           */
     rem = GMP_NORMALIZE( rem );
