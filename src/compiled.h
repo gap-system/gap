@@ -315,18 +315,9 @@ static inline Obj C_NORMALIZE_64BIT(Obj o) {
 
 
 #else
-static inline Obj C_MAKE_MED_INT( Int8 value ) {
-  Obj x;
-  UInt type;
-  if (value < 0) {
-    type = T_INTNEG;
-    value = -value;
-  } else
-    type = T_INTPOS;
-
-  x = C_MAKE_INTEGER_BAG(8,type);
-  C_SET_LIMB8(x,0,(UInt8)value);
-  return x;
+static inline Obj C_MAKE_MED_INT( Int8 value )
+{
+    return ObjInt_Int8(value);
 }
 
 static inline Obj C_NORMALIZE_64BIT( Obj o) {
