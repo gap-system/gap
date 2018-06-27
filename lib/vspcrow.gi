@@ -1781,7 +1781,7 @@ end );
 BindGlobal( "Length_ExtendedVectors", T -> Length( T!.spaceEnumerator ) );
 
 BindGlobal( "PrintObj_ExtendedVectors", function( T )
-    Print( "A( ", UnderlyingCollection( T!.spaceEnumerator ), " )" );
+    Print( "A( ", T!.space, " )" );
 end );
 
 BindGlobal( "ExtendedVectors", function( V )
@@ -1794,18 +1794,17 @@ BindGlobal( "ExtendedVectors", function( V )
                PrintObj        := PrintObj_ExtendedVectors,
 
                spaceEnumerator := Enumerator( V ),
+               space           := V,
                one             := One( LeftActingDomain( V ) ),
                len             := Length( Zero( V ) ) + 1 ) );
 
+    enum!.q:= Size( LeftActingDomain( V ) );
     if     IsFinite( LeftActingDomain( V ) )
        and IsPrimeInt( Size( LeftActingDomain( V ) ) )
        and Size( LeftActingDomain( V ) ) < 256
        and IsInternalRep( One( LeftActingDomain( V ) ) ) then
       SetFilterObj( enum, IsQuickPositionList );
-      enum!.q:= enum!.spaceEnumerator!.q;
       enum!.NumberElement:= NumberElement_ExtendedVectorsFF;
-    else
-      enum!.q:= Size( LeftActingDomain( V ) );
     fi;
 
     return enum;
