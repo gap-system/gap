@@ -22,6 +22,9 @@ InstallMethod( \=,
     IsIdenticalObj,
     [ IsCollection and IsList, IsDomain ],
     function( C, D )
+    if HasIsFinite(C) and HasIsFinite(D) and (IsFinite(C) <> IsFinite(D)) then
+      return false;
+    fi;
     return IsSSortedList( C ) and AsSSortedList( D ) = C;
     end );
 
@@ -37,6 +40,9 @@ InstallMethod( \=,
     IsIdenticalObj,
     [ IsDomain, IsCollection and IsList ],
     function( D, C )
+    if HasIsFinite(C) and HasIsFinite(D) and (IsFinite(C) <> IsFinite(D)) then
+      return false;
+    fi;
     return IsSSortedList( C ) and AsSSortedList( D ) = C;
     end );
 
