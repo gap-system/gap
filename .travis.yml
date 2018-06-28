@@ -79,7 +79,7 @@ matrix:
     - env: TEST_SUITES=testmanuals CONFIGFLAGS="--enable-debug"
 
     # HPC-GAP builds (for efficiency, we don't build all combinations)
-    - env: TEST_SUITES="docomp testinstall" ABI=64 HPCGAP=yes CONFIGFLAGS="--enable-debug"
+    - env: TEST_SUITES="docomp testtravis" ABI=64 HPCGAP=yes CONFIGFLAGS="--enable-debug"
 
     # out of tree builds -- these are mainly done to verify that the build
     # system work in this scenario. Since we don't expect the test results to
