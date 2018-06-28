@@ -33,9 +33,3 @@ true
 gap> ResumeMethodReordering();
 gap> Unbind(CheckReorder);
 gap> STOP_TEST("method-reordering.tst");
-
- 
-
-
-             
-

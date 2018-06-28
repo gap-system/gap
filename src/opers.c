@@ -1929,8 +1929,8 @@ static ALWAYS_INLINE Obj GetMethodUncached(
         // entry n+4 is the info text
         // entry n+5 is, if set, the location where the method was installed
         // entry n+6 is, if set, the relative rank that was supplied when
-        //                       the method was installed, either as a small integer or a function
-        //                       of no arguments
+        //               the method was installed, either as a small integer 
+        //               or a function of no arguments
 
         // check argument filters against the given types
         Obj filter;

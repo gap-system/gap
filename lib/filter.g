@@ -173,9 +173,9 @@ end );
 
 #############################################################################
 ##
-#F SuspendMethodReordering()
-#F ResumeMethodReordering()
-#F ResetMethodReordering()
+#F  SuspendMethodReordering( )
+#F  ResumeMethodReordering( )
+#F  ResetMethodReordering( )
 ##
 ##  <#GAPDoc Label="MethodReordering">
 ##  <ManSection>
@@ -183,18 +183,20 @@ end );
 ##  <Func Name="ResumeMethodReordering" Arg=""/>
 ##  <Func Name="ResetMethodReordering" Arg=""/>
 ##
-##  <Description> These functions control whether the method reordering process
+##  <Description> 
+##  These functions control whether the method reordering process
 ##  described in <Ref Func="InstallTrueMethod"/> is invoked or not. Since this 
 ##  process can be comparatively time-consuming, it is usually suspended when
 ##  a lot of implications are due to be installed, for instance when loading
-##  the library, or a package. This is done by called <C>SuspendMethodReordering()</C>
+##  the library, or a package. This is done by calling <C>SuspendMethodReordering()</C>
 ##  once the installations are done, <C>ResumeMethodReordering()</C> should be called. 
 ##  These pairs of calls can be nested. When the outermost pair is complete, method
 ##  reordering takes place and is enabled in <C>InstallTrueMethod</C> thereafter.
 ##
 ##  <C>ResetMethodReordering()</C> effectively exits all nested suspensions, resuming
 ##  reordering immediately. This function is mainly provided for error recovery and 
-##  similar purposes.</Description>
+##  similar purposes and is called on quitting from a break loop.
+##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 
@@ -276,8 +278,6 @@ end);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-
-
 
 BIND_GLOBAL( "InstallTrueMethod", function ( tofilt, from )
 
