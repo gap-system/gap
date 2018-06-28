@@ -252,6 +252,7 @@ CallAndInstallPostRestore( function()
       BindThreadLocal( "LastErrorMessage", "" );
     else
       ASS_GVAR( "BreakOnError", not GAPInfo.CommandLineOptions.T );
+      ASS_GVAR( "SilentErrors", false );
     fi;
 end);
 
