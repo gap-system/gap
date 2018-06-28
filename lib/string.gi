@@ -642,23 +642,19 @@ InstallGlobalFunction("RemoveCharacters", REMOVE_CHARACTERS);
 ##
 #F  EvalString( <expr> ) . . . . . . . . . . . . evaluate a string expression
 ##
-_EVALSTRINGTMP := 0;
 InstallGlobalFunction("EvalString", function( s )
   local a, f, res;
-  a := "_EVALSTRINGTMP:=";
+  # Prepend 'return' and append ';' to the given string; also add newlines to
+  # ensure that if there are syntax errors in the evaluated string, GAP
+  # prints only the evaluated string, but not the 'return' and ';' we prepend
+  # resp. append.
+  a := "return\n";
   Append(a, s);
-  Add(a, ';');
-  Unbind(_EVALSTRINGTMP);
+  Append(a, ";\n");
   f := InputTextString(a);
-  Read(f);
-  if not IsBound(_EVALSTRINGTMP) then
-    Error("Could not evaluate string.\n");
-  fi;
-  res := _EVALSTRINGTMP;
-  Unbind(_EVALSTRINGTMP);
-  return res;
+  f := ReadAsFunction(f);
+  return f();
 end);
-Unbind(_EVALSTRINGTMP);
 
 #############################################################################
 ##
