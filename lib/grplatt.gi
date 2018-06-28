@@ -2819,11 +2819,10 @@ InstallGlobalFunction("SubgroupsTrivialFitting",function(G)
 	ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
       Info(InfoPerformance,2,"Using Table of Marks Library");
       go:=ImagesSource(tom[1]);
-      tom:=tom[2];
       Info(InfoLattice,1, "Fetching subgroups of simple ",
-	  Identifier(tom)," from table of marks");
-      len:=LengthsTom(tom);
-      sub:=List([1..Length(len)],x->RepresentativeTom(tom,x));
+	  Identifier(tom[2])," from table of marks");
+      len:=LengthsTom(tom[2]);
+      sub:=List([1..Length(len)],x->PreImage(tom[1],RepresentativeTom(tom[2],x)));
       return sub;
     fi;
   fi;
@@ -2851,14 +2850,15 @@ InstallGlobalFunction("SubgroupsTrivialFitting",function(G)
 	tom:=TomDataAlmostSimpleRecognition(i);
 	if tom<>fail then
 	  go:=ImagesSource(tom[1]);
-	  tom:=tom[2];
-	  if tom<>fail and
+	  if tom[2]<>fail and
 	   ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
 	    Info(InfoPerformance,2,"Using Table of Marks Library");
 	    Info(InfoLattice,1, "Fetching subgroups of simple ",
-	      Identifier(tom)," from table of marks");
-	    len:=LengthsTom(tom);
-	    sub:=List([1..Length(len)],x->RepresentativeTom(tom,x));
+	      Identifier(tom[2])," from table of marks");
+	    len:=LengthsTom(tom[2]);
+            # different than above -- no preimage. We're setting subgroups
+            # of go
+	    sub:=List([1..Length(len)],x->RepresentativeTom(tom[2],x));
 	    sub:=List(sub,x->ConjugacyClassSubgroups(go,x));
 	    SetConjugacyClassesSubgroups(go,sub);
 	  fi;
@@ -2868,7 +2868,6 @@ InstallGlobalFunction("SubgroupsTrivialFitting",function(G)
 	  go:=SimpleGroup(t);
 	fi;
 	Add(gold,go);
-
 
 	p:=Length(types);
       fi;
