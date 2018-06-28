@@ -9,7 +9,7 @@
 gap> START_TEST("alist.tst");
 gap> if IsHPCGAP and not ARCH_IS_WINDOWS() then tasks := 100; else tasks := 10; fi;;
 gap> taskssum := (tasks*(tasks+1))/2;;
-gap> a := AtomicList([1,1,1,1]);
+gap> a := AtomicList([1,1,1,1]);;
 gap> f := function(job)
 > local check;
 > check := false;
@@ -20,12 +20,12 @@ gap> f := function(job)
 > end;;
 gap> joblist := [];;
 gap> for j in [1..4] do for i in [1..tasks] do Add(joblist, [j, i, i+1]); od; od;
-gap> results := List(joblist, x -> RunTask(f, x));
+gap> results := List(joblist, x -> RunTask(f, x));;
 gap> ForAll(results, TaskResult);
 true
 gap> ForAll([1..4], x -> a[x] = tasks + 1);
 true
-gap> a := AtomicList([]);
+gap> a := AtomicList([]);;
 gap> binder := function(val)
 > local i, j, count;
 > count := 0;
@@ -53,7 +53,7 @@ gap> unbinder := function(val)
 >    fi;
 >  od;
 > od;
-> end;
+> end;;
 gap> tasklist := [RunTask(binder, 1), RunTask(binder, 2),
 >              RunTask(unbinder, 1), RunTask(unbinder, 2)];;
 gap> List(tasklist, TaskResult);
