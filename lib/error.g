@@ -12,6 +12,9 @@
 CallAndInstallPostRestore( function()
     ASS_GVAR( "ERROR_COUNT", 0 );
     ASS_GVAR( "ErrorLevel", 0 );
+    if IsHPCGAP then
+      MakeThreadLocal("ErrorLevel");
+    fi;
     ASS_GVAR( "QUITTING", false );
 end);
 
@@ -111,7 +114,7 @@ BIND_GLOBAL("ErrorInner",
         function( arg )
     local   context, mayReturnVoid,  mayReturnObj,  lateMessage,  earlyMessage,  
             x,  prompt,  res, errorLVars, justQuit, printThisStatement,
-            location;
+            location, lastErrorStream, shellOut, shellIn;
 
 	context := arg[1].context;
     if not IsLVarsBag(context) then
@@ -188,11 +191,22 @@ BIND_GLOBAL("ErrorInner",
     ErrorLVars := context;
     # BreakOnError is defined by the `-T` command line flag in init.g
     if QUITTING or not BreakOnError then
-        PrintTo("*errout*", "Error, ");
-        for x in earlyMessage do
-            PrintTo("*errout*", x);
-        od;
-        PrintTo("*errout*", "\n");
+        if not SilentErrors then
+            PrintTo("*errout*", "Error, ");
+            for x in earlyMessage do
+                PrintTo("*errout*", x);
+            od;
+            PrintTo("*errout*", "\n");
+        fi;
+        if IsHPCGAP then
+            LastErrorMessage := "";
+            lastErrorStream := OutputTextString(LastErrorMessage, true);
+            for x in earlyMessage do
+                PrintTo(lastErrorStream, x);
+            od;
+            CloseStream(lastErrorStream);
+            MakeImmutable(LastErrorMessage);
+        fi;
         ErrorLevel := ErrorLevel-1;
         ErrorLVars := errorLVars;
         if ErrorLevel = 0 then LEAVE_ALL_NAMESPACES(); fi;
@@ -212,7 +226,8 @@ BIND_GLOBAL("ErrorInner",
         fi;
     else
         location := CURRENT_STATEMENT_LOCATION(context);
-        if location <> fail then          PrintTo("*errout*", " at ", location[1], ":", location[2]);
+        if location <> fail then
+          PrintTo("*errout*", " at ", location[1], ":", location[2]);
         fi;
         PrintTo("*errout*", " called from\n");
     fi;
@@ -236,8 +251,16 @@ BIND_GLOBAL("ErrorInner",
     else
         prompt := "brk> ";
     fi;
+    shellOut := "*errout*";
+    shellIn := "*errin*";
+    if IsHPCGAP then
+        if HaveMultiThreadedUI then
+            shellOut := "*defout*";
+            shellIn := "*defin*";
+        fi;
+    fi;
     if not justQuit then
-        res := SHELL(context,mayReturnVoid,mayReturnObj,3,false,prompt,false,"*errin*","*errout*",false);
+        res := SHELL(context,mayReturnVoid,mayReturnObj,3,false,prompt,false,shellIn,shellOut,false);
     else
         res := fail;
     fi;
