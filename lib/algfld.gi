@@ -64,7 +64,7 @@ end;
 InstallMethod(AlgebraicElementsFamily,"generic",true,
   [IsField,IsUnivariatePolynomial,IsBool],0,
 function(f,p,check)
-local fam,i,cof,red,rchar,impattr,deg;
+local fam,i,cof,red,rchar,impattr,deg,tmp;
   if check and not IsIrreducibleRingElement(PolynomialRing(f,
              [IndeterminateNumberOfLaurentPolynomial(p)]),p) then
     Error("<p> must be irreducible over f");
@@ -101,7 +101,7 @@ local fam,i,cof,red,rchar,impattr,deg;
   fam!.deg:=deg;
   i:=List([1..DegreeOfLaurentPolynomial(p)],i->fam!.zeroCoefficient);
   i[2]:=fam!.oneCoefficient;
-  i:=ImmutableVector(Size(f),i,true);
+  i:=ImmutableVector(f,i,true);
   fam!.primitiveElm:=MakeImmutable(ObjByExtRep(fam,i));
   fam!.indeterminateName:=MakeImmutable("a");
 
@@ -113,7 +113,10 @@ local fam,i,cof,red,rchar,impattr,deg;
     Add(cof,fam!.oneCoefficient);
     if rchar>0 then
       if IsHPCGAP then
-        cof := CopyToVectorRep(cof,rchar); # rchar is <= 256
+        tmp := CopyToVectorRep(cof,rchar); # rchar is <= 256
+        if tmp <> fail then
+          cof := tmp;
+        fi;
       else
         ConvertToVectorRep(cof,rchar);
       fi;
