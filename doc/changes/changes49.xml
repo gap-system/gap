@@ -1206,4 +1206,91 @@ so that it can be distributed again, please contact the &GAP; team.
 
 </Section>
 
+<Section Label="gap492">
+<Heading>&GAP; 4.9.2 (July 2018)</Heading>
+
+<Subsection Label="Changes in the core GAP system introduced in GAP 4.9.2">
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.9.2</Heading>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+Fixed a bug in iterating over an empty cartesian product
+(<URL><LinkText>&Hash;2421</LinkText><Link>https://github.com/gap-system/gap/pull/2421</Link></URL>).
+[Reported by @isadofschi]
+</Item>
+</List>
+
+Fixed bugs that could lead to crashes:
+<List>
+<Item>
+Fixed a crash after entering <C>return;</C> in a <Q>method not found</Q> break loop
+(<URL><LinkText>&Hash;2449</LinkText><Link>https://github.com/gap-system/gap/pull/2449</Link></URL>).
+</Item>
+<Item>
+Fixed a crash when an error occurs and
+<Ref BookName="ref" Oper="OutputLogTo" Label="for streams"/>
+points to a stream which internally uses another stream
+(<URL><LinkText>&Hash;2596</LinkText><Link>https://github.com/gap-system/gap/pull/2596</Link></URL>).
+</Item>
+</List>
+
+Fixed bugs that could lead to incorrect results:
+<List>
+<Item>
+Fixed a bug in computing maximal subgroups, which broke some other
+calculations, in particular, computing intermediate subgroups.
+(<URL><LinkText>&Hash;2488</LinkText><Link>https://github.com/gap-system/gap/pull/2488</Link></URL>).
+[Reported by Seyed Hassan Alavi]
+</Item>
+</List>
+
+Other fixed bugs and further improvements:
+<List>
+<Item>
+Profiling now correctly handles calls to <C>longjmp</C> and allows to generate
+profiles using version 2.0.1 of the <Package>Profiling</Package> package
+(<URL><LinkText>&Hash;2444</LinkText><Link>https://github.com/gap-system/gap/pull/2444</Link></URL>).
+</Item>
+<Item>
+The <File>bin/gap.sh</File> script now respects the <C>GAP_DIR</C> environment variable
+(<URL><LinkText>&Hash;2465</LinkText><Link>https://github.com/gap-system/gap/pull/2465</Link></URL>).
+[Contributed by RussWoodroofe]
+</Item>
+<Item>
+The <File>bin/BuildPackages.sh</File> script now properly builds binaries for
+the <Package>simpcomp</Package> package
+(<URL><LinkText>&Hash;2475</LinkText><Link>https://github.com/gap-system/gap/pull/2475</Link></URL>).
+</Item>
+<Item>
+Fixed a bug in restoring a workspace, which prevented &GAP; from saving
+the history if a workspace was loaded during startup
+(<URL><LinkText>&Hash;2578</LinkText><Link>https://github.com/gap-system/gap/pull/2578</Link></URL>).
+</Item>
+
+
+</List>
+
+
+</Subsection>
+
+<Subsection Label="New and updated packages since GAP 4.9.1">
+<Heading>New and updated packages since &GAP; 4.9.1</Heading>
+
+This release contains updated versions of 22 packages
+from &GAP; 4.9.1 distribution. Additionally, it has three new packages.
+The new <Package>JupyterKernel</Package> package by Markus Pfeiffer provides
+a so-called <E>kernel</E> for the Jupyter interactive document system
+(<URL>https://jupyter.org/</URL>). This package requires Jupyter to be
+installed on your system (see <URL>https://jupyter.org/install</URL>
+for instructions). It also requires &GAP; packages <Package>IO</Package>,
+<Package>ZeroMQInterface</Package>, <Package>json</Package>, and also two
+new packages by Markus Pfeiffer called <Package>crypting</Package> and
+<Package>uuid</Package>, all included into &GAP; 4.9.2 distribution.
+The <Package>JupyterKernel</Package> package is not yet usable on Windows.
+
+</Subsection>
+
+</Section>
+
 </Chapter>
