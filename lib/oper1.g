@@ -69,21 +69,21 @@ BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
         #   `RunImmediateMethods'.
 
         if IsBound( IMMEDIATES[j] ) then
-#T  the `if' statement can disappear when `IMM_FLAGS' is improved ...
+            #T  the `if' statement can disappear when `IMM_FLAGS' is improved ...
             imm := IMMEDIATES[j];
             for i  in [ 0, SIZE_IMMEDIATE_METHOD_ENTRY .. LEN_LIST(imm)-SIZE_IMMEDIATE_METHOD_ENTRY ]  do
 
                 if        IS_SUBSET_FLAGS( flags, imm[i+4] )
-                  and not IS_SUBSET_FLAGS( flags, imm[i+3] )
-                  and not imm[i+6] in tried
-                then
+                          and not IS_SUBSET_FLAGS( flags, imm[i+3] )
+                          and not imm[i+6] in tried
+                          then
 
                     # Call the method, and store that it was used.
                     meth := IMMEDIATE_METHODS[ imm[i+6] ];
                     res := meth( obj );
                     ADD_LIST( tried, imm[i+6] );
                     RUN_IMMEDIATE_METHODS_CHECKS :=
-                        RUN_IMMEDIATE_METHODS_CHECKS+1;
+                      RUN_IMMEDIATE_METHODS_CHECKS+1;
                     if TRACE_IMMEDIATE_METHODS  then
                         Print( "#I  immediate: ", NAME_FUNC( imm[i+1] ));
                         if imm[i+7] <> false then
@@ -99,7 +99,7 @@ BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
                         imm[i+2]( obj, res );
                         IGNORE_IMMEDIATE_METHODS := false;
                         RUN_IMMEDIATE_METHODS_HITS :=
-                            RUN_IMMEDIATE_METHODS_HITS+1;
+                          RUN_IMMEDIATE_METHODS_HITS+1;
 
                         # If `obj' has noticed the new information,
                         # add the numbers of newly known filters to
@@ -107,14 +107,14 @@ BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
                         # methods later.
                         if not IS_IDENTICAL_OBJ( TYPE_OBJ(obj), type ) then
 
-                          type := TYPE_OBJ(obj);
+                            type := TYPE_OBJ(obj);
 
-                          newflags := SUB_FLAGS( type![2], IMM_FLAGS );
-                          newflags := SUB_FLAGS( newflags, flags );
-                          APPEND_LIST_INTR( flagspos,
-                                            TRUES_FLAGS( newflags ) );
+                            newflags := SUB_FLAGS( type![2], IMM_FLAGS );
+                            newflags := SUB_FLAGS( newflags, flags );
+                            APPEND_LIST_INTR( flagspos,
+                                    TRUES_FLAGS( newflags ) );
 
-                          flags := type![2];
+                            flags := type![2];
 
                         fi;
                     fi;
@@ -143,7 +143,7 @@ fi;
 #F  INSTALL_METHOD_FLAGS( <opr>, <info>, <rel>, <flags>, <rank>, <method> ) .
 ##
 BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
-    function( opr, info, rel, flags, baserank, method )
+        function( opr, info, rel, flags, baserank, method )
     local   methods,  narg,  i,  k,  tmp, replace, match, j, lk, rank;
 
     if IsHPCGAP then
@@ -215,7 +215,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     fi;
     # push the other functions back
     if not REREADING or not replace then
-       COPY_LIST_ENTRIES(methods, i+1, 1, methods, narg+BASE_SIZE_METHODS_OPER_ENTRY+i+1,1,
+        COPY_LIST_ENTRIES(methods, i+1, 1, methods, narg+BASE_SIZE_METHODS_OPER_ENTRY+i+1,1,
                 LEN_LIST(methods)-i);        
     fi;
 
@@ -252,8 +252,8 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
         if CHECK_INSTALL_METHOD and not IS_OPERATION( method ) then
             tmp := NARG_FUNC(method);
             if tmp < AINV(narg)-1 or (tmp >= 0 and tmp <> narg)  then
-               Error(NAME_FUNC(opr),": <method> must accept ",
-                     narg, " arguments");
+                Error(NAME_FUNC(opr),": <method> must accept ",
+                      narg, " arguments");
             fi;
         fi;
         methods[i+(narg+2)] := method;
@@ -297,9 +297,11 @@ end );
 ##  if supplied <A>info</A> should be a short but informative string
 ##  that describes for what situation the method is installed,
 ##  <A>famp</A> should be a function to be applied to the families
-##  of the arguments,
-##  and <A>val</A> should be an integer that measures the priority
-##  of the method.
+##  of the arguments.
+##  a<A>val</A> should be an integer that measures the priority
+##  of the method, or a function of no arguments which should return such an
+##  integer and will be called each time method order is being recalculated, 
+##  (see <Ref Func="InstallTrueMethod"/>).
 ##  <P/>
 ##  The default values for <A>info</A>, <A>famp</A>, and <A>val</A> are
 ##  the empty string,
@@ -462,9 +464,11 @@ BIND_GLOBAL( "INSTALL_METHOD",
     # Check the rank.
     if not IsBound( arglist[ pos ] ) then
       Error( "the method is missing in <arglist>" );
-    elif IS_INT( arglist[ pos ] ) then
-      rank:= arglist[ pos ];
-      pos:= pos + 1;
+    elif IS_INT( arglist[ pos ] ) or
+         (IS_FUNCTION( arglist[ pos ] ) and NARG_FUNC( arglist[ pos ] ) = 0 
+           and pos < LEN_LIST(arglist)) then
+        rank := arglist[ pos ];
+        pos := pos+1;        
     else
       rank:= 0;
     fi;

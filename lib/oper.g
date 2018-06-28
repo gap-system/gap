@@ -2006,15 +2006,10 @@ BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
                         changed := true;
                         meths[base+n+3] := rank;
                     fi;
-                    meths[base+n+3] := rank;
-                        # compare to rank of succeding method
+                    # compare to rank of succeding method
                     if i = nmethods or rank >= meths[base+BASE_SIZE_METHODS_OPER_ENTRY + 2*n + 3] then
                         continue;
                     fi;
-                    if IsHPCGAP and not changed then 
-                        meths := SHALLOW_COPY_OBJ(meths);
-                    fi;
-                    changed := true;
                     k := i+2;
                     while k <= nmethods and meths[(k-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n) + n + 3] < rank do
                         k := k+1;
@@ -2047,19 +2042,19 @@ BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
                         rank := rank+RankFilter(WITH_IMPS_FLAGS(req));
                     od;
                     
-                    if rank = meths[base+n+3] then
-                        continue;
+                    if rank <> meths[base+n+3] then
+                        if IsHPCGAP and not changed then 
+                            meths := SHALLOW_COPY_OBJ(meths);
+                        fi;
+                        changed := true;
+                        meths[base+n+3] := rank;
                     fi;
-                    meths[base+n+3] := rank;
+                    
                     # compare to rank of preceding method
                     if i = 1 or rank <= meths[base-BASE_SIZE_METHODS_OPER_ENTRY+3] then
                         continue;
                     fi;                
                     
-                    if IsHPCGAP and not changed then 
-                        meths := SHALLOW_COPY_OBJ(meths);
-                    fi;
-                    changed := true;
                     k := i-2;
                     while k > 1 and meths[(k-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n) + n + 3] < rank do
                         k := k-1;
