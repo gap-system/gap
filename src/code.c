@@ -1275,8 +1275,6 @@ void            CodeBreak ( void )
 {
     Stat                stat;           /* break-statement, result         */
 
-    GAP_ASSERT(STATE(LoopNesting) != 0);
-
     /* allocate the break-statement                                        */
     stat = NewStat( T_BREAK, 0 * sizeof(Expr) );
 
@@ -1294,8 +1292,6 @@ void            CodeBreak ( void )
 void            CodeContinue ( void )
 {
     Stat                stat;           /* continue-statement, result         */
-
-    GAP_ASSERT(STATE(LoopNesting) != 0);
 
     /* allocate the continue-statement                                        */
     stat = NewStat( T_CONTINUE, 0 * sizeof(Expr) );

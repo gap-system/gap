@@ -54,12 +54,6 @@ typedef struct GAPState {
     /* From read.c */
     syJmp_buf ReadJmpError;
     Obj       StackNams;
-    UInt      ReadTop;
-    UInt      ReadTilde;
-    UInt      CurrLHSGVar;
-    UInt      CurrentGlobalForLoopVariables[100];
-    UInt      CurrentGlobalForLoopDepth;
-    UInt      LoopNesting;
 
     /* From scanner.c */
     Obj    ValueObj;

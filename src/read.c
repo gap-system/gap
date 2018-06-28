@@ -44,6 +44,7 @@
 */
 /* TL: Obj             StackNams; */
 
+struct ReaderState {
 
 /****************************************************************************
 **
@@ -58,10 +59,8 @@
 **  'ReadTilde' is 1 if the reader has read a  reference to the global variable
 **  '~' within the current outmost list or record expression.
 */
-/* TL: UInt            ReadTop; */
-
-/* TL: UInt            ReadTilde; */
-
+UInt ReadTop;
+UInt ReadTilde;
 
 /****************************************************************************
 **
@@ -71,7 +70,22 @@
 **  to prevent undefined global variable  warnings, when reading a  recursive
 **  function.
 */
-/* TL: UInt            CurrLHSGVar; */
+UInt CurrLHSGVar;
+
+
+UInt CurrentGlobalForLoopVariables[100];
+UInt CurrentGlobalForLoopDepth;
+
+UInt LoopNesting;
+
+};
+
+static ModuleStateOffset ReaderStateOffset = -1;
+
+extern inline struct ReaderState * ReaderState(void)
+{
+    return (struct ReaderState *)StateSlotsAtOffset(ReaderStateOffset);
+}
 
 
 /****************************************************************************
@@ -95,33 +109,30 @@ static void ReadAtom (
     TypSymbolSet        follow,
     Char                mode );
 
-/* TL: static UInt CurrentGlobalForLoopVariables[100]; */
-/* TL: static UInt CurrentGlobalForLoopDepth; */
-
 void PushGlobalForLoopVariable( UInt var)
 {
-  if (STATE(CurrentGlobalForLoopDepth) < 100)
-    STATE(CurrentGlobalForLoopVariables)[STATE(CurrentGlobalForLoopDepth)] = var;
-  STATE(CurrentGlobalForLoopDepth)++;
+    struct ReaderState * rs = ReaderState();
+    if (rs->CurrentGlobalForLoopDepth < 100)
+        rs->CurrentGlobalForLoopVariables[rs->CurrentGlobalForLoopDepth] = var;
+    rs->CurrentGlobalForLoopDepth++;
 }
 
 void PopGlobalForLoopVariable( void )
 {
-  assert(STATE(CurrentGlobalForLoopDepth));
-  STATE(CurrentGlobalForLoopDepth)--;
+    GAP_ASSERT(ReaderState()->CurrentGlobalForLoopDepth);
+    ReaderState()->CurrentGlobalForLoopDepth--;
 }
 
 static UInt GlobalComesFromEnclosingForLoop (UInt var)
 {
-  UInt i;
-  for (i = 0; i < STATE(CurrentGlobalForLoopDepth); i++)
-    {
-      if (i==100)
-        return 0;
-      if (STATE(CurrentGlobalForLoopVariables)[i] == var)
-        return 1;
+    struct ReaderState * rs = ReaderState();
+    for (UInt i = 0; i < rs->CurrentGlobalForLoopDepth; i++) {
+        if (i == 100)
+          return 0;
+        if (rs->CurrentGlobalForLoopVariables[i] == var)
+          return 1;
     }
-  return 0;
+    return 0;
 }
 
 // match either a semicolon or a dual semicolon
@@ -790,7 +801,7 @@ static void ReadCallVarAss(TypSymbolSet follow, Char mode)
     if ( ref.type == R_GVAR            // Reading a global variable
       && mode != 'i'                // Not inside 'IsBound'
       && LEN_PLIST(STATE(StackNams)) != 0   // Inside a function
-      && ref.var != STATE(CurrLHSGVar)  // Not LHS of assignment
+      && ref.var != ReaderState()->CurrLHSGVar  // Not LHS of assignment
       && ValGVar(ref.var) == 0          // Not an existing global var
       && ExprGVar(ref.var) == 0         // Or an auto var
       && ! STATE(IntrIgnoring)      // Not currently ignoring parsed code
@@ -827,7 +838,7 @@ static void ReadCallVarAss(TypSymbolSet follow, Char mode)
         else {
             Match( S_ASSIGN, ":=", follow );
             if ( LEN_PLIST(STATE(StackNams)) == 0 || !STATE(IntrCoding) ) {
-                STATE(CurrLHSGVar) = (ref.type == R_GVAR ? ref.var : 0);
+                ReaderState()->CurrLHSGVar = (ref.type == R_GVAR ? ref.var : 0);
             }
             ReadExpr( follow, 'r' );
             AssignRef(ref);
@@ -937,14 +948,16 @@ static void ReadListExpr (
     volatile UInt       nr;             /* number of elements              */
     volatile UInt       range;          /* is the list expression a range  */
 
+    struct ReaderState * volatile rs = ReaderState();
+
     /* '['                                                                 */
     Match( S_LBRACK, "[", follow );
-    STATE(ReadTop)++;
-    if ( STATE(ReadTop) == 1 ) {
-        STATE(ReadTilde) = 0;
+    rs->ReadTop++;
+    if (rs->ReadTop == 1) {
+        rs->ReadTilde = 0;
         STATE(Tilde) = 0;
     }
-    TRY_READ { IntrListExprBegin( (STATE(ReadTop) == 1) ); }
+    TRY_READ { IntrListExprBegin( (rs->ReadTop == 1) ); }
     pos   = 1;
     nr    = 0;
     range = 0;
@@ -989,7 +1002,7 @@ static void ReadListExpr (
         ReadExpr( S_RBRACK|follow, 'r' );
         TRY_READ { IntrListExprEndElm(); }
         nr++;
-        if ( STATE(ReadTop) == 1 && STATE(ReadTilde) == 1 ) {
+        if (rs->ReadTop == 1 && rs->ReadTilde == 1) {
             SyntaxError("Sorry, '~' not allowed in range");
         }
     }
@@ -997,13 +1010,13 @@ static void ReadListExpr (
     /* ']'                                                                 */
     Match( S_RBRACK, "]", follow );
     TRY_READ {
-        IntrListExprEnd( nr, range, (STATE(ReadTop) == 1), (STATE(ReadTilde) == 1) );
+        IntrListExprEnd( nr, range, (rs->ReadTop == 1), (rs->ReadTilde == 1) );
     }
-    if ( STATE(ReadTop) == 1 ) {
-        STATE(ReadTilde) = 0;
+    if (rs->ReadTop == 1) {
+        rs->ReadTilde = 0;
         STATE(Tilde) = 0;
     }
-    STATE(ReadTop)--;
+    rs->ReadTop--;
 }
 
 
@@ -1022,15 +1035,17 @@ static void ReadRecExpr (
     volatile UInt       rnam;           /* record component name           */
     volatile UInt       nr;             /* number of components            */
 
+    struct ReaderState * volatile rs = ReaderState();
+
     /* 'rec('                                                              */
     Match( S_REC, "rec", follow );
     Match( S_LPAREN, "(", follow|S_RPAREN|S_COMMA );
-    STATE(ReadTop)++;
-    if ( STATE(ReadTop) == 1 ) {
-        STATE(ReadTilde) = 0;
+    rs->ReadTop++;
+    if ( rs->ReadTop == 1 ) {
+        rs->ReadTilde = 0;
         STATE(Tilde) = 0;
     }
-    TRY_READ { IntrRecExprBegin( (STATE(ReadTop) == 1) ); }
+    TRY_READ { IntrRecExprBegin( (rs->ReadTop == 1) ); }
     nr = 0;
 
     /* [ <Ident> | '(' <Expr> ')' ':=' <Expr>                              */
@@ -1070,13 +1085,13 @@ static void ReadRecExpr (
     /* ')'                                                                 */
     Match( S_RPAREN, ")", follow );
     TRY_READ {
-        IntrRecExprEnd( nr, (STATE(ReadTop) == 1), (STATE(ReadTilde) == 1) );
+        IntrRecExprEnd( nr, (rs->ReadTop == 1), (rs->ReadTilde == 1) );
     }
-    if ( STATE(ReadTop) == 1) {
-        STATE(ReadTilde) = 0;
+    if (rs->ReadTop == 1) {
+        rs->ReadTilde = 0;
         STATE(Tilde) = 0;
     }
-    STATE(ReadTop)--;
+    rs->ReadTop--;
 }
 
 /****************************************************************************
@@ -1240,10 +1255,10 @@ static void ReadFuncExprBody(
             SET_LCKS_FUNC(CURR_FUNC(), args.locks);
 #endif
         // <Statements>
-        UInt oldLoopNesting = STATE(LoopNesting);
-        STATE(LoopNesting) = 0;
+        UInt oldLoopNesting = ReaderState()->LoopNesting;
+        ReaderState()->LoopNesting = 0;
         nr = ReadStats(S_END | follow);
-        STATE(LoopNesting) = oldLoopNesting;
+        ReaderState()->LoopNesting = oldLoopNesting;
     }
 
 
@@ -1465,7 +1480,7 @@ static void ReadLiteral (
 
     /* '~'                                                                 */
     case S_TILDE:
-        STATE(ReadTilde) = 1;
+        ReaderState()->ReadTilde = 1;
         TRY_READ { IntrTildeExpr(); }
         Match( S_TILDE, "~", follow );
         break;
@@ -2043,11 +2058,11 @@ static void ReadFor (
 
     /* 'do' <Statements>                                                    */
     Match( S_DO, "do", STATBEGIN|S_OD|follow );
-    STATE(LoopNesting)++;
+    ReaderState()->LoopNesting++;
     TRY_READ { IntrForBeginBody(); }
     nrs = ReadStats( S_OD|follow );
     TRY_READ { IntrForEndBody( nrs ); }
-    STATE(LoopNesting)--;
+    ReaderState()->LoopNesting--;
 
     /* 'od'                                                                */
     Match( S_OD, "od", follow );
@@ -2097,11 +2112,11 @@ static void ReadWhile (
     Match( S_DO, "do", STATBEGIN|S_DO|follow );
 
     //     <Statements>
-    STATE(LoopNesting)++;
+    ReaderState()->LoopNesting++;
     TRY_READ { IntrWhileBeginBody(); }
     nrs = ReadStats( S_OD|follow );
     TRY_READ { IntrWhileEndBody( nrs ); }
-    STATE(LoopNesting)--;
+    ReaderState()->LoopNesting--;
 
     /* 'od'                                                                */
     Match( S_OD, "od", follow );
@@ -2232,11 +2247,11 @@ static void ReadRepeat (
     Match( S_REPEAT, "repeat", follow );
 
     //  <Statements>
-    STATE(LoopNesting)++;
+    ReaderState()->LoopNesting++;
     TRY_READ { IntrRepeatBeginBody(); }
     nrs = ReadStats( S_UNTIL|follow );
     TRY_READ { IntrRepeatEndBody( nrs ); }
-    STATE(LoopNesting)--;
+    ReaderState()->LoopNesting--;
 
     /* 'until' <Expr>                                                      */
     Match( S_UNTIL, "until", EXPRBEGIN|follow );
@@ -2270,7 +2285,7 @@ static void ReadRepeat (
 static void ReadBreak (
     TypSymbolSet        follow )
 {
-    if (!STATE(LoopNesting))
+    if (!ReaderState()->LoopNesting)
         SyntaxError("'break' statement not enclosed in a loop");
 
     /* skip the break symbol                                               */
@@ -2292,7 +2307,7 @@ static void ReadBreak (
 static void ReadContinue (
     TypSymbolSet        follow )
 {
-    if (!STATE(LoopNesting))
+    if (!ReaderState()->LoopNesting)
         SyntaxError("'continue' statement not enclosed in a loop");
 
     /* skip the continue symbol                                               */
@@ -2521,6 +2536,8 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     int                 lockSP;
 #endif
 
+    struct ReaderState * volatile rs = ReaderState();
+
     /* get the first symbol from the input                                 */
     Match( STATE(Symbol), "", 0UL );
 
@@ -2538,19 +2555,19 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 
     /* remember the old reader context                                     */
     stackNams   = STATE(StackNams);
-    readTop     = STATE(ReadTop);
-    readTilde   = STATE(ReadTilde);
+    readTop     = rs->ReadTop;
+    readTilde   = rs->ReadTilde;
     tilde       = STATE(Tilde);
-    currLHSGVar = STATE(CurrLHSGVar);
+    currLHSGVar = rs->CurrLHSGVar;
     errorLVars  = STATE(ErrorLVars);
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 
     // initialize everything and begin an interpreter
     STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
-    STATE(ReadTop)     = 0;
-    STATE(ReadTilde)   = 0;
+    rs->ReadTop        = 0;
+    rs->ReadTilde      = 0;
     STATE(Tilde)       = 0;
-    STATE(CurrLHSGVar) = 0;
+    rs->CurrLHSGVar    = 0;
     STATE(ErrorLVars)  = context;
     RecreateStackNams(context);
 #ifdef HPCGAP
@@ -2559,7 +2576,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 
     AssGVar(GVarName("READEVALCOMMAND_LINENUMBER"), INTOBJ_INT(GetInputLineNumber()));
 
-    GAP_ASSERT(STATE(LoopNesting) == 0);
+    GAP_ASSERT(rs->LoopNesting == 0);
 
     IntrBegin( context );
 
@@ -2604,15 +2621,15 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 #endif
     }
 
-    GAP_ASSERT(STATE(LoopNesting) == 0);
+    GAP_ASSERT(rs->LoopNesting == 0);
 
     /* switch back to the old reader context                               */
     memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
     STATE(StackNams)   = stackNams;
-    STATE(ReadTop)     = readTop;
-    STATE(ReadTilde)   = readTilde;
+    rs->ReadTop        = readTop;
+    rs->ReadTilde      = readTilde;
     STATE(Tilde)       = tilde;
-    STATE(CurrLHSGVar) = currLHSGVar;
+    rs->CurrLHSGVar    = currLHSGVar;
     STATE(ErrorLVars)  = errorLVars;
 
     /* copy the result (if any)                                            */
@@ -2648,6 +2665,8 @@ UInt ReadEvalFile(Obj *evalResult)
     volatile int        lockSP;
 #endif
 
+    struct ReaderState * volatile rs = ReaderState();
+
     /* get the first symbol from the input                                 */
     Match( STATE(Symbol), "", 0UL );
 
@@ -2659,24 +2678,24 @@ UInt ReadEvalFile(Obj *evalResult)
 
     /* remember the old reader context                                     */
     stackNams   = STATE(StackNams);
-    readTop     = STATE(ReadTop);
-    readTilde   = STATE(ReadTilde);
+    readTop     = rs->ReadTop;
+    readTilde   = rs->ReadTilde;
     tilde       = STATE(Tilde);
-    currLHSGVar = STATE(CurrLHSGVar);
+    currLHSGVar = rs->CurrLHSGVar;
 #ifdef HPCGAP
     lockSP      = RegionLockSP();
 #endif
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 
     // initialize everything and begin an interpreter
-    STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
-    STATE(ReadTop)     = 0;
-    STATE(ReadTilde)   = 0;
-    STATE(Tilde)       = 0;
-    STATE(CurrLHSGVar) = 0;
+    STATE(StackNams) = NEW_PLIST( T_PLIST, 16 );
+    rs->ReadTop      = 0;
+    rs->ReadTilde    = 0;
+    STATE(Tilde)     = 0;
+    rs->CurrLHSGVar  = 0;
     IntrBegin(STATE(BottomLVars));
 
-    GAP_ASSERT(STATE(LoopNesting) == 0);
+    GAP_ASSERT(rs->LoopNesting == 0);
 
     /* check for local variables                                           */
     nams = NEW_PLIST(T_PLIST, 0);
@@ -2691,13 +2710,13 @@ UInt ReadEvalFile(Obj *evalResult)
 
     /* read the statements                                                 */
     {
-        UInt oldLoopNesting = STATE(LoopNesting);
-        STATE(LoopNesting) = 0;
+        UInt oldLoopNesting = rs->LoopNesting;
+        rs->LoopNesting = 0;
         nr = ReadStats(S_SEMICOLON | S_EOF);
-        STATE(LoopNesting) = oldLoopNesting;
+        rs->LoopNesting = oldLoopNesting;
     }
 
-    GAP_ASSERT(STATE(LoopNesting) == 0);
+    GAP_ASSERT(rs->LoopNesting == 0);
 
     /* we now want to be at <end-of-file>                                  */
     if ( STATE(Symbol) != S_EOF ) {
@@ -2732,11 +2751,11 @@ UInt ReadEvalFile(Obj *evalResult)
     if (TLS(CurrentHashLock))
       HashUnlock(TLS(CurrentHashLock));
 #endif
-    STATE(StackNams)   = stackNams;
-    STATE(ReadTop)     = readTop;
-    STATE(ReadTilde)   = readTilde;
-    STATE(Tilde)       = tilde;
-    STATE(CurrLHSGVar) = currLHSGVar;
+    STATE(StackNams) = stackNams;
+    rs->ReadTop      = readTop;
+    rs->ReadTilde    = readTilde;
+    STATE(Tilde)     = tilde;
+    rs->CurrLHSGVar  = currLHSGVar;
 
     /* copy the result (if any)                                            */
     *evalResult = STATE(IntrResult);
@@ -2781,9 +2800,9 @@ struct SavedReaderState {
 
 static void SaveReaderState( struct SavedReaderState *s) {
   s->stackNams   = STATE(StackNams);
-  s->readTop     = STATE(ReadTop);
-  s->readTilde   = STATE(ReadTilde);
-  s->currLHSGVar = STATE(CurrLHSGVar);
+  s->readTop     = ReaderState()->ReadTop;
+  s->readTilde   = ReaderState()->ReadTilde;
+  s->currLHSGVar = ReaderState()->CurrLHSGVar;
   s->userHasQuit = STATE(UserHasQuit);
   s->intrCoding = STATE(IntrCoding);
   s->intrIgnoring = STATE(IntrIgnoring);
@@ -2794,9 +2813,9 @@ static void SaveReaderState( struct SavedReaderState *s) {
 
 static void ClearReaderState( void ) {
   STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
-  STATE(ReadTop)     = 0;
-  STATE(ReadTilde)   = 0;
-  STATE(CurrLHSGVar) = 0;
+  ReaderState()->ReadTop     = 0;
+  ReaderState()->ReadTilde   = 0;
+  ReaderState()->CurrLHSGVar = 0;
   STATE(UserHasQuit) = 0;
   STATE(IntrCoding) = 0;
   STATE(IntrIgnoring) = 0;
@@ -2808,9 +2827,9 @@ static void RestoreReaderState( const struct SavedReaderState *s) {
   memcpy( STATE(ReadJmpError), s->readJmpError, sizeof(syJmp_buf) );
   STATE(UserHasQuit) = s->userHasQuit;
   STATE(StackNams)   = s->stackNams;
-  STATE(ReadTop)     = s->readTop;
-  STATE(ReadTilde)   = s->readTilde;
-  STATE(CurrLHSGVar) = s->currLHSGVar;
+  ReaderState()->ReadTop     = s->readTop;
+  ReaderState()->ReadTilde   = s->readTilde;
+  ReaderState()->CurrLHSGVar = s->currLHSGVar;
   STATE(IntrCoding) = s->intrCoding;
   STATE(IntrIgnoring) = s->intrIgnoring;
   STATE(IntrReturning) = s->intrReturning;
@@ -2921,10 +2940,10 @@ static Int InitModuleState(void)
 {
     STATE(ErrorLVars) = (UInt **)0;
     STATE(StackNams) = NEW_PLIST(T_PLIST, 16);
-    STATE(ReadTop) = 0;
-    STATE(ReadTilde) = 0;
-    STATE(CurrLHSGVar) = 0;
-    STATE(CurrentGlobalForLoopDepth) = 0;
+    ReaderState()->ReadTop = 0;
+    ReaderState()->ReadTilde = 0;
+    ReaderState()->CurrLHSGVar = 0;
+    ReaderState()->CurrentGlobalForLoopDepth = 0;
 
     // return success
     return 0;
@@ -2941,6 +2960,9 @@ static StructInitInfo module = {
     .type = MODULE_BUILTIN,
     .name = "read",
     .initKernel = InitKernel,
+
+    .moduleStateSize = sizeof(struct ReaderState),
+    .moduleStateOffsetPtr = &ReaderStateOffset,
     .initModuleState = InitModuleState,
 };
 
