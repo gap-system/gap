@@ -46,6 +46,15 @@ gap> f3(2);
 gap> f3(6);
 Check:6
 36
+gap> f4 := MemoizePosIntFunction(func,
+> rec(defaults := [10,,20], errorHandler := function(x) Print("Woops\n"); end));;
+gap> f4(1);
+10
+gap> f4(2);
+Check:2
+4
+gap> f4("Hello, world");
+Woops
 
 # HPCGAP currently disables flushing caches
 gap> FlushCaches();
