@@ -245,6 +245,11 @@ void MakeImmutablePRec( Obj rec)
   UInt len;
   UInt i;
   len = LEN_PREC( rec );
+
+  // change the tnum first, to avoid infinite recursion for objects that
+  // contain themselves
+  RetypeBag(rec, IMMUTABLE_TNUM(TNUM_OBJ(rec)));
+
   for ( i = 1; i <= len; i++ )
     MakeImmutable(GET_ELM_PREC(rec,i));
   
@@ -252,7 +257,6 @@ void MakeImmutablePRec( Obj rec)
      This can never hurt, unless the record will never be accessed again anyway
      for HPCGAP it's essential so that immutable records are actually binary unchanging */
   SortPRecRNam(rec, 1); 
-  RetypeBag(rec, IMMUTABLE_TNUM(TNUM_OBJ(rec)));
 }
 
 
