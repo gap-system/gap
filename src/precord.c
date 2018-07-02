@@ -240,23 +240,24 @@ void CleanPRecCopy (
 *F  MakeImmutablePRec( <rec> )
 */
 
-void MakeImmutablePRec( Obj rec)
+void MakeImmutablePRec(Obj rec)
 {
-  UInt len;
-  UInt i;
-  len = LEN_PREC( rec );
+    // change the tnum first, to avoid infinite recursion for objects that
+    // contain themselves
+    RetypeBag(rec, IMMUTABLE_TNUM(TNUM_OBJ(rec)));
 
-  // change the tnum first, to avoid infinite recursion for objects that
-  // contain themselves
-  RetypeBag(rec, IMMUTABLE_TNUM(TNUM_OBJ(rec)));
+    // FIXME HPC-GAP: there is a potential race here: <rec> becomes public
+    // the moment we change its type, but it's not ready for public access
+    // until the following code completed.
 
-  for ( i = 1; i <= len; i++ )
-    MakeImmutable(GET_ELM_PREC(rec,i));
-  
-  /* Sort the record at this point.
-     This can never hurt, unless the record will never be accessed again anyway
-     for HPCGAP it's essential so that immutable records are actually binary unchanging */
-  SortPRecRNam(rec, 1); 
+    UInt len = LEN_PREC(rec);
+    for (UInt i = 1; i <= len; i++)
+        MakeImmutable(GET_ELM_PREC(rec, i));
+
+    // Sort the record at this point. This can never hurt, unless the record
+    // will never be accessed again anyway. But for HPC-GAP it is essential so
+    // that immutable records are actually binary unchanging.
+    SortPRecRNam(rec, 1);
 }
 
 
