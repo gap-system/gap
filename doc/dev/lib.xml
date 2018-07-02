@@ -12,6 +12,69 @@ kernel among the developers.
 
 <Chapter Label="Chap-Lib">
 <Heading>Maintaining the &GAP; kernel and library</Heading>
+
+<Section Label="Sect-debugging">
+<Heading>Debugging the &GAP; Kernel</Heading>
+
+The &GAP; kernel supports a variety of options which can be enabled by running
+<C>configure</C> which provide various checks which can be useful when writing
+and debugging &GAP; kernel code.
+<P/>
+
+The first option, <C>--enable-debug</C>, is well supported can can be used
+whenever the &GAP; kernel, or kernel modules, are being developed (although
+developers should still check their code works without it).
+<P/>
+<C>--enable-debug</C> enables assertions throughout the kernel. These
+assertions are implemented using the <C>GAP_ASSERT</C> macro. These
+assertions are disabled when &GAP; is compiled without <C>--enable-debug</C>.
+When <C>--enable-debug</C> is enabled, <C>KernelDebug</C> will be shown in
+the line starting <C>Configuration:</C> when &GAP; is started.
+<P/>
+
+The next two options are more experimental, and are not designed to be constantly
+enabled. They are particularly designed to track down bugs relating to memory
+corruption relating to GASMAN (&GAP;'s memory manager). They cannot both be enabled
+at the same time.
+
+These options assume you are familiar somewhat familiar with the internals of GASMAN
+(see gasman.c for more information). In particular, GASMAN represents memory using
+an object of type Bag. The contents of these Bags can be moved during garbage collection.
+
+<P/>
+<C>--enable-memory-checking</C> makes &GAP; check for C pointers to the content of Bags
+being used after a new Bag has been created or a Bag is resized. GASMAN
+moves Bags during garbage collection, which can happen whenever a new Bag is created
+or a Bag is resized. However, as it is very unlikely that any single allocation
+will cause a garbage collection, these bugs trigger very rarely. Also the problems
+caused by these bugs are, if the C pointer is written to, a random other Bag,
+somewhere in &GAP;, is changed.
+<P/>
+
+After configuring, the memory checking must still be turned on. This can be done
+either by passing <C>--enableMemCheck</C> to &GAP;'s command line, or calling <C>GASMAN_MEM_CHECK(1)</C>.
+Note that enabling these tests makes &GAP; VERY, VERY slow. It can (depending on the
+machine and operating system) take &GAP; over a day to start, and load all standard
+packages. The recommending way to use this option is to start &GAP;, and then load
+small test files to try to isolate the problem. <C>MemCheck</C> will be shown in
+the line starting <C>Configuration:</C> when &GAP; is started.
+<P/>
+
+Known bugs: &GAP; will crash if <C>IO_fork</C> from the IO package is called while
+memory checking is enabled.
+<P/>
+
+<C>--enable-valgrind</C> makes changes to GASMAN so it is compatible with the
+<URL Text="valgrind">http://valgrind.org</URL> memory checking program.
+Without this, Valgrind will report many incorrect warnings relating to GASMAN
+and no useful warnings.
+<P/>
+
+At present, this <C>--enable-valgrind</C> only checks for invalid writes to the
+last bag which was created. Also, this option does not do anything unless &GAP;
+is run through Valgrind (for example by running <C>valgrind gap</C>.
+</Section>
+
 <Index>modules</Index>
 
 Modules, PROPOSALs, ...
