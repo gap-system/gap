@@ -1105,7 +1105,7 @@ InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
       Append( str, inforec.PackageWWWHome );
       Append( str, "\n" );
     fi;
-    
+
     # temporary hack, in some package names with umlauts are in HTML encoding
     str := Concatenation(sep, RecodeForCurrentTerminal(str), sep);
     str:= ReplacedString( str, "&auml;", RecodeForCurrentTerminal("ä") );
@@ -1331,7 +1331,9 @@ BindGlobal( "LoadPackage_ReadImplementationParts",
 
         # If the component `BannerString' is bound in `info' then we print
         # this string, otherwise we print the default banner string.
-        if IsBound( info.BannerString ) then
+        if IsBound( info.BannerFunction ) then
+          bannerstring:= RecodeForCurrentTerminal(info.BannerFunction(info));
+        elif IsBound( info.BannerString ) then
           bannerstring:= RecodeForCurrentTerminal(info.BannerString);
         else
           bannerstring:= DefaultPackageBannerString( info );
@@ -2264,6 +2266,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
       fi;
     fi;
     TestMandat( record, "AvailabilityTest", IsFunction, "a function" );
+    TestOption( record, "BannerFunction", IsFunction, "a function" );
     TestOption( record, "BannerString", IsString, "a string" );
     TestOption( record, "TestFile", IsFilename,
                 "a string denoting a relative path to a readable file" );
