@@ -246,6 +246,24 @@ AC_ARG_ENABLE([memory-checking],
 AC_MSG_CHECKING([whether to enable memory checking])
 AC_MSG_RESULT([$enable_memory_checking])
 
+AC_ARG_ENABLE([valgrind],
+    [AS_HELP_STRING([--enable-valgrind], [enable valgrind extensions to GASMAN])],
+    [AC_DEFINE([MEMORY_CANARY], [1], [define if building with valgrind extensions])],
+    [enable_valgrind=no]
+    )
+AC_MSG_CHECKING([whether to enable valgrind extensions to GASMAN])
+AC_MSG_RESULT([$enable_valgrind])
+
+if test "x$enable_valgrind" != "xno" -a "x$enable_memory_checking" != "xno"; then
+    AC_MSG_ERROR([--enable-valgrind and --enable-memory-checking cannot be used at the same time])
+fi
+
+if test "x$with_gc" != "xgasman"; then
+    if test "x$enable_valgrind" != "xno" -o "x$enable_memory_checking" != "xno"; then
+        AC_MSG_ERROR([--enable-valgrind and --enable-memory-checking are only compatible with GASMAN])
+    fi
+fi
+
 dnl
 dnl User setting: Enable -Werror (off by default)
 dnl
