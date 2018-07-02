@@ -3,23 +3,25 @@ gap> # Verify that a CRLF after a line continuation increments the current line
 gap> # counter only once, so that both examples below report the error in line 2.
 gap> #
 gap> EvalString("123\\\n45x;");
-Error, Variable: '12345x' must have a value
-not in any function at stream:2
-Error, Could not evaluate string.
- at GAPROOT/lib/string.gi:655 called from
+Syntax warning: Unbound global variable in stream:3
+45x;;
+    ^
+Error, Variable: '12345x' must have an assigned value in
+  return 12345x; at stream:3 called from 
+f(  ) at GAPROOT/lib/string.gi:656 called from
 <function "EvalString">( <arguments> )
  called from read-eval loop at *stdin*:6
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can 'return;' after assigning a value
 brk> quit;
 gap> EvalString("123\\\r\n45x;");
-Error, Variable: '12345x' must have a value
-not in any function at stream:2
-Error, Could not evaluate string.
- at GAPROOT/lib/string.gi:655 called from
+Syntax warning: Unbound global variable in stream:3
+45x;;
+    ^
+Error, Variable: '12345x' must have an assigned value in
+  return 12345x; at stream:3 called from 
+f(  ) at GAPROOT/lib/string.gi:656 called from
 <function "EvalString">( <arguments> )
  called from read-eval loop at *stdin*:6
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can 'return;' after assigning a value
 brk> quit;
 gap> QUIT;

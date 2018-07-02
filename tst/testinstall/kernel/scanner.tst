@@ -123,18 +123,23 @@ a.x111111111111111111111111111111111111111111111111111111111111111111111111111\
 # test EOF inside a string literal
 #
 gap> EvalString("\"123");
-Syntax error: String must end with " before end of file in stream:1
+Syntax error: String must not include <newline> in stream:2
+"123;
+    ^
+Syntax error: ; expected in stream:3
 ^
-Syntax error: ; expected in stream:1
-^
-Error, Could not evaluate string.
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments
+The 1st argument is 'fail' which might point to an earlier problem
 
 gap> EvalString("\"\"\"123");
-Syntax error: String must end with """ before end of file in stream:1
+Syntax error: String must end with """ before end of file in stream:3
 ^
-Syntax error: ; expected in stream:1
+Syntax error: ; expected in stream:3
 ^
-Error, Could not evaluate string.
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments
+The 1st argument is 'fail' which might point to an earlier problem
 
 gap> obj := """
 Syntax error: String must end with """ before end of file in stream:2
