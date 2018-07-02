@@ -2643,7 +2643,6 @@ void MakeImmutablePlistInHom(Obj list)
         Obj elm = ELM_PLIST(list, i);
         if (elm != 0) {
             MakeImmutable(elm);
-            CHANGED_BAG(list);
         }
     }
 }
