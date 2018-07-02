@@ -431,14 +431,6 @@ Obj STEVES_TRACING;
     if (lockSP != TLS(lockStackPointer)) \
       PopRegionLocks(lockSP)
 
-#else
-
-#define REMEMBER_LOCKSTACK() \
-    do { } while (0)
-
-#define CLEAR_LOCK_STACK() \
-    do { } while (0)
-
 #endif
 
 static void ExecFuncHelper(void)
@@ -496,17 +488,16 @@ static void LockFuncArgs(Obj func, Int narg, const Obj * args)
 
 #endif
 
-static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg, Int isAtomic)
+static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg)
 {
     Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
-#ifdef HPCGAP
-    if (isAtomic)
-        LockFuncArgs(func, narg, arg);
-#else
-    (void)isAtomic; // unused
-#endif
     CHECK_RECURSION_BEFORE
+
+#ifdef HPCGAP
+    REMEMBER_LOCKSTACK();
+    if (LCKS_FUNC(func))
+        LockFuncArgs(func, narg, arg);
+#endif
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, narg, NLOC_FUNC(func), oldLvars );
@@ -517,7 +508,9 @@ static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg, Int isAt
 
     /* execute the statement sequence                                      */
     ExecFuncHelper();
+#ifdef HPCGAP
     CLEAR_LOCK_STACK();
+#endif
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
@@ -531,7 +524,7 @@ static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg, Int isAt
 Obj DoExecFunc0args (
     Obj                 func )
 {
-    return DoExecFunc(func, 0, 0, 0);
+    return DoExecFunc(func, 0, 0);
 }
 
 Obj             DoExecFunc1args (
@@ -539,7 +532,7 @@ Obj             DoExecFunc1args (
     Obj                 arg1 )
 {
     Obj arg[] = { arg1 };
-    return DoExecFunc(func, 1, arg, 0);
+    return DoExecFunc(func, 1, arg);
 }
 
 Obj             DoExecFunc2args (
@@ -548,7 +541,7 @@ Obj             DoExecFunc2args (
     Obj                 arg2 )
 {
     Obj arg[] = { arg1, arg2 };
-    return DoExecFunc(func, 2, arg, 0);
+    return DoExecFunc(func, 2, arg);
 }
 
 Obj             DoExecFunc3args (
@@ -558,7 +551,7 @@ Obj             DoExecFunc3args (
     Obj                 arg3 )
 {
     Obj arg[] = { arg1, arg2, arg3 };
-    return DoExecFunc(func, 3, arg, 0);
+    return DoExecFunc(func, 3, arg);
 }
 
 Obj             DoExecFunc4args (
@@ -569,7 +562,7 @@ Obj             DoExecFunc4args (
     Obj                 arg4 )
 {
     Obj arg[] = { arg1, arg2, arg3, arg4 };
-    return DoExecFunc(func, 4, arg, 0);
+    return DoExecFunc(func, 4, arg);
 }
 
 Obj             DoExecFunc5args (
@@ -581,7 +574,7 @@ Obj             DoExecFunc5args (
     Obj                 arg5 )
 {
     Obj arg[] = { arg1, arg2, arg3, arg4, arg5 };
-    return DoExecFunc(func, 5, arg, 0);
+    return DoExecFunc(func, 5, arg);
 }
 
 Obj             DoExecFunc6args (
@@ -594,7 +587,7 @@ Obj             DoExecFunc6args (
     Obj                 arg6 )
 {
     Obj arg[] = { arg1, arg2, arg3, arg4, arg5, arg6 };
-    return DoExecFunc(func, 6, arg, 0);
+    return DoExecFunc(func, 6, arg);
 }
 
 Obj             DoExecFuncXargs (
@@ -602,7 +595,6 @@ Obj             DoExecFuncXargs (
     Obj                 args )
 {
     Bag                 oldLvars;       /* old values bag                  */
-    REMEMBER_LOCKSTACK();
     UInt                len;            /* number of arguments             */
     UInt                i;              /* loop variable                   */
 
@@ -617,122 +609,12 @@ Obj             DoExecFuncXargs (
             "you can replace the <list> of arguments via 'return <list>;'" );
         PLAIN_LIST( args );
     }
-
-    /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, len, NLOC_FUNC(func), oldLvars );
-
-    /* enter the arguments                                                 */
-    for ( i = 1; i <= len; i++ ) {
-        ASS_LVAR( i, ELM_PLIST( args, i ) );
-    }
-
-    /* execute the statement sequence                                      */
-    ExecFuncHelper();
-    CLEAR_LOCK_STACK();
-
-    /* switch back to the old values bag                                   */
-    SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
-
-    CHECK_RECURSION_AFTER
-
-    /* return the result                                                   */
-    return PopReturnObjStat();
-}
-
 
 #ifdef HPCGAP
-
-Obj             DoExecFunc0argsL (
-    Obj                 func )
-{
-    return DoExecFunc(func, 0, 0, 1);
-}
-
-Obj             DoExecFunc1argsL (
-    Obj                 func,
-    Obj                 arg1 )
-{
-    Obj arg[] = { arg1 };
-    return DoExecFunc(func, 1, arg, 1);
-}
-
-Obj             DoExecFunc2argsL (
-    Obj                 func,
-    Obj                 arg1,
-    Obj                 arg2 )
-{
-    Obj arg[] = { arg1, arg2 };
-    return DoExecFunc(func, 2, arg, 1);
-}
-
-Obj             DoExecFunc3argsL (
-    Obj                 func,
-    Obj                 arg1,
-    Obj                 arg2,
-    Obj                 arg3 )
-{
-    Obj arg[] = { arg1, arg2, arg3 };
-    return DoExecFunc(func, 3, arg, 1);
-}
-
-Obj             DoExecFunc4argsL (
-    Obj                 func,
-    Obj                 arg1,
-    Obj                 arg2,
-    Obj                 arg3,
-    Obj                 arg4 )
-{
-    Obj arg[] = { arg1, arg2, arg3, arg4 };
-    return DoExecFunc(func, 4, arg, 1);
-}
-
-Obj             DoExecFunc5argsL (
-    Obj                 func,
-    Obj                 arg1,
-    Obj                 arg2,
-    Obj                 arg3,
-    Obj                 arg4,
-    Obj                 arg5 )
-{
-    Obj arg[] = { arg1, arg2, arg3, arg4, arg5 };
-    return DoExecFunc(func, 5, arg, 1);
-}
-
-Obj             DoExecFunc6argsL (
-    Obj                 func,
-    Obj                 arg1,
-    Obj                 arg2,
-    Obj                 arg3,
-    Obj                 arg4,
-    Obj                 arg5,
-    Obj                 arg6 )
-{
-    Obj arg[] = { arg1, arg2, arg3, arg4, arg5, arg6 };
-    return DoExecFunc(func, 6, arg, 1);
-}
-
-Obj             DoExecFuncXargsL (
-    Obj                 func,
-    Obj                 args )
-{
-    Bag                 oldLvars;       /* old values bag                  */
-    UInt                len;            /* number of arguments             */
-    UInt                i;              /* loop variable                   */
     REMEMBER_LOCKSTACK();
-
-    CHECK_RECURSION_BEFORE
-
-    /* check the number of arguments                                       */
-    len = NARG_FUNC( func );
-    while ( len != LEN_PLIST( args ) ) {
-        args = ErrorReturnObj(
-            "Function Calls: number of arguments must be %d (not %d)",
-            len, LEN_PLIST( args ),
-            "you can replace the <list> of arguments via 'return <list>;'" );
-        PLAIN_LIST( args );
-    }
-
-    LockFuncArgs(func, len, CONST_ADDR_OBJ(args) + 1);
+    if (LCKS_FUNC(func))
+        LockFuncArgs(func, len, CONST_ADDR_OBJ(args) + 1);
+#endif
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, len, NLOC_FUNC(func), oldLvars );
@@ -744,7 +626,9 @@ Obj             DoExecFuncXargsL (
 
     /* execute the statement sequence                                      */
     ExecFuncHelper();
+#ifdef HPCGAP
     CLEAR_LOCK_STACK();
+#endif
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
@@ -754,8 +638,6 @@ Obj             DoExecFuncXargsL (
     /* return the result                                                   */
     return PopReturnObjStat();
 }
-
-#endif /* HPCGAP */
 
 
 Obj DoPartialUnWrapFunc(Obj func, Obj args)
@@ -766,6 +648,7 @@ Obj DoPartialUnWrapFunc(Obj func, Obj args)
     UInt len;
     Obj argx;
 
+    CHECK_RECURSION_BEFORE
 
     named = ((UInt)-NARG_FUNC(func))-1;
     len = LEN_PLIST(args);
@@ -775,7 +658,11 @@ Obj DoPartialUnWrapFunc(Obj func, Obj args)
       return DoOperation2Args(CallFuncListOper, func, argx);
     }
 
-    CHECK_RECURSION_BEFORE
+#ifdef HPCGAP
+    REMEMBER_LOCKSTACK();
+    if (LCKS_FUNC(func))
+        LockFuncArgs(func, len, CONST_ADDR_OBJ(args) + 1);
+#endif
 
     /* switch to a new values bag                                          */
     SWITCH_TO_NEW_LVARS( func, named+1, NLOC_FUNC(func), oldLvars );
@@ -791,9 +678,10 @@ Obj DoPartialUnWrapFunc(Obj func, Obj args)
     ASS_LVAR(named+1, args);
 
     /* execute the statement sequence                                      */
-    REMEMBER_LOCKSTACK();
     ExecFuncHelper();
+#ifdef HPCGAP
     CLEAR_LOCK_STACK();
+#endif
 
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
@@ -815,23 +703,7 @@ Obj             MakeFunction (
 {
     Obj                 func;           /* function, result                */
     ObjFunc             hdlr;           /* handler                         */
-#ifdef HPCGAP
-    Obj                 locks;          /* Locks of the function?   */
 
-    locks = LCKS_FUNC(fexp);
-    /* select the right handler                                            */
-    if (locks) {
-        if      ( NARG_FUNC(fexp) ==  0 )  hdlr = DoExecFunc0argsL;
-        else if ( NARG_FUNC(fexp) ==  1 )  hdlr = DoExecFunc1argsL;
-        else if ( NARG_FUNC(fexp) ==  2 )  hdlr = DoExecFunc2argsL;
-        else if ( NARG_FUNC(fexp) ==  3 )  hdlr = DoExecFunc3argsL;
-        else if ( NARG_FUNC(fexp) ==  4 )  hdlr = DoExecFunc4argsL;
-        else if ( NARG_FUNC(fexp) ==  5 )  hdlr = DoExecFunc5argsL;
-        else if ( NARG_FUNC(fexp) ==  6 )  hdlr = DoExecFunc6argsL;
-        else if ( NARG_FUNC(fexp) >=  7 )  hdlr = DoExecFuncXargsL;
-        else   /* NARG_FUNC(fexp) == -1 */ hdlr = DoExecFunc1argsL;
-    } else
-#endif
     if      ( NARG_FUNC(fexp) ==  0 )  hdlr = DoExecFunc0args;
     else if ( NARG_FUNC(fexp) ==  1 )  hdlr = DoExecFunc1args;
     else if ( NARG_FUNC(fexp) ==  2 )  hdlr = DoExecFunc2args;
@@ -856,7 +728,7 @@ Obj             MakeFunction (
     CHANGED_BAG( STATE(CurrLVars) );
     MakeHighVars(STATE(CurrLVars));
 #ifdef HPCGAP
-    SET_LCKS_FUNC( func, locks );
+    SET_LCKS_FUNC( func, LCKS_FUNC( fexp ) );
 #endif
     SET_FEXS_FUNC( func, FEXS_FUNC( fexp ) );
 
@@ -1113,17 +985,6 @@ static Int InitKernel (
     InitHandlerFunc( DoExecFunc5args, "i5");
     InitHandlerFunc( DoExecFunc6args, "i6");
     InitHandlerFunc( DoExecFuncXargs, "iX");
-
-#ifdef HPCGAP
-    InitHandlerFunc( DoExecFunc1argsL, "i1l");
-    InitHandlerFunc( DoExecFunc2argsL, "i2l");
-    InitHandlerFunc( DoExecFunc3argsL, "i3l");
-    InitHandlerFunc( DoExecFunc4argsL, "i4l");
-    InitHandlerFunc( DoExecFunc5argsL, "i5l");
-    InitHandlerFunc( DoExecFunc6argsL, "i6l");
-    InitHandlerFunc( DoExecFuncXargsL, "iXl");
-#endif
-
     InitHandlerFunc( DoPartialUnWrapFunc, "pUW");
 
     /* install the evaluators and executors                                */
