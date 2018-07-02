@@ -22,13 +22,19 @@ function(func, extra...)
     options := rec(
         defaults := [],
         flush := true,
-        errorHandler := function(x)
+        invalidInputHandler := function(x)
             ErrorNoReturn("<val> must be a positive integer");
         end);
 
     if LEN_LIST(extra) > 0 then
         for r in REC_NAMES(extra[1]) do
-            if IsBound(options.(r)) then
+            if r = "errorHandler" then
+                # for backwards compatibility with GAP 4.9.x, accept the
+                # old name
+                #Info( InfoObsolete, 1, "MemoizePosIntFunction: please use ",
+                #        "'.invalidInputHandler' instead of '.errorHandler'");
+                options.invalidInputHandler := extra[1].errorHandler;
+            elif IsBound(options.(r)) then
                 options.(r) := extra[1].(r);
             else
                 ErrorNoReturn("Invalid option: ", r);
@@ -51,7 +57,7 @@ function(func, extra...)
     return function(val)
         local v, boundcpy;
         if not IsPosInt(val) then
-            return options.errorHandler(val);
+            return options.invalidInputHandler(val);
         fi;
         # Make a copy of the reference to boundvals, in case the cache
         # is flushed, which will causes boundvals to be bound to a new list.

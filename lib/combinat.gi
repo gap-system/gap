@@ -2693,7 +2693,7 @@ InstallGlobalFunction(Bernoulli,
         fi;
         return brn;
     end,
-    rec(errorHandler :=
+    rec(invalidInputHandler :=
         function ( n )
             if n <> 0 then
                 Error("Bernoulli: <n> must be a nonnegative integer");
