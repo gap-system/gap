@@ -89,8 +89,7 @@ void SetRecursionDepth(Int depth)
 static Obj PushOptions;
 static Obj PopOptions;
 
-UInt ExecProccallOpts(
-    Stat                call )
+static UInt ExecProccallOpts(Stat call)
 {
   Obj opts;
   
@@ -204,8 +203,7 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call)
 }
 
 
-
-UInt ExecProccall0args(Stat call)
+static UInt ExecProccall0args(Stat call)
 {
     EvalOrExecCall(1, 0, call);
 
@@ -213,7 +211,7 @@ UInt ExecProccall0args(Stat call)
     return 0;
 }
 
-UInt ExecProccall1args(Stat call)
+static UInt ExecProccall1args(Stat call)
 {
     EvalOrExecCall(1, 1, call);
 
@@ -221,7 +219,7 @@ UInt ExecProccall1args(Stat call)
     return 0;
 }
 
-UInt ExecProccall2args(Stat call)
+static UInt ExecProccall2args(Stat call)
 {
     EvalOrExecCall(1, 2, call);
 
@@ -229,7 +227,7 @@ UInt ExecProccall2args(Stat call)
     return 0;
 }
 
-UInt ExecProccall3args(Stat call)
+static UInt ExecProccall3args(Stat call)
 {
     EvalOrExecCall(1, 3, call);
 
@@ -237,7 +235,7 @@ UInt ExecProccall3args(Stat call)
     return 0;
 }
 
-UInt ExecProccall4args(Stat call)
+static UInt ExecProccall4args(Stat call)
 {
     EvalOrExecCall(1, 4, call);
 
@@ -245,7 +243,7 @@ UInt ExecProccall4args(Stat call)
     return 0;
 }
 
-UInt ExecProccall5args(Stat call)
+static UInt ExecProccall5args(Stat call)
 {
     EvalOrExecCall(1, 5, call);
 
@@ -253,7 +251,7 @@ UInt ExecProccall5args(Stat call)
     return 0;
 }
 
-UInt ExecProccall6args(Stat call)
+static UInt ExecProccall6args(Stat call)
 {
     EvalOrExecCall(1, 6, call);
 
@@ -261,7 +259,7 @@ UInt ExecProccall6args(Stat call)
     return 0;
 }
 
-UInt ExecProccallXargs(Stat call)
+static UInt ExecProccallXargs(Stat call)
 {
     // pass in 7 (instead of NARG_SIZE_CALL(SIZE_STAT(call)))
     // to allow the compiler to perform better optimizations
@@ -280,8 +278,7 @@ UInt ExecProccallXargs(Stat call)
 ** handled here
 */
 
-Obj EvalFunccallOpts(
-    Expr                call )
+static Obj EvalFunccallOpts(Expr call)
 {
   Obj opts;
   Obj res;
@@ -314,42 +311,42 @@ Obj EvalFunccallOpts(
 **  'ARGI_CALL(<call>,<i>)'.  It returns the value returned by the function.
 */
 
-Obj EvalFunccall0args(Expr call)
+static Obj EvalFunccall0args(Expr call)
 {
     return EvalOrExecCall(0, 0, call);
 }
 
-Obj EvalFunccall1args(Expr call)
+static Obj EvalFunccall1args(Expr call)
 {
     return EvalOrExecCall(0, 1, call);
 }
 
-Obj EvalFunccall2args(Expr call)
+static Obj EvalFunccall2args(Expr call)
 {
     return EvalOrExecCall(0, 2, call);
 }
 
-Obj EvalFunccall3args(Expr call)
+static Obj EvalFunccall3args(Expr call)
 {
     return EvalOrExecCall(0, 3, call);
 }
 
-Obj EvalFunccall4args(Expr call)
+static Obj EvalFunccall4args(Expr call)
 {
     return EvalOrExecCall(0, 4, call);
 }
 
-Obj EvalFunccall5args(Expr call)
+static Obj EvalFunccall5args(Expr call)
 {
     return EvalOrExecCall(0, 5, call);
 }
 
-Obj EvalFunccall6args(Expr call)
+static Obj EvalFunccall6args(Expr call)
 {
     return EvalOrExecCall(0, 6, call);
 }
 
-Obj EvalFunccallXargs(Expr call)
+static Obj EvalFunccallXargs(Expr call)
 {
     // pass in 7 (instead of NARG_SIZE_CALL(SIZE_EXPR(call)))
     // to allow the compiler to perform better optimizations
@@ -521,78 +518,48 @@ static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg)
     return PopReturnObjStat();
 }
 
-Obj DoExecFunc0args (
-    Obj                 func )
+static Obj DoExecFunc0args(Obj func)
 {
     return DoExecFunc(func, 0, 0);
 }
 
-Obj             DoExecFunc1args (
-    Obj                 func,
-    Obj                 arg1 )
+static Obj DoExecFunc1args(Obj func, Obj a1)
 {
-    Obj arg[] = { arg1 };
+    Obj arg[] = { a1 };
     return DoExecFunc(func, 1, arg);
 }
 
-Obj             DoExecFunc2args (
-    Obj                 func,
-    Obj                 arg1,
-    Obj                 arg2 )
+static Obj DoExecFunc2args(Obj func, Obj a1, Obj a2)
 {
-    Obj arg[] = { arg1, arg2 };
+    Obj arg[] = { a1, a2 };
     return DoExecFunc(func, 2, arg);
 }
 
-Obj             DoExecFunc3args (
-    Obj                 func,
-    Obj                 arg1,
-    Obj                 arg2,
-    Obj                 arg3 )
+static Obj DoExecFunc3args(Obj func, Obj a1, Obj a2, Obj a3)
 {
-    Obj arg[] = { arg1, arg2, arg3 };
+    Obj arg[] = { a1, a2, a3 };
     return DoExecFunc(func, 3, arg);
 }
 
-Obj             DoExecFunc4args (
-    Obj                 func,
-    Obj                 arg1,
-    Obj                 arg2,
-    Obj                 arg3,
-    Obj                 arg4 )
+static Obj DoExecFunc4args(Obj func, Obj a1, Obj a2, Obj a3, Obj a4)
 {
-    Obj arg[] = { arg1, arg2, arg3, arg4 };
+    Obj arg[] = { a1, a2, a3, a4 };
     return DoExecFunc(func, 4, arg);
 }
 
-Obj             DoExecFunc5args (
-    Obj                 func,
-    Obj                 arg1,
-    Obj                 arg2,
-    Obj                 arg3,
-    Obj                 arg4,
-    Obj                 arg5 )
+static Obj DoExecFunc5args(Obj func, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
 {
-    Obj arg[] = { arg1, arg2, arg3, arg4, arg5 };
+    Obj arg[] = { a1, a2, a3, a4, a5 };
     return DoExecFunc(func, 5, arg);
 }
 
-Obj             DoExecFunc6args (
-    Obj                 func,
-    Obj                 arg1,
-    Obj                 arg2,
-    Obj                 arg3,
-    Obj                 arg4,
-    Obj                 arg5,
-    Obj                 arg6 )
+static Obj DoExecFunc6args(Obj func, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
 {
-    Obj arg[] = { arg1, arg2, arg3, arg4, arg5, arg6 };
+    Obj arg[] = { a1, a2, a3, a4, a5, a6 };
     return DoExecFunc(func, 6, arg);
 }
 
-Obj             DoExecFuncXargs (
-    Obj                 func,
-    Obj                 args )
+static Obj DoExecFuncXargs(Obj func, Obj args)
 {
     Bag                 oldLvars;       /* old values bag                  */
     UInt                len;            /* number of arguments             */
@@ -640,7 +607,7 @@ Obj             DoExecFuncXargs (
 }
 
 
-Obj DoPartialUnWrapFunc(Obj func, Obj args)
+static Obj DoPartialUnWrapFunc(Obj func, Obj args)
 {
     Bag                 oldLvars;       /* old values bag                  */
     UInt                named;          /* number of arguments             */
