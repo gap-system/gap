@@ -39,12 +39,8 @@ void            SyntaxError (
     OpenOutput( "*errout*" );
     assert(STATE(Output));
 
-    /* one more error                                                      */
-    STATE(NrError)++;
-    STATE(NrErrLine)++;
-
     /* do not print a message if we found one already on the current line  */
-    if ( STATE(NrErrLine) == 1 )
+    if ( STATE(NrErrLine) == 0 )
 
       {
         /* print the message and the filename, unless it is '*stdin*'          */
@@ -70,6 +66,11 @@ void            SyntaxError (
     assert(STATE(Output));
     CloseOutput();
     assert(STATE(Output));
+
+    /* one more error                                                      */
+    STATE(NrError)++;
+    STATE(NrErrLine)++;
+
 }
 
 /****************************************************************************
