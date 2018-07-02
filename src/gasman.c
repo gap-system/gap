@@ -179,7 +179,7 @@
 **  returns the number  of words occupied  by the data  area and padding of a
 **  bag of size <size>.
 **
-**  A body in the workspace whose type byte contains the value 255 is the
+**  A body in the workspace whose type byte contains the value T_DUMMY is the
 **  remainder of a 'ResizeBag'. That is it consists either of the unused words
 **  after a bag has been shrunk, or of the old body of the bag after the
 **  contents of the body have been copied elsewhere for an extension. The
@@ -195,22 +195,24 @@
 **
 */
 
-#define SIZE_MPTR_BAGS  1
+enum {
+    SIZE_MPTR_BAGS = 1,
+
+    T_DUMMY = NUM_TYPES - 1,
+};
+
 
 static inline UInt WORDS_BAG(UInt size)
 {
     return (size + sizeof(Bag) - 1) / sizeof(Bag);
 }
 
-/* This could be 65536, but would waste memory in various tables */
-
-#define NTYPES 256
-
 
 static inline Bag *DATA(BagHeader *bag)
 {
     return (Bag *)(((char *)bag) + sizeof(BagHeader));
 }
+
 
 /****************************************************************************
 **
@@ -428,7 +430,7 @@ UInt                    NrHalfDeadBags;
 **
 *V  InfoBags[<type>]  . . . . . . . . . . . . . . . . .  information for bags
 */
-TNumInfoBags            InfoBags [ NTYPES ];
+TNumInfoBags            InfoBags [ NUM_TYPES ];
 
 /****************************************************************************
 **
@@ -509,7 +511,7 @@ void            InitMsgsFuncBags (
 *F  InitSweepFuncBags(<type>,<mark-func>)  . . . .  install sweeping function
 */
 
-static TNumSweepFuncBags TabSweepFuncBags[NTYPES];
+static TNumSweepFuncBags TabSweepFuncBags[NUM_TYPES];
 
 
 void InitSweepFuncBags (
@@ -541,7 +543,7 @@ void InitSweepFuncBags (
 **  by GASMAN as default.  This will allow to catch type clashes.
 */
 
-TNumMarkFuncBags TabMarkFuncBags [ NTYPES ];
+TNumMarkFuncBags TabMarkFuncBags [ NUM_TYPES ];
 
 void InitMarkFuncBags (
     UInt                type,
@@ -968,7 +970,7 @@ void FinishedRestoringBags( void )
 **
 **  'InitFreeFuncBag' is really too simple for an explanation.
 */
-static TNumFreeFuncBags TabFreeFuncBags[256];
+static TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
 
 void            InitFreeFuncBag (
     UInt                type,
@@ -1186,7 +1188,7 @@ void            InitBags (
     AllocSizeBags = 256;
 
     /* install the marking functions                                       */
-    for ( i = 0; i < 255; i++ )
+    for ( i = 0; i < NUM_TYPES; i++ )
         TabMarkFuncBags[i] = MarkAllSubBagsDefault;
 
     /* Set ChangedBags to a proper initial value */
@@ -1251,6 +1253,8 @@ Bag NewBag (
     {
         Panic("cannot extend the workspace any more!!!!");
     }
+
+    GAP_ASSERT(type < T_DUMMY);
 
 #ifdef COUNT_BAGS
     /* update the statistics                                               */
@@ -1346,9 +1350,9 @@ void            RetypeBag (
 **  If  the bag  is  to be  shrunk  and at  least   one  word becomes   free,
 **  'ResizeBag'  changes  the  size word of  the bag, and stores a magic
 **  size-type word in  the first free word.  This  magic size-type  word  has
-**  type 255 and the size  is the number  of  following  free bytes, which is
-**  always divisible by 'sizeof(Bag)'.  The  type 255 allows 'CollectBags' to
-**  detect that  this body  is the remainder of a   resize operation, and the
+**  type T_DUMMY and the size is the number of following free bytes, which is
+**  always divisible by 'sizeof(Bag)'. The type T_DUMMY allows 'CollectBags'
+**  to detect that this body is the remainder of a resize operation, and the
 **  size allows  it  to know how  many  bytes  there  are  in this  body (see
 **  "Implementation of CollectBags").
 **
@@ -1373,9 +1377,9 @@ void            RetypeBag (
 **         \_____________
 **                       \
 **                        V
-**    +---------+---------+------------------------+----+---------+---------+
-**    | 10  . 7 |  <link> |         .         .    | pad|  4  .255|         |
-**    +---------+---------+------------------------+----+---------+---------+
+**    +---------+---------+------------------------+----+-------------+-----+
+**    | 10  . 7 |  <link> |         .         .    | pad| 4 . T_DUMMY |     |
+**    +---------+---------+------------------------+----+-------------+-----+
 **
 **  If the bag is to be extended and it  is that last  allocated bag, so that
 **  it  is  immediately adjacent  to the allocation  area, 'ResizeBag' simply
@@ -1386,7 +1390,7 @@ void            RetypeBag (
 **  'ResizeBag'  first allocates a  new bag  similar to 'NewBag', but without
 **  using  a new masterpointer.   Then it copies the old  contents to the new
 **  bag.  Finally it resets the masterpointer of the bag to  point to the new
-**  address.  Then it changes the type of the old body  to  255,  so that the
+**  address. Then it changes the type of the old body to T_DUMMY, so that the
 **  garbage collection can detect that this body is the remainder of a resize
 **  (see "Implementation of NewBag" and "Implementation of CollectBags").
 **
@@ -1445,9 +1449,9 @@ UInt ResizeBag (
     // memory may not be zero filled, and zeroing it out would cost us
     else if ( diff < 0 ) {
 
-        // leave magic size-type word for the sweeper, type must be 255
+        // leave magic size-type word for the sweeper, type must be T_DUMMY
         BagHeader * freeHeader = (BagHeader *)(DATA(header) + WORDS_BAG(new_size));
-        freeHeader->type = 255;
+        freeHeader->type = T_DUMMY;
         if ( diff == -1 ) {
             // if there is only one free word, avoid setting the size in
             // the header: there is no space for it on 32bit systems;
@@ -1509,8 +1513,8 @@ UInt ResizeBag (
         // update header pointer in case bag moved
         header = BAG_HEADER(bag);
 
-        // leave magic size-type word  for the sweeper, type must be 255
-        header->type = 255;
+        // leave magic size-type word  for the sweeper, type must be T_DUMMY
+        header->type = T_DUMMY;
         header->flags = 0;
         header->size = sizeof(BagHeader) + (WORDS_BAG(old_size) - 1) * sizeof(Bag);
 #if SIZEOF_VOID_P == 4
@@ -1701,9 +1705,9 @@ UInt ResizeBag (
 **  initially   point to  the   beginning  of  the   young bags area.    Then
 **  'CollectBags' looks at the body pointed to by the source pointer.
 **
-**  If this body has type 255, it is the remainder of a resize operation.  In
-**  this case 'CollectBags' simply moves the source pointer to the  next body
-**  (see "Implementation of ResizeBag").
+**  If this body has type T_DUMMY, it is the remainder of a resize operation.
+**  In this case 'CollectBags' simply moves the source pointer to the next
+**  body (see "Implementation of ResizeBag").
 **
 **
 **  Otherwise, if the  link word contains the  identifier of the bag  itself,
@@ -1997,7 +2001,7 @@ again:
         BagHeader * header = (BagHeader *)src;
 
         /* leftover of a resize of <n> bytes                               */
-        if ( header->type == 255 ) {
+        if ( header->type == T_DUMMY ) {
 
             /* advance src                                                 */
             if (header->flags == 1)

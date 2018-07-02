@@ -1503,7 +1503,7 @@ Obj FuncIS_IDENTICAL_OBJ (
 **  No saving function may allocate any bag
 */
 
-void (*SaveObjFuncs[256]) ( Obj obj );
+void (*SaveObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 void SaveObjError( Obj obj )
 {
@@ -1528,7 +1528,7 @@ void SaveObjError( Obj obj )
 **  No loading function may allocate any bag
 */
 
-void (*LoadObjFuncs[256]) ( Obj obj );
+void (*LoadObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 void LoadObjError( Obj obj )
 {
@@ -1872,7 +1872,7 @@ Obj FuncDEBUG_TNUM_NAMES(Obj self)
 {
     UInt indentLvl = 0;
     Char indentStr[20] = "";
-    for (UInt k = 0; k < 256; k++) {
+    for (UInt k = 0; k < NUM_TYPES; k++) {
         START_SYMBOLIC_TNUM(FIRST_REAL_TNUM);
         START_SYMBOLIC_TNUM(FIRST_CONSTANT_TNUM);
         START_SYMBOLIC_TNUM(FIRST_MULT_TNUM);

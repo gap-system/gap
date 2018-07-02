@@ -42,9 +42,7 @@
 
 
 
-enum { NTYPES = 256 };
-
-TNumInfoBags InfoBags[NTYPES];
+TNumInfoBags InfoBags[NUM_TYPES];
 
 UInt8 SizeAllBags;
 
@@ -59,7 +57,7 @@ static inline Bag * DATA(BagHeader * bag)
 *V  DSInfoBags[<type>]  . . . .  . . . . . . . . . .  region info for bags
 */
 
-static char DSInfoBags[NTYPES];
+static char DSInfoBags[NUM_TYPES];
 
 #define DSI_TL 0
 #define DSI_PUBLIC 1
@@ -101,7 +99,7 @@ Region * RegionBag(Bag bag)
 *F  InitFreeFuncBag(<type>,<free-func>)
 */
 
-TNumFreeFuncBags TabFreeFuncBags[NTYPES];
+TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
 
 void InitFreeFuncBag(UInt type, TNumFreeFuncBags finalizer_func)
 {
@@ -291,7 +289,7 @@ void * AllocateMemoryBlock(UInt size)
     return GC_malloc(size);
 }
 
-int TabMarkTypeBags[NTYPES];
+int TabMarkTypeBags[NUM_TYPES];
 
 void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
 {
@@ -320,7 +318,7 @@ void InitBags(UInt              initial_size,
     UInt i; /* loop variable                   */
 
     /* install the marking functions                                       */
-    for (i = 0; i < 255; i++) {
+    for (i = 0; i < NUM_TYPES; i++) {
         TabMarkTypeBags[i] = -1;
     }
 #ifndef DISABLE_GC

@@ -95,6 +95,17 @@ typedef struct {
 
 /****************************************************************************
 **
+**  'NUM_TYPES' is the maximal number of different types supported, and
+**  depends on the number of bits in the type member of struct BagHeader.
+**  It must be a power of two.
+*/
+enum {
+    NUM_TYPES = 256,
+};
+
+
+/****************************************************************************
+**
 *F  BAG_HEADER(<bag>) . . . . . . . . . . . . . . . . . . . . header of a bag
 **
 **  'BAG_HEADER' returns the header of the bag with the identifier <bag>.

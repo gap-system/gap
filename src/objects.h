@@ -591,7 +591,7 @@ extern Int IsInternallyMutableObj(Obj obj);
 **  No saving function may allocate any bag.
 */
 
-extern void (*SaveObjFuncs[256]) ( Obj obj );
+extern void (*SaveObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 extern void SaveObjError( Obj obj );
 
@@ -611,7 +611,7 @@ extern void SaveObjError( Obj obj );
 **  No loading function may allocate any bag.
 */
 
-extern void (*LoadObjFuncs[256]) ( Obj obj );
+extern void (*LoadObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 extern void LoadObjError( Obj obj );
 
@@ -710,7 +710,7 @@ extern Obj CopyObj (
 **  already unmarked object, it should simply return.
 */
 #if !defined(USE_THREADSAFE_COPYING)
-extern Obj (*CopyObjFuncs[LAST_REAL_TNUM+COPYING+1]) ( Obj obj, Int mut );
+extern Obj (*CopyObjFuncs[LAST_COPYING_TNUM+1]) ( Obj obj, Int mut );
 #endif
 
 
@@ -719,7 +719,7 @@ extern Obj (*CopyObjFuncs[LAST_REAL_TNUM+COPYING+1]) ( Obj obj, Int mut );
 *V  CleanObjFuncs[<type>] . . . . . . . . . . . . table of cleaning functions
 */
 #if !defined(USE_THREADSAFE_COPYING)
-extern void (*CleanObjFuncs[LAST_REAL_TNUM+COPYING+1]) ( Obj obj );
+extern void (*CleanObjFuncs[LAST_COPYING_TNUM+1]) ( Obj obj );
 #endif
 
 

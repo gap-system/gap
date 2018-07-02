@@ -914,7 +914,7 @@ again:
             Pr( "%40s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
-            for ( UInt k = 0; k < 256; k++ ) {
+            for ( UInt k = 0; k < NUM_TYPES; k++ ) {
                 if ( InfoBags[k].name != 0 ) {
                     Char buf[41];
                     buf[0] = '\0';
@@ -935,7 +935,7 @@ again:
             Pr( "%40s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
-            for ( UInt k = 0; k < 256; k++ ) {
+            for ( UInt k = 0; k < NUM_TYPES; k++ ) {
                 if ( InfoBags[k].name != 0 && 
                      (InfoBags[k].nrLive != 0 ||
                       InfoBags[k].sizeLive != 0 ||
@@ -957,7 +957,7 @@ again:
         /* if request display the statistics                               */
         else if ( strcmp( CSTR_STRING(cmd), "clear" ) == 0 ) {
 #ifdef COUNT_BAGS
-            for ( UInt k = 0; k < 256; k++ ) {
+            for ( UInt k = 0; k < NUM_TYPES; k++ ) {
 #ifdef GASMAN_CLEAR_TO_LIVE
                 InfoBags[k].nrAll    = InfoBags[k].nrLive;
                 InfoBags[k].sizeAll  = InfoBags[k].sizeLive;
@@ -1737,7 +1737,7 @@ StructInitInfo * InitInfoGap ( void )
 **  `PostRestore'.  This function is only used when restoring.
 */
 #ifdef USE_GASMAN
-extern TNumMarkFuncBags TabMarkFuncBags [ 256 ];
+extern TNumMarkFuncBags TabMarkFuncBags [ NUM_TYPES ];
 #endif
 
 static Obj POST_RESTORE;
@@ -1789,7 +1789,7 @@ void InitializeGap (
             Pr( "#W  %36s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
-            for ( Int i = 0;  i < 256;  i++ ) {
+            for ( Int i = 0;  i < NUM_TYPES;  i++ ) {
                 if ( InfoBags[i].name != 0 && InfoBags[i].nrAll != 0 ) {
                     char    buf[41];
 
