@@ -2628,19 +2628,23 @@ Obj FuncASS_PLIST_DEFAULT (
 **  (or immutable, but MakeImmutable will have caught that case before we get here)
 */
 
-void MakeImmutablePlistInHom( Obj list )
+void MakeImmutablePlistInHom(Obj list)
 {
-  UInt i;
-  Obj elm;
-  RetypeBag( list, IMMUTABLE_TNUM(TNUM_OBJ(list)));
-  for (i = 1; i <= LEN_PLIST(list); i++)
-    {
-      elm = ELM_PLIST( list, i);
-      if (elm != 0)
-	{
-	  MakeImmutable( elm );
-	  CHANGED_BAG(list);
-	}
+    // change the tnum first, to avoid infinite recursion for objects that
+    // contain themselves
+    RetypeBag(list, IMMUTABLE_TNUM(TNUM_OBJ(list)));
+
+    // FIXME HPC-GAP: there is a potential race here: <list> becomes public
+    // the moment we change its type, but it's not ready for public access
+    // until the following code completed.
+
+    UInt len = LEN_PLIST(list);
+    for (UInt i = 1; i <= len; i++) {
+        Obj elm = ELM_PLIST(list, i);
+        if (elm != 0) {
+            MakeImmutable(elm);
+            CHANGED_BAG(list);
+        }
     }
 }
 
