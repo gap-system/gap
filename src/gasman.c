@@ -271,40 +271,6 @@ Bag *                   AllocBags;
 UInt                    AllocSizeBags;
 Bag *                   EndBags;
 
-#if defined(MEMORY_CANARY)
-
-#include <valgrind/valgrind.h>
-#include <valgrind/memcheck.h>
-Int canary_size() {
-  Int bufsize = (Int)EndBags - (Int)AllocBags;
-  return bufsize<4096?bufsize:4096;
-}
-
-void ADD_CANARY() {
-  VALGRIND_MAKE_MEM_NOACCESS(AllocBags, canary_size());
-}
-void CLEAR_CANARY() {
-  VALGRIND_MAKE_MEM_DEFINED(AllocBags, canary_size());
-}
-#define CANARY_DISABLE_VALGRIND()  VALGRIND_DISABLE_ERROR_REPORTING
-#define CANARY_ENABLE_VALGRIND() VALGRIND_ENABLE_ERROR_REPORTING
-
-void CHANGED_BAG(Bag bag) {
-    CANARY_DISABLE_VALGRIND();
-    if (CONST_PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
-        LINK_BAG(bag) = ChangedBags;
-        ChangedBags = bag;
-    }
-    CANARY_ENABLE_VALGRIND();
-}
-#else
-#define ADD_CANARY()
-#define CLEAR_CANARY()
-#define CANARY_DISABLE_VALGRIND()
-#define CANARY_ENABLE_VALGRIND()
-#endif
-
-
 /* These macros, are (a) for more readable code, but more importantly
    (b) to ensure that unsigned subtracts and divides are used (since
    we know the ordering of the pointers. This is needed on > 2GB
@@ -483,6 +449,44 @@ static inline UInt IS_BAG_BODY(void * ptr)
     return (((void *)OldBags <= ptr) && (ptr < (void *)AllocBags) &&
             ((UInt)ptr & (sizeof(Bag) - 1)) == 0);
 }
+
+#if defined(MEMORY_CANARY)
+
+#include <valgrind/valgrind.h>
+#include <valgrind/memcheck.h>
+static Int canary_size(void)
+{
+    Int bufsize = (Int)EndBags - (Int)AllocBags;
+    return bufsize < 4096 ? bufsize : 4096;
+}
+
+static void ADD_CANARY(void)
+{
+    VALGRIND_MAKE_MEM_NOACCESS(AllocBags, canary_size());
+}
+
+static void CLEAR_CANARY(void)
+{
+    VALGRIND_MAKE_MEM_DEFINED(AllocBags, canary_size());
+}
+#define CANARY_DISABLE_VALGRIND() VALGRIND_DISABLE_ERROR_REPORTING
+#define CANARY_ENABLE_VALGRIND() VALGRIND_ENABLE_ERROR_REPORTING
+
+void CHANGED_BAG(Bag bag)
+{
+    CANARY_DISABLE_VALGRIND();
+    if (CONST_PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
+        LINK_BAG(bag) = ChangedBags;
+        ChangedBags = bag;
+    }
+    CANARY_ENABLE_VALGRIND();
+}
+#else
+#define ADD_CANARY()
+#define CLEAR_CANARY()
+#define CANARY_DISABLE_VALGRIND()
+#define CANARY_ENABLE_VALGRIND()
+#endif
 
 /****************************************************************************
 **
