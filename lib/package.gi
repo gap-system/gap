@@ -280,7 +280,14 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
                   elif IsRecord( record.PackageDoc ) then
                     record.PackageDoc:= [ record.PackageDoc ];
                   fi;
-                  Add( GAPInfo.PackagesInfo, MakeImmutable(record) );
+                  if IsHPCGAP then
+                    # FIXME: we make the package info record immutable, to
+                    # allow access from multiple threads; but that in turn
+                    # can break packages, which rely on their package info
+                    # record being readable (see issue #2568)
+                    MakeImmutable(record);
+                  fi;
+                  Add( GAPInfo.PackagesInfo, record );
                 fi;
               fi;
             fi;
@@ -303,7 +310,13 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
       else
         record.( name ):= [ r ];
       fi;
-      MakeImmutable( record.( name ) );
+      if IsHPCGAP then
+        # FIXME: we make the package info record immutable, to
+        # allow access from multiple threads; but that in turn
+        # can break packages, which rely on their package info
+        # record being readable (see issue #2568)
+        MakeImmutable( record.( name ) );
+      fi;
     od;
     GAPInfo.PackagesInfo:= AtomicRecord(record);
 
