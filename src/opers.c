@@ -1810,18 +1810,6 @@ static inline Obj CacheOper(Obj oper, UInt i)
     return cache;
 }
 
-
-#ifdef HPCGAP
-
-#define GET_METHOD_CACHE(oper, i)                                            \
-    (STATE(MethodCacheItems)[INT_INTOBJ(CACHE_OPER(oper, i))])
-
-#else
-
-#define GET_METHOD_CACHE(oper, i) CACHE_OPER(oper, i)
-
-#endif
-
 #ifdef COUNT_OPERS
 static UInt CacheHitStatistics[CACHE_SIZE][CACHE_SIZE][7];
 static UInt CacheMissStatistics[CACHE_SIZE + 1][7];
@@ -1832,7 +1820,7 @@ static UInt CacheMissStatistics[CACHE_SIZE + 1][7];
 // called with n a compile-time constant to allow the optimiser to tidy
 // things up.
 // It is also marked with 'ALWAYS_INLINE' for this reason (see above).
-static ALWAYS_INLINE Obj GetMethodCached(Obj  oper,
+static ALWAYS_INLINE Obj GetMethodCached(Obj  cacheBag,
                                          UInt n,
                                          Int  prec,
                                          Obj  ids[])
@@ -1843,7 +1831,7 @@ static ALWAYS_INLINE Obj GetMethodCached(Obj  oper,
     UInt  i;
     const UInt cacheEntrySize = n + 2;
 
-    cache = 1 + ADDR_OBJ(CacheOper(oper, n));
+    cache = 1 + ADDR_OBJ(cacheBag);
 
     /* Up to CACHE_SIZE methods might be in the cache */
     if (prec < CACHE_SIZE) {
@@ -1891,14 +1879,13 @@ static ALWAYS_INLINE Obj GetMethodCached(Obj  oper,
 /* Add a method to the cache -- called when a method is selected that is not
    in the cache */
 static inline void
-CacheMethod(Obj oper, UInt n, Int prec, Obj * ids, Obj method)
+CacheMethod(Obj cacheBag, UInt n, Int prec, Obj * ids, Obj method)
 {
     if (prec >= CACHE_SIZE)
         return;
     /* We insert this method at position <prec> and move
        the older methods down */
     UInt  cacheEntrySize = n + 2;
-    Bag   cacheBag = GET_METHOD_CACHE(oper, n);
     Obj * cache = 1 + prec * cacheEntrySize + ADDR_OBJ(cacheBag);
     SyMemmove(cache + cacheEntrySize, cache,
             sizeof(Obj) * (CACHE_SIZE - prec - 1) * cacheEntrySize);
@@ -1929,9 +1916,8 @@ enum {
     BASE_SIZE_METHODS_OPER_ENTRY = 5,
 };
 static ALWAYS_INLINE Obj GetMethodUncached(
-    UInt verbose, UInt constructor, UInt n, Obj oper, Int prec, Obj types[])
+    UInt verbose, UInt constructor, UInt n, Obj methods, Int prec, Obj types[])
 {
-    Obj methods = METHS_OPER(oper, n);
     if (methods == 0)
         return Fail;
 
@@ -2099,12 +2085,15 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
     for (UInt i = 1; i < n; i++)
         ids[i] = ID_TYPE(types[i]);
 
+    Obj cacheBag = CacheOper(oper, n);
+    Obj methods = METHS_OPER(oper, n);
+
     /* outer loop deals with TryNextMethod */
     prec = -1;
     do {
         prec++;
         /* Is there a method in the cache */
-        method = verbose ? 0 : GetMethodCached(oper, n, prec, ids);
+        method = verbose ? 0 : GetMethodCached(cacheBag, n, prec, ids);
 
 #ifdef COUNT_OPERS
         if (method)
@@ -2120,11 +2109,11 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
 
         /* otherwise try to find one in the list of methods */
         if (!method) {
-            method = GetMethodUncached(verbose, constructor, n, oper,
+            method = GetMethodUncached(verbose, constructor, n, methods,
                                               prec, types);
             /* update the cache */
             if (!verbose && method)
-                CacheMethod(oper, n, prec, ids, method);
+                CacheMethod(cacheBag, n, prec, ids, method);
         }
 
         /* If there was no method found, then pass the information needed
