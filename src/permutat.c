@@ -71,14 +71,6 @@
 */
 #define IMAGE(i,pt,dg)  (((i) < (dg)) ? (pt)[(i)] : (i))
 
-/****************************************************************************
-**
-*F  IMAGETWO(<i>,<pt>,<dg>)  . . . . . .  image of <i> under <pt> of degree <dg>
-**
-**  as IMAGE but for a 2-byte permutation: If we map, we have to cast in UInt2.
-*/
-#define IMAGETWO(i,pt,dg)  (((i) < (dg)) ? (pt)[(UInt2)(i)] : (i))
-
 
 /****************************************************************************
 **
@@ -3365,12 +3357,12 @@ Obj FuncSPLIT_PARTITION(
 	  return INTOBJ_INT(-1);
 	}
       } while (ELM_PLIST(Qnum,
-	      IMAGETWO(INT_INTOBJ(ELM_PLIST(Ppoints,b))-1,gpt,deg)+1)==jval);
+	      IMAGE(INT_INTOBJ(ELM_PLIST(Ppoints,b))-1,gpt,deg)+1)==jval);
       do {
 	a++;
       } while ((a<b)
 	      &&(!(ELM_PLIST(Qnum,
-	      IMAGETWO(INT_INTOBJ(ELM_PLIST(Ppoints,a))-1,gpt,deg)+1)==jval)));
+	      IMAGE(INT_INTOBJ(ELM_PLIST(Ppoints,a))-1,gpt,deg)+1)==jval)));
       /* swap */
       if (a<b) {
 	tmp=ELM_PLIST(Ppoints,a);
