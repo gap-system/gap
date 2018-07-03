@@ -3516,7 +3516,7 @@ Obj FuncCHANGED_METHODS_OPERATION (
     n = INT_INTOBJ( narg );
     cacheBag = CacheOper( oper, (UInt) n );
     cache = ADDR_OBJ( cacheBag );
-    for ( i = 0;  i < SIZE_OBJ(cacheBag) / sizeof(Obj);  i++ ) {
+    for ( i = 1;  i < SIZE_OBJ(cacheBag) / sizeof(Obj);  i++ ) {
         cache[i] = 0;
     }
     return 0;
