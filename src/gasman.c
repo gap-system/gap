@@ -202,11 +202,23 @@ enum {
 };
 
 
-static inline UInt WORDS_BAG(UInt size)
+// BAG_SLACK is used to define a block of empty space at the end of each
+// bag, which can then be marked as "not accessible" in the memory checker
+// Valgrind
+
+enum { BAG_SLACK = 0 };
+
+// TIGHT_WORDS_BAG defines the actual amount of space a Bag requires,
+// without BAG_SLACK.
+static inline UInt TIGHT_WORDS_BAG(UInt size)
 {
     return (size + sizeof(Bag) - 1) / sizeof(Bag);
 }
 
+static inline UInt WORDS_BAG(UInt size)
+{
+    return TIGHT_WORDS_BAG(size) + BAG_SLACK;
+}
 
 static inline Bag *DATA(BagHeader *bag)
 {
@@ -1521,7 +1533,8 @@ UInt ResizeBag (
         // leave magic size-type word  for the sweeper, type must be T_DUMMY
         header->type = T_DUMMY;
         header->flags = 0;
-        header->size = sizeof(BagHeader) + (WORDS_BAG(old_size) - 1) * sizeof(Bag);
+        header->size =
+            sizeof(BagHeader) + (TIGHT_WORDS_BAG(old_size) - 1) * sizeof(Bag);
 #if SIZEOF_VOID_P == 4
         GAP_ASSERT(header->reserved == 0);
 #endif
