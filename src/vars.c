@@ -349,15 +349,14 @@ Obj             EvalRefHVar (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
+    UInt hvar = (UInt)(ADDR_EXPR(expr)[0]);
 
     /* get and check the value of the higher variable                      */
-    if ( (val = OBJ_HVAR( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
-        while ( (val = OBJ_HVAR( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
-            ErrorReturnVoid(
-                "Variable: '%g' must have an assigned value",
-                (Int)NAME_HVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L,
-                "you can 'return;' after assigning a value" );
-        }
+    while ( (val = OBJ_HVAR(hvar)) == 0 ) {
+        ErrorReturnVoid(
+            "Variable: '%g' must have an assigned value",
+            (Int)NAME_HVAR(hvar), 0L,
+            "you can 'return;' after assigning a value" );
     }
 
     /* return the value                                                    */
