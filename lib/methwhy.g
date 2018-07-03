@@ -433,10 +433,13 @@ BIND_GLOBAL("PageSource", function ( fun, nr... )
     l := fail;
     f := FILENAME_FUNC( fun );
     if IsString(f) and Length(f)>0 and f[1] <> '/' then
-      if Length(f) > 7 and f{[1..8]} = "GAPROOT/" then
-        f := f{[9..Length(f)]};
+      # first assume it is a local path, otherwise look in GAP roots
+      if not IsReadableFile(f) then
+        if Length(f) > 7 and f{[1..8]} = "GAPROOT/" then
+          f := f{[9..Length(f)]};
+        fi;
+        f := Filename(List(GAPInfo.RootPaths, Directory), f);
       fi;
-      f := Filename(List(GAPInfo.RootPaths, Directory), f);
     fi;
     if f = fail and fun in OPERATIONS then
       # for operations we show the location(s) of their declaration
