@@ -12,30 +12,39 @@
 **
 **  Mathematically a permutation is a bijective mapping  of a finite set onto
 **  itself.  In \GAP\ this subset must always be of the form [ 1, 2, .., N ],
-**  where N is at most $2^16$.
+**  where N is at most $2^32$.
 **
-**  Internally a permutation  is viewed as a mapping  of [ 0,  1,  .., N-1 ],
+**  Internally a permutation <p> is viewed as a mapping of [ 0, 1, .., N-1 ],
 **  because in C indexing of  arrays is done with the origin  0 instead of 1.
-**  A permutation is represented by a bag of type 'T_PERM' of the form
+**  A permutation is represented by a bag of type 'T_PERM2' or 'T_PERM4' of
+**  the form
 **
-**      +-------+-------+-------+-------+- - - -+-------+-------+
-**      | image | image | image | image |       | image | image |
-**      | of  0 | of  1 | of  2 | of  3 |       | of N-2| of N-1|
-**      +-------+-------+-------+-------+- - - -+-------+-------+
+**      (CONST_)ADDR_OBJ(p)
+**      |
+**      v
+**      +------+-------+-------+-------+-------+- - - -+-------+-------+
+**      | inv. | image | image | image | image |       | image | image |
+**      | perm | of  0 | of  1 | of  2 | of  3 |       | of N-2| of N-1|
+**      +------+-------+-------+-------+-------+- - - -+-------+-------+
+**             ^
+**             |
+**             (CONST_)ADDR_PERM2(p) resp. (CONST_)ADDR_PERM4(p)
 **
-**  The entries of the bag are of type  'UInt2'  (defined in 'system.h' as an
-**  at least 16 bit   wide unsigned integer  type).   The first entry is  the
-**  image of 0, the second is the image of 1, and so  on.  Thus, the entry at
-**  C index <i> is the image of <i>, if we view the permutation as mapping of
-**  [ 0, 1, 2, .., N-1 ] as described above.
+**  The first entry of the bag <p> is either zero, or a reference to another
+**  permutation representing the inverse of <p>. The remaining entries of the
+**  bag form an array describing the permutation. For bags of type 'T_PERM2',
+**  the entries are of type 'UInt2' (defined in 'system.h' as an 16 bit wide
+**  unsigned integer type), for type 'T_PERM4' the entries are of type
+**  'UInt4' (defined as a 32bit wide unsigned integer type). The first of
+**  these entries is the image of 0, the second is the image of 1, and so on.
+**  Thus, the entry at C index <i> is the image of <i>, if we view the
+**  permutation as mapping of [ 0, 1, 2, .., N-1 ] as described above.
 **
 **  Permutations are never  shortened.  For  example, if  the product  of two
 **  permutations of degree 100 is the identity, it  is nevertheless stored as
 **  array of length 100, in  which the <i>-th  entry is of course simply <i>.
 **  Testing whether a product has trailing  fixpoints would be pretty costly,
 **  and permutations of equal degree can be handled by the functions faster.
-**
-*N  13-Jan-91 martin should add 'CyclesPerm', 'CycleLengthsPerm'
 */
 
 #include "permutat.h"
