@@ -18,6 +18,7 @@
 #include "bool.h"
 #include "calls.h"
 #include "funcs.h"
+#include "gap.h"
 #include "gapstate.h"
 #include "gvars.h"
 #include "hookintrprtr.h"
@@ -61,19 +62,18 @@ static Obj TYPE_KERNEL_OBJECT;
 **  'OffsBody' is the  offset in the current   body.  It is  only valid while
 **  coding.
 */
-#define MAX_FUNC_EXPR_NESTING 1024
 /* TL: Stat OffsBody; */
 
 /* TL: Stat OffsBodyStack[1024]; */
 /* TL: UInt OffsBodyCount = 0; */
 
 static inline void PushOffsBody( void ) {
-  assert(STATE(OffsBodyCount) <= MAX_FUNC_EXPR_NESTING-1);
+  GAP_ASSERT(STATE(OffsBodyCount) < MAX_FUNC_EXPR_NESTING);
   STATE(OffsBodyStack)[STATE(OffsBodyCount)++] = STATE(OffsBody);
 }
 
 static inline void PopOffsBody( void ) {
-  assert(STATE(OffsBodyCount));
+  GAP_ASSERT(STATE(OffsBodyCount));
   STATE(OffsBody) = STATE(OffsBodyStack)[--STATE(OffsBodyCount)];
 }
 

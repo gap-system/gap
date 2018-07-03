@@ -87,6 +87,38 @@ enum {
 
 /****************************************************************************
 **
+*S  MAX_FUNC_EXPR_NESTING_BITS
+*S  MAX_FUNC_EXPR_NESTING . . . . . . . . . . . . . . . maximal nesting level
+**
+**  GAP functions can be nested; any function 'A' can contain definition of
+**  another function 'B', and function 'B' then has full access to the local
+**  variables of 'A', including its arguments. As encoding access to such
+**  "higher" local variables must be encoded in limited storage, we also
+**  limit how deeply functions can be nested.
+*/
+enum {
+    MAX_FUNC_EXPR_NESTING_BITS = 10,
+    MAX_FUNC_EXPR_NESTING      = 1L << MAX_FUNC_EXPR_NESTING_BITS,
+};
+
+
+/****************************************************************************
+**
+*S  MAX_FUNC_LVARS_BITS
+*S  MAX_FUNC_LVARS_MASK
+*S  MAX_FUNC_LVARS  . . . .  maximal numbers of local variables in a function
+**
+**  Note that function arguments also count as local variables.
+*/
+enum {
+    MAX_FUNC_LVARS_BITS = 16,
+    MAX_FUNC_LVARS      = 1L << MAX_FUNC_LVARS_BITS,
+    MAX_FUNC_LVARS_MASK = MAX_FUNC_LVARS - 1,
+};
+
+
+/****************************************************************************
+**
 *F  InitializeGap( <argc>, <argv> ) . . . . . . . . . . . . . . . .  init GAP
 */
 extern void InitializeGap (

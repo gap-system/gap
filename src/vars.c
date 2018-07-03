@@ -24,6 +24,7 @@
 #include "code.h"
 #include "error.h"
 #include "exprs.h"
+#include "gap.h"
 #include "gaputils.h"
 #include "gvars.h"
 #include "hookintrprtr.h"
@@ -271,24 +272,24 @@ Obj NAME_HVAR(UInt hvar)
 void ASS_HVAR_WITH_CONTEXT(Obj context, UInt hvar, Obj val)
 {
     // walk up the environment chain to the correct values bag
-    for (UInt i = 1; i <= (hvar >> 16); i++) {
+    for (UInt i = 1; i <= (hvar >> MAX_FUNC_LVARS_BITS); i++) {
         context = ENVI_FUNC(FUNC_LVARS(context));
     }
 
     // assign the value
-    ASS_LVAR_WITH_CONTEXT(context, hvar & 0xFFFF, val);
+    ASS_LVAR_WITH_CONTEXT(context, hvar & MAX_FUNC_LVARS_MASK, val);
     CHANGED_BAG(context);
 }
 
 Obj OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
 {
     // walk up the environment chain to the correct values bag
-    for (UInt i = 1; i <= (hvar >> 16); i++) {
+    for (UInt i = 1; i <= (hvar >> MAX_FUNC_LVARS_BITS); i++) {
         context = ENVI_FUNC(FUNC_LVARS(context));
     }
 
     // get the value
-    Obj val = OBJ_LVAR_WITH_CONTEXT(context, hvar & 0xFFFF);
+    Obj val = OBJ_LVAR_WITH_CONTEXT(context, hvar & MAX_FUNC_LVARS_MASK);
 
     // return the value
     return val;
@@ -297,12 +298,12 @@ Obj OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
 Obj NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
 {
     // walk up the environment chain to the correct values bag
-    for (UInt i = 1; i <= (hvar >> 16); i++) {
+    for (UInt i = 1; i <= (hvar >> MAX_FUNC_LVARS_BITS); i++) {
         context = ENVI_FUNC(FUNC_LVARS(context));
     }
 
     // get the name
-    return NAME_LVAR_WITH_CONTEXT(context, hvar & 0xFFFF);
+    return NAME_LVAR_WITH_CONTEXT(context, hvar & MAX_FUNC_LVARS_MASK);
 }
 
 

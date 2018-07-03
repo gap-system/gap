@@ -108,7 +108,7 @@ brk_2> y:=100;
 brk_2> IsBound(y);
 true
 brk_2> unbound_higher;
-Error, Variable: <debug-variable-64-4> must have a value in
+Error, Variable: <debug-variable-1-4> must have a value in
   <corrupted statement>  called from 
 Error( "breakpoint" ); at *stdin*:9 called from
 g( 10 ) at *stdin*:12 called from
