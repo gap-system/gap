@@ -172,23 +172,25 @@ Obj FuncHASH_FLAGS (
     }
 
     /* do the real work*/
-#ifndef SYS_IS_64_BIT
+#if !defined(SYS_IS_64_BIT) || !defined(WORDS_BIGENDIAN)
 
-    /* 32 bit case  -- this is the "defining" case, others are
-     adjusted to comply with this */
-    len = NRB_FLAGS(flags);
+    // 32 bit case  -- this is the "defining" case, others are adjusted to
+    // comply with this. For 64 bit systems in little endian mode, this
+    // amounts to the same code, only the value of NRB_FLAGS has to be
+    // adjusted
+    len = NRB_FLAGS(flags) * (sizeof(UInt) / sizeof(UInt4));
     ptr = (UInt4 *)BLOCKS_FLAGS(flags);
     hash = 0;
     x    = 1;
     for ( i = len; i >= 1; i-- ) {
         hash = (hash + (*ptr % HASH_FLAGS_SIZE) * x) % HASH_FLAGS_SIZE;
-        x    = ((8*sizeof(UInt4)-1) * x) % HASH_FLAGS_SIZE;
+        x    = (31 * x) % HASH_FLAGS_SIZE;
         ptr++;
     }
-#else
-#ifdef WORDS_BIGENDIAN
 
-    /* This is the hardest case */
+#else
+
+    /* This is the hardest case: 64 bit big endian */
     len = NRB_FLAGS(flags);
     ptr = (UInt4 *)BLOCKS_FLAGS(flags);
     hash = 0;
@@ -197,28 +199,13 @@ Obj FuncHASH_FLAGS (
 
         /* least significant 32 bits first */
         hash = (hash + (ptr[1] % HASH_FLAGS_SIZE) * x) % HASH_FLAGS_SIZE;
-        x    = ((8*sizeof(UInt4)-1) * x) % HASH_FLAGS_SIZE;
+        x    = (31 * x) % HASH_FLAGS_SIZE;
         /* now the more significant */
         hash = (hash + (*ptr % HASH_FLAGS_SIZE) * x) % HASH_FLAGS_SIZE;
-        x    = ((8*sizeof(UInt4)-1) * x) % HASH_FLAGS_SIZE;
+        x    = (31 * x) % HASH_FLAGS_SIZE;
         
         ptr+= 2;
     }
-#else
-
-    /* and the middle case -- for DEC alpha, the 32 bit chunks are
-       in the right order, and we merely have to be sure to process them as
-       32 bit chunks */
-    len = NRB_FLAGS(flags)*(sizeof(UInt)/sizeof(UInt4));
-    ptr = (UInt4 *)BLOCKS_FLAGS(flags);
-    hash = 0;
-    x    = 1;
-    for ( i = len; i >= 1; i-- ) {
-        hash = (hash + (*ptr % HASH_FLAGS_SIZE) * x) % HASH_FLAGS_SIZE;
-        x    = ((8*sizeof(UInt4)-1) * x) % HASH_FLAGS_SIZE;
-        ptr++;
-    }
-#endif
 #endif
     SET_HASH_FLAGS( flags, INTOBJ_INT((UInt)hash+1) );
     CHANGED_BAG(flags);
