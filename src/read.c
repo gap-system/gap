@@ -137,7 +137,7 @@ static void MatchSemicolon(TypSymbolSet skipto)
 // found.
 static UInt findValueInNams(Obj nams, UInt start, UInt end)
 {
-    GAP_ASSERT(LEN_PLIST(nams) < 65536);
+    GAP_ASSERT(LEN_PLIST(nams) < MAX_FUNC_LVARS);
     for (UInt i = start; i <= end; i++) {
         if (strcmp(CSTR_STRING(ELM_PLIST(nams, i)), STATE(Value)) == 0) {
             return i;
@@ -656,11 +656,9 @@ static LHSRef ReadVar(TypSymbolSet follow)
     const UInt countNams = LEN_PLIST(STATE(StackNams));
     for (nest = 0; nest < countNams; nest++) {
 #ifndef SYS_IS_64_BIT
-        // we store nest and indx together in var; if we are on a 32bit
-        // system, then this limits both to 16 bits, which we enforce here
-        if (nest >= 65536) {
-            Pr("Warning: abandoning search for %s at 65536th higher frame\n",
-               (Int)STATE(Value), 0L);
+        if (nest >= MAX_FUNC_EXPR_NESTING) {
+            Pr("Warning: abandoning search for %g at %dth higher frame\n",
+               (Int)STATE(Value), MAX_FUNC_EXPR_NESTING);
             break;
         }
 #endif
@@ -668,7 +666,7 @@ static LHSRef ReadVar(TypSymbolSet follow)
         indx = findValueInNams(nams, 1, LEN_PLIST(nams));
         if (indx != 0) {
             ref.type = (nest == 0) ? R_LVAR : R_HVAR;
-            ref.var = (nest << 16) + indx;
+            ref.var = (nest << MAX_FUNC_LVARS_BITS) + indx;
             break;
         }
     }
@@ -687,7 +685,7 @@ static LHSRef ReadVar(TypSymbolSet follow)
                 indx = findValueInNams(nams, 1, LEN_PLIST(nams));
                 if (indx) {
                     ref.type = R_DVAR;
-                    ref.var = (nest << 16) + indx;
+                    ref.var = (nest << MAX_FUNC_LVARS_BITS) + indx;
                     ref.nest0 = nest0;
                     break;
                 }
@@ -695,12 +693,10 @@ static LHSRef ReadVar(TypSymbolSet follow)
             lvars = ENVI_FUNC(FUNC_LVARS(lvars));
             nest++;
 #ifndef SYS_IS_64_BIT
-            // we store nest and indx together in var; if we are on a 32bit
-            // system, then this limits both to 16 bits, which we enforce here
-            if (nest >= 65536) {
-                Pr("Warning: abandoning search for %s at 65536th higher "
+            if (nest >= MAX_FUNC_EXPR_NESTING) {
+                Pr("Warning: abandoning search for %g at %dth higher "
                    "frame\n",
-                   (Int)STATE(Value), 0L);
+                   (Int)STATE(Value), MAX_FUNC_EXPR_NESTING);
                 break;
             }
 #endif
@@ -1180,7 +1176,7 @@ static ArgList ReadFuncArgList(
         }
         narg += 1;
         PushPlist(nams, MakeImmString(STATE(Value)));
-        if (LEN_PLIST(nams) >= 65536) {
+        if (LEN_PLIST(nams) >= MAX_FUNC_LVARS) {
             SyntaxError("Too many function arguments");
         }
         Match(S_IDENT,"identifier",symbol|S_LOCAL|STATBEGIN|S_END|follow);

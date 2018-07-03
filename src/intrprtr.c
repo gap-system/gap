@@ -2697,7 +2697,7 @@ void            IntrAssDVar (
 
     if ( STATE(IntrCoding) > 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
-                   dvar >> 10, dvar & 0x3FF );
+                   dvar >> MAX_FUNC_LVARS_BITS, dvar & MAX_FUNC_LVARS_MASK );
     }
 
 
@@ -2728,7 +2728,7 @@ void            IntrUnbDVar (
 
     if ( STATE(IntrCoding) > 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
-                   dvar >> 10, dvar & 0x3FF );
+                   dvar >> MAX_FUNC_LVARS_BITS, dvar & MAX_FUNC_LVARS_MASK );
     }
 
     /* assign the right hand side                                          */
@@ -2761,7 +2761,7 @@ void            IntrRefDVar (
 
     if ( STATE(IntrCoding) > 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
-                   dvar >> 10, dvar & 0x3FF );
+                   dvar >> MAX_FUNC_LVARS_BITS, dvar & MAX_FUNC_LVARS_MASK );
     }
 
     /* get and check the value                                             */
@@ -2771,7 +2771,7 @@ void            IntrRefDVar (
     val = OBJ_HVAR_WITH_CONTEXT(context, dvar);
     if ( val == 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> must have a value",
-                   dvar >> 10, dvar & 0xFFFF );
+                   dvar >> MAX_FUNC_LVARS_BITS, dvar & MAX_FUNC_LVARS_MASK );
     }
 
     /* push the value                                                      */
