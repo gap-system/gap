@@ -47,14 +47,20 @@ gap> f3(6);
 Check:6
 36
 
-# HPCGAP currently disables flushing caches
-gap> FlushCaches();
-gap> if IsHPCGAP then Print("Check:6\n"); fi; f1(6);
-Check:6
+# test flushing caches
+gap> f1(6);
 36
-gap> if IsHPCGAP then Print("Check:10\n"); fi; f2(10);
-Check:10
+gap> f2(10);
 100
 gap> f3(6);
+36
+gap> FlushCaches();
+gap> f1(6);
+Check:6
+36
+gap> f2(10);
+Check:10
+100
+gap> f3(6); # f3 disables flushing
 36
 gap> STOP_TEST("memoize.tst", 1);

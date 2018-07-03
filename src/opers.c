@@ -1796,6 +1796,9 @@ static inline Obj CacheOper(Obj oper, UInt i)
 
     if (cache == 0) {
         len = (i < 7 ? CACHE_SIZE * (i + 2) : CACHE_SIZE * (1 + 2));
+#ifdef HPCGAP
+        len++; // reserve one slot for pointer to methods list
+#endif
         cache = NEW_PLIST(T_PLIST, len);
         SET_LEN_PLIST(cache, len);
 #ifdef HPCGAP
@@ -1831,7 +1834,10 @@ static ALWAYS_INLINE Obj GetMethodCached(Obj  cacheBag,
     UInt  i;
     const UInt cacheEntrySize = n + 2;
 
-    cache = 1 + ADDR_OBJ(cacheBag);
+    cache = BASE_PTR_PLIST(cacheBag);
+#ifdef HPCGAP
+    cache++; // skip over the pointer to the methods list
+#endif
 
     /* Up to CACHE_SIZE methods might be in the cache */
     if (prec < CACHE_SIZE) {
@@ -1886,7 +1892,10 @@ CacheMethod(Obj cacheBag, UInt n, Int prec, Obj * ids, Obj method)
     /* We insert this method at position <prec> and move
        the older methods down */
     UInt  cacheEntrySize = n + 2;
-    Obj * cache = 1 + prec * cacheEntrySize + ADDR_OBJ(cacheBag);
+    Obj * cache = BASE_PTR_PLIST(cacheBag) + prec * cacheEntrySize;
+#ifdef HPCGAP
+    cache++; // skip over the pointer to the methods list
+#endif
     SyMemmove(cache + cacheEntrySize, cache,
             sizeof(Obj) * (CACHE_SIZE - prec - 1) * cacheEntrySize);
     cache[0] = method;
@@ -2087,6 +2096,15 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
 
     Obj cacheBag = CacheOper(oper, n);
     Obj methods = METHS_OPER(oper, n);
+
+#ifdef HPCGAP
+    // reset the method cache if necessary
+    if (ELM_PLIST(cacheBag, 1) != methods) {
+        Obj * cache = BASE_PTR_PLIST(cacheBag);
+        cache[0] = methods;
+        memset(cache + 1, 0, SIZE_OBJ(cacheBag)-2*sizeof(Obj));
+    }
+#endif
 
     /* outer loop deals with TryNextMethod */
     prec = -1;
