@@ -468,24 +468,55 @@ static inline UInt IS_BAG_BODY(void * ptr)
 
 #include <valgrind/valgrind.h>
 #include <valgrind/memcheck.h>
-static Int canary_size(void)
+
+// tell valgrind that the masterpointer, bag contents and bag header of Bag
+// should all be accessible
+static void CANARY_ALLOW_ACCESS_BAG(Bag bag)
 {
-    Int bufsize = (Int)EndBags - (Int)AllocBags;
-    return bufsize < 4096 ? bufsize : 4096;
+    VALGRIND_MAKE_MEM_DEFINED(bag, sizeof(Bag));
+    char * ptr = (char *)PTR_BAG(bag);
+    Int    bagLength = SIZE_BAG(bag);
+    VALGRIND_MAKE_MEM_DEFINED(ptr, bagLength);
+
+    BagHeader * header = BAG_HEADER(bag);
+    VALGRIND_MAKE_MEM_DEFINED(
+        header, sizeof(*header) - sizeof(header->memory_canary_padding));
 }
 
-static void ADD_CANARY(void)
+// Reverse CANARY_ALL_ACCESS_BAG, making the masterpointer, bag contents and
+// bag header all inaccessible
+static void CANARY_FORBID_ACCESS_BAG(Bag bag)
 {
-    VALGRIND_MAKE_MEM_NOACCESS(AllocBags, canary_size());
+    VALGRIND_MAKE_MEM_NOACCESS(bag, sizeof(Bag));
+    char * ptr = (char *)PTR_BAG(bag);
+    Int    bagLength = SIZE_BAG(bag);
+    VALGRIND_MAKE_MEM_NOACCESS(ptr, bagLength);
+
+    BagHeader * header = BAG_HEADER(bag);
+    VALGRIND_MAKE_MEM_NOACCESS(
+        header, sizeof(*header) - sizeof(header->memory_canary_padding));
 }
 
-static void CLEAR_CANARY(void)
+// Mark all bags as accessible
+static void CANARY_ALLOW_ACCESS_ALL_BAGS(void)
 {
-    VALGRIND_MAKE_MEM_DEFINED(AllocBags, canary_size());
+    CallbackForAllBags(CANARY_ALLOW_ACCESS_BAG);
 }
+
+// Mark all bags as inaccessible
+static void CANARY_FORBID_ACCESS_ALL_BAGS(void)
+{
+    VALGRIND_MAKE_MEM_NOACCESS(MptrBags, (EndBags - MptrBags) * sizeof(Bag));
+}
+
+// Temporarily disable valgrind checking. This is used while creating bags or
+// adjusting any internal GASMAN structures
 #define CANARY_DISABLE_VALGRIND() VALGRIND_DISABLE_ERROR_REPORTING
+
+// Renable valgrind checking.
 #define CANARY_ENABLE_VALGRIND() VALGRIND_ENABLE_ERROR_REPORTING
 
+// CHANGED_BAG must be here to disable/enable valgrind
 void CHANGED_BAG(Bag bag)
 {
     CANARY_DISABLE_VALGRIND();
@@ -496,10 +527,12 @@ void CHANGED_BAG(Bag bag)
     CANARY_ENABLE_VALGRIND();
 }
 #else
-#define ADD_CANARY()
-#define CLEAR_CANARY()
 #define CANARY_DISABLE_VALGRIND()
 #define CANARY_ENABLE_VALGRIND()
+#define CANARY_ALLOW_ACCESS_BAG(b)
+#define CANARY_FORBID_ACCESS_BAG(b)
+#define CANARY_ALLOW_ACCESS_ALL_BAGS()
+#define CANARY_FORBID_ACCESS_ALL_BAGS()
 #endif
 
 /****************************************************************************
@@ -1212,6 +1245,7 @@ void            InitBags (
     ChangedBags = 0;
 
     GAP_ASSERT(SanityCheckGasmanPointers());
+    CANARY_FORBID_ACCESS_ALL_BAGS();
 }
 
 
@@ -1264,6 +1298,8 @@ Bag NewBag (
     CollectBags(0,0);
 #endif
 
+    CANARY_DISABLE_VALGRIND();
+
     /* check that a masterpointer and enough storage are available         */
     if ( (FreeMptrBags == 0 || SizeAllocationArea < WORDS_BAG(sizeof(BagHeader)+size))
       && CollectBags( size, 0 ) == 0 )
@@ -1286,11 +1322,10 @@ Bag NewBag (
     /* get the identifier of the bag and set 'FreeMptrBags' to the next    */
     bag          = FreeMptrBags;
     FreeMptrBags = *(Bag*)bag;
-    CLEAR_CANARY();
+
     /* allocate the storage for the bag                                    */
     BagHeader * header = (BagHeader *)AllocBags;
     AllocBags = DATA(header) + WORDS_BAG(size);
-    ADD_CANARY();
 
     // enter bag header
     header->type = type;
@@ -1306,7 +1341,11 @@ Bag NewBag (
     /* set the masterpointer                                               */
     SET_PTR_BAG(bag, DATA(header));
 
+    CANARY_ALLOW_ACCESS_BAG(bag);
+
     GAP_ASSERT(SanityCheckGasmanPointers());
+
+    CANARY_ENABLE_VALGRIND();
 
     /* return the identifier of the new bag                                */
     return bag;
@@ -1439,6 +1478,10 @@ UInt ResizeBag (
     CollectBags(0,0);
 #endif
 
+    CANARY_DISABLE_VALGRIND();
+
+    CANARY_FORBID_ACCESS_BAG(bag);
+
     BagHeader * header = BAG_HEADER(bag);
     UInt type     = header->type;
     UInt flags    = header->flags;
@@ -1488,7 +1531,6 @@ UInt ResizeBag (
 
     // if the last bag is enlarged ...
     else if (CONST_PTR_BAG(bag) + WORDS_BAG(old_size) == AllocBags) {
-        CLEAR_CANARY();
         // check that enough storage for the new bag is available
         if (SpaceBetweenPointers(EndBags, CONST_PTR_BAG(bag)) < WORDS_BAG(new_size)
               && CollectBags( new_size-old_size, 0 ) == 0 ) {
@@ -1509,8 +1551,6 @@ UInt ResizeBag (
 #endif
         SizeAllBags             += new_size - old_size;
 
-        ADD_CANARY();
-
         header->size = new_size;
 #if SIZEOF_VOID_P == 4
         GAP_ASSERT(header->reserved == 0);
@@ -1525,7 +1565,6 @@ UInt ResizeBag (
               && CollectBags( new_size, 0 ) == 0 ) {
             Panic("Cannot extend the workspace any more!!!!!!");
         }
-        CLEAR_CANARY();
 
         // update header pointer in case bag moved
         header = BAG_HEADER(bag);
@@ -1542,7 +1581,6 @@ UInt ResizeBag (
         /* allocate the storage for the bag                                */
         BagHeader * newHeader = (BagHeader *)AllocBags;
         AllocBags = DATA(newHeader) + WORDS_BAG(new_size);
-        ADD_CANARY();
 
         newHeader->type = type;
         newHeader->flags = flags;
@@ -1586,6 +1624,8 @@ UInt ResizeBag (
     }
 
     GAP_ASSERT(SanityCheckGasmanPointers());
+    CANARY_ALLOW_ACCESS_BAG(bag);
+    CANARY_ENABLE_VALGRIND();
     /* return success                                                      */
     return 1;
 }
@@ -1873,7 +1913,7 @@ UInt CollectBags (
 
     GAP_ASSERT(SanityCheckGasmanPointers());
     CANARY_DISABLE_VALGRIND();
-    CLEAR_CANARY();
+    CANARY_FORBID_ACCESS_ALL_BAGS();
 #ifdef DEBUG_MASTERPOINTERS
     CheckMasterPointers();
 #endif
@@ -2325,6 +2365,7 @@ again:
     /* Possibly advise the operating system about unused pages:            */
     SyMAdviseFree();
 
+    CANARY_ALLOW_ACCESS_ALL_BAGS();
     CANARY_ENABLE_VALGRIND();
 
     GAP_ASSERT(SanityCheckGasmanPointers());
