@@ -65,6 +65,20 @@
 #define JOIN(x, y) JOIN2(x, y)
 #define JOIN2(x, y) x##y
 
+
+// Compare a and b, first checking if a and b are equal objects,
+// and if so returning false straight away. We do this because
+// some comparators do not work when comparing equal objects.
+// This can occur either because the original list had identical
+// objects, or when comparing against the pivot in quicksort.
+#define SORT_COMP_CHECK_EQ PREFIXNAME(SortCompCheckEqObj)
+static Int SORT_COMP_CHECK_EQ(SORT_FUNC_ARGS, Obj a, Obj b) {
+    if(a==b)
+        return 0;
+    else
+        return SORT_COMP(a, b);
+}
+
 void PREFIXNAME(Shell)(SORT_FUNC_ARGS, Int start, Int end) {
   UInt len; /* length of the list              */
   UInt h;   /* gap width in the shellsort      */
@@ -83,7 +97,7 @@ void PREFIXNAME(Shell)(SORT_FUNC_ARGS, Int start, Int end) {
       SORT_ASS_LIST_TO_LOCAL(v, i);
       k = i;
       SORT_ASS_LIST_TO_LOCAL(w, k - h);
-      while (h + (start - 1) < k && SORT_COMP(v, w)) {
+      while (h + (start - 1) < k && SORT_COMP_CHECK_EQ(SORT_ARGS, v, w)) {
         SORT_ASS_LOCAL_TO_LIST(k, w);
         k -= h;
         if (h + (start - 1) < k) {
@@ -115,7 +129,7 @@ static inline int COMP_INDICES(SORT_FUNC_ARGS, Int a, Int b) {
   SORT_CREATE_LOCAL(u);
   SORT_ASS_LIST_TO_LOCAL(t, a);
   SORT_ASS_LIST_TO_LOCAL(u, b);
-  return SORT_COMP(t, u);
+  return SORT_COMP_CHECK_EQ(SORT_ARGS, t, u);
 }
 
 /* Sort 3 indices */
@@ -162,7 +176,7 @@ static inline Int PREFIXNAME(Partition)(SORT_FUNC_ARGS, Int start, Int end,
     while (left < right) {
       SORT_CREATE_LOCAL(listcpy);
       SORT_ASS_LIST_TO_LOCAL(listcpy, left);
-      if (SORT_COMP(pivot, listcpy))
+      if (SORT_COMP_CHECK_EQ(SORT_ARGS, pivot, listcpy))
         break;
       left++;
     }
@@ -171,7 +185,7 @@ static inline Int PREFIXNAME(Partition)(SORT_FUNC_ARGS, Int start, Int end,
     while (left < right) {
       SORT_CREATE_LOCAL(listcpy);
       SORT_ASS_LIST_TO_LOCAL(listcpy, right);
-      if (!(SORT_COMP(pivot, listcpy)))
+      if (!(SORT_COMP_CHECK_EQ(SORT_ARGS, pivot, listcpy)))
         break;
       right--;
     }
@@ -197,7 +211,7 @@ void PREFIXNAME(Insertion)(SORT_FUNC_ARGS, Int start, Int end) {
     SORT_ASS_LIST_TO_LOCAL(v, i);
     k = i;
     SORT_ASS_LIST_TO_LOCAL(w, k - 1);
-    while (start < k && SORT_COMP(v, w)) {
+    while (start < k && SORT_COMP_CHECK_EQ(SORT_ARGS, v, w)) {
       SORT_ASS_LOCAL_TO_LIST(k, w);
       k -= 1;
       if (start < k) {
@@ -220,7 +234,7 @@ Obj PREFIXNAME(LimitedInsertion)(SORT_FUNC_ARGS, Int start, Int end) {
     SORT_ASS_LIST_TO_LOCAL(v, i);
     k = i;
     SORT_ASS_LIST_TO_LOCAL(w, k - 1);
-    while (start < k && SORT_COMP(v, w)) {
+    while (start < k && SORT_COMP_CHECK_EQ(SORT_ARGS, v, w)) {
       limit--;
       if (limit == 0) {
         SORT_ASS_LOCAL_TO_LIST(k, v);
