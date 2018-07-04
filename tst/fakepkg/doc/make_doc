@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+echo "TeXing documentation"
+# TeX the manual 
+tex manual
+# TeX the manual again to incorporate the ToC ... and build the index
+tex manual; ../../../doc/manualindex manual
+# Finally TeX the manual again to get cross-references right
+tex manual
