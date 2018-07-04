@@ -62,14 +62,26 @@ void initGRMT(UInt4 *mt, UInt4 s)
     mt[624] = mti;
 }
 
+// Read s[pos], returning 0 if pos is past the error of the array
+static inline UChar checkedReadChar(UChar * s, UInt4 pos, UInt4 len)
+{
+    if (pos < len)
+        return s[pos];
+    else
+        return 0;
+}
+
 /* to read a seed string independently of endianness */
-static inline UInt4 uint4frombytes(UChar *s)
+static inline UInt4 uint4frombytes(UChar * s, UInt4 pos, UInt4 len)
 {
   UInt4 res;
-  res = s[3]; res <<= 8;
-  res += s[2]; res <<= 8;
-  res += s[1]; res <<= 8;
-  res += s[0];
+  res = checkedReadChar(s, pos + 3, len);
+  res <<= 8;
+  res += checkedReadChar(s, pos + 2, len);
+  res <<= 8;
+  res += checkedReadChar(s, pos + 1, len);
+  res <<= 8;
+  res += checkedReadChar(s, pos + 0, len);
   return res;
 }
 
@@ -77,7 +89,7 @@ Obj FuncInitRandomMT( Obj self, Obj initstr)
 {
   Obj str;
   UChar *init_key;
-  UInt4 *mt, key_length, i, j, k, N=624;
+  UInt4 *mt, key_length, byte_key_length, i, j, k, N = 624;
 
   /* check the seed, given as string */
   while (! IsStringConv(initstr)) {
@@ -97,11 +109,12 @@ Obj FuncInitRandomMT( Obj self, Obj initstr)
   i=1; j=0;
   /* Do not set these up until all garbage collection is done   */
   init_key = CHARS_STRING(initstr);
-  key_length = GET_LEN_STRING(initstr) / 4;
+  byte_key_length = GET_LEN_STRING(initstr);
+  key_length = byte_key_length / 4;
   k = (N>key_length ? N : key_length);
   for (; k; k--) {
-      mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1664525UL))
-        + uint4frombytes(init_key+4*j) + j;
+      mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 30)) * 1664525UL)) +
+              uint4frombytes(init_key, 4 * j, byte_key_length) + j;
       mt[i] &= 0xffffffffUL;
       i++; j++;
       if (i>=N) { mt[0] = mt[N-1]; i=1; }
