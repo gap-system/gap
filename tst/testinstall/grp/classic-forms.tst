@@ -126,16 +126,9 @@ gap> for d in [3,5,7] do
 > od;
 gap> ForAll(grps, CheckGeneratorsSpecial);
 true
-
-# FIXME: forms are not implemented for odd d, even q
-# gap> ForAll(grps, CheckBilinearForm);
-# true
-# gap> ForAll(grps, CheckQuadraticForm);
-# true
-#
-gap> ForAll(Filtered(grps, g -> Characteristic(g)<>2), CheckBilinearForm);
+gap> ForAll(grps, CheckBilinearForm);
 true
-gap> ForAll(Filtered(grps, g -> Characteristic(g)<>2), CheckQuadraticForm);
+gap> ForAll(grps, CheckQuadraticForm);
 true
 gap> ForAll(grps, CheckSize);
 true

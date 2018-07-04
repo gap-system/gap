@@ -1491,24 +1491,30 @@ end);
 #F  OmegaZero( <d>, <q> ) . . . . . . . . . . . . . . . . \Omega^0_{<d>}(<q>)
 ##
 BindGlobal( "OmegaZero", function( d, q )
-    local f, o, m, mo, n, i, x1, x2, x, g, xi, h, s, q2, q2i;
+    local f, o, m, mo, n, i, x, g, xi, h, s, q2, q2i;
 
     # <d> must be odd
     if d mod 2 = 0 then
       Error( "<d> must be odd" );
     elif d < 3 then
       Error( "<d> must be at least 3" );
+    elif q mod 2 = 0 then
+      # For even q, the generators claimed in [RylandsTalor98] are wrong:
+      # For (d,q) = (5,2), the matrices generate only S4(2)' not S4(2).
+      # In the other cases, the matrices would have to be transposed
+      # in order to respect a form as required;
+      # thus they describe a group of the right isomorphism type
+      # but not an orthogonal group.
+      # We return the isomorphic group SO(d,q) in these cases;
+      # note that this is the definition of Omega(d,q) for odd d and even q
+      # in the ATLAS of Finite Groups [CCN85, p. xi].
+      return SO( d, q );
     fi;
     f:= GF(q);
     o:= One( f );
     m:= ( d-1 ) / 2;
 
-    if d = 5 and q = 2 then
-      # The matrices given in [RylandsTalor98] generate only A6 not S6.
-      # So we take the isomorphic group SO( 5, 2 ) instead.
-      return SO( 5, 2 );
-
-    elif 3 < d then
+    if 3 < d then
       # Omega(0,d,q) for d=2m+1, m >= 2, Section 4.5
       if d mod 4 = 3 then
         mo:= -o;  # (-1)^m
@@ -1525,22 +1531,11 @@ BindGlobal( "OmegaZero", function( d, q )
         n[ d+1-i ][ d-i ]:= o;
       od;
 
-      if q mod 2 = 0 then
-        # $x = x_{\epsilon_1 - \epsilon_m}(1) x_{-\alpha_1}(1)$
-        x1:= IdentityMat( d, f );
-        x1[1][m]:= o;
-        x1[ m+2 ][d]:= o;
-        x2:= IdentityMat( d, f );
-        x2[ m+1 ][m]:= o;
-        x2[ m+2 ][m]:= o;
-        x:= x1 * x2;
-      else
-        # $x = x_{\alpha_1}(1)$
-        x:= IdentityMat( d, f );
-        x[m][ m+1 ]:= 2*o;
-        x[ m+1 ][ m+2 ]:= -o;
-        x[m][ m+2 ]:= -o;
-      fi;
+      # $x = x_{\alpha_1}(1)$
+      x:= IdentityMat( d, f );
+      x[m][ m+1 ]:= 2*o;
+      x[ m+1 ][ m+2 ]:= -o;
+      x[m][ m+2 ]:= -o;
 
       if q <= 3 then
         # the matrices $x$ and $n$
@@ -1590,17 +1585,12 @@ BindGlobal( "OmegaZero", function( d, q )
     SetSize( g, q^(m^2) * s );
 
     # construct the forms
-      if q mod 2 = 0 then
-      # FIXME: add forms for even characteristic, if that is possible at all
-      # (it doesn't seem to be)
-    else
-      x:= NullMat( d, d, f );
-      for i in [ 1 .. m ] do
-        x[i,d-i+1] := o;
-      od;
-      x[m+1,m+1] := (Characteristic(f)+1)/4*o;
-      SetInvariantQuadraticFormFromMatrix(g, ImmutableMatrix( f, x, true ) );
-    fi;
+    x:= NullMat( d, d, f );
+    for i in [ 1 .. m ] do
+      x[i,d-i+1] := o;
+    od;
+    x[m+1,m+1] := (Characteristic(f)+1)/4*o;
+    SetInvariantQuadraticFormFromMatrix(g, ImmutableMatrix( f, x, true ) );
 
     # and return
     return g;
