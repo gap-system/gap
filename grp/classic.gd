@@ -13,22 +13,35 @@
 ##
 ##  <#GAPDoc Label="[1]{classic}">
 ##  The following functions return classical groups.
+##  <P/>
 ##  For the linear, symplectic, and unitary groups (the latter in dimension
 ##  at least <M>3</M>),
 ##  the generators are taken from&nbsp;<Cite Key="Tay87"/>.
 ##  For the unitary groups in dimension <M>2</M>, the isomorphism of
 ##  SU<M>(2,q)</M> and SL<M>(2,q)</M> is used,
 ##  see for example&nbsp;<Cite Key="Hup67"/>.
+##  <P/>
 ##  The generators of the general and special orthogonal groups are taken
 ##  from&nbsp;<Cite Key="IshibashiEarnest94"/> and
 ##  <Cite Key="KleidmanLiebeck90"/>,
 ##  except that the generators of the groups in odd dimension in even
 ##  characteristic are constructed via the isomorphism to a symplectic group,
 ##  see for example&nbsp;<Cite Key="Car72a"/>.
+##  <P/>
 ##  The generators of the groups <M>\Omega^\epsilon(d, q)</M> are taken
 ##  from&nbsp;<Cite Key="RylandsTalor98"/>,
-##  except that the generators of SO<M>(5, 2)</M> are taken for
-##  <M>\Omega(5, 2)</M>.
+##  except that in odd dimension and even characteristic,
+##  the generators of SO<M>(d, q)</M> are taken for <M>\Omega(d, q)</M>.
+##  Note that the generators claimed
+##  in&nbsp;<Cite Key="RylandsTalor98" Where="Section 4.5 and 4.6"/>
+##  do not describe orthogonal groups, one would have to transpose these
+##  matrices in order to get groups that respect the required forms.
+##  The matrices from&nbsp;<Cite Key="RylandsTalor98"/> generate groups
+##  of the right isomorphism types but not orthogonal groups,
+##  except in the case <M>(d,q) = (5,2)</M>,
+##  where the matrices from&nbsp;<Cite Key="RylandsTalor98"/> generate
+##  the simple group <M>S_4(2)'</M> and not the group <M>S_4(2)</M>.
+##  <P/>
 ##  The generators for the semilinear groups are constructed from the
 ##  generators of the corresponding linear groups plus one additional
 ##  generator that describes the action of the group of field automorphisms;

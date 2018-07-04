@@ -131,7 +131,7 @@ Error, <subfield> must be a prime or a finite field
 
 #
 gap> Omega(3,2);
-Omega(0,3,2)
+GO(0,3,2)
 gap> Omega(3,3);
 Omega(0,3,3)
 gap> Omega(5,2);
