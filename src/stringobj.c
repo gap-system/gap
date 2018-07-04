@@ -600,7 +600,7 @@ Obj CopyString (
 
     /* copy the subvalues                                                  */
     memcpy(ADDR_OBJ(copy)+1, CONST_ADDR_OBJ(list)+1,
-           ((SIZE_OBJ(copy)+sizeof(Obj)-1)/sizeof(Obj)-1) * sizeof(Obj));
+           SIZE_OBJ(list)-sizeof(Obj) );
 
     /* return the copy                                                     */
     return copy;

@@ -345,17 +345,12 @@ Obj ShallowCopyObjDefault (
     Obj                 new;
     const Obj *         o;
     Obj *               n;
-    UInt                len;
-    UInt                i;
 
     /* make the new object and copy the contents                           */
-    len = (SIZE_OBJ( obj ) + sizeof(Obj)-1) / sizeof(Obj);
     new = NewBag( MUTABLE_TNUM(TNUM_OBJ(obj)), SIZE_OBJ(obj) );
     o = CONST_ADDR_OBJ(obj);
     n = ADDR_OBJ( new );
-    for ( i = 0; i < len; i++ ) {
-        *n++ = *o++;
-    }
+    memcpy(n, o, SIZE_OBJ(obj) );
 
     /* 'CHANGED_BAG(new);' not needed, <new> is newest object              */
     return new;
@@ -680,7 +675,6 @@ Obj CopyObjDatObj (
 {
     Obj                 copy;           /* copy, result                    */
     Obj                 tmp;            /* temporary variable              */
-    UInt                i;              /* loop variable                   */
     const Int *         src;
     Int               * dst;
 
@@ -716,10 +710,7 @@ Obj CopyObjDatObj (
     /* copy the subvalues                                                  */
     src = (const Int *)(CONST_ADDR_OBJ(obj) + 1);
     dst = (Int *)(ADDR_OBJ(copy) + 1);
-    i   = (SIZE_OBJ(obj)-sizeof(Obj)+sizeof(Int)-1) / sizeof(Int);
-    for ( ;  0 < i;  i--, src++, dst++ ) {
-        *dst = *src;
-    }
+    memcpy(dst, src, SIZE_OBJ(obj)-sizeof(Obj));
     CHANGED_BAG(copy);
 
     /* return the copy                                                     */
@@ -1683,7 +1674,6 @@ Obj FuncCLONE_OBJ (
 {
     const Obj *     psrc;
     Obj *           pdst;
-    Int             i;
 
     /* check <src>                                                         */
     if ( IS_INTOBJ(src) ) {
@@ -1745,9 +1735,7 @@ Obj FuncCLONE_OBJ (
     pdst = ADDR_OBJ(dst);
 #endif
     psrc = CONST_ADDR_OBJ(src);
-    for ( i = (SIZE_OBJ(src)+sizeof(Obj) - 1)/sizeof(Obj);  0 < i;  i-- ) {
-        *pdst++ = *psrc++;
-    }
+    memcpy(pdst, psrc, SIZE_OBJ(src));
     CHANGED_BAG(dst);
 #ifdef HPCGAP
     REGION(dst) = REGION(src);
