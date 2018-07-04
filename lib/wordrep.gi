@@ -468,6 +468,12 @@ InstallMethod( \*,
     [ Is8BitsAssocWord, Is8BitsAssocWord ], 0,
     8Bits_Product );
 
+InstallMethod( \/,
+    "for two 8 bits assoc. words",
+    IsIdenticalObj,
+    [ Is8BitsAssocWord, Is8BitsAssocWord and IsMultiplicativeElementWithInverse ], 0,
+    8Bits_Quotient );
+
 InstallMethod( OneOp,
     "for an 8 bits assoc. word-with-one",
     true,
@@ -561,6 +567,12 @@ InstallMethod( \*,
     [ Is16BitsAssocWord, Is16BitsAssocWord ], 0,
     16Bits_Product );
 
+InstallMethod( \/,
+    "for two 16 bits assoc. words",
+    IsIdenticalObj,
+    [ Is16BitsAssocWord, Is16BitsAssocWord and IsMultiplicativeElementWithInverse ], 0,
+    16Bits_Quotient );
+
 InstallMethod( OneOp,
     "for a 16 bits assoc. word-with-one",
     true,
@@ -653,6 +665,12 @@ InstallMethod( \*,
     IsIdenticalObj,
     [ Is32BitsAssocWord, Is32BitsAssocWord ], 0,
     32Bits_Product );
+
+InstallMethod( \/,
+    "for two 32 bits assoc. words",
+    IsIdenticalObj,
+    [ Is32BitsAssocWord, Is32BitsAssocWord and IsMultiplicativeElementWithInverse ], 0,
+    32Bits_Quotient );
 
 InstallMethod( OneOp,
     "for a 32 bits assoc. word-with-one",

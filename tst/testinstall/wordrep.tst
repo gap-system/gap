@@ -197,11 +197,11 @@ gap> words32 := [u32,v32,w32,x32];; ForAll(words32, Is32BitsAssocWord);
 true
 
 #
-gap> SetX(words8, words8, {a,b} -> (a/b) = 8Bits_Quotient(a,b));
+gap> SetX(words8, words8, {a,b} -> (a/b) * b = a);
 [ true ]
-gap> SetX(words16, words16, {a,b} -> (a/b) = 16Bits_Quotient(a,b));
+gap> SetX(words16, words16, {a,b} -> (a/b) * b = a);
 [ true ]
-gap> SetX(words32, words32, {a,b} -> (a/b) = 32Bits_Quotient(a,b));
+gap> SetX(words32, words32, {a,b} -> (a/b) * b = a);
 [ true ]
 
 #
