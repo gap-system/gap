@@ -3282,6 +3282,9 @@ InstallMethod( HighestWeightModule,
         
         o:= n2-n1;
         pos:= PositionProperty( o, x -> x <> 0 );
+        if pos = fail then
+            return false;
+        fi;
         return o[pos] < 0;
     end;
 
@@ -3552,7 +3555,7 @@ InstallMethod( HighestWeightModule,
         # be a factor of `b' if we have `a=b'. So reduction within a
         # weight component is the same as linear algebra. We use the 
         # mutable bases in `sps' to perform the linear algebra.
-                                 
+    
         sps:= [ ];
         sortmn:= [ ];                         
         for j in [1..Length(w)] do
