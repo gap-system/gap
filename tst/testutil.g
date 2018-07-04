@@ -448,7 +448,7 @@ for name in rules do
   report:=[];
 
   for nargs in [1..2] do
-    f:=METHODS_OPERATION( EvalString(name), nargs );
+    f:=METHODS_OPERATION( ValueGlobal(name), nargs );
     for m in [1..Length(f)/(BASE_SIZE_METHODS_OPER_ENTRY+nargs)] do
       met := f[(m-1)*(BASE_SIZE_METHODS_OPER_ENTRY+nargs)+2+nargs];
       str := "";
