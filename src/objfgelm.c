@@ -947,90 +947,6 @@ Obj Func8Bits_Product (
 
 /****************************************************************************
 **
-*F  Func8Bits_Quotient( <self>, <l>, <r> )
-*/
-Obj Func8Bits_Quotient (
-    Obj         self,
-    Obj         l,
-    Obj         r )
-{
-    Int         ebits;          /* number of bits in the exponent          */
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        sepm;           /* unsigned exponent mask                  */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        genm;           /* generator mask                          */
-    Int         nl;             /* number of pairs to consider in <l>      */
-    Int         nr;             /* number of pairs in <r>                  */
-    UInt1 *     pl;             /* data area in <l>                        */
-    UInt1 *     pr;             /* data area in <r>                        */
-    Obj         obj;            /* the result                              */
-    UInt1 *     po;             /* data area in <obj>                      */
-    Int         ex = 0;         /* meeting exponent                        */
-    Int         over;           /* overlap                                 */
-
-    /* get the number of bits for exponents                                */
-    ebits = EBITS_WORD(l);
-
-    /* get the exponent masks                                              */
-    exps = 1UL << (ebits-1);
-    expm = exps - 1;
-    sepm = (1UL << ebits) - 1;
-
-    /* get the generator mask                                              */
-    genm = ((1UL << (8-ebits)) - 1) << ebits;
-
-    /* if <r> is the identity return <l>                                   */
-    nl = NPAIRS_WORD(l);
-    nr = NPAIRS_WORD(r);
-    if ( 0 == nr )  return l;
-
-    /* look closely at the meeting point                                   */
-    pl = (UInt1*)DATA_WORD(l)+(nl-1);
-    pr = (UInt1*)DATA_WORD(r)+(nr-1);
-    while ( 0 < nl && 0 < nr && (*pl & genm) == (*pr & genm) ) {
-        if ( (*pl&exps) != (*pr&exps) )
-            break;
-        if ( (*pl&expm) != (*pr&expm) )
-            break;
-        pr--;  nr--;
-        pl--;  nl--;
-    }
-
-    /* create a new word                                                   */
-    over = ( 0 < nl && 0 < nr && (*pl & genm) == (*pr & genm) ) ? 1 : 0;
-    if ( over ) {
-        ex = ( *pl & expm ) - ( *pr & expm );
-        if ( *pl & exps )  ex -= exps;
-        if ( *pr & exps )  ex += exps;
-        if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
-            return TRY_NEXT_METHOD;
-        }
-    }
-    NEW_WORD( obj, PURETYPE_WORD(l), nl+nr-over );
-
-    /* copy the <l> part into the word                                     */
-    po = (UInt1*)DATA_WORD(obj);
-    pl = (UInt1*)DATA_WORD(l);
-    while ( 0 < nl-- )
-        *po++ = *pl++;
-
-    /* handle the overlap                                                  */
-    if ( over ) {
-        po[-1] = (po[-1] & genm) | (ex & sepm);
-        nr--;
-    }
-
-    /* copy the <r> part into the word                                     */
-    pr = ((UInt1*)DATA_WORD(r)) + (nr-1);
-    while ( 0 < nr-- ) {
-        *po++ = (*pr&genm) | (exps-(*pr&expm)) | (~*pr & exps);
-        pr--;
-    }
-    return obj;
-}
-
-/****************************************************************************
-**
 *F  Func8Bits_LengthWord( <self>, <w> )
 */
 
@@ -1901,90 +1817,6 @@ Obj Func16Bits_Product (
     return obj;
 }
 
-
-/****************************************************************************
-**
-*F  Func16Bits_Quotient( <self>, <l>, <r> )
-*/
-Obj Func16Bits_Quotient (
-    Obj         self,
-    Obj         l,
-    Obj         r )
-{
-    Int         ebits;          /* number of bits in the exponent          */
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        sepm;           /* unsigned exponent mask                  */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        genm;           /* generator mask                          */
-    Int         nl;             /* number of pairs to consider in <l>      */
-    Int         nr;             /* number of pairs in <r>                  */
-    UInt2 *     pl;             /* data area in <l>                        */
-    UInt2 *     pr;             /* data area in <r>                        */
-    Obj         obj;            /* the result                              */
-    UInt2 *     po;             /* data area in <obj>                      */
-    Int         ex = 0;         /* meeting exponent                        */
-    Int         over;           /* overlap                                 */
-
-    /* get the number of bits for exponents                                */
-    ebits = EBITS_WORD(l);
-
-    /* get the exponent masks                                              */
-    exps = 1UL << (ebits-1);
-    expm = exps - 1;
-    sepm = (1UL << ebits) - 1;
-
-    /* get the generator mask                                              */
-    genm = ((1UL << (16-ebits)) - 1) << ebits;
-
-    /* if <r> is the identity return <l>                                   */
-    nl = NPAIRS_WORD(l);
-    nr = NPAIRS_WORD(r);
-    if ( 0 == nr )  return l;
-
-    /* look closely at the meeting point                                   */
-    pl = (UInt2*)DATA_WORD(l)+(nl-1);
-    pr = (UInt2*)DATA_WORD(r)+(nr-1);
-    while ( 0 < nl && 0 < nr && (*pl & genm) == (*pr & genm) ) {
-        if ( (*pl&exps) != (*pr&exps) )
-            break;
-        if ( (*pl&expm) != (*pr&expm) )
-            break;
-        pr--;  nr--;
-        pl--;  nl--;
-    }
-
-    /* create a new word                                                   */
-    over = ( 0 < nl && 0 < nr && (*pl & genm) == (*pr & genm) ) ? 1 : 0;
-    if ( over ) {
-        ex = ( *pl & expm ) - ( *pr & expm );
-        if ( *pl & exps )  ex -= exps;
-        if ( *pr & exps )  ex += exps;
-        if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
-            return TRY_NEXT_METHOD;
-        }
-    }
-    NEW_WORD( obj, PURETYPE_WORD(l), nl+nr-over );
-
-    /* copy the <l> part into the word                                     */
-    po = (UInt2*)DATA_WORD(obj);
-    pl = (UInt2*)DATA_WORD(l);
-    while ( 0 < nl-- )
-        *po++ = *pl++;
-
-    /* handle the overlap                                                  */
-    if ( over ) {
-        po[-1] = (po[-1] & genm) | (ex & sepm);
-        nr--;
-    }
-
-    /* copy the <r> part into the word                                     */
-    pr = ((UInt2*)DATA_WORD(r)) + (nr-1);
-    while ( 0 < nr-- ) {
-        *po++ = (*pr&genm) | (exps-(*pr&expm)) | (~*pr & exps);
-        pr--;
-    }
-    return obj;
-}
 
 /****************************************************************************
 **
@@ -2862,90 +2694,6 @@ Obj Func32Bits_Product (
 
 /****************************************************************************
 **
-*F  Func32Bits_Quotient( <self>, <l>, <r> )
-*/
-Obj Func32Bits_Quotient (
-    Obj         self,
-    Obj         l,
-    Obj         r )
-{
-    Int         ebits;          /* number of bits in the exponent          */
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        sepm;           /* unsigned exponent mask                  */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        genm;           /* generator mask                          */
-    Int         nl;             /* number of pairs to consider in <l>      */
-    Int         nr;             /* number of pairs in <r>                  */
-    UInt4 *     pl;             /* data area in <l>                        */
-    UInt4 *     pr;             /* data area in <r>                        */
-    Obj         obj;            /* the result                              */
-    UInt4 *     po;             /* data area in <obj>                      */
-    Int         ex = 0;         /* meeting exponent                        */
-    Int         over;           /* overlap                                 */
-
-    /* get the number of bits for exponents                                */
-    ebits = EBITS_WORD(l);
-
-    /* get the exponent masks                                              */
-    exps = 1UL << (ebits-1);
-    expm = exps - 1;
-    sepm = (1UL << ebits) - 1;
-
-    /* get the generator mask                                              */
-    genm = ((1UL << (32-ebits)) - 1) << ebits;
-
-    /* if <r> is the identity return <l>                                   */
-    nl = NPAIRS_WORD(l);
-    nr = NPAIRS_WORD(r);
-    if ( 0 == nr )  return l;
-
-    /* look closely at the meeting point                                   */
-    pl = (UInt4*)DATA_WORD(l)+(nl-1);
-    pr = (UInt4*)DATA_WORD(r)+(nr-1);
-    while ( 0 < nl && 0 < nr && (*pl & genm) == (*pr & genm) ) {
-        if ( (*pl&exps) != (*pr&exps) )
-            break;
-        if ( (*pl&expm) != (*pr&expm) )
-            break;
-        pr--;  nr--;
-        pl--;  nl--;
-    }
-
-    /* create a new word                                                   */
-    over = ( 0 < nl && 0 < nr && (*pl & genm) == (*pr & genm) ) ? 1 : 0;
-    if ( over ) {
-        ex = ( *pl & expm ) - ( *pr & expm );
-        if ( *pl & exps )  ex -= exps;
-        if ( *pr & exps )  ex += exps;
-        if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
-            return TRY_NEXT_METHOD;
-        }
-    }
-    NEW_WORD( obj, PURETYPE_WORD(l), nl+nr-over );
-
-    /* copy the <l> part into the word                                     */
-    po = (UInt4*)DATA_WORD(obj);
-    pl = (UInt4*)DATA_WORD(l);
-    while ( 0 < nl-- )
-        *po++ = *pl++;
-
-    /* handle the overlap                                                  */
-    if ( over ) {
-        po[-1] = (po[-1] & genm) | (ex & sepm);
-        nr--;
-    }
-
-    /* copy the <r> part into the word                                     */
-    pr = ((UInt4*)DATA_WORD(r)) + (nr-1);
-    while ( 0 < nr-- ) {
-        *po++ = (*pr&genm) | (exps-(*pr&expm)) | (~*pr & exps);
-        pr--;
-    }
-    return obj;
-}
-
-/****************************************************************************
-**
 *F  Func32Bits_LengthWord( <self>, <w> )
 */
 
@@ -3250,7 +2998,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(8Bits_HeadByNumber, 2, "16_bits_word, gen_num"),
     GVAR_FUNC(8Bits_Power, 2, "8_bits_word, small_integer"),
     GVAR_FUNC(8Bits_Product, 2, "8_bits_word, 8_bits_word"),
-    GVAR_FUNC(8Bits_Quotient, 2, "8_bits_word, 8_bits_word"),
     GVAR_FUNC(8Bits_LengthWord, 1, "8_bits_word"),
     GVAR_FUNC(16Bits_Equal, 2, "16_bits_word, 16_bits_word"),
     GVAR_FUNC(16Bits_ExponentSums1, 1, "16_bits_word"),
@@ -3267,7 +3014,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(16Bits_HeadByNumber, 2, "16_bits_word, gen_num"),
     GVAR_FUNC(16Bits_Power, 2, "16_bits_word, small_integer"),
     GVAR_FUNC(16Bits_Product, 2, "16_bits_word, 16_bits_word"),
-    GVAR_FUNC(16Bits_Quotient, 2, "16_bits_word, 16_bits_word"),
     GVAR_FUNC(16Bits_LengthWord, 1, "16_bits_word"),
     GVAR_FUNC(32Bits_Equal, 2, "32_bits_word, 32_bits_word"),
     GVAR_FUNC(32Bits_ExponentSums1, 1, "32_bits_word"),
@@ -3284,7 +3030,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(32Bits_HeadByNumber, 2, "16_bits_word, gen_num"),
     GVAR_FUNC(32Bits_Power, 2, "32_bits_word, small_integer"),
     GVAR_FUNC(32Bits_Product, 2, "32_bits_word, 32_bits_word"),
-    GVAR_FUNC(32Bits_Quotient, 2, "32_bits_word, 32_bits_word"),
     GVAR_FUNC(32Bits_LengthWord, 1, "32_bits_word"),
 
     GVAR_FUNC(MULT_WOR_LETTREP, 2, "list,list"),
