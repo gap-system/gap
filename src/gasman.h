@@ -90,6 +90,11 @@ typedef struct {
 #ifdef USE_GASMAN
     Bag link;
 #endif
+#if defined(MEMORY_CANARY)
+    // The following variable is marked as not readable or writable
+    // in valgrind, to check for code reading before the start of a Bag.
+    uint64_t memory_canary_padding[8];
+#endif
 } BagHeader;
 
 
