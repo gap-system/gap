@@ -14,19 +14,20 @@
 # check some non-plists. Also need to test with and without comparators.
 gap> START_TEST("stablesort.tst");
 gap> lowAlpha := Immutable(SSortedList("abcdefghijklmnopqrstuvwxyz"));;
+gap> CheckIdObj := function (a,b) if IsIdenticalObj(a,b) then Error("Equal Obj!"); fi; end;;
 gap> CheckStabilityPair := function(inputlist)
 > local pairlist, listcpy1, listcpy2, intlist;
 > pairlist := List([1..Length(inputlist)], x -> [inputlist[x],x]);
 > listcpy1 := DEEP_COPY_OBJ(pairlist);
 > listcpy2 := DEEP_COPY_OBJ(pairlist);
 > Sort(listcpy1);
-> StableSort(listcpy2, function(x,y) return x[1] < y[1]; end);
+> StableSort(listcpy2, function(x,y) CheckIdObj(x,y); return x[1] < y[1]; end);
 > if listcpy1 <> listcpy2 then
 >    Print("failed Stability test 1:", inputlist, listcpy1, listcpy2);
 > fi;
 > listcpy2 := DEEP_COPY_OBJ(pairlist);
 > intlist := [1..Length(inputlist)];
-> StableSortParallel(listcpy2, intlist, function(x,y) return x[1] < y[1]; end);
+> StableSortParallel(listcpy2, intlist, function(x,y) CheckIdObj(x,y); return x[1] < y[1]; end);
 > if intlist <> List(listcpy2, x -> x[2]) then
 >    Print("failed Stability test 2:", listcpy2, intlist);
 > fi;
@@ -61,11 +62,11 @@ gap> CheckSort := function(list, sorted)
 >  local listcpy, perm;
 >  listcpy := DEEP_COPY_OBJ(list); StableSort(listcpy);
 >  if listcpy <> sorted then Print("Fail 1 : ", listcpy, list, sorted); fi;
->  listcpy := DEEP_COPY_OBJ(list); StableSort(listcpy, function (a,b) return a < b; end);
+>  listcpy := DEEP_COPY_OBJ(list); StableSort(listcpy, function (a,b) CheckIdObj(a,b); return a < b; end);
 >  if listcpy <> sorted then Print("Fail 2 : ", listcpy, list, sorted); fi;
->  listcpy := DEEP_COPY_OBJ(list); StableSort(listcpy, function (a,b) return a <= b; end);
+>  listcpy := DEEP_COPY_OBJ(list); StableSort(listcpy, function (a,b) CheckIdObj(a,b); return a <= b; end);
 >  if listcpy <> sorted then Print("Fail 3 : ", listcpy, list, sorted); fi;
->  listcpy := DEEP_COPY_OBJ(list); Sort(listcpy, function (a,b) return a > b; end);
+>  listcpy := DEEP_COPY_OBJ(list); Sort(listcpy, function (a,b) CheckIdObj(a,b); return a > b; end);
 >  if listcpy <> Reversed(sorted) then Print("Fail 4 : ", listcpy, list, sorted); fi;
 >  CheckStabilityPair(list);
 >  if IsStringRep(list) then
