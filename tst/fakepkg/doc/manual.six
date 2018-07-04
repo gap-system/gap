@@ -1,0 +1,11 @@
+C about.tex 1. About this package
+S 1.1. Testing general text
+S 1.2. Testing various mansection formats
+F 1.2. Size
+F 1.2. Size!for permutation groups
+F 1.2. addition
+F 1.2. size of a set
+F 1.2. size!of a list
+F 1.2. size
+F 1.2. Size!GL( n, q )
+F 1.2. SomeGlobalVariable

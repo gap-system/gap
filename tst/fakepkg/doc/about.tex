@@ -1,0 +1,158 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Chapter{About this package}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{Testing general text}
+
+This is a mock package to be used to test {\GAP} library code
+related to {\GAP} packages, for example to validate `PackageInfo.g`
+files. Clearly, it's not available anywhere, and it has it's `ArchiveURL' set
+to `Concatenation( ~.PackageWWWHome, "/", ~.PackageName, "-", ~.Version )'
+only for testing purposes.
+
+\medskip
+
+This manual is used to construct a test for the code from
+`lib/helpt2t.g\{d,i\}' which converts {\TeX} documentation 
+written in `gapmacro.tex' format into text for the ``screen''
+online help viewer.
+
+\bigskip
+\hrule
+
+Note that `gapmacro.tex' format is obsolete. If you are planning to
+write new documentation for a {\GAP} package, don{\pif}t use it.
+Instead, we recommend to use the \package{GAPDoc} package by Frank
+L{\accent127u}beck and Max Neunh{\accent127o}ffer,
+see \URL{http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/}.
+
+If you have any questions, please contact {\bsf GAP Support}
+by email: \Mailto{support@gap-system.org}.
+
+\par
+*Examples:*
+The following text demonstrates various features of
+`gapmacro.tex' format.
+
+This is an example of a {\GAP} session:
+
+\beginexample
+gap> a:=42;
+42
+\endexample
+
+This assigns $42$ to the variable `a'
+(see Section~"ref:Variables" in the {\GAP} Reference Manual).
+
+This is another example which is excluded from automated testing:
+
+\testexamplefalse
+\beginexample
+gap> Exec("date");
+Sun Oct 7 16:23:45 CEST 2001
+\endexample
+
+This is an example of using the matrix environment:
+$$
+b_N = \left\{
+\matrix{
+\frac{1}{2}(-1+\sqrt{N}) &{\rm if} &N \equiv 1 &\pmod 4\cr
+\frac{1}{2}(-1+i \sqrt{N}) &{\rm if} &N \equiv -1 &\pmod 4\cr
+}
+\right.
+$$
+
+This is an example of using the begintt environment:
+
+\begintt
+A.~X || B.~Y || C.~Z
+--------------------
+1    || 2    || 3
+X    || Y    || Z
+--------------------
+\endtt
+
+These common domains are defined by special macros:
+\beginitems
+natural numbers &
+  \N
+
+integers &
+  \Z
+\enditems
+\hfill Similarly, there are macros for \Q, \R, \C, \F, \calR.
+
+This is a collection of symbols to exercise various special
+cases in the core to render them as a text:
+\beginlist%unordered
+\item{(a)} \c a \ss \aa \`a \'a \lq a \rq \accent18 a \accent19 a \accent20 \copyright
+\item{(b)} \accent21 a \accent22 a \accent94 a \accent95 a \accent125 a \accent126 a
+\item{(c)} \H a \u a \v a
+\item{(d)} \hbox{more} mathematical symbols:
+\itemitem{--} $ 1 \over 2 $ \quad $=$ \qquad $ \dot a \cdot a \dots a \pif $
+\itemitem{--} $ \langle \rangle \ne 1 \bmod 2 \le \ge \setminus% 
+                \bullet \circ \mapsto $
+\itemitem{--} $ \longmapsto \to \Rightarrow \tilde a \vdash \iff \times \in \gamma $
+\itemitem{--} $ \forall \exists \mid \colon \ast \lfloor \rfloor \prime \cup $
+\endlist
+
+Furthermore, $\Sigma_{k}$ is given by
+
+$$
+\Sigma_{k} = \sum\limits_{i\in N}(A_{i,k})
+$$
+
+Finally,
+%
+\){\fmark ...}
+
+produces no label and index entry, and 
+
+\){\kernttindent ...}
+
+is useful for producing a line in typewriter type.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Section{Testing various mansection formats}
+
+The following examples are taken from the gapmacro documentation.
+
+\>Size(<obj>) A
+
+is an attribute of an object.
+
+\>Size(<obj>)!{for permutation groups} A
+
+is special form of the previous command for permutation groups.
+
+\>`<a> + <b>'{addition}
+
+is used to display {\it command} as a header.
+
+\>`Size( <set> )'{size of a set} A
+
+is another example of the previous command.
+
+\>`Size( <list> )'{size!of a list} A
+
+is an example with a sub-entry.
+
+\>`Size( <obj> )'{size}@{`Size'} A
+
+is an example equivalent to the first one in this section.
+
+\>`Size( GL( <n>, <q> ) )'%
+% a percent sign at the end of line indicates a continuation
+{Size!GL( n, q )}%
+@{`Size'! `GL'( \noexpand<n>, \noexpand<q> )} A
+
+is a more complex example.
+
+\>`SomeGlobalVariable' V
+
+is an example of a global variable.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

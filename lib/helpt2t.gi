@@ -9,9 +9,9 @@
 #Y  Germany (C) 2001 School Math and  Comp. Sci., University of St Andrews,
 #Y  Scotland
 ##  
-##  The files  helpt2t.g{d,i} contain the  probably longest function  in the
-##  GAP library. It converts TeX source code written in `gapmacro.tex' style
-##  into text for the "screen" online help viewer.
+##  The files helpt2t.g{d,i}  contain  the function  to convert  TeX source 
+##  code written in `gapmacro.tex' style  into text for the "screen" online
+##  help viewer.
 ##  
   
 #############################################################################
