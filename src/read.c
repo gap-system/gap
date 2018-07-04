@@ -300,7 +300,7 @@ static UInt EvalRef(const LHSRef ref, Int needExpr)
                 IntrElmList(ref.narg);
             else
                 IntrElmListLevel(ref.narg, ref.level);
-            break;
+            return ref.level;
         case R_ELMS_LIST:
             if (ref.level == 0)
                 IntrElmsList();
@@ -312,7 +312,7 @@ static UInt EvalRef(const LHSRef ref, Int needExpr)
                 IntrElmPosObj();
             else
                 IntrElmPosObjLevel(ref.level);
-            break;
+            return ref.level;
         case R_ELMS_POSOBJ:
             if (ref.level == 0)
                 IntrElmsPosObj();
