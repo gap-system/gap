@@ -19,12 +19,6 @@ false
 gap> [] = l;
 false
 
-# equality for a list and an infinite domain
-gap> CF(4)=[E(4)];
-false
-gap> [E(4)]=CF(4);
-false
-
 #
 # assignment / extraction, also with selectors
 #
