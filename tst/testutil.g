@@ -449,8 +449,8 @@ for name in rules do
 
   for nargs in [1..2] do
     f:=METHODS_OPERATION( EvalString(name), nargs );
-    for m in [1..Length(f)/(4+nargs)] do
-      met := f[(m-1)*(4+nargs)+2+nargs];
+    for m in [1..Length(f)/(BASE_SIZE_METHODS_OPER_ENTRY+nargs)] do
+      met := f[(m-1)*(BASE_SIZE_METHODS_OPER_ENTRY+nargs)+2+nargs];
       str := "";
       ots := OutputTextString(str,true);;
       PrintTo( ots, met );
@@ -469,7 +469,7 @@ for name in rules do
       od;
       if Length(illegal_delegations) > 0 then
         Add( report, [ FILENAME_FUNC( met ), STARTLINE_FUNC( met ),
-                       f[(m-1)*(4+nargs)+4+nargs], illegal_delegations, met ] );
+                       f[m*(BASE_SIZE_METHODS_OPER_ENTRY+nargs)+4+nargs], illegal_delegations, met ] );
       fi;
     od;
   od;
