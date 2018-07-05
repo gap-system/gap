@@ -518,7 +518,7 @@ InstallMethod( NumberSyllables,
     "for an 8 bits assoc. word",
     true,
     [ Is8BitsAssocWord ], 0,
-    8Bits_NumberSyllables );
+    NBits_NumberSyllables );
 
 InstallMethod( ExponentSums,
     "for an 8 bits assoc. word",
@@ -617,7 +617,7 @@ InstallMethod( NumberSyllables,
     "for a 16 bits assoc. word",
     true,
     [ Is16BitsAssocWord ], 0,
-    16Bits_NumberSyllables );
+    NBits_NumberSyllables );
 
 InstallMethod( ExponentSums,
     "for a 16 bits assoc. word",
@@ -716,7 +716,7 @@ InstallMethod( NumberSyllables,
     "for a 32 bits assoc. word",
     true,
     [ Is32BitsAssocWord ], 0,
-    32Bits_NumberSyllables );
+    NBits_NumberSyllables );
 
 InstallMethod( ExponentSums,
     "for a 32 bits assoc. word",
