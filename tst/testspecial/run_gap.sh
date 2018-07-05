@@ -5,7 +5,6 @@ set -e
 # This script should be run as ./run_gap.sh gap gapfile.g
 gap="$1"
 gfile="$2"
-outfile="$3"
 
 # It provides the following features:
 # 1) Stop GAP from attaching to the terminal (which it will
@@ -16,5 +15,5 @@ outfile="$3"
 GAPROOT=$(cd ../..; pwd)
 ( echo "LogTo(\"${outfile}.tmp\");" ; cat "$gfile" ; echo "QUIT;" ) |
     "$gap" -r -A -b -x 200 2>/dev/null >/dev/null
-sed "s:${GAPROOT//:/\\:}:GAPROOT:g" < "${outfile}.tmp" >"${outfile}"
+sed "s:${GAPROOT//:/\\:}:GAPROOT:g" < "${outfile}.tmp"
 rm "${outfile}.tmp"
