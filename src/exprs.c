@@ -136,14 +136,14 @@ Obj             EvalOr (
     Expr                tmp;            /* temporary expression            */
 
     /* evaluate and test the left operand                                  */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_BOOL_EXPR( tmp );
     if ( opL != False ) {
         return True;
     }
 
     /* evaluate and test the right operand                                 */
-    tmp = ADDR_EXPR(expr)[1];
+    tmp = READ_EXPR(expr, 1);
     return EVAL_BOOL_EXPR( tmp );
 }
 
@@ -170,7 +170,7 @@ Obj             EvalAnd (
     Expr                tmp;            /* temporary expression            */
 
     /* if the left operand is 'false', this is the result                  */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     if      ( opL == False ) {
         return opL;
@@ -178,13 +178,13 @@ Obj             EvalAnd (
 
     /* if the left operand is 'true', the result is the right operand      */
     else if ( opL == True  ) {
-        tmp = ADDR_EXPR(expr)[1];
+        tmp = READ_EXPR(expr, 1);
         return EVAL_BOOL_EXPR( tmp );
     }
 
     /* handle the 'and' of two filters                                    */
     else if ( TNUM_OBJ(opL) == T_FUNCTION ) {
-        tmp = ADDR_EXPR(expr)[1];
+        tmp = READ_EXPR(expr, 1);
         opR = EVAL_EXPR( tmp );
         if ( TNUM_OBJ(opR) == T_FUNCTION ) {
             return NewAndFilter( opL, opR );
@@ -224,7 +224,7 @@ Obj             EvalNot (
     Expr                tmp;            /* temporary expression            */
 
     /* evaluate the operand to a boolean                                   */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     op = EVAL_BOOL_EXPR( tmp );
 
     /* compute the negation                                                */
@@ -255,9 +255,9 @@ Obj             EvalEq (
     Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
-    tmp = ADDR_EXPR(expr)[1];
+    tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
@@ -289,9 +289,9 @@ Obj             EvalNe (
     Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
-    tmp = ADDR_EXPR(expr)[1];
+    tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
@@ -323,9 +323,9 @@ Obj             EvalLt (
     Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
-    tmp = ADDR_EXPR(expr)[1];
+    tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
@@ -357,9 +357,9 @@ Obj             EvalGe (
     Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
-    tmp = ADDR_EXPR(expr)[1];
+    tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
@@ -391,9 +391,9 @@ Obj             EvalGt (
     Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
-    tmp = ADDR_EXPR(expr)[1];
+    tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
@@ -425,9 +425,9 @@ Obj             EvalLe (
     Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
-    tmp = ADDR_EXPR(expr)[1];
+    tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
@@ -457,11 +457,11 @@ Obj             EvalIn (
     Expr                tmp;            /* temporary expression            */
 
     /* evaluate <opL>                                                      */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
 
     /* evaluate <opR>                                                      */
-    tmp = ADDR_EXPR(expr)[1];
+    tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
     /* perform the test                                                    */
@@ -493,9 +493,9 @@ Obj             EvalSum (
     Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
-    tmp = ADDR_EXPR(expr)[1];
+    tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
     /* first try to treat the operands as small integers with small result */
@@ -530,7 +530,7 @@ Obj             EvalAInv (
     Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
 
     /* compute the additive inverse                                        */
@@ -562,9 +562,9 @@ Obj             EvalDiff (
     Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
-    tmp = ADDR_EXPR(expr)[1];
+    tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
     /* first try to treat the operands as small integers with small result */
@@ -601,9 +601,9 @@ Obj             EvalProd (
     Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
-    tmp = ADDR_EXPR(expr)[1];
+    tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
     /* first try to treat the operands as small integers with small result */
@@ -640,9 +640,9 @@ Obj             EvalQuo (
     Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
-    tmp = ADDR_EXPR(expr)[1];
+    tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
     /* dispatch to the division function                                   */
@@ -674,9 +674,9 @@ Obj             EvalMod (
     Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
-    tmp = ADDR_EXPR(expr)[1];
+    tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
     /* dispatch to the remainder function                                  */
@@ -708,9 +708,9 @@ Obj             EvalPow (
     Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    tmp = ADDR_EXPR(expr)[0];
+    tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
-    tmp = ADDR_EXPR(expr)[1];
+    tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
     /* dispatch to the powering function                                   */
@@ -729,17 +729,15 @@ Obj             EvalPow (
 **  'EvalIntExpr' evaluates the literal integer expression <expr> and returns
 **  its value.
 */
-#define IDDR_EXPR(expr)         ((UInt2*)ADDR_EXPR(expr))
-
 Obj             EvalIntExpr (
     Expr                expr )
 {
     Obj                 val;            /* integer, result                 */
 
-    
     /* allocate the integer                                                */
-    val = NewBag( ((UInt *)ADDR_EXPR(expr))[0], SIZE_EXPR(expr)-sizeof(UInt));
-    memcpy(ADDR_OBJ(val), ((UInt *)ADDR_EXPR(expr))+1, SIZE_EXPR(expr)-sizeof(UInt));
+    val = NewBag(READ_EXPR(expr, 0), SIZE_EXPR(expr) - sizeof(UInt));
+    memcpy(ADDR_OBJ(val), ((const UInt *)CONST_ADDR_EXPR(expr)) + 1,
+           SIZE_EXPR(expr) - sizeof(UInt));
 
     /* return the value                                                    */
     return val;
@@ -798,7 +796,7 @@ Obj             EvalFalseExpr (
 Obj             EvalCharExpr (
     Expr                expr )
 {
-    return ObjsChar[ ((UChar*)ADDR_EXPR(expr))[0] ];
+    return ObjsChar[ ((const UChar*)CONST_ADDR_EXPR(expr))[0] ];
 }
 
 
@@ -831,7 +829,7 @@ Obj             EvalPermExpr (
 
     /* loop over the cycles                                                */
     for ( i = 1; i <= SIZE_EXPR(expr)/sizeof(Expr); i++ ) {
-        cycle = ADDR_EXPR(expr)[i-1];
+        cycle = READ_EXPR(expr, i - 1);
 
         // Need to inform profiling this cycle expression is executed, as
         // we never call EVAL_EXPR on it.
@@ -841,7 +839,7 @@ Obj             EvalPermExpr (
         for ( j = SIZE_EXPR(cycle)/sizeof(Expr); 1 <= j; j-- ) {
 
             /* get and check current entry for the cycle                   */
-            val = EVAL_EXPR( ADDR_EXPR( cycle )[j-1] );
+            val = EVAL_EXPR(READ_EXPR(cycle, j - 1));
             while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) <= 0 ) {
                 val = ErrorReturnObj(
               "Permutation: <expr> must be a positive integer (not a %s)",
@@ -1049,7 +1047,7 @@ ALWAYS_INLINE void ListExpr2(Obj list, Expr expr, Int tildeInUse)
     for ( i = 1; i <= len; i++ ) {
 
         /* if the subexpression is empty                                   */
-        if ( ADDR_EXPR(expr)[i-1] == 0 ) {
+        if ( READ_EXPR(expr, i-1) == 0 ) {
           if (!posshole)
             posshole = 1;
           continue;
@@ -1063,7 +1061,7 @@ ALWAYS_INLINE void ListExpr2(Obj list, Expr expr, Int tildeInUse)
                 }
                 posshole = 2;
               }
-            sub = EVAL_EXPR( ADDR_EXPR(expr)[i-1] );
+            sub = EVAL_EXPR( READ_EXPR(expr, i-1) );
             if (tildeInUse) {
                 ASS_LIST(list, i, sub);
             }
@@ -1098,7 +1096,7 @@ Obj             EvalRangeExpr (
     Int                 high;           /* high (as C integer)             */
 
     /* evaluate the low value                                              */
-    val = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    val = EVAL_EXPR(READ_EXPR(expr, 0));
     while ( ! IS_INTOBJ(val) ) {
         val = ErrorReturnObj(
             "Range: <first> must be an integer less than 2^%d (not a %s)",
@@ -1109,7 +1107,7 @@ Obj             EvalRangeExpr (
 
     /* evaluate the second value (if present)                              */
     if ( SIZE_EXPR(expr) == 3*sizeof(Expr) ) {
-        val = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+        val = EVAL_EXPR(READ_EXPR(expr, 1));
         while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) == low ) {
             if ( ! IS_INTOBJ(val) ) {
                 val = ErrorReturnObj(
@@ -1131,7 +1129,7 @@ Obj             EvalRangeExpr (
     }
 
     /* evaluate and check the high value                                   */
-    val = EVAL_EXPR( ADDR_EXPR(expr)[ SIZE_EXPR(expr)/sizeof(Expr)-1 ] );
+    val = EVAL_EXPR(READ_EXPR(expr, SIZE_EXPR(expr) / sizeof(Expr) - 1));
     while ( ! IS_INTOBJ(val) || (INT_INTOBJ(val) - low) % inc != 0 ) {
         if ( ! IS_INTOBJ(val) ) {
             val = ErrorReturnObj(
@@ -1193,10 +1191,10 @@ Obj             EvalStringExpr (
 {
     Obj                 string;         /* string value, result            */
     UInt                 len;           /* size of expression              */
-    
-    len = *((UInt *)ADDR_EXPR(expr));
+
+    len = READ_EXPR(expr, 0);
     string = NEW_STRING(len);
-    memcpy(ADDR_OBJ(string), ADDR_EXPR(expr), SIZEBAG_STRINGLEN(len) );
+    memcpy(ADDR_OBJ(string), CONST_ADDR_EXPR(expr), SIZEBAG_STRINGLEN(len));
 
     /* return the string                                                   */
     return string;
@@ -1226,7 +1224,7 @@ Obj             EvalFloatExprLazy (
      * cache concurrently in that it won't crash, but may occasionally
      * result in evaluating a floating point literal twice.
      */
-    ix = ((UInt *)ADDR_EXPR(expr))[1];
+    ix = READ_EXPR(expr, 1);
     if (ix && (!MAX_FLOAT_LITERAL_CACHE_SIZE || 
                MAX_FLOAT_LITERAL_CACHE_SIZE == INTOBJ_INT(0) ||
                ix <= INT_INTOBJ(MAX_FLOAT_LITERAL_CACHE_SIZE))) {
@@ -1236,11 +1234,10 @@ Obj             EvalFloatExprLazy (
       if (fl)
         return fl;
     }
-    len = *((UInt *)ADDR_EXPR(expr));
+    len = READ_EXPR(expr, 0);
     string = NEW_STRING(len);
-    memcpy(CHARS_STRING(string), 
-           (char *)ADDR_EXPR(expr) + 2*sizeof(UInt),
-           len );
+    memcpy(CHARS_STRING(string),
+           (const char *)CONST_ADDR_EXPR(expr) + 2 * sizeof(UInt), len);
     fl = CALL_1ARGS(CONVERT_FLOAT_LITERAL, string);
     if (cache) {
       ASS_LIST(cache, ix, fl);
@@ -1260,7 +1257,7 @@ extern Obj EAGER_FLOAT_LITERAL_CACHE;
 
 Obj EvalFloatExprEager(Expr expr)
 {
-    UInt ix = ((UInt *)ADDR_EXPR(expr))[0];
+    UInt ix = READ_EXPR(expr, 0);
     Obj fl = ELM_LIST(EAGER_FLOAT_LITERAL_CACHE, ix);
     return fl;
 }
@@ -1383,7 +1380,7 @@ void            RecExpr2 (
     for ( i = 1; i <= len; i++ ) {
 
         /* handle the name                                                 */
-        tmp = ADDR_EXPR(expr)[2*i-2];
+        tmp = READ_EXPR(expr, 2 * i - 2);
         if ( IS_INTEXPR(tmp) ) {
             rnam = (UInt)INT_INTEXPR(tmp);
         }
@@ -1392,7 +1389,7 @@ void            RecExpr2 (
         }
 
         /* if the subexpression is empty (cannot happen for records)       */
-        tmp = ADDR_EXPR(expr)[2*i-1];
+        tmp = READ_EXPR(expr, 2 * i - 1);
         if ( tmp == 0 ) {
             continue;
         }
@@ -1483,7 +1480,7 @@ void            PrintNot (
     else Pr("%2>",0L,0L);
     
     Pr("not%> ",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<",0L,0L);
     
     /* if necessary print the closing parenthesis                          */
@@ -1514,7 +1511,7 @@ void            PrintAInv (
     else Pr("%2>",0L,0L);
     
     Pr("-%> ",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<",0L,0L);
     
     /* if necessary print the closing parenthesis                          */
@@ -1558,16 +1555,16 @@ void            PrintBinop (
 
     /* print the left operand                                              */
     if ( TNUM_EXPR(expr) == T_POW
-         && ((  (IS_INTEXPR(ADDR_EXPR(expr)[0])
-                 && INT_INTEXPR(ADDR_EXPR(expr)[0]) < 0)
-                || TNUM_EXPR(ADDR_EXPR(expr)[0]) == T_INTNEG)
-             || TNUM_EXPR(ADDR_EXPR(expr)[0]) == T_POW) ) {
+         && ((  (IS_INTEXPR(READ_EXPR(expr, 0))
+                 && INT_INTEXPR(READ_EXPR(expr, 0)) < 0)
+                || TNUM_EXPR(READ_EXPR(expr, 0)) == T_INTNEG)
+             || TNUM_EXPR(READ_EXPR(expr, 0)) == T_POW) ) {
         Pr( "(", 0L, 0L );
-        PrintExpr( ADDR_EXPR(expr)[0] );
+        PrintExpr(READ_EXPR(expr, 0));
         Pr( ")", 0L, 0L );
     }
     else {
-        PrintExpr( ADDR_EXPR(expr)[0] );
+        PrintExpr(READ_EXPR(expr, 0));
     }
 
     /* print the operator                                                  */
@@ -1575,7 +1572,7 @@ void            PrintBinop (
 
     /* print the right operand                                             */
     PrintPrecedence++;
-    PrintExpr( ADDR_EXPR(expr)[1] );
+    PrintExpr(READ_EXPR(expr, 1));
     PrintPrecedence--;
 
     /* if necessary print the closing parenthesis                          */
@@ -1646,7 +1643,7 @@ void            PrintCharExpr (
 {
     UChar               chr;
 
-    chr = *(UChar*)ADDR_EXPR(expr);
+    chr = *(const UChar*)CONST_ADDR_EXPR(expr);
     if      ( chr == '\n'  )  Pr("'\\n'",0L,0L);
     else if ( chr == '\t'  )  Pr("'\\t'",0L,0L);
     else if ( chr == '\r'  )  Pr("'\\r'",0L,0L);
@@ -1677,13 +1674,13 @@ void            PrintPermExpr (
     
     /* print all cycles                                                    */
     for ( i = 1; i <= SIZE_EXPR(expr)/sizeof(Expr); i++ ) {
-        cycle = ADDR_EXPR(expr)[i-1];
+        cycle = READ_EXPR(expr, i - 1);
         Pr("%>(",0L,0L);
 
         /* print all entries of that cycle                                 */
         for ( j = 1; j <= SIZE_EXPR(cycle)/sizeof(Expr); j++ ) {
             Pr("%>",0L,0L);
-            PrintExpr( ADDR_EXPR(cycle)[j-1] );
+            PrintExpr(READ_EXPR(cycle, j - 1));
             Pr("%<",0L,0L);
             if ( j < SIZE_EXPR(cycle)/sizeof(Expr) )  Pr(",",0L,0L);
         }
@@ -1712,7 +1709,7 @@ void            PrintListExpr (
     /* loop over the entries                                               */
     Pr("%2>[ %2>",0L,0L);
     for ( i = 1;  i <= len;  i++ ) {
-        elm = ADDR_EXPR(expr)[i-1];
+        elm = READ_EXPR(expr, i - 1);
         if ( elm != 0 ) {
             if ( 1 < i )  Pr("%<,%< %2>",0L,0L);
             PrintExpr( elm );
@@ -1735,14 +1732,14 @@ void            PrintRangeExpr (
     Expr                expr )
 {
     if ( SIZE_EXPR( expr ) == 2*sizeof(Expr) ) {
-        Pr("%2>[ %2>",0L,0L);    PrintExpr( ADDR_EXPR(expr)[0] );
-        Pr("%2< .. %2>",0L,0L);  PrintExpr( ADDR_EXPR(expr)[1] );
+        Pr("%2>[ %2>",0L,0L);    PrintExpr( READ_EXPR(expr, 0) );
+        Pr("%2< .. %2>",0L,0L);  PrintExpr( READ_EXPR(expr, 1) );
         Pr(" %4<]",0L,0L);
     }
     else {
-        Pr("%2>[ %2>",0L,0L);    PrintExpr( ADDR_EXPR(expr)[0] );
-        Pr("%<,%< %2>",0L,0L);   PrintExpr( ADDR_EXPR(expr)[1] );
-        Pr("%2< .. %2>",0L,0L);  PrintExpr( ADDR_EXPR(expr)[2] );
+        Pr("%2>[ %2>",0L,0L);    PrintExpr( READ_EXPR(expr, 0) );
+        Pr("%<,%< %2>",0L,0L);   PrintExpr( READ_EXPR(expr, 1) );
+        Pr("%2< .. %2>",0L,0L);  PrintExpr( READ_EXPR(expr, 2) );
         Pr(" %4<]",0L,0L);
     }
 }
@@ -1758,7 +1755,6 @@ void            PrintStringExpr (
     Expr                expr )
 {
     PrintString(EvalStringExpr(expr));
-    /*Pr( "\"%S\"", (Int)ADDR_EXPR(expr), 0L );*/
 }
 
 /****************************************************************************
@@ -1770,7 +1766,7 @@ void            PrintStringExpr (
 void            PrintFloatExprLazy (
     Expr                expr )
 {
-  Pr("%s", (Int)(((char *)ADDR_EXPR(expr) + 2*sizeof(UInt))), 0L);
+  Pr("%s", (Int)(((const char *)CONST_ADDR_EXPR(expr) + 2*sizeof(UInt))), 0L);
 }
 
 /****************************************************************************
@@ -1783,9 +1779,9 @@ void            PrintFloatExprEager (
     Expr                expr )
 {
   Char mark;
-  Pr("%s", (Int)(((char *)ADDR_EXPR(expr) + 3*sizeof(UInt))), 0L);
+  Pr("%s", (Int)(((const char *)CONST_ADDR_EXPR(expr) + 3*sizeof(UInt))), 0L);
   Pr("_",0L,0L);
-  mark = (Char)(((UInt *)ADDR_EXPR(expr))[2]);
+  mark = (Char)(((const UInt *)CONST_ADDR_EXPR(expr))[2]);
   if (mark != '\0') {
     Pr("%c",mark,0L);
   }
@@ -1806,7 +1802,7 @@ void            PrintRecExpr1 (
   
   for ( i = 1; i <= SIZE_EXPR(expr)/(2*sizeof(Expr)); i++ ) {
         /* print an ordinary record name                                   */
-        tmp = ADDR_EXPR(expr)[2*i-2];
+        tmp = READ_EXPR(expr, 2 * i - 2);
         if ( IS_INTEXPR(tmp) ) {
             Pr( "%H", (Int)NAME_RNAM( INT_INTEXPR(tmp) ), 0L );
         }
@@ -1819,7 +1815,7 @@ void            PrintRecExpr1 (
         }
 
         /* print the component                                             */
-        tmp = ADDR_EXPR(expr)[2*i-1];
+        tmp = READ_EXPR(expr, 2 * i - 1);
         Pr("%< := %>",0L,0L);
         PrintExpr( tmp );
         if ( i < SIZE_EXPR(expr)/(2*sizeof(Expr)) )

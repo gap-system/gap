@@ -94,10 +94,10 @@ static UInt ExecProccallOpts(Stat call)
   Obj opts;
   
   SET_BRK_CURR_STAT( call );
-  opts = EVAL_EXPR( ADDR_STAT(call)[0] );
+  opts = EVAL_EXPR(READ_STAT(call, 0));
   CALL_1ARGS(PushOptions, opts);
 
-  EXEC_STAT( ADDR_STAT( call )[1]);
+  EXEC_STAT(READ_STAT(call, 1));
 
   CALL_0ARGS(PopOptions);
   
@@ -282,12 +282,12 @@ static Obj EvalFunccallOpts(Expr call)
 {
   Obj opts;
   Obj res;
-  
-  
-  opts = EVAL_EXPR( ADDR_STAT(call)[0] );
+
+
+  opts = EVAL_EXPR(READ_STAT(call, 0));
   CALL_1ARGS(PushOptions, opts);
 
-  res = EVAL_EXPR( ADDR_STAT( call )[1]);
+  res = EVAL_EXPR(READ_STAT(call, 1));
 
   CALL_0ARGS(PopOptions);
   
@@ -718,7 +718,7 @@ Obj             EvalFuncExpr (
 
     /* get the function expression bag                                     */
     fexs = FEXS_FUNC( CURR_FUNC() );
-    fexp = ELM_PLIST( fexs, (Int)(ADDR_EXPR(expr)[0]) );
+    fexp = ELM_PLIST(fexs, (Int)(READ_EXPR(expr, 0)));
 
     /* and make the function                                               */
     return MakeFunction( fexp );
@@ -739,7 +739,7 @@ void            PrintFuncExpr (
 
     /* get the function expression bag                                     */
     fexs = FEXS_FUNC( CURR_FUNC() );
-    fexp = ELM_PLIST( fexs, (Int)(ADDR_EXPR(expr)[0]) );
+    fexp = ELM_PLIST(fexs, (Int)(READ_EXPR(expr, 0)));
     PrintFunction( fexp );
     /* Pr("function ... end",0L,0L); */
 }
@@ -812,10 +812,10 @@ void            PrintFunccall (
 void             PrintFunccallOpts (
     Expr                call )
 {
-  PrintFunccall1( ADDR_STAT( call )[1]);
-  Pr(" :%2> ", 0L, 0L);
-  PrintRecExpr1 ( ADDR_STAT( call )[0]);
-  Pr(" %4<)",0L,0L);
+    PrintFunccall1(READ_STAT(call, 1));
+    Pr(" :%2> ", 0L, 0L);
+    PrintRecExpr1(READ_STAT(call, 0));
+    Pr(" %4<)", 0L, 0L);
 }
 
   

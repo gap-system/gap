@@ -319,7 +319,7 @@ static Stat PopSeqStat (
         /* enter the statements into the sequence                          */
         for ( i = nr; 1 <= i; i-- ) {
             stat = PopStat();
-            ADDR_STAT(body)[i-1] = stat;
+            WRITE_STAT(body, i - 1, stat);
         }
     }
 
@@ -348,7 +348,7 @@ static inline Stat PopLoopStat(UInt baseType, UInt extra, UInt nr)
     // enter the statements
     for (UInt i = nr; 1 <= i; i--) {
         Stat stat1 = PopStat();
-        ADDR_STAT(stat)[i + extra - 1] = stat1;
+        WRITE_STAT(stat, i + extra - 1, stat1);
     }
 
     return stat;
@@ -433,7 +433,7 @@ void PushUnaryOp (
 
     /* enter the operand                                                   */
     op = PopExpr();
-    ADDR_EXPR(unop)[0] = op;
+    WRITE_EXPR(unop, 0, op);
 
     /* push the unary operator                                             */
     PushExpr( unop );
@@ -459,11 +459,11 @@ void PushBinaryOp (
 
     /* enter the right operand                                             */
     opR = PopExpr();
-    ADDR_EXPR(binop)[1] = opR;
+    WRITE_EXPR(binop, 1, opR);
 
     /* enter the left operand                                              */
     opL = PopExpr();
-    ADDR_EXPR(binop)[0] = opL;
+    WRITE_EXPR(binop, 0, opL);
 
     /* push the binary operator                                            */
     PushExpr( binop );
@@ -530,8 +530,8 @@ void            CodeFuncCallOptionsEnd ( UInt nr )
     for ( i = nr; 1 <= i; i-- ) {
         entry = PopExpr();
         rnam  = PopExpr();
-        ADDR_EXPR(record)[2*(i-1)]   = rnam;
-        ADDR_EXPR(record)[2*(i-1)+1] = entry;
+        WRITE_EXPR(record, 2 * (i - 1), rnam);
+        WRITE_EXPR(record, 2 * (i - 1) + 1, entry);
     }
 
     /* push the record                                                     */
@@ -656,20 +656,20 @@ void CodeFuncCallEnd (
     /* enter the argument expressions                                      */
     for ( i = nr; 1 <= i; i-- ) {
         arg = PopExpr();
-        ARGI_CALL(call,i) = arg;
+        SET_ARGI_CALL(call, i, arg);
     }
 
     /* enter the function expression                                       */
     func = PopExpr();
-    FUNC_CALL(call) = func;
+    SET_FUNC_CALL(call, func);
 
     /* wrap up the call with the options */
     if (options)
       {
         wrapper = NewExpr( funccall ? T_FUNCCALL_OPTS : T_PROCCALL_OPTS, 
                            2*sizeof(Expr));
-        ADDR_EXPR(wrapper)[0] = opts;
-        ADDR_EXPR(wrapper)[1] = call;
+        WRITE_EXPR(wrapper, 0, opts);
+        WRITE_EXPR(wrapper, 1, call);
         call = wrapper;
       }
 
@@ -796,7 +796,7 @@ void CodeFuncExprEnd(UInt nr)
     STAT_HEADER(OFFSET_FIRST_STAT)->type = T_SEQ_STAT+nr-1;
     for ( i = 1; i <= nr; i++ ) {
         stat1 = PopStat();
-        ADDR_STAT(OFFSET_FIRST_STAT)[nr-i] = stat1;
+        WRITE_STAT(OFFSET_FIRST_STAT, nr - i, stat1);
     }
 
     // make the function expression list immutable
@@ -818,7 +818,7 @@ void CodeFuncExprEnd(UInt nr)
         fexs = FEXS_FUNC( CURR_FUNC() );
         len = PushPlist( fexs, fexp );
         expr = NewExpr( T_FUNC_EXPR, sizeof(Expr) );
-        ADDR_EXPR(expr)[0] = (Expr)len;
+        WRITE_EXPR(expr, 0, len);
         PushExpr( expr );
     }
 
@@ -949,8 +949,8 @@ void CodeIfEnd (
     for ( i = nr; 1 <= i; i-- ) {
         Stat body = PopStat();
         cond = PopExpr();
-        ADDR_STAT(stat)[2*(i-1)] = cond;
-        ADDR_STAT(stat)[2*(i-1)+1] = body;
+        WRITE_STAT(stat, 2 * (i - 1), cond);
+        WRITE_STAT(stat, 2 * (i - 1) + 1, body);
     }
 
     /* push the if-statement                                               */
@@ -994,7 +994,7 @@ void CodeForIn ( void )
   Expr var = PopExpr();
   if (TNUM_EXPR(var) == T_REF_GVAR)
     {
-      PushGlobalForLoopVariable((UInt)ADDR_EXPR(var)[0]);
+      PushGlobalForLoopVariable(READ_EXPR(var, 0));
     }
   PushExpr(var);
 }
@@ -1033,10 +1033,10 @@ void CodeForEndBody (
     stat = PopLoopStat(type, 2, nr);
 
     /* enter the list expression                                           */
-    ADDR_STAT(stat)[1] = list;
+    WRITE_STAT(stat, 1, list);
 
     /* enter the variable reference                                        */
-    ADDR_STAT(stat)[0] = var;
+    WRITE_STAT(stat, 0, var);
 
     /* push the for-statement                                              */
     PushStat( stat );
@@ -1099,14 +1099,14 @@ void CodeAtomicEndBody (
     stat = NewStat( T_ATOMIC, sizeof(Stat) + nrexprs*2*sizeof(Stat) );
     
     /* enter the statement sequence */
-    ADDR_STAT(stat)[0] = stat1;
+    WRITE_STAT(stat, 0, stat1);
 
     /* enter the expressions                                                */
     for ( i = 2*nrexprs; 1 <= i; i -= 2 ) {
         e = PopExpr();
         qual = PopExpr();
-        ADDR_STAT(stat)[i] = e;
-        ADDR_STAT(stat)[i-1] = qual;
+        WRITE_STAT(stat, i, e);
+        WRITE_STAT(stat, i - 1, qual);
     }
 
     /* push the atomic-statement                                            */
@@ -1189,7 +1189,7 @@ void CodeWhileEndBody (
 
     /* enter the condition                                                 */
     cond = PopExpr();
-    ADDR_STAT(stat)[0] = cond;
+    WRITE_STAT(stat, 0, cond);
 
     /* push the while-statement                                            */
     PushStat( stat );
@@ -1257,7 +1257,7 @@ void CodeRepeatEnd ( void )
     stat = PopLoopStat(T_REPEAT, 1, nr);
 
     /* enter the condition                                                 */
-    ADDR_STAT(stat)[0] = cond;
+    WRITE_STAT(stat, 0, cond);
 
     /* push the repeat-statement                                           */
     PushStat( stat );
@@ -1319,7 +1319,7 @@ void CodeReturnObj ( void )
 
     /* enter the expression                                                */
     expr = PopExpr();
-    ADDR_STAT(stat)[0] = expr;
+    WRITE_STAT(stat, 0, expr);
 
     /* push the return-statement                                           */
     PushStat( stat );
@@ -1522,7 +1522,7 @@ void CodeIntExpr(Obj val)
     else {
         GAP_ASSERT(TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG);
         expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
-        ((UInt *)ADDR_EXPR(expr))[0] = (UInt)TNUM_OBJ(val);
+        WRITE_EXPR(expr, 0, TNUM_OBJ(val));
         memcpy((UInt *)ADDR_EXPR(expr)+1, CONST_ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
     }
 
@@ -1614,7 +1614,7 @@ void CodePermCycle (
     /* enter the entries                                                   */
     for ( j = nrx; 1 <= j; j-- ) {
         entry = PopExpr();
-        ADDR_EXPR(cycle)[j-1] = entry;
+        WRITE_EXPR(cycle, j - 1, entry);
     }
 
     /* push the cycle                                                      */
@@ -1634,7 +1634,7 @@ void CodePerm (
     /* enter the cycles                                                    */
     for ( i = nrc; 1 <= i; i-- ) {
         cycle = PopExpr();
-        ADDR_EXPR(perm)[i-1] = cycle;
+        WRITE_EXPR(perm, i - 1, cycle);
     }
 
     /* push the permutation                                                */
@@ -1703,7 +1703,7 @@ void CodeListExprEnd (
     for ( i = nr; 1 <= i; i-- ) {
         entry = PopExpr();
         pos   = PopExpr();
-        ADDR_EXPR(list)[ INT_INTEXPR(pos)-1 ] = entry;
+        WRITE_EXPR(list, INT_INTEXPR(pos) - 1, entry);
     }
 
     /* push the list                                                       */
@@ -1811,11 +1811,11 @@ static void CodeLazyFloatExpr(Char * str, UInt len)
     /* copy the string                                                     */
     memcpy((char *)ADDR_EXPR(fl) + 2 * sizeof(UInt), str, len + 1);
 
-    *(UInt *)ADDR_EXPR(fl) = len;
+    WRITE_EXPR(fl, 0, len);
     ix = CheckForCommonFloat(str);
     if (!ix)
         ix = getNextFloatExprNumber();
-    ((UInt *)ADDR_EXPR(fl))[1] = ix;
+    WRITE_EXPR(fl, 1, ix);
 
     /* push the expression */
     PushExpr(fl);
@@ -1836,9 +1836,9 @@ static void CodeEagerFloatExpr(Obj str, Char mark)
     assert(IS_PLIST(EAGER_FLOAT_LITERAL_CACHE));
     ix = PushPlist(EAGER_FLOAT_LITERAL_CACHE, v);
 #endif
-    ADDR_EXPR(fl)[0] = ix;
-    ADDR_EXPR(fl)[1] = l;
-    ADDR_EXPR(fl)[2] = (UInt)mark;
+    WRITE_EXPR(fl, 0, ix);
+    WRITE_EXPR(fl, 1, l);
+    WRITE_EXPR(fl, 2, (UInt)mark);
     memcpy(ADDR_EXPR(fl) + 3, CHARS_STRING(str), l + 1);
     PushExpr(fl);
 }
@@ -1957,8 +1957,8 @@ void CodeRecExprEnd (
     for ( i = nr; 1 <= i; i-- ) {
         entry = PopExpr();
         rnam  = PopExpr();
-        ADDR_EXPR(record)[2*(i-1)]   = rnam;
-        ADDR_EXPR(record)[2*(i-1)+1] = entry;
+        WRITE_EXPR(record, 2 * (i - 1), rnam);
+        WRITE_EXPR(record, 2 * (i - 1) + 1, entry);
     }
 
     /* push the record                                                     */
@@ -1989,10 +1989,10 @@ void CodeAssLVar (
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
-    ADDR_STAT(ass)[1] = (Stat)rhsx;
+    WRITE_STAT(ass, 1, rhsx);
 
     /* enter the local variable                                            */
-    ADDR_STAT(ass)[0] = (Stat)lvar;
+    WRITE_STAT(ass, 0, lvar);
 
     /* push the assignment                                                 */
     PushStat( ass );
@@ -2012,7 +2012,7 @@ void CodeUnbLVar (
     ass = NewStat( T_UNB_LVAR, sizeof(Stat) );
 
     /* enter the local variable                                            */
-    ADDR_STAT(ass)[0] = (Stat)lvar;
+    WRITE_STAT(ass, 0, lvar);
 
     /* push the unbind                                                     */
     PushStat( ass );
@@ -2056,7 +2056,7 @@ void CodeIsbLVar (
     ref = NewExpr( T_ISB_LVAR, sizeof(Expr) );
 
     /* enter the local variable                                            */
-    ADDR_EXPR(ref)[0] = (Expr)lvar;
+    WRITE_EXPR(ref, 0, lvar);
 
     /* push the isbound                                                    */
     PushExpr( ref );
@@ -2086,10 +2086,10 @@ void CodeAssHVar (
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
-    ADDR_STAT(ass)[1] = (Stat)rhsx;
+    WRITE_STAT(ass, 1, rhsx);
 
     /* enter the higher variable                                           */
-    ADDR_STAT(ass)[0] = (Stat)hvar;
+    WRITE_STAT(ass, 0, hvar);
 
     /* push the assignment                                                 */
     PushStat( ass );
@@ -2109,7 +2109,7 @@ void CodeUnbHVar (
     ass = NewStat( T_UNB_HVAR, sizeof(Stat) );
 
     /* enter the higher variable                                           */
-    ADDR_STAT(ass)[0] = (Stat)hvar;
+    WRITE_STAT(ass, 0, hvar);
 
     /* push the unbind                                                     */
     PushStat( ass );
@@ -2136,7 +2136,7 @@ void CodeRefHVar (
     ref = NewExpr( T_REF_HVAR, sizeof(Expr) );
 
     /* enter the higher variable                                           */
-    ADDR_EXPR(ref)[0] = (Expr)hvar;
+    WRITE_EXPR(ref, 0, hvar);
 
     /* push the reference                                                  */
     PushExpr( ref );
@@ -2156,7 +2156,7 @@ void CodeIsbHVar (
     ref = NewExpr( T_ISB_HVAR, sizeof(Expr) );
 
     /* enter the higher variable                                           */
-    ADDR_EXPR(ref)[0] = (Expr)hvar;
+    WRITE_EXPR(ref, 0, hvar);
 
     /* push the isbound                                                    */
     PushExpr( ref );
@@ -2186,10 +2186,10 @@ void CodeAssGVar (
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
-    ADDR_STAT(ass)[1] = (Stat)rhsx;
+    WRITE_STAT(ass, 1, rhsx);
 
     /* enter the global variable                                           */
-    ADDR_STAT(ass)[0] = (Stat)gvar;
+    WRITE_STAT(ass, 0, gvar);
 
     /* push the assignment                                                 */
     PushStat( ass );
@@ -2209,7 +2209,7 @@ void CodeUnbGVar (
     ass = NewStat( T_UNB_GVAR, sizeof(Stat) );
 
     /* enter the global variable                                           */
-    ADDR_STAT(ass)[0] = (Stat)gvar;
+    WRITE_STAT(ass, 0, gvar);
 
     /* push the unbind                                                     */
     PushStat( ass );
@@ -2235,7 +2235,7 @@ void CodeRefGVar (
     ref = NewExpr( T_REF_GVAR, sizeof(Expr) );
 
     /* enter the global variable                                           */
-    ADDR_EXPR(ref)[0] = (Expr)gvar;
+    WRITE_EXPR(ref, 0, gvar);
 
     /* push the reference                                                  */
     PushExpr( ref );
@@ -2255,7 +2255,7 @@ void CodeIsbGVar (
     ref = NewExpr( T_ISB_GVAR, sizeof(Expr) );
 
     /* enter the global variable                                           */
-    ADDR_EXPR(ref)[0] = (Expr)gvar;
+    WRITE_EXPR(ref, 0, gvar);
 
     /* push the isbound                                                    */
     PushExpr( ref );
@@ -2280,17 +2280,17 @@ void CodeAssListUniv (
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
-    ADDR_STAT(ass)[narg+1] = (Stat)rhsx;
+    WRITE_STAT(ass, narg + 1, rhsx);
 
     /* enter the position expression                                       */
     for (i = narg; i > 0; i--) {
       pos = PopExpr();
-      ADDR_STAT(ass)[i] = (Stat)pos;
+      WRITE_STAT(ass, i, pos);
     }
 
     /* enter the list expression                                           */
     list = PopExpr();
-    ADDR_STAT(ass)[0] = (Stat)list;
+    WRITE_STAT(ass, 0, list);
 
     /* push the assignment                                                 */
     PushStat( ass );
@@ -2330,7 +2330,7 @@ void CodeAssListLevel ( Int narg,
 
     /* allocate the assignment and enter the level                         */
     ass = NewStat( T_ASS_LIST_LEV, (narg + 3) * sizeof(Stat) );
-    ADDR_STAT(ass)[narg+2] = (Stat)level;
+    WRITE_STAT(ass, narg + 2, level);
 
     /* let 'CodeAssListUniv' do the rest                                   */
     CodeAssListUniv( ass, narg );
@@ -2343,7 +2343,7 @@ void CodeAsssListLevel (
 
     /* allocate the assignment and enter the level                         */
     ass = NewStat( T_ASSS_LIST_LEV, 4 * sizeof(Stat) );
-    ADDR_STAT(ass)[3] = (Stat)level;
+    WRITE_STAT(ass, 3, level);
 
     /* let 'CodeAssListUniv' do the rest                                   */
     CodeAssListUniv( ass, 1 );
@@ -2367,12 +2367,12 @@ void CodeUnbList ( Int narg )
     /* enter the position expressions                                       */
     for (i = narg; i > 0; i--) {
       pos = PopExpr();
-      ADDR_STAT(ass)[i] = (Stat)pos;
+      WRITE_STAT(ass, i, pos);
     }
 
     /* enter the list expression                                           */
     list = PopExpr();
-    ADDR_STAT(ass)[0] = (Stat)list;
+    WRITE_STAT(ass, 0, list);
 
     /* push the unbind                                                     */
     PushStat( ass );
@@ -2398,12 +2398,12 @@ void CodeElmListUniv (
 
     for (i = narg; i > 0; i--) {
       pos = PopExpr();
-      ADDR_EXPR(ref)[i] = pos;
+      WRITE_EXPR(ref, i, pos);
     }
 
     /* enter the list expression                                           */
     list = PopExpr();
-    ADDR_EXPR(ref)[0] = list;
+    WRITE_EXPR(ref, 0, list);
 
     /* push the reference                                                  */
     PushExpr( ref );
@@ -2443,7 +2443,7 @@ void CodeElmListLevel ( Int narg,
 
     /* allocate the reference and enter the level                          */
     ref = NewExpr( T_ELM_LIST_LEV, (narg + 2) * sizeof(Expr));
-    ADDR_EXPR(ref)[narg+1] = (Stat)level;
+    WRITE_EXPR(ref, narg + 1, level);
 
     /* let 'CodeElmListUniv' do the rest                                   */
     CodeElmListUniv( ref, narg );
@@ -2456,7 +2456,7 @@ void CodeElmsListLevel (
 
     /* allocate the reference and enter the level                          */
     ref = NewExpr( T_ELMS_LIST_LEV, 3 * sizeof(Expr) );
-    ADDR_EXPR(ref)[2] = (Stat)level;
+    WRITE_EXPR(ref, 2, level);
 
     /* let 'CodeElmListUniv' do the rest                                   */
     CodeElmListUniv( ref, 1 );
@@ -2480,12 +2480,12 @@ void CodeIsbList ( Int narg )
     /* enter the position expression                                       */
     for (i = narg; i > 0; i--) {
       pos = PopExpr();
-      ADDR_EXPR(ref)[i] = pos;
+      WRITE_EXPR(ref, i, pos);
     }
 
     /* enter the list expression                                           */
     list = PopExpr();
-    ADDR_EXPR(ref)[0] = list;
+    WRITE_EXPR(ref, 0, list);
 
     /* push the isbound                                                    */
     PushExpr( ref );
@@ -2509,14 +2509,14 @@ void            CodeAssRecName (
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
-    ADDR_STAT(stat)[2] = (Stat)rhsx;
+    WRITE_STAT(stat, 2, rhsx);
 
     /* enter the name                                                      */
-    ADDR_STAT(stat)[1] = (Stat)rnam;
+    WRITE_STAT(stat, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_STAT(stat)[0] = (Stat)rec;
+    WRITE_STAT(stat, 0, rec);
 
     /* push the assignment                                                 */
     PushStat( stat );
@@ -2534,15 +2534,15 @@ void            CodeAssRecExpr ( void )
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
-    ADDR_STAT(stat)[2] = (Stat)rhsx;
+    WRITE_STAT(stat, 2, rhsx);
 
     /* enter the name expression                                           */
     rnam = PopExpr();
-    ADDR_STAT(stat)[1] = (Stat)rnam;
+    WRITE_STAT(stat, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_STAT(stat)[0] = (Stat)rec;
+    WRITE_STAT(stat, 0, rec);
 
     /* push the assignment                                                 */
     PushStat( stat );
@@ -2558,11 +2558,11 @@ void            CodeUnbRecName (
     stat = NewStat( T_UNB_REC_NAME, 2 * sizeof(Stat) );
 
     /* enter the name                                                      */
-    ADDR_STAT(stat)[1] = (Stat)rnam;
+    WRITE_STAT(stat, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_STAT(stat)[0] = (Stat)rec;
+    WRITE_STAT(stat, 0, rec);
 
     /* push the unbind                                                     */
     PushStat( stat );
@@ -2579,11 +2579,11 @@ void            CodeUnbRecExpr ( void )
 
     /* enter the name expression                                           */
     rnam = PopExpr();
-    ADDR_STAT(stat)[1] = (Stat)rnam;
+    WRITE_STAT(stat, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_STAT(stat)[0] = (Stat)rec;
+    WRITE_STAT(stat, 0, rec);
 
     /* push the unbind                                                     */
     PushStat( stat );
@@ -2605,11 +2605,11 @@ void CodeElmRecName (
     expr = NewExpr( T_ELM_REC_NAME, 2 * sizeof(Expr) );
 
     /* enter the name                                                      */
-    ADDR_EXPR(expr)[1] = (Expr)rnam;
+    WRITE_EXPR(expr, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_EXPR(expr)[0] = rec;
+    WRITE_EXPR(expr, 0, rec);
 
     /* push the reference                                                  */
     PushExpr( expr );
@@ -2626,11 +2626,11 @@ void CodeElmRecExpr ( void )
 
     /* enter the expression                                                */
     rnam = PopExpr();
-    ADDR_EXPR(expr)[1] = rnam;
+    WRITE_EXPR(expr, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_EXPR(expr)[0] = rec;
+    WRITE_EXPR(expr, 0, rec);
 
     /* push the reference                                                  */
     PushExpr( expr );
@@ -2651,11 +2651,11 @@ void CodeIsbRecName (
     expr = NewExpr( T_ISB_REC_NAME, 2 * sizeof(Expr) );
 
     /* enter the name                                                      */
-    ADDR_EXPR(expr)[1] = (Expr)rnam;
+    WRITE_EXPR(expr, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_EXPR(expr)[0] = rec;
+    WRITE_EXPR(expr, 0, rec);
 
     /* push the isbound                                                    */
     PushExpr( expr );
@@ -2677,11 +2677,11 @@ void CodeIsbRecExpr ( void )
 
     /* enter the expression                                                */
     rnam = PopExpr();
-    ADDR_EXPR(expr)[1] = rnam;
+    WRITE_EXPR(expr, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_EXPR(expr)[0] = rec;
+    WRITE_EXPR(expr, 0, rec);
 
     /* push the isbound                                                    */
     PushExpr( expr );
@@ -2704,15 +2704,15 @@ void CodeAssPosObjUniv (
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
-    ADDR_STAT(ass)[2] = (Stat)rhsx;
+    WRITE_STAT(ass, 2, rhsx);
 
     /* enter the position expression                                       */
     pos = PopExpr();
-    ADDR_STAT(ass)[1] = (Stat)pos;
+    WRITE_STAT(ass, 1, pos);
 
     /* enter the list expression                                           */
     list = PopExpr();
-    ADDR_STAT(ass)[0] = (Stat)list;
+    WRITE_STAT(ass, 0, list);
 
     /* push the assignment                                                 */
     PushStat( ass );
@@ -2747,7 +2747,7 @@ void CodeAssPosObjLevel (
 
     /* allocate the assignment and enter the level                         */
     ass = NewStat( T_ASS_POSOBJ_LEV, 4 * sizeof(Stat) );
-    ADDR_STAT(ass)[3] = (Stat)level;
+    WRITE_STAT(ass, 3, level);
 
     /* let 'CodeAssPosObjUniv' do the rest                                 */
     CodeAssPosObjUniv( ass );
@@ -2760,7 +2760,7 @@ void CodeAsssPosObjLevel (
 
     /* allocate the assignment and enter the level                         */
     ass = NewStat( T_ASSS_POSOBJ_LEV, 4 * sizeof(Stat) );
-    ADDR_STAT(ass)[3] = (Stat)level;
+    WRITE_STAT(ass, 3, level);
 
     /* let 'CodeAssPosObjUniv' do the rest                                 */
     CodeAssPosObjUniv( ass );
@@ -2782,11 +2782,11 @@ void CodeUnbPosObj ( void )
 
     /* enter the position expression                                       */
     pos = PopExpr();
-    ADDR_STAT(ass)[1] = (Stat)pos;
+    WRITE_STAT(ass, 1, pos);
 
     /* enter the list expression                                           */
     list = PopExpr();
-    ADDR_STAT(ass)[0] = (Stat)list;
+    WRITE_STAT(ass, 0, list);
 
     /* push the unbind                                                     */
     PushStat( ass );
@@ -2808,11 +2808,11 @@ void CodeElmPosObjUniv (
 
     /* enter the position expression                                       */
     pos = PopExpr();
-    ADDR_EXPR(ref)[1] = pos;
+    WRITE_EXPR(ref, 1, pos);
 
     /* enter the list expression                                           */
     list = PopExpr();
-    ADDR_EXPR(ref)[0] = list;
+    WRITE_EXPR(ref, 0, list);
 
     /* push the reference                                                  */
     PushExpr( ref );
@@ -2847,7 +2847,7 @@ void CodeElmPosObjLevel (
 
     /* allocate the reference and enter the level                          */
     ref = NewExpr( T_ELM_POSOBJ_LEV, 3 * sizeof(Expr) );
-    ADDR_EXPR(ref)[2] = (Stat)level;
+    WRITE_EXPR(ref, 2, level);
 
     /* let 'CodeElmPosObjUniv' do the rest                                 */
     CodeElmPosObjUniv( ref );
@@ -2860,7 +2860,7 @@ void CodeElmsPosObjLevel (
 
     /* allocate the reference and enter the level                          */
     ref = NewExpr( T_ELMS_POSOBJ_LEV, 3 * sizeof(Expr) );
-    ADDR_EXPR(ref)[2] = (Stat)level;
+    WRITE_EXPR(ref, 2, level);
 
     /* let 'CodeElmPosObjUniv' do the rest                                 */
     CodeElmPosObjUniv( ref );
@@ -2882,11 +2882,11 @@ void CodeIsbPosObj ( void )
 
     /* enter the position expression                                       */
     pos = PopExpr();
-    ADDR_EXPR(ref)[1] = pos;
+    WRITE_EXPR(ref, 1, pos);
 
     /* enter the list expression                                           */
     list = PopExpr();
-    ADDR_EXPR(ref)[0] = list;
+    WRITE_EXPR(ref, 0, list);
 
     /* push the isbound                                                    */
     PushExpr( ref );
@@ -2910,14 +2910,14 @@ void            CodeAssComObjName (
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
-    ADDR_STAT(stat)[2] = (Stat)rhsx;
+    WRITE_STAT(stat, 2, rhsx);
 
     /* enter the name                                                      */
-    ADDR_STAT(stat)[1] = (Stat)rnam;
+    WRITE_STAT(stat, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_STAT(stat)[0] = (Stat)rec;
+    WRITE_STAT(stat, 0, rec);
 
     /* push the assignment                                                 */
     PushStat( stat );
@@ -2935,15 +2935,15 @@ void            CodeAssComObjExpr ( void )
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
-    ADDR_STAT(stat)[2] = (Stat)rhsx;
+    WRITE_STAT(stat, 2, rhsx);
 
     /* enter the name expression                                           */
     rnam = PopExpr();
-    ADDR_STAT(stat)[1] = (Stat)rnam;
+    WRITE_STAT(stat, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_STAT(stat)[0] = (Stat)rec;
+    WRITE_STAT(stat, 0, rec);
 
     /* push the assignment                                                 */
     PushStat( stat );
@@ -2959,11 +2959,11 @@ void            CodeUnbComObjName (
     stat = NewStat( T_UNB_COMOBJ_NAME, 2 * sizeof(Stat) );
 
     /* enter the name                                                      */
-    ADDR_STAT(stat)[1] = (Stat)rnam;
+    WRITE_STAT(stat, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_STAT(stat)[0] = (Stat)rec;
+    WRITE_STAT(stat, 0, rec);
 
     /* push the unbind                                                     */
     PushStat( stat );
@@ -2980,11 +2980,11 @@ void            CodeUnbComObjExpr ( void )
 
     /* enter the name expression                                           */
     rnam = PopExpr();
-    ADDR_STAT(stat)[1] = (Stat)rnam;
+    WRITE_STAT(stat, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_STAT(stat)[0] = (Stat)rec;
+    WRITE_STAT(stat, 0, rec);
 
     /* push the unbind                                                     */
     PushStat( stat );
@@ -3006,11 +3006,11 @@ void CodeElmComObjName (
     expr = NewExpr( T_ELM_COMOBJ_NAME, 2 * sizeof(Expr) );
 
     /* enter the name                                                      */
-    ADDR_EXPR(expr)[1] = (Expr)rnam;
+    WRITE_EXPR(expr, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_EXPR(expr)[0] = rec;
+    WRITE_EXPR(expr, 0, rec);
 
     /* push the reference                                                  */
     PushExpr( expr );
@@ -3027,11 +3027,11 @@ void CodeElmComObjExpr ( void )
 
     /* enter the expression                                                */
     rnam = PopExpr();
-    ADDR_EXPR(expr)[1] = rnam;
+    WRITE_EXPR(expr, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_EXPR(expr)[0] = rec;
+    WRITE_EXPR(expr, 0, rec);
 
     /* push the reference                                                  */
     PushExpr( expr );
@@ -3052,11 +3052,11 @@ void CodeIsbComObjName (
     expr = NewExpr( T_ISB_COMOBJ_NAME, 2 * sizeof(Expr) );
 
     /* enter the name                                                      */
-    ADDR_EXPR(expr)[1] = (Expr)rnam;
+    WRITE_EXPR(expr, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_EXPR(expr)[0] = rec;
+    WRITE_EXPR(expr, 0, rec);
 
     /* push the isbound                                                    */
     PushExpr( expr );
@@ -3077,11 +3077,11 @@ void CodeIsbComObjExpr ( void )
 
     /* enter the expression                                                */
     rnam = PopExpr();
-    ADDR_EXPR(expr)[1] = rnam;
+    WRITE_EXPR(expr, 1, rnam);
 
     /* enter the record expression                                         */
     rec = PopExpr();
-    ADDR_EXPR(expr)[0] = rec;
+    WRITE_EXPR(expr, 0, rec);
 
     /* push the isbound                                                    */
     PushExpr( expr );
@@ -3133,7 +3133,7 @@ void CodeInfoEnd   (
     /* narg only counts the printable arguments                            */
     for ( i = narg + 2; 0 < i; i-- ) {
         expr = PopExpr();
-        ARGI_INFO( stat, i ) = expr;
+        SET_ARGI_INFO(stat, i, expr);
     }
 
     /* push the statement                                                  */
@@ -3169,8 +3169,8 @@ void CodeAssertEnd2Args ( void )
 
     stat = NewStat( T_ASSERT_2ARGS, 2*sizeof(Expr) );
 
-    ADDR_STAT(stat)[1] = PopExpr(); /* condition */
-    ADDR_STAT(stat)[0] = PopExpr(); /* level */
+    WRITE_STAT(stat, 1, PopExpr()); /* condition */
+    WRITE_STAT(stat, 0, PopExpr()); /* level */
 
     PushStat( stat );
 }
@@ -3181,9 +3181,9 @@ void CodeAssertEnd3Args ( void )
 
     stat = NewStat( T_ASSERT_3ARGS, 3*sizeof(Expr) );
 
-    ADDR_STAT(stat)[2] = PopExpr(); /* message */
-    ADDR_STAT(stat)[1] = PopExpr(); /* condition */
-    ADDR_STAT(stat)[0] = PopExpr(); /* level */
+    WRITE_STAT(stat, 2, PopExpr()); /* message */
+    WRITE_STAT(stat, 1, PopExpr()); /* condition */
+    WRITE_STAT(stat, 0, PopExpr()); /* level */
 
     PushStat( stat );
 }
