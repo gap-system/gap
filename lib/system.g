@@ -94,7 +94,7 @@ BIND_GLOBAL( "GAPInfo", rec(
       rec( short:= "M", default := false, help := ["disable/enable loading of compiled modules"] ),
       rec( short:= "N", default := false, help := ["do not use hidden implications"] ),
       rec( short:= "O", default := false, help := ["disable/enable loading of obsolete files"] ),
-      rec( short:= "T", default := false, help := ["disable/enable break loop and error traceback"] ),
+      rec( short:= "T", long := "nobreakloop", default := false, help := ["disable/enable break loop and error traceback"] ),
       rec( long := "quitonbreak", default := false, help := ["quit GAP with non-zero return value instead of entering break loop"]),
       ,
       rec( short:= "L", default := "", arg := "<file>", help := [ "restore a saved workspace"] ),
