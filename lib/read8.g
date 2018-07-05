@@ -10,6 +10,9 @@ ReadLib( "overload.g"  );
 ##
 ReadLib( "compiler.g"  );
 
+ReadLib( "syntaxtree.gd" );
+ReadLib( "syntaxtree.gi" );
+
 #############################################################################
 ##
 #X  Teaching functionality

@@ -6,6 +6,7 @@
 #include "objccoll.h"
 #include "objset.h"
 #include "profile.h"
+#include "syntaxtree.h"
 #include "vec8bit.h"
 #include "vecffe.h"
 #include "vecgf2.h"
@@ -102,6 +103,9 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     /* save and load workspace, weak pointers                              */
     InitInfoWeakPtr,
     InitInfoSaveLoad,
+
+    /* syntax and parser tools */
+    InitInfoSyntaxTree,
 
     /* input and output                                                    */
     InitInfoStreams,

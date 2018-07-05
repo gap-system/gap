@@ -184,6 +184,7 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/string.g",
     "../../lib/string.gd",
     "../../lib/system.g",
+    "../../lib/syntaxtree.gd",
     "../../lib/teaching.g",
     "../../lib/tcsemi.gd",
     "../../lib/test.gi",
