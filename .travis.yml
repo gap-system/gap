@@ -7,6 +7,8 @@ env:
   global:
     - CFLAGS="--coverage -O2"
     - LDFLAGS="--coverage"
+    # default config flags: enable debug asserts, and treat compiler warnings as errors
+    - CONFIGFLAGS="--enable-debug --enable-Werror"
 
 addons:
   apt_packages:
@@ -16,8 +18,11 @@ addons:
 matrix:
   include:
     # general test suite (subsumes testinstall tests, too)
-    - env: TEST_SUITES="docomp testtravis" CONFIGFLAGS="--enable-debug"
-    - env: TEST_SUITES="docomp testtravis" ABI=32
+    - env: TEST_SUITES="docomp testtravis"
+    # the same in 32 bit mode, and with debugging turned off, to (a) make it
+    # a lot faster, and (b) to make sure nobody accidentally put some vital
+    # computing into code that is only run when debugging is on.
+    - env: TEST_SUITES="docomp testtravis" ABI=32 CONFIGFLAGS="--enable-Werror"
       addons:
         apt_packages:
           - gcc-multilib
@@ -26,7 +31,7 @@ matrix:
           - libreadline-dev:i386
 
     # compiler packages and run package tests
-    - env: TEST_SUITES=testpackages CONFIGFLAGS="--enable-debug"
+    - env: TEST_SUITES=testpackages
       addons:
         apt_packages:
           - gcc-multilib
@@ -42,7 +47,7 @@ matrix:
           - pari-gp                 # for alnuth
           - libzmq3-dev             # for ZeroMQInterface
 
-    - env: TEST_SUITES=testpackages ABI=32 CONFIGFLAGS="--enable-debug"
+    - env: TEST_SUITES=testpackages ABI=32
       addons:
         apt_packages:
           - gcc-multilib
@@ -65,7 +70,7 @@ matrix:
     #  compiler: clang
 
     # test creating the manual
-    - env: TEST_SUITES=makemanuals CONFIGFLAGS="--enable-debug"
+    - env: TEST_SUITES=makemanuals
       addons:
         apt_packages:
           - texlive-latex-base
@@ -76,18 +81,20 @@ matrix:
           - texlive-fonts-extra
 
     # run tests contained in the manual
-    - env: TEST_SUITES=testmanuals CONFIGFLAGS="--enable-debug"
+    - env: TEST_SUITES=testmanuals
 
     # HPC-GAP builds (for efficiency, we don't build all combinations)
-    - env: TEST_SUITES="docomp testtravis" ABI=64 HPCGAP=yes CONFIGFLAGS="--enable-debug"
+    - env: TEST_SUITES="docomp testtravis" ABI=64 HPCGAP=yes
 
     # out of tree builds -- these are mainly done to verify that the build
     # system work in this scenario. Since we don't expect the test results to
     # vary compared to the in-tree builds, we turn off coverage reporting by
     # setting NO_COVERAGE=1; this has the extra benefit of also running the
     # tests at least once with the ReproducibleBehaviour option turned off.
-    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=64 BUILDDIR=build CONFIGFLAGS="--enable-debug"
-    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=build
+    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=64 BUILDDIR=build
+    # for 32bit mode, also turn off debugging (see elsewhere in this file for
+    # an explanation)
+    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS="--enable-Werror"
       addons:
         apt_packages:
           - gcc-multilib
@@ -96,10 +103,10 @@ matrix:
           - libreadline-dev:i386
 
     # run bugfix regression tests
-    - env: TEST_SUITES=testbugfix CONFIGFLAGS="--enable-debug"
+    - env: TEST_SUITES=testbugfix
 
     # test error reporting and compiling (quickest job in this test suite)
-    - env: TEST_SUITES=testspecial CONFIGFLAGS="--enable-debug"
+    - env: TEST_SUITES=testspecial
 
 script:
   - gcov --version
