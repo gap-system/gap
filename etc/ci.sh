@@ -41,8 +41,8 @@ for TEST_SUITE in $TEST_SUITES
 do
   case $TEST_SUITE in
   testspecial)
-    cd $SRCDIR/tst/test-error
-    GAPDIR=$BUILDDIR ./run_error_tests.sh
+    cd $SRCDIR/tst/testspecial
+    GAPDIR=$BUILDDIR ./run_all.sh
     cd ../test-compile
     GAPDIR=$BUILDDIR ./run_all.sh
     ;;
