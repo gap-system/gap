@@ -1568,7 +1568,7 @@ void            PrintReturnObj (
 {
     Expr expr = READ_STAT(stat, 0);
     if (TNUM_EXPR(expr) == T_REF_GVAR &&
-        (UInt)(READ_STAT(expr, 0)) == GVarName("TRY_NEXT_METHOD")) {
+        READ_STAT(expr, 0) == GVarName("TRY_NEXT_METHOD")) {
         Pr( "TryNextMethod();", 0L, 0L );
     }
     else {
