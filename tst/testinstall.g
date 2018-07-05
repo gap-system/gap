@@ -24,14 +24,9 @@
 
 Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g -K 2g'.\n\n" );
 
-bits := String(8*GAPInfo.BytesPerVariable);
 dirs := [
   DirectoriesLibrary( "tst/testinstall" ),
-  DirectoriesLibrary( Concatenation("tst/test", bits, "bit") ),
 ];
-if ARCH_IS_UNIX() then
-  Add(dirs, DirectoriesLibrary( "tst/testunix" ));
-fi;
 TestDirectory( dirs, rec(exitGAP := true) );
 
   

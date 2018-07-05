@@ -4,6 +4,7 @@ gap> START_TEST("streams.tst");
 # input/output streams
 #
 gap> d := DirectoryCurrent();;
+#@if ARCH_IS_UNIX()
 gap> f := Filename(DirectoriesSystemPrograms(), "cat");;
 gap> s := InputOutputLocalProcess(d,f,[]);
 < input/output stream to cat >
@@ -20,6 +21,7 @@ gap> repeat str := ReadAllLine(s); until str <> fail; str;
 gap> CloseStream(s);
 gap> s;
 < closed input/output stream to cat >
+#@fi
 
 #
 gap> STOP_TEST( "streams.tst", 1);
