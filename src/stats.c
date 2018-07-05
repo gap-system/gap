@@ -147,7 +147,7 @@ static ALWAYS_INLINE UInt ExecSeqStatHelper(Stat stat, UInt nr)
     // loop over the statements
     for (UInt i = 1; i <= nr; i++) {
         // execute the <i>-th statement
-        UInt leave = EXEC_STAT( ADDR_STAT(stat)[i-1] );
+        UInt leave = EXEC_STAT(READ_STAT(stat, i - 1));
         if ( leave != 0 ) {
             return leave;
         }
@@ -222,11 +222,11 @@ UInt            ExecIf (
 
     /* if the condition evaluates to 'true', execute the if-branch body    */
     SET_BRK_CURR_STAT( stat );
-    cond = ADDR_STAT(stat)[0];
+    cond = READ_STAT(stat, 0);
     if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
         /* execute the if-branch body and leave                            */
-        body = ADDR_STAT(stat)[1];
+        body = READ_STAT(stat, 1);
         return EXEC_STAT( body );
 
     }
@@ -243,17 +243,17 @@ UInt            ExecIfElse (
 
     /* if the condition evaluates to 'true', execute the if-branch body    */
     SET_BRK_CURR_STAT( stat );
-    cond = ADDR_STAT(stat)[0];
+    cond = READ_STAT(stat, 0);
     if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
         /* execute the if-branch body and leave                            */
-        body = ADDR_STAT(stat)[1];
+        body = READ_STAT(stat, 1);
         return EXEC_STAT( body );
 
     }
 
     /* otherwise execute the else-branch body and leave                    */
-    body = ADDR_STAT(stat)[3];
+    body = READ_STAT(stat, 3);
     return EXEC_STAT( body );
 }
 
@@ -273,11 +273,11 @@ UInt            ExecIfElif (
 
         /* if the condition evaluates to 'true', execute the branch body   */
         SET_BRK_CURR_STAT( stat );
-        cond = ADDR_STAT(stat)[2*(i-1)];
+        cond = READ_STAT(stat, 2 * (i - 1));
         if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
             /* execute the branch body and leave                           */
-            body = ADDR_STAT(stat)[2*(i-1)+1];
+            body = READ_STAT(stat, 2 * (i - 1) + 1);
             return EXEC_STAT( body );
 
         }
@@ -304,11 +304,11 @@ UInt            ExecIfElifElse (
 
         /* if the condition evaluates to 'true', execute the branch body   */
         SET_BRK_CURR_STAT( stat );
-        cond = ADDR_STAT(stat)[2*(i-1)];
+        cond = READ_STAT(stat, 2 * (i - 1));
         if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
             /* execute the branch body and leave                           */
-            body = ADDR_STAT(stat)[2*(i-1)+1];
+            body = READ_STAT(stat, 2 * (i - 1) + 1);
             return EXEC_STAT( body );
 
         }
@@ -316,7 +316,7 @@ UInt            ExecIfElifElse (
     }
 
     /* otherwise execute the else-branch body and leave                    */
-    body = ADDR_STAT(stat)[2*(i-1)+1];
+    body = READ_STAT(stat, 2 * (i - 1) + 1);
     return EXEC_STAT( body );
 }
 
@@ -366,29 +366,30 @@ static ALWAYS_INLINE UInt ExecForHelper(Stat stat, UInt nr)
     GAP_ASSERT(1 <= nr && nr <= 3);
 
     /* get the variable (initialize them first to please 'lint')           */
-    if ( IS_REFLVAR( ADDR_STAT(stat)[0] ) ) {
-        var = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
+    const Stat varstat = READ_STAT(stat, 0);
+    if (IS_REFLVAR(varstat)) {
+        var = LVAR_REFLVAR(varstat);
         vart = 'l';
     }
-    else if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_HVAR ) {
-        var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
+    else if (TNUM_EXPR(varstat) == T_REF_HVAR) {
+        var = READ_EXPR(varstat, 0);
         vart = 'h';
     }
-    else /* if ( TNUM_EXPR( ADDR_STAT(stat)[0] ) == T_REF_GVAR ) */ {
-        var = (UInt)(ADDR_EXPR( ADDR_STAT(stat)[0] )[0]);
+    else /* if ( TNUM_EXPR( varstat ) == T_REF_GVAR ) */ {
+        var = READ_EXPR(varstat, 0);
         vart = 'g';
     }
 
     /* evaluate the list                                                   */
     SET_BRK_CURR_STAT( stat );
-    list = EVAL_EXPR( ADDR_STAT(stat)[1] );
+    list = EVAL_EXPR(READ_STAT(stat, 1));
 
     /* get the body                                                        */
-    body1 = ADDR_STAT(stat)[2];
+    body1 = READ_STAT(stat, 2);
     if (nr >= 2)
-        body2 = ADDR_STAT(stat)[3];
+        body2 = READ_STAT(stat, 3);
     if (nr >= 3)
-        body3 = ADDR_STAT(stat)[4];
+        body3 = READ_STAT(stat, 4);
 
     /* special case for lists                                              */
     if ( IS_SMALL_LIST( list ) ) {
@@ -521,12 +522,12 @@ static ALWAYS_INLINE UInt ExecForRangeHelper(Stat stat, UInt nr)
     GAP_ASSERT(1 <= nr && nr <= 3);
 
     /* get the variable (initialize them first to please 'lint')           */
-    lvar = LVAR_REFLVAR( ADDR_STAT(stat)[0] );
+    lvar = LVAR_REFLVAR(READ_STAT(stat, 0));
 
     /* evaluate the range                                                  */
     SET_BRK_CURR_STAT( stat );
-    VisitStatIfHooked(ADDR_STAT(stat)[1]);
-    elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[0] );
+    VisitStatIfHooked(READ_STAT(stat, 1));
+    elm = EVAL_EXPR(READ_EXPR(READ_STAT(stat, 1), 0));
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
             "Range: <first> must be an integer (not a %s)",
@@ -534,7 +535,7 @@ static ALWAYS_INLINE UInt ExecForRangeHelper(Stat stat, UInt nr)
             "you can replace <first> via 'return <first>;'" );
     }
     first = INT_INTOBJ(elm);
-    elm = EVAL_EXPR( ADDR_EXPR( ADDR_STAT(stat)[1] )[1] );
+    elm = EVAL_EXPR(READ_EXPR(READ_STAT(stat, 1), 1));
     while ( ! IS_INTOBJ(elm) ) {
         elm = ErrorReturnObj(
             "Range: <last> must be an integer (not a %s)",
@@ -544,11 +545,11 @@ static ALWAYS_INLINE UInt ExecForRangeHelper(Stat stat, UInt nr)
     last  = INT_INTOBJ(elm);
 
     /* get the body                                                        */
-    body1 = ADDR_STAT(stat)[2];
+    body1 = READ_STAT(stat, 2);
     if (nr >= 2)
-        body2 = ADDR_STAT(stat)[3];
+        body2 = READ_STAT(stat, 3);
     if (nr >= 3)
-        body3 = ADDR_STAT(stat)[4];
+        body3 = READ_STAT(stat, 4);
 
     /* loop over the range                                                 */
     for ( i = first; i <= last; i++ ) {
@@ -612,10 +613,10 @@ UInt ExecAtomic(
   
   j = 0;
   for (i = 1; i <= nrexprs; i++) {
-    o = EVAL_EXPR(ADDR_STAT(stat)[2*i]);
+    o = EVAL_EXPR(READ_STAT(stat, 2*i));
     if (!((Int)o & 0x3)) {
       tolock[j] =  o;
-      mode = INT_INTEXPR(ADDR_STAT(stat)[2*i-1]);
+      mode = INT_INTEXPR(READ_STAT(stat, 2*i-1));
       locktypes[j] = (mode == 2) ? 1 : (mode == 1) ? 0 : DEFAULT_LOCK_TYPE;
       j++;
     }
@@ -645,7 +646,7 @@ UInt ExecAtomic(
   }
   lockSP = LockObjects(j, tolock, locktypes);
   if (lockSP >= 0) {
-    status = EXEC_STAT(ADDR_STAT(stat)[0]);
+    status = EXEC_STAT(READ_STAT(stat, 0));
     PopRegionLocks(lockSP);
   } else {
     status = 0;
@@ -654,7 +655,7 @@ UInt ExecAtomic(
   return status;
 #else
     // In non-HPC GAP, we completely ignore all the 'atomic' terms
-    return EXEC_STAT(ADDR_STAT(stat)[0]);
+    return EXEC_STAT(READ_STAT(stat, 0));
 #endif
 }
 
@@ -688,12 +689,12 @@ static ALWAYS_INLINE UInt ExecWhileHelper(Stat stat, UInt nr)
     GAP_ASSERT(1 <= nr && nr <= 3);
 
     /* get the condition and the body                                      */
-    cond = ADDR_STAT(stat)[0];
-    body1 = ADDR_STAT(stat)[1];
+    cond = READ_STAT(stat, 0);
+    body1 = READ_STAT(stat, 1);
     if (nr >= 2)
-        body2 = ADDR_STAT(stat)[2];
+        body2 = READ_STAT(stat, 2);
     if (nr >= 3)
-        body3 = ADDR_STAT(stat)[3];
+        body3 = READ_STAT(stat, 3);
 
     /* while the condition evaluates to 'true', execute the body           */
     SET_BRK_CURR_STAT( stat );
@@ -764,12 +765,12 @@ static ALWAYS_INLINE UInt ExecRepeatHelper(Stat stat, UInt nr)
     Stat                body3;          /* third  stat. of body of loop    */
 
     /* get the condition and the body                                      */
-    cond = ADDR_STAT(stat)[0];
-    body1 = ADDR_STAT(stat)[1];
+    cond = READ_STAT(stat, 0);
+    body1 = READ_STAT(stat, 1);
     if (nr >= 2)
-        body2 = ADDR_STAT(stat)[2];
+        body2 = READ_STAT(stat, 2);
     if (nr >= 3)
-        body3 = ADDR_STAT(stat)[3];
+        body3 = READ_STAT(stat, 3);
 
     /* execute the body until the condition evaluates to 'true'            */
     SET_BRK_CURR_STAT( stat );
@@ -940,9 +941,9 @@ UInt ExecAssert2Args (
     SET_BRK_CURR_STAT( stat );
     SET_BRK_CALL_TO( stat );
 
-    level = EVAL_EXPR( ADDR_STAT( stat )[0] );
+    level = EVAL_EXPR(READ_STAT(stat, 0));
     if ( ! LT(CurrentAssertionLevel, level) )  {
-        decision = EVAL_EXPR( ADDR_STAT( stat )[1]);
+        decision = EVAL_EXPR(READ_STAT(stat, 1));
         while ( decision != True && decision != False ) {
          decision = ErrorReturnObj(
           "Assertion condition must evaluate to 'true' or 'false', not a %s",
@@ -980,10 +981,10 @@ UInt ExecAssert3Args (
 
     SET_BRK_CURR_STAT( stat );
     SET_BRK_CALL_TO( stat );
-    
-    level = EVAL_EXPR( ADDR_STAT( stat )[0] );
+
+    level = EVAL_EXPR(READ_STAT(stat, 0));
     if ( ! LT(CurrentAssertionLevel, level) ) {
-        decision = EVAL_EXPR( ADDR_STAT( stat )[1]);
+        decision = EVAL_EXPR(READ_STAT(stat, 1));
         while ( decision != True && decision != False ) {
             decision = ErrorReturnObj(
             "Assertion condition must evaluate to 'true' or 'false', not a %s",
@@ -991,7 +992,7 @@ UInt ExecAssert3Args (
             "you may 'return true;' or 'return false;'");
         }
         if ( decision == False ) {
-            message = EVAL_EXPR(ADDR_STAT( stat )[2]);
+            message = EVAL_EXPR(READ_STAT(stat, 2));
             if ( message != (Obj) 0 ) {
                 if (IS_STRING_REP( message ))
                     PrintString1( message );
@@ -1031,7 +1032,7 @@ UInt            ExecReturnObj (
 
     /* evaluate the expression                                             */
     SET_BRK_CURR_STAT( stat );
-    STATE(ReturnObjStat) = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    STATE(ReturnObjStat) = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* return up to function interpreter                                   */
     return STATUS_RETURN_VAL;
@@ -1272,7 +1273,7 @@ void            PrintSeqStat (
     for ( i = 1; i <= nr; i++ ) {
 
         /* print the <i>-th statement                                      */
-        PrintStat( ADDR_STAT(stat)[i-1] );
+        PrintStat(READ_STAT(stat, i - 1));
 
         /* print a line break after all but the last statement             */
         if ( i < nr )  Pr( "\n", 0L, 0L );
@@ -1299,24 +1300,24 @@ void            PrintIf (
 
     /* print the 'if' branch                                               */
     Pr( "if%4> ", 0L, 0L );
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr( "%2< then%2>\n", 0L, 0L );
-    PrintStat( ADDR_STAT(stat)[1] );
+    PrintStat(READ_STAT(stat, 1));
     Pr( "%4<\n", 0L, 0L );
 
     len = SIZE_STAT(stat) / (2 * sizeof(Stat));
     /* print the 'elif' branch                                             */
     for (i = 2; i <= len; i++) {
         if (i == len &&
-            TNUM_EXPR(ADDR_STAT(stat)[2 * (i - 1)]) == T_TRUE_EXPR) {
+            TNUM_EXPR(READ_STAT(stat, 2 * (i - 1))) == T_TRUE_EXPR) {
             Pr( "else%4>\n", 0L, 0L );
         }
         else {
             Pr( "elif%4> ", 0L, 0L );
-            PrintExpr( ADDR_EXPR(stat)[2*(i-1)] );
+            PrintExpr(READ_EXPR(stat, 2 * (i - 1)));
             Pr( "%2< then%2>\n", 0L, 0L );
         }
-        PrintStat( ADDR_STAT(stat)[2*(i-1)+1] );
+        PrintStat(READ_STAT(stat, 2 * (i - 1) + 1));
         Pr( "%4<\n", 0L, 0L );
     }
 
@@ -1340,12 +1341,12 @@ void            PrintFor (
     UInt                i;              /* loop variable                   */
 
     Pr( "for%4> ", 0L, 0L );
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr( "%2< in%2> ", 0L, 0L );
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     Pr( "%2< do%2>\n", 0L, 0L );
     for ( i = 2; i <= SIZE_STAT(stat)/sizeof(Stat)-1; i++ ) {
-        PrintStat( ADDR_STAT(stat)[i] );
+        PrintStat(READ_STAT(stat, i));
         if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr( "\n", 0L, 0L );
     }
     Pr( "%4<\nod;", 0L, 0L );
@@ -1367,10 +1368,10 @@ void            PrintWhile (
     UInt                i;              /* loop variable                   */
 
     Pr( "while%4> ", 0L, 0L );
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr( "%2< do%2>\n", 0L, 0L );
     for ( i = 1; i <= SIZE_STAT(stat)/sizeof(Stat)-1; i++ ) {
-        PrintStat( ADDR_STAT(stat)[i] );
+        PrintStat(READ_STAT(stat, i));
         if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr( "\n", 0L, 0L );
     }
     Pr( "%4<\nod;", 0L, 0L );
@@ -1396,17 +1397,17 @@ void            PrintAtomic (
     for (i = 1; i <=  nrexprs; i++) {
       if (i != 1)
 	Pr(", ",0L,0L);
-      switch (INT_INTEXPR(ADDR_STAT(stat)[2*i-1])) {
+      switch (INT_INTEXPR(READ_STAT(stat, 2 * i - 1))) {
       case 0: break;
       case 1: Pr("readonly ",0L,0L);
 	break;
       case 2: Pr("readwrite ",0L,0L);
 	break;
       }
-      PrintExpr(ADDR_EXPR(stat)[2*i]);
+      PrintExpr(READ_EXPR(stat, 2 * i));
     }
     Pr( "%2< do%2>\n", 0L, 0L );
-    PrintStat(ADDR_STAT(stat)[0]);
+    PrintStat(READ_STAT(stat, 0));
     Pr( "%4<\nod;", 0L, 0L );
 }
 
@@ -1427,11 +1428,11 @@ void            PrintRepeat (
 
     Pr( "repeat%4>\n", 0L, 0L );
     for ( i = 1; i <= SIZE_STAT(stat)/sizeof(Stat)-1; i++ ) {
-        PrintStat( ADDR_STAT(stat)[i] );
+        PrintStat(READ_STAT(stat, i));
         if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr( "\n", 0L, 0L );
     }
     Pr( "%4<\nuntil%2> ", 0L, 0L );
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr( "%2<;", 0L, 0L );
 }
 
@@ -1518,9 +1519,9 @@ void            PrintAssert2Args (
     Pr("%<( %>",0L,0L);
 
     /* Print the arguments, separated by a comma                           */
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<, %>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
 
     /* print the closing parenthesis                                       */
     Pr(" %2<);",0L,0L);
@@ -1544,11 +1545,11 @@ void            PrintAssert3Args (
     Pr("%<( %>",0L,0L);
 
     /* Print the arguments, separated by commas                            */
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<, %>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     Pr("%<, %>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[2] );
+    PrintExpr(READ_EXPR(stat, 2));
 
     /* print the closing parenthesis                                       */
     Pr(" %2<);",0L,0L);
@@ -1565,9 +1566,9 @@ void            PrintAssert3Args (
 void            PrintReturnObj (
     Stat                stat )
 {
-    Expr expr = ADDR_STAT(stat)[0];
-    if ( TNUM_EXPR(expr) == T_REF_GVAR &&
-         (UInt)(ADDR_STAT(expr)[0]) == GVarName( "TRY_NEXT_METHOD" ) ) {
+    Expr expr = READ_STAT(stat, 0);
+    if (TNUM_EXPR(expr) == T_REF_GVAR &&
+        (UInt)(READ_STAT(expr, 0)) == GVarName("TRY_NEXT_METHOD")) {
         Pr( "TryNextMethod();", 0L, 0L );
     }
     else {

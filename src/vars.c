@@ -164,8 +164,8 @@ UInt            ExecAssLVar (
 
     /* assign the right hand side to the local variable                    */
     SET_BRK_CURR_STAT( stat );
-    rhs = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    ASS_LVAR( (UInt)(ADDR_STAT(stat)[0]), rhs );
+    rhs = EVAL_EXPR(READ_STAT(stat, 1));
+    ASS_LVAR((UInt)(READ_STAT(stat, 0)), rhs);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -175,7 +175,7 @@ UInt            ExecUnbLVar (
     Stat                stat )
 {
     /* unbind the local variable                                           */
-    ASS_LVAR( (UInt)(ADDR_STAT(stat)[0]), (Obj)0 );
+    ASS_LVAR((UInt)(READ_STAT(stat, 0)), (Obj)0);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -189,7 +189,7 @@ Obj             EvalIsbLVar (
     Obj                 val;            /* value, result                   */
 
     /* get the value of the local variable                                 */
-    val = OBJ_LVAR( (UInt)(ADDR_EXPR(expr)[0]) );
+    val = OBJ_LVAR((UInt)(READ_EXPR(expr, 0)));
 
     /* return the value                                                    */
     return (val != (Obj)0 ? True : False);
@@ -206,9 +206,9 @@ void            PrintAssLVar (
     Stat                stat )
 {
     Pr( "%2>", 0L, 0L );
-    Pr( "%H", (Int)NAME_LVAR( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
+    Pr("%H", (Int)NAME_LVAR((UInt)(READ_STAT(stat, 0))), 0L);
     Pr( "%< %>:= ", 0L, 0L );
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     Pr( "%2<;", 0L, 0L );
 }
 
@@ -216,7 +216,7 @@ void            PrintUnbLVar (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
-    Pr( "%H", (Int)NAME_LVAR( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
+    Pr("%H", (Int)NAME_LVAR((UInt)(READ_STAT(stat, 0))), 0L);
     Pr( " );", 0L, 0L );
 }
 
@@ -237,7 +237,7 @@ void            PrintIsbLVar (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
-    Pr( "%H", (Int)NAME_LVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
+    Pr("%H", (Int)NAME_LVAR((UInt)(READ_EXPR(expr, 0))), 0L);
     Pr( " )", 0L, 0L );
 }
 
@@ -321,8 +321,8 @@ UInt            ExecAssHVar (
 
     /* assign the right hand side to the higher variable                   */
     SET_BRK_CURR_STAT( stat );
-    rhs = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    ASS_HVAR( (UInt)(ADDR_STAT(stat)[0]), rhs );
+    rhs = EVAL_EXPR(READ_STAT(stat, 1));
+    ASS_HVAR((UInt)(READ_STAT(stat, 0)), rhs);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -332,7 +332,7 @@ UInt            ExecUnbHVar (
     Stat                stat )
 {
     /* unbind the higher variable                                          */
-    ASS_HVAR( (UInt)(ADDR_STAT(stat)[0]), 0 );
+    ASS_HVAR((UInt)(READ_STAT(stat, 0)), 0);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -350,7 +350,7 @@ Obj             EvalRefHVar (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
-    UInt hvar = (UInt)(ADDR_EXPR(expr)[0]);
+    UInt                hvar = (UInt)(READ_EXPR(expr, 0));
 
     /* get and check the value of the higher variable                      */
     while ( (val = OBJ_HVAR(hvar)) == 0 ) {
@@ -370,7 +370,7 @@ Obj             EvalIsbHVar (
     Obj                 val;            /* value, result                   */
 
     /* get the value of the higher variable                                */
-    val = OBJ_HVAR( (UInt)(ADDR_EXPR(expr)[0]) );
+    val = OBJ_HVAR((UInt)(READ_EXPR(expr, 0)));
 
     /* return the value                                                    */
     return (val != (Obj)0 ? True : False);
@@ -387,9 +387,9 @@ void            PrintAssHVar (
     Stat                stat )
 {
     Pr( "%2>", 0L, 0L );
-    Pr( "%H", (Int)NAME_HVAR( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
+    Pr("%H", (Int)NAME_HVAR((UInt)(READ_STAT(stat, 0))), 0L);
     Pr( "%< %>:= ", 0L, 0L );
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     Pr( "%2<;", 0L, 0L );
 }
 
@@ -397,7 +397,7 @@ void            PrintUnbHVar (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
-    Pr( "%H", (Int)NAME_HVAR( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
+    Pr("%H", (Int)NAME_HVAR((UInt)(READ_STAT(stat, 0))), 0L);
     Pr( " );", 0L, 0L );
 }
 
@@ -411,14 +411,14 @@ void            PrintUnbHVar (
 void            PrintRefHVar (
     Expr                expr )
 {
-    Pr( "%H", (Int)NAME_HVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
+    Pr("%H", (Int)NAME_HVAR((UInt)(READ_EXPR(expr, 0))), 0L);
 }
 
 void            PrintIsbHVar (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
-    Pr( "%H", (Int)NAME_HVAR( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
+    Pr("%H", (Int)NAME_HVAR((UInt)(READ_EXPR(expr, 0))), 0L);
     Pr( " )", 0L, 0L );
 }
 
@@ -437,8 +437,8 @@ UInt            ExecAssGVar (
 
     /* assign the right hand side to the global variable                   */
     SET_BRK_CURR_STAT( stat );
-    rhs = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    AssGVar( (UInt)(ADDR_STAT(stat)[0]), rhs );
+    rhs = EVAL_EXPR(READ_STAT(stat, 1));
+    AssGVar((UInt)(READ_STAT(stat, 0)), rhs);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -448,7 +448,7 @@ UInt            ExecUnbGVar (
     Stat                stat )
 {
     /* unbind the global variable                                          */
-    AssGVar( (UInt)(ADDR_STAT(stat)[0]), (Obj)0 );
+    AssGVar((UInt)(READ_STAT(stat, 0)), (Obj)0);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -468,10 +468,10 @@ Obj             EvalRefGVar (
     Obj                 val;            /* value, result                   */
 
     /* get and check the value of the global variable                      */
-    while ( (val = ValAutoGVar( (UInt)(ADDR_EXPR(expr)[0]) )) == 0 ) {
+    while ( (val = ValAutoGVar( (UInt)(READ_EXPR(expr, 0)) )) == 0 ) {
         ErrorReturnVoid(
             "Variable: '%g' must have an assigned value",
-            (Int)NameGVar( (UInt)(ADDR_EXPR(expr)[0]) ), 0L,
+            (Int)NameGVar( (UInt)(READ_EXPR(expr, 0)) ), 0L,
             "you can 'return;' after assigning a value" );
     }
 
@@ -485,7 +485,7 @@ Obj             EvalIsbGVar (
     Obj                 val;            /* value, result                   */
 
     /* get the value of the global variable                                */
-    val = ValAutoGVar( (UInt)(ADDR_EXPR(expr)[0]) );
+    val = ValAutoGVar((UInt)(READ_EXPR(expr, 0)));
 
     /* return the value                                                    */
     return (val != (Obj)0 ? True : False);
@@ -502,9 +502,9 @@ void            PrintAssGVar (
     Stat                stat )
 {
     Pr( "%2>", 0L, 0L );
-    Pr( "%H", (Int)NameGVar( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
+    Pr("%H", (Int)NameGVar((UInt)(READ_STAT(stat, 0))), 0L);
     Pr( "%< %>:= ", 0L, 0L );
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     Pr( "%2<;", 0L, 0L );
 }
 
@@ -512,7 +512,7 @@ void            PrintUnbGVar (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
-    Pr( "%H", (Int)NameGVar( (UInt)(ADDR_STAT(stat)[0]) ), 0L );
+    Pr("%H", (Int)NameGVar((UInt)(READ_STAT(stat, 0))), 0L);
     Pr( " );", 0L, 0L );
 }
 
@@ -526,14 +526,14 @@ void            PrintUnbGVar (
 void            PrintRefGVar (
     Expr                expr )
 {
-    Pr( "%H", (Int)NameGVar( (UInt)(ADDR_STAT(expr)[0]) ), 0L );
+    Pr("%H", (Int)NameGVar((UInt)(READ_STAT(expr, 0))), 0L);
 }
 
 void            PrintIsbGVar (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
-    Pr( "%H", (Int)NameGVar( (UInt)(ADDR_EXPR(expr)[0]) ), 0L );
+    Pr("%H", (Int)NameGVar((UInt)(READ_EXPR(expr, 0))), 0L);
     Pr( " )", 0L, 0L );
 }
 
@@ -555,13 +555,13 @@ UInt            ExecAssList (
 
     /* evaluate the list (checking is done by 'ASS_LIST')                  */
     SET_BRK_CURR_STAT( stat );
-    list = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    list = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate the position                                               */
-    pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
+    pos = EVAL_EXPR(READ_STAT(stat, 1));
 
     /* evaluate the right hand side                                        */
-    rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
+    rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
     if (IS_POS_INTOBJ(pos)) {
         p = INT_INTOBJ(pos);
@@ -604,14 +604,14 @@ UInt            ExecAss2List (
 
     /* evaluate the list (checking is done by 'ASS_LIST')                  */
     SET_BRK_CURR_STAT( stat );
-    list = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    list = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate the position                                               */
-    pos1 = EVAL_EXPR( ADDR_STAT(stat)[1] );
-    pos2 = EVAL_EXPR( ADDR_STAT(stat)[2] );
+    pos1 = EVAL_EXPR(READ_STAT(stat, 1));
+    pos2 = EVAL_EXPR(READ_STAT(stat, 2));
 
     /* evaluate the right hand side                                        */
-    rhs = EVAL_EXPR( ADDR_STAT(stat)[3] );
+    rhs = EVAL_EXPR(READ_STAT(stat, 3));
 
     ASS2_LIST( list, pos1, pos2, rhs );
 
@@ -637,21 +637,21 @@ UInt            ExecAssXList (
 
     /* evaluate the list (checking is done by 'ASS_LIST')                  */
     SET_BRK_CURR_STAT( stat );
-    list = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    list = EVAL_EXPR(READ_STAT(stat, 0));
 
     narg = SIZE_STAT(stat)/sizeof(Stat) - 2;
     ixs = NEW_PLIST(T_PLIST,narg);
 
     for (i = 1; i <= narg; i++) {
       /* evaluate the position                                             */
-      pos = EVAL_EXPR( ADDR_STAT(stat)[i] );
+      pos = EVAL_EXPR(READ_STAT(stat, i));
       SET_ELM_PLIST(ixs,i,pos);
       CHANGED_BAG(ixs);
     }
     SET_LEN_PLIST(ixs,narg);
 
     /* evaluate the right hand side                                        */
-    rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
+    rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
     ASSB_LIST(list, ixs, rhs);
 
@@ -676,14 +676,14 @@ UInt            ExecAsssList (
 
     /* evaluate the list (checking is done by 'ASSS_LIST')                 */
     SET_BRK_CURR_STAT( stat );
-    list = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    list = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate and check the positions                                    */
-    poss = EVAL_EXPR( ADDR_STAT(stat)[1] );
+    poss = EVAL_EXPR(READ_STAT(stat, 1));
     CheckIsPossList("List Assignment", poss);
 
     /* evaluate and check right hand sides                                 */
-    rhss = EVAL_EXPR( ADDR_STAT(stat)[2] );
+    rhss = EVAL_EXPR(READ_STAT(stat, 2));
     CheckIsDenseList("List Assignment", "rhss", rhss);
     CheckSameLength("List Assignment", "rhss", "positions", rhss, poss);
 
@@ -722,21 +722,21 @@ UInt            ExecAssListLevel (
     /* evaluate lists (if this works, then <lists> is nested <level> deep, */
     /* checking it is nested <level>+1 deep is done by 'AssListLevel')     */
     SET_BRK_CURR_STAT( stat );
-    lists = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    lists = EVAL_EXPR(READ_STAT(stat, 0));
     narg = SIZE_STAT(stat)/sizeof(Stat) -3;
     ixs = NEW_PLIST(T_PLIST, narg);
     for (i = 1; i <= narg; i++) {
-      pos = EVAL_EXPR(ADDR_STAT(stat)[i]);
-      SET_ELM_PLIST(ixs,i,pos);
-      CHANGED_BAG(ixs);
+        pos = EVAL_EXPR(READ_STAT(stat, i));
+        SET_ELM_PLIST(ixs, i, pos);
+        CHANGED_BAG(ixs);
     }
     SET_LEN_PLIST(ixs, narg);
 
     /* evaluate right hand sides (checking is done by 'AssListLevel')      */
-    rhss = EVAL_EXPR( ADDR_STAT(stat)[narg+1] );
-      
+    rhss = EVAL_EXPR(READ_STAT(stat, narg + 1));
+
     /* get the level                                                       */
-    level = (Int)(ADDR_STAT(stat)[narg+2]);
+    level = (Int)(READ_STAT(stat, narg + 2));
 
     /* assign the right hand sides to the elements of several lists        */
     AssListLevel( lists, ixs, rhss, level );
@@ -771,17 +771,17 @@ UInt            ExecAsssListLevel (
     /* evaluate lists (if this works, then <lists> is nested <level> deep, */
     /* checking it is nested <level>+1 deep is done by 'AsssListLevel')    */
     SET_BRK_CURR_STAT( stat );
-    lists = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    lists = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate and check the positions                                    */
-    poss = EVAL_EXPR( ADDR_EXPR(stat)[1] );
+    poss = EVAL_EXPR(READ_EXPR(stat, 1));
     CheckIsPossList("List Assignment", poss);
 
     /* evaluate right hand sides (checking is done by 'AsssListLevel')     */
-    rhss = EVAL_EXPR( ADDR_STAT(stat)[2] );
+    rhss = EVAL_EXPR(READ_STAT(stat, 2));
 
     /* get the level                                                       */
-    level = (Int)(ADDR_STAT(stat)[3]);
+    level = (Int)(READ_STAT(stat, 3));
 
     /* assign the right hand sides to several elements of several lists    */
     AsssListLevel( lists, poss, rhss, level );
@@ -809,10 +809,10 @@ UInt            ExecUnbList (
 
     /* evaluate the list (checking is done by 'LEN_LIST')                  */
     SET_BRK_CURR_STAT( stat );
-    list = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    list = EVAL_EXPR(READ_STAT(stat, 0));
     narg = SIZE_STAT(stat)/sizeof(Stat) - 1;
     if (narg == 1) {
-      pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
+      pos = EVAL_EXPR( READ_STAT(stat, 1) );
       /* unbind the element                                                */
       if (IS_POS_INTOBJ(pos)) {
         UNB_LIST( list, INT_INTOBJ(pos) );
@@ -823,8 +823,8 @@ UInt            ExecUnbList (
       ixs = NEW_PLIST(T_PLIST, narg);
       for (i = 1; i <= narg; i++) {
 	/* evaluate the position                                               */
-	pos = EVAL_EXPR( ADDR_STAT(stat)[i] );
-	SET_ELM_PLIST(ixs,i,pos);
+        pos = EVAL_EXPR(READ_STAT(stat, i));
+        SET_ELM_PLIST(ixs,i,pos);
 	CHANGED_BAG(ixs);
       }
       SET_LEN_PLIST(ixs, narg);
@@ -853,10 +853,10 @@ Obj             EvalElmList (
     Int                 p;              /* position, as C integer          */
 
     /* evaluate the list (checking is done by 'ELM_LIST')                  */
-    list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    list = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* evaluate and check the position                                     */
-    pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    pos = EVAL_EXPR(READ_EXPR(expr, 1));
 
     SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
 
@@ -901,12 +901,12 @@ Obj             EvalElm2List (
     Obj                 pos2;           /* position, right operand         */
 
     /* evaluate the list (checking is done by 'ELM2_LIST')                 */
-    list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    list = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* evaluate and check the positions                                    */
-    pos1 = EVAL_EXPR( ADDR_EXPR(expr)[1] ); 
-    pos2 = EVAL_EXPR( ADDR_EXPR(expr)[2] ); 
-   
+    pos1 = EVAL_EXPR(READ_EXPR(expr, 1));
+    pos2 = EVAL_EXPR(READ_EXPR(expr, 2));
+
     elm = ELM2_LIST(list, pos1, pos2);
 
     /* return the element                                                  */
@@ -932,13 +932,13 @@ Obj             EvalElmXList (
      
 
     /* evaluate the list (checking is done by 'ELM2_LIST')                 */
-    list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    list = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* evaluate and check the positions                                    */
     narg = SIZE_EXPR(expr)/sizeof(Expr) -1;
     ixs = NEW_PLIST(T_PLIST,narg);
     for (i = 1; i <= narg; i++) {
-      pos = EVAL_EXPR( ADDR_EXPR(expr)[i] );
+      pos = EVAL_EXPR( READ_EXPR(expr, i) );
       SET_ELM_PLIST(ixs,i,pos);
       CHANGED_BAG(ixs);
     }
@@ -966,10 +966,10 @@ Obj             EvalElmsList (
     Obj                 poss;           /* positions, right operand        */
 
     /* evaluate the list (checking is done by 'ELMS_LIST')                 */
-    list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    list = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* evaluate and check the positions                                    */
-    poss = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    poss = EVAL_EXPR(READ_EXPR(expr, 1));
     CheckIsPossList("List Elements", poss);
 
     /* select several elements from the list                               */
@@ -1005,18 +1005,18 @@ Obj             EvalElmListLevel (
 
     /* evaluate lists (if this works, then <lists> is nested <level> deep, */
     /* checking it is nested <level>+1 deep is done by 'ElmListLevel')     */
-    lists = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    lists = EVAL_EXPR(READ_EXPR(expr, 0));
     narg = SIZE_EXPR(expr)/sizeof(Expr) -2;
     ixs = NEW_PLIST(T_PLIST, narg);
     for (i = 1; i <= narg; i++) {
-      pos = EVAL_EXPR( ADDR_EXPR(expr)[i]);
+      pos = EVAL_EXPR( READ_EXPR(expr, i));
       SET_ELM_PLIST(ixs, i, pos);
       CHANGED_BAG(ixs);
     }
     SET_LEN_PLIST(ixs, narg);
     /* get the level                                                       */
-    level = (Int)(ADDR_EXPR(expr)[narg+1]);
-    
+    level = (Int)(READ_EXPR(expr, narg + 1));
+
     /* select the elements from several lists (store them in <lists>)      */
     ElmListLevel( lists, ixs, level );
 
@@ -1048,14 +1048,14 @@ Obj             EvalElmsListLevel (
 
     /* evaluate lists (if this works, then <lists> is nested <level> deep, */
     /* checking it is nested <level>+1 deep is done by 'ElmsListLevel')    */
-    lists = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    lists = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* evaluate and check the positions                                    */
-    poss = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    poss = EVAL_EXPR(READ_EXPR(expr, 1));
     CheckIsPossList("List Elements", poss);
 
     /* get the level                                                       */
-    level = (Int)(ADDR_EXPR(expr)[2]);
+    level = (Int)(READ_EXPR(expr, 2));
 
     /* select several elements from several lists (store them in <lists>)  */
     ElmsListLevel( lists, poss, level );
@@ -1081,12 +1081,12 @@ Obj             EvalIsbList (
     Int narg, i;
 
     /* evaluate the list (checking is done by 'ISB_LIST')                  */
-    list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    list = EVAL_EXPR(READ_EXPR(expr, 0));
     narg = SIZE_EXPR(expr)/sizeof(Expr) -1;
     if (narg == 1) {
       /* evaluate and check the position                                   */
-      pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
-      
+      pos = EVAL_EXPR(READ_EXPR(expr, 1));
+
       if (IS_POS_INTOBJ(pos))
         return ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
       else
@@ -1094,7 +1094,7 @@ Obj             EvalIsbList (
     } else {
       ixs = NEW_PLIST(T_PLIST, narg);
       for (i = 1; i <= narg; i++) {
-	pos = EVAL_EXPR( ADDR_EXPR(expr)[i] );
+	pos = EVAL_EXPR( READ_EXPR(expr, i) );
 	SET_ELM_PLIST(ixs,i,pos);
 	CHANGED_BAG(ixs);
       }
@@ -1118,12 +1118,12 @@ void            PrintAssList (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<[",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     Pr("%<]",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[2] );
+    PrintExpr(READ_EXPR(stat, 2));
     Pr("%2<;",0L,0L);
 }
 
@@ -1131,14 +1131,14 @@ void            PrintAss2List (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<[",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     Pr("%<, %>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[2] );
+    PrintExpr(READ_EXPR(stat, 2));
     Pr("%<]",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[3] );
+    PrintExpr(READ_EXPR(stat, 3));
     Pr("%2<;",0L,0L);
 }
 
@@ -1148,16 +1148,16 @@ void            PrintAssXList (
   Int narg = SIZE_STAT(stat)/sizeof(stat) - 2;
   Int i;
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<[",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     for (i = 2; i <= narg; i++) {
       Pr("%<, %>",0L,0L);
-      PrintExpr( ADDR_EXPR(stat)[i] );
+      PrintExpr(READ_EXPR(stat, i));
     }
     Pr("%<]",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[narg + 1] );
+    PrintExpr(READ_EXPR(stat, narg + 1));
     Pr("%2<;",0L,0L);
 }
 
@@ -1168,12 +1168,12 @@ void            PrintUnbList (
   Int i;
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<[",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     for (i = 2; i <= narg; i++) {
       Pr("%<, %>",0L,0L);
-      PrintExpr( ADDR_EXPR(stat)[i]);
+      PrintExpr(READ_EXPR(stat, i));
     }
     Pr("%<]",0L,0L);
     Pr( " );", 0L, 0L );
@@ -1193,12 +1193,12 @@ void            PrintAsssList (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<{",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     Pr("%<}",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[2] );
+    PrintExpr(READ_EXPR(stat, 2));
     Pr("%2<;",0L,0L);
 }
 
@@ -1216,9 +1216,9 @@ void            PrintElmList (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<[",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[1] );
+    PrintExpr(READ_EXPR(expr, 1));
     Pr("%<]",0L,0L);
 }
 
@@ -1226,11 +1226,11 @@ void PrintElm2List (
 		     Expr expr )
 {
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<[",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[1] );
+    PrintExpr(READ_EXPR(expr, 1));
     Pr("%<, %<",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[2] );
+    PrintExpr(READ_EXPR(expr, 2));
     Pr("%<]",0L,0L);
 }
 
@@ -1240,12 +1240,12 @@ void PrintElmXList (
   Int i;
   Int narg = SIZE_EXPR(expr)/sizeof(Expr) -1 ;
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<[",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[1] );
+    PrintExpr(READ_EXPR(expr, 1));
     for (i = 2; i <= narg; i++) {
       Pr("%<, %<",0L,0L);
-      PrintExpr( ADDR_EXPR(expr)[i] );
+      PrintExpr(READ_EXPR(expr, i));
     }
     Pr("%<]",0L,0L);
 }
@@ -1256,12 +1256,12 @@ void PrintElmListLevel (
   Int i;
   Int narg = SIZE_EXPR(expr)/sizeof(Expr) -2 ;
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<[",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[1] );
+    PrintExpr(READ_EXPR(expr, 1));
     for (i = 2; i <= narg; i++) {
       Pr("%<, %<",0L,0L);
-      PrintExpr( ADDR_EXPR(expr)[i] );
+      PrintExpr(READ_EXPR(expr, i));
     }
     Pr("%<]",0L,0L);
 }
@@ -1274,12 +1274,12 @@ void            PrintIsbList (
   Int i;
     Pr( "IsBound( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<[",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[1] );
+    PrintExpr(READ_EXPR(expr, 1));
     for (i = 2; i <= narg; i++) {
       Pr("%<, %>", 0L, 0L);
-      PrintExpr(ADDR_EXPR(expr)[i] );
+      PrintExpr(READ_EXPR(expr, i));
     }
     Pr("%<]",0L,0L);
     Pr( " )", 0L, 0L );
@@ -1299,9 +1299,9 @@ void            PrintElmsList (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<{",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[1] );
+    PrintExpr(READ_EXPR(expr, 1));
     Pr("%<}",0L,0L);
 }
 
@@ -1322,13 +1322,13 @@ UInt            ExecAssRecName (
 
     /* evaluate the record (checking is done by 'ASS_REC')                 */
     SET_BRK_CURR_STAT( stat );
-    record = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
-    rnam = (UInt)(ADDR_STAT(stat)[1]);
+    rnam = (UInt)(READ_STAT(stat, 1));
 
     /* evaluate the right hand side                                        */
-    rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
+    rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
     /* assign the right hand side to the element of the record             */
     ASS_REC( record, rnam, rhs );
@@ -1354,13 +1354,13 @@ UInt            ExecAssRecExpr (
 
     /* evaluate the record (checking is done by 'ASS_REC')                 */
     SET_BRK_CURR_STAT( stat );
-    record = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate the name and convert it to a record name                   */
-    rnam = RNamObj( EVAL_EXPR( ADDR_STAT(stat)[1] ) );
+    rnam = RNamObj(EVAL_EXPR(READ_STAT(stat, 1)));
 
     /* evaluate the right hand side                                        */
-    rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
+    rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
     /* assign the right hand side to the element of the record             */
     ASS_REC( record, rnam, rhs );
@@ -1385,10 +1385,10 @@ UInt            ExecUnbRecName (
 
     /* evaluate the record (checking is done by 'UNB_REC')                 */
     SET_BRK_CURR_STAT( stat );
-    record = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
-    rnam = (UInt)(ADDR_STAT(stat)[1]);
+    rnam = (UInt)(READ_STAT(stat, 1));
 
     /* unbind the element of the record                                    */
     UNB_REC( record, rnam );
@@ -1413,10 +1413,10 @@ UInt            ExecUnbRecExpr (
 
     /* evaluate the record (checking is done by 'UNB_REC')                 */
     SET_BRK_CURR_STAT( stat );
-    record = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate the name and convert it to a record name                   */
-    rnam = RNamObj( EVAL_EXPR( ADDR_STAT(stat)[1] ) );
+    rnam = RNamObj(EVAL_EXPR(READ_STAT(stat, 1)));
 
     /* unbind the element of the record                                    */
     UNB_REC( record, rnam );
@@ -1441,10 +1441,10 @@ Obj             EvalElmRecName (
     UInt                rnam;           /* the name, right operand         */
 
     /* evaluate the record (checking is done by 'ELM_REC')                 */
-    record = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    record = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* get the name (stored immediately in the expression)                 */
-    rnam = (UInt)(ADDR_EXPR(expr)[1]);
+    rnam = (UInt)(READ_EXPR(expr, 1));
 
     /* select the element of the record                                    */
     elm = ELM_REC( record, rnam );
@@ -1469,10 +1469,10 @@ Obj             EvalElmRecExpr (
     UInt                rnam;           /* the name, right operand         */
 
     /* evaluate the record (checking is done by 'ELM_REC')                 */
-    record = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    record = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* evaluate the name and convert it to a record name                   */
-    rnam = RNamObj( EVAL_EXPR( ADDR_EXPR(expr)[1] ) );
+    rnam = RNamObj(EVAL_EXPR(READ_EXPR(expr, 1)));
 
     /* select the element of the record                                    */
     elm = ELM_REC( record, rnam );
@@ -1496,10 +1496,10 @@ Obj             EvalIsbRecName (
     UInt                rnam;           /* the name, right operand         */
 
     /* evaluate the record (checking is done by 'ISB_REC')                 */
-    record = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    record = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* get the name (stored immediately in the expression)                 */
-    rnam = (UInt)(ADDR_EXPR(expr)[1]);
+    rnam = (UInt)(READ_EXPR(expr, 1));
 
     /* return the result                                                   */
     return (ISB_REC( record, rnam ) ? True : False);
@@ -1520,10 +1520,10 @@ Obj             EvalIsbRecExpr (
     UInt                rnam;           /* the name, right operand         */
 
     /* evaluate the record (checking is done by 'ISB_REC')                 */
-    record = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    record = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* evaluate the name and convert it to a record name                   */
-    rnam = RNamObj( EVAL_EXPR( ADDR_EXPR(expr)[1] ) );
+    rnam = RNamObj(EVAL_EXPR(READ_EXPR(expr, 1)));
 
     /* return the result                                                   */
     return (ISB_REC( record, rnam ) ? True : False);
@@ -1541,12 +1541,12 @@ void            PrintAssRecName (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<.",0L,0L);
-    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
+    Pr("%H", (Int)NAME_RNAM((UInt)(READ_STAT(stat, 1))), 0L);
     Pr("%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[2] );
+    PrintExpr(READ_EXPR(stat, 2));
     Pr("%2<;",0L,0L);
 }
 
@@ -1555,9 +1555,9 @@ void            PrintUnbRecName (
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<.",0L,0L);
-    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
+    Pr("%H", (Int)NAME_RNAM((UInt)(READ_STAT(stat, 1))), 0L);
     Pr("%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -1574,12 +1574,12 @@ void            PrintAssRecExpr (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<.(",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     Pr(")%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[2] );
+    PrintExpr(READ_EXPR(stat, 2));
     Pr("%2<;",0L,0L);
 }
 
@@ -1588,9 +1588,9 @@ void            PrintUnbRecExpr (
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<.(",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     Pr(")%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -1607,9 +1607,9 @@ void            PrintElmRecName (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<.",0L,0L);
-    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
+    Pr("%H", (Int)NAME_RNAM((UInt)(READ_EXPR(expr, 1))), 0L);
     Pr("%<",0L,0L);
 }
 
@@ -1618,9 +1618,9 @@ void            PrintIsbRecName (
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<.",0L,0L);
-    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
+    Pr("%H", (Int)NAME_RNAM((UInt)(READ_EXPR(expr, 1))), 0L);
     Pr("%<",0L,0L);
     Pr( " )", 0L, 0L );
 }
@@ -1637,9 +1637,9 @@ void            PrintElmRecExpr (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<.(",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[1] );
+    PrintExpr(READ_EXPR(expr, 1));
     Pr(")%<",0L,0L);
 }
 
@@ -1648,9 +1648,9 @@ void            PrintIsbRecExpr (
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<.(",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[1] );
+    PrintExpr(READ_EXPR(expr, 1));
     Pr(")%<",0L,0L);
     Pr( " )", 0L, 0L );
 }
@@ -1673,10 +1673,10 @@ UInt            ExecAssPosObj (
 
     /* evaluate the list (checking is done by 'ASS_LIST')                  */
     SET_BRK_CURR_STAT( stat );
-    list = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    list = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate and check the position                                     */
-    pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
+    pos = EVAL_EXPR(READ_STAT(stat, 1));
     while ( ! IS_POS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
@@ -1686,7 +1686,7 @@ UInt            ExecAssPosObj (
     p = INT_INTOBJ(pos);
 
     /* evaluate the right hand side                                        */
-    rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
+    rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
     /* special case for plain list                                         */
     if ( TNUM_OBJ(list) == T_POSOBJ ) {
@@ -1727,10 +1727,10 @@ UInt            ExecUnbPosObj (
 
     /* evaluate the list (checking is done by 'LEN_LIST')                  */
     SET_BRK_CURR_STAT( stat );
-    list = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    list = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate and check the position                                     */
-    pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
+    pos = EVAL_EXPR(READ_STAT(stat, 1));
     while ( ! IS_POS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
          "PosObj Assignment: <position> must be a positive integer (not a %s)",
@@ -1776,10 +1776,10 @@ Obj             EvalElmPosObj (
     Int                 p;              /* position, as C integer          */
 
     /* evaluate the list (checking is done by 'ELM_LIST')                  */
-    list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    list = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* evaluate and check the position                                     */
-    pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    pos = EVAL_EXPR(READ_EXPR(expr, 1));
     while ( ! IS_POS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
             "PosObj Element: <position> must be a positive integer (not a %s)",
@@ -1843,10 +1843,10 @@ Obj             EvalIsbPosObj (
     Int                 p;              /* position, as C integer          */
 
     /* evaluate the list (checking is done by 'ISB_LIST')                  */
-    list = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    list = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* evaluate and check the position                                     */
-    pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    pos = EVAL_EXPR(READ_EXPR(expr, 1));
     while ( ! IS_POS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
             "PosObj Element: <position> must be a positive integer (not a %s)",
@@ -1895,12 +1895,12 @@ void            PrintAssPosObj (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<![",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     Pr("%<]",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[2] );
+    PrintExpr(READ_EXPR(stat, 2));
     Pr("%2<;",0L,0L);
 }
 
@@ -1909,9 +1909,9 @@ void            PrintUnbPosObj (
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<![",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     Pr("%<]",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -1930,9 +1930,9 @@ void            PrintElmPosObj (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<![",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[1] );
+    PrintExpr(READ_EXPR(expr, 1));
     Pr("%<]",0L,0L);
 }
 
@@ -1941,9 +1941,9 @@ void            PrintIsbPosObj (
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<![",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[1] );
+    PrintExpr(READ_EXPR(expr, 1));
     Pr("%<]",0L,0L);
     Pr( " )", 0L, 0L );
 }
@@ -1965,13 +1965,13 @@ UInt            ExecAssComObjName (
 
     /* evaluate the record (checking is done by 'ASS_REC')                 */
     SET_BRK_CURR_STAT( stat );
-    record = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
-    rnam = (UInt)(ADDR_STAT(stat)[1]);
+    rnam = (UInt)(READ_STAT(stat, 1));
 
     /* evaluate the right hand side                                        */
-    rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
+    rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
     /* assign the right hand side to the element of the record             */
     switch (TNUM_OBJ(record)) {
@@ -2021,13 +2021,13 @@ UInt            ExecAssComObjExpr (
 
     /* evaluate the record (checking is done by 'ASS_REC')                 */
     SET_BRK_CURR_STAT( stat );
-    record = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate the name and convert it to a record name                   */
-    rnam = RNamObj( EVAL_EXPR( ADDR_STAT(stat)[1] ) );
+    rnam = RNamObj(EVAL_EXPR(READ_STAT(stat, 1)));
 
     /* evaluate the right hand side                                        */
-    rhs = EVAL_EXPR( ADDR_STAT(stat)[2] );
+    rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
     /* assign the right hand side to the element of the record             */
     switch (TNUM_OBJ(record)) {
@@ -2064,10 +2064,10 @@ UInt            ExecUnbComObjName (
 
     /* evaluate the record (checking is done by 'UNB_REC')                 */
     SET_BRK_CURR_STAT( stat );
-    record = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
-    rnam = (UInt)(ADDR_STAT(stat)[1]);
+    rnam = (UInt)(READ_STAT(stat, 1));
 
     /* unbind the element of the record                                    */
     switch (TNUM_OBJ(record)) {
@@ -2104,10 +2104,10 @@ UInt            ExecUnbComObjExpr (
 
     /* evaluate the record (checking is done by 'UNB_REC')                 */
     SET_BRK_CURR_STAT( stat );
-    record = EVAL_EXPR( ADDR_STAT(stat)[0] );
+    record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate the name and convert it to a record name                   */
-    rnam = RNamObj( EVAL_EXPR( ADDR_STAT(stat)[1] ) );
+    rnam = RNamObj(EVAL_EXPR(READ_STAT(stat, 1)));
 
     /* unbind the element of the record                                    */
     switch (TNUM_OBJ(record)) {
@@ -2144,10 +2144,10 @@ Obj             EvalElmComObjName (
     UInt                rnam;           /* the name, right operand         */
 
     /* evaluate the record (checking is done by 'ELM_REC')                 */
-    record = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    record = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* get the name (stored immediately in the expression)                 */
-    rnam = (UInt)(ADDR_EXPR(expr)[1]);
+    rnam = (UInt)(READ_EXPR(expr, 1));
 
     /* select the element of the record                                    */
     switch (TNUM_OBJ(record)) {
@@ -2184,10 +2184,10 @@ Obj             EvalElmComObjExpr (
     UInt                rnam;           /* the name, right operand         */
 
     /* evaluate the record (checking is done by 'ELM_REC')                 */
-    record = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    record = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* evaluate the name and convert it to a record name                   */
-    rnam = RNamObj( EVAL_EXPR( ADDR_EXPR(expr)[1] ) );
+    rnam = RNamObj(EVAL_EXPR(READ_EXPR(expr, 1)));
 
     /* select the element of the record                                    */
     switch (TNUM_OBJ(record)) {
@@ -2224,10 +2224,10 @@ Obj             EvalIsbComObjName (
     UInt                rnam;           /* the name, right operand         */
 
     /* evaluate the record (checking is done by 'ISB_REC')                 */
-    record = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    record = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* get the name (stored immediately in the expression)                 */
-    rnam = (UInt)(ADDR_EXPR(expr)[1]);
+    rnam = (UInt)(READ_EXPR(expr, 1));
 
     /* select the element of the record                                    */
     switch (TNUM_OBJ(record)) {
@@ -2264,10 +2264,10 @@ Obj             EvalIsbComObjExpr (
     UInt                rnam;           /* the name, right operand         */
 
     /* evaluate the record (checking is done by 'ISB_REC')                 */
-    record = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    record = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* evaluate the name and convert it to a record name                   */
-    rnam = RNamObj( EVAL_EXPR( ADDR_EXPR(expr)[1] ) );
+    rnam = RNamObj(EVAL_EXPR(READ_EXPR(expr, 1)));
 
     /* select the element of the record                                    */
     switch (TNUM_OBJ(record)) {
@@ -2300,12 +2300,12 @@ void            PrintAssComObjName (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<!.",0L,0L);
-    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
+    Pr("%H", (Int)NAME_RNAM((UInt)(READ_STAT(stat, 1))), 0L);
     Pr("%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[2] );
+    PrintExpr(READ_EXPR(stat, 2));
     Pr("%2<;",0L,0L);
 }
 
@@ -2314,9 +2314,9 @@ void            PrintUnbComObjName (
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<!.",0L,0L);
-    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_STAT(stat)[1])),0L);
+    Pr("%H", (Int)NAME_RNAM((UInt)(READ_STAT(stat, 1))), 0L);
     Pr("%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -2333,12 +2333,12 @@ void            PrintAssComObjExpr (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<!.(",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     Pr(")%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[2] );
+    PrintExpr(READ_EXPR(stat, 2));
     Pr("%2<;",0L,0L);
 }
 
@@ -2347,9 +2347,9 @@ void            PrintUnbComObjExpr (
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[0] );
+    PrintExpr(READ_EXPR(stat, 0));
     Pr("%<!.(",0L,0L);
-    PrintExpr( ADDR_EXPR(stat)[1] );
+    PrintExpr(READ_EXPR(stat, 1));
     Pr(")%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -2366,9 +2366,9 @@ void            PrintElmComObjName (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<!.",0L,0L);
-    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
+    Pr("%H", (Int)NAME_RNAM((UInt)(READ_EXPR(expr, 1))), 0L);
     Pr("%<",0L,0L);
 }
 
@@ -2377,9 +2377,9 @@ void            PrintIsbComObjName (
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<!.",0L,0L);
-    Pr("%H",(Int)NAME_RNAM((UInt)(ADDR_EXPR(expr)[1])),0L);
+    Pr("%H", (Int)NAME_RNAM((UInt)(READ_EXPR(expr, 1))), 0L);
     Pr("%<",0L,0L);
     Pr( " )", 0L, 0L );
 }
@@ -2396,9 +2396,9 @@ void            PrintElmComObjExpr (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<!.(",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[1] );
+    PrintExpr(READ_EXPR(expr, 1));
     Pr(")%<",0L,0L);
 }
 
@@ -2407,9 +2407,9 @@ void            PrintIsbComObjExpr (
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[0] );
+    PrintExpr(READ_EXPR(expr, 0));
     Pr("%<!.(",0L,0L);
-    PrintExpr( ADDR_EXPR(expr)[1] );
+    PrintExpr(READ_EXPR(expr, 1));
     Pr(")%<",0L,0L);
     Pr( " )", 0L, 0L );
 }

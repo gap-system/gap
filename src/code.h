@@ -236,6 +236,8 @@ enum STAT_TNUM {
 
 
 #define STAT_HEADER(stat) (((StatHeader *)ADDR_STAT(stat)) - 1)
+#define CONST_STAT_HEADER(stat)                                              \
+    (((const StatHeader *)CONST_ADDR_STAT(stat)) - 1)
 
 
 /****************************************************************************
@@ -244,7 +246,7 @@ enum STAT_TNUM {
 **
 **  'TNUM_STAT' returns the type of the statement <stat>.
 */
-#define TNUM_STAT(stat) (STAT_HEADER(stat)->type)
+#define TNUM_STAT(stat) (CONST_STAT_HEADER(stat)->type)
 
 
 /****************************************************************************
@@ -253,7 +255,7 @@ enum STAT_TNUM {
 **
 **  'SIZE_STAT' returns the size of the statement <stat>.
 */
-#define SIZE_STAT(stat) (STAT_HEADER(stat)->size)
+#define SIZE_STAT(stat) (CONST_STAT_HEADER(stat)->size)
 
 /****************************************************************************
 **
@@ -261,7 +263,7 @@ enum STAT_TNUM {
 **
 **  'LINE_STAT' returns the line number of the statement <stat>.
 */
-#define LINE_STAT(stat) (STAT_HEADER(stat)->line)
+#define LINE_STAT(stat) (CONST_STAT_HEADER(stat)->line)
 
 /****************************************************************************
 **
@@ -270,8 +272,7 @@ enum STAT_TNUM {
 **  'VISITED_STAT' returns true if the statement has ever been executed
 **  while profiling is turned on.
 */
-#define VISITED_STAT(stat) (STAT_HEADER(stat)->visited)
-
+#define VISITED_STAT(stat) (CONST_STAT_HEADER(stat)->visited)
 
 
 /****************************************************************************
@@ -281,8 +282,12 @@ enum STAT_TNUM {
 **  'ADDR_STAT' returns   the  absolute address of the    memory block of the
 **  statement <stat>.
 */
-#define ADDR_STAT(stat) ((Stat*)(((char*)STATE(PtrBody))+(stat)))
+#define ADDR_STAT(stat) ((Stat *)(((char *)STATE(PtrBody)) + (stat)))
+#define CONST_ADDR_STAT(stat)                                                \
+    ((const Stat *)(((const char *)STATE(PtrBody)) + (stat)))
 
+#define READ_STAT(stat, idx) (CONST_ADDR_STAT(stat)[idx])
+#define WRITE_STAT(stat, idx, val) ADDR_STAT(stat)[idx] = val
 
 /****************************************************************************
 **
@@ -466,7 +471,10 @@ enum EXPR_TNUM {
 **  'T_REFLVAR' or 'T_INTEXPR'.
 */
 #define ADDR_EXPR(expr) ADDR_STAT(expr)
+#define CONST_ADDR_EXPR(expr) CONST_ADDR_STAT(expr)
 
+#define READ_EXPR(expr, idx) (CONST_ADDR_EXPR(expr)[idx])
+#define WRITE_EXPR(expr, idx, val) ADDR_EXPR(expr)[idx] = val
 
 /****************************************************************************
 **
@@ -489,8 +497,10 @@ enum EXPR_TNUM {
 **  'SIZE_NARG_CALL' returns the size a  function call bag  should have for a
 **  function call bag with <narg> arguments.
 */
-#define FUNC_CALL(call)         (* (ADDR_EXPR((call)) +0     ) )
-#define ARGI_CALL(call,i)       (* (ADDR_EXPR((call)) +0 +(i)) )
+#define SET_FUNC_CALL(call,x)   WRITE_EXPR(call, 0, x)
+#define SET_ARGI_CALL(call,i,x) WRITE_EXPR(call, i, x)
+#define FUNC_CALL(call)         READ_EXPR(call, 0)
+#define ARGI_CALL(call,i)       READ_EXPR(call, i)
 #define NARG_SIZE_CALL(size)    (((size) / sizeof(Expr)) - 1)
 #define SIZE_NARG_CALL(narg)    (((narg) + 1) * sizeof(Expr))
 
@@ -511,7 +521,8 @@ enum EXPR_TNUM {
 **  'SIZE_NARG_INFO' returns the size a  function call bag  should have for a
 **  function call bag with <narg> arguments.
 */
-#define ARGI_INFO(info,i)       (* (ADDR_STAT((info))+(i) -1) )
+#define SET_ARGI_INFO(info,i,x) WRITE_STAT(info, (i) - 1, x)
+#define ARGI_INFO(info,i)       READ_STAT(info, (i) - 1)
 #define NARG_SIZE_INFO(size)    ((size) / sizeof(Expr))
 #define SIZE_NARG_INFO(narg)    ((narg) * sizeof(Expr))
 
