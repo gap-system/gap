@@ -1579,7 +1579,7 @@ void CodeCharExpr (
 
     /* allocate the character expression                                   */
     litr = NewExpr( T_CHAR_EXPR, sizeof(UChar) );
-    ((UChar*)ADDR_EXPR(litr))[0] = chr;
+    WRITE_EXPR(litr, 0, chr);
 
     /* push the literal expression                                         */
     PushExpr( litr );

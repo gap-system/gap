@@ -796,7 +796,7 @@ Obj             EvalFalseExpr (
 Obj             EvalCharExpr (
     Expr                expr )
 {
-    return ObjsChar[ ((const UChar*)CONST_ADDR_EXPR(expr))[0] ];
+    return ObjsChar[ READ_EXPR(expr, 0) ];
 }
 
 
@@ -1643,7 +1643,7 @@ void            PrintCharExpr (
 {
     UChar               chr;
 
-    chr = *(const UChar*)CONST_ADDR_EXPR(expr);
+    chr = READ_EXPR(expr, 0);
     if      ( chr == '\n'  )  Pr("'\\n'",0L,0L);
     else if ( chr == '\t'  )  Pr("'\\t'",0L,0L);
     else if ( chr == '\r'  )  Pr("'\\r'",0L,0L);

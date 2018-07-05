@@ -2392,7 +2392,7 @@ CVar            CompCharExpr (
     val = CVAR_TEMP( NewTemp( "val" ) );
 
     /* emit the code                                                       */
-    Emit( "%c = ObjsChar[%d];\n", val, (Int)(((const UChar*)CONST_ADDR_EXPR(expr))[0]));
+    Emit( "%c = ObjsChar[%d];\n", val, READ_EXPR(expr, 0));
 
     /* we know that we have a value                                        */
     SetInfoCVar( val, W_BOUND );
