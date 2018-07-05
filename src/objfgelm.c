@@ -3243,15 +3243,13 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(8Bits_GeneratorSyllable, 2, "8_bits_word, position"),
     GVAR_FUNC(8Bits_Less, 2, "8_bits_word, 8_bits_word"),
     GVAR_FUNC(8Bits_AssocWord, 2, "type, data"),
-    { "8Bits_NumberSyllables", 1, "8_bits_word",
-      FuncNBits_NumberSyllables, "src/objfgelm.c:8Bits_NumberSyllables" },
-
     GVAR_FUNC(8Bits_ObjByVector, 2, "type, data"),
     GVAR_FUNC(8Bits_HeadByNumber, 2, "16_bits_word, gen_num"),
     GVAR_FUNC(8Bits_Power, 2, "8_bits_word, small_integer"),
     GVAR_FUNC(8Bits_Product, 2, "8_bits_word, 8_bits_word"),
     GVAR_FUNC(8Bits_Quotient, 2, "8_bits_word, 8_bits_word"),
     GVAR_FUNC(8Bits_LengthWord, 1, "8_bits_word"),
+
     GVAR_FUNC(16Bits_Equal, 2, "16_bits_word, 16_bits_word"),
     GVAR_FUNC(16Bits_ExponentSums1, 1, "16_bits_word"),
     GVAR_FUNC(16Bits_ExponentSums3, 3, "16_bits_word, start, end"),
@@ -3260,15 +3258,13 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(16Bits_GeneratorSyllable, 2, "16_bits_word, pos"),
     GVAR_FUNC(16Bits_Less, 2, "16_bits_word, 16_bits_word"),
     GVAR_FUNC(16Bits_AssocWord, 2, "type, data"),
-    { "16Bits_NumberSyllables", 1, "16_bits_word",
-      FuncNBits_NumberSyllables, "src/objfgelm.c:16Bits_NumberSyllables" },
-
     GVAR_FUNC(16Bits_ObjByVector, 2, "type, data"),
     GVAR_FUNC(16Bits_HeadByNumber, 2, "16_bits_word, gen_num"),
     GVAR_FUNC(16Bits_Power, 2, "16_bits_word, small_integer"),
     GVAR_FUNC(16Bits_Product, 2, "16_bits_word, 16_bits_word"),
     GVAR_FUNC(16Bits_Quotient, 2, "16_bits_word, 16_bits_word"),
     GVAR_FUNC(16Bits_LengthWord, 1, "16_bits_word"),
+
     GVAR_FUNC(32Bits_Equal, 2, "32_bits_word, 32_bits_word"),
     GVAR_FUNC(32Bits_ExponentSums1, 1, "32_bits_word"),
     GVAR_FUNC(32Bits_ExponentSums3, 3, "32_bits_word, start, end"),
@@ -3277,15 +3273,14 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(32Bits_GeneratorSyllable, 2, "32_bits_word, pos"),
     GVAR_FUNC(32Bits_Less, 2, "32_bits_word, 32_bits_word"),
     GVAR_FUNC(32Bits_AssocWord, 2, "type, data"),
-    { "32Bits_NumberSyllables", 1, "32_bits_word",
-      FuncNBits_NumberSyllables, "src/objfgelm.c:32Bits_NumberSyllables" },
-
     GVAR_FUNC(32Bits_ObjByVector, 2, "type, data"),
     GVAR_FUNC(32Bits_HeadByNumber, 2, "16_bits_word, gen_num"),
     GVAR_FUNC(32Bits_Power, 2, "32_bits_word, small_integer"),
     GVAR_FUNC(32Bits_Product, 2, "32_bits_word, 32_bits_word"),
     GVAR_FUNC(32Bits_Quotient, 2, "32_bits_word, 32_bits_word"),
     GVAR_FUNC(32Bits_LengthWord, 1, "32_bits_word"),
+
+    GVAR_FUNC(NBits_NumberSyllables, 1, "N_bits_word"),
 
     GVAR_FUNC(MULT_WOR_LETTREP, 2, "list,list"),
     GVAR_FUNC(MULT_BYT_LETTREP, 2, "string,string"),
