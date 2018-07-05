@@ -40,10 +40,8 @@ fi
 for TEST_SUITE in $TEST_SUITES
 do
   case $TEST_SUITE in
-  testspecial)
-    cd $SRCDIR/tst/testspecial
-    GAPDIR=$BUILDDIR ./run_all.sh
-    cd ../test-compile
+  testspecial | test-compile)
+    cd $SRCDIR/tst/$TEST_SUITE
     GAPDIR=$BUILDDIR ./run_all.sh
     ;;
 
