@@ -17,11 +17,7 @@ bits := String(8*GAPInfo.BytesPerVariable);
 dirs := [
   DirectoriesLibrary( "tst/teststandard" ),
   DirectoriesLibrary( "tst/testinstall" ),
-  DirectoriesLibrary( Concatenation("tst/test", bits, "bit") ),
 ];
-if ARCH_IS_UNIX() then
-  Add(dirs, DirectoriesLibrary( "tst/testunix" ));
-fi;
 TestDirectory( dirs, rec(exitGAP := true) );
   
 # Should never get here
