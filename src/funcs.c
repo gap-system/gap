@@ -718,7 +718,7 @@ Obj             EvalFuncExpr (
 
     /* get the function expression bag                                     */
     fexs = FEXS_FUNC( CURR_FUNC() );
-    fexp = ELM_PLIST(fexs, (Int)(READ_EXPR(expr, 0)));
+    fexp = ELM_PLIST(fexs, READ_EXPR(expr, 0));
 
     /* and make the function                                               */
     return MakeFunction( fexp );
@@ -739,7 +739,7 @@ void            PrintFuncExpr (
 
     /* get the function expression bag                                     */
     fexs = FEXS_FUNC( CURR_FUNC() );
-    fexp = ELM_PLIST(fexs, (Int)(READ_EXPR(expr, 0)));
+    fexp = ELM_PLIST(fexs, READ_EXPR(expr, 0));
     PrintFunction( fexp );
     /* Pr("function ... end",0L,0L); */
 }

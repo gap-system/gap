@@ -3158,7 +3158,7 @@ CVar CompElmListLev (
 {
     CVar                lists;          /* lists                           */
     CVar                pos;            /* position                        */
-    Int                 level;          /* level                           */
+    UInt                level;          /* level                           */
 
     /* compile the lists expression                                        */
     lists = CompExpr(READ_EXPR(expr, 0));
@@ -3168,7 +3168,7 @@ CVar CompElmListLev (
     CompCheckIntSmallPos( pos );
 
     /* get the level                                                       */
-    level = (Int)(READ_EXPR(expr, 2));
+    level = READ_EXPR(expr, 2);
 
     /* emit the code to select the elements from several lists (to <lists>)*/
     Emit( "ElmListLevel( %c, %c, %d );\n", lists, pos, level );
@@ -3190,7 +3190,7 @@ CVar CompElmsListLev (
 {
     CVar                lists;          /* lists                           */
     CVar                poss;           /* positions                       */
-    Int                 level;          /* level                           */
+    UInt                level;          /* level                           */
 
     /* compile the lists expression                                        */
     lists = CompExpr(READ_EXPR(expr, 0));
@@ -3199,7 +3199,7 @@ CVar CompElmsListLev (
     poss = CompExpr(READ_EXPR(expr, 1));
 
     /* get the level                                                       */
-    level = (Int)(READ_EXPR(expr, 2));
+    level = READ_EXPR(expr, 2);
 
     /* emit the code to select the elements from several lists (to <lists>)*/
     Emit( "ElmsListLevelCheck( %c, %c, %d );\n", lists, poss, level );
@@ -3266,7 +3266,7 @@ CVar CompElmRecName (
     record = CompExpr(READ_EXPR(expr, 0));
 
     /* get the name (stored immediately in the expression)                 */
-    rnam = (UInt)(READ_EXPR(expr, 1));
+    rnam = READ_EXPR(expr, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* emit the code to select the element of the record                   */
@@ -3336,7 +3336,7 @@ CVar CompIsbRecName (
     record = CompExpr(READ_EXPR(expr, 0));
 
     /* get the name (stored immediately in the expression)                 */
-    rnam = (UInt)(READ_EXPR(expr, 1));
+    rnam = READ_EXPR(expr, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* emit the code to test the element                                   */
@@ -3530,7 +3530,7 @@ CVar CompElmComObjName (
     record = CompExpr(READ_EXPR(expr, 0));
 
     /* get the name (stored immediately in the expression)                 */
-    rnam = (UInt)(READ_EXPR(expr, 1));
+    rnam = READ_EXPR(expr, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* emit the code to select the element of the record                   */
@@ -3617,7 +3617,7 @@ CVar CompIsbComObjName (
     record = CompExpr(READ_EXPR(expr, 0));
 
     /* get the name (stored immediately in the expression)                 */
-    rnam = (UInt)(READ_EXPR(expr, 1));
+    rnam = READ_EXPR(expr, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* emit the code to test the element                                   */
@@ -4151,11 +4151,11 @@ void CompFor (
             vart = 'm';
         }
         else if (TNUM_EXPR(READ_STAT(stat, 0)) == T_REF_HVAR) {
-            var = (UInt)(READ_EXPR(READ_STAT(stat, 0), 0));
+            var = READ_EXPR(READ_STAT(stat, 0), 0);
             vart = 'h';
         }
         else /* if ( TNUM_EXPR( READ_STAT(stat, 0) ) == T_REF_GVAR ) */ {
-            var = (UInt)(READ_EXPR(READ_STAT(stat, 0), 0));
+            var = READ_EXPR(READ_STAT(stat, 0), 0);
             CompSetUseGVar( var, COMP_USE_GVAR_ID );
             vart = 'g';
         }
@@ -4710,7 +4710,7 @@ void CompAssListLev (
     CVar                lists;          /* lists                           */
     CVar                pos;            /* position                        */
     CVar                rhss;           /* right hand sides                */
-    Int                 level;          /* level                           */
+    UInt                level;          /* level                           */
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
@@ -4728,7 +4728,7 @@ void CompAssListLev (
     rhss = CompExpr(READ_STAT(stat, 2));
 
     /* get the level                                                       */
-    level = (Int)(READ_STAT(stat, 3));
+    level = READ_STAT(stat, 3);
 
     /* emit the code                                                       */
     Emit( "AssListLevel( %c, %c, %c, %d );\n", lists, pos, rhss, level );
@@ -4750,7 +4750,7 @@ void CompAsssListLev (
     CVar                lists;          /* list                            */
     CVar                poss;           /* positions                       */
     CVar                rhss;           /* right hand sides                */
-    Int                 level;          /* level                           */
+    UInt                level;          /* level                           */
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
@@ -4767,7 +4767,7 @@ void CompAsssListLev (
     rhss = CompExpr(READ_STAT(stat, 2));
 
     /* get the level                                                       */
-    level = (Int)(READ_STAT(stat, 3));
+    level = READ_STAT(stat, 3);
 
     /* emit the code                                                       */
     Emit( "AsssListLevelCheck( %c, %c, %c, %d );\n",
@@ -4831,7 +4831,7 @@ void CompAssRecName (
     record = CompExpr(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
-    rnam = (UInt)(READ_STAT(stat, 1));
+    rnam = READ_STAT(stat, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* compile the right hand side                                         */
@@ -4900,7 +4900,7 @@ void CompUnbRecName (
     record = CompExpr(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
-    rnam = (UInt)(READ_STAT(stat, 1));
+    rnam = READ_STAT(stat, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* emit the code for the assignment                                    */
@@ -5097,7 +5097,7 @@ void CompAssComObjName (
     record = CompExpr(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
-    rnam = (UInt)(READ_STAT(stat, 1));
+    rnam = READ_STAT(stat, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* compile the right hand side                                         */
@@ -5182,7 +5182,7 @@ void CompUnbComObjName (
     record = CompExpr(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
-    rnam = (UInt)(READ_STAT(stat, 1));
+    rnam = READ_STAT(stat, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* emit the code for the assignment                                    */

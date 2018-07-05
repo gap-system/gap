@@ -165,7 +165,7 @@ UInt            ExecAssLVar (
     /* assign the right hand side to the local variable                    */
     SET_BRK_CURR_STAT( stat );
     rhs = EVAL_EXPR(READ_STAT(stat, 1));
-    ASS_LVAR((UInt)(READ_STAT(stat, 0)), rhs);
+    ASS_LVAR(READ_STAT(stat, 0), rhs);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -175,7 +175,7 @@ UInt            ExecUnbLVar (
     Stat                stat )
 {
     /* unbind the local variable                                           */
-    ASS_LVAR((UInt)(READ_STAT(stat, 0)), (Obj)0);
+    ASS_LVAR(READ_STAT(stat, 0), (Obj)0);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -189,7 +189,7 @@ Obj             EvalIsbLVar (
     Obj                 val;            /* value, result                   */
 
     /* get the value of the local variable                                 */
-    val = OBJ_LVAR((UInt)(READ_EXPR(expr, 0)));
+    val = OBJ_LVAR(READ_EXPR(expr, 0));
 
     /* return the value                                                    */
     return (val != (Obj)0 ? True : False);
@@ -206,7 +206,7 @@ void            PrintAssLVar (
     Stat                stat )
 {
     Pr( "%2>", 0L, 0L );
-    Pr("%H", (Int)NAME_LVAR((UInt)(READ_STAT(stat, 0))), 0L);
+    Pr("%H", (Int)NAME_LVAR(READ_STAT(stat, 0)), 0L);
     Pr( "%< %>:= ", 0L, 0L );
     PrintExpr(READ_EXPR(stat, 1));
     Pr( "%2<;", 0L, 0L );
@@ -216,7 +216,7 @@ void            PrintUnbLVar (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
-    Pr("%H", (Int)NAME_LVAR((UInt)(READ_STAT(stat, 0))), 0L);
+    Pr("%H", (Int)NAME_LVAR(READ_STAT(stat, 0)), 0L);
     Pr( " );", 0L, 0L );
 }
 
@@ -237,7 +237,7 @@ void            PrintIsbLVar (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
-    Pr("%H", (Int)NAME_LVAR((UInt)(READ_EXPR(expr, 0))), 0L);
+    Pr("%H", (Int)NAME_LVAR(READ_EXPR(expr, 0)), 0L);
     Pr( " )", 0L, 0L );
 }
 
@@ -322,7 +322,7 @@ UInt            ExecAssHVar (
     /* assign the right hand side to the higher variable                   */
     SET_BRK_CURR_STAT( stat );
     rhs = EVAL_EXPR(READ_STAT(stat, 1));
-    ASS_HVAR((UInt)(READ_STAT(stat, 0)), rhs);
+    ASS_HVAR(READ_STAT(stat, 0), rhs);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -332,7 +332,7 @@ UInt            ExecUnbHVar (
     Stat                stat )
 {
     /* unbind the higher variable                                          */
-    ASS_HVAR((UInt)(READ_STAT(stat, 0)), 0);
+    ASS_HVAR(READ_STAT(stat, 0), 0);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -350,7 +350,7 @@ Obj             EvalRefHVar (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
-    UInt                hvar = (UInt)(READ_EXPR(expr, 0));
+    UInt                hvar = READ_EXPR(expr, 0);
 
     /* get and check the value of the higher variable                      */
     while ( (val = OBJ_HVAR(hvar)) == 0 ) {
@@ -370,7 +370,7 @@ Obj             EvalIsbHVar (
     Obj                 val;            /* value, result                   */
 
     /* get the value of the higher variable                                */
-    val = OBJ_HVAR((UInt)(READ_EXPR(expr, 0)));
+    val = OBJ_HVAR(READ_EXPR(expr, 0));
 
     /* return the value                                                    */
     return (val != (Obj)0 ? True : False);
@@ -387,7 +387,7 @@ void            PrintAssHVar (
     Stat                stat )
 {
     Pr( "%2>", 0L, 0L );
-    Pr("%H", (Int)NAME_HVAR((UInt)(READ_STAT(stat, 0))), 0L);
+    Pr("%H", (Int)NAME_HVAR(READ_STAT(stat, 0)), 0L);
     Pr( "%< %>:= ", 0L, 0L );
     PrintExpr(READ_EXPR(stat, 1));
     Pr( "%2<;", 0L, 0L );
@@ -397,7 +397,7 @@ void            PrintUnbHVar (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
-    Pr("%H", (Int)NAME_HVAR((UInt)(READ_STAT(stat, 0))), 0L);
+    Pr("%H", (Int)NAME_HVAR(READ_STAT(stat, 0)), 0L);
     Pr( " );", 0L, 0L );
 }
 
@@ -411,14 +411,14 @@ void            PrintUnbHVar (
 void            PrintRefHVar (
     Expr                expr )
 {
-    Pr("%H", (Int)NAME_HVAR((UInt)(READ_EXPR(expr, 0))), 0L);
+    Pr("%H", (Int)NAME_HVAR(READ_EXPR(expr, 0)), 0L);
 }
 
 void            PrintIsbHVar (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
-    Pr("%H", (Int)NAME_HVAR((UInt)(READ_EXPR(expr, 0))), 0L);
+    Pr("%H", (Int)NAME_HVAR(READ_EXPR(expr, 0)), 0L);
     Pr( " )", 0L, 0L );
 }
 
@@ -438,7 +438,7 @@ UInt            ExecAssGVar (
     /* assign the right hand side to the global variable                   */
     SET_BRK_CURR_STAT( stat );
     rhs = EVAL_EXPR(READ_STAT(stat, 1));
-    AssGVar((UInt)(READ_STAT(stat, 0)), rhs);
+    AssGVar(READ_STAT(stat, 0), rhs);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -448,7 +448,7 @@ UInt            ExecUnbGVar (
     Stat                stat )
 {
     /* unbind the global variable                                          */
-    AssGVar((UInt)(READ_STAT(stat, 0)), (Obj)0);
+    AssGVar(READ_STAT(stat, 0), (Obj)0);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -468,10 +468,10 @@ Obj             EvalRefGVar (
     Obj                 val;            /* value, result                   */
 
     /* get and check the value of the global variable                      */
-    while ( (val = ValAutoGVar( (UInt)(READ_EXPR(expr, 0)) )) == 0 ) {
+    while ( (val = ValAutoGVar( READ_EXPR(expr, 0) )) == 0 ) {
         ErrorReturnVoid(
             "Variable: '%g' must have an assigned value",
-            (Int)NameGVar( (UInt)(READ_EXPR(expr, 0)) ), 0L,
+            (Int)NameGVar( READ_EXPR(expr, 0) ), 0L,
             "you can 'return;' after assigning a value" );
     }
 
@@ -485,7 +485,7 @@ Obj             EvalIsbGVar (
     Obj                 val;            /* value, result                   */
 
     /* get the value of the global variable                                */
-    val = ValAutoGVar((UInt)(READ_EXPR(expr, 0)));
+    val = ValAutoGVar(READ_EXPR(expr, 0));
 
     /* return the value                                                    */
     return (val != (Obj)0 ? True : False);
@@ -502,7 +502,7 @@ void            PrintAssGVar (
     Stat                stat )
 {
     Pr( "%2>", 0L, 0L );
-    Pr("%H", (Int)NameGVar((UInt)(READ_STAT(stat, 0))), 0L);
+    Pr("%H", (Int)NameGVar(READ_STAT(stat, 0)), 0L);
     Pr( "%< %>:= ", 0L, 0L );
     PrintExpr(READ_EXPR(stat, 1));
     Pr( "%2<;", 0L, 0L );
@@ -512,7 +512,7 @@ void            PrintUnbGVar (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
-    Pr("%H", (Int)NameGVar((UInt)(READ_STAT(stat, 0))), 0L);
+    Pr("%H", (Int)NameGVar(READ_STAT(stat, 0)), 0L);
     Pr( " );", 0L, 0L );
 }
 
@@ -526,14 +526,14 @@ void            PrintUnbGVar (
 void            PrintRefGVar (
     Expr                expr )
 {
-    Pr("%H", (Int)NameGVar((UInt)(READ_STAT(expr, 0))), 0L);
+    Pr("%H", (Int)NameGVar(READ_STAT(expr, 0)), 0L);
 }
 
 void            PrintIsbGVar (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
-    Pr("%H", (Int)NameGVar((UInt)(READ_EXPR(expr, 0))), 0L);
+    Pr("%H", (Int)NameGVar(READ_EXPR(expr, 0)), 0L);
     Pr( " )", 0L, 0L );
 }
 
@@ -715,7 +715,7 @@ UInt            ExecAssListLevel (
     Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, left operand          */
     Obj                 rhss;           /* right hand sides, right operand */
-    Int                 level;          /* level                           */
+    UInt                level;          /* level                           */
     Int narg,i;
     Obj ixs;
 
@@ -736,7 +736,7 @@ UInt            ExecAssListLevel (
     rhss = EVAL_EXPR(READ_STAT(stat, narg + 1));
 
     /* get the level                                                       */
-    level = (Int)(READ_STAT(stat, narg + 2));
+    level = READ_STAT(stat, narg + 2);
 
     /* assign the right hand sides to the elements of several lists        */
     AssListLevel( lists, ixs, rhss, level );
@@ -766,7 +766,7 @@ UInt            ExecAsssListLevel (
     Obj                 lists;          /* lists, left operand             */
     Obj                 poss;           /* position, left operand          */
     Obj                 rhss;           /* right hand sides, right operand */
-    Int                 level;          /* level                           */
+    UInt                level;          /* level                           */
 
     /* evaluate lists (if this works, then <lists> is nested <level> deep, */
     /* checking it is nested <level>+1 deep is done by 'AsssListLevel')    */
@@ -781,7 +781,7 @@ UInt            ExecAsssListLevel (
     rhss = EVAL_EXPR(READ_STAT(stat, 2));
 
     /* get the level                                                       */
-    level = (Int)(READ_STAT(stat, 3));
+    level = READ_STAT(stat, 3);
 
     /* assign the right hand sides to several elements of several lists    */
     AsssListLevel( lists, poss, rhss, level );
@@ -999,7 +999,7 @@ Obj             EvalElmListLevel (
     Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, right operand         */
     Obj                 ixs;
-    Int                 level;          /* level                           */
+    UInt                level;          /* level                           */
     Int narg;
     Int i;
 
@@ -1015,7 +1015,7 @@ Obj             EvalElmListLevel (
     }
     SET_LEN_PLIST(ixs, narg);
     /* get the level                                                       */
-    level = (Int)(READ_EXPR(expr, narg + 1));
+    level = READ_EXPR(expr, narg + 1);
 
     /* select the elements from several lists (store them in <lists>)      */
     ElmListLevel( lists, ixs, level );
@@ -1044,7 +1044,7 @@ Obj             EvalElmsListLevel (
 {
     Obj                 lists;          /* lists, left operand             */
     Obj                 poss;           /* positions, right operand        */
-    Int                 level;          /* level                           */
+    UInt                level;          /* level                           */
 
     /* evaluate lists (if this works, then <lists> is nested <level> deep, */
     /* checking it is nested <level>+1 deep is done by 'ElmsListLevel')    */
@@ -1055,7 +1055,7 @@ Obj             EvalElmsListLevel (
     CheckIsPossList("List Elements", poss);
 
     /* get the level                                                       */
-    level = (Int)(READ_EXPR(expr, 2));
+    level = READ_EXPR(expr, 2);
 
     /* select several elements from several lists (store them in <lists>)  */
     ElmsListLevel( lists, poss, level );
@@ -1325,7 +1325,7 @@ UInt            ExecAssRecName (
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
-    rnam = (UInt)(READ_STAT(stat, 1));
+    rnam = READ_STAT(stat, 1);
 
     /* evaluate the right hand side                                        */
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
@@ -1388,7 +1388,7 @@ UInt            ExecUnbRecName (
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
-    rnam = (UInt)(READ_STAT(stat, 1));
+    rnam = READ_STAT(stat, 1);
 
     /* unbind the element of the record                                    */
     UNB_REC( record, rnam );
@@ -1444,7 +1444,7 @@ Obj             EvalElmRecName (
     record = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* get the name (stored immediately in the expression)                 */
-    rnam = (UInt)(READ_EXPR(expr, 1));
+    rnam = READ_EXPR(expr, 1);
 
     /* select the element of the record                                    */
     elm = ELM_REC( record, rnam );
@@ -1499,7 +1499,7 @@ Obj             EvalIsbRecName (
     record = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* get the name (stored immediately in the expression)                 */
-    rnam = (UInt)(READ_EXPR(expr, 1));
+    rnam = READ_EXPR(expr, 1);
 
     /* return the result                                                   */
     return (ISB_REC( record, rnam ) ? True : False);
@@ -1543,7 +1543,7 @@ void            PrintAssRecName (
     Pr("%4>",0L,0L);
     PrintExpr(READ_EXPR(stat, 0));
     Pr("%<.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM((UInt)(READ_STAT(stat, 1))), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0L);
     Pr("%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
     PrintExpr(READ_EXPR(stat, 2));
@@ -1557,7 +1557,7 @@ void            PrintUnbRecName (
     Pr("%2>",0L,0L);
     PrintExpr(READ_EXPR(stat, 0));
     Pr("%<.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM((UInt)(READ_STAT(stat, 1))), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0L);
     Pr("%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -1609,7 +1609,7 @@ void            PrintElmRecName (
     Pr("%2>",0L,0L);
     PrintExpr(READ_EXPR(expr, 0));
     Pr("%<.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM((UInt)(READ_EXPR(expr, 1))), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0L);
     Pr("%<",0L,0L);
 }
 
@@ -1620,7 +1620,7 @@ void            PrintIsbRecName (
     Pr("%2>",0L,0L);
     PrintExpr(READ_EXPR(expr, 0));
     Pr("%<.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM((UInt)(READ_EXPR(expr, 1))), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0L);
     Pr("%<",0L,0L);
     Pr( " )", 0L, 0L );
 }
@@ -1968,7 +1968,7 @@ UInt            ExecAssComObjName (
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
-    rnam = (UInt)(READ_STAT(stat, 1));
+    rnam = READ_STAT(stat, 1);
 
     /* evaluate the right hand side                                        */
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
@@ -2067,7 +2067,7 @@ UInt            ExecUnbComObjName (
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
-    rnam = (UInt)(READ_STAT(stat, 1));
+    rnam = READ_STAT(stat, 1);
 
     /* unbind the element of the record                                    */
     switch (TNUM_OBJ(record)) {
@@ -2147,7 +2147,7 @@ Obj             EvalElmComObjName (
     record = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* get the name (stored immediately in the expression)                 */
-    rnam = (UInt)(READ_EXPR(expr, 1));
+    rnam = READ_EXPR(expr, 1);
 
     /* select the element of the record                                    */
     switch (TNUM_OBJ(record)) {
@@ -2227,7 +2227,7 @@ Obj             EvalIsbComObjName (
     record = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* get the name (stored immediately in the expression)                 */
-    rnam = (UInt)(READ_EXPR(expr, 1));
+    rnam = READ_EXPR(expr, 1);
 
     /* select the element of the record                                    */
     switch (TNUM_OBJ(record)) {
@@ -2302,7 +2302,7 @@ void            PrintAssComObjName (
     Pr("%4>",0L,0L);
     PrintExpr(READ_EXPR(stat, 0));
     Pr("%<!.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM((UInt)(READ_STAT(stat, 1))), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0L);
     Pr("%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
     PrintExpr(READ_EXPR(stat, 2));
@@ -2316,7 +2316,7 @@ void            PrintUnbComObjName (
     Pr("%2>",0L,0L);
     PrintExpr(READ_EXPR(stat, 0));
     Pr("%<!.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM((UInt)(READ_STAT(stat, 1))), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0L);
     Pr("%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -2368,7 +2368,7 @@ void            PrintElmComObjName (
     Pr("%2>",0L,0L);
     PrintExpr(READ_EXPR(expr, 0));
     Pr("%<!.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM((UInt)(READ_EXPR(expr, 1))), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0L);
     Pr("%<",0L,0L);
 }
 
@@ -2379,7 +2379,7 @@ void            PrintIsbComObjName (
     Pr("%2>",0L,0L);
     PrintExpr(READ_EXPR(expr, 0));
     Pr("%<!.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM((UInt)(READ_EXPR(expr, 1))), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0L);
     Pr("%<",0L,0L);
     Pr( " )", 0L, 0L );
 }
