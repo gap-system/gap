@@ -32,11 +32,11 @@ gap> PrintRenderedText:=function( chapter, section, key... )
 > local t2t, startline, lastline, i;
 > atomic readwrite HELP_REGION do
 >   if Length(key)=0 then
->     t2t:=HELP_PRINT_SECTION_TEXT(HELP_BOOK_INFO("fakepkg"),chapter,section);;
+>     t2t:=HELP_PRINT_SECTION_TEXT(HELP_BOOK_INFO("mockpkg"),chapter,section);;
 >     startline := 1;
 >     lastline  := Length(t2t.lines);
 >   else
->     t2t:=HELP_PRINT_SECTION_TEXT(HELP_BOOK_INFO("fakepkg"),chapter,section,key[1]);;
+>     t2t:=HELP_PRINT_SECTION_TEXT(HELP_BOOK_INFO("mockpkg"),chapter,section,key[1]);;
 >     if t2t.start+key[2] > Length(t2t.lines) then
 >       startline := Length(t2t.lines)-key[2]+1; 
 >     else
@@ -50,9 +50,9 @@ gap> PrintRenderedText:=function( chapter, section, key... )
 > od;
 > end;;
 
-# Load the help book for the fakepkg package
+# Load the help book for the mockpkg package
 #
-gap> HELP_ADD_BOOK("fakepkg","fakepkg",DirectoriesLibrary("tst/fakepkg/doc")[1]);
+gap> HELP_ADD_BOOK("mockpkg","mockpkg",DirectoriesLibrary("tst/mockpkg/doc")[1]);
 
 # First we test calling HELP_PRINT_SECTION_TEXT with three arguments
 #
