@@ -18,10 +18,7 @@
 #endif
 
 enum {
-    STATE_MAX_HANDLERS = 256,
     STATE_SLOTS_SIZE = 32768,
-
-    MAX_OPEN_FILES = 16,
 
     MAX_VALUE_LEN = 1024,
 };
