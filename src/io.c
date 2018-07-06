@@ -131,6 +131,10 @@ static Char promptBuf[81];
 
 static ModuleStateOffset IOStateOffset = -1;
 
+enum {
+    MAX_OPEN_FILES = 16,
+};
+
 struct IOModuleState {
 
     // The stack of the open input files
