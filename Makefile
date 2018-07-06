@@ -11,7 +11,7 @@
 #
 .DEFAULT:
 	@if test -f GNUmakefile ; then \
-	    printf "Please use GNU make to build GAP (try 'gmake' or 'gnumake')" ; \
+	    printf "Please use GNU make to build GAP (try 'gmake' or 'gnumake')\n" ; \
 	  else \
 		printf "You need to run "; \
 		if ! test -f configure ; then \
