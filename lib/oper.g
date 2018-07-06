@@ -1931,6 +1931,36 @@ end);
 
 fi;
 
+if BASE_SIZE_METHODS_OPER_ENTRY <> 5 then
+    Error("MethodsOperation must be updated for new BASE_SIZE_METHODS_OPER_ENTRY");
+fi;
+
+# TODO: document this?!
+BIND_GLOBAL("MethodsOperation", function(oper, nargs)
+    local meths, len, result, i, m;
+
+    meths := METHODS_OPERATION(oper, nargs);
+    if meths = fail then
+        return fail;
+    fi;
+    len := BASE_SIZE_METHODS_OPER_ENTRY + nargs;
+    result := [];
+    for i in [0, len .. LENGTH(meths) - len] do
+        m := rec(
+            famPred := meths[i + 1],
+            argFilt := meths{[i + 2 .. i + nargs + 1]},
+            func    := meths[i + nargs + 2],
+            rank    := meths[i + nargs + 3],
+            info    := meths[i + nargs + 4],
+            );
+        ADD_LIST(result, m);
+        if IsBound(meths[ + nargs + 5]) then
+            m.location := meths[ + nargs + 5];
+        fi;
+    od;
+    return result;
+end );
+
 #############################################################################
 ##
 #E
