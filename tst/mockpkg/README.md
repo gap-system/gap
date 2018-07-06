@@ -1,4 +1,4 @@
-The GAP 4 package `fakepkg`
+The GAP 4 package `mockpkg`
 ===========================
 
 This is a mock package to be used to test GAP library code

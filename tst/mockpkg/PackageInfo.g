@@ -1,5 +1,5 @@
 #
-# fakepkg: A fake package for use by the GAP test suite
+# mockpkg: A mock package for use by the GAP test suite
 #
 # This file contains package meta data. For additional information on
 # the meaning and correct usage of these fields, please consult the
@@ -8,8 +8,8 @@
 #
 SetPackageInfo( rec(
 
-PackageName := "fakepkg",
-Subtitle := "A fake package for use by the GAP test suite",
+PackageName := "mockpkg",
+Subtitle := "A mock package for use by the GAP test suite",
 Version := "0.1",
 Date := "21/03/2018", # dd/mm/yyyy format
 
@@ -19,22 +19,22 @@ Persons := [
     IsMaintainer := true,
     FirstNames := "Active",
     LastName := "Author",
-    WWWHome := "https://fakepkg.gap-system.org/~author",
-    Email := "a.author@fakepkg.gap-system.org",
+    WWWHome := "https://mockpkg.gap-system.org/~author",
+    Email := "a.author@mockpkg.gap-system.org",
   ),
   rec(
     IsAuthor := true,
     IsMaintainer := false,
     FirstNames := "Retired",
     LastName := "Author",
-    Email := "r.author@fakepkg.gap-system.org",
+    Email := "r.author@mockpkg.gap-system.org",
   ),
   rec(
     IsAuthor := false,
     IsMaintainer := true,
     FirstNames := "Only",
     LastName := "Maintainer",
-    WWWHome := "https://fakepkg.gap-system.org/~maintainer",
+    WWWHome := "https://mockpkg.gap-system.org/~maintainer",
   ),
   rec(
     IsAuthor := false,
@@ -48,7 +48,7 @@ Persons := [
 #IssueTrackerURL := "TODO",
 #SupportEmail := "TODO",
 
-PackageWWWHome := "https://fakepkg.gap-system.org/",
+PackageWWWHome := "https://mockpkg.gap-system.org/",
 
 PackageInfoURL := Concatenation( ~.PackageWWWHome, "PackageInfo.g" ),
 README_URL     := Concatenation( ~.PackageWWWHome, "README.md" ),
@@ -70,12 +70,12 @@ Status := "dev",
 AbstractHTML   :=  "",
 
 PackageDoc := rec(
-  BookName  := "fakepkg",
+  BookName  := "mockpkg",
   ArchiveURLSubset := ["doc"],
   HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
   SixFile   := "doc/manual.six",
-  LongTitle := "A fake package for use by the GAP test suite",
+  LongTitle := "A mock package for use by the GAP test suite",
 ),
 
 Dependencies := rec(
