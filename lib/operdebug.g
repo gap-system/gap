@@ -30,16 +30,15 @@ BIND_GLOBAL("WriteMethodOverview", function(fname)
     return Concatenation(":",String(n),"\c");
   end;
   f := function()
-    local nam, m, s, op, i, j;
+    local op, nam, i, ms, m;
     for op in OPERATIONS do
       nam := NameFunction(op);
       for i in [0..6] do
-        m := METHODS_OPERATION(op, i);
-        s := BASE_SIZE_METHODS_OPER_ENTRY + i;
-        for j in [1..Length(m)/s] do
+        ms := MethodsOperation(op, i);
+        for m in ms do
           Print(nam,";\c",i,";",
-                relname(m[j*s][1]),":",m[j*s][2],";\c",
-                m[j*s-2],"\n");
+                relname(m.location[1]),":",m.location[2],";\c",
+                m.rank,"\n");
         od;
       od;
     od;
