@@ -208,17 +208,14 @@ static inline void FinishAndCallFakeFuncExpr(void)
     // code a function expression (with one statement in the body)
     CodeFuncExprEnd(1);
 
-    // switch back to immediate mode
-    CodeEnd(0);
+    // switch back to immediate mode and get the function
+    Obj func = CodeEnd(0);
 
     // If we are in a break loop, then we will have created a "dummy" local
     // variable names list to get the counts right. Remove it.
     const UInt len = LEN_PLIST(STATE(StackNams));
     if (len > 0)
         PopPlist(STATE(StackNams));
-
-    // get the function
-    Obj func = STATE(CodeResult);
 
     // call the function
     CALL_0ARGS(func);
@@ -490,11 +487,8 @@ void IntrFuncExprEnd(UInt nr)
     CodeFuncExprEnd(nr);
 
     if (STATE(IntrCoding) == 0) {
-        // switch back to immediate mode
-        CodeEnd(0);
-
-        // get the function
-        Obj func = STATE(CodeResult);
+        // switch back to immediate mode and get the function
+        Obj func = CodeEnd(0);
 
         // push the function
         PushObj(func);
