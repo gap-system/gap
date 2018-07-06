@@ -114,7 +114,8 @@ BIND_GLOBAL("ErrorInner",
         function( arg )
     local   context, mayReturnVoid,  mayReturnObj,  lateMessage,  earlyMessage,  
             x,  prompt,  res, errorLVars, justQuit, printThisStatement,
-            location, lastErrorStream, shellOut, shellIn;
+            printEarlyMessage, printEarlyTraceback, lastErrorStream,
+            shellOut, shellIn;
 
 	context := arg[1].context;
     if not IsLVarsBag(context) then
@@ -185,25 +186,56 @@ BIND_GLOBAL("ErrorInner",
         JUMP_TO_CATCH(1);
     fi;
         
+    # Local functions that print the user feedback.
+    printEarlyMessage := function(stream)
+        PrintTo(stream, "Error, ");
+        # earlyMessage usually contains information about what went wrong.
+        for x in earlyMessage do
+            PrintTo(stream, x);
+        od;
+    end;
+
+    printEarlyTraceback := function(stream)
+        local location;
+        if printThisStatement then
+            if context <> GetBottomLVars() then
+                PrintTo(stream, " in\n  ");
+                PRINT_CURRENT_STATEMENT(stream, context);
+                PrintTo(stream, " called from ");
+            fi;
+        else
+            location := CURRENT_STATEMENT_LOCATION(context);
+            if location <> fail then
+              PrintTo(stream, " at ", location[1], ":", location[2]);
+            fi;
+            PrintTo(stream, " called from");
+        fi;
+        PrintTo("*errout*", "\n");
+    end;
+
     ErrorLevel := ErrorLevel+1;
     ERROR_COUNT := ERROR_COUNT+1;
     errorLVars := ErrorLVars;
     ErrorLVars := context;
-    # BreakOnError is defined by the `-T` command line flag in init.g
+    # Do we want to skip the break loop?
+    # BreakOnError is initialized by the `-T` command line flag in init.g
     if QUITTING or not BreakOnError then
-        if not SilentErrors then
-            PrintTo("*errout*", "Error, ");
-            for x in earlyMessage do
-                PrintTo("*errout*", x);
-            od;
+        # If we skip the break loop, the standard behaviour is to print only
+        # the earlyMessage. If SilentNonInteractiveErrors is true we do not
+        # print any messages.
+        # This is used by HPC-GAP to e.g. suppress error messages in worker
+        # threads.
+        if not SilentNonInteractiveErrors then
+            printEarlyMessage("*errout*");
             PrintTo("*errout*", "\n");
         fi;
         if IsHPCGAP then
+            # In HPC-GAP we want to access error messages encountered in
+            # tasks via TaskError. To this end we store the error message
+            # in the thread local variable LastErrorMessage.
             LastErrorMessage := "";
             lastErrorStream := OutputTextString(LastErrorMessage, true);
-            for x in earlyMessage do
-                PrintTo(lastErrorStream, x);
-            od;
+            printEarlyMessage(lastErrorStream);
             CloseStream(lastErrorStream);
             MakeImmutable(LastErrorMessage);
         fi;
@@ -212,33 +244,20 @@ BIND_GLOBAL("ErrorInner",
         if ErrorLevel = 0 then LEAVE_ALL_NAMESPACES(); fi;
         JUMP_TO_CATCH(0);
     fi;
-    PrintTo("*errout*", "Error, ");
-    for x in earlyMessage do
-        PrintTo("*errout*", x);
-    od;
-    if printThisStatement then 
-        if context <> GetBottomLVars() then
-            PrintTo("*errout*", " in\n  ");
-            PRINT_CURRENT_STATEMENT("*errout*", context);
-            PrintTo("*errout*", " called from \n");
-        else
-            PrintTo("*errout*", "\n");
-        fi;
-    else
-        location := CURRENT_STATEMENT_LOCATION(context);
-        if location <> fail then
-          PrintTo("*errout*", " at ", location[1], ":", location[2]);
-        fi;
-        PrintTo("*errout*", " called from\n");
-    fi;
+
+    printEarlyMessage("*errout*");
+    printEarlyTraceback("*errout*");
 
     if SHOULD_QUIT_ON_BREAK() then
         FORCE_QUIT_GAP(1);
     fi;
 
+    # OnBreak() is set to Where() by default, which prints the traceback.
     if IsBound(OnBreak) and IsFunction(OnBreak) then
         OnBreak();
     fi;
+
+    # Now print lateMessage and OnBreakMessage a la "press return; to .."
     if IsString(lateMessage) then
         PrintTo("*errout*", lateMessage,"\n");
     elif lateMessage then

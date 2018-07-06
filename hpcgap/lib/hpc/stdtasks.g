@@ -18,7 +18,7 @@ TASKS := AtomicRecord( rec (
   WorkerThread := function(context)
     local task;
     BreakOnError := false;
-    SilentErrors := true;
+    SilentNonInteractiveErrors := true;
     WaitSemaphore(context.semaphore);
     while true do
       WaitSemaphore(context.semaphore);

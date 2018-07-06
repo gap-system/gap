@@ -248,11 +248,11 @@ CallAndInstallPostRestore( function()
 
     if IsHPCGAP then
       BindThreadLocal( "BreakOnError", not GAPInfo.CommandLineOptions.T );
-      BindThreadLocal( "SilentErrors", false );
+      BindThreadLocal( "SilentNonInteractiveErrors", false );
       BindThreadLocal( "LastErrorMessage", "" );
     else
       ASS_GVAR( "BreakOnError", not GAPInfo.CommandLineOptions.T );
-      ASS_GVAR( "SilentErrors", false );
+      ASS_GVAR( "SilentNonInteractiveErrors", false );
     fi;
 end);
 
