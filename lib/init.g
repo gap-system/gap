@@ -247,8 +247,13 @@ CallAndInstallPostRestore( function()
     UNBIND_GLOBAL( "DEBUG_LOADING" );
 
     if IsHPCGAP then
+      # In HPC-GAP we want to decide how to handle errors on a per thread
+      # basis. E.g. the break loop can be disabled in a worker thread that
+      # runs tasks.
       BindThreadLocal( "BreakOnError", not GAPInfo.CommandLineOptions.T );
       BindThreadLocal( "SilentNonInteractiveErrors", false );
+      # We store the error messages on a per thread basis to be able to
+      # e.g. access them independently from the main thread.
       BindThreadLocal( "LastErrorMessage", "" );
     else
       ASS_GVAR( "BreakOnError", not GAPInfo.CommandLineOptions.T );
