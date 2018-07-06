@@ -236,6 +236,8 @@ fi;
 ##
 ##  - Unbind `DEBUG_LOADING', since later the `-D' option can be checked.
 ##  - Set or disable break loop according to the `-T' option.
+##  - Set whether traceback may be suppressed (e.g. by `-T') according to the
+##    `--alwaystrace' option.
 ##
 CallAndInstallPostRestore( function()
     if DEBUG_LOADING then
@@ -251,12 +253,17 @@ CallAndInstallPostRestore( function()
       # basis. E.g. the break loop can be disabled in a worker thread that
       # runs tasks.
       BindThreadLocal( "BreakOnError", not GAPInfo.CommandLineOptions.T );
+      BindThreadLocal(
+        "AlwaysPrintTracebackOnError",
+        GAPInfo.CommandLineOptions.alwaystrace
+      );
       BindThreadLocal( "SilentNonInteractiveErrors", false );
       # We store the error messages on a per thread basis to be able to
       # e.g. access them independently from the main thread.
       BindThreadLocal( "LastErrorMessage", "" );
     else
       ASS_GVAR( "BreakOnError", not GAPInfo.CommandLineOptions.T );
+      ASS_GVAR( "AlwaysPrintTracebackOnError", GAPInfo.CommandLineOptions.alwaystrace );
       ASS_GVAR( "SilentNonInteractiveErrors", false );
     fi;
 end);
