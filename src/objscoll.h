@@ -122,9 +122,9 @@ extern Obj FuncFinPowConjCol_ReducedQuotient ( Obj, Obj, Obj, Obj );
 
 /****************************************************************************
 **
-*F  InitInfoSingleCollector() . . . . . . . . . . . . table of init functions
+*F  InitInfoCollectors() . . . . . . . . . . . . . .  table of init functions
 */
-StructInitInfo * InitInfoSingleCollector ( void );
+StructInitInfo * InitInfoCollectors ( void );
 
 
 #endif // GAP_OBJSCOLL_H

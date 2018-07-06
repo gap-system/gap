@@ -70,7 +70,6 @@ SOURCES += src/lists.c
 SOURCES += src/macfloat.c
 SOURCES += src/modules.c
 SOURCES += src/modules-builtin.c
-SOURCES += src/objccoll.c
 SOURCES += src/objcftl.c
 SOURCES += src/objects.c
 SOURCES += src/objfgelm.c
