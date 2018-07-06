@@ -185,7 +185,7 @@ BIND_GLOBAL("ErrorInner",
         LEAVE_ALL_NAMESPACES();
         JUMP_TO_CATCH(1);
     fi;
-        
+
     # Local functions that print the user feedback.
     printEarlyMessage := function(stream)
         PrintTo(stream, "Error, ");
@@ -222,12 +222,21 @@ BIND_GLOBAL("ErrorInner",
     if QUITTING or not BreakOnError then
         # If we skip the break loop, the standard behaviour is to print only
         # the earlyMessage. If SilentNonInteractiveErrors is true we do not
-        # print any messages.
-        # This is used by HPC-GAP to e.g. suppress error messages in worker
+        # print any messages. If AlwaysPrintTracebackOnError is true we also
+        # call OnBreak(), which by default prints the traceback.
+        # SilentNonInteractiveErrors superseeds AlwaysPrintTracebackOnError.
+        # It is used by HPC-GAP to e.g. suppress error messages in worker
         # threads.
         if not SilentNonInteractiveErrors then
             printEarlyMessage("*errout*");
-            PrintTo("*errout*", "\n");
+            if AlwaysPrintTracebackOnError then
+                printEarlyTraceback("*errout*");
+                if IsBound(OnBreak) and IsFunction(OnBreak) then
+                    OnBreak();
+                fi;
+            else
+                PrintTo("*errout*", "\n");
+            fi;
         fi;
         if IsHPCGAP then
             # In HPC-GAP we want to access error messages encountered in
@@ -236,6 +245,17 @@ BIND_GLOBAL("ErrorInner",
             LastErrorMessage := "";
             lastErrorStream := OutputTextString(LastErrorMessage, true);
             printEarlyMessage(lastErrorStream);
+            if AlwaysPrintTracebackOnError then
+                printEarlyTraceback(lastErrorStream);
+                # FIXME: Also make HPCGAP work with OnBreak().
+                # If AlwaysPrintTracebackOnError is true, the output of
+                # OnBreak() should also be put into LastErrorMessage.
+                # To do this there needs to be a way to put its output
+                # into lastErrorStream.
+                # OnBreak() is documented to not take any arguments.
+                # One could work around that if there were e.g. a GAP error
+                # stream which all error functions print to.
+            fi;
             CloseStream(lastErrorStream);
             MakeImmutable(LastErrorMessage);
         fi;
@@ -249,6 +269,14 @@ BIND_GLOBAL("ErrorInner",
     printEarlyTraceback("*errout*");
 
     if SHOULD_QUIT_ON_BREAK() then
+        # Again, the default is to not print the rest of the traceback.
+        # If AlwaysPrintTracebackOnError is true we do so anyways.
+        if
+            AlwaysPrintTracebackOnError
+            and IsBound(OnBreak) and IsFunction(OnBreak)
+        then
+            OnBreak();
+        fi;
         FORCE_QUIT_GAP(1);
     fi;
 
