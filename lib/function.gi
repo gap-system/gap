@@ -73,9 +73,11 @@ end);
 
 InstallMethod(String, "for a function, with whitespace reduced", [IsFunction and IsInternalRep],
 function(fun)
-    local  s, str;
-    s := ShallowCopy(DisplayString(fun));
-    Remove(s);
+    local  s, stream;
+    s := "";
+    stream := OutputTextString(s, true);
+    PrintTo(stream, fun);
+    CloseStream(stream);
     NormalizeWhitespace(s);
     return MakeImmutable(s);
 end);
