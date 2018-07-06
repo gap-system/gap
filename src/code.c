@@ -571,8 +571,7 @@ void CodeBegin ( void )
     STATE(CodeResult) = 0;
 }
 
-UInt CodeEnd (
-    UInt                error )
+Obj CodeEnd(UInt error)
 {
     /* if everything went fine                                             */
     if ( ! error ) {
@@ -585,6 +584,7 @@ UInt CodeEnd (
         assert( STATE(CurrLVars) == STATE(CodeLVars) );
 
         /* 'CodeFuncExprEnd' left the function already in 'STATE(CodeResult)'     */
+        return STATE(CodeResult);
     }
 
     /* otherwise clean up the mess                                         */
@@ -596,10 +596,9 @@ UInt CodeEnd (
 
         /* go back to the correct frame                                    */
         SWITCH_TO_OLD_LVARS( STATE(CodeLVars) );
-    }
 
-    /* return value is ignored                                             */
-    return 0;
+        return 0;
+    }
 }
 
 

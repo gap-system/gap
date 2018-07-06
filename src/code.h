@@ -543,14 +543,14 @@ enum EXPR_TNUM {
 **  'CodeEnd' stops the coder.  It  is called from the immediate  interpreter
 **  when he is done with the construct  that it cannot immediately interpret.
 **  If <error> is  non-zero, a syntax error  was detected by the  reader, and
-**  the coder should only clean up.
+**  the coder should only clean up. Otherwise, returns the newly coded
+**  function.
 **
 **  ...only function expressions inbetween...
 */
 extern  void            CodeBegin ( void );
 
-extern  UInt            CodeEnd (
-            UInt                error );
+extern Obj CodeEnd(UInt error);
 
 
 /****************************************************************************
