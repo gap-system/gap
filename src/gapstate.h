@@ -75,16 +75,6 @@ typedef struct GAPState {
 
     /* From code.c */
     Stat * PtrBody;
-    Stat   OffsBody;
-    Stat * OffsBodyStack;
-    UInt   OffsBodyCount;
-
-    Obj CodeResult;
-    Bag StackStat;
-    Int CountStat;
-    Bag StackExpr;
-    Int CountExpr;
-    Bag CodeLVars;
 
     /* From opers.c */
 #if defined(HPCGAP)

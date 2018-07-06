@@ -55,6 +55,8 @@ static Obj TYPE_KERNEL_OBJECT;
 */
 /* TL: Stat * PtrBody; */
 
+struct CodeState {
+
 /****************************************************************************
 **
 *V  OffsBody  . . . . . . . . . . . . . . . . . . . .  offset in current body
@@ -62,19 +64,48 @@ static Obj TYPE_KERNEL_OBJECT;
 **  'OffsBody' is the  offset in the current   body.  It is  only valid while
 **  coding.
 */
-/* TL: Stat OffsBody; */
+Stat OffsBody;
 
-/* TL: Stat OffsBodyStack[1024]; */
-/* TL: UInt OffsBodyCount = 0; */
+Stat * OffsBodyStack;
+UInt OffsBodyCount;
+
+/****************************************************************************
+**
+*V  CodeResult  . . . . . . . . . . . . . . . . . . . . . .  result of coding
+**
+**  'CodeResult'  is the result  of the coding, i.e.,   the function that was
+**  coded.
+*/
+Obj CodeResult;
+
+Bag StackStat;
+Int CountStat;
+
+Bag StackExpr;
+Int CountExpr;
+
+Bag CodeLVars;
+
+};
+
+static ModuleStateOffset CodeStateOffset = -1;
+
+extern inline struct CodeState * CodeState(void)
+{
+    return (struct CodeState *)StateSlotsAtOffset(CodeStateOffset);
+}
+
+#define CS(x) (CodeState()->x)
+
 
 static inline void PushOffsBody( void ) {
-  GAP_ASSERT(STATE(OffsBodyCount) < MAX_FUNC_EXPR_NESTING);
-  STATE(OffsBodyStack)[STATE(OffsBodyCount)++] = STATE(OffsBody);
+    GAP_ASSERT(CS(OffsBodyCount) < MAX_FUNC_EXPR_NESTING);
+    CS(OffsBodyStack)[CS(OffsBodyCount)++] = CS(OffsBody);
 }
 
 static inline void PopOffsBody( void ) {
-  GAP_ASSERT(STATE(OffsBodyCount));
-  STATE(OffsBody) = STATE(OffsBodyStack)[--STATE(OffsBodyCount)];
+    GAP_ASSERT(CS(OffsBodyCount));
+    CS(OffsBody) = CS(OffsBodyStack)[--CS(OffsBodyCount)];
 }
 
 // filename
@@ -172,17 +203,17 @@ static Stat NewStatWithProf (
     Stat                stat;           /* result                          */
 
     /* this is where the new statement goes                                */
-    stat = STATE(OffsBody) + sizeof(StatHeader);
+    stat = CS(OffsBody) + sizeof(StatHeader);
 
     /* increase the offset                                                 */
-    STATE(OffsBody) = stat + ((size+sizeof(Stat)-1) / sizeof(Stat)) * sizeof(Stat);
+    CS(OffsBody) = stat + ((size+sizeof(Stat)-1) / sizeof(Stat)) * sizeof(Stat);
 
     /* make certain that the current body bag is large enough              */
     Obj body = BODY_FUNC(CURR_FUNC());
     UInt bodySize = SIZE_BAG(body);
     if (bodySize == 0)
-        bodySize = STATE(OffsBody);
-    while (bodySize < STATE(OffsBody))
+        bodySize = CS(OffsBody);
+    while (bodySize < CS(OffsBody))
         bodySize *= 2;
     ResizeBag(body, bodySize);
     STATE(PtrBody) = (Stat*)PTR_BAG(body);
@@ -221,16 +252,6 @@ Expr            NewExpr (
 
 /****************************************************************************
 **
-*V  CodeResult  . . . . . . . . . . . . . . . . . . . . . .  result of coding
-**
-**  'CodeResult'  is the result  of the coding, i.e.,   the function that was
-**  coded.
-*/
-/* TL: Obj CodeResult; */
-
-
-/****************************************************************************
-**
 *V  StackStat . . . . . . . . . . . . . . . . . . . . . . .  statements stack
 *V  CountStat . . . . . . . . . . . . . . . number of statements on the stack
 *F  PushStat( <stat> )  . . . . . . . . . . . . push statement onto the stack
@@ -249,27 +270,27 @@ Expr            NewExpr (
 */
 static inline UInt CapacityStatStack(void)
 {
-    return SIZE_BAG(STATE(StackStat))/sizeof(Stat) - 1;
+    return SIZE_BAG(CS(StackStat)) / sizeof(Stat) - 1;
 }
 
 static void PushStat (
     Stat                stat )
 {
     /* there must be a stack, it must not be underfull or overfull         */
-    assert( STATE(StackStat) != 0 );
-    assert( 0 <= STATE(CountStat) );
-    assert( STATE(CountStat) <= CapacityStatStack() );
-    assert( stat != 0 );
+    GAP_ASSERT(CS(StackStat) != 0);
+    GAP_ASSERT(0 <= CS(CountStat));
+    GAP_ASSERT(CS(CountStat) <= CapacityStatStack());
+    GAP_ASSERT( stat != 0 );
 
     // count up and put the statement onto the stack
-    if ( STATE(CountStat) == CapacityStatStack() ) {
-        ResizeBag( STATE(StackStat), (2*STATE(CountStat) + 1)*sizeof(Stat) );
+    if (CS(CountStat) == CapacityStatStack()) {
+        ResizeBag(CS(StackStat), (2 * CS(CountStat) + 1) * sizeof(Stat));
     }
 
     // put
-    Stat * data = (Stat *)PTR_BAG(STATE(StackStat)) + 1;
-    data[STATE(CountStat)] = stat;
-    STATE(CountStat)++;
+    Stat * data = (Stat *)PTR_BAG(CS(StackStat)) + 1;
+    data[CS(CountStat)] = stat;
+    CS(CountStat)++;
 }
 
 static Stat PopStat ( void )
@@ -277,14 +298,14 @@ static Stat PopStat ( void )
     Stat                stat;
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
-    assert( STATE(StackStat) != 0 );
-    assert( 1 <= STATE(CountStat) );
-    assert( STATE(CountStat) <= CapacityStatStack() );
+    GAP_ASSERT(CS(StackStat) != 0);
+    GAP_ASSERT(1 <= CS(CountStat));
+    GAP_ASSERT(CS(CountStat) <= CapacityStatStack());
 
     /* get the top statement from the stack, and count down                */
-    STATE(CountStat)--;
-    Stat * data = (Stat *)PTR_BAG(STATE(StackStat)) + 1;
-    stat = data[STATE(CountStat)];
+    CS(CountStat)--;
+    Stat * data = (Stat *)PTR_BAG(CS(StackStat)) + 1;
+    stat = data[CS(CountStat)];
 
     /* return the popped statement                                         */
     return stat;
@@ -375,25 +396,25 @@ static inline Stat PopLoopStat(UInt baseType, UInt extra, UInt nr)
 */
 static inline UInt CapacityStackExpr(void)
 {
-    return SIZE_BAG(STATE(StackExpr))/sizeof(Expr) - 1;
+    return SIZE_BAG(CS(StackExpr)) / sizeof(Expr) - 1;
 }
 
 static void PushExpr(Expr expr)
 {
     /* there must be a stack, it must not be underfull or overfull         */
-    assert( STATE(StackExpr) != 0 );
-    assert( 0 <= STATE(CountExpr) );
-    assert( STATE(CountExpr) <= CapacityStackExpr() );
-    assert( expr != 0 );
+    GAP_ASSERT(CS(StackExpr) != 0);
+    GAP_ASSERT(0 <= CS(CountExpr));
+    GAP_ASSERT(CS(CountExpr) <= CapacityStackExpr());
+    GAP_ASSERT( expr != 0 );
 
     /* count up and put the expression onto the stack                      */
-    if ( STATE(CountExpr) == CapacityStackExpr() ) {
-        ResizeBag( STATE(StackExpr), (2*STATE(CountExpr) + 1)*sizeof(Expr) );
+    if (CS(CountExpr) == CapacityStackExpr()) {
+        ResizeBag(CS(StackExpr), (2 * CS(CountExpr) + 1) * sizeof(Expr));
     }
 
-    Expr * data = (Expr *)PTR_BAG(STATE(StackExpr)) + 1;
-    data[STATE(CountExpr)] = expr;
-    STATE(CountExpr)++;
+    Expr * data = (Expr *)PTR_BAG(CS(StackExpr)) + 1;
+    data[CS(CountExpr)] = expr;
+    CS(CountExpr)++;
 }
 
 static Expr PopExpr(void)
@@ -401,14 +422,14 @@ static Expr PopExpr(void)
     Expr                expr;
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
-    assert( STATE(StackExpr) != 0 );
-    assert( 1 <= STATE(CountExpr) );
-    assert( STATE(CountExpr) <= CapacityStackExpr() );
+    GAP_ASSERT(CS(StackExpr) != 0);
+    GAP_ASSERT(1 <= CS(CountExpr));
+    GAP_ASSERT(CS(CountExpr) <= CapacityStackExpr());
 
     /* get the top expression from the stack, and count down               */
-    STATE(CountExpr)--;
-    Expr * data = (Expr *)PTR_BAG(STATE(StackExpr)) + 1;
-    expr = data[STATE(CountExpr)];
+    CS(CountExpr)--;
+    Expr * data = (Expr *)PTR_BAG(CS(StackExpr)) + 1;
+    expr = data[CS(CountExpr)];
 
     /* return the popped expression                                        */
     return expr;
@@ -556,19 +577,18 @@ void            CodeFuncCallOptionsEnd ( UInt nr )
 **
 **  ...only function expressions inbetween...
 */
-/* TL: Bag CodeLVars; */
 
 void CodeBegin ( void )
 {
     /* the stacks must be empty                                            */
-    assert( STATE(CountStat) == 0 );
-    assert( STATE(CountExpr) == 0 );
+    GAP_ASSERT(CS(CountStat) == 0);
+    GAP_ASSERT(CS(CountExpr) == 0);
 
     /* remember the current frame                                          */
-    STATE(CodeLVars) = STATE(CurrLVars);
+    CS(CodeLVars) = STATE(CurrLVars);
 
     /* clear the code result bag                                           */
-    STATE(CodeResult) = 0;
+    CS(CodeResult) = 0;
 }
 
 Obj CodeEnd(UInt error)
@@ -577,25 +597,25 @@ Obj CodeEnd(UInt error)
     if ( ! error ) {
 
         /* the stacks must be empty                                        */
-        assert( STATE(CountStat) == 0 );
-        assert( STATE(CountExpr) == 0 );
+        GAP_ASSERT(CS(CountStat) == 0);
+        GAP_ASSERT(CS(CountExpr) == 0);
 
         /* we must be back to 'STATE(CurrLVars)'                                  */
-        assert( STATE(CurrLVars) == STATE(CodeLVars) );
+        GAP_ASSERT(STATE(CurrLVars) == CS(CodeLVars));
 
-        /* 'CodeFuncExprEnd' left the function already in 'STATE(CodeResult)'     */
-        return STATE(CodeResult);
+        /* 'CodeFuncExprEnd' left the function already in 'CS(CodeResult)'     */
+        return CS(CodeResult);
     }
 
     /* otherwise clean up the mess                                         */
     else {
 
         /* empty the stacks                                                */
-        STATE(CountStat) = 0;
-        STATE(CountExpr) = 0;
+        CS(CountStat) = 0;
+        CS(CountExpr) = 0;
 
         /* go back to the correct frame                                    */
-        SWITCH_TO_OLD_LVARS( STATE(CodeLVars) );
+        SWITCH_TO_OLD_LVARS(CS(CodeLVars));
 
         return 0;
     }
@@ -735,7 +755,7 @@ void CodeFuncExprBegin (
     /* record where we are reading from */
     SET_GAPNAMEID_BODY(body, GetInputFilenameID());
     SET_STARTLINE_BODY(body, startLine);
-    STATE(OffsBody) = sizeof(BodyHeader);
+    CS(OffsBody) = sizeof(BodyHeader);
 
     /* give it an environment                                              */
     SET_ENVI_FUNC( fexp, STATE(CurrLVars) );
@@ -802,7 +822,7 @@ void CodeFuncExprEnd(UInt nr)
     MakeImmutable( FEXS_FUNC( fexp ) );
 
     /* make the body smaller                                               */
-    ResizeBag( BODY_FUNC(fexp), STATE(OffsBody) );
+    ResizeBag(BODY_FUNC(fexp), CS(OffsBody));
     SET_ENDLINE_BODY(BODY_FUNC(fexp), GetInputLineNumber());
 
     /* switch back to the previous function                                */
@@ -813,7 +833,7 @@ void CodeFuncExprEnd(UInt nr)
 
     /* if this was inside another function definition, make the expression */
     /* and store it in the function expression list of the outer function  */
-    if ( STATE(CurrLVars) != STATE(CodeLVars) ) {
+    if (STATE(CurrLVars) != CS(CodeLVars)) {
         fexs = FEXS_FUNC( CURR_FUNC() );
         len = PushPlist( fexs, fexp );
         expr = NewExpr( T_FUNC_EXPR, sizeof(Expr) );
@@ -821,9 +841,9 @@ void CodeFuncExprEnd(UInt nr)
         PushExpr( expr );
     }
 
-    /* otherwise, make the function and store it in 'STATE(CodeResult)'           */
+    /* otherwise, make the function and store it in 'CS(CodeResult)'           */
     else {
-        STATE(CodeResult) = MakeFunction( fexp );
+        CS(CodeResult) = MakeFunction(fexp);
     }
 
 }
@@ -3258,12 +3278,12 @@ static Int InitKernel (
 
 #if !defined(HPCGAP)
     /* make the result variable known to Gasman                            */
-    InitGlobalBag( &STATE(CodeResult), "CodeResult" );
+    InitGlobalBag(&CS(CodeResult), "CodeResult");
 #endif
 
     /* allocate the statements and expressions stacks                      */
-    InitGlobalBag( &STATE(StackStat), "STATE(StackStat)" );
-    InitGlobalBag( &STATE(StackExpr), "STATE(StackExpr)" );
+    InitGlobalBag(&CS(StackStat), "CS(StackStat)");
+    InitGlobalBag(&CS(StackExpr), "CS(StackExpr)");
 
     /* some functions and globals needed for float conversion */
     InitGlobalBag( &EAGER_FLOAT_LITERAL_CACHE, "EAGER_FLOAT_LITERAL_CACHE" );
@@ -3316,7 +3336,7 @@ static Int PreSave (
     StructInitInfo *    module )
 {
   /* Can't save in mid-parsing */
-  if (STATE(CountExpr) || STATE(CountStat))
+  if (CS(CountExpr) || CS(CountStat))
     return 1;
 
   /* push the FP cache index out into a GAP Variable */
@@ -3324,8 +3344,8 @@ static Int PreSave (
 
   // clean any old data out of the statement and expression stacks,
   // but leave the type field alone
-  memset(ADDR_OBJ(STATE(StackStat)) + 1, 0, SIZE_BAG(STATE(StackStat)) - sizeof(Obj));
-  memset(ADDR_OBJ(STATE(StackExpr)) + 1, 0, SIZE_BAG(STATE(StackExpr)) - sizeof(Obj));
+  memset(ADDR_OBJ(CS(StackStat)) + 1, 0, SIZE_BAG(CS(StackStat)) - sizeof(Obj));
+  memset(ADDR_OBJ(CS(StackExpr)) + 1, 0, SIZE_BAG(CS(StackExpr)) - sizeof(Obj));
 
   /* return success                                                      */
   return 0;
@@ -3333,19 +3353,19 @@ static Int PreSave (
 
 static Int InitModuleState(void)
 {
-    STATE(OffsBodyCount) = 0;
+    CS(OffsBodyCount) = 0;
 
     // allocate the statements and expressions stacks
-    STATE(StackStat) = NewBag(T_DATOBJ, sizeof(Obj) + 64*sizeof(Stat));
-    STATE(StackExpr) = NewBag(T_DATOBJ, sizeof(Obj) + 64*sizeof(Expr));
-    SET_TYPE_DATOBJ(STATE(StackStat), TYPE_KERNEL_OBJECT);
-    SET_TYPE_DATOBJ(STATE(StackExpr), TYPE_KERNEL_OBJECT);
+    CS(StackStat) = NewBag(T_DATOBJ, sizeof(Obj) + 64 * sizeof(Stat));
+    CS(StackExpr) = NewBag(T_DATOBJ, sizeof(Obj) + 64 * sizeof(Expr));
+    SET_TYPE_DATOBJ(CS(StackStat), TYPE_KERNEL_OBJECT);
+    SET_TYPE_DATOBJ(CS(StackExpr), TYPE_KERNEL_OBJECT);
 
 #ifdef HPCGAP
-    STATE(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
+    CS(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
 #else
     static Stat MainOffsBodyStack[MAX_FUNC_EXPR_NESTING];
-    STATE(OffsBodyStack) = MainOffsBodyStack;
+    CS(OffsBodyStack) = MainOffsBodyStack;
 #endif
 
     // return success
@@ -3365,6 +3385,9 @@ static StructInitInfo module = {
     .initLibrary = InitLibrary,
     .preSave = PreSave,
     .postRestore = PostRestore,
+
+    .moduleStateSize = sizeof(struct CodeState),
+    .moduleStateOffsetPtr = &CodeStateOffset,
     .initModuleState = InitModuleState,
 };
 
