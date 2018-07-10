@@ -11,6 +11,13 @@ environment:
       ABI: 32
     - CYG_ARCH: x86_64
       CYG_ROOT: C:\cygwin64
+    - CYG_ARCH: x86
+      CYG_ROOT: C:\cygwin
+      ABI: 32
+      PACKAGES: "-P libgmp-devel,zlib-devel"
+    - CYG_ARCH: x86_64
+      CYG_ROOT: C:\cygwin64
+      PACKAGES: "-P libgmp-devel,zlib-devel"
 # FIXME: HPC-GAP builds on AppVeyor are disabled for now, as they experience
 # weird errors in building ward (which I cannot replicate on a Windows VM).
 #    - CYG_ARCH: x86
@@ -28,7 +35,7 @@ cache:
   - packages-master.tar.gz
 
 install:
-  - '%CYG_ROOT%\setup-%CYG_ARCH%.exe -qnNdO -R %CYG_ROOT% -s http://cygwin.mirror.constant.com -l %CYG_ROOT%/var/cache/setup -P libgmp-devel,zlib-devel'
+  - '%CYG_ROOT%\setup-%CYG_ARCH%.exe -qnNdO -R %CYG_ROOT% -s http://cygwin.mirror.constant.com -l %CYG_ROOT%/var/cache/setup %PACKAGES%'
 
 # scripts that run after cloning repository
 build_script:
