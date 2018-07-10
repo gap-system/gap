@@ -78,7 +78,7 @@ static void PrintMacfloatToBuf(char *buf, size_t bufsize, Double val, int precis
 */
 void PrintMacfloat(Obj x)
 {
-    Char buf[32];
+    Char buf[1024];
     // TODO: should we use PRINTFDIGITS instead of 16?
     PrintMacfloatToBuf(buf, sizeof(buf), VAL_MACFLOAT(x), 16);
     Pr("%s", (Int)buf, 0);
@@ -433,7 +433,7 @@ Obj FuncINTFLOOR_MACFLOAT( Obj self, Obj obj )
 
 Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj gapprec, Obj f)
 {
-  Char buf[50];
+  Char buf[1024];
   Obj str;
   int prec = INT_INTOBJ(gapprec);
   if (prec > 40) /* too much anyways, and would risk buffer overrun */
