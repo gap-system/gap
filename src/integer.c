@@ -2655,7 +2655,7 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
 {
   Obj res;
   Int i, n, q, r, qoff, len;
-  UInt4 *mt, rand;
+  UInt4 *mt;
   UInt4 *pt;
   while (! IsStringConv(mtstr)) {
      mtstr = ErrorReturnObj(
@@ -2707,14 +2707,21 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
      pt = (UInt4*) ADDR_INT(res);
      mt = (UInt4*) CHARS_STRING(mtstr);
      for (i = 0; i < qoff; i++, pt++) {
-       rand = (UInt4) nextrandMT_int32(mt);
-       *pt = rand;
+       *pt = nextrandMT_int32(mt);
      }
      if (r != 0) {
        /* we generated too many random bits -- chop of the extra bits */
        pt = (UInt4*) ADDR_INT(res);
        pt[qoff-1] = pt[qoff-1] & ((UInt4)(-1) >> (32-r));
      }
+#if defined(SYS_IS_64_BIT) && defined(WORDS_BIGENDIAN)
+     // swap the halves of the 64bit words to match the
+     // little endian resp. 32 bit versions of this code
+     pt = (UInt4 *)ADDR_INT(res);
+     for (i = 0; i < qoff; i += 2, pt += 2) {
+       SWAP(UInt4, pt[0], pt[1]);
+     }
+#endif
      /* shrink bag if necessary */
      res = GMP_NORMALIZE(res);
      /* convert result if small int */
