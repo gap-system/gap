@@ -2,15 +2,22 @@
 clone_depth: 5                  # clone entire repository history if not defined
 
 environment:
-  CFLAGS: "--coverage"
-  LDFLAGS: "--coverage"
   TEST_SUITES: testinstall
+
+  # To test building GAP both using the bundled libraries (zlib and GMP), as
+  # well as using the versions distributed with cygwin, we do the former in
+  # the 32 bit build and the latter in the 64 bit build. But building zlib
+  # does not see to work if '--coverage' is used, so we only use that flag in
+  # the 64 bit build.
   matrix:
     - CYG_ARCH: x86
       CYG_ROOT: C:\cygwin
       ABI: 32
     - CYG_ARCH: x86_64
       CYG_ROOT: C:\cygwin64
+      PACKAGES: "-P libgmp-devel,zlib-devel"
+      CFLAGS: "--coverage"
+      LDFLAGS: "--coverage"
 # FIXME: HPC-GAP builds on AppVeyor are disabled for now, as they experience
 # weird errors in building ward (which I cannot replicate on a Windows VM).
 #    - CYG_ARCH: x86
@@ -28,7 +35,7 @@ cache:
   - packages-master.tar.gz
 
 install:
-  - '%CYG_ROOT%\setup-%CYG_ARCH%.exe -qnNdO -R %CYG_ROOT% -s http://cygwin.mirror.constant.com -l %CYG_ROOT%/var/cache/setup -P libgmp-devel,zlib-devel'
+  - '%CYG_ROOT%\setup-%CYG_ARCH%.exe -qnNdO -R %CYG_ROOT% -s http://cygwin.mirror.constant.com -l %CYG_ROOT%/var/cache/setup %PACKAGES%'
 
 # scripts that run after cloning repository
 build_script:
