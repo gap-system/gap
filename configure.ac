@@ -394,6 +394,7 @@ AS_CASE([$with_zlib],
   ]
 )
 
+
 AS_IF([test $BUILD_ZLIB = no],
   [
     # try to link against zlib
@@ -410,14 +411,17 @@ AS_IF([test $BUILD_ZLIB = no],
 
 # Use bundled zlib if requested
 AS_IF([test x$BUILD_ZLIB = xyes],[
-  AS_CASE([$host_os],
-    [*cygwin*],[
-        AC_MSG_ERROR([Builtin zlib not supported on cygwin. Install zlib-devel package])
-    ]
-  )
   BUILD_ZLIB=yes
   ZLIB_CPPFLAGS='-I${abs_builddir}/extern/install/zlib/include'
-  ZLIB_LDFLAGS='${abs_builddir}/extern/install/zlib/lib/libz.a'
+  AS_CASE([$host_os],
+    [*cygwin*],[
+      ZLIB_LDFLAGS='-L${abs_builddir}/extern/install/zlib/lib/ -lz'
+    ],
+    [*],[
+      ZLIB_LDFLAGS='${abs_builddir}/extern/install/zlib/lib/libz.a'
+    ]
+  )
+
   ZLIB_LIBS=
 ])
 
