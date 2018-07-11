@@ -37,7 +37,7 @@ function(func, extra...)
     fi;
 
     original := AtomicList(options.defaults);
-    
+
     boundvals := MakeWriteOnceAtomic(AtomicList(original));
 
     if options.flush then
@@ -51,7 +51,11 @@ function(func, extra...)
     return function(val)
         local v, boundcpy;
         if not IsPosInt(val) then
-            return options.errorHandler(val);
+            v := CallFuncListWrap(options.errorHandler, [val]);
+            if v <> [] then
+                return v[1];
+            fi;
+            return;
         fi;
         # Make a copy of the reference to boundvals, in case the cache
         # is flushed, which will causes boundvals to be bound to a new list.
