@@ -37,20 +37,6 @@
 
 #include "debug.h"
 
-/****************************************************************************
-**
-*D  debug flags (user edit-able)
-*/
-
-
-/* * * * * * * * * * * * * debugging GASMAN  * * * * * * * * * * * * * * * */
-
-/* define to create functions PTR_BAG, etc instead of macros               */
-/* #undef DEBUG_FUNCTIONS_BAGS */
-
-
-/* define to debug masterpointers errors                                   */
-/* #undef DEBUG_MASTERPOINTERS */
 
 /* check if we are on a 64 bit machine                                     */
 #if SIZEOF_VOID_P == 8
