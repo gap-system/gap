@@ -50,6 +50,7 @@
 #include "modules.h"
 #include "range.h"
 #include "saveload.h"
+#include "sysopt.h"    // for SyInitializing
 
 #ifdef HPCGAP
 #include "hpc/guards.h"

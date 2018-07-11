@@ -31,6 +31,7 @@
 #include "modules.h"
 #include "plist.h"
 #include "sysfiles.h"
+#include "sysopt.h"    // for SyInitializing
 
 
 /****************************************************************************

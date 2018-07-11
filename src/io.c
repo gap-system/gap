@@ -30,6 +30,7 @@
 #include "scanner.h"
 #include "stringobj.h"
 #include "sysfiles.h"
+#include "sysopt.h"
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"

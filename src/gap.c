@@ -38,6 +38,7 @@
 #include "stringobj.h"
 #include "sysfiles.h"
 #include "sysmem.h"
+#include "sysopt.h"
 #include "vars.h"
 
 #ifdef HPCGAP

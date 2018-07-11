@@ -30,6 +30,7 @@
 #include "stats.h"
 #include "stringobj.h"
 #include "sysfiles.h"
+#include "sysopt.h"
 #include "vars.h"
 
 #include <dirent.h>
