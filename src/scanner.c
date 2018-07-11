@@ -23,6 +23,7 @@
 #include "modules.h"
 #include "plist.h"
 #include "stringobj.h"
+#include "sysopt.h"
 
 
 static UInt NextSymbol(void);

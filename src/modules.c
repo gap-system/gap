@@ -30,6 +30,7 @@
 #include "streams.h"
 #include "stringobj.h"
 #include "sysfiles.h"
+#include "sysopt.h"
 
 
 /****************************************************************************

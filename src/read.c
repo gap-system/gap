@@ -27,6 +27,7 @@
 #include "stats.h"
 #include "stringobj.h"
 #include "vars.h"
+#include "sysopt.h"
 
 #ifdef HPCGAP
 #include "hpc/thread.h"

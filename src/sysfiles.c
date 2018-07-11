@@ -33,6 +33,7 @@
 #include "records.h"
 #include "stats.h"
 #include "stringobj.h"
+#include "sysopt.h"
 
 #include "hpc/thread.h"
 

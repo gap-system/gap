@@ -27,6 +27,7 @@
 #endif
 #include "sysfiles.h"
 #include "sysmem.h"
+#include "sysopt.h"
 
 #ifdef HPCGAP
 #include "hpc/misc.h"
