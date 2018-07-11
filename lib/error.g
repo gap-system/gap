@@ -117,7 +117,7 @@ BIND_GLOBAL("ErrorInner",
             printEarlyMessage, printEarlyTraceback, lastErrorStream,
             shellOut, shellIn;
 
-	context := arg[1].context;
+    context := arg[1].context;
     if not IsLVarsBag(context) then
         PrintTo("*errout*", "ErrorInner:   option context must be a local variables bag\n");
         LEAVE_ALL_NAMESPACES();
@@ -271,10 +271,8 @@ BIND_GLOBAL("ErrorInner",
     if SHOULD_QUIT_ON_BREAK() then
         # Again, the default is to not print the rest of the traceback.
         # If AlwaysPrintTracebackOnError is true we do so anyways.
-        if
-            AlwaysPrintTracebackOnError
-            and IsBound(OnBreak) and IsFunction(OnBreak)
-        then
+        if AlwaysPrintTracebackOnError
+            and IsBound(OnBreak) and IsFunction(OnBreak) then
             OnBreak();
         fi;
         FORCE_QUIT_GAP(1);
@@ -317,10 +315,10 @@ BIND_GLOBAL("ErrorInner",
         if IsBound(OnQuit) and IsFunction(OnQuit) then
             OnQuit();
         fi;
-	if ErrorLevel = 0 then LEAVE_ALL_NAMESPACES(); fi;
+        if ErrorLevel = 0 then LEAVE_ALL_NAMESPACES(); fi;
         if not justQuit then
-	   # dont try and do anything else after this before the longjump 	
-            SetUserHasQuit(1);	
+           # dont try and do anything else after this before the longjump
+            SetUserHasQuit(1);
         fi;
         JUMP_TO_CATCH(3);
     fi;
