@@ -39,21 +39,6 @@
 
 /****************************************************************************
 **
-*D  user edit-able defines
-*/
-
-/* initial amount of memory if '-m' is not given in KB                     */ 
-/* The following tests whether we are in 64-bit mode, note that
- * SYS_IS_64_BIT is only defined later in this file! */
-#if SIZEOF_VOID_P == 8
-#define SY_STOR_MIN		(128L * 1024)
-#else
-#define SY_STOR_MIN		(64L * 1024)
-#endif
-
-
-/****************************************************************************
-**
 *D  debug flags (user edit-able)
 */
 

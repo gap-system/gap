@@ -1118,9 +1118,11 @@ void InitSystem (
     SyQuiet = 0;
     SyInitializing = 0;
 #ifdef SYS_IS_64_BIT
+    SyStorMin = 128 * 1024L;
     SyStorMax = 2048*1024L;          /* This is in kB! */
     SyAllocPool = 4096L*1024*1024;   /* Note this is in bytes! */
 #else
+    SyStorMin = 64 * 1024L;
     SyStorMax = 1024*1024L;          /* This is in kB! */
 #ifdef SYS_IS_CYGWIN32
     SyAllocPool = 0;                 /* works better on cygwin */
@@ -1130,7 +1132,6 @@ void InitSystem (
 #endif
     SyStorOverrun = 0;
     SyStorKill = 0;
-    SyStorMin = SY_STOR_MIN;         /* see system.h */
     SyUseModule = 1;
     SyWindow = 0;
 
