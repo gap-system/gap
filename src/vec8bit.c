@@ -299,7 +299,7 @@ void MakeFieldInfo8Bit( UInt q)
           ((e == 1) ? 0 : (256 * 256)) + /* the other lot of polynomial data */
           ((p == 2) ? 0 : (256 * 256)); /* add byte */
 
-    info = NewBag(T_DATOBJ, size);
+    info = NewWordSizedBag(T_DATOBJ, size);
     SetTypeDatObj(info, TYPE_FIELDINFO_8BIT);
 
     succ = SUCC_FF(gfq);
@@ -563,7 +563,7 @@ void RewriteVec8Bit( Obj vec, UInt q)
     }
 
     /* enlarge the bag */
-    ResizeBag(vec, SIZE_VEC8BIT(len, els));
+    ResizeWordSizedBag(vec, SIZE_VEC8BIT(len, els));
 
     gettab1 = GETELT_FIELDINFO_8BIT(info1);
     convtab1 = FFE_FELT_FIELDINFO_8BIT(info1);
@@ -630,7 +630,7 @@ void RewriteGF2Vec( Obj vec, UInt q )
     els = ELS_BYTE_FIELDINFO_8BIT(info);
 
     /* enlarge the bag */
-    ResizeBag(vec, SIZE_VEC8BIT(len, els));
+    ResizeWordSizedBag(vec, SIZE_VEC8BIT(len, els));
 
     settab = SETELT_FIELDINFO_8BIT(info);
     convtab = FELT_FFE_FIELDINFO_8BIT(info);
@@ -724,7 +724,7 @@ void ConvVec8Bit (
        in this process */
     nsize = SIZE_VEC8BIT(len, elts);
     if (nsize > SIZE_OBJ(list))
-        ResizeBag(list, nsize);
+        ResizeWordSizedBag(list, nsize);
 
 
     /* writing the first byte may clobber the third list entry
@@ -768,7 +768,7 @@ void ConvVec8Bit (
 
     /* retype and resize bag */
     if (nsize != SIZE_OBJ(list))
-        ResizeBag(list, nsize);
+        ResizeWordSizedBag(list, nsize);
     SET_LEN_VEC8BIT(list, len);
     SET_FIELD_VEC8BIT(list, q);
     type = TypeVec8Bit(q, IS_MUTABLE_OBJ(list));
@@ -901,7 +901,7 @@ Obj NewVec8Bit (
     len = LEN_LIST(list);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     nsize = SIZE_VEC8BIT(len,elts);
-    res = NewBag( T_DATOBJ, nsize );
+    res = NewWordSizedBag( T_DATOBJ, nsize );
     
     /* main loop -- e is the element within byte */
     e = 0;
@@ -1091,7 +1091,7 @@ Obj CopyVec8Bit( Obj list, UInt mut )
     Obj type;
 
     size = SIZE_BAG(list);
-    copy = NewBag(T_DATOBJ, size);
+    copy = NewWordSizedBag(T_DATOBJ, size);
     q = FIELD_VEC8BIT(list);
     type = TypeVec8Bit(q, mut);
     SetTypeDatObj(copy, type);
@@ -1221,7 +1221,7 @@ Obj SumVec8BitVec8Bit( Obj vl, Obj vr )
     len = LEN_VEC8BIT(vl);
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
-    sum = NewBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
+    sum = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
     SET_LEN_VEC8BIT(sum, len);
     type = TypeVec8Bit(q, IS_MUTABLE_OBJ(vl) || IS_MUTABLE_OBJ(vr));
     SetTypeDatObj(sum, type);
@@ -1364,7 +1364,7 @@ Obj MultVec8BitFFE( Obj vec, Obj scal )
     len = LEN_VEC8BIT(vec);
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
-    prod = NewBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
+    prod = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
     SET_LEN_VEC8BIT(prod, len);
     type = TypeVec8Bit(q, IS_MUTABLE_OBJ(vec));
     SetTypeDatObj(prod, type);
@@ -1396,7 +1396,7 @@ Obj ZeroVec8Bit ( UInt q, UInt len, UInt mut )
     Obj type;
     info = GetFieldInfo8Bit(q);
     size = SIZE_VEC8BIT(len, ELS_BYTE_FIELDINFO_8BIT(info));
-    zerov = NewBag(T_DATOBJ, size);
+    zerov = NewWordSizedBag(T_DATOBJ, size);
     type = TypeVec8Bit(q, mut);
     SetTypeDatObj(zerov, type);
     CHANGED_BAG(zerov);
@@ -1882,7 +1882,7 @@ Obj SumVec8BitVec8BitMult( Obj vl, Obj vr, Obj mult )
     len = LEN_VEC8BIT(vl);
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
-    sum = NewBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
+    sum = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
     SET_LEN_VEC8BIT(sum, len);
     type = TypeVec8Bit(q, IS_MUTABLE_OBJ(vl) || IS_MUTABLE_OBJ(vr));
     SetTypeDatObj(sum, type);
@@ -2806,7 +2806,7 @@ Obj FuncELMS_VEC8BIT (
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
     len2 = LEN_VEC8BIT(list);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
-    res = NewBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
+    res = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
     SetTypeDatObj(res, TYPE_DATOBJ(list));
     SET_FIELD_VEC8BIT(res, FIELD_VEC8BIT(list));
     SET_LEN_VEC8BIT(res, len);
@@ -2886,7 +2886,7 @@ Obj FuncELMS_VEC8BIT_RANGE (
     } else if (low < 1 || low + inc * (len - 1) > lenl)
         ErrorQuit("ELMS_VEC8BIT_RANGE: Range includes indices which are too high or too low",
                   0L, 0L);
-    res = NewBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
+    res = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
     SetTypeDatObj(res, TYPE_DATOBJ(list));
     SET_FIELD_VEC8BIT(res, FIELD_VEC8BIT(list));
     SET_LEN_VEC8BIT(res, len);
@@ -2994,7 +2994,7 @@ Obj FuncASS_VEC8BIT (
                                 "You can `return;' to ignore the assignment");
                 return 0;
             }
-            ResizeBag(list, SIZE_VEC8BIT(p, elts));
+            ResizeWordSizedBag(list, SIZE_VEC8BIT(p, elts));
             SET_LEN_VEC8BIT(list, p);
             /*  Pr("Extending 8 bit vector by 1",0,0); */
         }
@@ -3106,7 +3106,7 @@ Obj FuncUNB_VEC8BIT (
         BYTES_VEC8BIT(list)[(p - 1) / elts] =
         SETELT_FIELDINFO_8BIT(info)[((p - 1) % elts) * 256 +
         BYTES_VEC8BIT(list)[(p - 1) / elts]];
-        ResizeBag(list, 3 * sizeof(UInt) + (p + elts - 2) / elts);
+        ResizeWordSizedBag(list, 3 * sizeof(UInt) + (p + elts - 2) / elts);
         SET_LEN_VEC8BIT(list, p - 1);
     } else {
         PlainVec8Bit(list);
@@ -3219,7 +3219,7 @@ Obj FuncAPPEND_VEC8BIT (
     }
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(vecl));
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
-    ResizeBag(vecl, SIZE_VEC8BIT(lenl + lenr, elts));
+    ResizeWordSizedBag(vecl, SIZE_VEC8BIT(lenl + lenr, elts));
 
     if (lenl % elts == 0) {
         ptrl = BYTES_VEC8BIT(vecl) + lenl / elts;
@@ -3618,7 +3618,7 @@ Obj ProdMat8BitMat8Bit( Obj matl, Obj matr)
     assert(q == FIELD_VEC8BIT(ELM_MAT8BIT(matr, 1)));
     assert(LEN_MAT8BIT(matr) == LEN_VEC8BIT(ELM_MAT8BIT(matl, 1)));
 
-    prod = NewBag(T_POSOBJ, sizeof(Obj) * (len + 2));
+    prod = NewWordSizedBag(T_POSOBJ, sizeof(Obj) * (len + 2));
     SET_LEN_MAT8BIT(prod, len);
     type = TypeMat8Bit(q, IS_MUTABLE_OBJ(matl) || IS_MUTABLE_OBJ(matr));
     SET_TYPE_POSOBJ(prod, type);
@@ -3705,7 +3705,7 @@ Obj InverseMat8Bit( Obj mat, UInt mut)
         if (x == 0)
             return Fail;
         xi = INV(ffefelt[x]);
-        row1 = NewBag(T_DATOBJ, SIZE_VEC8BIT(1, elts));
+        row1 = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(1, elts));
         type = TypeVec8BitLocked(q, mut == 2 || (mut == 1 && IS_MUTABLE_OBJ(row)));
         SetTypeDatObj(row1, type);
         settab = SETELT_FIELDINFO_8BIT(info);
@@ -3955,7 +3955,7 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
 
 cando:
     if (pos > len) {
-        ResizeBag(mat, sizeof(Obj) * (pos + 2));
+        ResizeWordSizedBag(mat, sizeof(Obj) * (pos + 2));
         SET_LEN_MAT8BIT(mat, pos);
     }
     type = TypeVec8BitLocked(q, IS_MUTABLE_OBJ(obj));
@@ -4027,7 +4027,7 @@ Obj SumMat8BitMat8Bit( Obj ml, Obj mr)
     }
 
     q = FIELD_VEC8BIT(ELM_MAT8BIT(ml, 1));
-    sum = NewBag(T_POSOBJ, sizeof(Obj) * (ls + 2));
+    sum = NewWordSizedBag(T_POSOBJ, sizeof(Obj) * (ls + 2));
     type = TypeMat8Bit(q, IS_MUTABLE_OBJ(ml) || IS_MUTABLE_OBJ(mr));
     SET_TYPE_POSOBJ(sum, type);
     SET_LEN_MAT8BIT(sum, ls);
@@ -4109,7 +4109,7 @@ Obj DiffMat8BitMat8Bit( Obj ml, Obj mr)
     if (q % 2 == 0)
         return SumMat8BitMat8Bit(ml, mr);
 
-    diff = NewBag(T_POSOBJ, sizeof(Obj) * (ld + 2));
+    diff = NewWordSizedBag(T_POSOBJ, sizeof(Obj) * (ld + 2));
     type = TypeMat8Bit(q, IS_MUTABLE_OBJ(ml) || IS_MUTABLE_OBJ(mr));
     SET_TYPE_POSOBJ(diff, type);
     SET_LEN_MAT8BIT(diff, ld);
@@ -4228,7 +4228,7 @@ void ResizeVec8Bit( Obj vec, UInt newlen, UInt knownclean )
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     SET_LEN_VEC8BIT(vec, newlen);
-    ResizeBag(vec, SIZE_VEC8BIT(newlen, elts));
+    ResizeWordSizedBag(vec, SIZE_VEC8BIT(newlen, elts));
     /* vector has got shorter. */
     if (len > newlen) {
         if (newlen % elts) {
@@ -5023,7 +5023,7 @@ Obj FuncQUOTREM_COEFFS_VEC8BIT( Obj self, Obj vl, Obj ll, Obj vrshifted)
     ResizeVec8Bit(rem, ill, 0);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     lr = INT_INTOBJ(ELM_PLIST(vrshifted, elts + 1));
-    quot = NewBag(T_DATOBJ, SIZE_VEC8BIT(ill - lr + 1, elts));
+    quot = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(ill - lr + 1, elts));
     type = TypeVec8Bit(q, 1);
     SetTypeDatObj(quot, type);
     SET_FIELD_VEC8BIT(quot, q);
@@ -5103,7 +5103,7 @@ Obj SemiEchelonListVec8Bits( Obj mat, UInt TransformationsNeeded )
     for (i = 1; i <= nrows; i++) {
         row = ELM_PLIST(mat, i);
         if (TransformationsNeeded) {
-            coeffrow = NewBag(T_DATOBJ, SIZE_VEC8BIT(nrows, elts));
+            coeffrow = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(nrows, elts));
             SET_LEN_VEC8BIT(coeffrow, nrows);
             type = TypeVec8Bit(q, 1);
             SetTypeDatObj(coeffrow, type);
@@ -5558,7 +5558,7 @@ Obj FuncTRANSPOSED_MAT8BIT( Obj self, Obj mat)
     w = LEN_VEC8BIT(r1);
 
 
-    tra = NewBag(T_POSOBJ, sizeof(Obj) * (w + 2));
+    tra = NewWordSizedBag(T_POSOBJ, sizeof(Obj) * (w + 2));
     q = FIELD_VEC8BIT(r1);
     type = TypeMat8Bit(q, 1);
     SET_TYPE_POSOBJ(tra, type);
@@ -5571,7 +5571,7 @@ Obj FuncTRANSPOSED_MAT8BIT( Obj self, Obj mat)
 
     /* create new matrix */
     for (i = 1; i <= w; i++) {
-        row = NewBag(T_DATOBJ, SIZE_VEC8BIT(l, elts));
+        row = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(l, elts));
         SET_LEN_VEC8BIT(row, l);
         SET_FIELD_VEC8BIT(row, q);
         type = TypeVec8BitLocked(q, 1);
@@ -5657,7 +5657,7 @@ Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT( Obj self, Obj matl, Obj matr)
     zero = FELT_FFE_FIELDINFO_8BIT(info)[0];
 
     /* create a matrix */
-    mat = NewBag(T_POSOBJ, sizeof(Obj) * (nrowl*nrowr + 2));
+    mat = NewWordSizedBag(T_POSOBJ, sizeof(Obj) * (nrowl*nrowr + 2));
     SET_LEN_MAT8BIT(mat, nrowl*nrowr);
     SET_TYPE_POSOBJ(mat, TypeMat8Bit(q, mutable));
     type = TypeVec8BitLocked(q, mutable);
@@ -5672,7 +5672,7 @@ Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT( Obj self, Obj matl, Obj matr)
 
     /* allocate data for shifts of rows of matr */
     for (i = 0; i < elts; i++) {
-        shift[i] = NewBag(T_DATOBJ, ncolr / elts + 200 + sizeof(Obj));
+        shift[i] = NewWordSizedBag(T_DATOBJ, ncolr / elts + 200 + sizeof(Obj));
     }
 
     /* allocation is done. speed up operations by getting lookup tables */
