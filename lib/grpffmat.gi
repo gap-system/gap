@@ -180,8 +180,7 @@ InstallGlobalFunction(ProjectiveActionOnFullSpace,function(g,f,n)
 local o;
   # as the groups are large, we can take all normed vectors
   o:=NormedRowVectors(f^n);
-  o:=ImmutableMatrix(f,o);
-  o:=Set(o);
+  o:=Set(o, r -> ImmutableVector(f, r));
   return Action(g,o,OnLines);
 end);
 
