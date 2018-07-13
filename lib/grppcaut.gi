@@ -400,109 +400,6 @@ end;
 
 #############################################################################
 ##
-#F BlockStabilizer( G, bl )
-##
-BlockStabilizer := function( G, bl )
-    local sub, sortbl, f, len, pos, L, new;
-
-    # the trivial blocksys is useless
-    if ForAll( bl, x -> Length(x) = 1 ) then return G; fi;
-    if Length( bl ) = 1 then return G; fi;
-    sub := Filtered( bl, x -> Length(x) > 1 );
-    len := Set( List( sub, x -> Length(x) ) );
-    pos := List( len, x -> Filtered(sub, y -> Length(y) = x ) );
-    L   := ShallowCopy( G );
-    Sort( pos, function( x, y ) return Length(x) < Length( y ); end);
-
-    sortbl := function( sys )
-        local i;
-        for i in [1..Length(sys)] do
-            Sort( sys[i] );
-        od;
-        Sort( sys, function( x, y ) return x[1] < y[1]; end);
-    end;
-    sortbl( sub );
-
-    f := function( pt, perm )
-        local new;
-        new := List( pt, x -> List( x, y -> y^perm) );
-        sortbl( new );
-        return new;
-    end;
-
-    # now loop
-    for new in pos do
-        if Length( new ) = 1 then
-            L := Stabilizer( L, new[1], OnSets );
-        else
-            L := Stabilizer( L, new, f );
-        fi;
-    od;
-        
-    return L;
-end;
-
-#############################################################################
-##
-#F InducedActionAutGroup( epi, weights, s, n, A )
-##
-InducedActionAutGroup := function( epi, weights, s, n, A )
-    local M, H, F, pcgsM, indices, pcsN, N, d, gensN, G, free, words,
-          comp, aut, imgs, mat, w, m, exp, tup, gensG, field, D, gensA;
-
-    M := KernelOfMultiplicativeGeneralMapping( epi );
-    H := Source( epi );
-    F := Image( epi );
-    pcgsM := Pcgs( M );
-    field := GF( weights[s][3] );
-
-    # construct p-subgroup of H 
-    indices := Filtered( [1..s-1], x -> weights[x][1] = weights[s][1] 
-                                   and  weights[x][3] = weights[s][3] );
-    pcsN  := Pcgs( H ){indices};
-    N     := SubgroupNC( H, pcsN );
-    d     := Length( indices );
-    gensN := pcsN{[1..d]};
-
-    # construct words for pcgsM in gensN
-    G     := FreeGroup( d );
-    gensG := GeneratorsOfGroup( G );
-    free  := GroupHomomorphismByImagesNC( G, N, gensG, gensN );
-    words := List( pcgsM, x -> PreImagesRepresentative( free, x ) );
-
-    # compute images of words
-    comp := [];
-    if CanEasilyComputePcgs( A ) then
-        gensA := Pcgs( A );
-    else
-        gensA := GeneratorsOfGroup( A );
-    fi;
-    for aut in gensA do
-        imgs := List( gensN, x -> Image( aut, Image( epi, x ) ) );
-        imgs := List( imgs, x -> PreImagesRepresentative( epi, x ) );
-        mat := [];
-        for w in words do
-            m := MappedWord( w, gensG, imgs );
-            exp := ExponentsOfPcElement( pcgsM, m ) * One( field );
-            Add( mat, exp );
-        od;
-        tup := DirectProductElement( [aut, mat] );
-        Add( comp, tup );
-    od; 
-
-    # add size and check solubility
-    D := GroupByGenerators( comp, DirectProductElement( [ One( A ),
-             Immutable( IdentityMat(Length(pcgsM), field) )]));
-    SetSize( D, Size( A ) );
-    if CanEasilyComputePcgs( A ) then
-        TransferPcgsInfo( D, comp, RelativeOrders( gensA ) );
-    fi;
-   
-    return D;
-end;
-
-#############################################################################
-##
 #F Fingerprint( G, U )
 ##
 if not IsBound( MyFingerprint ) then MyFingerprint := false; fi;
@@ -643,7 +540,6 @@ local spec,s,n,M,
     orb := OrbitsDomain( U, norm, f );
     part := List( orb, x -> List( x, y -> Position( norm, y ) ) );
 
-    # was: L := BlockStabilizer( L, part );
     part:=List(part,Set);
     L:=PartitionStabilizerPermGroup(L,part);
     Info( InfoOverGr, 1, "found blocksystem ",part );
@@ -909,89 +805,6 @@ end;
 ##
 #F AutomorphismGroupSolvableGroup( G )
 ##
-
-# should be more generic -- test whether orbit length exceeds limit
-BindGlobal("OrbitIsLonger",function(acts,pnt,act,lim)
-local orb,d,gen,i,p,D;
-  # try to find a domain
-  D:=DomainForAction(pnt,acts,act);
-  pnt:=Immutable(pnt);
-  d:=NewDictionary(pnt,false,D);
-  orb := [ pnt ];
-  AddDictionary(d,pnt);
-  for p in orb do
-    for gen in acts do
-      i:=act(p,gen);
-      MakeImmutable(i);
-      if not KnowsDictionary(d,i) then
-	Add( orb, i );
-	if Length(orb)>lim then
-	  return true;
-	fi;
-	AddDictionary(d,i);
-      fi;
-    od;
-  od;
-  return false;
-end);
-
-# another function that should be more general and has space for improvement.
-BindGlobal("SubspaceStabilizerMatrixGroup",function(G,bas)
-local f,act,xset,stb,hom,n,m,l,i;
-  n:=DimensionOfMatrixGroup(G);
-  if Length(bas)=0 or ForAll(GeneratorsOfGroup(G),
-	     x->ForAll(bas,y->SolutionMat(bas,y*x)<>fail)) then
-    # space is fixed
-    return G;
-  fi;
-  bas:=OnSubspacesByCanonicalBasis(bas,One(G)); # canonical form
-  f:=DefaultFieldOfMatrixGroup(G);
-  if IsNaturalGL(G) then
-    # write down stabilizer
-    l:=Length(bas);
-    act:=BaseSteinitzVectors(IdentityMat(n,f),
-	  bas);
-    act:=Concatenation(bas,act.factorspace);
-    stb:=[];
-    # subspace
-    for i in GeneratorsOfGroup(GL(l,f)) do
-      m:=IdentityMat(n,f);
-      m{[1..l]}{[1..l]}:=i;
-      Add(stb,m);
-    od;
-    # factor
-    for i in GeneratorsOfGroup(GL(n-l,f)) do
-      m:=IdentityMat(n,f);
-      m{[l+1..n]}{[l+1..n]}:=i;
-      Add(stb,m);
-    od;
-    # mixer
-    m:=IdentityMat(n,f);
-    m[l+1][1]:=One(f);
-    Add(stb,m);
-    stb:=List(stb,x->x^act); # base change
-    stb:=Group(stb);
-    SetSize(stb,Size(GL(l,f))*Size(GL(n-l,f))*Size(f)^(l*(n-l)));
-    Info(InfoMatOrb,2,"reduced full GL by ",Size(G)/Size(stb));
-    return stb;
-  fi;
-  if not OrbitIsLonger(GeneratorsOfGroup(G),bas,OnSubspacesByCanonicalBasis,
-	   Size(f)^QuoInt(Length(bas[1]),2)) then
-    #just plain
-    act:=OnSubspacesByCanonicalBasis;
-    xset:=Orbit(G,bas,act);
-    stb:=[Position(xset,bas)];
-  else
-    act:=OnLines;
-    stb:=NormedRowVectors(VectorSpace(f,bas));
-    xset:=Union(Orbits(G,stb,act));
-    stb:=Set(List(stb,x->Position(xset,x)));
-  fi;
-  hom:=ActionHomomorphism(G,xset,act,"surjective");
-  act:=PreImage(hom,Stabilizer(Image(hom),stb,OnSets));
-  Info(InfoMatOrb,2,"reduce ",Size(G), " to ",Size(act));
-  return act;
-end);
 
 # construct subgroup of GL that stabilizes the spaces given and fixes the
 # listed spaceorbits.
@@ -1443,52 +1256,6 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     Assert(2,
       ForAll(sporb,x->Length(Orbit(B,x[1],OnSubspacesByCanonicalBasis))<=Length(x)));
 
-# not needed any longer -- fixed
-#    if somechar<>fail then
-#      field:=DefaultFieldOfMatrixGroup(B);
-#      C:=List(somechar,x->quotimg(F,FamilyPcgs(F),x));
-#      C:=List(C,x->List(SmallGeneratingSet(x),
-#	  x->ExponentsOfPcElement(FamilyPcgs(F),x)*One(field)));
-#      C:=Filtered(C,x->Length(x)>0);
-#      C:=List(C,x->Filtered(OnSubspacesByCanonicalBasis(x,One(B)),
-#	      y->not IsZero(y)));
-#      C:=Unique(C);
-#      for D in C do
-#	B:=SubspaceStabilizerMatrixGroup(B,D);
-#      od;
-#      if scharorb<>fail then
-#	C:=List(scharorb,x->List(x,x->quotimg(F,FamilyPcgs(F),x)));
-#	C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(F));
-#	C:=List(C,Set);
-#	D:=Unique(C);
-#	for C in D do
-#	  C:=List(C,x->List(SmallGeneratingSet(x),
-#	      x->ExponentsOfPcElement(FamilyPcgs(F),x)*One(field)));
-#	  C:=List(C,x->OnSubspacesByCanonicalBasis(x,One(B)));
-#
-#	  if Length(C)=1 then
-#	    C:=SubspaceStabilizerMatrixGroup(B,C[1]);
-#	    if B<>C then Error("UGH1");fi;
-#	    B:=C;
-#	  else
-#	    act:=OnSubspacesByCanonicalBasis;
-#	    xset:=Orbit(B,C[1],act);
-#	    C:=Filtered(C,x->x in xset);
-#	    if Length(xset)>Length(C) then
-#	      hom:=ActionHomomorphism(B,xset,act,"surjective");
-#	      C:=List(C,x->Position(xset,x));
-#	      e:=Size(B);
-#	      C:=Stabilizer(Image(hom),C,OnSets);
-#	      if C<>Image(hom) then Error("UGH!");fi;
-#	      #B:=PreImage(hom,Stabilizer(Image(hom),C,OnSets));
-#	      Info(InfoAutGrp,2,"characteristics reduce ",e,
-#		" to ",Size(B));
-#	    fi;
-#	  fi;
-#	od;
-#      fi;
-#    fi;
-
     A     := AutomorphismGroupElAbGroup( F, B );
     SetIsGroupOfAutomorphismsFiniteGroup(A,true);
 
@@ -1587,50 +1354,6 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
 	# A and B will not be used later, so it is no problem to 
 	# replace them by other groups with fewer generators
 	B:=SubgroupNC(B,SmallGeneratingSet(B));
-
-	# not needed any longer
-#	if somechar<>fail then
-#	  field:=GF(RelativeOrders(pcgsN)[1]);
-#	  e:=Product(RelativeOrders(pcgsN));
-#	  C:=List(somechar,x->quotimg(H,pcgsH,Intersection(x,eN)));
-#
-#	  C:=List(C,x->List(SmallGeneratingSet(x),
-#	      x->ExponentsOfPcElement(pcgsH,x){[s..n-1]}*One(field)));
-#	  C:=Filtered(C,x->Length(x)>0);
-#	  C:=List(C,x->Filtered(OnSubspacesByCanonicalBasis(x,One(B)),
-#		  y->not IsZero(y)));
-#	  C:=Unique(C);
-#	  for D in C do
-#	    B:=SubspaceStabilizerMatrixGroup(B,D);
-#	  od;
-#	  if scharorb<>fail then
-#	    C:=List(scharorb,
-#	      x->List(x,x->quotimg(H,pcgsH,Intersection(x,eN))));
-#	    C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(F));
-#	    D:=Unique(List(C,Set));
-#	    for C in D do
-#	      C:=List(C,x->List(SmallGeneratingSet(x),
-#		x->ExponentsOfPcElement(pcgsH,x){[s..n-1]}*One(field)));
-#	      C:=List(C,x->OnSubspacesByCanonicalBasis(x,One(B)));
-#
-#	      if Length(C)=1 then
-#		B:=SubspaceStabilizerMatrixGroup(B,C[1]);
-#	      else
-#		act:=OnSubspacesByCanonicalBasis;
-#		xset:=Orbit(B,C[1],act);
-#		C:=Filtered(C,x->x in xset);
-#		if Length(xset)>Length(C) then
-#		  hom:=ActionHomomorphism(B,xset,act,"surjective");
-#		  C:=List(C,x->Position(xset,x));
-#		  e:=Size(B);
-#		  B:=PreImage(hom,Stabilizer(Image(hom),C,OnSets));
-#		  Info(InfoAutGrp,2,"characteristics reduce ",e,
-#		    " to ",Size(B));
-#		fi;
-#	      fi;
-#	    od;
-#	  fi;
-#	fi;
 
         if weights[s][2] = 1 then
             #Info( InfoAutGrp, 2,"compute reduced gl ");
