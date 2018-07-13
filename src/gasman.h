@@ -432,6 +432,17 @@ extern  Bag             NewBag (
             UInt                size );
 
 
+// NewWordSizedBag is the same as NewBag, except it rounds 'size' up to
+// the next multiple of sizeof(UInt)
+static inline Bag NewWordSizedBag(UInt type, UInt size)
+{
+    UInt padding = 0;
+    if(size % sizeof(UInt) != 0) {
+        padding = sizeof(UInt) - (size % sizeof(UInt));
+    }
+    return NewBag(type, size + padding);
+}
+
 /****************************************************************************
 **
 *F  RetypeBag(<bag>,<new>)  . . . . . . . . . . . .  change the type of a bag
@@ -502,6 +513,17 @@ extern  void            RetypeBagIfWritable (
 extern  UInt            ResizeBag (
             Bag                 bag,
             UInt                new_size );
+
+// ResizedWordSizedBag is the same as ResizeBag, except it round 'size'
+// up to the next multiple of sizeof(UInt)
+static inline UInt ResizeWordSizedBag(Bag bag, UInt size)
+{
+    UInt padding = 0;
+    if(size % sizeof(UInt) != 0) {
+        padding = sizeof(UInt) - (size % sizeof(UInt));
+    }
+    return ResizeBag(bag, size + padding);
+}
 
 
 /****************************************************************************
