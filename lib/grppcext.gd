@@ -236,34 +236,6 @@ DeclareOperation( "SplitExtension", [CanEasilyComputePcgs, IsObject] );
 
 #############################################################################
 ##
-#O  TopExtensionsByAutomorphism( <G>, <aut>, <p> )
-##
-##  <ManSection>
-##  <Oper Name="TopExtensionsByAutomorphism" Arg='G, aut, p'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareOperation( "TopExtensionsByAutomorphism",
-                               [CanEasilyComputePcgs, IsObject, IsInt] );
-
-#############################################################################
-##
-#O  CyclicTopExtensions( <G>, <p> )
-##
-##  <ManSection>
-##  <Oper Name="CyclicTopExtensions" Arg='G, p'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareOperation( "CyclicTopExtensions", 
-                       [CanEasilyComputePcgs, IsInt] );
-
-#############################################################################
-##
 #A  SocleComplement(<G>)
 ##
 ##  <ManSection>
