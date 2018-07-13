@@ -16,11 +16,15 @@ gap> InstallMethod(foobar, [IsObject], x -> fail); # fallback with no info strin
 # is no bug which just happens to work with 1 argument
 gap> InstallOtherMethod(foobar, "for two lists", [IsList, IsList], 17-2*RankFilter(IsList), Concatenation);
 gap> InstallOtherMethod(foobar, "for no argument", [], {}->1);
-gap> InstallOtherMethod(foobar, "for 2 integers", [IsInt, IsInt], -2*RankFilter(IsInt), {x,y...}->1);
-gap> InstallOtherMethod(foobar, "for 3 integers", [IsInt, IsInt, IsInt], -3*RankFilter(IsInt), {x,y...}->1);
-gap> InstallOtherMethod(foobar, "for 4 integers", [IsInt, IsInt, IsInt, IsInt], -4*RankFilter(IsInt), {x,y...}->1);
-gap> InstallOtherMethod(foobar, "for 5 integers", [IsInt, IsInt, IsInt, IsInt, IsInt], -5*RankFilter(IsInt), {x,y...}->1);
-gap> InstallOtherMethod(foobar, "for 6 integers", [IsInt, IsInt, IsInt, IsInt, IsInt, IsInt], -6*RankFilter(IsInt), {x,y...}->1);
+
+# small trick to ensure the various methods get different locations
+gap> Read(InputTextString("""
+> InstallOtherMethod(foobar, "for 2 integers", [IsInt, IsInt], -2*RankFilter(IsInt), {x,y...}->1);
+> InstallOtherMethod(foobar, "for 3 integers", [IsInt, IsInt, IsInt], -3*RankFilter(IsInt), {x,y...}->1);
+> InstallOtherMethod(foobar, "for 4 integers", [IsInt, IsInt, IsInt, IsInt], -4*RankFilter(IsInt), {x,y...}->1);
+> InstallOtherMethod(foobar, "for 5 integers", [IsInt, IsInt, IsInt, IsInt, IsInt], -5*RankFilter(IsInt), {x,y...}->1);
+> InstallOtherMethod(foobar, "for 6 integers", [IsInt, IsInt, IsInt, IsInt, IsInt, IsInt], -6*RankFilter(IsInt), {x,y...}->1);
+> """));
 
 #
 #
@@ -88,7 +92,7 @@ end
 gap> Display(ApplicableMethod(foobar, [1, 2], 1));
 #I  Searching Method for foobar with 2 arguments:
 #I  Total: 2 entries
-#I  Method 2: ``foobar: for 2 integers'' at stream:1 , value: 0
+#I  Method 2: ``foobar: for 2 integers'' at stream:2 , value: 0
 function ( x, y... )
     return 1;
 end
@@ -96,7 +100,7 @@ gap> Display(ApplicableMethod(foobar, [1, 2], 2));
 #I  Searching Method for foobar with 2 arguments:
 #I  Total: 2 entries
 #I  Method 1: ``foobar: for two lists'' at stream:1, value: 17
-#I  Method 2: ``foobar: for 2 integers'' at stream:1, value: 0
+#I  Method 2: ``foobar: for 2 integers'' at stream:2, value: 0
 function ( x, y... )
     return 1;
 end
@@ -105,7 +109,7 @@ gap> Display(ApplicableMethod(foobar, [1, 2], 3));
 #I  Total: 2 entries
 #I  Method 1: ``foobar: for two lists'' at stream:1, value: 17
 #I   - 1st argument needs [ "IsList" ]
-#I  Method 2: ``foobar: for 2 integers'' at stream:1, value: 0
+#I  Method 2: ``foobar: for 2 integers'' at stream:2, value: 0
 function ( x, y... )
     return 1;
 end
@@ -115,7 +119,7 @@ gap> Display(ApplicableMethod(foobar, [1, 2], 4));
 #I  Method 1: ``foobar: for two lists'' at stream:1, value: 17
 #I   - 1st argument needs [ "IsList" ]
 #I   - 2nd argument needs [ "IsList" ]
-#I  Method 2: ``foobar: for 2 integers'' at stream:1, value: 0
+#I  Method 2: ``foobar: for 2 integers'' at stream:2, value: 0
 function ( x, y... )
     return 1;
 end
@@ -125,7 +129,7 @@ gap> Display(ApplicableMethod(foobar, [1, 2], 5));
 #I  Method 1: ``foobar: for two lists'' at stream:1, value: 17
 #I   - 1st argument needs [ "IsList" ]
 #I   - 2nd argument needs [ "IsList" ]
-#I  Method 2: ``foobar: for 2 integers'' at stream:1, value: 0
+#I  Method 2: ``foobar: for 2 integers'' at stream:2, value: 0
 function ( x, y... )
     return 1;
 end
@@ -142,7 +146,7 @@ gap> ApplicableMethod(foobar, [1, []], 5);
 #I  Total: 2 entries
 #I  Method 1: ``foobar: for two lists'' at stream:1, value: 17
 #I   - 1st argument needs [ "IsList" ]
-#I  Method 2: ``foobar: for 2 integers'' at stream:1, value: 0
+#I  Method 2: ``foobar: for 2 integers'' at stream:2, value: 0
 #I   - 2nd argument needs [ "IsInt" ]
 fail
 
@@ -173,35 +177,35 @@ gap> Display(ApplicableMethod(foobar, [1,2], 5));
 #I  Method 1: ``foobar: for two lists'' at stream:1, value: 17
 #I   - 1st argument needs [ "IsList" ]
 #I   - 2nd argument needs [ "IsList" ]
-#I  Method 2: ``foobar: for 2 integers'' at stream:1, value: 0
+#I  Method 2: ``foobar: for 2 integers'' at stream:2, value: 0
 function ( x, y... )
     return 1;
 end
 gap> Display(ApplicableMethod(foobar, [1..3], 5));
 #I  Searching Method for foobar with 3 arguments:
 #I  Total: 1 entries
-#I  Method 1: ``foobar: for 3 integers'' at stream:1, value: 0
+#I  Method 1: ``foobar: for 3 integers'' at stream:3, value: 0
 function ( x, y... )
     return 1;
 end
 gap> Display(ApplicableMethod(foobar, [1..4], 5));
 #I  Searching Method for foobar with 4 arguments:
 #I  Total: 1 entries
-#I  Method 1: ``foobar: for 4 integers'' at stream:1, value: 0
+#I  Method 1: ``foobar: for 4 integers'' at stream:4, value: 0
 function ( x, y... )
     return 1;
 end
 gap> Display(ApplicableMethod(foobar, [1..5], 5));
 #I  Searching Method for foobar with 5 arguments:
 #I  Total: 1 entries
-#I  Method 1: ``foobar: for 5 integers'' at stream:1, value: 0
+#I  Method 1: ``foobar: for 5 integers'' at stream:5, value: 0
 function ( x, y... )
     return 1;
 end
 gap> Display(ApplicableMethod(foobar, [1..6], 5));
 #I  Searching Method for foobar with 6 arguments:
 #I  Total: 1 entries
-#I  Method 1: ``foobar: for 6 integers'' at stream:1, value: 0
+#I  Method 1: ``foobar: for 6 integers'' at stream:6, value: 0
 function ( x, y... )
     return 1;
 end

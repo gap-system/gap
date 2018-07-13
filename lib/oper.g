@@ -1954,8 +1954,8 @@ BIND_GLOBAL("MethodsOperation", function(oper, nargs)
             info    := meths[i + nargs + 4],
             );
         ADD_LIST(result, m);
-        if IsBound(meths[ + nargs + 5]) then
-            m.location := meths[ + nargs + 5];
+        if IsBound(meths[i + nargs + 5]) then
+            m.location := meths[i + nargs + 5];
         fi;
     od;
     return result;
