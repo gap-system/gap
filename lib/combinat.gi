@@ -20,7 +20,7 @@ InstallGlobalFunction(Factorial, FACTORIAL_INT);
 
 #############################################################################
 ##
-#F  Binomial( <n>, <k> )  . . . . . . . . .  binomial coefficient of integers
+#F  GaussianCoefficient( <n>, <k>, <q> ) . . . . . . . .  number of subspaces
 ##
 InstallGlobalFunction(GaussianCoefficient,function ( n, k, q )
 local   gc, i, j;
@@ -34,6 +34,7 @@ local   gc, i, j;
     return gc;
   fi;
 end);
+
 
 #############################################################################
 ##

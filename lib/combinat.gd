@@ -108,7 +108,7 @@ DeclareGlobalFunction("Binomial");
 
 #############################################################################
 ##
-#F  GaussianCoefficient( <n>, <k>, <q> )  . number of subspaces
+#F  GaussianCoefficient( <n>, <k>, <q> ) . . . . . . . .  number of subspaces
 ##
 ##  <#GAPDoc Label="GaussianCoefficient">
 ##  <ManSection>
