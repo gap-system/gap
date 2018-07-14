@@ -157,7 +157,7 @@ Obj AddCoeffsGF2VecGF2Vec (
     
     /* grow <sum> is necessary                                             */
     if ( LEN_GF2VEC(sum) < len ) {
-        ResizeBag( sum, SIZE_PLEN_GF2VEC(len) );
+        ResizeWordSizedBag( sum, SIZE_PLEN_GF2VEC(len) );
         SET_LEN_GF2VEC( sum, len );
     }
 
@@ -1413,7 +1413,7 @@ void ConvGF2Vec (
     }
 
     /* retype and resize bag                                               */
-    ResizeBag( list, SIZE_PLEN_GF2VEC(len) );
+    ResizeWordSizedBag( list, SIZE_PLEN_GF2VEC(len) );
     SET_LEN_GF2VEC( list, len );
     if ( IS_MUTABLE_PLIST( list ) ) {
         SetTypeDatObj( list, TYPE_LIST_GF2VEC);
@@ -1949,7 +1949,7 @@ Obj FuncASS_GF2VEC (
         if ( LEN_GF2VEC(list)+1 == p ) {
 	  if (DoFilter(IsLockedRepresentationVector, list) == True)
 	    ErrorMayQuit("Assignment forbidden beyond the end of locked GF2 vector", 0, 0);
-	  ResizeBag( list, SIZE_PLEN_GF2VEC(p) );
+	  ResizeWordSizedBag( list, SIZE_PLEN_GF2VEC(p) );
 	  SET_LEN_GF2VEC( list, p );
         }
         if ( EQ(GF2One,elm) ) {
@@ -2122,7 +2122,7 @@ Obj FuncUNB_GF2VEC (
         ;
     }
     else if ( LEN_GF2VEC(list) == p ) {
-        ResizeBag( list, SIZE_PLEN_GF2VEC(p-1) );
+        ResizeWordSizedBag( list, SIZE_PLEN_GF2VEC(p-1) );
         SET_LEN_GF2VEC( list, p-1 );
     }
     else {
@@ -2636,7 +2636,7 @@ Obj FuncSHRINKCOEFFS_GF2VEC (
     while ( 0 < len && ! ( *ptr & MASK_POS_GF2VEC(len) ) ) {
         len--;
     }
-    ResizeBag( vec, SIZE_PLEN_GF2VEC(len) );
+    ResizeWordSizedBag( vec, SIZE_PLEN_GF2VEC(len) );
     SET_LEN_GF2VEC( vec, len );
     return INTOBJ_INT(len);
 }
@@ -2764,7 +2764,7 @@ Obj FuncAPPEND_GF2VEC( Obj self, Obj vecl, Obj vecr )
       ErrorMayQuit("Append to locked compressed vector is forbidden", 0, 0);
       return 0;
     }
-  ResizeBag(vecl, SIZE_PLEN_GF2VEC(lenl+lenr));
+  ResizeWordSizedBag(vecl, SIZE_PLEN_GF2VEC(lenl+lenr));
   CopySection_GF2Vecs(vecr, vecl, 1, lenl+1, lenr);
   SET_LEN_GF2VEC(vecl,lenl+lenr);
   return (Obj) 0;
@@ -3585,7 +3585,7 @@ void ResizeGF2Vec( Obj vec, UInt newlen )
   
   if (newlen > len)
     {
-      ResizeBag(vec,SIZE_PLEN_GF2VEC(newlen));
+      ResizeWordSizedBag(vec,SIZE_PLEN_GF2VEC(newlen));
 
       /* now clean remainder of last block */
       if (len == 0)
@@ -3626,7 +3626,7 @@ void ResizeGF2Vec( Obj vec, UInt newlen )
 #endif
 	}
       SET_LEN_GF2VEC(vec, newlen);
-      ResizeBag(vec, SIZE_PLEN_GF2VEC(newlen));
+      ResizeWordSizedBag(vec, SIZE_PLEN_GF2VEC(newlen));
       return;
     }
 }
