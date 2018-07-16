@@ -362,4 +362,42 @@ gap> DistanceVecFFE(v1,v2);
 2
 
 #
+gap> checkShift := function(filt, field, length, shift)
+> local w;
+> w := NewVector(filt, field, List([1..length], x -> Random(field)));
+> v := StructuralCopy(w);
+> LeftShiftRowVector(v, shift);
+> if Length(v) <> Maximum(0, length - shift) then
+>   Print("failed left shift\n");
+> fi;
+> if ForAny([1..length-shift], i -> (w[i+shift] <> v[i])) then
+>   Print("failed left shift\n");
+> fi;
+> v := StructuralCopy(w);
+> RightShiftRowVector(v, shift, Zero(field));
+> if Length(v) <> length + shift then
+>   Print("failed right shift\n");
+> fi;
+> if ForAny([1..length], i -> (w[i] <> v[i+shift])) then
+>   Print("failed right shift\n");
+> fi;
+> if ForAny([1..shift], i -> (v[i] <> Zero(field))) then
+>   Print("failed right shift\n");
+> fi;
+> end;;
+
+# Check around powers of two
+gap> testlens := [0,1,2,7,8,9,15,16,17,31,32,33,62,63,64,65,66,126,127,128,129];;
+gap> for types in [[IsGF2VectorRep, GF(2)],
+>                  [IsPlistVectorRep, Integers],
+>                  [Is8BitVectorRep, GF(2)],
+>                  [Is8BitVectorRep, GF(9)]] do
+>      for i in testlens do
+>        for j in testlens do
+>          checkShift(IsGF2VectorRep, GF(2), i, j);
+>        od;
+>      od;
+>    od;
+
+#
 gap> STOP_TEST("vecmat.tst");
