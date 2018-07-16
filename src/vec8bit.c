@@ -2036,12 +2036,6 @@ Int CmpVec8BitVec8Bit( Obj vl, Obj vr )
         }
     }
     /* now the final byte */
-
-    /* a quick and easy case */
-    if (lenl == lenr && *ptrL == *ptrR)
-        return 0;
-
-    /* the more general case */
     if (lenl < lenr)
         len = lenl;
     else
