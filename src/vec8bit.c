@@ -4295,10 +4295,10 @@ void ShiftLeftVec8Bit( Obj vec, UInt amount)
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     ptr1 = BYTES_VEC8BIT(vec);
     ptr2 = BYTES_VEC8BIT(vec) + amount / elts;
+    end = BYTES_VEC8BIT(vec) + (len + elts - 1) / elts;
 
     /* The easy case is just a shift by bytes */
     if (amount % elts == 0) {
-        end = BYTES_VEC8BIT(vec) + (len + elts - 1) / elts;
         while (ptr2 < end)
             *ptr1++ = *ptr2++;
     } else {
@@ -4314,7 +4314,12 @@ void ShiftLeftVec8Bit( Obj vec, UInt amount)
             x = gettab[fbyte + 256 * (from % elts)];
             tbyte = settab[tbyte + 256 * (to % elts + elts * x)];
             if (++from % elts == 0)
-                fbyte = *++ptr2;
+            {
+                if(++ptr2 < end)
+                    fbyte = *ptr2;
+                else
+                    fbyte = 0;
+            }
             if (++to % elts == 0) {
                 *ptr1++ = tbyte;
                 tbyte = 0;
