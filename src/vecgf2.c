@@ -3690,12 +3690,17 @@ void ShiftLeftGF2Vec( Obj vec, UInt amount )
       ptr1 = BLOCKS_GF2VEC(vec);
       ptr2 = ptr1 + amount/BIPEB;
       off = amount % BIPEB;
-      for (i = 0; i < (len - amount + BIPEB - 1)/BIPEB; i++)
-	{
-	  block = (*ptr2++) >> off;
-	  block |= (*ptr2) << (BIPEB - off);
-	  *ptr1++ = block;
-	}
+      for (i = 0; i < (len - amount + BIPEB - 1)/BIPEB - 1; i++)
+      {
+        block = (*ptr2++) >> off;
+        block |= (*ptr2) << (BIPEB - off);
+        *ptr1++ = block;
+      }
+      // Handle last block seperately to avoid reading off end of Bag
+      block = (*ptr2++) >> off;
+      if(ptr2 < BLOCKS_GF2VEC(vec) + NUMBER_BLOCKS_GF2VEC(vec))
+        block |= (*ptr2) << (BIPEB - off);
+      *ptr1 = block;
     }
   ResizeGF2Vec(vec, len-amount);
 }
