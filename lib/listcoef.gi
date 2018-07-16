@@ -236,7 +236,7 @@ function( l, s )
     for i  in [ 1 .. Length(l)-s ]  do
         l[i] := l[i+s];
     od;
-    for i  in [ Length(l)-s+1 .. Length(l) ]  do
+    for i  in [ Maximum(1, Length(l)-s+1) .. Length(l) ]  do
         Unbind(l[i]);
     od;
 end );
