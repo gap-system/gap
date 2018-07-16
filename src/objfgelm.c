@@ -486,7 +486,7 @@ Obj Func8Bits_Less (
             /* compare the exponents, and check the next generator.  This  */
             /* amounts to stripping off the common prefix  x^|expl-expr|.  */
             if( exl > exr ) {
-                if( nr > 0 ) {
+                if( nr > 1 ) {
                   lexico = (*pl & genm) < (*(pr+1) & genm) ? True : False;
                   break;
                 }
@@ -494,7 +494,7 @@ Obj Func8Bits_Less (
                     /* <r> is now essentially the empty word.             */
                     return False;
             }
-            if( nl > 0 ) {  /* exl < exr                                  */
+            if( nl > 1 ) {  /* exl < exr                                  */
                 lexico = (*(pl+1) & genm) < (*pr & genm) ? True : False;
                 break;
             }
@@ -1443,7 +1443,7 @@ Obj Func16Bits_Less (
             /* compare the exponents, and check the next generator.  This  */
             /* amounts to stripping off the common prefix  x^|expl-expr|.  */
             if( exl > exr ) {
-                if( nr > 0 ) {
+                if( nr > 1 ) {
                   lexico = (*pl & genm) < (*(pr+1) & genm) ? True : False;
                   break;
                 }
@@ -1451,7 +1451,7 @@ Obj Func16Bits_Less (
                     /* <r> is now essentially the empty word.             */
                     return False;
             }
-            if( nl > 0 ) {  /* exl < exr                                  */
+            if( nl > 1 ) {  /* exl < exr                                  */
                 lexico = (*(pl+1) & genm) < (*pr & genm) ? True : False;
                 break;
             }
@@ -2400,7 +2400,7 @@ Obj Func32Bits_Less (
             /* compare the exponents, and check the next generator.  This  */
             /* amounts to stripping off the common prefix  x^|expl-expr|.  */
             if( exl > exr ) {
-                if( nr > 0 ) {
+                if( nr > 1 ) {
                   lexico = (*pl & genm) < (*(pr+1) & genm) ? True : False;
                   break;
                 }
@@ -2408,7 +2408,7 @@ Obj Func32Bits_Less (
                     /* <r> is now essentially the empty word.             */
                     return False;
             }
-            if( nl > 0 ) {  /* exl < exr                                  */
+            if( nl > 1 ) {  /* exl < exr                                  */
                 lexico = (*(pl+1) & genm) < (*pr & genm) ? True : False;
                 break;
             }
