@@ -2373,7 +2373,7 @@ InstallMethod( Sortex,
     
     n := Length(list);
     index := [1..n];
-    SortParallel(list, index);
+    StableSortParallel(list, index);
     return PermList(index)^-1;
     
     end );
@@ -2391,7 +2391,7 @@ InstallMethod( Sortex,
   
     n := Length(list);
     index := [1..n];
-    SortParallel(list, index, comp);
+    StableSortParallel(list, index, comp);
     return PermList(index)^-1;
 
     end );
