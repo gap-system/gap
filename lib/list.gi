@@ -2434,37 +2434,12 @@ end );
 InstallMethod( SortingPerm,
     [ IsDenseList ],
     function( list )
-    local  both, perm, i, l;
+        local copy;
 
-    # {\GAP} supports permutations only up to `MAX_SIZE_LIST_INTERNAL'.
-    if not IsSmallList( list ) then
-      Error( "<list> must have length at most ", MAX_SIZE_LIST_INTERNAL );
-    fi;
-
-    # make a new list that contains the elements of <list> and their indices
-    both := [];
-    l:= Length( list );
-    for i in [ 1 .. l ] do
-        both[i] := [ list[i], i ];
-    od;
-
-    # Sort the new list according to the first item (stable).
-    # This needs more memory than a call of 'Sort' but is much faster.
-    # (The change was proposed by Frank Lübeck.)
-    both := Set( both );
-
-    # Remember the permutation.
-    perm := [];
-    perm{ [ 1 .. l ] }:= both{ [ 1 .. l ] }[2];
-
-    # return the permutation mapping <list> onto the sorted list
-    return PermList( perm )^(-1);
+        copy := ShallowCopy(list);
+        return Sortex(copy);
     end );
 
-InstallMethod( SortingPerm,
-    "for a dense and sorted list",
-    [ IsDenseList and IsSortedList ], SUM_FLAGS,
-    list -> () );
 
 
 #############################################################################
