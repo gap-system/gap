@@ -74,8 +74,20 @@ gap> l :=  [ 2, 3, 4, 1, 5, 10, 9, 7, 8, 6 ];;
 gap> SortBy(l,AINV);
 gap> l;
 [ 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
-gap> perm:= Sortex( [ 2, 3, 4, 1, 5, 10, 9, 7, 8, 6 ] );
+gap> l2 := [ 2, 3, 4, 1, 5, 10, 9, 7, 8, 6 ];;
+gap> lcpy := List(l2);;
+gap> permsp := SortingPerm(l2);
 (1,2,3,4)(6,10)(7,9,8)
+gap> l2 = lcpy;
+true
+gap> perm:= Sortex(l2);
+(1,2,3,4)(6,10)(7,9,8)
+gap> SortingPerm(l2);
+()
+gap> Sortex(l2);
+()
+gap> IsSet(l2);
+true
 gap> Permuted( [ 2, 3, 4, 1, 5, 10, 9, 7, 8, 6 ], perm );
 [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
 gap> Product( [ 2, 3, 4, 1, 5, 10, 9, 7, 8, 6 ] );
