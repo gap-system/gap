@@ -1661,7 +1661,7 @@ DeclareOperation( "StableSortBy", [IsList and IsMutable, IsFunction ] );
 ##  <Oper Name="Sortex" Arg='list[, func]'/>
 ##
 ##  <Description>
-##  sorts the list <A>list</A> and returns a permutation
+##  stable sorts the list <A>list</A> and returns a permutation
 ##  that can be applied to <A>list</A> to obtain the sorted list.
 ##  The one argument form sorts via the operator <C>&lt;</C>,
 ##  the two argument form sorts w.r.t. the function <A>func</A>.
