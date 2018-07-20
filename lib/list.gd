@@ -1661,10 +1661,12 @@ DeclareOperation( "StableSortBy", [IsList and IsMutable, IsFunction ] );
 ##  <Oper Name="Sortex" Arg='list[, func]'/>
 ##
 ##  <Description>
-##  stable sorts the list <A>list</A> and returns a permutation
+##  sorts the list <A>list</A> and returns a permutation
 ##  that can be applied to <A>list</A> to obtain the sorted list.
 ##  The one argument form sorts via the operator <C>&lt;</C>,
 ##  the two argument form sorts w.r.t. the function <A>func</A>.
+##  The permutation returned by <Ref Func="Sortex"/> will keep
+##  elements which compare equal in the same relative order.
 ##  (If the list is not homogeneous it is the user's responsibility to ensure
 ##  that <C>&lt;</C> is defined for all element pairs,
 ##  see&nbsp;<Ref Sect="Comparison Operations for Elements"/>)

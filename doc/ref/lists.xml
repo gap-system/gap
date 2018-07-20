@@ -1462,15 +1462,20 @@ copy using <Ref Func="Immutable"/>.
 <Section Label="Sorting Lists">
 <Heading>Sorting Lists</Heading>
 
+GAP implements three different families of sorting algorithms. The
+default algorithm is pattern-defeating quicksort, a variant of quicksort
+which performs better on partially sorted lists and has good worst-case
+behaviour. The functions which begin <C>Stable</C> are stable (equal
+elements keep the same relative order in the sorted list) and use
+merge sort. Finally, the functions which begin <C>Shell</C> use the shell
+sort which was GAP's default search algorithm before 4.9.
+
+<Ref Oper="Sortex"/> and <Ref Attr="SortingPerm"/> are also stable.
 
 <#Include Label="Sort">
 <#Include Label="SortParallel">
 <#Include Label="Sortex">
 <#Include Label="SortingPerm">
-
-The default methods for all of these sorting operations currently
-use Shell sort as it has a comparable performance to Quicksort for lists of
-length at most a few thousands, and has better worst-case behaviour.
 
 </Section>
 
