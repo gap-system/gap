@@ -1187,8 +1187,8 @@ InstallGlobalFunction( CharacterTableWreathSymmetric, function( sub, n )
     powermap:= tbl.ComputedPowerMaps;
     for prime in PrimeDivisors( tbl.Size ) do
        spm:= PowerMap( sub, prime );
-       powermap[prime]:= List( [ 1 .. nccl ],
-           i -> Position(parts, PowerWreath(spm, parts[i], prime)) );
+       powermap[prime]:= MakeImmutable( List( [ 1 .. nccl ],
+           i -> Position(parts, PowerWreath(spm, parts[i], prime)) ) );
     od;
 
     # \ldots and `Irr'.
@@ -1252,7 +1252,8 @@ InstallMethod( Irr,
     fun:= gentbl.powermap[1];
     for p in PrimeDivisors( Size( G ) ) do
       if not IsBound( pow[p] ) then
-        pow[p]:= List( cp, x -> Position( cp, fun( deg, x[2], p ) ) );
+        pow[p]:= MakeImmutable(
+                     List( cp, x -> Position( cp, fun( deg, x[2], p ) ) ) );
       fi;
     od;
 
@@ -1837,6 +1838,7 @@ InstallValue( CharTableDoubleCoverSymmetric, MakeImmutable ( rec(
               fi;
             fi;
           od;
+          MakeImmutable( pow[p] );
         od;
 
         # Make the character parameters unique.
@@ -1861,9 +1863,10 @@ InstallValue( CharTableDoubleCoverSymmetric, MakeImmutable ( rec(
                     OrdersClassRepresentatives:= ord,
                     ComputedClassFusions:=
                         [ rec( name:= Concatenation("Sym(",String(n),")"),
-                               map:= fus ) ],
-                    Irr:= Concatenation( CharTableSymmetric.matrix( n )
-                              { [ 1 .. nrparts ] }{ fus }, chars ) );
+                               map:= MakeImmutable( fus ) ) ],
+                    Irr:= MakeImmutable( Concatenation(
+                              CharTableSymmetric.matrix( n )
+                              { [ 1 .. nrparts ] }{ fus }, chars ) ) );
         end,
     domain:= IsPosInt ) ) );
 
@@ -2125,6 +2128,7 @@ InstallValue( CharTableDoubleCoverAlternating, MakeImmutable( rec(
               fi;
             fi;
           od;
+          MakeImmutable( pow[p] );
         od;
 
         # add the characters of Alt_n
@@ -2160,12 +2164,12 @@ InstallValue( CharTableDoubleCoverAlternating, MakeImmutable( rec(
                     ComputedClassFusions:=
                         [ rec( name:= Concatenation( "Alt(", String( n ),
                                                      ")" ),
-                               map:= fus1 ),
+                               map:= MakeImmutable( fus1 ) ),
                           rec( name:= Concatenation( "2.Sym(", String( n ),
                                                      ")" ),
-                               map:= fus2 ) ],
-                    Irr:= Concatenation( tbl.Irr{
-                            [ 1 .. Length( tbl.Irr ) ] }{ fus1 }, chars ) );
+                               map:= MakeImmutable( fus2 ) ) ],
+                    Irr:= MakeImmutable( Concatenation( tbl.Irr{
+                            [ 1 .. Length( tbl.Irr ) ] }{ fus1 }, chars ) ) );
         end,
     domain:= IsPosInt ) ) );
 

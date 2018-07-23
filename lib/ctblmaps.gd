@@ -970,7 +970,7 @@ DeclareAttributeSuppCT( "NamesOfFusionSources",
 ##  <Mark><C>parameters</C></Mark>
 ##  <Item>
 ##    a record with components <C>maxamb</C>, <C>minamb</C> and <C>maxlen</C>
-##    which control the subroutine
+##    (and perhaps some optional components) which control the subroutine
 ##    <Ref Func="FusionsAllowedByRestrictions"/>;
 ##    it only uses characters with current indeterminateness up to
 ##    <C>maxamb</C>,
@@ -2368,13 +2368,21 @@ DeclareGlobalFunction( "ConsiderTableAutomorphisms" );
 ##  characters of <A>subtbl</A> and <A>tbl</A>, respectively,
 ##  <A>approxmap</A> a parametrized map that is an approximation of the class
 ##  fusion of <A>subtbl</A> in <A>tbl</A>,
-##  and <A>parameters</A> a record with components
+##  and <A>parameters</A> a record with the mandatory components
 ##  <C>maxlen</C>, <C>minamb</C>, <C>maxamb</C> (three integers),
 ##  <C>quick</C> (a Boolean),
-##  and <C>contained</C> (a function).
-##  Usual values of <C>contained</C> are
+##  and <C>contained</C> (a function, usual values are
 ##  <Ref Func="ContainedCharacters"/> or
-##  <Ref Func="ContainedPossibleCharacters"/>.
+##  <Ref Func="ContainedPossibleCharacters"/>);
+##  optional components of the <A>parameters</A> record are
+##  <C>testdec</C> (the function that tests the decomposability, 
+##  the default is <Ref Func="NonnegIntScalarProducts"/>),
+##  <C>powermaps</C> (the power paps of <A>subtbl</A> that shall be used for
+##  compatibility checks, the default is the <Ref Attr="ComputedPowerMaps"/>
+##  value),
+##  <C>subpowermaps</C> (the power paps of <A>tbl</A> that shall be used for
+##  compatibility checks, the default is the <Ref Attr="ComputedPowerMaps"/>
+##  value).
 ##  <P/>
 ##  <Ref Func="FusionsAllowedByRestrictions"/> replaces the entries of
 ##  <A>approxmap</A> by improved values,

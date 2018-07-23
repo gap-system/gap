@@ -357,20 +357,18 @@ BindGlobal( "NearlyCharacterTablesFamily",
 ##  <Ref Var="SupportedCharacterTableInfo"/> is a list that contains
 ##  at position <M>3i-2</M> an attribute getter function,
 ##  at position <M>3i-1</M> the name of this attribute,
-##  and at position <M>3i</M> a list containing one or two of the
-##  strings <C>"class"</C>, <C>"character"</C>,
+##  and at position <M>3i</M> a list containing a subset of
+##  <C>[ "character", "class", "mutable" ]</C>,
 ##  depending on whether the attribute value relies on the ordering of
-##  classes or characters.
-##  This allows one to set exactly the components with these names in the
-##  record that is later converted to the new table,
-##  in order to use the values as attribute values.
-##  So the record components that shall <E>not</E> be regarded as attribute
-##  values can be ignored.
-##  Also other attributes of the old table are ignored.
+##  characters or classes, or whether the attribute value is a mutable
+##  list or record.
 ##  <P/>
-##  <Ref Var="SupportedCharacterTableInfo"/> is used when (ordinary or
-##  Brauer) character table objects are created from records, using
-##  <Ref Func="ConvertToCharacterTable"/>.
+##  When (ordinary or Brauer) character table objects are created from
+##  records, using <Ref Func="ConvertToCharacterTable"/>,
+##  <Ref Var="SupportedCharacterTableInfo"/> specifies those
+##  record components that shall be used as attribute values;
+##  other record components are <E>not</E> be regarded as attribute
+##  values in the conversion process.
 ##  <P/>
 ##  New attributes and properties can be notified to
 ##  <Ref Var="SupportedCharacterTableInfo"/> by creating them with
@@ -387,12 +385,12 @@ BindGlobal( "SupportedCharacterTableInfo", [] );
 #############################################################################
 ##
 #F  DeclareAttributeSuppCT( <name>, <filter>[, "mutable"], <depend> )
-#F  DeclarePropertySuppCT( <name>, <filter>[, "mutable"] )
+#F  DeclarePropertySuppCT( <name>, <filter> )
 ##
 ##  <ManSection>
 ##  <Func Name="DeclareAttributeSuppCT"
 ##   Arg='name, filter[, "mutable"], depend'/>
-##  <Func Name="DeclarePropertySuppCT" Arg='name, filter[, "mutable"]'/>
+##  <Func Name="DeclarePropertySuppCT" Arg='name, filter'/>
 ##
 ##  <Description>
 ##  do the same as <Ref Func="DeclareAttribute"/> and
@@ -402,46 +400,50 @@ BindGlobal( "SupportedCharacterTableInfo", [] );
 ##  </Description>
 ##  </ManSection>
 ##
-BindGlobal( "DeclareAttributeSuppCT", function( arg )
-    local attr;
+BindGlobal( "DeclareAttributeSuppCT", function( name, filter, arg... )
+    local mutflag, depend;
 
     # Check the arguments.
-    if not ( Length( arg ) in [ 3, 4 ] and IsString( arg[1] ) and
-             IsFilter( arg[2] ) and ( IsHomogeneousList( arg[3] ) or
-             ( arg[3] = "mutable" and IsHomogeneousList( arg[4] ) ) ) ) then
+    if not ( IsString( name ) and IsFilter( filter ) ) then
+      Error( "<name> must be a string, <filter> must be a filter" );
+    elif Length( arg ) = 1 and IsList( arg[1] ) then
+      mutflag:= false;
+      depend:= arg[1];
+    elif Length( arg ) = 2 and arg[1] = "mutable" and IsList( arg[2] ) then
+      mutflag:= true;
+      depend:= arg[2];
+    else
       Error( "usage: DeclareAttributeSuppCT( <name>,\n",
              " <filter>[, \"mutable\"], <depend> )" );
-    elif not ForAll( arg[ Length( arg ) ],
-                     str -> str in [ "class", "character" ] ) then
+    fi;
+    if not ForAll( depend, str -> str in [ "class", "character" ] ) then
       Error( "<depend> must contain only \"class\", \"character\"" );
     fi;
 
     # Create/change the attribute as `DeclareAttribute' does.
-    CallFuncList( DeclareAttribute, arg{ [ 1 .. Length( arg )-1 ] } );
+    if mutflag then
+      DeclareAttribute( name, filter, "mutable" );
+      depend:= Concatenation( depend, [ "mutable" ] );
+    else
+      DeclareAttribute( name, filter );
+    fi;
 
     # Do the additional magic.
-    attr:= ValueGlobal( arg[1] );
     Append( SupportedCharacterTableInfo,
-            [ attr, arg[1], arg[ Length( arg ) ] ] );
+            [ ValueGlobal( name ), name, depend ] );
 end );
 
-BindGlobal( "DeclarePropertySuppCT", function( arg )
-    local prop;
-
+BindGlobal( "DeclarePropertySuppCT", function( name, filter )
     # Check the arguments.
-    if not ( Length( arg ) in [ 2, 3 ] and IsString( arg[1] ) and
-             IsFilter( arg[2] ) and ( Length( arg ) = 2 or
-             arg[3] = "mutable" ) ) then
-      Error( "usage: DeclarePropertySuppCT( <name>,\n",
-             " <filter>[, \"mutable\"] )" );
+    if not ( IsString( name ) and IsFilter( filter ) ) then
+      Error( "<name> must be a string, <filter> must be a filter" );
     fi;
 
     # Create/change the property as `DeclareProperty' does.
-    CallFuncList( DeclareProperty, arg );
+    DeclareProperty( name, filter );
 
     # Do the additional magic.
-    prop:= ValueGlobal( arg[1] );
-    Append( SupportedCharacterTableInfo, [ prop, arg[1], [] ] );
+    Append( SupportedCharacterTableInfo, [ ValueGlobal( name ), name, [] ] );
 end );
 
 
@@ -968,7 +970,7 @@ InstallIsomorphismMaintenance( CharacterDegrees,
 DeclareAttribute( "Irr", IsGroup );
 DeclareOperation( "Irr", [ IsGroup, IsInt ] );
 DeclareAttributeSuppCT( "Irr", IsNearlyCharacterTable,
-    [ "class", "character" ] );
+    [ "character", "class" ] );
 
 
 #############################################################################
@@ -1656,7 +1658,7 @@ fi;
 
 #############################################################################
 ##
-#A  InfoText( <tbl> )
+#M  InfoText( <tbl> )
 ##
 ##  <#GAPDoc Label="InfoText_ctbl">
 ##  <ManSection>
@@ -1684,7 +1686,16 @@ fi;
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttributeSuppCT( "InfoText", IsNearlyCharacterTable, "mutable", [] );
+##  Do not call 'DeclareAttributeSuppCT',
+##  since the attribute has already been declared for arbitrary GAP objects.
+##  A second declaration with requirement 'IsNearlyCharacterTable' would
+##  make the installation of a method with 'InstallMethod' impossible.
+##
+##  We want, however, to add 'InfoText' to the list
+##  'SupportedCharacterTableInfo'.
+##
+Append( SupportedCharacterTableInfo,
+    [ InfoText, "InfoText", [ "mutable" ] ] );
 
 
 #############################################################################

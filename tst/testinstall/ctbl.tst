@@ -61,6 +61,31 @@ gap> ViewString( t );
 gap> PrintString( t );
 "CharacterTable( \"Group( \>[ (1,2,3,4,5), (1,2) ]\<\> )\< )"
 
+# entries of mutable attributes are immutable
+gap> t:= CharacterTable( SymmetricGroup( 5 ) );
+CharacterTable( Sym( [ 1 .. 5 ] ) )
+gap> PowerMap( t, 2 );;  PowerMap( t, 3 );;
+gap> Length( ComputedPowerMaps( t ) );
+3
+gap> IsMutable( ComputedPowerMaps( t ) );
+true
+gap> ForAny( ComputedPowerMaps( t ), IsMutable );
+false
+gap> Indicator( t, 2 );;
+gap> Length( ComputedIndicators( t ) );
+2
+gap> IsMutable( ComputedIndicators( t ) );
+true
+gap> ForAny( ComputedIndicators( t ), IsMutable );
+false
+gap> PrimeBlocks( t, 2 );;
+gap> Length( ComputedPrimeBlockss( t ) );
+2
+gap> IsMutable( ComputedPrimeBlockss( t ) );
+true
+gap> ForAny( ComputedPrimeBlockss( t ), IsMutable );
+false
+
 ##
 gap> STOP_TEST( "ctbl.tst", 1);
 

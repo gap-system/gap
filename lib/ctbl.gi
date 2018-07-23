@@ -97,6 +97,8 @@ InstallGlobalFunction( CharacterTableWithStoredGroup, function( arg )
               rec( UnderlyingCharacteristic := 0 ) );
 
     # Set the supported attribute values.
+    # We may assume that the subobjects of mutable attribute values
+    # are already immutable.
     for i in [ 3, 6 .. Length( SupportedCharacterTableInfo ) ] do
       if Tester( SupportedCharacterTableInfo[ i-2 ] )( tbl )
          and SupportedCharacterTableInfo[ i-1 ] <> "Irr" then
@@ -2752,7 +2754,7 @@ InstallMethod( PrimeBlocks,
     # This avoids errors if a calculation had been interrupted.
     if not IsBound( known[p] ) then
       erg:= PrimeBlocksOp( tbl, p );
-      known[p]:= erg;
+      known[p]:= MakeImmutable( erg );
     fi;
 
     return known[p];
@@ -3859,7 +3861,7 @@ InstallMethod( Indicator,
     # This avoids errors if a calculation had been interrupted.
     if not IsBound( known[n] ) then
       erg:= IndicatorOp( tbl, Irr( tbl ), n );
-      known[n]:= erg;
+      known[n]:= MakeImmutable( erg );
     fi;
 
     return known[n];
@@ -4260,7 +4262,6 @@ InstallMethod( ComputedBrauerTables,
 ##
 InstallGlobalFunction( CharacterTableRegular,
     function( ordtbl, prime )
-
     local fusion,
           inverse,
           orders,
@@ -4300,12 +4301,14 @@ InstallGlobalFunction( CharacterTableRegular,
     power:= ComputedPowerMaps( ordtbl );
     for i in [ 1 .. Length( power ) ] do
       if IsBound( power[i] ) then
-        regular.ComputedPowerMaps[i]:= inverse{ power[i]{ fusion } };
+        regular.ComputedPowerMaps[i]:= MakeImmutable(
+            inverse{ power[i]{ fusion } } );
       fi;
     od;
 
     regular:= ConvertToCharacterTableNC( regular );
-    StoreFusion( regular, rec( map:= fusion, type:= "choice" ), ordtbl );
+    StoreFusion( regular,
+        rec( map:= MakeImmutable( fusion ), type:= "choice" ), ordtbl );
 
     return regular;
     end );
@@ -4317,9 +4320,7 @@ InstallGlobalFunction( CharacterTableRegular,
 #F  ConvertToCharacterTableNC( <record> ) . . . create character table object
 ##
 InstallGlobalFunction( ConvertToCharacterTableNC, function( record )
-
-    local names,    # list of component names
-          i;        # loop over `SupportedCharacterTableInfo'
+    local names, i, name, val, entry;
 
     names:= RecNames( record );
 
@@ -4337,18 +4338,32 @@ InstallGlobalFunction( ConvertToCharacterTableNC, function( record )
     fi;
 
     # Enter the properties and attributes.
+    # For mutable attributes, if the value is a list but not a string
+    # then make the list entries immutable.
     for i in [ 1, 4 .. Length( SupportedCharacterTableInfo ) - 2 ] do
-      if     SupportedCharacterTableInfo[ i+1 ] in names
-         and SupportedCharacterTableInfo[ i+1 ] <> "Irr" then
-        Setter( SupportedCharacterTableInfo[i] )( record,
-            record!.( SupportedCharacterTableInfo[ i+1 ] ) );
+      name:= SupportedCharacterTableInfo[ i+1 ];
+      if name in names and name <> "Irr" then
+        val:= record!.( name );
+        if "mutable" in SupportedCharacterTableInfo[ i+2 ] then
+          if IsList( val ) and not IsString( val ) then
+            # Store a mutable list with immutable entries.
+            for entry in val do
+              MakeImmutable( entry );
+            od;
+          fi;
+        else
+          # Avoid making a copy.
+          MakeImmutable( val );
+        fi;
+        Setter( SupportedCharacterTableInfo[i] )( record, val );
       fi;
     od;
 
-    # Make the lists of character values into character objects.
+    # Turn the lists of character values into character objects.
     if "Irr" in names then
-      SetIrr( record, List( record!.Irr,
-                            chi -> Character( record, chi ) ) );
+      SetIrr( record, MakeImmutable( List( record!.Irr,
+                            chi -> Character( record,
+                                              MakeImmutable( chi ) ) ) ) );
     fi;
 
     # Return the object.
@@ -5358,14 +5373,15 @@ InstallMethod( CharacterTableDirectProduct,
           powermap_k[ j + ncc2_i ]:= vals2[j] + ncc2 * ( vals1[i] - 1 );
         od;
       od;
-      vals_direct[k]:= powermap_k;
+      vals_direct[k]:= MakeImmutable( powermap_k );
     od;
 
     # Compute the irreducibles.
     SetIrr( direct, List( KroneckerProduct(
                                 List( Irr( tbl1 ), ValuesOfClassFunction ),
                                 List( Irr( tbl2 ), ValuesOfClassFunction ) ),
-                          vals -> Character( direct, vals ) ) );
+                          vals -> Character( direct,
+                                             MakeImmutable( vals ) ) ) );
 
     # Form character parameters if they exist for the irreducibles
     # in both tables.
@@ -5387,7 +5403,7 @@ InstallMethod( CharacterTableDirectProduct,
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= i; od;
     od;
     StoreFusion( direct,
-                 rec( map := fus, specification := "1" ),
+                 rec( map := MakeImmutable( fus ), specification := "1" ),
                  tbl1 );
 
     fus:= [];
@@ -5395,18 +5411,18 @@ InstallMethod( CharacterTableDirectProduct,
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= j; od;
     od;
     StoreFusion( direct,
-                 rec( map := fus, specification := "2" ),
+                 rec( map := MakeImmutable( fus ), specification := "2" ),
                  tbl2 );
 
     # Store embeddings.
     StoreFusion( tbl1,
-                 rec( map := [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ],
+                 rec( map := MakeImmutable( [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ] ),
                       specification := "1" ),
                  direct );
 
     StoreFusion( tbl2,
-                 rec( map := [ 1 .. ncc2 ],
-                      specification := "2" ),
+                 rec( map := MakeImmutable( [ 1 .. ncc2 ] ),
+                                specification := "2" ),
                  direct );
 
     # Store the argument list as the value of `FactorsOfDirectProduct'.
@@ -5456,22 +5472,22 @@ InstallMethod( CharacterTableDirectProduct,
     for i in [ 1 .. ncc1 ] do
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= i; od;
     od;
-    StoreFusion( reg, fus, tbl1 );
+    StoreFusion( reg, MakeImmutable( fus ), tbl1 );
 
     fus:= [];
     for i in [ 1 .. ncc1 ] do
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= j; od;
     od;
-    StoreFusion( reg, fus, tbl2 );
+    StoreFusion( reg, MakeImmutable( fus ), tbl2 );
 
     StoreFusion( tbl1,
-                 rec( map := [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ],
-                      specification := "1" ),
+                 MakeImmutable( rec( map := [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ],
+                                     specification := "1" ) ),
                  reg );
 
     StoreFusion( tbl2,
-                 rec( map := [ 1 .. ncc2 ],
-                      specification := "2" ),
+                 MakeImmutable( rec( map := [ 1 .. ncc2 ],
+                                     specification := "2" ) ),
                  reg );
 
     # Return the table.
@@ -5518,22 +5534,22 @@ InstallMethod( CharacterTableDirectProduct,
     for i in [ 1 .. ncc1 ] do
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= i; od;
     od;
-    StoreFusion( reg, fus, tbl1 );
+    StoreFusion( reg, MakeImmutable( fus ), tbl1 );
 
     fus:= [];
     for i in [ 1 .. ncc1 ] do
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= j; od;
     od;
-    StoreFusion( reg, fus, tbl2 );
+    StoreFusion( reg, MakeImmutable( fus ), tbl2 );
 
     StoreFusion( tbl1,
-                 rec( map := [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ],
-                      specification := "1" ),
+                 MakeImmutable( rec( map := [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ],
+                                     specification := "1" ) ),
                  reg );
 
     StoreFusion( tbl2,
-                 rec( map := [ 1 .. ncc2 ],
-                      specification := "2" ),
+                 MakeImmutable( rec( map := [ 1 .. ncc2 ],
+                                     specification := "2" ) ),
                  reg );
 
     # Return the table.
@@ -5583,27 +5599,27 @@ InstallMethod( CharacterTableDirectProduct,
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= i; od;
     od;
     StoreFusion( reg,
-                 rec( map := fus,
-                      specification := "1" ),
+                 MakeImmutable( rec( map := fus,
+                                     specification := "1" ) ),
                  tbl1 );
     fus:= [];
     for i in [ 1 .. ncc1 ] do
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= j; od;
     od;
     StoreFusion( reg,
-                 rec( map := fus,
-                      specification := "2" ),
+                 MakeImmutable( rec( map := fus,
+                                     specification := "2" ) ),
                  tbl2 );
 
     # Store embeddings.
     StoreFusion( tbl1,
-                 rec( map := [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ],
-                      specification := "1" ),
+                 MakeImmutable( rec( map := [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ],
+                                     specification := "1" ) ),
                  reg );
 
     StoreFusion( tbl2,
-                 rec( map := [ 1 .. ncc2 ],
-                      specification := "2" ),
+                 MakeImmutable( rec( map := [ 1 .. ncc2 ],
+                                     specification := "2" ) ),
                  reg );
 
     # Return the table.
@@ -5671,7 +5687,8 @@ InstallGlobalFunction( CharacterTableHeadOfFactorGroupByFusion,
     for p in [ 1 .. Length( ComputedPowerMaps( tbl ) ) ] do
       if IsBound( ComputedPowerMaps( tbl )[p] ) then
         map:= ComputedPowerMaps( tbl )[p];
-        F.ComputedPowerMaps[p]:= factorfusion{ map{ inverse } };
+        F.ComputedPowerMaps[p]:= MakeImmutable(
+                                     factorfusion{ map{ inverse } } );
       fi;
     od;
 
@@ -5719,14 +5736,15 @@ InstallMethod( CharacterTableFactorGroup,
     F:= CharacterTableHeadOfFactorGroupByFusion( tbl, factorfusion );
 
     # Set the irreducibles.
-    SetIrr( F, List( factirr, chi -> Character( F, chi ) ) );
+    SetIrr( F, List( factirr, chi -> Character( F, MakeImmutable( chi ) ) ) );
 
     # Transfer necessary power maps of `tbl' to `F'.
     inverse:= ProjectionMap( factorfusion );
     maps:= ComputedPowerMaps( F );
     for p in PrimeDivisors( Size( F ) ) do
       if not IsBound( maps[p] ) then
-        maps[p]:= factorfusion{ PowerMap( tbl, p ){ inverse } };
+        maps[p]:= MakeImmutable(
+                      factorfusion{ PowerMap( tbl, p ){ inverse } } );
       fi;
     od;
 
@@ -5766,7 +5784,8 @@ InstallMethod( CharacterTableFactorGroup,
     factirr:= Filtered( List( Irr( modtbl ), ValuesOfClassFunction ),
                         x -> Length( Set( x{ kernel } ) ) = 1 );
     proj:= ProjectionMap( fus );
-    SetIrr( modfact, List( factirr, x -> Character( modfact, x{ proj } ) ) );
+    SetIrr( modfact, List( factirr, x -> Character( modfact,
+                                           MakeImmutable( x{ proj } ) ) ) );
 
     # Return the result.
     return modfact;
@@ -5988,7 +6007,7 @@ InstallOtherMethod( CharacterTableIsoclinic,
         OrdersClassRepresentatives := orders,
         ComputedClassFusions       := [],
         ComputedPowerMaps          := [],
-        Irr                        := irreds.all );
+        Irr                        := List( irreds.all, MakeImmutable ) );
 
     # Get the fusion map onto the factor group modulo the central subgroup.
     # We assume that the first class of element order two or four in the
@@ -6052,7 +6071,7 @@ InstallOtherMethod( CharacterTableIsoclinic,
         od;
       fi;
 
-      isoclinic.ComputedPowerMaps[p]:= map;
+      isoclinic.ComputedPowerMaps[p]:= MakeImmutable( map );
 
     od;
 
@@ -6161,7 +6180,8 @@ InstallOtherMethod( CharacterTableIsoclinic,
       irreducibles:= List( irreducibles, x -> Permuted( x, pi ) );
     fi;
 
-    SetIrr( reg, List( irreducibles, vals -> Character( reg, vals ) ) );
+    SetIrr( reg, List( irreducibles,
+                       vals -> Character( reg, MakeImmutable( vals ) ) ) );
 
     # Return the result.
     return reg;
@@ -6226,9 +6246,9 @@ InstallGlobalFunction( CharacterTableOfNormalSubgroup,
 
     for p in [ 1 .. Length( ComputedPowerMaps( tbl ) ) ] do
       if IsBound( ComputedPowerMaps( tbl )[p] ) then
-        result.ComputedPowerMaps[p]:=
+        result.ComputedPowerMaps[p]:= MakeImmutable(
             CompositionMaps( inverse,
-                CompositionMaps( ComputedPowerMaps( tbl )[p], classes ) );
+                CompositionMaps( ComputedPowerMaps( tbl )[p], classes ) ) );
       fi;
     od;
 
@@ -6242,7 +6262,7 @@ InstallGlobalFunction( CharacterTableOfNormalSubgroup,
                   i -> sizesclasses[i] * char[i] * GaloisCyc(char[i],-1), 0 )
                = size
            and not char in irreducibles then
-          Add( irreducibles, char );
+          Add( irreducibles, MakeImmutable( char ) );
         fi;
       od;
 
@@ -6551,8 +6571,7 @@ InstallMethod( CharacterTableWithSortedClasses,
     "for an ordinary character table, and a permutation",
     [ IsOrdinaryTable, IsPerm ],
     function( tbl, perm )
-
-    local new, i, attr, fus, tblmaps, permmap, inverse, k;
+    local new, i, attr, fus, copy, tblmaps, permmap, inverse, k;
 
     # Catch trivial cases.
     if 1^perm <> 1 then
@@ -6583,21 +6602,24 @@ InstallMethod( CharacterTableWithSortedClasses,
                   SizesConjugacyClasses,
                 ] do
       if Tester( attr )( tbl ) then
-        Setter( attr )( new, Permuted( attr( tbl ), perm ) );
+        Setter( attr )( new, MakeImmutable( Permuted( attr( tbl ), perm ) ) );
       fi;
     od;
 
     # For each fusion, the map must be permuted.
     for fus in ComputedClassFusions( tbl ) do
-      Add( ComputedClassFusions( new ),
-           rec( name:= fus.name, map:= Permuted( fus.map, perm ) ) );
+      copy:= ShallowCopy( fus );
+      copy.map:= MakeImmutable( Permuted( fus.map, perm ) );
+      Add( ComputedClassFusions( new ), MakeImmutable( copy ) );
     od;
 
     # Each irreducible character must be permuted.
     if HasIrr( tbl ) then
       SetIrr( new,
-          List( Irr( tbl ), chi -> Character( new,
-                Permuted( ValuesOfClassFunction( chi ), perm ) ) ) );
+          List( Irr( tbl ),
+                chi -> Character( new,
+                           MakeImmutable( Permuted(
+                               ValuesOfClassFunction( chi ), perm ) ) ) ) );
     fi;
 
     # Power maps must be ``conjugated''.
@@ -6612,8 +6634,9 @@ InstallMethod( CharacterTableWithSortedClasses,
       od;
       for k in [ 1 .. Length( tblmaps ) ] do
         if IsBound( tblmaps[k] ) then
-          ComputedPowerMaps( new )[k]:= CompositionMaps( permmap,
-              CompositionMaps( tblmaps[k], inverse ) );
+          ComputedPowerMaps( new )[k]:= MakeImmutable(
+              CompositionMaps( permmap,
+                  CompositionMaps( tblmaps[k], inverse ) ) );
         fi;
       od;
 
