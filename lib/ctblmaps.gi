@@ -43,7 +43,7 @@ InstallMethod( PowerMap,
       # compute the <n>-th power map
       if not IsBound( known[n] ) then
         erg:= PowerMapOp( tbl, n );
-        known[n]:= erg;
+        known[n]:= MakeImmutable( erg );
       fi;
 
       # return the <p>-th power map
@@ -129,7 +129,7 @@ InstallMethod( PowerMapOp,
         if Length( pmap ) <> 1 then
           return fail;
         elif IsSmallIntRep( i ) then
-          powermap[i]:= pmap[1];
+          powermap[i]:= MakeImmutable( pmap[1] );
         fi;
         nth_powermap:= nth_powermap{ pmap[1] };
       fi;
@@ -168,11 +168,11 @@ InstallOtherMethod( PowerMapOp,
 
     image:= class;
     for i in Factors(Integers, n ) do
-      # Here we use that `n' is a small integer.
+      # Here we use that `i' is a small integer.
       if not IsBound( powermap[i] ) then
 
         # Compute the missing power map.
-        powermap[i]:= PowerMap( tbl, i );
+        powermap[i]:= MakeImmutable( PowerMap( tbl, i ) );
 #T if the group is available, better ask it directly?
 #T (careful: No maps are stored by the three-argument call,
 #T this may slow down the computation if many calls are done ...)
@@ -471,9 +471,10 @@ InstallOtherMethod( PossiblePowerMaps,
     local ordtbl, poss, fus, inv;
     ordtbl:= OrdinaryCharacterTable( modtbl );
     if IsBound( ComputedPowerMaps( ordtbl )[ prime ] ) then
-      return [ ComputedPowerMaps( ordtbl )[ prime ] ];
+      poss:= [ ComputedPowerMaps( ordtbl )[ prime ] ];
+    else
+      poss:= PossiblePowerMaps( ordtbl, prime, rec() );
     fi;
-    poss:= PossiblePowerMaps( ordtbl, prime, rec() );
     fus:= GetFusionMap( modtbl, ordtbl );
     inv:= InverseMap( fus );
     return Set( List( poss,
@@ -492,21 +493,22 @@ InstallMethod( PossiblePowerMaps,
     local ordtbl, poss, fus, inv, quick, decompose;
     ordtbl:= OrdinaryCharacterTable( modtbl );
     if IsBound( ComputedPowerMaps( ordtbl )[ prime ] ) then
-      return [ ComputedPowerMaps( ordtbl )[ prime ] ];
-    fi;
-    quick:= IsBound( arec.quick ) and ( arec.quick = true );
-    decompose:= IsBound( arec.decompose ) and ( arec.decompose = true );
-    if IsBound( arec.parameters ) then
-      poss:= PossiblePowerMaps( ordtbl, prime,
+      poss:= [ ComputedPowerMaps( ordtbl )[ prime ] ];
+    else
+      quick:= IsBound( arec.quick ) and ( arec.quick = true );
+      decompose:= IsBound( arec.decompose ) and ( arec.decompose = true );
+      if IsBound( arec.parameters ) then
+        poss:= PossiblePowerMaps( ordtbl, prime,
                rec( quick      := quick,
                     decompose  := decompose,
                     parameters := rec( maxamb:= arec.parameters.maxamb,
                                        minamb:= arec.parameters.minamb,
                                        maxlen:= arec.parameters.maxlen ) ) );
-    else
-      poss:= PossiblePowerMaps( ordtbl, prime,
+      else
+        poss:= PossiblePowerMaps( ordtbl, prime,
                rec( quick      := quick,
                     decompose  := decompose ) );
+      fi;
     fi;
     fus:= GetFusionMap( modtbl, ordtbl );
     inv:= InverseMap( fus );
@@ -1101,9 +1103,8 @@ InstallGlobalFunction( StoreFusion, function( source, fusion, destination )
 
     # Adjust the map to the stored permutation.
     if HasClassPermutation( destination ) then
-      fusion.map:= OnTuples( fusion.map,
-                             Inverse( ClassPermutation( destination ) ) );
-      MakeImmutable( fusion.map );
+      fusion.map:= MakeImmutable( OnTuples( fusion.map,
+                       Inverse( ClassPermutation( destination ) ) ) );
     fi;
 
     # Check that different stored fusions into the same table
@@ -1121,11 +1122,9 @@ InstallGlobalFunction( StoreFusion, function( source, fusion, destination )
         if    not IsBound( fusion.specification )
            or (     IsBound( fus.specification )
                 and fusion.specification = fus.specification ) then
-
           Error( "fusion to <destination> already stored on <source>;\n",
-             " to store another one, assign different specifications",
-             " to both fusions" );
-
+             " to store another one, assign a different specification",
+             " to the new fusion record <fusion>" );
         fi;
 
       fi;
@@ -3684,8 +3683,7 @@ InstallGlobalFunction( PowerMapsAllowedBySymmetrizations,
       for j in pow[ class ] do
         newpow:= List( pow, ShallowCopy );
         newpow[ class ]:= j;
-        copy:= StructuralCopy( ComputedPowerMaps( tbl ) );
-#T really?
+        copy:= ShallowCopy( ComputedPowerMaps( tbl ) );
         Unbind( copy[ prime ] );
         if TestConsistencyMaps( copy, newpow, copy ) then
           newindet:= List( indeterminateness, ShallowCopy );
@@ -4201,7 +4199,6 @@ InstallGlobalFunction( FusionsAllowedByRestrictions,
     else
       powermaps:= ComputedPowerMaps( tbl );
     fi;
-#T document new parameters `testdec', `subpowermaps', `powermaps'
 
     # May we return immediately?
     if quick and Indeterminateness( fus ) < minamb then

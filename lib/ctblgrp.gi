@@ -144,7 +144,7 @@ local p,primes,i,cl,spr,j,allpowermaps,pm,ex;
   D.inversemap:=p;
 
   allpowermaps:=ComputedPowerMaps(D.characterTable);
-  allpowermaps[1]:=D.classrange;
+  allpowermaps[1]:= Immutable( D.classrange );
   D.powermap:=allpowermaps;
 
   # get all primes smaller than the largest element order
@@ -214,8 +214,8 @@ fi;
       fi;
     od;
 
+    MakeImmutable( pm );
   od;
-
 end;
 
 #############################################################################
