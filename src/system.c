@@ -1302,6 +1302,7 @@ void InitSystem (
         syBuf[2].fp = syBuf[0].fp;  syBuf[2].echo = syBuf[0].echo;
         syBuf[2].isTTY = syBuf[0].isTTY;
         syBuf[3].fp = syBuf[1].fp;
+        syBuf[3].echo = syBuf[1].echo;
         syWinPut( 0, "@p", "1." );
     }
    
