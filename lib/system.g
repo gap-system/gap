@@ -339,7 +339,9 @@ CallAndInstallPostRestore( function()
     while i <= LENGTH( line ) do
       word:= line[i];
       i:= i+1;
-      if word[1] = '-' and (LENGTH( word ) = 2 or word[2] = '-') then
+      if word = "" then
+        PRINT_TO( "*errout*", "Ignoring empty command line argument\n");
+      elif word[1] = '-' and (LENGTH( word ) = 2 or word[2] = '-') then
         opt:= word{[2..LENGTH(word)]};
         if opt[1] = '-' then
           opt := opt{[2..LENGTH(opt)]};
