@@ -858,16 +858,6 @@ Int SyFopen (
         syBuf[fid].type = gzip_socket;
         syBuf[fid].bufno = -1;
     }
-#ifdef HAVE_POPEN
-   else if ( strncmp(mode,"r",1) == 0
-           && SyIsReadableFile(namegz) == 0
-             && ( (syBuf[fid].pipehandle = popen(cmd,"r"))
-               ) ) {
-        syBuf[fid].type = pipe_socket;
-        syBuf[fid].fp = fileno(syBuf[fid].pipehandle);
-        syBuf[fid].bufno = -1;
-    }
-#endif
     else {
         HashUnlock(&syBuf);
         return (Int)-1;
@@ -3207,16 +3197,13 @@ Int SyIsExistingFile ( const Char * name )
 Int SyIsReadableFile ( const Char * name )
 {
     Int         res;
-#ifdef HAVE_POPEN
     Char        xname[1024];
-#endif
 
     SyClearErrorNo();
     res = access( name, R_OK );
     if ( res == -1 ) {
-      /* if there is popen then we might be able to read the file via gunzip */
+      /* we might be able to read the file via zlib */
 
-#ifdef HAVE_POPEN
       /* beware of buffer overflows */
       if ( strlcpy(xname, name, sizeof(xname)) < sizeof(xname) &&
             strlcat(xname, ".gz", sizeof(xname))  < sizeof(xname) ) {
@@ -3224,7 +3211,6 @@ Int SyIsReadableFile ( const Char * name )
       }
 
       if (res == -1)
-#endif
         SySetErrorNo();
     }
     return res;
