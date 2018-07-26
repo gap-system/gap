@@ -62,6 +62,9 @@ do
     # HACK: skip building semigroups-3.x for now -- it requires GCC >= 5, which Travis doesn't have
     rm -rf semigroups-3.*
 
+    # HACK: skip building float for now -- it doesn't link reliably on travis
+    rm -rf float-*
+
     if [[ x"$ABI" == "x32" ]]
     then
       # HACK: disable NormalizInterface in 32bit mode for now. Version
