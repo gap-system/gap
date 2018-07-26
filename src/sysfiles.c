@@ -227,8 +227,6 @@ Int4 SyGAPCRC( const Char * name )
     Int4        ch;
     Int         fid;
     Int         seen_nl;
-    Char        buf[BUFSIZ];
-    FILE        *f;
 
     /* the CRC of a non existing file is 0                                 */
     fid = SyFopen( name, "r" );
@@ -240,11 +238,7 @@ Int4 SyGAPCRC( const Char * name )
     crc = 0x12345678L;
     seen_nl = 0;
 
-    /* Here it is both safe and sensible to use buffered IO */
-    f = fdopen(syBuf[fid].fp, "r");
-    setbuf(f, buf);
-
-    while ( (ch =  fgetc(f) )!= EOF ) {
+    while ( (ch = SyGetch(fid) )!= EOF ) {
         if ( ch == '\377' || ch == '\n' || ch == '\r' )
             ch = '\n';
         if ( ch == '\n' ) {
@@ -265,7 +259,6 @@ Int4 SyGAPCRC( const Char * name )
 
     /* and close it again                                                  */
     SyFclose( fid );
-    fclose(f);
     /* Emulate a signed shift: */
     if (crc & 0x80000000L)
         return (Int4) ((crc >> 4) | 0xF0000000L);
