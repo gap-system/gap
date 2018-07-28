@@ -175,6 +175,7 @@ free generators, that will map on this element again.
 <#Include Label="RightCosets">
 <#Include Label="CanonicalRightCosetElement">
 <#Include Label="IsRightCoset">
+<#Include Label="IsBiCoset">
 <#Include Label="CosetDecomposition">
 
 </Section>
