@@ -629,6 +629,14 @@ function(d)
   Print(ViewString(d));
 end);
 
+InstallMethod(IsBiCoset,"test property",true,[IsRightCoset],0,
+function(c)
+local s,r;
+  s:=ActingDomain(c);
+  r:=Representative(c);
+  return ForAll(GeneratorsOfGroup(s),x->r*x/r in s);
+end);
+
 InstallMethodWithRandomSource(Random,
   "for a random source and a RightCoset",
   [IsRandomSource, IsRightCoset],0,
@@ -656,10 +664,17 @@ end);
 InstallOtherMethod(\*,"RightCosets",IsIdenticalObj,
         [IsRightCoset,IsRightCoset],0,
 function(a,b)
-  if ActingDomain(a)<>ActingDomain(b) then
-    Error("no multiplication defined for cosets of different subgroups");
+local c;
+  if ActingDomain(a)<>ActingDomain(b) then TryNextMethod();fi;
+  if not IsBiCoset(a) then # product does not require b to be bicoset
+    TryNextMethod();
+  fi; 
+  c:=RightCoset(ActingDomain(a), Representative(a) * Representative(b) );
+  if IsBiCoset(b) then
+    SetIsBiCoset(c,true);
   fi;
-  return RightCoset(ActingDomain(a), Representative(a) * Representative(b) );
+
+  return c;
 end);
 
 InstallOtherMethod(InverseOp,"Right cosets",true,
@@ -668,10 +683,12 @@ function(a)
 local s,r;
   s:=ActingDomain(a);
   r:=Representative(a);
-  if ForAny(GeneratorsOfGroup(s),x->not x^r in s) then
+  if not IsBiCoset(a) then
     Error("Inversion only works for cosets of normal subgroups");
   fi;
-  return RightCoset(s,Inverse(r));
+  r:=RightCoset(s,Inverse(r));
+  SetIsBiCoset(r,true);
+  return r;
 end);
 
 InstallOtherMethod(OneOp,"Right cosets",true,
