@@ -9,31 +9,6 @@
 
 #############################################################################
 ##
-#F CheckAuto( auto )
-##
-CheckAuto := function( auto )
-    local new,mapi;
-    mapi:=MappingGeneratorsImages(auto);
-    new := GroupGeneralMappingByImagesNC( Source(auto), Range(auto),
-           mapi[1], mapi[2] );
-    if Source( auto ) <> Range( auto ) then 
-        Print("source and range differ \n");
-        return false;
-    fi;
-    if not IsGroupHomomorphism( new ) then
-        Print("no group hom \n");
-        return false;
-    fi;
-    if not IsBijective( new ) then
-        Print("no bijection \n");
-        return false;
-    fi;
-    return true;
-end;
-
-
-#############################################################################
-##
 #F InducedActionFactor( mats, fac, low )
 # this function is used only in a package.
 ##
