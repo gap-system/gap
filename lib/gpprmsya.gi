@@ -563,7 +563,7 @@ local dom, n, mine, root, d, k, b, m, l,lh;
   fi;
   # so the group is primitive
 
-  if n>10 then # otherwise the size is immediate
+  if n>10 then
     # test whether its socle could be A_l^m, acting on k-tuples in product
     # action. 
     mine:=Minimum(List(Collected(Factors(n)),i->i[2]));
