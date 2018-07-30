@@ -1184,3 +1184,10 @@ gac: $(srcdir)/cnf/gac.in config.status
 # considered dirty by target, hence are forced to be re-run
 ########################################################################
 .PHONY: FORCE
+
+########################################################################
+# Makefile debugging trick:
+# call print-VARIABLE to see the runtime value of any variable
+########################################################################
+print-%:
+	@echo '$*=$($*)'
