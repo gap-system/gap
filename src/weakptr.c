@@ -688,34 +688,48 @@ Obj CopyObjWPObj (
 
 void MakeImmutableWPObj( Obj obj )
 {
-  UInt i;
-
 #ifdef USE_BOEHM_GC
+  UInt i;
   UInt len = 0;
-  Obj copy = NewBag(T_PLIST+IMMUTABLE, SIZE_BAG(obj));
+  Obj copy = NewBag(T_PLIST, SIZE_BAG(obj));
   for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++) {
     volatile Obj tmp = ELM_WPOBJ(obj, i);
     MEMBAR_READ();
-    if (IS_BAG_REF(tmp)) {
-      if (ELM_WPOBJ(obj, i)) {
+    if (tmp) {
+      if (IS_BAG_REF(tmp) && ELM_WPOBJ(obj, i)) {
         FORGET_WP(obj, i);
-        len = i;
       }
-    } else {
       len = i;
     }
     SET_ELM_PLIST(copy, i, tmp);
   }
   SET_LEN_PLIST(copy, len);
   SET_PTR_BAG(obj, PTR_BAG(copy));
+
+  // Note: there is brief moment here where the WP obj has been turned into a
+  // mutable plist, but not yet been made immutable. This should be fine as
+  // long as the object is non-public, i.e., owned exclusively by the current
+  // thread.
+
 #else
-  /* remove any weak dead bags */
-  for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++) {
-      ELM_WPOBJ(obj,i);
-  }
-  /* Change the type */
-  RetypeBag( obj, T_PLIST+IMMUTABLE);
+    // recompute stored length
+    UInt len = LengthWPObj(obj);
+
+    // remove any weak dead bags, by relying on side-effect of ELM_WPOBJ
+    for (UInt i = 1; i <= len; i++) {
+        ELM_WPOBJ(obj, i);
+    }
+
+    // change the type - this works correctly, as the layout of weak pointer
+    // objects and plists is identical, and we removed all weak dead bags,
+    // and set the length properly.
+    RetypeBag(obj, (len == 0) ? T_PLIST_EMPTY : T_PLIST);
 #endif
+
+    // make the plist immutable (and recursively any subobjects); note that
+    // this can cause garbage collections, hence we must do it after we
+    // completed conversion of the WP object into a plist
+    MakeImmutable(obj);
 }
 
 #if !defined(USE_THREADSAFE_COPYING)
