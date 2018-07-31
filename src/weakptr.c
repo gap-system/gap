@@ -65,35 +65,33 @@
 
 /****************************************************************************
 **
-*F  STORE_LEN_WPOBJ(<wp>,<len>) . . . . . . .  set the length of a WP object
+*F  STORE_LEN_WPOBJ(<wp>,<len>) . . . . . . . . set the length of a WP object
 **
-**  'STORE_LEN_WPOBJ' sets the length of  the WP object  <wp> to <len>.
-**
-**  Note  that 'STORE_LEN_WPOBJ'  is a macro, so do not call it with  arguments
-**  that have side effects.
+**  'STORE_LEN_WPOBJ' sets the length of the WP object <wp> to <len>.
 ** 
-**  Objects at the end of wp may evaporate, so the stored length can only
+**  Objects at the end of <wp> may evaporate, so the stored length can only
 **  be regarded as an upper bound.
 */
-
-#define STORE_LEN_WPOBJ(wp,len)         (ADDR_OBJ(wp)[0] = (Obj)(len))
+static inline void STORE_LEN_WPOBJ(Obj wp, Int len)
+{
+    ADDR_OBJ(wp)[0] = (Obj)len;
+}
 
 
 /****************************************************************************
 **
-*F  STORED_ LEN_WPOBJ(<wp>). . .. . . . . . .  stored length of a WP Object
+*F  STORED_LEN_WPOBJ(<wp>) . . . . . . . . . . . stored length of a WP object
 **
 **  'STORED_LEN_WPOBJ' returns the stored length of the WP object <wp> 
 **  as a C integer.
 **
-**  Note that 'STORED_LEN_WPOBJ' is a  macro, so do  not call it 
-**  with arguments that have side effects.
-**
 **  Note that as the list can mutate under your feet, the length may be
-**  an overestimate
+**  an overestimate.
 */
-
-#define STORED_LEN_WPOBJ(wp)                 ((Int)(CONST_ADDR_OBJ(wp)[0]))
+static inline Int STORED_LEN_WPOBJ(Obj wp)
+{
+    return (Int)(CONST_ADDR_OBJ(wp)[0]);
+}
 
 /****************************************************************************
 **
