@@ -55,10 +55,18 @@
 #elif defined(USE_BOEHM_GC)
 
 #define IS_WEAK_DEAD_BAG(bag) (!(bag))
-#define REGISTER_WP(loc, obj) \
-	GC_general_register_disappearing_link((void **)(loc), (obj))
-#define FORGET_WP(loc) \
-	GC_unregister_disappearing_link((void **)(loc))
+
+static inline void REGISTER_WP(Obj wp, UInt pos, Obj obj)
+{
+    void ** ptr = (void **)(ADDR_OBJ(wp) + pos);
+    GC_general_register_disappearing_link(ptr, obj);
+}
+
+static inline void FORGET_WP(Obj wp, UInt pos)
+{
+    void ** ptr = (void **)(ADDR_OBJ(wp) + pos);
+    GC_unregister_disappearing_link(ptr);
+}
 
 #endif
 
@@ -148,8 +156,8 @@ static inline void GROW_WPOBJ(Obj wp, UInt need)
       volatile Obj tmp = ELM_WPOBJ(wp, i);
       MEMBAR_READ();
       if (IS_BAG_REF(tmp) && ELM_WPOBJ(wp, i)) {
-        FORGET_WP(&ELM_WPOBJ(wp, i));
-        REGISTER_WP(&ELM_WPOBJ(copy, i), tmp);
+        FORGET_WP(wp, i);
+        REGISTER_WP(copy, i, tmp);
       }
       ELM_WPOBJ(wp, i) = 0;
       ELM_WPOBJ(copy, i) = tmp;
@@ -194,7 +202,7 @@ Obj FuncWeakPointerObj(Obj self, Obj list)
       Obj tmp = ELM0_LIST(list2, i);
       ELM_WPOBJ(wp,i) = tmp;
       if (IS_BAG_REF(tmp))
-        REGISTER_WP(&ELM_WPOBJ(wp, i), tmp);
+        REGISTER_WP(wp, i, tmp);
 #else
       ELM_WPOBJ(wp,i) = ELM0_LIST(list,i); 
 #endif
@@ -310,10 +318,10 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
   volatile Obj tmp = ELM_WPOBJ(wp, ipos);
   MEMBAR_READ();
   if (IS_BAG_REF(tmp) && ELM_WPOBJ(wp, ipos))
-    FORGET_WP(&ELM_WPOBJ(wp, ipos));
+    FORGET_WP(wp, ipos);
   ELM_WPOBJ(wp,ipos) = val2;
   if (IS_BAG_REF(val2))
-    REGISTER_WP(&ELM_WPOBJ(wp, ipos), val2);
+    REGISTER_WP(wp, ipos, val2);
 #else
   ELM_WPOBJ(wp,ipos) = val;
 #endif
@@ -428,7 +436,7 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
     MEMBAR_READ();
     if (ELM_WPOBJ(wp, ipos)) {
       if (IS_BAG_REF(tmp))
-        FORGET_WP( &ELM_WPOBJ(wp, ipos));
+        FORGET_WP(wp, ipos);
       ELM_WPOBJ( wp, ipos) =  0;
     }
 #else
@@ -598,7 +606,7 @@ void CopyWPObj(Obj copy, Obj original)
         if (IS_BAG_REF(tmp) && IS_BAG_REF(*ptr)) {
             *copyptr = ReplaceByCopy(tmp);
 #ifdef USE_BOEHM_GC
-            REGISTER_WP(copyptr, tmp);
+            GC_general_register_disappearing_link((void **)copyptr, tmp);
 #endif
         }
         ptr++;
@@ -685,7 +693,7 @@ void MakeImmutableWPObj( Obj obj )
     MEMBAR_READ();
     if (IS_BAG_REF(tmp)) {
       if (ELM_WPOBJ(obj, i)) {
-        FORGET_WP(&ELM_WPOBJ(obj, i));
+        FORGET_WP(obj, i);
         len = i;
       }
     } else {
