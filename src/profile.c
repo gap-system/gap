@@ -31,6 +31,8 @@
 #include <sys/resource.h>               // definition of 'struct rusage'
 #endif
 
+#include <zlib.h>
+
 
 /****************************************************************************
 **
@@ -112,10 +114,9 @@ typedef enum { Tick_WallTime, Tick_CPUTime, Tick_Mem } TickMethod;
 
 struct ProfileState
 {
-  // C steam we are writing to
-  FILE* Stream;
-  // Did we use 'popen' to open the stream (matters when closing)
-  int StreamWasPopened;
+  // stream we are writing to
+  gzFile Stream;
+
   // Are we currently outputting repeats (false=code coverage)
   Int OutputRepeats;
   // Are we colouring output (not related to profiling directly)
@@ -186,7 +187,7 @@ static void CheckLeaveFunctionsAfterLongjmp(void)
 
     while (pos > 0 && INT_INTOBJ(ELM_PLIST(profileState.visitedDepths, pos)) > depth) {
         // Give dummy values if we do not know
-        fprintf(profileState.Stream,
+        gzprintf(profileState.Stream,
                 "{\"Type\":\"O\",\"Fun\":\"nameless\",\"Line\":-1,"
                 "\"EndLine\":-1,\"File\":\"<missing filename>\","
                 "\"FileId\":-1}\n");
@@ -203,7 +204,7 @@ static inline void outputFilenameIdIfRequired(UInt id)
     if (LEN_PLIST(OutputtedFilenameList) < id ||
         ELM_PLIST(OutputtedFilenameList, id) != True) {
         AssPlist(OutputtedFilenameList, id, True);
-        fprintf(profileState.Stream,
+        gzprintf(profileState.Stream,
                 "{\"Type\":\"S\",\"File\":\"%s\",\"FileId\":%d}\n",
                 CSTR_STRING(GetCachedFilename(id)), (int)id);
     }
@@ -239,7 +240,7 @@ void HookedLineOutput(Obj func, char type)
 
     if(type == 'I' && profileState.lastNotOutputted.line != -1)
     {
-      fprintf(profileState.Stream, "{\"Type\":\"X\",\"Line\":%d,\"FileId\":%d}\n",
+      gzprintf(profileState.Stream, "{\"Type\":\"X\",\"Line\":%d,\"FileId\":%d}\n",
               (int)profileState.lastNotOutputted.line,
               (int)profileState.lastNotOutputted.fileID);
     }
@@ -247,7 +248,7 @@ void HookedLineOutput(Obj func, char type)
     // We output 'File' here for compatability with
     // profiling v1.3.0 and earlier, FileId provides the same information
     // in a more useful and compact form.
-    fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Fun\":\"%s\",\"Line\":%"
+    gzprintf(profileState.Stream, "{\"Type\":\"%c\",\"Fun\":\"%s\",\"Line\":%"
                                  "d,\"EndLine\":%d,\"File\":\"%s\","
                                  "\"FileId\":%d}\n",
             type, name_c, (int)startline, (int)endline, filename_c,
@@ -287,12 +288,9 @@ void leaveFunction(Obj func)
 /****************************************************************************
 **
 ** Functionality to store streams compressed.
-** If we could rely on the existence of the IO package, we would use that here.
-** however, we want to be able to start compressing files right at the start
-** of GAP's execution, before anything else is done.
+**
 */
 
-#ifdef HAVE_POPEN
 static int endsWithgz(char* s)
 {
   s = strrchr(s, '.');
@@ -301,40 +299,19 @@ static int endsWithgz(char* s)
   else
     return 0;
 }
-#endif
 
 static void fopenMaybeCompressed(char* name, struct ProfileState* ps)
 {
-#ifdef HAVE_POPEN
-  char popen_buf[4096];
-  // Need space for "gzip < '", ".gz'" and terminating \0.
-  if(endsWithgz(name) && strlen(name) < sizeof(popen_buf) - 8 - 4 - 1)
-  {
-    strxcpy(popen_buf, "gzip > '", sizeof(popen_buf));
-    strxcat(popen_buf, name, sizeof(popen_buf));
-    strxcat(popen_buf, "'", sizeof(popen_buf));
-    ps->Stream = popen(popen_buf, "w");
-    ps->StreamWasPopened = 1;
-    return;
-  }
-#endif
-
-  ps->Stream = fopen(name, "w");
-  ps->StreamWasPopened = 0;
+    // determine the file mode; note that 'T' tells zlib to activate
+    // the "direct" mode, in which compression is disabled.
+    const char *mode = endsWithgz(name) ? "w" : "wT";
+    ps->Stream = gzopen(name, mode);
 }
 
 static void fcloseMaybeCompressed(struct ProfileState* ps)
 {
-#ifdef HAVE_POPEN
-  if(ps->StreamWasPopened)
-  {
-    pclose(ps->Stream);
+    gzclose(ps->Stream);
     ps->Stream = 0;
-    return;
-  }
-#endif
-  fclose(ps->Stream);
-  ps->Stream = 0;
 }
 
 static inline Int8 CPUmicroseconds(void)
@@ -422,7 +399,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
             }
             ticks -= ticksDone;
             outputFilenameIdIfRequired(nameid);
-            fprintf(
+            gzprintf(
                 profileState.Stream,
                 "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"FileId\":%d}\n",
                 exec ? 'E' : 'R', ticksDone, (int)line, (int)nameid);
@@ -439,7 +416,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
     }
     else {
       outputFilenameIdIfRequired(nameid);
-      fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Line\":%d,\"FileId\":%d}\n",
+      gzprintf(profileState.Stream, "{\"Type\":\"%c\",\"Line\":%d,\"FileId\":%d}\n",
               exec ? 'E' : 'R', (int)line, (int)nameid);
       profileState.lastOutputted.line = line;
       profileState.lastOutputted.fileID = nameid;
@@ -477,7 +454,7 @@ void visitStat(Stat stat)
 void outputVersionInfo(void)
 {
     const char timeTypeNames[3][10] = { "WallTime", "CPUTime", "Memory" };
-    fprintf(profileState.Stream,
+    gzprintf(profileState.Stream,
             "{ \"Type\": \"_\", \"Version\":1, \"IsCover\": %s, "
             "  \"TimeType\": \"%s\"}\n",
             profileState.OutputRepeats ? "false" : "true",

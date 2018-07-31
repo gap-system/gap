@@ -665,7 +665,6 @@ dnl various functions to deal with child processes
 AC_HEADER_SYS_WAIT
 AC_TYPE_PID_T
 AC_FUNC_FORK
-AC_CHECK_FUNCS([popen])
 
 dnl signal handling
 AC_CHECK_TYPE([sig_atomic_t], [],
