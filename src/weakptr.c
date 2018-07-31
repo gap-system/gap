@@ -10,10 +10,10 @@
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 **
-**  This file contains the functions that deal with weak pointer objects
+**  This file contains the functions that deal with weak pointer objects.
 **  A weak pointer object looks like a plain list, except that its entries
 **  are NOT kept alive through a garbage collection (unless they are contained
-**  in some other kind of object). 
+**  in some other kind of object).
 */
 
 #include "weakptr.h"
@@ -137,12 +137,11 @@ static inline void SET_ELM_WPOBJ(Obj list, UInt pos, Obj val)
 
 /****************************************************************************
 **
-*F  GROW_WPOBJ(<wp>,<need>) . make sure a weak pointer object is large enough
+*F  GROW_WPOBJ(<wp>,<need>) . . .  ensure weak pointer object is large enough
 **
-**  'GROW_WPOBJ' grows the weak pointer   object <wp> if necessary  to
-**  ensure that it has room for at least <need> elements.
+**  'GROW_WPOBJ' grows the weak pointer object <wp> if necessary to ensure
+**  that it has room for at least <need> elements.
 */
-
 static inline void GROW_WPOBJ(Obj wp, UInt need)
 {
   UInt                plen;           /* new physical length             */
@@ -186,7 +185,7 @@ static inline void GROW_WPOBJ(Obj wp, UInt need)
 
 /****************************************************************************
 **
-*F  FuncWeakPointerObj( <self>, <list> ) . . . . . make a weak pointer object
+*F  FuncWeakPointerObj(<self>,<list>) . . . . . .  make a weak pointer object
 **
 **  Handler for the GAP function WeakPointerObject(<list>), which makes a new
 **  WP object.
@@ -231,11 +230,11 @@ Obj FuncWeakPointerObj(Obj self, Obj list)
 
 /****************************************************************************
 **
-*F  LengthWPObj(<wp>) . . . . . . . . . . . . . . current length of WP Object
+*F  LengthWPObj(<wp>) . . . . . . . . . . . . . . current length of WP object
 **
-**  'LengthWPObj(<wp>)' returns  the   current length  of WP  Object  as  a C
-**  integer  the   value cannot be   trusted past  a   garbage collection, as
-**  trailing items may evaporate.
+**  'LengthWPObj' returns the length of the WP object <wp> as a C integer.
+**  The value cannot be trusted past a garbage collection, as trailing items
+**  may evaporate.
 **   
 **  Any identifiers of trailing objects that have evaporated in a garbage
 **  collection are cleaned up by this function. However, for HPC-GAP, this
@@ -266,12 +265,11 @@ Int LengthWPObj(Obj wp)
 
 /****************************************************************************
 **
-*F  FuncLengthWPObj(<wp>) . . . . . . . . . . . . current length of WP Object
+*F  FuncLengthWPObj(<wp>) . . . . . . . . . . . . current length of WP object
 **
-**  'FuncLengthWPObj(<wp>)' is a handler for a  GAP function that returns the
-**  current length of WP  Object. The value  cannot be trusted past a garbage
+**  'FuncLengthWPObj' is a handler for a GAP function that returns the length
+**  of the WP object <wp>. The value cannot be trusted past a garbage
 **  collection, as trailing items may evaporate.
-** 
 */
 
 Obj FuncLengthWPObj(Obj self, Obj wp)
@@ -287,11 +285,10 @@ Obj FuncLengthWPObj(Obj self, Obj wp)
 
 /****************************************************************************
 **
-*F  FuncSetElmWPObj(<self>, <wp>, <pos>, <obj> ) . set an entry in a WP Object
+*F  FuncSetElmWPObj(<self>,<wp>,<pos>,<obj>) . .  set an entry in a WP object
 **
-**  'FuncSetElmWPObj(<self>, <wp>,  <pos>, <obj>  )'  is a  handler for a GAP
-**  function that sets an entry in a WP object.
-** 
+**  'FuncSetElmWPObj'  is a handler for a GAP function that sets an entry in
+**  a WP object.
 */
 
 Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
@@ -343,9 +340,9 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 
 /****************************************************************************
 **
-*F  IsBoundElmWPObj( <wp>, <pos> ) .  . . . . is an entry bound in a WP Object
+*F  IsBoundElmWPObj(<wp>,<pos>) .  . . . . is an entry bound in a WP object
 **
-**  'IsBoundElmWPObj( <wp>, <pos> )' returns 1 is there is (currently) a live
+**  'IsBoundElmWPObj' returns 1 is there is (currently) a live
 **  value at position pos or the WP object wp and  0 otherwise, cleaning up a
 **  dead entry if there is one
 ** */
@@ -393,13 +390,11 @@ Int IsBoundElmWPObj( Obj wp, Obj pos)
 
 /****************************************************************************
 **
-*F  FuncIsBoundElmWPObj( <self>, <wp>, <pos> ) . . . . . . .IsBound WP Object
+*F  FuncIsBoundElmWPObj(<self>,<wp>,<pos>) . . IsBound handler for WP objects
 **
-**  GAP  handler for IsBound  test on WP Object.   Remember that bindings can
+**  GAP  handler for IsBound  test on WP object.   Remember that bindings can
 **  evaporate in any garbage collection.
 */
-
-
 Obj FuncIsBoundElmWPObj( Obj self, Obj wp, Obj pos)
 {
   return IsBoundElmWPObj(wp, pos) ? True : False;
@@ -408,9 +403,9 @@ Obj FuncIsBoundElmWPObj( Obj self, Obj wp, Obj pos)
 
 /****************************************************************************
 **
-*F  FuncUnbindElmWPObj( <self>, <wp>, <pos> ) . . . . . . . .Unbind WP Object
+*F  FuncUnbindElmWPObj(<self>,<wp>,<pos>) . . . Unbind handler for WP objects
 **
-**  GAP  handler for Unbind on WP Object. 
+**  GAP  handler for Unbind on WP object. 
 */
 
 Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
@@ -456,19 +451,10 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 
 /****************************************************************************
 **
-*F  FuncElmWPObj( <self>, <wp>, <pos> ) . . . . . . . . . . .Access WP Object
+*F  ElmDefWPList(<wp>,<ipos>,<def>)
 **
-**  GAP handler for access to WP Object. If the entry is not bound, then fail
-**  is  returned. It would not be  correct to return  an error, because there
-**  would be no  way  to  safely access  an  element, which  might  evaporate
-**  between a  call   to IsBound and the    access. This, of  course,  causes
-**  possible  confusion  with a WP  object which  does have  a  value of fail
-**  stored in  it. This, however  can be  checked  with a subsequent  call to
-**  IsBound, relying on the fact  that fail can never  dissapear in a garbage
-**  collection.
+**  Provide implementation of 'ElmDefListFuncs'.
 */
-
-// Provide implementation of ElmDefListFuncs
 Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
 {
     GAP_ASSERT(TNUM_OBJ(wp) == T_WPOBJ);
@@ -497,6 +483,20 @@ Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
   return elm;
 }
 
+
+/****************************************************************************
+**
+*F  FuncElmWPObj(<self>,<wp>,<pos>) . . . . . . . access entry of a WP object
+**
+**  GAP handler for access to WP object. If the entry is not bound, then fail
+**  is  returned. It would not be  correct to return  an error, because there
+**  would be no  way  to  safely access  an  element, which  might  evaporate
+**  between a  call   to IsBound and the    access. This, of  course,  causes
+**  possible  confusion  with a WP  object which  does have  a  value of fail
+**  stored in  it. This, however  can be  checked  with a subsequent  call to
+**  IsBound, relying on the fact  that fail can never  dissapear in a garbage
+**  collection.
+*/
 Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
 {
     if (TNUM_OBJ(wp) != T_WPOBJ) {
@@ -521,10 +521,10 @@ Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
 
 /****************************************************************************
 **
-*F  TypeWPObj( <wp> ) . . . . . . . . . . . . . . . . . . . Type of WP Object
+*F  TypeWPObj(<wp>) . . . . . . . . . . . . . . . . . . . . type of WP object
 **
-**  This is imported from the library variable  TYPE_WPOBJ. They all have the
-**  same type
+**  This returns the library variable TYPE_WPOBJ. All WP objects have the
+**  same type.
 */
 
 Obj TYPE_WPOBJ;              
@@ -537,7 +537,7 @@ Obj TypeWPObj( Obj wp )
 
 /****************************************************************************
 **
-*F  FuncIsWPObj( <self>, <wp>) . . . . . . . Handler for GAP function IsWPObj
+*F  FuncIsWPObj(<self>,<wp>) . . . . . . . . handler for GAP function IsWPObj
 */
 static Obj IsWPObjFilt;
 
@@ -548,12 +548,12 @@ Obj FuncIsWPObj( Obj self, Obj wp)
 
 /****************************************************************************
 **
-*F  MarkWeakPointerObj( <wp> ) . . . . . . . . . . . . . . . Marking function
-*F  SweepWeakPointerObj( <src>, <dst>, <len> ) . . . . . . .Sweeping function
+*F  MarkWeakPointerObj(<wp>) . . . . . . . . . . . . . . . . Marking function
+*F  SweepWeakPointerObj(<src>,<dst>,<len>) . . . . . . . .  Sweeping function
 **
-**  These functions are installed for GASMAN to use in garbage collection. The
-**  sweeping function must  clean up any  dead  weak pointers encountered  so
-**  that, after a  full  GC, the  masterpointers  occupied by the  dead  weak
+**  These functions are installed for GASMAN to use in garbage collection.
+**  The sweeping function must clean up any dead weak pointers encountered so
+**  that, after a full GC, the masterpointers occupied by the dead weak
 **  pointers can be reclaimed.  
 */
 
@@ -621,7 +621,7 @@ void CopyWPObj(Obj copy, Obj original)
 
 /****************************************************************************
 **
-*F  CopyObjWPObj( <obj>, <mut> ) . . . . . . . . .  copy a positional object
+*F  CopyObjWPObj(<obj>,<mut>) . . . . . . . . . . . . . . .  copy a WP object
 **
 **  Note  that an  immutable   copy of  a  weak  pointer  object is a  normal
 **  immutable plist. An Immutable WP object is a contradiction.
@@ -682,7 +682,7 @@ Obj CopyObjWPObj (
 
 /****************************************************************************
 **
-*F  MakeImmutableWPObj( <obj> ) . . . . . . . . . . make immutable in place
+*F  MakeImmutableWPObj(<obj>) . . . . . . . . . . . . make immutable in place
 **
 */
 
@@ -722,7 +722,7 @@ void MakeImmutableWPObj( Obj obj )
 
 /****************************************************************************
 **
-*F  CleanObjWPObj( <obj> ) . . . . . . . . . . . . . . . . . . .  clean WPobj
+*F  CleanObjWPObj(<obj>) . . . . . . . . . . . . . . . . . .  clean WP object
 */
 void CleanObjWPObj (
     Obj                 obj )
@@ -732,7 +732,7 @@ void CleanObjWPObj (
 
 /****************************************************************************
 **
-*F  CopyObjWPObjCopy( <obj>, <mut> ) . . . . . . . . . .  . copy a WPobj copy
+*F  CopyObjWPObjCopy(<obj>,<mut>) . . . . . . . . . . . copy a WP object copy
 */
 Obj CopyObjWPObjCopy (
     Obj                 obj,
@@ -744,7 +744,7 @@ Obj CopyObjWPObjCopy (
 
 /****************************************************************************
 **
-*F  CleanObjWPObjCopy( <obj> ) . . . . . . . . . . . . . . clean WPobj copy
+*F  CleanObjWPObjCopy(<obj>) . . . . . . . . . . . . . . clean WP object copy
 */
 void CleanObjWPObjCopy (
     Obj                 obj )
@@ -773,7 +773,7 @@ void CleanObjWPObjCopy (
 
 /****************************************************************************
 **
-*F  SaveWPObj( <wpobj> )
+*F  SaveWPObj(<wpobj>)
 */
 
 void SaveWPObj(Obj wpobj)
@@ -787,7 +787,7 @@ void SaveWPObj(Obj wpobj)
 
 /****************************************************************************
 **
-*F  LoadWPObj( <wpobj> )
+*F  LoadWPObj(<wpobj>)
 */
 
 void LoadWPObj(Obj wpobj)
@@ -837,7 +837,7 @@ static StructGVarFunc GVarFuncs [] = {
 
 /****************************************************************************
 **
-*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*F  InitKernel(<module>) . . . . . . . . .  initialise kernel data structures
 */
 static Int InitKernel (
     StructInitInfo *    module )
@@ -898,7 +898,7 @@ static Int InitKernel (
 
 /****************************************************************************
 **
-*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+*F  InitLibrary(<module>) . . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
     StructInitInfo *    module )
