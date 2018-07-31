@@ -54,8 +54,6 @@
 
 #elif defined(USE_BOEHM_GC)
 
-#define IS_WEAK_DEAD_BAG(bag) (!(bag))
-
 static inline void REGISTER_WP(Obj wp, UInt pos, Obj obj)
 {
     void ** ptr = (void **)(ADDR_OBJ(wp) + pos);
@@ -101,24 +99,40 @@ static inline Int STORED_LEN_WPOBJ(Obj wp)
     return (Int)(CONST_ADDR_OBJ(wp)[0]);
 }
 
+
 /****************************************************************************
 **
-*F  ELM_WPOBJ(<wp>,<pos>) . . . . . . . . . . . . . element of a WP object
+*F  ELM_WPOBJ(<wp>,<pos>) . . . . . . . . . . . . .  get entry of a WP object
 **
-**  'ELM_WPOBJ' return the <wp>-th element of the WP object <wp>.  <pos> must
+**  'ELM_WPOBJ' return the <pos>-th element of the WP object <wp>. <pos> must
 **  be a positive integer less than or equal  to the physical length of <wp>.
 **  If <wp> has no assigned element at position <pos>, 'ELM_WPOBJ' returns 0.
-**
-**  If the entry died at a recent garbage collection, it will return a Bag ID
-**  for which IS_WEAK_DEAD_BAG will return 1
-**
-**  Note that  'ELM_WPOBJ' is a macro, so do  not call it with arguments that
-**  have side effects.  
-**
-**  ELM_WPOBJ(<wp>,<pos>) is a valid lvalue and may be assigned to
 */
+static inline Obj ELM_WPOBJ(Obj list, UInt pos)
+{
+    Bag elm = CONST_ADDR_OBJ(list)[pos];
 
-#define ELM_WPOBJ(list,pos)             (ADDR_OBJ(list)[pos])
+#ifdef USE_GASMAN
+    if (IS_WEAK_DEAD_BAG(elm)) {
+        ADDR_OBJ(list)[pos] = 0;
+        return 0;
+    }
+#endif
+
+    return elm;
+}
+
+
+/****************************************************************************
+**
+*F  SET_ELM_WPOBJ(<wp>,<pos>,<val>) . . . . . . . .  set entry of a WP object
+**
+**  'SET_ELM_WPOBJ' sets the <pos>-th element of the WP object <wp> to <val>.
+*/
+static inline void SET_ELM_WPOBJ(Obj list, UInt pos, Obj val)
+{
+    ADDR_OBJ(list)[pos] = val;
+}
 
 
 /****************************************************************************
@@ -159,8 +173,8 @@ static inline void GROW_WPOBJ(Obj wp, UInt need)
         FORGET_WP(wp, i);
         REGISTER_WP(copy, i, tmp);
       }
-      ELM_WPOBJ(wp, i) = 0;
-      ELM_WPOBJ(copy, i) = tmp;
+      SET_ELM_WPOBJ(wp, i, 0);
+      SET_ELM_WPOBJ(copy, i, tmp);
     }
     SET_PTR_BAG(wp, PTR_BAG(copy));
 #else
@@ -200,11 +214,11 @@ Obj FuncWeakPointerObj(Obj self, Obj list)
     { 
 #ifdef USE_BOEHM_GC
       Obj tmp = ELM0_LIST(list2, i);
-      ELM_WPOBJ(wp,i) = tmp;
+      SET_ELM_WPOBJ(wp, i, tmp);
       if (IS_BAG_REF(tmp))
         REGISTER_WP(wp, i, tmp);
 #else
-      ELM_WPOBJ(wp,i) = ELM0_LIST(list,i); 
+      SET_ELM_WPOBJ(wp, i, ELM0_LIST(list, i));
 #endif
       CHANGED_BAG(wp);          /* this must be here in case list is 
                                  in fact an object and causes a GC in the 
@@ -240,11 +254,9 @@ Int LengthWPObj(Obj wp)
   Obj elm;
   while (len > 0) {
     elm = ELM_WPOBJ(wp, len);
-    if (elm && !IS_WEAK_DEAD_BAG(elm))
+    if (elm)
         break;
     changed = 1;
-    if (elm)
-      ELM_WPOBJ(wp, len) = 0;
     len--;
   }
   if (changed)
@@ -319,11 +331,11 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
   MEMBAR_READ();
   if (IS_BAG_REF(tmp) && ELM_WPOBJ(wp, ipos))
     FORGET_WP(wp, ipos);
-  ELM_WPOBJ(wp,ipos) = val2;
+  SET_ELM_WPOBJ(wp, ipos, val2);
   if (IS_BAG_REF(val2))
     REGISTER_WP(wp, ipos, val2);
 #else
-  ELM_WPOBJ(wp,ipos) = val;
+  SET_ELM_WPOBJ(wp, ipos, val);
 #endif
   CHANGED_BAG(wp);
   return 0;
@@ -375,11 +387,6 @@ Int IsBoundElmWPObj( Obj wp, Obj pos)
 #else
   if (elm == 0)
       return 0;
-  if (IS_WEAK_DEAD_BAG(elm))
-    {
-      ELM_WPOBJ(wp,ipos) = 0;
-      return 0;
-    }
 #endif
   return 1;
 }
@@ -437,10 +444,10 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
     if (ELM_WPOBJ(wp, ipos)) {
       if (IS_BAG_REF(tmp))
         FORGET_WP(wp, ipos);
-      ELM_WPOBJ( wp, ipos) =  0;
+      SET_ELM_WPOBJ(wp, ipos, 0);
     }
 #else
-    ELM_WPOBJ( wp, ipos) =  0;
+    SET_ELM_WPOBJ(wp, ipos, 0);
 #endif
   }
   return 0;
@@ -484,11 +491,6 @@ Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
   if (elm == 0 || ELM_WPOBJ(wp, ipos) == 0)
       return def;
 #else
-  if (IS_WEAK_DEAD_BAG(elm))
-    {
-      ELM_WPOBJ(wp,ipos) = 0;
-      return def;
-    }
   if (elm == 0)
       return def;
 #endif
@@ -660,10 +662,13 @@ Obj CopyObjWPObj (
 
     /* copy the subvalues                                                  */
     for ( i =  SIZE_OBJ(obj)/sizeof(Obj)-1; i > 0; i-- ) {
-        elm = CONST_ADDR_OBJ(obj)[i];
-        if ( elm != 0  && !IS_WEAK_DEAD_BAG(elm)) {
-            tmp = COPY_OBJ( elm, mut );
-            ADDR_OBJ(copy)[i] = tmp;
+        elm = ELM_WPOBJ(obj, i);
+        if (elm) {
+            tmp = COPY_OBJ(elm, mut);
+            if (mut)
+                SET_ELM_WPOBJ(copy, i, tmp);
+            else
+                SET_ELM_PLIST(copy, i, tmp);
             CHANGED_BAG( copy );
         }
     }
@@ -684,7 +689,7 @@ Obj CopyObjWPObj (
 void MakeImmutableWPObj( Obj obj )
 {
   UInt i;
-  
+
 #ifdef USE_BOEHM_GC
   UInt len = 0;
   Obj copy = NewBag(T_PLIST+IMMUTABLE, SIZE_BAG(obj));
@@ -706,9 +711,7 @@ void MakeImmutableWPObj( Obj obj )
 #else
   /* remove any weak dead bags */
   for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++) {
-      Obj elm = ELM_WPOBJ(obj,i);
-      if (elm != 0 && IS_WEAK_DEAD_BAG(elm))
-        ELM_WPOBJ(obj,i) = 0;
+      ELM_WPOBJ(obj,i);
   }
   /* Change the type */
   RetypeBag( obj, T_PLIST+IMMUTABLE);
@@ -758,9 +761,9 @@ void CleanObjWPObjCopy (
 
     /* clean the subvalues                                                 */
     for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i++ ) {
-        elm = CONST_ADDR_OBJ(obj)[i];
-        if ( elm != 0  && !IS_WEAK_DEAD_BAG(elm)) 
-          CLEAN_OBJ( elm );
+        elm = ELM_WPOBJ(obj, i);
+        if (elm)
+            CLEAN_OBJ(elm);
     }
 
 }
@@ -773,25 +776,12 @@ void CleanObjWPObjCopy (
 *F  SaveWPObj( <wpobj> )
 */
 
-void SaveWPObj( Obj wpobj )
+void SaveWPObj(Obj wpobj)
 {
-  UInt len, i;
-  Obj *ptr;
-  Obj x;
-  ptr = ADDR_OBJ(wpobj)+1;
-  len = STORED_LEN_WPOBJ(wpobj);
-  SaveUInt(len);
-  for (i = 1; i <= len; i++)
-    {
-      x = *ptr;
-      if (IS_WEAK_DEAD_BAG(x))
-        {
-          SaveSubObj(0);
-          *ptr = 0;
-        }
-      else
-        SaveSubObj(x);
-      ptr++;
+    UInt len = STORED_LEN_WPOBJ(wpobj);
+    SaveUInt(len);
+    for (UInt i = 1; i <= len; i++) {
+        SaveSubObj(ELM_WPOBJ(wpobj, i));
     }
 }
 
@@ -800,16 +790,12 @@ void SaveWPObj( Obj wpobj )
 *F  LoadWPObj( <wpobj> )
 */
 
-void LoadWPObj( Obj wpobj )
+void LoadWPObj(Obj wpobj)
 {
-  UInt len, i;
-  Obj *ptr;
-  ptr = ADDR_OBJ(wpobj)+1;
-  len =   LoadUInt();
-  STORE_LEN_WPOBJ(wpobj, len);
-  for (i = 1; i <= len; i++)
-    {
-      *ptr++ = LoadSubObj();
+    const UInt len = LoadUInt();
+    STORE_LEN_WPOBJ(wpobj, len);
+    for (UInt i = 1; i <= len; i++) {
+        SET_ELM_WPOBJ(wpobj, i, LoadSubObj());
     }
 }
 
