@@ -551,13 +551,14 @@ Obj FuncIsWPObj( Obj self, Obj wp)
 
 #if defined(USE_GASMAN)
 
-static void MarkWeakPointerObj( Obj wp) 
+static void MarkWeakPointerObj(Obj wp)
 {
-  Int i;
-  /* can't use the stored length here, in case we
-     are in the middle of copying */
-  for (i = 1; i <= (SIZE_BAG(wp)/sizeof(Obj))-1; i++)
-    MarkBagWeakly(ELM_WPOBJ(wp,i));
+    // can't use the stored length here, in case we are in the middle of
+    // copying
+    const UInt len = SIZE_BAG(wp) / sizeof(Obj) - 1;
+    for (UInt i = 1; i <= len; i++) {
+        MarkBagWeakly(ADDR_OBJ(wp)[i]);
+    }
 }
 
 static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
