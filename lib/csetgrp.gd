@@ -329,7 +329,7 @@ DeclareCategory("IsRightCoset", IsDomain and IsExternalOrbit and
 ##  <Prop Name="IsBiCoset" Arg='C'/>
 ##
 ##  <Description>
-##  A (right) cose is considered a <E>bicoset</E> if its set of elements simultaneously forms a left
+##  A (right) coset is considered a <E>bicoset</E> if its set of elements simultaneously forms a left
 ##  coset for the same subgroup. This is the case, for example, if the coset representative normalizes
 ##  the subgroup.
 ##  </Description>
