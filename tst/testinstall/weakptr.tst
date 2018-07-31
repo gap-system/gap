@@ -75,14 +75,15 @@ true
 #
 gap> w[1];
 1
-gap> w{[2..4]} := [[1,2],E(5),311]; 
-[ [ 1, 2 ], E(5), 311 ]
+gap> l := [ 311 ];; # keep ref so that this list is not garbage collected
+gap> w{[2..4]} := [[1,2],E(5),l]; 
+[ [ 1, 2 ], E(5), [ 311 ] ]
 gap> Print(w,"\n");
-WeakPointerObj( [ 1, [ 1, 2 ], E(5), 311, , fail ] )
+WeakPointerObj( [ 1, [ 1, 2 ], E(5), [ 311 ], , fail ] )
 gap> Print(StructuralCopy(w),"\n");
-WeakPointerObj( [ 1, [ 1, 2 ], E(5), 311, , fail ] )
+WeakPointerObj( [ 1, [ 1, 2 ], E(5), [ 311 ], , fail ] )
 gap> Immutable(w);
-[ 1, [ 1, 2 ], E(5), 311,, fail ]
+[ 1, [ 1, 2 ], E(5), [ 311 ],, fail ]
 gap> IsBound(w[2]);
 true
 gap> GASMAN("collect");
@@ -90,13 +91,38 @@ gap> IsBound(w[5]);
 false
 gap> Unbind(w[2]);
 gap> Print(w,"\n");
-WeakPointerObj( [ 1, , E(5), 311, , fail ] )
+WeakPointerObj( [ 1, , E(5), [ 311 ], , fail ] )
 gap> Immutable(w);
-[ 1,, E(5), 311,, fail ]
+[ 1,, E(5), [ 311 ],, fail ]
 gap> w;
-WeakPointerObj( [ 1, , E(5), 311, , fail ] )
+WeakPointerObj( [ 1, , E(5), [ 311 ], , fail ] )
 gap> MakeImmutable(w);
-[ 1,, E(5), 311,, fail ]
+[ 1,, E(5), [ 311 ],, fail ]
 gap> w;
-[ 1,, E(5), 311,, fail ]
+[ 1,, E(5), [ 311 ],, fail ]
+gap> IsMutable(w);
+false
+gap> ForAny(w, IsMutable);
+false
+
+#
+# test recursive MakeImmutable
+#
+gap> w := WeakPointerObj([ ~ ]);;
+gap> MakeImmutable(w);
+[ [ ~[1] ] ]
+
+#
+gap> w := WeakPointerObj([ 1 ]);;
+gap> w[1] := w;;
+gap> MakeImmutable(w);
+[ ~ ]
+
+#
+gap> w := WeakPointerObj([ rec() ]);;
+gap> w[1].self := w;;
+gap> MakeImmutable(w);
+[ rec( self := ~ ) ]
+
+#
 gap> STOP_TEST( "weakptr.tst", 1);
