@@ -348,7 +348,7 @@ static inline void SET_PTR_BAG(Bag bag, Bag *val)
 **  is incorrect as mentioned in the section for 'PTR_BAG' (see "PTR_BAG").
 */
 
-#if !defined(USE_GASMAN)
+#if defined(USE_BOEHM_GC)
 
 static inline void CHANGED_BAG(Bag bag)
 {
@@ -370,7 +370,7 @@ static inline void CHANGED_BAG(Bag bag)
 
 extern void CHANGED_BAG(Bag b);
 
-#else
+#elif defined(USE_GASMAN)
 
 extern Bag * YoungBags;
 extern Bag   ChangedBags;
@@ -381,6 +381,10 @@ static inline void CHANGED_BAG(Bag bag)
         ChangedBags = bag;
     }
 }
+
+#else
+
+#error unknown garbage collector
 
 #endif
 
