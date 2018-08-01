@@ -48,7 +48,7 @@ CharacterTable( <pc group of size 8 with 3 generators> )
 gap> Print( t, "\n" );
 CharacterTable( Group( [ f1, f2, f3 ] ) )
 gap> ViewString( t );
-"CharacterTable( <group of size 8 with 3 generators> )"
+"CharacterTable( <pc group of size 8 with 3 generators> )"
 gap> PrintString( t );
 "CharacterTable( \"Group( \>[ f1, f2, f3 ]\<\> )\< )"
 gap> t:= CharacterTable( SymmetricGroup( 5 ) );;
@@ -67,3 +67,4 @@ gap> STOP_TEST( "ctbl.tst", 1);
 #############################################################################
 ##
 #E
+

@@ -278,32 +278,42 @@ end );
 
 #############################################################################
 ##
+#M  ViewString( <F> ) . . . . . . . . . . . . . . for an abelian number field
+##
+InstallMethod( ViewString,
+    "for abelian number field of cyclotomics",
+    [ IsAbelianNumberField and IsCyclotomicCollection ],
+    function( F )
+    if IsPrimeField( LeftActingDomain( F ) ) then
+      return STRINGIFY( "NF(", Conductor( F ), ",",
+                 GaloisStabilizer( F ), ")" );
+    else
+      return STRINGIFY( "AsField( ", ViewString( LeftActingDomain( F ) ),
+                 ", NF(", Conductor( F ), ",", GaloisStabilizer( F ), ") )" );
+    fi;
+    end );
+
+InstallMethod( ViewString,
+    "for cyclotomic field of cyclotomics",
+    [ IsCyclotomicField and IsCyclotomicCollection ],
+    function( F )
+    if IsPrimeField( LeftActingDomain( F ) ) then
+      return STRINGIFY( "CF(", Conductor( F ), ")" );
+    else
+      return STRINGIFY( "AsField( ", ViewString( LeftActingDomain( F ) ),
+                 ", CF(", Conductor( F ), ") )" );
+    fi;
+    end );
+
+
+#############################################################################
+##
 #M  ViewObj( <F> )  . . . . . . . . . . . . . .  view an abelian number field
 ##
 InstallMethod( ViewObj,
     "for abelian number field of cyclotomics",
     [ IsAbelianNumberField and IsCyclotomicCollection ],
-    function( F )
-    if IsPrimeField( LeftActingDomain( F ) ) then
-      Print( "NF(", Conductor( F ), ",",
-              GaloisStabilizer( F ), ")" );
-    else
-      Print( "AsField( ", LeftActingDomain( F ),
-             ", NF(", Conductor( F ), ",", GaloisStabilizer( F ), ") )" );
-    fi;
-    end );
-
-InstallMethod( ViewObj,
-    "for cyclotomic field of cyclotomics",
-    [ IsCyclotomicField and IsCyclotomicCollection ],
-    function( F )
-    if IsPrimeField( LeftActingDomain( F ) ) then
-      Print( "CF(", Conductor( F ), ")" );
-    else
-      Print( "AsField( ", LeftActingDomain( F ),
-             ", CF(", Conductor( F ), ") )" );
-    fi;
-    end );
+    DelegateFromViewObjToViewString );
 
 
 #############################################################################

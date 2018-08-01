@@ -570,35 +570,45 @@ InstallOtherMethod( ElementOfFpGroup,
 
 #############################################################################
 ##
-#M  ViewObj(<G>)
+#M  ViewString( <G> )
+##
+InstallMethod( ViewString,
+    "subgroup of free group",
+    [ IsFreeGroup ],
+    function(G)
+    if IsGroupOfFamily( G ) then
+      if Length( GeneratorsOfGroup( G ) ) > GAPInfo.ViewLength * 10 then
+        return STRINGIFY( "<free group with ",
+                          Length( GeneratorsOfGroup( G ) ), " generators>" );
+      else
+        return STRINGIFY( "<free group on the generators ",
+                          ViewString( GeneratorsOfGroup( G ) ), ">" );
+      fi;
+    elif HasGeneratorsOfGroup( G ) then
+      if not IsBound( G!.gensWordLengthSum ) then
+	G!.gensWordLengthSum:= Sum( List( GeneratorsOfGroup( G ), Length ) );
+      fi;
+      if G!.gensWordLengthSum <= GAPInfo.ViewLength * 30 then
+        return STRINGIFY( "Group(", ViewString( GeneratorsOfGroup( G ) ),
+                          ")" );
+      else
+        return STRINGIFY( "Group(<", Length( GeneratorsOfGroup( G ) ),
+                          " generators>)" );
+      fi;
+    else
+      return STRINGIFY( "Group(<free, no generators known>)" );
+    fi;
+    end);
+
+
+#############################################################################
+##
+#M  ViewObj( <G> )  . . . . . . . . . . . . . . . . . . . . view a free group
 ##
 InstallMethod( ViewObj,
     "subgroup of free group",
     [ IsFreeGroup ],
-function(G)
-  if IsGroupOfFamily(G) then
-    if Length(GeneratorsOfGroup(G)) > GAPInfo.ViewLength * 10 then
-      Print("<free group with ",Length(GeneratorsOfGroup(G))," generators>");
-    else
-      Print("<free group on the generators ",GeneratorsOfGroup(G),">");
-    fi;
-  else
-    Print("Group(");
-    if HasGeneratorsOfGroup(G) then
-      if not IsBound(G!.gensWordLengthSum) then
-	G!.gensWordLengthSum:=Sum(List(GeneratorsOfGroup(G),Length));
-      fi;
-      if G!.gensWordLengthSum <= GAPInfo.ViewLength * 30 then
-        Print(GeneratorsOfGroup(G));
-      else
-        Print("<",Length(GeneratorsOfGroup(G))," generators>");
-      fi;
-    else
-      Print("<free, no generators known>");
-    fi;
-    Print(")");
-  fi;
-end);
+    DelegateFromViewObjToViewString );
 
 
 #############################################################################

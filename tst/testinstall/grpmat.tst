@@ -6,6 +6,16 @@
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 ##
 gap> START_TEST("grpmat.tst");
+
+##  test 'ViewObj' for matrix groups
+gap> G:= GroupByGenerators( GeneratorsOfGroup( GL( 5, 2 ) ) );
+<matrix group with 2 generators>
+gap> Size( G );; G;
+<matrix group of size 9999360 with 2 generators>
+gap> TrivialSubgroup( G );
+<matrix group of size 1 with 0 generators>
+
+##
 gap> i := E(4);; G := Group([[i,0],[0,-i]],[[0,1],[-1,0]]);;
 gap> gens := GeneratorsOfGroup( G );; IsSSortedList( gens );
 false

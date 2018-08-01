@@ -55,24 +55,44 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
+#M  ViewString( <R> ) . . . . . . . . . . . . . . . . . . . . . .  for a ring
+##
+InstallMethod( ViewString,
+    "for a ring",
+    [ IsRing ],
+    R -> "<ring>" );
+
+InstallMethod( ViewString,
+    "for a ring with known generators",
+    [ IsRing and HasGeneratorsOfRing ],
+    R -> STRINGIFY( "<ring with ", Length( GeneratorsOfRing( R ) ),
+             " generators>" ) );
+
+
+#############################################################################
+##
+#M  ViewString( <R> ) . . . . . . . . . . . . . . . . . . for a ring-with-one
+##
+InstallMethod( ViewString,
+    "for a ring-with-one",
+    [ IsRingWithOne ],
+    R -> "<ring-with-one>" );
+
+InstallMethod( ViewString,
+    "for a ring-with-one with known generators",
+    [ IsRingWithOne and HasGeneratorsOfRingWithOne ],
+    R -> STRINGIFY( "<ring-with-one, with ",
+             Length( GeneratorsOfRingWithOne( R ) ), " generators>" ) );
+
+
+#############################################################################
+##
 #M  ViewObj( <R> )  . . . . . . . . . . . . . . . . . . . . . . . view a ring
 ##
 InstallMethod( ViewObj,
     "for a ring",
-    true,
-    [ IsRing ], 0,
-    function( R )
-    Print( "<ring>" );
-    end );
-
-InstallMethod( ViewObj,
-    "for a ring with known generators",
-    true,
-    [ IsRing and HasGeneratorsOfRing ], 0,
-    function( R )
-    Print( "<ring with ", Length( GeneratorsOfRing( R ) ),
-           " generators>" );
-    end );
+    [ IsRing ],
+    DelegateFromViewObjToViewString );
 
 
 #############################################################################
@@ -81,20 +101,8 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( ViewObj,
     "for a ring-with-one",
-    true,
-    [ IsRingWithOne ], 0,
-    function( R )
-    Print( "<ring-with-one>" );
-    end );
-
-InstallMethod( ViewObj,
-    "for a ring-with-one with known generators",
-    true,
-    [ IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
-    function( R )
-    Print( "<ring-with-one, with ", Length( GeneratorsOfRingWithOne( R ) ),
-           " generators>" );
-    end );
+    [ IsRingWithOne ],
+    DelegateFromViewObjToViewString );
 
 
 #############################################################################

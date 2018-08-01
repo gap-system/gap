@@ -134,6 +134,8 @@ Rationals
 1
 gap> G:=CyclicGroup(IsMatrixGroup, GF(2), 1);
 Group([ <an immutable 1x1 matrix over GF2> ])
+gap> ViewString( G );
+"Group([ <an immutable 1x1 matrix over GF2> ])"
 gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
 GF(2)
 1

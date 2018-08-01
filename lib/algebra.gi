@@ -1865,6 +1865,40 @@ InstallMethod( IsSubset,
 
 #############################################################################
 ##
+#M  ViewString( <A> ) . . . . . . . . . . . . . . . . . . . . .  for a FLMLOR
+##
+##  show left acting domain, if known also dimension or no. of generators
+##
+InstallMethod( ViewString,
+    "for a FLMLOR",
+    [ IsFLMLOR ],
+    function( A )
+    return STRINGIFY( "<free left module over ",
+                      ViewString( LeftActingDomain( A ) ), ", and ring>" );
+    end );
+
+InstallMethod( ViewString,
+    "for a FLMLOR with known dimension",
+    [ IsFLMLOR and HasDimension ], 1,   # override method requiring gens.
+    function( A )
+    return STRINGIFY( "<free left module of dimension ", Dimension( A ),
+               " over ", ViewString( LeftActingDomain( A ) ),
+               ", and ring>" );
+    end );
+
+InstallMethod( ViewString,
+    "for a FLMLOR with known generators",
+    [ IsFLMLOR and HasGeneratorsOfAlgebra ],
+    function( A )
+    return STRINGIFY( "<free left module over ",
+               ViewString( LeftActingDomain( A ) ),
+               ", and ring, with ",
+               Length( GeneratorsOfFLMLOR( A ) ), " generators>" );
+    end );
+
+
+#############################################################################
+##
 #M  ViewObj( <A> )  . . . . . . . . . . . . . . . . . . . . . . view a FLMLOR
 ##
 ##  print left acting domain, if known also dimension or no. of generators
@@ -1872,26 +1906,7 @@ InstallMethod( IsSubset,
 InstallMethod( ViewObj,
     "for a FLMLOR",
     [ IsFLMLOR ],
-    function( A )
-    Print( "<free left module over ", LeftActingDomain( A ), ", and ring>" );
-    end );
-
-InstallMethod( ViewObj,
-    "for a FLMLOR with known dimension",
-    [ IsFLMLOR and HasDimension ], 1,   # override method requiring gens.
-    function( A )
-    Print( "<free left module of dimension ", Dimension( A ),
-           " over ", LeftActingDomain( A ), ", and ring>" );
-    end );
-
-InstallMethod( ViewObj,
-    "for a FLMLOR with known generators",
-    [ IsFLMLOR and HasGeneratorsOfAlgebra ],
-    function( A )
-    Print( "<free left module over ", LeftActingDomain( A ),
-           ", and ring, with ",
-           Length( GeneratorsOfFLMLOR( A ) ), " generators>" );
-    end );
+    DelegateFromViewObjToViewString );
 
 
 #############################################################################
@@ -1920,6 +1935,41 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
+#M  ViewString( <A> ) . . . . . . . . . . . . . . . . . for a FLMLOR-with-one
+##
+##  show left acting domain, if known also dimension or no. of generators
+##
+InstallMethod( ViewString,
+    "for a FLMLOR-with-one",
+    [ IsFLMLORWithOne ],
+    function( A )
+    return STRINGIFY( "<free left module over ",
+               ViewString( LeftActingDomain( A ) ),
+               ", and ring-with-one>" );
+    end );
+
+InstallMethod( ViewString,
+    "for a FLMLOR-with-one with known dimension",
+    [ IsFLMLORWithOne and HasDimension ], 1,   # override method requ. gens.
+    function( A )
+    return STRINGIFY( "<free left module of dimension ", Dimension( A ),
+               " over ", ViewString( LeftActingDomain( A ) ),
+               ", and ring-with-one>" );
+    end );
+
+InstallMethod( ViewString,
+    "for a FLMLOR-with-one with known generators",
+    [ IsFLMLORWithOne and HasGeneratorsOfFLMLORWithOne ],
+    function( A )
+    return STRINGIFY( "<free left module over ",
+               ViewString( LeftActingDomain( A ) ),
+               ", and ring-with-one, with ",
+               Length( GeneratorsOfAlgebraWithOne( A ) ), " generators>" );
+    end );
+
+
+#############################################################################
+##
 #M  ViewObj( <A> )  . . . . . . . . . . . . . . . . .  view a FLMLOR-with-one
 ##
 ##  print left acting domain, if known also dimension or no. of generators
@@ -1927,28 +1977,7 @@ InstallMethod( PrintObj,
 InstallMethod( ViewObj,
     "for a FLMLOR-with-one",
     [ IsFLMLORWithOne ],
-    function( A )
-    Print( "<free left module over ", LeftActingDomain( A ),
-           ", and ring-with-one>" );
-    end );
-
-InstallMethod( ViewObj,
-    "for a FLMLOR-with-one with known dimension",
-    [ IsFLMLORWithOne and HasDimension ], 1,   # override method requ. gens.
-    function( A )
-    Print( "<free left module of dimension ", Dimension( A ),
-           " over ", LeftActingDomain( A ), ", and ring-with-one>" );
-    end );
-
-InstallMethod( ViewObj,
-    "for a FLMLOR-with-one with known generators",
-    [ IsFLMLORWithOne and HasGeneratorsOfFLMLORWithOne ],
-    function( A )
-    Print( "<free left module over ", LeftActingDomain( A ),
-           ", and ring-with-one, with ",
-           Length( GeneratorsOfAlgebraWithOne( A ) ), " generators>" );
-
-    end );
+    DelegateFromViewObjToViewString );
 
 
 #############################################################################
@@ -1978,6 +2007,38 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
+#M  ViewString( <A> ) . . . . . . . . . . . . . . . . . . . .  for an algebra
+##
+##  show left acting domain, if known also dimension or no. of generators
+##
+InstallMethod( ViewString,
+    "for an algebra",
+    [ IsAlgebra ],
+    function( A )
+    return STRINGIFY( "<algebra over ",
+               ViewString( LeftActingDomain( A ) ), ">" );
+    end );
+
+InstallMethod( ViewString,
+    "for an algebra with known dimension",
+    [ IsAlgebra and HasDimension ], 1,   # override method requiring gens.
+    function( A )
+    return STRINGIFY( "<algebra of dimension ", Dimension( A ),
+           " over ", ViewString( LeftActingDomain( A ) ), ">" );
+    end );
+
+InstallMethod( ViewString,
+    "for an algebra with known generators",
+    [ IsAlgebra and HasGeneratorsOfAlgebra ],
+    function( A )
+    return STRINGIFY( "<algebra over ", ViewString( LeftActingDomain( A ) ),
+               ", with ", Length( GeneratorsOfAlgebra( A ) ),
+               " generators>" );
+    end );
+
+
+#############################################################################
+##
 #M  ViewObj( <A> )  . . . . . . . . . . . . . . . . . . . . . view an algebra
 ##
 ##  print left acting domain, if known also dimension or no. of generators
@@ -1985,25 +2046,7 @@ InstallMethod( PrintObj,
 InstallMethod( ViewObj,
     "for an algebra",
     [ IsAlgebra ],
-    function( A )
-    Print( "<algebra over ", LeftActingDomain( A ), ">" );
-    end );
-
-InstallMethod( ViewObj,
-    "for an algebra with known dimension",
-    [ IsAlgebra and HasDimension ], 1,   # override method requiring gens.
-    function( A )
-    Print( "<algebra of dimension ", Dimension( A ),
-           " over ", LeftActingDomain( A ), ">" );
-    end );
-
-InstallMethod( ViewObj,
-    "for an algebra with known generators",
-    [ IsAlgebra and HasGeneratorsOfAlgebra ],
-    function( A )
-    Print( "<algebra over ", LeftActingDomain( A ), ", with ",
-           Length( GeneratorsOfAlgebra( A ) ), " generators>" );
-    end );
+    DelegateFromViewObjToViewString );
 
 
 #############################################################################
@@ -2032,34 +2075,50 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
+#M  ViewString( <A> ) . . . . . . . . . . . . . . . . for an algebra-with-one
+##
+##  show left acting domain, if known also dimension or no. of generators
+##
+InstallMethod( ViewString,
+    "for an algebra-with-one",
+    [ IsAlgebraWithOne ],
+    function( A )
+    if IsIdenticalObj( A, LeftActingDomain( A ) ) then
+      return "<algebra-with-one over itself>";
+    else
+      return STRINGIFY( "<algebra-with-one over ",
+                 ViewString( LeftActingDomain( A ) ), ">" );
+    fi;
+    end );
+
+InstallMethod( ViewString,
+    "for an algebra-with-one with known dimension",
+    [ IsAlgebraWithOne and HasDimension ], 1,   # override method requ. gens.
+    function( A )
+    return STRINGIFY( "<algebra-with-one of dimension ", Dimension( A ),
+               " over ", ViewString( LeftActingDomain( A ) ), ">" );
+    end );
+
+InstallMethod( ViewString,
+    "for an algebra-with-one with known generators",
+    [ IsAlgebraWithOne and HasGeneratorsOfAlgebraWithOne ],
+    function( A )
+    return STRINGIFY( "<algebra-with-one over ",
+               ViewString( LeftActingDomain( A ) ), ", with ",
+               Length( GeneratorsOfAlgebraWithOne( A ) ), " generators>" );
+    end );
+
+
+#############################################################################
+##
 #M  ViewObj( <A> )  . . . . . . . . . . . . . . . .  view an algebra-with-one
 ##
 ##  print left acting domain, if known also dimension or no. of generators
 ##
-InstallMethod( ViewObj, "for an algebra-with-one", [ IsAlgebraWithOne ],
-function( A )
-  if IsIdenticalObj(A,LeftActingDomain(A)) then
-    Print( "<algebra-with-one over itself>" );
-  else
-    Print( "<algebra-with-one over ", LeftActingDomain( A ), ">" );
-  fi;
-end );
-
 InstallMethod( ViewObj,
-    "for an algebra-with-one with known dimension",
-    [ IsAlgebraWithOne and HasDimension ], 1,   # override method requ. gens.
-    function( A )
-    Print( "<algebra-with-one of dimension ", Dimension( A ),
-           " over ", LeftActingDomain( A ), ">" );
-    end );
-
-InstallMethod( ViewObj,
-    "for an algebra-with-one with known generators",
-    [ IsAlgebraWithOne and HasGeneratorsOfAlgebraWithOne ],
-    function( A )
-    Print( "<algebra-with-one over ", LeftActingDomain( A ), ", with ",
-           Length( GeneratorsOfAlgebraWithOne( A ) ), " generators>" );
-    end );
+    "for an algebra-with-one",
+    [ IsAlgebraWithOne ],
+    DelegateFromViewObjToViewString );
 
 
 #############################################################################
@@ -2089,32 +2148,46 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
-#M  ViewObj( <A> )  . . . . . . . . . . . . . . . . . . view a Lie algebra
+#M  ViewString( <A> ) . . . . . . . . . . . . . . . . . . . for a Lie algebra
+##
+##  show left acting domain, if known also dimension or no. of generators
+##
+InstallMethod( ViewString,
+    "for a Lie algebra",
+    [ IsLieAlgebra ],
+    function( A )
+    return STRINGIFY( "<Lie algebra over ",
+               ViewString( LeftActingDomain( A ) ), ">" );
+    end );
+
+InstallMethod( ViewString,
+    "for a Lie algebra with known dimension",
+    [ IsLieAlgebra and HasDimension ], 1,       # override method requ. gens.
+    function( A )
+    return STRINGIFY( "<Lie algebra of dimension ", Dimension( A ),
+               " over ", ViewString( LeftActingDomain( A ) ), ">" );
+    end );
+
+InstallMethod( ViewString,
+    "for a Lie algebra with known generators",
+    [ IsLieAlgebra and HasGeneratorsOfAlgebra ],
+    function( A )
+    return STRINGIFY( "<Lie algebra over ",
+               ViewString( LeftActingDomain( A ) ), ", with ",
+               Length( GeneratorsOfAlgebra( A ) ), " generators>" );
+end );
+
+
+#############################################################################
+##
+#M  ViewObj( <A> )  . . . . . . . . . . . . . . . . . . .  view a Lie algebra
 ##
 ##  print left acting domain, if known also dimension or no. of generators
 ##
 InstallMethod( ViewObj,
     "for a Lie algebra",
     [ IsLieAlgebra ],
-    function( A )
-    Print( "<Lie algebra over ", LeftActingDomain( A ), ">" );
-    end );
-
-InstallMethod( ViewObj,
-    "for a Lie algebra with known dimension",
-    [ IsLieAlgebra and HasDimension ], 1,       # override method requ. gens.
-    function( A )
-    Print( "<Lie algebra of dimension ", Dimension( A ),
-           " over ", LeftActingDomain( A ), ">" );
-    end );
-
-InstallMethod( ViewObj,
-    "for a Lie algebra with known generators",
-    [ IsLieAlgebra and HasGeneratorsOfAlgebra ],
-    function( A )
-    Print( "<Lie algebra over ", LeftActingDomain( A ), ", with ",
-           Length( GeneratorsOfAlgebra( A ) ), " generators>" );
-end );
+    DelegateFromViewObjToViewString );
 
 
 #############################################################################

@@ -4305,9 +4305,8 @@ InstallMethod( ViewString,
 
 InstallMethod( ViewObj, "for a group",
     [ IsGroup ],
-        function(G)
-    Print(ViewString(G));
-end);   
+    DelegateFromViewObjToViewString );
+
 
 #############################################################################
 ##

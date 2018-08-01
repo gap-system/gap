@@ -300,9 +300,8 @@ end);
 
 InstallMethod(ViewObj, "For large finite field elements",
         [IsFFE and IsCoeffsModConwayPolRep], 
-        function(x)
-    Print(ViewString(x));
-end);
+    DelegateFromViewObjToViewString );
+
 
 #############################################################################
 ##

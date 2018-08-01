@@ -217,7 +217,24 @@ InstallMethod( GeneratorsOfLeftModule,
 
 #############################################################################
 ##
-#M  ViewObj( <M> )
+#M  ViewString( <M> ) . . . . . . . . . . . . . . . . . .  full matrix module
+##
+InstallMethod( ViewString,
+    "for full matrix module",
+    [ IsFreeLeftModule and IsFullMatrixModule ],
+    function( M )
+    if IsLieObjectCollection( M ) then
+      TryNextMethod();
+    fi;
+    return STRINGIFY( "( ",
+               ViewString( LeftActingDomain( M ) ),
+               "^", DimensionOfVectors( M ), " )" );
+    end );
+
+
+#############################################################################
+##
+#M  ViewObj( <M> )  . . . . . . . . . . . . . . . . . . .  full matrix module
 ##
 InstallMethod( ViewObj,
     "for full matrix module",
@@ -226,9 +243,7 @@ InstallMethod( ViewObj,
     if IsLieObjectCollection( M ) then
       TryNextMethod();
     fi;
-    Print( "( " );
-    View( LeftActingDomain( M ) );
-    Print( "^", DimensionOfVectors( M ), " )" );
+    DelegateFromViewObjToViewString( M );
     end );
 
 

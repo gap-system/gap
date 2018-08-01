@@ -625,9 +625,7 @@ function(d)
 end);
 
 InstallMethod(ViewObj,"RightCoset",true,[IsRightCoset],0,
-function(d)
-  Print(ViewString(d));
-end);
+    DelegateFromViewObjToViewString );
 
 InstallMethodWithRandomSource(Random,
   "for a random source and a RightCoset",

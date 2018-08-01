@@ -665,30 +665,57 @@ local mon,dom,S,o,oimgs,p,i,g;
   return e;
 end);
 
+
 #############################################################################
 ##
-#M  ViewObj( <matgrp> )
+#M  ViewString( <matgrp> )
 ##
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a matrix group with stored generators",
     [ IsMatrixGroup and HasGeneratorsOfGroup ],
-function(G)
-local gens;
-  gens:=GeneratorsOfGroup(G);
-  if Length(gens)>0 and Length(gens)*
-                        Length(gens[1])^2 / GAPInfo.ViewLength > 8 then
-    Print("<matrix group");
-    if HasSize(G) then
-      Print(" of size ",Size(G));
+    function( G )
+    local gens;
+
+    gens:= GeneratorsOfGroup( G );
+    if Length( gens ) > 0 and
+       Length( gens ) * Length( gens[1] )^2 <= 8 * GAPInfo.ViewLength then
+      return STRINGIFY( "Group(", ViewString( gens ), ")" );
+    elif HasSize( G ) then
+      return STRINGIFY( "<matrix group of size ", Size( G ),
+                 " with ", Length( gens ), " generators>" );
+    else
+      return STRINGIFY( "<matrix group with ", Length( gens ),
+                 " generators>" );
     fi;
-    Print(" with ",Length(GeneratorsOfGroup(G)),
-          " generators>");
-  else
-    Print("Group(");
-    ViewObj(GeneratorsOfGroup(G));
-    Print(")");
-  fi;
-end);
+    end );
+
+
+#############################################################################
+##
+#M  ViewString( <matgrp> )
+##
+InstallMethod( ViewString,"for a matrix group",
+    [ IsMatrixGroup ],
+    function( G )
+    local d, str;
+
+    d:= String( DimensionOfMatrixGroup( G ) );
+    str:= STRINGIFY( "<group of ", d, "x", d, " matrices" );
+    if HasSize( G ) then
+      str:= STRINGIFY( str, " of size ", Size( G ) );
+    fi;
+    if HasFieldOfMatrixGroup( G ) then
+      return STRINGIFY( str, " over ",
+                 ViewString( FieldOfMatrixGroup( G ) ), ">" );
+    elif HasDefaultFieldOfMatrixGroup( G ) then
+      return STRINGIFY( str, " over ",
+                 ViewString( DefaultFieldOfMatrixGroup( G ) ), ">" );
+    else
+      return STRINGIFY( str, " in characteristic ",
+                 Characteristic( One( G ) ), ">" );
+    fi;
+    end );
+
 
 #############################################################################
 ##
@@ -696,21 +723,8 @@ end);
 ##
 InstallMethod( ViewObj,"for a matrix group",
     [ IsMatrixGroup ],
-function(G)
-local d;
-  d:=DimensionOfMatrixGroup(G);
-  Print("<group of ",d,"x",d," matrices");
-  if HasSize(G) then
-    Print(" of size ",Size(G));
-  fi;
-  if HasFieldOfMatrixGroup(G) then
-    Print(" over ",FieldOfMatrixGroup(G),">");
-  elif HasDefaultFieldOfMatrixGroup(G) then
-    Print(" over ",DefaultFieldOfMatrixGroup(G),">");
-  else
-    Print(" in characteristic ",Characteristic(One(G)),">");
-  fi;
-end);
+    DelegateFromViewObjToViewString );
+
 
 #############################################################################
 ##
