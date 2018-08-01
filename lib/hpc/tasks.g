@@ -23,3 +23,11 @@ end;
 TaskResult := function(task)
     return task.taskresult;
 end;
+
+ScheduleTask := function(cond, func, args...)
+    return CallFuncListWrap(RunTask, Concatenation([func], args))[1];
+end;
+
+WaitTask := function(args...)
+    return;
+end;

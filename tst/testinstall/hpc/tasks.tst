@@ -1,11 +1,11 @@
 #############################################################################
 ##
-#W  task.tst                 GAP tests                   Alexander Konovalov
+#W  tasks.tst                 GAP tests                   Alexander Konovalov
 ##
 ##
 #Y  Copyright (C)  2012
 ##
-gap> START_TEST("task.tst");
+gap> START_TEST("tasks.tst");
 gap> CallAsTask := function(arg)
 > return TaskResult( RunTask( CallFuncList, arg[1], arg{[2..Length(arg)]} ) );
 > end;;
@@ -73,4 +73,15 @@ rec( B := [  ], basis := [  ], mue := [  ] )
 gap> CallAsTask(LLLReducedBasis,[ [ 0, 0 ], [ 0, 0 ] ], "linearcomb" );
 rec( B := [  ], basis := [  ], mue := [  ], 
   relations := [ [ 1, 0 ], [ 0, 1 ] ], transformation := [  ] )
-gap> STOP_TEST( "task.tst", 1 );
+gap> task := RunTask(GF, 7);;
+gap> TaskResult(task);
+GF(7)
+gap> task2 := ScheduleTask(task, x -> x^2, 4);;
+gap> WaitTask(task, task2);
+gap> task3 := ScheduleTask([task, task2], x -> x^2, 5);;
+gap> TaskResult(task3);
+25
+gap> task4 := ScheduleTask([], GcdInt, 6, 10);;
+gap> TaskResult(task4);
+2
+gap> STOP_TEST( "tasks.tst", 1 );
