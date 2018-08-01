@@ -2440,6 +2440,10 @@ InstallMethod( SortingPerm,
         return Sortex(copy);
     end );
 
+InstallMethod( SortingPerm,
+    "for a dense and sorted list",
+    [ IsDenseList and IsSortedList ], SUM_FLAGS,
+    list -> () );
 
 
 #############################################################################
