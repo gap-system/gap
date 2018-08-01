@@ -1,7 +1,6 @@
 #############################################################################
 ##
 #W  ctblsymm.gd                 GAP library                    Götz Pfeiffer
-#W                                                               Felix Noeske
 ##
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
@@ -296,36 +295,6 @@ DeclareGlobalFunction( "CharValueWreathSymmetric" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "CharacterTableWreathSymmetric" );
-
-
-#############################################################################
-##
-#V  CharTableDoubleCoverSymmetric
-##
-##  <ManSection>
-##  <Var Name="CharTableDoubleCoverSymmetric"/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalVariable( "CharTableDoubleCoverSymmetric",
-    "gen. char. table of the standard Schur double cover of symm. groups" );
-
-
-#############################################################################
-##
-#V  CharTableDoubleCoverAlternating
-##
-##  <ManSection>
-##  <Var Name="CharTableDoubleCoverAlternating"/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalVariable( "CharTableDoubleCoverAlternating",
-    "generic char. table of the Schur double cover of alternating groups" );
 
 
 #############################################################################
