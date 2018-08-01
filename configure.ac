@@ -201,7 +201,7 @@ dnl
 dnl User setting: garbage collector to use
 dnl
 AC_ARG_WITH([gc],
-    [AS_HELP_STRING([--with-gc@<:@=default|gasman|boehm@:>@],
+    [AS_HELP_STRING([--with-gc@<:@=default|gasman|boehm|julia@:>@],
       [specify which garbage collector to use (default: gasman; for HPC-GAP: boehm)])],
     [],
     [with_gc=default])
@@ -223,7 +223,10 @@ AS_CASE([$with_gc],
                  AC_SUBST([GC_SOURCES], [src/gasman.c])
                  AC_DEFINE([USE_GASMAN],    [1], [define as 1 if GASMAN is used])
                 ],
-    [*],        [AC_MSG_ERROR([Invalid gc method '$with_gc', use default|none|gasman|boehm])],
+    [julia],    [AC_SUBST([GC_SOURCES], [src/julia_gc.c])
+                 AC_DEFINE([USE_JULIA_GC],  [1], [define as 1 if the Julia GC is used])
+                ],
+    [*],        [AC_MSG_ERROR([Invalid gc method '$with_gc', use default|none|gasman|boehm|julia])],
     )
 AC_MSG_RESULT([$with_gc])
 
@@ -470,6 +473,49 @@ AS_IF([test "x$with_readline" != xno],[
 AC_SUBST([READLINE_CPPFLAGS])
 AC_SUBST([READLINE_LDFLAGS])
 AC_SUBST([READLINE_LIBS])
+
+
+dnl Find julia
+AC_ARG_WITH([julia],
+  [AS_HELP_STRING([--with-julia@<:@=PREFIX@:>@],
+    [specify a prefix where julia can be found])])
+
+AS_IF([test "x$with_julia" != xno],[
+  JULIA_LIBS="-ljulia"
+  AS_CASE([x"$with_julia"],
+    [xyes|x],[
+      JULIA_CPPFLAGS=
+      JULIA_LDFLAGS=
+    ],
+    [*],[
+      JULIA_CPPFLAGS="-I$with_julia/include/julia"
+      JULIA_LDFLAGS="-L$with_julia/lib -Wl,-rpath,$with_julia/lib"
+      JULIA_LIBS="-ljulia"
+    ]
+  )
+
+  AX_CHECK_LIBRARY([JULIA], [julia.h], [julia], [jl_gc_alloc], [], [], [])
+
+  # TODO: also check for gcext.h, so that we can be sure the user is pointing
+  # at a modified version of Julia.
+
+  AS_IF([test $ax_cv_have_JULIA = yes],[
+    AC_DEFINE([HAVE_LIBJULIA], [1], [Define if you have libjulia])
+  ],[
+    AS_CASE([x"$with_julia"],
+      [x], [JULIA_CPPFLAGS= JULIA_LDFLAGS= JULIA_LIBS=],
+      [*], [AC_MSG_FAILURE([--with-julia was given, but test for julia failed])]
+    )
+  ])
+])
+
+dnl TODO: check if $with_gc = julia; if so, error out if julia is not found
+
+
+AC_SUBST([JULIA_CPPFLAGS])
+AC_SUBST([JULIA_LDFLAGS])
+AC_SUBST([JULIA_LIBS])
+
 
 dnl Find ward (if HPC-GAP mode is enabled)
 AC_ARG_WITH([ward],
