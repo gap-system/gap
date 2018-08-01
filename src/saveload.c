@@ -53,13 +53,13 @@ static Int OpenForSave( Obj fname )
 {
   if (SaveFile != -1)
     {
-      Pr("Already saving",0L,0L);
+      Pr("Already saving\n",0L,0L);
       return 1;
     }
   SaveFile = SyFopen(CSTR_STRING(fname), "wb");
   if (SaveFile == -1)
     {
-      Pr("Couldn't open file %s to save workspace",
+      Pr("Couldn't open file %s to save workspace\n",
 	 (UInt)CSTR_STRING(fname),0L);
       return 1;
     }
@@ -575,6 +575,7 @@ Obj SaveWorkspace( Obj fname )
 
 #else
   Obj fullname;
+  Obj result;
 
   if (!IsStringConv(fname))
     ErrorQuit("usage: SaveWorkspace( <filename> )",0,0);
@@ -592,8 +593,10 @@ Obj SaveWorkspace( Obj fname )
   CallbackForAllBags( AddSaveIndex );
 
   /* Now do the work */
+  result = Fail;
   if (!OpenForSave( fullname ))
     {
+      result = True;
       WriteSaveHeader();
       SaveCStr("Bag data");
       SortHandlers( 1 ); /* Sort by address to speed up CookieOfHandler */
@@ -607,7 +610,7 @@ Obj SaveWorkspace( Obj fname )
   /* Restore situation by calling all post-save methods */
   ModulesPostSave();
 
-  return True;
+  return result;
 #endif
 }
 
@@ -636,7 +639,7 @@ Obj FuncSaveWorkspace(Obj self, Obj filename )
 void LoadWorkspace( Char * fname )
 {
 #ifndef USE_GASMAN
-  Pr("LoadWorkspace is only supported when GASMAN is in use",0,0);
+  Pr("LoadWorkspace is only supported when GASMAN is in use\n",0,0);
 
 #else
   UInt nGlobs, nBags, i, maxSize;
