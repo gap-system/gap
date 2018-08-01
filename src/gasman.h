@@ -354,6 +354,12 @@ static inline void CHANGED_BAG(Bag bag)
 {
 }
 
+#elif defined(USE_JULIA_GC)
+
+void CHANGED_BAG(Bag bag);
+
+int IsGapObj(void *);
+
 #elif defined(MEMORY_CANARY)
 
 /****************************************************************************

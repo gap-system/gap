@@ -40,6 +40,10 @@
 # include <gc/gc.h>
 #endif
 
+#ifdef USE_JULIA_GC
+#include "julia.h"
+#endif
+
 /****************************************************************************
 **
 *F
@@ -65,6 +69,10 @@ static inline void FORGET_WP(Obj wp, UInt pos)
     void ** ptr = (void **)(ADDR_OBJ(wp) + pos);
     GC_unregister_disappearing_link(ptr);
 }
+
+#elif defined(USE_JULIA_GC)
+
+extern void MarkJuliaRef(void * p);
 
 #endif
 
@@ -119,6 +127,17 @@ static inline Obj ELM_WPOBJ(Obj list, UInt pos)
     }
 #endif
 
+#ifdef USE_JULIA_GC
+    if (!IS_BAG_REF(elm))
+        return elm;
+    jl_weakref_t * wref = (jl_weakref_t *)elm;
+    if (wref->value == jl_nothing) {
+        ADDR_OBJ(list)[pos] = 0;
+        return 0;
+    }
+    elm = (Obj)(wref->value);
+#endif
+
     return elm;
 }
 
@@ -131,7 +150,24 @@ static inline Obj ELM_WPOBJ(Obj list, UInt pos)
 */
 static inline void SET_ELM_WPOBJ(Obj list, UInt pos, Obj val)
 {
+#ifndef USE_JULIA_GC
     ADDR_OBJ(list)[pos] = val;
+#else
+    Obj * ptr = ADDR_OBJ(list);
+    if (!IS_BAG_REF(val)) {
+        ptr[pos] = val;
+        return;
+    }
+    jl_weakref_t * wref = (jl_weakref_t *)(ptr[pos]);
+    if (!IS_BAG_REF(wref)) {
+        ptr[pos] = (Bag)jl_gc_new_weakref((jl_value_t *)val);
+        jl_gc_wb_back(BAG_HEADER(list));
+    }
+    else {
+        wref->value = (jl_value_t *)val;
+        jl_gc_wb(wref, BAG_HEADER(val));
+    }
+#endif
 }
 
 
@@ -557,7 +593,7 @@ Obj FuncIsWPObj( Obj self, Obj wp)
 **  pointers can be reclaimed.  
 */
 
-#if defined(USE_GASMAN)
+#if defined(USE_GASMAN) || defined(USE_JULIA_GC)
 
 static void MarkWeakPointerObj(Obj wp)
 {
@@ -565,9 +601,20 @@ static void MarkWeakPointerObj(Obj wp)
     // copying
     const UInt len = SIZE_BAG(wp) / sizeof(Obj) - 1;
     for (UInt i = 1; i <= len; i++) {
+#if defined(USE_JULIA_GC)
+        Obj elm = ADDR_OBJ(wp)[i];
+        if (IS_BAG_REF(elm))
+            MarkJuliaRef(elm);
+#else
         MarkBagWeakly(ADDR_OBJ(wp)[i]);
+#endif
     }
 }
+
+#endif
+
+
+#if defined(USE_GASMAN)
 
 static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
 {
@@ -717,7 +764,16 @@ void MakeImmutableWPObj( Obj obj )
 
     // remove any weak dead bags, by relying on side-effect of ELM_WPOBJ
     for (UInt i = 1; i <= len; i++) {
+#ifdef USE_JULIA_GC
+        Obj elm = ELM_WPOBJ(obj, i);
+        if (IS_BAG_REF(elm)) {
+            // write back the entries using ADDR_OBJ (not SET_ELM_WPOBJ) to
+            // get rid of the jl_weakref_t objects
+            ADDR_OBJ(obj)[i] = elm;
+        }
+#else
         ELM_WPOBJ(obj, i);
+#endif
     }
 
     // change the type - this works correctly, as the layout of weak pointer
@@ -874,6 +930,11 @@ static Int InitKernel (
   #if !defined(USE_THREADSAFE_COPYING)
     InitMarkFuncBags ( T_WPOBJ +COPYING, MarkWeakPointerObj   );
     InitSweepFuncBags( T_WPOBJ +COPYING, SweepWeakPointerObj  );
+  #endif
+#elif defined(USE_JULIA_GC)
+    InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
+  #if !defined(USE_THREADSAFE_COPYING)
+    InitMarkFuncBags ( T_WPOBJ +COPYING, MarkWeakPointerObj   );
   #endif
 #else
 #error Unknown garbage collector implementation, no weak pointer object implemention available
