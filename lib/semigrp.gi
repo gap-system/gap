@@ -105,12 +105,10 @@ function(S)
   Append(str, "\>with\< \>");
   Append(str, ViewString(nrgens));
   Append(str, "\< \>generator");
-
   if nrgens > 1 or nrgens = 0 then
-    Append(str, "s\<");
-  else
-    Append(str, "\<");
+    Append(str, "s");
   fi;
+  Append(str, "\<");
 
   Append(str, ">\<");
 
@@ -190,9 +188,7 @@ function(S)
     Append(str, "\< generator");
 
     if Length(gens) > 1 or Length(gens) = 0 then
-      Append(str, "s\<");
-    else
-      Append(str, "\<");
+      Append(str, "s");
     fi;
   else
     Remove(str, Length(str));
