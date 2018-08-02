@@ -189,8 +189,8 @@ DeclareGlobalFunction("AlgExtSquareHensel");
 ##  called an ideal decomposition. In the context of field
 ##  extensions, if <M>\alpha</M> is a root of <M>f</M> in a suitable extension
 ##  and <M>Q</M> the field of rational numbers. Such decompositions correspond
-##  to (proper) subfields <M>Q\lt Q(\beta)\lt Q(\alpha)</M>, where <M>g</M> is the
-##  minimal polynomial of <M>\beta</M>.
+##  to (proper) subfields <M>Q &lt; Q(\beta) &lt; Q(\alpha)</M>,
+##  where <M>g</M> is the minimal polynomial of <M>\beta</M>.
 ##  This function determines such decompositions up to equality of the subfields
 ##  <M>Q(\beta)</M>, thus determining subfields of a given algebraic extension.
 ##  It returns a list of pairs <M>[g,h]</M> (and an empty list if no such
