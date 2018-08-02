@@ -41,6 +41,15 @@ gap> ClassPositionsOfCentre( TrivialCharacter( t ) );
 gap> ClassPositionsOfKernel( TrivialCharacter( t ) );
 [ 1 ]
 
+# Display for the table of the trivial group
+gap> Display( CharacterTable( CyclicGroup( 1 ) ) );
+CT1
+
+
+       1a
+
+X.1     1
+
 # viewing and printing of character tables with stored groups
 gap> t:= CharacterTable( DihedralGroup( 8 ) );;
 gap> View( t ); Print( "\n" );
