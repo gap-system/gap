@@ -2447,6 +2447,30 @@ InstallMethod( RadicalGroup, "symmetric", true,
 InstallMethod( RadicalGroup, "alternating", true,
     [ IsNaturalAlternatingGroup and IsFinite], 0,RadicalSymmAlt);
 
+InstallMethod(NormalSubgroups,
+"for a symmetric group",
+[IsSymmetricGroup],
+RankFilter(IsPermGroup),
+function(S)
+  if SymmetricDegree(S) <= 4 then
+    # S is soluble, so this includes the trivial group (and Klein 4)
+    return DerivedSeriesOfGroup(S);
+  fi;
+  # DerivedSubgroup is the alternating group
+  return [S, DerivedSubgroup(S), TrivialSubgroup(S)];
+end);
+
+InstallMethod(NormalSubgroups,
+"for an alternating group",
+[IsAlternatingGroup],
+RankFilter(IsPermGroup),
+function(A)
+  if AlternatingDegree(A) <= 4 then
+    # S is soluble, so this includes the trivial group (and Klein 4)
+    return DerivedSeriesOfGroup(A);
+  fi;
+  return [A, TrivialSubgroup(A)];
+end);
 
 #############################################################################
 ##
