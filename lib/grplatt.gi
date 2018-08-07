@@ -2122,14 +2122,25 @@ local G,	# group
       Info(InfoLattice,2,"Search involution");
 
       # find involution in M/T
+      cnt:=0;
       repeat
-	repeat
-	  inv:=Random(M);
-	until (Order(inv) mod 2 =0) and not inv in T;
-	o:=First([2..Order(inv)],i->inv^i in T);
-      until (o mod 2 =0);
-      Info(InfoLattice,2,"Element of order ",o);
-      inv:=inv^(o/2); # this is an involution in the factor
+        repeat
+          repeat
+            inv:=Random(M);
+          until (Order(inv) mod 2 =0) and not inv in T;
+          o:=First([2..Order(inv)],i->inv^i in T);
+        until (o mod 2 =0);
+        Info(InfoLattice,2,"Element of order ",o);
+        inv:=inv^(o/2); # this is an involution in the factor
+
+        cnt:=cnt+1;
+      # in permgroups try to pick an involution that does not move all
+      # points. This can make the core of C to be computed quicker.
+      until not (IsPermGroup(M) and cnt<10 
+                and Length(MovedPoints(inv))=Length(MovedPoints(M)));
+
+
+
       Assert(1,inv^2 in T and not inv in T);
 
       S:=Normalizer(G,T); # stabilize first component
