@@ -778,8 +778,7 @@ inline void MarkBag(Bag bag)
         MarkCacheHits++;
 #endif
     }
-    else if (!jl_gc_is_internal_obj_alloc(p) ||
-             !jl_typeis(p, datatype_mptr)) {
+    else if (jl_gc_internal_obj_base_ptr(p) != p) {
         return;
     }
 #ifdef STAT_MARK_CACHE
@@ -805,7 +804,7 @@ inline void MarkBag(Bag bag)
 // 'MarkJuliaRef' is a variant of MarkBag which omits any checks; used by the
 // weak pointer object code to mark jl_weakref_t objects (we can't use MarkBag
 // for that, as it only accepts master pointers; on the up side, we avoid a
-// potential expensive call to jl_gc_is_internal_obj_alloc)
+// potential expensive call to jl_gc_internal_obj_base_ptr()).
 void MarkJuliaRef(void * p)
 {
     if (JMark(p))
