@@ -801,16 +801,6 @@ inline void MarkBag(Bag bag)
     }
 }
 
-// 'MarkJuliaRef' is a variant of MarkBag which omits any checks; used by the
-// weak pointer object code to mark jl_weakref_t objects (we can't use MarkBag
-// for that, as it only accepts master pointers; on the up side, we avoid a
-// potential expensive call to jl_gc_internal_obj_base_ptr()).
-void MarkJuliaRef(void * p)
-{
-    if (JMark(p))
-        YoungRef++;
-}
-
 inline void MarkArrayOfBags(const Bag array[], UInt count)
 {
     for (UInt i = 0; i < count; i++) {

@@ -70,10 +70,6 @@ static inline void FORGET_WP(Obj wp, UInt pos)
     GC_unregister_disappearing_link(ptr);
 }
 
-#elif defined(USE_JULIA_GC)
-
-extern void MarkJuliaRef(void * p);
-
 #endif
 
 
@@ -593,7 +589,7 @@ Obj FuncIsWPObj( Obj self, Obj wp)
 **  pointers can be reclaimed.  
 */
 
-#if defined(USE_GASMAN) || defined(USE_JULIA_GC)
+#if defined(USE_GASMAN)
 
 static void MarkWeakPointerObj(Obj wp)
 {
@@ -601,20 +597,9 @@ static void MarkWeakPointerObj(Obj wp)
     // copying
     const UInt len = SIZE_BAG(wp) / sizeof(Obj) - 1;
     for (UInt i = 1; i <= len; i++) {
-#if defined(USE_JULIA_GC)
-        Obj elm = ADDR_OBJ(wp)[i];
-        if (IS_BAG_REF(elm))
-            MarkJuliaRef(elm);
-#else
         MarkBagWeakly(ADDR_OBJ(wp)[i]);
-#endif
     }
 }
-
-#endif
-
-
-#if defined(USE_GASMAN)
 
 static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
 {
@@ -927,9 +912,9 @@ static Int InitKernel (
     InitSweepFuncBags( T_WPOBJ +COPYING, SweepWeakPointerObj  );
   #endif
 #elif defined(USE_JULIA_GC)
-    InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
+    InitMarkFuncBags ( T_WPOBJ,          MarkAllButFirstSubBags   );
   #if !defined(USE_THREADSAFE_COPYING)
-    InitMarkFuncBags ( T_WPOBJ +COPYING, MarkWeakPointerObj   );
+    InitMarkFuncBags ( T_WPOBJ +COPYING, MarkAllSubBags   );
   #endif
 #else
 #error Unknown garbage collector implementation, no weak pointer object implemention available
