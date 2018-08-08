@@ -634,7 +634,7 @@ function(c)
 local s,r;
   s:=ActingDomain(c);
   r:=Representative(c);
-  return ForAll(GeneratorsOfGroup(s),x->r*x/r in s);
+  return ForAll(GeneratorsOfGroup(s),x->x^r in s);
 end);
 
 InstallMethodWithRandomSource(Random,
@@ -667,11 +667,11 @@ function(a,b)
 local c;
   if ActingDomain(a)<>ActingDomain(b) then TryNextMethod();fi;
   if not IsBiCoset(a) then # product does not require b to be bicoset
-    TryNextMethod();
+    ErrorNoReturn("right cosets can only be multiplied if the left operand is a bicoset");
   fi; 
   c:=RightCoset(ActingDomain(a), Representative(a) * Representative(b) );
-  if IsBiCoset(b) then
-    SetIsBiCoset(c,true);
+  if HasIsBiCoset(b) then
+    SetIsBiCoset(c,IsBiCoset(b));
   fi;
 
   return c;
@@ -684,7 +684,7 @@ local s,r;
   s:=ActingDomain(a);
   r:=Representative(a);
   if not IsBiCoset(a) then
-    Error("Inversion only works for cosets of normal subgroups");
+    ErrorNoReturn("only right cosets which are bicosets can be inverted");
   fi;
   r:=RightCoset(s,Inverse(r));
   SetIsBiCoset(r,true);
