@@ -183,10 +183,29 @@ gap> DegreeFFE( [[Z(2),Z(8)],[Z(2), Z(4)]]);
 6
 
 #
-gap> n:=LogFFE(Z(25)^3, Z(25)^7);; (Z(25)^7)^n;
-Z(5^2)^3
+# LogFFE
+#
+gap> q:=25;; r:=Z(q)^7;; ForAll([0..q-2], i -> LogFFE(r^i,r)=i);
+true
 
+# test an issue reported by MN on 2009/10/06, added by AK on 2011/01/16
+gap> q:=2^16;; r:=Z(q)^2;; ForAll([0..q-2], i -> LogFFE(r^i,r)=i);
+true
+
+# test an edge case on 32 bit systems, where a kernel value could overflow
+# (see https://github.com/gap-system/gap/issues/2687)
+gap> q:=37^3;; r:=Z(q)^1055;; ForAll([0..q-2], i -> LogFFE(r^i,r)=i);
+true
+
+# error handling
+gap> LogFFE(0*Z(2), Z(2));
+Error, LogFFE: <z> must be a nonzero finite field element
+gap> LogFFE(Z(2), 0*Z(2));
+Error, LogFFE: <r> must be a nonzero finite field element
+
+#
 # RootFFE
+#
 gap> Rochambeau:=function(F)
 > local e,i,p,a,r;
 >  e:=Elements(F);

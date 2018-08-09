@@ -1471,11 +1471,9 @@ Obj FuncLOG_FFE_DEFAULT (
 
     while (a < 0)
       a+= (qX -1)/c;
-    /* return the logarithm                                                */
-    
 
-    return INTOBJ_INT( (((Int) (vZ-1) / c) * a) % ((Int) (qX-1)) );
-
+    // return the logarithm
+    return INTOBJ_INT( (((UInt) (vZ-1) / c) * a) % ((UInt) (qX-1)) );
 }
 
 
