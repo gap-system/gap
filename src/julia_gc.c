@@ -42,6 +42,11 @@
 // conservative mechanism is used. It should be disabled for precise
 // object tracing, however. The cache does not affect conservative
 // *stack* tracing at all, only conservative tracing of objects.
+//
+// It functions by remembering valid object references in a (lossy)
+// hash table. If we find an object reference in that table, we no
+// longer need to verify that it is accurate, which is a potentially
+// expensive call to the Julia runtime.
 
 static Bag MarkCache[MARK_CACHE_SIZE];
 #ifdef STAT_MARK_CACHE
@@ -456,6 +461,8 @@ static void TryMark(void * p)
         }
     }
     else {
+        // Prepopulate the mark cache with references we know
+        // are valid and in current use.
         if (jl_typeis(p2, datatype_mptr))
             MarkCache[MARK_HASH((UInt)p2)] = (Bag)p2;
     }
@@ -773,19 +780,28 @@ inline void MarkBag(Bag bag)
     MarkCacheAttempts++;
 #endif
     UInt hash = MARK_HASH((UInt)bag);
-    if (MarkCache[hash] == bag) {
+    if (MarkCache[hash] != bag) {
+        // not in the cache, so verify it explicitly
+        if (jl_gc_internal_obj_base_ptr(p) != p) {
+            // not a valid object
+            return;
+        }
+#ifdef STAT_MARK_CACHE
+        if (MarkCache[hash])
+            MarkCacheCollisions++;
+#endif
+        MarkCache[hash] = bag;
+    } else {
 #ifdef STAT_MARK_CACHE
         MarkCacheHits++;
 #endif
     }
-    else if (jl_gc_internal_obj_base_ptr(p) != p) {
-        return;
-    }
-#ifdef STAT_MARK_CACHE
-    if (MarkCache[hash])
-        MarkCacheCollisions++;
-#endif
-    MarkCache[hash] = bag;
+    // The following code is a performance optimization and
+    // relies on Julia internals. It is functionally equivalent
+    // to:
+    //
+    //     if (JMark(p)) YoungRef++;
+    //
     switch (jl_astaggedvalue(p)->bits.gc) {
     case 0:
         if (JMark(p))
