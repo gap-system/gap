@@ -33,8 +33,10 @@
 #else
 // If the compiler does not support _Static_assert resp. static_assert,
 // fall back to a hack (the error message is a bit ugly in that case).
+#define _intern_CONCAT_(X, Y)  X ## Y
+#define _intern_CONCAT(X, Y)  _intern_CONCAT_(X,Y)
 #define GAP_STATIC_ASSERT(cond, msg) \
-    typedef char static_assertion_##__LINE__[(cond)? 1 : -1]
+    typedef char _intern_CONCAT(static_assertion_, __LINE__)[(cond)? 1 : -1]
 #endif
 
 
