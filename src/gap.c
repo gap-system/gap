@@ -896,13 +896,20 @@ again:
                "you can replace <cmd> via 'return <cmd>;'" );
        }
 
-#if !defined(USE_GASMAN)
+        // perform full garbage collection
         if ( strcmp( CSTR_STRING(cmd), "collect" ) == 0 ) {
             CollectBags(0,1);
         }
+
+        // perform partial garbage collection
+        else if ( strcmp( CSTR_STRING(cmd), "partial" ) == 0 ) {
+            CollectBags(0,0);
+        }
+
+#if !defined(USE_GASMAN)
         else {
             cmd = ErrorReturnObj(
-                "GASMAN: <cmd> must be \"collect\"", 0L, 0L,
+                "GASMAN: <cmd> must be \"collect\" or \"partial\"", 0L, 0L,
                 "you can replace <cmd> via 'return <cmd>;'" );
             goto again;
         }
@@ -910,7 +917,7 @@ again:
 #else
 
         /* if request display the statistics                               */
-        if ( strcmp( CSTR_STRING(cmd), "display" ) == 0 ) {
+        else if ( strcmp( CSTR_STRING(cmd), "display" ) == 0 ) {
 #ifdef COUNT_BAGS
             Pr( "%40s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
@@ -968,16 +975,6 @@ again:
 #endif
             }
 #endif
-        }
-
-        /* or collect the garbage                                          */
-        else if ( strcmp( CSTR_STRING(cmd), "collect" ) == 0 ) {
-            CollectBags(0,1);
-        }
-
-        /* or collect the garbage                                          */
-        else if ( strcmp( CSTR_STRING(cmd), "partial" ) == 0 ) {
-            CollectBags(0,0);
         }
 
         /* or display information about global bags                        */
