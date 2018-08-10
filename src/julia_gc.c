@@ -84,9 +84,9 @@ void JFinalizer(jl_value_t * obj)
     Bag         contents = (Bag)(hdr + 1);
     UInt        tnum = hdr->type;
 
-    // calling MakeImmutable on a weak pointer object can turn it into a
-    // plist, which no longer requires a free function; but we already
-    // scheduled one, so we must check TabFreeFuncBags here
+    // if a bag needing a finalizer is retyped to a new tnum which no longer
+    // needs one, it may happen that JFinalize is called even though
+    // TabFreeFuncBags[tnum] is NULL
     if (TabFreeFuncBags[tnum])
         TabFreeFuncBags[tnum]((Bag)&contents);
 }
@@ -654,25 +654,26 @@ void RetypeBag(Bag bag, UInt new_type)
 #endif
 
     if (!TabFreeFuncBags[old_type] && TabFreeFuncBags[new_type]) {
-        // calling MakeImmutable on a weak pointer object can turn it into a
-        // plist, which no longer requires a free functions; we allow this,
-        // but we disallow changing the other way. Otherwise, we might end up
-        // switch an object several times between types which require a free
-        // callback and types which don't.
+        // Retyping a bag can change whether a finalizer needs to be run for
+        // it or not, depending on whether TabFreeFuncBags[tnum] is NULL or
+        // not. While JFinalizer checks for this, there is a deeper problem:
+        // jl_gc_schedule_foreign_sweepfunc is not idempotent, and we must not
+        // call it more than once for any given bag. But this could happen if
+        // a bag changed its tnum multiple times between one needing and one
+        // not needing a finalizer. To avoid this, we only allow changing from
+        // needing a finalizer to not needing one, but not the other way
+        // around.
         //
-        // But then we either end up calling jl_gc_schedule_foreign_sweepfunc
-        // multiple times for the same object, which then can lead to Julia
-        // invoking the free function on that object multiple times, which in
-        // turn could have bad consequences.
-        //
-        // Or else we would have to write code to to track whether
-        // jl_gc_schedule_foreign_sweepfunc was called for an object (e.g. by
-        // using an object flag). But right now no GAP code needs to do this,
-        // and changing the type of an object to a completely different type
-        // is something better to be avoided anyway. So instead of supporting
-        // a feature nobody uses right now, we error out and wait to see if
-        // somebody complains.
+        // The alternative would be to write code which tracks whether
+        // jl_gc_schedule_foreign_sweepfunc was already called for an object
+        // (e.g. by using an object flag). But right now no GAP code needs to
+        // do this, and changing the type of an object to a completely
+        // different type is something better to be avoided anyway. So instead
+        // of supporting a feature nobody uses right now, we error out and
+        // wait to see if somebody complains.
         Panic("cannot change bag type to one which requires a 'free' callback");
+
+
     }
     header->type = new_type;
 }
