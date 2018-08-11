@@ -47,8 +47,8 @@
 **  This package consists of three parts.
 **
 **  The  first  part  consists  of  the  macros  'BIPEB',  'SIZE_PLEN_BLIST',
-**  'PLEN_SIZE_BLIST',   'LEN_BLIST',   'SET_LEN_BLIST',   'ELM_BLIST',   and
-**  'SET_ELM_BLIST'.   They  determine the  representation of boolean  lists.
+**  'LEN_BLIST', 'SET_LEN_BLIST', 'ELM_BLIST', and 'SET_ELM_BLIST'. They
+**  determine the  representation of boolean  lists.
 **  The  rest  of the {\GAP} kernel  uses those macros  to access and  modify
 **  boolean lists.
 **
