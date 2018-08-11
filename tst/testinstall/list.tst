@@ -117,6 +117,80 @@ Syntax error: '[]' only supports 1 or 2 indices in stream:1
 Unbind(a[1,1,1]);
               ^
 
+#
+# slices
+#
+gap> 1{1};
+Error, List Elements: <positions> must be a dense list of positive integers
+
+# ... for blists
+gap> list := [true,false,true];;
+gap> list{1};
+Error, List Elements: <positions> must be a dense list of positive integers
+gap> list{[4]};
+Error, List Elements: <list>[4] must have an assigned value
+gap> list{[1,2,3]} = list;  # with a plist as selector
+true
+gap> list{[1,2^100,3]};
+Error, List Elements: position is too large for this type of list
+gap> list{[1..3]} = list;  # with a range as selector
+true
+gap> list{[1..4]};
+Error, List Elements: <list>[4] must have an assigned value
+gap> list{[4..5]};
+Error, List Elements: <list>[4] must have an assigned value
+
+# ... for plists
+gap> list := [1, 2, 4];;
+gap> list{1};
+Error, List Elements: <positions> must be a dense list of positive integers
+gap> list{[4]};
+Error, List Elements: <list>[4] must have an assigned value
+gap> list{[1,2,3]} = list;  # with a plist as selector
+true
+gap> list{[1,2^100,3]};
+Error, List Elements: position is too large for this type of list
+gap> list{[1..3]} = list;  # with a range as selector
+true
+gap> list{[1..4]};
+Error, List Elements: <list>[4] must have an assigned value
+gap> list{[4..5]};
+Error, List Elements: <list>[4] must have an assigned value
+
+# ... for ranges
+gap> list := [1..3];;
+gap> list{1};
+Error, List Elements: <positions> must be a dense list of positive integers
+gap> list{[4]};
+Error, List Elements: <list>[4] must have an assigned value
+gap> list{[1,2,3]} = list;  # with a plist as selector
+true
+gap> list{[1,2^100,3]};
+Error, List Elements: position is too large for this type of list
+gap> list{[1..3]} = list;  # with a range as selector
+true
+gap> list{[1..4]};
+Error, List Elements: <list>[4] must have an assigned value
+gap> list{[4..5]};
+Error, List Elements: <list>[4] must have an assigned value
+
+# ... for strings
+gap> list := "abc";;
+gap> list{1};
+Error, List Elements: <positions> must be a dense list of positive integers
+gap> list{[4]};
+Error, List Elements: <list>[4] must have an assigned value
+gap> list{[1,2,3]} = list;  # with a plist as selector
+true
+gap> list{[1,2^100,3]};
+Error, List Elements: position is too large for this type of list
+gap> list{[1..3]} = list;  # with a range as selector
+true
+gap> list{[1..4]};
+Error, List Elements: <list>[4] must have an assigned value
+gap> list{[4..5]};
+Error, List Elements: <list>[4] must have an assigned value
+
 # ListWithIdenticalEntries: errors
 gap> ListWithIdenticalEntries(fail, true);
 Error, <n> must be a non-negative integer (not a boolean or fail)
