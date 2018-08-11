@@ -264,7 +264,6 @@ FF              FiniteField (
     succ = (FFV*)(1+ADDR_OBJ( succBag ));
 
     /* if q is a prime find the smallest primitive root $e$, use $x - e$   */
-    /*N 1990/02/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
     /*N 1990/02/04 mschoene there are few dumber ways to find prim. roots  */
     if ( d == 1 ) {
         for ( e = 1, i = 1; i != p-1; ++e ) {
@@ -281,7 +280,6 @@ FF              FiniteField (
     }
 
     /* construct 'indx' such that 'e = x^(indx[e]-1) % poly' for every e   */
-    /*N 1990/02/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
     indx[ 0 ] = 0;
     for ( e = 1, n = 0; n < q-1; ++n ) {
         indx[ e ] = n + 1;
@@ -698,7 +696,6 @@ Obj             SumFFEFFE (
     fR = FLD_FFE( opR );
     qR = SIZE_FF( fR  );
 
-    /*N 1997/01/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
     if ( qL == qR ) {
         fX = fL;
     }
@@ -866,7 +863,6 @@ Obj             DiffFFEFFE (
     fR = FLD_FFE( opR );
     qR = SIZE_FF( fR  );
 
-    /*N 1997/01/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
     if ( qL == qR ) {
         fX = fL;
     }
@@ -996,7 +992,6 @@ Obj             ProdFFEFFE (
     fR = FLD_FFE( opR );
     qR = SIZE_FF( fR  );
 
-    /*N 1997/01/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
     if ( qL == qR ) {
         fX = fL;
     }
@@ -1165,7 +1160,6 @@ Obj             QuoFFEFFE (
     fR = FLD_FFE( opR );
     qR = SIZE_FF( fR  );
 
-    /*N 1997/01/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
     if ( qL == qR ) {
         fX = fL;
     }
@@ -1343,11 +1337,7 @@ Obj PowFFEFFE (
 {
     /* get the field for the result                                        */
     if ( CHAR_FF( FLD_FFE(opL) ) != CHAR_FF( FLD_FFE(opR) ) ) {
-        opR = ErrorReturnObj(
-          "FFE operations: characteristic of conjugating element must be %d",
-          (Int)CHAR_FF(FLD_FFE(opL)), 0L,
-          "you can replace conjugating element <elt> via 'return <elt>;'" );
-        return POW( opL, opR );
+        ErrorMayQuit("<x> and <y> have different characteristic", 0, 0);
     }
 
     /* compute and return the result                                       */
@@ -1406,19 +1396,17 @@ Obj FuncLOG_FFE_DEFAULT (
     Int                 a, b, c, d, t;  /* temporaries                     */
 
     /* check the arguments                                                 */
-    if ( ! IS_FFE(opZ) || VAL_FFE(opZ) == 0 ) {
+    while ( ! IS_FFE(opZ) || VAL_FFE(opZ) == 0 ) {
         opZ = ErrorReturnObj(
             "LogFFE: <z> must be a nonzero finite field element",
              0L, 0L,
              "you can replace <z> via 'return <z>;'" );
-        return FuncLOG_FFE_DEFAULT( self, opZ, opR );
     }
-    if ( ! IS_FFE(opR) || VAL_FFE(opR) == 0 ) {
+    while ( ! IS_FFE(opR) || VAL_FFE(opR) == 0 ) {
         opR = ErrorReturnObj(
             "LogFFE: <r> must be a nonzero finite field element",
              0L, 0L,
              "you can replace <r> via 'return <r>;'" );
-        return FuncLOG_FFE_DEFAULT( self, opZ, opR );
     }
 
     /* get the values, handle trivial cases                                */
@@ -1431,7 +1419,6 @@ Obj FuncLOG_FFE_DEFAULT (
     fR = FLD_FFE( opR );
     qR = SIZE_FF( fR  );
 
-    /*N 1997/01/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
     if ( qZ == qR ) {
         fX = fZ;
         qX = qZ;
@@ -1457,7 +1444,6 @@ Obj FuncLOG_FFE_DEFAULT (
     }
 
     /* now solve <l> * (<vR>-1) = (<vZ>-1) % (<qX>-1)                      */
-    /*N 1990/02/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
     a = 1;             b = 0;
     c = (Int) (vR-1);  d = (Int) (qX-1);
     while ( d != 0 ) {
@@ -1637,7 +1623,7 @@ Obj FuncZ2 ( Obj self, Obj p, Obj d)
     {
       ip = INT_INTOBJ(p);
       id = INT_INTOBJ(d);
-      if (ip > 1 && id > 0 && id <= 16 && ip <= 65536)
+      if (ip > 1 && id > 0 && id <= 16 && ip < 65536)
         {
           id1 = id;
           q = ip;
