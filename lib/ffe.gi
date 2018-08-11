@@ -600,7 +600,7 @@ InstallMethod( RootOfDefiningPolynomial,
 
     coeffs:= ShiftedCoeffs( coeffs[1], coeffs[2] );
     p:= Characteristic( F );
-    d:= ( Length( coeffs ) - 1 ) * DegreeOverPrimeField( F );
+    d:= DegreeOverPrimeField( F );
 
     if Length( coeffs ) = 2 then
       return - coeffs[1] / coeffs[2];

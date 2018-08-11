@@ -168,6 +168,9 @@ InstallOtherMethod(ZOp,
         [IsPosInt, IsPosInt],
         function(p,d)
     local   q;
+    if not IsPrimeInt(p) then
+        Error("Z: <p> must be a prime");
+    fi;
     q := p^d;
     if q <= MAXSIZE_GF_INTERNAL or d =1 then
         return Z(q);
@@ -185,7 +188,9 @@ InstallMethod(ZOp,
     p := SmallestRootInt(q);
     d := LogInt(q,p);
     Assert(1, q=p^d);
-    Assert(2, IsProbablyPrimeInt(p));
+    if not IsPrimeInt(p) then
+        Error("Z: <q> must be a positive prime power");
+    fi;
     if d > 1 then
         return FFECONWAY.ZNC(p,d);
     fi;
