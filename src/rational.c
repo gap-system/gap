@@ -120,23 +120,12 @@ Int             EqRat (
 
     CHECK_RAT(opL);
     CHECK_RAT(opR);
+
     /* get numerator and denominator of the operands                       */
-    if ( TNUM_OBJ(opL) == T_RAT ) {
-        numL = NUM_RAT(opL);
-        denL = DEN_RAT(opL);
-    }
-    else {
-        numL = opL;
-        denL = INTOBJ_INT( 1L );
-    }
-    if ( TNUM_OBJ(opR) == T_RAT ) {
-        numR = NUM_RAT(opR);
-        denR = DEN_RAT(opR);
-    }
-    else {
-        numR = opR;
-        denR = INTOBJ_INT( 1L );
-    }
+    numL = NUM_RAT(opL);
+    denL = DEN_RAT(opL);
+    numR = NUM_RAT(opR);
+    denR = DEN_RAT(opR);
 
     /* compare the numerators                                              */
     if ( ! EQ( numL, numR ) ) {
@@ -769,7 +758,7 @@ Obj             FuncNUMERATOR_RAT (
     /* check the argument                                                   */
     while ( TNUM_OBJ(rat) != T_RAT && !IS_INT(rat) ) {
         rat = ErrorReturnObj(
-            "Numerator: <rat> must be a rational (not a %s)",
+            "NumeratorRat: <rat> must be a rational (not a %s)",
             (Int)TNAM_OBJ(rat), 0L,
             "you can replace <rat> via 'return <rat>;'" );
     }
