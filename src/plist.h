@@ -74,18 +74,13 @@ static inline Int IS_PLIST(Obj list)
 **  This function is used in a GAP_ASSERT checking if calling functions like
 **  SET_ELM_PLIST is acceptable on an Obj.
 **
-**  Unlike IS_PLIST, this function also accepts plists which are being copied
-**  (and hence have the COPYING flag set), as well as positional objects
+**  Unlike IS_PLIST, this function also accepts positional objects
 **  (which have the same memory layout as plists), as the plist APIs using it
 **  for assertion checks are in practice invoked on such objects, too.
 */
 static inline Int IS_PLIST_OR_POSOBJ(Obj list)
 {
     UInt tnum = TNUM_OBJ(list);
-#if !defined(USE_THREADSAFE_COPYING)
-    if (tnum > COPYING)
-        tnum -= COPYING;
-#endif
     return (FIRST_PLIST_TNUM <= tnum && tnum <= LAST_PLIST_TNUM) ||
            tnum == T_POSOBJ;
 }
