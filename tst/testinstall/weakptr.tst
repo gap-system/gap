@@ -15,6 +15,10 @@ gap> w := WeakPointerObj([1,,2^40*10^10,Z(17),[2,3,4],fail,SymmetricGroup(5),]);
 gap> Print(w,"\n");
 WeakPointerObj( [ 1, , 10995116277760000000000, Z(17), 
 [ 2, 3, 4 ], fail, SymmetricGroup( [ 1 .. 5 ] ) ] )
+gap> IsWeakPointerObject(w);
+true
+gap> IsWeakPointerObject([1, 2, 3]);
+false
 gap> LengthWPObj(w);
 7
 gap> val := "cheese";;
