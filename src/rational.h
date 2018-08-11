@@ -30,21 +30,25 @@
 */
 static inline Obj NUM_RAT(Obj rat)
 {
+    GAP_ASSERT(TNUM_OBJ(rat) == T_RAT);
     return CONST_ADDR_OBJ(rat)[0];
 }
 
 static inline Obj DEN_RAT(Obj rat)
 {
+    GAP_ASSERT(TNUM_OBJ(rat) == T_RAT);
     return CONST_ADDR_OBJ(rat)[1];
 }
 
 static inline void SET_NUM_RAT(Obj rat, Obj val)
 {
+    GAP_ASSERT(TNUM_OBJ(rat) == T_RAT);
     ADDR_OBJ(rat)[0] = val;
 }
 
 static inline void SET_DEN_RAT(Obj rat, Obj val)
 {
+    GAP_ASSERT(TNUM_OBJ(rat) == T_RAT);
     ADDR_OBJ(rat)[1] = val;
 }
 

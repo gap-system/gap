@@ -1,8 +1,30 @@
 #
-gap> NumeratorRat(1/2);
-1
-gap> DenominatorRat(1/2);
+gap> x := 2/3;
+2/3
+gap> NumeratorRat(x);
 2
+gap> DenominatorRat(x);
+3
+gap> NumeratorRat('c');
+Error, NumeratorRat: <rat> must be a rational (not a character)
+gap> DenominatorRat('c');
+Error, DenominatorRat: <rat> must be a rational (not a character)
+
+#
+gap> IsRat(x);
+true
+gap> IsRat(2);
+true
+gap> IsRat('c');
+false
+
+#
+gap> One(x);
+1
+gap> OneImmutable(x);
+1
+gap> x^0;
+1
 
 #
 # 'Rat' -- converting things to a rational
@@ -21,6 +43,12 @@ gap> Rat("3-5");
 fail
 gap> Rat(3.7e-1);                                                  
 37/100
+
+# division by zero
+gap> 0/0;
+Error, Rational operations: <divisor> must not be zero
+gap> 1/0;
+Error, Rational operations: <divisor> must not be zero
 
 #
 # modular inverses of rationals
