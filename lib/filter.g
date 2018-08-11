@@ -173,6 +173,62 @@ end );
 
 #############################################################################
 ##
+#F  SuspendMethodReordering( )
+#F  ResumeMethodReordering( )
+#F  ResetMethodReordering( )
+##
+##  <#GAPDoc Label="MethodReordering">
+##  <ManSection>
+##  <Func Name="SuspendMethodReordering" Arg=""/>
+##  <Func Name="ResumeMethodReordering" Arg=""/>
+##  <Func Name="ResetMethodReordering" Arg=""/>
+##
+##  <Description> 
+##  These functions control whether the method reordering process
+##  described in <Ref Func="InstallTrueMethod"/> is invoked or not. Since this 
+##  process can be comparatively time-consuming, it is usually suspended when
+##  a lot of implications are due to be installed, for instance when loading
+##  the library, or a package. This is done by calling <C>SuspendMethodReordering()</C>
+##  once the installations are done, <C>ResumeMethodReordering()</C> should be called. 
+##  These pairs of calls can be nested. When the outermost pair is complete, method
+##  reordering takes place and is enabled in <C>InstallTrueMethod</C> thereafter.
+##
+##  <C>ResetMethodReordering()</C> effectively exits all nested suspensions, resuming
+##  reordering immediately. This function is mainly provided for error recovery and 
+##  similar purposes and is called on quitting from a break loop.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+
+#
+# This function will be defined in oper.g
+#
+RECALCULATE_ALL_METHOD_RANKS := fail;
+ 
+REORDER_METHODS_SUSPENSION_LEVEL := 1;
+
+BIND_GLOBAL( "SuspendMethodReordering", function()
+    REORDER_METHODS_SUSPENSION_LEVEL := REORDER_METHODS_SUSPENSION_LEVEL + 1;    
+end);
+
+
+BIND_GLOBAL( "ResumeMethodReordering", function()
+    if REORDER_METHODS_SUSPENSION_LEVEL > 0 then
+        REORDER_METHODS_SUSPENSION_LEVEL := REORDER_METHODS_SUSPENSION_LEVEL - 1;    
+    fi;    
+    if REORDER_METHODS_SUSPENSION_LEVEL <= 0 then
+        RECALCULATE_ALL_METHOD_RANKS();
+    fi;    
+end);
+
+BIND_GLOBAL( "ResetMethodReordering", function()
+    REORDER_METHODS_SUSPENSION_LEVEL := 0;
+    RECALCULATE_ALL_METHOD_RANKS();
+end);
+
+
+#############################################################################
+##
 #F  InstallTrueMethod( <newfil>, <filt> )
 ##
 ##  <#GAPDoc Label="InstallTrueMethod">
@@ -209,18 +265,33 @@ end );
 ##  This means that after the above implication has been installed,
 ##  one can rely on the fact that every object in the filter
 ##  <C>IsGroup and IsCyclic</C> will also be in the filter
-##  <Ref Func="IsCommutative"/>.
+##  <Ref Func="IsCommutative"/>.<P/>
+##
+##  Adding logical implications can change the rank of filters 
+##  (see <Ref Func="RankFilter"/>) and consequently the rank, and so choice of
+##  methods for operations (see <Ref Sect="Applicable Methods and Method Selection"/>).
+##  By default <C>InstallTrueMethod</C> adjusts the method selection data structures 
+##  to take care of this, but this process can be time-consuming, so functions
+##  <Ref Func="SuspendMethodReordering"/> and <Ref Func="ResumeMethodReordering"/>
+##  are provided to allow control of this process.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+
 BIND_GLOBAL( "InstallTrueMethod", function ( tofilt, from )
 
     InstallTrueMethodNewFilter( tofilt, from );
-
+    
     # clear the caches because we do not know if filter <from> is new
     CLEAR_HIDDEN_IMP_CACHE( from );
     CLEAR_IMP_CACHE();
+    
+    # maybe rerank methods to take account of new implication
+    if REORDER_METHODS_SUSPENSION_LEVEL = 0 then
+        RECALCULATE_ALL_METHOD_RANKS();
+    fi;
+    
 end );
 
 
@@ -424,11 +495,7 @@ BIND_GLOBAL( "RankFilter", function( filter )
       all := WITH_IMPS_FLAGS(flags);
     fi;
     for i  in TRUES_FLAGS(all)  do
-        if IsBound(RANK_FILTERS[i])  then
             rank := rank + RANK_FILTERS[i];
-        else
-            rank := rank + 1;
-        fi;
     od;
     return rank;
 end );

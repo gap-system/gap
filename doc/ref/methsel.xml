@@ -252,6 +252,7 @@ one can install also <E>immediate methods</E>.
 <Heading>Logical Implications</Heading>
 
 <#Include Label="InstallTrueMethod">
+<#Include Label="MethodReordering">
 
 </Section>
 

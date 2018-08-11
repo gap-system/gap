@@ -1420,7 +1420,7 @@ InstallGlobalFunction( LoadPackage, function( arg )
     local name, Name, version, banner, loadsuggested, msg, depinfo, path,
           pair, i, order, paths, cycle, secondrun, pkgname, pos, info,
           filename, read;
-
+    
     # Get the arguments.
     if Length( arg ) = 0 then
       name:= "";
@@ -1516,7 +1516,14 @@ InstallGlobalFunction( LoadPackage, function( arg )
       GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel - 1;
       return path;
     fi;
-
+    
+    #
+    # Suspend reordering of methods following InstallTrueMethod
+    # because it would slow things down too much
+    #
+    SuspendMethodReordering();    
+    
+    
     # Compute the order in which the packages are loaded.
     # For each set of packages with cyclic dependencies,
     # we will first read all `init.g' files
@@ -1631,6 +1638,8 @@ InstallGlobalFunction( LoadPackage, function( arg )
     LogPackageLoadingMessage( PACKAGE_DEBUG, "return from LoadPackage",
         Name );
     GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel - 1;
+    
+    ResumeMethodReordering();
     return true;
     end );
 
@@ -1640,11 +1649,13 @@ InstallGlobalFunction( LoadPackage, function( arg )
 #F  LoadAllPackages()
 ##
 InstallGlobalFunction( LoadAllPackages, function()
+    SuspendMethodReordering();        
     if ValueOption( "reversed" ) = true then
-    	List( Reversed( RecNames( GAPInfo.PackagesInfo ) ), LoadPackage );
+       List( Reversed( RecNames( GAPInfo.PackagesInfo ) ), LoadPackage );
     else
-    	List( RecNames( GAPInfo.PackagesInfo ), LoadPackage );
+       List( RecNames( GAPInfo.PackagesInfo ), LoadPackage );
     fi;	
+    ResumeMethodReordering();        
     end );
 
 

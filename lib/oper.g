@@ -1096,6 +1096,7 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     FILTERS[ FLAG2_FILTER( tester ) ] := tester;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
     INFO_FILTERS[ FLAG2_FILTER( tester ) ] := 5;
+    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
     od;
 
     # clear the cache because <filter> is something old
@@ -1107,10 +1108,6 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     # run the attribute functions
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
-    # store the ranks
-    atomic FILTER_REGION do
-    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
-    od;
 
     # and make the remaining assignments
     nname:= "Set"; APPEND_LIST_INTR( nname, name );
@@ -1198,6 +1195,8 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
           # install the default functions
           FILTERS[ FLAG2_FILTER( tester ) ] := tester;
           IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
+          # store the rank
+          RANK_FILTERS[ FLAG2_FILTER( tester ) ] := rank;
 
           # the <tester> is newly made, therefore  the cache cannot contain a  flag
           # list involving <tester>
@@ -1209,8 +1208,6 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
           # run the attribute functions
           RUN_ATTR_FUNCS( filter, getter, setter, tester, mutflag );
 
-          # store the rank
-          RANK_FILTERS[ FLAG2_FILTER( tester ) ] := rank;
           
           
           return;
@@ -1439,6 +1436,10 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     INFO_FILTERS[ FLAG1_FILTER( getter ) ]:= 7;
     INFO_FILTERS[ FLAG2_FILTER( getter ) ]:= 8;
 
+    # store the ranks
+    RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
+    RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
+    
     # clear the cache because <filter> is something old
     if not GAPInfo.CommandLineOptions.N then
       InstallHiddenTrueMethod( tester, getter );
@@ -1450,9 +1451,6 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     # run the attribute functions
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
-    # store the ranks
-    RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
-    RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
 
     # and make the remaining assignments
     nname:= "Set"; APPEND_LIST_INTR( nname, name );
@@ -1513,8 +1511,14 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     FILTERS[ FLAG2_FILTER( getter ) ] := tester;
     INFO_FILTERS[ FLAG1_FILTER( getter ) ] := 9;
     INFO_FILTERS[ FLAG2_FILTER( getter ) ] := 10;
+    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= arg[3];
+    else
+        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
+    fi;
+    RANK_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
     od;
-
+    
     # the <tester> and  <getter> are newly  made, therefore the cache cannot
     # contain a flag list involving <tester> or <getter>
     if not GAPInfo.CommandLineOptions.N then
@@ -1526,15 +1530,6 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     # run the attribute functions
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
-    # store the rank
-    atomic FILTER_REGION do
-    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
-        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= arg[3];
-    else
-        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
-    fi;
-    RANK_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
-    od;
 
     # and return the getter
     return getter;
@@ -1931,7 +1926,8 @@ end);
 
 fi;
 
-if BASE_SIZE_METHODS_OPER_ENTRY <> 5 then
+
+if BASE_SIZE_METHODS_OPER_ENTRY <> 6 then
     Error("MethodsOperation must be updated for new BASE_SIZE_METHODS_OPER_ENTRY");
 fi;
 
@@ -1952,6 +1948,7 @@ BIND_GLOBAL("MethodsOperation", function(oper, nargs)
             func    := meths[i + nargs + 2],
             rank    := meths[i + nargs + 3],
             info    := meths[i + nargs + 4],
+            rankbase := meths[i + nargs + 6],
             );
         ADD_LIST(result, m);
         if IsBound(meths[i + nargs + 5]) then
@@ -1960,6 +1957,139 @@ BIND_GLOBAL("MethodsOperation", function(oper, nargs)
     od;
     return result;
 end );
+
+#############################################################################
+##
+#F RECALCULATE_ALL_METHOD_RANKS() . . reorder methods after new implications
+##
+## Installing new implications (including hidden implications) can change the
+## rank of existing filters, and so of existing methods for operations.
+##
+## This function recalculates all such ranks and adjusts the method ordering
+## where needed. If the ordering changes, the relevant caches are flushed.
+##
+## If PRINT_REORDERED_METHODS is true, it prints some diagnostics (this is a
+## bit too low-level for Info).
+##
+##
+
+
+#
+# We had to install a placeholder for this in filter.g
+#
+Unbind(RECALCULATE_ALL_METHOD_RANKS);
+
+PRINT_REORDERED_METHODS := false;
+
+BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
+    local  oper, n, changed, meths, nmethods, i, base, rank, j, req, 
+           req2, k, l;
+    
+    for oper in OPERATIONS do        
+        for n in [0..6] do
+            changed := false;                
+            meths := METHODS_OPERATION(oper, n);
+            nmethods := LENGTH(meths)/(BASE_SIZE_METHODS_OPER_ENTRY+n);                
+            if IS_CONSTRUCTOR(oper) and n > 0 then
+                for i in [nmethods,nmethods-1..1] do
+                    base := (i-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n);
+                    # data for this method is meths{[base+1..base+BASE_SIZE_METHODS_OPER_ENTRY + n]}
+                    rank := meths[base+6+n];                    
+                    if IS_FUNCTION(rank) then
+                        rank := rank();
+                    fi;
+                    rank := rank - RankFilter(WITH_IMPS_FLAGS(meths[base+2]));                    
+                    if rank <> meths[base+n+3] then
+                        if IsHPCGAP and not changed then 
+                            meths := SHALLOW_COPY_OBJ(meths);
+                        fi;
+                        changed := true;
+                        meths[base+n+3] := rank;
+                    fi;
+                    # compare to rank of succeding method
+                    if i = nmethods or rank >= meths[base+BASE_SIZE_METHODS_OPER_ENTRY + 2*n + 3] then
+                        continue;
+                    fi;
+                    k := i+2;
+                    while k <= nmethods and meths[(k-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n) + n + 3] < rank do
+                        k := k+1;
+                    od;
+                    k := k-1;
+                    if PRINT_REORDERED_METHODS then
+                        Print("Constructor ",NAME_FUNC(oper), " ", n," args. Moving method ",i," (",
+                              meths[base+n+4]," from ",meths[base+n+5][1],":", meths[base+n+5][2],                 
+                              ") to position ",k,"\n");                      
+                    fi;
+                    l := meths{[base+1..base+n+BASE_SIZE_METHODS_OPER_ENTRY]};
+                    COPY_LIST_ENTRIES(meths, 1 + i*(n+BASE_SIZE_METHODS_OPER_ENTRY), 1, 
+                            meths, 1 +(i-1)*(n+BASE_SIZE_METHODS_OPER_ENTRY), 1, 
+                            (k-i)*(n+BASE_SIZE_METHODS_OPER_ENTRY));
+                    meths{[1 + (k-1)*(n+BASE_SIZE_METHODS_OPER_ENTRY)..
+                           k*(n+BASE_SIZE_METHODS_OPER_ENTRY)]} := l;
+                od;
+            else
+                for i in [1 ..nmethods] do
+                    base := (i-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n);
+                    # data for this method is meths{[base+1..base+BASE_SIZE_METHODS_OPER_ENTRY + n]}
+                    rank := meths[base+6+n];                    
+                    if IS_FUNCTION(rank) then
+                        rank := rank();
+                    fi;
+                    
+                    
+                    for j in [1..n] do
+                        req := meths[base+1+j];
+                        rank := rank+RankFilter(WITH_IMPS_FLAGS(req));
+                    od;
+                    
+                    if rank <> meths[base+n+3] then
+                        if IsHPCGAP and not changed then 
+                            meths := SHALLOW_COPY_OBJ(meths);
+                        fi;
+                        changed := true;
+                        meths[base+n+3] := rank;
+                    fi;
+                    
+                    # compare to rank of preceding method
+                    if i = 1 or rank <= meths[base-BASE_SIZE_METHODS_OPER_ENTRY+3] then
+                        continue;
+                    fi;                
+                    
+                    k := i-2;
+                    while k > 1 and meths[(k-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n) + n + 3] < rank do
+                        k := k-1;
+                    od;
+                    k := k+1;
+                    if PRINT_REORDERED_METHODS then
+                        Print(NAME_FUNC(oper), " ", n," args. Moving method ",i," (",
+                              meths[base+n+4]," from ",meths[base+n+5][1],":", meths[base+n+5][2],                 
+                              ") to position ",k,"\n");                      
+                    fi;
+                    l := meths{[base+1..base+n+BASE_SIZE_METHODS_OPER_ENTRY]};
+                    COPY_LIST_ENTRIES(meths, 1 + (k-1)*(n+BASE_SIZE_METHODS_OPER_ENTRY), 1, 
+                            meths, 1 + k*(n+BASE_SIZE_METHODS_OPER_ENTRY), 1, 
+                            (i-k)*(n+BASE_SIZE_METHODS_OPER_ENTRY));
+                    meths{[1 + (k-1)*(n+BASE_SIZE_METHODS_OPER_ENTRY)..
+                           k*(n+BASE_SIZE_METHODS_OPER_ENTRY)]} := l;
+                od;
+            fi;
+            if changed then
+                if IsHPCGAP then
+                    SET_METHODS_OPERATION(oper,n,MakeReadOnlySingleObj(meths));                    
+                else
+                    CHANGED_METHODS_OPERATION(oper,n);
+                fi;
+            fi;
+        od;
+    od;
+end );
+
+
+
+
+
+
+
 
 #############################################################################
 ##

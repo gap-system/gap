@@ -1018,6 +1018,9 @@ fi;
 ##
 ##  Read init files, run a shell, and do exit-time processing.
 ##
+
+ResumeMethodReordering();
+
 InstallAndCallPostRestore( function()
     local i, status;
     for i in [1..Length(GAPInfo.InitFiles)] do
@@ -1036,6 +1039,8 @@ InstallAndCallPostRestore( function()
         fi;
     od;
 end );
+
+
 
 if IsLIBGAP then
   # GAP is used as a library, do not start an interactive session
