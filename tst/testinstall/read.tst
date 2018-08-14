@@ -86,19 +86,19 @@ true
 gap> READ_ALL_COMMANDS(InputTextString(""), false, false, false);
 [  ]
 gap> READ_ALL_COMMANDS(InputTextString("a := (3,7,1); y := a^(-1);"), false, false, false);
-[ [ true, (1,3,7), false,, ], [ true, (1,7,3), false,, ] ]
+[ [ true, (1,3,7), false ], [ true, (1,7,3), false ] ]
 gap> READ_ALL_COMMANDS(InputTextString("Unbind(x); z := x;"), false, false, false);
 Error, Variable: 'x' must have a value
-[ [ true,, false,, ], [ false,,,, ] ]
+[ [ true,, false ], [ false ] ]
 gap> READ_ALL_COMMANDS(InputTextString("SymmetricGroup(5);"), false, false, ViewString );
-[ [ true, Sym( [ 1 .. 5 ] ), false, "Sym( [ 1 .. 5 ] )", ] ]
+[ [ true, Sym( [ 1 .. 5 ] ), false, "Sym( [ 1 .. 5 ] )" ] ]
 gap> READ_ALL_COMMANDS(InputTextString("1;;2;3;;4;5;6;7;8;9;10;11;12;13;14;;15;16;17;18;"), false, false, false);
-[ [ true, 1, true,, ], [ true, 2, false,, ], [ true, 3, true,, ], 
-  [ true, 4, false,, ], [ true, 5, false,, ], [ true, 6, false,, ], 
-  [ true, 7, false,, ], [ true, 8, false,, ], [ true, 9, false,, ], 
-  [ true, 10, false,, ], [ true, 11, false,, ], [ true, 12, false,, ], 
-  [ true, 13, false,, ], [ true, 14, true,, ], [ true, 15, false,, ], 
-  [ true, 16, false,, ], [ true, 17, false,, ], [ true, 18, false,, ] ]
+[ [ true, 1, true ], [ true, 2, false ], [ true, 3, true ], 
+  [ true, 4, false ], [ true, 5, false ], [ true, 6, false ], 
+  [ true, 7, false ], [ true, 8, false ], [ true, 9, false ], 
+  [ true, 10, false ], [ true, 11, false ], [ true, 12, false ], 
+  [ true, 13, false ], [ true, 14, true ], [ true, 15, false ], 
+  [ true, 16, false ], [ true, 17, false ], [ true, 18, false ] ]
 gap> READ_ALL_COMMANDS(InputTextString("Print(\"Hello, world\");"), false, true, false );
 [ [ true,, false,, "Hello, world" ] ]
 gap> READ_ALL_COMMANDS(InputTextString("SymmetricGroup(42); Print(\"Hello, world\");"), false, true, ViewObj );

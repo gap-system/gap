@@ -87,40 +87,43 @@ static Int READ_COMMAND(Obj *evalResult)
 *F  FuncREAD_ALL_COMMANDS( <self>, <instream>, <echo>, <capture>, <outputFunc> )
 **
 **  FuncREAD_ALL_COMMANDS attempts to execute all statements read from the
-**  stream <instream> and returns fail if the stream cannot be opened, or a list
-**  of lists, each entry of which reflects the result of the execution of one
-**  statement.
+**  stream <instream>. It returns 'fail' if the stream cannot be opened,
+**  otherwise a list of lists, each entry of which reflects the result of the
+**  execution of one statement.
 **
-**  If the parameter <echo> is True, then the statements are echoed to the
+**  If the parameter <echo> is 'true', then the statements are echoed to the
 **  current output.
 **
-**  If the parameter <capture> is True, then any output occurring during
-**  execution of a statement, including the output of <outputFunc>, is captured
-**  into a string.
+**  If the parameter <capture> is 'true', then any output occurring during
+**  execution of a statement, including the output of <outputFunc>, is
+**  captured into a string.
 **
 **  If <resultCallback> is a function, then this function is called on every
-**  statement result, otherwise this parameter is ignored.
-**  Possible outputs of this function are captured if <capture> is True.
+**  statement result, otherwise this parameter is ignored. Possible outputs of
+**  this function are captured if <capture> is 'true'.
 **
-**  The results are returned as lists of length five, the structure of which
-**  is explained below.
+**  The results are returned as lists of length at most five, the structure of
+**  which is explained below:
 **
-**  The first entry is either true if the statement was executed successfully,
-**  and false otherwise.
+**  - The first entry is 'true' if the statement was executed successfully,
+**    and 'false' otherwise.
 **
-**  If the first entry is true, then the second entry is bound to the result
-**  of the statement if there was one, and unbound otherwise.
+**  - If the first entry is 'true', then the second entry is bound to the
+**    result of the statement if there was one, and unbound otherwise.
 **
-**  The third entry is true if the statement ended in a dual semicolon.
+**  - The third entry is 'true' if the statement ended in a dual semicolon,
+**    and 'false' otherwise.
 **
-**  The fourth entry contains the return value of <resultCallback> if applicable.
+**  - The fourth entry contains the return value of <resultCallback> if
+**    applicable.
 **
-**  The fifth entry contains the captured output as a string, if <capture> is True.
+**  - The fifth entry contains the captured output as a string, if <capture>
+**    is 'true'.
 **
 **  This function is currently used in interactive tools such as the GAP
-**  Jupyter kernel to execute cells and is likely to be replaced by a
-**  function that can read a single command from a stream without losing the
-**  rest of its content.
+**  Jupyter kernel to execute cells and is likely to be replaced by a function
+**  that can read a single command from a stream without losing the rest of
+**  its content.
 */
 Obj FuncREAD_ALL_COMMANDS(
     Obj self, Obj instream, Obj echo, Obj capture, Obj resultCallback)
@@ -163,24 +166,21 @@ Obj FuncREAD_ALL_COMMANDS(
 
         if (!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))) {
             result = NEW_PLIST(T_PLIST, 5);
-            SET_LEN_PLIST(result, 5);
-            SET_ELM_PLIST(result, 1, False);
+            AssPlist(result, 1, False);
             PushPlist(resultList, result);
 
             if (!(status & STATUS_ERROR)) {
 
-                SET_ELM_PLIST(result, 1, True);
-                SET_ELM_PLIST(result, 3, dualSemicolon ? True : False);
+                AssPlist(result, 1, True);
+                AssPlist(result, 3, dualSemicolon ? True : False);
 
                 if (evalResult) {
-                    SET_ELM_PLIST(result, 2, evalResult);
-                    CHANGED_BAG(result);
+                    AssPlist(result, 2, evalResult);
                 }
 
                 if (evalResult && IS_FUNC(resultCallback) && !dualSemicolon) {
                     Obj tmp = CALL_1ARGS(resultCallback, evalResult);
-                    SET_ELM_PLIST(result, 4, tmp);
-                    CHANGED_BAG(result);
+                    AssPlist(result, 4, tmp);
                 }
             }
             // Capture output
@@ -189,8 +189,7 @@ Obj FuncREAD_ALL_COMMANDS(
                 Pr("\03", 0L, 0L);
                 copy = CopyToStringRep(outstreamString);
                 SET_LEN_STRING(outstreamString, 0);
-                SET_ELM_PLIST(result, 5, copy);
-                CHANGED_BAG(result);
+                AssPlist(result, 5, copy);
             }
         }
     } while (!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT)));
