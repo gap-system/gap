@@ -861,6 +861,10 @@ InstallTrueMethod( IsPolycyclicGroup,
 ##
 DeclareAttribute( "AbelianInvariants", IsGroup );
 
+# minimal number of generators for abelianization. Used internally to check
+# whether it is worth to attempt to reduce generator number
+DeclareAttribute( "AbelianRank", IsGroup );
+
 #############################################################################
 ##
 #A  IsInfiniteAbelianizationGroup( <G> )

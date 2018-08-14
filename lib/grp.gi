@@ -701,6 +701,18 @@ InstallMethod( AbelianInvariants,
     return inv;
     end );
 
+InstallMethod( AbelianRank ,"generic method for groups", [ IsGroup ],0,
+function(G)
+local a,r;
+  a:=AbelianInvariants(G);
+  r:=Number(a,IsZero);
+  a:=Filtered(a,x->not IsZero(x));
+  if Length(a)=0 then return r; fi;
+  a:=List(Set(a,SmallestRootInt),p->Number(a,x->x mod p=0));
+  return r+Maximum(a);
+end);
+
+
 #############################################################################
 ##
 #M  IsInfiniteAbelianizationGroup( <G> ) 
