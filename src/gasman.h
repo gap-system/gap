@@ -885,42 +885,6 @@ extern void MarkArrayOfBags(const Bag array[], UInt count);
 
 /****************************************************************************
 **
-*F  InitSweepFuncBags(<type>,<sweep-func>)  . . . . install sweeping function
-**
-**  'InitSweepFuncBags( <type>, <sweep-func> )'
-**
-**  'InitSweepFuncBags' installs the function <sweep-func> as sweeping
-**  function for bags of type <type>.  
-**
-**  A sweeping function is a function that takes two arguments src and dst of
-**  type Bag *, and  a third, length of type  UInt, and returns nothing. When
-**  it  is called, src points to  the start of the data  area of one bag, and
-**  dst to another. The function should copy the  data from the source bag to
-**  the destination, making any appropriate changes.
-**
-**  Those functions are applied during  the garbage collection to each marked
-**  bag, i.e., bags that are assumed  to be still live  to move them to their
-**  new  position. The  intended  use is  for  weak  pointer bags, which must
-**  remove references to identifiers of  any half-dead objects. 
-**
-**  If no function  is installed for a TNum,  then the data is  simply copied
-**  unchanged and this is done particularly quickly 
-*/
-
-#ifdef USE_GASMAN
-typedef void            (* TNumSweepFuncBags ) (
-            Bag  *               src,
-            Bag *                dst,
-            UInt                 length);
-
-extern  void            InitSweepFuncBags (
-            UInt                tnum,
-            TNumSweepFuncBags    sweep_func );
-#endif
-
-
-/****************************************************************************
-**
 *F  InitGlobalBag(<addr>) . . . . . inform Gasman about global bag identifier
 **
 **  'InitGlobalBag( <addr>, <cookie> )'
