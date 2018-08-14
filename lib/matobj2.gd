@@ -119,7 +119,25 @@
 ############################################################################
 
 
-# The following are guaranteed to be always set or cheaply calculable:
+#############################################################################
+##
+#A  BaseDomain( <vector> )
+##
+##  <#GAPDoc Label="MatObj_BaseDomain_IsVectorObj">
+##  <ManSection>
+##  <Attr Name="BaseDomain" Arg='vector'/>
+##
+##  <Description>
+##  The object <A>vector</A> is defined over.
+##  Note that not all entries of <A>vector</A> necessarily lie in
+##  <C>BaseDomain( <A>vector</A> )</C> with respect to <C>in</C>.
+##  E.g. <A>vector</A> can be defined over a polynomial ring but also contain
+##  integers
+##  (see section&nbsp;<Ref Sect="Fundamental Ideas and Rules"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "BaseDomain", IsVectorObj );
 # Typically, the base domain will be a ring, it need not be commutative
 # nor associative. For non-associative base domains, the behavior of
@@ -133,6 +151,22 @@ DeclareAttribute( "ZeroOfBaseDomain", IsVectorObj );
 # non-plist vector or matrix then calling 'OneOfBaseDomain' or
 # 'ZeroOfBaseDomain' is not more expensive than calling 'BaseDomain' first.
 
+
+#############################################################################
+##
+#A  Length( <vector> )
+##
+##  <#GAPDoc Label="MatObj_Length_IsVectorObj">
+##  <ManSection>
+##  <Attr Name="Length" Arg='vector'/>
+##
+##  <Description>
+##  returns the length of the vector object <A>vector</A>, which is defined to
+##  be the number of entries of <A>vector</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "Length", IsVectorObj );    # can be zero
 # We have to declare this since a row vector is not necessarily
 # a list! Correspondingly we have to use InstallOtherMethod
@@ -595,7 +629,25 @@ DeclareOperation( "DistanceOfVectors", [IsVectorObj, IsVectorObj] );
 # Attributes of matrices:
 ############################################################################
 
-# The following are guaranteed to be always set or cheaply calculable:
+#############################################################################
+##
+#A  BaseDomain( <matrix> )
+##
+##  <#GAPDoc Label="MatObj_BaseDomain_IsMatrixObj">
+##  <ManSection>
+##  <Attr Name="BaseDomain" Arg='matrix'/>
+##
+##  <Description>
+##  The object <A>matrix</A> is defined over.
+##  Note that not all entries of <A>matrix</A> necessarily lie in
+##  <C>BaseDomain( <A>matrix</A> )</C> with respect to <C>in</C>.
+##  E.g. <A>matrix</A> can be defined over a polynomial ring but also contain
+##  integers
+##  (see section&nbsp;<Ref Sect="Fundamental Ideas and Rules"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareAttribute( "BaseDomain", IsMatrixObj );
 # Typically, the base domain will be a ring, it need not be commutative
 # nor associative. For non-associative base domains, the behavior of
