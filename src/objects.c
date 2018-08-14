@@ -498,6 +498,12 @@ Obj CopyObjPosObj (
     }
 
     /* leave a forwarding pointer                                          */
+    // Note that unlike for plists, ranges etc., we cannot simply restore the
+    // overwritten value (which points to the type of <obj>) by copying the
+    // value from <copy>, as the type may have changed in case we are making
+    // an immutable copy of a mutable object. Hence the forwarding pointer
+    // actually points to a plist with two entries: the overwritten value, and
+    // the actual forwarding pointer.
     tmp = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( tmp, 2 );
     SET_ELM_PLIST(tmp, 1, CONST_ADDR_OBJ(obj)[0]);
@@ -601,6 +607,12 @@ Obj CopyObjComObj (
     }
 
     /* leave a forwarding pointer                                          */
+    // Note that unlike for plists, ranges etc., we cannot simply restore the
+    // overwritten value (which points to the type of <obj>) by copying the
+    // value from <copy>, as the type may have changed in case we are making
+    // an immutable copy of a mutable object. Hence the forwarding pointer
+    // actually points to a plist with two entries: the overwritten value, and
+    // the actual forwarding pointer.
     tmp = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( tmp, 2 );
     SET_ELM_PLIST(tmp, 1, CONST_ADDR_OBJ(obj)[0]);
@@ -703,6 +715,12 @@ Obj CopyObjDatObj (
     }
 
     /* leave a forwarding pointer                                          */
+    // Note that unlike for plists, ranges etc., we cannot simply restore the
+    // overwritten value (which points to the type of <obj>) by copying the
+    // value from <copy>, as the type may have changed in case we are making
+    // an immutable copy of a mutable object. Hence the forwarding pointer
+    // actually points to a plist with two entries: the overwritten value, and
+    // the actual forwarding pointer.
     tmp = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( tmp, 2 );
     SET_ELM_PLIST(tmp, 1, CONST_ADDR_OBJ(obj)[0]);
