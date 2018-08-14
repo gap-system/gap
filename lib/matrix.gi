@@ -31,6 +31,11 @@ InstallOtherMethod( \[\]\:\=, [ IsMatrix and IsMutable, IsPosInt, IsPosInt, IsOb
     1-RankFilter(IsMatrix),
     function (m,i,j,o) m[i][j]:=o; end );
 
+InstallOtherMethod( Unpack,
+    [ IsMatrix ],
+    ShallowCopy );
+
+
 #############################################################################
 ##
 #F  PrintArray( <array> ) . . . . . . . . . . . . . . . . pretty print matrix
@@ -158,7 +163,7 @@ InstallMethod( IsGeneralizedCartanMatrix,
 ##
 #M  IsDiagonalMat(<mat>)
 ##
-InstallMethod( IsDiagonalMat,
+InstallOtherMethod( IsDiagonalMat,
     "for a matrix",
     [ IsMatrix ],
     function( mat )
@@ -182,7 +187,7 @@ InstallOtherMethod( IsDiagonalMat, [ IsEmpty ], ReturnTrue );
 ##
 #M  IsUpperTriangularMat(<mat>)
 ##
-InstallMethod( IsUpperTriangularMat,
+InstallOtherMethod( IsUpperTriangularMat,
     "for a matrix",
     [ IsMatrix ],
     function( mat )
@@ -203,7 +208,7 @@ InstallMethod( IsUpperTriangularMat,
 ##
 #M  IsLowerTriangularMat(<mat>)
 ##
-InstallMethod( IsLowerTriangularMat,
+InstallOtherMethod( IsLowerTriangularMat,
     "for a matrix",
     [ IsMatrix ],
     function( mat )
@@ -250,7 +255,7 @@ DeclareRepresentation( "IsNullMapMatrix", IsMatrix, [  ] );
 BindGlobal( "NullMapMatrix",
     Objectify( NewType( ListsFamily, IsNullMapMatrix ), MakeImmutable([  ]) ) );
 
-InstallMethod( Length,
+InstallOtherMethod( Length,
     "for null map matrix",
     [ IsNullMapMatrix ],
     null -> 0 );
@@ -1214,7 +1219,7 @@ end );
 ##  Since the rows are homogeneous and nonempty,
 ##  one can also access the first entry in the first row.
 ##
-InstallMethod( BaseDomain,
+InstallOtherMethod( BaseDomain,
     "generic method for a row vector",
     [ IsRowVector ],
     DefaultRing );
@@ -1229,7 +1234,7 @@ InstallOtherMethod( ZeroOfBaseDomain,
     [ IsRowVector ],
     v -> Zero( v[1] ) );
 
-InstallMethod( BaseDomain,
+InstallOtherMethod( BaseDomain,
     "generic method for a matrix that is a plain list",
     [ IsMatrix and IsPlistRep ],
     mat -> BaseDomain( mat[1] ) );
@@ -1606,7 +1611,7 @@ InstallMethod( DeterminantMatDivFree,
 ##
 #M  DimensionsMat( <mat> )
 ##
-InstallMethod( DimensionsMat,
+InstallOtherMethod( DimensionsMat,
     [ IsMatrix ],
     function( A )
     if IsRectangularTable(A) then
@@ -1928,7 +1933,7 @@ InstallMethod( MutableCopyMat, "generic method", [IsList],
 ##
 #M  MutableTransposedMat( <mat> ) . . . . . . . . . .  transposed of a matrix
 ##
-InstallMethod( MutableTransposedMat,
+InstallOtherMethod( MutableTransposedMat,
     "generic method",
     [ IsRectangularTable and IsMatrix ],
     function( mat )
@@ -2238,7 +2243,7 @@ end );
 ##
 #M  RankMat( <mat> )  . . . . . . . . . . . . . . . . . . .  rank of a matrix
 ##
-InstallMethod( RankMatDestructive,
+InstallOtherMethod( RankMatDestructive,
     "generic method for mutable matrices",
     [ IsMatrix and IsMutable ],
     function( mat )
@@ -2249,7 +2254,7 @@ InstallMethod( RankMatDestructive,
     return mat;
     end );
 
-InstallMethod( RankMat,
+InstallOtherMethod( RankMat,
     "generic method for matrices",
     [ IsMatrix ],
     mat -> RankMatDestructive( MutableCopyMat( mat ) ) );
@@ -2641,7 +2646,7 @@ end );
 ##
 #M  KroneckerProduct( <mat1>, <mat2> )
 ##
-InstallMethod( KroneckerProduct,
+InstallOtherMethod( KroneckerProduct,
     "generic method for matrices",
     IsIdenticalObj,
     [ IsMatrix, IsMatrix ],

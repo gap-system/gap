@@ -236,31 +236,6 @@ DeclareAttribute( "DefaultFieldOfMatrix", IsMatrix );
 
 #############################################################################
 ##
-#A  BaseDomain( <v> )
-#A  BaseDomain( <mat> )
-##
-##  <ManSection>
-##  <Attr Name="BaseDomain" Arg='v'/>
-##  <Attr Name="BaseDomain" Arg='mat'/>
-##
-##  <Description>
-##  For a row vector <A>v</A> that is a (necessarily nonempty) plain list,
-##  the default <Ref Attr="BaseDomain"/> method returns the default ring
-##  of <A>v</A>,
-##  see <Ref Attr="DefaultRing" Label="for ring elements"/>.
-##  <P/>
-##  For a matrix <A>mat</A> that is a (necessarily nonempty) plain list,
-##  the default <Ref Attr="BaseDomain"/> method returns the value
-##  for the first row of <A>mat</A>.
-##  </Description>
-##  </ManSection>
-##
-DeclareAttribute( "BaseDomain", IsRowVector );
-DeclareAttribute( "BaseDomain", IsMatrix );
-
-
-#############################################################################
-##
 #A  DepthOfUpperTriangularMatrix( <mat> )
 ##
 ##  <#GAPDoc Label="DepthOfUpperTriangularMatrix">
