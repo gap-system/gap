@@ -30,7 +30,6 @@ InstallMethod( \[\]\:\=, "for a matrix object, two positions, and an object",
   end );
 
 
-
 InstallMethod( WeightOfVector, "generic method",
   [IsVectorObj],
   function(v)
@@ -446,6 +445,117 @@ InstallMethod( TraceMat, "generic method",
     od;
     return s;
   end );
+
+InstallMethod(PositionNonZero,
+  "generic method for a row vector",
+  [IsRowVector],
+  function(vec)
+  local i;
+  for i in [1..Length(vec)] do
+    if not IsZero(vec[i]) then return i; fi;
+  od;
+  return i+1;
+end);
+
+InstallMethod(PositionNonZero,
+  "generic method for a vector object",
+  [ IsVectorObj ],
+  function(vec)
+  local i;
+  for i in [1..Length(vec)] do
+    if not IsZero(vec[i]) then return i; fi;
+  od;
+  return i+1;
+end);
+
+InstallMethod( ListOp,
+  "generic method for a vector object",
+  [ IsVectorObj ],
+  function(vec)
+  local result, i, len;
+  len := Length(vec);
+  result := [];
+  result[len] := vec[len];
+  for i in [ 1 .. len - 1 ] do
+    result[i] := vec[i];
+  od;
+  return result;
+end );
+
+InstallMethod( ListOp,
+  "generic method for a vector object and a function",
+  [ IsVectorObj, IsFunction ],
+  function(vec,func)
+  local result, i, len;
+  len := Length(vec);
+  result := [];
+  result[len] := func(vec[len]);
+  for i in [ 1 .. len - 1 ] do
+    result[i] := func(vec[i]);
+  od;
+  return result;
+end );
+
+InstallMethod( Unpack,
+  "generic method for a vector object",
+  [ IsVectorObj ],
+  ListOp ); ## Potentially slower than a direct implementation,
+            ## but avoids code duplication.
+
+
+InstallMethod( \{\},
+  "generic method for a vector object and a list",
+  [ IsVectorObj, IsList ],
+  function(vec,poss)
+    local vec_list;
+    vec_list := ListOp(vec);
+    vec_list := vec_list{poss};
+    return Vector(vec_list,vec);
+end );
+
+InstallMethod( CopySubVector,
+  "generic method for vectors",
+  [ IsVectorObj and IsMutable, IsList, IsVectorObj, IsList ],
+  function(dst, dcols, src, scols)
+    local i;
+    if not Length( dcols ) = Length( scols ) then
+      Error( "source and destination index lists must be of equal length" );
+      return;
+    fi;
+    for i in [ 1 .. Length( dcols ) ] do
+      dst[dcols[i]] := src[scols[i]];
+    od;
+end );
+
+## Backwards compatible version
+InstallMethod( CopySubVector,
+  "generic method for vectors",
+  [ IsVectorObj, IsVectorObj and IsMutable, IsList, IsList ],
+  function(src, dst, scols, dcols)
+    CopySubVector(dst,dcols,src,scols);
+end );
+
+InstallMethod( Randomize,
+  "generic method for a vector",
+  [ IsVectorObj and IsMutable ],
+  function(vec)
+    local basedomain, i;
+    basedomain := BaseDomain( vec );
+    for i in [ 1 .. Length( vec ) ] do
+        vec[ i ] := Random( basedomain );
+    od;
+end );
+
+InstallMethod( Randomize,
+  "generic method for a vector and a random source",
+  [ IsVectorObj and IsMutable, IsRandomSource ],
+  function(vec, rs)
+    local basedomain, i;
+    basedomain := BaseDomain( vec );
+    for i in [ 1 .. Length( vec ) ] do
+        vec[ i ] := Random( rs, basedomain );
+    od;
+end );
 
 #
 # Compatibility code: Install MatrixObj methods for IsMatrix.
