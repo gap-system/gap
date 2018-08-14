@@ -2341,16 +2341,20 @@ Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr)
 
 /****************************************************************************
 **
-**  DoConstructor0Args( <oper> )
-**
-** I'm not sure if this makes any sense at all
+*F  DoConstructor0Args( <oper> )
+*F  DoConstructor1Args( <oper> )
+*F  DoConstructor2Args( <oper> )
+*F  DoConstructor3Args( <oper> )
+*F  DoConstructor4Args( <oper> )
+*F  DoConstructor5Args( <oper> )
+*F  DoConstructor6Args( <oper> )
+*F  DoConstructorXArgs( <oper> )
 */
-
 
 Obj DoConstructor0Args(Obj oper)
 {
-    return DoOperationNArgs(oper, 0, 0, 1, 0, 0, 0, 0,
-                            0, 0);
+    ErrorQuit("constructors must have at least one argument", 0L, 0L);
+    return 0;
 }
 
 Obj DoConstructor1Args(Obj oper, Obj arg1)
@@ -2391,26 +2395,29 @@ Obj DoConstructor6Args(
                             arg3, arg4, arg5, arg6);
 }
 
-
-/****************************************************************************
-**
-**  DoConstructorXArgs( <oper>, ... )
-*/
 Obj DoConstructorXArgs(Obj self, Obj args)
 {
     ErrorQuit("sorry: cannot yet have X argument constructors", 0L, 0L);
     return 0;
 }
 
+
 /****************************************************************************
 **
-**  DoVerboseConstructor0Args( <oper> )
+*F  DoVerboseConstructor0Args( <oper> )
+*F  DoVerboseConstructor1Args( <oper> )
+*F  DoVerboseConstructor2Args( <oper> )
+*F  DoVerboseConstructor3Args( <oper> )
+*F  DoVerboseConstructor4Args( <oper> )
+*F  DoVerboseConstructor5Args( <oper> )
+*F  DoVerboseConstructor6Args( <oper> )
+*F  DoVerboseConstructorXArgs( <oper> )
 */
 
 Obj DoVerboseConstructor0Args(Obj oper)
 {
-    return DoOperationNArgs(oper, 0, 1, 1, 0, 0,
-                            0, 0, 0, 0);
+    ErrorQuit("constructors must have at least one argument", 0L, 0L);
+    return 0;
 }
 
 Obj DoVerboseConstructor1Args(Obj oper, Obj arg1)
@@ -2452,11 +2459,6 @@ Obj DoVerboseConstructor6Args(
                             arg2, arg3, arg4, arg5, arg6);
 }
 
-
-/****************************************************************************
-**
-**  DoVerboseConstructorXArgs( <oper>, ... )
-*/
 Obj DoVerboseConstructorXArgs(Obj self, Obj args)
 {
     ErrorQuit("sorry: cannot yet have X argument constructors", 0L, 0L);
