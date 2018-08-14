@@ -153,9 +153,10 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     fi;
     # add the number of filters required for each argument
     if IS_CONSTRUCTOR(opr) then
-        if 0 < LEN_LIST(flags)  then
-            rank := rank - RankFilter( flags[ 1 ] );
+        if 0 = LEN_LIST(flags)  then
+            Error(NAME_FUNC(opr),": constructors must have at least one argument");
         fi;
+        rank := rank - RankFilter( flags[ 1 ] );
     else
         for i  in flags  do
             rank := rank + RankFilter( i );

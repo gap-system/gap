@@ -85,9 +85,8 @@ gap> # tracing of constructors
 gap> #
 gap> 
 gap> # create a dummy constructor
-gap> o:=NewConstructor("foobar",[]);
+gap> o:=NewConstructor("foobar",[IsObject]);
 <Constructor "foobar">
-gap> InstallOtherMethod(o,[],{}->[]);
 gap> InstallOtherMethod(o,[IsInt],{arg...}->arg);
 gap> InstallOtherMethod(o,[IsInt,IsInt],{arg...}->arg);
 gap> InstallOtherMethod(o,[IsInt,IsInt],{arg...}->arg);
@@ -97,7 +96,6 @@ gap> InstallOtherMethod(o,[IsInt,IsInt,IsInt,IsInt,IsInt],{arg...}->arg);
 gap> InstallOtherMethod(o,[IsInt,IsInt,IsInt,IsInt,IsInt,IsInt],{arg...}->arg);
 gap> 
 gap> # without tracing
-gap> #o(); # ???
 gap> o(IsInt);
 [ <Category "IsInt"> ]
 gap> o(IsInt,2);
@@ -112,36 +110,34 @@ gap> o(IsInt,2,3,4,5,6);
 [ <Category "IsInt">, 2, 3, 4, 5, 6 ]
 gap> o(IsInt,2,3,4,5,6,7); # not (yet?) supported
 Error, sorry: cannot yet have X argument constructors
-not in any function at *stdin*:72
+not in any function at *stdin*:70
 gap> 
 gap> # with tracing
 gap> TraceMethods( o );
-gap> #o(); # ???
 gap> o(IsInt);
-#I  foobar at *stdin*:56
+#I  foobar at *stdin*:55
 [ <Category "IsInt"> ]
 gap> o(IsInt,2);
-#I  foobar at *stdin*:58
+#I  foobar at *stdin*:57
 [ <Category "IsInt">, 2 ]
 gap> o(IsInt,2,3);
-#I  foobar at *stdin*:59
+#I  foobar at *stdin*:58
 [ <Category "IsInt">, 2, 3 ]
 gap> o(IsInt,2,3,4);
-#I  foobar at *stdin*:60
+#I  foobar at *stdin*:59
 [ <Category "IsInt">, 2, 3, 4 ]
 gap> o(IsInt,2,3,4,5);
-#I  foobar at *stdin*:61
+#I  foobar at *stdin*:60
 [ <Category "IsInt">, 2, 3, 4, 5 ]
 gap> o(IsInt,2,3,4,5,6);
-#I  foobar at *stdin*:62
+#I  foobar at *stdin*:61
 [ <Category "IsInt">, 2, 3, 4, 5, 6 ]
 gap> o(IsInt,2,3,4,5,6,7); # not (yet?) supported
 Error, sorry: cannot yet have X argument constructors
-not in any function at *stdin*:83
+not in any function at *stdin*:80
 gap> UntraceMethods( o );
 gap> 
 gap> # again without tracing
-gap> #o(); # ???
 gap> o(IsInt);
 [ <Category "IsInt"> ]
 gap> o(IsInt,2);
@@ -156,5 +152,5 @@ gap> o(IsInt,2,3,4,5,6);
 [ <Category "IsInt">, 2, 3, 4, 5, 6 ]
 gap> o(IsInt,2,3,4,5,6,7); # not (yet?) supported
 Error, sorry: cannot yet have X argument constructors
-not in any function at *stdin*:94
+not in any function at *stdin*:90
 gap> QUIT;
