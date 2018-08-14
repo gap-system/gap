@@ -536,42 +536,16 @@ local hom,embs,s,k,agens,ad,i,j,perm,dia,ggens,e,tgens,d,m,reco,emba,outs,id;
   return m;
 end);
 
-InstallGlobalFunction(MaxesAlmostSimple,function(G)
-local id,m,epi,cnt,h;
+InstallMethod(MaxesAlmostSimple,"fallback to lattice",true,[IsGroup],0,
+function(G)
+  if ValueOption("cheap")=true then return [];fi;
+  Info(InfoLattice,1,"MaxesAlmostSimple: Fallback to lattice");
+  return MaxesByLattice(G);
+end);
 
-  # is a permutation degree too big?
-  if IsPermGroup(G) then
-    if NrMovedPoints(G)>
-        SufficientlySmallDegreeSimpleGroupOrder(Size(PerfectResiduum(G))) then
-      h:=G;
-      for cnt in [1..5] do
-	epi:=SmallerDegreePermutationRepresentation(h);
-	if NrMovedPoints(Range(epi))<NrMovedPoints(h) then
-	  m:=MaxesAlmostSimple(Image(epi,G));
-	  m:=List(m,x->PreImage(epi,x));
-	  return m;
-	fi;
-	# new group to avoid storing the map
-	h:=Group(GeneratorsOfGroup(G));
-	SetSize(h,Size(G));
-      od;
-    fi;
-
-
-    # Are just finding out that a group is symmetric or alternating?
-    # if so, try to use method that uses data library
-    if 
-    #not (HasIsNaturalSymmetricGroup(G) or HasIsNaturalAlternatingGroup(G)) and
-        (IsNaturalSymmetricGroup(G) or IsNaturalAlternatingGroup(G)) then
-      Info(InfoLattice,1,"MaxesAlmostSimple: Use S_n/A_n");
-      m:=MaximalSubgroupsSymmAlt(G,false);
-      if m<>fail then
-	return m;
-      fi;
-    fi;
-  fi;
-
-  # is the degree bad?
+InstallMethod(MaxesAlmostSimple,"table of marks and linear",true,[IsGroup],0,
+function(G)
+local m,id,epi;
 
   # does the table of marks have it?
   m:=TomDataMaxesAlmostSimple(G);
@@ -595,10 +569,41 @@ local id,m,epi,cnt,h;
     fi;
 
   fi;
+  TryNextMethod();
+end);
 
-  if ValueOption("cheap")=true then return [];fi;
-  Info(InfoLattice,1,"MaxesAlmostSimple: Fallback to lattice");
-  return MaxesByLattice(G);
+InstallMethod(MaxesAlmostSimple,"permutation group",true,[IsPermGroup],0,
+function(G)
+local m,epi,cnt,h;
+
+  # Are we just finding out that a group is symmetric or alternating?
+  # if so, try to use method that uses data library
+  if (IsNaturalSymmetricGroup(G) or IsNaturalAlternatingGroup(G)) then
+    Info(InfoLattice,1,"MaxesAlmostSimple: Use S_n/A_n");
+    m:=MaximalSubgroupsSymmAlt(G,false);
+    if m<>fail then
+      return m;
+    fi;
+  fi;
+
+  # is a permutation degree too big?
+  if NrMovedPoints(G)>
+      SufficientlySmallDegreeSimpleGroupOrder(Size(PerfectResiduum(G))) then
+    h:=G;
+    for cnt in [1..5] do
+      epi:=SmallerDegreePermutationRepresentation(h);
+      if NrMovedPoints(Range(epi))<NrMovedPoints(h) then
+        m:=MaxesAlmostSimple(Image(epi,G));
+        m:=List(m,x->PreImage(epi,x));
+        return m;
+      fi;
+      # re-create group to avoid storing the map
+      h:=Group(GeneratorsOfGroup(G));
+      SetSize(h,Size(G));
+    od;
+  fi;
+
+  TryNextMethod();
 end);
 
 BindGlobal("MaxesType4a",function(w,G,a,t,n)
