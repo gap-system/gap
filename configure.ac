@@ -670,21 +670,8 @@ dnl
 dnl check for the existence of various header files
 dnl
 
-dnl check for stdint.h and the types int8_t, uint8_t etc. it defines
-AC_TYPE_INT8_T
-AC_TYPE_INT16_T
-AC_TYPE_INT32_T
-AC_TYPE_INT64_T
-AC_TYPE_UINT8_T
-AC_TYPE_UINT16_T
-AC_TYPE_UINT32_T
-AC_TYPE_UINT64_T
-
-dnl
 dnl check for functionality related to child process handling,
 dnl including pseudo TTY support, signals, etc.
-dnl
-
 AC_CHECK_HEADERS([termios.h])
 AC_CHECK_HEADERS([sys/ioctl.h sys/resource.h])
 
@@ -709,7 +696,6 @@ AC_CHECK_FUNCS([select])
 
 dnl various functions to deal with child processes
 AC_HEADER_SYS_WAIT
-AC_TYPE_PID_T
 AC_FUNC_FORK
 AC_CHECK_FUNCS([popen])
 
