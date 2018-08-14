@@ -402,25 +402,6 @@ DeclareOperation( "[]", [IsMatrixObj,IsPosInt] );  # <mat>, <pos>
 # for matrices which are not row-lists. Efficient code will have to use MatElm and
 # SetMatElm instead.
 
-# These should probably only be defined for RowListMatrices???
-
-DeclareOperation( "PositionNonZero", [IsMatrixObj] );
-DeclareOperation( "PositionNonZero", [IsMatrixObj, IsInt] );
-
-DeclareOperation( "PositionLastNonZero", [IsMatrixObj] );
-DeclareOperation( "PositionLastNonZero", [IsMatrixObj, IsInt] );
-
-DeclareOperation( "Position", [IsMatrixObj, IsVectorObj] );
-DeclareOperation( "Position", [IsMatrixObj, IsVectorObj, IsInt] );
-
-# This allows for usage of PositionSorted:
-DeclareOperation( "PositionSortedOp", [IsMatrixObj, IsVectorObj] );
-DeclareOperation( "PositionSortedOp",[IsMatrixObj,IsVectorObj,IsFunction]);
-
-# I intentionally left out "PositionNot" here.
-
-# Note that "PositionSet" is a function only for lists. End of story.
-
 # Note that arbitrary matrices need not behave like lists with respect to the 
 # following operations:
 #  Add, Remove, IsBound, Unbind, \{\}\:\=, Append, Concatenation,
