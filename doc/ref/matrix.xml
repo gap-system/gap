@@ -13,7 +13,7 @@
 
 Matrices are represented in &GAP; by lists of row vectors
 (see <Ref Chap="Row Vectors"/>) (for future changes to this
-policy see Chapter <Ref Chap="Matrix objects"/>).
+policy see Chapter <Ref Chap="Vector and Matrix Objects"/>).
 The vectors must all have the same length, and their elements must lie in
 a common ring. However, since checking rectangularness can be expensive
 functions and methods of operations for matrices often will not give an error

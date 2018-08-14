@@ -4,8 +4,8 @@
 <!--   Copyright (C) 2011 The GAP Group                                   -->
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
-<Chapter Label="Matrix objects">
-<Heading>Vector and matrix objects</Heading>
+<Chapter Label="Vector and Matrix Objects">
+<Heading>Vector and Matrix Objects</Heading>
 
 This chapter is work in progress. It will eventually describe the new
 interface to vector and matrix objects.
@@ -20,34 +20,33 @@ To eventually solve
 this problem, this chapter describes a new programming interface to
 vectors and matrices.
 
-<Section>
-    <Heading>Fundamental ideas and rules</Heading>
+<Section Label="Fundamental Ideas and Rules">
+    <Heading>Fundamental Ideas and Rules</Heading>
 
 <#Include Label="MatObj_Overview">
 
 </Section>
 
-<Section>
-    <Heading>Categories of vectors and matrices</Heading>
+<Section Label="Categories of Vectors and Matrices">
+    <Heading>Categories of Vectors and Matrices</Heading>
 
 </Section>
 
-<Section>
-    <Heading>Constructing vector and matrix objects</Heading>
+<Section Label="Constructing Vector and Matrix Objects">
+    <Heading>Constructing Vector and Matrix Objects</Heading>
 </Section>
 
-<Section>
-    <Heading>Operations for row vector objects</Heading>
+<Section Label="Operations for Vector Objects">
+    <Heading>Operations for Vector Objects</Heading>
+</Section>
+
+<Section Label="Operations for Row List Matrix Objects">
+    <Heading>Operations for Row List Matrix Objects</Heading>
 
 </Section>
 
-<Section>
-    <Heading>Operations for row list matrix objects</Heading>
-
-</Section>
-
-<Section>
-    <Heading>Operations for flat matrix objects</Heading>
+<Section Label="Operations for Flat Matrix Objects">
+    <Heading>Operations for Flat Matrix Objects</Heading>
 
 </Section>
 
