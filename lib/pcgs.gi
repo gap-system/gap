@@ -354,7 +354,7 @@ InstallMethod( DepthOfPcElement,
     0,
 
 function( pcgs, elm )
-    return PositionNot( ExponentsOfPcElement( pcgs, elm ), 0 );
+    return PositionNonZero( ExponentsOfPcElement( pcgs, elm ) );
 end );
 
 #############################################################################
@@ -367,7 +367,7 @@ InstallMethod( DepthAndLeadingExponentOfPcElement,
 function( pcgs, elm )
 local e,p;
     e:=ExponentsOfPcElement( pcgs, elm );
-    p:=PositionNot( e, 0 );
+    p:=PositionNonZero( e );
     if p>Length(e) then
       return [p,0];
     else
@@ -528,7 +528,7 @@ function( pcgs, elm )
     local   exp,  dep;
 
     exp := ExponentsOfPcElement( pcgs, elm );
-    dep := PositionNot( exp, 0 );
+    dep := PositionNonZero( exp );
     if Length(exp) < dep  then
         return fail;
     else
