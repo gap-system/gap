@@ -710,6 +710,9 @@ InstallTrueMethod( IsSimpleGroup, IsSporadicSimpleGroup );
 DeclareProperty( "IsAlmostSimpleGroup", IsGroup );
 InstallTrueMethod( IsGroup, IsAlmostSimpleGroup );
 
+# a simple group is almost simple
+InstallTrueMethod( IsAlmostSimpleGroup, IsSimpleGroup );
+
 
 #############################################################################
 ##
@@ -1221,7 +1224,9 @@ DeclareAttribute("TryMaximalSubgroupClassReps",IsGroup,"mutable");
 # utility function in maximal subgroups code
 DeclareGlobalFunction("TryMaxSubgroupTainter");
 DeclareGlobalFunction("DoMaxesTF");
-DeclareGlobalFunction("MaxesAlmostSimple");
+
+# make this an operation to allow for overloading and TryNextMethod();
+DeclareOperation("MaxesAlmostSimple",[IsGroup]);
 
 #############################################################################
 ##
