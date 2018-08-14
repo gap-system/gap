@@ -59,6 +59,9 @@ InstallMethod( NewMatrix,
   [ IsPlistMatrixRep and IsCheckingMatrix, IsRing, IsInt, IsList ],
   function( filter, basedomain, rl, l )
     local m,i,e,filter2;
+
+# TODO: verify that rl actually matches the data in l, if not, show an error
+
     if IsIdenticalObj(IsPlistMatrixRep,filter) then
         filter2 := IsPlistVectorRep;
     else
