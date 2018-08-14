@@ -941,8 +941,8 @@ Obj CopyPlist (
 
     /* copy the subvalues                                                  */
     for ( i = 1; i <= LEN_PLIST(copy); i++ ) {
-        if ( ADDR_OBJ(list)[i] != 0 ) {
-            tmp = COPY_OBJ( ADDR_OBJ(list)[i], mut );
+        if (CONST_ADDR_OBJ(list)[i] != 0) {
+            tmp = COPY_OBJ(CONST_ADDR_OBJ(list)[i], mut);
             ADDR_OBJ(copy)[i] = tmp;
             CHANGED_BAG( copy );
         }
@@ -961,7 +961,7 @@ Obj CopyPlistCopy (
     Obj                 list,
     Int                 mut )
 {
-    return ADDR_OBJ(list)[0];
+    return CONST_ADDR_OBJ(list)[0];
 }
 
 
@@ -985,7 +985,7 @@ void CleanPlistCopy (
     UInt                i;              /* loop variable                   */
 
     /* remove the forwarding pointer                                       */
-    ADDR_OBJ(list)[0] = ADDR_OBJ( ADDR_OBJ(list)[0] )[0];
+    ADDR_OBJ(list)[0] = CONST_ADDR_OBJ(CONST_ADDR_OBJ(list)[0])[0];
 
     /* now it is cleaned                                                   */
     RetypeBag( list, TNUM_OBJ(list) - COPYING );

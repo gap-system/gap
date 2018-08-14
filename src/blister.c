@@ -236,20 +236,18 @@ Obj CopyBlist (
     Int                 mut )
 {
     Obj copy;
-    Obj tmp;
 
     if (!IS_MUTABLE_OBJ(list)) {
         return list;
     }
 
     copy = DoCopyBlist(list, mut);
+
     /* leave a forwarding pointer */
-    tmp = NEW_PLIST( T_PLIST, 2 );
-    SET_LEN_PLIST( tmp, 2 );
-    SET_ELM_PLIST( tmp, 1, CONST_ADDR_OBJ(list)[0] );
-    SET_ELM_PLIST( tmp, 2, copy );
-    ADDR_OBJ(list)[0] = tmp;
+    ADDR_OBJ(list)[0] = copy;
     CHANGED_BAG(list);
+
+    /* now it is copied                                                    */
     RetypeBag( list, TNUM_OBJ(list) + COPYING );
     return copy;
 }
@@ -271,7 +269,7 @@ Obj ShallowCopyBlist ( Obj list)
 */
 Obj CopyBlistCopy(Obj list, Int mut)
 {
-    return ELM_PLIST(CONST_ADDR_OBJ(list)[0], 2);
+    return CONST_ADDR_OBJ(list)[0];
 }
 
 
@@ -292,7 +290,7 @@ void CleanBlist (
 void CleanBlistCopy(Obj list)
 {
     /* remove the forwarding pointer */
-    ADDR_OBJ(list)[0] = ELM_PLIST(CONST_ADDR_OBJ(list)[0], 1);
+    ADDR_OBJ(list)[0] = CONST_ADDR_OBJ(CONST_ADDR_OBJ(list)[0])[0];
 
     /* now it is cleaned */
     RetypeBag(list, TNUM_OBJ(list) - COPYING);

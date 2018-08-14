@@ -207,7 +207,7 @@ Obj CopyPRecCopy (
     Obj                 rec,
     Int                 mut )
 {
-    return ADDR_OBJ(rec)[0];
+    return CONST_ADDR_OBJ(rec)[0];
 }
 
 void CleanPRec (

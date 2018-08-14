@@ -697,11 +697,7 @@ Obj CopyObjWPObj (
     }
 
     /* leave a forwarding pointer                                          */
-    tmp = NEW_PLIST( T_PLIST, 2 );
-    SET_LEN_PLIST( tmp, 2 );
-    SET_ELM_PLIST( tmp, 1, CONST_ADDR_OBJ(obj)[0] );
-    SET_ELM_PLIST( tmp, 2, copy );
-    ADDR_OBJ(obj)[0] = tmp;
+    ADDR_OBJ(obj)[0] = copy;
     CHANGED_BAG(obj);
 
     /* now it is copied                                                    */
@@ -808,7 +804,7 @@ Obj CopyObjWPObjCopy (
     Obj                 obj,
     Int                 mut )
 {
-    return ELM_PLIST( CONST_ADDR_OBJ(obj)[0], 2 );
+    return CONST_ADDR_OBJ(obj)[0];
 }
 
 
@@ -823,8 +819,7 @@ void CleanObjWPObjCopy (
     Obj                 elm;            /* subobject                       */
 
     /* remove the forwarding pointer                                       */
-    ADDR_OBJ(obj)[0] = ELM_PLIST( CONST_ADDR_OBJ(obj)[0], 1 );
-    CHANGED_BAG(obj);
+    ADDR_OBJ(obj)[0] = CONST_ADDR_OBJ(CONST_ADDR_OBJ(obj)[0])[0];
 
     /* now it is cleaned                                                   */
     RetypeBag( obj, TNUM_OBJ(obj) - COPYING );
