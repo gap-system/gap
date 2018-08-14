@@ -30,6 +30,27 @@ InstallMethod( \[\]\:\=, "for a matrix object, two positions, and an object",
   end );
 
 
+InstallMethod( OneOfBaseDomain,
+    "generic method for IsVectorObj",
+    [ IsVectorObj ],
+    v -> One( BaseDomain( v ) ) );
+
+InstallMethod( ZeroOfBaseDomain,
+    "generic method for IsVectorObj",
+    [ IsVectorObj ],
+    v -> Zero( BaseDomain( v ) ) );
+
+InstallMethod( OneOfBaseDomain,
+    "generic method for IsMatrixObj",
+    [ IsMatrixObj ],
+    M -> One( BaseDomain( M ) ) );
+
+InstallMethod( ZeroOfBaseDomain,
+    "generic method for IsMatrixObj",
+    [ IsMatrixObj ],
+    M -> Zero( BaseDomain( M ) ) );
+
+
 InstallMethod( WeightOfVector, "generic method",
   [IsVectorObj],
   function(v)
