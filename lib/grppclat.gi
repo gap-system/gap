@@ -1201,7 +1201,7 @@ InstallMethod(CharacteristicSubgroups,"solvable, automorphisms",true,
   [IsGroup and IsSolvableGroup],0,
 function(G)
 local A,s;
-  if Length(AbelianInvariants(G))<5 then
+  if AbelianRank(G)<5 then
     TryNextMethod();
   fi;
   A:=AutomorphismGroup(G);

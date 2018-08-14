@@ -1267,8 +1267,7 @@ local G,cl,lcl,len,comb,combc,com,a,cnt,s,alltwo;
   #create just a list of ordinary classes.
   lcl:=List(cl,i->Concatenation(List(i,j->j.classes)));
   len:=1;
-  len:=Maximum(1,Length(MinimalGeneratingSet(
-		    Image(IsomorphismPcGroup((G/DerivedSubgroup(G))))))-1);
+  len:=Maximum(1,AbelianRank(G)-1);
   while true do
     len:=len+1;
     Info(InfoMorph,2,"Trying length ",len);
@@ -2188,8 +2187,8 @@ local m;
     return fail;
   fi;
 
-  if (Length(AbelianInvariants(G))>2 or Length(SmallGeneratingSet(G))>2) and Size(RadicalGroup(G))>1 then
-    # In place until a proper implementation of Cannon/Holt automorphism is
+  if (AbelianRank(G)>2 or Length(SmallGeneratingSet(G))>2) and Size(RadicalGroup(G))>1 then
+    # In place until a proper implementation of Cannon/Holt isomorphism is
     # made available.
     return PatheticIsomorphism(G,H);
   fi;
