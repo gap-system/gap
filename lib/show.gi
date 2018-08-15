@@ -42,6 +42,7 @@ NewView := function(obj)
     local stream;
     stream := OutputTextFile("*stdout*", true);
     ViewObjStream(stream, obj);
+    CloseStream(stream);
 end;
 
 ############################################################################
