@@ -1713,7 +1713,8 @@ static void SaveHandler( ObjFunc hdlr )
 	  Pr("No cookie for Handler -- workspace will be corrupt\n",0,0);
 	  SaveCStr("");
 	}
-      SaveCStr(cookie);
+      else
+        SaveCStr(cookie);
     }
 }
 
