@@ -263,8 +263,8 @@ endif # end of HPCGAP specific code
 ########################################################################
 
 # OBJS shall contain the names of all object files that constitute GAP.
-# So turn all src/*.c and gen/*.c file names in SOURCES into obj/*.lo
-OBJS = $(patsubst gen/%.c,obj/%.lo,$(patsubst src/%.c,obj/%.lo,$(SOURCES)))
+# So turn all FOO/*.c file names in SOURCES into obj/FOO/*.lo
+OBJS = $(patsubst %.c,obj/%.lo,$(SOURCES))
 
 # ensure config.h is built before the compilers gets invoked
 $(OBJS): gen/config.h
@@ -344,16 +344,7 @@ DEPFLAGS = -MQ "$@" -MMD -MP -MF $(DEPFILE)
 COMPILE=$(LIBTOOL) --mode=compile $(CC)
 
 # Build rule for C source files
-# Disabled for HPC-GAP, to ensure we always use the output of ward
-# and not the original source files
-ifeq ($(HPCGAP),no)
-obj/%.lo: src/%.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS libtool
-	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
-	$(QUIET_CC)$(COMPILE) $(DEPFLAGS) $(GAP_CFLAGS) $(GAP_CPPFLAGS) -c $< -o $@
-endif
-
-# Build rule for generated C source files
-obj/%.lo: gen/%.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS libtool
+obj/%.lo: %.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS libtool
 	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
 	$(QUIET_CC)$(COMPILE) $(DEPFLAGS) $(GAP_CFLAGS) $(GAP_CPPFLAGS) -c $< -o $@
 
