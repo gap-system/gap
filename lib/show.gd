@@ -40,7 +40,6 @@ DeclareOperation("ViewObjStream", [IsOutputStream, IsObject]);
 ##  More detailed information can be obtained by <Ref Func="ShowObj"/>
 ##  </Description>
 ##  </ManSection>
-##  Nicely formatted output
 ##
 DeclareOperation("DisplayObjStream", [IsOutputStream, IsObject]);
 
