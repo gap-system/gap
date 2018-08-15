@@ -1074,8 +1074,6 @@ the last release.)
    Since ComplementClasses is defined in Polycyclic package, its authors 
    are notified.
 -4 `Omega: remark ``@At the moment methods exist only for abelian G and n=1.@''
--4 `PRump': remark ``@example missing@''
--4 `IsPSolvable': remark ``@Currently no method is installed!@''
 -3 `ConjugacyClassSubgroups': Is this name needed at all--why not simply use 
    `ConjugacyClass'? (Do not forget to remove the `[]' method, as promised.)
 -3 What is the recommended way to compute representatives of classes of
