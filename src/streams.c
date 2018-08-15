@@ -125,8 +125,7 @@ static Int READ_COMMAND(Obj *evalResult)
 **  that can read a single command from a stream without losing the rest of
 **  its content.
 */
-Obj FuncREAD_ALL_COMMANDS(
-    Obj self, Obj instream, Obj echo, Obj capture, Obj resultCallback)
+Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
 {
     ExecStatus status;
     UInt       dualSemicolon;
@@ -201,6 +200,13 @@ Obj FuncREAD_ALL_COMMANDS(
 
     return resultList;
 }
+
+Obj FuncREAD_ALL_COMMANDS(
+    Obj self, Obj instream, Obj echo, Obj capture, Obj resultCallback)
+{
+    return READ_ALL_COMMANDS(instream, echo, capture, resultCallback);
+}
+
 
 /*
  Returns a list with one or two entries. The first
