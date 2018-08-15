@@ -1127,11 +1127,16 @@ void FinishBags( void )
 **  in global variables. It also allocates the initial workspace, and sets up
 **  the linked list of available masterpointer.
 */
-TNumExtraMarkFuncBags   ExtraMarkFuncBags;
-
 static Bag * StackBottomBags;
 
 static UInt StackAlignBags;
+
+static TNumExtraMarkFuncBags ExtraMarkFuncBags;
+void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func)
+{
+    ExtraMarkFuncBags = func;
+}
+
 
 void            InitBags (
     UInt                initial_size,

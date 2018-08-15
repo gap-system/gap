@@ -1003,6 +1003,12 @@ extern  void            InitCollectFuncBags (
             TNumCollectFuncBags after_func );
 #endif
 
+// ExtraMarkFuncBags, if not NULL, is called during garbage collection
+// This is used for integrating GAP (possibly linked as a shared library) with
+// other code bases which use their own form of garbage collection. For
+// example, with Python (for SageMath).
+typedef void (*TNumExtraMarkFuncBags)(void);
+extern void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func);
 
 /****************************************************************************
 **
@@ -1030,8 +1036,6 @@ extern  void            InitCollectFuncBags (
 **  only be at addresses that are a multiple of 'sizeof(Bag)'. This value
 **  depends on the machine, the operating system, and the compiler.
 */
-typedef void (*TNumExtraMarkFuncBags)(void);
-
 extern void InitBags(UInt initialSize, Bag * stackStart, UInt stackAlign);
 
 /****************************************************************************
