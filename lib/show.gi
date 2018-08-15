@@ -38,7 +38,7 @@ NewViewString := function(obj)
 end;
 
 # A possible implementation for View if ViewObjStream has a method installed
-NewView := function(obj)
+NewViewObj := function(obj)
     local stream;
     stream := OutputTextFile("*stdout*", true);
     ViewObjStream(stream, obj);
