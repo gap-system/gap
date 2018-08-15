@@ -28,22 +28,24 @@ function(stream, obj)
 end);
 
 # A possible implementation for ViewString
-# (once ViewObj with a stream parameter is the default)
-NewViewString := function(obj)
+# (once ViewObjStream is the default)
+BindGlobal("AlternateViewString",
+function(obj)
    local res, stream;
    res := "";
    stream := OutputTextString(res, true);
    ViewObj(stream, obj);
    return res;
-end;
+end);
 
-# A possible implementation for View if ViewObj has a method installed
-NewViewObj := function(obj)
+# A possible implementation for View if ViewObjStream has a method installed
+BindGlobal("AlternateViewObj",
+function(obj)
     local stream;
     stream := OutputTextFile("*stdout*", true);
     ViewObj(stream, obj);
     CloseStream(stream);
-end;
+end);
 
 ############################################################################
 ##
