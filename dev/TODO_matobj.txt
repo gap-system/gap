@@ -1,0 +1,166 @@
+Tasks for MatrixObj
+===================
+
+Design Decisions
+===================
+
+- Decide the relation between 'IsMatrix' and 'IsMatrixObj'.
+
+  (September 08th)
+  We are going to use the following setup:
+  - 'IsMatrixObj' implies 'IsMatrix'.
+  - 'IsMatrixObj' does not imply 'IsOrdinaryMatrix'.
+  - All current implementations of 'IsMatrixObj' representations
+    are in fact intended for matrices with the ``usual'' matrix product
+    and hence get the filter 'IsOrdinaryMatrix' (explicitly)
+  - Whenever a method requires that some of its arguments are matrices
+    that have to be multiplied via the ``usual'' matrix product,
+    the filter 'IsOrdinaryMatrix' must be required for these arguments.
+
+  (Thomas is going to make the necessary changes.)
+
+- When multiplying PlistMatrixObjs we check whether the BaseDomains are
+  identical. Should we adopt this everywhere?
+
+- Decide and document what `ShallowCopy` should do for IsVectorObj 
+  and IsMatrixObj objects. 
+  Idea: For IsVectorObj define and document similar behaviour as for
+  plain lists. For IsMatrixObj document it explicitly as undefined
+  (but some implementations may provide a method); suggest to use
+  `MutableCopyMat` for IsMatrixObj objects.
+
+- matobj2.gd states that +,-,*,<,=, AddRowVector, AddMultVector are possible
+  for vectors over the same BaseDomain and equal lengths.
+  Should this mean 'only if'?
+
+  (For example objects in 'Is8BitVectorRep' admit arithmetical operations
+  when the lengths are different.  I would say that the general documentation
+  should define the behaviour only for same lengths and equal BaseDomain,
+  and say that special vector representations may support more general
+  cases.)
+  
+- Attributes for 'IsMatrixObj' objects:
+
+  *Storing* rank, determinant, etc. makes sense only for immutable objects;
+  it would be dangerous/wrong to store such information in mutable matrices.
+  We can still declare 'RankMat', 'DeterminantMat', etc. as attributes,
+  since the feature to *store* attributes is deactivated unless one sets
+  the filter 'IsAttributeStoringRep' or installs special setter methods.
+  Thus we could document that we recommend to implement new kinds of matrix
+  objects in one of the following ways:
+
+  1. As always *immutable* objects,
+     with the possibility to set the filter 'IsAttributeStoringRep' or to
+     install special attribute setter methods,
+
+  2. as copyable objects (that is, with the possibility to create mutable
+     matrices);
+     here the filter 'IsAttributeStoringRep' should not be set,
+     and special attribute setter methods should better not be installed.
+
+  Note that 'IsMatrixObj' does currently imply 'IsCopyable'.
+  We could drop 'IsCopyable' from the general 'IsMatrixObj' definition,
+  and set it whenever mutable versions shall be supported.
+  (For example, if the objects returned by 'BlockMatrix' would not be lists
+  then one could think about removing 'IsCopyable' from their type.
+  Currently 'IsCopyable' is set, and 'ShallowCopy' is defined to return
+  a deep copy represented via plists.)
+
+
+Changes to IsMatrixObj
+===================
+
+- If the identity of the 'BaseDomain's of two matrices is a necessary
+  condition for the applicability of (generic) methods,
+  for example for 'KroneckerProduct',
+  then the 'BaseDomain' for plists of plists must be as large as possible,
+  in order to make these methods.
+  For plists of plists of cyclotomics, 'Cyclotomics' would be suitable.
+  For plists of plists of FFE elements, we do not have analogous objects
+  (one for each positive characteristic), but we could create them,
+  and for matrices of polynomials etc., things are getting complicated.
+  Alternatively, we could take the *family of the matrix entries* as the
+  'BaseDomain':
+  'One', 'Zero', 'Characteristic' work in principle,
+  'IsFinite', 'Size', '\in' could be provided.
+  (With this choice, computing the 'BaseDomain' would be cheap, as required.)
+  
+- introduce 'OneOfBaseDomain', 'ZeroOfBaseDomain' (done)
+
+- Define and implement 'EmptyMatrix' as IsMatrixObj
+
+- Define, document and implement generic methods mentioned in matobj{1,2}.gd
+
+- Provide test code.
+
+- Provide further kinds of vectors/matrices.
+
+- Rename *RowVector to *Vector like AddRowVector to AddVector
+
+
+Adapting the library
+===================
+
+- Change method installations that match several declarations
+  since 'IsMatrix' implies 'IsMatrixObj'.
+  (For example, 'Length' is declared for 'IsList', 'IsVectorObj',
+  and 'IsMatrixObj'.
+  So 'Length' methods for 'IsMatrix' match two declarations.)
+
+  (Thomas is going to do this.)
+
+- In the (about 240) library methods that *require* 'IsMatrix',
+  adjust the code according to the 'IsMatrixObj' interface.
+
+- Get rid of 'Zero(m[1][1])', 'm[i][j]', and working with rows.
+
+- In the (about 90) library methods that *call* 'IsMatrix',
+  decide if one can use 'IsMatrixObj' instead.
+
+- Change 'm[i][j]' to 'm[i,j]'.
+  (Only where really matrices are affected?)
+
+- Check the library methods that *create* matrices:
+  What can be done in order to choose a suitable kind of matrix?
+
+- Replace 'PositionNot( obj, zero )' by 'PositionNonZero( obj )'.
+  (And change the default methods for 'PositionNonZero'.)
+  (done)
+
+- Replace 'EmptyMatrix' and 'NullMapMatrix' by 'IsMatrixObj' objects.
+  Change GF2 and 8bit matrix code to support empty matrices
+
+- various operations on gf2 and 8bit matrix objects can silently convert
+  them to plists-of-plists; e.g. it is allows to unbind an element in the
+  middle, or assign something in cross characteristic, etc. etc. and all of
+  these work and silently convert the matrix/vector. I can't think of
+  situations where I'd want that -- I'd really prefer to require the user to
+  perform a manual conversion, and instead let accesses like the above
+  generate an error, to help track down bugs.
+
+- I'd like to rename `vecmat.{gi,gd}` to e.g. `vecmat_gf2.{gi,gd}`, to
+  indicate the purpose of those files; and then move any generic methods for
+  (compressed) matrices and vectors in it into another file
+
+
+Documentation
+===================
+- add entry in programming language section of ref manual for
+      x:=A[B];  and A[B]:=x;
+    for arbitrary objects B
+
+- Document and implement the interface.
+
+- add entries for [] and []:= to MatrixObj chapter
+
+- link to these from the list chapter entries for [] and []:= (and vice versa)
+
+- Add a chapter 'How to use IsMatrixObj' to the documentation.
+  There, add the following sections to the documentation:
+  - which Methods should be implemented for new IsMatrixObj types so that
+    the generic methods work for all new objects
+  - list the generic methods. Say that these can/should be overwritten by
+    more efficient specialized code.
+  - Changes from IsMatrix to IsMatrixObj
+  - how to convert existing IsMatrix code to adapt IsMatrixObj
+  - deprecated usages of operations/functions
