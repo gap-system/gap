@@ -1388,7 +1388,7 @@ InstallMethod( IsSupersolvableCharacterTable,
 ##  and the groups in the two infinite series <M>O(2n+1,q)</M> and
 ##  <M>S(2n,q)</M>, where <M>q</M> is a power of the (odd) prime <M>p</M>,
 ##  can be distinguished by the fact that in the latter group, any
-##  element of order <M>p</M> in the centre of the Sylow <M>p</M> subgroup
+##  element of order <M>p</M> in the centre of the Sylow <M>p</M>-subgroup
 ##  has centralizer order divisible by <M>q^{{2n-2}} - 1</M>, whereas no such
 ##  elements exist in the former group.
 ##  (Note that <M>n</M> and <M>p</M> can be computed from the order of

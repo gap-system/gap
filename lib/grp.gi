@@ -2999,7 +2999,7 @@ end);
 #M  PCoreOp( <G>, <p> ) . . . . . . . . . . . . . . . . . . p-core of a group
 ##
 ##  `PCore' returns the <p>-core of the group <G>, i.e., the  largest  normal
-##  <p> subgroup of <G>.  This is the core of the <p> Sylow subgroups.
+##  <p>-subgroup of <G>.  This is the core of any Sylow <p> subgroup.
 ##
 InstallMethod( PCoreOp,
     "generic method for nilpotent group and prime",
