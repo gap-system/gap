@@ -207,6 +207,11 @@ function( stream, record )
     PrintTo(stream, " \<\<\<\<)");
 end);
 
+InstallMethod( DisplayObj,
+               "for an output stream, and a record",
+               [ IsOutputStream, IsRecord ],
+               ViewObj);
+
 # methods to catch error cases
 
 InstallMethod( \.,
