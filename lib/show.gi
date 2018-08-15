@@ -7,11 +7,11 @@
 ##
 ##  These functions should replace all the View/Print/Display variants, and
 ##  in particular get rid of a lot of code duplication, when there are separate
-##  implementations for View and ViewString for instance, and lack of
-##  implementations when View exists, but ViewString doesn't (probably for the
-##  reason above)
+##  implementations for ViewObj and ViewString for instance, and lack of
+##  implementations when ViewObj exists, but ViewString doesn't (probably for
+##  the reason above)
 ##
-##  output streams will be free to ignore/strip formatting helpers
+##  Output streams will be free to ignore/strip formatting helpers
 ##
 ##  The naming is still topic of discussion. I renamed Print to Code, because
 ##  this makes the requirement to output Code clearer.
