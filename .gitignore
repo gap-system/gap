@@ -86,3 +86,6 @@ doc/gapmacrodoc.idx
 /hpcgap/ward
 
 /builds/
+
+/libgap.la
+/.libs

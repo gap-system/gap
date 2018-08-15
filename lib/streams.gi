@@ -234,14 +234,6 @@ function( stream )
     CloseStream(stream);
 end );
 
-BindGlobal("LIBGAP_EvalString",
-function(string)
-   local instream, obj;
-   instream := InputTextString(string);
-   obj := READ_ALL_COMMANDS(instream, 0, false);
-   return obj;
-end);
-
 
 #############################################################################
 ##
