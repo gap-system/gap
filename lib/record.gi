@@ -135,8 +135,8 @@ InstallMethod( ViewObj,
     Print(" \<\<\<\<)");
 end);
 
-InstallMethod( ViewObjStream,
-               "for a record",
+InstallMethod( ViewObj,
+               "for an output stream, and a record",
                [ IsOutputStream, IsRecord ],
 function(stream, record)
     local nam, com, i, snam, names, order;
@@ -163,16 +163,16 @@ function(stream, record)
             # otherwise we use (...) syntax:
             snam := String(nam);
             PrintTo(stream, "(");
-            ViewObjStream(stream, snam);
+            ViewObj(stream, snam);
             PrintTo(stream, ") := ");
         fi;
-        ViewObjStream(stream, record.(nam));
+        ViewObj(stream, record.(nam));
     od;
     PrintTo(stream, " \<\<\<\<)");
 end);
 
-InstallMethod( CodeObjStream,
-               "for a record",
+InstallMethod( CodeObj,
+               "for an output stream, and a record",
                [ IsOutputStream, IsRecord ],
 function( stream, record )
     local com, i, snam, nam, names, order;
@@ -199,10 +199,10 @@ function( stream, record )
             # otherwise we use (...) syntax:
             snam := String(nam);
             PrintTo(stream, "(");
-            CodeObjStream(stream, snam);
+            CodeObj(stream, snam);
             PrintTo(stream, ")\< := \>");
         fi;
-        CodeObjStream(stream, record.(nam));
+        CodeObj(stream, record.(nam));
     od;
     PrintTo(stream, " \<\<\<\<)");
 end);

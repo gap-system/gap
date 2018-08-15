@@ -8,13 +8,13 @@
 
 ############################################################################
 ##
-#O  ViewObjStream(<stream>, <obj>)
+#O  ViewObj(<stream>, <obj>)
 ##
 ##  <ManSection>
-##  <Oper Name="ViewObjStream" Arg='stream, obj'/>
+##  <Oper Name="ViewObj" Arg='stream, obj'/>
 ##
 ##  <Description>
-##  <Ref Oper="ViewObjStream"/> prints information about the object <A>obj</A>
+##  <Ref Oper="ViewObj"/> prints information about the object <A>obj</A>
 ##  to the stream <A>stream</A>.
 ##  This information should be concise and human readable,
 ##  in particular <E>not</E> necessarily detailed enough for defining <A>obj</A>,
@@ -24,41 +24,41 @@
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareOperation("ViewObjStream", [IsOutputStream, IsObject]);
+DeclareOperation("ViewObj", [IsOutputStream, IsObject]);
 
 ############################################################################
 ##
-#O  DisplayObjStream(<stream>, <obj>)
+#O  DisplayObj(<stream>, <obj>)
 ##
 ##  <ManSection>
-##  <Oper Name="DisplayObjStream" Arg='stream, obj'/>
+##  <Oper Name="DisplayObj" Arg='stream, obj'/>
 ##
 ##  <Description>
-##  <Ref Oper="DisplayObjStream"/> prints information about the object
+##  <Ref Oper="DisplayObj"/> prints information about the object
 ##  <A>obj</A> to the stream <A>stream</A> in a nicely formatted way.
 ##  <P/>
 ##  More detailed information can be obtained by <Ref Func="ShowObj"/>
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareOperation("DisplayObjStream", [IsOutputStream, IsObject]);
+DeclareOperation("DisplayObj", [IsOutputStream, IsObject]);
 
 ############################################################################
 ##
-#O  CodeObjStream(<stream>, <obj>)
+#O  CodeObj(<stream>, <obj>)
 ##
 ##  <ManSection>
-##  <Oper Name="CodeObjStream" Arg='stream, obj'/>
+##  <Oper Name="CodeObj" Arg='stream, obj'/>
 ##
 ##  <Description>
-##  <Ref Oper="CodeObjStream"/> prints GAP code to recreate the object
+##  <Ref Oper="CodeObj"/> prints GAP code to recreate the object
 ##  <A>obj</A> to the stream <A>stream</A>.
 ##  <P/>
 ##  More detailed information can be obtained by <Ref Func="ShowObj"/>
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareOperation("CodeObjStream", [IsOutputStream, IsObject]);
+DeclareOperation("CodeObj", [IsOutputStream, IsObject]);
 
 ############################################################################
 ##
