@@ -16,9 +16,6 @@
 all: gap$(EXEEXT) gac
 .PHONY: all
 
-libgap: libgap.la
-.PHONY: libgap
-
 # Backwards compatibility: add "default" target as alias for "all"
 default: all
 .PHONY: default
@@ -64,6 +61,9 @@ SOURCES += src/intfuncs.c
 SOURCES += src/intrprtr.c
 SOURCES += src/io.c
 SOURCES += src/iostream.c
+ifeq ($(HPCGAP),no)             # we don't support a kernel API in HPC-GAP atm
+SOURCES += src/libgap-api.c
+endif
 SOURCES += src/listfunc.c
 SOURCES += src/listoper.c
 SOURCES += src/lists.c
@@ -120,7 +120,6 @@ ifeq ($(HPCGAP),yes)
   SOURCES += src/hpc/tls.c
   SOURCES += src/hpc/traverse.c
 endif
-
 
 ########################################################################
 # Preprocessor flags
@@ -389,12 +388,15 @@ gap$(EXEEXT): libgap.la cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 
 else
 
+all: libgap.so
+libgap.so: symlinks libgap.la
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) -shared $(OBJS) $(GAP_LIBS) -o $@
+
 # Linking rule and dependencies for the main gap executable
 gap$(EXEEXT): $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(OBJS) $(GAP_LIBS) -o $@
 
 endif
-
 
 ########################################################################
 # The "docomp" target regenerates the various src/c_*.c files, and
@@ -458,6 +460,7 @@ clean:
 	rm -rf obj
 	rm -f gap$(EXEEXT) gac ffgen
 	rm -f libgap.la
+	rm -f libgap.so
 	rm -f gen/gap_version.c
 	rm -f doc/wsp.g
 	rm -f cnf/GAP-{CFLAGS,CPPFLAGS,LDFLAGS,LIBS,OBJS}
@@ -985,6 +988,12 @@ testbugfix: all
 	( echo 'SetUserPreference("UseColorsInTerminal",false); LoadAllPackages(); \
           ReadGapRoot( "tst/testbugfix.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/testbugfix2_%Y-%m-%d-%H-%M` )
+
+testlibgap: libgap.la obj/tst/testlibgap/basic.lo 
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) obj/tst/testlibgap/basic.lo libgap.la -o test-libgap
+	./test-libgap -A -l $(top_srcdir) -m 32m -q -T --nointeract > basic.out
+	diff $(top_srcdir)/tst/testlibgap/basic.expect basic.out
+.PHONY: testlibgap
 
 coverage:
 	gcov -o . $(SOURCES)

@@ -1,0 +1,18 @@
+# Initializing GAP...
+gap> 1+2+3;
+6
+gap> g:=FreeGroup(2);
+<free group on the generators [ f1, f2 ]>
+gap> a:=g.1;
+f1
+gap> b:=g.2;
+f2
+gap> lis:=[a^2, a^2, b*a];
+[ f1^2, f1^2, f2*f1 ]
+gap> h:=g/lis;
+<fp group on the generators [ f1, f2 ]>
+gap> c:=h.1;
+f1
+gap> Set([1..1000000], i->Order(c));
+[ 2 ]
+# done

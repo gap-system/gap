@@ -108,6 +108,9 @@ matrix:
     # test error reporting and compiling (quickest job in this test suite)
     - env: TEST_SUITES="testspecial test-compile"
 
+    # test libgap
+    - env: TEST_SUITES="testlibgap"
+
 script:
   - gcov --version
   - bash etc/ci-prepare.sh && bash etc/ci.sh
