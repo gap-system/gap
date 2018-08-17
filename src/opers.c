@@ -2561,7 +2561,7 @@ Obj DoAttribute (
     val = DoOperation1Args( self, obj );
     while (val == (Obj) 0) {
         val = ErrorReturnObj("Method for an attribute must return a value",
-                             0L, 0L, 
+                             0L, 0L,
                              "you can supply a value <val> via 'return <val>;'");
     }
     val = CopyObj( val, 0 );
@@ -2614,6 +2614,11 @@ Obj DoVerboseAttribute (
     
     /* call the operation to compute the value                             */
     val = DoVerboseOperation1Args( self, obj );
+    while (val == (Obj) 0) {
+        val = ErrorReturnObj("Method for an attribute must return a value",
+                             0L, 0L,
+                             "you can supply a value <val> via 'return <val>;'");
+    }
     val = CopyObj( val, 0 );
     
     /* set the value (but not for internal objects)                        */
@@ -2983,12 +2988,12 @@ Obj DoProperty (
     /* call the operation to compute the value                             */
     val = DoOperation1Args( self, obj );
     while ( val != True && val != False ) {
-        val = ErrorReturnObj( 
+        val = ErrorReturnObj(
                "Method for a property did not return true or false",
-               0L, 0L, 
+               0L, 0L,
                "you can 'return true;' or 'return false;'");
     }
-    
+
     /* set the value (but not for internal objects)                        */
     if ( ENABLED_ATTR(self) == 1 && ! IS_MUTABLE_OBJ(obj) ) {
         switch ( TNUM_OBJ( obj ) ) {
@@ -3038,7 +3043,13 @@ Obj DoVerboseProperty (
 
     /* call the operation to compute the value                             */
     val = DoVerboseOperation1Args( self, obj );
-    
+    while ( val != True && val != False ) {
+        val = ErrorReturnObj(
+               "Method for a property did not return true or false",
+               0L, 0L,
+               "you can 'return true;' or 'return false;'");
+    }
+
     /* set the value (but not for internal objects)                        */
     if ( ENABLED_ATTR(self) == 1 && ! IS_MUTABLE_OBJ(obj) ) {
         switch ( TNUM_OBJ( obj ) ) {
