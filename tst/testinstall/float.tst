@@ -73,10 +73,24 @@ gap> 355/113.0 = 355.0/113;
 true
 
 #
-# convert floats to other types
+gap> 2.0^2;
+4.
+gap> 2.0^-2;
+0.25
+gap> 2.0^2.;
+4.
+gap> 2.0^-2.;
+0.25
+
 #
-gap> Rat(355.0/113.0);
-355/113
+gap> LeftQuotient(1.0, 2.0);
+2.
+gap> LeftQuotient(2.0, 1.0);
+0.5
+
+#
+# convert floats to ints
+#
 gap> Int(1.0);
 1
 gap> Int(1.5);
@@ -85,10 +99,32 @@ gap> Int(-1.0);
 -1
 gap> Int(-1.5);
 -1
+gap> Int(1.e22);
+10000000000000000000000
+gap> Int(-1.e22);
+-10000000000000000000000
+
+#
+# convert floats to rationals
+#
+gap> Rat(355.0/113.0);
+355/113
 gap> Rat(0.5);
 1/2
 gap> Rat(0.0);
 0
+
+#
+# Print / View / Display for floats
+#
+gap> l := [ 0.0, -0.0, 1.0, Sqrt(2.0), posinf, neginf, nan ];
+[ 0., -0., 1., 1.41421, inf, -inf, nan ]
+gap> ViewObj(l); Print("\n");
+[ 0., -0., 1., 1.41421, inf, -inf, nan ]
+gap> PrintObj(l); Print("\n");
+[ 0, -0, 1, 1.414213562373095, inf, -inf, nan ]
+gap> Display(l);
+[ 0, -0, 1, 1.414213562373095, inf, -inf, nan ]
 
 #
 #
@@ -285,6 +321,76 @@ gap> Display(g);
 function (  )
     return 23.0;
 end
+
+#
+#
+#
+gap> Cos(0.);
+1.
+gap> Sin(0.);
+0.
+gap> Tan(0.);
+0.
+gap> Acos(1.);
+0.
+gap> Asin(0.);
+0.
+gap> Log(1.);
+0.
+gap> Exp(0.);
+1.
+gap> if IsBound(Log2) then Assert(0, Log2(1.) = 0.); fi;
+gap> if IsBound(Log10) then Assert(0, Log10(1.) = 0.); fi;
+gap> if IsBound(Log1p) then Assert(0, Log1p(0.) = 0.); fi;
+gap> if IsBound(Exp2) then Assert(0, Exp2(0.) = 1.); fi;
+gap> if IsBound(Exp10) then Assert(0, Exp10(0.) = 1.); fi;
+gap> if IsBound(Expm1) then Assert(0, Expm1(0.) = 0.); fi;
+
+#
+gap> Round(1.3);
+1.
+gap> Round(1.9);
+2.
+gap> Round(-1.9);
+-2.
+gap> Round(-1.3);
+-1.
+
+#
+gap> Floor(1.3);
+1.
+gap> Floor(1.9);
+1.
+gap> Floor(-1.9);
+-2.
+gap> Floor(-1.3);
+-2.
+
+#
+gap> Ceil(1.3);
+2.
+gap> Ceil(1.9);
+2.
+gap> Ceil(-1.9);
+-1.
+gap> Ceil(-1.3);
+-1.
+
+#
+gap> AbsoluteValue(1.3);
+1.3
+gap> AbsoluteValue(1.9);
+1.9
+gap> AbsoluteValue(-1.9);
+1.9
+gap> AbsoluteValue(-1.3);
+1.3
+
+#
+gap> Atan2(0.,0.);
+0.
+gap> Hypothenuse(3.,4.);
+5.
 
 #
 gap> STOP_TEST( "float.tst", 1);
