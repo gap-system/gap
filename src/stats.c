@@ -427,7 +427,7 @@ static ALWAYS_INLINE UInt ExecForHelper(Stat stat, UInt nr)
         /* get the iterator                                                */
         list = CALL_1ARGS( ITERATOR, list );
 
-        if ( CALL_1ARGS( STD_ITER, list ) == True && IS_PREC(list) ) {
+        if (IS_PREC_OR_COMOBJ(list) && CALL_1ARGS(STD_ITER, list) == True) {
             /* this can avoid method selection overhead on iterator        */
             dfun = ElmPRec( list, RNamName("IsDoneIterator") );
             nfun = ElmPRec( list, RNamName("NextIterator") );
