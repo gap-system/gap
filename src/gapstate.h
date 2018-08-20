@@ -31,7 +31,6 @@ typedef struct GAPState {
 #endif
 
     /* From intrprtr.c */
-    Obj  IntrResult;
     UInt IntrIgnoring;
     UInt IntrReturning;
     UInt IntrCoding;

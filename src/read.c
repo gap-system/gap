@@ -2606,14 +2606,14 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 
     /* end the interpreter                                                 */
     TRY_READ {
-        type = IntrEnd( 0UL );
+        type = IntrEnd(0, evalResult);
 
         /* check for dual semicolon */
         if (dualSemicolon)
             *dualSemicolon = (STATE(Symbol) == S_DUALSEMICOLON);
     }
     CATCH_READ_ERROR {
-        IntrEnd( 1UL );
+        IntrEnd(1, evalResult);
         type = STATUS_ERROR;
 #ifdef HPCGAP
         PopRegionLocks(lockSP);
@@ -2632,9 +2632,6 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     STATE(Tilde)       = tilde;
     rs->CurrLHSGVar    = currLHSGVar;
     STATE(ErrorLVars)  = errorLVars;
-
-    /* copy the result (if any)                                            */
-    *evalResult = STATE(IntrResult);
 
     /* return whether a return-statement or a quit-statement were executed */
     return type;
@@ -2738,10 +2735,10 @@ UInt ReadEvalFile(Obj *evalResult)
 
     /* end the interpreter                                                 */
     TRY_READ {
-        type = IntrEnd( 0UL );
+        type = IntrEnd(0, evalResult);
     }
     CATCH_READ_ERROR {
-        IntrEnd( 1UL );
+        IntrEnd(1, evalResult);
         type = STATUS_ERROR;
     }
 
@@ -2757,9 +2754,6 @@ UInt ReadEvalFile(Obj *evalResult)
     rs->ReadTilde    = readTilde;
     STATE(Tilde)     = tilde;
     rs->CurrLHSGVar  = currLHSGVar;
-
-    /* copy the result (if any)                                            */
-    *evalResult = STATE(IntrResult);
 
     /* return whether a return-statement or a quit-statement were executed */
     return type;
@@ -2863,11 +2857,11 @@ Obj Call0ArgsInNewReader(Obj f)
     result = CALL_0ARGS(f);
     PushVoidObj();
     /* end the interpreter                                                 */
-    IntrEnd( 0UL );
+    IntrEnd(0, NULL);
   }
   CATCH_READ_ERROR {
     result = (Obj) 0L;
-    IntrEnd( 1UL );
+    IntrEnd(1, NULL);
     ClearError();
   }
 
@@ -2902,11 +2896,11 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
     result = CALL_1ARGS(f,a);
     PushVoidObj();
     /* end the interpreter                                                 */
-    IntrEnd( 0UL );
+    IntrEnd(0, NULL);
   }
   CATCH_READ_ERROR {
     result = (Obj) 0L;
-    IntrEnd( 1UL );
+    IntrEnd(1, NULL);
     ClearError();
   }
 

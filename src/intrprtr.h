@@ -24,17 +24,6 @@
 
 /****************************************************************************
 **
-*V  IntrResult  . . . . . . . . . . . . . . . . . result value of interpreter
-**
-**  'IntrResult'  is the result value of  the interpreter, i.e., the value of
-**  the  statement  that  was  last  interpreted (which   might  have been  a
-**  return-value-statement).
-*/
-/* TL: extern  Obj             IntrResult; */
-
-
-/****************************************************************************
-**
 *V  IntrIgnoring  . . . . . . . . . interpreter is currently ignoring actions
 **
 **  If 'IntrIgnoring'  is  non-zero,  the interpreter  is  currently ignoring
@@ -71,26 +60,27 @@
 /****************************************************************************
 **
 *F  IntrBegin() . . . . . . . . . . . . . . . . . . . .  start an interpreter
-*F  IntrEnd(<error>)  . . . . . . . . . . . . . . . . . . stop an interpreter
+*F  IntrEnd(<error>,<result>)  . . . . . . . . . . . . .  stop an interpreter
 **
-**  'IntrBegin( <frame> )' starts a new interpreter in context <frame>
-**  if in doubt, pass STATE(BottomLVars) as <frame>
+**  'IntrBegin' starts a new interpreter in context <frame>. If in doubt,
+**  pass STATE(BottomLVars) as <frame>
 **
-**  'IntrEnd(<error>)' stops the current interpreter.
+**  'IntrEnd' stops the current interpreter.
 **
 **  If <error>  is non-zero a  syntax error was found by  the reader, and the
 **  interpreter only clears up the mess.
 **
-**  If 'IntrEnd' returns  0, then no  return-statement or quit-statement  was
-**  interpreted.  If  'IntrEnd' returns 1,  then a return-value-statement was
-**  interpreted and in this case the  return value is stored in 'IntrResult'.
-**  If  'IntrEnd' returns 2, then a  return-void-statement  was  interpreted.
-**  If 'IntrEnd' returns 8, then a quit-statement was interpreted.
+**  If 'IntrEnd' returns 'STATUS_END', then no return-statement or
+**  quit-statement was interpreted. If 'IntrEnd' returns 'STATUS_RETURN_VAL',
+**  then a return-value-statement was interpreted and in this case the return
+**  value is assigned to the address <result> points at (but only if <result>
+**  is not 0). If 'IntrEnd' returns 'STATUS_RETURN_VOID', then a
+**  return-void-statement was interpreted. If 'IntrEnd' returns 'STATUS_QUIT',
+**  then a quit-statement was interpreted.
 */
 extern  void            IntrBegin ( Obj frame );
 
-extern  ExecStatus             IntrEnd (
-            UInt                error );
+extern ExecStatus IntrEnd(UInt error, Obj *result);
 
 
 /****************************************************************************

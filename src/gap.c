@@ -1533,9 +1533,9 @@ void ThreadedInterpreter(void *funcargs) {
     if (exit) CALL_0ARGS(exit);
     PushVoidObj();
     /* end the interpreter                                                 */
-    IntrEnd( 0UL );
+    IntrEnd(0, NULL);
   } CATCH_READ_ERROR {
-    IntrEnd( 1UL );
+    IntrEnd(1, NULL);
     ClearError();
   } 
 }

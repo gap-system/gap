@@ -47,17 +47,6 @@
 
 /****************************************************************************
 **
-*V  IntrResult  . . . . . . . . . . . . . . . . . result value of interpreter
-**
-**  'IntrResult'  is the result value of  the interpreter, i.e., the value of
-**  the  statement  that  was  last  interpreted (which   might  have been  a
-**  return-value-statement).
-*/
-/* TL: Obj IntrResult; */
-
-
-/****************************************************************************
-**
 *V  IntrReturning   . . . . . . . . . . .  interpreter is currently returning
 **
 **  If 'IntrReturning' is  non-zero, the interpreter is currently  returning.
@@ -227,20 +216,23 @@ static inline void FinishAndCallFakeFuncExpr(void)
 /****************************************************************************
 **
 *F  IntrBegin() . . . . . . . . . . . . . . . . . . . .  start an interpreter
-*F  IntrEnd( <error> )  . . . . . . . . . . . . . . . . . stop an interpreter
+*F  IntrEnd(<error>,<result>)  . . . . . . . . . . . . .  stop an interpreter
 **
-**  'IntrBegin' starts a new interpreter.
+**  'IntrBegin' starts a new interpreter in context <frame>. If in doubt,
+**  pass STATE(BottomLVars) as <frame>
 **
-**  'IntrEnd(<error>)' stops the current interpreter.
+**  'IntrEnd' stops the current interpreter.
 **
 **  If <error>  is non-zero a  syntax error was found by  the reader, and the
 **  interpreter only clears up the mess.
 **
-**  If 'IntrEnd' returns  0, then no  return-statement or quit-statement  was
-**  interpreted.  If  'IntrEnd' returns 1,  then a return-value-statement was
-**  interpreted and in this case the  return value is stored in 'STATE(IntrResult)'.
-**  If  'IntrEnd' returns 2, then a  return-void-statement  was  interpreted.
-**  If 'IntrEnd' returns 8, then a quit-statement was interpreted.
+**  If 'IntrEnd' returns 'STATUS_END', then no return-statement or
+**  quit-statement was interpreted. If 'IntrEnd' returns 'STATUS_RETURN_VAL',
+**  then a return-value-statement was interpreted and in this case the return
+**  value is assigned to the address <result> points at (but only if <result>
+**  is not 0). If 'IntrEnd' returns 'STATUS_RETURN_VOID', then a
+**  return-void-statement was interpreted. If 'IntrEnd' returns 'STATUS_QUIT',
+**  then a quit-statement was interpreted.
 */
 void IntrBegin ( Obj frame )
 {
@@ -263,8 +255,7 @@ void IntrBegin ( Obj frame )
     ExecBegin(frame);
 }
 
-ExecStatus IntrEnd (
-    UInt                error )
+ExecStatus IntrEnd(UInt error, Obj *result)
 {
     UInt                intrReturning;  /* interpreted return-statement?   */
 
@@ -284,7 +275,8 @@ ExecStatus IntrEnd (
 
         /* and the stack must contain the result value (which may be void) */
         assert( LEN_PLIST(STATE(StackObj)) == 1 );
-        STATE(IntrResult) = PopVoidObj();
+        if (result)
+            *result = PopVoidObj();
 
     }
 
@@ -306,8 +298,8 @@ ExecStatus IntrEnd (
         STATE(IntrCoding)   = 0;
 
         /* dummy result value (probably ignored)                           */
-        STATE(IntrResult) = (Obj)0;
-
+        if (result)
+            *result = 0;
     }
 
     // switch back to the old state
@@ -4490,7 +4482,6 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
 #if !defined(HPCGAP)
-    InitGlobalBag( &STATE(IntrResult), "src/intrprtr.c:IntrResult" );
     InitGlobalBag( &STATE(IntrState),  "src/intrprtr.c:IntrState"  );
     InitGlobalBag( &STATE(StackObj),   "src/intrprtr.c:StackObj"   );
     InitGlobalBag( &STATE(ErrorLVars), "STATE(ErrorLVars)"         );
