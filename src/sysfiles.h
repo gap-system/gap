@@ -130,70 +130,29 @@ extern const Char * SyWinCmd (
 */
 
 
-/****************************************************************************
-**
-*V  syBuf . . . . . . . . . . . . . .  buffer and other info for files, local
-**
-**  'syBuf' is  a array used as  buffers for  file I/O to   prevent the C I/O
-**  routines  from   allocating their  buffers  using  'malloc',  which would
-**  otherwise confuse Gasman.
-*/
+extern UInt SySetBuffering(UInt fid);
 
-// The type of file stored in a 'SYS_SY_BUF'
-typedef enum {
-    unused_socket,  // Socket is free
-    raw_socket,     // Plain UNIX socket stored in 'fp'
-    pipe_socket,    // UNIX socket attached to a pipe stored in 'fp'
-    gzip_socket     // A gzFile handled by zlib stored in 'gzfp'
-} GAPSocketType;
-
-typedef struct {
-    /* gzfp is used if type == gzip_socket
-    ** Stored as a void* to avoid including zlib.h */
-    void * gzfp;
-
-    /* fp and echo are used if type == raw_socket or type == pipe_socket */
-    int fp;   /* file descriptor for this file */
-    int echo; /* file descriptor for the echo */
-
-    GAPSocketType type; /* file is either a plain descriptor, pipe or gzipped */
-    FILE *     pipehandle; /* for pipes we need to remember the file handle */
-    UInt       ateof;      /* set to 1 by any read operation that hits eof
-                              reset to 0 by a subsequent successful read */
-    UInt crlast;           /* records that last character read was \r for
-                              cygwin and othger systems that need end-of-line
-                              hackery */
-    Int bufno;             /* if non-negative then this file has a buffer in
-                              syBuffers[bufno]; If negative, this file may not
-                              be buffered */
-    UInt isTTY; /* set in Fopen when this fid is a *stdin* or *errin*
-                   and really is a tty*/
-} SYS_SY_BUF;
-
-#define SYS_FILE_BUF_SIZE 20000
-
-typedef struct {
-  Char buf[SYS_FILE_BUF_SIZE];
-  UInt inuse;
-  UInt bufstart;
-  UInt buflen;
-} SYS_SY_BUFFER;
-
-extern SYS_SY_BUF syBuf [256];
-
-extern SYS_SY_BUFFER syBuffers[32];
-
-extern UInt SySetBuffering( UInt fid );
-
-extern void SyMarkBufUnused(Int i);
-
-extern Int SyBufInUse(Int i);
+extern void SyRedirectStderrToStdOut(void);
 
 /****************************************************************************
 **
-*F  SyFileno( <fid> ) . . . . . . . . . . . . . . get operating system fileno
+*F  SyBufFileno( <fid> ) . . . . . . . . . . . .  get operating system fileno
+**
+**  Given a 'syBuf' buffer id, return the associated file descriptor, if any.
 */
-#define SyFileno(fid)   (fid==-1?-1:syBuf[fid].fp)
+extern int SyBufFileno(Int fid);
+
+/****************************************************************************
+**
+*F  SyBufIsTTY( <fid> ) . . . . . . . . . . . . determine if handle for a tty
+**
+**  Given a 'syBuf' buffer id, return 1 if it references a TTY, else 0
+*/
+extern Int SyBufIsTTY(Int fid);
+
+
+// HACK: set 'ateof' to true for the given 'syBuf' entry
+extern void SyBufSetEOF(Int fid);
 
 
 /****************************************************************************
@@ -349,7 +308,7 @@ extern void SyFputs (
 Int SyRead(Int fid, void * ptr, size_t len);
 Int SyWrite(Int fid, const void * ptr, size_t len);
 
-ssize_t SyWriteandcheck(Int fid, const void * buf, size_t count);
+Int SyReadWithBuffer(Int fid, void * ptr, size_t len);
 
 /****************************************************************************
 **
@@ -650,6 +609,10 @@ void * SyMemmove(void * dst, const void * src, size_t size);
 **
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
+
+// This function is called by 'InitSystem', before the usual module
+// initialization.
+extern void InitSysFiles(void);
 
 /****************************************************************************
 **
