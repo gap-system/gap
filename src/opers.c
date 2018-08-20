@@ -2175,6 +2175,8 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
         case 6:
             res = CALL_6ARGS(method, arg1, arg2, arg3, arg4, arg5, arg6);
             break;
+        default:
+            GAP_ASSERT(0);
         }
     } while (res == TRY_NEXT_METHOD);
 

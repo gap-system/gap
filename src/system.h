@@ -97,7 +97,7 @@ enum {
 *T  Wrappers for various compiler attributes
 **
 */
-#ifdef HAVE_FUNC_ATTRIBUTE_ALWAYS_INLINE
+#if defined(HAVE_FUNC_ATTRIBUTE_ALWAYS_INLINE) && !defined(GAP_KERNEL_DEBUG)
 #define ALWAYS_INLINE __attribute__((always_inline)) inline
 #else
 #define ALWAYS_INLINE inline

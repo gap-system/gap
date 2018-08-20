@@ -386,10 +386,8 @@ static ALWAYS_INLINE UInt ExecForHelper(Stat stat, UInt nr)
 
     /* get the body                                                        */
     body1 = READ_STAT(stat, 2);
-    if (nr >= 2)
-        body2 = READ_STAT(stat, 3);
-    if (nr >= 3)
-        body3 = READ_STAT(stat, 4);
+    body2 = (nr >= 2) ? READ_STAT(stat, 3) : 0;
+    body3 = (nr >= 3) ? READ_STAT(stat, 4) : 0;
 
     /* special case for lists                                              */
     if ( IS_SMALL_LIST( list ) ) {
@@ -546,10 +544,8 @@ static ALWAYS_INLINE UInt ExecForRangeHelper(Stat stat, UInt nr)
 
     /* get the body                                                        */
     body1 = READ_STAT(stat, 2);
-    if (nr >= 2)
-        body2 = READ_STAT(stat, 3);
-    if (nr >= 3)
-        body3 = READ_STAT(stat, 4);
+    body2 = (nr >= 2) ? READ_STAT(stat, 3) : 0;
+    body3 = (nr >= 3) ? READ_STAT(stat, 4) : 0;
 
     /* loop over the range                                                 */
     for ( i = first; i <= last; i++ ) {
@@ -691,10 +687,8 @@ static ALWAYS_INLINE UInt ExecWhileHelper(Stat stat, UInt nr)
     /* get the condition and the body                                      */
     cond = READ_STAT(stat, 0);
     body1 = READ_STAT(stat, 1);
-    if (nr >= 2)
-        body2 = READ_STAT(stat, 2);
-    if (nr >= 3)
-        body3 = READ_STAT(stat, 3);
+    body2 = (nr >= 2) ? READ_STAT(stat, 2) : 0;
+    body3 = (nr >= 3) ? READ_STAT(stat, 3) : 0;
 
     /* while the condition evaluates to 'true', execute the body           */
     SET_BRK_CURR_STAT( stat );
@@ -767,10 +761,8 @@ static ALWAYS_INLINE UInt ExecRepeatHelper(Stat stat, UInt nr)
     /* get the condition and the body                                      */
     cond = READ_STAT(stat, 0);
     body1 = READ_STAT(stat, 1);
-    if (nr >= 2)
-        body2 = READ_STAT(stat, 2);
-    if (nr >= 3)
-        body3 = READ_STAT(stat, 3);
+    body2 = (nr >= 2) ? READ_STAT(stat, 2) : 0;
+    body3 = (nr >= 3) ? READ_STAT(stat, 3) : 0;
 
     /* execute the body until the condition evaluates to 'true'            */
     SET_BRK_CURR_STAT( stat );
