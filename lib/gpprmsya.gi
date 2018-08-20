@@ -1812,19 +1812,14 @@ end );
 
 InstallMethod( ViewObj,
     "for natural alternating group",
-    true,
-    [ IsNaturalAlternatingGroup ], 0,
-function(alt)
-    Print(ViewString(alt));
-end );
+    [ IsNaturalAlternatingGroup ],
+    DelegateFromViewObjToViewString );
 
 InstallMethod( ViewObj,
     "for natural symmetric group",
-    true,
-    [ IsNaturalSymmetricGroup ], 0,
-function(sym)
-    Print(ViewString(sym));
-end );
+    [ IsNaturalSymmetricGroup ],
+    DelegateFromViewObjToViewString );
+
 
 #############################################################################
 ##

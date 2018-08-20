@@ -455,9 +455,7 @@ InstallMethod( ObjByExtRep, "for floats", [ IsFloatFamily, IsCyclotomicCollectio
 end);
 
 InstallMethod( ViewObj, "for floats", [ IsFloat ],
-        function ( x )
-    Print(ViewString(x));
-end);
+    DelegateFromViewObjToViewString );
 
 InstallMethod( Display, "for floats", [ IsFloat ],
         function ( x )

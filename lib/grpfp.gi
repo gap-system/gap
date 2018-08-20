@@ -5059,42 +5059,60 @@ local iso,k,id,f;
 	       ReducedForm(k,GroupwordToMonword(id,w)));
 end);
 
+
 #############################################################################
 ##
-#M  ViewObj(<G>)
+#M  ViewString( <G> )
 ##
-InstallMethod(ViewObj,"fp group",true,[IsSubgroupFpGroup],
- 10,# to override the pure `Size' method
-function(G)
-  if IsFreeGroup(G) then TryNextMethod();fi;
-  if IsGroupOfFamily(G) then
-    Print("<fp group");
-    if HasSize(G) then
-      Print(" of size ",Size(G));
-    fi;
-    if Length(GeneratorsOfGroup(G)) > GAPInfo.ViewLength * 10 then
-      Print(" with ",Length(GeneratorsOfGroup(G))," generators>");
-    else
-      Print(" on the generators ",GeneratorsOfGroup(G),">");
-    fi;
-  else
-    Print("Group(");
-    if HasGeneratorsOfGroup(G) then
-      if not IsBound(G!.gensWordLengthSum) then
-	G!.gensWordLengthSum:=Sum(List(GeneratorsOfGroup(G),
-	         i->Length(UnderlyingElement(i))));
+InstallMethod( ViewString,
+    "fp group",
+    [ IsSubgroupFpGroup ],
+    10,  # to override the pure `Size' method
+    function( G )
+    local str;
+
+    if IsFreeGroup( G ) then
+      TryNextMethod();
+    elif IsGroupOfFamily( G ) then
+      str:= "<fp group";
+      if HasSize( G ) then
+        str:= STRINGIFY( str, " of size ", Size( G ) );
+      fi;
+      if Length( GeneratorsOfGroup( G ) ) > GAPInfo.ViewLength * 10 then
+        return STRINGIFY( str, " with ", Length( GeneratorsOfGroup( G ) ),
+                          " generators>" );
+      else
+        return STRINGIFY( str, " on the generators ",
+                          ViewString( GeneratorsOfGroup( G ) ), ">" );
+      fi;
+    elif HasGeneratorsOfGroup( G ) then
+      if not IsBound( G!.gensWordLengthSum ) then
+        G!.gensWordLengthSum:= Sum( List( GeneratorsOfGroup( G ),
+            i -> Length( UnderlyingElement( i ) ) ) );
       fi;
       if G!.gensWordLengthSum <= GAPInfo.ViewLength * 30 then
-        Print(GeneratorsOfGroup(G));
+        return STRINGIFY( "Group(", ViewString( GeneratorsOfGroup( G ) ),
+                          ")" );
       else
-        Print("<",Length(GeneratorsOfGroup(G))," generators>");
+        return STRINGIFY( "Group(<", Length( GeneratorsOfGroup( G ) ),
+                          " generators>)" );
       fi;
     else
-      Print("<fp, no generators known>");
+      return "Group(<fp, no generators known>)";
     fi;
-    Print(")");
-  fi;
-end);
+    end );
+
+
+#############################################################################
+##
+#M  ViewObj( <G> )  . . . . . . . . . . . . . . . . . . .  view an f.p. group
+##
+InstallMethod( ViewObj,
+    "fp group",
+    [ IsSubgroupFpGroup ],
+    10,  # to override the pure `Size' method
+    DelegateFromViewObjToViewString );
+
 
 #############################################################################
 ##

@@ -319,8 +319,9 @@ end);
 #M  ViewString( <pring> ) . . . . . . . . . . . . . . . for a polynomial ring
 ##
 InstallMethod( ViewString,
-               "for a polynomial ring", true,  [ IsPolynomialRing ], 0,
-
+    "for a polynomial ring",
+    [ IsPolynomialRing ],
+    RankFilter( IsFLMLOR ),  # override the higher ranking FLMLOR method
   R -> Concatenation(ViewString(LeftActingDomain(R)),
                      Filtered(String(IndeterminatesOfPolynomialRing(R)),
                               ch -> ch <> ' ')) );
@@ -333,10 +334,8 @@ InstallMethod( ViewObj,
               "for a polynomial ring", true, [ IsPolynomialRing ],
               # override the higher ranking FLMLOR method
               RankFilter(IsFLMLOR),
+    DelegateFromViewObjToViewString );
 
-  function( R )
-    Print(ViewString(R));
-  end );
 
 #############################################################################
 ##

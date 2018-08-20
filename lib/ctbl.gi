@@ -4400,32 +4400,9 @@ end );
 #M  ViewObj( <tbl> )  . . . . . . . . . . . . . . . . . for a character table
 ##
 InstallMethod( ViewObj,
-    "for an ordinary table",
-    [ IsOrdinaryTable ],
-    function( tbl )
-    Print( "CharacterTable( " );
-    if HasUnderlyingGroup( tbl ) then
-      View( UnderlyingGroup( tbl ) );
-    else
-      View( Identifier( tbl ) );
-    fi;
-    Print(  " )" );
-    end );
-
-InstallMethod( ViewObj,
-    "for a Brauer table",
-    [ IsBrauerTable ],
-    function( tbl )
-    local ordtbl;
-    ordtbl:= OrdinaryCharacterTable( tbl );
-    Print( "BrauerTable( " );
-    if HasUnderlyingGroup( ordtbl ) then
-      View( UnderlyingGroup( ordtbl ) );
-    else
-      View( Identifier( ordtbl ) );
-    fi;
-    Print( ", ", UnderlyingCharacteristic( tbl ), " )" );
-    end );
+    "for a character table",
+    [ IsCharacterTable ],
+    DelegateFromViewObjToViewString );
 
 
 #############################################################################

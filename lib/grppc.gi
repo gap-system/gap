@@ -2227,27 +2227,37 @@ function(G)
   return IsInt(Size(G)) and IsPrimeInt(Size(G));
 end);
 
+
+#############################################################################
+##
+#M  ViewString( <G> )
+##
+InstallMethod( ViewString,
+    "pc group",
+    [ IsPcGroup ],
+    function( G )
+    if HasParent( G ) and
+       Length( GeneratorsOfGroup( G ) )
+       * Length( GeneratorsOfGroup( Parent( G ) ) )
+       <= 50 * GAPInfo.ViewLength then
+      return STRINGIFY( "Group(", ViewString( GeneratorsOfGroup( G ) ), ")" );
+    elif HasSize( G ) then
+      return STRINGIFY( "<pc group of size ", Size( G ), " with ",
+                 Length( GeneratorsOfGroup( G ) ), " generators>" );
+    else
+      return STRINGIFY( "<pc group with ",
+                 Length( GeneratorsOfGroup( G ) ), " generators>" );
+    fi;
+    end);
+
+
 #############################################################################
 ##
 #M  ViewObj(<G>)
 ##
 InstallMethod(ViewObj,"pc group",true,[IsPcGroup],0,
-function(G)
-  if (not HasParent(G)) or
-   Length(GeneratorsOfGroup(G))*Length(GeneratorsOfGroup(Parent(G)))
-     / GAPInfo.ViewLength > 50 then
-    Print("<pc group");
-    if HasSize(G) then
-      Print(" of size ",Size(G));
-    fi;
-    Print(" with ",Length(GeneratorsOfGroup(G)),
-          " generators>");
-  else
-    Print("Group(");
-    ViewObj(GeneratorsOfGroup(G));
-    Print(")");
-  fi;
-end);
+    DelegateFromViewObjToViewString );
+
 
 #############################################################################
 ##

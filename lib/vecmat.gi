@@ -247,21 +247,29 @@ end );
 
 #############################################################################
 ##
+#M  ViewString( <gf2vec> )  . . . . . . . . . . . . . . . .  for a GF2 vector
+##
+InstallMethod( ViewString,
+    "for GF2 vector",
+    [ IsRowVector and IsFinite and IsGF2VectorRep ],
+    function( vec )
+      if IsMutable(vec)  then
+        return STRINGIFY( "<a GF2 vector of length ", Length( vec ), ">" );
+      else
+        return STRINGIFY( "<an immutable GF2 vector of length ",
+                   Length( vec ), ">" );
+      fi;
+    end );
+
+
+#############################################################################
+##
 #M  ViewObj( <gf2vec> ) . . . . . . . . . . . . . . . . . . view a GF2 vector
 ##
 InstallMethod( ViewObj,
     "for GF2 vector",
-    true,
     [ IsRowVector and IsFinite and IsGF2VectorRep ],
-    0,
-
-function( vec )
-    if IsMutable(vec)  then
-        Print( "<a GF2 vector of length ", Length(vec), ">" );
-    else
-        Print( "<an immutable GF2 vector of length ", Length(vec), ">" );
-    fi;
-end );
+    DelegateFromViewObjToViewString );
 
 
 #############################################################################
@@ -695,30 +703,37 @@ end );
 
 #############################################################################
 ##
+#M  ViewString( <gf2mat> )  . . . . . . . . . . . . . . . .  for a GF2 matrix
+##
+InstallMethod( ViewString,
+    "for GF2 matrix",
+    [ IsMatrix and IsFinite and IsGF2MatrixRep ],
+    function( mat )
+    if Length( mat ) = 0 then
+      if IsMutable( mat ) then
+        return "<a 0x0 matrix over GF2>";
+      else
+        return "<an immutable 0x0 matrix over GF2>";
+      fi;
+    elif IsMutable( mat ) then
+      return STRINGIFY( "<a ", Length( mat ), "x", Length( mat[1] ),
+                 " matrix over GF2>" );
+    else
+      return STRINGIFY( "<an immutable ", Length( mat ), "x",
+                 Length( mat[1] ), " matrix over GF2>" );
+    fi;
+    end );
+
+
+#############################################################################
+##
 #M  ViewObj( <gf2mat> )   . . . . . . . . . . . . . . . .   view a GF2 matrix
 ##
 InstallMethod( ViewObj,
     "for GF2 matrix",
-    true,
     [ IsMatrix and IsFinite and IsGF2MatrixRep ],
-    0,
+    DelegateFromViewObjToViewString );
 
-function( mat )
-    if Length(mat) = 0  then
-        if IsMutable(mat)  then
-            Print( "<a 0x0 matrix over GF2>" );
-        else
-            Print( "<an immutable 0x0 matrix over GF2>" );
-        fi;
-    else
-        if IsMutable(mat)  then
-            Print("<a ",Length(mat),"x",Length(mat[1])," matrix over GF2>");
-        else
-            Print( "<an immutable ", Length(mat), "x", Length(mat[1]),
-                   " matrix over GF2>" );
-        fi;
-    fi;
-end );
 
 #############################################################################
 ##

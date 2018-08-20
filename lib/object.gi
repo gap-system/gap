@@ -428,6 +428,30 @@ InstallMethod( ViewObj,
 
 #############################################################################
 ##
+#F  DelegateFromViewObjToViewString( <obj> )
+##
+##  Simply replacing the 'ViewObj' method for an object by a 'ViewString'
+##  method does usually not have the intended effect,
+##  since probably a 'ViewObj' method for another (a bit more general) object
+##  would be applicable.
+##
+##  As long as lots of such 'ViewObj' methods are installed,
+##  we can install the appropriate 'ViewString' methods (which are needed
+##  for example in jupyter notebooks) and replace the in principle obsolete
+##  'ViewObj' method by 'DelegateFromViewObjToViewString'.
+##
+##  (Once it will be available in enough situations,
+##  it may make sense to call 'TryNextMethod()' inside, and to see where
+##  the bahaviour of GAP changes.)
+##
+BIND_GLOBAL( "DelegateFromViewObjToViewString",
+    function( obj )
+      Print( ViewString( obj ) );
+    end );
+
+
+#############################################################################
+##
 #M  ViewString( <obj> ) . . . . . . . . . . . . . . . for an object with name
 ##
 InstallMethod( ViewString, "for an object with name", true,

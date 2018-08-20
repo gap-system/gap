@@ -54,6 +54,8 @@ gap> Dimension( b );
 gap> c:= Algebra( CF(5), [ [ [ 1, E(5) ], [ E(5), 0 ] ] ],
 >                     [ [ 0, 0 ], [ 0, 0 ] ] );
 <algebra over CF(5), with 1 generators>
+gap> ViewString( CF(5) );
+"CF(5)"
 gap> IsGaussianMatrixSpace( c );
 true
 gap> Dimension( c );

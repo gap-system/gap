@@ -674,10 +674,10 @@ InstallMethod( String, "for a field of FFEs",
 InstallMethod( ViewString, "for a field of FFEs",
         [ IsField and IsFFECollection ], 10, GAPInfo.tmpGFstring );
 Unbind(GAPInfo.tmpGFstring);
+
 InstallMethod( ViewObj, "for a field of FFEs",
-        [ IsField and IsFFECollection ], 10, function( F )
-    Print( ViewString(F) );
-end );
+    [ IsField and IsFFECollection ], 10,
+    DelegateFromViewObjToViewString );
 
 InstallMethod( PrintObj, "for a field of FFEs",
         [ IsField and IsFFECollection ], 10, function( F )

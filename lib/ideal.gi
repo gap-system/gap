@@ -342,56 +342,86 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
-#M  ViewObj( <I> )  . . . . . . . . . . . . . . . . . . . . . .  for an ideal
+#M  ViewString( <I> ) . . . . . . . . . . . . . . . . . . . . .  for an ideal
 ##
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a left ideal with known generators",
-    true,
     [ IsRing and HasLeftActingRingOfIdeal and HasGeneratorsOfLeftIdeal ],
     100,  # stronger than methods for the different kinds of algebras
     function( I )
-    Print( "\>\><left ideal in \>\>" );
-    View( LeftActingRingOfIdeal( I ) );
     if HasDimension( I ) then
-      Print( "\<,\< \>\>(dimension ", Dimension( I ), "\<\<\<\<)>" );
+      return STRINGIFY( "\>\><left ideal in \>\>",
+                 ViewString( LeftActingRingOfIdeal( I ) ),
+                 "\<,\< \>\>(dimension ", Dimension( I ),
+                 "\<\<\<\<)>" );
     else
-      Print( "\<,\< \>\>(", Length( GeneratorsOfLeftIdeal( I ) ),
-             " generators)\<\<\<\<>" );
+      return STRINGIFY( "\>\><left ideal in \>\>",
+                 ViewString( LeftActingRingOfIdeal( I ) ),
+                 "\<,\< \>\>(", Length( GeneratorsOfLeftIdeal( I ) ),
+                 " generators)\<\<\<\<>" );
     fi;
     end );
 
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a right ideal with known generators",
-    true,
     [ IsRing and HasRightActingRingOfIdeal and HasGeneratorsOfRightIdeal ],
     100,  # stronger than methods for the different kinds of algebras
     function( I )
-    Print( "\>\><right ideal in \>\>" );
-    View( RightActingRingOfIdeal( I ) );
     if HasDimension( I ) then
-      Print( "\<,\< \>\>(dimension ", Dimension( I ), "\<\<\<\<)>" );
+      return STRINGIFY( "\>\><right ideal in \>\>",
+                 ViewString( RightActingRingOfIdeal( I ) ),
+                 "\<,\< \>\>(dimension ", Dimension( I ),
+                 "\<\<\<\<)>" );
     else
-      Print( "\<,\< \>\>(", Length( GeneratorsOfRightIdeal( I ) ),
-             " generators)\<\<\<\<>" );
+      return STRINGIFY( "\>\><right ideal in \>\>",
+                 ViewString( RightActingRingOfIdeal( I ) ),
+                 "\<,\< \>\>(", Length( GeneratorsOfRightIdeal( I ) ),
+                 " generators)\<\<\<\<>" );
     fi;
     end );
 
-InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for a two-sided ideal with known generators",
-    true,
     [ IsRing and HasLeftActingRingOfIdeal and HasRightActingRingOfIdeal
              and HasGeneratorsOfTwoSidedIdeal ],
     100,  # stronger than methods for the different kinds of algebras
     function( I )
-    Print( "\>\><two-sided ideal in \>\>" );
-    View( RightActingRingOfIdeal( I ) );
     if HasDimension( I ) then
-      Print( "\<,\< \>\>(dimension ", Dimension( I ), "\<\<\<\<)>" );
+      return STRINGIFY( "\>\><two-sided ideal in \>\>",
+                 ViewString( RightActingRingOfIdeal( I ) ),
+                 "\<,\< \>\>(dimension ", Dimension( I ),
+                 "\<\<\<\<)>" );
     else
-      Print( "\<,\< \>\>(", Length( GeneratorsOfTwoSidedIdeal( I ) ),
-             " generators)\<\<\<\<>" );
+      return STRINGIFY( "\>\><two-sided ideal in \>\>",
+                 ViewString( RightActingRingOfIdeal( I ) ),
+                 "\<,\< \>\>(", Length( GeneratorsOfTwoSidedIdeal( I ) ),
+                 " generators)\<\<\<\<>" );
     fi;
     end );
+
+
+#############################################################################
+##
+#M  ViewObj( <I> )  . . . . . . . . . . . . . . . . . . . . . .  for an ideal
+##
+InstallMethod( ViewObj,
+    "for a left ideal with known generators",
+    [ IsRing and HasLeftActingRingOfIdeal and HasGeneratorsOfLeftIdeal ],
+    100,  # stronger than methods for the different kinds of algebras
+    DelegateFromViewObjToViewString );
+
+InstallMethod( ViewObj,
+    "for a right ideal with known generators",
+    [ IsRing and HasRightActingRingOfIdeal and HasGeneratorsOfRightIdeal ],
+    100,  # stronger than methods for the different kinds of algebras
+    DelegateFromViewObjToViewString );
+
+InstallMethod( ViewObj,
+    "for a two-sided ideal with known generators",
+    [ IsRing and HasLeftActingRingOfIdeal and HasRightActingRingOfIdeal
+             and HasGeneratorsOfTwoSidedIdeal ],
+    100,  # stronger than methods for the different kinds of algebras
+    DelegateFromViewObjToViewString );
 
 
 #############################################################################

@@ -13,8 +13,8 @@
 
 #############################################################################
 ##
-#M  PrintObj( <obj> ) . . . . . . . . . . . . . . . . for an algebra module
-#M  ViewObj( <obj> ) . . . . . . . . . . . . . . . .  for an algebra module
+#M  PrintObj( <obj> ) . . . . . . . . . . . . . . . . . for an algebra module
+#M  ViewString( <A> ) . . . . . . . . . . . . . . . . . for an algebra module
 ##
 InstallMethod( PrintObj,
     "for algebra module",
@@ -46,35 +46,44 @@ InstallMethod( PrintObj,
 
   end );
 
-  InstallMethod( ViewObj,
+InstallMethod( ViewString,
     "for algebra module",
-    true, [ IsVectorSpace and IsAlgebraModule ], 0,
+    [ IsVectorSpace and IsAlgebraModule ],
     function( V )
+    local str;
 
-      if HasDimension( V ) then
-         Print("<", Dimension(V), "-dimensional " );
-      else
-         Print( "<" );
-      fi;
-      if IsLeftAlgebraModuleElementCollection( V ) then
-          if IsRightAlgebraModuleElementCollection( V ) then
-              Print("bi-module over ");
-              View( LeftActingAlgebra( V ) );
-              Print( " (left) and " );
-              View( RightActingAlgebra( V ) );
-              Print( " (right)>" );
-          else
-              Print("left-module over ");
-              View( LeftActingAlgebra( V ) );
-              Print(">");
-          fi;
-      else
-          Print("right-module over ");
-          View( RightActingAlgebra( V ) );
-          Print(">");
-      fi;
+    str:= "<";
+    if HasDimension( V ) then
+      str:= STRINGIFY( str, Dimension( V ), "-dimensional " );
+    fi;
 
-end );
+    if IsLeftAlgebraModuleElementCollection( V ) then
+      if IsRightAlgebraModuleElementCollection( V ) then
+        return STRINGIFY( str, "bi-module over ",
+                          ViewString( LeftActingAlgebra( V ) ),
+                          " (left) and ",
+                          ViewString( RightActingAlgebra( V ) ),
+                          " (right)>" );
+      else
+        return STRINGIFY( str, "left-module over ",
+                          ViewString( LeftActingAlgebra( V ) ), ">" );
+      fi;
+    else
+      return STRINGIFY( str, "right-module over ",
+                        ViewString( RightActingAlgebra( V ) ), ">" );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  ViewObj( <A> )  . . . . . . . . . . . . . . . . .  view an algebra module
+##
+InstallMethod( ViewObj,
+    "for algebra module",
+    [ IsVectorSpace and IsAlgebraModule ],
+    DelegateFromViewObjToViewString );
+
 
 ############################################################################
 ##
