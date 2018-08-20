@@ -1929,21 +1929,19 @@ Obj FuncFD_OF_FILE(Obj self,Obj fid)
 #ifdef HPCGAP
 Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
 {
-  Int fd;
-  int fdi;
-  while (fid == (Obj) 0 || !(IS_INTOBJ(fid)))
-  {
-    fid = ErrorReturnObj(
-           "<fid> must be a small integer (not a %s)",
-           (Int)TNAM_OBJ(fid),0L,
-           "you can replace <fid> via 'return <fid>;'" );
-  }
-  fd = INT_INTOBJ(fid);
-  fdi = SyBufFileno(fd);
-  if (onoff == False || onoff == Fail)
-    return syStopraw(fdi), False;
-  else
-    return syStartraw(fdi) ? True : False;
+    while (!IS_INTOBJ(fid)) {
+        fid = ErrorReturnObj("<fid> must be a small integer (not a %s)",
+                             (Int)TNAM_OBJ(fid), 0L,
+                             "you can replace <fid> via 'return <fid>;'");
+    }
+
+    Int fd = INT_INTOBJ(fid);
+    if (onoff == False || onoff == Fail) {
+        syStopraw(fd);
+        return False;
+    }
+    else
+        return syStartraw(fd) ? True : False;
 }
 #endif
 
