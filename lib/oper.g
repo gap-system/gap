@@ -773,6 +773,9 @@ end );
 BIND_GLOBAL( "NewConstructor", function ( name, filters )
     local   oper,  filt,  filter;
 
+    if LEN_LIST( filters ) = 0 then
+      Error( "constructors must have at least one argument" );
+    fi;
     if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
       Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
              " arguments" );
@@ -944,7 +947,9 @@ BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
 
     local gvar, req, filt, filter;
 
-    if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
+    if LEN_LIST( filters ) = 0 then
+      Error( "constructors must have at least one argument" );
+    elif GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
       Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
              " arguments" );
     elif ISB_GVAR( name ) then

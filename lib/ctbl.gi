@@ -1237,39 +1237,6 @@ InstallGlobalFunction( CharacterTable_IsNilpotentFactor, function( tbl, N )
 
 #############################################################################
 ##
-#F  CharacterTable_IsNilpotentNormalSubgroup( <tbl>, <N> )
-##
-InstallGlobalFunction( CharacterTable_IsNilpotentNormalSubgroup,
-    function( tbl, N )
-
-    local classlengths,  # class lengths
-          orders,        # orders of class representatives
-          ppow,          # list of classes of prime power order
-          part,          # one pair `[ prime, exponent ]'
-          classes;       # classes of p power order for a prime p
-
-    # Take the classes of prime power order.
-    classlengths:= SizesConjugacyClasses( tbl );
-    orders:= OrdersClassRepresentatives( tbl );
-    ppow:= Filtered( N, i -> IsPrimePowerInt( orders[i] ) );
-
-    for part in Collected( Factors(Integers, Sum( classlengths{ N }, 0 ) ) ) do
-
-      # Check whether the Sylow p subgroup of `N' is normal in `N',
-      # i.e., whether the number of elements of p-power is equal to
-      # the size of a Sylow p subgroup.
-      classes:= Filtered( ppow, i -> orders[i] mod part[1] = 0 );
-      if part[1] ^ part[2] <> Sum( classlengths{ classes }, 0 ) + 1 then
-        return false;
-      fi;
-
-    od;
-    return true;
-    end );
-
-
-#############################################################################
-##
 #M  IsNilpotentCharacterTable( <tbl> )
 ##
 InstallMethod( IsNilpotentCharacterTable,
@@ -1421,7 +1388,7 @@ InstallMethod( IsSupersolvableCharacterTable,
 ##  and the groups in the two infinite series <M>O(2n+1,q)</M> and
 ##  <M>S(2n,q)</M>, where <M>q</M> is a power of the (odd) prime <M>p</M>,
 ##  can be distinguished by the fact that in the latter group, any
-##  element of order <M>p</M> in the centre of the Sylow <M>p</M> subgroup
+##  element of order <M>p</M> in the centre of the Sylow <M>p</M>-subgroup
 ##  has centralizer order divisible by <M>q^{{2n-2}} - 1</M>, whereas no such
 ##  elements exist in the former group.
 ##  (Note that <M>n</M> and <M>p</M> can be computed from the order of
@@ -5006,9 +4973,11 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
        elif centralizers = true then
           Print( "\n" );
           for i in [col..col+acol-1] do
-             fak:= Factors(Integers, tbl_centralizers[classes[i]] );
+             fak:= Factors( Integers, tbl_centralizers[ classes[i] ] );
              for prime in Set( fak ) do
-                cen[prime][i]:= Number( fak, x -> x = prime );
+               if prime <> 1 then
+                 cen[prime][i]:= Number( fak, x -> x = prime );
+               fi;
              od;
           od;
           for j in [1..Length(cen)] do
@@ -6199,13 +6168,13 @@ InstallGlobalFunction( CharacterTableOfNormalSubgroup,
           nccl,           # no. of classes
           orders,         # repr. orders of the result
           centralizers,   # centralizer orders of the result
-          result,         # result table
           err,            # list of classes that must split
-          inverse,        # inverse map of `classes'
-          p,              # loop over primes
           irreducibles,   # list of irred. characters
           chi,            # loop over irreducibles of `tbl'
-          char;           # one character values list for `result'
+          char,           # one character values list for `result'
+          result,         # result table
+          inverse,        # inverse map of `classes'
+          p;              # loop over primes
 
     if not IsOrdinaryTable( tbl ) then
       Error( "<tbl> must be an ordinary character table" );
@@ -6215,12 +6184,47 @@ InstallGlobalFunction( CharacterTableOfNormalSubgroup,
     size:= Sum( sizesclasses );
 
     if Size( tbl ) mod size <> 0 then
-      Error( "<classes> is not a normal subgroup" );
+      # <classes> does not form a normal subgroup.
+      return fail;
     fi;
 
     nccl:= Length( classes );
     orders:= OrdersClassRepresentatives( tbl ){ classes };
     centralizers:= List( sizesclasses, x -> size / x );
+
+    err:= Filtered( [ 1 .. nccl ],
+                    x -> not IsInt( centralizers[x] / orders[x] ) );
+    if not IsEmpty( err ) then
+      Info( InfoCharacterTable, 2,
+            "CharacterTableOfNormalSubgroup: classes in " , err,
+            " necessarily split" );
+      return fail;
+    fi;
+
+    # Compute the irreducibles.
+    irreducibles:= [];
+    for chi in Irr( tbl ) do
+      char:= ValuesOfClassFunction( chi ){ classes };
+      if     Sum( [ 1 .. nccl ],
+                i -> sizesclasses[i] * char[i] * GaloisCyc(char[i],-1), 0 )
+             = size
+         and not char in irreducibles then
+        Add( irreducibles, MakeImmutable( char ) );
+      fi;
+    od;
+
+    if Length( irreducibles ) <> nccl then
+      p:= Size( tbl ) / size;
+      if IsPrimeInt( p ) and not IsEmpty( irreducibles ) then
+        Info( InfoCharacterTable, 2,
+              "CharacterTableOfNormalSubgroup: The table must have ",
+              p * NrConjugacyClasses( tbl ) -
+              ( p^2 - 1 ) * Length( irreducibles ), " classes\n",
+              "#I   (now ", Length( classes ), ", after nec. splitting ",
+              Length( classes ) + (p-1) * Length( err ), ")" );
+      fi;
+      return fail;
+    fi;
 
     result:= Concatenation( "Rest(", Identifier( tbl ), ",",
                             String( classes ), ")" );
@@ -6228,20 +6232,14 @@ InstallGlobalFunction( CharacterTableOfNormalSubgroup,
 
     result:= rec(
         UnderlyingCharacteristic   := 0,
-        Identifier                 := result,
+        Identifier                 := MakeImmutable( result ),
         Size                       := size,
-        SizesCentralizers          := centralizers,
-        SizesConjugacyClasses      := sizesclasses,
-        OrdersClassRepresentatives := orders,
-        ComputedPowerMaps          := []             );
+        SizesCentralizers          := MakeImmutable( centralizers ),
+        SizesConjugacyClasses      := MakeImmutable( sizesclasses ),
+        OrdersClassRepresentatives := MakeImmutable( orders ),
+        ComputedPowerMaps          := [],
+        Irr                        := irreducibles );
 
-    err:= Filtered( [ 1 .. nccl ],
-                    x-> centralizers[x] mod orders[x] <> 0 );
-    if not IsEmpty( err ) then
-      Info( InfoCharacterTable, 2,
-            "CharacterTableOfNormalSubgroup: classes in " , err,
-            " necessarily split" );
-    fi;
     inverse:= InverseMap( classes );
 
     for p in [ 1 .. Length( ComputedPowerMaps( tbl ) ) ] do
@@ -6252,45 +6250,8 @@ InstallGlobalFunction( CharacterTableOfNormalSubgroup,
       fi;
     od;
 
-    # Compute the irreducibles if known.
-    irreducibles:= [];
-    if HasIrr( tbl ) then
-
-      for chi in Irr( tbl ) do
-        char:= ValuesOfClassFunction( chi ){ classes };
-        if     Sum( [ 1 .. nccl ],
-                  i -> sizesclasses[i] * char[i] * GaloisCyc(char[i],-1), 0 )
-               = size
-           and not char in irreducibles then
-          Add( irreducibles, MakeImmutable( char ) );
-        fi;
-      od;
-
-    fi;
-
-    if Length( irreducibles ) = nccl then
-
-      result.Irr:= irreducibles;
-
-      # Convert the record into a library table.
-      ConvertToLibraryCharacterTableNC( result );
-
-    else
-
-      p:= Size( tbl ) / size;
-      if IsPrimeInt( p ) and not IsEmpty( irreducibles ) then
-        Info( InfoCharacterTable, 2,
-              "CharacterTableOfNormalSubgroup: The table must have ",
-              p * NrConjugacyClasses( tbl ) -
-              ( p^2 - 1 ) * Length( irreducibles ), " classes\n",
-              "#I   (now ", Length( classes ), ", after nec. splitting ",
-              Length( classes ) + (p-1) * Length( err ), ")" );
-      fi;
-
-      Error( "tables in progress not yet supported" );
-#T !!
-
-    fi;
+    # Convert the record into a library table.
+    ConvertToLibraryCharacterTableNC( result );
 
     # Store the fusion into `tbl'.
     StoreFusion( result, classes, tbl );

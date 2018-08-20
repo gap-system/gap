@@ -42,6 +42,11 @@ extern Obj READ_AS_FUNC ( void );
 */
 extern Int READ_GAP_ROOT ( const Char * filename );
 
+// READ_ALL_COMMANDS reads a string of GAP statements and executes them
+// allowing to capture and process outputs
+extern Obj
+READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback);
+
 
 /****************************************************************************
 **

@@ -368,28 +368,24 @@ InstallMethod( AdditiveInverseOp,
 #M  IsBound\[\]( <mat>, <i> )
 #M  Position( <mat>, <obj> )
 ##
-InstallMethod( \[\],
+InstallOtherMethod( \[\],
     "for Lie matrix in default representation, and positive integer",
-    true,
-    [ IsLieMatrix and IsPackedElementDefaultRep, IsPosInt ], 0,
+    [ IsLieMatrix and IsPackedElementDefaultRep, IsPosInt ],
     function( mat, i ) return mat![1][i]; end );
 
-InstallMethod( Length,
+InstallOtherMethod( Length,
     "for Lie matrix in default representation",
-    true,
-    [ IsLieMatrix and IsPackedElementDefaultRep ], 0,
-    mat -> Length( mat![1] ) );
+    [ IsLieMatrix and IsPackedElementDefaultRep ],
+    mat -> NumberRows( mat![1] ) );
 
 InstallMethod( IsBound\[\],
     "for Lie matrix in default representation, and integer",
-    true,
-    [ IsLieMatrix and IsPackedElementDefaultRep, IsPosInt ], 0,
+    [ IsLieMatrix and IsPackedElementDefaultRep, IsPosInt ],
     function( mat, i ) return IsBound( mat![1][i] ); end );
 
 InstallMethod( Position,
     "for Lie matrix in default representation, row vector, and integer",
-    true,
-    [ IsLieMatrix and IsPackedElementDefaultRep, IsRowVector, IsInt ], 0,
+    [ IsLieMatrix and IsPackedElementDefaultRep, IsRowVector, IsInt ],
     function( mat, v, pos ) return Position( mat![1], v, pos ); end );
 
 

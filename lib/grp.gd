@@ -3219,6 +3219,14 @@ DeclareOperation("CentralizerModulo", [IsGroup,IsGroup,IsObject]);
 ##  The <A>p</A>-central series of <A>G</A> is defined by
 ##  <M>U_1:= <A>G</A></M>,
 ##  <M>U_i:= [<A>G</A>, U_{{i-1}}] U_{{i-1}}^{<A>p</A>}</M>.
+##  <Example><![CDATA[
+##  gap> g:=QuaternionGroup(12);;
+##  gap> PCentralSeries(g,2);
+##  [ <pc group of size 12 with 3 generators>, Group([ y3, y*y3 ]), Group([ y*y3 ]) ]
+##  gap> g:=SymmetricGroup(4);;
+##  gap> PCentralSeries(g,2);
+##  [ Sym( [ 1 .. 4 ] ), Group([ (1,2,3), (2,3,4) ]) ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -3235,14 +3243,18 @@ KeyDependentOperation( "PCentralSeries", IsGroup, IsPosInt, "prime" );
 ##  <Oper Name="PRump" Arg='G, p'/>
 ##
 ##  <Description>
-##  For a prime <M>p</M>, the <E><A>p</A>-rump</E> of a group <A>G</A> is
-##  the subgroup <M><A>G</A>' <A>G</A>^{<A>p</A>}</M>.
+##  For a prime <M>p</M>, the <E><A>p</A>-rump</E> of a group <A>G</A> is the
+##  subgroup <M><A>G</A>' <A>G</A>^{<A>p</A>}</M>. Unless it equals <A>G</A>
+##  itself (which is the e.g. the case if <A>G</A> is perfect), it is equal
+##  to the second term of the <A>p</A>-central series of <A>G</A>, see
+##  <Ref Func="PCentralSeries"/>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> p:=2;;
-##  gap> gp := Group(List(g,elm->elm^p));;
-##  gap> gprime:=DerivedSubgroup(g);;
-##  gap> PRump(g,p) = ClosureGroup(gp,gprime);
+##  gap> g:=QuaternionGroup(12);;
+##  gap> PRump(g,2) = PCentralSeries(g,2)[2];
+##  true
+##  gap> g:=SymmetricGroup(4);;
+##  gap> PRump(g,2) = AlternatingGroup(4);
 ##  true
 ##  ]]></Example>
 ##  </Description>
@@ -3264,11 +3276,23 @@ KeyDependentOperation( "PRump", IsGroup, IsPosInt, "prime" );
 ##  <Index Key="Op(G)" Subkey="see PCore"><M>O_p(G)</M></Index>
 ##  The <E><A>p</A>-core</E> of <A>G</A> is the largest normal
 ##  <A>p</A>-subgroup of <A>G</A>.
-##  It is the core of a Sylow <A>p</A> subgroup of <A>G</A>,
+##  It is the core of a Sylow <A>p</A>-subgroup of <A>G</A>,
 ##  see <Ref Func="Core"/>.
 ##  <Example><![CDATA[
+##  gap> g:=QuaternionGroup(12);;
+##  gap> PCore(g,2);
+##  Group([ y3 ])
+##  gap> PCore(g,2) = Core(g,SylowSubgroup(g,2));
+##  true
+##  gap> PCore(g,3);
+##  Group([ y*y3 ])
+##  gap> PCore(g,5);
+##  Group([  ])
+##  gap> g:=SymmetricGroup(4);;
 ##  gap> PCore(g,2);
 ##  Group([ (1,4)(2,3), (1,2)(3,4) ])
+##  gap> PCore(g,2) = Core(g,SylowSubgroup(g,2));
+##  true
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3312,7 +3336,7 @@ InParentFOA( "SubnormalSeries", IsGroup, IsGroup, DeclareAttribute );
 ##  <Oper Name="SylowSubgroup" Arg='G, p'/>
 ##
 ##  <Description>
-##  returns a Sylow <A>p</A> subgroup of the finite group <A>G</A>.
+##  returns a Sylow <A>p</A>-subgroup of the finite group <A>G</A>.
 ##  This is a <A>p</A>-subgroup of <A>G</A> whose index in <A>G</A> is
 ##  coprime to <A>p</A>.
 ##  <Ref Oper="SylowSubgroup"/> computes Sylow subgroups via the operation

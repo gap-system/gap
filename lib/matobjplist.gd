@@ -41,10 +41,6 @@ BindGlobal( "ELSPOS", 2 );
 DeclareFilter( "IsIntVector" );
 DeclareFilter( "IsFFEVector" );
 
-# Another pair of filters that slow down things:
-DeclareFilter( "IsCheckingVector" );
-DeclareFilter( "IsCheckingMatrix" );
-
 ############################################################################
 # Constructors:
 ############################################################################

@@ -280,6 +280,7 @@ The following few conventions should be noted.
 <#Include Label="ClassPositionsOfFittingSubgroup">
 <#Include Label="ClassPositionsOfLowerCentralSeries">
 <#Include Label="ClassPositionsOfUpperCentralSeries">
+<#Include Label="ClassPositionsOfSolvableRadical">
 <#Include Label="ClassPositionsOfSupersolvableResiduum">
 <#Include Label="ClassPositionsOfPCore">
 <#Include Label="ClassPositionsOfNormalClosure">
@@ -606,7 +607,7 @@ gap> SetInfoLevel( InfoCharacterTable, 0 );
 <#Include Label="FactorsOfDirectProduct">
 <#Include Label="CharacterTableFactorGroup">
 <#Include Label="CharacterTableIsoclinic">
-<!-- %Declaration{CharacterTableOfNormalSubgroup} -->
+<#Include Label="CharacterTableOfNormalSubgroup">
 <#Include Label="CharacterTableWreathSymmetric">
 
 </Section>

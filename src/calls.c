@@ -1700,20 +1700,19 @@ Int IsKernelFunction(Obj func)
 
 #ifdef USE_GASMAN
 
-static void SaveHandler( ObjFunc hdlr )
+static void SaveHandler(ObjFunc hdlr)
 {
-  const Char * cookie;
-  if (hdlr == (ObjFunc)0)
-    SaveCStr("");
-  else
-    {
-      cookie = CookieOfHandler(hdlr);
-      if (!cookie)
-	{
-	  Pr("No cookie for Handler -- workspace will be corrupt\n",0,0);
-	  SaveCStr("");
-	}
-      SaveCStr(cookie);
+    const Char * cookie;
+    if (hdlr == (ObjFunc)0)
+        SaveCStr("");
+    else {
+        cookie = CookieOfHandler(hdlr);
+        if (!cookie) {
+            Pr("No cookie for Handler -- workspace will be corrupt\n", 0, 0);
+            SaveCStr("");
+        }
+        else
+            SaveCStr(cookie);
     }
 }
 

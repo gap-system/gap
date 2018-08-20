@@ -1657,18 +1657,6 @@ InstallMethod( Append, "for GF2 vectors",
         
 #############################################################################
 ##
-#M  PositionCanonical( <list>, <obj> )  . .  for GF2 matrices
-##
-InstallMethod( PositionCanonical,
-    "for internally represented lists, fall back on `Position'",
-    true, # the list may be non-homogeneous.
-    [ IsList and IsGF2MatrixRep, IsObject ], 0,
-    function( list, obj )
-    return Position( list, obj, 0 );
-end );
-
-#############################################################################
-##
 #M  ShallowCopy( <vec> ) . . . for GF2 vectors
 ##
 InstallMethod( ShallowCopy,
@@ -2122,9 +2110,8 @@ InstallMethod(DeterminantMatDestructive,
 ##
 
 
-InstallMethod(RankMatDestructive,
+InstallOtherMethod(RankMatDestructive,
         "kernel method for plain list of GF2 vectors",
-        true,
         [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
         GF2_AHEAD_OF_8BIT_RANK, 
         RANK_LIST_GF2VECS);
@@ -2233,27 +2220,15 @@ InstallMethod( Matrix, "for a list of vecs, an integer, and a gf2 mat",
     ConvertToMatrixRep(li,2);
     return li;
   end );
-BindGlobal( "PositionLastNonZeroFunc",
+
+InstallMethod( PositionLastNonZero, "for a row vector obj",
+  [IsVectorObj],
   function(l)
     local i;
     i := Length(l);
     while i >= 1 and IsZero(l[i]) do i := i - 1; od;
     return i;
   end );
-BindGlobal( "PositionLastNonZeroFunc2",
-  function(l,pos)
-    local i;
-    i := pos-1;
-    while i >= 1 and IsZero(l[i]) do i := i - 1; od;
-    return i;
-  end );
-
-InstallMethod( PositionLastNonZero, "for a row vector obj",
-  [IsVectorObj], PositionLastNonZeroFunc );
-InstallMethod( PositionLastNonZero, "for a matrix obj",
-  [IsMatrixObj], PositionLastNonZeroFunc );
-InstallMethod( PositionLastNonZero, "for a matrix obj, and an index",
-  [IsMatrixObj, IsPosInt], PositionLastNonZeroFunc2 );
         
 InstallMethod( ExtractSubMatrix, "for a gf2 matrix, and two lists",
   [IsGF2MatrixRep, IsList, IsList],

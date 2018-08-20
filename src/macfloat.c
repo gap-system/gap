@@ -443,11 +443,6 @@ Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj gapprec, Obj f)
   return str;
 }
 
-Obj FuncSTRING_MACFLOAT( Obj self, Obj f) /* backwards compatibility */
-{
-  return FuncSTRING_DIGITS_MACFLOAT(self,INTOBJ_INT(PRINTFDIGITS),f);
-}
-
 Obj FuncLDEXP_MACFLOAT( Obj self, Obj f, Obj i)
 {
   return NEW_MACFLOAT(ldexp(VAL_MACFLOAT(f),INT_INTOBJ(i)));
@@ -517,7 +512,6 @@ static StructGVarFunc GVarFuncs [] = {
   GVAR_FUNC(ABS_MACFLOAT, 1, "macfloat"),
   GVAR_FUNC(SIGN_MACFLOAT, 1, "macfloat"),
   GVAR_FUNC(SIGNBIT_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(STRING_MACFLOAT, 1, "macfloat"),
 
   GVAR_FUNC(STRING_DIGITS_MACFLOAT, 2, "digits, macfloat"),
   GVAR_FUNC(EQ_MACFLOAT, 2, "x, y"),

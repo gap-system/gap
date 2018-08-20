@@ -84,39 +84,53 @@ static Int READ_COMMAND(Obj *evalResult)
 
 /****************************************************************************
 **
-*F  FuncREAD_ALL_COMMANDS( <self>, <instream>, <echo>, <outputFunc> )
+*F  FuncREAD_ALL_COMMANDS( <self>, <instream>, <echo>, <capture>, <outputFunc> )
 **
-**  FuncREAD_ALL_COMMANDS reads all code from <instream> and returns either
-**  fail if the stream cannot be opened, or executes all statements in the
-**  stream and returns a list of lists, each entry of which reflects the
-**  result of the execution of one statement.
+**  FuncREAD_ALL_COMMANDS attempts to execute all statements read from the
+**  stream <instream>. It returns 'fail' if the stream cannot be opened,
+**  otherwise a list of lists, each entry of which reflects the result of the
+**  execution of one statement.
 **
-**  The results are returned as lists of length three if <outputFunc> is
-**  false, or five, if <outputFunc> is a function.
+**  If the parameter <echo> is 'true', then the statements are echoed to the
+**  current output.
 **
-**  If the first entry is true, then the second entry is bound to the result
-**  of the statement if there was one, and unbound otherwise, and the third
-**  entry reflects whether the statement ended in a dual semicolon. If the
-**  first entry is false, an error occurred during the execution of a
-**  statement. In this case, if <outputFunc> is false, only the first entry
-**  is set. If <outputFunc> is a function, only the first and the fifth entry
-**  are set. If <outputFunc> is a function, the fourth entry of the list is
-**  <outputFunc> applied to the result, if there was one, and if the
-**  statement did not end in a dual semicolon. Furthermore, if <outputFunc>
-**  is not false, the fifth entry contains a string of all output printed
-**  while the corresponding statement was executed. If <outputFunc> is false,
-**  all intermediate output is discarded.
+**  If the parameter <capture> is 'true', then any output occurring during
+**  execution of a statement, including the output of <outputFunc>, is
+**  captured into a string.
+**
+**  If <resultCallback> is a function, then this function is called on every
+**  statement result, otherwise this parameter is ignored. Possible outputs of
+**  this function are captured if <capture> is 'true'.
+**
+**  The results are returned as lists of length at most five, the structure of
+**  which is explained below:
+**
+**  - The first entry is 'true' if the statement was executed successfully,
+**    and 'false' otherwise.
+**
+**  - If the first entry is 'true', then the second entry is bound to the
+**    result of the statement if there was one, and unbound otherwise.
+**
+**  - The third entry is 'true' if the statement ended in a dual semicolon,
+**    and 'false' otherwise.
+**
+**  - The fourth entry contains the return value of <resultCallback> if
+**    applicable.
+**
+**  - The fifth entry contains the captured output as a string, if <capture>
+**    is 'true'.
 **
 **  This function is currently used in interactive tools such as the GAP
-**  Jupyter kernel to execute cells and is likely to be replaced by a
-**  function that can read a single command from a stream without losing the
-**  rest of its content.
+**  Jupyter kernel to execute cells and is likely to be replaced by a function
+**  that can read a single command from a stream without losing the rest of
+**  its content.
 */
-Obj FuncREAD_ALL_COMMANDS(Obj self, Obj instream, Obj echo, Obj outputFunc)
+Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
 {
     ExecStatus status;
     UInt       dualSemicolon;
     Obj        result, resultList;
+    Obj        copy;
     Obj        evalResult;
     Obj        outstream = 0;
     Obj        outstreamString = 0;
@@ -127,7 +141,7 @@ Obj FuncREAD_ALL_COMMANDS(Obj self, Obj instream, Obj echo, Obj outputFunc)
     }
 
 
-    if (outputFunc != False) {
+    if (capture == True) {
         outstreamString = NEW_STRING(0);
         outstream = DoOperation2Args(ValGVar(GVarName("OutputTextString")),
                                      outstreamString, True);
@@ -141,9 +155,8 @@ Obj FuncREAD_ALL_COMMANDS(Obj self, Obj instream, Obj echo, Obj outputFunc)
 
     do {
         ClearError();
-
         if (outstream) {
-            // Clean in case Callback function had output
+            // Clean in case there has been any output
             SET_LEN_STRING(outstreamString, 0);
         }
 
@@ -151,38 +164,31 @@ Obj FuncREAD_ALL_COMMANDS(Obj self, Obj instream, Obj echo, Obj outputFunc)
             ReadEvalCommand(STATE(BottomLVars), &evalResult, &dualSemicolon);
 
         if (!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))) {
-            if (outputFunc != False) {
-                Obj copy = CopyToStringRep(outstreamString);
-                SET_LEN_STRING(outstreamString, 0);
-                result = NEW_PLIST(T_PLIST, 5);
-                SET_LEN_PLIST(result, 5);
-                SET_ELM_PLIST(result, 5, copy);
-                CHANGED_BAG(result);
-            }
-            else {
-                result = NEW_PLIST(T_PLIST, 3);
-                SET_LEN_PLIST(result, 3);
-            }
-            SET_ELM_PLIST(result, 1, False);
+            result = NEW_PLIST(T_PLIST, 5);
+            AssPlist(result, 1, False);
             PushPlist(resultList, result);
 
             if (!(status & STATUS_ERROR)) {
-                SET_ELM_PLIST(result, 1, True);
-                SET_ELM_PLIST(result, 3, dualSemicolon ? True : False);
+
+                AssPlist(result, 1, True);
+                AssPlist(result, 3, dualSemicolon ? True : False);
 
                 if (evalResult) {
-                    SET_ELM_PLIST(result, 2, evalResult);
-                    CHANGED_BAG(result);
+                    AssPlist(result, 2, evalResult);
                 }
 
-                if (evalResult && outputFunc != False && !dualSemicolon) {
-                    Obj tmp = CALL_1ARGS(outputFunc, evalResult);
-                    SET_ELM_PLIST(result, 4, tmp);
-                    CHANGED_BAG(result);
+                if (evalResult && IS_FUNC(resultCallback) && !dualSemicolon) {
+                    Obj tmp = CALL_1ARGS(resultCallback, evalResult);
+                    AssPlist(result, 4, tmp);
                 }
             }
-            else {
-                SET_LEN_PLIST(result, 1);
+            // Capture output
+            if (capture == True) {
+                // Flush output
+                Pr("\03", 0L, 0L);
+                copy = CopyToStringRep(outstreamString);
+                SET_LEN_STRING(outstreamString, 0);
+                AssPlist(result, 5, copy);
             }
         }
     } while (!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT)));
@@ -194,6 +200,13 @@ Obj FuncREAD_ALL_COMMANDS(Obj self, Obj instream, Obj echo, Obj outputFunc)
 
     return resultList;
 }
+
+Obj FuncREAD_ALL_COMMANDS(
+    Obj self, Obj instream, Obj echo, Obj capture, Obj resultCallback)
+{
+    return READ_ALL_COMMANDS(instream, echo, capture, resultCallback);
+}
+
 
 /*
  Returns a list with one or two entries. The first
@@ -2179,7 +2192,7 @@ static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(READ, 1, "filename"),
     GVAR_FUNC(READ_NORECOVERY, 1, "filename"),
-    GVAR_FUNC(READ_ALL_COMMANDS, 3, "instream, echo, outputFunc"),
+    GVAR_FUNC(READ_ALL_COMMANDS, 4, "instream, echo, capture, outputFunc"),
     GVAR_FUNC(READ_COMMAND_REAL, 2, "stream, echo"),
     GVAR_FUNC(READ_STREAM, 1, "stream"),
     GVAR_FUNC(READ_STREAM_LOOP, 2, "stream, catchstderrout"),

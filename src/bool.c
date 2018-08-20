@@ -98,9 +98,6 @@ void PrintBool (
     else if ( bool == Fail ) {
         Pr( "fail", 0L, 0L );
     }
-    else if ( bool == Undefined ) {
-        Pr( "Undefined", 0L, 0L );
-    }
     else {
         Pr( "<<very strange boolean value>>", 0L, 0L );
     }
@@ -111,19 +108,14 @@ void PrintBool (
 **
 *F  EqBool( <boolL>, <boolR> )  . . . . . . . . .  test if <boolL> =  <boolR>
 **
-**  'EqBool' returns 'True' if the two boolean values <boolL> and <boolR> are
-**  equal, and 'False' otherwise.
+**  'EqBool' returns '1' if the two boolean values <boolL> and <boolR> are
+**  equal, and '0' otherwise.
 */
 Int EqBool (
     Obj                 boolL,
     Obj                 boolR )
 {
-    if ( boolL == boolR ) {
-        return 1L;
-    }
-    else {
-        return 0L;
-    }
+    return boolL == boolR;
 }
 
 
@@ -131,15 +123,17 @@ Int EqBool (
 **
 *F  LtBool( <boolL>, <boolR> )  . . . . . . . . .  test if <boolL> <  <boolR>
 **
-**  The ordering of Booleans is true < false <= fail (the <= comes from
-**  the fact that Fail may be equal to False in some compatibility modes
+**  The ordering of Booleans is true < false < fail.
 */
 Int LtBool (
     Obj                 boolL,
     Obj                 boolR )
 {
-  return  ( boolL == True && boolR != True) ||
-    ( boolL == False && boolR == Fail && boolL != boolR);
+    if (boolL == True)
+        return boolR != True;
+    if (boolL == False)
+        return boolR == Fail;
+    return 0;
 }
 
 

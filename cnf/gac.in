@@ -408,7 +408,7 @@ if [ $comp_howfar = "link" ]; then
         if [ "X${output}" = "X" ]; then output="gacout"; fi
 
         for object in $GAP_OBJS;  do
-            if [ ${object} != "obj/compstat.lo" ]; then
+            if [ ${object} != "obj/src/compstat.lo" ]; then
                 objects="${abs_top_builddir}/${object} ${objects}"
             fi
         done

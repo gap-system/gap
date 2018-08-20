@@ -2039,6 +2039,7 @@ DeclareAttribute( "ClassPositionsOfFittingSubgroup", IsOrdinaryTable );
 ##
 #A  ClassPositionsOfSolvableRadical( <ordtbl> )
 ##
+##  <#GAPDoc Label="ClassPositionsOfSolvableRadical">
 ##  <ManSection>
 ##  <Attr Name="ClassPositionsOfSolvableRadical" Arg='ordtbl'/>
 ##
@@ -2052,6 +2053,7 @@ DeclareAttribute( "ClassPositionsOfFittingSubgroup", IsOrdinaryTable );
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareAttribute( "ClassPositionsOfSolvableRadical",
     IsOrdinaryTable );
@@ -3638,7 +3640,7 @@ DeclareGlobalFunction( "PrintCharacterTable" );
 ##  and return a character table.
 ##  This holds also for <Ref Oper="BrauerTable"
 ##  Label="for a character table, and a prime integer"/>.
-##  note that the return value of <Ref Oper="BrauerTable"
+##  Note that the return value of <Ref Oper="BrauerTable"
 ##  Label="for a character table, and a prime integer"/>
 ##  will in general not know the irreducible Brauer characters,
 ##  and &GAP; might be unable to compute these characters.
@@ -3895,24 +3897,65 @@ DeclareAttributeSuppCT( "SourceOfIsoclinicTable", IsNearlyCharacterTable,
 ##
 #F  CharacterTableOfNormalSubgroup( <ordtbl>, <classes> )
 ##
+##  <#GAPDoc Label="CharacterTableOfNormalSubgroup">
 ##  <ManSection>
 ##  <Func Name="CharacterTableOfNormalSubgroup" Arg='ordtbl, classes'/>
 ##
 ##  <Description>
-##  returns the restriction of the ordinary character table <A>ordtbl</A>
-##  to the classes in the list <A>classes</A>.
+##  Let <A>ordtbl</A> be the ordinary character table of a group <M>G</M>,
+##  say, and <A>classes</A> be a list of class positions for this table.
+##  If the classes given by <A>classes</A> form a normal subgroup <M>N</M>,
+##  say, of <M>G</M> and if these classes are conjugacy classes of <M>N</M>
+##  then this function returns the character table of <M>N</M>.
+##  In all other cases, the function returns <K>fail</K>.
 ##  <P/>
-##  In most cases, this table is only an approximation of the character table
-##  of this normal subgroup, and some classes of the normal subgroup must be
-##  split (see&nbsp;<Ref Func="CharacterTableSplitClasses"/>) in order to get
-##  a character table.
-##  The result is only a table in progress then
-##  (see&nbsp;<Ref Sect="Character Table Categories"/>).
+##  <Example><![CDATA[
+##  gap> t:= CharacterTable( "Symmetric", 4 );
+##  CharacterTable( "Sym(4)" )
+##  gap> nsg:= ClassPositionsOfNormalSubgroups( t );
+##  [ [ 1 ], [ 1, 3 ], [ 1, 3, 4 ], [ 1 .. 5 ] ]
+##  gap> rest:= List( nsg, c -> CharacterTableOfNormalSubgroup( t, c ) );
+##  [ CharacterTable( "Rest(Sym(4),[ 1 ])" ), fail, fail, 
+##    CharacterTable( "Rest(Sym(4),[ 1 .. 5 ])" ) ]
+##  ]]></Example>
 ##  <P/>
-##  If the classes in <A>classes</A> need not to be split then the result is
-##  a proper character table.
+##  Here is a nontrivial example.
+##  We use <Ref Func="CharacterTableOfNormalSubgroup"/> for computing the
+##  two isoclinic variants of <M>2.A_5.2</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> g:= SchurCoverOfSymmetricGroup( 5, 3, 1 );;
+##  gap> c:= CyclicGroup( 4 );;
+##  gap> dp:= DirectProduct( g, c );;
+##  gap> diag:= First( Elements( Centre( dp ) ), 
+##  >                  x -> Order( x ) = 2 and
+##  >                       not x in Image( Embedding( dp, 1 ) ) and
+##  >                       not x in Image( Embedding( dp, 2 ) ) );;
+##  gap> fact:= Image( NaturalHomomorphismByNormalSubgroup( dp, 
+##  >                      Subgroup( dp, [ diag ] ) ));;
+##  gap> t:= CharacterTable( fact );;
+##  gap> Size( t );
+##  480
+##  gap> nsg:= ClassPositionsOfNormalSubgroups( t );;
+##  gap> rest:= List( nsg, c -> CharacterTableOfNormalSubgroup( t, c ) );;
+##  gap> index2:= Filtered( rest, x -> x <> fail and Size( x ) = 240 );;
+##  gap> Length( index2 );
+##  2
+##  gap> tg:= CharacterTable( g );;
+##  gap> IsRecord(
+##  >        TransformingPermutationsCharacterTables( index2[1], tg ) );
+##  false
+##  gap> IsRecord(
+##  >        TransformingPermutationsCharacterTables( index2[2], tg ) );
+##  true
+##  ]]></Example>
+##  <P/>
+##  Alternatively, we could construct the character table of the central
+##  product with character theoretic methods.
+##  Or we could use <Ref Oper="CharacterTableIsoclinic"/>.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "CharacterTableOfNormalSubgroup" );
 
@@ -4393,11 +4436,11 @@ DeclareGlobalFunction( "NormalSubgroupClasses" );
 ##    Character( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] ), 
 ##    Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] ) ]
 ##  gap> kernel:= KernelOfCharacter( irr[3] );
-##  Group([ (1,2)(3,4), (1,4)(2,3) ])
+##  Group([ (1,2)(3,4), (1,3)(2,4) ])
 ##  gap> HasNormalSubgroupClassesInfo( tbl );
 ##  true
 ##  gap> NormalSubgroupClassesInfo( tbl );
-##  rec( nsg := [ Group([ (1,2)(3,4), (1,4)(2,3) ]) ],
+##  rec( nsg := [ Group([ (1,2)(3,4), (1,3)(2,4) ]) ],
 ##    nsgclasses := [ [ 1, 3 ] ], nsgfactors := [  ] )
 ##  gap> ClassPositionsOfNormalSubgroup( tbl, kernel );
 ##  [ 1, 3 ]
