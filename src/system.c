@@ -1144,60 +1144,8 @@ void InitSystem (
     }
 
     preAllocAmount = 4*1024*1024;
-    
-    /* open the standard files                                             */
-    struct stat stat_in, stat_out, stat_err;
-    fstat(fileno(stdin), &stat_in);
-    fstat(fileno(stdout), &stat_out);
-    fstat(fileno(stderr), &stat_err);
 
-    // set up stdin
-    syBuf[0].type = raw_socket;
-    syBuf[0].fp = fileno(stdin);
-    syBuf[0].echo = fileno(stdout);
-    syBuf[0].bufno = -1;
-    syBuf[0].isTTY = isatty(fileno(stdin));
-    if (syBuf[0].isTTY) {
-        // if stdin is on a terminal, make sure stdout in on the same terminal
-        if (stat_in.st_dev != stat_out.st_dev ||
-            stat_in.st_ino != stat_out.st_ino)
-            syBuf[0].echo = open( ttyname(fileno(stdin)), O_WRONLY );
-    }
-
-    // set up stdout
-    syBuf[1].type = raw_socket;
-    syBuf[1].echo = syBuf[1].fp = fileno(stdout); 
-    syBuf[1].bufno = -1;
-    syBuf[1].isTTY = isatty(fileno(stdout));
-
-    // set up errin (defaults to stdin, unless stderr is on a terminal)
-    syBuf[2].type = raw_socket;
-    syBuf[2].fp = fileno(stdin);
-    syBuf[2].echo = fileno(stderr);
-    syBuf[2].bufno = -1;
-    syBuf[2].isTTY = isatty(fileno(stderr));
-    if (syBuf[2].isTTY) {
-        // if stderr is on a terminal, make sure errin in on the same terminal
-        if (stat_in.st_dev != stat_err.st_dev ||
-            stat_in.st_ino != stat_err.st_ino)
-            syBuf[2].fp = open( ttyname(fileno(stderr)), O_RDONLY );
-    }
-
-    // set up errout
-    syBuf[3].type = raw_socket;
-    syBuf[3].echo = syBuf[3].fp = fileno(stderr);
-    syBuf[3].bufno = -1;
-
-    // turn off buffering
-    setbuf(stdin, (char *)0);
-    setbuf(stdout, (char *)0);
-    setbuf(stderr, (char *)0);
-
-    for (i = 4; i < ARRAY_SIZE(syBuf); i++)
-        SyMarkBufUnused(i);
-
-    for (i = 0; i < ARRAY_SIZE(syBuffers); i++)
-        syBuffers[i].inuse = 0;
+    InitSysFiles();
 
 #ifdef HAVE_LIBREADLINE
     rl_initialize ();
@@ -1299,10 +1247,7 @@ void InitSystem (
     if ( SyWindow ) {
       /*         SyLineEdit   = 1;
                  SyCTRD       = 1; */
-        syBuf[2].fp = syBuf[0].fp;  syBuf[2].echo = syBuf[0].echo;
-        syBuf[2].isTTY = syBuf[0].isTTY;
-        syBuf[3].fp = syBuf[1].fp;
-        syBuf[3].echo = syBuf[1].echo;
+        SyRedirectStderrToStdOut();
         syWinPut( 0, "@p", "1." );
     }
    

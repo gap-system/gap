@@ -1613,12 +1613,6 @@ Obj FuncPOSITION_FILE (
         return Fail;
     }
 
-    // Need to account for characters in buffer
-    if (syBuf[ifid].bufno >= 0) {
-        UInt bufno = syBuf[ifid].bufno;
-        ret -= syBuffers[bufno].buflen - syBuffers[bufno].bufstart;
-    }
-
     return INTOBJ_INT(ret);
 }
 
@@ -1746,31 +1740,13 @@ Obj FuncREAD_ALL_FILE (
     len = 0;
     lstr = 0;
 
-
-    if (syBuf[ifid].bufno >= 0) {
-        UInt bufno = syBuf[ifid].bufno;
-
-        /* first drain the buffer */
-        lstr = syBuffers[bufno].buflen - syBuffers[bufno].bufstart;
-        if (ilim != -1) {
-            if (lstr > ilim)
-                lstr = ilim;
-            ilim -= lstr;
-        }
-        GROW_STRING(str, lstr);
-        memcpy(CHARS_STRING(str),
-               syBuffers[bufno].buf + syBuffers[bufno].bufstart, lstr);
-        len = lstr;
-        SET_LEN_STRING(str, len);
-        syBuffers[bufno].bufstart += lstr;
-    }
 #ifdef SYS_IS_CYGWIN32
  getmore:
 #endif
     while (ilim == -1 || len < ilim ) {
       if ( len > 0 && !HasAvailableBytes(ifid))
           break;
-      if (syBuf[ifid].isTTY) {
+      if (SyBufIsTTY(ifid)) {
           if (ilim == -1) {
               Pr("#W Warning -- reading to  end of input tty will never "
                  "end\n",
@@ -1789,11 +1765,11 @@ Obj FuncREAD_ALL_FILE (
           do {
               csize =
                   (ilim == -1 || (ilim - len) > 20000) ? 20000 : ilim - len;
-              lstr = SyRead(ifid, buf, csize);
+              lstr = SyReadWithBuffer(ifid, buf, csize);
           } while (lstr == -1 && errno == EAGAIN);
       }
       if (lstr <= 0) {
-          syBuf[ifid].ateof = 1;
+          SyBufSetEOF(ifid);
           break;
       }
       GROW_STRING( str, len+lstr );
@@ -1854,11 +1830,6 @@ Obj FuncSEEK_POSITION_FILE (
             "you can replace <pos> via 'return <pos>;'" );
     }
     
-    if (syBuf[INT_INTOBJ(fid)].bufno >= 0)
-    {
-            syBuffers[syBuf[INT_INTOBJ(fid)].bufno].buflen = 0;
-            syBuffers[syBuf[INT_INTOBJ(fid)].bufno].bufstart = 0;
-    }
     ret = SyFseek( INT_INTOBJ(fid), INT_INTOBJ(pos) );
     return ret == -1 ? Fail : True;
 }
@@ -1951,33 +1922,26 @@ Obj FuncFD_OF_FILE(Obj self,Obj fid)
   }
 
   Int fd = INT_INTOBJ(fid);
-
-  // gzipped files don't have a fd
-  if (syBuf[fd].type == gzip_socket)
-      return INTOBJ_INT(-1);
-
-  Int fdi = syBuf[fd].fp;
+  Int fdi = SyBufFileno(fd);
   return INTOBJ_INT(fdi);
 }
 
 #ifdef HPCGAP
 Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
 {
-  Int fd;
-  int fdi;
-  while (fid == (Obj) 0 || !(IS_INTOBJ(fid)))
-  {
-    fid = ErrorReturnObj(
-           "<fid> must be a small integer (not a %s)",
-           (Int)TNAM_OBJ(fid),0L,
-           "you can replace <fid> via 'return <fid>;'" );
-  }
-  fd = INT_INTOBJ(fid);
-  fdi = syBuf[fd].fp;
-  if (onoff == False || onoff == Fail)
-    return syStopraw(fdi), False;
-  else
-    return syStartraw(fdi) ? True : False;
+    while (!IS_INTOBJ(fid)) {
+        fid = ErrorReturnObj("<fid> must be a small integer (not a %s)",
+                             (Int)TNAM_OBJ(fid), 0L,
+                             "you can replace <fid> via 'return <fid>;'");
+    }
+
+    Int fd = INT_INTOBJ(fid);
+    if (onoff == False || onoff == Fail) {
+        syStopraw(fd);
+        return False;
+    }
+    else
+        return syStartraw(fd) ? True : False;
 }
 #endif
 
