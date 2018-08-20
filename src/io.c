@@ -2015,7 +2015,7 @@ Obj FuncIS_INPUT_TTY(Obj self)
     GAP_ASSERT(IO()->Input);
     if (IO()->Input->isstream)
         return False;
-    return syBuf[IO()->Input->file].isTTY ? True : False;
+    return SyBufIsTTY(IO()->Input->file) ? True : False;
 }
 
 Obj FuncIS_OUTPUT_TTY(Obj self)
@@ -2023,7 +2023,7 @@ Obj FuncIS_OUTPUT_TTY(Obj self)
     GAP_ASSERT(IO()->Output);
     if (IO()->Output->isstream)
         return False;
-    return syBuf[IO()->Output->file].isTTY ? True : False;
+    return SyBufIsTTY(IO()->Output->file) ? True : False;
 }
 
 Obj FuncGET_FILENAME_CACHE(Obj self)
