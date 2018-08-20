@@ -549,6 +549,7 @@ static ALWAYS_INLINE Obj DoProfNNNargs (
     case  5: result = CALL_5ARGS_PROF( self, arg1, arg2, arg3, arg4, arg5 ); break;
     case  6: result = CALL_6ARGS_PROF( self, arg1, arg2, arg3, arg4, arg5, arg6 ); break;
     case -1: result = CALL_XARGS_PROF( self, arg1 ); break;
+    default: result = 0; GAP_ASSERT(0);
     }
 
     /* number of invocation of this function                               */
