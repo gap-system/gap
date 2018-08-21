@@ -528,13 +528,24 @@ static void RemoveSaveIndex( Bag bag)
   LINK_BAG(bag) = bag;
 }
 
+
+static Char * GetKernelDescription(void)
+{
+    static Char SyKernelDescription[256];
+    strcpy(SyKernelDescription, SyKernelVersion);
+    if (SyUseReadline) {
+        strcat(SyKernelDescription, " with readline");
+    }
+    return SyKernelDescription;
+}
+
 static void WriteSaveHeader( void )
 {
   UInt i;
   UInt globalcount = 0;
   
   SaveCStr("GAP workspace");
-  SaveCStr(SyKernelVersion);
+  SaveCStr(GetKernelDescription());
 
 #ifdef SYS_IS_64_BIT             
   SaveCStr("64 bit");
@@ -661,10 +672,11 @@ void LoadWorkspace( Char * fname )
   if (strcmp (buf, "GAP workspace") == 0) {
 
      LoadCStr(buf,256);
-     if (strcmp (buf, SyKernelVersion) != 0) {
-        Pr("This workspace is not compatible with GAP kernel (%s, present: %s).\n", 
-           (long)buf, (long)SyKernelVersion);
-        SyExit(1);
+     if (strcmp(buf, GetKernelDescription()) != 0) {
+         Pr("This workspace is not compatible with GAP kernel (%s, present: "
+            "%s).\n",
+            (long)buf, (long)GetKernelDescription());
+         SyExit(1);
      }
 
      LoadCStr(buf,256);
