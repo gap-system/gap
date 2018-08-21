@@ -154,5 +154,30 @@ gap> randomTest([1,-6,"cheese", Group(())], Random);
 gap> randomTest(PadicExtensionNumberFamily(3, 5, [1,1,1], [1,1]), Random, function(x,y) return IsPadicExtensionNumber(x); end);
 gap> randomTest(PurePadicNumberFamily(2,20), Random, function(x,y) return IsPurePadicNumber(x); end);
 
+# Test initialising random number generator
+# We take a string and 0-pad it to 4 bytes
+gap> getOneInt := function(str)
+>   Init(GlobalMersenneTwister, str);
+>   return Random([1..100000]);
+> end;;
+gap> getOneInt("") = getOneInt("\000");
+true
+gap> getOneInt("a") = getOneInt("b");
+false
+gap> getOneInt("") = getOneInt("\000\000\000\000");
+true
+gap> getOneInt("a") = getOneInt("a\000");
+true
+gap> getOneInt("a") = getOneInt("a\000\000\000");
+true
+gap> getOneInt("a") = getOneInt("a\000\000\000\000");
+false
+gap> getOneInt("a") = getOneInt("a\000\000\000a\000\000\000");
+false
+gap> getOneInt("a\000\000\000a\000\000\000") = getOneInt("a\000\000\000a");
+true
+gap> getOneInt("a") = getOneInt("a\000\000\000b");
+false
+
 #
 gap> STOP_TEST("random.tst", 1);

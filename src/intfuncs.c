@@ -118,7 +118,7 @@ Obj FuncInitRandomMT( Obj self, Obj initstr)
       mt[i] &= 0xffffffffUL;
       i++; j++;
       if (i>=N) { mt[0] = mt[N-1]; i=1; }
-      if (j>=key_length) j=0;
+      if (4 * j >= byte_key_length) j=0;
   }
   for (k=N-1; k; k--) {
       mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1566083941UL)) - i;
