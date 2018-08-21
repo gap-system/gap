@@ -776,7 +776,7 @@ Obj FuncHASH_SYNCHRONIZED(Obj self, Obj target, Obj function)
     volatile int locked = 0;
     jmp_buf      readJmpError;
     memcpy(readJmpError, STATE(ReadJmpError), sizeof(jmp_buf));
-    TRY_READ
+    TRY_IF_NO_ERROR
     {
         HashLock(target);
         locked = 1;
@@ -795,7 +795,7 @@ Obj FuncHASH_SYNCHRONIZED_SHARED(Obj self, Obj target, Obj function)
     volatile int locked = 0;
     jmp_buf      readJmpError;
     memcpy(readJmpError, STATE(ReadJmpError), sizeof(jmp_buf));
-    TRY_READ
+    TRY_IF_NO_ERROR
     {
         HashLockShared(target);
         locked = 1;
