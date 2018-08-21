@@ -111,7 +111,11 @@ BIND_GLOBAL( "GAPInfo", rec(
            help := [ "Run ProfileLineByLine(<filename>) with recordMem := true on GAP start"] ),
       rec( long := "cover", default := "", arg := "<file>",
            help := [ "Run CoverageLineByLine(<filename>) on GAP start"] ),
-      rec( long := "enableMemCheck", default := false)
+      rec( long := "enableMemCheck", default := false),
+      rec( long := "norepl", default := false,
+           help := [ "Disable the GAP read-evaluate-print loop (REPL)" ] ),
+      rec( long := "nointeract", default := false,
+           help := [ "Start GAP in non-interactive mode (disable read-evaluate-print loop (REPL) and break loop)" ] )
     ],
     ) );
 
@@ -377,6 +381,13 @@ CallAndInstallPostRestore( function()
     CommandLineOptions.g:= CommandLineOptions.g mod 3;
     # use the same as the kernel
     CommandLineOptions.E:= GAPInfo.KernelInfo.HAVE_LIBREADLINE;
+
+    # --nointeract implies no break loop and no repl
+    if CommandLineOptions.nointeract then
+      CommandLineOptions.T := true;
+      CommandLineOptions.norepl := true;
+    fi;
+
     MakeImmutable( CommandLineOptions );
     MakeImmutable( InitFiles );
 
