@@ -1576,22 +1576,6 @@ InstallGlobalFunction( LoadPackage, function( arg )
         info:= First( PackageInfo( pkgname ),
                       r -> r.InstallationPath = paths[2][ pos ][1] );
 
-        # This is the first attempt to read stuff for this package.
-        # So we handle the case of a `PreloadFile' entry.
-        if IsBound( info.PreloadFile ) then
-          filename:= UserHomeExpand( info.PreloadFile );
-          if filename[1] = '/' then
-            read:= READ( filename );
-          else
-            read:= ReadPackage( name, filename );
-          fi;
-          if not read then
-            LogPackageLoadingMessage( PACKAGE_WARNING,
-                Concatenation( "file `", filename, "' cannot be read" ),
-                info.PackageName );
-          fi;
-        fi;
-
         # Notify the documentation (for the available version).
         LoadPackageDocumentation( info );
 
@@ -2282,8 +2266,6 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
     TestMandat( record, "AvailabilityTest", IsFunction, "a function" );
     TestOption( record, "BannerString", IsString, "a string" );
     TestOption( record, "TestFile", IsFilename,
-                "a string denoting a relative path to a readable file" );
-    TestOption( record, "PreloadFile", IsFilename,
                 "a string denoting a relative path to a readable file" );
     TestOption( record, "Keywords", IsStringList, "a list of strings" );
 
