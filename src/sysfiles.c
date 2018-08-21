@@ -88,6 +88,74 @@ typedef void sig_handler_t ( int );
 #include <zlib.h>
 
 
+static ssize_t SyWriteandcheck(Int fid, const void * buf, size_t count);
+
+
+/****************************************************************************
+**
+*V  syBuf . . . . . . . . . . . . . .  buffer and other info for files, local
+**
+**  'syBuf' is  a array used as  buffers for  file I/O to   prevent the C I/O
+**  routines  from   allocating their  buffers  using  'malloc',  which would
+**  otherwise confuse Gasman.
+**
+**
+**  Actually these days SyBuf just stores various file info. SyBuffers
+**  stores buffers for the relatively few files that need them.
+*/
+
+// The type of file stored in a 'SYS_SY_BUF'
+typedef enum {
+    unused_socket,    // Socket is free
+    raw_socket,       // Plain UNIX socket stored in 'fp'
+    gzip_socket       // A gzFile handled by zlib stored in 'gzfp'
+} GAPSocketType;
+
+GAP_STATIC_ASSERT(unused_socket == 0, "unused_socket must be zero");
+
+typedef struct {
+    // gzfp is used if type == gzip_socket
+    gzFile gzfp;
+
+    // file descriptor for this file (only used if type == raw_socket)
+    int fp;
+
+    // file descriptor for the echo (only used if type == raw_socket)
+    int echo;
+
+    // file is either a plain descriptor, pipe or gzipped
+    GAPSocketType type;
+
+    // set to 1 by any read operation that hits eof; reset to 0 by a
+    // subsequent successful read
+    UInt ateof;
+
+    // records that last character read was \r for cygwin and other systems
+    // that need end-of-line hackery
+    UInt crlast;
+
+    // if non-negative then this file has a buffer in syBuffers[bufno]; if
+    // negative, this file may not be buffered
+    Int bufno;
+
+    // set when this fid is a *stdin* or *errin* and really is a tty
+    Int isTTY;
+} SYS_SY_BUF;
+
+#define SYS_FILE_BUF_SIZE 20000
+
+typedef struct {
+    Char buf[SYS_FILE_BUF_SIZE];
+    UInt inuse;
+    UInt bufstart;
+    UInt buflen;
+} SYS_SY_BUFFER;
+
+SYS_SY_BUF syBuf[256];
+
+SYS_SY_BUFFER syBuffers[32];
+
+
 /* utility to check return value of 'write'  */
 ssize_t echoandcheck(int fid, const char *buf, size_t count) {
   int ret;
@@ -711,27 +779,10 @@ const Char * SyWinCmd (
 */
 
 
-/****************************************************************************
-**
-*V  syBuf . . . . . . . . . . . . . .  buffer and other info for files, local
-**
-**  'syBuf' is  a array used as  buffers for  file I/O to   prevent the C I/O
-**  routines  from   allocating their  buffers  using  'malloc',  which would
-**  otherwise confuse Gasman.
-**
-**
-**  Actually these days SyBuf just stores various file info. SyBuffers
-**  stores buffers for the relatively few files that need them.
-*/
-
-SYS_SY_BUF syBuf [256];
-
-SYS_SY_BUFFER syBuffers [ 32];
-
 // Mark a member of syBuf as unused
-void SyMarkBufUnused(Int i)
+static void SyBufMarkUnused(Int i)
 {
-    GAP_ASSERT(i >= 0 && i < 256);
+    GAP_ASSERT(i >= 0 && i < ARRAY_SIZE(syBuf));
     memset(&(syBuf[i]), 0, sizeof(syBuf[i]));
     syBuf[i].type = unused_socket;
 }
@@ -740,11 +791,51 @@ void SyMarkBufUnused(Int i)
 // they are marked as used when created.
 
 // Check if a member of syBuf is in use
-Int SyBufInUse(Int i)
+static Int SyBufInUse(Int i)
 {
-    GAP_ASSERT(i >= 0 && i < 256);
-    return syBuf[i].type != unused_socket;
+    if (i >= 0 && i < ARRAY_SIZE(syBuf))
+        return syBuf[i].type != unused_socket;
+    return 0;
 }
+
+void SyRedirectStderrToStdOut(void)
+{
+    syBuf[2].fp = syBuf[0].fp;
+    syBuf[2].echo = syBuf[0].echo;
+    syBuf[2].isTTY = syBuf[0].isTTY;
+    syBuf[3].fp = syBuf[1].fp;
+    syBuf[3].echo = syBuf[1].echo;
+}
+
+/****************************************************************************
+**
+*F  SyBufFileno( <fid> ) . . . . . . . . . . . .  get operating system fileno
+**
+**  Given a 'syBuf' buffer id, return the associated file descriptor, if any.
+**  For gzipped files, -1 is returned.
+*/
+extern int SyBufFileno(Int fid)
+{
+    if (fid == -1)
+        return -1;
+    GAP_ASSERT(0 <= fid && fid < ARRAY_SIZE(syBuf));
+
+    // fp is only valid in the raw case
+    return (syBuf[fid].type == raw_socket) ? syBuf[fid].fp : -1;
+}
+
+Int SyBufIsTTY(Int fid)
+{
+    GAP_ASSERT(0 <= fid && fid < ARRAY_SIZE(syBuf));
+    return syBuf[fid].isTTY;
+}
+
+void SyBufSetEOF(Int fid)
+{
+    GAP_ASSERT(0 <= fid && fid < ARRAY_SIZE(syBuf));
+    syBuf[fid].ateof = 1;
+}
+
 
 /****************************************************************************
 **
@@ -848,7 +939,8 @@ Int SyFopen (
 #endif
 
     /* try to open the file                                                */
-    if ( 0 <= (syBuf[fid].fp = open(name,flags, 0644)) ) {
+    syBuf[fid].fp = open(name,flags, 0644);
+    if ( 0 <= syBuf[fid].fp ) {
         syBuf[fid].type = raw_socket;
         syBuf[fid].echo = syBuf[fid].fp;
         syBuf[fid].bufno = -1;
@@ -856,6 +948,7 @@ Int SyFopen (
     else if (strncmp(mode, "r", 1) == 0 && SyIsReadableFile(namegz) == 0 &&
              (syBuf[fid].gzfp = gzopen(namegz, mode))) {
         syBuf[fid].type = gzip_socket;
+        syBuf[fid].fp = -1;
         syBuf[fid].bufno = -1;
     }
     else {
@@ -926,15 +1019,10 @@ Int SyFclose (
     }
     HashLock(&syBuf);
     /* try to close the file                                               */
-    if ((syBuf[fid].type == raw_socket && close(syBuf[fid].fp) == EOF) ||
-        (syBuf[fid].type == pipe_socket && pclose(syBuf[fid].pipehandle) == -1
-#ifdef ECHILD
-         && errno != ECHILD
-#endif
-         )) {
+    if (syBuf[fid].type == raw_socket && close(syBuf[fid].fp) == EOF) {
         fputs("gap: 'SyFclose' cannot close file, ",stderr);
         fputs("maybe your file system is full?\n",stderr);
-        SyMarkBufUnused(fid);
+        SyBufMarkUnused(fid);
         HashUnlock(&syBuf);
         return -1;
     }
@@ -948,7 +1036,7 @@ Int SyFclose (
     /* mark the buffer as unused                                           */
     if (syBuf[fid].bufno >= 0)
       syBuffers[syBuf[fid].bufno].inuse = 0;
-    SyMarkBufUnused(fid);
+    SyBufMarkUnused(fid);
     HashUnlock(&syBuf);
     return 0;
 }
@@ -962,9 +1050,6 @@ Int SyIsEndOfFile (
     Int                 fid )
 {
     /* check file identifier                                               */
-    if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
-        return -1;
-    }
     if ( !SyBufInUse(fid) ) {
         return -1;
     }
@@ -1046,7 +1131,9 @@ UInt syStartraw ( Int fid )
     }
 
     /* try to get the terminal attributes, will fail if not terminal       */
-    if ( tcgetattr( syBuf[fid].fp, &syOld) == -1 )
+    const int fd = SyBufFileno(fid);
+    GAP_ASSERT(fd >= 0);
+    if ( tcgetattr( fd, &syOld) == -1 )
         return 0;
 
     /* disable interrupt, quit, start and stop output characters           */
@@ -1062,7 +1149,7 @@ UInt syStartraw ( Int fid )
     syNew.c_cc[VTIME] = 0;
     syNew.c_lflag    &= ~(ECHO|ICANON);
 
-    if ( tcsetattr( syBuf[fid].fp, TCSANOW, &syNew) == -1 )
+    if ( tcsetattr( fd, TCSANOW, &syNew) == -1 )
         return 0;
 
 #ifdef SIGTSTP
@@ -1094,7 +1181,9 @@ void syStopraw (
 #endif
 
     /* enable input buffering, line editing and echo again                 */
-    if (tcsetattr(syBuf[fid].fp, TCSANOW, &syOld) == -1)
+    const int fd = SyBufFileno(fid);
+    GAP_ASSERT(fd >= 0);
+    if (tcsetattr(fd, TCSANOW, &syOld) == -1)
         fputs("gap: 'tcsetattr' could not turn off raw mode!\n",stderr);
 }
 
@@ -1306,9 +1395,6 @@ Int SyEchoch (
     Int                 fid )
 {
     /* check file identifier                                               */
-    if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
-        return -1;
-    }
     if ( !SyBufInUse(fid) ) {
         return -1;
     }
@@ -1375,8 +1461,7 @@ void SyFputs (
 
     /* otherwise compute only the length                                   */
     else {
-        for ( i = 0; line[i] != '\0'; i++ )
-            ;
+        i = strlen(line);
     }
 
     /* if running under a window handler, send the line to it              */
@@ -1403,21 +1488,29 @@ Int SyFtell (
     Int                 fid )
 {
     /* check file identifier                                               */
-    if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
-        return -1;
-    }
     if ( !SyBufInUse(fid) ) {
         return -1;
     }
 
+    Int ret;
+
     switch (syBuf[fid].type) {
     case raw_socket:
-        return (Int)lseek(syBuf[fid].fp, 0, SEEK_CUR);
+        ret = (Int)lseek(syBuf[fid].fp, 0, SEEK_CUR);
+        break;
     case gzip_socket:
-        return (Int)gzseek(syBuf[fid].gzfp, 0, SEEK_CUR);
+        ret = (Int)gzseek(syBuf[fid].gzfp, 0, SEEK_CUR);
+        break;
     default:
         return -1;
     }
+
+    // Need to account for characters in buffer
+    if (syBuf[fid].bufno >= 0) {
+        UInt bufno = syBuf[fid].bufno;
+        ret -= syBuffers[bufno].buflen - syBuffers[bufno].bufstart;
+    }
+    return ret;
 }
 
 
@@ -1430,11 +1523,14 @@ Int SyFseek (
     Int                 pos )
 {
     /* check file identifier                                               */
-    if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
-        return -1;
-    }
     if ( !SyBufInUse(fid) ) {
         return -1;
+    }
+
+    if (syBuf[fid].bufno >= 0) {
+        UInt bufno = syBuf[fid].bufno;
+        syBuffers[bufno].buflen = 0;
+        syBuffers[bufno].bufstart = 0;
     }
 
     switch (syBuf[fid].type) {
@@ -1484,6 +1580,11 @@ Int SyFseek (
 
 Int SyRead(Int fid, void * ptr, size_t len)
 {
+    /* check file identifier                                               */
+    if ( !SyBufInUse(fid) ) {
+        return -1;
+    }
+
     if (syBuf[fid].type == gzip_socket) {
         return gzread(syBuf[fid].gzfp, ptr, len);
     }
@@ -1492,8 +1593,38 @@ Int SyRead(Int fid, void * ptr, size_t len)
     }
 }
 
+Int SyReadWithBuffer(Int fid, void * ptr, size_t len)
+{
+    /* check file identifier                                               */
+    if ( !SyBufInUse(fid) ) {
+        return -1;
+    }
+
+    // first drain the buffer
+    if (syBuf[fid].bufno >= 0) {
+        UInt   bufno = syBuf[fid].bufno;
+        size_t avail = syBuffers[bufno].buflen - syBuffers[bufno].bufstart;
+        if (avail > 0) {
+            if (avail > len)
+                avail = len;
+            memcpy(ptr, syBuffers[bufno].buf + syBuffers[bufno].bufstart,
+                   avail);
+            syBuffers[bufno].bufstart += avail;
+            return avail;
+        }
+    }
+
+    return SyRead(fid, ptr, len);
+}
+
+
 Int SyWrite(Int fid, const void * ptr, size_t len)
 {
+    /* check file identifier                                               */
+    if ( !SyBufInUse(fid) ) {
+        return -1;
+    }
+
     if (syBuf[fid].type == gzip_socket) {
         return gzwrite(syBuf[fid].gzfp, ptr, len);
     }
@@ -1502,7 +1633,7 @@ Int SyWrite(Int fid, const void * ptr, size_t len)
     }
 }
 
-ssize_t SyWriteandcheck(Int fid, const void * buf, size_t count)
+static ssize_t SyWriteandcheck(Int fid, const void * buf, size_t count)
 {
     int ret;
     if (syBuf[fid].type == gzip_socket) {
@@ -1673,11 +1804,6 @@ Int SyGetch (
     Int                 ch;
 
     /* check file identifier                                               */
-    if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
-        return -1;
-    }
-        /* on the Mac, syBuf[fid].fp is -1 for stdin, stdout, errin, errout
-           the other cases are handled by syGetch */
     if ( !SyBufInUse(fid) ) {
         return -1;
     }
@@ -1923,8 +2049,7 @@ Int HasAvailableBytes( UInt fid )
   Int ret;
 #endif
   UInt bufno;
-  if (fid > ARRAY_SIZE(syBuf) ||
-      !SyBufInUse(fid))
+  if (!SyBufInUse(fid))
     return -1;
 
   if (syBuf[fid].bufno >= 0)
@@ -2312,9 +2437,6 @@ Char * syFgets (
     Obj                 linestr, yankstr, args, res;
 
     /* check file identifier                                               */
-    if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
-        return (Char*)0;
-    }
     if ( !SyBufInUse(fid) ) {
         return (Char*)0;
     }
@@ -2978,19 +3100,22 @@ UInt SyExecuteProcess (
     if ( chdir(dir) == -1 ) return -1;
 
     /* if <in> is -1 open "/dev/null"                                  */
-    if ( in == -1 ) {
+    if ( in == -1 )
         tin = open( "/dev/null", O_RDONLY );
-        if ( tin == -1 ) return -1;
-    } else tin = SyFileno(in);
+    else
+        tin = SyBufFileno(in);
+    if ( tin == -1 )
+        return -1;
 
     /* if <out> is -1 open "/dev/null"                                 */
-    if ( out == -1 ) {
+    if ( out == -1 )
         tout = open( "/dev/null", O_WRONLY );
-        if ( tout == -1 ) {
-            if (in == -1) close(tin);
-            return -1;
-        }
-    } else tout = SyFileno(out);
+    else
+        tout = SyBufFileno(out);
+    if ( tout == -1 ) {
+        if (in == -1) close(tin);
+        return -1;
+    }
 
     /* set standard input to <in>, standard output to <out>            */
     savestdin = -1;   /* Just to please the compiler */
@@ -3120,23 +3245,23 @@ UInt SyExecuteProcess (
         /* if <in> is -1 open "/dev/null"                                  */
         if ( in == -1 ) {
             tin = open( "/dev/null", O_RDONLY );
-            if ( tin == -1 ) {
-                _exit(-1);
-            }
         }
         else {
-            tin = SyFileno(in);
+            tin = SyBufFileno(in);
+        }
+        if ( tin == -1 ) {
+            _exit(-1);
         }
 
         /* if <out> is -1 open "/dev/null"                                 */
         if ( out == -1 ) {
             tout = open( "/dev/null", O_WRONLY );
-            if ( tout == -1 ) {
-                _exit(-1);
-            }
         }
         else {
-            tout = SyFileno(out);
+            tout = SyBufFileno(out);
+        }
+        if ( tout == -1 ) {
+            _exit(-1);
         }
 
         /* set standard input to <in>, standard output to <out>            */
@@ -3700,6 +3825,63 @@ static StructGVarFunc GVarFuncs [] = {
 **
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
+
+// This function is called by 'InitSystem', before the usual module
+// initialization.
+void InitSysFiles(void)
+{
+    memset(syBuffers, 0, sizeof(syBuf));
+
+    memset(syBuf, 0, sizeof(syBuf));
+
+    // open the standard files
+    struct stat stat_in, stat_out, stat_err;
+    fstat(fileno(stdin), &stat_in);
+    fstat(fileno(stdout), &stat_out);
+    fstat(fileno(stderr), &stat_err);
+
+    // set up stdin
+    syBuf[0].type = raw_socket;
+    syBuf[0].fp = fileno(stdin);
+    syBuf[0].echo = fileno(stdout);
+    syBuf[0].bufno = -1;
+    syBuf[0].isTTY = isatty(fileno(stdin));
+    if (syBuf[0].isTTY) {
+        // if stdin is on a terminal, make sure stdout in on the same terminal
+        if (stat_in.st_dev != stat_out.st_dev ||
+            stat_in.st_ino != stat_out.st_ino)
+            syBuf[0].echo = open(ttyname(fileno(stdin)), O_WRONLY);
+    }
+
+    // set up stdout
+    syBuf[1].type = raw_socket;
+    syBuf[1].echo = syBuf[1].fp = fileno(stdout);
+    syBuf[1].bufno = -1;
+    syBuf[1].isTTY = isatty(fileno(stdout));
+
+    // set up errin (defaults to stdin, unless stderr is on a terminal)
+    syBuf[2].type = raw_socket;
+    syBuf[2].fp = fileno(stdin);
+    syBuf[2].echo = fileno(stderr);
+    syBuf[2].bufno = -1;
+    syBuf[2].isTTY = isatty(fileno(stderr));
+    if (syBuf[2].isTTY) {
+        // if stderr is on a terminal, make sure errin in on the same terminal
+        if (stat_in.st_dev != stat_err.st_dev ||
+            stat_in.st_ino != stat_err.st_ino)
+            syBuf[2].fp = open(ttyname(fileno(stderr)), O_RDONLY);
+    }
+
+    // set up errout
+    syBuf[3].type = raw_socket;
+    syBuf[3].echo = syBuf[3].fp = fileno(stderr);
+    syBuf[3].bufno = -1;
+
+    // turn off buffering
+    setbuf(stdin, (char *)0);
+    setbuf(stdout, (char *)0);
+    setbuf(stderr, (char *)0);
+}
 
 /* NB Should probably do some checks preSave for open files etc and refuse to save
    if any are found */
