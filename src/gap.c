@@ -129,7 +129,7 @@ void ViewObjHandler ( Obj obj )
 
   /* if non-zero use this function, otherwise use `PrintObj'             */
   memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
-  TRY_READ {
+  TRY_IF_NO_ERROR {
     if ( func != 0 && TNUM_OBJ(func) == T_FUNCTION ) {
       ViewObj(obj);
     }
@@ -1522,7 +1522,7 @@ void ThreadedInterpreter(void *funcargs) {
   }
   SET_LEN_PLIST(tmp, LEN_PLIST(tmp)-1);
 
-  TRY_READ {
+  TRY_IF_NO_ERROR {
     Obj init, exit;
     if (sySetjmp(TLS(threadExit)))
       return;
@@ -1534,7 +1534,7 @@ void ThreadedInterpreter(void *funcargs) {
     PushVoidObj();
     /* end the interpreter                                                 */
     IntrEnd(0, NULL);
-  } CATCH_READ_ERROR {
+  } CATCH_ERROR {
     IntrEnd(1, NULL);
     ClearError();
   } 
@@ -1825,7 +1825,7 @@ void InitializeGap (
            calls the post restore functions and then runs a GAP session */
         if (POST_RESTORE != (Obj) 0 &&
             IS_FUNC(POST_RESTORE))
-          TRY_READ {
+          TRY_IF_NO_ERROR {
             CALL_0ARGS(POST_RESTORE);
           }
     }
@@ -1849,7 +1849,7 @@ void InitializeGap (
        past here when we're about to exit. 
                                            */
     if ( SyLoadSystemInitFile ) {
-      TRY_READ {
+      TRY_IF_NO_ERROR {
         if ( READ_GAP_ROOT("lib/init.g") == 0 ) {
                 Pr( "gap: hmm, I cannot find 'lib/init.g' maybe",
                     0L, 0L );
@@ -1858,7 +1858,7 @@ void InitializeGap (
                     " script instead.", 0L, 0L );
             }
       }
-      CATCH_READ_ERROR {
+      CATCH_ERROR {
           Panic("Caught error at top-most level, probably quit from "
                 "library loading");
       }
