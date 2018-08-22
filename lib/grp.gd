@@ -3220,7 +3220,7 @@ DeclareOperation("CentralizerModulo", [IsGroup,IsGroup,IsObject]);
 ##  <M>U_1:= <A>G</A></M>,
 ##  <M>U_i:= [<A>G</A>, U_{{i-1}}] U_{{i-1}}^{<A>p</A>}</M>.
 ##  <Example><![CDATA[
-##  gap> g:=QuaternionGroup(12);;
+##  gap> g:=DicyclicGroup(12);;
 ##  gap> PCentralSeries(g,2);
 ##  [ <pc group of size 12 with 3 generators>, Group([ y3, y*y3 ]), Group([ y*y3 ]) ]
 ##  gap> g:=SymmetricGroup(4);;
@@ -3250,7 +3250,7 @@ KeyDependentOperation( "PCentralSeries", IsGroup, IsPosInt, "prime" );
 ##  <Ref Func="PCentralSeries"/>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> g:=QuaternionGroup(12);;
+##  gap> g:=DicyclicGroup(12);;
 ##  gap> PRump(g,2) = PCentralSeries(g,2)[2];
 ##  true
 ##  gap> g:=SymmetricGroup(4);;
@@ -3279,7 +3279,7 @@ KeyDependentOperation( "PRump", IsGroup, IsPosInt, "prime" );
 ##  It is the core of a Sylow <A>p</A>-subgroup of <A>G</A>,
 ##  see <Ref Func="Core"/>.
 ##  <Example><![CDATA[
-##  gap> g:=QuaternionGroup(12);;
+##  gap> g:=DicyclicGroup(12);;
 ##  gap> PCore(g,2);
 ##  Group([ y3 ])
 ##  gap> PCore(g,2) = Core(g,SylowSubgroup(g,2));
