@@ -152,29 +152,15 @@ static inline Obj CURR_FUNC(void)
 *F  BRK_CALL_TO() . . . . . . . . . expr. which was called from current frame
 *F  SET_BRK_CALL_TO(expr) . . . set expr. which was called from current frame
 */
-
-#ifdef TRACEFRAMES
-extern Obj STEVES_TRACING;
-extern Obj True;
-#endif
-
-static inline void SetBrkCallTo( Expr expr, const char * file, int line ) {
-#ifdef TRACEFRAMES
-  if (STEVES_TRACING == True) {
-    fprintf(stderr,"SBCT: %i %x %s %i\n",
-            (int)expr, (int)STATE(CurrLVars), file, line);
-  }
-#endif
-  ((LVarsHeader *)STATE(PtrLVars))->stat = expr;
+static inline Expr BRK_CALL_TO(void)
+{
+    return STAT_LVARS_PTR(STATE(PtrLVars));
 }
 
-#ifndef NO_BRK_CALLS
-#define BRK_CALL_TO()                   STAT_LVARS_PTR(STATE(PtrLVars))
-#define SET_BRK_CALL_TO(expr)           SetBrkCallTo(expr, __FILE__, __LINE__)
-#else
-#define BRK_CALL_TO()                   /* do nothing */
-#define SET_BRK_CALL_TO(expr)           /* do nothing */
-#endif
+static inline void SET_BRK_CALL_TO(Expr expr)
+{
+    ((LVarsHeader *)STATE(PtrLVars))->stat = expr;
+}
 
 
 /****************************************************************************
@@ -221,11 +207,7 @@ static void SET_CURR_LVARS(Obj lvars)
 **  variables.  The old local variables bag is saved in <old>.
 */
 
-static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
-#ifdef TRACEFRAMES
-, const char * file, int line
-#endif
-)
+static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc)
 {
   // make sure old lvars are not garbage collected
   Obj old = STATE(CurrLVars);
@@ -239,22 +221,11 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 
   // switch to new lvars
   SET_CURR_LVARS(new_lvars);
-#ifdef TRACEFRAMES
-  if (STEVES_TRACING == True) {
-    Obj n = NAME_FUNC(func);
-    Char *s = ((UInt)n) ? (Char *)CHARS_STRING(n) : (Char *)"nameless";
-    fprintf(stderr,"STNL: %s %i\n   func %lx narg %i nloc %i function name %s\n     old lvars %lx new lvars %lx\n",
-            file, line, (UInt) func, (int)narg, (int)nloc,s,(UInt)old, (UInt)STATE(CurrLVars));
-  }
-#endif
+
   return old;
 }
 
-#ifdef TRACEFRAMES
-#define SWITCH_TO_NEW_LVARS(func, narg, nloc, old)     (old) = SwitchToNewLvars((func), (narg), (nloc), __FILE__, __LINE__)
-#else
 #define SWITCH_TO_NEW_LVARS(func, narg, nloc, old)     (old) = SwitchToNewLvars((func), (narg), (nloc))
-#endif
 
 
 /****************************************************************************
@@ -263,20 +234,13 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc
 **
 **  'SWITCH_TO_OLD_LVARS' switches back to the old local variables bag <old>.
 */
-
-static inline void SwitchToOldLVars(Obj old, const char *file, int line)
+static inline void SWITCH_TO_OLD_LVARS(Obj old)
 {
-#ifdef TRACEFRAMES
-  if (STEVES_TRACING == True) {
-    fprintf(stderr,"STOL:  %s %i old lvars %lx new lvars %lx\n",
-           file, line, (UInt)STATE(CurrLVars),(UInt)old);
-  }
-#endif
   CHANGED_BAG( STATE(CurrLVars) );
   SET_CURR_LVARS(old);
 }
 
-static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
+static inline void SWITCH_TO_OLD_LVARS_AND_FREE(Obj old)
 {
   // remove the link to the calling function, in case this values bag stays
   // alive due to higher variable reference
@@ -285,12 +249,8 @@ static inline void SwitchToOldLVarsAndFree(Obj old, const char *file, int line)
   if (STATE(CurrLVars) != old && TNUM_OBJ(STATE(CurrLVars)) == T_LVARS)
     FreeLVarsBag(STATE(CurrLVars));
 
-  SwitchToOldLVars(old, file, line);
+  SWITCH_TO_OLD_LVARS(old);
 }
-
-
-#define SWITCH_TO_OLD_LVARS(old) SwitchToOldLVars((old), __FILE__,__LINE__)
-#define SWITCH_TO_OLD_LVARS_AND_FREE(old) SwitchToOldLVarsAndFree((old), __FILE__,__LINE__)
 
 
 /****************************************************************************
