@@ -225,7 +225,7 @@ Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 2nd choice method found for `DihedralGroupCons' on 2 arguments
 
 #
-# quaternion groups
+# dicyclic groups
 #
 gap> IdGroup(DicyclicGroup(4));
 [ 4, 1 ]
@@ -263,19 +263,41 @@ gap> DimensionOfMatrixGroup(G);
 
 #
 gap> DicyclicGroup(2,3);
-Error, usage: DicyclicGroup( [<filter>, [<field>, ] ]<size> )
+Error, usage: <filter> must be a filter
 gap> DicyclicGroup(IsRing,3);
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `DicyclicGroupCons' on 2 arguments
+Error, usage: <size> must be a positive integer divisible by 4
 gap> DicyclicGroup(0);
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `DicyclicGroupCons' on 2 arguments
+Error, usage: <size> must be a positive integer divisible by 4
 gap> DicyclicGroup(1);
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 2nd choice method found for `DicyclicGroupCons' on 2 arguments
+Error, usage: <size> must be a positive integer divisible by 4
 gap> DicyclicGroup(IsFpGroup,1);
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 2nd choice method found for `DicyclicGroupCons' on 2 arguments
+Error, usage: <size> must be a positive integer divisible by 4
+
+#
+# (generalised) quaternion groups
+#
+gap> QuaternionGroup(4);
+#I  Warning: QuaternionGroup called with <size> 4 which is less than 8, or not a power of 2.
+<pc group of size 4 with 2 generators>
+gap> QuaternionGroup(8);
+<pc group of size 8 with 3 generators>
+gap> QuaternionGroup(12);
+#I  Warning: QuaternionGroup called with <size> 12 which is less than 8, or not a power of 2.
+<pc group of size 12 with 3 generators>
+gap> QuaternionGroup(11);
+Error, usage: <size> must be a positive integer divisible by 4
+gap> GeneralisedQuaternionGroup(16);
+<pc group of size 16 with 4 generators>
+gap> GeneralisedQuaternionGroup(IsFpGroup, 32);
+<fp group of size 32 on the generators [ r, s ]>
+gap> GeneralisedQuaternionGroup(IsMatrixGroup, 32);
+<matrix group of size 32 with 2 generators>
+gap> F:=FunctionField(GF(16),1);;
+gap> Q:=GeneralisedQuaternionGroup(IsMatrixGroup, F, 256); 
+<matrix group of size 256 with 2 generators>
+gap> HasIsQuaternionGroup(Q);
+true
+gap> Unbind(F);; Unbind(Q);;
 
 #
 # elementary abelian groups
