@@ -1153,7 +1153,7 @@ Obj FuncBLIST_LIST (
         lenList  = GET_LEN_RANGE( list );
         lenSub   = GET_LEN_RANGE( sub );
         blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
-        ADDR_OBJ(blist)[0] = INTOBJ_INT(lenList);
+        SET_LEN_BLIST(blist, lenList);
         ptrBlist = BLOCKS_BLIST(blist);
 
         /* get the bounds of the subset with respect to the boolean list   */
@@ -1183,7 +1183,7 @@ Obj FuncBLIST_LIST (
         lenList  = GET_LEN_RANGE( list );
         lenSub   = LEN_LIST( sub );
         blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
-        ADDR_OBJ(blist)[0] = INTOBJ_INT(lenList);
+        SET_LEN_BLIST(blist, lenList);
         ptrBlist = BLOCKS_BLIST(blist);
         ptrSub = CONST_ADDR_OBJ(sub);
 
@@ -1217,7 +1217,7 @@ Obj FuncBLIST_LIST (
 
             /* allocate the boolean list and get pointer                   */
             blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
-            ADDR_OBJ(blist)[0] = INTOBJ_INT(lenList);
+            SET_LEN_BLIST(blist, lenList);
 
             /* run over the elements of <sub> and search for the elements  */
             for ( l = 1; l <= LEN_LIST(sub); l++ ) {
@@ -1253,7 +1253,7 @@ Obj FuncBLIST_LIST (
 
             /* allocate the boolean list and get pointer                   */
             blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
-            ADDR_OBJ(blist)[0] = INTOBJ_INT(lenList);
+            SET_LEN_BLIST(blist, lenList);
 
             /* run over the elements of <list>                             */
             k = 1;
@@ -1299,7 +1299,7 @@ Obj FuncBLIST_LIST (
         lenList  = LEN_LIST( list );
         lenSub   = LEN_PLIST( sub );
         blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
-        ADDR_OBJ(blist)[0] = INTOBJ_INT(lenList);
+        SET_LEN_BLIST(blist, lenList);
 
         /* run over the elements of <list>                                 */
         k = 1;
