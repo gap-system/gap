@@ -1,0 +1,13 @@
+gap> # double a list until there is a memory overflow
+gap> l:=[1];; while true do Append(l,l); od;
+Error, reached the pre-set memory limit
+(change it with the -o command line option) in
+  Append( l, l ); at *stdin*:3 called from 
+<function "unknown">( <arguments> )
+ called from read-eval loop at *stdin*:3
+you can 'return;'
+brk> # ... then we should be in a break loop. Exit that, perform some other computations.
+brk> quit;
+gap> Factorial(42);
+1405006117752879898543142606244511569936384000000000
+gap> QUIT;

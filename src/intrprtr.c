@@ -4434,7 +4434,7 @@ void             IntrAssertEnd2Args ( void )
 
 
     if ( STATE(IntrIgnoring)  == 0 )
-      ErrorQuit("Assertion Failure", 0, 0);
+      ErrorQuit("Assertion failure", 0, 0);
     else
       STATE(IntrIgnoring) -= 2;
 

@@ -946,11 +946,6 @@ UInt ExecAssert2Args (
             SET_BRK_CURR_STAT( stat );
             ErrorReturnVoid( "Assertion failure", 0L, 0L, "you may 'return;'");
         }
-
-        /* decision must be 'True' here                                    */
-        else {
-            return 0;
-        }
     }
   return 0;
 }
@@ -992,7 +987,6 @@ UInt ExecAssert3Args (
                     PrintObj(message);
             }
         }
-        return 0;
     }
     return 0;
 }
