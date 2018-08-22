@@ -174,9 +174,9 @@ end );
 
 #############################################################################
 ##
-#M  QuaternionGroupCons( <IsFpGroup and IsFinite>, <n> )
+#M  DicyclicGroupCons( <IsFpGroup and IsFinite>, <n> )
 ##
-InstallMethod( QuaternionGroupCons,
+InstallMethod( DicyclicGroupCons,
     "fp group",
     true,
     [ IsFpGroup and IsFinite,

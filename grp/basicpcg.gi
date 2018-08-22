@@ -217,9 +217,9 @@ end );
 
 #############################################################################
 ##
-#M  QuaternionGroupCons( <IsPcGroup and IsFinite>, <n> )
+#M  DicyclicGroupCons( <IsPcGroup and IsFinite>, <n> )
 ##
-InstallMethod( QuaternionGroupCons,
+InstallMethod( DicyclicGroupCons,
     "pc group",
     true,
     [ IsPcGroup and IsFinite,
