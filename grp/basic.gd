@@ -384,23 +384,81 @@ DeclareSynonym("QuaternionGroupCons", DicyclicGroupCons);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BindGlobal( "DicyclicGroup", function ( arg )
+BindGlobal( "GRPLIB_DicyclicParameterCheck",
+function(args, quaternion)
+    local res, size;
 
-  if Length(arg) = 1  then
-    return DicyclicGroupCons( IsPcGroup, arg[1] );
-  elif IsOperation(arg[1]) then
-    if Length(arg) = 2  then
-      return DicyclicGroupCons( arg[1], arg[2] );
-    elif Length(arg) = 3  then
-      # some filters require extra arguments, e.g. IsMatrixGroup + field
-      return DicyclicGroupCons( arg[1], arg[2], arg[3] );
+    res := [];
+
+    if Length(args) = 1 then
+        res[1] := IsPcGroup;
+        res[2] := args[1];
+        size := res[2];
+    elif Length(args) = 2 then
+        res[1] := args[1];
+        res[2] := args[2];
+        size := res[2];
+    elif Length(args) = 3 then
+        res[1] := args[1];
+        res[2] := args[2];
+        res[3] := args[3];
+        size := res[3];
+
+        if not IsField(res[2]) then
+            ErrorNoReturn("usage: <field> must be a field");
+        fi;
+    else
+        ErrorNoReturn("usage: DicyclicGroup( [<filter>, [<field>, ] ] <size> )");
     fi;
-  fi;
-  Error( "usage: DicyclicGroup( [<filter>, [<field>, ] ]<size> )" );
 
-end );
+    if not IsFilter(res[1]) then
+        ErrorNoReturn("usage: <filter> must be a filter");
+    fi;
 
-DeclareSynonym( "QuaternionGroup", DicyclicGroup );
+    if not (IsPosInt(size) and (size mod 4 = 0)) then
+        ErrorNoReturn("usage: <size> must be a positive integer divisible by 4");
+    fi;
+
+    if not IsPrimePowerInt(size) or size < 8 then
+        if quaternion = "error" then
+            ErrorNoReturn("usage: <size> must be a power of 2 and at least 8");
+        elif quaternion = "warn" then
+            Info(InfoWarning, 1, "Warning: QuaternionGroup called with <size> ", size,
+                                 " which is less than 8, or not a power of 2.");
+        fi;
+    fi;
+
+    return res;
+end);
+
+BindGlobal( "DicyclicGroup",
+function(args...)
+    local res;
+
+    res := GRPLIB_DicyclicParameterCheck(args, "");
+
+    return CallFuncList(DicyclicGroupCons, res);
+end);
+
+BindGlobal( "QuaternionGroup",
+function(args...)
+    local res;
+
+    res := GRPLIB_DicyclicParameterCheck(args, "warn");
+
+    return CallFuncList(DicyclicGroupCons, res);
+end);
+
+BindGlobal( "GeneralisedQuaternionGroup",
+function(args...)
+    local res, grp;
+
+    res := GRPLIB_DicyclicParameterCheck(args, "error");
+    grp := CallFuncList(DicyclicGroupCons, res);
+    SetIsQuaternionGroup(grp, true);
+
+    return grp;
+end);
 
 
 #############################################################################
