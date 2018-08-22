@@ -187,19 +187,6 @@ static inline void MakeHighVars( Bag bag ) {
 
 /****************************************************************************
 **
-*F  SET_CURR_LVARS
-*/
-static void SET_CURR_LVARS(Obj lvars)
-{
-    GAP_ASSERT(IS_LVARS_OR_HVARS(lvars));
-    STATE(CurrLVars) = lvars;
-    STATE(PtrLVars) = PTR_BAG(lvars);
-    STATE(PtrBody) = (Stat *)PTR_BAG(BODY_FUNC(CURR_FUNC()));
-}
-
-
-/****************************************************************************
-**
 *F  SWITCH_TO_NEW_LVARS( <func>, <narg>, <nloc>, <old> )  . . . . . new local
 **
 **  'SWITCH_TO_NEW_LVARS'  creates and switches  to a new local variabes bag,
@@ -220,7 +207,9 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc)
   hdr->parent = old;
 
   // switch to new lvars
-  SET_CURR_LVARS(new_lvars);
+  STATE(CurrLVars) = new_lvars;
+  STATE(PtrLVars) = (Obj *)hdr;
+  STATE(PtrBody) = (Stat *)ADDR_OBJ(BODY_FUNC(func));
 
   return old;
 }
@@ -236,8 +225,13 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc)
 */
 static inline void SWITCH_TO_OLD_LVARS(Obj old)
 {
-  CHANGED_BAG( STATE(CurrLVars) );
-  SET_CURR_LVARS(old);
+    CHANGED_BAG(STATE(CurrLVars));
+
+    GAP_ASSERT(IS_LVARS_OR_HVARS(old));
+    LVarsHeader * hdr = (LVarsHeader *)ADDR_OBJ(old);
+    STATE(CurrLVars) = old;
+    STATE(PtrLVars) = (Obj *)hdr;
+    STATE(PtrBody) = (Stat *)ADDR_OBJ(BODY_FUNC(hdr->func));
 }
 
 static inline void SWITCH_TO_OLD_LVARS_AND_FREE(Obj old)

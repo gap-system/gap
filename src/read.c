@@ -1272,7 +1272,7 @@ static void ReadFuncExprBody(
         if (nrError == 0 && STATE(IntrCoding)) {
             CodeEnd(1);
             STATE(IntrCoding)--;
-            SET_CURR_LVARS(currLVars);
+            SWITCH_TO_OLD_LVARS(currLVars);
         }
     }
 
@@ -2078,7 +2078,7 @@ static void ReadFor (
         if ( nrError == 0 && STATE(IntrCoding) ) {
             CodeEnd(1);
             STATE(IntrCoding)--;
-            SET_CURR_LVARS(currLVars);
+            SWITCH_TO_OLD_LVARS(currLVars);
         }
     }
 }
@@ -2132,7 +2132,7 @@ static void ReadWhile (
         if ( nrError == 0 && STATE(IntrCoding) ) {
             CodeEnd(1);
             STATE(IntrCoding)--;
-            SET_CURR_LVARS(currLVars);
+            SWITCH_TO_OLD_LVARS(currLVars);
         }
     }
 }
@@ -2210,7 +2210,7 @@ static void ReadAtomic (
         if ( nrError == 0 && STATE(IntrCoding) ) {
             CodeEnd(1);
             STATE(IntrCoding)--;
-            SET_CURR_LVARS(currLVars);
+            SWITCH_TO_OLD_LVARS(currLVars);
         }
     }
 #ifdef HPCGAP
@@ -2268,7 +2268,7 @@ static void ReadRepeat (
         if ( nrError == 0 && STATE(IntrCoding) ) {
             CodeEnd(1);
             STATE(IntrCoding)--;
-            SET_CURR_LVARS(currLVars);
+            SWITCH_TO_OLD_LVARS(currLVars);
         }
     }
 }
