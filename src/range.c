@@ -610,13 +610,8 @@ Obj             PosRange (
     low     = GET_LOW_RANGE(list);
     inc     = GET_INC_RANGE(list);
 
-    /* look just beyond the end                                            */
-    if ( istart == lenList ) {
-        k = 0;
-    }
-
-    /* look for an integer                                                 */
-    else if ( IS_INTOBJ(val) ) {
+    // look for an integer, and not beyond the list end
+    if ( IS_INTOBJ(val) && istart < lenList ) {
         v = INT_INTOBJ(val);
         if ( 0 < inc
           && low + istart * inc <= v && v <= low + (lenList-1) * inc
@@ -1033,24 +1028,7 @@ Obj FuncINTER_RANGE( Obj self, Obj r1, Obj r2)
   SET_LEN_PLIST(r1, 0L);
   return (Obj) 0;
 }
-/* torture:
-a := [-10..10];; INTER_RANGE(a,[-10..10]); a;
-a := [-10..10];; INTER_RANGE(a,[-11..10]); a;
-a := [-10..10];; INTER_RANGE(a,[-10..11]); a;
-a := [-10..10];; INTER_RANGE(a,[-11..9]); a;
-a := [-10..10];; INTER_RANGE(a,[-9..11]); a;
-a := [-10..10];; INTER_RANGE(a,[-21,-18..21]); a;
-a := [-10..10];; INTER_RANGE(a,[-6,-3..21]); a;
-a := [-10..10];; INTER_RANGE(a,[-21,-18..6]); a;
-a := [-10,-7..20];; INTER_RANGE(a,[-21,-18..6]); a;
-a := [-9,-6..21];; INTER_RANGE(a,[-21,-18..6]); a;
-a := [-12,-10..20];; INTER_RANGE(a,[-21,-18..6]); a;
-a := [-15,-12..3];; INTER_RANGE(a,[-21,-18..6]); a;
-a := [-12,-9..3];; INTER_RANGE(a,[-21,-18..6]); a;
-a := [-9,-6..3];; INTER_RANGE(a,[-21,-18..6]); a;
-a := [-9,-3..3];; INTER_RANGE(a,[-21,-18..6]); a;
-a := [-9,-5..3];; INTER_RANGE(a,[-21,-18..6]); a;
-*/    
+
 
 /****************************************************************************
 **

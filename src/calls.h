@@ -92,8 +92,8 @@ typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5,
 **
 **  'BODY_FUNC(<func>)' is the body.
 **
-**  'ENVI_FUNC(<func>)'  is the  environment  (i.e., the local  variables bag
-**  that was current when <func> was created).
+**  'ENVI_FUNC(<func>)'  is the  environment (i.e., the local  variables bag)
+**  that was current when <func> was created.
 **
 **  'FEXS_FUNC(<func>)'  is the function expressions list (i.e., the list of
 **  the function expressions of the functions defined inside of <func>).

@@ -1045,7 +1045,7 @@ Obj FuncSUBTR_SET (
 static StructGVarFunc GVarFuncs [] = {
 
     GVAR_FUNC(LIST_SORTED_LIST, 1, "list"),
-    GVAR_FUNC(IS_EQUAL_SET, 2, "set1, set2"),
+    GVAR_FUNC(IS_EQUAL_SET, 2, "list1, list2"),
     GVAR_FUNC(IS_SUBSET_SET, 2, "set1, set2"),
     GVAR_FUNC(ADD_SET, 2, "set, val"),
     GVAR_FUNC(REM_SET, 2, "set, val"),

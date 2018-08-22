@@ -169,19 +169,3 @@ Unbind(l!{[1,3]});
                 ^
 gap> l;
 [ 42, 2, 23 ]
-
-#
-# assertions
-#
-gap> Assert(0, true);
-gap> Assert(0, false);
-Error, Assertion Failure
-gap> Assert(0, 0);
-Error, <condition> in Assert must yield 'true' or 'false' (not a integer)
-gap> Assert(0, true, "bla");
-gap> Assert(0, false, "bla\n");
-bla
-gap> Assert(0, false, 1); Print("\n");
-1
-gap> Assert(0, 0, "bla");
-Error, <condition> in Assert must yield 'true' or 'false' (not a integer)
