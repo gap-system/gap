@@ -236,9 +236,9 @@ InstallMethod( DihedralGroupCons,
 
 #############################################################################
 ##
-#M  QuaternionGroupCons( <IsPermGroup>, <4n> )
+#M  DicyclicGroupCons( <IsPermGroup>, <4n> )
 ##
-InstallMethod( QuaternionGroupCons,
+InstallMethod( DicyclicGroupCons,
     "perm. group",
     true,
     [ IsPermGroup, IsPosInt ], 0,

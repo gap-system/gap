@@ -227,55 +227,55 @@ Error, no 2nd choice method found for `DihedralGroupCons' on 2 arguments
 #
 # quaternion groups
 #
-gap> IdGroup(QuaternionGroup(4));
+gap> IdGroup(DicyclicGroup(4));
 [ 4, 1 ]
-gap> IdGroup(QuaternionGroup(IsFpGroup,4));
+gap> IdGroup(DicyclicGroup(IsFpGroup,4));
 [ 4, 1 ]
-gap> QuaternionGroup(8);
+gap> DicyclicGroup(8);
 <pc group of size 8 with 3 generators>
-gap> QuaternionGroup(IsPcGroup,8);
+gap> DicyclicGroup(IsPcGroup,8);
 <pc group of size 8 with 3 generators>
-gap> QuaternionGroup(IsPermGroup,8);
+gap> DicyclicGroup(IsPermGroup,8);
 Group([ (1,5,3,7)(2,8,4,6), (1,2,3,4)(5,6,7,8) ])
-gap> QuaternionGroup(IsFpGroup,8);
+gap> DicyclicGroup(IsFpGroup,8);
 <fp group of size 8 on the generators [ r, s ]>
-gap> G:=QuaternionGroup(IsMatrixGroup, 8);
+gap> G:=DicyclicGroup(IsMatrixGroup, 8);
 <matrix group of size 8 with 2 generators>
 gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
 Rationals
 4
-gap> G:=QuaternionGroup(IsMatrixGroup, GF(2), 8);
+gap> G:=DicyclicGroup(IsMatrixGroup, GF(2), 8);
 <matrix group of size 8 with 2 generators>
 gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
 GF(2)
 8
-gap> G:=QuaternionGroup(IsMatrixGroup, GF(3), 8);
+gap> G:=DicyclicGroup(IsMatrixGroup, GF(3), 8);
 <matrix group of size 8 with 2 generators>
 gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
 GF(3)
 4
 gap> F:=FunctionField(GF(3),["t"]);
 FunctionField(...,[ t ])
-gap> G:=QuaternionGroup(IsMatrixGroup, F, 8);
+gap> G:=DicyclicGroup(IsMatrixGroup, F, 8);
 <matrix group of size 8 with 2 generators>
 gap> DimensionOfMatrixGroup(G);
 4
 
 #
-gap> QuaternionGroup(2,3);
-Error, usage: QuaternionGroup( [<filter>, ]<size> )
-gap> QuaternionGroup(IsRing,3);
+gap> DicyclicGroup(2,3);
+Error, usage: DicyclicGroup( [<filter>, [<field>, ] ]<size> )
+gap> DicyclicGroup(IsRing,3);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `QuaternionGroupCons' on 2 arguments
-gap> QuaternionGroup(0);
+Error, no 1st choice method found for `DicyclicGroupCons' on 2 arguments
+gap> DicyclicGroup(0);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `QuaternionGroupCons' on 2 arguments
-gap> QuaternionGroup(1);
+Error, no 1st choice method found for `DicyclicGroupCons' on 2 arguments
+gap> DicyclicGroup(1);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 2nd choice method found for `QuaternionGroupCons' on 2 arguments
-gap> QuaternionGroup(IsFpGroup,1);
+Error, no 2nd choice method found for `DicyclicGroupCons' on 2 arguments
+gap> DicyclicGroup(IsFpGroup,1);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 2nd choice method found for `QuaternionGroupCons' on 2 arguments
+Error, no 2nd choice method found for `DicyclicGroupCons' on 2 arguments
 
 #
 # elementary abelian groups

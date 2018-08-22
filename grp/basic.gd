@@ -343,31 +343,31 @@ end );
 
 #############################################################################
 ##
-#O  QuaternionGroupCons( <filter>, <n> )
+#O  DicyclicGroupCons( <filter>, <n> )
 ##
 ##  <ManSection>
-##  <Oper Name="QuaternionGroupCons" Arg='filter, n'/>
+##  <Oper Name="DicyclicGroupCons" Arg='filter, n'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareConstructor( "QuaternionGroupCons", [ IsGroup, IsInt ] );
+DeclareConstructor( "DicyclicGroupCons", [ IsGroup, IsInt ] );
+DeclareSynonym("QuaternionGroupCons", DicyclicGroupCons);
 
 
 #############################################################################
 ##
-#F  QuaternionGroup( [<filt>, ]<n> )  . . . . . . . quaternion group of order <n>
+#F  DicyclicGroup( [<filt>, [<field>, ] ]<n> )  Dicyclic group of order <n>
 ##
-##  <#GAPDoc Label="QuaternionGroup">
+##  <#GAPDoc Label="DicyclicGroup">
 ##  <ManSection>
-##  <Func Name="QuaternionGroup" Arg='[filt, ]n'/>
-##  <Func Name="DicyclicGroup" Arg='[filt, ]n'/>
+##  <Func Name="DicyclicGroup" Arg='[filt, [field, ]]n'/>
+##  <Func Name="QuaternionGroup" Arg='[filt, [field, ]]n'/>
 ##
 ##  <Description>
-##  constructs the generalized quaternion group (or dicyclic group) of size
-##  <A>n</A> in the category given by the filter <A>filt</A>.  Here, <A>n</A>
-##  is a multiple of 4.
+##  constructs the dicyclic group of size <A>n</A> in the category given by the
+##  filter <A>filt</A>. Here, <A>n</A> is a multiple of 4.
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section
 ##  (<Ref Sect="Basic Groups"/>).
@@ -375,8 +375,8 @@ DeclareConstructor( "QuaternionGroupCons", [ IsGroup, IsInt ] );
 ##  degree and minimal dimension in coprime characteristic).
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> QuaternionGroup(32);
-##  <pc group of size 32 with 5 generators>
+##  gap> DicyclicGroup(24);
+##  <pc group of size 24 with 4 generators>
 ##  gap> g:=QuaternionGroup(IsMatrixGroup,CF(16),32);
 ##  Group([ [ [ 0, 1 ], [ -1, 0 ] ], [ [ E(16), 0 ], [ 0, -E(16)^7 ] ] ])
 ##  ]]></Example>
@@ -384,23 +384,23 @@ DeclareConstructor( "QuaternionGroupCons", [ IsGroup, IsInt ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BindGlobal( "QuaternionGroup", function ( arg )
+BindGlobal( "DicyclicGroup", function ( arg )
 
   if Length(arg) = 1  then
-    return QuaternionGroupCons( IsPcGroup, arg[1] );
+    return DicyclicGroupCons( IsPcGroup, arg[1] );
   elif IsOperation(arg[1]) then
     if Length(arg) = 2  then
-      return QuaternionGroupCons( arg[1], arg[2] );
+      return DicyclicGroupCons( arg[1], arg[2] );
     elif Length(arg) = 3  then
       # some filters require extra arguments, e.g. IsMatrixGroup + field
-      return QuaternionGroupCons( arg[1], arg[2], arg[3] );
+      return DicyclicGroupCons( arg[1], arg[2], arg[3] );
     fi;
   fi;
-  Error( "usage: QuaternionGroup( [<filter>, ]<size> )" );
+  Error( "usage: DicyclicGroup( [<filter>, [<field>, ] ]<size> )" );
 
 end );
 
-DeclareSynonym( "DicyclicGroup", QuaternionGroup );
+DeclareSynonym( "QuaternionGroup", DicyclicGroup );
 
 
 #############################################################################

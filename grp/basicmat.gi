@@ -68,23 +68,23 @@ end );
 
 #############################################################################
 ##
-#M  QuaternionGroupCons( <IsMatrixGroup>, <n> )
+#M  DicyclicGroupCons( <IsMatrixGroup>, <n> )
 ##
-InstallMethod( QuaternionGroupCons,
+InstallMethod( DicyclicGroupCons,
     "matrix group for default field",
     true,
     [ IsMatrixGroup and IsFinite,
       IsInt and IsPosRat ],
     0,
 function( filter, n )
-  return QuaternionGroup( filter, Rationals, n );
+  return DicyclicGroup( filter, Rationals, n );
 end );
 
 #############################################################################
 ##
-#M  QuaternionGroupCons( <IsMatrixGroup>, <field>, <n> )
+#M  DicyclicGroupCons( <IsMatrixGroup>, <field>, <n> )
 ##
-InstallOtherMethod( QuaternionGroupCons,
+InstallOtherMethod( DicyclicGroupCons,
     "matrix group for given field",
     true,
     [ IsMatrixGroup and IsFinite,
@@ -103,7 +103,7 @@ function( filter, fld, n )
     one := 1;
   elif Characteristic( fld ) = 0 or (0 = n mod Characteristic( fld ))
   then # XXX: regular rep is not minimal
-    grp := QuaternionGroup( IsPermGroup, n );
+    grp := DicyclicGroup( IsPermGroup, n );
     grp := Group( List( GeneratorsOfGroup( grp ), prm -> PermutationMat( prm, NrMovedPoints( grp ), fld ) ) );
     SetSize( grp, n );
     return grp;

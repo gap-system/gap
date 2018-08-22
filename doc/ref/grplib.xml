@@ -89,7 +89,7 @@ calculations.
 <#Include Label="ElementaryAbelianGroup">
 <#Include Label="FreeAbelianGroup">
 <#Include Label="DihedralGroup">
-<#Include Label="QuaternionGroup">
+<#Include Label="DicyclicGroup">
 <#Include Label="ExtraspecialGroup">
 <#Include Label="AlternatingGroup">
 <#Include Label="SymmetricGroup">
