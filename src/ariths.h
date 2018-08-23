@@ -61,8 +61,6 @@ typedef Obj (* ArithMethod2) ( Obj opL, Obj opR );
 */
 #define ZERO(op)        ((*ZeroFuncs[TNUM_OBJ(op)])(op))
 
-extern Obj ZEROOp;
-
 
 /****************************************************************************
 **
@@ -73,19 +71,11 @@ extern ArithMethod1 ZeroFuncs [LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  InstallZeroObject( <verb> )
-*/
-extern void InstallZeroObject ( Int );
-
-/****************************************************************************
-**
 *F  ZERO_MUT( <op> )  . . . . . . . . . . . . . . . . . . . . . zero of an object
 **
 **  'ZERO_MUT' returns the mutable zero of the object <op>.
 */
 #define ZERO_MUT(op)        ((*ZeroMutFuncs[TNUM_OBJ(op)])(op))
-
-extern Obj ZeroOp;
 
 
 /****************************************************************************
@@ -97,20 +87,11 @@ extern ArithMethod1 ZeroMutFuncs [LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  InstallZeroMutObject( <verb> )
-*/
-extern void InstallZeroMutObject ( Int );
-
-
-/****************************************************************************
-**
 *F  AINV( <op> )  . . . . . . . . . . . . . . . additive inverse of an object
 **
 **  'AINV' returns the additive inverse of the object <op>.
 */
 #define AINV(op) ((*AInvFuncs[TNUM_OBJ(op)])(op))
-
-extern Obj AInvOp;
 
 
 /****************************************************************************
@@ -122,19 +103,11 @@ extern ArithMethod1 AInvFuncs [LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  InstallAinvObject( <verb> )
-*/
-extern void InstallAinvObject ( Int );
-
-/****************************************************************************
-**
 *F  AINV_MUT( <op> )  . . . . . . . . . . . . . additive inverse of an object
 **
 **  'AINV_MUT' returns the mutable additive inverse of the object <op>.
 */
 #define AINV_MUT(op) ((*AInvMutFuncs[TNUM_OBJ(op)])(op))
-
-extern Obj AdditiveInverseOp;
 
 
 /****************************************************************************
@@ -142,13 +115,6 @@ extern Obj AdditiveInverseOp;
 *V  AInvMutFuncs[<type>] . . . . . . . . . . . table of additive inverse methods
 */
 extern ArithMethod1 AInvMutFuncs [LAST_REAL_TNUM+1];
-
-
-/****************************************************************************
-**
-*F  InstallAinvMutObject( <verb> )
-*/
-extern void InstallAinvMutObject ( Int );
 
 
 /****************************************************************************
@@ -183,8 +149,6 @@ extern void InstallAinvMutObject ( Int );
 */
 #define ONE(op)         ((*OneFuncs[TNUM_OBJ(op)])(op))
 
-extern Obj OneOp;
-
 
 /****************************************************************************
 **
@@ -195,20 +159,12 @@ extern ArithMethod1 OneFuncs [LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  InstallOneObject( <verb> )
-*/
-extern void InstallOneObject ( Int );
-
-/****************************************************************************
-**
 *F  ONE_MUT( <op> )    . . . . . . . .  one of an object retaining mutability
 **
 **  'ONE_MUT' returns the one of the object <op> with the same
 **  mutability level as <op>.
 */
 #define ONE_MUT(op)         ((*OneMutFuncs[TNUM_OBJ(op)])(op))
-
-extern Obj OneMutOp;
 
 
 /****************************************************************************
@@ -220,20 +176,11 @@ extern ArithMethod1 OneMutFuncs [LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  InstallOneMutObject( <verb> )
-*/
-extern void InstallOneMutObject ( Int );
-
-
-/****************************************************************************
-**
 *F  INV( <op> ) . . . . . . . . . . . . . . . . . . . .  inverse of an object
 **
 **  'INV' returns the multiplicative inverse of the object <op>.
 */
 #define INV(op)         ((*InvFuncs[TNUM_OBJ(op)])(op))
-
-extern Obj InvOp;
 
 
 /****************************************************************************
@@ -245,20 +192,11 @@ extern ArithMethod1 InvFuncs [LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  InstallInvObject( <verb> )
-*/
-extern void InstallInvObject ( Int );
-
-
-/****************************************************************************
-**
 *F  INV_MUT( <op> ) . . . . . . . . inverse of an object retaining mutability
 **
 **  'INV_MUT' returns the multiplicative inverse of the object <op>.
 */
 #define INV_MUT(op)         ((*InvMutFuncs[TNUM_OBJ(op)])(op))
-
-extern Obj InvMutOp;
 
 
 /****************************************************************************
@@ -266,13 +204,6 @@ extern Obj InvMutOp;
 *V  InvMutFuncs[<type>]  .. .table of mutability preserving inverse functions
 */
 extern ArithMethod1 InvMutFuncs [LAST_REAL_TNUM+1];
-
-
-/****************************************************************************
-**
-*F  InstallInvMutObject( <verb> )
-*/
-extern void InstallInvMutObject ( Int );
 
 
 /****************************************************************************
@@ -303,13 +234,6 @@ extern CompaMethod EqFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  InstallEqObject( <verb> )
-*/
-extern void InstallEqObject ( Int );
-
-
-/****************************************************************************
-**
 *F  LT( <opL>, <opR> )  . . . . . . . . . . . . . . comparison of two objects
 **
 **  'LT' returns a nonzero value if the object <opL> is  less than the object
@@ -331,13 +255,6 @@ extern CompaMethod LtFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  InstallLtObject( <verb> )
-*/
-extern void InstallLtObject ( Int );
-
-
-/****************************************************************************
-**
 *F  IN( <opL>, <opR> )  . . . . . . . . . . .  membership test of two objects
 **
 **  'IN' returns a nonzero   value if the object  <opL>  is a member  of  the
@@ -345,21 +262,12 @@ extern void InstallLtObject ( Int );
 */
 #define IN(opL,opR)     ((*InFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
-extern Obj InOper;
-
 
 /****************************************************************************
 **
 *V  InFuncs[<typeL>][<typeR>] . . . . . . . . . . table of membership methods
 */
 extern CompaMethod InFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
-
-
-/****************************************************************************
-**
-*F  InstallInObject( <verb> )
-*/
-extern void InstallInObject ( Int );
 
 
 /****************************************************************************
@@ -389,13 +297,6 @@ extern Obj SumOper;
 *V  SumFuncs[<typeL>][<typeR>]  . . . . . . . . . . . .  table of sum methods
 */
 extern ArithMethod2 SumFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
-
-
-/****************************************************************************
-**
-*F  InstallSumObject( <verb> )
-*/
-extern void InstallSumObject ( Int );
 
 
 /****************************************************************************
@@ -440,21 +341,12 @@ extern void InstallSumObject ( Int );
 */
 #define DIFF(opL,opR)   ((*DiffFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
-extern Obj DiffOper;
-
 
 /****************************************************************************
 **
 *V  DiffFuncs[<typeL>][<typeR>] . . . . . . . . . table of difference methods
 */
 extern ArithMethod2 DiffFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
-
-
-/****************************************************************************
-**
-*F  InstallDiffObject( <verb> )
-*/
-extern void InstallDiffObject ( Int );
 
 
 /****************************************************************************
@@ -499,21 +391,12 @@ extern void InstallDiffObject ( Int );
 */
 #define PROD(opL,opR)   ((*ProdFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
-extern Obj ProdOper;
-
 
 /****************************************************************************
 **
 *V  ProdFuncs[<typeL>][<typeR>] . . . . . . . . . .  table of product methods
 */
 extern  ArithMethod2    ProdFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
-
-
-/****************************************************************************
-**
-*F  InstallProdObject( <verb> )
-*/
-extern void InstallProdObject ( Int );
 
 
 /****************************************************************************
@@ -552,8 +435,6 @@ extern void InstallProdObject ( Int );
 */
 #define QUO(opL,opR)    ((*QuoFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
 
-extern Obj QuoOper;
-
 
 /****************************************************************************
 **
@@ -564,20 +445,11 @@ extern ArithMethod2 QuoFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  InstallQuoObject( <verb> )
-*/
-extern void InstallQuoObject ( Int );
-
-
-/****************************************************************************
-**
 *F  LQUO( <opL>, <opR> )  . . . . . . . . . . .  left quotient of two operand
 **
 **  'LQUO' returns the left quotient of the object <opL> by the object <opR>.
 */
 #define LQUO(opL,opR)   ((*LQuoFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-
-extern Obj LQuoOper;
 
 
 /****************************************************************************
@@ -589,22 +461,11 @@ extern ArithMethod2 LQuoFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  InstallLQuoObject( <verb> )
-*/
-extern void InstallLQuoObject ( Int );
-
-
-/****************************************************************************
-**
 *F  POW( <opL>, <opR> ) . . . . . . . . . . . . . . . .  power of two objects
 **
 **  'POW' returns the power of the object <opL> by the object <opL>.
 */
 #define POW(opL,opR)    ((*PowFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-
-extern Obj PowOper;
-
-extern Obj PowDefault ( Obj opL, Obj opR );
 
 
 /****************************************************************************
@@ -616,20 +477,11 @@ extern ArithMethod2 PowFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  InstallPowObject( <verb> )
-*/
-extern void InstallPowObject ( Int );
-
-
-/****************************************************************************
-**
 *F  COMM( <opL>, <opR> )  . . . . . . . . . . . . . commutator of two objects
 **
 **  'COMM' returns the commutator of the two objects <opL> and <opR>.
 */
 #define COMM(opL,opR)   ((*CommFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-
-extern Obj CommOper;
 
 
 /****************************************************************************
@@ -641,20 +493,11 @@ extern ArithMethod2 CommFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  InstallCommObject( <verb> )
-*/
-extern void InstallCommObject ( Int );
-
-
-/****************************************************************************
-**
 *F  MOD( <opL>, <opR> ) . . . . . . . . . . . . . .  remainder of two objects
 **
 **  'MOD' returns the remainder of the object <opL> by the object <opR>.
 */
 #define MOD(opL,opR)    ((*ModFuncs[TNUM_OBJ(opL)][TNUM_OBJ(opR)])(opL,opR))
-
-extern Obj ModOper;
 
 
 /****************************************************************************
@@ -666,9 +509,9 @@ extern ArithMethod2 ModFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  InstallModObject( <verb> )
+*F  ChangeArithDoOperations( <oper>, <verb> )
 */
-extern void InstallModObject ( Int );
+extern void ChangeArithDoOperations(Obj oper, Int verb);
 
 
 /****************************************************************************

@@ -3828,28 +3828,7 @@ void ChangeDoOperations (
     Int                 i;
     Int                 j;
 
-    /* catch infix operations                                          */
-    if ( oper == EqOper   )  { InstallEqObject(verb);   }
-    if ( oper == LtOper   )  { InstallLtObject(verb);   }
-    if ( oper == InOper   )  { InstallInObject(verb);   }
-    if ( oper == SumOper  )  { InstallSumObject(verb);  }
-    if ( oper == DiffOper )  { InstallDiffObject(verb); }
-    if ( oper == ProdOper )  { InstallProdObject(verb); }
-    if ( oper == QuoOper  )  { InstallQuoObject(verb);  }
-    if ( oper == LQuoOper )  { InstallLQuoObject(verb); }
-    if ( oper == PowOper  )  { InstallPowObject(verb);  }
-    if ( oper == CommOper )  { InstallCommObject(verb); }
-    if ( oper == ModOper  )  { InstallModObject(verb);  }
-
-    if ( oper == InvOp  )  { InstallInvObject(verb);  }
-    if ( oper == OneOp  )  { InstallOneObject(verb);  }
-    if ( oper == AInvOp )  { InstallAinvObject(verb); }
-    if ( oper == ZEROOp )  { InstallZeroObject(verb); }
-
-    if ( oper == InvMutOp  )  { InstallInvMutObject(verb);  }
-    if ( oper == OneMutOp  )  { InstallOneMutObject(verb);  }
-    if ( oper == AdditiveInverseOp )  { InstallAinvMutObject(verb); }
-    if ( oper == ZeroOp )  { InstallZeroMutObject(verb); }
+    ChangeArithDoOperations(oper, verb);
 
     /* be verbose                                                          */
     if ( verb ) {
