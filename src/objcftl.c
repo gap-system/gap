@@ -194,7 +194,7 @@ Obj CollectPolycyc (
           
           if( LtInt( INTOBJ_INT(0), e ) ) {
             C_DIFF_FIA( ee, e, INTOBJ_INT(1) );  e = ee;
-            SET_ELM_PLIST( est, st, e );
+            SET_ELM_PLIST( est, st, e ); CHANGED_BAG( est );
             conj  = ADDR_OBJ(pcp)[PC_CONJUGATES];
             iconj = ADDR_OBJ(pcp)[PC_INVERSECONJUGATES];
             
@@ -202,7 +202,7 @@ Obj CollectPolycyc (
           }
           else {
             C_SUM_FIA( ee, e, INTOBJ_INT(1) );  e = ee;
-            SET_ELM_PLIST( est, st, e );
+            SET_ELM_PLIST( est, st, e ); CHANGED_BAG( est );
             conj  = ADDR_OBJ(pcp)[PC_CONJUGATESINVERSE];
             iconj = ADDR_OBJ(pcp)[PC_INVERSECONJUGATESINVERSE];
             
