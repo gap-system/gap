@@ -1964,6 +1964,13 @@ function( hom )
 
   if IsEndoGeneralMapping( hom ) then
 
+    # cheap test for cycle structures
+    if Length(Set(List(MappingGeneratorsImages(hom),
+      x->List(x,CycleStructurePerm))))>1
+    then
+      return false;
+    fi;
+
     # test in transitive case whether we can realize in S_n
     # we do not yet compute the permutation here because we will still have to
     # test first whether it is in fact an inner automorphism:
@@ -2106,9 +2113,11 @@ function( hom )
         if rep<>fail then
           pi:=List([1..Length(orb)],x->MappingPermListList(Permuted(orb[x],rep[x]),orb[x]));
           rep:=Product(pi);
-          Assert(1,ForAll(genss,i->ImagesRepresentative(hom,i)=i^rep));
-          SetConjugatorOfConjugatorIsomorphism( hom, rep );
-          return true;
+          # must do final test, in case element maps to restricted perm
+          if ForAll(genss,i->ImagesRepresentative(hom,i)=i^rep) then
+            SetConjugatorOfConjugatorIsomorphism( hom, rep );
+            return true;
+          fi;
         fi;
 
         if ValueOption("cheap")=true then
