@@ -320,7 +320,7 @@ marking functions  of weak pointer objects.  A  bag which is  marked both
 weakly and strongly  is treated as strongly marked.   A bag which is only
 weakly marked will be recovered by garbage collection, but its identifier
 remains, marked      in   a    way    which   can     be   detected    by
-<C>IS_WEAK_DEAD_BAG</C>. This should  always be checked before copying or
+<C>IsWeakDeadBag</C>. This should  always be checked before copying or
 using such an identifier.
 <P/>
 &GASMAN; already provides the following standard 

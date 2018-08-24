@@ -752,7 +752,7 @@ void MarkBagWeakly(Bag bag)
     }
 }
 
-Int IS_WEAK_DEAD_BAG(Bag bag)
+Int IsWeakDeadBag(Bag bag)
 {
     return (((UInt)bag & (sizeof(Bag) - 1)) == 0) && (Bag)MptrBags <= bag &&
            bag < (Bag)MptrEndBags && (((UInt)*bag) & (sizeof(Bag) - 1)) == 1;
@@ -1892,7 +1892,7 @@ linked from weak pointer objects but whose bag bodies have been
 collected.  Two values are used so that old masterpointers of this
 kind can be reclaimed after a full garbage collection. The values must
 not look like valid pointers, and should be congruent to 1 mod sizeof(Bag),
-to ensure that IS_WEAK_DEAD_BAG works correctly.
+to ensure that IsWeakDeadBag works correctly.
 */
 
 Bag * NewWeakDeadBagMarker = (Bag *)(1000*sizeof(Bag) + 1L);

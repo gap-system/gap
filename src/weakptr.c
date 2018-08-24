@@ -114,7 +114,7 @@ static inline Obj ELM_WPOBJ(Obj list, UInt pos)
     Bag elm = CONST_ADDR_OBJ(list)[pos];
 
 #ifdef USE_GASMAN
-    if (IS_WEAK_DEAD_BAG(elm)) {
+    if (IsWeakDeadBag(elm)) {
         ADDR_OBJ(list)[pos] = 0;
         return 0;
     }
@@ -615,7 +615,7 @@ static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
   while (len --)
     {
       elm = *src++;
-      *dst ++ = IS_WEAK_DEAD_BAG(elm) ? (Bag) 0 : elm;
+      *dst ++ = IsWeakDeadBag(elm) ? (Bag) 0 : elm;
     }
 }
 
