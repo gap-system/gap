@@ -141,6 +141,11 @@ ps:// or ftp://
  https:// or ftp://
 #E  component `PackageDoc' must be bound to a record or a list of records
 #E  component `AvailabilityTest' must be bound to a function
+#W  ************************************************************
+#W  No 'TestFile' is given but is highly recommended. Package
+#W  tests are run for deposited packages as part of the standard
+#W  GAP test suite. See '?TestPackage' for more information.
+#W  ************************************************************
 false
 gap> info := rec(
 >     PackageName := "pkg",
@@ -168,6 +173,11 @@ a readable file
 #E  component `SixFile' must be bound to a string denoting a relative path to \
 a readable file
 #E  component `LongTitle' must be bound to a string
+#W  ************************************************************
+#W  No 'TestFile' is given but is highly recommended. Package
+#W  tests are run for deposited packages as part of the standard
+#W  GAP test suite. See '?TestPackage' for more information.
+#W  ************************************************************
 false
 gap> info.PackageDoc := rec(
 >     BookName := "",
@@ -177,6 +187,7 @@ gap> info.PackageDoc := rec(
 >     SixFile := Filename(DirectoriesLibrary(), "init.g"),
 >     LongTitle := "",
 >   );;
+> info.TestFile:="tst/testall.g";;
 gap> ValidatePackageInfo(info);
 true
 
