@@ -754,8 +754,12 @@ void MarkBagWeakly(Bag bag)
 
 Int IsWeakDeadBag(Bag bag)
 {
-    return (((UInt)bag & (sizeof(Bag) - 1)) == 0) && (Bag)MptrBags <= bag &&
-           bag < (Bag)MptrEndBags && (((UInt)*bag) & (sizeof(Bag) - 1)) == 1;
+    CANARY_DISABLE_VALGRIND();
+    Int isWeakDeadBag = (((UInt)bag & (sizeof(Bag) - 1)) == 0) &&
+                        (Bag)MptrBags <= bag && bag < (Bag)MptrEndBags &&
+                        (((UInt)*bag) & (sizeof(Bag) - 1)) == 1;
+    CANARY_ENABLE_VALGRIND();
+    return isWeakDeadBag;
 }
 
 
