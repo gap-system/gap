@@ -1582,19 +1582,6 @@ void            PrintReturnVoid (
 */
 
 
-
-/****************************************************************************
-**
-*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
-*/
-static Int InitLibrary (
-    StructInitInfo *    module )
-{
-
-    /* return success                                                      */
-    return 0;
-}
-
 /****************************************************************************
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
@@ -1728,7 +1715,6 @@ static StructInitInfo module = {
     .type = MODULE_BUILTIN,
     .name = "stats",
     .initKernel = InitKernel,
-    .initLibrary = InitLibrary,
     .initModuleState = InitModuleState,
 };
 
