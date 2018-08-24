@@ -752,6 +752,12 @@ void MarkBagWeakly(Bag bag)
     }
 }
 
+Int IS_WEAK_DEAD_BAG(Bag bag)
+{
+    return (((UInt)bag & (sizeof(Bag) - 1)) == 0) && (Bag)MptrBags <= bag &&
+           bag < (Bag)MptrEndBags && (((UInt)*bag) & (sizeof(Bag) - 1)) == 1;
+}
+
 
 /****************************************************************************
 **
