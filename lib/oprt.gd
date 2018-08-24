@@ -377,7 +377,7 @@ DeclareAttribute( "CanonicalRepresentativeDeterminatorOfExternalSet",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareAttribute( "CanEasilyDetermineCanonicalRepresentativeExternalSet",
+DeclareProperty( "CanEasilyDetermineCanonicalRepresentativeExternalSet",
     IsExternalSet );
 
 InstallTrueMethod(CanEasilyDetermineCanonicalRepresentativeExternalSet,
