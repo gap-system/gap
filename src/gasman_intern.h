@@ -22,6 +22,15 @@
 */
 extern void MarkBagWeakly( Bag bag );
 
+/****************************************************************************
+**
+*F  IS_WEAK_DEAD_BAG(<bag>) . . . . . . . . check if <bag> is a weak dead bag
+**
+**  'IS_WEAK_DEAD_BAG' checks if <bag> is a master pointer which refers to
+**  an object which was freed as the only references to it were weak.
+**  This is used for implement weak pointer references.
+*/
+extern Int IS_WEAK_DEAD_BAG(Bag bag);
 
 /****************************************************************************
 **

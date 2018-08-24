@@ -49,14 +49,7 @@
 *F
 */
 
-#ifdef USE_GASMAN
-
-#define IS_WEAK_DEAD_BAG(bag) ( (((UInt)bag & (sizeof(Bag)-1)) == 0) && \
-                                (Bag)MptrBags <= (bag)    &&          \
-                                (bag) < (Bag)MptrEndBags  &&              \
-                                (((UInt)*bag) & (sizeof(Bag)-1)) == 1)
-
-#elif defined(USE_BOEHM_GC)
+#if defined(USE_BOEHM_GC)
 
 static inline void REGISTER_WP(Obj wp, UInt pos, Obj obj)
 {
