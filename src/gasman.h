@@ -192,7 +192,10 @@ static inline void CLEAR_BAG_FLAG(Bag bag, uint8_t flag)
 **
 **  See also 'IS_INTOBJ' and 'IS_FFE'.
 */
-#define IS_BAG_REF(bag) (bag && !((Int)(bag)& 0x03))
+static inline Int IS_BAG_REF(Obj bag)
+{
+    return bag && !((Int)bag & 0x03);
+}
 
 
 /****************************************************************************
