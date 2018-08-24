@@ -2143,7 +2143,7 @@ look worse than others)
   For example, recently they turned out to be very useful in a package
   about homology (by Barakat et al.): AK: reduced the level of warning.
 -4 cross-references to the undocumented functions MarkBagWeakly, MARK_BAG,
-  IS_WEAK_DEAD_BAG, ListsFamily.
+  IsWeakDeadBag, ListsFamily.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter 87: Stabilizer Chains (preliminary)
 % File: ./stbchain.xml (line 10)
