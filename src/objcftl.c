@@ -368,18 +368,6 @@ static Int InitKernel (
 
 /****************************************************************************
 **
-*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
-*/
-static Int PostRestore (
-    StructInitInfo *    module )
-{
-    /* return success                                                      */
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
@@ -445,7 +433,6 @@ static StructInitInfo module = {
     .name = "objcftl",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
-    .postRestore = PostRestore,
 
     .moduleStateSize = sizeof(struct CFTLModuleState),
     .moduleStateOffsetPtr = &CFTLStateOffset,

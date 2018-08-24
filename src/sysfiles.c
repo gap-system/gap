@@ -3883,21 +3883,8 @@ void InitSysFiles(void)
     setbuf(stderr, (char *)0);
 }
 
-/* NB Should probably do some checks preSave for open files etc and refuse to save
+/* TODO: Should probably do some checks preSave for open files etc and refuse to save
    if any are found */
-
-/****************************************************************************
-**
-*F  postResore( <module> ) . . . . . . .re-initialise library data structures
-*/
-
-static Int postRestore (
-    StructInitInfo *    module )
-{
-
-    /* return success                                                      */
-    return 0;
-}
 
 /****************************************************************************
 **
@@ -3937,7 +3924,7 @@ static Int InitLibrary(
   /* init filters and functions                                          */
   InitGVarFuncsFromTable( GVarFuncs );
 
-  return postRestore( module );
+  return 0;
 }
 
 /****************************************************************************
@@ -3951,7 +3938,6 @@ static StructInitInfo module = {
     .name = "sysfiles",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
-    .postRestore = postRestore
 };
 
 StructInitInfo * InitInfoSysFiles ( void )
