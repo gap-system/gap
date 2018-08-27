@@ -1445,6 +1445,8 @@ void            PrintUnknownExpr (
 }
 
 
+struct ExprsState {
+
 /****************************************************************************
 **
 *V  PrintPrecedence  . . . . . . . . . . . . . . . . current precedence level
@@ -1458,8 +1460,18 @@ void            PrintUnknownExpr (
 **  This sometimes puts in superfluous parenthesis: 2 * f( (3 + 4) ), since it
 **  doesn't know that a function call adds automatically parenthesis.
 */
-UInt            PrintPrecedence;
+UInt PrintPrecedence;
 
+};
+
+static ModuleStateOffset ExprsStateOffset = -1;
+
+extern inline struct ExprsState * ExprsState(void)
+{
+    return (struct ExprsState *)StateSlotsAtOffset(ExprsStateOffset);
+}
+
+#define PrintPrecedence ExprsState()->PrintPrecedence
 
 /****************************************************************************
 **
@@ -2012,6 +2024,9 @@ static StructInitInfo module = {
     .name = "exprs",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
+
+    .moduleStateSize = sizeof(struct ExprsState),
+    .moduleStateOffsetPtr = &ExprsStateOffset,
 };
 
 StructInitInfo * InitInfoExprs ( void )
