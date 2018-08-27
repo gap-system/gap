@@ -40,12 +40,6 @@ gap> ?qwert_asdf
 Help: no matching entry found
 
 #
-# tilde
-#
-gap> ~;
-Error, '~' does not have a value here
-
-#
 # function call with options
 #
 gap> f:=x->ValueOption("a");;
