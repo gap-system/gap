@@ -57,7 +57,11 @@ static void SyntaxErrorOrWarning(const Char * msg, UInt error)
 
         // print the current line
         const char * line = GetInputLineBuffer();
-        Pr("%s", (Int)line, 0);
+        const UInt len = strlen(line);
+        if (len > 0 && line[len-1] != '\n')
+            Pr("%s\n", (Int)line, 0);
+        else
+            Pr("%s", (Int)line, 0);
 
         // print a '^' pointing to the current position
         Int startPos = STATE(SymbolStartPos);
