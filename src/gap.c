@@ -1506,8 +1506,6 @@ void ThreadedInterpreter(void *funcargs) {
   int i;
 
   /* initialize everything and begin an interpreter                       */
-  STATE(IntrCoding) = 0;
-  STATE(IntrIgnoring) = 0;
   STATE(NrError) = 0;
   STATE(ThrownObject) = 0;
 
@@ -1759,8 +1757,6 @@ void InitializeGap (
     InitMsgsFuncBags( SyMsgsBags );
 #endif
 
-    STATE(IntrCoding)   = 0;
-    STATE(IntrIgnoring) = 0;
     STATE(NrError)      = 0;
     STATE(ThrownObject) = 0;
     STATE(UserHasQUIT) = 0;
