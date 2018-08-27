@@ -1,9 +1,13 @@
 gap> START_TEST("tilde.tst");
+
+#
 gap> aqq~ := 1;
 Error, Variable: 'aqq' must have a value
 Syntax error: ; expected in stream:1
 aqq~ := 1;
    ^
+
+#
 gap> l := [2, ~];
 [ 2, ~ ]
 gap> l = l[2];
@@ -18,6 +22,71 @@ gap> r.x;
 rec( x := ~, y := [ 1, 2, ~ ] )
 gap> r.y[3];
 rec( x := ~, y := [ 1, 2, ~ ] )
+
+#
+gap> [ ~ ];
+[ ~ ]
+gap> [ 1, 2, [0 .. Length(~)] ];
+[ 1, 2, [ 0 .. 2 ] ]
+gap> [0, 1 + ~, 2 ];
+[ 0, [ 1 ], 2 ]
+
+#
+gap> [ (x->~)(1) ];
+[ ~ ]
+gap> l := [ x->~ ];  # this function escapes with an invalid tilde reference
+[ function( x ) ... end ]
+gap> f := l[1];;
+gap> f(1);
+Error, '~' does not have a value here
+gap> [ f(1) ];
+[ ~ ]
+
+#
+gap> ~;
+Syntax error: '~' not allowed here in stream:1
+~;
+^
+gap> (1,~);
+Syntax error: '~' not allowed here in stream:1
+(1,~);
+   ^
+gap> x->~;
+Syntax error: '~' not allowed here in stream:1
+x->~;
+   ^
+gap> x -> (1,~);
+Syntax error: '~' not allowed here in stream:1
+x -> (1,~);
+        ^
+
+#
+gap> [1..~];
+Syntax error: Sorry, '~' not allowed in range in stream:1
+[1..~];
+     ^
+gap> [~..1];
+Syntax error: Sorry, '~' not allowed in range in stream:1
+[~..1];
+     ^
+gap> [1,~..5];
+Syntax error: Sorry, '~' not allowed in range in stream:1
+[1,~..5];
+       ^
+gap> x->[1..~];
+Syntax error: Sorry, '~' not allowed in range in stream:1
+x->[1..~];
+        ^
+gap> x->[~..1];
+Syntax error: Sorry, '~' not allowed in range in stream:1
+x->[~..1];
+        ^
+gap> x->[1,~..5];
+Syntax error: Sorry, '~' not allowed in range in stream:1
+x->[1,~..5];
+          ^
+
+#
 gap> f := function(~) local a; end;
 Syntax error: identifier expected in stream:1
 f := function(~) local a; end;
@@ -42,6 +111,8 @@ gap> {~,~} -> 2;
 Syntax error: identifier expected in stream:1
 {~,~} -> 2;
  ^
+
+#
 gap> list1 := [1,~];
 [ 1, ~ ]
 gap> list2 := [1,[1,[1,[1,0]]]];
@@ -96,4 +167,6 @@ gap> [2,rem(~),3,4,rem(~),5,6,rem(~)];
 [ , 1, 3,, 1, 5,, 1 ]
 gap> (function() return  [2,rem(~),3,4,rem(~),5,6,rem(~)]; end)();
 [ , 1, 3,, 1, 5,, 1 ]
+
+#
 gap> STOP_TEST( "tilde.tst", 1);

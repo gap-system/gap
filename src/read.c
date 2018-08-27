@@ -1235,7 +1235,7 @@ static void ReadFuncExprBody(
     // push the new local variables list
     PushPlist(STATE(StackNams), args.nams);
 
-    // begin interpreting the function expression (with 1 argument)
+    // begin interpreting the function expression
     TRY_IF_NO_ERROR {
         IntrFuncExprBegin(args.isvarg ? -args.narg : args.narg, nloc,
                           args.nams, startLine);
@@ -1477,6 +1477,9 @@ static void ReadLiteral (
 
     /* '~'                                                                 */
     case S_TILDE:
+        if (ReaderState()->ReadTop == 0) {
+            SyntaxError("'~' not allowed here");
+        }
         ReaderState()->ReadTilde = 1;
         TRY_IF_NO_ERROR { IntrTildeExpr(); }
         Match( S_TILDE, "~", follow );
