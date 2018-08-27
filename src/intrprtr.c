@@ -4531,6 +4531,16 @@ static Int InitLibrary (
     return 0;
 }
 
+static Int InitModuleState(void)
+{
+    STATE(IntrCoding) = 0;
+    STATE(IntrIgnoring) = 0;
+    STATE(IntrReturning) = 0;
+
+    // return success
+    return 0;
+}
+
 
 /****************************************************************************
 **
@@ -4543,6 +4553,8 @@ static StructInitInfo module = {
     .name = "intrprtr",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
+
+    .initModuleState = InitModuleState,
 };
 
 StructInitInfo * InitInfoIntrprtr ( void )
