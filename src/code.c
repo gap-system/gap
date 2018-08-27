@@ -892,18 +892,19 @@ void CodeIfElse ( void )
     CodeTrueExpr();
 }
 
-void CodeIfBeginBody ( void )
+Int CodeIfBeginBody ( void )
 {
     // get and check the condition
     Expr cond = PopExpr();
 
     // if the condition is 'false', ignore the body
     if (TNUM_EXPR(cond) == T_FALSE_EXPR) {
-        STATE(IntrIgnoring) = 1;
+        return 1; // signal interpreter to set IntrIgnoring to 1
     }
     else {
         // put the condition expression back on the stack
         PushExpr(cond);
+        return 0;
     }
 }
 
@@ -917,11 +918,9 @@ Int CodeIfEndBody (
     Expr cond = PopExpr();
     PushExpr(cond);
 
-    // if the condition is 'true', ignore other branches of the if-statement
-    if (TNUM_EXPR(cond) == T_TRUE_EXPR) {
-        STATE(IntrIgnoring) = 1;
-    }
-    return 1;
+    // if the condition is 'true', signal interpreter to set IntrIgnoring to 1,
+    // so that other branches of the if-statement are ignored
+    return TNUM_EXPR(cond) == T_TRUE_EXPR;
 }
 
 void CodeIfEnd (
