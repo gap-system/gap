@@ -1269,11 +1269,8 @@ static void ReadFuncExprBody(
     }
     CATCH_ERROR {
         // an error has occurred *after* the 'IntrFuncExprEnd'
-        if (nrError == 0 && STATE(IntrCoding)) {
-            CodeEnd(1);
-            STATE(IntrCoding)--;
-            SWITCH_TO_OLD_LVARS(currLVars);
-        }
+        if (nrError == 0)
+            IntrAbortCoding(currLVars);
     }
 
     // pop the new local variables list
@@ -2071,15 +2068,12 @@ static void ReadFor (
         IntrForEnd();
     }
     CATCH_ERROR {
-        /* an error has occurred *after* the 'IntrForEndBody'               */
+        /* an error has occurred *after* the 'IntrForBegin'                */
         /* If we hadn't actually come out of coding the body, we need
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
-        if ( nrError == 0 && STATE(IntrCoding) ) {
-            CodeEnd(1);
-            STATE(IntrCoding)--;
-            SWITCH_TO_OLD_LVARS(currLVars);
-        }
+        if (nrError == 0)
+            IntrAbortCoding(currLVars);
     }
 }
 
@@ -2125,15 +2119,12 @@ static void ReadWhile (
         IntrWhileEnd();
     }
     CATCH_ERROR {
-        /* an error has occurred *after* the 'IntrWhileEndBody'             */
+        /* an error has occurred *after* the 'IntrWhileBegin'              */
         /* If we hadn't actually come out of coding the body, we need
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
-        if ( nrError == 0 && STATE(IntrCoding) ) {
-            CodeEnd(1);
-            STATE(IntrCoding)--;
-            SWITCH_TO_OLD_LVARS(currLVars);
-        }
+        if (nrError == 0)
+            IntrAbortCoding(currLVars);
     }
 }
 
@@ -2203,15 +2194,12 @@ static void ReadAtomic (
         IntrAtomicEnd();
     }
     CATCH_ERROR {
-        /* an error has occurred *after* the 'IntrAtomicEndBody'            */
+        /* an error has occurred *after* the 'IntrAtomicBegin'             */
         /* If we hadn't actually come out of coding the body, we need
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
-        if ( nrError == 0 && STATE(IntrCoding) ) {
-            CodeEnd(1);
-            STATE(IntrCoding)--;
-            SWITCH_TO_OLD_LVARS(currLVars);
-        }
+        if (nrError == 0)
+            IntrAbortCoding(currLVars);
     }
 #ifdef HPCGAP
     /* This is a no-op if IntrAtomicEnd() succeeded, otherwise it restores
@@ -2261,15 +2249,12 @@ static void ReadRepeat (
         IntrRepeatEnd();
     }
     CATCH_ERROR {
-        /* an error has occurred *after* the 'IntrRepeatEndBody'            */
+        /* an error has occurred *after* the 'IntrRepeatBegin'             */
         /* If we hadn't actually come out of coding the body, we need
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
-        if ( nrError == 0 && STATE(IntrCoding) ) {
-            CodeEnd(1);
-            STATE(IntrCoding)--;
-            SWITCH_TO_OLD_LVARS(currLVars);
-        }
+        if (nrError == 0)
+            IntrAbortCoding(currLVars);
     }
 }
 
@@ -2496,7 +2481,7 @@ static UInt ReadStats (
 **
 **  'ReadEvalCommand' reads one command and interprets it immediately.
 **
-**  It does not expect the  first symbol of its input  already read and  wont
+**  It does not expect the  first symbol of its input  already read and  won't
 **  read the  first symbol of the  next  input.
 **
 */
@@ -2659,6 +2644,7 @@ UInt ReadEvalFile(Obj *evalResult)
     volatile UInt       nr;
     volatile Obj        nams;
     volatile Int        nloc;
+    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>      */
 #ifdef HPCGAP
     volatile int        lockSP;
 #endif
@@ -2703,6 +2689,8 @@ UInt ReadEvalFile(Obj *evalResult)
         nloc = ReadLocals(0, nams);
     }
 
+    currLVars = STATE(CurrLVars);
+
     /* fake the 'function ()'                                              */
     IntrFuncExprBegin(0, nloc, nams, GetInputLineNumber());
 
@@ -2726,11 +2714,7 @@ UInt ReadEvalFile(Obj *evalResult)
         IntrFuncExprEnd(nr);
     }
     CATCH_ERROR {
-        Obj fexp;
-        CodeEnd(1);
-        STATE(IntrCoding)--;
-        fexp = CURR_FUNC();
-        if (fexp && ENVI_FUNC(fexp))  SWITCH_TO_OLD_LVARS(ENVI_FUNC(fexp));
+        IntrAbortCoding(currLVars);
     }
 
     /* end the interpreter                                                 */
