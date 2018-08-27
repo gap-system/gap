@@ -593,10 +593,9 @@ UInt ExecForRange3(Stat stat)
 *F  ExecAtomic(<stat>)
 */
 
-UInt ExecAtomic(
-		Stat stat)
-{
 #ifdef HPCGAP
+UInt ExecAtomic(Stat stat)
+{
   Obj tolock[MAX_ATOMIC_OBJS];
   int locktypes[MAX_ATOMIC_OBJS];
   int lockstatus[MAX_ATOMIC_OBJS];
@@ -649,11 +648,8 @@ UInt ExecAtomic(
     ErrorMayQuit("Cannot lock required regions", 0L, 0L);      
   }
   return status;
-#else
-    // In non-HPC GAP, we completely ignore all the 'atomic' terms
-    return EXEC_STAT(READ_STAT(stat, 0));
-#endif
 }
+#endif
 
 
 /****************************************************************************
@@ -1372,6 +1368,7 @@ void            PrintWhile (
 **  Linebreaks are printed after the 'do' and the statments  in the body.  If
 **  necessary one is preferred immediately before the 'do'.
 */
+#ifdef HPCGAP
 void            PrintAtomic (
     Stat                stat )
 {
@@ -1396,6 +1393,7 @@ void            PrintAtomic (
     PrintStat(READ_STAT(stat, 0));
     Pr( "%4<\nod;", 0L, 0L );
 }
+#endif
 
 
 /****************************************************************************
@@ -1652,7 +1650,9 @@ static Int InitKernel (
     InstallExecStatFunc( T_RETURN_OBJ     , ExecReturnObj);
     InstallExecStatFunc( T_RETURN_VOID    , ExecReturnVoid);
     InstallExecStatFunc( T_EMPTY          , ExecEmpty);
+#ifdef HPCGAP
     InstallExecStatFunc( T_ATOMIC         , ExecAtomic);
+#endif
 
     /* install printers for non-statements                                */
     for ( i = 0; i < ARRAY_SIZE(PrintStatFuncs); i++ ) {
@@ -1690,7 +1690,9 @@ static Int InitKernel (
     InstallPrintStatFunc( T_RETURN_OBJ     , PrintReturnObj);
     InstallPrintStatFunc( T_RETURN_VOID    , PrintReturnVoid);
     InstallPrintStatFunc( T_EMPTY          , PrintEmpty);
+#ifdef HPCGAP
     InstallPrintStatFunc( T_ATOMIC         , PrintAtomic);
+#endif
 
     for ( i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++ )
         IntrExecStatFuncs[i] = ExecIntrStat;
