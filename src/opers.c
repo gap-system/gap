@@ -1299,12 +1299,6 @@ Obj ReturnTrueFilter;
 **
 *F  NewReturnTrueFilter() . . . . . . . . . . create a new return true filter
 */
-Obj TesterReturnTrueFilter (
-    Obj                 getter )
-{
-    return getter;
-}
-
 Obj DoSetReturnTrueFilter (
     Obj                 self,
     Obj                 obj,
@@ -1344,7 +1338,6 @@ Obj NewReturnTrueFilter ( void )
 {
     Obj                 getter;
     Obj                 setter;
-    Obj                 tester;
     Obj                 flags;
 
     getter = NewFunctionT( T_FUNCTION, sizeof(OperBag),
@@ -1361,9 +1354,8 @@ Obj NewReturnTrueFilter ( void )
     SET_SETTR_FILT(getter, setter);
     CHANGED_BAG(getter);
 
-    tester = TesterReturnTrueFilter( getter );
-    SET_TESTR_FILT(getter, tester);
-    CHANGED_BAG(getter);
+    // the tester also returns true, so we can reuse the getter
+    SET_TESTR_FILT(getter, getter);
         
     return getter;
 }
