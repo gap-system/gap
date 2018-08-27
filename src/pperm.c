@@ -2322,15 +2322,16 @@ Obj FuncAS_PERM_PPERM(Obj self, Obj f)
     UInt2 *ptf2, *ptp2;
     UInt4 *ptf4, *ptp4;
     UInt   deg, i, j, rank;
-    Obj    p, dom;
+    Obj    p, dom, img;
 
+    img = FuncIMAGE_SET_PPERM(self, f);
+    dom = DOM_PPERM(f);
+    if (!EQ(img, dom)) {
+        return Fail;
+    }
     if (TNUM_OBJ(f) == T_PPERM2) {
-        if (!EQ(FuncIMAGE_SET_PPERM(self, f), DOM_PPERM(f))) {
-            return Fail;
-        }
         deg = DEG_PPERM2(f);
         p = NEW_PERM2(deg);
-        dom = DOM_PPERM(f);
         ptp2 = ADDR_PERM2(p);
         ptf2 = ADDR_PPERM2(f);
         for (i = 0; i < deg; i++)
@@ -2342,12 +2343,8 @@ Obj FuncAS_PERM_PPERM(Obj self, Obj f)
         }
     }
     else {
-        if (!EQ(FuncIMAGE_SET_PPERM(self, f), DOM_PPERM(f))) {
-            return Fail;
-        }
         deg = DEG_PPERM4(f);
         p = NEW_PERM4(deg);
-        dom = DOM_PPERM(f);
         ptp4 = ADDR_PERM4(p);
         ptf4 = ADDR_PPERM4(f);
         for (i = 0; i < deg; i++)
