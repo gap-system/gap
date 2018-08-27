@@ -138,4 +138,10 @@ static inline void * StateSlotsAtOffset(ModuleStateOffset offset)
 #define MODULE_STATE(module) \
     (*(module ## ModuleState *)StateSlotsAtOffset(module ## StateOffset))
 
+typedef void (*FuncJumpToCatchCallback)(void);
+static inline void SetJumpToCatchCallback(FuncJumpToCatchCallback func)
+{
+    STATE(JumpToCatchCallback) = func;
+}
+
 #endif    // GAP_GAPSTATE_H
