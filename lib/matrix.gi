@@ -1222,6 +1222,9 @@ end );
 InstallOtherMethod( BaseDomain,
     "generic method for a row vector",
     [ IsRowVector ],
+    # FIXME: Remove this downranking, it was introduced to prevent
+    #        Semigroups from breaking ahead of the 4.10 release
+    -SUM_FLAGS,
     DefaultRing );
 
 InstallOtherMethod( OneOfBaseDomain,
@@ -1248,7 +1251,6 @@ InstallOtherMethod( ZeroOfBaseDomain,
     "generic method for a matrix that is a plain list",
     [ IsMatrix and IsPlistRep ],
     mat -> Zero( mat[1,1] ) );
-
 
 #############################################################################
 ##
