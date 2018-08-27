@@ -131,4 +131,82 @@ Syntax error: Badly formed number in stream:1
 ^^^^^
 
 #
+# ReadEvalFile / READ_AS_FUNC / READ_AS_FUNC_STREAM / ReadAsFunction
+#
+gap> f:=ReadAsFunction(InputTextString("return 1;"));
+function(  ) ... end
+gap> Display(f);
+function (  )
+    return 1;
+end
+gap> f();
+1
+gap> f:={} -> ReadAsFunction(InputTextString("return 1;"));;
+gap> f();
+function(  ) ... end
+gap> Display(f());
+function (  )
+    return 1;
+end
+gap> f()();
+1
+
+# check that locals are supported
+gap> f:=ReadAsFunction(InputTextString("local x; x:=1; return x;"));
+function(  ) ... end
+gap> Display(f);
+function (  )
+    local x;
+    x := 1;
+    return x;
+end
+gap> f();
+1
+
+# and nested functions
+gap> f:=ReadAsFunction(InputTextString("local x; x := function(a) return a; end;; return x(1);"));
+function(  ) ... end
+gap> Display(f);
+function (  )
+    local x;
+    x := function ( a )
+          return a;
+      end;
+    return x( 1 );
+end
+gap> f();
+1
+
+# with syntax errors
+gap> f:=ReadAsFunction(InputTextString("return 1"));;
+Syntax error: ; expected in stream:1
+
+gap> f:={} -> ReadAsFunction(InputTextString("return 1"));;
+gap> f();
+Syntax error: ; expected in stream:1
+
+fail
+
+# with execution errors
+gap> f:=ReadAsFunction(InputTextString("return 1/0;"));;
+gap> f();
+Error, Rational operations: <divisor> must not be zero
+gap> f:={} -> ReadAsFunction(InputTextString("return 1/0;"));;
+gap> f();
+function(  ) ... end
+gap> f()();
+Error, Rational operations: <divisor> must not be zero
+
+# with syntax errors nested one level deep
+gap> f:=ReadAsFunction(InputTextString("local x; x := function(a) return a end;; return x(1);"));;
+Syntax error: ; expected in stream:1
+local x; x := function(a) return a end;; return x(1);
+                                   ^^^
+gap> f:={} -> ReadAsFunction(InputTextString("return 1"));;
+gap> f();
+Syntax error: ; expected in stream:1
+
+fail
+
+#
 gap> STOP_TEST("kernel/read.tst", 1);
