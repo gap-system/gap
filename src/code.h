@@ -680,7 +680,7 @@ extern  void            CodeIfElif ( void );
 
 extern  void            CodeIfElse ( void );
 
-extern  void            CodeIfBeginBody ( void );
+extern  Int             CodeIfBeginBody ( void );
 
 extern  Int             CodeIfEndBody (
             UInt                nr );

@@ -564,7 +564,10 @@ void            IntrIfBeginBody ( void )
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return; }
     if ( STATE(IntrIgnoring)  > 0 ) { STATE(IntrIgnoring)++; return; }
-    if ( STATE(IntrCoding)    > 0 ) { CodeIfBeginBody(); return; }
+    if ( STATE(IntrCoding)    > 0 ) {
+        STATE(IntrIgnoring) = CodeIfBeginBody();
+        return;
+    }
 
 
     /* get and check the condition                                         */
@@ -589,7 +592,10 @@ Int            IntrIfEndBody (
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return 0; }
     if ( STATE(IntrIgnoring)  > 0 ) { STATE(IntrIgnoring)--; return 0; }
-    if ( STATE(IntrCoding)    > 0 ) { return CodeIfEndBody( nr ); }
+    if ( STATE(IntrCoding)    > 0 ) {
+        STATE(IntrIgnoring) = CodeIfEndBody( nr );
+        return 1;
+    }
 
     /* otherwise drop the values for the statements executed in the body   */
     for ( i = nr; 1 <= i; i-- ) {
