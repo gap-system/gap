@@ -1254,6 +1254,9 @@ Obj NewAndFilter (
     if ( oper2 == ReturnTrueFilter )
         return oper1;
 
+    if ( oper1 == oper2 )
+        return oper1;
+
     str_len = GET_LEN_STRING(NAME_FUNC(oper1)) + GET_LEN_STRING(NAME_FUNC(oper2)) + 8;
     str = NEW_STRING(str_len);
     s = CSTR_STRING(str);
