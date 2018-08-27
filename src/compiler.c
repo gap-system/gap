@@ -2502,7 +2502,7 @@ CVar CompListTildeExpr (
 
     /* remember the old value of '~'                                       */
     tilde = CVAR_TEMP( NewTemp( "tilde" ) );
-    Emit( "%c = STATE( Tilde );\n", tilde );
+    Emit( "%c = STATE(Tilde);\n", tilde );
 
     /* create the list value                                               */
     list = CompListExpr1( expr );
@@ -2718,19 +2718,19 @@ CVar CompRecTildeExpr (
 
     /* remember the old value of '~'                                       */
     tilde = CVAR_TEMP( NewTemp( "tilde" ) );
-    Emit( "%c = STATE( Tilde );\n", tilde );
+    Emit( "%c = STATE(Tilde);\n", tilde );
 
     /* create the record value                                             */
     rec = CompRecExpr1( expr );
 
     /* assign the record value to the variable '~'                         */
-    Emit( "STATE( Tilde ) = %c;\n", rec );
+    Emit( "STATE(Tilde) = %c;\n", rec );
 
     /* evaluate the subexpressions into the record value                   */
     CompRecExpr2( rec, expr );
 
     /* restore the old value of '~'                                        */
-    Emit( "STATE( Tilde ) = %c;\n", tilde );
+    Emit( "STATE(Tilde) = %c;\n", tilde );
     if ( IS_TEMP_CVAR( tilde ) )  FreeTemp( TEMP_CVAR( tilde ) );
 
     /* return the record value                                             */

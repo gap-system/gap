@@ -2074,7 +2074,7 @@ void            IntrListExprBegin (
     /* if this is an outmost list, save it for reference in '~'            */
     /* (and save the old value of '~' on the values stack)                 */
     if ( top ) {
-        old = STATE( Tilde );
+        old = STATE(Tilde);
         if ( old != 0 ) { PushObj( old ); }
         else            { PushVoidObj();  }
         STATE(Tilde) = list;
@@ -2288,10 +2288,10 @@ void            IntrRecExprBegin (
     /* if this is an outmost record, save it for reference in '~'          */
     /* (and save the old value of '~' on the values stack)                 */
     if ( top ) {
-        old = STATE( Tilde );
+        old = STATE(Tilde);
         if ( old != 0 ) { PushObj( old ); }
         else            { PushVoidObj();  }
-        STATE( Tilde ) = record;
+        STATE(Tilde) = record;
     }
 
     /* push the record                                                     */

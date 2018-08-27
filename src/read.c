@@ -1080,8 +1080,7 @@ static void ReadRecExpr (
         nr++;
       }
 
-    }
-  while ( STATE(Symbol) == S_COMMA );
+    } while (STATE(Symbol) == S_COMMA);
 
     /* ')'                                                                 */
     Match( S_RPAREN, ")", follow );
