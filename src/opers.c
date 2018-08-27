@@ -1195,6 +1195,7 @@ Obj NewFilter (
     flags = NEW_FLAGS( flag1 );
     SET_ELM_FLAGS( flags, flag1, True );
     SET_FLAGS_FILT(getter, flags);
+    SET_IS_FILTER(getter);
     CHANGED_BAG(getter);
 
     setter = NewSetterFilter( getter );
@@ -1203,6 +1204,11 @@ Obj NewFilter (
     CHANGED_BAG(getter);
 
     return getter;    
+}
+
+Obj FuncIS_FILTER(Obj self, Obj obj)
+{
+    return IS_FILTER(obj) ? True : False;
 }
 
 
@@ -1267,6 +1273,7 @@ Obj NewAndFilter (
     SET_FLAGS_FILT(getter, flags);
     SET_SETTR_FILT(getter, INTOBJ_INT(0xBADBABE));
     SET_TESTR_FILT(getter, INTOBJ_INT(0xBADBABE));
+    SET_IS_FILTER(getter);
     CHANGED_BAG(getter);
 
     return getter;
@@ -1344,6 +1351,7 @@ Obj NewReturnTrueFilter ( void )
     SET_FLAG2_FILT(getter, INTOBJ_INT(0));
     flags = NEW_FLAGS( 0 );
     SET_FLAGS_FILT(getter, flags);
+    SET_IS_FILTER(getter);
     CHANGED_BAG(getter);
 
     setter = SetterReturnTrueFilter( getter );
@@ -2810,6 +2818,7 @@ static Obj MakeTester( Obj name, Int flag1, Int flag2)
     SET_FLAGS_FILT(tester, flags);
     SET_SETTR_FILT(tester, 0);
     SET_TESTR_FILT(tester, ReturnTrueFilter);
+    SET_IS_FILTER(tester);
     CHANGED_BAG(tester);
     return tester;
 }
@@ -3105,7 +3114,8 @@ Obj NewProperty (
     SET_FLAGS_FILT(getter, flags);
     SET_SETTR_FILT(getter, setter);
     SET_TESTR_FILT(getter, tester);
-    SET_ENABLED_ATTR(getter,1);
+    SET_ENABLED_ATTR(getter, 1);
+    SET_IS_FILTER(getter);
     CHANGED_BAG(getter);
 
     /*N 1996/06/28 mschoene bad hack see comment in <setter>               */
@@ -3214,7 +3224,7 @@ void SaveOperationExtras (
     SaveSubObj(header->flags);
     SaveSubObj(header->setter);
     SaveSubObj(header->tester);
-    SaveSubObj(header->enabled);
+    SaveSubObj(header->extra);
     for (UInt i = 0; i <= 7; i++)
         SaveSubObj(header->methods[i]);
 #ifdef HPCGAP
@@ -3245,7 +3255,7 @@ void LoadOperationExtras (
     header->flags = LoadSubObj();
     header->setter = LoadSubObj();
     header->tester = LoadSubObj();
-    header->enabled = LoadSubObj();
+    header->extra = LoadSubObj();
     for (UInt i = 0; i <= 7; i++)
         header->methods[i] = LoadSubObj();
 #ifdef HPCGAP
@@ -3990,6 +4000,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(CLEAR_CACHE_INFO, 0, ""),
     GVAR_FUNC(SET_ATTRIBUTE_STORING, 2, "attr, val"),
     GVAR_FUNC(DO_NOTHING_SETTER, 2, "obj, val"),
+    GVAR_FUNC(IS_FILTER, 1, "obj"),
     GVAR_FUNC(IS_AND_FILTER, 1, "filter"),
     GVAR_FUNC(IS_CONSTRUCTOR, 1, "x"),
     GVAR_FUNC(COMPACT_TYPE_IDS, 0, ""),

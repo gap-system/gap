@@ -47,10 +47,20 @@ typedef struct {
     // cache of an operation
     Obj cache[8];
 
-    // 1 if the operation is an attribute and storing is enabled (default) else 0
-    Obj enabled;
+    // small integer encoding a set of bit flags with information about the
+    // operation, see OperExtras below
+    //
+    // note: this is encoded as an integer object, and not just stored
+    // directly as C bitfield, to avoid the need for a custom marking function
+    // which does not call 'MarkBag' on this field (while that would be safe
+    // to do with GASMAN, it may not be in alternate GC implementations)
+    Obj extra;
 } OperBag;
 
+enum OperExtras {
+    OPER_IS_ATTR_STORING = (1 << 0),
+    OPER_IS_FILTER       = (1 << 1),
+};
 
 /****************************************************************************
 **
@@ -63,9 +73,9 @@ extern Obj TRY_NEXT_METHOD;
 **
 *F  IS_OPERATION( <obj> ) . . . . . . . . . . check if object is an operation
 */
-static inline Int IS_OPERATION(Obj func)
+static inline Int IS_OPERATION(Obj obj)
 {
-    return TNUM_OBJ(func) == T_FUNCTION && SIZE_OBJ(func) == sizeof(OperBag);
+    return TNUM_OBJ(obj) == T_FUNCTION && SIZE_OBJ(obj) == sizeof(OperBag);
 }
 
 
@@ -202,19 +212,51 @@ static inline void SET_CACHE_OPER(Obj oper, Int i, Obj x)
 */
 static inline Int ENABLED_ATTR(Obj oper)
 {
-    Obj val = CONST_OPER(oper)->enabled;
-    return val ? INT_INTOBJ(val) : 0;
+    Obj val = CONST_OPER(oper)->extra;
+    Int v = val ? INT_INTOBJ(val) : 0;
+    return v & OPER_IS_ATTR_STORING;
 }
 
 
 /****************************************************************************
 **
-*F  SET_ENABLED_ATTR( <oper>, <new> )  . set a new value that records whether 
+*F  SET_ENABLED_ATTR( <oper>, <on> ) . set a new value that records whether 
 **                                       storing is enabled for an operation
 */
-static inline void SET_ENABLED_ATTR(Obj oper, Int x)
+static inline void SET_ENABLED_ATTR(Obj oper, Int on)
 {
-    OPER(oper)->enabled = INTOBJ_INT(x);
+    Obj val = CONST_OPER(oper)->extra;
+    Int v = val ? INT_INTOBJ(val) : 0;
+    if (on)
+        v |= OPER_IS_ATTR_STORING;
+    else
+        v &= ~OPER_IS_ATTR_STORING;
+    OPER(oper)->extra = INTOBJ_INT(v);
+}
+
+/****************************************************************************
+**
+*F  IS_FILTER( <oper> ) . . . . . . . . . . . . . check if object is a filter
+*/
+static inline Int IS_FILTER(Obj oper)
+{
+    if (!IS_OPERATION(oper))
+        return 0;
+    Obj val = CONST_OPER(oper)->extra;
+    Int v = val ? INT_INTOBJ(val) : 0;
+    return v & OPER_IS_FILTER;
+}
+
+/****************************************************************************
+**
+*F  SET_IS_FILTER( <oper> ) . . . . . . . . . . .  mark operation as a filter
+*/
+static inline void SET_IS_FILTER(Obj oper)
+{
+    Obj val = CONST_OPER(oper)->extra;
+    Int v = val ? INT_INTOBJ(val) : 0;
+    v |= OPER_IS_FILTER;
+    OPER(oper)->extra = INTOBJ_INT(v);
 }
 
 
