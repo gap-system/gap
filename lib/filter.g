@@ -359,11 +359,7 @@ end);
 ##  We handle IsObject as a special case, as it is equal to ReturnTrue,
 ##  as all objects satisfy IsObject!
 ##
-BIND_GLOBAL( "IsFilter",
-    x -> IS_IDENTICAL_OBJ(x, IS_OBJECT)
-         or ( IS_OPERATION( x ) and NARG_FUNC( x ) = 1
-              and ( (FLAG1_FILTER( x ) <> 0 and FLAGS_FILTER(x) <> false)
-                    or IS_ELEMENTARY_FILTER(x) ) ) );
+BIND_GLOBAL( "IsFilter", IS_FILTER );
 
 
 ## Global Rank declarations
