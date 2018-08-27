@@ -181,6 +181,12 @@ static inline void StartFakeFuncExpr(Int startLine)
     // exist, and we have to create an empty local variable names list to
     // match the function expression that we are creating.
     //
+    // Without this, access to variables defined in the existing local
+    // variable context will be coded as LVAR accesses; but when we then
+    // execute this code, they will not actually be available in the current
+    // context, but rather one level up, i.e., they really should have been
+    // coded as HVARs.
+    //
     // If we are not in a break loop, then this would be a waste of time and
     // effort
     if (LEN_PLIST(STATE(StackNams)) > 0) {
