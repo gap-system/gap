@@ -81,6 +81,26 @@ Syntax error: 'QUIT;' cannot be used in this context in stream:1
 for i in [1..5] do QUIT; od;
                    ^^^^
 
+# some more similar tests, which (together with the above)
+# cover all calls to IntrAbortCoding
+gap> while true do QUIT; od;
+Syntax error: 'QUIT;' cannot be used in this context in stream:1
+while true do QUIT; od;
+              ^^^^
+gap> repeat QUIT; until false;
+Syntax error: 'QUIT;' cannot be used in this context in stream:1
+repeat QUIT; until false;
+       ^^^^
+gap> atomic fail do QUIT; od;
+Syntax error: 'QUIT;' cannot be used in this context in stream:1
+atomic fail do QUIT; od;
+               ^^^^
+gap> f:=ReadAsFunction(InputTextString("QUIT; return 1;"));
+Syntax error: 'QUIT;' cannot be used in this context in stream:1
+QUIT; return 1;
+^^^^
+fail
+
 #
 gap> f := function() local i; for i in [1..5] do continue; od; end;;
 gap> f();

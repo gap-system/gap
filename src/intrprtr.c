@@ -316,6 +316,16 @@ ExecStatus IntrEnd(UInt error, Obj *result)
 }
 
 
+void IntrAbortCoding(Obj lvars)
+{
+    if (STATE(IntrCoding)) {
+        CodeEnd(1);
+        STATE(IntrCoding)--;
+        SWITCH_TO_OLD_LVARS(lvars);
+    }
+}
+
+
 /****************************************************************************
 **
 *F  IntrFuncCallBegin() . . . . . . . . . . .  interpret function call, begin

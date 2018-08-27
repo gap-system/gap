@@ -85,6 +85,16 @@ extern ExecStatus IntrEnd(UInt error, Obj *result);
 
 /****************************************************************************
 **
+*F  IntrAbortCoding(<lvars>) . . . . . . . . . . . . . . . . . . abort coding
+**
+**  'IntrAbortCoding' aborts coding, if it is active, and resets the active
+**  lvars to <lvars>.
+*/
+extern void IntrAbortCoding(Obj lvars);
+
+
+/****************************************************************************
+**
 *F  IntrFuncCallBegin() . . . . . . . . . . .  interpret function call, begin
 *F  IntrFuncCallEnd(<funccall>,<options>,<nr>)  interpret function call, end
 **
