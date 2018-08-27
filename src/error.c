@@ -255,14 +255,12 @@ Obj FuncCALL_WITH_CATCH(Obj self, Obj func, volatile Obj args)
         SWITCH_TO_OLD_LVARS(currLVars);
         STATE(CurrStat) = currStat;
         SetRecursionDepth(recursionDepth);
-#ifdef HPCGAP
         STATE(Tilde) = tilde;
+#ifdef HPCGAP
         PopRegionLocks(lockSP);
         TLS(currentRegion) = savedRegion;
         if (TLS(CurrentHashLock))
             HashUnlock(TLS(CurrentHashLock));
-#else
-        STATE(Tilde) = tilde;
 #endif
     }
     else {

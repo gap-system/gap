@@ -959,7 +959,7 @@ Obj             EvalListTildeExpr (
     Obj                 tilde;          /* old value of tilde              */
 
     /* remember the old value of '~'                                       */
-    tilde = STATE( Tilde );
+    tilde = STATE(Tilde);
 
     /* create the list value                                               */
     list = ListExpr1(expr, 1);
@@ -1309,7 +1309,7 @@ Obj             EvalRecTildeExpr (
     Obj                 tilde;          /* old value of tilde              */
 
     /* remember the old value of '~'                                       */
-    tilde = STATE( Tilde );
+    tilde = STATE(Tilde);
 
     /* create the record value                                             */
     rec = RecExpr1( expr );
