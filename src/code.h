@@ -176,7 +176,9 @@ enum STAT_TNUM {
             T_REPEAT2,
             T_REPEAT3,
 
+#ifdef HPCGAP
             T_ATOMIC,
+#endif
 
             END_ENUM_RANGE(LAST_COMPOUND_STAT),
 
