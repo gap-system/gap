@@ -2526,6 +2526,29 @@ Obj FuncTHREAD_COUNTERS_GET(Obj self)
 
 /****************************************************************************
 **
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+    // install info string
+    { T_THREAD, "thread" },
+    { T_MONITOR, "monitor" },
+    { T_REGION, "region" },
+    { T_SEMAPHORE, "semaphore" },
+    { T_CHANNEL, "channel" },
+    { T_BARRIER, "barrier" },
+    { T_SYNCVAR, "syncvar" },
+    { -1,    "" }
+};
+
+
+/****************************************************************************
+**
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs[] = {
@@ -2645,14 +2668,8 @@ static StructGVarFunc GVarFuncs[] = {
 */
 static Int InitKernel(StructInitInfo * module)
 {
-    // install info string
-    InfoBags[T_THREAD].name = "thread";
-    InfoBags[T_MONITOR].name = "monitor";
-    InfoBags[T_REGION].name = "region";
-    InfoBags[T_SEMAPHORE].name = "semaphore";
-    InfoBags[T_CHANNEL].name = "channel";
-    InfoBags[T_BARRIER].name = "barrier";
-    InfoBags[T_SYNCVAR].name = "syncvar";
+    // set the bag type names (for error messages and debugging)
+    InitBagNamesFromTable(BagNames);
 
     // install the type methods
     TypeObjFuncs[T_THREAD] = TypeThread;

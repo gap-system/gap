@@ -983,9 +983,27 @@ static Obj FuncOBJ_MAP_KEYS(Obj self, Obj map) {
 
 /****************************************************************************
 **
-*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
+
+/****************************************************************************
+**
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_OBJSET,           "object set" },
+  { T_OBJSET+IMMUTABLE, "immutable object set" },
+  { T_OBJMAP,           "object map" },
+  { T_OBJMAP+IMMUTABLE, "immutable object map" },
+  { -1, "" }
+};
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
 static StructGVarFunc GVarFuncs [] = {
 
     GVAR_FUNC(OBJ_SET, -1, "[list]"),
@@ -1014,11 +1032,9 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-  /* install info string */
-  InfoBags[T_OBJSET].name = "object set";
-  InfoBags[T_OBJSET+IMMUTABLE].name = "immutable object set";
-  InfoBags[T_OBJMAP].name = "object map";
-  InfoBags[T_OBJMAP+IMMUTABLE].name = "immutable object map";
+  // set the bag type names (for error messages and debugging)
+  InitBagNamesFromTable( BagNames );
+
   /* install kind functions */
   TypeObjFuncs[T_OBJSET          ] = TypeObjSet;
   TypeObjFuncs[T_OBJSET+IMMUTABLE] = TypeObjSet;

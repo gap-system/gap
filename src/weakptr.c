@@ -866,6 +866,19 @@ void LoadWPObj(Obj wpobj)
 
 /****************************************************************************
 **
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_WPOBJ,                          "object (weakptr)"               },
+#if !defined(USE_THREADSAFE_COPYING)
+  { T_WPOBJ       +COPYING,           "object (weakptr, copied)"       },
+#endif
+  { -1,                               ""                               }
+};
+
+
+/****************************************************************************
+**
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -900,12 +913,10 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* install the marking and sweeping methods                            */
-    InfoBags[ T_WPOBJ          ].name = "object (weakptr)";
-#if !defined(USE_THREADSAFE_COPYING)
-    InfoBags[ T_WPOBJ +COPYING ].name = "object (weakptr, copied)";
-#endif
+    // set the bag type names (for error messages and debugging)
+    InitBagNamesFromTable( BagNames );
 
+    /* install the marking and sweeping methods                            */
 #if defined(USE_BOEHM_GC)
     /* force atomic allocation of these pointers */
     InitMarkFuncBags ( T_WPOBJ,          MarkNoSubBags   );

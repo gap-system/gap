@@ -2736,6 +2736,24 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
+
+/****************************************************************************
+**
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_INT,    "integer" },
+#ifdef SYS_IS_64_BIT
+  { T_INTPOS, "integer (>= 2^60)" },
+  { T_INTNEG, "integer (< -2^60)" },
+#else
+  { T_INTPOS, "integer (>= 2^28)" },
+  { T_INTNEG, "integer (< -2^28)" },
+#endif
+  { -1, "" }
+};
+
+
 /****************************************************************************
 **
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
@@ -2797,15 +2815,10 @@ static Int InitKernel ( StructInitInfo * module )
   InitHdlrFiltsFromTable( GVarFilts );
   InitHdlrFuncsFromTable( GVarFuncs );
   
+  // set the bag type names (for error messages and debugging)
+  InitBagNamesFromTable( BagNames );
+
   /* install the marking functions                                         */
-  InfoBags[         T_INT    ].name = "integer";
-#ifdef SYS_IS_64_BIT
-  InfoBags[         T_INTPOS ].name = "integer (>= 2^60)";
-  InfoBags[         T_INTNEG ].name = "integer (< -2^60)";
-#else
-  InfoBags[         T_INTPOS ].name = "integer (>= 2^28)";
-  InfoBags[         T_INTNEG ].name = "integer (< -2^28)";
-#endif
   InitMarkFuncBags( T_INTPOS, MarkNoSubBags );
   InitMarkFuncBags( T_INTNEG, MarkNoSubBags );
   

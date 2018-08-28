@@ -1795,6 +1795,17 @@ void MarkFunctionSubBags(Obj func)
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
+
+/****************************************************************************
+**
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_FUNCTION, "function" },
+  { -1,         ""         }
+};
+
+
 /****************************************************************************
 **
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
@@ -1853,9 +1864,10 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-  
+    // set the bag type names (for error messages and debugging)
+    InitBagNamesFromTable( BagNames );
+
     /* install the marking functions                                       */
-    InfoBags[ T_FUNCTION ].name = "function";
     InitMarkFuncBags(T_FUNCTION, MarkFunctionSubBags);
 
 #ifdef HPCGAP

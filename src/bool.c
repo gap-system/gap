@@ -323,6 +323,16 @@ void LoadBool( Obj obj )
 
 /****************************************************************************
 **
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_BOOL, "boolean or fail" },
+  { -1,     "" }
+};
+
+
+/****************************************************************************
+**
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -342,8 +352,10 @@ static StructGVarFilt GVarFilts [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
+    // set the bag type names (for error messages and debugging)
+    InitBagNamesFromTable( BagNames );
+
     /* install the marking functions for boolean values                    */
-    InfoBags[ T_BOOL ].name = "boolean or fail";
     InitMarkFuncBags( T_BOOL, MarkNoSubBags );
 
     /* init filters and functions                                          */

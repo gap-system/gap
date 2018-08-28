@@ -2554,6 +2554,16 @@ void PrintLVars( Obj lvars )
 
 /****************************************************************************
 **
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_LVARS, "values bag"         },
+  { T_HVARS, "high variables bag" },
+  { -1,      ""                   }
+};
+
+/****************************************************************************
+**
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -2585,10 +2595,11 @@ static Int InitKernel (
     }
 #endif
 
+    // set the bag type names (for error messages and debugging)
+    InitBagNamesFromTable( BagNames );
+
     /* install the marking functions for local variables bag               */
-    InfoBags[ T_LVARS ].name = "values bag";
     InitMarkFuncBags( T_LVARS, MarkAllButFirstSubBags );
-    InfoBags[ T_HVARS ].name = "high variables bag";
     InitMarkFuncBags( T_HVARS, MarkAllButFirstSubBags );
 
 #ifdef HPCGAP
