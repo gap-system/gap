@@ -62,11 +62,11 @@ Error, usage: the argument must be a partial perm,
 
 # test input validation
 gap> DegreeOfPartialPerm(fail);
-Error, usage: the argument should be a partial perm,
+Error, DegreeOfPartialPerm: <f> must be a partial perm,
 gap> CoDegreeOfPartialPerm(fail);
-Error, usage: the argument should be a partial perm,
+Error, CoDegreeOfPartialPerm: <f> must be a partial perm,
 gap> RankOfPartialPerm(fail);
-Error, usage: the argument should be a partial perm,
+Error, RankOfPartialPerm: <f> must be a partial perm,
 gap> 
 
 # SmallestIdempotentPower, IndexPeriodOfPartialPerm, IsIdempotent
@@ -3550,7 +3550,7 @@ gap> EMPTY_PPERM4 * PartialPermNC([1]);
 
 # PowIntPPerm2
 gap> (-1) ^ PartialPerm([1]);
-Error, usage: the first argument should be a positive integer,
+Error, usage: the first argument must be a positive integer,
 gap> "a" ^ PartialPerm([1]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `^' on 2 arguments
@@ -3560,7 +3560,7 @@ Error, no 1st choice method found for `^' on 2 arguments
 
 # PowIntPPerm2
 gap> (-1) ^ PPerm4([1]);
-Error, usage: the first argument should be a positive integer,
+Error, usage: the first argument must be a positive integer,
 gap> "a" ^ PPerm4([1]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `^' on 2 arguments
