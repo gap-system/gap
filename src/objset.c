@@ -768,13 +768,13 @@ static void CheckArgument(const char *func, Obj obj, Int t1, Int t2) {
   Int tnum = TNUM_OBJ(obj);
   if (t2 < 0 && tnum == t1+IMMUTABLE) {
     ErrorQuit("%s: First argument must be a mutable %s",
-      (Int) func,
-      (Int) InfoBags[t1].name);
+      (Int)func,
+      (Int)TNAM_TNUM(t1));
   }
   if (tnum != t1 && tnum != t2) {
     ErrorQuit("%s: First argument must be an %s",
-      (Int) func,
-      (Int) InfoBags[t1].name);
+      (Int)func,
+      (Int)TNAM_TNUM(t1));
   }
 }
 

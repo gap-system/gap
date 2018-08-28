@@ -2607,19 +2607,15 @@ static Int CheckInit (
 
     /* fix unknown list types                                              */
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i +=2 ) {
-        if ( InfoBags[i].name == 0 ) {
-            InfoBags[i].name = "unknown list type";
-        }
-        if ( InfoBags[i+IMMUTABLE].name == 0 ) {
-            InfoBags[i+IMMUTABLE].name = "unknown immutable list type";
-        }
+        GAP_ASSERT( TNAM_TNUM(i) );
+        GAP_ASSERT( TNAM_TNUM(i + IMMUTABLE) );
     }
 
     /* check that all relevant `ClearFiltListTNums' are installed          */
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
         if ( ClearFiltsTNums[i] == 0 ) {
             Pr( "#W  ClearFiltsListTNums [%s] missing\n",
-                    (Int)(InfoBags[i].name), 0L );
+                    (Int)TNAM_TNUM(i), 0L );
             success = 0;
         }
     }
@@ -2630,7 +2626,7 @@ static Int CheckInit (
         for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( HasFiltListTNums[i][fnums[j]] == -1 ) {
                 Pr( "#W  HasFiltListTNums [%s] [%s] missing\n",
-                    (Int)(InfoBags[i].name), (Int)fnams[j] );
+                    (Int)TNAM_TNUM(i), (Int)fnams[j] );
                 success = 0;
                 HasFiltListTNums[i][fnums[j]] = 0;
             }
@@ -2643,7 +2639,7 @@ static Int CheckInit (
         for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( SetFiltListTNums[i][fnums[j]] == 0 ) {
                 Pr( "#W  SetFiltListTNums [%s] [%s] missing\n",
-                    (Int)(InfoBags[i].name), (Int)fnams[j] );
+                    (Int)TNAM_TNUM(i), (Int)fnams[j] );
                 success = 0;
             }
         }
@@ -2655,7 +2651,7 @@ static Int CheckInit (
         for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( ResetFiltListTNums[i][fnums[j]] == 0 ) {
                 Pr( "#W  ResetFiltListTNums [%s] [%s] missing\n",
-                    (Int)(InfoBags[i].name), (Int)fnams[j] );
+                    (Int)TNAM_TNUM(i), (Int)fnams[j] );
                 success = 0;
             }
         }
@@ -2674,7 +2670,7 @@ static Int CheckInit (
                 else if ( new != -1 && HasFiltListTNums[new][fnums[j]] ) {
                     Pr(
                      "#W  ResetFiltListTNums [%s] [%s] failed to reset\n",
-                     (Int)(InfoBags[i].name), (Int)fnams[j] );
+                     (Int)TNAM_TNUM(i), (Int)fnams[j] );
                     success = 0;
                 }
             }
@@ -2690,7 +2686,7 @@ static Int CheckInit (
                 if ( new != -1 && new != i ) {
                     Pr(
                      "#W  SetFiltListTNums [%s] [%s] must not change\n",
-                     (Int)(InfoBags[i].name), (Int)fnams[j] );
+                     (Int)TNAM_TNUM(i), (Int)fnams[j] );
                     success = 0;
                 }
             }
@@ -2703,7 +2699,7 @@ static Int CheckInit (
         if ( (i & IMMUTABLE) == 0 ) {
             if ( ClearFiltsTNums[i]+IMMUTABLE != ClearFiltsTNums[i+IMMUTABLE]) {
                 Pr( "#W  ClearFiltsTNums [%s] mismatch between mutable and immutable\n",
-                    (Int)(InfoBags[i].name), 0 );
+                    (Int)TNAM_TNUM(i), 0 );
                 success = 0;
             }
             for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
@@ -2711,21 +2707,21 @@ static Int CheckInit (
                 if ( HasFiltListTNums[i][fnums[j]] !=
                      HasFiltListTNums[i+IMMUTABLE][fnums[j]]) {
                     Pr( "#W  HasFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
-                        (Int)(InfoBags[i].name), (Int)fnams[j] );
+                        (Int)TNAM_TNUM(i), (Int)fnams[j] );
                     success = 0;
                 }
 
                 if ( (SetFiltListTNums[i][fnums[j]] | IMMUTABLE) !=
                      SetFiltListTNums[i+IMMUTABLE][fnums[j]]) {
                     Pr( "#W  SetFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
-                        (Int)(InfoBags[i].name), (Int)fnams[j] );
+                        (Int)TNAM_TNUM(i), (Int)fnams[j] );
                     success = 0;
                 }
 
                 if ( (ResetFiltListTNums[i][fnums[j]] | IMMUTABLE) !=
                      ResetFiltListTNums[i+IMMUTABLE][fnums[j]]) {
                     Pr( "#W  ResetFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
-                        (Int)(InfoBags[i].name), (Int)fnams[j] );
+                        (Int)TNAM_TNUM(i), (Int)fnams[j] );
                     success = 0;
                 }
 
@@ -2736,43 +2732,43 @@ static Int CheckInit (
             if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty -> dense ] missing\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
             if ( HasFiltListTNums[i][FN_IS_NDENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty + ndense ] illegal\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
             if ( ! HasFiltListTNums[i][FN_IS_HOMOG] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty -> homog ] missing\n",
-                 (Int)(InfoBags[i].name), 0L );
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
             if ( HasFiltListTNums[i][FN_IS_NHOMOG] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty + nhomog ] illegal\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
             if ( ! HasFiltListTNums[i][FN_IS_SSORT] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty -> ssort ] missing\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
             if ( HasFiltListTNums[i][FN_IS_NSORT] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty + nsort ] illegal\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
             if ( HasFiltListTNums[i][FN_IS_TABLE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty + table ] illegal\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
         }
@@ -2781,7 +2777,7 @@ static Int CheckInit (
             if ( HasFiltListTNums[i][FN_IS_NDENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ dense + ndense ] illegal\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
         }
@@ -2790,13 +2786,13 @@ static Int CheckInit (
             if ( HasFiltListTNums[i][FN_IS_HOMOG] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ ndense + homog ] illegal\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
             if ( HasFiltListTNums[i][FN_IS_TABLE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ ndense + table ] illegal\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
         }
@@ -2805,19 +2801,19 @@ static Int CheckInit (
             if ( HasFiltListTNums[i][FN_IS_NHOMOG] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ homog + nhomog ] illegal\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
             if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ homog -> dense ] missing\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
             if ( HasFiltListTNums[i][FN_IS_NDENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ homog + ndense ] illegal\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
         }
@@ -2826,7 +2822,7 @@ static Int CheckInit (
             if ( HasFiltListTNums[i][FN_IS_TABLE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ nhomog + table ] illegal\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
         }
@@ -2835,13 +2831,13 @@ static Int CheckInit (
             if ( ! HasFiltListTNums[i][FN_IS_HOMOG] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ table -> homog ] missing\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
             if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ table -> dense ] missing\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
         }
@@ -2850,7 +2846,7 @@ static Int CheckInit (
             if ( HasFiltListTNums[i][FN_IS_NSORT] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ ssort + nsort ] illegal\n",
-                 (Int)(InfoBags[i].name), 0L );   
+                 (Int)TNAM_TNUM(i), 0L );
                 success = 0;
             }
         }           
