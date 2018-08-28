@@ -916,10 +916,10 @@ again:
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
             for ( UInt k = 0; k < NUM_TYPES; k++ ) {
-                if ( InfoBags[k].name != 0 ) {
+                if ( TNAM_TNUM(k) != 0 ) {
                     Char buf[41];
                     buf[0] = '\0';
-                    strlcat( buf, InfoBags[k].name, sizeof(buf) );
+                    strlcat( buf, TNAM_TNUM(k), sizeof(buf) );
                     Pr("%40s ",    (Int)buf, 0L );
                     Pr("%8d %8d ", (Int)InfoBags[k].nrLive,
                                    (Int)(InfoBags[k].sizeLive/1024));
@@ -937,14 +937,14 @@ again:
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
             for ( UInt k = 0; k < NUM_TYPES; k++ ) {
-                if ( InfoBags[k].name != 0 && 
+                if ( TNAM_TNUM(k) != 0 && 
                      (InfoBags[k].nrLive != 0 ||
                       InfoBags[k].sizeLive != 0 ||
                       InfoBags[k].nrAll != 0 ||
                       InfoBags[k].sizeAll != 0) ) {
                     Char buf[41];
                     buf[0] = '\0';
-                    strlcat( buf, InfoBags[k].name, sizeof(buf) );
+                    strlcat( buf, TNAM_TNUM(k), sizeof(buf) );
                     Pr("%40s ",    (Int)buf, 0L );
                     Pr("%8d %8d ", (Int)InfoBags[k].nrLive,
                                    (Int)(InfoBags[k].sizeLive/1024));
@@ -1791,11 +1791,11 @@ void InitializeGap (
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
             for ( Int i = 0;  i < NUM_TYPES;  i++ ) {
-                if ( InfoBags[i].name != 0 && InfoBags[i].nrAll != 0 ) {
+                if ( TNAM_TNUM(i) != 0 && InfoBags[i].nrAll != 0 ) {
                     char    buf[41];
 
                     buf[0] = '\0';
-                    strlcat( buf, InfoBags[i].name, sizeof(buf) );
+                    strlcat( buf, TNAM_TNUM(i), sizeof(buf) );
                     Pr("#W  %36s ",    (Int)buf, 0L );
                     Pr("%8d %8d ", (Int)InfoBags[i].nrLive,
                        (Int)(InfoBags[i].sizeLive/1024));

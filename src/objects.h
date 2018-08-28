@@ -365,11 +365,18 @@ static inline UInt TNUM_OBJ(Obj obj)
 
 /****************************************************************************
 **
+*F  TNAM_TNUM( <obj> ) . . . . . . . . . . . . . . . . . . . . name of a type
+*/
+const Char * TNAM_TNUM(UInt tnum);
+
+
+/****************************************************************************
+**
 *F  TNAM_OBJ( <obj> ) . . . . . . . . . . . . . name of the type of an object
 */
 static inline const Char * TNAM_OBJ(Obj obj)
 {
-    return InfoBags[TNUM_OBJ(obj)].name;
+    return TNAM_TNUM(TNUM_OBJ(obj));
 }
 
 

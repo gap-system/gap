@@ -91,6 +91,11 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) )
     return tnum;
 }
 
+const Char * TNAM_TNUM(UInt tnum)
+{
+    return InfoBags[tnum].name;
+}
+
 
 /****************************************************************************
 **
@@ -1896,7 +1901,7 @@ Obj FuncDEBUG_TNUM_NAMES(Obj self)
         START_SYMBOLIC_TNUM(FIRST_COPYING_TNUM);
         START_SYMBOLIC_TNUM(FIRST_PACKAGE_TNUM + COPYING);
 #endif
-        const char *name = InfoBags[k].name;
+        const char *name = TNAM_TNUM(k);
         Pr("%3d: %s", k, (Int)indentStr);
         Pr("%s%s\n", (Int)indentStr, (Int)(name ? name : "."));
         STOP_SYMBOLIC_TNUM(LAST_MULT_TNUM);

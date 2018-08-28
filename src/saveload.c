@@ -372,7 +372,7 @@ static void LoadBagData ( void )
   flags = LoadUInt1();
   size = LoadUInt();
 
-    if (InfoBags[type].name == NULL)
+    if (TNAM_TNUM(type) == NULL)
       {
         Pr("Bad type %d, size %d\n",type,size);
         exit(1);
