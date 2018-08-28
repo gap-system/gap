@@ -149,7 +149,7 @@ VoidFunc debug_func_pointers[] = {
     (VoidFunc)IS_MODULE_BUILTIN,
     (VoidFunc)IS_MODULE_DYNAMIC,
     (VoidFunc)IS_MODULE_STATIC,
-    (VoidFunc)IS_MUTABLE_PLIST,
+    (VoidFunc)IS_PLIST_MUTABLE,
     (VoidFunc)IS_NONNEG_INTOBJ,
     (VoidFunc)IS_PLIST,
     (VoidFunc)IS_PLIST_OR_POSOBJ,

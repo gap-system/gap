@@ -165,7 +165,7 @@ static inline Obj DOM_PPERM(Obj f)
 static inline void SET_IMG_PPERM(Obj f, Obj img)
 {
     GAP_ASSERT(IS_PPERM(f));
-    GAP_ASSERT(IS_PLIST(img) && !IS_MUTABLE_PLIST(img));
+    GAP_ASSERT(IS_PLIST(img) && !IS_PLIST_MUTABLE(img));
     GAP_ASSERT(DOM_PPERM(f) == NULL ||
                LEN_PLIST(img) == LEN_PLIST(DOM_PPERM(f)));
     // TODO check entries of img are valid
@@ -175,7 +175,7 @@ static inline void SET_IMG_PPERM(Obj f, Obj img)
 static inline void SET_DOM_PPERM(Obj f, Obj dom)
 {
     GAP_ASSERT(IS_PPERM(f));
-    GAP_ASSERT(IS_PLIST(dom) && !IS_MUTABLE_PLIST(dom));
+    GAP_ASSERT(IS_PLIST(dom) && !IS_PLIST_MUTABLE(dom));
     GAP_ASSERT(IMG_PPERM(f) == NULL ||
                LEN_PLIST(dom) == LEN_PLIST(IMG_PPERM(f)));
     // TODO check entries of img are valid
@@ -6180,7 +6180,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
 
     const UInt len = LEN_PLIST(set);
 
-    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_PLIST(set), T_PLIST, len);
+    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(set), T_PLIST, len);
 
     /* get the pointer                                                 */
     ptset = CONST_ADDR_OBJ(set) + len;
@@ -6239,7 +6239,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
         }
     }
     if (reslen == 0) {
-        RetypeBag(res, IS_MUTABLE_PLIST(set) ? T_PLIST_EMPTY
+        RetypeBag(res, IS_PLIST_MUTABLE(set) ? T_PLIST_EMPTY
                                              : T_PLIST_EMPTY + IMMUTABLE);
         return res;
     }
@@ -6249,7 +6249,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
     // sort the result
     if (isint) {
         SortPlistByRawObj(res);
-        RetypeBag(res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT
+        RetypeBag(res, IS_PLIST_MUTABLE(set) ? T_PLIST_CYC_SSORT
                                              : T_PLIST_CYC_SSORT + IMMUTABLE);
     }
     else {
@@ -6284,7 +6284,7 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
 
     const UInt len = LEN_PLIST(tup);
 
-    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_PLIST(tup), T_PLIST_CYC, len);
+    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(tup), T_PLIST_CYC, len);
 
     /* get the pointer                                                 */
     pttup = CONST_ADDR_OBJ(tup) + 1;
@@ -6363,7 +6363,7 @@ Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
     }
 
     PLAIN_LIST(set);
-    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_PLIST(set), T_PLIST_CYC_SSORT,
+    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(set), T_PLIST_CYC_SSORT,
                                     LEN_PLIST(set));
 
     /* get the pointer                                                 */
@@ -6401,12 +6401,12 @@ Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
     SET_LEN_PLIST(res, reslen);
 
     if (reslen == 0) {
-        RetypeBag(res, IS_MUTABLE_PLIST(set) ? T_PLIST_EMPTY
+        RetypeBag(res, IS_PLIST_MUTABLE(set) ? T_PLIST_EMPTY
                                              : T_PLIST_EMPTY + IMMUTABLE);
     }
     else {
         SortPlistByRawObj(res);
-        RetypeBag(res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT
+        RetypeBag(res, IS_PLIST_MUTABLE(set) ? T_PLIST_CYC_SSORT
                                              : T_PLIST_CYC_SSORT + IMMUTABLE);
     }
 

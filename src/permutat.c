@@ -3578,7 +3578,7 @@ Obj             OnTuplesPerm (
     const UInt len = LEN_PLIST(tup);
 
     /* make a bag for the result and initialize pointers                   */
-    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_PLIST(tup), T_PLIST, len);
+    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(tup), T_PLIST, len);
     SET_LEN_PLIST(res, len);
 
     /* handle small permutations                                           */
@@ -3686,7 +3686,7 @@ Obj             OnSetsPerm (
     const UInt len = LEN_PLIST(set);
 
     /* make a bag for the result and initialize pointers                   */
-    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_PLIST(set), T_PLIST, len);
+    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(set), T_PLIST, len);
     SET_LEN_PLIST(res, len);
 
     /* handle small permutations                                           */
@@ -3758,7 +3758,7 @@ Obj             OnSetsPerm (
     // sort the result
     if (isint) {
         SortPlistByRawObj(res);
-        RetypeBag(res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT
+        RetypeBag(res, IS_PLIST_MUTABLE(set) ? T_PLIST_CYC_SSORT
                                              : T_PLIST_CYC_SSORT + IMMUTABLE);
     }
     else {
