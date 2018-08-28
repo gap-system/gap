@@ -473,9 +473,12 @@ enum {
 **
 **  'TYPE_OBJ' returns the type of the object <obj>.
 */
-#define TYPE_OBJ(obj)   ((*TypeObjFuncs[ TNUM_OBJ(obj) ])( obj ))
-
 extern Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+static inline Obj TYPE_OBJ(Obj obj)
+{
+    UInt tnum = TNUM_OBJ(obj);
+    return (*TypeObjFuncs[tnum])(obj);
+}
 
 
 /****************************************************************************
@@ -484,10 +487,12 @@ extern Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 **
 **  'SET_TYPE_OBJ' sets the kind <kind>of the object <obj>.
 */
-#define SET_TYPE_OBJ(obj, kind) \
-  ((*SetTypeObjFuncs[ TNUM_OBJ(obj) ])( obj, kind ))
-
 extern void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj kind );
+static inline void SET_TYPE_OBJ(Obj obj, Obj type)
+{
+    UInt tnum = TNUM_OBJ(obj);
+    (*SetTypeObjFuncs[tnum])(obj, type);
+}
 
 
 /****************************************************************************
@@ -622,27 +627,27 @@ extern void LoadObjError( Obj obj );
 **  'IS_COPYABLE_OBJ' returns 1 if the object <obj> is copyable (i.e., can be
 **  copied into a mutable object), and 0 otherwise.
 */
-#define IS_COPYABLE_OBJ(obj) \
-                        ((IsCopyableObjFuncs[ TNUM_OBJ(obj) ])( obj ))
-
 extern Int (*IsCopyableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
-
-
-/****************************************************************************
-**
-*F  SHALLOW_COPY_OBJ( <obj> ) . . . . . . .  make a shallow copy of an object
-**
-**  'SHALLOW_COPY_OBJ' makes a shallow copy of the object <obj>.
-*/
-#define SHALLOW_COPY_OBJ(obj) \
-                        ((*ShallowCopyObjFuncs[ TNUM_OBJ(obj) ])( obj ))
+static inline Int IS_COPYABLE_OBJ(Obj obj)
+{
+    UInt tnum = TNUM_OBJ(obj);
+    return (IsCopyableObjFuncs[tnum])(obj);
+}
 
 
 /****************************************************************************
 **
 *V  ShallowCopyObjFuncs[<type>] . . . . . . . . . .  shallow copier functions
+*F  SHALLOW_COPY_OBJ( <obj> ) . . . . . . .  make a shallow copy of an object
+**
+**  'SHALLOW_COPY_OBJ' makes a shallow copy of the object <obj>.
 */
 extern Obj (*ShallowCopyObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+static inline Obj SHALLOW_COPY_OBJ(Obj obj)
+{
+    UInt tnum = TNUM_OBJ(obj);
+    return (ShallowCopyObjFuncs[tnum])(obj);
+}
 
 
 /****************************************************************************
@@ -744,11 +749,6 @@ extern void PrintObj (
 **  is the function '<func>(<obj>)' that should be called to print the object
 **  <obj> of this type.
 */
-/* TL: extern Obj  PrintObjThis; */
-
-/* TL: extern Int  PrintObjIndex; */
-/* TL: extern Int  PrintObjDepth; */
-
 extern void (* PrintObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 
@@ -760,8 +760,6 @@ extern void (* PrintObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 */
 extern void ViewObj (
             Obj                 obj );
-
-
 
 
 /****************************************************************************
