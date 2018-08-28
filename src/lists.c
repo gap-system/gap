@@ -1218,12 +1218,12 @@ Int             IsHomogListDefault (
     if ( elm == 0 ) {
         return 0L;
     }
-    fam = FAMILY_TYPE( TYPE_OBJ( elm ) );
+    fam = FAMILY_OBJ( elm );
 
     /* loop over the entries of the list                                   */
     for ( i = 2; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
-        if ( elm == 0 || fam != FAMILY_TYPE( TYPE_OBJ( elm ) ) ) {
+        if ( elm == 0 || fam != FAMILY_OBJ( elm ) ) {
             return 0L;
         }
     }
@@ -1285,13 +1285,13 @@ Int             IsTableListDefault (
     if ( ! IS_HOMOG_LIST( elm ) ) {
         return 0L;
     }
-    fam = FAMILY_TYPE( TYPE_OBJ( elm ) );
+    fam = FAMILY_OBJ( elm );
     /*     len = LEN_LIST( elm ); */
 
     /* loop over the entries of the list                                   */
     for ( i = 2; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
-        if ( elm == 0 || fam != FAMILY_TYPE( TYPE_OBJ( elm ) ) ) {
+        if ( elm == 0 || fam != FAMILY_OBJ( elm ) ) {
             return 0L;
         }
         /*        if ( ! IS_LIST( elm ) || LEN_LIST( elm ) != len ) {
