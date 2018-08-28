@@ -1921,7 +1921,7 @@ static ALWAYS_INLINE Obj GetMethodUncached(
         return Fail;
 
     const UInt len = LEN_PLIST(methods);
-    UInt       j = 0;
+    UInt       matchCount = 0;
     for (UInt pos = 0; pos < len; pos += n + BASE_SIZE_METHODS_OPER_ENTRY) {
         // each method comprises n + BASE_SIZE_METHODS_OPER_ENTRY
         // entries in the 'methods' list:
@@ -2000,7 +2000,7 @@ static ALWAYS_INLINE Obj GetMethodUncached(
         }
 
         // we have a match; is it the right one?
-        if (prec == j) {
+        if (prec == matchCount) {
             if (verbose) {
                 CALL_3ARGS(prec == 0 ? VMETHOD_PRINT_INFO : NEXT_VMETHOD_PRINT_INFO, methods,
                            INTOBJ_INT(pos / (n + BASE_SIZE_METHODS_OPER_ENTRY) + 1),
@@ -2010,7 +2010,7 @@ static ALWAYS_INLINE Obj GetMethodUncached(
             Obj meth = ELM_PLIST(methods, pos + n + 2);
             return meth;
         }
-        j++;
+        matchCount++;
     }
     return Fail;
 }
