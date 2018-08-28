@@ -850,38 +850,7 @@ Obj DeserializeTypedObj(UInt tnum)
     func = ELM_REC(deserialization_rec, rnam);
     if (!func || TNUM_OBJ(func) != T_FUNCTION)
         DeserializationError();
-    switch (len) {
-    case 0:
-        result = CALL_0ARGS(func);
-        break;
-    case 1:
-        result = CALL_1ARGS(func, ELM_PLIST(args, 1));
-        break;
-    case 2:
-        result = CALL_2ARGS(func, ELM_PLIST(args, 1), ELM_PLIST(args, 2));
-        break;
-    case 3:
-        result = CALL_3ARGS(func, ELM_PLIST(args, 1), ELM_PLIST(args, 2),
-                            ELM_PLIST(args, 3));
-        break;
-    case 4:
-        result = CALL_4ARGS(func, ELM_PLIST(args, 1), ELM_PLIST(args, 2),
-                            ELM_PLIST(args, 3), ELM_PLIST(args, 4));
-        break;
-    case 5:
-        result = CALL_5ARGS(func, ELM_PLIST(args, 1), ELM_PLIST(args, 2),
-                            ELM_PLIST(args, 3), ELM_PLIST(args, 4),
-                            ELM_PLIST(args, 5));
-        break;
-    case 6:
-        result = CALL_6ARGS(func, ELM_PLIST(args, 1), ELM_PLIST(args, 2),
-                            ELM_PLIST(args, 3), ELM_PLIST(args, 4),
-                            ELM_PLIST(args, 5), ELM_PLIST(args, 6));
-        break;
-    default:
-        result = CALL_XARGS(func, args);
-        break;
-    }
+    result = CallFuncList(func, args);
     return result;
 }
 
