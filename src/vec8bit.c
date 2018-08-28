@@ -1466,7 +1466,7 @@ Obj FuncZERO_VEC8BIT( Obj self, Obj vec )
 Obj FuncZERO_VEC8BIT_2( Obj self, Obj q, Obj len )
 {
     if (!ARE_INTOBJS(q, len))
-        ErrorQuit("ZERO_VEC8BIT2: arguments must be small integers, not a %s and a %s",
+        ErrorQuit("ZERO_VEC8BIT_2: arguments must be small integers, not a %s and a %s",
         (Int)TNAM_OBJ(q), (Int)TNAM_OBJ(len));
     return ZeroVec8Bit(INT_INTOBJ(q),
                        INT_INTOBJ(len),
@@ -4968,7 +4968,7 @@ void ReduceCoeffsVec8Bit ( Obj vl, Obj vrshifted, Obj quot )
 Obj FuncMAKE_SHIFTED_COEFFS_VEC8BIT( Obj self, Obj vr, Obj lr)
 {
     if (!IS_INTOBJ(lr))
-        ErrorQuit("ReduceCoeffs: Length of right argument should be a small integer, not a %s",
+        ErrorQuit("ReduceCoeffs: Length of right argument must be a small integer, not a %s",
                   (Int)TNAM_OBJ(lr), 0L);
     if (INT_INTOBJ(lr) < 0 || INT_INTOBJ(lr) > LEN_VEC8BIT(vr)) {
         ErrorQuit("ReduceCoeffs: given length <lr> of right argt (%d)\n is negative or longer than the argt (%d)",
@@ -4986,7 +4986,7 @@ Obj FuncREDUCE_COEFFS_VEC8BIT( Obj self, Obj vl, Obj ll, Obj vrshifted)
     if (q != FIELD_VEC8BIT(ELM_PLIST(vrshifted, 1)))
         return Fail;
     if (!IS_INTOBJ(ll))
-        ErrorQuit("ReduceCoeffs: Length of left argument should be a small integer, not a %s",
+        ErrorQuit("ReduceCoeffs: Length of left argument must be a small integer, not a %s",
                   (Int)TNAM_OBJ(ll), 0L);
     if (0 > INT_INTOBJ(ll) || INT_INTOBJ(ll) > LEN_VEC8BIT(vl)) {
         ErrorQuit("ReduceCoeffs: given length <ll> of left argt (%d)\n is negative or longer than the argt (%d)",
@@ -5011,7 +5011,7 @@ Obj FuncQUOTREM_COEFFS_VEC8BIT( Obj self, Obj vl, Obj ll, Obj vrshifted)
     if (q != FIELD_VEC8BIT(ELM_PLIST(vrshifted, 1)))
         return Fail;
     if (!IS_INTOBJ(ll))
-        ErrorQuit("QuotRemCoeffs: Length of left argument should be a small integer, not a %s",
+        ErrorQuit("QuotRemCoeffs: Length of left argument must be a small integer, not a %s",
                   (Int)TNAM_OBJ(ll), 0L);
     if (0 > INT_INTOBJ(ll) || INT_INTOBJ(ll) > LEN_VEC8BIT(vl)) {
         ErrorQuit("QuotRemCoeffs: given length <ll> of left argt (%d)\n is negative or longer than the argt (%d)",

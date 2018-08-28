@@ -467,7 +467,7 @@ Obj FuncDegreeOfPartialPerm(Obj self, Obj f)
     else if (TNUM_OBJ(f) == T_PPERM4) {
         return INTOBJ_INT(DEG_PPERM4(f));
     }
-    ErrorQuit("usage: the argument should be a partial perm,", 0L, 0L);
+    ErrorQuit("DegreeOfPartialPerm: <f> must be a partial perm,", 0L, 0L);
     return Fail;
 }
 
@@ -481,7 +481,7 @@ Obj FuncCoDegreeOfPartialPerm(Obj self, Obj f)
     else if (TNUM_OBJ(f) == T_PPERM4) {
         return INTOBJ_INT(CODEG_PPERM4(f));
     }
-    ErrorQuit("usage: the argument should be a partial perm,", 0L, 0L);
+    ErrorQuit("CoDegreeOfPartialPerm: <f> must be a partial perm,", 0L, 0L);
     return Fail;
 }
 
@@ -494,7 +494,7 @@ Obj FuncRankOfPartialPerm(Obj self, Obj f)
     else if (TNUM_OBJ(f) == T_PPERM4) {
         return INTOBJ_INT(RANK_PPERM4(f));
     }
-    ErrorQuit("usage: the argument should be a partial perm,", 0L, 0L);
+    ErrorQuit("RankOfPartialPerm: <f> must be a partial perm,", 0L, 0L);
     return Fail;
 }
 
@@ -5360,7 +5360,7 @@ Obj PowIntPPerm2(Obj i, Obj f)
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
 
     if (!IS_INTOBJ(i) || INT_INTOBJ(i) <= 0) {
-        ErrorQuit("usage: the first argument should be a positive integer,",
+        ErrorQuit("usage: the first argument must be a positive integer,",
                   0L, 0L);
         return 0L;
     }
@@ -5373,7 +5373,7 @@ Obj PowIntPPerm4(Obj i, Obj f)
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
 
     if (!IS_INTOBJ(i) || INT_INTOBJ(i) <= 0) {
-        ErrorQuit("usage: the first argument should be a positive integer,",
+        ErrorQuit("usage: the first argument must be a positive integer,",
                   0L, 0L);
         return 0L;
     }
