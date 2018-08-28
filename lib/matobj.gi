@@ -201,9 +201,6 @@ InstallMethod( Matrix,
 
 InstallMethod( Matrix,
   [IsSemiring, IsMatrixObj],
-  # FIXME: Remove this downranking, it was introduced to prevent
-  #        Semigroups from breaking ahead of the 4.10 release
-  -SUM_FLAGS,
   function( basedomain, mat )
     # TODO: can we do better? encourage MatrixObj implementors to overload this?
     return NewMatrix( DefaultMatrixRepForBaseDomain(basedomain), basedomain, NrCols(mat), Unpack(mat) );
