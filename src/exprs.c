@@ -918,10 +918,8 @@ Obj             EvalPermExpr (
 **  'EvalListExpr'  just  calls 'ListExpr1'  and  'ListExpr2' to evaluate the
 **  list expression.
 */
-Obj             ListExpr1(Expr expr, Int tildeInUse);
-void            ListExpr2(Obj list, Expr expr, Int tildeInUse);
-Obj             RecExpr1 ( Expr expr );
-void            RecExpr2 ( Obj rec, Expr expr );
+static Obj  ListExpr1(Expr expr, Int tildeInUse);
+static void ListExpr2(Obj list, Expr expr, Int tildeInUse);
 
 Obj             EvalListExpr (
     Expr                expr )
@@ -1004,7 +1002,7 @@ Obj             EvalListTildeExpr (
 **  and TNUM of the list changing whenever a new element is constructed.
 **
 */
-ALWAYS_INLINE Obj ListExpr1(Expr expr, Int tildeInUse)
+static ALWAYS_INLINE Obj ListExpr1(Expr expr, Int tildeInUse)
 {
     Obj                 list;           /* list value, result              */
     Int                 len;            /* logical length of the list      */
@@ -1026,7 +1024,7 @@ ALWAYS_INLINE Obj ListExpr1(Expr expr, Int tildeInUse)
     return list;
 }
 
-ALWAYS_INLINE void ListExpr2(Obj list, Expr expr, Int tildeInUse)
+static ALWAYS_INLINE void ListExpr2(Obj list, Expr expr, Int tildeInUse)
 {
     Obj                 sub;            /* value of a subexpression        */
     Int                 len;            /* logical length of the list      */
@@ -1273,6 +1271,9 @@ Obj EvalFloatExprEager(Expr expr)
 **  'EvalRecExpr' just calls 'RecExpr1' and 'RecExpr2' to evaluate the record
 **  expression.
 */
+static Obj  RecExpr1(Expr expr);
+static void RecExpr2(Obj rec, Expr expr);
+
 Obj             EvalRecExpr (
     Expr                expr )
 {
@@ -1347,8 +1348,7 @@ Obj             EvalRecTildeExpr (
 **  'rec(  a := 1,  ~.a  )' requires that the   value of one subexpression is
 **  entered into the record value before the next subexpression is evaluated.
 */
-Obj             RecExpr1 (
-    Expr                expr )
+static Obj RecExpr1(Expr expr)
 {
     Obj                 rec;            /* record value, result            */
     Int                 len;            /* number of components            */
@@ -1363,9 +1363,7 @@ Obj             RecExpr1 (
     return rec;
 }
 
-void            RecExpr2 (
-    Obj                 rec,
-    Expr                expr )
+static void RecExpr2(Obj rec, Expr expr)
 {
     UInt                rnam;           /* name of component               */
     Obj                 sub;            /* value of subexpression          */
