@@ -269,7 +269,7 @@ Int KTNumPlist (
 #endif
     else if (TEST_OBJ_FLAG(elm, TESTING)) {
         isHom   = 0;
-        areMut  = IS_MUTABLE_PLIST(elm);
+        areMut  = IS_PLIST_MUTABLE(elm);
         isTable = 0;
     }
     else {
@@ -332,7 +332,7 @@ Int KTNumPlist (
 #endif
         else if (TEST_OBJ_FLAG(elm, TESTING)) {
             isHom   = 0;
-            areMut  = (areMut || IS_MUTABLE_PLIST(elm));
+            areMut  = (areMut || IS_PLIST_MUTABLE(elm));
             isTable = 0;
             isRect = 0;
         }
@@ -798,7 +798,7 @@ Obj             ShallowCopyPlist (
 
     /* make the new object and copy the contents                           */
     len = LEN_PLIST(list);
-    if ( ! IS_MUTABLE_PLIST(list) ) {
+    if ( ! IS_PLIST_MUTABLE(list) ) {
         new = NEW_PLIST( TNUM_OBJ(list) - IMMUTABLE, len );
     }
     else {
@@ -2608,7 +2608,7 @@ Obj FuncASS_PLIST_DEFAULT (
             "you can replace <pos> via 'return <pos>;'" );
         return FuncASS_PLIST_DEFAULT( self, plist, pos, val );
     }
-    while ( ! IS_PLIST(plist) || ! IS_MUTABLE_PLIST(plist) ) {
+    while ( ! IS_PLIST(plist) || ! IS_PLIST_MUTABLE(plist) ) {
         plist = ErrorReturnObj(
             "<list> must be a mutable plain list (not a %s)",
             (Int)TNAM_OBJ(plist), 0,

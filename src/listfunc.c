@@ -83,7 +83,7 @@ void            AddPlist3 (
 {
   UInt len;
 
-    if ( ! IS_MUTABLE_PLIST(list) ) {
+    if ( ! IS_PLIST_MUTABLE(list) ) {
         list = ErrorReturnObj(
                 "List Assignment: <list> must be a mutable list",
                 0L, 0L,
@@ -200,7 +200,7 @@ Obj            RemPlist (
     Int                 pos;           
     Obj removed; 
 
-    if ( ! IS_MUTABLE_PLIST(list) ) {
+    if ( ! IS_PLIST_MUTABLE(list) ) {
         list = ErrorReturnObj(
                 "Remove: <list> must be a mutable list",
                 0L, 0L,

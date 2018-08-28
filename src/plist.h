@@ -232,10 +232,11 @@ static inline Int IS_DENSE_PLIST(Obj list)
 
 /****************************************************************************
 **
-*F  IS_MUTABLE_PLIST( <list> )  . . . . . . . . . . . is a plain list mutable
+*F  IS_PLIST_MUTABLE( <list> )  . . . . . . . . . . . is a plain list mutable
 */
-static inline Int IS_MUTABLE_PLIST(Obj list)
+static inline Int IS_PLIST_MUTABLE(Obj list)
 {
+    GAP_ASSERT(IS_PLIST(list));
     return !((TNUM_OBJ(list) - T_PLIST) % 2);
 }
 

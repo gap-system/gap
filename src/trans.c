@@ -103,14 +103,14 @@ static inline Obj EXT_TRANS(Obj f)
 static inline void SET_IMG_TRANS(Obj f, Obj img)
 {
     GAP_ASSERT(IS_TRANS(f));
-    GAP_ASSERT(img == NULL || (IS_PLIST(img) && !IS_MUTABLE_PLIST(img)));
+    GAP_ASSERT(img == NULL || (IS_PLIST(img) && !IS_PLIST_MUTABLE(img)));
     ADDR_OBJ(f)[0] = img;
 }
 
 static inline void SET_KER_TRANS(Obj f, Obj ker)
 {
     GAP_ASSERT(IS_TRANS(f));
-    GAP_ASSERT(ker == NULL || (IS_PLIST(ker) && !IS_MUTABLE_PLIST(ker) &&
+    GAP_ASSERT(ker == NULL || (IS_PLIST(ker) && !IS_PLIST_MUTABLE(ker) &&
                                LEN_PLIST(ker) == DEG_TRANS(f)));
     ADDR_OBJ(f)[1] = ker;
 }
@@ -3829,7 +3829,7 @@ Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
 
     const UInt len = LEN_PLIST(set);
 
-    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_PLIST(set), T_PLIST_CYC_SSORT, len);
+    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(set), T_PLIST_CYC_SSORT, len);
     SET_LEN_PLIST(res, len);
 
     ptset = CONST_ADDR_OBJ(set) + len;
@@ -5235,7 +5235,7 @@ Obj OnSetsTrans(Obj set, Obj f)
 
     const UInt len = LEN_PLIST(set);
 
-    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_PLIST(set), T_PLIST, len);
+    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(set), T_PLIST, len);
     SET_LEN_PLIST(res, len);
 
     ptset = CONST_ADDR_OBJ(set) + len;
@@ -5295,7 +5295,7 @@ Obj OnSetsTrans(Obj set, Obj f)
         SortPlistByRawObj(res);
         REMOVE_DUPS_PLIST_INTOBJ(res);
 
-        RetypeBag(res, IS_MUTABLE_PLIST(set) ? T_PLIST_CYC_SSORT
+        RetypeBag(res, IS_PLIST_MUTABLE(set) ? T_PLIST_CYC_SSORT
                                              : T_PLIST_CYC_SSORT + IMMUTABLE);
     }
     else {
@@ -5329,7 +5329,7 @@ Obj OnTuplesTrans(Obj tup, Obj f)
 
     const UInt len = LEN_PLIST(tup);
 
-    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_PLIST(tup), T_PLIST, len);
+    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(tup), T_PLIST, len);
     SET_LEN_PLIST(res, len);
 
     pttup = CONST_ADDR_OBJ(tup) + len;
