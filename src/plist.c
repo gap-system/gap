@@ -735,7 +735,7 @@ Obj TypePlistHom(Obj list)
 
     /* get the tnum and the family of the elements                         */
     tnum   = KTNumHomPlist( list );
-    family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST( list, 1 ) ) );
+    family = FAMILY_OBJ( ELM_PLIST( list, 1 ) );
 
     return TypePlistHomHelper(family, tnum, T_PLIST_HOM, list);
 }
@@ -749,7 +749,7 @@ Obj TypePlistCyc(Obj list)
     tnum   = TNUM_OBJ( list );
 
     /* This had better return the cyclotomics family, could be speeded up */
-    family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST( list, 1 ) ) );
+    family = FAMILY_OBJ( ELM_PLIST( list, 1 ) );
 
     return TypePlistHomHelper(family, tnum, T_PLIST_CYC, list);
 }
@@ -761,7 +761,7 @@ Obj TypePlistFfe(Obj list)
 
     /* get the tnum and the family of the elements                         */
     tnum   = TNUM_OBJ( list );
-    family = FAMILY_TYPE( TYPE_OBJ( ELM_PLIST( list, 1 ) ) );
+    family = FAMILY_OBJ( ELM_PLIST( list, 1 ) );
 
     return TypePlistHomHelper(family, tnum, T_PLIST_FFE, list);
 }
