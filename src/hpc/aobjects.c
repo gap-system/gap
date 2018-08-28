@@ -1787,6 +1787,27 @@ Obj FuncTestBindOnceExpr(Obj self, Obj obj, Obj index, Obj new) {
 
 /****************************************************************************
 **
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+    { T_ALIST, "atomic list" },
+    { T_FIXALIST, "fixed atomic list" },
+    { T_APOSOBJ, "atomic positional object" },
+    { T_AREC, "atomic record" },
+    { T_ACOMOBJ, "atomic component object" },
+    { T_TLREC, "thread-local record" },
+    { -1,    "" }
+};
+
+
+/****************************************************************************
+**
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 
@@ -1875,13 +1896,9 @@ static Int InitKernel (
   UsageCap[7] = 96;
   for (i=8; i<sizeof(UInt)*8; i++)
     UsageCap[i] = (1<<i)/3 * 2;
-  /* install info string */
-  InfoBags[T_ALIST].name = "atomic list";
-  InfoBags[T_FIXALIST].name = "fixed atomic list";
-  InfoBags[T_APOSOBJ].name = "atomic positional object";
-  InfoBags[T_AREC].name = "atomic record";
-  InfoBags[T_ACOMOBJ].name = "atomic component object";
-  InfoBags[T_TLREC].name = "thread-local record";
+
+  // set the bag type names (for error messages and debugging)
+  InitBagNamesFromTable(BagNames);
   
   /* install the kind methods */
   TypeObjFuncs[ T_ALIST ] = TypeAList;

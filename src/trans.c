@@ -5472,8 +5472,20 @@ Obj IsTransHandler(Obj self, Obj val)
     }
 }
 
-/*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * *
- */
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_TRANS2, "transformation (small)" },
+  { T_TRANS4, "transformation (large)" },
+  { -1, "" }
+};
 
 /****************************************************************************
 **
@@ -5553,15 +5565,17 @@ static StructGVarFunc GVarFuncs[] = {
     { 0, 0, 0, 0, 0 }
 
 };
+
+
 /******************************************************************************
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel(StructInitInfo * module)
 {
+    // set the bag type names (for error messages and debugging)
+    InitBagNamesFromTable( BagNames );
 
     /* install the marking functions                                       */
-    InfoBags[T_TRANS2].name = "transformation (small)";
-    InfoBags[T_TRANS4].name = "transformation (large)";
     InitMarkFuncBags(T_TRANS2, MarkThreeSubBags);
     InitMarkFuncBags(T_TRANS4, MarkThreeSubBags);
 

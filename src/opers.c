@@ -3937,6 +3937,16 @@ Obj FuncDO_NOTHING_SETTER( Obj self, Obj obj, Obj val)
 
 /****************************************************************************
 **
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_FLAGS, "flags list" },
+  { -1, "" }
+};
+
+
+/****************************************************************************
+**
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -4137,8 +4147,10 @@ static Int InitKernel (
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );
 
+    // set the bag type names (for error messages and debugging)
+    InitBagNamesFromTable( BagNames );
+
     /* install the marking function                                        */
-    InfoBags[T_FLAGS].name = "flags list";
     InitMarkFuncBags( T_FLAGS, MarkThreeSubBags );
 
     /* install the printing function                                       */

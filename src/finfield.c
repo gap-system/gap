@@ -1654,6 +1654,16 @@ Obj FuncZ2 ( Obj self, Obj p, Obj d)
 
 /****************************************************************************
 **
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_FFE, "ffe" },
+  { -1,    "" }
+};
+
+
+/****************************************************************************
+**
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -1687,9 +1697,8 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* install the marking function                                        */
-    InfoBags[ T_FFE ].name = "ffe";
-    /* InitMarkFuncBags( T_FFE, MarkNoSubBags ); */
+    // set the bag type names (for error messages and debugging)
+    InitBagNamesFromTable( BagNames );
 
     /* install the type functions                                          */
     ImportFuncFromLibrary( "TYPE_FFE", &TYPE_FFE );

@@ -467,6 +467,16 @@ Obj FuncFREXP_MACFLOAT( Obj self, Obj f)
 
 /****************************************************************************
 **
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_MACFLOAT, "macfloat" },
+  { -1,    "" }
+};
+
+
+/****************************************************************************
+**
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
@@ -528,8 +538,10 @@ extern Int EqObject (Obj,Obj);
 static Int InitKernel (
     StructInitInfo *    module )
 {
+    // set the bag type names (for error messages and debugging)
+    InitBagNamesFromTable( BagNames );
+
     /* install the marking functions for macfloatean values                    */
-    InfoBags[ T_MACFLOAT ].name = "macfloat";
     InitMarkFuncBags( T_MACFLOAT, MarkNoSubBags );
 #ifdef HPCGAP
     MakeBagTypePublic( T_MACFLOAT );

@@ -4366,18 +4366,25 @@ Obj FuncSCR_SIFT_HELPER(Obj self, Obj S, Obj g, Obj n)
   }
   /* so we're done sifting, and now we just have to clean up result */  
   return result;
-  
-  
 }
-  
-  
-  
 
 
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
+
+
+/****************************************************************************
+**
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_PERM2, "permutation (small)" },
+  { T_PERM4, "permutation (large)" },
+  { -1, "" }
+};
+
 
 /****************************************************************************
 **
@@ -4429,10 +4436,11 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
+    // set the bag type names (for error messages and debugging)
+    InitBagNamesFromTable( BagNames );
+
     /* install the marking function                                        */
-    InfoBags[           T_PERM2         ].name = "permutation (small)";
     InitMarkFuncBags(T_PERM2, MarkOneSubBags);
-    InfoBags[           T_PERM4         ].name = "permutation (large)";
     InitMarkFuncBags(T_PERM4, MarkOneSubBags);
 
 #ifdef HPCGAP

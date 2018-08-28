@@ -1931,6 +1931,23 @@ Obj FuncDEBUG_TNUM_NAMES(Obj self)
 
 /****************************************************************************
 **
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_COMOBJ,                         "object (component)"             },
+  { T_POSOBJ,                         "object (positional)"            },
+  { T_DATOBJ,                         "object (data)"                  },
+#if !defined(USE_THREADSAFE_COPYING)
+  { T_COMOBJ      +COPYING,           "object (component,copied)"      },
+  { T_POSOBJ      +COPYING,           "object (positional,copied)"     },
+  { T_DATOBJ      +COPYING,           "object (data,copied)"           },
+#endif
+  { -1,                               ""                               }
+};
+
+
+/****************************************************************************
+**
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
 static StructGVarFilt GVarFilts [] = {
@@ -2013,19 +2030,17 @@ static Int InitKernel (
 {
     Int                 t;              /* loop variable                   */
 
+    // set the bag type names (for error messages and debugging)
+    InitBagNamesFromTable( BagNames );
+
     /* install the marking methods                                         */
-    InfoBags[         T_COMOBJ          ].name = "object (component)";
     InitMarkFuncBags( T_COMOBJ          , MarkPRecSubBags );
-    InfoBags[         T_POSOBJ          ].name = "object (positional)";
     InitMarkFuncBags( T_POSOBJ          , MarkAllSubBags  );
-    InfoBags[         T_DATOBJ          ].name = "object (data)";
     InitMarkFuncBags( T_DATOBJ          , MarkOneSubBags  );
+
 #if !defined(USE_THREADSAFE_COPYING)
-    InfoBags[         T_COMOBJ +COPYING ].name = "object (component,copied)";
     InitMarkFuncBags( T_COMOBJ +COPYING , MarkPRecSubBags );
-    InfoBags[         T_POSOBJ +COPYING ].name = "object (positional,copied)";
     InitMarkFuncBags( T_POSOBJ +COPYING , MarkAllSubBags  );
-    InfoBags[         T_DATOBJ +COPYING ].name = "object (data,copied)";
     InitMarkFuncBags( T_DATOBJ +COPYING , MarkOneSubBags  );
 #endif
 

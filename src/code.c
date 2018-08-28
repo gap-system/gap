@@ -3259,13 +3259,24 @@ void LoadBody ( Obj body )
 
 /****************************************************************************
 **
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_BODY, "function body bag" },
+  { -1,     ""                  }
+};
+
+/****************************************************************************
+**
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
     StructInitInfo *    module )
 {
+    // set the bag type names (for error messages and debugging)
+    InitBagNamesFromTable( BagNames );
+
     /* install the marking functions for function body bags                */
-    InfoBags[ T_BODY ].name = "function body bag";
     InitMarkFuncBags( T_BODY, MarkThreeSubBags );
 
     SaveObjFuncs[ T_BODY ] = SaveBody;

@@ -6499,8 +6499,22 @@ Obj IsPPermHandler(Obj self, Obj val)
     }
 }
 
-/*F * * * * * * * * * * * * initialize module * * * * * * * * * * * * * *
- */
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_PPERM2,                         "partial perm (small)"           },
+  { T_PPERM4,                         "partial perm (large)"           },
+  { -1,                               ""                               }
+};
+
 
 /**************************************************************************
 **
@@ -6514,6 +6528,7 @@ static StructGVarFilt GVarFilts[] = {
     { 0, 0, 0, 0, 0 }
 
 };
+
 
 /****************************************************************************
  *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
@@ -6569,10 +6584,10 @@ static StructGVarFunc GVarFuncs[] = {
  */
 static Int InitKernel(StructInitInfo * module)
 {
+    // set the bag type names (for error messages and debugging)
+    InitBagNamesFromTable( BagNames );
 
     /* install the marking function                                        */
-    InfoBags[T_PPERM2].name = "partial perm (small)";
-    InfoBags[T_PPERM4].name = "partial perm (large)";
     InitMarkFuncBags(T_PPERM2, MarkTwoSubBags);
     InitMarkFuncBags(T_PPERM4, MarkTwoSubBags);
 

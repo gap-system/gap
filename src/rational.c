@@ -860,6 +860,14 @@ static StructGVarFunc GVarFuncs [] = {
     { 0, 0, 0, 0, 0 }
 
 };
+/****************************************************************************
+**
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
+*/
+static StructBagNames BagNames[] = {
+  { T_RAT, "rational" },
+  { -1,    ""         }
+};
 
 
 /****************************************************************************
@@ -869,8 +877,10 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
+    // set the bag type names (for error messages and debugging)
+    InitBagNamesFromTable( BagNames );
+
     /* install the marking function                                        */
-    InfoBags[         T_RAT ].name = "rational";
     /* MarkTwoSubBags() is faster for Gasman, but MarkAllSubBags() is
      * more space-efficient for the Boehm GC and does not incur a
      * speed penalty.
