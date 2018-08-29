@@ -433,6 +433,7 @@ DeclareSynonym( "DecompositionTypes", DecompositionTypesOfGroup );
 #P  IsDihedralGroup( <G> )
 #A  DihedralGenerators( <G> )
 ##
+##  <#GAPDoc Label="IsDihedralGroup">
 ##  <ManSection>
 ##  <Prop Name="IsDihedralGroup" Arg="G"/>
 ##  <Attr Name="DihedralGenerators" Arg="G"/>
@@ -441,9 +442,10 @@ DeclareSynonym( "DecompositionTypes", DecompositionTypesOfGroup );
 ##    Indicates whether the group <A>G</A> is a dihedral group.
 ##    If it is, methods may set the attribute <C>DihedralGenerators</C> to
 ##    [<A>t</A>,<A>s</A>], where <A>t</A> and <A>s</A> are two elements such
-##    that <A>G</A> = <M><A>t, s | t^2 = s^n = 1, s^t = s^-1</A></M>.
+##    that <A>G</A> = <M>\langle t, s | t^2 = s^n = 1, s^t = s^{-1} \rangle</M>.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsDihedralGroup", IsGroup );
 DeclareAttribute( "DihedralGenerators", IsGroup );
@@ -455,6 +457,7 @@ InstallTrueMethod( IsGroup, IsDihedralGroup );
 #P  IsQuaternionGroup( <G> )
 #A  QuaternionGenerators( <G> )
 ##
+##  <#GAPDoc Label="IsQuaternionGroup">
 ##  <ManSection>
 ##  <Prop Name="IsQuaternionGroup" Arg="G"/>
 ##  <Attr Name="QuaternionGenerators" Arg="G"/>
@@ -464,9 +467,10 @@ InstallTrueMethod( IsGroup, IsDihedralGroup );
 ##    of size <M>N = 2^(k+1)</M>, <M>k >= 2</M>. If it is, methods may set
 ##    the attribute <C>QuaternionGenerators</C> to [<A>t</A>,<A>s</A>],
 ##    where <A>t</A> and <A>s</A> are two elements such that <A>G</A> =
-##    <M><A>t, s | s^(2^k) = 1, t^2 = s^(2^k-1), s^t = s^-1</A></M>.
+##    <M>\langle t, s | s^{(2^k)} = 1, t^2 = s^{(2^k-1)}, s^t = s^{-1} \rangle</M>.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareProperty( "IsQuaternionGroup", IsGroup );
 DeclareAttribute( "QuaternionGenerators", IsGroup );
