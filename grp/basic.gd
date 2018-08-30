@@ -366,8 +366,11 @@ DeclareSynonym("QuaternionGroupCons", DicyclicGroupCons);
 ##  <Func Name="QuaternionGroup" Arg='[filt, [field, ]]n'/>
 ##
 ##  <Description>
-##  constructs the dicyclic group of size <A>n</A> in the category given by the
-##  filter <A>filt</A>. Here, <A>n</A> is a multiple of 4.
+##  <Ref Func="DicyclicGroup"/> constructs the dicyclic group of size <A>n</A>
+##  in the category given by the #  filter <A>filt</A>. Here, <A>n</A> is a
+##  multiple of 4. <Ref Func="QuaternionGroup"/> is a synonym for
+##  <Ref Func="DicyclicGroup" /> provided for backward compatibility, but will
+##  print a warning if <A>n</A> is not a power of <M>2</M>.
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section
 ##  (<Ref Sect="Basic Groups"/>).
@@ -455,7 +458,7 @@ function(args...)
 
     res := GRPLIB_DicyclicParameterCheck(args, "error");
     grp := CallFuncList(DicyclicGroupCons, res);
-    SetIsQuaternionGroup(grp, true);
+    SetIsGeneralisedQuaternionGroup(grp, true);
 
     return grp;
 end);
