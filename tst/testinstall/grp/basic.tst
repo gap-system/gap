@@ -225,6 +225,32 @@ Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 2nd choice method found for `DihedralGroupCons' on 2 arguments
 
 #
+gap> Q := DihedralGroup(32);;
+gap> gens := DihedralGenerators(Q);;
+gap> Group(gens) = Q;
+true
+gap> Q := Group(GeneratorsOfGroup(DihedralGroup(IsPermGroup, 32)));;
+gap> HasIsDihedralGroup(Q);
+false
+gap> HasDihedralGenerators(Q);
+false
+gap> gens := DihedralGenerators(Q);;
+gap> Group(gens) = Q;
+true
+gap> IsDihedralGroup(Q);
+true
+gap> Q := Group(GeneratorsOfGroup(DihedralGroup(IsPermGroup, 32)));;
+gap> HasIsDihedralGroup(Q);
+false
+gap> HasDihedralGenerators(Q);
+false
+gap> IsDihedralGroup(Q);
+true
+gap> HasDihedralGenerators(Q);
+true
+gap> Unbind(F);; Unbind(Q);;
+
+#
 # dicyclic groups
 #
 gap> IdGroup(DicyclicGroup(4));
@@ -288,8 +314,11 @@ gap> QuaternionGroup(11);
 Error, usage: <size> must be a positive integer divisible by 4
 gap> GeneralisedQuaternionGroup(16);
 <pc group of size 16 with 4 generators>
-gap> GeneralisedQuaternionGroup(IsFpGroup, 32);
+gap> Q := GeneralisedQuaternionGroup(IsFpGroup, 32);
 <fp group of size 32 on the generators [ r, s ]>
+gap> gens := GeneralisedQuaternionGenerators(Q);;
+gap> Group(gens) = Q;
+true
 gap> GeneralisedQuaternionGroup(IsMatrixGroup, 32);
 <matrix group of size 32 with 2 generators>
 gap> F:=FunctionField(GF(16),1);;
@@ -297,8 +326,25 @@ gap> Q:=GeneralisedQuaternionGroup(IsMatrixGroup, F, 256);
 <matrix group of size 256 with 2 generators>
 gap> HasIsGeneralisedQuaternionGroup(Q);
 true
-gap> GeneralisedQuaternionGenerators(Q);
-
+gap> Q := Group(GeneratorsOfGroup(GeneralisedQuaternionGroup(IsPermGroup, 32)));;
+gap> HasIsGeneralisedQuaternionGroup(Q);
+false
+gap> HasGeneralisedQuaternionGenerators(Q);
+false
+gap> gens := GeneralisedQuaternionGenerators(Q);;
+gap> Group(gens) = Q;
+true
+gap> IsGeneralisedQuaternionGroup(Q);
+true
+gap> Q := Group(GeneratorsOfGroup(GeneralisedQuaternionGroup(IsPermGroup, 32)));;
+gap> HasIsGeneralisedQuaternionGroup(Q);
+false
+gap> HasGeneralisedQuaternionGenerators(Q);
+false
+gap> IsGeneralisedQuaternionGroup(Q);
+true
+gap> HasGeneralisedQuaternionGenerators(Q);
+true
 gap> Unbind(F);; Unbind(Q);;
 
 #
