@@ -303,12 +303,12 @@ Error, usage: <size> must be a positive integer divisible by 4
 # (generalised) quaternion groups
 #
 gap> QuaternionGroup(4);
-#I  Warning: QuaternionGroup called with <size> 4 which is less than 8, or not a power of 2.
+#I  Warning: QuaternionGroup called with <size> 4 which is less than 8
 <pc group of size 4 with 2 generators>
 gap> QuaternionGroup(8);
 <pc group of size 8 with 3 generators>
 gap> QuaternionGroup(12);
-#I  Warning: QuaternionGroup called with <size> 12 which is less than 8, or not a power of 2.
+#I  Warning: QuaternionGroup called with <size> 12 which is not a power of 2
 <pc group of size 12 with 3 generators>
 gap> QuaternionGroup(11);
 Error, usage: <size> must be a positive integer divisible by 4

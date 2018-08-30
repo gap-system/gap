@@ -452,6 +452,8 @@ DeclareProperty( "IsDihedralGroup", IsGroup );
 DeclareAttribute( "DihedralGenerators", IsGroup );
 
 InstallTrueMethod( IsGroup, IsDihedralGroup );
+InstallTrueMethod( IsDihedralGroup, HasDihedralGenerators );
+
 
 #############################################################################
 ##
@@ -484,8 +486,9 @@ DeclareAttribute( "GeneralisedQuaternionGenerators", IsGroup );
 DeclareSynonymAttr( "IsQuaternionGroup", IsGeneralisedQuaternionGroup );
 DeclareSynonymAttr( "QuaternionGenerators", GeneralisedQuaternionGenerators );
 
-
 InstallTrueMethod( IsGroup, IsQuaternionGroup );
+InstallTrueMethod( IsGeneralisedQuaternionGroup, HasGeneralisedQuaternionGenerators );
+
 
 #############################################################################
 ##

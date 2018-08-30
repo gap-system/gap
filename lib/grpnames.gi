@@ -994,13 +994,11 @@ InstallMethod( IsDihedralGroup,
 function(G)
     local gens;
 
-    if not HasDihedralGenerators(G) then
-        gens := DoComputeDihedralGenerators(G);
-        if gens = fail then
-            return false;
-        else
-            SetDihedralGenerators(G, gens);
-        fi;
+    gens := DoComputeDihedralGenerators(G);
+    if gens = fail then
+        return false;
+    else
+        SetDihedralGenerators(G, gens);
     fi;
     return true;
 end);
@@ -1012,10 +1010,10 @@ function(G)
     local gens;
 
     gens := DoComputeDihedralGenerators(G);
+    SetIsDihedralGroup(G, gens <> fail);
     if gens = fail then
         ErrorNoReturn("G is not a dihedral group");
     fi;
-    SetIsDihedralGroup(G, true);
     return gens;
 end);
 
@@ -1072,13 +1070,11 @@ InstallMethod( IsGeneralisedQuaternionGroup,
 function(G)
     local gens;
 
-    if not HasGeneralisedQuaternionGenerators(G) then
-        gens := DoComputeGeneralisedQuaternionGenerators(G);
-        if gens = fail then
-            return false;
-        else
-            SetGeneralisedQuaternionGenerators(G, gens);
-        fi;
+    gens := DoComputeGeneralisedQuaternionGenerators(G);
+    if gens = fail then
+        return false;
+    else
+        SetGeneralisedQuaternionGenerators(G, gens);
     fi;
     return true;
 end);
@@ -1090,10 +1086,10 @@ function(G)
     local gens;
 
     gens := DoComputeGeneralisedQuaternionGenerators(G);
+    SetIsGeneralisedQuaternionGroup(G, gens <> fail);
     if gens = fail then
         ErrorNoReturn("G is not a generalised quaternion group");
     fi;
-    SetIsGeneralisedQuaternionGroup(G, true);
     return gens;
 end);
 #############################################################################

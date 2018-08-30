@@ -392,21 +392,20 @@ function(args, quaternion)
     local size;
 
     if Length(args) = 1 then
-        res := [ IsPcGroup, args[1] ];
+        args := [ IsPcGroup, args[1] ];
     elif Length(args) = 2 then
-        res := args;
+        # 2 inputs are valid, but we just reuse args
+        # args := args;
     elif Length(args) = 3 then
-        res := args;
-
-        if not IsField(res[2]) then
+        if not IsField(args[2]) then
             ErrorNoReturn("usage: <field> must be a field");
         fi;
     else
         ErrorNoReturn("usage: DicyclicGroup( [<filter>, [<field>, ] ] <size> )");
     fi;
 
-    size := res[Length(res)];
-    if not IsFilter(res[1]) then
+    size := args[Length(args)];
+    if not IsFilter(args[1]) then
         ErrorNoReturn("usage: <filter> must be a filter");
     fi;
 
@@ -428,7 +427,7 @@ function(args, quaternion)
         fi;
     fi;
 
-    return res;
+    return args;
 end);
 
 BindGlobal( "DicyclicGroup",
