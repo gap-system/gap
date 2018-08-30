@@ -367,9 +367,9 @@ DeclareSynonym("QuaternionGroupCons", DicyclicGroupCons);
 ##
 ##  <Description>
 ##  <Ref Func="DicyclicGroup"/> constructs the dicyclic group of size <A>n</A>
-##  in the category given by the #  filter <A>filt</A>. Here, <A>n</A> is a
-##  multiple of 4. <Ref Func="QuaternionGroup"/> is a synonym for
-##  <Ref Func="DicyclicGroup" /> provided for backward compatibility, but will
+##  in the category given by the filter <A>filt</A>. Here, <A>n</A> must be a
+##  multiple of 4. The synonym <Ref Func="QuaternionGroup"/> for
+##  <Ref Func="DicyclicGroup" /> is provided for backward compatibility, but will
 ##  print a warning if <A>n</A> is not a power of <M>2</M>.
 ##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section
@@ -389,23 +389,14 @@ DeclareSynonym("QuaternionGroupCons", DicyclicGroupCons);
 ##
 BindGlobal( "GRPLIB_DicyclicParameterCheck",
 function(args, quaternion)
-    local res, size;
-
-    res := [];
+    local size;
 
     if Length(args) = 1 then
-        res[1] := IsPcGroup;
-        res[2] := args[1];
-        size := res[2];
+        res := [ IsPcGroup, args[1] ];
     elif Length(args) = 2 then
-        res[1] := args[1];
-        res[2] := args[2];
-        size := res[2];
+        res := args;
     elif Length(args) = 3 then
-        res[1] := args[1];
-        res[2] := args[2];
-        res[3] := args[3];
-        size := res[3];
+        res := args;
 
         if not IsField(res[2]) then
             ErrorNoReturn("usage: <field> must be a field");
@@ -414,6 +405,7 @@ function(args, quaternion)
         ErrorNoReturn("usage: DicyclicGroup( [<filter>, [<field>, ] ] <size> )");
     fi;
 
+    size := res[Length(res)];
     if not IsFilter(res[1]) then
         ErrorNoReturn("usage: <filter> must be a filter");
     fi;
@@ -426,8 +418,13 @@ function(args, quaternion)
         if quaternion = "error" then
             ErrorNoReturn("usage: <size> must be a power of 2 and at least 8");
         elif quaternion = "warn" then
-            Info(InfoWarning, 1, "Warning: QuaternionGroup called with <size> ", size,
-                                 " which is less than 8, or not a power of 2.");
+            if not IsPrimePowerInt(size) then
+                Info(InfoWarning, 1, "Warning: QuaternionGroup called with <size> ", size,
+                                     " which is not a power of 2");
+            else
+                Info(InfoWarning, 1, "Warning: QuaternionGroup called with <size> ", size,
+                                     " which is less than 8");
+            fi;
         fi;
     fi;
 
