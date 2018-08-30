@@ -295,8 +295,10 @@ gap> GeneralisedQuaternionGroup(IsMatrixGroup, 32);
 gap> F:=FunctionField(GF(16),1);;
 gap> Q:=GeneralisedQuaternionGroup(IsMatrixGroup, F, 256); 
 <matrix group of size 256 with 2 generators>
-gap> HasIsQuaternionGroup(Q);
+gap> HasIsGeneralisedQuaternionGroup(Q);
 true
+gap> GeneralisedQuaternionGenerators(Q);
+
 gap> Unbind(F);; Unbind(Q);;
 
 #
