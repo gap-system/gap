@@ -2316,13 +2316,13 @@ void CodeAssList ( Int narg )
 {
     Stat                ass;            /* assignment, result              */
 
+    GAP_ASSERT(narg == 1 || narg == 2);
+
     /* allocate the assignment                                             */
     if (narg == 1)
       ass = NewStat( T_ASS_LIST, 3 * sizeof(Stat) );
-    else if (narg == 2)
+    else /* if (narg == 2) */
       ass = NewStat( T_ASS2_LIST, 4 * sizeof(Stat));
-    else
-      ass = NewStat( T_ASSX_LIST, (narg + 2) * sizeof(Stat));
 
     /* let 'CodeAssListUniv' do the rest                                   */
     CodeAssListUniv( ass, narg );
@@ -2429,13 +2429,13 @@ void CodeElmList ( Int narg )
 {
     Expr                ref;            /* reference, result               */
 
+    GAP_ASSERT(narg == 1 || narg == 2);
+
     /* allocate the reference                                              */
     if (narg == 1)
       ref = NewExpr( T_ELM_LIST, 2 * sizeof(Expr) );
-    else if (narg == 2)
+    else /* if (narg == 2) */
       ref = NewExpr( T_ELM2_LIST, 3 * sizeof(Expr) );
-    else
-      ref = NewExpr( T_ELMX_LIST, (narg + 1) * sizeof(Expr));
       
     /* let 'CodeElmListUniv' to the rest                                   */
     CodeElmListUniv( ref, narg );
