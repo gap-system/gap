@@ -3470,9 +3470,6 @@ void            IntrIsbRecExpr ( void )
 /****************************************************************************
 **
 *F  IntrAssPosObj() . . . . . . . . . . . . .  interpret assignment to a list
-*F  IntrAsssPosObj()  . . . . . . . . interpret multiple assignment to a list
-*F  IntrAssPosObjLevel(<level>) . . . . interpret assignment to several lists
-*F  IntrAsssPosObjLevel(<level>)  . intr multiple assignment to several lists
 */
 void            IntrAssPosObj ( void )
 {
@@ -3530,106 +3527,6 @@ void            IntrAssPosObj ( void )
     PushObj( rhs );
 }
 
-void            IntrAsssPosObj ( void )
-{
-    Obj                 list;           /* list                            */
-    Obj                 poss;           /* positions                       */
-    Obj                 rhss;           /* right hand sides                */
-
-    /* ignore or code                                                      */
-    SKIP_IF_RETURNING();
-    SKIP_IF_IGNORING();
-    if ( STATE(IntrCoding)    > 0 ) { CodeAsssPosObj(); return; }
-
-
-    /* get the right hand sides                                            */
-    rhss = PopObj();
-    CheckIsDenseList("PosObj Assignment", "rhss", rhss);
-
-    /* get and check the positions                                         */
-    poss = PopObj();
-    CheckIsPossList("PosObj Assignment", poss);
-    CheckSameLength("List Assignment", "rhss", "positions", rhss, poss);
-
-    /* get the list (checking is done by 'ASSS_LIST')                      */
-    list = PopObj();
-
-    /* assign to several elements of the list                              */
-    if ( TNUM_OBJ(list) == T_POSOBJ
-#ifdef HPCGAP
-    || TNUM_OBJ(list) == T_APOSOBJ
-#endif
-    ) {
-        ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
-    }
-    else {
-        ASSS_LIST( list, poss, rhss );
-    }
-
-    /* push the right hand sides again                                     */
-    PushObj( rhss );
-}
-
-void            IntrAssPosObjLevel (
-    UInt                level )
-{
-    Obj                 pos;            /* position, left operand          */
-    Obj                 rhss;           /* right hand sides, right operand */
-
-    /* ignore or code                                                      */
-    SKIP_IF_RETURNING();
-    SKIP_IF_IGNORING();
-    if ( STATE(IntrCoding)    > 0 ) { CodeAssPosObjLevel( level ); return; }
-
-
-    /* get right hand sides (checking is done by 'AssPosObjLevel')           */
-    rhss = PopObj();
-
-    /* get and check the position                                          */
-    pos = PopObj();
-    if ( ! IS_POS_INTOBJ(pos) ) {
-        ErrorQuit(
-         "PosObj Assignment: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
-    }
-
-    /* assign the right hand sides to the elements of several lists        */
-    ErrorQuit(
-        "sorry: <lists>{<poss>}![<pos>] not yet implemented",
-        0L, 0L );
-
-    /* push the assigned values again                                      */
-    PushObj( rhss );
-}
-
-void            IntrAsssPosObjLevel (
-    UInt                level )
-{
-    Obj                 poss;           /* position, left operand          */
-    Obj                 rhss;           /* right hand sides, right operand */
-
-    /* ignore or code                                                      */
-    SKIP_IF_RETURNING();
-    SKIP_IF_IGNORING();
-    if ( STATE(IntrCoding)    > 0 ) { CodeAsssPosObjLevel( level ); return; }
-
-
-    /* get right hand sides (checking is done by 'AsssPosObjLevel')          */
-    rhss = PopObj();
-
-    /* get and check the positions                                         */
-    poss = PopObj();
-    CheckIsPossList("PosObj Assignment", poss);
-
-    /* assign the right hand sides to several elements of several lists    */
-    ErrorQuit(
-        "sorry: <lists>{<poss>}!{<poss>} not yet implemented",
-        0L, 0L );
-
-    /* push the assigned values again                                      */
-    PushObj( rhss );
-}
-
 void            IntrUnbPosObj ( void )
 {
     Obj                 list;           /* list                            */
@@ -3684,9 +3581,6 @@ void            IntrUnbPosObj ( void )
 /****************************************************************************
 **
 *F  IntrElmPosObj() . . . . . . . . . . . . . . interpret selection of a list
-*F  IntrElmsPosObj()  . . . . . . . .  interpret multiple selection of a list
-*F  IntrElmPosObjLevel(<level>) . . . .  interpret selection of several lists
-*F  IntrElmsPosObjLevel(<level>)  .  intr multiple selection of several lists
 */
 void            IntrElmPosObj ( void )
 {
@@ -3753,104 +3647,6 @@ void            IntrElmPosObj ( void )
 
     /* push the element                                                    */
     PushObj( elm );
-}
-
-void            IntrElmsPosObj ( void )
-{
-    Obj                 elms;           /* elements, result                */
-    Obj                 list;           /* list, left operand              */
-    Obj                 poss;           /* positions, right operand        */
-
-    /* ignore or code                                                      */
-    SKIP_IF_RETURNING();
-    SKIP_IF_IGNORING();
-    if ( STATE(IntrCoding)    > 0 ) { CodeElmsPosObj(); return; }
-
-
-    /* get and check the positions                                         */
-    poss = PopObj();
-    CheckIsPossList("PosObj Elements", poss);
-
-    /* get the list (checking is done by 'ELMS_LIST')                      */
-    list = PopObj();
-
-    /* select several elements from the list                               */
-    if ( TNUM_OBJ(list) == T_POSOBJ
-#ifdef HPCGAP
-    || TNUM_OBJ(list) == T_APOSOBJ
-#endif
-    ) {
-        elms = 0;
-        ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
-    }
-    else {
-        elms = ELMS_LIST( list, poss );
-    }
-
-    /* push the elements                                                   */
-    PushObj( elms );
-}
-
-void            IntrElmPosObjLevel (
-    UInt                level )
-{
-    Obj                 lists;          /* lists, left operand             */
-    Obj                 pos;            /* position, right operand         */
-
-    /* ignore or code                                                      */
-    SKIP_IF_RETURNING();
-    SKIP_IF_IGNORING();
-    if ( STATE(IntrCoding)    > 0 ) { CodeElmPosObjLevel( level ); return; }
-
-
-    /* get and check the position                                          */
-    pos = PopObj();
-    if ( ! IS_POS_INTOBJ(pos) ) {
-        ErrorQuit(
-            "PosObj Element: <position> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
-    }
-
-    /* get lists (if this works, then <lists> is nested <level> deep,      */
-    /* checking it is nested <level>+1 deep is done by 'ElmPosObjLevel')     */
-    lists = PopObj();
-
-    /* select the elements from several lists (store them in <lists>)      */
-    ErrorQuit(
-        "sorry: <lists>{<poss>}![<pos>] not yet implemented",
-        0L, 0L );
-
-    /* push the elements                                                   */
-    PushObj( lists );
-}
-
-void            IntrElmsPosObjLevel (
-    UInt                level )
-{
-    Obj                 lists;          /* lists, left operand             */
-    Obj                 poss;           /* positions, right operand        */
-
-    /* ignore or code                                                      */
-    SKIP_IF_RETURNING();
-    SKIP_IF_IGNORING();
-    if ( STATE(IntrCoding)    > 0 ) { CodeElmsPosObjLevel( level ); return; }
-
-
-    /* get and check the positions                                         */
-    poss = PopObj();
-    CheckIsPossList("PosObj Elements", poss);
-
-    /* get lists (if this works, then <lists> is nested <level> deep,      */
-    /* checking it is nested <level>+1 deep is done by 'ElmsPosObjLevel')    */
-    lists = PopObj();
-
-    /* select several elements from several lists (store them in <lists>)  */
-    ErrorQuit(
-        "sorry: <lists>{<poss>}!{<poss>} not yet implemented",
-        0L, 0L );
-
-    /* push the elements                                                   */
-    PushObj( lists );
 }
 
 void            IntrIsbPosObj ( void )

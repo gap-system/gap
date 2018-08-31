@@ -41,7 +41,6 @@ enum SCANNER_SYMBOLS {
     S_LBRACK            = (1UL<< 4)+0,
     S_LBRACE            = (1UL<< 4)+1,
     S_BLBRACK           = (1UL<< 4)+2,
-    S_BLBRACE           = (1UL<< 4)+3,
     S_RBRACK            = (1UL<< 5)+0,
     S_RBRACE            = (1UL<< 5)+1,
     S_DOT               = (1UL<< 6)+0,

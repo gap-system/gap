@@ -38,26 +38,10 @@ gap> a := [ [ [1, 2], [3, 4] ], [ [5, 6], [7, 8] ] ];
 [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 5, 6 ], [ 7, 8 ] ] ]
 gap> a{[1]};
 [ [ [ 1, 2 ], [ 3, 4 ] ] ]
-gap> a!{[1]};
-[ [ [ 1, 2 ], [ 3, 4 ] ] ]
 gap> a{[1]}{[1]};
 [ [ [ 1, 2 ] ] ]
-gap> a!{[1]}{[1]};
-[ [ [ 1, 2 ] ] ]
-gap> a!{[1]}[1][1];
-[ 1 ]
-gap> a!{[1]}[1][2];
-[ 2 ]
-gap> a!{[1]}[1]{[1]};
-[ [ 1 ] ]
-gap> a!{[1]}[1]{[2]};
-[ [ 2 ] ]
-gap> a{[1]}!{[1]};
-Error, sorry: <lists>{<poss>}!{<poss>} not yet implemented
 gap> a{[1]}{[1]}[1];
 [ [ 1 ] ]
-gap> a{[1]}{[1]}![1];
-Error, sorry: <lists>{<poss>}![<pos>] not yet implemented
 
 #
 gap> a{[1,,2]}:=1;
@@ -70,8 +54,6 @@ gap> a{[1]}{[1]}[1] := 42;
 Error, List Assignment: <objs> must be a dense list
 gap> a{[1]}{[1]}[1] := [ 42 ];
 Error, List Assignment: <objs> must be a dense list
-gap> a{[1]}{[1]}![1] := [ [ 42 ] ];
-Error, sorry: <lists>{<poss>}![<pos>] not yet implemented
 gap> a{[1]}{[1]}[1] := [ [ 42 ] ];
 [ [ 42 ] ]
 gap> a;
@@ -90,10 +72,6 @@ gap> a{[1]}{[1,,3]} := [ [ [ 18, 19 ] ] ];
 Error, List Assignment: <positions> must be a dense list of positive integers
 gap> a{[1]}{[1]} := [ [ [ 18, 19 ] ] ];
 [ [ [ 18, 19 ] ] ]
-gap> a!{[1]}{[1]} := [ [ [ 18, 19 ] ] ];
-[ [ [ 18, 19 ] ] ]
-gap> a{[1]}!{[1]} := [ [ [ 18, 19 ] ] ];
-Error, sorry: <lists>{<poss>}!{<poss>} not yet implemented
 gap> a;
 [ [ [ 18, 19 ], [ 3, 4 ] ], [ [ 5, 6 ], [ 7, 8 ] ] ]
 
