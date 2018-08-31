@@ -19,6 +19,7 @@
 #include "error.h"
 #include "gapstate.h"
 #include "gaputils.h"
+#include "integer.h"
 #include "io.h"
 #include "lists.h"
 #include "plist.h"
@@ -43,8 +44,18 @@ static void SyntaxErrorOrWarning(ScannerState * s,
                                  Int            tokenoffset)
 {
     GAP_ASSERT(tokenoffset >= 0 && tokenoffset <= 2);
+
+
+    if (s->tokens) {
+        // if tokenization mode, don't print the error, instead
+        // add it to tokens
+        PushPlist(s->tokens, NewPlistFromArgs(
+                                 MakeImmString("ERROR"), MakeImmString(msg),
+                                 INTOBJ_INT(error), INTOBJ_INT(tokenoffset)));
+    }
+
     // do not print a message if we found one already on the current line
-    if (s->input->lastErrorLine != s->input->number) {
+    else if (s->input->lastErrorLine != s->input->number) {
 
         // open error output
         TypOutputFile output = { 0 };
@@ -886,6 +897,8 @@ static UInt NextSymbol(ScannerState * s)
     // Record end of previous symbol's position
     StoreSymbolPosition(s);
 
+    Obj tokenEntry = 0;
+
     Char c = PEEK_CURR_CHAR(s->input);
 
     // skip over <spaces>, <tabs>, <newlines> and comments
@@ -895,6 +908,7 @@ static UInt NextSymbol(ScannerState * s)
             if (c == '%') {
                 // we have encountered a pragma
                 GetPragma(s, c);
+                // TODO: record token positions before/after
                 return S_PRAGMA;
             }
 
@@ -906,13 +920,21 @@ static UInt NextSymbol(ScannerState * s)
     // Record start of this symbol's position
     StoreSymbolPosition(s);
 
-    // switch according to the character
-    if (IsAlpha(c)) {
-        return GetIdent(s, 0, c);
+    UInt symbol = S_ILLEGAL;
+
+    if (s->tokens) {
+        // in tokenizer mode, record the current position
+        tokenEntry = NEW_PLIST(T_PLIST, 3);
+        PushPlist(tokenEntry, MakeImmString("token"));
+        PushPlist(tokenEntry, INTOBJ_INT(s->SymbolStartLine[1]));
+        PushPlist(tokenEntry, INTOBJ_INT(s->SymbolStartPos[1]));
+        PushPlist(tokenEntry, INTOBJ_INT(s->SymbolStartLine[0]));
+        PushPlist(tokenEntry, INTOBJ_INT(s->SymbolStartPos[0]));
+        // push the token now, so that SyntaxError can modify it if necessary
+        PushPlist(s->tokens, tokenEntry);
     }
 
-    UInt symbol;
-
+    // switch according to the character
     switch (c) {
     case '.':         symbol = S_DOT;           c = GET_NEXT_CHAR();
       if (c == '.') { symbol = S_DOTDOT;        c = GET_NEXT_CHAR();
@@ -961,17 +983,33 @@ static UInt NextSymbol(ScannerState * s)
     case '?':         symbol = S_HELP;              GetHelp(s); break;
     case '"':         symbol = S_STRING;            GetString(s); break;
     case '\'':        symbol = S_CHAR;              GetChar(s); break;
-    case '\\':        return GetIdent(s, 0, c);
-    case '_':         return GetIdent(s, 0, c);
-    case '@':         return GetIdent(s, 0, c);
+    case '\\':        symbol = GetIdent(s, 0, c); break;
+    case '_':         symbol = GetIdent(s, 0, c); break;
+    case '@':         symbol = GetIdent(s, 0, c); break;
 
     case '0': case '1': case '2': case '3': case '4':
     case '5': case '6': case '7': case '8': case '9':
-                      return GetNumber(s, 0, c);
+                      symbol = GetNumber(s, 0, c); break;
 
     case '\377':      symbol = S_EOF;  FlushRestOfInputLine(s->input); break;
 
-    default:          symbol = S_ILLEGAL;       GET_NEXT_CHAR(); break;
+    default:
+        if (IsAlpha(c)) {
+            symbol = GetIdent(s, 0, c);
+        }
+        else {
+            symbol = S_ILLEGAL;
+            GET_NEXT_CHAR();
+        }
+        break;
     }
+
+    if (s->tokens) {
+        // in tokenizer mode, record the current position
+        PushPlist(tokenEntry, INTOBJ_INT(GetInputLineNumber(s->input)));
+        PushPlist(tokenEntry, INTOBJ_INT(GetInputLinePosition(s->input)));
+        PushPlist(tokenEntry, ObjInt_UInt((UInt4)symbol));
+    }
+
     return symbol;
 }

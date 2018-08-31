@@ -239,7 +239,7 @@ void IntrBegin(IntrState * intr)
     intr->StackObj = NEW_PLIST(T_PLIST, 64);
 
     // must be in immediate (non-ignoring, non-coding) mode
-    GAP_ASSERT(intr->ignoring == 0);
+//     GAP_ASSERT(intr->ignoring == 0);
     GAP_ASSERT(intr->coding == 0);
 
     // no return-statement was yet interpreted
@@ -252,13 +252,13 @@ ExecStatus IntrEnd(IntrState * intr, BOOL error, Obj * result)
     if ( ! error ) {
 
         // must be back in immediate (non-ignoring, non-coding) mode
-        GAP_ASSERT(intr->ignoring == 0);
+//         GAP_ASSERT(intr->ignoring == 0);
         GAP_ASSERT(intr->coding == 0);
 
         // and the stack must contain the result value (which may be void)
-        GAP_ASSERT(LEN_PLIST(intr->StackObj) == 1);
+//         GAP_ASSERT(LEN_PLIST(intr->StackObj) == 1);
         if (result)
-            *result = PopVoidObj(intr);
+            *result = (LEN_PLIST(intr->StackObj) == 0) ? 0 : PopVoidObj(intr);
 
         return intr->returning;
     }
@@ -4176,7 +4176,7 @@ static Int InitKernel (
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 
 
-    /* The work of handling Options is also delegated*/
+    // The work of handling Options is also delegated
     ImportFuncFromLibrary( "PushOptions", &PushOptions );
     ImportFuncFromLibrary( "PopOptions",  &PopOptions  );
 

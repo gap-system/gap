@@ -42,6 +42,14 @@ ExecStatus ReadEvalCommand(Obj            context,
 
 /****************************************************************************
 **
+*F  ReadTokenizeCommand()
+**
+*/
+ExecStatus ReadTokenizeCommand(Obj context, TypInputFile * input, Obj * tokens);
+
+
+/****************************************************************************
+**
 *F  ReadEvalFile()  . . . . . . . . . . . . . . . . . . . . . . . read a file
 **
 **  'ReadEvalFile' reads an entire file and returns (in 'evalResult') the
