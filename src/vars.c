@@ -618,46 +618,6 @@ UInt            ExecAss2List (
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
 }
-/****************************************************************************
-**
-*F  ExecAssXList(<ass>)  . . . . . . . . . . .  assign to an element of a list
-**
-**  'ExecAssXList'  executes the list  assignment statement <stat> of the form
-**  '<list>[<position>,<position>,<position>[,<position>]*] := <rhs>;'.
-*/
-UInt            ExecAssXList (
-    Expr                stat )
-{
-    Obj                 list;           /* list, left operand              */
-    Obj                 pos;            /* position, left operand          */
-    Obj                 rhs;            /* right hand side, right operand  */
-    Obj ixs;
-    Int i;
-    Int narg;
-
-    /* evaluate the list (checking is done by 'ASS_LIST')                  */
-    SET_BRK_CURR_STAT( stat );
-    list = EVAL_EXPR(READ_STAT(stat, 0));
-
-    narg = SIZE_STAT(stat)/sizeof(Stat) - 2;
-    ixs = NEW_PLIST(T_PLIST,narg);
-
-    for (i = 1; i <= narg; i++) {
-      /* evaluate the position                                             */
-      pos = EVAL_EXPR(READ_STAT(stat, i));
-      SET_ELM_PLIST(ixs,i,pos);
-      CHANGED_BAG(ixs);
-    }
-    SET_LEN_PLIST(ixs,narg);
-
-    /* evaluate the right hand side                                        */
-    rhs = EVAL_EXPR(READ_STAT(stat, 2));
-
-    ASSB_LIST(list, ixs, rhs);
-
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
-}
 
 
 /****************************************************************************
@@ -913,43 +873,6 @@ Obj             EvalElm2List (
     return elm;
 }
 
-/****************************************************************************
-**
-*F  EvalElmXList(<expr>) . . . . . . . . . . . . select an element of a list
-**
-**  'EvalElmXList' evaluates the list  element expression  <expr> of the  form
-**  '<list>[<pos1>,<pos2>,<pos3>,....]'.
-*/
-Obj             EvalElmXList (
-    Expr                expr )
-{
-    Obj                 elm;            /* element, result                 */
-    Obj                 list;           /* list, left operand              */
-    Obj                 pos;            /* position, right operand         */
-    Obj ixs;
-    Int narg;
-    Int i;
-     
-
-    /* evaluate the list (checking is done by 'ELM2_LIST')                 */
-    list = EVAL_EXPR(READ_EXPR(expr, 0));
-
-    /* evaluate and check the positions                                    */
-    narg = SIZE_EXPR(expr)/sizeof(Expr) -1;
-    ixs = NEW_PLIST(T_PLIST,narg);
-    for (i = 1; i <= narg; i++) {
-      pos = EVAL_EXPR( READ_EXPR(expr, i) );
-      SET_ELM_PLIST(ixs,i,pos);
-      CHANGED_BAG(ixs);
-    }
-    SET_LEN_PLIST(ixs,narg);
-   
-    elm = ELMB_LIST(list,ixs);
-
-    /* return the element                                                  */
-    return elm;
-}
-
 
 /****************************************************************************
 **
@@ -1142,25 +1065,6 @@ void            PrintAss2List (
     Pr("%2<;",0L,0L);
 }
 
-void            PrintAssXList (
-    Stat                stat )
-{
-  Int narg = SIZE_STAT(stat)/sizeof(stat) - 2;
-  Int i;
-    Pr("%4>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<[",0L,0L);
-    PrintExpr(READ_EXPR(stat, 1));
-    for (i = 2; i <= narg; i++) {
-      Pr("%<, %>",0L,0L);
-      PrintExpr(READ_EXPR(stat, i));
-    }
-    Pr("%<]",0L,0L);
-    Pr("%< %>:= ",0L,0L);
-    PrintExpr(READ_EXPR(stat, narg + 1));
-    Pr("%2<;",0L,0L);
-}
-
 void            PrintUnbList (
     Stat                stat )
 {
@@ -1231,22 +1135,6 @@ void PrintElm2List (
     PrintExpr(READ_EXPR(expr, 1));
     Pr("%<, %<",0L,0L);
     PrintExpr(READ_EXPR(expr, 2));
-    Pr("%<]",0L,0L);
-}
-
-void PrintElmXList (
-		     Expr expr )
-{
-  Int i;
-  Int narg = SIZE_EXPR(expr)/sizeof(Expr) -1 ;
-    Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<[",0L,0L);
-    PrintExpr(READ_EXPR(expr, 1));
-    for (i = 2; i <= narg; i++) {
-      Pr("%<, %<",0L,0L);
-      PrintExpr(READ_EXPR(expr, i));
-    }
     Pr("%<]",0L,0L);
 }
 
@@ -2657,9 +2545,7 @@ static Int InitKernel (
     InstallExecStatFunc( T_ASS_LIST_LEV   , ExecAssListLevel);
     InstallExecStatFunc( T_ASSS_LIST_LEV  , ExecAsssListLevel);
     InstallExecStatFunc( T_ASS2_LIST  , ExecAss2List);
-    InstallExecStatFunc( T_ASSX_LIST  , ExecAssXList);
     InstallPrintStatFunc( T_ASS2_LIST  , PrintAss2List);
-    InstallPrintStatFunc( T_ASSX_LIST  , PrintAssXList);
     
     InstallExecStatFunc( T_UNB_LIST       , ExecUnbList);
     InstallEvalExprFunc( T_ELM_LIST       , EvalElmList);
@@ -2668,9 +2554,7 @@ static Int InitKernel (
     InstallEvalExprFunc( T_ELMS_LIST_LEV  , EvalElmsListLevel);
     InstallEvalExprFunc( T_ISB_LIST       , EvalIsbList);
     InstallEvalExprFunc( T_ELM2_LIST      , EvalElm2List);
-    InstallEvalExprFunc( T_ELMX_LIST      , EvalElmXList);
     InstallPrintExprFunc( T_ELM2_LIST     , PrintElm2List);
-    InstallPrintExprFunc( T_ELMX_LIST     , PrintElmXList);
     
     InstallPrintStatFunc( T_ASS_LIST       , PrintAssList);
     InstallPrintStatFunc( T_ASSS_LIST      , PrintAsssList);

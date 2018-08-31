@@ -204,7 +204,6 @@ enum STAT_TNUM {
 
         T_ASS_LIST,
         T_ASS2_LIST,
-        T_ASSX_LIST,
         T_ASSS_LIST,
         T_ASS_LIST_LEV,
         T_ASSS_LIST_LEV,
@@ -409,7 +408,6 @@ enum EXPR_TNUM {
 
     T_ELM_LIST,
     T_ELM2_LIST,
-    T_ELMX_LIST,
     T_ELMS_LIST,
     T_ELM_LIST_LEV,
     T_ELMS_LIST_LEV,
