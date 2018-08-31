@@ -3870,14 +3870,14 @@ Obj Array2Perm (
             val = ELM_LIST( cycle, j );
             while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) <= 0 ) {
                 val = ErrorReturnObj(
-              "Permutation: <expr> must be a positive integer (not to a %s)",
+              "Permutation: <expr> must be a positive integer (not a %s)",
                     (Int)TNAM_OBJ(val), 0L,
                     "you can replace <expr> via 'return <expr>;'" );
             }
             c = INT_INTOBJ(val);
-	    if (c > MAX_DEG_PERM4)
-	      ErrorMayQuit( "Permutation literal exceeds maximum permutatuion degree -- %i vs %i",
-			    c, MAX_DEG_PERM4);
+            if (c > MAX_DEG_PERM4)
+              ErrorMayQuit( "Permutation literal exceeds maximum permutation degree -- %i vs %i",
+                            c, MAX_DEG_PERM4);
 
             /* if necessary resize the permutation                         */
             if (DEG_PERM4(perm) < c) {
@@ -3895,7 +3895,7 @@ Obj Array2Perm (
             ptr4 = ADDR_PERM4( perm );
             if ( (p != 0 && p == c) || (ptr4[c-1] != c-1) ) {
                 return ErrorReturnObj(
-                    "Permutation: cycles must be disjoint",
+                    "Permutation: cycles must be disjoint and duplicate-free",
                     0L, 0L,
                     "you can replace the permutation <perm> via 'return <perm>;'" );
             }
@@ -3911,6 +3911,9 @@ Obj Array2Perm (
 
         /* enter first (last popped) entry at last (first popped) location */
         ptr4 = ADDR_PERM4( perm );
+        if (ptr4[l-1] != l-1) {
+            ErrorQuit("Permutation: cycles must be disjoint and duplicate-free", 0L, 0L );
+        }
         ptr4[l-1] = p-1;
 
     }

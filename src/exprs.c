@@ -847,9 +847,9 @@ Obj             EvalPermExpr (
                     "you can replace <expr> via 'return <expr>;'" );
             }
             c = INT_INTOBJ(val);
-	    if (c > MAX_DEG_PERM4)
-	      ErrorMayQuit( "Permutation literal exceeds maximum permutation degree -- %i vs %i",
-			    c, MAX_DEG_PERM4);
+            if (c > MAX_DEG_PERM4)
+              ErrorMayQuit( "Permutation literal exceeds maximum permutation degree -- %i vs %i",
+                            c, MAX_DEG_PERM4);
 
             /* if necessary resize the permutation                         */
             if (DEG_PERM4(perm) < c) {
@@ -867,9 +867,9 @@ Obj             EvalPermExpr (
             ptr4 = ADDR_PERM4( perm );
             if ( (p != 0 && p == c) || (ptr4[c-1] != c-1) ) {
                 return ErrorReturnObj(
-                    "Permutation: cycles must be disjoint",
+                    "Permutation: cycles must be disjoint and duplicate-free",
                     0L, 0L,
-                    "you can replace permutation <perm> via 'return <perm>;'" );
+                    "you can replace the permutation <perm> via 'return <perm>;'" );
             }
 
             /* enter the previous entry at current location                */
@@ -883,6 +883,9 @@ Obj             EvalPermExpr (
 
         /* enter first (last popped) entry at last (first popped) location */
         ptr4 = ADDR_PERM4( perm );
+        if (ptr4[l-1] != l-1) {
+            ErrorQuit("Permutation: cycles must be disjoint and duplicate-free", 0L, 0L );
+        }
         ptr4[l-1] = p-1;
 
     }

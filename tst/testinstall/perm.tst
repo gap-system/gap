@@ -22,6 +22,8 @@ gap> (1,2,0);
 Error, Permutation: <expr> must be a positive integer (not a integer)
 gap> (1,2)(1,2);
 Error, Permutation: cycles must be disjoint and duplicate-free
+gap> (1,2,3,2);
+Error, Permutation: cycles must be disjoint and duplicate-free
 
 # The GAP kernel implements many functions in multiple variants, e.g. to
 # compare permutations for equality, there are actually four functions in the
