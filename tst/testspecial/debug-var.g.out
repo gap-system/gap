@@ -114,6 +114,38 @@ Error( "breakpoint" ); at *stdin*:9 called from
 g( 10 ) at *stdin*:12 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:6
-brk_2> quit;
-brk> 
-brk> QUIT;
+brk_2> 
+brk_2> # check coding of dvars
+brk_2> function() return unbound_higher; end;
+Error, Variable: <debug-variable-1-4> cannot be used here in
+  <corrupted statement>  called from 
+<corrupted statement>  called from
+Error( "breakpoint" ); at *stdin*:9 called from
+g( 10 ) at *stdin*:12 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:9
+brk_2> function() return IsBound(unbound_higher); end;
+Error, Variable: <debug-variable-1-4> cannot be used here in
+  <corrupted statement>  called from 
+<corrupted statement>  called from
+Error( "breakpoint" ); at *stdin*:9 called from
+g( 10 ) at *stdin*:12 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:10
+brk_2> function() Unbind(unbound_higher); end;
+Error, Variable: <debug-variable-1-4> cannot be used here in
+  <corrupted statement>  called from 
+<corrupted statement>  called from
+Error( "breakpoint" ); at *stdin*:9 called from
+g( 10 ) at *stdin*:12 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:11
+brk_2> function() unbound_higher:=0; end;
+Error, Variable: <debug-variable-1-4> cannot be used here in
+  <corrupted statement>  called from 
+<corrupted statement>  called from
+Error( "breakpoint" ); at *stdin*:9 called from
+g( 10 ) at *stdin*:12 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:12
+brk_2> QUIT;
