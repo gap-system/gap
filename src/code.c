@@ -2287,9 +2287,7 @@ void CodeIsbGVar (
 *F  CodeAssListLevel( <level> ) . . . . . .  code assignment to several lists
 *F  CodeAsssListLevel( <level> )  . code multiple assignment to several lists
 */
-void CodeAssListUniv ( 
-		      Stat                ass,
-		       Int narg)
+static void CodeAssListUniv(Stat ass, Int narg)
 {
     Expr                list;           /* list expression                 */
     Expr                pos;            /* position expression             */
@@ -2404,7 +2402,7 @@ void CodeUnbList ( Int narg )
 *F  CodeElmListLevel( <level> ) . . . . . . . code selection of several lists
 *F  CodeElmsListLevel( <level> )  .  code multiple selection of several lists
 */
-void CodeElmListUniv (
+static void CodeElmListUniv (
 		      Expr                ref,
 		      Int narg)
 {
@@ -2709,16 +2707,16 @@ void CodeIsbRecExpr ( void )
 /****************************************************************************
 **
 *F  CodeAssPosObj() . . . . . . . . . . . . . . . . code assignment to a list
-*F  CodeAsssPosObj()  . . . . . . . . . .  code multiple assignment to a list
-*F  CodeAssPosObjLevel( <level> ) . . . . .  code assignment to several lists
-*F  CodeAsssPosObjLevel( <level> )  code multiple assignment to several lists
 */
-void CodeAssPosObjUniv (
-    Stat                ass )
+void CodeAssPosObj ( void )
 {
+    Stat                ass;            /* assignment, result              */
     Expr                list;           /* list expression                 */
     Expr                pos;            /* position expression             */
     Expr                rhsx;           /* right hand side expression      */
+
+    /* allocate the assignment                                             */
+    ass = NewStat( T_ASS_POSOBJ, 3 * sizeof(Stat) );
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
@@ -2734,54 +2732,6 @@ void CodeAssPosObjUniv (
 
     /* push the assignment                                                 */
     PushStat( ass );
-}
-
-void CodeAssPosObj ( void )
-{
-    Stat                ass;            /* assignment, result              */
-
-    /* allocate the assignment                                             */
-    ass = NewStat( T_ASS_POSOBJ, 3 * sizeof(Stat) );
-
-    /* let 'CodeAssPosObjUniv' do the rest                                 */
-    CodeAssPosObjUniv( ass );
-}
-
-void CodeAsssPosObj ( void )
-{
-    Stat                ass;            /* assignment, result              */
-
-    /* allocate the assignment                                             */
-    ass = NewStat( T_ASSS_POSOBJ, 3 * sizeof(Stat) );
-
-    /* let 'CodeAssPosObjUniv' do the rest                                 */
-    CodeAssPosObjUniv( ass );
-}
-
-void CodeAssPosObjLevel (
-    UInt                level )
-{
-    Stat                ass;            /* assignment, result              */
-
-    /* allocate the assignment and enter the level                         */
-    ass = NewStat( T_ASS_POSOBJ_LEV, 4 * sizeof(Stat) );
-    WRITE_STAT(ass, 3, level);
-
-    /* let 'CodeAssPosObjUniv' do the rest                                 */
-    CodeAssPosObjUniv( ass );
-}
-
-void CodeAsssPosObjLevel (
-    UInt                level )
-{
-    Stat                ass;            /* assignment, result              */
-
-    /* allocate the assignment and enter the level                         */
-    ass = NewStat( T_ASSS_POSOBJ_LEV, 4 * sizeof(Stat) );
-    WRITE_STAT(ass, 3, level);
-
-    /* let 'CodeAssPosObjUniv' do the rest                                 */
-    CodeAssPosObjUniv( ass );
 }
 
 
@@ -2814,15 +2764,15 @@ void CodeUnbPosObj ( void )
 /****************************************************************************
 **
 *F  CodeElmPosObj() . . . . . . . . . . . . . . . .  code selection of a list
-*F  CodeElmsPosObj()  . . . . . . . . . . . code multiple selection of a list
-*F  CodeElmPosObjLevel( <level> ) . . . . . . code selection of several lists
-*F  CodeElmsPosObjLevel( <level> )   code multiple selection of several lists
 */
-void CodeElmPosObjUniv (
-    Expr                ref )
+void CodeElmPosObj ( void )
 {
+    Expr                ref;            /* reference, result               */
     Expr                list;           /* list expression                 */
     Expr                pos;            /* position expression             */
+
+    /* allocate the reference                                              */
+    ref = NewExpr( T_ELM_POSOBJ, 2 * sizeof(Expr) );
 
     /* enter the position expression                                       */
     pos = PopExpr();
@@ -2834,54 +2784,6 @@ void CodeElmPosObjUniv (
 
     /* push the reference                                                  */
     PushExpr( ref );
-}
-
-void CodeElmPosObj ( void )
-{
-    Expr                ref;            /* reference, result               */
-
-    /* allocate the reference                                              */
-    ref = NewExpr( T_ELM_POSOBJ, 2 * sizeof(Expr) );
-
-    /* let 'CodeElmPosObjUniv' to the rest                                   */
-    CodeElmPosObjUniv( ref );
-}
-
-void CodeElmsPosObj ( void )
-{
-    Expr                ref;            /* reference, result               */
-
-    /* allocate the reference                                              */
-    ref = NewExpr( T_ELMS_POSOBJ, 2 * sizeof(Expr) );
-
-    /* let 'CodeElmPosObjUniv' to the rest                                   */
-    CodeElmPosObjUniv( ref );
-}
-
-void CodeElmPosObjLevel (
-    UInt                level )
-{
-    Expr                ref;            /* reference, result               */
-
-    /* allocate the reference and enter the level                          */
-    ref = NewExpr( T_ELM_POSOBJ_LEV, 3 * sizeof(Expr) );
-    WRITE_EXPR(ref, 2, level);
-
-    /* let 'CodeElmPosObjUniv' do the rest                                 */
-    CodeElmPosObjUniv( ref );
-}
-
-void CodeElmsPosObjLevel (
-    UInt                level )
-{
-    Expr                ref;            /* reference, result               */
-
-    /* allocate the reference and enter the level                          */
-    ref = NewExpr( T_ELMS_POSOBJ_LEV, 3 * sizeof(Expr) );
-    WRITE_EXPR(ref, 2, level);
-
-    /* let 'CodeElmPosObjUniv' do the rest                                 */
-    CodeElmPosObjUniv( ref );
 }
 
 

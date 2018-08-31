@@ -216,9 +216,6 @@ enum STAT_TNUM {
         T_UNB_REC_EXPR,
 
         T_ASS_POSOBJ,
-        T_ASSS_POSOBJ,
-        T_ASS_POSOBJ_LEV,
-        T_ASSS_POSOBJ_LEV,
         T_UNB_POSOBJ,
 
         T_ASS_COMOBJ_NAME,
@@ -424,9 +421,6 @@ enum EXPR_TNUM {
     T_ISB_REC_EXPR,
 
     T_ELM_POSOBJ,
-    T_ELMS_POSOBJ,
-    T_ELM_POSOBJ_LEV,
-    T_ELMS_POSOBJ_LEV,
     T_ISB_POSOBJ,
 
     T_ELM_COMOBJ_NAME,
@@ -1254,19 +1248,8 @@ extern  void            CodeIsbRecExpr ( void );
 /****************************************************************************
 **
 *F  CodeAssPosObj() . . . . . . . . . . . . . . . . code assignment to a list
-*F  CodeAsssPosObj()  . . . . . . . . . .  code multiple assignment to a list
-*F  CodeAssPosObjLevel(<level>) . . . . . .  code assignment to several lists
-*F  CodeAsssPosObjLevel(<level>)  . code multiple assignment to several lists
 */
 extern  void            CodeAssPosObj ( void );
-
-extern  void            CodeAsssPosObj ( void );
-
-extern  void            CodeAssPosObjLevel (
-            UInt                level );
-
-extern  void            CodeAsssPosObjLevel (
-            UInt                level );
 
 extern  void            CodeUnbPosObj ( void );
 
@@ -1274,19 +1257,8 @@ extern  void            CodeUnbPosObj ( void );
 /****************************************************************************
 **
 *F  CodeElmPosObj() . . . . . . . . . . . . . . . .  code selection of a list
-*F  CodeElmsPosObj()  . . . . . . . . . . . code multiple selection of a list
-*F  CodeElmPosObjLevel(<level>) . . . . . . . code selection of several lists
-*F  CodeElmsPosObjLevel(<level>)  .  code multiple selection of several lists
 */
 extern  void            CodeElmPosObj ( void );
-
-extern  void            CodeElmsPosObj ( void );
-
-extern  void            CodeElmPosObjLevel (
-            UInt                level );
-
-extern  void            CodeElmsPosObjLevel (
-            UInt                level );
 
 extern  void            CodeIsbPosObj ( void );
 

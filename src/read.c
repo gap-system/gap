@@ -231,10 +231,9 @@ static UInt WarnOnUnboundGlobalsRNam;
 **  R_HVAR:             high var with id <var>
 **  R_DVAR:             debug var with id <var>, at nesting level <nest0>
 **  R_GVAR:             global var with id <var>
-**  R_ELM_LIST:         uses <narg>, <level>
-**  R_ELMS_LIST:        uses <level>
-**  R_ELM_POSOBJ:       uses <level>
-**  R_ELMS_POSOBJ:      uses <level>
+**  R_ELM_LIST:         list access l[idx], uses <narg>, <level>
+**  R_ELMS_LIST:        list access l{indices}, uses <level>
+**  R_ELM_POSOBJ:       pos obj access obj![idx]
 **  R_ELM_REC_NAME:     record access r.<rnam>
 **  R_ELM_REC_EXPR      record access r.(expr)
 **  R_ELM_COMOBJ_NAME:  com obj access obj.<rnam>
@@ -251,7 +250,6 @@ enum REFTYPE {
     R_ELM_LIST,
     R_ELMS_LIST,
     R_ELM_POSOBJ,
-    R_ELMS_POSOBJ,
     R_ELM_REC_NAME,
     R_ELM_REC_EXPR,
     R_ELM_COMOBJ_NAME,
@@ -309,17 +307,8 @@ static UInt EvalRef(const LHSRef ref, Int needExpr)
                 IntrElmsListLevel(ref.level);
             return ref.level + 1;
         case R_ELM_POSOBJ:
-            if (ref.level == 0)
-                IntrElmPosObj();
-            else
-                IntrElmPosObjLevel(ref.level);
-            return ref.level;
-        case R_ELMS_POSOBJ:
-            if (ref.level == 0)
-                IntrElmsPosObj();
-            else
-                IntrElmsPosObjLevel(ref.level);
-            return ref.level + 1;
+            IntrElmPosObj();
+            break;
         case R_ELM_REC_NAME:
             IntrElmRecName(ref.rnam);
             break;
@@ -377,16 +366,7 @@ static void AssignRef(const LHSRef ref)
                 IntrAsssListLevel(ref.level);
             break;
         case R_ELM_POSOBJ:
-            if (ref.level == 0)
-                IntrAssPosObj();
-            else
-                IntrAssPosObjLevel(ref.level);
-            break;
-        case R_ELMS_POSOBJ:
-            if (ref.level == 0)
-                IntrAsssPosObj();
-            else
-                IntrAsssPosObjLevel(ref.level);
+            IntrAssPosObj();
             break;
         case R_ELM_REC_NAME:
             IntrAssRecName(ref.rnam);
@@ -447,7 +427,6 @@ static void UnbindRef(const LHSRef ref)
             break;
         case R_INVALID:
         case R_ELMS_LIST:
-        case R_ELMS_POSOBJ:
         case R_FUNCCALL:
         case R_FUNCCALL_OPTS:
         default:
@@ -493,7 +472,6 @@ static void IsBoundRef(const LHSRef ref)
             break;
         case R_INVALID:
         case R_ELMS_LIST:
-        case R_ELMS_POSOBJ:
         case R_FUNCCALL:
         case R_FUNCCALL_OPTS:
         default:
@@ -545,16 +523,6 @@ static LHSRef ReadSelector(TypSymbolSet follow, UInt level)
         ReadExpr(S_RBRACK | follow, 'r');
         Match(S_RBRACK, "]", follow);
         ref.type = R_ELM_POSOBJ;
-        ref.level = level;
-    }
-
-    // <Var> '!{' <Expr> '}'  sublist selector
-    else if (STATE(Symbol) == S_BLBRACE) {
-        Match(S_BLBRACE, "!{", follow);
-        ReadExpr(S_RBRACE | follow, 'r');
-        Match(S_RBRACE, "}", follow);
-        ref.type = R_ELMS_POSOBJ;
-        ref.level = level;
     }
 
     // <Var> '.' <Ident>  record selector

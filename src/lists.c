@@ -2130,27 +2130,6 @@ void AsssListCheck (
 
 /****************************************************************************
 **
-*F  AsssPosObjCheck( <list>, <poss>, <rhss> ) . . . . . . . . . . . ASSS_LIST
-*/
-void AsssPosObjCheck (
-    Obj                 list,
-    Obj                 poss,
-    Obj                 rhss )
-{
-    CheckIsPossList("List Assignment", poss);
-    CheckIsDenseList("List Assignment", "rhss", rhss);
-    CheckSameLength("List Assignment", "rhss", "positions", rhss, poss);
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
-        ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
-    }
-    else {
-        ASSS_LIST( list, poss, rhss );
-    }
-}
-
-
-/****************************************************************************
-**
 *F  AsssListLevelCheck( <lists>, <poss>, <rhss>, <level> )  . . AsssListLevel
 */
 void AsssListLevelCheck (

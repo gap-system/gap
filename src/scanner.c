@@ -935,7 +935,6 @@ static UInt NextSymbol(void)
     case '!':         symbol = S_ILLEGAL;       c = GET_NEXT_CHAR();
       if (c == '.') { symbol = S_BDOT;              GET_NEXT_CHAR(); break; }
       if (c == '[') { symbol = S_BLBRACK;           GET_NEXT_CHAR(); break; }
-      if (c == '{') { symbol = S_BLBRACE;           GET_NEXT_CHAR(); break; }
       break;
     case '[':         symbol = S_LBRACK;            GET_NEXT_CHAR(); break;
     case ']':         symbol = S_RBRACK;            GET_NEXT_CHAR(); break;

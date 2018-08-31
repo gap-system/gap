@@ -977,16 +977,6 @@ extern void AsssListCheck (
 
 /****************************************************************************
 **
-*F  AsssPosObjCheck( <list>, <poss>, <rhss> ) . . . . . . . . . . . ASSS_LIST
-*/
-extern void AsssPosObjCheck (
-    Obj                 list,
-    Obj                 poss,
-    Obj                 rhss );
-
-
-/****************************************************************************
-**
 *F  AsssListLevelCheck( <lists>, <poss>, <rhss>, <level> )  . . AsssListLevel
 */
 extern void AsssListLevelCheck (

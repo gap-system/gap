@@ -3434,42 +3434,6 @@ CVar CompElmPosObj (
 
 /****************************************************************************
 **
-*F  CompElmsPosObj( <expr> )  . . . . . . . . . . . . . . . . . T_ELMS_POSOBJ
-*/
-CVar CompElmsPosObj (
-    Expr                expr )
-{
-    Emit( "CANNOT COMPILE EXPRESSION OF TNUM %d;\n", TNUM_EXPR(expr) );
-    return 0;
-}
-
-
-/****************************************************************************
-**
-*F  CompElmPosObjLev( <expr> )  . . . . . . . . . . . . . .  T_ELM_POSOBJ_LEV
-*/
-CVar CompElmPosObjLev (
-    Expr                expr )
-{
-    Emit( "CANNOT COMPILE EXPRESSION OF TNUM %d;\n", TNUM_EXPR(expr) );
-    return 0;
-}
-
-
-/****************************************************************************
-**
-*F  CompElmsPosObjLev( <expr> ) . . . . . . . . . . . . . . . . T_ELMS_POSOBJ
-*/
-CVar CompElmsPosObjLev (
-    Expr                expr )
-{
-    Emit( "CANNOT COMPILE EXPRESSION OF TNUM %d;\n", TNUM_EXPR(expr) );
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F  CompIsbPosObj( <expr> ) . . . . . . . . . . . . . . . . . .  T_ISB_POSOBJ
 */
 CVar CompIsbPosObj (
@@ -4983,64 +4947,6 @@ void CompAssPosObj (
 }
 
 
-
-/****************************************************************************
-**
-*F  CompAsssPosObj( <stat> )  . . . . . . . . . . . . . . . . . T_ASSS_POSOBJ
-*/
-void CompAsssPosObj (
-    Stat                stat )
-{
-    CVar                list;           /* list                            */
-    CVar                poss;           /* positions                       */
-    CVar                rhss;           /* right hand sides                */
-
-    /* print a comment                                                     */
-    if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
-    }
-
-    /* compile the list expression                                         */
-    list = CompExpr(READ_STAT(stat, 0));
-
-    /* compile and check the position expression                           */
-    poss = CompExpr(READ_STAT(stat, 1));
-
-    /* compile the right hand side                                         */
-    rhss = CompExpr(READ_STAT(stat, 2));
-
-    /* emit the code                                                       */
-    Emit( "AsssPosObjCheck( %c, %c, %c );\n", list, poss, rhss );
-
-    /* free the temporaries                                                */
-    if ( IS_TEMP_CVAR( rhss ) )  FreeTemp( TEMP_CVAR( rhss ) );
-    if ( IS_TEMP_CVAR( poss ) )  FreeTemp( TEMP_CVAR( poss ) );
-    if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
-}
-
-
-/****************************************************************************
-**
-*F  CompAssPosObjLev( <stat> )  . . . . . . . . . . . . . .  T_ASS_POSOBJ_LEV
-*/
-void CompAssPosObjLev (
-    Stat                stat )
-{
-    Emit( "CANNOT COMPILE STATEMENT OF TNUM %d;\n", TNUM_STAT(stat) );
-}
-
-
-/****************************************************************************
-**
-*F  CompAsssPosObjLev( <stat> ) . . . . . . . . . . . . . . T_ASSS_POSOBJ_LEV
-*/
-void CompAsssPosObjLev (
-    Stat                stat )
-{
-    Emit( "CANNOT COMPILE STATEMENT OF TNUM %d;\n", TNUM_STAT(stat) );
-}
-
-
 /****************************************************************************
 **
 *F  CompUnbPosObj( <stat> ) . . . . . . . . . . . . . . . . . .  T_UNB_POSOBJ
@@ -5918,9 +5824,6 @@ static Int InitKernel (
     CompExprFuncs[ T_ISB_REC_EXPR    ] = CompIsbRecExpr;
 
     CompExprFuncs[ T_ELM_POSOBJ      ] = CompElmPosObj;
-    CompExprFuncs[ T_ELMS_POSOBJ     ] = CompElmsPosObj;
-    CompExprFuncs[ T_ELM_POSOBJ_LEV  ] = CompElmPosObjLev;
-    CompExprFuncs[ T_ELMS_POSOBJ_LEV ] = CompElmsPosObjLev;
     CompExprFuncs[ T_ISB_POSOBJ      ] = CompIsbPosObj;
     CompExprFuncs[ T_ELM_COMOBJ_NAME ] = CompElmComObjName;
     CompExprFuncs[ T_ELM_COMOBJ_EXPR ] = CompElmComObjExpr;
@@ -6005,9 +5908,6 @@ static Int InitKernel (
     CompStatFuncs[ T_UNB_REC_EXPR    ] = CompUnbRecExpr;
 
     CompStatFuncs[ T_ASS_POSOBJ      ] = CompAssPosObj;
-    CompStatFuncs[ T_ASSS_POSOBJ     ] = CompAsssPosObj;
-    CompStatFuncs[ T_ASS_POSOBJ_LEV  ] = CompAssPosObjLev;
-    CompStatFuncs[ T_ASSS_POSOBJ_LEV ] = CompAsssPosObjLev;
     CompStatFuncs[ T_UNB_POSOBJ      ] = CompUnbPosObj;
     CompStatFuncs[ T_ASS_COMOBJ_NAME ] = CompAssComObjName;
     CompStatFuncs[ T_ASS_COMOBJ_EXPR ] = CompAssComObjExpr;

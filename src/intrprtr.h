@@ -839,19 +839,8 @@ extern  void            IntrIsbRecExpr ( void );
 /****************************************************************************
 **
 *F  IntrAssPosObj() . . . . . . . . . . . .  interpret assignment to a posobj
-*F  IntrAsssPosObj() . . . . . . .  interpret multiple assignment to a posobj
-*F  IntrAssPosObjLevel(<level>) . . . interpret assignment to several posobjs
-*F  IntrAsssPosObjLevel(<level>)  intr multiple assignment to several posobjs
 */
 extern  void            IntrAssPosObj ( void );
-
-extern  void            IntrAsssPosObj ( void );
-
-extern  void            IntrAssPosObjLevel (
-            UInt                level );
-
-extern  void            IntrAsssPosObjLevel (
-            UInt                level );
 
 extern  void            IntrUnbPosObj ( void );
 
@@ -859,19 +848,8 @@ extern  void            IntrUnbPosObj ( void );
 /****************************************************************************
 **
 *F  IntrElmPosObj() . . . . . . . . . . . . . interpret selection of a posobj
-*F  IntrElmsPosObj() . . . . . . . . interpret multiple selection of a posobj
-*F  IntrElmPosObjLevel(<level>) . . .  interpret selection of several posobjs
-*F  IntrElmsPosObjLevel(<level>) . intr multiple selection of several posobjs
 */
 extern  void            IntrElmPosObj ( void );
-
-extern  void            IntrElmsPosObj ( void );
-
-extern  void            IntrElmPosObjLevel (
-            UInt                level );
-
-extern  void            IntrElmsPosObjLevel (
-            UInt                level );
 
 extern  void            IntrIsbPosObj ( void );
 
