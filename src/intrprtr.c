@@ -2696,8 +2696,6 @@ void            IntrAssDVar (
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    /* if ( STATE(IntrCoding)    > 0 ) { CodeAssDVar( gvar ); return; } */
-
 
     if ( STATE(IntrCoding) > 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
@@ -2727,8 +2725,6 @@ void            IntrUnbDVar (
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    /* if ( STATE(IntrCoding)    > 0 ) { CodeUnbGVar( gvar ); return; } */
-
 
     if ( STATE(IntrCoding) > 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
@@ -2760,8 +2756,6 @@ void            IntrRefDVar (
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    /* if ( STATE(IntrCoding)    > 0 ) { CodeRefGVar( gvar ); return; } */
-
 
     if ( STATE(IntrCoding) > 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
@@ -2792,8 +2786,11 @@ void            IntrIsbDVar (
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    /* if ( STATE(IntrCoding)    > 0 ) { CodeIsbGVar( gvar ); return; } */
 
+    if ( STATE(IntrCoding) > 0 ) {
+        ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
+                   dvar >> MAX_FUNC_LVARS_BITS, dvar & MAX_FUNC_LVARS_MASK );
+    }
 
     /* get the value                                                       */
     context = STATE(ErrorLVars);

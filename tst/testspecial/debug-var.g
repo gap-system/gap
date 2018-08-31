@@ -49,5 +49,9 @@ Unbind(y);
 y:=100;
 IsBound(y);
 unbound_higher;
-quit;
 
+# check coding of dvars
+function() return unbound_higher; end;
+function() return IsBound(unbound_higher); end;
+function() Unbind(unbound_higher); end;
+function() unbound_higher:=0; end;
