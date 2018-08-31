@@ -1653,8 +1653,7 @@ It is an error to use this statement other than inside a loop.
 <P/>
 <Log><![CDATA[
 gap> break;
-Error, A break statement can only appear inside a loop
-not in any function
+Syntax error: 'break' statement not enclosed in a loop
 ]]></Log>
 
 </Section>
@@ -1688,8 +1687,7 @@ It is an error to use this statement other than inside a loop.
 <P/>
 <Log><![CDATA[
 gap> continue;
-Error, A continue statement can only appear inside a loop
-not in any function
+Syntax error: 'continue' statement not enclosed in a loop
 ]]></Log>
 
 </Section>

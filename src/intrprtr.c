@@ -832,22 +832,26 @@ void            IntrWhileEnd ( void )
 **                                       by readwrite or readonly
 **
 */
-
 void IntrQualifiedExprBegin(UInt qual) 
 {
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
-    if ( STATE(IntrIgnoring)  > 0 ) { STATE(IntrIgnoring)++; return; }
-    if ( STATE(IntrCoding)    > 0 ) { CodeQualifiedExprBegin(qual); return; }
-    PushObj(INTOBJ_INT(qual));
+    SKIP_IF_IGNORING();
+
+    /* otherwise must be coding                                            */
+    GAP_ASSERT(STATE(IntrCoding) > 0);
+    CodeQualifiedExprBegin(qual);
 }
 
 void IntrQualifiedExprEnd( void ) 
 {
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
-    if ( STATE(IntrIgnoring)  > 0 ) { STATE(IntrIgnoring)--; return; }
-    if ( STATE(IntrCoding)    > 0 ) { CodeQualifiedExprEnd(); return; }
+    SKIP_IF_IGNORING();
+
+    /* otherwise must be coding                                            */
+    GAP_ASSERT(STATE(IntrCoding) > 0);
+    CodeQualifiedExprEnd();
 }
 
 /****************************************************************************
@@ -1029,10 +1033,8 @@ void            IntrBreak ( void )
     SKIP_IF_IGNORING();
 
     /* otherwise must be coding                                            */
-    if ( STATE(IntrCoding) == 0 )
-      ErrorQuit("'break' statement can only appear inside a loop",0L,0L);
-    else
-      CodeBreak();
+    GAP_ASSERT(STATE(IntrCoding) > 0);
+    CodeBreak();
 }
 
 
@@ -1053,10 +1055,8 @@ void            IntrContinue ( void )
     SKIP_IF_IGNORING();
 
     /* otherwise must be coding                                            */
-    if ( STATE(IntrCoding) == 0 )
-      ErrorQuit("'continue' statement can only appear inside a loop",0L,0L);
-    else
-      CodeContinue();
+    GAP_ASSERT(STATE(IntrCoding) > 0);
+    CodeContinue();
 }
 
 
