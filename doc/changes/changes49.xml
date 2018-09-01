@@ -1293,4 +1293,60 @@ The <Package>JupyterKernel</Package> package is not yet usable on Windows.
 
 </Section>
 
+
+<Section Label="gap493">
+<Heading>&GAP; 4.9.3 (September 2018)</Heading>
+
+<Subsection Label="Changes in the core GAP system introduced in GAP 4.9.3">
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.9.3</Heading>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+Fixed a regression in <Ref Oper="HighestWeightModule" BookName="ref"/>
+caused by changes in sort functions introduced in &GAP; 4.9 release
+(<URL><LinkText>&Hash;2617</LinkText><Link>https://github.com/gap-system/gap/pull/2617</Link></URL>).
+</Item>
+</List>
+
+Other fixed bugs and further improvements:
+<List>
+<Item>
+Fixed a compile time assertion that caused compiler error on some systems
+(<URL><LinkText>&Hash;2691</LinkText><Link>https://github.com/gap-system/gap/pull/2691</Link></URL>).
+</Item>
+</List>
+
+</Subsection>
+
+<Subsection Label="New and updated packages since GAP 4.9.2">
+<Heading>New and updated packages since &GAP; 4.9.2</Heading>
+
+This release contains updated versions of 18 packages
+from &GAP; 4.9.2 distribution. Additionally, it has three new packages:
+<List>
+<Item>
+The <Package>curlInterface</Package> package by Christopher Jefferson
+and Michael Torpey, which provides a simple wrapper around
+<Package>libcurl</Package> library (<URL>https://curl.haxx.se/</URL>)
+to allow downloading files over http, ftp and https protocols.
+</Item>
+<Item>
+The <Package>datastructures</Package> package by
+Markus Pfeiffer, Max Horn, Christopher Jefferson and Steve Linton,
+which aims at providing standard datastructures, consolidating
+existing code and improving on it, in particular in view of &HPCGAP;.
+</Item>
+<Item>
+The <Package>DeepThought</Package> package by Nina Wagner and Max Horn,
+which provides functionality for computations in finitely generated
+nilpotent groups given by a suitable presentation using Deep Thought
+polynomials.
+</Item>
+</List>
+
+</Subsection>
+
+</Section>
+
 </Chapter>
