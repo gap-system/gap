@@ -55,6 +55,7 @@ matrix:
           - libgmp-dev:i386
           - libreadline-dev:i386
           - libncurses5-dev:i386    # for Browse
+          - libcurl4-openssl-dev:i386 # for curlInterface
           - libboost-dev:i386       # for NormalizInterface
           - libmpfr-dev:i386        # for float
           - libmpfi-dev:i386        # for float
