@@ -65,6 +65,11 @@ rec("a":=1);
     ^^^
 
 #
+# ReadAtomic
+#
+gap> f := atomic function() end;;
+
+#
 # ReadEvalCommand
 #
 # See also https://github.com/gap-system/gap/issues/995

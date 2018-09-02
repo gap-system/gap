@@ -26,5 +26,43 @@ Error, Permutation: cycles must be disjoint and duplicate-free
 gap> f(1,2,1,2);
 Error, Permutation: cycles must be disjoint and duplicate-free
 
+# EvalRangeExpr
+gap> f:={a,b,c} -> [a,b..c];;
+gap> f(1,2,3);
+[ 1 .. 3 ]
+gap> f(1,3,5);
+[ 1, 3 .. 5 ]
+gap> f(1,1,1);
+Error, Range: <second> must not be equal to <first> (1)
+gap> f(1,3,4);
+Error, Range: <last>-<first> (3) must be divisible by <inc> (2)
+
+# EvalRecExpr
+gap> f:={a,b} -> rec( (a) := b );;
+gap> f(1,2);
+rec( 1 := 2 )
+gap> f(fail,2);
+Error, Record: '<rec>.(<obj>)' <obj> must be a string or an integer
+
+# PrintBinop
+gap> Display(x-> (-2)^x);
+function ( x )
+    return (-2) ^ x;
+end
+gap> Display( x -> 2 * f( 3 + 4 ));
+function ( x )
+    return 2 * f( (3 + 4) );
+end
+
+# PrintTildeExpr, EvalTildeExpr
+gap> l := [x -> ~];;
+gap> f := l[1];;
+gap> Display(f);
+function ( x )
+    return ~;
+end
+gap> f(1);
+Error, '~' does not have a value here
+
 #
 gap> STOP_TEST("kernel/exprs.tst", 1);

@@ -39,15 +39,23 @@ gap> last = List([1..10], n->PrimeDivisors(-n));
 true
 
 #
-gap> n:=(2^31-1)*(2^61-1);;
+gap> n:=(2^31-1)*(2^61-1);; # product of two "small" primes
 gap> PartialFactorization(n);
 [ 2147483647, 2305843009213693951 ]
 gap> FactorsInt(n);
 [ 2147483647, 2305843009213693951 ]
-gap> PartialFactorization(2^155-19);
+gap> n:=2^155-19;; # not a prime; GAP fails to fully factorize it, though FactInt finds all 4 factors
+gap> PartialFactorization(n);
 [ 167, 273484587823896504154881143846609846492502347 ]
-gap> n:=(2^2203-1)*(2^2281-1);;
+gap> n:=(2^2203-1)*(2^2281-1);;  # product of two "large" primes
 gap> PartialFactorization(n) = [ n ];
+true
+gap> n:=2^255-19;; # this is a "large" prime for which GAP only knows it is probably prime
+gap> PartialFactorization(n) = [ n ];
+true
+gap> FactorsInt(n) = [ n ];
+#I  FactorsInt: used the following factor(s) which are probably primes:
+#I        57896044618658097711785492504343953926634992332820282019728792003956564819949
 true
 
 #
