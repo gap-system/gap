@@ -1745,9 +1745,24 @@ DeclareUserPreference( rec(
 For backwards compatibility, the default lists most of packages \
 that were autoloaded in GAP 4.4 (add or remove packages as you like)."
     ],
-  default:= [ "autpgrp", "alnuth", "crisp", "ctbllib", "factint", "fga", 
-              "irredsol", "laguna", "polenta", "polycyclic", "resclasses", 
-              "sophus", "tomlib" ],
+  default:= [
+    "autpgrp",
+    "alnuth",
+    "crisp",
+    "ctbllib",
+    "factint",
+    "fga",
+    "irredsol",
+    "laguna",
+    "polenta",
+    "polycyclic",
+    "primgrp",
+    "resclasses",
+    "smallgrp",
+    "sophus",
+    "tomlib",
+    "transgrp",
+    ],
   values:= function() return RecNames( GAPInfo.PackagesInfo ); end,
   multi:= true,
   ) );

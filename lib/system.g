@@ -30,9 +30,6 @@ BIND_GLOBAL( "GAPInfo", rec(
     Dependencies := MakeImmutable(rec(
       NeededOtherPackages := [
         [ "gapdoc", ">= 1.2" ],
-        [ "primgrp", ">= 3.1.0" ],
-        [ "smallgrp", ">= 1.0" ],
-        [ "transgrp", ">= 1.0" ],
       ],
     )),
 # There is no SuggestedOtherPackages here because the default value of
