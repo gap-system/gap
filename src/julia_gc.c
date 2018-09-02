@@ -54,9 +54,7 @@ static UInt MarkCacheHits, MarkCacheAttempts, MarkCacheCollisions;
 #endif
 
 
-enum { NTYPES = 256 };
-
-TNumInfoBags InfoBags[NTYPES];
+TNumInfoBags InfoBags[NUM_TYPES];
 
 UInt SizeAllBags;
 
@@ -71,7 +69,7 @@ static inline Bag * DATA(BagHeader * bag)
 *F  InitFreeFuncBag(<type>,<free-func>)
 */
 
-TNumFreeFuncBags TabFreeFuncBags[NTYPES];
+TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
 
 void InitFreeFuncBag(UInt type, TNumFreeFuncBags finalizer_func)
 {
@@ -398,7 +396,7 @@ static void * AllocateBagMemory(UInt type, UInt size)
     return result;
 }
 
-TNumMarkFuncBags TabMarkFuncBags[NTYPES];
+TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
 
 void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
 {
@@ -580,7 +578,7 @@ static uintptr_t JMarkBag(jl_ptls_t ptls, jl_value_t * obj)
 void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
 {
     // HOOK: initialization happens here.
-    for (UInt i = 0; i < NTYPES; i++)
+    for (UInt i = 0; i < NUM_TYPES; i++)
         TabMarkFuncBags[i] = MarkAllSubBags;
     // These callbacks need to be set before initialization so
     // that we can track objects allocated during `jl_init()`.
