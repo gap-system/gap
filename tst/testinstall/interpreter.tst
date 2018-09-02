@@ -4,6 +4,9 @@
 # For now this mostly focuses on testing edge cases and error
 # handling in the interpreter.
 #
+# The files coder.tst and interpreter.tst closely mirror each other.
+#
+gap> START_TEST("interpreter.tst");
 
 #
 # non boolean expression as condition
@@ -74,7 +77,7 @@ rec(  )
 #
 gap> r!.a := 1;
 1
-gap> r!.("a");
+gap> r!.a;
 1
 gap> IsBound(r!.a);
 true
@@ -105,7 +108,30 @@ gap> r;
 rec(  )
 
 #
-# lists and posobj
+# component objects (atomic by default in HPC-GAP)
+#
+gap> r := Objectify(NewType(NewFamily("MockFamily"), IsComponentObjectRep), rec());;
+
+#
+gap> r!.a := 1;
+1
+gap> r!.a;
+1
+gap> IsBound(r!.a);
+true
+gap> Unbind(r!.a);
+
+#
+gap> r!.("a") := 1;
+1
+gap> r!.("a");
+1
+gap> IsBound(r!.("a"));
+true
+gap> Unbind(r!.("a"));
+
+#
+# lists
 #
 gap> l:=[1,2,3];
 [ 1, 2, 3 ]
@@ -133,6 +159,20 @@ gap> l;
 [ , 2, 3 ]
 
 #
+gap> l![fail] := 42;
+Error, PosObj Assignment: <position> must be a positive integer (not a boolean\
+ or fail)
+gap> l![fail];
+Error, PosObj Element: <position> must be a positive integer (not a boolean or\
+ fail)
+gap> IsBound(l![fail]);
+Error, PosObj Element: <position> must be a positive integer (not a boolean or\
+ fail)
+gap> Unbind(l![fail]);
+Error, PosObj Assignment: <position> must be a positive integer (not a boolean\
+ or fail)
+
+#
 gap> l{[1,3]} := [42, 23];
 [ 42, 23 ]
 gap> l{[3,1]};
@@ -149,17 +189,65 @@ gap> l;
 [ 42, 2, 23 ]
 
 #
-gap> l!{[1,3]} := [42, 23];
-[ 42, 23 ]
-gap> l!{[3,1]};
-[ 23, 42 ]
-gap> IsBound(l!{[1,3]});
-Syntax error: Illegal operand for 'IsBound' in stream:1
-IsBound(l!{[1,3]});
-                 ^
-gap> Unbind(l!{[1,3]});
-Syntax error: Illegal operand for 'Unbind' in stream:1
-Unbind(l!{[1,3]});
-                ^
-gap> l;
-[ 42, 2, 23 ]
+# posobj
+#
+gap> l := Objectify(NewType(NewFamily("MockFamily"), IsPositionalObjectRep),[]);;
+
+#
+gap> l![1] := 42;
+42
+gap> l![1];
+42
+gap> IsBound(l![1]);
+true
+gap> Unbind(l![1]);
+gap> IsBound(l![1]);
+false
+
+#
+gap> l![fail] := 42;
+Error, PosObj Assignment: <position> must be a positive integer (not a boolean\
+ or fail)
+gap> l![fail];
+Error, PosObj Element: <position> must be a positive integer (not a boolean or\
+ fail)
+gap> IsBound(l![fail]);
+Error, PosObj Element: <position> must be a positive integer (not a boolean or\
+ fail)
+gap> Unbind(l![fail]);
+Error, PosObj Assignment: <position> must be a positive integer (not a boolean\
+ or fail)
+
+#
+# atomic posobj (HPC-GAP)
+#
+gap> l := Objectify(NewType(NewFamily("MockFamily"), IsAtomicPositionalObjectRep),[23]);;
+
+#
+gap> l![1] := 42;
+42
+gap> l![1];
+42
+gap> IsBound(l![1]);
+true
+gap> Unbind(l![1]);
+gap> IsBound(l![1]);
+false
+
+#
+gap> l![fail] := 42;
+Error, PosObj Assignment: <position> must be a positive integer (not a boolean\
+ or fail)
+gap> l![fail];
+Error, PosObj Element: <position> must be a positive integer (not a boolean or\
+ fail)
+gap> IsBound(l![fail]);
+Error, PosObj Element: <position> must be a positive integer (not a boolean or\
+ fail)
+gap> Unbind(l![fail]);
+Error, PosObj Assignment: <position> must be a positive integer (not a boolean\
+ or fail)
+
+#
+#
+gap> STOP_TEST("interpreter.tst", 1);
