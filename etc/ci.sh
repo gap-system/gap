@@ -59,6 +59,9 @@ do
     # HACK to work out timestamp issues with anupq
     touch anupq*/configure* anupq*/Makefile* anupq*/aclocal.m4
 
+    # HACK: skip building digraphs for now -- it doesn't link reliably on travis
+    rm -rf digraphs-*
+
     # HACK: skip building semigroups-3.x for now -- it requires GCC >= 5, which Travis doesn't have
     rm -rf semigroups-3.*
 
