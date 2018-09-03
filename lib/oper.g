@@ -1199,36 +1199,34 @@ end );
 ##
 BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, rank, name)
     local   setter,  tester,   nname;
-              # store the information about the filter
-          INFO_FILTERS[ FLAG2_FILTER(getter) ] := 6;
 
-          # add  setter and tester to the list of operations
-          setter := SETTER_FILTER( getter );
-          tester := TESTER_FILTER( getter );
+    # store the information about the filter
+    INFO_FILTERS[ FLAG2_FILTER(getter) ] := 6;
 
-          STORE_OPER_FLAGS(setter, [ flags, FLAGS_FILTER( IS_OBJECT ) ]);
-          STORE_OPER_FLAGS(tester, [ flags ]);
+    # add  setter and tester to the list of operations
+    setter := SETTER_FILTER( getter );
+    tester := TESTER_FILTER( getter );
 
-          # install the default functions
-          FILTERS[ FLAG2_FILTER( tester ) ] := tester;
-          IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
+    STORE_OPER_FLAGS(setter, [ flags, FLAGS_FILTER( IS_OBJECT ) ]);
+    STORE_OPER_FLAGS(tester, [ flags ]);
 
-          # the <tester> is newly made, therefore  the cache cannot contain a  flag
-          # list involving <tester>
-          if not GAPInfo.CommandLineOptions.N then
-            InstallHiddenTrueMethod( filter, tester );
-          fi;
-          # CLEAR_HIDDEN_IMP_CACHE();
+    # install the default functions
+    FILTERS[ FLAG2_FILTER( tester ) ] := tester;
+    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
 
-          # run the attribute functions
-          RUN_ATTR_FUNCS( filter, getter, setter, tester, mutflag );
+    # the <tester> is newly made, therefore  the cache cannot contain a  flag
+    # list involving <tester>
+    if not GAPInfo.CommandLineOptions.N then
+      InstallHiddenTrueMethod( filter, tester );
+    fi;
+    # CLEAR_HIDDEN_IMP_CACHE();
 
-          # store the rank
-          RANK_FILTERS[ FLAG2_FILTER( tester ) ] := rank;
-          
-          
-          return;
-      end);
+    # run the attribute functions
+    RUN_ATTR_FUNCS( filter, getter, setter, tester, mutflag );
+
+    # store the rank
+    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := rank;
+end);
 
 # construct getter, setter and tester
 BIND_GLOBAL( "NewAttribute", function ( name, filter, args... )
