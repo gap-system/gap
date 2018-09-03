@@ -1436,7 +1436,8 @@ InstallMethod( FreeProductOp,
           hom,          # holds a monomorphism
           F,            # free group of free product
           FP,           # free product
-          rels          # free product relators
+          rels, # free product relators
+          nam   # names
     ;
         
     ## Check the arguments.
@@ -1467,7 +1468,13 @@ InstallMethod( FreeProductOp,
 
     ## Create the free group of the free product
     ##
-    F := FreeGroup(gennum);
+    nam:=List(Concatenation(List(fpisolist,x->GeneratorsOfGroup(Range(x)))),
+           String);
+    if Length(Set(nam))=gennum then
+      F:=FreeGroup(nam);
+    else
+      F := FreeGroup(gennum);
+    fi;
 
     ## Create the relations for the for free product
     ##
