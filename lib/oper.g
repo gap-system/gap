@@ -1069,6 +1069,18 @@ end );
 
 #############################################################################
 ##
+BIND_GLOBAL( "BIND_SETTER_TESTER",
+function( name, setter, tester)
+    local nname;
+    nname:= "Set"; APPEND_LIST_INTR( nname, name );
+    BIND_GLOBAL( nname, setter );
+    nname:= "Has"; APPEND_LIST_INTR( nname, name );
+    BIND_GLOBAL( nname, tester );
+end );
+
+
+#############################################################################
+##
 #F  DeclareAttributeKernel( <name>, <filter>, <getter> )  . . . new attribute
 ##
 ##  <ManSection>
@@ -1081,7 +1093,7 @@ end );
 ##  </ManSection>
 ##
 BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
-    local setter, tester, nname;
+    local setter, tester;
 
     # This will yield an error if `name' is already bound.
     BIND_GLOBAL( name, getter );
@@ -1118,10 +1130,7 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     od;
 
     # and make the remaining assignments
-    nname:= "Set"; APPEND_LIST_INTR( nname, name );
-    BIND_GLOBAL( nname, setter );
-    nname:= "Has"; APPEND_LIST_INTR( nname, name );
-    BIND_GLOBAL( nname, tester );
+    BIND_SETTER_TESTER( name, setter, tester );
 
 end );
 
@@ -1291,7 +1300,7 @@ end );
 
 BIND_GLOBAL( "ConvertToAttribute",
 function(name, op, filter, rank, mutable)
-    local req, reqs, flags, nname;
+    local req, reqs, flags;
     # `op' is not an attribute (tester) and not a property (tester),
     # or `op' is a filter; in any case, `op' is not an attribute.
 
@@ -1318,15 +1327,12 @@ function(name, op, filter, rank, mutable)
     OPER_SetupAttribute(op, flags, mutable, filter, rank, name);
 
     # and make the remaining assignments
-    nname:= "Set"; APPEND_LIST_INTR( nname, name );
-    BIND_GLOBAL( nname, SETTER_FILTER(op) );
-    nname:= "Has"; APPEND_LIST_INTR( nname, name );
-    BIND_GLOBAL( nname, TESTER_FILTER(op) );
+    BIND_SETTER_TESTER( name, SETTER_FILTER(op), TESTER_FILTER(op) );
 end);
 
 BIND_GLOBAL( "DeclareAttribute", function ( name, filter, args... )
     local gvar, req, reqs, setter, tester,
-              attr, nname, mutflag, flags, rank;
+              attr, mutflag, flags, rank;
 
     if not IS_STRING( name ) then
         Error( "<name> must be a string");
@@ -1382,10 +1388,7 @@ BIND_GLOBAL( "DeclareAttribute", function ( name, filter, args... )
         BIND_GLOBAL( name, attr );
 
         # and make the remaining assignments
-        nname := "Set"; APPEND_LIST_INTR( nname, name );
-        BIND_GLOBAL( nname, SETTER_FILTER(attr) );
-        nname := "Has"; APPEND_LIST_INTR( nname, name );
-        BIND_GLOBAL( nname, TESTER_FILTER( attr ) );
+        BIND_SETTER_TESTER( name, SETTER_FILTER(attr), TESTER_FILTER(attr) );
     fi;
 end );
 
@@ -1422,7 +1425,7 @@ LENGTH_SETTER_METHODS_2 := 0;
 ##  </ManSection>
 ##
 BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
-    local setter, tester, nname;
+    local setter, tester;
 
     # This will yield an error if `name' is already bound.
     BIND_GLOBAL( name, getter );
@@ -1460,10 +1463,7 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
 
     # and make the remaining assignments
-    nname:= "Set"; APPEND_LIST_INTR( nname, name );
-    BIND_GLOBAL( nname, setter );
-    nname:= "Has"; APPEND_LIST_INTR( nname, name );
-    BIND_GLOBAL( nname, tester );
+    BIND_SETTER_TESTER( name, setter, tester );
 end );
 
 
@@ -1567,7 +1567,7 @@ end );
 ##
 BIND_GLOBAL( "DeclareProperty", function ( arg )
 
-    local prop, name, nname, gvar, req, filter;
+    local prop, name, gvar, req, filter;
 
     name:= arg[1];
 
@@ -1606,10 +1606,7 @@ BIND_GLOBAL( "DeclareProperty", function ( arg )
       # The property is new.
       prop:= CALL_FUNC_LIST( NewProperty, arg );
       BIND_GLOBAL( name, prop );
-      nname:= "Set"; APPEND_LIST_INTR( nname, name );
-      BIND_GLOBAL( nname, SETTER_FILTER( prop ) );
-      nname:= "Has"; APPEND_LIST_INTR( nname, name );
-      BIND_GLOBAL( nname, TESTER_FILTER( prop ) );
+      BIND_SETTER_TESTER( name, SETTER_FILTER( prop ), TESTER_FILTER( prop ) );
 
     fi;
 end );
