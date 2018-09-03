@@ -119,33 +119,6 @@ to be strictly sorted
 
 #############################################################################
 
-VIRTUAL LIST TYPES
-==================
-
-T_MAT_CYC
----------
-a non-empty, dense list of lists of equal lengths which can be
-converted into lists of type T_PLIST_CYC*
-
-T_MAT_FFE
----------
-not supported yet
-
-++ T_MATRIX
------------
-a non-empty, dense list of lists of equal lengths which contain
-only objects of type <= LAST_CONSTANT_TYPE
-
-++ T_VECTOR
------------
-a non-empty, dense list of objects of type <= LAST_CONSTANT_TYPE
-
-++ T_LISTX
-----------
-a list which is neither a T_MATRIX nor a T_VECTOR
-
-#############################################################################
-
 IsXType( <list> )
 =================
 'XType' is used to refine the arithmetic, i.e., it is used to jump
@@ -320,12 +293,6 @@ listoper.c
 
 ++ ( FIRST_REAL - LAST_VIRTUAL ) * x
    = do not change the entry
-
-   i * ( FIRST_REAL - LAST_VIRTUAL )
-   = ProdList (call XType for both operands)
-
-   ( FIRST_REAL - LAST_VIRTUAL ) * i
-   = ProdList (call XType for both operands)
 
    ( not s and not i ) * s
    = ProdListScl

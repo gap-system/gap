@@ -28,9 +28,8 @@
 **
 **  The element at position <pos> is thus simply <first> + (<pos>-1) * <inc>.
 **
-**  Note  that  a list  represented by a   bag of type   'T_LIST', 'T_SET' or
-**  'T_VECTOR' might still  be a range.  It is  just that the kernel does not
-**  know this.
+**  Note that a list represented by a bag of type 'T_PLIST' might still be a
+**  range. It is just that the kernel does not know this.
 **
 **  This package consists of three parts.
 **
