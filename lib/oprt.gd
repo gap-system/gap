@@ -521,15 +521,12 @@ end);
 ##  <#/GAPDoc>
 ##
 BindGlobal( "OrbitsishOperation", function( name, reqs, usetype, NewAorP )
-    local nname, op;
+    local op;
 
     # Create the attribute or property.
     op:= NewAorP( name, IsExternalSet );
     BIND_GLOBAL( name, op );
-    nname:= "Set"; APPEND_LIST_INTR( nname, name );
-    BIND_GLOBAL( nname, SETTER_FILTER( op ) );
-    nname:= "Has"; APPEND_LIST_INTR( nname, name );
-    BIND_GLOBAL( nname, TESTER_FILTER( op ) );
+    BIND_SETTER_TESTER( name, SETTER_FILTER( op ), TESTER_FILTER( op ) );
 
     # Make a declaration for non-default methods.
     DeclareOperation( name, reqs );
@@ -754,7 +751,7 @@ DeclareOperation( "PreOrbishProcessing", [IsGroup]);
 InstallMethod( PreOrbishProcessing, [IsGroup], x->x );
 
 BindGlobal( "OrbitishFO", function( name, reqs, famrel, usetype,realenum )
-local str, nname, orbish, func,isnotest;
+local str, orbish, func,isnotest;
 
     # Create the operation.
     str:= SHALLOW_COPY_OBJ( name );
