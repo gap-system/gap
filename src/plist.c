@@ -855,7 +855,7 @@ Obj   FuncShrinkAllocationPlist( Obj self, Obj plist )
 **
 *F  FuncIS_PLIST_REP( <self>, <obj> ) . . . . . . . .  handler for `IS_PLIST'
 */
-Obj IsPListFilt;
+Obj IsPlistFilt;
 
 Obj FuncIS_PLIST_REP (
     Obj                 self,
@@ -867,7 +867,7 @@ Obj FuncIS_PLIST_REP (
 
 #ifdef USE_THREADSAFE_COPYING
 
-void TraversePList(Obj obj)
+void TraversePlist(Obj obj)
 {
     UInt  len = LEN_PLIST(obj);
     const Obj * ptr = CONST_ADDR_OBJ(obj) + 1;
@@ -877,7 +877,7 @@ void TraversePList(Obj obj)
     }
 }
 
-void CopyPList(Obj copy, Obj original)
+void CopyPlist(Obj copy, Obj original)
 {
     UInt  len = LEN_PLIST(original);
     const Obj * ptr = CONST_ADDR_OBJ(original) + 1;
@@ -3530,7 +3530,7 @@ static Int ResetFiltTab [] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    GVAR_FILTER(IS_PLIST_REP, "obj", &IsPListFilt),
+    GVAR_FILTER(IS_PLIST_REP, "obj", &IsPlistFilt),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -3675,7 +3675,7 @@ static Int InitKernel (
 
 #ifdef USE_THREADSAFE_COPYING
     for (t1 = FIRST_PLIST_TNUM; t1 <= LAST_PLIST_TNUM; t1++) {
-        SetTraversalMethod(t1, TRAVERSE_BY_FUNCTION, TraversePList, CopyPList);
+        SetTraversalMethod(t1, TRAVERSE_BY_FUNCTION, TraversePlist, CopyPlist);
     }
     for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
         SetTraversalMethod(t1, TRAVERSE_NONE, 0, 0);
