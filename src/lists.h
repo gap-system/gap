@@ -787,9 +787,7 @@ extern  void            AsssListLevel (
 *V  PlainListFuncs[<type>]  . . . . . . . . . . table of conversion functions
 **
 **  'PLAIN_LIST' changes  the representation of the  list <list> to that of a
-**  plain list Note that the type of <list> need not be 'T_PLIST' afterwards,
-**  it could also be 'T_SET' or 'T_VECTOR'.  An  error is signalled if <list>
-**  is not a list.
+**  plain list. An error is signalled if <list> is not a list.
 **
 **  A package implementing a  list type <type>  must provide such  a function
 **  and install it in 'PlainListFuncs[<type>]'.

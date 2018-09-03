@@ -15,12 +15,9 @@
 **  and the compact representation of strings.
 **
 **  Strings in compact representation  can be accessed and handled through
-**  the  macros     'NEW_STRING',   'CHARS_STRING'  (and   'CSTR_STRING'),
+**  the functions 'NEW_STRING', 'CHARS_STRING' (and 'CSTR_STRING'),
 **  'GET_LEN_STRING',   'SET_LEN_STRING', 'GROW_STRING',  'GET_ELM_STRING'
 **  and 'SET_ELM_STRING'.
-**  
-**  This  package also contains the   list  function  for ranges, which   are
-**  installed in the appropriate tables by 'InitString'.
 */
 
 #ifndef GAP_STRINGOBJ_H
@@ -184,9 +181,6 @@ static inline void GROW_STRING(Obj list, Int len)
 *F  SHRINK_STRING(<list>) . . . . . . . . .  shrink a string to minimal size
 **
 **  'SHRINK_STRING' gives back not needed memory allocated by string.
-**
-**  Note that 'SHRINK_STRING' is a macro, so do not call it with arguments that
-**  have side effects.
 */
 static inline void SHRINK_STRING(Obj list)
 {
@@ -296,7 +290,7 @@ extern Int IsString (
 
 /****************************************************************************
 **
-*F  CopyToStringRep( <string> )  . . copy a string to the string representation
+*F  CopyToStringRep( <string> ) . . .  copy a string to string representation
 **
 **  'CopyToStringRep' copies the string <string> to a new string in string
 **  representation.
@@ -307,9 +301,9 @@ extern Obj CopyToStringRep(
 
 /****************************************************************************
 **
-*F  ConvString( <string> )  . . convert a string to the string representation
+*F  ConvString( <string> ) . . . .  convert a string to string representation
 **
-**  'ConvString' converts the string <list> to the string representation.
+**  'ConvString' converts the string <string> to string representation.
 */
 extern void ConvString (
             Obj                 string );

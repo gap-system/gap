@@ -29,19 +29,19 @@
 **  object. This allows to use C routines with  strings  directly  with  null 
 **  character free strings (e.g., filenames). 
 **
-**  Note that a list represented by a bag of type  'T_PLIST' or 'T_SET' might
-**  still be a string.  It is just that the kernel does not know this.
+**  Note that a list represented by a bag of type 'T_PLIST' might still be a
+**  string. It is just that the kernel does not know this.
 **
 **  This package consists of three parts.
 **  
 **  The first part consists of the macros 'NEW_STRING', 'CHARS_STRING' (or
 **  'CSTR_STRING'),  'GET_LEN_STRING', 'SET_LEN_STRING', 'GET_ELM_STRING',
 **  'SET_ELM_STRING'  and  'C_NEW_STRING'.  These and  the functions below
-**  use the detailed knowledge about the respresentation of strings.
+**  use the detailed knowledge about the representation of strings.
 **  
 **  The second part  consists  of  the  functions  'LenString',  'ElmString',
 **  'ElmsStrings', 'AssString',  'AsssString', PlainString',
-**  and 'IsPossString'.  They are the functions requried by the generic lists
+**  and 'IsPossString'.  They are the functions required by the generic lists
 **  package.  Using these functions the other  parts of the {\GAP} kernel can
 **  access and  modify strings  without actually  being aware  that they  are
 **  dealing with a string.
@@ -200,7 +200,7 @@ void LoadChar( Obj c )
 **
 *F  FuncEmptyString( <self>, <len> ) . . . . . . . .  empty string with space
 **
-**  Returns an empty string, but with space for len characters preallocated.
+**  Returns an empty string, with space for <len> characters preallocated.
 **
 */
 Obj    FuncEmptyString( Obj self, Obj len )
@@ -291,7 +291,7 @@ Obj FuncINT_CHAR (
 
 /****************************************************************************
 **
-*F  FuncCHAR_SINT( <self>, <int> ) .. . . . . . . . . . char by signed integer
+*F  FuncCHAR_SINT( <self>, <int> ) . . . . . . . . . . char by signed integer
 */
 Obj FuncCHAR_SINT (
     Obj             self,
@@ -1306,7 +1306,7 @@ Int IsStringObject (
 
 /****************************************************************************
 **
-*F  CopyToStringRep( <string> )  . . copy a string to the string representation
+*F  CopyToStringRep( <string> ) . . .  copy a string to string representation
 **
 **  'CopyToStringRep' copies the string <string> to a new string in string
 **  representation.
@@ -1341,9 +1341,9 @@ Obj CopyToStringRep(
 
 /****************************************************************************
 **
-*F  ConvString( <string> )  . . convert a string to the string representation
+*F  ConvString( <string> ) . . . .  convert a string to string representation
 **
-**  'ConvString' converts the string <list> to the string representation.
+**  'ConvString' converts the string <string> to string representation.
 */
 void ConvString (
     Obj                 string )

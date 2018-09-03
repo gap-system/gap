@@ -32,17 +32,9 @@ extern Int             LtListList (
 
 /****************************************************************************
 **
-*F  SumList(<listL>,<listR>)  . . . . . . . . . . . . . . . . .  sum of lists
 *F  SumSclList(<listL>,<listR>) . . . . . . . . .  sum of a scalar and a list
 *F  SumListScl(<listL>,<listR>) . . . . . . . . .  sum of a list and a scalar
 *F  SumListList<listL>,<listR>)  . . . . . . . . . . . . .  sum of two lists
-**
-**  'SumList' is the extended dispatcher for the  sums involving lists.  That
-**  is, whenever  two operands are  added and at  least one operand is a list
-**  and 'SumFuncs'  does not point to  a special  function, then 'SumList' is
-**  called.  'SumList' determines the extended  types of the operands  (e.g.,
-**  'T_INT', 'T_VECTOR',  'T_MATRIX', 'T_LISTX') and then  dispatches through
-**  'SumFuncs' again.
 **
 **  'SumSclList' is a generic function  for the first kind  of sum, that of a
 **  scalar and a list.
@@ -69,17 +61,9 @@ Obj             SumListList (
 
 /****************************************************************************
 **
-*F  DiffList(<listL>,<listR>) . . . . . . . . . . . . . . difference of lists
 *F  DiffSclList(<listL>,<listR>)  . . . . . difference of a scalar and a list
 *F  DiffListScl(<listL>,<listR>)  . . . . . difference of a list and a scalar
 *F  DiffListList(<listL>,<listR>) . . . . . . . . . . difference of two lists
-**
-**  'DiffList' is  the   extended dispatcher for   the  differences involving
-**  lists.  That  is, whenever two operands are  subtracted and at  least one
-**  operand is a list and  'DiffFuncs' does not  point to a special function,
-**  then 'DiffList' is called.   'DiffList' determines the extended  types of
-**  the operands (e.g.,  'T_INT', 'T_VECTOR', 'T_MATRIX', 'T_LISTX') and then
-**  dispatches through 'DiffFuncs' again.
 **
 **  'DiffSclList' is a  generic function  for  the first  kind of difference,
 **  that of a scalar and a list.
@@ -106,17 +90,9 @@ Obj             DiffListList (
 
 /****************************************************************************
 **
-*F  ProdList(<listL>,<listR>) . . . . . . . . . . . . . . .  product of lists
 *F  ProdSclList(<listL>,<listR>)  . . . . . .  product of a scalar and a list
 *F  ProdListScl(<listL>,<listR>)  . . . . . .  product of a list and a scalar
 *F  ProdListList(<listL>,<listR>) . . . . . . . . . . .  product of two lists
-**
-**  'ProdList' is the extended  dispatcher for the products  involving lists.
-**  That is, whenever two operands are multiplied and at least one operand is
-**  a list   and  'ProdFuncs' does not    point to a  special function,  then
-**  'ProdList' is called.  'ProdList'   determines the extended types  of the
-**  operands (e.g.,   'T_INT',  'T_VECTOR', 'T_MATRIX',  'T_LISTX')  and then
-**  dispatches through 'ProdFuncs' again.
 **
 **  'ProdSclList' is a generic  function for the first  kind of product, that
 **  of a scalar and a list.  Note that this  includes kind of product defines
