@@ -1113,6 +1113,7 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     FILTERS[ FLAG2_FILTER( tester ) ] := tester;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
     INFO_FILTERS[ FLAG2_FILTER( tester ) ] := 5;
+    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
     od;
 
     # clear the cache because <filter> is something old
@@ -1124,10 +1125,6 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     # run the attribute functions
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
-    # store the ranks
-    atomic FILTER_REGION do
-    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
-    od;
 
     # and make the remaining assignments
     BIND_SETTER_TESTER( name, setter, tester );
@@ -1214,6 +1211,9 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
     FILTERS[ FLAG2_FILTER( tester ) ] := tester;
     IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
 
+    # store the rank
+    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := rank;
+
     # the <tester> is newly made, therefore  the cache cannot contain a  flag
     # list involving <tester>
     if not GAPInfo.CommandLineOptions.N then
@@ -1224,8 +1224,6 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
     # run the attribute functions
     RUN_ATTR_FUNCS( filter, getter, setter, tester, mutflag );
 
-    # store the rank
-    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := rank;
 end);
 
 # construct getter, setter and tester
@@ -1445,6 +1443,10 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     INFO_FILTERS[ FLAG1_FILTER( getter ) ]:= 7;
     INFO_FILTERS[ FLAG2_FILTER( getter ) ]:= 8;
 
+    # store the ranks
+    RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
+    RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
+
     # clear the cache because <filter> is something old
     if not GAPInfo.CommandLineOptions.N then
       InstallHiddenTrueMethod( tester, getter );
@@ -1456,9 +1458,6 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     # run the attribute functions
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
-    # store the ranks
-    RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
-    RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
 
     # and make the remaining assignments
     BIND_SETTER_TESTER( name, setter, tester );
@@ -1516,6 +1515,12 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     FILTERS[ FLAG2_FILTER( getter ) ] := tester;
     INFO_FILTERS[ FLAG1_FILTER( getter ) ] := 9;
     INFO_FILTERS[ FLAG2_FILTER( getter ) ] := 10;
+    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= arg[3];
+    else
+        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
+    fi;
+    RANK_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
     od;
 
     # the <tester> and  <getter> are newly  made, therefore the cache cannot
@@ -1529,15 +1534,6 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     # run the attribute functions
     RUN_ATTR_FUNCS( filter, getter, setter, tester, false );
 
-    # store the rank
-    atomic FILTER_REGION do
-    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
-        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= arg[3];
-    else
-        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
-    fi;
-    RANK_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
-    od;
 
     # and return the getter
     return getter;
