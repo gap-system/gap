@@ -1365,17 +1365,21 @@ BIND_GLOBAL( "DeclareAttribute", function ( name, filter, args... )
             Error( "variable `", name, "' is not bound to an operation" );
         fi;
 
-        # The attribute has already been declared.
-        # If it was not created as an attribute
-        # then we may be able to convert it
-        if FLAG2_FILTER( gvar ) = 0 or IS_ELEMENTARY_FILTER(gvar) then
-            ConvertToAttribute(name, gvar, filter, rank, mutflag);
-        else
+        # Check whether the variable is in fact bound to an attribute, i.e.,
+        # it has an associated tester (whose id is in FLAG2_FILTER) but is not
+        # a filter itself (to exclude properties, and also and-filters for which
+        # FLAG2_FILTER also is non-zero).
+        if FLAG2_FILTER( gvar ) <> 0 and not IsFilter(gvar) then
+            # gvar is already an attribute, extend it by the new filter
             STORE_OPER_FLAGS( gvar, [ FLAGS_FILTER( filter ) ] );
 
             # also set the extended range for the setter
             req := GET_OPER_FLAGS( Setter(gvar) );
             STORE_OPER_FLAGS( Setter(gvar), [ FLAGS_FILTER( filter), req[1][2] ] );
+        else
+            # gvar is a an existing non-attribute operation, try to convert it
+            # into an attribute
+            ConvertToAttribute(name, gvar, filter, rank, mutflag);
         fi;
       od;
     else
