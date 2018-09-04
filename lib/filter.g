@@ -52,8 +52,8 @@ fi;
 ##   2 = category
 ##   3 = representation kernel
 ##   4 = representation
-##   5 = attribute kernel
-##   6 = attribute
+##   5 = attribute tester kernel
+##   6 = attribute tester
 ##   7 = property kernel
 ##   8 = tester of 7
 ##   9 = property
@@ -64,13 +64,26 @@ if IsHPCGAP then
     LockAndMigrateObj(INFO_FILTERS, FILTER_REGION);
 fi;
 
-BIND_GLOBAL( "FNUM_CATS", MakeImmutable([ 1,  2 ]) );
-BIND_GLOBAL( "FNUM_REPS", MakeImmutable([ 3,  4 ]) );
-BIND_GLOBAL( "FNUM_ATTS", MakeImmutable([ 5,  6 ]) );
-BIND_GLOBAL( "FNUM_PROS", MakeImmutable([ 7,  9 ]) );
-BIND_GLOBAL( "FNUM_TPRS", MakeImmutable([ 8, 10 ]) );
+BIND_CONSTANT( "FNUM_CAT_KERN", 1 );
+BIND_CONSTANT( "FNUM_CAT", 2 );
+BIND_CONSTANT( "FNUM_REP_KERN", 3 );
+BIND_CONSTANT( "FNUM_REP", 4 );
+BIND_CONSTANT( "FNUM_ATTR_KERN", 5 );
+BIND_CONSTANT( "FNUM_ATTR", 6 );
+BIND_CONSTANT( "FNUM_PROP_KERN", 7 );
+BIND_CONSTANT( "FNUM_PROP", 9 );
+BIND_CONSTANT( "FNUM_TPR_KERN", 8 );
+BIND_CONSTANT( "FNUM_TPR", 10 );
 
-BIND_GLOBAL( "FNUM_CATS_AND_REPS", MakeImmutable([ 1 .. 4 ]) );
+BIND_GLOBAL( "FNUM_CATS", MakeImmutable([ FNUM_CAT_KERN, FNUM_CAT ]) );
+BIND_GLOBAL( "FNUM_REPS", MakeImmutable([ FNUM_REP_KERN, FNUM_REP ]) );
+BIND_GLOBAL( "FNUM_ATTS", MakeImmutable([ FNUM_ATTR_KERN, FNUM_ATTR ]) );
+BIND_GLOBAL( "FNUM_PROS", MakeImmutable([ FNUM_PROP_KERN, FNUM_PROP ]) );
+BIND_GLOBAL( "FNUM_TPRS", MakeImmutable([ FNUM_TPR_KERN, FNUM_TPR ]) );
+
+BIND_GLOBAL( "FNUM_CATS_AND_REPS",
+                MakeImmutable([ FNUM_CAT_KERN, FNUM_CAT,
+                                FNUM_REP_KERN, FNUM_REP ]) );
 
 
 #############################################################################
@@ -245,6 +258,15 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+BIND_GLOBAL( "REGISTER_FILTER", function( filter, id, rank, info )
+    atomic FILTER_REGION do
+      FILTERS[id] := filter;
+      IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( filter ) );
+      RANK_FILTERS[id] := rank;
+      INFO_FILTERS[id] := info;
+    od;
+end );
+
 BIND_GLOBAL( "NewFilter", function( arg )
     local   name,  implied,  rank,  filter;
 
@@ -272,12 +294,7 @@ BIND_GLOBAL( "NewFilter", function( arg )
     filter := NEW_FILTER( name );
 
     # Do some administrational work.
-    atomic FILTER_REGION do
-      FILTERS[ FLAG1_FILTER( filter ) ] := filter;
-      IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( filter ) );
-      RANK_FILTERS[ FLAG1_FILTER( filter ) ] := rank;
-      INFO_FILTERS[ FLAG1_FILTER( filter ) ] := 0;
-    od;
+    REGISTER_FILTER( filter, FLAG1_FILTER( filter ), rank, 0 );
 
     if implied <> 0 then
       InstallTrueMethodNewFilter( implied, filter );

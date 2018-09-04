@@ -1109,12 +1109,7 @@ BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
     STORE_OPER_FLAGS(tester, [ FLAGS_FILTER(filter) ]);
 
     # store the information about the filter
-    atomic FILTER_REGION do
-    FILTERS[ FLAG2_FILTER( tester ) ] := tester;
-    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
-    INFO_FILTERS[ FLAG2_FILTER( tester ) ] := 5;
-    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
-    od;
+    REGISTER_FILTER( tester, FLAG2_FILTER( tester ), 1, FNUM_ATTR_KERN );
 
     # clear the cache because <filter> is something old
     if not GAPInfo.CommandLineOptions.N then
@@ -1197,9 +1192,6 @@ end );
 BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, rank, name)
     local   setter,  tester,   nname;
 
-    # store the information about the filter
-    INFO_FILTERS[ FLAG2_FILTER(getter) ] := 6;
-
     # add  setter and tester to the list of operations
     setter := SETTER_FILTER( getter );
     tester := TESTER_FILTER( getter );
@@ -1207,12 +1199,8 @@ BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, ran
     STORE_OPER_FLAGS(setter, [ flags, FLAGS_FILTER( IS_OBJECT ) ]);
     STORE_OPER_FLAGS(tester, [ flags ]);
 
-    # install the default functions
-    FILTERS[ FLAG2_FILTER( tester ) ] := tester;
-    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( tester ) );
-
-    # store the rank
-    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := rank;
+    # store information about the filter
+    REGISTER_FILTER( tester, FLAG2_FILTER( tester ), rank, FNUM_ATTR );
 
     # the <tester> is newly made, therefore  the cache cannot contain a  flag
     # list involving <tester>
@@ -1265,9 +1253,7 @@ BIND_GLOBAL( "NewAttribute", function ( name, filter, args... )
     fi;
     STORE_OPER_FLAGS(getter, [ flags ]);
 
-    atomic FILTER_REGION do
     OPER_SetupAttribute(getter, flags, mutflag, filter, rank, name);
-    od;
 
     # And return the getter
     return getter;
@@ -1311,7 +1297,7 @@ function(name, op, filter, rank, mutable)
     od;
 
     flags := FLAGS_FILTER(filter);
-    STORE_OPER_FLAGS( op, [ FLAGS_FILTER( filter ) ] );
+    STORE_OPER_FLAGS( op, [ flags ] );
 
     # kernel magic for the conversion
     if mutable then
@@ -1356,7 +1342,6 @@ BIND_GLOBAL( "DeclareAttribute", function ( name, filter, args... )
     fi;
 
     if ISB_GVAR( name ) then
-      atomic FILTER_REGION do
         # The variable exists already.
         gvar := VALUE_GLOBAL( name );
 
@@ -1381,7 +1366,6 @@ BIND_GLOBAL( "DeclareAttribute", function ( name, filter, args... )
             # into an attribute
             ConvertToAttribute(name, gvar, filter, rank, mutflag);
         fi;
-      od;
     else
         # The attribute is new.
         attr := NewAttribute(name, filter, mutflag, rank);
@@ -1440,16 +1424,9 @@ BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
     STORE_OPER_FLAGS(setter, [ FLAGS_FILTER(filter), FLAGS_FILTER(IS_BOOL) ]);
     STORE_OPER_FLAGS(tester, [ FLAGS_FILTER(filter) ]);
 
-    # install the default functions
-    FILTERS[ FLAG1_FILTER( getter ) ]:= getter;
-    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
-    FILTERS[ FLAG2_FILTER( getter ) ]:= tester;
-    INFO_FILTERS[ FLAG1_FILTER( getter ) ]:= 7;
-    INFO_FILTERS[ FLAG2_FILTER( getter ) ]:= 8;
-
-    # store the ranks
-    RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
-    RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
+    # store information about the filters
+    REGISTER_FILTER( getter, FLAG1_FILTER( getter ), 1, FNUM_PROP_KERN );
+    REGISTER_FILTER( tester, FLAG2_FILTER( tester ), 1, FNUM_TPR_KERN );
 
     # clear the cache because <filter> is something old
     if not GAPInfo.CommandLineOptions.N then
@@ -1492,10 +1469,15 @@ end );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "NewProperty", function ( arg )
-    local   name, filter, flags, getter, setter, tester;
+    local name, filter, rank, flags, getter, setter, tester;
 
     name   := arg[1];
     filter := arg[2];
+    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+        rank := arg[3];
+    else
+        rank := 1;
+    fi;
 
     if not IS_OPERATION( filter ) then
       Error( "<filter> must be an operation" );
@@ -1512,20 +1494,9 @@ BIND_GLOBAL( "NewProperty", function ( arg )
     STORE_OPER_FLAGS(setter, [ flags, FLAGS_FILTER(IS_BOOL) ]);
     STORE_OPER_FLAGS(tester, [ flags ]);
 
-    # install the default functions
-    atomic FILTER_REGION do
-    FILTERS[ FLAG1_FILTER( getter ) ] := getter;
-    IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( getter ) );
-    FILTERS[ FLAG2_FILTER( getter ) ] := tester;
-    INFO_FILTERS[ FLAG1_FILTER( getter ) ] := 9;
-    INFO_FILTERS[ FLAG2_FILTER( getter ) ] := 10;
-    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
-        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= arg[3];
-    else
-        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
-    fi;
-    RANK_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
-    od;
+    # store information about the filters
+    REGISTER_FILTER( getter, FLAG1_FILTER( getter ), rank, FNUM_PROP );
+    REGISTER_FILTER( tester, FLAG2_FILTER( tester ), 1, FNUM_TPR );
 
     # the <tester> and  <getter> are newly  made, therefore the cache cannot
     # contain a flag list involving <tester> or <getter>
