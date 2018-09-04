@@ -40,10 +40,7 @@ BIND_GLOBAL( "DeclareCategoryKernel", function ( name, super, cat )
     if not IS_IDENTICAL_OBJ( cat, IS_OBJECT ) then
         atomic readwrite CATS_AND_REPS, FILTER_REGION do
             ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
-            FILTERS[ FLAG1_FILTER( cat ) ] := cat;
-            IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
-            INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
-            RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
+            REGISTER_FILTER( cat, FLAG1_FILTER( cat ), 1, FNUM_CAT_KERN );
         od;
         InstallTrueMethod( super, cat );
     fi;
@@ -83,23 +80,20 @@ end );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "NewCategory", function ( arg )
-    local   cat;
+    local cat, rank;
 
     # Create the filter.
     cat:= NEW_FILTER( arg[1] );
+    if LEN_LIST( arg ) >= 3 and IS_INT( arg[3] ) then
+        rank := arg[3];
+    else
+        rank := 1;
+    fi;
 
     # Do some administrational work.
     atomic readwrite CATS_AND_REPS, FILTER_REGION do
         ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
-        FILTERS[ FLAG1_FILTER( cat ) ] := cat;
-        IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( cat ) );
-
-        if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
-          RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= arg[3];
-        else
-          RANK_FILTERS[ FLAG1_FILTER( cat ) ]:= 1;
-        fi;
-        INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 2;
+        REGISTER_FILTER( cat, FLAG1_FILTER( cat ), rank, FNUM_CAT );
     od;
 
     # Do not call this before adding 'cat' to 'FILTERS'.
@@ -160,11 +154,11 @@ BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
         else
             Error("usage: DeclareRepresentation( <name>, <super>, <slots> [, <req> ] )");
         fi;
-        ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
-        FILTERS[ FLAG1_FILTER( rep ) ]       := rep;
-        IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
-        RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
-        INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 3;
+        atomic readwrite CATS_AND_REPS, FILTER_REGION do
+            ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
+            REGISTER_FILTER( rep, FLAG1_FILTER( rep ), 1, FNUM_REP_KERN );
+        od;
+
     od;
     InstallTrueMethod( arg[2], rep );
     BIND_GLOBAL( arg[1], rep );
@@ -252,10 +246,7 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     # Do some administrational work.
     atomic readwrite CATS_AND_REPS, FILTER_REGION do
         ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
-        FILTERS[ FLAG1_FILTER( rep ) ] := rep;
-        IMM_FLAGS:= AND_FLAGS( IMM_FLAGS, FLAGS_FILTER( rep ) );
-        RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
-        INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 4;
+        REGISTER_FILTER( rep, FLAG1_FILTER( rep ), 1, FNUM_REP );
     od;
 
     # Do not call this before adding 'rep' to 'FILTERS'.
