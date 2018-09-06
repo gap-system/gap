@@ -158,36 +158,37 @@ end );
 ##  They can be removed as soon as none of the available packages calls them.
 ##
 
-BindGlobal( "DeclarePackage", Ignore );
-# 03/2018: still used in itc
+#BindGlobal( "DeclarePackage", Ignore );
+# 09/2018: not used in any redistributed package
 
-BindGlobal( "DeclareAutoPackage", Ignore );
-# 03/2018: still used in liealgdb, sophus
+#BindGlobal( "DeclareAutoPackage", Ignore );
+# 06/2018: not used in any redistributed package
 
-BindGlobal( "DeclarePackageAutoDocumentation", Ignore );
-# 03/2018: still used in itc
+#BindGlobal( "DeclarePackageAutoDocumentation", Ignore );
+# 09/2018: not used in any redistributed package
 
 #BindGlobal( "DeclarePackageDocumentation", Ignore );
 # 03/2018: not used in any redistributed package
 
 DeclareObsoleteSynonym( "ReadPkg", "ReadPackage" );
-# 03/2018: still used in automgrp, ctbllib, fplsa, fwtree, Hap (HapCocyclic),
-# itc, modisom, pargap, quagroup
+# 06/2018: still used in automgrp, Hap (HapCocyclic), modisom
+# safely used in GAP3 compatibility code: ctbllib, quagroup, singular (09/2018)
 
 DeclareObsoleteSynonym( "RequirePackage", "LoadPackage" );
-# 03/2018: still used (sometimes in examples or documentation) in
-# ctbllib, edim, fwtree, hecke, itc, lpres, repsn, singular, tomlib, unipot
+# 09/2018: not used in "general" code in any redistributed package
+# used in documentation or for generating it: edim, hecke, repsn, singular (09/2018)
+# safely used in GAP3 compatibility code: ctbllib, singular (09/2018)
 
 
 #############################################################################
 ##
 #V  KERNEL_VERSION   - not used in any redistributed package (11/2017)
-#V  VERSION          - still used by HAP, liealgdb, singular, sophus (03/2018)
+#V  VERSION          - still used by HAP, singular (06/2018)
 #V  GAP_ARCHITECTURE - still used by gbnp, singular (03/2018)
 #V  GAP_ROOT_PATHS   - not used in any redistributed package (03/2018)
 #V  DEBUG_LOADING    - still used by the GAP kernel itself (11/2017)
-#V  BANNER           - still used by cubefree, loops, lpres, quagroup (11/2017)
-#V  QUIET            - still used by cubefree, loops, quagroup (11/2017)
+#V  BANNER           - still used by loops, quagroup (09/2018)
+#V  QUIET            - still used by loops, quagroup (09/2018)
 #V  LOADED_PACKAGES  - not used in any redistributed package (11/2017)
 ##
 ##  Up to GAP 4.3,
@@ -212,7 +213,7 @@ BindGlobal( "Revision", rec() );
 
 #############################################################################
 ##
-#V  TRANSDEGREES - still used by CTblLib (03/2018)
+#V  TRANSDEGREES - not used in any redistributed package (09/2018)
 ##
 ##  This variable was used by the GAP Transitive Groups Library before it
 ##  became a separate TransGrp package. It denoted the maximal degree of
@@ -234,7 +235,7 @@ BindGlobal( "TRANSDEGREES", 30 );
 #A  NormedVectors( <V> )
 ##
 ##  Moved to obsoletes in May 2003. 
-##  Still used in ctbllib, matgrp, sophus. (03/2018)
+##  Still used in ctbllib, matgrp (06/2018)
 ##
 DeclareObsoleteSynonymAttr( "NormedVectors", "NormedRowVectors" );
 
@@ -283,7 +284,7 @@ DeclareObsoleteSynonym( "FormattedString", "String" );
 ##  in GAP 4.5, and should be removed in GAP 4.6.
 ##
 #F  IsTuple( ... ) - not used in any redistributed package (11/2017)
-#F  Tuple( ... ) - still used by cubefree, groupoids, modisom, sonata (03/2018)
+#F  Tuple( ... ) - still used by groupoids, modisom, numericalsgps (09/2018)
 ##
 #DeclareObsoleteSynonym( "IsTuple", "IsDirectProductElement" );
 DeclareObsoleteSynonym( "Tuple", "DirectProductElement" );
@@ -402,7 +403,7 @@ DeclareObsoleteSynonym( "Complementclasses", "ComplementClassesRepresentatives" 
 
 #############################################################################
 ##
-#V  POST_RESTORE_FUNCS - still used by grape (03/2018)
+#V  POST_RESTORE_FUNCS - still used by grape (09/2018)
 ##
 ##  were supported until GAP 4.4, obsolescent in GAP 4.5.
 ##
@@ -486,7 +487,7 @@ DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-## still used by modisom (03/2018)
+## still used by modisom (09/2018)
 DeclareObsoleteSynonym( "MutableIdentityMat", "IdentityMat" );
 
 
@@ -508,7 +509,7 @@ DeclareObsoleteSynonym( "MutableIdentityMat", "IdentityMat" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-## still used by modisom, qpa, singular (03/2018)
+## still used by modisom, qpa, singular (09/2018)
 DeclareObsoleteSynonym( "MutableNullMat", "NullMat" );
 
 #############################################################################
@@ -567,8 +568,8 @@ DeclareObsoleteSynonym( "MutableNullMat", "NullMat" );
 ##  former is still used in some packages, for backwards compatibility we
 ##  replace it by the call of `Test' with comparison up to whitespaces.
 ##
-##  Still used in ctbllib, fga, gbnp, guarana, hapcryst, happrime, loops,
-##  polymaking, radiroot, singular (03/2018)
+##  Still used in ctbllib, cubefree, gapdoc, gbnp, guarana, hapcryst, polymaking,
+##  radiroot, singular (09/2018)
 BindGlobal( "ReadTest", function( fn )
   Print("#I  ReadTest is no longer supported. Please use more robust and flexible\n",
         "#I  Test. For backwards compatibility, ReadTest(<filename>) is replaced\n",
@@ -582,7 +583,8 @@ end);
 ##
 ##  This got a nicer name before is became documented.
 ##
-## still used by Browse, profiling, resclasses (03/2018)
+## still used by Browse, profiling, resclasses (09/2018)
+## safely used in compatibility code: digraphs, profiling, semigroups (09/2018)
 DeclareObsoleteSynonym( "USER_HOME_EXPAND", "UserHomeExpand" );
 
 #############################################################################
@@ -591,7 +593,8 @@ DeclareObsoleteSynonym( "USER_HOME_EXPAND", "UserHomeExpand" );
 ##
 ##  This name stems from GAP 3 days.
 ##
-## still used by Browse, ctbllib (03/2018)
+## still used by Browse, ctbllib (09/2018)
+## safely used in GAP3 compatibility code: ctbllib (09/2018)
 DeclareObsoleteSynonym( "RecFields", "RecNames" );
 
 #############################################################################
@@ -604,7 +607,7 @@ DeclareObsoleteSynonym( "RecFields", "RecNames" );
 ##  UNDOCUMENTED kernel functions may wish to keep using SHALLOW_SIZE until
 ##  they can adjust their minimal GAP version requirements.
 ##
-## still used by orb, recog (03/2018)
+## still used by orb, recog (09/2018)
 DeclareObsoleteSynonym( "SHALLOW_SIZE", "SIZE_OBJ" );
 
 #############################################################################
