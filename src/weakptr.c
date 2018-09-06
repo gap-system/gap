@@ -590,6 +590,12 @@ Obj FuncIsWPObj( Obj self, Obj wp)
 
 static void MarkWeakPointerObj(Obj wp)
 {
+#if !defined(USE_THREADSAFE_COPYING)
+    // mark the forwarding pointer
+    if (TNUM_OBJ(wp) == T_WPOBJ + COPYING)
+        MarkBag(CONST_ADDR_OBJ(wp)[0]);
+#endif
+
     // can't use the stored length here, in case we are in the middle of
     // copying
     const UInt len = SIZE_BAG(wp) / sizeof(Obj) - 1;
