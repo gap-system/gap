@@ -365,88 +365,113 @@ static inline Int8 getTicks(void)
     }
 }
 
+
+static inline void printOutput(UInt line, int nameid, int exec, int visited)
+{
+    Int8 ticks = 0, newticks = 0;
+
+    if (profileState.lastOutputted.line != line ||
+        profileState.lastOutputted.fileID != nameid ||
+        profileState.lastOutputtedExec != exec) {
+
+        if (profileState.OutputRepeats) {
+            newticks = getTicks();
+
+            ticks = newticks - profileState.lastOutputtedTime;
+
+            // Basic sanity check
+            if (ticks < 0)
+                ticks = 0;
+            if ((profileState.minimumProfileTick == 0) ||
+                (ticks > profileState.minimumProfileTick) || (!visited)) {
+                int ticksDone;
+                if (profileState.minimumProfileTick == 0) {
+                    ticksDone = ticks;
+                }
+                else {
+                    ticksDone = (ticks / profileState.minimumProfileTick) *
+                                profileState.minimumProfileTick;
+                }
+                ticks -= ticksDone;
+                outputFilenameIdIfRequired(nameid);
+                fprintf(profileState.Stream,
+                        "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,"
+                        "\"FileId\":%d}\n",
+                        exec ? 'E' : 'R', ticksDone, (int)line, (int)nameid);
+                profileState.lastOutputtedTime = newticks;
+                profileState.lastNotOutputted.line = -1;
+                profileState.lastOutputted.line = line;
+                profileState.lastOutputted.fileID = nameid;
+                profileState.lastOutputtedExec = exec;
+            }
+            else {
+                profileState.lastNotOutputted.line = line;
+                profileState.lastNotOutputted.fileID = nameid;
+            }
+        }
+        else {
+            outputFilenameIdIfRequired(nameid);
+            fprintf(profileState.Stream,
+                    "{\"Type\":\"%c\",\"Line\":%d,\"FileId\":%d}\n",
+                    exec ? 'E' : 'R', (int)line, (int)nameid);
+            profileState.lastOutputted.line = line;
+            profileState.lastOutputted.fileID = nameid;
+            profileState.lastOutputtedExec = exec;
+            profileState.lastNotOutputted.line = -1;
+        }
+    }
+}
+
 // exec : are we executing this statement
 // visit: Was this statement previously visited (that is, executed)
 static inline void outputStat(Stat stat, int exec, int visited)
 {
-  UInt line;
-  int nameid;
+    UInt line;
+    int  nameid;
 
-  CheckLeaveFunctionsAfterLongjmp();
-
-  Int8 ticks = 0, newticks = 0;
-
-  // Explicitly skip these two cases, as they are often specially handled
-  // and also aren't really interesting statements (something else will
-  // be executed whenever they are).
-  if (TNUM_STAT(stat) == T_TRUE_EXPR || TNUM_STAT(stat) == T_FALSE_EXPR) {
-    return;
-  }
-
-  // Catch the case we arrive here and profiling is already disabled
-  if (!profileState_Active) {
-    return;
-  }
-
-  nameid = getFilenameIdOfCurrentFunction();
-  outputFilenameIdIfRequired(nameid);
-
-  // Statement not attached to a file
-  if (nameid == 0) {
-    return;
-  }
-
-  line = LINE_STAT(stat);
-  if (profileState.lastOutputted.line != line ||
-     profileState.lastOutputted.fileID != nameid ||
-     profileState.lastOutputtedExec != exec)
-  {
-
-    if (profileState.OutputRepeats) {
-        newticks = getTicks();
-
-        ticks = newticks - profileState.lastOutputtedTime;
-
-        // Basic sanity check
-        if (ticks < 0)
-            ticks = 0;
-        if ((profileState.minimumProfileTick == 0) ||
-            (ticks > profileState.minimumProfileTick) || (!visited)) {
-            int ticksDone;
-            if (profileState.minimumProfileTick == 0) {
-                ticksDone = ticks;
-            }
-            else {
-                ticksDone = (ticks / profileState.minimumProfileTick) *
-                            profileState.minimumProfileTick;
-            }
-            ticks -= ticksDone;
-            outputFilenameIdIfRequired(nameid);
-            fprintf(
-                profileState.Stream,
-                "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,\"FileId\":%d}\n",
-                exec ? 'E' : 'R', ticksDone, (int)line, (int)nameid);
-            profileState.lastOutputtedTime = newticks;
-            profileState.lastNotOutputted.line = -1;
-            profileState.lastOutputted.line = line;
-            profileState.lastOutputted.fileID = nameid;
-            profileState.lastOutputtedExec = exec;
-      }
-      else {
-        profileState.lastNotOutputted.line = line;
-        profileState.lastNotOutputted.fileID = nameid;
-      }
+    // Explicitly skip these two cases, as they are often specially handled
+    // and also aren't really interesting statements (something else will
+    // be executed whenever they are).
+    if (TNUM_STAT(stat) == T_TRUE_EXPR || TNUM_STAT(stat) == T_FALSE_EXPR) {
+        return;
     }
-    else {
-      outputFilenameIdIfRequired(nameid);
-      fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Line\":%d,\"FileId\":%d}\n",
-              exec ? 'E' : 'R', (int)line, (int)nameid);
-      profileState.lastOutputted.line = line;
-      profileState.lastOutputted.fileID = nameid;
-      profileState.lastOutputtedExec = exec;
-      profileState.lastNotOutputted.line = -1;
+
+    CheckLeaveFunctionsAfterLongjmp();
+
+    // Catch the case we arrive here and profiling is already disabled
+    if (!profileState_Active) {
+        return;
     }
-  }
+
+    nameid = getFilenameIdOfCurrentFunction();
+    outputFilenameIdIfRequired(nameid);
+
+    // Statement not attached to a file
+    if (nameid == 0) {
+        return;
+    }
+
+    line = LINE_STAT(stat);
+    printOutput(line, nameid, exec, visited);
+}
+
+static inline void outputInterpretedStat(Int file, Int line, Int exec)
+{
+    CheckLeaveFunctionsAfterLongjmp();
+
+    // Catch the case we arrive here and profiling is already disabled
+    if (!profileState_Active) {
+        return;
+    }
+
+    outputFilenameIdIfRequired(file);
+
+    // Statement not attached to a file
+    if (file == 0) {
+        return;
+    }
+
+    printOutput(line, file, exec, 0);
 }
 
 void visitStat(Stat stat)
@@ -467,6 +492,18 @@ void visitStat(Stat stat)
     outputStat(stat, 1, visited);
     HashUnlock(&profileState);
   }
+}
+
+void visitInterpretedStat(Int file, Int line)
+{
+#ifdef HPCGAP
+    if (profileState.profiledThread != TLS(threadID))
+        return;
+#endif
+
+    HashLock(&profileState);
+    outputInterpretedStat(file, line, 1);
+    HashUnlock(&profileState);
 }
 
 /****************************************************************************
@@ -502,10 +539,25 @@ void registerStat(Stat stat)
     HashUnlock(&profileState);
 }
 
+void registerInterpretedStat(Int file, Int line)
+{
+    int active;
+    HashLock(&profileState);
+    active = profileState_Active;
+    if (active) {
+        outputInterpretedStat(file, line, 0);
+    }
+    HashUnlock(&profileState);
+}
 
-struct InterpreterHooks profileHooks = {
-  visitStat, enterFunction, leaveFunction, registerStat,
- "line-by-line profiling"};
+
+struct InterpreterHooks profileHooks = { visitStat,
+                                         visitInterpretedStat,
+                                         enterFunction,
+                                         leaveFunction,
+                                         registerStat,
+                                         registerInterpretedStat,
+                                         "line-by-line profiling" };
 
 
 void enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
