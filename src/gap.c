@@ -50,6 +50,9 @@
 
 #include <gmp.h>
 
+#ifdef USE_JULIA_GC
+#include "julia.h"
+#endif
 
 static Obj Error;
 
@@ -1434,6 +1437,13 @@ Obj FuncKERNEL_INFO(Obj self) {
   str = MakeImmString( gmp_version );
   r = RNamName("GMP_VERSION");
   AssPRec(res, r, str);
+
+#ifdef USE_JULIA_GC
+  /* export Julia version  */
+  str = MakeImmString( jl_ver_string() );
+  r = RNamName("JULIA_VERSION");
+  AssPRec(res, r, str);
+#endif
 
   r = RNamName("KernelDebug");
 #ifdef GAP_KERNEL_DEBUG
