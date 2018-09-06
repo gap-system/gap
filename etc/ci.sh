@@ -131,7 +131,11 @@ GAPInput
     ;;
 
   testmanuals)
-    $GAP $SRCDIR/tst/extractmanuals.g
+    # Start GAP with -O option to disable obsoletes. The test
+    # will fail if there will be an error message, but warnings
+    # should be checked manually in the test log. Since some
+    # packages may still use obsoletes, we use -A option.
+    $GAP -O -A $SRCDIR/tst/extractmanuals.g
 
     $GAP <<GAPInput
         SetUserPreference("ReproducibleBehaviour", true);
