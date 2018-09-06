@@ -73,9 +73,11 @@ extern void (*OriginalPrintExprFuncsForHook[256])(Expr expr);
 
 struct InterpreterHooks {
     void (*visitStat)(Stat stat);
+    void (*visitInterpretedStat)(Int line, Int pos);
     void (*enterFunction)(Obj func);
     void (*leaveFunction)(Obj func);
     void (*registerStat)(Stat stat);
+    void (*registerInterpretedStat)(Int line, Int pos);
     const char * hookName;
 };
 
@@ -122,17 +124,17 @@ void DeactivatePrintHooks(struct PrintHooks * hook);
 ** variable to avoid race conditions.
 */
 
-#define GAP_HOOK_LOOP(member, argument)                                      \
+#define GAP_HOOK_LOOP(member, ...)                                           \
     do {                                                                     \
-        Int i;                                                               \
+        Int                       i;                                         \
         struct InterpreterHooks * hook;                                      \
         for (i = 0; i < HookCount; ++i) {                                    \
             hook = activeHooks[i];                                           \
             if (hook && hook->member) {                                      \
-                (hook->member)(argument);                                    \
+                (hook->member)(__VA_ARGS__);                                 \
             }                                                                \
         }                                                                    \
-    } while(0)
+    } while (0)
 
 static inline void VisitStatIfHooked(Stat stat)
 {
@@ -153,6 +155,14 @@ static inline void HookedLineOutFunction(Obj func)
 static inline void RegisterStatWithHook(Stat func)
 {
     GAP_HOOK_LOOP(registerStat, func);
+}
+
+static inline void InterpreterHook(Int file, Int line, Int skipped)
+{
+    GAP_HOOK_LOOP(registerInterpretedStat, file, line);
+    if (!skipped) {
+        GAP_HOOK_LOOP(visitInterpretedStat, file, line);
+    }
 }
 
 
