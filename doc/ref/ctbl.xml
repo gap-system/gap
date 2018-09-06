@@ -609,6 +609,7 @@ gap> SetInfoLevel( InfoCharacterTable, 0 );
 <#Include Label="CharacterTableIsoclinic">
 <#Include Label="CharacterTableOfNormalSubgroup">
 <#Include Label="CharacterTableWreathSymmetric">
+<#Include Label="CharacterValueWreathSymmetric">
 
 </Section>
 

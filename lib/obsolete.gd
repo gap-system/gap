@@ -265,6 +265,19 @@ DeclareObsoleteSynonymAttr( "NormedVectors", "NormedRowVectors" );
 
 #############################################################################
 ##
+#F  CharValueWreathSymmetric( <tbl>, <n>, <beta>, <pi> )  . .
+#F                                        . . . .  character value in G wr Sn
+##
+##  This function was never documented but had been available for decades.
+##  Its functionality became documented under the more suitable name
+##  'CharacterValueWreathSymmetric' in GAP 4.10.
+##
+DeclareObsoleteSynonym( "CharValueWreathSymmetric",
+    "CharacterValueWreathSymmetric" );
+
+
+#############################################################################
+##
 #O  FormattedString( <obj>, <nr> )  . . formatted string repres. of an object
 ##
 ##  This variable name was never documented and is obsolete.

@@ -69,6 +69,7 @@ subsets.
 <#Include Label="PowerPartition">
 <#Include Label="PartitionTuples">
 <#Include Label="NrPartitionTuples">
+<#Include Label="BetaSet">
 
 </Section>
 

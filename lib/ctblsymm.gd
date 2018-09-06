@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  ctblsymm.gd                 GAP library                    Götz Pfeiffer
+#W  ctblsymm.gd                 GAP library                     Götz Pfeiffer
 #W                                                               Felix Noeske
 ##
 ##
@@ -74,12 +74,27 @@
 ##
 #F  BetaSet( <alpha> )  . . . . . . . . . . . . . . . . . . . . . . beta set.
 ##
+##  <#GAPDoc Label="BetaSet">
 ##  <ManSection>
 ##  <Func Name="BetaSet" Arg='alpha'/>
 ##
 ##  <Description>
+##  For a list <A>alpha</A> that describes a partition of a nonnegative
+##  integer (see <Ref Func="Partitions"/>),
+##  <Ref Func="BetaSet"/> returns the list of integers obtained by reversing
+##  the order of <A>alpha</A>
+##  and then adding the sequence <C>[ 0, 1, 2, ... ]</C> of the same length,
+##  cf. <Cite Key="JK81" Where="Section 2.7"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> BetaSet( [ 4, 2, 1 ] );
+##  [ 1, 3, 6 ]
+##  gap> BetaSet( [] );
+##  [  ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "BetaSet" );
 
@@ -230,16 +245,58 @@ DeclareGlobalVariable( "CharTableWeylD",
 
 #############################################################################
 ##
-#F  CharValueWreathSymmetric(<sub>,<n>,<beta>,<pi>) . char. value in G wr Sn.
+#F  CharacterValueWreathSymmetric( <tbl>, <n>, <beta>, <pi> ) . .
+#F                                        . . . .  character value in G wr Sn
 ##
+##  <#GAPDoc Label="CharacterValueWreathSymmetric">
 ##  <ManSection>
-##  <Func Name="CharValueWreathSymmetric" Arg='sub,n,beta,pi'/>
+##  <Func Name="CharacterValueWreathSymmetric" Arg='tbl, n, beta, pi'/>
 ##
 ##  <Description>
+##  Let <A>tbl</A> be the ordinary character table of a group <M>G</M>, say.
+##  The aim of this function is to compute a single character value
+##  from the character table of the wreath product of <M>G</M>
+##  with the full symmetric group on <A>n</A> points.
+##  <P/>
+##  The conjugacy classes and the irreducible characters of this
+##  wreath product are parametrized by <M>r</M>-tuples of partitions
+##  which together form a partition of <A>n</A>
+##  (see <Ref Func="PartitionTuples"/>),
+##  where <M>r</M> is the number of conjugacy classes of <M>G</M>.
+##  <P/>
+##  We describe the conjugacy class for which we want to compute the value
+##  by the <M>r</M>-tuple <A>pi</A> of partitions in question,
+##  and describe the character for which we want to compute the value
+##  by the <M>r</M>-tuple <A>beta</A> of <Ref Func="BetaSet"/> values of the
+##  <M>r</M>-tuple of partitions in question.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> n:= 4;;
+##  gap> classpara:= [ [], [ 2, 1, 1 ] ];;
+##  gap> charpara:= [ [ 2, 1 ], [ 1 ] ];;
+##  gap> betas:= List( charpara, BetaSet );;
+##  gap> c2:= CharacterTable( "Cyclic", 2 );;
+##  gap> CharacterValueWreathSymmetric( c2, n, betas, classpara );
+##  0
+##  gap> wr:= CharacterTableWreathSymmetric( c2, n );;
+##  gap> classpos:= Position( ClassParameters( wr ), classpara );;
+##  gap> charpos:= Position( CharacterParameters( wr ), charpara );;
+##  gap> Irr( wr )[ charpos, classpos ];
+##  0
+##  ]]></Example>
+##  <P/>
+##  This function can be useful if one is interested in only a few
+##  character values.
+##  If many character values are needed then it is probably faster to
+##  compute the whole character table of the wreath product using
+##  <Ref Func="CharacterTableWreathSymmetric"/>,
+##  which uses intermediate results of recursive computations
+##  and therefore can avoid repetitions.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "CharValueWreathSymmetric" );
+DeclareGlobalFunction( "CharacterValueWreathSymmetric" );
 
 
 #############################################################################

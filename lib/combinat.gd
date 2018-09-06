@@ -1250,7 +1250,9 @@ DeclareGlobalFunction("PowerPartition");
 ##  <P/>
 ##  <A>r</A>-tuples of partitions describe the classes and the characters
 ##  of wreath products of groups with <A>r</A> conjugacy classes with the
-##  symmetric group <M>S_n</M>.
+##  symmetric group on <A>n</A> points,
+##  see <Ref Func="CharacterTableWreathSymmetric"/>
+##  and <Ref Func="CharacterValueWreathSymmetric"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
