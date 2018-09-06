@@ -54,14 +54,21 @@
 **  terminated by the character '\0'.  Because 'line' holds  only part of the
 **  line for very long lines the last character need not be a <newline>.
 **
+**  'stream' is non-zero if the input points to a stream.
+**
+**  'sline' contains the next line from the stream as GAP string.
+**
+**  The following variables are used to store the state of the interpreter
+**  and stream when another input file is opened:
+**
 **  'ptr' points to the current character within that line.  This is not used
 **  for the current input file, where 'In' points to the  current  character.
 **
 **  'number' is the number of the current line, is used in error messages.
 **
-**  'stream' is none zero if the input points to a stream.
+**  'interpreterStartLine' is the number of the line where the fragment of
+**  code currently being interpreted started. This is used for profiling
 **
-**  'sline' contains the next line from the stream as GAP string.
 **
 */
 typedef struct {
@@ -72,6 +79,7 @@ typedef struct {
     Char   line[32768];
     Char * ptr;
     UInt   symbol;
+    Int    interpreterStartLine;
     Int    number;
     Obj    stream;
     UInt   isstringstream;
@@ -537,6 +545,7 @@ UInt OpenInputStream(Obj stream, UInt echo)
         GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
         IO()->Input->ptr = STATE(In);
         IO()->Input->symbol = STATE(Symbol);
+        IO()->Input->interpreterStartLine = STATE(InterpreterStartLine);
     }
 
     /* enter the file identifier and the file name                         */
@@ -561,6 +570,7 @@ UInt OpenInputStream(Obj stream, UInt echo)
     STATE(In) = IO()->Input->line;
     STATE(In)[0] = STATE(In)[1] = '\0';
     STATE(Symbol) = S_ILLEGAL;
+    STATE(InterpreterStartLine) = 0;
     IO()->Input->number = 1;
 
     /* indicate success                                                    */
@@ -602,6 +612,7 @@ UInt CloseInput ( void )
     IO()->Input = IO()->InputStack[sp - 1];
     STATE(In) = IO()->Input->ptr;
     STATE(Symbol) = IO()->Input->symbol;
+    STATE(InterpreterStartLine) = IO()->Input->interpreterStartLine;
 
     /* indicate success                                                    */
     return 1;
