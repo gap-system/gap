@@ -199,13 +199,16 @@ Note that <C>MultRowVector</C> was also renamed to <C>MultVectorLeft</C>.
 <InfoClass Name="InfoObsolete"/>
 <Description>
 is an info class to display warnings when an obsolete variable is used.
-By default, these warnings are switched off since the info level for 
-this class is 0. Setting it to 1 will trigger warnings if &GAP; will 
-detect that an obsolete variable is used at runtime.
+By default, the info level for this class is set to 1, which will only
+show variables which will be removed in the next major version of GAP.
+Setting it to 2 will trigger further warnings, for variables which have
+alternative names, or may be removed in future.
+
+This class can be set to 0 to disable all obsolete warnings.
 <P/>
-To check that the &GAP; code does not use obsolete variables at the 
-parsing time, and not at a runtime, use <C>-O</C> command line option,
-see <Ref Sect="Command Line Options"/>. 
+To check that the &GAP; code does not use any obsolete variables at
+parsing time, and not at a runtime, use the <C>-O</C> command line option,
+see <Ref Sect="Command Line Options"/>.
 </Description>
 </ManSection>
 

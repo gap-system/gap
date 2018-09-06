@@ -3,7 +3,7 @@ gap> foo:=function() return 42; end;
 function(  ) ... end
 gap> DeclareObsoleteSynonym("bar","foo");
 gap> oldLevel := InfoLevel(InfoObsolete);;
-gap> SetInfoLevel(InfoObsolete,1);
+gap> SetInfoLevel(InfoObsolete,2);
 gap> bar();
 #I  'bar' is obsolete.
 #I  It may be removed in a future release of GAP.

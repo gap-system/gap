@@ -429,8 +429,9 @@ end);
 ##
 #V  InfoObsolete
 ##
-##  This info class has a default level of 0.
-##  Warnings can be switched on by setting its level to one.
+##  This info class has a default level of 1.
+##  Warnings can be disabled entirely by setting its level to 0, and further
+##  warnings can be switched on by setting its level to 2.
 ##
 DeclareInfoClass( "InfoObsolete" );
-SetInfoLevel(InfoObsolete,0);
+SetInfoLevel(InfoObsolete,1);
