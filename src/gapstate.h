@@ -60,6 +60,10 @@ typedef struct GAPState {
     UInt   SymbolStartPos;
     UInt   SymbolStartLine;
 
+    // Used for recording the first line of the fragment of code currently
+    // begin interpreted, so the current line is outputted when profiling
+    UInt InterpreterStartLine;
+
     const Char * Prompt;
 
     Char * In;

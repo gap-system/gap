@@ -195,6 +195,10 @@ void Match (
 {
     Char                errmsg [256];
 
+    if (STATE(InterpreterStartLine) == 0) {
+        STATE(InterpreterStartLine) = STATE(SymbolStartLine);
+    }
+
     // if 'STATE(Symbol)' is the expected symbol match it away
     if ( symbol == STATE(Symbol) ) {
         STATE(Symbol) = NextSymbol();
