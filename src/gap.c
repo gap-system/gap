@@ -1360,6 +1360,9 @@ Obj FuncKERNEL_INFO(Obj self) {
   tmp = MakeImmString( SyKernelVersion );
   r = RNamName("KERNEL_VERSION");
   AssPRec(res,r,tmp);
+  tmp = INTOBJ_INT(GAP_KERNEL_API_VERSION);
+  r = RNamName("KERNEL_API_VERSION");
+  AssPRec(res, r, tmp);
   tmp = MakeImmString( SyBuildVersion );
   r = RNamName("BUILD_VERSION");
   AssPRec(res,r,tmp);
