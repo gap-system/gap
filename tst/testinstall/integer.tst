@@ -31,6 +31,12 @@ gap> QuoInt(5, -3);
 -1
 
 #
+gap> RoundCyc(3);
+3
+gap> RoundCycDown(3);
+3
+
+#
 gap> PrimeDivisors(0);
 Error, <n> must be non zero
 gap> List([1..10], PrimeDivisors);

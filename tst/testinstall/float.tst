@@ -393,6 +393,20 @@ gap> Hypothenuse(3.,4.);
 5.
 
 #
+gap> ComplexConjugate(1.3);
+1.3
+
+#
+gap> Display(1.3);
+1.3
+gap> Display(-.4e6);
+-400000.
+gap> PrintObj(1.3); Print("Q\n");
+1.3Q
+gap> DisplayString(1.3);
+"1.3\n"
+
+#
 gap> STOP_TEST( "float.tst", 1);
 
 #############################################################################
