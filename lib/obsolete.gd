@@ -55,6 +55,17 @@
 ##  Usually, old names will be available for several releases;
 ##  they may be removed when they don't seem to be used any more.
 ##  <P/>
+##  Information about obsolete names is printed by <Ref Func="Info"/> using the
+##  InfoObsolete Info class. By default InfoObsolete is set to 1. Newly
+##  obsoleted identifiers should at first be outputted at info level 2. Once they
+##  have been removed from all packages, they should then be moved to info level
+##  1, so they are visible to normal users, for at least one major release before
+##  being removed.
+##  <P/>
+##  The functions DeclareObsoleteSynonym and DeclareObsoleteSynonymAttr take
+##  an optional final paremeter, specifying the info level at which the given
+##  obsolete symbol should be reported. It defaults to 1.
+##  <P/>
 ##  The obsolete &GAP; code is collected in two library files,
 ##  <F>lib/obsolete.gd</F> and <F>lib/obsolete.gi</F>.
 ##  By default, these files are read when &GAP; is started.
@@ -76,19 +87,29 @@
 ##  <#/GAPDoc>
 ##
 
-BIND_GLOBAL( "DeclareObsoleteSynonym", function( name_obsolete, name_current )
-    local value, orig_value;
+BIND_GLOBAL( "DeclareObsoleteSynonym", function( name_obsolete, name_current, level_arg... )
+    local value, orig_value, printed_warning, level;
     if not ForAll( [ name_obsolete, name_current ], IsString ) then
         Error("Each argument of DeclareObsoleteSynonym must be a string\n");
     fi;
+    if Length(level_arg) = 0 then
+        level := 2;
+    else
+        level := level_arg[1];
+    fi;
+
     value := EvalString( name_current );
     if IsFunction( value ) then
         orig_value := value;
+        printed_warning := false;
         value := function (arg)
             local res;
-            Info( InfoObsolete, 1, "'", name_obsolete, "' is obsolete.",
-                "\n#I  It may be removed in a future release of GAP.",
-                "\n#I  Use ", name_current, " instead.");
+            if not printed_warning and InfoLevel(InfoObsolete) >= level then
+                Info( InfoObsolete, level, "'", name_obsolete, "' is obsolete.",
+                    "\n#I  It may be removed in a future release of GAP.",
+                    "\n#I  Use ", name_current, " instead.");
+                printed_warning := true;
+            fi;
             # TODO: This will error out if orig_value is a function which returns nothing.
             #return CallFuncList(orig_value, arg);
             res := CallFuncListWrap(orig_value, arg);
@@ -100,11 +121,16 @@ BIND_GLOBAL( "DeclareObsoleteSynonym", function( name_obsolete, name_current )
     BIND_GLOBAL( name_obsolete, value );
 end );
 
-BIND_GLOBAL( "DeclareObsoleteSynonymAttr", function( name_obsolete, name_current )
+BIND_GLOBAL( "DeclareObsoleteSynonymAttr", function( name_obsolete, name_current, level_arg... )
+    local level;
     Assert(0, IsFunction( ValueGlobal( name_current ) ) );
-    DeclareObsoleteSynonym( name_obsolete, name_current );
-    DeclareObsoleteSynonym( Concatenation("Set", name_obsolete), Concatenation("Set", name_current) );
-    DeclareObsoleteSynonym( Concatenation("Has", name_obsolete), Concatenation("Has", name_current) );
+    level := 1;
+    if Length(level_arg) > 0 then
+        level := level_arg[1];
+    fi;
+    DeclareObsoleteSynonym( name_obsolete, name_current, level );
+    DeclareObsoleteSynonym( Concatenation("Set", name_obsolete), Concatenation("Set", name_current), level );
+    DeclareObsoleteSynonym( Concatenation("Has", name_obsolete), Concatenation("Has", name_current), level );
 end );
 
 
