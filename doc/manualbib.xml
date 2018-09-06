@@ -2878,6 +2878,25 @@
   <other type="fjournal">Journal of Algebra</other>
 </article></entry>
 
+<entry id="JK81"><book>
+  <author>
+    <name><first>Gordon</first><last>James</last></name>
+    <name><first>Adalbert</first><last>Kerber</last></name>
+  </author>
+  <title>The representation theory of the symmetric group</title>
+  <publisher>Addison-Wesley Publishing Co., Reading, Mass.</publisher>
+  <year>1981</year>
+  <volume>16</volume>
+  <series>Encyclopedia of Mathematics and its Applications</series>
+  <note>With a foreword by P. M. Cohn,
+              With an introduction by Gilbert de B. Robinson</note>
+  <isbn>0-201-13515-9</isbn>
+  <mrnumber>644144</mrnumber>
+  <mrclass>20-02 (20C30)</mrclass>
+  <mrreviewer>A. O. Morris</mrreviewer>
+  <other type="pages">xxviii+510</other>
+</book></entry>
+
 <entry id="JLPW95"><book>
   <author>
     <name><first>Christoph</first><last>Jansen</last></name>

@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  ctblsymm.gi                 GAP library                    Götz Pfeiffer
+#W  ctblsymm.gi                 GAP library                     Götz Pfeiffer
 #W                                                               Felix Noeske
 ##
 ##
@@ -1054,12 +1054,14 @@ CharTableWeylD.matrix := function(n)
 end;
 MakeImmutable(CharTableWeylD);
 
+
 #############################################################################
 ##
-#F  CharValueWreathSymmetric( <sub>, <n>, <beta>, <pi> ) . .
-#F                                        . . . . character value in G wr Sn.
+#F  CharacterValueWreathSymmetric( <tbl>, <n>, <beta>, <pi> ) . .
+#F                                        . . . .  character value in G wr Sn
 ##
-InstallGlobalFunction( CharValueWreathSymmetric, function(sub, n, beta, pi)
+InstallGlobalFunction( CharacterValueWreathSymmetric,
+    function( sub, n, beta, pi )
     local i, j, k, lb, o, s, t, r, gamma, rho, sign, val, subirreds;
 
     #  termination condition.
@@ -1112,11 +1114,13 @@ InstallGlobalFunction( CharValueWreathSymmetric, function(sub, n, beta, pi)
 
              #  construct new beta set.
              gamma:= ShallowCopy(beta);
-             SubtractSet(gamma[s], [i]);
+             gamma[s]:= ShallowCopy( gamma[s] );
+             RemoveSet( gamma[s], i );
              AddSet(gamma[s], i-k);
 
              #  enter recursion.
-             val:= val + sign*CharValueWreathSymmetric(sub, n-k, gamma, rho);
+             val:= val +
+                sign * CharacterValueWreathSymmetric( sub, n-k, gamma, rho );
           fi;
        od;
     od;
