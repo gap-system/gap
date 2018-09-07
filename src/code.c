@@ -599,6 +599,7 @@ Obj CodeEnd(UInt error)
         /* the stacks must be empty                                        */
         GAP_ASSERT(CS(CountStat) == 0);
         GAP_ASSERT(CS(CountExpr) == 0);
+        GAP_ASSERT(CS(OffsBodyCount) == 0);
 
         /* we must be back to 'STATE(CurrLVars)'                                  */
         GAP_ASSERT(STATE(CurrLVars) == CS(CodeLVars));
@@ -613,6 +614,7 @@ Obj CodeEnd(UInt error)
         /* empty the stacks                                                */
         CS(CountStat) = 0;
         CS(CountExpr) = 0;
+        CS(OffsBodyCount) = 0;
 
         /* go back to the correct frame                                    */
         SWITCH_TO_OLD_LVARS(CS(CodeLVars));
