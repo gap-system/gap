@@ -64,6 +64,13 @@ static inline Bag * DATA(BagHeader * bag)
 }
 
 
+static TNumExtraMarkFuncBags ExtraMarkFuncBags;
+void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func)
+{
+    ExtraMarkFuncBags = func;
+}
+
+
 /****************************************************************************
 **
 *F  InitFreeFuncBag(<type>,<free-func>)
@@ -497,6 +504,13 @@ void GapRootScanner(int full)
     // mark our Julia module (this contains references to our custom data
     // types, which thus also will not be collected prematurely)
     JMark(Module);
+
+    // allow installing a custom marking function. This is used for
+    // integrating GAP (possibly linked as a shared library) with other code
+    // bases which use their own form of garbage collection. For example,
+    // with Python (for SageMath).
+    if (ExtraMarkFuncBags)
+        (*ExtraMarkFuncBags)();
 
     // scan the stack for further object references, and mark them
     syJmp_buf registers;
