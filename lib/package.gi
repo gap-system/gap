@@ -1578,6 +1578,10 @@ InstallGlobalFunction( LoadPackage, function( arg )
         info:= First( PackageInfo( pkgname ),
                       r -> r.InstallationPath = paths[2][ pos ][1] );
 
+        if not ValidatePackageInfo(info) then
+           Print("#E Validation of package ", pkgname, " from ", info.InstallationPath, " failed\n");
+        fi;
+
         # Notify the documentation (for the available version).
         LoadPackageDocumentation( info );
 
