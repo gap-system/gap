@@ -1356,26 +1356,6 @@ Obj             FuncOnRight (
 
 /****************************************************************************
 **
-*F  FuncOnLeftAntiOperation( <self>, <point>, <elm> ) op. by mult. from the left
-**
-**  'FuncOnLeftAntiOperation' implements the internal function
-**  'OnLeftAntiOperation'.
-**
-**  'OnLeftAntiOperation( <point>, <elm> )'
-**
-**  specifies that group elements operate by multiplication from the left.
-*/
-Obj             FuncOnLeftAntiOperation (
-    Obj                 self,
-    Obj                 point,
-    Obj                 elm )
-{
-    return PROD( elm, point );
-}
-
-
-/****************************************************************************
-**
 *F  FuncOnLeftInverse( <self>, <point>, <elm> ) . . op by mult. from the left
 **
 **  'FuncOnLeftInverse' implements the internal function 'OnLeftInverse'.
@@ -1782,7 +1762,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(OnTuples, 2, "tuple, elm"),
     GVAR_FUNC(OnSets, 2, "set, elm"),
     GVAR_FUNC(OnRight, 2, "pnt, elm"),
-    GVAR_FUNC(OnLeftAntiOperation, 2, "pnt, elm"),
     GVAR_FUNC(OnLeftInverse, 2, "pnt, elm"),
     GVAR_FUNC(COPY_LIST_ENTRIES, -1, "srclist,srcstart,srcinc,dstlist,dststart,dstinc,number"),
     GVAR_FUNC(STRONGLY_CONNECTED_COMPONENTS_DIGRAPH, 1, "digraph"),
