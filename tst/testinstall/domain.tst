@@ -18,8 +18,10 @@ gap> M = I;
 false
 gap> I = J;
 false
-gap> M = J;
-Error, no method found for comparing two infinite domains
+
+# TODO: Reinstate a version that is compatible with the Semigroups package
+#gap> M = J;
+#Error, no method found for comparing two infinite domains
 
 #
 gap> STOP_TEST("domain.tst");
