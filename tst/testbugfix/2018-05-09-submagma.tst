@@ -30,15 +30,12 @@ gap> IsMagmaWithInverses(asub);
 false
 
 #
-gap> mgm:=Magma( () );
-<commutative semigroup with 1 generator>
+gap> mgm:=Magma( () );;
 gap> Size(mgm);
 1
 gap> IsTrivial(mgm);
 true
 gap> IsEmpty(mgm);
-false
-gap> IsMagmaWithInverses(mgm);
 false
 
 #
