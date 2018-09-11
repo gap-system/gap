@@ -1,0 +1,10 @@
+gap> SetUserPreference("Pager", "builtin");
+gap> ?IsNonExistentKeyWord
+Help: no matching entry found
+gap> 
+gap> # trick: in general, we cannot assume the the GAP documentation was built
+gap> # prior to running this test; but that of GAPDoc definitely is available
+gap> ?MakeGAPDocDoc
+Help: Showing `GAPDoc: [22m[34mMakeGAPDocDoc[0m'
+gap>  # this gets send to the pager
+gap> QUIT;

@@ -201,10 +201,14 @@ BindGlobal("PAGER_BUILTIN", function( lines )
       od;
     fi;
     PrintTo(out, halt);
-    char := CHAR_INT(ReadByte(stream));
-    while not char in " nbpq" do
-      char := CHAR_INT(ReadByte(stream));
-    od;
+    repeat
+      char := ReadByte(stream);
+      if char = fail then
+        char := 'q';
+      else
+        char := CHAR_INT(char);
+      fi;
+    until char in " nbpq";
     if char = ' ' and i < len then
       from := from+size[2]-1;
     elif char = 'n' and i < len then
