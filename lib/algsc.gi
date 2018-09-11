@@ -78,8 +78,13 @@ InstallMethod( IsFullSCAlgebra,
 ##  The external representation is the coefficients vector,
 ##  which is stored at position 1 in the object.
 ##
+if IsHPCGAP then
+DeclareRepresentation( "IsDenseCoeffVectorRep",
+    IsAtomicPositionalObjectRep, [ 1 ] );
+else
 DeclareRepresentation( "IsDenseCoeffVectorRep",
     IsPositionalObjectRep, [ 1 ] );
+fi;
 
 
 #############################################################################
@@ -683,6 +688,9 @@ InstallAccessToGenerators( IsSCAlgebraObjCollection and IsFullSCAlgebra,
 #V  QuaternionAlgebraData
 ##
 InstallFlushableValue( QuaternionAlgebraData, [] );
+if IsHPCGAP then
+    ShareSpecialObj( QuaternionAlgebraData );
+fi;
 
 
 #############################################################################
