@@ -16,6 +16,8 @@ gap> f1(-1);
 Error, <val> must be a positive integer
 gap> f1( () );
 Error, <val> must be a positive integer
+
+#
 gap> f2 := MemoizePosIntFunction(func,
 > rec(defaults := [10,,20], errorHandler := x -> "Woops"));;
 gap> f2(1);
@@ -34,6 +36,8 @@ gap> f2(-1);
 "Woops"
 gap> f2( () );
 "Woops"
+
+#
 gap> f3 := MemoizePosIntFunction(func,
 > rec(defaults := [10,,20], flush := false));;
 gap> f3(1);
@@ -46,6 +50,18 @@ gap> f3(2);
 gap> f3(6);
 Check:6
 36
+
+#
+gap> f4 := MemoizePosIntFunction(func,
+> rec(defaults := [10,,20], errorHandler := function(x) Print("Woops\n"); end));;
+gap> f4(1);
+10
+gap> f4(2);
+Check:2
+4
+gap> f4("Hello, world");
+Woops
+Error, Function Calls: <func> must return a value
 
 # test flushing caches
 gap> f1(6);
