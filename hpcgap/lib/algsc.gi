@@ -78,7 +78,13 @@ InstallMethod( IsFullSCAlgebra,
 ##  The external representation is the coefficients vector,
 ##  which is stored at position 1 in the object.
 ##
-DeclareRepresentation( "IsDenseCoeffVectorRep", IsAtomicPositionalObjectRep, [ 1 ] );
+if IsHPCGAP then
+DeclareRepresentation( "IsDenseCoeffVectorRep",
+    IsAtomicPositionalObjectRep, [ 1 ] );
+else
+DeclareRepresentation( "IsDenseCoeffVectorRep",
+    IsPositionalObjectRep, [ 1 ] );
+fi;
 
 
 #############################################################################
@@ -161,8 +167,7 @@ InstallMethod( PrintObj,
       return;
     fi;
 
-    zero  := Zero( elm[1] );
-    depth := PositionNot( elm, zero );
+    depth := PositionNonZero( elm );
 
     if len < depth then
 
@@ -173,6 +178,7 @@ InstallMethod( PrintObj,
     else
 
       one:= One(  elm[1] );
+      zero:= Zero( elm[1] );
 
       if elm[ depth ] <> one then
         Print( "(", elm[ depth ], ")*" );
@@ -220,8 +226,7 @@ InstallMethod( String,
       return "<zero of trivial s.c. algebra>";
     fi;
 
-    zero  := Zero( elm[1] );
-    depth := PositionNot( elm, zero );
+    depth := PositionNonZero( elm );
 
     s:="";
     if len < depth then
@@ -234,6 +239,7 @@ InstallMethod( String,
     else
 
       one:= One(  elm[1] );
+      zero:= Zero( elm[1] );
 
       if elm[ depth ] <> one then
 	Add(s,'(');
@@ -682,7 +688,10 @@ InstallAccessToGenerators( IsSCAlgebraObjCollection and IsFullSCAlgebra,
 #V  QuaternionAlgebraData
 ##
 InstallFlushableValue( QuaternionAlgebraData, [] );
-ShareSpecialObj( QuaternionAlgebraData );
+if IsHPCGAP then
+    ShareSpecialObj( QuaternionAlgebraData );
+fi;
+
 
 #############################################################################
 ##
@@ -743,11 +752,11 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
     if HasIsAssociative( F ) and IsAssociative( F ) then
       filter:= filter and IsAssociativeElement;
     fi;
-    if IsNegRat( a ) and IsNegRat( b )
-        #T it suffices if the parameters are real and negative
-        and IsCyclotomicCollection( F ) and IsField( F )
-        and ForAll( GeneratorsOfDivisionRing( F ),
-                    x -> x = ComplexConjugate( x ) ) then
+    if     IsNegRat( a ) and IsNegRat( b )
+#T it suffices if the parameters are real and negative
+       and IsCyclotomicCollection( F ) and IsField( F )
+       and ForAll( GeneratorsOfDivisionRing( F ),
+                   x -> x = ComplexConjugate( x ) ) then
       filter:= filter and IsZDFRE;
     fi;
 
@@ -762,7 +771,7 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
               "e", "i", "j", "k" ],
             filter );
     SetFilterObj( A, IsAlgebraWithOne );
-    #T better introduce AlgebraWithOneByStructureConstants?
+#T better introduce AlgebraWithOneByStructureConstants?
 
     atomic readwrite QuaternionAlgebraData do
       stored:= First( QuaternionAlgebraData,
