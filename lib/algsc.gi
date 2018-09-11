@@ -100,7 +100,7 @@ InstallMethod( ObjByExtRep,
        or not IsBound( Fam!.coefficientsDomain ) then
       TryNextMethod();
     elif Length( coeffs ) <> Length( Fam!.names ) then
-      Error( "<coeffs> must be a list of length ", Fam!.names );
+      Error( "<coeffs> must be a list of length ", Length( Fam!.names ) );
     elif not ForAll( coeffs, c -> c in Fam!.coefficientsDomain ) then
       Error( "all in <coeffs> must lie in `<Fam>!.coefficientsDomain'" );
     fi;
