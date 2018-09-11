@@ -30,20 +30,58 @@ gap> a:= AlgebraByStructureConstants( Rationals, T0 );
 <algebra of dimension 4 over Rationals>
 gap> Dimension( a );
 4
-gap> v:= ObjByExtRep( ElementsFamily( FamilyObj( a ) ), [ 0, 1, 0, 1 ] );
+gap> IsFullSCAlgebra( a );
+true
+gap> IsWholeFamily( a );
+false
+gap> IsWholeFamily( AlgebraByStructureConstants( Cyclotomics, T0 ) );
+true
+
+#
+gap> fam:= ElementsFamily( FamilyObj( a ) );
+<Family: "SCAlgebraObjFamily">
+gap> ObjByExtRep( fam, [ 0, 1, 0, 1 ] * Z(2) );
+Error, family of <coeffs> does not fit to <Fam>
+gap> ObjByExtRep( fam, [ 0, 1, 0 ] );
+Error, <coeffs> must be a list of length [ "v.1", "v.2", "v.3", "v.4" ]
+gap> v:= ObjByExtRep( fam, [ 0, 1, 0, 1 ] );
 v.2+v.4
-gap> One( v ); v^0;
+gap> t:= AlgebraByStructureConstants( Rationals, [ 0, 0 ] );
+<algebra over Rationals, with 0 generators>
+gap> String(v);
+"v.2+v.4"
+gap> One( fam ); One( v ); v^0; String(v^0);
 v.1
 v.1
-gap> Zero( v ); 0*v;
+v.1
+"v.1"
+gap> Zero( fam ); Zero( v ); 0*v; String(0*v);
 0*v.1
 0*v.1
-gap> Inverse( v ); v^-1;
+0*v.1
+"0*v.1"
+gap> 0*v = v*0;
+true
+gap> 1*v = v;
+true
+gap> v*1 = v;
+true
+gap> (1/2 * v) * 2 = v;
+true
+gap> 2 * (v * 1/2) = v;
+true
+
+#
+gap> Inverse( v ); v^-1; String( v^-1 );
 (-1/2)*v.2+(-1/2)*v.4
 (-1/2)*v.2+(-1/2)*v.4
-gap> AdditiveInverse( v ); -v;
+"(-1/2)*v.2+(-1/2)*v.4"
+gap> Inverse( Zero( v) );
+fail
+gap> AdditiveInverse( v ); -v; String( -v );
 (-1)*v.2+(-1)*v.4
 (-1)*v.2+(-1)*v.4
+"(-1)*v.2+(-1)*v.4"
 gap> b:= Basis( a );
 CanonicalBasis( <algebra of dimension 4 over Rationals> )
 gap> Coefficients( b, v );
@@ -660,6 +698,8 @@ gap> t:= AlgebraByStructureConstants( Rationals, [ 0, 0 ] );
 <algebra over Rationals, with 0 generators>
 gap> z:= Zero( t );
 <zero of trivial s.c. algebra>
+gap> String(z);
+"<zero of trivial s.c. algebra>"
 gap> Random( t );
 <zero of trivial s.c. algebra>
 gap> b:=Basis( t );
@@ -683,6 +723,79 @@ gap> a:= Algebra( Rationals, [ [ [ 0, 0 ], [ 1, 0 ] ] ] );;
 gap> sc:= Image( IsomorphismSCAlgebra( a ) );;
 gap> Dimension( RadicalOfAlgebra( sc ) );
 1
+
+#############################################################################
+##
+##  Test various functions
+##
+
+#
+gap> QuaternionAlgebra();
+Error, usage: QuaternionAlgebra( <F>[, <a>, <b>] ) for a ring <F>
+gap> A:= QuaternionAlgebra( GF(5) );
+<algebra-with-one of dimension 4 over GF(5)>
+gap> A = QuaternionAlgebra( [Z(5)] );
+true
+
+#
+gap> A:= QuaternionAlgebra( Rationals, 2, 3 );
+<algebra-with-one of dimension 4 over Rationals>
+gap> A= QuaternionAlgebra( [1], 2, 3 );
+true
+gap> A= QuaternionAlgebra( [1], 2, 5 );
+false
+gap> gens:= GeneratorsOfAlgebra( A );
+[ e, i, j, k ]
+gap> List(gens, x -> x^2);
+[ e, (2)*e, (3)*e, (-6)*e ]
+
+#
+gap> A:= QuaternionAlgebra( Rationals );
+<algebra-with-one of dimension 4 over Rationals>
+gap> gens:= GeneratorsOfAlgebra( A );
+[ e, i, j, k ]
+gap> v:= Sum( gens );
+e+i+j+k
+gap> i:= gens[2];
+i
+gap> ComplexConjugate(v);
+e+(-1)*i+(-1)*j+(-1)*k
+gap> RealPart(v);
+e
+gap> (v - ComplexConjugate( v )) / (2*i);
+e+(-1)*j+k
+
+#
+gap> ComplexificationQuat( gens{[1]} );
+[ 1, 0 ]
+gap> ComplexificationQuat( gens{[2]} );
+[ E(4), 0 ]
+gap> ComplexificationQuat( gens{[3]} );
+[ 0, 1 ]
+gap> ComplexificationQuat( gens{[4]} );
+[ 0, E(4) ]
+
+#
+gap> U:=Subspace(A, gens{[1,2]});
+<vector space over Rationals, with 2 generators>
+gap> V:=Subspace(A, gens{[2,3]});
+<vector space over Rationals, with 2 generators>
+gap> W:=Subspace(A, []);
+<vector space over Rationals, with 0 generators>
+gap> Intersection2(U,V);
+<vector space of dimension 1 over Rationals>
+gap> Intersection2(U,W);
+<vector space over Rationals, with 0 generators>
+gap> Intersection2(V,W);
+<vector space over Rationals, with 0 generators>
+
+#
+gap> A:= OctaveAlgebra(Rationals);
+<algebra of dimension 8 over Rationals>
+gap> v:= Sum( GeneratorsOfAlgebra( A ) );
+s1+t1+s2+t2+s3+t3+s4+t4
+gap> List( GeneratorsOfAlgebra( A ), x -> x^2 );
+[ s1, t1, 0*s1, 0*s1, 0*s1, 0*s1, 0*s1, 0*s1 ]
 
 #############################################################################
 gap> STOP_TEST( "algsc.tst", 1);
