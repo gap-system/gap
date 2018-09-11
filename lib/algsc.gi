@@ -690,6 +690,23 @@ InstallAccessToGenerators( IsSCAlgebraObjCollection and IsFullSCAlgebra,
 InstallFlushableValue( QuaternionAlgebraData, [] );
 if IsHPCGAP then
     ShareSpecialObj( QuaternionAlgebraData );
+
+    BindGlobal("StoreQuaternionAlgebraData", function( a, b, F, A )
+      local stored;
+      atomic readwrite QuaternionAlgebraData do
+        stored:= First( QuaternionAlgebraData,
+                        t -> t[1] = a and t[2] = b and
+                             IsIdenticalObj( t[3], FamilyObj( F ) ) );
+        if stored = fail then
+          # Store the data for the next call.
+          Add( QuaternionAlgebraData, MakeImmutable([ a, b, FamilyObj( F ), A ]) );
+        else
+          A:= AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
+          SetGeneratorsOfAlgebra( A, GeneratorsOfAlgebraWithOne( A ) );
+        fi;
+      od;
+      return A;
+    end);
 fi;
 
 
@@ -725,9 +742,11 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
     fi;
 
     # Generators in the right family may be already available.
-    stored:= First( QuaternionAlgebraData,
-                    t ->     t[1] = a and t[2] = b
-                         and IsIdenticalObj( t[3], FamilyObj( F ) ) );
+    atomic readonly QuaternionAlgebraData do
+      stored:= First( QuaternionAlgebraData,
+                      t ->     t[1] = a and t[2] = b
+                           and IsIdenticalObj( t[3], FamilyObj( F ) ) );
+    od;
     if stored <> fail then
       A:= AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
       SetGeneratorsOfAlgebra( A, GeneratorsOfAlgebraWithOne( A ) );
@@ -761,7 +780,11 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
 #T better introduce AlgebraWithOneByStructureConstants?
 
       # Store the data for the next call.
-      Add( QuaternionAlgebraData, [ a, b, FamilyObj( F ), A ] );
+      if IsHPCGAP then
+        A := StoreQuaternionAlgebraData( a, b, F, A );
+      else
+        Add( QuaternionAlgebraData, [ a, b, FamilyObj( F ), A ] );
+      fi;
 
     fi;
 
