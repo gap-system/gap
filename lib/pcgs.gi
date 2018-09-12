@@ -1449,7 +1449,7 @@ InstallPcgsSeriesFromIndices:=function(series,indices)
   # workaround for old code 
   InstallMethod(series,"compatibility only",true,
     [IsPcgs and HasIndicesNormalSteps],
-     -RankFilter(HasIndicesNormalSteps),
+     {} -> -RankFilter(HasIndicesNormalSteps),
   function(pcgs)
   local p,l,g,h,i,ipcgs,home;
     home:=ParentPcgs(pcgs);
@@ -1471,7 +1471,7 @@ InstallPcgsSeriesFromIndices:=function(series,indices)
 
   InstallMethod(indices,"compatibility only",true,
     [IsPcgs and HasIndicesNormalSteps],
-     -RankFilter(HasIndicesNormalSteps),
+     {} -> -RankFilter(HasIndicesNormalSteps),
   function(pcgs)
   local p,l,g,h,i,ipcgs,home;
     home:=ParentPcgs(pcgs);

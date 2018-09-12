@@ -1277,7 +1277,7 @@ InstallTrueMethod(IsRegular,IsPermGroup and IsSemiRegular and IsTransitive);
 InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
         IsObject, IsObject, IsFunction ], 
   # the objects might be group elements: rank up	
-  2*RankFilter(IsMultiplicativeElementWithInverse),
+  {} -> 2*RankFilter(IsMultiplicativeElementWithInverse),
     function ( G, d, e, act )
     local   rep,                # representative, result
             S,                  # stabilizer of <G>
@@ -1516,7 +1516,7 @@ InstallOtherMethod( StabilizerOp, "permutation group with generators list",
           IsList,
           IsFunction ],
   # the objects might be a group element: rank up	
-  RankFilter(IsMultiplicativeElementWithInverse)
+  {} -> RankFilter(IsMultiplicativeElementWithInverse)
   # and we are better even if the group is solvable
   +RankFilter(IsSolvableGroup),
   PermGroupStabilizerOp);
@@ -1528,7 +1528,7 @@ InstallOtherMethod( StabilizerOp, "permutation group with domain",true,
           IsList,
           IsFunction ],
   # the objects might be a group element: rank up	
-  RankFilter(IsMultiplicativeElementWithInverse)
+  {} -> RankFilter(IsMultiplicativeElementWithInverse)
   # and we are better even if the group is solvable
   +RankFilter(IsSolvableGroup),
   PermGroupStabilizerOp);

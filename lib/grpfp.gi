@@ -3142,7 +3142,7 @@ InstallMethod(LowIndexSubgroups, "FpFroups, using LowIndexSubgroupsFpGroup",
   true,
   [IsSubgroupFpGroup,IsPosInt],
   # rank higher than method for finit groups using maximal subgroups
-  RankFilter(IsGroup and IsFinite),
+  {} -> RankFilter(IsGroup and IsFinite),
   LowIndexSubgroupsFpGroup );
 
 InstallOtherMethod(LowIndexSubgroupsFpGroup,
@@ -4115,7 +4115,7 @@ InstallMethod(IsomorphismPermGroup,"for full finitely presented groups",
     true, [ IsGroup and IsSubgroupFpGroup and IsGroupOfFamily ],
     # as this method may be called to compare elements we must get higher
     # than a method for finite groups (via right multiplication).
-    RankFilter(IsFinite and IsGroup),
+    {} -> RankFilter(IsFinite and IsGroup),
 function(G)
   return IsomorphismPermGroupOrFailFpGroup(G,10^30);
 end);
@@ -4123,7 +4123,7 @@ end);
 InstallMethod(IsomorphismPermGroup,"for subgroups of finitely presented groups",
     true, [ IsGroup and IsSubgroupFpGroup ],
     # even if we don't demand to know to be finite, we have to assume it.
-    RankFilter(IsFinite and IsGroup),
+    {} -> RankFilter(IsFinite and IsGroup),
 function(G)
 local P,imgs,hom;
   Size(G);

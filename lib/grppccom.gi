@@ -1207,7 +1207,7 @@ end);
 ##
 InstallMethod( ComplementClassesRepresentatives,
   "tell that the normal subgroup or factor must be solvable", IsIdenticalObj,
-  [ IsGroup, IsGroup ], -2*RankFilter(IsGroup),
+  [ IsGroup, IsGroup ], {} -> -2*RankFilter(IsGroup),
 function( G, N )
   if IsSolvableGroup(N) or HasSolvableFactorGroup(G, N) then
     TryNextMethod();

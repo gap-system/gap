@@ -155,7 +155,7 @@ InstallMethod(NiceMonomorphism,
     "for subgroups that get the nice monomorphism by their parent", true,
     [ IsGroup and IsHandledByNiceMonomorphism and HasParent],
     # to rank higher than matrix group methods.
-    RankFilter(IsFinite and IsMatrixGroup),
+    {} -> RankFilter(IsFinite and IsMatrixGroup),
 
 function(G)
     local P;

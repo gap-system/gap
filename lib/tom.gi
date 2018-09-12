@@ -2713,7 +2713,7 @@ InstallMethod( EulerianFunction,
 InstallMethod( EulerianFunction,
     "for a group, compute table of marks",
     [ IsGroup, IsPosInt ], 
-    -RankFilter (IsGroup)-RankFilter (IsPosInt), # rank 0
+    {} -> -RankFilter (IsGroup)-RankFilter (IsPosInt), # rank 0
     function( G, s )
         if not HasTableOfMarks( G ) then
           Info( InfoWarning, 1, "EulerianFunction computes ",

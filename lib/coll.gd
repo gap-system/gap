@@ -501,7 +501,7 @@ InstallMethod( UseSubsetRelation,
     IsIdenticalObj,
     [ IsCollection, IsCollection ],
     # Make sure that this method is installed with ``real'' rank zero.
-    - 2 * RankFilter( IsCollection ),
+    {} -> - 2 * RankFilter( IsCollection ),
     function( super, sub )
 
     local entry;
@@ -777,7 +777,7 @@ InstallMethod( UseIsomorphismRelation,
     "default method that checks maintenances and then returns `true'",
     [ IsCollection, IsCollection ],
     # Make sure that this method is installed with ``real'' rank zero.
-    - 2 * RankFilter( IsCollection ),
+    {} -> - 2 * RankFilter( IsCollection ),
     function( old, new )
     local entry;
 
@@ -941,7 +941,7 @@ InstallMethod( UseFactorRelation,
     true,
     [ IsCollection, IsObject, IsCollection ],
     # Make sure that this method is installed with ``real'' rank zero.
-    - 2 * RankFilter( IsCollection )-RankFilter(IsObject),
+    {} -> - 2 * RankFilter( IsCollection )-RankFilter(IsObject),
     function( num, den, fac )
 
     local entry;

@@ -486,7 +486,7 @@ InstallMethod( MaximalNormalSubgroups, "for abelian groups",
                # IsGroup and IsFinite ranks higher than IsGroup and IsAbelian,
                # so we have to increase the rank, otherwise the method for
                # normal subgroup computation is selected.
-               RankFilter( IsGroup and IsFinite and IsAbelian )
+               {} -> RankFilter( IsGroup and IsFinite and IsAbelian )
                - RankFilter( IsGroup and IsAbelian ),
 function( G )
     local Gf,     # FactorGroup of G
@@ -523,7 +523,7 @@ InstallMethod( MaximalNormalSubgroups, "for solvable groups",
                # IsGroup and IsSolvableGroup, so we have to increase the
                # rank, otherwise the method for normal subgroup computation
                # is selected.
-               RankFilter( IsGroup and IsFinite and IsSolvableGroup )
+               {} -> RankFilter( IsGroup and IsFinite and IsSolvableGroup )
                - RankFilter( IsGroup and IsSolvableGroup ),
 function( G )
     local Gf,     # FactorGroup of G

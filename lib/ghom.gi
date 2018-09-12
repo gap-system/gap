@@ -611,8 +611,8 @@ InstallMethod( ImagesSource, "for group homomorphism", true,
     [ IsGroupHomomorphism ], 
     # rank higher than the method for IsGroupGeneralMappingByImages,
     # as we can exploit more structure here
-    RankFilter(IsGroupHomomorphism and IsGroupGeneralMappingByImages)
-    - RankFilter(IsGroupHomomorphism),
+    {} -> RankFilter(IsGroupHomomorphism and IsGroupGeneralMappingByImages)
+        - RankFilter(IsGroupHomomorphism),
 function(hom)
 local gens, G;
   gens := GeneratorsOfGroup(Source(hom));
