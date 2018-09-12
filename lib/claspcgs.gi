@@ -208,7 +208,7 @@ local   classes,    # classes to be constructed, the result
         if IsIdenticalObj( FamilyObj( U ), FamilyObj( cl.candidates ) )  then
             for c  in cl.candidates  do
                 exp:=ExponentsOfPcElement( N, LeftQuotient( h, c ) );
-                MultRowVector( exp, One( field ) );
+                MultVector( exp, One( field ) );
                 w:=exp * N!.subspace.projection;
                 exp{ N!.subspace.baseComplement }:=
                   exp{ N!.subspace.baseComplement }-w;

@@ -529,7 +529,7 @@ function(rs, G)
     local m;
     m:= RandomInvertibleMat( rs, DimensionOfMatrixGroup( G ),
                 FieldOfMatrixGroup( G ) );
-    MultRowVector(m[1], DeterminantMat(m)^-1);
+    MultVector(m[1], DeterminantMat(m)^-1);
     return ImmutableMatrix(FieldOfMatrixGroup(G), m, true);
 end);
 

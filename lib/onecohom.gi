@@ -1238,14 +1238,14 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
                 Append(RS,OCSmallEquationMatrix(ocr,rels[i],g));
             od;
             RR:=OCSmallEquationVector(ocr,rels[i]);
-	    MultRowVector(RR,-One(ocr.field));
+	    MultVector(RR,-One(ocr.field));
 
         else
             for g in gens do
                 Append(RS,OCEquationMatrix(ocr,rels[i],g));
             od;
             RR:=OCEquationVector(ocr,rels[i]);
-	    MultRowVector(RR,-One(ocr.field));
+	    MultVector(RR,-One(ocr.field));
 
         fi;
 

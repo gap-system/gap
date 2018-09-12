@@ -1315,7 +1315,7 @@ Obj FuncINV_MATRIX_IMMUTABLE( Obj self, Obj mat)
 /* We need these to redispatch when the user has supplied a replacement value. */
 
 static Obj AddRowVectorOp;   /* BH changed to static */
-static Obj MultRowVectorLeftOp; /* BH changed to static */
+static Obj MultVectorLeftOp; /* BH changed to static */
 
 Obj FuncADD_ROW_VECTOR_5( Obj self,
                           Obj list1,
@@ -1547,7 +1547,7 @@ Obj FuncADD_ROW_VECTOR_2_FAST ( Obj self,
 
 /****************************************************************************
 **
-*F  MULT_ROW_VECTOR_LEFT_RIGHT_2( <list>, <mult>, <left> )
+*F  MULT_VECTOR_LEFT_RIGHT_2( <list>, <mult>, <left> )
 **
 **  This function destructively multiplies the entries of <list> by <mult>.
 **  It multiplies with <mult> from the left if <left> is not 0 and from the
@@ -1555,7 +1555,7 @@ Obj FuncADD_ROW_VECTOR_2_FAST ( Obj self,
 **  It does very little checking.
 **
 */
-static inline Obj MULT_ROW_VECTOR_LEFT_RIGHT_2(Obj list, Obj mult, UInt left)
+static inline Obj MULT_VECTOR_LEFT_RIGHT_2(Obj list, Obj mult, UInt left)
 {
   UInt i;
   Obj prd;
@@ -1577,19 +1577,19 @@ static inline Obj MULT_ROW_VECTOR_LEFT_RIGHT_2(Obj list, Obj mult, UInt left)
   return 0;
 }
 
-Obj FuncMULT_ROW_VECTOR_LEFT_2(Obj self, Obj list, Obj mult)
+Obj FuncMULT_VECTOR_LEFT_2(Obj self, Obj list, Obj mult)
 {
-    return MULT_ROW_VECTOR_LEFT_RIGHT_2(list, mult, 1);
+    return MULT_VECTOR_LEFT_RIGHT_2(list, mult, 1);
 }
 
-Obj FuncMULT_ROW_VECTOR_RIGHT_2(Obj self, Obj list, Obj mult)
+Obj FuncMULT_VECTOR_RIGHT_2(Obj self, Obj list, Obj mult)
 {
-    return MULT_ROW_VECTOR_LEFT_RIGHT_2(list, mult, 0);
+    return MULT_VECTOR_LEFT_RIGHT_2(list, mult, 0);
 }
 
 /****************************************************************************
 **
-*F  FuncMULT_ROW_VECTOR_2_FAST( <self>, <list>, <mult> )
+*F  FuncMULT_VECTOR_2_FAST( <self>, <list>, <mult> )
 **
 **  This function destructively multiplies the entries of <list> by <mult>
 **  It does very little checking
@@ -1598,7 +1598,7 @@ Obj FuncMULT_ROW_VECTOR_RIGHT_2(Obj self, Obj list, Obj mult)
 **  multiplier
 */
 
-Obj FuncMULT_ROW_VECTOR_2_FAST( Obj self,
+Obj FuncMULT_VECTOR_2_FAST( Obj self,
                                 Obj list,
                                 Obj mult )
 {
@@ -1658,7 +1658,7 @@ Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
           if (res == (Obj)0)
             {
               res = SHALLOW_COPY_OBJ(vecr);
-              CALL_2ARGS(MultRowVectorLeftOp, res, elt);
+              CALL_2ARGS(MultVectorLeftOp, res, elt);
             }
           else
             CALL_3ARGS(AddRowVectorOp, res, vecr, elt);
@@ -1676,7 +1676,7 @@ Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
 *F  FuncINV_MAT_DEFAULT
 **
 **  A faster version of InvMat for those matrices for whose rows AddRowVector
-** and MultRowVectorLeft make sense (and might have fast kernel methods)
+** and MultVectorLeft make sense (and might have fast kernel methods)
 **
 */
 
@@ -1777,8 +1777,8 @@ Obj InvMatWithRowVecs( Obj mat, UInt mut)
       if (!EQ(x, one))
         {
           xi = INV(x);
-          CALL_2ARGS(MultRowVectorLeftOp, row, xi);
-          CALL_2ARGS(MultRowVectorLeftOp, row2, xi);
+          CALL_2ARGS(MultVectorLeftOp, row, xi);
+          CALL_2ARGS(MultVectorLeftOp, row2, xi);
         }
 
       /* Clear the entries. We know that we can ignore the entries in rows i..j */
@@ -2234,9 +2234,9 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(ADD_ROW_VECTOR_3_FAST, 3, "list1, list2, mult"),
     GVAR_FUNC(ADD_ROW_VECTOR_2, 2, "list1, list2"),
     GVAR_FUNC(ADD_ROW_VECTOR_2_FAST, 2, "list1, list2"),
-    GVAR_FUNC(MULT_ROW_VECTOR_LEFT_2, 2, "list, mult"),
-    GVAR_FUNC(MULT_ROW_VECTOR_RIGHT_2, 2, "list, mult"),
-    GVAR_FUNC(MULT_ROW_VECTOR_2_FAST, 2, "list, mult"),
+    GVAR_FUNC(MULT_VECTOR_LEFT_2, 2, "list, mult"),
+    GVAR_FUNC(MULT_VECTOR_RIGHT_2, 2, "list, mult"),
+    GVAR_FUNC(MULT_VECTOR_2_FAST, 2, "list, mult"),
     GVAR_FUNC(PROD_VEC_MAT_DEFAULT, 2, "vec, mat"),
     GVAR_FUNC(INV_MAT_DEFAULT_MUTABLE, 1, "mat"),
     GVAR_FUNC(INV_MAT_DEFAULT_SAME_MUTABILITY, 1, "mat"),
@@ -2267,7 +2267,7 @@ static Int InitKernel (
     InitHdlrFuncsFromTable( GVarFuncs );
 
     InitFopyGVar( "AddRowVector", &AddRowVectorOp );
-    InitFopyGVar("MultRowVectorLeft", &MultRowVectorLeftOp);
+    InitFopyGVar("MultVectorLeft", &MultVectorLeftOp);
     InitFopyGVar( "ConvertToMatrixRep", &ConvertToMatrixRep );
 
 
