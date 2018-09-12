@@ -2733,6 +2733,42 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
 
 /****************************************************************************
 **
+**  The following functions only exist to enable use to test the conversion
+**  functions (Int_ObjInt, ObjInt_Int, etc.) via a regular .tst file.
+*/
+Obj FuncINTERNAL_TEST_CONV_INT(Obj self, Obj val)
+{
+    Int ival = Int_ObjInt(val);
+    return ObjInt_Int(ival);
+}
+
+Obj FuncINTERNAL_TEST_CONV_UINT(Obj self, Obj val)
+{
+    UInt ival = UInt_ObjInt(val);
+    return ObjInt_UInt(ival);
+}
+
+Obj FuncINTERNAL_TEST_CONV_UINTINV(Obj self, Obj val)
+{
+    UInt ival = UInt_ObjInt(val);
+    return ObjInt_UIntInv(ival);
+}
+
+Obj FuncINTERNAL_TEST_CONV_INT8(Obj self, Obj val)
+{
+    Int8 ival = Int8_ObjInt(val);
+    return ObjInt_Int8(ival);
+}
+
+Obj FuncINTERNAL_TEST_CONV_UINT8(Obj self, Obj val)
+{
+    UInt8 ival = UInt8_ObjInt(val);
+    return ObjInt_UInt8(ival);
+}
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
@@ -2794,6 +2830,13 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(STRING_INT, 1, "gmp"),
     GVAR_FUNC(INT_STRING, 1, "string"),
     GVAR_FUNC(RandomIntegerMT, 2, "mtstr, nrbits"),
+
+    GVAR_FUNC(INTERNAL_TEST_CONV_INT, 1, "val"),
+    GVAR_FUNC(INTERNAL_TEST_CONV_UINT, 1, "val"),
+    GVAR_FUNC(INTERNAL_TEST_CONV_UINTINV, 1, "val"),
+    GVAR_FUNC(INTERNAL_TEST_CONV_INT8, 1, "val"),
+    GVAR_FUNC(INTERNAL_TEST_CONV_UINT8, 1, "val"),
+
     { 0, 0, 0, 0, 0 }
 
 };
