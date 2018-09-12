@@ -201,11 +201,6 @@ void LoadBlist (
 **  forwarding pointer.
 **
 **  'CopyBlist' is the function in 'CopyObjFuncs' for boolean lists.
-**
-**  'CleanBlist' removes the mark and the forwarding pointer from the boolean
-**  list <list>.
-**
-**  'CleanBlist' is the function in 'CleanObjFuncs' for boolean lists.
 */
 
 Obj DoCopyBlist(Obj list, Int mut)
@@ -244,11 +239,7 @@ Obj CopyBlist (
     copy = DoCopyBlist(list, mut);
 
     /* leave a forwarding pointer */
-    ADDR_OBJ(list)[0] = copy;
-    CHANGED_BAG(list);
-
-    /* now it is copied                                                    */
-    RetypeBag( list, TNUM_OBJ(list) + COPYING );
+    PrepareCopy(list, copy);
     return copy;
 }
 
@@ -259,44 +250,6 @@ Obj ShallowCopyBlist ( Obj list)
 {
   return DoCopyBlist(list, 1);
 }
-
-
-#if !defined(USE_THREADSAFE_COPYING)
-
-/****************************************************************************
-**
-*F  CopyBlistCopy( <list>, <mut> )  . . . . . . . copy a already copied blist
-*/
-Obj CopyBlistCopy(Obj list, Int mut)
-{
-    return CONST_ADDR_OBJ(list)[0];
-}
-
-
-/****************************************************************************
-**
-*F  CleanBlist( <list> )  . . . . . . . . . . . . . . clean up a boolean list
-*/
-void CleanBlist (
-    Obj                 list )
-{
-}
-
-
-/****************************************************************************
-**
-*F  CleanBlistCopy( <list> )  . . . . . . . . . . . . .  clean a copied blist
-*/
-void CleanBlistCopy(Obj list)
-{
-    /* remove the forwarding pointer */
-    ADDR_OBJ(list)[0] = CONST_ADDR_OBJ(CONST_ADDR_OBJ(list)[0])[0];
-
-    /* now it is cleaned */
-    RetypeBag(list, TNUM_OBJ(list) - COPYING);
-}
-
-#endif // !defined(USE_THREADSAFE_COPYING)
 
 
 /****************************************************************************
@@ -2012,14 +1965,6 @@ static StructBagNames BagNames[] = {
   { T_BLIST_NSORT +IMMUTABLE,          "list (boolean,nsort,imm)"        },
   { T_BLIST_SSORT,                     "list (boolean,ssort)"            },
   { T_BLIST_SSORT +IMMUTABLE,          "list (boolean,ssort,imm)"        },
-#if !defined(USE_THREADSAFE_COPYING)
-  { T_BLIST                  +COPYING, "list (boolean,copied)"           },
-  { T_BLIST       +IMMUTABLE +COPYING, "list (boolean,imm,copied)"       },
-  { T_BLIST_NSORT            +COPYING, "list (boolean,nsort,copied)"     },
-  { T_BLIST_NSORT +IMMUTABLE +COPYING, "list (boolean,nsort,imm,copied)" },
-  { T_BLIST_SSORT            +COPYING, "list (boolean,ssort,copied)"     },
-  { T_BLIST_SSORT +IMMUTABLE +COPYING, "list (boolean,ssort,imm,copied)" },
-#endif
   { -1,                                ""                                }
 };
 
@@ -2204,10 +2149,6 @@ static Int InitKernel (
     for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
         InitMarkFuncBags( t1                     , MarkNoSubBags  );
         InitMarkFuncBags( t1 +IMMUTABLE          , MarkNoSubBags  );
-#if !defined(USE_THREADSAFE_COPYING)
-        InitMarkFuncBags( t1            +COPYING , MarkOneSubBags );
-        InitMarkFuncBags( t1 +IMMUTABLE +COPYING , MarkOneSubBags );
-#endif
     }
 
     /* Make immutable blists public					   */
@@ -2244,12 +2185,8 @@ static Int InitKernel (
 #if !defined(USE_THREADSAFE_COPYING)
         CopyObjFuncs [ t1                     ] = CopyBlist;
         CopyObjFuncs [ t1 +IMMUTABLE          ] = CopyBlist;
-        CopyObjFuncs [ t1            +COPYING ] = CopyBlistCopy;
-        CopyObjFuncs [ t1 +IMMUTABLE +COPYING ] = CopyBlistCopy;
-        CleanObjFuncs[ t1                     ] = CleanBlist;
-        CleanObjFuncs[ t1 +IMMUTABLE          ] = CleanBlist;
-        CleanObjFuncs[ t1            +COPYING ] = CleanBlistCopy;
-        CleanObjFuncs[ t1 +IMMUTABLE +COPYING ] = CleanBlistCopy;
+        CleanObjFuncs[ t1                     ] = 0;
+        CleanObjFuncs[ t1 +IMMUTABLE          ] = 0;
 #endif
         ShallowCopyObjFuncs[ t1               ] = ShallowCopyBlist;
         ShallowCopyObjFuncs[ t1 +IMMUTABLE    ] = ShallowCopyBlist;

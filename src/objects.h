@@ -236,21 +236,20 @@ enum TNUM {
 
         // package TNUMs, for use by kernel extensions
         //
-        // The largest TNUM (which, depending on USE_THREADSAFE_COPYING, is
-        // either LAST_REAL_TNUM or LAST_COPYING_TNUM) must not exceed 253.
+        // The value of LAST_REAL_TNUM must not exceed 254.
         // This restricts the value for LAST_PACKAGE_TNUM indirectly. It is
-        // difficult to describe the largest possible value with a formula, as
-        // LAST_COPYING_TNUM itself changes depending LAST_PACKAGE_TNUM, and
+        // difficult to describe the largest possible value with a formula,
+        // as LAST_REAL_TNUM itself changes depending LAST_PACKAGE_TNUM, and
         // the fact that some TNUMs are forced to be even causes additional
-        // jumps; so increasing LAST_PACKAGE_TNUM by 1 can lead to
-        // LAST_COPYING_TNUM growing by 2, 3 or even 4. So we simply hand-pick
+        // jumps; increasing LAST_PACKAGE_TNUM by 1 can lead to
+        // LAST_REAL_TNUM growing by 2. So we simply hand-pick
         // LAST_PACKAGE_TNUM as the largest value that does not trigger the
         // GAP_STATIC_ASSERT following this enum.
         FIRST_PACKAGE_TNUM,
 #ifdef HPCGAP
         LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 153,
 #else
-        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 50,
+        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 167,
 #endif
 
     END_ENUM_RANGE(LAST_EXTERNAL_TNUM),
@@ -285,19 +284,14 @@ enum TNUM {
     END_ENUM_RANGE(LAST_REAL_TNUM),
 
 #if !defined(USE_THREADSAFE_COPYING)
-    // virtual TNUMs for copying objects
-    START_ENUM_RANGE_EVEN(FIRST_COPYING_TNUM),
-        COPYING             = FIRST_COPYING_TNUM - FIRST_IMM_MUT_TNUM,
-        // we use LAST_EXTERNAL_TNUM+1 instead of LAST_REAL_TNUM to
-        // skip over the shared TNUMs in HPC-GAP
-    LAST_COPYING_TNUM       = LAST_EXTERNAL_TNUM + COPYING,
+    T_COPYING,
 #endif
 };
 
-#if defined(USE_THREADSAFE_COPYING)
-GAP_STATIC_ASSERT(LAST_REAL_TNUM <= 254, "LAST_REAL_TNUM is too large");
+#if !defined(USE_THREADSAFE_COPYING)
+GAP_STATIC_ASSERT(T_COPYING <= 254, "T_COPYING is too large");
 #else
-GAP_STATIC_ASSERT(LAST_COPYING_TNUM <= 254, "LAST_COPYING_TNUM is too large");
+GAP_STATIC_ASSERT(LAST_REAL_TNUM <= 254, "LAST_REAL_TNUM is too large");
 #endif
 
 
@@ -676,12 +670,20 @@ extern Obj CopyObj (
 **  'COPY_OBJ'  implements  the first pass  of  'CopyObj', i.e., it makes the
 **  structural copy of <obj> and marks <obj> as already copied.
 **
-**  Note that 'COPY_OBJ' and 'CLEAN_OBJ' are macros, so do not call them with
-**  arguments that have side effects.
+**  Note that 'COPY_OBJ' is a macro, so do not call it with arguments that
+**  have side effects.
 */
 #if !defined(USE_THREADSAFE_COPYING)
-#define COPY_OBJ(obj,mut) \
-                        ((*CopyObjFuncs[ TNUM_OBJ(obj) ])( obj, mut ))
+extern Obj COPY_OBJ(Obj obj, Int mut);
+#endif
+
+/****************************************************************************
+**
+*F  PrepareCopy(<obj>,<copy>) . . .  helper for use in CopyObjFuncs functions
+**
+*/
+#if !defined(USE_THREADSAFE_COPYING)
+extern void PrepareCopy(Obj obj, Obj copy);
 #endif
 
 
@@ -690,14 +692,10 @@ extern Obj CopyObj (
 *F  CLEAN_OBJ(<obj>)  . . . . . . . . . . . . . clean up object after copying
 **
 **  'CLEAN_OBJ' implements the second pass of 'CopyObj', i.e., it removes the
-**  mark <obj>.
-**
-**  Note that 'COPY_OBJ' and 'CLEAN_OBJ' are macros, so do not call them with
-**  arguments that have side effects.
+**  mark from <obj>.
 */
 #if !defined(USE_THREADSAFE_COPYING)
-#define CLEAN_OBJ(obj) \
-                        ((*CleanObjFuncs[ TNUM_OBJ(obj) ])( obj ))
+extern void CLEAN_OBJ(Obj obj);
 #endif
 
 
@@ -722,7 +720,7 @@ extern Obj CopyObj (
 **  already unmarked object, it should simply return.
 */
 #if !defined(USE_THREADSAFE_COPYING)
-extern Obj (*CopyObjFuncs[LAST_COPYING_TNUM+1]) ( Obj obj, Int mut );
+extern Obj (*CopyObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj, Int mut );
 #endif
 
 
@@ -731,11 +729,16 @@ extern Obj (*CopyObjFuncs[LAST_COPYING_TNUM+1]) ( Obj obj, Int mut );
 *V  CleanObjFuncs[<type>] . . . . . . . . . . . . table of cleaning functions
 */
 #if !defined(USE_THREADSAFE_COPYING)
-extern void (*CleanObjFuncs[LAST_COPYING_TNUM+1]) ( Obj obj );
+extern void (*CleanObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 #endif
 
 
+/****************************************************************************
+**
+*V  MakeImmutableObjFuncs[<type>] . . . . . . . . . . . .  table of functions
+*/
 extern void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+
 
 /****************************************************************************
 **

@@ -1742,10 +1742,6 @@ StructInitInfo * InitInfoGap ( void )
 **  general    `InitLibrary'  will  create    all objects    and  then  calls
 **  `PostRestore'.  This function is only used when restoring.
 */
-#ifdef USE_GASMAN
-extern TNumMarkFuncBags TabMarkFuncBags [ NUM_TYPES ];
-#endif
-
 static Obj POST_RESTORE;
 
 void InitializeGap (
@@ -1806,14 +1802,6 @@ void InitializeGap (
                 }
             }
         }
-    }
-#endif
-
-#ifdef USE_GASMAN
-    /* and now for a special hack                                          */
-    for ( UInt i = LAST_CONSTANT_TNUM+1; i <= LAST_REAL_TNUM; i++ ) {
-      if (TabMarkFuncBags[i + COPYING] == MarkAllSubBagsDefault)
-        TabMarkFuncBags[ i+COPYING ] = TabMarkFuncBags[ i ];
     }
 #endif
 

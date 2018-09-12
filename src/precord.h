@@ -60,8 +60,8 @@ static inline Int IS_PREC_OR_COMOBJ(Obj rec)
 {
     UInt tnum = TNUM_OBJ(rec);
 #if !defined(USE_THREADSAFE_COPYING)
-    if (tnum > COPYING)
-        tnum -= COPYING;
+    if (tnum == T_COPYING)
+        return 1;
 #endif
     return tnum == T_PREC || tnum == T_PREC+IMMUTABLE || tnum == T_COMOBJ;
 }

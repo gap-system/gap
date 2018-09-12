@@ -112,11 +112,6 @@ Obj TypeRangeSSort(Obj list)
 **  has already been copied, it returns the value of the forwarding pointer.
 **
 **  'CopyRange' is the function in 'CopyObjFuncs' for ranges.
-**
-**  'CleanRange' removes the mark  and the forwarding  pointer from the range
-**  <list>.
-**
-**  'CleanRange' is the function in 'CleanObjFuncs' for ranges.
 */
 Obj CopyRange (
     Obj                 list,
@@ -139,11 +134,7 @@ Obj CopyRange (
     ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(list)[0];
 
     /* leave a forwarding pointer                                          */
-    ADDR_OBJ(list)[0] = copy;
-    CHANGED_BAG( list );
-
-    /* now it is copied                                                    */
-    RetypeBag( list, TNUM_OBJ(list) + COPYING );
+    PrepareCopy(list, copy);
 
     /* copy the subvalues                                                  */
     ADDR_OBJ(copy)[1] = CONST_ADDR_OBJ(list)[1];
@@ -151,43 +142,6 @@ Obj CopyRange (
 
     /* return the copy                                                     */
     return copy;
-}
-
-
-/****************************************************************************
-**
-*F  CopyRangeCopy( <list>, <mut> )  . . . . . . . . . . . copy a copied range
-*/
-Obj CopyRangeCopy (
-    Obj                 list,
-    Int                 mut )
-{
-    return CONST_ADDR_OBJ(list)[0];
-}
-
-
-/****************************************************************************
-**
-*F  CleanRange( <list> )  . . . . . . . . . . . . . . . . .  clean up a range
-*/
-void CleanRange (
-    Obj                 list )
-{
-}
-
-
-/****************************************************************************
-**
-*F  CleanRange( <list> )  . . . . . . . . . . . . . . clean up a copied range
-*/
-void CleanRangeCopy (
-    Obj                 list )
-{
-    /* remove the forwarding pointer                                       */
-    ADDR_OBJ(list)[0] = CONST_ADDR_OBJ( CONST_ADDR_OBJ(list)[0] )[0];
-
-    /* now it is cleaned                                                   */
-    RetypeBag( list, TNUM_OBJ(list) - COPYING );
 }
 
 #endif // !defined(USE_THREADSAFE_COPYING)
@@ -1044,12 +998,6 @@ static StructBagNames BagNames[] = {
   { T_RANGE_NSORT +IMMUTABLE,          "list (range,nsort,imm)"        },
   { T_RANGE_SSORT,                     "list (range,ssort)"            },
   { T_RANGE_SSORT +IMMUTABLE,          "list (range,ssort,imm)"        },
-#if !defined(USE_THREADSAFE_COPYING)
-  { T_RANGE_NSORT            +COPYING, "list (range,nsort,copied)"     },
-  { T_RANGE_NSORT +IMMUTABLE +COPYING, "list (range,nsort,imm,copied)" },
-  { T_RANGE_SSORT            +COPYING, "list (range,ssort,copied)"     },
-  { T_RANGE_SSORT +IMMUTABLE +COPYING, "list (range,ssort,imm,copied)" },
-#endif
   { -1,                                ""                              }
 };
 
@@ -1195,12 +1143,6 @@ static Int InitKernel (
     InitMarkFuncBags(   T_RANGE_NSORT +IMMUTABLE          , MarkAllSubBags );
     InitMarkFuncBags(   T_RANGE_SSORT                     , MarkAllSubBags );
     InitMarkFuncBags(   T_RANGE_SSORT +IMMUTABLE          , MarkAllSubBags );
-#if !defined(USE_THREADSAFE_COPYING)
-    InitMarkFuncBags(   T_RANGE_NSORT            +COPYING , MarkAllSubBags );
-    InitMarkFuncBags(   T_RANGE_NSORT +IMMUTABLE +COPYING , MarkAllSubBags );
-    InitMarkFuncBags(   T_RANGE_SSORT            +COPYING , MarkAllSubBags );
-    InitMarkFuncBags(   T_RANGE_SSORT +IMMUTABLE +COPYING , MarkAllSubBags );
-#endif
 
 #ifdef HPCGAP
     /* Make immutable bags public                                          */
@@ -1244,20 +1186,12 @@ static Int InitKernel (
     /* install the copy methods                                            */
     CopyObjFuncs [ T_RANGE_NSORT                     ] = CopyRange;
     CopyObjFuncs [ T_RANGE_NSORT +IMMUTABLE          ] = CopyRange;
-    CopyObjFuncs [ T_RANGE_NSORT            +COPYING ] = CopyRangeCopy;
-    CopyObjFuncs [ T_RANGE_NSORT +IMMUTABLE +COPYING ] = CopyRangeCopy;
     CopyObjFuncs [ T_RANGE_SSORT                     ] = CopyRange;
     CopyObjFuncs [ T_RANGE_SSORT +IMMUTABLE          ] = CopyRange;
-    CopyObjFuncs [ T_RANGE_SSORT            +COPYING ] = CopyRangeCopy;
-    CopyObjFuncs [ T_RANGE_SSORT +IMMUTABLE +COPYING ] = CopyRangeCopy;
-    CleanObjFuncs[ T_RANGE_NSORT                     ] = CleanRange;
-    CleanObjFuncs[ T_RANGE_NSORT +IMMUTABLE          ] = CleanRange;
-    CleanObjFuncs[ T_RANGE_NSORT            +COPYING ] = CleanRangeCopy;
-    CleanObjFuncs[ T_RANGE_NSORT +IMMUTABLE +COPYING ] = CleanRangeCopy;
-    CleanObjFuncs[ T_RANGE_SSORT                     ] = CleanRange;
-    CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE          ] = CleanRange;
-    CleanObjFuncs[ T_RANGE_SSORT            +COPYING ] = CleanRangeCopy;
-    CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE +COPYING ] = CleanRangeCopy;
+    CleanObjFuncs[ T_RANGE_NSORT                     ] = 0;
+    CleanObjFuncs[ T_RANGE_NSORT +IMMUTABLE          ] = 0;
+    CleanObjFuncs[ T_RANGE_SSORT                     ] = 0;
+    CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE          ] = 0;
 #endif
 
     /* Make immutable methods */
