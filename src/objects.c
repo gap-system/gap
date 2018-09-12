@@ -470,6 +470,9 @@ extern Obj COPY_OBJ(Obj obj, Int mut)
         // return pointer to the copy
         copy = ELM_PLIST(fpl, 2);
     }
+    else if (!IS_MUTABLE_OBJ(obj)) {
+        copy = obj;
+    }
     else {
         copy = (*CopyObjFuncs[tnum])(obj, mut);
     }
@@ -575,10 +578,8 @@ Obj CopyObjPosObj (
     Obj                 tmp;            /* temporary variable              */
     UInt                i;              /* loop variable                   */
 
-    /* don't change immutable objects                                      */
-    if ( ! IS_MUTABLE_OBJ(obj) ) {
-        return obj;
-    }
+    // immutable input is handled by COPY_OBJ
+    GAP_ASSERT(IS_MUTABLE_OBJ(obj));
 
     /* if the object is not copyable return                                */
     if ( ! IS_COPYABLE_OBJ(obj) ) {
@@ -639,10 +640,8 @@ Obj CopyObjComObj (
     Obj                 copy;           /* copy, result                    */
     Obj                 tmp;            /* temporary variable              */
 
-    /* don't change immutable objects                                      */
-    if ( ! IS_MUTABLE_OBJ(obj) ) {
-        return obj;
-    }
+    // immutable input is handled by COPY_OBJ
+    GAP_ASSERT(IS_MUTABLE_OBJ(obj));
 
     /* if the object is not copyable return                                */
     if ( ! IS_COPYABLE_OBJ(obj) ) {
@@ -703,10 +702,8 @@ Obj CopyObjDatObj (
 {
     Obj                 copy;           /* copy, result                    */
 
-    /* don't change immutable objects                                      */
-    if ( ! IS_MUTABLE_OBJ(obj) ) {
-        return obj;
-    }
+    // immutable input is handled by COPY_OBJ
+    GAP_ASSERT(IS_MUTABLE_OBJ(obj));
 
     /* if the object is not copyable return                                */
     if ( ! IS_COPYABLE_OBJ(obj) ) {

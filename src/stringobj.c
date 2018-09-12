@@ -572,10 +572,8 @@ Obj CopyString (
 {
     Obj                 copy;           /* handle of the copy, result      */
 
-    /* just return immutable objects                                       */
-    if ( ! IS_MUTABLE_OBJ(list) ) {
-        return list;
-    }
+    // immutable input is handled by COPY_OBJ
+    GAP_ASSERT(IS_MUTABLE_OBJ(list));
 
     /* make object for  copy                                               */
     if ( mut ) {

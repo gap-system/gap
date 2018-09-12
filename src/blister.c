@@ -232,9 +232,8 @@ Obj CopyBlist (
 {
     Obj copy;
 
-    if (!IS_MUTABLE_OBJ(list)) {
-        return list;
-    }
+    // immutable input is handled by COPY_OBJ
+    GAP_ASSERT(IS_MUTABLE_OBJ(list));
 
     copy = DoCopyBlist(list, mut);
 

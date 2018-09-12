@@ -664,6 +664,9 @@ Obj CopyObjWPObj (
     Obj                 elm;
     UInt                i;              /* loop variable                   */
 
+    // immutable input is handled by COPY_OBJ
+    GAP_ASSERT(IS_MUTABLE_OBJ(obj));
+
     /* make a copy                                                         */
     if ( mut ) {
         copy = NewBag( T_WPOBJ, SIZE_OBJ(obj) );
