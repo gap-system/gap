@@ -43,7 +43,7 @@ gap> fam:= ElementsFamily( FamilyObj( a ) );
 gap> ObjByExtRep( fam, [ 0, 1, 0, 1 ] * Z(2) );
 Error, family of <coeffs> does not fit to <Fam>
 gap> ObjByExtRep( fam, [ 0, 1, 0 ] );
-Error, <coeffs> must be a list of length [ "v.1", "v.2", "v.3", "v.4" ]
+Error, <coeffs> must be a list of length 4
 gap> v:= ObjByExtRep( fam, [ 0, 1, 0, 1 ] );
 v.2+v.4
 gap> t:= AlgebraByStructureConstants( Rationals, [ 0, 0 ] );

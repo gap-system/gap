@@ -122,7 +122,7 @@ InstallMethod( ObjByExtRep,
                         ElementsFamily( FamilyObj( coeffs ) ) ) then
       Error( "family of <coeffs> does not fit to <Fam>" );
     elif Length( coeffs ) <> Length( Fam!.names ) then
-      Error( "<coeffs> must be a list of length ", Fam!.names );
+      Error( "<coeffs> must be a list of length ", Length( Fam!.names ) );
     fi;
     return Objectify( Fam!.defaultTypeDenseCoeffVectorRep,
                       [ Immutable( coeffs ) ] );
