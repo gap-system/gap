@@ -168,10 +168,8 @@ Obj CopyPRec (
     Obj                 copy;           /* copy, result                    */
     Obj                 tmp;            /* temporary variable              */
 
-    /* don't change immutable objects                                      */
-    if ( ! IS_MUTABLE_OBJ(rec) ) {
-        return rec;
-    }
+    // immutable input is handled by COPY_OBJ
+    GAP_ASSERT(IS_MUTABLE_OBJ(rec));
 
     /* make a copy                                                     */
     if ( mut ) {

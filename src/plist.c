@@ -918,10 +918,8 @@ Obj CopyPlist (
     Obj                 tmp;            /* temporary variable              */
     UInt                i;              /* loop variable                   */
 
-    /* don't change immutable objects                                      */
-    if ( ! IS_MUTABLE_OBJ(list) ) {
-        return list;
-    }
+    // immutable input is handled by COPY_OBJ
+    GAP_ASSERT(IS_MUTABLE_OBJ(list));
 
     /* make a copy                                                         */
     if ( mut ) {
