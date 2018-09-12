@@ -33,7 +33,7 @@ InstallMethod( ObjByExtRep,
     [ IsSCRingObjFamily, IsHomogeneousList ],
     function( Fam, coeffs )
     if Length( coeffs ) <> Length( Fam!.names ) then
-      Error( "<coeffs> must be a list of length ", Fam!.names );
+      Error( "<coeffs> must be a list of length ", Length( Fam!.names ) );
     elif not ForAll( [1..Length(coeffs)], IsInt ) and
       ForAll([1..Length(coeffs)],p->Fam!.moduli[p]=0 or 
 	(0<=coeffs[p] and coeffs[p]<Fam!.moduli[p])) then
