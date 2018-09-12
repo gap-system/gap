@@ -2325,6 +2325,10 @@ static Int InitLibrary (
     ExportAsConstantGVar(POS_NUMB_TYPE);
     ExportAsConstantGVar(POS_FIRST_FREE_TYPE);
 
+    // export small integer limits
+    AssConstantGVar(GVarName("INTOBJ_MIN"), INTOBJ_MIN);
+    AssConstantGVar(GVarName("INTOBJ_MAX"), INTOBJ_MAX);
+
     /* return success                                                      */
     return 0;
 }
