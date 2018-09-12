@@ -1897,24 +1897,22 @@ Obj FuncLOCK(Obj self, Obj args)
     int   numargs = LEN_PLIST(args);
     int   count = 0;
     Obj * objects;
-    int * modes;
-    int   mode = 1;
+    LockMode * modes;
+    LockMode   mode = LOCK_MODE_DEFAULT;
     int   i;
     int   result;
 
     if (numargs > 1024)
         return ArgumentError("LOCK: Too many arguments");
     objects = alloca(sizeof(Obj) * numargs);
-    modes = alloca(sizeof(int) * numargs);
+    modes = alloca(sizeof(LockMode) * numargs);
     for (i = 1; i <= numargs; i++) {
         Obj obj;
         obj = ELM_PLIST(args, i);
         if (obj == True)
-            mode = 1;
+            mode = LOCK_MODE_READWRITE;
         else if (obj == False)
-            mode = 0;
-        else if (IS_INTOBJ(obj))
-            mode = (INT_INTOBJ(obj) && 1);
+            mode = LOCK_MODE_READONLY;
         else {
             objects[count] = obj;
             modes[count] = mode;
@@ -1937,7 +1935,7 @@ Obj FuncDO_LOCK(Obj self, Obj args)
 
 Obj FuncWRITE_LOCK(Obj self, Obj obj)
 {
-    const int modes[] = { 1 };
+    const LockMode modes[] = { LOCK_MODE_READWRITE };
     int result = LockObjects(1, &obj, modes);
     if (result < 0)
       ErrorMayQuit("Cannot lock required regions", 0L, 0L);
@@ -1946,7 +1944,7 @@ Obj FuncWRITE_LOCK(Obj self, Obj obj)
 
 Obj FuncREAD_LOCK(Obj self, Obj obj)
 {
-    const int modes[] = { 0 };
+    const LockMode modes[] = { LOCK_MODE_READONLY };
     int result = LockObjects(1, &obj, modes);
     if (result < 0)
       ErrorMayQuit("Cannot lock required regions", 0L, 0L);
@@ -1958,8 +1956,8 @@ Obj FuncTRYLOCK(Obj self, Obj args)
     int   numargs = LEN_PLIST(args);
     int   count = 0;
     Obj * objects;
-    int * modes;
-    int   mode = 1;
+    LockMode * modes;
+    LockMode   mode = LOCK_MODE_DEFAULT;
     int   i;
     int   result;
 
@@ -1971,11 +1969,9 @@ Obj FuncTRYLOCK(Obj self, Obj args)
         Obj obj;
         obj = ELM_PLIST(args, i);
         if (obj == True)
-            mode = 1;
+            mode = LOCK_MODE_READWRITE;
         else if (obj == False)
-            mode = 0;
-        else if (IS_INTOBJ(obj))
-            mode = (INT_INTOBJ(obj) && 1);
+            mode = LOCK_MODE_READONLY;
         else {
             objects[count] = obj;
             modes[count] = mode;
@@ -2087,7 +2083,8 @@ Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
 Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
 {
     Region * target_region = GetRegionOf(target);
-    if (!target_region || IsLocked(target_region) != 1)
+    if (!target_region ||
+        IsLocked(target_region) != LOCK_STATUS_READWRITE_LOCKED)
         return ArgumentError("MIGRATE_NORECURSE: Thread does not have "
                              "exclusive access to target region");
     if (!MigrateObjects(1, &obj, target_region, 0))
@@ -2209,7 +2206,8 @@ Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
 {
     Region * target_region = GetRegionOf(target);
     Obj      reachable;
-    if (!target_region || IsLocked(target_region) != 1)
+    if (!target_region ||
+        IsLocked(target_region) != LOCK_STATUS_READWRITE_LOCKED)
         return ArgumentError("MIGRATE: Thread does not have exclusive access "
                              "to target region");
     reachable = ReachableObjectsFrom(obj);
@@ -2224,7 +2222,8 @@ Obj FuncMIGRATE_RAW(Obj self, Obj obj, Obj target)
 {
     Region * target_region = GetRegionOf(target);
     Obj      reachable;
-    if (!target_region || IsLocked(target_region) != 1)
+    if (!target_region ||
+        IsLocked(target_region) != LOCK_STATUS_READWRITE_LOCKED)
         return ArgumentError("MIGRATE: Thread does not have exclusive access "
                              "to target region");
     reachable = ReachableObjectsFrom(obj);

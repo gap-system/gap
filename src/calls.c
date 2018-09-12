@@ -54,6 +54,9 @@
 #include "stringobj.h"
 #include "vars.h"
 
+#ifdef HPCGAP
+#include "hpc/thread.h"
+#endif
 
 void SET_NAME_FUNC(Obj func, Obj name)
 {
@@ -1125,10 +1128,10 @@ void PrintFunction (
 #ifdef HPCGAP
         if (locks) {
             switch(locks[i-1]) {
-            case 1:
+            case LOCK_QUAL_READONLY:
                 Pr("%>readonly %<", 0L, 0L);
                 break;
-            case 2:
+            case LOCK_QUAL_READWRITE:
                 Pr("%>readwrite %<", 0L, 0L);
                 break;
             }

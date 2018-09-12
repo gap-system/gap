@@ -334,7 +334,6 @@ extern  void            IntrAtomicEnd ( void );
 #ifdef HPCGAP
 /* TODO: move these constants to a more appropriate location */
 enum {
-    DEFAULT_LOCK_TYPE  = 1,
     MAX_ATOMIC_OBJS = 256
 };
 #endif

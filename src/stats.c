@@ -597,10 +597,10 @@ UInt ExecForRange3(Stat stat)
 UInt ExecAtomic(Stat stat)
 {
   Obj tolock[MAX_ATOMIC_OBJS];
-  int locktypes[MAX_ATOMIC_OBJS];
-  int lockstatus[MAX_ATOMIC_OBJS];
+  LockMode lockmode[MAX_ATOMIC_OBJS];
+  LockStatus lockstatus[MAX_ATOMIC_OBJS];
   int lockSP;
-  UInt mode, nrexprs,i,j,status;
+  UInt nrexprs,i,j,status;
   Obj o;
   
   SET_BRK_CURR_STAT( stat );
@@ -609,10 +609,15 @@ UInt ExecAtomic(Stat stat)
   j = 0;
   for (i = 1; i <= nrexprs; i++) {
     o = EVAL_EXPR(READ_STAT(stat, 2*i));
-    if (!((Int)o & 0x3)) {
+    if (IS_BAG_REF(o)) {
       tolock[j] =  o;
-      mode = INT_INTEXPR(READ_STAT(stat, 2*i-1));
-      locktypes[j] = (mode == 2) ? 1 : (mode == 1) ? 0 : DEFAULT_LOCK_TYPE;
+      LockQual qual = INT_INTEXPR(READ_STAT(stat, 2*i-1));
+      if (qual == LOCK_QUAL_READWRITE)
+        lockmode[j] = LOCK_MODE_READWRITE;
+      else if (qual == LOCK_QUAL_READONLY)
+        lockmode[j] = LOCK_MODE_READONLY;
+      else /* if (qual == LOCK_QUAL_NONE) */
+        lockmode[j] = LOCK_MODE_DEFAULT;
       j++;
     }
   }
@@ -624,22 +629,20 @@ UInt ExecAtomic(Stat stat)
   j = 0;
   for (i = 0; i < nrexprs; i++) { 
     switch (lockstatus[i]) {
-    case 0:
+    case LOCK_STATUS_UNLOCKED:
       tolock[j] = tolock[i];
-      locktypes[j] = locktypes[i];
+      lockmode[j] = lockmode[i];
       j++;
       break;
-    case 2:
-      if (locktypes[i] == 1)
+    case LOCK_STATUS_READONLY_LOCKED:
+      if (lockmode[i] == LOCK_MODE_READWRITE)
         ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
       break;
-    case 1:
+    case LOCK_STATUS_READWRITE_LOCKED:
       break;
-    default:
-      assert(0);
     }
   }
-  lockSP = LockObjects(j, tolock, locktypes);
+  lockSP = LockObjects(j, tolock, lockmode);
   if (lockSP >= 0) {
     status = EXEC_STAT(READ_STAT(stat, 0));
     PopRegionLocks(lockSP);
@@ -1379,13 +1382,16 @@ void            PrintAtomic (
     nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
     for (i = 1; i <=  nrexprs; i++) {
       if (i != 1)
-	Pr(", ",0L,0L);
+        Pr(", ",0L,0L);
       switch (INT_INTEXPR(READ_STAT(stat, 2 * i - 1))) {
-      case 0: break;
-      case 1: Pr("readonly ",0L,0L);
-	break;
-      case 2: Pr("readwrite ",0L,0L);
-	break;
+      case LOCK_QUAL_NONE:
+        break;
+      case LOCK_QUAL_READONLY:
+        Pr("readonly ",0L,0L);
+        break;
+      case LOCK_QUAL_READWRITE:
+        Pr("readwrite ",0L,0L);
+        break;
       }
       PrintExpr(READ_EXPR(stat, 2 * i));
     }

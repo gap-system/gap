@@ -612,15 +612,15 @@ void RegionUnlock(Region * region)
     pthread_rwlock_unlock(region->lock);
 }
 
-int IsLocked(Region * region)
+LockStatus IsLocked(Region * region)
 {
     if (!region)
-        return 0; /* public region */
+        return LOCK_STATUS_UNLOCKED; /* public region */
     if (region->owner == GetTLS())
-        return 1;
+        return LOCK_STATUS_READWRITE_LOCKED;
     if (region->readers[TLS(threadID)])
-        return 2;
-    return 0;
+        return LOCK_STATUS_READONLY_LOCKED;
+    return LOCK_STATUS_UNLOCKED;
 }
 
 Region * GetRegionOf(Obj obj)
@@ -655,7 +655,7 @@ Obj GetRegionName(Region * region)
     return result;
 }
 
-void GetLockStatus(int count, Obj * objects, int * status)
+void GetLockStatus(int count, Obj * objects, LockStatus * status)
 {
     int i;
     for (i = 0; i < count; i++)
@@ -695,7 +695,7 @@ void ResetRegionLockCounters(Region * region)
 typedef struct {
     Obj      obj;
     Region * region;
-    int      mode;
+    LockMode mode;
 } LockRequest;
 
 static int LessThanLockRequest(const void * a, const void * b)
@@ -1042,23 +1042,23 @@ static Int CurrentRegionPrecedence(void)
     return -1;
 }
 
-int LockObject(Obj obj, int mode)
+int LockObject(Obj obj, LockMode mode)
 {
     Region * region = GetRegionOf(obj);
-    int      locked;
     int      result = TLS(lockStackPointer);
     if (!region)
         return result;
-    locked = IsLocked(region);
-    if (locked == 2 && mode)
+
+    LockStatus locked = IsLocked(region);
+    if (locked == LOCK_STATUS_READONLY_LOCKED && mode == LOCK_MODE_READWRITE)
         return -1;
-    if (!locked) {
+    if (locked == LOCK_STATUS_UNLOCKED) {
         Int prec = CurrentRegionPrecedence();
         if (prec >= 0 && region->prec >= prec && region->prec >= 0)
             return -1;
         if (region->fixed_owner)
             return -1;
-        if (mode)
+        if (mode == LOCK_MODE_READWRITE)
             RegionWriteLock(region);
         else
             RegionReadLock(region);
@@ -1067,11 +1067,10 @@ int LockObject(Obj obj, int mode)
     return result;
 }
 
-int LockObjects(int count, Obj * objects, const int * mode)
+int LockObjects(int count, Obj * objects, const LockMode * mode)
 {
     int           result;
     int           i, p;
-    int           locked;
     Int           curr_prec;
     LockRequest * order;
     if (count == 1) /* fast path */
@@ -1103,8 +1102,10 @@ int LockObjects(int count, Obj * objects, const int * mode)
             continue; /* skip duplicates */
         if (!region)
             continue;
-        locked = IsLocked(region);
-        if (locked == 2 && order[i].mode) {
+
+        LockStatus locked = IsLocked(region);
+        if (locked == LOCK_STATUS_READONLY_LOCKED &&
+            order[i].mode == LOCK_MODE_READWRITE) {
             /* trying to upgrade read lock to write lock */
             PopRegionLocks(result);
             return -1;
@@ -1119,7 +1120,7 @@ int LockObjects(int count, Obj * objects, const int * mode)
                 PopRegionLocks(result);
                 return -1;
             }
-            if (order[i].mode)
+            if (order[i].mode == LOCK_MODE_READWRITE)
                 RegionWriteLock(region);
             else
                 RegionReadLock(region);
@@ -1134,11 +1135,10 @@ int LockObjects(int count, Obj * objects, const int * mode)
     return result;
 }
 
-int TryLockObjects(int count, Obj * objects, const int * mode)
+int TryLockObjects(int count, Obj * objects, const LockMode * mode)
 {
     int           result;
     int           i;
-    int           locked;
     LockRequest * order;
     if (count > MAX_LOCKS)
         return -1;
@@ -1163,14 +1163,15 @@ int TryLockObjects(int count, Obj * objects, const int * mode)
             PopRegionLocks(result);
             return -1;
         }
-        locked = IsLocked(region);
-        if (locked == 2 && order[i].mode) {
+        LockStatus locked = IsLocked(region);
+        if (locked == LOCK_STATUS_READONLY_LOCKED &&
+            order[i].mode == LOCK_MODE_READWRITE) {
             /* trying to upgrade read lock to write lock */
             PopRegionLocks(result);
             return -1;
         }
-        if (!locked) {
-            if (order[i].mode) {
+        if (locked == LOCK_STATUS_UNLOCKED) {
+            if (order[i].mode == LOCK_MODE_READWRITE) {
                 if (!RegionTryWriteLock(region)) {
                     PopRegionLocks(result);
                     return -1;

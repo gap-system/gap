@@ -68,11 +68,32 @@ void GCThreadHandler(void);
 
 void InitMainThread(void);
 
-int IsLocked(Region *region);
-void GetLockStatus(int count, Obj *objects, int *status);
-int LockObject(Obj obj, int mode);
-int LockObjects(int count, Obj *objects, const int *mode);
-int TryLockObjects(int count, Obj *objects, const int *mode);
+typedef enum LockQual {
+    LOCK_QUAL_NONE = 0,
+    LOCK_QUAL_READONLY = 1,
+    LOCK_QUAL_READWRITE = 2,
+} LockQual;
+
+typedef enum LockStatus {
+    LOCK_STATUS_UNLOCKED = 0,
+    LOCK_STATUS_READWRITE_LOCKED = 1,
+    LOCK_STATUS_READONLY_LOCKED = 2,
+} LockStatus;
+
+LockStatus IsLocked(Region *region);
+void GetLockStatus(int count, Obj *objects, LockStatus *status);
+
+
+typedef enum LockMode {
+    LOCK_MODE_READONLY = 0,
+    LOCK_MODE_READWRITE = 1,
+    LOCK_MODE_DEFAULT = LOCK_MODE_READWRITE,
+} LockMode;
+
+int LockObject(Obj obj, LockMode mode);
+int LockObjects(int count, Obj * objects, const LockMode * mode);
+int TryLockObjects(int count, Obj * objects, const LockMode * mode);
+
 void PushRegionLock(Region *region);
 void PopRegionLocks(int newSP);
 int RegionLockSP(void);

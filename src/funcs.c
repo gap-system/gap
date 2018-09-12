@@ -449,23 +449,23 @@ static void LockFuncArgs(Obj func, Int narg, const Obj * args)
 {
     Int i;
     int count = 0;
-    int *mode = alloca(narg * sizeof(int));
+    LockMode * mode = alloca(narg * sizeof(int));
     UChar *locks = CHARS_STRING(LCKS_FUNC(func));
     Obj *objects = alloca(narg * sizeof(Obj));
     for (i=0; i<narg; i++) {
       Obj obj = args[i];
       switch (locks[i]) {
-        case 1:
+      case LOCK_QUAL_READONLY:
           if (CheckReadAccess(obj))
             break;
-          mode[count] = 0;
+          mode[count] = LOCK_MODE_READONLY;
           objects[count] = obj;
           count++;
           break;
-        case 2:
+      case LOCK_QUAL_READWRITE:
           if (CheckWriteAccess(obj))
             break;
-          mode[count] = 1;
+          mode[count] = LOCK_MODE_READWRITE;
           objects[count] = obj;
           count++;
           break;
