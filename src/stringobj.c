@@ -1314,10 +1314,26 @@ Obj CopyToStringRep(
         } 
         CHARS_STRING(copy)[lenString] = '\0';
     }
-    CHANGED_BAG(copy);
-    return (copy);
+    return copy;
 }
 
+
+/****************************************************************************
+**
+*F  ImmutableString( <string> ) . . . copy to immutable string in string rep.
+**
+**  'ImmutableString' returns an immutable string in string representation
+**  equal to <string>. This may return <string> if it already satisfies these
+**  criteria.
+*/
+Obj ImmutableString(Obj string)
+{
+    if (!IS_STRING_REP(string) || !IS_MUTABLE_OBJ(string)) {
+        string = CopyToStringRep(string);
+        MakeImmutableString(string);
+    }
+    return string;
+}
 
 
 /****************************************************************************
@@ -1383,22 +1399,6 @@ Int IsStringConv (
 
     /* return the result                                                   */
     return res;
-}
-
-
-Obj ConvImmString(Obj str)
-{
-  Obj result;
-  size_t len;
-  if (!str || !IsStringConv(str))
-    return (Obj) 0;
-  if (!IS_MUTABLE_OBJ(str))
-    return str;
-  len = GET_LEN_STRING(str);
-  result = NEW_STRING(len);
-  memcpy(CHARS_STRING(result), CHARS_STRING(str), len);
-  MakeImmutableString(result);
-  return result;
 }
 
 
