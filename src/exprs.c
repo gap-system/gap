@@ -183,15 +183,27 @@ Obj             EvalAnd (
     }
 
     /* handle the 'and' of two filters                                    */
-    else if ( TNUM_OBJ(opL) == T_FUNCTION ) {
+    else if (IS_PSEUDO_FILTER(opL)) {
+        if (!IS_FILTER(opL)) {
+            // support this for backwards compatibility; see discussion on
+            // https://github.com/gap-system/gap/pull/2732
+            Warning("operation '%g' used in AND-filter is not a filter",
+                    (Int)NAME_FUNC(opL), 0);
+        }
         tmp = READ_EXPR(expr, 1);
         opR = EVAL_EXPR( tmp );
-        if ( TNUM_OBJ(opR) == T_FUNCTION ) {
+        if (IS_PSEUDO_FILTER(opR)) {
+            if (!IS_FILTER(opR)) {
+                // support this for backwards compatibility; see discussion on
+                // https://github.com/gap-system/gap/pull/2732
+                Warning("operation '%g' used in AND-filter is not a filter",
+                        (Int)NAME_FUNC(opR), 0);
+            }
             return NewAndFilter( opL, opR );
         }
         else {
             ErrorQuit(
-                "<expr> must be 'true' or 'false' (not a %s)",
+                "<expr> must be a filter (not a %s)",
                 (Int)TNAM_OBJ(opL), 0L );
         }
     }
@@ -199,7 +211,7 @@ Obj             EvalAnd (
     /* signal an error                                                     */
     else {
         ErrorQuit(
-            "<expr> must be 'true' or 'false' (not a %s)",
+            "<expr> must be 'true' or 'false' or a filter (not a %s)",
             (Int)TNAM_OBJ(opL), 0L );
     }
     
