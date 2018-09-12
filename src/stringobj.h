@@ -321,13 +321,15 @@ extern Int IsStringConv (
     memcpy( CHARS_STRING(string), (cstr), tmp_len ); \
   } while ( 0 );
 
+
 /****************************************************************************
 **
-*F  MakeImmutableString(  <str> ) make a string immutable in place
-**
+*F  MakeImmutableString( <str> ) . . . . . . make a string immutable in place
 */
-
-void MakeImmutableString(Obj str);
+static inline void MakeImmutableString(Obj str)
+{
+    RetypeBag(str, IMMUTABLE_TNUM(TNUM_OBJ(str)));
+}
 
 
 // Functions to create mutable and immutable GAP strings from C strings.
@@ -336,15 +338,16 @@ void MakeImmutableString(Obj str);
 
 static inline Obj MakeString(const Char * cstr)
 {
-    Obj result;
-    C_NEW_STRING(result, strlen(cstr), cstr);
+    size_t len = strlen(cstr);
+    Obj    result = NEW_STRING(len);
+    memcpy(CHARS_STRING(result), cstr, len);
     return result;
 }
 
 static inline Obj MakeImmString(const Char * cstr)
 {
     Obj result = MakeString(cstr);
-    RetypeBag(result, IMMUTABLE_TNUM(T_STRING));
+    MakeImmutableString(result);
     return result;
 }
 
