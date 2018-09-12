@@ -3181,10 +3181,6 @@ Obj NewGlobalFunction (
 /****************************************************************************
 **
 *F  InstallGlobalFunction( <oper>, <func> ) . . . . . . . . .  clone function
-**
-**  There is a problem  with uncompleted functions: if  they are  cloned then
-**  only   the orignal and not  the  clone will be  completed.  Therefore the
-**  clone must postpone the real cloning.
 */
 void InstallGlobalFunction (
     Obj                 oper,
