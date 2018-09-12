@@ -565,11 +565,6 @@ Obj TypeString (
 **  has already been copied, it returns the value of the forwarding pointer.
 **
 **  'CopyString' is the function in 'CopyObjFuncs' for strings.
-**
-**  'CleanString' removes the mark and the forwarding pointer from the string
-**  <list>.
-**
-**  'CleanString' is the function in 'CleanObjFuncs' for strings.
 */
 Obj CopyString (
     Obj                 list,
@@ -592,11 +587,7 @@ Obj CopyString (
     ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(list)[0];
 
     /* leave a forwarding pointer                                          */
-    ADDR_OBJ(list)[0] = copy;
-    CHANGED_BAG( list );
-
-    /* now it is copied                                                    */
-    RetypeBag( list, TNUM_OBJ(list) + COPYING );
+    PrepareCopy(list, copy);
 
     /* copy the subvalues                                                  */
     memcpy(ADDR_OBJ(copy)+1, CONST_ADDR_OBJ(list)+1,
@@ -604,42 +595,6 @@ Obj CopyString (
 
     /* return the copy                                                     */
     return copy;
-}
-
-/****************************************************************************
-**
-*F  CopyStringCopy( <list>, <mut> ) . . . . . . . . . .  copy a copied string
-*/
-Obj CopyStringCopy (
-    Obj                 list,
-    Int                 mut )
-{
-    return CONST_ADDR_OBJ(list)[0];
-}
-
-
-/****************************************************************************
-**
-*F  CleanString( <list> ) . . . . . . . . . . . . . . . . . clean up a string
-*/
-void CleanString (
-    Obj                 list )
-{
-}
-
-
-/****************************************************************************
-**
-*F  CleanStringCopy( <list> ) . . . . . . . . . . .  clean up a copied string
-*/
-void CleanStringCopy (
-    Obj                 list )
-{
-    /* remove the forwarding pointer                                       */
-    ADDR_OBJ(list)[0] = CONST_ADDR_OBJ( CONST_ADDR_OBJ(list)[0] )[0];
-
-    /* now it is cleaned                                                   */
-    RetypeBag( list, TNUM_OBJ(list) - COPYING );
 }
 
 #endif //!defined(USE_THREADSAFE_COPYING)
@@ -2032,14 +1987,6 @@ static StructBagNames BagNames[] = {
   { T_STRING_SSORT        +IMMUTABLE, "list (string,ssort,imm)"        },
   { T_STRING_NSORT,                   "list (string,nsort)"            },
   { T_STRING_NSORT        +IMMUTABLE, "list (string,nsort,imm)"        },
-#if !defined(USE_THREADSAFE_COPYING)
-  { T_STRING      +COPYING,           "list (string,copied)"           },
-  { T_STRING      +COPYING+IMMUTABLE, "list (string,imm,copied)"       },
-  { T_STRING_SSORT+COPYING,           "list (string,ssort,copied)"     },
-  { T_STRING_SSORT+COPYING+IMMUTABLE, "list (string,ssort,imm,copied)" },
-  { T_STRING_NSORT+COPYING,           "list (string,nsort,copied)"     },
-  { T_STRING_NSORT+COPYING+IMMUTABLE, "list (string,nsort,imm,copied)" },
-#endif
   { -1,                               ""                               }
 };
 
@@ -2246,10 +2193,6 @@ static Int InitKernel (
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
         InitMarkFuncBags( t1                     , MarkNoSubBags );
         InitMarkFuncBags( t1          +IMMUTABLE , MarkNoSubBags );
-#if !defined(USE_THREADSAFE_COPYING)
-        InitMarkFuncBags( t1 +COPYING            , MarkNoSubBags );
-        InitMarkFuncBags( t1 +COPYING +IMMUTABLE , MarkNoSubBags );
-#endif
     }
 
 #ifdef HPCGAP
@@ -2314,12 +2257,8 @@ static Int InitKernel (
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
         CopyObjFuncs [ t1                     ] = CopyString;
         CopyObjFuncs [ t1          +IMMUTABLE ] = CopyString;
-        CleanObjFuncs[ t1                     ] = CleanString;
-        CleanObjFuncs[ t1          +IMMUTABLE ] = CleanString;
-        CopyObjFuncs [ t1 +COPYING            ] = CopyStringCopy;
-        CopyObjFuncs [ t1 +COPYING +IMMUTABLE ] = CopyStringCopy;
-        CleanObjFuncs[ t1 +COPYING            ] = CleanStringCopy;
-        CleanObjFuncs[ t1 +COPYING +IMMUTABLE ] = CleanStringCopy;
+        CleanObjFuncs[ t1                     ] = 0;
+        CleanObjFuncs[ t1          +IMMUTABLE ] = 0;
     }
 #endif
 

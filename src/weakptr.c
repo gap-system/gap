@@ -586,12 +586,6 @@ Obj FuncIsWPObj( Obj self, Obj wp)
 
 static void MarkWeakPointerObj(Obj wp)
 {
-#if !defined(USE_THREADSAFE_COPYING)
-    // mark the forwarding pointer
-    if (TNUM_OBJ(wp) == T_WPOBJ + COPYING)
-        MarkBag(CONST_ADDR_OBJ(wp)[0]);
-#endif
-
     // can't use the stored length here, in case we are in the middle of
     // copying
     const UInt len = SIZE_BAG(wp) / sizeof(Obj) - 1;
@@ -681,11 +675,7 @@ Obj CopyObjWPObj (
     }
 
     /* leave a forwarding pointer                                          */
-    ADDR_OBJ(obj)[0] = copy;
-    CHANGED_BAG(obj);
-
-    /* now it is copied                                                    */
-    RetypeBag( obj, T_WPOBJ + COPYING );
+    PrepareCopy(obj, copy);
 
     /* copy the subvalues                                                  */
     for ( i =  SIZE_OBJ(obj)/sizeof(Obj)-1; i > 0; i-- ) {
@@ -777,36 +767,8 @@ void MakeImmutableWPObj( Obj obj )
 void CleanObjWPObj (
     Obj                 obj )
 {
-}
-
-
-/****************************************************************************
-**
-*F  CopyObjWPObjCopy(<obj>,<mut>) . . . . . . . . . . . copy a WP object copy
-*/
-Obj CopyObjWPObjCopy (
-    Obj                 obj,
-    Int                 mut )
-{
-    return CONST_ADDR_OBJ(obj)[0];
-}
-
-
-/****************************************************************************
-**
-*F  CleanObjWPObjCopy(<obj>) . . . . . . . . . . . . . . clean WP object copy
-*/
-void CleanObjWPObjCopy (
-    Obj                 obj )
-{
     UInt                i;              /* loop variable                   */
     Obj                 elm;            /* subobject                       */
-
-    /* remove the forwarding pointer                                       */
-    ADDR_OBJ(obj)[0] = CONST_ADDR_OBJ(CONST_ADDR_OBJ(obj)[0])[0];
-
-    /* now it is cleaned                                                   */
-    RetypeBag( obj, TNUM_OBJ(obj) - COPYING );
 
     /* clean the subvalues                                                 */
     for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i++ ) {
@@ -861,9 +823,6 @@ void LoadWPObj(Obj wpobj)
 */
 static StructBagNames BagNames[] = {
   { T_WPOBJ,                          "object (weakptr)"               },
-#if !defined(USE_THREADSAFE_COPYING)
-  { T_WPOBJ       +COPYING,           "object (weakptr, copied)"       },
-#endif
   { -1,                               ""                               }
 };
 
@@ -911,21 +870,11 @@ static Int InitKernel (
 #if defined(USE_BOEHM_GC)
     /* force atomic allocation of these pointers */
     InitMarkFuncBags ( T_WPOBJ,          MarkNoSubBags   );
-  #if !defined(USE_THREADSAFE_COPYING)
-    InitMarkFuncBags ( T_WPOBJ +COPYING, MarkNoSubBags   );
-  #endif
 #elif defined(USE_GASMAN)
     InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
     InitSweepFuncBags( T_WPOBJ,          SweepWeakPointerObj  );
-  #if !defined(USE_THREADSAFE_COPYING)
-    InitMarkFuncBags ( T_WPOBJ +COPYING, MarkWeakPointerObj   );
-    InitSweepFuncBags( T_WPOBJ +COPYING, SweepWeakPointerObj  );
-  #endif
 #elif defined(USE_JULIA_GC)
     InitMarkFuncBags ( T_WPOBJ,          MarkAllButFirstSubBags   );
-  #if !defined(USE_THREADSAFE_COPYING)
-    InitMarkFuncBags ( T_WPOBJ +COPYING, MarkAllSubBags   );
-  #endif
 #else
 #error Unknown garbage collector implementation, no weak pointer object implemention available
 #endif
@@ -950,9 +899,7 @@ static Int InitKernel (
 #else
     /* copying functions                                                   */
     CopyObjFuncs[  T_WPOBJ           ] = CopyObjWPObj;
-    CopyObjFuncs[  T_WPOBJ + COPYING ] = CopyObjWPObjCopy;
     CleanObjFuncs[ T_WPOBJ           ] = CleanObjWPObj;
-    CleanObjFuncs[ T_WPOBJ + COPYING ] = CleanObjWPObjCopy;
 #endif
 
     MakeImmutableObjFuncs[ T_WPOBJ ] = MakeImmutableWPObj;

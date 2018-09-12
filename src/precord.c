@@ -184,11 +184,7 @@ Obj CopyPRec (
     ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(rec)[0];
 
     // leave a forwarding pointer
-    ADDR_OBJ(rec)[0] = copy;
-    CHANGED_BAG( rec );
-
-    // now it is copied
-    RetypeBag( rec, TNUM_OBJ(rec) + COPYING );
+    PrepareCopy(rec, copy);
 
     // copy the subvalues
     SET_LEN_PREC( copy, LEN_PREC(rec) );
@@ -203,28 +199,10 @@ Obj CopyPRec (
     return copy;
 }
 
-Obj CopyPRecCopy (
-    Obj                 rec,
-    Int                 mut )
-{
-    return CONST_ADDR_OBJ(rec)[0];
-}
-
 void CleanPRec (
     Obj                 rec )
 {
-}
-
-void CleanPRecCopy (
-    Obj                 rec )
-{
     UInt                i;              /* loop variable                   */
-
-    /* remove the forwarding pointer                                       */
-    ADDR_OBJ(rec)[0] = CONST_ADDR_OBJ( CONST_ADDR_OBJ(rec)[0] )[0];
-
-    /* now it is cleaned                                               */
-    RetypeBag( rec, TNUM_OBJ(rec) - COPYING );
 
     /* clean the subvalues                                             */
     for ( i = 1; i <= LEN_PREC(rec); i++ ) {
@@ -861,10 +839,6 @@ void MarkPRecSubBags(Obj bag)
 static StructBagNames BagNames[] = {
   { T_PREC,                     "record (plain)"            },
   { T_PREC +IMMUTABLE,          "record (plain,imm)"        },
-#if !defined(USE_THREADSAFE_COPYING)
-  { T_PREC            +COPYING, "record (plain,copied)"     },
-  { T_PREC +IMMUTABLE +COPYING, "record (plain,imm,copied)" },
-#endif
   { -1,                         ""                          }
 };
 
@@ -894,10 +868,6 @@ static Int InitKernel (
 
     InitMarkFuncBags( T_PREC                     , MarkPRecSubBags );
     InitMarkFuncBags( T_PREC +IMMUTABLE          , MarkPRecSubBags );
-#if !defined(USE_THREADSAFE_COPYING)
-    InitMarkFuncBags( T_PREC            +COPYING , MarkPRecSubBags );
-    InitMarkFuncBags( T_PREC +IMMUTABLE +COPYING , MarkPRecSubBags );
-#endif
 
 #ifdef HPCGAP
     /* Immutable records are public                                        */
@@ -934,12 +904,8 @@ static Int InitKernel (
     /* install into copy function tables                                  */
     CopyObjFuncs [ T_PREC                     ] = CopyPRec;
     CopyObjFuncs [ T_PREC +IMMUTABLE          ] = CopyPRec;
-    CopyObjFuncs [ T_PREC            +COPYING ] = CopyPRecCopy;
-    CopyObjFuncs [ T_PREC +IMMUTABLE +COPYING ] = CopyPRecCopy;
     CleanObjFuncs[ T_PREC                     ] = CleanPRec;
     CleanObjFuncs[ T_PREC +IMMUTABLE          ] = CleanPRec;
-    CleanObjFuncs[ T_PREC            +COPYING ] = CleanPRecCopy;
-    CleanObjFuncs[ T_PREC +IMMUTABLE +COPYING ] = CleanPRecCopy;
 #endif
 
     /* install printer                                                     */
