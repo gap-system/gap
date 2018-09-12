@@ -384,24 +384,24 @@ DeclareOperation( "AddRowVector",
 
 #############################################################################
 ##
-#O  MultRowVector( <vec>, <mul>[, <from>, <to>] )
-#O  MultRowVectorLeft( <vec>, <mul>[, <from>, <to>] )
-#O  MultRowVectorRight( <vec>, <mul>[, <from>, <to>] )
+#O  MultVector( <vec>, <mul>[, <from>, <to>] )
+#O  MultVectorLeft( <vec>, <mul>[, <from>, <to>] )
+#O  MultVectorRight( <vec>, <mul>[, <from>, <to>] )
 ##
-##  <#GAPDoc Label="MatObj_MultRowVectorLeft">
+##  <#GAPDoc Label="MatObj_MultVectorLeft">
 ##  <ManSection>
-##  <Oper Name="MultRowVector" Arg='vec, mul[, from, to]'/>
-##  <Oper Name="MultRowVectorLeft" Arg='vec, mul[, from, to]'/>
-##  <Oper Name="MultRowVectorRight" Arg='vec, mul[, from, to]'/>
+##  <Oper Name="MultVector" Arg='vec, mul[, from, to]'/>
+##  <Oper Name="MultVectorLeft" Arg='vec, mul[, from, to]'/>
+##  <Oper Name="MultVectorRight" Arg='vec, mul[, from, to]'/>
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  These operations multiply <A>mul</A> with <A>vec</A> in-place
-##  where <C>MultRowVectorLeft</C> multiplies with <A>mul</A> from the left
-##  and <C>MultRowVectorRight</C> does so from the right.
+##  where <C>MultVectorLeft</C> multiplies with <A>mul</A> from the left
+##  and <C>MultVectorRight</C> does so from the right.
 ##  </P>
-##  Note that <C>MultRowVector</C> is just a synonym for
-##  <C>MultRowVectorLeft</C>.
+##  Note that <C>MultVector</C> is just a synonym for
+##  <C>MultVectorLeft</C>.
 ##  </P>
 ##  If the optional parameters <A>from</A> and <A>to</A> are given only the
 ##  index range <C>[<A>from</A>..<A>to</A>]</C> is guaranteed to be 
@@ -414,15 +414,15 @@ DeclareOperation( "AddRowVector",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "MultRowVectorLeft",
+DeclareOperation( "MultVectorLeft",
   [ IsVectorObj and IsMutable, IsObject ] );
-DeclareOperation( "MultRowVectorRight",
+DeclareOperation( "MultVectorRight",
   [ IsVectorObj and IsMutable, IsObject ] );
-DeclareOperation( "MultRowVectorLeft",
+DeclareOperation( "MultVectorLeft",
   [ IsVectorObj and IsMutable, IsObject, IsInt, IsInt ] );
-DeclareOperation( "MultRowVectorRight",
+DeclareOperation( "MultVectorRight",
   [ IsVectorObj and IsMutable, IsObject, IsInt, IsInt ] );
-#  Note that MultRowVector is declared a synonym for MultRowVectorLeft in
+#  Note that MultVector is declared a synonym for MultVectorLeft in
 #  listcoef.gd
 
 
@@ -601,7 +601,7 @@ DeclareOperation( "Randomize", [IsVectorObj and IsMutable,IsRandomSource] );
 ##
 ## TODO: link to ExtractSubVector
 ## 
-## TODO: In AddRowVector and MultRowVector, the destination is always the first argument;
+## TODO: In AddRowVector and MultVector, the destination is always the first argument;
 ##   it would be better if we were consistent...
 ##
 ## TODO: Maybe also have a version of this as follows:

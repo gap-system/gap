@@ -74,7 +74,7 @@ InstallGlobalFunction(SparseVectorBySortedList, function(arg)
     return l;
 end);
 
-## AddRowVector, MultRowVector
+## AddRowVector, MultVector
 ## products with scalars, scalar product, AddCoeffs, MultCoeffs,
 ##  more coeffs functions
 ## maybe product with matrices
@@ -267,9 +267,9 @@ InstallMethod(DIFF, [IsSparseRowVector and IsSparseListBySortedListRep, IsSparse
         function(v1,v2) return SUM(v1, AINV(v2)); end);
 
 
-InstallOtherMethod( MultRowVector, [IsSparseRowVector and IsSparseListBySortedListRep and IsMutable, IsMultiplicativeElement],
+InstallOtherMethod( MultVector, [IsSparseRowVector and IsSparseListBySortedListRep and IsMutable, IsMultiplicativeElement],
         function(v,x)
-    MultRowVector(v![SL_VALS],x);
+    MultVector(v![SL_VALS],x);
 end);
 
 InstallMethod( \*, [IsSparseRowVector and IsSparseListBySortedListRep, IsMultiplicativeElement],
