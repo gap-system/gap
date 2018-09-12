@@ -65,6 +65,30 @@ static inline void SET_CHAR_VALUE(Obj charObj, UChar c)
 
 /****************************************************************************
 **
+*F  SINT_CHAR(a)
+**
+**  'SINT_CHAR' converts the character a (a UInt1) into a signed (C) integer.
+*/
+static inline Int SINT_CHAR(UInt1 a)
+{
+    return a < 128 ? (Int)a : (Int)a-256;
+}
+
+
+/****************************************************************************
+**
+*F  CHAR_SINT(n)
+**
+**  'CHAR_SINT' converts the signed (C) integer n into an (UInt1) character.
+*/
+static inline UInt1 CHAR_SINT(Int n)
+{
+    return (UInt1)(n >= 0 ? n : n+256);
+}
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * * * string functions * * * * * * * * * * * * * *
 */
 
@@ -341,22 +365,6 @@ Obj ConvImmString(Obj str);
 */
 #define C_NEW_STRING_DYN(string,cstr) \
   C_NEW_STRING(string, strlen(cstr), cstr)
-
-/****************************************************************************
-**
-*F  SINT_CHAR(a)
-**
-**  'SINT_CHAR' converts the character a (a UInt1) into a signed (C) integer.
-*/
-#define SINT_CHAR(a)    (((UInt1)a)<128 ? (Int)a : (Int)a-256)
-
-/****************************************************************************
-**
-*F  CHAR_SINT(n)
-**
-**  'CHAR_SINT' converts the signed (C) integer n into an (UInt1) character.
-*/
-#define CHAR_SINT(n)    (UInt1)(n>=0 ? n : n+256)
 
 /****************************************************************************
 **
