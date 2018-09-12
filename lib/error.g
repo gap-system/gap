@@ -32,6 +32,9 @@ BIND_GLOBAL( "OnQuit",  # care to ensure it always has a definition. - GG
       until IsEmpty(OptionsStack);
       Info(InfoWarning,1,"Options stack has been reset");
     fi;
+    if IsBound(ResetMethodReordering) and IsFunction(ResetMethodReordering) then
+        ResetMethodReordering();
+    fi;
 end);
 
 
