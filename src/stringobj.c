@@ -1368,8 +1368,6 @@ void ConvString (
 **  otherwise.   If <obj> is a  string it  changes  its representation to the
 **  string representation.
 */
-Obj IsStringConvFilt;
-
 Int IsStringConv (
     Obj                 obj )
 {
@@ -1387,17 +1385,6 @@ Int IsStringConv (
     return res;
 }
 
-
-/****************************************************************************
-**
-*F  MakeImmutableString(  <str> ) make a string immutable in place
-**
-*/
-
-void MakeImmutableString( Obj str )
-{
-    RetypeBag(str, IMMUTABLE_TNUM(TNUM_OBJ(str)));
-}
 
 Obj ConvImmString(Obj str)
 {
