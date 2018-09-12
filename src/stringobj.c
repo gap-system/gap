@@ -1410,23 +1410,6 @@ void MakeImmutableString( Obj str )
     RetypeBag(str, IMMUTABLE_TNUM(TNUM_OBJ(str)));
 }
 
-Obj MakeString2(const Char *cstr1, const Char *cstr2)
-{
-  Obj result;
-  size_t len1 = strlen(cstr1), len2 = strlen(cstr2);
-  result = NEW_STRING(len1 + len2);
-  memcpy(CSTR_STRING(result), cstr1, len1);
-  memcpy(CSTR_STRING(result)+len1, cstr2, len2);
-  return result;
-}
-
-Obj MakeImmString2(const Char *cstr1, const Char *cstr2)
-{
-  Obj result = MakeString2(cstr1, cstr2);
-  MakeImmutableString(result);
-  return result;
-}
-
 Obj ConvImmString(Obj str)
 {
   Obj result;

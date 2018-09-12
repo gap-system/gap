@@ -360,9 +360,6 @@ static inline Obj MakeImmString(const Char * cstr)
 }
 
 
-Obj MakeString2(const Char *cstr1, const Char *cstr2);
-
-Obj MakeImmString2(const Char *cstr1, const Char *cstr2);
 Obj ConvImmString(Obj str);
 
 

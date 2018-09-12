@@ -288,6 +288,17 @@ void CreateMainRegion(void)
     }
 }
 
+static Obj MakeImmString2(const Char * cstr1, const Char * cstr2)
+{
+    Obj    result;
+    size_t len1 = strlen(cstr1), len2 = strlen(cstr2);
+    result = NEW_STRING(len1 + len2);
+    memcpy(CSTR_STRING(result), cstr1, len1);
+    memcpy(CSTR_STRING(result) + len1, cstr2, len2);
+    MakeImmutableString(result);
+    return result;
+}
+
 void * DispatchThread(void * arg)
 {
     ThreadData * this_thread = arg;
