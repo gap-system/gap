@@ -1341,7 +1341,7 @@ function(info,fampred3,fampred2,filters,rank,fun)
   filters{[2,3]},
   # Adjust the method rank by taking the rank of the (omitted) ring argument
   # into account
-  rank+Maximum(0,RankFilter(filters[1])
+  {} -> rank+Maximum(0,RankFilter(filters[1])
                    -RankFilter(IsUniqueFactorizationRing)),fun);
 end);
 

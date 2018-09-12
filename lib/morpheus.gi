@@ -2056,7 +2056,7 @@ end);
 #M  AutomorphismGroup(<G>) . . abelian case
 ##
 InstallMethod(AutomorphismGroup,"test abelian",true,[IsGroup and IsFinite],
-  RankFilter(IsSolvableGroup and IsFinite),
+  {} -> RankFilter(IsSolvableGroup and IsFinite),
 function(G)
 local A;
   if not IsAbelian(G) then
@@ -2075,7 +2075,7 @@ end);
 #M  AutomorphismGroup(<G>) . . abelian case
 ##
 InstallMethod(AutomorphismGroup,"test abelian",true,[IsGroup and IsFinite],
-  RankFilter(IsSolvableGroup and IsFinite),
+  {} -> RankFilter(IsSolvableGroup and IsFinite),
 function(G)
 local A;
   if not IsAbelian(G) then

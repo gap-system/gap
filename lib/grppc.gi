@@ -2220,7 +2220,7 @@ InstallMethod(IsSimpleGroup,"for solvable groups",true,
   [IsSolvableGroup],
   # this is also better for permutation groups, so we increase the value to
   # be above the value for `IsPermGroup'.
-  Maximum(RankFilter(IsSolvableGroup),
+  {} -> Maximum(RankFilter(IsSolvableGroup),
           RankFilter(IsPermGroup)+1)
     -RankFilter(IsSolvableGroup),
 function(G)
@@ -2401,7 +2401,7 @@ end);
 ##
 InstallMethod(MinimalGeneratingSet,
     "compute via Smith normal form",
-        [IsGroup and CanEasilyComputePcgs and IsAbelian], RankFilter (IsPcGroup),
+        [IsGroup and CanEasilyComputePcgs and IsAbelian], {} -> RankFilter(IsPcGroup),
     function(G)
     
         local pcgs, matrix, snf, gens, cti, row, g, i;

@@ -60,7 +60,7 @@ end );
 InstallOtherMethod( RepresentativeActionOp, "natural alternating group",
   true, [ IsNaturalAlternatingGroup, IsObject, IsObject, IsFunction ], 
   # the objects might be group elements: rank up	
-  2*RankFilter(IsMultiplicativeElementWithInverse),
+  {} -> 2*RankFilter(IsMultiplicativeElementWithInverse),
 function ( G, d, e, opr )
 local dom,dom2,sortfun,max,cd,ce,rep,dp,ep;
   # test for internal rep
@@ -993,21 +993,21 @@ end;
 InstallOtherMethod( StabilizerOp,"symmetric group", true,
     [ IsNaturalSymmetricGroup, IsObject, IsList, IsList, IsFunction ],
   # the objects might be a group element: rank up	
-        RankFilter(IsMultiplicativeElementWithInverse) + 
+        {} -> RankFilter(IsMultiplicativeElementWithInverse) + 
         RankFilter(IsSolvableGroup),
         SYMGP_STABILIZER);
 
 InstallOtherMethod( StabilizerOp,"symmetric group", true,
     [ IsNaturalSymmetricGroup, IsDomain, IsObject, IsList, IsList, IsFunction ],
   # the objects might be a group element: rank up	
-        RankFilter(IsMultiplicativeElementWithInverse) + 
+        {} -> RankFilter(IsMultiplicativeElementWithInverse) + 
         RankFilter(IsSolvableGroup),
         SYMGP_STABILIZER);
 
 InstallOtherMethod( StabilizerOp,"alternating group", true,
     [ IsNaturalAlternatingGroup, IsObject, IsList, IsList, IsFunction ],
   # the objects might be a group element: rank up	
-        RankFilter(IsMultiplicativeElementWithInverse) + 
+        {} -> RankFilter(IsMultiplicativeElementWithInverse) + 
         RankFilter(IsSolvableGroup),
 function(g, arg...) 
 local s;
@@ -1023,7 +1023,7 @@ end);
 InstallOtherMethod( StabilizerOp,"alternating group", true,
     [ IsNaturalAlternatingGroup, IsDomain, IsObject, IsList, IsList, IsFunction ],
   # the objects might be a group element: rank up	
-        RankFilter(IsMultiplicativeElementWithInverse) + 
+        {} -> RankFilter(IsMultiplicativeElementWithInverse) + 
         RankFilter(IsSolvableGroup),
         function(g, arg...)
     return AlternatingSubgroup(CallFuncList(Stabilizer, Concatenation([SymmetricParentGroup(g)], arg)));
@@ -1559,7 +1559,7 @@ end);
 InstallOtherMethod( RepresentativeActionOp, "for natural symmetric group",
     true, [ IsNaturalSymmetricGroup, IsObject, IsObject, IsFunction ], 
   # the objects might be group elements: rank up	
-  2*RankFilter(IsMultiplicativeElementWithInverse),
+  {} -> 2*RankFilter(IsMultiplicativeElementWithInverse),
 function ( G, d, e, opr )
 local dom,n,sortfun,max,cd,ce,p1,p2;
   # test for internal rep
@@ -2452,7 +2452,7 @@ InstallMethod( RadicalGroup, "alternating", true,
 InstallMethod(NormalSubgroups,
 "for a symmetric group",
 [IsSymmetricGroup],
-RankFilter(IsPermGroup),
+{} -> RankFilter(IsPermGroup),
 function(S)
   if SymmetricDegree(S) <= 4 then
     # S is soluble, so this includes the trivial group (and Klein 4)
@@ -2465,7 +2465,7 @@ end);
 InstallMethod(NormalSubgroups,
 "for an alternating group",
 [IsAlternatingGroup],
-RankFilter(IsPermGroup),
+{} -> RankFilter(IsPermGroup),
 function(A)
   if AlternatingDegree(A) <= 4 then
     # S is soluble, so this includes the trivial group (and Klein 4)

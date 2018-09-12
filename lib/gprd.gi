@@ -388,7 +388,7 @@ InstallGlobalFunction (PcgsDirectProduct,
 
 InstallMethod( Pcgs, "for direct products", true, 
                [IsGroup and HasDirectProductInfo], 
-	       Maximum(
+	       {} -> Maximum(
 		RankFilter(IsPcGroup),
 		RankFilter(IsPermGroup and IsSolvableGroup)
 	        ),# this is better than these two common alternatives
@@ -396,7 +396,7 @@ InstallMethod( Pcgs, "for direct products", true,
 
 InstallMethod( PcgsElementaryAbelianSeries, "for direct products", true, 
                [IsGroup and HasDirectProductInfo], 
-	       Maximum(
+	       {} -> Maximum(
 		RankFilter(IsPcGroup),
 		RankFilter(IsPermGroup and IsSolvableGroup)
 	        ),# this is better than these two common alternatives
@@ -408,7 +408,7 @@ InstallMethod( PcgsElementaryAbelianSeries, "for direct products", true,
 
 InstallMethod( PcgsCentralSeries, "for direct products", true, 
                [IsGroup and HasDirectProductInfo], 
-	       Maximum(
+	       {} -> Maximum(
 		RankFilter(IsPcGroup),
 		RankFilter(IsPermGroup and IsSolvableGroup)
 	        ),# this is better than these two common alternatives
@@ -420,7 +420,7 @@ InstallMethod( PcgsCentralSeries, "for direct products", true,
 
 InstallMethod( PcgsChiefSeries, "for direct products", true, 
                [IsGroup and HasDirectProductInfo], 
-	       Maximum(
+	       {} -> Maximum(
 		RankFilter(IsPcGroup),
 		RankFilter(IsPermGroup and IsSolvableGroup)
 	        ),# this is better than these two common alternatives
@@ -429,7 +429,7 @@ InstallMethod( PcgsChiefSeries, "for direct products", true,
 
 InstallMethod( PcgsPCentralSeriesPGroup, "for direct products", true, 
                [IsGroup and HasDirectProductInfo], 
-	       Maximum(
+	       {} -> Maximum(
 		RankFilter(IsPcGroup),
 		RankFilter(IsPermGroup and IsSolvableGroup)
 	        ),# this is better than these two common alternatives

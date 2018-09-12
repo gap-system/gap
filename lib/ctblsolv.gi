@@ -19,7 +19,7 @@
 InstallMethod( CharacterDegrees,
     "for an abelian group, and an integer p (just strip off the p-part)",
     [ IsGroup and IsAbelian, IsInt ],
-    RankFilter(IsZeroCyc), # There is a method for groups for
+    {} -> RankFilter(IsZeroCyc), # There is a method for groups for
                            # the integer zero which is worse
     function( G, p )
     G:= Size( G );
@@ -482,7 +482,7 @@ BindGlobal( "CharacterDegreesConlon", function( G, q )
 InstallMethod( CharacterDegrees,
     "for a solvable group and an integer (Conlon's algorithm)",
     [ IsGroup and IsSolvableGroup, IsInt ],
-    RankFilter(IsZeroCyc), # There is a method for groups for
+    {} -> RankFilter(IsZeroCyc), # There is a method for groups for
                            # the integer zero which is worse
     function( G, q )
     if HasIrr( G ) then

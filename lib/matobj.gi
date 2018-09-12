@@ -17,14 +17,14 @@
 # so that these are only used as a last resort.
 InstallMethod( \[\], "for a matrix object and two positions",
   [ IsMatrixObj, IsPosInt, IsPosInt ],
-  -RankFilter(IsMatrixObj),
+  {} -> -RankFilter(IsMatrixObj),
   function( m, row, col )
     return MatElm( m, row, col );
   end );
 
 InstallMethod( \[\]\:\=, "for a matrix object, two positions, and an object",
   [ IsMatrixObj and IsMutable, IsPosInt, IsPosInt, IsObject ],
-  -RankFilter(IsMatrixObj),
+  {} -> -RankFilter(IsMatrixObj),
   function( m, row, col, obj )
     SetMatElm( m, row, col, obj );
   end );

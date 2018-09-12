@@ -75,7 +75,7 @@ InstallMethod( IsCyclic,
 InstallMethod( Size,
     "for a cyclic group",
     [ IsGroup and IsCyclic and HasGeneratorsOfGroup ],
-    -RankFilter(HasGeneratorsOfGroup),
+    {} -> -RankFilter(HasGeneratorsOfGroup),
 function(G)
   local gens;
   if HasMinimalGeneratingSet(G) then
@@ -95,7 +95,7 @@ end);
 
 InstallMethod( MinimalGeneratingSet,"finite cyclic groups",true,
     [ IsGroup and IsCyclic and IsFinite ],
-    RankFilter(IsFinite and IsPcGroup),
+    {} -> RankFilter(IsFinite and IsPcGroup),
 function ( G )
 local g;
   if IsTrivial(G) then return []; fi;
@@ -1956,7 +1956,7 @@ InstallMethod( Socle, "for elementary abelian groups",
 ##
 InstallMethod( Socle, "for nilpotent groups",
               [ IsGroup and IsNilpotentGroup ],
-              RankFilter( IsGroup and IsFinite and IsNilpotentGroup )
+              {} -> RankFilter( IsGroup and IsFinite and IsNilpotentGroup )
               - RankFilter( IsGroup and IsNilpotentGroup ),
   function(G)
     local P, C, size, gen, abinv, indgen, i, p, q, soc;
@@ -2616,7 +2616,7 @@ InstallMethod( IndexNC,
     "for two groups with known Size value",
     IsIdenticalObj,
     [ IsGroup and HasSize, IsGroup and HasSize and IsFinite ],
-    2 * RankFilter( IsHandledByNiceMonomorphism ),
+    {} -> 2 * RankFilter( IsHandledByNiceMonomorphism ),
     function( G, H )
     return Size( G ) / Size( H );
     end );
@@ -4952,7 +4952,7 @@ InstallMethod( MinimalNormalSubgroups, "for nilpotent groups",
   # IsGroup and IsFinite ranks higher than IsGroup and IsNilpotentGroup
   # so we have to increase the rank, otherwise the method for computation
   # by conjugacy classes above is selected.
-  RankFilter( IsGroup and IsFinite and IsNilpotentGroup )
+  {} -> RankFilter( IsGroup and IsFinite and IsNilpotentGroup )
   - RankFilter( IsGroup and IsNilpotentGroup ),
   function(G)
     local soc, i, p, primes, gen, min, MinimalSubgroupsOfPGroupByGenerators;

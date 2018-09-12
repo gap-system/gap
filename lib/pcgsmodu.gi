@@ -695,7 +695,7 @@ InstallOtherMethod( RelativeOrderOfPcElement,
       IsObject ],
     # as we fall back on the code for pcgs, we must be sure that the method
     # has lower value
-    RankFilter(IsModuloPcgs)
+    {} -> RankFilter(IsModuloPcgs)
     -RankFilter(IsModuloPcgs and IsPrimeOrdersPcgs),
 
 function( pcgs, elm )
