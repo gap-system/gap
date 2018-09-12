@@ -1013,6 +1013,9 @@ fi;
 ##
 ##  Read init files, run a shell, and do exit-time processing.
 ##
+
+ResumeMethodReordering();
+
 InstallAndCallPostRestore( function()
     local i, status;
     for i in [1..Length(GAPInfo.InitFiles)] do

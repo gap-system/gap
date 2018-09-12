@@ -143,8 +143,8 @@ fi;
 #F  INSTALL_METHOD_FLAGS( <opr>, <info>, <rel>, <flags>, <rank>, <method> ) .
 ##
 BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
-    function( opr, info, rel, flags, rank, method )
-    local   methods,  narg,  i,  k,  tmp, replace, match, j, lk;
+    function( opr, info, rel, flags, baserank, method )
+    local   methods,  narg,  i,  k,  tmp, replace, match, j, lk, rank;
 
     if IsHPCGAP then
         # TODO: once the GAP compiler supports 'atomic', use that
@@ -152,6 +152,11 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
         lk := WRITE_LOCK(METHODS_OPERATION_REGION);
     fi;
     # add the number of filters required for each argument
+    if IS_FUNCTION(baserank) then
+        rank := baserank();
+    else
+        rank := baserank;
+    fi;
     if IS_CONSTRUCTOR(opr) then
         if 0 = LEN_LIST(flags)  then
             Error(NAME_FUNC(opr),": constructors must have at least one argument");
@@ -262,6 +267,9 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     methods[i+(narg+4)] := IMMUTABLE_COPY_OBJ(info);
     if BASE_SIZE_METHODS_OPER_ENTRY >= 5 then
         methods[i+(narg+5)] := MakeImmutable([INPUT_FILENAME(), READEVALCOMMAND_LINENUMBER, INPUT_LINENUMBER()]);
+        if BASE_SIZE_METHODS_OPER_ENTRY >= 6 then
+            methods[i+(narg+6)] := baserank;
+        fi;
     fi;
 
     # flush the cache
@@ -290,9 +298,11 @@ end );
 ##  if supplied <A>info</A> should be a short but informative string
 ##  that describes for what situation the method is installed,
 ##  <A>famp</A> should be a function to be applied to the families
-##  of the arguments,
-##  and <A>val</A> should be an integer that measures the priority
-##  of the method.
+##  of the arguments.
+##  <A>val</A> should be an integer that measures the priority of the
+##  method, or a function of no arguments which should return such an
+##  integer and will be called each time method order is being
+##  recalculated (see <Ref Func="InstallTrueMethod"/>).
 ##  <P/>
 ##  The default values for <A>info</A>, <A>famp</A>, and <A>val</A> are
 ##  the empty string,
@@ -455,9 +465,11 @@ BIND_GLOBAL( "INSTALL_METHOD",
     # Check the rank.
     if not IsBound( arglist[ pos ] ) then
       Error( "the method is missing in <arglist>" );
-    elif IS_INT( arglist[ pos ] ) then
-      rank:= arglist[ pos ];
-      pos:= pos + 1;
+    elif IS_INT( arglist[ pos ] ) or
+         (IS_FUNCTION( arglist[ pos ] ) and NARG_FUNC( arglist[ pos ] ) = 0
+           and pos < LEN_LIST(arglist)) then
+        rank := arglist[ pos ];
+        pos := pos+1;
     else
       rank:= 0;
     fi;
