@@ -746,6 +746,7 @@ It is generally safe to use if all threads but the current one are paused.
     <Subsection Label="The atomic statement.">
       <Heading>The <C>atomic</C> statement.</Heading>
 
+<Index Key="atomic" Subkey="no value"><K>atomic</K></Index>
 The <C>atomic</C> statement ensures exclusive or read-only access to one or more shared regions for statements within
 its scope. It has the following syntax:
 

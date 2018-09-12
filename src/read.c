@@ -1102,9 +1102,9 @@ static ArgList ReadFuncArgList(
     const Char * symbolstr)
 {
     Int        narg;           /* number of arguments             */
-    int        lockmode;       /* type of lock for current argument */
     Obj        nams;           /* list of local variables names   */
 #ifdef HPCGAP
+    LockQual   lockqual;
     Bag        locks = 0;      /* locks of the function */
 #endif
     UInt       isvarg = 0;     /* does function have varargs?     */
@@ -1128,37 +1128,43 @@ static ArgList ReadFuncArgList(
 
         Match( S_COMMA, ",", follow );
     start:
-        lockmode = 0;
-        switch (STATE(Symbol)) {
-        case S_READWRITE:
+#ifdef HPCGAP
+        lockqual = LOCK_QUAL_NONE;
+#endif
+        if (STATE(Symbol) == S_READWRITE) {
             if (!is_atomic) {
                 SyntaxError("'readwrite' argument of non-atomic function");
-                Match(S_READWRITE, "readwrite", follow);
-                break;
             }
-            lockmode++;
-        case S_READONLY:
+#ifdef HPCGAP
+            else {
+                lockqual = LOCK_QUAL_READWRITE;
+            }
+#endif
+            Match(S_READWRITE, "readwrite", follow);
+        }
+        else if (STATE(Symbol) == S_READONLY) {
             if (!is_atomic) {
                 SyntaxError("'readonly' argument of non-atomic function");
-                Match(S_READONLY, "readonly", follow);
-                break;
             }
-            lockmode++;
 #ifdef HPCGAP
-            GrowString(locks, narg+1);
-            SET_LEN_STRING(locks, narg+1);
-            CHARS_STRING(locks)[narg] = lockmode;
+            else {
+                lockqual = LOCK_QUAL_READONLY;
+            }
 #endif
-            if (STATE(Symbol) == S_READWRITE)
-                Match(S_READWRITE, "readwrite", follow);
-            else
-                Match(S_READONLY, "readonly", follow);
+            Match(S_READONLY, "readonly", follow);
         }
         if (STATE(Symbol) == S_IDENT && findValueInNams(nams, 1, narg)) {
             SyntaxError("Name used for two arguments");
         }
         narg += 1;
         PushPlist(nams, MakeImmString(STATE(Value)));
+#ifdef HPCGAP
+        if (is_atomic) {
+            GrowString(locks, narg);
+            SET_LEN_STRING(locks, narg);
+            CHARS_STRING(locks)[narg - 1] = lockqual;
+        }
+#endif
         if (LEN_PLIST(nams) >= MAX_FUNC_LVARS) {
             SyntaxError("Too many function arguments");
         }
