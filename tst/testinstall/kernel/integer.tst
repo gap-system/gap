@@ -4,6 +4,26 @@
 gap> START_TEST("kernel/integer.tst");
 
 #
+gap> INT_STRING(fail);
+fail
+
+#
+gap> ABS_INT(-100);
+100
+gap> ABS_INT(-100000000000);
+100000000000
+
+#
+gap> SIGN_INT(-100);
+-1
+gap> SIGN_INT(-100000000000);
+-1
+
+#
+gap> FACTORIAL_INT(fail);
+Error, Factorial: <n> must be an integer (not a boolean or fail)
+
+#
 #
 #
 gap> N := 2^(8*GAPInfo.BytesPerVariable-1);;
