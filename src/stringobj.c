@@ -34,10 +34,10 @@
 **
 **  This package consists of three parts.
 **  
-**  The first part consists of the macros 'NEW_STRING', 'CHARS_STRING' (or
-**  'CSTR_STRING'),  'GET_LEN_STRING', 'SET_LEN_STRING', 'GET_ELM_STRING',
-**  'SET_ELM_STRING'  and  'C_NEW_STRING'.  These and  the functions below
-**  use the detailed knowledge about the representation of strings.
+**  The first part consists of the functions 'NEW_STRING', 'CHARS_STRING' (or
+**  'CSTR_STRING'),  'GET_LEN_STRING', 'SET_LEN_STRING', 'C_NEW_STRING' and
+**  more. These and the functions below use the detailed knowledge about the
+**  representation of strings.
 **  
 **  The second part  consists  of  the  functions  'LenString',  'ElmString',
 **  'ElmsStrings', 'AssString',  'AsssString', PlainString',
@@ -790,6 +790,42 @@ Int IsbString (
 {
     /* since strings are dense, this must only test for the length         */
     return (pos <= GET_LEN_STRING(list));
+}
+
+
+/****************************************************************************
+**
+*F  GET_ELM_STRING( <list>, <pos> ) . . . . . . select an element of a string
+**
+**  'GET_ELM_STRING'  returns the  <pos>-th  element  of  the string  <list>.
+**  <pos> must be  a positive integer  less than  or  equal to  the length of
+**  <list>.
+*/
+static inline Obj GET_ELM_STRING(Obj list, Int pos)
+{
+    GAP_ASSERT(IS_STRING_REP(list));
+    GAP_ASSERT(pos > 0);
+    GAP_ASSERT((UInt) pos <= GET_LEN_STRING(list));
+    UChar c = CHARS_STRING(list)[pos - 1];
+    return ObjsChar[c];
+}
+
+
+/****************************************************************************
+**
+*F  SET_ELM_STRING( <list>, <pos>, <val> ) . . . . set a character of a string
+**
+**  'SET_ELM_STRING'  sets the  <pos>-th  character  of  the string  <list>.
+**  <val> must be a character and <list> stay a string after the assignment.
+*/
+static inline void SET_ELM_STRING(Obj list, Int pos, Obj val)
+{
+    GAP_ASSERT(IS_STRING_REP(list));
+    GAP_ASSERT(pos > 0);
+    GAP_ASSERT((UInt) pos <= GET_LEN_STRING(list));
+    GAP_ASSERT(TNUM_OBJ(val) == T_CHAR);
+    UChar * ptr = CHARS_STRING(list) + (pos - 1);
+    *ptr = CHAR_VALUE(val);
 }
 
 

@@ -124,7 +124,6 @@ VoidFunc debug_func_pointers[] = {
 #endif
     (VoidFunc)GET_ELM_PREC,
     (VoidFunc)GET_ELM_RANGE,
-    (VoidFunc)GET_ELM_STRING,
     (VoidFunc)GET_INC_RANGE,
     (VoidFunc)GET_LEN_RANGE,
     (VoidFunc)GET_LEN_STRING,
@@ -205,7 +204,6 @@ VoidFunc debug_func_pointers[] = {
     (VoidFunc)SET_DEN_RAT,
     (VoidFunc)SET_ELM_PLIST,
     (VoidFunc)SET_ELM_PREC,
-    (VoidFunc)SET_ELM_STRING,
     (VoidFunc)SET_ENVI_FUNC,
     (VoidFunc)SET_FEXS_FUNC,
     (VoidFunc)SET_HDLR_FUNC,
