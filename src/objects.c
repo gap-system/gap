@@ -638,7 +638,6 @@ Obj CopyObjComObj (
 {
     Obj                 copy;           /* copy, result                    */
     Obj                 tmp;            /* temporary variable              */
-    UInt                i;              /* loop variable                   */
 
     /* don't change immutable objects                                      */
     if ( ! IS_MUTABLE_OBJ(obj) ) {
@@ -653,8 +652,7 @@ Obj CopyObjComObj (
 
     /* make a copy                                                         */
     copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-    ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(obj)[0];
-    SET_LEN_PREC(copy,LEN_PREC(obj));
+    memcpy(ADDR_OBJ(copy), CONST_ADDR_OBJ(obj), SIZE_OBJ(obj));
     if ( !mut ) {
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
@@ -662,12 +660,15 @@ Obj CopyObjComObj (
     /* leave a forwarding pointer                                          */
     PrepareCopy(obj, copy);
 
-    /* copy the subvalues                                                  */
-    for ( i = 1; i <= LEN_PREC(obj); i++) {
-        SET_RNAM_PREC(copy,i,GET_RNAM_PREC(obj,i));
-        tmp = COPY_OBJ( GET_ELM_PREC(obj,i), mut );
-        SET_ELM_PREC(copy,i,tmp);
-        CHANGED_BAG( copy );
+    // copy the subvalues; since we used memcpy above, we don't need to worry
+    // about copying the length or RNAMs; and by working solely inside the
+    // copy, we avoid triggering tnum assertions in GET_ELM_PREC and
+    // SET_ELM_PREC
+    const UInt len = LEN_PREC(copy);
+    for (UInt i = 1; i <= len; i++) {
+        tmp = COPY_OBJ(GET_ELM_PREC(copy, i), mut);
+        SET_ELM_PREC(copy, i, tmp);
+        CHANGED_BAG(copy);
     }
 
     /* return the copy                                                     */
@@ -701,8 +702,6 @@ Obj CopyObjDatObj (
     Int                 mut )
 {
     Obj                 copy;           /* copy, result                    */
-    const Int *         src;
-    Int               * dst;
 
     /* don't change immutable objects                                      */
     if ( ! IS_MUTABLE_OBJ(obj) ) {
@@ -717,19 +716,13 @@ Obj CopyObjDatObj (
 
     /* make a copy                                                         */
     copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
-    ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(obj)[0];
+    memcpy(ADDR_OBJ(copy), CONST_ADDR_OBJ(obj), SIZE_OBJ(obj));
     if ( !mut ) {
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
 
     /* leave a forwarding pointer                                          */
     PrepareCopy(obj, copy);
-
-    /* copy the subvalues                                                  */
-    src = (const Int *)(CONST_ADDR_OBJ(obj) + 1);
-    dst = (Int *)(ADDR_OBJ(copy) + 1);
-    memcpy(dst, src, SIZE_OBJ(obj)-sizeof(Obj));
-    CHANGED_BAG(copy);
 
     /* return the copy                                                     */
     return copy;

@@ -51,18 +51,13 @@ static inline Int IS_PREC(Obj rec)
 **  This function is used in a GAP_ASSERT checking if calling functions like
 **  SET_ELM_PREC is acceptable on an Obj.
 **
-**  Unlike IS_PREC, this function also accepts precs which are being copied
-**  (and hence have the COPYING flag set), as well as component objects
-**  (which have the same memory layout as precs), as the precs APIs using it
-**  for assertion checks are in practice invoked on such objects, too.
+**  Unlike IS_PREC, this function also accepts component objects (which have
+**  the same memory layout as precs), as the precs APIs using it for
+**  assertion checks are in practice invoked on such objects, too.
 */
 static inline Int IS_PREC_OR_COMOBJ(Obj rec)
 {
     UInt tnum = TNUM_OBJ(rec);
-#if !defined(USE_THREADSAFE_COPYING)
-    if (tnum == T_COPYING)
-        return 1;
-#endif
     return tnum == T_PREC || tnum == T_PREC+IMMUTABLE || tnum == T_COMOBJ;
 }
 

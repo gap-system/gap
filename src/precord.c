@@ -167,7 +167,6 @@ Obj CopyPRec (
 {
     Obj                 copy;           /* copy, result                    */
     Obj                 tmp;            /* temporary variable              */
-    UInt                i;              /* loop variable                   */
 
     /* don't change immutable objects                                      */
     if ( ! IS_MUTABLE_OBJ(rec) ) {
@@ -181,18 +180,20 @@ Obj CopyPRec (
     else {
         copy = NewBag( IMMUTABLE_TNUM(TNUM_OBJ(rec)), SIZE_OBJ(rec) );
     }
-    ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(rec)[0];
+    memcpy(ADDR_OBJ(copy), CONST_ADDR_OBJ(rec), SIZE_OBJ(rec));
 
     // leave a forwarding pointer
     PrepareCopy(rec, copy);
 
-    // copy the subvalues
-    SET_LEN_PREC( copy, LEN_PREC(rec) );
-    for ( i = 1; i <= LEN_PREC(copy); i++ ) {
-        SET_RNAM_PREC( copy, i, GET_RNAM_PREC( rec, i ) );
-        tmp = COPY_OBJ( GET_ELM_PREC( rec, i ), mut );
-        SET_ELM_PREC( copy, i, tmp );
-        CHANGED_BAG( copy );
+    // copy the subvalues; since we used memcpy above, we don't need to worry
+    // about copying the length or RNAMs; and by working solely inside the
+    // copy, we avoid triggering tnum assertions in GET_ELM_PREC and
+    // SET_ELM_PREC
+    const UInt len = LEN_PREC(copy);
+    for (UInt i = 1; i <= len; i++) {
+        tmp = COPY_OBJ(GET_ELM_PREC(copy, i), mut);
+        SET_ELM_PREC(copy, i, tmp);
+        CHANGED_BAG(copy);
     }
 
     /* return the copy                                                     */
