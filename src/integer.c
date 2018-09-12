@@ -593,9 +593,9 @@ Int Int_ObjInt(Obj i)
     if (IS_INTOBJ(i))
         return INT_INTOBJ(i);
     // must be a single limb
-    if (TNUM_BAG(i) == T_INTPOS)
+    if (TNUM_OBJ(i) == T_INTPOS)
         sign = 0;
-    else if (TNUM_BAG(i) == T_INTNEG)
+    else if (TNUM_OBJ(i) == T_INTNEG)
         sign = 1;
     else
         ErrorMayQuit("Conversion error, expecting an integer, not a %s",
@@ -623,7 +623,7 @@ UInt UInt_ObjInt(Obj i)
         ErrorMayQuit("Conversion error, cannot convert negative integer to unsigned type", 0, 0);
     if (IS_INTOBJ(i))
         return (UInt)INT_INTOBJ(i);
-    if (TNUM_BAG(i) != T_INTPOS)
+    if (TNUM_OBJ(i) != T_INTPOS)
         ErrorMayQuit("Conversion error, expecting an integer, not a %s",
                      (Int)TNAM_OBJ(i), 0);
 
@@ -643,9 +643,9 @@ Int8 Int8_ObjInt(Obj i)
         return (Int8)INT_INTOBJ(i);
 
     UInt sign = 0;
-    if (TNUM_BAG(i) == T_INTPOS)
+    if (TNUM_OBJ(i) == T_INTPOS)
         sign = 0;
-    else if (TNUM_BAG(i) == T_INTNEG)
+    else if (TNUM_OBJ(i) == T_INTNEG)
         sign = 1;
     else
         ErrorMayQuit("Conversion error, expecting an integer, not a %s",
@@ -677,7 +677,7 @@ UInt8 UInt8_ObjInt(Obj i)
         ErrorMayQuit("Conversion error, cannot convert negative integer to unsigned type", 0, 0);
     if (IS_INTOBJ(i))
         return (UInt8)INT_INTOBJ(i);
-    if (TNUM_BAG(i) != T_INTPOS)
+    if (TNUM_OBJ(i) != T_INTPOS)
         ErrorMayQuit("Conversion error, expecting an integer, not a %s",
                      (Int)TNAM_OBJ(i), 0);
     if (SIZE_INT(i) > 2)
@@ -755,21 +755,15 @@ void PrintInt ( Obj op )
 ** Convert the integer <gmp> to a string relative to the given base <base>.
 ** Here, base may range from 2 to 36.
 */
-Obj StringIntBase( Obj gmp, int base )
+static Obj StringIntBase( Obj gmp, int base )
 {
   int len;
   Obj res;
   fake_mpz_t v;
 
-  if ( !IS_INT(gmp) ) {
-    return Fail;
-  }
-
+  GAP_ASSERT(IS_INT(gmp));
   CHECK_INT(gmp);
-
-  if ( base < 2 || 36 < base ) {
-    return Fail;
-  }
+  GAP_ASSERT(2 <= base && base <= 36);
 
   /* 0 is special */
   if ( gmp == INTOBJ_INT(0) ) {
@@ -1467,7 +1461,7 @@ Obj ProdInt ( Obj gmpL, Obj gmpR )
 **
 *F  ProdIntObj(<n>,<op>)  . . . . . . . . product of an integer and an object
 */
-Obj ProdIntObj ( Obj n, Obj op )
+static Obj ProdIntObj ( Obj n, Obj op )
 {
   Obj                 res = 0;        /* result                            */
   UInt                i, k;           /* loop variables                    */
