@@ -116,7 +116,7 @@ void            AddPlist (
   AddPlist3(list, obj, -1);
 }
 
-Obj AddListOper;
+static Obj AddListOper;
 
 Obj FuncADD_LIST3 (
     Obj                 self,
@@ -194,8 +194,7 @@ extern Obj FuncREM_LIST(
     Obj                 self,
     Obj                 list);
 
-Obj            RemPlist (
-                          Obj                 list)
+static Obj RemPlist(Obj list)
 {
     Int                 pos;           
     Obj removed; 
@@ -228,7 +227,7 @@ Obj            RemPlist (
     return removed;
 }
 
-Obj RemListOper;
+static Obj RemListOper;
 
 Obj FuncREM_LIST (
     Obj                 self,
@@ -347,7 +346,7 @@ Obj             FuncAPPEND_LIST_INTR (
     return (Obj)0;
 }
 
-Obj             AppendListOper;
+static Obj AppendListOper;
 
 Obj             FuncAPPEND_LIST (
     Obj                 self,

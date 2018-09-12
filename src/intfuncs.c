@@ -94,7 +94,7 @@ Obj FuncInitRandomMT( Obj self, Obj initstr)
   /* check the seed, given as string */
   while (! IsStringConv(initstr)) {
      initstr = ErrorReturnObj(
-         "<initstr> must be a string, not a %s)",
+         "<initstr> must be a string (not a %s)",
          (Int)TNAM_OBJ(initstr), 0L,
          "you can replace <initstr> via 'return <initstr>;'" );
   }
