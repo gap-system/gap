@@ -3196,7 +3196,7 @@ void InstallGlobalFunction (
     }
     memcpy(ADDR_OBJ(oper), CONST_ADDR_OBJ(func), SIZE_OBJ(func));
 
-    SET_NAME_FUNC(oper, ConvImmString(name));
+    SET_NAME_FUNC(oper, name ? ImmutableString(name) : 0);
     CHANGED_BAG(oper);
 }
 

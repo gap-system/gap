@@ -281,11 +281,22 @@ extern Int IsString (
 **
 *F  CopyToStringRep( <string> ) . . .  copy a string to string representation
 **
-**  'CopyToStringRep' copies the string <string> to a new string in string
-**  representation.
+**  'CopyToStringRep' copies the string <string> to a new mutable string in
+**  string representation.
 */
 extern Obj CopyToStringRep(
             Obj                 string );
+
+
+/****************************************************************************
+**
+*F  ImmutableString( <string> ) . . . copy to immutable string in string rep.
+**
+**  'ImmutableString' returns an immutable string in string representation
+**  equal to <string>. This may return <string> if it already satisfies these
+**  criteria.
+*/
+extern Obj ImmutableString(Obj string);
 
 
 /****************************************************************************
@@ -350,9 +361,6 @@ static inline Obj MakeImmString(const Char * cstr)
     MakeImmutableString(result);
     return result;
 }
-
-
-Obj ConvImmString(Obj str);
 
 
 /****************************************************************************

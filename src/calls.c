@@ -956,7 +956,7 @@ Obj NewFunctionT (
     }
 
     /* enter the arguments and the names                               */
-    SET_NAME_FUNC(func, ConvImmString(name));
+    SET_NAME_FUNC(func, name ? ImmutableString(name) : 0);
     SET_NARG_FUNC(func, narg);
     SET_NAMS_FUNC(func, nams);
     SET_NLOC_FUNC(func, 0);
@@ -1373,10 +1373,10 @@ Obj FuncSET_NAME_FUNC(
 {
   while (!IsStringConv(name)) {
     name = ErrorReturnObj("SET_NAME_FUNC( <func>, <name> ): <name> must be a string, not a %s",
-                          (Int)TNAM_OBJ(name), 0, "YOu can return a new name to continue");
+                          (Int)TNAM_OBJ(name), 0, "You can return a new name to continue");
   }
   if (TNUM_OBJ(func) == T_FUNCTION ) {
-    SET_NAME_FUNC(func, ConvImmString(name));
+    SET_NAME_FUNC(func, ImmutableString(name));
     CHANGED_BAG(func);
   } else
     DoOperation2Args(SET_NAME_FUNC_Oper, func, name);
