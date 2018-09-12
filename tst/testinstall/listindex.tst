@@ -191,6 +191,8 @@ gap> Append( () , [1,2,3] );
 Error, Append: <list1> must be a mutable list
 gap> s;
 [  ]
+
+#
 gap> s := [1,2,3];; l := [4,5,6];;
 gap> CopyListEntries(s,1,1,l,1,1,1); l;
 [ 1, 5, 6 ]
@@ -204,6 +206,23 @@ gap> CopyListEntries(s,3,-1,l,6,-1,2); l;
 [ 3, 2, 6,, 2, 3 ]
 gap> CopyListEntries(s,3,-1,l,4,-3,2); l;
 [ 2, 2, 6, 3, 2, 3 ]
+
+#
+gap> l := [1,2,3,4,5];;
+gap> CopyListEntries(l,2,2,l,2,2,2); l;
+[ 1, 2, 3, 4, 5 ]
+gap> CopyListEntries(l,2,2,l,1,2,2); l;
+[ 2, 2, 4, 4, 5 ]
+gap> l := [1,2,3,4,5];;
+gap> CopyListEntries(l,2,2,l,3,2,2); l;
+[ 1, 2, 2, 4, 4 ]
+gap> l := [1,2,3,4,5];;
+gap> CopyListEntries(l,1,1,l,3,2,2); l;
+[ 1, 2, 1, 4, 2 ]
+
+#
+gap> CopyListEntries();
+Error, COPY_LIST_ENTRIES: number of arguments must be 7, not 0
 gap> CopyListEntries("abc",3,-1,l,4,-3,2);
 Error, COPY_LIST_ENTRIES: source must be a plain list not a list (string)
 gap> CopyListEntries(s,3,-1,"abc",4,-3,2);
@@ -235,6 +254,8 @@ gap> CopyListEntries(s,1,1,l,1,-1,2);
 Error, COPY_LIST_ENTRIES: list indices must be positive integers
 gap> CopyListEntries(s,1,1,l,0,1,2);
 Error, COPY_LIST_ENTRIES: list indices must be positive integers
+
+#
 gap> x := [1,3,4];;
 gap> \[\](x,-1);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
