@@ -612,90 +612,84 @@ Obj CopyString (
 **  No linebreaks are  allowed, if one must be inserted  anyhow, it must
 **  be escaped by a backslash '\', which is done in 'Pr'.
 **
-**  The kernel  buffer PrStrBuf  is used to  protect Pr  against garbage
-**  collections caused by  printing to string streams,  which might move
-**  the body of list.
+**  The buffer 'PrStrBuf' is used to protect 'Pr' against garbage collections
+**  caused by printing to string streams, which might move the body of list.
 **
 **  The output uses octal number notation for non-ascii or non-printable
-**  characters. The function can be used  to print *any* string in a way
+**  characters. The function can be used to print *any* string in a way
 **  which can be read in by GAP afterwards.
-**
 */
-
-void PrintString (
-    Obj                 list )
+void PrintString(Obj list)
 {
-  char PrStrBuf[10007];	/* 7 for a \c\123 at the end */
-  UInt scanout, n;
-  UInt1 c;
-  UInt len = GET_LEN_STRING(list);
-  UInt off = 0;
-  Pr("\"", 0L, 0L);
-  while (off < len)
-    {
-      scanout = 0;
-      do 
-	{
-	  c = CHARS_STRING(list)[off++];
-	  switch (c)
-	    {
+    char  PrStrBuf[10007]; /* 7 for a \c\123 at the end */
+    UInt  scanout, n;
+    UInt1 c;
+    UInt  len = GET_LEN_STRING(list);
+    UInt  off = 0;
+    Pr("\"", 0L, 0L);
+    while (off < len) {
+        scanout = 0;
+        do {
+            c = CHARS_STRING(list)[off++];
+            switch (c) {
             case '\\':
-              PrStrBuf[scanout++] = '\\';
-              PrStrBuf[scanout++] = '\\';
-              break;
+                PrStrBuf[scanout++] = '\\';
+                PrStrBuf[scanout++] = '\\';
+                break;
             case '\"':
-              PrStrBuf[scanout++] = '\\';
-              PrStrBuf[scanout++] = '\"';
-              break;
-	    case '\n':
-	      PrStrBuf[scanout++] = '\\';
-	      PrStrBuf[scanout++] = 'n';
-	      break;
-	    case '\t':
-	      PrStrBuf[scanout++] = '\\';
-	      PrStrBuf[scanout++] = 't';
-	      break;
-	    case '\r':
-	      PrStrBuf[scanout++] = '\\';
-	      PrStrBuf[scanout++] = 'r';
-	      break;
-	    case '\b':
-	      PrStrBuf[scanout++] = '\\';
-	      PrStrBuf[scanout++] = 'b';
-	      break;
-	    case '\01':
-	      PrStrBuf[scanout++] = '\\';
-	      PrStrBuf[scanout++] = '>';
-	      break;
-	    case '\02':
-	      PrStrBuf[scanout++] = '\\';
-	      PrStrBuf[scanout++] = '<';
-	      break;
-	    case '\03':
-	      PrStrBuf[scanout++] = '\\';
-	      PrStrBuf[scanout++] = 'c';
-	      break;
-	    default:
-              if (c < 32 || c>126) {
-                 PrStrBuf[scanout++] = '\\';
-                 n = c / 64;
-                 c = c - n*64;
-                 PrStrBuf[scanout++] = n + '0';
-                 n = c / 8;
-                 c = c - n*8;
-                 PrStrBuf[scanout++] = n + '0';
-                 PrStrBuf[scanout++] = c + '0'; 
-              }
-              else
-                 PrStrBuf[scanout++] = c;
-	    }
-	}
-      while (off < len && scanout < 10000);
-      PrStrBuf[scanout++] = '\0';
-      Pr( "%s", (Int)PrStrBuf, 0L );
+                PrStrBuf[scanout++] = '\\';
+                PrStrBuf[scanout++] = '\"';
+                break;
+            case '\n':
+                PrStrBuf[scanout++] = '\\';
+                PrStrBuf[scanout++] = 'n';
+                break;
+            case '\t':
+                PrStrBuf[scanout++] = '\\';
+                PrStrBuf[scanout++] = 't';
+                break;
+            case '\r':
+                PrStrBuf[scanout++] = '\\';
+                PrStrBuf[scanout++] = 'r';
+                break;
+            case '\b':
+                PrStrBuf[scanout++] = '\\';
+                PrStrBuf[scanout++] = 'b';
+                break;
+            case '\01':
+                PrStrBuf[scanout++] = '\\';
+                PrStrBuf[scanout++] = '>';
+                break;
+            case '\02':
+                PrStrBuf[scanout++] = '\\';
+                PrStrBuf[scanout++] = '<';
+                break;
+            case '\03':
+                PrStrBuf[scanout++] = '\\';
+                PrStrBuf[scanout++] = 'c';
+                break;
+            default:
+                if (c < 32 || c > 126) {
+                    PrStrBuf[scanout++] = '\\';
+                    n = c / 64;
+                    c = c - n * 64;
+                    PrStrBuf[scanout++] = n + '0';
+                    n = c / 8;
+                    c = c - n * 8;
+                    PrStrBuf[scanout++] = n + '0';
+                    PrStrBuf[scanout++] = c + '0';
+                }
+                else
+                    PrStrBuf[scanout++] = c;
+            }
+        } while (off < len && scanout < 10000);
+        PrStrBuf[scanout++] = '\0';
+        Pr("%s", (Int)PrStrBuf, 0L);
     }
-  Pr( "\"", 0L, 0L );
+    Pr("\"", 0L, 0L);
 }
+
+
 /****************************************************************************
 **
 *F  PrintString1(<list>)  . . . . . . . . . . . .  print a string for 'Print'
@@ -703,8 +697,6 @@ void PrintString (
 **  'PrintString1' prints the string  constant  in  the  format  used  by the
 **  'Print' and 'PrintTo' function.
 */
-
-
 void PrintString1 (
     Obj                 list )
 {
