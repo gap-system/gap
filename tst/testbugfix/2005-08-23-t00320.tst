@@ -4,7 +4,8 @@ gap> IsElementaryAbelian( tbl );
 true
 gap> ClassPositionsOfMinimalNormalSubgroups( tbl );
 [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ] ]
-gap> if LoadPackage("ctbllib", false) <> fail then
+gap> if TestPackageAvailability("ctbllib") <> fail and
+>       LoadPackage("ctbllib", false) <> fail then
 >      tbl:= CharacterTableIsoclinic( CharacterTable( "2.A5.2" ) );
 >      if tbl mod 3 = fail then
 >        Error( CharacterTable( "Isoclinic(2.A5.2)" ), " mod 3" );
