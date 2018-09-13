@@ -211,9 +211,9 @@ Obj VerboseAInvObject (
 
 /****************************************************************************
 **
-*F  InstallAinvObject( <verb> ) . . . . . .  install additive inverse methods
+*F  InstallAInvObject( <verb> ) . . . . . .  install additive inverse methods
 */
-static void InstallAinvObject ( Int verb )
+static void InstallAInvObject(Int verb)
 {
     UInt                t1;             /* type of left  operand           */
     ArithMethod1        func;           /* ainv function                   */
@@ -272,9 +272,9 @@ Obj VerboseAInvMutObject (
 
 /****************************************************************************
 **
-*F  InstallAinvMutObject( <verb> ) . . . . . .  install additive inverse methods
+*F  InstallAInvMutObject( <verb> ) . . . . . install additive inverse methods
 */
-static void InstallAinvMutObject ( Int verb )
+static void InstallAInvMutObject(Int verb)
 {
     UInt                t1;             /* type of left  operand           */
     ArithMethod1        func;           /* ainv function                   */
@@ -1585,12 +1585,12 @@ void ChangeArithDoOperations(Obj oper, Int verb)
 
     if ( oper == InvOp  )  { InstallInvObject(verb);  }
     if ( oper == OneOp  )  { InstallOneObject(verb);  }
-    if ( oper == AInvOp )  { InstallAinvObject(verb); }
+    if ( oper == AInvOp )  { InstallAInvObject(verb); }
     if ( oper == ZEROOp )  { InstallZeroObject(verb); }
 
     if ( oper == InvMutOp  )  { InstallInvMutObject(verb);  }
     if ( oper == OneMutOp  )  { InstallOneMutObject(verb);  }
-    if ( oper == AdditiveInverseOp )  { InstallAinvMutObject(verb); }
+    if ( oper == AdditiveInverseOp )  { InstallAInvMutObject(verb); }
     if ( oper == ZeroOp )  { InstallZeroMutObject(verb); }
 }
 
@@ -1679,14 +1679,14 @@ static Int InitKernel (
         assert(AInvFuncs[t1] == 0);
         AInvFuncs[t1] = AInvObject;
     }
-    InstallAinvObject(0);
+    InstallAInvObject(0);
 
     /* make and install the 'AINV_MUT' arithmetic operation                */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         assert(AInvMutFuncs[t1] == 0);
         AInvMutFuncs[t1] = AInvMutObject;
     }
-    InstallAinvMutObject(0);
+    InstallAInvMutObject(0);
 
     /* make and install the 'ONE' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
