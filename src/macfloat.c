@@ -167,7 +167,7 @@ Obj ZeroMacfloat( Obj f )
 
 /****************************************************************************
 **
-*F  AinvMacfloat(<macfloat> ) . . . . . . . . . . . . . . . . . . . unary minus 
+*F  AInvMacfloat( <macfloat> ) . . . . . . . . . . . . . . . . .  unary minus
 **
 */
 

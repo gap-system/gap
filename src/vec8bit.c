@@ -1496,7 +1496,7 @@ Obj FuncPROD_FFE_VEC8BIT( Obj self, Obj ffe, Obj vec)
 ** GAP Callable methods for unary -
 */
 
-Obj AinvVec8Bit( Obj vec, UInt mut)
+Obj AInvVec8Bit(Obj vec, UInt mut)
 {
     Obj info;
     UInt p;
@@ -1522,17 +1522,17 @@ Obj AinvVec8Bit( Obj vec, UInt mut)
 
 Obj FuncAINV_VEC8BIT_MUTABLE( Obj self, Obj vec )
 {
-    return AinvVec8Bit(vec, 1);
+    return AInvVec8Bit(vec, 1);
 }
 
 Obj FuncAINV_VEC8BIT_SAME_MUTABILITY( Obj self, Obj vec )
 {
-    return AinvVec8Bit(vec, IS_MUTABLE_OBJ(vec));
+    return AInvVec8Bit(vec, IS_MUTABLE_OBJ(vec));
 }
 
 Obj FuncAINV_VEC8BIT_IMMUTABLE( Obj self, Obj vec )
 {
-    return AinvVec8Bit(vec, 0);
+    return AInvVec8Bit(vec, 0);
 }
 
 
