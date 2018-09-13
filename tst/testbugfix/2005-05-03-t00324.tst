@@ -1,5 +1,6 @@
 # 2005/05/03 (BH)
-gap> if LoadPackage("crisp", false) <> fail then
+gap> if TestPackageAvailability("crisp") <> fail and
+>       LoadPackage("crisp", false) <> fail then
 >      F:=FreeGroup("a","b","c");;
 >      a:=F.1;;b:=F.2;;c:=F.3;;
 >      G:=F/[a^12,b^2*a^6,c^2*a^6,b^-1*a*b*a,c^-1*a*c*a^-7,c^-1*b*c*a^-9*b^-1];;
