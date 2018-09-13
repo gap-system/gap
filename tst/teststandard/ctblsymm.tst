@@ -8,7 +8,7 @@
 gap> START_TEST( "ctblsymm.tst" );
 
 #
-gap> c3:= CharacterTable( "Cyclic", 3 );;
+gap> c3:= CharacterTable( CyclicGroup( 3 ) );;
 gap> n:= 3;;
 gap> wr:= CharacterTableWreathSymmetric( c3, n );;
 gap> irr:= Irr( wr );;
