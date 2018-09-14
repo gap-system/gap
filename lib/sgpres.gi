@@ -2372,10 +2372,10 @@ local c,o,n,j,au;
   for j in DATA.A do
     c[j+o][n]:=0;
   od;
-  c[a+o][i]:=n;
+  c[o+a][i]:=n;
   c[o-a][n]:=i;
   if DATA.augmented then
-    DATA.aug[a+o][i]:=DATA.one;
+    DATA.aug[o+a][i]:=DATA.one;
     DATA.aug[o-a][n]:=DATA.one;
     DATA.pp[n]:=DATA.one;
   fi;
@@ -2397,6 +2397,8 @@ end;
 
 NEWTC_Coincidence:=function(DATA,a,b)
 local Rep,Merge,ct,offset,l,q,i,c,x,d,p,mu,nu;
+
+  if a=b then return;fi;
 
   Rep:=function(kappa)
   local lambda,rho,mu;
@@ -2439,6 +2441,7 @@ local Rep,Merge,ct,offset,l,q,i,c,x,d,p,mu,nu;
     for x in DATA.A do
       if ct[x+offset][c]<>0 then
         d:=ct[x+offset][c];
+        ct[x+offset][c]:=0;
         ct[-x+offset][d]:=0;
         mu:=Rep(c);
         nu:=Rep(d);
@@ -2454,7 +2457,6 @@ local Rep,Merge,ct,offset,l,q,i,c,x,d,p,mu,nu;
       fi;
     od;
   od;
-  #Error("coinc\n");
 end;
 
 NEWTC_ModifiedCoincidence:=function(DATA,a,b,w)
@@ -2474,11 +2476,9 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
   local lambda,rho,mu,s;
     lambda:=kappa;
     rho:=p[lambda];
-    if rho=lambda then
-      return lambda;
-    fi;
+    if rho=lambda then return lambda; fi;
 
-    s:=[]; # new array to trace back compression path
+    s:=DATA.s; # re-used array to trace back compression path
     while rho<>lambda do
       s[rho]:=lambda;
       lambda:=rho;rho:=p[lambda];
@@ -2682,10 +2682,8 @@ local c,offset,f,b,r,i,j,fp,bp,t;
   c:=DATA.ct;
   offset:=DATA.offset;
   t:=TC_QUICK_SCAN(c,offset,alpha,w,DATA.scandata);
-  if t=false then 
-    return;
-  fi;
 
+  if t=false then return; fi;
 
   f:=alpha;i:=1;
   fp:=DATA.one;
@@ -2869,10 +2867,12 @@ local ded,offset,pair,alpha,x,p,w;
         fi;
       od;
     fi;
+    # separate 'if' check, as the `break;` only ends innermost loop
     if p[alpha]=alpha then
       alpha:=DATA.ct[x+offset][alpha]; # beta
       if p[alpha]=alpha then
-        for w in DATA.ccr[x+offset] do
+        # AH, 9/13/18: It's R^c_{x^-1}, so -x
+        for w in DATA.ccr[offset-x] do
           if DATA.augmented then
             NEWTC_ModifiedScan(DATA,alpha,w,DATA.one);
           else
@@ -2889,9 +2889,11 @@ end;
 
 NEWTC_DoCosetEnum:=function(freegens,freerels,subgens,aug,trace)
 local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
-  oldead,with,collapse,j,from,pp,PERCFACT,ap;
+  oldead,with,collapse,j,from,pp,PERCFACT,ap,ordertwo;
 
-  PERCFACT:=100;
+  # indicate at what change threshold display of coset Nr. should happen
+  PERCFACT:=ValueOption("display");
+  if not IsInt(PERCFACT) then PERCFACT:=100; fi;
 
   m:=Length(freegens);
   A:=List(freegens,LetterRepAssocWord);
@@ -2905,6 +2907,24 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
   ri:=Union(rels,List(rels,x->x^-1));
   ri:=List(ri,LetterRepAssocWord);
   SortBy(ri,Length);
+  A:=Concatenation([1..m],-[1..m]);
+
+  # are generators known to be of order 2?
+  ordertwo:=[];
+  for i in [1..Length(ri)] do
+    w:=ri[i];
+    if Length(w)=2 and Length(Set(w))=1 then
+      Unbind(ri[i]); # not needed any longer
+      a:=AbsInt(w[1]);
+      if not a in ordertwo then
+        Info(InfoFpGroup,1,"Generator ",a," has order 2");
+        AddSet(ordertwo,a);
+        A:=Filtered(A,x->x<>-a);
+      fi;
+    fi;
+  od;
+  ri:=Filtered(ri,x->IsBound(x));
+
 
   # cyclic conjugates, sort by first letter
   ccr:=List([1..2*m+1],x->[]);
@@ -2919,7 +2939,6 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
   # coset table in slightly different format: row (offset+x) is for
   # generator x
   ct:=List([1..offset+m],x->[0]);Unbind(ct[offset]);
-  A:=Concatenation([1..m],-[1..m]);
 
   n:=1;
   p:=[1];
@@ -2929,6 +2948,7 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
          subgword:=List(subgens,x->LetterRepAssocWord(UnderlyingElement(x))),
          n:=n,offset:=offset,A:=A,limit:=2^23,
          deductions:=[],dead:=0,defcount:=0,
+         ordertwo:=ordertwo,s:=[],
          # a global list for the kernel scan function to return 4 variables
          scandata:=[0,0,0,0]);
 
@@ -2966,6 +2986,13 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
   else
     DATA.augmented:=false;
   fi;
+
+  for a in ordertwo do
+    DATA.ct[offset-a]:=DATA.ct[offset+a];
+    if DATA.augmented then
+      DATA.aug[offset-a]:=DATA.aug[offset+a];
+    fi;
+  od;
 
   if trace<>false then
     with:=[0]; # generator by which a coset was defined
@@ -3022,6 +3049,7 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
 
   i:=1;
   while i<=DATA.n do
+
     for a in A do
       if p[i]=i then
         if ct[a+offset][i]=0 then
@@ -3521,7 +3549,7 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
         od;
         Info(InfoFpGroup,2,"Length =",Length(s));
         r:=s;
-        if warn and Length(s)>10*Sum(rels,Length) then
+        if warn and Length(s)>100*Sum(rels,Length) then
           warn:=false;
           Error(
             "Trying to eliminate all auxillary generators might cause the\n",

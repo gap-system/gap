@@ -393,54 +393,7 @@ DeclareGlobalFunction("AddRelator");
 ##  <P/>
 ##  This time we end up with a shorter presentation.
 ##  <P/>
-##  As an example of an implicit call of the function
-##  <Ref Func="DecodeTree"/> via the command
-##  <Ref Func="PresentationSubgroupMtc"/> we handle a subgroup
-##  of index 240 in a
-##  group of order 40320 given by a presentation due to
-##  B.&nbsp;H.&nbsp;Neumann.
-##  Note that we increase the level of <Ref InfoClass="InfoFpGroup"/>
-##  temporarily to get some additional output.
 ##  <P/>
-##  <Example><![CDATA[
-##  gap> F3 := FreeGroup( "a", "b", "c" );;
-##  gap> a := F3.1;;  b := F3.2;;  c := F3.3;;
-##  gap> G := F3 / [ a^3, b^3, c^3, (a*b)^5, (a^-1*b)^5, (a*c)^4,
-##  >     (a*c^-1)^4, a*b^-1*a*b*c^-1*a*c*a*c^-1, (b*c)^3, (b^-1*c)^4 ];;
-##  gap> a := G.1;;  b := G.2;;  c := G.3;;
-##  gap> H := Subgroup( G, [ a, c ] );;
-##  gap> SetInfoLevel( InfoFpGroup, 1 );
-##  gap> P := PresentationSubgroupMtc( G, H );;
-##  #I  there are 4 generators and 144 relators of total length 4373
-##  #I  there are 4 generators and 140 relators of total length 3898
-##  #I  there are 4 generators and 137 relators of total length 3715
-##  #I  there are 4 generators and 135 relators of total length 3380
-##  #I  there are 4 generators and 134 relators of total length 3291
-##  #I  there are 4 generators and 133 relators of total length 3212
-##  #I  there are 3 generators and 129 relators of total length 6494
-##  #I  there are 3 generators and 128 relators of total length 5465
-##  #I  there are 3 generators and 127 relators of total length 3722
-##  #I  there are 3 generators and 126 relators of total length 3048
-##  #I  there are 2 generators and 10 relators of total length 118
-##  #I  there are 2 generators and 5 relators of total length 38
-##  gap> TzGoGo( P );
-##  gap> TzPrintGenerators( P );
-##  #I  1.  _x1   19 occurrences
-##  #I  2.  _x2   19 occurrences
-##  gap> TzPrint( P );
-##  #I  generators: [ _x1, _x2 ]
-##  #I  relators:
-##  #I  1.  3  [ 1, 1, 1 ]
-##  #I  2.  3  [ 2, 2, 2 ]
-##  #I  3.  8  [ 1, -2, 1, -2, 1, -2, 1, -2 ]
-##  #I  4.  8  [ 2, 1, 2, 1, 2, 1, 2, 1 ]
-##  #I  5.  16  [ 2, -1, 2, 1, 2, -1, 2, 1, 2, -1, 2, 1, 2, -1, 2, 1 ]
-##  gap> K :=  FpGroupPresentation( P );
-##  <fp group on the generators [ _x1, _x2 ]>
-##  gap> SetInfoLevel( InfoFpGroup, 0 );
-##  gap> Size( K );
-##  168
-##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1603,7 +1556,7 @@ DeclareAttribute("TzOptions",IsPresentation,"mutable");
 ##  <A>P</A>.
 ##  <Example><![CDATA[
 ##  gap> TzPrintOptions( P );
-##  #I  protected          = 2
+##  #I  protected          = 0
 ##  #I  eliminationsLimit  = 100
 ##  #I  expandLimit        = 150
 ##  #I  generatorsLimit    = 0
