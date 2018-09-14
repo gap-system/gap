@@ -3726,7 +3726,7 @@ end );
 ##  enumerations with cumulatively bigger coset tables up to table size
 ##  <maxtable>. It returns `fail' if no table could be found.
 BindGlobal("FinIndexCyclicSubgroupGenerator",function(G,maxtable)
-local fgens,grels,max,gens,t,Attempt;
+local fgens,grels,max,gens,t,Attempt,perms,short;
   fgens:=FreeGeneratorsOfFpGroup(G);
   grels:=RelatorsOfFpGroup(G);
   max:=ValueOption("max");
@@ -3742,6 +3742,7 @@ local fgens,grels,max,gens,t,Attempt;
     #pseudorandom element - try if it works
     PseudoRandom(G:radius:=Random(2,3))],
     Filtered(gens,j->UnderlyingElement(j)<>UnderlyingElement(t)));
+  gens:=Set(List(gens,UnderlyingElement));
 
   # recursive search (via smaller and smaller partitions) for a finite index
   # subgroup
@@ -3753,7 +3754,7 @@ local fgens,grels,max,gens,t,Attempt;
     trial:=sgens{[1..m]};
     Info(InfoFpGroup,1,"FIS: trying ",trial);
     t:=CosetTableFromGensAndRels(fgens,grels,
-	List(trial,UnderlyingElement):silent:=true,max:=max);
+	trial:silent:=true,max:=max);
     if t<>fail and Length(trial)>1 then
       Unbind(t);
       t:=Attempt(trial);
@@ -3780,7 +3781,17 @@ local fgens,grels,max,gens,t,Attempt;
   while max<=maxtable do
     t:=Attempt(gens);
     if t<>fail then
-      return t;
+      perms:=List(t[2]{[1,3..Length(t[2])-1]},PermList);
+      short:=FreeGeneratorsOfFpGroup(G);
+      short:=Concatenation(short, List(short,Inverse));
+      short:=Set(List(Concatenation(List([1..3],x->Arrangements(short,x))),
+                 Product));
+      short:=List(short,
+        x->[Order(MappedWord(x,FreeGeneratorsOfFpGroup(G),perms)),x]);
+      Sort(short);
+      Info(InfoFpGroup,1,"FIS: better ",short[Length(short)][1]);
+      return [ElementOfFpGroup(FamilyObj(One(G)),short[Length(short)][2]),
+              max];
     fi;
     if max*3/2<maxtable and max*2>maxtable then
       max:=maxtable;
@@ -3829,7 +3840,7 @@ local   fgens,      # generators of the free group
     # the group could be quite big -- try to find a cyclic subgroup of
     # finite index.
     gen:=FinIndexCyclicSubgroupGenerator(G,infinity);
-    max:=gen[3];
+    max:=gen[2];
     gen:=gen[1];
 
     H := Subgroup(G,[gen]);
