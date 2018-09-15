@@ -1965,89 +1965,53 @@ BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
             changed := false;
             meths := METHODS_OPERATION(oper, n);
             nmethods := LENGTH(meths)/(BASE_SIZE_METHODS_OPER_ENTRY+n);
-            if IS_CONSTRUCTOR(oper) and n > 0 then
-                for i in [nmethods,nmethods-1..1] do
-                    base := (i-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n);
-                    # data for this method is meths{[base+1..base+BASE_SIZE_METHODS_OPER_ENTRY + n]}
-                    rank := meths[base+6+n];
-                    if IS_FUNCTION(rank) then
-                        rank := rank();
-                    fi;
-                    rank := rank - RankFilter(WITH_IMPS_FLAGS(meths[base+2]));
-                    if rank <> meths[base+n+3] then
-                        if IsHPCGAP and not changed then
-                            meths := SHALLOW_COPY_OBJ(meths);
-                        fi;
-                        changed := true;
-                        meths[base+n+3] := rank;
-                    fi;
-                    # compare to rank of succeding method
-                    if i = nmethods or rank >= meths[base+BASE_SIZE_METHODS_OPER_ENTRY + 2*n + 3] then
-                        continue;
-                    fi;
-                    k := i+2;
-                    while k <= nmethods and meths[(k-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n) + n + 3] < rank do
-                        k := k+1;
-                    od;
-                    k := k-1;
-                    if PRINT_REORDERED_METHODS then
-                        Print("Constructor ",NAME_FUNC(oper), " ", n," args. Moving method ",i," (",
-                              meths[base+n+4]," from ",meths[base+n+5][1],":", meths[base+n+5][2],
-                              ") to position ",k,"\n");
-                    fi;
-                    l := meths{[base+1..base+n+BASE_SIZE_METHODS_OPER_ENTRY]};
-                    COPY_LIST_ENTRIES(meths, 1 + i*(n+BASE_SIZE_METHODS_OPER_ENTRY), 1,
-                            meths, 1 +(i-1)*(n+BASE_SIZE_METHODS_OPER_ENTRY), 1,
-                            (k-i)*(n+BASE_SIZE_METHODS_OPER_ENTRY));
-                    meths{[1 + (k-1)*(n+BASE_SIZE_METHODS_OPER_ENTRY)..
-                           k*(n+BASE_SIZE_METHODS_OPER_ENTRY)]} := l;
-                od;
-            else
-                for i in [1 ..nmethods] do
-                    base := (i-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n);
-                    # data for this method is meths{[base+1..base+BASE_SIZE_METHODS_OPER_ENTRY + n]}
-                    rank := meths[base+6+n];
-                    if IS_FUNCTION(rank) then
-                        rank := rank();
-                    fi;
+            for i in [1 ..nmethods] do
+                base := (i-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n);
+                # data for this method is meths{[base+1..base+BASE_SIZE_METHODS_OPER_ENTRY + n]}
+                rank := meths[base+6+n];
+                if IS_FUNCTION(rank) then
+                    rank := rank();
+                fi;
 
-
+                if IS_CONSTRUCTOR(oper) and n > 0 then
+                    rank := rank - RankFilter(meths[base+2]);
+                else
                     for j in [1..n] do
                         req := meths[base+1+j];
-                        rank := rank+RankFilter(WITH_IMPS_FLAGS(req));
+                        rank := rank + RankFilter(req);
                     od;
+                fi;
 
-                    if rank <> meths[base+n+3] then
-                        if IsHPCGAP and not changed then
-                            meths := SHALLOW_COPY_OBJ(meths);
-                        fi;
-                        changed := true;
-                        meths[base+n+3] := rank;
+                if rank <> meths[base+n+3] then
+                    if IsHPCGAP and not changed then
+                        meths := SHALLOW_COPY_OBJ(meths);
                     fi;
+                    changed := true;
+                    meths[base+n+3] := rank;
+                fi;
 
-                    # compare to rank of preceding method
-                    if i = 1 or rank <= meths[base-BASE_SIZE_METHODS_OPER_ENTRY+3] then
-                        continue;
-                    fi;
+                # compare to rank of preceding method
+                if i = 1 or rank <= meths[base-BASE_SIZE_METHODS_OPER_ENTRY+3] then
+                    continue;
+                fi;
 
-                    k := i-2;
-                    while k > 1 and meths[(k-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n) + n + 3] < rank do
-                        k := k-1;
-                    od;
-                    k := k+1;
-                    if PRINT_REORDERED_METHODS then
-                        Print(NAME_FUNC(oper), " ", n," args. Moving method ",i," (",
-                              meths[base+n+4]," from ",meths[base+n+5][1],":", meths[base+n+5][2],
-                              ") to position ",k,"\n");
-                    fi;
-                    l := meths{[base+1..base+n+BASE_SIZE_METHODS_OPER_ENTRY]};
-                    COPY_LIST_ENTRIES(meths, 1 + (k-1)*(n+BASE_SIZE_METHODS_OPER_ENTRY), 1,
-                            meths, 1 + k*(n+BASE_SIZE_METHODS_OPER_ENTRY), 1,
-                            (i-k)*(n+BASE_SIZE_METHODS_OPER_ENTRY));
-                    meths{[1 + (k-1)*(n+BASE_SIZE_METHODS_OPER_ENTRY)..
-                           k*(n+BASE_SIZE_METHODS_OPER_ENTRY)]} := l;
+                k := i-2;
+                while k > 1 and meths[(k-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n) + n + 3] < rank do
+                    k := k-1;
                 od;
-            fi;
+                k := k+1;
+                if PRINT_REORDERED_METHODS then
+                    Print(NAME_FUNC(oper), " ", n," args. Moving method ",i," (",
+                          meths[base+n+4]," from ",meths[base+n+5][1],":", meths[base+n+5][2],
+                          ") to position ",k,"\n");
+                fi;
+                l := meths{[base+1..base+n+BASE_SIZE_METHODS_OPER_ENTRY]};
+                COPY_LIST_ENTRIES(meths, 1 + (k-1)*(n+BASE_SIZE_METHODS_OPER_ENTRY), 1,
+                        meths, 1 + k*(n+BASE_SIZE_METHODS_OPER_ENTRY), 1,
+                        (i-k)*(n+BASE_SIZE_METHODS_OPER_ENTRY));
+                meths{[1 + (k-1)*(n+BASE_SIZE_METHODS_OPER_ENTRY)..
+                       k*(n+BASE_SIZE_METHODS_OPER_ENTRY)]} := l;
+            od;
             if changed then
                 if IsHPCGAP then
                     SET_METHODS_OPERATION(oper,n,MakeReadOnlySingleObj(meths));
