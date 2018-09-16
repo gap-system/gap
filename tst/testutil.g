@@ -436,21 +436,20 @@ end);
 ##
 BindGlobal( "CheckOutputDelegations",
 function()
-local rules, name, f, str, ots, met, pos, nargs, r, i,
+local rules, name, f, str, ots, met, pos, nargs, r, i, tmp,
       report, line, m, n, illegal_delegations, checklist;
 
 rules := [ "Display", "ViewObj", "PrintObj", "DisplayString",
            "ViewString", "PrintString", "String" ];
 
-for name in rules do
-
-  pos:=Position( rules, name );
+for pos in [1..Length(rules)] do
+  name := rules[pos];
   report:=[];
 
   for nargs in [1..2] do
     f:=MethodsOperation( ValueGlobal(name), nargs );
     for m in f do
-      met := m.method;
+      met := m.func;
       str := "";
       ots := OutputTextString(str,true);;
       PrintTo( ots, met );
@@ -458,18 +457,30 @@ for name in rules do
       illegal_delegations:=[];
       checklist:=rules{[1..pos-1]};
       for r in checklist do
-        n := POSITION_SUBSTRING(str, r, 0);
-        if n <> fail then
+        # check for all occurrences of the string, but
+        # ignore those which are preceded or followed by a letter
+        n := 0;
+        while true do
+          n := POSITION_SUBSTRING(str, r, n);
+          if n = fail then break; fi;
+          if n > 1 and str[n-1] in LETTERS then continue; fi;
           if Length(str) >= n + Length(r) then
             if not str[n + Length(r)] in LETTERS then
               Add( illegal_delegations, r );
+              break;
             fi;
           fi;
-        fi;
+        od;
       od;
       if Length(illegal_delegations) > 0 then
-        Add( report, [ FILENAME_FUNC( met ), STARTLINE_FUNC( met ),
-                       m.info, illegal_delegations, met ] );
+        tmp := [];
+        if IsBound(m.location) then
+          Add(tmp, m.location);
+        else
+          Add(tmp, [ FILENAME_FUNC( met ), STARTLINE_FUNC( met ) ]);
+        fi;
+        Append(tmp, [ m.info, illegal_delegations, met ]);
+        Add(report, tmp);
       fi;
     od;
   od;
@@ -478,8 +489,8 @@ for name in rules do
     Print("\nDetected incorrect delegations for ", name, "\n");
     for line in report do
       Print("---------------------------------------------------------------\n");
-      Print( line[3], "\n", " delegates to ", line[4], "\n",
-             "Filename: ", line[1], ", line : ", line[2], "\n", line[5], "\n");
+      Print( line[2], "\n", " delegates to ", line[3], "\n",
+             "Filename: ", line[1][1], ":", line[1][2], "\n", line[4], "\n");
     od;
     Print("---------------------------------------------------------------\n");
   else
