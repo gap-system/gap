@@ -484,7 +484,7 @@ DeclareOperation( "Vector", [IsList]);
 ##    <Oper Arg="V" Name="ConstructingFilter" Label="for IsVectorObj"/>
 ##    <Returns>a filter</Returns>
 ##    <Description>
-##      Returns a filter <C>f</C> such that if <Ref Oper="NewVector"/> is
+##      Returns a filter <C>f</C> such that if <C>NewVector</C> is
 ##      called with <C>f</C> a vector in the same representation as <A>V</A>
 ##      is produced.
 ##    </Description>
