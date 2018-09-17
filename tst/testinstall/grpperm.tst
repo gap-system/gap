@@ -77,4 +77,6 @@ gap> IsSolvable(G);
 false
 gap> Length(MinimalGeneratingSet(G));
 2
+gap> IsomorphismPermGroup(G) = IdentityMapping(G);
+true
 gap> STOP_TEST( "grpperm.tst", 1);
