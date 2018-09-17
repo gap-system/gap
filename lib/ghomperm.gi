@@ -1928,7 +1928,8 @@ end);
 InstallMethod( IsomorphismPermGroup,
     "perm groups",
     true,
-    [ IsPermGroup ], 0,
+    [ IsPermGroup ],
+    SUM_FLAGS,
     IdentityMapping );
 
 
