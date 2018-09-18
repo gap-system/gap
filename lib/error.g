@@ -18,6 +18,10 @@ CallAndInstallPostRestore( function()
     ASS_GVAR( "QUITTING", false );
 end);
 
+#############################################################################
+##
+## Default stream for error messages.
+ERROR_OUTPUT := "*errout*";
 
 #############################################################################
 ##
