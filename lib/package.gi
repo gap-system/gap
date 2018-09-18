@@ -161,6 +161,107 @@ InstallGlobalFunction( SetPackageInfo, function( record )
 
 #############################################################################
 ##
+#F  FindPackageInfosInSubdirectories( pkgdir, name )
+##
+##  Finds all PackageInfos in subdirectories of directory name in
+##  directory pkgdir, return a list of their paths.
+##
+BindGlobal( "FindPackageInfosInSubdirectories", function( pkgdir, name )
+    local pkgpath, file, files, subdir;
+    pkgpath:= Filename( [ pkgdir ], name );
+    # This can be 'fail' if 'name' is a void link.
+    if pkgpath = fail then
+      return [];
+    fi;
+
+    if not IsDirectoryPath( pkgpath ) then
+      return [];
+    fi;
+    if name in [ ".", ".." ] then
+      return [];
+    fi;
+
+    file:= Filename( [ pkgdir ],
+                      Concatenation( name, "/PackageInfo.g" ) );
+    if file = fail then
+      files := [];
+      # Perhaps some subdirectories contain `PackageInfo.g' files.
+      for subdir in Set( DirectoryContents( pkgpath ) ) do
+        if not subdir in [ ".", ".." ] then
+          pkgpath:= Filename( [ pkgdir ],
+                              Concatenation( name, "/", subdir ) );
+          if pkgpath <> fail and IsDirectoryPath( pkgpath )
+                              and not subdir in [ ".", ".." ] then
+            file:= Filename( [ pkgdir ],
+                Concatenation( name, "/", subdir, "/PackageInfo.g" ) );
+            if file <> fail then
+              Add( files,
+                    [ file, Concatenation( name, "/", subdir ) ] );
+            fi;
+          fi;
+        fi;
+      od;
+    else
+      files:= [ [ file, name ] ];
+    fi;
+    return files;
+end );
+
+
+#############################################################################
+##
+#F  AddPackageInfo( files )
+##
+BindGlobal( "AddPackageInfos", function( files, pkgdir, ignore )
+    local file, record, pkgname, version;
+    for file in files do
+      # Read the `PackageInfo.g' file.
+      Unbind( GAPInfo.PackageInfoCurrent );
+      Read( file[1] );
+      if IsBound( GAPInfo.PackageInfoCurrent ) then
+        record:= GAPInfo.PackageInfoCurrent;
+        Unbind( GAPInfo.PackageInfoCurrent );
+        pkgname:= LowercaseString( record.PackageName );
+        NormalizeWhitespace( pkgname );
+        version:= record.Version;
+
+        # If we have this version already then leave it out.
+        if ForAll( GAPInfo.PackagesInfo,
+                    r ->    r.PackageName <> record.PackageName
+                        or r.Version <> version ) then
+
+          # Check whether GAP wants to reset loadability.
+          if     IsBound( GAPInfo.PackagesRestrictions.( pkgname ) )
+              and GAPInfo.PackagesRestrictions.( pkgname ).OnInitialization(
+                      record ) = false then
+            Add( GAPInfo.PackagesInfoRefuseLoad, record );
+          elif pkgname in ignore then
+            LogPackageLoadingMessage( PACKAGE_DEBUG,
+                Concatenation( "ignore package ", record.PackageName,
+                " (user preference PackagesToIgnore)" ), "GAP" );
+          else
+            record.InstallationPath:= Filename( [ pkgdir ], file[2] );
+            if not IsBound( record.PackageDoc ) then
+              record.PackageDoc:= [];
+            elif IsRecord( record.PackageDoc ) then
+              record.PackageDoc:= [ record.PackageDoc ];
+            fi;
+            if IsHPCGAP then
+              # FIXME: we make the package info record immutable, to
+              # allow access from multiple threads; but that in turn
+              # can break packages, which rely on their package info
+              # record being readable (see issue #2568)
+              MakeImmutable(record);
+            fi;
+            Add( GAPInfo.PackagesInfo, record );
+          fi;
+        fi;
+      fi;
+    od;
+end );
+
+#############################################################################
+##
 #F  InitializePackagesInfoRecords()
 ##
 ##  In earlier versions, this function had an argument; now we ignore it.
@@ -219,80 +320,12 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
 
       # Loop over subdirectories of this package directory.
       for name in Set( DirectoryContents( Filename( pkgdir, "" ) ) ) do
-        pkgpath:= Filename( [ pkgdir ], name );
-        # This can be 'fail' if 'name' is a void link.
-        if pkgpath <> fail and IsDirectoryPath( pkgpath )
-                           and not name in [ ".", ".." ] then
-          file:= Filename( [ pkgdir ],
-                           Concatenation( name, "/PackageInfo.g" ) );
-          if file = fail then
-            # Perhaps some subdirectories contain `PackageInfo.g' files.
-            files:= [];
-            for subdir in Set( DirectoryContents( pkgpath ) ) do
-              if not subdir in [ ".", ".." ] then
-                pkgpath:= Filename( [ pkgdir ],
-                                    Concatenation( name, "/", subdir ) );
-                if pkgpath <> fail and IsDirectoryPath( pkgpath )
-                                   and not subdir in [ ".", ".." ] then
-                  file:= Filename( [ pkgdir ],
-                      Concatenation( name, "/", subdir, "/PackageInfo.g" ) );
-                  if file <> fail then
-                    Add( files,
-                         [ file, Concatenation( name, "/", subdir ) ] );
-                  fi;
-                fi;
-              fi;
-            od;
-          else
-            files:= [ [ file, name ] ];
-          fi;
 
-          for file in files do
+          ## Get all package dirs
+          files := FindPackageInfosInSubdirectories( pkgdir, name );
 
-            # Read the `PackageInfo.g' file.
-            Unbind( GAPInfo.PackageInfoCurrent );
-            Read( file[1] );
-            if IsBound( GAPInfo.PackageInfoCurrent ) then
-              record:= GAPInfo.PackageInfoCurrent;
-              Unbind( GAPInfo.PackageInfoCurrent );
-              pkgname:= LowercaseString( record.PackageName );
-              NormalizeWhitespace( pkgname );
-              version:= record.Version;
+          AddPackageInfos( files, pkgdir, ignore );
 
-              # If we have this version already then leave it out.
-              if ForAll( GAPInfo.PackagesInfo,
-                         r ->    r.PackageName <> record.PackageName
-                              or r.Version <> version ) then
-
-                # Check whether GAP wants to reset loadability.
-                if     IsBound( GAPInfo.PackagesRestrictions.( pkgname ) )
-                   and GAPInfo.PackagesRestrictions.( pkgname ).OnInitialization(
-                           record ) = false then
-                  Add( GAPInfo.PackagesInfoRefuseLoad, record );
-                elif pkgname in ignore then
-                  LogPackageLoadingMessage( PACKAGE_DEBUG,
-                      Concatenation( "ignore package ", record.PackageName,
-                      " (user preference PackagesToIgnore)" ), "GAP" );
-                else
-                  record.InstallationPath:= Filename( [ pkgdir ], file[2] );
-                  if not IsBound( record.PackageDoc ) then
-                    record.PackageDoc:= [];
-                  elif IsRecord( record.PackageDoc ) then
-                    record.PackageDoc:= [ record.PackageDoc ];
-                  fi;
-                  if IsHPCGAP then
-                    # FIXME: we make the package info record immutable, to
-                    # allow access from multiple threads; but that in turn
-                    # can break packages, which rely on their package info
-                    # record being readable (see issue #2568)
-                    MakeImmutable(record);
-                  fi;
-                  Add( GAPInfo.PackagesInfo, record );
-                fi;
-              fi;
-            fi;
-          od;
-        fi;
       od;
     od;
 
