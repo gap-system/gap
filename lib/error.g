@@ -60,17 +60,17 @@ BIND_GLOBAL("WHERE", function( context, depth, outercontext)
     bottom := GetBottomLVars();
     lastcontext := outercontext;
     while depth > 0  and context <> bottom do
-        PRINT_CURRENT_STATEMENT("*errout*", context);
-        PrintTo("*errout*", " called from\n");
+        PRINT_CURRENT_STATEMENT(ERROR_OUTPUT, context);
+        PrintTo(ERROR_OUTPUT, " called from\n");
         lastcontext := context;
         context := ParentLVars(context);
         depth := depth-1;
     od;
     if depth = 0 then 
-        PrintTo("*errout*", "...  ");
+        PrintTo(ERROR_OUTPUT, "...  ");
     else
         f := ContentsLVars(lastcontext).func;
-        PrintTo("*errout*", "<function \"",NAME_FUNC(f)
+        PrintTo(ERROR_OUTPUT, "<function \"",NAME_FUNC(f)
               ,"\">( <arguments> )\n called from read-eval loop ");
     fi;
 end);
@@ -85,11 +85,11 @@ BIND_GLOBAL("Where", function(arg)
     fi;
     
     if ErrorLVars = fail or ErrorLVars = GetBottomLVars() then
-        PrintTo("*errout*", "not in any function ");
+        PrintTo(ERROR_OUTPUT, "not in any function ");
     else
         WHERE(ParentLVars(ErrorLVars),depth, ErrorLVars);
     fi;
-    PrintTo("*errout*", "at ",INPUT_FILENAME(),":",INPUT_LINENUMBER(),"\n");
+    PrintTo(ERROR_OUTPUT, "at ",INPUT_FILENAME(),":",INPUT_LINENUMBER(),"\n");
 end);
 
 OnBreak := Where;
@@ -126,7 +126,7 @@ BIND_GLOBAL("ErrorInner",
 
     context := arg[1].context;
     if not IsLVarsBag(context) then
-        PrintTo("*errout*", "ErrorInner:   option context must be a local variables bag\n");
+        PrintTo(ERROR_OUTPUT, "ErrorInner:   option context must be a local variables bag\n");
         LEAVE_ALL_NAMESPACES();
         JUMP_TO_CATCH(1);
     fi; 
@@ -134,7 +134,7 @@ BIND_GLOBAL("ErrorInner",
     if IsBound(arg[1].justQuit) then
         justQuit := arg[1].justQuit;
         if not justQuit in [false, true] then
-            PrintTo("*errout*", "ErrorInner: option justQuit must be true or false\n");
+            PrintTo(ERROR_OUTPUT, "ErrorInner: option justQuit must be true or false\n");
             LEAVE_ALL_NAMESPACES();
             JUMP_TO_CATCH(1);
         fi;
@@ -145,7 +145,7 @@ BIND_GLOBAL("ErrorInner",
     if IsBound(arg[1].mayReturnVoid) then
         mayReturnVoid := arg[1].mayReturnVoid;
         if not mayReturnVoid in [false, true] then
-            PrintTo("*errout*", "ErrorInner: option mayReturnVoid must be true or false\n");
+            PrintTo(ERROR_OUTPUT, "ErrorInner: option mayReturnVoid must be true or false\n");
             LEAVE_ALL_NAMESPACES();
             JUMP_TO_CATCH(1);
         fi;
@@ -156,7 +156,7 @@ BIND_GLOBAL("ErrorInner",
     if IsBound(arg[1].mayReturnObj) then
         mayReturnObj := arg[1].mayReturnObj;
         if not mayReturnObj in [false, true] then
-            PrintTo("*errout*", "ErrorInner: option mayReturnObj must be true or false\n");
+            PrintTo(ERROR_OUTPUT, "ErrorInner: option mayReturnObj must be true or false\n");
             LEAVE_ALL_NAMESPACES();
             JUMP_TO_CATCH(1);
         fi;
@@ -167,7 +167,7 @@ BIND_GLOBAL("ErrorInner",
     if IsBound(arg[1].printThisStatement) then
         printThisStatement := arg[1].printThisStatement;
         if not printThisStatement in [false, true] then
-            PrintTo("*errout*", "ErrorInner: option printThisStatement must be true or false\n");
+            PrintTo(ERROR_OUTPUT, "ErrorInner: option printThisStatement must be true or false\n");
             LEAVE_ALL_NAMESPACES();
             JUMP_TO_CATCH(1);
         fi;
@@ -178,7 +178,7 @@ BIND_GLOBAL("ErrorInner",
     if IsBound(arg[1].lateMessage) then
         lateMessage := arg[1].lateMessage;
         if not lateMessage in [false, true] and not IsString(lateMessage) then
-            PrintTo("*errout*", "ErrorInner: option lateMessage must be a string or false\n");
+            PrintTo(ERROR_OUTPUT, "ErrorInner: option lateMessage must be a string or false\n");
             LEAVE_ALL_NAMESPACES();
             JUMP_TO_CATCH(1);
         fi;
@@ -188,7 +188,7 @@ BIND_GLOBAL("ErrorInner",
         
     earlyMessage := arg[2];
     if Length(arg) <> 2 then
-        PrintTo("*errout*", "ErrorInner: new format takes exactly two arguments\n");
+        PrintTo(ERROR_OUTPUT, "ErrorInner: new format takes exactly two arguments\n");
         LEAVE_ALL_NAMESPACES();
         JUMP_TO_CATCH(1);
     fi;
@@ -217,7 +217,7 @@ BIND_GLOBAL("ErrorInner",
             fi;
             PrintTo(stream, " called from");
         fi;
-        PrintTo("*errout*", "\n");
+        PrintTo(ERROR_OUTPUT, "\n");
     end;
 
     ErrorLevel := ErrorLevel+1;
@@ -235,14 +235,14 @@ BIND_GLOBAL("ErrorInner",
         # It is used by HPC-GAP to e.g. suppress error messages in worker
         # threads.
         if not SilentNonInteractiveErrors then
-            printEarlyMessage("*errout*");
+            printEarlyMessage(ERROR_OUTPUT);
             if AlwaysPrintTracebackOnError then
-                printEarlyTraceback("*errout*");
+                printEarlyTraceback(ERROR_OUTPUT);
                 if IsBound(OnBreak) and IsFunction(OnBreak) then
                     OnBreak();
                 fi;
             else
-                PrintTo("*errout*", "\n");
+                PrintTo(ERROR_OUTPUT, "\n");
             fi;
         fi;
         if IsHPCGAP then
@@ -272,8 +272,8 @@ BIND_GLOBAL("ErrorInner",
         JUMP_TO_CATCH(0);
     fi;
 
-    printEarlyMessage("*errout*");
-    printEarlyTraceback("*errout*");
+    printEarlyMessage(ERROR_OUTPUT);
+    printEarlyTraceback(ERROR_OUTPUT);
 
     if SHOULD_QUIT_ON_BREAK() then
         # Again, the default is to not print the rest of the traceback.
@@ -292,7 +292,7 @@ BIND_GLOBAL("ErrorInner",
 
     # Now print lateMessage and OnBreakMessage a la "press return; to .."
     if IsString(lateMessage) then
-        PrintTo("*errout*", lateMessage,"\n");
+        PrintTo(ERROR_OUTPUT, lateMessage,"\n");
     elif lateMessage then
         if IsBound(OnBreakMessage) and IsFunction(OnBreakMessage) then
             OnBreakMessage();
