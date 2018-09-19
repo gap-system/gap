@@ -14,9 +14,11 @@
 #include "objects.h"
 #include "sysmem.h"
 
+#ifdef HPCGAP
 #include "hpc/misc.h"
 #include "hpc/thread.h"
 #include "hpc/guards.h"
+#endif
 
 #ifdef TRACK_CREATOR
 #include "calls.h"
@@ -27,13 +29,15 @@
 #error This file can only be used when the Boehm GC collector is enabled
 #endif
 
+#ifdef HPCGAP
 #include <pthread.h>
+#define GC_THREADS
+#endif
 
 #define LARGE_GC_SIZE (8192 * sizeof(UInt))
 #define TL_GC_SIZE (256 * sizeof(UInt))
 
 #ifndef DISABLE_GC
-#define GC_THREADS
 #include <gc/gc.h>
 #include <gc/gc_inline.h>
 #include <gc/gc_typed.h>
@@ -57,6 +61,8 @@ static inline Bag * DATA(BagHeader * bag)
 *V  DSInfoBags[<type>]  . . . .  . . . . . . . . . .  region info for bags
 */
 
+#ifdef HPCGAP
+
 static char DSInfoBags[NUM_TYPES];
 
 #define DSI_TL 0
@@ -69,18 +75,14 @@ void MakeBagTypePublic(int type)
 
 Bag MakeBagPublic(Bag bag)
 {
-#ifdef HPCGAP
     MEMBAR_WRITE();
-#endif
     REGION(bag) = 0;
     return bag;
 }
 
 Bag MakeBagReadOnly(Bag bag)
 {
-#ifdef HPCGAP
     MEMBAR_WRITE();
-#endif
     REGION(bag) = ReadOnlyRegion;
     return bag;
 }
@@ -88,11 +90,12 @@ Bag MakeBagReadOnly(Bag bag)
 Region * RegionBag(Bag bag)
 {
     Region * result = REGION(bag);
-#ifdef HPCGAP
     MEMBAR_READ();
-#endif
     return result;
 }
+
+#endif // HPCGAP
+
 
 /****************************************************************************
 **
@@ -257,6 +260,8 @@ void * AllocateBagMemory(int gc_type, int type, UInt size)
     return result;
 }
 
+#ifdef HPCGAP
+
 void LockFinalizer(void * lock, void * data)
 {
     pthread_rwlock_destroy(lock);
@@ -283,6 +288,8 @@ Region * NewRegion(void)
     result->lock = lock;
     return result;
 }
+
+#endif
 
 void * AllocateMemoryBlock(UInt size)
 {
@@ -311,6 +318,11 @@ void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
     TabMarkTypeBags[type] = mark_type;
 }
 
+void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func)
+{
+    Panic("SetExtraMarkFuncBags not implemented for Boehm GC");
+}
+
 void InitBags(UInt              initial_size,
               Bag *             stack_bottom,
               UInt              stack_align)
@@ -322,6 +334,7 @@ void InitBags(UInt              initial_size,
         TabMarkTypeBags[i] = -1;
     }
 #ifndef DISABLE_GC
+#ifdef HPCGAP
     if (!getenv("GC_MARKERS")) {
         /* The Boehm GC does not have an API to set the number of
          * markers for the parallel mark and sweep implementation,
@@ -342,6 +355,7 @@ void InitBags(UInt              initial_size,
         sprintf(marker_env_str, "GC_MARKERS=%u", num_markers);
         putenv(marker_env_str);
     }
+#endif
     GC_set_all_interior_pointers(0);
     GC_init();
     GC_set_free_space_divisor(1);
@@ -353,8 +367,13 @@ void InitBags(UInt              initial_size,
         GC_expand_hp(initial_size - GC_get_heap_size());
     if (SyStorKill)
         GC_set_max_heap_size(SyStorKill * 1024);
+#ifdef HPCGAP
     AddGCRoots();
     CreateMainRegion();
+#else
+    void * p = ActiveGAPState();
+    GC_add_roots(p, (char *)p + sizeof(GAPState));
+#endif
     for (i = 0; i <= MAX_GC_PREFIX_DESC; i++) {
         BuildPrefixGCDescriptor(i);
         /* This is necessary to initialize some internal structures
@@ -372,11 +391,13 @@ UInt CollectBags(UInt size, UInt full)
     return 1;
 }
 
+#ifdef HPCGAP
 void RetypeBagIfWritable(Obj obj, UInt new_type)
 {
     if (CheckWriteAccess(obj))
         RetypeBag(obj, new_type);
 }
+#endif
 
 void RetypeBag(Bag bag, UInt new_type)
 {
@@ -400,11 +421,13 @@ void RetypeBag(Bag bag, UInt new_type)
             SET_PTR_BAG(bag, (void *)(((char *)new_mem) + sizeof(BagHeader)));
         }
     }
+#ifdef HPCGAP
     switch (DSInfoBags[new_type]) {
     case DSI_PUBLIC:
         REGION(bag) = NULL;
         break;
     }
+#endif // HPCGAP
 }
 
 Bag NewBag(UInt type, UInt size)
@@ -474,6 +497,7 @@ Bag NewBag(UInt type, UInt size)
 
     /* set the masterpointer                                               */
     SET_PTR_BAG(bag, DATA(header));
+#ifdef HPCGAP
     switch (DSInfoBags[type]) {
     case DSI_TL:
         REGION(bag) = CurrentRegion();
@@ -482,6 +506,7 @@ Bag NewBag(UInt type, UInt size)
         REGION(bag) = NULL;
         break;
     }
+#endif
 
     /* return the identifier of the new bag                                */
     return bag;

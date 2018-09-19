@@ -508,7 +508,8 @@ void CLEAN_OBJ(Obj obj)
         CleanObjFuncs[tnum](obj);
 }
 
-#if defined(USE_GASMAN) || defined(USE_JULIA_GC)
+#if !defined(USE_THREADSAFE_COPYING) && !defined(USE_BOEHM_GC)
+
 extern TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
 
 void MarkCopyingSubBags(Obj obj)
@@ -1989,7 +1990,7 @@ static Int InitKernel (
     InitMarkFuncBags( T_COMOBJ          , MarkPRecSubBags );
     InitMarkFuncBags( T_POSOBJ          , MarkAllSubBags  );
     InitMarkFuncBags( T_DATOBJ          , MarkOneSubBags  );
-#if !defined(USE_THREADSAFE_COPYING)
+#if !defined(USE_THREADSAFE_COPYING) && !defined(USE_BOEHM_GC)
     InitMarkFuncBags(T_COPYING, MarkCopyingSubBags);
 #endif
 
