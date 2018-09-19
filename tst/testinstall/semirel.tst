@@ -135,6 +135,39 @@ gap> LClassOfHClass(H);
 <Green's L-class: Transformation( [ 2, 4, 3, 4 ] )>
 gap> RClassOfHClass(H);
 <Green's R-class: Transformation( [ 2, 4, 3, 4 ] )>
+
+# GreensXClasses for a GreensClass
+gap> S := Semigroup([Transformation([1, 1, 1, 1]),
+>                    Transformation([1, 1, 1, 2]),
+>                    Transformation([1, 1, 1, 3])]);;
+gap> D := GreensDClasses(S); 
+[ <Green's D-class: Transformation( [ 1, 1, 1, 1 ] )>, 
+  <Green's D-class: Transformation( [ 1, 1, 1, 2 ] )>, 
+  <Green's D-class: Transformation( [ 1, 1, 1, 3 ] )> ]
+gap> L := GreensLClasses(S);
+[ <Green's L-class: Transformation( [ 1, 1, 1, 1 ] )>, 
+  <Green's L-class: Transformation( [ 1, 1, 1, 2 ] )>, 
+  <Green's L-class: Transformation( [ 1, 1, 1, 3 ] )> ]
+gap> R := GreensRClasses(S);
+[ <Green's R-class: Transformation( [ 1, 1, 1, 1 ] )>, 
+  <Green's R-class: Transformation( [ 1, 1, 1, 2 ] )>, 
+  <Green's R-class: Transformation( [ 1, 1, 1, 3 ] )> ]
+gap> H := GreensHClasses(S);
+[ <Green's H-class: Transformation( [ 1, 1, 1, 1 ] )>, 
+  <Green's H-class: Transformation( [ 1, 1, 1, 2 ] )>, 
+  <Green's H-class: Transformation( [ 1, 1, 1, 3 ] )> ]
+gap> Concatenation(List(D, GreensLClasses)) = L;
+true
+gap> Concatenation(List(D, GreensRClasses)) = R;
+true
+gap> Concatenation(List(D, GreensHClasses)) = H;
+true
+gap> Concatenation(List(L, GreensHClasses)) = H;
+true
+gap> Concatenation(List(R, GreensHClasses)) = H;
+true
+
+#
 gap> STOP_TEST( "semirel.tst", 1);
 
 #############################################################################
