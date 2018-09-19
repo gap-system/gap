@@ -94,18 +94,34 @@ afterwards.
 <Section Label="Info Functions">
 <Heading>Info Functions</Heading>
 
-The <Ref Func="Info"/> mechanism permits operations to display intermediate results or
+The <Index>verbosity of GAP output</Index><Ref Func="Info"/> mechanism
+permits operations to display intermediate results or
 information about the progress of the algorithms.
 Information is always given according to one or more <E>info classes</E>. Each of the
 info classes defined in the &GAP; library usually covers a certain range
 of algorithms, so for example <C>InfoLattice</C> covers all the cyclic extension
 algorithms for the computation of a subgroup lattice.
 <P/>
-The amount of information to be displayed can be specified by the user for
-each info class separately by a <E>level</E>, the higher the level the more
-information will be displayed.
-Ab initio all info classes have level zero except
-<Ref Func="InfoWarning"/> which initially has level 1.
+
+Note that not all info classes defined in the &GAP; library are currently
+documented.  Many &GAP; packages define additional info classes, which are
+typically documented in the corresponding package documentation.
+<P/>
+The amount of information to be displayed by each info class can be separately
+specified by the user. This is done by selecting a non-negative integer
+<E>level</E> for the info class: no information will be displayed at level 0,
+and the higher the level, the more information that will be displayed. At
+creation, an info class has level 0. By default, all built-in GAP info classes
+have level 0, except for the following info classes, which have level 1:
+<List>
+  <Item><Ref Func="InfoWarning"/>,</Item>
+  <Item><Ref Func="InfoPackageLoading"/>,</Item>
+  <Item><C>InfoDebug</C>,</Item>
+  <Item><C>InfoPerformance</C>,</Item>
+  <Item><C>InfoTempDirectories</C>,</Item>
+  <Item><C>InfoPrimeInt</C>, and</Item>
+  <Item><C>InfoSLP</C>.</Item>
+</List>
 <P/>
 <ManSection>
 <Oper Name="NewInfoClass" Arg='name'/>
@@ -129,7 +145,8 @@ readonly by this function.
 <Oper Name="SetInfoLevel" Arg='infoclass, level'/>
 
 <Description>
-Sets the info level for <A>infoclass</A> to <A>level</A>.
+  Sets the info level for <A>infoclass</A> to the non-negative integer
+  <A>level</A>.
 </Description>
 </ManSection>
 <P/>
@@ -145,13 +162,15 @@ returns the info level of <A>infoclass</A>.
 <Func Name="Info" Arg='infoclass, level, info[, moreinfo ...]'/>
 
 <Description>
-If the info level of <A>infoclass</A> is at least <A>level</A> the remaining
-arguments, <A>info</A> and possibly <A>moreinfo</A> and so on, are evaluated.
+If the info level of <A>infoclass</A> is at least <A>level</A>, then the remaining
+arguments, <A>info</A>, and possibly <A>moreinfo</A> and so on, are evaluated.
 (Technically, <Ref Func="Info"/> is a keyword and not a function.)
 <P/>
-By default, they are 
+By default, the results of these evaluations are
 viewed, preceded by the string <C>"#I  "</C> and followed by a newline.
-Otherwise the third and subsequent arguments are not evaluated.
+<P/>
+If the info level of <A>infoclass</A> is strictly less than <A>level</A>, then
+the third and subsequent arguments are not evaluated.
 (The latter can save substantial time when displaying difficult results.)
 <P/>
 The behaviour can be customized with <Ref Func="SetInfoHandler"/>.
@@ -208,12 +227,12 @@ gap> InfoLevel(InfoWarning);
 <Func Arg="out" Name="SetDefaultInfoOutput" />
 <Returns>nothing</Returns>
 <Description>
-This allows to customize what happens in an
+This allows one to customize what happens in an
 <C>Info(<A>infoclass</A>, <A>level</A>, ...)</C> statement.<P/> 
-In the first function <A>handler</A>
+In the first function, <A>handler</A>
 must be a function with three arguments <A>infoclass</A>, <A>level</A>,
-<A>list</A>. Here <A>list</A> is the list containing the third to last
-argument of the <Ref Func="Info"/> call.
+<A>list</A>. Here <A>list</A> is the list containing the third argument and
+any subsequent optional arguments of the <Ref Func="Info"/> call.
 <P/>
 The default handler is the function <C>DefaultInfoHandler</C>.
 <Index Key="DefaultInfoHandler"><C>DefaultInfoHandler</C></Index>
