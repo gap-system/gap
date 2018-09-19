@@ -921,9 +921,7 @@ void ModulesInitKernel(void)
             }
             Int ret = info->initKernel(info);
             if (ret) {
-                FPUTS_TO_STDERR("#I  InitKernel(builtin ");
-                FPUTS_TO_STDERR(info->name);
-                FPUTS_TO_STDERR(") returned non-zero value\n");
+                Panic("InitKernel(builtin %s) returned non-zero value", info->name);
             }
         }
     }
@@ -941,9 +939,7 @@ void ModulesInitLibrary(void)
             }
             Int ret = info->initLibrary(info);
             if (ret) {
-                FPUTS_TO_STDERR("#I  InitLibrary(builtin ");
-                FPUTS_TO_STDERR(info->name);
-                FPUTS_TO_STDERR(") returned non-zero value\n");
+                Panic("InitLibrary(builtin %s) returned non-zero value", info->name);
             }
         }
     }
@@ -961,9 +957,7 @@ void ModulesCheckInit(void)
             }
             Int ret = info->checkInit(info);
             if (ret) {
-                FPUTS_TO_STDERR("#I  CheckInit(builtin ");
-                FPUTS_TO_STDERR(info->name);
-                FPUTS_TO_STDERR(") returned non-zero value\n");
+                Panic("CheckInit(builtin %s) returned non-zero value", info->name);
             }
         }
     }
@@ -981,9 +975,7 @@ void ModulesInitModuleState(void)
             }
             Int ret = info->initModuleState();
             if (ret) {
-                FPUTS_TO_STDERR("#I  InitModuleState(");
-                FPUTS_TO_STDERR(info->name);
-                FPUTS_TO_STDERR(") returned non-zero value\n");
+                Panic("InitModuleState(builtin %s) returned non-zero value", info->name);
             }
         }
     }
@@ -1001,9 +993,7 @@ void ModulesDestroyModuleState(void)
             }
             Int ret = info->destroyModuleState();
             if (ret) {
-                FPUTS_TO_STDERR("#I  DestroyModuleState(");
-                FPUTS_TO_STDERR(info->name);
-                FPUTS_TO_STDERR(") returned non-zero value\n");
+                Panic("DestroyModuleState(builtin %s) returned non-zero value", info->name);
             }
         }
     }
@@ -1049,9 +1039,7 @@ void ModulesPostRestore(void)
             }
             Int ret = info->postRestore(info);
             if (ret) {
-                FPUTS_TO_STDERR("#I  PostRestore(builtin ");
-                FPUTS_TO_STDERR(info->name);
-                FPUTS_TO_STDERR(") returned non-zero value\n");
+                Panic("PostRestore(builtin %s) returned non-zero value", info->name);
             }
         }
     }
