@@ -17,7 +17,7 @@
 
 #V  MAXSIZE_GF_INTERNAL . . . . . . . . . . . . maximal size of internal ffes
 ##
-BIND_GLOBAL( "MAXSIZE_GF_INTERNAL", 2^16 );
+BIND_GLOBAL( "MAXSIZE_GF_INTERNAL", 2^24 ); #jdb 16/09/18 2^24 was 2^16.
 
 
 #############################################################################

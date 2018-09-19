@@ -67,7 +67,7 @@
 **  Since there are  only  6542 (prime) + 93 (nonprime)  small finite fields,
 **  the index fits into a 'UInt2' (actually into 13 bits).
 */
-typedef UInt2       FF;
+typedef UInt4       FF; /* was UInt2, jdb 16/09/18 */
 
 
 /****************************************************************************
@@ -158,7 +158,7 @@ extern  Obj             TypeFF0;
 **  cause an overflow.  And of course the successor table stored for a finite
 **  field will become quite large for fields with more than 65536 elements.
 */
-typedef UInt2           FFV;
+typedef UInt4           FFV; /* was UInt2, first real change in datatypes jdb 16/09/18 */
 
 
 /****************************************************************************
@@ -284,7 +284,9 @@ typedef UInt2           FFV;
 **  Before performing the multiplication, ANSI-C will only convert to Int
 **  since UInt2 fits into Int.
 */
-#define POW1_FFV(a,n,f) ( (((UInt4)(a)-1) * (UInt4)(n)) % (UInt4)*(f) + 1 )
+/*#define POW1_FFV(a,n,f) ( (((UInt4)(a)-1) * (UInt4)(n)) % (UInt4)*(f) + 1 )*/
+#define POW1_FFV(a,n,f) ( (((UInt8)(a)-1) * (UInt8)(n)) % (UInt8)*(f) + 1 ) /*/16/09/18: jdb: UInt8 was UInt4, but this is too small for fields > 2^16.*/
+
 #define POW_FFV(a,n,f)  ( (n)==0 ? 1 : ( (a)==0 ? 0 : POW1_FFV(a,n,f) ) )
 
 
@@ -298,7 +300,8 @@ typedef UInt2           FFV;
 **  Note that 'FLD_FFE' is a macro, so do not call  it  with  arguments  that
 **  have side effects.
 */
-#define FLD_FFE(ffe)            ((FF)((((UInt)(ffe)) & 0xFFFF) >> 3))
+/*#define FLD_FFE(ffe)            ((FF)((((UInt)(ffe)) & 0xFFFF) >> 3))*/
+#define FLD_FFE(ffe)            ((FF)((((UInt)(ffe)) & 0xFFFFFFFF) >> 3)) /*jdb: 16/09/18 see line above for old version */
 
 
 /****************************************************************************
@@ -312,7 +315,8 @@ typedef UInt2           FFV;
 **  Note that 'VAL_FFE' is a macro, so do not call  it  with  arguments  that
 **  have side effects.
 */
-#define VAL_FFE(ffe)            ((FFV)(((UInt)(ffe)) >> 16))
+/*#define VAL_FFE(ffe)            ((FFV)(((UInt)(ffe)) >> 16))*/
+#define VAL_FFE(ffe)            ((FFV)(((UInt)(ffe)) >> 32)) /*jdb: 16/09/18 see line above for old version */
 
 
 /****************************************************************************
@@ -325,8 +329,10 @@ typedef UInt2           FFV;
 **  Note that 'NEW_FFE' is a macro, so do not  call  it  with  arguments that
 **  have side effects.
 */
-#define NEW_FFE(fld,val)        ((Obj)(((UInt)(val) << 16) + \
-                                ((UInt)(fld) << 3) + (UInt)0x02))
+/*#define NEW_FFE(fld,val)        ((Obj)(((UInt)(val) << 16) + \
+                                ((UInt)(fld) << 3) + (UInt)0x02))*/
+#define NEW_FFE(fld,val)        ((Obj)(((UInt)(val) << 32) + \
+                                ((UInt)(fld) << 3) + (UInt)0x02)) /* jdb 16/09/18 see above for old version */
 
 
 /****************************************************************************
