@@ -70,7 +70,9 @@ BindGlobal("POST_RESTORE", function()
             f();
         fi;
     od;
-    SESSION();
+    if not GAPInfo.CommandLineOptions.norepl then
+        SESSION();
+    fi;
     PROGRAM_CLEAN_UP();
 end);
 
