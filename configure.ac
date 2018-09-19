@@ -135,6 +135,7 @@ AC_DEFINE_UNQUOTED([HAVE_ARITHRIGHTSHIFT],
 
 dnl function attributes
 AX_GCC_FUNC_ATTRIBUTE([always_inline])
+AX_GCC_FUNC_ATTRIBUTE([format])
 AX_GCC_FUNC_ATTRIBUTE([noinline])
 AX_GCC_FUNC_ATTRIBUTE([noreturn])
 
