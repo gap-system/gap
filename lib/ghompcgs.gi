@@ -680,8 +680,7 @@ end );
 #M  IsomorphismPcGroup( <G> ) . . . .  for pc group (return identity mapping)
 ##
 InstallMethod( IsomorphismPcGroup,
-    true,
-    [ IsPcGroup ], 0,
+    [ IsPcGroup ], SUM_FLAGS,
     IdentityMapping );
 
 

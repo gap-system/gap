@@ -527,7 +527,7 @@ InstallMethod( AsList,
 
 InstallMethod( ViewObj,
     "for an enumerator that perhaps has its own `ViewObj' function",
-    [ IsEnumeratorByFunctions ], 20,
+    [ IsEnumeratorByFunctions ], SUM_FLAGS,
     # override, e.g., the method for finite lists
     # in the case of an enumerator of GF(q)^n
     function( enum )
