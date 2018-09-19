@@ -98,7 +98,7 @@ typedef struct GAPState {
     UInt1 StateSlots[STATE_SLOTS_SIZE];
 
 /* Allocation */
-#if !defined(USE_GASMAN)
+#if defined(USE_BOEHM_GC)
 #define MAX_GC_PREFIX_DESC 4
     void ** FreeList[MAX_GC_PREFIX_DESC + 2];
 #endif

@@ -213,9 +213,7 @@ AS_IF([test "x$with_gc" = xdefault],
     ])
 AS_CASE([$with_gc],
     [none|no],  [AC_MSG_ERROR([cannot run GAP without a garbage collector])],
-    [boehm],    [AS_IF([test "x$enable_hpcgap" = xno],
-                    [AC_MSG_ERROR([Boehm GC can only be used with HPC-GAP])])
-                 AC_SUBST([GC_SOURCES], [src/boehm_gc.c])
+    [boehm],    [AC_SUBST([GC_SOURCES], [src/boehm_gc.c])
                  AC_DEFINE([USE_BOEHM_GC],  [1], [define as 1 if Boehm GC is used])
                 ],
     [gasman],   [AS_IF([test "x$enable_hpcgap" = xyes],
@@ -536,8 +534,11 @@ AS_IF([test "x$enable_hpcgap" = xyes],
         )
   AC_PATH_PROG([ADDGUARDS2], [addguards2c addguards2], [], [$WARD_PATH])
   AS_IF([test "x$ADDGUARDS2" = x], AC_MSG_ERROR([could not locate addguards2]))
+  ]
+)
 
-
+AS_IF([test "x$with_gc" = xboehm],
+  [
   # We bundle two libraries we need for HPC-GAP:
   # Boehm garbage collector, see http://www.hboehm.info/gc/
   # libatomic_ops - part of Boehm GC, but see also https://github.com/ivmai/libatomic_ops
@@ -560,11 +561,8 @@ AS_IF([test "x$enable_hpcgap" = xyes],
 
   ATOMIC_OPS_CFLAGS=$LIBATOMIC_OPS_CPPFLAGS
   ATOMIC_OPS_LIBS=$LIBATOMIC_OPS_LDFLAGS
-  ]
-)
 
-AS_IF([test "x$with_gc" = xboehm],
-  [
+
   BUILD_BOEHM_GC=yes
   BOEHM_GC_CPPFLAGS='-I${abs_builddir}/extern/install/gc/include'
   BOEHM_GC_LDFLAGS='${abs_builddir}/extern/install/gc/lib/libgc.la'
