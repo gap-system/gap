@@ -132,7 +132,7 @@ InstallMethod( SemidirectProduct,
     "generic method for pc groups",
     true, 
     [ CanEasilyComputePcgs, IsGroupHomomorphism, CanEasilyComputePcgs ],
-    0,
+    {} -> 2*RankFilter(IsFinite), # ensure this is ranked higher than the generic method
 function( G, aut, N )
     local info, H;
     H := SplitExtension( G, aut, N );
