@@ -719,14 +719,14 @@ function(semi)
   return GreensHClasses(semi);
 end);
 
-InstallOtherMethod(GreensHClasses, "for a Green's Class", true, [IsGreensDClass], 0,
-x-> GreensHClasses(CanonicalGreensClass(x)));
+InstallMethod(GreensHClasses, "for a Green's D-class", [IsGreensDClass],
+x -> Filtered(GreensHClasses(ParentAttr(x)), y -> Representative(y) in x));
 
-InstallOtherMethod(GreensHClasses, "for a Green's Class", true, [IsGreensRClass], 0,
-x-> GreensHClasses(CanonicalGreensClass(x)));
+InstallMethod(GreensHClasses, "for a Green's R-class", [IsGreensRClass],
+x -> Filtered(GreensHClasses(ParentAttr(x)), y -> Representative(y) in x));
 
-InstallOtherMethod(GreensHClasses, "for a Green's Class", true, [IsGreensLClass], 0,
-x-> GreensHClasses(CanonicalGreensClass(x)));
+InstallMethod(GreensHClasses, "for a Green's L-class", [IsGreensLClass],
+x -> Filtered(GreensHClasses(ParentAttr(x)), y -> Representative(y) in x));
 
 #############################################################################
 ##
