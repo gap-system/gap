@@ -816,7 +816,7 @@ void InitGlobalBag (
 {
 
     if ( GlobalBags.nr == NR_GLOBAL_BAGS ) {
-        Panic("Panic: Gasman cannot handle so many global variables");
+        Panic("Gasman cannot handle so many global variables");
     }
 
     if (cookie != 0) {
@@ -900,11 +900,8 @@ Bag * GlobalByCookie(
 {
   UInt i,top,bottom,middle;
   Int res;
-  if (cookie == 0L)
-    {
-      Pr("Panic -- 0L cookie passed to GlobalByCookie\n",0L,0L);
-      SyExit(2);
-    }
+  if (cookie == 0)
+      Panic("zero cookie passed to GlobalByCookie");
   if (GlobalSortingStatus != 2)
     {
       for (i = 0; i < GlobalBags.nr; i++)
@@ -1192,6 +1189,7 @@ void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func)
     ExtraMarkFuncBags = func;
 }
 
+GAP_STATIC_ASSERT((sizeof(BagHeader) % sizeof(Bag)) == 0, "BagHeader size must be multiple of word size");
 
 void            InitBags (
     UInt                initial_size,
@@ -1210,14 +1208,10 @@ void            InitBags (
     StackBottomBags = stack_bottom;
     StackAlignBags  = stack_align;
 
-    if ( sizeof(BagHeader) % sizeof(Bag) != 0 )
-        Panic("BagHeader size is not a multiple of word size.");
-
     /* first get some storage from the operating system                    */
     initial_size    = (initial_size + 511) & ~(511);
     MptrBags = SyAllocBags( initial_size, 1 );
-    if ( MptrBags == 0 )
-        Panic("cannot get storage for the initial workspace.");
+    GAP_ASSERT(MptrBags);
     EndBags = MptrBags + 1024*(initial_size / sizeof(Bag*));
 
     // In GAP_MEM_CHECK we want as few master pointers as possible, as we
@@ -2185,7 +2179,7 @@ again:
 
         /* oops                                                            */
         else {
-            Panic("Panic: Gasman found a bogus header");
+            Panic("Gasman found a bogus header");
         }
 
     }

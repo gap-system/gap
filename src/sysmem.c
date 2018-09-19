@@ -327,11 +327,11 @@ void SyMAdviseFree(void) {
 #ifdef SYS_IS_DARWIN
     if (mmap(from, size, PROT_NONE,
             MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
-        Panic("gap: OS X trick to free pages did not work, bye!");
+        Panic("OS X trick to free pages did not work!");
     }
     if (mmap(from, size, PROT_READ|PROT_WRITE,
             MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
-        Panic("gap: OS X trick to free pages did not work, bye!");
+        Panic("OS X trick to free pages did not work!!");
     }
 #endif
 #endif
@@ -424,7 +424,7 @@ void SyInitialAllocPool( void )
        halvingsdone++;
        if (SyDebugLoading) fputs("gap: halving pool size.\n", stderr);
        if (SyAllocPool < 16*1024*1024) {
-           Panic("gap: cannot allocate initial memory, bye.");
+           Panic("cannot allocate initial memory");
        }
    } while (1);   /* Is left by break */
 
@@ -440,7 +440,7 @@ UInt ***SyAllocBagsFromPool(Int size, UInt need)
   /* first check if we would get above SyStorKill, if yes exit! */
   if ( need < 2 && SyStorKill != 0 && 0 < size 
                 && SyStorKill < syWorksize + size ) {
-      Panic("gap: will not extend workspace above -K limit, bye!");
+      Panic("will not extend workspace above -K limit!");
   }
   if (size > 0) {
     while ((syWorksize+size)*1024 > SyAllocPool) {
@@ -488,7 +488,7 @@ UInt * * * SyAllocBags (
         /* first check if we would get above SyStorKill, if yes exit! */
         if ( need < 2 && SyStorKill != 0 && 0 < size && 
              SyStorKill < syWorksize + size ) {
-            Panic("gap: will not extend workspace above -K limit, bye!");
+            Panic("will not extend workspace above -K limit!");
         }
         if (0 < size )
           {
@@ -555,7 +555,7 @@ UInt * * * SyAllocBags (
 
     /* test if the allocation failed                                       */
     if ( ret == (UInt***)-1 && need ) {
-        Panic("gap: cannot extend the workspace any more!");
+        Panic("cannot extend the workspace any more!");
     }
     /* if we de-allocated the whole workspace then remember this */
     if (syWorksize == 0)
@@ -607,17 +607,17 @@ UInt * * * SyAllocBags (
     else {
         if ( SyStorKill != 0 && 0 < size && SyStorKill < 1024*(syWorksize + size) ) {
             if (need) {
-                Panic("gap: will not extend workspace above -K limit, bye!");
+                Panic("will not extend workspace above -K limit!");
             }  
         }
         /* check that <size> is divisible by <vm_page_size>                    */
         else if ( size*1024 % vm_page_size != 0 ) {
-            Panic("gap: memory block size is not a multiple of vm_page_size");
+            Panic("memory block size is not a multiple of vm_page_size");
         }
 
         /* check that we don't try to shrink uninitialized memory                */
         else if ( size <= 0 && syBase == 0 ) {
-            Panic("gap: trying to shrink uninitialized vm memory");
+            Panic("trying to shrink uninitialized vm memory");
         }
 
         /* allocate memory anywhere on first call                              */
@@ -648,14 +648,14 @@ UInt * * * SyAllocBags (
 
         /* test if the allocation failed                                       */
         if ( ret == (UInt***)-1 && need ) {
-            Panic("gap: cannot extend the workspace any more!!");
+            Panic("cannot extend the workspace any more!!");
         }
     }
 
     /* otherwise return the result (which could be 0 to indicate failure)  */
     if ( ret == (UInt***)-1 ){
         if (need) {
-            Panic("gap: cannot extend the workspace any more!!!");
+            Panic("cannot extend the workspace any more!!!");
         }
         return (UInt***) 0;
     } 

@@ -165,7 +165,7 @@ Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
             Pr("PRINT_CURRENT_STATEMENT: failed to open error stream\n", 0, 0);
         }
         else {
-            Panic("gap: failed to open *errout*!\n");
+            Panic("failed to open *errout*");
         }
     }
 
@@ -398,7 +398,7 @@ Obj CallErrorInner(const Char * msg,
 void ErrorQuit(const Char * msg, Int arg1, Int arg2)
 {
     CallErrorInner(msg, arg1, arg2, 1, 0, 0, False, 1);
-    Panic("panic: ErrorQuit must not return");
+    Panic("ErrorQuit must not return");
 }
 
 
@@ -541,7 +541,7 @@ void ErrorMayQuit(const Char * msg, Int arg1, Int arg2)
 {
     Obj LateMsg = MakeString("type 'quit;' to quit to outer loop");
     CallErrorInner(msg, arg1, arg2, 0, 0, 0, LateMsg, 1);
-    Panic("panic: ErrorMayQuit must not return");
+    Panic("ErrorMayQuit must not return");
 }
 
 /****************************************************************************

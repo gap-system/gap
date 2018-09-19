@@ -311,7 +311,7 @@ UInt SyTime ( void )
     struct rusage       buf;
 
     if ( getrusage( RUSAGE_SELF, &buf ) ) {
-        Panic("gap: panic 'SyTime' cannot get time!");
+        Panic("'SyTime' could not get time");
     }
     return buf.ru_utime.tv_sec*1000 + buf.ru_utime.tv_usec/1000;
 }
@@ -320,7 +320,7 @@ UInt SyTimeSys ( void )
     struct rusage       buf;
 
     if ( getrusage( RUSAGE_SELF, &buf ) ) {
-        Panic("gap: panic 'SyTimeSys' cannot get time!");
+        Panic("'SyTimeSys' could not get time");
     }
     return buf.ru_stime.tv_sec*1000 + buf.ru_stime.tv_usec/1000;
 }
@@ -329,7 +329,7 @@ UInt SyTimeChildren ( void )
     struct rusage       buf;
 
     if ( getrusage( RUSAGE_CHILDREN, &buf ) ) {
-        Panic("gap: panic 'SyTimeChildren' cannot get time!");
+        Panic("'SyTimeChildren' could not get time");
     }
     return buf.ru_utime.tv_sec*1000 + buf.ru_utime.tv_usec/1000;
 }
@@ -338,7 +338,7 @@ UInt SyTimeChildrenSys ( void )
     struct rusage       buf;
 
     if ( getrusage( RUSAGE_CHILDREN, &buf ) ) {
-        Panic("gap: panic 'SyTimeChildrenSys' cannot get time!");
+        Panic("'SyTimeChildrenSys' could not get time");
     }
     return buf.ru_stime.tv_sec*1000 + buf.ru_stime.tv_usec/1000;
 }
@@ -555,8 +555,9 @@ void SyExit (
 **
 *F  Panic( <msg> )
 */
-extern void Panic(const char * fmt, ...)
+void Panic_(const char * file, int line, const char * fmt, ...)
 {
+    fprintf(stderr, "Panic in %s:%d: ", file, line);
     va_list args;
     va_start(args, fmt);
     vfprintf(stderr, fmt, args);

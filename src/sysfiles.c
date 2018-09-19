@@ -927,11 +927,9 @@ Int SyFopen (
       flags = O_WRONLY | O_CREAT | O_TRUNC;
     else if (strncmp( mode, "a",1) == 0)
       flags = O_WRONLY | O_APPEND | O_CREAT;
-    else
-      {
-        Pr("Panic: Unknown mode %s\n",(Int) mode, 0);
-        SyExit(2);
-      }
+    else {
+        Panic("Unknown mode %s", mode);
+    }
 
 #ifdef SYS_IS_CYGWIN32
     if(strlen(mode) >= 2 && mode[1] == 'b')

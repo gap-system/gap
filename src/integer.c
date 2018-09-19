@@ -2845,7 +2845,7 @@ static Int InitKernel ( StructInitInfo * module )
   UInt                t1,  t2;
 
   if (mp_bits_per_limb != GMP_LIMB_BITS) {
-    Panic("Panic, GMP limb size mismatch");
+    Panic("GMP limb size mismatch");
   }
 
   /* init filters and functions                                            */
