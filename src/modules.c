@@ -803,12 +803,12 @@ void RecordLoadedModule(StructInitInfo * info,
 {
     UInt len;
     if (NrModules == MAX_MODULES) {
-        Pr("panic: no room to record module\n", 0L, 0L);
+        Panic("no room to record module");
     }
     len = strlen(filename);
     if (NextLoadedModuleFilename + len + 1 >
         LoadedModuleFilenames + MAX_MODULE_FILENAMES) {
-        Pr("panic: no room for module filename\n", 0L, 0L);
+        Panic("no room for module filename");
     }
     *NextLoadedModuleFilename = '\0';
     memcpy(NextLoadedModuleFilename, filename, len + 1);
@@ -894,7 +894,7 @@ void ModulesSetup(void)
     NrModules = 0;
     for (UInt i = 0; InitFuncsBuiltinModules[i]; i++) {
         if (NrModules == MAX_MODULES) {
-            Panic("panic: too many builtin modules");
+            Panic("too many builtin modules");
         }
         StructInitInfo * info = InitFuncsBuiltinModules[i]();
         Modules[NrModules++].info = info;
