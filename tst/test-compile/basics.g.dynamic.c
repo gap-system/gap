@@ -1454,7 +1454,7 @@ static Obj  HdlrFunc11 (
  /* x := 0; */
  l_x = INTOBJ_INT(0);
  
- /* while x < 100 od */
+ /* while x < 100 do */
  while ( 1 ) {
   t_1 = (Obj)(UInt)(LT( l_x, INTOBJ_INT(100) ));
   if ( ! t_1 ) break;
