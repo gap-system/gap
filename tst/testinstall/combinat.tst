@@ -229,6 +229,26 @@ gap> Print(List( [0..3], k -> NrTuples( [1..3], k ) ),"\n");
 gap> NrTuples( [1..8], 4 );
 4096
 
+#
+# IteratorOfCartesianProduct
+#
+
+# empty cartesian product
+gap> it:=IteratorOfCartesianProduct([[1,2],[]]);;
+gap> IsDoneIterator(it);
+true
+gap> List(it);
+[  ]
+
+# non-empty cartesian product
+gap> it:=IteratorOfCartesianProduct([1,2], [3,4]);;
+gap> IsDoneIterator(it);
+false
+gap> List(it);
+[ [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ] ]
+gap> List(it); # do it again, to verify the original iterator was not modified
+[ [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ] ]
+
 #F  PermutationsList( <mset> )  . . . . . . set of permutations of a multiset
 gap> PermutationsList( [] );
 [ [  ] ]
