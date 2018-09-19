@@ -4260,7 +4260,7 @@ void CompWhile (
     if ( CompPass == 2 ) {
         Emit( "\n/* while " );
         PrintExpr(READ_EXPR(stat, 0));
-        Emit( " od */\n" );
+        Emit( " do */\n" );
     }
 
     /* emit the code for the loop                                          */

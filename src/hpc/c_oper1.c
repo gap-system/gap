@@ -833,7 +833,7 @@ static Obj  HdlrFunc3 (
  /* i := 0; */
  l_i = INTOBJ_INT(0);
  
- /* while i < LEN_LIST( methods ) and rank < methods[i + (narg + 3)] od */
+ /* while i < LEN_LIST( methods ) and rank < methods[i + (narg + 3)] do */
  while ( 1 ) {
   t_4 = GF_LEN__LIST;
   t_3 = CALL_1ARGS( t_4, l_methods );
@@ -872,7 +872,7 @@ static Obj  HdlrFunc3 (
   /* k := i; */
   l_k = l_i;
   
-  /* while k < LEN_LIST( methods ) and rank = methods[k + narg + 3] od */
+  /* while k < LEN_LIST( methods ) and rank = methods[k + narg + 3] do */
   while ( 1 ) {
    t_4 = GF_LEN__LIST;
    t_3 = CALL_1ARGS( t_4, l_methods );
@@ -2079,7 +2079,7 @@ static Obj  HdlrFunc6 (
   /* notmatch := 0; */
   l_notmatch = INTOBJ_INT(0);
   
-  /* while j < LEN_LIST( req ) and not match od */
+  /* while j < LEN_LIST( req ) and not match do */
   while ( 1 ) {
    t_4 = GF_LEN__LIST;
    t_3 = CALL_1ARGS( t_4, l_req );
@@ -2957,7 +2957,7 @@ static Obj  HdlrFunc10 (
  /* i := -1; */
  l_i = INTOBJ_INT(-1);
  
- /* while i + 2 < k od */
+ /* while i + 2 < k do */
  while ( 1 ) {
   C_SUM_FIA( t_2, l_i, INTOBJ_INT(2) )
   t_1 = (Obj)(UInt)(LT( t_2, l_k ));
