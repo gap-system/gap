@@ -3453,8 +3453,6 @@ Int SyRmdir ( const Char * name )
 **  for a real directory, 'C' for a character device, 'B' for a block
 **  device 'P' for a FIFO (named pipe) and 'S' for a socket.
 */
-#ifdef HAVE_LSTAT
-
 Obj SyIsDir ( const Char * name )
 {
   Int res;
@@ -3482,15 +3480,6 @@ Obj SyIsDir ( const Char * name )
 #endif
   else return ObjsChar['?'];
 }
-
-#else
-
-Obj SyIsDir ( const Char * name )
-{
-  return ObjsChar['?'];
-}
-
-#endif
 
 /****************************************************************************
 **
@@ -3530,8 +3519,6 @@ Char * SyFindGapRootFile ( const Char * filename, Char * buffer, size_t bufferSi
 **  to 'SyTmpname'  should  produce different  file names  *even* if no files
 **  were created.
 */
-
-#ifdef HAVE_MKSTEMP
 Char *SyTmpname ( void )
 {
   static char name[1024];
@@ -3539,41 +3526,6 @@ Char *SyTmpname ( void )
   close(mkstemp(name));
   return name;
 }
-
-#else
-Char * SyTmpname ( void )
-{
-    static Char   * base = 0;
-    static Char     name[1024];
-    static UInt     count = 0;
-    Char          * s;
-    UInt            c;
-
-    SyClearErrorNo();
-    count++;
-    if ( base == 0 ) {
-        base = tmpnam( (char*)0 );
-    }
-    if ( base == 0 ) {
-        SySetErrorNo();
-        return 0;
-    }
-    if (count == 0) { /* one time in 2^32 */
-        strcat( base, "x" ); /* FIXME: BUG, we must not modify the pointer returned by tmpnam */
-        count++;
-    }
-    strxcpy( name, base, sizeof(name) );
-    strxcat( name, ".", sizeof(name) );
-    s = name + strlen(name);
-    c = count;
-    while (c != 0) {
-        *s++ = '0' + c % 10;
-        c /= 10;
-    }
-    *s = (Char)0;
-    return name;
-}
-#endif
 
 
 /****************************************************************************
@@ -3588,28 +3540,17 @@ Char * SyTmpname ( void )
 **  would   usually   represent   '/usr/tmp/<hint>_<proc_id>_<cnt>/',   e.g.,
 **  '/usr/tmp/guava_17188_1/'.
 */
-
-
-/****************************************************************************
-**
-*f  SyTmpdir( <hint> )  . . . . . . . . . . . . . . . . . . . . using `mkdir'
-*/
-
+Char * SyTmpdir( const Char * hint )
+{
 #ifdef SYS_IS_CYGWIN32
 #define TMPDIR_BASE "/cygdrive/c/WINDOWS/Temp/"
 #else
 #define TMPDIR_BASE "/tmp/"
 #endif
-
-
-#ifdef HAVE_MKDTEMP
-
-Char * SyTmpdir( const Char * hint )
-{
   static char name[1024];
   static const char *base = TMPDIR_BASE;
-  char * env_tmpdir;
-  if ((env_tmpdir = getenv("TMPDIR")) != NULL) {
+  char * env_tmpdir = getenv("TMPDIR");
+  if (env_tmpdir != NULL) {
     strxcpy(name, env_tmpdir, sizeof(name));
     strxcat(name, "/", sizeof(name));
   }
@@ -3623,31 +3564,11 @@ Char * SyTmpdir( const Char * hint )
   return mkdtemp(name);
 }
 
-#else
-
-Char * SyTmpdir ( const Char * hint )
-{
-    Char *      tmp;
-    int         res;                    /* result of `mkdir'               */
-
-    /* for the moment ignore <hint>                                        */
-    tmp = SyTmpname();
-    if ( tmp == 0 )
-        return 0;
-
-    /* create a new directory                                              */
-    unlink( tmp );
-    res = mkdir( tmp, 0777 );
-    if ( res == -1 ) {
-        SySetErrorNo();
-        return 0;
-    }
-
-    return tmp;
-}
-
-#endif
-
+/****************************************************************************
+**
+*F  SyReadStringFile( <fid> ) . . . . . . . . read file content into a string
+**
+*/
 Obj SyReadStringFile(Int fid)
 {
     Char            buf[32769];
