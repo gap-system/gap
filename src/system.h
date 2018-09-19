@@ -448,7 +448,11 @@ extern void SyExit(UInt ret) NORETURN;
 **
 *F  Panic( <msg> )
 */
-extern void Panic(const char * msg) NORETURN;
+extern void Panic(const char * fmt, ...) NORETURN
+#ifdef HAVE_FUNC_ATTRIBUTE_NORETURN
+  __attribute__ ((format (printf, 1, 2)))
+#endif
+;
 
 
 /****************************************************************************

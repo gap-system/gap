@@ -35,6 +35,7 @@
 
 #include <assert.h>
 #include <fcntl.h>
+#include <stdarg.h>
 #include <unistd.h>
 
 #include <sys/stat.h>
@@ -554,9 +555,12 @@ void SyExit (
 **
 *F  Panic( <msg> )
 */
-extern void Panic(const char * msg)
+extern void Panic(const char * fmt, ...)
 {
-    fputs(msg, stderr);
+    va_list args;
+    va_start(args, fmt);
+    vfprintf(stderr, fmt, args);
+    va_end (args);
     fputs("\n", stderr);
     exit(1);
 }
