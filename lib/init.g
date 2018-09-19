@@ -564,6 +564,9 @@ BindGlobal( "ShowKernelInformation", function()
     fi;
     Add( config, str );
   fi;
+  if IsBound( GAPInfo.KernelInfo.GC ) then
+    Add( config, GAPInfo.KernelInfo.GC );
+  fi;
   if IsBound( GAPInfo.KernelInfo.JULIA_VERSION ) then
     str := "Julia ";
     Append(str, GAPInfo.KernelInfo.JULIA_VERSION);

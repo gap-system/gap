@@ -1438,6 +1438,18 @@ Obj FuncKERNEL_INFO(Obj self) {
   r = RNamName("GMP_VERSION");
   AssPRec(res, r, str);
 
+  /* export name of the garbage collector we use  */
+  r = RNamName("GC");
+#if defined(USE_GASMAN)
+    AssPRec(res, r, MakeImmString("GASMAN"));
+#elif defined(USE_BOEHM_GC)
+    AssPRec(res, r, MakeImmString("Boehm GC"));
+#elif defined(USE_JULIA_GC)
+    AssPRec(res, r, MakeImmString("Julia GC"));
+#else
+    #error Unsupported garbage collector
+#endif
+
 #ifdef USE_JULIA_GC
   /* export Julia version  */
   str = MakeImmString( jl_ver_string() );
