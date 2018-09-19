@@ -984,11 +984,18 @@ testbugfix: all
           ReadGapRoot( "tst/testbugfix.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/testbugfix2_%Y-%m-%d-%H-%M` )
 
-testlibgap: libgap.la obj/tst/testlibgap/basic.lo 
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) obj/tst/testlibgap/basic.lo libgap.la -o test-libgap
+testlibgapws: libgap.la obj/tst/testlibgap/wscreate.lo  obj/tst/testlibgap/wsload.lo  obj/tst/testlibgap/common.lo 
+	$(LINK) $(GAP_LDFLAGS) obj/tst/testlibgap/wscreate.lo  obj/tst/testlibgap/common.lo  libgap.la -o test-libgapwscreate
+	$(LINK) $(GAP_LDFLAGS) obj/tst/testlibgap/wsload.lo   obj/tst/testlibgap/common.lo  libgap.la -o test-libgapwsload
+	./test-libgapwscreate -A -l $(top_srcdir) -m 32m -q -T --nointeract
+	./test-libgapwsload   -A -l $(top_srcdir) -m 32m -q -T --nointeract -L /tmp/libgap.ws
+
+testlibgap: libgap.la obj/tst/testlibgap/basic.lo   obj/tst/testlibgap/common.lo 
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) obj/tst/testlibgap/basic.lo  obj/tst/testlibgap/common.lo libgap.la -o test-libgap
 	./test-libgap -A -l $(top_srcdir) -m 32m -q -T --nointeract > basic.out
 	diff $(top_srcdir)/tst/testlibgap/basic.expect basic.out
-.PHONY: testlibgap
+
+.PHONY: testlibgap testlibgapws
 
 coverage:
 	gcov -o . $(SOURCES)
