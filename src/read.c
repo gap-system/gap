@@ -2137,8 +2137,9 @@ static void ReadAtomic (
     Match( S_ATOMIC, "atomic", follow );
     /* Might just be an atomic function literal as an expression */
     if (STATE(Symbol) == S_FUNCTION) {
-      ReadExpr(follow, 'a');
-      return; }
+          ReadExpr(follow, 'a');
+          return;
+    }
 
     /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'    */
     TRY_IF_NO_ERROR { IntrAtomicBegin(); }
@@ -2146,7 +2147,7 @@ static void ReadAtomic (
     ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
     nexprs = 1;
     while (STATE(Symbol) == S_COMMA) {
-      Match( S_COMMA, "comma", follow | S_DO | S_OD );
+      Match( S_COMMA, ",", follow | S_DO | S_OD );
       ReadQualifiedExpr( S_DO|S_OD|follow, 'r' );
       nexprs ++;
 #ifdef HPCGAP
@@ -2157,7 +2158,7 @@ static void ReadAtomic (
 #endif
     }
 
-    Match( S_DO, "do or comma", STATBEGIN|S_DO|follow );
+    Match( S_DO, "do", STATBEGIN|S_DO|follow );
 
     //     <Statements>
     TRY_IF_NO_ERROR { IntrAtomicBeginBody(nexprs); }
