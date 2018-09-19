@@ -16,3 +16,4 @@ ignore:
  - "extern"
  - "hpcgap/extern"
  - "tst"
+ - "pkg"
