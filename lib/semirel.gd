@@ -240,9 +240,7 @@ DeclareAttribute("GreensJClasses", IsSemigroup);
 DeclareAttribute("GreensDClasses", IsSemigroup);
 DeclareAttribute("GreensHClasses", IsSemigroup);
 
-DeclareAttribute("GreensHClasses", IsGreensDClass);
-DeclareAttribute("GreensHClasses", IsGreensLClass);
-DeclareAttribute("GreensHClasses", IsGreensRClass);
+DeclareAttribute("GreensHClasses", IsGreensClass);
 DeclareAttribute("GreensRClasses", IsGreensDClass);
 DeclareAttribute("GreensLClasses", IsGreensDClass);
 
