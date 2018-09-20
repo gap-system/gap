@@ -73,10 +73,6 @@ typedef void sig_handler_t ( int );
 #include <process.h>
 #endif
 
-#ifdef HAVE_RLD_LOAD
-#include <mach-o/rld.h>
-#endif
-
 #ifdef HAVE_DLOPEN
 #include <dlfcn.h>
 #endif
@@ -401,24 +397,11 @@ Obj FuncCrcString( Obj self, Obj str ) {
 
 /****************************************************************************
 **
-*F  SyLoadModule( <name>, <func> )  . . . . . . . . .  load a compiled module
+*F  SyLoadModule( <name> )  . . . . . . . . . . . . . . . . . . . . .  dlopen
 */
-
-#define SYS_INIT_DYNAMIC       "Init__Dynamic"
-
-
-/****************************************************************************
-**
-*f  SyLoadModule( <name> )  . . . . . . . . . . . . . . . . . . . . .  dlopen
-*/
-#ifdef HAVE_DLOPEN
-
-#ifndef RTLD_LAZY
-#define RTLD_LAZY               1
-#endif
-
 Int SyLoadModule( const Char * name, InitInfoFunc * func )
 {
+#ifdef HAVE_DLOPEN
     void *          init;
     void *          handle;
 
@@ -430,57 +413,18 @@ Int SyLoadModule( const Char * name, InitInfoFunc * func )
       return 1;
     }
 
-    init = dlsym( handle, SYS_INIT_DYNAMIC );
+    init = dlsym( handle, "Init__Dynamic" );
     if ( init == 0 )
       return 3;
 
     *func = (InitInfoFunc) init;
     return 0;
-}
-
-
-/****************************************************************************
-**
-*f  SyLoadModule( <name> )  . . . . . . . . . . . . . . . . . . . .  rld_load
-*/
-#elif defined(HAVE_RLD_LOAD)
-
-InitInfoFunc SyLoadModule( const Char * name, InitInfoFunc * func )
-{
-    const Char *    names[2];
-    unsigned long   init;
-
-    *func = 0;
-
-    names[0] = name;
-    names[1] = 0;
-    if ( rld_load( 0, 0,  names, 0 ) == 0 ) {
-        return 1;
-    }
-    if ( rld_lookup( 0, SYS_INIT_DYNAMIC, &init ) == 0 ) {
-        return 3;
-    }
-    if ( rld_forget_symbol( 0, SYS_INIT_DYNAMIC ) == 0 ) {
-        return 5;
-    }
-    *func = (InitInfoFunc) init;
-    return 0;
-}
-
-
-/****************************************************************************
-**
-*f  SyLoadModule( <name> )  . . . . . . . . . . . . . . . . . . .  no support
-*/
 #else
-
-Int SyLoadModule( const Char * name, InitInfoFunc * func )
-{
     *func = 0;
     return 7;
+#endif
 }
 
-#endif
 
 /****************************************************************************
 **
