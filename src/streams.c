@@ -765,36 +765,44 @@ Obj FuncPrint (
     return 0;
 }
 
-static Obj PRINT_OR_APPEND_TO(Obj args, int append)
+static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
 {
     const char * volatile funcname = append ? "AppendTo" : "PrintTo";
     volatile Obj        arg;
-    volatile Obj        filename;
+    volatile Obj        destination;
     volatile UInt       i;
     syJmp_buf           readJmpError;
 
-    /* first entry is the filename                                         */
-    filename = ELM_LIST(args,1);
-    RequireStringRep(funcname, filename);
+    /* first entry is the file or stream                                   */
+    destination = ELM_LIST(args, 1);
 
-    /* try to open the file for output                                     */
-    i = append ? OpenAppend( CONST_CSTR_STRING(filename) )
-               : OpenOutput( CONST_CSTR_STRING(filename) );
-
-    if ( ! i ) {
-        if (strcmp(CSTR_STRING(filename), "*errout*") == 0) {
-            Panic("Failed to open *errout*!");
+    /* try to open the output and handle failures                          */
+    if (file) {
+        RequireStringRep(funcname, destination);
+        i = append ? OpenAppend(CONST_CSTR_STRING(destination))
+                   : OpenOutput(CONST_CSTR_STRING(destination));
+        if (!i) {
+            if (strcmp(CSTR_STRING(destination), "*errout*") == 0) {
+                Panic("Failed to open *errout*!");
+            }
+            ErrorQuit("%s: cannot open '%g' for output", (Int)funcname,
+                      (Int)destination);
+            return 0;
         }
-        ErrorQuit( "%s: cannot open '%g' for output",
-                   (Int)funcname, (Int)filename );
-        return 0;
+    }
+    else {
+        i = OpenOutputStream(destination);
+        if (!i) {
+            ErrorQuit("%s: cannot open stream for output", (Int)funcname, 0L);
+            return 0;
+        }
     }
 
     /* print all the arguments, take care of strings and functions         */
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
 
-        /* if an error occurs stop printing                            */
+        /* if an error occurs stop printing                                */
         memcpy(readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf));
         TRY_IF_NO_ERROR
         {
@@ -828,61 +836,15 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
 
     return 0;
 }
+static Obj PRINT_OR_APPEND_TO(Obj args, int append)
+{
+    return PRINT_OR_APPEND_TO_FILE_OR_STREAM(args, append, 1);
+}
 
 
 static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
 {
-    const char * volatile funcname = append ? "AppendTo" : "PrintTo";
-    volatile Obj        arg;
-    volatile Obj        stream;
-    volatile UInt       i;
-    syJmp_buf           readJmpError;
-
-    /* first entry is the stream                                           */
-    stream = ELM_LIST(args,1);
-
-    /* try to open the file for output                                     */
-    i = OpenOutputStream(stream);
-    if ( ! i ) {
-        ErrorQuit( "%s: cannot open stream for output", (Int)funcname, 0L );
-        return 0;
-    }
-
-    /* print all the arguments, take care of strings and functions         */
-    for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
-        arg = ELM_LIST(args,i);
-
-        /* if an error occurs stop printing                                */
-        memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
-        TRY_IF_NO_ERROR {
-            if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
-                PrintString1(arg);
-            }
-            else if ( IS_STRING_REP(arg) ) {
-                PrintString1(arg);
-            }
-            else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-                PrintFunction( arg );
-            }
-            else {
-                PrintObj( arg );
-            }
-        }
-        CATCH_ERROR {
-            CloseOutput();
-            memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
-            ReadEvalError();
-        }
-        memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
-    }
-
-    /* close the output file again, and return nothing                     */
-    if ( ! CloseOutput() ) {
-        ErrorQuit( "%s: cannot close output", (Int)funcname, 0L );
-        return 0;
-    }
-
-    return 0;
+    return PRINT_OR_APPEND_TO_FILE_OR_STREAM(args, append, 0);
 }
 
 /****************************************************************************
