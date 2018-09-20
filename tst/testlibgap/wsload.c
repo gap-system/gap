@@ -4,7 +4,6 @@
 #include "common.h"
 int main(int argc, char ** argv)
 {
-    printf("# Initializing GAP...\n");
     GAP_Initialize(argc, argv, environ, 0L, 0L);
     printf("# looking at saved stuff...\n");
     test_eval("g;");
