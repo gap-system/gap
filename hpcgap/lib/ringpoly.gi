@@ -332,7 +332,7 @@ InstallMethod( ViewString,
 InstallMethod( ViewObj,
               "for a polynomial ring", true, [ IsPolynomialRing ],
               # override the higher ranking FLMLOR method
-              RankFilter(IsFLMLOR),
+              {} -> RankFilter(IsFLMLOR),
 
   function( R )
     Print(ViewString(R));
@@ -344,7 +344,7 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( String,
                "for a polynomial ring", true, [ IsPolynomialRing ],
-               RankFilter(IsFLMLOR),
+               {} -> RankFilter(IsFLMLOR),
                R -> Concatenation("PolynomialRing( ",
                                    String(LeftActingDomain(R)),", ",
                                    String(IndeterminatesOfPolynomialRing(R)),
@@ -359,7 +359,7 @@ InstallMethod( PrintObj,
     true,
     [ IsPolynomialRing ],
     # override the higher ranking FLMLOR method
-    RankFilter(IsFLMLOR),
+    {} -> RankFilter(IsFLMLOR),
 
 function( obj )
 local i,f;
@@ -757,7 +757,7 @@ end);
 ##
 InstallMethod(ViewObj,"for function field",true,[IsFunctionField],
     # override the higher ranking FLMLOR method
-    RankFilter(IsFLMLOR),
+    {} -> RankFilter(IsFLMLOR),
 function(obj)
     Print("FunctionField(...,",
         IndeterminatesOfFunctionField(obj),")");
@@ -770,7 +770,7 @@ end);
 ##
 InstallMethod(PrintObj,"for a function field",true,[IsFunctionField],
     # override the higher ranking FLMLOR method
-    RankFilter(IsFLMLOR),
+    {} -> RankFilter(IsFLMLOR),
 function(obj)
 local i,f;
     Print("FunctionField(",LeftActingDomain(obj),",[");

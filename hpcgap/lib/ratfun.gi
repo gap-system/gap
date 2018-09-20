@@ -1052,13 +1052,13 @@ function(r, c)
 end);
 
 InstallMethod( \*, "ratfun * rat", true,
-    [ IsPolynomialFunction, IsRat ],-RankFilter(IsRat),
+    [ IsPolynomialFunction, IsRat ], {} -> -RankFilter(IsRat),
 function( left, right )
   return left * (right*FamilyObj(left)!.oneCoefficient);
 end );
 
 InstallMethod( \*, "rat * ratfun ", true,
-    [ IsRat, IsPolynomialFunction], -RankFilter(IsRat),
+    [ IsRat, IsPolynomialFunction], {} -> -RankFilter(IsRat),
 function( left, right )
   return (left*FamilyObj(right)!.oneCoefficient) * right;
 end);
@@ -1306,13 +1306,13 @@ function( left, right )
 end);
 
 InstallMethod( \+, "ratfun + rat", true,
-    [ IsPolynomialFunction, IsRat ],-RankFilter(IsRat),
+    [ IsPolynomialFunction, IsRat ], {} -> -RankFilter(IsRat),
 function( left, right )
   return left+right*FamilyObj(left)!.oneCoefficient;
 end );
 
 InstallMethod( \+, "rat + ratfun ", true,
-    [ IsRat, IsPolynomialFunction], -RankFilter(IsRat),
+    [ IsRat, IsPolynomialFunction], {} -> -RankFilter(IsRat),
 function( left, right )
   return left*FamilyObj(right)!.oneCoefficient+right;
 end);

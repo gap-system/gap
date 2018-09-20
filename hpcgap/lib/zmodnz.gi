@@ -789,13 +789,13 @@ InstallMethod( PrintObj,
 InstallMethod( AsList,
     "for full ring Z/nZ",
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
-    RankFilter( IsRing ),
+    {} -> RankFilter( IsRing ),
     AsSSortedList );
 
 InstallMethod( AsSSortedList,
     "for full ring Z/nZ",
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ],
-    RankFilter( IsRing ),
+    {} -> RankFilter( IsRing ),
     function( R )
     local F;
     F:= ElementsFamily( FamilyObj( R ) );
@@ -812,7 +812,7 @@ InstallMethod( AsSSortedList,
 InstallMethodWithRandomSource(Random,
     "for a random source and full ring Z/nZ",
     [ IsRandomSource, IsZmodnZObjNonprimeCollection and IsWholeFamily ],
-    RankFilter( IsRing ),
+    {} -> RankFilter( IsRing ),
     { rs, R } -> ZmodnZObj( ElementsFamily( FamilyObj( R ) ),
                     Random( rs, [ 0 .. Size( R ) - 1 ] ) ) );
 
