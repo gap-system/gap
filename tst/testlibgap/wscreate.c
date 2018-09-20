@@ -14,7 +14,7 @@ int main(int argc, char ** argv)
     test_eval("lis:=[a^2, a^2, b*a];");
     test_eval("h:=g/lis;");
     test_eval("c:=h.1;");
-    test_eval("Set([1..1000000], i->Order(c));");
+    test_eval("SaveWorkspace(\"/tmp/libgap.ws\");\n");
     printf("# done\n");
     return 0;
 }

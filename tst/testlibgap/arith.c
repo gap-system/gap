@@ -4,17 +4,17 @@
 #include "common.h"
 int main(int argc, char ** argv)
 {
+    Int a = 42;
+    Obj b, c;
     printf("# Initializing GAP...\n");
     GAP_Initialize(argc, argv, environ, 0L, 0L);
+    b = INTOBJ_INT(a); 
+    b = INV(b);  
+    ViewObj(b);  
+    Pr("\n", 0L, 0L); 
     CollectBags(0, 1);    // full GC
-    test_eval("1+2+3;");
-    test_eval("g:=FreeGroup(2);");
-    test_eval("a:=g.1;");
-    test_eval("b:=g.2;");
-    test_eval("lis:=[a^2, a^2, b*a];");
-    test_eval("h:=g/lis;");
-    test_eval("c:=h.1;");
-    test_eval("Set([1..1000000], i->Order(c));");
+    ViewObj(b);  
+    Pr("\n", 0L, 0L); 
     printf("# done\n");
     return 0;
 }
