@@ -12,6 +12,7 @@ gap> c3:= CharacterTable( CyclicGroup( 3 ) );;
 gap> n:= 3;;
 gap> wr:= CharacterTableWreathSymmetric( c3, n );;
 gap> irr:= Irr( wr );;
+gap> betas:=fail;;
 gap> for i in [ 1 .. Length( irr ) ] do
 >      betas:= List( CharacterParameters( wr )[i], BetaSet );
 >      if List( ClassParameters( wr ), 

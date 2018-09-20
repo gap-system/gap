@@ -806,11 +806,13 @@ static void ReadCallVarAss(TypSymbolSet follow, Char mode)
         }
         else {
             Match( S_ASSIGN, ":=", follow );
+            UInt currLHSGVar = ReaderState()->CurrLHSGVar;
             if ( LEN_PLIST(STATE(StackNams)) == 0 || !STATE(IntrCoding) ) {
                 ReaderState()->CurrLHSGVar = (ref.type == R_GVAR ? ref.var : 0);
             }
             ReadExpr( follow, 'r' );
             AssignRef(ref);
+            ReaderState()->CurrLHSGVar = currLHSGVar;
         }
     }
 
