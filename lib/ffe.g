@@ -10,6 +10,8 @@
 ##
 ##  This file deals with internal finite field elements.
 ##
+##  Update September 2018: MAXSIZE_GF_INTERNAL changed to 2^24.
+##
 
 
 #############################################################################
@@ -17,7 +19,7 @@
 
 #V  MAXSIZE_GF_INTERNAL . . . . . . . . . . . . maximal size of internal ffes
 ##
-BIND_GLOBAL( "MAXSIZE_GF_INTERNAL", 2^24 ); #jdb 16/09/18 2^24 was 2^16.
+BIND_GLOBAL( "MAXSIZE_GF_INTERNAL", 2^24 ); #jdebeule 16/09/18 2^24 was 2^16.
 
 
 #############################################################################
