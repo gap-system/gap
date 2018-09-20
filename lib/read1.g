@@ -57,6 +57,9 @@ ReadLib( "listcoef.gd" );
 ReadLib( "info.gd"     );
 ReadLib( "files.gd"    );
 ReadLib( "streams.gd"  );
+if IsHPCGAP then
+  ReadLib( "custom_streams.gd"  );
+fi;
 
 ReadLib( "record.gi"   );
 
