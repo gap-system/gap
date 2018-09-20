@@ -73,10 +73,6 @@ typedef void sig_handler_t ( int );
 #include <process.h>
 #endif
 
-#ifdef HAVE_DLOPEN
-#include <dlfcn.h>
-#endif
-
 #ifdef SYS_IS_DARWIN
 #include <mach-o/dyld.h>
 #endif
@@ -392,37 +388,6 @@ Obj FuncCrcString( Obj self, Obj str ) {
         crc = 1;
     }
     return INTOBJ_INT(((Int4) crc) >> 4);
-}
-
-
-/****************************************************************************
-**
-*F  SyLoadModule( <name> )  . . . . . . . . . . . . . . . . . . . . .  dlopen
-*/
-Int SyLoadModule( const Char * name, InitInfoFunc * func )
-{
-#ifdef HAVE_DLOPEN
-    void *          init;
-    void *          handle;
-
-    *func = 0;
-
-    handle = dlopen( name, RTLD_LAZY | RTLD_GLOBAL);
-    if ( handle == 0 ) {
-      Pr("#W dlopen() error: %s\n", (long) dlerror(), 0L);
-      return 1;
-    }
-
-    init = dlsym( handle, "Init__Dynamic" );
-    if ( init == 0 )
-      return 3;
-
-    *func = (InitInfoFunc) init;
-    return 0;
-#else
-    *func = 0;
-    return 7;
-#endif
 }
 
 
