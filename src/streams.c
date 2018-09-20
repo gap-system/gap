@@ -780,17 +780,10 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
     /* try to open the file for output                                     */
     i = append ? OpenAppend( CONST_CSTR_STRING(filename) )
                : OpenOutput( CONST_CSTR_STRING(filename) );
+
     if ( ! i ) {
-        if (strcmp(CONST_CSTR_STRING(filename), "*errout*") == 0) {
-            // When trying to print an error opening *errout* failed,
-            // We exit GAP after trying to print an error.
-            // First try printing an error to stderr
-            int ret = fputs("gap: panic, could not open *errout*!\n", stderr);
-            // If that failed, try printing to stdout
-            if(ret == EOF) {
-                fputs("gap: panic, could not open *errout*!\n", stdout);
-            }
-            SyExit(1);
+        if (strcmp(CSTR_STRING(filename), "*errout*") == 0) {
+            Panic("Failed to open *errout*!");
         }
         ErrorQuit( "%s: cannot open '%g' for output",
                    (Int)funcname, (Int)filename );
@@ -800,29 +793,31 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
     /* print all the arguments, take care of strings and functions         */
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
-        if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
-            PrintString1(arg);
-        }
-        else if ( IS_STRING_REP(arg) ) {
-            PrintString1(arg);
-        }
-        else if ( TNUM_OBJ(arg) == T_FUNCTION ) {
-            PrintFunction( arg );
-        }
-        else {
-            memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 
-            /* if an error occurs stop printing                            */
-            TRY_IF_NO_ERROR {
-                PrintObj( arg );
+        /* if an error occurs stop printing                            */
+        memcpy(readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf));
+        TRY_IF_NO_ERROR
+        {
+            if (IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg)) {
+                PrintString1(arg);
             }
-            CATCH_ERROR {
-                CloseOutput();
-                memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
-                ReadEvalError();
+            else if (IS_STRING_REP(arg)) {
+                PrintString1(arg);
             }
-            memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
+            else if (IS_FUNC(arg)) {
+                PrintFunction(arg);
+            }
+            else {
+                PrintObj(arg);
+            }
         }
+        CATCH_ERROR
+        {
+            CloseOutput();
+            memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
+            ReadEvalError();
+        }
+        memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
     }
 
     /* close the output file again, and return nothing                     */
