@@ -353,6 +353,25 @@ DeclareGlobalFunction( "TestPackageAvailability" );
 
 #############################################################################
 ##
+#F  IsPackageLoaded( <name>[, <version>][, <checkall>] )
+##
+##  <#GAPDoc Label="IsPackageLoaded">
+##  <ManSection>
+##  <Func Name="IsPackageLoaded" Arg='name[, version][, checkall]'/>
+##
+##  <Description>
+##  This function return <K>true</K> if the given package is loaded, and
+##  <K>false</K> otherwise. For details on the meaning of the arguments,
+##  see <Ref Func="TestPackageAvailability"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "IsPackageLoaded" );
+
+
+#############################################################################
+##
 #F  DisplayPackageLoadingLog( [<severity>] )
 #I  InfoPackageLoading
 #V  PACKAGE_ERROR

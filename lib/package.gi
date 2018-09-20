@@ -1005,6 +1005,18 @@ InstallGlobalFunction( TestPackageAvailability, function( arg )
 
 #############################################################################
 ##
+#F  IsPackageLoaded( <name>[, <version>][, <checkall>] )
+##
+InstallGlobalFunction( IsPackageLoaded, function( arg )
+    local result;
+
+    result := CallFuncList( TestPackageAvailability, arg );
+    return result = true;
+    end );
+
+
+#############################################################################
+##
 #F  IsPackageMarkedForLoading( <name>, <version> )
 ##
 InstallGlobalFunction( IsPackageMarkedForLoading, function( name, version )

@@ -114,12 +114,13 @@ You will find further information about their use in Section
 
 <#Include Label="ReadPackage">
 <#Include Label="TestPackageAvailability">
+<#Include Label="IsPackageLoaded">
+<#Include Label="IsPackageMarkedForLoading">
 <#Include Label="TestPackage">
 <#Include Label="InstalledPackageVersion">
 <#Include Label="DirectoriesPackageLibrary">
 <#Include Label="DirectoriesPackagePrograms">
 <#Include Label="CompareVersionNumbers">
-<#Include Label="IsPackageMarkedForLoading">
 <#Include Label="DeclareAutoreadableVariables">
 
 <Subsection Label="Kernel modules">
