@@ -2356,8 +2356,12 @@ local  Omega,      # a common operation domain for <G>, <E> and <F>
   od;
   
   # Find the order in which to process the points in the base choice.
-  order := cycles.points{ cycles.firsts };
-  SortParallel( ShallowCopy( -cycles.lengths ), order );
+  #SortParallel( ShallowCopy( -cycles.lengths ), order );
+
+  # random permutation to avoid falling into bad case out of habit
+  i:=FLOYDS_ALGORITHM(GlobalMersenneTwister,Length(cycles.firsts),false);
+  order := cycles.points{ cycles.firsts{i} };
+  SortParallel( -(cycles.lengths{i}), order );
 
   repeat
 
