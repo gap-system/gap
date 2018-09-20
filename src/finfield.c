@@ -48,6 +48,26 @@
 **  is the  logarithm  of $z^{a-1} +   1$.  This list  is  usually called the
 **  Zech-Logarithm  table.  The zeroth  entry in the  finite field bag is the
 **  order of the finite field minus one.
+**
+**  Note of September 2018. A finite field element (FFE) uses 32 bit (cfr supra).
+**  We would like to allow finite fields of order larger than 65536 in this "internal"
+**  representation. The obvious way seems to simply double the number of bits for
+**  representing the value of an FFE (and hence also doubling the number of bits
+**  to represent the field. Note the following figures:
+**
+**  order <= 2^16: 6542 fields of prime order, 93 of non-prime order: 6635
+**  order <= 2^24: 1077871 fields of prime order, 684 of non-prime order: 1078555
+**  order <= 2^32: 203280221 fields of prime order, 6948 of non-prime order: 203287169
+**
+**  So 29 bits is sufficient for the number <field> itself.
+**
+**  The main problem for "large" fields is the computation (and storage) of the Zech Log
+**  table. Up to order 2^24, computation time and storage seems not problematic.
+**  Therefore, currently the largest allowed size for internatlly represented fields
+**  is set to 2^24. A second hurdle to deal with larger fields is the data stored in ffdata.c.
+**  The interpolation search requires these lists to be available, but increasing the largest
+**  possible order, increases the amount of data.
+**
 */
 
 #include "finfield.h"
@@ -84,11 +104,11 @@ static Obj TYPE_FFE0;
 **  entries are the  proper prime powers,  odd entries are the  corresponding
 **  conway polynomials.
 *
-**  jdb: There are now 6948 Conway polynomials. We have stored them in the
-**  file finfield_conway.h
+**  Update September 2018: the 6948 Conway polynomials for fields of prime power
+**  order at most 2^32 are stored in the file finfield_conway.h
 */
 
-#include "finfield_conway.h" /* jdb 16/09/18 */
+#include "finfield_conway.h" /* jdebeule 16/09/18 */
 
 static Obj PrimitiveRootMod;
 
@@ -113,7 +133,7 @@ FF              FiniteField (
     UInt                q;              /* size of finite field            */
     UInt                poly;           /* Conway polynomial of extension  */
     UInt                i, l, f, n, e;  /* loop variables                  */
-    Obj                 root;           /* will be a primitive root mod p  (jdb added 16/09/18 */
+    Obj                 root;           /* will be a primitive root mod p  (jdebeule 16/09/18 */
 
     /* calculate size of field */
     q = 1;
@@ -177,9 +197,10 @@ FF              FiniteField (
 
     /* if q is a prime find the smallest primitive root $e$, use $x - e$   */
     /*N 1990/02/04 mschoene there are few dumber ways to find prim. roots  */
-    /*N 2016/11/14 jdb: when starting GAP, some really small finite fields are intialized
+    /*jdebeule 16/9/2018: when starting GAP, some really small finite fields are intialized
         before the number theory is loaded. So PrimitiveRootMod is not yet available.
         therefore I just kept the old code for the "small" primes. */
+    /*jdebeule 16/9/2018: for prime fields of "large" order, the GAP function PrimitiveRootMod computes a primitive root modulo p (much) faster */
     if ( d == 1 ) {
         if ( p < 65537 ) {
             for ( e = 1, i = 1; i != p-1; ++e ) {
@@ -191,8 +212,7 @@ FF              FiniteField (
             root=CALL_1ARGS(PrimitiveRootMod, INTOBJ_INT(p));
             e = INT_INTOBJ(root)+1;
         }
-        /*printf("found root in FiniteField:%llu\n",e);*/
-        poly = p-(e-1); /*jdb: e-1 = PrimitiveRootMod */
+        poly = p-(e-1); /*jdebeule: e-1 = PrimitiveRootMod */
      }
 
     /* otherwise look up the polynomial used to construct this field       */
@@ -1493,7 +1513,7 @@ Obj FuncZ (
     UInt                r;              /* temporary                       */
 
     /* check the argument                                                  */
-    if ( (IS_INTOBJ(q) && (INT_INTOBJ(q) > SIZE_LARGEST_INTERNAL_FF)) || /* jdb 19/09/18 changed to 2^24 */
+    if ( (IS_INTOBJ(q) && (INT_INTOBJ(q) > SIZE_LARGEST_INTERNAL_FF)) || /* jdebeule 19/09/18 replaced 65536 by constant */
          (TNUM_OBJ(q) == T_INTPOS))
       return CALL_1ARGS(ZOp, q);
     
@@ -1545,7 +1565,8 @@ Obj FuncZ2 ( Obj self, Obj p, Obj d)
     {
       ip = INT_INTOBJ(p);
       id = INT_INTOBJ(d);
-      if (ip > 1 && id > 0 && id <= 24 && ip <= SIZE_LARGEST_INTERNAL_FF) /*  jdb 16/09/18: 24 was 16 and new constant in ffdata.h */
+      /* jdebeule 19/9/2018 '24' was '16', 65536 became new constant from ffdata.h */
+      if (ip > 1 && id > 0 && id <= 24 && ip <= SIZE_LARGEST_INTERNAL_FF)
         {
           id1 = id;
           q = ip;
@@ -1626,7 +1647,8 @@ static Int InitKernel (
     ImportFuncFromLibrary( "TYPE_FFE", &TYPE_FFE );
     ImportFuncFromLibrary( "TYPE_FFE0", &TYPE_FFE0 );
     ImportFuncFromLibrary( "ZOp", &ZOp );
-    InitFopyGVar( "PrimitiveRootMod", &PrimitiveRootMod );  /* jdb 16/09/18: added */
+    /* jdebeule 19/09/2018: the next line imports the GAP library function PrimitiveRootMod. Thanks to Markus and Max for sorting this out! */
+    InitFopyGVar( "PrimitiveRootMod", &PrimitiveRootMod );
     TypeObjFuncs[ T_FFE ] = TypeFFE;
 
     /* create the fields and integer conversion bags                       */

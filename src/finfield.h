@@ -48,7 +48,35 @@
 **  is the  logarithm  of $z^{a-1} +   1$.  This list  is  usually called the
 **  Zech-Logarithm  table.  The zeroth  entry in the  finite field bag is the
 **  order of the finite field minus one.
+**
+**  Note of September 2018. A finite field element (FFE) uses 32 bit (cfr supra).
+**  We would like to allow finite fields of order larger than 65536 in this "internal"
+**  representation. The obvious way seems to simply double the number of bits for
+**  representing the value of an FFE (and hence also doubling the number of bits
+**  to represent the field. Note the following figures:
+**
+**  order <= 2^16: 6542 fields of prime order, 93 of non-prime order: 6635
+**  order <= 2^24: 1077871 fields of prime order, 684 of non-prime order: 1078555
+**  order <= 2^32: 203280221 fields of prime order, 6948 of non-prime order: 203287169
+**
+**  So 29 bits is sufficient for the number <field> itself.
+**
+**  The main problem for "large" fields is the computation (and storage) of the Zech Log
+**  table. Up to order 2^24, computation time and storage seems not problematic.
+**  Therefore, currently the largest allowed size for internatlly represented fields
+**  is set to 2^24. A second hurdle to deal with larger fields is the data stored in ffdata.c.
+**  The interpolation search requires these lists to be available, but increasing the largest
+**  possible order, increases the amount of data. 
+**  
 */
+
+
+/*
+**  For fields of prime order between 2^16 and 2^24, the computation of a primitive root
+**  modulo p requires some time. This can be improved using the GAP library function
+**  PrimitiveRootMod.
+*/
+
 
 #ifndef GAP_FINFIELD_H
 #define GAP_FINFIELD_H
@@ -65,9 +93,11 @@
 **  Small finite fields are represented by an  index  into  a  global  table.
 **
 **  Since there are  only  6542 (prime) + 93 (nonprime)  small finite fields,
-**  the index fits into a 'UInt2' (actually into 13 bits).
+**  the index fits into a 'UInt2' (actually into 13 bits). See note above,
+**  203280221 fields of order at most 2^32, this fits into less than 29 bits
+**  (and 29 bits are available when choosing UInt4).
 */
-typedef UInt4       FF; /* was UInt2, jdb 16/09/18 */
+typedef UInt4       FF; /* jdebeule (16/9/18): was UInt2 */
 
 
 /****************************************************************************
@@ -157,8 +187,11 @@ extern  Obj             TypeFF0;
 **  which  will only work if  the product of integers  of type 'FFV' does not
 **  cause an overflow.  And of course the successor table stored for a finite
 **  field will become quite large for fields with more than 65536 elements.
+**
+**  Update of September 2018: we fully agree with the comments above. See
+**  the necessary changes in POW1_FFV, VAL_FFE, NEW_FFE, and FLD_FFE
 */
-typedef UInt4           FFV; /* was UInt2, first real change in datatypes jdb 16/09/18 */
+typedef UInt4           FFV; /* jdebeule (16/9/18): was UInt2 */
 
 
 /****************************************************************************
@@ -285,7 +318,7 @@ typedef UInt4           FFV; /* was UInt2, first real change in datatypes jdb 16
 **  since UInt2 fits into Int.
 */
 /*#define POW1_FFV(a,n,f) ( (((UInt4)(a)-1) * (UInt4)(n)) % (UInt4)*(f) + 1 )*/
-#define POW1_FFV(a,n,f) ( (((UInt8)(a)-1) * (UInt8)(n)) % (UInt8)*(f) + 1 ) /*/16/09/18: jdb: UInt8 was UInt4, but this is too small for fields > 2^16.*/
+#define POW1_FFV(a,n,f) ( (((UInt8)(a)-1) * (UInt8)(n)) % (UInt8)*(f) + 1 ) /* jdebeule (16/9/18): UInt8 was UInt4, but this is too small for fields > 2^16, see comment where FFV type is defined*/
 
 #define POW_FFV(a,n,f)  ( (n)==0 ? 1 : ( (a)==0 ? 0 : POW1_FFV(a,n,f) ) )
 
@@ -299,9 +332,11 @@ typedef UInt4           FFV; /* was UInt2, first real change in datatypes jdb 16
 **
 **  Note that 'FLD_FFE' is a macro, so do not call  it  with  arguments  that
 **  have side effects.
+**
+**  Update September 2018: the change in FLD_FFE is obvious now.
 */
 /*#define FLD_FFE(ffe)            ((FF)((((UInt)(ffe)) & 0xFFFF) >> 3))*/
-#define FLD_FFE(ffe)            ((FF)((((UInt)(ffe)) & 0xFFFFFFFF) >> 3)) /*jdb: 16/09/18 see line above for old version */
+#define FLD_FFE(ffe)            ((FF)((((UInt)(ffe)) & 0xFFFFFFFF) >> 3)) /*jdebeule (16/9/18): see line above for old version */
 
 
 /****************************************************************************
@@ -314,9 +349,11 @@ typedef UInt4           FFV; /* was UInt2, first real change in datatypes jdb 16
 **
 **  Note that 'VAL_FFE' is a macro, so do not call  it  with  arguments  that
 **  have side effects.
+**
+**  Update September 2018: the change in VAL_FFE is obvious now.
 */
 /*#define VAL_FFE(ffe)            ((FFV)(((UInt)(ffe)) >> 16))*/
-#define VAL_FFE(ffe)            ((FFV)(((UInt)(ffe)) >> 32)) /*jdb: 16/09/18 see line above for old version */
+#define VAL_FFE(ffe)            ((FFV)(((UInt)(ffe)) >> 32)) /*jdebeule (16/9/18): see line above for old version */
 
 
 /****************************************************************************
@@ -328,11 +365,13 @@ typedef UInt4           FFV; /* was UInt2, first real change in datatypes jdb 16
 **
 **  Note that 'NEW_FFE' is a macro, so do not  call  it  with  arguments that
 **  have side effects.
+**
+**  Update September 2018: the change in NEW_FFE is obvious now.
 */
 /*#define NEW_FFE(fld,val)        ((Obj)(((UInt)(val) << 16) + \
                                 ((UInt)(fld) << 3) + (UInt)0x02))*/
 #define NEW_FFE(fld,val)        ((Obj)(((UInt)(val) << 32) + \
-                                ((UInt)(fld) << 3) + (UInt)0x02)) /* jdb 16/09/18 see above for old version */
+                                ((UInt)(fld) << 3) + (UInt)0x02)) /* jdebeule (16/9/18): see above for old version */
 
 
 /****************************************************************************
