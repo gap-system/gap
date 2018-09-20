@@ -1,0 +1,12 @@
+# looking at saved stuff...
+gap> g;
+<free group on the generators [ f1, f2 ]>
+gap> a;
+f1
+gap> b;
+f2
+gap> [a^2, a^2, b*a];
+[ f1^2, f1^2, f2*f1 ]
+gap> Order(h);
+2
+# done
