@@ -57,6 +57,7 @@ ReadLib( "listcoef.gd" );
 ReadLib( "info.gd"     );
 ReadLib( "files.gd"    );
 ReadLib( "streams.gd"  );
+ReadLib( "show.gd"     );
 
 ReadLib( "record.gi"   );
 
