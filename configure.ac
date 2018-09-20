@@ -713,8 +713,6 @@ dnl check for dynamic loading of modules
 dnl TODO: replace with libtool code?!
 dnl
 
-AC_CHECK_FUNCS([rld_load])
-
 AC_SEARCH_LIBS([dlopen], [dl],
     [AC_DEFINE([HAVE_DLOPEN], [1], [define as 1 if you have `dlopen' and `dlsym'])]
 )
