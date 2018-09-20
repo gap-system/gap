@@ -753,7 +753,7 @@ end);
 ##
 #F  PrimeDivisors( <n> ) . . . . . . . . . . . . . . list of prime divisors
 ##  
-##  delegating to FactorsInt
+##  delegating to Factors
 ##  
 InstallMethod( PrimeDivisors, "for integer", [ IsInt ], function(n)
   if n = 0 then
@@ -765,7 +765,7 @@ InstallMethod( PrimeDivisors, "for integer", [ IsInt ], function(n)
   if n = 1 then
     return [];
   fi;
-  return Set(FactorsInt(n));
+  return Set(Factors(Integers,n));
 end);
 
 
@@ -964,7 +964,16 @@ InstallGlobalFunction( IsPrimePowerInt, function(n)
             i := i + 1;
             k := Primes[i];
         else
+            # need more primes...
             k := NextPrimeInt( k );
+            # since we are now beyond the primes in Primes, for which we
+            # checked whether they divide n, we might now just as well
+            # test if k divides n, too
+            r := PVALUATION_INT(n, k);
+            if r > 0 then
+                if s = -1 and IsEvenInt(r) then return false; fi;
+                return n = k^r;
+            fi;
         fi;
     od;
 
@@ -1094,7 +1103,7 @@ InstallGlobalFunction(PrimePowersInt,function( n )
     elif n < 0  then
     	n := -1 * n;
     fi;
-    return Flat(Collected(FactorsInt(n)));
+    return Flat(Collected(Factors(Integers,n)));
 
 end);
 
