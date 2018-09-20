@@ -31,6 +31,8 @@
 <#Include Label="IsOutputStream">
 <#Include Label="IsOutputTextStream">
 <#Include Label="IsOutputTextNone">
+<#Include Label="IsOutputStreamFormatter">
+<#Include Label="IsOutputStreamPrefixer">
 <#Include Label="StreamsFamily">
 
 </Section>
