@@ -896,7 +896,7 @@ Int SyFopen (
         if ( strcmp( mode, "w" ) != 0 && strcmp( mode, "a" ) != 0 )
           return -1;
         else
-          return 3;
+          return ERROUT_REDIRECT ? ERROUT_REDIRECT : 3;
     }
 
     HashLock(&syBuf);

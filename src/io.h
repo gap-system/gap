@@ -429,6 +429,7 @@ extern  void            SPrTo (
 
 extern void FlushRestOfInputLine( void );
 
+extern int ERROUT_REDIRECT; // is zero or points to where errout is redirected
 
 StructInitInfo * InitInfoIO(void);
 

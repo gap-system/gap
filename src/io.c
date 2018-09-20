@@ -156,7 +156,6 @@ struct IOModuleState {
     //
     TypOutputFile * IgnoreStdoutErrout;
 
-
     // The file identifier of the current input logfile. If it is not 0 the
     // scanner echoes all input from the files '*stdin*' and '*errin*' to
     // this file.
@@ -175,6 +174,11 @@ struct IOModuleState {
     Char   Pushback;
     Char * RealIn;
 };
+
+// POC redirecting *errout*
+int ERROUT_REDIRECT; // is zero or points to where errout is redirected
+TypOutputFile ERROUT_REDIRECT_TARGET;
+TypOutputFile * ERROUT_REDIRECT_BUFFER;
 
 // for debugging from GDB / lldb, we mark this as extern inline
 extern inline struct IOModuleState * IO(void)
@@ -977,7 +981,6 @@ UInt OpenOutput (
     return 1;
 }
 
-
 /****************************************************************************
 **
 *F  OpenOutputStream( <stream> )  . . . . . . open a stream as current output
@@ -1044,12 +1047,17 @@ UInt CloseOutput ( void )
         TLS(DefaultOutput) == IO()->Output->stream)
         return 0;
 #else
-    if (IO()->OutputStackPointer <= 1)
+    if (IO()->OutputStackPointer <= 1 && !ERROUT_REDIRECT)
         return 0;
 #endif
 
     /* flush output and close the file                                     */
     Pr( "%c", (Int)'\03', 0L );
+    if (ERROUT_REDIRECT) {
+        IO()->Output = ERROUT_REDIRECT_BUFFER;
+        return 1;
+    }
+
     if (!IO()->Output->isstream) {
         SyFclose(IO()->Output->file);
     }
@@ -2031,8 +2039,30 @@ Obj FuncGET_FILENAME_CACHE(Obj self)
   return CopyObj(FilenameCache, 1);
 }
 
+// POC redirecting *errout*
+Obj FuncREDIRECT_ERROUT( Obj self, Obj gapfilename )
+{
+    const Char * filename;
+    Int fid;
+
+    filename = CSTR_STRING(gapfilename);
+    fid = SyFopen(filename, "w");
+    if (fid == -1)
+        return False;
+    ERROUT_REDIRECT = fid;
+    ERROUT_REDIRECT_BUFFER = IO()->Output;
+    ERROUT_REDIRECT_TARGET.file = fid;
+    ERROUT_REDIRECT_TARGET.line[0] = '\0';
+    ERROUT_REDIRECT_TARGET.pos = 0;
+    ERROUT_REDIRECT_TARGET.indent = 0;
+    ERROUT_REDIRECT_TARGET.isstream = 0;
+    ERROUT_REDIRECT_TARGET.format = 1;
+    return True;
+}
+
 static StructGVarFunc GVarFuncs [] = {
 
+    GVAR_FUNC(REDIRECT_ERROUT, 1, "file-or-stream"),
     GVAR_FUNC(ToggleEcho, 0, ""),
     GVAR_FUNC(CPROMPT, 0, ""),
     GVAR_FUNC(PRINT_CPROMPT, 1, "prompt"),
@@ -2079,6 +2109,9 @@ static Int InitKernel (
     IO()->Output = 0;
     IO()->InputLog = 0;
     IO()->OutputLog = 0;
+
+    // POC
+    ERROUT_REDIRECT = 0;
 
 #if !defined(HPCGAP)
     for (Int i = 0; i < MAX_OPEN_FILES; i++) {
