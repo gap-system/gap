@@ -1712,12 +1712,6 @@ InstallGlobalFunction( ExtendRootDirectories, function( rootpaths )
           rootpaths ) );
       # Clear the cache.
       GAPInfo.DirectoriesLibrary:= AtomicRecord( rec() );
-      # Deal with an obsolete variable.
-      if IsBoundGlobal( "GAP_ROOT_PATHS" ) then
-        MakeReadWriteGlobal( "GAP_ROOT_PATHS" );
-        UnbindGlobal( "GAP_ROOT_PATHS" );
-        BindGlobal( "GAP_ROOT_PATHS", GAPInfo.RootPaths );
-      fi;
       # Reread the package information.
       if IsBound( GAPInfo.PackagesInfoInitialized ) and
          GAPInfo.PackagesInfoInitialized = true then

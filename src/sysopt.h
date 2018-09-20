@@ -92,7 +92,7 @@ extern Int SyDebugLoading;
 **
 **  It is modified by the command line option -l.
 **
-**  It  is copied into the GAP  variable  called 'GAP_ROOT_PATHS' and used by
+**  It is copied into the GAP variable 'GAPInfo.RootPaths' and used by
 **  'SyFindGapRootFile'.
 **
 **  Each entry must end  with the pathname seperator, eg.  if 'init.g' is the
