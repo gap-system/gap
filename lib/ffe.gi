@@ -31,6 +31,9 @@
 ##  the field of size $p^d$ is stored in `GALOIS_FIELDS[<p>][<d>]'.
 ##
 InstallFlushableValue( GALOIS_FIELDS, [] );
+if IsHPCGAP then
+  ShareSpecialObj( GALOIS_FIELDS );
+fi;
 
 
 #############################################################################

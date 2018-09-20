@@ -1299,7 +1299,9 @@ function( G, d, e, opr )
 end );
 
 BIND_GLOBAL( "CYCLICACHE", []);
-ShareSpecialObj(CYCLICACHE);
+if IsHPCGAP then
+  ShareSpecialObj(CYCLICACHE);
+fi;
 
 InstallGlobalFunction(CreateIsomorphicPcGroup,function(pcgs,needindices,flag)
 local r,i,p,A,f,a;
