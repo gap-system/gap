@@ -63,18 +63,6 @@ extern Int4 SyGAPCRC(
 
 /****************************************************************************
 **
-*F  SyLoadModule( <name>, <func> )  . . . . . . . . .  load a compiled module
-**
-**  This function attempts to load a compiled module <name>.
-**  If successful, it returns 0, and sets <func> to a pointer to the init
-**  function of the module. In case of an error, <func> is set to 0, and the
-**  return value indicates which error occurred.
-*/
-extern Int SyLoadModule( const Char * name, InitInfoFunc * func );
-
-
-/****************************************************************************
-**
 *F * * * * * * * * * * finding location of executable * * * * * * * * * * * *
 */
 

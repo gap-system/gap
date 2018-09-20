@@ -32,6 +32,10 @@
 #include "sysfiles.h"
 #include "sysopt.h"
 
+#ifdef HAVE_DLOPEN
+#include <dlfcn.h>
+#endif
+
 
 /****************************************************************************
 **
@@ -166,6 +170,41 @@ void ActivateModule(StructInitInfo * info)
         res = res || (info->initModuleState)();
 }
 
+
+/****************************************************************************
+**
+*F  SyLoadModule( <name>, <func> )  . . . . . . . . .  load a compiled module
+**
+**  This function attempts to load a compiled module <name>.
+**  If successful, it returns 0, and sets <func> to a pointer to the init
+**  function of the module. In case of an error, <func> is set to 0, and the
+**  return value indicates which error occurred.
+*/
+#ifdef HAVE_DLOPEN
+Int SyLoadModule( const Char * name, InitInfoFunc * func )
+{
+    void *          init;
+    void *          handle;
+
+    *func = 0;
+
+    handle = dlopen( name, RTLD_LAZY | RTLD_GLOBAL);
+    if ( handle == 0 ) {
+      Pr("#W dlopen() error: %s\n", (long) dlerror(), 0L);
+      return 1;
+    }
+
+    init = dlsym( handle, "Init__Dynamic" );
+    if ( init == 0 )
+      return 3;
+
+    *func = (InitInfoFunc) init;
+    return 0;
+}
+#endif
+
+
+
 /****************************************************************************
 **
 *F  FuncLOAD_DYN( <self>, <name>, <crc> ) . . .  try to load a dynamic module
@@ -191,21 +230,19 @@ Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
     }
 
     /* try to read the module                                              */
+#ifdef HAVE_DLOPEN
     res = SyLoadModule(CSTR_STRING(filename), &init);
     if (res == 1)
         ErrorQuit("module '%g' not found", (Int)filename, 0L);
     else if (res == 3)
         ErrorQuit("symbol 'Init_Dynamic' not found", 0L, 0L);
-    else if (res == 5)
-        ErrorQuit("forget symbol failed", 0L, 0L);
-
+#else
     /* no dynamic library support                                          */
-    else if (res == 7) {
-        if (SyDebugLoading) {
-            Pr("#I  LOAD_DYN: no support for dynamical loading\n", 0L, 0L);
-        }
-        return False;
+    if (SyDebugLoading) {
+        Pr("#I  LOAD_DYN: no support for dynamical loading\n", 0L, 0L);
     }
+    return False;
+#endif
 
     /* get the description structure                                       */
     info = (*init)();
@@ -864,6 +901,7 @@ void LoadModules(void)
                 /* and dynamic case */
                 InitInfoFunc init;
 
+#ifdef HAVE_DLOPEN
                 Int res = SyLoadModule(buf, &init);
 
                 if (res != 0) {
@@ -879,6 +917,9 @@ void LoadModules(void)
                        (Int)buf, (Int)info);
                     SyExit(1);
                 }
+#else
+                Panic("dynamic module not supported");
+#endif
             }
 
             ActivateModule(info);
