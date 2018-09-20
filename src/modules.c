@@ -902,23 +902,22 @@ void LoadModules(void)
                 InitInfoFunc init;
 
 #ifdef HAVE_DLOPEN
-                Int res = SyLoadModule(buf, &init);
-
+                int res = SyLoadModule(buf, &init);
                 if (res != 0) {
-                    Pr("Failed to load needed dynamic module %s, error code "
-                       "%d\n",
-                       (Int)buf, res);
-                    SyExit(1);
+                    Panic("Failed to load needed dynamic module %s, error "
+                          "code %d\n",
+                          buf, res);
                 }
                 info = (*init)();
                 if (info == 0) {
-                    Pr("Failed to init needed dynamic module %s, error code "
-                       "%d\n",
-                       (Int)buf, (Int)info);
-                    SyExit(1);
+                    Panic("Failed to init needed dynamic module %s, error "
+                          "code %d\n",
+                          buf, res);
                 }
 #else
-                Panic("dynamic module not supported");
+                Panic("workspace require dynamic module %s, but dynamic "
+                      "loading not supported",
+                      buf);
 #endif
             }
 
