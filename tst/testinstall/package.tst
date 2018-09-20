@@ -277,6 +277,34 @@ BibTeX:
 
 
 #
+gap> TestPackageAvailability("non-existing-package");
+fail
+gap> TestPackageAvailability("mockpkg");
+true
+gap> TestPackageAvailability("mockpkg", "=0.1");
+true
+gap> TestPackageAvailability("mockpkg", ">=0.1");
+true
+gap> TestPackageAvailability("mockpkg", "=2.0");
+fail
+gap> TestPackageAvailability("mockpkg", ">=2.0");
+fail
+
+#
+gap> IsPackageLoaded("non-existing-package");
+false
+gap> IsPackageLoaded("mockpkg");
+true
+gap> IsPackageLoaded("mockpkg", "=0.1");
+true
+gap> IsPackageLoaded("mockpkg", ">=0.1");
+true
+gap> IsPackageLoaded("mockpkg", "=2.0");
+false
+gap> IsPackageLoaded("mockpkg", ">=2.0");
+false
+
+#
 gap> STOP_TEST( "package.tst", 1);
 
 #############################################################################
