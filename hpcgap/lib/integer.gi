@@ -365,12 +365,14 @@ ADD_SET(Primes2, 4330075309599657322634371042967428373533799534566765522517);
 ADD_SET(Primes2, 549180361199324724418373466271912931710271534073773);
 ADD_SET(Primes2,  85411410016592864938535742262164288660754818699519364051241927961077872028620787589587608357877); 
 
-ShareSpecialObj(Primes2);
-
 InstallFlushableValue(ProbablePrimes2, []);
 IsSSortedList( ProbablePrimes2 );
 
-ShareSpecialObj(ProbablePrimes2);
+if IsHPCGAP then
+  ShareSpecialObj(Primes2);
+  ShareSpecialObj(ProbablePrimes2);
+fi;
+
 
 #############################################################################
 ##
@@ -468,7 +470,9 @@ end);
 ##
 BindGlobal("DivisorsIntCache",
 List([[1],[1,2],[1,3],[1,2,4],[1,5],[1,2,3,6],[1,7]], Immutable));
-MakeImmutable(DivisorsIntCache);
+if IsHPCGAP then
+  MakeImmutable(DivisorsIntCache);
+fi;
 
 InstallGlobalFunction(DivisorsInt,function ( n )
     local  divisors, factors, divs;

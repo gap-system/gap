@@ -128,6 +128,9 @@ end);
 ##   numerically with a denominator of 'digits' digits.
 ##
 APPROXROOTS:=[];
+if IsHPCGAP then
+  ShareSpecialObj(APPROXROOTS);
+fi;
 
 BindGlobal("ApproximateRoot",function(arg)
 local r,e,f,x,nf,lf,c,store,letzt;

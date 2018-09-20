@@ -368,6 +368,12 @@ ADD_SET(Primes2,  85411410016592864938535742262164288660754818699519364051241927
 InstallFlushableValue(ProbablePrimes2, []);
 IsSSortedList( ProbablePrimes2 );
 
+if IsHPCGAP then
+  ShareSpecialObj(Primes2);
+  ShareSpecialObj(ProbablePrimes2);
+fi;
+
+
 #############################################################################
 ##
 #F  BestQuoInt( <n>, <m> )
@@ -464,6 +470,9 @@ end);
 ##
 BindGlobal("DivisorsIntCache",
 List([[1],[1,2],[1,3],[1,2,4],[1,5],[1,2,3,6],[1,7]], Immutable));
+if IsHPCGAP then
+  MakeImmutable(DivisorsIntCache);
+fi;
 
 InstallGlobalFunction(DivisorsInt,function ( n )
     local  divisors, factors, divs;
