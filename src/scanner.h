@@ -285,6 +285,9 @@ extern  void            SyntaxError (
 extern  void            SyntaxWarning (
             const Char *        msg );
 
+// POC: exchange PrintExpr by StringExpr
+// FIXME: Move this to stringobj.c/h
+extern Obj AppendBufToString(Obj, const char *, UInt);
 
 /****************************************************************************
 **

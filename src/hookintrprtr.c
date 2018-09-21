@@ -100,6 +100,12 @@ void InstallPrintExprFunc(Int pos, void (*expr)(Expr))
     HashUnlock(&activeHooks);
 }
 
+// POC: exchange PrintExpr by StringExpr
+void InstallStringExprFunc(Int pos, Obj (*expr)(Obj, Expr))
+{
+    StringExprFuncs[pos] = expr;
+}
+
 UInt ProfileExecStatPassthrough(Stat stat)
 {
     GAP_HOOK_LOOP(visitStat, stat);

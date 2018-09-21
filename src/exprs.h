@@ -129,6 +129,9 @@ extern void PrintRecExpr1 ( Expr expr ); /* needed for printing
 */
 extern  void            (* PrintExprFuncs [256] ) ( Expr expr );
 
+// POC: exchange PrintExpr by StringExpr
+extern Obj      StringExpr( Obj string, Expr expr );
+extern Obj      (* StringExprFuncs[256] ) ( Obj string, Expr expr );
 
 /****************************************************************************
 **

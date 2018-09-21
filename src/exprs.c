@@ -33,6 +33,7 @@
 #include "precord.h"
 #include "range.h"
 #include "records.h"
+#include "scanner.h"
 #include "stringobj.h"
 #include "vars.h"
 
@@ -1414,7 +1415,17 @@ static void RecExpr2(Obj rec, Expr expr)
 void            PrintExpr (
     Expr                expr )
 {
-    (*PrintExprFuncs[ TNUM_EXPR(expr) ])( expr );
+    // POC: exchange PrintExpr by StringExpr
+    // While transitioning from using PrintExprFuncs to StringExprFuncs,
+    // we only use a an entry of StringExprFuncs if it is non-zero.
+    Obj (* stringFuncPtr ) ( Obj string, Expr expr );
+    stringFuncPtr = StringExprFuncs[ TNUM_EXPR(expr) ];
+    if (stringFuncPtr == 0)
+        (*PrintExprFuncs[ TNUM_EXPR(expr) ])( expr );
+    else {
+        Obj string = 0;
+        Pr(CSTR_STRING((*stringFuncPtr)( string, expr )), 0L, 0L);
+    }
 }
 
 
@@ -1428,6 +1439,12 @@ void            PrintExpr (
 */
 void            (* PrintExprFuncs[256] ) ( Expr expr );
 
+// POC: exchange PrintExpr by StringExpr
+Obj      StringExpr( Obj string, Expr expr )
+{
+    return (*StringExprFuncs[ TNUM_EXPR(expr) ])( string, expr );
+}
+Obj      (* StringExprFuncs[256] ) ( Obj string, Expr expr );
 
 /****************************************************************************
 **
@@ -1633,6 +1650,16 @@ void            PrintTrueExpr (
     Expr                expr )
 {
     Pr( "true", 0L, 0L );
+}
+
+/****************************************************************************
+**
+*F  StringTrueExpr(<expr>) . . . . . . . . . . . print literal true expression
+*/
+Obj             StringTrueExpr (
+    Obj string, Expr expr )
+{
+    return AppendBufToString(string, "true test", 9);
 }
 
 
@@ -1951,6 +1978,13 @@ static Int InitKernel (
     InstallEvalExprFunc( T_STRING_EXPR    , EvalStringExpr);
     InstallEvalExprFunc( T_REC_EXPR       , EvalRecExpr);
     InstallEvalExprFunc( T_REC_TILDE_EXPR , EvalRecTildeExpr);
+
+    /* clear the tables for the string dispatching                       */
+    for ( type = 0; type < 256; type++ ) {
+        InstallPrintExprFunc( type , 0 );
+    }
+
+    InstallStringExprFunc( T_TRUE_EXPR     , StringTrueExpr);
 
     /* clear the tables for the printing dispatching                       */
     for ( type = 0; type < 256; type++ ) {

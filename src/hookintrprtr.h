@@ -19,6 +19,8 @@ void InstallEvalExprFunc(Int, Obj (*)(Expr));
 void InstallExecStatFunc(Int, UInt (*)(Stat));
 void InstallPrintStatFunc(Int, void (*)(Stat));
 void InstallPrintExprFunc(Int, void (*)(Expr));
+// POC: exchange PrintExpr by StringExpr
+void InstallStringExprFunc(Int, Obj (*)(Obj, Expr));
 
 
 /****************************************************************************
