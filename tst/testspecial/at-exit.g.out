@@ -1,0 +1,11 @@
+gap> # Check InstallAtExit is run in reverse order
+gap> InstallAtExit(function() Print("First Call\n"); end);
+gap> 
+gap> # Check InstallAtExit recovers from Errors
+gap> InstallAtExit(function() Print("Step 1\n"); Error("ERROR!"); Print("Step 2\n"); end);
+gap> InstallAtExit(function() Print("Last Call\n"); end);
+gap> QUIT;
+Last Call
+Step 1
+Error, ERROR!
+First Call

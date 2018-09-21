@@ -24,9 +24,10 @@ end);
 BIND_GLOBAL("PROGRAM_CLEAN_UP", function()
     local f;
     if IsBound( GAPInfo.AtExitFuncs ) and IsList( GAPInfo.AtExitFuncs ) then
-        for f in GAPInfo.AtExitFuncs do
+        while not IsEmpty(GAPInfo.AtExitFuncs) do
+            f := Remove(GAPInfo.AtExitFuncs);
             if IsFunction(f) then
-                CALL_WITH_CATCH(f,[]);        # really should be CALL_WITH_CATCH here
+                CALL_WITH_CATCH(f,[]);
             fi;
         od;
     fi;
