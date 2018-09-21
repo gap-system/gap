@@ -501,7 +501,11 @@ DeclareGlobalFunction( "RemoveDirectoryRecursively" );
 InstallAtExit( function()
   local path;
   for path in GAPInfo.DirectoriesTemporary do
-      RemoveDirectoryRecursively(path);
+      if IsDir(path) = 'D' then
+          RemoveDirectoryRecursively(path);
+      else
+          PRINT_TO("*errout*", "Temporary directory already removed: ", path, "\n");
+      fi;
   od;
   end );
 
