@@ -93,6 +93,7 @@ BindGlobal( "ShallowCopy_FreeGroup", iter -> rec(
 InstallMethod( Iterator,
     "for a free group",
     [ IsAssocWordWithInverseCollection and IsWholeFamily and IsGroup ],
+    SUM_FLAGS,
     G -> IteratorByFunctions( rec(
              IsDoneIterator := ReturnFalse,
              NextIterator   := NextIterator_FreeGroup,
