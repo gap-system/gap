@@ -1,10 +1,18 @@
 /*
- * Small program to test libgap ability to save workspaces
+ * Small program to test libgap ability to load workspaces.
+ * Also shows how to directly pass command line arguments to libgap.
  */
 #include "common.h"
 int main(int argc, char ** argv)
 {
-    GAP_Initialize(argc, argv, environ, 0L, 0L);
+    char *args[50];
+    char lpar[3] = "-L";
+    char wsname[16] = "/tmp/libgap.ws"; /* the name must match the one used in wscreate.c */
+    memcpy(args, argv, argc*sizeof(char*));
+    args[argc] = lpar;
+    args[argc+1] = wsname;
+    args[argc+2] = NULL;
+    GAP_Initialize(argc+2, args, environ, 0L, 0L);
     printf("# looking at saved stuff...\n");
     test_eval("g;");
     test_eval("a;");
