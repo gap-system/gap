@@ -287,9 +287,8 @@ Error, the argument must be a semigroup with a multiplicative neutral element
 # Test IsomorphismTransformationSemigroup for a transformation semigroup
 gap> S := Semigroup(Transformation([1, 4, 6, 2, 5, 3, 7, 8, 9, 9]));;
 gap> IsomorphismTransformationSemigroup(S);
-MappingByFunction( <commutative transformation semigroup of degree 10 with 1 
- generator>, <commutative transformation semigroup of degree 10 with 1 
- generator>, function( object ) ... end, function( object ) ... end )
+IdentityMapping( <commutative transformation semigroup of degree 10 with 1 
+ generator> )
 gap> BruteForceIsoCheck(last);
 true
 gap> BruteForceInverseCheck(last2);

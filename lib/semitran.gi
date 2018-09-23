@@ -383,9 +383,8 @@ end);
 InstallMethod(IsomorphismTransformationSemigroup, 
 "for a transformation semigroup", 
 [IsTransformationSemigroup], 
-function(S)
-  return MagmaIsomorphismByFunctionsNC(S, S, IdFunc, IdFunc);
-end);
+SUM_FLAGS,
+IdentityMapping);
 
 InstallMethod(IsomorphismTransformationSemigroup, "for partial perm semigroup",
 [IsPartialPermSemigroup],
