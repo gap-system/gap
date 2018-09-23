@@ -990,26 +990,26 @@ testbugfix: all
           ReadGapRoot( "tst/testbugfix.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/testbugfix2_%Y-%m-%d-%H-%M` )
 
+LIBGAPTESTS := $(addprefix tst/testlibgap/,basic wsload wscreate)
+
+# run a test in tst/testlibgap
 tst/testlibgap/%: obj/tst/testlibgap/%.lo obj/tst/testlibgap/common.lo libgap.la
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $^ -o $@
 
 clean: clean-testlibgap
 clean-testlibgap:
-	rm -f tst/testlibgap/basic tst/testlibgap/wsload tst/testlibgap/wscreate
+	rm -f ${LIBGAPTESTS}
 
-testlibgapws: tst/testlibgap/wscreate tst/testlibgap/wsload
-	tst/testlibgap/wscreate -A -l $(top_srcdir) -m 32m -q -T --nointeract > createws.out
-	diff $(top_srcdir)/tst/testlibgap/createws.expect createws.out
-	tst/testlibgap/wsload   -A -l $(top_srcdir) -m 32m -q -T --nointeract -L /tmp/libgap.ws > loadws.out
-	diff $(top_srcdir)/tst/testlibgap/loadws.expect loadws.out
-	rm -f /tmp/libgap.ws loadws.out createws.out
+# run all the tests in tst/testlibgap
+testlibgap: ${LIBGAPTESTS}
+	$(foreach v,$^,                                              \
+	      $(v) -A -l $(top_srcdir) -q -T --nointeract >$(v).out; \
+	      diff $(top_srcdir)/$(v).expect $(v).out; )
 
-testlibgap: tst/testlibgap/basic
-	tst/testlibgap/basic -A -l $(top_srcdir) -m 32m -q -T --nointeract > basic.out
-	diff $(top_srcdir)/tst/testlibgap/basic.expect basic.out
-	rm -f basic.out
+# this is to make sure wscreate is run before wsload : order-only dependence.
+tst/testlibgap/wsload: | tst/testlibgap/wscreate
 
-.PHONY: testlibgap testlibgapws
+.PHONY: testlibgap
 
 coverage:
 	gcov -o . $(SOURCES)
