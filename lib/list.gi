@@ -3704,6 +3704,7 @@ LIST_WITH_IDENTICAL_ENTRIES );
 InstallMethod( ViewObj,
     "for finite lists",
     [ IsList and IsFinite ],
+    {} -> RankFilter(IsList) + 1 - RankFilter(IsList and IsFinite),
 function( list )
     local   i;
 
