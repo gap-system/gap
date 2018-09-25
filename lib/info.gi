@@ -209,28 +209,28 @@ end);
 
 InstallOtherMethod(\+,
     "for two info classes",
-    IsIdenticalObj, [IsInfoClass, IsInfoClass], 0,
+    IsIdenticalObj, [IsInfoClass, IsInfoClass], SUM_FLAGS,
         function(ic1,ic2)
     return Set([ic1,ic2]);
 end);
 
 InstallOtherMethod(\+,
     "for info class and info selector",
-    true, [IsInfoClass, IsInfoSelector], 20,
+    true, [IsInfoClass, IsInfoSelector], SUM_FLAGS,
         function(ic,is)
     return Union(is,[ic]);
 end);
 
 InstallOtherMethod(\+,
     "for info selector and info class",
-    true, [IsInfoSelector, IsInfoClass], 20,
+    true, [IsInfoSelector, IsInfoClass], SUM_FLAGS,
         function(is,ic)
     return Union(is,[ic]);
 end);
 
 InstallOtherMethod(\+,
     "for two info selectors",
-    IsIdenticalObj, [IsInfoSelector, IsInfoSelector], 20,
+    IsIdenticalObj, [IsInfoSelector, IsInfoSelector], SUM_FLAGS,
         function(is1,is2)
     return Union(is1,is2);
 end);
