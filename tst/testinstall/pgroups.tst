@@ -101,15 +101,11 @@ gap> K := Group((1,3),(1,2,3,4),(5,6,7));
 Group([ (1,3), (1,2,3,4), (5,6,7) ])
 gap> IsNilpotentGroup(K);
 true
-gap> HasIsPGroup(K);
-true
 gap> IsPGroup(K);
 false
 gap> L := Group((2,4), (1,2,3,4));
 Group([ (2,4), (1,2,3,4) ])
 gap> IsNilpotentGroup(L);
-true
-gap> HasIsPGroup(L) and HasPrimePGroup(L);
 true
 gap> IsPGroup(L);
 true
