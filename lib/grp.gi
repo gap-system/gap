@@ -414,7 +414,7 @@ InstallMethod( IsNilpotentGroup,
     elif s = 1 then
         SetIsPGroup( G, true );
         return true;
-    else
+    elif s <> infinity then
         SetIsPGroup( G, false );
     fi;
     TryNextMethod();
