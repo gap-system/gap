@@ -40,8 +40,8 @@ gap> FrattiniSubgroup(CyclicGroup(IsPermGroup, 9));
 Group([ (1,4,7)(2,5,8)(3,6,9) ])
 gap> FrattiniSubgroup(CyclicGroup(IsPcGroup, 3));
 Group([  ])
-gap> FrattiniSubgroup(CyclicGroup(IsPcGroup, 9));
-Group([ f2 ])
+gap> AsSet( FrattiniSubgroup(CyclicGroup(IsPcGroup, 9)) );
+[ <identity> of ..., f2, f2^2 ]
 
 #
 gap> List(AllSmallGroups(60), g -> Size(FrattiniSubgroup(g)));
