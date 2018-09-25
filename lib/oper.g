@@ -1985,23 +1985,26 @@ PRINT_REORDERED_METHODS := false;
 
 BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
     local  oper, n, changed, meths, nmethods, i, base, rank, j, req,
-           req2, k, l;
+           req2, k, l, entrysize;
 
     for oper in OPERATIONS do
         for n in [0..6] do
             changed := false;
             meths := METHODS_OPERATION(oper, n);
-            nmethods := LENGTH(meths)/(BASE_SIZE_METHODS_OPER_ENTRY+n);
-            for i in [1 ..nmethods] do
-                base := (i-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n);
-                # data for this method is meths{[base+1..base+BASE_SIZE_METHODS_OPER_ENTRY + n]}
+            entrysize := BASE_SIZE_METHODS_OPER_ENTRY+n;
+            nmethods := LENGTH(meths)/entrysize;
+            for i in [1..nmethods] do
+                base := (i-1)*entrysize;
+                # data for this method is meths{[base+1..base+entrysize]}
                 rank := meths[base+6+n];
                 if IS_FUNCTION(rank) then
                     rank := rank();
                 fi;
 
-                if IS_CONSTRUCTOR(oper) and n > 0 then
-                    rank := rank - RankFilter(meths[base+2]);
+                # adjust the base rank by the rank of the argument filters
+                if IS_CONSTRUCTOR(oper) then
+                    Assert(2, n > 0);
+                    rank := rank - RankFilter(meths[base+1+1]);
                 else
                     for j in [1..n] do
                         req := meths[base+1+j];
@@ -2009,6 +2012,7 @@ BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
                     od;
                 fi;
 
+                # check if new rank differs from old rank
                 if rank <> meths[base+n+3] then
                     if IsHPCGAP and not changed then
                         meths := SHALLOW_COPY_OBJ(meths);
@@ -2017,27 +2021,30 @@ BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
                     meths[base+n+3] := rank;
                 fi;
 
-                # compare to rank of preceding method
-                if i = 1 or rank <= meths[base-BASE_SIZE_METHODS_OPER_ENTRY+3] then
+                # determine how far back we need to adjust the rank
+                k := i;
+                while k > 1 and meths[(k-2)*entrysize+n+3] < rank do
+                    k := k-1;
+                od;
+
+                # do nothing if the preceding methods don't have lower rank
+                if i = k then
                     continue;
                 fi;
 
-                k := i-2;
-                while k >= 1 and meths[(k-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n) + n + 3] < rank do
-                    k := k-1;
-                od;
-                k := k+1;
                 if PRINT_REORDERED_METHODS then
                     Print(NAME_FUNC(oper), " ", n," args. Moving method ",i," (",
                           meths[base+n+4]," from ",meths[base+n+5][1],":", meths[base+n+5][2],
                           ") to position ",k,"\n");
                 fi;
-                l := meths{[base+1..base+n+BASE_SIZE_METHODS_OPER_ENTRY]};
-                COPY_LIST_ENTRIES(meths, 1 + (k-1)*(n+BASE_SIZE_METHODS_OPER_ENTRY), 1,
-                        meths, 1 + k*(n+BASE_SIZE_METHODS_OPER_ENTRY), 1,
-                        (i-k)*(n+BASE_SIZE_METHODS_OPER_ENTRY));
-                meths{[1 + (k-1)*(n+BASE_SIZE_METHODS_OPER_ENTRY)..
-                       k*(n+BASE_SIZE_METHODS_OPER_ENTRY)]} := l;
+                # extract the current method
+                l := meths{[base+1..base+entrysize]};
+                # move all preceding methods of lower rank
+                COPY_LIST_ENTRIES(meths, 1 + (k-1)*entrysize, 1,
+                                  meths, 1 + k*entrysize, 1,
+                                  (i-k)*entrysize);
+                # insert the current method at its new position
+                meths{[1 + (k-1)*entrysize..k*entrysize]} := l;
             od;
             if changed then
                 if IsHPCGAP then
