@@ -1933,6 +1933,33 @@ BIND_GLOBAL("MethodsOperation", function(oper, nargs)
     return result;
 end );
 
+
+#############################################################################
+##
+#F  CHECK_ALL_METHOD_RANKS
+##
+##  Debugging helper which checks that all methods are sorted correctly
+##
+BIND_GLOBAL( "CHECK_ALL_METHOD_RANKS", function()
+    local  oper, n, meths, i, result;
+
+    result := true;
+    for oper in OPERATIONS do
+        for n in [0..6] do
+            meths := MethodsOperation(oper, n);
+            for i in [2..LENGTH(meths)] do
+                if meths[i-1].rank < meths[i].rank then
+                    Print("Error, wrong method ordering for '", oper, "' on ", n, " arguments:\n");
+                    Print(" ", i-1, ": ", meths[i-1].rank, " ", meths[i-1].info, "\n");
+                    Print(" ", i  , ": ", meths[i].rank, " ", meths[i].info, "\n");
+                    result := false;
+                fi;
+            od;
+        od;
+    od;
+    return result;
+end );
+
 #############################################################################
 ##
 #F RECALCULATE_ALL_METHOD_RANKS() . . reorder methods after new implications
@@ -1996,7 +2023,7 @@ BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
                 fi;
 
                 k := i-2;
-                while k > 1 and meths[(k-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n) + n + 3] < rank do
+                while k >= 1 and meths[(k-1)*(BASE_SIZE_METHODS_OPER_ENTRY+n) + n + 3] < rank do
                     k := k-1;
                 od;
                 k := k+1;
@@ -2021,6 +2048,8 @@ BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
             fi;
         od;
     od;
+
+    Assert(2, CHECK_ALL_METHOD_RANKS());
 end );
 
 
