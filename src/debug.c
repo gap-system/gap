@@ -93,6 +93,8 @@ VoidFunc debug_func_pointers[] = {
     (VoidFunc)CLEAR_OBJ_FLAG,
     (VoidFunc)CODEG_PPERM,
     (VoidFunc)CONST_ADDR_OBJ,
+    (VoidFunc)CONST_CHARS_STRING,
+    (VoidFunc)CONST_CSTR_STRING,
     (VoidFunc)CONST_PTR_BAG,
     (VoidFunc)COPY_CHARS,
     (VoidFunc)COUNT_TRUES_BLOCK,
