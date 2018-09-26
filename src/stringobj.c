@@ -716,12 +716,12 @@ Int EqString (
     Obj                 listR )
 {
   UInt lL, lR;
-  UInt1 *pL, *pR;
+  const UInt1 *pL, *pR;
   lL = GET_LEN_STRING(listL);
   lR = GET_LEN_STRING(listR);
   if (lR != lL) return 0;
-  pL = CHARS_STRING(listL);
-  pR = CHARS_STRING(listR);
+  pL = CONST_CHARS_STRING(listL);
+  pR = CONST_CHARS_STRING(listR);
   return memcmp(pL, pR, lL) == 0;
 }
 
@@ -965,7 +965,7 @@ Obj ElmsString (
             }
 
             /* select the element                                          */
-            elm = CHARS_STRING(list)[pos-1];
+            elm = CONST_CHARS_STRING(list)[pos-1];
 
             /* assign the element into <elms>                              */
             CHARS_STRING(elms)[i-1] = elm;

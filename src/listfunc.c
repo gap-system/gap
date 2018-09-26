@@ -287,7 +287,7 @@ Obj             FuncAPPEND_LIST_INTR (
         SET_LEN_STRING(list1, len1 + len2);
         CLEAR_FILTS_LIST(list1);
         // copy data, including terminating zero byte
-        memcpy(CHARS_STRING(list1) + len1, CHARS_STRING(list2), len2 + 1);
+        memcpy(CHARS_STRING(list1) + len1, CONST_CHARS_STRING(list2), len2 + 1);
         return (Obj) 0;
     }
 

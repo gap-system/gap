@@ -133,10 +133,22 @@ static inline Char * CSTR_STRING(Obj list)
     return (Char *)ADDR_OBJ(list) + sizeof(UInt);
 }
 
+static inline const Char * CONST_CSTR_STRING(Obj list)
+{
+    GAP_ASSERT(IS_STRING_REP(list));
+    return (const Char *)CONST_ADDR_OBJ(list) + sizeof(UInt);
+}
+
 static inline UChar * CHARS_STRING(Obj list)
 {
     GAP_ASSERT(IS_STRING_REP(list));
     return (UChar *)ADDR_OBJ(list) + sizeof(UInt);
+}
+
+static inline const UChar * CONST_CHARS_STRING(Obj list)
+{
+    GAP_ASSERT(IS_STRING_REP(list));
+    return (const UChar *)CONST_ADDR_OBJ(list) + sizeof(UInt);
 }
 
 /****************************************************************************
