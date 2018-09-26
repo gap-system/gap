@@ -607,7 +607,7 @@ Int Int_ObjInt(Obj i)
     // that has a range from -2^N to 2^N-1 so we need to check both ends
     // Since -2^N is the same bit pattern as the UInt 2^N (N is 31 or 63)
     // we can do it as below which avoids some compiler warnings
-    UInt val = ADDR_INT(i)[0];
+    UInt val = VAL_LIMB0(i);
 #ifdef SYS_IS_64_BIT
     if ((!sign && (val > INT64_MAX)) || (sign && (val > (UInt)INT64_MIN)))
 #else
@@ -630,7 +630,7 @@ UInt UInt_ObjInt(Obj i)
     // must be a single limb
     if (SIZE_INT(i) != 1)
         ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
-    return ADDR_INT(i)[0];
+    return VAL_LIMB0(i);
 }
 
 Int8 Int8_ObjInt(Obj i)
@@ -654,8 +654,8 @@ Int8 Int8_ObjInt(Obj i)
     // must be at most two limbs
     if (SIZE_INT(i) > 2)
         ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
-    UInt  vall = ADDR_INT(i)[0];
-    UInt  valh = (SIZE_INT(i) == 1) ? 0 : ADDR_INT(i)[1];
+    UInt  vall = VAL_LIMB0(i);
+    UInt  valh = (SIZE_INT(i) == 1) ? 0 : CONST_ADDR_INT(i)[1];
     UInt8 val = (UInt8)vall + ((UInt8)valh << 32);
     // now check if val is small enough to fit in the signed Int8 type
     // that has a range from -2^63 to 2^63-1 so we need to check both ends
@@ -682,8 +682,8 @@ UInt8 UInt8_ObjInt(Obj i)
                      (Int)TNAM_OBJ(i), 0);
     if (SIZE_INT(i) > 2)
         ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
-    UInt vall = ADDR_INT(i)[0];
-    UInt valh = (SIZE_INT(i) == 1) ? 0 : ADDR_INT(i)[1];
+    UInt vall = VAL_LIMB0(i);
+    UInt valh = (SIZE_INT(i) == 1) ? 0 : CONST_ADDR_INT(i)[1];
     return (UInt8)vall + ((UInt8)valh << 32);
 #endif
 }
