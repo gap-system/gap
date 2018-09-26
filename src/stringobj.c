@@ -351,7 +351,7 @@ Obj FuncINTLIST_STRING (
 {
   UInt l,i;
   Obj n, *addr;
-  UInt1 *p;
+  const UInt1 *p;
 
   /* test whether val is a string, convert to compact rep if necessary */
   while (! IsStringConv(val)) {
@@ -364,12 +364,12 @@ Obj FuncINTLIST_STRING (
   l=GET_LEN_STRING(val);
   n=NEW_PLIST(T_PLIST,l);
   SET_LEN_PLIST(n,l);
-  p=CHARS_STRING(val);
+  p=CONST_CHARS_STRING(val);
   addr=ADDR_OBJ(n);
   /* signed or unsigned ? */
   if (sign == INTOBJ_INT(1L)) {
     for (i=1; i<=l; i++) {
-      addr[i] = INTOBJ_INT((UInt1)p[i-1]);
+      addr[i] = INTOBJ_INT(p[i-1]);
     }
   }
   else {
@@ -450,7 +450,8 @@ Obj FuncREVNEG_STRING (
 {
   UInt l,i,j;
   Obj n;
-  UInt1 *p,*q;
+  const UInt1 *p;
+  UInt1 *q;
 
   /* test whether val is a string, convert to compact rep if necessary */
   while (! IsStringConv(val)) {
@@ -462,7 +463,7 @@ Obj FuncREVNEG_STRING (
 
   l=GET_LEN_STRING(val);
   n=NEW_STRING(l);
-  p=CHARS_STRING(val);
+  p=CONST_CHARS_STRING(val);
   q=CHARS_STRING(n);
   j=l-1;
   for (i=1;i<=l;i++) {
@@ -494,8 +495,9 @@ Obj NEW_STRING ( Int len )
   res = NewBag( T_STRING, SIZEBAG_STRINGLEN(len)  ); 
   SET_LEN_STRING(res, len);
   /* it may be sometimes useful to have trailing zero characters */
-  CHARS_STRING(res)[0] = '\0';
-  CHARS_STRING(res)[len] = '\0';
+  Char *p = CSTR_STRING(res);
+  p[0] = '\0';
+  p[len] = '\0';
   return res;
 }
 
@@ -630,7 +632,7 @@ void PrintString(Obj list)
     while (off < len) {
         scanout = 0;
         do {
-            c = CHARS_STRING(list)[off++];
+            c = CONST_CHARS_STRING(list)[off++];
             switch (c) {
             case '\\':
                 PrStrBuf[scanout++] = '\\';
@@ -738,11 +740,11 @@ Int LtString (
     Obj                 listR )
 {
   UInt lL, lR;
-  UInt1 *pL, *pR;
+  const UInt1 *pL, *pR;
   lL = GET_LEN_STRING(listL);
   lR = GET_LEN_STRING(listR);
-  pL = CHARS_STRING(listL);
-  pR = CHARS_STRING(listR);
+  pL = CONST_CHARS_STRING(listL);
+  pR = CONST_CHARS_STRING(listR);
 
   Int res;
   if (lL <= lR) {
@@ -806,7 +808,7 @@ static inline Obj GET_ELM_STRING(Obj list, Int pos)
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(pos > 0);
     GAP_ASSERT((UInt) pos <= GET_LEN_STRING(list));
-    UChar c = CHARS_STRING(list)[pos - 1];
+    UChar c = CONST_CHARS_STRING(list)[pos - 1];
     return ObjsChar[c];
 }
 
@@ -1005,7 +1007,7 @@ Obj ElmsString (
         elms = NEW_STRING( lenPoss );
 
         /* loop over the entries of <positions> and select                 */
-        UInt1 * p = CHARS_STRING(list);
+        const UInt1 * p = CONST_CHARS_STRING(list);
         UInt1 * pn = CHARS_STRING(elms);
         for ( i = 1; i <= lenPoss; i++, pos += inc ) {
             pn[i - 1] = p[pos - 1];
@@ -1127,11 +1129,11 @@ Int IsSSortString (
 {
     Int                 len;
     Int                 i;
-    UInt1 *             ptr;
+    const UInt1 *       ptr;
 
     /* test whether the string is strictly sorted                          */
     len = GET_LEN_STRING( list );
-    ptr = (UInt1*) CHARS_STRING(list);
+    ptr = CONST_CHARS_STRING(list);
     for ( i = 1; i < len; i++ ) {
         if ( ! (ptr[i-1] < ptr[i]) )
             break;
@@ -1176,7 +1178,7 @@ Obj PosString (
     Int                 lenList;        /* length of <list>                */
     Int                 i;              /* loop variable                   */
     UInt1               valc;        /* C characters                    */
-    UInt1               *p;             /* pointer to chars of <list>      */
+    const UInt1         *p;             /* pointer to chars of <list>      */
     UInt                istart;
 
     /* if the starting position is too big to be a small int
@@ -1196,7 +1198,7 @@ Obj PosString (
     valc = CHAR_VALUE(val);
 
     /* search entries in <list>                                     */
-    p = CHARS_STRING(list);
+    p = CONST_CHARS_STRING(list);
     for ( i = istart; i < lenList && p[i] != valc; i++ );
 
     /* return the position (0 if <val> was not found)                      */
@@ -1504,7 +1506,7 @@ Obj FuncPOSITION_SUBSTRING(
 			   Obj                  off )
 {
   Int    ipos, i, j, lens, lenss, max;
-  UInt1  *s, *ss, c;
+  const UInt1  *s, *ss;
 
   /* check whether <string> is a string                                  */
   while ( ! IsStringConv( string ) ) {
@@ -1538,10 +1540,10 @@ Obj FuncPOSITION_SUBSTRING(
 
   lens = GET_LEN_STRING(string);
   max = lens - lenss + 1;
-  s = CHARS_STRING(string);
-  ss = CHARS_STRING(substr);
+  s = CONST_CHARS_STRING(string);
+  ss = CONST_CHARS_STRING(substr);
   
-  c = ss[0];
+  const UInt1 c = ss[0];
   for (i = ipos; i < max; i++) {
     if (c == s[i]) {
       for (j = 1; j < lenss; j++) {
@@ -1678,7 +1680,6 @@ Obj FuncTranslateString (
 			      Obj     string,
                               Obj     trans     )
 {
-  UInt1  *s, *t;
   Int j, len;
 
   /* check whether <string> is a string                                  */
@@ -1706,8 +1707,8 @@ Obj FuncTranslateString (
 
   /* now change string in place */
   len = GET_LEN_STRING(string);
-  s = CHARS_STRING(string);
-  t = CHARS_STRING(trans);
+  UInt1 *s = CHARS_STRING(string);
+  const UInt1 *t = CONST_CHARS_STRING(trans);
   for (j = 0; j < len; j++) {
     s[j] = t[s[j]];
   }
@@ -1730,7 +1731,7 @@ Obj FuncSplitStringInternal (
                               Obj     seps,
                               Obj     wspace    )
 {
-  UInt1  *s;
+  const UInt1  *s;
   Int i, a, z, l, pos, len;
   Obj res, part;
   UInt1 SPLITSTRINGSEPS[256] = { 0 };
@@ -1762,12 +1763,12 @@ Obj FuncSplitStringInternal (
   
   /* set SPLITSTRINGSEPS by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(seps);
-  s = CHARS_STRING(seps);
+  s = CONST_CHARS_STRING(seps);
   for(i=0; i<len; i++) SPLITSTRINGSEPS[s[i]] = 1;
   
   /* set SPLITSTRINGWSPACE by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(wspace);
-  s = CHARS_STRING(wspace);
+  s = CONST_CHARS_STRING(wspace);
   for(i=0; i<len; i++) SPLITSTRINGWSPACE[s[i]] = 1;
  
   /* create the result (list of strings) */
@@ -1776,7 +1777,7 @@ Obj FuncSplitStringInternal (
 
   /* now do the splitting */
   len = GET_LEN_STRING(string);
-  s = CHARS_STRING(string);
+  s = CONST_CHARS_STRING(string);
   for (a=0, z=0; z<len; z++) {
     // Whenever we encounter a separator or a white space, the substring
     // starting after the last separator/white space is cut out.  The
@@ -1787,12 +1788,12 @@ Obj FuncSplitStringInternal (
         l = z-a;
         part = NEW_STRING(l);
         // update s in case there was a garbage collection
-        s = CHARS_STRING(string);
+        s = CONST_CHARS_STRING(string);
         COPY_CHARS(part, s + a, l);
         CHARS_STRING(part)[l] = 0;
         pos++;
         AssPlist(res, pos, part);
-        s = CHARS_STRING(string);
+        s = CONST_CHARS_STRING(string);
         a = z+1;
       }
       else {
@@ -1804,12 +1805,12 @@ Obj FuncSplitStringInternal (
         l = z-a;
         part = NEW_STRING(l);
         // update s in case there was a garbage collection
-        s = CHARS_STRING(string);
+        s = CONST_CHARS_STRING(string);
         COPY_CHARS(part, s + a, l);
         CHARS_STRING(part)[l] = 0;
         pos++;
         AssPlist(res, pos, part);
-        s = CHARS_STRING(string);
+        s = CONST_CHARS_STRING(string);
         a = z+1;
       }
     }
@@ -1821,7 +1822,7 @@ Obj FuncSplitStringInternal (
     /* copy until last position which is z-1 */
     l = z-a;
     part = NEW_STRING(l);
-    s = CHARS_STRING(string);
+    s = CONST_CHARS_STRING(string);
     COPY_CHARS(part, s + a, l);
     CHARS_STRING(part)[l] = 0;
     pos++;
@@ -1846,16 +1847,16 @@ Obj FuncFIND_ALL_IN_STRING(Obj self, Obj string, Obj chars)
   Obj result;
   UInt i, len, matches;
   unsigned char table[1<<(8*sizeof(char))];
-  unsigned char *s;
+  const UInt1 *s;
   if (!IsStringConv(string) || !IsStringConv(chars))
     ErrorQuit("FIND_ALL_IN_STRING: Requires two string arguments", 0L, 0L);
   memset(table, 0, sizeof(table));
   len = GET_LEN_STRING(chars);
-  s = (unsigned char *) CSTR_STRING(chars);
+  s = CONST_CHARS_STRING(chars);
   for (i=0; i<len; i++)
     table[s[i]] = 1;
   len = GET_LEN_STRING(string);
-  s = (unsigned char *) CSTR_STRING(string);
+  s = CONST_CHARS_STRING(string);
   matches = 0;
   for (i = 0; i < len; i++)
     if (table[s[i]])
@@ -1914,7 +1915,7 @@ Obj FuncNORMALIZE_NEWLINES(Obj self, Obj string)
 
 Obj FuncSMALLINT_STR( Obj self, Obj str )
 {
-  const Char *string = CSTR_STRING(str);
+  const Char *string = CONST_CSTR_STRING(str);
   Int x = 0;
   Int sign = 1;
   while (IsSpace(*string))

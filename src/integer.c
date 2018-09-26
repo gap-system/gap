@@ -783,7 +783,7 @@ static Obj StringIntBase( Obj gmp, int base )
   mpz_get_str( CSTR_STRING( res ), -base, MPZ_FAKEMPZ(v) );
 
   /* we may have to shrink the string */
-  int real_len = strlen( CSTR_STRING(res) );
+  int real_len = strlen( CONST_CSTR_STRING(res) );
   if ( real_len != GET_LEN_STRING(res) ) {
     SET_LEN_STRING(res, real_len);
   }
@@ -843,7 +843,7 @@ Obj FuncIntHexString( Obj self,  Obj str )
   Obj res;
   Int  i, len, sign, nd;
   mp_limb_t n;
-  UInt1 *p;
+  const UInt1 *p;
   UInt *limbs;
 
   if (! IsStringConv(str))
@@ -855,7 +855,7 @@ Obj FuncIntHexString( Obj self,  Obj str )
     res = INTOBJ_INT(0);
     return res;
   }
-  p = CHARS_STRING(str);
+  p = CONST_CHARS_STRING(str);
   if (*p == '-') {
     sign = -1;
     i = 1;
@@ -883,7 +883,7 @@ Obj FuncIntHexString( Obj self,  Obj str )
     res = NewBag( (sign == 1) ? T_INTPOS : T_INTNEG, (nd + 1) * sizeof(mp_limb_t) );
 
     /* update pointer, in case a garbage collection happened */
-    p = CHARS_STRING(str) + i;
+    p = CONST_CHARS_STRING(str) + i;
     limbs = ADDR_INT(res);
 
     /* if len is not divisible by 2*INTEGER_UNIT_SIZE, then take care of the extra bytes */
@@ -1026,7 +1026,7 @@ Obj IntStringInternal(Obj string, const Char *str)
 
     // if <string> is given, then we ignore <str>
     if (string)
-        str = CSTR_STRING(string);
+        str = CONST_CSTR_STRING(string);
 
     // get the sign, if any
     sign = 1;
@@ -1054,7 +1054,7 @@ Obj IntStringInternal(Obj string, const Char *str)
             // refresh 'str', in case the arithmetic operations triggered
             // a garbage collection
             if (string)
-                str = CSTR_STRING(string);
+                str = CONST_CSTR_STRING(string);
             pow = 1;
             low = 0;
         }

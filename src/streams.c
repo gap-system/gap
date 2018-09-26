@@ -556,7 +556,7 @@ Obj FuncLOG_TO (
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
-    if ( ! OpenLog( CSTR_STRING(filename) ) ) {
+    if ( ! OpenLog( CONST_CSTR_STRING(filename) ) ) {
         ErrorReturnVoid( "LogTo: cannot log to %g",
                          (Int)filename, 0L,
                          "you can 'return;'" );
@@ -628,7 +628,7 @@ Obj FuncINPUT_LOG_TO (
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
-    if ( ! OpenInputLog( CSTR_STRING(filename) ) ) {
+    if ( ! OpenInputLog( CONST_CSTR_STRING(filename) ) ) {
         ErrorReturnVoid( "InputLogTo: cannot log to %g",
                          (Int)filename, 0L,
                          "you can 'return;'" );
@@ -700,7 +700,7 @@ Obj FuncOUTPUT_LOG_TO (
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
-    if ( ! OpenOutputLog( CSTR_STRING(filename) ) ) {
+    if ( ! OpenOutputLog( CONST_CSTR_STRING(filename) ) ) {
         ErrorReturnVoid( "OutputLogTo: cannot log to %g",
                          (Int)filename, 0L,
                          "you can 'return;'" );
@@ -787,10 +787,10 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
     }
 
     /* try to open the file for output                                     */
-    i = append ? OpenAppend( CSTR_STRING(filename) )
-               : OpenOutput( CSTR_STRING(filename) );
+    i = append ? OpenAppend( CONST_CSTR_STRING(filename) )
+               : OpenOutput( CONST_CSTR_STRING(filename) );
     if ( ! i ) {
-        if (strcmp(CSTR_STRING(filename), "*errout*") == 0) {
+        if (strcmp(CONST_CSTR_STRING(filename), "*errout*") == 0) {
             // When trying to print an error opening *errout* failed,
             // We exit GAP after trying to print an error.
             // First try printing an error to stderr
@@ -972,7 +972,7 @@ Obj FuncREAD (
     }
 
     /* try to open the file                                                */
-    if ( ! OpenInput( CSTR_STRING(filename) ) ) {
+    if ( ! OpenInput( CONST_CSTR_STRING(filename) ) ) {
         return False;
     }
 
@@ -1002,7 +1002,7 @@ Obj FuncREAD_NORECOVERY (
     }
 
     /* try to open the file                                                */
-    if ( ! OpenInput( CSTR_STRING(filename) ) ) {
+    if ( ! OpenInput( CONST_CSTR_STRING(filename) ) ) {
         return False;
     }
 
@@ -1088,7 +1088,7 @@ Obj FuncREAD_AS_FUNC (
     }
 
     /* try to open the file                                                */
-    if ( ! OpenInput( CSTR_STRING(filename) ) ) {
+    if ( ! OpenInput( CONST_CSTR_STRING(filename) ) ) {
         return Fail;
     }
 
@@ -1134,7 +1134,7 @@ Obj FuncREAD_GAP_ROOT (
     }
 
     /* Copy to avoid garbage collection moving string                      */
-    strlcpy(filenamecpy, CSTR_STRING(filename), GAP_PATH_MAX);
+    strlcpy(filenamecpy, CONST_CSTR_STRING(filename), GAP_PATH_MAX);
     /* try to open the file                                                */
     return READ_GAP_ROOT(filenamecpy) ? True : False;
 }
@@ -1193,7 +1193,7 @@ Obj FuncRemoveFile (
     }
     
     /* call the system dependent function                                  */
-    return SyRemoveFile( CSTR_STRING(filename) ) == -1 ? Fail : True;
+    return SyRemoveFile( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
 }
 
 /****************************************************************************
@@ -1213,7 +1213,7 @@ Obj FuncCreateDir (
     }
     
     /* call the system dependent function                                  */
-    return SyMkdir( CSTR_STRING(filename) ) == -1 ? Fail : True;
+    return SyMkdir( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
 }
 
 /****************************************************************************
@@ -1233,7 +1233,7 @@ Obj FuncRemoveDir (
     }
     
     /* call the system dependent function                                  */
-    return SyRmdir( CSTR_STRING(filename) ) == -1 ? Fail : True;
+    return SyRmdir( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
 }
 
 /****************************************************************************
@@ -1252,7 +1252,7 @@ Obj FuncIsDir (
     }
 
     /* call the system dependent function                                  */
-    return SyIsDir( CSTR_STRING(filename) );
+    return SyIsDir( CONST_CSTR_STRING(filename) );
 }
 
 
@@ -1318,7 +1318,7 @@ Obj FuncIsExistingFile (
     }
     
     /* call the system dependent function                                  */
-    res = SyIsExistingFile( CSTR_STRING(filename) );
+    res = SyIsExistingFile( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
 }
 
@@ -1342,7 +1342,7 @@ Obj FuncIsReadableFile (
     }
     
     /* call the system dependent function                                  */
-    res = SyIsReadableFile( CSTR_STRING(filename) );
+    res = SyIsReadableFile( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
 }
 
@@ -1366,7 +1366,7 @@ Obj FuncIsWritableFile (
     }
     
     /* call the system dependent function                                  */
-    res = SyIsWritableFile( CSTR_STRING(filename) );
+    res = SyIsWritableFile( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
 }
 
@@ -1390,7 +1390,7 @@ Obj FuncIsExecutableFile (
     }
     
     /* call the system dependent function                                  */
-    res = SyIsExecutableFile( CSTR_STRING(filename) );
+    res = SyIsExecutableFile( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
 }
 
@@ -1414,7 +1414,7 @@ Obj FuncIsDirectoryPathString (
     }
     
     /* call the system dependent function                                  */
-    res = SyIsDirectoryPath( CSTR_STRING(filename) );
+    res = SyIsDirectoryPath( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
 }
 
@@ -1449,7 +1449,7 @@ Obj FuncSTRING_LIST_DIR (
     }
     
     SyClearErrorNo();
-    dir = opendir(CSTR_STRING(dirname));
+    dir = opendir(CONST_CSTR_STRING(dirname));
     if (dir == NULL) {
       SySetErrorNo();
       return Fail;
@@ -1520,7 +1520,7 @@ Obj FuncINPUT_TEXT_FILE (
     
     /* call the system dependent function                                  */
     SyClearErrorNo();
-    fid = SyFopen( CSTR_STRING(filename), "r" );
+    fid = SyFopen( CONST_CSTR_STRING(filename), "r" );
     if ( fid == - 1)
         SySetErrorNo();
     return fid == -1 ? Fail : INTOBJ_INT(fid);
@@ -1578,10 +1578,10 @@ Obj FuncOUTPUT_TEXT_FILE (
     /* call the system dependent function                                  */
     SyClearErrorNo();
     if ( append == True ) {
-        fid = SyFopen( CSTR_STRING(filename), "a" );
+        fid = SyFopen( CONST_CSTR_STRING(filename), "a" );
     }
     else {
-        fid = SyFopen( CSTR_STRING(filename), "w" );
+        fid = SyFopen( CONST_CSTR_STRING(filename), "w" );
     }
     if ( fid == - 1)
         SySetErrorNo();
@@ -1875,12 +1875,12 @@ Obj FuncWRITE_STRING_FILE_NC (
     Obj             str )
 {
     Int             len = 0, l, ret;
-    char            *ptr;
+    const char      *ptr;
 
     /* don't check the argument                                            */
     
     len = GET_LEN_STRING(str);
-    ptr = CSTR_STRING(str);
+    ptr = CONST_CSTR_STRING(str);
     while (len > 0) {
       l = (len > 1048576) ? 1048576 : len;
       ret = SyWrite(INT_INTOBJ(fid), ptr, l);

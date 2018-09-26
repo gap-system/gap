@@ -396,7 +396,7 @@ static UInt GetNumber(Int readDecimalPoint)
       if (STATE(ValueObj)) {
         i = GET_LEN_STRING(STATE(ValueObj));
         GAP_ASSERT(i >= MAX_VALUE_LEN - 1);
-        memcpy(STATE(Value), CSTR_STRING(STATE(ValueObj)), MAX_VALUE_LEN);
+        memcpy(STATE(Value), CONST_CSTR_STRING(STATE(ValueObj)), MAX_VALUE_LEN);
         STATE(ValueObj) = 0;
       }
       // this looks like an identifier, scan the rest of it

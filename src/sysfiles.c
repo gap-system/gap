@@ -352,7 +352,7 @@ Obj FuncCrcString( Obj self, Obj str ) {
     UInt4       old;
     UInt4       new;
     UInt4       i, len;
-    Char        *ptr;
+    const Char  *ptr;
     Int4        ch;
     Int         seen_nl;
 
@@ -364,7 +364,7 @@ Obj FuncCrcString( Obj self, Obj str ) {
             "you can replace <filename> via 'return <str>;'" );
     }
 
-    ptr = CSTR_STRING(str);
+    ptr = CONST_CSTR_STRING(str);
     len = GET_LEN_STRING(str);
     crc = 0x12345678L;
     seen_nl = 0;
@@ -2089,7 +2089,7 @@ int GAP_rl_func(int count, int key)
    obj = ELM_LIST(res, 1);
    if (IsStringConv(obj)) {
       /* insert txt */
-      rl_insert_text(CSTR_STRING(obj));
+      rl_insert_text(CONST_CSTR_STRING(obj));
       n = 1;
    } else if ((obj == True || obj == False) && len > 2) {
       /* kill or delete text */
@@ -2112,7 +2112,7 @@ int GAP_rl_func(int count, int key)
       rl_begin_undo_group();
       rl_delete_text(INT_INTOBJ(beginchange)-1, INT_INTOBJ(endchange)-1);
       rl_point = INT_INTOBJ(beginchange)-1;
-      rl_insert_text(CSTR_STRING(obj));
+      rl_insert_text(CONST_CSTR_STRING(obj));
       rl_end_undo_group();
       n = 3;
    } else if (IS_INTOBJ(obj) && len == 2) {
@@ -2472,12 +2472,12 @@ Char * syFgets (
             if (IS_BAG_REF(res) && IS_LIST(res) && LEN_LIST(res) == 3) {
               linestr = ELM_LIST(res,1);
               len = GET_LEN_STRING(linestr);
-              memcpy(line,CHARS_STRING(linestr),len);
+              memcpy(line,CONST_CHARS_STRING(linestr),len);
               line[len] = '\0';
               p = line + (INT_INTOBJ(ELM_LIST(res,2)) - 1);
               yankstr = ELM_LIST(res,3);
               len = GET_LEN_STRING(yankstr);
-              memcpy(yank,CHARS_STRING(yankstr),len);
+              memcpy(yank,CONST_CHARS_STRING(yankstr),len);
               yank[len] = '\0';
             }
           }

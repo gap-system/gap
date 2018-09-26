@@ -3121,7 +3121,7 @@ Obj FuncMULT_BYT_LETTREP (
 {
   UInt l,m,i,j,newlen,as,bs,ae,be;
   Obj n;
-  UInt1 *p,*q;
+  const Char *p,*q;
   
   /* short check, if necessary strings are compacted */
   while ( ! IsStringConv(a) ) {
@@ -3155,8 +3155,8 @@ Obj FuncMULT_BYT_LETTREP (
   /* j:=1; */
   j=1;
   /* while i>=1 and j<=m and a[i]=-b[j] do */
-  p=CHARS_STRING(a);
-  q=CHARS_STRING(b);
+  p=CONST_CSTR_STRING(a);
+  q=CONST_CSTR_STRING(b);
   while ((i>=1)&&(j<=m)&&
     (SINT_CHAR(p[i-1])==-SINT_CHAR(q[j-1]))) {
     /* i:=i-1; */
@@ -3204,23 +3204,22 @@ Obj FuncMULT_BYT_LETTREP (
   }
   /* make the new list */
   n=NEW_STRING(newlen);
-  q=CHARS_STRING(n);
-  p=CHARS_STRING(a);
+  Char *dst = CSTR_STRING(n);
+  p=CONST_CSTR_STRING(a);
   j=as;
   /* a[as] position */
   while (j<=ae) {
-    *q++=p[j-1];
+    *dst++=p[j-1];
     j++;
   }
   j=bs;
-  p=CHARS_STRING(b);
+  p=CONST_CSTR_STRING(b);
   /* b[bs] position */
   while (j<=be) {
-    *q++=p[j-1];
+    *dst++=p[j-1];
     j++;
   }
   /* return a; */
-  CHANGED_BAG(n);
   return n;
 }
 

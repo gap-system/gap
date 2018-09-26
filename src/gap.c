@@ -402,7 +402,7 @@ Obj FuncSHELL (Obj self, Obj args)
   if (!IsStringConv(prompt) || GET_LEN_STRING(prompt) > 80)
     ErrorMayQuit("SHELL: 6th argument (prompt) must be a string of length at most 80 characters",0,0);
   promptBuffer[0] = '\0';
-  strlcat(promptBuffer, CSTR_STRING(prompt), sizeof(promptBuffer));
+  strlcat(promptBuffer, CONST_CSTR_STRING(prompt), sizeof(promptBuffer));
 
   preCommandHook = ELM_PLIST(args,7);
  
@@ -732,7 +732,7 @@ Obj FuncWindowCmd (
   Int             i;
   Char *          ptr;
   const Char *    inptr;
-  Char *          qtr;
+  const Char *    qtr;
 
   /* check arguments                                                     */
   while ( ! IS_SMALL_LIST(args) ) {
@@ -780,7 +780,7 @@ Obj FuncWindowCmd (
   ptr  = (Char*) CSTR_STRING(WindowCmdString);
 
   /* first the command name                                              */
-  memcpy( ptr, CSTR_STRING( ELM_LIST(args,1) ), 3 + 1 );
+  memcpy( ptr, CONST_CSTR_STRING( ELM_LIST(args,1) ), 3 + 1 );
   ptr += 3;
 
   /* and now the arguments                                               */
@@ -804,7 +804,7 @@ Obj FuncWindowCmd (
         for ( ; 0 < m;  m/= 10 )
           *ptr++ = (m%10) + '0';
         *ptr++ = '+';
-        qtr = CSTR_STRING(tmp);
+        qtr = CONST_CSTR_STRING(tmp);
         for ( m = LEN_LIST(tmp);  0 < m;  m-- )
           *ptr++ = *qtr++;
       }
@@ -812,7 +812,7 @@ Obj FuncWindowCmd (
   *ptr = 0;
 
   /* now call the window front end with the argument string              */
-  qtr = CSTR_STRING(WindowCmdString);
+  qtr = CONST_CSTR_STRING(WindowCmdString);
   inptr = SyWinCmd( qtr, strlen(qtr) );
   len = strlen(inptr);
 
@@ -900,12 +900,12 @@ again:
        }
 
         // perform full garbage collection
-        if ( strcmp( CSTR_STRING(cmd), "collect" ) == 0 ) {
+        if ( strcmp( CONST_CSTR_STRING(cmd), "collect" ) == 0 ) {
             CollectBags(0,1);
         }
 
         // perform partial garbage collection
-        else if ( strcmp( CSTR_STRING(cmd), "partial" ) == 0 ) {
+        else if ( strcmp( CONST_CSTR_STRING(cmd), "partial" ) == 0 ) {
             CollectBags(0,0);
         }
 
@@ -920,7 +920,7 @@ again:
 #else
 
         /* if request display the statistics                               */
-        else if ( strcmp( CSTR_STRING(cmd), "display" ) == 0 ) {
+        else if ( strcmp( CONST_CSTR_STRING(cmd), "display" ) == 0 ) {
 #ifdef COUNT_BAGS
             Pr( "%40s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
@@ -941,7 +941,7 @@ again:
         }
 
         /* if request give a short display of the statistics                */
-        else if ( strcmp( CSTR_STRING(cmd), "displayshort" ) == 0 ) {
+        else if ( strcmp( CONST_CSTR_STRING(cmd), "displayshort" ) == 0 ) {
 #ifdef COUNT_BAGS
             Pr( "%40s ", (Int)"type",  0L          );
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
@@ -966,7 +966,7 @@ again:
         }
 
         /* if request display the statistics                               */
-        else if ( strcmp( CSTR_STRING(cmd), "clear" ) == 0 ) {
+        else if ( strcmp( CONST_CSTR_STRING(cmd), "clear" ) == 0 ) {
 #ifdef COUNT_BAGS
             for ( UInt k = 0; k < NUM_TYPES; k++ ) {
 #ifdef GASMAN_CLEAR_TO_LIVE
@@ -981,7 +981,7 @@ again:
         }
 
         /* or display information about global bags                        */
-        else if ( strcmp( CSTR_STRING(cmd), "global" ) == 0 ) {
+        else if ( strcmp( CONST_CSTR_STRING(cmd), "global" ) == 0 ) {
             for ( i = 0;  i < GlobalBags.nr;  i++ ) {
                 Bag bag = *(GlobalBags.addr[i]);
                 if (bag != 0) {
@@ -992,7 +992,7 @@ again:
         }
 
         /* or finally toggle Gasman messages                               */
-        else if ( strcmp( CSTR_STRING(cmd), "message" ) == 0 ) {
+        else if ( strcmp( CONST_CSTR_STRING(cmd), "message" ) == 0 ) {
             SyMsgsFlagBags = (SyMsgsFlagBags + 1) % 3;
         }
 
@@ -1411,7 +1411,7 @@ Obj FuncKERNEL_INFO(Obj self) {
     else
         str = NEW_STRING(lenstr);
     strncat(CSTR_STRING(str),sysenviron[i],lenstr2);
-    r = RNamName(CSTR_STRING(str));
+    r = RNamName(CONST_CSTR_STRING(str));
     *(CSTR_STRING(str)) = 0;
     strncat(CSTR_STRING(str),p, lenstr);
     SET_LEN_STRING(str, lenstr);

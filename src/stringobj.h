@@ -231,7 +231,7 @@ static inline void SHRINK_STRING(Obj list)
 **  It assumes that the data area in <str> is large enough. It does not add
 **  a terminating null character and not change the length of the string.
 */
-static inline void COPY_CHARS(Obj str, UChar * pnt, Int n)
+static inline void COPY_CHARS(Obj str, const UChar * pnt, Int n)
 {
     GAP_ASSERT(IS_STRING_REP(str));
     GAP_ASSERT(n >= 0);

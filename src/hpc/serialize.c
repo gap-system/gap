@@ -120,7 +120,7 @@ static void ReadBytesNativeString(void * addr, UInt size)
     UInt off = MODULE_STATE(Serialize).index;
     if (off + size > max)
         DeserializationError();
-    memcpy(addr, CSTR_STRING(str) + off, size);
+    memcpy(addr, CONST_CSTR_STRING(str) + off, size);
     MODULE_STATE(Serialize).index += size;
 }
 
@@ -609,7 +609,7 @@ Obj DeserializeRecord(UInt tnum)
         GROW_STRING(rnams, rnamlen + 1);
         ReadByteBlockData(rnams, sizeof(Obj), rnamlen);
         CSTR_STRING(rnams)[rnamlen] = '\0';
-        rnam = RNamName(CSTR_STRING(rnams));
+        rnam = RNamName(CONST_CSTR_STRING(rnams));
         SET_RNAM_PREC(result, i, rnam);
     }
     for (i = 1; i <= len; i++) {
@@ -818,7 +818,7 @@ Obj DeserializeTypedObj(UInt tnum)
     namelen = ReadByteBlockLength();
     name = NEW_STRING(namelen);
     ReadByteBlockData(name, sizeof(UInt), namelen);
-    rnam = RNamName(CSTR_STRING(name));
+    rnam = RNamName(CONST_CSTR_STRING(name));
     len = INT_INTOBJ(ReadImmediateObj());
     args = NEW_PLIST(T_PLIST, len);
     SET_LEN_PLIST(args, len);

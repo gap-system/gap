@@ -151,7 +151,7 @@ static UInt findValueInNams(Obj nams, UInt start, UInt end)
 {
     GAP_ASSERT(LEN_PLIST(nams) < MAX_FUNC_LVARS);
     for (UInt i = start; i <= end; i++) {
-        if (strcmp(CSTR_STRING(ELM_PLIST(nams, i)), STATE(Value)) == 0) {
+        if (strcmp(CONST_CSTR_STRING(ELM_PLIST(nams, i)), STATE(Value)) == 0) {
             return i;
         }
     }
@@ -1182,7 +1182,7 @@ static ArgList ReadFuncArgList(
     Match( symbol, symbolstr, S_LOCAL|STATBEGIN|S_END|follow );
 
     // Special case for function(arg)
-    if ( narg == 1 && ! strcmp( "arg", CSTR_STRING( ELM_PLIST(nams, narg) ) )) {
+    if ( narg == 1 && ! strcmp( "arg", CONST_CSTR_STRING( ELM_PLIST(nams, narg) ) )) {
         isvarg = 1;
     }
 

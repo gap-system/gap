@@ -715,7 +715,7 @@ void            Emit (
                 Obj str = va_arg( ap, Obj );
                 UInt i = 0;
                 Char c;
-                while ((c = CSTR_STRING(str)[i++])) {
+                while ((c = CONST_CSTR_STRING(str)[i++])) {
                     if ( IsAlpha(c) || IsDigit(c) ) {
                         Pr( "%c", (Int)c, 0L );
                     }
@@ -5455,7 +5455,7 @@ Int CompileFunc (
     UInt                compFunctionsNr;
 
     /* open the output file                                                */
-    if ( ! OpenOutput( CSTR_STRING(output) ) ) {
+    if ( ! OpenOutput( CONST_CSTR_STRING(output) ) ) {
         return 0;
     }
     col = SyNrCols;
@@ -5603,7 +5603,7 @@ Int CompileFunc (
     /* emit the initialization code                                        */
     Emit( "\n/* <name> returns the description of this module */\n" );
     Emit( "static StructInitInfo module = {\n" );
-    if ( ! strcmp( "Init_Dynamic", CSTR_STRING(name) ) ) {
+    if ( ! strcmp( "Init_Dynamic", CONST_CSTR_STRING(name) ) ) {
         Emit( ".type        = MODULE_DYNAMIC,\n" );
     }
     else {

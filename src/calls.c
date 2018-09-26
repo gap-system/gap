@@ -1095,7 +1095,7 @@ void PrintFunction (
     UInt                i;              /* loop variable                   */
     UInt                isvarg;         /* does function have varargs?     */
 #ifdef HPCGAP
-    UChar               *locks = 0L;
+    const Char          *locks = 0;
 #endif
 
     isvarg = 0;
@@ -1108,7 +1108,7 @@ void PrintFunction (
 #ifdef HPCGAP
     /* print 'function (' or 'atomic function ('                          */
     if (LCKS_FUNC(func)) {
-      locks = CHARS_STRING(LCKS_FUNC(func));
+      locks = CONST_CSTR_STRING(LCKS_FUNC(func));
       Pr("%5>atomic function%< ( %>",0L,0L);
     } else
       Pr("%5>function%< ( %>",0L,0L);

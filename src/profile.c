@@ -205,7 +205,7 @@ static inline void outputFilenameIdIfRequired(UInt id)
         AssPlist(OutputtedFilenameList, id, True);
         fprintf(profileState.Stream,
                 "{\"Type\":\"S\",\"File\":\"%s\",\"FileId\":%d}\n",
-                CSTR_STRING(GetCachedFilename(id)), (int)id);
+                CONST_CSTR_STRING(GetCachedFilename(id)), (int)id);
     }
 }
 
@@ -228,14 +228,14 @@ void HookedLineOutput(Obj func, char type)
     UInt endline = GET_ENDLINE_BODY(body);
 
     Obj name = NAME_FUNC(func);
-    const Char *name_c = name ? CSTR_STRING(name) : "nameless";
+    const Char *name_c = name ? CONST_CSTR_STRING(name) : "nameless";
 
     Obj         filename = GET_FILENAME_BODY(body);
     UInt        fileID = GET_GAPNAMEID_BODY(body);
     outputFilenameIdIfRequired(fileID);
     const Char *filename_c = "<missing filename>";
     if(filename != Fail && filename != NULL)
-      filename_c = CSTR_STRING(filename);
+      filename_c = CONST_CSTR_STRING(filename);
 
     if(type == 'I' && profileState.lastNotOutputted.line != -1)
     {
@@ -293,7 +293,7 @@ void leaveFunction(Obj func)
 */
 
 #ifdef HAVE_POPEN
-static int endsWithgz(char* s)
+static int endsWithgz(const char* s)
 {
   s = strrchr(s, '.');
   if(s)
@@ -303,7 +303,7 @@ static int endsWithgz(char* s)
 }
 #endif
 
-static void fopenMaybeCompressed(char* name, struct ProfileState* ps)
+static void fopenMaybeCompressed(const char* name, struct ProfileState* ps)
 {
 #ifdef HAVE_POPEN
   char popen_buf[4096];
@@ -652,7 +652,7 @@ Obj FuncACTIVATE_PROFILING(Obj self,
       profileState.OutputRepeats = 1;
     }
 
-    fopenMaybeCompressed(CSTR_STRING(filename), &profileState);
+    fopenMaybeCompressed(CONST_CSTR_STRING(filename), &profileState);
 
     if(profileState.Stream == 0) {
       HashUnlock(&profileState);
