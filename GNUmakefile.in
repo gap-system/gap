@@ -28,6 +28,10 @@ GC_SOURCES = @GC_SOURCES@
 COMPAT_MODE = @COMPAT_MODE@
 GAPARCH = @GAPARCH@
 
+# GAP kernel version
+GAP_KERNEL_MINOR_VERSION = @gap_kernel_minor_version@
+GAP_KERNEL_MAJOR_VERSION = @gap_kernel_major_version@
+
 # autoconf package metadata
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
