@@ -56,11 +56,11 @@ static Int OpenForSave( Obj fname )
       Pr("Already saving\n",0L,0L);
       return 1;
     }
-  SaveFile = SyFopen(CSTR_STRING(fname), "wb");
+  SaveFile = SyFopen(CONST_CSTR_STRING(fname), "wb");
   if (SaveFile == -1)
     {
       Pr("Couldn't open file %s to save workspace\n",
-	 (UInt)CSTR_STRING(fname),0L);
+	 (UInt)CONST_CSTR_STRING(fname),0L);
       return 1;
     }
   LBPointer = LoadBuffer;
@@ -83,7 +83,7 @@ static void CloseAfterSave( void )
 
 #endif
 
-static void OpenForLoad( Char *fname ) 
+static void OpenForLoad( const Char *fname ) 
 {
   if (LoadFile != -1)
     {
@@ -275,7 +275,7 @@ void LoadCStr( Char *buf, UInt maxsize)
 void SaveString ( Obj string )
 {
   UInt i, len = GET_LEN_STRING(string);
-  UInt1 *p = (UInt1*)CHARS_STRING(string);
+  const UInt1 *p = CONST_CHARS_STRING(string);
   SaveUInt(len);
   for (i=0; i<len; i++)
     SAVE_BYTE(p[i]);
@@ -787,7 +787,7 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
 {
   UInt nMods, nGlobs, nBags, i, relative;
   Char buf[256];
-  OpenForLoad( CSTR_STRING(fname) );
+  OpenForLoad( CONST_CSTR_STRING(fname) );
   LoadCStr(buf,256);
   Pr("Header string: %s\n",(Int) buf, 0L);
   LoadCStr(buf,256);

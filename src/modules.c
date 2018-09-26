@@ -132,7 +132,7 @@ Obj FuncGAP_CRC(Obj self, Obj filename)
     }
 
     /* compute the crc value                                               */
-    return INTOBJ_INT(SyGAPCRC(CSTR_STRING(filename)));
+    return INTOBJ_INT(SyGAPCRC(CONST_CSTR_STRING(filename)));
 }
 
 
@@ -231,7 +231,7 @@ Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
 
     /* try to read the module                                              */
 #ifdef HAVE_DLOPEN
-    res = SyLoadModule(CSTR_STRING(filename), &init);
+    res = SyLoadModule(CONST_CSTR_STRING(filename), &init);
     if (res == 1)
         ErrorQuit("module '%g' not found", (Int)filename, 0L);
     else if (res == 3)
@@ -281,7 +281,7 @@ Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
     }
 
     ActivateModule(info);
-    RecordLoadedModule(info, 0, CSTR_STRING(filename));
+    RecordLoadedModule(info, 0, CONST_CSTR_STRING(filename));
 
     return True;
 }
@@ -313,7 +313,7 @@ Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
     /* try to find the module                                              */
     for (k = 0; CompInitFuncs[k]; k++) {
         info = (*(CompInitFuncs[k]))();
-        if (info && !strcmp(CSTR_STRING(filename), info->name)) {
+        if (info && !strcmp(CONST_CSTR_STRING(filename), info->name)) {
             break;
         }
     }
@@ -341,7 +341,7 @@ Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
     }
 
     ActivateModule(info);
-    RecordLoadedModule(info, 0, CSTR_STRING(filename));
+    RecordLoadedModule(info, 0, CONST_CSTR_STRING(filename));
 
     return True;
 }

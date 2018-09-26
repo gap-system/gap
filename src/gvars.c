@@ -483,7 +483,7 @@ Obj FuncIsThreadLocalGVar( Obj self, Obj name) {
     ErrorMayQuit("IsThreadLocalGVar: argument must be a string (not a %s)",
                  (Int)TNAM_OBJ(name), 0L);
 
-  UInt gvar = GVarName(CSTR_STRING(name));
+  UInt gvar = GVarName(CONST_CSTR_STRING(name));
   return (VAL_GVAR_INTERN(gvar) == 0 && IS_INTOBJ(ExprGVar(gvar))) ?
     True: False;
 }
@@ -557,7 +557,7 @@ UInt GVarName (
     UInt                sizeGVars;      // size of <TableGVars>
 
     /* First see whether it could be namespace-local: */
-    cns = STATE(CurrNamespace) ? CSTR_STRING(STATE(CurrNamespace)) : "";
+    cns = STATE(CurrNamespace) ? CONST_CSTR_STRING(STATE(CurrNamespace)) : "";
     if (*cns) {   /* only if a namespace is set */
         len = strlen(name);
         if (name[len-1] == NSCHAR) {
@@ -577,7 +577,7 @@ UInt GVarName (
     sizeGVars = LEN_PLIST(TableGVars);
     pos = (hash % sizeGVars) + 1;
     while ( (gvar = ELM_PLIST( TableGVars, pos )) != 0
-         && strncmp( CSTR_STRING( NameGVar( INT_INTOBJ(gvar) ) ), name, 1023 ) ) {
+         && strncmp( CONST_CSTR_STRING( NameGVar( INT_INTOBJ(gvar) ) ), name, 1023 ) ) {
         pos = (pos % sizeGVars) + 1;
     }
 
@@ -591,7 +591,7 @@ UInt GVarName (
         sizeGVars = LEN_PLIST(TableGVars);
         pos = (hash % sizeGVars) + 1;
         while ( (gvar = ELM_PLIST( TableGVars, pos )) != 0
-             && strncmp( CSTR_STRING( NameGVar( INT_INTOBJ(gvar) ) ), name, 1023 ) ) {
+             && strncmp( CONST_CSTR_STRING( NameGVar( INT_INTOBJ(gvar) ) ), name, 1023 ) ) {
             pos = (pos % sizeGVars) + 1;
         }
     }
@@ -654,7 +654,7 @@ UInt GVarName (
             for ( i = 1; i <= (sizeGVars-1)/2; i++ ) {
                 gvar2 = ELM_PLIST( table, i );
                 if ( gvar2 == 0 )  continue;
-                pos = HashString( CSTR_STRING( NameGVar( INT_INTOBJ(gvar2) ) ) );
+                pos = HashString( CONST_CSTR_STRING( NameGVar( INT_INTOBJ(gvar2) ) ) );
                 pos = (pos % sizeGVars) + 1;
                 while ( ELM_PLIST( TableGVars, pos ) != 0 ) {
                     pos = (pos % sizeGVars) + 1;
@@ -749,7 +749,7 @@ Obj FuncMakeReadOnlyGVar (
     }
 
     /* get the variable and make it read only                              */
-    MakeReadOnlyGVar(GVarName(CSTR_STRING(name)));
+    MakeReadOnlyGVar(GVarName(CONST_CSTR_STRING(name)));
 
     /* return void                                                         */
     return 0;
@@ -776,7 +776,7 @@ Obj FuncMakeConstantGVar(Obj self, Obj name)
     }
 
     /* get the variable and make it read only                              */
-    MakeConstantGVar(GVarName(CSTR_STRING(name)));
+    MakeConstantGVar(GVarName(CONST_CSTR_STRING(name)));
 
     /* return void                                                         */
     return 0;
@@ -821,7 +821,7 @@ Obj FuncMakeReadWriteGVar (
     }
 
     /* get the variable and make it read write                             */
-    MakeReadWriteGVar(GVarName(CSTR_STRING(name)));
+    MakeReadWriteGVar(GVarName(CONST_CSTR_STRING(name)));
 
     /* return void                                                         */
     return 0;
@@ -856,7 +856,7 @@ static Obj FuncIsReadOnlyGVar (
     }
 
     /* get the answer                             */
-    return IsReadOnlyGVar(GVarName(CSTR_STRING(name))) ? True : False;
+    return IsReadOnlyGVar(GVarName(CONST_CSTR_STRING(name))) ? True : False;
 }
 
 /****************************************************************************
@@ -884,7 +884,7 @@ static Obj FuncIsConstantGVar(Obj self, Obj name)
     }
 
     /* get the answer                             */
-    return IsConstantGVar(GVarName(CSTR_STRING(name))) ? True : False;
+    return IsConstantGVar(GVarName(CONST_CSTR_STRING(name))) ? True : False;
 }
 
 
@@ -949,7 +949,7 @@ Obj             FuncAUTO (
                 (Int)TNAM_OBJ(name), 0L,
                 "you can return a string for <name>" );
         }
-        gvar = GVarName( CSTR_STRING(name) );
+        gvar = GVarName( CONST_CSTR_STRING(name) );
         SET_ELM_GVAR_LIST( ValGVars, gvar, 0 );
         SET_ELM_GVAR_LIST( ExprGVars, gvar, list );
         CHANGED_GVAR_LIST( ExprGVars, gvar );
@@ -969,13 +969,13 @@ UInt            iscomplete_gvar (
     Char *              name,
     UInt                len )
 {
-    Char *              curr;
+    const Char *        curr;
     UInt                i, k;
     UInt                numGVars;
 
     numGVars = INT_INTOBJ(CountGVars);
     for ( i = 1; i <= numGVars; i++ ) {
-        curr = CSTR_STRING( NameGVar( i ) );
+        curr = CONST_CSTR_STRING( NameGVar( i ) );
         for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
         if ( k == len && curr[k] == '\0' )  return 1;
     }
@@ -986,8 +986,8 @@ UInt            completion_gvar (
     Char *              name,
     UInt                len )
 {
-    Char *              curr;
-    Char *              next;
+    const Char *        curr;
+    const Char *        next;
     UInt                i, k;
     UInt                numGVars;
 
@@ -996,7 +996,7 @@ UInt            completion_gvar (
     for ( i = 1; i <= numGVars; i++ ) {
         /* consider only variables which are currently bound for completion */
         if ( VAL_GVAR_INTERN( i ) || ELM_GVAR_LIST( ExprGVars, i )) {
-            curr = CSTR_STRING( NameGVar( i ) );
+            curr = CONST_CSTR_STRING( NameGVar( i ) );
             for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
             if ( k < len || curr[k] <= name[k] )  continue;
             if ( next != 0 ) {
@@ -1098,7 +1098,7 @@ Obj FuncASS_GVAR (
             "you can return a string for <gvar>" );
     }
 
-    AssGVar( GVarName( CSTR_STRING(gvar) ), val );
+    AssGVar( GVarName( CONST_CSTR_STRING(gvar) ), val );
     return 0L;
 }
 
@@ -1119,7 +1119,7 @@ Obj FuncISB_GVAR (
             "you can return a string for <gvar>" );
     }
 
-    UInt gv = GVarName( CSTR_STRING(gvar) );
+    UInt gv = GVarName( CONST_CSTR_STRING(gvar) );
     if (VAL_GVAR_INTERN(gv))
       return True;
     Obj expr = ExprGVar(gv);
@@ -1154,7 +1154,7 @@ Obj FuncVAL_GVAR (
     }
 
     /* get the value */
-    val = ValAutoGVar( GVarName( CSTR_STRING(gvar) ) );
+    val = ValAutoGVar( GVarName( CONST_CSTR_STRING(gvar) ) );
 
     while (val == (Obj) 0)
       val = ErrorReturnObj("VAL_GVAR: No value bound to %g",
@@ -1181,7 +1181,7 @@ Obj FuncUNB_GVAR (
     }
 
     /*  */
-    AssGVar( GVarName( CSTR_STRING(gvar) ), (Obj)0 );
+    AssGVar( GVarName( CONST_CSTR_STRING(gvar) ), (Obj)0 );
     return (Obj) 0;
 }
 

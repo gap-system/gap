@@ -159,7 +159,7 @@ Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
 
     /* HACK: we want to redirect output */
     /* Try to print the output to stream. Use *errout* as a fallback. */
-    if ((IsStringConv(stream) && !OpenOutput(CSTR_STRING(stream))) ||
+    if ((IsStringConv(stream) && !OpenOutput(CONST_CSTR_STRING(stream))) ||
         (!IS_STRING(stream) && !OpenOutputStream(stream))) {
         if (OpenOutput("*errout*")) {
             Pr("PRINT_CURRENT_STATEMENT: failed to open error stream\n", 0, 0);

@@ -407,7 +407,7 @@ UInt OpenDefaultInput( void )
   if (!stream)
     ErrorQuit("DEFAULT_INPUT_STREAM() did not return a stream", 0L, 0L);
   if (IsStringConv(stream))
-    return OpenInput(CSTR_STRING(stream));
+    return OpenInput(CONST_CSTR_STRING(stream));
   TLS(DefaultInput) = stream;
   return OpenInputStream(stream, 0);
 }
@@ -425,7 +425,7 @@ UInt OpenDefaultOutput( void )
   if (!stream)
     ErrorQuit("DEFAULT_OUTPUT_STREAM() did not return a stream", 0L, 0L);
   if (IsStringConv(stream))
-    return OpenOutput(CSTR_STRING(stream));
+    return OpenOutput(CONST_CSTR_STRING(stream));
   TLS(DefaultOutput) = stream;
   return OpenOutputStream(stream);
 }
@@ -1153,8 +1153,8 @@ static Int GetLine2 (
             bptr++;
 
         /* copy piece of input->sline into buffer and adjust counters */
-        Char *ptr = CSTR_STRING(input->sline) + input->spos;
-        const Char * const end = CSTR_STRING(input->sline) + GET_LEN_STRING(input->sline);
+        const Char *ptr = CONST_CSTR_STRING(input->sline) + input->spos;
+        const Char * const end = CONST_CSTR_STRING(input->sline) + GET_LEN_STRING(input->sline);
         const Char * const bend = buffer + length - 2;
         while (bptr < bend && ptr < end) {
             Char c = *ptr++;
@@ -1171,7 +1171,7 @@ static Int GetLine2 (
                 break;
         }
         *bptr = '\0';
-        input->spos = ptr - (Char *)CHARS_STRING(input->sline);
+        input->spos = ptr - CONST_CSTR_STRING(input->sline);
 
         /* if input->stream is a string stream, we have to adjust the
            position counter in the stream object as well */
@@ -1587,7 +1587,7 @@ Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
   if (IS_STRING_REP(prompt)) {
     /* by assigning to Prompt we also tell readline (if used) what the
        current prompt is  */
-    strlcpy(promptBuf, CSTR_STRING(prompt), sizeof(promptBuf));
+    strlcpy(promptBuf, CONST_CSTR_STRING(prompt), sizeof(promptBuf));
     STATE(Prompt) = promptBuf;
   }
   Pr("%s%c", (Int)STATE(Prompt), (Int)'\03' );
@@ -1715,14 +1715,14 @@ static inline void FormatOutput(
       // which occurs in put_a_char
       if (*p == 'g') {
         arg1obj = (Obj)arg1;
-        arg1 = (Int)CSTR_STRING(arg1obj);
+        arg1 = (Int)CONST_CSTR_STRING(arg1obj);
       }
       else {
         arg1obj = 0;
       }
 
       /* compute how many characters this identifier requires    */
-      for ( Char * q = (Char *)arg1; *q != '\0' && prec > 0; q++ ) {
+      for ( const Char * q = (const Char *)arg1; *q != '\0' && prec > 0; q++ ) {
         prec--;
       }
 
@@ -1730,14 +1730,14 @@ static inline void FormatOutput(
       while ( prec-- > 0 )  put_a_char(state, ' ');
 
       if (arg1obj) {
-          arg1 = (Int)CSTR_STRING(arg1obj);
+          arg1 = (Int)CONST_CSTR_STRING(arg1obj);
       }
 
       /* print the string                                        */
       /* must be careful that line breaks don't go inside
          escaped sequences \n or \123 or similar */
-      for ( Int i = 0; ((Char *)arg1)[i] != '\0'; i++ ) {
-          Char* q = ((Char *)arg1) + i;
+      for ( Int i = 0; ((const Char *)arg1)[i] != '\0'; i++ ) {
+          const Char* q = ((const Char *)arg1) + i;
           if (*q == '\\' && IO()->NoSplitLine == 0) {
               if (*(q + 1) < '8' && *(q + 1) >= '0')
                   IO()->NoSplitLine = 3;
@@ -1749,7 +1749,7 @@ static inline void FormatOutput(
         put_a_char(state, *q);
 
         if (arg1obj) {
-          arg1 = (Int)CSTR_STRING(arg1obj);
+          arg1 = (Int)CONST_CSTR_STRING(arg1obj);
         }
       }
 
@@ -1765,7 +1765,7 @@ static inline void FormatOutput(
       // which occurs in put_a_char
       if (*p == 'G') {
         arg1obj = (Obj)arg1;
-        arg1 = (Int)CSTR_STRING(arg1obj);
+        arg1 = (Int)CONST_CSTR_STRING(arg1obj);
       }
       else {
         arg1obj = 0;
@@ -1773,7 +1773,7 @@ static inline void FormatOutput(
 
 
       /* compute how many characters this identifier requires    */
-      for ( Char * q = (Char *)arg1; *q != '\0' && prec > 0; q++ ) {
+      for ( const Char * q = (const Char *)arg1; *q != '\0' && prec > 0; q++ ) {
         if      ( *q == '\n'  ) { prec -= 2; }
         else if ( *q == '\t'  ) { prec -= 2; }
         else if ( *q == '\r'  ) { prec -= 2; }
@@ -1790,12 +1790,12 @@ static inline void FormatOutput(
       while ( prec-- > 0 )  put_a_char(state, ' ');
 
       if (arg1obj) {
-          arg1 = (Int)CSTR_STRING(arg1obj);
+          arg1 = (Int)CONST_CSTR_STRING(arg1obj);
       }
 
       /* print the string                                        */
-      for ( Int i = 0; ((Char *)arg1)[i] != '\0'; i++ ) {
-        Char* q = ((Char *)arg1) + i;
+      for ( Int i = 0; ((const Char *)arg1)[i] != '\0'; i++ ) {
+        const Char* q = ((const Char *)arg1) + i;
         if      ( *q == '\n'  ) { put_a_char(state, '\\'); put_a_char(state, 'n');  }
         else if ( *q == '\t'  ) { put_a_char(state, '\\'); put_a_char(state, 't');  }
         else if ( *q == '\r'  ) { put_a_char(state, '\\'); put_a_char(state, 'r');  }
@@ -1808,7 +1808,7 @@ static inline void FormatOutput(
         else                    { put_a_char(state, *q);               }
 
         if (arg1obj) {
-          arg1 = (Int)CSTR_STRING(arg1obj);
+          arg1 = (Int)CONST_CSTR_STRING(arg1obj);
         }
       }
 
@@ -1820,7 +1820,7 @@ static inline void FormatOutput(
     else if ( *p == 'C' ) {
 
       /* compute how many characters this identifier requires    */
-      for ( Char * q = (Char *)arg1; *q != '\0' && prec > 0; q++ ) {
+      for ( const Char * q = (const Char *)arg1; *q != '\0' && prec > 0; q++ ) {
         if      ( *q == '\n'  ) { prec -= 2; }
         else if ( *q == '\t'  ) { prec -= 2; }
         else if ( *q == '\r'  ) { prec -= 2; }
@@ -1837,7 +1837,7 @@ static inline void FormatOutput(
       while ( prec-- > 0 )  put_a_char(state, ' ');
 
       /* print the string                                        */
-      for ( Char * q = (Char *)arg1; *q != '\0'; q++ ) {
+      for ( const Char * q = (const Char *)arg1; *q != '\0'; q++ ) {
         if      ( *q == '\n'  ) { put_a_char(state, '\\'); put_a_char(state, 'n');  }
         else if ( *q == '\t'  ) { put_a_char(state, '\\'); put_a_char(state, 't');  }
         else if ( *q == '\r'  ) { put_a_char(state, '\\'); put_a_char(state, 'r');  }
@@ -1866,20 +1866,20 @@ static inline void FormatOutput(
       // which occurs in put_a_char
       if (*p == 'H') {
         arg1obj = (Obj)arg1;
-        arg1 = (Int)CSTR_STRING(arg1obj);
+        arg1 = (Int)CONST_CSTR_STRING(arg1obj);
       }
       else {
         arg1obj = 0;
       }
 
       /* check if q matches a keyword    */
-      found_keyword = IsKeyword((Char *)arg1);
+      found_keyword = IsKeyword((const Char *)arg1);
 
       /* compute how many characters this identifier requires    */
       if (found_keyword) {
         prec--;
       }
-      for ( Char * q = (Char *)arg1; *q != '\0'; q++ ) {
+      for ( const Char * q = (const Char *)arg1; *q != '\0'; q++ ) {
         if ( !IsIdent(*q) && !IsDigit(*q) ) {
           prec--;
         }
@@ -1894,15 +1894,15 @@ static inline void FormatOutput(
         put_a_char(state, '\\');
       }
 
-      for ( Int i = 0; ((Char *)arg1)[i] != '\0'; i++ ) {
-        Char c = ((Char *)arg1)[i];
+      for ( Int i = 0; ((const Char *)arg1)[i] != '\0'; i++ ) {
+        Char c = ((const Char *)arg1)[i];
 
         if ( !IsIdent(c) && !IsDigit(c) ) {
           put_a_char(state, '\\');
         }
         put_a_char(state, c);
         if (arg1obj) {
-          arg1 = (Int)CSTR_STRING(arg1obj);
+          arg1 = (Int)CONST_CSTR_STRING(arg1obj);
         }
       }
 

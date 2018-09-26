@@ -1859,7 +1859,7 @@ static void CodeEagerFloatExpr(Obj str, Char mark)
     WRITE_EXPR(fl, 0, ix);
     WRITE_EXPR(fl, 1, l);
     WRITE_EXPR(fl, 2, (UInt)mark);
-    memcpy(ADDR_EXPR(fl) + 3, CHARS_STRING(str), l + 1);
+    memcpy(ADDR_EXPR(fl) + 3, CONST_CSTR_STRING(str), l + 1);
     PushExpr(fl);
 }
 

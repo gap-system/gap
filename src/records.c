@@ -113,7 +113,7 @@ UInt            RNamName (
     sizeRNam = LEN_PLIST(HashRNam);
     pos = (hash % sizeRNam) + 1;
     while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
-         && strncmp( CSTR_STRING( NAME_RNAM( INT_INTOBJ(rnam) ) ), name, 1023 ) ) {
+         && strncmp( CONST_CSTR_STRING( NAME_RNAM( INT_INTOBJ(rnam) ) ), name, 1023 ) ) {
         pos = (pos % sizeRNam) + 1;
     }
     if (rnam != 0) {
@@ -130,7 +130,7 @@ UInt            RNamName (
       sizeRNam = LEN_PLIST(HashRNam);
       pos = (hash % sizeRNam) + 1;
       while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
-           && strncmp( CSTR_STRING( NAME_RNAM( INT_INTOBJ(rnam) ) ), name, 1023 ) ) {
+           && strncmp( CONST_CSTR_STRING( NAME_RNAM( INT_INTOBJ(rnam) ) ), name, 1023 ) ) {
           pos = (pos % sizeRNam) + 1;
       }
     }
@@ -164,7 +164,7 @@ UInt            RNamName (
         for ( i = 1; i <= (sizeRNam-1)/2; i++ ) {
             rnam2 = ELM_PLIST( table, i );
             if ( rnam2 == 0 )  continue;
-            pos = HashString( CSTR_STRING( NAME_RNAM( INT_INTOBJ(rnam2) ) ) );
+            pos = HashString( CONST_CSTR_STRING( NAME_RNAM( INT_INTOBJ(rnam2) ) ) );
             pos = (pos % sizeRNam) + 1;
             while ( ELM_PLIST( HashRNam, pos ) != 0 ) {
                 pos = (pos % sizeRNam) + 1;
@@ -230,7 +230,7 @@ UInt            RNamObj (
 
     /* convert string object (empty string may have type T_PLIST)          */
     else if ( IsStringConv(obj) && IS_STRING_REP(obj) ) {
-        return RNamName( CSTR_STRING(obj) );
+        return RNamName( CONST_CSTR_STRING(obj) );
     }
 
     /* otherwise fail                                                      */
@@ -537,7 +537,7 @@ UInt            iscomplete_rnam (
     const UInt          countRNam = LEN_PLIST(NamesRNam);
 
     for ( i = 1; i <= countRNam; i++ ) {
-        curr = CSTR_STRING( NAME_RNAM( i ) );
+        curr = CONST_CSTR_STRING( NAME_RNAM( i ) );
         for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
         if ( k == len && curr[k] == '\0' )  return 1;
     }
@@ -555,7 +555,7 @@ UInt            completion_rnam (
 
     next = 0;
     for ( i = 1; i <= countRNam; i++ ) {
-        curr = CSTR_STRING( NAME_RNAM( i ) );
+        curr = CONST_CSTR_STRING( NAME_RNAM( i ) );
         for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
         if ( k < len || curr[k] <= name[k] )  continue;
         if ( next != 0 ) {

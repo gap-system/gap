@@ -1123,7 +1123,7 @@ static Obj FuncGET_ATOMIC_RECORD(Obj self, Obj record, Obj field, Obj def)
     ArgumentError("GET_ATOMIC_RECORD: First argument must be an atomic record");
   if (!IsStringConv(field))
     ArgumentError("GET_ATOMIC_RECORD: Second argument must be a string");
-  fieldname = RNamName(CSTR_STRING(field));
+  fieldname = RNamName(CONST_CSTR_STRING(field));
   result = GetARecordField(record, fieldname);
   return result ? result : def;
 }
@@ -1136,11 +1136,11 @@ static Obj FuncSET_ATOMIC_RECORD(Obj self, Obj record, Obj field, Obj value)
     ArgumentError("SET_ATOMIC_RECORD: First argument must be an atomic record");
   if (!IsStringConv(field))
     ArgumentError("SET_ATOMIC_RECORD: Second argument must be a string");
-  fieldname = RNamName(CSTR_STRING(field));
+  fieldname = RNamName(CONST_CSTR_STRING(field));
   result = SetARecordField(record, fieldname, value);
   if (!result)
     ErrorQuit("SET_ATOMIC_RECORD: Field '%s' already exists",
-      (UInt) CSTR_STRING(field), 0L);
+      (UInt) CONST_CSTR_STRING(field), 0L);
   return result;
 }
 
@@ -1152,10 +1152,10 @@ static Obj FuncUNBIND_ATOMIC_RECORD(Obj self, Obj record, Obj field)
     ArgumentError("UNBIND_ATOMIC_RECORD: First argument must be an atomic record");
   if (!IsStringConv(field))
     ArgumentError("UNBIND_ATOMIC_RECORD: Second argument must be a string");
-  fieldname = RNamName(CSTR_STRING(field));
+  fieldname = RNamName(CONST_CSTR_STRING(field));
   if (GetARecordUpdatePolicy(record) != AREC_RW)
     ErrorQuit("UNBIND_ATOMIC_RECORD: Record elements cannot be changed",
-      (UInt) CSTR_STRING(field), 0L);
+      (UInt) CONST_CSTR_STRING(field), 0L);
   exists = GetARecordField(record, fieldname);
   if (exists)
     SetARecordField(record, fieldname, (Obj) 0);
