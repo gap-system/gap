@@ -260,41 +260,24 @@ template<typename T> void            PrintPerm(
 **  same length, if  the  larger  permutation  fixes  the  exceeding  points.
 **
 */
-Int             EqPerm22 (
-    Obj                 opL,
-    Obj                 opR ) {
-  return EqPermTrans22(DEG_PERM2(opL), 
-                       DEG_PERM2(opR), 
-                       CONST_ADDR_PERM2(opL),
-                       CONST_ADDR_PERM2(opR));
-}
-
-Int             EqPerm44 (
-    Obj                 opL,
-    Obj                 opR ) {
-  return EqPermTrans44(DEG_PERM4(opL), 
-                       DEG_PERM4(opR), 
-                       CONST_ADDR_PERM4(opL),
-                       CONST_ADDR_PERM4(opR));
-}
-
-Int             EqPerm24 (
+template<typename TL, typename TR>
+Int             EqPerm (
     Obj                 opL,
     Obj                 opR )
 {
     UInt                degL;           /* degree of the left operand      */
-    const UInt2 *       ptL;            /* pointer to the left operand     */
+    const TL *          ptL;            /* pointer to the left operand     */
     UInt                degR;           /* degree of the right operand     */
-    const UInt4 *       ptR;            /* pointer to the right operand    */
+    const TR *          ptR;            /* pointer to the right operand    */
     UInt                p;              /* loop variable                   */
 
     /* get the degrees                                                     */
-    degL = DEG_PERM2(opL);
-    degR = DEG_PERM4(opR);
+    degL = DEG_PERM<TL>(opL);
+    degR = DEG_PERM<TR>(opR);
 
     /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM2(opL);
-    ptR = CONST_ADDR_PERM4(opR);
+    ptL = CONST_ADDR_PERM<TL>(opL);
+    ptR = CONST_ADDR_PERM<TR>(opR);
 
     /* search for a difference and return False if you find one          */
     if ( degL <= degR ) {
@@ -318,10 +301,6 @@ Int             EqPerm24 (
     return 1L;
 }
 
-Int EqPerm42(Obj opL, Obj opR)
-{
-    return EqPerm24(opR, opL);
-}
 
 /****************************************************************************
 **
@@ -3511,10 +3490,10 @@ static Int InitKernel (
     PrintObjFuncs[ T_PERM4   ] = PrintPerm<UInt4>;
 
     /* install the comparison methods                                      */
-    EqFuncs  [ T_PERM2  ][ T_PERM2  ] = EqPerm22;
-    EqFuncs  [ T_PERM2  ][ T_PERM4  ] = EqPerm24;
-    EqFuncs  [ T_PERM4  ][ T_PERM2  ] = EqPerm42;
-    EqFuncs  [ T_PERM4  ][ T_PERM4  ] = EqPerm44;
+    EqFuncs  [ T_PERM2  ][ T_PERM2  ] = EqPerm<UInt2, UInt2>;
+    EqFuncs  [ T_PERM2  ][ T_PERM4  ] = EqPerm<UInt2, UInt4>;
+    EqFuncs  [ T_PERM4  ][ T_PERM2  ] = EqPerm<UInt4, UInt2>;
+    EqFuncs  [ T_PERM4  ][ T_PERM4  ] = EqPerm<UInt4, UInt4>;
     LtFuncs  [ T_PERM2  ][ T_PERM2  ] = LtPerm<UInt2, UInt2>;
     LtFuncs  [ T_PERM2  ][ T_PERM4  ] = LtPerm<UInt2, UInt4>;
     LtFuncs  [ T_PERM4  ][ T_PERM2  ] = LtPerm<UInt4, UInt2>;
