@@ -26,17 +26,6 @@ COVDIR=coverage
 mkdir -p $COVDIR
 
 
-# Compile edim, if present, to test gac (but not on HPC-GAP and not on Cygwin,
-# where gac is known to be broken)
-if [[ -d $SRCDIR/pkg/edim && $HPCGAP != yes && $OSTYPE = Cygwin* ]]
-then
-  pushd $SRCDIR/pkg/edim
-  ./configure $BUILDDIR
-  make
-  popd
-fi
-
-
 for TEST_SUITE in $TEST_SUITES
 do
   case $TEST_SUITE in
