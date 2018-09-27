@@ -2,6 +2,7 @@
 /autom4te.cache/
 /cnf/GAP-VERSION-FILE
 /cnf/GAP-CFLAGS
+/cnf/GAP-CXXFLAGS
 /cnf/GAP-CPPFLAGS
 /cnf/GAP-LDFLAGS
 /cnf/GAP-LIBS
