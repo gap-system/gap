@@ -187,13 +187,47 @@ f4*f3^-1048576*f2^-1*f1^-1
 (f4*f3^-1048576*f2^-1*f1^-1)^3
 
 #
+# test overflow checks when powering
+#
+
+#
+gap> a8:=ObjByExtRep(fam,[1,1]);; Is8BitsAssocWord(a8);
+true
+gap> 8Bits_Power(a8,2^10);
+"TRY_NEXT_METHOD"
+gap> p16:=a8^(2^10);; ExtRepOfObj(p16);
+[ 1, 1024 ]
+gap> Is16BitsAssocWord(p16);
+true
+
+#
+gap> a16:=ObjByExtRep(fam,[1,2^10]);; Is16BitsAssocWord(a16);
+true
+gap> 16Bits_Power(a16,2^10);
+"TRY_NEXT_METHOD"
+gap> p32:=a16^(2^10);; ExtRepOfObj(p32);
+[ 1, 1048576 ]
+gap> Is32BitsAssocWord(p32);
+true
+
+#
+gap> a32:=ObjByExtRep(fam,[1,2^26]);; Is32BitsAssocWord(a32);
+true
+gap> 32Bits_Power(a32,2^10);
+"TRY_NEXT_METHOD"
+gap> pinf:=a32^(2^10);; ExtRepOfObj(pinf);
+[ 1, 68719476736 ]
+gap> IsInfBitsAssocWord(pinf);
+true
+
+#
 # quotients
 #
-gap> words8 := [u8,v8,w8,x8];; ForAll(words8, Is8BitsAssocWord);
+gap> words8 := [u8,v8,w8,x8,a8];; ForAll(words8, Is8BitsAssocWord);
 true
-gap> words16 := [u16,v16,w16,x16];; ForAll(words16, Is16BitsAssocWord);
+gap> words16 := [u16,v16,w16,x16,a16,p16];; ForAll(words16, Is16BitsAssocWord);
 true
-gap> words32 := [u32,v32,w32,x32];; ForAll(words32, Is32BitsAssocWord);
+gap> words32 := [u32,v32,w32,x32,a32,p32];; ForAll(words32, Is32BitsAssocWord);
 true
 
 #
