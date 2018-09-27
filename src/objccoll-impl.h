@@ -19,7 +19,7 @@
         CollectorsState()->SC_MAX_STACK_SIZE *= 2; \
         return -1; \
     } \
-    *++nw = (void*)DATA_WORD(word); \
+    *++nw = (UIntN *)DATA_WORD(word); \
     *++lw = *nw + (INT_INTOBJ((((Obj*)(*nw))[-1])) - 1); \
     *++pw = *nw; \
     *++ew = (**pw) & expm; \
@@ -30,7 +30,7 @@
         CollectorsState()->SC_MAX_STACK_SIZE *= 2; \
         return -1; \
     } \
-    *++nw = (void*)DATA_WORD(gen); \
+    *++nw = (UIntN *)DATA_WORD(gen); \
     *++lw = *nw; \
     *++pw = *nw; \
     *++ew = exp; \
@@ -55,6 +55,7 @@
 **  global exponent because the beginning of  the word might not commute with
 **  the rest.
 **/
+template<typename UIntN>
 static void AddWordIntoExpVec( Int *v, const UIntN *w, Int e, 
                            Int ebits, UInt expm, 
                            Int p, const Obj *pow, Int lpow ) {
@@ -78,6 +79,7 @@ static void AddWordIntoExpVec( Int *v, const UIntN *w, Int e,
     }
 }
 
+template<typename UIntN>
 static void AddCommIntoExpVec( Int *v, const UIntN *w, Int e, 
                            Int ebits, UInt expm, 
                            Int p, const Obj *pow, Int lpow ) {
@@ -103,6 +105,7 @@ static void AddCommIntoExpVec( Int *v, const UIntN *w, Int e,
     }
 }
 
+template<typename UIntN>
 static void AddPartIntoExpVec( Int *v, const UIntN *w, const UIntN *wend,
                            Int ebits, UInt expm, 
                            Int p, const Obj *pow, Int lpow ) {
@@ -125,6 +128,7 @@ static void AddPartIntoExpVec( Int *v, const UIntN *w, const UIntN *wend,
     }
 }
 
+template<typename UIntN>
 Int CombiCollectWord ( Obj sc, Obj vv, Obj w )
 {
     Int         ebits;      /* number of bits in the exponent              */
@@ -456,8 +460,3 @@ Int CombiCollectWord ( Obj sc, Obj vv, Obj w )
 #undef SC_PUSH_GEN
 #undef SC_POP_WORD
 
-#undef AddWordIntoExpVec
-#undef AddCommIntoExpVec
-#undef AddPartIntoExpVec
-#undef CombiCollectWord
-#undef UIntN

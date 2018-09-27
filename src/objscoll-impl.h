@@ -2,6 +2,7 @@
 **
 *F  WordVectorAndClear( <type>, <vv>, <num> )
 */
+template<typename UIntN>
 Obj WordVectorAndClear ( Obj type, Obj vv, Int num )
 {
     Int         ebits;          /* number of bits in the exponent          */
@@ -46,6 +47,7 @@ Obj WordVectorAndClear ( Obj type, Obj vv, Int num )
 **
 **  WARNING: This function assumes that <vv> is cleared!
 */
+template<typename UIntN>
 Int VectorWord ( Obj vv, Obj v, Int num )
 {
     Int         ebits;          /* number of bits in the exponent          */
@@ -116,7 +118,7 @@ Int VectorWord ( Obj vv, Obj v, Int num )
         CollectorsState()->SC_MAX_STACK_SIZE *= 2; \
         return -1; \
     } \
-    *++nw = (void*)DATA_WORD(word); \
+    *++nw = (UIntN *)DATA_WORD(word); \
     *++lw = *nw + (INT_INTOBJ((((const Obj*)(*nw))[-1])) - 1); \
     *++pw = *nw; \
     *++ew = (**pw) & expm; \
@@ -138,6 +140,7 @@ Int VectorWord ( Obj vv, Obj v, Int num )
 **  global exponent because the beginning of  the word might not commute with
 **  the rest.
 **/
+template<typename UIntN>
 static Int SAddWordIntoExpVec( Int *v, const UIntN *w, Int e, 
                            Int ebits, UInt expm, 
                            const Obj *ro, const Obj *pow, Int lpow ) {
@@ -164,6 +167,7 @@ static Int SAddWordIntoExpVec( Int *v, const UIntN *w, Int e,
     return start;
 }
 
+template<typename UIntN>
 static Int SAddPartIntoExpVec( Int *v, const UIntN *w, const UIntN *wend,
                            Int ebits, UInt expm, 
                            const Obj* ro, const Obj *pow, Int lpow ) {
@@ -189,6 +193,7 @@ static Int SAddPartIntoExpVec( Int *v, const UIntN *w, const UIntN *wend,
     return start;
 }
 
+template<typename UIntN>
 Int SingleCollectWord ( Obj sc, Obj vv, Obj w )
 {
     Int         ebits;      /* number of bits in the exponent              */
@@ -468,6 +473,7 @@ Int SingleCollectWord ( Obj sc, Obj vv, Obj w )
 **
 *F  Solution( <sc>, <ww>, <uu>, <func> )
 */
+template<typename UIntN>
 Int Solution( 
     Obj         sc,
     Obj         ww,
@@ -547,12 +553,3 @@ Int Solution(
     }
     return 0;
 }
-
-#undef WordVectorAndClear
-#undef VectorWord
-#undef SingleCollectWord
-#undef SAddWordIntoExpVec
-#undef SAddPartIntoExpVec
-#undef SingleCollectWord
-#undef Solution
-#undef UIntN
