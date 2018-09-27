@@ -1044,19 +1044,65 @@ Obj IsPermHandler (
 **  'FuncPermList' simply copies the list pointwise into  a  permutation  bag.
 **  It also does some checks to make sure that the  list  is  a  permutation.
 */
+template <typename T> static inline Obj PermList(Obj list)
+{
+    Obj                 perm;           /* handle of the permutation       */
+    T *                 ptPerm;         /* pointer to the permutation      */
+    UInt                degPerm;        /* degree of the permutation       */
+    const Obj *         ptList;         /* pointer to the list             */
+    T *                 ptTmp;          /* pointer to the buffer bag       */
+    Int                 i,  k;          /* loop variables                  */
+
+    PLAIN_LIST( list );
+
+    degPerm = LEN_LIST( list );
+
+    /* make sure that the global buffer bag is large enough for checkin*/
+    UseTmpPerm(SIZEBAG_PERM<T>(degPerm));
+
+    /* allocate the bag for the permutation and get pointer            */
+    perm    = NEW_PERM<T>(degPerm);
+    ptPerm  = ADDR_PERM<T>(perm);
+    ptList  = CONST_ADDR_OBJ(list);
+    ptTmp   = ADDR_PERM<T>(TmpPerm);
+
+    /* make the buffer bag clean                                       */
+    for ( i = 1; i <= degPerm; i++ )
+        ptTmp[i-1] = 0;
+
+    /* run through all entries of the list                             */
+    for ( i = 1; i <= degPerm; i++ ) {
+
+        /* get the <i>th entry of the list                             */
+        if ( ptList[i] == 0 ) {
+            return Fail;
+        }
+        if ( !IS_INTOBJ(ptList[i]) ) {
+            return Fail;
+        }
+        k = INT_INTOBJ(ptList[i]);
+        if ( k <= 0 || degPerm < k ) {
+            return Fail;
+        }
+
+        /* make sure we haven't seen this entry yet                     */
+        if ( ptTmp[k-1] != 0 ) {
+            return Fail;
+        }
+        ptTmp[k-1] = 1;
+
+        /* and finally copy it into the permutation                    */
+        ptPerm[i-1] = k-1;
+    }
+
+    /* return the permutation                                              */
+    return perm;
+}
+
 Obj             FuncPermList (
     Obj                 self,
     Obj                 list )
 {
-    Obj                 perm;           /* handle of the permutation       */
-    UInt2 *             ptPerm2;        /* pointer to the permutation      */
-    UInt4 *             ptPerm4;        /* pointer to the permutation      */
-    UInt                degPerm;        /* degree of the permutation       */
-    const Obj *         ptList;         /* pointer to the list             */
-    UInt2 *             ptTmp2;         /* pointer to the buffer bag       */
-    UInt4 *             ptTmp4;         /* pointer to the buffer bag       */
-    Int                 i,  k;          /* loop variables                  */
-
     /* check the arguments                                                 */
     while ( ! IS_SMALL_LIST( list ) ) {
         list = ErrorReturnObj(
@@ -1064,104 +1110,18 @@ Obj             FuncPermList (
             (Int)TNAM_OBJ(list), 0L,
             "you can replace <list> via 'return <list>;'" );
     }
-    PLAIN_LIST( list );
 
-    /* handle small permutations                                           */
-    if ( LEN_LIST( list ) <= 65536 ) {
-
-        degPerm = LEN_LIST( list );
-
-        /* make sure that the global buffer bag is large enough for checkin*/
-        UseTmpPerm(SIZEBAG_PERM2(degPerm));
-
-        /* allocate the bag for the permutation and get pointer            */
-        perm    = NEW_PERM2( degPerm );
-        ptPerm2 = ADDR_PERM2(perm);
-        ptList  = CONST_ADDR_OBJ(list);
-        ptTmp2  = ADDR_PERM2(TmpPerm);
-
-        /* make the buffer bag clean                                       */
-        for ( i = 1; i <= degPerm; i++ )
-            ptTmp2[i-1] = 0;
-
-        /* run through all entries of the list                             */
-        for ( i = 1; i <= degPerm; i++ ) {
-
-            /* get the <i>th entry of the list                             */
-            if ( ptList[i] == 0 ) {
-                return Fail;
-            }
-            if ( !IS_INTOBJ(ptList[i]) ) {
-                return Fail;
-            }
-            k = INT_INTOBJ(ptList[i]);
-            if ( k <= 0 || degPerm < k ) {
-                return Fail;
-            }
-
-            /* make sure we haven't seen this entry yet                     */
-            if ( ptTmp2[k-1] != 0 ) {
-                return Fail;
-            }
-            ptTmp2[k-1] = 1;
-
-            /* and finally copy it into the permutation                    */
-            ptPerm2[i-1] = k-1;
-        }
-
+    UInt len = LEN_LIST( list );
+    if ( len <= 65536 ) {
+        return PermList<UInt2>(list);
     }
-
-    /* handle large permutations                                           */
+    else if (len <= MAX_DEG_PERM4) {
+        return PermList<UInt4>(list);
+    }
     else {
-
-        degPerm = LEN_LIST( list );
-
-	if (degPerm > MAX_DEG_PERM4)
-	  ErrorMayQuit("PermList: list length %i exceeds maximum permutation degree %i\n",
-		       degPerm, MAX_DEG_PERM4);
-
-        /* make sure that the global buffer bag is large enough for checkin*/
-        UseTmpPerm(SIZEBAG_PERM4(degPerm));
-
-        /* allocate the bag for the permutation and get pointer            */
-        perm    = NEW_PERM4( degPerm );
-        ptPerm4 = ADDR_PERM4(perm);
-        ptList  = CONST_ADDR_OBJ( list);
-        ptTmp4  = ADDR_PERM4(TmpPerm);
-
-        /* make the buffer bag clean                                       */
-        for ( i = 1; i <= degPerm; i++ )
-            ptTmp4[i-1] = 0;
-
-        /* run through all entries of the list                             */
-        for ( i = 1; i <= degPerm; i++ ) {
-
-            /* get the <i>th entry of the list                             */
-            if ( ptList[i] == 0 ) {
-                return Fail;
-            }
-            if ( !IS_INTOBJ(ptList[i]) ) {
-                return Fail;
-            }
-            k = INT_INTOBJ(ptList[i]);
-            if ( k <= 0 || degPerm < k ) {
-                return Fail;
-            }
-
-            /* make sure we haven't seen this entry yet                     */
-            if ( ptTmp4[k-1] != 0 ) {
-                return Fail;
-            }
-            ptTmp4[k-1] = 1;
-
-            /* and finally copy it into the permutation                    */
-            ptPerm4[i-1] = k-1;
-        }
-
+        ErrorMayQuit("PermList: list length %i exceeds maximum permutation degree %i\n",
+		     len, MAX_DEG_PERM4);
     }
-
-    /* return the permutation                                              */
-    return perm;
 }
 
 /****************************************************************************
