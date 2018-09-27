@@ -425,11 +425,9 @@ Obj             ProdPerm (
 **  Unfortunatly this can not be done in <degree> steps, we need 2 * <degree>
 **  steps.
 */
-Obj InvPerm(Obj);
-
 Obj QuoPerm(Obj opL, Obj opR)
 {
-    return PROD(opL, InvPerm(opR));
+    return PROD(opL, INV(opR));
 }
 
 
@@ -492,6 +490,41 @@ Obj             LQuoPerm (
 
 /****************************************************************************
 **
+*F  InvPerm( <perm> ) . . . . . . . . . . . . . . .  inverse of a permutation
+*/
+template<typename T>
+Obj InvPerm (
+    Obj             perm )
+{
+    Obj                 inv;            /* handle of the inverse (result)  */
+    T *                 ptInv;          /* pointer to the inverse          */
+    const T *           ptPerm;         /* pointer to the permutation      */
+    UInt                deg;            /* degree of the permutation       */
+    UInt                p;              /* loop variables                  */
+
+    inv = STOREDINV_PERM(perm);
+    if (inv != 0)
+        return inv;
+
+    deg = DEG_PERM<T>(perm);
+    inv = NEW_PERM<T>(deg);
+
+    // get pointer to the permutation and the inverse
+    ptPerm = CONST_ADDR_PERM<T>(perm);
+    ptInv = ADDR_PERM<T>(inv);
+
+    // invert the permutation
+    for ( p = 0; p < deg; p++ )
+        ptInv[ *ptPerm++ ] = p;
+
+    // store and return the inverse
+    SET_STOREDINV_PERM(perm, inv);
+    return inv;
+}
+
+
+/****************************************************************************
+**
 *F  PowPermInt( <opL>, <opR> )  . . . . . . .  integer power of a permutation
 **
 **  'PowPermInt' returns the <opR>-th power  of the permutation <opL>.  <opR>
@@ -520,8 +553,8 @@ Obj             PowPermInt (
       return IdentityPerm;
     if ( opR == INTOBJ_INT(1))
       return opL;
-    if (opR == INTOBJ_INT(-1) && STOREDINV_PERM(opL) != 0)
-        return STOREDINV_PERM(opL);
+    if (opR == INTOBJ_INT(-1))
+        return InvPerm<T>(opL);
 
     /* get the operands and allocate a result bag                          */
     deg = DEG_PERM<T>(opL);
@@ -634,19 +667,6 @@ Obj             PowPermInt (
             }
 
         }
-
-    }
-
-    /* special case for inverting permutations                             */
-    else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) == -1 ) {
-
-        /* get pointer to the permutation and the power                    */
-        ptL = CONST_ADDR_PERM<T>(opL);
-        ptP = ADDR_PERM<T>(pow);
-
-        /* invert the permutation                                          */
-        for ( p = 0; p < deg; p++ )
-            ptP[ *(ptL++) ] = p;
 
     }
 
@@ -768,22 +788,6 @@ Obj             PowPermInt (
 
 /****************************************************************************
 **
-*F  InvPerm( <perm> ) . . . . . . . . . . . . . . .  inverse of a permutation
-*/
-Obj InvPerm (
-    Obj             perm )
-{
-    Obj inv = STOREDINV_PERM(perm);
-    if (inv != 0)
-        return inv;
-    inv = POW(perm, INTOBJ_INT(-1));
-    SET_STOREDINV_PERM(perm, inv);
-    return inv;
-}
-
-
-/****************************************************************************
-**
 *F  PowIntPerm( <opL>, <opR> )  . . . image of an integer under a permutation
 **
 **  'PowIntPerm' returns the  image of the positive  integer  <opL> under the
@@ -865,7 +869,7 @@ Obj             QuoIntPerm (
     if (inv == 0 && PERM_INVERSE_THRESHOLD != 0 &&
         IS_INTOBJ(PERM_INVERSE_THRESHOLD) &&
         DEG_PERM<T>(opR) <= INT_INTOBJ(PERM_INVERSE_THRESHOLD))
-        inv = InvPerm(opR);
+        inv = InvPerm<T>(opR);
 
     if (inv != 0)
         return INTOBJ_INT(
@@ -3490,10 +3494,10 @@ static Int InitKernel (
     OneMutFuncs[ T_PERM4 ] = OnePerm;
 
     /* install the 'INV' function for permutations                         */
-    InvFuncs[ T_PERM2 ] = InvPerm;
-    InvFuncs[ T_PERM4 ] = InvPerm;
-    InvMutFuncs[ T_PERM2 ] = InvPerm;
-    InvMutFuncs[ T_PERM4 ] = InvPerm;
+    InvFuncs[ T_PERM2 ] = InvPerm<UInt2>;
+    InvFuncs[ T_PERM4 ] = InvPerm<UInt4>;
+    InvMutFuncs[ T_PERM2 ] = InvPerm<UInt2>;
+    InvMutFuncs[ T_PERM4 ] = InvPerm<UInt4>;
 
     /* return success                                                      */
     return 0;
