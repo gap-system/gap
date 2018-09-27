@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*W  objfgelm.c                  GAP source                       Frank Celler
+*W  objfgelm.cc                 GAP source                       Frank Celler
 **
 *
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
@@ -72,6 +72,8 @@
 **    returns the result type
 */
 
+extern "C" {
+
 #include "objfgelm.h"
 
 #include "ariths.h"
@@ -83,6 +85,8 @@
 #include "opers.h"
 #include "plist.h"
 #include "stringobj.h"
+
+}
 
 
 /****************************************************************************
@@ -3337,12 +3341,22 @@ static Int InitLibrary (
 *F  InitInfoFreeGroupElements() . . . . . . . . . . . table of init functions
 */
 static StructInitInfo module = {
-    // init struct using C99 designated initializers; for a full list of
-    // fields, please refer to the definition of StructInitInfo
-    .type = MODULE_BUILTIN,
-    .name = "objfgelm",
-    .initKernel = InitKernel,
-    .initLibrary = InitLibrary,
+ /* type        = */ MODULE_BUILTIN,
+ /* name        = */ "objfgelm",
+ /* revision_c  = */ 0,
+ /* revision_h  = */ 0,
+ /* version     = */ 0,
+ /* crc         = */ 0,
+ /* initKernel  = */ InitKernel,
+ /* initLibrary = */ InitLibrary,
+ /* checkInit   = */ 0,
+ /* preSave     = */ 0,
+ /* postSave    = */ 0,
+ /* postRestore = */ 0,
+ /* moduleStateSize      = */ 0,
+ /* moduleStateOffsetPtr = */ 0,
+ /* initModuleState      = */ 0,
+ /* destroyModuleState   = */ 0,
 };
 
 StructInitInfo * InitInfoFreeGroupElements ( void )
