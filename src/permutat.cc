@@ -1089,39 +1089,19 @@ Obj             FuncPermList (
 
             /* get the <i>th entry of the list                             */
             if ( ptList[i] == 0 ) {
-                /* list = ErrorReturnObj(
-                    "PermList: <list>[%d] must have an assigned value",
-                    (Int)i, 0L,
-                    "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list ); */
-		return Fail;
+                return Fail;
             }
             if ( !IS_INTOBJ(ptList[i]) ) {
-                /* list = ErrorReturnObj(
-                    "PermList: <list>[%d] must be a integer",
-                    (Int)i, 0L,
-                    "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list ); */
-		return Fail;
+                return Fail;
             }
             k = INT_INTOBJ(ptList[i]);
             if ( k <= 0 || degPerm < k ) {
-                /* list = ErrorReturnObj(
-                    "PermList: <list>[%d] must lie in [1..%d]",
-                    (Int)i, (Int)degPerm,
-                    "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list ); */
-		return Fail;
+                return Fail;
             }
 
             /* make sure we haven't seen this entry yet                     */
             if ( ptTmp2[k-1] != 0 ) {
-		/* list = ErrorReturnObj(
-                    "PermList: the point %d must occur only once",
-                    (Int)k, 0L,
-                    "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list ); */
-		return Fail;
+                return Fail;
             }
             ptTmp2[k-1] = 1;
 
@@ -1158,39 +1138,19 @@ Obj             FuncPermList (
 
             /* get the <i>th entry of the list                             */
             if ( ptList[i] == 0 ) {
-                /* list = ErrorReturnObj(
-                    "PermList: <list>[%d] must have an assigned value",
-                    (Int)i, 0L,
-                    "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list ); */
-		return Fail;
+                return Fail;
             }
             if ( !IS_INTOBJ(ptList[i]) ) {
-                /* list = ErrorReturnObj(
-                    "PermList: <list>[%d] must be a integer",
-                    (Int)i, 0L,
-                    "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list ); */
-		return Fail;
+                return Fail;
             }
             k = INT_INTOBJ(ptList[i]);
             if ( k <= 0 || degPerm < k ) {
-                /* list = ErrorReturnObj(
-                    "PermList: <list>[%d] must lie in [1..%d]",
-                    (Int)i, (Int)degPerm,
-                    "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list ); */
-		return Fail;
+                return Fail;
             }
 
             /* make sure we haven't seen this entry yet                     */
             if ( ptTmp4[k-1] != 0 ) {
-                /* list = ErrorReturnObj(
-                    "PermList: the point %d must occur only once",
-                    (Int)k, 0L,
-                    "you can replace <list> via 'return <list>;'" );
-                return FuncPermList( 0, list ); */
-		return Fail;
+                return Fail;
             }
             ptTmp4[k-1] = 1;
 
