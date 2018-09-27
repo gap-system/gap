@@ -88,6 +88,14 @@ extern "C" {
 
 }
 
+// OverflowType<UIntN> is a type which is larger enough to detect
+// overflow of multiplication of two IntN values. For 8 and 16 bit
+// inputs, we use `Int`, for 32 bit inputs we use Int8.
+template<typename T> struct OverflowType { };
+template<> struct OverflowType<UInt1> { typedef Int type; };
+template<> struct OverflowType<UInt2> { typedef Int type; };
+template<> struct OverflowType<UInt4> { typedef Int8 type; };
+
 
 /****************************************************************************
 **
@@ -646,6 +654,8 @@ Obj Func8Bits_Power (
     Obj         l,
     Obj         r )
 {
+    typedef typename OverflowType<UIntN>::type OInt;
+
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* signed exponent mask                    */
     UInt        exps;           /* sign exponent mask                      */
@@ -658,7 +668,7 @@ Obj Func8Bits_Power (
     UIntN *     pl;             /* data area in <l>                        */
     UIntN *     pr;             /* data area in <obj>                      */
     UIntN *     pe;             /* end marker                              */
-    Int         ex = 0;         /* meeting exponent                        */
+    OInt        ex = 0;         /* meeting exponent                        */
     Int         pow;            /* power to take                           */
     Int         apw;            /* absolute value of <pow>                 */
 
@@ -1604,6 +1614,8 @@ Obj Func16Bits_Power (
     Obj         l,
     Obj         r )
 {
+    typedef typename OverflowType<UIntN>::type OInt;
+
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* signed exponent mask                    */
     UInt        exps;           /* sign exponent mask                      */
@@ -1616,7 +1628,7 @@ Obj Func16Bits_Power (
     UIntN *     pl;             /* data area in <l>                        */
     UIntN *     pr;             /* data area in <obj>                      */
     UIntN *     pe;             /* end marker                              */
-    Int         ex = 0;         /* meeting exponent                        */
+    OInt        ex = 0;         /* meeting exponent                        */
     Int         pow;            /* power to take                           */
     Int         apw;            /* absolute value of <pow>                 */
 
@@ -2562,6 +2574,8 @@ Obj Func32Bits_Power (
     Obj         l,
     Obj         r )
 {
+    typedef typename OverflowType<UIntN>::type OInt;
+
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* signed exponent mask                    */
     UInt        exps;           /* sign exponent mask                      */
@@ -2574,7 +2588,7 @@ Obj Func32Bits_Power (
     UIntN *     pl;             /* data area in <l>                        */
     UIntN *     pr;             /* data area in <obj>                      */
     UIntN *     pe;             /* end marker                              */
-    Int         ex = 0;         /* meeting exponent                        */
+    OInt        ex = 0;         /* meeting exponent                        */
     Int         pow;            /* power to take                           */
     Int         apw;            /* absolute value of <pow>                 */
 
@@ -2637,11 +2651,10 @@ Obj Func32Bits_Power (
     if ( sl == sr ) {
         ex = (*pl&expm);
         if ( *pl & exps )  ex -= exps;
-        Int exs = ex;   // save <ex> for overflow test
-        ex  = (Int)((UInt)ex * (UInt)pow);
+        ex = ex * pow;
 
         /* check that n*pow fits into the exponent                         */
-        if ( ex/pow!=exs || (0<ex && expm<ex) || (ex<0 && expm<-ex) ) {
+        if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
             return TRY_NEXT_METHOD;
         }
 
