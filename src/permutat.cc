@@ -1213,39 +1213,27 @@ Obj             FuncPermList (
 **
 **  This is easy, except that permutations may  contain  trailing  fixpoints.
 */
+template <typename T> static inline UInt LargestMovedPointPerm_(Obj perm)
+{
+    UInt      sup;
+    const T * ptPerm;
+
+    ptPerm = CONST_ADDR_PERM<T>(perm);
+    for (sup = DEG_PERM<T>(perm); 1 <= sup; sup--) {
+        if (ptPerm[sup - 1] != sup - 1)
+            break;
+    }
+    return sup;
+}
+
 UInt LargestMovedPointPerm(Obj perm)
 {
-    UInt                sup;            /* support (result)                */
-    const UInt2 *       ptPerm2;        /* pointer to the permutation      */
-    const UInt4 *       ptPerm4;        /* pointer to the permutation      */
-
     GAP_ASSERT(TNUM_OBJ(perm) == T_PERM2 || TNUM_OBJ(perm) == T_PERM4);
 
-    /* handle small permutations                                           */
-    if ( TNUM_OBJ(perm) == T_PERM2 ) {
-
-        /* find the largest moved point                                    */
-        ptPerm2 = CONST_ADDR_PERM2(perm);
-        for ( sup = DEG_PERM2(perm); 1 <= sup; sup-- ) {
-            if ( ptPerm2[sup-1] != sup-1 )
-                break;
-        }
-
-    }
-
-    /* handle large permutations                                           */
-    else {
-
-        /* find the largest moved point                                    */
-        ptPerm4 = CONST_ADDR_PERM4(perm);
-        for ( sup = DEG_PERM4(perm); 1 <= sup; sup-- ) {
-            if ( ptPerm4[sup-1] != sup-1 )
-                break;
-        }
-
-    }
-
-    return sup;
+    if (TNUM_OBJ(perm) == T_PERM2)
+        return LargestMovedPointPerm_<UInt2>(perm);
+    else
+        return LargestMovedPointPerm_<UInt4>(perm);
 }
 
 
