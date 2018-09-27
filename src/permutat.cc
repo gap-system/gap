@@ -2128,15 +2128,12 @@ Obj             FuncSMALLEST_IMG_TUP_PERM (
 **  The input <tup> must be a non-empty and dense plain list. This is is not
 **  verified.
 */
-Obj             OnTuplesPerm (
-    Obj                 tup,
-    Obj                 perm )
+template <typename T> static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
 {
     Obj                 res;            /* handle of the image, result     */
     Obj *               ptRes;          /* pointer to the result           */
     const Obj *         ptTup;          /* pointer to the tuple            */
-    const UInt2 *       ptPrm2;         /* pointer to the permutation      */
-    const UInt4 *       ptPrm4;         /* pointer to the permutation      */
+    const T *           ptPrm;          /* pointer to the permutation      */
     Obj                 tmp;            /* temporary handle                */
     UInt                lmp;            /* largest moved point             */
     UInt                i, k;           /* loop variables                  */
@@ -2150,78 +2147,50 @@ Obj             OnTuplesPerm (
     res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(tup), T_PLIST, len);
     SET_LEN_PLIST(res, len);
 
-    /* handle small permutations                                           */
-    if ( TNUM_OBJ(perm) == T_PERM2 ) {
 
-        /* get the pointer                                                 */
-        ptTup = CONST_ADDR_OBJ(tup) + len;
-        ptRes = ADDR_OBJ(res) + len;
-        ptPrm2 = CONST_ADDR_PERM2(perm);
-        lmp = DEG_PERM2(perm);
+    /* get the pointer                                                 */
+    ptTup = CONST_ADDR_OBJ(tup) + len;
+    ptRes = ADDR_OBJ(res) + len;
+    ptPrm = CONST_ADDR_PERM<T>(perm);
+    lmp = DEG_PERM<T>(perm);
 
-        /* loop over the entries of the tuple                              */
-        for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
-            if (IS_INTOBJ(*ptTup) && (0 < INT_INTOBJ(*ptTup))) {
-                k = INT_INTOBJ( *ptTup );
-                if (k > lmp) {
-                    tmp = *ptTup;
-                } else
-                    tmp = INTOBJ_INT( ptPrm2[k-1] + 1 );
-                *ptRes = tmp;
-            }
-            else {
-                if (*ptTup == NULL) {
-                  ErrorQuit("OnTuples for perm: list must not contain holes",
-                            0L, 0L);
-                }
-                tmp = POW( *ptTup, perm );
-                ptTup = CONST_ADDR_OBJ(tup) + i;
-                ptRes = ADDR_OBJ(res) + i;
-                ptPrm2 = CONST_ADDR_PERM2(perm);
-                *ptRes = tmp;
-                CHANGED_BAG( res );
-            }
+    /* loop over the entries of the tuple                              */
+    for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
+        if (IS_INTOBJ(*ptTup) && (0 < INT_INTOBJ(*ptTup))) {
+            k = INT_INTOBJ( *ptTup );
+            if (k > lmp) {
+                tmp = *ptTup;
+            } else
+                tmp = INTOBJ_INT( ptPrm[k-1] + 1 );
+            *ptRes = tmp;
         }
-
+        else {
+            if (*ptTup == NULL) {
+              ErrorQuit("OnTuples for perm: list must not contain holes",
+                        0L, 0L);
+            }
+            tmp = POW( *ptTup, perm );
+            ptTup = CONST_ADDR_OBJ(tup) + i;
+            ptRes = ADDR_OBJ(res) + i;
+            ptPrm = CONST_ADDR_PERM<T>(perm);
+            *ptRes = tmp;
+            CHANGED_BAG( res );
+        }
     }
 
-    /* handle large permutations                                           */
-    else {
-
-        /* get the pointer                                                 */
-        ptTup = CONST_ADDR_OBJ(tup) + len;
-        ptRes = ADDR_OBJ(res) + len;
-        ptPrm4 = CONST_ADDR_PERM4(perm);
-        lmp = DEG_PERM4(perm);
-
-        /* loop over the entries of the tuple                              */
-        for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
-            if (IS_INTOBJ(*ptTup) && (0 < INT_INTOBJ(*ptTup))) {
-                k = INT_INTOBJ( *ptTup );
-                if (k > lmp) {
-                    tmp = *ptTup;
-                } else
-                    tmp = INTOBJ_INT( ptPrm4[k-1] + 1 );
-                *ptRes = tmp;
-            }
-            else {
-                if (*ptTup == NULL) {
-                  ErrorQuit("OnTuples for perm: list must not contain holes",
-                            0L, 0L);
-                }
-                tmp = POW( *ptTup, perm );
-                ptTup = CONST_ADDR_OBJ(tup) + i;
-                ptRes = ADDR_OBJ(res) + i;
-                ptPrm4 = CONST_ADDR_PERM4(perm);
-                *ptRes = tmp;
-                CHANGED_BAG( res );
-            }
-        }
-
-    }
-
-    /* return the result                                                   */
     return res;
+}
+
+Obj             OnTuplesPerm (
+    Obj                 tup,
+    Obj                 perm )
+{
+    if ( TNUM_OBJ(perm) == T_PERM2 ) {
+        return OnTuplesPerm_<UInt2>(tup, perm);
+    }
+    else {
+        return OnTuplesPerm_<UInt4>(tup, perm);
+    }
 }
 
 
