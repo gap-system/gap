@@ -521,15 +521,15 @@ Obj             LQuoPerm (
 **  This repeatedly applies the permutation <opR> to all points  which  seems
 **  to be faster than binary powering, and does not need  temporary  storage.
 */
-
-Obj             PowPerm2Int (
+template<typename T>
+Obj             PowPermInt (
     Obj                 opL,
     Obj                 opR )
 {
     Obj                 pow;            /* handle of the power (result)    */
-    UInt2 *             ptP;            /* pointer to the power            */
-    const UInt2 *       ptL;            /* pointer to the permutation      */
-    UInt2 *             ptKnown;        /* pointer to temporary bag        */
+    T *                 ptP;            /* pointer to the power            */
+    const T *           ptL;            /* pointer to the permutation      */
+    T *                 ptKnown;        /* pointer to temporary bag        */
     UInt                deg;            /* degree of the permutation       */
     Int                 exp,  e;        /* exponent (right operand)        */
     UInt                len;            /* length of cycle (result)        */
@@ -545,8 +545,8 @@ Obj             PowPerm2Int (
         return STOREDINV_PERM(opL);
 
     /* get the operands and allocate a result bag                          */
-    deg = DEG_PERM2(opL);
-    pow = NEW_PERM2( deg );
+    deg = DEG_PERM<T>(opL);
+    pow = NEW_PERM<T>(deg);
 
     /* compute the power by repeated mapping for small positive exponents  */
     if ( IS_INTOBJ(opR)
@@ -554,8 +554,8 @@ Obj             PowPerm2Int (
 
         /* get pointer to the permutation and the power                    */
         exp = INT_INTOBJ(opR);
-        ptL = CONST_ADDR_PERM2(opL);
-        ptP = ADDR_PERM2(pow);
+        ptL = CONST_ADDR_PERM<T>(opL);
+        ptP = ADDR_PERM<T>(pow);
 
         /* loop over the points of the permutation                         */
         for ( p = 0; p < deg; p++ ) {
@@ -572,16 +572,16 @@ Obj             PowPerm2Int (
 
         /* make sure that the buffer bag is large enough                   */
         UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM2(TmpPerm);
+        ptKnown = ADDR_PERM<T>(TmpPerm);
 
         /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM2(opL); p++ )
+        for ( p = 0; p < DEG_PERM<T>(opL); p++ )
             ptKnown[p] = 0;
 
         /* get pointer to the permutation and the power                    */
         exp = INT_INTOBJ(opR);
-        ptL = CONST_ADDR_PERM2(opL);
-        ptP = ADDR_PERM2(pow);
+        ptL = CONST_ADDR_PERM<T>(opL);
+        ptP = ADDR_PERM<T>(pow);
 
         /* loop over all cycles                                            */
         for ( p = 0; p < deg; p++ ) {
@@ -618,15 +618,15 @@ Obj             PowPerm2Int (
 
         /* make sure that the buffer bag is large enough                   */
         UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM2(TmpPerm);
+        ptKnown = ADDR_PERM<T>(TmpPerm);
 
         /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM2(opL); p++ )
+        for ( p = 0; p < DEG_PERM<T>(opL); p++ )
             ptKnown[p] = 0;
 
         /* get pointer to the permutation and the power                    */
-        ptL = CONST_ADDR_PERM2(opL);
-        ptP = ADDR_PERM2(pow);
+        ptL = CONST_ADDR_PERM<T>(opL);
+        ptP = ADDR_PERM<T>(pow);
 
         /* loop over all cycles                                            */
         for ( p = 0; p < deg; p++ ) {
@@ -662,8 +662,8 @@ Obj             PowPerm2Int (
     else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) == -1 ) {
 
         /* get pointer to the permutation and the power                    */
-        ptL = CONST_ADDR_PERM2(opL);
-        ptP = ADDR_PERM2(pow);
+        ptL = CONST_ADDR_PERM<T>(opL);
+        ptP = ADDR_PERM<T>(pow);
 
         /* invert the permutation                                          */
         for ( p = 0; p < deg; p++ )
@@ -677,8 +677,8 @@ Obj             PowPerm2Int (
 
         /* get pointer to the permutation and the power                    */
         exp = -INT_INTOBJ(opR);
-        ptL = CONST_ADDR_PERM2(opL);
-        ptP = ADDR_PERM2(pow);
+        ptL = CONST_ADDR_PERM<T>(opL);
+        ptP = ADDR_PERM<T>(pow);
 
         /* loop over the points                                            */
         for ( p = 0; p < deg; p++ ) {
@@ -695,16 +695,16 @@ Obj             PowPerm2Int (
 
         /* make sure that the buffer bag is large enough                   */
         UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM2(TmpPerm);
+        ptKnown = ADDR_PERM<T>(TmpPerm);
 
         /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM2(opL); p++ )
+        for ( p = 0; p < DEG_PERM<T>(opL); p++ )
             ptKnown[p] = 0;
 
         /* get pointer to the permutation and the power                    */
         exp = -INT_INTOBJ(opR);
-        ptL = CONST_ADDR_PERM2(opL);
-        ptP = ADDR_PERM2(pow);
+        ptL = CONST_ADDR_PERM<T>(opL);
+        ptP = ADDR_PERM<T>(pow);
 
         /* loop over all cycles                                            */
         for ( p = 0; p < deg; p++ ) {
@@ -742,278 +742,15 @@ Obj             PowPerm2Int (
 
         /* make sure that the buffer bag is large enough                   */
         UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM2(TmpPerm);
+        ptKnown = ADDR_PERM<T>(TmpPerm);
 
         /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM2(opL); p++ )
+        for ( p = 0; p < DEG_PERM<T>(opL); p++ )
             ptKnown[p] = 0;
 
         /* get pointer to the permutation and the power                    */
-        ptL = CONST_ADDR_PERM2(opL);
-        ptP = ADDR_PERM2(pow);
-
-        /* loop over all cycles                                            */
-        for ( p = 0; p < deg; p++ ) {
-
-            /* if we haven't looked at this cycle so far                   */
-            if ( ptKnown[p] == 0 ) {
-
-                /* find the length of this cycle                           */
-                len = 1;
-                for ( q = ptL[p]; q != p; q = ptL[q] ) {
-                    len++;  ptKnown[q] = 1;
-                }
-
-                /* raise this cycle to the power <exp> mod <len>           */
-                r = p;
-                exp = INT_INTOBJ( ModInt( opR, INTOBJ_INT(len) ) );
-                for ( e = 0; e < exp % len; e++ )
-                    r = ptL[r];
-                ptP[r] = p;
-                r = ptL[r];
-                for ( q = ptL[p]; q != p; q = ptL[q] ) {
-                    ptP[r] = q;
-                    r = ptL[r];
-                }
-
-            }
-
-        }
-
-    }
-
-    /* return the result                                                   */
-    return pow;
-}
-
-Obj             PowPerm4Int (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 pow;            /* handle of the power (result)    */
-    UInt4 *             ptP;            /* pointer to the power            */
-    const UInt4 *       ptL;            /* pointer to the permutation      */
-    UInt4 *             ptKnown;        /* pointer to temporary bag        */
-    UInt                deg;            /* degree of the permutation       */
-    Int                 exp,  e;        /* exponent (right operand)        */
-    UInt                len;            /* length of cycle (result)        */
-    UInt                p,  q,  r;      /* loop variables                  */
-
-    /* handle zeroth and first powers separately  and stored inverses */
-    if ( opR == INTOBJ_INT(0)) 
-      return IdentityPerm;
-    if ( opR == INTOBJ_INT(1))
-      return opL;
-    if (opR == INTOBJ_INT(-1) && STOREDINV_PERM(opL) != 0)
-        return STOREDINV_PERM(opL);
-
-
-    /* get the operands and allocate a result bag                          */
-    deg = DEG_PERM4(opL);
-    pow = NEW_PERM4( deg );
-
-    /* compute the power by repeated mapping for small positive exponents  */
-    if ( IS_INTOBJ(opR)
-      && 0 <= INT_INTOBJ(opR) && INT_INTOBJ(opR) < 8 ) {
-
-        /* get pointer to the permutation and the power                    */
-        exp = INT_INTOBJ(opR);
-        ptL = CONST_ADDR_PERM4(opL);
-        ptP = ADDR_PERM4(pow);
-
-        /* loop over the points of the permutation                         */
-        for ( p = 0; p < deg; p++ ) {
-            q = p;
-            for ( e = 0; e < exp; e++ )
-                q = ptL[q];
-            ptP[p] = q;
-        }
-
-    }
-
-    /* compute the power by raising the cycles individually for large exps */
-    else if ( IS_INTOBJ(opR) && 8 <= INT_INTOBJ(opR) ) {
-
-        /* make sure that the buffer bag is large enough                   */
-        UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM4(TmpPerm);
-
-        /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM4(opL); p++ )
-            ptKnown[p] = 0;
-
-        /* get pointer to the permutation and the power                    */
-        exp = INT_INTOBJ(opR);
-        ptL = CONST_ADDR_PERM4(opL);
-        ptP = ADDR_PERM4(pow);
-
-        /* loop over all cycles                                            */
-        for ( p = 0; p < deg; p++ ) {
-
-            /* if we haven't looked at this cycle so far                   */
-            if ( ptKnown[p] == 0 ) {
-
-                /* find the length of this cycle                           */
-                len = 1;
-                for ( q = ptL[p]; q != p; q = ptL[q] ) {
-                    len++;  ptKnown[q] = 1;
-                }
-
-                /* raise this cycle to the power <exp> mod <len>           */
-                r = p;
-                for ( e = 0; e < exp % len; e++ )
-                    r = ptL[r];
-                ptP[p] = r;
-                r = ptL[r];
-                for ( q = ptL[p]; q != p; q = ptL[q] ) {
-                    ptP[q] = r;
-                    r = ptL[r];
-                }
-
-            }
-
-        }
-
-    }
-
-    /* compute the power by raising the cycles individually for large exps */
-    else if ( TNUM_OBJ(opR) == T_INTPOS ) {
-
-        /* make sure that the buffer bag is large enough                   */
-        UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM4(TmpPerm);
-
-        /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM4(opL); p++ )
-            ptKnown[p] = 0;
-
-        /* get pointer to the permutation and the power                    */
-        ptL = CONST_ADDR_PERM4(opL);
-        ptP = ADDR_PERM4(pow);
-
-        /* loop over all cycles                                            */
-        for ( p = 0; p < deg; p++ ) {
-
-            /* if we haven't looked at this cycle so far                   */
-            if ( ptKnown[p] == 0 ) {
-
-                /* find the length of this cycle                           */
-                len = 1;
-                for ( q = ptL[p]; q != p; q = ptL[q] ) {
-                    len++;  ptKnown[q] = 1;
-                }
-
-                /* raise this cycle to the power <exp> mod <len>           */
-                r = p;
-                exp = INT_INTOBJ( ModInt( opR, INTOBJ_INT(len) ) );
-                for ( e = 0; e < exp; e++ )
-                    r = ptL[r];
-                ptP[p] = r;
-                r = ptL[r];
-                for ( q = ptL[p]; q != p; q = ptL[q] ) {
-                    ptP[q] = r;
-                    r = ptL[r];
-                }
-
-            }
-
-        }
-
-    }
-
-    /* special case for inverting permutations                             */
-    else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) == -1 ) {
-
-        /* get pointer to the permutation and the power                    */
-        ptL = CONST_ADDR_PERM4(opL);
-        ptP = ADDR_PERM4(pow);
-
-        /* invert the permutation                                          */
-        for ( p = 0; p < deg; p++ )
-            ptP[ *(ptL++) ] = p;
-
-    }
-
-    /* compute the power by repeated mapping for small negative exponents  */
-    else if ( IS_INTOBJ(opR)
-           && -8 < INT_INTOBJ(opR) && INT_INTOBJ(opR) < 0 ) {
-
-        /* get pointer to the permutation and the power                    */
-        exp = -INT_INTOBJ(opR);
-        ptL = CONST_ADDR_PERM4(opL);
-        ptP = ADDR_PERM4(pow);
-
-        /* loop over the points                                            */
-        for ( p = 0; p < deg; p++ ) {
-            q = p;
-            for ( e = 0; e < exp; e++ )
-                q = ptL[q];
-            ptP[q] = p;
-        }
-
-    }
-
-    /* compute the power by raising the cycles individually for large exps */
-    else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) <= -8 ) {
-
-        /* make sure that the buffer bag is large enough                   */
-        UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM4(TmpPerm);
-
-        /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM4(opL); p++ )
-            ptKnown[p] = 0;
-
-        /* get pointer to the permutation and the power                    */
-        exp = -INT_INTOBJ(opR);
-        ptL = CONST_ADDR_PERM4(opL);
-        ptP = ADDR_PERM4(pow);
-
-        /* loop over all cycles                                            */
-        for ( p = 0; p < deg; p++ ) {
-
-            /* if we haven't looked at this cycle so far                   */
-            if ( ptKnown[p] == 0 ) {
-
-                /* find the length of this cycle                           */
-                len = 1;
-                for ( q = ptL[p]; q != p; q = ptL[q] ) {
-                    len++;  ptKnown[q] = 1;
-                }
-
-                /* raise this cycle to the power <exp> mod <len>           */
-                r = p;
-                for ( e = 0; e < exp % len; e++ )
-                    r = ptL[r];
-                ptP[r] = p;
-                r = ptL[r];
-                for ( q = ptL[p]; q != p; q = ptL[q] ) {
-                    ptP[r] = q;
-                    r = ptL[r];
-                }
-
-            }
-
-        }
-
-    }
-
-    /* compute the power by raising the cycles individually for large exps */
-    else if ( TNUM_OBJ(opR) == T_INTNEG ) {
-        /* do negation first as it can cause a garbage collection          */
-        opR = AInvInt(opR);
-
-        /* make sure that the buffer bag is large enough                   */
-        UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM4(TmpPerm);
-
-        /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM4(opL); p++ )
-            ptKnown[p] = 0;
-
-        /* get pointer to the permutation and the power                    */
-        ptL = CONST_ADDR_PERM4(opL);
-        ptP = ADDR_PERM4(pow);
+        ptL = CONST_ADDR_PERM<T>(opL);
+        ptP = ADDR_PERM<T>(pow);
 
         /* loop over all cycles                                            */
         for ( p = 0; p < deg; p++ ) {
@@ -1074,7 +811,8 @@ Obj InvPerm (
 **  permutation <opR>.  If <opL>  is larger than the  degree of <opR> it is a
 **  fixpoint of the permutation and thus simply returned.
 */
-Obj             PowIntPerm2 (
+template<typename T>
+Obj             PowIntPerm (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1095,37 +833,8 @@ Obj             PowIntPerm2 (
     }
 
     /* compute the image                                                   */
-    if ( img <= DEG_PERM2(opR) ) {
-        img = (CONST_ADDR_PERM2(opR))[img-1] + 1;
-    }
-
-    /* return it                                                           */
-    return INTOBJ_INT(img);
-}
-
-Obj             PowIntPerm4 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Int                 img;            /* image (result)                  */
-
-    /* large positive integers (> 2^28-1) are fixed by any permutation     */
-    if ( TNUM_OBJ(opL) == T_INTPOS )
-        return opL;
-
-    /* permutations do not act on negative integers                        */
-    img = INT_INTOBJ( opL );
-    if ( img <= 0 ) {
-        opL = ErrorReturnObj(
-            "Perm. Operations: <point> must be a positive integer (not %d)",
-            (Int)img, 0L,
-            "you can replace <point> via 'return <point>;'" );
-        return POW( opL, opR );
-    }
-
-    /* compute the image                                                   */
-    if ( img <= DEG_PERM4(opR) ) {
-        img = (CONST_ADDR_PERM4(opR))[img-1] + 1;
+    if ( img <= DEG_PERM<T>(opR) ) {
+        img = (CONST_ADDR_PERM<T>(opR))[img-1] + 1;
     }
 
     /* return it                                                           */
@@ -1149,13 +858,14 @@ Obj             PowIntPerm4 (
 */
 static Obj PERM_INVERSE_THRESHOLD;
 
-Obj             QuoIntPerm2 (
+template<typename T>
+Obj             QuoIntPerm (
     Obj                 opL,
     Obj                 opR )
 {
-    UInt2               pre;            /* preimage (result)               */
+    T                   pre;            /* preimage (result)               */
     Int                 img;            /* image (left operand)            */
-    const UInt2 *       ptR;            /* pointer to the permutation      */
+    const T *           ptR;            /* pointer to the permutation      */
 
     /* large positive integers (> 2^28-1) are fixed by any permutation     */
     if ( TNUM_OBJ(opL) == T_INTPOS )
@@ -1175,67 +885,21 @@ Obj             QuoIntPerm2 (
 
     if (inv == 0 && PERM_INVERSE_THRESHOLD != 0 &&
         IS_INTOBJ(PERM_INVERSE_THRESHOLD) &&
-        DEG_PERM2(opR) <= INT_INTOBJ(PERM_INVERSE_THRESHOLD))
+        DEG_PERM<T>(opR) <= INT_INTOBJ(PERM_INVERSE_THRESHOLD))
         inv = InvPerm(opR);
 
     if (inv != 0)
         return INTOBJ_INT(
-            IMAGE(img - 1, CONST_ADDR_PERM2(inv), DEG_PERM2(inv)) + 1);
+            IMAGE(img - 1, CONST_ADDR_PERM<T>(inv), DEG_PERM<T>(inv)) + 1);
 
     /* compute the preimage                                                */
-    if ( img <= DEG_PERM2(opR) ) {
-        pre = (UInt2)(img - 1);
-        ptR = CONST_ADDR_PERM2(opR);
-        while (ptR[pre] != (UInt2)(img - 1))
+    if ( img <= DEG_PERM<T>(opR) ) {
+        pre = T(img - 1);
+        ptR = CONST_ADDR_PERM<T>(opR);
+        while (ptR[pre] != T(img - 1))
             pre = ptR[pre];
         /* return it */
         return INTOBJ_INT(pre + 1);
-    }
-    else
-        return INTOBJ_INT(img);
-}
-
-Obj             QuoIntPerm4 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    UInt4               pre;            /* preimage (result)               */
-    Int                 img;            /* image (left operand)            */
-    const UInt4 *       ptR;            /* pointer to the permutation      */
-
-    /* large positive integers (> 2^28-1) are fixed by any permutation     */
-    if ( TNUM_OBJ(opL) == T_INTPOS )
-        return opL;
-
-    /* permutations do not act on negative integers                        */
-    img = INT_INTOBJ(opL);
-    if ( img <= 0 ) {
-        opL = ErrorReturnObj(
-            "Perm. Operations: <point> must be a positive integer (not %d)",
-            (Int)img, 0L,
-            "you can replace <point> via 'return <point>;'" );
-        return QUO( opL, opR );
-    }
-
-    Obj inv = STOREDINV_PERM(opR);
-
-    if (inv == 0 && PERM_INVERSE_THRESHOLD != 0 &&
-        IS_INTOBJ(PERM_INVERSE_THRESHOLD) &&
-        DEG_PERM2(opR) <= INT_INTOBJ(PERM_INVERSE_THRESHOLD))
-        inv = InvPerm(opR);
-
-    if (inv != 0)
-        return INTOBJ_INT(
-            IMAGE(img - 1, CONST_ADDR_PERM4(inv), DEG_PERM4(inv)) + 1);
-
-    /* compute the preimage                                                */
-    if ( img <= DEG_PERM4(opR) ) {
-        pre = (UInt4)(img - 1);
-        ptR = CONST_ADDR_PERM4(opR);
-        while (ptR[pre] != (UInt4)(img - 1))
-            pre = ptR[pre];
-        /* return it */
-        return INTOBJ_INT((Int)(pre + 1));
     }
     else
         return INTOBJ_INT(img);
@@ -3301,19 +2965,19 @@ Obj Array2Perm (
     return perm;
 }
 
-static inline Int myquo( Obj pt, Obj perm) {
+static inline Int myquo(Obj pt, Obj perm)
+{
   if (TNUM_OBJ(perm) == T_PERM2)
-    return INT_INTOBJ(QuoIntPerm2(pt, perm));
+    return INT_INTOBJ(QuoIntPerm<UInt2>(pt, perm));
   else if (TNUM_OBJ(perm) == T_PERM4)
-    return INT_INTOBJ(QuoIntPerm4(pt, perm));
+    return INT_INTOBJ(QuoIntPerm<UInt4>(pt, perm));
   else
-    return INT_INTOBJ(QUO(pt,perm ));
+    return INT_INTOBJ(QUO(pt, perm));
 }
   
 
 /* Stabilizer chain helper implements AddGeneratorsExtendSchreierTree Inner loop */
 Obj FuncAGESTC( Obj self, Obj args)
-
 {
   Int i,j;
   Obj pt;
@@ -3869,20 +3533,20 @@ static Int InitKernel (
     LQuoFuncs[ T_PERM2  ][ T_PERM4  ] = LQuoPerm<UInt2, UInt4>;
     LQuoFuncs[ T_PERM4  ][ T_PERM2  ] = LQuoPerm<UInt4, UInt2>;
     LQuoFuncs[ T_PERM4  ][ T_PERM4  ] = LQuoPerm<UInt4, UInt4>;
-    PowFuncs [ T_PERM2  ][ T_INT    ] = PowPerm2Int;
-    PowFuncs [ T_PERM2  ][ T_INTPOS ] = PowPerm2Int;
-    PowFuncs [ T_PERM2  ][ T_INTNEG ] = PowPerm2Int;
-    PowFuncs [ T_PERM4  ][ T_INT    ] = PowPerm4Int;
-    PowFuncs [ T_PERM4  ][ T_INTPOS ] = PowPerm4Int;
-    PowFuncs [ T_PERM4  ][ T_INTNEG ] = PowPerm4Int;
-    PowFuncs [ T_INT    ][ T_PERM2  ] = PowIntPerm2;
-    PowFuncs [ T_INTPOS ][ T_PERM2  ] = PowIntPerm2;
-    PowFuncs [ T_INT    ][ T_PERM4  ] = PowIntPerm4;
-    PowFuncs [ T_INTPOS ][ T_PERM4  ] = PowIntPerm4;
-    QuoFuncs [ T_INT    ][ T_PERM2  ] = QuoIntPerm2;
-    QuoFuncs [ T_INTPOS ][ T_PERM2  ] = QuoIntPerm2;
-    QuoFuncs [ T_INT    ][ T_PERM4  ] = QuoIntPerm4;
-    QuoFuncs [ T_INTPOS ][ T_PERM4  ] = QuoIntPerm4;
+    PowFuncs [ T_PERM2  ][ T_INT    ] = PowPermInt<UInt2>;
+    PowFuncs [ T_PERM2  ][ T_INTPOS ] = PowPermInt<UInt2>;
+    PowFuncs [ T_PERM2  ][ T_INTNEG ] = PowPermInt<UInt2>;
+    PowFuncs [ T_PERM4  ][ T_INT    ] = PowPermInt<UInt4>;
+    PowFuncs [ T_PERM4  ][ T_INTPOS ] = PowPermInt<UInt4>;
+    PowFuncs [ T_PERM4  ][ T_INTNEG ] = PowPermInt<UInt4>;
+    PowFuncs [ T_INT    ][ T_PERM2  ] = PowIntPerm<UInt2>;
+    PowFuncs [ T_INTPOS ][ T_PERM2  ] = PowIntPerm<UInt2>;
+    PowFuncs [ T_INT    ][ T_PERM4  ] = PowIntPerm<UInt4>;
+    PowFuncs [ T_INTPOS ][ T_PERM4  ] = PowIntPerm<UInt4>;
+    QuoFuncs [ T_INT    ][ T_PERM2  ] = QuoIntPerm<UInt2>;
+    QuoFuncs [ T_INTPOS ][ T_PERM2  ] = QuoIntPerm<UInt2>;
+    QuoFuncs [ T_INT    ][ T_PERM4  ] = QuoIntPerm<UInt4>;
+    QuoFuncs [ T_INTPOS ][ T_PERM4  ] = QuoIntPerm<UInt4>;
     PowFuncs [ T_PERM2  ][ T_PERM2  ] = PowPerm<UInt2, UInt2>;
     PowFuncs [ T_PERM2  ][ T_PERM4  ] = PowPerm<UInt2, UInt4>;
     PowFuncs [ T_PERM4  ][ T_PERM2  ] = PowPerm<UInt4, UInt2>;
