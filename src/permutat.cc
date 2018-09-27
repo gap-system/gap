@@ -1296,19 +1296,51 @@ Obj             FuncCYCLE_LENGTH_PERM_INT (
 **  'CyclePermInt' returns the cycle of <point>, which  must  be  a  positive
 **  integer, under the permutation <perm> as a list.
 */
+template <typename T>
+static inline Obj CYCLE_PERM_INT(Obj perm, Obj point)
+{
+    Obj                 list;           /* handle of the list (result)     */
+    Obj *               ptList;         /* pointer to the list             */
+    const T *           ptPerm;         /* pointer to the permutation      */
+    UInt                deg;            /* degree of the permutation       */
+    UInt                pnt;            /* value of the point              */
+    UInt                len;            /* length of the cycle             */
+    UInt                p;              /* loop variable                   */
+
+    /* get pointer to the permutation, the degree, and the point       */
+    ptPerm = CONST_ADDR_PERM<T>(perm);
+    deg = DEG_PERM<T>(perm);
+    pnt = INT_INTOBJ(point)-1;
+
+    /* now compute the length by looping over the cycle                */
+    len = 1;
+    if ( pnt < deg ) {
+        for ( p = ptPerm[pnt]; p != pnt; p = ptPerm[p] )
+            len++;
+    }
+
+    /* allocate the list                                               */
+    list = NEW_PLIST( T_PLIST, len );
+    SET_LEN_PLIST( list, len );
+    ptList = ADDR_OBJ(list);
+    ptPerm = CONST_ADDR_PERM<T>(perm);
+
+    /* copy the points into the list                                   */
+    len = 1;
+    ptList[len++] = INTOBJ_INT( pnt+1 );
+    if ( pnt < deg ) {
+        for ( p = ptPerm[pnt]; p != pnt; p = ptPerm[p] )
+            ptList[len++] = INTOBJ_INT( p+1 );
+    }
+
+    return list;
+}
+
 Obj             FuncCYCLE_PERM_INT (
     Obj                 self,
     Obj                 perm,
     Obj                 point )
 {
-    Obj                 list;           /* handle of the list (result)     */
-    Obj *               ptList;         /* pointer to the list             */
-    const UInt2 *       ptPerm2;        /* pointer to the permutation      */
-    const UInt4 *       ptPerm4;        /* pointer to the permutation      */
-    UInt                deg;            /* degree of the permutation       */
-    UInt                pnt;            /* value of the point              */
-    UInt                len;            /* length of the cycle             */
-    UInt                p;              /* loop variable                   */
 
     /* evaluate and check the arguments                                    */
     while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
@@ -1324,70 +1356,12 @@ Obj             FuncCYCLE_PERM_INT (
             "you can replace <point> via 'return <point>;'" );
     }
 
-    /* handle small permutations                                           */
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
-
-        /* get pointer to the permutation, the degree, and the point       */
-        ptPerm2 = CONST_ADDR_PERM2(perm);
-        deg = DEG_PERM2(perm);
-        pnt = INT_INTOBJ(point)-1;
-
-        /* now compute the length by looping over the cycle                */
-        len = 1;
-        if ( pnt < deg ) {
-            for ( p = ptPerm2[pnt]; p != pnt; p = ptPerm2[p] )
-                len++;
-        }
-
-        /* allocate the list                                               */
-        list = NEW_PLIST( T_PLIST, len );
-        SET_LEN_PLIST( list, len );
-        ptList = ADDR_OBJ(list);
-        ptPerm2 = CONST_ADDR_PERM2(perm);
-
-        /* copy the points into the list                                   */
-        len = 1;
-        ptList[len++] = INTOBJ_INT( pnt+1 );
-        if ( pnt < deg ) {
-            for ( p = ptPerm2[pnt]; p != pnt; p = ptPerm2[p] )
-                ptList[len++] = INTOBJ_INT( p+1 );
-        }
-
+        return CYCLE_PERM_INT<UInt2>(perm, point);
     }
-
-    /* handle large permutations                                           */
     else {
-
-        /* get pointer to the permutation, the degree, and the point       */
-        ptPerm4 = CONST_ADDR_PERM4(perm);
-        deg = DEG_PERM4(perm);
-        pnt = INT_INTOBJ(point)-1;
-
-        /* now compute the length by looping over the cycle                */
-        len = 1;
-        if ( pnt < deg ) {
-            for ( p = ptPerm4[pnt]; p != pnt; p = ptPerm4[p] )
-                len++;
-        }
-
-        /* allocate the list                                               */
-        list = NEW_PLIST( T_PLIST, len );
-        SET_LEN_PLIST( list, len );
-        ptList = ADDR_OBJ(list);
-        ptPerm4 = CONST_ADDR_PERM4(perm);
-
-        /* copy the points into the list                                   */
-        len = 1;
-        ptList[len++] = INTOBJ_INT( pnt+1 );
-        if ( pnt < deg ) {
-            for ( p = ptPerm4[pnt]; p != pnt; p = ptPerm4[p] )
-                ptList[len++] = INTOBJ_INT( p+1 );
-        }
-
+        return CYCLE_PERM_INT<UInt4>(perm, point);
     }
-
-    /* return the list                                                     */
-    return list;
 }
 
 /****************************************************************************
