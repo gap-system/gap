@@ -1,12 +1,14 @@
 /****************************************************************************
 **
-*W  objpcgel.c                  GAP source                       Frank Celler
+*W  objpcgel.cc                 GAP source                       Frank Celler
 **
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
 *Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
 *Y  Copyright (C) 2002 The GAP Group
 */
+
+extern "C" {
 
 #include "objpcgel.h"
 
@@ -16,6 +18,8 @@
 #include "modules.h"
 #include "objscoll.h"
 #include "plist.h"
+
+}
 
 
 /****************************************************************************
@@ -628,12 +632,22 @@ static Int InitLibrary (
 *F  InitInfoPcElements()  . . . . . . . . . . . . . . table of init functions
 */
 static StructInitInfo module = {
-    // init struct using C99 designated initializers; for a full list of
-    // fields, please refer to the definition of StructInitInfo
-    .type = MODULE_BUILTIN,
-    .name = "objpcgel",
-    .initKernel = InitKernel,
-    .initLibrary = InitLibrary,
+ /* type        = */ MODULE_BUILTIN,
+ /* name        = */ "objpcgel",
+ /* revision_c  = */ 0,
+ /* revision_h  = */ 0,
+ /* version     = */ 0,
+ /* crc         = */ 0,
+ /* initKernel  = */ InitKernel,
+ /* initLibrary = */ InitLibrary,
+ /* checkInit   = */ 0,
+ /* preSave     = */ 0,
+ /* postSave    = */ 0,
+ /* postRestore = */ 0,
+ /* moduleStateSize      = */ 0,
+ /* moduleStateOffsetPtr = */ 0,
+ /* initModuleState      = */ 0,
+ /* destroyModuleState   = */ 0,
 };
 
 StructInitInfo * InitInfoPcElements ( void )
