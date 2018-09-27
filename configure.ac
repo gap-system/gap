@@ -516,28 +516,6 @@ AC_SUBST([JULIA_LDFLAGS])
 AC_SUBST([JULIA_LIBS])
 
 
-dnl Find ward (if HPC-GAP mode is enabled)
-AC_ARG_WITH([ward],
-  [AS_HELP_STRING([--with-ward@<:@=PREFIX@:>@],
-    [prefix to the ward tool (used for building HPC-GAP)])],
-  [],
-  [with_ward=check])
-
-dnl If HPC-GAP is enabled, check for a usable ward, either in the prefix
-dnl specified by the user, or else in $srcdir/hpcgap/ward
-AS_IF([test "x$enable_hpcgap" = xyes],
-  [
-  # If the user specified a prefix, check only there.
-  # Otherwise, check in various relative paths, and in $PATH
-  AS_IF([test "x$with_ward" != xcheck],
-        [WARD_PATH="$with_ward/bin"],
-        [WARD_PATH="$srcdir/hpcgap/ward/bin:ward/bin:../ward/bin:$PATH"]
-        )
-  AC_PATH_PROG([ADDGUARDS2], [addguards2c addguards2], [], [$WARD_PATH])
-  AS_IF([test "x$ADDGUARDS2" = x], AC_MSG_ERROR([could not locate addguards2]))
-  ]
-)
-
 AS_IF([test "x$with_gc" = xboehm],
   [
   # We bundle two libraries we need for HPC-GAP:

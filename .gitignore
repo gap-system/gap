@@ -82,9 +82,6 @@ doc/gapmacrodoc.idx
 /tags
 /src/TAGS
 
-# ward
-/hpcgap/ward
-
 /builds/
 
 /libgap.la

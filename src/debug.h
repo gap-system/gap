@@ -29,9 +29,8 @@
 #endif
 
 // Portable compile time assertion.
-#if defined(static_assert) && !defined(WARD_ENABLED)
+#if defined(static_assert)
 // If available, use _Static_assert resp. static_assert from C11.
-// However, ward currently cannot deal with it.
 #define GAP_STATIC_ASSERT(cond, msg)    static_assert(cond, msg)
 #else
 // If the compiler does not support _Static_assert resp. static_assert,
