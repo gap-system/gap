@@ -331,33 +331,29 @@ Int             LtPerm (
 
     /* search for a difference and return if you find one                  */
     if ( degL <= degR ) {
-      
-        for ( p = 0; p < degL; p++ )
-            if ( *(ptL++) != *(ptR++) ) {
-                if ( *(--ptL) < *(--ptR) )  return 1L ;
-                else                        return 0L;
-	    }
-        for ( p = degL; p < degR; p++ )
-            if (        p != *(ptR++) ) {
-                if (        p < *(--ptR) )  return 1L ;
-                else                        return 0L;
-	    }
+
+        for (p = 0; p < degL; p++, ptL++, ptR++)
+            if (*ptL != *ptR) {
+                return *ptL < *ptR;
+            }
+        for (p = degL; p < degR; p++, ptR++)
+            if (p != *ptR) {
+                return p < *ptR;
+            }
     }
     else {
-        for ( p = 0; p < degR; p++ )
-            if ( *(ptL++) != *(ptR++) ) {
-                if ( *(--ptL) < *(--ptR) )  return 1L ;
-                else                        return 0L;
-	    }
-        for ( p = degR; p < degL; p++ )
-            if ( *(ptL++) != p ) {
-                if ( *(--ptL) <        p )  return 1L ;
-                else                        return 0L;
-	    }
+        for (p = 0; p < degR; p++, ptL++, ptR++)
+            if (*ptL != *ptR) {
+                return *ptL < *ptR;
+            }
+        for (p = degR; p < degL; p++, ptL++)
+            if (*ptL != p) {
+                return *ptL < p;
+            }
     }
 
     /* otherwise they must be equal                                        */
-    return 0L;
+    return 0;
 }
 
 
