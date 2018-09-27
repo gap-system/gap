@@ -168,26 +168,17 @@ the two. In order to recombine the two, we merged the HPC-GAP fork into a
 subdirectory `hpcgap` of the GAP repository.  Then, all files inside `hpcgap`
 which were identical to their counterparts in the GAP repository were deleted
 (e.g. `hpcgap/src/ariths.c` was deleted as it was identical to `src/ariths.c`).
+At this point, `hpcgap/src` has been fully merged, but there are still files
+in `hpcgap/lib/` which differ from their counterparts in `lib/`
 
-The new build system was then modified to optionally allow building HPC-GAP
-(when the `--enable-hpcgap` flag is passed to the `configure` script). For
-this work, and the resulting HPC-GAP binary to work, two tricks are used:
-
-1. In order to get the library to work right, HPC-GAP mode employs multiple
+The new build system can optionally be instructed to build HPC-GAP, by
+passing the `--enable-hpcgap` flag to the `configure` script. For the
+resulting HPC-GAP binary to work, a trick is used:  HPC-GAP mode uses multiple
 GAP root paths. Specifically, the GAP kernel function `SySetGapRootPath` was
 modified so that for every root directory `FOO` that gets added, we first add
-`FOO/hpcgap` to the list of root directories. 
-
-2. Ward (a tool for scanning our C sources and inserting guard statements into
-it) is integrated as follows: Normally, `src/FOO.c` gets compiled to
-`obj/FOO.o` (or rather `obj/FOO.lo`, as we use GNU libtool). With ward in the
-mix, `src/FOO.c` is first turned into `gen/FOO.c` by ward, and then the
-compiler turns the latter into `obj/FOO.lo`. For each conversion, dependencies
-are tracked via `gen/.deps/FOO.d` resp. `obj/.deps/FOO.d` files. In
-particular, if `src/FOO.c` is modified, then the dependency rules in
-`gen/.deps/FOO.d` will ensure that `gen/FOO.c` is regenerated from
-`src/FOO.c`; and the dependency rules in `obj/.deps/FOO.d` ensure that
-`obj/FOO.lo` is regenerated from `gen/FOO.c`
+`FOO/hpcgap` to the list of root directories. This way, `GAPROOT/hpcgap/lib`
+is searched first for files, and only if no matching file is found there does
+GAP also search in `GAPROOT/lib`.
 
 
 ## Open tasks
