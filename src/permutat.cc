@@ -1752,20 +1752,102 @@ Obj             FuncSMALLEST_GENERATOR_PERM (
 **  is set to `true' is is verified that <dom> is the union of cycles of
 **  <perm>.
 */
+template <typename T> static inline Obj RESTRICTED_PERM(Obj perm,
+    Obj                 dom,
+    Obj 		test)
+{
+    Obj rest;
+    T *                ptRest;
+    const T *          ptPerm;
+    const Obj *        ptDom;
+    Int i,inc,len,p,deg;
+
+    /* make sure that the buffer bag is large enough */
+    UseTmpPerm(SIZE_OBJ(perm));
+
+    /* allocate the result bag                                         */
+    deg = DEG_PERM<T>(perm);
+    rest = NEW_PERM<T>(deg);
+
+    /* get the pointer to the bags                                     */
+    ptPerm  = CONST_ADDR_PERM<T>(perm);
+    ptRest  = ADDR_PERM<T>(rest);
+
+    /* create identity everywhere */
+    for ( p = 0; p < deg; p++ ) {
+        ptRest[p]=(T)p;
+    }
+
+    if ( ! IS_RANGE(dom) ) {
+      if ( ! IS_PLIST( dom ) ) {
+        return Fail;
+      }
+      /* domain is list */
+      ptPerm  = CONST_ADDR_PERM<T>(perm);
+      ptRest  = ADDR_PERM<T>(rest);
+      ptDom  = CONST_ADDR_OBJ(dom);
+      len = LEN_LIST(dom);
+      for (i = 1; i <= len; i++) {
+          if (IS_POS_INTOBJ(ptDom[i])) {
+              p = INT_INTOBJ(ptDom[i]);
+              if (p <= deg) {
+                  p -= 1;
+                  ptRest[p] = ptPerm[p];
+              }
+          }
+          else {
+              return Fail;
+          }
+      }
+    }
+    else {
+      len = GET_LEN_RANGE(dom);
+      p = GET_LOW_RANGE(dom);
+      inc = GET_INC_RANGE(dom);
+      while (p<1) {
+        p+=inc;
+        len=-1;
+      }
+      i=p+(inc*len)-1;
+      while (i>deg) {
+        i-=inc;
+      }
+      p-=1;
+      i-=1;
+      while (p<=i) {
+        ptRest[p]=ptPerm[p];
+        p+=inc;
+      }
+    }
+
+    if (test==True) {
+
+      T * ptTmp  = ADDR_PERM<T>(TmpPerm);
+
+      /* cleanout */
+      for ( p = 0; p < deg; p++ ) {
+        ptTmp[p]=0;
+      }
+
+      /* check whether the result is a permutation */
+      for (p=0;p<deg;p++) {
+        inc=ptRest[p];
+        if (ptTmp[inc]==1) return Fail; /* point was known */
+        else ptTmp[inc]=1; /* now point is known */
+      }
+
+    }
+
+    /* return the restriction */
+    return rest;
+}
+
 Obj             FuncRESTRICTED_PERM (
     Obj                 self,
     Obj                 perm,
     Obj                 dom,
     Obj 		test )
 {
-    Obj rest;
-    UInt2 *            ptRest2;
-    const UInt2 *      ptPerm2;
-    UInt4 *            ptRest4;
-    const UInt4 *      ptPerm4;
-    const Obj *        ptDom;
-    Int i,inc,len,p,deg;
-
     /* check arguments and extract permutation                             */
     while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
@@ -1774,163 +1856,12 @@ Obj             FuncRESTRICTED_PERM (
             "you can replace <perm> via 'return <perm>;'" );
     }
 
-    /* make sure that the buffer bag is large enough */
-    UseTmpPerm(SIZE_OBJ(perm));
-
-    /* handle small permutations                                           */
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
-
-      /* allocate the result bag                                         */
-      deg = DEG_PERM2(perm);
-      rest = NEW_PERM2(deg);
-
-      /* get the pointer to the bags                                     */
-      ptPerm2  = CONST_ADDR_PERM2(perm);
-      ptRest2  = ADDR_PERM2(rest);
-
-      /* create identity everywhere */
-      for ( p = 0; p < deg; p++ ) {
-	  ptRest2[p]=(UInt2)p;
-      }
-
-      if ( ! IS_RANGE(dom) ) {
-	if ( ! IS_PLIST( dom ) ) {
-	  return Fail;
-	}
-	/* domain is list */
-	ptPerm2  = CONST_ADDR_PERM2(perm);
-	ptRest2  = ADDR_PERM2(rest);
-	ptDom  = CONST_ADDR_OBJ(dom);
-	len = LEN_LIST(dom);
-	for (i=1;i<=len;i++) {
-            if (IS_POS_INTOBJ(ptDom[i])) {
-                p = INT_INTOBJ(ptDom[i]);
-                if (p <= deg) {
-                    p -= 1;
-                    ptRest2[p] = ptPerm2[p];
-                }
-          }
-	  else{
-	    return Fail;
-	  }
-	}
-      }
-      else {
-	len = GET_LEN_RANGE(dom);
-	p = GET_LOW_RANGE(dom);
-	inc = GET_INC_RANGE(dom);
-	while (p<1) {
-	  p+=inc;
-	  len=-1;
-	}
-	i=p+(inc*len)-1;
-	while (i>deg) {
-	  i-=inc;
-	}
-	p-=1;
-	i-=1;
-	while (p<=i) {
-	  ptRest2[p]=ptPerm2[p];
-	  p+=inc;
-	}
-      }
-
-      if (test==True) {
-
-	UInt2 * ptTmp2  = ADDR_PERM2(TmpPerm);
-
-	/* cleanout */
-	for (p=0; p<deg; p++ ) {
-	  ptTmp2[p]=0;
-	}
-
-        /* check whether the result is a permutation */
-	for (p=0;p<deg;p++) {
-	  inc=ptRest2[p];
-	  if (ptTmp2[inc]==1) return Fail; /* point was known */
-	  else ptTmp2[inc]=1; /* now point is known */
-	}
-
-      }
-
+        return RESTRICTED_PERM<UInt2>(perm, dom, test);
     }
     else {
-      /* allocate the result bag                                         */
-      deg = DEG_PERM4(perm);
-      rest = NEW_PERM4(deg);
-
-      /* get the pointer to the bags                                     */
-      ptPerm4  = ADDR_PERM4(perm);
-      ptRest4  = ADDR_PERM4(rest);
-
-      /* create identity everywhere */
-      for ( p = 0; p < deg; p++ ) {
-	  ptRest4[p]=(UInt4)p;
-      }
-
-      if ( ! IS_RANGE(dom) ) {
-	if ( ! IS_PLIST( dom ) ) {
-	  return Fail;
-	}
-	/* domain is list */
-	ptPerm4  = ADDR_PERM4(perm);
-	ptRest4  = ADDR_PERM4(rest);
-	ptDom  = ADDR_OBJ(dom);
-	len = LEN_LIST(dom);
-        for (i = 1; i <= len; i++) {
-            if (IS_POS_INTOBJ(ptDom[i])) {
-                p = INT_INTOBJ(ptDom[i]);
-                if (p <= deg) {
-                    p -= 1;
-                    ptRest4[p] = ptPerm4[p];
-                }
-            }
-            else {
-                return Fail;
-            }
-        }
-      }
-      else {
-	len = GET_LEN_RANGE(dom);
-	p = GET_LOW_RANGE(dom);
-	inc = GET_INC_RANGE(dom);
-	while (p<1) {
-	  p+=inc;
-	  len=-1;
-	}
-	i=p+(inc*len)-1;
-	while (i>deg) {
-	  i-=inc;
-	}
-	p-=1;
-	i-=1;
-	while (p<=i) {
-	  ptRest4[p]=ptPerm4[p];
-	  p+=inc;
-	}
-      }
-
-      if (test==True) {
-
-	UInt4 * ptTmp4  = ADDR_PERM4(TmpPerm);
-
-	/* cleanout */
-	for ( p = 0; p < deg; p++ ) {
-	  ptTmp4[p]=0;
-	}
-
-        /* check whether the result is a permutation */
-	for (p=0;p<deg;p++) {
-	  inc=ptRest4[p];
-	  if (ptTmp4[inc]==1) return Fail; /* point was known */
-	  else ptTmp4[inc]=1; /* now point is known */
-	}
-
-      }
+        return RESTRICTED_PERM<UInt4>(perm, dom, test);
     }
-
-    /* return the restriction */
-    return rest;
 }
 
 /****************************************************************************
