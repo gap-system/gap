@@ -331,171 +331,28 @@ Int EqPerm42(Obj opL, Obj opR)
 **  the permutation  <opR>.  Permutations are  ordered lexicographically with
 **  respect to the images of 1,2,.., etc.
 */
-Int             LtPerm22 (
+template<typename TL, typename TR>
+Int             LtPerm (
     Obj                 opL,
     Obj                 opR )
 {
     UInt                degL;           /* degree of the left operand      */
-    const UInt2 *       ptL;            /* pointer to the left operand     */
+    const TL *          ptL;            /* pointer to the left operand     */
     UInt                degR;           /* degree of the right operand     */
-    const UInt2 *       ptR;            /* pointer to the right operand    */
+    const TR *          ptR;            /* pointer to the right operand    */
     UInt                p;              /* loop variable                   */
 
     /* get the degrees of the permutations                                 */
-    degL = DEG_PERM2(opL);
-    degR = DEG_PERM2(opR);
+    degL = DEG_PERM<TL>(opL);
+    degR = DEG_PERM<TR>(opR);
 
     /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM2(opL);
-    ptR = CONST_ADDR_PERM2(opR);
+    ptL = CONST_ADDR_PERM<TL>(opL);
+    ptR = CONST_ADDR_PERM<TR>(opR);
 
     /* search for a difference and return if you find one                  */
     if ( degL <= degR ) {
       
-        for ( p = 0; p < degL; p++ )
-            if ( *(ptL++) != *(ptR++) ) {
-                if ( *(--ptL) < *(--ptR) )  return 1L ;
-                else                        return 0L;
-	    }
-        for ( p = degL; p < degR; p++ )
-            if (        p != *(ptR++) ) {
-                if (        p < *(--ptR) )  return 1L ;
-                else                        return 0L;
-	    }
-    }
-    else {
-        for ( p = 0; p < degR; p++ )
-            if ( *(ptL++) != *(ptR++) ) {
-                if ( *(--ptL) < *(--ptR) )  return 1L ;
-                else                        return 0L;
-	    }
-        for ( p = degR; p < degL; p++ )
-            if ( *(ptL++) != p ) {
-                if ( *(--ptL) <        p )  return 1L ;
-                else                        return 0L;
-	    }
-    }
-
-    /* otherwise they must be equal                                        */
-    return 0L;
-}
-
-Int             LtPerm24 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    UInt                degL;           /* degree of the left operand      */
-    const UInt2 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt4 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* get the degrees of the permutations                                 */
-    degL = DEG_PERM2(opL);
-    degR = DEG_PERM4(opR);
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM2(opL);
-    ptR = CONST_ADDR_PERM4(opR);
-
-    /* search for a difference and return if you find one                  */
-    if ( degL <= degR ) {
-        for ( p = 0; p < degL; p++ )
-            if ( *(ptL++) != *(ptR++) ) {
-                if ( *(--ptL) < *(--ptR) )  return 1L ;
-                else                        return 0L;
-	    }
-        for ( p = degL; p < degR; p++ )
-            if (        p != *(ptR++) ) {
-                if (        p < *(--ptR) )  return 1L ;
-                else                        return 0L;
-	    }
-    }
-    else {
-        for ( p = 0; p < degR; p++ )
-            if ( *(ptL++) != *(ptR++) ) {
-                if ( *(--ptL) < *(--ptR) )  return 1L ;
-                else                        return 0L;
-	    }
-        for ( p = degR; p < degL; p++ )
-            if ( *(ptL++) != p ) {
-                if ( *(--ptL) <        p )  return 1L ;
-                else                        return 0L;
-	    }
-    }
-
-    /* otherwise they must be equal                                        */
-    return 0L;
-}
-
-Int             LtPerm42 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    UInt                degL;           /* degree of the left operand      */
-    const UInt4 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt2 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* get the degrees of the permutations                                 */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM2(opR);
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM4(opL);
-    ptR = CONST_ADDR_PERM2(opR);
-
-    /* search for a difference and return if you find one                  */
-    if ( degL <= degR ) {
-        for ( p = 0; p < degL; p++ )
-            if ( *(ptL++) != *(ptR++) ) {
-                if ( *(--ptL) < *(--ptR) )  return 1L ;
-                else                        return 0L;
-	    }
-        for ( p = degL; p < degR; p++ )
-            if (        p != *(ptR++) ) {
-                if (        p < *(--ptR) )  return 1L ;
-                else                        return 0L;
-	    }
-    }
-    else {
-        for ( p = 0; p < degR; p++ )
-            if ( *(ptL++) != *(ptR++) ) {
-                if ( *(--ptL) < *(--ptR) )  return 1L ;
-                else                        return 0L;
-	    }
-        for ( p = degR; p < degL; p++ )
-            if ( *(ptL++) != p ) {
-                if ( *(--ptL) <        p )  return 1L ;
-                else                        return 0L;
-	    }
-    }
-
-    /* otherwise they must be equal                                        */
-    return 0L;
-}
-
-Int             LtPerm44 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    UInt                degL;           /* degree of the left operand      */
-    const UInt4 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt4 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* get the degrees of the permutations                                 */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM4(opR);
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM4(opL);
-    ptR = CONST_ADDR_PERM4(opR);
-
-    /* search for a difference and return if you find one                  */
-    if ( degL <= degR ) {
         for ( p = 0; p < degL; p++ )
             if ( *(ptL++) != *(ptR++) ) {
                 if ( *(--ptL) < *(--ptR) )  return 1L ;
@@ -533,29 +390,32 @@ Int             LtPerm44 (
 **
 **  This is a little bit tuned but should be sufficiently easy to understand.
 */
-Obj             ProdPerm22 (
+template<typename TL, typename TR>
+Obj             ProdPerm (
     Obj                 opL,
     Obj                 opR )
 {
+    typedef typename ResultType<TL,TR>::type Res;
+
     Obj                 prd;            /* handle of the product (result)  */
     UInt                degP;           /* degree of the product           */
-    UInt2 *             ptP;            /* pointer to the product          */
+    Res *               ptP;            /* pointer to the product          */
     UInt                degL;           /* degree of the left operand      */
-    const UInt2 *       ptL;            /* pointer to the left operand     */
+    const TL *          ptL;            /* pointer to the left operand     */
     UInt                degR;           /* degree of the right operand     */
-    const UInt2 *       ptR;            /* pointer to the right operand    */
+    const TR *          ptR;            /* pointer to the right operand    */
     UInt                p;              /* loop variable                   */
 
     /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM2(opL);
-    degR = DEG_PERM2(opR);
+    degL = DEG_PERM<TL>(opL);
+    degR = DEG_PERM<TR>(opR);
     degP = degL < degR ? degR : degL;
-    prd  = NEW_PERM2( degP );
+    prd  = NEW_PERM<Res>( degP );
 
     /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM2(opL);
-    ptR = CONST_ADDR_PERM2(opR);
-    ptP = ADDR_PERM2(prd);
+    ptL = CONST_ADDR_PERM<TL>(opL);
+    ptR = CONST_ADDR_PERM<TR>(opR);
+    ptP = ADDR_PERM<Res>(prd);
 
     /* if the left (inner) permutation has smaller degree, it is very easy */
     if ( degL <= degR ) {
@@ -575,134 +435,6 @@ Obj             ProdPerm22 (
     return prd;
 }
 
-
-Obj             ProdPerm24 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 prd;            /* handle of the product (result)  */
-    UInt                degP;           /* degree of the product           */
-    UInt4 *             ptP;            /* pointer to the product          */
-    UInt                degL;           /* degree of the left operand      */
-    const UInt2 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt4 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM2(opL);
-    degR = DEG_PERM4(opR);
-    degP = degL < degR ? degR : degL;
-    prd  = NEW_PERM4( degP );
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM2(opL);
-    ptR = CONST_ADDR_PERM4(opR);
-    ptP = ADDR_PERM4(prd);
-
-    /* if the left (inner) permutation has smaller degree, it is very easy */
-    if ( degL <= degR ) {
-        for ( p = 0; p < degL; p++ )
-            *(ptP++) = ptR[ *(ptL++) ];
-        for ( p = degL; p < degR; p++ )
-            *(ptP++) = ptR[ p ];
-    }
-
-    /* otherwise we have to use the macro 'IMAGE'                          */
-    else {
-        for ( p = 0; p < degL; p++ )
-            *(ptP++) = IMAGE( ptL[ p ], ptR, degR );
-    }
-
-    /* return the result                                                   */
-    return prd;
-}
-
-
-Obj             ProdPerm42 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 prd;            /* handle of the product (result)  */
-    UInt                degP;           /* degree of the product           */
-    UInt4 *             ptP;            /* pointer to the product          */
-    UInt                degL;           /* degree of the left operand      */
-    const UInt4 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt2 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM2(opR);
-    degP = degL < degR ? degR : degL;
-    prd  = NEW_PERM4( degP );
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM4(opL);
-    ptR = CONST_ADDR_PERM2(opR);
-    ptP = ADDR_PERM4(prd);
-
-    /* if the left (inner) permutation has smaller degree, it is very easy */
-    if ( degL <= degR ) {
-        for ( p = 0; p < degL; p++ )
-            *(ptP++) = ptR[ *(ptL++) ];
-        for ( p = degL; p < degR; p++ )
-            *(ptP++) = ptR[ p ];
-    }
-
-    /* otherwise we have to use the macro 'IMAGE'                          */
-    else {
-        for ( p = 0; p < degL; p++ )
-            *(ptP++) = IMAGE( ptL[ p ], ptR, degR );
-    }
-
-    /* return the result                                                   */
-    return prd;
-}
-
-
-Obj             ProdPerm44 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 prd;            /* handle of the product (result)  */
-    UInt                degP;           /* degree of the product           */
-    UInt4 *             ptP;            /* pointer to the product          */
-    UInt                degL;           /* degree of the left operand      */
-    const UInt4 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt4 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM4(opR);
-    degP = degL < degR ? degR : degL;
-    prd  = NEW_PERM4( degP );
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM4(opL);
-    ptR = CONST_ADDR_PERM4(opR);
-    ptP = ADDR_PERM4(prd);
-
-    /* if the left (inner) permutation has smaller degree, it is very easy */
-    if ( degL <= degR ) {
-        for ( p = 0; p < degL; p++ )
-            *(ptP++) = ptR[ *(ptL++) ];
-        for ( p = degL; p < degR; p++ )
-            *(ptP++) = ptR[ p ];
-    }
-
-    /* otherwise we have to use the macro 'IMAGE'                          */
-    else {
-        for ( p = 0; p < degL; p++ )
-            *(ptP++) = IMAGE( ptL[ p ], ptR, degR );
-    }
-
-    /* return the result                                                   */
-    return prd;
-}
 
 /****************************************************************************
 **
@@ -4485,16 +4217,16 @@ static Int InitKernel (
     EqFuncs  [ T_PERM2  ][ T_PERM4  ] = EqPerm24;
     EqFuncs  [ T_PERM4  ][ T_PERM2  ] = EqPerm42;
     EqFuncs  [ T_PERM4  ][ T_PERM4  ] = EqPerm44;
-    LtFuncs  [ T_PERM2  ][ T_PERM2  ] = LtPerm22;
-    LtFuncs  [ T_PERM2  ][ T_PERM4  ] = LtPerm24;
-    LtFuncs  [ T_PERM4  ][ T_PERM2  ] = LtPerm42;
-    LtFuncs  [ T_PERM4  ][ T_PERM4  ] = LtPerm44;
+    LtFuncs  [ T_PERM2  ][ T_PERM2  ] = LtPerm<UInt2, UInt2>;
+    LtFuncs  [ T_PERM2  ][ T_PERM4  ] = LtPerm<UInt2, UInt4>;
+    LtFuncs  [ T_PERM4  ][ T_PERM2  ] = LtPerm<UInt4, UInt2>;
+    LtFuncs  [ T_PERM4  ][ T_PERM4  ] = LtPerm<UInt4, UInt4>;
 
     /* install the binary operations                                       */
-    ProdFuncs[ T_PERM2  ][ T_PERM2  ] = ProdPerm22;
-    ProdFuncs[ T_PERM2  ][ T_PERM4  ] = ProdPerm24;
-    ProdFuncs[ T_PERM4  ][ T_PERM2  ] = ProdPerm42;
-    ProdFuncs[ T_PERM4  ][ T_PERM4  ] = ProdPerm44;
+    ProdFuncs[ T_PERM2  ][ T_PERM2  ] = ProdPerm<UInt2, UInt2>;
+    ProdFuncs[ T_PERM2  ][ T_PERM4  ] = ProdPerm<UInt2, UInt4>;
+    ProdFuncs[ T_PERM4  ][ T_PERM2  ] = ProdPerm<UInt4, UInt2>;
+    ProdFuncs[ T_PERM4  ][ T_PERM4  ] = ProdPerm<UInt4, UInt4>;
     QuoFuncs[T_PERM2][T_PERM2] = QuoPerm;
     QuoFuncs[T_PERM2][T_PERM4] = QuoPerm;
     QuoFuncs[T_PERM4][T_PERM2] = QuoPerm;
