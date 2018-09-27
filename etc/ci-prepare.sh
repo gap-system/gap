@@ -45,12 +45,6 @@ fi
 # check that GAP is at least able to start
 echo 'Print("GAP started successfully\n");QUIT_GAP(0);' | ./gap -T
 
-# TEMPORARY FIX : factint is not HPC-GAP compatible
-if [[ $HPCGAP = yes ]]
-then
-    rm -rf pkg/factint*
-fi
-
 # packages must be placed inside SRCDIR, as only that
 # is a GAP root, while BUILDDIR is not.
 if [[ ! -d "$SRCDIR/pkg" ]]
@@ -68,14 +62,6 @@ then
   if [[ $ABI == 32 ]]
   then
     CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
-  fi
-
-  # TODO: get rid of this hack (packages should get include paths from sysinfo.gap resp. gac)
-  if [[ $HPCGAP = yes ]]
-  then
-    # Add flags so that Boehm GC and libatomic headers are found
-    CPPFLAGS="-I$PWD/extern/install/gc/include -I$PWD/extern/install/libatomic_ops/include $CPPFLAGS"
-    export CPPFLAGS
   fi
 
   # We need to compile the profiling package in order to generate coverage
