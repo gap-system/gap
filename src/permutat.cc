@@ -463,163 +463,34 @@ Obj QuoPerm(Obj opL, Obj opR)
 **
 **  This can be done as fast as a single multiplication or inversion.
 */
-Obj             LQuoPerm22 (
+template<typename TL, typename TR>
+Obj             LQuoPerm (
     Obj                 opL,
     Obj                 opR )
 {
+    typedef typename ResultType<TL,TR>::type Res;
+
     Obj                 mod;            /* handle of the quotient (result) */
     UInt                degM;           /* degree of the quotient          */
-    UInt2 *             ptM;            /* pointer to the quotient         */
+    Res *               ptM;            /* pointer to the quotient         */
     UInt                degL;           /* degree of the left operand      */
-    const UInt2 *       ptL;            /* pointer to the left operand     */
+    const TL *          ptL;            /* pointer to the left operand     */
     UInt                degR;           /* degree of the right operand     */
-    const UInt2 *       ptR;            /* pointer to the right operand    */
+    const TR *          ptR;            /* pointer to the right operand    */
     UInt                p;              /* loop variable                   */
 
     /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM2(opL);
-    degR = DEG_PERM2(opR);
+    degL = DEG_PERM<TL>(opL);
+    degR = DEG_PERM<TR>(opR);
     degM = degL < degR ? degR : degL;
-    mod = NEW_PERM2( degM );
+    mod = NEW_PERM<Res>( degM );
 
     /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM2(opL);
-    ptR = CONST_ADDR_PERM2(opR);
-    ptM = ADDR_PERM2(mod);
+    ptL = CONST_ADDR_PERM<TL>(opL);
+    ptR = CONST_ADDR_PERM<TR>(opR);
+    ptM = ADDR_PERM<Res>(mod);
 
-    /* its one thing if the left (inner) permutation is smaller            */
-    if ( degL <= degR ) {
-        for ( p = 0; p < degL; p++ )
-            ptM[ *(ptL++) ] = *(ptR++);
-        for ( p = degL; p < degR; p++ )
-            ptM[ p ] = *(ptR++);
-    }
-
-    /* and another if the right (outer) permutation is smaller             */
-    else {
-        for ( p = 0; p < degR; p++ )
-            ptM[ *(ptL++) ] = *(ptR++);
-        for ( p = degR; p < degL; p++ )
-            ptM[ *(ptL++) ] = p;
-    }
-
-    /* return the result                                                   */
-    return mod;
-}
-
-Obj             LQuoPerm24 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 mod;            /* handle of the quotient (result) */
-    UInt                degM;           /* degree of the quotient          */
-    UInt4 *             ptM;            /* pointer to the quotient         */
-    UInt                degL;           /* degree of the left operand      */
-    const UInt2 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt4 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM2(opL);
-    degR = DEG_PERM4(opR);
-    degM = degL < degR ? degR : degL;
-    mod = NEW_PERM4( degM );
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM2(opL);
-    ptR = CONST_ADDR_PERM4(opR);
-    ptM = ADDR_PERM4(mod);
-
-    /* its one thing if the left (inner) permutation is smaller            */
-    if ( degL <= degR ) {
-        for ( p = 0; p < degL; p++ )
-            ptM[ *(ptL++) ] = *(ptR++);
-        for ( p = degL; p < degR; p++ )
-            ptM[ p ] = *(ptR++);
-    }
-
-    /* and another if the right (outer) permutation is smaller             */
-    else {
-        for ( p = 0; p < degR; p++ )
-            ptM[ *(ptL++) ] = *(ptR++);
-        for ( p = degR; p < degL; p++ )
-            ptM[ *(ptL++) ] = p;
-    }
-
-    /* return the result                                                   */
-    return mod;
-}
-
-Obj             LQuoPerm42 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 mod;            /* handle of the quotient (result) */
-    UInt                degM;           /* degree of the quotient          */
-    UInt4 *             ptM;            /* pointer to the quotient         */
-    UInt                degL;           /* degree of the left operand      */
-    const UInt4 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt2 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM2(opR);
-    degM = degL < degR ? degR : degL;
-    mod = NEW_PERM4( degM );
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM4(opL);
-    ptR = CONST_ADDR_PERM2(opR);
-    ptM = ADDR_PERM4(mod);
-
-    /* its one thing if the left (inner) permutation is smaller            */
-    if ( degL <= degR ) {
-        for ( p = 0; p < degL; p++ )
-            ptM[ *(ptL++) ] = *(ptR++);
-        for ( p = degL; p < degR; p++ )
-            ptM[ p ] = *(ptR++);
-    }
-
-    /* and another if the right (outer) permutation is smaller             */
-    else {
-        for ( p = 0; p < degR; p++ )
-            ptM[ *(ptL++) ] = *(ptR++);
-        for ( p = degR; p < degL; p++ )
-            ptM[ *(ptL++) ] = p;
-    }
-
-    /* return the result                                                   */
-    return mod;
-}
-
-Obj             LQuoPerm44 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 mod;            /* handle of the quotient (result) */
-    UInt                degM;           /* degree of the quotient          */
-    UInt4 *             ptM;            /* pointer to the quotient         */
-    UInt                degL;           /* degree of the left operand      */
-    const UInt4 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt4 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM4(opR);
-    degM = degL < degR ? degR : degL;
-    mod = NEW_PERM4( degM );
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM4(opL);
-    ptR = CONST_ADDR_PERM4(opR);
-    ptM = ADDR_PERM4(mod);
-
-    /* its one thing if the left (inner) permutation is smaller            */
+    /* it is one thing if the left (inner) permutation is smaller          */
     if ( degL <= degR ) {
         for ( p = 0; p < degL; p++ )
             ptM[ *(ptL++) ] = *(ptR++);
@@ -1379,151 +1250,34 @@ Obj             QuoIntPerm4 (
 **  <opR>, that s  defined as the  following product '<opR>\^-1 \*\ <opL> \*\
 **  <opR>'.
 */
-Obj             PowPerm22 (
+template<typename TL, typename TR>
+Obj             PowPerm (
     Obj                 opL,
     Obj                 opR )
 {
+    typedef typename ResultType<TL,TR>::type Res;
+
     Obj                 cnj;            /* handle of the conjugation (res) */
     UInt                degC;           /* degree of the conjugation       */
-    UInt2 *             ptC;            /* pointer to the conjugation      */
+    Res *               ptC;            /* pointer to the conjugation      */
     UInt                degL;           /* degree of the left operand      */
-    const UInt2 *       ptL;            /* pointer to the left operand     */
+    const TL *          ptL;            /* pointer to the left operand     */
     UInt                degR;           /* degree of the right operand     */
-    const UInt2 *       ptR;            /* pointer to the right operand    */
+    const TR *          ptR;            /* pointer to the right operand    */
     UInt                p;              /* loop variable                   */
 
     /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM2(opL);
-    degR = DEG_PERM2(opR);
+    degL = DEG_PERM<TL>(opL);
+    degR = DEG_PERM<TR>(opR);
     degC = degL < degR ? degR : degL;
-    cnj = NEW_PERM2( degC );
+    cnj = NEW_PERM<Res>( degC );
 
     /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM2(opL);
-    ptR = CONST_ADDR_PERM2(opR);
-    ptC = ADDR_PERM2(cnj);
+    ptL = CONST_ADDR_PERM<TL>(opL);
+    ptR = CONST_ADDR_PERM<TR>(opR);
+    ptC = ADDR_PERM<Res>(cnj);
 
-    /* its faster if the both permutations have the same size              */
-    if ( degL == degR ) {
-        for ( p = 0; p < degC; p++ )
-            ptC[ ptR[p] ] = ptR[ ptL[p] ];
-    }
-
-    /* otherwise we have to use the macro 'IMAGE' three times              */
-    else {
-        for ( p = 0; p < degC; p++ )
-            ptC[ IMAGE(p,ptR,degR) ] = IMAGE( IMAGE(p,ptL,degL), ptR, degR );
-    }
-
-    /* return the result                                                   */
-    return cnj;
-}
-
-Obj             PowPerm24 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 cnj;            /* handle of the conjugation (res) */
-    UInt                degC;           /* degree of the conjugation       */
-    UInt4 *             ptC;            /* pointer to the conjugation      */
-    UInt                degL;           /* degree of the left operand      */
-    const UInt2 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt4 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM2(opL);
-    degR = DEG_PERM4(opR);
-    degC = degL < degR ? degR : degL;
-    cnj = NEW_PERM4( degC );
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM2(opL);
-    ptR = CONST_ADDR_PERM4(opR);
-    ptC = ADDR_PERM4(cnj);
-
-    /* its faster if the both permutations have the same size              */
-    if ( degL == degR ) {
-        for ( p = 0; p < degC; p++ )
-            ptC[ ptR[p] ] = ptR[ ptL[p] ];
-    }
-
-    /* otherwise we have to use the macro 'IMAGE' three times              */
-    else {
-        for ( p = 0; p < degC; p++ )
-            ptC[ IMAGE(p,ptR,degR) ] = IMAGE( IMAGE(p,ptL,degL), ptR, degR );
-    }
-
-    /* return the result                                                   */
-    return cnj;
-}
-
-Obj             PowPerm42 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 cnj;            /* handle of the conjugation (res) */
-    UInt                degC;           /* degree of the conjugation       */
-    UInt4 *             ptC;            /* pointer to the conjugation      */
-    UInt                degL;           /* degree of the left operand      */
-    const UInt4 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt2 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM2(opR);
-    degC = degL < degR ? degR : degL;
-    cnj = NEW_PERM4( degC );
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM4(opL);
-    ptR = CONST_ADDR_PERM2(opR);
-    ptC = ADDR_PERM4(cnj);
-
-    /* its faster if the both permutations have the same size              */
-    if ( degL == degR ) {
-        for ( p = 0; p < degC; p++ )
-            ptC[ ptR[p] ] = ptR[ ptL[p] ];
-    }
-
-    /* otherwise we have to use the macro 'IMAGE' three times              */
-    else {
-        for ( p = 0; p < degC; p++ )
-            ptC[ IMAGE(p,ptR,degR) ] = IMAGE( IMAGE(p,ptL,degL), ptR, degR );
-    }
-
-    /* return the result                                                   */
-    return cnj;
-}
-
-Obj             PowPerm44 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 cnj;            /* handle of the conjugation (res) */
-    UInt                degC;           /* degree of the conjugation       */
-    UInt4 *             ptC;            /* pointer to the conjugation      */
-    UInt                degL;           /* degree of the left operand      */
-    const UInt4 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt4 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM4(opR);
-    degC = degL < degR ? degR : degL;
-    cnj = NEW_PERM4( degC );
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM4(opL);
-    ptR = CONST_ADDR_PERM4(opR);
-    ptC = ADDR_PERM4(cnj);
-
-    /* its faster if the both permutations have the same size              */
+    /* it is faster if the both permutations have the same size            */
     if ( degL == degR ) {
         for ( p = 0; p < degC; p++ )
             ptC[ ptR[p] ] = ptR[ ptL[p] ];
@@ -1547,154 +1301,34 @@ Obj             PowPerm44 (
 **  'CommPerm' returns the  commutator  of  the  two permutations  <opL>  and
 **  <opR>, that is defined as '<hd>\^-1 \*\ <opR>\^-1 \*\ <opL> \*\ <opR>'.
 */
-Obj             CommPerm22 (
+template<typename TL, typename TR>
+Obj             CommPerm (
     Obj                 opL,
     Obj                 opR )
 {
+    typedef typename ResultType<TL,TR>::type Res;
+
     Obj                 com;            /* handle of the commutator  (res) */
     UInt                degC;           /* degree of the commutator        */
-    UInt2 *             ptC;            /* pointer to the commutator       */
+    Res *               ptC;            /* pointer to the commutator       */
     UInt                degL;           /* degree of the left operand      */
-    const UInt2 *       ptL;            /* pointer to the left operand     */
+    const TL *          ptL;            /* pointer to the left operand     */
     UInt                degR;           /* degree of the right operand     */
-    const UInt2 *       ptR;            /* pointer to the right operand    */
+    const TR *          ptR;            /* pointer to the right operand    */
     UInt                p;              /* loop variable                   */
 
     /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM2(opL);
-    degR = DEG_PERM2(opR);
+    degL = DEG_PERM<TL>(opL);
+    degR = DEG_PERM<TR>(opR);
     degC = degL < degR ? degR : degL;
-    com = NEW_PERM2( degC );
+    com = NEW_PERM<Res>( degC );
 
     /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM2(opL);
-    ptR = CONST_ADDR_PERM2(opR);
-    ptC = ADDR_PERM2(com);
+    ptL = CONST_ADDR_PERM<TL>(opL);
+    ptR = CONST_ADDR_PERM<TR>(opR);
+    ptC = ADDR_PERM<Res>(com);
 
-    /* its faster if the both permutations have the same size              */
-    if ( degL == degR ) {
-        for ( p = 0; p < degC; p++ )
-            ptC[ ptL[ ptR[ p ] ] ] = ptR[ ptL[ p ] ];
-    }
-
-    /* otherwise we have to use the macro 'IMAGE' four times               */
-    else {
-        for ( p = 0; p < degC; p++ )
-            ptC[ IMAGE( IMAGE(p,ptR,degR), ptL, degL ) ]
-               = IMAGE( IMAGE(p,ptL,degL), ptR, degR );
-    }
-
-    /* return the result                                                   */
-    return com;
-}
-
-Obj             CommPerm24 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 com;            /* handle of the commutator  (res) */
-    UInt                degC;           /* degree of the commutator        */
-    UInt4 *             ptC;            /* pointer to the commutator       */
-    UInt                degL;           /* degree of the left operand      */
-    const UInt2 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt4 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM2(opL);
-    degR = DEG_PERM4(opR);
-    degC = degL < degR ? degR : degL;
-    com = NEW_PERM4( degC );
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM2(opL);
-    ptR = CONST_ADDR_PERM4(opR);
-    ptC = ADDR_PERM4(com);
-
-    /* its faster if the both permutations have the same size              */
-    if ( degL == degR ) {
-        for ( p = 0; p < degC; p++ )
-            ptC[ ptL[ ptR[ p ] ] ] = ptR[ ptL[ p ] ];
-    }
-
-    /* otherwise we have to use the macro 'IMAGE' four times               */
-    else {
-        for ( p = 0; p < degC; p++ )
-            ptC[ IMAGE( IMAGE(p,ptR,degR), ptL, degL ) ]
-               = IMAGE( IMAGE(p,ptL,degL), ptR, degR );
-    }
-
-    /* return the result                                                   */
-    return com;
-}
-
-Obj             CommPerm42 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 com;            /* handle of the commutator  (res) */
-    UInt                degC;           /* degree of the commutator        */
-    UInt4 *             ptC;            /* pointer to the commutator       */
-    UInt                degL;           /* degree of the left operand      */
-    const UInt4 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt2 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM2(opR);
-    degC = degL < degR ? degR : degL;
-    com = NEW_PERM4( degC );
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM4(opL);
-    ptR = CONST_ADDR_PERM2(opR);
-    ptC = ADDR_PERM4(com);
-
-    /* its faster if the both permutations have the same size              */
-    if ( degL == degR ) {
-        for ( p = 0; p < degC; p++ )
-            ptC[ ptL[ ptR[ p ] ] ] = ptR[ ptL[ p ] ];
-    }
-
-    /* otherwise we have to use the macro 'IMAGE' four times               */
-    else {
-        for ( p = 0; p < degC; p++ )
-            ptC[ IMAGE( IMAGE(p,ptR,degR), ptL, degL ) ]
-               = IMAGE( IMAGE(p,ptL,degL), ptR, degR );
-    }
-
-    /* return the result                                                   */
-    return com;
-}
-
-Obj             CommPerm44 (
-    Obj                 opL,
-    Obj                 opR )
-{
-    Obj                 com;            /* handle of the commutator  (res) */
-    UInt                degC;           /* degree of the commutator        */
-    UInt4 *             ptC;            /* pointer to the commutator       */
-    UInt                degL;           /* degree of the left operand      */
-    const UInt4 *       ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const UInt4 *       ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
-
-    /* compute the size of the result and allocate a bag                   */
-    degL = DEG_PERM4(opL);
-    degR = DEG_PERM4(opR);
-    degC = degL < degR ? degR : degL;
-    com = NEW_PERM4( degC );
-
-    /* set up the pointers                                                 */
-    ptL = CONST_ADDR_PERM4(opL);
-    ptR = CONST_ADDR_PERM4(opR);
-    ptC = ADDR_PERM4(com);
-
-    /* its faster if the both permutations have the same size              */
+    /* it is faster if the both permutations have the same size            */
     if ( degL == degR ) {
         for ( p = 0; p < degC; p++ )
             ptC[ ptL[ ptR[ p ] ] ] = ptR[ ptL[ p ] ];
@@ -4231,10 +3865,10 @@ static Int InitKernel (
     QuoFuncs[T_PERM2][T_PERM4] = QuoPerm;
     QuoFuncs[T_PERM4][T_PERM2] = QuoPerm;
     QuoFuncs[T_PERM4][T_PERM4] = QuoPerm;
-    LQuoFuncs[ T_PERM2  ][ T_PERM2  ] = LQuoPerm22;
-    LQuoFuncs[ T_PERM2  ][ T_PERM4  ] = LQuoPerm24;
-    LQuoFuncs[ T_PERM4  ][ T_PERM2  ] = LQuoPerm42;
-    LQuoFuncs[ T_PERM4  ][ T_PERM4  ] = LQuoPerm44;
+    LQuoFuncs[ T_PERM2  ][ T_PERM2  ] = LQuoPerm<UInt2, UInt2>;
+    LQuoFuncs[ T_PERM2  ][ T_PERM4  ] = LQuoPerm<UInt2, UInt4>;
+    LQuoFuncs[ T_PERM4  ][ T_PERM2  ] = LQuoPerm<UInt4, UInt2>;
+    LQuoFuncs[ T_PERM4  ][ T_PERM4  ] = LQuoPerm<UInt4, UInt4>;
     PowFuncs [ T_PERM2  ][ T_INT    ] = PowPerm2Int;
     PowFuncs [ T_PERM2  ][ T_INTPOS ] = PowPerm2Int;
     PowFuncs [ T_PERM2  ][ T_INTNEG ] = PowPerm2Int;
@@ -4249,14 +3883,14 @@ static Int InitKernel (
     QuoFuncs [ T_INTPOS ][ T_PERM2  ] = QuoIntPerm2;
     QuoFuncs [ T_INT    ][ T_PERM4  ] = QuoIntPerm4;
     QuoFuncs [ T_INTPOS ][ T_PERM4  ] = QuoIntPerm4;
-    PowFuncs [ T_PERM2  ][ T_PERM2  ] = PowPerm22;
-    PowFuncs [ T_PERM2  ][ T_PERM4  ] = PowPerm24;
-    PowFuncs [ T_PERM4  ][ T_PERM2  ] = PowPerm42;
-    PowFuncs [ T_PERM4  ][ T_PERM4  ] = PowPerm44;
-    CommFuncs[ T_PERM2  ][ T_PERM2  ] = CommPerm22;
-    CommFuncs[ T_PERM2  ][ T_PERM4  ] = CommPerm24;
-    CommFuncs[ T_PERM4  ][ T_PERM2  ] = CommPerm42;
-    CommFuncs[ T_PERM4  ][ T_PERM4  ] = CommPerm44;
+    PowFuncs [ T_PERM2  ][ T_PERM2  ] = PowPerm<UInt2, UInt2>;
+    PowFuncs [ T_PERM2  ][ T_PERM4  ] = PowPerm<UInt2, UInt4>;
+    PowFuncs [ T_PERM4  ][ T_PERM2  ] = PowPerm<UInt4, UInt2>;
+    PowFuncs [ T_PERM4  ][ T_PERM4  ] = PowPerm<UInt4, UInt4>;
+    CommFuncs[ T_PERM2  ][ T_PERM2  ] = CommPerm<UInt2, UInt2>;
+    CommFuncs[ T_PERM2  ][ T_PERM4  ] = CommPerm<UInt2, UInt4>;
+    CommFuncs[ T_PERM4  ][ T_PERM2  ] = CommPerm<UInt4, UInt2>;
+    CommFuncs[ T_PERM4  ][ T_PERM4  ] = CommPerm<UInt4, UInt4>;
 
     /* install the 'ONE' function for permutations                         */
     OneFuncs[ T_PERM2 ] = OnePerm;
