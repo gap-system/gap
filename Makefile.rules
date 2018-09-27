@@ -316,15 +316,35 @@ DEPFLAGS = -MQ "$@" -MMD -MP -MF $(DEPFILE)
 # Compiler rules
 ########################################################################
 
+# HACK: when we rename a file foobar.c to foobar.cc (i.e., only the extension
+# is changed from C to C++), then this can cause problems in the .d file, as
+# they contain rules which depend on the source file, and that is now gone.
+# As a result, one may get errors like this:
+#
+#  make: *** No rule to make target 'src/objpcgel.c', needed by 'obj/src/objpcgel.lo'.  Stop.
+#
+# To avoid this, we simply add an empty rule  `foobar.c:` resp. `foobar.cc:`
+# to the end of the .d files, via this line in the build rules:
+#	@echo "$<:" >> $(DEPFILE)
+#
+# Extra hack: Since old versions of the build system don't have this,
+# switching from a build with such an old version to one with a new version
+# (e.g. during a `git bisect`) still runs into the above error. To work
+# around that, we add a few explicit rules down below, for files that were
+# changed from .c to .cc
+src/permutat.c:
+
 # Build rule for C++ source files
 obj/%.lo: %.cc cnf/GAP-CXXFLAGS cnf/GAP-CPPFLAGS libtool
 	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
 	$(QUIET_CXX)$(LIBTOOL) --mode=compile --tag CXX $(CXX) $(DEPFLAGS) $(GAP_CXXFLAGS) $(WARN_CXXFLAGS) $(GAP_CPPFLAGS) -c $< -o $@
+	@echo "$<:" >> $(DEPFILE)
 
 # Build rule for C source files
 obj/%.lo: %.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS libtool
 	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
 	$(QUIET_CC)$(LIBTOOL) --mode=compile --tag CC $(CC) $(DEPFLAGS) $(GAP_CFLAGS) $(WARN_CFLAGS) $(GAP_CPPFLAGS) -c $< -o $@
+	@echo "$<:" >> $(DEPFILE)
 
 
 ########################################################################
