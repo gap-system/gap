@@ -201,18 +201,18 @@ Obj             TypePerm4 (
 **  This may in the worst case, for (1,2,..,n), take n^2/2 steps, but is fast
 **  enough to keep a terminal at 9600 baud busy for all but the extrem cases.
 */
-void            PrintPerm2 (
+template<typename T> void            PrintPerm(
     Obj                 perm )
 {
     UInt                degPerm;        /* degree of the permutation       */
-    const UInt2 *       ptPerm;         /* pointer to the permutation      */
+    const T *           ptPerm;         /* pointer to the permutation      */
     UInt                p,  q;          /* loop variables                  */
     UInt                isId;           /* permutation is the identity?    */
     const char *        fmt1;           /* common formats to print points  */
     const char *        fmt2;           /* common formats to print points  */
 
     /* set up the formats used, so all points are printed with equal width */
-    degPerm = DEG_PERM2(perm);
+    degPerm = DEG_PERM<T>(perm);
     if      ( degPerm <    10 ) { fmt1 = "%>(%>%1d%<"; fmt2 = ",%>%1d%<"; }
     else if ( degPerm <   100 ) { fmt1 = "%>(%>%2d%<"; fmt2 = ",%>%2d%<"; }
     else if ( degPerm <  1000 ) { fmt1 = "%>(%>%3d%<"; fmt2 = ",%>%3d%<"; }
@@ -221,7 +221,7 @@ void            PrintPerm2 (
 
     /* run through all points                                              */
     isId = 1;
-    ptPerm = CONST_ADDR_PERM2(perm);
+    ptPerm = CONST_ADDR_PERM<T>(perm);
     for ( p = 0; p < degPerm; p++ ) {
 
         /* find the smallest element in this cycle                         */
@@ -232,56 +232,14 @@ void            PrintPerm2 (
         if ( p == q && ptPerm[p] != p ) {
             isId = 0;
             Pr(fmt1,(Int)(p+1),0L);
-            for ( q = CONST_ADDR_PERM2(perm)[p]; q != p; q = CONST_ADDR_PERM2(perm)[q] ) {
+            ptPerm = CONST_ADDR_PERM<T>(perm);
+            for ( q = ptPerm[p]; q != p; q = ptPerm[q] ) {
                 Pr(fmt2,(Int)(q+1),0L);
+                ptPerm = CONST_ADDR_PERM<T>(perm);
             }
             Pr("%<)",0L,0L);
             /* restore pointer, in case Pr caused a garbage collection */
-            ptPerm = CONST_ADDR_PERM2(perm);  
-        }
-
-    }
-
-    /* special case for the identity                                       */
-    if ( isId )  Pr("()",0L,0L);
-}
-
-void            PrintPerm4 (
-    Obj                 perm )
-{
-    UInt                degPerm;        /* degree of the permutation       */
-    const UInt4 *       ptPerm;         /* pointer to the permutation      */
-    UInt                p,  q;          /* loop variables                  */
-    UInt                isId;           /* permutation is the identity?    */
-    const char *        fmt1;           /* common formats to print points  */
-    const char *        fmt2;           /* common formats to print points  */
-
-    /* set up the formats used, so all points are printed with equal width */
-    degPerm = DEG_PERM4(perm);
-    if      ( degPerm <    10 ) { fmt1 = "%>(%>%1d%<"; fmt2 = ",%>%1d%<"; }
-    else if ( degPerm <   100 ) { fmt1 = "%>(%>%2d%<"; fmt2 = ",%>%2d%<"; }
-    else if ( degPerm <  1000 ) { fmt1 = "%>(%>%3d%<"; fmt2 = ",%>%3d%<"; }
-    else if ( degPerm < 10000 ) { fmt1 = "%>(%>%4d%<"; fmt2 = ",%>%4d%<"; }
-    else                        { fmt1 = "%>(%>%5d%<"; fmt2 = ",%>%5d%<"; }
-
-    /* run through all points                                              */
-    isId = 1;
-    ptPerm = CONST_ADDR_PERM4(perm);
-    for ( p = 0; p < degPerm; p++ ) {
-
-        /* find the smallest element in this cycle                         */
-        q = ptPerm[p];
-        while ( p < q )  q = ptPerm[q];
-
-        /* if the smallest is the one we started with lets print the cycle */
-        if ( p == q && ptPerm[p] != p ) {
-            isId = 0;
-            Pr(fmt1,(Int)(p+1),0L);
-            for ( q = CONST_ADDR_PERM4(perm)[p]; q != p; q = CONST_ADDR_PERM4(perm)[q] )
-                Pr(fmt2,(Int)(q+1),0L);
-            Pr("%<)",0L,0L);
-            /* restore pointer, in case Pr caused a garbage collection */
-            ptPerm = CONST_ADDR_PERM4(perm);
+            ptPerm = CONST_ADDR_PERM<T>(perm);
         }
 
     }
@@ -4519,8 +4477,8 @@ static Int InitKernel (
     LoadObjFuncs[ T_PERM4 ] = LoadPerm4;
 
     /* install the printing functions                                      */
-    PrintObjFuncs[ T_PERM2   ] = PrintPerm2;
-    PrintObjFuncs[ T_PERM4   ] = PrintPerm4;
+    PrintObjFuncs[ T_PERM2   ] = PrintPerm<UInt2>;
+    PrintObjFuncs[ T_PERM4   ] = PrintPerm<UInt4>;
 
     /* install the comparison methods                                      */
     EqFuncs  [ T_PERM2  ][ T_PERM2  ] = EqPerm22;
