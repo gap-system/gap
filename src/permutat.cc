@@ -1633,17 +1633,12 @@ Obj             FuncSIGN_PERM (
 **  respect  to the lexicographical order  defined  by '\<' the smallest such
 **  permutation.
 */
-Obj             FuncSMALLEST_GENERATOR_PERM (
-    Obj                 self,
-    Obj                 perm )
+template <typename T> static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
 {
     Obj                 small;          /* handle of the smallest gen      */
-    UInt2 *             ptSmall2;       /* pointer to the smallest gen     */
-    UInt4 *             ptSmall4;       /* pointer to the smallest gen     */
-    const UInt2 *       ptPerm2;        /* pointer to the permutation      */
-    const UInt4 *       ptPerm4;        /* pointer to the permutation      */
-    UInt2 *             ptKnown2;       /* pointer to temporary bag        */
-    UInt4 *             ptKnown4;       /* pointer to temporary bag        */
+    T *                 ptSmall;        /* pointer to the smallest gen     */
+    const T *           ptPerm;         /* pointer to the permutation      */
+    T *                 ptKnown;        /* pointer to temporary bag        */
     Obj                 ord;            /* order, may be huge              */
     Obj                 pow;            /* power, may also be huge         */
     UInt                len;            /* length of one cycle             */
@@ -1652,6 +1647,82 @@ Obj             FuncSMALLEST_GENERATOR_PERM (
     UInt                p,  q;          /* loop variables                  */
     UInt                l, n, x, gcd2;  /* loop variable                   */
 
+    /* make sure that the buffer bag is large enough                       */
+    UseTmpPerm(SIZE_OBJ(perm));
+
+    /* allocate the result bag                                         */
+    small = NEW_PERM<T>( DEG_PERM<T>(perm) );
+
+    /* get the pointer to the bags                                     */
+    ptPerm   = CONST_ADDR_PERM<T>(perm);
+    ptKnown  = ADDR_PERM<T>(TmpPerm);
+    ptSmall  = ADDR_PERM<T>(small);
+
+    /* clear the buffer bag                                            */
+    for ( p = 0; p < DEG_PERM<T>(perm); p++ )
+        ptKnown[p] = 0;
+
+    /* we only know that we must raise <perm> to a power = 0 mod 1     */
+    ord = INTOBJ_INT(1);  pow = INTOBJ_INT(0);
+
+    /* loop over all cycles                                            */
+    for ( p = 0; p < DEG_PERM<T>(perm); p++ ) {
+
+        /* if we haven't looked at this cycle so far                   */
+        if ( ptKnown[p] == 0 ) {
+
+            /* find the length of this cycle                           */
+            len = 1;
+            for ( q = ptPerm[p]; q != p; q = ptPerm[q] ) {
+                len++;  ptKnown[q] = 1;
+            }
+
+            /* compute the gcd with the previously order ord           */
+            /* Note that since len is single precision, ord % len is to*/
+            gcd = len;  s = INT_INTOBJ( ModInt( ord, INTOBJ_INT(len) ) );
+            while ( s != 0 ) {
+                t = s;  s = gcd % s;  gcd = t;
+            }
+
+            /* we must raise the cycle into a power = pow mod gcd      */
+            x = INT_INTOBJ( ModInt( pow, INTOBJ_INT( gcd ) ) );
+
+            /* find the smallest element in the cycle at such a positio*/
+            min = DEG_PERM<T>(perm)-1;
+            n = 0;
+            for ( q = p, l = 0; l < len; l++ ) {
+                gcd2 = len;  s = l;
+                while ( s != 0 ) { t = s; s = gcd2 % s; gcd2 = t; }
+                if ( l % gcd == x && gcd2 == 1 && q <= min ) {
+                    min = q;
+                    n = l;
+                }
+                q = ptPerm[q];
+            }
+
+            /* raise the cycle to that power and put it in the result  */
+            ptSmall[p] = min;
+            for ( q = ptPerm[p]; q != p; q = ptPerm[q] ) {
+                min = ptPerm[min];  ptSmall[q] = min;
+            }
+
+            /* compute the new order and the new power                 */
+            while ( INT_INTOBJ( ModInt( pow, INTOBJ_INT(len) ) ) != n )
+                pow = SumInt( pow, ord );
+            ord = ProdInt( ord, INTOBJ_INT( len / gcd ) );
+
+        }
+
+    }
+
+    /* return the smallest generator                                       */
+    return small;
+}
+
+Obj             FuncSMALLEST_GENERATOR_PERM (
+    Obj                 self,
+    Obj                 perm )
+{
     /* check arguments and extract permutation                             */
     while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
@@ -1660,151 +1731,12 @@ Obj             FuncSMALLEST_GENERATOR_PERM (
             "you can replace <perm> via 'return <perm>;'" );
     }
 
-    /* make sure that the buffer bag is large enough                       */
-    UseTmpPerm(SIZE_OBJ(perm));
-
-    /* handle small permutations                                           */
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
-
-        /* allocate the result bag                                         */
-        small = NEW_PERM2( DEG_PERM2(perm) );
-
-        /* get the pointer to the bags                                     */
-        ptPerm2   = CONST_ADDR_PERM2(perm);
-        ptKnown2  = ADDR_PERM2(TmpPerm);
-        ptSmall2  = ADDR_PERM2(small);
-
-        /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM2(perm); p++ )
-            ptKnown2[p] = 0;
-
-        /* we only know that we must raise <perm> to a power = 0 mod 1     */
-        ord = INTOBJ_INT(1);  pow = INTOBJ_INT(0);
-
-        /* loop over all cycles                                            */
-        for ( p = 0; p < DEG_PERM2(perm); p++ ) {
-
-            /* if we haven't looked at this cycle so far                   */
-            if ( ptKnown2[p] == 0 ) {
-
-                /* find the length of this cycle                           */
-                len = 1;
-                for ( q = ptPerm2[p]; q != p; q = ptPerm2[q] ) {
-                    len++;  ptKnown2[q] = 1;
-                }
-
-                /* compute the gcd with the previously order ord           */
-                /* Note that since len is single precision, ord % len is to*/
-                gcd = len;  s = INT_INTOBJ( ModInt( ord, INTOBJ_INT(len) ) );
-                while ( s != 0 ) {
-                    t = s;  s = gcd % s;  gcd = t;
-                }
-
-                /* we must raise the cycle into a power = pow mod gcd      */
-                x = INT_INTOBJ( ModInt( pow, INTOBJ_INT( gcd ) ) );
-
-                /* find the smallest element in the cycle at such a positio*/
-                min = DEG_PERM2(perm)-1;
-                n = 0;
-                for ( q = p, l = 0; l < len; l++ ) {
-                    gcd2 = len;  s = l;
-                    while ( s != 0 ) { t = s; s = gcd2 % s; gcd2 = t; }
-                    if ( l % gcd == x && gcd2 == 1 && q <= min ) {
-                        min = q;
-                        n = l;
-                    }
-                    q = ptPerm2[q];
-                }
-
-                /* raise the cycle to that power and put it in the result  */
-                ptSmall2[p] = min;
-                for ( q = ptPerm2[p]; q != p; q = ptPerm2[q] ) {
-                    min = ptPerm2[min];  ptSmall2[q] = min;
-                }
-
-                /* compute the new order and the new power                 */
-                while ( INT_INTOBJ( ModInt( pow, INTOBJ_INT(len) ) ) != n )
-                    pow = SumInt( pow, ord );
-                ord = ProdInt( ord, INTOBJ_INT( len / gcd ) );
-
-            }
-
-        }
-
+        return SMALLEST_GENERATOR_PERM<UInt2>(perm);
     }
-
-    /* handle large permutations                                           */
     else {
-
-        /* allocate the result bag                                         */
-        small = NEW_PERM4( DEG_PERM4(perm) );
-
-        /* get the pointer to the bags                                     */
-        ptPerm4   = CONST_ADDR_PERM4(perm);
-        ptKnown4  = ADDR_PERM4(TmpPerm);
-        ptSmall4  = ADDR_PERM4(small);
-
-        /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM4(perm); p++ )
-            ptKnown4[p] = 0;
-
-        /* we only know that we must raise <perm> to a power = 0 mod 1     */
-        ord = INTOBJ_INT(1);  pow = INTOBJ_INT(0);
-
-        /* loop over all cycles                                            */
-        for ( p = 0; p < DEG_PERM4(perm); p++ ) {
-
-            /* if we haven't looked at this cycle so far                   */
-            if ( ptKnown4[p] == 0 ) {
-
-                /* find the length of this cycle                           */
-                len = 1;
-                for ( q = ptPerm4[p]; q != p; q = ptPerm4[q] ) {
-                    len++;  ptKnown4[q] = 1;
-                }
-
-                /* compute the gcd with the previously order ord           */
-                /* Note that since len is single precision, ord % len is to*/
-                gcd = len;  s = INT_INTOBJ( ModInt( ord, INTOBJ_INT(len) ) );
-                while ( s != 0 ) {
-                    t = s;  s = gcd % s;  gcd = t;
-                }
-
-                /* we must raise the cycle into a power = pow mod gcd      */
-                x = INT_INTOBJ( ModInt( pow, INTOBJ_INT( gcd ) ) );
-
-                /* find the smallest element in the cycle at such a positio*/
-                min = DEG_PERM4(perm)-1;
-                n = 0;
-                for ( q = p, l = 0; l < len; l++ ) {
-                    gcd2 = len;  s = l;
-                    while ( s != 0 ) { t = s; s = gcd2 % s; gcd2 = t; }
-                    if ( l % gcd == x && gcd2 == 1 && q <= min ) {
-                        min = q;
-                        n = l;
-                    }
-                    q = ptPerm4[q];
-                }
-
-                /* raise the cycle to that power and put it in the result  */
-                ptSmall4[p] = min;
-                for ( q = ptPerm4[p]; q != p; q = ptPerm4[q] ) {
-                    min = ptPerm4[min];  ptSmall4[q] = min;
-                }
-
-                /* compute the new order and the new power                 */
-                while ( INT_INTOBJ( ModInt( pow, INTOBJ_INT(len) ) ) != n )
-                    pow = SumInt( pow, ord );
-                ord = ProdInt( ord, INTOBJ_INT( len / gcd ) );
-
-            }
-
-        }
-
+        return SMALLEST_GENERATOR_PERM<UInt4>(perm);
     }
-
-    /* return the smallest generator                                       */
-    return small;
 }
 
 /****************************************************************************
