@@ -185,6 +185,7 @@ typedef struct {
     const Char * cookie;
 } StructGVarProp;
 
+typedef Obj (*GenericHandler)();
 
 /****************************************************************************
 **
@@ -195,7 +196,7 @@ typedef struct {
     Int          nargs;
     const Char * args;
     Obj *        operation;
-    Obj (*handler)(/*arguments*/);
+    GenericHandler handler;
     const Char * cookie;
 } StructGVarOper;
 
@@ -223,7 +224,7 @@ typedef struct {
 // StructGVarFunc arrays
 #define GVAR_FUNC(name, nargs, args)                                         \
     {                                                                        \
-        #name, nargs, args, Func##name, __FILE__ ":" #name                   \
+        #name, nargs, args, (GenericHandler)Func##name, __FILE__ ":" #name                   \
     }
 
 

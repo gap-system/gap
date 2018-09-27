@@ -864,10 +864,10 @@ extern UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 */
 #define SET_FILT_LIST(list,fn) \
   do { \
-    UInt     new; \
-    new = SetFiltListTNums[TNUM_OBJ(list)][fn]; \
-    if ( new != (UInt)-1 ) \
-      RetypeBagIfWritable( list, new ); \
+    UInt     n; \
+    n = SetFiltListTNums[TNUM_OBJ(list)][fn]; \
+    if ( n != (UInt)-1 ) \
+      RetypeBagIfWritable( list, n ); \
      else { \
       Pr( "#E  SET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
       Pr( "%s:%d\n", (Int)__FILE__, (Int)__LINE__); \
@@ -901,10 +901,10 @@ extern UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 */
 #define RESET_FILT_LIST(list,fn) \
   do { \
-    UInt     new; \
-    new = ResetFiltListTNums[TNUM_OBJ(list)][fn]; \
-    if ( new != (UInt) -1 ) \
-      RetypeBag( list, new ); \
+    UInt     n; \
+    n = ResetFiltListTNums[TNUM_OBJ(list)][fn]; \
+    if ( n != (UInt) -1 ) \
+      RetypeBag( list, n ); \
     else  { \
       Pr( "#E  RESET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
       Pr( "%s:%d\n", (Int)__FILE__, (Int)__LINE__); \
@@ -946,11 +946,11 @@ extern UInt ClearFiltsTNums [ LAST_REAL_TNUM ];
 */
 #define CLEAR_FILTS_LIST(list) \
   do { \
-    UInt     new; \
-    new = ClearFiltsTNums[TNUM_OBJ(list)]; \
-    if ( new > 0 ) \
-      RetypeBag( list, new ); \
-/*    else if ( new < 0 ) { \
+    UInt     n; \
+    n = ClearFiltsTNums[TNUM_OBJ(list)]; \
+    if ( n > 0 ) \
+      RetypeBag( list, n ); \
+/*    else if ( n < 0 ) { \
       Pr( "#E  CLEAR_FILTS_LIST[%s] in ", (Int)TNAM_OBJ(list), 0 ); \
       Pr( "%s:%d\n", (Int)__FILE__, (Int)__LINE__); \
       } */ \
