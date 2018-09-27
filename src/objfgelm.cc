@@ -112,8 +112,8 @@ Obj FuncNBits_Equal (
 {
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
-    UIntN *     pl;             /* data area in <l>                        */
-    UIntN *     pr;             /* data area in <r>                        */
+    const UIntN * pl;           /* data area in <l>                        */
+    const UIntN * pr;           /* data area in <r>                        */
 
     /* if <l> or <r> is the identity it is easy                            */
     nl = NPAIRS_WORD(l);
@@ -123,8 +123,8 @@ Obj FuncNBits_Equal (
     }
 
     /* compare the generator/exponent pairs                                */
-    pl = (UIntN*)DATA_WORD(l);
-    pr = (UIntN*)DATA_WORD(r);
+    pl = CONST_DATA_WORD(l);
+    pr = CONST_DATA_WORD(r);
     for ( ;  0 < nl;  nl--, pl++, pr++ ) {
         if ( *pl != *pr ) {
             return False;
@@ -158,7 +158,7 @@ Obj FuncNBits_ExponentSums3 (
     Int         i;              /* loop variable for gen/exp pairs         */
     Int         pos;            /* current generator number                */
     Int         exp;            /* current exponent                        */
-    UIntN *     ptr;            /* pointer into the data area of <obj>     */
+    const UIntN * ptr;          /* pointer into the data area of <obj>     */
 
     /* <start> must be positive                                            */
     while ( !IS_POS_INTOBJ(vstart) )
@@ -195,7 +195,7 @@ Obj FuncNBits_ExponentSums3 (
         SET_ELM_PLIST( sums, i-start+1, 0 );
 
     /* and unpack <obj> into <sums>                                        */
-    ptr = (UIntN*)DATA_WORD(obj);
+    ptr = CONST_DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
         pos = ((*ptr) >> ebits)+1;
         if ( start <= pos && pos <= end ) {
@@ -207,7 +207,7 @@ Obj FuncNBits_ExponentSums3 (
             /* this will not cause a garbage collection                    */
             exp = exp + (Int) ELM_PLIST( sums, pos-start+1 );
             SET_ELM_PLIST( sums, pos-start+1, (Obj) exp );
-            assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
+            assert( ptr == CONST_DATA_WORD(obj) + (i-1) );
         }
     }
 
@@ -274,7 +274,7 @@ Obj FuncNBits_ExponentSyllable (
     expm = exps - 1;
 
     /* return the <i> th exponent                                          */
-    p = ((UIntN*)DATA_WORD(w))[i-1];
+    p = CONST_DATA_WORD(w)[i-1];
     if ( p & exps )
         return INTOBJ_INT((p&expm)-exps);
     else
@@ -300,7 +300,7 @@ Obj FuncNBits_ExtRepOfObj (
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* loop variable for gen/exp pairs         */
     Obj         type;           /* type of <obj>                           */
-    UIntN *     ptr;            /* pointer into the data area of <obj>     */
+    const UIntN * ptr;          /* pointer into the data area of <obj>     */
     Obj         lst;            /* result                                  */
 
     /* get the type of <obj>                                               */
@@ -321,7 +321,7 @@ Obj FuncNBits_ExtRepOfObj (
     SET_LEN_PLIST( lst, 2*num );
 
     /* and unpack <obj> into <lst>                                         */
-    ptr = (UIntN*)DATA_WORD(obj);
+    ptr = CONST_DATA_WORD(obj);
 
     /* this will not cause a garbage collection                            */
     for ( i = 1;  i <= num;  i++, ptr++ ) {
@@ -330,7 +330,7 @@ Obj FuncNBits_ExtRepOfObj (
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT(((*ptr)&expm)-exps) );
         else
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT((*ptr)&expm) );
-        assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == CONST_DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(lst);
 
@@ -368,7 +368,7 @@ Obj FuncNBits_GeneratorSyllable (
     ebits = EBITS_WORD(w);
 
     /* return the <i> th generator                                         */
-    p = ((UIntN*)DATA_WORD(w))[i-1];
+    p = CONST_DATA_WORD(w)[i-1];
     return INTOBJ_INT((p >> ebits)+1);
 }
 
@@ -391,7 +391,7 @@ Obj FuncNBits_HeadByNumber (
     Int         sl;             /* start position in <obj>                 */
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         gr;             /* value of <r>                            */
-    UIntN *     pl;             /* data area in <l>                        */
+    const UIntN * pl;           /* data area in <l>                        */
     Obj         obj;            /* the result                              */
     UIntN *     po;             /* data area in <obj>                      */
 
@@ -410,7 +410,7 @@ Obj FuncNBits_HeadByNumber (
 
     /* look closely at the generators                                      */
     sl = 0;
-    pl = (UIntN*)DATA_WORD(l);
+    pl = CONST_DATA_WORD(l);
     while ( sl < nl && ((*pl & genm) >> ebits) < gr ) {
         sl++;  pl++;
     }
@@ -421,8 +421,8 @@ Obj FuncNBits_HeadByNumber (
     NEW_WORD( obj, PURETYPE_WORD(l), sl );
 
     /* copy the <l> part into the word                                     */
-    po = (UIntN*)DATA_WORD(obj);
-    pl = (UIntN*)DATA_WORD(l);
+    po = DATA_WORD(obj);
+    pl = CONST_DATA_WORD(l);
     while ( 0 < sl-- )
         *po++ = *pl++;
 
@@ -475,8 +475,8 @@ Obj FuncNBits_Less (
     Int         exr;            /* right exponent                          */
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
-    UIntN *     pl;             /* data area in <l>                        */
-    UIntN *     pr;             /* data area in <r>                        */
+    const UIntN * pl;           /* data area in <l>                        */
+    const UIntN * pr;           /* data area in <r>                        */
     Obj         lexico;         /* lexicographic order of <l> and <r>      */
     Obj         ll;             /* length of <l>                           */
     Obj         lr;             /* length of <r>                           */
@@ -497,8 +497,8 @@ Obj FuncNBits_Less (
     
     /* Skip the common prefix and determine if the first word is smaller   */
     /* with respect to the lexicographic ordering.                         */
-    pl = (UIntN*)DATA_WORD(l);
-    pr = (UIntN*)DATA_WORD(r);
+    pl = CONST_DATA_WORD(l);
+    pr = CONST_DATA_WORD(r);
     for ( lexico = False;  0 < nl && 0 < nr;  nl--, nr--, pl++, pr++ )
         if ( *pl != *pr ) {
             /* got a difference                                            */
@@ -591,7 +591,7 @@ Obj FuncNBits_AssocWord (
     num = LEN_LIST(data)/2;
     NEW_WORD( obj, type, num );
 
-    ptr = (UIntN*)DATA_WORD(obj);
+    ptr = DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
 
         /* this will not cause a garbage collection                        */
@@ -605,7 +605,7 @@ Obj FuncNBits_AssocWord (
         }
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
-        assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -660,7 +660,7 @@ Obj FuncNBits_ObjByVector (
     /* construct a new object                                              */
     NEW_WORD( obj, type, num );
 
-    ptr = (UIntN*)DATA_WORD(obj);
+    ptr = DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++, j++ ) {
 
         /* this will not cause a garbage collection                        */
@@ -669,7 +669,7 @@ Obj FuncNBits_ObjByVector (
         vexp = ELMW_LIST( data, j );
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((j-1) << ebits) | nexp;
-        assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -701,9 +701,9 @@ Obj FuncNBits_Power (
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         sr;             /* start position in <r>                   */
     Int         sl;             /* start position in <obj>                 */
-    UIntN *     pl;             /* data area in <l>                        */
+    const UIntN * pl;           /* data area in <l>                        */
     UIntN *     pr;             /* data area in <obj>                      */
-    UIntN *     pe;             /* end marker                              */
+    const UIntN * pe;           /* end marker                              */
     OInt        ex = 0;         /* meeting exponent                        */
     Int         pow;            /* power to take                           */
     Int         apw;            /* absolute value of <pow>                 */
@@ -738,8 +738,8 @@ Obj FuncNBits_Power (
     /* if <pow> is minus one invert <l>                                    */
     if ( pow == -1 ) {
         NEW_WORD( obj, PURETYPE_WORD(l), nl );
-        pl = (UIntN*)DATA_WORD(l);
-        pr = (UIntN*)DATA_WORD(obj) + (nl-1);
+        pl = CONST_DATA_WORD(l);
+        pr = DATA_WORD(obj) + (nl-1);
         sl = nl;
 
         /* exponents are symmetric, so we cannot get an overflow            */
@@ -750,17 +750,17 @@ Obj FuncNBits_Power (
     }
 
     /* split word into w * h * w^-1                                        */
-    pl = (UIntN*)DATA_WORD(l);
-    pr = pl + (nl-1);
+    pl = CONST_DATA_WORD(l);
+    pe = pl + (nl-1);
     sl = 0;
     sr = nl-1;
-    while ( (*pl & genm) == (*pr & genm) ) {
-        if ( (*pl&exps) == (*pr&exps) )
+    while ( (*pl & genm) == (*pe & genm) ) {
+        if ( (*pl&exps) == (*pe&exps) )
             break;
-        if ( (*pl&expm) + (*pr&expm) != exps )
+        if ( (*pl&expm) + (*pe&expm) != exps )
             break;
         pl++;  sl++;
-        pr--;  sr--;
+        pe--;  sr--;
     }
 
     /* special case: w * gi^n * w^-1                                       */
@@ -776,24 +776,24 @@ Obj FuncNBits_Power (
 
         /* copy <l> into <obj>                                             */
         NEW_WORD( obj, PURETYPE_WORD(l), nl );
-        pl = (UIntN*)DATA_WORD(l);
-        pr = (UIntN*)DATA_WORD(obj);
+        pl = CONST_DATA_WORD(l);
+        pr = DATA_WORD(obj);
         sl = nl;
         while ( 0 < sl-- ) {
             *pr++ = *pl++;
         }
 
         /* and fix the exponent at position <sr>                           */
-        pr = (UIntN*)DATA_WORD(obj);
+        pr = DATA_WORD(obj);
         pr[sr] = (pr[sr] & genm) | (ex & ((1UL<<ebits)-1));
         return obj;
     }
 
     /* special case: w * gj^x * t * gj^y * w^-1, x != -y                   */
-    if ( (*pl & genm) == (*pr & genm) ) {
-        ex = (*pl&expm) + (*pr&expm);
+    if ( (*pl & genm) == (*pe & genm) ) {
+        ex = (*pl&expm) + (*pe&expm);
         if ( *pl & exps )  ex -= exps;
-        if ( *pr & exps )  ex -= exps;
+        if ( *pe & exps )  ex -= exps;
 
         /* check that <ex> fits into the exponent                          */
         if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
@@ -809,8 +809,8 @@ Obj FuncNBits_Power (
         NEW_WORD( obj, PURETYPE_WORD(l), 2*(sl+1)+apw*(sr-sl-1)+(apw-1) );
 
         /* copy the beginning w * gj^x into <obj>                          */
-        pl = (UIntN*)DATA_WORD(l);
-        pr = (UIntN*)DATA_WORD(obj);
+        pl = CONST_DATA_WORD(l);
+        pr = DATA_WORD(obj);
         pe = pl+sl;
         while ( pl <= pe ) {
             *pr++ = *pl++;
@@ -819,7 +819,7 @@ Obj FuncNBits_Power (
         /* copy t * gj^<ex> <pow> times into <obj>                         */
         if ( 0 < pow ) {
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UIntN*)DATA_WORD(l) + (sl+1);
+                pl = CONST_DATA_WORD(l) + (sl+1);
                 pe = pl + (sr-sl-1);
                 while ( pl <= pe ) {
                     *pr++ = *pl++;
@@ -829,7 +829,7 @@ Obj FuncNBits_Power (
 
             /* copy tail gj^y * w^-1 into <obj>                            */
             pr[-1] = pl[-1];
-            pe = (UIntN*)DATA_WORD(l) + nl;
+            pe = CONST_DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr++ = *pl++;
             }
@@ -839,7 +839,7 @@ Obj FuncNBits_Power (
         else {
             pr[-1] = ( pl[sr-sl-1] ^ invm ) + 1;
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UIntN*)DATA_WORD(l) + (sr-1);
+                pl = CONST_DATA_WORD(l) + (sr-1);
                 pe = pl + (sl-sr+1);
                 while ( pe <= pl ) {
                     *pr++ = ( *pl-- ^ invm ) + 1;
@@ -849,8 +849,8 @@ Obj FuncNBits_Power (
 
             /* copy tail gj^x * w^-1 into <obj>                            */
             pr[-1] = ( pl[1] ^ invm ) + 1;
-            pl = (UIntN*)DATA_WORD(l) + (sr+1);
-            pe = (UIntN*)DATA_WORD(l) + nl;
+            pl = CONST_DATA_WORD(l) + (sr+1);
+            pe = CONST_DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr ++ = *pl++;
             }
@@ -866,8 +866,8 @@ Obj FuncNBits_Power (
         NEW_WORD( obj, PURETYPE_WORD(l), 2*sl+apw*(sr-sl+1) );
 
         /* copy the beginning w * gj^x into <obj>                          */
-        pl = (UIntN*)DATA_WORD(l);
-        pr = (UIntN*)DATA_WORD(obj);
+        pl = CONST_DATA_WORD(l);
+        pr = DATA_WORD(obj);
         pe = pl+sl;
         while ( pl < pe ) {
             *pr++ = *pl++;
@@ -876,7 +876,7 @@ Obj FuncNBits_Power (
         /* copy t <pow> times into <obj>                                   */
         if ( 0 < pow ) {
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UIntN*)DATA_WORD(l) + sl;
+                pl = CONST_DATA_WORD(l) + sl;
                 pe = pl + (sr-sl);
                 while ( pl <= pe ) {
                     *pr++ = *pl++;
@@ -884,7 +884,7 @@ Obj FuncNBits_Power (
             }
 
             /* copy tail w^-1 into <obj>                                   */
-            pe = (UIntN*)DATA_WORD(l) + nl;
+            pe = CONST_DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr++ = *pl++;
             }
@@ -893,7 +893,7 @@ Obj FuncNBits_Power (
         /* copy and invert t <pow> times into <obj>                        */
         else {
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UIntN*)DATA_WORD(l) + sr;
+                pl = CONST_DATA_WORD(l) + sr;
                 pe = pl + (sl-sr);
                 while ( pe <= pl ) {
                     *pr++ = ( *pl-- ^ invm ) + 1;
@@ -901,8 +901,8 @@ Obj FuncNBits_Power (
             }
 
             /* copy tail w^-1 into <obj>                                   */
-            pl = (UIntN*)DATA_WORD(l) + (sr+1);
-            pe = (UIntN*)DATA_WORD(l) + nl;
+            pl = CONST_DATA_WORD(l) + (sr+1);
+            pe = CONST_DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr ++ = *pl++;
             }
@@ -932,8 +932,8 @@ Obj FuncNBits_Product (
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
     Int         sr;             /* start position in <r>                   */
-    UIntN *     pl;             /* data area in <l>                        */
-    UIntN *     pr;             /* data area in <r>                        */
+    const UIntN * pl;           /* data area in <l>                        */
+    const UIntN * pr;           /* data area in <r>                        */
     Obj         obj;            /* the result                              */
     UIntN *     po;             /* data area in <obj>                      */
     Int         ex = 0;         /* meeting exponent                        */
@@ -957,8 +957,8 @@ Obj FuncNBits_Product (
 
     /* look closely at the meeting point                                   */
     sr = 0;
-    pl = (UIntN*)DATA_WORD(l)+(nl-1);
-    pr = (UIntN*)DATA_WORD(r);
+    pl = CONST_DATA_WORD(l)+(nl-1);
+    pr = CONST_DATA_WORD(r);
     while ( 0 < nl && sr < nr && (*pl & genm) == (*pr & genm) ) {
         if ( (*pl&exps) == (*pr&exps) )
             break;
@@ -981,8 +981,8 @@ Obj FuncNBits_Product (
     NEW_WORD( obj, PURETYPE_WORD(l), nl+(nr-sr)-over );
 
     /* copy the <l> part into the word                                     */
-    po = (UIntN*)DATA_WORD(obj);
-    pl = (UIntN*)DATA_WORD(l);
+    po = DATA_WORD(obj);
+    pl = CONST_DATA_WORD(l);
     while ( 0 < nl-- )
         *po++ = *pl++;
 
@@ -993,7 +993,7 @@ Obj FuncNBits_Product (
     }
 
     /* copy the <r> part into the word                                     */
-    pr = ((UIntN*)DATA_WORD(r)) + sr;
+    pr = CONST_DATA_WORD(r) + sr;
     while ( sr++ < nr )
         *po++ = *pr++;
     return obj;
@@ -1020,8 +1020,8 @@ Obj FuncNBits_Quotient (
     UInt        genm;           /* generator mask                          */
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
-    UIntN *     pl;             /* data area in <l>                        */
-    UIntN *     pr;             /* data area in <r>                        */
+    const UIntN * pl;           /* data area in <l>                        */
+    const UIntN * pr;           /* data area in <r>                        */
     Obj         obj;            /* the result                              */
     UIntN *     po;             /* data area in <obj>                      */
     Int         ex = 0;         /* meeting exponent                        */
@@ -1044,8 +1044,8 @@ Obj FuncNBits_Quotient (
     if ( 0 == nr )  return l;
 
     /* look closely at the meeting point                                   */
-    pl = (UIntN*)DATA_WORD(l)+(nl-1);
-    pr = (UIntN*)DATA_WORD(r)+(nr-1);
+    pl = CONST_DATA_WORD(l)+(nl-1);
+    pr = CONST_DATA_WORD(r)+(nr-1);
     while ( 0 < nl && 0 < nr && (*pl & genm) == (*pr & genm) ) {
         if ( (*pl&exps) != (*pr&exps) )
             break;
@@ -1068,8 +1068,8 @@ Obj FuncNBits_Quotient (
     NEW_WORD( obj, PURETYPE_WORD(l), nl+nr-over );
 
     /* copy the <l> part into the word                                     */
-    po = (UIntN*)DATA_WORD(obj);
-    pl = (UIntN*)DATA_WORD(l);
+    po = DATA_WORD(obj);
+    pl = CONST_DATA_WORD(l);
     while ( 0 < nl-- )
         *po++ = *pl++;
 
@@ -1080,7 +1080,7 @@ Obj FuncNBits_Quotient (
     }
 
     /* copy the <r> part into the word                                     */
-    pr = ((UIntN*)DATA_WORD(r)) + (nr-1);
+    pr = CONST_DATA_WORD(r) + (nr-1);
     while ( 0 < nr-- ) {
         *po++ = (*pr&genm) | (exps-(*pr&expm)) | (~*pr & exps);
         pr--;
@@ -1103,11 +1103,12 @@ Obj FuncNBits_LengthWord (
 {
   UInt npairs,i,ebits,exps,expm;
   Obj len, uexp;
-  UIntN *data, pair;
+  const UIntN *data;
+  UIntN pair;
   
   npairs = NPAIRS_WORD(w);
   ebits = EBITS_WORD(w);
-  data = (UIntN*)DATA_WORD(w);
+  data = CONST_DATA_WORD(w);
   
   /* get the exponent masks                                              */
   exps = 1UL << (ebits-1);

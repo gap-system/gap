@@ -91,7 +91,7 @@ static Obj TYPE_KERNEL_OBJECT;
         CollectorsState()->SC_MAX_STACK_SIZE *= 2; \
         return -1; \
     } \
-    *++nw = (UIntN *)DATA_WORD(word); \
+    *++nw = CONST_DATA_WORD(word); \
     *++lw = *nw + (INT_INTOBJ((((const Obj*)(*nw))[-1])) - 1); \
     *++pw = *nw; \
     *++ew = (**pw) & expm; \
@@ -102,7 +102,7 @@ static Obj TYPE_KERNEL_OBJECT;
         CollectorsState()->SC_MAX_STACK_SIZE *= 2; \
         return -1; \
     } \
-    *++nw = (UIntN *)DATA_WORD(gen); \
+    *++nw = CONST_DATA_WORD(gen); \
     *++lw = *nw; \
     *++pw = *nw; \
     *++ew = exp; \
@@ -166,7 +166,7 @@ Obj WordVectorAndClear ( Obj type, Obj vv, Int num )
     NEW_WORD( obj, type, num );
 
     /* clear <vv>                                                          */
-    ptr = (UIntN*)DATA_WORD(obj);
+    ptr = DATA_WORD(obj);
     qtr = (Int*)(ADDR_OBJ(vv)+1);
     for ( i = 1, j = 0;  i <= num;  i++,  qtr++ ) {
         if ( *qtr != 0 ) {
@@ -199,7 +199,7 @@ Int VectorWord ( Obj vv, Obj v, Int num )
     Int         i;              /* loop variable for gen/exp pairs         */
     Int         pos;            /* generator number                        */
     Int *       qtr;            /* pointer into the collect vector         */
-    UIntN *     ptr;            /* pointer into the data area of <obj>     */
+    const UIntN * ptr;          /* pointer into the data area of <obj>     */
 
     /* <vv> must be a string                                               */
     if ( TNUM_OBJ(vv) != T_STRING ) {
@@ -227,7 +227,7 @@ Int VectorWord ( Obj vv, Obj v, Int num )
     expm = exps - 1;
 
     /* unfold <v> into <vv>                                                */
-    ptr = (UIntN*)DATA_WORD(v);
+    ptr = CONST_DATA_WORD(v);
     qtr = (Int*)ADDR_OBJ(vv);
     for ( i = NPAIRS_WORD(v);  0 < i;  i--, ptr++ ) {
         pos = ((*ptr) >> ebits)+1;
@@ -274,7 +274,7 @@ static Int SAddWordIntoExpVec( Int *v, const UIntN *w, Int e,
             v[i] -= ex * INT_INTOBJ(ro[i]);
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
                 start = SAddWordIntoExpVec(
-                    v, (UIntN*)DATA_WORD(pow[i]), ex,
+                    v, CONST_DATA_WORD(pow[i]), ex,
                     ebits, expm, ro, pow, lpow  );
             }
         }
@@ -300,7 +300,7 @@ static Int SAddPartIntoExpVec( Int *v, const UIntN *w, const UIntN *wend,
             v[i] -= ex * INT_INTOBJ(ro[i]);
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
                 start = SAddWordIntoExpVec(
-                    v, (const UIntN*)DATA_WORD(pow[i]), ex,
+                    v, CONST_DATA_WORD(pow[i]), ex,
                     ebits, expm, ro, pow, lpow  );
             }
         }
@@ -324,11 +324,11 @@ Int SingleCollectWord ( Obj sc, Obj vv, Obj w )
     UInt        exps;       /* sign exponent mask                          */
 
     Obj         vnw;        /* word stack                                  */
-    UIntN **    nw;         /* address of <vnw>                            */
+    const UIntN ** nw;      /* address of <vnw>                            */
     Obj         vlw;        /* last syllable stack                         */
-    UIntN **    lw;         /* address of <vlw>                            */
+    const UIntN ** lw;      /* address of <vlw>                            */
     Obj         vpw;        /* current syllable stack                      */
-    UIntN **    pw;         /* address of <vpw>                            */
+    const UIntN ** pw;      /* address of <vpw>                            */
     Obj         vew;        /* unprocessed exponent stack                  */
     UIntN *     ew;         /* address of <vew>                            */
     Obj         vge;        /* global exponent stack                       */
@@ -421,13 +421,13 @@ Int SingleCollectWord ( Obj sc, Obj vv, Obj w )
 
     /* from now on we use addresses instead of handles most of the time    */
     v  = (Int*)ADDR_OBJ(vv);
-    nw = (UIntN**)(ADDR_OBJ(vnw)+1);
-    lw = (UIntN**)(ADDR_OBJ(vlw)+1);
-    pw = (UIntN**)(ADDR_OBJ(vpw)+1);
+    nw = (const UIntN**)(CONST_ADDR_OBJ(vnw)+1);
+    lw = (const UIntN**)(CONST_ADDR_OBJ(vlw)+1);
+    pw = (const UIntN**)(CONST_ADDR_OBJ(vpw)+1);
     ew = (UIntN*)(ADDR_OBJ(vew)+1);
     ge = (Int*)(ADDR_OBJ(vge)+1);
 
-    /* conjuagtes, powers, order, generators, avector, inverses           */
+    /* conjugates, powers, order, generators, avector, inverses            */
     vpow = SC_POWERS(sc);
     lpow = LEN_PLIST(vpow);
     pow  = CONST_ADDR_OBJ(vpow);
@@ -660,7 +660,7 @@ Int Solution(
     /* start clearing <ww>, storing the result in <uu>                     */
     ptr = (Int*)(ADDR_OBJ(ww)+1);
     qtr = (Int*)(ADDR_OBJ(uu)+1);
-    gtr = (UIntN*)DATA_WORD(g);
+    gtr = DATA_WORD(g);
     for ( i = 0;  i < num; i++, ptr++, qtr++ ) {
         ro = INT_INTOBJ(ELMW_LIST(rod,i+1));
         *qtr = ( *qtr - *ptr ) % ro;
@@ -749,7 +749,7 @@ static void AddWordIntoExpVec( Int *v, const UIntN *w, Int e,
             v[i] -= ex * p;
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
                 AddWordIntoExpVec(
-                    v, (UIntN*)DATA_WORD(pow[i]), ex,
+                    v, CONST_DATA_WORD(pow[i]), ex,
                     ebits, expm, p, pow, lpow  );
             }
         }
@@ -775,7 +775,7 @@ static void AddCommIntoExpVec( Int *v, const UIntN *w, Int e,
             v[i] -= ex * p;
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
                 AddWordIntoExpVec(
-                    v, (UIntN*)DATA_WORD(pow[i]), ex,
+                    v, CONST_DATA_WORD(pow[i]), ex,
                     ebits, expm, p, pow, lpow  );
             }
         }
@@ -798,7 +798,7 @@ static void AddPartIntoExpVec( Int *v, const UIntN *w, const UIntN *wend,
             v[i] -= ex * p;
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
                 AddWordIntoExpVec(
-                    v, (UIntN*)DATA_WORD(pow[i]), ex,
+                    v, CONST_DATA_WORD(pow[i]), ex,
                     ebits, expm, p, pow, lpow  );
             }
         }
@@ -819,11 +819,11 @@ Int CombiCollectWord ( Obj sc, Obj vv, Obj w )
     UInt        exps;       /* sign exponent mask                          */
 
     Obj         vnw;        /* word stack                                  */
-    UIntN **    nw;         /* address of <vnw>                            */
+    const UIntN ** nw;      /* address of <vnw>                            */
     Obj         vlw;        /* last syllable stack                         */
-    UIntN **    lw;         /* address of <vlw>                            */
+    const UIntN ** lw;      /* address of <vlw>                            */
     Obj         vpw;        /* current syllable stack                      */
-    UIntN **    pw;         /* address of <vpw>                            */
+    const UIntN ** pw;      /* address of <vpw>                            */
     Obj         vew;        /* unprocessed exponent stack                  */
     UIntN *     ew;         /* address of <vew>                            */
     Obj         vge;        /* global exponent stack                       */
@@ -916,9 +916,9 @@ Int CombiCollectWord ( Obj sc, Obj vv, Obj w )
 
     /* from now on we use addresses instead of handles most of the time    */
     v  = (Int*)ADDR_OBJ(vv);
-    nw = (UIntN**)(ADDR_OBJ(vnw)+1);
-    lw = (UIntN**)(ADDR_OBJ(vlw)+1);
-    pw = (UIntN**)(ADDR_OBJ(vpw)+1);
+    nw = (const UIntN**)(CONST_ADDR_OBJ(vnw)+1);
+    lw = (const UIntN**)(CONST_ADDR_OBJ(vlw)+1);
+    pw = (const UIntN**)(CONST_ADDR_OBJ(vpw)+1);
     ew = (UIntN*)(ADDR_OBJ(vew)+1);
     ge = (Int*)(ADDR_OBJ(vge)+1);
 
@@ -1000,7 +1000,7 @@ Int CombiCollectWord ( Obj sc, Obj vv, Obj w )
                 v[gn] -= ex * p;
                 if ( gn <= lpow && pow[gn] && 0 < NPAIRS_WORD(pow[gn]) ) {
                     AddWordIntoExpVec(
-                      v, (UIntN*)DATA_WORD(pow[gn]), ex,
+                      v, CONST_DATA_WORD(pow[gn]), ex,
                       ebits, expm, p, pow, lpow  );
                 }
               }
@@ -1037,7 +1037,7 @@ Int CombiCollectWord ( Obj sc, Obj vv, Obj w )
                         tmp = ELM_PLIST( cnj[i], gn );
                         if ( tmp != 0 && 0 < NPAIRS_WORD(tmp) ) {
                             AddCommIntoExpVec(
-                                v, (UIntN*)DATA_WORD(tmp), v[i] * (*ew),
+                                v, CONST_DATA_WORD(tmp), v[i] * (*ew),
                                 ebits, expm, p, pow, lpow );
                         }
                     }
@@ -1061,7 +1061,7 @@ Int CombiCollectWord ( Obj sc, Obj vv, Obj w )
                             }
                         }
                         AddWordIntoExpVec(
-                             v, (UIntN*)DATA_WORD(pow[i]), ex,
+                             v, CONST_DATA_WORD(pow[i]), ex,
                              ebits, expm, p, pow, lpow  );
                     }
                 }
@@ -1081,7 +1081,7 @@ Int CombiCollectWord ( Obj sc, Obj vv, Obj w )
                           tmp = ELM_PLIST( cnj[i], gn );
                           if ( tmp != 0 && 0 < NPAIRS_WORD(tmp) )
                               AddCommIntoExpVec(
-                                  v, (UIntN*)DATA_WORD(tmp), v[i],
+                                  v, CONST_DATA_WORD(tmp), v[i],
                                   ebits, expm, p, pow, lpow );
                       }
               }
