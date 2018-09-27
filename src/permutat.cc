@@ -1375,196 +1375,122 @@ Obj             FuncCYCLE_PERM_INT (
 **
 **  'CycleStructPerm' returns a list of the form as described under
 **  `CycleStructure'.
-**  integer, under the permutation <perm> as a list.
 */
-Obj             FuncCYCLE_STRUCT_PERM (
-    Obj                 self,
-    Obj                 perm )
+template <typename T> static inline Obj CYCLE_STRUCT_PERM(Obj perm)
 {
     Obj                 list;           /* handle of the list (result)     */
     Obj *               ptList;         /* pointer to the list             */
-    const UInt2 *       ptPerm2;        /* pointer to the permutation      */
-    UInt2 * 		scratch2;
-    UInt2 *		offset2;
-    const UInt4 *       ptPerm4;        /* pointer to the permutation      */
-    UInt4 * 		scratch4;
-    UInt4 *		offset4;
+    const T *           ptPerm;         /* pointer to the permutation      */
+    T *                 scratch;
+    T *                 offset;
     UInt                deg;            /* degree of the permutation       */
     UInt                pnt;            /* value of the point              */
     UInt                len;            /* length of the cycle             */
     UInt                p;              /* loop variable                   */
-    UInt 		max;		/* maximal cycle length            */
-    UInt		cnt;
-    UInt		ende;
-    UInt		bytes;
-    UInt1 *		clr;
+    UInt                max;            /* maximal cycle length            */
+    UInt                cnt;
+    UInt                ende;
+    UInt                bytes;
+    UInt1 *             clr;
 
+    /* make sure that the buffer bag is large enough                       */
+    UseTmpPerm(SIZE_OBJ(perm) + 8);
+
+    /* find the largest moved point                                    */
+    ptPerm = CONST_ADDR_PERM<T>(perm);
+    for (deg = DEG_PERM<T>(perm); 1 <= deg; deg--) {
+        if (ptPerm[deg - 1] != deg - 1)
+            break;
+    }
+    if (deg == 0) {
+        /* special treatment of identity */
+        list = NEW_PLIST(T_PLIST, 0);
+        return list;
+    }
+
+    scratch = ADDR_PERM<T>(TmpPerm);
+
+    /* the first deg bytes of TmpPerm hold a bit list of points done
+     * so far. The remaining bytes will form the lengths of nontrivial
+     * cycles (as numbers of type T). As every nontrivial cycle requires
+     * at least 2 points, this is guaranteed to fit. */
+    bytes = ((deg / sizeof(T)) + 1) * sizeof(T); // ensure alignment
+    offset = (T *)((UInt)scratch + (bytes));
+    clr = (UInt1 *)scratch;
+
+    /* clear out the bits */
+    for (cnt = 0; cnt < bytes; cnt++) {
+        clr[cnt] = (UInt1)0;
+    }
+
+    cnt = 0;
+    clr = (UInt1 *)scratch;
+    max = 0;
+    for (pnt = 0; pnt < deg; pnt++) {
+        if (clr[pnt] == 0) {
+            len = 1;
+            clr[pnt] = 1;
+            for (p = ptPerm[pnt]; p != pnt; p = ptPerm[p]) {
+                clr[p] = 1;
+                len++;
+            }
+
+            if (len > 1) {
+                offset[cnt] = (T)len;
+                cnt++;
+                if (len > max) {
+                    max = len;
+                }
+            }
+        }
+    }
+
+    ende = cnt;
+
+    /* create the list */
+    list = NEW_PLIST(T_PLIST, max - 1);
+    SET_LEN_PLIST(list, max - 1);
+    ptList = ADDR_OBJ(list);
+
+    /* Recalculate after possible GC */
+    scratch = ADDR_PERM<T>(TmpPerm);
+    offset = (T *)((UInt)scratch + (bytes));
+
+    for (pnt = 1; pnt < max; pnt++) {
+        ptList[pnt] = 0;
+    } /* clean out */
+
+    for (cnt = 0; cnt < ende; cnt++) {
+        pnt = (UInt)offset[cnt];
+        pnt--;
+        ptList[pnt] = (Obj)((UInt)ptList[pnt] + 1);
+    }
+
+    for (pnt = 1; pnt < max; pnt++) {
+        if (ptList[pnt] != 0) {
+            ptList[pnt] = INTOBJ_INT((UInt)ptList[pnt]);
+        }
+    }
+
+    return list;
+}
+
+Obj FuncCYCLE_STRUCT_PERM(Obj self, Obj perm)
+{
     /* evaluate and check the arguments                                    */
-    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
+    while (TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4) {
         perm = ErrorReturnObj(
             "CycleStructPerm: <perm> must be a permutation (not a %s)",
             (Int)TNAM_OBJ(perm), 0L,
-            "you can replace <perm> via 'return <perm>;'" );
+            "you can replace <perm> via 'return <perm>;'");
     }
 
-    /* make sure that the buffer bag is large enough                       */
-    UseTmpPerm(SIZE_OBJ(perm)+8);
-
-    /* handle small permutations                                           */
-    if ( TNUM_OBJ(perm) == T_PERM2 ) {
-
-        /* get pointer to the permutation and the degree       */
-
-        /* find the largest moved point                                    */
-        ptPerm2 = CONST_ADDR_PERM2(perm);
-        for ( deg = DEG_PERM2(perm); 1 <= deg; deg-- ) {
-            if ( ptPerm2[deg-1] != deg-1 )
-                break;
-        }
-	if (deg==0) {
-	  /* special treatment of identity */
-	  list = NEW_PLIST( T_PLIST, 0 );
-	  return list;
-	}
-
-        scratch2=ADDR_PERM2(TmpPerm);
-
-	/* the first deg bytes of TmpPerm hold a bit list of points done
-	 * so far. The remaining bytes will form the lengths of nontrivial 
-	 * cycles (as 2 byte numbers). As every nontrivial cycle requires at
-	 * least 2 points, this is guaranteed to fit. */
-        bytes=((deg/2)+1)*2; /* ensure 2-byte align */
-        offset2=(UInt2*)((UInt)scratch2+(bytes));
-	clr=(UInt1*)scratch2;
-	/* clear out the bits */
-	for (cnt=0;cnt<bytes;cnt++) {
-	  clr[cnt]=(UInt1)0;
-	}
-
-	cnt=0;
-	clr=(UInt1*)scratch2;
-	max=0;
-	for (pnt=0;pnt<deg;pnt++) {
-	  if ( clr[pnt] ==0 ) {
-	    len=1;
-	    clr[pnt]=1;
-	    for ( p = ptPerm2[pnt]; p != pnt; p = ptPerm2[p] ) {
-	      clr[p]=1;
-	      len++;
-	    }
-	    /*Pr("pnt:%d, len=%d\n",pnt,len);*/
-	    if (len>1) {
-	      offset2[cnt]=(UInt2)len;
-	      cnt++;
-	      if (len>max) { max=len;}
-	    }
-	  }
-	}
-       
-	ende=cnt;
-
-	/*Pr("max=%d cnt=%d\n",max,cnt);*/
-	/* create the list */
-	list=NEW_PLIST(T_PLIST,max-1);
-	SET_LEN_PLIST(list,max-1);
-        ptList = ADDR_OBJ(list);
-
-        /* Recalculate after possible GC */
-        scratch2=ADDR_PERM2(TmpPerm);
-        offset2=(UInt2*)((UInt)scratch2+(bytes));
-
-	for (pnt=1;pnt<=max-1;pnt++) { ptList[pnt]=0; } /* clean out */
-
-	for (cnt=0; cnt<ende;cnt++) {
-	  pnt=(UInt)offset2[cnt];
-	  /*Pr("> cnt=%d pnt=%d\n",cnt,pnt);*/
-	  pnt--;
-	  ptList[pnt]=(Obj)((UInt)ptList[pnt]+1);
-
-	} 
-
-    } 
-
-    /* handle large permutations                                           */
+    if (TNUM_OBJ(perm) == T_PERM2) {
+        return CYCLE_STRUCT_PERM<UInt2>(perm);
+    }
     else {
-
-        /* get pointer to the permutation and the degree       */
-
-        /* find the largest moved point                                    */
-        ptPerm4 = ADDR_PERM4(perm);
-        for ( deg = DEG_PERM4(perm); 1 <= deg; deg-- ) {
-            if ( ptPerm4[deg-1] != deg-1 )
-                break;
-        }
-	if (deg==0) {
-	  /* special treatment of identity */
-	  list = NEW_PLIST( T_PLIST, 0 );
-	  return list;
-	}
-
-	/* the first deg bytes of TmpPerm hold a bit list of points done
-	 * so far. The remaining bytes will form the lengths of nontrivial 
-	 * cycles (as 4 byte numbers). As every nontrivial cycle requires at
-	 * least 2 points, this is guaranteed to fit. */
-        scratch4=ADDR_PERM4(TmpPerm);
-        bytes=((deg/4)+1)*4; /* ensure 4-byte align */
-        offset4=(UInt4*)((UInt)scratch4+(bytes));
-	clr=(UInt1*)scratch4;
-	/* clear out the bits */
-	for (cnt=0;cnt<bytes;cnt++) {
-	  clr[cnt]=(UInt1)0;
-	}
-
-	cnt=0;
-	clr=(UInt1*)scratch4;
-	max=0;
-	for (pnt=0;pnt<deg;pnt++) {
-	  if ( clr[pnt] ==0 ) {
-	    len=1;
-	    clr[pnt]=1;
-	    for ( p = ptPerm4[pnt]; p != pnt; p = ptPerm4[p] ) {
-	      clr[p]=1;
-	      len++;
-	    }
-	    /*Pr("pnt:%d, len=%d\n",pnt,len);*/
-	    if (len>1) {
-	      offset4[cnt]=(UInt4)len;
-	      cnt++;
-	      if (len>max) { max=len;}
-	    }
-	  }
-	}
-       
-	ende=cnt;
-
-	/*Pr("max=%d cnt=%d\n",max,cnt);*/
-	/* create the list */
-	list=NEW_PLIST(T_PLIST,max-1);
-	SET_LEN_PLIST(list,max-1);
-        ptList = ADDR_OBJ(list);
-
-        /* Recalculate after possible GC */
-        scratch4=ADDR_PERM4(TmpPerm);
-        offset4=(UInt4*)((UInt)scratch4+(bytes));
-
-	for (pnt=1;pnt<max;pnt++) { ptList[pnt]=0; } /* clean out */
-
-	for (cnt=0; cnt<ende;cnt++) {
-	  pnt=(UInt)offset4[cnt];
-	  /*Pr("> cnt=%d pnt=%d\n",cnt,pnt);*/
-	  pnt--;
-	  ptList[pnt]=(Obj)((UInt)ptList[pnt]+1);
-
-	} 
-
+        return CYCLE_STRUCT_PERM<UInt4>(perm);
     }
-
-    for (pnt=1; pnt<max;pnt++) {
-      if (ptList[pnt]!=0) { ptList[pnt]=INTOBJ_INT((UInt)ptList[pnt]);}
-    } 
-
-    /* return the list                                                     */
-    return list;
 }
 
 /****************************************************************************
