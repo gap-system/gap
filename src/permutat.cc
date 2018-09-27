@@ -2000,67 +2000,49 @@ Obj FuncSPLIT_PARTITION(
 **  'DistancePerms' returns the number of points moved by <perm1>/<perm2>
 **
 */
-
-Obj FuncDISTANCE_PERMS( Obj self, Obj p1, Obj p2)
+template <typename TL, typename TR>
+static inline Obj DISTANCE_PERMS(Obj opL, Obj opR)
 {
-  UInt dist = 0;
-  if (TNUM_OBJ(p1) == T_PERM2 && TNUM_OBJ(p2) == T_PERM2) {
-    const UInt2 *pt1 = CONST_ADDR_PERM2(p1);
-    const UInt2 *pt2 = CONST_ADDR_PERM2(p2);
-    UInt l1 = DEG_PERM2(p1);
-    UInt l2 = DEG_PERM2(p2);
-    UInt lmin = (l1 < l2) ? l1 : l2;
-    UInt i;
-    for (i = 0; i < lmin; i++)
-      if (pt1[i] != pt2[i])
-	dist++;
-    for (; i < l1; i++)
-      if (pt1[i] != i)
-	dist++;
-    for (; i < l2; i++)
-      if (pt2[i] != i)
-	dist++;
-  } else {
-    if (TNUM_OBJ(p1) == T_PERM2 && TNUM_OBJ(p2) == T_PERM4) {
-      Obj temp = p1;
-      p1 = p2;
-      p2 = temp;
+    UInt       dist = 0;
+    const TL * ptL = CONST_ADDR_PERM<TL>(opL);
+    const TR * ptR = CONST_ADDR_PERM<TR>(opR);
+    UInt       degL = DEG_PERM<TL>(opL);
+    UInt       degR = DEG_PERM<TR>(opR);
+    UInt       i;
+    if (degL < degR) {
+        for (i = 0; i < degL; i++)
+            if (ptL[i] != ptR[i])
+                dist++;
+        for (; i < degR; i++)
+            if (ptR[i] != i)
+                dist++;
     }
-    if (TNUM_OBJ(p1) == T_PERM4 && TNUM_OBJ(p2) == T_PERM2) {
-      const UInt4 *pt1 = CONST_ADDR_PERM4(p1);
-      const UInt2 *pt2 = CONST_ADDR_PERM2(p2);
-      UInt l1 = DEG_PERM4(p1);
-      UInt l2 = DEG_PERM2(p2);
-      UInt lmin = (l1 < l2) ? l1 : l2;
-      UInt i;
-      for (i = 0; i < lmin; i++)
-	if (pt1[i] != pt2[i])
-	  dist++;
-      for (; i < l1; i++)
-	if (pt1[i] != i)
-	  dist++;
-      for (; i < l2; i++)
-	if (pt2[i] != i)
-	  dist++;
-    } else {
-      const UInt4 *pt1 = CONST_ADDR_PERM4(p1);
-      const UInt4 *pt2 = CONST_ADDR_PERM4(p2);
-      UInt l1 = DEG_PERM4(p1);
-      UInt l2 = DEG_PERM4(p2);
-      UInt lmin = (l1 < l2) ? l1 : l2;
-      UInt i;
-      for (i = 0; i < lmin; i++)
-	if (pt1[i] != pt2[i])
-	  dist++;
-      for (; i < l1; i++)
-	if (pt1[i] != i)
-	  dist++;
-      for (; i < l2; i++)
-	if (pt2[i] != i)
-	  dist++;
+    else {
+        for (i = 0; i < degR; i++)
+            if (ptL[i] != ptR[i])
+                dist++;
+        for (; i < degL; i++)
+            if (ptL[i] != i)
+                dist++;
     }
-  }
-  return INTOBJ_INT(dist);
+
+    return INTOBJ_INT(dist);
+}
+
+Obj FuncDISTANCE_PERMS(Obj self, Obj opL, Obj opR)
+{
+    UInt type = (TNUM_OBJ(opL) == T_PERM2 ? 20 : 40) + (TNUM_OBJ(opR) == T_PERM2 ? 2 : 4);
+    switch (type) {
+    case 22:
+        return DISTANCE_PERMS<UInt2, UInt2>(opL, opR);
+    case 24:
+        return DISTANCE_PERMS<UInt2, UInt4>(opL, opR);
+    case 42:
+        return DISTANCE_PERMS<UInt4, UInt2>(opL, opR);
+    case 44:
+        return DISTANCE_PERMS<UInt4, UInt4>(opL, opR);
+    }
+    return Fail;
 }
 
 /****************************************************************************
