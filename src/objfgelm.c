@@ -90,6 +90,9 @@
 *F * * * * * * * * * * * * * * * * 8 bits words * * * * * * * * * * * * * * *
 */
 
+#undef UIntN
+#define UIntN UInt1
+
 /****************************************************************************
 **
 *F  Func8Bits_Equal( <self>, <l>, <r> )
@@ -101,8 +104,8 @@ Obj Func8Bits_Equal (
 {
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
-    UInt1 *     pl;             /* data area in <l>                        */
-    UInt1 *     pr;             /* data area in <r>                        */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <r>                        */
 
     /* if <l> or <r> is the identity it is easy                            */
     nl = NPAIRS_WORD(l);
@@ -112,8 +115,8 @@ Obj Func8Bits_Equal (
     }
 
     /* compare the generator/exponent pairs                                */
-    pl = (UInt1*)DATA_WORD(l);
-    pr = (UInt1*)DATA_WORD(r);
+    pl = (UIntN*)DATA_WORD(l);
+    pr = (UIntN*)DATA_WORD(r);
     for ( ;  0 < nl;  nl--, pl++, pr++ ) {
         if ( *pl != *pr ) {
             return False;
@@ -143,7 +146,7 @@ Obj Func8Bits_ExponentSums3 (
     Int         i;              /* loop variable for gen/exp pairs         */
     Int         pos;            /* current generator number                */
     Int         exp;            /* current exponent                        */
-    UInt1 *     ptr;            /* pointer into the data area of <obj>     */
+    UIntN *     ptr;            /* pointer into the data area of <obj>     */
 
     /* <start> must be positive                                            */
     while ( !IS_POS_INTOBJ(vstart) )
@@ -180,7 +183,7 @@ Obj Func8Bits_ExponentSums3 (
         SET_ELM_PLIST( sums, i-start+1, 0 );
 
     /* and unpack <obj> into <sums>                                        */
-    ptr = (UInt1*)DATA_WORD(obj);
+    ptr = (UIntN*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
         pos = ((*ptr) >> ebits)+1;
         if ( start <= pos && pos <= end ) {
@@ -192,7 +195,7 @@ Obj Func8Bits_ExponentSums3 (
             /* this will not cause a garbage collection                    */
             exp = exp + (Int) ELM_PLIST( sums, pos-start+1 );
             SET_ELM_PLIST( sums, pos-start+1, (Obj) exp );
-            assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
+            assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
         }
     }
 
@@ -234,7 +237,7 @@ Obj Func8Bits_ExponentSyllable (
     UInt        exps;           /* sign exponent mask                      */
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* integer corresponding to <vi>           */
-    UInt1       p;              /* <i>th syllable                          */
+    UIntN       p;              /* <i>th syllable                          */
 
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
@@ -251,7 +254,7 @@ Obj Func8Bits_ExponentSyllable (
     expm = exps - 1;
 
     /* return the <i> th exponent                                          */
-    p = ((UInt1*)DATA_WORD(w))[i-1];
+    p = ((UIntN*)DATA_WORD(w))[i-1];
     if ( p & exps )
         return INTOBJ_INT((p&expm)-exps);
     else
@@ -273,7 +276,7 @@ Obj Func8Bits_ExtRepOfObj (
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* loop variable for gen/exp pairs         */
     Obj         type;           /* type of <obj>                           */
-    UInt1 *     ptr;            /* pointer into the data area of <obj>     */
+    UIntN *     ptr;            /* pointer into the data area of <obj>     */
     Obj         lst;            /* result                                  */
 
     /* get the type of <obj>                                               */
@@ -294,7 +297,7 @@ Obj Func8Bits_ExtRepOfObj (
     SET_LEN_PLIST( lst, 2*num );
 
     /* and unpack <obj> into <lst>                                         */
-    ptr = (UInt1*)DATA_WORD(obj);
+    ptr = (UIntN*)DATA_WORD(obj);
 
     /* this will not cause a garbage collection                            */
     for ( i = 1;  i <= num;  i++, ptr++ ) {
@@ -303,7 +306,7 @@ Obj Func8Bits_ExtRepOfObj (
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT(((*ptr)&expm)-exps) );
         else
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT((*ptr)&expm) );
-        assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(lst);
 
@@ -324,7 +327,7 @@ Obj Func8Bits_GeneratorSyllable (
     Int         ebits;          /* number of bits in the exponent          */
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* integer corresponding to <vi>           */
-    UInt1       p;              /* <i>th syllable                          */
+    UIntN       p;              /* <i>th syllable                          */
 
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
@@ -337,7 +340,7 @@ Obj Func8Bits_GeneratorSyllable (
     ebits = EBITS_WORD(w);
 
     /* return the <i> th generator                                         */
-    p = ((UInt1*)DATA_WORD(w))[i-1];
+    p = ((UIntN*)DATA_WORD(w))[i-1];
     return INTOBJ_INT((p >> ebits)+1);
 }
 
@@ -356,9 +359,9 @@ Obj Func8Bits_HeadByNumber (
     Int         sl;             /* start position in <obj>                 */
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         gr;             /* value of <r>                            */
-    UInt1 *     pl;             /* data area in <l>                        */
+    UIntN *     pl;             /* data area in <l>                        */
     Obj         obj;            /* the result                              */
-    UInt1 *     po;             /* data area in <obj>                      */
+    UIntN *     po;             /* data area in <obj>                      */
 
     /* get the generator number to stop                                    */
     gr = INT_INTOBJ(r) - 1;
@@ -367,7 +370,7 @@ Obj Func8Bits_HeadByNumber (
     ebits = EBITS_WORD(l);
 
     /* get the generator mask                                              */
-    genm = ((1UL << (8-ebits)) - 1) << ebits;
+    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <l> is the identity return                                       */
     nl = NPAIRS_WORD(l);
@@ -375,7 +378,7 @@ Obj Func8Bits_HeadByNumber (
 
     /* look closely at the generators                                      */
     sl = 0;
-    pl = (UInt1*)DATA_WORD(l);
+    pl = (UIntN*)DATA_WORD(l);
     while ( sl < nl && ((*pl & genm) >> ebits) < gr ) {
         sl++;  pl++;
     }
@@ -386,8 +389,8 @@ Obj Func8Bits_HeadByNumber (
     NEW_WORD( obj, PURETYPE_WORD(l), sl );
 
     /* copy the <l> part into the word                                     */
-    po = (UInt1*)DATA_WORD(obj);
-    pl = (UInt1*)DATA_WORD(l);
+    po = (UIntN*)DATA_WORD(obj);
+    pl = (UIntN*)DATA_WORD(l);
     while ( 0 < sl-- )
         *po++ = *pl++;
 
@@ -436,8 +439,8 @@ Obj Func8Bits_Less (
     Int         exr;            /* right exponent                          */
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
-    UInt1 *     pl;             /* data area in <l>                        */
-    UInt1 *     pr;             /* data area in <r>                        */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <r>                        */
     Obj         lexico;         /* lexicographic order of <l> and <r>      */
     Obj         ll;             /* length of <l>                           */
     Obj         lr;             /* length of <r>                           */
@@ -458,14 +461,14 @@ Obj Func8Bits_Less (
     
     /* Skip the common prefix and determine if the first word is smaller   */
     /* with respect to the lexicographic ordering.                         */
-    pl = (UInt1*)DATA_WORD(l);
-    pr = (UInt1*)DATA_WORD(r);
+    pl = (UIntN*)DATA_WORD(l);
+    pr = (UIntN*)DATA_WORD(r);
     for ( lexico = False;  0 < nl && 0 < nr;  nl--, nr--, pl++, pr++ )
         if ( *pl != *pr ) {
             /* got a difference                                            */
 
             /* get the generator mask                                      */
-            genm = ((1UL << (8-ebits)) - 1) << ebits;
+            genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
             /* compare the generators                                      */
             if ( (*pl & genm) != (*pr & genm) ) {
@@ -536,7 +539,7 @@ Obj Func8Bits_AssocWord (
     Obj         vgen;           /* value of current generator              */
     Int         ngen;           /* current generator                       */
     Obj         obj;            /* result                                  */
-    UInt1 *     ptr;            /* pointer into the data area of <obj>     */
+    UIntN *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
     ebits = EBITS_WORDTYPE(type);
@@ -548,8 +551,7 @@ Obj Func8Bits_AssocWord (
     num = LEN_LIST(data)/2;
     NEW_WORD( obj, type, num );
 
-    /* use UInt1 pointer for eight bits                                    */
-    ptr = (UInt1*)DATA_WORD(obj);
+    ptr = (UIntN*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
 
         /* this will not cause a garbage collection                        */
@@ -563,7 +565,7 @@ Obj Func8Bits_AssocWord (
         }
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
-        assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -588,7 +590,7 @@ Obj Func8Bits_ObjByVector (
     Int         nexp;           /* current exponent                        */
     Obj         vexp;           /* value of current exponent               */
     Obj         obj;            /* result                                  */
-    UInt1 *     ptr;            /* pointer into the data area of <obj>     */
+    UIntN *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
     ebits = EBITS_WORDTYPE(type);
@@ -614,8 +616,7 @@ Obj Func8Bits_ObjByVector (
     /* construct a new object                                              */
     NEW_WORD( obj, type, num );
 
-    /* use UInt1 pointer for eight bits                                    */
-    ptr = (UInt1*)DATA_WORD(obj);
+    ptr = (UIntN*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++, j++ ) {
 
         /* this will not cause a garbage collection                        */
@@ -624,7 +625,7 @@ Obj Func8Bits_ObjByVector (
         vexp = ELMW_LIST( data, j );
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((j-1) << ebits) | nexp;
-        assert( ptr == (UInt1*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -650,9 +651,9 @@ Obj Func8Bits_Power (
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         sr;             /* start position in <r>                   */
     Int         sl;             /* start position in <obj>                 */
-    UInt1 *     pl;             /* data area in <l>                        */
-    UInt1 *     pr;             /* data area in <obj>                      */
-    UInt1 *     pe;             /* end marker                              */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <obj>                      */
+    UIntN *     pe;             /* end marker                              */
     Int         ex = 0;         /* meeting exponent                        */
     Int         pow;            /* power to take                           */
     Int         apw;            /* absolute value of <pow>                 */
@@ -666,7 +667,7 @@ Obj Func8Bits_Power (
     invm = (1UL<<ebits)-1;
 
     /* get the generator mask                                              */
-    genm = ((1UL << (8-ebits)) - 1) << ebits;
+    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <l> is the identity return <l>                                   */
     nl = NPAIRS_WORD(l);
@@ -687,8 +688,8 @@ Obj Func8Bits_Power (
     /* if <pow> is minus one invert <l>                                    */
     if ( pow == -1 ) {
         NEW_WORD( obj, PURETYPE_WORD(l), nl );
-        pl = (UInt1*)DATA_WORD(l);
-        pr = (UInt1*)DATA_WORD(obj) + (nl-1);
+        pl = (UIntN*)DATA_WORD(l);
+        pr = (UIntN*)DATA_WORD(obj) + (nl-1);
         sl = nl;
 
         /* exponents are symmetric, so we cannot get an overflow            */
@@ -699,7 +700,7 @@ Obj Func8Bits_Power (
     }
 
     /* split word into w * h * w^-1                                        */
-    pl = (UInt1*)DATA_WORD(l);
+    pl = (UIntN*)DATA_WORD(l);
     pr = pl + (nl-1);
     sl = 0;
     sr = nl-1;
@@ -725,15 +726,15 @@ Obj Func8Bits_Power (
 
         /* copy <l> into <obj>                                             */
         NEW_WORD( obj, PURETYPE_WORD(l), nl );
-        pl = (UInt1*)DATA_WORD(l);
-        pr = (UInt1*)DATA_WORD(obj);
+        pl = (UIntN*)DATA_WORD(l);
+        pr = (UIntN*)DATA_WORD(obj);
         sl = nl;
         while ( 0 < sl-- ) {
             *pr++ = *pl++;
         }
 
         /* and fix the exponent at position <sr>                           */
-        pr = (UInt1*)DATA_WORD(obj);
+        pr = (UIntN*)DATA_WORD(obj);
         pr[sr] = (pr[sr] & genm) | (ex & ((1UL<<ebits)-1));
         return obj;
     }
@@ -758,8 +759,8 @@ Obj Func8Bits_Power (
         NEW_WORD( obj, PURETYPE_WORD(l), 2*(sl+1)+apw*(sr-sl-1)+(apw-1) );
 
         /* copy the beginning w * gj^x into <obj>                          */
-        pl = (UInt1*)DATA_WORD(l);
-        pr = (UInt1*)DATA_WORD(obj);
+        pl = (UIntN*)DATA_WORD(l);
+        pr = (UIntN*)DATA_WORD(obj);
         pe = pl+sl;
         while ( pl <= pe ) {
             *pr++ = *pl++;
@@ -768,7 +769,7 @@ Obj Func8Bits_Power (
         /* copy t * gj^<ex> <pow> times into <obj>                         */
         if ( 0 < pow ) {
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UInt1*)DATA_WORD(l) + (sl+1);
+                pl = (UIntN*)DATA_WORD(l) + (sl+1);
                 pe = pl + (sr-sl-1);
                 while ( pl <= pe ) {
                     *pr++ = *pl++;
@@ -778,7 +779,7 @@ Obj Func8Bits_Power (
 
             /* copy tail gj^y * w^-1 into <obj>                            */
             pr[-1] = pl[-1];
-            pe = (UInt1*)DATA_WORD(l) + nl;
+            pe = (UIntN*)DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr++ = *pl++;
             }
@@ -788,7 +789,7 @@ Obj Func8Bits_Power (
         else {
             pr[-1] = ( pl[sr-sl-1] ^ invm ) + 1;
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UInt1*)DATA_WORD(l) + (sr-1);
+                pl = (UIntN*)DATA_WORD(l) + (sr-1);
                 pe = pl + (sl-sr+1);
                 while ( pe <= pl ) {
                     *pr++ = ( *pl-- ^ invm ) + 1;
@@ -798,8 +799,8 @@ Obj Func8Bits_Power (
 
             /* copy tail gj^x * w^-1 into <obj>                            */
             pr[-1] = ( pl[1] ^ invm ) + 1;
-            pl = (UInt1*)DATA_WORD(l) + (sr+1);
-            pe = (UInt1*)DATA_WORD(l) + nl;
+            pl = (UIntN*)DATA_WORD(l) + (sr+1);
+            pe = (UIntN*)DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr ++ = *pl++;
             }
@@ -815,8 +816,8 @@ Obj Func8Bits_Power (
         NEW_WORD( obj, PURETYPE_WORD(l), 2*sl+apw*(sr-sl+1) );
 
         /* copy the beginning w * gj^x into <obj>                          */
-        pl = (UInt1*)DATA_WORD(l);
-        pr = (UInt1*)DATA_WORD(obj);
+        pl = (UIntN*)DATA_WORD(l);
+        pr = (UIntN*)DATA_WORD(obj);
         pe = pl+sl;
         while ( pl < pe ) {
             *pr++ = *pl++;
@@ -825,7 +826,7 @@ Obj Func8Bits_Power (
         /* copy t <pow> times into <obj>                                   */
         if ( 0 < pow ) {
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UInt1*)DATA_WORD(l) + sl;
+                pl = (UIntN*)DATA_WORD(l) + sl;
                 pe = pl + (sr-sl);
                 while ( pl <= pe ) {
                     *pr++ = *pl++;
@@ -833,7 +834,7 @@ Obj Func8Bits_Power (
             }
 
             /* copy tail w^-1 into <obj>                                   */
-            pe = (UInt1*)DATA_WORD(l) + nl;
+            pe = (UIntN*)DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr++ = *pl++;
             }
@@ -842,7 +843,7 @@ Obj Func8Bits_Power (
         /* copy and invert t <pow> times into <obj>                        */
         else {
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UInt1*)DATA_WORD(l) + sr;
+                pl = (UIntN*)DATA_WORD(l) + sr;
                 pe = pl + (sl-sr);
                 while ( pe <= pl ) {
                     *pr++ = ( *pl-- ^ invm ) + 1;
@@ -850,8 +851,8 @@ Obj Func8Bits_Power (
             }
 
             /* copy tail w^-1 into <obj>                                   */
-            pl = (UInt1*)DATA_WORD(l) + (sr+1);
-            pe = (UInt1*)DATA_WORD(l) + nl;
+            pl = (UIntN*)DATA_WORD(l) + (sr+1);
+            pe = (UIntN*)DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr ++ = *pl++;
             }
@@ -877,10 +878,10 @@ Obj Func8Bits_Product (
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
     Int         sr;             /* start position in <r>                   */
-    UInt1 *     pl;             /* data area in <l>                        */
-    UInt1 *     pr;             /* data area in <r>                        */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <r>                        */
     Obj         obj;            /* the result                              */
-    UInt1 *     po;             /* data area in <obj>                      */
+    UIntN *     po;             /* data area in <obj>                      */
     Int         ex = 0;         /* meeting exponent                        */
     Int         over;           /* overlap                                 */
 
@@ -892,7 +893,7 @@ Obj Func8Bits_Product (
     expm = exps - 1;
 
     /* get the generator mask                                              */
-    genm = ((1UL << (8-ebits)) - 1) << ebits;
+    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <l> or <r> is the identity return the other                      */
     nl = NPAIRS_WORD(l);
@@ -902,8 +903,8 @@ Obj Func8Bits_Product (
 
     /* look closely at the meeting point                                   */
     sr = 0;
-    pl = (UInt1*)DATA_WORD(l)+(nl-1);
-    pr = (UInt1*)DATA_WORD(r);
+    pl = (UIntN*)DATA_WORD(l)+(nl-1);
+    pr = (UIntN*)DATA_WORD(r);
     while ( 0 < nl && sr < nr && (*pl & genm) == (*pr & genm) ) {
         if ( (*pl&exps) == (*pr&exps) )
             break;
@@ -926,8 +927,8 @@ Obj Func8Bits_Product (
     NEW_WORD( obj, PURETYPE_WORD(l), nl+(nr-sr)-over );
 
     /* copy the <l> part into the word                                     */
-    po = (UInt1*)DATA_WORD(obj);
-    pl = (UInt1*)DATA_WORD(l);
+    po = (UIntN*)DATA_WORD(obj);
+    pl = (UIntN*)DATA_WORD(l);
     while ( 0 < nl-- )
         *po++ = *pl++;
 
@@ -938,7 +939,7 @@ Obj Func8Bits_Product (
     }
 
     /* copy the <r> part into the word                                     */
-    pr = ((UInt1*)DATA_WORD(r)) + sr;
+    pr = ((UIntN*)DATA_WORD(r)) + sr;
     while ( sr++ < nr )
         *po++ = *pr++;
     return obj;
@@ -961,10 +962,10 @@ Obj Func8Bits_Quotient (
     UInt        genm;           /* generator mask                          */
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
-    UInt1 *     pl;             /* data area in <l>                        */
-    UInt1 *     pr;             /* data area in <r>                        */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <r>                        */
     Obj         obj;            /* the result                              */
-    UInt1 *     po;             /* data area in <obj>                      */
+    UIntN *     po;             /* data area in <obj>                      */
     Int         ex = 0;         /* meeting exponent                        */
     Int         over;           /* overlap                                 */
 
@@ -977,7 +978,7 @@ Obj Func8Bits_Quotient (
     sepm = (1UL << ebits) - 1;
 
     /* get the generator mask                                              */
-    genm = ((1UL << (8-ebits)) - 1) << ebits;
+    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <r> is the identity return <l>                                   */
     nl = NPAIRS_WORD(l);
@@ -985,8 +986,8 @@ Obj Func8Bits_Quotient (
     if ( 0 == nr )  return l;
 
     /* look closely at the meeting point                                   */
-    pl = (UInt1*)DATA_WORD(l)+(nl-1);
-    pr = (UInt1*)DATA_WORD(r)+(nr-1);
+    pl = (UIntN*)DATA_WORD(l)+(nl-1);
+    pr = (UIntN*)DATA_WORD(r)+(nr-1);
     while ( 0 < nl && 0 < nr && (*pl & genm) == (*pr & genm) ) {
         if ( (*pl&exps) != (*pr&exps) )
             break;
@@ -1009,8 +1010,8 @@ Obj Func8Bits_Quotient (
     NEW_WORD( obj, PURETYPE_WORD(l), nl+nr-over );
 
     /* copy the <l> part into the word                                     */
-    po = (UInt1*)DATA_WORD(obj);
-    pl = (UInt1*)DATA_WORD(l);
+    po = (UIntN*)DATA_WORD(obj);
+    pl = (UIntN*)DATA_WORD(l);
     while ( 0 < nl-- )
         *po++ = *pl++;
 
@@ -1021,7 +1022,7 @@ Obj Func8Bits_Quotient (
     }
 
     /* copy the <r> part into the word                                     */
-    pr = ((UInt1*)DATA_WORD(r)) + (nr-1);
+    pr = ((UIntN*)DATA_WORD(r)) + (nr-1);
     while ( 0 < nr-- ) {
         *po++ = (*pr&genm) | (exps-(*pr&expm)) | (~*pr & exps);
         pr--;
@@ -1040,11 +1041,11 @@ Obj Func8Bits_LengthWord (
 {
   UInt npairs,i,ebits,exps,expm;
   Obj len, uexp;
-  UInt1 *data, pair;
-
+  UIntN *data, pair;
+  
   npairs = NPAIRS_WORD(w);
   ebits = EBITS_WORD(w);
-  data = (UInt1*)DATA_WORD(w);
+  data = (UIntN*)DATA_WORD(w);
   
   /* get the exponent masks                                              */
   exps = 1UL << (ebits-1);
@@ -1068,6 +1069,9 @@ Obj Func8Bits_LengthWord (
 *F * * * * * * * * * * * * * * * * 16 bits word * * * * * * * * * * * * * * *
 */
 
+#undef UIntN
+#define UIntN UInt2
+
 /****************************************************************************
 **
 *F  Func16Bits_Equal( <self>, <l>, <r> )
@@ -1079,8 +1083,8 @@ Obj Func16Bits_Equal (
 {
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
-    UInt2 *     pl;             /* data area in <l>                        */
-    UInt2 *     pr;             /* data area in <r>                        */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <r>                        */
 
     /* if <l> or <r> is the identity it is easy                            */
     nl = NPAIRS_WORD(l);
@@ -1090,8 +1094,8 @@ Obj Func16Bits_Equal (
     }
 
     /* compare the generator/exponent pairs                                */
-    pl = (UInt2*)DATA_WORD(l);
-    pr = (UInt2*)DATA_WORD(r);
+    pl = (UIntN*)DATA_WORD(l);
+    pr = (UIntN*)DATA_WORD(r);
     for ( ;  0 < nl;  nl--, pl++, pr++ ) {
         if ( *pl != *pr ) {
             return False;
@@ -1121,7 +1125,7 @@ Obj Func16Bits_ExponentSums3 (
     Int         i;              /* loop variable for gen/exp pairs         */
     Int         pos;            /* current generator number                */
     Int         exp;            /* current exponent                        */
-    UInt2 *     ptr;            /* pointer into the data area of <obj>     */
+    UIntN *     ptr;            /* pointer into the data area of <obj>     */
 
     /* <start> must be positive                                            */
     while ( !IS_POS_INTOBJ(vstart) )
@@ -1158,7 +1162,7 @@ Obj Func16Bits_ExponentSums3 (
         SET_ELM_PLIST( sums, i-start+1, 0 );
 
     /* and unpack <obj> into <sums>                                        */
-    ptr = (UInt2*)DATA_WORD(obj);
+    ptr = (UIntN*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
         pos = ((*ptr) >> ebits)+1;
         if ( start <= pos && pos <= end ) {
@@ -1170,7 +1174,7 @@ Obj Func16Bits_ExponentSums3 (
             /* this will not cause a garbage collection                    */
             exp = exp + (Int) ELM_PLIST( sums, pos-start+1 );
             SET_ELM_PLIST( sums, pos-start+1, (Obj) exp );
-            assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
+            assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
         }
     }
 
@@ -1212,7 +1216,7 @@ Obj Func16Bits_ExponentSyllable (
     UInt        exps;           /* sign exponent mask                      */
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* integer corresponding to <vi>           */
-    UInt2       p;              /* <i>th syllable                          */
+    UIntN       p;              /* <i>th syllable                          */
 
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
@@ -1229,7 +1233,7 @@ Obj Func16Bits_ExponentSyllable (
     expm = exps - 1;
 
     /* return the <i> th exponent                                          */
-    p = ((UInt2*)DATA_WORD(w))[i-1];
+    p = ((UIntN*)DATA_WORD(w))[i-1];
     if ( p & exps )
         return INTOBJ_INT((p&expm)-exps);
     else
@@ -1251,7 +1255,7 @@ Obj Func16Bits_ExtRepOfObj (
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* loop variable for gen/exp pairs         */
     Obj         type;           /* type of <obj>                           */
-    UInt2 *     ptr;            /* pointer into the data area of <obj>     */
+    UIntN *     ptr;            /* pointer into the data area of <obj>     */
     Obj         lst;            /* result                                  */
 
     /* get the type of <obj>                                               */
@@ -1272,7 +1276,7 @@ Obj Func16Bits_ExtRepOfObj (
     SET_LEN_PLIST( lst, 2*num );
 
     /* and unpack <obj> into <lst>                                         */
-    ptr = (UInt2*)DATA_WORD(obj);
+    ptr = (UIntN*)DATA_WORD(obj);
 
     /* this will not cause a garbage collection                            */
     for ( i = 1;  i <= num;  i++, ptr++ ) {
@@ -1281,7 +1285,7 @@ Obj Func16Bits_ExtRepOfObj (
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT(((*ptr)&expm)-exps) );
         else
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT((*ptr)&expm) );
-        assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(lst);
 
@@ -1302,7 +1306,7 @@ Obj Func16Bits_GeneratorSyllable (
     Int         ebits;          /* number of bits in the exponent          */
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* integer corresponding to <vi>           */
-    UInt2       p;              /* <i>th syllable                          */
+    UIntN       p;              /* <i>th syllable                          */
 
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
@@ -1315,7 +1319,7 @@ Obj Func16Bits_GeneratorSyllable (
     ebits = EBITS_WORD(w);
 
     /* return the <i> th generator                                         */
-    p = ((UInt2*)DATA_WORD(w))[i-1];
+    p = ((UIntN*)DATA_WORD(w))[i-1];
     return INTOBJ_INT((p >> ebits)+1);
 }
 
@@ -1334,9 +1338,9 @@ Obj Func16Bits_HeadByNumber (
     Int         sl;             /* start position in <obj>                 */
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         gr;             /* value of <r>                            */
-    UInt2 *     pl;             /* data area in <l>                        */
+    UIntN *     pl;             /* data area in <l>                        */
     Obj         obj;            /* the result                              */
-    UInt2 *     po;             /* data area in <obj>                      */
+    UIntN *     po;             /* data area in <obj>                      */
 
     /* get the generator number to stop                                    */
     gr = INT_INTOBJ(r) - 1;
@@ -1345,7 +1349,7 @@ Obj Func16Bits_HeadByNumber (
     ebits = EBITS_WORD(l);
 
     /* get the generator mask                                              */
-    genm = ((1UL << (16-ebits)) - 1) << ebits;
+    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <l> is the identity return                                       */
     nl = NPAIRS_WORD(l);
@@ -1353,7 +1357,7 @@ Obj Func16Bits_HeadByNumber (
 
     /* look closely at the generators                                      */
     sl = 0;
-    pl = (UInt2*)DATA_WORD(l);
+    pl = (UIntN*)DATA_WORD(l);
     while ( sl < nl && ((*pl & genm) >> ebits) < gr ) {
         sl++;  pl++;
     }
@@ -1364,8 +1368,8 @@ Obj Func16Bits_HeadByNumber (
     NEW_WORD( obj, PURETYPE_WORD(l), sl );
 
     /* copy the <l> part into the word                                     */
-    po = (UInt2*)DATA_WORD(obj);
-    pl = (UInt2*)DATA_WORD(l);
+    po = (UIntN*)DATA_WORD(obj);
+    pl = (UIntN*)DATA_WORD(l);
     while ( 0 < sl-- )
         *po++ = *pl++;
 
@@ -1393,8 +1397,8 @@ Obj Func16Bits_Less (
     Int         exr;            /* right exponent                          */
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
-    UInt2 *     pl;             /* data area in <l>                        */
-    UInt2 *     pr;             /* data area in <r>                        */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <r>                        */
     Obj         lexico;         /* lexicographic order of <l> and <r>      */
     Obj         ll;             /* length of <l>                           */
     Obj         lr;             /* length of <r>                           */
@@ -1415,14 +1419,14 @@ Obj Func16Bits_Less (
     
     /* Skip the common prefix and determine if the first word is smaller   */
     /* with respect to the lexicographic ordering.                         */
-    pl = (UInt2*)DATA_WORD(l);
-    pr = (UInt2*)DATA_WORD(r);
+    pl = (UIntN*)DATA_WORD(l);
+    pr = (UIntN*)DATA_WORD(r);
     for ( lexico = False;  0 < nl && 0 < nr;  nl--, nr--, pl++, pr++ )
         if ( *pl != *pr ) {
             /* got a difference                                            */
 
             /* get the generator mask                                      */
-            genm = ((1UL << (16-ebits)) - 1) << ebits;
+            genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
             /* compare the generators                                      */
             if ( (*pl & genm) != (*pr & genm) ) {
@@ -1493,7 +1497,7 @@ Obj Func16Bits_AssocWord (
     Obj         vgen;           /* value of current generator              */
     Int         ngen;           /* current generator                       */
     Obj         obj;            /* result                                  */
-    UInt2 *     ptr;            /* pointer into the data area of <obj>     */
+    UIntN *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
     ebits = EBITS_WORDTYPE(type);
@@ -1505,8 +1509,7 @@ Obj Func16Bits_AssocWord (
     num = LEN_LIST(data)/2;
     NEW_WORD( obj, type, num );
 
-    /* use UInt2 pointer for sixteen bits                                  */
-    ptr = (UInt2*)DATA_WORD(obj);
+    ptr = (UIntN*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
 
         /* this will not cause a garbage collection                        */
@@ -1520,7 +1523,7 @@ Obj Func16Bits_AssocWord (
         }
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
-        assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -1545,7 +1548,7 @@ Obj Func16Bits_ObjByVector (
     Int         nexp;           /* current exponent                        */
     Obj         vexp;           /* value of current exponent               */
     Obj         obj;            /* result                                  */
-    UInt2 *     ptr;            /* pointer into the data area of <obj>     */
+    UIntN *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
     ebits = EBITS_WORDTYPE(type);
@@ -1571,8 +1574,7 @@ Obj Func16Bits_ObjByVector (
     /* construct a new object                                              */
     NEW_WORD( obj, type, num );
 
-    /* use UInt2 pointer for sixteen bits                                  */
-    ptr = (UInt2*)DATA_WORD(obj);
+    ptr = (UIntN*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++, j++ ) {
 
         /* this will not cause a garbage collection                        */
@@ -1581,7 +1583,7 @@ Obj Func16Bits_ObjByVector (
         vexp = ELMW_LIST( data, j );
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((j-1) << ebits) | nexp;
-        assert( ptr == (UInt2*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -1607,9 +1609,9 @@ Obj Func16Bits_Power (
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         sr;             /* start position in <r>                   */
     Int         sl;             /* start position in <obj>                 */
-    UInt2 *     pl;             /* data area in <l>                        */
-    UInt2 *     pr;             /* data area in <obj>                      */
-    UInt2 *     pe;             /* end marker                              */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <obj>                      */
+    UIntN *     pe;             /* end marker                              */
     Int         ex = 0;         /* meeting exponent                        */
     Int         pow;            /* power to take                           */
     Int         apw;            /* absolute value of <pow>                 */
@@ -1623,7 +1625,7 @@ Obj Func16Bits_Power (
     invm = (1UL<<ebits)-1;
 
     /* get the generator mask                                              */
-    genm = ((1UL << (16-ebits)) - 1) << ebits;
+    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <l> is the identity return <l>                                   */
     nl = NPAIRS_WORD(l);
@@ -1644,8 +1646,8 @@ Obj Func16Bits_Power (
     /* if <pow> is minus one invert <l>                                    */
     if ( pow == -1 ) {
         NEW_WORD( obj, PURETYPE_WORD(l), nl );
-        pl = (UInt2*)DATA_WORD(l);
-        pr = (UInt2*)DATA_WORD(obj) + (nl-1);
+        pl = (UIntN*)DATA_WORD(l);
+        pr = (UIntN*)DATA_WORD(obj) + (nl-1);
         sl = nl;
 
         /* exponents are symmetric, so we cannot get an overflow            */
@@ -1656,7 +1658,7 @@ Obj Func16Bits_Power (
     }
 
     /* split word into w * h * w^-1                                        */
-    pl = (UInt2*)DATA_WORD(l);
+    pl = (UIntN*)DATA_WORD(l);
     pr = pl + (nl-1);
     sl = 0;
     sr = nl-1;
@@ -1682,15 +1684,15 @@ Obj Func16Bits_Power (
 
         /* copy <l> into <obj>                                             */
         NEW_WORD( obj, PURETYPE_WORD(l), nl );
-        pl = (UInt2*)DATA_WORD(l);
-        pr = (UInt2*)DATA_WORD(obj);
+        pl = (UIntN*)DATA_WORD(l);
+        pr = (UIntN*)DATA_WORD(obj);
         sl = nl;
         while ( 0 < sl-- ) {
             *pr++ = *pl++;
         }
 
         /* and fix the exponent at position <sr>                           */
-        pr = (UInt2*)DATA_WORD(obj);
+        pr = (UIntN*)DATA_WORD(obj);
         pr[sr] = (pr[sr] & genm) | (ex & ((1UL<<ebits)-1));
         return obj;
     }
@@ -1715,8 +1717,8 @@ Obj Func16Bits_Power (
         NEW_WORD( obj, PURETYPE_WORD(l), 2*(sl+1)+apw*(sr-sl-1)+(apw-1) );
 
         /* copy the beginning w * gj^x into <obj>                          */
-        pl = (UInt2*)DATA_WORD(l);
-        pr = (UInt2*)DATA_WORD(obj);
+        pl = (UIntN*)DATA_WORD(l);
+        pr = (UIntN*)DATA_WORD(obj);
         pe = pl+sl;
         while ( pl <= pe ) {
             *pr++ = *pl++;
@@ -1725,7 +1727,7 @@ Obj Func16Bits_Power (
         /* copy t * gj^<ex> <pow> times into <obj>                         */
         if ( 0 < pow ) {
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UInt2*)DATA_WORD(l) + (sl+1);
+                pl = (UIntN*)DATA_WORD(l) + (sl+1);
                 pe = pl + (sr-sl-1);
                 while ( pl <= pe ) {
                     *pr++ = *pl++;
@@ -1735,7 +1737,7 @@ Obj Func16Bits_Power (
 
             /* copy tail gj^y * w^-1 into <obj>                            */
             pr[-1] = pl[-1];
-            pe = (UInt2*)DATA_WORD(l) + nl;
+            pe = (UIntN*)DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr++ = *pl++;
             }
@@ -1745,7 +1747,7 @@ Obj Func16Bits_Power (
         else {
             pr[-1] = ( pl[sr-sl-1] ^ invm ) + 1;
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UInt2*)DATA_WORD(l) + (sr-1);
+                pl = (UIntN*)DATA_WORD(l) + (sr-1);
                 pe = pl + (sl-sr+1);
                 while ( pe <= pl ) {
                     *pr++ = ( *pl-- ^ invm ) + 1;
@@ -1755,8 +1757,8 @@ Obj Func16Bits_Power (
 
             /* copy tail gj^x * w^-1 into <obj>                            */
             pr[-1] = ( pl[1] ^ invm ) + 1;
-            pl = (UInt2*)DATA_WORD(l) + (sr+1);
-            pe = (UInt2*)DATA_WORD(l) + nl;
+            pl = (UIntN*)DATA_WORD(l) + (sr+1);
+            pe = (UIntN*)DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr ++ = *pl++;
             }
@@ -1772,8 +1774,8 @@ Obj Func16Bits_Power (
         NEW_WORD( obj, PURETYPE_WORD(l), 2*sl+apw*(sr-sl+1) );
 
         /* copy the beginning w * gj^x into <obj>                          */
-        pl = (UInt2*)DATA_WORD(l);
-        pr = (UInt2*)DATA_WORD(obj);
+        pl = (UIntN*)DATA_WORD(l);
+        pr = (UIntN*)DATA_WORD(obj);
         pe = pl+sl;
         while ( pl < pe ) {
             *pr++ = *pl++;
@@ -1782,7 +1784,7 @@ Obj Func16Bits_Power (
         /* copy t <pow> times into <obj>                                   */
         if ( 0 < pow ) {
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UInt2*)DATA_WORD(l) + sl;
+                pl = (UIntN*)DATA_WORD(l) + sl;
                 pe = pl + (sr-sl);
                 while ( pl <= pe ) {
                     *pr++ = *pl++;
@@ -1790,7 +1792,7 @@ Obj Func16Bits_Power (
             }
 
             /* copy tail w^-1 into <obj>                                   */
-            pe = (UInt2*)DATA_WORD(l) + nl;
+            pe = (UIntN*)DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr++ = *pl++;
             }
@@ -1799,7 +1801,7 @@ Obj Func16Bits_Power (
         /* copy and invert t <pow> times into <obj>                        */
         else {
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UInt2*)DATA_WORD(l) + sr;
+                pl = (UIntN*)DATA_WORD(l) + sr;
                 pe = pl + (sl-sr);
                 while ( pe <= pl ) {
                     *pr++ = ( *pl-- ^ invm ) + 1;
@@ -1807,8 +1809,8 @@ Obj Func16Bits_Power (
             }
 
             /* copy tail w^-1 into <obj>                                   */
-            pl = (UInt2*)DATA_WORD(l) + (sr+1);
-            pe = (UInt2*)DATA_WORD(l) + nl;
+            pl = (UIntN*)DATA_WORD(l) + (sr+1);
+            pe = (UIntN*)DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr ++ = *pl++;
             }
@@ -1834,10 +1836,10 @@ Obj Func16Bits_Product (
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
     Int         sr;             /* start position in <r>                   */
-    UInt2 *     pl;             /* data area in <l>                        */
-    UInt2 *     pr;             /* data area in <r>                        */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <r>                        */
     Obj         obj;            /* the result                              */
-    UInt2 *     po;             /* data area in <obj>                      */
+    UIntN *     po;             /* data area in <obj>                      */
     Int         ex = 0;         /* meeting exponent                        */
     Int         over;           /* overlap                                 */
 
@@ -1849,7 +1851,7 @@ Obj Func16Bits_Product (
     expm = exps - 1;
 
     /* get the generator mask                                              */
-    genm = ((1UL << (16-ebits)) - 1) << ebits;
+    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <l> or <r> is the identity return the other                      */
     nl = NPAIRS_WORD(l);
@@ -1859,8 +1861,8 @@ Obj Func16Bits_Product (
 
     /* look closely at the meeting point                                   */
     sr = 0;
-    pl = (UInt2*)DATA_WORD(l)+(nl-1);
-    pr = (UInt2*)DATA_WORD(r);
+    pl = (UIntN*)DATA_WORD(l)+(nl-1);
+    pr = (UIntN*)DATA_WORD(r);
     while ( 0 < nl && sr < nr && (*pl & genm) == (*pr & genm) ) {
         if ( (*pl&exps) == (*pr&exps) )
             break;
@@ -1883,8 +1885,8 @@ Obj Func16Bits_Product (
     NEW_WORD( obj, PURETYPE_WORD(l), nl+(nr-sr)-over );
 
     /* copy the <l> part into the word                                     */
-    po = (UInt2*)DATA_WORD(obj);
-    pl = (UInt2*)DATA_WORD(l);
+    po = (UIntN*)DATA_WORD(obj);
+    pl = (UIntN*)DATA_WORD(l);
     while ( 0 < nl-- )
         *po++ = *pl++;
 
@@ -1895,7 +1897,7 @@ Obj Func16Bits_Product (
     }
 
     /* copy the <r> part into the word                                     */
-    pr = ((UInt2*)DATA_WORD(r)) + sr;
+    pr = ((UIntN*)DATA_WORD(r)) + sr;
     while ( sr++ < nr )
         *po++ = *pr++;
     return obj;
@@ -1918,10 +1920,10 @@ Obj Func16Bits_Quotient (
     UInt        genm;           /* generator mask                          */
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
-    UInt2 *     pl;             /* data area in <l>                        */
-    UInt2 *     pr;             /* data area in <r>                        */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <r>                        */
     Obj         obj;            /* the result                              */
-    UInt2 *     po;             /* data area in <obj>                      */
+    UIntN *     po;             /* data area in <obj>                      */
     Int         ex = 0;         /* meeting exponent                        */
     Int         over;           /* overlap                                 */
 
@@ -1934,7 +1936,7 @@ Obj Func16Bits_Quotient (
     sepm = (1UL << ebits) - 1;
 
     /* get the generator mask                                              */
-    genm = ((1UL << (16-ebits)) - 1) << ebits;
+    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <r> is the identity return <l>                                   */
     nl = NPAIRS_WORD(l);
@@ -1942,8 +1944,8 @@ Obj Func16Bits_Quotient (
     if ( 0 == nr )  return l;
 
     /* look closely at the meeting point                                   */
-    pl = (UInt2*)DATA_WORD(l)+(nl-1);
-    pr = (UInt2*)DATA_WORD(r)+(nr-1);
+    pl = (UIntN*)DATA_WORD(l)+(nl-1);
+    pr = (UIntN*)DATA_WORD(r)+(nr-1);
     while ( 0 < nl && 0 < nr && (*pl & genm) == (*pr & genm) ) {
         if ( (*pl&exps) != (*pr&exps) )
             break;
@@ -1966,8 +1968,8 @@ Obj Func16Bits_Quotient (
     NEW_WORD( obj, PURETYPE_WORD(l), nl+nr-over );
 
     /* copy the <l> part into the word                                     */
-    po = (UInt2*)DATA_WORD(obj);
-    pl = (UInt2*)DATA_WORD(l);
+    po = (UIntN*)DATA_WORD(obj);
+    pl = (UIntN*)DATA_WORD(l);
     while ( 0 < nl-- )
         *po++ = *pl++;
 
@@ -1978,7 +1980,7 @@ Obj Func16Bits_Quotient (
     }
 
     /* copy the <r> part into the word                                     */
-    pr = ((UInt2*)DATA_WORD(r)) + (nr-1);
+    pr = ((UIntN*)DATA_WORD(r)) + (nr-1);
     while ( 0 < nr-- ) {
         *po++ = (*pr&genm) | (exps-(*pr&expm)) | (~*pr & exps);
         pr--;
@@ -1997,11 +1999,11 @@ Obj Func16Bits_LengthWord (
 {
   UInt npairs,i,ebits,exps,expm;
   Obj len, uexp;
-  UInt2 *data, pair;
+  UIntN *data, pair;
   
   npairs = NPAIRS_WORD(w);
   ebits = EBITS_WORD(w);
-  data = (UInt2*)DATA_WORD(w);
+  data = (UIntN*)DATA_WORD(w);
   
   /* get the exponent masks                                              */
   exps = 1UL << (ebits-1);
@@ -2025,6 +2027,9 @@ Obj Func16Bits_LengthWord (
 *F * * * * * * * * * * * * * * *  32 bits words * * * * * * * * * * * * * * *
 */
 
+#undef UIntN
+#define UIntN UInt4
+
 /****************************************************************************
 **
 *F  Func32Bits_Equal( <self>, <l>, <r> )
@@ -2036,8 +2041,8 @@ Obj Func32Bits_Equal (
 {
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
-    UInt4 *     pl;             /* data area in <l>                        */
-    UInt4 *     pr;             /* data area in <r>                        */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <r>                        */
 
     /* if <l> or <r> is the identity it is easy                            */
     nl = NPAIRS_WORD(l);
@@ -2047,8 +2052,8 @@ Obj Func32Bits_Equal (
     }
 
     /* compare the generator/exponent pairs                                */
-    pl = (UInt4*)DATA_WORD(l);
-    pr = (UInt4*)DATA_WORD(r);
+    pl = (UIntN*)DATA_WORD(l);
+    pr = (UIntN*)DATA_WORD(r);
     for ( ;  0 < nl;  nl--, pl++, pr++ ) {
         if ( *pl != *pr ) {
             return False;
@@ -2078,7 +2083,7 @@ Obj Func32Bits_ExponentSums3 (
     Int         i;              /* loop variable for gen/exp pairs         */
     Int         pos;            /* current generator number                */
     Int         exp;            /* current exponent                        */
-    UInt4 *     ptr;            /* pointer into the data area of <obj>     */
+    UIntN *     ptr;            /* pointer into the data area of <obj>     */
 
     /* <start> must be positive                                            */
     while ( !IS_POS_INTOBJ(vstart) )
@@ -2115,7 +2120,7 @@ Obj Func32Bits_ExponentSums3 (
         SET_ELM_PLIST( sums, i-start+1, 0 );
 
     /* and unpack <obj> into <sums>                                        */
-    ptr = (UInt4*)DATA_WORD(obj);
+    ptr = (UIntN*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
         pos = ((*ptr) >> ebits)+1;
         if ( start <= pos && pos <= end ) {
@@ -2127,7 +2132,7 @@ Obj Func32Bits_ExponentSums3 (
             /* this will not cause a garbage collection                    */
             exp = exp + (Int) ELM_PLIST( sums, pos-start+1 );
             SET_ELM_PLIST( sums, pos-start+1, (Obj) exp );
-            assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
+            assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
         }
     }
 
@@ -2169,7 +2174,7 @@ Obj Func32Bits_ExponentSyllable (
     UInt        exps;           /* sign exponent mask                      */
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* integer corresponding to <vi>           */
-    UInt4       p;              /* <i>th syllable                          */
+    UIntN       p;              /* <i>th syllable                          */
 
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
@@ -2186,7 +2191,7 @@ Obj Func32Bits_ExponentSyllable (
     expm = exps - 1;
 
     /* return the <i> th exponent                                          */
-    p = ((UInt4*)DATA_WORD(w))[i-1];
+    p = ((UIntN*)DATA_WORD(w))[i-1];
     if ( p & exps )
         return INTOBJ_INT((p&expm)-exps);
     else
@@ -2208,7 +2213,7 @@ Obj Func32Bits_ExtRepOfObj (
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* loop variable for gen/exp pairs         */
     Obj         type;           /* type of <obj>                           */
-    UInt4 *     ptr;            /* pointer into the data area of <obj>     */
+    UIntN *     ptr;            /* pointer into the data area of <obj>     */
     Obj         lst;            /* result                                  */
 
     /* get the type of <obj>                                               */
@@ -2229,7 +2234,7 @@ Obj Func32Bits_ExtRepOfObj (
     SET_LEN_PLIST( lst, 2*num );
 
     /* and unpack <obj> into <lst>                                         */
-    ptr = (UInt4*)DATA_WORD(obj);
+    ptr = (UIntN*)DATA_WORD(obj);
 
     /* this will not cause a garbage collection                            */
     for ( i = 1;  i <= num;  i++, ptr++ ) {
@@ -2238,7 +2243,7 @@ Obj Func32Bits_ExtRepOfObj (
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT(((*ptr)&expm)-exps) );
         else
             SET_ELM_PLIST( lst, 2*i, INTOBJ_INT((*ptr)&expm) );
-        assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(lst);
 
@@ -2259,7 +2264,7 @@ Obj Func32Bits_GeneratorSyllable (
     Int         ebits;          /* number of bits in the exponent          */
     Int         num;            /* number of gen/exp pairs in <data>       */
     Int         i;              /* integer corresponding to <vi>           */
-    UInt4       p;              /* <i>th syllable                          */
+    UIntN       p;              /* <i>th syllable                          */
 
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
@@ -2272,7 +2277,7 @@ Obj Func32Bits_GeneratorSyllable (
     ebits = EBITS_WORD(w);
 
     /* return the <i> th generator                                         */
-    p = ((UInt4*)DATA_WORD(w))[i-1];
+    p = ((UIntN*)DATA_WORD(w))[i-1];
     return INTOBJ_INT((p >> ebits)+1);
 }
 
@@ -2291,9 +2296,9 @@ Obj Func32Bits_HeadByNumber (
     Int         sl;             /* start position in <obj>                 */
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         gr;             /* value of <r>                            */
-    UInt4 *     pl;             /* data area in <l>                        */
+    UIntN *     pl;             /* data area in <l>                        */
     Obj         obj;            /* the result                              */
-    UInt4 *     po;             /* data area in <obj>                      */
+    UIntN *     po;             /* data area in <obj>                      */
 
     /* get the generator number to stop                                    */
     gr = INT_INTOBJ(r) - 1;
@@ -2302,7 +2307,7 @@ Obj Func32Bits_HeadByNumber (
     ebits = EBITS_WORD(l);
 
     /* get the generator mask                                              */
-    genm = ((1UL << (32-ebits)) - 1) << ebits;
+    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <l> is the identity return                                       */
     nl = NPAIRS_WORD(l);
@@ -2310,7 +2315,7 @@ Obj Func32Bits_HeadByNumber (
 
     /* look closely at the generators                                      */
     sl = 0;
-    pl = (UInt4*)DATA_WORD(l);
+    pl = (UIntN*)DATA_WORD(l);
     while ( sl < nl && ((*pl & genm) >> ebits) < gr ) {
         sl++;  pl++;
     }
@@ -2321,8 +2326,8 @@ Obj Func32Bits_HeadByNumber (
     NEW_WORD( obj, PURETYPE_WORD(l), sl );
 
     /* copy the <l> part into the word                                     */
-    po = (UInt4*)DATA_WORD(obj);
-    pl = (UInt4*)DATA_WORD(l);
+    po = (UIntN*)DATA_WORD(obj);
+    pl = (UIntN*)DATA_WORD(l);
     while ( 0 < sl-- )
         *po++ = *pl++;
 
@@ -2350,8 +2355,8 @@ Obj Func32Bits_Less (
     Int         exr;            /* right exponent                          */
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
-    UInt4 *     pl;             /* data area in <l>                        */
-    UInt4 *     pr;             /* data area in <r>                        */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <r>                        */
     Obj         lexico;         /* lexicographic order of <l> and <r>      */
     Obj         ll;             /* length of <l>                           */
     Obj         lr;             /* length of <r>                           */
@@ -2372,14 +2377,14 @@ Obj Func32Bits_Less (
     
     /* Skip the common prefix and determine if the first word is smaller   */
     /* with respect to the lexicographic ordering.                         */
-    pl = (UInt4*)DATA_WORD(l);
-    pr = (UInt4*)DATA_WORD(r);
+    pl = (UIntN*)DATA_WORD(l);
+    pr = (UIntN*)DATA_WORD(r);
     for ( lexico = False;  0 < nl && 0 < nr;  nl--, nr--, pl++, pr++ )
         if ( *pl != *pr ) {
             /* got a difference                                            */
 
             /* get the generator mask                                      */
-            genm = ((1UL << (32-ebits)) - 1) << ebits;
+            genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
             /* compare the generators                                      */
             if ( (*pl & genm) != (*pr & genm) ) {
@@ -2450,7 +2455,7 @@ Obj Func32Bits_AssocWord (
     Obj         vgen;           /* value of current generator              */
     Int         ngen;           /* current generator                       */
     Obj         obj;            /* result                                  */
-    UInt4 *     ptr;            /* pointer into the data area of <obj>     */
+    UIntN *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
     ebits = EBITS_WORDTYPE(type);
@@ -2462,8 +2467,7 @@ Obj Func32Bits_AssocWord (
     num = LEN_LIST(data)/2;
     NEW_WORD( obj, type, num );
 
-    /* use UInt4 pointer for thirty-two bits                               */
-    ptr = (UInt4*)DATA_WORD(obj);
+    ptr = (UIntN*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
 
         /* this will not cause a garbage collection                        */
@@ -2477,7 +2481,7 @@ Obj Func32Bits_AssocWord (
         }
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
-        assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -2502,7 +2506,7 @@ Obj Func32Bits_ObjByVector (
     Int         nexp;           /* current exponent                        */
     Obj         vexp;           /* value of current exponent               */
     Obj         obj;            /* result                                  */
-    UInt4 *     ptr;            /* pointer into the data area of <obj>     */
+    UIntN *     ptr;            /* pointer into the data area of <obj>     */
 
     /* get the number of bits for exponents                                */
     ebits = EBITS_WORDTYPE(type);
@@ -2528,8 +2532,7 @@ Obj Func32Bits_ObjByVector (
     /* construct a new object                                              */
     NEW_WORD( obj, type, num );
 
-    /* use UInt4 pointer for thirty-two bits                               */
-    ptr = (UInt4*)DATA_WORD(obj);
+    ptr = (UIntN*)DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++, j++ ) {
 
         /* this will not cause a garbage collection                        */
@@ -2538,7 +2541,7 @@ Obj Func32Bits_ObjByVector (
         vexp = ELMW_LIST( data, j );
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((j-1) << ebits) | nexp;
-        assert( ptr == (UInt4*)DATA_WORD(obj) + (i-1) );
+        assert( ptr == (UIntN*)DATA_WORD(obj) + (i-1) );
     }
     CHANGED_BAG(obj);
 
@@ -2564,9 +2567,9 @@ Obj Func32Bits_Power (
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         sr;             /* start position in <r>                   */
     Int         sl;             /* start position in <obj>                 */
-    UInt4 *     pl;             /* data area in <l>                        */
-    UInt4 *     pr;             /* data area in <obj>                      */
-    UInt4 *     pe;             /* end marker                              */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <obj>                      */
+    UIntN *     pe;             /* end marker                              */
     Int         ex = 0;         /* meeting exponent                        */
     Int         pow;            /* power to take                           */
     Int         apw;            /* absolute value of <pow>                 */
@@ -2580,7 +2583,7 @@ Obj Func32Bits_Power (
     invm = (1UL<<ebits)-1;
 
     /* get the generator mask                                              */
-    genm = ((1UL << (32-ebits)) - 1) << ebits;
+    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <l> is the identity return <l>                                   */
     nl = NPAIRS_WORD(l);
@@ -2601,8 +2604,8 @@ Obj Func32Bits_Power (
     /* if <pow> is minus one invert <l>                                    */
     if ( pow == -1 ) {
         NEW_WORD( obj, PURETYPE_WORD(l), nl );
-        pl = (UInt4*)DATA_WORD(l);
-        pr = (UInt4*)DATA_WORD(obj) + (nl-1);
+        pl = (UIntN*)DATA_WORD(l);
+        pr = (UIntN*)DATA_WORD(obj) + (nl-1);
         sl = nl;
 
         /* exponents are symmetric, so we cannot get an overflow            */
@@ -2613,7 +2616,7 @@ Obj Func32Bits_Power (
     }
 
     /* split word into w * h * w^-1                                        */
-    pl = (UInt4*)DATA_WORD(l);
+    pl = (UIntN*)DATA_WORD(l);
     pr = pl + (nl-1);
     sl = 0;
     sr = nl-1;
@@ -2640,15 +2643,15 @@ Obj Func32Bits_Power (
 
         /* copy <l> into <obj>                                             */
         NEW_WORD( obj, PURETYPE_WORD(l), nl );
-        pl = (UInt4*)DATA_WORD(l);
-        pr = (UInt4*)DATA_WORD(obj);
+        pl = (UIntN*)DATA_WORD(l);
+        pr = (UIntN*)DATA_WORD(obj);
         sl = nl;
         while ( 0 < sl-- ) {
             *pr++ = *pl++;
         }
 
         /* and fix the exponent at position <sr>                           */
-        pr = (UInt4*)DATA_WORD(obj);
+        pr = (UIntN*)DATA_WORD(obj);
         pr[sr] = (pr[sr] & genm) | (ex & ((1UL<<ebits)-1));
         return obj;
     }
@@ -2673,8 +2676,8 @@ Obj Func32Bits_Power (
         NEW_WORD( obj, PURETYPE_WORD(l), 2*(sl+1)+apw*(sr-sl-1)+(apw-1) );
 
         /* copy the beginning w * gj^x into <obj>                          */
-        pl = (UInt4*)DATA_WORD(l);
-        pr = (UInt4*)DATA_WORD(obj);
+        pl = (UIntN*)DATA_WORD(l);
+        pr = (UIntN*)DATA_WORD(obj);
         pe = pl+sl;
         while ( pl <= pe ) {
             *pr++ = *pl++;
@@ -2683,7 +2686,7 @@ Obj Func32Bits_Power (
         /* copy t * gj^<ex> <pow> times into <obj>                         */
         if ( 0 < pow ) {
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UInt4*)DATA_WORD(l) + (sl+1);
+                pl = (UIntN*)DATA_WORD(l) + (sl+1);
                 pe = pl + (sr-sl-1);
                 while ( pl <= pe ) {
                     *pr++ = *pl++;
@@ -2693,7 +2696,7 @@ Obj Func32Bits_Power (
 
             /* copy tail gj^y * w^-1 into <obj>                            */
             pr[-1] = pl[-1];
-            pe = (UInt4*)DATA_WORD(l) + nl;
+            pe = (UIntN*)DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr++ = *pl++;
             }
@@ -2703,7 +2706,7 @@ Obj Func32Bits_Power (
         else {
             pr[-1] = ( pl[sr-sl-1] ^ invm ) + 1;
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UInt4*)DATA_WORD(l) + (sr-1);
+                pl = (UIntN*)DATA_WORD(l) + (sr-1);
                 pe = pl + (sl-sr+1);
                 while ( pe <= pl ) {
                     *pr++ = ( *pl-- ^ invm ) + 1;
@@ -2713,8 +2716,8 @@ Obj Func32Bits_Power (
 
             /* copy tail gj^x * w^-1 into <obj>                            */
             pr[-1] = ( pl[1] ^ invm ) + 1;
-            pl = (UInt4*)DATA_WORD(l) + (sr+1);
-            pe = (UInt4*)DATA_WORD(l) + nl;
+            pl = (UIntN*)DATA_WORD(l) + (sr+1);
+            pe = (UIntN*)DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr ++ = *pl++;
             }
@@ -2730,8 +2733,8 @@ Obj Func32Bits_Power (
         NEW_WORD( obj, PURETYPE_WORD(l), 2*sl+apw*(sr-sl+1) );
 
         /* copy the beginning w * gj^x into <obj>                          */
-        pl = (UInt4*)DATA_WORD(l);
-        pr = (UInt4*)DATA_WORD(obj);
+        pl = (UIntN*)DATA_WORD(l);
+        pr = (UIntN*)DATA_WORD(obj);
         pe = pl+sl;
         while ( pl < pe ) {
             *pr++ = *pl++;
@@ -2740,7 +2743,7 @@ Obj Func32Bits_Power (
         /* copy t <pow> times into <obj>                                   */
         if ( 0 < pow ) {
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UInt4*)DATA_WORD(l) + sl;
+                pl = (UIntN*)DATA_WORD(l) + sl;
                 pe = pl + (sr-sl);
                 while ( pl <= pe ) {
                     *pr++ = *pl++;
@@ -2748,7 +2751,7 @@ Obj Func32Bits_Power (
             }
 
             /* copy tail w^-1 into <obj>                                   */
-            pe = (UInt4*)DATA_WORD(l) + nl;
+            pe = (UIntN*)DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr++ = *pl++;
             }
@@ -2757,7 +2760,7 @@ Obj Func32Bits_Power (
         /* copy and invert t <pow> times into <obj>                        */
         else {
             for ( ; 0 < apw;  apw-- ) {
-                pl = (UInt4*)DATA_WORD(l) + sr;
+                pl = (UIntN*)DATA_WORD(l) + sr;
                 pe = pl + (sl-sr);
                 while ( pe <= pl ) {
                     *pr++ = ( *pl-- ^ invm ) + 1;
@@ -2765,8 +2768,8 @@ Obj Func32Bits_Power (
             }
 
             /* copy tail w^-1 into <obj>                                   */
-            pl = (UInt4*)DATA_WORD(l) + (sr+1);
-            pe = (UInt4*)DATA_WORD(l) + nl;
+            pl = (UIntN*)DATA_WORD(l) + (sr+1);
+            pe = (UIntN*)DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr ++ = *pl++;
             }
@@ -2792,10 +2795,10 @@ Obj Func32Bits_Product (
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
     Int         sr;             /* start position in <r>                   */
-    UInt4 *     pl;             /* data area in <l>                        */
-    UInt4 *     pr;             /* data area in <r>                        */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <r>                        */
     Obj         obj;            /* the result                              */
-    UInt4 *     po;             /* data area in <obj>                      */
+    UIntN *     po;             /* data area in <obj>                      */
     Int         ex = 0;         /* meeting exponent                        */
     Int         over;           /* overlap                                 */
 
@@ -2807,7 +2810,7 @@ Obj Func32Bits_Product (
     expm = exps - 1;
 
     /* get the generator mask                                              */
-    genm = ((1UL << (32-ebits)) - 1) << ebits;
+    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <l> or <r> is the identity return the other                      */
     nl = NPAIRS_WORD(l);
@@ -2817,8 +2820,8 @@ Obj Func32Bits_Product (
 
     /* look closely at the meeting point                                   */
     sr = 0;
-    pl = (UInt4*)DATA_WORD(l)+(nl-1);
-    pr = (UInt4*)DATA_WORD(r);
+    pl = (UIntN*)DATA_WORD(l)+(nl-1);
+    pr = (UIntN*)DATA_WORD(r);
     while ( 0 < nl && sr < nr && (*pl & genm) == (*pr & genm) ) {
         if ( (*pl&exps) == (*pr&exps) )
             break;
@@ -2841,8 +2844,8 @@ Obj Func32Bits_Product (
     NEW_WORD( obj, PURETYPE_WORD(l), nl+(nr-sr)-over );
 
     /* copy the <l> part into the word                                     */
-    po = (UInt4*)DATA_WORD(obj);
-    pl = (UInt4*)DATA_WORD(l);
+    po = (UIntN*)DATA_WORD(obj);
+    pl = (UIntN*)DATA_WORD(l);
     while ( 0 < nl-- )
         *po++ = *pl++;
 
@@ -2853,7 +2856,7 @@ Obj Func32Bits_Product (
     }
 
     /* copy the <r> part into the word                                     */
-    pr = ((UInt4*)DATA_WORD(r)) + sr;
+    pr = ((UIntN*)DATA_WORD(r)) + sr;
     while ( sr++ < nr )
         *po++ = *pr++;
     return obj;
@@ -2876,10 +2879,10 @@ Obj Func32Bits_Quotient (
     UInt        genm;           /* generator mask                          */
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
-    UInt4 *     pl;             /* data area in <l>                        */
-    UInt4 *     pr;             /* data area in <r>                        */
+    UIntN *     pl;             /* data area in <l>                        */
+    UIntN *     pr;             /* data area in <r>                        */
     Obj         obj;            /* the result                              */
-    UInt4 *     po;             /* data area in <obj>                      */
+    UIntN *     po;             /* data area in <obj>                      */
     Int         ex = 0;         /* meeting exponent                        */
     Int         over;           /* overlap                                 */
 
@@ -2892,7 +2895,7 @@ Obj Func32Bits_Quotient (
     sepm = (1UL << ebits) - 1;
 
     /* get the generator mask                                              */
-    genm = ((1UL << (32-ebits)) - 1) << ebits;
+    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <r> is the identity return <l>                                   */
     nl = NPAIRS_WORD(l);
@@ -2900,8 +2903,8 @@ Obj Func32Bits_Quotient (
     if ( 0 == nr )  return l;
 
     /* look closely at the meeting point                                   */
-    pl = (UInt4*)DATA_WORD(l)+(nl-1);
-    pr = (UInt4*)DATA_WORD(r)+(nr-1);
+    pl = (UIntN*)DATA_WORD(l)+(nl-1);
+    pr = (UIntN*)DATA_WORD(r)+(nr-1);
     while ( 0 < nl && 0 < nr && (*pl & genm) == (*pr & genm) ) {
         if ( (*pl&exps) != (*pr&exps) )
             break;
@@ -2924,8 +2927,8 @@ Obj Func32Bits_Quotient (
     NEW_WORD( obj, PURETYPE_WORD(l), nl+nr-over );
 
     /* copy the <l> part into the word                                     */
-    po = (UInt4*)DATA_WORD(obj);
-    pl = (UInt4*)DATA_WORD(l);
+    po = (UIntN*)DATA_WORD(obj);
+    pl = (UIntN*)DATA_WORD(l);
     while ( 0 < nl-- )
         *po++ = *pl++;
 
@@ -2936,7 +2939,7 @@ Obj Func32Bits_Quotient (
     }
 
     /* copy the <r> part into the word                                     */
-    pr = ((UInt4*)DATA_WORD(r)) + (nr-1);
+    pr = ((UIntN*)DATA_WORD(r)) + (nr-1);
     while ( 0 < nr-- ) {
         *po++ = (*pr&genm) | (exps-(*pr&expm)) | (~*pr & exps);
         pr--;
@@ -2955,11 +2958,11 @@ Obj Func32Bits_LengthWord (
 {
   UInt npairs,i,ebits,exps,expm;
   Obj len, uexp;
-  UInt4 *data, pair;
+  UIntN *data, pair;
   
   npairs = NPAIRS_WORD(w);
   ebits = EBITS_WORD(w);
-  data = (UInt4*)DATA_WORD(w);
+  data = (UIntN*)DATA_WORD(w);
   
   /* get the exponent masks                                              */
   exps = 1UL << (ebits-1);
