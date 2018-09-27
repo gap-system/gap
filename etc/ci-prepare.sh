@@ -20,13 +20,8 @@ then
 fi
 BUILDDIR=$PWD
 
-# for HPC-GAP we install ward inside BUILDDIR
 if [[ $HPCGAP = yes ]]
 then
-  git clone https://github.com/gap-system/ward
-  cd ward
-  CFLAGS= LDFLAGS= ./build.sh
-  cd ..
   CONFIGFLAGS="$CONFIGFLAGS --enable-hpcgap"
 fi
 

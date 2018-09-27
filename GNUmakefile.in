@@ -19,7 +19,6 @@ ABI_CFLAGS = @ABI_CFLAGS@
 
 # HPC-GAP specific
 HPCGAP = @HPCGAP@
-ADDGUARDS2 = @ADDGUARDS2@
 
 # garbage collector source files
 GC_SOURCES = @GC_SOURCES@
