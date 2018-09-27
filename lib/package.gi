@@ -888,7 +888,7 @@ InstallGlobalFunction( PackageAvailabilityInfo,
       record.InstallationPaths:= record_local.InstallationPaths;
       Add( record.InstallationPaths,
            [ name, [ inforec.InstallationPath, inforec.Version,
-                     inforec.PackageName ] ] );
+                     inforec.PackageName, false ] ] );
       record.Dependencies:= record_local.Dependencies;
       record.StrongDependencies:= record_local.StrongDependencies;
       record.AlreadyHandled:= record_local.AlreadyHandled;
@@ -1005,13 +1005,20 @@ InstallGlobalFunction( TestPackageAvailability, function( arg )
 
 #############################################################################
 ##
-#F  IsPackageLoaded( <name>[, <version>][, <checkall>] )
+#F  IsPackageLoaded( <name>[, <version>] )
 ##
-InstallGlobalFunction( IsPackageLoaded, function( arg )
+InstallGlobalFunction( IsPackageLoaded, function( name, version... )
     local result;
 
-    result := CallFuncList( TestPackageAvailability, arg );
-    return result = true;
+    if Length(version) > 0 then
+        version := version[1];
+    fi;
+    result := IsPackageMarkedForLoading( name, version );
+    if result then
+        # check if the package actually completed loading
+        result := GAPInfo.PackagesLoaded.( name )[4];
+    fi;
+    return result;
     end );
 
 
@@ -1319,10 +1326,10 @@ BindGlobal( "LoadPackage_ReadImplementationParts",
     local pair, info, bannerstring, fun, u, pkgname, namespace;
 
     for pair in secondrun do
+      namespace := pair[1].PackageName;
+      pkgname := LowercaseString( namespace );
       if pair[2] <> fail then
         GAPInfo.PackageCurrent:= pair[1];
-        namespace := pair[1].PackageName;
-        pkgname := LowercaseString( namespace );
         LogPackageLoadingMessage( PACKAGE_DEBUG,
             "start reading file 'read.g'",
             namespace );
@@ -1334,6 +1341,9 @@ BindGlobal( "LoadPackage_ReadImplementationParts",
             "finish reading file 'read.g'",
             namespace );
       fi;
+      # mark the package as completely loaded
+      GAPInfo.PackagesLoaded.(pkgname)[4] := true;
+      MakeImmutable( GAPInfo.PackagesLoaded.(pkgname) );
     od;
 
     # Show the banners.
@@ -1560,7 +1570,8 @@ InstallGlobalFunction( LoadPackage, function( arg )
       # inside the package code causes the files to be read more than once.
       for pkgname in cycle do
         pos:= PositionSorted( paths[1], pkgname );
-        GAPInfo.PackagesLoaded.( pkgname ):= MakeImmutable(paths[2][ pos ]);
+        # the following entry is made immutable in LoadPackage_ReadImplementationParts
+        GAPInfo.PackagesLoaded.( pkgname ):= paths[2][ pos ];
       od;
 
       # If the weight is 1 and the GAP library is not yet loaded
