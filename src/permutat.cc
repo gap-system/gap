@@ -1550,18 +1550,56 @@ Obj             FuncORDER_PERM (
 **  is a homomorphism from the symmetric group onto the multiplicative  group
 **  $\{ +1, -1 \}$, the kernel of which is the alternating group.
 */
+template <typename T> static inline Obj SIGN_PERM(Obj perm)
+{
+    const T *           ptPerm;         /* pointer to the permutation      */
+    Int                 sign;           /* sign (result)                   */
+    T *                 ptKnown;        /* pointer to temporary bag        */
+    UInt                len;            /* length of one cycle             */
+    UInt                p,  q;          /* loop variables                  */
+
+    /* make sure that the buffer bag is large enough                       */
+    UseTmpPerm(SIZE_OBJ(perm));
+
+    /* get the pointer to the bags                                     */
+    ptPerm  = CONST_ADDR_PERM<T>(perm);
+    ptKnown = ADDR_PERM<T>(TmpPerm);
+
+    /* clear the buffer bag                                            */
+    for ( p = 0; p < DEG_PERM<T>(perm); p++ )
+        ptKnown[p] = 0;
+
+    /* start with sign  1                                              */
+    sign = 1;
+
+    /* loop over all cycles                                            */
+    for ( p = 0; p < DEG_PERM<T>(perm); p++ ) {
+
+        /* if we haven't looked at this cycle so far                   */
+        if ( ptKnown[p] == 0 && ptPerm[p] != p ) {
+
+            /* find the length of this cycle                           */
+            len = 1;
+            for ( q = ptPerm[p]; q != p; q = ptPerm[q] ) {
+                len++;  ptKnown[q] = 1;
+            }
+
+            /* if the length is even invert the sign                   */
+            if ( len % 2 == 0 )
+                sign = -sign;
+
+        }
+
+    }
+
+    /* return the sign                                                     */
+    return INTOBJ_INT( sign );
+}
+
 Obj             FuncSIGN_PERM (
     Obj                 self,
     Obj                 perm )
 {
-    const UInt2 *       ptPerm2;        /* pointer to the permutation      */
-    const UInt4 *       ptPerm4;        /* pointer to the permutation      */
-    Int                 sign;           /* sign (result)                   */
-    UInt2 *             ptKnown2;       /* pointer to temporary bag        */
-    UInt4 *             ptKnown4;       /* pointer to temporary bag        */
-    UInt                len;            /* length of one cycle             */
-    UInt                p,  q;          /* loop variables                  */
-
     /* check arguments and extract permutation                             */
     while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
         perm = ErrorReturnObj(
@@ -1570,83 +1608,12 @@ Obj             FuncSIGN_PERM (
             "you can replace <perm> via 'return <perm>;'" );
     }
 
-    /* make sure that the buffer bag is large enough                       */
-    UseTmpPerm(SIZE_OBJ(perm));
-
-    /* handle small permutations                                           */
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
-
-        /* get the pointer to the bags                                     */
-        ptPerm2  = CONST_ADDR_PERM2(perm);
-        ptKnown2 = ADDR_PERM2(TmpPerm);
-
-        /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM2(perm); p++ )
-            ptKnown2[p] = 0;
-
-        /* start with sign  1                                              */
-        sign = 1;
-
-        /* loop over all cycles                                            */
-        for ( p = 0; p < DEG_PERM2(perm); p++ ) {
-
-            /* if we haven't looked at this cycle so far                   */
-            if ( ptKnown2[p] == 0 && ptPerm2[p] != p ) {
-
-                /* find the length of this cycle                           */
-                len = 1;
-                for ( q = ptPerm2[p]; q != p; q = ptPerm2[q] ) {
-                    len++;  ptKnown2[q] = 1;
-                }
-
-                /* if the length is even invert the sign                   */
-                if ( len % 2 == 0 )
-                    sign = -sign;
-
-            }
-
-        }
-
+        return SIGN_PERM<UInt2>(perm);
     }
-
-    /* handle large permutations                                           */
     else {
-
-        /* get the pointer to the bags                                     */
-        ptPerm4  = CONST_ADDR_PERM4(perm);
-        ptKnown4 = ADDR_PERM4(TmpPerm);
-
-        /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM4(perm); p++ )
-            ptKnown4[p] = 0;
-
-        /* start with sign  1                                              */
-        sign = 1;
-
-        /* loop over all cycles                                            */
-        for ( p = 0; p < DEG_PERM4(perm); p++ ) {
-
-            /* if we haven't looked at this cycle so far                   */
-            if ( ptKnown4[p] == 0 && ptPerm4[p] != p ) {
-
-                /* find the length of this cycle                           */
-                len = 1;
-                for ( q = ptPerm4[p]; q != p; q = ptPerm4[q] ) {
-                    len++;  ptKnown4[q] = 1;
-                }
-
-                /* if the length is even invert the sign                   */
-                if ( len % 2 == 0 )
-                    sign = -sign;
-
-            }
-
-        }
-
+        return SIGN_PERM<UInt4>(perm);
     }
-
-    /* return the sign                                                     */
-    return INTOBJ_INT( sign );
 }
 
 
