@@ -2074,62 +2074,48 @@ Obj FuncDISTANCE_PERMS( Obj self, Obj p1, Obj p2)
 **  `SmallestImgTuplePerm' returns the smallest image of the  tuple  <tup>
 **  under  the permutation <perm>.
 */
-Obj             FuncSMALLEST_IMG_TUP_PERM (
-    Obj			self,
-    Obj                 tup,
-    Obj                 perm )
+template <typename T> static inline Obj SMALLEST_IMG_TUP_PERM(Obj tup, Obj perm)
 {
     UInt                res;            /* handle of the image, result     */
     const Obj *         ptTup;          /* pointer to the tuple            */
-    const UInt2 *       ptPrm2;         /* pointer to the permutation      */
-    const UInt4 *       ptPrm4;         /* pointer to the permutation      */
+    const T *           ptPrm;         /* pointer to the permutation      */
     UInt                tmp;            /* temporary handle                */
     UInt                lmp;            /* largest moved point             */
     UInt                i, k;           /* loop variables                  */
 
     res = MAX_DEG_PERM4; /* ``infty''. */
-    /* handle small permutations                                           */
-    if ( TNUM_OBJ(perm) == T_PERM2 ) {
 
-        /* get the pointer                                                 */
-        ptTup = CONST_ADDR_OBJ(tup) + LEN_LIST(tup);
-        ptPrm2 = CONST_ADDR_PERM2(perm);
-        lmp = DEG_PERM2(perm);
+    /* get the pointer                                                 */
+    ptTup = CONST_ADDR_OBJ(tup) + LEN_LIST(tup);
+    ptPrm = CONST_ADDR_PERM<T>(perm);
+    lmp = DEG_PERM<T>(perm);
 
-        /* loop over the entries of the tuple                              */
-        for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup-- ) {
-	  k = INT_INTOBJ( *ptTup );
-	  if ( k <= lmp )
-	      tmp = ptPrm2[k-1] + 1;
-	  else
-	      tmp = k ;
-	  if (tmp<res) res = tmp;
-        }
-
-    }
-
-    /* handle large permutations                                           */
-    else {
-
-        /* get the pointer                                                 */
-        ptTup = CONST_ADDR_OBJ(tup) + LEN_LIST(tup);
-        ptPrm4 = CONST_ADDR_PERM4(perm);
-        lmp = DEG_PERM4(perm);
-
-        /* loop over the entries of the tuple                              */
-        for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup-- ) {
-	  k = INT_INTOBJ( *ptTup );
-	  if ( k <= lmp )
-	      tmp = ptPrm4[k-1] + 1;
-	  else
-	      tmp = k;
-	  if (tmp<res) res = tmp;
-        }
-
+    /* loop over the entries of the tuple                              */
+    for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup-- ) {
+      k = INT_INTOBJ( *ptTup );
+      if ( k <= lmp )
+          tmp = ptPrm[k-1] + 1;
+      else
+          tmp = k;
+      if (tmp<res) res = tmp;
     }
 
     /* return the result                                                   */
     return INTOBJ_INT(res);
+
+}
+
+Obj             FuncSMALLEST_IMG_TUP_PERM (
+    Obj			self,
+    Obj                 tup,
+    Obj                 perm )
+{
+    if ( TNUM_OBJ(perm) == T_PERM2 ) {
+        return SMALLEST_IMG_TUP_PERM<UInt2>(tup, perm);
+    }
+    else {
+        return SMALLEST_IMG_TUP_PERM<UInt4>(tup, perm);
+    }
 }
 
 /****************************************************************************
