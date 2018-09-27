@@ -40,6 +40,7 @@ SOURCES += src/c_type1.c
 endif
 SOURCES += src/calls.c
 SOURCES += src/code.c
+SOURCES += src/collectors.cc
 SOURCES += src/compiler.c
 SOURCES += src/compstat.c
 SOURCES += src/costab.c
@@ -74,7 +75,6 @@ SOURCES += src/objcftl.c
 SOURCES += src/objects.c
 SOURCES += src/objfgelm.c
 SOURCES += src/objpcgel.cc
-SOURCES += src/objscoll.c
 SOURCES += src/objset.c
 SOURCES += src/opers.c
 SOURCES += src/permutat.cc

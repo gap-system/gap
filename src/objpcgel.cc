@@ -13,10 +13,10 @@ extern "C" {
 #include "objpcgel.h"
 
 #include "bool.h"
+#include "collectors.h"
 #include "gvars.h"
 #include "lists.h"
 #include "modules.h"
-#include "objscoll.h"
 #include "plist.h"
 
 }

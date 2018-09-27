@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*W  objscoll.c                  GAP source                       Frank Celler
+*W  collectors.cc               GAP source                       Frank Celler
 **                                                           & Werner  Nickel
 **
 **
@@ -24,7 +24,9 @@
 **  assume that the vectors are cleared.
 */
 
-#include "objscoll.h"
+extern "C" {
+
+#include "collectors.h"
 
 #include "bool.h"
 #include "error.h"
@@ -37,13 +39,15 @@
 #include "plist.h"
 #include "stringobj.h"
 
+}
+
 
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * module specific state  * * * * * * * * * * * * *
 */
 
-struct CollectorsState {
+struct CollectorsState_ {
     Obj  SC_NW_STACK;
     Obj  SC_LW_STACK;
     Obj  SC_PW_STACK;
@@ -56,9 +60,9 @@ struct CollectorsState {
 
 static ModuleStateOffset CollectorsStateOffset = -1;
 
-extern inline struct CollectorsState * CollectorsState(void)
+extern inline struct CollectorsState_ * CollectorsState(void)
 {
-    return (struct CollectorsState *)StateSlotsAtOffset(CollectorsStateOffset);
+    return (struct CollectorsState_ *)StateSlotsAtOffset(CollectorsStateOffset);
 }
 
 
@@ -97,14 +101,6 @@ typedef struct {
 *F * * * * * * * * * * * internal collector functions * * * * * * * * * * * *
 */
 
-#define WordVectorAndClear  C8Bits_WordVectorAndClear
-#define VectorWord          C8Bits_VectorWord
-#define SingleCollectWord   C8Bits_SingleCollectWord
-#define SAddWordIntoExpVec  C8Bits_SAddWordIntoExpVec
-#define SAddPartIntoExpVec  C8Bits_SAddPartIntoExpVec
-#define SingleCollectWord   C8Bits_SingleCollectWord
-#define Solution            C8Bits_Solution
-#define UIntN               UInt1
 #include "objscoll-impl.h"
 
 /****************************************************************************
@@ -112,54 +108,32 @@ typedef struct {
 *V  C8Bits_SingleCollector
 */
 FinPowConjCol C8Bits_SingleCollector = {
-    C8Bits_WordVectorAndClear,
-    C8Bits_VectorWord,
-    C8Bits_SingleCollectWord,
-    C8Bits_Solution
+    WordVectorAndClear<UInt1>,
+    VectorWord<UInt1>,
+    SingleCollectWord<UInt1>,
+    Solution<UInt1>,
 };
-
-
-#define WordVectorAndClear  C16Bits_WordVectorAndClear
-#define VectorWord          C16Bits_VectorWord
-#define SingleCollectWord   C16Bits_SingleCollectWord
-#define SAddWordIntoExpVec  C16Bits_SAddWordIntoExpVec
-#define SAddPartIntoExpVec  C16Bits_SAddPartIntoExpVec
-#define SingleCollectWord   C16Bits_SingleCollectWord
-#define Solution            C16Bits_Solution
-#define UIntN               UInt2
-#include "objscoll-impl.h"
 
 /****************************************************************************
 **
 *V  C16Bits_SingleCollector
 */
 FinPowConjCol C16Bits_SingleCollector = {
-    C16Bits_WordVectorAndClear,
-    C16Bits_VectorWord,
-    C16Bits_SingleCollectWord,
-    C16Bits_Solution
+    WordVectorAndClear<UInt2>,
+    VectorWord<UInt2>,
+    SingleCollectWord<UInt2>,
+    Solution<UInt2>,
 };
-
-
-#define WordVectorAndClear  C32Bits_WordVectorAndClear
-#define VectorWord          C32Bits_VectorWord
-#define SingleCollectWord   C32Bits_SingleCollectWord
-#define SAddWordIntoExpVec  C32Bits_SAddWordIntoExpVec
-#define SAddPartIntoExpVec  C32Bits_SAddPartIntoExpVec
-#define SingleCollectWord   C32Bits_SingleCollectWord
-#define Solution            C32Bits_Solution
-#define UIntN               UInt4
-#include "objscoll-impl.h"
 
 /****************************************************************************
 **
 *V  C32Bits_SingleCollector
 */
 FinPowConjCol C32Bits_SingleCollector = {
-    C32Bits_WordVectorAndClear,
-    C32Bits_VectorWord,
-    C32Bits_SingleCollectWord,
-    C32Bits_Solution
+    WordVectorAndClear<UInt4>,
+    VectorWord<UInt4>,
+    SingleCollectWord<UInt4>,
+    Solution<UInt4>,
 };
 
 /****************************************************************************
@@ -170,11 +144,6 @@ FinPowConjCol C32Bits_SingleCollector = {
 **  collectors and therefore can be used in the same way.
 */
 
-#define AddWordIntoExpVec   C8Bits_AddWordIntoExpVec
-#define AddCommIntoExpVec   C8Bits_AddCommIntoExpVec
-#define AddPartIntoExpVec   C8Bits_AddPartIntoExpVec
-#define CombiCollectWord    C8Bits_CombiCollectWord
-#define UIntN       UInt1
 #include "objccoll-impl.h"
 
 /****************************************************************************
@@ -182,46 +151,32 @@ FinPowConjCol C32Bits_SingleCollector = {
 *V  C8Bits_CombiCollector
 */
 FinPowConjCol C8Bits_CombiCollector = {
-    C8Bits_WordVectorAndClear,
-    C8Bits_VectorWord,
-    C8Bits_CombiCollectWord,
-    C8Bits_Solution
+    WordVectorAndClear<UInt1>,
+    VectorWord<UInt1>,
+    CombiCollectWord<UInt1>,
+    Solution<UInt1>,
 };
-
-#define AddWordIntoExpVec   C16Bits_AddWordIntoExpVec
-#define AddCommIntoExpVec   C16Bits_AddCommIntoExpVec
-#define AddPartIntoExpVec   C16Bits_AddPartIntoExpVec
-#define CombiCollectWord    C16Bits_CombiCollectWord
-#define UIntN       UInt2
-#include "objccoll-impl.h"
 
 /****************************************************************************
 **
 *V  C16Bits_CombiCollector
 */
 FinPowConjCol C16Bits_CombiCollector = {
-    C16Bits_WordVectorAndClear,
-    C16Bits_VectorWord,
-    C16Bits_CombiCollectWord,
-    C16Bits_Solution
+    WordVectorAndClear<UInt2>,
+    VectorWord<UInt2>,
+    CombiCollectWord<UInt2>,
+    Solution<UInt2>,
 };
-
-#define AddWordIntoExpVec   C32Bits_AddWordIntoExpVec
-#define AddCommIntoExpVec   C32Bits_AddCommIntoExpVec
-#define AddPartIntoExpVec   C32Bits_AddPartIntoExpVec
-#define CombiCollectWord    C32Bits_CombiCollectWord
-#define UIntN       UInt4
-#include "objccoll-impl.h"
 
 /****************************************************************************
 **
 *V  C32Bits_CombiCollector
 */
 FinPowConjCol C32Bits_CombiCollector = {
-    C32Bits_WordVectorAndClear,
-    C32Bits_VectorWord,
-    C32Bits_CombiCollectWord,
-    C32Bits_Solution
+    WordVectorAndClear<UInt4>,
+    VectorWord<UInt4>,
+    CombiCollectWord<UInt4>,
+    Solution<UInt4>,
 };
 
 /****************************************************************************
@@ -875,16 +830,22 @@ static Int InitModuleState(void)
 *F  InitInfoCollectors() . . . . . . . . . . . . . .  table of init functions
 */
 static StructInitInfo module = {
-    // init struct using C99 designated initializers; for a full list of
-    // fields, please refer to the definition of StructInitInfo
-    .type = MODULE_BUILTIN,
-    .name = "objscoll",
-    .initKernel = InitKernel,
-    .initLibrary = InitLibrary,
-
-    .moduleStateSize = sizeof(struct CollectorsState),
-    .moduleStateOffsetPtr = &CollectorsStateOffset,
-    .initModuleState = InitModuleState,
+ /* type        = */ MODULE_BUILTIN,
+ /* name        = */ "collectors",
+ /* revision_c  = */ 0,
+ /* revision_h  = */ 0,
+ /* version     = */ 0,
+ /* crc         = */ 0,
+ /* initKernel  = */ InitKernel,
+ /* initLibrary = */ InitLibrary,
+ /* checkInit   = */ 0,
+ /* preSave     = */ 0,
+ /* postSave    = */ 0,
+ /* postRestore = */ 0,
+ /* moduleStateSize      = */ sizeof(CollectorsState_),
+ /* moduleStateOffsetPtr = */ &CollectorsStateOffset,
+ /* initModuleState      = */ InitModuleState,
+ /* destroyModuleState   = */ 0,
 };
 
 StructInitInfo * InitInfoCollectors ( void )

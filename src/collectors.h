@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*W  objscoll.h                  GAP source                       Frank Celler
+*W  collectors.h                GAP source                       Frank Celler
 **
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
@@ -8,8 +8,8 @@
 *Y  Copyright (C) 2002 The GAP Group
 */
 
-#ifndef GAP_OBJSCOLL_H
-#define GAP_OBJSCOLL_H
+#ifndef GAP_COLLECTORS_H
+#define GAP_COLLECTORS_H
 
 #include "system.h"
 
@@ -127,4 +127,4 @@ extern Obj FuncFinPowConjCol_ReducedQuotient ( Obj, Obj, Obj, Obj );
 StructInitInfo * InitInfoCollectors ( void );
 
 
-#endif // GAP_OBJSCOLL_H
+#endif // GAP_COLLECTORS_H
