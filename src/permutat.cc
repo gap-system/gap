@@ -71,6 +71,21 @@ extern "C" {
 
 }
 
+
+#ifdef GAP_KERNEL_DEBUG
+template <typename T> static bool CHECK_PERM_TYPE(Obj perm);
+
+template <> inline bool CHECK_PERM_TYPE<UInt2>(Obj perm)
+{
+    return TNUM_OBJ(perm) == T_PERM2;
+}
+
+template <> inline bool CHECK_PERM_TYPE<UInt4>(Obj perm)
+{
+    return TNUM_OBJ(perm) == T_PERM4;
+}
+#endif
+
 template<typename T> static inline UInt SIZEBAG_PERM(UInt deg)
 {
     return sizeof(Obj) + deg * sizeof(T);
@@ -83,16 +98,19 @@ template<typename T> static inline Obj NEW_PERM(UInt deg)
 
 template<typename T> static inline UInt DEG_PERM(Obj perm)
 {
+    GAP_ASSERT(CHECK_PERM_TYPE<T>(perm));
     return (SIZE_OBJ(perm) - sizeof(Obj)) / sizeof(T);
 }
 
 template<typename T> static inline T * ADDR_PERM(Obj perm)
 {
+    GAP_ASSERT(CHECK_PERM_TYPE<T>(perm));
     return (T *)(ADDR_OBJ(perm) + 1);
 }
 
 template<typename T> static inline const T * CONST_ADDR_PERM(Obj perm)
 {
+    GAP_ASSERT(CHECK_PERM_TYPE<T>(perm));
     return (const T *)(CONST_ADDR_OBJ(perm) + 1);
 }
 
@@ -155,13 +173,21 @@ Obj TmpPerm;
 #define  TmpPerm MODULE_STATE(Permutat).TmpPerm
 
 
-static void UseTmpPerm(UInt size)
+static UInt1 * UseTmpPerm(UInt size)
 {
     if (TmpPerm == (Obj)0)
         TmpPerm  = NewBag(T_PERM4, size);
     else if (SIZE_BAG(TmpPerm) < size)
         ResizeBag(TmpPerm, size);
+    return (UInt1 *)(ADDR_OBJ(TmpPerm) + 1);
 }
+
+template<typename T> static inline T * ADDR_TMP_PERM()
+{
+    // no GAP_ASSERT here on purpose
+    return (T *)(ADDR_OBJ(TmpPerm) + 1);
+}
+
 
 /****************************************************************************
 **
@@ -580,7 +606,7 @@ Obj             PowPermInt (
 
         /* make sure that the buffer bag is large enough                   */
         UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM<UInt1>(TmpPerm);
+        ptKnown = ADDR_TMP_PERM<UInt1>();
 
         /* clear the buffer bag                                            */
         memset(ptKnown, 0, DEG_PERM<T>(opL));
@@ -625,7 +651,7 @@ Obj             PowPermInt (
 
         /* make sure that the buffer bag is large enough                   */
         UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM<UInt1>(TmpPerm);
+        ptKnown = ADDR_TMP_PERM<UInt1>();
 
         /* clear the buffer bag                                            */
         memset(ptKnown, 0, DEG_PERM<T>(opL));
@@ -688,7 +714,7 @@ Obj             PowPermInt (
 
         /* make sure that the buffer bag is large enough                   */
         UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM<UInt1>(TmpPerm);
+        ptKnown = ADDR_TMP_PERM<UInt1>();
 
         /* clear the buffer bag                                            */
         memset(ptKnown, 0, DEG_PERM<T>(opL));
@@ -734,7 +760,7 @@ Obj             PowPermInt (
 
         /* make sure that the buffer bag is large enough                   */
         UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM<UInt1>(TmpPerm);
+        ptKnown = ADDR_TMP_PERM<UInt1>();
 
         /* clear the buffer bag                                            */
         memset(ptKnown, 0, DEG_PERM<T>(opL));
@@ -1060,7 +1086,7 @@ template <typename T> static inline Obj PermList(Obj list)
     perm    = NEW_PERM<T>(degPerm);
     ptPerm  = ADDR_PERM<T>(perm);
     ptList  = CONST_ADDR_OBJ(list);
-    ptTmp   = ADDR_PERM<T>(TmpPerm);
+    ptTmp   = ADDR_TMP_PERM<T>();
 
     /* make the buffer bag clean                                       */
     for ( i = 1; i <= degPerm; i++ )
@@ -1364,7 +1390,7 @@ template <typename T> static inline Obj CYCLE_STRUCT_PERM(Obj perm)
         return list;
     }
 
-    scratch = ADDR_PERM<T>(TmpPerm);
+    scratch = ADDR_TMP_PERM<T>();
 
     /* the first deg bytes of TmpPerm hold a bit list of points done
      * so far. The remaining bytes will form the lengths of nontrivial
@@ -1409,7 +1435,7 @@ template <typename T> static inline Obj CYCLE_STRUCT_PERM(Obj perm)
     ptList = ADDR_OBJ(list);
 
     /* Recalculate after possible GC */
-    scratch = ADDR_PERM<T>(TmpPerm);
+    scratch = ADDR_TMP_PERM<T>();
     offset = (T *)((UInt)scratch + (bytes));
 
     for (pnt = 1; pnt < max; pnt++) {
@@ -1476,7 +1502,7 @@ template <typename T> static inline Obj ORDER_PERM(Obj perm)
 
     /* get the pointer to the bags                                     */
     ptPerm  = CONST_ADDR_PERM<T>(perm);
-    ptKnown = ADDR_PERM<T>(TmpPerm);
+    ptKnown = ADDR_TMP_PERM<T>();
 
     /* clear the buffer bag                                            */
     for ( p = 0; p < DEG_PERM<T>(perm); p++ )
@@ -1501,7 +1527,7 @@ template <typename T> static inline Obj ORDER_PERM(Obj perm)
 
             // update bag pointers, in case a garbage collection happened
             ptPerm  = CONST_ADDR_PERM<T>(perm);
-            ptKnown = ADDR_PERM<T>(TmpPerm);
+            ptKnown = ADDR_TMP_PERM<T>();
 
         }
 
@@ -1559,7 +1585,7 @@ template <typename T> static inline Obj SIGN_PERM(Obj perm)
 
     /* get the pointer to the bags                                     */
     ptPerm  = CONST_ADDR_PERM<T>(perm);
-    ptKnown = ADDR_PERM<T>(TmpPerm);
+    ptKnown = ADDR_TMP_PERM<T>();
 
     /* clear the buffer bag                                            */
     for ( p = 0; p < DEG_PERM<T>(perm); p++ )
@@ -1651,7 +1677,7 @@ template <typename T> static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
 
     /* get the pointer to the bags                                     */
     ptPerm   = CONST_ADDR_PERM<T>(perm);
-    ptKnown  = ADDR_PERM<T>(TmpPerm);
+    ptKnown  = ADDR_TMP_PERM<T>();
     ptSmall  = ADDR_PERM<T>(small);
 
     /* clear the buffer bag                                            */
@@ -1818,7 +1844,7 @@ template <typename T> static inline Obj RESTRICTED_PERM(Obj perm,
 
     if (test==True) {
 
-      T * ptTmp  = ADDR_PERM<T>(TmpPerm);
+      T * ptTmp  = ADDR_TMP_PERM<T>();
 
       /* cleanout */
       for ( p = 0; p < deg; p++ ) {
