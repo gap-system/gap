@@ -2204,15 +2204,12 @@ Obj             OnTuplesPerm (
 **  The input <set> must be a non-empty set, i.e., plain, dense and strictly
 **  sorted. This is is not verified.
 */
-Obj             OnSetsPerm (
-    Obj                 set,
-    Obj                 perm )
+template <typename T> static inline Obj OnSetsPerm_(Obj set, Obj perm)
 {
     Obj                 res;            /* handle of the image, result     */
     Obj *               ptRes;          /* pointer to the result           */
     const Obj *         ptTup;          /* pointer to the tuple            */
-    const UInt2 *       ptPrm2;         /* pointer to the permutation      */
-    const UInt4 *       ptPrm4;         /* pointer to the permutation      */
+    const T *           ptPrm;          /* pointer to the permutation      */
     Obj                 tmp;            /* temporary handle                */
     UInt                lmp;            /* largest moved point             */
     UInt                isint;          /* <set> only holds integers       */
@@ -2227,70 +2224,32 @@ Obj             OnSetsPerm (
     res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(set), T_PLIST, len);
     SET_LEN_PLIST(res, len);
 
-    /* handle small permutations                                           */
-    if ( TNUM_OBJ(perm) == T_PERM2 ) {
+    /* get the pointer                                                 */
+    ptTup = CONST_ADDR_OBJ(set) + len;
+    ptRes = ADDR_OBJ(res) + len;
+    ptPrm = CONST_ADDR_PERM<T>(perm);
+    lmp = DEG_PERM<T>(perm);
 
-        /* get the pointer                                                 */
-        ptTup = CONST_ADDR_OBJ(set) + len;
-        ptRes = ADDR_OBJ(res) + len;
-        ptPrm2 = CONST_ADDR_PERM2(perm);
-        lmp = DEG_PERM2(perm);
-
-        /* loop over the entries of the tuple                              */
-        isint = 1;
-        for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
-            if ( IS_INTOBJ( *ptTup ) && 0 < INT_INTOBJ( *ptTup ) ) {
-                k = INT_INTOBJ( *ptTup );
-                if ( k <= lmp )
-                    tmp = INTOBJ_INT( ptPrm2[k-1] + 1 );
-                else
-                    tmp = INTOBJ_INT( k );
-                *ptRes = tmp;
-            }
-            else {
-                isint = 0;
-                tmp = POW( *ptTup, perm );
-                ptTup = CONST_ADDR_OBJ(set) + i;
-                ptRes = ADDR_OBJ(res) + i;
-                ptPrm2 = CONST_ADDR_PERM2(perm);
-                *ptRes = tmp;
-                CHANGED_BAG( res );
-            }
+    /* loop over the entries of the tuple                              */
+    isint = 1;
+    for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
+        if ( IS_INTOBJ( *ptTup ) && 0 < INT_INTOBJ( *ptTup ) ) {
+            k = INT_INTOBJ( *ptTup );
+            if ( k <= lmp )
+                tmp = INTOBJ_INT( ptPrm[k-1] + 1 );
+            else
+                tmp = INTOBJ_INT( k );
+            *ptRes = tmp;
         }
-
-    }
-
-    /* handle large permutations                                           */
-    else {
-
-        /* get the pointer                                                 */
-        ptTup = CONST_ADDR_OBJ(set) + len;
-        ptRes = ADDR_OBJ(res) + len;
-        ptPrm4 = CONST_ADDR_PERM4(perm);
-        lmp = DEG_PERM4(perm);
-
-        /* loop over the entries of the tuple                              */
-        isint = 1;
-        for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
-            if ( IS_INTOBJ( *ptTup ) && 0 < INT_INTOBJ( *ptTup ) ) {
-                k = INT_INTOBJ( *ptTup );
-                if ( k <= lmp )
-                    tmp = INTOBJ_INT( ptPrm4[k-1] + 1 );
-                else
-                    tmp = INTOBJ_INT( k );
-                *ptRes = tmp;
-            }
-            else {
-                isint = 0;
-                tmp = POW( *ptTup, perm );
-                ptTup = CONST_ADDR_OBJ(set) + i;
-                ptRes = ADDR_OBJ(res) + i;
-                ptPrm4 = CONST_ADDR_PERM4(perm);
-                *ptRes = tmp;
-                CHANGED_BAG( res );
-            }
+        else {
+            isint = 0;
+            tmp = POW( *ptTup, perm );
+            ptTup = CONST_ADDR_OBJ(set) + i;
+            ptRes = ADDR_OBJ(res) + i;
+            ptPrm = CONST_ADDR_PERM<T>(perm);
+            *ptRes = tmp;
+            CHANGED_BAG( res );
         }
-
     }
 
     // sort the result
@@ -2305,6 +2264,18 @@ Obj             OnSetsPerm (
 
     /* return the result                                                   */
     return res;
+}
+
+Obj             OnSetsPerm (
+    Obj                 set,
+    Obj                 perm )
+{
+    if ( TNUM_OBJ(perm) == T_PERM2 ) {
+        return OnSetsPerm_<UInt2>(set, perm);
+    }
+    else {
+        return OnSetsPerm_<UInt4>(set, perm);
+    }
 }
 
 
