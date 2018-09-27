@@ -541,7 +541,7 @@ Obj             PowPermInt (
     Obj                 pow;            /* handle of the power (result)    */
     T *                 ptP;            /* pointer to the power            */
     const T *           ptL;            /* pointer to the permutation      */
-    T *                 ptKnown;        /* pointer to temporary bag        */
+    UInt1 *             ptKnown;        /* pointer to temporary bag        */
     UInt                deg;            /* degree of the permutation       */
     Int                 exp,  e;        /* exponent (right operand)        */
     UInt                len;            /* length of cycle (result)        */
@@ -584,11 +584,10 @@ Obj             PowPermInt (
 
         /* make sure that the buffer bag is large enough                   */
         UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM<T>(TmpPerm);
+        ptKnown = ADDR_PERM<UInt1>(TmpPerm);
 
         /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM<T>(opL); p++ )
-            ptKnown[p] = 0;
+        memset(ptKnown, 0, DEG_PERM<T>(opL));
 
         /* get pointer to the permutation and the power                    */
         exp = INT_INTOBJ(opR);
@@ -630,11 +629,10 @@ Obj             PowPermInt (
 
         /* make sure that the buffer bag is large enough                   */
         UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM<T>(TmpPerm);
+        ptKnown = ADDR_PERM<UInt1>(TmpPerm);
 
         /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM<T>(opL); p++ )
-            ptKnown[p] = 0;
+        memset(ptKnown, 0, DEG_PERM<T>(opL));
 
         /* get pointer to the permutation and the power                    */
         ptL = CONST_ADDR_PERM<T>(opL);
@@ -694,11 +692,10 @@ Obj             PowPermInt (
 
         /* make sure that the buffer bag is large enough                   */
         UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM<T>(TmpPerm);
+        ptKnown = ADDR_PERM<UInt1>(TmpPerm);
 
         /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM<T>(opL); p++ )
-            ptKnown[p] = 0;
+        memset(ptKnown, 0, DEG_PERM<T>(opL));
 
         /* get pointer to the permutation and the power                    */
         exp = -INT_INTOBJ(opR);
@@ -741,11 +738,10 @@ Obj             PowPermInt (
 
         /* make sure that the buffer bag is large enough                   */
         UseTmpPerm(SIZE_OBJ(opL));
-        ptKnown = ADDR_PERM<T>(TmpPerm);
+        ptKnown = ADDR_PERM<UInt1>(TmpPerm);
 
         /* clear the buffer bag                                            */
-        for ( p = 0; p < DEG_PERM<T>(opL); p++ )
-            ptKnown[p] = 0;
+        memset(ptKnown, 0, DEG_PERM<T>(opL));
 
         /* get pointer to the permutation and the power                    */
         ptL = CONST_ADDR_PERM<T>(opL);
