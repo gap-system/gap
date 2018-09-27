@@ -183,6 +183,47 @@ true
 #
 # Deal with mock package
 #
+
+# first, force "unload" it (this is a very bad idea in general,
+# but for this mock package, it is OK because we control everything)
+gap> Unbind(GAPInfo.PackagesInfo.mockpkg);
+gap> Unbind(GAPInfo.PackagesLoaded.mockpkg);
+gap> for n in [ "mockpkg_GlobalFunction", "mockpkg_Operation", "mockpkg_Attribute", "mockpkg_Property" ] do
+>   if IsBoundGlobal(n) then
+>     MakeReadWriteGlobal(n);
+>     UnbindGlobal(n);
+>   fi;
+> od;
+
+#
+gap> TestPackageAvailability("non-existing-package");
+fail
+gap> TestPackageAvailability("mockpkg");
+fail
+gap> TestPackageAvailability("mockpkg", "=0.1");
+fail
+gap> TestPackageAvailability("mockpkg", ">=0.1");
+fail
+gap> TestPackageAvailability("mockpkg", "=2.0");
+fail
+gap> TestPackageAvailability("mockpkg", ">=2.0");
+fail
+
+#
+gap> IsPackageLoaded("non-existing-package");
+false
+gap> IsPackageLoaded("mockpkg");
+false
+gap> IsPackageLoaded("mockpkg", "=0.1");
+false
+gap> IsPackageLoaded("mockpkg", ">=0.1");
+false
+gap> IsPackageLoaded("mockpkg", "=2.0");
+false
+gap> IsPackageLoaded("mockpkg", ">=2.0");
+false
+
+#
 gap> mockpkgpath := DirectoriesLibrary("tst/mockpkg")[1];;
 gap> ValidatePackageInfo(Filename(mockpkgpath, "PackageInfo.g"));
 true
@@ -196,12 +237,45 @@ gap> GetPackageNameForPrefix("mock");
 # point GAP at mockpkg
 gap> SetPackagePath("mockpkg", mockpkgpath);
 
-# ... now it "knows" it
+# ... now GAP "knows" the package
 gap> GetPackageNameForPrefix("mock");
 "mockpkg"
 
+#
+gap> TestPackageAvailability("non-existing-package");
+fail
+gap> TestPackageAvailability("mockpkg") = Filename(mockpkgpath, "");
+oops, should not print here
+true
+gap> TestPackageAvailability("mockpkg", "=0.1") = Filename(mockpkgpath, "");
+oops, should not print here
+true
+gap> TestPackageAvailability("mockpkg", ">=0.1") = Filename(mockpkgpath, "");
+oops, should not print here
+true
+gap> TestPackageAvailability("mockpkg", "=2.0");
+fail
+gap> TestPackageAvailability("mockpkg", ">=2.0");
+fail
+
+#
+gap> IsPackageLoaded("non-existing-package");
+false
+gap> IsPackageLoaded("mockpkg");
+false
+gap> IsPackageLoaded("mockpkg", "=0.1");
+false
+gap> IsPackageLoaded("mockpkg", ">=0.1");
+false
+gap> IsPackageLoaded("mockpkg", "=2.0");
+false
+gap> IsPackageLoaded("mockpkg", ">=2.0");
+false
+
 # instruct GAP to load the package, and record all its declarations
 gap> PackageVariablesInfo("mockpkg", "0.1");;
+oops, should not print here
+oops, should not print here
 gap> ShowPackageVariables("mockpkg");
 new global functions:
   mockpkg_GlobalFunction(  )*
