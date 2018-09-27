@@ -1877,7 +1877,7 @@ DeclareAttribute( "MinimalNormalSubgroups", IsGroup );
 ##  returns a list of all normal subgroups of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> g:=SymmetricGroup(4);;NormalSubgroups(g);
-##  [ Sym( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ), Group([ (1,4)(2,3), (1,3) 
+##  [ Sym( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ), Group([ (1,4)(2,3), (1,3)
 ##    (2,4) ]), Group(()) ]
 ##  ]]></Example>
 ##  <P/>
