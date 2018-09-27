@@ -85,7 +85,10 @@ Dependencies := rec(
   ExternalConditions := [ ],
 ),
 
-AvailabilityTest := ReturnTrue,
+AvailabilityTest := function()
+  Print("oops, should not print here\n");
+  return true;
+end,
 
 # use an empty banner string, so that we get identical output regardless
 # of whether GAP is started with -q or -b, or not.
