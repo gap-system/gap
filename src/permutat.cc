@@ -1926,8 +1926,7 @@ Obj             FuncTRIM_PERM (
 **  many are moved).
 **  Ppoints and Qnum must be plain lists of small integers.
 */
-Obj FuncSPLIT_PARTITION(
-    Obj self,
+template <typename T> static inline Obj SPLIT_PARTITION(
     Obj Ppoints,
     Obj Qnum,
     Obj jval,
@@ -1940,8 +1939,7 @@ Obj FuncSPLIT_PARTITION(
   Int max;
   Int blim;
   UInt deg;
-  const UInt2 * gpt; /* perm pointer for 2 and 4 bytes */
-  const UInt4 * gpf;
+  const T * ptPerm;
   Obj tmp;
 
 
@@ -1951,9 +1949,8 @@ Obj FuncSPLIT_PARTITION(
   cnt=0;
   blim=b-max-1;
 
-  if (TNUM_OBJ(g)==T_PERM2) {
-    deg=DEG_PERM2(g);
-    gpt=CONST_ADDR_PERM2(g);
+    deg=DEG_PERM<T>(g);
+    ptPerm=CONST_ADDR_PERM<T>(g);
     while ( (a<b)) {
       do {
 	b--;
@@ -1962,12 +1959,12 @@ Obj FuncSPLIT_PARTITION(
 	  return INTOBJ_INT(-1);
 	}
       } while (ELM_PLIST(Qnum,
-	      IMAGE(INT_INTOBJ(ELM_PLIST(Ppoints,b))-1,gpt,deg)+1)==jval);
+               IMAGE(INT_INTOBJ(ELM_PLIST(Ppoints,b))-1,ptPerm,deg)+1)==jval);
       do {
 	a++;
       } while ((a<b)
 	      &&(!(ELM_PLIST(Qnum,
-	      IMAGE(INT_INTOBJ(ELM_PLIST(Ppoints,a))-1,gpt,deg)+1)==jval)));
+                   IMAGE(INT_INTOBJ(ELM_PLIST(Ppoints,a))-1,ptPerm,deg)+1)==jval)));
       /* swap */
       if (a<b) {
 	tmp=ELM_PLIST(Ppoints,a);
@@ -1976,38 +1973,28 @@ Obj FuncSPLIT_PARTITION(
 	cnt++;
       }
     }
-  }
-  else {
-    deg=DEG_PERM4(g);
-    gpf=CONST_ADDR_PERM4(g);
-    while ( (a<b)) {
-      do {
-	b--;
-	if (b<blim) {
-	  /* too many points got moved out */
-	  return INTOBJ_INT(-1);
-	}
-      } while (ELM_PLIST(Qnum,
-		  IMAGE(INT_INTOBJ(ELM_PLIST(Ppoints,b))-1,gpf,deg)+1)==jval);
-      do {
-	a++;
-      } while ((a<b)
-	      &&(!(ELM_PLIST(Qnum,
-		  IMAGE(INT_INTOBJ(ELM_PLIST(Ppoints,a))-1,gpf,deg)+1)==jval)));
-      /* swap */
-      if (a<b) {
-	tmp=ELM_PLIST(Ppoints,a);
-	SET_ELM_PLIST(Ppoints,a,ELM_PLIST(Ppoints,b));
-	SET_ELM_PLIST(Ppoints,b,tmp);
-	cnt++;
-      }
-    }
-  }
+
   /* list is not necc. sorted wrt. \< (any longer) */
   RESET_FILT_LIST(Ppoints, FN_IS_SSORT);
   RESET_FILT_LIST(Ppoints, FN_IS_NSORT);
 
   return INTOBJ_INT(b+1);
+}
+
+Obj FuncSPLIT_PARTITION(
+    Obj self,
+    Obj Ppoints,
+    Obj Qnum,
+    Obj jval,
+    Obj g,
+    Obj lst)
+{
+  if (TNUM_OBJ(g)==T_PERM2) {
+    return SPLIT_PARTITION<UInt2>(Ppoints, Qnum, jval, g, lst);
+  }
+  else {
+    return SPLIT_PARTITION<UInt4>(Ppoints, Qnum, jval, g, lst);
+  }
 }
 
 /*****************************************************************************
