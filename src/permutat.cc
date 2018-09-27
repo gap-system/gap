@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*W  permutat.c                  GAP source                   Martin Schönert
+*W  permutat.cc                 GAP source                   Martin Schönert
 **                                                           & Alice Niemeyer
 **
 **
@@ -47,6 +47,8 @@
 **  and permutations of equal degree can be handled by the functions faster.
 */
 
+extern "C" {
+
 #include "permutat.h"
 
 #include "ariths.h"
@@ -66,6 +68,8 @@
 #include "saveload.h"
 #include "sysfiles.h"
 #include "trans.h"
+
+}
 
 /****************************************************************************
 **
@@ -4467,11 +4471,11 @@ static Int InitKernel (
 
     /* make the buffer bag                                                 */
 #ifndef HPCGAP
-    InitGlobalBag( &TmpPerm, "src/permutat.c:TmpPerm" );
+    InitGlobalBag( &TmpPerm, "src/permutat.cc:TmpPerm" );
 #endif
 
     /* make the identity permutation                                       */
-    InitGlobalBag( &IdentityPerm, "src/permutat.c:IdentityPerm" );
+    InitGlobalBag( &IdentityPerm, "src/permutat.cc:IdentityPerm" );
 
     /* install the saving functions */
     SaveObjFuncs[ T_PERM2 ] = SavePerm2;
@@ -4580,16 +4584,22 @@ static Int InitModuleState(void)
 *F  InitInfoPermutat()  . . . . . . . . . . . . . . . table of init functions
 */
 static StructInitInfo module = {
-    // init struct using C99 designated initializers; for a full list of
-    // fields, please refer to the definition of StructInitInfo
-    .type = MODULE_BUILTIN,
-    .name = "permutat",
-    .initKernel = InitKernel,
-    .initLibrary = InitLibrary,
-
-    .moduleStateSize = sizeof(PermutatModuleState),
-    .moduleStateOffsetPtr = &PermutatStateOffset,
-    .initModuleState = InitModuleState,
+ /* type        = */ MODULE_BUILTIN,
+ /* name        = */ "permutat",
+ /* revision_c  = */ 0,
+ /* revision_h  = */ 0,
+ /* version     = */ 0,
+ /* crc         = */ 0,
+ /* initKernel  = */ InitKernel,
+ /* initLibrary = */ InitLibrary,
+ /* checkInit   = */ 0,
+ /* preSave     = */ 0,
+ /* postSave    = */ 0,
+ /* postRestore = */ 0,
+ /* moduleStateSize      = */ sizeof(PermutatModuleState),
+ /* moduleStateOffsetPtr = */ &PermutatStateOffset,
+ /* initModuleState      = */ InitModuleState,
+ /* destroyModuleState   = */ 0,
 };
 
 StructInitInfo * InitInfoPermutat ( void )
