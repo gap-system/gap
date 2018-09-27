@@ -116,7 +116,7 @@ Obj DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
     /* otherwise it is the generators number of the first syllable         */
     else {
         ebits = EBITS_WORD(w);
-        return INTOBJ_INT(((((UIntN*)DATA_WORD(w))[0]) >> ebits)+1);
+        return INTOBJ_INT((CONST_DATA_WORD(w)[0] >> ebits)+1);
     }
 }
 
@@ -133,7 +133,7 @@ Obj ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
     UInt        ebits;          /* number of exponent bits                 */
     UInt        npos;           /* the wanted generator number             */
     UInt        num;            /* number of syllables in <w>              */
-    UIntN *     ptr;            /* pointer to the syllables of <w>         */
+    const UIntN * ptr;          /* pointer to the syllables of <w>         */
     UInt        i;              /* loop                                    */
     UInt        gen;            /* current generator number                */
 
@@ -148,7 +148,7 @@ Obj ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
         exps  = 1UL << (ebits-1);
         expm  = exps - 1;
         npos  = INT_INTOBJ(pos);
-        ptr   = ((UIntN*)DATA_WORD(w));
+        ptr   = CONST_DATA_WORD(w);
         for ( i = 1;  i <= num;  i++, ptr++ ) {
             gen = ((*ptr) >> ebits) + 1;
             if ( gen == npos ) {
@@ -184,7 +184,7 @@ Obj LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
     else {
         exps = 1UL << (EBITS_WORD(w)-1);
         expm = exps - 1;
-        p = ((UIntN*)DATA_WORD(w))[0];
+        p = CONST_DATA_WORD(w)[0];
         if ( p & exps )
             return INTOBJ_INT((p&expm)-exps);
         else
@@ -207,7 +207,7 @@ Obj ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
     UInt        exps;           /* sign exponent mask                      */
     UInt        ebits;          /* number of exponent bits                 */
     UInt        num;            /* number of syllables in <w>              */
-    UIntN *     ptr;            /* pointer to the syllables of <w>         */
+    const UIntN * ptr;          /* pointer to the syllables of <w>         */
     UInt        i,j;            /* loop                                    */
     UInt        gen;            /* current generator number                */
 
@@ -227,7 +227,7 @@ Obj ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
     exps  = 1UL << (ebits-1);
     expm  = exps - 1;
 
-    ptr   = ((UIntN*)DATA_WORD(w));
+    ptr   = CONST_DATA_WORD(w);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
       gen = ((*ptr) >> ebits) + 1;
       for (j=le; j< gen;j++) {
