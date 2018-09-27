@@ -43,11 +43,10 @@ result, it may differ from what you would expect under your particular
 operating system. In particular, it does not include an automatic installer
 program.
 
-Installing the GAP distribution with all the packages and full data
-libraries takes about 1.6 GB of disk space and (except on Windows) will
-require a C compiler (gcc is recommended) to be installed on your system.
+Installing the GAP distribution with all the packages and full data libraries
+takes about 1.6 GB of disk space and (except on Windows) will require both a C
+and a C++ compiler (gcc is recommended) to be installed on your system.
 To get maximum benefit from GAP and from various packages, we recommend
-that in addition a C++ compiler is available, and it may be useful
 to install a number of other free software libraries (and their associated
 development tools) although they are not required for basic operation. See
 <https://www.gap-system.org/Download/tools.html> for more details.
@@ -543,8 +542,9 @@ The configure script respects compiler settings given in environment
 variables. However such settings may conflict with the automatic
 configuration process. If configure produces strange error messages about
 not being able to run the compiler, check whether environment variables
-that might affect the compilation (in particular `CC`, `LD`, `CFLAGS`,
-`LDFLAGS` and `CPPFLAGS`) are set and reset them using `unsetenv`.
+that might affect the compilation (in particular `CC`, `CXX`, `CPP`, `LD`,
+`CFLAGS`, `CXXFLAGS`, `CPPFLAGS` and `LDFLAGS`) are set and reset them using
+`unsetenv`.
 
 
 12 Optimization and Compiler Options
@@ -556,7 +556,8 @@ possible optimisation level, but you might need to tell make about it.
 
 If you want to compile GAP with further compiler options (for example
 specific processor optimisations) you will have to assign them to the
-variables CFLAGS, CPPFLAGS and LDFLAGS, then re-run configure and make.
+variables `CFLAGS`, `CXXFLAGS`, `CPPFLAGS` and `LDFLAGS`, then re-run
+`configure` and `make`.
 
 If there are several compiler options or if they contain spaces you might
 have to enclose them by quotes depending on the shell you are
@@ -565,24 +566,20 @@ using.
 The configure process also introduces some default compiler options. You can
 eliminate these by assigning the replacement options to the variable `CFLAGS`.
 
-The recommended C compiler for GAP is the GNU C compiler gcc version 4.8
+The recommended C/C++ compiler for GAP is the GNU C compiler gcc version 4.8
 or later. The Clang compiler version 3.0 and later also should work fine.
 If you use another compiler, please let us know your experience with using
 it to compile GAP.
 
 If you do wish to use GAP with a specific compiler, you can set the environment
-variable `CC` to the name of your preferred compiler and then rerun configure
-and make.
-
-We also recommend that you install a C++ compiler before compiling GAP;
-while GAP itself does not need it, there are GAP packages which do
-require a C++ compiler.
+variables `CC` resp. `CXX` to the name of your preferred C resp. C++ compiler
+and then rerun `configure` and `make`.
 
 As an example, here is how one can configure GAP to compile with Clang 5
-(assuming it is installed on your system), with custom CFLAGS and debug mode
-enabled:
+(assuming it is installed on your system), with custom compiler flags and
+debug mode enabled:
 
-    ./configure CC=clang-5.0 CFLAGS="-g -Og" --enable-debug
+    ./configure CC=clang-5.0 CXX=clang++-5.0 CFLAGS="-g -Og" CXXFLAGS="-g -Og" --enable-debug
 
 
 13 GAP for OS X

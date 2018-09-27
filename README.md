@@ -43,10 +43,11 @@ GAP source repository using git:
 ## Installing required dependencies
 
 In this case, you need to have some more software dependencies installed than
-with a stable release in order to compiler GAP. In particular, you need at
+with a stable release in order to compile GAP. In particular, you need at
 least these:
 
 * a C compiler, e.g. GCC or Clang
+* a C++ compiler
 * GNU Make
 * GNU Autoconf (we recommend 2.69 or later)
 * GNU Libtool

@@ -17,9 +17,10 @@ AC_CANONICAL_HOST
 
 
 dnl
-dnl Set the language
+dnl Check for working C and C++ compiler; insist on C99 support
 dnl
 AC_PROG_CC_C99
+AC_PROG_CXX
 AC_LANG([C])
 
 
@@ -84,17 +85,6 @@ fi
 AC_MSG_RESULT([$ABI])
 AC_SUBST([ABI])
 
-
-dnl autoconf may set CXX to g++ even if there is no working C++ compiler.
-dnl So verify that CXX really is able to compile C++ code.
-AC_LANG_PUSH([C++])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-  [[#include <iostream>
-    #ifndef __cplusplus
-    #error "broken C++"
-    #endif]])],,
-  [CXX=;])
-AC_LANG_POP([C++])
 
 
 dnl
@@ -282,9 +272,7 @@ AS_IF([test "x$enable_Werror" != "xno"],
   [ax_enable_compile_warnings=error],
   [ax_enable_compile_warnings=yes])
 
-#WARNING_CPPFLAGS=""
-AX_COMPILER_FLAGS_CFLAGS([WARNING_CPPFLAGS])
-AC_SUBST([WARNING_CPPFLAGS])
+AX_COMPILER_WARNING_FLAGS
 
 dnl
 dnl User setting: Enable popcnt (on by default)

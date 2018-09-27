@@ -1,16 +1,21 @@
+#
+# This file has been modified to better fit with the needs of GAP,
+# and as such deviates from the original version described below.
+#
 # =============================================================================
 #  https://www.gnu.org/software/autoconf-archive/ax_compiler_flags_cflags.html
 # =============================================================================
 #
 # SYNOPSIS
 #
-#   AX_COMPILER_FLAGS_CFLAGS([VARIABLE], [IS-RELEASE], [EXTRA-BASE-FLAGS], [EXTRA-YES-FLAGS])
+#   AX_COMPILER_WARNING_FLAGS
 #
 # DESCRIPTION
 #
-#   Add warning flags for the C compiler to VARIABLE, which defaults to
-#   WARN_CFLAGS.  VARIABLE is AC_SUBST-ed by this macro, but must be
-#   manually added to the CFLAGS variable for each target in the code base.
+#   Add warning flags for the C compiler to WARN_CFLAGS, and for the C++
+#   compiler in WARN_CXXFLAGS. Both variables are AC_SUBST-ed by this macro,
+#   but must be manually added to the CFLAGS respectively CXXFLAGS variables
+#   for each target in the code base.
 #
 #   This macro depends on the environment set up by AX_COMPILER_FLAGS.
 #   Specifically, it uses the value of $ax_enable_compile_warnings to decide
@@ -28,15 +33,15 @@
 
 #serial 16
 
-AC_DEFUN([AX_COMPILER_FLAGS_CFLAGS],[
+AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
     AC_REQUIRE([AC_PROG_SED])
     AX_REQUIRE_DEFINED([AX_APPEND_COMPILE_FLAGS])
     AX_REQUIRE_DEFINED([AX_APPEND_FLAG])
     AX_REQUIRE_DEFINED([AX_CHECK_COMPILE_FLAG])
 
     # Variable names
-    m4_define([ax_warn_cflags_variable],
-              [m4_normalize(ifelse([$1],,[WARN_CFLAGS],[$1]))])
+    m4_define([ax_warn_cflags_variable],[WARN_CFLAGS])
+    m4_define([ax_warn_cxxflags_variable],[WARN_CXXFLAGS])
 
     AC_LANG_PUSH([C])
 
@@ -68,7 +73,6 @@ AC_DEFUN([AX_COMPILER_FLAGS_CFLAGS],[
     # Base flags
     AX_APPEND_COMPILE_FLAGS([ dnl
         -fno-strict-aliasing dnl
-        $3 dnl
     ],ax_warn_cflags_variable,[$ax_compiler_flags_test])
 
     AS_IF([test "$ax_enable_compile_warnings" != "no"],[
@@ -84,7 +88,6 @@ AC_DEFUN([AX_COMPILER_FLAGS_CFLAGS],[
             -Wno-unused-parameter dnl
             -Wmissing-field-initializers dnl
             -Wformat=2 dnl
-            -Wold-style-definition dnl
             dnl -Wcast-align dnl
             -Wformat-nonliteral dnl
             -Wformat-security dnl
@@ -103,7 +106,6 @@ AC_DEFUN([AX_COMPILER_FLAGS_CFLAGS],[
             -Wreturn-type dnl
             dnl -Wswitch-enum dnl
             dnl -Wswitch-default dnl
-            -Wno-implicit-fallthrough dnl
             -Wno-inline dnl
             -Wduplicated-cond dnl
             -Wduplicated-branches dnl
@@ -111,11 +113,11 @@ AC_DEFUN([AX_COMPILER_FLAGS_CFLAGS],[
             -Wrestrict dnl
             dnl -Wnull-dereference dnl
             -Wdouble-promotion dnl
-            $4 dnl
-            $5 dnl
-            $6 dnl
-            $7 dnl
         ],ax_warn_cflags_variable,[$ax_compiler_flags_test])
+        # HACK: use the warning flags determined so far also for the C++ compiler.
+        # This assumes that the C and C++ compiler are "related" and thus will
+        # accept similar warnings flags.
+        AS_VAR_SET(ax_warn_cxxflags_variable,[$ax_warn_cflags_variable])
         if test "$ax_compiler_cxx" = "no" ; then
             # C-only flags. Warn in C++
             AX_APPEND_COMPILE_FLAGS([ dnl
@@ -123,6 +125,7 @@ AC_DEFUN([AX_COMPILER_FLAGS_CFLAGS],[
             dnl -Wmissing-prototypes dnl
             dnl -Wstrict-prototypes dnl
             dnl -Wdeclaration-after-statement dnl
+            -Wno-implicit-fallthrough dnl
             -Wimplicit-function-declaration dnl
             -Wold-style-definition dnl
             -Wjump-misses-init dnl
@@ -160,4 +163,5 @@ AC_DEFUN([AX_COMPILER_FLAGS_CFLAGS],[
 
     # Substitute the variables
     AC_SUBST(ax_warn_cflags_variable)
+    AC_SUBST(ax_warn_cxxflags_variable)
 ])dnl AX_COMPILER_FLAGS
