@@ -26,6 +26,14 @@ gap> p:=Image(IsomorphismPermGroup(g));;
 gap> s:=SylowSubgroup(p,7);;
 gap> Length(IntermediateSubgroups(p,s).subgroups);
 71
+gap> g:=SymmetricGroup(9);;s:=SylowSubgroup(g,3);;
+gap> dc:=DoubleCosetRepsAndSizes(g,s,s);;
+gap> Length(dc);Sum(dc,x->x[2])=Size(g);
+88
+true
+gap> dc1:=DoubleCosetRepsAndSizes(g,s,s:sisyphus);;
+gap> Collected(List(dc,x->x[2]))=Collected(List(dc1,x->x[2]));
+true
 
 # Unbind variables so we can GC memory
 gap> Unbind(g); Unbind(dc); Unbind(ac); Unbind(g); Unbind(p); Unbind(s);

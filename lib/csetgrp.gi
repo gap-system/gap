@@ -851,12 +851,14 @@ local live,orbs,orbset,done,nr,p,o,os,orbitextender,bahn,i,j,enum,dict,map,pam;
               if IsBound(map[j]) and map[j]>i then map[j]:=map[j]-1; fi;
             od;
 
-            p:=[i..Length(orbs)-1];
-            orbs{p}:=orbs{p+1};Unbind(orbs[Length(orbs)]);
-            orbset{p}:=orbset{p+1};Unbind(orbset[Length(orbset)]);
-            done{p}:=done{p+1};Unbind(done[Length(done)]);
-            bahn{p}:=bahn{p+1};Unbind(bahn[Length(bahn)]);
-            pam{p}:=pam{p+1};Unbind(pam[Length(pam)]);
+            # Remove entry i, i.e.
+            #p:=[i..Length(orbs)-1];
+            #orbs{p}:=orbs{p+1};Unbind(orbs[Length(orbs)]);
+            Remove(orbs,i);
+            Remove(orbset,i);
+            Remove(done,i);
+            Remove(bahn,i);
+            Remove(pam,i);
           else
             done[i]:=-p;
           fi;
@@ -1029,6 +1031,12 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
 
     fi;
 
+  elif ValueOption("sisyphus")=true then
+    # purely to allow for tests of up-step mechanism in smaller examples.
+    # This is creating unneccessary extra work and thus should never be used
+    # in practice, but will force some code to be run through.
+    c:=Concatenation([TrivialSubgroup(G)],c);
+    cano:=true;
   fi;
 
   r:=[One(G)];
