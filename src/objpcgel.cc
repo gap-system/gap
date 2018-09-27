@@ -102,9 +102,10 @@ Obj FuncNBitsPcWord_Quotient ( Obj self, Obj left, Obj right )
 
 /****************************************************************************
 **
-*F  Func8Bits_DepthOfPcElement( <self>, <pcgs>, <w> )
+*F  DepthOfPcElement( <self>, <pcgs>, <w> )
 */
-Obj Func8Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
+template<typename UIntN>
+Obj DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
 {
     Int         ebits;          /* number of bits in the exponent          */
 
@@ -115,8 +116,153 @@ Obj Func8Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
     /* otherwise it is the generators number of the first syllable         */
     else {
         ebits = EBITS_WORD(w);
-        return INTOBJ_INT(((((UInt1*)DATA_WORD(w))[0]) >> ebits)+1);
+        return INTOBJ_INT(((((UIntN*)DATA_WORD(w))[0]) >> ebits)+1);
     }
+}
+
+
+/****************************************************************************
+**
+*F  ExponentOfPcElement( <self>, <pcgs>, <w>, <pos> )
+*/
+template<typename UIntN>
+Obj ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
+{
+    UInt        expm;           /* signed exponent mask                    */
+    UInt        exps;           /* sign exponent mask                      */
+    UInt        ebits;          /* number of exponent bits                 */
+    UInt        npos;           /* the wanted generator number             */
+    UInt        num;            /* number of syllables in <w>              */
+    UIntN *     ptr;            /* pointer to the syllables of <w>         */
+    UInt        i;              /* loop                                    */
+    UInt        gen;            /* current generator number                */
+
+    /* all exponents are zero if the pc element if the identity            */
+    num = NPAIRS_WORD(w);
+    if ( num == 0 )
+        return INTOBJ_INT(0);
+
+    /* otherwise find the syllable belonging to <exp>                      */
+    else {
+        ebits = EBITS_WORD(w);
+        exps  = 1UL << (ebits-1);
+        expm  = exps - 1;
+        npos  = INT_INTOBJ(pos);
+        ptr   = ((UIntN*)DATA_WORD(w));
+        for ( i = 1;  i <= num;  i++, ptr++ ) {
+            gen = ((*ptr) >> ebits) + 1;
+            if ( gen == npos ) {
+                if ( (*ptr) & exps )
+                    return INTOBJ_INT(((*ptr)&expm)-exps);
+                else
+                    return INTOBJ_INT((*ptr)&expm);
+            }
+            if ( npos < gen )
+                return INTOBJ_INT(0);
+        }
+        return INTOBJ_INT(0);
+    }
+}
+
+
+/****************************************************************************
+**
+*F  LeadingExponentOfPcElement( <self>, <pcgs>, <w> )
+*/
+template<typename UIntN>
+Obj LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
+{
+    UInt        expm;           /* signed exponent mask                    */
+    UInt        exps;           /* sign exponent mask                      */
+    UIntN       p;              /* first syllable                          */
+
+    /* the leading exponent is zero iff the pc element if the identity     */
+    if ( NPAIRS_WORD(w) == 0 )
+        return Fail;
+
+    /* otherwise it is the exponent of the first syllable                  */
+    else {
+        exps = 1UL << (EBITS_WORD(w)-1);
+        expm = exps - 1;
+        p = ((UIntN*)DATA_WORD(w))[0];
+        if ( p & exps )
+            return INTOBJ_INT((p&expm)-exps);
+        else
+            return INTOBJ_INT(p&expm);
+    }
+}
+
+/****************************************************************************
+**
+*F  ExponentsOfPcElement( <self>, <pcgs>, <w> )
+*/
+template<typename UIntN>
+Obj ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
+{
+    UInt	len;		/* length of pcgs */
+    Obj		el;		/* exponents list */
+    UInt        le;
+    UInt	indx;
+    UInt        expm;           /* signed exponent mask                    */
+    UInt        exps;           /* sign exponent mask                      */
+    UInt        ebits;          /* number of exponent bits                 */
+    UInt        num;            /* number of syllables in <w>              */
+    UIntN *     ptr;            /* pointer to the syllables of <w>         */
+    UInt        i,j;            /* loop                                    */
+    UInt        gen;            /* current generator number                */
+
+    len=LEN_LIST(pcgs);
+    el=NEW_PLIST(T_PLIST_CYC,len);
+    SET_LEN_PLIST(el,len);
+
+    /* Check if the exponent vector is the empty list. */
+    if( len == 0 ) { RetypeBag( el, T_PLIST_EMPTY ); return el; }
+
+    indx=1; /* current index in el we assign to */
+    num = NPAIRS_WORD(w);
+
+    le=1; /* last exponent which has been assigned+1 */
+
+    ebits = EBITS_WORD(w);
+    exps  = 1UL << (ebits-1);
+    expm  = exps - 1;
+
+    ptr   = ((UIntN*)DATA_WORD(w));
+    for ( i = 1;  i <= num;  i++, ptr++ ) {
+      gen = ((*ptr) >> ebits) + 1;
+      for (j=le; j< gen;j++) {
+        /* zero out intermediate entries */
+	SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
+	indx++;
+      }
+
+      if ( (*ptr) & exps )
+	  SET_ELM_PLIST(el,indx,INTOBJ_INT(((*ptr)&expm)-exps));
+      else
+	  SET_ELM_PLIST(el,indx,INTOBJ_INT((*ptr)&expm));
+      indx++;
+      le=gen+1;
+    }
+
+    /* zeroes at the end */
+    for (j=le; j<=len;j++) {
+      /* zero out  */
+      SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
+      indx++;
+    }
+
+    CHANGED_BAG(el);
+    return el;
+}
+
+
+/****************************************************************************
+**
+*F  Func8Bits_DepthOfPcElement( <self>, <pcgs>, <w> )
+*/
+Obj Func8Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
+{
+    return DepthOfPcElement<UInt1>(self, pcgs, w);
 }
 
 
@@ -126,40 +272,7 @@ Obj Func8Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
 */
 Obj Func8Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
 {
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        ebits;          /* number of exponent bits                 */
-    UInt        npos;           /* the wanted generator number             */
-    UInt        num;            /* number of syllables in <w>              */
-    UInt1 *     ptr;            /* pointer to the syllables of <w>         */
-    UInt        i;              /* loop                                    */
-    UInt        gen;            /* current generator number                */
-
-    /* all exponents are zero if the pc element if the identity            */
-    num = NPAIRS_WORD(w);
-    if ( num == 0 )
-        return INTOBJ_INT(0);
-
-    /* otherwise find the syllable belonging to <exp>                      */
-    else {
-        ebits = EBITS_WORD(w);
-        exps  = 1UL << (ebits-1);
-        expm  = exps - 1;
-        npos  = INT_INTOBJ(pos);
-        ptr   = ((UInt1*)DATA_WORD(w));
-        for ( i = 1;  i <= num;  i++, ptr++ ) {
-            gen = ((*ptr) >> ebits) + 1;
-            if ( gen == npos ) {
-                if ( (*ptr) & exps )
-                    return INTOBJ_INT(((*ptr)&expm)-exps);
-                else
-                    return INTOBJ_INT((*ptr)&expm);
-            }
-            if ( npos < gen )
-                return INTOBJ_INT(0);
-        }
-        return INTOBJ_INT(0);
-    }
+    return ExponentOfPcElement<UInt1>(self, pcgs, w, pos);
 }
 
 
@@ -169,24 +282,7 @@ Obj Func8Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
 */
 Obj Func8Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
 {
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt1       p;              /* first syllable                          */
-
-    /* the leading exponent is zero iff the pc element if the identity     */
-    if ( NPAIRS_WORD(w) == 0 )
-        return Fail;
-
-    /* otherwise it is the exponent of the first syllable                  */
-    else {
-        exps = 1UL << (EBITS_WORD(w)-1);
-        expm = exps - 1;
-        p = ((UInt1*)DATA_WORD(w))[0];
-        if ( p & exps )
-            return INTOBJ_INT((p&expm)-exps);
-        else
-            return INTOBJ_INT(p&expm);
-    }
+    return LeadingExponentOfPcElement<UInt1>(self, pcgs, w);
 }
 
 /****************************************************************************
@@ -195,60 +291,7 @@ Obj Func8Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
 */
 Obj Func8Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
 {
-    UInt	len;		/* length of pcgs */
-    Obj		el;		/* exponents list */
-    UInt        le;
-    UInt	indx;
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        ebits;          /* number of exponent bits                 */
-    UInt        num;            /* number of syllables in <w>              */
-    UInt1 *     ptr;            /* pointer to the syllables of <w>         */
-    UInt        i,j;            /* loop                                    */
-    UInt        gen;            /* current generator number                */
-
-    len=LEN_LIST(pcgs);
-    el=NEW_PLIST(T_PLIST_CYC,len);
-    SET_LEN_PLIST(el,len);
-
-    /* Check if the exponent vector is the empty list. */
-    if( len == 0 ) { RetypeBag( el, T_PLIST_EMPTY ); return el; }
-
-    indx=1; /* current index in el we assign to */
-    num = NPAIRS_WORD(w);
-
-    le=1; /* last exponent which has been assigned+1 */
-
-    ebits = EBITS_WORD(w);
-    exps  = 1UL << (ebits-1);
-    expm  = exps - 1;
-
-    ptr   = ((UInt1*)DATA_WORD(w));
-    for ( i = 1;  i <= num;  i++, ptr++ ) {
-      gen = ((*ptr) >> ebits) + 1;
-      for (j=le; j< gen;j++) {
-        /* zero out intermediate entries */
-	SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
-	indx++;
-      }
-
-      if ( (*ptr) & exps )
-	  SET_ELM_PLIST(el,indx,INTOBJ_INT(((*ptr)&expm)-exps));
-      else
-	  SET_ELM_PLIST(el,indx,INTOBJ_INT((*ptr)&expm));
-      indx++;
-      le=gen+1;
-    }
-
-    /* zeroes at the end */
-    for (j=le; j<=len;j++) {
-      /* zero out  */
-      SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
-      indx++;
-    }
-
-    CHANGED_BAG(el);
-    return el;
+    return ExponentsOfPcElement<UInt1>(self, pcgs, w);
 }
 
 
@@ -258,17 +301,7 @@ Obj Func8Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
 */
 Obj Func16Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
 {
-    Int         ebits;          /* number of bits in the exponent          */
-
-    /* if the pc element is the identity we have to ask the pcgs           */
-    if ( NPAIRS_WORD(w) == 0 )
-        return INTOBJ_INT( LEN_LIST(pcgs) + 1 );
-
-    /* otherwise it is the generators number of the first syllable         */
-    else {
-        ebits = EBITS_WORD(w);
-        return INTOBJ_INT(((((UInt2*)DATA_WORD(w))[0]) >> ebits)+1);
-    }
+    return DepthOfPcElement<UInt2>(self, pcgs, w);
 }
 
 
@@ -278,40 +311,7 @@ Obj Func16Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
 */
 Obj Func16Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
 {
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        ebits;          /* number of exponent bits                 */
-    UInt        npos;           /* the wanted generator number             */
-    UInt        num;            /* number of syllables in <w>              */
-    UInt2 *     ptr;            /* pointer to the syllables of <w>         */
-    UInt        i;              /* loop                                    */
-    UInt        gen;            /* current generator number                */
-
-    /* all exponents are zero if the pc element if the identity            */
-    num = NPAIRS_WORD(w);
-    if ( num == 0 )
-        return INTOBJ_INT(0);
-
-    /* otherwise find the syllable belonging to <exp>                      */
-    else {
-        ebits = EBITS_WORD(w);
-        exps  = 1UL << (ebits-1);
-        expm  = exps - 1;
-        npos  = INT_INTOBJ(pos);
-        ptr   = ((UInt2*)DATA_WORD(w));
-        for ( i = 1;  i <= num;  i++, ptr++ ) {
-            gen = ((*ptr) >> ebits) + 1;
-            if ( gen == npos ) {
-                if ( (*ptr) & exps )
-                    return INTOBJ_INT(((*ptr)&expm)-exps);
-                else
-                    return INTOBJ_INT((*ptr)&expm);
-            }
-            if ( npos < gen )
-                return INTOBJ_INT(0);
-        }
-        return INTOBJ_INT(0);
-    }
+    return ExponentOfPcElement<UInt2>(self, pcgs, w, pos);
 }
 
 
@@ -321,24 +321,7 @@ Obj Func16Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
 */
 Obj Func16Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
 {
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt2       p;              /* first syllable                          */
-
-    /* the leading exponent is zero iff the pc element if the identity     */
-    if ( NPAIRS_WORD(w) == 0 )
-        return Fail;
-
-    /* otherwise it is the exponent of the first syllable                  */
-    else {
-        exps = 1UL << (EBITS_WORD(w)-1);
-        expm = exps - 1;
-        p = ((UInt2*)DATA_WORD(w))[0];
-        if ( p & exps )
-            return INTOBJ_INT((p&expm)-exps);
-        else
-            return INTOBJ_INT(p&expm);
-    }
+    return LeadingExponentOfPcElement<UInt2>(self, pcgs, w);
 }
 
 /****************************************************************************
@@ -347,60 +330,7 @@ Obj Func16Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
 */
 Obj Func16Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
 {
-    UInt	len;		/* length of pcgs */
-    Obj		el;		/* exponents list */
-    UInt        le;
-    UInt	indx;
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        ebits;          /* number of exponent bits                 */
-    UInt        num;            /* number of syllables in <w>              */
-    UInt2 *     ptr;            /* pointer to the syllables of <w>         */
-    UInt        i,j;            /* loop                                    */
-    UInt        gen;            /* current generator number                */
-
-    len=LEN_LIST(pcgs);
-    el=NEW_PLIST(T_PLIST_CYC,len);
-    SET_LEN_PLIST(el,len);
-
-    /* Check if the exponent vector is the empty list. */
-    if( len == 0 ) { RetypeBag( el, T_PLIST_EMPTY ); return el; }
-
-    indx=1; /* current index in el we assign to */
-    num = NPAIRS_WORD(w);
-
-    le=1; /* last exponent which has been assigned+1 */
-
-    ebits = EBITS_WORD(w);
-    exps  = 1UL << (ebits-1);
-    expm  = exps - 1;
-
-    ptr   = ((UInt2*)DATA_WORD(w));
-    for ( i = 1;  i <= num;  i++, ptr++ ) {
-      gen = ((*ptr) >> ebits) + 1;
-      for (j=le; j< gen;j++) {
-        /* zero out intermediate entries */
-	SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
-	indx++;
-      }
-
-      if ( (*ptr) & exps )
-	  SET_ELM_PLIST(el,indx,INTOBJ_INT(((*ptr)&expm)-exps));
-      else
-	  SET_ELM_PLIST(el,indx,INTOBJ_INT((*ptr)&expm));
-      indx++;
-      le=gen+1;
-    }
-
-    /* zeroes at the end */
-    for (j=le; j<=len;j++) {
-      /* zero out  */
-      SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
-      indx++;
-    }
-
-    CHANGED_BAG(el);
-    return el;
+    return ExponentsOfPcElement<UInt2>(self, pcgs, w);
 }
 
 
@@ -410,17 +340,7 @@ Obj Func16Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
 */
 Obj Func32Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
 {
-    Int         ebits;          /* number of bits in the exponent          */
-
-    /* if the pc element is the identity we have to ask the pcgs           */
-    if ( NPAIRS_WORD(w) == 0 )
-        return INTOBJ_INT( LEN_LIST(pcgs) + 1 );
-
-    /* otherwise it is the generators number of the first syllable         */
-    else {
-        ebits = EBITS_WORD(w);
-        return INTOBJ_INT(((((UInt4*)DATA_WORD(w))[0]) >> ebits)+1);
-    }
+    return DepthOfPcElement<UInt4>(self, pcgs, w);
 }
 
 
@@ -430,40 +350,7 @@ Obj Func32Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
 */
 Obj Func32Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
 {
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        ebits;          /* number of exponent bits                 */
-    UInt        npos;           /* the wanted generator number             */
-    UInt        num;            /* number of syllables in <w>              */
-    UInt4 *     ptr;            /* pointer to the syllables of <w>         */
-    UInt        i;              /* loop                                    */
-    UInt        gen;            /* current generator number                */
-
-    /* all exponents are zero if the pc element if the identity            */
-    num = NPAIRS_WORD(w);
-    if ( num == 0 )
-        return INTOBJ_INT(0);
-
-    /* otherwise find the syllable belonging to <exp>                      */
-    else {
-        ebits = EBITS_WORD(w);
-        exps  = 1UL << (ebits-1);
-        expm  = exps - 1;
-        npos  = INT_INTOBJ(pos);
-        ptr   = ((UInt4*)DATA_WORD(w));
-        for ( i = 1;  i <= num;  i++, ptr++ ) {
-            gen = ((*ptr) >> ebits) + 1;
-            if ( gen == npos ) {
-                if ( (*ptr) & exps )
-                    return INTOBJ_INT(((*ptr)&expm)-exps);
-                else
-                    return INTOBJ_INT((*ptr)&expm);
-            }
-            if ( npos < gen )
-                return INTOBJ_INT(0);
-        }
-        return INTOBJ_INT(0);
-    }
+    return ExponentOfPcElement<UInt4>(self, pcgs, w, pos);
 }
 
 
@@ -473,24 +360,7 @@ Obj Func32Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
 */
 Obj Func32Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
 {
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt4       p;              /* first syllable                          */
-
-    /* the leading exponent is zero iff the pc element if the identity     */
-    if ( NPAIRS_WORD(w) == 0 )
-        return Fail;
-
-    /* otherwise it is the exponent of the first syllable                  */
-    else {
-        exps = 1UL << (EBITS_WORD(w)-1);
-        expm = exps - 1;
-        p = ((UInt4*)DATA_WORD(w))[0];
-        if ( p & exps )
-            return INTOBJ_INT((p&expm)-exps);
-        else
-            return INTOBJ_INT(p&expm);
-    }
+    return LeadingExponentOfPcElement<UInt4>(self, pcgs, w);
 }
 
 /****************************************************************************
@@ -499,60 +369,7 @@ Obj Func32Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
 */
 Obj Func32Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
 {
-    UInt	len;		/* length of pcgs */
-    Obj		el;		/* exponents list */
-    UInt        le;
-    UInt	indx;
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        ebits;          /* number of exponent bits                 */
-    UInt        num;            /* number of syllables in <w>              */
-    UInt4 *     ptr;            /* pointer to the syllables of <w>         */
-    UInt        i,j;            /* loop                                    */
-    UInt        gen;            /* current generator number                */
-
-    len=LEN_LIST(pcgs);
-    el=NEW_PLIST(T_PLIST_CYC,len);
-    SET_LEN_PLIST(el,len);
-
-    /* Check if the exponent vector is the empty list. */
-    if( len == 0 ) { RetypeBag( el, T_PLIST_EMPTY ); return el; }
-
-    indx=1; /* current index in el we assign to */
-    num = NPAIRS_WORD(w);
-
-    le=1; /* last exponent which has been assigned+1 */
-
-    ebits = EBITS_WORD(w);
-    exps  = 1UL << (ebits-1);
-    expm  = exps - 1;
-
-    ptr   = ((UInt4*)DATA_WORD(w));
-    for ( i = 1;  i <= num;  i++, ptr++ ) {
-      gen = ((*ptr) >> ebits) + 1;
-      for (j=le; j< gen;j++) {
-        /* zero out intermediate entries */
-	SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
-	indx++;
-      }
-
-      if ( (*ptr) & exps )
-	  SET_ELM_PLIST(el,indx,INTOBJ_INT(((*ptr)&expm)-exps));
-      else
-	  SET_ELM_PLIST(el,indx,INTOBJ_INT((*ptr)&expm));
-      indx++;
-      le=gen+1;
-    }
-
-    /* zeroes at the end */
-    for (j=le; j<=len;j++) {
-      /* zero out  */
-      SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
-      indx++;
-    }
-
-    CHANGED_BAG(el);
-    return el;
+    return ExponentsOfPcElement<UInt4>(self, pcgs, w);
 }
 
 
