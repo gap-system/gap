@@ -596,7 +596,7 @@ static void MarkWeakPointerObj(Obj wp)
     // copying
     const UInt len = SIZE_BAG(wp) / sizeof(Obj) - 1;
     for (UInt i = 1; i <= len; i++) {
-        MarkBagWeakly(ADDR_OBJ(wp)[i]);
+        MarkBagWeakly(CONST_ADDR_OBJ(wp)[i]);
     }
 }
 
