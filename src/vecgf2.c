@@ -107,7 +107,7 @@ Obj GF2Zero;
 
 static inline void AddGF2VecToGF2Vec(
   UInt *	ptS,
-  UInt *	ptV,
+  const UInt *	ptV,
   UInt		len)
 {
   register UInt ct;
@@ -133,7 +133,7 @@ UInt RightMostOneGF2Vec (
 
     len = LEN_GF2VEC(vec);
     while ( 0 < len ) {
-        if ( BLOCK_ELM_GF2VEC(vec,len) == 0 )
+        if ( CONST_BLOCK_ELM_GF2VEC(vec,len) == 0 )
 	    len = BIPEB*((len-1)/BIPEB);
         else if ( BLOCK_ELM_GF2VEC(vec,len) & MASK_POS_GF2VEC(len) )
             break;
@@ -149,7 +149,7 @@ Obj AddCoeffsGF2VecGF2Vec (
     Obj                 vec )
 {
     UInt *              ptS;
-    UInt *              ptV;
+    const UInt *        ptV;
     UInt                len;
 
     /* get the length                                                      */
@@ -163,7 +163,7 @@ Obj AddCoeffsGF2VecGF2Vec (
 
     /* add <vec> to <sum>                                                  */
     ptS = BLOCKS_GF2VEC(sum);
-    ptV = BLOCKS_GF2VEC(vec);
+    ptV = CONST_BLOCKS_GF2VEC(vec);
     AddGF2VecToGF2Vec(ptS, ptV, len);
     return INTOBJ_INT(RightMostOneGF2Vec(sum));
 }
@@ -174,13 +174,13 @@ CopySection_GF2Vecs(Obj src, Obj dest, UInt smin, UInt dmin, UInt nelts)
 {
     UInt   soff;
     UInt   doff;
-    UInt * sptr;
+    const UInt * sptr;
     UInt * dptr;
 
     /* switch to zero-based indices and find the first blocks and so on */
     soff = (smin - 1) % BIPEB;
     doff = (dmin - 1) % BIPEB;
-    sptr = BLOCKS_GF2VEC(src) + (smin - 1) / BIPEB;
+    sptr = CONST_BLOCKS_GF2VEC(src) + (smin - 1) / BIPEB;
     dptr = BLOCKS_GF2VEC(dest) + (dmin - 1) / BIPEB;
 
     CopyBits(sptr, soff, dptr, doff, nelts);
@@ -212,8 +212,8 @@ Obj AddPartialGF2VecGF2Vec (
     Obj                 vr,
     UInt                n )
 {
-    UInt *              ptL;            /* bit field of <vl>               */
-    UInt *              ptR;            /* bit field of <vr>               */
+    const UInt *        ptL;            /* bit field of <vl>               */
+    const UInt *        ptR;            /* bit field of <vr>               */
     UInt *              ptS;            /* bit field of <sum>              */
     UInt *              end;            /* end marker                      */
     UInt                len;            /* length of the list              */
@@ -232,14 +232,14 @@ Obj AddPartialGF2VecGF2Vec (
 
     /* calculate the offset for adding                                     */
     if ( n == 1 ) {  
-        ptL = BLOCKS_GF2VEC(vl);
-        ptR = BLOCKS_GF2VEC(vr);
+        ptL = CONST_BLOCKS_GF2VEC(vl);
+        ptR = CONST_BLOCKS_GF2VEC(vr);
         ptS = BLOCKS_GF2VEC(sum);
         end = ptS + ((len+BIPEB-1)/BIPEB);
     } else {
         offset = ( n - 1 ) / BIPEB;
-        ptL = BLOCKS_GF2VEC(vl) + offset ;
-        ptR = BLOCKS_GF2VEC(vr) + offset ;
+        ptL = CONST_BLOCKS_GF2VEC(vl) + offset ;
+        ptR = CONST_BLOCKS_GF2VEC(vr) + offset ;
         ptS = BLOCKS_GF2VEC(sum) + offset ;
         end = ptS + ((len+BIPEB-1)/BIPEB) - offset;
     }
@@ -307,8 +307,8 @@ Obj AddPartialGF2VecGF2Vec (
 
 Obj ProdGF2VecGF2Vec ( Obj vl, Obj vr )
 {
-    UInt *              ptL;            /* bit field of <vl>               */
-    UInt *              ptR;            /* bit field of <vr>               */
+    const UInt *        ptL;            /* bit field of <vl>               */
+    const UInt *        ptR;            /* bit field of <vr>               */
     UInt                lenL;           /* length of the list              */
     UInt                lenR;           /* length of the list              */
     UInt                len;            /* minimum of the lengths          */
@@ -331,8 +331,8 @@ Obj ProdGF2VecGF2Vec ( Obj vl, Obj vr )
     }
 
     /* loop over the entries and multiply                                  */
-    ptL = BLOCKS_GF2VEC(vl);
-    ptR = BLOCKS_GF2VEC(vr);
+    ptL = CONST_BLOCKS_GF2VEC(vl);
+    ptR = CONST_BLOCKS_GF2VEC(vr);
     nrb = len /BIPEB;
     n   = 0;
     for ( i = nrb;  i > 0;  i-- ) {
@@ -372,7 +372,7 @@ Obj ProdGF2VecGF2Mat ( Obj vl, Obj vr )
     Obj                 prod;           /* product, result                 */
     Obj                 row1;           /* top row of matrix               */
     UInt *              start;
-    UInt *              ptL;
+    const UInt *        ptL;
     UInt                mask;
     
     /* both operands lie in the same field                                 */
@@ -388,7 +388,7 @@ Obj ProdGF2VecGF2Mat ( Obj vl, Obj vr )
     
     /* get the start and end block                                         */
     start = BLOCKS_GF2VEC(prod);
-    ptL   = BLOCKS_GF2VEC(vl);
+    ptL   = CONST_BLOCKS_GF2VEC(vl);
 
     /* loop over the vector                                                */
     for ( i = 1;  i <= len;  ptL++ )  {
@@ -407,7 +407,7 @@ Obj ProdGF2VecGF2Mat ( Obj vl, Obj vr )
 
             /* if there is entry add the row to the result                 */
             if ( (*ptL & mask) != 0 ) {
-                UInt * ptRR = BLOCKS_GF2VEC(ELM_GF2MAT(vr,i));
+                const UInt * ptRR = CONST_BLOCKS_GF2VEC(ELM_GF2MAT(vr,i));
 		AddGF2VecToGF2Vec(start, ptRR, col);
             }
         }
@@ -433,8 +433,8 @@ Obj ProdGF2MatGF2Vec ( Obj ml, Obj vr )
     UInt                len;            /* length of the vector            */
     UInt                ln1;            /* length of the rows of the mx    */
     UInt                ln2;            /* length of the matrix            */
-    UInt *              ptL;            /* bit field of <ml>[j]            */
-    UInt *              ptR;            /* bit field of <vr>               */
+    const UInt *        ptL;            /* bit field of <ml>[j]            */
+    const UInt *        ptR;            /* bit field of <vr>               */
     UInt                nrb;            /* number of blocks in blist       */
     UInt                m;              /* number of bits in a block       */
     UInt                n;              /* number of bits in blist         */
@@ -462,8 +462,8 @@ Obj ProdGF2MatGF2Vec ( Obj ml, Obj vr )
     /* loop over the entries and multiply                                  */
     nrb = len/BIPEB;
     for ( j = 1;  j <= ln2;  j++ ) {
-        ptL = BLOCKS_GF2VEC(ELM_GF2MAT(ml,j));
-        ptR = BLOCKS_GF2VEC(vr);
+        ptL = CONST_BLOCKS_GF2VEC(ELM_GF2MAT(ml,j));
+        ptR = CONST_BLOCKS_GF2VEC(vr);
         n   = 0;
         for ( i = 1;  i <= nrb;  i++ ) {
             m = (*ptL++) & (*ptR++);
@@ -545,7 +545,7 @@ Obj ProdGF2MatGF2MatSimple( Obj ml, Obj mr )
    return them as the nbits least significant bits in a UInt.
    Bits are always numbered least-significant first */
 
-static inline UInt getbits(UInt * vptr, UInt from, UInt nbits)
+static inline UInt getbits(const UInt * vptr, UInt from, UInt nbits)
 {
   UInt wno = (from  -1)/BIPEB;
   UInt word1 = vptr[wno];
@@ -575,8 +575,11 @@ static inline UInt getbits(UInt * vptr, UInt from, UInt nbits)
    we put the things that don't change in the recursive call into this structure */
 
 struct greaseinfo {
-  UInt *pgtags, *pgbuf,  nblocks, *pgrules;
-  UInt **prrows;
+  UInt *pgtags;
+  UInt *pgbuf;
+  UInt nblocks;
+  UInt *pgrules;
+  const UInt **prrows;
 };
 
 
@@ -585,10 +588,13 @@ struct greaseinfo {
    controlled by the data in g. Recursive
    so can't be inlined */
 
-static UInt * getgreasedata( struct greaseinfo *g, UInt bits)
+static const UInt * getgreasedata( struct greaseinfo *g, UInt bits)
 { 
   UInt x,y;
-  register UInt *ps, *pd, *ps2,i ;
+  const UInt *ps;
+  UInt *pd;
+  const UInt *ps2;
+  UInt i;
   UInt *pd1;
   switch(g->pgtags[bits])
     {
@@ -629,9 +635,9 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
   Obj prod;			/* Product Matrix */
   UInt i,j, k, b;		/* Loop counters */
   UInt gs;			/* Actual level of grease for current block */
-  UInt *rptr;			/* Pointer to current row of ml */
+  const UInt *rptr;		/* Pointer to current row of ml */
   UInt bits;			/* current chunk of current row, for lookup in grease tables */
-  UInt *v;			/* pointer to computed grease vector */
+  const UInt *v;		/* pointer to computed grease vector */
   UInt len, rlen, ilen;		/* len = length of ml, ilen = row length of ml = length of mr, rlen = row length of mr */
   Obj row;			/* current row of ml, or row of prod when it is being built */
   Obj rtype;			/* type of rows of prod */
@@ -646,9 +652,9 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
   UInt bs;			/* actual size of current block */
   UInt *pprow;			/* pointer into current row of prod */
   Obj lrowptrs;			/* cache of direct pointers to rows of ml */
-  UInt **plrows;		/* and a direct pointer to that cache */
+  const UInt **plrows;		/* and a direct pointer to that cache */
   Obj rrowptrs;			/* and for mr */
-  UInt **prrows;
+  const UInt **prrows;
   Obj prowptrs;			/* and for prod */
   UInt **pprows;
   struct greaseinfo g;
@@ -732,17 +738,17 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
 
   /* Take direct pointers to all the parts of all the matrices to avoid multiple
      indirection overheads */
-  plrows = (UInt **)ADDR_OBJ(lrowptrs);
-  prrows = (UInt **)ADDR_OBJ(rrowptrs);
+  plrows = (const UInt **)CONST_ADDR_OBJ(lrowptrs);
+  prrows = (const UInt **)CONST_ADDR_OBJ(rrowptrs);
   pprows = (UInt **)ADDR_OBJ(prowptrs);
 
   for (i = 0; i < len; i++)
     {
-      plrows[i] = BLOCKS_GF2VEC(ELM_GF2MAT(ml,i+1));
+      plrows[i] = CONST_BLOCKS_GF2VEC(ELM_GF2MAT(ml,i+1));
       pprows[i] = BLOCKS_GF2VEC(ELM_GF2MAT(prod, i+1));
     }
   for (i = 0; i < ilen; i++)
-    prrows[i] = BLOCKS_GF2VEC(ELM_GF2MAT(mr, i+1));
+    prrows[i] = CONST_BLOCKS_GF2VEC(ELM_GF2MAT(mr, i+1));
 
 
   /* OK, finally ready to start work */
@@ -821,16 +827,16 @@ Obj ProdGF2MatGF2MatAdvanced( Obj ml, Obj mr, UInt greasesize , UInt blocksize)
 	  g.pgrules = pgrules;
 	  g.nblocks = nwords;
 	}
-	plrows = (UInt **)ADDR_OBJ(lrowptrs);
-	prrows = (UInt **)ADDR_OBJ(rrowptrs);
+	plrows = (const UInt **)CONST_ADDR_OBJ(lrowptrs);
+	prrows = (const UInt **)CONST_ADDR_OBJ(rrowptrs);
 	pprows = (UInt **)ADDR_OBJ(prowptrs);
 	for (i = 0; i < len; i++)
 	  {
-	    plrows[i] = BLOCKS_GF2VEC(ELM_GF2MAT(ml,i+1));
+	    plrows[i] = CONST_BLOCKS_GF2VEC(ELM_GF2MAT(ml,i+1));
 	    pprows[i] = BLOCKS_GF2VEC(ELM_GF2MAT(prod, i+1));
 	  }
 	for (i = 0; i < ilen; i++)
-	  prrows[i] = BLOCKS_GF2VEC(ELM_GF2MAT(mr, i+1));
+	  prrows[i] = CONST_BLOCKS_GF2VEC(ELM_GF2MAT(mr, i+1));
       }
     }
   return prod;
@@ -870,7 +876,7 @@ Obj FuncPROD_GF2VEC_ANYMAT(Obj self, Obj vec, Obj mat)
   for (i = 1; i <= len; i++)
     {
       if (i % BIPEB == 1)
-	block = BLOCK_ELM_GF2VEC(vec,i);
+	block = CONST_BLOCK_ELM_GF2VEC(vec,i);
       if (block & MASK_POS_GF2VEC(i))
      	{
 	  row1 = ELM_PLIST(mat,i);  
@@ -899,9 +905,9 @@ Obj InversePlistGF2VecsDesstructive( Obj list )
     Obj                 old;            /* row from <mat>                  */
     Obj                 tmp;            /* temporary                       */
     UInt *              ptQ;            /* data block of <row>             */
-    UInt *              ptP;            /* data block of source row        */
-    UInt *              end;            /* end marker                      */
-    UInt *              end2;           /* end marker                      */
+    const UInt *        ptP;            /* data block of source row        */
+    const UInt *        end;            /* end marker                      */
+    const UInt *        end2;           /* end marker                      */
     UInt                i;              /* loop variable                   */
     UInt                k;              /* loop variable                   */
 
@@ -924,7 +930,7 @@ Obj InversePlistGF2VecsDesstructive( Obj list )
         /* find a nonzero entry in column <k>                              */
         for ( i = k;  i <= len;  i++ ) {
             row = ELM_PLIST( list, i );
-            if ( BLOCK_ELM_GF2VEC(row,k) & MASK_POS_GF2VEC(k) )
+            if ( CONST_BLOCK_ELM_GF2VEC(row,k) & MASK_POS_GF2VEC(k) )
                 break;
         }
         if ( i > len )  {
@@ -941,16 +947,16 @@ Obj InversePlistGF2VecsDesstructive( Obj list )
         
         /* clear entries                                                   */
         old = ELM_PLIST( list, k );
-        end = BLOCKS_GF2VEC(old) + ((len+BIPEB-1)/BIPEB);
+        end = CONST_BLOCKS_GF2VEC(old) + ((len+BIPEB-1)/BIPEB);
         for ( i = 1;  i <= len;  i++ ) {
             if ( i == k )
                 continue;
             row = ELM_PLIST( list, i );
-            if ( BLOCK_ELM_GF2VEC(row,k) & MASK_POS_GF2VEC(k) ) {
+            if ( CONST_BLOCK_ELM_GF2VEC(row,k) & MASK_POS_GF2VEC(k) ) {
 
                 /* clear <mat>                                             */
                 ptQ = &(BLOCK_ELM_GF2VEC(row,k));
-                ptP = &(BLOCK_ELM_GF2VEC(old,k));
+                ptP = &(CONST_BLOCK_ELM_GF2VEC(old,k));
                 while ( ptP < end ) {
                     *ptQ++ ^= *ptP++;
                 }
@@ -959,7 +965,7 @@ Obj InversePlistGF2VecsDesstructive( Obj list )
                 row  = ELM_PLIST( inv, i );
                 ptQ  = BLOCKS_GF2VEC(row);
                 row  = ELM_PLIST( inv, k );
-                ptP  = BLOCKS_GF2VEC(row);
+                ptP  = CONST_BLOCKS_GF2VEC(row);
                 end2 = ptP + ((len+BIPEB-1)/BIPEB);
                 while ( ptP < end2 ) {
                     *ptQ++ ^= *ptP++;
@@ -991,7 +997,7 @@ Obj InverseGF2Mat (
     Obj                 tmp;            /* temporary                       */
     UInt                i;              /* loop variable                   */
     Obj                 old;            /* row from <mat>                  */
-    UInt *              ptQ;            /* data block of <row>             */
+    const UInt *        ptQ;            /* data block of <row>             */
     UInt *              ptP;            /* data block of source row        */
     UInt *              end;            /* end marker                      */
     Obj                 rtype;
@@ -1005,7 +1011,7 @@ Obj InverseGF2Mat (
     }
     if (len == 1 ) {
       row = ELM_GF2MAT(mat,1);
-      if (BLOCKS_GF2VEC(row)[0] & 1)
+      if (CONST_BLOCKS_GF2VEC(row)[0] & 1)
 	{
 	  return CopyObj(mat, 1);
 	}
@@ -1017,7 +1023,7 @@ Obj InverseGF2Mat (
     for ( i = len;  0 < i;  i-- ) {
         old = ELM_GF2MAT( mat, i );
         NEW_GF2VEC( row, TYPE_LIST_GF2VEC_IMM, len );
-        ptQ = BLOCKS_GF2VEC(old);
+        ptQ = CONST_BLOCKS_GF2VEC(old);
         ptP = BLOCKS_GF2VEC(row);
         end = ptP + ((len+BIPEB-1)/BIPEB);
         while ( ptP < end )
@@ -1060,11 +1066,11 @@ Obj ShallowCopyVecGF2( Obj vec )
 {
   Obj copy;
   UInt len;
-  UInt *ptrS;
+  const UInt *ptrS;
   UInt *ptrD;
   len = LEN_GF2VEC(vec);
   NEW_GF2VEC( copy, TYPE_LIST_GF2VEC, len);
-  ptrS = BLOCKS_GF2VEC(vec);
+  ptrS = CONST_BLOCKS_GF2VEC(vec);
   ptrD = BLOCKS_GF2VEC(copy);
   memcpy(ptrD, ptrS, NUMBER_BLOCKS_GF2VEC(vec)*sizeof(UInt));
   return copy;
@@ -1133,9 +1139,9 @@ Obj SemiEchelonListGF2Vecs( Obj mat, UInt TransformationsNeeded )
 	    {
 	      if (rowp[(j-1)/BIPEB] & MASK_POS_GF2VEC(j))
 		{
-		  AddGF2VecToGF2Vec(rowp, BLOCKS_GF2VEC(ELM_PLIST(vectors,h)),ncols);
+		  AddGF2VecToGF2Vec(rowp, CONST_BLOCKS_GF2VEC(ELM_PLIST(vectors,h)), ncols);
 		  if (TransformationsNeeded)
-		    AddGF2VecToGF2Vec(coeffrowp, BLOCKS_GF2VEC(ELM_PLIST(coeffs,h)),nrows);
+		    AddGF2VecToGF2Vec(coeffrowp, CONST_BLOCKS_GF2VEC(ELM_PLIST(coeffs,h)), nrows);
 		}
 	    }
 	}
@@ -1214,7 +1220,8 @@ UInt TriangulizeListGF2Vecs( Obj mat, UInt clearup)
   UInt workrow;
   UInt rank;
   Obj row, row2;
-  UInt *rowp, *row2p;
+  const UInt *rowp;
+  UInt *row2p;
   UInt block;
   UInt mask;
   UInt j;
@@ -1229,7 +1236,7 @@ UInt TriangulizeListGF2Vecs( Obj mat, UInt clearup)
       block = (workcol-1)/BIPEB;
       mask = MASK_POS_GF2VEC(workcol);
       for (workrow = rank+1; workrow <= nrows &&
-	     !(BLOCKS_GF2VEC(ELM_PLIST(mat, workrow))[block] & mask); workrow ++)
+	     !(CONST_BLOCKS_GF2VEC(ELM_PLIST(mat, workrow))[block] & mask); workrow ++)
 	;
       if (workrow <= nrows)
 	{
@@ -1240,7 +1247,7 @@ UInt TriangulizeListGF2Vecs( Obj mat, UInt clearup)
 	      SET_ELM_PLIST(mat, workrow, ELM_PLIST(mat, rank));
 	      SET_ELM_PLIST(mat, rank, row);
 	    }
-	  rowp = BLOCKS_GF2VEC(row);
+	  rowp = CONST_BLOCKS_GF2VEC(row);
 	  if (clearup)
 	    for (j = 1; j < rank; j ++)
 	      {
@@ -1654,8 +1661,8 @@ Int Cmp_GF2VEC_GF2VEC (
     Obj                 vr )
 {
     UInt                i;              /* loop variable                   */
-    UInt *              bl;             /* block of <vl>                   */
-    UInt *              br;             /* block of <vr>                   */
+    const UInt *        bl;             /* block of <vl>                   */
+    const UInt *        br;             /* block of <vr>                   */
     UInt                len,lenl,lenr;  /* length of the list              */
     UInt a,b,nb;
 
@@ -1669,8 +1676,8 @@ Int Cmp_GF2VEC_GF2VEC (
     }
 
     /* check all blocks                                                    */
-    bl = BLOCKS_GF2VEC(vl);
-    br = BLOCKS_GF2VEC(vr);
+    bl = CONST_BLOCKS_GF2VEC(vl);
+    br = CONST_BLOCKS_GF2VEC(vr);
     for ( i = nb;  1 < i;  i--, bl++, br++ ) {
 	/* comparison is numeric of the reverted lists*/
       if (*bl != *br)
@@ -2326,7 +2333,7 @@ Obj FuncINV_PLIST_GF2VECS_DESTRUCTIVE( Obj self, Obj list )
   }
   if (len == 1 ) {
     row = ELM_PLIST(list,1);
-    if (BLOCKS_GF2VEC(row)[0] & 1)
+    if (CONST_BLOCKS_GF2VEC(row)[0] & 1)
       {
 	return CopyObj(list, 1);
 	}
@@ -2366,12 +2373,12 @@ Obj FuncSUM_GF2VEC_GF2VEC (
     if (ll < lr)
       {
 	sum = ShallowCopyVecGF2(vr);
-	AddGF2VecToGF2Vec(BLOCKS_GF2VEC(sum),BLOCKS_GF2VEC(vl),ll);
+	AddGF2VecToGF2Vec(BLOCKS_GF2VEC(sum),CONST_BLOCKS_GF2VEC(vl),ll);
       }
     else
       {
 	sum = ShallowCopyVecGF2(vl);
-	AddGF2VecToGF2Vec(BLOCKS_GF2VEC(sum),BLOCKS_GF2VEC(vr),lr);
+	AddGF2VecToGF2Vec(BLOCKS_GF2VEC(sum),CONST_BLOCKS_GF2VEC(vr),lr);
       }
 
     if (!IS_MUTABLE_OBJ(vl) && !IS_MUTABLE_OBJ(vr))
@@ -2654,7 +2661,7 @@ UInt PositionNonZeroGF2Vec ( Obj vec, UInt from)
     UInt                len;
     UInt                nbb;
     UInt                nb;
-    UInt *              ptr;
+    const UInt *        ptr;
     UInt                pos;
 
     /* get length and number of blocks                                     */
@@ -2666,7 +2673,7 @@ UInt PositionNonZeroGF2Vec ( Obj vec, UInt from)
 
     nbb = from / BIPEB;
     pos = from % BIPEB;
-    ptr = BLOCKS_GF2VEC(vec)+nbb;
+    ptr = CONST_BLOCKS_GF2VEC(vec)+nbb;
     if (pos) /* partial block to check */
       {
 	pos = from+1;
@@ -2851,13 +2858,13 @@ Obj FuncSUM_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
 	{
 	  sv = ShallowCopyVecGF2( ELM_GF2MAT( matl, i));
 	  vr = ELM_GF2MAT( matr, i);
-	  AddGF2VecToGF2Vec(BLOCKS_GF2VEC(sv), BLOCKS_GF2VEC(vr), wm);
+	  AddGF2VecToGF2Vec(BLOCKS_GF2VEC(sv), CONST_BLOCKS_GF2VEC(vr), wm);
 	}
       else
 	{
 	  sv = ShallowCopyVecGF2( ELM_GF2MAT(matr, i));
 	  vl = ELM_GF2MAT( matl, i);
-	  AddGF2VecToGF2Vec(BLOCKS_GF2VEC(sv), BLOCKS_GF2VEC(vl), wm);
+	  AddGF2VecToGF2Vec(BLOCKS_GF2VEC(sv), CONST_BLOCKS_GF2VEC(vl), wm);
 	}
       
       SetTypeDatObj(sv, rtype);
@@ -2896,7 +2903,6 @@ Obj FuncTRANSPOSED_GF2MAT( Obj self, Obj mat)
   UInt mask,val,bit;
   UInt imod,nrb,nstart;
   UInt i,j,k,n;
-  UInt * ptr;
 
   /* check argument */
   if (TNUM_OBJ(mat) != T_POSOBJ) {
@@ -2926,10 +2932,6 @@ Obj FuncTRANSPOSED_GF2MAT( Obj self, Obj mat)
   /* create new matrix */
   for (i = 1; i <= w; i++) {
     NEW_GF2VEC( row,  typ, l );
-
-    ptr=BLOCKS_GF2VEC(row);
-    for (n=1;n<=nrb;n++){*ptr=0;}
-
     SET_ELM_GF2MAT( tra, i, row);
     CHANGED_BAG(tra);
   }
@@ -2944,7 +2946,7 @@ Obj FuncTRANSPOSED_GF2MAT( Obj self, Obj mat)
 	  vals[j]=0; /* outside matrix */ 
 	}
 	else {
-	  ptr=BLOCKS_GF2VEC(ELM_GF2MAT(mat,i+j))+n;
+	  const UInt * ptr=CONST_BLOCKS_GF2VEC(ELM_GF2MAT(mat,i+j))+n;
 	  vals[j]=*ptr;
 	}
       }
@@ -2963,7 +2965,7 @@ Obj FuncTRANSPOSED_GF2MAT( Obj self, Obj mat)
 	    bit=bit<<1;
 	  }
 	  /* set entry */
-	  ptr=BLOCKS_GF2VEC(ELM_GF2MAT(tra,nstart+j))+imod;
+	  UInt * ptr = BLOCKS_GF2VEC(ELM_GF2MAT(tra,nstart+j))+imod;
 	  *ptr=val;
 	  /* next bit */
 	  mask=mask<<1;
@@ -2986,25 +2988,25 @@ Obj FuncNUMBER_GF2VEC( Obj self, Obj vec )
   UInt head,a;
   UInt off,off2;		/* 0 based */
   Obj zahl;  /* the long number */
-  UInt *num;
+  UInt *num2;
   mp_limb_t *vp;
   len = LEN_GF2VEC(vec);
   if (len == 0)
     return INTOBJ_INT(1);
-  num = BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
+  num2 = BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
   off = (len -1) % BIPEB + 1; /* number of significant bits in last word */
   off2 = BIPEB - off;         /* number of insignificant bits in last word */
 
   /* mask out the last bits */
 #ifdef SYS_IS_64_BIT
-  *num &= 0xffffffffffffffff >> off2;
+  *num2 &= 0xffffffffffffffff >> off2;
 #else
-  *num &= 0xffffffff >> off2;
+  *num2 &= 0xffffffff >> off2;
 #endif
 
   if (len <=NR_SMALL_INT_BITS) 
     /* it still fits into a small integer */
-    return INTOBJ_INT(revertbits(*num,len));
+    return INTOBJ_INT(revertbits(*num2,len));
   else {
     /* we might have to build a long integer */
 
@@ -3016,7 +3018,7 @@ Obj FuncNUMBER_GF2VEC( Obj self, Obj vec )
     /* +1)>>1)<<1: round up to next even number*/
 
     /* garbage collection might lose pointer */
-    num = BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
+    const UInt *num = CONST_BLOCKS_GF2VEC(vec) + (len-1)/BIPEB;
 
     vp = (mp_limb_t *)ADDR_OBJ(zahl); /* the place we write to */
     i=1;
@@ -3122,10 +3124,10 @@ Obj FuncLT_GF2MAT_GF2MAT( Obj self, Obj ml, Obj mr)
 **  ptL and ptR for a GF(2) vector of <len> entries.
 **  
 */
-UInt DistGF2Vecs(UInt* ptL,UInt* ptR,UInt len)
+UInt DistGF2Vecs(const UInt* ptL, const UInt* ptR, UInt len)
 {
   UInt 			sum,m;
-  UInt *                end;            /* end marker                      */
+  const UInt *          end;            /* end marker                      */
 
   /*T this  function will not work if the vectors have more than 2^28
    * entries */
@@ -3191,7 +3193,7 @@ Obj FuncDIST_GF2VEC_GF2VEC (
 }
 
 
-Int DistVecClosVec(
+void DistVecClosVec(
   Obj		veclis, /* pointers to matrix vectors and their multiples */
   Obj 	        ovec,    /* vector we compute distance to */
   Obj		d,	/* distances list */
@@ -3204,29 +3206,22 @@ Int DistVecClosVec(
   UInt		di;
   Obj		cnt;
   Obj		vp;
-  UInt *        vec;
-  UInt *        sum;
+  const UInt *  vec;
   Obj           one;
   Obj           tmp;
-  Int		chg;
 
-  vec = BLOCKS_GF2VEC(ovec);
-  sum = BLOCKS_GF2VEC(osum);
+  vec = CONST_BLOCKS_GF2VEC(ovec);
   vp = ELM_PLIST(veclis,pos);
   one = INTOBJ_INT(1);
-  chg=0;
   
   for (i=0;i<=1;i++) {
     if (pos < l)
       {
-	chg |= DistVecClosVec(veclis,ovec,d,osum,pos+1,l,len);
-	if (chg!=0) {
-	  sum = BLOCKS_GF2VEC(osum);
-	  }
+	DistVecClosVec(veclis,ovec,d,osum,pos+1,l,len);
       }
     else
       {
-	di=DistGF2Vecs(sum,vec,len);
+	di=DistGF2Vecs(CONST_BLOCKS_GF2VEC(osum),vec,len);
 
 	cnt=ELM_PLIST(d,di+1);
 	if (IS_INTOBJ(cnt) && SUM_INTOBJS(tmp, cnt, one))
@@ -3237,16 +3232,13 @@ Int DistVecClosVec(
 	else
 	  {
 	    cnt=SumInt(cnt,one);
-	    vec = BLOCKS_GF2VEC(ovec);
-	    sum = BLOCKS_GF2VEC(osum);
+	    vec = CONST_BLOCKS_GF2VEC(ovec);
 	    SET_ELM_PLIST(d,di+1,cnt);
 	    CHANGED_BAG(d);
-	    chg=1;
 	  }
       }
-    AddGF2VecToGF2Vec(sum,BLOCKS_GF2VEC(ELM_PLIST(vp,i+1)),len);
+    AddGF2VecToGF2Vec(BLOCKS_GF2VEC(osum),CONST_BLOCKS_GF2VEC(ELM_PLIST(vp,i+1)),len);
   }
-  return chg;
 }
 
 Obj FuncDIST_VEC_CLOS_VEC(
@@ -3287,11 +3279,11 @@ UInt AClosVec(
 {
   UInt		di;
   Obj		vp;
-  UInt *        vec;
   UInt *        sum;
   UInt *        bv;
-  UInt *        end;
-  UInt *w;
+  const UInt *  vec;
+  const UInt *  end;
+  const UInt *  w;
 
 
 
@@ -3306,10 +3298,10 @@ UInt AClosVec(
 
   /* Otherwise we do */
   
-  vec = BLOCKS_GF2VEC(ovec);
+  vec = CONST_BLOCKS_GF2VEC(ovec);
   sum = BLOCKS_GF2VEC(osum);
   vp = ELM_PLIST(veclis,pos);
-  w = BLOCKS_GF2VEC(ELM_PLIST(vp,1));
+  w = CONST_BLOCKS_GF2VEC(ELM_PLIST(vp,1));
   AddGF2VecToGF2Vec(sum,w,len);
 
   if (coords != (Obj) 0)
@@ -3469,7 +3461,7 @@ UInt CosetLeadersInnerGF2( Obj veclis,
   UInt sy;
   UInt u0;
   Obj vc;
-  UInt i,j;
+  UInt i;
     
   /* we know that the length of w does not exceed BIPEB -4 here
      (or there would not be room in a PLIST for all the coset leaders)
@@ -3482,16 +3474,15 @@ UInt CosetLeadersInnerGF2( Obj veclis,
     {
       for (i = pos; i <= len; i++)
 	{
-	  u0 = BLOCKS_GF2VEC(ELM_PLIST(ELM_PLIST(veclis, i),1))[0];
+	  u0 = CONST_BLOCKS_GF2VEC(ELM_PLIST(ELM_PLIST(veclis, i),1))[0];
 	  BLOCKS_GF2VEC(w)[0] ^= u0;
 	  BLOCK_ELM_GF2VEC(v, i) |= MASK_POS_GF2VEC(i);
 
-	  sy = revertbits(BLOCKS_GF2VEC(w)[0], lenw);
+	  sy = revertbits(CONST_BLOCKS_GF2VEC(w)[0], lenw);
 	  if ((Obj) 0 == ELM_PLIST(leaders,sy+1))
 	    {
 	      NEW_GF2VEC(vc, TYPE_LIST_GF2VEC_IMM, len);
-	      for (j = 0; j < NUMBER_BLOCKS_GF2VEC(v); j++)
-		BLOCKS_GF2VEC(vc)[j] = BLOCKS_GF2VEC(v)[j];
+	      memcpy(BLOCKS_GF2VEC(vc), CONST_BLOCKS_GF2VEC(v), NUMBER_BLOCKS_GF2VEC(v) * sizeof(UInt));
 	      SET_ELM_PLIST(leaders,sy+1,vc);
 	      CHANGED_BAG(leaders);
 	      if (++found == tofind)
@@ -3509,7 +3500,7 @@ UInt CosetLeadersInnerGF2( Obj veclis,
 	  if (found == tofind)
 	    return found;
 	}
-      u0 = BLOCKS_GF2VEC(ELM_PLIST(ELM_PLIST(veclis, pos),1))[0];
+      u0 = CONST_BLOCKS_GF2VEC(ELM_PLIST(ELM_PLIST(veclis, pos),1))[0];
       BLOCKS_GF2VEC(w)[0] ^= u0;
       BLOCK_ELM_GF2VEC(v, pos) |= MASK_POS_GF2VEC(pos);
       found += CosetLeadersInnerGF2(veclis, v, w, weight -1, pos + 1, leaders, tofind - found);
@@ -3816,14 +3807,15 @@ Obj FuncSHIFT_RIGHT_GF2VEC( Obj self, Obj vec, Obj amount)
 
 void AddShiftedVecGF2VecGF2( Obj vec1, Obj vec2, UInt len2, UInt off )
 {
-  UInt *ptr1, *ptr2;
+  UInt *ptr1;
+  const UInt *ptr2;
   UInt i;
   UInt block;
   UInt shift1, shift2;
   if (off % BIPEB == 0)
     {
       ptr1 = BLOCKS_GF2VEC(vec1) + off/BIPEB;
-      ptr2 = BLOCKS_GF2VEC(vec2);
+      ptr2 = CONST_BLOCKS_GF2VEC(vec2);
       for (i = 0; i < (len2 - 1)/BIPEB; i++)
 	*ptr1++ ^= *ptr2++;
       block = *ptr2;
@@ -3837,7 +3829,7 @@ void AddShiftedVecGF2VecGF2( Obj vec1, Obj vec2, UInt len2, UInt off )
   else
     {
       ptr1 = BLOCKS_GF2VEC(vec1) + off/BIPEB;
-      ptr2 = BLOCKS_GF2VEC(vec2);
+      ptr2 = CONST_BLOCKS_GF2VEC(vec2);
       shift1 = off %BIPEB;
       shift2 = BIPEB - off%BIPEB;
       for (i = 0; i < len2/BIPEB; i++)
@@ -3905,7 +3897,7 @@ Obj ProductCoeffsGF2Vec( Obj vec1, UInt len1, Obj vec2, UInt len2)
 {
   Obj prod;
   UInt i,e;
-  UInt *ptr;
+  const UInt *ptr;
   UInt block = 0;
   UInt len;
   if (len1 == 0 && len2 == 0)
@@ -3927,7 +3919,7 @@ Obj ProductCoeffsGF2Vec( Obj vec1, UInt len1, Obj vec2, UInt len2)
       vec2 = tmpv;
     }
 
-  ptr = BLOCKS_GF2VEC(vec1);
+  ptr = CONST_BLOCKS_GF2VEC(vec1);
   e = BIPEB;
   for (i = 0; i < len1; i++)
     {
@@ -3981,12 +3973,13 @@ void ReduceCoeffsGF2Vec( Obj vec1, Obj vec2, UInt len2, Obj quotient )
 {
   UInt len1 = LEN_GF2VEC(vec1);
   UInt i,j,e;
-  UInt *ptr, *qptr = (UInt *)0;
+  const UInt *ptr;
+  UInt *qptr = (UInt *)0;
   if (len2 > len1)
     return;
   i = len1 -1;
   e = (i % BIPEB);
-  ptr = BLOCKS_GF2VEC(vec1) + (i/BIPEB);
+  ptr = CONST_BLOCKS_GF2VEC(vec1) + (i/BIPEB);
   if (quotient != (Obj) 0)
     qptr = BLOCKS_GF2VEC(quotient);
   j = len1-len2+1;
@@ -4036,9 +4029,9 @@ Obj FuncREDUCE_COEFFS_GF2VEC( Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
   ResizeGF2Vec(vec1, INT_INTOBJ(len1));
   
   while ( 0 < len2a ) {
-    if ( BLOCK_ELM_GF2VEC(vec2,len2a) == 0 )
+    if ( CONST_BLOCK_ELM_GF2VEC(vec2,len2a) == 0 )
       len2a = BIPEB*((len2a-1)/BIPEB);
-    else if ( BLOCK_ELM_GF2VEC(vec2,len2a) & MASK_POS_GF2VEC(len2a) )
+    else if ( CONST_BLOCK_ELM_GF2VEC(vec2,len2a) & MASK_POS_GF2VEC(len2a) )
       break;
     else
       len2a--;
@@ -4082,9 +4075,9 @@ Obj FuncQUOTREM_COEFFS_GF2VEC( Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 		  len2a, LEN_GF2VEC(vec2));
      
      while ( 0 < len2a ) {
-       if ( BLOCK_ELM_GF2VEC(vec2,len2a) == 0 )
+       if ( CONST_BLOCK_ELM_GF2VEC(vec2,len2a) == 0 )
 	 len2a = BIPEB*((len2a-1)/BIPEB);
-       else if ( BLOCK_ELM_GF2VEC(vec2,len2a) & MASK_POS_GF2VEC(len2a) )
+       else if ( CONST_BLOCK_ELM_GF2VEC(vec2,len2a) & MASK_POS_GF2VEC(len2a) )
 	 break;
        else
 	 len2a--;
@@ -4096,7 +4089,7 @@ Obj FuncQUOTREM_COEFFS_GF2VEC( Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
      }
 
      NEW_GF2VEC(remv, TYPE_LIST_GF2VEC, len1a);
-     memcpy(BLOCKS_GF2VEC(remv), BLOCKS_GF2VEC(vec1),
+     memcpy(BLOCKS_GF2VEC(remv), CONST_BLOCKS_GF2VEC(vec1),
 	    ((len1a + BIPEB-1)/BIPEB)*sizeof(UInt));
      
      NEW_GF2VEC(quotv, TYPE_LIST_GF2VEC, len1a-len2a+1);
@@ -4337,14 +4330,14 @@ Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
   for (j = 1; j <= nrowr; j++) {
     /* create shifts of rows of matr */
     data = (UInt *) ADDR_OBJ(shift[0]);
-    datar = BLOCKS_GF2VEC(ELM_GF2MAT(matr,j));
+    datar = CONST_BLOCKS_GF2VEC(ELM_GF2MAT(matr,j));
     for (k = 0; k < (ncolr+BIPEB-1)/BIPEB; k++)
       data[k] = datar[k];
     data[k] = 0;
     
     for (i = 1; i < BIPEB; i++) { /* now shifts in [1..BIPEB-1] */
       data = (UInt *) ADDR_OBJ(shift[i]);
-      datar = BLOCKS_GF2VEC(ELM_GF2MAT(matr,j));
+      datar = CONST_BLOCKS_GF2VEC(ELM_GF2MAT(matr,j));
       data[0] = datar[0] << i;
       for (k = 1; k < (ncolr+BIPEB-1)/BIPEB; k++)
 	data[k] = (datar[k] << i) | (datar[k-1] >> (BIPEB-i));
@@ -4355,7 +4348,7 @@ Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT( Obj self, Obj matl, Obj matr)
       ncol = 0;
       for (k = 1; k <= ncoll; k++) {
 	l = 0;
-	if (BLOCK_ELM_GF2VEC(ELM_GF2MAT(matl,i),k) & MASK_POS_GF2VEC(k)) {
+	if (CONST_BLOCK_ELM_GF2VEC(ELM_GF2MAT(matl,i),k) & MASK_POS_GF2VEC(k)) {
 	  /* append shift[ncol%BIPEB] to data */
 	  datar = (const UInt *) CONST_ADDR_OBJ(shift[ncol%BIPEB]);
 	  if (ncol % BIPEB) {
