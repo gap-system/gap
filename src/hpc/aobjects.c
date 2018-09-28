@@ -61,6 +61,7 @@ typedef union AtomicObj
 } AtomicObj;
 
 #define ADDR_ATOM(bag) ((AtomicObj *)(ADDR_OBJ(bag)))
+#define CONST_ADDR_ATOM(bag) ((const AtomicObj *)(CONST_ADDR_OBJ(bag)))
 
 #ifndef WARD_ENABLED
 
@@ -69,8 +70,7 @@ static UInt UsageCap[sizeof(UInt)*8];
 Obj TypeAList(Obj obj)
 {
   Obj result;
-  Obj *addr;
-  addr = ADDR_OBJ(obj);
+  const Obj *addr = CONST_ADDR_OBJ(obj);
   MEMBAR_READ();
   result = addr[1];
   return result != NULL ? result : TYPE_ALIST;
@@ -80,7 +80,7 @@ Obj TypeARecord(Obj obj)
 {
   Obj result;
   MEMBAR_READ();
-  result = ADDR_OBJ(obj)[0];
+  result = CONST_ADDR_OBJ(obj)[0];
   return result != NULL ? result : TYPE_AREC;
 }
 
@@ -268,10 +268,10 @@ static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
 {
   UInt n;
   UInt len;
-  AtomicObj *addr;
+  const AtomicObj *addr;
   if (TNUM_OBJ(list) != T_ALIST && TNUM_OBJ(list) != T_FIXALIST)
     ArgumentError("GET_ATOMIC_LIST: First argument must be an atomic list");
-  addr = ADDR_ATOM(list);
+  addr = CONST_ADDR_ATOM(list);
   len = ALIST_LEN((UInt) addr[0].atom);
   if (!IS_INTOBJ(index))
     ArgumentError("GET_ATOMIC_LIST: Second argument must be an integer");
@@ -289,12 +289,12 @@ static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
 static Obj ElmDefAList(Obj list, Int n, Obj value)
 {
     UInt        len;
-    AtomicObj * addr;
+    const AtomicObj * addr;
     Obj         val;
 
     GAP_ASSERT(TNUM_OBJ(list) == T_ALIST || TNUM_OBJ(list) == T_FIXALIST);
     GAP_ASSERT(n > 0);
-    addr = ADDR_ATOM(list);
+    addr = CONST_ADDR_ATOM(list);
     len = ALIST_LEN((UInt)addr[0].atom);
 
     if (n <= 0 || n > len) {
@@ -427,9 +427,9 @@ static Obj FuncAddAtomicList(Obj self, Obj list, Obj obj)
 Obj FromAtomicList(Obj list)
 {
   Obj result;
-  AtomicObj *data;
+  const AtomicObj *data;
   UInt i, len;
-  data = ADDR_ATOM(list);
+  data = CONST_ADDR_ATOM(list);
   len = ALIST_LEN((UInt) (data++->atom));
   result = NEW_PLIST(T_PLIST, len);
   SET_LEN_PLIST(result, len);
@@ -450,8 +450,8 @@ static Obj FuncFromAtomicList(Obj self, Obj list)
 static void MarkAtomicList(Bag bag)
 {
   UInt len;
-  AtomicObj *ptr, *ptrend;
-  ptr = ADDR_ATOM(bag);
+  const AtomicObj *ptr, *ptrend;
+  ptr = CONST_ADDR_ATOM(bag);
   len = ALIST_LEN((UInt)(ptr++->atom));
   ptrend = ptr + len + 1;
   while (ptr < ptrend)
@@ -488,7 +488,7 @@ enum {
 
 static Obj GetTLInner(Obj obj)
 {
-  Obj contents = ADDR_ATOM(obj)->obj;
+  Obj contents = CONST_ADDR_ATOM(obj)->obj;
   MEMBAR_READ(); /* read barrier */
   return contents;
 }
@@ -506,7 +506,7 @@ static void MarkAtomicRecord(Bag bag)
 
 static void MarkAtomicRecord2(Bag bag)
 {
-  AtomicObj *p = ADDR_ATOM(bag);
+  const AtomicObj *p = CONST_ADDR_ATOM(bag);
   UInt cap = p->atom;
   p += 5;
   while (cap) {
@@ -519,15 +519,14 @@ static void MarkAtomicRecord2(Bag bag)
 static void ExpandTLRecord(Obj obj)
 {
   AtomicObj contents, newcontents;
-  Obj *table, *newtable;
   do {
-    contents = *ADDR_ATOM(obj);
-    table = ADDR_OBJ(contents.obj);
+    contents = *CONST_ADDR_ATOM(obj);
+    const Obj *table = CONST_ADDR_OBJ(contents.obj);
     UInt thread = TLS(threadID);
     if (thread < (UInt)*table)
       return;
     newcontents.obj = NewBag(T_TLREC_INNER, sizeof(Obj) * (thread+TLR_DATA+1));
-    newtable = ADDR_OBJ(newcontents.obj);
+    Obj *newtable = ADDR_OBJ(newcontents.obj);
     newtable[TLR_SIZE] = (Obj)(thread+1);
     newtable[TLR_DEFAULTS] = table[TLR_DEFAULTS];
     newtable[TLR_CONSTRUCTORS] = table[TLR_CONSTRUCTORS];
@@ -544,14 +543,14 @@ static void PrintAtomicList(Obj obj)
 
   if (TNUM_OBJ(obj) == T_FIXALIST)
     Pr("<fixed atomic list of size %d>",
-      ALIST_LEN((UInt)(ADDR_OBJ(obj)[0])), 0L);
+      ALIST_LEN((UInt)(CONST_ADDR_OBJ(obj)[0])), 0L);
   else
-    Pr("<atomic list of size %d>", ALIST_LEN((UInt)(ADDR_OBJ(obj)[0])), 0L);
+    Pr("<atomic list of size %d>", ALIST_LEN((UInt)(CONST_ADDR_OBJ(obj)[0])), 0L);
 }
 
 static inline Obj ARecordObj(Obj record)
 {
-  return ADDR_OBJ(record)[1];
+  return CONST_ADDR_OBJ(record)[1];
 }
 
 static inline AtomicObj* ARecordTable(Obj record)
@@ -573,7 +572,7 @@ static void PrintAtomicRecord(Obj record)
 static void PrintTLRecord(Obj obj)
 {
   Obj contents = GetTLInner(obj);
-  Obj *table = ADDR_OBJ(contents);
+  const Obj *table = CONST_ADDR_OBJ(contents);
   Obj record = 0;
   Obj defrec = table[TLR_DEFAULTS];
   int comma = 0;
@@ -956,10 +955,10 @@ Obj ShallowCopyARecord(Obj obj)
   Obj copy, inner, innerCopy;
   HashLock(obj);
   copy = NewBag(TNUM_BAG(obj), SIZE_BAG(obj));
-  memcpy(ADDR_OBJ(copy), ADDR_OBJ(obj), SIZE_BAG(obj));
-  inner = ADDR_OBJ(obj)[1];
+  memcpy(ADDR_OBJ(copy), CONST_ADDR_OBJ(obj), SIZE_BAG(obj));
+  inner = CONST_ADDR_OBJ(obj)[1];
   innerCopy = NewBag(TNUM_BAG(inner), SIZE_BAG(inner));
-  memcpy(ADDR_OBJ(innerCopy), ADDR_OBJ(inner), SIZE_BAG(inner));
+  memcpy(ADDR_OBJ(innerCopy), CONST_ADDR_OBJ(inner), SIZE_BAG(inner));
   ADDR_OBJ(copy)[1] = innerCopy;
   HashUnlock(obj);
   CHANGED_BAG(innerCopy);
@@ -1168,7 +1167,7 @@ static Obj CreateTLDefaults(Obj defrec) {
   UInt i;
   TLS(currentRegion) = LimboRegion;
   result = NewBag(T_PREC, SIZE_BAG(defrec));
-  memcpy(ADDR_OBJ(result), ADDR_OBJ(defrec), SIZE_BAG(defrec));
+  memcpy(ADDR_OBJ(result), CONST_ADDR_OBJ(defrec), SIZE_BAG(defrec));
   for (i = 1; i <= LEN_PREC(defrec); i++) {
     SET_ELM_PREC(result, i,
       CopyReachableObjectsFrom(GET_ELM_PREC(result, i), 0, 1, 0));
@@ -1263,18 +1262,18 @@ static Obj FuncSetTLConstructor(Obj self, Obj record, Obj name, Obj function)
 static Int LenListAList(Obj list)
 {
   MEMBAR_READ();
-  return (Int)(ALIST_LEN((UInt)ADDR_ATOM(list)[0].atom));
+  return (Int)(ALIST_LEN((UInt)CONST_ADDR_ATOM(list)[0].atom));
 }
 
 Obj LengthAList(Obj list)
 {
   MEMBAR_READ();
-  return INTOBJ_INT(ALIST_LEN((UInt)ADDR_ATOM(list)[0].atom));
+  return INTOBJ_INT(ALIST_LEN((UInt)CONST_ADDR_ATOM(list)[0].atom));
 }
 
 Obj Elm0AList(Obj list, Int pos)
 {
-  AtomicObj *addr = ADDR_ATOM(list);
+  const AtomicObj *addr = CONST_ADDR_ATOM(list);
   UInt len;
   MEMBAR_READ();
   len = ALIST_LEN((UInt) addr[0].atom);
@@ -1286,7 +1285,7 @@ Obj Elm0AList(Obj list, Int pos)
 
 Obj ElmAList(Obj list, Int pos)
 {
-  AtomicObj *addr = ADDR_ATOM(list);
+  const AtomicObj *addr = CONST_ADDR_ATOM(list);
   UInt len;
   MEMBAR_READ();
   len = ALIST_LEN((UInt)addr[0].atom);
@@ -1315,7 +1314,7 @@ Obj ElmAList(Obj list, Int pos)
 }
 
 Int IsbAList(Obj list, Int pos) {
-  AtomicObj *addr = ADDR_ATOM(list);
+  const AtomicObj *addr = CONST_ADDR_ATOM(list);
   UInt len;
   MEMBAR_READ();
   len = ALIST_LEN((UInt) addr[0].atom);
@@ -1324,7 +1323,7 @@ Int IsbAList(Obj list, Int pos) {
 
 void AssFixAList(Obj list, Int pos, Obj obj)
 {
-  UInt pol = (UInt)ADDR_ATOM(list)[0].atom;
+  UInt pol = (UInt)CONST_ADDR_ATOM(list)[0].atom;
   UInt len = ALIST_LEN(pol);
   while (pos < 1 || pos > len) {
     Obj posobj;
@@ -1572,7 +1571,7 @@ Obj FuncMakeWriteOnceAtomic(Obj self, Obj obj) {
     case T_APOSOBJ:
       HashLock(obj);
       ADDR_ATOM(obj)[0].atom =
-        CHANGE_ALIST_POL(ADDR_ATOM(obj)[0].atom, ALIST_W1);
+        CHANGE_ALIST_POL(CONST_ADDR_ATOM(obj)[0].atom, ALIST_W1);
       HashUnlock(obj);
       break;
     case T_AREC:
@@ -1595,7 +1594,7 @@ Obj FuncMakeReadWriteAtomic(Obj self, Obj obj) {
     case T_APOSOBJ:
       HashLock(obj);
       ADDR_ATOM(obj)[0].atom =
-        CHANGE_ALIST_POL(ADDR_ATOM(obj)[0].atom, ALIST_RW);
+        CHANGE_ALIST_POL(CONST_ADDR_ATOM(obj)[0].atom, ALIST_RW);
       HashUnlock(obj);
       break;
     case T_AREC:
@@ -1618,7 +1617,7 @@ Obj FuncMakeStrictWriteOnceAtomic(Obj self, Obj obj) {
     case T_APOSOBJ:
       HashLock(obj);
       ADDR_ATOM(obj)[0].atom =
-        CHANGE_ALIST_POL(ADDR_ATOM(obj)[0].atom, ALIST_WX);
+        CHANGE_ALIST_POL(CONST_ADDR_ATOM(obj)[0].atom, ALIST_WX);
       HashUnlock(obj);
       break;
     case T_AREC:
