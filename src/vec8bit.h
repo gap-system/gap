@@ -128,6 +128,7 @@ extern Obj GetFieldInfo8Bit(UInt q);
 **  returns a pointer to the start of the data of the 8bit GFQ vector
 */
 #define BYTES_VEC8BIT(list) ((UInt1 *)(ADDR_OBJ(list) + 3))
+#define CONST_BYTES_VEC8BIT(list) ((const UInt1 *)(CONST_ADDR_OBJ(list) + 3))
 
 
 /****************************************************************************
@@ -156,9 +157,13 @@ extern Obj GetFieldInfo8Bit(UInt q);
 #define SET_D_FIELDINFO_8BIT(info, d) (ADDR_OBJ(info)[3] = (Obj)(d))
 #define ELS_BYTE_FIELDINFO_8BIT(info) ((UInt)(CONST_ADDR_OBJ(info)[4]))
 #define SET_ELS_BYTE_FIELDINFO_8BIT(info, e) (ADDR_OBJ(info)[4] = (Obj)(e))
-#define FFE_FELT_FIELDINFO_8BIT(info) (ADDR_OBJ(info) + 5)
+#define FFE_FELT_FIELDINFO_8BIT(info) (CONST_ADDR_OBJ(info) + 5)
+#define SET_FFE_FELT_FIELDINFO_8BIT(info, i, d)                              \
+    (ADDR_OBJ(info)[5 + (i)] = (Obj)(d))
 #define GAPSEQ_FELT_FIELDINFO_8BIT(info)                                     \
-    (ADDR_OBJ(info) + 5 + Q_FIELDINFO_8BIT(info))
+    (CONST_ADDR_OBJ(info) + 5 + Q_FIELDINFO_8BIT(info))
+#define SET_GAPSEQ_FELT_FIELDINFO_8BIT(info, i, d)                           \
+    (ADDR_OBJ(info)[5 + Q_FIELDINFO_8BIT(info) + (i)] = (Obj)(d))
 #define FELT_FFE_FIELDINFO_8BIT(info)                                        \
     ((UInt1 *)(GAPSEQ_FELT_FIELDINFO_8BIT(info) + Q_FIELDINFO_8BIT(info)))
 #define SETELT_FIELDINFO_8BIT(info)                                          \
