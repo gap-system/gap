@@ -146,11 +146,12 @@ DeclareOperation( "Init", [IsRandomSource, IsObject] );
 ##  <Filt Name="IsMersenneTwister" Arg='rs' Type='Category'/>
 ##  <Filt Name="IsGAPRandomSource" Arg='rs' Type='Category'/>
 ##  <Filt Name="IsGlobalRandomSource" Arg='rs' Type='Category'/>
+##  <Filt Name="IsPCG32RandomSource" Arg='rs' Type='Category'/>
 ##  <Var Name="GlobalMersenneTwister"/>
 ##  <Var Name="GlobalRandomSource"/>
 ##
 ##  <Description>
-##  Currently, the &GAP; library provides three types of random sources,
+##  Currently, the &GAP; library provides four types of random sources,
 ##  distinguished by the three listed categories.
 ##  <P/>
 ##  <Ref  Var="IsMersenneTwister"/>  are random  sources  which  use a  fast
@@ -160,8 +161,14 @@ DeclareOperation( "Init", [IsRandomSource, IsObject] );
 ##  and the origin of the code used in the &GAP; kernel, see:
 ##  <URL>http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html</URL>.
 ##  <P/>
-##  Use the Mersenne twister if possible, in particular for generating many 
-##  large random integers. 
+##  The Mersenne twister is a good standard choice, in particular for
+##  generating many large random integers.
+##  <P/>
+##  <Ref Var="IsPCG32RandomSource"/> are random sources which use the PCG
+##  random generator. These generators achieve excellent statistical quality
+##  and also have the advantage that their internal state is very small
+##  (two 64-bit integers), so can be created very quickly. PCG32 is documented
+##  at <URL>http://www.pcg-random.org/</URL>.
 ##  <P/>
 ##  There is also a predefined global random source 
 ##  <Ref Var="GlobalMersenneTwister"/> which is used by most of the library
@@ -187,6 +194,7 @@ DeclareOperation( "Init", [IsRandomSource, IsObject] );
 DeclareCategory("IsGlobalRandomSource", IsRandomSource);
 DeclareCategory("IsGAPRandomSource", IsRandomSource);
 DeclareCategory("IsMersenneTwister", IsRandomSource);
+DeclareCategory("IsPCG32RandomSource", IsRandomSource);
 
 if IsHPCGAP then
     MakeThreadLocal( "GlobalRandomSource" );

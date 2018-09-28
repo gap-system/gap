@@ -18,6 +18,7 @@
 #include "bool.h"
 #include "calls.h"
 #include "error.h"
+#include "integer.h"
 #include "lists.h"
 #include "modules.h"
 #include "plist.h"
@@ -25,6 +26,159 @@
 #include "records.h"
 #include "stringobj.h"
 
+
+/****************************************************************************
+**
+** * * * * * * * "PCG" random numbers  * * * * * * * * * * * * *
+**
+** This next function implements the stepping function of the 'PCG'
+** random number library. This library produces high quality random numbers
+** which pass many statistical tests. They also have a very small state which
+** can be quickly initalised
+**
+** The following three functions are under the following original license
+** *Really* minimal PCG32 code / (c) 2014 M.E. O'Neill / pcg-random.org
+** Licensed under Apache License 2.0 (NO WARRANTY, etc. see website)
+*/
+
+struct pcg_state_setseq_64 {    // Internals are *Private*.
+    uint64_t state;             // RNG state.  All values are possible.
+    uint64_t inc;               // Controls which RNG sequence (stream) is
+                                // selected. Must *always* be odd.
+};
+
+typedef struct pcg_state_setseq_64 pcg32_random_t;
+
+// pcg32_random()
+// pcg32_random_r(rng)
+//     Generate a uniformly distributed 32-bit random number
+
+static uint32_t pcg32_random_r(pcg32_random_t * rng)
+{
+    uint64_t oldstate = rng->state;
+    rng->state = oldstate * 6364136223846793005ULL + rng->inc;
+    uint32_t xorshifted = ((oldstate >> 18u) ^ oldstate) >> 27u;
+    uint32_t rot = oldstate >> 59u;
+    return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
+}
+
+// pcg32_srandom(initstate, initseq)
+// pcg32_srandom_r(rng, initstate, initseq):
+//     Seed the rng.  Specified in two parts, state initializer and a
+//     sequence selection constant (a.k.a. stream id)
+
+static void
+pcg32_srandom_r(pcg32_random_t * rng, uint64_t initstate, uint64_t initseq)
+{
+    rng->state = 0U;
+    rng->inc = (initseq << 1u) | 1u;
+    pcg32_random_r(rng);
+    rng->state += initstate;
+    pcg32_random_r(rng);
+}
+
+// pcg32_boundedrand(bound):
+// pcg32_boundedrand_r(rng, bound):
+//     Generate a uniformly distributed number, r, where 0 <= r < bound
+
+static uint32_t pcg32_boundedrand_r(pcg32_random_t * rng, uint32_t bound)
+{
+    // To avoid bias, we need to make the range of the RNG a multiple of
+    // bound, which we do by dropping output less than a threshold.
+    // A naive scheme to calculate the threshold would be to do
+    //
+    //     uint32_t threshold = 0x100000000ull % bound;
+    //
+    // but 64-bit div/mod is slower than 32-bit div/mod (especially on
+    // 32-bit platforms).  In essence, we do
+    //
+    //     uint32_t threshold = (0x100000000ull-bound) % bound;
+    //
+    // because this version will calculate the same modulus, but the LHS
+    // value is less than 2^32.
+
+    uint32_t threshold = -bound % bound;
+
+    // Uniformity guarantees that this loop will terminate.  In practice, it
+    // should usually terminate quickly; on average (assuming all bounds are
+    // equally likely), 82.25% of the time, we can expect it to require just
+    // one iteration.  In the worst case, someone passes a bound of 2^31 + 1
+    // (i.e., 2147483649), which invalidates almost 50% of the range.  In
+    // practice, bounds are typically small and only a tiny amount of the
+    // range is eliminated.
+    for (;;) {
+        uint32_t r = pcg32_random_r(rng);
+        if (r >= threshold)
+            return r % bound;
+    }
+}
+
+// End of external PCG32 code
+
+
+static Obj TYPE_KERNEL_OBJECT;
+
+Obj FuncPCG32_INIT_FROM_SEED(Obj self, Obj initstateObj, Obj initseqObj)
+{
+    uint64_t initstate = UInt8_ObjInt(initstateObj);
+    uint64_t initseq = UInt8_ObjInt(initseqObj);
+
+    Obj state = NewBag(T_DATOBJ, sizeof(Obj) + sizeof(pcg32_random_t));
+    SET_TYPE_DATOBJ(state, TYPE_KERNEL_OBJECT);
+    pcg32_srandom_r((pcg32_random_t *)(1 + ADDR_OBJ(state)), initstate,
+                    initseq);
+    return state;
+}
+
+// This function assumes we have an existing state we are reinitalising from.
+// It will reject if initseq is not odd.
+Obj FuncPCG32_INIT_FROM_STATE(Obj self, Obj initstateObj, Obj initseqObj)
+{
+    uint64_t initstate = UInt8_ObjInt(initstateObj);
+    uint64_t initseq = UInt8_ObjInt(initseqObj);
+
+    if (initseq % 2 == 0) {
+        ErrorMayQuit("Illegal PCG32 state: 2nd argument must be odd", 0, 0);
+    }
+
+    Obj state = NewBag(T_DATOBJ, sizeof(Obj) + sizeof(pcg32_random_t));
+    SET_TYPE_DATOBJ(state, TYPE_KERNEL_OBJECT);
+    pcg32_random_t * pcg32_state = (pcg32_random_t *)(1 + ADDR_OBJ(state));
+    pcg32_state->state = initstate;
+    pcg32_state->inc = initseq;
+    return state;
+}
+
+Obj FuncPCG32_RANDOM_R(Obj self, Obj state)
+{
+    uint32_t val = pcg32_random_r((pcg32_random_t *)(1 + ADDR_OBJ(state)));
+    return ObjInt_UInt(val);
+}
+
+Obj FuncPCG32_BOUNDEDRAND_R(Obj self, Obj state, Obj boundObj)
+{
+    UInt8 bound = UInt8_ObjInt(boundObj);
+    if (bound > UINT32_MAX) {
+        ErrorMayQuit("Invalid bound in PCG32_BOUNBDEDRAND_R", 0, 0);
+    }
+
+    uint32_t val =
+        pcg32_boundedrand_r((pcg32_random_t *)(1 + ADDR_OBJ(state)), bound);
+    return ObjInt_UInt(val);
+}
+
+Obj FuncPCG32_GET_STATE(Obj self, Obj stateObj)
+{
+    pcg32_random_t * pcg32_state = (pcg32_random_t *)(1 + ADDR_OBJ(stateObj));
+    Obj              state = ObjInt_UInt8(pcg32_state->state);
+    Obj              inc = ObjInt_UInt8(pcg32_state->inc);
+    Obj              list = NEW_PLIST(T_PLIST, 2);
+    SET_LEN_PLIST(list, 2);
+    SET_ELM_PLIST(list, 1, state);
+    SET_ELM_PLIST(list, 2, inc);
+    CHANGED_BAG(list);
+    return list;
+}
 
 /****************************************************************************
 **
@@ -730,13 +884,18 @@ Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
 
     GVAR_FUNC(HASHKEY_BAG, 4, "obj, int,int,int"),
     GVAR_FUNC(InitRandomMT, 1, "initstr"),
     GVAR_FUNC(MAKE_BITFIELDS, -1, "widths"),
     GVAR_FUNC(BUILD_BITFIELDS, -2, "widths, vals"),
+    GVAR_FUNC(PCG32_INIT_FROM_SEED, 2, "initstate, initseq"),
+    GVAR_FUNC(PCG32_INIT_FROM_STATE, 2, "initstate, initseq"),
+    GVAR_FUNC(PCG32_RANDOM_R, 1, "state"),
+    GVAR_FUNC(PCG32_BOUNDEDRAND_R, 2, "state, bound"),
+    GVAR_FUNC(PCG32_GET_STATE, 1, "state"),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -757,6 +916,8 @@ static Int InitKernel (
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
+
+    ImportGVarFromLibrary("TYPE_KERNEL_OBJECT", &TYPE_KERNEL_OBJECT);
 
     return 0;
 }

@@ -116,7 +116,7 @@ end;;
 
 
 randomTest := function(collection, randfunc, checkin...)
-    local sizeone, randchecker;
+    local sizeone, randchecker, existingPCG32;
     if Length(checkin) = 0 then
         checkin := \in;
     else
@@ -145,4 +145,8 @@ randomTest := function(collection, randfunc, checkin...)
     randchecker(IsGAPRandomSource,
         GlobalRandomSource, x -> randfunc(GlobalRandomSource, x), randfunc,
         collection, checkin);
+
+    existingPCG32 := RandomSource(IsPCG32RandomSource);
+    randchecker(IsPCG32RandomSource,
+        existingPCG32, x -> randfunc(existingPCG32, x), randfunc, collection, checkin);
 end;

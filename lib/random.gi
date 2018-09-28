@@ -31,7 +31,7 @@ end);
 
 # Generic fallback methods, such that it is sufficient to install Random for 
 # lists or for pairs of integers.
-InstallMethod(Random, [IsRandomSource, IsInt, IsInt], function(rs, a, b)
+BindGlobal("FALLBACK_GENERATE_RANDOM_INT", function(rs, a, b)
   local  d, x, r, y;
   d := b - a;
   if d < 0  then
@@ -53,6 +53,8 @@ InstallMethod(Random, [IsRandomSource, IsInt, IsInt], function(rs, a, b)
     fi;
   fi;
 end);
+
+InstallMethod(Random, [IsRandomSource, IsInt, IsInt], FALLBACK_GENERATE_RANDOM_INT);
 
 InstallMethod(Random, [IsRandomSource, IsList], function(rs, list)
   return list[Random(rs, 1, Length(list))];
@@ -159,6 +161,55 @@ InstallMethod(Random, [IsGAPRandomSource, IsList], function(rs, list)
   fi;
 end);
 
+############################################################################
+##  PCG32 Random Source
+## 
+
+InstallMethod(Init, [IsPCG32RandomSource, IsObject], function(rs, seed)
+  local initstate, initseq;
+  initstate := 1;
+  initseq := 0;
+  if IsInt(seed) then
+    rs!.state := PCG32_INIT_FROM_SEED(seed, 0);
+  else
+    rs!.state := PCG32_INIT_FROM_STATE(seed[1], seed[2]);
+  fi;
+  return rs;
+end);
+
+InstallMethod(State, [IsPCG32RandomSource], function(rs)
+  return PCG32_GET_STATE(rs!.state);
+end);
+
+InstallMethod(Reset, [IsPCG32RandomSource, IsObject], function(rs, seed)
+  local old;
+  old := State(rs);
+  Init(rs, seed);
+  return old;
+end);
+
+InstallMethod(Random, [IsPCG32RandomSource, IsList], function(rs, list)
+  local val;
+  if Length(list) < 2^32-1 then
+    return list[PCG32_BOUNDEDRAND_R(rs!.state, Length(list))+1];
+  else
+    return list[Random(rs, 1, Length(list))];
+  fi;
+end);
+
+InstallMethod(Random, [IsPCG32RandomSource, IsInt, IsInt], function(rs,a,b)
+  local  d, x, r, y;
+  d := b - a;
+  if d < 0  then
+    return fail;
+  elif a = b  then
+    return a;
+  elif d < 2^32-1 then
+    return a + PCG32_BOUNDEDRAND_R(rs!.state, d+1);
+  else
+    return FALLBACK_GENERATE_RANDOM_INT(rs,a,b);
+  fi;
+end);
 
 ##############################################################################
 ##  Random source using the Mersenne twister kernel functions.
