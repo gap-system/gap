@@ -921,15 +921,16 @@ Obj CopyPlist (
     else {
         copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
     }
-    ADDR_OBJ(copy)[0] = ADDR_OBJ(list)[0];
+    ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(list)[0];
 
     /* leave a forwarding pointer                                          */
     PrepareCopy(list, copy);
 
     /* copy the subvalues                                                  */
     for ( i = 1; i <= LEN_PLIST(copy); i++ ) {
-        if (CONST_ADDR_OBJ(list)[i] != 0) {
-            tmp = COPY_OBJ(CONST_ADDR_OBJ(list)[i], mut);
+        Obj obj = CONST_ADDR_OBJ(list)[i];
+        if (obj != 0) {
+            tmp = COPY_OBJ(obj, mut);
             ADDR_OBJ(copy)[i] = tmp;
             CHANGED_BAG( copy );
         }
@@ -950,8 +951,9 @@ void CleanPlist (
 
     /* clean the subvalues                                                 */
     for ( i = 1; i <= LEN_PLIST(list); i++ ) {
-        if ( ADDR_OBJ(list)[i] != 0 )
-            CLEAN_OBJ( ADDR_OBJ(list)[i] );
+        Obj obj = CONST_ADDR_OBJ(list)[i];
+        if (obj != 0)
+            CLEAN_OBJ(obj);
     }
 
 }

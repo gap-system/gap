@@ -98,15 +98,15 @@ Obj CollectPolycyc (
     Obj list,
     Obj word )
 {
-    Int    ngens   = INT_INTOBJ( ADDR_OBJ(pcp)[ PC_NUMBER_OF_GENERATORS ] );
-    Obj    commute = ADDR_OBJ(pcp)[ PC_COMMUTE ];
+    Int    ngens   = INT_INTOBJ( CONST_ADDR_OBJ(pcp)[ PC_NUMBER_OF_GENERATORS ] );
+    Obj    commute = CONST_ADDR_OBJ(pcp)[ PC_COMMUTE ];
 
-    Obj    gens    = ADDR_OBJ(pcp)[ PC_GENERATORS ];
-    Obj    igens   = ADDR_OBJ(pcp)[ PC_INVERSES ];
+    Obj    gens    = CONST_ADDR_OBJ(pcp)[ PC_GENERATORS ];
+    Obj    igens   = CONST_ADDR_OBJ(pcp)[ PC_INVERSES ];
 
-    Obj    pow     = ADDR_OBJ(pcp)[ PC_POWERS ];
-    Obj    ipow    = ADDR_OBJ(pcp)[ PC_INVERSEPOWERS ];
-    Obj    exp     = ADDR_OBJ(pcp)[ PC_EXPONENTS ];
+    Obj    pow     = CONST_ADDR_OBJ(pcp)[ PC_POWERS ];
+    Obj    ipow    = CONST_ADDR_OBJ(pcp)[ PC_INVERSEPOWERS ];
+    Obj    exp     = CONST_ADDR_OBJ(pcp)[ PC_EXPONENTS ];
 
     Obj    wst  = CFTLState()->WORD_STACK;
     Obj    west = CFTLState()->WORD_EXPONENT_STACK;
@@ -195,16 +195,16 @@ Obj CollectPolycyc (
           if( LtInt( INTOBJ_INT(0), e ) ) {
             C_DIFF_FIA( ee, e, INTOBJ_INT(1) );  e = ee;
             SET_ELM_PLIST( est, st, e ); CHANGED_BAG( est );
-            conj  = ADDR_OBJ(pcp)[PC_CONJUGATES];
-            iconj = ADDR_OBJ(pcp)[PC_INVERSECONJUGATES];
+            conj  = CONST_ADDR_OBJ(pcp)[PC_CONJUGATES];
+            iconj = CONST_ADDR_OBJ(pcp)[PC_INVERSECONJUGATES];
             
             C_SUM_FIA( ge, ELM_PLIST( list, g ), INTOBJ_INT(1) );
           }
           else {
             C_SUM_FIA( ee, e, INTOBJ_INT(1) );  e = ee;
             SET_ELM_PLIST( est, st, e ); CHANGED_BAG( est );
-            conj  = ADDR_OBJ(pcp)[PC_CONJUGATESINVERSE];
-            iconj = ADDR_OBJ(pcp)[PC_INVERSECONJUGATESINVERSE];
+            conj  = CONST_ADDR_OBJ(pcp)[PC_CONJUGATESINVERSE];
+            iconj = CONST_ADDR_OBJ(pcp)[PC_INVERSECONJUGATESINVERSE];
             
             C_DIFF_FIA( ge, ELM_PLIST( list, g ), INTOBJ_INT(1) );
           }

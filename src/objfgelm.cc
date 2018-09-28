@@ -1157,7 +1157,7 @@ Obj FuncMULT_WOR_LETTREP (
 {
   UInt l,m,i,j,newlen,as,bs,ae,be;
   Obj n;
-  Obj *p;
+  const Obj *p;
   Obj *q;
 
   /* short check */
@@ -1243,16 +1243,14 @@ Obj FuncMULT_WOR_LETTREP (
   q++;
   j=as;
   /* a[as] position */
-  /* there must be a better way for giving this address ... */
-  p=(Obj*) &(ADDR_OBJ(a)[as]);
+  p=CONST_ADDR_OBJ(a) + as;
   while (j<=ae) {
     *q++=*p++;
     j++;
   }
   j=bs;
   /* b[bs] position */
-  /* there must be a better way for giving this address ... */
-  p=(Obj*) &(ADDR_OBJ(b)[bs]);
+  p=CONST_ADDR_OBJ(b) + bs;
   while (j<=be) {
     *q++=*p++;
     j++;

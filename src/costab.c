@@ -2088,8 +2088,8 @@ UInt RelatorScan (
 {
     UInt  m,i,p,a,j;
     UInt  pa=0,pb=0;
-    UInt * rp;
-    rp=(UInt*)ADDR_OBJ(r);
+    const UInt * rp;
+    rp=(const UInt*)CONST_ADDR_OBJ(r);
     m=rp[1]; /* length is in position 1 */
     i=2;
     p=di;

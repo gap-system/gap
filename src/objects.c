@@ -805,7 +805,7 @@ void MakeImmutableComObj( Obj obj)
 /*UInt i; */
   /* 
   for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i += 2 ) {
-       MakeImmutable(ADDR_OBJ(obj)[i]);
+       MakeImmutable(CONST_ADDR_OBJ(obj)[i]);
        CHANGED_BAG(obj);
     }
   */
@@ -818,7 +818,7 @@ void MakeImmutablePosObj( Obj obj)
 /*UInt i; */
   /* 
   for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i += 1 ) {
-       MakeImmutable(ADDR_OBJ(obj)[i]);
+       MakeImmutable(CONST_ADDR_OBJ(obj)[i]);
        CHANGED_BAG(obj);
     }
   */
