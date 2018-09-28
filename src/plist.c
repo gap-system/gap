@@ -791,10 +791,7 @@ Obj             ShallowCopyPlist (
     Obj                 list )
 {
     Obj                 new;
-    Obj *               o;
-    Obj *               n;
     UInt                len;
-    UInt                i;
 
     /* make the new object and copy the contents                           */
     len = LEN_PLIST(list);
@@ -804,11 +801,7 @@ Obj             ShallowCopyPlist (
     else {
         new = NEW_PLIST( TNUM_OBJ(list), len );
     }
-    o = ADDR_OBJ(list);
-    n = ADDR_OBJ(new);
-    for ( i = 0; i < len+1; i++ ) {
-        *n++ = *o++;
-    }
+    memcpy(ADDR_OBJ(new), CONST_ADDR_OBJ(list), (len + 1) * sizeof(Obj));
     /* 'CHANGED_BAG(new);' not needed, <new> is newest object              */
     return new;
 }
