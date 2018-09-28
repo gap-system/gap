@@ -39,31 +39,31 @@
 **  WARNING: 'cwVector' and 'cw2Vector' must be cleaned after using them.
 */
 #define SC_AVECTOR(sc) \
-    (ADDR_OBJ(sc)[SCP_AVECTOR])
+    (CONST_ADDR_OBJ(sc)[SCP_AVECTOR])
 
 #define SC_COLLECTOR(sc) \
-    (FinPowConjCollectors[INT_INTOBJ(ADDR_OBJ(sc)[SCP_COLLECTOR])])
+    (FinPowConjCollectors[INT_INTOBJ(CONST_ADDR_OBJ(sc)[SCP_COLLECTOR])])
 
 #define SC_CONJUGATES(sc) \
-    (ADDR_OBJ(sc)[SCP_CONJUGATES])
+    (CONST_ADDR_OBJ(sc)[SCP_CONJUGATES])
 
 #define SC_DEFAULT_TYPE(sc) \
-    (ADDR_OBJ(sc)[SCP_DEFAULT_TYPE])
+    (CONST_ADDR_OBJ(sc)[SCP_DEFAULT_TYPE])
 
 #define SC_INVERSES(sc) \
-    (ADDR_OBJ(sc)[SCP_INVERSES])
+    (CONST_ADDR_OBJ(sc)[SCP_INVERSES])
 
 #define SC_NUMBER_RWS_GENERATORS(sc) \
-    (INT_INTOBJ((ADDR_OBJ(sc)[SCP_NUMBER_RWS_GENERATORS])))
+    (INT_INTOBJ((CONST_ADDR_OBJ(sc)[SCP_NUMBER_RWS_GENERATORS])))
 
 #define SC_POWERS(sc) \
-    (ADDR_OBJ(sc)[SCP_POWERS])
+    (CONST_ADDR_OBJ(sc)[SCP_POWERS])
 
 #define SC_RELATIVE_ORDERS(sc) \
-    (ADDR_OBJ(sc)[SCP_RELATIVE_ORDERS])
+    (CONST_ADDR_OBJ(sc)[SCP_RELATIVE_ORDERS])
 
 #define SC_RWS_GENERATORS(sc) \
-    (ADDR_OBJ(sc)[SCP_RWS_GENERATORS])
+    (CONST_ADDR_OBJ(sc)[SCP_RWS_GENERATORS])
 
 /****************************************************************************
 **
