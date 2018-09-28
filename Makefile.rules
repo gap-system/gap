@@ -332,9 +332,9 @@ DEPFLAGS = -MQ "$@" -MMD -MP -MF $(DEPFILE)
 # (e.g. during a `git bisect`) still runs into the above error. To work
 # around that, we add a few explicit rules down below, for files that were
 # changed from .c to .cc
-src/objfgelm.c:
-src/objpcgel.c:
-src/permutat.c:
+$(srcdir)/src/objfgelm.c:
+$(srcdir)/src/objpcgel.c:
+$(srcdir)/src/permutat.c:
 
 # Build rule for C++ source files
 obj/%.lo: %.cc cnf/GAP-CXXFLAGS cnf/GAP-CPPFLAGS libtool
