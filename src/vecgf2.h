@@ -60,6 +60,7 @@
 **  returns a pointer to the start of the data of the GF2 vector
 */
 #define BLOCKS_GF2VEC(list)             ((UInt*)(ADDR_OBJ(list)+2))
+#define CONST_BLOCKS_GF2VEC(list)       ((const UInt*)(CONST_ADDR_OBJ(list)+2))
 
 
 /****************************************************************************
@@ -75,6 +76,7 @@
 **  that have side effects.
 */
 #define BLOCK_ELM_GF2VEC(list, pos)    (BLOCKS_GF2VEC(list)[((pos)-1)/BIPEB])
+#define CONST_BLOCK_ELM_GF2VEC(list, pos)    (CONST_BLOCKS_GF2VEC(list)[((pos)-1)/BIPEB])
 
 
 /****************************************************************************
@@ -124,7 +126,7 @@
 **  have side effects.
 */
 #define ELM_GF2VEC(list,pos) \
-  ((BLOCK_ELM_GF2VEC(list,pos) & MASK_POS_GF2VEC(pos)) ?  GF2One : GF2Zero)
+  ((CONST_BLOCK_ELM_GF2VEC(list,pos) & MASK_POS_GF2VEC(pos)) ?  GF2One : GF2Zero)
 
 
 /****************************************************************************
