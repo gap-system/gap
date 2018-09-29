@@ -1434,7 +1434,7 @@ Int             IsPossListDefault (
     for ( i = 1; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
 
-        /* if it's a hole then its not a poss list */
+        /* if it has a hole then it isn't a poss list */
         if ( elm == 0)
           return 0L;
 

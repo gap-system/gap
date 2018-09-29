@@ -1331,7 +1331,7 @@ function( S, i )
 
     info := SemidirectProductInfo( S );
     if not IsBound(info.vectorspace) then
-      # its not a vectorspace product
+      # it's not a vectorspace product
       TryNextMethod();
     fi;
 
