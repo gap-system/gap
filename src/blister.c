@@ -864,7 +864,7 @@ Int IsBlist (
         isBlist = 1;
     }
 
-    /* if <list> is not a small list, its not a boolean list (convert to list)   */
+    /* if <list> is not a small list, it isn't a boolean list (convert to list)   */
     else if ( ! IS_SMALL_LIST( list ) ) {
         isBlist = 0;
     }
@@ -912,7 +912,7 @@ Int IsBlistConv (
         isBlist = 1;
     }
 
-    /* if <list> is not a list, its not a boolean list (convert to list)   */
+    /* if <list> is not a list, it isn't a boolean list (convert to list)  */
     else if ( ! IS_SMALL_LIST(list) ) {
         isBlist = 0;
     }

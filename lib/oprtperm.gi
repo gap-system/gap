@@ -278,7 +278,7 @@ InstallMethod( BlocksOp, "permgroup on integers",
                 img := eql[img];
             od;
 
-            # if its not our current block but a minimal block
+            # if it is not our current block but a minimal block
             if   img <> D[1]  and img <> cur  and leq[img] = img  then
 
                 # then try <img> as a new start
@@ -293,7 +293,7 @@ InstallMethod( BlocksOp, "permgroup on integers",
                 gen := Reversed( gen );
                 pnt := cur;
 
-            # otherwise if its not our current block but contains it
+            # otherwise if it is not our current block but contains it
             # by construction a nonminimal block contains the current block
             elif img <> D[1]  and img <> cur  and leq[img] <> img  then
 
@@ -716,7 +716,7 @@ local   blocks,   # block system of <G>, result
           img := eql[img];
         od;
 
-        # if its not our current block but a new block
+        # if it is not our current block but a new block
         if   img <> D[1]  and img <> cur and leq[img] = img
             and (iter[img] = 0 or iter[img] = start) then
 
@@ -739,7 +739,7 @@ local   blocks,   # block system of <G>, result
           gen := Reversed( gen );
           pnt := cur;
 
-        # otherwise if its not our current block but contains it
+        # otherwise if it is not our current block but contains it
         # by construction a nonminimal block contains the current block
         # - not any more it doesn't! Now we also have to check whether
         # the block appeared this time or earlier.

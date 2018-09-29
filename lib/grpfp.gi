@@ -244,7 +244,7 @@ end);
 MakeFpGroupCompMethod:=function(CMP)
   return function(fam)
     local hom,f,com;
-    # if a normal form method is known, and its not known to be crummy
+    # if a normal form method is known, and it is not known to be crummy
     if HasFpElementNFFunction(fam) and not IsBound(fam!.hascrudeFPENFF) then
       f:=FpElementNFFunction(fam);
       com:=x->f(UnderlyingElement(x));
