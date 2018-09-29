@@ -220,11 +220,11 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
                 LEN_LIST(methods)-i);
     fi;
 
-    # install the new method
+    # check the family predicate
     if   rel = true  then
-        methods[i+1] := RETURN_TRUE;
+        rel := RETURN_TRUE;
     elif rel = false  then
-        methods[i+1] := RETURN_FALSE;
+        rel := RETURN_FALSE;
     elif IS_FUNCTION(rel)  then
         if CHECK_INSTALL_METHOD  then
             tmp := NARG_FUNC(rel);
@@ -233,22 +233,16 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
                       narg, " arguments");
             fi;
         fi;
-        methods[i+1] := rel;
     else
         Error(NAME_FUNC(opr),
               ": <famrel> must be a function, `true', or `false'" );
     fi;
 
-    # install the filters
-    for k  in [ 1 .. narg ]  do
-        methods[i+k+1] := flags[k];
-    od;
-
-    # install the method
+    # check the method
     if   method = true  then
-        methods[i+(narg+2)] := RETURN_TRUE;
+        method := RETURN_TRUE;
     elif method = false  then
-        methods[i+(narg+2)] := RETURN_FALSE;
+        method := RETURN_FALSE;
     elif IS_FUNCTION(method)  then
         if CHECK_INSTALL_METHOD and not IS_OPERATION( method ) then
             tmp := NARG_FUNC(method);
@@ -257,19 +251,31 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
                      narg, " arguments");
             fi;
         fi;
-        methods[i+(narg+2)] := method;
     else
         Error(NAME_FUNC(opr),
               ": <method> must be a function, `true', or `false'" );
     fi;
+
+    # install the family predicate
+    methods[i+1] := rel;
+
+    # install the filters
+    for k  in [ 1 .. narg ]  do
+        methods[i+k+1] := flags[k];
+    od;
+
+    # install the method
+    methods[i+(narg+2)] := method;
     methods[i+(narg+3)] := rank;
 
     methods[i+(narg+4)] := IMMUTABLE_COPY_OBJ(info);
+
     if BASE_SIZE_METHODS_OPER_ENTRY >= 5 then
         methods[i+(narg+5)] := MakeImmutable([INPUT_FILENAME(), READEVALCOMMAND_LINENUMBER, INPUT_LINENUMBER()]);
-        if BASE_SIZE_METHODS_OPER_ENTRY >= 6 then
-            methods[i+(narg+6)] := baserank;
-        fi;
+    fi;
+
+    if BASE_SIZE_METHODS_OPER_ENTRY >= 6 then
+        methods[i+(narg+6)] := baserank;
     fi;
 
     # flush the cache

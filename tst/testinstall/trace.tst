@@ -18,14 +18,14 @@ gap> type := NewType(fam, cat and IsAttributeStoringRep);;
 gap> TraceImmediateMethods(true);
 
 # add immediate method that requires extra filter
-gap> InstallImmediateMethod( Size, cat and IsAbelian, 0, x -> 1 );
+gap> InstallImmediateMethod( Size, "for abelian mockobj", cat and IsAbelian, 0, x -> 1 );
 gap> a := Objectify(type,rec());;
 gap> Size(a);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `Size' on 1 arguments
 gap> SetIsAbelian(a, true);
 #I RunImmediateMethods
-#I  immediate: Size at stream:1
+#I  immediate: Size: for abelian mockobj at stream:1
 gap> Size(a);
 1
 
