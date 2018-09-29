@@ -201,7 +201,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
             if info = methods[k+narg+4] then
 
                 # ForAll not available
-                match := false;
+                match := true;
                 for j in [1..narg] do
                     match := match and methods[k+j+1] = flags[j];
                 od;

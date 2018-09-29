@@ -48,7 +48,30 @@ gap> List([0..6], n->Length(METHODS_OPERATION(IsMyProperty, n)) / (BASE_SIZE_MET
 gap> List(MethodsOperation(IsMyProperty, 1), x->x.info);
 [ "IsMyProperty: system getter" ]
 
-# TODO: test Reread with method installation
+# actually install some methods
+gap> InstallMethod(IsMyProperty,"for any object", [IsObject], false);
+gap> InstallMethod(IsMyProperty,"for an integer", [IsInt], IsEvenInt);
+gap> IsMyProperty(fail);
+false
+gap> IsMyProperty(0);
+true
+gap> IsMyProperty(1);
+false
+gap> List(MethodsOperation(IsMyProperty, 1), x->x.info);
+[ "IsMyProperty: system getter", "IsMyProperty: for an integer", 
+  "IsMyProperty: for any object" ]
+
+# verify Reread does the right thing
+gap> Reread(InputTextString("""InstallMethod(IsMyProperty,"for any object", [IsObject], x->x=fail);"""));
+gap> IsMyProperty(fail);
+true
+gap> IsMyProperty(0);
+true
+gap> IsMyProperty(1);
+false
+gap> List(MethodsOperation(IsMyProperty, 1), x->x.info);
+[ "IsMyProperty: system getter", "IsMyProperty: for an integer", 
+  "IsMyProperty: for any object" ]
 
 #
 gap> RedispatchOnCondition();

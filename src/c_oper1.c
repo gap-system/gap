@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "15483281"
+#define FILE_CRC  "4806423"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -865,8 +865,8 @@ static Obj  HdlrFunc3 (
    t_1 = (Obj)(UInt)(EQ( a_info, t_2 ));
    if ( t_1 ) {
     
-    /* match := false; */
-    t_1 = False;
+    /* match := true; */
+    t_1 = True;
     l_match = t_1;
     
     /* for j in [ 1 .. narg ] do */
@@ -4140,7 +4140,7 @@ static Obj  HdlrFunc1 (
           k := i;
           while k < LEN_LIST( methods ) and rank = methods[k + narg + 3] do
               if info = methods[k + narg + 4] then
-                  match := false;
+                  match := true;
                   for j in [ 1 .. narg ] do
                       match := match and methods[k + j + 1] = flags[j];
                   od;
@@ -4957,7 +4957,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = 15483281,
+ .crc         = 4806423,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
