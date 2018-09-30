@@ -1068,21 +1068,14 @@ Obj FuncSIZE_BLIST (
 **  'BlistList' is most effective if <list> is a set, but can be used with an
 **  arbitrary list that has no holes.
 */
+
+Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub);
+
 Obj FuncBLIST_LIST (
     Obj                 self,
     Obj                 list,
     Obj                 sub )
 {
-    Obj                 blist;          /* boolean list, result            */
-    UInt  *             ptrBlist;       /* pointer to the boolean list     */
-    UInt                block;          /* one block of boolean list       */
-    UInt                bit;            /* one bit of block                */
-    Int                 lenList;        /* logical length of the list      */
-    const Obj *               ptrSub;         /* pointer to the sublist          */
-    UInt                lenSub;         /* logical length of sublist       */
-    UInt                i, j, k = 0, l;     /* loop variables                  */
-    long                s, t;           /* elements of a range             */
-
     /* get and check the arguments                                         */
     while ( ! IS_SMALL_LIST(list) ) {
         list = ErrorReturnObj(
@@ -1097,191 +1090,12 @@ Obj FuncBLIST_LIST (
             "you can replace <sub> via 'return <sub>;'" );
     }
 
-    lenList = LEN_LIST( list );
-    blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
+    Int lenList = LEN_LIST( list );
+    Obj blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
     SET_LEN_BLIST(blist, lenList);
 
-    lenSub = LEN_LIST( sub );
+    FuncUNITE_BLIST_LIST(self, list, blist, sub);
 
-    /* for a range as subset of a range, it is extremely easy               */
-    if ( IS_RANGE(list) && IS_RANGE(sub) && GET_INC_RANGE( list ) == 1
-          && GET_INC_RANGE( sub ) == 1) {
-
-        /* allocate the boolean list and get pointer                       */
-        ptrBlist = BLOCKS_BLIST(blist);
-
-        /* get the bounds of the subset with respect to the boolean list   */
-        s = INT_INTOBJ( GET_ELM_RANGE( list, 1 ) );
-        t = INT_INTOBJ( GET_ELM_RANGE( sub, 1 ) );
-        if ( s <= t )  i = t - s + 1;
-        else           i = 1;
-
-        if ( i + lenSub - 1 <= lenList )  j = i + lenSub - 1;
-        else                              j = lenList;
-
-        /* set the corresponding entries to 'true'                         */
-        for ( k = i; k <= j && (k-1)%BIPEB != 0; k++ )
-            ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
-        for ( ; k+BIPEB <= j; k += BIPEB )
-            ptrBlist[(k-1)/BIPEB] = ~(UInt)0;
-        for ( ; k <= j; k++ )
-            ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
-
-    }
-
-    /* for a list as subset of a range, we need basically no search        */
-    else if ( IS_RANGE(list) && GET_INC_RANGE( list) == 1
-          && IS_PLIST(sub) ) {
-
-        ptrBlist = BLOCKS_BLIST(blist);
-        ptrSub = CONST_ADDR_OBJ(sub);
-
-        /* loop over <sub> and set the corresponding entries to 'true'     */
-        s = INT_INTOBJ( GET_ELM_RANGE( list, 1 ) );
-        for ( l = 1; l <= LEN_LIST(sub); l++ ) {
-            if ( ptrSub[l] != 0 ) {
-
-                /* if <sub>[<l>] is an integer it is very easy             */
-                if ( IS_INTOBJ( ptrSub[l] ) ) {
-                    t = INT_INTOBJ( ptrSub[l] ) - s + 1;
-                    if ( 0 < t && t <= lenList )
-                        ptrBlist[(t-1)/BIPEB] |= (1UL << (t-1)%BIPEB);
-                }
-            }
-        }
-
-    }
-
-    /* if <list> is a set we have two possibilities                        */
-    else if ( IsSet( list ) ) {
-
-        /* get the length of <list> and its logarithm                      */
-        lenList = LEN_PLIST( list );
-        for ( i = lenList, l = 0; i != 0; i >>= 1, l++ ) ;
-        PLAIN_LIST( sub );
-        lenSub = LEN_LIST( sub );
-
-        /* if <sub> is small, we loop over <sub> and use binary search     */
-        if ( l * lenSub < 2 * lenList ) {
-
-            /* allocate the boolean list and get pointer                   */
-
-            /* run over the elements of <sub> and search for the elements  */
-            for ( l = 1; l <= LEN_LIST(sub); l++ ) {
-                if ( CONST_ADDR_OBJ(sub)[l] != 0 ) {
-
-                    /* perform the binary search to find the position      */
-                    i = 0;  k = lenList+1;
-                    while ( i+1 < k ) {
-                        j = (i + k) / 2;
-                        if ( LT(CONST_ADDR_OBJ(list)[j],CONST_ADDR_OBJ(sub)[l]) )
-                            i = j;
-                        else
-                            k = j;
-                    }
-
-                    /* set bit if <sub>[<l>] was found at position k       */
-                    if ( k <= lenList
-                      && EQ( CONST_ADDR_OBJ(list)[k], CONST_ADDR_OBJ(sub)[l] ) )
-                        SET_BIT_BLIST(blist, k);
-                }
-            }
-
-        }
-
-        /* if <sub> is large, run over both list in parallel               */
-        else {
-
-            /* turn the <sub> into a set for faster searching              */
-            if ( ! IsSet( sub ) ) {
-                sub = SetList( sub );
-                lenSub = LEN_LIST( sub );
-            }
-
-            /* run over the elements of <list>                             */
-            k = 1;
-            block = 0;
-            bit   = 1;
-            for ( l = 1; l <= lenList; l++ ) {
-
-                /* test if <list>[<l>] is in <sub>                         */
-                while ( k <= lenSub
-                     && LT(CONST_ADDR_OBJ(sub)[k],CONST_ADDR_OBJ(list)[l]) )
-                    k++;
-
-                /* if <list>[<k>] is in <sub> set the current bit in block */
-                if ( k <= lenSub
-                  && EQ(CONST_ADDR_OBJ(sub)[k],CONST_ADDR_OBJ(list)[l]) ) {
-                    block |= bit;
-                    k++;
-                }
-
-                /* if block is full add it to boolean list and start next  */
-                bit = bit << 1;
-                if ( bit == 0 || l == lenList ) {
-                    *BLOCK_ELM_BLIST_PTR(blist, l) = block;
-                    block = 0;
-                    bit = 1;
-                }
-
-            }
-        }
-
-    }
-
-    /* if <list> is not a set, we have to use brute force                  */
-    else {
-
-        /* convert left argument to an ordinary list, ignore return value  */
-        PLAIN_LIST( list );
-
-        /* turn <sub> into a set for faster searching                      */
-        if ( ! IsSet( sub ) )  sub = SetList( sub );
-
-        lenSub   = LEN_PLIST( sub );
-
-        /* run over the elements of <list>                                 */
-        k = 1;
-        block = 0;
-        bit   = 1;
-        for ( l = 1; l <= lenList; l++ ) {
-
-            /* test if <list>[<l>] is in <sub>                             */
-            if ( l == 1 || LT(CONST_ADDR_OBJ(list)[l-1],CONST_ADDR_OBJ(list)[l]) ){
-                while ( k <= lenSub
-                     && LT(CONST_ADDR_OBJ(sub)[k],CONST_ADDR_OBJ(list)[l]) )
-                    k++;
-            }
-            else {
-                i = 0;  k = LEN_PLIST(sub) + 1;
-                while ( i+1 < k ) {
-                    j = (i + k) / 2;
-                    if ( LT( CONST_ADDR_OBJ(sub)[j], CONST_ADDR_OBJ(list)[l] ) )
-                        i = j;
-                    else
-                        k = j;
-                }
-            }
-
-            /* if <list>[<k>] is in <sub> set the current bit in the block */
-            if ( k <= lenSub
-              && EQ( CONST_ADDR_OBJ(sub)[k], CONST_ADDR_OBJ(list)[l] ) ) {
-                block |= bit;
-                k++;
-            }
-
-            /* if block is full add it to the boolean list and start next  */
-            bit = bit << 1;
-            if ( bit == 0 || l == lenList ) {
-                *BLOCK_ELM_BLIST_PTR(blist, l) = block;
-                block = 0;
-                bit   = 1;
-            }
-        }
-
-    }
-
-    /* return the boolean list                                             */
     return blist;
 }
 
