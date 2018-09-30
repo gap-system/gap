@@ -1097,15 +1097,17 @@ Obj FuncBLIST_LIST (
             "you can replace <sub> via 'return <sub>;'" );
     }
 
+    lenList = LEN_LIST( list );
+    blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
+    SET_LEN_BLIST(blist, lenList);
+
+    lenSub = LEN_LIST( sub );
+
     /* for a range as subset of a range, it is extremely easy               */
     if ( IS_RANGE(list) && IS_RANGE(sub) && GET_INC_RANGE( list ) == 1
           && GET_INC_RANGE( sub ) == 1) {
 
         /* allocate the boolean list and get pointer                       */
-        lenList  = GET_LEN_RANGE( list );
-        lenSub   = GET_LEN_RANGE( sub );
-        blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
-        SET_LEN_BLIST(blist, lenList);
         ptrBlist = BLOCKS_BLIST(blist);
 
         /* get the bounds of the subset with respect to the boolean list   */
@@ -1131,11 +1133,6 @@ Obj FuncBLIST_LIST (
     else if ( IS_RANGE(list) && GET_INC_RANGE( list) == 1
           && IS_PLIST(sub) ) {
 
-        /* allocate the boolean list and get pointer                       */
-        lenList  = GET_LEN_RANGE( list );
-        lenSub   = LEN_LIST( sub );
-        blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
-        SET_LEN_BLIST(blist, lenList);
         ptrBlist = BLOCKS_BLIST(blist);
         ptrSub = CONST_ADDR_OBJ(sub);
 
@@ -1168,8 +1165,6 @@ Obj FuncBLIST_LIST (
         if ( l * lenSub < 2 * lenList ) {
 
             /* allocate the boolean list and get pointer                   */
-            blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
-            SET_LEN_BLIST(blist, lenList);
 
             /* run over the elements of <sub> and search for the elements  */
             for ( l = 1; l <= LEN_LIST(sub); l++ ) {
@@ -1202,10 +1197,6 @@ Obj FuncBLIST_LIST (
                 sub = SetList( sub );
                 lenSub = LEN_LIST( sub );
             }
-
-            /* allocate the boolean list and get pointer                   */
-            blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
-            SET_LEN_BLIST(blist, lenList);
 
             /* run over the elements of <list>                             */
             k = 1;
@@ -1247,11 +1238,7 @@ Obj FuncBLIST_LIST (
         /* turn <sub> into a set for faster searching                      */
         if ( ! IsSet( sub ) )  sub = SetList( sub );
 
-        /* allocate the boolean list and get pointer                       */
-        lenList  = LEN_LIST( list );
         lenSub   = LEN_PLIST( sub );
-        blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
-        SET_LEN_BLIST(blist, lenList);
 
         /* run over the elements of <list>                                 */
         k = 1;
