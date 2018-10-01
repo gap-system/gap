@@ -984,26 +984,24 @@ Obj FuncREAD (
 **
 *F  FuncREAD_NORECOVERY( <self>, <filename> )  . . .  . . . . . . read a file
 **
-** Read the current input and close the input stream. Disable the normal 
-** mechanism which ensures that quitting from a break loop gets you back to a 
-** live prompt. This is initially designed for the files read from the command 
-** line
+**  Read the current input and close the input stream. Disable the normal 
+**  mechanism which ensures that quitting from a break loop gets you back to
+**  a live prompt. This is initially designed for the files read from the
+**  command line.
 */
 Obj FuncREAD_NORECOVERY (
     Obj                 self,
-    Obj                 filename )
+    Obj                 input )
 {
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "READ: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
+    if ( IsStringConv( input ) ) {
+        if ( ! OpenInput( CONST_CSTR_STRING(input) ) ) {
+            return False;
+        }
     }
-
-    /* try to open the file                                                */
-    if ( ! OpenInput( CONST_CSTR_STRING(filename) ) ) {
-        return False;
+    else {
+        if (!OpenInputStream(input, 0)) {
+            return False;
+        }
     }
 
     /* read the file */

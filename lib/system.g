@@ -115,7 +115,9 @@ BIND_GLOBAL( "GAPInfo", rec(
       rec( long := "norepl", default := false,
            help := [ "Disable the GAP read-evaluate-print loop (REPL)" ] ),
       rec( long := "nointeract", default := false,
-           help := [ "Start GAP in non-interactive mode (disable read-evaluate-print loop (REPL) and break loop)" ] )
+           help := [ "Start GAP in non-interactive mode (disable read-evaluate-print loop (REPL) and break loop)" ] ),
+      ,
+      rec( short:= "c", default := "", arg := "<expr>", help := [ "execute the given expression"] ),
     ],
     ) );
 
@@ -361,7 +363,10 @@ CallAndInstallPostRestore( function()
           elif IS_INT( value ) then
             CommandLineOptions.( opt ):= CommandLineOptions.( opt ) + 1;
           elif i <= LENGTH( line ) then
-            if IS_STRING_REP( value ) then
+            if opt = "c" then
+              ADD_LIST_DEFAULT( InitFiles, rec( command := line[i] ) );
+              i := i+1;
+            elif IS_STRING_REP( value ) then
               # string
               CommandLineOptions.( opt ):= line[i];
               i := i+1;

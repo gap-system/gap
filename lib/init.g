@@ -1020,20 +1020,33 @@ fi;
 ResumeMethodReordering();
 
 InstallAndCallPostRestore( function()
-    local i, status;
+    local i, f, status;
     for i in [1..Length(GAPInfo.InitFiles)] do
-        status := READ_NORECOVERY(GAPInfo.InitFiles[i]);
+        f := GAPInfo.InitFiles[i];
+        if IsRecord(f) then
+            status := READ_NORECOVERY(InputTextString(f.command));
+        else
+            status := READ_NORECOVERY(f);
+        fi;
         if status = fail then
-            PRINT_TO( "*errout*", "Reading file \"", GAPInfo.InitFiles[i],
-                "\" has been aborted.\n");
+            if IsRecord(f) then
+                PRINT_TO( "*errout*", "Executing command \"", f.command,
+                    "\" has been aborted.\n");
+            else
+                PRINT_TO( "*errout*", "Reading file \"", f,
+                    "\" has been aborted.\n");
+            fi;
             if i < Length (GAPInfo.InitFiles) then
                 PRINT_TO( "*errout*",
-                    "The remaining files on the command line will not be read.\n" );
+                    "The remaining files or commands on the command line will not be read.\n" );
             fi;
             break;
         elif status = false then
-            PRINT_TO( "*errout*", 
-                "Could not read file \"", GAPInfo.InitFiles[i],"\".\n" );
+            if IsRecord(f) then
+                PRINT_TO( "*errout*", "Could not execute command \"", f.command, "\".\n" );
+            else
+                PRINT_TO( "*errout*", "Could not read file \"", f, "\".\n" );
+            fi;
         fi;
     od;
 end );
