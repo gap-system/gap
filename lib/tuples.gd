@@ -46,7 +46,8 @@ DeclareInfoClass( "InfoDirectProductElements" );
 ##  The sum and the product of a direct product element and a list in
 ##  <Ref Func="IsListDefault"/> is the list of sums and products,
 ##  respectively.
-##  The sum and the product of a direct product element and a non-list
+##  The sum and the product of a direct product element and an object
+##  that is neither a list nor a collection
 ##  is the direct product element of componentwise sums and products,
 ##  respectively.
 ##  </Description>
