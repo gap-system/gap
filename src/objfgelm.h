@@ -12,11 +12,6 @@
 #define GAP_OBJFGELM_H
 
 #include "objects.h"
-#include "plist.h"
-
-#ifdef HPCGAP
-#include "hpc/guards.h"
-#endif
 
 /****************************************************************************
 **
@@ -121,30 +116,12 @@
 
 /****************************************************************************
 **
-*F  NEW_WORD( <word>, <type>, <npairs> )
+*F  NewWord( <type>, <npairs> )
 **
-**  'NEW_WORD' creates  a new object which has  the given <type> and room for
-**  <npairs> pairs of generator number/exponent.  The new  word is return  in
-**  <word>.
+**  'NewWord' returns a new object which has the given <type> and room for
+**  <npairs> pairs of generator number/exponent.
 */
-static inline Obj NewWord(Obj type, UInt npairs) {
-  Obj word;
-#ifdef HPCGAP
-  ReadGuard(type);
-#endif
-  word = NewBag(T_DATOBJ,2*sizeof(Obj)+npairs*BITS_WORDTYPE(type)/8L);
-  ADDR_OBJ(word)[1] = INTOBJ_INT(npairs);
-  SetTypeDatObj(word, type);
-#ifdef HPCGAP
-  MakeBagReadOnly( word );
-#endif
-  return word;
-}
-
-#define NEW_WORD(word, type, npairs) \
-  do { \
-    (word) = NewWord((type), (npairs)); \
-  } while(0)
+extern Obj NewWord(Obj type, UInt npairs);
 
 
 /****************************************************************************

@@ -14,7 +14,7 @@
 **  the family.  Any object of this type looks like:
 **
 **    +------+-----+-------+-------+-----+-----------+
-**    | TYPE | len | g1/e1 | g2/e2 | ... | glen/elen | 
+**    | TYPE | len | g1/e1 | g2/e2 | ... | glen/elen |
 **    +------+-----+-------+-------+-----+-----------+
 **
 **  where  <len> is a GAP integer  object and <gi>/<ei> occupies 8, 16, or 32
@@ -29,15 +29,11 @@
 **  of accessing these entries directly you should use the following macros.
 **
 **
-**  The file "objects.h" defines the following macros:
+**  The file "objfgelm.h" defines the following functions and macros:
 **
-**  NEW_WORD( <result>, <type>, <npairs> )
-**    creates   a  new  objects   of   type  <type>  with  room  for <npairs>
+**   NewWord(( <type>, <npairs> )
+**    returns a new objects of type <type> with room for <npairs>
 **    generator/exponent pairs.
-**
-**  RESIZE_WORD( <word>, <npairs> ) 
-**    resizes the  <word> such that  it will hold <npairs> generator/exponent
-**    pairs.
 **
 **
 **  BITS_WORD( <word> )
@@ -86,6 +82,9 @@ extern "C" {
 #include "plist.h"
 #include "stringobj.h"
 
+#ifdef HPCGAP
+#include "hpc/guards.h"
+#endif
 }
 
 // OverflowType<UIntN> is a type which is larger enough to detect
@@ -95,6 +94,23 @@ template<typename T> struct OverflowType { };
 template<> struct OverflowType<UInt1> { typedef Int type; };
 template<> struct OverflowType<UInt2> { typedef Int type; };
 template<> struct OverflowType<UInt4> { typedef Int8 type; };
+
+
+extern Obj NewWord(Obj type, UInt npairs)
+{
+    Obj word;
+#ifdef HPCGAP
+    ReadGuard(type);
+#endif
+    word =
+        NewBag(T_DATOBJ, 2 * sizeof(Obj) + npairs * BITS_WORDTYPE(type) / 8L);
+    ADDR_OBJ(word)[1] = INTOBJ_INT(npairs);
+    SetTypeDatObj(word, type);
+#ifdef HPCGAP
+    MakeBagReadOnly(word);
+#endif
+    return word;
+}
 
 
 /****************************************************************************
@@ -418,7 +434,7 @@ Obj FuncNBits_HeadByNumber (
         return l;
 
     /* create a new word                                                   */
-    NEW_WORD( obj, PURETYPE_WORD(l), sl );
+    obj = NewWord(PURETYPE_WORD(l), sl);
 
     /* copy the <l> part into the word                                     */
     po = DATA_WORD(obj);
@@ -589,7 +605,7 @@ Obj FuncNBits_AssocWord (
 
     /* construct a new object                                              */
     num = LEN_LIST(data)/2;
-    NEW_WORD( obj, type, num );
+    obj = NewWord(type, num);
 
     ptr = DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
@@ -658,7 +674,7 @@ Obj FuncNBits_ObjByVector (
     }
 
     /* construct a new object                                              */
-    NEW_WORD( obj, type, num );
+    obj = NewWord(type, num);
 
     ptr = DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++, j++ ) {
@@ -727,7 +743,7 @@ Obj FuncNBits_Power (
     /* if <pow> is zero return the identity                                */
     pow = INT_INTOBJ(r);
     if ( pow == 0 ) {
-        NEW_WORD( obj, PURETYPE_WORD(l), 0 );
+        obj = NewWord(PURETYPE_WORD(l), 0);
         return obj;
     }
 
@@ -737,7 +753,7 @@ Obj FuncNBits_Power (
 
     /* if <pow> is minus one invert <l>                                    */
     if ( pow == -1 ) {
-        NEW_WORD( obj, PURETYPE_WORD(l), nl );
+        obj = NewWord(PURETYPE_WORD(l), nl);
         pl = CONST_DATA_WORD(l);
         pr = DATA_WORD(obj) + (nl-1);
         sl = nl;
@@ -775,7 +791,7 @@ Obj FuncNBits_Power (
         }
 
         /* copy <l> into <obj>                                             */
-        NEW_WORD( obj, PURETYPE_WORD(l), nl );
+        obj = NewWord(PURETYPE_WORD(l), nl);
         pl = CONST_DATA_WORD(l);
         pr = DATA_WORD(obj);
         sl = nl;
@@ -806,7 +822,8 @@ Obj FuncNBits_Power (
 
         /* create a new word                                               */
         apw = ( pow < 0 ) ? -pow : pow;
-        NEW_WORD( obj, PURETYPE_WORD(l), 2*(sl+1)+apw*(sr-sl-1)+(apw-1) );
+        obj = NewWord(PURETYPE_WORD(l),
+                      2 * (sl + 1) + apw * (sr - sl - 1) + (apw - 1));
 
         /* copy the beginning w * gj^x into <obj>                          */
         pl = CONST_DATA_WORD(l);
@@ -863,7 +880,7 @@ Obj FuncNBits_Power (
 
         /* create a new word                                               */
         apw = ( pow < 0 ) ? -pow : pow;
-        NEW_WORD( obj, PURETYPE_WORD(l), 2*sl+apw*(sr-sl+1) );
+        obj = NewWord(PURETYPE_WORD(l), 2 * sl + apw * (sr - sl + 1));
 
         /* copy the beginning w * gj^x into <obj>                          */
         pl = CONST_DATA_WORD(l);
@@ -978,7 +995,7 @@ Obj FuncNBits_Product (
             return TRY_NEXT_METHOD;
         }
     }
-    NEW_WORD( obj, PURETYPE_WORD(l), nl+(nr-sr)-over );
+    obj = NewWord(PURETYPE_WORD(l), nl + (nr - sr) - over);
 
     /* copy the <l> part into the word                                     */
     po = DATA_WORD(obj);
@@ -1065,7 +1082,7 @@ Obj FuncNBits_Quotient (
             return TRY_NEXT_METHOD;
         }
     }
-    NEW_WORD( obj, PURETYPE_WORD(l), nl+nr-over );
+    obj = NewWord(PURETYPE_WORD(l), nl + nr - over);
 
     /* copy the <l> part into the word                                     */
     po = DATA_WORD(obj);
