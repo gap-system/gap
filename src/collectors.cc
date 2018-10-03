@@ -163,7 +163,7 @@ Obj WordVectorAndClear ( Obj type, Obj vv, Int num )
     expm = (1UL << ebits) - 1;
 
     /* construct a new object                                              */
-    NEW_WORD( obj, type, num );
+    obj = NewWord(type, num);
 
     /* clear <vv>                                                          */
     ptr = DATA_WORD(obj);
@@ -655,7 +655,7 @@ Int Solution(
     expm = (1UL << ebits) - 1;
 
     /* use <g> as right argument for the collector                         */
-    NEW_WORD( g, SC_DEFAULT_TYPE(sc), 1 );
+    g = NewWord(SC_DEFAULT_TYPE(sc), 1);
 
     /* start clearing <ww>, storing the result in <uu>                     */
     ptr = (Int*)(ADDR_OBJ(ww)+1);
@@ -1471,7 +1471,7 @@ Obj ReducedPowerSmallInt (
 
     /* return the trivial word if <pow> is zero                            */
     if ( pow == 0 ) {
-        NEW_WORD( res, type, 0 );
+        res = NewWord(type, 0);
         return res;
     }
 
