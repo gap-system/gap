@@ -22,6 +22,7 @@
 #include "opers.h"
 #include "plist.h"
 #include "precord.h"
+#include "records.h"
 #include "saveload.h"
 #include "stringobj.h"
 #include "sysfiles.h"
@@ -1277,6 +1278,76 @@ Obj FuncSET_TYPE_COMOBJ (
     CHANGED_BAG( obj );
 #endif
     return obj;
+}
+
+
+/****************************************************************************
+**
+*F  AssComObj( <obj>, <rnam>, <val> )
+*F  UnbComObj( <obj>, <rnam> )
+*F  ElmComObj( <obj>, <rnam> )
+*F  IsbComObj( <obj>, <rnam> )
+*/
+void AssComObj(Obj obj, UInt rnam, Obj val)
+{
+    switch (TNUM_OBJ(obj)) {
+    case T_COMOBJ:
+        AssPRec(obj, rnam, val);
+        break;
+#ifdef HPCGAP
+    case T_ACOMOBJ:
+        SetARecordField(obj, rnam, val);
+        break;
+#endif
+    default:
+        ASS_REC(obj, rnam, val);
+        break;
+    }
+}
+
+void UnbComObj(Obj obj, UInt rnam)
+{
+    switch (TNUM_OBJ(obj)) {
+    case T_COMOBJ:
+        UnbPRec(obj, rnam);
+        break;
+#ifdef HPCGAP
+    case T_ACOMOBJ:
+        UnbARecord(obj, rnam);
+        break;
+#endif
+    default:
+        UNB_REC(obj, rnam);
+        break;
+    }
+}
+
+Obj ElmComObj(Obj obj, UInt rnam)
+{
+    switch (TNUM_OBJ(obj)) {
+    case T_COMOBJ:
+        return ElmPRec(obj, rnam);
+#ifdef HPCGAP
+    case T_ACOMOBJ:
+        return ElmARecord(obj, rnam);
+#endif
+    default:
+        return ELM_REC(obj, rnam);
+    }
+}
+
+Int IsbComObj(Obj obj, UInt rnam)
+{
+    switch (TNUM_OBJ(obj)) {
+    case T_COMOBJ:
+        return IsbPRec(obj, rnam);
+#ifdef HPCGAP
+    case T_ACOMOBJ:
+        return IsbARecord(obj, rnam);
+#endif
+    default:
+        return ISB_REC(obj, rnam);
+    }
 }
 
 

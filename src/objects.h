@@ -821,6 +821,19 @@ static inline void SET_TYPE_COMOBJ(Obj obj, Obj val)
 
 /****************************************************************************
 **
+*F  AssComObj( <obj>, <rnam>, <val> )
+*F  UnbComObj( <obj>, <rnam> )
+*F  ElmComObj( <obj>, <rnam> )
+*F  IsbComObj( <obj>, <rnam> )
+*/
+extern void AssComObj(Obj obj, UInt rnam, Obj val);
+extern void UnbComObj(Obj obj, UInt rnam);
+extern Obj  ElmComObj(Obj obj, UInt rnam);
+extern Int  IsbComObj(Obj obj, UInt rnam);
+
+
+/****************************************************************************
+**
 *F  IS_POSOBJ( <obj> )  . . . . . . . . . .  is an object a positional object
 */
 static inline Int IS_POSOBJ(Obj obj)
