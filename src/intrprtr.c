@@ -3757,19 +3757,7 @@ void            IntrAssComObjName (
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    switch (TNUM_OBJ(record)) {
-      case T_COMOBJ:
-        AssPRec( record, rnam, rhs );
-        break;
-#ifdef HPCGAP
-      case T_ACOMOBJ:
-        SetARecordField( record, rnam, rhs );
-        break;
-#endif
-      default:
-        ASS_REC( record, rnam, rhs );
-        break;
-    }
+    AssComObj( record, rnam, rhs );
 
     /* push the assigned value                                             */
     PushObj( rhs );
@@ -3797,19 +3785,7 @@ void            IntrAssComObjExpr ( void )
     record = PopObj();
 
     /* assign the right hand side to the element of the record             */
-    switch (TNUM_OBJ(record)) {
-      case T_COMOBJ:
-        AssPRec( record, rnam, rhs );
-        break;
-#ifdef HPCGAP
-      case T_ACOMOBJ:
-        SetARecordField( record, rnam, rhs );
-        break;
-#endif
-      default:
-        ASS_REC( record, rnam, rhs );
-        break;
-    }
+    AssComObj( record, rnam, rhs );
 
     /* push the assigned value                                             */
     PushObj( rhs );
@@ -3830,19 +3806,7 @@ void            IntrUnbComObjName (
     record = PopObj();
 
     /* unbind the element of the record                                    */
-    switch (TNUM_OBJ(record)) {
-      case T_COMOBJ:
-        UnbPRec( record, rnam );
-        break;
-#ifdef HPCGAP
-      case T_ACOMOBJ:
-        UnbARecord( record, rnam);
-        break;
-#endif
-      default:
-        UNB_REC( record, rnam );
-        break;
-    }
+    UnbComObj( record, rnam );
 
     /* push void                                                           */
     PushVoidObj();
@@ -3866,19 +3830,7 @@ void            IntrUnbComObjExpr ( void )
     record = PopObj();
 
     /* unbind the element of the record                                    */
-    switch (TNUM_OBJ(record)) {
-      case T_COMOBJ:
-        UnbPRec( record, rnam );
-        break;
-#ifdef HPCGAP
-      case T_ACOMOBJ:
-        UnbARecord( record, rnam);
-        break;
-#endif
-      default:
-        UNB_REC( record, rnam );
-        break;
-    }
+    UnbComObj( record, rnam );
 
     /* push void                                                           */
     PushVoidObj();
@@ -3906,20 +3858,7 @@ void            IntrElmComObjName (
     record = PopObj();
 
     /* select the element of the record                                    */
-
-    switch (TNUM_OBJ(record)) {
-      case T_COMOBJ:
-        elm = ElmPRec( record, rnam );
-        break;
-#ifdef HPCGAP
-      case T_ACOMOBJ:
-        elm = ElmARecord ( record, rnam );
-        break;
-#endif
-      default:
-        elm = ELM_REC( record, rnam );
-        break;
-    }
+    elm = ElmComObj( record, rnam );
 
     /* push the element                                                    */
     PushObj( elm );
@@ -3944,19 +3883,7 @@ void            IntrElmComObjExpr ( void )
     record = PopObj();
 
     /* select the element of the record                                    */
-    switch (TNUM_OBJ(record)) {
-      case T_COMOBJ:
-        elm = ElmPRec( record, rnam );
-        break;
-#ifdef HPCGAP
-      case T_ACOMOBJ:
-        elm = ElmARecord ( record, rnam );
-        break;
-#endif
-      default:
-        elm = ELM_REC( record, rnam );
-        break;
-    }
+    elm = ElmComObj( record, rnam );
 
     /* push the element                                                    */
     PushObj( elm );
@@ -3978,19 +3905,7 @@ void            IntrIsbComObjName (
     record = PopObj();
 
     /* get the result                                                      */
-    switch (TNUM_OBJ(record)) {
-      case T_COMOBJ:
-        isb = IsbPRec( record, rnam ) ? True : False;
-        break;
-#ifdef HPCGAP
-      case T_ACOMOBJ:
-        isb = GetARecordField( record, rnam ) ? True : False;
-        break;
-#endif
-      default:
-        isb = ISB_REC( record, rnam ) ? True : False;
-        break;
-    }
+    isb = IsbComObj( record, rnam ) ? True : False;
 
     /* push the result                                                     */
     PushObj( isb );
@@ -4015,19 +3930,7 @@ void            IntrIsbComObjExpr ( void )
     record = PopObj();
 
     /* get the result                                                      */
-    switch (TNUM_OBJ(record)) {
-      case T_COMOBJ:
-        isb = IsbPRec( record, rnam ) ? True : False;
-        break;
-#ifdef HPCGAP
-      case T_ACOMOBJ:
-        isb = GetARecordField( record, rnam ) ? True : False;
-        break;
-#endif
-      default:
-        isb = ISB_REC( record, rnam ) ? True : False;
-        break;
-    }
+    isb = IsbComObj( record, rnam ) ? True : False;
 
     /* push the result                                                     */
     PushObj( isb );

@@ -1275,42 +1275,15 @@ static Obj  HdlrFunc10 (
  
  /* Display( IsBound( x!.a ) ); */
  t_1 = GF_Display;
- if ( TNUM_OBJ(l_x) == T_COMOBJ ) {
-  t_2 = (IsbPRec( l_x, R_a ) ? True : False);
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_x) == T_ACOMOBJ ) {
-  t_2 = (IsbARecord( l_x, R_a ) ? True : False);
-#endif
- }
- else {
-  t_2 = (ISB_REC( l_x, R_a ) ? True : False);
- }
+ t_2 = IsbComObj( l_x, R_a ) ? True : False;
  CALL_1ARGS( t_1, t_2 );
  
  /* Unbind( x!.a ); */
- if ( TNUM_OBJ(l_x) == T_COMOBJ ) {
-  UnbPRec( l_x, R_a );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_x) == T_ACOMOBJ ) {
-  UnbARecord( l_x, R_a );
-#endif
- }
- else {
-  UNB_REC( l_x, R_a );
- }
+ UnbComObj( l_x, R_a );
  
  /* Display( IsBound( x!.a ) ); */
  t_1 = GF_Display;
- if ( TNUM_OBJ(l_x) == T_COMOBJ ) {
-  t_2 = (IsbPRec( l_x, R_a ) ? True : False);
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_x) == T_ACOMOBJ ) {
-  t_2 = (IsbARecord( l_x, R_a ) ? True : False);
-#endif
- }
- else {
-  t_2 = (ISB_REC( l_x, R_a ) ? True : False);
- }
+ t_2 = IsbComObj( l_x, R_a ) ? True : False;
  CALL_1ARGS( t_1, t_2 );
  
  /* Print( "Testing IsBound and Unbind for record with bang and expr\n" ); */
@@ -1329,44 +1302,17 @@ static Obj  HdlrFunc10 (
  /* Display( IsBound( x!.("a") ) ); */
  t_1 = GF_Display;
  t_3 = MakeString( "a" );
- if ( TNUM_OBJ(l_x) == T_COMOBJ ) {
-  t_2 = (IsbPRec( l_x, RNamObj(t_3) ) ? True : False);
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_x) == T_ACOMOBJ ) {
-  t_2 = (IsbARecord( l_x, RNamObj(t_3) ) ? True : False);
-#endif
- }
- else {
-  t_2 = (ISB_REC( l_x, RNamObj(t_3) ) ? True : False);
- }
+ t_2 = IsbComObj( l_x, RNamObj(t_3) ) ? True : False;
  CALL_1ARGS( t_1, t_2 );
  
  /* Unbind( x!.("a") ); */
  t_1 = MakeString( "a" );
- if ( TNUM_OBJ(l_x) == T_COMOBJ ) {
-  UnbPRec( l_x, RNamObj(t_1) );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_x) == T_ACOMOBJ ) {
-  UnbARecord( l_x, RNamObj(t_1) );
-#endif
- }
- else {
-  UNB_REC( l_x, RNamObj(t_1) );
- }
+ UnbComObj( l_x, RNamObj(t_1) );
  
  /* Display( IsBound( x!.("a") ) ); */
  t_1 = GF_Display;
  t_3 = MakeString( "a" );
- if ( TNUM_OBJ(l_x) == T_COMOBJ ) {
-  t_2 = (IsbPRec( l_x, RNamObj(t_3) ) ? True : False);
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_x) == T_ACOMOBJ ) {
-  t_2 = (IsbARecord( l_x, RNamObj(t_3) ) ? True : False);
-#endif
- }
- else {
-  t_2 = (ISB_REC( l_x, RNamObj(t_3) ) ? True : False);
- }
+ t_2 = IsbComObj( l_x, RNamObj(t_3) ) ? True : False;
  CALL_1ARGS( t_1, t_2 );
  
  /* return; */

@@ -320,16 +320,7 @@ static Obj  HdlrFunc4 (
  /* obj!.(name) := val; */
  t_1 = OBJ_HVAR( (1 << 16) | 1 );
  CHECK_BOUND( t_1, "name" )
- if ( TNUM_OBJ(a_obj) == T_COMOBJ ) {
-  AssPRec( a_obj, RNamObj(t_1), a_val );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(a_obj) == T_ACOMOBJ ) {
-  AssARecord( a_obj, RNamObj(t_1), a_val );
-#endif
- }
- else {
-  ASS_REC( a_obj, RNamObj(t_1), a_val );
- }
+ AssComObj( a_obj, RNamObj(t_1), a_val );
  
  /* SetFilterObj( obj, tester ); */
  t_1 = GF_SetFilterObj;
@@ -572,64 +563,19 @@ static Obj  HdlrFunc5 (
  t_2 = GF_IMMUTABLE__COPY__OBJ;
  t_1 = CALL_1ARGS( t_2, a_name );
  CHECK_FUNC_RESULT( t_1 )
- if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
-  AssPRec( l_family, R_NAME, t_1 );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ ) {
-  AssARecord( l_family, R_NAME, t_1 );
-#endif
- }
- else {
-  ASS_REC( l_family, R_NAME, t_1 );
- }
+ AssComObj( l_family, R_NAME, t_1 );
  
  /* family!.REQ_FLAGS := req_filter; */
- if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
-  AssPRec( l_family, R_REQ__FLAGS, a_req__filter );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ ) {
-  AssARecord( l_family, R_REQ__FLAGS, a_req__filter );
-#endif
- }
- else {
-  ASS_REC( l_family, R_REQ__FLAGS, a_req__filter );
- }
+ AssComObj( l_family, R_REQ__FLAGS, a_req__filter );
  
  /* family!.IMP_FLAGS := imp_filter; */
- if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
-  AssPRec( l_family, R_IMP__FLAGS, a_imp__filter );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ ) {
-  AssARecord( l_family, R_IMP__FLAGS, a_imp__filter );
-#endif
- }
- else {
-  ASS_REC( l_family, R_IMP__FLAGS, a_imp__filter );
- }
+ AssComObj( l_family, R_IMP__FLAGS, a_imp__filter );
  
  /* family!.nTYPES := 0; */
- if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
-  AssPRec( l_family, R_nTYPES, INTOBJ_INT(0) );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ ) {
-  AssARecord( l_family, R_nTYPES, INTOBJ_INT(0) );
-#endif
- }
- else {
-  ASS_REC( l_family, R_nTYPES, INTOBJ_INT(0) );
- }
+ AssComObj( l_family, R_nTYPES, INTOBJ_INT(0) );
  
  /* family!.HASH_SIZE := 32; */
- if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
-  AssPRec( l_family, R_HASH__SIZE, INTOBJ_INT(32) );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ ) {
-  AssARecord( l_family, R_HASH__SIZE, INTOBJ_INT(32) );
-#endif
- }
- else {
-  ASS_REC( l_family, R_HASH__SIZE, INTOBJ_INT(32) );
- }
+ AssComObj( l_family, R_HASH__SIZE, INTOBJ_INT(32) );
  
  /* lock := WRITE_LOCK( DS_TYPE_CACHE ); */
  t_2 = GF_WRITE__LOCK;
@@ -647,16 +593,7 @@ static Obj  HdlrFunc5 (
  CHECK_BOUND( t_4, "DS_TYPE_CACHE" )
  t_1 = CALL_2ARGS( t_2, t_3, t_4 );
  CHECK_FUNC_RESULT( t_1 )
- if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
-  AssPRec( l_family, R_TYPES, t_1 );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ ) {
-  AssARecord( l_family, R_TYPES, t_1 );
-#endif
- }
- else {
-  ASS_REC( l_family, R_TYPES, t_1 );
- }
+ AssComObj( l_family, R_TYPES, t_1 );
  
  /* UNLOCK( lock ); */
  t_1 = GF_UNLOCK;
@@ -669,16 +606,7 @@ static Obj  HdlrFunc5 (
  CHECK_FUNC_RESULT( t_3 )
  t_1 = CALL_1ARGS( t_2, t_3 );
  CHECK_FUNC_RESULT( t_1 )
- if ( TNUM_OBJ(l_family) == T_COMOBJ ) {
-  AssPRec( l_family, R_TYPES__LIST__FAM, t_1 );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_family) == T_ACOMOBJ ) {
-  AssARecord( l_family, R_TYPES__LIST__FAM, t_1 );
-#endif
- }
- else {
-  ASS_REC( l_family, R_TYPES__LIST__FAM, t_1 );
- }
+ AssComObj( l_family, R_TYPES__LIST__FAM, t_1 );
  
  /* return family; */
  RES_BRK_CURR_STAT();
@@ -1042,32 +970,14 @@ static Obj  HdlrFunc11 (
  l_lock = t_1;
  
  /* cache := family!.TYPES; */
- if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
-  t_1 = ElmPRec( a_family, R_TYPES );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
-  t_1 = ElmARecord( a_family, R_TYPES );
-#endif
- }
- else {
-  t_1 = ELM_REC( a_family, R_TYPES );
- }
+ t_1 = ElmComObj( a_family, R_TYPES );
  l_cache = t_1;
  
  /* hash := HASH_FLAGS( flags ) mod family!.HASH_SIZE + 1; */
  t_4 = GF_HASH__FLAGS;
  t_3 = CALL_1ARGS( t_4, a_flags );
  CHECK_FUNC_RESULT( t_3 )
- if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
-  t_4 = ElmPRec( a_family, R_HASH__SIZE );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
-  t_4 = ElmARecord( a_family, R_HASH__SIZE );
-#endif
- }
- else {
-  t_4 = ELM_REC( a_family, R_HASH__SIZE );
- }
+ t_4 = ElmComObj( a_family, R_HASH__SIZE );
  t_2 = MOD( t_3, t_4 );
  C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
  l_hash = t_1;
@@ -1465,27 +1375,9 @@ static Obj  HdlrFunc11 (
  CALL_2ARGS( t_1, l_type, a_typeOfTypes );
  
  /* if 3 * family!.nTYPES > family!.HASH_SIZE then */
- if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
-  t_3 = ElmPRec( a_family, R_nTYPES );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
-  t_3 = ElmARecord( a_family, R_nTYPES );
-#endif
- }
- else {
-  t_3 = ELM_REC( a_family, R_nTYPES );
- }
+ t_3 = ElmComObj( a_family, R_nTYPES );
  C_PROD_FIA( t_2, INTOBJ_INT(3), t_3 )
- if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
-  t_3 = ElmPRec( a_family, R_HASH__SIZE );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
-  t_3 = ElmARecord( a_family, R_HASH__SIZE );
-#endif
- }
- else {
-  t_3 = ELM_REC( a_family, R_HASH__SIZE );
- }
+ t_3 = ElmComObj( a_family, R_HASH__SIZE );
  t_1 = (Obj)(UInt)(LT( t_3, t_2 ));
  if ( t_1 ) {
   
@@ -1501,16 +1393,7 @@ static Obj  HdlrFunc11 (
   CALL_2ARGS( t_1, l_ncache, t_2 );
   
   /* ncl := 3 * family!.HASH_SIZE + 1; */
-  if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
-   t_3 = ElmPRec( a_family, R_HASH__SIZE );
-#ifdef HPCGAP
-  } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
-   t_3 = ElmARecord( a_family, R_HASH__SIZE );
-#endif
-  }
-  else {
-   t_3 = ELM_REC( a_family, R_HASH__SIZE );
-  }
+  t_3 = ElmComObj( a_family, R_HASH__SIZE );
   C_PROD_FIA( t_2, INTOBJ_INT(3), t_3 )
   C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
   l_ncl = t_1;
@@ -1552,28 +1435,10 @@ static Obj  HdlrFunc11 (
   /* od */
   
   /* family!.HASH_SIZE := ncl; */
-  if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
-   AssPRec( a_family, R_HASH__SIZE, l_ncl );
-#ifdef HPCGAP
-  } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ ) {
-   AssARecord( a_family, R_HASH__SIZE, l_ncl );
-#endif
-  }
-  else {
-   ASS_REC( a_family, R_HASH__SIZE, l_ncl );
-  }
+  AssComObj( a_family, R_HASH__SIZE, l_ncl );
   
   /* family!.TYPES := ncache; */
-  if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
-   AssPRec( a_family, R_TYPES, l_ncache );
-#ifdef HPCGAP
-  } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ ) {
-   AssARecord( a_family, R_TYPES, l_ncache );
-#endif
-  }
-  else {
-   ASS_REC( a_family, R_TYPES, l_ncache );
-  }
+  AssComObj( a_family, R_TYPES, l_ncache );
   
   /* ncache[HASH_FLAGS( flags ) mod ncl + 1] := type; */
   t_4 = GF_HASH__FLAGS;
@@ -1596,27 +1461,9 @@ static Obj  HdlrFunc11 (
  /* fi */
  
  /* family!.nTYPES := family!.nTYPES + 1; */
- if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
-  t_2 = ElmPRec( a_family, R_nTYPES );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
-  t_2 = ElmARecord( a_family, R_nTYPES );
-#endif
- }
- else {
-  t_2 = ELM_REC( a_family, R_nTYPES );
- }
+ t_2 = ElmComObj( a_family, R_nTYPES );
  C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
- if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
-  AssPRec( a_family, R_nTYPES, t_1 );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ ) {
-  AssARecord( a_family, R_nTYPES, t_1 );
-#endif
- }
- else {
-  ASS_REC( a_family, R_nTYPES, t_1 );
- }
+ AssComObj( a_family, R_nTYPES, t_1 );
  
  /* MakeReadOnlySingleObj( type ); */
  t_1 = GF_MakeReadOnlySingleObj;
@@ -1665,16 +1512,7 @@ static Obj  HdlrFunc12 (
  t_2 = GF_NEW__TYPE;
  t_4 = GF_WITH__IMPS__FLAGS;
  t_6 = GF_AND__FLAGS;
- if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
-  t_7 = ElmPRec( a_family, R_IMP__FLAGS );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
-  t_7 = ElmARecord( a_family, R_IMP__FLAGS );
-#endif
- }
- else {
-  t_7 = ELM_REC( a_family, R_IMP__FLAGS );
- }
+ t_7 = ElmComObj( a_family, R_IMP__FLAGS );
  t_9 = GF_FLAGS__FILTER;
  t_8 = CALL_1ARGS( t_9, a_filter );
  CHECK_FUNC_RESULT( t_8 )
@@ -1727,16 +1565,7 @@ static Obj  HdlrFunc13 (
  t_2 = GF_NEW__TYPE;
  t_4 = GF_WITH__IMPS__FLAGS;
  t_6 = GF_AND__FLAGS;
- if ( TNUM_OBJ(a_family) == T_COMOBJ ) {
-  t_7 = ElmPRec( a_family, R_IMP__FLAGS );
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(a_family) == T_ACOMOBJ) {
-  t_7 = ElmARecord( a_family, R_IMP__FLAGS );
-#endif
- }
- else {
-  t_7 = ELM_REC( a_family, R_IMP__FLAGS );
- }
+ t_7 = ElmComObj( a_family, R_IMP__FLAGS );
  t_9 = GF_FLAGS__FILTER;
  t_8 = CALL_1ARGS( t_9, a_filter );
  CHECK_FUNC_RESULT( t_8 )
