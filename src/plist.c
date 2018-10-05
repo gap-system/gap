@@ -859,6 +859,7 @@ Obj FuncIS_PLIST_REP (
 
 
 #ifdef USE_THREADSAFE_COPYING
+#ifndef WARD_ENABLED
 
 void TraversePlist(Obj obj)
 {
@@ -881,6 +882,7 @@ void CopyPlist(Obj copy, Obj original)
     }
 }
 
+#endif // WARD_ENABLED
 #else
 
 /****************************************************************************

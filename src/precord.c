@@ -125,6 +125,8 @@ Int             GrowPRec (
 
 
 #ifdef USE_THREADSAFE_COPYING
+#ifndef WARD_ENABLED
+
 void TraversePRecord(Obj obj)
 {
     UInt i, len = LEN_PREC(obj);
@@ -139,6 +141,7 @@ void CopyPRecord(Obj copy, Obj original)
         SET_ELM_PREC(copy, i, ReplaceByCopy(GET_ELM_PREC(original, i)));
 }
 
+#endif // WARD_ENABLED
 #else
 
 /****************************************************************************
