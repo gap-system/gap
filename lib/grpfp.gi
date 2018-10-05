@@ -3781,6 +3781,12 @@ local fgens,grels,max,gens,t,Attempt,perms,short;
   while max<=maxtable do
     t:=Attempt(gens);
     if t<>fail then
+      # do not try to redo the work if the index is comparatively small, as
+      # it's not worth doing double work in this case.
+      if Length(t[2][1])<100 then
+        return [ElementOfFpGroup(FamilyObj(One(G)),t[1]),max];
+      fi;
+
       perms:=List(t[2]{[1,3..Length(t[2])-1]},PermList);
       short:=FreeGeneratorsOfFpGroup(G);
       short:=Concatenation(short, List(short,Inverse));
@@ -3788,7 +3794,8 @@ local fgens,grels,max,gens,t,Attempt,perms,short;
                  Product));
       short:=List(short,
         x->[Order(MappedWord(x,FreeGeneratorsOfFpGroup(G),perms)),x]);
-      Sort(short);
+      # prefer large order and short word length
+      SortBy(short,x->[x[1],-Length(x[2])]);
       Info(InfoFpGroup,1,"FIS: better ",short[Length(short)][1]);
       return [ElementOfFpGroup(FamilyObj(One(G)),short[Length(short)][2]),
               max];
