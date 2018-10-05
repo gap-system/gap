@@ -615,7 +615,7 @@ static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
 
 #ifdef USE_THREADSAFE_COPYING
 #ifndef WARD_ENABLED
-void TraverseWPObj(Obj obj)
+void TraverseWPObj(TraversalState * traversal, Obj obj)
 {
     UInt  len = STORED_LEN_WPOBJ(obj);
     const Obj * ptr = CONST_ADDR_OBJ(obj) + 1;
@@ -623,13 +623,13 @@ void TraverseWPObj(Obj obj)
         volatile Obj tmp = *ptr;
         MEMBAR_READ();
         if (IS_BAG_REF(tmp) && IS_BAG_REF(*ptr))
-            QueueForTraversal(*ptr);
+            QueueForTraversal(traversal, *ptr);
         ptr++;
         len--;
     }
 }
 
-void CopyWPObj(Obj copy, Obj original)
+void CopyWPObj(TraversalState * traversal, Obj copy, Obj original)
 {
     UInt  len = STORED_LEN_WPOBJ(original);
     const Obj * ptr = CONST_ADDR_OBJ(original) + 1;
@@ -638,7 +638,7 @@ void CopyWPObj(Obj copy, Obj original)
         volatile Obj tmp = *ptr;
         MEMBAR_READ();
         if (IS_BAG_REF(tmp) && IS_BAG_REF(*ptr)) {
-            *copyptr = ReplaceByCopy(tmp);
+            *copyptr = ReplaceByCopy(traversal, tmp);
 #ifdef USE_BOEHM_GC
             GC_general_register_disappearing_link((void **)copyptr, tmp);
 #endif

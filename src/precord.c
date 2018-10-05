@@ -127,18 +127,18 @@ Int             GrowPRec (
 #ifdef USE_THREADSAFE_COPYING
 #ifndef WARD_ENABLED
 
-void TraversePRecord(Obj obj)
+void TraversePRecord(TraversalState * traversal, Obj obj)
 {
     UInt i, len = LEN_PREC(obj);
     for (i = 1; i <= len; i++)
-        QueueForTraversal((Obj)GET_ELM_PREC(obj, i));
+        QueueForTraversal(traversal, (Obj)GET_ELM_PREC(obj, i));
 }
 
-void CopyPRecord(Obj copy, Obj original)
+void CopyPRecord(TraversalState * traversal, Obj copy, Obj original)
 {
     UInt i, len = LEN_PREC(original);
     for (i = 1; i <= len; i++)
-        SET_ELM_PREC(copy, i, ReplaceByCopy(GET_ELM_PREC(original, i)));
+        SET_ELM_PREC(copy, i, ReplaceByCopy(traversal, GET_ELM_PREC(original, i)));
 }
 
 #endif // WARD_ENABLED

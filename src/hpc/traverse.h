@@ -3,12 +3,14 @@
 
 #include "system.h"
 
+typedef struct TraversalState TraversalState;
+
 /*
  * Functionality to traverse nested object structures.
  */
 
-typedef void (*TraversalFunction)(Obj);
-typedef void (*TraversalCopyFunction)(Obj copy, Obj original);
+typedef void (*TraversalFunction)(TraversalState *, Obj);
+typedef void (*TraversalCopyFunction)(TraversalState *, Obj copy, Obj original);
 
 typedef enum {
     TRAVERSE_NONE,
@@ -26,10 +28,10 @@ extern void SetTraversalMethod(UInt tnum,
 
 
 // helper to be called from traverse functions
-extern void QueueForTraversal(Obj obj);
+extern void QueueForTraversal(TraversalState *, Obj obj);
 
 // helper to be called from copy functions
-extern Obj ReplaceByCopy(Obj obj);
+extern Obj ReplaceByCopy(TraversalState *, Obj obj);
 
 
 Obj ReachableObjectsFrom(Obj obj);

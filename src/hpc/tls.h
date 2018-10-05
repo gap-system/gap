@@ -18,7 +18,6 @@ typedef struct ThreadLocalStorage
   unsigned multiplexRandomSeed;
   void *currentRegion;
   void *threadRegion;
-  void *traversalState;
   Obj threadObject;
   Obj tlRecords;
   Obj lockStack;

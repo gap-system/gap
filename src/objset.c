@@ -387,22 +387,22 @@ void LoadObjSet(Obj set)
 
 #ifdef USE_THREADSAFE_COPYING
 #ifndef WARD_ENABLED
-void TraverseObjSet(Obj obj)
+void TraverseObjSet(TraversalState * traversal, Obj obj)
 {
     UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
         Obj item = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + i];
         if (item && item != Undefined)
-            QueueForTraversal(item);
+            QueueForTraversal(traversal, item);
     }
 }
 
-void CopyObjSet(Obj copy, Obj original)
+void CopyObjSet(TraversalState * traversal, Obj copy, Obj original)
 {
     UInt i, len = *(UInt *)(CONST_ADDR_OBJ(original) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
         Obj item = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + i];
-        ADDR_OBJ(copy)[OBJSET_HDRSIZE + i] = ReplaceByCopy(item);
+        ADDR_OBJ(copy)[OBJSET_HDRSIZE + i] = ReplaceByCopy(traversal, item);
     }
 }
 #endif // WARD_ENABLED
@@ -696,27 +696,27 @@ void LoadObjMap(Obj map)
 
 #ifdef USE_THREADSAFE_COPYING
 #ifndef WARD_ENABLED
-void TraverseObjMap(Obj obj)
+void TraverseObjMap(TraversalState * traversal, Obj obj)
 {
     UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
         Obj key = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2 * i];
         Obj val = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2 * i + 1];
         if (key && key != Undefined) {
-            QueueForTraversal(key);
-            QueueForTraversal(val);
+            QueueForTraversal(traversal, key);
+            QueueForTraversal(traversal, val);
         }
     }
 }
 
-void CopyObjMap(Obj copy, Obj original)
+void CopyObjMap(TraversalState * traversal, Obj copy, Obj original)
 {
     UInt i, len = *(UInt *)(CONST_ADDR_OBJ(original) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
         Obj key = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + 2 * i];
         Obj val = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + 2 * i + 1];
-        ADDR_OBJ(copy)[OBJSET_HDRSIZE + 2 * i] = ReplaceByCopy(key);
-        ADDR_OBJ(copy)[OBJSET_HDRSIZE + 2 * i + 1] = ReplaceByCopy(val);
+        ADDR_OBJ(copy)[OBJSET_HDRSIZE + 2 * i] = ReplaceByCopy(traversal, key);
+        ADDR_OBJ(copy)[OBJSET_HDRSIZE + 2 * i + 1] = ReplaceByCopy(traversal, val);
     }
 }
 #endif

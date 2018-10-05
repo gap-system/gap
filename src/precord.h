@@ -250,8 +250,9 @@ extern  void            SortPRecRNam (
 
 
 #ifdef USE_THREADSAFE_COPYING
-extern void TraversePRecord(Obj obj);
-extern void CopyPRecord(Obj copy, Obj original);
+typedef struct TraversalState TraversalState;
+extern void TraversePRecord(TraversalState * traversal, Obj obj);
+extern void CopyPRecord(TraversalState * traversal, Obj copy, Obj original);
 #endif
 
 
