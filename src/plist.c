@@ -861,23 +861,23 @@ Obj FuncIS_PLIST_REP (
 #ifdef USE_THREADSAFE_COPYING
 #ifndef WARD_ENABLED
 
-void TraversePlist(Obj obj)
+void TraversePlist(TraversalState * traversal, Obj obj)
 {
     UInt  len = LEN_PLIST(obj);
     const Obj * ptr = CONST_ADDR_OBJ(obj) + 1;
     while (len) {
-        QueueForTraversal(*ptr++);
+        QueueForTraversal(traversal, *ptr++);
         len--;
     }
 }
 
-void CopyPlist(Obj copy, Obj original)
+void CopyPlist(TraversalState * traversal, Obj copy, Obj original)
 {
     UInt  len = LEN_PLIST(original);
     const Obj * ptr = CONST_ADDR_OBJ(original) + 1;
     Obj * copyptr = ADDR_OBJ(copy) + 1;
     while (len) {
-        *copyptr++ = ReplaceByCopy(*ptr++);
+        *copyptr++ = ReplaceByCopy(traversal, *ptr++);
         len--;
     }
 }
