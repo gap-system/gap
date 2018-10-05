@@ -614,6 +614,7 @@ static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
 
 
 #ifdef USE_THREADSAFE_COPYING
+#ifndef WARD_ENABLED
 void TraverseWPObj(Obj obj)
 {
     UInt  len = STORED_LEN_WPOBJ(obj);
@@ -647,6 +648,7 @@ void CopyWPObj(Obj copy, Obj original)
     }
 }
 
+#endif // WARD_ENABLED
 
 #else
 

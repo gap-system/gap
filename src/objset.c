@@ -386,6 +386,7 @@ void LoadObjSet(Obj set)
 }
 
 #ifdef USE_THREADSAFE_COPYING
+#ifndef WARD_ENABLED
 void TraverseObjSet(Obj obj)
 {
     UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
@@ -404,6 +405,7 @@ void CopyObjSet(Obj copy, Obj original)
         ADDR_OBJ(copy)[OBJSET_HDRSIZE + i] = ReplaceByCopy(item);
     }
 }
+#endif // WARD_ENABLED
 #endif
 
 
@@ -693,6 +695,7 @@ void LoadObjMap(Obj map)
 }
 
 #ifdef USE_THREADSAFE_COPYING
+#ifndef WARD_ENABLED
 void TraverseObjMap(Obj obj)
 {
     UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
@@ -716,6 +719,7 @@ void CopyObjMap(Obj copy, Obj original)
         ADDR_OBJ(copy)[OBJSET_HDRSIZE + 2 * i + 1] = ReplaceByCopy(val);
     }
 }
+#endif
 #endif
 
 /**
