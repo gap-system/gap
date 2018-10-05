@@ -87,7 +87,7 @@ end);
 
 InstallGlobalFunction(RunTests, function(arg)
   local tests, opts, breakOnError, inp, outp, pos, cmp, times, ttime, nrlines,
-        s, res, fres, t, f, i;
+        s, res, fres, t, f, i, gaproot;
   # don't enter break loop in case of error during test
   tests := arg[1];
   opts := rec( breakOnError := false, showProgress := "some" );
@@ -142,6 +142,11 @@ InstallGlobalFunction(RunTests, function(arg)
         Error("user interrupt");
         BreakOnError := opts.breakOnError;
     fi;
+    # Remove explicit references to GAP's root path, so
+    # tests can be run on multiple machines
+    for gaproot in GAPInfo.KernelInfo.GAP_ROOT_PATHS do
+        res := ReplacedString(res, gaproot, "GAPROOT/");
+    od;
     Add(cmp, res);
     Add(times, t);
   od;
@@ -200,6 +205,9 @@ end;
 ##  lines starting with <C>"#"</C>.<Br/>
 ##  All other lines are considered as &GAP; output from the
 ##  preceding &GAP; input.
+##  To simplify running tests when GAP is installed in different locations,
+##  any directory in GAPInfo.KernelInfo.GAP_ROOT_PATHS is replaced with the
+##  string GAPROOT/.
 ##  <P/>
 ##  By default the actual &GAP; output is compared exactly with the
 ##  stored output, and if these are different some information about the 
