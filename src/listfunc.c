@@ -1369,8 +1369,7 @@ Obj             FuncOnLeftInverse (
     Obj                 point,
     Obj                 elm )
 {
-    elm = INV(elm);
-    return PROD( elm, point );
+    return LQUO(elm, point);
 }
 
 /****************************************************************************
