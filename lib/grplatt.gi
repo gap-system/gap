@@ -839,9 +839,9 @@ end);
 #M  LatticeViaRadical(<G>[,<H>])  . . . . . . . . . .  lattice of subgroups
 ##
 InstallGlobalFunction(LatticeViaRadical,function(arg)
-  local G,H,HN,HNI,ser, pcgs, u, hom, f, c, nu, nn, nf, a, k, ohom, mpcgs, gf,
-  act, nts, orbs, n, ns, nim, fphom, as, p, isn, isns, lmpc, npcgs, ocr, v,
-  com, cg, i, j, w, ii,first,cgs,cs,presmpcgs,select,fselect,
+  local G,H,HN,HNI,ser,pcgs,u,hom,f,c,nu,nn,nf,a,e,kg,k,ohom,mpcgs,gf,
+  act,nts,orbs,n,ns,nim,fphom,as,p,isn,isns,lmpc,npcgs,ocr,v,
+  com,cg,i,j,w,ii,first,cgs,cs,presmpcgs,select,fselect,
   makesubgroupclasses,cefastersize;
 
   #group order below which cyclic extension is usually faster
@@ -940,12 +940,19 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
     nu:=[];
     nn:=[];
     nf:=[];
+    kg:=GeneratorsOfGroup(KernelOfMultiplicativeGeneralMapping(hom));
     for i in c do
       a:=Representative(i);
-      k:=PreImage(hom,a);
+      #k:=PreImage(hom,a);
+      # make generators of homomorphism fit nicely to presentation
+      gf:=IsomorphismFpGroup(a);
+      e:=List(MappingGeneratorsImages(gf)[1],x->PreImagesRepresentative(hom,x));
+      k:=ClosureSubgroupNC(KernelOfMultiplicativeGeneralMapping(hom),e);
       Add(nu,k);
       Add(nn,PreImage(hom,Stabilizer(i)));
-      Add(nf,RestrictedMapping(hom,k)*IsomorphismFpGroup(a));
+      Add(nf,GroupHomomorphismByImagesNC(k,Range(gf),Concatenation(e,kg),
+             Concatenation(MappingGeneratorsImages(gf)[2],
+                List(kg,x->One(Range(gf))))));
     od;
     u:=[nu,nn,nf];
   fi;
@@ -1122,9 +1129,8 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
 	    fi;
 	    ocr:=rec(group:=a,
 		    modulePcgs:=lmpc);
-	    #fphom:=RestrictedMapping(ohom,a)*IsomorphismFpGroup(Image(ohom,a));
-	    #ocr.factorfphom:=fphom;
 	    ocr.factorfphom:=u[3][k];
+
 	    OCOneCocycles(ocr,true);
 	    if IsBound(ocr.complement) then
 #if ForAny(ocr.complementGens,i->SIZE_OBJ(i)>maxsz) then Error("3");fi;
