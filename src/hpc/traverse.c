@@ -87,10 +87,6 @@ static void BeginTraversal(TraversalState * traversal)
     traversal->listCurrent = 0;
 }
 
-static void EndTraversal(TraversalState * traversal)
-{
-}
-
 static void TraversalRehash(TraversalState * traversal);
 
 static int SeenDuringTraversal(TraversalState * traversal, Obj obj)
@@ -247,7 +243,6 @@ Obj ReachableObjectsFrom(Obj obj)
         return NewList(0);
     BeginTraversal(&traversal);
     TraverseRegionFrom(&traversal, obj, IsSameRegion);
-    EndTraversal(&traversal);
     return traversal.list;
 }
 
@@ -296,7 +291,6 @@ int PreMakeImmutableCheck(Obj obj)
     BeginTraversal(&traversal);
     traversal.border = 0;
     TraverseRegionFrom(&traversal, obj, IsWritableOrImmutable);
-    EndTraversal(&traversal);
     return !traversal.border;
 }
 
@@ -333,7 +327,6 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
     Obj * copies = ADDR_OBJ(copyList);
     traversal.border = delimited;
     if (len == 0) {
-        EndTraversal(&traversal);
         if (delimited) {
             // FIXME: honor asList
             return GetRegionOf(obj)->obj;
@@ -354,7 +347,6 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
     for (i = 1; i <= len; i++)
         if (copies[i])
             CopyBag(&traversal, copies[i], traversed[i]);
-    EndTraversal(&traversal);
     if (imm) {
         for (i = 1; i <= len; i++) {
             if (copies[i])
@@ -394,7 +386,6 @@ Obj CopyTraversed(Obj traversedList)
     }
     for (i = 1; i <= len; i++)
         CopyBag(&traversal, copies[i], traversed[i]);
-    EndTraversal(&traversal);
     return copies[1];
 }
 
