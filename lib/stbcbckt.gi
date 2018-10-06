@@ -2748,7 +2748,7 @@ Eh, Lh, Nh,G0;
     else
       Nh:=G; # we know that G normalizes
     fi;
-    Assert(1,Nh=DoNormalizerPermGroup(G,E,L,
+    Assert(3,Nh=DoNormalizerPermGroup(G,E,L,
                   [1..Maximum(Maximum(mpG),Maximum(mpE))]));
     return Nh;
 
