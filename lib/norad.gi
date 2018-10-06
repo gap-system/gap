@@ -985,7 +985,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 
 	  # construct the map reps->preimages and map the gens we want (to work
 	  # in the right coordinates)
-	  map:=GroupGeneralMappingByImages(uf,G,map,l);
+	  map:=GroupGeneralMappingByImagesNC(uf,G,map,l);
 	  l:=List(uff,x->ImagesRepresentative(map,x));
 	fi;
 #Display([l]);
