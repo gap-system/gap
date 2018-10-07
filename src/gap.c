@@ -1193,10 +1193,6 @@ Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
 **
 */
 
-#ifdef HPCGAP
-  extern UInt HaveInterrupt();
-#endif
-
 Obj FuncSleep( Obj self, Obj secs )
 {
   Int  s;
@@ -1210,11 +1206,7 @@ Obj FuncSleep( Obj self, Obj secs )
     SySleep((UInt)s);
   
   /* either we used up the time, or we were interrupted. */
-#ifdef HPCGAP
   if (HaveInterrupt())
-#else
-  if (SyIsIntr())
-#endif
     {
       ClearError(); /* The interrupt may still be pending */
       ErrorReturnVoid("user interrupt in sleep", 0L, 0L,
@@ -1244,11 +1236,7 @@ Obj FuncMicroSleep( Obj self, Obj msecs )
     SyUSleep((UInt)s);
   
   /* either we used up the time, or we were interrupted. */
-#ifdef HPCGAP
   if (HaveInterrupt())
-#else
-  if (SyIsIntr())
-#endif
     {
       ClearError(); /* The interrupt may still be pending */
       ErrorReturnVoid("user interrupt in microsleep", 0L, 0L,

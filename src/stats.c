@@ -113,16 +113,14 @@ UInt            ExecUnknownStat (
 
 /****************************************************************************
 **
-*F  UInt HaveInterrupt() . . . . . . . . check for user interrupts
+*F  HaveInterrupt . . . . . . . . . . . . . . . . . check for user interrupts
 **
 */
-
 #ifdef HPCGAP
-UInt HaveInterrupt( void ) {
-  return STATE(CurrExecStatFuncs) == IntrExecStatFuncs;
+UInt HaveInterrupt(void)
+{
+    return STATE(CurrExecStatFuncs) == IntrExecStatFuncs;
 }
-#else
-#define HaveInterrupt()   SyIsIntr()
 #endif
 
 /****************************************************************************
@@ -1084,10 +1082,9 @@ static void UnInterruptExecStat(void)
 **  allowing GAP execution in the usual way
 **
 **  This will do nothing (pretty quickly) if Ctrl-C has not been pressed and 
-**  return 0. Otherwise it
-**   will respond appropriately.  This may result in a longjmp
-**  or in returning to the caller after arbitrary execution of GAP code
-** including possible garbage collection. In this case 1 is returned.
+**  return 0. Otherwise it will respond appropriately. This may result in a
+**  longjmp or in returning to the caller after arbitrary execution of GAP
+**  code including possible garbage collection. In this case 1 is returned.
 */
 
 UInt TakeInterrupt( void )
