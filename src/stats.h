@@ -105,7 +105,23 @@ extern  UInt 		(* IntrExecStatFuncs[256]) ( Stat stat );
 /* TL: extern  Obj             ReturnObjStat; */
 
 
+/****************************************************************************
+**
+*F  HaveInterrupt . . . . . . . . . . . . . . . . . check for user interrupts
+**
+*/
+#ifdef HPCGAP
+extern UInt HaveInterrupt(void);
+#else
+#define HaveInterrupt() SyIsIntr()
+#endif
+
+
+/****************************************************************************
+**
+*/
 extern UInt TakeInterrupt();
+
 
 /****************************************************************************
 **

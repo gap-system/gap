@@ -25,7 +25,6 @@
 #include "records.h"
 #include "saveload.h"
 #include "stringobj.h"
-#include "sysfiles.h"
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"
@@ -942,17 +941,6 @@ void            PrintObj (
     UInt                lastPV;        /* save LastPV */
     UInt                fromview;      /* non-zero when we were called
                                         from viewObj of the SAME object */
-
-    /* check for interrupts                                                */
-    if ( SyIsIntr() ) {
-        i = STATE(PrintObjDepth);
-        Pr( "%c%c", (Int)'\03', (Int)'\04' );
-        ErrorReturnVoid(
-            "user interrupt while printing",
-            0L, 0L,
-            "you can 'return;'" );
-        STATE(PrintObjDepth) = i;
-    }
 
 #if defined(HPCGAP) && !defined(WARD_ENABLED)
    if (IS_BAG_REF(obj) && !CheckReadAccess(obj)) {
