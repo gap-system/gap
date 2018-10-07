@@ -136,6 +136,12 @@ InstallGlobalFunction(RunTests, function(arg)
     t := Runtime() - t;
     CloseStream(fres);
     CloseStream(s);
+    # check whether the user aborted by pressing ctrl-C
+    if StartsWith(res, "Error, user interrupt") then
+        BreakOnError := breakOnError;
+        Error("user interrupt");
+        BreakOnError := opts.breakOnError;
+    fi;
     Add(cmp, res);
     Add(times, t);
   od;
