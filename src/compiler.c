@@ -78,13 +78,6 @@ Int CompCheckListElements;
 
 /****************************************************************************
 **
-*V  CompCheckPosObjElements .  option to emit code that assumes pos elm exist
-*/
-Int CompCheckPosObjElements;
-
-
-/****************************************************************************
-**
 *V  CompPass  . . . . . . . . . . . . . . . . . . . . . . . . . compiler pass
 **
 **  'CompPass' holds the number of the current pass.
@@ -3413,12 +3406,7 @@ CVar CompElmPosObj (
     CompCheckIntSmallPos( pos );
 
     /* emit the code to get the element                                    */
-    if (        CompCheckPosObjElements ) {
-        Emit( "C_ELM_POSOBJ( %c, %c, %i )\n", elm, list, pos );
-    }
-    else if ( ! CompCheckPosObjElements ) {
-        Emit( "C_ELM_POSOBJ_NLE( %c, %c, %i );\n", elm, list, pos );
-    }
+    Emit( "%c = ElmPosObj( %c, %i );\n", elm, list, pos );
 
     /* we know that we have a value                                        */
     SetInfoCVar( elm, W_BOUND );
@@ -3454,16 +3442,7 @@ CVar CompIsbPosObj (
     CompCheckIntSmallPos( pos );
 
     /* emit the code to test the element                                   */
-    Emit( "if ( TNUM_OBJ(%c) == T_POSOBJ ) {\n", list );
-    Emit( "%c = (%i <= SIZE_OBJ(%c)/sizeof(Obj)-1\n", isb, pos, list );
-    Emit( "   && ELM_PLIST(%c,%i) != 0 ? True : False);\n", list, pos );
-    Emit( "#ifdef HPCGAP\n" );
-    Emit( "} else if ( TNUM_OBJ(%c) == T_APOSOBJ ) {\n", list );
-    Emit( "%c = Elm0AList(%c,%i) != 0 ? True : False;\n", isb, list, pos );
-    Emit( "#endif\n" );
-    Emit( "}\nelse {\n" );
-    Emit( "%c = (ISB_LIST( %c, %i ) ? True : False);\n", isb, list, pos );
-    Emit( "}\n" );
+    Emit( "%c = IsbPosObj( %c, %i ) ? True : False;\n", isb, list, pos );
 
     /* we know that the result is boolean                                  */
     SetInfoCVar( isb, W_BOOL );
@@ -4897,12 +4876,7 @@ void CompAssPosObj (
     rhs = CompExpr(READ_STAT(stat, 2));
 
     /* emit the code                                                       */
-    if ( HasInfoCVar( rhs, W_INT_SMALL ) ) {
-        Emit( "C_ASS_POSOBJ_INTOBJ( %c, %i, %c )\n", list, pos, rhs );
-    }
-    else {
-        Emit( "C_ASS_POSOBJ( %c, %i, %c )\n", list, pos, rhs );
-    }
+    Emit( "AssPosObj( %c, %i, %c );\n", list, pos, rhs );
 
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( rhs  ) )  FreeTemp( TEMP_CVAR( rhs  ) );
@@ -4934,13 +4908,7 @@ void CompUnbPosObj (
     CompCheckIntSmallPos( pos );
 
     /* emit the code                                                       */
-    Emit( "if ( TNUM_OBJ(%c) == T_POSOBJ ) {\n", list );
-    Emit( "if ( %i <= SIZE_OBJ(%c)/sizeof(Obj)-1 ) {\n", pos, list );
-    Emit( "SET_ELM_PLIST( %c, %i, 0 );\n", list, pos );
-    Emit( "}\n}\n" );
-    Emit( "else {\n" );
-    Emit( "UNB_LIST( %c, %i );\n", list, pos );
-    Emit( "}\n" );
+    Emit( "UnbPosObj( %c, %i );\n", list, pos );
 
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( pos  ) )  FreeTemp( TEMP_CVAR( pos  ) );
@@ -5615,7 +5583,6 @@ Obj FuncCOMPILE_FUNC (
     CompFastListFuncs       = 1;
     CompCheckTypes          = 1;
     CompCheckListElements   = 1;
-    CompCheckPosObjElements = 0;
 
     if ( 6 <= len ) {
         CompFastIntArith        = EQ( ELM_LIST( arg,  6 ), True );
@@ -5631,9 +5598,6 @@ Obj FuncCOMPILE_FUNC (
     }
     if ( 10 <= len ) {
         CompCheckListElements   = EQ( ELM_LIST( arg, 10 ), True );
-    }
-    if ( 11 <= len ) {
-        CompCheckPosObjElements = EQ( ELM_LIST( arg, 11 ), True );
     }
     
     /* compile the function                                                */
@@ -5678,7 +5642,6 @@ static Int InitKernel (
     CompFastPlainLists = 1;
     CompCheckTypes = 1;
     CompCheckListElements = 1;
-    CompCheckPosObjElements = 0;
     CompPass = 0;
     
     /* init filters and functions                                          */

@@ -287,7 +287,7 @@ static Obj  HdlrFunc2 (
  l_type = t_1;
  
  /* flags := type![2]; */
- C_ELM_POSOBJ_NLE( t_1, l_type, 2 );
+ t_1 = ElmPosObj( l_type, 2 );
  a_flags = t_1;
  
  /* RUN_IMMEDIATE_METHODS_RUNS := RUN_IMMEDIATE_METHODS_RUNS + 1; */
@@ -543,7 +543,7 @@ static Obj  HdlrFunc2 (
        
        /* newflags := SUB_FLAGS( type![2], IMM_FLAGS ); */
        t_10 = GF_SUB__FLAGS;
-       C_ELM_POSOBJ_NLE( t_11, l_type, 2 );
+       t_11 = ElmPosObj( l_type, 2 );
        t_12 = GC_IMM__FLAGS;
        CHECK_BOUND( t_12, "IMM_FLAGS" )
        t_9 = CALL_2ARGS( t_10, t_11, t_12 );
@@ -564,7 +564,7 @@ static Obj  HdlrFunc2 (
        CALL_2ARGS( t_9, l_flagspos, t_10 );
        
        /* flags := type![2]; */
-       C_ELM_POSOBJ_NLE( t_9, l_type, 2 );
+       t_9 = ElmPosObj( l_type, 2 );
        a_flags = t_9;
        
       }

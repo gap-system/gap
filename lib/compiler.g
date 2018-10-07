@@ -247,7 +247,6 @@ end );
 ##  "FastPlainLists"
 ##  "CheckTypes"
 ##  "CheckListElements"
-##  "CheckPosObjElements"
 ##
 CompileFunc := function( arg )
     local   output,  func,  name,  arguments;
@@ -262,8 +261,7 @@ CompileFunc := function( arg )
         fastintarith        := "switch/true",
         fastplainlists      := "switch/true",
         checktypes          := "switch/true",
-        checklistelements   := "switch/true",
-        checkposobjelements := "switch/true" );
+        checklistelements   := "switch/true" );
 
     arguments := ParseArguments( arguments, arg, 4 );
 
@@ -271,7 +269,7 @@ CompileFunc := function( arg )
         output, func, name,
         arguments.magic1, arguments.magic2, arguments.fastintarith,
         arguments.fastplainlists, arguments.checktypes,
-        arguments.checklistelements, arguments.checkposobjelements );
+        arguments.checklistelements );
 
 end;
 

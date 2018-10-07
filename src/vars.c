@@ -1577,22 +1577,7 @@ UInt            ExecAssPosObj (
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
     /* special case for plain list                                         */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
-#ifdef HPCGAP
-        WriteGuard(list);
-#endif
-        if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
-            ResizeBag( list, (p+1) * sizeof(Obj) );
-        }
-        SET_ELM_PLIST( list, p, rhs );
-        CHANGED_BAG( list );
-#ifdef HPCGAP
-    } else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
-        AssListFuncs[T_FIXALIST](list, p, rhs);
-#endif
-    } else {
-        ASS_LIST( list, p, rhs );
-    }
+    AssPosObj(list, p, rhs);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -1628,20 +1613,7 @@ UInt            ExecUnbPosObj (
     p = INT_INTOBJ(pos);
 
     /* unbind the element                                                  */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
-#ifdef HPCGAP
-        WriteGuard(list);
-#endif
-        if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
-            SET_ELM_PLIST( list, p, 0 );
-        }
-#ifdef HPCGAP
-    } else if (TNUM_OBJ(list) == T_APOSOBJ ) {
-        UnbListFuncs[T_FIXALIST](list, p);
-#endif
-    } else {
-        UNB_LIST( list, p );
-    }
+    UnbPosObj(list, p);
 
     /* return 0 (to indicate that no leave-statement was executed)         */
     return 0;
@@ -1677,38 +1649,7 @@ Obj             EvalElmPosObj (
     p = INT_INTOBJ( pos );
 
     /* special case for plain lists (use generic code to signal errors)    */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
-#ifdef HPCGAP
-        const Bag *contents = CONST_PTR_BAG(list);
-        while ( SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1 < p ) {
-            ErrorReturnVoid(
-                "PosObj Element: <PosObj>![%d] must have an assigned value",
-                (Int)p, 0L,
-                "you can 'return;' after assigning a value" );
-        }
-        elm = contents[p];
-#else
-        while ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
-            ErrorReturnVoid(
-                "PosObj Element: <PosObj>![%d] must have an assigned value",
-                (Int)p, 0L,
-                "you can 'return;' after assigning a value" );
-        }
-        elm = ELM_PLIST( list, p );
-#endif
-        while ( elm == 0 ) {
-            ErrorReturnVoid(
-                "PosObj Element: <PosObj>![%d] must have an assigned value",
-                (Int)p, 0L,
-                "you can 'return;' after assigning a value" );
-        }
-#ifdef HPCGAP
-    } else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
-        elm = ElmListFuncs[T_FIXALIST](list, p);
-#endif
-    } else {
-        elm = ELM_LIST( list, p );
-    }
+    elm = ElmPosObj(list, p);
 
     /* return the element                                                  */
     return elm;
@@ -1744,26 +1685,7 @@ Obj             EvalIsbPosObj (
     p = INT_INTOBJ( pos );
 
     /* get the result                                                      */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
-#ifdef HPCGAP
-        const Bag *contents = CONST_PTR_BAG(list);
-        if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
-          isb = False;
-        else
-          isb = contents[p] != 0 ? True : False;
-#else
-        isb = (p <= SIZE_OBJ(list)/sizeof(Obj)-1 && ELM_PLIST(list,p) != 0 ?
-               True : False);
-#endif
-    }
-#ifdef HPCGAP
-    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
-        isb = IsbListFuncs[T_FIXALIST](list, p) ? True : False;
-    }
-#endif
-    else {
-        isb = (ISB_LIST( list, p ) ? True : False);
-    }
+    isb = IsbPosObj(list, p) ? True : False;
 
     /* return the result                                                   */
     return isb;
