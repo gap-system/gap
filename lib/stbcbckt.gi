@@ -2371,7 +2371,8 @@ local  Omega,      # a common operation domain for <G>, <E> and <F>
   if ValueOption("norandom")=true then
     i:=[1..Length(cycles.firsts)];
   else
-    i:=FLOYDS_ALGORITHM(GlobalMersenneTwister,Length(cycles.firsts),false);
+    i:=FLOYDS_ALGORITHM(RandomSource(IsMersenneTwister),
+         Length(cycles.firsts),false);
   fi;
   order := cycles.points{ cycles.firsts{i} };
   SortParallel( -(cycles.lengths{i}), order );
