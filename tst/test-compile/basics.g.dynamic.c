@@ -1167,42 +1167,15 @@ static Obj  HdlrFunc10 (
  
  /* Display( IsBound( x![2] ) ); */
  t_1 = GF_Display;
- if ( TNUM_OBJ(l_x) == T_POSOBJ ) {
-  t_2 = (2 <= SIZE_OBJ(l_x)/sizeof(Obj)-1
-     && ELM_PLIST(l_x,2) != 0 ? True : False);
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_x) == T_APOSOBJ ) {
-  t_2 = Elm0AList(l_x,2) != 0 ? True : False;
-#endif
- }
- else {
-  t_2 = (ISB_LIST( l_x, 2 ) ? True : False);
- }
+ t_2 = IsbPosObj( l_x, 2 ) ? True : False;
  CALL_1ARGS( t_1, t_2 );
  
  /* Unbind( x![2] ); */
- if ( TNUM_OBJ(l_x) == T_POSOBJ ) {
-  if ( 2 <= SIZE_OBJ(l_x)/sizeof(Obj)-1 ) {
-   SET_ELM_PLIST( l_x, 2, 0 );
-  }
- }
- else {
-  UNB_LIST( l_x, 2 );
- }
+ UnbPosObj( l_x, 2 );
  
  /* Display( IsBound( x![2] ) ); */
  t_1 = GF_Display;
- if ( TNUM_OBJ(l_x) == T_POSOBJ ) {
-  t_2 = (2 <= SIZE_OBJ(l_x)/sizeof(Obj)-1
-     && ELM_PLIST(l_x,2) != 0 ? True : False);
-#ifdef HPCGAP
- } else if ( TNUM_OBJ(l_x) == T_APOSOBJ ) {
-  t_2 = Elm0AList(l_x,2) != 0 ? True : False;
-#endif
- }
- else {
-  t_2 = (ISB_LIST( l_x, 2 ) ? True : False);
- }
+ t_2 = IsbPosObj( l_x, 2 ) ? True : False;
  CALL_1ARGS( t_1, t_2 );
  
  /* Print( "Testing IsBound and Unbind for record\n" ); */

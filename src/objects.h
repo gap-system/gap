@@ -864,6 +864,19 @@ static inline void SET_TYPE_POSOBJ(Obj obj, Obj val)
 
 /****************************************************************************
 **
+*F  AssPosbj( <obj>, <rnam>, <val> )
+*F  UnbPosbj( <obj>, <rnam> )
+*F  ElmPosbj( <obj>, <rnam> )
+*F  IsbPosbj( <obj>, <rnam> )
+*/
+extern void AssPosObj(Obj obj, Int idx, Obj val);
+extern void UnbPosObj(Obj obj, Int idx);
+extern Obj  ElmPosObj(Obj obj, Int idx);
+extern Int  IsbPosObj(Obj obj, Int idx);
+
+
+/****************************************************************************
+**
 *F  IS_DATOBJ( <obj> )  . . . . . . . . . . . . .  is an object a data object
 */
 static inline Int IS_DATOBJ(Obj obj)

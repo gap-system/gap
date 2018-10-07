@@ -18,6 +18,7 @@
 #include "gapstate.h"
 #include "gvars.h"
 #include "io.h"
+#include "lists.h"
 #include "modules.h"
 #include "opers.h"
 #include "plist.h"
@@ -1452,6 +1453,132 @@ Obj FuncLEN_POSOBJ (
     }
 #endif
     return INTOBJ_INT( SIZE_OBJ(obj) / sizeof(Obj) - 1 );
+}
+
+
+/****************************************************************************
+**
+*F  AssPosbj( <obj>, <rnam>, <val> )
+*F  UnbPosbj( <obj>, <rnam> )
+*F  ElmPosbj( <obj>, <rnam> )
+*F  IsbPosbj( <obj>, <rnam> )
+*/
+void AssPosObj(Obj obj, Int idx, Obj val)
+{
+    if (TNUM_OBJ(obj) == T_POSOBJ) {
+#ifdef HPCGAP
+        // Because BindOnce() functions can reallocate the list even if they
+        // only have read-only access, we have to be careful when accessing
+        // positional objects. Hence the explicit WriteGuard().
+        WriteGuard(obj);
+#endif
+        if (SIZE_OBJ(obj) / sizeof(Obj) - 1 < idx) {
+            ResizeBag(obj, (idx + 1) * sizeof(Obj));
+        }
+        SET_ELM_PLIST(obj, idx, val);
+        CHANGED_BAG(obj);
+    }
+#ifdef HPCGAP
+    else if (TNUM_OBJ(obj) == T_APOSOBJ) {
+        AssListFuncs[T_FIXALIST](obj, idx, val);
+    }
+#endif
+    else {
+        ASS_LIST(obj, idx, val);
+    }
+}
+
+void UnbPosObj(Obj obj, Int idx)
+{
+    if (TNUM_OBJ(obj) == T_POSOBJ) {
+#ifdef HPCGAP
+        // Because BindOnce() functions can reallocate the list even if they
+        // only have read-only access, we have to be careful when accessing
+        // positional objects. Hence the explicit WriteGuard().
+        WriteGuard(obj);
+#endif
+        if (idx <= SIZE_OBJ(obj) / sizeof(Obj) - 1) {
+            SET_ELM_PLIST(obj, idx, 0);
+        }
+    }
+#ifdef HPCGAP
+    else if (TNUM_OBJ(obj) == T_APOSOBJ) {
+        UnbListFuncs[T_FIXALIST](obj, idx);
+    }
+#endif
+    else {
+        UNB_LIST(obj, idx);
+    }
+}
+
+Obj ElmPosObj(Obj obj, Int idx)
+{
+    Obj elm;
+    if (TNUM_OBJ(obj) == T_POSOBJ) {
+#ifdef HPCGAP
+        // Because BindOnce() functions can reallocate the list even if they
+        // only have read-only access, we have to be careful when accessing
+        // positional objects.
+        const Bag * contents = CONST_PTR_BAG(obj);
+        MEMBAR_READ(); /* essential memory barrier */
+        while (SIZE_BAG_CONTENTS(contents) / sizeof(Obj) - 1 < idx) {
+            ErrorReturnVoid(
+                "PosObj Element: <PosObj>![%d] must have an assigned value",
+                (Int)idx, 0L, "you can 'return;' after assigning a value");
+        }
+        elm = contents[idx];
+#else
+        while (SIZE_OBJ(obj) / sizeof(Obj) - 1 < idx) {
+            ErrorReturnVoid(
+                "PosObj Element: <PosObj>![%d] must have an assigned value",
+                (Int)idx, 0L, "you can 'return;' after assigning a value");
+        }
+        elm = ELM_PLIST(obj, idx);
+#endif
+        while (elm == 0) {
+            ErrorReturnVoid(
+                "PosObj Element: <PosObj>![%d] must have an assigned value",
+                (Int)idx, 0L, "you can 'return;' after assigning a value");
+        }
+    }
+#ifdef HPCGAP
+    else if (TNUM_OBJ(obj) == T_APOSOBJ) {
+        elm = ElmListFuncs[T_FIXALIST](obj, idx);
+    }
+#endif
+    else {
+        elm = ELM_LIST(obj, idx);
+    }
+    return elm;
+}
+
+Int IsbPosObj(Obj obj, Int idx)
+{
+    Int isb;
+    if (TNUM_OBJ(obj) == T_POSOBJ) {
+#ifdef HPCGAP
+        // Because BindOnce() functions can reallocate the list even if they
+        // only have read-only access, we have to be careful when accessing
+        // positional objects.
+        const Bag * contents = CONST_PTR_BAG(obj);
+        if (idx > SIZE_BAG_CONTENTS(contents) / sizeof(Obj) - 1)
+            isb = 0;
+        else
+            isb = contents[idx] != 0;
+#else
+        isb = (idx <= SIZE_OBJ(obj) / sizeof(Obj) - 1 &&
+               ELM_PLIST(obj, idx) != 0);
+#endif
+    }
+#ifdef HPCGAP
+    else if (TNUM_OBJ(obj) == T_APOSOBJ) {
+        isb = IsbListFuncs[T_FIXALIST](obj, idx);
+    }
+#endif
+    else {
+        isb = ISB_LIST(obj, idx);
+    }
+    return isb;
 }
 
 

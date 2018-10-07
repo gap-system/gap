@@ -3528,28 +3528,7 @@ void            IntrAssPosObj ( void )
     list = PopObj();
 
     /* assign to the element of the list                                   */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
-#ifdef HPCGAP
-        /* Because BindOnce() functions can reallocate the list even if they
-         * only have read-only access, we have to be careful when accessing
-         * positional objects. Hence the explicit WriteGuard().
-         */
-        WriteGuard(list);
-#endif
-        if ( SIZE_OBJ(list)/sizeof(Obj) - 1 < p ) {
-            ResizeBag( list, (p+1) * sizeof(Obj) );
-        }
-        SET_ELM_PLIST( list, p, rhs );
-        CHANGED_BAG( list );
-    }
-#ifdef HPCGAP
-    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
-        AssListFuncs[T_FIXALIST]( list, p, rhs );
-    }
-#endif
-    else {
-        ASS_LIST( list, p, rhs );
-    }
+    AssPosObj( list, p, rhs );
 
     /* push the right hand side again                                      */
     PushObj( rhs );
@@ -3580,26 +3559,7 @@ void            IntrUnbPosObj ( void )
     list = PopObj();
 
     /* unbind the element                                                  */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
-#ifdef HPCGAP
-        /* Because BindOnce() functions can reallocate the list even if they
-         * only have read-only access, we have to be careful when accessing
-         * positional objects. Hence the explicit WriteGuard().
-         */
-        WriteGuard(list);
-#endif
-        if ( p <= SIZE_OBJ(list)/sizeof(Obj)-1 ) {
-            SET_ELM_PLIST( list, p, 0 );
-        }
-    }
-#ifdef HPCGAP
-    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
-        UnbListFuncs[T_FIXALIST]( list, p );
-    }
-#endif
-    else {
-        UNB_LIST( list, p );
-    }
+    UnbPosObj( list, p );
 
     /* push void                                                           */
     PushVoidObj();
@@ -3636,42 +3596,7 @@ void            IntrElmPosObj ( void )
     list = PopObj();
 
     /* get the element of the list                                         */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
-#ifdef HPCGAP
-        /* Because BindOnce() functions can reallocate the list even if they
-         * only have read-only access, we have to be careful when accessing
-         * positional objects.
-         */
-        const Bag *contents = CONST_PTR_BAG(list);
-        MEMBAR_READ(); /* essential memory barrier */
-        if ( SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1 < p ) {
-            ErrorQuit(
-                "PosObj Element: <posobj>![%d] must have an assigned value",
-                (Int)p, 0L );
-        }
-        elm = contents[p];
-#else
-        if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
-            ErrorQuit(
-                "PosObj Element: <posobj>![%d] must have an assigned value",
-                (Int)p, 0L );
-        }
-        elm = ELM_PLIST( list, p );
-#endif
-        if ( elm == 0 ) {
-            ErrorQuit(
-                "PosObj Element: <posobj>![%d] must have an assigned value",
-                (Int)p, 0L );
-        }
-    }
-#ifdef HPCGAP
-    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
-        elm = ElmListFuncs[T_FIXALIST]( list, p );
-    }
-#endif
-    else {
-        elm = ELM_LIST( list, p );
-    }
+    elm = ElmPosObj( list, p );
 
     /* push the element                                                    */
     PushObj( elm );
@@ -3703,30 +3628,7 @@ void            IntrIsbPosObj ( void )
     list = PopObj();
 
     /* get the result                                                      */
-    if ( TNUM_OBJ(list) == T_POSOBJ ) {
-#ifdef HPCGAP
-        /* Because BindOnce() functions can reallocate the list even if they
-         * only have read-only access, we have to be careful when accessing
-         * positional objects.
-         */
-        const Bag *contents = CONST_PTR_BAG(list);
-        if (p > SIZE_BAG_CONTENTS(contents)/sizeof(Obj)-1)
-          isb = False;
-        else
-          isb = contents[p] != 0 ? True : False;
-#else
-        isb = (p <= SIZE_OBJ(list)/sizeof(Obj)-1 && ELM_PLIST(list,p) != 0 ?
-               True : False);
-#endif
-    }
-#ifdef HPCGAP
-    else if ( TNUM_OBJ(list) == T_APOSOBJ ) {
-        isb = (IsbListFuncs[T_FIXALIST]( list, p ) ? True : False);
-    }
-#endif
-    else {
-        isb = (ISB_LIST( list, p ) ? True : False);
-    }
+    isb = IsbPosObj( list, p ) ? True : False;
 
     /* push the result                                                     */
     PushObj( isb );

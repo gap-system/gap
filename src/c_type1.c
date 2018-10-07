@@ -918,7 +918,7 @@ static Obj  HdlrFunc11 (
   
   /* if IS_EQUAL_FLAGS( flags, cached![2] ) then */
   t_3 = GF_IS__EQUAL__FLAGS;
-  C_ELM_POSOBJ_NLE( t_4, l_cached, 2 );
+  t_4 = ElmPosObj( l_cached, 2 );
   t_2 = CALL_2ARGS( t_3, a_flags, t_4 );
   CHECK_FUNC_RESULT( t_2 )
   CHECK_BOOL( t_2 )
@@ -926,12 +926,12 @@ static Obj  HdlrFunc11 (
   if ( t_1 ) {
    
    /* flags := cached![2]; */
-   C_ELM_POSOBJ_NLE( t_1, l_cached, 2 );
+   t_1 = ElmPosObj( l_cached, 2 );
    a_flags = t_1;
    
    /* if IS_IDENTICAL_OBJ( data, cached![3] ) and IS_IDENTICAL_OBJ( typeOfTypes, TYPE_OBJ( cached ) ) then */
    t_4 = GF_IS__IDENTICAL__OBJ;
-   C_ELM_POSOBJ_NLE( t_5, l_cached, 3 );
+   t_5 = ElmPosObj( l_cached, 3 );
    t_3 = CALL_2ARGS( t_4, a_data, t_5 );
    CHECK_FUNC_RESULT( t_3 )
    CHECK_BOOL( t_3 )
@@ -975,17 +975,7 @@ static Obj  HdlrFunc11 (
       l_i = t_1;
       
       /* if IsBound( cached![i] ) then */
-      if ( TNUM_OBJ(l_cached) == T_POSOBJ ) {
-       t_4 = (INT_INTOBJ(l_i) <= SIZE_OBJ(l_cached)/sizeof(Obj)-1
-          && ELM_PLIST(l_cached,INT_INTOBJ(l_i)) != 0 ? True : False);
-#ifdef HPCGAP
-      } else if ( TNUM_OBJ(l_cached) == T_APOSOBJ ) {
-       t_4 = Elm0AList(l_cached,INT_INTOBJ(l_i)) != 0 ? True : False;
-#endif
-      }
-      else {
-       t_4 = (ISB_LIST( l_cached, INT_INTOBJ(l_i) ) ? True : False);
-      }
+      t_4 = IsbPosObj( l_cached, INT_INTOBJ(l_i) ) ? True : False;
       t_3 = (Obj)(UInt)(t_4 != False);
       if ( t_3 ) {
        
@@ -1048,28 +1038,8 @@ static Obj  HdlrFunc11 (
       l_i = t_1;
       
       /* if IsBound( parent![i] ) <> IsBound( cached![i] ) then */
-      if ( TNUM_OBJ(a_parent) == T_POSOBJ ) {
-       t_4 = (INT_INTOBJ(l_i) <= SIZE_OBJ(a_parent)/sizeof(Obj)-1
-          && ELM_PLIST(a_parent,INT_INTOBJ(l_i)) != 0 ? True : False);
-#ifdef HPCGAP
-      } else if ( TNUM_OBJ(a_parent) == T_APOSOBJ ) {
-       t_4 = Elm0AList(a_parent,INT_INTOBJ(l_i)) != 0 ? True : False;
-#endif
-      }
-      else {
-       t_4 = (ISB_LIST( a_parent, INT_INTOBJ(l_i) ) ? True : False);
-      }
-      if ( TNUM_OBJ(l_cached) == T_POSOBJ ) {
-       t_5 = (INT_INTOBJ(l_i) <= SIZE_OBJ(l_cached)/sizeof(Obj)-1
-          && ELM_PLIST(l_cached,INT_INTOBJ(l_i)) != 0 ? True : False);
-#ifdef HPCGAP
-      } else if ( TNUM_OBJ(l_cached) == T_APOSOBJ ) {
-       t_5 = Elm0AList(l_cached,INT_INTOBJ(l_i)) != 0 ? True : False;
-#endif
-      }
-      else {
-       t_5 = (ISB_LIST( l_cached, INT_INTOBJ(l_i) ) ? True : False);
-      }
+      t_4 = IsbPosObj( a_parent, INT_INTOBJ(l_i) ) ? True : False;
+      t_5 = IsbPosObj( l_cached, INT_INTOBJ(l_i) ) ? True : False;
       t_3 = (Obj)(UInt)( ! EQ( t_4, t_5 ));
       if ( t_3 ) {
        
@@ -1084,39 +1054,19 @@ static Obj  HdlrFunc11 (
       /* fi */
       
       /* if IsBound( parent![i] ) and IsBound( cached![i] ) and not IS_IDENTICAL_OBJ( parent![i], cached![i] ) then */
-      if ( TNUM_OBJ(a_parent) == T_POSOBJ ) {
-       t_6 = (INT_INTOBJ(l_i) <= SIZE_OBJ(a_parent)/sizeof(Obj)-1
-          && ELM_PLIST(a_parent,INT_INTOBJ(l_i)) != 0 ? True : False);
-#ifdef HPCGAP
-      } else if ( TNUM_OBJ(a_parent) == T_APOSOBJ ) {
-       t_6 = Elm0AList(a_parent,INT_INTOBJ(l_i)) != 0 ? True : False;
-#endif
-      }
-      else {
-       t_6 = (ISB_LIST( a_parent, INT_INTOBJ(l_i) ) ? True : False);
-      }
+      t_6 = IsbPosObj( a_parent, INT_INTOBJ(l_i) ) ? True : False;
       t_5 = (Obj)(UInt)(t_6 != False);
       t_4 = t_5;
       if ( t_4 ) {
-       if ( TNUM_OBJ(l_cached) == T_POSOBJ ) {
-        t_7 = (INT_INTOBJ(l_i) <= SIZE_OBJ(l_cached)/sizeof(Obj)-1
-           && ELM_PLIST(l_cached,INT_INTOBJ(l_i)) != 0 ? True : False);
-#ifdef HPCGAP
-       } else if ( TNUM_OBJ(l_cached) == T_APOSOBJ ) {
-        t_7 = Elm0AList(l_cached,INT_INTOBJ(l_i)) != 0 ? True : False;
-#endif
-       }
-       else {
-        t_7 = (ISB_LIST( l_cached, INT_INTOBJ(l_i) ) ? True : False);
-       }
+       t_7 = IsbPosObj( l_cached, INT_INTOBJ(l_i) ) ? True : False;
        t_6 = (Obj)(UInt)(t_7 != False);
        t_4 = t_6;
       }
       t_3 = t_4;
       if ( t_3 ) {
        t_8 = GF_IS__IDENTICAL__OBJ;
-       C_ELM_POSOBJ_NLE( t_9, a_parent, INT_INTOBJ(l_i) );
-       C_ELM_POSOBJ_NLE( t_10, l_cached, INT_INTOBJ(l_i) );
+       t_9 = ElmPosObj( a_parent, INT_INTOBJ(l_i) );
+       t_10 = ElmPosObj( l_cached, INT_INTOBJ(l_i) );
        t_7 = CALL_2ARGS( t_8, t_9, t_10 );
        CHECK_FUNC_RESULT( t_7 )
        CHECK_BOOL( t_7 )
@@ -1246,17 +1196,7 @@ static Obj  HdlrFunc11 (
    l_i = t_1;
    
    /* if IsBound( parent![i] ) and not IsBound( type[i] ) then */
-   if ( TNUM_OBJ(a_parent) == T_POSOBJ ) {
-    t_5 = (INT_INTOBJ(l_i) <= SIZE_OBJ(a_parent)/sizeof(Obj)-1
-       && ELM_PLIST(a_parent,INT_INTOBJ(l_i)) != 0 ? True : False);
-#ifdef HPCGAP
-   } else if ( TNUM_OBJ(a_parent) == T_APOSOBJ ) {
-    t_5 = Elm0AList(a_parent,INT_INTOBJ(l_i)) != 0 ? True : False;
-#endif
-   }
-   else {
-    t_5 = (ISB_LIST( a_parent, INT_INTOBJ(l_i) ) ? True : False);
-   }
+   t_5 = IsbPosObj( a_parent, INT_INTOBJ(l_i) ) ? True : False;
    t_4 = (Obj)(UInt)(t_5 != False);
    t_3 = t_4;
    if ( t_3 ) {
@@ -1268,7 +1208,7 @@ static Obj  HdlrFunc11 (
    if ( t_3 ) {
     
     /* type[i] := parent![i]; */
-    C_ELM_POSOBJ_NLE( t_3, a_parent, INT_INTOBJ(l_i) );
+    t_3 = ElmPosObj( a_parent, INT_INTOBJ(l_i) );
     C_ASS_LIST_FPL( l_type, l_i, t_3 )
     
    }
@@ -1327,7 +1267,7 @@ static Obj  HdlrFunc11 (
    
    /* ncache[HASH_FLAGS( t![2] ) mod ncl + 1] := t; */
    t_8 = GF_HASH__FLAGS;
-   C_ELM_POSOBJ_NLE( t_9, l_t, 2 );
+   t_9 = ElmPosObj( l_t, 2 );
    t_7 = CALL_1ARGS( t_8, t_9 );
    CHECK_FUNC_RESULT( t_7 )
    t_6 = MOD( t_7, l_ncl );
@@ -1615,10 +1555,10 @@ static Obj  HdlrFunc15 (
  t_2 = GF_NEW__TYPE;
  t_3 = GC_TypeOfTypes;
  CHECK_BOUND( t_3, "TypeOfTypes" )
- C_ELM_POSOBJ_NLE( t_4, a_type, 1 );
+ t_4 = ElmPosObj( a_type, 1 );
  t_6 = GF_WITH__IMPS__FLAGS;
  t_8 = GF_AND__FLAGS;
- C_ELM_POSOBJ_NLE( t_9, a_type, 2 );
+ t_9 = ElmPosObj( a_type, 2 );
  t_11 = GF_FLAGS__FILTER;
  t_10 = CALL_1ARGS( t_11, a_filter );
  CHECK_FUNC_RESULT( t_10 )
@@ -1626,7 +1566,7 @@ static Obj  HdlrFunc15 (
  CHECK_FUNC_RESULT( t_7 )
  t_5 = CALL_1ARGS( t_6, t_7 );
  CHECK_FUNC_RESULT( t_5 )
- C_ELM_POSOBJ_NLE( t_6, a_type, 3 );
+ t_6 = ElmPosObj( a_type, 3 );
  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, a_type );
  CHECK_FUNC_RESULT( t_1 )
  RES_BRK_CURR_STAT();
@@ -1669,10 +1609,10 @@ static Obj  HdlrFunc16 (
  t_2 = GF_NEW__TYPE;
  t_3 = GC_TypeOfTypes;
  CHECK_BOUND( t_3, "TypeOfTypes" )
- C_ELM_POSOBJ_NLE( t_4, a_type, 1 );
+ t_4 = ElmPosObj( a_type, 1 );
  t_6 = GF_WITH__IMPS__FLAGS;
  t_8 = GF_AND__FLAGS;
- C_ELM_POSOBJ_NLE( t_9, a_type, 2 );
+ t_9 = ElmPosObj( a_type, 2 );
  t_11 = GF_FLAGS__FILTER;
  t_10 = CALL_1ARGS( t_11, a_filter );
  CHECK_FUNC_RESULT( t_10 )
@@ -1802,15 +1742,15 @@ static Obj  HdlrFunc18 (
  t_2 = GF_NEW__TYPE;
  t_3 = GC_TypeOfTypes;
  CHECK_BOUND( t_3, "TypeOfTypes" )
- C_ELM_POSOBJ_NLE( t_4, a_type, 1 );
+ t_4 = ElmPosObj( a_type, 1 );
  t_6 = GF_SUB__FLAGS;
- C_ELM_POSOBJ_NLE( t_7, a_type, 2 );
+ t_7 = ElmPosObj( a_type, 2 );
  t_9 = GF_FLAGS__FILTER;
  t_8 = CALL_1ARGS( t_9, a_filter );
  CHECK_FUNC_RESULT( t_8 )
  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
  CHECK_FUNC_RESULT( t_5 )
- C_ELM_POSOBJ_NLE( t_6, a_type, 3 );
+ t_6 = ElmPosObj( a_type, 3 );
  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, a_type );
  CHECK_FUNC_RESULT( t_1 )
  RES_BRK_CURR_STAT();
@@ -1851,9 +1791,9 @@ static Obj  HdlrFunc19 (
  t_2 = GF_NEW__TYPE;
  t_3 = GC_TypeOfTypes;
  CHECK_BOUND( t_3, "TypeOfTypes" )
- C_ELM_POSOBJ_NLE( t_4, a_type, 1 );
+ t_4 = ElmPosObj( a_type, 1 );
  t_6 = GF_SUB__FLAGS;
- C_ELM_POSOBJ_NLE( t_7, a_type, 2 );
+ t_7 = ElmPosObj( a_type, 2 );
  t_9 = GF_FLAGS__FILTER;
  t_8 = CALL_1ARGS( t_9, a_filter );
  CHECK_FUNC_RESULT( t_8 )
@@ -1969,7 +1909,7 @@ static Obj  HdlrFunc21 (
  SET_BRK_CURR_STAT(0);
  
  /* return K![1]; */
- C_ELM_POSOBJ_NLE( t_1, a_K, 1 );
+ t_1 = ElmPosObj( a_K, 1 );
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -1995,7 +1935,7 @@ static Obj  HdlrFunc22 (
  SET_BRK_CURR_STAT(0);
  
  /* return K![2]; */
- C_ELM_POSOBJ_NLE( t_1, a_K, 2 );
+ t_1 = ElmPosObj( a_K, 2 );
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -2021,7 +1961,7 @@ static Obj  HdlrFunc23 (
  SET_BRK_CURR_STAT(0);
  
  /* return K![3]; */
- C_ELM_POSOBJ_NLE( t_1, a_K, 3 );
+ t_1 = ElmPosObj( a_K, 3 );
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -2047,7 +1987,7 @@ static Obj  HdlrFunc24 (
  SET_BRK_CURR_STAT(0);
  
  /* K![3] := data; */
- C_ASS_POSOBJ( a_K, 3, a_data )
+ AssPosObj( a_K, 3, a_data );
  
  /* return; */
  RES_BRK_CURR_STAT();
@@ -2207,7 +2147,7 @@ static Obj  HdlrFunc27 (
   
   /* RunImmediateMethods( obj, type![2] ); */
   t_1 = GF_RunImmediateMethods;
-  C_ELM_POSOBJ_NLE( t_2, a_type, 2 );
+  t_2 = ElmPosObj( a_type, 2 );
   CALL_2ARGS( t_1, a_obj, t_2 );
   
  }
@@ -2292,8 +2232,8 @@ static Obj  HdlrFunc28 (
    /* RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) ); */
    t_1 = GF_RunImmediateMethods;
    t_3 = GF_SUB__FLAGS;
-   C_ELM_POSOBJ_NLE( t_4, l_newtype, 2 );
-   C_ELM_POSOBJ_NLE( t_5, l_type, 2 );
+   t_4 = ElmPosObj( l_newtype, 2 );
+   t_5 = ElmPosObj( l_type, 2 );
    t_2 = CALL_2ARGS( t_3, t_4, t_5 );
    CHECK_FUNC_RESULT( t_2 )
    CALL_2ARGS( t_1, a_obj, t_2 );
@@ -2348,8 +2288,8 @@ static Obj  HdlrFunc28 (
     /* RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) ); */
     t_1 = GF_RunImmediateMethods;
     t_3 = GF_SUB__FLAGS;
-    C_ELM_POSOBJ_NLE( t_4, l_newtype, 2 );
-    C_ELM_POSOBJ_NLE( t_5, l_type, 2 );
+    t_4 = ElmPosObj( l_newtype, 2 );
+    t_5 = ElmPosObj( l_type, 2 );
     t_2 = CALL_2ARGS( t_3, t_4, t_5 );
     CHECK_FUNC_RESULT( t_2 )
     CALL_2ARGS( t_1, a_obj, t_2 );
@@ -2404,8 +2344,8 @@ static Obj  HdlrFunc28 (
      /* RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) ); */
      t_1 = GF_RunImmediateMethods;
      t_3 = GF_SUB__FLAGS;
-     C_ELM_POSOBJ_NLE( t_4, l_newtype, 2 );
-     C_ELM_POSOBJ_NLE( t_5, l_type, 2 );
+     t_4 = ElmPosObj( l_newtype, 2 );
+     t_5 = ElmPosObj( l_type, 2 );
      t_2 = CALL_2ARGS( t_3, t_4, t_5 );
      CHECK_FUNC_RESULT( t_2 )
      CALL_2ARGS( t_1, a_obj, t_2 );

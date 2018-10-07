@@ -120,45 +120,6 @@ typedef UInt    RNam;
 #define SWITCH_TO_OLD_FRAME     SWITCH_TO_OLD_LVARS
 
 
-/* objects, should into 'objects.c'  * * * * * * * * * * * * * * * * * * * */
-
-/* there should be a function for C_ELM_POSOBJ */
-#define C_ELM_POSOBJ( elm, list, pos ) NOT_READY_YET
-
-
-#define C_ELM_POSOBJ_NLE( elm, list, pos ) \
-    if ( TNUM_OBJ(list) == T_POSOBJ ) { \
-        elm = ELM_PLIST( list, pos ); \
-    } \
-    else { \
-        elm = ELMW_LIST( list, pos ); \
-    }
-
-#define C_ASS_POSOBJ_INTOBJ( list, pos, elm ) \
-    if ( TNUM_OBJ(list) == T_POSOBJ ) { \
-        if ( SIZE_OBJ(list)/sizeof(Obj)-1 < pos ) { \
-            ResizeBag( list, (pos+1)*sizeof(Obj) ); \
-        } \
-        SET_ELM_PLIST( list, pos, elm ); \
-    } \
-    else { \
-        ASS_LIST( list, pos, elm ); \
-    }
-
-#define C_ASS_POSOBJ( list, pos, elm ) \
-    if ( TNUM_OBJ(list) == T_POSOBJ ) { \
-        if ( SIZE_OBJ(list)/sizeof(Obj)-1 < pos ) { \
-            ResizeBag( list, (pos+1)*sizeof(Obj) ); \
-        } \
-        SET_ELM_PLIST( list, pos, elm ); \
-        CHANGED_BAG(list); \
-    } \
-    else { \
-        ASS_LIST( list, pos, elm ); \
-    }
-
-
-
 /* lists, should go into 'lists.c' * * * * * * * * * * * * * * * * * * * * */
 #define C_LEN_LIST(len,list) \
  len = LENGTH(list);
