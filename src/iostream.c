@@ -29,6 +29,7 @@
 #include "lists.h"
 #include "modules.h"
 #include "stringobj.h"
+#include "sysfiles.h"
 
 #include "hpc/thread.h"
 
@@ -330,7 +331,7 @@ static Int StartChildProcess(Char * dir, Char * prg, Char * args[])
     PtyIOStreams[stream].blocked = 0;
     PtyIOStreams[stream].changed = 0;
     /* fork */
-    PtyIOStreams[stream].childPID = fork();
+    PtyIOStreams[stream].childPID = SyFork();
     if (PtyIOStreams[stream].childPID == 0) {
         /* Set up the child */
         close(PtyIOStreams[stream].ptyFD);

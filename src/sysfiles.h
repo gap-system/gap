@@ -401,6 +401,28 @@ extern void SySetErrorNo ( void );
 *F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
 */
 
+typedef enum ForkState { PreFork, PostForkChild, PostForkParent } ForkState;
+typedef void (*ForkObserver)(ForkState);
+
+/*
+ *F RegisterSyForkObserver( <func> )
+ ** Register a function to be called before and after fork is called.
+ ** returns 1 on success, 0 if the table of functions is already full.
+ ** This function is idempotent -- if a function is passed multiple times
+ ** it is still only registered once.
+ */
+Int RegisterSyForkObserver(ForkObserver);
+
+/*
+ *F SyFork()
+ ** SyFork wraps the 'fork' system call.
+ ** SyFork will first call all functions passed to SyAddForkWatcher with
+ ** the argument 'PreFork', then call 'fork', then call all watchers again
+ ** with 'PostForkChild' in the child process, and 'PostForkParent' in the
+ ** parent process.
+ */
+Int SyFork(void);
+
 /****************************************************************************
 **
 *F  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> ) . . . . new process
