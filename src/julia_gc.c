@@ -529,8 +529,11 @@ void GapRootScanner(int full)
 
 void GapTaskScanner(jl_task_t * task, int root_task)
 {
-    if (task->stkbuf) {
-        TryMarkRange(task->stkbuf, (char *)task->stkbuf + task->bufsz);
+    size_t size;
+    int    tid;
+    void * stack = jl_task_stack_buffer(task, &size, &tid);
+    if (stack && tid < 0) {
+        TryMarkRange(stack, (char *)stack + size);
     }
 }
 
