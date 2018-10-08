@@ -22,11 +22,14 @@
 #include "modules.h"
 #include "plist.h"
 #include "stringobj.h"
+#include "sysfiles.h"
 #include "vars.h"
 
 #include "hpc/thread.h"
 
 #include <sys/time.h>                   // for gettimeofday
+#include <sys/types.h>
+#include <unistd.h>
 #ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>               // definition of 'struct rusage'
 #endif
@@ -114,6 +117,8 @@ struct ProfileState
 {
   // C steam we are writing to
   FILE* Stream;
+  // Filename we are writing to
+  char filename[GAP_PATH_MAX];
   // Did we use 'popen' to open the stream (matters when closing)
   int StreamWasPopened;
   // Are we currently outputting repeats (false=code coverage)
@@ -335,6 +340,26 @@ static void fcloseMaybeCompressed(struct ProfileState* ps)
 #endif
   fclose(ps->Stream);
   ps->Stream = 0;
+}
+
+// When a child is forked off, we force profile information to be stored
+// in a new file for the child, to avoid corruption
+static void ProfileRegisterSyForkOccured(ForkState state)
+{
+    HashLock(&profileState);
+    if (state == PostForkChild && profileState_Active) {
+        char filenamecpy[GAP_PATH_MAX + 20];
+        if (endsWithgz(profileState.filename)) {
+            snprintf(filenamecpy, sizeof(filenamecpy), "%s.%d.gz",
+                     profileState.filename, getpid());
+        }
+        else {
+            snprintf(filenamecpy, sizeof(filenamecpy), "%s.%d",
+                     profileState.filename, getpid());
+        }
+        fcloseMaybeCompressed(&profileState);
+        fopenMaybeCompressed(filenamecpy, &profileState);
+    }
 }
 
 static inline Int8 CPUmicroseconds(void)
@@ -576,10 +601,14 @@ void enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
         exit(1);
     }
 
+    strlcpy(profileState.filename, filename, GAP_PATH_MAX);
+
     ActivateHooks(&profileHooks);
 
     profileState_Active = 1;
     RegisterSyLongjmpObserver(ProfileRegisterLongJmpOccurred);
+    RegisterSyForkObserver(ProfileRegisterSyForkOccured);
+
     profileState.profiledPreviously = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
@@ -706,6 +735,8 @@ Obj FuncACTIVATE_PROFILING(Obj self,
 
     fopenMaybeCompressed(CONST_CSTR_STRING(filename), &profileState);
 
+    strlcpy(profileState.filename, CONST_CSTR_STRING(filename), GAP_PATH_MAX);
+
     if(profileState.Stream == 0) {
       HashUnlock(&profileState);
       return Fail;
@@ -713,6 +744,7 @@ Obj FuncACTIVATE_PROFILING(Obj self,
 
     profileState_Active = 1;
     RegisterSyLongjmpObserver(ProfileRegisterLongJmpOccurred);
+    RegisterSyForkObserver(ProfileRegisterSyForkOccured);
     profileState.profiledPreviously = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);

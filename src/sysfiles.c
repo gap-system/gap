@@ -2956,7 +2956,51 @@ void SySetErrorNo ( void )
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
+**
 */
+
+enum { signalSyForkFuncsLen = 16 };
+
+static ForkObserver signalSyforkFuncs[signalSyForkFuncsLen];
+
+Int RegisterSyForkObserver(ForkObserver func)
+{
+    Int i;
+    for (i = 0; i < signalSyForkFuncsLen; ++i) {
+        if (signalSyforkFuncs[i] == func) {
+            return 1;
+        }
+        if (signalSyforkFuncs[i] == 0) {
+            signalSyforkFuncs[i] = func;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+Int SyFork(void)
+{
+    for (int i = 0; i < signalSyForkFuncsLen; ++i) {
+        if (signalSyforkFuncs[i]) {
+            signalSyforkFuncs[i](PreFork);
+        }
+    }
+
+    Int ret = fork();
+    if (ret < 0)
+        return ret;
+
+    ForkState state = (ret == 0) ? PostForkChild : PostForkParent;
+
+    for (int i = 0; i < signalSyForkFuncsLen; ++i) {
+        if (signalSyforkFuncs[i]) {
+            signalSyforkFuncs[i](state);
+        }
+    }
+
+    return ret;
+}
+
 
 /****************************************************************************
 **
@@ -3109,7 +3153,7 @@ UInt SyExecuteProcess (
       func2 = &NullSignalHandler;
 
     /* clone the process                                                   */
-    pid = vfork();
+    pid = SyFork();
     if ( pid == -1 ) {
         return -1;
     }
