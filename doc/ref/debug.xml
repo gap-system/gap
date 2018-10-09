@@ -791,6 +791,12 @@ limitations which users should be aware of:
     is most obvious when looking at code coverage examples, which will appear
     to miss lines of code in files not in a function.
   </Item>
+  <Item>
+    If the current GAP is forked, using the <C>IO_fork</C> function in the
+    <Package>IO</Package> package,
+    a new profile output file will be created for the new child process, with
+    the process ID of the child attached to the end of the filename.
+  </Item>
 </List>
 
 Profiles are transformed into a human-readable form with

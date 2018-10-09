@@ -546,7 +546,7 @@ dnl Define kernel version
 dnl
 
 
-gap_kernel_major_version=5
+gap_kernel_major_version=6
 gap_kernel_minor_version=0
 AC_SUBST([gap_kernel_major_version])
 AC_SUBST([gap_kernel_minor_version])
