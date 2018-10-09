@@ -59,16 +59,17 @@ Obj             SumIntVector (
     for (i = 1; i <= len; i++) {
         elmR = ptrR[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! SUM_INTOBJS(elmS, elmL, elmR)) {
-            CHANGED_BAG(vecS);
             elmS = SUM(elmL, elmR);
             ptrR = CONST_ADDR_OBJ(vecR);
             ptrS = ADDR_OBJ(vecS);
+            ptrS[i] = elmS;
+            CHANGED_BAG(vecS);
         }
-        ptrS[i] = elmS;
+        else
+            ptrS[i] = elmS;
     }
 
     /* return the result                                                   */
-    CHANGED_BAG(vecS);
     return vecS;
 }
 
@@ -107,16 +108,17 @@ Obj             SumVectorInt (
     for (i = 1; i <= len; i++) {
         elmL = ptrL[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! SUM_INTOBJS(elmS, elmL, elmR)) {
-            CHANGED_BAG(vecS);
             elmS = SUM(elmL, elmR);
             ptrL = CONST_ADDR_OBJ(vecL);
             ptrS = ADDR_OBJ(vecS);
+            ptrS[i] = elmS;
+            CHANGED_BAG(vecS);
         }
-        ptrS[i] = elmS;
+        else
+            ptrS[i] = elmS;
     }
 
     /* return the result                                                   */
-    CHANGED_BAG(vecS);
     return vecS;
 }
 
@@ -168,13 +170,15 @@ Obj             SumVectorVector (
         elmL = ptrL[i];
         elmR = ptrR[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! SUM_INTOBJS(elmS, elmL, elmR)) {
-            CHANGED_BAG(vecS);
             elmS = SUM(elmL, elmR);
             ptrL = CONST_ADDR_OBJ(vecL);
             ptrR = CONST_ADDR_OBJ(vecR);
             ptrS = ADDR_OBJ(vecS);
+            ptrS[i] = elmS;
+            CHANGED_BAG(vecS);
         }
-        ptrS[i] = elmS;
+        else
+            ptrS[i] = elmS;
     }
     if (lenL < lenR)
         for (; i <= lenR; i++) {
@@ -184,8 +188,8 @@ Obj             SumVectorVector (
         for (; i <= lenL; i++) {
             ptrS[i] = ptrL[i];
         }
+
     /* return the result                                                   */
-    CHANGED_BAG(vecS);
     return vecS;
 }
 
@@ -224,16 +228,17 @@ Obj             DiffIntVector (
     for (i = 1; i <= len; i++) {
         elmR = ptrR[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! DIFF_INTOBJS(elmD, elmL, elmR)) {
-            CHANGED_BAG(vecD);
             elmD = DIFF(elmL, elmR);
             ptrR = CONST_ADDR_OBJ(vecR);
             ptrD = ADDR_OBJ(vecD);
+            ptrD[i] = elmD;
+            CHANGED_BAG(vecD);
         }
-        ptrD[i] = elmD;
+        else
+            ptrD[i] = elmD;
     }
 
     /* return the result                                                   */
-    CHANGED_BAG(vecD);
     return vecD;
 }
 
@@ -272,16 +277,17 @@ Obj             DiffVectorInt (
     for (i = 1; i <= len; i++) {
         elmL = ptrL[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! DIFF_INTOBJS(elmD, elmL, elmR)) {
-            CHANGED_BAG(vecD);
             elmD = DIFF(elmL, elmR);
             ptrL = CONST_ADDR_OBJ(vecL);
             ptrD = ADDR_OBJ(vecD);
+            ptrD[i] = elmD;
+            CHANGED_BAG(vecD);
         }
-        ptrD[i] = elmD;
+        else
+            ptrD[i] = elmD;
     }
 
     /* return the result                                                   */
-    CHANGED_BAG(vecD);
     return vecD;
 }
 
@@ -333,31 +339,35 @@ Obj             DiffVectorVector (
         elmL = ptrL[i];
         elmR = ptrR[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! DIFF_INTOBJS(elmD, elmL, elmR)) {
-            CHANGED_BAG(vecD);
             elmD = DIFF(elmL, elmR);
             ptrL = CONST_ADDR_OBJ(vecL);
             ptrR = CONST_ADDR_OBJ(vecR);
             ptrD = ADDR_OBJ(vecD);
+            ptrD[i] = elmD;
+            CHANGED_BAG(vecD);
         }
-        ptrD[i] = elmD;
+        else
+            ptrD[i] = elmD;
     }
     if (lenL < lenR)
         for (; i <= lenR; i++) {
             elmR = ptrR[i];
             if (! IS_INTOBJ(elmR) || ! DIFF_INTOBJS(elmD, INTOBJ_INT(0), elmR)) {
-                CHANGED_BAG(vecD);
                 elmD = AINV(elmR);
                 ptrR = CONST_ADDR_OBJ(vecR);
                 ptrD = ADDR_OBJ(vecD);
+                ptrD[i] = elmD;
+                CHANGED_BAG(vecD);
             }
-            ptrD[i] = elmD;
+            else
+                ptrD[i] = elmD;
         }
     else
         for (; i <= lenL; i++) {
             ptrD[i] = ptrL[i];
         }
+
     /* return the result                                                   */
-    CHANGED_BAG(vecD);
     return vecD;
 }
 
@@ -396,16 +406,17 @@ Obj             ProdIntVector (
     for (i = 1; i <= len; i++) {
         elmR = ptrR[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! PROD_INTOBJS(elmP, elmL, elmR)) {
-            CHANGED_BAG(vecP);
             elmP = PROD(elmL, elmR);
             ptrR = CONST_ADDR_OBJ(vecR);
             ptrP = ADDR_OBJ(vecP);
+            ptrP[i] = elmP;
+            CHANGED_BAG(vecP);
         }
-        ptrP[i] = elmP;
+        else
+            ptrP[i] = elmP;
     }
 
     /* return the result                                                   */
-    CHANGED_BAG(vecP);
     return vecP;
 }
 
@@ -444,16 +455,17 @@ Obj             ProdVectorInt (
     for (i = 1; i <= len; i++) {
         elmL = ptrL[i];
         if (! ARE_INTOBJS(elmL, elmR) || ! PROD_INTOBJS(elmP, elmL, elmR)) {
-            CHANGED_BAG(vecP);
             elmP = PROD(elmL, elmR);
             ptrL = CONST_ADDR_OBJ(vecL);
             ptrP = ADDR_OBJ(vecP);
+            ptrP[i] = elmP;
+            CHANGED_BAG(vecP);
         }
-        ptrP[i] = elmP;
+        else
+            ptrP[i] = elmP;
     }
 
     /* return the result                                                   */
-    CHANGED_BAG(vecP);
     return vecP;
 }
 
@@ -579,12 +591,14 @@ Obj             ProdVectorMatrix (
                 elmP = ptrP[k];
                 if (! ARE_INTOBJS(elmP, elmT)
                 || ! SUM_INTOBJS(elmS, elmP, elmT)) {
-                    CHANGED_BAG(vecP);
                     elmS = SUM(elmP, elmT);
                     ptrR = CONST_ADDR_OBJ(vecR);
                     ptrP = ADDR_OBJ(vecP);
+                    ptrP[k] = elmS;
+                    CHANGED_BAG(vecP);
                 }
-                ptrP[k] = elmS;
+                else
+                    ptrP[k] = elmS;
             }
         } else if (elmL == INTOBJ_INT(-1L)) {
             for (k = 1; k <= col; k++) {
@@ -592,12 +606,14 @@ Obj             ProdVectorMatrix (
                 elmP = ptrP[k];
                 if (! ARE_INTOBJS(elmP, elmT)
                         || ! DIFF_INTOBJS(elmS, elmP, elmT)) {
-                    CHANGED_BAG(vecP);
                     elmS = DIFF(elmP, elmT);
                     ptrR = CONST_ADDR_OBJ(vecR);
                     ptrP = ADDR_OBJ(vecP);
+                    ptrP[k] = elmS;
+                    CHANGED_BAG(vecP);
                 }
-                ptrP[k] = elmS;
+                else
+                    ptrP[k] = elmS;
 
             }
         } else if (elmL != INTOBJ_INT(0L)) {
@@ -606,27 +622,30 @@ Obj             ProdVectorMatrix (
                 if (elmR != INTOBJ_INT(0L)) {
                     if (! ARE_INTOBJS(elmL, elmR)
                             || ! PROD_INTOBJS(elmT, elmL, elmR)) {
-                        CHANGED_BAG(vecP);
                         elmT = PROD(elmL, elmR);
                         ptrR = CONST_ADDR_OBJ(vecR);
                         ptrP = ADDR_OBJ(vecP);
+                        elmP = ptrP[k];
+                        CHANGED_BAG(vecP);
                     }
-                    elmP = ptrP[k];
+                    else
+                        elmP = ptrP[k];
                     if (! ARE_INTOBJS(elmP, elmT)
                             || ! SUM_INTOBJS(elmS, elmP, elmT)) {
-                        CHANGED_BAG(vecP);
                         elmS = SUM(elmP, elmT);
                         ptrR = CONST_ADDR_OBJ(vecR);
                         ptrP = ADDR_OBJ(vecP);
+                        ptrP[k] = elmS;
+                        CHANGED_BAG(vecP);
                     }
-                    ptrP[k] = elmS;
+                    else
+                        ptrP[k] = elmS;
                 }
             }
         }
     }
 
     /* return the result                                                   */
-    CHANGED_BAG(vecP);
     return vecP;
 }
 
@@ -637,12 +656,12 @@ Obj FuncPROD_VECTOR_MATRIX(Obj self, Obj vec, Obj mat)
 
 /****************************************************************************
 **
-*F  ZeroVector(<vec>) . . . .  zero of a cyclotomicVector
+*F  ZeroVector(<vec>) . . . . . . . . . . . . . . zero of a cyclotomic vector
 **
 **  'ZeroVector' returns the zero of the vector <vec>.
 **
 **  It is a better version of ZeroListDefault for the case of cyclotomic
-**  vectors, becuase it knows what the cyclotomic zero is.
+**  vectors, because it knows what the cyclotomic zero is.
 */
 
 Obj ZeroVector( Obj vec )
