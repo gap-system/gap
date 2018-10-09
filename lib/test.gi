@@ -278,6 +278,10 @@ end;
 ##  <Item>If this is <K>true</K> then &GAP; substitutes DOS/Windows style
 ##  line breaks "\r\n" by UNIX style line breaks "\n" after reading the test
 ##  file. (default is <K>true</K>).</Item>
+##  <Mark><C>returnNumFailures</C></Mark>
+##  <Item>If this is <K>true</K> then &GAP; returns the number of input
+##  lines of the test file which had differences in their output, instead
+##  of returning <K>true</K> or <K>false</K>.</Item>
 ##  </List>
 ## 
 ##  <Log><![CDATA[
@@ -330,7 +334,7 @@ end;
 ##  <#/GAPDoc>
 ##  
 InstallGlobalFunction("Test", function(arg)
-  local fnam, nopts, opts, size, full, pf, ret, lines, ign, new, n, 
+  local fnam, nopts, opts, size, full, pf, failures, lines, ign, new, n,
         cT, ok, oldtimes, thr, delta, len, c, i, j, d;
   
   # get arguments and set options
@@ -380,6 +384,7 @@ InstallGlobalFunction("Test", function(arg)
              Print("########\n");
            end,
            subsWindowsLineBreaks := true,
+           returnNumFailures := false,
          );
   if not IS_OUTPUT_TTY() then
     opts.showProgress := false;
@@ -438,12 +443,12 @@ InstallGlobalFunction("Test", function(arg)
   SizeScreen(size);
 
   # check for and report differences
-  ret := true;
+  failures := 0;
   for i in [1..Length(pf[1])] do
     if opts.compareFunction(pf[2][i], pf[4][i]) <> true then
       if not opts.ignoreSTOP_TEST or 
          PositionSublist(pf[1][i], "STOP_TEST") <> 1 then
-        ret := false;
+        failures := failures + 1;
         opts.reportDiff(pf[1][i], pf[2][i], pf[4][i], fnam, pf[3][i], pf[5][i]);
       else
         # print output of STOP_TEST
@@ -527,8 +532,13 @@ InstallGlobalFunction("Test", function(arg)
   # store internal test data in TEST
   TEST.lastTestData := pf;
 
+  # if requested, return number of failures
+  if opts.returnNumFailures then
+    return failures;
+  fi;
+
   # return true/false
-  return ret;
+  return (failures = 0);
 end);
 
 
@@ -581,14 +591,15 @@ end);
 ##  </ManSection>
 ##  <#/GAPDoc>
 InstallGlobalFunction( "TestDirectory", function(arg)
-    local  testTotal, totalTime, totalMem, STOP_TEST_CPY, 
+    local  testTotalFailures, testFailedFiles, totalTime, totalMem, STOP_TEST_CPY,
            basedirs, nopts, opts, testOptions, earlyStop, 
            showProgress, suppressStatusMessage, exitGAP, c, files, 
            filetimes, filemems, recurseFiles, f, i, startTime, 
            startMem, testResult, time, mem, startGcTime, gctime,
            totalGcTime, filegctimes, GcTime;
 
-  testTotal := true;
+  testTotalFailures := 0;
+  testFailedFiles := 0;
   totalTime := 0;
   totalMem := 0;
   totalGcTime := 0;
@@ -627,7 +638,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     opts.(c) := nopts.(c);
   od;
   opts.exclude := Set(opts.exclude);
-  
+  opts.testOptions.returnNumFailures := true;
   
   if opts.exitGAP then
     GAP_EXIT_CODE(1);
@@ -696,7 +707,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
       opts.testOptions.rewriteToFile := files[i].name;
     fi;
     testResult := Test(files[i].name, opts.testOptions);
-    if not(testResult) and opts.earlyStop then
+    if (testResult <> 0) and opts.earlyStop then
       STOP_TEST := STOP_TEST_CPY;
       if not opts.suppressStatusMessage then
         # Do not change the next line - it is needed for testing scrips
@@ -707,7 +718,10 @@ InstallGlobalFunction( "TestDirectory", function(arg)
       fi;
       return false;
     fi;
-    testTotal := testTotal and testResult;
+    if testResult <> 0 then
+      testFailedFiles := testFailedFiles + 1;
+    fi;
+    testTotalFailures := testTotalFailures + testResult;
     
     time := Runtime() - startTime;
     mem := TotalMemoryAllocated() - startMem;    
@@ -731,10 +745,15 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   Print("-----------------------------------\n");
   Print( "total",
          String( totalTime, 10 ), " ms (",String( totalGcTime )," ms GC) and ", 
-         StringOfMemoryAmount( totalMem )," allocated\n\n" );
+         StringOfMemoryAmount( totalMem )," allocated\n" );
+  Print( "     ", String( testTotalFailures, 10 ), " failures in " );
+  if testTotalFailures > 0 then
+    Print( testFailedFiles, " of " );
+  fi;
+  Print( Length(files), " files\n\n" );
 
   if not opts.suppressStatusMessage then
-    if testTotal then
+    if testTotalFailures = 0 then
       # Do not change the next line - it is needed for testing scrips
       Print( "#I  No errors detected while testing\n\n" );
     else
@@ -744,14 +763,14 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   fi;
 
   if opts.exitGAP then
-    if testTotal then
+    if testTotalFailures = 0 then
       QUIT_GAP(0);
     else
       QUIT_GAP(1);
     fi;
   fi;
   
-  return testTotal;
+  return testTotalFailures = 0;
 end);
 
 #############################################################################
