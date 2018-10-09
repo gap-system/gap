@@ -65,7 +65,7 @@ InstallOtherMethod( FLMLORByGenerators,
     SetZero( A, zero );
 
     if IsEmpty( gens ) then
-      SetIsTrivial( A, true );
+      SetDimension( A, 0 );
       SetGeneratorsOfLeftModule( A, gens );
     fi;
 
@@ -201,6 +201,7 @@ InstallGlobalFunction( SubFLMLORNC, function( arg )
                               and IsTwoSidedIdealInParent
                               and IsAttributeStoringRep ),
                      rec() );
+      SetDimension(S, 0);
       SetLeftActingDomain( S, LeftActingDomain( arg[1] ) );
       SetGeneratorsOfLeftModule( S, AsList( arg[2] ) );
     else

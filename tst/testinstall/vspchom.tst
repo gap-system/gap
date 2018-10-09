@@ -24,9 +24,9 @@ gap> ImagesSource( map1 );
 gap> PreImagesRange( map1 );
 <vector space over GF(3), with 1 generators>
 gap> CoKernelOfAdditiveGeneralMapping( map1 );
-<vector space over GF(3), with 0 generators>
+<vector space of dimension 0 over GF(3)>
 gap> KernelOfAdditiveGeneralMapping( map1 );
-<vector space over GF(3), with 0 generators>
+<vector space of dimension 0 over GF(3)>
 gap> IsSingleValued( map1 );
 true
 gap> IsInjective( map1 );
@@ -53,7 +53,7 @@ gap> ImagesSource( map2 );
 gap> PreImagesRange( map2 );
 GF(3^3)
 gap> CoKernelOfAdditiveGeneralMapping( map2 );
-<vector space over GF(3), with 0 generators>
+<vector space of dimension 0 over GF(3)>
 gap> KernelOfAdditiveGeneralMapping( map2 );
 <vector space over GF(3), with 1 generators>
 gap> IsSingleValued( map2 );
@@ -84,7 +84,7 @@ gap> PreImagesRange( map3 );
 gap> CoKernelOfAdditiveGeneralMapping( map3 );
 <vector space over GF(3), with 1 generators>
 gap> KernelOfAdditiveGeneralMapping( map3 );
-<vector space over GF(3), with 0 generators>
+<vector space of dimension 0 over GF(3)>
 gap> IsSingleValued( map3 );
 false
 gap> IsInjective( map3 );
@@ -197,9 +197,9 @@ gap> ImagesSource( map5 );
 gap> PreImagesRange( map5 );
 GF(3)
 gap> CoKernelOfAdditiveGeneralMapping( map5 );
-<algebra over GF(3)>
+<algebra of dimension 0 over GF(3)>
 gap> KernelOfAdditiveGeneralMapping( map5 );
-<vector space over GF(3), with 0 generators>
+<vector space of dimension 0 over GF(3)>
 gap> IsSingleValued( map5 );
 true
 gap> IsInjective( map5 );
@@ -225,7 +225,7 @@ gap> ImagesSource( map6 );
 gap> PreImagesRange( map6 );
 GF(3^3)
 gap> CoKernelOfAdditiveGeneralMapping( map6 );
-<vector space over GF(3), with 0 generators>
+<vector space of dimension 0 over GF(3)>
 gap> KernelOfAdditiveGeneralMapping( map6 );
 <vector space over GF(3), with 1 generators>
 gap> IsSingleValued( map6 );
@@ -253,7 +253,7 @@ gap> ImagesSource( map7 );
 gap> PreImagesRange( map7 );
 ( GF(3)^2 )
 gap> CoKernelOfAdditiveGeneralMapping( map7 );
-<algebra over GF(3)>
+<algebra of dimension 0 over GF(3)>
 gap> KernelOfAdditiveGeneralMapping( map7 );
 <vector space over GF(3), with 1 generators>
 gap> IsSingleValued( map7 );
@@ -354,7 +354,7 @@ gap> ImagesSource( nathom );
 gap> PreImagesRange( nathom );
 ( GF(3)^2 )
 gap> CoKernelOfAdditiveGeneralMapping( nathom );
-<vector space over GF(3), with 0 generators>
+<vector space of dimension 0 over GF(3)>
 gap> KernelOfAdditiveGeneralMapping( nathom );
 <vector space of dimension 1 over GF(3)>
 gap> IsInjective( nathom );
@@ -403,7 +403,7 @@ gap> Dimension( sub );
 gap> zero:= ZeroMapping( v, w );
 ZeroMapping( GF(3^3), ( GF(3)^2 ) )
 gap> triv:= LeftModuleByGenerators( f, [], zero );
-<vector space over GF(3), with 0 generators>
+<vector space of dimension 0 over GF(3)>
 gap> IsSubset( hom, triv );
 true
 gap> mb:= MutableBasis( f, [], zero );
@@ -433,7 +433,7 @@ gap> DefaultRingByGenerators( [ id ] );
 gap> RingWithOneByGenerators( [ id ] );
 <algebra-with-one over GF(3), with 1 generators>
 gap> a:= AlgebraByGenerators( f, [], zero );
-<algebra over GF(3), with 0 generators>
+<algebra of dimension 0 over GF(3)>
 gap> Dimension( a );
 0
 gap> a:= AlgebraByGenerators( f, [ id ] );

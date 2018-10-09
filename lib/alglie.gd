@@ -226,7 +226,7 @@ DeclareAttribute( "LieLowerCentralSeries", IsAlgebra and IsLieAlgebra );
 ##  gap> L:=LieAlgebra( Rationals, mats );;
 ##  gap> LieUpperCentralSeries( L );
 ##  [ <two-sided ideal in <Lie algebra of dimension 3 over Rationals>, 
-##        (dimension 1)>, <Lie algebra over Rationals, with 0 generators> 
+##        (dimension 1)>, <Lie algebra of dimension 0 over Rationals> 
 ##   ]
 ##  ]]></Example>
 ##  </Description>

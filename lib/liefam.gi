@@ -561,6 +561,7 @@ IdealByGeneratorsForLieAlgebra := function( L, elms )
 
     if IsEmpty( elms ) then
       SetIsTrivial( I, true );
+      SetDimension( I, 0 );
     fi;
 
     CheckForHandlingByNiceBasis( lad, elms, I, false );

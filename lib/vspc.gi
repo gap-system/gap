@@ -312,6 +312,7 @@ InstallGlobalFunction( Intersection2Spaces,
         elif IsEmpty( inters ) then
           inters:= Substructure( V, inters, "basis" );
           SetIsTrivial( inters, true );
+          SetDimension( inters, 0 );
         else
           inters:= Structure( LeftActingDomain( V ), inters, "basis" );
         fi;

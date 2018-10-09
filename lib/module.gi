@@ -47,7 +47,7 @@ InstallMethod( LeftModuleByGenerators,
     SetGeneratorsOfLeftModule( V, AsList( gens ) );
     SetZero( V, zero );
     if IsEmpty( gens ) then
-      SetIsTrivial( V, true );
+      SetDimension( V, 0 );
     fi;
 
     CheckForHandlingByNiceBasis( R, gens, V, zero );
@@ -343,6 +343,7 @@ InstallGlobalFunction( SubmoduleNC, function( arg )
                               and IsTrivial
                               and IsAttributeStoringRep ),
                      rec() );
+      SetDimension( S, 0 );
       SetLeftActingDomain( S, LeftActingDomain( arg[1] ) );
       SetGeneratorsOfLeftModule( S, AsList( arg[2] ) );
     else
@@ -401,6 +402,32 @@ InstallMethod( DimensionOfVectors,
     fi;
     end );
 
+
+# This setter method is installed to implement filter settings in response
+# to an objects size as part of setting the size. This used to be handled
+# instead by immediate methods, but in a situation as here it would trigger
+# multiple immediate methods, several of which could apply and each changing
+# the type of the object. Doing so can be costly and thus should be
+# avoided.
+InstallOtherMethod(SetDimension,true,[IsObject and IsAttributeStoringRep,IsObject],
+  100, # override system setter
+function(obj,dim)
+local filt;
+  if HasDimension(obj) and IsBound(obj!.Dimension) then
+    Assert(2, Dimension(obj) = dim);
+    return;
+  fi;
+  if dim=0 then
+    filt := IsTrivial and IsFiniteDimensional;
+  elif dim = infinity then
+    filt := IsNonTrivial and HasIsFiniteDimensional and HasIsFinite;
+  else
+    filt := IsNonTrivial and IsFiniteDimensional;
+  fi;
+  filt := filt and HasDimension;
+  obj!.Dimension := dim;
+  SetFilterObj(obj, filt);
+end);
 
 #############################################################################
 ##

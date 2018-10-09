@@ -105,6 +105,7 @@ InstallMethod( LeftModuleByGenerators,
     SetLeftActingDomain( V, F );
     SetGeneratorsOfLeftModule( V, empty );
     SetZero( V, zero );
+    SetDimension( V, 0 );
     SetDimensionOfVectors( V, Length( zero ) );
 
     return V;

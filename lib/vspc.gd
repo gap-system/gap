@@ -428,7 +428,7 @@ DeclareAttribute( "NormedRowVectors", IsGaussianSpace );
 ##  <Example><![CDATA[
 ##  gap> V:= GF(3)^3;;
 ##  gap> triv:= TrivialSubspace( V );
-##  <vector space over GF(3), with 0 generators>
+##  <vector space of dimension 0 over GF(3)>
 ##  gap> AsSet( triv );
 ##  [ [ 0*Z(3), 0*Z(3), 0*Z(3) ] ]
 ##  ]]></Example>
@@ -705,7 +705,7 @@ DeclareSynonym( "MatSpace", FullMatrixModule );
 ##  28
 ##  gap> iter:= Iterator( D );;
 ##  gap> NextIterator( iter );
-##  <vector space over GF(3), with 0 generators>
+##  <vector space of dimension 0 over GF(3)>
 ##  gap> NextIterator( iter );
 ##  <vector space of dimension 1 over GF(3)>
 ##  gap> IsSubspacesVectorSpace( D );

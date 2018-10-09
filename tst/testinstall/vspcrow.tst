@@ -15,7 +15,7 @@ gap> START_TEST("vspcrow.tst");
 ##  1. Construct Gaussian and non-Gaussian row spaces
 ##
 gap> z:= LeftModuleByGenerators( GF(3), [], [ 0*Z(9) ] );
-<vector space over GF(3), with 0 generators>
+<vector space of dimension 0 over GF(3)>
 gap> IsGaussianRowSpace( z );
 true
 gap> IsNonGaussianRowSpace( z );
@@ -231,7 +231,7 @@ VectorSpace( GF(3^2),
 [ [ Z(3)^0, Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0, 0*Z(3) ], 
   [ 0*Z(3), 0*Z(3), Z(3)^0 ] ] )
 gap> Intersection( v, c );
-<vector space over GF(3^2), with 0 generators>
+<vector space of dimension 0 over GF(3^2)>
 gap> Intersection( v, f ) = v;
 true
 gap> nv:= NormedRowVectors( v );;
