@@ -30,6 +30,20 @@ then
   CONFIGFLAGS="$CONFIGFLAGS --enable-hpcgap"
 fi
 
+
+if [[ $JULIA = yes ]]
+then
+  # TODO: once Julia 1.1 is released, switch to stable Julia versions here?
+  wget https://julialangnightlies-s3.julialang.org/bin/linux/x64/julia-latest-linux64.tar.gz
+  tar xvf julia-latest-linux64.tar.gz
+  rm julia-latest-linux64.tar.gz
+  pushd julia-*
+  JULIA_PATH=$(pwd)
+  popd
+  CONFIGFLAGS="$CONFIGFLAGS --with-gc=julia --with-julia=$JULIA_PATH"
+fi
+
+
 # configure and make GAP
 "$SRCDIR/configure" $CONFIGFLAGS --enable-Werror
 make V=1 -j4
