@@ -103,6 +103,9 @@ matrix:
           #- libgmp-dev:i386    # do not install GMP, to test that GAP can build its own
           - libreadline-dev:i386
 
+    # test Julia integration
+    - env: TEST_SUITES="testinstall" JULIA=yes
+
     # run bugfix regression tests
     - env: TEST_SUITES=testbugfix
 
