@@ -9,8 +9,6 @@
 **  and gasman.c for two other garbage collector implementations.
 **/
 
-#define JULIA_ENABLE_THREADING
-
 #include "code.h"
 #include "funcs.h"
 #include "gapstate.h"
