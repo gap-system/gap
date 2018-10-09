@@ -230,6 +230,7 @@ InstallOtherMethod( FLMLORByGenerators,
                             and IsTrivial
                             and IsAttributeStoringRep ),
                    rec() );
+    SetDimension( A, 0 );
     SetLeftActingDomain( A, F );
     SetGeneratorsOfLeftModule( A, empty );
     SetZero( A, zero );
@@ -360,6 +361,7 @@ InstallOtherMethod( FLMLORByGenerators,
                             and IsTrivial
                             and IsAttributeStoringRep ),
                    rec() );
+    SetDimension( A, 0 );
     SetLeftActingDomain( A, F );
     SetGeneratorsOfLeftModule( A, empty );
     SetZero( A, zero );
@@ -633,6 +635,7 @@ InstallMethod( TwoSidedIdealByGenerators,
                             and IsAttributeStoringRep ),
                    rec() );
 
+    SetDimension( I, 0 );
     SetLeftActingDomain( I, LeftActingDomain( A ) );
     SetGeneratorsOfTwoSidedIdeal( I, mats );
     SetGeneratorsOfLeftOperatorRing( I, mats );
@@ -727,6 +730,7 @@ InstallMethod( LeftIdealByGenerators,
                             and IsAttributeStoringRep ),
                    rec() );
 
+    SetDimension( I, 0 );
     SetLeftActingDomain( I, LeftActingDomain( A ) );
     SetGeneratorsOfLeftIdeal( I, mats );
     SetGeneratorsOfLeftOperatorRing( I, mats );
@@ -820,6 +824,7 @@ InstallMethod( RightIdealByGenerators,
                             and IsAttributeStoringRep ),
                    rec() );
 
+    SetDimension( I, 0 );
     SetLeftActingDomain( I, LeftActingDomain( A ) );
     SetGeneratorsOfRightIdeal( I, mats );
     SetGeneratorsOfLeftOperatorRing( I, mats );

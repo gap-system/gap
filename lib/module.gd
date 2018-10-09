@@ -371,7 +371,7 @@ DeclareSynonymAttr( "GeneratorsOfRightModule",
 ##  <Example><![CDATA[
 ##  gap> V:= LeftModuleByGenerators(Rationals, [[ 1, 0, 0 ], [ 0, 1, 0 ]]);;
 ##  gap> TrivialSubmodule( V );
-##  <vector space over Rationals, with 0 generators>
+##  <vector space of dimension 0 over Rationals>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

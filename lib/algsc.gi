@@ -623,6 +623,7 @@ BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
       gens:= Immutable( [] );
       A:= FLMLORByGenerators( R, gens, Zero( Fam ) );
       SetIsTrivial( A, true );
+      SetDimension( A, 0 );
     fi;
     Fam!.basisVectors:= gens;
 #T where is this needed?

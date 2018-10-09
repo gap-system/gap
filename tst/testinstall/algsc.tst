@@ -47,7 +47,7 @@ Error, <coeffs> must be a list of length 4
 gap> v:= ObjByExtRep( fam, [ 0, 1, 0, 1 ] );
 v.2+v.4
 gap> t:= AlgebraByStructureConstants( Rationals, [ 0, 0 ] );
-<algebra over Rationals, with 0 generators>
+<algebra of dimension 0 over Rationals>
 gap> String(v);
 "v.2+v.4"
 gap> One( fam ); One( v ); v^0; String(v^0);
@@ -171,7 +171,7 @@ false
 gap> Dimension( l1 );
 10
 gap> ucs:= LieUpperCentralSeries( l1 );
-[ <Lie algebra over Rationals, with 0 generators> ]
+[ <Lie algebra of dimension 0 over Rationals> ]
 gap> lcs:= LieLowerCentralSeries( l1 );
 [ <Lie algebra of dimension 10 over Rationals> ]
 gap> IsLieSolvable( l1 );
@@ -456,7 +456,7 @@ gap> Dimension( l2 );
 15
 gap> ucs:= LieUpperCentralSeries( l2 );
 [ <two-sided ideal in <Lie algebra of dimension 15 over Rationals>, 
-      (dimension 1)>, <Lie algebra over Rationals, with 0 generators> ]
+      (dimension 1)>, <Lie algebra of dimension 0 over Rationals> ]
 gap> lcs:= LieLowerCentralSeries( l2 );
 [ <Lie algebra of dimension 15 over Rationals>, 
   <Lie algebra of dimension 14 over Rationals> ]
@@ -603,7 +603,7 @@ false
 gap> Dimension( l3 );
 14
 gap> ucs:= LieUpperCentralSeries( l3 );
-[ <Lie algebra over Rationals, with 0 generators> ]
+[ <Lie algebra of dimension 0 over Rationals> ]
 gap> lcs:= LieLowerCentralSeries( l3 );
 [ <Lie algebra of dimension 14 over Rationals>, 
   <Lie algebra of dimension 10 over Rationals> ]
@@ -695,7 +695,7 @@ v.11
 ##  Expl. 5: Trivial s.c. algebra
 ##
 gap> t:= AlgebraByStructureConstants( Rationals, [ 0, 0 ] );
-<algebra over Rationals, with 0 generators>
+<algebra of dimension 0 over Rationals>
 gap> z:= Zero( t );
 <zero of trivial s.c. algebra>
 gap> String(z);
@@ -781,13 +781,13 @@ gap> U:=Subspace(A, gens{[1,2]});
 gap> V:=Subspace(A, gens{[2,3]});
 <vector space over Rationals, with 2 generators>
 gap> W:=Subspace(A, []);
-<vector space over Rationals, with 0 generators>
+<vector space of dimension 0 over Rationals>
 gap> Intersection2(U,V);
 <vector space of dimension 1 over Rationals>
 gap> Intersection2(U,W);
-<vector space over Rationals, with 0 generators>
+<vector space of dimension 0 over Rationals>
 gap> Intersection2(V,W);
-<vector space over Rationals, with 0 generators>
+<vector space of dimension 0 over Rationals>
 
 #
 gap> A:= OctaveAlgebra(Rationals);
