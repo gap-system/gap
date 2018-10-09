@@ -478,44 +478,47 @@ AC_SUBST([READLINE_LIBS])
 dnl Find julia
 AC_ARG_WITH([julia],
   [AS_HELP_STRING([--with-julia@<:@=PREFIX@:>@],
-    [specify a prefix where julia can be found])])
+    [specify a prefix where julia can be found])],
+  [],[with_julia=no]
+)
 
 AS_IF([test "x$with_julia" != xno],[
-  JULIA_LIBS="-ljulia"
-  AS_CASE([x"$with_julia"],
-    [xyes|x],[
-      JULIA_CPPFLAGS=
-      JULIA_LDFLAGS=
-    ],
-    [*],[
-      JULIA_CPPFLAGS="-I$with_julia/include/julia"
-      JULIA_LDFLAGS="-L$with_julia/lib -Wl,-rpath,$with_julia/lib"
-      JULIA_LIBS="-ljulia"
-    ]
-  )
+  AC_PATH_PROG([JULIA], [julia], [], [${with_julia}/bin ${PATH}])
+  AS_IF([test "x$JULIA" = x],[ AC_MSG_ERROR([no julia executable found]) ])
 
-  AX_CHECK_LIBRARY([JULIA], [julia.h], [julia], [jl_gc_alloc], [], [], [])
+  JL_SHARE=$($JULIA -e 'print(joinpath(Sys.BINDIR, Base.DATAROOTDIR, "julia"))')
+  AS_IF([test -f "${JL_SHARE}/julia-config.jl"], [], [AC_MSG_ERROR([no julia-config.jl found])])
 
-  # TODO: also check for gcext.h, so that we can be sure the user is pointing
-  # at a modified version of Julia.
+  AC_MSG_CHECKING([for JULIA_CPPFLAGS])
+  JULIA_CPPFLAGS=$(${JULIA} ${JL_SHARE}/julia-config.jl --cflags 2>/dev/null)
+  AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_CPPFLAGS from julia-config.jl])])
+  JULIA_CPPFLAGS=${JULIA_CPPFLAGS/-std=gnu99/}  # need to remove -std=gnu99 for our C++ code
+  # remove apostrophes, they mess up quoting when used in shell code(although
+  # they are fine inside of Makefiles); this could cause problems if any
+  # paths involve spaces, but then we likely will haves problem in other
+  # places; in any case, if anybody ever cares about this, we can work on
+  # finding a better solution.
+  JULIA_CPPFLAGS=${JULIA_CPPFLAGS//\'/}
+  AC_MSG_RESULT([${JULIA_CPPFLAGS}])
 
-  AS_IF([test $ax_cv_have_JULIA = yes],[
-    AC_DEFINE([HAVE_LIBJULIA], [1], [Define if you have libjulia])
-  ],[
-    AS_CASE([x"$with_julia"],
-      [x], [JULIA_CPPFLAGS= JULIA_LDFLAGS= JULIA_LIBS=],
-      [*], [AC_MSG_FAILURE([--with-julia was given, but test for julia failed])]
-    )
-  ])
+  AC_MSG_CHECKING([for JULIA_LDFLAGS])
+  JULIA_LDFLAGS=$(${JULIA} ${JL_SHARE}/julia-config.jl --ldflags)
+  AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_LDFLAGS from julia-config.jl])])
+  JULIA_LDFLAGS=${JULIA_LDFLAGS//\'/}
+  AC_MSG_RESULT([${JULIA_LDFLAGS}])
+
+  AC_MSG_CHECKING([for JULIA_LIBS])
+  JULIA_LIBS=$(${JULIA} ${JL_SHARE}/julia-config.jl --ldlibs)
+  AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_LIBS from julia-config.jl])])
+  JULIA_LIBS=${JULIA_LIBS//\'/}
+  AC_MSG_RESULT([${JULIA_LIBS}])
 ])
-
-dnl TODO: check if $with_gc = julia; if so, error out if julia is not found
-
-
+AC_SUBST([JULIA])
 AC_SUBST([JULIA_CPPFLAGS])
 AC_SUBST([JULIA_LDFLAGS])
 AC_SUBST([JULIA_LIBS])
 
+dnl TODO: check if $with_gc = julia; if so, error out if julia is not found
 
 dnl Find ward (if HPC-GAP mode is enabled)
 AC_ARG_WITH([ward],
