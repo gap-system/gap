@@ -2356,8 +2356,26 @@ local  Omega,      # a common operation domain for <G>, <E> and <F>
   od;
   
   # Find the order in which to process the points in the base choice.
-  order := cycles.points{ cycles.firsts };
-  SortParallel( ShallowCopy( -cycles.lengths ), order );
+  #SortParallel( ShallowCopy( -cycles.lengths ), order );
+
+  # The criterion for selection of base points is to select them according
+  # to (descending) cycle length of the permutation to be conjugated. At the
+  # moment no other criterion is used (though experiments can observe a
+  # significant impact on run time -- there is work TODO).
+  # Beyond this choice, the base point order is determined as a side effect
+  # of the sorting algorithm.
+  # To avoid particular configurations falling repeatedly into a bad case,
+  # we permute the base points to obtain a random ordering beyond the
+  # criterion used. This can be turned off through an option for debugging
+  # purposes.
+  if ValueOption("norandom")=true then
+    i:=[1..Length(cycles.firsts)];
+  else
+    i:=FLOYDS_ALGORITHM(RandomSource(IsMersenneTwister),
+         Length(cycles.firsts),false);
+  fi;
+  order := cycles.points{ cycles.firsts{i} };
+  SortParallel( -(cycles.lengths{i}), order );
 
   repeat
 
