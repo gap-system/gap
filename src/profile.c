@@ -164,6 +164,20 @@ struct ProfileState
 UInt profileState_Active;
 
 
+// Output information about how this profile was configured
+void outputVersionInfo(void)
+{
+    const char timeTypeNames[3][10] = { "WallTime", "CPUTime", "Memory" };
+    fprintf(profileState.Stream,
+            "{ \"Type\": \"_\", \"Version\":1, \"IsCover\": %s, "
+            "  \"TimeType\": \"%s\"}\n",
+            profileState.OutputRepeats ? "false" : "true",
+            timeTypeNames[profileState.tickMethod]);
+    // Explictly flush, so this information is in the file
+    // even if GAP crashes
+    fflush(profileState.Stream);
+}
+
 static void ProfileRegisterLongJmpOccurred(void)
 {
     profileState.LongJmpOccurred = 1;
@@ -365,7 +379,11 @@ void InformProfilingThatThisIsAForkedGAP(void)
         }
         fcloseMaybeCompressed(&profileState);
         fopenMaybeCompressed(filenamecpy, &profileState);
+        outputVersionInfo();
+        // Need to flush list of outputed files, as we will start a fresh file
+        OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
     }
+    HashUnlock(&profileState);
 }
 
 static inline Int8 CPUmicroseconds(void)
@@ -537,20 +555,7 @@ void visitInterpretedStat(Int file, Int line)
     HashUnlock(&profileState);
 }
 
-/****************************************************************************
-**
-** Activating and deacivating profiling, either at startup or by user request
-*/
 
-void outputVersionInfo(void)
-{
-    const char timeTypeNames[3][10] = { "WallTime", "CPUTime", "Memory" };
-    fprintf(profileState.Stream,
-            "{ \"Type\": \"_\", \"Version\":1, \"IsCover\": %s, "
-            "  \"TimeType\": \"%s\"}\n",
-            profileState.OutputRepeats ? "false" : "true",
-            timeTypeNames[profileState.tickMethod]);
-}
 
 /****************************************************************************
 **
