@@ -129,7 +129,7 @@ GAPInput
     make docomp
 
     # detect if there are any diffs
-    git diff --exit-code -- src hpcgap/src
+    git diff --exit-code -- src
     ;;
 
   makemanuals)

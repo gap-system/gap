@@ -134,8 +134,7 @@ Compatibility mode does the following things:
 * create a symlink `sysinfo.gap-default$ABI` pointing at `sysinfo.gap`
 * create a `bin/$GAPARCH/config.h` symlink pointing at `gen/config.h`
 * create a `bin/$GAPARCH/gac` symlink pointing at `gac`
-* create a `bin/$GAPARCH/src` symlink pointing at either `$srcdir/src`
-  or (for HPC-GAP build) at `$srcdir/hpcgap/src`
+* create a `bin/$GAPARCH/src` symlink pointing at `$srcdir/src`
 * for out-of-tree builds, it creates a `${builddir}/src/compiled.h` file
 * ...
 
