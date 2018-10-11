@@ -1182,54 +1182,6 @@ end );
 
 #############################################################################
 ##
-#M  SimplifiedFpGroup( <FpGroup> ) . . . . . . . . .  sinplify the FpGroup by
-#M                                                     Tietze transformations
-##
-##  `SimplifiedFpGroup'  returns a group  isomorphic to the given one  with a
-##  presentation which has been tried to simplify via Tietze transformations.
-##
-InstallGlobalFunction( SimplifiedFpGroup, function ( G )
-
-    local H, T,map,mapi;
-
-    # check the given argument to be a finitely presented group.
-    if not ( IsSubgroupFpGroup( G ) and IsGroupOfFamily( G ) ) then
-        Error( "argument must be a finitely presented group" );
-    fi;
-
-    # convert the given group presentation to a Tietze presentation.
-    T := PresentationFpGroup( G, 0 );
-
-    # perform Tietze transformations.
-    TzInitGeneratorImages(T);
-    TzGo( T );
-
-  # reconvert the Tietze presentation to a group presentation.
-  H := FpGroupPresentation( T );
-
-  # translate info
-  map:=GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),
-        List(TzImagesOldGens(T),
-          i->MappedWord(i,GeneratorsOfPresentation(T),
-                          GeneratorsOfGroup(H))));
-
-  mapi:=GroupHomomorphismByImagesNC(H,G,GeneratorsOfGroup(H),
-        List(TzPreImagesNewGens(T),
-          i->MappedWord(i,OldGeneratorsOfPresentation(T),
-                          GeneratorsOfGroup(G))));
-
-  SetIsBijective(map,true);
-  SetInverseGeneralMapping(map,mapi);
-  SetInverseGeneralMapping(mapi,map);
-  ProcessEpimorphismToNewFpGroup(map);
-
-  # return the resulting group.
-  return H;
-end );
-
-
-#############################################################################
-##
 #M  AbstractWordTietzeWord( <word>, <fgens> )  . . . .  convert a Tietze word
 #M                                                        to an abstract word
 ##

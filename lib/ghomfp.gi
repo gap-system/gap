@@ -915,21 +915,6 @@ local H, pres,map,mapi,opt;
 
   # perform Tietze transformations.
   opt:=TzOptions(pres);
-  if ValueOption("expandLimit")<>fail then
-    opt.expandLimit:=ValueOption("expandLimit");
-  else
-    opt.expandLimit:=120; # do not grow too much.
-  fi;
-  if ValueOption("eliminationsLimit")<>fail then
-    opt.eliminationsLimit:=ValueOption("eliminationsLimit");
-  else
-    opt.eliminationsLimit:=20; # do not be too greedy
-  fi;
-  if ValueOption("lengthLimit")<>fail then
-    opt.lengthLimit:=ValueOption("lengthLimit");
-  else
-    opt.lengthLimit:=Int(3*pres!.tietze[TZ_TOTAL]); # not too big.
-  fi;
 
   if ValueOption("protected")<>fail then
     opt.expandLimit:=ValueOption("protected");
@@ -937,14 +922,41 @@ local H, pres,map,mapi,opt;
 
   opt.printLevel:=InfoLevel(InfoFpGroup); 
   TzInitGeneratorImages(pres);
-  TzGoGo( pres );
+  if ValueOption("easy")=true then
+    # case of old `SimplifiedFpGroup`, use default strategy parameters
+    TzGo( pres );
+  else
+    # Somewhat tuned strategy parameters
+    if ValueOption("expandLimit")<>fail then
+      opt.expandLimit:=ValueOption("expandLimit");
+    else
+      opt.expandLimit:=120; # do not grow too much.
+    fi;
+    if ValueOption("eliminationsLimit")<>fail then
+      opt.eliminationsLimit:=ValueOption("eliminationsLimit");
+    else
+      opt.eliminationsLimit:=20; # do not be too greedy
+    fi;
+    if ValueOption("lengthLimit")<>fail then
+      opt.lengthLimit:=ValueOption("lengthLimit");
+    else
+      opt.lengthLimit:=Int(3*pres!.tietze[TZ_TOTAL]); # not too big.
+    fi;
+    TzGoGo( pres );
+  fi;
 
   # reconvert the Tietze presentation to a group presentation.
   H := FpGroupPresentation( pres );
-  map:=GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),
-         List(TzImagesOldGens(pres),
-           i->MappedWord(i,GeneratorsOfPresentation(pres),
-                           GeneratorsOfGroup(H))));
+
+  if Length(GeneratorsOfGroup(H))>0 then
+    map:=List(TzImagesOldGens(pres),
+          i->MappedWord(i,GeneratorsOfPresentation(pres),
+                          GeneratorsOfGroup(H)));
+  else
+    map:=List(TzImagesOldGens(pres),y->One(H));
+  fi;
+
+  map:=GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),map);
 
   mapi:=GroupHomomorphismByImagesNC(H,G,GeneratorsOfGroup(H),
          List(TzPreImagesNewGens(pres),
@@ -957,6 +969,18 @@ local H, pres,map,mapi,opt;
 
   return map;
 end );
+
+#############################################################################
+##
+#M  SimplifiedFpGroup( <FpGroup> ) . . . . . . . . .  simplify the FpGroup by
+#M                                                     Tietze transformations
+##
+##  `SimplifiedFpGroup'  returns a group  isomorphic to the given one  with a
+##  presentation which has been tried to simplify via Tietze transformations.
+##
+InstallGlobalFunction( SimplifiedFpGroup, function ( G )
+  return Range(IsomorphismSimplifiedFpGroup(G:easy));
+end);
 
 #############################################################################
 ##
