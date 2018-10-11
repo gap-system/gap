@@ -101,6 +101,18 @@ gap> Print( Collected( List( l, x -> Index( c2, x ) ) ), "\n" );
 gap> Print( Collected( List( LowIndexSubgroupsFpGroup( g, s, 5 ),
 >                            x -> Index( c2, x ) ) ), "\n" );
 [ [ 12, 1 ], [ 24, 1 ], [ 48, 1 ] ]
+
+# Tietze simplifications
+gap> F:=FreeGroup("a");;
+gap> SimplifiedFpGroup(F/[GeneratorsOfGroup(F)[1]]);
+<fp group on the generators [  ]>
+gap> F:=FreeGroup("a","b","c");;
+gap> rels:=ParseRelators(F,"a2,b3,c4,abC");
+[ a^2, b^3, c^4, a*b*c^-1 ]
+gap> IsomorphismSimplifiedFpGroup(F/rels);
+[ a, b, c ] -> [ c*b^-1, b, c ]
+
+#
 gap> STOP_TEST( "grpfp.tst", 1);
 
 #############################################################################
