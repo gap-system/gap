@@ -40,9 +40,15 @@ DeclareInfoClass( "InfoSchur" );
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;
 ##  gap> epi:=EpimorphismSchurCover(g);
-##  [ f1, f2, f3 ] -> [ (3,4), (2,4,3), (1,3)(2,4) ]
+##  [ F1, F2, F3 ] -> [ (3,4), (2,4,3), (1,3)(2,4) ]
 ##  gap> Size(Source(epi));
 ##  48
+##  gap> f:=FreeGroup("a","b");;
+##  gap> g:=f/ParseRelators(f,"a2,b3,(ab)5");;
+##  gap> epi:=EpimorphismSchurCover(g);
+##  [ a, b ] -> [ a, b ]
+##  gap> Size(Kernel(epi));
+##  2
 ##  ]]></Example>
 ##  <P/>
 ##  If the group becomes bigger, Schur Cover calculations might become

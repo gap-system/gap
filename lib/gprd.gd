@@ -68,6 +68,14 @@
 ##  (4,5)
 ##  gap> Image(Projection(d,2),(1,2,3)(4,5)(8,9));
 ##  (1,2)
+##  gap> f:=FreeGroup("a","b");;
+##  gap> g:=f/ParseRelators(f,"a2,b3,(ab)5");
+##  <fp group on the generators [ a, b ]>
+##  gap> f2:=FreeGroup("x","y");;
+##  gap> h:=f2/ParseRelators(f2,"x2,y4,xy=Yx");
+##  <fp group on the generators [ x, y ]>
+##  gap> d:=DirectProduct(g,h);
+##  <fp group on the generators [ a, b, x, y ]>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
