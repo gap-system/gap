@@ -585,6 +585,19 @@ void CheckSameLength(const Char * desc, const Char *leftName, const Char *rightN
 
 /****************************************************************************
 **
+*F  Warning
+*/
+void Warning(const Char * msg, Int arg1, Int arg2)
+{
+    Pr("Warning, ", 0, 0);
+    Pr(msg, arg1, arg2);
+    if (strcmp("*stdin*", GetInputFilename()) != 0)
+        Pr(" in %s:%d", (Int)GetInputFilename(), GetInputLineNumber());
+    Pr("\n", 0, 0);
+}
+
+/****************************************************************************
+**
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs[] = {

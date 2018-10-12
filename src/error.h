@@ -150,6 +150,13 @@ void CheckSameLength(const Char * desc, const Char *leftName, const Char *rightN
 
 /****************************************************************************
 **
+*F  Warning
+*/
+extern void Warning(const Char * msg, Int arg1, Int arg2);
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * *
 */
 

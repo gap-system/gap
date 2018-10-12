@@ -247,6 +247,16 @@ static inline Int IS_FILTER(Obj oper)
     return v & OPER_IS_FILTER;
 }
 
+// temporary HACK, until all affected packages are fixed
+static inline Int IS_PSEUDO_FILTER(Obj oper)
+{
+    if (!IS_OPERATION(oper))
+        return 0;
+    Obj flags = FLAGS_FILT(oper);
+    return flags && TNUM_OBJ(flags) == T_FLAGS;
+}
+
+
 /****************************************************************************
 **
 *F  SET_IS_FILTER( <oper> ) . . . . . . . . . . .  mark operation as a filter
