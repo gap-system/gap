@@ -1369,13 +1369,13 @@ void            IntrAnd ( void )
     }
 
     /* handle the 'and' of two filters                                    */
-    else if ( IS_OPERATION(opL) ) {
-        if ( IS_OPERATION(opR) ) {
+    else if (IS_FILTER(opL)) {
+        if (IS_FILTER(opR)) {
             PushObj( NewAndFilter( opL, opR ) );
         }
         else {
             ErrorQuit(
-                "<expr> must be 'true' or 'false' (not a %s)",
+                "<expr> must be a filter (not a %s)",
                 (Int)TNAM_OBJ(opL), 0L );
         }
     }
@@ -1383,7 +1383,7 @@ void            IntrAnd ( void )
     /* signal an error                                                     */
     else {
         ErrorQuit(
-            "<expr> must be 'true' or 'false' (not a %s)",
+            "<expr> must be 'true' or 'false' or a filter (not a %s)",
             (Int)TNAM_OBJ(opL), 0L );
     }
 }
