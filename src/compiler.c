@@ -1312,11 +1312,16 @@ CVar CompAnd (
     Emit( "}\n" );
 
     /* emit the code for the case that the left value is a filter          */
-    Emit( "else {\n" );
-    CompCheckFunc( left );
+    Emit( "else if (IS_FILTER( %c ) ) {\n", left );
     right2 = CompExpr(READ_EXPR(expr, 1));
-    CompCheckFunc( right2 );
     Emit( "%c = NewAndFilter( %c, %c );\n", val, left, right2 );
+    Emit( "}\n" );
+
+    /* signal an error                                                     */
+    Emit( "else {\n" );
+    Emit( "ErrorQuit(\n"
+            "\"<expr> must be 'true' or 'false' or a filter (not a %%s)\",\n"
+            "(Int)TNAM_OBJ(%c), 0L );\n", left );
     Emit( "}\n" );
 
     /* we know precious little about the result                            */
