@@ -237,10 +237,13 @@ static Obj  HdlrFunc2 (
   CHECK_BOOL( a_tester )
   t_5 = a_tester;
  }
- else {
-  CHECK_FUNC( t_6 )
-  CHECK_FUNC( a_tester )
+ else if (IS_FILTER( t_6 ) ) {
   t_5 = NewAndFilter( t_6, a_tester );
+ }
+ else {
+  ErrorQuit(
+  "<expr> must be 'true' or 'false' or a filter (not a %s)",
+  (Int)TNAM_OBJ(t_6), 0L );
  }
  SET_ELM_PLIST( t_4, 1, t_5 );
  CHANGED_BAG( t_4 );

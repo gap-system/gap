@@ -80,13 +80,13 @@ Error, <expr> must be 'true' or 'false' or a filter (not a function)
 gap> ReturnTrue and true;
 Error, <expr> must be 'true' or 'false' or a filter (not a function)
 gap> IsAssociative and ReturnTrue;
-Error, <expr> must be a filter (not a function)
+Error, <oper2> must be a filter (not a function)
 gap> IsAssociative and true;
-Error, <expr> must be a filter (not a function)
+Error, <oper2> must be a filter (not a boolean or fail)
 gap> IsAssociative and Center;
-Error, <expr> must be a filter (not a function)
+Error, <oper2> must be a filter (not a function)
 gap> IsAssociative and FirstOp;
-Error, <expr> must be a filter (not a function)
+Error, <oper2> must be a filter (not a function)
 gap> true and IsAssociative;
 Error, <expr> must be 'true' or 'false' (not a function)
 gap> Center and IsAssociative;
@@ -112,13 +112,13 @@ Error, <expr> must be 'true' or 'false' or a filter (not a function)
 gap> function() return ReturnTrue and true; end();
 Error, <expr> must be 'true' or 'false' or a filter (not a function)
 gap> function() return IsAssociative and ReturnTrue; end();
-Error, <expr> must be a filter (not a function)
+Error, <oper2> must be a filter (not a function)
 gap> function() return IsAssociative and true; end();
-Error, <expr> must be a filter (not a function)
+Error, <oper2> must be a filter (not a boolean or fail)
 gap> function() return IsAssociative and Center; end();
-Error, <expr> must be a filter (not a function)
+Error, <oper2> must be a filter (not a function)
 gap> function() return IsAssociative and FirstOp; end();
-Error, <expr> must be a filter (not a function)
+Error, <oper2> must be a filter (not a function)
 gap> function() return true and IsAssociative; end();
 Error, <expr> must be 'true' or 'false' (not a function)
 gap> function() return Center and IsAssociative; end();

@@ -186,14 +186,7 @@ Obj             EvalAnd (
     else if (IS_FILTER(opL)) {
         tmp = READ_EXPR(expr, 1);
         opR = EVAL_EXPR( tmp );
-        if (IS_FILTER(opR)) {
-            return NewAndFilter( opL, opR );
-        }
-        else {
-            ErrorQuit(
-                "<expr> must be a filter (not a %s)",
-                (Int)TNAM_OBJ(opL), 0L );
-        }
+        return NewAndFilter(opL, opR);
     }
     
     /* signal an error                                                     */

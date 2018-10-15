@@ -890,16 +890,19 @@ static Obj  HdlrFunc3 (
       t_4 = (EQ( t_5, t_6 ) ? True : False);
       t_3 = t_4;
      }
-     else {
-      CHECK_FUNC( l_match )
+     else if (IS_FILTER( l_match ) ) {
       C_SUM_FIA( t_8, l_k, l_j )
       C_SUM_FIA( t_7, t_8, INTOBJ_INT(1) )
       CHECK_INT_POS( t_7 )
       C_ELM_LIST_FPL( t_6, l_methods, t_7 )
       C_ELM_LIST_FPL( t_7, a_flags, l_j )
       t_5 = (EQ( t_6, t_7 ) ? True : False);
-      CHECK_FUNC( t_5 )
       t_3 = NewAndFilter( l_match, t_5 );
+     }
+     else {
+      ErrorQuit(
+      "<expr> must be 'true' or 'false' or a filter (not a %s)",
+      (Int)TNAM_OBJ(l_match), 0L );
      }
      l_match = t_3;
      
@@ -2667,13 +2670,16 @@ static Obj  HdlrFunc7 (
      CHECK_BOOL( t_6 )
      t_5 = t_6;
     }
-    else {
-     CHECK_FUNC( l_cats )
+    else if (IS_FILTER( l_cats ) ) {
      t_8 = GC_FILTERS;
      CHECK_BOUND( t_8, "FILTERS" )
      C_ELM_LIST_FPL( t_7, t_8, l_i )
-     CHECK_FUNC( t_7 )
      t_5 = NewAndFilter( l_cats, t_7 );
+    }
+    else {
+     ErrorQuit(
+     "<expr> must be 'true' or 'false' or a filter (not a %s)",
+     (Int)TNAM_OBJ(l_cats), 0L );
     }
     l_cats = t_5;
     
@@ -3201,12 +3207,15 @@ static Obj  HdlrFunc15 (
   t_3 = (EQ( t_4, a_key ) ? True : False);
   t_1 = t_3;
  }
- else {
-  CHECK_FUNC( t_2 )
+ else if (IS_FILTER( t_2 ) ) {
   C_ELM_LIST_FPL( t_5, l_known, l_i )
   t_4 = (EQ( t_5, a_key ) ? True : False);
-  CHECK_FUNC( t_4 )
   t_1 = NewAndFilter( t_2, t_4 );
+ }
+ else {
+  ErrorQuit(
+  "<expr> must be 'true' or 'false' or a filter (not a %s)",
+  (Int)TNAM_OBJ(t_2), 0L );
  }
  RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);

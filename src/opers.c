@@ -1248,6 +1248,14 @@ Obj NewAndFilter (
     Obj                 str;
     char*               s;
 
+    if (!IS_FILTER(oper1))
+        ErrorQuit("<oper1> must be a filter (not a %s)", (Int)TNAM_OBJ(oper1),
+                  0);
+
+    if (!IS_FILTER(oper2))
+        ErrorQuit("<oper2> must be a filter (not a %s)", (Int)TNAM_OBJ(oper2),
+                  0);
+
     if ( oper1 == ReturnTrueFilter )
         return oper2;
 
