@@ -247,6 +247,7 @@ static inline Int IS_FILTER(Obj oper)
     return v & OPER_IS_FILTER;
 }
 
+
 /****************************************************************************
 **
 *F  SET_IS_FILTER( <oper> ) . . . . . . . . . . .  mark operation as a filter

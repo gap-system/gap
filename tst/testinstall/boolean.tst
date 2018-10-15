@@ -54,7 +54,17 @@ gap> ViewString(true); ViewString(false); ViewString(fail);
 gap> TNAM_OBJ(fail);
 "boolean or fail"
 
-# test error handling
+# crazy stuff that is accepted by interpreter and executor
+gap> false and 1;
+false
+gap> true or 1;
+true
+gap> function() return false and 1; end();
+false
+gap> function() return true or 1; end();
+true
+
+# test error handling in interpreter
 gap> not 1;
 Error, <expr> must be 'true' or 'false' (not a integer)
 gap> false or 1;
@@ -64,17 +74,59 @@ Error, <expr> must be 'true' or 'false' (not a integer)
 gap> true and 1;
 Error, <expr> must be 'true' or 'false' (not a integer)
 gap> 1 and true;
-Error, <expr> must be 'true' or 'false' (not a integer)
+Error, <expr> must be 'true' or 'false' or a filter (not a integer)
 gap> ReturnTrue and ReturnTrue;
-Error, <expr> must be 'true' or 'false' (not a function)
+Error, <expr> must be 'true' or 'false' or a filter (not a function)
 gap> ReturnTrue and true;
-Error, <expr> must be 'true' or 'false' (not a function)
+Error, <expr> must be 'true' or 'false' or a filter (not a function)
 gap> IsAssociative and ReturnTrue;
-Error, <expr> must be 'true' or 'false' (not a function)
+Error, <expr> must be a filter (not a function)
 gap> IsAssociative and true;
-Error, <expr> must be 'true' or 'false' (not a function)
+Error, <expr> must be a filter (not a function)
+gap> IsAssociative and Center;
+Error, <expr> must be a filter (not a function)
+gap> IsAssociative and FirstOp;
+Error, <expr> must be a filter (not a function)
 gap> true and IsAssociative;
 Error, <expr> must be 'true' or 'false' (not a function)
+gap> Center and IsAssociative;
+Error, <expr> must be 'true' or 'false' or a filter (not a function)
+gap> FirstOp and IsAssociative;
+Error, <expr> must be 'true' or 'false' or a filter (not a function)
+gap> IsAssociative and IsAssociative;
+<Property "IsAssociative">
+
+# test error handling in executor
+gap> function() return not 1; end();
+Error, <expr> must be 'true' or 'false' (not a integer)
+gap> function() return false or 1; end();
+Error, <expr> must be 'true' or 'false' (not a integer)
+gap> function() return 1 or false; end();
+Error, <expr> must be 'true' or 'false' (not a integer)
+gap> function() return true and 1; end();
+Error, <expr> must be 'true' or 'false' (not a integer)
+gap> function() return 1 and true; end();
+Error, <expr> must be 'true' or 'false' or a filter (not a integer)
+gap> function() return ReturnTrue and ReturnTrue; end();
+Error, <expr> must be 'true' or 'false' or a filter (not a function)
+gap> function() return ReturnTrue and true; end();
+Error, <expr> must be 'true' or 'false' or a filter (not a function)
+gap> function() return IsAssociative and ReturnTrue; end();
+Error, <expr> must be a filter (not a function)
+gap> function() return IsAssociative and true; end();
+Error, <expr> must be a filter (not a function)
+gap> function() return IsAssociative and Center; end();
+Error, <expr> must be a filter (not a function)
+gap> function() return IsAssociative and FirstOp; end();
+Error, <expr> must be a filter (not a function)
+gap> function() return true and IsAssociative; end();
+Error, <expr> must be 'true' or 'false' (not a function)
+gap> function() return Center and IsAssociative; end();
+Error, <expr> must be 'true' or 'false' or a filter (not a function)
+gap> function() return FirstOp and IsAssociative; end();
+Error, <expr> must be 'true' or 'false' or a filter (not a function)
+gap> function() return IsAssociative and IsAssociative; end();
+<Property "IsAssociative">
 
 #
 gap> STOP_TEST( "boolean.tst", 1);
