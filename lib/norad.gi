@@ -380,7 +380,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
   famo2,ufr,dims,vecs,ovecs,vecsz,l,prop,properties,clusters,clusterspaces,
   fs,i,v1,o1,p1,
   orblens,stabilizespaceandupdate,dual,myact,bound,boundbas,ranges,j,module,sumos,
-  minimalsubs,localinduce,lmpcgs,tst,nonzero,sel,myact2,tailnum;
+  minimalsubs,localinduce,lmpcgs,tst,nonzero,sel,myact2,tailnum,lfamo;
 
 #timer:=List([1..15],x->0);
   localinduce:=function(seq)
@@ -552,7 +552,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 	# work in quotient modules first
 	module:=GModuleByMats(Concatenation(ngm,npm),f);
 	sumos:=Reversed(MTX.BasesCompositionSeries(module));
-        Info(InfoFitFree,2,"module layers ",List(sumos,Length));
+  Info(InfoFitFree,2,"module layers ",List(sumos,Length));
 	sumos:=sumos{[2..Length(sumos)]};
 
 	for fs in sumos do
@@ -796,10 +796,11 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 	      l:=List([1..Length(part)],
 		x->part[x]*PcElementByExponentsNC(famo,l{ranges[x]}));
 	      l:=List([1..Length(part)],x->l[x]^gen);
+
 	      l:=CanonicalPcgs(InducedPcgsByGeneratorsNC(pcgs,l));
+
 	      l:=List([1..Length(part)],
-		x->ExponentsOfPcElement(famo,
-		  LeftQuotient(part[x],l[x]))*One(f));
+		x->ExponentsOfPcElement(famo, LeftQuotient(part[x],l[x]))*One(f));
 	      l:=Concatenation(l);
 	      l:=SiftedVector(bound,l);
 	      ConvertToVectorRep(l,Size(f));
@@ -847,7 +848,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 	      return l;
 	    end;
 
-	    # as corrections involve only pcgs parts, the images inthe
+	    # as corrections involve only pcgs parts, the images in the
 	    # radical factor are not affected.
 	    ng:=List(ng,x->x/PcElementByExponents(famo,
 	      SolutionMat(boundbas,myact(sub,x))));
@@ -877,142 +878,169 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 
     if Length(part)>0 and Length(famo)>0 then
 
-      ranges:=List([1..Length(part)],
-	x->[(x-1)*Length(famo)+1..x*Length(famo)]);
+      #old: lfamo:=famo;
 
-      sub:=Concatenation(List(part,a->List(famo,x->Zero(f))));
+      # calculate cohomology for quotient modules first to reduce orbit lengths
+      module:=GModuleByMats(LinearActionLayer(Concatenation(ng,np),famo),f);
+      sumos:=Reversed(MTX.BasesCompositionSeries(module));
+      sumos:=sumos{[2..Length(sumos)]};
+      Info(InfoFitFree,2,"Module layers ",List(sumos,Length));
+      
+      p1:=0;
+      o1:=1;
+      repeat
+        p1:=p1+1;
+        while p1<Length(sumos) and Length(sumos[o1])-Length(sumos[p1+1])<10 do
+          p1:=p1+1;
+        od;
+        
+        sub:=List(sumos[p1],x->PcElementByExponents(famo,x));
+        sub:=InducedPcgsByGeneratorsNC(NumeratorOfModuloPcgs(famo),Concatenation(DenominatorOfModuloPcgs(famo),sub));
+        lfamo:=NumeratorOfModuloPcgs(famo) mod sub;
 
-      # coboundaries
-      boundbas:=List(famo,x->Concatenation(List(part,
-		y->ExponentsOfPcElement(famo,Comm(y,x))*One(f))));
-      bound:=List(boundbas,ShallowCopy);
-      TriangulizeMat(bound);
-      bound:=List(bound,Zero);
-      bound:=Basis(VectorSpace(f,bound));
+        Info(InfoFitFree,3,"Factor ",p1," Module ",Length(lfamo));
 
-      Info(InfoFitFree,2,"up 0:",
-	" on ",
-	Product(RelativeOrders(famo))," cobounds:",Size(f)^Length(bound)
-	);
+        ranges:=List([1..Length(part)],
+          x->[(x-1)*Length(lfamo)+1..x*Length(lfamo)]);
 
-      myact:=function(l,gen)
-	local pos,map,l0;
+        sub:=Concatenation(List(part,a->List(lfamo,x->Zero(f))));
 
-	# make l  the conjugated generator list
-	l:=List([1..Length(part)],
-	  x->part[x]*PcElementByExponentsNC(famo,l{ranges[x]}));
-	l:=List([1..Length(part)],x->l[x]^gen);
+        # coboundaries
+        boundbas:=List(lfamo,x->Concatenation(List(part,
+                  y->ExponentsOfPcElement(lfamo,Comm(y,x))*One(f))));
+        boundbas:=ImmutableMatrix(f,boundbas);
+        bound:=List(boundbas,ShallowCopy);
+        TriangulizeMat(bound);
+        bound:=List(bound,Zero);
+        bound:=Basis(VectorSpace(f,bound));
 
-	# when acting with radical elements, it centralizes in the factor
-	pos:=Position(np,gen);
-	if pos=fail then
-	  # not in the radical. There might be an induced automorphism of
-	  # the factor which we'll have to undo
+        #TODO: unify with later code, requires slight change in print statement
+        # and action
+        Info(InfoFitFree,2,"up 0:", " on ",
+          Product(RelativeOrders(lfamo))," cobounds:",Size(f)^Length(bound));
 
-	  # find out what the images in the factor are by conjugating in the
-	  # factor. This is intended to avoid image calculations
-	  pos:=Position(ng,gen);
-	  if pos=fail then
+        myact:=function(l,gen)
+          local pos,map,l0;
 
-	    # must use image instead
-	    map:=ImagesRepresentative(ser.factorhom,gen);
-	    map:=List(uff,x->x^map);
-	  else
-	    map:=List(uff,x->x^nf[pos]);
-	  fi;
+          # make l  the conjugated generator list
+          l:=List([1..Length(part)],
+            x->part[x]*PcElementByExponentsNC(lfamo,l{ranges[x]}));
+          l:=List([1..Length(part)],x->l[x]^gen);
 
-	  # construct the map reps->preimages and map the gens we want (to work
-	  # in the right coordinates)
-	  map:=GroupGeneralMappingByImagesNC(uf,G,map,l);
-	  l:=List(uff,x->ImagesRepresentative(map,x));
-	fi;
+          # when acting with radical elements, it centralizes in the factor
+          pos:=Position(np,gen);
+          if pos=fail then
+            # not in the radical. There might be an induced automorphism of
+            # the factor which we'll have to undo
 
-	l:=List([1..Length(part)],x->LeftQuotient(part[x],l[x]));
-	l:=List(l,x->ExponentsOfPcElement(famo,x)*One(f));
-	l:=Concatenation(l);
-	l:=SiftedVector(bound,l);
-	ConvertToVectorRep(l,Size(f));
-	MakeImmutable(l);
-	return l;
-      end;
-      sub:=myact(sub,One(np[1])); # standardize -- force compression
+            # find out what the images in the factor are by conjugating in the
+            # factor. This is intended to avoid image calculations
+            # (because we do not have `CanonicalPcgs')
+            pos:=Position(ng,gen);
+            if pos=fail then
+              # nonstandard generator, must use image instead
+              map:=ImagesRepresentative(ser.factorhom,gen);
+              map:=List(uff,x->x^map);
+            else
+              map:=List(uff,x->x^nf[pos]);
+            fi;
 
-      if false then
-	stb:=TwoLevelStabilizer(ng,nf,ng,np,np,factorhom,sub,f^Length(sub),myact);
-      else
-	if Length(bound)>0 then
-	  sel:=Filtered([1..Length(sub)],x->bound!.heads[x]=0);
-	else
-	  sel:=[1..Length(sub)];
-	fi;
-	myact2:=RealizeAffineAction(Concatenation(ng,np),sub,sel,f,myact);
+            # construct the map reps->preimages and map the gens we want (to work
+            # in the right coordinates)
+            map:=GroupGeneralMappingByImagesNC(uf,G,map,l);
+            l:=List(uff,x->ImagesRepresentative(map,x));
+          fi;
 
-	# stabilize in cohomology group
-	stb:=TwoLevelStabilizer(ng,nf,ng,np,np,factorhom,sub{sel},
-               f^Length(sel),myact2:
-		actrange:=[1..Length(np)-tailnum]);
-      fi;
+          #l:=List([1..Length(part)],x->LeftQuotient(part[x],l[x]));
+          #l:=List(l,x->ExponentsOfPcElement(famo,x)*One(f));
 
-      ng:=stb.gens;
-      nf:=stb.imgs;
-      np:=localinduce(stb.pcgs);
+          l:=List([1..Length(part)],
+            x->ExponentsOfPcElement(lfamo, LeftQuotient(part[x],l[x]))*One(f));
 
-      if Length(bound)>0 then
-	#nontrivial blocks -- now correct
+          l:=Concatenation(l);
+          l:=SiftedVector(bound,l);
+          l:=ImmutableVector(f,l);
+          return l;
+        end;
+        sub:=myact(sub,One(np[1])); # standardize -- force compression
 
-	myact:=function(l,gen)
-	  local pos,map;
+        if Length(bound)>0 then
+          sel:=Filtered([1..Length(sub)],x->bound!.heads[x]=0);
+        else
+          sel:=[1..Length(sub)];
+        fi;
+        myact2:=RealizeAffineAction(Concatenation(ng,np),sub,sel,f,myact);
 
-	  # make l  the conjugated generator list
-	  l:=List([1..Length(part)],
-	    x->part[x]*PcElementByExponentsNC(famo,l{ranges[x]}));
-	  l:=List([1..Length(part)],x->l[x]^gen);
+        # stabilize in cohomology group
+        stb:=TwoLevelStabilizer(ng,nf,ng,np,np,factorhom,sub{sel},
+                f^Length(sel),myact2:
+                actrange:=[1..Length(np)-tailnum]);
 
-	  # when acting with radical elements, it centralizes in the factor
-	  pos:=Position(np,gen);
-	  if pos=fail then
-	    # not in the radical. There might be an induced automorphism of
-	    # the factor which we'll have to undo
+        Info(InfoFitFree,2,"orblen=",stb.orblen);
 
-	    # find out what the images in the factor are by conjugating in the
-	    # factor. This is intended to avoid image calculations
-	    pos:=Position(ng,gen);
-	    if pos=fail then
+        ng:=stb.gens;
+        nf:=stb.imgs;
+        np:=localinduce(stb.pcgs);
 
-	      # must use image instead
-	      map:=ImagesRepresentative(ser.factorhom,gen);
-	      map:=List(uff,x->x^map);
-	    else
-	      map:=List(uff,x->x^nf[pos]);
-	    fi;
+        if Length(bound)>0 then
+          #nontrivial blocks -- now correct
 
-	    # construct the map reps->preimages and map the gens we want (to work
-	    # in the right coordinates)
-	    map:=GroupGeneralMappingByImages(uf,G,map,l);
-	    l:=List(uff,x->ImagesRepresentative(map,x));
-	  fi;
+          myact:=function(l,gen)
+            local pos,map;
 
-	  l:=List([1..Length(part)],x->LeftQuotient(part[x],l[x]));
-	  l:=List(l,x->ExponentsOfPcElement(famo,x)*One(f));
-	  l:=Concatenation(l);
-	  return l;
-	end;
+            # make l  the conjugated generator list
+            l:=List([1..Length(part)],
+              x->part[x]*PcElementByExponentsNC(famo,l{ranges[x]}));
+            l:=List([1..Length(part)],x->l[x]^gen);
 
-	# as corrections involve only pcgs parts, the inages inthe
-	# radical factor are not affected.
-	ng:=List(ng,x->x/PcElementByExponents(famo,
-	  SolutionMat(boundbas,myact(sub,x))));
-	np:=InducedPcgsByGeneratorsNC(pcgs,
-          Concatenation(
-	    List(np{[1..Length(np)-tailnum]},x->x/PcElementByExponents(famo,
-	    SolutionMat(boundbas,myact(sub,x)))),
-	    np{[Length(np)-tailnum+1..Length(np)]}));
-	Assert(1,ForAll(ng,x->myact(sub,x)=sub));
-	Assert(1,ForAll(np,x->myact(sub,x)=sub));
+            # when acting with radical elements, it centralizes in the factor
+            pos:=Position(np,gen);
+            if pos=fail then
+              # not in the radical. There might be an induced automorphism of
+              # the factor which we'll have to undo
 
-      fi;
+              # find out what the images in the factor are by conjugating in the
+              # factor. This is intended to avoid image calculations
+              pos:=Position(ng,gen);
+              if pos=fail then
+
+                # must use image instead
+                map:=ImagesRepresentative(ser.factorhom,gen);
+                map:=List(uff,x->x^map);
+              else
+                map:=List(uff,x->x^nf[pos]);
+              fi;
+
+              # construct the map reps->preimages and map the gens we want (to work
+              # in the right coordinates)
+              map:=GroupGeneralMappingByImages(uf,G,map,l);
+              l:=List(uff,x->ImagesRepresentative(map,x));
+            fi;
+
+            l:=List([1..Length(part)],x->LeftQuotient(part[x],l[x]));
+            l:=List(l,x->ExponentsOfPcElement(famo,x)*One(f));
+            l:=Concatenation(l);
+            return l;
+          end;
+
+          # as corrections involve only pcgs parts, the images in the
+          # radical factor are not affected.
+          ng:=List(ng,x->x/PcElementByExponents(famo,
+            SolutionMat(boundbas,myact(sub,x))));
+          np:=InducedPcgsByGeneratorsNC(pcgs,
+            Concatenation(
+              List(np{[1..Length(np)-tailnum]},x->x/PcElementByExponents(famo,
+              SolutionMat(boundbas,myact(sub,x)))),
+              np{[Length(np)-tailnum+1..Length(np)]}));
+          Assert(1,ForAll(ng,x->myact(sub,x)=sub));
+          Assert(1,ForAll(np,x->myact(sub,x)=sub));
+
+        fi;
+
+        o1:=p1;
+      until p1=Length(sumos);
+        
     fi;
-
   od;
 
   return SubgroupByFittingFreeData(G,ng,nf,np);
