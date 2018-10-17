@@ -25,7 +25,7 @@ Error, OutputLogTo: <filename> must be a string (not a boolean or fail)
 gap> READ(fail);
 Error, READ: <filename> must be a string (not a boolean or fail)
 gap> READ_NORECOVERY(fail);
-Error, READ: <filename> must be a string (not a boolean or fail)
+fail
 gap> READ_AS_FUNC(fail);
 Error, READ_AS_FUNC: <filename> must be a string (not a boolean or fail)
 gap> READ_GAP_ROOT(fail);
