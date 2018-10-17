@@ -46,6 +46,9 @@
 #endif
 
 
+static Obj IsInputStream;
+static Obj IsOutputStream;
+
 
 /****************************************************************************
 **
@@ -135,6 +138,10 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
     Obj        outstream = 0;
     Obj        outstreamString = 0;
 
+    if (CALL_1ARGS(IsInputStream, instream) != True) {
+        ErrorQuit("READ_ALL_COMMANDS: <instream> must be an input stream", 0, 0);
+    }
+
     /* try to open the streams */
     if (!OpenInputStream(instream, echo == True)) {
         return Fail;
@@ -220,6 +227,10 @@ Obj FuncREAD_COMMAND_REAL ( Obj self, Obj stream, Obj echo )
     Int status;
     Obj result;
     Obj evalResult;
+
+    if (CALL_1ARGS(IsInputStream, stream) != True) {
+        ErrorQuit("READ_COMMAND_REAL: <stream> must be an input stream", 0, 0);
+    }
 
     result = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST(result, 1);
@@ -998,10 +1009,13 @@ Obj FuncREAD_NORECOVERY (
             return False;
         }
     }
-    else {
+    else if (CALL_1ARGS(IsInputStream, input) == True) {
         if (!OpenInputStream(input, 0)) {
             return False;
         }
+    }
+    else {
+        return Fail;
     }
 
     /* read the file */
@@ -1022,6 +1036,11 @@ Obj FuncREAD_STREAM (
     Obj                 self,
     Obj                 stream )
 {
+
+    if (CALL_1ARGS(IsInputStream, stream) != True) {
+        ErrorQuit("READ_STREAM: <stream> must be an input stream", 0, 0);
+    }
+
     /* try to open the file                                                */
     if (!OpenInputStream(stream, 0)) {
         return False;
@@ -1044,6 +1063,14 @@ Obj FuncREAD_STREAM_LOOP (
     Obj                 outstream )
 {
     Int res;
+
+    if (CALL_1ARGS(IsInputStream, instream) != True) {
+        ErrorQuit("READ_STREAM_LOOP: <instream> must be an input stream", 0, 0);
+    }
+
+    if (CALL_1ARGS(IsOutputStream, outstream) != True) {
+        ErrorQuit("READ_STREAM_LOOP: <outstream> must be an output stream", 0, 0);
+    }
 
     if (!OpenInputStream(instream, 0)) {
         return False;
@@ -1103,6 +1130,10 @@ Obj FuncREAD_AS_FUNC_STREAM (
     Obj                 self,
     Obj                 stream )
 {
+    if (CALL_1ARGS(IsInputStream, stream) != True) {
+        ErrorQuit("READ_AS_FUNC_STREAM: <stream> must be an input stream", 0, 0);
+    }
+
     /* try to open the file                                                */
     if (!OpenInputStream(stream, 0)) {
         return Fail;
@@ -2223,6 +2254,9 @@ static Int InitKernel (
 {
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
+
+    ImportFuncFromLibrary( "IsInputStream", &IsInputStream );
+    ImportFuncFromLibrary( "IsOutputStream", &IsOutputStream );
 
     /* return success                                                      */
     return 0;
