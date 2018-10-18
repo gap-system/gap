@@ -82,8 +82,8 @@ GAP_STATIC_ASSERT(sizeof(void *) == SIZEOF_VOID_P, "sizeof(void *) is wrong");
 **  at least GAP won't be the only program to run into problems.
 */
 enum {
-#ifdef PATH_MAX
-    GAP_PATH_MAX = 4096 > PATH_MAX ? 4096 : PATH_MAX,
+#if defined(PATH_MAX) && PATH_MAX > 4096
+    GAP_PATH_MAX = PATH_MAX,
 #else
     GAP_PATH_MAX = 4096,
 #endif
