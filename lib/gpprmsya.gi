@@ -754,7 +754,7 @@ BindGlobal("FLOYDS_ALGORITHM", function(rs, deg, even)
     rnd := [1..deg];
     sgn := 1;
     for i  in [1..deg-1] do
-        k := Random( rs, [ i .. deg] );
+        k := Random( rs, i, deg );
         if k <> i then
             tmp := rnd[i];
             rnd[i] := rnd[k];
