@@ -113,6 +113,7 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
             -Wrestrict dnl
             dnl -Wnull-dereference dnl
             -Wdouble-promotion dnl
+            -Wno-cast-function-type dnl
         ],ax_warn_cflags_variable,[$ax_compiler_flags_test])
         # HACK: use the warning flags determined so far also for the C++ compiler.
         # This assumes that the C and C++ compiler are "related" and thus will
