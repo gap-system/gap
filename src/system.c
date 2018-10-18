@@ -971,7 +971,7 @@ static Int storePosInteger( Char **argv, void *Where )
   UInt n;
   Char *p = argv[0];
   n = 0;
-  while (isdigit(*p)) {
+  while (IsDigit(*p)) {
     n = n * 10 + (*p-'0');
     p++;
   }
