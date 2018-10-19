@@ -21,14 +21,31 @@
 ##    library. 
 
 BindGlobal("SchurCoverFP",function( G )
-local g, i, m, n, r, D, I, M, M2,fgens,rels,gens,Drels;
+local g, i, m, n, r, D, I, M, M2,fgens,rels,gens,Drels,nam;
   
   fgens:=FreeGeneratorsOfFpGroup(G);
   rels:=RelatorsOfFpGroup(G);
   n := Length( fgens );
   m := Length( rels );
+  nam:=List(fgens,String);
+  if not ForAny(nam,x->'k' in x) then
+    r:="k";
+  else
+    r:=First(Concatenation(CHARS_LALPHA,CHARS_UALPHA),
+      x->not ForAny(nam,y->x in y));
+    if r=fail then 
+      r:="extra"; # unlikely to have the same name, will just print weirdly
+      # but not calculate wrongly
+    else
+      r:=[r];
+    fi;
+  fi;
+
+  for i in [1..m] do
+    Add(nam,Concatenation(r,String(i)));
+  od;
   
-  D := FreeGroup( n+m );
+  D := FreeGroup(nam);
   gens:=GeneratorsOfGroup(D);
   Drels := [];
   for i in [1..m] do
