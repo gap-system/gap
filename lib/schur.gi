@@ -151,7 +151,7 @@ local u,a,b,i,j,c,x,y;
       return [];
     else
       Info(InfoSchur,2,"the commutators do not generate!");
-      i:=Random([1..Length(g)]);
+      i:=Random(1,Length(g));
       x:=x*g[i];
       y:=y*h[i];
     fi;

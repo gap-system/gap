@@ -918,7 +918,7 @@ gap> InstallMethod( Random,
 >    "for full collection Z/nZ",
 >    [ CategoryCollections( IsMyZmodnZObj ) and IsWholeFamily ],
 >    R -> MyZmodnZObj( ElementsFamily( FamilyObj(R) ),
->                    Random( [ 0 .. Size( R ) - 1 ] ) ) );
+>                    Random( 0, Size( R ) - 1 ) ) );
 gap> 
 gap> InstallMethod( Size,
 >    "for full ring Z/nZ",
@@ -1329,7 +1329,7 @@ gap> InstallMethod( Random,
 >    "for full ring Z/nZ",
 >    [ CategoryCollections( IsMyZmodnZObjNonprime ) and IsWholeFamily ],
 >    R -> MyZmodnZObj( ElementsFamily( FamilyObj( R ) ),
->                    Random( [ 0 .. Size( R ) - 1 ] ) ) );
+>                    Random( 0, Size( R ) - 1 ) ) );
 gap> 
 gap> InstallMethod( Size,
 >    "for full ring Z/nZ",

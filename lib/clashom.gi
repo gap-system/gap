@@ -2054,7 +2054,7 @@ BindGlobal("LiftClassesEATrivRep",
       # split space as direct sum under normal sub -- clifford Theory
       o:=MTX.BasesMinimalSubmodules(mo);
       if Length(o)>50 then
-	o:=o{Set(List([1..50],x->Random([1..Length(o)])))};
+        o:=o{Set([1..50],x->Random(1,Length(o)))};
       fi;
 
       for i in Filtered([1..Length(o)],

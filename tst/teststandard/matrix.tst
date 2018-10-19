@@ -124,7 +124,7 @@ gap> m1lst{[1,3]}=mlst{[1,3]};
 true
 gap> ##  
 gap> r := Integers;;
-gap> n := Random([5..10]);;
+gap> n := Random(5, 10);;
 gap> rm := RandomInvertibleMat(n,r);; rmi := rm^-1;;
 gap> e*rmi = e/rm;
 true

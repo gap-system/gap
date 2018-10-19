@@ -146,7 +146,7 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
 	  elif incstb then
 	    if IsBound(tp[p]) and IsBound(tp[q]) then
 	      sch:=tp[p]*gens[i]/tp[q];
-	    elif Random([1..200])=1 then
+	    elif Random(1,200)=1 then
 	      if IsBound(tp[p]) then
 		sch:=tp[p];
 	      else

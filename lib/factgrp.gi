@@ -673,8 +673,8 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
     u:=v;
     repeat
       repeat
-	if Length(arg)<4 or Random([1,2])=1 then
-	  if IsCyclic(u) and Random([1..4])=1 then
+	if Length(arg)<4 or Random(1,2)=1 then
+	  if IsCyclic(u) and Random(1,4)=1 then
 	    # avoid being stuck with a bad first element
 	    u:=Subgroup(G,[Random(G)]);
 	  fi;

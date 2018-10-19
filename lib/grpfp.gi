@@ -394,7 +394,7 @@ local gens, lim, n, r, l, w, a,la,f,up;
     n:=n+1;
     for r in [1..l] do
       repeat
-	a:=Random([1..n]);
+	a:=Random(1,n);
       until a<>la;
       if a>Length(gens) then
 	la:=a-Length(gens);
@@ -3956,7 +3956,7 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, silent, sz,
   comb:=Concatenation(
     # a few combs: all gen but one
     List(
-      Set(List([1..3],i->Random([1..Length(gens)]))),
+      Set([1..3],i->Random(1,Length(gens))),
       i->gens{Difference([1..Length(gens)],[i])}),
     # first combination is full list and thus uninteresting
     comb{[2..Length(comb)]});

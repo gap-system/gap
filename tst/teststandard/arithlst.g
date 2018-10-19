@@ -538,10 +538,10 @@ TestOfAdditiveListArithmetic := function( R, dim )
       RunTest( AdditionTest, Random( R ), [] );
       RunTest( AdditionTest, [], Random( R ) );
       r:= Random( R );
-      intlist:= List( [ 1 .. Length( r ) + Random( [ -1 .. 1 ] ) ],
+      intlist:= List( [ 1 .. Length( r ) + Random( -1, 1 ) ],
                       x -> Random( Integers ) );
       for j in [ 1 .. Int( Length( r ) / 3 ) ] do
-        Unbind( intlist[ Random( [ 1 .. Length( intlist ) ] ) ] );
+        Unbind( intlist[ Random( 1, Length( intlist ) ) ] );
       od;
       RunTest( AdditionTest, r, intlist );
       RunTest( AdditionTest, intlist, r );
@@ -564,12 +564,12 @@ TestOfAdditiveListArithmetic := function( R, dim )
     RunTest( AdditionTest, [], vec2 );
     Unbind( vec1[ dim ] );
     RunTest( AdditionTest, vec1, vec2 );
-    Unbind( vec2[ Random( [ 1 .. dim ] ) ] );
+    Unbind( vec2[ Random( 1, dim ) ] );
     RunTest( ZeroTest, vec2 );
     RunTest( AdditiveInverseTest, vec1 );
     RunTest( AdditiveInverseTest, vec2 );
     RunTest( AdditionTest, vec1, vec2 );
-    Unbind( vec1[ Random( [ 1 .. dim ] ) ] );
+    Unbind( vec1[ Random( 1, dim ) ] );
     RunTest( AdditionTest, vec1, vec2 );
 
     mat1:= RandomSquareArray( dim, R );
@@ -586,18 +586,18 @@ TestOfAdditiveListArithmetic := function( R, dim )
     RunTest( AdditionTest, mat1, [] );
     RunTest( AdditionTest, [], mat2 );
     Unbind( mat1[ dim ] );
-    row:= mat1[ Random( [ 1 .. dim-1 ] ) ];
+    row:= mat1[ Random( 1, dim-1 ) ];
     if not IsLockedRepresentationVector( row ) then
-      Unbind( row[ Random( [ 1 .. dim ] ) ] );
+      Unbind( row[ Random( 1, dim ) ] );
     fi;
     RunTest( AdditionTest, mat1, mat2 );
-    Unbind( mat2[ Random( [ 1 .. dim ] ) ] );
+    Unbind( mat2[ Random( 1, dim ) ] );
     RunTest( ZeroTest, mat2 );
     RunTest( AdditiveInverseTest, mat1 );
     RunTest( AdditiveInverseTest, mat2 );
     RunTest( TransposedMatTest, mat2 );
     RunTest( AdditionTest, mat1, mat2 );
-    Unbind( mat1[ Random( [ 1 .. dim ] ) ] );
+    Unbind( mat1[ Random( 1, dim ) ] );
     RunTest( AdditionTest, mat1, mat2 );
 
   od;
@@ -645,10 +645,10 @@ TestOfMultiplicativeListArithmetic := function( R, dim )
     # tests of kind 2.
     for i in [ 1 .. ARITH_LST_REPS ] do
       r:= Random( R );
-      intlist:= List( [ 1 .. Length( r ) + Random( [ -1 .. 1 ] ) ],
+      intlist:= List( [ 1 .. Length( r ) + Random( -1, 1 ) ],
                       x -> Random( Integers ) );
       for j in [ 1 .. Int( Length( r ) / 3 ) ] do
-        Unbind( intlist[ Random( [ 1 .. Length( intlist ) ] ) ] );
+        Unbind( intlist[ Random( 1, Length( intlist ) ) ] );
       od;
       RunTest( MultiplicationTest, r, intlist );
       RunTest( MultiplicationTest, intlist, r );
@@ -669,12 +669,12 @@ TestOfMultiplicativeListArithmetic := function( R, dim )
     RunTest( MultiplicationTest, vec1, vec2 );
     Unbind( vec1[ dim ] );
     RunTest( MultiplicationTest, vec1, vec2 );
-    Unbind( vec2[ Random( [ 1 .. dim ] ) ] );
+    Unbind( vec2[ Random( 1, dim ) ] );
     RunTest( OneTest, vec2 );
     RunTest( InverseTest, vec1 );
     RunTest( InverseTest, vec2 );
     RunTest( MultiplicationTest, vec1, vec2 );
-    Unbind( vec1[ Random( [ 1 .. dim ] ) ] );
+    Unbind( vec1[ Random( 1, dim ) ] );
     RunTest( MultiplicationTest, vec1, vec2 );
 
     mat1:= RandomSquareArray( dim, R );
@@ -688,19 +688,19 @@ TestOfMultiplicativeListArithmetic := function( R, dim )
     RunTest( MultiplicationTest, mat1, vec2 );
     RunTest( MultiplicationTest, mat1, mat2 );
     Unbind( mat1[ dim ] );
-    row:= mat1[ Random( [ 1 .. dim-1 ] ) ];
+    row:= mat1[ Random( 1, dim-1 ) ];
     if not IsLockedRepresentationVector( row ) then
-      Unbind( row[ Random( [ 1 .. dim ] ) ] );
+      Unbind( row[ Random( 1, dim ) ] );
     fi;
     RunTest( MultiplicationTest, vec1, mat2 );
     RunTest( MultiplicationTest, mat1, vec2 );
     RunTest( MultiplicationTest, mat1, mat2 );
-    Unbind( mat2[ Random( [ 1 .. dim ] ) ] );
+    Unbind( mat2[ Random( 1, dim ) ] );
     RunTest( OneTest, mat2 );
     RunTest( InverseTest, mat1 );
     RunTest( InverseTest, mat2 );
     RunTest( MultiplicationTest, mat1, mat2 );
-    Unbind( mat1[ Random( [ 1 .. dim ] ) ] );
+    Unbind( mat1[ Random( 1, dim ) ] );
     RunTest( MultiplicationTest, mat1, mat2 );
 
   od;

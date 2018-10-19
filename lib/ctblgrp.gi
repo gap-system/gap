@@ -2364,7 +2364,7 @@ local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
         Error("could not find suitable elements?");
       fi;
       repeat
-	rti:=Random([1..Length(rt)]);
+	rti:=Random(1, Length(rt));
       until rtl[rti]=false;
       rtl[rti]:=true;
       r:=rt[rti];

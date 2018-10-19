@@ -715,7 +715,7 @@ InstallMethod( RandomHashKey, "for sparse hash tables", true,
 
         if Size( hash ) = 0 then return fail; fi;
         repeat
-            i := Random( [1..hash!.LengthArray] );
+            i := Random( 1, hash!.LengthArray );
         until hash!.KeyArray[i] <> fail;
         return hash!.KeyArray[i];
     end );

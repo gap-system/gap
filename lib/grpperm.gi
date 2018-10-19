@@ -1678,7 +1678,7 @@ InstallGlobalFunction( ApproximateSuborbitsStabilizerPermGroup,
 
     processStabGen:=function()
     local punkt,img,a,b,gen;
-      if Random([1,2])=1 then
+      if Random(1,2)=1 then
 	# next one
 	currGen:=currGen+1;
 	if currGen>Length(Ggens) then
@@ -1691,8 +1691,8 @@ InstallGlobalFunction( ApproximateSuborbitsStabilizerPermGroup,
 	a:=currPt;
 	b:=currGen;
       else
-	a:=Random([1..Length(orbit)]);
-	b:=Random([1..Length(Ggens)]);
+        a:=Random(1, Length(orbit));
+        b:=Random(1, Length(Ggens));
       fi;
       # map a with b
       img:=orbit[a]^Ggens[b];

@@ -886,7 +886,7 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
         # try random elements
         elm := rnd[rni];
         img := rne[rni];
-        i := Random( [ 1 .. Length( mapi[1] ) ] );
+        i := Random( 1, Length( mapi[1] ) );
         rnd[rni] := rnd[rni] * mapi[1][i];
         rne[rni] := rne[rni] * mapi[2][i];
         rni := rni mod two + 1;
