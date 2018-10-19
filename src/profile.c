@@ -366,8 +366,7 @@ void InformProfilingThatThisIsAForkedGAP(void)
         // Allow 20 chracters to allow space for .%d.gz
         const int SUPPORTED_PATH_LEN = GAP_PATH_MAX - 20;
         if(strlen(profileState.filename) > SUPPORTED_PATH_LEN) {
-           Pr("Filename can be at most %d character when forking", SUPPORTED_PATH_LEN, 0L);
-           SyExit(1);
+           Panic("Filename can be at most %d character when forking", SUPPORTED_PATH_LEN);
         }
         if (endsWithgz(profileState.filename)) {
             snprintf(filenamecpy, sizeof(filenamecpy), "%.*s.%d.gz",
@@ -599,17 +598,14 @@ struct InterpreterHooks profileHooks = { visitStat,
 void enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
 {
     if(profileState_Active) {
-        fprintf(stderr, "-P or -C can only be passed once\n");
-        exit(1);
+        Panic("-P or -C can only be passed once\n");
     }
     
     profileState.OutputRepeats = repeats;
 
     fopenMaybeCompressed(filename, &profileState);
     if(!profileState.Stream) {
-        fprintf(stderr, "Failed to open '%s' for profiling output.\n", filename);
-        fprintf(stderr, "Abandoning starting GAP.\n");
-        exit(1);
+        Panic("Failed to open '%s' for profiling output.\n", filename);
     }
 
     strlcpy(profileState.filename, filename, GAP_PATH_MAX);

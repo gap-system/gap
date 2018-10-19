@@ -372,11 +372,8 @@ static void LoadBagData ( void )
   flags = LoadUInt1();
   size = LoadUInt();
 
-    if (TNAM_TNUM(type) == NULL)
-      {
-        Pr("Bad type %d, size %d\n",type,size);
-        exit(1);
-      }
+  if (TNAM_TNUM(type) == NULL)
+    Panic("Bad type %d, size %d\n", (int)type, (int)size);
 
   /* Get GASMAN to set up the bag for me */
   bag = NextBagRestoring( type, flags, size );

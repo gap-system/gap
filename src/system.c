@@ -563,7 +563,7 @@ void Panic_(const char * file, int line, const char * fmt, ...)
     vfprintf(stderr, fmt, args);
     va_end (args);
     fputs("\n", stderr);
-    exit(1);
+    SyExit(1);
 }
 
 
