@@ -33,6 +33,10 @@
 #include "hpc/misc.h"
 #endif
 
+#ifdef USE_JULIA_GC
+#include "julia.h"
+#endif
+
 #include <assert.h>
 #include <fcntl.h>
 #include <stdarg.h>
@@ -547,7 +551,10 @@ void SyUSleep ( UInt msecs )
 void SyExit (
     UInt                ret )
 {
-        exit( (int)ret );
+#ifdef USE_JULIA_GC
+    jl_atexit_hook(ret);
+#endif
+    exit( (int)ret );
 }
 
 
