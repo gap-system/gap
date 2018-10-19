@@ -250,14 +250,45 @@ static inline void SET_LCKS_FUNC(Obj func, Obj locks)
 extern Int IsKernelFunction(Obj func);
 
 
-#define HDLR_0ARGS(func)        ((ObjFunc_0ARGS)HDLR_FUNC(func,0))
-#define HDLR_1ARGS(func)        ((ObjFunc_1ARGS)HDLR_FUNC(func,1))
-#define HDLR_2ARGS(func)        ((ObjFunc_2ARGS)HDLR_FUNC(func,2))
-#define HDLR_3ARGS(func)        ((ObjFunc_3ARGS)HDLR_FUNC(func,3))
-#define HDLR_4ARGS(func)        ((ObjFunc_4ARGS)HDLR_FUNC(func,4))
-#define HDLR_5ARGS(func)        ((ObjFunc_5ARGS)HDLR_FUNC(func,5))
-#define HDLR_6ARGS(func)        ((ObjFunc_6ARGS)HDLR_FUNC(func,6))
-#define HDLR_XARGS(func)        ((ObjFunc_1ARGS)HDLR_FUNC(func,7))
+static inline ObjFunc_0ARGS HDLR_0ARGS(Obj func)
+{
+    return (ObjFunc_0ARGS)HDLR_FUNC(func, 0);
+}
+
+static inline ObjFunc_1ARGS HDLR_1ARGS(Obj func)
+{
+    return (ObjFunc_1ARGS)HDLR_FUNC(func, 1);
+}
+
+static inline ObjFunc_2ARGS HDLR_2ARGS(Obj func)
+{
+    return (ObjFunc_2ARGS)HDLR_FUNC(func, 2);
+}
+
+static inline ObjFunc_3ARGS HDLR_3ARGS(Obj func)
+{
+    return (ObjFunc_3ARGS)HDLR_FUNC(func, 3);
+}
+
+static inline ObjFunc_4ARGS HDLR_4ARGS(Obj func)
+{
+    return (ObjFunc_4ARGS)HDLR_FUNC(func, 4);
+}
+
+static inline ObjFunc_5ARGS HDLR_5ARGS(Obj func)
+{
+    return (ObjFunc_5ARGS)HDLR_FUNC(func, 5);
+}
+
+static inline ObjFunc_6ARGS HDLR_6ARGS(Obj func)
+{
+    return (ObjFunc_6ARGS)HDLR_FUNC(func, 6);
+}
+
+static inline ObjFunc_1ARGS HDLR_XARGS(Obj func)
+{
+    return (ObjFunc_1ARGS)HDLR_FUNC(func, 7);
+}
 
 extern Obj NargError(Obj func, Int actual);
 
@@ -265,7 +296,10 @@ extern Obj NargError(Obj func, Int actual);
 **
 *F  IS_FUNC( <obj> )  . . . . . . . . . . . . . check if object is a function
 */
-#define IS_FUNC(obj)    (TNUM_OBJ(obj) == T_FUNCTION)
+static inline int IS_FUNC(Obj obj)
+{
+    return TNUM_OBJ(obj) == T_FUNCTION;
+}
 
 
 /****************************************************************************
@@ -292,14 +326,45 @@ extern Obj NargError(Obj func, Int actual);
 **  callee,  or it collects the  arguments in a list  if  the callee allows a
 **  variable number of arguments.
 */
-#define CALL_0ARGS(f)                     HDLR_0ARGS(f)(f)
-#define CALL_1ARGS(f,a1)                  HDLR_1ARGS(f)(f,a1)
-#define CALL_2ARGS(f,a1,a2)               HDLR_2ARGS(f)(f,a1,a2)
-#define CALL_3ARGS(f,a1,a2,a3)            HDLR_3ARGS(f)(f,a1,a2,a3)
-#define CALL_4ARGS(f,a1,a2,a3,a4)         HDLR_4ARGS(f)(f,a1,a2,a3,a4)
-#define CALL_5ARGS(f,a1,a2,a3,a4,a5)      HDLR_5ARGS(f)(f,a1,a2,a3,a4,a5)
-#define CALL_6ARGS(f,a1,a2,a3,a4,a5,a6)   HDLR_6ARGS(f)(f,a1,a2,a3,a4,a5,a6)
-#define CALL_XARGS(f,as)                  HDLR_XARGS(f)(f,as)
+static inline Obj CALL_0ARGS(Obj f)
+{
+    return HDLR_0ARGS(f)(f);
+}
+
+static inline Obj CALL_1ARGS(Obj f, Obj a1)
+{
+    return HDLR_1ARGS(f)(f, a1);
+}
+
+static inline Obj CALL_2ARGS(Obj f, Obj a1, Obj a2)
+{
+    return HDLR_2ARGS(f)(f, a1, a2);
+}
+
+static inline Obj CALL_3ARGS(Obj f, Obj a1, Obj a2, Obj a3)
+{
+    return HDLR_3ARGS(f)(f, a1, a2, a3);
+}
+
+static inline Obj CALL_4ARGS(Obj f, Obj a1, Obj a2, Obj a3, Obj a4)
+{
+    return HDLR_4ARGS(f)(f, a1, a2, a3, a4);
+}
+
+static inline Obj CALL_5ARGS(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
+{
+    return HDLR_5ARGS(f)(f, a1, a2, a3, a4, a5);
+}
+
+static inline Obj CALL_6ARGS(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
+{
+    return HDLR_6ARGS(f)(f, a1, a2, a3, a4, a5, a6);
+}
+
+static inline Obj CALL_XARGS(Obj f, Obj as)
+{
+    return HDLR_XARGS(f)(f, as);
+}
 
 
 /****************************************************************************
@@ -317,29 +382,45 @@ extern Obj NargError(Obj func, Int actual);
 **  call  the  real  handler  stored  in the   profiling  information of  the
 **  function.
 */
-#define CALL_0ARGS_PROF(f) \
-        HDLR_0ARGS(PROF_FUNC(f))(f)
+static inline Obj CALL_0ARGS_PROF(Obj f)
+{
+    return HDLR_0ARGS(PROF_FUNC(f))(f);
+}
 
-#define CALL_1ARGS_PROF(f,a1) \
-        HDLR_1ARGS(PROF_FUNC(f))(f,a1)
+static inline Obj CALL_1ARGS_PROF(Obj f, Obj a1)
+{
+    return HDLR_1ARGS(PROF_FUNC(f))(f, a1);
+}
 
-#define CALL_2ARGS_PROF(f,a1,a2) \
-        HDLR_2ARGS(PROF_FUNC(f))(f,a1,a2)
+static inline Obj CALL_2ARGS_PROF(Obj f, Obj a1, Obj a2)
+{
+    return HDLR_2ARGS(PROF_FUNC(f))(f, a1, a2);
+}
 
-#define CALL_3ARGS_PROF(f,a1,a2,a3) \
-        HDLR_3ARGS(PROF_FUNC(f))(f,a1,a2,a3)
+static inline Obj CALL_3ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3)
+{
+    return HDLR_3ARGS(PROF_FUNC(f))(f, a1, a2, a3);
+}
 
-#define CALL_4ARGS_PROF(f,a1,a2,a3,a4) \
-        HDLR_4ARGS(PROF_FUNC(f))(f,a1,a2,a3,a4)
+static inline Obj CALL_4ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3, Obj a4)
+{
+    return HDLR_4ARGS(PROF_FUNC(f))(f, a1, a2, a3, a4);
+}
 
-#define CALL_5ARGS_PROF(f,a1,a2,a3,a4,a5) \
-        HDLR_5ARGS(PROF_FUNC(f))(f,a1,a2,a3,a4,a5)
+static inline Obj CALL_5ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
+{
+    return HDLR_5ARGS(PROF_FUNC(f))(f, a1, a2, a3, a4, a5);
+}
 
-#define CALL_6ARGS_PROF(f,a1,a2,a3,a4,a5,a6) \
-        HDLR_6ARGS(PROF_FUNC(f))(f,a1,a2,a3,a4,a5,a6)
+static inline Obj CALL_6ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
+{
+    return HDLR_6ARGS(PROF_FUNC(f))(f, a1, a2, a3, a4, a5, a6);
+}
 
-#define CALL_XARGS_PROF(f,as) \
-        HDLR_XARGS(PROF_FUNC(f))(f,as)
+static inline Obj CALL_XARGS_PROF(Obj f, Obj as)
+{
+    return HDLR_XARGS(PROF_FUNC(f))(f, as);
+}
 
 
 /****************************************************************************
