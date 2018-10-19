@@ -179,7 +179,7 @@ function(G,dom,all)
     t:=Length(GeneratorsOfGroup(gp));
     if HasSize(gp) and not HasStabChainMutable(gp) and t>4 then
       sel:=GeneratorsOfGroup(gp);
-      t:=Group(sel{Set(List([1,2],i->Random([1..t])))},One(gp));
+      t:=Group(sel{Set([1,2],i->Random(1,t))},One(gp));
       while Size(t)<Size(gp) do
 	t:=ClosureGroup(t,Random(sel));
       od;

@@ -5323,9 +5323,9 @@ function( grp )
     fi;
 
     # construct the next element
-    i := Random([ 1 .. Length(seed[1]) ]);
-    j := Random([ 1 .. Length(seed[1]) ]);
-    k := Random([ 1 .. Length(seed[1]) ]);
+    i := Random( 1, Length(seed[1]) );
+    j := Random( 1, Length(seed[1]) );
+    k := Random( 1, Length(seed[1]) );
     
     seed[3] := seed[3]*seed[1][i];
     seed[1][j] := seed[1][j]*seed[3];

@@ -949,7 +949,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
       else
 	# then something random
 	repeat
-	  if Length(gens)>2 and Random([1,2])=1 then
+	  if Length(gens)>2 and Random(1,2)=1 then
 	    # try to get down to 2 gens
 	    gens:=List([1,2],i->Random(H));
 	  else
@@ -959,7 +959,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
 	  for k in [1..Length(gens)] do
 	    go:=Order(gens[k]);
 	    # try a p-element
-	    if Random([1..3*Length(gens)])=1 then
+	    if Random(1,3*Length(gens))=1 then
 	      gens[k]:=gens[k]^(go/(Random(Factors(go))));
 	    fi;
 	  od;

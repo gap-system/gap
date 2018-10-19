@@ -1416,18 +1416,18 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
 	      else
 		# then something random
 		repeat
-		  if Length(gens)>2 and Random([1,2])=1 then
+		  if Length(gens)>2 and Random(1,2)=1 then
 		    # try to get down to 2 gens
 		    gens:=List([1,2],i->Random(u));
 		  else
-		    gens:=List([1..Random([2..Length(SmallGeneratingSet(u))])],
+		    gens:=List([1..Random(2, Length(SmallGeneratingSet(u)))],
 		      i->Random(u));
 		  fi;
                   # try to get small orders
 		  for k in [1..Length(gens)] do
 		    go:=Order(gens[k]);
 		    # try a p-element
-		    if Random([1..2*Length(gens)])=1 then
+		    if Random(1, 2*Length(gens))=1 then
 		      gens[k]:=gens[k]^(go/(Random(Factors(go))));
 		    fi;
 		  od;

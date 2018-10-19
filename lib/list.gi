@@ -2186,7 +2186,7 @@ InstallMethod(Shuffle, [IsDenseList and IsMutable], function(l)
   local len, j, tmp, i;
   len := Length(l);
   for i in [1..len-1] do
-    j := Random([i..len]);
+    j := Random(i, len);
     if i <> j then
       tmp := l[i];
       l[i] := l[j];

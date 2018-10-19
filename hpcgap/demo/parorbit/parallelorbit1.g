@@ -73,7 +73,7 @@ Worker := function(gens,op,hashins,hashouts,f)
   Print("Hello there\n");
   atomic readonly hashins,hashouts,gens do
       n := Length(hashins);
-      i := Random([1..n]);
+      i := Random(1,n);
       lens := EmptyPlist(n);
       while true do
           readies := 0;

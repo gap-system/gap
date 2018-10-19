@@ -513,7 +513,7 @@ BindGlobal( "Matrix_MinimalPolynomialSameField", function( fld, mat, ind )
           #Add(vec,Random([one,zero]));
           vec[i]:=Random([one,zero]);
         od;
-        vec[Random([1..n])] := one; # make sure it's not zero
+        vec[Random(1,n)] := one; # make sure it's not zero
         #ConvertToVectorRepNC(vec,fld);
         MakeImmutable(vec);
         span := [];
@@ -3681,9 +3681,9 @@ InstallGlobalFunction( RandomUnimodularMat, function ( arg )
     for c  in [1..m]  do
 
         # multiply two random rows with a random? unimodular 2x2 matrix
-        i := Random(rs, [1..m]);
+        i := Random(rs, 1, m);
         repeat
-            j := Random(rs, [1..m]);
+            j := Random(rs, 1, m);
         until j <> i;
         repeat
             a := Random( rs, Integers );
@@ -3695,9 +3695,9 @@ InstallGlobalFunction( RandomUnimodularMat, function ( arg )
         mat[j] := ShallowCopy(gcd.coeff3 * v + gcd.coeff4 * w);
 
         # multiply two random cols with a random? unimodular 2x2 matrix
-        k := Random(rs, [1..m]);
+        k := Random(rs, 1, m);
         repeat
-            l := Random(rs, [1..m]);
+            l := Random(rs, 1, m);
         until l <> k;
         repeat
             a := Random( rs, Integers );

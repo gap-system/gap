@@ -129,7 +129,7 @@ gap> CheckSortParallel := function(sortedlist, perm, maxval)
 >   list1orig[i] := sortedlist[i^perm];
 > od;
 > list1 := DEEP_COPY_OBJ(list1orig);
-> list2 := List([1..maxval], x -> Random([1..100]));
+> list2 := List([1..maxval], x -> Random(1, 100));
 > listcpy := List(list2);
 > SortParallel(list1, list2);
 > if ForAny([1..maxval], x -> list2[x^perm] <> listcpy[x]) then

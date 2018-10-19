@@ -1600,7 +1600,7 @@ InstallMethodWithRandomSource(Random,
     [IsRandomSource, IsIntegers],
     0,
     function( rg, Integers )
-    return NrBitsInt( Random( rg, [0..2^20-1] ) ) - 10;
+    return NrBitsInt( Random( rg, 0, 2^20-1 ) ) - 10;
     end );
 
 

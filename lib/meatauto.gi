@@ -427,10 +427,10 @@ local V, nv, W, nw, U, echu, F, matsV, matsW, k, g1, g2, max_stack_len, _t,
     # do preprocessing to make random matrices list in parallel
 
     for i in [1..10] do
-      g1:=Random([1..k]);
+      g1:=Random(1, k);
       g2:=g1;
       while g2 = g1 and Length(r.mats)>1 do
-	g2:=Random([1..k]);
+	g2:=Random(1, k);
       od;
       Add(r.mats,[r.mats[g1][1]*r.mats[g2][1], 
 		  r.mats[g1][2]*r.mats[g2][2]]);
@@ -500,9 +500,9 @@ local V, nv, W, nw, U, echu, F, matsV, matsW, k, g1, g2, max_stack_len, _t,
 
       # first take two elements of the list and multiply them
       # together
-      g1:=Random([1..k]);
+      g1:=Random(1, k);
       repeat
-	g2:=Random([1..k]);
+	g2:=Random(1, k);
       until g2 <> g1 or Length(r.mats)=1;
       Add(r.mats,[r.mats[g1][1]*r.mats[g2][1], 
 		  r.mats[g1][2]*r.mats[g2][2]]);

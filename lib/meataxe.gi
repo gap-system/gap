@@ -889,10 +889,10 @@ end;
 
 SMTX_SMCoRaEl:=function(matrices,ngens,newgenlist,dim,F)
 local g1,g2,coefflist,M,pol;
-  g1:=Random([1..ngens]);
+  g1:=Random(1, ngens);
   g2:=g1;
   while g2=g1 and ngens>1 do
-     g2:=Random([1..ngens]);
+     g2:=Random(1, ngens);
   od;
   ngens:=ngens + 1;
   matrices[ngens]:=matrices[g1] * matrices[g2];
@@ -1005,10 +1005,10 @@ SMTX_IrreducibilityTest:=function( module )
    newgenlist:=[];
    # Do a small amount of preprocessing to increase the generator set.
    for i in [1..1] do
-      g1:=Random([1..ngens]);
+      g1:=Random(1, ngens);
       g2:=g1;
       while g2=g1 and Length(matrices) > 1 do
-         g2:=Random([1..ngens]);
+         g2:=Random(1, ngens);
       od;
       ngens:=ngens + 1;
       matrices[ngens]:=matrices[g1] * matrices[g2];
@@ -2116,9 +2116,9 @@ SMTX_Distinguish:=function( cf, i )
       wno:=wno + 1;
       # Add a new generator if there are less than 8 or if wno mod 10=0.
       if  ngens<8 or wno mod 10 = 0 then
-         x:=Random([1..ngens]);
+         x:=Random(1, ngens);
          y:=x;
-         while y = x and ngens > 1 do y:=Random([1..ngens]); od;
+         while y = x and ngens > 1 do y:=Random(1, ngens); od;
          Add(el[1], [x, y]);
          ngens:=ngens + 1;
          matsi[ngens]:=matsi[x] * matsi[y];

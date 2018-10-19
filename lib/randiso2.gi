@@ -290,7 +290,7 @@ IsomorphismSolvableSmallGroups := function( g, h )
    Info( InfoRandIso, 3, "testing ", -i, " generating strategies" );
    while poses = fail or i < 0 do
       i := i + 1;
-      nposes := List( [ 1 .. lmin ], x -> Random( [ 1 .. lcoc ] ) );
+      nposes := List( [ 1 .. lmin ], x -> Random( 1, lcoc ) );
       nqual := Product( coclen{ nposes } );
       if nqual < qual and
           Size( Group( List( coc1{ nposes }, Random ) ) ) = size then

@@ -17,8 +17,8 @@ for i in [1..iter] do
   if i mod 100000 = 0 then
     Display(i);
   fi;
-  data[Random([1..n])] := t;
-  SetElmWPObj(wp[Random([1..m])], Int(i/1024)+1, t);
+  data[Random(1,n)] := t;
+  SetElmWPObj(wp[Random(1,m)], Int(i/1024)+1, t);
 od;
 
 for i in [1..m] do
@@ -34,8 +34,8 @@ for i in [iter+1..iter*2] do
   if i mod 100000 = 0 then
     Display(i);
   fi;
-  data[Random([1..n])] := t;
-  SetElmWPObj(wp[Random([1..m])], Int(i/1024)+1, t);
+  data[Random(1,n)] := t;
+  SetElmWPObj(wp[Random(1,m)], Int(i/1024)+1, t);
 od;
 
 min := iter;

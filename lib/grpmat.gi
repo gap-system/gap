@@ -177,7 +177,7 @@ local F, gens, evals, espaces, is, ise, gen, i, j,module,list,ind,vecs,mins;
 	mins:=MTX.BasesMinimalSubmodules(module);
       else
 	if Length(mins)>7 then
-	  mins:=mins{Set(List([1..7],x->Random([1..Length(mins)])))};
+	  mins:=mins{Set([1..7],x->Random(1,Length(mins)))};
 	fi;
       fi;
 

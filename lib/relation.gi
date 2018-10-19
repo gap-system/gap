@@ -959,7 +959,7 @@ InstallGlobalFunction(RandomBinaryRelationOnPoints,
             Error("error, <n> must be a positive integer");
         fi;
         return BinaryRelationOnPointsNC(
-            List([1..n],i->List([1..Random([1..n])],j->Random([1..n]))));
+            List([1..n],i->List([1..Random(1,n)],j->Random(1,n))));
     end);
 
 ############################################################################

@@ -1053,9 +1053,9 @@ InstallGlobalFunction( TransStabCSPG, function(G,H)
 
         # first, take random element of G\H
         repeat
-            v := Random([1..Length( chainG.orbit )]);
+            v := Random(1, Length( chainG.orbit ));
             g := CosetRepAsWord( x, chainG.orbit[v], chainG.transversal );
-            u := Random([1..Length( chainstabgroup.orbit )]);
+            u := Random(1, Length( chainstabgroup.orbit ));
             Append(g,CosetRepAsWord( y, chainstabgroup.orbit[u],
                                         chainstabgroup.transversal ));
             notinH := false;
@@ -1334,7 +1334,7 @@ InstallGlobalFunction( RandomElmAsWord, function( chain )
     word:=[];
     stb:= chain;
     while IsBound(stb.stabilizer) do
-       v := Random([1..Length(stb.orbit)]);
+       v := Random(1,Length(stb.orbit));
        coset := CosetRepAsWord(stb.orbit[1],stb.orbit[v],stb.transversal);
        len := Length(word);
        for i in [1..Length(coset)] do

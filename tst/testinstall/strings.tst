@@ -207,7 +207,7 @@ gap> OldCopyToStringRep := function(s)
 >    return(tmp);
 > end;
 function( s ) ... end
-gap> s := List([1..2^16], x->CharInt(Random([63..126])));;
+gap> s := List([1..2^16], x->CharInt(Random(63,126)));;
 gap> IsStringRep(s);
 false
 gap> cp1 := OldCopyToStringRep(s);;

@@ -814,7 +814,7 @@ InstallMethodWithRandomSource(Random,
     [ IsRandomSource, IsZmodnZObjNonprimeCollection and IsWholeFamily ],
     {} -> RankFilter( IsRing ),
     { rs, R } -> ZmodnZObj( ElementsFamily( FamilyObj( R ) ),
-                    Random( rs, [ 0 .. Size( R ) - 1 ] ) ) );
+                    Random( rs, 0, Size( R ) - 1 ) ) );
 
 
 #############################################################################

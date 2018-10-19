@@ -595,7 +595,7 @@ function(R)
   else
     n:=1000; 
   fi;
-  nrterms:=20+Random([-19..100+n]);
+  nrterms:=20+Random(-19,100+n);
   degbound:=RootInt(nrterms,n)+3;
   ran:=Concatenation([0,0],[0..degbound]);
   p:=Zero(R);
