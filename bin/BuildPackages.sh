@@ -213,15 +213,6 @@ build_one_package() {
       cp bin/xgap.sh "$GAPROOT/bin"
     ;;
 
-    simpcomp*)
-      # Old versions of simpcomp were not setting the executable
-      # bit for some files; they also were not copying the bistellar
-      # executable to the right place
-      (chmod a+x configure depcomp install-sh missing || :) && \
-      run_configure_and_make && \
-      mkdir -p bin && test -x bin/bistellar || mv bistellar bin
-    ;;
-
     *)
       run_configure_and_make
     ;;
