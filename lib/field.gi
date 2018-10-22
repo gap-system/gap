@@ -235,7 +235,23 @@ InstallMethod( ClosureDivisionRing,
 
 #############################################################################
 ##
-#M  ViewString( <F> )  . . . . . . . . . . . . . . . . . . . . . .  view a field
+#M  ViewObj( <F> )  . . . . . . . . . . . . . . . . . . . . . .  view a field
+##
+InstallMethod( ViewObj,
+    "for a field",
+    [ IsField ],
+    function( F )
+    if HasSize( F ) and IsInt( Size( F ) ) then
+      Print( "<field of size ", String(Size( F )), ">" );
+    else
+      Print( "<field in characteristic ", Characteristic( F ), ">" );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  ViewString( <F> ) . . . . . . . . . . . . . . . . . . . . .  view a field
 ##
 InstallMethod( ViewString,
     "for a field",
