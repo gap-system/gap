@@ -65,7 +65,7 @@ Obj GAP_EvalString(const char * cmd)
 //
 // Returns the GAP object containing
 // <string>
-Obj GAP_MakeString(char * string)
+Obj GAP_MakeString(const char * string)
 {
     return MakeString(string);
 }
