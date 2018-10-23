@@ -1,0 +1,9 @@
+
+PrintStatFuncs
+    - table, instead use
+    const char *    (* CStringsForStats[256] ) ( Stat stat );
+void InstallPrintStatFunc(Int pos, void (*stat)(Stat))
+
+What are these?
+PrintSeqStat
+OriginalPrintStatFuncsForHook
