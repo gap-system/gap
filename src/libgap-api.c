@@ -8,6 +8,7 @@
 #include "gapstate.h"
 #include "gvars.h"
 #include "lists.h"
+#include "plist.h"
 #include "streams.h"
 #include "stringobj.h"
 
@@ -59,4 +60,28 @@ Obj GAP_EvalString(const char * cmd)
     instream = DoOperation1Args(streamFunc, MakeString(cmd));
     res = READ_ALL_COMMANDS(instream, False, True, viewObjFunc);
     return res;
+}
+
+//
+// Returns the GAP object containing
+// <string>
+Obj GAP_MakeString(char * string)
+{
+    return MakeString(string);
+}
+
+//
+// Returns a pointer to the
+// contents of the GAP string object <string>
+char * GAP_CSTR_STRING(Obj string)
+{
+    return CSTR_STRING(string);
+}
+
+//
+// Returns a new empty plain list
+// with capacity <capacity>
+Obj GAP_NewPlist(Int capacity)
+{
+    return NEW_PLIST(T_PLIST_EMPTY, capacity);
 }
