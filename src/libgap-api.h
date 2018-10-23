@@ -17,7 +17,7 @@ void GAP_Initialize(int          argc,
 
 Obj GAP_ValueGlobalVariable(const char * name);
 Obj GAP_EvalString(const char * cmd);
-Obj GAP_MakeString(char * string);
+Obj GAP_MakeString(const char * string);
 char * GAP_CSTR_STRING(Obj string);
 Obj GAP_NewPlist(Int capacity);
 
