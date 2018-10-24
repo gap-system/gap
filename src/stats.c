@@ -45,6 +45,7 @@
 inline UInt EXEC_STAT(Stat stat)
 {
     UInt tnum = TNUM_STAT(stat);
+    SET_BRK_CALL_TO(stat);
     return (*STATE(CurrExecStatFuncs)[ tnum ]) ( stat );
 }
 
