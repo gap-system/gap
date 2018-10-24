@@ -215,12 +215,9 @@ static Obj  HdlrFunc2 (
  Obj t_6 = 0;
  Obj t_7 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* InstallOtherMethod( getter, "system getter", true, [ IsAttributeStoringRep and tester ], GETTER_FLAGS, GETTER_FUNCTION( name ) ); */
  t_1 = GF_InstallOtherMethod;
@@ -255,12 +252,10 @@ static Obj  HdlrFunc2 (
  CALL_6ARGS( t_1, a_getter, t_2, t_3, t_4, t_5, t_6 );
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -274,12 +269,9 @@ static Obj  HdlrFunc4 (
  Obj t_1 = 0;
  Obj t_2 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* obj!.(name) := val; */
  t_1 = OBJ_HVAR( (1 << 16) | 1 );
@@ -293,12 +285,10 @@ static Obj  HdlrFunc4 (
  CALL_2ARGS( t_1, a_obj, t_2 );
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -322,14 +312,11 @@ static Obj  HdlrFunc3 (
  Obj t_7 = 0;
  Obj t_8 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,2,0,oldFrame);
  ASS_LVAR( 1, a_name );
  ASS_LVAR( 2, a_tester );
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* if mutflag then */
  CHECK_BOOL( a_mutflag )
@@ -396,12 +383,10 @@ static Obj  HdlrFunc3 (
  /* fi */
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -431,12 +416,9 @@ static Obj  HdlrFunc5 (
  (void)l_pair;
  (void)l_family;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* imp_filter := WITH_IMPS_FLAGS( AND_FLAGS( imp_filter, req_filter ) ); */
  t_2 = GF_WITH__IMPS__FLAGS;
@@ -544,12 +526,10 @@ static Obj  HdlrFunc5 (
  C_ASS_LIST_FPL_INTOBJ( t_1, INTOBJ_INT(27), INTOBJ_INT(0) )
  
  /* return family; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return l_family;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -565,12 +545,9 @@ static Obj  HdlrFunc6 (
  Obj t_3 = 0;
  Obj t_4 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return NEW_FAMILY( typeOfFamilies, name, EMPTY_FLAGS, EMPTY_FLAGS ); */
  t_2 = GF_NEW__FAMILY;
@@ -580,12 +557,10 @@ static Obj  HdlrFunc6 (
  CHECK_BOUND( t_4, "EMPTY_FLAGS" )
  t_1 = CALL_4ARGS( t_2, a_typeOfFamilies, a_name, t_3, t_4 );
  CHECK_FUNC_RESULT( t_1 )
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -602,12 +577,9 @@ static Obj  HdlrFunc7 (
  Obj t_3 = 0;
  Obj t_4 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return NEW_FAMILY( typeOfFamilies, name, FLAGS_FILTER( req ), EMPTY_FLAGS ); */
  t_2 = GF_NEW__FAMILY;
@@ -618,12 +590,10 @@ static Obj  HdlrFunc7 (
  CHECK_BOUND( t_4, "EMPTY_FLAGS" )
  t_1 = CALL_4ARGS( t_2, a_typeOfFamilies, a_name, t_3, t_4 );
  CHECK_FUNC_RESULT( t_1 )
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -642,12 +612,9 @@ static Obj  HdlrFunc8 (
  Obj t_4 = 0;
  Obj t_5 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return NEW_FAMILY( typeOfFamilies, name, FLAGS_FILTER( req ), FLAGS_FILTER( imp ) ); */
  t_2 = GF_NEW__FAMILY;
@@ -659,12 +626,10 @@ static Obj  HdlrFunc8 (
  CHECK_FUNC_RESULT( t_4 )
  t_1 = CALL_4ARGS( t_2, a_typeOfFamilies, a_name, t_3, t_4 );
  CHECK_FUNC_RESULT( t_1 )
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -685,12 +650,9 @@ static Obj  HdlrFunc9 (
  Obj t_5 = 0;
  Obj t_6 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return NEW_FAMILY( Subtype( typeOfFamilies, filter ), name, FLAGS_FILTER( req ), FLAGS_FILTER( imp ) ); */
  t_2 = GF_NEW__FAMILY;
@@ -705,12 +667,10 @@ static Obj  HdlrFunc9 (
  CHECK_FUNC_RESULT( t_5 )
  t_1 = CALL_4ARGS( t_2, t_3, a_name, t_4, t_5 );
  CHECK_FUNC_RESULT( t_1 )
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -728,12 +688,9 @@ static Obj  HdlrFunc10 (
  Obj t_6 = 0;
  Obj t_7 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* if LEN_LIST( arg ) = 1 then */
  t_3 = GF_LEN__LIST;
@@ -749,7 +706,6 @@ static Obj  HdlrFunc10 (
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
   t_1 = CALL_2ARGS( t_2, t_3, t_4 );
   CHECK_FUNC_RESULT( t_1 )
-  RES_BRK_CURR_STAT();
   SWITCH_TO_OLD_FRAME(oldFrame);
   return t_1;
   
@@ -771,7 +727,6 @@ static Obj  HdlrFunc10 (
    C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
    t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
    CHECK_FUNC_RESULT( t_1 )
-   RES_BRK_CURR_STAT();
    SWITCH_TO_OLD_FRAME(oldFrame);
    return t_1;
    
@@ -794,7 +749,6 @@ static Obj  HdlrFunc10 (
     C_ELM_LIST_FPL( t_6, a_arg, INTOBJ_INT(3) )
     t_1 = CALL_4ARGS( t_2, t_3, t_4, t_5, t_6 );
     CHECK_FUNC_RESULT( t_1 )
-    RES_BRK_CURR_STAT();
     SWITCH_TO_OLD_FRAME(oldFrame);
     return t_1;
     
@@ -818,7 +772,6 @@ static Obj  HdlrFunc10 (
      C_ELM_LIST_FPL( t_7, a_arg, INTOBJ_INT(4) )
      t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, t_7 );
      CHECK_FUNC_RESULT( t_1 )
-     RES_BRK_CURR_STAT();
      SWITCH_TO_OLD_FRAME(oldFrame);
      return t_1;
      
@@ -839,12 +792,10 @@ static Obj  HdlrFunc10 (
  /* fi */
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -889,12 +840,9 @@ static Obj  HdlrFunc11 (
  (void)l_i;
  (void)l_match;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* cache := family!.TYPES; */
  t_1 = ElmComObj( a_family, R_TYPES );
@@ -1006,7 +954,6 @@ static Obj  HdlrFunc11 (
       AssGVar( G_NEW__TYPE__CACHE__HIT, t_1 );
       
       /* return cached; */
-      RES_BRK_CURR_STAT();
       SWITCH_TO_OLD_FRAME(oldFrame);
       return l_cached;
       
@@ -1103,7 +1050,6 @@ static Obj  HdlrFunc11 (
       AssGVar( G_NEW__TYPE__CACHE__HIT, t_1 );
       
       /* return cached; */
-      RES_BRK_CURR_STAT();
       SWITCH_TO_OLD_FRAME(oldFrame);
       return l_cached;
       
@@ -1313,12 +1259,10 @@ static Obj  HdlrFunc11 (
  AssComObj( a_family, R_nTYPES, t_1 );
  
  /* return type; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return l_type;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -1340,12 +1284,9 @@ static Obj  HdlrFunc12 (
  Obj t_8 = 0;
  Obj t_9 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return NEW_TYPE( typeOfTypes, family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), fail, fail ); */
  t_2 = GF_NEW__TYPE;
@@ -1365,12 +1306,10 @@ static Obj  HdlrFunc12 (
  CHECK_BOUND( t_5, "fail" )
  t_1 = CALL_5ARGS( t_2, a_typeOfTypes, a_family, t_3, t_4, t_5 );
  CHECK_FUNC_RESULT( t_1 )
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -1393,12 +1332,9 @@ static Obj  HdlrFunc13 (
  Obj t_8 = 0;
  Obj t_9 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return NEW_TYPE( typeOfTypes, family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), data, fail ); */
  t_2 = GF_NEW__TYPE;
@@ -1416,12 +1352,10 @@ static Obj  HdlrFunc13 (
  CHECK_BOUND( t_4, "fail" )
  t_1 = CALL_5ARGS( t_2, a_typeOfTypes, a_family, t_3, a_data, t_4 );
  CHECK_FUNC_RESULT( t_1 )
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -1440,12 +1374,9 @@ static Obj  HdlrFunc14 (
  Obj t_6 = 0;
  (void)l_type;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* if not IsFamily( arg[1] ) then */
  t_4 = GF_IsFamily;
@@ -1519,12 +1450,10 @@ static Obj  HdlrFunc14 (
  
  /* return type; */
  CHECK_BOUND( l_type, "type" )
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return l_type;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -1547,12 +1476,9 @@ static Obj  HdlrFunc15 (
  Obj t_10 = 0;
  Obj t_11 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return NEW_TYPE( TypeOfTypes, type![1], WITH_IMPS_FLAGS( AND_FLAGS( type![2], FLAGS_FILTER( filter ) ) ), type![3], type ); */
  t_2 = GF_NEW__TYPE;
@@ -1572,12 +1498,10 @@ static Obj  HdlrFunc15 (
  t_6 = ElmPosObj( a_type, 3 );
  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, a_type );
  CHECK_FUNC_RESULT( t_1 )
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -1601,12 +1525,9 @@ static Obj  HdlrFunc16 (
  Obj t_10 = 0;
  Obj t_11 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return NEW_TYPE( TypeOfTypes, type![1], WITH_IMPS_FLAGS( AND_FLAGS( type![2], FLAGS_FILTER( filter ) ) ), data, type ); */
  t_2 = GF_NEW__TYPE;
@@ -1625,12 +1546,10 @@ static Obj  HdlrFunc16 (
  CHECK_FUNC_RESULT( t_5 )
  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, a_data, a_type );
  CHECK_FUNC_RESULT( t_1 )
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -1650,12 +1569,9 @@ static Obj  HdlrFunc17 (
  (void)l_p;
  (void)l_type;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* if not IsType( arg[1] ) then */
  t_4 = GF_IsType;
@@ -1708,12 +1624,10 @@ static Obj  HdlrFunc17 (
  /* fi */
  
  /* return type; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return l_type;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -1734,12 +1648,9 @@ static Obj  HdlrFunc18 (
  Obj t_8 = 0;
  Obj t_9 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return NEW_TYPE( TypeOfTypes, type![1], SUB_FLAGS( type![2], FLAGS_FILTER( filter ) ), type![3], type ); */
  t_2 = GF_NEW__TYPE;
@@ -1756,12 +1667,10 @@ static Obj  HdlrFunc18 (
  t_6 = ElmPosObj( a_type, 3 );
  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, a_type );
  CHECK_FUNC_RESULT( t_1 )
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -1783,12 +1692,9 @@ static Obj  HdlrFunc19 (
  Obj t_8 = 0;
  Obj t_9 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return NEW_TYPE( TypeOfTypes, type![1], SUB_FLAGS( type![2], FLAGS_FILTER( filter ) ), data, type ); */
  t_2 = GF_NEW__TYPE;
@@ -1804,12 +1710,10 @@ static Obj  HdlrFunc19 (
  CHECK_FUNC_RESULT( t_5 )
  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, a_data, a_type );
  CHECK_FUNC_RESULT( t_1 )
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -1825,12 +1729,9 @@ static Obj  HdlrFunc20 (
  Obj t_4 = 0;
  Obj t_5 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* if not IsType( arg[1] ) then */
  t_4 = GF_IsType;
@@ -1863,7 +1764,6 @@ static Obj  HdlrFunc20 (
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(2) )
   t_1 = CALL_2ARGS( t_2, t_3, t_4 );
   CHECK_FUNC_RESULT( t_1 )
-  RES_BRK_CURR_STAT();
   SWITCH_TO_OLD_FRAME(oldFrame);
   return t_1;
   
@@ -1879,7 +1779,6 @@ static Obj  HdlrFunc20 (
   C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(3) )
   t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
   CHECK_FUNC_RESULT( t_1 )
-  RES_BRK_CURR_STAT();
   SWITCH_TO_OLD_FRAME(oldFrame);
   return t_1;
   
@@ -1887,12 +1786,10 @@ static Obj  HdlrFunc20 (
  /* fi */
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -1904,21 +1801,16 @@ static Obj  HdlrFunc21 (
 {
  Obj t_1 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return K![1]; */
  t_1 = ElmPosObj( a_K, 1 );
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -1930,21 +1822,16 @@ static Obj  HdlrFunc22 (
 {
  Obj t_1 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return K![2]; */
  t_1 = ElmPosObj( a_K, 2 );
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -1956,21 +1843,16 @@ static Obj  HdlrFunc23 (
 {
  Obj t_1 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return K![3]; */
  t_1 = ElmPosObj( a_K, 3 );
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -1982,23 +1864,18 @@ static Obj  HdlrFunc24 (
  Obj  a_data )
 {
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* K![3] := data; */
  AssPosObj( a_K, 3, a_data );
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -2013,12 +1890,9 @@ static Obj  HdlrFunc25 (
  Obj t_3 = 0;
  Obj t_4 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return FlagsType( TypeObj( obj ) ); */
  t_2 = GF_FlagsType;
@@ -2027,12 +1901,10 @@ static Obj  HdlrFunc25 (
  CHECK_FUNC_RESULT( t_3 )
  t_1 = CALL_1ARGS( t_2, t_3 );
  CHECK_FUNC_RESULT( t_1 )
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -2047,12 +1919,9 @@ static Obj  HdlrFunc26 (
  Obj t_3 = 0;
  Obj t_4 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return DataType( TypeObj( obj ) ); */
  t_2 = GF_DataType;
@@ -2061,12 +1930,10 @@ static Obj  HdlrFunc26 (
  CHECK_FUNC_RESULT( t_3 )
  t_1 = CALL_1ARGS( t_2, t_3 );
  CHECK_FUNC_RESULT( t_1 )
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -2084,12 +1951,9 @@ static Obj  HdlrFunc27 (
  Obj t_4 = 0;
  (void)l_flags;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* if not IsType( type ) then */
  t_4 = GF_IsType;
@@ -2157,12 +2021,10 @@ static Obj  HdlrFunc27 (
  /* fi */
  
  /* return obj; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return a_obj;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -2184,12 +2046,9 @@ static Obj  HdlrFunc28 (
  (void)l_type;
  (void)l_newtype;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* if IS_POSOBJ( obj ) then */
  t_3 = GF_IS__POSOBJ;
@@ -2436,12 +2295,10 @@ static Obj  HdlrFunc28 (
  /* fi */
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -2458,12 +2315,9 @@ static Obj  HdlrFunc29 (
  Obj t_4 = 0;
  Obj t_5 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* if IS_AND_FILTER( filter ) then */
  t_3 = GF_IS__AND__FILTER;
@@ -2621,12 +2475,10 @@ static Obj  HdlrFunc29 (
  /* fi */
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -2640,12 +2492,9 @@ static Obj  HdlrFunc30 (
 {
  Obj t_1 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* if val then */
  CHECK_BOOL( a_val )
@@ -2669,12 +2518,10 @@ static Obj  HdlrFunc30 (
  /* fi */
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -2712,12 +2559,9 @@ static Obj  HdlrFunc31 (
  (void)l_extra;
  (void)l_nflags;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* obj := arg[1]; */
  C_ELM_LIST_FPL( t_1, a_arg, INTOBJ_INT(1) )
@@ -3041,12 +2885,10 @@ static Obj  HdlrFunc31 (
  /* od */
  
  /* return obj; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return l_obj;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -3061,12 +2903,9 @@ static Obj  HdlrFunc1 (
  Obj t_4 = 0;
  Obj t_5 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* InstallAttributeFunction( function ( name, filter, getter, setter, tester, mutflag )
       InstallOtherMethod( getter, "system getter", true, [ IsAttributeStoringRep and tester ], GETTER_FLAGS, GETTER_FUNCTION( name ) );
@@ -3870,12 +3709,10 @@ static Obj  HdlrFunc1 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }

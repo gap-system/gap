@@ -27,12 +27,9 @@ static Obj  HdlrFunc3 (
  Obj t_1 = 0;
  Obj t_2 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return false and 1; */
  t_2 = False;
@@ -51,12 +48,10 @@ static Obj  HdlrFunc3 (
   "<expr> must be 'true' or 'false' or a filter (not a %s)",
   (Int)TNAM_OBJ(t_2), 0L );
  }
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -69,12 +64,9 @@ static Obj  HdlrFunc4 (
  Obj t_2 = 0;
  Obj t_3 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return true or 1; */
  t_3 = True;
@@ -85,12 +77,10 @@ static Obj  HdlrFunc4 (
   t_3 = (Obj)(UInt)(INTOBJ_INT(1) != False);
   t_1 = (t_3 ? True : False);
  }
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -104,12 +94,9 @@ static Obj  HdlrFunc5 (
  Obj t_3 = 0;
  Obj t_4 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return Center and IsAssociative; */
  t_2 = GC_Center;
@@ -133,12 +120,10 @@ static Obj  HdlrFunc5 (
   "<expr> must be 'true' or 'false' or a filter (not a %s)",
   (Int)TNAM_OBJ(t_2), 0L );
  }
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -152,12 +137,9 @@ static Obj  HdlrFunc6 (
  Obj t_3 = 0;
  Obj t_4 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* return IsAssociative and Center; */
  t_2 = GC_IsAssociative;
@@ -181,12 +163,10 @@ static Obj  HdlrFunc6 (
   "<expr> must be 'true' or 'false' or a filter (not a %s)",
   (Int)TNAM_OBJ(t_2), 0L );
  }
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -201,12 +181,9 @@ static Obj  HdlrFunc2 (
  Obj t_4 = 0;
  Obj t_5 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* Print( false and 1, "\n" ); */
  t_1 = GF_Print;
@@ -339,12 +316,10 @@ static Obj  HdlrFunc2 (
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -356,12 +331,9 @@ static Obj  HdlrFunc1 (
  Obj t_1 = 0;
  Obj t_2 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* runtest := function (  )
       Print( false and 1, "\n" );
@@ -393,12 +365,10 @@ static Obj  HdlrFunc1 (
  AssGVar( G_runtest, t_1 );
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
