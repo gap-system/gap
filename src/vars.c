@@ -163,7 +163,6 @@ UInt            ExecAssLVar (
     Obj                 rhs;            /* value of right hand side        */
 
     /* assign the right hand side to the local variable                    */
-    SET_BRK_CURR_STAT( stat );
     rhs = EVAL_EXPR(READ_STAT(stat, 1));
     ASS_LVAR(READ_STAT(stat, 0), rhs);
 
@@ -320,7 +319,6 @@ UInt            ExecAssHVar (
     Obj                 rhs;            /* value of right hand side        */
 
     /* assign the right hand side to the higher variable                   */
-    SET_BRK_CURR_STAT( stat );
     rhs = EVAL_EXPR(READ_STAT(stat, 1));
     ASS_HVAR(READ_STAT(stat, 0), rhs);
 
@@ -436,7 +434,6 @@ UInt            ExecAssGVar (
     Obj                 rhs;            /* value of right hand side        */
 
     /* assign the right hand side to the global variable                   */
-    SET_BRK_CURR_STAT( stat );
     rhs = EVAL_EXPR(READ_STAT(stat, 1));
     AssGVar(READ_STAT(stat, 0), rhs);
 
@@ -554,7 +551,6 @@ UInt            ExecAssList (
     Obj                 rhs;            /* right hand side, right operand  */
 
     /* evaluate the list (checking is done by 'ASS_LIST')                  */
-    SET_BRK_CURR_STAT( stat );
     list = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate the position                                               */
@@ -603,7 +599,6 @@ UInt            ExecAss2List (
     Obj                 rhs;            /* right hand side, right operand  */
 
     /* evaluate the list (checking is done by 'ASS_LIST')                  */
-    SET_BRK_CURR_STAT( stat );
     list = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate the position                                               */
@@ -635,7 +630,6 @@ UInt            ExecAsssList (
     Obj                 rhss;           /* right hand sides, right operand */
 
     /* evaluate the list (checking is done by 'ASSS_LIST')                 */
-    SET_BRK_CURR_STAT( stat );
     list = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate and check the positions                                    */
@@ -681,7 +675,6 @@ UInt            ExecAssListLevel (
 
     /* evaluate lists (if this works, then <lists> is nested <level> deep, */
     /* checking it is nested <level>+1 deep is done by 'AssListLevel')     */
-    SET_BRK_CURR_STAT( stat );
     lists = EVAL_EXPR(READ_STAT(stat, 0));
     narg = SIZE_STAT(stat)/sizeof(Stat) -3;
     ixs = NEW_PLIST(T_PLIST, narg);
@@ -730,7 +723,6 @@ UInt            ExecAsssListLevel (
 
     /* evaluate lists (if this works, then <lists> is nested <level> deep, */
     /* checking it is nested <level>+1 deep is done by 'AsssListLevel')    */
-    SET_BRK_CURR_STAT( stat );
     lists = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate and check the positions                                    */
@@ -768,7 +760,6 @@ UInt            ExecUnbList (
     Int i;
 
     /* evaluate the list (checking is done by 'LEN_LIST')                  */
-    SET_BRK_CURR_STAT( stat );
     list = EVAL_EXPR(READ_STAT(stat, 0));
     narg = SIZE_STAT(stat)/sizeof(Stat) - 1;
     if (narg == 1) {
@@ -1207,7 +1198,6 @@ UInt            ExecAssRecName (
     Obj                 rhs;            /* rhs, right operand              */
 
     /* evaluate the record (checking is done by 'ASS_REC')                 */
-    SET_BRK_CURR_STAT( stat );
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
@@ -1239,7 +1229,6 @@ UInt            ExecAssRecExpr (
     Obj                 rhs;            /* rhs, right operand              */
 
     /* evaluate the record (checking is done by 'ASS_REC')                 */
-    SET_BRK_CURR_STAT( stat );
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate the name and convert it to a record name                   */
@@ -1270,7 +1259,6 @@ UInt            ExecUnbRecName (
     UInt                rnam;           /* name, left operand              */
 
     /* evaluate the record (checking is done by 'UNB_REC')                 */
-    SET_BRK_CURR_STAT( stat );
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
@@ -1298,7 +1286,6 @@ UInt            ExecUnbRecExpr (
     UInt                rnam;           /* name, left operand              */
 
     /* evaluate the record (checking is done by 'UNB_REC')                 */
-    SET_BRK_CURR_STAT( stat );
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate the name and convert it to a record name                   */
@@ -1558,7 +1545,6 @@ UInt            ExecAssPosObj (
     Obj                 rhs;            /* right hand side, right operand  */
 
     /* evaluate the list (checking is done by 'ASS_LIST')                  */
-    SET_BRK_CURR_STAT( stat );
     list = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate and check the position                                     */
@@ -1597,7 +1583,6 @@ UInt            ExecUnbPosObj (
     Int                 p;              /* position, as a C integer        */
 
     /* evaluate the list (checking is done by 'LEN_LIST')                  */
-    SET_BRK_CURR_STAT( stat );
     list = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate and check the position                                     */
@@ -1772,7 +1757,6 @@ UInt            ExecAssComObjName (
     Obj                 rhs;            /* rhs, right operand              */
 
     /* evaluate the record (checking is done by 'ASS_REC')                 */
-    SET_BRK_CURR_STAT( stat );
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
@@ -1804,7 +1788,6 @@ UInt            ExecAssComObjExpr (
     Obj                 rhs;            /* rhs, right operand              */
 
     /* evaluate the record (checking is done by 'ASS_REC')                 */
-    SET_BRK_CURR_STAT( stat );
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate the name and convert it to a record name                   */
@@ -1835,7 +1818,6 @@ UInt            ExecUnbComObjName (
     UInt                rnam;           /* name, left operand              */
 
     /* evaluate the record (checking is done by 'UNB_REC')                 */
-    SET_BRK_CURR_STAT( stat );
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
@@ -1863,7 +1845,6 @@ UInt            ExecUnbComObjExpr (
     UInt                rnam;           /* name, left operand              */
 
     /* evaluate the record (checking is done by 'UNB_REC')                 */
-    SET_BRK_CURR_STAT( stat );
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate the name and convert it to a record name                   */

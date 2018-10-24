@@ -64,19 +64,6 @@ extern  UInt 		(* IntrExecStatFuncs[256]) ( Stat stat );
 
 /****************************************************************************
 **
-*F  SET_BRK_CURR_STAT(<stat>) . . . . . . . set currently executing statement
-*F  OLD_BRK_CURR_STAT . . . . . . . . .  define variable to remember CurrStat
-*F  REM_BRK_CURR_STAT() . . . . . . .  remember currently executing statement
-*F  RES_BRK_CURR_STAT() . . . . . . . . restore currently executing statement
-*/
-#define SET_BRK_CURR_STAT(stat) do {} while (0) /* do nothing */
-#define OLD_BRK_CURR_STAT       do {} while (0) /* do nothing */ ;
-#define REM_BRK_CURR_STAT()     do {} while (0) /* do nothing */
-#define RES_BRK_CURR_STAT()     do {} while (0) /* do nothing */
-
-
-/****************************************************************************
-**
 *V  ReturnObjStat . . . . . . . . . . . . . . . .  result of return-statement
 **
 **  'ReturnObjStat'  is   the result of the   return-statement  that was last

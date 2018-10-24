@@ -209,7 +209,6 @@ UInt            ExecIf (
     Stat                body;           /* body                            */
 
     /* if the condition evaluates to 'true', execute the if-branch body    */
-    SET_BRK_CURR_STAT( stat );
     cond = READ_STAT(stat, 0);
     if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
@@ -230,7 +229,6 @@ UInt            ExecIfElse (
     Stat                body;           /* body                            */
 
     /* if the condition evaluates to 'true', execute the if-branch body    */
-    SET_BRK_CURR_STAT( stat );
     cond = READ_STAT(stat, 0);
     if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
@@ -260,7 +258,6 @@ UInt            ExecIfElif (
     for ( i = 1; i <= nr; i++ ) {
 
         /* if the condition evaluates to 'true', execute the branch body   */
-        SET_BRK_CURR_STAT( stat );
         cond = READ_STAT(stat, 2 * (i - 1));
         if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
@@ -291,7 +288,6 @@ UInt            ExecIfElifElse (
     for ( i = 1; i <= nr; i++ ) {
 
         /* if the condition evaluates to 'true', execute the branch body   */
-        SET_BRK_CURR_STAT( stat );
         cond = READ_STAT(stat, 2 * (i - 1));
         if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
@@ -369,7 +365,6 @@ static ALWAYS_INLINE UInt ExecForHelper(Stat stat, UInt nr)
     }
 
     /* evaluate the list                                                   */
-    SET_BRK_CURR_STAT( stat );
     list = EVAL_EXPR(READ_STAT(stat, 1));
 
     /* get the body                                                        */
@@ -511,7 +506,6 @@ static ALWAYS_INLINE UInt ExecForRangeHelper(Stat stat, UInt nr)
     lvar = LVAR_REFLVAR(READ_STAT(stat, 0));
 
     /* evaluate the range                                                  */
-    SET_BRK_CURR_STAT( stat );
     VisitStatIfHooked(READ_STAT(stat, 1));
     elm = EVAL_EXPR(READ_EXPR(READ_STAT(stat, 1), 0));
     while ( ! IS_INTOBJ(elm) ) {
@@ -591,7 +585,6 @@ UInt ExecAtomic(Stat stat)
   UInt nrexprs,i,j,status;
   Obj o;
   
-  SET_BRK_CURR_STAT( stat );
   nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
   
   j = 0;
@@ -678,7 +671,6 @@ static ALWAYS_INLINE UInt ExecWhileHelper(Stat stat, UInt nr)
     body3 = (nr >= 3) ? READ_STAT(stat, 3) : 0;
 
     /* while the condition evaluates to 'true', execute the body           */
-    SET_BRK_CURR_STAT( stat );
     while ( EVAL_BOOL_EXPR( cond ) != False ) {
 
 #if !defined(HAVE_SIGNAL)
@@ -694,8 +686,6 @@ static ALWAYS_INLINE UInt ExecWhileHelper(Stat stat, UInt nr)
             EXEC_STAT_IN_LOOP(body2);
         if (nr >= 3)
             EXEC_STAT_IN_LOOP(body3);
-
-        SET_BRK_CURR_STAT( stat );
 
     }
 
@@ -752,7 +742,6 @@ static ALWAYS_INLINE UInt ExecRepeatHelper(Stat stat, UInt nr)
     body3 = (nr >= 3) ? READ_STAT(stat, 3) : 0;
 
     /* execute the body until the condition evaluates to 'true'            */
-    SET_BRK_CURR_STAT( stat );
     do {
 
 #if !defined(HAVE_SIGNAL)
@@ -768,8 +757,6 @@ static ALWAYS_INLINE UInt ExecRepeatHelper(Stat stat, UInt nr)
             EXEC_STAT_IN_LOOP(body2);
         if (nr >= 3)
             EXEC_STAT_IN_LOOP(body3);
-
-        SET_BRK_CURR_STAT( stat );
 
     } while ( EVAL_BOOL_EXPR( cond ) == False );
 
@@ -870,9 +857,6 @@ UInt ExecInfo (
     selectors = EVAL_EXPR( ARGI_INFO( stat, 1 ) );
     level = EVAL_EXPR( ARGI_INFO( stat, 2) );
 
-    SET_BRK_CALL_TO( stat );
-    SET_BRK_CURR_STAT( stat );
-
     selected = InfoCheckLevel(selectors, level);
     if (selected == True) {
 
@@ -917,9 +901,6 @@ UInt ExecAssert2Args (
     Obj             level;
     Obj             decision;
 
-    SET_BRK_CURR_STAT( stat );
-    SET_BRK_CALL_TO( stat );
-
     level = EVAL_EXPR(READ_STAT(stat, 0));
     if ( ! LT(CurrentAssertionLevel, level) )  {
         decision = EVAL_EXPR(READ_STAT(stat, 1));
@@ -930,7 +911,6 @@ UInt ExecAssert2Args (
           "you may 'return true;' or 'return false;'");
         }
         if ( decision == False ) {
-            SET_BRK_CURR_STAT( stat );
             ErrorReturnVoid( "Assertion failure", 0L, 0L, "you may 'return;'");
         }
     }
@@ -953,9 +933,6 @@ UInt ExecAssert3Args (
     Obj             decision;
     Obj             message;
 
-    SET_BRK_CURR_STAT( stat );
-    SET_BRK_CALL_TO( stat );
-
     level = EVAL_EXPR(READ_STAT(stat, 0));
     if ( ! LT(CurrentAssertionLevel, level) ) {
         decision = EVAL_EXPR(READ_STAT(stat, 1));
@@ -968,6 +945,7 @@ UInt ExecAssert3Args (
         if ( decision == False ) {
             message = EVAL_EXPR(READ_STAT(stat, 2));
             if ( message != (Obj) 0 ) {
+                SET_BRK_CALL_TO( stat );
                 if (IS_STRING_REP( message ))
                     PrintString1( message );
                 else
@@ -1004,7 +982,6 @@ UInt            ExecReturnObj (
 #endif
 
     /* evaluate the expression                                             */
-    SET_BRK_CURR_STAT( stat );
     STATE(ReturnObjStat) = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* return up to function interpreter                                   */
@@ -1115,7 +1092,6 @@ UInt ExecIntrStat (
     HaveInterrupt();
 
     /* and now for something completely different                          */
-    SET_BRK_CURR_STAT( stat );
     if ( SyStorOverrun != 0 ) {
       SyStorOverrun = 0; /* reset */
       ErrorReturnVoid(
