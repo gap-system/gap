@@ -185,4 +185,12 @@ return l[2, 1]; at *stdin*:39 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> quit;
+gap> 
+gap> # verify issue #1373 is fixed
+gap> InstallMethod( Matrix, [IsFilter, IsSemiring, IsMatrixObj], {a,b,c} -> fail );
+Error, <oper> must be an operation in
+  <<compiled GAP code>> from GAPROOT/lib/oper1.g:377 in function INSTALL_METHOD called from 
+<<compiled GAP code>> from GAPROOT/lib/oper1.g:337 in function InstallMethod called from
+<function "InstallMethod">( <arguments> )
+ called from read-eval loop at *stdin*:42
 gap> QUIT;
