@@ -69,7 +69,6 @@ typedef struct GAPState {
     Char * In;
 
     /* From stats.c */
-    Stat CurrStat;
     Obj  ReturnObjStat;
     UInt (**CurrExecStatFuncs)(Stat);
 

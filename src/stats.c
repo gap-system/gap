@@ -74,17 +74,6 @@ UInt            (* ExecStatFuncs[256]) ( Stat stat );
 
 /****************************************************************************
 **
-*V  CurrStat  . . . . . . . . . . . . . . . . .  currently executed statement
-**
-**  'CurrStat'  is the statement that  is currently being executed.  The sole
-**  purpose of 'CurrStat' is to make it possible to  point to the location in
-**  case an error is signalled.
-*/
-/* TL: Stat            CurrStat; */
-
-
-/****************************************************************************
-**
 *V  ReturnObjStat . . . . . . . . . . . . . . . .  result of return-statement
 **
 **  'ReturnObjStat'  is   the result of the   return-statement  that was last

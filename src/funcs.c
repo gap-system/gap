@@ -828,13 +828,12 @@ void            ExecBegin ( Obj frame )
     Obj                 execState;      /* old execution state             */
 
     /* remember the old execution state                                    */
-    execState = NEW_PLIST(T_PLIST, 3);
-    SET_LEN_PLIST(execState, 3);
+    execState = NEW_PLIST(T_PLIST, 2);
+    SET_LEN_PLIST(execState, 2);
     SET_ELM_PLIST(execState, 1, FuncsState()->ExecState);
     SET_ELM_PLIST(execState, 2, STATE(CurrLVars));
     /* the 'CHANGED_BAG(STATE(CurrLVars))' is needed because it is delayed        */
     CHANGED_BAG( STATE(CurrLVars) );
-    SET_ELM_PLIST(execState, 3, INTOBJ_INT((Int)STATE(CurrStat)));
     FuncsState()->ExecState = execState;
 
     /* set up new state                                                    */
@@ -845,16 +844,7 @@ void            ExecBegin ( Obj frame )
 void            ExecEnd (
     UInt                error )
 {
-    /* if everything went fine                                             */
-    if ( ! error ) {
-
-        /* the state must be primal again                                  */
-        assert( STATE(CurrStat)  == 0 );
-
-    }
-
     /* switch back to the old state                                    */
-    SET_BRK_CURR_STAT((Stat)INT_INTOBJ(ELM_PLIST(FuncsState()->ExecState, 3)));
     SWITCH_TO_OLD_LVARS( ELM_PLIST(FuncsState()->ExecState, 2) );
     FuncsState()->ExecState = ELM_PLIST(FuncsState()->ExecState, 1);
 }
