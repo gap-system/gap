@@ -93,7 +93,6 @@ static UInt ExecProccallOpts(Stat call)
 {
   Obj opts;
   
-  SET_BRK_CURR_STAT( call );
   opts = EVAL_EXPR(READ_STAT(call, 0));
   CALL_1ARGS(PushOptions, opts);
 
@@ -131,8 +130,6 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call)
     Obj result;
 
     // evaluate the function
-    if (ignoreResult)
-        SET_BRK_CURR_STAT( call );
     func = EVAL_EXPR( FUNC_CALL( call ) );
  
     // evaluate the arguments
@@ -426,16 +423,6 @@ void RecursionDepthTrap( void )
 
 #endif
 
-static void ExecFuncHelper(void)
-{
-    OLD_BRK_CURR_STAT   // old executing statement
-
-    // execute the statement sequence
-    REM_BRK_CURR_STAT();
-    EXEC_STAT( OFFSET_FIRST_STAT );
-    RES_BRK_CURR_STAT();
-}
-
 static Obj PopReturnObjStat(void)
 {
     Obj returnObjStat = STATE(ReturnObjStat);
@@ -500,7 +487,7 @@ static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg)
         ASS_LVAR( i+1, arg[i] );
 
     /* execute the statement sequence                                      */
-    ExecFuncHelper();
+    EXEC_STAT( OFFSET_FIRST_STAT );
 #ifdef HPCGAP
     CLEAR_LOCK_STACK();
 #endif
@@ -588,7 +575,7 @@ static Obj DoExecFuncXargs(Obj func, Obj args)
     }
 
     /* execute the statement sequence                                      */
-    ExecFuncHelper();
+    EXEC_STAT( OFFSET_FIRST_STAT );
 #ifdef HPCGAP
     CLEAR_LOCK_STACK();
 #endif
@@ -641,7 +628,7 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
     ASS_LVAR(named+1, args);
 
     /* execute the statement sequence                                      */
-    ExecFuncHelper();
+    EXEC_STAT( OFFSET_FIRST_STAT );
 #ifdef HPCGAP
     CLEAR_LOCK_STACK();
 #endif
