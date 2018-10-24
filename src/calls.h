@@ -534,6 +534,8 @@ extern Obj ArgStringToList(const Char *nams_c);
 extern void PrintFunction (
     Obj                 func );
 
+extern void PrintKernelFunction(Obj func);
+
 
 /****************************************************************************
 **

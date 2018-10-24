@@ -79,15 +79,15 @@ f := function(a,b..) end;
                  ^^
 gap> Display(RETURN_FIRST);
 function ( object... )
-    <<kernel code from src/gap.c:RETURN_FIRST>>
+    <<kernel code>> from src/gap.c:RETURN_FIRST
 end
 gap> Print(INSTALL_METHOD_FLAGS,"\n");
 function ( <<arg-1>>, <<arg-2>>, <<arg-3>>, <<arg-4>>, <<arg-5>>, <<arg-6>> )
-    <<compiled GAP code from GAPROOT/lib/oper1.g:146>>
+    <<compiled GAP code>> from GAPROOT/lib/oper1.g:146
 end
 gap> Display(InstallMethod);
 function ( <<arg-1>>... )
-    <<compiled GAP code from GAPROOT/lib/oper1.g:337>>
+    <<compiled GAP code>> from GAPROOT/lib/oper1.g:337
 end
 gap> [1..2];
 [ 1, 2 ]

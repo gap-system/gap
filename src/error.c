@@ -172,36 +172,36 @@ Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
     Obj func = FUNC_LVARS(context);
     GAP_ASSERT(func);
     Stat call = STAT_LVARS(context);
+    Obj  body = BODY_FUNC(func);
     if (IsKernelFunction(func)) {
-        Pr("<compiled statement> ", 0L, 0L);
-        /* HACK: close the output again */
-        CloseOutput();
-        return 0;
+        PrintKernelFunction(func);
+        Obj funcname = NAME_FUNC(func);
+        if (funcname) {
+            Pr(" in function %g", (Int)funcname, 0);
+        }
     }
-    Obj body = BODY_FUNC(func);
-    if (call < OFFSET_FIRST_STAT ||
-        call > SIZE_BAG(body) - sizeof(StatHeader)) {
+    else if (call < OFFSET_FIRST_STAT ||
+             call > SIZE_BAG(body) - sizeof(StatHeader)) {
         Pr("<corrupted statement> ", 0L, 0L);
-        /* HACK: close the output again */
-        CloseOutput();
-        return 0;
+    }
+    else {
+        Obj currLVars = STATE(CurrLVars);
+        SWITCH_TO_OLD_LVARS(context);
+        GAP_ASSERT(call == BRK_CALL_TO());
+
+        Int type = TNUM_STAT(call);
+        Obj filename = GET_FILENAME_BODY(body);
+        if (FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) {
+            PrintStat(call);
+            Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
+        }
+        else if (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM) {
+            PrintExpr(call);
+            Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
+        }
+        SWITCH_TO_OLD_LVARS(currLVars);
     }
 
-    Obj currLVars = STATE(CurrLVars);
-    SWITCH_TO_OLD_LVARS(context);
-    GAP_ASSERT(call == BRK_CALL_TO());
-
-    Int type = TNUM_STAT(call);
-    Obj filename = GET_FILENAME_BODY(body);
-    if (FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) {
-        PrintStat(call);
-        Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
-    }
-    else if (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM) {
-        PrintExpr(call);
-        Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
-    }
-    SWITCH_TO_OLD_LVARS(currLVars);
     /* HACK: close the output again */
     CloseOutput();
     return 0;

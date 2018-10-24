@@ -1166,27 +1166,7 @@ void PrintFunction (
 
         /* print the body                                                  */
         if (IsKernelFunction(func)) {
-            UInt outputtedfunc = 0;
-            if ( BODY_FUNC(func) ) {
-                Obj body = BODY_FUNC(func);
-                if ( GET_FILENAME_BODY(body) ) {
-                    if ( GET_LOCATION_BODY(body) ) {
-                        Pr("<<kernel code from %g:%g>>",
-                            (Int)GET_FILENAME_BODY(body),
-                            (Int)GET_LOCATION_BODY(body));
-                            outputtedfunc = 1;
-                    }
-                    else if ( GET_STARTLINE_BODY(body) ) {
-                        Pr("<<compiled GAP code from %g:%d>>",
-                            (Int)GET_FILENAME_BODY(body),
-                            GET_STARTLINE_BODY(body));
-                            outputtedfunc = 1;
-                    }
-                }
-            }
-            if(!outputtedfunc) {
-                Pr("<<kernel or compiled code>>",0L,0L);
-            }
+            PrintKernelFunction(func);
         }
         else {
             SWITCH_TO_NEW_LVARS( func, narg, NLOC_FUNC(func),
@@ -1198,6 +1178,28 @@ void PrintFunction (
     
     /* print 'end'                                                         */
     Pr("end",0L,0L);
+}
+
+void PrintKernelFunction(Obj func)
+{
+    GAP_ASSERT(IsKernelFunction(func));
+    Obj body = BODY_FUNC(func);
+    Obj filename = body ? GET_FILENAME_BODY(body) : 0;
+    if (filename) {
+        if ( GET_LOCATION_BODY(body) ) {
+            Pr("<<kernel code>> from %g:%g",
+                (Int)filename,
+                (Int)GET_LOCATION_BODY(body));
+        }
+        else if ( GET_STARTLINE_BODY(body) ) {
+            Pr("<<compiled GAP code>> from %g:%d",
+                (Int)filename,
+                GET_STARTLINE_BODY(body));
+        }
+    }
+    else {
+        Pr("<<kernel or compiled code>>", 0, 0);
+    }
 }
 
 

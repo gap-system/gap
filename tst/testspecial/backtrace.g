@@ -72,3 +72,6 @@ l := [[1]];; f := {} -> l[2,1];;
 f();
 Where();
 quit;
+
+# verify issue #1373 is fixed
+InstallMethod( Matrix, [IsFilter, IsSemiring, IsMatrixObj], {a,b,c} -> fail );
