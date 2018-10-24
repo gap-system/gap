@@ -884,11 +884,12 @@ InstallMethod( ImaginaryPart,
     "for a quaternion",
     [ IsQuaternion and IsSCAlgebraObj ],
     function( quat )
-    local v, z;
+    local v, z, a;
 
     v:= ExtRepOfObj( quat );
     z:= Zero( v[1] );
-    return ObjByExtRep( FamilyObj( quat ), [ v[2], z, v[4], -v[3] ] );
+    a:= FamilyObj( quat )!.sctable[2][2][2][1];  # the first parameter
+    return ObjByExtRep( FamilyObj( quat ), [ v[2], z, -v[4], -v[3]/a ] );
     end );
 
 

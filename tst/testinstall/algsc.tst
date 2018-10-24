@@ -107,6 +107,22 @@ gap> v:= Subspace( a, [ v, 0*v, v^0, w ] );
 gap> Dimension( v );
 3
 
+#
+gap> a:= QuaternionAlgebra( Rationals, -2, -3 );;
+gap> gens:= GeneratorsOfAlgebra( a );
+[ e, i, j, k ]
+gap> List( gens, RealPart );
+[ e, 0*e, 0*e, 0*e ]
+gap> List( gens, ImaginaryPart ) * gens[2];
+[ 0*e, i, j, k ]
+gap> vecs := Concatenation( gens, [ Sum( gens ) ] );
+[ e, i, j, k, e+i+j+k ]
+gap> ForAll( vecs, v -> (v + ComplexConjugate( v )) / 2 = RealPart( v ) );
+true
+gap> ForAll( vecs, v -> (v - ComplexConjugate( v )) / (2*gens[2])
+>                       = ImaginaryPart( v ) );
+true
+
 #############################################################################
 ##
 ##  Expl. 1: $2.A6$, gen. by 20 quaternionic reflections over $H(\sqrt{3})$
