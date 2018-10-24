@@ -66,3 +66,9 @@ f:=function() local x; Assert(0, 1, "hello"); return 2; end;;
 f();
 Where();
 quit;
+
+# Verify issue #2656 is fixed
+l := [[1]];; f := {} -> l[2,1];;
+f();
+Where();
+quit;
