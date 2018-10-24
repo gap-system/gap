@@ -238,6 +238,8 @@ UInt            ExecIfElse (
 
     }
 
+    SET_BRK_CALL_TO(stat);
+
     /* otherwise execute the else-branch body and leave                    */
     body = READ_STAT(stat, 3);
     return EXEC_STAT( body );
@@ -267,6 +269,7 @@ UInt            ExecIfElif (
 
         }
 
+        SET_BRK_CALL_TO(stat);
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -297,6 +300,7 @@ UInt            ExecIfElifElse (
 
         }
 
+        SET_BRK_CALL_TO(stat);
     }
 
     /* otherwise execute the else-branch body and leave                    */
@@ -687,6 +691,7 @@ static ALWAYS_INLINE UInt ExecWhileHelper(Stat stat, UInt nr)
         if (nr >= 3)
             EXEC_STAT_IN_LOOP(body3);
 
+        SET_BRK_CALL_TO(stat);
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -757,6 +762,8 @@ static ALWAYS_INLINE UInt ExecRepeatHelper(Stat stat, UInt nr)
             EXEC_STAT_IN_LOOP(body2);
         if (nr >= 3)
             EXEC_STAT_IN_LOOP(body3);
+
+        SET_BRK_CALL_TO(stat);
 
     } while ( EVAL_BOOL_EXPR( cond ) == False );
 
