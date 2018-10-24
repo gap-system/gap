@@ -170,4 +170,19 @@ brk> Where();
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> quit;
+gap> 
+gap> # Verify issue #2656 is fixed
+gap> l := [[1]];; f := {} -> l[2,1];;
+gap> f();
+Error, List Element: <list>[2] must have an assigned value in
+  return m[i][j]; at GAPROOT/lib/matrix.gi:29 called from 
+return l[2, 1]; at *stdin*:39 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *stdin*:40
+you can 'return;' after assigning a value
+brk> Where();
+return l[2, 1]; at *stdin*:39 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:1
+brk> quit;
 gap> QUIT;
