@@ -821,32 +821,23 @@ void             PrintFunccallOpts (
 *F  ExecBegin() . . . . . . . . . . . . . . . . . . . . .  begin an execution
 *F  ExecEnd(<error>)  . . . . . . . . . . . . . . . . . . .  end an execution
 */
-/* TL: Obj             ExecState; */
 
-void            ExecBegin ( Obj frame )
+void ExecBegin(Obj frame)
 {
-    Obj                 execState;      /* old execution state             */
+    // remember the old execution state
+    PushPlist(FuncsState()->ExecState, STATE(CurrLVars));
 
-    /* remember the old execution state                                    */
-    execState = NEW_PLIST(T_PLIST, 2);
-    SET_LEN_PLIST(execState, 2);
-    SET_ELM_PLIST(execState, 1, FuncsState()->ExecState);
-    SET_ELM_PLIST(execState, 2, STATE(CurrLVars));
-    /* the 'CHANGED_BAG(STATE(CurrLVars))' is needed because it is delayed        */
+    // the 'CHANGED_BAG(STATE(CurrLVars))' is needed because it is delayed
     CHANGED_BAG( STATE(CurrLVars) );
-    FuncsState()->ExecState = execState;
 
-    /* set up new state                                                    */
+    // set up new state
     SWITCH_TO_OLD_LVARS( frame );
-    SET_BRK_CURR_STAT( 0 );
 }
 
-void            ExecEnd (
-    UInt                error )
+void ExecEnd(UInt error)
 {
-    /* switch back to the old state                                    */
-    SWITCH_TO_OLD_LVARS( ELM_PLIST(FuncsState()->ExecState, 2) );
-    FuncsState()->ExecState = ELM_PLIST(FuncsState()->ExecState, 1);
+    // switch back to the old state
+    SWITCH_TO_OLD_LVARS(PopPlist(FuncsState()->ExecState));
 }
 
 /****************************************************************************
@@ -986,7 +977,7 @@ static Int InitKernel (
 
 static Int InitModuleState(void)
 {
-    FuncsState()->ExecState = 0;
+    FuncsState()->ExecState = NEW_PLIST(T_PLIST_EMPTY, 16);
     FuncsState()->RecursionDepth = 0;
 
     // return success
