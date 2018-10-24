@@ -21,9 +21,7 @@ gap>
 gap> f:=function() if true = 1/0 then return 1; fi; return 2; end;;
 gap> f();
 Error, Rational operations: <divisor> must not be zero in
-  if true = 1 / 0 then
-    return 1;
-fi; at *stdin*:9 called from 
+  1 / 0 at *stdin*:9 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:10
 you can replace <divisor> via 'return <divisor>;'
@@ -66,11 +64,7 @@ gap>
 gap> f:=function() if 1 < 0 then return 1; elif 1 then return 2; fi; return 3; end;;
 gap> f();
 Error, <expr> must be 'true' or 'false' (not a integer) in
-  if 1 < 0 then
-    return 1;
-elif 1 then
-    return 2;
-fi; at *stdin*:18 called from 
+  1 < 0 at *stdin*:18 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:19
 you can replace <expr> via 'return <expr>;'
@@ -136,9 +130,7 @@ gap>
 gap> f:=function() local x; repeat x:=1; until 1; return 2; end;;
 gap> f();
 Error, <expr> must be 'true' or 'false' (not a integer) in
-  repeat
-    x := 1;
-until 1; at *stdin*:30 called from 
+  x := 1; at *stdin*:30 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:31
 you can replace <expr> via 'return <expr>;'

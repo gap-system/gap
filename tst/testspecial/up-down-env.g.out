@@ -2,7 +2,7 @@ gap> f:=lvl -> 1/lvl + f(lvl-1);
 function( lvl ) ... end
 gap> f(7);
 Error, Rational operations: <divisor> must not be zero in
-  return 1 / lvl + f( (lvl - 1) ); at *stdin*:2 called from 
+  1 / lvl at *stdin*:2 called from 
 f( lvl - 1 ) at *stdin*:2 called from
 f( lvl - 1 ) at *stdin*:2 called from
 f( lvl - 1 ) at *stdin*:2 called from

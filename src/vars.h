@@ -203,6 +203,7 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc)
   // create new lvars (may cause garbage collection)
   Obj new_lvars = NewLVarsBag( narg+nloc );
   LVarsHeader * hdr = (LVarsHeader *)ADDR_OBJ(new_lvars);
+  hdr->stat = 0;
   hdr->func = func;
   hdr->parent = old;
 

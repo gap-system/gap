@@ -64,34 +64,15 @@ extern  UInt 		(* IntrExecStatFuncs[256]) ( Stat stat );
 
 /****************************************************************************
 **
-*V  CurrStat  . . . . . . . . . . . . . . . . .  currently executed statement
-**
-**  'CurrStat'  is the statement that  is currently being executed.  The sole
-**  purpose of 'CurrStat' is to make it possible to  point to the location in
-**  case an error is signalled.
-*/
-/* TL: extern  Stat            CurrStat; */
-
-
-/****************************************************************************
-**
 *F  SET_BRK_CURR_STAT(<stat>) . . . . . . . set currently executing statement
 *F  OLD_BRK_CURR_STAT . . . . . . . . .  define variable to remember CurrStat
 *F  REM_BRK_CURR_STAT() . . . . . . .  remember currently executing statement
 *F  RES_BRK_CURR_STAT() . . . . . . . . restore currently executing statement
 */
-#ifndef NO_BRK_CURR_STAT
-#define SET_BRK_CURR_STAT(stat) (STATE(CurrStat) = (stat))
-#define OLD_BRK_CURR_STAT       Stat oldStat;
-#define REM_BRK_CURR_STAT()     (oldStat = STATE(CurrStat))
-#define RES_BRK_CURR_STAT()     (STATE(CurrStat) = oldStat)
-#endif
-#ifdef  NO_BRK_CURR_STAT
-#define SET_BRK_CURR_STAT(stat) /* do nothing */
-#define OLD_BRK_CURR_STAT       /* do nothing */
-#define REM_BRK_CURR_STAT()     /* do nothing */
-#define RES_BRK_CURR_STAT()     /* do nothing */
-#endif
+#define SET_BRK_CURR_STAT(stat) do {} while (0) /* do nothing */
+#define OLD_BRK_CURR_STAT       do {} while (0) /* do nothing */ ;
+#define REM_BRK_CURR_STAT()     do {} while (0) /* do nothing */
+#define RES_BRK_CURR_STAT()     do {} while (0) /* do nothing */
 
 
 /****************************************************************************

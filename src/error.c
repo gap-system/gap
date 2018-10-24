@@ -219,7 +219,6 @@ Obj FuncCALL_WITH_CATCH(Obj self, Obj func, volatile Obj args)
     volatile Obj       currLVars;
     volatile Obj       tilde;
     volatile Int       recursionDepth;
-    volatile Stat      currStat;
 
     if (!IS_FUNC(func))
         ErrorMayQuit(
@@ -238,7 +237,9 @@ Obj FuncCALL_WITH_CATCH(Obj self, Obj func, volatile Obj args)
     memcpy((void *)&readJmpError, (void *)&STATE(ReadJmpError),
            sizeof(syJmp_buf));
     currLVars = STATE(CurrLVars);
-    currStat = STATE(CurrStat);
+#ifdef GAP_KERNEL_DEBUG
+    volatile Stat currStat = BRK_CALL_TO();
+#endif
     recursionDepth = GetRecursionDepth();
     tilde = STATE(Tilde);
     res = NEW_PLIST_IMM(T_PLIST_DENSE, 2);
@@ -253,7 +254,7 @@ Obj FuncCALL_WITH_CATCH(Obj self, Obj func, volatile Obj args)
         CHANGED_BAG(res);
         STATE(ThrownObject) = 0;
         SWITCH_TO_OLD_LVARS(currLVars);
-        STATE(CurrStat) = currStat;
+        GAP_ASSERT(currStat == BRK_CALL_TO());
         SetRecursionDepth(recursionDepth);
         STATE(Tilde) = tilde;
 #ifdef HPCGAP
@@ -380,7 +381,7 @@ Obj CallErrorInner(const Char * msg,
     l = NEW_PLIST_IMM(T_PLIST_HOM, 1);
     SET_ELM_PLIST(l, 1, EarlyMsg);
     SET_LEN_PLIST(l, 1);
-    SET_BRK_CALL_TO(STATE(CurrStat));
+
     // Signal functions about entering and leaving break loop
     for (i = 0; i < ARRAY_SIZE(signalBreakFuncList) && signalBreakFuncList[i];
          ++i)

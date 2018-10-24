@@ -9,6 +9,7 @@
 #include "plist.h"
 #include "stats.h"
 #include "stringobj.h"
+#include "vars.h"
 
 #include "hpc/guards.h"
 #include "hpc/misc.h"
@@ -860,7 +861,7 @@ static void InterruptCurrentThread(int locked, Stat stat)
     if (!locked)
         pthread_mutex_lock(thread->lock);
     STATE(CurrExecStatFuncs) = ExecStatFuncs;
-    SET_BRK_CURR_STAT(stat);
+    SET_BRK_CALL_TO(stat);
     state = GetThreadState(TLS(threadID));
     if ((state & TSTATE_MASK) == TSTATE_INTERRUPTED)
         UpdateThreadState(TLS(threadID), state, TSTATE_RUNNING);
