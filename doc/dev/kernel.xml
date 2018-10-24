@@ -886,7 +886,6 @@ CHANGED_BAG( t_1 );
 t_2 = POW( a_x, INTOBJ_INT(3) );
 SET_ELM_PLIST( t_1, 3, t_2 );
 CHANGED_BAG( t_1 );
-RES_BRK_CURR_STAT();
 SWITCH_TO_OLD_FRAME(oldFrame);
 return t_1;
 ]]>

@@ -30,12 +30,9 @@ static Obj  HdlrFunc2 (
  Obj t_2 = 0;
  Obj t_3 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* Print( "f1:", a, "\n" ); */
  t_1 = GF_Print;
@@ -44,12 +41,10 @@ static Obj  HdlrFunc2 (
  CALL_3ARGS( t_1, t_2, a_a, t_3 );
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -65,12 +60,9 @@ static Obj  HdlrFunc3 (
  Obj t_3 = 0;
  Obj t_4 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* Print( "f2:", a, ":", b, "\n" ); */
  t_1 = GF_Print;
@@ -80,12 +72,10 @@ static Obj  HdlrFunc3 (
  CALL_5ARGS( t_1, t_2, a_a, t_3, a_b, t_4 );
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -99,12 +89,9 @@ static Obj  HdlrFunc4 (
  Obj t_2 = 0;
  Obj t_3 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* Print( "f3:", a, "\n" ); */
  t_1 = GF_Print;
@@ -113,12 +100,10 @@ static Obj  HdlrFunc4 (
  CALL_3ARGS( t_1, t_2, a_a, t_3 );
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -135,7 +120,6 @@ static Obj  HdlrFunc5 (
  Obj t_3 = 0;
  Obj t_4 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  CHECK_NR_AT_LEAST_ARGS( 2, args )
  a_a = ELM_PLIST( args, 1 );
  Obj x_temp_range = Range2Check(INTOBJ_INT(2), INTOBJ_INT(LEN_PLIST(args)));
@@ -143,8 +127,6 @@ static Obj  HdlrFunc5 (
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* Print( "f4:", a, ":", b, "\n" ); */
  t_1 = GF_Print;
@@ -154,12 +136,10 @@ static Obj  HdlrFunc5 (
  CALL_5ARGS( t_1, t_2, a_a, t_3, a_b, t_4 );
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -170,12 +150,9 @@ static Obj  HdlrFunc6 (
 {
  Obj t_1 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* f1( 2 ); */
  t_1 = GF_f1;
@@ -210,12 +187,10 @@ static Obj  HdlrFunc6 (
  CALL_3ARGS( t_1, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) );
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }
@@ -227,12 +202,9 @@ static Obj  HdlrFunc1 (
  Obj t_1 = 0;
  Obj t_2 = 0;
  Bag oldFrame;
- OLD_BRK_CURR_STAT
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- REM_BRK_CURR_STAT();
- SET_BRK_CURR_STAT(0);
  
  /* f1 := function ( a )
       Print( "f1:", a, "\n" );
@@ -312,12 +284,10 @@ static Obj  HdlrFunc1 (
  AssGVar( G_runtest, t_1 );
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
  
  /* return; */
- RES_BRK_CURR_STAT();
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
 }

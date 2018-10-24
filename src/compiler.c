@@ -4341,7 +4341,6 @@ void CompReturnObj (
     obj = CompExpr(READ_STAT(stat, 0));
 
     /* emit code to remove stack frame                                     */
-    Emit( "RES_BRK_CURR_STAT();\n" );
     Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
 
     /* emit code to return from function                                   */
@@ -4365,7 +4364,6 @@ void CompReturnVoid (
     }
 
     /* emit code to remove stack frame                                     */
-    Emit( "RES_BRK_CURR_STAT();\n");
     Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
 
     /* emit code to return from function                                   */
@@ -5274,7 +5272,6 @@ void CompFunc (
 
     /* emit the code for the higher variables                              */
     Emit( "Bag oldFrame;\n" );
-    Emit( "OLD_BRK_CURR_STAT\n");
 
     /* emit the code to get the arguments for xarg functions               */
     if ( 6 < narg ) {
@@ -5294,32 +5291,14 @@ void CompFunc (
     }
 
     /* emit the code to switch to a new frame for outer functions          */
-#if 1
-    /* Try and get better debugging by always doing this */
-    if (1) {
-#else
-      /* this was the old code */
-    if ( NHVAR_INFO(info) != 0 ) {
-#endif
-        Emit( "\n/* allocate new stack frame */\n" );
-        Emit( "SWITCH_TO_NEW_FRAME(self,%d,0,oldFrame);\n",NHVAR_INFO(info));
-        for ( i = 1; i <= narg; i++ ) {
-            if ( CompGetUseHVar( i ) ) {
-                Emit( "ASS_LVAR( %d, %c );\n",GetIndxHVar(i),CVAR_LVAR(i));
-            }
+    Emit( "\n/* allocate new stack frame */\n" );
+    Emit( "SWITCH_TO_NEW_FRAME(self,%d,0,oldFrame);\n",NHVAR_INFO(info));
+    for ( i = 1; i <= narg; i++ ) {
+        if ( CompGetUseHVar( i ) ) {
+            Emit( "ASS_LVAR( %d, %c );\n",GetIndxHVar(i),CVAR_LVAR(i));
         }
     }
-    else {
-        Emit( "\n/* restoring old stack frame */\n" );
-        Emit( "oldFrame = STATE(CurrLVars);\n" );
-        Emit( "SWITCH_TO_OLD_FRAME(ENVI_FUNC(self));\n" );
-    }
 
-    /* emit the code to save and zero the "current statement" information
-     so that the break loop behaves */
-    Emit( "REM_BRK_CURR_STAT();\n");
-    Emit( "SET_BRK_CURR_STAT(0);\n");
-    
     /* we know all the arguments have values                               */
     for ( i = 1; i <= narg; i++ ) {
         SetInfoCVar( CVAR_LVAR(i), W_BOUND );
@@ -5333,7 +5312,6 @@ void CompFunc (
 
     /* emit the code to switch back to the old frame and return            */
     Emit( "\n/* return; */\n" );
-    Emit( "RES_BRK_CURR_STAT();\n" );
     Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
     Emit( "return 0;\n" );
     Emit( "}\n" );
