@@ -433,6 +433,12 @@ void ErrorQuitIntSmall(Obj obj)
               0L);
 }
 
+void ErrorMayQuitIntSmall(Obj obj)
+{
+    ErrorMayQuit("<obj> must be a small integer (not a %s)", (Int)TNAM_OBJ(obj),
+                 0L);
+}
+
 
 /****************************************************************************
 **

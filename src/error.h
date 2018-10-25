@@ -61,8 +61,10 @@ extern void ErrorQuitFuncResult(void) NORETURN;
 /****************************************************************************
 **
 *F  ErrorQuitIntSmall( <obj> )  . . . . . . . . . . . . . not a small integer
+*F  ErrorMayQuitIntSmall( <obj> )  . . . . . . . . . . .  not a small integer
 */
 extern void ErrorQuitIntSmall(Obj obj) NORETURN;
+extern void ErrorMayQuitIntSmall(Obj obj) NORETURN;
 
 
 /****************************************************************************
