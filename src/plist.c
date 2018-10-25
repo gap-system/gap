@@ -60,6 +60,14 @@
 
 /****************************************************************************
 **
+*V  ImmutableEmptyPlist . . . . . . . . . . . . an immutable empty plain list
+**
+**  'ImmutableEmptyPlist' is an immutable empty plist.
+*/
+Obj ImmutableEmptyPlist;
+
+/****************************************************************************
+**
 *F  GROW_PLIST(<list>,<plen>) . . . .  make sure a plain list is large enough
 **
 */
@@ -1272,7 +1280,7 @@ Obj             ElmsPlist (
 
     /* select no element                                                   */
     if ( LEN_LIST(poss) == 0 ) {
-        elms = NEW_PLIST( T_PLIST_EMPTY, 0 );
+        elms = NewEmptyPlist();
     }
 
     /* general code                                                        */
@@ -1396,7 +1404,7 @@ Obj             ElmsPlistDense (
 
     /* select no element                                                   */
     if ( LEN_LIST(poss) == 0 ) {
-        elms = NEW_PLIST( T_PLIST_EMPTY, 0 );
+        elms = NewEmptyPlist();
     }
 
     /* general code                                                        */
@@ -3433,6 +3441,9 @@ static Int InitKernel (
     /* GASMAN marking functions and GASMAN names                           */
     InitBagNamesFromTable( BagNames );
 
+    InitGlobalBag(&ImmutableEmptyPlist, "src/plist.c:ImmutableEmptyPlist");
+
+
     for ( t1 = T_PLIST;  t1 < T_PLIST_FFE ;  t1 += 2 ) {
         InitMarkFuncBags( t1                     , MarkAllButFirstSubBags );
         InitMarkFuncBags( t1 +IMMUTABLE          , MarkAllButFirstSubBags );
@@ -3844,6 +3855,8 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
+
+    ImmutableEmptyPlist = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
 
     /* return success                                                      */
     return 0;

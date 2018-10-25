@@ -2086,7 +2086,7 @@ void            IntrListExprBegin (
 
 
     /* allocate the new list                                               */
-    list = NEW_PLIST( T_PLIST_EMPTY, 0 );
+    list = NewEmptyPlist();
 
     /* if this is an outmost list, save it for reference in '~'            */
     /* (and save the old value of '~' on the values stack)                 */
@@ -2208,7 +2208,7 @@ void            IntrListExprEnd (
 
         /* if <low> is larger than <high> the range is empty               */
         if ( (0 < inc && high < low) || (inc < 0 && low < high) ) {
-            list = NEW_PLIST( T_PLIST_EMPTY, 0 );
+            list = NewEmptyPlist();
         }
 
         /* if <low> is equal to <high> the range is a singleton list       */

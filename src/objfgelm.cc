@@ -194,7 +194,7 @@ Obj FuncNBits_ExponentSums3(Obj self, Obj obj, Obj vstart, Obj vend)
 
     /* <end> must be at least <start>                                      */
     if ( end < start ) {
-        sums = NEW_PLIST( T_PLIST_EMPTY, 0 );
+        sums = NewEmptyPlist();
         return sums;
     }
 

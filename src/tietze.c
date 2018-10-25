@@ -1588,7 +1588,7 @@ Obj  FuncREDUCE_LETREP_WORDS_REW_SYS (
      newlen = n-lrul+rlen;
 
      if (newlen==0) {
-       nw=NEW_PLIST(T_PLIST_EMPTY,0);
+       nw=NewEmptyPlist();
      }
      else {
         /* make space for the new word */

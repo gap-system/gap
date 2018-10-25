@@ -203,7 +203,7 @@ Obj FuncLIST_SORTED_LIST (
 
     /* if the list is empty create a new empty list                        */
     if ( LEN_LIST(list) == 0 ) {
-        set = NEW_PLIST( T_PLIST_EMPTY, 0 );
+        set = NewEmptyPlist();
     }
 
     /* if <list> is a set just shallow copy it                             */
