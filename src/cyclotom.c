@@ -1759,9 +1759,7 @@ Obj FuncCOEFFS_CYC (
 
     /* if <cyc> is rational just put it in a list of length 1              */
     if ( IS_INT(cyc) || TNUM_OBJ(cyc) == T_RAT ) {
-        list = NEW_PLIST( T_PLIST, 1 );
-        SET_LEN_PLIST( list, 1 );
-        SET_ELM_PLIST( list, 1, cyc );
+        list = NewPlistFromArgs(cyc);
         /* 'CHANGED_BAG' not needed for last bag                           */
     }
 

@@ -474,9 +474,7 @@ Obj    Mark2(
             **  pos(tree(<tree>, i)),  and add i to <new>                  */
             if ( ELM_PLIST(list, INT_INTOBJ( DT_POS(tree, i) )  )  ==  0)
             {
-                new = NEW_PLIST( T_PLIST, 1);
-                SET_LEN_PLIST(new, 1);
-                SET_ELM_PLIST(new, 1, INTOBJ_INT(i) );
+                new = NewPlistFromArgs(INTOBJ_INT(i));
                 SET_ELM_PLIST(list, INT_INTOBJ( DT_POS(tree, i) ),  new);
                 /*  tell gasman that list has changed                      */
                 CHANGED_BAG(list);
@@ -592,12 +590,9 @@ Obj    MakeFormulaVector(
           gen;
 
     /*  initialize <vec> and set the first four elements              */
-    vec = NEW_PLIST(T_PLIST, 4);
-    SET_LEN_PLIST(vec, 4);
-    SET_ELM_PLIST(vec, 1, INTOBJ_INT(0) );
-    SET_ELM_PLIST(vec, 2, INTOBJ_INT(1) );
-    SET_ELM_PLIST(vec, 3, DT_GEN(tree, DT_LEFT(tree, 1) )  );
-    SET_ELM_PLIST(vec, 4, DT_GEN(tree, DT_RIGHT(tree, 1) )  );
+    vec = NewPlistFromArgs(INTOBJ_INT(0), INTOBJ_INT(1),
+                           DT_GEN(tree, DT_LEFT(tree, 1)),
+                           DT_GEN(tree, DT_RIGHT(tree, 1)));
     /*  loop over all almost equal classes of subtrees of <tree> except for
     **  <tree> itself.                                                    */
     u = FindTree(tree, 1);
