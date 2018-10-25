@@ -309,6 +309,37 @@ extern Obj ImmutableEmptyPlist;
 
 /****************************************************************************
 **
+*F  NewPlistFromArray(<list>,<length>) . . create a plain list from a C array
+*/
+static inline Obj NewPlistFromArray(const Obj * list, Int length)
+{
+    if (length == 0) {
+        return NewEmptyPlist();
+    }
+
+    Obj o = NEW_PLIST(T_PLIST, length);
+    SET_LEN_PLIST(o, length);
+    memcpy(BASE_PTR_PLIST(o), list, length * sizeof(Obj));
+    return o;
+}
+
+/****************************************************************************
+**
+*F  NewPlistFromArgs(<args...>) .  create a plain list from list of arguments
+**
+**  This macro turns a variable-length list of macro arguments into an array,
+**  which is then passed to NewPlistFromArray.
+**
+**  __VA_ARGS__ contains the list of arguments given to this macro.
+**  (Obj[]){ __VA_ARGS__ } creates an array of Obj containing the elements
+**  of __VA_ARGS__.
+*/
+#define NewPlistFromArgs(...)                                                \
+    NewPlistFromArray((Obj[]){ __VA_ARGS__ },                                \
+                      ARRAY_SIZE(((Obj[]){ __VA_ARGS__ })))
+
+/****************************************************************************
+**
 *F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list
 *F  UnbPlistImm( <list>, <pos> ) . . . .  unbind an element from a plain list
 */

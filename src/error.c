@@ -142,11 +142,7 @@ Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
         (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM)) {
         Int line = LINE_STAT(call);
         Obj filename = GET_FILENAME_BODY(body);
-        retlist = NEW_PLIST(T_PLIST, 2);
-        SET_LEN_PLIST(retlist, 2);
-        SET_ELM_PLIST(retlist, 1, filename);
-        SET_ELM_PLIST(retlist, 2, INTOBJ_INT(line));
-        CHANGED_BAG(retlist);
+        retlist = NewPlistFromArgs(filename, INTOBJ_INT(line));
     }
     SWITCH_TO_OLD_LVARS(currLVars);
     return retlist;

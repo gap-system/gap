@@ -907,10 +907,7 @@ Obj             FuncAUTO (
     arg = ELM_LIST( args, 2 );
 
     /* make the list of function and argument                              */
-    list = NEW_PLIST( T_PLIST, 2 );
-    SET_LEN_PLIST( list, 2 );
-    SET_ELM_PLIST( list, 1, func );
-    SET_ELM_PLIST( list, 2, arg );
+    list = NewPlistFromArgs(func, arg);
 
     /* make the global variables automatic                                 */
     for ( i = 3; i <= LEN_LIST(args); i++ ) {
