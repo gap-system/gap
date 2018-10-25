@@ -45,6 +45,7 @@
 #include "finfield.h"
 #include "funcs.h"
 #include "gaputils.h"
+#include "integer.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
@@ -3417,12 +3418,24 @@ static StructGVarFilt GVarFilts [] = {
 
 };
 
+static Obj FuncTEST_SUM_LIST(Obj self, Obj list)
+{
+    UInt sum = 0;
+    Int len = LEN_PLIST(list);
+    for(Int j = 1; j < 200; ++j) {
+        for(Int k = 1; k <= len; ++k) {
+            sum += INT_INTOBJ(ELM_PLIST(list, k)) * j;
+        }
+    }
+    return ObjInt_UInt(sum);
+}
 
 /****************************************************************************
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
+    GVAR_FUNC(TEST_SUM_LIST, 1, "list"),
 
     GVAR_FUNC(ASS_PLIST_DEFAULT, 3, "list, pos, val"),
     GVAR_FUNC(IsRectangularTablePlist, 1, "plist"),
