@@ -1157,7 +1157,7 @@ Obj             FuncOnTuples (
     /* special case for the empty list */
     if (LEN_LIST(tuple) == 0) {
       if (IS_MUTABLE_OBJ(tuple)) {
-        img = NEW_PLIST(T_PLIST_EMPTY, 0);
+        img = NewEmptyPlist();
         return img;
       } else {
         return tuple;
@@ -1228,7 +1228,7 @@ Obj             FuncOnSets (
     /* special case for the empty list */
     if (LEN_LIST(set) == 0) {
       if (IS_MUTABLE_OBJ(set)) {
-        img = NEW_PLIST(T_PLIST_EMPTY, 0);
+        img = NewEmptyPlist();
         return img;
       } else {
         return set;
@@ -1354,7 +1354,7 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
   n = LEN_LIST(digraph);
   if (n == 0)
     {
-      return NEW_PLIST(T_PLIST_EMPTY,0);
+      return NewEmptyPlist();
     }
   val = NewBag(T_DATOBJ, (n+1)*sizeof(UInt));
   stack = NEW_PLIST(T_PLIST_CYC, n);
@@ -1632,7 +1632,7 @@ Obj FuncLIST_WITH_IDENTICAL_ENTRIES(Obj self, Obj n, Obj obj)
         }
     }
     else if (len == 0) {
-        list = NEW_PLIST(T_PLIST_EMPTY, 0);
+        list = NewEmptyPlist();
     }
     else {
         switch (tnum) {

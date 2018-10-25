@@ -1132,7 +1132,7 @@ Obj             EvalRangeExpr (
 
     /* if <low> is larger than <high> the range is empty                   */
     if ( (0 < inc && high < low) || (inc < 0 && low < high) ) {
-        range = NEW_PLIST( T_PLIST_EMPTY, 0 );
+        range = NewEmptyPlist();
     }
 
     /* if <low> is equal to <high> the range is a singleton list           */

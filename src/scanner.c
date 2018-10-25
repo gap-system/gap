@@ -1013,7 +1013,7 @@ int IsKeyword(const char * str)
 
 Obj FuncALL_KEYWORDS(Obj self)
 {
-    Obj l = NEW_PLIST(T_PLIST_EMPTY, 0);
+    Obj l = NewEmptyPlist();
     for (UInt i = 0; i < ARRAY_SIZE(AllKeywords); i++) {
         Obj s = MakeImmString(AllKeywords[i]);
         ASS_LIST(l, i+1, s);

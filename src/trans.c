@@ -166,7 +166,7 @@ UInt INIT_TRANS2(Obj f)
 
     if (deg == 0) {
         // special case for degree 0
-        img = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
+        img = ImmutableEmptyPlist;
         SET_IMG_TRANS(f, img);
         SET_KER_TRANS(f, img);
         CHANGED_BAG(f);
@@ -218,7 +218,7 @@ UInt INIT_TRANS4(Obj f)
         // T_TRANS4 and that does not have (internal) degree 65537 or greater
         // is ID_TRANS4.
 
-        img = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
+        img = ImmutableEmptyPlist;
         SET_IMG_TRANS(f, img);
         SET_KER_TRANS(f, img);
         CHANGED_BAG(f);
@@ -908,7 +908,7 @@ Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
             return KER_TRANS(f);
         }
         else if (m == 0) {
-            new = NEW_PLIST(T_PLIST_EMPTY, 0);
+            new = NewEmptyPlist();
             return new;
         }
         else {
@@ -948,7 +948,7 @@ Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
             return KER_TRANS(f);
         }
         else if (m == 0) {
-            new = NEW_PLIST(T_PLIST_EMPTY, 0);
+            new = NewEmptyPlist();
             return new;
         }
         else {
@@ -1007,7 +1007,7 @@ Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
 
     // special case for the identity
     if (m == 0) {
-        ker = NEW_PLIST(T_PLIST_EMPTY, 0);
+        ker = NewEmptyPlist();
         return ker;
     }
 
@@ -1171,7 +1171,7 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
         return FuncIMAGE_SET_TRANS(self, f);
     }
     else if (m == 0) {
-        new = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
+        new = ImmutableEmptyPlist;
         return new;
     }
     else if (m < deg) {
@@ -1250,7 +1250,7 @@ Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n)
     m = INT_INTOBJ(n);
 
     if (m == 0) {
-        out = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
+        out = ImmutableEmptyPlist;
         return out;
     }
 
@@ -1700,7 +1700,7 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
         deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
         if (len >= deg) {
             if (len == 0) {
-                out = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
+                out = ImmutableEmptyPlist;
                 return out;
             }
             out = NEW_PLIST_IMM(T_PLIST_CYC, len);
@@ -1735,7 +1735,7 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
         deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
         if (len >= deg) {
             if (len == 0) {
-                out = NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
+                out = ImmutableEmptyPlist;
                 return out;
             }
             out = NEW_PLIST_IMM(T_PLIST_CYC, len);
@@ -2687,7 +2687,7 @@ Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
     if (deg == 0) {
-        out = NEW_PLIST(T_PLIST_EMPTY, 0);
+        out = NewEmptyPlist();
         return out;
     }
 
@@ -2880,7 +2880,7 @@ Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
     if (deg == 0) {
-        out = NEW_PLIST(T_PLIST_EMPTY, 0);
+        out = NewEmptyPlist();
         return out;
     }
 
@@ -3123,7 +3123,7 @@ Obj FuncCYCLES_TRANS(Obj self, Obj f)
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
     if (deg == 0) {
-        out = NEW_PLIST(T_PLIST_EMPTY, 0);
+        out = NewEmptyPlist();
         return out;
     }
 
@@ -3224,7 +3224,7 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
     if (LEN_LIST(list) == 0) {
-        out = NEW_PLIST(T_PLIST_EMPTY, 0);
+        out = NewEmptyPlist();
         return out;
     }
 

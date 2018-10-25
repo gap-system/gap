@@ -291,6 +291,22 @@ static inline Obj PopPlist(Obj list)
     return val;
 }
 
+
+/****************************************************************************
+**
+*F  NewEmptyPlist() . . . . . . . . . . . . . . create a new empty plain list
+*V  ImmutableEmptyPlist . . . . . . . . . . . . an immutable empty plain list
+**
+**  ImmutableEmptyPlist is a variable rather than a function, as we can
+**  reuse the same immutable empty plist.
+*/
+static inline Obj NewEmptyPlist(void)
+{
+    return NEW_PLIST(T_PLIST_EMPTY, 0);
+}
+
+extern Obj ImmutableEmptyPlist;
+
 /****************************************************************************
 **
 *F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list

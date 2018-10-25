@@ -325,7 +325,7 @@ Obj Shell ( Obj context,
     }
   if (status & STATUS_RETURN_VOID)
     {
-      res = NEW_PLIST(T_PLIST_EMPTY,0);
+      res = NewEmptyPlist();
       return res;
     }
   if (status & STATUS_RETURN_VAL)
