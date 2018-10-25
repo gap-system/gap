@@ -224,9 +224,9 @@ function( dtrws, orders )
     dtrws![PC_EXPONENTS] := orders;
     if  Length(orders) < dtrws![PC_NUMBER_OF_GENERATORS]  or  
         not IsHomogeneousList( orders )                        then
-	SetFeatureObj( dtrws, IsFinite, false );
+	SetIsFinite( dtrws, false );
     else
-	SetFeatureObj( dtrws, IsFinite, true );
+	SetIsFinite( dtrws, true );
     fi;
 end   );
 
@@ -258,14 +258,14 @@ function( dtrws, i, ord )
     if  ord = infinity  or  ord = 0  then
 	if  IsBound( dtrws![PC_EXPONENTS][i] )  then
 	    Unbind( dtrws![PC_EXPONENTS][i] );
-	    SetFeatureObj( dtrws, IsFinite, false );
+	    SetIsFinite( dtrws, false );
 	fi;
     else
 	dtrws![PC_EXPONENTS][i] := ord;
 	if  0 in RelativeOrders( dtrws )  then
-	    SetFeatureObj( dtrws, IsFinite, false );
+	    SetIsFinite( dtrws, false );
 	else
-	    SetFeatureObj( dtrws, IsFinite, true );
+	    SetIsFinite( dtrws, true );
 	fi;
     fi;
 end   );
@@ -584,7 +584,7 @@ function( dtrws )
     # reduce the coefficients of the deep thought polynomials
     ReduceCoefficientsOfRws(dtrws);
 
-    SetFeatureObj( dtrws, IsUpToDatePolycyclicCollector, true );
+    SetFilterObj( dtrws, IsUpToDatePolycyclicCollector );
 
 end );
 

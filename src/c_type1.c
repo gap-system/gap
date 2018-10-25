@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "-43167549"
+#define FILE_CRC  "-66698575"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
@@ -194,7 +194,7 @@ static RNam R_HASH__SIZE;
 static RNam R_TYPES;
 
 /* information for the functions */
-static Obj  NameFunc[32];
+static Obj  NameFunc[31];
 static Obj FileName;
 
 /* handler for function 2 */
@@ -2486,49 +2486,6 @@ static Obj  HdlrFunc29 (
 /* handler for function 30 */
 static Obj  HdlrFunc30 (
  Obj  self,
- Obj  a_obj,
- Obj  a_filter,
- Obj  a_val )
-{
- Obj t_1 = 0;
- Bag oldFrame;
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- 
- /* if val then */
- CHECK_BOOL( a_val )
- t_1 = (Obj)(UInt)(a_val != False);
- if ( t_1 ) {
-  
-  /* SetFilterObj( obj, filter ); */
-  t_1 = GF_SetFilterObj;
-  CALL_2ARGS( t_1, a_obj, a_filter );
-  
- }
- 
- /* else */
- else {
-  
-  /* ResetFilterObj( obj, filter ); */
-  t_1 = GF_ResetFilterObj;
-  CALL_2ARGS( t_1, a_obj, a_filter );
-  
- }
- /* fi */
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 31 */
-static Obj  HdlrFunc31 (
- Obj  self,
  Obj  a_arg )
 {
  Obj l_obj = 0;
@@ -3609,26 +3566,6 @@ static Obj  HdlrFunc1 (
  CHECK_BOUND( t_3, "ResetFilterObj" )
  CALL_2ARGS( t_1, t_2, t_3 );
  
- /* BIND_GLOBAL( "SetFeatureObj", function ( obj, filter, val )
-      if val then
-          SetFilterObj( obj, filter );
-      else
-          ResetFilterObj( obj, filter );
-      fi;
-      return;
-  end ); */
- t_1 = GF_BIND__GLOBAL;
- t_2 = MakeString( "SetFeatureObj" );
- t_3 = NewFunction( NameFunc[30], 3, 0, HdlrFunc30 );
- SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 839);
- SET_ENDLINE_BODY(t_4, 845);
- SET_FILENAME_BODY(t_4, FileName);
- SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
- CALL_2ARGS( t_1, t_2, t_3 );
- 
  /* BIND_GLOBAL( "IsAttributeStoringRepFlags", FLAGS_FILTER( IsAttributeStoringRep ) ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "IsAttributeStoringRepFlags" );
@@ -3698,11 +3635,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ObjectifyWithAttributes" );
- t_3 = NewFunction( NameFunc[31], -1, 0, HdlrFunc31 );
+ t_3 = NewFunction( NameFunc[30], -1, 0, HdlrFunc30 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 893);
- SET_ENDLINE_BODY(t_4, 959);
+ SET_STARTLINE_BODY(t_4, 873);
+ SET_ENDLINE_BODY(t_4, 939);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3851,7 +3788,6 @@ static Int PostRestore ( StructInitInfo * module )
  NameFunc[28] = 0;
  NameFunc[29] = 0;
  NameFunc[30] = 0;
- NameFunc[31] = 0;
  
  /* return success */
  return 0;
@@ -4018,8 +3954,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitGlobalBag( &(NameFunc[29]), "GAPROOT/lib/type1.g:NameFunc[29]("FILE_CRC")" );
  InitHandlerFunc( HdlrFunc30, "GAPROOT/lib/type1.g:HdlrFunc30("FILE_CRC")" );
  InitGlobalBag( &(NameFunc[30]), "GAPROOT/lib/type1.g:NameFunc[30]("FILE_CRC")" );
- InitHandlerFunc( HdlrFunc31, "GAPROOT/lib/type1.g:HdlrFunc31("FILE_CRC")" );
- InitGlobalBag( &(NameFunc[31]), "GAPROOT/lib/type1.g:NameFunc[31]("FILE_CRC")" );
  
  /* return success */
  return 0;
@@ -4055,7 +3989,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/type1.g",
- .crc         = -43167549,
+ .crc         = -66698575,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

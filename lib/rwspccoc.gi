@@ -166,7 +166,7 @@ function( cc )
     CombiCollector_MakeAvector2(cc);
 
     # 'MakeInverses' is very careful
-    SetFeatureObj( cc, IsUpToDatePolycyclicCollector, true );
+    SetFilterObj( cc, IsUpToDatePolycyclicCollector );
 
     # construct the inverses
     SingleCollector_MakeInverses(cc);
@@ -313,7 +313,7 @@ function( efam, gens, orders )
     cc![SCP_WEIGHTS] := [1..cc![SCP_NUMBER_RWS_GENERATORS]] * 0;
     cc![SCP_CLASS]   := 666666;
 
-    SetFeatureObj( cc, IsCombinatorialCollectorRep, true );
+    SetFilterObj( cc, IsCombinatorialCollectorRep );
 
     # and return
     return cc;
@@ -345,7 +345,7 @@ function( comcol )
     fi;
 
     # it's a combinatorial collector now
-    SetFeatureObj( copy, IsCombinatorialCollectorRep, true );
+    SetFilterObj( copy, IsCombinatorialCollectorRep );
 
     return copy;
 
