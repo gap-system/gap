@@ -535,7 +535,6 @@ static Obj FuncREM_SET(Obj self, Obj set, Obj obj)
 
 static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2)
 {
-    UInt                lenr;           /* length  of result set           */
     UInt                len1;           /* length  of left  set            */
     UInt                len2;           /* length  of right set            */
     UInt                i1;             /* index into left  set            */
@@ -552,7 +551,6 @@ static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2)
     len1 = LEN_PLIST( set1 );
     len2 = LEN_PLIST( set2 );
     TmpUnion = NEW_PLIST(T_PLIST,len1+len2);
-    lenr = 0;
     i1 = 1;
     i2 = 1;
 
@@ -561,36 +559,26 @@ static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2)
         e1 = ELM_PLIST( set1, i1 );
         e2 = ELM_PLIST( set2, i2 );
         if ( EQ( e1, e2 ) ) {
-            lenr++;
-            SET_ELM_PLIST( TmpUnion, lenr, e1 );
-            CHANGED_BAG( TmpUnion );
+            PushPlist( TmpUnion, e1 );
             i1++;  i2++;
         }
         else if ( LT( e1, e2 ) ) {
-            lenr++;
-            SET_ELM_PLIST( TmpUnion, lenr, e1 );
-            CHANGED_BAG( TmpUnion );
+            PushPlist( TmpUnion, e1 );
             i1++;
         }
         else {
-            lenr++;
-            SET_ELM_PLIST( TmpUnion, lenr, e2 );
-            CHANGED_BAG( TmpUnion );
+            PushPlist( TmpUnion, e2 );
             i2++;
         }
     }
     while ( i1 <= len1 ) {
         e1 = ELM_PLIST( set1, i1 );
-        lenr++;
-        SET_ELM_PLIST( TmpUnion, lenr, e1 );
-        CHANGED_BAG( TmpUnion );
+        PushPlist( TmpUnion, e1 );
         i1++;
     }
     while ( i2 <= len2 ) {
         e2 = ELM_PLIST( set2, i2 );
-        lenr++;
-        SET_ELM_PLIST( TmpUnion, lenr, e2 );
-        CHANGED_BAG( TmpUnion );
+        PushPlist( TmpUnion, e2 );
         i2++;
     }
 
@@ -612,13 +600,10 @@ static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2)
     SET_FILT_LIST(set1, FN_IS_SSORT);
 
     /* resize the result and copy back from the union                      */
-    GROW_PLIST(    set1, lenr );
-    SET_LEN_PLIST( set1, lenr );
-    for ( i1 = 1;  i1 <= lenr;  i1++ ) {
-        SET_ELM_PLIST( set1, i1, ELM_PLIST( TmpUnion, i1 ) );
-        CHANGED_BAG( set1 );
-        SET_ELM_PLIST( TmpUnion, i1, (Obj)0 );
-    }
+    UInt size = (LEN_PLIST(TmpUnion) + 1) * sizeof(Obj);
+    GROW_PLIST(set1, LEN_PLIST(TmpUnion));
+    memcpy(ADDR_OBJ(set1), CONST_ADDR_OBJ(TmpUnion), size);
+    CHANGED_BAG(set1);
 
     return 0;
 }
