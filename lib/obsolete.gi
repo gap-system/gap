@@ -942,5 +942,22 @@ BindGlobal( "SetUserPreferences", function( arg )
 
 #############################################################################
 ##
+#F  SetFeatureObj( <obj>, <filter>, <val> )
+##
+##  Moved to obsoletes in October 2018 for GAP 4.11.
+##
+##  still used by guarana, lpres, nq (10/2018)
+##
+BIND_GLOBAL( "SetFeatureObj", function ( obj, filter, val )
+    Info( InfoObsolete, 1, "'SetFeatureObj' is obsolete, use 'SetFilterObj' or 'ResetFilterObj' instead" );
+    if val then
+        SetFilterObj( obj, filter );
+    else
+        ResetFilterObj( obj, filter );
+    fi;
+end );
+
+#############################################################################
+##
 #E
 

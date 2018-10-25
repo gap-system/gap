@@ -355,7 +355,7 @@ function( sc )
 
     # return if there is nothing to reduce
     if n = 0  then
-        SetFeatureObj( sc, IsDefaultRhsTypeSingleCollector, true );
+        SetFilterObj( sc, IsDefaultRhsTypeSingleCollector );
         OutdatePolycyclicCollector(sc);
         UpdatePolycyclicCollector(sc);
         return;
@@ -404,7 +404,7 @@ function( sc )
     od;
 
     # now all right hand sides have the default type
-    SetFeatureObj( sc, IsDefaultRhsTypeSingleCollector, true );
+    SetFilterObj( sc, IsDefaultRhsTypeSingleCollector );
 
     # but we have to outdate the collector to force recomputation of avec
     OutdatePolycyclicCollector(sc);
@@ -439,7 +439,7 @@ function( sc, i, j, rhs )
         sc![SCP_CONJUGATES][i][j] := rhs;
         if not sc![SCP_IS_DEFAULT_TYPE](rhs)  then
             Print( "#W  Warning: mixed types in collector\n" );
-            SetFeatureObj( sc, IsDefaultRhsTypeSingleCollector, false );
+            ResetFilterObj( sc, IsDefaultRhsTypeSingleCollector );
         fi;
     fi;
 
@@ -455,7 +455,7 @@ SingleCollector_SetConjugateNC := function( sc, i, j, rhs )
     else
         sc![SCP_CONJUGATES][i][j] := rhs;
         if not sc![SCP_IS_DEFAULT_TYPE](rhs)  then
-            SetFeatureObj( sc, IsDefaultRhsTypeSingleCollector, false );
+            ResetFilterObj( sc, IsDefaultRhsTypeSingleCollector );
         fi;
     fi;
 
@@ -545,7 +545,7 @@ function( sc, i, rhs )
         sc![SCP_POWERS][i] := rhs;
         if not sc![SCP_IS_DEFAULT_TYPE](rhs)  then
             Print( "#  Warning: mixed types in collector\n" );
-            SetFeatureObj( sc, IsDefaultRhsTypeSingleCollector, false );
+            ResetFilterObj( sc, IsDefaultRhsTypeSingleCollector );
         fi;
     fi;
 
@@ -559,7 +559,7 @@ SingleCollector_SetPowerNC := function( sc, i, rhs )
     else
         sc![SCP_POWERS][i] := rhs;
         if not sc![SCP_IS_DEFAULT_TYPE](rhs)  then
-            SetFeatureObj( sc, IsDefaultRhsTypeSingleCollector, false );
+            ResetFilterObj( sc, IsDefaultRhsTypeSingleCollector );
         fi;
     fi;
 
@@ -816,7 +816,7 @@ function( sc )
     SingleCollector_MakeAvector(sc);
 
     # 'MakeInverses' is very careful
-    SetFeatureObj( sc, IsUpToDatePolycyclicCollector, true );
+    SetFilterObj( sc, IsUpToDatePolycyclicCollector );
 
     # construct the inverses
     SingleCollector_MakeInverses(sc);
@@ -1026,13 +1026,13 @@ function( efam, gens, orders )
     type := NewType( fam, IsSingleCollectorRep and bits and IsFinite
                           and IsMutable );
     Objectify( type, sc );
-    SetFeatureObj( sc, HasUnderlyingFamily,      true );
-    SetFeatureObj( sc, HasRelativeOrders,        true );
-    SetFeatureObj( sc, HasGeneratorsOfRws,       true );
-    SetFeatureObj( sc, HasNumberGeneratorsOfRws, true );
+    SetFilterObj( sc, HasUnderlyingFamily      );
+    SetFilterObj( sc, HasRelativeOrders        );
+    SetFilterObj( sc, HasGeneratorsOfRws       );
+    SetFilterObj( sc, HasNumberGeneratorsOfRws );
 
     # there are no right hand sides
-    SetFeatureObj( sc, IsDefaultRhsTypeSingleCollector, true );
+    SetFilterObj( sc, IsDefaultRhsTypeSingleCollector );
 
     # we haven't computed the avector and the inverses
     OutdatePolycyclicCollector(sc);

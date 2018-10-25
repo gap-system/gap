@@ -513,7 +513,7 @@ UpdateWeightInfo := function( qs )
     od;
     qs!.collector![SCP_AVECTOR2] := avc2;
 
-    SetFeatureObj( qs!.collector, IsUpToDatePolycyclicCollector, true );
+    SetFilterObj( qs!.collector, IsUpToDatePolycyclicCollector );
 end;
 
 #############################################################################

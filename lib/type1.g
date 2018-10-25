@@ -827,26 +827,6 @@ BIND_GLOBAL( "RESET_FILTER_OBJ", ResetFilterObj );
 
 #############################################################################
 ##
-#F  SetFeatureObj( <obj>, <filter>, <val> )
-##
-##  <ManSection>
-##  <Func Name="SetFeatureObj" Arg='obj, filter, val'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BIND_GLOBAL( "SetFeatureObj", function ( obj, filter, val )
-    if val then
-        SetFilterObj( obj, filter );
-    else
-        ResetFilterObj( obj, filter );
-    fi;
-end );
-
-
-#############################################################################
-##
 #F  ObjectifyWithAttributes(<obj>,<type>,<attr1>,<val1>,<attr2>,<val2>... )
 ##
 ##  <#GAPDoc Label="ObjectifyWithAttributes">

@@ -658,7 +658,11 @@ BIND_GLOBAL( "InstallSubsetMaintenance",
       SUBSET_MAINTAINED_INFO[1][ i+1 ]:= MakeImmutable(
                 [ filt1, filt2, operation, operation,
                   function( sub, val )
-                      SetFeatureObj( sub, operation, val );
+                      if val then
+                          SetFilterObj( sub, operation );
+                      else
+                          ResetFilterObj( sub, operation );
+                      fi;
                   end ]);
     fi;
     od; # end atomic

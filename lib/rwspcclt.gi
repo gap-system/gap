@@ -331,7 +331,7 @@ InstallMethod( OutdatePolycyclicCollector,
     0,
 
 function( col )
-    SetFeatureObj( col, IsUpToDatePolycyclicCollector, false );
+    ResetFilterObj( col, IsUpToDatePolycyclicCollector );
 end );
 
 
