@@ -33,6 +33,7 @@ a
 #define GAP_INTOBJ_H
 
 #include "system.h"
+#include "error.h"
 
 #ifdef SYS_IS_64_BIT
 #define NR_SMALL_INT_BITS  (64 - 4)
@@ -111,12 +112,18 @@ static inline Int ARE_INTOBJS(Obj o1, Obj o2)
  * chooses to do a logical right shift. */
 static inline Int INT_INTOBJ(Obj o)
 {
-    GAP_ASSERT(IS_INTOBJ(o));
+    if(__builtin_expect(IS_INTOBJ(o),1))
+    {
 #ifdef HAVE_ARITHRIGHTSHIFT
-    return (Int)o >> 2;
+        return (Int)o >> 2;
 #else
-    return ((Int)o - 1) / 4;
+        return ((Int)o - 1) / 4;
 #endif
+    }
+    else
+    {
+        ErrorQuitIntSmall(o);
+    }
 }
 
 
