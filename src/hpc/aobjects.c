@@ -230,15 +230,15 @@ static Obj FuncMakeFixedAtomicList(Obj self, Obj list) {
     case T_FIXALIST:
       HashLock(list);
       switch (TNUM_OBJ(list)) {
-	case T_ALIST:
-	case T_FIXALIST:
-	  RetypeBag(list, T_FIXALIST);
-	  HashUnlock(list);
-	  return list;
+        case T_ALIST:
+        case T_FIXALIST:
+          RetypeBag(list, T_FIXALIST);
+          HashUnlock(list);
+          return list;
         default:
-	  HashUnlock(list);
+          HashUnlock(list);
           ArgumentError("MakeFixedAtomicList: Argument must be atomic list");
-	  return (Obj) 0; /* flow control hint */
+          return (Obj) 0; /* flow control hint */
       }
       HashUnlock(list);
       break;
@@ -250,17 +250,17 @@ static Obj FuncMakeFixedAtomicList(Obj self, Obj list) {
 
 static Obj FuncIS_ATOMIC_RECORD (Obj self, Obj obj) 
 {
-	return (TNUM_OBJ(obj) == T_AREC) ? True : False;
+        return (TNUM_OBJ(obj) == T_AREC) ? True : False;
 }
 
 static Obj FuncIS_ATOMIC_LIST (Obj self, Obj obj) 
 {
-	return (TNUM_OBJ(obj) == T_ALIST) ? True : False;
+        return (TNUM_OBJ(obj) == T_ALIST) ? True : False;
 }
 
 static Obj FuncIS_FIXED_ATOMIC_LIST (Obj self, Obj obj) 
 {
-	return (TNUM_OBJ(obj) == T_FIXALIST) ? True : False;
+        return (TNUM_OBJ(obj) == T_FIXALIST) ? True : False;
 }
 
 
@@ -588,7 +588,7 @@ static void PrintTLRecord(Obj obj)
       Pr("%H", (Int)NAME_RNAM(labs((Int)GET_RNAM_PREC(record, i))), 0L);
       Pr ("%< := %>", 0L, 0L);
       if (val)
-	PrintObj(val);
+        PrintObj(val);
       else
         Pr("<undefined>", 0L, 0L);
       if (i < LEN_PREC(record))
@@ -605,7 +605,7 @@ static void PrintTLRecord(Obj obj)
     UInt dummy;
     if (key && (!record || !FindPRec(record, key, &dummy, 0))) {
       if (comma)
-	Pr("%2<, %2>", 0L, 0L);
+        Pr("%2<, %2>", 0L, 0L);
       Pr("%H", (Int)(NAME_RNAM(key)), 0L);
       Pr ("%< := %>", 0L, 0L);
       PrintObj(CopyTraversed(value));
@@ -701,26 +701,26 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
       MEMBAR_FULL(); /* memory barrier */
       if (policy == AREC_WX) {
         HashUnlockShared(record);
-	return 0;
+        return 0;
       }
       else if (policy == AREC_RW) {
         AtomicObj old;
-	AtomicObj new;
-	new.obj = obj;
-	do {
-	  old = data[hash*2+1];
-	} while (!COMPARE_AND_SWAP(&data[hash*2+1].atom,
-	          old.atom, new.atom));
-	CHANGED_BAG(inner);
-	HashUnlockShared(record);
-	return obj;
+        AtomicObj new;
+        new.obj = obj;
+        do {
+          old = data[hash*2+1];
+        } while (!COMPARE_AND_SWAP(&data[hash*2+1].atom,
+                  old.atom, new.atom));
+        CHANGED_BAG(inner);
+        HashUnlockShared(record);
+        return obj;
       } else { // AREC_W1
-	do {
-	  result = data[hash*2+1].obj;
-	} while (!result);
-	CHANGED_BAG(inner);
-	HashUnlockShared(record);
-	return result;
+        do {
+          result = data[hash*2+1].obj;
+        } while (!result);
+        CHANGED_BAG(inner);
+        HashUnlockShared(record);
+        return result;
       }
     }
     hash++;
@@ -739,7 +739,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
     if (old.atom == field) {
       /* we don't actually need a new entry, so revert the size update */
       do {
-	size = table[AR_SIZE].atom;
+        size = table[AR_SIZE].atom;
       } while (!COMPARE_AND_SWAP(&table[AR_SIZE].atom, size, size-1));
       /* continue below */
     } else if (!old.atom) {
@@ -759,29 +759,29 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
       old = data[hash*2+1];
       if (old.obj) {
         if (policy == AREC_WX) {
-	  result = 0;
-	  break;
-	}
-	else if (policy == AREC_RW) {
-	  AtomicObj new;
-	  new.obj = obj;
-	  if (COMPARE_AND_SWAP(&data[hash*2+1].atom,
-	      old.atom, new.atom)) {
-	    result = obj;
-	    break;
-	  }
-	} else {
-	  result = old.obj;
-	  break;
-	}
+          result = 0;
+          break;
+        }
+        else if (policy == AREC_RW) {
+          AtomicObj new;
+          new.obj = obj;
+          if (COMPARE_AND_SWAP(&data[hash*2+1].atom,
+              old.atom, new.atom)) {
+            result = obj;
+            break;
+          }
+        } else {
+          result = old.obj;
+          break;
+        }
       } else {
         AtomicObj new;
-	new.obj = obj;
-	if (COMPARE_AND_SWAP(&data[hash*2+1].atom,
-	    old.atom, new.atom)) {
-	  result = obj;
-	  break;
-	}
+        new.obj = obj;
+        if (COMPARE_AND_SWAP(&data[hash*2+1].atom,
+            old.atom, new.atom)) {
+          result = obj;
+          break;
+        }
       }
     } /* end CAS loop */
     CHANGED_BAG(inner);
@@ -1004,8 +1004,8 @@ Obj GetTLRecordField(Obj record, UInt rnam)
     if (result) {
       result = CopyTraversed(result);
       if (!tlrecord) {
-	tlrecord = NEW_PREC(0);
-	UpdateThreadRecord(record, tlrecord);
+        tlrecord = NEW_PREC(0);
+        UpdateThreadRecord(record, tlrecord);
       }
       AssPRec(tlrecord, rnam, result);
       TLS(currentRegion) = savedRegion;
@@ -1015,22 +1015,22 @@ Obj GetTLRecordField(Obj record, UInt rnam)
       Obj constructors = table[TLR_CONSTRUCTORS];
       func = GetARecordField(constructors, rnam);
       if (!tlrecord) {
-	tlrecord = NEW_PREC(0);
-	UpdateThreadRecord(record, tlrecord);
+        tlrecord = NEW_PREC(0);
+        UpdateThreadRecord(record, tlrecord);
       }
       if (func) {
         if (NARG_FUNC(func) == 0)
-	  result = CALL_0ARGS(func);
-	else
-	  result = CALL_1ARGS(func, record);
-	TLS(currentRegion) = savedRegion;
-	if (!result) {
-	  if (!FindPRec(tlrecord, rnam, &pos, 1))
-	    return 0;
-	  return GET_ELM_PREC(tlrecord, pos);
-	}
-	AssPRec(tlrecord, rnam, result);
-	return result;
+          result = CALL_0ARGS(func);
+        else
+          result = CALL_1ARGS(func, record);
+        TLS(currentRegion) = savedRegion;
+        if (!result) {
+          if (!FindPRec(tlrecord, rnam, &pos, 1))
+            return 0;
+          return GET_ELM_PREC(tlrecord, pos);
+        }
+        AssPRec(tlrecord, rnam, result);
+        return result;
       }
       TLS(currentRegion) = savedRegion;
       return 0;
@@ -1098,14 +1098,14 @@ static Obj FuncAtomicRecord(Obj self, Obj args)
     case 1:
       arg = ELM_PLIST(args, 1);
       if (IS_INTOBJ(arg)) {
-	if (INT_INTOBJ(arg) <= 0)
+        if (INT_INTOBJ(arg) <= 0)
           ArgumentError("AtomicRecord: capacity must be a positive integer");
         return NewAtomicRecord(INT_INTOBJ(arg));
       }
       switch (TNUM_OBJ(arg)) {
         case T_PREC:
-	case T_PREC+IMMUTABLE:
-	  return NewAtomicRecordFrom(arg);
+        case T_PREC+IMMUTABLE:
+          return NewAtomicRecordFrom(arg);
       }
       ArgumentError("AtomicRecord: argument must be an integer or record");
     default:
@@ -1294,9 +1294,9 @@ Obj ElmAList(Obj list, Int pos)
     Obj posobj;
     do {
       posobj = ErrorReturnObj(
-	"Atomic List Element: <pos>=%d is an invalid index for <list>",
-	(Int) pos, 0L,
-	"you can replace value <pos> via 'return <pos>;'" );
+        "Atomic List Element: <pos>=%d is an invalid index for <list>",
+        (Int) pos, 0L,
+        "you can replace value <pos> via 'return <pos>;'" );
     } while (!IS_INTOBJ(posobj));
     pos = INT_INTOBJ(posobj);
   }
@@ -1307,9 +1307,9 @@ Obj ElmAList(Obj list, Int pos)
       return result;
     }
     ErrorReturnVoid(
-	"Atomic List Element: <list>[%d] must have an assigned value",
-	(Int)pos, 0L,
-	"you can 'return;' after assigning a value" );
+        "Atomic List Element: <list>[%d] must have an assigned value",
+        (Int)pos, 0L,
+        "you can 'return;' after assigning a value" );
   }
 }
 
@@ -1329,9 +1329,9 @@ void AssFixAList(Obj list, Int pos, Obj obj)
     Obj posobj;
     do {
       posobj = ErrorReturnObj(
-	"Atomic List Element: <pos>=%d is an invalid index for <list>",
-	(Int) pos, 0L,
-	"you can replace value <pos> via 'return <pos>;'" );
+        "Atomic List Element: <pos>=%d is an invalid index for <list>",
+        (Int) pos, 0L,
+        "you can replace value <pos> via 'return <pos>;'" );
     } while (!IS_INTOBJ(posobj));
     pos = INT_INTOBJ(posobj);
   }
@@ -1346,7 +1346,7 @@ void AssFixAList(Obj list, Int pos, Obj obj)
     case ALIST_WX:
       if (!COMPARE_AND_SWAP(&ADDR_ATOM(list)[1+pos].atom,
         (AtomicUInt) 0, (AtomicUInt) obj)) {
-	ErrorQuit("Atomic List Assignment: <list>[%d] already has an assigned value", pos, (Int) 0);
+        ErrorQuit("Atomic List Assignment: <list>[%d] already has an assigned value", pos, (Int) 0);
       }
       break;
   }
@@ -1408,8 +1408,8 @@ void AssAList(Obj list, Int pos, Obj obj)
 {
   if (pos < 1) {
     ErrorQuit(
-	"Atomic List Element: <pos>=%d is an invalid index for <list>",
-	(Int) pos, 0L);
+        "Atomic List Element: <pos>=%d is an invalid index for <list>",
+        (Int) pos, 0L);
     return; /* flow control hint */
   }
 
@@ -1429,8 +1429,8 @@ void AssAList(Obj list, Int pos, Obj obj)
     case ALIST_WX:
       if (!COMPARE_AND_SWAP(&ADDR_ATOM(list)[1+pos].atom,
         (AtomicUInt) 0, (AtomicUInt) obj)) {
-	HashUnlock(list);
-	ErrorQuit("Atomic List Assignment: <list>[%d] already has an assigned value", pos, (Int) 0);
+        HashUnlock(list);
+        ErrorQuit("Atomic List Assignment: <list>[%d] already has an assigned value", pos, (Int) 0);
       }
       break;
   }
@@ -1504,8 +1504,8 @@ UInt AddAList(Obj list, Obj obj)
     case ALIST_WX:
       if (!COMPARE_AND_SWAP(&ADDR_ATOM(list)[2+len].atom,
         (AtomicUInt) 0, (AtomicUInt) obj)) {
-	HashUnlock(list);
-	ErrorQuit("Atomic List Assignment: <list>[%d] already has an assigned value", len+1, (Int) 0);
+        HashUnlock(list);
+        ErrorQuit("Atomic List Assignment: <list>[%d] already has an assigned value", len+1, (Int) 0);
       }
       break;
   }
