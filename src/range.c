@@ -775,13 +775,13 @@ Obj Range2Check (
     Int                 f, l;
     if ( ! IS_INTOBJ(first) ) {
         ErrorQuit(
-            "Range: <first> must be a positive small integer (not a %s)",
+            "Range: <first> must be a small integer (not a %s)",
             (Int)TNAM_OBJ(first), 0L );
     }
     f = INT_INTOBJ(first);
     if ( ! IS_INTOBJ(last) ) {
         ErrorQuit(
-            "Range: <last> must be a positive small integer (not a %s)",
+            "Range: <last> must be a small integer (not a %s)",
             (Int)TNAM_OBJ(last), 0L );
     }
     l = INT_INTOBJ(last);
@@ -816,13 +816,13 @@ Obj Range3Check (
     Int                 f, i, l;
     if ( ! IS_INTOBJ(first) ) {
         ErrorQuit(
-            "Range: <first> must be a positive small integer (not a %s)",
+            "Range: <first> must be a small integer (not a %s)",
             (Int)TNAM_OBJ(first), 0L );
     }
     f = INT_INTOBJ(first);
     if ( ! IS_INTOBJ(second) ) {
         ErrorQuit(
-            "Range: <second> must be a positive small integer (not a %s)",
+            "Range: <second> must be a small integer (not a %s)",
             (Int)TNAM_OBJ(second), 0L );
     }
     if ( first == second ) {
@@ -833,7 +833,7 @@ Obj Range3Check (
     i = INT_INTOBJ(second) - f;
     if ( ! IS_INTOBJ(last) ) {
         ErrorQuit(
-            "Range: <last> must be a positive small integer (not a %s)",
+            "Range: <last> must be a small integer (not a %s)",
             (Int)TNAM_OBJ(last), 0L );
     }
     l = INT_INTOBJ(last);
