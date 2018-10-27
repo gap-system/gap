@@ -160,17 +160,17 @@ gap> l;
 
 #
 gap> l![fail] := 42;
-Error, PosObj Assignment: <position> must be a positive integer (not a boolean\
- or fail)
+Error, PosObj Assignment: <position> must be a positive small integer (not a b\
+oolean or fail)
 gap> l![fail];
-Error, PosObj Element: <position> must be a positive integer (not a boolean or\
- fail)
+Error, PosObj Element: <position> must be a positive small integer (not a bool\
+ean or fail)
 gap> IsBound(l![fail]);
-Error, PosObj Element: <position> must be a positive integer (not a boolean or\
- fail)
+Error, PosObj Element: <position> must be a positive small integer (not a bool\
+ean or fail)
 gap> Unbind(l![fail]);
-Error, PosObj Assignment: <position> must be a positive integer (not a boolean\
- or fail)
+Error, PosObj Assignment: <position> must be a positive small integer (not a b\
+oolean or fail)
 
 #
 gap> l{[1,3]} := [42, 23];
@@ -206,17 +206,17 @@ false
 
 #
 gap> l![fail] := 42;
-Error, PosObj Assignment: <position> must be a positive integer (not a boolean\
- or fail)
+Error, PosObj Assignment: <position> must be a positive small integer (not a b\
+oolean or fail)
 gap> l![fail];
-Error, PosObj Element: <position> must be a positive integer (not a boolean or\
- fail)
+Error, PosObj Element: <position> must be a positive small integer (not a bool\
+ean or fail)
 gap> IsBound(l![fail]);
-Error, PosObj Element: <position> must be a positive integer (not a boolean or\
- fail)
+Error, PosObj Element: <position> must be a positive small integer (not a bool\
+ean or fail)
 gap> Unbind(l![fail]);
-Error, PosObj Assignment: <position> must be a positive integer (not a boolean\
- or fail)
+Error, PosObj Assignment: <position> must be a positive small integer (not a b\
+oolean or fail)
 
 #
 # atomic posobj (HPC-GAP)
@@ -236,17 +236,17 @@ false
 
 #
 gap> l![fail] := 42;
-Error, PosObj Assignment: <position> must be a positive integer (not a boolean\
- or fail)
+Error, PosObj Assignment: <position> must be a positive small integer (not a b\
+oolean or fail)
 gap> l![fail];
-Error, PosObj Element: <position> must be a positive integer (not a boolean or\
- fail)
+Error, PosObj Element: <position> must be a positive small integer (not a bool\
+ean or fail)
 gap> IsBound(l![fail]);
-Error, PosObj Element: <position> must be a positive integer (not a boolean or\
- fail)
+Error, PosObj Element: <position> must be a positive small integer (not a bool\
+ean or fail)
 gap> Unbind(l![fail]);
-Error, PosObj Assignment: <position> must be a positive integer (not a boolean\
- or fail)
+Error, PosObj Assignment: <position> must be a positive small integer (not a b\
+oolean or fail)
 
 #
 #

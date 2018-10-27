@@ -801,10 +801,10 @@ Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
         rank = 0;
         for (i = 1; i <= len; i++) {
             pt = ELM_LIST(list, i);
-            if (!IS_INTOBJ(pt) || INT_INTOBJ(pt) < 1) {
+            if (!IS_POS_INTOBJ(pt)) {
                 ErrorQuit(
-                    "RANK_TRANS_LIST: the second argument <list> must be a "
-                    "list of positive integers (not a %s)",
+                    "RANK_TRANS_LIST: <list> must be a "
+                    "list of positive small integers (not a %s)",
                     (Int)TNAM_OBJ(pt), 0L);
             }
             j = INT_INTOBJ(pt) - 1;
@@ -828,10 +828,10 @@ Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
         rank = 0;
         for (i = 1; i <= len; i++) {
             pt = ELM_LIST(list, i);
-            if (!IS_INTOBJ(pt) || INT_INTOBJ(pt) < 1) {
+            if (!IS_POS_INTOBJ(pt)) {
                 ErrorQuit(
-                    "RANK_TRANS_LIST: the second argument <list> must be a "
-                    "list of positive integers (not a %s)",
+                    "RANK_TRANS_LIST: <list> must be a "
+                    "list of positive small integers (not a %s)",
                     (Int)TNAM_OBJ(pt), 0L);
             }
             j = INT_INTOBJ(pt) - 1;
@@ -3376,9 +3376,9 @@ Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
         }
         for (j = 1; j <= (UInt)LEN_LIST(list); j++) {
             k = ELM_LIST(list, j);
-            if (!IS_INTOBJ(k) || INT_INTOBJ(k) < 1) {
+            if (!IS_POS_INTOBJ(k)) {
                 ErrorQuit(
-                    "INV_LIST_TRANS: <list>[%d] must be a positive integer "
+                    "INV_LIST_TRANS: <list>[%d] must be a positive small integer "
                     "(not a %s)",
                     (Int)j, (Int)TNAM_OBJ(k));
             }
@@ -3401,9 +3401,9 @@ Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
         }
         for (j = 1; j <= (UInt)LEN_LIST(list); j++) {
             k = ELM_LIST(list, j);
-            if (!IS_INTOBJ(k) || INT_INTOBJ(k) < 1) {
+            if (!IS_POS_INTOBJ(k)) {
                 ErrorQuit(
-                    "INV_LIST_TRANS: <list>[%d] must be a positive integer "
+                    "INV_LIST_TRANS: <list>[%d] must be a positive small integer "
                     "(not a %s)",
                     (Int)j, (Int)TNAM_OBJ(k));
             }

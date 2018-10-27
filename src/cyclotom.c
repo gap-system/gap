@@ -1544,9 +1544,9 @@ Obj FuncE (
     }
 
     /* get and check the argument                                          */
-    while ( !IS_INTOBJ(n) || INT_INTOBJ(n) <= 0 ) {
+    while (!IS_POS_INTOBJ(n)) {
         n = ErrorReturnObj(
-            "E: <n> must be a positive integer (not a %s)",
+            "E: <n> must be a positive small integer (not a %s)",
             (Int)TNAM_OBJ(n), 0L,
             "you can replace <n> via 'return <n>;'" );
     }

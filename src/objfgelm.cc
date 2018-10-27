@@ -178,13 +178,13 @@ Obj FuncNBits_ExponentSums3 (
 
     /* <start> must be positive                                            */
     while ( !IS_POS_INTOBJ(vstart) )
-        vstart = ErrorReturnObj( "<start> must be a positive integer", 0L, 0L,
+        vstart = ErrorReturnObj( "<start> must be a positive small integer", 0L, 0L,
                                  "you can replace <start> via 'return <start>;'" );
     start = INT_INTOBJ(vstart);
 
     /* <end> must be positive                                              */
     while ( !IS_POS_INTOBJ(vend) )
-        vend = ErrorReturnObj( "<end> must be a positive integer", 0L, 0L,
+        vend = ErrorReturnObj( "<end> must be a positive small integer", 0L, 0L,
                                "you can replace <end> via 'return <end>;'" );
     end = INT_INTOBJ(vend);
 

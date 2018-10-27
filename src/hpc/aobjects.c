@@ -1097,9 +1097,7 @@ static Obj FuncAtomicRecord(Obj self, Obj args)
       return NewAtomicRecord(8);
     case 1:
       arg = ELM_PLIST(args, 1);
-      if (IS_INTOBJ(arg)) {
-        if (INT_INTOBJ(arg) <= 0)
-          ArgumentError("AtomicRecord: capacity must be a positive integer");
+      if (IS_POS_INTOBJ(arg)) {
         return NewAtomicRecord(INT_INTOBJ(arg));
       }
       switch (TNUM_OBJ(arg)) {
@@ -1107,7 +1105,7 @@ static Obj FuncAtomicRecord(Obj self, Obj args)
         case T_PREC+IMMUTABLE:
           return NewAtomicRecordFrom(arg);
       }
-      ArgumentError("AtomicRecord: argument must be an integer or record");
+      ArgumentError("AtomicRecord: argument must be a positive small integer or a record");
     default:
       ArgumentError("AtomicRecord: takes one optional argument");
       return (Obj) 0;
@@ -1640,10 +1638,11 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncN
   Int n;
   Bag *contents;
   Bag result;
-  if (!IS_INTOBJ(index) || ((n = INT_INTOBJ(index)) <= 0)) {
-    FuncError("index for positional object must be a positive integer");
+  if (!IS_POS_INTOBJ(index)) {
+    FuncError("index for positional object must be a positive small integer");
     return (Obj) 0; /* flow control hint */
   }
+  n = INT_INTOBJ(index);
   ReadGuard(obj);
 #ifndef WARD_ENABLED
   contents = PTR_BAG(obj);

@@ -1971,9 +1971,9 @@ void            IntrPermCycle (
 
         /* get and check current entry for the cycle                       */
         val = PopObj();
-        if ( ! IS_INTOBJ(val) || INT_INTOBJ(val) <= 0 ) {
+        if (!IS_POS_INTOBJ(val)) {
             ErrorQuit(
-                "Permutation: <expr> must be a positive integer (not a %s)",
+                "Permutation: <expr> must be a positive small integer (not a %s)",
                 (Int)TNAM_OBJ(val), 0L );
         }
         c = INT_INTOBJ(val);
@@ -3512,7 +3512,7 @@ void            IntrAssPosObj ( void )
     pos = PopObj();
     if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
-         "PosObj Assignment: <position> must be a positive integer (not a %s)",
+         "PosObj Assignment: <position> must be a positive small integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ(pos);
@@ -3543,7 +3543,7 @@ void            IntrUnbPosObj ( void )
     pos = PopObj();
     if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
-         "PosObj Assignment: <position> must be a positive integer (not a %s)",
+         "PosObj Assignment: <position> must be a positive small integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ(pos);
@@ -3580,7 +3580,7 @@ void            IntrElmPosObj ( void )
     pos = PopObj();
     if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
-            "PosObj Element: <position> must be a positive integer (not a %s)",
+            "PosObj Element: <position> must be a positive small integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ( pos );
@@ -3612,7 +3612,7 @@ void            IntrIsbPosObj ( void )
     pos = PopObj();
     if ( ! IS_POS_INTOBJ(pos) ) {
         ErrorQuit(
-            "PosObj Element: <position> must be a positive integer (not a %s)",
+            "PosObj Element: <position> must be a positive small integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0L );
     }
     p = INT_INTOBJ( pos );

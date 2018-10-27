@@ -2556,20 +2556,13 @@ Obj FuncASS_PLIST_DEFAULT (
     Int                 p;
 
     /* check the arguments                                                 */
-    while ( ! IS_INTOBJ(pos) ) {
+    while ( ! IS_POS_INTOBJ(pos) ) {
         pos = ErrorReturnObj(
-            "<pos> must be an integer (not a %s)",
+            "<pos> must be a positive small integer (not a %s)",
             (Int)TNAM_OBJ(pos), 0,
             "you can replace <pos> via 'return <pos>;'" );
     }
     p = INT_INTOBJ(pos);
-    if ( p < 0 ) {
-        pos = ErrorReturnObj(
-            "<pos> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0,
-            "you can replace <pos> via 'return <pos>;'" );
-        return FuncASS_PLIST_DEFAULT( self, plist, pos, val );
-    }
     while ( ! IS_PLIST(plist) || ! IS_PLIST_MUTABLE(plist) ) {
         plist = ErrorReturnObj(
             "<list> must be a mutable plain list (not a %s)",

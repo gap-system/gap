@@ -292,7 +292,7 @@ gap> SetCyclotomicsLimit(1000000);
 
 #
 gap> E(0);
-Error, E: <n> must be a positive integer (not a integer)
+Error, E: <n> must be a positive small integer (not a integer)
 
 #
 gap> IS_CYC('a');

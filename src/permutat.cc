@@ -1251,7 +1251,7 @@ Obj             FuncCYCLE_LENGTH_PERM_INT (
             (Int)TNAM_OBJ(perm), 0L,
             "you can replace <perm> via 'return <perm>;'" );
     }
-    while ( !IS_INTOBJ(point) || INT_INTOBJ(point) <= 0 ) {
+    while (!IS_POS_INTOBJ(point)) {
         point = ErrorReturnObj(
          "CycleLengthPermInt: <point> must be a positive integer (not a %s)",
             (Int)TNAM_OBJ(point), 0L,
@@ -1331,9 +1331,9 @@ Obj             FuncCYCLE_PERM_INT (
             (Int)TNAM_OBJ(perm), 0L,
             "you can replace <perm> via 'return <perm>;'" );
     }
-    while ( !IS_INTOBJ(point) || INT_INTOBJ(point) <= 0 ) {
+    while (!IS_POS_INTOBJ(point)) {
         point = ErrorReturnObj(
-            "CyclePermInt: <point> must be a positive integer (not a %s)",
+            "CyclePermInt: <point> must be a positive small integer (not a %s)",
             (Int)TNAM_OBJ(point), 0L,
             "you can replace <point> via 'return <point>;'" );
     }
@@ -2381,9 +2381,9 @@ Obj Array2Perm (
 
             /* get and check current entry for the cycle                   */
             val = ELM_LIST( cycle, j );
-            while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) <= 0 ) {
+            while (!IS_POS_INTOBJ(val)) {
                 val = ErrorReturnObj(
-              "Permutation: <expr> must be a positive integer (not a %s)",
+              "Permutation: <expr> must be a positive small integer (not a %s)",
                     (Int)TNAM_OBJ(val), 0L,
                     "you can replace <expr> via 'return <expr>;'" );
             }
