@@ -1726,10 +1726,8 @@ increment <C><A>second</A> - <A>first</A></C>,
 otherwise an error is signalled.
 <P/>
 Currently, the integers <A>first</A>, <A>second</A> and <A>last</A>
-and the length of a range must be small integers,
-that is at least <M>-2^d</M> and at most <M>2^d - 1</M> 
-with <M>d = 28</M> on 32-bit architectures
-and <M>d = 60</M> on 64-bit architectures.
+and the length of a range must be <E>small integers</E>
+as defined in chapter&nbsp;<Ref Chap="Integers"/>.
 <P/>
 Note also that a range is just a special case of a list.
 Thus you can access elements in a range (see <Ref Sect="List Elements"/>),
