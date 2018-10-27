@@ -2,7 +2,7 @@
 gap> a := 2^(8*GAPInfo.BytesPerVariable-4)-1;;
 gap> Unbind( x );
 gap> x := [-a..a];
-Error, Range: the length of a range must be less than 2^28
+Error, Range: the length of a range must be a small integer
 gap> IsBound(x);
 false
 
@@ -10,72 +10,54 @@ false
 # test range bounds checks in interpreter
 #
 gap> [2^40..0];
-Error, Range: <first> must be an integer less than 2^28 (not a integer (>= 2^2\
-8))
+Error, Range: <first> must be a small integer (not a large positive integer)
 gap> [0..2^40];
-Error, Range: <last> must be an integer less than 2^28 (not a integer (>= 2^28\
-))
+Error, Range: <last> must be a small integer (not a large positive integer)
 gap> [2^100..0];
-Error, Range: <first> must be an integer less than 2^28 (not a integer (>= 2^2\
-8))
+Error, Range: <first> must be a small integer (not a large positive integer)
 gap> [0..2^100];
-Error, Range: <last> must be an integer less than 2^28 (not a integer (>= 2^28\
-))
+Error, Range: <last> must be a small integer (not a large positive integer)
 gap> [0..()];
-Error, Range: <last> must be an integer less than 2^28 (not a permutation (sma\
-ll))
+Error, Range: <last> must be a small integer (not a permutation (small))
 gap> [()..0];
-Error, Range: <first> must be an integer less than 2^28 (not a permutation (sm\
-all))
+Error, Range: <first> must be a small integer (not a permutation (small))
 gap> [(),1..3];
-Error, Range: <first> must be an integer less than 2^28 (not a permutation (sm\
-all))
+Error, Range: <first> must be a small integer (not a permutation (small))
 gap> [1,()..3];
-Error, Range: <second> must be an integer less than 2^28 (not a permutation (s\
-mall))
+Error, Range: <second> must be a small integer (not a permutation (small))
 gap> [1,2..()];
-Error, Range: <last> must be an integer less than 2^28 (not a permutation (sma\
-ll))
+Error, Range: <last> must be a small integer (not a permutation (small))
 gap> [-2^28..2^28-1];
-Error, Range: the length of a range must be less than 2^28
+Error, Range: the length of a range must be a small integer
 
 # length
 gap> [-2^28..2^28-1];
-Error, Range: the length of a range must be less than 2^28
+Error, Range: the length of a range must be a small integer
 
 #
 # test range bounds checks in executor
 #
 gap> f:={a,b} -> [a..b];;
 gap> f(2^40,0);
-Error, Range: <first> must be an integer less than 2^28 (not a integer (>= 2^2\
-8))
+Error, Range: <first> must be a small integer (not a large positive integer)
 gap> f(0,2^40);
-Error, Range: <last> must be an integer less than 2^28 (not a integer (>= 2^28\
-))
+Error, Range: <last> must be a small integer (not a large positive integer)
 gap> f(2^100,0);
-Error, Range: <first> must be an integer less than 2^28 (not a integer (>= 2^2\
-8))
+Error, Range: <first> must be a small integer (not a large positive integer)
 gap> f(0,2^100);
-Error, Range: <last> must be an integer less than 2^28 (not a integer (>= 2^28\
-))
+Error, Range: <last> must be a small integer (not a large positive integer)
 gap> f(0,());
-Error, Range: <last> must be an integer less than 2^28 (not a permutation (sma\
-ll))
+Error, Range: <last> must be a small integer (not a permutation (small))
 gap> f((),0);
-Error, Range: <first> must be an integer less than 2^28 (not a permutation (sm\
-all))
+Error, Range: <first> must be a small integer (not a permutation (small))
 gap> g:={a,b,c} -> [a,b..c];;
 gap> g((),1,3);
-Error, Range: <first> must be an integer less than 2^28 (not a permutation (sm\
-all))
+Error, Range: <first> must be a small integer (not a permutation (small))
 gap> g(1,(),3);
-Error, Range: <second> must be an integer less than 2^28 (not a permutation (s\
-mall))
+Error, Range: <second> must be a small integer (not a permutation (small))
 gap> g(1,2,());
-Error, Range: <last> must be an integer less than 2^28 (not a permutation (sma\
-ll))
+Error, Range: <last> must be a small integer (not a permutation (small))
 
 # length
 gap> f(-2^28,2^28-1);
-Error, Range: the length of a range must be less than 2^28
+Error, Range: the length of a range must be a small integer

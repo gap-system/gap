@@ -1978,8 +1978,8 @@ void            IntrPermCycle (
         }
         c = INT_INTOBJ(val);
         if (c > MAX_DEG_PERM4)
-          ErrorQuit( "Permutation literal exceeds maximum permutation degree -- %i vs %i",
-                     c, MAX_DEG_PERM4);
+          ErrorQuit( "Permutation literal exceeds maximum permutation degree",
+                     0, 0);
 
         /* if necessary resize the permutation                             */
         if (DEG_PERM4(perm) < c) {
@@ -2184,8 +2184,8 @@ void            IntrListExprEnd (
         val = ELM_LIST( list, 1 );
         if ( ! IS_INTOBJ(val) ) {
             ErrorQuit(
-                "Range: <first> must be an integer less than 2^%d (not a %s)",
-                NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val) );
+                "Range: <first> must be a small integer (not a %s)",
+                (Int)TNAM_OBJ(val), 0 );
         }
         low = INT_INTOBJ( val );
 
@@ -2194,8 +2194,8 @@ void            IntrListExprEnd (
             val = ELM_LIST( list, 2 );
             if ( ! IS_INTOBJ(val) ) {
                 ErrorQuit(
-                    "Range: <second> must be an integer less than 2^%d (not a %s)",
-                    NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val) );
+                    "Range: <second> must be a small integer (not a %s)",
+                    (Int)TNAM_OBJ(val), 0 );
             }
             if ( INT_INTOBJ(val) == low ) {
                 ErrorQuit(
@@ -2212,8 +2212,8 @@ void            IntrListExprEnd (
         val = ELM_LIST( list, LEN_LIST(list) );
         if ( ! IS_INTOBJ(val) ) {
             ErrorQuit(
-                "Range: <last> must be an integer less than 2^%d (not a %s)",
-                NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val) );
+                "Range: <last> must be a small integer (not a %s)",
+                (Int)TNAM_OBJ(val), 0 );
         }
         if ( (INT_INTOBJ(val) - low) % inc != 0 ) {
             ErrorQuit(
@@ -2238,8 +2238,8 @@ void            IntrListExprEnd (
         else {
             /* length must be a small integer as well */
             if ((high-low) / inc >= INT_INTOBJ_MAX) {
-                ErrorQuit("Range: the length of a range must be less than 2^%d",
-                           NR_SMALL_INT_BITS, 0L);
+                ErrorQuit("Range: the length of a range must be a small integer",
+                           0, 0);
             }
 
             if ( 0 < inc )

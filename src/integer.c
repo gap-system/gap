@@ -2773,13 +2773,8 @@ Obj FuncINTERNAL_TEST_CONV_UINT8(Obj self, Obj val)
 */
 static StructBagNames BagNames[] = {
   { T_INT,    "integer" },
-#ifdef SYS_IS_64_BIT
-  { T_INTPOS, "integer (>= 2^60)" },
-  { T_INTNEG, "integer (< -2^60)" },
-#else
-  { T_INTPOS, "integer (>= 2^28)" },
-  { T_INTNEG, "integer (< -2^28)" },
-#endif
+  { T_INTPOS, "large positive integer" },
+  { T_INTNEG, "large negative integer" },
   { -1, "" }
 };
 

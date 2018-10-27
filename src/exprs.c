@@ -841,8 +841,8 @@ Obj             EvalPermExpr (
             }
             c = INT_INTOBJ(val);
             if (c > MAX_DEG_PERM4)
-              ErrorMayQuit( "Permutation literal exceeds maximum permutation degree -- %i vs %i",
-                            c, MAX_DEG_PERM4);
+              ErrorMayQuit( "Permutation literal exceeds maximum permutation degree",
+                            0, 0);
 
             /* if necessary resize the permutation                         */
             if (DEG_PERM4(perm) < c) {
@@ -1093,8 +1093,8 @@ Obj             EvalRangeExpr (
     val = EVAL_EXPR(READ_EXPR(expr, 0));
     while ( ! IS_INTOBJ(val) ) {
         val = ErrorReturnObj(
-            "Range: <first> must be an integer less than 2^%d (not a %s)",
-            NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val),
+            "Range: <first> must be a small integer (not a %s)",
+            (Int)TNAM_OBJ(val), 0,
             "you can replace <first> via 'return <first>;'" );
     }
     low = INT_INTOBJ( val );
@@ -1105,8 +1105,8 @@ Obj             EvalRangeExpr (
         while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) == low ) {
             if ( ! IS_INTOBJ(val) ) {
                 val = ErrorReturnObj(
-                    "Range: <second> must be an integer less than 2^%d (not a %s)",
-                    NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val),
+                    "Range: <second> must be a small integer (not a %s)",
+                    (Int)TNAM_OBJ(val), 0,
                     "you can replace <second> via 'return <second>;'" );
             }
             else {
@@ -1127,8 +1127,8 @@ Obj             EvalRangeExpr (
     while ( ! IS_INTOBJ(val) || (INT_INTOBJ(val) - low) % inc != 0 ) {
         if ( ! IS_INTOBJ(val) ) {
             val = ErrorReturnObj(
-                "Range: <last> must be an integer less than 2^%d (not a %s)",
-                NR_SMALL_INT_BITS, (Int)TNAM_OBJ(val),
+                "Range: <last> must be a small integer (not a %s)",
+                (Int)TNAM_OBJ(val), 0,
                 "you can replace <last> via 'return <last>;'" );
         }
         else {
@@ -1155,9 +1155,9 @@ Obj             EvalRangeExpr (
     /* else make the range                                                 */
     else {
         /* the length must be a small integer as well */
-        if ((high-low) / inc + 1 >= (1L<<NR_SMALL_INT_BITS)) {
-             ErrorQuit("Range: the length of a range must be less than 2^%d",
-                        NR_SMALL_INT_BITS, 0L);
+        if ((high-low) / inc + 1 > INT_INTOBJ_MAX) {
+             ErrorQuit("Range: the length of a range must be a small integer",
+                        0, 0);
         }
         if ( 0 < inc )
             range = NEW_RANGE_SSORT();
