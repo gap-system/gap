@@ -104,11 +104,11 @@ gap> RANK_TRANS_INT(Transformation([65537], [1]), 10);
 gap> RANK_TRANS_LIST(Transformation([1, 2, 1]), 2);
 Error, RANK_TRANS_LIST: the second argument must be a list (not a integer)
 gap> RANK_TRANS_LIST(Transformation([1, 2, 1]), "a");
-Error, RANK_TRANS_LIST: the second argument <list> must be a list of positive \
-integers (not a character)
+Error, RANK_TRANS_LIST: <list> must be a list of positive small integers (not \
+a character)
 gap> RANK_TRANS_LIST(Transformation([1, 2, 1]) ^ (1, 65537), "a");
-Error, RANK_TRANS_LIST: the second argument <list> must be a list of positive \
-integers (not a character)
+Error, RANK_TRANS_LIST: <list> must be a list of positive small integers (not \
+a character)
 gap> RANK_TRANS_LIST(Transformation([1, 2, 1]), [1, 3]);
 1
 gap> RANK_TRANS_LIST(Transformation([1, 2, 1, 5, 5]), [1 .. 10]);
@@ -961,16 +961,19 @@ true
 gap> g := INV_LIST_TRANS([65536], f);
 IdentityTransformation
 gap> INV_LIST_TRANS([1, -1], f);
-Error, INV_LIST_TRANS: <list>[2] must be a positive integer (not a integer)
+Error, INV_LIST_TRANS: <list>[2] must be a positive small integer (not a integ\
+er)
 gap> INV_LIST_TRANS("a", f);
-Error, INV_LIST_TRANS: <list>[1] must be a positive integer (not a character)
+Error, INV_LIST_TRANS: <list>[1] must be a positive small integer (not a chara\
+cter)
 gap> INV_LIST_TRANS(0, f);
 Error, INV_LIST_TRANS: the first argument must be a list (not a integer)
 gap> INV_LIST_TRANS([1, 2], "a");
 Error, INV_LIST_TRANS: the second argument must be a transformation (not a lis\
 t (string))
 gap> INV_LIST_TRANS([1, -1], Transformation([1], [65537]));
-Error, INV_LIST_TRANS: <list>[2] must be a positive integer (not a integer)
+Error, INV_LIST_TRANS: <list>[2] must be a positive small integer (not a integ\
+er)
 
 # IndexPeriodOfTransformation
 gap> f := Transformation([4, 3, 8, 9, 3, 5, 8, 10, 5, 6, 2, 8]);;

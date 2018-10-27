@@ -326,17 +326,13 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
                    (Int)TNAM_OBJ(wp), 0);
     }
 
-  if (!IS_INTOBJ(pos))
+  if (!IS_POS_INTOBJ(pos))
     {
-      ErrorMayQuit("SetElmWPObj: Position must be a small integer, not a %s",
+      ErrorMayQuit("SetElmWPObj: Position must be a positive small integer, not a %s",
                 (Int)TNAM_OBJ(pos),0L);
     }
 
   UInt ipos = INT_INTOBJ(pos);
-  if (ipos < 1)
-    {
-      ErrorMayQuit("SetElmWPObj: Position must be a positive integer",0L,0L);
-    }
 
 #ifdef USE_BOEHM_GC
   /* Ensure reference remains visible to GC in case val is
@@ -385,17 +381,13 @@ Int IsBoundElmWPObj( Obj wp, Obj pos)
                    (Int)TNAM_OBJ(wp), 0);
     }
 
-  if (!IS_INTOBJ(pos))
+  if (!IS_POS_INTOBJ(pos))
     {
-      ErrorMayQuit("IsBoundElmWPObj: Position must be a small integer, not a %s",
+      ErrorMayQuit("IsBoundElmWPObj: Position must be a positive small integer, not a %s",
                 (Int)TNAM_OBJ(pos),0L);
     }
 
   UInt ipos = INT_INTOBJ(pos);
-  if (ipos < 1)
-    {
-      ErrorMayQuit("IsBoundElmWPObj: Position must be a positive integer",0L,0L);
-    }
 
 #ifdef HPCGAP
   volatile
@@ -445,17 +437,13 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
                    (Int)TNAM_OBJ(wp), 0);
     }
 
-  if (!IS_INTOBJ(pos))
+  if (!IS_POS_INTOBJ(pos))
     {
-      ErrorMayQuit("UnbindElmWPObj: Position must be a small integer, not a %s",
+      ErrorMayQuit("UnbindElmWPObj: Position must be a positive small integer, not a %s",
                 (Int)TNAM_OBJ(pos),0L);
     }
 
   UInt ipos = INT_INTOBJ(pos);
-  if (ipos < 1)
-    {
-      ErrorMayQuit("UnbindElmWPObj: Position must be a positive integer",0L,0L);
-    }
 
   Int len = LengthWPObj(wp);
   if ( ipos <= len ) {
@@ -536,15 +524,12 @@ Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
                      (Int)TNAM_OBJ(wp), 0);
     }
 
-    if (!IS_INTOBJ(pos)) {
-        ErrorMayQuit("ElmWPObj: Position must be a small integer, not a %s",
+    if (!IS_POS_INTOBJ(pos)) {
+        ErrorMayQuit("ElmWPObj: Position must be a positive small integer, not a %s",
                      (Int)TNAM_OBJ(pos), 0L);
     }
 
     Int ipos = INT_INTOBJ(pos);
-    if (ipos < 1) {
-        ErrorMayQuit("ElmWPObj: Position must be a positive integer", 0L, 0L);
-    }
 
     return ElmDefWPList(wp, ipos, Fail);
 }

@@ -833,9 +833,9 @@ Obj             EvalPermExpr (
 
             /* get and check current entry for the cycle                   */
             val = EVAL_EXPR(READ_EXPR(cycle, j - 1));
-            while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) <= 0 ) {
+            while ( ! IS_POS_INTOBJ(val) ) {
                 val = ErrorReturnObj(
-              "Permutation: <expr> must be a positive integer (not a %s)",
+              "Permutation: <expr> must be a positive small integer (not a %s)",
                     (Int)TNAM_OBJ(val), 0L,
                     "you can replace <expr> via 'return <expr>;'" );
             }

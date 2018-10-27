@@ -1195,9 +1195,9 @@ Obj FuncPositionNthTrueBlist (
             (Int)TNAM_OBJ(blist), 0L,
             "you can replace <blist> via 'return <blist>;'" );
     }
-    while ( ! IS_INTOBJ(Nth) || INT_INTOBJ(Nth) <= 0 ) {
+    while ( ! IS_POS_INTOBJ(Nth) ) {
         Nth = ErrorReturnObj(
-            "Position: <nth> must be a positive integer (not a %s)",
+            "Position: <nth> must be a positive small integer (not a %s)",
             (Int)TNAM_OBJ(Nth), 0L,
             "you can replace <nth> via 'return <nth>;'" );
     }
