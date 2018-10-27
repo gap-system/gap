@@ -113,12 +113,18 @@ Relevant pull requests:
 
 We now provide a experimental way to allow 3rd party code to link &GAP; as a
 library; this is based on the <Package>libGAP</Package> code by
-<URL Text="SageMath">https://www.sagemath.org</URL>, but different. We hope that a future
-version of <Package>SageMath</Package> can drop its custom modifications for &GAP; and use this
-interface instead. If you are interested in this kind of interface, please
-get in touch with us to help us improve it.
+<URL Text="SageMath">https://www.sagemath.org</URL>, but different: While we aim to provide the same
+functionality, we do not rename any symbols, and we do not provide the same API.
+We hope that a future version of <Package>SageMath</Package> can drop its custom modifications for
+&GAP; and use this interface instead. Work is underway to achieve this goal.
+
+If you are interested in this kind of interface, please get in touch with us to help us improve it.
 See also <URL Text="this email">https://mail.gap-system.org/pipermail/gap/2018-August/001123.html</URL>.
 <P/>
+
+To get an idea how <Package>libGAP</Package> works, you can configure GAP as normal, and then execute
+<C>make testlibgap</C> which will build a small program that uses some of the existing API and links
+&GAP;.
 
 Relevant pull requests:
 <List>
