@@ -1141,8 +1141,8 @@ Obj             FuncPermList (
         return PermList<UInt4>(list);
     }
     else {
-        ErrorMayQuit("PermList: list length %i exceeds maximum permutation degree %i\n",
-		     len, MAX_DEG_PERM4);
+        ErrorMayQuit("PermList: list length %i exceeds maximum permutation degree\n",
+             len, 0);
     }
 }
 
@@ -2389,8 +2389,8 @@ Obj Array2Perm (
             }
             c = INT_INTOBJ(val);
             if (c > MAX_DEG_PERM4)
-              ErrorMayQuit( "Permutation literal exceeds maximum permutation degree -- %i vs %i",
-                            c, MAX_DEG_PERM4);
+              ErrorMayQuit( "Permutation literal exceeds maximum permutation degree",
+                            0, 0);
 
             /* if necessary resize the permutation                         */
             if (DEG_PERM4(perm) < c) {
