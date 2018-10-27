@@ -1758,7 +1758,7 @@ void CodeStringExpr (
 enum {
     FLOAT_0_INDEX = 1,    // reserved for constant 0.0
     FLOAT_1_INDEX = 2,    // reserved for constant 1.0
-    MAX_FLOAT_INDEX = ((1L << NR_SMALL_INT_BITS) - 2)
+    MAX_FLOAT_INDEX = INT_INTOBJ_MAX - 1,
 };
 static UInt NextFloatExprNumber = 3;
 
