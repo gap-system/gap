@@ -111,11 +111,15 @@ end);
 ##  #I  ``Size: for a permutation group'' at ... some path .../lib/grpperm.gi:483
 ##  #I  Method 50, valid operation number 3, value: 2
 ##  #I  ``Size: for a collection'' at ... some path .../lib/coll.gi:189
-##  function( C ) ... end
-##  gap> Print( last );
+##  [ function( C ) ... end, function( G ) ... end, function( C ) ... end ]
+##  gap> Print( last[1], "\n" );                  
 ##  function ( C )
-##      return Length( Enumerator( C ) );
+##      if IsFinite( C ) then
+##          TryNextMethod();
+##      fi;
+##      return infinity;
 ##  end
+
 ##  ]]></Example>
 ##  The second example shows that for <C>DirectProduct</C>, 
 ##  which is a function the location may be displayed and the code returned. 
@@ -167,7 +171,7 @@ end);
 ##  #I  ``SplitString: for a string and two characters''
 ##  #I   at ... some path .../lib/string.gi:545
 ##  #I   - 2nd argument needs [ "IsChar" ]
-##  function( string, d1, d2 ) ... end
+##  [ function( string, d1, d2 ) ... end ]
 ##  ]]></Example>
 ##  When a method returned by <Ref Func="ApplicableMethod"/> is called then
 ##  it returns either the desired result or the string
@@ -380,8 +384,11 @@ local oper,opargs,nopargs,verbos,fams,flags,i,j,methods,flag,flag2,
       od;
     fi;
   od;
+Print([nr,numapplic],"\n");
   if nr>numapplic then 
     return fail;
+  elif nr=0 then 
+    return List(applic, i->methods[i].func);
   else 
     return oper;
   fi;
