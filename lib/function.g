@@ -266,9 +266,9 @@ DeclareOperationKernel( "NamesLocalVariablesFunction", [IS_OBJECT], NAMS_FUNC );
 ##  fail
 ##  gap> FilenameFunc( x -> x^2 );  # an interactively entered function
 ##  "*stdin*"
-##  gap> meth:= ApplicableMethod( Size, [ Group( () ) ] );;
+##  gap> meth:= ApplicableMethod( Size, [ Group( () ) ], 0, 2 );;
 ##  gap> FilenameFunc( meth );
-##  "... some path .../grpperm.gi"
+##  "... some path .../lib/grpperm.gi"
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
@@ -296,9 +296,9 @@ BIND_GLOBAL( "FilenameFunc", FILENAME_FUNC );
 ##  in this file where the definition of <A>func</A> ends.
 ##  <P/>
 ##  <Log><![CDATA[
-##  gap> meth:= ApplicableMethod( Size, [ Group( () ) ] );;
+##  gap> meth:= ApplicableMethod( Size, [ Group( () ) ], 0, 2 );;
 ##  gap> FilenameFunc( meth );
-##  "... some path ... gap4r5/lib/grpperm.gi"
+##  "... some path ... /lib/grpperm.gi"
 ##  gap> StartlineFunc( meth );
 ##  487
 ##  gap> EndlineFunc( meth );
@@ -325,7 +325,7 @@ BIND_GLOBAL( "EndlineFunc", ENDLINE_FUNC );
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> LocationFunc( Intersection );
-##  "... some path ... gap/lib/coll.gi:2467"
+##  "... some path ... /lib/coll.gi:2373"
 ##  # String is an attribute, so no information is stored
 ##  gap> LocationFunc( String );
 ##  ""

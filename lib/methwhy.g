@@ -90,12 +90,85 @@ end);
 ##      also for each not applicable method all reasons why it is not
 ##      applicable.
 ##  </Item>
-##  <Mark>6</Mark>
-##  <Item>
-##      also the function body of the selected method(s)
-##  </Item>
 ##  </List>
 ##  <P/>
+##  Since <C>ApplicableMethod</C> returns a function, <C>Print(last);</C> 
+##  may be used to view the code. 
+##  <P/>
+##  If the first argument is a function, rather than an operation, 
+##  then the function is returned. 
+##  <P/>
+##  The first example shows that there are 50 methods for <C>Size</C> 
+##  currently available, or which 3 are applicable to <C>s4</C>. 
+##  <Example><![CDATA[
+##  gap> s4 := Group( (1,2,3,4), (3,4) );; 
+##  gap> ApplicableMethod( Size, [s4], 1, "all" );
+##  #I  Searching Method for Size with 1 arguments:
+##  #I  Total: 50 entries, of which 3 are applicable:
+##  #I  Method 6, valid operation number 1, value: 103
+##  #I  ``Size'' at ... some path .../lib/coll.gi:176
+##  #I  Method 10, valid operation number 2, value: 59
+##  #I  ``Size: for a permutation group'' at ... some path .../lib/grpperm.gi:483
+##  #I  Method 50, valid operation number 3, value: 2
+##  #I  ``Size: for a collection'' at ... some path .../lib/coll.gi:189
+##  function( C ) ... end
+##  gap> Print( last );
+##  function ( C )
+##      return Length( Enumerator( C ) );
+##  end
+##  ]]></Example>
+##  The second example shows that for <C>DirectProduct</C>, 
+##  which is a function the location may be displayed and the code returned. 
+##  For <C>DirectProductOp</C> with verbosity <M>2</M> and <M>nr=2</M> 
+##  methods <M>1</M> and <M>5</M> are applicable, and all methods numbered 
+##  <M>[2..5]</M> are displayed. 
+##  <Example><![CDATA[
+##  gap> ApplicableMethod( DirectProduct, [s4,s4], 1, 1 );    
+##  #I  DirectProduct is a function, not an operation, located at:
+##  #I  ... some path .../lib/gprd.gi:17
+##  function( arg... ) ... end
+##  gap> ApplicableMethod( DirectProductOp, [[s4,s4],s4], 2, 2 );
+##  #I  Searching Method for DirectProductOp with 2 arguments:
+##  #I  Total: 5 entries, of which 2 are applicable:
+##  #I  Method 2, value: 66
+##  #I  ``DirectProductOp: for a list (of pc groups), and a pc group''
+##  #I   at ... some path .../lib/gprdpc.gi:15
+##  #I  Method 3, value: 47
+##  #I  ``DirectProductOp: matrix groups''
+##  #I   at ... some path .../lib/gprdmat.gi:70
+##  #I  Method 4, value: 40
+##  #I  ``DirectProductOp: for a list of fp groups, and a fp group''
+##  #I   at ... some path .../lib/grpfp.gi:5495
+##  #I  Method 5, valid operation number 2, value: 37
+##  #I  ``DirectProductOp: for a list (of groups), and a group''
+##  #I   at ... some path .../lib/gprd.gi:50
+##  function( list, gp ) ... end
+##  ]]></Example>
+##  The third example shows the sort of output that can be obtained 
+##  with verbosity <M>4</M>.  
+##  <Example><![CDATA[
+##  gap> s := "hello! hello! hello!";;                           
+##  gap> ApplicableMethod(SplitString,[s,"!",' '],4,"all");
+##  #I  Searching Method for SplitString with 3 arguments:
+##  #I  Total: 4 entries, of which 1 is applicable:
+##  #I  Method 1, value: 15
+##  #I  ``SplitString: for three strings''
+##  #I   at ... some path .../lib/string.gi:539
+##  #I   - 3rd argument needs [ "IsString" ]
+##  #I  Method 2, value: 11
+##  #I  ``SplitString: for a string, a character and a string''
+##  #I   at ... some path .../lib/string.gi:561
+##  #I   - 2nd argument needs [ "IsChar" ]
+##  #I   - 3rd argument needs [ "IsString" ]
+##  #I  Method 3, valid operation number 1, value: 11
+##  #I  ``SplitString: for two strings and a character''
+##  #I   at ... some path .../lib/string.gi:553
+##  #I  Method 4, value: 7
+##  #I  ``SplitString: for a string and two characters''
+##  #I   at ... some path .../lib/string.gi:545
+##  #I   - 2nd argument needs [ "IsChar" ]
+##  function( string, d1, d2 ) ... end
+##  ]]></Example>
 ##  When a method returned by <Ref Func="ApplicableMethod"/> is called then
 ##  it returns either the desired result or the string
 ##  <C>"TRY_NEXT_METHOD"</C>, which corresponds to a call to
@@ -120,35 +193,48 @@ end);
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ApplicableMethodTypes",function(arg)
-local oper,narg,args,skip,verbos,fams,flags,i,j,methods,flag,flag2,
-      m,nam,val,erg,has,need,isconstructor;
+local oper,opargs,nopargs,verbos,fams,flags,i,j,methods,flag,flag2,
+      m,nam,val,has,need,isconstructor,
+      nummeth,valid,applic,numapplic,nr,first,last;
   if Length(arg)<2 or not IsList(arg[2]) or not IsFunction(arg[1]) then
     Error("usage: ApplicableMethodTypes(<opr>,<arglist>[,<verbosity>[,<nr>]])");
   fi;
+  ## process the arguments 
   oper:=arg[1];
   isconstructor:=IS_CONSTRUCTOR(oper);
-  args:=arg[2];
-  if Length(arg)>2 then
-    verbos:=arg[3];
-  else
-    verbos:=0;
+    opargs:=arg[2];
+  nopargs:=Length(opargs);
+  verbos:=0;
+  if Length(arg)>2 and IsPosInt(arg[3]) then
+    verbos:=Minimum(arg[3],4);
   fi;
-  if Length(arg)>3 then
-    if IsInt( arg[4] ) then
-      skip:=arg[4] - 1;
-    else
-      skip:= -1;
+  nr:=1;
+  if Length(arg)>3 then 
+    if IsPosInt(arg[4]) then
+      nr:=arg[4];
+    elif arg[4]="all" then 
+      nr:=0;
     fi;
-    erg:=[];
-  else
-    skip:=0;
   fi;
-  narg:=Length(args);
-
+  ## accept the name of a function 
+  if not oper in OPERATIONS then 
+    nam:=FilenameFunc(oper); 
+    if nam=fail then 
+      Print("#I  ",oper," is not recognised as the name of an operation\n"); 
+      return fail;
+    else
+      if verbos>0 then 
+        Print("#I  ",NameFunction(oper),
+              " is a function, not an operation, located at:\n"); 
+        Print("#I  ",LocationFunc(oper),"\n"); 
+      fi;
+      return oper;
+    fi; 
+  fi; 
   # get families and filters
   flags:=[];
   fams:=[];
-  for i in args do
+  for i in opargs do
     if IsFilter(i) then
       Add(flags,FLAGS_FILTER(i));
       Add(fams,fail);
@@ -159,100 +245,164 @@ local oper,narg,args,skip,verbos,fams,flags,i,j,methods,flag,flag2,
       Error("wrong kind of argument");
     fi;
   od;
-
   if ForAny(fams,i->i=fail) then
     fams:=fail;
     Info(InfoWarning,1,"Family predicate cannot be tested");
   fi;
-
-  methods:=MethodsOperation(oper,narg);
-  if verbos > 0 then
-    Print("#I  Searching Method for ",NameFunction(oper)," with ",narg,
-	  " arguments:\n");
+  ## find all the methods 
+  methods:=MethodsOperation(oper,nopargs);
+  nummeth:=Length(methods);
+  if nummeth=0 then 
+    Print("#I  no method found for this operation with these arguments\n"); 
+    return fail;
   fi;
-  if verbos > 0 then 
-    Print("#I  Total: ", Length(methods)," entries\n");
+  applic := [ ];
+  valid := ListWithIdenticalEntries( nummeth, false );
+  for i in [1..nummeth] do 
+    flag := true; 
+    m := methods[i];
+    for j in [1..nopargs] do 
+      if isconstructor then
+        flag2:=IS_SUBSET_FLAGS(m.argFilt[j],flags[j]);
+      else
+        flag2:=IS_SUBSET_FLAGS(flags[j],m.argFilt[j]);
+      fi;
+      flag := flag and flag2;
+    od;
+    if flag then 
+      valid[i] := true; 
+      Add( applic, i );;
+    fi;
+  od;
+  numapplic := Length( applic );
+  ## if nothing to print then return the oper 
+  if verbos=0 then 
+    if nr=0 or nr>numapplic then 
+      return fail; 
+    fi;
+    return methods[applic[nr]].func; 
   fi;
-  for i in [1..Length(methods)] do
+  ## output basic information
+  Print("#I  Searching Method for ",NameFunction(oper)," with ", 
+        nopargs," arguments:\n");
+  Print("#I  Total: ",nummeth," entries, of which ",numapplic); 
+  if numapplic=1 then 
+    Print(" is applicable:\n");
+  else 
+    Print(" are applicable:\n");
+  fi;
+  if nr>numapplic then 
+    if (numapplic=0) then 
+      Print("#I  there are no valid methods with these parameters\n"); 
+    else
+      if numapplic=1 then 
+        Print("#I  there is only 1 valid method\n"); 
+      else
+        Print("#I  there are only ",numapplic," valid methods\n"); 
+      fi;
+    fi;
+  fi;
+  ## find the range [first..last] of methods which might be printed
+  if nr=0 then  ## this is the case "all" 
+    first:=1;
+    last:=nummeth;
+  elif numapplic=0 then 
+    if verbos=1 then 
+      return fail; 
+    else
+      first:=1;
+      last:=nummeth;
+    fi;
+  elif nr>numapplic then 
+    first:=1;
+    last:=0;
+  else 
+    last:=applic[nr]; 
+    if verbos>1 then 
+      if nr=1 then 
+        first:=1;
+      else
+        first:=applic[nr-1]+1; 
+      fi;
+    else 
+      first := applic[nr];
+    fi;
+  fi;
+  ## loop over the methods to be printed
+  for i in [first..last] do
     m := methods[i];
     nam:=m.info;
     val:=m.rank;
     oper:=m.func;
-    if verbos>1 then
-      Print("#I  Method ",i,": ``",nam,"''");
+    if i in applic then 
+      Print("#I  Method ",i); 
+      Print(", valid operation number ",Position(applic,i)); 
+      Print(", value: ");  
+      Print_Value_SFF(val);
+      Print("\n#I  ``",nam,"''\n");
       if IsBound(m.location) then
-        Print(" at ", m.location[1], ":", m.location[2]);
+        Print("#I   at ", m.location[1], ":", m.location[2]);
       elif LocationFunc(oper) <> "" then
         Print(" at ",LocationFunc(oper));
       fi;
-      Print(", value: ");
-      Print_Value_SFF(val);
       Print("\n");
-    fi;
-    flag:=true;
-    j:=1;
-    while j<=narg and (flag or verbos>3) do
-      if j=1 and isconstructor then
-	flag2:=IS_SUBSET_FLAGS(m.argFilt[j],flags[j]);
-      else
-	flag2:=IS_SUBSET_FLAGS(flags[j],m.argFilt[j]);
+    elif verbos>1 then
+      Print("#I  Method ",i); 
+      Print(", value: ");  
+      Print_Value_SFF(val);
+      Print("\n#I  ``",nam,"''\n");
+      if IsBound(m.location) then
+        Print("#I   at ", m.location[1], ":", m.location[2]);
+      elif LocationFunc(oper) <> "" then
+        Print(" at ",LocationFunc(oper));
       fi;
-      flag:=flag and flag2;
-      if flag2=false and verbos>2 then
-	need:=NamesFilter(m.argFilt[j]);
-	if j=1 and isconstructor then
-	  Print("#I   - ",Ordinal(j)," argument must be ",
-		need,"\n");
-	else
-	  has:=NamesFilter(flags[j]);
-	  Print("#I   - ",Ordinal(j)," argument needs ",
-		Filtered(need,i->not i in has),"\n");
-	fi;
-      fi;
-      j:=j+1;
-    od;
-    if flag then
-      if fams=fail or CallFuncList(m.famPred,fams) then
-	if verbos=1 then
-	  Print("#I  Method ",i,": ``",nam,"''");
-          if IsBound(m.location) then
-            Print(" at ", m.location[1], ":", m.location[2]);
-	  elif LocationFunc(oper) <> "" then
-	    Print(" at ",LocationFunc(oper));
-	  fi;
-	  Print(" , value: ");
-	  Print_Value_SFF(val);
-	  Print("\n");
-	fi;
-	if verbos>5 then
-	  Print("#I  Function Body:\n");
-	  Print(oper);
-	fi;
-	if skip=0 then
-	  return oper;
-	else
-	  Add(erg,oper);
-	  skip:=skip-1;
-	  if verbos>0 then
-	    Print("#I  Skipped:\n");
-	  fi;
+      Print("\n");
+      flag:=true;
+      j:=1;
+      while j<=nopargs and (flag or verbos>3) do
+        if j=1 and isconstructor then
+          flag2:=IS_SUBSET_FLAGS(m.argFilt[j],flags[j]);
+        else
+          flag2:=IS_SUBSET_FLAGS(flags[j],m.argFilt[j]);
         fi;
-      elif verbos>2 then
-        Print("#I   - bad family relations\n");
-      fi;
+        flag:=flag and flag2;
+        if flag2=false and verbos>2 then
+          need:=NamesFilter(m.argFilt[j]);
+          if j=1 and isconstructor then
+            Print("#I   - ",Ordinal(j)," argument must be ", need,"\n");
+          else
+            has:=NamesFilter(flags[j]);
+            Print("#I   - ",Ordinal(j)," argument needs ",
+                  Filtered(need,i->not i in has),"\n");
+          fi;
+        fi;
+        j:=j+1;
+      od;
     fi;
   od;
-  if skip<0 then
-    return erg;
-  else
+  if nr>numapplic then 
     return fail;
+  else 
+    return oper;
   fi;
 end);
 
 BIND_GLOBAL("ApplicableMethod",function(arg)
-local i,l;
-  if Length(arg)<2 or not IsList(arg[2]) or not IsFunction(arg[1]) then
-    Error("usage: ApplicableMethod(<opr>,<arglist>[,<verbosity>[,<nr>]])");
+local i,l,ok,errstr;
+  ok:=false;
+  errstr:="#I  usage: ApplicableMethod(<opr>,<arglist>[,<verbosity>[,<nr>]])\n";
+  if Length(arg)<2 then 
+    Print("#I  ApplicableMethod requires at least two arguments\n"); 
+  elif not IsList(arg[2]) then 
+    Print("#I  argument 2 must be a list of arguments for the operation\n" ); 
+  elif not IsFunction(arg[1]) then 
+    Print("#I  argument 1 must be the name of an operation\n" );
+  else 
+    ok := true;
+  fi;
+  if not ok then 
+    Print(errstr);
+    return fail;
   fi;
   l:=ShallowCopy(arg[2]);
   for i in [1..Length(l)] do
@@ -260,7 +410,7 @@ local i,l;
       l[i]:=l[i];
     else
       l[i]:=TypeObj(l[i]);
-  fi;
+    fi;
   od;
   arg[2]:=l;
   return CallFuncList(ApplicableMethodTypes,arg);

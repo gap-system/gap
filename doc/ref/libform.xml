@@ -79,7 +79,7 @@ This does not work for arbitrary functions,
 see Section <Ref Func="FilenameFunc"/> for the restrictions.
 <P/>
 If you are interested in getting the function which implements a method
-for specific arguments, you can use <Ref Sect="ApplicableMethod"/>.
+for specific arguments, you can use <Ref Func="ApplicableMethod"/>.
 If <Ref Func="FilenameFunc"/> does not work for this method then
 setting the print level of <Ref Sect="ApplicableMethod"/> higher will give
 you the installation string for this method, which can be used for searching

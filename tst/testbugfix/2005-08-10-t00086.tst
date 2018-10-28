@@ -6,5 +6,9 @@
 # <span class="code">Conductor</span> and thus was much slower.
 # Now the special method has been ranked up by changing the requirements
 # in the method installation.
-gap> ApplicableMethod( \in, [ 1, Rationals ] );
-function( x, Rationals ) ... end
+gap> ApplicableMethod( \in, [ 1, Rationals ], 0, 1 );
+function( arg... ) ... end
+gap> Display( ApplicableMethod( \in, [ 1, Rationals ], 0, 2 ) );
+function ( x, Rationals )
+    return IsRat( x );
+end
