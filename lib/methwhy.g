@@ -384,7 +384,6 @@ local oper,opargs,nopargs,verbos,fams,flags,i,j,methods,flag,flag2,
       od;
     fi;
   od;
-Print([nr,numapplic],"\n");
   if nr>numapplic then 
     return fail;
   elif nr=0 then 
