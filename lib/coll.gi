@@ -1342,10 +1342,15 @@ InstallGlobalFunction( Filtered,
           res[i]:= elm;
         fi;
       od;
-      return res;
     else
-      return FilteredOp( C, func );
+      res:= FilteredOp( C, func );
     fi;
+
+    if HasIsSSortedList( C ) and IsSSortedList( C ) then
+      SetIsSSortedList( res, true );
+    fi;
+
+    return res;
 end );
 
 

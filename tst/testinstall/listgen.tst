@@ -24,8 +24,14 @@ gap> Reversed( [ 1, 2, 1, 2 ] );
 [ 2, 1, 2, 1 ]
 gap> Print(Reversed( [ 1 .. 10 ] ),"\n");
 [ 10, 9 .. 1 ]
-gap> Filtered( [ 1 .. 10 ], x -> x < 5 );
+gap> filt:= Filtered( [ 1 .. 10 ], x -> x < 5 );
 [ 1, 2, 3, 4 ]
+gap> HasIsSSortedList( filt );
+true
+gap> filt:= Filtered( [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ], x -> x < 5 );
+[ 1, 2, 3, 4 ]
+gap> HasIsSSortedList( filt );
+false
 gap> Number( [ 1 .. 10 ], x -> x < 5 );
 4
 gap> Number( [ 1 .. 10 ] );
