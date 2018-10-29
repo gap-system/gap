@@ -44,6 +44,11 @@
 #include "julia.h"
 #endif
 
+#define RequireWPObj(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, TNUM_OBJ(op) == T_WPOBJ, \
+        "must be a weak pointer object")
+
+
 /****************************************************************************
 **
 *F
@@ -301,12 +306,8 @@ Int LengthWPObj(Obj wp)
 
 Obj FuncLengthWPObj(Obj self, Obj wp)
 {
-  if (TNUM_OBJ(wp) != T_WPOBJ)
-    {
-      ErrorMayQuit("LengthWPObj: argument must be a weak pointer object, not a %s",
-                   (Int)TNAM_OBJ(wp), 0);
-    }
-  return INTOBJ_INT(LengthWPObj(wp));
+    RequireWPObj("LengthWPObj", wp);
+    return INTOBJ_INT(LengthWPObj(wp));
 }
 
 
@@ -320,19 +321,9 @@ Obj FuncLengthWPObj(Obj self, Obj wp)
 
 Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 {
-  if (TNUM_OBJ(wp) != T_WPOBJ)
-    {
-      ErrorMayQuit("SetElmWPObj: First argument must be a weak pointer object, not a %s",
-                   (Int)TNAM_OBJ(wp), 0);
-    }
-
-  if (!IS_POS_INTOBJ(pos))
-    {
-      ErrorMayQuit("SetElmWPObj: Position must be a positive small integer, not a %s",
-                (Int)TNAM_OBJ(pos),0L);
-    }
-
-  UInt ipos = INT_INTOBJ(pos);
+    RequireWPObj("SetElmWPObj", wp);
+    RequirePositiveSmallInt("SetElmWPObj", pos, "pos");
+    UInt ipos = INT_INTOBJ(pos);
 
 #ifdef USE_BOEHM_GC
   /* Ensure reference remains visible to GC in case val is
@@ -375,19 +366,9 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 
 Int IsBoundElmWPObj( Obj wp, Obj pos)
 {
-  if (TNUM_OBJ(wp) != T_WPOBJ)
-    {
-      ErrorMayQuit("IsBoundElmWPObj: First argument must be a weak pointer object, not a %s",
-                   (Int)TNAM_OBJ(wp), 0);
-    }
-
-  if (!IS_POS_INTOBJ(pos))
-    {
-      ErrorMayQuit("IsBoundElmWPObj: Position must be a positive small integer, not a %s",
-                (Int)TNAM_OBJ(pos),0L);
-    }
-
-  UInt ipos = INT_INTOBJ(pos);
+    RequireWPObj("IsBoundElmWPObj", wp);
+    RequirePositiveSmallInt("IsBoundElmWPObj", pos, "pos");
+    UInt ipos = INT_INTOBJ(pos);
 
 #ifdef HPCGAP
   volatile
@@ -431,19 +412,9 @@ Obj FuncIsBoundElmWPObj( Obj self, Obj wp, Obj pos)
 
 Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 {
-  if (TNUM_OBJ(wp) != T_WPOBJ)
-    {
-      ErrorMayQuit("UnbindElmWPObj: First argument must be a weak pointer object, not a %s",
-                   (Int)TNAM_OBJ(wp), 0);
-    }
-
-  if (!IS_POS_INTOBJ(pos))
-    {
-      ErrorMayQuit("UnbindElmWPObj: Position must be a positive small integer, not a %s",
-                (Int)TNAM_OBJ(pos),0L);
-    }
-
-  UInt ipos = INT_INTOBJ(pos);
+    RequireWPObj("UnbindElmWPObj", wp);
+    RequirePositiveSmallInt("UnbindElmWPObj", pos, "pos");
+    UInt ipos = INT_INTOBJ(pos);
 
   Int len = LengthWPObj(wp);
   if ( ipos <= len ) {
@@ -518,17 +489,8 @@ Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
 */
 Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
 {
-    if (TNUM_OBJ(wp) != T_WPOBJ) {
-        ErrorMayQuit("ElmWPObj: First argument must be a weak pointer "
-                     "object, not a %s",
-                     (Int)TNAM_OBJ(wp), 0);
-    }
-
-    if (!IS_POS_INTOBJ(pos)) {
-        ErrorMayQuit("ElmWPObj: Position must be a positive small integer, not a %s",
-                     (Int)TNAM_OBJ(pos), 0L);
-    }
-
+    RequireWPObj("ElmWPObj", wp);
+    RequirePositiveSmallInt("ElmWPObj", pos, "pos");
     Int ipos = INT_INTOBJ(pos);
 
     return ElmDefWPList(wp, ipos, Fail);
