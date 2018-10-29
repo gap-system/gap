@@ -117,6 +117,8 @@ BIND_GLOBAL( "GAPInfo", rec(
            help := [ "Disable the GAP read-evaluate-print loop (REPL)" ] ),
       rec( long := "nointeract", default := false,
            help := [ "Start GAP in non-interactive mode (disable read-evaluate-print loop (REPL) and break loop)" ] ),
+      rec( long := "bare", default := false,
+           help := [ "Attempt to start GAP without even needed packages (developer tool)" ] ),
       ,
       rec( short:= "c", default := "", arg := "<expr>", help := [ "execute the given expression"] ),
     ],
@@ -392,6 +394,11 @@ CallAndInstallPostRestore( function()
     if CommandLineOptions.nointeract then
       CommandLineOptions.T := true;
       CommandLineOptions.norepl := true;
+    fi;
+
+    if CommandLineOptions.bare then
+      CommandLineOptions.A := true;
+      GAPInfo.Dependencies := MakeImmutable(rec( NeededOtherPackages := [] ));
     fi;
 
     MakeImmutable( CommandLineOptions );
