@@ -72,7 +72,7 @@ gap> ApplicableMethod(foobar, [ ['a'] ], 1, "all");
 #I  Method 4, valid operation number 3, value: 0
 #I  ``foobar''
 #I   at stream:1
-function( x ) ... end
+[ function( x ) ... end, <Attribute "Length">, function( x ) ... end ]
 
 #
 gap> Display(ApplicableMethod(foobar, [fail], 1));
