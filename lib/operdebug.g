@@ -30,39 +30,38 @@ BIND_GLOBAL("WriteMethodOverview", function(fname)
     return Concatenation(":",String(n),"\c");
   end;
   f := function()
-    local op, nam, i, ms, m;
+    local op, nam, i, ms, m, str;
+    str := OutputTextFile(fname, false);
     for op in OPERATIONS do
       nam := NameFunction(op);
       for i in [0..6] do
         ms := MethodsOperation(op, i);
         for m in ms do
-          Print(nam,";\c",i,";",
-                relname(m.location[1]),":",m.location[2],";\c",
-                m.rank,"\n");
+          PrintTo(str, nam,";\c",i,";",
+                       relname(m.location[1]),":",m.location[2],";\c",
+                       m.rank,"\n");
         od;
       od;
     od;
+    CloseStream(str);
   end;
-  PrintTo1(fname, f);
+  f();
 end);
 
 # prints file with lines of format
 #   filter name (with some abbreviations);rank
 BIND_GLOBAL("WriteFilterRanks", function(fname)
-  local f;
-  f := function()
-    local nams, rks, n, i;
-    nams := List(FILTERS, NameFunction);
-    rks := List(FILTERS, RankFilter);
-    SortParallel(nams, rks);
-    for i in [1..Length(nams)] do
-      n := SubstitutionSublist(nams[i],"CategoryCollections","CC");
-      if Length(n) > 75 then
-        n := Concatenation(n{[1..30]},"...",n{[Length(n)-29..Length(n)]});
-      fi;
-      Print(n,";",rks[i],"\n");
-    od;
-  end;
-  PrintTo1(fname, f);
+  local nams, rks, n, i, str;
+  str := OutputTextFile(fname, false);
+  nams := List(FILTERS, NameFunction);
+  rks := List(FILTERS, RankFilter);
+  SortParallel(nams, rks);
+  for i in [1..Length(nams)] do
+    n := ReplacedString(nams[i],"CategoryCollections","CC");
+    if Length(n) > 75 then
+      n := Concatenation(n{[1..30]},"...",n{[Length(n)-29..Length(n)]});
+    fi;
+    PrintTo(str, n,";",rks[i],"\n");
+  od;
+  CloseStream(str);
 end);
-
