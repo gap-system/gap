@@ -87,7 +87,7 @@ void            AddPlist3 (
         list = ErrorReturnObj(
                 "List Assignment: <list> must be a mutable list",
                 0L, 0L,
-                "you may replace <list> via 'return <list>;'" );
+                "you can replace <list> via 'return <list>;'" );
         FuncADD_LIST( 0, list, obj );
         return;
     }
@@ -182,7 +182,7 @@ Obj            RemList (
         list = ErrorReturnObj(
                 "Remove: <list> must not be empty",
                 0L, 0L,
-                "you may replace <list> via 'return <list>;'" );
+                "you can replace <list> via 'return <list>;'" );
         return RemList(list);
     }
     result = ELM_LIST(list, pos);
@@ -203,7 +203,7 @@ static Obj RemPlist(Obj list)
         list = ErrorReturnObj(
                 "Remove: <list> must be a mutable list",
                 0L, 0L,
-                "you may replace <list> via 'return <list>;'" );
+                "you can replace <list> via 'return <list>;'" );
         return FuncREM_LIST( 0, list);
     }
     pos = LEN_PLIST( list );
@@ -211,7 +211,7 @@ static Obj RemPlist(Obj list)
         list = ErrorReturnObj(
                 "Remove: <list> must not be empty",
                 0L, 0L,
-                "you may replace <list> via 'return <list>;'" );
+                "you can replace <list> via 'return <list>;'" );
         return FuncREM_LIST( 0, list);
     }
     removed = ELM_PLIST(list, pos);

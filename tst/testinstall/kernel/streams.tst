@@ -127,13 +127,13 @@ Error, <fid> must be a small integer (not a boolean or fail)
 
 #
 gap> ExecuteProcess(fail,fail,fail,fail,fail);
-Error, <dir> must be a string (not a boolean or fail)
+Error, ExecuteProcess: <dir> must be a string (not a boolean or fail)
 gap> ExecuteProcess("",fail,fail,fail,fail);
-Error, <prg> must be a string (not a boolean or fail)
+Error, ExecuteProcess: <prg> must be a string (not a boolean or fail)
 gap> ExecuteProcess("","",fail,fail,fail);
-Error, <in> must be an integer (not a boolean or fail)
+Error, ExecuteProcess: <in> must be an integer (not a boolean or fail)
 gap> ExecuteProcess("","",0,fail,fail);
-Error, <out> must be an integer (not a boolean or fail)
+Error, ExecuteProcess: <out> must be an integer (not a boolean or fail)
 gap> ExecuteProcess("","",0,0,fail);
 Error, ExecuteProcess: <args> must be a small list (not a boolean or fail)
 gap> ExecuteProcess("","",0,0,[1]);

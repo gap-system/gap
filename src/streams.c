@@ -2109,25 +2109,25 @@ Obj FuncExecuteProcess (
     /* check the argument                                                  */
     while ( ! IsStringConv(dir) ) {
         dir = ErrorReturnObj(
-            "<dir> must be a string (not a %s)",
+            "ExecuteProcess: <dir> must be a string (not a %s)",
             (Int)TNAM_OBJ(dir), 0L,
             "you can replace <dir> via 'return <dir>;'" );
     }
     while ( ! IsStringConv(prg) ) {
         prg = ErrorReturnObj(
-            "<prg> must be a string (not a %s)",
+            "ExecuteProcess: <prg> must be a string (not a %s)",
             (Int)TNAM_OBJ(prg), 0L,
             "you can replace <prg> via 'return <prg>;'" );
     }
     while ( ! IS_INTOBJ(in) ) {
         in = ErrorReturnObj(
-            "<in> must be an integer (not a %s)",
+            "ExecuteProcess: <in> must be an integer (not a %s)",
             (Int)TNAM_OBJ(in), 0L,
             "you can replace <in> via 'return <in>;'" );
     }
     while ( ! IS_INTOBJ(out) ) {
         out = ErrorReturnObj(
-            "<out> must be an integer (not a %s)",
+            "ExecuteProcess: <out> must be an integer (not a %s)",
             (Int)TNAM_OBJ(out), 0L,
             "you can replace <out> via 'return <out>;'" );
     }

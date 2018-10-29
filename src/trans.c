@@ -3237,7 +3237,7 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
         ptf2 = CONST_ADDR_TRANS2(f);
         for (i = 1; i <= (UInt)LEN_LIST(list); i++) {
             list_i = ELM_LIST(list, i);
-            if (!IS_INTOBJ(list_i) || INT_INTOBJ(list_i) < 1) {
+            if (!IS_POS_INTOBJ(list_i)) {
                 ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a "
                           "list of positive integer (not a %s)",
                           (Int)TNAM_OBJ(list_i), 0L);
@@ -3284,9 +3284,9 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
         ptf4 = CONST_ADDR_TRANS4(f);
         for (i = 1; i <= (UInt)LEN_LIST(list); i++) {
             list_i = ELM_LIST(list, i);
-            if (!IS_INTOBJ(list_i) || INT_INTOBJ(list_i) < 1) {
+            if (!IS_POS_INTOBJ(list_i)) {
                 ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a "
-                          "positive integer (not a %s)",
+                          "list of positive integers (not a %s)",
                           (Int)TNAM_OBJ(list_i), 0L);
             }
             j = INT_INTOBJ(list_i) - 1;
