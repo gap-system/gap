@@ -1487,11 +1487,7 @@ Obj FuncCLEAR_PROFILE_FUNC(
 {
     Obj                 prof;
 
-    /* check the argument                                                  */
-    if ( TNUM_OBJ(func) != T_FUNCTION ) {
-        ErrorQuit( "<func> must be a function", 0L, 0L );
-        return 0;
-    }
+    RequireFunction("CLEAR_PROFILE_FUNC", func);
 
     /* clear profile info                                                  */
     prof = PROF_FUNC(func);
@@ -1527,11 +1523,8 @@ Obj FuncPROFILE_FUNC(
     Obj                 prof;
     Obj                 copy;
 
-    /* check the argument                                                  */
-    if ( TNUM_OBJ(func) != T_FUNCTION ) {
-        ErrorQuit( "<func> must be a function", 0L, 0L );
-        return 0;
-    }
+    RequireFunction("PROFILE_FUNC", func);
+
     /* uninstall trace handler                                             */
     ChangeDoOperations( func, 0 );
 
@@ -1578,21 +1571,13 @@ Obj FuncIS_PROFILED_FUNC(
     Obj                 self,
     Obj                 func )
 {
-    /* check the argument                                                  */
-    if ( TNUM_OBJ(func) != T_FUNCTION ) {
-        ErrorQuit( "<func> must be a function", 0L, 0L );
-        return 0;
-    }
+    RequireFunction("IS_PROFILED_FUNC", func);
     return ( TNUM_OBJ(PROF_FUNC(func)) != T_FUNCTION ) ? False : True;
 }
 
-Obj FuncFILENAME_FUNC(Obj self, Obj func) {
-
-    /* check the argument                                                  */
-    if ( TNUM_OBJ(func) != T_FUNCTION ) {
-        ErrorQuit( "<func> must be a function", 0L, 0L );
-        return 0;
-    }
+Obj FuncFILENAME_FUNC(Obj self, Obj func)
+{
+    RequireFunction("FILENAME_FUNC", func);
 
     if (BODY_FUNC(func)) {
         Obj fn =  GET_FILENAME_BODY(BODY_FUNC(func));
@@ -1602,12 +1587,9 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func) {
     return Fail;
 }
 
-Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
-    /* check the argument                                                  */
-    if ( TNUM_OBJ(func) != T_FUNCTION ) {
-        ErrorQuit( "<func> must be a function", 0L, 0L );
-        return 0;
-    }
+Obj FuncSTARTLINE_FUNC(Obj self, Obj func)
+{
+    RequireFunction("STARTLINE_FUNC", func);
 
     if (BODY_FUNC(func)) {
         UInt sl = GET_STARTLINE_BODY(BODY_FUNC(func));
@@ -1617,12 +1599,9 @@ Obj FuncSTARTLINE_FUNC(Obj self, Obj func) {
     return Fail;
 }
 
-Obj FuncENDLINE_FUNC(Obj self, Obj func) {
-    /* check the argument                                                  */
-    if ( TNUM_OBJ(func) != T_FUNCTION ) {
-        ErrorQuit( "<func> must be a function", 0L, 0L );
-        return 0;
-    }
+Obj FuncENDLINE_FUNC(Obj self, Obj func)
+{
+    RequireFunction("ENDLINE_FUNC", func);
 
     if (BODY_FUNC(func)) {
         UInt el = GET_ENDLINE_BODY(BODY_FUNC(func));
@@ -1632,12 +1611,9 @@ Obj FuncENDLINE_FUNC(Obj self, Obj func) {
     return Fail;
 }
 
-Obj FuncLOCATION_FUNC(Obj self, Obj func) {
-    /* check the argument                                                  */
-    if ( TNUM_OBJ(func) != T_FUNCTION ) {
-        ErrorQuit( "<func> must be a function", 0L, 0L );
-        return 0;
-    }
+Obj FuncLOCATION_FUNC(Obj self, Obj func)
+{
+    RequireFunction("LOCATION_FUNC", func);
 
     if (BODY_FUNC(func)) {
         Obj sl = GET_LOCATION_BODY(BODY_FUNC(func));
@@ -1657,11 +1633,7 @@ Obj FuncUNPROFILE_FUNC(
 {
     Obj                 prof;
 
-    /* check the argument                                                  */
-    if ( TNUM_OBJ(func) != T_FUNCTION ) {
-        ErrorQuit( "<func> must be a function", 0L, 0L );
-        return 0;
-    }
+    RequireFunction("UNPROFILE_FUNC", func);
 
     /* uninstall trace handler                                             */
     ChangeDoOperations( func, 0 );

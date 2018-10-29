@@ -79,36 +79,36 @@ Error, no 1st choice method found for `PROF_FUNC' on 1 arguments
 gap> PROF_FUNC(x->x);
 [ 0, 0, 0, 0, 0 ]
 gap> CLEAR_PROFILE_FUNC(fail);
-Error, <func> must be a function
+Error, CLEAR_PROFILE_FUNC: <func> must be a function (not a boolean or fail)
 gap> PROFILE_FUNC(fail);
-Error, <func> must be a function
+Error, PROFILE_FUNC: <func> must be a function (not a boolean or fail)
 gap> IS_PROFILED_FUNC(fail);
-Error, <func> must be a function
+Error, IS_PROFILED_FUNC: <func> must be a function (not a boolean or fail)
 gap> IS_PROFILED_FUNC(x->x);
 false
 
 #
 gap> f:=x->x;;
 gap> FILENAME_FUNC(fail);
-Error, <func> must be a function
+Error, FILENAME_FUNC: <func> must be a function (not a boolean or fail)
 gap> FILENAME_FUNC(f);
 "stream"
 gap> FILENAME_FUNC(IS_OBJECT);
 fail
 gap> STARTLINE_FUNC(fail);
-Error, <func> must be a function
+Error, STARTLINE_FUNC: <func> must be a function (not a boolean or fail)
 gap> STARTLINE_FUNC(f);
 1
 gap> STARTLINE_FUNC(IS_OBJECT);
 fail
 gap> ENDLINE_FUNC(fail);
-Error, <func> must be a function
+Error, ENDLINE_FUNC: <func> must be a function (not a boolean or fail)
 gap> ENDLINE_FUNC(f);
 1
 gap> ENDLINE_FUNC(IS_OBJECT);
 fail
 gap> LOCATION_FUNC(fail);
-Error, <func> must be a function
+Error, LOCATION_FUNC: <func> must be a function (not a boolean or fail)
 gap> LOCATION_FUNC(f);
 fail
 gap> LOCATION_FUNC(IS_OBJECT);
@@ -116,7 +116,7 @@ fail
 
 #
 gap> UNPROFILE_FUNC(fail);
-Error, <func> must be a function
+Error, UNPROFILE_FUNC: <func> must be a function (not a boolean or fail)
 gap> UNPROFILE_FUNC(x->x);
 
 #

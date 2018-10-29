@@ -511,12 +511,7 @@ Obj             FuncPOSITION_SORTED_LIST_COMP (
     RequireSmallListMayReplace("POSITION_SORTED_LIST_COMP", list);
 
     /* check the third argument                                            */
-    while ( TNUM_OBJ( func ) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "POSITION_SORTED_LIST_COMP: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can replace <func> via 'return <func>;'" );
-    }
+    RequireFunctionMayReplace("POSITION_SORTED_LIST_COMP", func);
 
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) ) {
@@ -867,19 +862,6 @@ UInt            RemoveDupsDensePlist (
 
 /****************************************************************************
 **
-**  Some common checks.
-*/
-
-static void CheckIsFunction(Obj func, const Char * caller)
-{
-  if ( TNUM_OBJ( func ) != T_FUNCTION ) {
-    ErrorMayQuit("%s: <func> must be a function (not a %s)",
-          (Int)caller, (Int)TNAM_OBJ(func));
-  }
-}
-
-/****************************************************************************
-**
 *F  FuncSORT_LIST( <self>, <list> ) . . . . . . . . . . . . . . . sort a list
 */
 Obj FuncSORT_LIST (
@@ -937,7 +919,7 @@ Obj FuncSORT_LIST_COMP (
     RequireSmallList("SORT_LIST_COMP", list);
 
     /* check the third argument                                            */
-    CheckIsFunction(func, "SORT_LIST_COMP");
+    RequireFunction("SORT_LIST_COMP", func);
 
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) ) {
@@ -960,7 +942,7 @@ Obj FuncSTABLE_SORT_LIST_COMP (
     RequireSmallList("STABLE_SORT_LIST_COMP", list);
 
     /* check the third argument                                            */
-    CheckIsFunction(func, "STABLE_SORT_LIST_COMP");
+    RequireFunction("STABLE_SORT_LIST_COMP", func);
 
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) ) {
@@ -1042,7 +1024,7 @@ Obj FuncSORT_PARA_LIST_COMP (
     CheckSameLength("SORT_PARA_LIST_COMP", "list", "shadow", list, shadow);
 
     /* check the third argument                                            */
-    CheckIsFunction(func, "SORT_PARA_LIST_COMP");
+    RequireFunction("SORT_PARA_LIST_COMP", func);
     
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
@@ -1068,7 +1050,7 @@ Obj FuncSTABLE_SORT_PARA_LIST_COMP (
     CheckSameLength("SORT_PARA_LIST_COMP", "list", "shadow", list, shadow);
 
     /* check the third argument                                            */
-    CheckIsFunction(func, "SORT_PARA_LIST_COMP");
+    RequireFunction("SORT_PARA_LIST_COMP", func);
     
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
