@@ -347,6 +347,15 @@ gap> l := [40, 39 .. 10];;
 gap> RepresentativeSmallest(l);
 10
 
+# Positions
+gap> ll := [ 1, 2, 3, 2, 1, 2 ];;
+gap> Positions( ll, 1 );
+[ 1, 5 ]
+gap> Positions( ll, 4 );
+[  ]
+gap> HasIsSSortedList( Positions( ll, 2 ) );
+true
+
 # PositionsProperty
 gap> ll := [ 1, , "s" ];;
 gap> PositionsProperty( ll, ReturnTrue );
@@ -358,6 +367,8 @@ gap> PositionsProperty( ll, ReturnTrue );
 [ 1, 2, 3 ]
 gap> PositionsProperty( ll, IsInt );
 [ 1, 2, 3 ]
+gap> HasIsSSortedList( PositionsProperty( ll, IsPrimeInt ) );
+true
 
 # PositionProperty
 gap> ll := [ 1, , "s" ];;
@@ -378,6 +389,28 @@ gap> PositionProperty( ll, ReturnTrue, 2);
 3
 gap> PositionProperty( ll, ReturnTrue, 3);
 fail
+
+# PositionBound
+gap> PositionBound( [] );
+fail
+gap> PositionBound( [ 1 .. 3 ] );
+1
+gap> PositionBound( [ 2, 3, 4 ] );
+1
+gap> PositionBound( [ ,, 1 ] );
+3
+
+# PositionsBound
+gap> PositionsBound( [] );
+[  ]
+gap> PositionsBound( [ 1 .. 3 ] );
+[ 1 .. 3 ]
+gap> PositionsBound( [ 1, 2, 3 ] );
+[ 1 .. 3 ]
+gap> PositionsBound( [ 1,, 2 ] );
+[ 1, 3 ]
+gap> HasIsSSortedList( PositionsBound( [ 1,, 2 ] ) );
+true
 
 #
 gap> STOP_TEST("list.tst");

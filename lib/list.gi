@@ -1346,10 +1346,13 @@ InstallGlobalFunction( Positions,
           break;
         fi;
       od;
-      return res;
     else
-      return PositionsOp(list,obj);
+      res:= PositionsOp(list,obj);
     fi;
+
+    SetIsSSortedList( res, true );
+
+    return res;
   end );
 # generic method for non-plain lists
 InstallMethod(PositionsOp, [IsList, IsObject], function(list, obj)
@@ -1654,6 +1657,8 @@ InstallMethod( PositionsProperty,
       fi;
     od;
 
+    SetIsSSortedList( result, true );
+
     return result;
     end );
 
@@ -1669,6 +1674,8 @@ InstallMethod( PositionsProperty,
         Add( result, i );
       fi;
     od;
+
+    SetIsSSortedList( result, true );
 
     return result;
     end );
@@ -1709,6 +1716,8 @@ InstallGlobalFunction( PositionsBound, function( list )
             Add( bound, i );
         fi;
     od;
+
+    SetIsSSortedList( bound, true );
 
     return bound;
 end );

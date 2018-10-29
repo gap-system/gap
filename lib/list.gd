@@ -689,7 +689,7 @@ DeclareOperation( "Position", [ IsList, IsObject, IS_INT ] );
 ##  <Oper Name="PositionsOp" Arg='list, obj'/>
 ##
 ##  <Description>
-##  returns the positions of <E>all</E> occurrences of <A>obj</A> in
+##  returns the set of positions of <E>all</E> occurrences of <A>obj</A> in
 ##  <A>list</A>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -958,7 +958,7 @@ DeclareGlobalFunction( "PositionMinimum" );
 ##  <Oper Name="PositionsProperty" Arg='list, func'/>
 ##
 ##  <Description>
-##  returns the list of all those positions in the list <A>list</A>
+##  returns the set of all those positions in the list <A>list</A>
 ##  which are bound and
 ##  for which the property tester function <A>func</A> returns <K>true</K>.
 ##  <P/>
@@ -1007,11 +1007,11 @@ DeclareOperation( "PositionBound", [ IsList ] );
 
 #############################################################################
 ##
-#O  PositionsBound( <list> ) . . . . . . . . . positions of all bound entries
+#F  PositionsBound( <list> ) . . . . . . . . . positions of all bound entries
 ##
 ##  <#GAPDoc Label="PositionsBound">
 ##  <ManSection>
-##  <Oper Name="PositionsBound" Arg='list'/>
+##  <Func Name="PositionsBound" Arg='list'/>
 ##
 ##  <Description>
 ##  returns the set of all bound positions in the list
@@ -1030,7 +1030,6 @@ DeclareOperation( "PositionBound", [ IsList ] );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PositionsBound", [IsList] );
-
 
 
 #############################################################################
