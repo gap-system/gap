@@ -833,12 +833,7 @@ Obj             EvalPermExpr (
 
             /* get and check current entry for the cycle                   */
             val = EVAL_EXPR(READ_EXPR(cycle, j - 1));
-            while ( ! IS_POS_INTOBJ(val) ) {
-                val = ErrorReturnObj(
-              "Permutation: <expr> must be a positive small integer (not a %s)",
-                    (Int)TNAM_OBJ(val), 0L,
-                    "you can replace <expr> via 'return <expr>;'" );
-            }
+            RequirePositiveSmallIntMayReplace("Permutation", val, "expr");
             c = INT_INTOBJ(val);
             if (c > MAX_DEG_PERM4)
               ErrorMayQuit( "Permutation literal exceeds maximum permutation degree",

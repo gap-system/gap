@@ -1054,12 +1054,8 @@ Obj FuncPREIMAGES_TRANS_INT(Obj self, Obj f, Obj pt)
     UInt deg, nr, i, j;
     Obj  out;
 
-    if (!IS_INTOBJ(pt) || INT_INTOBJ(pt) < 1) {
-        ErrorQuit("PREIMAGES_TRANS_INT: the second argument must be a "
-                  "positive integer",
-                  0L, 0L);
-    }
-    else if (!IS_TRANS(f)) {
+    RequirePositiveSmallInt("PREIMAGES_TRANS_INT", pt, "pt");
+    if (!IS_TRANS(f)) {
         ErrorQuit("PREIMAGES_TRANS_INT: the first argument must be a "
                   "transformation (not a %s)",
                   (Int)TNAM_OBJ(f), 0L);
@@ -2999,11 +2995,7 @@ Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
                   "transformation (not a %s)",
                   (Int)TNAM_OBJ(f), 0L);
     }
-    else if (!IS_INTOBJ(pt) || INT_INTOBJ(pt) < 1) {
-        ErrorQuit("COMPONENT_TRANS_INT: the second argument must be a "
-                  "positive integer (not a %s)",
-                  (Int)TNAM_OBJ(pt), 0L);
-    }
+    RequirePositiveSmallInt("COMPONENT_TRANS_INT", pt, "pt");
 
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
     cpt = INT_INTOBJ(pt) - 1;
@@ -3062,11 +3054,7 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
                   "transformation (not a %s)",
                   (Int)TNAM_OBJ(f), 0L);
     }
-    else if (!IS_INTOBJ(pt) || INT_INTOBJ(pt) < 1) {
-        ErrorQuit("CYCLE_TRANS_INT: the second argument must be a "
-                  "positive integer (not a %s)",
-                  (Int)TNAM_OBJ(pt), 0L);
-    }
+    RequirePositiveSmallInt("CYCLE_TRANS_INT", pt, "pt");
 
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
     cpt = INT_INTOBJ(pt) - 1;
@@ -5173,13 +5161,9 @@ Obj PowIntTrans2(Obj i, Obj f)
         return i;
     }
 
-    img = INT_INTOBJ(i);
+    RequirePositiveSmallInt("Tran. Operations", i, "point");
 
-    if (img <= 0) {
-        ErrorQuit("Tran. Operations: <point> must be a positive integer "
-                  "(not %d)",
-                  (Int)img, 0L);
-    }
+    img = INT_INTOBJ(i);
 
     if ((UInt)img <= DEG_TRANS2(f)) {
         img = (CONST_ADDR_TRANS2(f))[img - 1] + 1;
@@ -5196,13 +5180,9 @@ Obj PowIntTrans4(Obj i, Obj f)
         return i;
     }
 
-    img = INT_INTOBJ(i);
+    RequirePositiveSmallInt("Tran. Operations", i, "point");
 
-    if (img <= 0) {
-        ErrorQuit(
-            "Tran. Operations: <point> must be a positive integer (not %d)",
-            (Int)img, 0L);
-    }
+    img = INT_INTOBJ(i);
 
     if ((UInt)img <= DEG_TRANS4(f)) {
         img = (CONST_ADDR_TRANS4(f))[img - 1] + 1;

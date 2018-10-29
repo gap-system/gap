@@ -2556,12 +2556,7 @@ Obj FuncASS_PLIST_DEFAULT (
     Int                 p;
 
     /* check the arguments                                                 */
-    while ( ! IS_POS_INTOBJ(pos) ) {
-        pos = ErrorReturnObj(
-            "<pos> must be a positive small integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0,
-            "you can replace <pos> via 'return <pos>;'" );
-    }
+    RequirePositiveSmallIntMayReplace("List Assignment", pos, "pos");
     p = INT_INTOBJ(pos);
     while ( ! IS_PLIST(plist) || ! IS_PLIST_MUTABLE(plist) ) {
         plist = ErrorReturnObj(

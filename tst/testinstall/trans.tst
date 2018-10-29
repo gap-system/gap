@@ -468,11 +468,14 @@ true
 
 # Test PREIMAGES_TRANS_INT
 gap> PREIMAGES_TRANS_INT(IdentityTransformation, 0);
-Error, PREIMAGES_TRANS_INT: the second argument must be a positive integer
+Error, PREIMAGES_TRANS_INT: <pt> must be a positive small integer (not a integ\
+er)
 gap> PREIMAGES_TRANS_INT(IdentityTransformation, -1);
-Error, PREIMAGES_TRANS_INT: the second argument must be a positive integer
+Error, PREIMAGES_TRANS_INT: <pt> must be a positive small integer (not a integ\
+er)
 gap> PREIMAGES_TRANS_INT(IdentityTransformation, "a");
-Error, PREIMAGES_TRANS_INT: the second argument must be a positive integer
+Error, PREIMAGES_TRANS_INT: <pt> must be a positive small integer (not a list \
+(string))
 gap> PREIMAGES_TRANS_INT("a", 2);
 Error, PREIMAGES_TRANS_INT: the first argument must be a transformation (not a\
  list (string))
@@ -1466,11 +1469,11 @@ gap> COMPONENT_TRANS_INT(Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6, 12,
 gap> COMPONENT_TRANS_INT(IdentityTransformation, 10);
 [ 10 ]
 gap> COMPONENT_TRANS_INT(IdentityTransformation, 0);
-Error, COMPONENT_TRANS_INT: the second argument must be a positive integer (no\
-t a integer)
+Error, COMPONENT_TRANS_INT: <pt> must be a positive small integer (not a integ\
+er)
 gap> COMPONENT_TRANS_INT(IdentityTransformation, "a");
-Error, COMPONENT_TRANS_INT: the second argument must be a positive integer (no\
-t a list (string))
+Error, COMPONENT_TRANS_INT: <pt> must be a positive small integer (not a list \
+(string))
 gap> COMPONENT_TRANS_INT((), 1);
 Error, COMPONENT_TRANS_INT: the first argument must be a transformation (not a\
  permutation (small))
@@ -1563,11 +1566,10 @@ gap> CYCLE_TRANS_INT(Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6, 12,
 gap> CYCLE_TRANS_INT(IdentityTransformation, 10);
 [ 10 ]
 gap> CYCLE_TRANS_INT(IdentityTransformation, 0);
-Error, CYCLE_TRANS_INT: the second argument must be a positive integer (not a \
-integer)
+Error, CYCLE_TRANS_INT: <pt> must be a positive small integer (not a integer)
 gap> CYCLE_TRANS_INT(IdentityTransformation, "a");
-Error, CYCLE_TRANS_INT: the second argument must be a positive integer (not a \
-list (string))
+Error, CYCLE_TRANS_INT: <pt> must be a positive small integer (not a list (str\
+ing))
 gap> CYCLE_TRANS_INT((), 1);
 Error, CYCLE_TRANS_INT: the first argument must be a transformation (not a per\
 mutation (small))
@@ -2585,7 +2587,8 @@ gap> 10 ^ Transformation([1, 1]);
 gap> (2 ^ 60) ^ Transformation([1, 1]);
 1152921504606846976
 gap> (-1) ^ Transformation([1, 1]);
-Error, Tran. Operations: <point> must be a positive integer (not -1)
+Error, Tran. Operations: <point> must be a positive small integer (not a integ\
+er)
 gap> 65535 ^ Transformation([65535], [65537]);
 65537
 gap> 1 ^ Transformation([65535], [65537]);
@@ -2595,7 +2598,8 @@ gap> 65538 ^ Transformation([65535], [65537]);
 gap> (2 ^ 60) ^ Transformation([65535], [65537]);
 1152921504606846976
 gap> (-1) ^ Transformation([65535], [65537]);
-Error, Tran. Operations: <point> must be a positive integer (not -1)
+Error, Tran. Operations: <point> must be a positive small integer (not a integ\
+er)
 
 # OnSetsTrans: for a transformation
 gap> OnSets([], Transformation([1, 1]));
@@ -2607,7 +2611,8 @@ gap> OnSets([1, 2, 10], Transformation([1, 1]));
 gap> OnSets([1, 2, 10, (2 ^ 60)], Transformation([1, 1]));
 [ 1, 10, 1152921504606846976 ]
 gap> OnSets([-1, 1, 2], Transformation([1, 1]));
-Error, Tran. Operations: <point> must be a positive integer (not -1)
+Error, Tran. Operations: <point> must be a positive small integer (not a integ\
+er)
 gap> OnSets([65535, 65536, 65537], Transformation([65535], [65537]));
 [ 65536, 65537 ]
 gap> OnSets([1, 2, 10], Transformation([65535], [65537]));
@@ -2617,7 +2622,8 @@ gap> OnSets([1, 65535, 65538], Transformation([65535], [65537]));
 gap> OnSets([1, 2, 10, 65537, (2 ^ 60)], Transformation([65537], [1]));
 [ 1, 2, 10, 1152921504606846976 ]
 gap> OnSets([-1, 1, 2], Transformation([65535], [65537]));
-Error, Tran. Operations: <point> must be a positive integer (not -1)
+Error, Tran. Operations: <point> must be a positive small integer (not a integ\
+er)
 gap> OnSets([1, 2, 10, 65535, (2 ^ 60)], Transformation([65535], [5]));
 [ 1, 2, 5, 10, 1152921504606846976 ]
 gap> OnSets([1 .. 20], Transformation([10, 7, 10, 8, 8, 7, 5, 9, 1, 9]));
@@ -2643,7 +2649,8 @@ gap> OnTuples([1, 2, 10], Transformation([1, 1]));
 gap> OnTuples([1, 2, 10, (2 ^ 60)], Transformation([1, 1]));
 [ 1, 1, 10, 1152921504606846976 ]
 gap> OnTuples([-1, 1, 2], Transformation([1, 1]));
-Error, Tran. Operations: <point> must be a positive integer (not -1)
+Error, Tran. Operations: <point> must be a positive small integer (not a integ\
+er)
 gap> OnTuples([65535, 65536, 65537], Transformation([65535], [65537]));
 [ 65537, 65536, 65537 ]
 gap> OnTuples([1, 2, 10], Transformation([65535], [65537]));
@@ -2653,7 +2660,8 @@ gap> OnTuples([1, 65535, 65538], Transformation([65535], [65537]));
 gap> OnTuples([1, 2, 10, 65537, (2 ^ 60)], Transformation([65537], [1]));
 [ 1, 2, 10, 1, 1152921504606846976 ]
 gap> OnTuples([-1, 1, 2], Transformation([65535], [65537]));
-Error, Tran. Operations: <point> must be a positive integer (not -1)
+Error, Tran. Operations: <point> must be a positive small integer (not a integ\
+er)
 gap> OnTuples([1, 2, 10, 65535, (2 ^ 60)], Transformation([65535], [5]));
 [ 1, 2, 10, 5, 1152921504606846976 ]
 gap> OnTuples([1 .. 20], Transformation([10, 7, 10, 8, 8, 7, 5, 9, 1, 9]));

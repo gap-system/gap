@@ -812,14 +812,8 @@ Obj FuncCONV_VEC8BIT (
     Obj                 list,
     Obj                 q)
 {
-    if (!IS_INTOBJ(q)) {
-        ErrorMayQuit("CONV_VEC8BIT: q must be a small integer (3--256) not a %s",
-        (Int)TNAM_OBJ(q), 0);
-    }
-
+    RequirePositiveSmallInt("CONV_VEC8BIT", q, "q");
     ConvVec8Bit(list, INT_INTOBJ(q));
-
-    /* return nothing                                                      */
     return 0;
 }
 
@@ -952,15 +946,8 @@ Obj FuncCOPY_VEC8BIT (
     Obj                 list,
     Obj                 q)
 {
-  if (!IS_INTOBJ(q))
-    {
-      ErrorMayQuit("CONV_VEC8BIT: q must be a small integer (3--256) not a %s",
-		   (Int)TNAM_OBJ(q), 0);
-    }
-    
-  list = NewVec8Bit(list, INT_INTOBJ(q));
-  
-  return list;
+    RequirePositiveSmallInt("COPY_VEC8BIT", q, "q");
+    return NewVec8Bit(list, INT_INTOBJ(q));
 }
 
 /****************************************************************************
@@ -2732,9 +2719,7 @@ Obj FuncELM0_VEC8BIT (
     Obj     info;
     UInt elts;
 
-    if (!IS_INTOBJ(pos))
-        ErrorQuit("ELM0_VEC8BIT: position must be a small integer, not a %s",
-                  (Int)TNAM_OBJ(pos), 0L);
+    RequirePositiveSmallInt("ELM0_VEC8BIT", pos, "position");
     p = INT_INTOBJ(pos);
     if (LEN_VEC8BIT(list) < p) {
         return Fail;
@@ -2765,9 +2750,7 @@ Obj FuncELM_VEC8BIT (
     Obj     info;
     UInt elts;
 
-    if (!IS_INTOBJ(pos))
-        ErrorQuit("ELM0_VEC8BIT: position must be a small integer, not a %s",
-                  (Int)TNAM_OBJ(pos), 0L);
+    RequirePositiveSmallInt("ELM_VEC8BIT", pos, "position");
     p = INT_INTOBJ(pos);
     if (LEN_VEC8BIT(list) < p) {
         ErrorReturnVoid(
@@ -2984,12 +2967,8 @@ Obj FuncASS_VEC8BIT (
     }
 
     /* get the position                                                    */
-    if (!IS_INTOBJ(pos))
-        ErrorQuit("ASS_VEC8BIT: position should be a small integer, not a %s",
-                  (Int)TNAM_OBJ(pos), 0L);
+    RequirePositiveSmallInt("ASS_VEC8BIT", pos, "position");
     p = INT_INTOBJ(pos);
-    if (p <= 0)
-        ErrorQuit("ASS_VEC8BIT: position must be positive", 0L, 0L);
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     chr = P_FIELDINFO_8BIT(info);
@@ -3099,12 +3078,8 @@ Obj FuncUNB_VEC8BIT (
     }
 
     /* get the position                                                    */
-    if (!IS_INTOBJ(pos))
-        ErrorQuit("UNB_VEC8BIT: position should be a small integer, not a %s",
-        (Int)TNAM_OBJ(pos), 0L);
+    RequirePositiveSmallInt("UNB_VEC8BIT", pos, "position");
     p = INT_INTOBJ(pos);
-    if (p <= 0)
-        ErrorQuit("UNB_VEC8BIT: position must be positive", 0L, 0L);
 
     /* if we unbind the last position keep the representation              */
     if (LEN_VEC8BIT(list) < p) {
@@ -3402,9 +3377,7 @@ Obj FuncCONV_MAT8BIT( Obj self, Obj list, Obj q )
     Obj tmp;
     Obj type;
 
-    if (!IS_INTOBJ(q))
-        ErrorQuit("CONV_MAT8BIT: q must be a small integer, not a %s",
-        (Int)TNAM_OBJ(q), (Int)0L);
+    RequirePositiveSmallInt("CONV_MAT8BIT", q, "q");
     PLAIN_LIST(list);
     len = LEN_PLIST(list);
     mut = IS_MUTABLE_OBJ(list);
@@ -3898,12 +3871,8 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
     UInt pos;
     Obj type;
 
-    if (!IS_INTOBJ(p))
-        ErrorQuit("ASS_MAT8BIT: position should be a small integer, not a %s",
-                  (Int)TNAM_OBJ(p), 0L);
+    RequirePositiveSmallInt("ASS_MAT8BIT", p, "position");
     pos = INT_INTOBJ(p);
-    if (pos <= 0)
-        ErrorQuit("ASS_MAT8BIT: position must be positive", 0L, 0L);
 
     len = LEN_MAT8BIT(mat);
     if (!IS_VEC8BIT_REP(obj) && !IS_GF2VEC_REP(obj))
@@ -3991,10 +3960,7 @@ cantdo:
 */
 Obj FuncELM_MAT8BIT( Obj self, Obj mat, Obj row )
 {
-    if (!IS_POS_INTOBJ(row)) {
-        ErrorMayQuit("ELM_MAT8BIT: position must be a small integer, not a %s",
-                     (Int)TNAM_OBJ(row), 0L);
-    }
+    RequirePositiveSmallInt("ELM_MAT8BIT", row, "position");
     UInt r = INT_INTOBJ(row);
     if (LEN_MAT8BIT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r, LEN_MAT8BIT(mat));
@@ -5837,7 +5803,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(AINV_VEC8BIT_IMMUTABLE, 1, "gfqvec"),
     GVAR_FUNC(AINV_VEC8BIT_SAME_MUTABILITY, 1, "gfqvec"),
     GVAR_FUNC(ZERO_VEC8BIT, 1, "gfqvec"),
-    GVAR_FUNC(ZERO_VEC8BIT_2, 2, "q,len"),
+    GVAR_FUNC(ZERO_VEC8BIT_2, 2, "q, len"),
     GVAR_FUNC(EQ_VEC8BIT_VEC8BIT, 2, "gfqvecl, gfqvecr"),
     GVAR_FUNC(LT_VEC8BIT_VEC8BIT, 2, "gfqvecl, gfqvecr"),
     GVAR_FUNC(PROD_VEC8BIT_VEC8BIT, 2, "gfqvecl, gfqvecr"),

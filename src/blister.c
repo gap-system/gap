@@ -1195,12 +1195,7 @@ Obj FuncPositionNthTrueBlist (
             (Int)TNAM_OBJ(blist), 0L,
             "you can replace <blist> via 'return <blist>;'" );
     }
-    while ( ! IS_POS_INTOBJ(Nth) ) {
-        Nth = ErrorReturnObj(
-            "Position: <nth> must be a positive small integer (not a %s)",
-            (Int)TNAM_OBJ(Nth), 0L,
-            "you can replace <nth> via 'return <nth>;'" );
-    }
+    RequirePositiveSmallIntMayReplace("Position", Nth, "nth");
     
     nrb = NUMBER_BLOCKS_BLIST(blist);
     if ( ! nrb )  return Fail;
