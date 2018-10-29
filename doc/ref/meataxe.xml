@@ -82,7 +82,7 @@ bases used are needed as well.
 <Func Name="PermutationGModule" Arg='G, F'/>
 
 <Description>
-Called with a permutation group <A>G</A> and a finite field <A>F</A>,
+Called with a permutation group <A>G</A> and a field <A>F</A> (<A>F</A> may be infinite),
 <Ref Func="PermutationGModule"/> returns the natural permutation module
 <M>M</M> over <A>F</A>
 for the group of permutation matrices that acts on the canonical basis of
