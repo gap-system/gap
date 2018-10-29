@@ -2131,12 +2131,7 @@ Obj FuncExecuteProcess (
             (Int)TNAM_OBJ(out), 0L,
             "you can replace <out> via 'return <out>;'" );
     }
-    while ( ! IS_SMALL_LIST(args) ) {
-        args = ErrorReturnObj(
-            "<args> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(args), 0L,
-            "you can replace <args> via 'return <args>;'" );
-    }
+    RequireSmallListMayReplace("ExecuteProcess", args);
 
     /* create an argument array                                            */
     for ( i = 1;  i <= LEN_LIST(args);  i++ ) {

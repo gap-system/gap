@@ -72,7 +72,7 @@ Error, STABLE_SORT_LIST_COMP: <func> must be a function (not a boolean or fail\
 gap> SORT_PARA_LIST(fail, fail);
 Error, SORT_PARA_LIST: <list> must be a small list (not a boolean or fail)
 gap> SORT_PARA_LIST([], fail);
-Error, SORT_PARA_LIST: <list> must be a small list (not a boolean or fail)
+Error, SORT_PARA_LIST: <shadow> must be a small list (not a boolean or fail)
 gap> SORT_PARA_LIST([], [1]);
 Error, SORT_PARA_LIST: <list> must have the same length as <shadow> (not 0 and\
  1)
@@ -82,8 +82,8 @@ gap> STABLE_SORT_PARA_LIST(fail, fail);
 Error, STABLE_SORT_PARA_LIST: <list> must be a small list (not a boolean or fa\
 il)
 gap> STABLE_SORT_PARA_LIST([], fail);
-Error, STABLE_SORT_PARA_LIST: <list> must be a small list (not a boolean or fa\
-il)
+Error, STABLE_SORT_PARA_LIST: <shadow> must be a small list (not a boolean or \
+fail)
 gap> STABLE_SORT_PARA_LIST([], [1]);
 Error, STABLE_SORT_PARA_LIST: <list> must have the same length as <shadow> (no\
 t 0 and 1)

@@ -1307,9 +1307,7 @@ Obj FuncCALL_FUNC_LIST (
     Obj                 list )
 {
     /* check that the second argument is a list                            */
-    if ( ! IS_SMALL_LIST( list ) ) {
-       ErrorMayQuit("CallFuncList: <list> must be a small list", 0L, 0L);
-    }
+    RequireSmallList("CallFuncList", list);
     return CallFuncList(func, list);
 }
 
@@ -1320,9 +1318,7 @@ Obj FuncCALL_FUNC_LIST_WRAP (
 {
     Obj retval, retlist;
     /* check that the second argument is a list                            */
-    if ( ! IS_SMALL_LIST( list ) ) {
-       ErrorMayQuit("CallFuncListWrap: <list> must be a small list", 0L, 0L);
-    }
+    RequireSmallList("CallFuncListWrap", list);
     retval = CallFuncList(func, list);
 
     if (retval == 0)

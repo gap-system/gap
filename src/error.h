@@ -174,6 +174,24 @@ ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 
 /****************************************************************************
 **
+*F  RequireSmallList
+*/
+#define RequireSmallList(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, IS_SMALL_LIST(op), \
+        "must be a small list")
+
+
+/****************************************************************************
+**
+*F  RequireSmallListMayReplace
+*/
+#define RequireSmallListMayReplace(funcname, op) \
+    RequireArgumentConditionMayReplace(funcname, op, #op, IS_SMALL_LIST(op), \
+        "must be a small list")
+
+
+/****************************************************************************
+**
 *F  CheckIsPossList( <desc>, <poss> ) . . . . . . . . . . check for poss list
 */
 void CheckIsPossList(const Char * desc, Obj poss);

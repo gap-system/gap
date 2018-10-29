@@ -293,12 +293,7 @@ Obj             FuncAPPEND_LIST_INTR (
 
     /* check the type of the first argument                                */
     if ( TNUM_OBJ( list1 ) != T_PLIST ) {
-        while ( ! IS_SMALL_LIST( list1 ) ) {
-            list1 = ErrorReturnObj(
-                "AppendList: <list1> must be a small list (not a %s)",
-                (Int)TNAM_OBJ(list1), 0L,
-                "you can replace <list1> via 'return <list1>;'" );
-        }
+        RequireSmallListMayReplace("AppendList", list1);
         if ( ! IS_PLIST( list1 ) ) {
             PLAIN_LIST( list1 );
         }
@@ -308,12 +303,7 @@ Obj             FuncAPPEND_LIST_INTR (
 
     /* check the type of the second argument                               */
     if ( ! IS_PLIST( list2 ) ) {
-        while ( ! IS_SMALL_LIST( list2 ) ) {
-            list2 = ErrorReturnObj(
-                "AppendList: <list2> must be a small list (not a %s)",
-                (Int)TNAM_OBJ(list2), 0L,
-                "you can replace <list2> via 'return <list2>;'"  );
-        }
+        RequireSmallListMayReplace("AppendList", list2);
         len2 = LEN_LIST( list2 );
     }
     else {
@@ -433,13 +423,7 @@ Obj             FuncPOSITION_SORTED_LIST (
     UInt                h;              /* position, result                */
 
     /* check the first argument                                            */
-    while ( ! IS_SMALL_LIST(list) ) {
-        list = ErrorReturnObj(
-            "POSITION_SORTED_LIST: <list> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(list), 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
-
+    RequireSmallListMayReplace("POSITION_SORTED_LIST", list);
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) ) {
         h = PositionSortedDensePlist( list, obj );
@@ -524,12 +508,7 @@ Obj             FuncPOSITION_SORTED_LIST_COMP (
     UInt                h;              /* position, result                */
 
     /* check the first argument                                            */
-    while ( ! IS_SMALL_LIST(list) ) {
-        list = ErrorReturnObj(
-            "POSITION_SORTED_LIST_COMP: <list> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(list), 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
+    RequireSmallListMayReplace("POSITION_SORTED_LIST_COMP", list);
 
     /* check the third argument                                            */
     while ( TNUM_OBJ( func ) != T_FUNCTION ) {
@@ -891,14 +870,6 @@ UInt            RemoveDupsDensePlist (
 **  Some common checks.
 */
 
-static void CheckIsSmallList( Obj list, const Char * caller)
-{
-  if ( ! IS_SMALL_LIST(list) ) {
-    ErrorMayQuit("%s: <list> must be a small list (not a %s)",
-                 (Int)caller, (Int)TNAM_OBJ(list));
-  }
-}
-
 static void CheckIsFunction(Obj func, const Char * caller)
 {
   if ( TNUM_OBJ( func ) != T_FUNCTION ) {
@@ -916,7 +887,7 @@ Obj FuncSORT_LIST (
     Obj                 list )
 {
     /* check the first argument                                            */
-    CheckIsSmallList(list, "SORT_LIST");
+    RequireSmallList("SORT_LIST", list);
 
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) ) {
@@ -936,7 +907,7 @@ Obj FuncSTABLE_SORT_LIST (
     Obj                 list )
 {
     /* check the first argument                                            */
-    CheckIsSmallList(list, "STABLE_SORT_LIST");
+    RequireSmallList("STABLE_SORT_LIST", list);
 
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) ) {
@@ -963,7 +934,7 @@ Obj FuncSORT_LIST_COMP (
     Obj                 func )
 {
     /* check the first argument                                            */
-    CheckIsSmallList(list, "SORT_LIST_COMP");
+    RequireSmallList("SORT_LIST_COMP", list);
 
     /* check the third argument                                            */
     CheckIsFunction(func, "SORT_LIST_COMP");
@@ -986,7 +957,7 @@ Obj FuncSTABLE_SORT_LIST_COMP (
     Obj                 func )
 {
     /* check the first argument                                            */
-    CheckIsSmallList(list, "STABLE_SORT_LIST_COMP");
+    RequireSmallList("STABLE_SORT_LIST_COMP", list);
 
     /* check the third argument                                            */
     CheckIsFunction(func, "STABLE_SORT_LIST_COMP");
@@ -1014,8 +985,8 @@ Obj FuncSORT_PARA_LIST (
     Obj               shadow )
 {
     /* check the first two arguments                                       */
-    CheckIsSmallList(list, "SORT_PARA_LIST");
-    CheckIsSmallList(shadow, "SORT_PARA_LIST");
+    RequireSmallList("SORT_PARA_LIST", list);
+    RequireSmallList("SORT_PARA_LIST", shadow);
     CheckSameLength("SORT_PARA_LIST", "list", "shadow", list, shadow);
 
     /* dispatch                                                            */
@@ -1037,8 +1008,8 @@ Obj FuncSTABLE_SORT_PARA_LIST (
     Obj               shadow )
 {
     /* check the first two arguments                                       */
-    CheckIsSmallList(list, "STABLE_SORT_PARA_LIST");
-    CheckIsSmallList(shadow, "STABLE_SORT_PARA_LIST");
+    RequireSmallList("STABLE_SORT_PARA_LIST", list);
+    RequireSmallList("STABLE_SORT_PARA_LIST", shadow);
     CheckSameLength("STABLE_SORT_PARA_LIST", "list", "shadow", list, shadow);
 
     /* dispatch                                                            */
@@ -1066,8 +1037,8 @@ Obj FuncSORT_PARA_LIST_COMP (
     Obj                 func )
 {
     /* check the first two arguments                                       */
-    CheckIsSmallList(list, "SORT_PARA_LIST_COMP");
-    CheckIsSmallList(shadow, "SORT_PARA_LIST_COMP");
+    RequireSmallList("SORT_PARA_LIST_COMP", list);
+    RequireSmallList("SORT_PARA_LIST_COMP", shadow);
     CheckSameLength("SORT_PARA_LIST_COMP", "list", "shadow", list, shadow);
 
     /* check the third argument                                            */
@@ -1092,8 +1063,8 @@ Obj FuncSTABLE_SORT_PARA_LIST_COMP (
     Obj                 func )
 {
     /* check the first two arguments                                       */
-    CheckIsSmallList(list, "SORT_PARA_LIST_COMP");
-    CheckIsSmallList(shadow, "SORT_PARA_LIST_COMP");
+    RequireSmallList("SORT_PARA_LIST_COMP", list);
+    RequireSmallList("SORT_PARA_LIST_COMP", shadow);
     CheckSameLength("SORT_PARA_LIST_COMP", "list", "shadow", list, shadow);
 
     /* check the third argument                                            */
@@ -1199,12 +1170,7 @@ Obj             FuncOnTuples (
     UInt                i;              /* loop variable                   */
 
     /* check the type of the first argument                                */
-    while ( ! IS_SMALL_LIST( tuple ) ) {
-        tuple = ErrorReturnObj(
-            "OnTuples: <tuple> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(tuple), 0L,
-            "you can replace <tuple> via 'return <tuple>;'" );
-    }
+    RequireSmallListMayReplace("OnTuples", tuple);
 
     /* special case for the empty list */
     if (LEN_LIST(tuple) == 0) {

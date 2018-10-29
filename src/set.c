@@ -199,12 +199,7 @@ Obj FuncLIST_SORTED_LIST (
     Obj                 set;            /* result                          */
 
     /* check the argument                                                  */
-    while ( ! IS_SMALL_LIST( list ) ) {
-        list = ErrorReturnObj(
-            "Set: <list> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(list), 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
+    RequireSmallListMayReplace("Set", list);
 
     /* if the list is empty create a new empty list                        */
     if ( LEN_LIST(list) == 0 ) {
@@ -275,19 +270,9 @@ Obj             FuncIS_EQUAL_SET (
     Obj                 list2 )
 {
     /* check the arguments, convert to sets if necessary                   */
-    while ( ! IS_SMALL_LIST(list1) ) {
-        list1 = ErrorReturnObj(
-            "IsEqualSet: <list1> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(list1), 0L,
-            "you can replace <list1> via 'return <list1>;'" );
-    }
+    RequireSmallListMayReplace("IsEqualSet", list1);
     if ( ! IsSet( list1 ) )  list1 = SetList( list1 );
-    while ( ! IS_SMALL_LIST(list2) ) {
-        list2 = ErrorReturnObj(
-            "IsEqualSet: <list2> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(list2), 0L,
-            "you can replace <list2> via 'return <list2>;'" );
-    }
+    RequireSmallListMayReplace("IsEqualSet", list2);
     if ( ! IsSet( list2 ) )  list2 = SetList( list2 );
 
     /* and now compare them                                                */
@@ -322,18 +307,8 @@ Obj             FuncIS_SUBSET_SET (
     UInt                pos;            /* position                        */
 
     /* check the arguments, convert to sets if necessary                   */
-    while ( ! IS_SMALL_LIST(set1) ) {
-        set1 = ErrorReturnObj(
-            "IsSubsetSet: <set1> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(set1), 0L,
-            "you can replace <set1> via 'return <set1>;'" );
-    }
-    while ( ! IS_SMALL_LIST(set2) ) {
-        set2 = ErrorReturnObj(
-            "IsSubsetSet: <set2> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(set2), 0L,
-            "you can replace <set2> via 'return <set2>;'" );
-    }
+    RequireSmallListMayReplace("IsSubsetSet", set1);
+    RequireSmallListMayReplace("IsSubsetSet", set2);
     if ( ! IsSet( set1 ) )  set1 = SetList( set1 );
     if ( ! IsSet( set2 ) )  set2 = SetList( set2 );
 
@@ -631,12 +606,7 @@ Obj FuncUNITE_SET (
             (Int)TNAM_OBJ(set1), 0L,
             "you can replace <set1> via 'return <set1>;'" );
     }
-    while ( ! IS_SMALL_LIST(set2) ) {
-        set2 = ErrorReturnObj(
-            "UniteSet: <set2> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(set2), 0L,
-            "you can replace <set2> via 'return <set2>;'" );
-    }
+    RequireSmallListMayReplace("UniteSet", set2);
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */
@@ -809,12 +779,7 @@ Obj FuncINTER_SET (
             (Int)TNAM_OBJ(set1), 0L,
             "you can replace <set1> via 'return <set1>;'" );
     }
-    while ( ! IS_SMALL_LIST(set2) ) {
-        set2 = ErrorReturnObj(
-            "IntersectSet: <set2> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(set2), 0L,
-            "you can replace <set2> via 'return <set2>;'" );
-    }
+    RequireSmallListMayReplace("IntersectSet", set2);
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */
@@ -987,12 +952,7 @@ Obj FuncSUBTR_SET (
             (Int)TNAM_OBJ(set1), 0L,
             "you can replace <set1> via 'return <set1>;'" );
     }
-    while ( ! IS_SMALL_LIST(set2) ) {
-        set2 = ErrorReturnObj(
-            "SubtractSet: <set2> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(set2), 0L,
-            "you can replace <set2> via 'return <set2>;'" );
-    }
+    RequireSmallListMayReplace("SubtractSet", set2);
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */

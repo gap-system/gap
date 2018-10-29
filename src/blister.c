@@ -1077,18 +1077,8 @@ Obj FuncBLIST_LIST (
     Obj                 sub )
 {
     /* get and check the arguments                                         */
-    while ( ! IS_SMALL_LIST(list) ) {
-        list = ErrorReturnObj(
-            "BlistList: <list> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(list), 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
-    while ( ! IS_SMALL_LIST(sub) ) {
-        sub = ErrorReturnObj(
-            "BlistList: <sub> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(sub), 0L,
-            "you can replace <sub> via 'return <sub>;'" );
-    }
+    RequireSmallListMayReplace("BlistList", list);
+    RequireSmallListMayReplace("BlistList", sub);
 
     Int lenList = LEN_LIST( list );
     Obj blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
@@ -1127,12 +1117,7 @@ Obj FuncLIST_BLIST (
     UInt                i;              /* loop variable                   */
 
     /* get and check the first argument                                    */
-    while ( ! IS_SMALL_LIST( list ) ) {
-        list = ErrorReturnObj(
-            "ListBlist: <list> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(list), 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
+    RequireSmallListMayReplace("ListBlist", list);
     /* get and check the second argument                                   */
     while ( ! IsBlistConv( blist ) ) {
         blist = ErrorReturnObj(
@@ -1358,12 +1343,7 @@ Obj FuncUNITE_BLIST_LIST (
     long                s, t;           /* elements of a range             */
 
     /* get and check the arguments                                         */
-    while ( ! IS_SMALL_LIST(list) ) {
-        list = ErrorReturnObj(
-            "UniteBlistList: <list> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(list), 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
+    RequireSmallListMayReplace("UniteBlistList", list);
 
     lenList  = LEN_LIST( list );
 
@@ -1380,12 +1360,7 @@ Obj FuncUNITE_BLIST_LIST (
             "you can replace <blist> via 'return <blist>;'" );
     }
 
-    while ( ! IS_SMALL_LIST(sub) ) {
-        sub = ErrorReturnObj(
-            "UniteBlistList: <sub> must be a small list (not a %s)",
-            (Int)TNAM_OBJ(sub), 0L,
-            "you can replace <sub> via 'return <sub>;'" );
-    }
+    RequireSmallListMayReplace("UniteBlistList", sub);
 
     lenSub   = LEN_LIST( sub );
 

@@ -2363,12 +2363,7 @@ Obj Array2Perm (
     /* loop over the cycles                                                */
     for ( i = 1; i <= LEN_LIST(array); i++ ) {
         cycle = ELM_LIST( array, i );
-        while ( ! IS_SMALL_LIST(cycle) ) {
-            cycle = ErrorReturnObj(
-                "Array2Perm: <cycle> must be a small list (not a %s)",
-                (Int)TNAM_OBJ(cycle), 0L,
-                "you can replace <cycle> via 'return <cycle>;'" );
-        }
+        RequireSmallListMayReplace("Array2Perm", cycle);
 
         /* loop over the entries of the cycle                              */
         c = p = l = 0;
