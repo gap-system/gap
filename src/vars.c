@@ -1549,12 +1549,7 @@ UInt            ExecAssPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_STAT(stat, 1));
-    while ( ! IS_POS_INTOBJ(pos) ) {
-        pos = ErrorReturnObj(
-         "PosObj Assignment: <position> must be a positive small integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <position> via 'return <position>;'" );
-    }
+    RequirePositiveSmallIntMayReplace("PosObj Assignment", pos, "position");
     p = INT_INTOBJ(pos);
 
     /* evaluate the right hand side                                        */
@@ -1587,12 +1582,7 @@ UInt            ExecUnbPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_STAT(stat, 1));
-    while ( ! IS_POS_INTOBJ(pos) ) {
-        pos = ErrorReturnObj(
-         "PosObj Assignment: <position> must be a positive small integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <position> via 'return <position>;'" );
-    }
+    RequirePositiveSmallIntMayReplace("PosObj Assignment", pos, "position");
     p = INT_INTOBJ(pos);
 
     /* unbind the element                                                  */
@@ -1623,12 +1613,7 @@ Obj             EvalElmPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_EXPR(expr, 1));
-    while ( ! IS_POS_INTOBJ(pos) ) {
-        pos = ErrorReturnObj(
-            "PosObj Element: <position> must be a positive small integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <position> via 'return <position>;'" );
-    }
+    RequirePositiveSmallIntMayReplace("PosObj Element", pos, "position");
     p = INT_INTOBJ( pos );
 
     /* special case for plain lists (use generic code to signal errors)    */
@@ -1659,12 +1644,7 @@ Obj             EvalIsbPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_EXPR(expr, 1));
-    while ( ! IS_POS_INTOBJ(pos) ) {
-        pos = ErrorReturnObj(
-            "PosObj Element: <position> must be a positive small integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <position> via 'return <position>;'" );
-    }
+    RequirePositiveSmallIntMayReplace("PosObj Element", pos, "position");
     p = INT_INTOBJ( pos );
 
     /* get the result                                                      */

@@ -129,6 +129,51 @@ ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 
 /****************************************************************************
 **
+*F  RequireArgumentCondition
+*/
+#define RequireArgumentCondition(funcname, op, argname, cond, msg) \
+    do { \
+        if (!(cond)) { \
+            ErrorMayQuit(funcname ": <" argname "> " msg " (not a %s)", \
+                (Int)TNAM_OBJ(op), 0); \
+        } \
+    } while (0)
+
+
+/****************************************************************************
+**
+*F  RequireArgumentConditionMayReplace
+*/
+#define RequireArgumentConditionMayReplace(funcname, op, argname, cond, msg) \
+    do { \
+        while (!(cond)) { \
+            op = ErrorReturnObj(funcname ": <" argname "> " msg " (not a %s)", \
+                (Int)TNAM_OBJ(op), 0, \
+                "you can replace <" argname "> via 'return <" argname ">;'"); \
+        } \
+    } while (0)
+
+
+/****************************************************************************
+**
+*F  RequirePositiveSmallInt
+*/
+#define RequirePositiveSmallInt(funcname, op, argname) \
+    RequireArgumentCondition(funcname, op, argname, IS_POS_INTOBJ(op), \
+        "must be a positive small integer")
+
+
+/****************************************************************************
+**
+*F  RequirePositiveSmallIntMayReplace
+*/
+#define RequirePositiveSmallIntMayReplace(funcname, op, argname) \
+    RequireArgumentConditionMayReplace(funcname, op, argname, IS_POS_INTOBJ(op), \
+        "must be a positive small integer")
+
+
+/****************************************************************************
+**
 *F  CheckIsPossList( <desc>, <poss> ) . . . . . . . . . . check for poss list
 */
 void CheckIsPossList(const Char * desc, Obj poss);

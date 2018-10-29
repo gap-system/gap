@@ -1971,11 +1971,7 @@ void            IntrPermCycle (
 
         /* get and check current entry for the cycle                       */
         val = PopObj();
-        if (!IS_POS_INTOBJ(val)) {
-            ErrorQuit(
-                "Permutation: <expr> must be a positive small integer (not a %s)",
-                (Int)TNAM_OBJ(val), 0L );
-        }
+        RequirePositiveSmallInt("Permutation", val, "expr");
         c = INT_INTOBJ(val);
         if (c > MAX_DEG_PERM4)
           ErrorQuit( "Permutation literal exceeds maximum permutation degree",
@@ -3199,11 +3195,7 @@ void            IntrElmListLevel ( Int narg,
       
     /* /\* get and check the position                                          *\/ */
     /* pos = PopObj(); */
-    /* if ( TNUM_OBJ(pos) != T_INTPOS && (! IS_POS_INTOBJ(pos) )) { */
-    /*     ErrorQuit( */
-    /*         "List Element: <position> must be a positive integer (not a %s)", */
-    /*         (Int)TNAM_OBJ(pos), 0L ); */
-    /* } */
+    /* RequirePositiveSmallInt("List Element", pos, "position"); */
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
     /* checking it is nested <level>+1 deep is done by 'ElmListLevel')     */
@@ -3510,11 +3502,7 @@ void            IntrAssPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_POS_INTOBJ(pos) ) {
-        ErrorQuit(
-         "PosObj Assignment: <position> must be a positive small integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
-    }
+    RequirePositiveSmallInt("PosObj Assignment", pos, "position");
     p = INT_INTOBJ(pos);
 
     /* get the list (checking is done by 'ASS_LIST')                       */
@@ -3541,11 +3529,7 @@ void            IntrUnbPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_POS_INTOBJ(pos) ) {
-        ErrorQuit(
-         "PosObj Assignment: <position> must be a positive small integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
-    }
+    RequirePositiveSmallInt("PosObj Assignment", pos, "position");
     p = INT_INTOBJ(pos);
 
     /* get the list (checking is done by 'UNB_LIST')                       */
@@ -3578,11 +3562,7 @@ void            IntrElmPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_POS_INTOBJ(pos) ) {
-        ErrorQuit(
-            "PosObj Element: <position> must be a positive small integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
-    }
+    RequirePositiveSmallInt("PosObj Element", pos, "position");
     p = INT_INTOBJ( pos );
 
     /* get the list (checking is done by 'ELM_LIST')                       */
@@ -3610,11 +3590,7 @@ void            IntrIsbPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    if ( ! IS_POS_INTOBJ(pos) ) {
-        ErrorQuit(
-            "PosObj Element: <position> must be a positive small integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L );
-    }
+    RequirePositiveSmallInt("PosObj Element", pos, "position");
     p = INT_INTOBJ( pos );
 
     /* get the list (checking is done by 'ISB_LIST')                       */

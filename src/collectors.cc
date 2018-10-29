@@ -1686,12 +1686,8 @@ Obj FuncFinPowConjCol_ReducedQuotient ( Obj self, Obj sc, Obj w, Obj u )
 */
 Obj FuncSET_SCOBJ_MAX_STACK_SIZE ( Obj self, Obj size )
 {
-    if (IS_INTOBJ(size) && INT_INTOBJ(size) > 0)
-        CollectorsState()->SC_MAX_STACK_SIZE = INT_INTOBJ(size);
-    else
-        ErrorQuit( "collect vector must be a positive small integer not a %s",
-                   (Int)TNAM_OBJ(size), 0L );
-
+    RequirePositiveSmallInt("SET_SCOBJ_MAX_STACK_SIZE", size, "size");
+    CollectorsState()->SC_MAX_STACK_SIZE = INT_INTOBJ(size);
     return 0;
 }
 

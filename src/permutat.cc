@@ -1331,12 +1331,7 @@ Obj             FuncCYCLE_PERM_INT (
             (Int)TNAM_OBJ(perm), 0L,
             "you can replace <perm> via 'return <perm>;'" );
     }
-    while (!IS_POS_INTOBJ(point)) {
-        point = ErrorReturnObj(
-            "CyclePermInt: <point> must be a positive small integer (not a %s)",
-            (Int)TNAM_OBJ(point), 0L,
-            "you can replace <point> via 'return <point>;'" );
-    }
+    RequirePositiveSmallInt("CyclePermInt", point, "point");
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
         return CYCLE_PERM_INT<UInt2>(perm, point);
@@ -2381,12 +2376,7 @@ Obj Array2Perm (
 
             /* get and check current entry for the cycle                   */
             val = ELM_LIST( cycle, j );
-            while (!IS_POS_INTOBJ(val)) {
-                val = ErrorReturnObj(
-              "Permutation: <expr> must be a positive small integer (not a %s)",
-                    (Int)TNAM_OBJ(val), 0L,
-                    "you can replace <expr> via 'return <expr>;'" );
-            }
+            RequirePositiveSmallIntMayReplace("Permutation", val, "expr");
             c = INT_INTOBJ(val);
             if (c > MAX_DEG_PERM4)
               ErrorMayQuit( "Permutation literal exceeds maximum permutation degree",

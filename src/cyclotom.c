@@ -1544,12 +1544,7 @@ Obj FuncE (
     }
 
     /* get and check the argument                                          */
-    while (!IS_POS_INTOBJ(n)) {
-        n = ErrorReturnObj(
-            "E: <n> must be a positive small integer (not a %s)",
-            (Int)TNAM_OBJ(n), 0L,
-            "you can replace <n> via 'return <n>;'" );
-    }
+    RequirePositiveSmallIntMayReplace("E", n, "n");
 
     /* for $e_1$ return 1 and for $e_2$ return -1                          */
     if ( n == INTOBJ_INT(1) )
