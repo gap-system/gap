@@ -1712,8 +1712,8 @@ gap> CYCLES_TRANS_LIST(f, [65535 .. 70001]);
 gap> CYCLES_TRANS_LIST(f, [1, , 3]);
 Error, List Element: <list>[2] must have an assigned value
 gap> CYCLES_TRANS_LIST(f, [-1]);
-Error, CYCLES_TRANS_LIST: the second argument must be a positive integer (not \
-a integer)
+Error, CYCLES_TRANS_LIST: the second argument must be a list of positive integ\
+ers (not a integer)
 gap> CYCLES_TRANS_LIST(0, [1 .. 10]);
 Error, CYCLES_TRANS_LIST: the first argument must be a transformation (not a i\
 nteger)
