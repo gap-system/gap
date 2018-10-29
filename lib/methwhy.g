@@ -100,7 +100,7 @@ end);
 ##  <P/>
 ##  The first example shows that there are 50 methods for <C>Size</C> 
 ##  currently available, or which 3 are applicable to <C>s4</C>. 
-##  <Example><![CDATA[
+##  <Log><![CDATA[
 ##  gap> s4 := Group( (1,2,3,4), (3,4) );; 
 ##  gap> ApplicableMethod( Size, [s4], 1, "all" );
 ##  #I  Searching Method for Size with 1 arguments:
@@ -120,13 +120,13 @@ end);
 ##      return infinity;
 ##  end
 
-##  ]]></Example>
+##  ]]></Log>
 ##  The second example shows that for <C>DirectProduct</C>, 
 ##  which is a function the location may be displayed and the code returned. 
 ##  For <C>DirectProductOp</C> with verbosity <M>2</M> and <M>nr=2</M> 
 ##  methods <M>1</M> and <M>5</M> are applicable, and all methods numbered 
 ##  <M>[2..5]</M> are displayed. 
-##  <Example><![CDATA[
+##  <Log><![CDATA[
 ##  gap> ApplicableMethod( DirectProduct, [s4,s4], 1, 1 );    
 ##  #I  DirectProduct is a function, not an operation, located at:
 ##  #I  ... some path .../lib/gprd.gi:17
@@ -147,10 +147,10 @@ end);
 ##  #I  ``DirectProductOp: for a list (of groups), and a group''
 ##  #I   at ... some path .../lib/gprd.gi:50
 ##  function( list, gp ) ... end
-##  ]]></Example>
+##  ]]></Log>
 ##  The third example shows the sort of output that can be obtained 
 ##  with verbosity <M>4</M>.  
-##  <Example><![CDATA[
+##  <Log><![CDATA[
 ##  gap> s := "hello! hello! hello!";;                           
 ##  gap> ApplicableMethod(SplitString,[s,"!",' '],4,"all");
 ##  #I  Searching Method for SplitString with 3 arguments:
@@ -172,7 +172,7 @@ end);
 ##  #I   at ... some path .../lib/string.gi:545
 ##  #I   - 2nd argument needs [ "IsChar" ]
 ##  [ function( string, d1, d2 ) ... end ]
-##  ]]></Example>
+##  ]]></Log>
 ##  When a method returned by <Ref Func="ApplicableMethod"/> is called then
 ##  it returns either the desired result or the string
 ##  <C>"TRY_NEXT_METHOD"</C>, which corresponds to a call to
