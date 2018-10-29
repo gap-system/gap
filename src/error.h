@@ -192,6 +192,24 @@ ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 
 /****************************************************************************
 **
+*F  RequireFunction
+*/
+#define RequireFunction(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, IS_FUNC(op), \
+        "must be a function")
+
+
+/****************************************************************************
+**
+*F  RequireFunctionMayReplace
+*/
+#define RequireFunctionMayReplace(funcname, op) \
+    RequireArgumentConditionMayReplace(funcname, op, #op, IS_FUNC(op), \
+        "must be a function")
+
+
+/****************************************************************************
+**
 *F  CheckIsPossList( <desc>, <poss> ) . . . . . . . . . . check for poss list
 */
 void CheckIsPossList(const Char * desc, Obj poss);
