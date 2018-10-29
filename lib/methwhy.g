@@ -350,6 +350,12 @@ local oper,opargs,nopargs,verbos,fams,flags,i,j,methods,flag,flag2,
         Print(" at ",LocationFunc(oper));
       fi;
       Print("\n");
+      ## not sure what this test is for
+      if not ( fams=fail or CallFuncList(m.famPred,fams) ) then 
+        if verbos>2 then 
+          Print("#I   - bad family relations\n"); 
+        fi;
+      fi;
     elif verbos>1 then
       Print("#I  Method ",i); 
       Print(", value: ");  
