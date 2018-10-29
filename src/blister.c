@@ -85,6 +85,10 @@
 #include "set.h"
 
 
+#define RequireBlistMayReplace(funcname, op, argname) \
+    RequireArgumentConditionMayReplace(funcname, op, argname, IsBlistConv(op), \
+        "must be a boolean list")
+
 /****************************************************************************
 **
 *F  TypeBlist( <list> )  . . . . . . . . . . . . . . . type of a boolean list
@@ -1039,14 +1043,7 @@ Obj FuncSIZE_BLIST (
     Obj                 self,
     Obj                 blist )
 {
-    /* get and check the argument                                          */
-    while ( ! IsBlistConv(blist) ) {
-        blist = ErrorReturnObj(
-            "SizeBlist: <blist> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(blist), 0L,
-            "you can replace <blist> via 'return <blist>;'" );
-    }
-  
+    RequireBlistMayReplace("SizeBlist", blist, "blist");
     return INTOBJ_INT(SizeBlist(blist));
 }
 
@@ -1119,12 +1116,7 @@ Obj FuncLIST_BLIST (
     /* get and check the first argument                                    */
     RequireSmallListMayReplace("ListBlist", list);
     /* get and check the second argument                                   */
-    while ( ! IsBlistConv( blist ) ) {
-        blist = ErrorReturnObj(
-            "ListBlist: <blist> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(blist), 0L,
-            "you can replace <blist> via 'return <blist>;'" );
-    }
+    RequireBlistMayReplace("ListBlist", blist, "blist");
     while ( LEN_LIST( list ) != LEN_BLIST( blist ) ) {
         blist = ErrorReturnObj(
             "ListBlist: <blist> must have the same length as <list> (%d)",
@@ -1174,12 +1166,7 @@ Obj FuncPositionNthTrueBlist (
     const UInt *        ptr;
 
     /* Check the arguments. */    
-    while ( ! IsBlistConv( blist ) ) {
-        blist = ErrorReturnObj(
-            "ListBlist: <blist> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(blist), 0L,
-            "you can replace <blist> via 'return <blist>;'" );
-    }
+    RequireBlistMayReplace("ListBlist", blist, "blist");
     RequirePositiveSmallIntMayReplace("Position", Nth, "nth");
     
     nrb = NUMBER_BLOCKS_BLIST(blist);
@@ -1229,18 +1216,8 @@ Obj FuncIS_SUB_BLIST (
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    while ( ! IsBlistConv( list1 ) ) {
-        list1 = ErrorReturnObj(
-            "IsSubsetBlist: <blist1> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(list1), 0L,
-            "you can replace <blist1> via 'return <blist1>;'" );
-    }
-    while ( ! IsBlistConv( list2 ) ) {
-        list2 = ErrorReturnObj(
-            "IsSubsetBlist: <blist2> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(list2), 0L,
-            "you can replace <blist2> via 'return <blist2>;'" );
-    }
+    RequireBlistMayReplace("IsSubsetBlist", list1, "blist1");
+    RequireBlistMayReplace("IsSubsetBlist", list2, "blist2");
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
         list2 = ErrorReturnObj(
         "IsSubsetBlist: <blist2> must have the same length as <blist1> (%d)",
@@ -1285,18 +1262,8 @@ Obj FuncUNITE_BLIST (
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    while ( ! IsBlistConv( list1 ) ) {
-        list1 = ErrorReturnObj(
-            "UniteBlist: <blist1> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(list1), 0L,
-            "you can replace <blist1> via 'return <blist1>;'" );
-    }
-    while ( ! IsBlistConv( list2 ) ) {
-        list2 = ErrorReturnObj(
-            "UniteBlist: <blist2> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(list2), 0L,
-            "you can replace <blist2> via 'return <blist2>;'" );
-    }
+    RequireBlistMayReplace("UniteBlist", list1, "blist1");
+    RequireBlistMayReplace("UniteBlist", list2, "blist2");
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
         list2 = ErrorReturnObj(
            "UniteBlist: <blist2> must have the same length as <blist1> (%d)",
@@ -1347,12 +1314,7 @@ Obj FuncUNITE_BLIST_LIST (
 
     lenList  = LEN_LIST( list );
 
-    while ( ! IsBlistConv( blist ) ) {
-        blist = ErrorReturnObj(
-            "UniteBlistList: <blist> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(blist), 0L,
-            "you can replace <blist> via 'return <blist>;'" );
-    }
+    RequireBlistMayReplace("UniteBlistList", blist, "blist");
     while ( LEN_BLIST(blist) != lenList ) {
         blist = ErrorReturnObj(
           "UniteBlistList: <blist> must have the same length as <list> (%d)",
@@ -1567,18 +1529,8 @@ Obj FuncINTER_BLIST (
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    while ( ! IsBlistConv( list1 ) ) {
-        list1 = ErrorReturnObj(
-            "IntersectBlist: <blist1> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(list1), 0L,
-            "you can replace <blist1> via 'return <blist1>;'" );
-    }
-    while ( ! IsBlistConv( list2 ) ) {
-        list2 = ErrorReturnObj(
-            "IntersectBlist: <blist2> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(list2), 0L,
-            "you can replace <blist2> via 'return <blist2>;'" );
-    }
+    RequireBlistMayReplace("IntersectBlist", list1, "blist1");
+    RequireBlistMayReplace("IntersectBlist", list2, "blist2");
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
         list2 = ErrorReturnObj(
        "IntersectBlist: <blist2> must have the same length as <blist1> (%d)",
@@ -1620,18 +1572,8 @@ Obj FuncSUBTR_BLIST (
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    while ( ! IsBlistConv( list1 ) ) {
-        list1 = ErrorReturnObj(
-            "SubtractBlist: <blist1> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(list1), 0L,
-            "you can replace <blist1> via 'return <blist1>;'" );
-    }
-    while ( ! IsBlistConv( list2 ) ) {
-        list2 = ErrorReturnObj(
-            "SubtractBlist: <blist2> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(list2), 0L,
-            "you can replace <blist2> via 'return <blist2>;'" );
-    }
+    RequireBlistMayReplace("SubtractBlist", list1, "blist1");
+    RequireBlistMayReplace("SubtractBlist", list2, "blist2");
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
         list2 = ErrorReturnObj(
         "SubtractBlist: <blist2> must have the same length as <blist1> (%d)",
@@ -1675,18 +1617,8 @@ Obj FuncMEET_BLIST (
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    while ( ! IsBlistConv( list1 ) ) {
-        list1 = ErrorReturnObj(
-            "MeetBlist: <blist1> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(list1), 0L,
-            "you can replace <blist1> via 'return <blist1>;'" );
-    }
-    while ( ! IsBlistConv( list2 ) ) {
-        list2 = ErrorReturnObj(
-            "MeetBlist: <blist2> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(list2), 0L,
-            "you can replace <blist2> via 'return <blist2>;'" );
-    }
+    RequireBlistMayReplace("MeetBlist", list1, "blist1");
+    RequireBlistMayReplace("MeetBlist", list2, "blist2");
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
         list2 = ErrorReturnObj(
         "MeetBlist: <blist2> must have the same length as <blist1> (%d)",
