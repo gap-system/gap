@@ -586,6 +586,55 @@ void CheckSameLength(const Char * desc, const Char *leftName, const Char *rightN
 
 /****************************************************************************
 **
+*F  RACErrorHelper
+*/
+Obj RACErrorHelper(int          mayReturn,
+                   const char * funcname,
+                   Obj          op,
+                   const char * argname,
+                   const char * msg)
+{
+    char msgbuf[1024] = { 0 };
+    Int  arg1 = 0;
+    Int  arg2 = 0;
+
+    strlcat(msgbuf, funcname, sizeof(msgbuf));
+    strlcat(msgbuf, ": <", sizeof(msgbuf));
+    strlcat(msgbuf, argname, sizeof(msgbuf));
+    strlcat(msgbuf, "> ", sizeof(msgbuf));
+    strlcat(msgbuf, msg, sizeof(msgbuf));
+    if (IS_INTOBJ(op)) {
+        strlcat(msgbuf, " (not the integer %d)", sizeof(msgbuf));
+        arg1 = INT_INTOBJ(op);
+    }
+    else if (op == True)
+        strlcat(msgbuf, " (not the value 'true')", sizeof(msgbuf));
+    else if (op == False)
+        strlcat(msgbuf, " (not the value 'false')", sizeof(msgbuf));
+    else if (op == Fail)
+        strlcat(msgbuf, " (not the value 'fail')", sizeof(msgbuf));
+    else {
+        strlcat(msgbuf, " (not a %s)", sizeof(msgbuf));
+        arg1 = (Int)TNAM_OBJ(op);
+    }
+
+    if (mayReturn) {
+        char extrabuf[1024] = { 0 };
+        strlcat(extrabuf, "you can replace <", sizeof(extrabuf));
+        strlcat(extrabuf, argname, sizeof(extrabuf));
+        strlcat(extrabuf, "> via 'return <", sizeof(extrabuf));
+        strlcat(extrabuf, argname, sizeof(extrabuf));
+        strlcat(extrabuf, ">;'", sizeof(extrabuf));
+        return ErrorReturnObj(msgbuf, arg1, arg2, extrabuf);
+    }
+    else {
+        ErrorMayQuit(msgbuf, arg1, arg2);
+    }
+}
+
+
+/****************************************************************************
+**
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs[] = {

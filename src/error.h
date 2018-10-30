@@ -129,14 +129,23 @@ ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 
 /****************************************************************************
 **
+*F  RACErrorHelper
+*/
+extern Obj RACErrorHelper(int          mayReturn,
+                          const char * funcname,
+                          Obj          op,
+                          const char * argname,
+                          const char * msg);
+
+/****************************************************************************
+**
 *F  RequireArgumentCondition
 */
-#define RequireArgumentCondition(funcname, op, argname, cond, msg) \
-    do { \
-        if (!(cond)) { \
-            ErrorMayQuit(funcname ": <" argname "> " msg " (not a %s)", \
-                (Int)TNAM_OBJ(op), 0); \
-        } \
+#define RequireArgumentCondition(funcname, op, argname, cond, msg)           \
+    do {                                                                     \
+        if (!(cond)) {                                                       \
+            RACErrorHelper(0, funcname, op, argname, msg);                   \
+        }                                                                    \
     } while (0)
 
 
@@ -145,12 +154,10 @@ ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 *F  RequireArgumentConditionMayReplace
 */
 #define RequireArgumentConditionMayReplace(funcname, op, argname, cond, msg) \
-    do { \
-        while (!(cond)) { \
-            op = ErrorReturnObj(funcname ": <" argname "> " msg " (not a %s)", \
-                (Int)TNAM_OBJ(op), 0, \
-                "you can replace <" argname "> via 'return <" argname ">;'"); \
-        } \
+    do {                                                                     \
+        while (!(cond)) {                                                    \
+            op = RACErrorHelper(1, funcname, op, argname, msg);              \
+        }                                                                    \
     } while (0)
 
 

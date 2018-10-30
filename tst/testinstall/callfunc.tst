@@ -2,9 +2,9 @@ gap> START_TEST("callfunc.tst");
 
 #
 gap> CallFuncList(1,2);
-Error, CallFuncList: <list> must be a small list (not a integer)
+Error, CallFuncList: <list> must be a small list (not the integer 2)
 gap> CallFuncListWrap(1,2);
-Error, CallFuncListWrap: <list> must be a small list (not a integer)
+Error, CallFuncListWrap: <list> must be a small list (not the integer 2)
 
 #
 gap> ForAll([0,2..100], x -> [1..x] = CallFuncList(Union, List([1..x], y -> [y]) ) );
