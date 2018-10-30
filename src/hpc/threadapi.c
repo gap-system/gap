@@ -105,10 +105,12 @@ static void RemoveWaitList(Monitor * monitor, struct WaitList * node)
     }
 }
 
+#ifndef WARD_ENABLED
 static inline void * ObjPtr(Obj obj)
 {
     return PTR_BAG(obj);
 }
+#endif
 
 Obj NewThreadObject(UInt id)
 {
@@ -356,6 +358,7 @@ pthread_mutex_t KeepAliveLock;
 Obj KeepAlive(Obj obj)
 {
     Obj newKeepAlive = NewBag(T_PLIST, 4 * sizeof(Obj));
+    REGION(newKeepAlive) = NULL;    // public region
     pthread_mutex_lock(&KeepAliveLock);
     ADDR_OBJ(newKeepAlive)[0] = (Obj)3; /* Length 3 */
     KEPTALIVE(newKeepAlive) = obj;
@@ -940,6 +943,7 @@ static UInt RNAM_SIGVTALRM;
 static UInt RNAM_SIGWINCH;
 #endif
 
+#ifndef WARD_ENABLED
 #ifdef USE_GASMAN
 static void MarkSemaphoreBag(Bag bag)
 {
@@ -997,7 +1001,6 @@ static void WaitChannel(Channel * channel)
     channel->waiting--;
 }
 
-#ifndef WARD_ENABLED
 static void ExpandChannel(Channel * channel)
 {
     /* Growth ratio should be less than the golden ratio */
@@ -1068,7 +1071,6 @@ static Obj RetrieveFromChannel(Channel * channel)
     channel->size -= 2;
     return obj;
 }
-#endif
 
 static Int TallyChannel(Channel * channel)
 {
@@ -1293,6 +1295,7 @@ static int DestroyChannel(Channel * channel)
 {
     return 1;
 }
+#endif
 
 Obj FuncCreateChannel(Obj self, Obj args)
 {

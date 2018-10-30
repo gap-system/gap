@@ -741,6 +741,9 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
             "you can replace <flags> via 'return <flags>;'" );
     }
 
+#ifdef HPCGAP
+    RegionWriteLock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
+#endif
     Int changed, i, lastand, stop;
     Int hidden_imps_length = LEN_PLIST(HIDDEN_IMPS) / 2;
     Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % HIDDEN_IMPS_CACHE_LENGTH;
@@ -751,9 +754,6 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
     Int old_moving;
     Obj with = flags;
     
-#ifdef HPCGAP
-    RegionWriteLock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
-#endif
     for(hash_loop = 0; hash_loop < 3; ++hash_loop)
     {
       cacheval = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+1);
