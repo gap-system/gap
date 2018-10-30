@@ -9,6 +9,8 @@
 
 #include "hpc/tlsconfig.h"
 
+typedef struct Region Region;
+
 typedef struct ThreadLocalStorage
 {
   int threadID;
@@ -16,8 +18,8 @@ typedef struct ThreadLocalStorage
   void *threadSignal;
   void *acquiredMonitor;
   unsigned multiplexRandomSeed;
-  void *currentRegion;
-  void *threadRegion;
+  Region * currentRegion;
+  Region * threadRegion;
   Obj threadObject;
   Obj tlRecords;
   Obj lockStack;

@@ -274,9 +274,9 @@ void CreateMainRegion(void)
     int i;
     TLS(currentRegion) = NewRegion();
     TLS(threadRegion) = TLS(currentRegion);
-    ((Region *)TLS(currentRegion))->fixed_owner = 1;
+    TLS(currentRegion)->fixed_owner = 1;
     RegionWriteLock(TLS(currentRegion));
-    ((Region *)TLS(currentRegion))->name = MakeImmString("thread region #0");
+    TLS(currentRegion)->name = MakeImmString("thread region #0");
     PublicRegionName = MakeImmString("public region");
     LimboRegion = NewRegion();
     LimboRegion->fixed_owner = 1;
@@ -311,8 +311,9 @@ void * DispatchThread(void * arg)
 #endif
     ModulesInitModuleState();
     TLS(CountActive) = 1;
-    TLS(currentRegion) = region = NewRegion();
-    TLS(threadRegion) = TLS(currentRegion);
+    region = NewRegion();
+    TLS(currentRegion) = region;
+    TLS(threadRegion) = region;
     TLS(threadLock) = this_thread->lock;
     TLS(threadSignal) = this_thread->cond;
     region->fixed_owner = 1;
@@ -839,11 +840,11 @@ static void PauseCurrentThread(int locked)
             TerminateCurrentThread(1);
         if ((state & TSTATE_MASK) != TSTATE_PAUSED)
             break;
-        ((Region *)(TLS(currentRegion)))->alt_owner =
+        TLS(currentRegion)->alt_owner =
             thread_data[state >> TSTATE_SHIFT].tls;
         pthread_cond_wait(thread->cond, thread->lock);
         // TODO: This really should go in ResumeThread()
-        ((Region *)(TLS(currentRegion)))->alt_owner = NULL;
+        TLS(currentRegion)->alt_owner = NULL;
     }
     if (!locked)
         pthread_mutex_unlock(thread->lock);
