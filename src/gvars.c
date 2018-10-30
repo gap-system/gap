@@ -740,13 +740,8 @@ Obj FuncMakeReadOnlyGVar (
     Obj                 self,
     Obj                 name )
 {       
-    /* check the argument                                                  */
-    while ( ! IsStringConv( name ) ) {
-        name = ErrorReturnObj(
-            "MakeReadOnlyGVar: <name> must be a string (not a %s)",
-            (Int)TNAM_OBJ(name), 0L,
-            "you can return a string for <name>" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("MakeReadOnlyGVar", name);
 
     /* get the variable and make it read only                              */
     MakeReadOnlyGVar(GVarName(CONST_CSTR_STRING(name)));
@@ -768,12 +763,8 @@ Obj FuncMakeReadOnlyGVar (
 */
 Obj FuncMakeConstantGVar(Obj self, Obj name)
 {
-    /* check the argument                                                  */
-    while (!IsStringConv(name)) {
-        name = ErrorReturnObj(
-            "MakeConstantGVar: <name> must be a string (not a %s)",
-            (Int)TNAM_OBJ(name), 0L, "you can return a string for <name>");
-    }
+    // check the argument
+    RequireStringRepMayReplace("MakeConstantGVar", name);
 
     /* get the variable and make it read only                              */
     MakeConstantGVar(GVarName(CONST_CSTR_STRING(name)));
@@ -812,13 +803,8 @@ Obj FuncMakeReadWriteGVar (
     Obj                 self,
     Obj                 name )
 {
-    /* check the argument                                                  */
-    while ( ! IsStringConv( name ) ) {
-        name = ErrorReturnObj(
-            "MakeReadWriteGVar: <name> must be a string (not a %s)",
-            (Int)TNAM_OBJ(name), 0L,
-            "you can return a string for <name>" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("MakeReadWriteGVar", name);
 
     /* get the variable and make it read write                             */
     MakeReadWriteGVar(GVarName(CONST_CSTR_STRING(name)));
@@ -847,13 +833,8 @@ static Obj FuncIsReadOnlyGVar (
     Obj                 self,
     Obj                 name )
 {
-    /* check the argument                                                  */
-    while ( ! IsStringConv( name ) ) {
-        name = ErrorReturnObj(
-            "IsReadOnlyGVar: <name> must be a string (not a %s)",
-            (Int)TNAM_OBJ(name), 0L,
-            "you can return a string for <name>" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("IsReadOnlyGVar", name);
 
     /* get the answer                             */
     return IsReadOnlyGVar(GVarName(CONST_CSTR_STRING(name))) ? True : False;
@@ -877,11 +858,7 @@ Int IsConstantGVar(UInt gvar)
 static Obj FuncIsConstantGVar(Obj self, Obj name)
 {
     // check the argument
-    while (!IsStringConv(name)) {
-        name = ErrorReturnObj(
-            "IsConstantGVar: <name> must be a string (not a %s)",
-            (Int)TNAM_OBJ(name), 0L, "you can return a string for <name>");
-    }
+    RequireStringRepMayReplace("IsConstantGVar", name);
 
     /* get the answer                             */
     return IsConstantGVar(GVarName(CONST_CSTR_STRING(name))) ? True : False;
@@ -943,12 +920,7 @@ Obj             FuncAUTO (
     /* make the global variables automatic                                 */
     for ( i = 3; i <= LEN_LIST(args); i++ ) {
         name = ELM_LIST( args, i );
-        while ( ! IsStringConv(name) ) {
-            name = ErrorReturnObj(
-                "AUTO: <name> must be a string (not a %s)",
-                (Int)TNAM_OBJ(name), 0L,
-                "you can return a string for <name>" );
-        }
+        RequireStringRepMayReplace("AUTO", name);
         gvar = GVarName( CONST_CSTR_STRING(name) );
         SET_ELM_GVAR_LIST( ValGVars, gvar, 0 );
         SET_ELM_GVAR_LIST( ExprGVars, gvar, list );
@@ -1090,13 +1062,8 @@ Obj FuncASS_GVAR (
     Obj                 gvar,
     Obj                 val )
 {
-    /* check the argument                                                  */
-    while ( ! IsStringConv( gvar ) ) {
-        gvar = ErrorReturnObj(
-            "READ: <gvar> must be a string (not a %s)",
-            (Int)TNAM_OBJ(gvar), 0L,
-            "you can return a string for <gvar>" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("READ", gvar);
 
     AssGVar( GVarName( CONST_CSTR_STRING(gvar) ), val );
     return 0L;
@@ -1111,13 +1078,8 @@ Obj FuncISB_GVAR (
     Obj                 self,
     Obj                 gvar )
 {
-    /* check the argument                                                  */
-    while ( ! IsStringConv( gvar ) ) {
-        gvar = ErrorReturnObj(
-            "ISB_GVAR: <gvar> must be a string (not a %s)",
-            (Int)TNAM_OBJ(gvar), 0L,
-            "you can return a string for <gvar>" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("ISB_GVAR", gvar);
 
     UInt gv = GVarName( CONST_CSTR_STRING(gvar) );
     if (VAL_GVAR_INTERN(gv))
@@ -1145,13 +1107,8 @@ Obj FuncVAL_GVAR (
    Obj                 gvar )
 {
   Obj val;
-    /* check the argument                                                  */
-    while ( ! IsStringConv( gvar ) ) {
-        gvar = ErrorReturnObj(
-            "VAL_GVAR: <gvar> must be a string (not a %s)",
-            (Int)TNAM_OBJ(gvar), 0L,
-            "you can return a string for <gvar>" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("VAL_GVAR", gvar);
 
     /* get the value */
     val = ValAutoGVar( GVarName( CONST_CSTR_STRING(gvar) ) );
@@ -1172,13 +1129,8 @@ Obj FuncUNB_GVAR (
     Obj                 self,
     Obj                 gvar )
 {
-    /* check the argument                                                  */
-    while ( ! IsStringConv( gvar ) ) {
-        gvar = ErrorReturnObj(
-            "UNB_GVAR: <gvar> must be a string (not a %s)",
-            (Int)TNAM_OBJ(gvar), 0L,
-            "you can return a string for <gvar>" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("UNB_GVAR", gvar);
 
     /*  */
     AssGVar( GVarName( CONST_CSTR_STRING(gvar) ), (Obj)0 );

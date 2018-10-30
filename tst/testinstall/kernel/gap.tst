@@ -109,21 +109,23 @@ gap> CALL_WITH_CATCH({x,y,z}->x,[1..3]);
 
 #
 gap> GAP_CRC(fail);
-Error, <filename> must be a string (not a boolean or fail)
+Error, GAP_CRC: <filename> must be a string (not the value 'fail')
 gap> GAP_CRC("foobar");
 0
 
 #
 gap> LOAD_DYN(fail, fail);
-Error, <filename> must be a string (not a boolean or fail)
+Error, LOAD_DYN: <filename> must be a string (not the value 'fail')
 gap> LOAD_DYN("foobar", fail);
-Error, <crc> must be a small integer or 'false' (not a boolean or fail)
+Error, LOAD_DYN: <crc> must be a small integer or 'false' (not a boolean or fa\
+il)
 
 #
 gap> LOAD_STAT(fail, fail);
-Error, <filename> must be a string (not a boolean or fail)
+Error, LOAD_STAT: <filename> must be a string (not the value 'fail')
 gap> LOAD_STAT("foobar", fail);
-Error, <crc> must be a small integer or 'false' (not a boolean or fail)
+Error, LOAD_STAT: <crc> must be a small integer or 'false' (not a boolean or f\
+ail)
 gap> LOAD_STAT("foobar", false);
 false
 
@@ -135,7 +137,7 @@ gap> GASMAN();
 Error, usage: GASMAN( "display"|"displayshort"|"clear"|"collect"|"message"|"pa\
 rtial" )
 gap> GASMAN(fail);
-Error, GASMAN: <cmd> must be a string (not a boolean or fail)
+Error, GASMAN: <cmd> must be a string (not the value 'fail')
 
 #
 gap> SIZE_OBJ(0);

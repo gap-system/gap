@@ -2647,21 +2647,16 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
   Int i, n, q, r, qoff, len;
   UInt4 *mt;
   UInt4 *pt;
-  while (! IsStringConv(mtstr)) {
-     mtstr = ErrorReturnObj(
-         "<mtstr> must be a string (not a %s)",
-         (Int)TNAM_OBJ(mtstr), 0L,
-         "you can replace <mtstr> via 'return <mtstr>;'" );
-  }
+  RequireStringRepMayReplace("RandomIntegerMT", mtstr);
   while ((! IsStringConv(mtstr)) || GET_LEN_STRING(mtstr) < 2500) {
      mtstr = ErrorReturnObj(
-         "<mtstr> must be a string with at least 2500 characters",
+         "RandomIntegerMT: <mtstr> must be a string with at least 2500 characters",
          0L, 0L,
          "you can replace <mtstr> via 'return <mtstr>;'" );
   }
   while ((! IS_INTOBJ(nrbits)) || INT_INTOBJ(nrbits) < 0) {
      nrbits = ErrorReturnObj(
-         "<nrbits> must be a small non-negative integer (not a %s)",
+         "RandomIntegerMT: <nrbits> must be a small non-negative integer (not a %s)",
          (Int)TNAM_OBJ(nrbits), 0L,
          "you can replace <mtstr> via 'return <mtstr>;'" );
   }

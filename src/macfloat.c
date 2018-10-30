@@ -308,12 +308,8 @@ Obj FuncMACFLOAT_INT( Obj self, Obj i )
 
 Obj FuncMACFLOAT_STRING( Obj self, Obj s )
 {
+    RequireStringRepMayReplace("MACFLOAT_STRING", s);
 
-  while (!IsStringConv(s))
-    {
-      s = ErrorReturnObj("MACFLOAT_STRING: object to be converted must be a string not a %s",
-			 (Int)TNAM_OBJ(s),0,"You can return a string to continue" );
-    }
   char * endptr;
   UChar *sp = CHARS_STRING(s);
   Obj res= NEW_MACFLOAT((Double) STRTOD((char *)sp,&endptr));

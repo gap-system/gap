@@ -948,11 +948,12 @@ gap> Random(mysource, 1, 2^40);
 gap> Random(mysource, 1, 2^80);
 1071135285340982180054653
 gap> RandomIntegerMT(fail, 1);
-Error, <mtstr> must be a string (not a boolean or fail)
+Error, RandomIntegerMT: <mtstr> must be a string (not the value 'fail')
 gap> RandomIntegerMT("abc", 1);
-Error, <mtstr> must be a string with at least 2500 characters
+Error, RandomIntegerMT: <mtstr> must be a string with at least 2500 characters
 gap> RandomIntegerMT(mysource!.state, fail);
-Error, <nrbits> must be a small non-negative integer (not a boolean or fail)
+Error, RandomIntegerMT: <nrbits> must be a small non-negative integer (not a b\
+oolean or fail)
 
 #
 # PrintInt

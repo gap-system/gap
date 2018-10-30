@@ -356,13 +356,8 @@ Obj FuncCrcString( Obj self, Obj str ) {
     Int4        ch;
     Int         seen_nl;
 
-    /* check the argument                                                  */
-    while ( ! IsStringConv( str ) ) {
-        str = ErrorReturnObj(
-            "<str> must be a string (not a %s)",
-            (Int)TNAM_OBJ(str), 0L,
-            "you can replace <filename> via 'return <str>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("CrcString", str);
 
     ptr = CONST_CSTR_STRING(str);
     len = GET_LEN_STRING(str);

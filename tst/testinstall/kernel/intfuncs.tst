@@ -5,7 +5,7 @@ gap> START_TEST("kernel/intfuncs.tst");
 
 #
 gap> InitRandomMT(fail);
-Error, <initstr> must be a string (not a boolean or fail)
+Error, InitRandomMT: <initstr> must be a string (not the value 'fail')
 
 #
 gap> HASHKEY_BAG(0, 0, 0, 0);

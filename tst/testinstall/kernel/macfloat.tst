@@ -9,8 +9,7 @@ fail
 
 #
 gap> MACFLOAT_STRING(fail);
-Error, MACFLOAT_STRING: object to be converted must be a string not a boolean \
-or fail
+Error, MACFLOAT_STRING: <s> must be a string (not the value 'fail')
 
 #
 gap> pi := 3.1415926535897932384626433;
