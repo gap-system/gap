@@ -59,7 +59,11 @@ local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
   G:=arg[1];
   N:=arg[2];
   # compute a series through N
-  s:=ChiefSeriesUnderAction(G,N);
+  if IsElementaryAbelian(N) then
+    s:=[N,TrivialSubgroup(N)];
+  else
+    s:=ChiefSeriesUnderAction(G,N);
+  fi;
   if Length(arg)=2 then
     K:=fail;
   else
@@ -69,10 +73,9 @@ local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
     s:=[h[1]];
     for i in h{[2..Length(h)]} do
       if Size(i)<Size(s[Length(s)]) then
-	Add(s,i);
+        Add(s,i);
       fi;
     od;
-
   fi;
 
   Info(InfoComplement,1,"Series of factors:",
