@@ -495,7 +495,9 @@ function( obj )
     trues := TRUES_FLAGS(type![2]);
 
     # filter the representations
-    trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_ATTS );
+    atomic readonly FILTER_REGION do
+        trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_ATTS );
+    od;
 
     # convert it into names, removing the "Has" prefix"
     return List( NamesFilter(trues), x -> x{[4..Length(x)]} );
@@ -520,7 +522,9 @@ function( obj )
     trues := TRUES_FLAGS(type![2]);
 
     # filter the representations
-    trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_TPRS );
+    atomic readonly FILTER_REGION do
+        trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_TPRS );
+    od;
 
     # convert it into names, removing the "Has" prefix"
     return List( NamesFilter(trues), x -> x{[4..Length(x)]} );
@@ -546,7 +550,9 @@ function( obj )
     trues := TRUES_FLAGS(type![2]);
 
     # filter the representations
-    trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_PROS );
+    atomic readonly FILTER_REGION do
+        trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_PROS );
+    od;
 
     # convert it into names
     return NamesFilter(trues);
@@ -571,7 +577,9 @@ function( obj )
     trues := TRUES_FLAGS(type![2]);
 
     # filter the representations
-    trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_CATS );
+    atomic readonly FILTER_REGION do
+        trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_CATS );
+    od;
 
     # convert it into names
     return NamesFilter(trues);
@@ -596,7 +604,9 @@ function( obj )
     trues := TRUES_FLAGS(type![2]);
 
     # filter the representations
-    trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_REPS );
+    atomic readonly FILTER_REGION do
+        trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_REPS );
+    od;
 
     # convert it into names
     return NamesFilter(trues);
