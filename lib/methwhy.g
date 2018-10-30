@@ -95,7 +95,7 @@ end);
 ##  Since <C>ApplicableMethod</C> returns a function, <C>Print(last);</C> 
 ##  may be used to view the code. 
 ##  <P/>
-##  If the first argument is a function, rather than an operation, 
+##  If the first argument is a function, but not an operation, 
 ##  then the function is returned. 
 ##  <P/>
 ##  The first example shows that there are 50 methods for <C>Size</C> 
@@ -105,12 +105,12 @@ end);
 ##  gap> ApplicableMethod( Size, [s4], 1, "all" );
 ##  #I  Searching Method for Size with 1 arguments:
 ##  #I  Total: 50 entries, of which 3 are applicable:
-##  #I  Method 6, valid operation number 1, value: 103
-##  #I  ``Size'' at ... some path .../lib/coll.gi:176
-##  #I  Method 10, valid operation number 2, value: 59
-##  #I  ``Size: for a permutation group'' at ... some path .../lib/grpperm.gi:483
-##  #I  Method 50, valid operation number 3, value: 2
-##  #I  ``Size: for a collection'' at ... some path .../lib/coll.gi:189
+##  #I  Method 6, applicable method number 1, value: 103
+##  #I  ``Size'' at GAPROOT/lib/coll.gi:176
+##  #I  Method 10, applicable method number 2, value: 59
+##  #I  ``Size: for a permutation group'' at GAPROOT/lib/grpperm.gi:483
+##  #I  Method 50, applicable method number 3, value: 2
+##  #I  ``Size: for a collection'' at GAPROOT/lib/coll.gi:189
 ##  [ function( C ) ... end, function( G ) ... end, function( C ) ... end ]
 ##  gap> Print( last[1], "\n" );                  
 ##  function ( C )
@@ -122,30 +122,30 @@ end);
 
 ##  ]]></Log>
 ##  The second example shows that for <C>DirectProduct</C>, 
-##  which is a function the location may be displayed and the code returned. 
-##  For <C>DirectProductOp</C> with verbosity <M>2</M> and <M>nr=2</M> 
+##  which is a function, the location may be displayed and the code returned. 
+##  For <C>DirectProductOp</C>, with verbosity <M>2</M> and <M>nr=2</M>, 
 ##  methods <M>1</M> and <M>5</M> are applicable, and all methods numbered 
 ##  <M>[2..5]</M> are displayed. 
 ##  <Log><![CDATA[
 ##  gap> ApplicableMethod( DirectProduct, [s4,s4], 1, 1 );    
 ##  #I  DirectProduct is a function, not an operation, located at:
-##  #I  ... some path .../lib/gprd.gi:17
+##  #I  GAPROOT/lib/gprd.gi:17
 ##  function( arg... ) ... end
 ##  gap> ApplicableMethod( DirectProductOp, [[s4,s4],s4], 2, 2 );
 ##  #I  Searching Method for DirectProductOp with 2 arguments:
 ##  #I  Total: 5 entries, of which 2 are applicable:
 ##  #I  Method 2, value: 66
 ##  #I  ``DirectProductOp: for a list (of pc groups), and a pc group''
-##  #I   at ... some path .../lib/gprdpc.gi:15
+##  #I   at GAPROOT/lib/gprdpc.gi:15
 ##  #I  Method 3, value: 47
 ##  #I  ``DirectProductOp: matrix groups''
-##  #I   at ... some path .../lib/gprdmat.gi:70
+##  #I   at GAPROOT/lib/gprdmat.gi:70
 ##  #I  Method 4, value: 40
 ##  #I  ``DirectProductOp: for a list of fp groups, and a fp group''
-##  #I   at ... some path .../lib/grpfp.gi:5495
-##  #I  Method 5, valid operation number 2, value: 37
+##  #I   at GAPROOT/lib/grpfp.gi:5495
+##  #I  Method 5, applicable method number 2, value: 37
 ##  #I  ``DirectProductOp: for a list (of groups), and a group''
-##  #I   at ... some path .../lib/gprd.gi:50
+##  #I   at GAPROOT/lib/gprd.gi:50
 ##  function( list, gp ) ... end
 ##  ]]></Log>
 ##  The third example shows the sort of output that can be obtained 
@@ -157,23 +157,23 @@ end);
 ##  #I  Total: 4 entries, of which 1 is applicable:
 ##  #I  Method 1, value: 15
 ##  #I  ``SplitString: for three strings''
-##  #I   at ... some path .../lib/string.gi:539
+##  #I   at GAPROOT/lib/string.gi:539
 ##  #I   - 3rd argument needs [ "IsString" ]
 ##  #I  Method 2, value: 11
 ##  #I  ``SplitString: for a string, a character and a string''
-##  #I   at ... some path .../lib/string.gi:561
+##  #I   at GAPROOT/lib/string.gi:561
 ##  #I   - 2nd argument needs [ "IsChar" ]
 ##  #I   - 3rd argument needs [ "IsString" ]
-##  #I  Method 3, valid operation number 1, value: 11
+##  #I  Method 3, applicable method number 1, value: 11
 ##  #I  ``SplitString: for two strings and a character''
-##  #I   at ... some path .../lib/string.gi:553
+##  #I   at GAPROOT/lib/string.gi:553
 ##  #I  Method 4, value: 7
 ##  #I  ``SplitString: for a string and two characters''
-##  #I   at ... some path .../lib/string.gi:545
+##  #I   at GAPROOT/lib/string.gi:545
 ##  #I   - 2nd argument needs [ "IsChar" ]
 ##  [ function( string, d1, d2 ) ... end ]
 ##  ]]></Log>
-##  When a method returned by <Ref Func="ApplicableMethod"/> is called then
+##  When a method returned by <Ref Func="ApplicableMethod"/> is called 
 ##  it returns either the desired result or the string
 ##  <C>"TRY_NEXT_METHOD"</C>, which corresponds to a call to
 ##  <Ref Func="TryNextMethod"/> in the method and means that
@@ -197,7 +197,7 @@ end);
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ApplicableMethodTypes",function(arg)
-local oper,opargs,nopargs,verbos,fams,flags,i,j,methods,flag,flag2,
+local oper,narg,args,verbos,fams,flags,i,j,methods,flag,flag2,
       m,nam,val,has,need,isconstructor,
       nummeth,valid,applic,numapplic,nr,first,last;
   if Length(arg)<2 or not IsList(arg[2]) or not IsFunction(arg[1]) then
@@ -206,8 +206,8 @@ local oper,opargs,nopargs,verbos,fams,flags,i,j,methods,flag,flag2,
   ## process the arguments 
   oper:=arg[1];
   isconstructor:=IS_CONSTRUCTOR(oper);
-    opargs:=arg[2];
-  nopargs:=Length(opargs);
+    args:=arg[2];
+  narg:=Length(args);
   verbos:=0;
   if Length(arg)>2 and IsPosInt(arg[3]) then
     verbos:=Minimum(arg[3],4);
@@ -220,8 +220,8 @@ local oper,opargs,nopargs,verbos,fams,flags,i,j,methods,flag,flag2,
       nr:=0;
     fi;
   fi;
-  ## accept the name of a function 
-  if not oper in OPERATIONS then 
+  ## if not an operation, just return the function 
+  if not IsOperation(oper) then 
     nam:=FilenameFunc(oper); 
     if nam=fail then 
       Print("#I  ",oper," is not recognised as the name of an operation\n"); 
@@ -238,7 +238,7 @@ local oper,opargs,nopargs,verbos,fams,flags,i,j,methods,flag,flag2,
   # get families and filters
   flags:=[];
   fams:=[];
-  for i in opargs do
+  for i in args do
     if IsFilter(i) then
       Add(flags,FLAGS_FILTER(i));
       Add(fams,fail);
@@ -254,7 +254,7 @@ local oper,opargs,nopargs,verbos,fams,flags,i,j,methods,flag,flag2,
     Info(InfoWarning,1,"Family predicate cannot be tested");
   fi;
   ## find all the methods 
-  methods:=MethodsOperation(oper,nopargs);
+  methods:=MethodsOperation(oper,narg);
   nummeth:=Length(methods);
   if nummeth=0 then 
     Print("#I  no method found for this operation with these arguments\n"); 
@@ -265,7 +265,7 @@ local oper,opargs,nopargs,verbos,fams,flags,i,j,methods,flag,flag2,
   for i in [1..nummeth] do 
     flag := true; 
     m := methods[i];
-    for j in [1..nopargs] do 
+    for j in [1..narg] do 
       if isconstructor then
         flag2:=IS_SUBSET_FLAGS(m.argFilt[j],flags[j]);
       else
@@ -288,7 +288,7 @@ local oper,opargs,nopargs,verbos,fams,flags,i,j,methods,flag,flag2,
   fi;
   ## output basic information
   Print("#I  Searching Method for ",NameFunction(oper)," with ", 
-        nopargs," arguments:\n");
+        narg," arguments:\n");
   Print("#I  Total: ",nummeth," entries, of which ",numapplic); 
   if numapplic=1 then 
     Print(" is applicable:\n");
@@ -297,12 +297,12 @@ local oper,opargs,nopargs,verbos,fams,flags,i,j,methods,flag,flag2,
   fi;
   if nr>numapplic then 
     if (numapplic=0) then 
-      Print("#I  there are no valid methods with these parameters\n"); 
+      Print("#I  there are no applicable methods with these parameters\n"); 
     else
       if numapplic=1 then 
-        Print("#I  there is only 1 valid method\n"); 
+        Print("#I  there is only 1 applicable method\n"); 
       else
-        Print("#I  there are only ",numapplic," valid methods\n"); 
+        Print("#I  there are only ",numapplic," applicable methods\n"); 
       fi;
     fi;
   fi;
@@ -340,7 +340,7 @@ local oper,opargs,nopargs,verbos,fams,flags,i,j,methods,flag,flag2,
     oper:=m.func;
     if i in applic then 
       Print("#I  Method ",i); 
-      Print(", valid operation number ",Position(applic,i)); 
+      Print(", applicable method number ",Position(applic,i)); 
       Print(", value: ");  
       Print_Value_SFF(val);
       Print("\n#I  ``",nam,"''\n");
@@ -369,7 +369,7 @@ local oper,opargs,nopargs,verbos,fams,flags,i,j,methods,flag,flag2,
       Print("\n");
       flag:=true;
       j:=1;
-      while j<=nopargs and (flag or verbos>3) do
+      while j<=narg and (flag or verbos>3) do
         if j=1 and isconstructor then
           flag2:=IS_SUBSET_FLAGS(m.argFilt[j],flags[j]);
         else

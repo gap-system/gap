@@ -38,7 +38,7 @@ end
 gap> Display(ApplicableMethod(foobar, [ ['a'] ], 1));
 #I  Searching Method for foobar with 1 arguments:
 #I  Total: 4 entries, of which 3 are applicable:
-#I  Method 1, valid operation number 1, value: 2*SUM_FLAGS+1
+#I  Method 1, applicable operation number 1, value: 2*SUM_FLAGS+1
 #I  ``foobar: for a string''
 #I   at stream:1
 function ( x )
@@ -51,25 +51,25 @@ fail
 gap> ApplicableMethod(foobar, [ ['a'] ], 1, 3);
 #I  Searching Method for foobar with 1 arguments:
 #I  Total: 4 entries, of which 3 are applicable:
-#I  Method 4, valid operation number 3, value: 0
+#I  Method 4, applicable operation number 3, value: 0
 #I  ``foobar''
 #I   at stream:1
 function( x ) ... end
 gap> ApplicableMethod(foobar, [ ['a'] ], 1, 4);
 #I  Searching Method for foobar with 1 arguments:
 #I  Total: 4 entries, of which 3 are applicable:
-#I  there are only 3 valid methods
+#I  there are only 3 applicable methods
 fail
 gap> ApplicableMethod(foobar, [ ['a'] ], 1, "all");
 #I  Searching Method for foobar with 1 arguments:
 #I  Total: 4 entries, of which 3 are applicable:
-#I  Method 1, valid operation number 1, value: 2*SUM_FLAGS+1
+#I  Method 1, applicable operation number 1, value: 2*SUM_FLAGS+1
 #I  ``foobar: for a string''
 #I   at stream:1
-#I  Method 2, valid operation number 2, value: 42
+#I  Method 2, applicable operation number 2, value: 42
 #I  ``foobar: for a list''
 #I   at stream:1
-#I  Method 4, valid operation number 3, value: 0
+#I  Method 4, applicable operation number 3, value: 0
 #I  ``foobar''
 #I   at stream:1
 [ function( x ) ... end, <Attribute "Length">, function( x ) ... end ]
@@ -78,7 +78,7 @@ gap> ApplicableMethod(foobar, [ ['a'] ], 1, "all");
 gap> Display(ApplicableMethod(foobar, [fail], 1));
 #I  Searching Method for foobar with 1 arguments:
 #I  Total: 4 entries, of which 1 is applicable:
-#I  Method 4, valid operation number 1, value: 0
+#I  Method 4, applicable operation number 1, value: 0
 #I  ``foobar''
 #I   at stream:1
 function ( x )
@@ -99,7 +99,7 @@ gap> ApplicableMethod(foobar, [fail], 4);
 #I  ``foobar: for an integer''
 #I   at stream:1
 #I   - 1st argument needs [ "IsInt" ]
-#I  Method 4, valid operation number 1, value: 0
+#I  Method 4, applicable operation number 1, value: 0
 #I  ``foobar''
 #I   at stream:1
 function( x ) ... end
@@ -118,7 +118,7 @@ gap> ApplicableMethod(foobar, [fail], 6);;
 #I  ``foobar: for an integer''
 #I   at stream:1
 #I   - 1st argument needs [ "IsInt" ]
-#I  Method 4, valid operation number 1, value: 0
+#I  Method 4, applicable operation number 1, value: 0
 #I  ``foobar''
 #I   at stream:1
 
@@ -132,7 +132,7 @@ end
 gap> Display(ApplicableMethod(foobar, [1, 2], 1));
 #I  Searching Method for foobar with 2 arguments:
 #I  Total: 2 entries, of which 1 is applicable:
-#I  Method 2, valid operation number 1, value: 0
+#I  Method 2, applicable operation number 1, value: 0
 #I  ``foobar: for 2 integers''
 #I   at stream:2
 function ( x, y... )
@@ -144,7 +144,7 @@ gap> Display(ApplicableMethod(foobar, [1, 2], 2));
 #I  Method 1, value: 17
 #I  ``foobar: for two lists''
 #I   at stream:1
-#I  Method 2, valid operation number 1, value: 0
+#I  Method 2, applicable operation number 1, value: 0
 #I  ``foobar: for 2 integers''
 #I   at stream:2
 function ( x, y... )
@@ -157,7 +157,7 @@ gap> Display(ApplicableMethod(foobar, [1, 2], 3));
 #I  ``foobar: for two lists''
 #I   at stream:1
 #I   - 1st argument needs [ "IsList" ]
-#I  Method 2, valid operation number 1, value: 0
+#I  Method 2, applicable operation number 1, value: 0
 #I  ``foobar: for 2 integers''
 #I   at stream:2
 function ( x, y... )
@@ -171,7 +171,7 @@ gap> Display(ApplicableMethod(foobar, [1, 2], 4));
 #I   at stream:1
 #I   - 1st argument needs [ "IsList" ]
 #I   - 2nd argument needs [ "IsList" ]
-#I  Method 2, valid operation number 1, value: 0
+#I  Method 2, applicable operation number 1, value: 0
 #I  ``foobar: for 2 integers''
 #I   at stream:2
 function ( x, y... )
@@ -182,7 +182,7 @@ end
 gap> ApplicableMethod(foobar, [[1], []], 5);;
 #I  Searching Method for foobar with 2 arguments:
 #I  Total: 2 entries, of which 1 is applicable:
-#I  Method 1, valid operation number 1, value: 17
+#I  Method 1, applicable operation number 1, value: 17
 #I  ``foobar: for two lists''
 #I   at stream:1
 
@@ -190,12 +190,12 @@ gap> ApplicableMethod(foobar, [[1], []], 5);;
 gap> ApplicableMethod(foobar, [1, []], 1);   
 #I  Searching Method for foobar with 2 arguments:
 #I  Total: 2 entries, of which 0 are applicable:
-#I  there are no valid methods with these parameters
+#I  there are no applicable methods with these parameters
 fail
 gap> ApplicableMethod(foobar, [1, []], 2);
 #I  Searching Method for foobar with 2 arguments:
 #I  Total: 2 entries, of which 0 are applicable:
-#I  there are no valid methods with these parameters
+#I  there are no applicable methods with these parameters
 #I  Method 1, value: 17
 #I  ``foobar: for two lists''
 #I   at stream:1
@@ -210,7 +210,7 @@ fail
 gap> ApplicableMethod(foobar, [], 4);
 #I  Searching Method for foobar with 0 arguments:
 #I  Total: 1 entries, of which 1 is applicable:
-#I  Method 1, valid operation number 1, value: 0
+#I  Method 1, applicable operation number 1, value: 0
 #I  ``foobar: for no argument''
 #I   at stream:1
 function(  ) ... end
@@ -225,14 +225,14 @@ gap> ApplicableMethod(foobar, [1], 4, 1);
 #I  ``foobar: for a list''
 #I   at stream:1
 #I   - 1st argument needs [ "IsList" ]
-#I  Method 3, valid operation number 1, value: 1
+#I  Method 3, applicable operation number 1, value: 1
 #I  ``foobar: for an integer''
 #I   at stream:1
 function( x ) ... end
 gap> ApplicableMethod(foobar, [1], 4, 2);
 #I  Searching Method for foobar with 1 arguments:
 #I  Total: 4 entries, of which 2 are applicable:
-#I  Method 4, valid operation number 2, value: 0
+#I  Method 4, applicable operation number 2, value: 0
 #I  ``foobar''
 #I   at stream:1
 function( x ) ... end
@@ -244,35 +244,35 @@ gap> ApplicableMethod(foobar, [1,2], 4);
 #I   at stream:1
 #I   - 1st argument needs [ "IsList" ]
 #I   - 2nd argument needs [ "IsList" ]
-#I  Method 2, valid operation number 1, value: 0
+#I  Method 2, applicable operation number 1, value: 0
 #I  ``foobar: for 2 integers''
 #I   at stream:2
 function( x, y... ) ... end
 gap> ApplicableMethod(foobar, [1..3], 4);
 #I  Searching Method for foobar with 3 arguments:
 #I  Total: 1 entries, of which 1 is applicable:
-#I  Method 1, valid operation number 1, value: 0
+#I  Method 1, applicable operation number 1, value: 0
 #I  ``foobar: for 3 integers''
 #I   at stream:3
 function( x, y... ) ... end
 gap> ApplicableMethod(foobar, [1..4], 4);
 #I  Searching Method for foobar with 4 arguments:
 #I  Total: 1 entries, of which 1 is applicable:
-#I  Method 1, valid operation number 1, value: 0
+#I  Method 1, applicable operation number 1, value: 0
 #I  ``foobar: for 4 integers''
 #I   at stream:4
 function( x, y... ) ... end
 gap> ApplicableMethod(foobar, [1..5], 2);
 #I  Searching Method for foobar with 5 arguments:
 #I  Total: 1 entries, of which 1 is applicable:
-#I  Method 1, valid operation number 1, value: 0
+#I  Method 1, applicable operation number 1, value: 0
 #I  ``foobar: for 5 integers''
 #I   at stream:5
 function( x, y... ) ... end
 gap> ApplicableMethod(foobar, [1..6], 1);
 #I  Searching Method for foobar with 6 arguments:
 #I  Total: 1 entries, of which 1 is applicable:
-#I  Method 1, valid operation number 1, value: 0
+#I  Method 1, applicable operation number 1, value: 0
 #I  ``foobar: for 6 integers''
 #I   at stream:6
 function( x, y... ) ... end

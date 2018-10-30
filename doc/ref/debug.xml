@@ -850,15 +850,22 @@ found in the <F>tst</F> directory of the &GAP; distribution.
 
 <#Include Label="[1]{testinstall.g}">
 
+You will get a large number of lines with output about the progress of 
+the tests, for example:
 <Log><![CDATA[
-test file         time(msec)
--------------------------------------------
-testing: ................/gap4r5/tst/zlattice.tst
-zlattice.tst               0
-testing: ................/gap4r5/tst/gaussian.tst
-gaussian.tst              10
-[ further lines deleted ]
+You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g -K 2g'.
+
+Architecture: x86_64-apple-darwin15.6.0-gcc-6-default64
+
+testing: /Users/alexk/GITREPS/gap/tst/testinstall/alghom.tst
+     140 msec for alghom.tst        
+testing: /Users/alexk/GITREPS/gap/tst/testinstall/algmat.tst
+    1309 msec for algmat.tst        
+testing: /Users/alexk/GITREPS/gap/tst/testinstall/algsc.tst
+     500 msec for algsc.tst         
+... further lines deleted ...
 ]]></Log>
+<P/>
 
 <#Include Label="[1]{teststandard.g}">
 <P/>
