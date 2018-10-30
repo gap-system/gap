@@ -1192,6 +1192,8 @@ static ArgList ReadFuncArgList(
     args.isvarg = isvarg;
 #ifdef HPCGAP
     args.locks = locks;
+    if (locks)
+        MakeImmutable(args.locks);
 #endif
     return args;
 }
