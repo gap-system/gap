@@ -76,14 +76,14 @@ void MakeBagTypePublic(int type)
 Bag MakeBagPublic(Bag bag)
 {
     MEMBAR_WRITE();
-    REGION(bag) = 0;
+    SET_REGION(bag, 0);
     return bag;
 }
 
 Bag MakeBagReadOnly(Bag bag)
 {
     MEMBAR_WRITE();
-    REGION(bag) = ReadOnlyRegion;
+    SET_REGION(bag, ReadOnlyRegion);
     return bag;
 }
 
@@ -424,7 +424,7 @@ void RetypeBag(Bag bag, UInt new_type)
 #ifdef HPCGAP
     switch (DSInfoBags[new_type]) {
     case DSI_PUBLIC:
-        REGION(bag) = NULL;
+        SET_REGION(bag, NULL);
         break;
     }
 #endif // HPCGAP
@@ -500,10 +500,10 @@ Bag NewBag(UInt type, UInt size)
 #ifdef HPCGAP
     switch (DSInfoBags[type]) {
     case DSI_TL:
-        REGION(bag) = CurrentRegion();
+        SET_REGION(bag, CurrentRegion());
         break;
     case DSI_PUBLIC:
-        REGION(bag) = NULL;
+        SET_REGION(bag, NULL);
         break;
     }
 #endif

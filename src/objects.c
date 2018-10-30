@@ -1905,7 +1905,7 @@ Obj FuncCLONE_OBJ (
     memcpy(pdst, psrc, SIZE_OBJ(src));
     CHANGED_BAG(dst);
 #ifdef HPCGAP
-    REGION(dst) = REGION(src);
+    SET_REGION(dst, REGION(src));
     MEMBAR_WRITE();
     /* The following is a no-op unless the region is public */
     SET_PTR_BAG(dst, PTR_BAG(tmp));
@@ -1942,8 +1942,8 @@ Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
         ErrorQuit("SWITCH_OBJ: Cannot write to first object's region.", 0, 0);
     if (!ds2 || ds2->owner != GetTLS())
         ErrorQuit("SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
-    REGION(obj2) = ds1;
-    REGION(obj1) = ds2;
+    SET_REGION(obj2, ds1);
+    SET_REGION(obj1, ds2);
 #endif
     SwapMasterPoint(obj1, obj2);
     CHANGED_BAG(obj1);
@@ -1987,9 +1987,9 @@ Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
         ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to first object's region.", 0, 0);
     if (ds2 && ds2->owner != GetTLS())
         ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
-    REGION(obj2) = ds1;
+    SET_REGION(obj2, ds1);
     SET_PTR_BAG(obj2, ptr1);
-    REGION(obj1) = ds2;
+    SET_REGION(obj1, ds2);
     SET_PTR_BAG(obj1, ptr2);
     CHANGED_BAG(obj1);
     CHANGED_BAG(obj2);
