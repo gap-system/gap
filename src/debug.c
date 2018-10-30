@@ -5,6 +5,10 @@
 #include "calls.h"
 #include "fibhash.h"
 
+#ifdef HPCGAP
+#include "hpc/region.h"
+#endif
+
 #if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
 #include <execinfo.h>
 #include <signal.h>
@@ -391,6 +395,8 @@ VoidFunc debug_func_pointers[] = {
     (VoidFunc)ATOMIC_SET_ELM_PLIST,
     (VoidFunc)GetTLS,
     (VoidFunc)LCKS_FUNC,
+    (VoidFunc)REGION,
     (VoidFunc)SET_LCKS_FUNC,
+    (VoidFunc)SET_REGION,
 #endif
 };

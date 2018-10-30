@@ -39,7 +39,15 @@ Region *NewRegion(void);
 **
 **  RegionBag() also contains a memory barrier.
 */
-#define REGION(bag) (((Region **)(bag))[1])
+static inline Region * REGION(Obj bag)
+{
+    return ((Region **)bag)[1];
+}
+
+static inline void SET_REGION(Obj bag, Region * region)
+{
+    ((Region **)bag)[1] = region;
+}
 
 Region *RegionBag(Bag bag);
 

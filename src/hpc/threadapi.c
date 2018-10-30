@@ -358,7 +358,7 @@ pthread_mutex_t KeepAliveLock;
 Obj KeepAlive(Obj obj)
 {
     Obj newKeepAlive = NewBag(T_PLIST, 4 * sizeof(Obj));
-    REGION(newKeepAlive) = NULL;    // public region
+    SET_REGION(newKeepAlive, NULL);    // public region
     pthread_mutex_lock(&KeepAliveLock);
     ADDR_OBJ(newKeepAlive)[0] = (Obj)3; /* Length 3 */
     KEPTALIVE(newKeepAlive) = obj;
@@ -413,7 +413,7 @@ Obj FuncCreateThread(Obj self, Obj funcargs)
             "CreateThread: Needs at least one function argument");
     templist = NEW_PLIST(T_PLIST, n);
     SET_LEN_PLIST(templist, n);
-    REGION(templist) = NULL; /* make it public */
+    SET_REGION(templist, NULL); /* make it public */
     for (i = 1; i <= n; i++)
         SET_ELM_PLIST(templist, i, ELM_PLIST(funcargs, i));
     thread = RunThread(ThreadedInterpreter, KeepAlive(templist));
@@ -1012,7 +1012,7 @@ static void ExpandChannel(Channel * channel)
     Obj  newqueue;
     newqueue = NEW_PLIST(T_PLIST, newCapacity);
     SET_LEN_PLIST(newqueue, newCapacity);
-    REGION(newqueue) = REGION(channel->queue);
+    SET_REGION(newqueue, REGION(channel->queue));
     channel->capacity = newCapacity;
     for (i = channel->head; i < oldCapacity; i++)
         ADDR_OBJ(newqueue)[i + 1] = ADDR_OBJ(channel->queue)[i + 1];
@@ -1045,7 +1045,7 @@ static void AddToChannel(Channel * channel, Obj obj, int migrate)
     }
     for (i = 1; i <= len; i++) {
         Obj item = ELM_PLIST(children, i);
-        REGION(item) = region;
+        SET_REGION(item, region);
     }
     ADDR_OBJ(channel->queue)[++channel->tail] = obj;
     ADDR_OBJ(channel->queue)[++channel->tail] = children;
@@ -1066,7 +1066,7 @@ static Obj RetrieveFromChannel(Channel * channel)
         channel->head = 0;
     for (i = 1; i <= len; i++) {
         Obj item = ELM_PLIST(children, i);
-        REGION(item) = region;
+        SET_REGION(item, region);
     }
     channel->size -= 2;
     return obj;
@@ -1286,7 +1286,7 @@ static Obj CreateChannel(int capacity)
     channel->dynamic = (capacity < 0);
     channel->waiting = 0;
     channel->queue = NEW_PLIST(T_PLIST, channel->capacity);
-    REGION(channel->queue) = LimboRegion;
+    SET_REGION(channel->queue, LimboRegion);
     SET_LEN_PLIST(channel->queue, channel->capacity);
     return channelBag;
 }
@@ -2030,13 +2030,13 @@ MigrateObjects(int count, Obj * objects, Region * target, int retype)
     for (i = 0; i < count; i++) {
         Region * region;
         if (IS_BAG_REF(objects[i])) {
-            region = (Region *)(REGION(objects[i]));
+            region = REGION(objects[i]);
             if (!region || region->owner != GetTLS())
                 return 0;
         }
     }
     for (i = 0; i < count; i++)
-        REGION(objects[i]) = target;
+        SET_REGION(objects[i], target);
     return 1;
 }
 
