@@ -3580,7 +3580,3 @@ SMTX_OrthogonalSign:=function(gm)
 end;
 
 SMTX.OrthogonalSign:=SMTX_OrthogonalSign;
-
-if IsHPCGAP then
-    MakeReadOnlyObj(SMTX);
-fi;
