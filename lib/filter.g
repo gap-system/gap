@@ -509,8 +509,10 @@ BIND_GLOBAL( "RankFilter", function( filter )
     else
       all := WITH_IMPS_FLAGS(flags);
     fi;
-    for i  in TRUES_FLAGS(all)  do
-        rank := rank + RANK_FILTERS[i];
+    atomic readonly FILTER_REGION do
+      for i  in TRUES_FLAGS(all)  do
+          rank := rank + RANK_FILTERS[i];
+      od;
     od;
     return rank;
 end );

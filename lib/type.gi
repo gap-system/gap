@@ -165,8 +165,10 @@ function(oper)
         if flags <> false then
             flags := TRUES_FLAGS(flags);
             types := [];
-            for t in flags do
-                AddSet(types, INFO_FILTERS[t]);
+            atomic readonly FILTER_REGION do
+                for t in flags do
+                    AddSet(types, INFO_FILTERS[t]);
+                od;
             od;
             catok := true;
             repok := true;
@@ -231,11 +233,13 @@ InstallGlobalFunction( CategoryByName,
 function(name)
     local fid;
 
+    atomic readonly CATS_AND_REPS, FILTER_REGION do
     for fid in CATS_AND_REPS do
         if (INFO_FILTERS[fid] in FNUM_CATS) and
            (NAME_FUNC(FILTERS[fid]) = name) then
             return FILTERS[fid];
         fi;
+    od;
     od;
     return fail;
 end);

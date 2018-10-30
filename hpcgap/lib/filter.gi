@@ -73,4 +73,8 @@ end);
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "FilterByName",
-             name -> First(FILTERS, f -> NAME_FUNC(f) = name) );
+function(name)
+    atomic readonly FILTER_REGION do
+        return First(FILTERS, f -> NAME_FUNC(f) = name);
+    od;
+end);

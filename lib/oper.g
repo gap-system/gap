@@ -292,6 +292,8 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
         Error( "no immediate methods for mutable objects!" );
     fi;
     relev := [];
+    atomic FILTER_REGION do
+
     for i  in flags  do
         if not INFO_FILTERS[i] in FNUM_CATS_AND_REPS  then
             ADD_LIST( relev, i );
@@ -304,8 +306,6 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
         relev:= [ flags[1] ];
     fi;
     flags:= relev;
-
-    atomic FILTER_REGION do
 
     # Remove requirements that are implied by the remaining ones.
     # (Note that it is possible to have implications from a filter
