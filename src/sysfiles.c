@@ -2445,8 +2445,19 @@ Char * syFgets (
         /* now perform the requested action <rep> times in the input line  */
         while ( rep-- > 0 ) {
           /* check for key handler on GAP level */
-          if (ch >= 0 && ch < LEN_PLIST(LineEditKeyHandlers) &&
-                         ELM_PLIST(LineEditKeyHandlers, ch+1) != 0) {
+          Int runLineEditKeyHandler = 0;
+          if (ch >= 0) {
+#ifdef HPCGAP
+            RegionReadLock(REGION(LineEditKeyHandlers));
+#endif
+            runLineEditKeyHandler =
+                  ch < LEN_PLIST(LineEditKeyHandlers) &&
+                  ELM_PLIST(LineEditKeyHandlers, ch + 1) != 0;
+#ifdef HPCGAP
+            RegionUnlock(REGION(LineEditKeyHandlers));
+#endif
+          }
+          if (runLineEditKeyHandler) {
             /* prepare data for GAP handler:
                    [linestr, ch, ppos, length, yankstr]
                GAP handler must return new
