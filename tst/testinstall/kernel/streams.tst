@@ -35,11 +35,11 @@ Error, READ: <filename> must be a string (not a boolean or fail)
 gap> RemoveFile(fail);
 Error, <filename> must be a string (not a boolean or fail)
 gap> CreateDir(fail);
-Error, <filename> must be a string (not a boolean or fail)
+Error, CreateDir: <filename> must be a string (not a boolean or fail)
 gap> RemoveDir(fail);
-Error, <filename> must be a string (not a boolean or fail)
+Error, RemoveDir: <filename> must be a string (not a boolean or fail)
 gap> IsDir(fail);
-Error, <filename> must be a string (not a boolean or fail)
+Error, IsDir: <filename> must be a string (not a boolean or fail)
 
 #
 gap> LastSystemError();; LastSystemError();
@@ -47,25 +47,26 @@ rec( message := "no error", number := 0 )
 
 #
 gap> IsExistingFile(fail);
-Error, <filename> must be a string (not a boolean or fail)
+Error, IsExistingFile: <filename> must be a string (not a boolean or fail)
 gap> IsReadableFile(fail);
-Error, <filename> must be a string (not a boolean or fail)
+Error, IsReadableFile: <filename> must be a string (not a boolean or fail)
 gap> IsWritableFile(fail);
-Error, <filename> must be a string (not a boolean or fail)
+Error, IsWritableFile: <filename> must be a string (not a boolean or fail)
 gap> IsExecutableFile(fail);
-Error, <filename> must be a string (not a boolean or fail)
+Error, IsExecutableFile: <filename> must be a string (not a boolean or fail)
 gap> IsDirectoryPathString(fail);
-Error, <filename> must be a string (not a boolean or fail)
+Error, IsDirectoryPathString: <filename> must be a string (not a boolean or fa\
+il)
 gap> STRING_LIST_DIR(fail);
-Error, <dirname> must be a string (not a boolean or fail)
+Error, STRING_LIST_DIR: <dirname> must be a string (not a boolean or fail)
 
 #
 gap> CLOSE_FILE(fail);
-Error, <fid> must be an integer (not a boolean or fail)
+Error, CLOSE_FILE: <fid> must be a small integer (not the value 'fail')
 gap> INPUT_TEXT_FILE(fail);
-Error, <filename> must be a string (not a boolean or fail)
+Error, INPUT_TEXT_FILE: <filename> must be a string (not a boolean or fail)
 gap> IS_END_OF_FILE(fail);
-Error, <fid> must be an integer (not a boolean or fail)
+Error, IS_END_OF_FILE: <fid> must be a small integer (not the value 'fail')
 gap> IS_END_OF_FILE(-1);
 fail
 gap> IS_END_OF_FILE(0);
@@ -73,13 +74,13 @@ false
 gap> IS_END_OF_FILE(254);
 fail
 gap> OUTPUT_TEXT_FILE(fail, fail);
-Error, <filename> must be a string (not a boolean or fail)
+Error, OUTPUT_TEXT_FILE: <filename> must be a string (not a boolean or fail)
 gap> OUTPUT_TEXT_FILE("test", fail);
-Error, <append> must be a boolean (not a boolean or fail)
+Error, OUTPUT_TEXT_FILE: <append> must be a boolean (not a boolean or fail)
 
 #
 gap> POSITION_FILE(fail);
-Error, <fid> must be an integer (not a boolean or fail)
+Error, POSITION_FILE: <fid> must be a small integer (not the value 'fail')
 gap> POSITION_FILE(-1);
 fail
 gap> IsInt(POSITION_FILE(4));
@@ -89,27 +90,29 @@ fail
 
 #
 gap> READ_BYTE_FILE(fail);
-Error, <fid> must be an integer (not a boolean or fail)
+Error, READ_BYTE_FILE: <fid> must be a small integer (not the value 'fail')
 gap> READ_BYTE_FILE(-1);
 fail
 
 #
 gap> READ_LINE_FILE(fail);
-Error, <fid> must be an integer (not a boolean or fail)
+Error, READ_LINE_FILE: <fid> must be a small integer (not the value 'fail')
 gap> READ_ALL_FILE(fail,fail);
-Error, <fid> must be an integer (not a boolean or fail)
+Error, READ_ALL_FILE: <fid> must be a small integer (not the value 'fail')
 gap> READ_ALL_FILE(1,fail);
-Error, <limit> must be a small integer (not a boolean or fail)
+Error, READ_ALL_FILE: <limit> must be a small integer (not the value 'fail')
 gap> SEEK_POSITION_FILE(fail,fail);
-Error, <fid> must be an integer (not a boolean or fail)
+Error, SEEK_POSITION_FILE: <fid> must be a small integer (not the value 'fail'\
+)
 gap> SEEK_POSITION_FILE(1,fail);
-Error, <pos> must be an integer (not a boolean or fail)
+Error, SEEK_POSITION_FILE: <pos> must be a small integer (not the value 'fail'\
+)
 
 #
 gap> WRITE_BYTE_FILE(fail,fail);
-Error, <fid> must be an integer (not a boolean or fail)
+Error, WRITE_BYTE_FILE: <fid> must be a small integer (not the value 'fail')
 gap> WRITE_BYTE_FILE(1,fail);
-Error, <ch> must be an integer (not a boolean or fail)
+Error, WRITE_BYTE_FILE: <ch> must be a small integer (not the value 'fail')
 gap> WRITE_BYTE_FILE(-1,65);
 fail
 gap> WRITE_BYTE_FILE(0,65);
@@ -119,11 +122,11 @@ fail
 
 #
 gap> READ_STRING_FILE(fail);
-Error, <fid> must be an integer (not a boolean or fail)
+Error, READ_STRING_FILE: <fid> must be a small integer (not the value 'fail')
 
 #
 gap> FD_OF_FILE(fail);
-Error, <fid> must be a small integer (not a boolean or fail)
+Error, FD_OF_FILE: <fid> must be a small integer (not the value 'fail')
 
 #
 gap> ExecuteProcess(fail,fail,fail,fail,fail);
@@ -131,13 +134,13 @@ Error, ExecuteProcess: <dir> must be a string (not a boolean or fail)
 gap> ExecuteProcess("",fail,fail,fail,fail);
 Error, ExecuteProcess: <prg> must be a string (not a boolean or fail)
 gap> ExecuteProcess("","",fail,fail,fail);
-Error, ExecuteProcess: <in> must be an integer (not a boolean or fail)
+Error, ExecuteProcess: <in> must be a small integer (not the value 'fail')
 gap> ExecuteProcess("","",0,fail,fail);
-Error, ExecuteProcess: <out> must be an integer (not a boolean or fail)
+Error, ExecuteProcess: <out> must be a small integer (not the value 'fail')
 gap> ExecuteProcess("","",0,0,fail);
 Error, ExecuteProcess: <args> must be a small list (not the value 'fail')
 gap> ExecuteProcess("","",0,0,[1]);
-Error, <tmp> must be a string (not a integer)
+Error, ExecuteProcess: <tmp> must be a string (not a integer)
 
 #
 gap> STOP_TEST("kernel/streams.tst", 1);

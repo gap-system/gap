@@ -453,22 +453,12 @@ Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
   }
 
   /* check the arguments                                                 */
-  while ( !IS_INTOBJ(opSeed) ) {
-      opSeed = ErrorReturnObj(
-	  "HASHKEY_BAG: <seed> must be a small integer (not a %s)",
-	  (Int)TNAM_OBJ(opSeed), 0L,
-	  "you can replace <seed> via 'return <seed>;'" );
-  }
+  RequireSmallIntMayReplace("HASHKEY_BAG", opSeed, "seed");
   
   do {
     offs = -1;
 
-    while ( !IS_INTOBJ(opOffset)  ) {
-      opOffset = ErrorReturnObj(
-       "HASHKEY_BAG: <offset> must be a small integer (not a %s)",
-       (Int)TNAM_OBJ(opOffset), 0L,
-       "you can replace <offset> via 'return <offset>;'" );      
-    }
+    RequireSmallIntMayReplace("HASHKEY_BAG", opOffset, "offset");
     offs = INT_INTOBJ(opOffset);
     if ( offs < 0 || offs > SIZE_OBJ(obj)) {
       opOffset = ErrorReturnObj(
@@ -479,12 +469,7 @@ Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
     }
   } while (offs < 0);
 
-  while ( !IS_INTOBJ(opMaxLen) ) {
-      opMaxLen = ErrorReturnObj(
-        "HASHKEY_BAG: <maxlen> must be a small integer (not a %s)",
-        (Int)TNAM_OBJ(opMaxLen), 0L,
-        "you can replace <maxlen> via 'return <maxlen>;'" );
-  }
+  RequireSmallIntMayReplace("HASHKEY_BAG", opMaxLen, "maxlen");
 
   n=SIZE_OBJ(obj)-offs;
 

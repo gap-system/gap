@@ -512,20 +512,10 @@ static ALWAYS_INLINE UInt ExecForRangeHelper(Stat stat, UInt nr)
     /* evaluate the range                                                  */
     VisitStatIfHooked(READ_STAT(stat, 1));
     elm = EVAL_EXPR(READ_EXPR(READ_STAT(stat, 1), 0));
-    while ( ! IS_INTOBJ(elm) ) {
-        elm = ErrorReturnObj(
-            "Range: <first> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(elm), 0L,
-            "you can replace <first> via 'return <first>;'" );
-    }
+    RequireSmallIntMayReplace("Range", elm, "first");
     first = INT_INTOBJ(elm);
     elm = EVAL_EXPR(READ_EXPR(READ_STAT(stat, 1), 1));
-    while ( ! IS_INTOBJ(elm) ) {
-        elm = ErrorReturnObj(
-            "Range: <last> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(elm), 0L,
-            "you can replace <last> via 'return <last>;'" );
-    }
+    RequireSmallIntMayReplace("Range", elm, "last");
     last  = INT_INTOBJ(elm);
 
     /* get the body                                                        */

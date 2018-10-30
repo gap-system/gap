@@ -313,9 +313,9 @@ Error, Integer operations: <divisor> must be nonzero
 gap> QuoInt(bigPos, 0);
 Error, Integer operations: <divisor> must be nonzero
 gap> QuoInt(fail,1);
-Error, QuoInt: <left> must be an integer (not a boolean or fail)
+Error, QuoInt: <left> must be an integer (not the value 'fail')
 gap> QuoInt(1,fail);
-Error, QuoInt: <right> must be an integer (not a boolean or fail)
+Error, QuoInt: <right> must be an integer (not the value 'fail')
 
 # corner cases
 gap> QuoInt(-2^28, -1);
@@ -363,9 +363,9 @@ Error, Integer operations: <divisor> must be nonzero
 gap> RemInt(bigPos, 0);
 Error, Integer operations: <divisor> must be nonzero
 gap> RemInt(fail,1);
-Error, RemInt: <left> must be an integer (not a boolean or fail)
+Error, RemInt: <left> must be an integer (not the value 'fail')
 gap> RemInt(1,fail);
-Error, RemInt: <right> must be an integer (not a boolean or fail)
+Error, RemInt: <right> must be an integer (not the value 'fail')
 
 # corner cases
 gap> RemInt(-2^28, 2^28);
@@ -436,9 +436,9 @@ true
 
 #
 gap> GcdInt(fail,1);
-Error, GcdInt: <left> must be an integer (not a boolean or fail)
+Error, GcdInt: <left> must be an integer (not the value 'fail')
 gap> GcdInt(1,fail);
-Error, GcdInt: <right> must be an integer (not a boolean or fail)
+Error, GcdInt: <right> must be an integer (not the value 'fail')
 
 # corner cases
 gap> GcdInt(0, 0);
@@ -483,9 +483,9 @@ true
 
 #
 gap> LcmInt(fail,1);
-Error, LcmInt: <left> must be an integer (not a boolean or fail)
+Error, LcmInt: <left> must be an integer (not the value 'fail')
 gap> LcmInt(1,fail);
-Error, LcmInt: <right> must be an integer (not a boolean or fail)
+Error, LcmInt: <right> must be an integer (not the value 'fail')
 
 # corner cases
 gap> LcmInt(0, 0);
@@ -1372,9 +1372,9 @@ Error, PValuation: <p> must be nonzero
 gap> PVALUATION_INT(0,0);
 Error, PValuation: <p> must be nonzero
 gap> PVALUATION_INT(fail,1);
-Error, PValuation: <n> must be an integer (not a boolean or fail)
+Error, PValuation: <n> must be an integer (not the value 'fail')
 gap> PVALUATION_INT(1,fail);
-Error, PValuation: <p> must be an integer (not a boolean or fail)
+Error, PValuation: <p> must be an integer (not the value 'fail')
 
 #
 # test ROOT_INT
@@ -1413,9 +1413,9 @@ Error, Root: <n> is negative but <k> is even
 gap> RootInt(0, 0);
 Error, Root: <k> must be a positive integer
 gap> RootInt(fail, 1);
-Error, Root: <n> must be an integer (not a boolean or fail)
+Error, Root: <n> must be an integer (not the value 'fail')
 gap> RootInt(1, fail);
-Error, Root: <k> must be an integer (not a boolean or fail)
+Error, Root: <k> must be an integer (not the value 'fail')
 
 #
 # test IS_PROBAB_PRIME_INT
@@ -1427,9 +1427,9 @@ gap> Filtered([-100..100], n -> false <> IS_PROBAB_PRIME_INT(2^255+n, 5));
 gap> Filtered([-100..100], n -> false <> IsProbablyPrimeInt(2^255+n));
 [ -31, -19, 95 ]
 gap> IS_PROBAB_PRIME_INT(fail, 1);
-Error, IsProbablyPrimeInt: <n> must be an integer (not a boolean or fail)
+Error, IsProbablyPrimeInt: <n> must be an integer (not the value 'fail')
 gap> IS_PROBAB_PRIME_INT(1, fail);
-Error, IsProbablyPrimeInt: <reps> must be an integer (not a boolean or fail)
+Error, IsProbablyPrimeInt: <reps> must be an integer (not the value 'fail')
 gap> IS_PROBAB_PRIME_INT(1, 2^100);
 Error, IsProbablyPrimeInt: <reps> must be a small positive integer
 gap> IS_PROBAB_PRIME_INT(1, 0);

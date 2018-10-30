@@ -773,17 +773,9 @@ Obj Range2Check (
 {
     Obj                 range;
     Int                 f, l;
-    if ( ! IS_INTOBJ(first) ) {
-        ErrorQuit(
-            "Range: <first> must be a small integer (not a %s)",
-            (Int)TNAM_OBJ(first), 0L );
-    }
+    RequireSmallInt("Range", first, "first");
+    RequireSmallInt("Range", last, "last");
     f = INT_INTOBJ(first);
-    if ( ! IS_INTOBJ(last) ) {
-        ErrorQuit(
-            "Range: <last> must be a small integer (not a %s)",
-            (Int)TNAM_OBJ(last), 0L );
-    }
     l = INT_INTOBJ(last);
     if ( f > l ) {
         range = NEW_PLIST( T_PLIST, 0 );
@@ -814,28 +806,16 @@ Obj Range3Check (
 {
     Obj                 range;
     Int                 f, i, l;
-    if ( ! IS_INTOBJ(first) ) {
-        ErrorQuit(
-            "Range: <first> must be a small integer (not a %s)",
-            (Int)TNAM_OBJ(first), 0L );
-    }
-    f = INT_INTOBJ(first);
-    if ( ! IS_INTOBJ(second) ) {
-        ErrorQuit(
-            "Range: <second> must be a small integer (not a %s)",
-            (Int)TNAM_OBJ(second), 0L );
-    }
+    RequireSmallInt("Range", first, "first");
+    RequireSmallInt("Range", second, "second");
+    RequireSmallInt("Range", last, "last");
     if ( first == second ) {
         ErrorQuit(
             "Range: <second> must not be equal to <first> (%d)",
             (Int)INT_INTOBJ(first), 0L );
     }
+    f = INT_INTOBJ(first);
     i = INT_INTOBJ(second) - f;
-    if ( ! IS_INTOBJ(last) ) {
-        ErrorQuit(
-            "Range: <last> must be a small integer (not a %s)",
-            (Int)TNAM_OBJ(last), 0L );
-    }
     l = INT_INTOBJ(last);
     if ( (l - f) % i != 0 ) {
         ErrorQuit(

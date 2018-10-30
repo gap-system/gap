@@ -1236,7 +1236,7 @@ Obj FuncCreateDir (
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
+            "CreateDir: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
@@ -1256,7 +1256,7 @@ Obj FuncRemoveDir (
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
+            "RemoveDir: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
@@ -1275,7 +1275,7 @@ Obj FuncIsDir (
 {
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
+            "IsDir: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
@@ -1341,7 +1341,7 @@ Obj FuncIsExistingFile (
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
+            "IsExistingFile: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
@@ -1365,7 +1365,7 @@ Obj FuncIsReadableFile (
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
+            "IsReadableFile: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
@@ -1389,7 +1389,7 @@ Obj FuncIsWritableFile (
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
+            "IsWritableFile: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
@@ -1413,7 +1413,7 @@ Obj FuncIsExecutableFile (
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
+            "IsExecutableFile: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
@@ -1437,7 +1437,7 @@ Obj FuncIsDirectoryPathString (
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
+            "IsDirectoryPathString: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
@@ -1472,7 +1472,7 @@ Obj FuncSTRING_LIST_DIR (
     /* check the argument                                                  */
     while ( ! IsStringConv( dirname ) ) {
         dirname = ErrorReturnObj(
-            "<dirname> must be a string (not a %s)",
+            "STRING_LIST_DIR: <dirname> must be a string (not a %s)",
             (Int)TNAM_OBJ(dirname), 0L,
             "you can replace <dirname> via 'return <dirname>;'" );
     }
@@ -1516,12 +1516,7 @@ Obj FuncCLOSE_FILE (
     Int             ret;
 
     /* check the argument                                                  */
-    while ( ! IS_INTOBJ(fid) ) {
-        fid = ErrorReturnObj(
-            "<fid> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(fid), 0L,
-            "you can replace <fid> via 'return <fid>;'" );
-    }
+    RequireSmallIntMayReplace("CLOSE_FILE", fid, "fid");
     
     /* call the system dependent function                                  */
     ret = SyFclose( INT_INTOBJ(fid) );
@@ -1542,7 +1537,7 @@ Obj FuncINPUT_TEXT_FILE (
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
+            "INPUT_TEXT_FILE: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
@@ -1567,12 +1562,7 @@ Obj FuncIS_END_OF_FILE (
     Int             ret;
 
     /* check the argument                                                  */
-    while ( ! IS_INTOBJ(fid) ) {
-        fid = ErrorReturnObj(
-            "<fid> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(fid), 0L,
-            "you can replace <fid> via 'return <fid>;'" );
-    }
+    RequireSmallIntMayReplace("IS_END_OF_FILE", fid, "fid");
     
     ret = SyIsEndOfFile( INT_INTOBJ(fid) );
     return ret == -1 ? Fail : ( ret == 0 ? False : True );
@@ -1593,13 +1583,13 @@ Obj FuncOUTPUT_TEXT_FILE (
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
+            "OUTPUT_TEXT_FILE: <filename> must be a string (not a %s)",
             (Int)TNAM_OBJ(filename), 0L,
             "you can replace <filename> via 'return <filename>;'" );
     }
     while ( append != True && append != False ) {
         filename = ErrorReturnObj(
-            "<append> must be a boolean (not a %s)",
+            "OUTPUT_TEXT_FILE: <append> must be a boolean (not a %s)",
             (Int)TNAM_OBJ(append), 0L,
             "you can replace <append> via 'return <append>;'" );
     }
@@ -1627,12 +1617,7 @@ Obj FuncPOSITION_FILE (
     Obj             fid )
 {
     /* check the argument                                                  */
-    while ( ! IS_INTOBJ(fid) ) {
-        fid = ErrorReturnObj(
-            "<fid> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(fid), 0L,
-            "you can replace <fid> via 'return <fid>;'" );
-    }
+    RequireSmallIntMayReplace("POSITION_FILE", fid, "fid");
 
     Int ifid = INT_INTOBJ(fid);
     Int ret = SyFtell(ifid);
@@ -1658,12 +1643,7 @@ Obj FuncREAD_BYTE_FILE (
     Int             ret;
 
     /* check the argument                                                  */
-    while ( ! IS_INTOBJ(fid) ) {
-        fid = ErrorReturnObj(
-            "<fid> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(fid), 0L,
-            "you can replace <fid> via 'return <fid>;'" );
-    }
+    RequireSmallIntMayReplace("READ_BYTE_FILE", fid, "fid");
     
     /* call the system dependent function                                  */
     ret = SyGetch( INT_INTOBJ(fid) );
@@ -1689,12 +1669,7 @@ Obj FuncREAD_LINE_FILE (
     Obj             str;
 
     /* check the argument                                                  */
-    while ( ! IS_INTOBJ(fid) ) {
-        fid = ErrorReturnObj(
-            "<fid> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(fid), 0L,
-            "you can replace <fid> via 'return <fid>;'" );
-    }
+    RequireSmallIntMayReplace("READ_LINE_FILE", fid, "fid");
     ifid = INT_INTOBJ(fid);
 
     /* read <fid> until we see a newline or eof or we've read at least
@@ -1748,19 +1723,10 @@ Obj FuncREAD_ALL_FILE (
     UInt            csize;
 
     /* check the argument                                                  */
-    while ( ! IS_INTOBJ(fid) ) {
-        fid = ErrorReturnObj(
-            "<fid> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(fid), 0L,
-            "you can replace <fid> via 'return <fid>;'" );
-    }
+    RequireSmallIntMayReplace("READ_ALL_FILE", fid, "fid");
     ifid = INT_INTOBJ(fid);
 
-    while ( ! IS_INTOBJ(limit) ) {
-        limit = ErrorReturnObj("<limit> must be a small integer (not a %s)",
-                               (Int)TNAM_OBJ(limit), 0L,
-                               "you can replace limit via 'return <limit>;'");
-    }
+    RequireSmallIntMayReplace("READ_ALL_FILE", limit, "limit");
     ilim = INT_INTOBJ(limit);
 
     /* read <fid> until we see  eof or we've read at least
@@ -1846,18 +1812,8 @@ Obj FuncSEEK_POSITION_FILE (
     Int             ret;
 
     /* check the argument                                                  */
-    while ( ! IS_INTOBJ(fid) ) {
-        fid = ErrorReturnObj(
-            "<fid> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(fid), 0L,
-            "you can replace <fid> via 'return <fid>;'" );
-    }
-    while ( ! IS_INTOBJ(pos) ) {
-        pos = ErrorReturnObj(
-            "<pos> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(pos), 0L,
-            "you can replace <pos> via 'return <pos>;'" );
-    }
+    RequireSmallIntMayReplace("SEEK_POSITION_FILE", fid, "fid");
+    RequireSmallIntMayReplace("SEEK_POSITION_FILE", pos, "pos");
     
     ret = SyFseek( INT_INTOBJ(fid), INT_INTOBJ(pos) );
     return ret == -1 ? Fail : True;
@@ -1876,18 +1832,8 @@ Obj FuncWRITE_BYTE_FILE (
     Int             ret;
 
     /* check the argument                                                  */
-    while ( ! IS_INTOBJ(fid) ) {
-        fid = ErrorReturnObj(
-            "<fid> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(fid), 0L,
-            "you can replace <fid> via 'return <fid>;'" );
-    }
-    while ( ! IS_INTOBJ(ch) ) {
-        ch = ErrorReturnObj(
-            "<ch> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(ch), 0L,
-            "you can replace <ch> via 'return <ch>;'" );
-    }
+    RequireSmallIntMayReplace("WRITE_BYTE_FILE", fid, "fid");
+    RequireSmallIntMayReplace("WRITE_BYTE_FILE", ch, "ch");
     
     /* call the system dependent function                                  */
     ret = SyEchoch( INT_INTOBJ(ch), INT_INTOBJ(fid) );
@@ -1928,12 +1874,7 @@ Obj FuncREAD_STRING_FILE (
     Obj             fid )
 {
     /* check the argument                                                  */
-    while ( ! IS_INTOBJ(fid) ) {
-        fid = ErrorReturnObj(
-            "<fid> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(fid), 0L,
-            "you can replace <fid> via 'return <fid>;'" );
-    }
+    RequireSmallIntMayReplace("READ_STRING_FILE", fid, "fid");
     return SyReadStringFid(INT_INTOBJ(fid));
 }
 
@@ -1943,26 +1884,17 @@ Obj FuncREAD_STRING_FILE (
 */
 Obj FuncFD_OF_FILE(Obj self,Obj fid)
 {
-  while (fid == (Obj) 0 || !(IS_INTOBJ(fid))) {
-    fid = ErrorReturnObj(
-           "<fid> must be a small integer (not a %s)",
-           (Int)TNAM_OBJ(fid),0L,
-           "you can replace <fid> via 'return <fid>;'" );
-  }
+    RequireSmallIntMayReplace("FD_OF_FILE", fid, "fid");
 
-  Int fd = INT_INTOBJ(fid);
-  Int fdi = SyBufFileno(fd);
-  return INTOBJ_INT(fdi);
+    Int fd = INT_INTOBJ(fid);
+    Int fdi = SyBufFileno(fd);
+    return INTOBJ_INT(fdi);
 }
 
 #ifdef HPCGAP
 Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
 {
-    while (!IS_INTOBJ(fid)) {
-        fid = ErrorReturnObj("<fid> must be a small integer (not a %s)",
-                             (Int)TNAM_OBJ(fid), 0L,
-                             "you can replace <fid> via 'return <fid>;'");
-    }
+    RequireSmallIntMayReplace("RAW_MODE_FILE", fid, "fid");
 
     Int fd = INT_INTOBJ(fid);
     if (onoff == False || onoff == Fail) {
@@ -1986,17 +1918,17 @@ Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist,
 
   while (inlist == (Obj) 0 || !(IS_PLIST(inlist)))
     inlist = ErrorReturnObj(
-           "<inlist> must be a list of small integers (not a %s)",
+           "UNIXSelect: <inlist> must be a list of small integers (not a %s)",
            (Int)TNAM_OBJ(inlist),0L,
            "you can replace <inlist> via 'return <inlist>;'" );
   while (outlist == (Obj) 0 || !(IS_PLIST(outlist)))
     outlist = ErrorReturnObj(
-           "<outlist> must be a list of small integers (not a %s)",
+           "UNIXSelect: <outlist> must be a list of small integers (not a %s)",
            (Int)TNAM_OBJ(outlist),0L,
            "you can replace <outlist> via 'return <outlist>;'" );
   while (exclist == (Obj) 0 || !(IS_PLIST(exclist)))
     exclist = ErrorReturnObj(
-           "<exclist> must be a list of small integers (not a %s)",
+           "UNIXSelect: <exclist> must be a list of small integers (not a %s)",
            (Int)TNAM_OBJ(exclist),0L,
            "you can replace <exclist> via 'return <exclist>;'" );
 
@@ -2119,18 +2051,8 @@ Obj FuncExecuteProcess (
             (Int)TNAM_OBJ(prg), 0L,
             "you can replace <prg> via 'return <prg>;'" );
     }
-    while ( ! IS_INTOBJ(in) ) {
-        in = ErrorReturnObj(
-            "ExecuteProcess: <in> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(in), 0L,
-            "you can replace <in> via 'return <in>;'" );
-    }
-    while ( ! IS_INTOBJ(out) ) {
-        out = ErrorReturnObj(
-            "ExecuteProcess: <out> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(out), 0L,
-            "you can replace <out> via 'return <out>;'" );
-    }
+    RequireSmallIntMayReplace("ExecuteProcess", in, "in");
+    RequireSmallIntMayReplace("ExecuteProcess", out, "out");
     RequireSmallListMayReplace("ExecuteProcess", args);
 
     /* create an argument array                                            */
@@ -2140,7 +2062,7 @@ Obj FuncExecuteProcess (
         tmp = ELM_LIST( args, i );
         while ( ! IsStringConv(tmp) ) {
             tmp = ErrorReturnObj(
-                "<tmp> must be a string (not a %s)",
+                "ExecuteProcess: <tmp> must be a string (not a %s)",
                 (Int)TNAM_OBJ(tmp), 0L,
                 "you can replace <tmp> via 'return <tmp>;'" );
         }

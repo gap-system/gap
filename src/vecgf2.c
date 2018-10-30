@@ -1771,10 +1771,7 @@ Obj FuncELM0_GF2VEC (
 {
     UInt                p;
 
-    
-    if (!IS_INTOBJ(pos))
-      ErrorMayQuit("ELM0_GF2VEC: position must be a small integer, not a %s",
-		(Int)TNAM_OBJ(pos),0L);
+    RequireSmallInt("ELM0_GF2VEC", pos, "pos");
     p = INT_INTOBJ(pos);
     if ( LEN_GF2VEC(list) < p ) {
         return Fail;
@@ -1800,9 +1797,7 @@ Obj FuncELM_GF2VEC (
 {
     UInt                p;
 
-    if (!IS_INTOBJ(pos))
-      ErrorMayQuit("ELM_GF2VEC: position must be a small integer, not a %s",
-		(Int)TNAM_OBJ(pos),0L);
+    RequireSmallInt("ELM_GF2VEC", pos, "pos");
     p = INT_INTOBJ(pos);
     if ( LEN_GF2VEC(list) < p ) {
         ErrorReturnVoid(
@@ -1946,9 +1941,7 @@ Obj FuncASS_GF2VEC (
     }
 
     /* get the position                                                    */
-    if (!IS_INTOBJ(pos))
-      ErrorMayQuit("ASS_VEC8BIT: position must be a small integer, not a %s",
-		(Int)TNAM_OBJ(pos),0L);
+    RequireSmallInt("ASS_VEC8BIT", pos, "pos");
     p = INT_INTOBJ(pos);
 
     /* if <elm> is Z(2) or 0*Z(2) and the position is OK, keep rep         */
@@ -2029,9 +2022,7 @@ Obj FuncASS_GF2MAT (
     }
 
     /* get the position                                                    */
-    if (!IS_INTOBJ(pos))
-      ErrorMayQuit("ASS_GF2MAT: position must be a small integer, not a %s",
-		(Int)TNAM_OBJ(pos),0L);
+    RequireSmallInt("ASS_GF2MAT", pos, "pos");
     p = INT_INTOBJ(pos);
 
     /* if <elm> is a GF2 vector and the length is OK, keep the rep         */
@@ -2073,10 +2064,7 @@ Obj FuncASS_GF2MAT (
 */
 Obj FuncELM_GF2MAT( Obj self, Obj mat, Obj row )
 {
-    if (!IS_POS_INTOBJ(row)) {
-        ErrorMayQuit("ELM_GF2MAT: position must be a small integer, not a %s",
-                     (Int)TNAM_OBJ(row), 0L);
-    }
+    RequireSmallInt("ELM_GF2MAT", row, "row");
     UInt r = INT_INTOBJ(row);
     if (LEN_GF2MAT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r, LEN_GF2MAT(mat));
@@ -2119,9 +2107,7 @@ Obj FuncUNB_GF2VEC (
     }
 
     /* get the position                                                    */
-    if (!IS_INTOBJ(pos))
-      ErrorMayQuit("UNB_GF2VEC: position must be a small integer, not a %s",
-		(Int)TNAM_OBJ(pos),0L);
+    RequireSmallInt("UNB_GF2VEC", pos, "pos");
     p = INT_INTOBJ(pos);
 
     /* if we unbind the last position keep the representation              */
@@ -2166,9 +2152,7 @@ Obj FuncUNB_GF2MAT (
     }
 
     /* get the position                                                    */
-    if (!IS_INTOBJ(pos))
-      ErrorMayQuit("UNB_GF2MAT: position must be a small integer, not a %s",
-		(Int)TNAM_OBJ(pos),0L);
+    RequireSmallInt("UNB_GF2MAT", pos, "pos");
     p = INT_INTOBJ(pos);
 
     /* if we unbind the last position keep the representation              */
@@ -3712,7 +3696,7 @@ Obj FuncSHIFT_LEFT_GF2VEC( Obj self, Obj vec, Obj amount)
       return (Obj)0;
     }
   if (!IS_INTOBJ(amount))
-    ErrorMayQuit("SHIFT_LEFT_GF2VEC: the amnount to shift must be a small integer, not a %d",
+    ErrorMayQuit("SHIFT_LEFT_GF2VEC: the amount to shift must be a small integer, not a %d",
 	      (Int)TNAM_OBJ(amount), 0L);
   amount1 = INT_INTOBJ(amount);
   if (amount1 < 0)
