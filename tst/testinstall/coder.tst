@@ -193,17 +193,17 @@ true
 #
 gap> l := [1,2,3];;
 gap> function() l![fail] := 42; end();
-Error, PosObj Assignment: <position> must be a positive small integer (not a b\
-oolean or fail)
+Error, PosObj Assignment: <position> must be a positive small integer (not the\
+ value 'fail')
 gap> function() return l![fail]; end();
-Error, PosObj Element: <position> must be a positive small integer (not a bool\
-ean or fail)
+Error, PosObj Element: <position> must be a positive small integer (not the va\
+lue 'fail')
 gap> function() return IsBound(l![fail]); end();
-Error, PosObj Element: <position> must be a positive small integer (not a bool\
-ean or fail)
+Error, PosObj Element: <position> must be a positive small integer (not the va\
+lue 'fail')
 gap> function() Unbind(l![fail]); end();
-Error, PosObj Assignment: <position> must be a positive small integer (not a b\
-oolean or fail)
+Error, PosObj Assignment: <position> must be a positive small integer (not the\
+ value 'fail')
 
 #
 # posobj
@@ -235,17 +235,17 @@ false
 
 #
 gap> function() l![fail] := 42; end();
-Error, PosObj Assignment: <position> must be a positive small integer (not a b\
-oolean or fail)
+Error, PosObj Assignment: <position> must be a positive small integer (not the\
+ value 'fail')
 gap> function() return l![fail]; end();
-Error, PosObj Element: <position> must be a positive small integer (not a bool\
-ean or fail)
+Error, PosObj Element: <position> must be a positive small integer (not the va\
+lue 'fail')
 gap> function() return IsBound(l![fail]); end();
-Error, PosObj Element: <position> must be a positive small integer (not a bool\
-ean or fail)
+Error, PosObj Element: <position> must be a positive small integer (not the va\
+lue 'fail')
 gap> function() Unbind(l![fail]); end();
-Error, PosObj Assignment: <position> must be a positive small integer (not a b\
-oolean or fail)
+Error, PosObj Assignment: <position> must be a positive small integer (not the\
+ value 'fail')
 
 #
 # atomic posobj (HPC-GAP)
@@ -277,17 +277,17 @@ false
 
 #
 gap> function() l![fail] := 42; end();
-Error, PosObj Assignment: <position> must be a positive small integer (not a b\
-oolean or fail)
+Error, PosObj Assignment: <position> must be a positive small integer (not the\
+ value 'fail')
 gap> function() return l![fail]; end();
-Error, PosObj Element: <position> must be a positive small integer (not a bool\
-ean or fail)
+Error, PosObj Element: <position> must be a positive small integer (not the va\
+lue 'fail')
 gap> function() return IsBound(l![fail]); end();
-Error, PosObj Element: <position> must be a positive small integer (not a bool\
-ean or fail)
+Error, PosObj Element: <position> must be a positive small integer (not the va\
+lue 'fail')
 gap> function() Unbind(l![fail]); end();
-Error, PosObj Assignment: <position> must be a positive small integer (not a b\
-oolean or fail)
+Error, PosObj Assignment: <position> must be a positive small integer (not the\
+ value 'fail')
 
 #
 gap> STOP_TEST("coder.tst", 1);

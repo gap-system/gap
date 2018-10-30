@@ -135,7 +135,7 @@ Error, ExecuteProcess: <in> must be an integer (not a boolean or fail)
 gap> ExecuteProcess("","",0,fail,fail);
 Error, ExecuteProcess: <out> must be an integer (not a boolean or fail)
 gap> ExecuteProcess("","",0,0,fail);
-Error, ExecuteProcess: <args> must be a small list (not a boolean or fail)
+Error, ExecuteProcess: <args> must be a small list (not the value 'fail')
 gap> ExecuteProcess("","",0,0,[1]);
 Error, <tmp> must be a string (not a integer)
 

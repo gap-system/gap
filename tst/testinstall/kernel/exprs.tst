@@ -12,8 +12,8 @@ gap> f(2,1);
 gap> f(2,2);
 Error, Permutation: cycles must be disjoint and duplicate-free
 gap> f(2,fail);
-Error, Permutation: <expr> must be a positive small integer (not a boolean or \
-fail)
+Error, Permutation: <expr> must be a positive small integer (not the value 'fa\
+il')
 gap> f:={a,b,c,d} -> (a,b,c,d);;
 gap> f(1,2,3,4);
 (1,2,3,4)

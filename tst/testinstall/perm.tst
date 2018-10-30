@@ -19,7 +19,8 @@ true
 
 # test error handling parsing of permutations
 gap> (1,2,0);
-Error, Permutation: <expr> must be a positive small integer (not a integer)
+Error, Permutation: <expr> must be a positive small integer (not the integer 0\
+)
 gap> (1,2)(1,2);
 Error, Permutation: cycles must be disjoint and duplicate-free
 gap> (1,2,3,2);

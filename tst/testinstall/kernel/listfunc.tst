@@ -27,16 +27,16 @@ Error, AppendList: <list1> must be a small list (not a record (plain))
 
 #
 gap> POSITION_SORTED_LIST(fail, fail);
-Error, POSITION_SORTED_LIST: <list> must be a small list (not a boolean or fai\
-l)
+Error, POSITION_SORTED_LIST: <list> must be a small list (not the value 'fail'\
+)
 
 #
 gap> POSITION_SORTED_LIST_COMP(fail, fail, fail);
-Error, POSITION_SORTED_LIST_COMP: <list> must be a small list (not a boolean o\
-r fail)
+Error, POSITION_SORTED_LIST_COMP: <list> must be a small list (not the value '\
+fail')
 gap> POSITION_SORTED_LIST_COMP([], 1, fail);
-Error, POSITION_SORTED_LIST_COMP: <func> must be a function (not a boolean or \
-fail)
+Error, POSITION_SORTED_LIST_COMP: <func> must be a function (not the value 'fa\
+il')
 gap> POSITION_SORTED_LIST_COMP([1,2,3], 3, \<);
 3
 gap> POSITION_SORTED_LIST_COMP([1..3], 3, \<);
@@ -48,42 +48,41 @@ gap> POSITION_SORTED_LIST_COMP([1..3], 0, \<);
 
 #
 gap> SORT_LIST(fail);
-Error, SORT_LIST: <list> must be a small list (not a boolean or fail)
+Error, SORT_LIST: <list> must be a small list (not the value 'fail')
 
 #
 gap> STABLE_SORT_LIST(fail);
-Error, STABLE_SORT_LIST: <list> must be a small list (not a boolean or fail)
+Error, STABLE_SORT_LIST: <list> must be a small list (not the value 'fail')
 
 #
 gap> SORT_LIST_COMP(fail, fail);
-Error, SORT_LIST_COMP: <list> must be a small list (not a boolean or fail)
+Error, SORT_LIST_COMP: <list> must be a small list (not the value 'fail')
 gap> SORT_LIST_COMP([], fail);
-Error, SORT_LIST_COMP: <func> must be a function (not a boolean or fail)
+Error, SORT_LIST_COMP: <func> must be a function (not the value 'fail')
 
 #
 gap> STABLE_SORT_LIST_COMP(fail, fail);
-Error, STABLE_SORT_LIST_COMP: <list> must be a small list (not a boolean or fa\
-il)
+Error, STABLE_SORT_LIST_COMP: <list> must be a small list (not the value 'fail\
+')
 gap> STABLE_SORT_LIST_COMP([], fail);
-Error, STABLE_SORT_LIST_COMP: <func> must be a function (not a boolean or fail\
-)
+Error, STABLE_SORT_LIST_COMP: <func> must be a function (not the value 'fail')
 
 #
 gap> SORT_PARA_LIST(fail, fail);
-Error, SORT_PARA_LIST: <list> must be a small list (not a boolean or fail)
+Error, SORT_PARA_LIST: <list> must be a small list (not the value 'fail')
 gap> SORT_PARA_LIST([], fail);
-Error, SORT_PARA_LIST: <shadow> must be a small list (not a boolean or fail)
+Error, SORT_PARA_LIST: <shadow> must be a small list (not the value 'fail')
 gap> SORT_PARA_LIST([], [1]);
 Error, SORT_PARA_LIST: <list> must have the same length as <shadow> (not 0 and\
  1)
 
 #
 gap> STABLE_SORT_PARA_LIST(fail, fail);
-Error, STABLE_SORT_PARA_LIST: <list> must be a small list (not a boolean or fa\
-il)
+Error, STABLE_SORT_PARA_LIST: <list> must be a small list (not the value 'fail\
+')
 gap> STABLE_SORT_PARA_LIST([], fail);
-Error, STABLE_SORT_PARA_LIST: <shadow> must be a small list (not a boolean or \
-fail)
+Error, STABLE_SORT_PARA_LIST: <shadow> must be a small list (not the value 'fa\
+il')
 gap> STABLE_SORT_PARA_LIST([], [1]);
 Error, STABLE_SORT_PARA_LIST: <list> must have the same length as <shadow> (no\
 t 0 and 1)
@@ -94,7 +93,7 @@ Error, OnPairs: <pair> must be a list of length 2 (not a boolean or fail)
 
 #
 gap> OnTuples(fail,fail);
-Error, OnTuples: <tuple> must be a small list (not a boolean or fail)
+Error, OnTuples: <tuple> must be a small list (not the value 'fail')
 
 #
 gap> OnSets(fail,fail);
