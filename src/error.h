@@ -253,6 +253,24 @@ extern Obj RACErrorHelper(int          mayReturn,
 
 /****************************************************************************
 **
+*F  RequireStringRep
+*/
+#define RequireStringRep(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, IsStringConv(op), \
+        "must be a string")
+
+
+/****************************************************************************
+**
+*F  RequireStringRepMayReplace
+*/
+#define RequireStringRepMayReplace(funcname, op) \
+    RequireArgumentConditionMayReplace(funcname, op, #op, IsStringConv(op), \
+        "must be a string")
+
+
+/****************************************************************************
+**
 *F  CheckIsPossList( <desc>, <poss> ) . . . . . . . . . . check for poss list
 */
 void CheckIsPossList(const Char * desc, Obj poss);

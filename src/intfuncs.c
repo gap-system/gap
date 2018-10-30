@@ -92,12 +92,7 @@ Obj FuncInitRandomMT( Obj self, Obj initstr)
   UInt4 *mt, key_length, byte_key_length, i, j, k, N = 624;
 
   /* check the seed, given as string */
-  while (! IsStringConv(initstr)) {
-     initstr = ErrorReturnObj(
-         "<initstr> must be a string (not a %s)",
-         (Int)TNAM_OBJ(initstr), 0L,
-         "you can replace <initstr> via 'return <initstr>;'" );
-  }
+  RequireStringRepMayReplace("InitRandomMT", initstr);
 
   /* store array of 624 UInt4 and one UInt4 as counter "mti" and an
      endianness marker */

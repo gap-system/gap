@@ -228,12 +228,7 @@ Obj    FuncEmptyString( Obj self, Obj len )
 */
 Obj   FuncShrinkAllocationString( Obj self, Obj str )
 {
-    while (! IsStringConv(str)) {
-       str = ErrorReturnObj(
-           "<str> must be a string, not a %s)",
-           (Int)TNAM_OBJ(str), 0L,
-           "you can replace <str> via 'return <str>;'" );
-    }
+    RequireStringRepMayReplace("ShrinkAllocationString", str);
     SHRINK_STRING(str);
     return (Obj)0;
 }
@@ -1499,20 +1494,10 @@ Obj FuncPOSITION_SUBSTRING(
   const UInt1  *s, *ss;
 
   /* check whether <string> is a string                                  */
-  while ( ! IsStringConv( string ) ) {
-    string = ErrorReturnObj(
-	     "POSITION_SUBSTRING: <string> must be a string (not a %s)",
-	     (Int)TNAM_OBJ(string), 0L,
-	     "you can replace <string> via 'return <string>;'" );
-  }
+  RequireStringRepMayReplace("POSITION_SUBSTRING", string);
   
   /* check whether <substr> is a string                        */
-  while ( ! IsStringConv( substr ) ) {
-    substr = ErrorReturnObj(
-	  "POSITION_SUBSTRING: <substr> must be a string (not a %s)",
-	  (Int)TNAM_OBJ(substr), 0L,
-	  "you can replace <substr> via 'return <substr>;'" );
-  }
+  RequireStringRepMayReplace("POSITION_SUBSTRING", substr);
 
   /* check wether <off> is a non-negative integer  */
   while ( ! IS_INTOBJ(off) || (ipos = INT_INTOBJ(off)) < 0 ) {
@@ -1565,12 +1550,7 @@ Obj FuncNormalizeWhitespace (
   Int i, j, len, white;
 
   /* check whether <string> is a string                                  */
-  while ( ! IsStringConv( string ) ) {
-    string = ErrorReturnObj(
-	     "NormalizeWhitespace: <string> must be a string (not a %s)",
-	     (Int)TNAM_OBJ(string), 0L,
-	     "you can replace <string> via 'return <string>;'" );
-  }
+  RequireStringRepMayReplace("NormalizeWhitespace", string);
   
   len = GET_LEN_STRING(string);
   s = CHARS_STRING(string);
@@ -1620,20 +1600,10 @@ Obj FuncREMOVE_CHARACTERS (
   UInt1 REMCHARLIST[256] = {0};
 
   /* check whether <string> is a string                                  */
-  while ( ! IsStringConv( string ) ) {
-    string = ErrorReturnObj(
-	     "RemoveCharacters: first argument <string> must be a string (not a %s)",
-	     (Int)TNAM_OBJ(string), 0L,
-	     "you can replace <string> via 'return <string>;'" );
-  }
+  RequireStringRepMayReplace("RemoveCharacters", string);
   
   /* check whether <rem> is a string                                  */
-  while ( ! IsStringConv( rem ) ) {
-    rem = ErrorReturnObj(
-	     "RemoveCharacters: second argument <rem> must be a string (not a %s)",
-	     (Int)TNAM_OBJ(rem), 0L,
-	     "you can replace <rem> via 'return <rem>;'" );
-  }
+  RequireStringRepMayReplace("RemoveCharacters", rem);
   
   /* set REMCHARLIST by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(rem);
@@ -1673,23 +1643,18 @@ Obj FuncTranslateString (
   Int j, len;
 
   /* check whether <string> is a string                                  */
-  while ( ! IsStringConv( string ) ) {
-    string = ErrorReturnObj(
-	     "TranslateString: first argument <string> must be a string (not a %s)",
-	     (Int)TNAM_OBJ(string), 0L,
-	     "you can replace <string> via 'return <string>;'" );
-  }
+  RequireStringRepMayReplace("TranslateString", string);
   
   // check whether <trans> is a string of length at least 256
   while ( ! IsStringConv( trans ) || GET_LEN_STRING( trans ) < 256 ) {
     if ( ! IsStringConv( trans ) ) {
       trans = ErrorReturnObj(
-           "TranslateString: second argument <trans> must be a string (not a %s)",
+           "TranslateString: <trans> must be a string (not a %s)",
            (Int)TNAM_OBJ(trans), 0L,
            "you can replace <trans> via 'return <trans>;'" );
     } else if ( GET_LEN_STRING( trans ) < 256 ) {
       trans = ErrorReturnObj(
-           "TranslateString: second argument <trans> must have length >= 256",
+           "TranslateString: <trans> must have length >= 256",
            0L, 0L,
            "you can replace <trans> via 'return <trans>;'" );
     }
@@ -1728,29 +1693,14 @@ Obj FuncSplitStringInternal (
   UInt1 SPLITSTRINGWSPACE[256] = { 0 };
 
   /* check whether <string> is a string                                  */
-  while ( ! IsStringConv( string ) ) {
-    string = ErrorReturnObj(
-	     "SplitString: first argument <string> must be a string (not a %s)",
-	     (Int)TNAM_OBJ(string), 0L,
-	     "you can replace <string> via 'return <string>;'" );
-  }
-  
+  RequireStringRepMayReplace("SplitString", string);
+
   /* check whether <seps> is a string                                  */
-  while ( ! IsStringConv( seps ) ) {
-    seps = ErrorReturnObj(
-	     "SplitString: second argument <seps> must be a string (not a %s)",
-	     (Int)TNAM_OBJ(seps), 0L,
-	     "you can replace <seps> via 'return <seps>;'" );
-  }
-  
+  RequireStringRepMayReplace("SplitString", seps);
+
   /* check whether <wspace> is a string                                  */
-  while ( ! IsStringConv( wspace ) ) {
-    wspace = ErrorReturnObj(
-	     "SplitString: third argument <wspace> must be a string (not a %s)",
-	     (Int)TNAM_OBJ(wspace), 0L,
-	     "you can replace <wspace> via 'return <wspace>;'" );
-  }
-  
+  RequireStringRepMayReplace("SplitString", wspace);
+
   /* set SPLITSTRINGSEPS by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(seps);
   s = CONST_CHARS_STRING(seps);

@@ -12,7 +12,7 @@ Error, <len> must be an non-negative integer (not a integer)
 #
 gap> ShrinkAllocationString(s);
 gap> ShrinkAllocationString(1);
-Error, <str> must be a string, not a integer)
+Error, ShrinkAllocationString: <str> must be a string (not the integer 1)
 
 #
 gap> CHAR_INT(fail);
@@ -87,9 +87,9 @@ gap> POSITION_SUBSTRING("abc","b",0);
 gap> POSITION_SUBSTRING("abc","b",3);
 fail
 gap> POSITION_SUBSTRING(1,2,3);
-Error, POSITION_SUBSTRING: <string> must be a string (not a integer)
+Error, POSITION_SUBSTRING: <string> must be a string (not the integer 1)
 gap> POSITION_SUBSTRING("abc",2,3);
-Error, POSITION_SUBSTRING: <substr> must be a string (not a integer)
+Error, POSITION_SUBSTRING: <substr> must be a string (not the integer 2)
 gap> POSITION_SUBSTRING("abc","b",-1);
 Error, POSITION_SUBSTRING: <off> must be a non-negative integer (not a integer\
 )
@@ -98,29 +98,25 @@ Error, POSITION_SUBSTRING: <off> must be a non-negative integer (not a integer\
 gap> s:="  abc\n  xyz\n";; NormalizeWhitespace(s); s;
 "abc xyz"
 gap> NormalizeWhitespace(1);
-Error, NormalizeWhitespace: <string> must be a string (not a integer)
+Error, NormalizeWhitespace: <string> must be a string (not the integer 1)
 
 #
 gap> s:="abcdabcd";; REMOVE_CHARACTERS(s, "db"); s;
 "acac"
 gap> REMOVE_CHARACTERS(1,1);
-Error, RemoveCharacters: first argument <string> must be a string (not a integ\
-er)
+Error, RemoveCharacters: <string> must be a string (not the integer 1)
 gap> REMOVE_CHARACTERS(s,1);
-Error, RemoveCharacters: second argument <rem> must be a string (not a integer\
-)
+Error, RemoveCharacters: <rem> must be a string (not the integer 1)
 
 #
 gap> s:="abc";; TranslateString(s,UPPERCASETRANSTABLE); s;
 "ABC"
 gap> TranslateString(1,1);
-Error, TranslateString: first argument <string> must be a string (not a intege\
-r)
+Error, TranslateString: <string> must be a string (not the integer 1)
 gap> TranslateString("abc",1);
-Error, TranslateString: second argument <trans> must be a string (not a intege\
-r)
+Error, TranslateString: <trans> must be a string (not a integer)
 gap> TranslateString("abc","def");
-Error, TranslateString: second argument <trans> must have length >= 256
+Error, TranslateString: <trans> must have length >= 256
 
 #
 gap> STOP_TEST("kernel/strinobj.tst", 1);

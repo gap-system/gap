@@ -561,12 +561,7 @@ Obj FuncLOG_TO (
     Obj                 self,
     Obj                 filename )
 {
-    while ( ! IsStringConv(filename) ) {
-        filename = ErrorReturnObj(
-            "LogTo: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    RequireStringRepMayReplace("LogTo", filename);
     if ( ! OpenLog( CONST_CSTR_STRING(filename) ) ) {
         ErrorReturnVoid( "LogTo: cannot log to %g",
                          (Int)filename, 0L,
@@ -633,12 +628,7 @@ Obj FuncINPUT_LOG_TO (
     Obj                 self,
     Obj                 filename )
 {
-    while ( ! IsStringConv(filename) ) {
-        filename = ErrorReturnObj(
-            "InputLogTo: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    RequireStringRepMayReplace("InputLogTo", filename);
     if ( ! OpenInputLog( CONST_CSTR_STRING(filename) ) ) {
         ErrorReturnVoid( "InputLogTo: cannot log to %g",
                          (Int)filename, 0L,
@@ -705,12 +695,7 @@ Obj FuncOUTPUT_LOG_TO (
     Obj                 self,
     Obj                 filename )
 {
-    while ( ! IsStringConv(filename) ) {
-        filename = ErrorReturnObj(
-            "OutputLogTo: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    RequireStringRepMayReplace("OutputLogTo", filename);
     if ( ! OpenOutputLog( CONST_CSTR_STRING(filename) ) ) {
         ErrorReturnVoid( "OutputLogTo: cannot log to %g",
                          (Int)filename, 0L,
@@ -790,12 +775,7 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
 
     /* first entry is the filename                                         */
     filename = ELM_LIST(args,1);
-    while ( ! IsStringConv(filename) ) {
-        filename = ErrorReturnObj(
-            "%s: <filename> must be a string (not a %s)",
-            (Int)funcname, (Int)TNAM_OBJ(filename),
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    RequireStringRepMayReplace(funcname, filename);
 
     /* try to open the file for output                                     */
     i = append ? OpenAppend( CONST_CSTR_STRING(filename) )
@@ -975,12 +955,7 @@ Obj FuncREAD (
     Obj                 filename )
 {
    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "READ: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    RequireStringRepMayReplace("READ", filename);
 
     /* try to open the file                                                */
     if ( ! OpenInput( CONST_CSTR_STRING(filename) ) ) {
@@ -1104,13 +1079,8 @@ Obj FuncREAD_AS_FUNC (
     Obj                 self,
     Obj                 filename )
 {
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "READ_AS_FUNC: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("READ_AS_FUNC", filename);
 
     /* try to open the file                                                */
     if ( ! OpenInput( CONST_CSTR_STRING(filename) ) ) {
@@ -1154,13 +1124,8 @@ Obj FuncREAD_GAP_ROOT (
 {
     Char filenamecpy[GAP_PATH_MAX];
 
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "READ: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("READ", filename);
 
     /* Copy to avoid garbage collection moving string                      */
     strlcpy(filenamecpy, CONST_CSTR_STRING(filename), GAP_PATH_MAX);
@@ -1213,13 +1178,8 @@ Obj FuncRemoveFile (
     Obj             self,
     Obj             filename )
 {
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("RemoveFile", filename);
     
     /* call the system dependent function                                  */
     return SyRemoveFile( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
@@ -1233,13 +1193,8 @@ Obj FuncCreateDir (
     Obj             self,
     Obj             filename )
 {
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "CreateDir: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("CreateDir", filename);
     
     /* call the system dependent function                                  */
     return SyMkdir( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
@@ -1253,13 +1208,8 @@ Obj FuncRemoveDir (
     Obj             self,
     Obj             filename )
 {
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "RemoveDir: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("RemoveDir", filename);
     
     /* call the system dependent function                                  */
     return SyRmdir( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
@@ -1273,12 +1223,7 @@ Obj FuncIsDir (
     Obj             self,
     Obj             filename )
 {
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "IsDir: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    RequireStringRepMayReplace("IsDir", filename);
 
     /* call the system dependent function                                  */
     return SyIsDir( CONST_CSTR_STRING(filename) );
@@ -1338,13 +1283,8 @@ Obj FuncIsExistingFile (
 {
     Int             res;
 
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "IsExistingFile: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("IsExistingFile", filename);
     
     /* call the system dependent function                                  */
     res = SyIsExistingFile( CONST_CSTR_STRING(filename) );
@@ -1362,13 +1302,8 @@ Obj FuncIsReadableFile (
 {
     Int             res;
 
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "IsReadableFile: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("IsReadableFile", filename);
     
     /* call the system dependent function                                  */
     res = SyIsReadableFile( CONST_CSTR_STRING(filename) );
@@ -1386,13 +1321,8 @@ Obj FuncIsWritableFile (
 {
     Int             res;
 
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "IsWritableFile: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("IsWritableFile", filename);
     
     /* call the system dependent function                                  */
     res = SyIsWritableFile( CONST_CSTR_STRING(filename) );
@@ -1410,13 +1340,8 @@ Obj FuncIsExecutableFile (
 {
     Int             res;
 
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "IsExecutableFile: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("IsExecutableFile", filename);
     
     /* call the system dependent function                                  */
     res = SyIsExecutableFile( CONST_CSTR_STRING(filename) );
@@ -1434,13 +1359,8 @@ Obj FuncIsDirectoryPathString (
 {
     Int             res;
 
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "IsDirectoryPathString: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("IsDirectoryPathString", filename);
     
     /* call the system dependent function                                  */
     res = SyIsDirectoryPath( CONST_CSTR_STRING(filename) );
@@ -1469,13 +1389,8 @@ Obj FuncSTRING_LIST_DIR (
     Obj res;
     Int len, sl;
 
-    /* check the argument                                                  */
-    while ( ! IsStringConv( dirname ) ) {
-        dirname = ErrorReturnObj(
-            "STRING_LIST_DIR: <dirname> must be a string (not a %s)",
-            (Int)TNAM_OBJ(dirname), 0L,
-            "you can replace <dirname> via 'return <dirname>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("STRING_LIST_DIR", dirname);
     
     SyClearErrorNo();
     dir = opendir(CONST_CSTR_STRING(dirname));
@@ -1515,7 +1430,7 @@ Obj FuncCLOSE_FILE (
 {
     Int             ret;
 
-    /* check the argument                                                  */
+    // check the argument
     RequireSmallIntMayReplace("CLOSE_FILE", fid, "fid");
     
     /* call the system dependent function                                  */
@@ -1534,13 +1449,8 @@ Obj FuncINPUT_TEXT_FILE (
 {
     Int             fid;
 
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "INPUT_TEXT_FILE: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("INPUT_TEXT_FILE", filename);
     
     /* call the system dependent function                                  */
     SyClearErrorNo();
@@ -1561,7 +1471,7 @@ Obj FuncIS_END_OF_FILE (
 {
     Int             ret;
 
-    /* check the argument                                                  */
+    // check the argument
     RequireSmallIntMayReplace("IS_END_OF_FILE", fid, "fid");
     
     ret = SyIsEndOfFile( INT_INTOBJ(fid) );
@@ -1580,13 +1490,8 @@ Obj FuncOUTPUT_TEXT_FILE (
 {
     Int             fid;
 
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "OUTPUT_TEXT_FILE: <filename> must be a string (not a %s)",
-            (Int)TNAM_OBJ(filename), 0L,
-            "you can replace <filename> via 'return <filename>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("OUTPUT_TEXT_FILE", filename);
     while ( append != True && append != False ) {
         filename = ErrorReturnObj(
             "OUTPUT_TEXT_FILE: <append> must be a boolean (not a %s)",
@@ -1616,7 +1521,7 @@ Obj FuncPOSITION_FILE (
     Obj             self,
     Obj             fid )
 {
-    /* check the argument                                                  */
+    // check the argument
     RequireSmallIntMayReplace("POSITION_FILE", fid, "fid");
 
     Int ifid = INT_INTOBJ(fid);
@@ -1642,7 +1547,7 @@ Obj FuncREAD_BYTE_FILE (
 {
     Int             ret;
 
-    /* check the argument                                                  */
+    // check the argument
     RequireSmallIntMayReplace("READ_BYTE_FILE", fid, "fid");
     
     /* call the system dependent function                                  */
@@ -1668,7 +1573,7 @@ Obj FuncREAD_LINE_FILE (
     UInt            lstr;
     Obj             str;
 
-    /* check the argument                                                  */
+    // check the argument
     RequireSmallIntMayReplace("READ_LINE_FILE", fid, "fid");
     ifid = INT_INTOBJ(fid);
 
@@ -1722,7 +1627,7 @@ Obj FuncREAD_ALL_FILE (
     Int             ilim;
     UInt            csize;
 
-    /* check the argument                                                  */
+    // check the argument
     RequireSmallIntMayReplace("READ_ALL_FILE", fid, "fid");
     ifid = INT_INTOBJ(fid);
 
@@ -1811,7 +1716,7 @@ Obj FuncSEEK_POSITION_FILE (
 {
     Int             ret;
 
-    /* check the argument                                                  */
+    // check the argument
     RequireSmallIntMayReplace("SEEK_POSITION_FILE", fid, "fid");
     RequireSmallIntMayReplace("SEEK_POSITION_FILE", pos, "pos");
     
@@ -1831,7 +1736,7 @@ Obj FuncWRITE_BYTE_FILE (
 {
     Int             ret;
 
-    /* check the argument                                                  */
+    // check the argument
     RequireSmallIntMayReplace("WRITE_BYTE_FILE", fid, "fid");
     RequireSmallIntMayReplace("WRITE_BYTE_FILE", ch, "ch");
     
@@ -1873,7 +1778,7 @@ Obj FuncREAD_STRING_FILE (
     Obj             self,
     Obj             fid )
 {
-    /* check the argument                                                  */
+    // check the argument
     RequireSmallIntMayReplace("READ_STRING_FILE", fid, "fid");
     return SyReadStringFid(INT_INTOBJ(fid));
 }
@@ -2038,19 +1943,9 @@ Obj FuncExecuteProcess (
     Int                 res;
     Int                 i;
 
-    /* check the argument                                                  */
-    while ( ! IsStringConv(dir) ) {
-        dir = ErrorReturnObj(
-            "ExecuteProcess: <dir> must be a string (not a %s)",
-            (Int)TNAM_OBJ(dir), 0L,
-            "you can replace <dir> via 'return <dir>;'" );
-    }
-    while ( ! IsStringConv(prg) ) {
-        prg = ErrorReturnObj(
-            "ExecuteProcess: <prg> must be a string (not a %s)",
-            (Int)TNAM_OBJ(prg), 0L,
-            "you can replace <prg> via 'return <prg>;'" );
-    }
+    // check the argument
+    RequireStringRepMayReplace("ExecuteProcess", dir);
+    RequireStringRepMayReplace("ExecuteProcess", prg);
     RequireSmallIntMayReplace("ExecuteProcess", in, "in");
     RequireSmallIntMayReplace("ExecuteProcess", out, "out");
     RequireSmallListMayReplace("ExecuteProcess", args);
@@ -2060,12 +1955,7 @@ Obj FuncExecuteProcess (
         if ( i == 1023 )
             break;
         tmp = ELM_LIST( args, i );
-        while ( ! IsStringConv(tmp) ) {
-            tmp = ErrorReturnObj(
-                "ExecuteProcess: <tmp> must be a string (not a %s)",
-                (Int)TNAM_OBJ(tmp), 0L,
-                "you can replace <tmp> via 'return <tmp>;'" );
-        }
+        RequireStringRepMayReplace("ExecuteProcess", tmp);
         ExecArgs[i] = tmp;
     }
     ExecCArgs[0]   = CSTR_STRING(prg);

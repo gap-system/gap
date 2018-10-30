@@ -7,39 +7,39 @@ gap> START_TEST("kernel/streams.tst");
 gap> CLOSE_LOG_TO();
 Error, LogTo: can not close the logfile
 gap> LOG_TO(fail);
-Error, LogTo: <filename> must be a string (not a boolean or fail)
+Error, LogTo: <filename> must be a string (not the value 'fail')
 
 #
 gap> CLOSE_INPUT_LOG_TO();
 Error, InputLogTo: can not close the logfile
 gap> INPUT_LOG_TO(fail);
-Error, InputLogTo: <filename> must be a string (not a boolean or fail)
+Error, InputLogTo: <filename> must be a string (not the value 'fail')
 
 #
 gap> CLOSE_OUTPUT_LOG_TO();
 Error, OutputLogTo: can not close the logfile
 gap> OUTPUT_LOG_TO(fail);
-Error, OutputLogTo: <filename> must be a string (not a boolean or fail)
+Error, OutputLogTo: <filename> must be a string (not the value 'fail')
 
 #
 gap> READ(fail);
-Error, READ: <filename> must be a string (not a boolean or fail)
+Error, READ: <filename> must be a string (not the value 'fail')
 gap> READ_NORECOVERY(fail);
 fail
 gap> READ_AS_FUNC(fail);
-Error, READ_AS_FUNC: <filename> must be a string (not a boolean or fail)
+Error, READ_AS_FUNC: <filename> must be a string (not the value 'fail')
 gap> READ_GAP_ROOT(fail);
-Error, READ: <filename> must be a string (not a boolean or fail)
+Error, READ: <filename> must be a string (not the value 'fail')
 
 #
 gap> RemoveFile(fail);
-Error, <filename> must be a string (not a boolean or fail)
+Error, RemoveFile: <filename> must be a string (not the value 'fail')
 gap> CreateDir(fail);
-Error, CreateDir: <filename> must be a string (not a boolean or fail)
+Error, CreateDir: <filename> must be a string (not the value 'fail')
 gap> RemoveDir(fail);
-Error, RemoveDir: <filename> must be a string (not a boolean or fail)
+Error, RemoveDir: <filename> must be a string (not the value 'fail')
 gap> IsDir(fail);
-Error, IsDir: <filename> must be a string (not a boolean or fail)
+Error, IsDir: <filename> must be a string (not the value 'fail')
 
 #
 gap> LastSystemError();; LastSystemError();
@@ -47,24 +47,24 @@ rec( message := "no error", number := 0 )
 
 #
 gap> IsExistingFile(fail);
-Error, IsExistingFile: <filename> must be a string (not a boolean or fail)
+Error, IsExistingFile: <filename> must be a string (not the value 'fail')
 gap> IsReadableFile(fail);
-Error, IsReadableFile: <filename> must be a string (not a boolean or fail)
+Error, IsReadableFile: <filename> must be a string (not the value 'fail')
 gap> IsWritableFile(fail);
-Error, IsWritableFile: <filename> must be a string (not a boolean or fail)
+Error, IsWritableFile: <filename> must be a string (not the value 'fail')
 gap> IsExecutableFile(fail);
-Error, IsExecutableFile: <filename> must be a string (not a boolean or fail)
+Error, IsExecutableFile: <filename> must be a string (not the value 'fail')
 gap> IsDirectoryPathString(fail);
-Error, IsDirectoryPathString: <filename> must be a string (not a boolean or fa\
-il)
+Error, IsDirectoryPathString: <filename> must be a string (not the value 'fail\
+')
 gap> STRING_LIST_DIR(fail);
-Error, STRING_LIST_DIR: <dirname> must be a string (not a boolean or fail)
+Error, STRING_LIST_DIR: <dirname> must be a string (not the value 'fail')
 
 #
 gap> CLOSE_FILE(fail);
 Error, CLOSE_FILE: <fid> must be a small integer (not the value 'fail')
 gap> INPUT_TEXT_FILE(fail);
-Error, INPUT_TEXT_FILE: <filename> must be a string (not a boolean or fail)
+Error, INPUT_TEXT_FILE: <filename> must be a string (not the value 'fail')
 gap> IS_END_OF_FILE(fail);
 Error, IS_END_OF_FILE: <fid> must be a small integer (not the value 'fail')
 gap> IS_END_OF_FILE(-1);
@@ -74,7 +74,7 @@ false
 gap> IS_END_OF_FILE(254);
 fail
 gap> OUTPUT_TEXT_FILE(fail, fail);
-Error, OUTPUT_TEXT_FILE: <filename> must be a string (not a boolean or fail)
+Error, OUTPUT_TEXT_FILE: <filename> must be a string (not the value 'fail')
 gap> OUTPUT_TEXT_FILE("test", fail);
 Error, OUTPUT_TEXT_FILE: <append> must be a boolean (not a boolean or fail)
 
@@ -130,9 +130,9 @@ Error, FD_OF_FILE: <fid> must be a small integer (not the value 'fail')
 
 #
 gap> ExecuteProcess(fail,fail,fail,fail,fail);
-Error, ExecuteProcess: <dir> must be a string (not a boolean or fail)
+Error, ExecuteProcess: <dir> must be a string (not the value 'fail')
 gap> ExecuteProcess("",fail,fail,fail,fail);
-Error, ExecuteProcess: <prg> must be a string (not a boolean or fail)
+Error, ExecuteProcess: <prg> must be a string (not the value 'fail')
 gap> ExecuteProcess("","",fail,fail,fail);
 Error, ExecuteProcess: <in> must be a small integer (not the value 'fail')
 gap> ExecuteProcess("","",0,fail,fail);
@@ -140,7 +140,7 @@ Error, ExecuteProcess: <out> must be a small integer (not the value 'fail')
 gap> ExecuteProcess("","",0,0,fail);
 Error, ExecuteProcess: <args> must be a small list (not the value 'fail')
 gap> ExecuteProcess("","",0,0,[1]);
-Error, ExecuteProcess: <tmp> must be a string (not a integer)
+Error, ExecuteProcess: <tmp> must be a string (not the integer 1)
 
 #
 gap> STOP_TEST("kernel/streams.tst", 1);

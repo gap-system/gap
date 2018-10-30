@@ -892,12 +892,7 @@ Obj FuncGASMAN (
         /* evaluate and check the command                                  */
         Obj cmd = ELM_PLIST( args, i );
 again:
-        while ( ! IsStringConv(cmd) ) {
-           cmd = ErrorReturnObj(
-               "GASMAN: <cmd> must be a string (not a %s)",
-               (Int)TNAM_OBJ(cmd), 0L,
-               "you can replace <cmd> via 'return <cmd>;'" );
-       }
+        RequireStringRepMayReplace("GASMAN", cmd);
 
         // perform full garbage collection
         if ( strcmp( CONST_CSTR_STRING(cmd), "collect" ) == 0 ) {

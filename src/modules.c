@@ -125,11 +125,7 @@ static void RegisterModuleState(StructInitInfo * info)
 Obj FuncGAP_CRC(Obj self, Obj filename)
 {
     /* check the argument                                                  */
-    while (!IsStringConv(filename)) {
-        filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)", (Int)TNAM_OBJ(filename),
-            0L, "you can replace <filename> via 'return <filename>;'");
-    }
+    RequireStringRepMayReplace("GAP_CRC", filename);
 
     /* compute the crc value                                               */
     return INTOBJ_INT(SyGAPCRC(CONST_CSTR_STRING(filename)));
@@ -217,14 +213,10 @@ Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
     InitInfoFunc     init;
 
     /* check the argument                                                  */
-    while (!IsStringConv(filename)) {
-        filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)", (Int)TNAM_OBJ(filename),
-            0L, "you can replace <filename> via 'return <filename>;'");
-    }
+    RequireStringRepMayReplace("LOAD_DYN", filename);
     while (!IS_INTOBJ(crc) && crc != False) {
         crc = ErrorReturnObj(
-            "<crc> must be a small integer or 'false' (not a %s)",
+            "LOAD_DYN: <crc> must be a small integer or 'false' (not a %s)",
             (Int)TNAM_OBJ(crc), 0L,
             "you can replace <crc> via 'return <crc>;'");
     }
@@ -298,14 +290,10 @@ Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
     Int              k;
 
     /* check the argument                                                  */
-    while (!IsStringConv(filename)) {
-        filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)", (Int)TNAM_OBJ(filename),
-            0L, "you can replace <filename> via 'return <filename>;'");
-    }
+    RequireStringRepMayReplace("LOAD_STAT", filename);
     while (!IS_INTOBJ(crc) && crc != False) {
         crc = ErrorReturnObj(
-            "<crc> must be a small integer or 'false' (not a %s)",
+            "LOAD_STAT: <crc> must be a small integer or 'false' (not a %s)",
             (Int)TNAM_OBJ(crc), 0L,
             "you can replace <crc> via 'return <crc>;'");
     }
