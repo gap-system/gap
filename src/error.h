@@ -163,6 +163,42 @@ extern Obj RACErrorHelper(int          mayReturn,
 
 /****************************************************************************
 **
+*F  RequireInt
+*/
+#define RequireInt(funcname, op, argname) \
+    RequireArgumentCondition(funcname, op, argname, IS_INT(op), \
+        "must be an integer")
+
+
+/****************************************************************************
+**
+*F  RequireIntMayReplace
+*/
+#define RequireIntMayReplace(funcname, op, argname) \
+    RequireArgumentConditionMayReplace(funcname, op, argname, IS_INT(op), \
+        "must be an integer")
+
+
+/****************************************************************************
+**
+*F  RequireSmallInt
+*/
+#define RequireSmallInt(funcname, op, argname) \
+    RequireArgumentCondition(funcname, op, argname, IS_INTOBJ(op), \
+        "must be a small integer")
+
+
+/****************************************************************************
+**
+*F  RequireSmallIntMayReplace
+*/
+#define RequireSmallIntMayReplace(funcname, op, argname) \
+    RequireArgumentConditionMayReplace(funcname, op, argname, IS_INTOBJ(op), \
+        "must be a small integer")
+
+
+/****************************************************************************
+**
 *F  RequirePositiveSmallInt
 */
 #define RequirePositiveSmallInt(funcname, op, argname) \

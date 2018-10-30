@@ -250,12 +250,7 @@ Obj FuncCHAR_INT (
 
     /* get and check the integer value                                     */
 again:
-    while ( ! IS_INTOBJ(val) ) {
-        val = ErrorReturnObj(
-            "<val> must be an integer (not a %s)",
-            (Int)TNAM_OBJ(val), 0L,
-            "you can replace <val> via 'return <val>;'" );
-    }
+    RequireSmallIntMayReplace("CHAR_INT", val, "val");
     chr = INT_INTOBJ(val);
     if ( 255 < chr || chr < 0 ) {
         val = ErrorReturnObj(
@@ -301,12 +296,7 @@ Obj FuncCHAR_SINT (
 
   /* get and check the integer value                                     */
 agains:
-  while ( ! IS_INTOBJ(val) ) {
-      val = ErrorReturnObj(
-	  "<val> must be an integer (not a %s)",
-	  (Int)TNAM_OBJ(val), 0L,
-	  "you can replace <val> via 'return <val>;'" );
-  }
+  RequireSmallIntMayReplace("CHAR_SINT", val, "val");
   chr = INT_INTOBJ(val);
   if ( 127 < chr || chr < -128 ) {
       val = ErrorReturnObj(

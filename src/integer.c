@@ -130,11 +130,7 @@ static Obj ObjInt_UIntInv( UInt i );
 
 #define SIZE_INT_OR_INTOBJ(obj) (IS_INTOBJ(obj) ? 1 : SIZE_INT(obj))
 
-#define REQUIRE_INT_ARG(funcname, argname, op) \
-    if ( !IS_INT(op) ) { \
-      ErrorMayQuit( funcname ": <" argname "> must be an integer (not a %s)", \
-                         (Int)TNAM_OBJ(op), 0L ); \
-    }
+#define REQUIRE_INT_ARG(funcname, argname, op) RequireInt(funcname, op, argname)
 
 GAP_STATIC_ASSERT( sizeof(mp_limb_t) == sizeof(UInt), "gmp limb size incompatible with GAP word size");
 

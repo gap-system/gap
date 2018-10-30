@@ -1086,12 +1086,7 @@ Obj             EvalRangeExpr (
 
     /* evaluate the low value                                              */
     val = EVAL_EXPR(READ_EXPR(expr, 0));
-    while ( ! IS_INTOBJ(val) ) {
-        val = ErrorReturnObj(
-            "Range: <first> must be a small integer (not a %s)",
-            (Int)TNAM_OBJ(val), 0,
-            "you can replace <first> via 'return <first>;'" );
-    }
+    RequireSmallIntMayReplace("Range", val, "first");
     low = INT_INTOBJ( val );
 
     /* evaluate the second value (if present)                              */

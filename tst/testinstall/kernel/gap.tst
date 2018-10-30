@@ -160,13 +160,13 @@ fail
 
 #
 gap> Sleep(fail);
-Error, <secs> must be a small integer
+Error, Sleep: <secs> must be a small integer (not the value 'fail')
 gap> Sleep(0);
 gap> Sleep(1);
 
 #
 gap>    MicroSleep(fail);
-Error, <usecs> must be a small integer
+Error, MicroSleep: <usecs> must be a small integer (not the value 'fail')
 gap> MicroSleep(0);
 gap> MicroSleep(1);
 

@@ -17,7 +17,7 @@ gap> Factorial( 50 );
 gap> Factorial(-1);
 Error, Factorial: <n> must be nonnegative
 gap> Factorial(fail);
-Error, Factorial: <n> must be an integer (not a boolean or fail)
+Error, Factorial: <n> must be an integer (not the value 'fail')
 
 #F  Binomial( <n>, <k> )  . . . . . . . . .  binomial coefficient of integers
 gap> Print(List( [-8..8], k -> Binomial( 0, k ) ),"\n");
@@ -34,9 +34,9 @@ true
 gap> Binomial( 2^100, 2 ) = 2^100 * (2^100 - 1) / 2;
 true
 gap> Binomial(fail, 0);
-Error, Binomial: <n> must be an integer (not a boolean or fail)
+Error, Binomial: <n> must be an integer (not the value 'fail')
 gap> Binomial(0, fail);
-Error, Binomial: <k> must be an integer (not a boolean or fail)
+Error, Binomial: <k> must be an integer (not the value 'fail')
 
 #F  Bell( <n> ) . . . . . . . . . . . . . . . . .  value of the Bell sequence
 gap> Print(List( [0..10], n -> Bell(n) ),"\n");

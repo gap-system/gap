@@ -16,7 +16,7 @@ Error, <str> must be a string, not a integer)
 
 #
 gap> CHAR_INT(fail);
-Error, <val> must be an integer (not a boolean or fail)
+Error, CHAR_INT: <val> must be a small integer (not the value 'fail')
 gap> CHAR_INT(-1);
 Error, <val> must be an integer between 0 and 255
 gap> CHAR_INT(65);
@@ -30,7 +30,7 @@ gap> INT_CHAR('A');
 
 #
 gap> CHAR_SINT(fail);
-Error, <val> must be an integer (not a boolean or fail)
+Error, CHAR_SINT: <val> must be a small integer (not the value 'fail')
 gap> CHAR_SINT(255);
 Error, <val> must be an integer between -128 and 127
 gap> CHAR_SINT(65);

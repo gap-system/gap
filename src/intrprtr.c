@@ -2178,21 +2178,13 @@ void            IntrListExprEnd (
 
         /* get the low value                                               */
         val = ELM_LIST( list, 1 );
-        if ( ! IS_INTOBJ(val) ) {
-            ErrorQuit(
-                "Range: <first> must be a small integer (not a %s)",
-                (Int)TNAM_OBJ(val), 0 );
-        }
+        RequireSmallInt("Range", val, "first");
         low = INT_INTOBJ( val );
 
         /* get the increment                                               */
         if ( nr == 3 ) {
             val = ELM_LIST( list, 2 );
-            if ( ! IS_INTOBJ(val) ) {
-                ErrorQuit(
-                    "Range: <second> must be a small integer (not a %s)",
-                    (Int)TNAM_OBJ(val), 0 );
-            }
+            RequireSmallInt("Range", val, "second");
             if ( INT_INTOBJ(val) == low ) {
                 ErrorQuit(
                       "Range: <second> must not be equal to <first> (%d)",
@@ -2206,11 +2198,7 @@ void            IntrListExprEnd (
 
         /* get and check the high value                                    */
         val = ELM_LIST( list, LEN_LIST(list) );
-        if ( ! IS_INTOBJ(val) ) {
-            ErrorQuit(
-                "Range: <last> must be a small integer (not a %s)",
-                (Int)TNAM_OBJ(val), 0 );
-        }
+        RequireSmallInt("Range", val, "last");
         if ( (INT_INTOBJ(val) - low) % inc != 0 ) {
             ErrorQuit(
                 "Range: <last>-<first> (%d) must be divisible by <inc> (%d)",

@@ -6,10 +6,10 @@ gap> START_TEST("kernel/stats.tst");
 # test checks in ExecForRangeHelper
 gap> f := function(a) local x; for x in [a..1] do od; end;;
 gap> f('x');
-Error, Range: <first> must be an integer (not a character)
+Error, Range: <first> must be a small integer (not a character)
 gap> f := function(a) local x; for x in [1..a] do od; end;;
 gap> f('x');
-Error, Range: <last> must be an integer (not a character)
+Error, Range: <last> must be a small integer (not a character)
 
 # test Assert with two arguments
 gap> function() Assert(0, 0); end();
