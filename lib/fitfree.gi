@@ -108,7 +108,11 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths;
   # transfer the IndicesEANormalSteps
   if ffs.pcgs<>ipcgs and HasIndicesEANormalSteps(ffs.pcgs) then
     U:=IndicesEANormalSteps(ffs.pcgs);
-    r:=ipcgs!.depthsInParent;
+    if IsBound(ipcgs!.depthsInParent) then
+      r:=ipcgs!.depthsInParent;
+    else
+      r:=List(ipcgs,x->DepthOfPcElement(ffs.pcgs,x));
+    fi;
     l:=[];
     for i in U{[1..Length(U)-1]} do # last one is length+1
       p:=PositionProperty(r,x->x>=i);
