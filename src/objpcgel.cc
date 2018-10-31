@@ -104,8 +104,8 @@ Obj FuncNBitsPcWord_Quotient ( Obj self, Obj left, Obj right )
 **
 *F  DepthOfPcElement( <self>, <pcgs>, <w> )
 */
-template<typename UIntN>
-Obj DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
+template <typename UIntN>
+Obj DepthOfPcElement(Obj self, Obj pcgs, Obj w)
 {
     Int         ebits;          /* number of bits in the exponent          */
 
@@ -125,8 +125,8 @@ Obj DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
 **
 *F  ExponentOfPcElement( <self>, <pcgs>, <w>, <pos> )
 */
-template<typename UIntN>
-Obj ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
+template <typename UIntN>
+Obj ExponentOfPcElement(Obj self, Obj pcgs, Obj w, Obj pos)
 {
     UInt        expm;           /* signed exponent mask                    */
     UInt        exps;           /* sign exponent mask                      */
@@ -169,8 +169,8 @@ Obj ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
 **
 *F  LeadingExponentOfPcElement( <self>, <pcgs>, <w> )
 */
-template<typename UIntN>
-Obj LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
+template <typename UIntN>
+Obj LeadingExponentOfPcElement(Obj self, Obj pcgs, Obj w)
 {
     UInt        expm;           /* signed exponent mask                    */
     UInt        exps;           /* sign exponent mask                      */
@@ -196,8 +196,8 @@ Obj LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
 **
 *F  ExponentsOfPcElement( <self>, <pcgs>, <w> )
 */
-template<typename UIntN>
-Obj ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
+template <typename UIntN>
+Obj ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
 {
     UInt	len;		/* length of pcgs */
     Obj		el;		/* exponents list */
