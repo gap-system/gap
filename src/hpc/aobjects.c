@@ -1118,8 +1118,7 @@ static Obj FuncGET_ATOMIC_RECORD(Obj self, Obj record, Obj field, Obj def)
   Obj result;
   if (TNUM_OBJ(record) != T_AREC)
     ArgumentError("GET_ATOMIC_RECORD: First argument must be an atomic record");
-  if (!IsStringConv(field))
-    ArgumentError("GET_ATOMIC_RECORD: Second argument must be a string");
+  RequireStringRep("GET_ATOMIC_RECORD", field);
   fieldname = RNamName(CONST_CSTR_STRING(field));
   result = GetARecordField(record, fieldname);
   return result ? result : def;
@@ -1131,8 +1130,7 @@ static Obj FuncSET_ATOMIC_RECORD(Obj self, Obj record, Obj field, Obj value)
   Obj result;
   if (TNUM_OBJ(record) != T_AREC)
     ArgumentError("SET_ATOMIC_RECORD: First argument must be an atomic record");
-  if (!IsStringConv(field))
-    ArgumentError("SET_ATOMIC_RECORD: Second argument must be a string");
+  RequireStringRep("SET_ATOMIC_RECORD", field);
   fieldname = RNamName(CONST_CSTR_STRING(field));
   result = SetARecordField(record, fieldname, value);
   if (!result)
@@ -1147,8 +1145,7 @@ static Obj FuncUNBIND_ATOMIC_RECORD(Obj self, Obj record, Obj field)
   Obj exists;
   if (TNUM_OBJ(record) != T_AREC)
     ArgumentError("UNBIND_ATOMIC_RECORD: First argument must be an atomic record");
-  if (!IsStringConv(field))
-    ArgumentError("UNBIND_ATOMIC_RECORD: Second argument must be a string");
+  RequireStringRep("UNBIND_ATOMIC_RECORD", field);
   fieldname = RNamName(CONST_CSTR_STRING(field));
   if (GetARecordUpdatePolicy(record) != AREC_RW)
     ErrorQuit("UNBIND_ATOMIC_RECORD: Record elements cannot be changed",
@@ -1251,8 +1248,7 @@ static Obj FuncSetTLConstructor(Obj self, Obj record, Obj name, Obj function)
     ArgumentError("SetTLConstructor: First argument must be a thread-local record");
   if (!IS_STRING(name) && !IS_INTOBJ(name))
     ArgumentError("SetTLConstructor: Second argument must be a string or integer");
-  if (TNUM_OBJ(function) != T_FUNCTION)
-    ArgumentError("SetTLConstructor: Third argument must be a function");
+  RequireFunction("SetTLConstructor", function);
   SetTLConstructor(record, RNamObj(name), function);
   return (Obj) 0;
 }
@@ -1638,10 +1634,7 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncN
   Int n;
   Bag *contents;
   Bag result;
-  if (!IS_POS_INTOBJ(index)) {
-    FuncError("index for positional object must be a positive small integer");
-    return (Obj) 0; /* flow control hint */
-  }
+  RequirePositiveSmallInt(currFuncName, index, "index");
   n = INT_INTOBJ(index);
   ReadGuard(obj);
 #ifndef WARD_ENABLED
@@ -1698,8 +1691,7 @@ Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFunc
   addr = ADDR_ATOM(obj);
   MEMBAR_READ();
   len = ALIST_LEN(addr[0].atom);
-  if (!IS_INTOBJ(index))
-    FuncError("Second argument must be an integer");
+  RequireSmallInt(currFuncName, index, "index");
   n = INT_INTOBJ(index);
   if (n <= 0 || n > len)
     FuncError("Index out of range");
