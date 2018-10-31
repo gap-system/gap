@@ -250,12 +250,16 @@ gap> iter:=Iterator(M1);
 <iterator>
 gap> List(iter);
 [ 1 ]
+gap> List(iter, x -> x+1);
+[ 2 ]
 
 #
 gap> iter:=Iterator([2,1]);
 <iterator>
 gap> List(iter);
 [ 2, 1 ]
+gap> List(iter, x -> x+1);
+[ 3, 2 ]
 
 #############################################################################
 #
@@ -265,12 +269,16 @@ gap> iter:=IteratorSorted(M1);
 <iterator>
 gap> List(iter);
 [ 1 ]
+gap> List(iter, x -> x+1);
+[ 2 ]
 
 #
 gap> iter:=IteratorSorted([2,1]);
 <iterator>
 gap> List(iter);
 [ 1, 2 ]
+gap> List(iter, x -> x+1);
+[ 2, 3 ]
 
 #############################################################################
 #
@@ -288,6 +296,8 @@ gap> iter:=ConcatenationIterators([Iterator(M1), Iterator(M0), Iterator([2,3])])
 <iterator>
 gap> List(iter);
 [ 1, 2, 3 ]
+gap> List(iter, x -> x+1);
+[ 2, 3, 4 ]
 
 #############################################################################
 #
@@ -297,6 +307,8 @@ gap> iter:=TrivialIterator(42);
 <iterator>
 gap> List(iter);
 [ 42 ]
+gap> List(iter, x -> x+1);
+[ 43 ]
 
 #############################################################################
 #

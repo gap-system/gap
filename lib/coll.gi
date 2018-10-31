@@ -836,15 +836,32 @@ InstallOtherMethod( Iterator,
 ##  
 ##  Does not change the iterator.
 ##  
-InstallOtherMethod(ListOp, [IsIterator], function(it)
-  local l, a;
-  l := [];
-  it := ShallowCopy(it);
-  for a in it do 
-    Add(l,a);
-  od;
-  return l;
-end);
+InstallOtherMethod( ListOp,
+    "for an iterator",
+    [ IsIterator ],
+    function ( iter )
+    local   res, elm;
+    res := [];
+    iter := ShallowCopy( iter );
+    for elm in iter do
+      Add( res, elm );
+    od;
+    return res;
+    end );
+
+InstallOtherMethod( ListOp,
+    "for an iterator, and a function",
+    [ IsIterator, IsFunction ],
+    function ( iter, func )
+    local   res, elm;
+    res := [];
+    iter := ShallowCopy( iter );
+    for elm in iter do
+      Add( res, func( elm ) );
+    od;
+    return res;
+    end );
+
 
 #############################################################################
 ##
