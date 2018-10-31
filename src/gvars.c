@@ -901,12 +901,7 @@ Obj             FuncAUTO (
 
     /* get and check the function                                          */
     func = ELM_LIST( args, 1 );
-    while ( TNUM_OBJ(func) != T_FUNCTION ) {
-        func = ErrorReturnObj(
-            "AUTO: <func> must be a function (not a %s)",
-            (Int)TNAM_OBJ(func), 0L,
-            "you can return a function for <func>" );
-    }
+    RequireFunctionMayReplace("AUTO", func);
 
     /* get the argument                                                    */
     arg = ELM_LIST( args, 2 );

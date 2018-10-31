@@ -5543,22 +5543,12 @@ Obj FuncCOMPILE_FUNC (
     magic1 = ELM_LIST( arg, 4 );
     magic2 = ELM_LIST( arg, 5 );
 
-    /* check the arguments                                                 */
-    if ( ! IsStringConv( output ) ) {
-        ErrorQuit("CompileFunc: <output> must be a string",0L,0L);
-    }
-    if ( TNUM_OBJ(func) != T_FUNCTION ) {
-        ErrorQuit("CompileFunc: <func> must be a function",0L,0L);
-    }
-    if ( ! IsStringConv( name ) ) {
-        ErrorQuit("CompileFunc: <name> must be a string",0L,0L);
-    }
-    if ( ! IS_INTOBJ(magic1) ) {
-        ErrorQuit("CompileFunc: <magic1> must be an integer",0L,0L);
-    }
-    if ( ! IsStringConv(magic2) ) {
-        ErrorQuit("CompileFunc: <magic2> must be a string",0L,0L);
-    }
+    // check the arguments
+    RequireStringRep("CompileFunc", output);
+    RequireFunction("CompileFunc", func);
+    RequireStringRep("CompileFunc", name);
+    RequireSmallInt("CompileFunc", magic1, "magic1");
+    RequireStringRep("CompileFunc", magic2);
 
     /* possible optimiser flags                                            */
     CompFastIntArith        = 1;

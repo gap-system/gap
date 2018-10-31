@@ -3444,19 +3444,13 @@ Obj FuncINSTALL_GLOBAL_FUNCTION (
     Obj                 func )
 {
     /* check the arguments                                                 */
-    if ( ! IS_FUNC(oper) ) {
-        ErrorQuit( "<oper> must be a function (not a %s)",
-                   (Int)TNAM_OBJ(oper), 0L );
-    }
+    RequireFunction("INSTALL_GLOBAL_FUNCTION", oper);
     if ( (REREADING != True) &&
          (HDLR_FUNC(oper,0) != (ObjFunc)DoUninstalledGlobalFunction) ) {
         ErrorQuit( "operation already installed",
                    0L, 0L );
     }
-    if ( ! IS_FUNC(func) ) {
-        ErrorQuit( "<func> must be a function (not a %s)",
-                   (Int)TNAM_OBJ(func), 0L );
-    }
+    RequireFunction("INSTALL_GLOBAL_FUNCTION", func);
     if ( IS_OPERATION(func) ) {
         ErrorQuit( "<func> must not be an operation", 0L, 0L );
     }

@@ -197,10 +197,12 @@ Error, usage: NewProperty( <name> )
 gap> NEW_GLOBAL_FUNCTION(fail);
 Error, usage: NewGlobalFunction( <name> )
 gap> INSTALL_GLOBAL_FUNCTION(fail, fail);
-Error, <oper> must be a function (not a boolean or fail)
+Error, INSTALL_GLOBAL_FUNCTION: <oper> must be a function (not the value 'fail\
+')
 gap> func := NEW_GLOBAL_FUNCTION("quux");;
 gap> INSTALL_GLOBAL_FUNCTION(func, fail);
-Error, <func> must be a function (not a boolean or fail)
+Error, INSTALL_GLOBAL_FUNCTION: <func> must be a function (not the value 'fail\
+')
 gap> INSTALL_GLOBAL_FUNCTION(func, Size);
 Error, <func> must not be an operation
 gap> INSTALL_GLOBAL_FUNCTION(func, x -> x);
