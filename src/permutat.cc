@@ -73,42 +73,50 @@ extern "C" {
 
 
 #ifdef GAP_KERNEL_DEBUG
-template <typename T> static bool CHECK_PERM_TYPE(Obj perm);
+template <typename T>
+static bool CHECK_PERM_TYPE(Obj perm);
 
-template <> inline bool CHECK_PERM_TYPE<UInt2>(Obj perm)
+template <>
+inline bool CHECK_PERM_TYPE<UInt2>(Obj perm)
 {
     return TNUM_OBJ(perm) == T_PERM2;
 }
 
-template <> inline bool CHECK_PERM_TYPE<UInt4>(Obj perm)
+template <>
+inline bool CHECK_PERM_TYPE<UInt4>(Obj perm)
 {
     return TNUM_OBJ(perm) == T_PERM4;
 }
 #endif
 
-template<typename T> static inline UInt SIZEBAG_PERM(UInt deg)
+template <typename T>
+static inline UInt SIZEBAG_PERM(UInt deg)
 {
     return sizeof(Obj) + deg * sizeof(T);
 }
 
-template<typename T> static inline Obj NEW_PERM(UInt deg)
+template <typename T>
+static inline Obj NEW_PERM(UInt deg)
 {
     return NewBag(sizeof(T) == 2 ? T_PERM2 : T_PERM4, SIZEBAG_PERM<T>(deg));
 }
 
-template<typename T> static inline UInt DEG_PERM(Obj perm)
+template <typename T>
+static inline UInt DEG_PERM(Obj perm)
 {
     GAP_ASSERT(CHECK_PERM_TYPE<T>(perm));
     return (SIZE_OBJ(perm) - sizeof(Obj)) / sizeof(T);
 }
 
-template<typename T> static inline T * ADDR_PERM(Obj perm)
+template <typename T>
+static inline T * ADDR_PERM(Obj perm)
 {
     GAP_ASSERT(CHECK_PERM_TYPE<T>(perm));
     return (T *)(ADDR_OBJ(perm) + 1);
 }
 
-template<typename T> static inline const T * CONST_ADDR_PERM(Obj perm)
+template <typename T>
+static inline const T * CONST_ADDR_PERM(Obj perm)
 {
     GAP_ASSERT(CHECK_PERM_TYPE<T>(perm));
     return (const T *)(CONST_ADDR_OBJ(perm) + 1);
@@ -117,12 +125,18 @@ template<typename T> static inline const T * CONST_ADDR_PERM(Obj perm)
 //
 // The 'ResultType' template is used by functions which take two permutations
 // as argument to select the type of the output they produce: by default, a
-// T_PERM4, whose entries are stored as UInt4. But if both inputs are T_PERM2,
-// then as a special case the output is also a T_PERM2, whose entries are
-// stored as UInt2.
+// T_PERM4, whose entries are stored as UInt4. But if both inputs are
+// T_PERM2, then as a special case the output is also a T_PERM2, whose
+// entries are stored as UInt2.
 //
-template<typename TL, typename TR> struct ResultType { typedef UInt4 type; };
-template<> struct ResultType<UInt2, UInt2> { typedef UInt2 type; };
+template <typename TL, typename TR>
+struct ResultType {
+    typedef UInt4 type;
+};
+template <>
+struct ResultType<UInt2, UInt2> {
+    typedef UInt2 type;
+};
 
 /****************************************************************************
 **
@@ -182,7 +196,8 @@ static UInt1 * UseTmpPerm(UInt size)
     return (UInt1 *)(ADDR_OBJ(TmpPerm) + 1);
 }
 
-template<typename T> static inline T * ADDR_TMP_PERM()
+template <typename T>
+static inline T * ADDR_TMP_PERM()
 {
     // no GAP_ASSERT here on purpose
     return (T *)(ADDR_OBJ(TmpPerm) + 1);
@@ -227,8 +242,8 @@ Obj             TypePerm4 (
 **  This may in the worst case, for (1,2,..,n), take n^2/2 steps, but is fast
 **  enough to keep a terminal at 9600 baud busy for all but the extrem cases.
 */
-template<typename T> void            PrintPerm(
-    Obj                 perm )
+template <typename T>
+void PrintPerm(Obj perm)
 {
     UInt                degPerm;        /* degree of the permutation       */
     const T *           ptPerm;         /* pointer to the permutation      */
@@ -286,10 +301,8 @@ template<typename T> void            PrintPerm(
 **  same length, if  the  larger  permutation  fixes  the  exceeding  points.
 **
 */
-template<typename TL, typename TR>
-Int             EqPerm (
-    Obj                 opL,
-    Obj                 opR )
+template <typename TL, typename TR>
+Int EqPerm(Obj opL, Obj opR)
 {
     UInt                degL;           /* degree of the left operand      */
     const TL *          ptL;            /* pointer to the left operand     */
@@ -336,10 +349,8 @@ Int             EqPerm (
 **  the permutation  <opR>.  Permutations are  ordered lexicographically with
 **  respect to the images of 1,2,.., etc.
 */
-template<typename TL, typename TR>
-Int             LtPerm (
-    Obj                 opL,
-    Obj                 opR )
+template <typename TL, typename TR>
+Int LtPerm(Obj opL, Obj opR)
 {
     UInt                degL;           /* degree of the left operand      */
     const TL *          ptL;            /* pointer to the left operand     */
@@ -391,10 +402,8 @@ Int             LtPerm (
 **
 **  This is a little bit tuned but should be sufficiently easy to understand.
 */
-template<typename TL, typename TR>
-Obj             ProdPerm (
-    Obj                 opL,
-    Obj                 opR )
+template <typename TL, typename TR>
+Obj ProdPerm(Obj opL, Obj opR)
 {
     typedef typename ResultType<TL,TR>::type Res;
 
@@ -462,10 +471,8 @@ Obj QuoPerm(Obj opL, Obj opR)
 **
 **  This can be done as fast as a single multiplication or inversion.
 */
-template<typename TL, typename TR>
-Obj             LQuoPerm (
-    Obj                 opL,
-    Obj                 opR )
+template <typename TL, typename TR>
+Obj LQuoPerm(Obj opL, Obj opR)
 {
     typedef typename ResultType<TL,TR>::type Res;
 
@@ -514,9 +521,8 @@ Obj             LQuoPerm (
 **
 *F  InvPerm( <perm> ) . . . . . . . . . . . . . . .  inverse of a permutation
 */
-template<typename T>
-Obj InvPerm (
-    Obj             perm )
+template <typename T>
+Obj InvPerm(Obj perm)
 {
     Obj                 inv;            /* handle of the inverse (result)  */
     T *                 ptInv;          /* pointer to the inverse          */
@@ -555,10 +561,8 @@ Obj InvPerm (
 **  This repeatedly applies the permutation <opR> to all points  which  seems
 **  to be faster than binary powering, and does not need  temporary  storage.
 */
-template<typename T>
-Obj             PowPermInt (
-    Obj                 opL,
-    Obj                 opR )
+template <typename T>
+Obj PowPermInt(Obj opL, Obj opR)
 {
     Obj                 pow;            /* handle of the power (result)    */
     T *                 ptP;            /* pointer to the power            */
@@ -812,10 +816,8 @@ Obj             PowPermInt (
 **  permutation <opR>.  If <opL>  is larger than the  degree of <opR> it is a
 **  fixpoint of the permutation and thus simply returned.
 */
-template<typename T>
-Obj             PowIntPerm (
-    Obj                 opL,
-    Obj                 opR )
+template <typename T>
+Obj PowIntPerm(Obj opL, Obj opR)
 {
     Int                 img;            /* image (result)                  */
 
@@ -859,10 +861,8 @@ Obj             PowIntPerm (
 */
 static Obj PERM_INVERSE_THRESHOLD;
 
-template<typename T>
-Obj             QuoIntPerm (
-    Obj                 opL,
-    Obj                 opR )
+template <typename T>
+Obj QuoIntPerm(Obj opL, Obj opR)
 {
     T                   pre;            /* preimage (result)               */
     Int                 img;            /* image (left operand)            */
@@ -915,10 +915,8 @@ Obj             QuoIntPerm (
 **  <opR>, that s  defined as the  following product '<opR>\^-1 \*\ <opL> \*\
 **  <opR>'.
 */
-template<typename TL, typename TR>
-Obj             PowPerm (
-    Obj                 opL,
-    Obj                 opR )
+template <typename TL, typename TR>
+Obj PowPerm(Obj opL, Obj opR)
 {
     typedef typename ResultType<TL,TR>::type Res;
 
@@ -966,10 +964,8 @@ Obj             PowPerm (
 **  'CommPerm' returns the  commutator  of  the  two permutations  <opL>  and
 **  <opR>, that is defined as '<hd>\^-1 \*\ <opR>\^-1 \*\ <opL> \*\ <opR>'.
 */
-template<typename TL, typename TR>
-Obj             CommPerm (
-    Obj                 opL,
-    Obj                 opR )
+template <typename TL, typename TR>
+Obj CommPerm(Obj opL, Obj opR)
 {
     typedef typename ResultType<TL,TR>::type Res;
 
@@ -1066,7 +1062,8 @@ Obj IsPermHandler (
 **  'FuncPermList' simply copies the list pointwise into  a  permutation  bag.
 **  It also does some checks to make sure that the  list  is  a  permutation.
 */
-template <typename T> static inline Obj PermList(Obj list)
+template <typename T>
+static inline Obj PermList(Obj list)
 {
     Obj                 perm;           /* handle of the permutation       */
     T *                 ptPerm;         /* pointer to the permutation      */
@@ -1155,7 +1152,8 @@ Obj             FuncPermList (
 **
 **  This is easy, except that permutations may  contain  trailing  fixpoints.
 */
-template <typename T> static inline UInt LargestMovedPointPerm_(Obj perm)
+template <typename T>
+static inline UInt LargestMovedPointPerm_(Obj perm)
 {
     UInt      sup;
     const T * ptPerm;
@@ -1353,7 +1351,8 @@ Obj             FuncCYCLE_PERM_INT (
 **  'CycleStructPerm' returns a list of the form as described under
 **  `CycleStructure'.
 */
-template <typename T> static inline Obj CYCLE_STRUCT_PERM(Obj perm)
+template <typename T>
+static inline Obj CYCLE_STRUCT_PERM(Obj perm)
 {
     Obj                 list;           /* handle of the list (result)     */
     Obj *               ptList;         /* pointer to the list             */
@@ -1484,7 +1483,8 @@ Obj FuncCYCLE_STRUCT_PERM(Obj self, Obj perm)
 **  Since the largest element in S(65536) has oder greater than  10^382  this
 **  computation may easily overflow.  So we have to use  arbitrary precision.
 */
-template <typename T> static inline Obj ORDER_PERM(Obj perm)
+template <typename T>
+static inline Obj ORDER_PERM(Obj perm)
 {
     const T *           ptPerm;         /* pointer to the permutation      */
     Obj                 ord;            /* order (result), may be huge     */
@@ -1567,7 +1567,8 @@ Obj             FuncORDER_PERM (
 **  is a homomorphism from the symmetric group onto the multiplicative  group
 **  $\{ +1, -1 \}$, the kernel of which is the alternating group.
 */
-template <typename T> static inline Obj SIGN_PERM(Obj perm)
+template <typename T>
+static inline Obj SIGN_PERM(Obj perm)
 {
     const T *           ptPerm;         /* pointer to the permutation      */
     Int                 sign;           /* sign (result)                   */
@@ -1650,7 +1651,8 @@ Obj             FuncSIGN_PERM (
 **  respect  to the lexicographical order  defined  by '\<' the smallest such
 **  permutation.
 */
-template <typename T> static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
+template <typename T>
+static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
 {
     Obj                 small;          /* handle of the smallest gen      */
     T *                 ptSmall;        /* pointer to the smallest gen     */
@@ -1769,9 +1771,8 @@ Obj             FuncSMALLEST_GENERATOR_PERM (
 **  is set to `true' is is verified that <dom> is the union of cycles of
 **  <perm>.
 */
-template <typename T> static inline Obj RESTRICTED_PERM(Obj perm,
-    Obj                 dom,
-    Obj 		test)
+template <typename T>
+static inline Obj RESTRICTED_PERM(Obj perm, Obj dom, Obj test)
 {
     Obj rest;
     T *                ptRest;
@@ -1943,12 +1944,9 @@ Obj             FuncTRIM_PERM (
 **  many are moved).
 **  Ppoints and Qnum must be plain lists of small integers.
 */
-template <typename T> static inline Obj SPLIT_PARTITION(
-    Obj Ppoints,
-    Obj Qnum,
-    Obj jval,
-    Obj g,
-    Obj lst)
+template <typename T>
+static inline Obj
+SPLIT_PARTITION(Obj Ppoints, Obj Qnum, Obj jval, Obj g, Obj lst)
 {
   Int a;
   Int b;
@@ -2073,7 +2071,8 @@ Obj FuncDISTANCE_PERMS(Obj self, Obj opL, Obj opR)
 **  `SmallestImgTuplePerm' returns the smallest image of the  tuple  <tup>
 **  under  the permutation <perm>.
 */
-template <typename T> static inline Obj SMALLEST_IMG_TUP_PERM(Obj tup, Obj perm)
+template <typename T>
+static inline Obj SMALLEST_IMG_TUP_PERM(Obj tup, Obj perm)
 {
     UInt                res;            /* handle of the image, result     */
     const Obj *         ptTup;          /* pointer to the tuple            */
@@ -2127,7 +2126,8 @@ Obj             FuncSMALLEST_IMG_TUP_PERM (
 **  The input <tup> must be a non-empty and dense plain list. This is is not
 **  verified.
 */
-template <typename T> static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
+template <typename T>
+static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
 {
     Obj                 res;            /* handle of the image, result     */
     Obj *               ptRes;          /* pointer to the result           */
@@ -2203,7 +2203,8 @@ Obj             OnTuplesPerm (
 **  The input <set> must be a non-empty set, i.e., plain, dense and strictly
 **  sorted. This is is not verified.
 */
-template <typename T> static inline Obj OnSetsPerm_(Obj set, Obj perm)
+template <typename T>
+static inline Obj OnSetsPerm_(Obj set, Obj perm)
 {
     Obj                 res;            /* handle of the image, result     */
     Obj *               ptRes;          /* pointer to the result           */

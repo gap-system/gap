@@ -145,8 +145,8 @@ typedef struct {
 **
 *F  WordVectorAndClear( <type>, <vv>, <num> )
 */
-template<typename UIntN>
-Obj WordVectorAndClear ( Obj type, Obj vv, Int num )
+template <typename UIntN>
+Obj WordVectorAndClear(Obj type, Obj vv, Int num)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
@@ -190,8 +190,8 @@ Obj WordVectorAndClear ( Obj type, Obj vv, Int num )
 **
 **  WARNING: This function assumes that <vv> is cleared!
 */
-template<typename UIntN>
-Int VectorWord ( Obj vv, Obj v, Int num )
+template <typename UIntN>
+Int VectorWord(Obj vv, Obj v, Int num)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
@@ -256,10 +256,16 @@ Int VectorWord ( Obj vv, Obj v, Int num )
 **  global exponent because the beginning of  the word might not commute with
 **  the rest.
 **/
-template<typename UIntN>
-static Int SAddWordIntoExpVec( Int *v, const UIntN *w, Int e,
-                           Int ebits, UInt expm,
-                           const Obj *ro, const Obj *pow, Int lpow ) {
+template <typename UIntN>
+static Int SAddWordIntoExpVec(Int *         v,
+                              const UIntN * w,
+                              Int           e,
+                              Int           ebits,
+                              UInt          expm,
+                              const Obj *   ro,
+                              const Obj *   pow,
+                              Int           lpow)
+{
 
     const UIntN * wend = w + (INT_INTOBJ((((const Obj*)(w))[-1])) - 1);
     Int        i;
@@ -283,10 +289,16 @@ static Int SAddWordIntoExpVec( Int *v, const UIntN *w, Int e,
     return start;
 }
 
-template<typename UIntN>
-static Int SAddPartIntoExpVec( Int *v, const UIntN *w, const UIntN *wend,
-                           Int ebits, UInt expm,
-                           const Obj* ro, const Obj *pow, Int lpow ) {
+template <typename UIntN>
+static Int SAddPartIntoExpVec(Int *         v,
+                              const UIntN * w,
+                              const UIntN * wend,
+                              Int           ebits,
+                              UInt          expm,
+                              const Obj *   ro,
+                              const Obj *   pow,
+                              Int           lpow)
+{
 
     Int        i;
     Int        ex;
@@ -316,8 +328,8 @@ static Int SAddPartIntoExpVec( Int *v, const UIntN *w, const UIntN *wend,
 **
 **  If a stack overflow occurs, we simply stop and return false.
 */
-template<typename UIntN>
-Int SingleCollectWord ( Obj sc, Obj vv, Obj w )
+template <typename UIntN>
+Int SingleCollectWord(Obj sc, Obj vv, Obj w)
 {
     Int         ebits;      /* number of bits in the exponent              */
     UInt        expm;       /* unsigned exponent mask                      */
@@ -594,12 +606,8 @@ Int SingleCollectWord ( Obj sc, Obj vv, Obj w )
 **
 *F  Solution( <sc>, <ww>, <uu>, <func> )
 */
-template<typename UIntN>
-Int Solution(
-    Obj         sc,
-    Obj         ww,
-    Obj         uu,
-    FuncIOOO    func )
+template <typename UIntN>
+Int Solution(Obj sc, Obj ww, Obj uu, FuncIOOO func)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
@@ -732,10 +740,16 @@ FinPowConjCol C32Bits_SingleCollector = {
 **  global exponent because the beginning of  the word might not commute with
 **  the rest.
 **/
-template<typename UIntN>
-static void AddWordIntoExpVec( Int *v, const UIntN *w, Int e,
-                           Int ebits, UInt expm,
-                           Int p, const Obj *pow, Int lpow ) {
+template <typename UIntN>
+static void AddWordIntoExpVec(Int *         v,
+                              const UIntN * w,
+                              Int           e,
+                              Int           ebits,
+                              UInt          expm,
+                              Int           p,
+                              const Obj *   pow,
+                              Int           lpow)
+{
 
     const UIntN * wend = w + (INT_INTOBJ((((const Obj*)(w))[-1])) - 1);
     Int        i;
@@ -756,10 +770,16 @@ static void AddWordIntoExpVec( Int *v, const UIntN *w, Int e,
     }
 }
 
-template<typename UIntN>
-static void AddCommIntoExpVec( Int *v, const UIntN *w, Int e,
-                           Int ebits, UInt expm,
-                           Int p, const Obj *pow, Int lpow ) {
+template <typename UIntN>
+static void AddCommIntoExpVec(Int *         v,
+                              const UIntN * w,
+                              Int           e,
+                              Int           ebits,
+                              UInt          expm,
+                              Int           p,
+                              const Obj *   pow,
+                              Int           lpow)
+{
 
     const UIntN * wend = w + (INT_INTOBJ((((const Obj*)(w))[-1])) - 1);
     Int        i;
@@ -782,10 +802,16 @@ static void AddCommIntoExpVec( Int *v, const UIntN *w, Int e,
     }
 }
 
-template<typename UIntN>
-static void AddPartIntoExpVec( Int *v, const UIntN *w, const UIntN *wend,
-                           Int ebits, UInt expm,
-                           Int p, const Obj *pow, Int lpow ) {
+template <typename UIntN>
+static void AddPartIntoExpVec(Int *         v,
+                              const UIntN * w,
+                              const UIntN * wend,
+                              Int           ebits,
+                              UInt          expm,
+                              Int           p,
+                              const Obj *   pow,
+                              Int           lpow)
+{
 
     Int        i;
     Int        ex;
@@ -811,8 +837,8 @@ static void AddPartIntoExpVec( Int *v, const UIntN *w, const UIntN *wend,
 **
 **  If a stack overflow occurs, we simply stop and return false.
 */
-template<typename UIntN>
-Int CombiCollectWord ( Obj sc, Obj vv, Obj w )
+template <typename UIntN>
+Int CombiCollectWord(Obj sc, Obj vv, Obj w)
 {
     Int         ebits;      /* number of bits in the exponent              */
     UInt        expm;       /* unsigned exponent mask                      */
