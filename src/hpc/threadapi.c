@@ -42,6 +42,27 @@
 #include <pthread.h>
 
 
+#define RequireThread(funcname, op, argname) \
+    RequireArgumentCondition(funcname, op, argname, TNUM_OBJ(op) == T_THREAD, \
+        "must be a thread object")
+
+#define RequireChannel(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, IsChannel(op), \
+        "must be a channel")
+
+#define RequireSemaphore(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, TNUM_OBJ(op) == T_SEMAPHORE, \
+        "must be a semaphore")
+
+#define RequireBarrier(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, IsBarrier(op), \
+        "must be a barrier")
+
+#define RequireSyncVar(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, IsSyncVar(op), \
+        "must be a synchronization variable")
+
+
 struct WaitList {
     struct WaitList *    prev;
     struct WaitList *    next;
@@ -432,8 +453,7 @@ Obj FuncCreateThread(Obj self, Obj funcargs)
 Obj FuncWaitThread(Obj self, Obj obj)
 {
     const char * error = NULL;
-    if (TNUM_OBJ(obj) != T_THREAD)
-        return ArgumentError("WaitThread: Argument must be a thread object");
+    RequireThread("WaitThread", obj, "thread");
     LockThreadControl(1);
     ThreadObject *thread = (ThreadObject *)ADDR_OBJ(obj);
     if (thread->status & THREAD_JOINED)
@@ -466,8 +486,7 @@ Obj FuncCurrentThread(Obj self)
 
 Obj FuncThreadID(Obj self, Obj thread)
 {
-    if (TNUM_OBJ(thread) != T_THREAD)
-        return ArgumentError("ThreadID: Argument must be a thread object");
+    RequireThread("ThreadID", thread, "thread");
     return INTOBJ_INT(ThreadID(thread));
 }
 
@@ -862,9 +881,7 @@ Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func)
     Region * volatile region = GetRegionOf(obj);
     syJmp_buf readJmpError;
 
-    if (TNUM_OBJ(func) != T_FUNCTION)
-        return ArgumentError(
-            "WITH_TARGET_REGION: Second argument must be a function");
+    RequireFunction("WITH_TARGET_REGION", func);
     if (!region || !CheckExclusiveWriteAccess(obj))
         return ArgumentError(
             "WITH_TARGET_REGION: Requires write access to target region");
@@ -1328,8 +1345,7 @@ static int IsChannel(Obj obj)
 
 Obj FuncDestroyChannel(Obj self, Obj channel)
 {
-    if (!IsChannel(channel))
-        return ArgumentError("DestroyChannel: Argument is not a channel");
+    RequireChannel("DestroyChannel", channel);
     if (!DestroyChannel(ObjPtr(channel)))
         return ArgumentError("DestroyChannel: Channel is in use");
     return (Obj)0;
@@ -1337,34 +1353,27 @@ Obj FuncDestroyChannel(Obj self, Obj channel)
 
 Obj FuncTallyChannel(Obj self, Obj channel)
 {
-    if (!IsChannel(channel))
-        return ArgumentError(
-            "TallyChannel: First argument must be a channel");
+    RequireChannel("TallyChannel", channel);
     return INTOBJ_INT(TallyChannel(ObjPtr(channel)));
 }
 
 Obj FuncSendChannel(Obj self, Obj channel, Obj obj)
 {
-    if (!IsChannel(channel))
-        return ArgumentError("SendChannel: First argument must be a channel");
+    RequireChannel("SendChannel", channel);
     SendChannel(ObjPtr(channel), obj, 1);
     return (Obj)0;
 }
 
 Obj FuncTransmitChannel(Obj self, Obj channel, Obj obj)
 {
-    if (!IsChannel(channel))
-        return ArgumentError(
-            "TransmitChannel: First argument must be a channel");
+    RequireChannel("TransmitChannel", channel);
     SendChannel(ObjPtr(channel), obj, 0);
     return (Obj)0;
 }
 
 Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list)
 {
-    if (!IsChannel(channel))
-        return ArgumentError(
-            "MultiSendChannel: First argument must be a channel");
+    RequireChannel("MultiSendChannel", channel);
     CheckIsDenseList("MultiSendChannel", "list", list);
     MultiSendChannel(ObjPtr(channel), list, 1);
     return (Obj)0;
@@ -1372,9 +1381,7 @@ Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list)
 
 Obj FuncMultiTransmitChannel(Obj self, Obj channel, Obj list)
 {
-    if (!IsChannel(channel))
-        return ArgumentError(
-            "MultiTransmitChannel: First argument must be a channel");
+    RequireChannel("MultiTransmitChannel", channel);
     CheckIsDenseList("MultiTransmitChannel", "list", list);
     MultiSendChannel(ObjPtr(channel), list, 0);
     return (Obj)0;
@@ -1382,9 +1389,7 @@ Obj FuncMultiTransmitChannel(Obj self, Obj channel, Obj list)
 
 Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list)
 {
-    if (!IsChannel(channel))
-        return ArgumentError(
-            "TryMultiSendChannel: First argument must be a channel");
+    RequireChannel("TryMultiSendChannel", channel);
     CheckIsDenseList("TryMultiSendChannel", "list", list);
     return INTOBJ_INT(TryMultiSendChannel(ObjPtr(channel), list, 1));
 }
@@ -1392,9 +1397,7 @@ Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list)
 
 Obj FuncTryMultiTransmitChannel(Obj self, Obj channel, Obj list)
 {
-    if (!IsChannel(channel))
-        return ArgumentError(
-            "TryMultiTransmitChannel: First argument must be a channel");
+    RequireChannel("TryMultiTransmitChannel", channel);
     CheckIsDenseList("TryMultiTransmitChannel", "list", list);
     return INTOBJ_INT(TryMultiSendChannel(ObjPtr(channel), list, 0));
 }
@@ -1402,22 +1405,19 @@ Obj FuncTryMultiTransmitChannel(Obj self, Obj channel, Obj list)
 
 Obj FuncTrySendChannel(Obj self, Obj channel, Obj obj)
 {
-    if (!IsChannel(channel))
-        return ArgumentError("TrySendChannel: Argument is not a channel");
+    RequireChannel("TrySendChannel", channel);
     return TrySendChannel(ObjPtr(channel), obj, 1) ? True : False;
 }
 
 Obj FuncTryTransmitChannel(Obj self, Obj channel, Obj obj)
 {
-    if (!IsChannel(channel))
-        return ArgumentError("TryTransmitChannel: Argument is not a channel");
+    RequireChannel("TryTransmitChannel", channel);
     return TrySendChannel(ObjPtr(channel), obj, 0) ? True : False;
 }
 
 Obj FuncReceiveChannel(Obj self, Obj channel)
 {
-    if (!IsChannel(channel))
-        return ArgumentError("ReceiveChannel: Argument is not a channel");
+    RequireChannel("ReceiveChannel", channel);
     return ReceiveChannel(ObjPtr(channel));
 }
 
@@ -1462,11 +1462,8 @@ Obj FuncReceiveAnyChannelWithIndex(Obj self, Obj args)
 Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj countobj)
 {
     int count;
-    if (!IsChannel(channel))
-        return ArgumentError(
-            "MultiReceiveChannel: Argument is not a channel");
-    if (!IS_INTOBJ(countobj))
-        return ArgumentError("MultiReceiveChannel: Size must be a number");
+    RequireChannel("MultiReceiveChannel", channel);
+    RequireSmallInt("MultiReceiveChannel", countobj, "count");
     count = INT_INTOBJ(countobj);
     if (count < 0)
         return ArgumentError(
@@ -1476,15 +1473,13 @@ Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj countobj)
 
 Obj FuncInspectChannel(Obj self, Obj channel)
 {
-    if (!IsChannel(channel))
-        return ArgumentError("InspectChannel: Argument is not a channel");
+    RequireChannel("InspectChannel", channel);
     return InspectChannel(ObjPtr(channel));
 }
 
 Obj FuncTryReceiveChannel(Obj self, Obj channel, Obj obj)
 {
-    if (!IsChannel(channel))
-        return ArgumentError("TryReceiveChannel: Argument must be a channel");
+    RequireChannel("TryReceiveChannel", channel);
     return TryReceiveChannel(ObjPtr(channel), obj);
 }
 
@@ -1527,8 +1522,7 @@ Obj FuncCreateSemaphore(Obj self, Obj args)
 Obj FuncSignalSemaphore(Obj self, Obj semaphore)
 {
     Semaphore * sem;
-    if (TNUM_OBJ(semaphore) != T_SEMAPHORE)
-        return ArgumentError("SignalSemaphore: Argument must be a semaphore");
+    RequireSemaphore("SignalSemaphore", semaphore);
     sem = ObjPtr(semaphore);
     LockMonitor(ObjPtr(sem->monitor));
     sem->count++;
@@ -1541,8 +1535,7 @@ Obj FuncSignalSemaphore(Obj self, Obj semaphore)
 Obj FuncWaitSemaphore(Obj self, Obj semaphore)
 {
     Semaphore * sem;
-    if (TNUM_OBJ(semaphore) != T_SEMAPHORE)
-        return ArgumentError("WaitSemaphore: Argument must be a semaphore");
+    RequireSemaphore("WaitSemaphore", semaphore);
     sem = ObjPtr(semaphore);
     LockMonitor(ObjPtr(sem->monitor));
     sem->waiting++;
@@ -1560,8 +1553,7 @@ Obj FuncTryWaitSemaphore(Obj self, Obj semaphore)
 {
     Semaphore * sem;
     int         success;
-    if (TNUM_OBJ(semaphore) != T_SEMAPHORE)
-        return ArgumentError("WaitSemaphore: Argument must be a semaphore");
+    RequireSemaphore("TryWaitSemaphore", semaphore);
     sem = ObjPtr(semaphore);
     LockMonitor(ObjPtr(sem->monitor));
     success = (sem->count > 0);
@@ -1649,20 +1641,15 @@ int IsBarrier(Obj obj)
 
 Obj FuncStartBarrier(Obj self, Obj barrier, Obj count)
 {
-    if (!IsBarrier(barrier))
-        return ArgumentError(
-            "StartBarrier: First argument must be a barrier");
-    if (!IS_INTOBJ(count))
-        return ArgumentError("StartBarrier: Second argument must be the "
-                             "number of threads to synchronize");
+    RequireBarrier("StartBarrier", barrier);
+    RequireSmallInt("StartBarrier", count, "count");
     StartBarrier(ObjPtr(barrier), INT_INTOBJ(count));
     return (Obj)0;
 }
 
 Obj FuncWaitBarrier(Obj self, Obj barrier)
 {
-    if (!IsBarrier(barrier))
-        return ArgumentError("StartBarrier: Argument must be a barrier");
+    RequireBarrier("WaitBarrier", barrier);
     WaitBarrier(ObjPtr(barrier));
     return (Obj)0;
 }
@@ -1737,37 +1724,29 @@ Obj FuncCreateSyncVar(Obj self)
     return CreateSyncVar();
 }
 
-Obj FuncSyncWrite(Obj self, Obj var, Obj value)
+Obj FuncSyncWrite(Obj self, Obj syncvar, Obj value)
 {
-    if (!IsSyncVar(var))
-        return ArgumentError(
-            "SyncWrite: First argument must be a synchronization variable");
-    SyncWrite(ObjPtr(var), value);
+    RequireSyncVar("SyncWrite", syncvar);
+    SyncWrite(ObjPtr(syncvar), value);
     return (Obj)0;
 }
 
-Obj FuncSyncTryWrite(Obj self, Obj var, Obj value)
+Obj FuncSyncTryWrite(Obj self, Obj syncvar, Obj value)
 {
-    if (!IsSyncVar(var))
-        return ArgumentError("SyncTryWrite: First argument must be a "
-                             "synchronization variable");
-    return SyncTryWrite(ObjPtr(var), value) ? True : False;
+    RequireSyncVar("SyncTryWrite", syncvar);
+    return SyncTryWrite(ObjPtr(syncvar), value) ? True : False;
 }
 
-Obj FuncSyncRead(Obj self, Obj var)
+Obj FuncSyncRead(Obj self, Obj syncvar)
 {
-    if (!IsSyncVar(var))
-        return ArgumentError(
-            "SyncRead: Argument must be a synchronization variable");
-    return SyncRead(ObjPtr(var));
+    RequireSyncVar("SyncRead", syncvar);
+    return SyncRead(ObjPtr(syncvar));
 }
 
-Obj FuncSyncIsBound(Obj self, Obj var)
+Obj FuncSyncIsBound(Obj self, Obj syncvar)
 {
-    if (!IsSyncVar(var))
-        return ArgumentError(
-            "SyncRead: Argument must be a synchronization variable");
-    return SyncIsBound(ObjPtr(var));
+    RequireSyncVar("SyncIsBound", syncvar);
+    return SyncIsBound(ObjPtr(syncvar));
 }
 
 
@@ -2059,7 +2038,7 @@ Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj)
 Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj)
 {
     if (!IS_BAG_REF(obj))
-        return ArgumentError("FORCE_MAKE_PUBLIC: Argument is a short integer "
+        return ArgumentError("FORCE_MAKE_PUBLIC: Argument is a small integer "
                              "or finite-field element");
     MakeBagPublic(obj);
     return obj;
@@ -2071,9 +2050,7 @@ Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "SHARE_NORECURSE: Second argument must be a string or fail");
-    if (!IS_INTOBJ(prec))
-        return ArgumentError(
-            "SHARE_NORECURSE: Third argument must be an integer");
+    RequireSmallInt("SHARE_NORECURSE", prec, "prec");
     region->prec = INT_INTOBJ(prec);
     if (!MigrateObjects(1, &obj, region, 0))
         return ArgumentError("SHARE_NORECURSE: Thread does not have "
@@ -2131,8 +2108,7 @@ Obj FuncNEW_REGION(Obj self, Obj name, Obj prec)
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "NEW_REGION: Second argument must be a string or fail");
-    if (!IS_INTOBJ(prec))
-        return ArgumentError("NEW_REGION: Third argument must be an integer");
+    RequireSmallInt("NEW_REGION", prec, "prec");
     region->prec = INT_INTOBJ(prec);
     if (name != Fail)
         SetRegionName(region, name);
@@ -2152,8 +2128,7 @@ Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "SHARE: Second argument must be a string or fail");
-    if (!IS_INTOBJ(prec))
-        return ArgumentError("SHARE: Third argument must be an integer");
+    RequireSmallInt("SHARE", prec, "prec");
     region->prec = INT_INTOBJ(prec);
     reachable = ReachableObjectsFrom(obj);
     if (!MigrateObjects(LEN_PLIST(reachable), ADDR_OBJ(reachable) + 1, region,
@@ -2172,8 +2147,7 @@ Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "SHARE_RAW: Second argument must be a string or fail");
-    if (!IS_INTOBJ(prec))
-        return ArgumentError("SHARE_RAW: Third argument must be an integer");
+    RequireSmallInt("SHARE_RAW", prec, "prec");
     region->prec = INT_INTOBJ(prec);
     reachable = ReachableObjectsFrom(obj);
     if (!MigrateObjects(LEN_PLIST(reachable), ADDR_OBJ(reachable) + 1, region,
@@ -2401,9 +2375,7 @@ Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
     if (!IS_INTOBJ(count) || INT_INTOBJ(count) < 0)
         return ArgumentError("PERIODIC_CHECK: First argument must be a "
                              "non-negative small integer");
-    if (TNUM_OBJ(func) != T_FUNCTION)
-        return ArgumentError(
-            "PERIODIC_CHECK: Second argument must be a function");
+    RequireFunction("PERIODIC_CHECK", func);
     /*
      * The following read of SigVTALRMCounter is a dirty read. We don't
      * need to synchronize access to it because it's a monotonically
