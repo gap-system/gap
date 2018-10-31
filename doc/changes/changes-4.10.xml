@@ -40,11 +40,16 @@ To address this, various steps were taken:
 <List>
 <Item>some immediate methods were turned into regular methods;
 </Item>
-<Item>a special handlers for <C>SetSize</C> was created that deduces properties which previously were taken care of by immediate methods;
+<Item>a special handlers for <C>SetSize</C> was created that deduces properties
+which previously were taken care of by immediate methods;
 </Item>
-<Item>some immediate methods were replaced by implications (set via <C>InstallTrueMethod</C>), a mechanism that essentially adds zero overhead, unlike immediate methods;
+<Item>some immediate methods were replaced by implications
+(set via <C>InstallTrueMethod</C>), a mechanism that essentially
+adds zero overhead, unlike immediate methods;
 </Item>
-<Item>various group constructors were modified to precompute and preset properties of freshly created group objects, to avoid triggering immediate methods for these.
+<Item>various group constructors were modified to precompute and preset
+properties of freshly created group objects, to avoid triggering immediate
+methods for these.
 </Item>
 </List>
 
@@ -113,7 +118,7 @@ Relevant pull requests:
 
 We now provide a experimental way to allow 3rd party code to link &GAP; as a
 library; this is based on the <Package>libGAP</Package> code by
-<URL Text="SageMath">https://www.sagemath.org</URL>, but different: While we aim to provide the same
+<URL Text="SageMath">https://www.sagemath.org</URL>, but different: while we aim to provide the same
 functionality, we do not rename any symbols, and we do not provide the same API.
 We hope that a future version of <Package>SageMath</Package> can drop its custom modifications for
 &GAP; and use this interface instead. Work is underway to achieve this goal.
@@ -122,7 +127,7 @@ If you are interested in this kind of interface, please get in touch with us to 
 See also <URL Text="this email">https://mail.gap-system.org/pipermail/gap/2018-August/001123.html</URL>.
 <P/>
 
-To get an idea how <Package>libGAP</Package> works, you can configure GAP as normal, and then execute
+To get an idea how <Package>libGAP</Package> works, you can configure &GAP; as normal, and then execute
 <C>make testlibgap</C> which will build a small program that uses some of the existing API and links
 &GAP;.
 
@@ -169,8 +174,8 @@ Relevant pull requests:
       Various changes, including:
   <List>
   <Item>Improve computation of automorphism groups for fp groups (we still recommend to instead first convert the group to a computationally nice representation, such as a perm or pc group)</Item>
-  <Item>Add <C>MinimalFaithfulPermutationDegree</C> attribute for finite groups</Item>
-  <Item>Improve performance of <C>GQuotients(F,G)</C> when <C>F</C> is an Fp group</Item>
+  <Item>Add <Ref Attr="MinimalFaithfulPermutationDegree" BookName="ref"/C> attribute for finite groups</Item>
+  <Item>Improve performance of <C>GQuotients(F,G)</C> when <C>F</C> is an fp group</Item>
   <Item>Some other performance and documentation tweaks</Item>
   </List>
 
@@ -184,7 +189,7 @@ Relevant pull requests:
 
 </Item>
 <Item><URL><LinkText>&Hash;2063</LinkText><Link>https://github.com/gap-system/gap/pull/2063</Link></URL>
-      Teach &GAP; that BPSW pseudo primes less than 2^64 are all known to be prime (the previous limit was 10^13)
+      Teach &GAP; that BPSW pseudo primes less than <M>2^{64}</M> are all known to be prime (the previous limit was <M>10^{13}</M>)
 
 </Item>
 <Item><URL><LinkText>&Hash;2091</LinkText><Link>https://github.com/gap-system/gap/pull/2091</Link></URL>
@@ -201,10 +206,15 @@ Relevant pull requests:
       Add <C>shortname</C> entry to record returned by <C>IsomorphismTypeInfoFiniteSimpleGroup</C>
 </Item>
 <Item><URL><LinkText>&Hash;2181</LinkText><Link>https://github.com/gap-system/gap/pull/2181</Link></URL>
-      Implement <C>Union(X,Y)</C>, where <C>X</C> and <C>Y</C> are in <C>PositiveIntegers, NonnegativeIntegers, Integers, GaussianIntegers, Rationals, GaussianRationals, Cyclotomics</C>, at least where a suitable output object exists (we already provided <C>Intersection(X,Y)</C> for a long time)
+      Implement <C>Union(X,Y)</C>, where <C>X</C> and <C>Y</C> are in
+      <C>PositiveIntegers</C>, <C>NonnegativeIntegers</C>, <C>Integers</C>,
+      <C>GaussianIntegers</C>, <C>Rationals</C>, <C>GaussianRationals</C>, <C>Cyclotomics</C>,
+      at least where a suitable output object exists (we already provided
+      <C>Intersection(X,Y)</C> for a long time)
 </Item>
 <Item><URL><LinkText>&Hash;2185</LinkText><Link>https://github.com/gap-system/gap/pull/2185</Link></URL>
-      Implement <C>IsCentral(M,x)</C>, where <C>M</C> is a magma, monoid, group, ring, algebra, ... and <C>x</C> an element of <C>M</C> (the documentation already claimed that these exist for a long time) 
+      Implement <C>IsCentral(M,x)</C>, where <C>M</C> is a magma, monoid, group, ring, algebra, etc.
+      and <C>x</C> an element of <C>M</C> (the documentation already claimed that these exist for a long time) 
 </Item>
 <Item><URL><LinkText>&Hash;2199</LinkText><Link>https://github.com/gap-system/gap/pull/2199</Link></URL>
       Optimize true/false conditions when coding if-statements
@@ -283,7 +293,7 @@ Relevant pull requests:
       Finite groups whose order is known and not divisible by 4 are immediately marked as solvable
 </Item>
 <Item><URL><LinkText>&Hash;2509</LinkText><Link>https://github.com/gap-system/gap/pull/2509</Link></URL>
-      Rewrite support for <C>.gz</C> compressed files to use <C>zlib</C>, now works on Windows
+      Rewrite support for <File>.gz</File> compressed files to use <Package>zlib</Package>, now works on Windows
 </Item>
 <Item><URL><LinkText>&Hash;2519</LinkText><Link>https://github.com/gap-system/gap/pull/2519</Link></URL>,
       <URL><LinkText>&Hash;2524</LinkText><Link>https://github.com/gap-system/gap/pull/2524</Link></URL>,
@@ -307,7 +317,7 @@ Relevant pull requests:
       Speed up computation of quotients of associative words by using existing (but previously unused) kernel functions for that
 </Item>
 <Item><URL><LinkText>&Hash;2640</LinkText><Link>https://github.com/gap-system/gap/pull/2640</Link></URL>
-      Work on MatrixObj and VectorObj
+      Work on <C>MatrixObj</C> and <C>VectorObj</C>
 </Item>
 <Item><URL><LinkText>&Hash;2654</LinkText><Link>https://github.com/gap-system/gap/pull/2654</Link></URL>
       Make <C>Sortex</C> stable
@@ -329,17 +339,19 @@ Relevant pull requests:
       Reject some invalid uses of <C>~</C>
 </Item>
 <Item><URL><LinkText>&Hash;2812</LinkText><Link>https://github.com/gap-system/gap/pull/2812</Link></URL>
-      Reduce memory usage and improve performance the MTC (modified Todd-Coxeter) code that was rewritten in &GAP; 4.9, but which was much slower than the old (but buggy) code it replaced; the difference is now small, but the old code still is faster in some case.
+      Reduce memory usage and improve performance the MTC (modified Todd-Coxeter) code
+      that was rewritten in &GAP; 4.9, but which was much slower than the old (but buggy)
+      code it replaced; the difference is now small, but the old code still is faster in some case.
 </Item>
 <Item><URL><LinkText>&Hash;2855</LinkText><Link>https://github.com/gap-system/gap/pull/2855</Link></URL>,
       <URL><LinkText>&Hash;2877</LinkText><Link>https://github.com/gap-system/gap/pull/2877</Link></URL>
-      Add <C>IsPackageLoaded</C>
+      Add <Ref Func="IsPackageLoaded" BookName="ref"/C>
 </Item>
 <Item><URL><LinkText>&Hash;2878</LinkText><Link>https://github.com/gap-system/gap/pull/2878</Link></URL>
-      Speed up conjugacy tests for permutation by using random permutation of points when selecting base in centralizer
+      Speed up conjugacy tests for permutation by using random permutation of points when selecting base in centraliser
 </Item>
 <Item><URL><LinkText>&Hash;2899</LinkText><Link>https://github.com/gap-system/gap/pull/2899</Link></URL>
-      TestDirectory reports number of failures and failed files
+      <C>TestDirectory</C> reports number of failures and failed files
 </Item>
 </List>
 
@@ -374,7 +386,7 @@ Relevant pull requests:
       Documented <C>ClassPositionsOfSolvableRadical</C> and <C>CharacterTableOfNormalSubgroup</C>
 </Item>
 <Item><URL><LinkText>&Hash;2834</LinkText><Link>https://github.com/gap-system/gap/pull/2834</Link></URL>
-      Improve manual section about Info classes
+      Improve manual section about <C>Info</C> classes
 </Item>
 </List>
 
@@ -563,10 +575,37 @@ Relevant pull requests:
 <Subsection> 
 <Heading>Packages</Heading>
 
+&GAP; 4.10.0 distribution includes 140 packages.
+<P/>
+
+Added to the distribution:
 <List>
-<Item>The <C>recogbase</C> package has been merged into the <C>recog</C> package, and therefore is no longer distributed with &GAP;.
+<Item>
+The <Package>francy</Package> by Manuel Martins, which provides an interface
+to draw graphics using objects. This interface allows creation of directed and
+undirected graphs, trees, line charts, bar charts and scatter charts. These
+graphical objects are drawn inside a canvas that includes a space for menus and
+to display informative messages. Within the canvas it is possible to interact
+with the graphical objects by clicking, selecting, dragging and zooming.
 </Item>
-<Item>The <C>linboxing</C> package has been unusable (it does not compile) for several years now, and is unmaintained. It was therefore dropped from the &GAP; package distribution. If anybody is willing to take over and fix the package, the latest sources are available at <URL>https://github.com/gap-packages/linboxing</URL>.
+<Item>
+The <Package>JupyterVis</Package> by Nathan Carter, which is intended for use
+in Jupyter Notebooks running GAP kernels and adds visualization tools for use
+in such notebooks, such as charts and graphs.
+</Item>
+</List>
+
+No longer redistributed with &GAP;:
+
+<List>
+<Item>The <Package>linboxing</Package> package has been unusable (it does not
+compile) for several years now, and is unmaintained. It was therefore dropped
+from the &GAP; package distribution. If anybody is willing to take over and
+fix the package, the latest sources are available at
+<URL>https://github.com/gap-packages/linboxing</URL>.
+</Item>
+<Item>The <Package>recogbase</Package> package has been merged into the
+<C>recog</C> package, and therefore is no longer distributed with &GAP;.
 </Item>
 </List>
 
