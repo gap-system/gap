@@ -407,6 +407,7 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
+##  Still used in hecke (11/2018)
 BIND_GLOBAL( "TeX", function( arg )
     local   str,  res,  obj;
 
@@ -452,6 +453,7 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+##  Not used in any redistributed package (11/2018)
 BIND_GLOBAL( "LaTeX", function( arg )
     local   str,  res,  obj;
 
@@ -946,8 +948,7 @@ BindGlobal( "SetUserPreferences", function( arg )
 ##
 ##  Moved to obsoletes in October 2018 for GAP 4.11.
 ##
-##  still used by guarana, lpres, nq (10/2018)
-##
+##  Still used in guarana, lpres, nq (11/2018)
 BIND_GLOBAL( "SetFeatureObj", function ( obj, filter, val )
     Info( InfoObsolete, 1, "'SetFeatureObj' is obsolete, use 'SetFilterObj' or 'ResetFilterObj' instead" );
     if val then

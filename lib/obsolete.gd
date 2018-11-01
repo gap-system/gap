@@ -162,7 +162,7 @@ end );
 ##
 ##  Moved to obsoletes in May 2003.
 ##
-##  not used in any redistributed package (01/2016)
+##  Not used in any redistributed package (01/2016)
 #DeclareGlobalFunction( "DiagonalizeIntMatNormDriven" );
 
 
@@ -185,43 +185,43 @@ end );
 ##
 
 #BindGlobal( "DeclarePackage", Ignore );
-# 09/2018: not used in any redistributed package
+# 09/2018: Not used in any redistributed package
 
 #BindGlobal( "DeclareAutoPackage", Ignore );
-# 06/2018: not used in any redistributed package
+# 06/2018: Not used in any redistributed package
 
 #BindGlobal( "DeclarePackageAutoDocumentation", Ignore );
-# 09/2018: not used in any redistributed package
+# 09/2018: Not used in any redistributed package
 
 #BindGlobal( "DeclarePackageDocumentation", Ignore );
-# 03/2018: not used in any redistributed package
+# 03/2018: Not used in any redistributed package
 
 DeclareObsoleteSynonym( "ReadPkg", "ReadPackage" );
-# 06/2018: still used in automgrp, Hap (HapCocyclic), modisom
-# safely used in GAP3 compatibility code: ctbllib, quagroup, singular (09/2018)
+# 11/2018: still used in Hap (HapCocyclic)
+# safely used in GAP3 compatibility code: ctbllib, quagroup (09/2018)
 
-DeclareObsoleteSynonym( "RequirePackage", "LoadPackage" );
+#DeclareObsoleteSynonym( "RequirePackage", "LoadPackage" );
 # 09/2018: not used in "general" code in any redistributed package
-# used in documentation or for generating it: edim, hecke, repsn, singular (09/2018)
-# safely used in GAP3 compatibility code: ctbllib, singular (09/2018)
+# used in documentation or for generating it: edim, repsn (11/2018)
+# safely used in GAP3 compatibility code: ctbllib (09/2018)
 
 
 #############################################################################
 ##
-#V  KERNEL_VERSION   - not used in any redistributed package (11/2017)
-#V  VERSION          - still used by HAP, singular (06/2018)
-#V  GAP_ARCHITECTURE - still used by gbnp, singular (03/2018)
-#V  GAP_ROOT_PATHS   - not used in any redistributed package (03/2018)
-#V  DEBUG_LOADING    - still used by the GAP kernel itself (11/2017)
-#V  BANNER           - still used by loops, quagroup (09/2018)
-#V  QUIET            - still used by loops, quagroup (09/2018)
-#V  LOADED_PACKAGES  - not used in any redistributed package (11/2017)
+#V  KERNEL_VERSION   - Not used in any redistributed package (11/2017)
+#V  VERSION          - Not used in any redistributed package (11/2018)
+#V  GAP_ARCHITECTURE - still used in gbnp (11/2018)
+#V  GAP_ROOT_PATHS   - Not used in any redistributed package (03/2018)
+#V  DEBUG_LOADING    - still used in the GAP kernel itself (11/2017)
+#V  BANNER           - still used in loops, quagroup (11/2018)
+#V  QUIET            - still used in loops, quagroup (11/2018)
+#V  LOADED_PACKAGES  - Not used in any redistributed package (11/2017)
 ##
 ##  Up to GAP 4.3,
 ##  these global variables were used instead of the record `GAPInfo'.
 ##
 #BindGlobal( "KERNEL_VERSION", GAPInfo.KernelVersion );
-BindGlobal( "VERSION", GAPInfo.Version );
+#BindGlobal( "VERSION", GAPInfo.Version );
 BindGlobal( "GAP_ARCHITECTURE", GAPInfo.Architecture );
 #BindGlobal( "GAP_ROOT_PATHS", GAPInfo.RootPaths );
 BindGlobal( "DEBUG_LOADING", GAPInfo.CommandLineOptions.D );
@@ -231,15 +231,14 @@ BindGlobal( "QUIET", GAPInfo.CommandLineOptions.q );
 
 #############################################################################
 ##
-#V  PACKAGES_VERSIONS - not used in any redistributed package (11/2017)
-#V  Revision          - still used by HAPcryst, pargap, polymaking, rds,
-#V                      singular, tomlib (03/2018)
+#V  PACKAGES_VERSIONS - Not used in any redistributed package (11/2017)
+#V  Revision          - still used in HAPcryst, polymaking, rds (11/2018)
 #BindGlobal( "PACKAGES_VERSIONS", rec() );
 BindGlobal( "Revision", rec() );
 
 #############################################################################
 ##
-#V  TRANSDEGREES - not used in any redistributed package (09/2018)
+#V  TRANSDEGREES
 ##
 ##  This variable was used by the GAP Transitive Groups Library before it
 ##  became a separate TransGrp package. It denoted the maximal degree of
@@ -254,6 +253,7 @@ BindGlobal( "Revision", rec() );
 ##  representatives for all transitive permutation groups of degree at
 ##  most 47, with degree 32 needing to be downloaded separately.
 ##
+##  Still used in ctbllib (11/2018)
 BindGlobal( "TRANSDEGREES", 30 );
 
 #############################################################################
@@ -261,7 +261,8 @@ BindGlobal( "TRANSDEGREES", 30 );
 #A  NormedVectors( <V> )
 ##
 ##  Moved to obsoletes in May 2003. 
-##  Still used in ctbllib, matgrp (06/2018)
+##  Still used in matgrp (11/2018)
+##  used in documentation or for generating it: ctbllib (11/2018)
 ##
 DeclareObsoleteSynonymAttr( "NormedVectors", "NormedRowVectors" );
 
@@ -298,8 +299,9 @@ DeclareObsoleteSynonymAttr( "NormedVectors", "NormedRowVectors" );
 ##  Its functionality became documented under the more suitable name
 ##  'CharacterValueWreathSymmetric' in GAP 4.10.
 ##
-DeclareObsoleteSynonym( "CharValueWreathSymmetric",
-    "CharacterValueWreathSymmetric" );
+##  Not used in any redistributed package (11/2018)
+#DeclareObsoleteSynonym( "CharValueWreathSymmetric",
+#    "CharacterValueWreathSymmetric" );
 
 
 #############################################################################
@@ -311,8 +313,7 @@ DeclareObsoleteSynonym( "CharValueWreathSymmetric",
 ##  for attributes.)
 ## 
 ##  Moved to obsolete in Dec 2007.
-##  Still used in ctbllib, gbnp. (03/2018)
-##
+##  Still used in ctbllib, gbnp (11/2018)
 DeclareObsoleteSynonym( "FormattedString", "String" );
 
 
@@ -322,16 +323,13 @@ DeclareObsoleteSynonym( "FormattedString", "String" );
 ##  The following names should be still available and regarded as obsolescent
 ##  in GAP 4.5, and should be removed in GAP 4.6.
 ##
-#F  IsTuple( ... ) - not used in any redistributed package (11/2017)
-#F  Tuple( ... ) - still used by groupoids, modisom, numericalsgps (09/2018)
+#F  IsTuple( ... ) - Not used in any redistributed package (11/2017)
+#F  Tuple( ... ) - still used in numericalsgps (11/2018)
 ##
 #DeclareObsoleteSynonym( "IsTuple", "IsDirectProductElement" );
 DeclareObsoleteSynonym( "Tuple", "DirectProductElement" );
 
-##  from GAPs "classical" random number generator:
 
-# Outdated, but kept since they were documented for a long time.
-# Moved to obsoletes in May 2010.
 #############################################################################
 ##
 #F  StateRandom()
@@ -392,11 +390,12 @@ DeclareObsoleteSynonym( "Tuple", "DirectProductElement" );
 
 # synonym formerly declared in factgrp.gd.
 # Moved to obsoletes in October 2011
-# not used in any redistributed package (11/2017)
+# Not used in any redistributed package (11/2017)
 #DeclareObsoleteSynonym( "FactorCosetOperation", "FactorCosetAction" );
 
 # synonym retained for backwards compatibility with GAP 4.4.
-# Moved to obsoletes in April 2012. Still used by hap (03/2018)
+# Moved to obsoletes in April 2012.
+# Still used in hap (11/2018)
 DeclareObsoleteSynonym( "Complementclasses", "ComplementClassesRepresentatives" );
 
 
@@ -421,7 +420,7 @@ DeclareObsoleteSynonym( "Complementclasses", "ComplementClassesRepresentatives" 
 ##  </Description>
 ##  </ManSection>
 ##
-##  not used in any redistributed package (11/2017)
+##  Not used in any redistributed package (11/2017)
 #DeclareOperation( "ShrinkCoeffs", [ IsMutable and IsList ] );
 
 
@@ -431,7 +430,7 @@ DeclareObsoleteSynonym( "Complementclasses", "ComplementClassesRepresentatives" 
 ##
 ##  was supported until GAP 4.4, obsolescent in GAP 4.5.
 ##
-##  not used in any redistributed package (01/2016)
+##  Not used in any redistributed package (01/2016)
 # BindGlobal( "ExcludeFromAutoload", function( arg )
 #     Info( InfoWarning, 1,
 #           "the function `ExcludeFromAutoload' is not supported anymore,\n",
@@ -442,11 +441,12 @@ DeclareObsoleteSynonym( "Complementclasses", "ComplementClassesRepresentatives" 
 
 #############################################################################
 ##
-#V  POST_RESTORE_FUNCS - still used by grape (09/2018)
+#V  POST_RESTORE_FUNCS
 ##
 ##  were supported until GAP 4.4, obsolescent in GAP 4.5.
 ##
-POST_RESTORE_FUNCS:= GAPInfo.PostRestoreFuncs;
+##  Not used in any redistributed package (11/2018)
+#POST_RESTORE_FUNCS:= GAPInfo.PostRestoreFuncs;
 
 
 #############################################################################
@@ -460,6 +460,8 @@ POST_RESTORE_FUNCS:= GAPInfo.PostRestoreFuncs;
 ##  </Description>
 ##  </ManSection>
 ##
+##  Not used in any redistributed package (11/2018)
+##  Still used in the GAP library (11/2018)
 DeclareOperation( "TeXObj", [ IS_OBJECT ] );
 
 
@@ -479,6 +481,8 @@ DeclareOperation( "TeXObj", [ IS_OBJECT ] );
 ##  </Description>
 ##  </ManSection>
 ##
+##  Not used in any redistributed package (11/2018)
+##  Still used in the GAP library (11/2018)
 DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
 
 
@@ -504,7 +508,7 @@ DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
 ##  In GAP 4.5, one can use the function `CharacterTableWithStoredGroup'
 ##  instead of `ConnectGroupAndCharacterTable'.
 ##
-##  not used in any redistributed package (01/2016)
+##  Not used in any redistributed package (01/2016)
 #DeclareGlobalFunction( "ConnectGroupAndCharacterTable" );
 
 
@@ -526,8 +530,8 @@ DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-## still used by modisom (09/2018)
-DeclareObsoleteSynonym( "MutableIdentityMat", "IdentityMat" );
+##  Not used in any redistributed package (11/2018)
+#DeclareObsoleteSynonym( "MutableIdentityMat", "IdentityMat" );
 
 
 #############################################################################
@@ -548,8 +552,9 @@ DeclareObsoleteSynonym( "MutableIdentityMat", "IdentityMat" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-## still used by modisom, qpa, singular (09/2018)
-DeclareObsoleteSynonym( "MutableNullMat", "NullMat" );
+##  Not used in any redistributed package (11/2018)
+#DeclareObsoleteSynonym( "MutableNullMat", "NullMat" );
+
 
 #############################################################################
 ##
@@ -574,7 +579,7 @@ DeclareObsoleteSynonym( "MutableNullMat", "NullMat" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-##  not used in any redistributed packages (11/2017)
+##  Not used in any redistributed packages (11/2017)
 #DeclareSynonymAttr( "IsSemilatticeAsSemigroup", IsSemilattice );
 
 #############################################################################
@@ -624,6 +629,7 @@ DeclareObsoleteSynonym( "MutableNullMat", "NullMat" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+##  Still used in fining, orb, polycyclic, recog (11/2018)
 DeclareObsoleteSynonym( "MultRowVector", "MultVector" );
 
 #############################################################################
@@ -634,9 +640,8 @@ DeclareObsoleteSynonym( "MultRowVector", "MultVector" );
 ##  former is still used in some packages, for backwards compatibility we
 ##  replace it by the call of `Test' with comparison up to whitespaces.
 ##
-##  Still used in ctbllib, cubefree, gbnp, guarana, hapcryst, polymaking,
-##  radiroot, singular (09/2018)
-##  safely used in compatibility code: gapdoc (09/2018)
+##  Still used in ctbllib, cubefree, gbnp, hapcryst, polymaking (11/2018)
+##  Safely used in compatibility code: gapdoc (09/2018)
 BindGlobal( "ReadTest", function( fn )
   Print("#I  ReadTest is no longer supported. Please use more robust and flexible\n",
         "#I  Test. For backwards compatibility, ReadTest(<filename>) is replaced\n",
@@ -650,8 +655,8 @@ end);
 ##
 ##  This got a nicer name before is became documented.
 ##
-## still used by Browse, profiling, resclasses (09/2018)
-## safely used in compatibility code: digraphs, profiling, semigroups (09/2018)
+##  Still used in ctbllib, Browse, resclasses (11/2018)
+##  Safely used in compatibility code: digraphs, profiling, semigroups (09/2018)
 DeclareObsoleteSynonym( "USER_HOME_EXPAND", "UserHomeExpand" );
 
 #############################################################################
@@ -660,8 +665,8 @@ DeclareObsoleteSynonym( "USER_HOME_EXPAND", "UserHomeExpand" );
 ##
 ##  This name stems from GAP 3 days.
 ##
-## still used by Browse, ctbllib (09/2018)
-## safely used in GAP3 compatibility code: ctbllib (09/2018)
+##  Still used in Browse (11/2018)
+##  Safely used in GAP3 compatibility code: ctbllib (11/2018)
 DeclareObsoleteSynonym( "RecFields", "RecNames" );
 
 #############################################################################
@@ -674,8 +679,8 @@ DeclareObsoleteSynonym( "RecFields", "RecNames" );
 ##  UNDOCUMENTED kernel functions may wish to keep using SHALLOW_SIZE until
 ##  they can adjust their minimal GAP version requirements.
 ##
-## still used by orb, recog (09/2018)
-DeclareObsoleteSynonym( "SHALLOW_SIZE", "SIZE_OBJ" );
+##  Not used in any redistributed package (11/2018)
+#DeclareObsoleteSynonym( "SHALLOW_SIZE", "SIZE_OBJ" );
 
 #############################################################################
 ##
