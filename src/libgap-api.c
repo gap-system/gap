@@ -80,8 +80,10 @@ char * GAP_CSTR_STRING(Obj string)
 
 //
 // Returns a new empty plain list
-// with capacity <capacity>
+// with capacity and length <capacity>
 Obj GAP_NewPlist(Int capacity)
 {
-    return NEW_PLIST(T_PLIST_EMPTY, capacity);
+    Obj list = NEW_PLIST(T_PLIST_EMPTY, capacity);
+    SET_LEN_PLIST(list, capacity);
+    return list;
 }
