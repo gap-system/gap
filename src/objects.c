@@ -1924,20 +1924,17 @@ Obj FuncCLONE_OBJ (
 **   This is inspired by the Smalltalk 'become:' operation.
 */
 
-Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
+Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2)
+{
     if ( IS_INTOBJ(obj1) || IS_INTOBJ(obj2) ) {
-        ErrorReturnVoid( "small integer objects cannot be switched", 0, 0,
-                         "you can 'return;' to leave them in place" );
-        return 0;
+        ErrorMayQuit("small integer objects cannot be switched", 0, 0);
     }
     if ( IS_FFE(obj1) || IS_FFE(obj2) ) {
-        ErrorReturnVoid( "finite field elements cannot be switched", 0, 0,
-                         "you can 'return;' to leave them in place" );
-        return 0;
+        ErrorMayQuit("finite field elements cannot be switched", 0, 0);
     }
 #ifdef HPCGAP
-    Region *ds1 = REGION(obj1);
-    Region *ds2 = REGION(obj2);
+    Region * ds1 = REGION(obj1);
+    Region * ds2 = REGION(obj2);
     if (!ds1 || ds1->owner != GetTLS())
         ErrorQuit("SWITCH_OBJ: Cannot write to first object's region.", 0, 0);
     if (!ds2 || ds2->owner != GetTLS())
@@ -1946,9 +1943,7 @@ Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
     SET_REGION(obj1, ds2);
 #endif
     SwapMasterPoint(obj1, obj2);
-    CHANGED_BAG(obj1);
-    CHANGED_BAG(obj2);
-    return (Obj) 0;
+    return 0;
 }
 
 
@@ -1964,39 +1959,26 @@ Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
 **  it allows public objects to be exchanged.
 */
 
-Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2) {
-#ifdef HPCGAP
-    Obj *ptr1, *ptr2;
-    Region *ds1, *ds2;
-
+Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2)
+{
     if ( IS_INTOBJ(obj1) || IS_INTOBJ(obj2) ) {
-        ErrorReturnVoid( "small integer objects cannot be switched", 0, 0,
-                         "you can 'return;' to leave them in place" );
-        return 0;
+        ErrorMayQuit("small integer objects cannot be switched", 0, 0);
     }
     if ( IS_FFE(obj1) || IS_FFE(obj2) ) {
-        ErrorReturnVoid( "finite field elements cannot be switched", 0, 0,
-                         "you can 'return;' to leave them in place" );
-        return 0;
+        ErrorMayQuit("finite field elements cannot be switched", 0, 0);
     }
-    ptr1 = PTR_BAG(obj1);
-    ptr2 = PTR_BAG(obj2);
-    ds1 = REGION(obj1);
-    ds2 = REGION(obj2);
+#ifdef HPCGAP
+    Region * ds1 = REGION(obj1);
+    Region * ds2 = REGION(obj2);
     if (ds1 && ds1->owner != GetTLS())
         ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to first object's region.", 0, 0);
     if (ds2 && ds2->owner != GetTLS())
         ErrorQuit("FORCE_SWITCH_OBJ: Cannot write to second object's region.", 0, 0);
     SET_REGION(obj2, ds1);
-    SET_PTR_BAG(obj2, ptr1);
     SET_REGION(obj1, ds2);
-    SET_PTR_BAG(obj1, ptr2);
-    CHANGED_BAG(obj1);
-    CHANGED_BAG(obj2);
-    return (Obj) 0;
-#else
-    return FuncSWITCH_OBJ(self, obj1, obj2);
 #endif
+    SwapMasterPoint(obj1, obj2);
+    return 0;
 }
 
 
