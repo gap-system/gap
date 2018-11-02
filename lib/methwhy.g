@@ -128,8 +128,7 @@ end);
 ##  <M>[2..5]</M> are displayed. 
 ##  <Log><![CDATA[
 ##  gap> ApplicableMethod( DirectProduct, [s4,s4], 1, 1 );    
-##  #I  DirectProduct is a function, not an operation, located at:
-##  #I  GAPROOT/lib/gprd.gi:17
+##  #I  and is located at: /GAPROOT/lib/gprd.gi:17
 ##  function( arg... ) ... end
 ##  gap> ApplicableMethod( DirectProductOp, [[s4,s4],s4], 2, 2 );
 ##  #I  Searching Method for DirectProductOp with 2 arguments:
@@ -199,14 +198,14 @@ end);
 BIND_GLOBAL("ApplicableMethodTypes",function(arg)
 local oper,narg,args,verbos,fams,flags,i,j,methods,flag,flag2,
       m,nam,val,has,need,isconstructor,
-      nummeth,valid,applic,numapplic,nr,first,last;
+      naf,nummeth,valid,applic,numapplic,nr,first,last;
   if Length(arg)<2 or not IsList(arg[2]) or not IsFunction(arg[1]) then
     Error("usage: ApplicableMethodTypes(<opr>,<arglist>[,<verbosity>[,<nr>]])");
   fi;
   ## process the arguments 
   oper:=arg[1];
   isconstructor:=IS_CONSTRUCTOR(oper);
-    args:=arg[2];
+  args:=arg[2];
   narg:=Length(args);
   verbos:=0;
   if Length(arg)>2 and IsPosInt(arg[3]) then
@@ -226,14 +225,22 @@ local oper,narg,args,verbos,fams,flags,i,j,methods,flag,flag2,
     if nam=fail then 
       Print("#I  ",oper," is not recognised as the name of an operation\n"); 
       return fail;
-    else
-      if verbos>0 then 
-        Print("#I  ",NameFunction(oper),
-              " is a function, not an operation, located at:\n"); 
-        Print("#I  ",LocationFunc(oper),"\n"); 
-      fi;
-      return oper;
-    fi; 
+    fi;
+    if verbos>0 then 
+      Print("#I  ",NameFunction(oper)," is a function, not an operation\n"); 
+    fi;
+    naf:=NumberArgumentsFunction(oper);
+    if naf>0 and naf<>narg then 
+      Print("#I  and requires ",naf," arguments\n");
+      return fail; 
+    elif -naf>narg then 
+      Print("#I  and requires at least ",-naf," arguments\n");
+      return fail; 
+    fi;
+    if verbos>0 then 
+      Print("#I  and is located at: ",LocationFunc(oper),"\n"); 
+    fi;
+    return oper;
   fi; 
   # get families and filters
   flags:=[];

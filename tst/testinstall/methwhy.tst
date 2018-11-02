@@ -278,4 +278,26 @@ gap> ApplicableMethod(foobar, [1..6], 1);
 function( x, y... ) ... end
 
 #
+# check ApplicableMethod when applied to a function 
+#
+gap> foobar := function(a,b,c) return 1; end;; 
+gap> ApplicableMethod( foobar, [4,5,6], 1, 1 );       
+#I  foobar is a function, not an operation
+#I  and is located at: stream:1
+function( a, b, c ) ... end
+gap> ApplicableMethod( foobar, [7,8], 1, 1 );  
+#I  foobar is a function, not an operation
+#I  and requires 3 arguments
+fail
+gap> foobar := function(x,arg...) return x*arg[1]; end;;
+gap> ApplicableMethod( foobar, [7,8], 1, 1 );           
+#I  foobar is a function, not an operation
+#I  and is located at: stream:1
+function( x, arg... ) ... end
+gap> ApplicableMethod( foobar, [9], 1, 1 );  
+#I  foobar is a function, not an operation
+#I  and requires at least 2 arguments
+fail
+
+#
 gap> STOP_TEST("methwhy.tst");
