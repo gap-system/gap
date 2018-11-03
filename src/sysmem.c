@@ -142,9 +142,6 @@ void SyMsgsBags (
     }
     /* package (window) mode full garbage collection messages              */
     if ( phase != 0 ) {
-      shifted =   3 <= phase && nr >= (1 << 21);
-      if (shifted)
-        nr *= 1024;
       cmd[0] = '@';
       cmd[1] = ( full ? '0' : ' ' ) + phase;
       cmd[2] = '\0';
@@ -153,8 +150,6 @@ void SyMsgsBags (
         str[i++] = '0' + (nr % 10);
       str[i++] = '+';
       str[i++] = '\0';
-      if (shifted)
-        str[i++] = 'k';
       syWinPut( 1, cmd, str );
     }
 }
