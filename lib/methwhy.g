@@ -170,7 +170,7 @@ end);
 ##  #I  ``SplitString: for a string and two characters''
 ##  #I   at GAPROOT/lib/string.gi:545
 ##  #I   - 2nd argument needs [ "IsChar" ]
-##  [ function( string, d1, d2 ) ... end ]
+##  [ function( string, seps, d ) ... end ]
 ##  ]]></Log>
 ##  When a method returned by <Ref Func="ApplicableMethod"/> is called 
 ##  it returns either the desired result or the string
@@ -280,6 +280,12 @@ local oper,narg,args,verbos,fams,flags,i,j,methods,flag,flag2,
       fi;
       flag := flag and flag2;
     od;
+    if not ( fams=fail or CallFuncList(m.famPred,fams) ) then 
+      flag := false; 
+      if verbos>2 then 
+        Print("#I   - bad family relations\n"); 
+      fi;
+    fi;
     if flag then 
       valid[i] := true; 
       Add( applic, i );;
@@ -357,12 +363,6 @@ local oper,narg,args,verbos,fams,flags,i,j,methods,flag,flag2,
         Print(" at ",LocationFunc(oper));
       fi;
       Print("\n");
-      ## not sure what this test is for
-      if not ( fams=fail or CallFuncList(m.famPred,fams) ) then 
-        if verbos>2 then 
-          Print("#I   - bad family relations\n"); 
-        fi;
-      fi;
     elif verbos>1 then
       Print("#I  Method ",i); 
       Print(", value: ");  
