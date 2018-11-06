@@ -1372,7 +1372,7 @@ Obj FuncSET_NAME_FUNC(
                       Obj func,
                       Obj name )
 {
-    RequireStringRepMayReplace("SET_NAME_FUNC", name);
+    RequireStringRep("SET_NAME_FUNC", name);
 
   if (TNUM_OBJ(func) == T_FUNCTION ) {
     SET_NAME_FUNC(func, ImmutableString(name));

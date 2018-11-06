@@ -2556,7 +2556,7 @@ Obj FuncASS_PLIST_DEFAULT (
     Int                 p;
 
     /* check the arguments                                                 */
-    RequirePositiveSmallIntMayReplace("List Assignment", pos, "pos");
+    RequirePositiveSmallInt("List Assignment", pos, "pos");
     p = INT_INTOBJ(pos);
     while ( ! IS_PLIST(plist) || ! IS_PLIST_MUTABLE(plist) ) {
         plist = ErrorReturnObj(
