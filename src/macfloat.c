@@ -308,7 +308,7 @@ Obj FuncMACFLOAT_INT( Obj self, Obj i )
 
 Obj FuncMACFLOAT_STRING( Obj self, Obj s )
 {
-    RequireStringRepMayReplace("MACFLOAT_STRING", s);
+    RequireStringRep("MACFLOAT_STRING", s);
 
   char * endptr;
   UChar *sp = CHARS_STRING(s);

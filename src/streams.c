@@ -561,7 +561,7 @@ Obj FuncLOG_TO (
     Obj                 self,
     Obj                 filename )
 {
-    RequireStringRepMayReplace("LogTo", filename);
+    RequireStringRep("LogTo", filename);
     if ( ! OpenLog( CONST_CSTR_STRING(filename) ) ) {
         ErrorReturnVoid( "LogTo: cannot log to %g",
                          (Int)filename, 0L,
@@ -628,7 +628,7 @@ Obj FuncINPUT_LOG_TO (
     Obj                 self,
     Obj                 filename )
 {
-    RequireStringRepMayReplace("InputLogTo", filename);
+    RequireStringRep("InputLogTo", filename);
     if ( ! OpenInputLog( CONST_CSTR_STRING(filename) ) ) {
         ErrorReturnVoid( "InputLogTo: cannot log to %g",
                          (Int)filename, 0L,
@@ -695,7 +695,7 @@ Obj FuncOUTPUT_LOG_TO (
     Obj                 self,
     Obj                 filename )
 {
-    RequireStringRepMayReplace("OutputLogTo", filename);
+    RequireStringRep("OutputLogTo", filename);
     if ( ! OpenOutputLog( CONST_CSTR_STRING(filename) ) ) {
         ErrorReturnVoid( "OutputLogTo: cannot log to %g",
                          (Int)filename, 0L,
@@ -775,7 +775,7 @@ static Obj PRINT_OR_APPEND_TO(Obj args, int append)
 
     /* first entry is the filename                                         */
     filename = ELM_LIST(args,1);
-    RequireStringRepMayReplace(funcname, filename);
+    RequireStringRep(funcname, filename);
 
     /* try to open the file for output                                     */
     i = append ? OpenAppend( CONST_CSTR_STRING(filename) )
@@ -955,7 +955,7 @@ Obj FuncREAD (
     Obj                 filename )
 {
    /* check the argument                                                  */
-    RequireStringRepMayReplace("READ", filename);
+    RequireStringRep("READ", filename);
 
     /* try to open the file                                                */
     if ( ! OpenInput( CONST_CSTR_STRING(filename) ) ) {
@@ -1080,7 +1080,7 @@ Obj FuncREAD_AS_FUNC (
     Obj                 filename )
 {
     // check the argument
-    RequireStringRepMayReplace("READ_AS_FUNC", filename);
+    RequireStringRep("READ_AS_FUNC", filename);
 
     /* try to open the file                                                */
     if ( ! OpenInput( CONST_CSTR_STRING(filename) ) ) {
@@ -1125,7 +1125,7 @@ Obj FuncREAD_GAP_ROOT (
     Char filenamecpy[GAP_PATH_MAX];
 
     // check the argument
-    RequireStringRepMayReplace("READ", filename);
+    RequireStringRep("READ", filename);
 
     /* Copy to avoid garbage collection moving string                      */
     strlcpy(filenamecpy, CONST_CSTR_STRING(filename), GAP_PATH_MAX);
@@ -1179,7 +1179,7 @@ Obj FuncRemoveFile (
     Obj             filename )
 {
     // check the argument
-    RequireStringRepMayReplace("RemoveFile", filename);
+    RequireStringRep("RemoveFile", filename);
     
     /* call the system dependent function                                  */
     return SyRemoveFile( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
@@ -1194,7 +1194,7 @@ Obj FuncCreateDir (
     Obj             filename )
 {
     // check the argument
-    RequireStringRepMayReplace("CreateDir", filename);
+    RequireStringRep("CreateDir", filename);
     
     /* call the system dependent function                                  */
     return SyMkdir( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
@@ -1209,7 +1209,7 @@ Obj FuncRemoveDir (
     Obj             filename )
 {
     // check the argument
-    RequireStringRepMayReplace("RemoveDir", filename);
+    RequireStringRep("RemoveDir", filename);
     
     /* call the system dependent function                                  */
     return SyRmdir( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
@@ -1223,7 +1223,7 @@ Obj FuncIsDir (
     Obj             self,
     Obj             filename )
 {
-    RequireStringRepMayReplace("IsDir", filename);
+    RequireStringRep("IsDir", filename);
 
     /* call the system dependent function                                  */
     return SyIsDir( CONST_CSTR_STRING(filename) );
@@ -1284,7 +1284,7 @@ Obj FuncIsExistingFile (
     Int             res;
 
     // check the argument
-    RequireStringRepMayReplace("IsExistingFile", filename);
+    RequireStringRep("IsExistingFile", filename);
     
     /* call the system dependent function                                  */
     res = SyIsExistingFile( CONST_CSTR_STRING(filename) );
@@ -1303,7 +1303,7 @@ Obj FuncIsReadableFile (
     Int             res;
 
     // check the argument
-    RequireStringRepMayReplace("IsReadableFile", filename);
+    RequireStringRep("IsReadableFile", filename);
     
     /* call the system dependent function                                  */
     res = SyIsReadableFile( CONST_CSTR_STRING(filename) );
@@ -1322,7 +1322,7 @@ Obj FuncIsWritableFile (
     Int             res;
 
     // check the argument
-    RequireStringRepMayReplace("IsWritableFile", filename);
+    RequireStringRep("IsWritableFile", filename);
     
     /* call the system dependent function                                  */
     res = SyIsWritableFile( CONST_CSTR_STRING(filename) );
@@ -1341,7 +1341,7 @@ Obj FuncIsExecutableFile (
     Int             res;
 
     // check the argument
-    RequireStringRepMayReplace("IsExecutableFile", filename);
+    RequireStringRep("IsExecutableFile", filename);
     
     /* call the system dependent function                                  */
     res = SyIsExecutableFile( CONST_CSTR_STRING(filename) );
@@ -1360,7 +1360,7 @@ Obj FuncIsDirectoryPathString (
     Int             res;
 
     // check the argument
-    RequireStringRepMayReplace("IsDirectoryPathString", filename);
+    RequireStringRep("IsDirectoryPathString", filename);
     
     /* call the system dependent function                                  */
     res = SyIsDirectoryPath( CONST_CSTR_STRING(filename) );
@@ -1390,7 +1390,7 @@ Obj FuncSTRING_LIST_DIR (
     Int len, sl;
 
     // check the argument
-    RequireStringRepMayReplace("STRING_LIST_DIR", dirname);
+    RequireStringRep("STRING_LIST_DIR", dirname);
     
     SyClearErrorNo();
     dir = opendir(CONST_CSTR_STRING(dirname));
@@ -1431,7 +1431,7 @@ Obj FuncCLOSE_FILE (
     Int             ret;
 
     // check the argument
-    RequireSmallIntMayReplace("CLOSE_FILE", fid, "fid");
+    RequireSmallInt("CLOSE_FILE", fid, "fid");
     
     /* call the system dependent function                                  */
     ret = SyFclose( INT_INTOBJ(fid) );
@@ -1450,7 +1450,7 @@ Obj FuncINPUT_TEXT_FILE (
     Int             fid;
 
     // check the argument
-    RequireStringRepMayReplace("INPUT_TEXT_FILE", filename);
+    RequireStringRep("INPUT_TEXT_FILE", filename);
     
     /* call the system dependent function                                  */
     SyClearErrorNo();
@@ -1472,7 +1472,7 @@ Obj FuncIS_END_OF_FILE (
     Int             ret;
 
     // check the argument
-    RequireSmallIntMayReplace("IS_END_OF_FILE", fid, "fid");
+    RequireSmallInt("IS_END_OF_FILE", fid, "fid");
     
     ret = SyIsEndOfFile( INT_INTOBJ(fid) );
     return ret == -1 ? Fail : ( ret == 0 ? False : True );
@@ -1491,7 +1491,7 @@ Obj FuncOUTPUT_TEXT_FILE (
     Int             fid;
 
     // check the argument
-    RequireStringRepMayReplace("OUTPUT_TEXT_FILE", filename);
+    RequireStringRep("OUTPUT_TEXT_FILE", filename);
     while ( append != True && append != False ) {
         filename = ErrorReturnObj(
             "OUTPUT_TEXT_FILE: <append> must be a boolean (not a %s)",
@@ -1522,7 +1522,7 @@ Obj FuncPOSITION_FILE (
     Obj             fid )
 {
     // check the argument
-    RequireSmallIntMayReplace("POSITION_FILE", fid, "fid");
+    RequireSmallInt("POSITION_FILE", fid, "fid");
 
     Int ifid = INT_INTOBJ(fid);
     Int ret = SyFtell(ifid);
@@ -1548,7 +1548,7 @@ Obj FuncREAD_BYTE_FILE (
     Int             ret;
 
     // check the argument
-    RequireSmallIntMayReplace("READ_BYTE_FILE", fid, "fid");
+    RequireSmallInt("READ_BYTE_FILE", fid, "fid");
     
     /* call the system dependent function                                  */
     ret = SyGetch( INT_INTOBJ(fid) );
@@ -1574,7 +1574,7 @@ Obj FuncREAD_LINE_FILE (
     Obj             str;
 
     // check the argument
-    RequireSmallIntMayReplace("READ_LINE_FILE", fid, "fid");
+    RequireSmallInt("READ_LINE_FILE", fid, "fid");
     ifid = INT_INTOBJ(fid);
 
     /* read <fid> until we see a newline or eof or we've read at least
@@ -1628,10 +1628,10 @@ Obj FuncREAD_ALL_FILE (
     UInt            csize;
 
     // check the argument
-    RequireSmallIntMayReplace("READ_ALL_FILE", fid, "fid");
+    RequireSmallInt("READ_ALL_FILE", fid, "fid");
     ifid = INT_INTOBJ(fid);
 
-    RequireSmallIntMayReplace("READ_ALL_FILE", limit, "limit");
+    RequireSmallInt("READ_ALL_FILE", limit, "limit");
     ilim = INT_INTOBJ(limit);
 
     /* read <fid> until we see  eof or we've read at least
@@ -1717,8 +1717,8 @@ Obj FuncSEEK_POSITION_FILE (
     Int             ret;
 
     // check the argument
-    RequireSmallIntMayReplace("SEEK_POSITION_FILE", fid, "fid");
-    RequireSmallIntMayReplace("SEEK_POSITION_FILE", pos, "pos");
+    RequireSmallInt("SEEK_POSITION_FILE", fid, "fid");
+    RequireSmallInt("SEEK_POSITION_FILE", pos, "pos");
     
     ret = SyFseek( INT_INTOBJ(fid), INT_INTOBJ(pos) );
     return ret == -1 ? Fail : True;
@@ -1737,8 +1737,8 @@ Obj FuncWRITE_BYTE_FILE (
     Int             ret;
 
     // check the argument
-    RequireSmallIntMayReplace("WRITE_BYTE_FILE", fid, "fid");
-    RequireSmallIntMayReplace("WRITE_BYTE_FILE", ch, "ch");
+    RequireSmallInt("WRITE_BYTE_FILE", fid, "fid");
+    RequireSmallInt("WRITE_BYTE_FILE", ch, "ch");
     
     /* call the system dependent function                                  */
     ret = SyEchoch( INT_INTOBJ(ch), INT_INTOBJ(fid) );
@@ -1779,7 +1779,7 @@ Obj FuncREAD_STRING_FILE (
     Obj             fid )
 {
     // check the argument
-    RequireSmallIntMayReplace("READ_STRING_FILE", fid, "fid");
+    RequireSmallInt("READ_STRING_FILE", fid, "fid");
     return SyReadStringFid(INT_INTOBJ(fid));
 }
 
@@ -1789,7 +1789,7 @@ Obj FuncREAD_STRING_FILE (
 */
 Obj FuncFD_OF_FILE(Obj self,Obj fid)
 {
-    RequireSmallIntMayReplace("FD_OF_FILE", fid, "fid");
+    RequireSmallInt("FD_OF_FILE", fid, "fid");
 
     Int fd = INT_INTOBJ(fid);
     Int fdi = SyBufFileno(fd);
@@ -1799,7 +1799,7 @@ Obj FuncFD_OF_FILE(Obj self,Obj fid)
 #ifdef HPCGAP
 Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
 {
-    RequireSmallIntMayReplace("RAW_MODE_FILE", fid, "fid");
+    RequireSmallInt("RAW_MODE_FILE", fid, "fid");
 
     Int fd = INT_INTOBJ(fid);
     if (onoff == False || onoff == Fail) {
@@ -1944,18 +1944,18 @@ Obj FuncExecuteProcess (
     Int                 i;
 
     // check the argument
-    RequireStringRepMayReplace("ExecuteProcess", dir);
-    RequireStringRepMayReplace("ExecuteProcess", prg);
-    RequireSmallIntMayReplace("ExecuteProcess", in, "in");
-    RequireSmallIntMayReplace("ExecuteProcess", out, "out");
-    RequireSmallListMayReplace("ExecuteProcess", args);
+    RequireStringRep("ExecuteProcess", dir);
+    RequireStringRep("ExecuteProcess", prg);
+    RequireSmallInt("ExecuteProcess", in, "in");
+    RequireSmallInt("ExecuteProcess", out, "out");
+    RequireSmallList("ExecuteProcess", args);
 
     /* create an argument array                                            */
     for ( i = 1;  i <= LEN_LIST(args);  i++ ) {
         if ( i == 1023 )
             break;
         tmp = ELM_LIST( args, i );
-        RequireStringRepMayReplace("ExecuteProcess", tmp);
+        RequireStringRep("ExecuteProcess", tmp);
         ExecArgs[i] = tmp;
     }
     ExecCArgs[0]   = CSTR_STRING(prg);

@@ -199,7 +199,7 @@ Obj FuncLIST_SORTED_LIST (
     Obj                 set;            /* result                          */
 
     /* check the argument                                                  */
-    RequireSmallListMayReplace("Set", list);
+    RequireSmallList("Set", list);
 
     /* if the list is empty create a new empty list                        */
     if ( LEN_LIST(list) == 0 ) {
@@ -270,9 +270,9 @@ Obj             FuncIS_EQUAL_SET (
     Obj                 list2 )
 {
     /* check the arguments, convert to sets if necessary                   */
-    RequireSmallListMayReplace("IsEqualSet", list1);
+    RequireSmallList("IsEqualSet", list1);
     if ( ! IsSet( list1 ) )  list1 = SetList( list1 );
-    RequireSmallListMayReplace("IsEqualSet", list2);
+    RequireSmallList("IsEqualSet", list2);
     if ( ! IsSet( list2 ) )  list2 = SetList( list2 );
 
     /* and now compare them                                                */
@@ -307,8 +307,8 @@ Obj             FuncIS_SUBSET_SET (
     UInt                pos;            /* position                        */
 
     /* check the arguments, convert to sets if necessary                   */
-    RequireSmallListMayReplace("IsSubsetSet", set1);
-    RequireSmallListMayReplace("IsSubsetSet", set2);
+    RequireSmallList("IsSubsetSet", set1);
+    RequireSmallList("IsSubsetSet", set2);
     if ( ! IsSet( set1 ) )  set1 = SetList( set1 );
     if ( ! IsSet( set2 ) )  set2 = SetList( set2 );
 
@@ -606,7 +606,7 @@ Obj FuncUNITE_SET (
             (Int)TNAM_OBJ(set1), 0L,
             "you can replace <set1> via 'return <set1>;'" );
     }
-    RequireSmallListMayReplace("UniteSet", set2);
+    RequireSmallList("UniteSet", set2);
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */
@@ -779,7 +779,7 @@ Obj FuncINTER_SET (
             (Int)TNAM_OBJ(set1), 0L,
             "you can replace <set1> via 'return <set1>;'" );
     }
-    RequireSmallListMayReplace("IntersectSet", set2);
+    RequireSmallList("IntersectSet", set2);
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */
@@ -952,7 +952,7 @@ Obj FuncSUBTR_SET (
             (Int)TNAM_OBJ(set1), 0L,
             "you can replace <set1> via 'return <set1>;'" );
     }
-    RequireSmallListMayReplace("SubtractSet", set2);
+    RequireSmallList("SubtractSet", set2);
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */

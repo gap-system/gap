@@ -741,7 +741,7 @@ Obj FuncMakeReadOnlyGVar (
     Obj                 name )
 {       
     // check the argument
-    RequireStringRepMayReplace("MakeReadOnlyGVar", name);
+    RequireStringRep("MakeReadOnlyGVar", name);
 
     /* get the variable and make it read only                              */
     MakeReadOnlyGVar(GVarName(CONST_CSTR_STRING(name)));
@@ -764,7 +764,7 @@ Obj FuncMakeReadOnlyGVar (
 Obj FuncMakeConstantGVar(Obj self, Obj name)
 {
     // check the argument
-    RequireStringRepMayReplace("MakeConstantGVar", name);
+    RequireStringRep("MakeConstantGVar", name);
 
     /* get the variable and make it read only                              */
     MakeConstantGVar(GVarName(CONST_CSTR_STRING(name)));
@@ -804,7 +804,7 @@ Obj FuncMakeReadWriteGVar (
     Obj                 name )
 {
     // check the argument
-    RequireStringRepMayReplace("MakeReadWriteGVar", name);
+    RequireStringRep("MakeReadWriteGVar", name);
 
     /* get the variable and make it read write                             */
     MakeReadWriteGVar(GVarName(CONST_CSTR_STRING(name)));
@@ -834,7 +834,7 @@ static Obj FuncIsReadOnlyGVar (
     Obj                 name )
 {
     // check the argument
-    RequireStringRepMayReplace("IsReadOnlyGVar", name);
+    RequireStringRep("IsReadOnlyGVar", name);
 
     /* get the answer                             */
     return IsReadOnlyGVar(GVarName(CONST_CSTR_STRING(name))) ? True : False;
@@ -858,7 +858,7 @@ Int IsConstantGVar(UInt gvar)
 static Obj FuncIsConstantGVar(Obj self, Obj name)
 {
     // check the argument
-    RequireStringRepMayReplace("IsConstantGVar", name);
+    RequireStringRep("IsConstantGVar", name);
 
     /* get the answer                             */
     return IsConstantGVar(GVarName(CONST_CSTR_STRING(name))) ? True : False;
@@ -901,7 +901,7 @@ Obj             FuncAUTO (
 
     /* get and check the function                                          */
     func = ELM_LIST( args, 1 );
-    RequireFunctionMayReplace("AUTO", func);
+    RequireFunction("AUTO", func);
 
     /* get the argument                                                    */
     arg = ELM_LIST( args, 2 );
@@ -915,7 +915,7 @@ Obj             FuncAUTO (
     /* make the global variables automatic                                 */
     for ( i = 3; i <= LEN_LIST(args); i++ ) {
         name = ELM_LIST( args, i );
-        RequireStringRepMayReplace("AUTO", name);
+        RequireStringRep("AUTO", name);
         gvar = GVarName( CONST_CSTR_STRING(name) );
         SET_ELM_GVAR_LIST( ValGVars, gvar, 0 );
         SET_ELM_GVAR_LIST( ExprGVars, gvar, list );
@@ -1058,7 +1058,7 @@ Obj FuncASS_GVAR (
     Obj                 val )
 {
     // check the argument
-    RequireStringRepMayReplace("READ", gvar);
+    RequireStringRep("READ", gvar);
 
     AssGVar( GVarName( CONST_CSTR_STRING(gvar) ), val );
     return 0L;
@@ -1074,7 +1074,7 @@ Obj FuncISB_GVAR (
     Obj                 gvar )
 {
     // check the argument
-    RequireStringRepMayReplace("ISB_GVAR", gvar);
+    RequireStringRep("ISB_GVAR", gvar);
 
     UInt gv = GVarName( CONST_CSTR_STRING(gvar) );
     if (VAL_GVAR_INTERN(gv))
@@ -1103,7 +1103,7 @@ Obj FuncVAL_GVAR (
 {
   Obj val;
     // check the argument
-    RequireStringRepMayReplace("VAL_GVAR", gvar);
+    RequireStringRep("VAL_GVAR", gvar);
 
     /* get the value */
     val = ValAutoGVar( GVarName( CONST_CSTR_STRING(gvar) ) );
@@ -1125,7 +1125,7 @@ Obj FuncUNB_GVAR (
     Obj                 gvar )
 {
     // check the argument
-    RequireStringRepMayReplace("UNB_GVAR", gvar);
+    RequireStringRep("UNB_GVAR", gvar);
 
     /*  */
     AssGVar( GVarName( CONST_CSTR_STRING(gvar) ), (Obj)0 );

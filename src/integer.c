@@ -2647,7 +2647,7 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
   Int i, n, q, r, qoff, len;
   UInt4 *mt;
   UInt4 *pt;
-  RequireStringRepMayReplace("RandomIntegerMT", mtstr);
+  RequireStringRep("RandomIntegerMT", mtstr);
   while ((! IsStringConv(mtstr)) || GET_LEN_STRING(mtstr) < 2500) {
      mtstr = ErrorReturnObj(
          "RandomIntegerMT: <mtstr> must be a string with at least 2500 characters",

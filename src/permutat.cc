@@ -2364,7 +2364,7 @@ Obj Array2Perm (
     /* loop over the cycles                                                */
     for ( i = 1; i <= LEN_LIST(array); i++ ) {
         cycle = ELM_LIST( array, i );
-        RequireSmallListMayReplace("Array2Perm", cycle);
+        RequireSmallList("Array2Perm", cycle);
 
         /* loop over the entries of the cycle                              */
         c = p = l = 0;
@@ -2372,7 +2372,7 @@ Obj Array2Perm (
 
             /* get and check current entry for the cycle                   */
             val = ELM_LIST( cycle, j );
-            RequirePositiveSmallIntMayReplace("Permutation", val, "expr");
+            RequirePositiveSmallInt("Permutation", val, "expr");
             c = INT_INTOBJ(val);
             if (c > MAX_DEG_PERM4)
               ErrorMayQuit( "Permutation literal exceeds maximum permutation degree",

@@ -1549,7 +1549,7 @@ UInt            ExecAssPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_STAT(stat, 1));
-    RequirePositiveSmallIntMayReplace("PosObj Assignment", pos, "position");
+    RequirePositiveSmallInt("PosObj Assignment", pos, "position");
     p = INT_INTOBJ(pos);
 
     /* evaluate the right hand side                                        */
@@ -1582,7 +1582,7 @@ UInt            ExecUnbPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_STAT(stat, 1));
-    RequirePositiveSmallIntMayReplace("PosObj Assignment", pos, "position");
+    RequirePositiveSmallInt("PosObj Assignment", pos, "position");
     p = INT_INTOBJ(pos);
 
     /* unbind the element                                                  */
@@ -1613,7 +1613,7 @@ Obj             EvalElmPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_EXPR(expr, 1));
-    RequirePositiveSmallIntMayReplace("PosObj Element", pos, "position");
+    RequirePositiveSmallInt("PosObj Element", pos, "position");
     p = INT_INTOBJ( pos );
 
     /* special case for plain lists (use generic code to signal errors)    */
@@ -1644,7 +1644,7 @@ Obj             EvalIsbPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_EXPR(expr, 1));
-    RequirePositiveSmallIntMayReplace("PosObj Element", pos, "position");
+    RequirePositiveSmallInt("PosObj Element", pos, "position");
     p = INT_INTOBJ( pos );
 
     /* get the result                                                      */

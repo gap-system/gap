@@ -892,7 +892,7 @@ Obj FuncGASMAN (
         /* evaluate and check the command                                  */
         Obj cmd = ELM_PLIST( args, i );
 again:
-        RequireStringRepMayReplace("GASMAN", cmd);
+        RequireStringRep("GASMAN", cmd);
 
         // perform full garbage collection
         if ( strcmp( CONST_CSTR_STRING(cmd), "collect" ) == 0 ) {
@@ -1190,7 +1190,7 @@ Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
 
 Obj FuncSleep( Obj self, Obj secs )
 {
-    RequireSmallIntMayReplace("Sleep", secs, "secs");
+    RequireSmallInt("Sleep", secs, "secs");
 
     Int s = INT_INTOBJ(secs);
     if (s > 0)
@@ -1215,7 +1215,7 @@ Obj FuncSleep( Obj self, Obj secs )
 
 Obj FuncMicroSleep( Obj self, Obj msecs )
 {
-    RequireSmallIntMayReplace("MicroSleep", msecs, "usecs");
+    RequireSmallInt("MicroSleep", msecs, "usecs");
 
     Int s = INT_INTOBJ(msecs);
 

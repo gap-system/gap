@@ -228,7 +228,7 @@ Obj    FuncEmptyString( Obj self, Obj len )
 */
 Obj   FuncShrinkAllocationString( Obj self, Obj str )
 {
-    RequireStringRepMayReplace("ShrinkAllocationString", str);
+    RequireStringRep("ShrinkAllocationString", str);
     SHRINK_STRING(str);
     return (Obj)0;
 }
@@ -245,7 +245,7 @@ Obj FuncCHAR_INT (
 
     /* get and check the integer value                                     */
 again:
-    RequireSmallIntMayReplace("CHAR_INT", val, "val");
+    RequireSmallInt("CHAR_INT", val, "val");
     chr = INT_INTOBJ(val);
     if ( 255 < chr || chr < 0 ) {
         val = ErrorReturnObj(
@@ -291,7 +291,7 @@ Obj FuncCHAR_SINT (
 
   /* get and check the integer value                                     */
 agains:
-  RequireSmallIntMayReplace("CHAR_SINT", val, "val");
+  RequireSmallInt("CHAR_SINT", val, "val");
   chr = INT_INTOBJ(val);
   if ( 127 < chr || chr < -128 ) {
       val = ErrorReturnObj(
@@ -1494,10 +1494,10 @@ Obj FuncPOSITION_SUBSTRING(
   const UInt1  *s, *ss;
 
   /* check whether <string> is a string                                  */
-  RequireStringRepMayReplace("POSITION_SUBSTRING", string);
+  RequireStringRep("POSITION_SUBSTRING", string);
   
   /* check whether <substr> is a string                        */
-  RequireStringRepMayReplace("POSITION_SUBSTRING", substr);
+  RequireStringRep("POSITION_SUBSTRING", substr);
 
   /* check wether <off> is a non-negative integer  */
   while ( ! IS_INTOBJ(off) || (ipos = INT_INTOBJ(off)) < 0 ) {
@@ -1550,7 +1550,7 @@ Obj FuncNormalizeWhitespace (
   Int i, j, len, white;
 
   /* check whether <string> is a string                                  */
-  RequireStringRepMayReplace("NormalizeWhitespace", string);
+  RequireStringRep("NormalizeWhitespace", string);
   
   len = GET_LEN_STRING(string);
   s = CHARS_STRING(string);
@@ -1600,10 +1600,10 @@ Obj FuncREMOVE_CHARACTERS (
   UInt1 REMCHARLIST[256] = {0};
 
   /* check whether <string> is a string                                  */
-  RequireStringRepMayReplace("RemoveCharacters", string);
+  RequireStringRep("RemoveCharacters", string);
   
   /* check whether <rem> is a string                                  */
-  RequireStringRepMayReplace("RemoveCharacters", rem);
+  RequireStringRep("RemoveCharacters", rem);
   
   /* set REMCHARLIST by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(rem);
@@ -1643,7 +1643,7 @@ Obj FuncTranslateString (
   Int j, len;
 
   /* check whether <string> is a string                                  */
-  RequireStringRepMayReplace("TranslateString", string);
+  RequireStringRep("TranslateString", string);
   
   // check whether <trans> is a string of length at least 256
   while ( ! IsStringConv( trans ) || GET_LEN_STRING( trans ) < 256 ) {
@@ -1693,13 +1693,13 @@ Obj FuncSplitStringInternal (
   UInt1 SPLITSTRINGWSPACE[256] = { 0 };
 
   /* check whether <string> is a string                                  */
-  RequireStringRepMayReplace("SplitString", string);
+  RequireStringRep("SplitString", string);
 
   /* check whether <seps> is a string                                  */
-  RequireStringRepMayReplace("SplitString", seps);
+  RequireStringRep("SplitString", seps);
 
   /* check whether <wspace> is a string                                  */
-  RequireStringRepMayReplace("SplitString", wspace);
+  RequireStringRep("SplitString", wspace);
 
   /* set SPLITSTRINGSEPS by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(seps);

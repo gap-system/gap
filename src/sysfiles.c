@@ -357,7 +357,7 @@ Obj FuncCrcString( Obj self, Obj str ) {
     Int         seen_nl;
 
     // check the argument
-    RequireStringRepMayReplace("CrcString", str);
+    RequireStringRep("CrcString", str);
 
     ptr = CONST_CSTR_STRING(str);
     len = GET_LEN_STRING(str);

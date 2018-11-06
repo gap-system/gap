@@ -92,7 +92,7 @@ Obj FuncInitRandomMT( Obj self, Obj initstr)
   UInt4 *mt, key_length, byte_key_length, i, j, k, N = 624;
 
   /* check the seed, given as string */
-  RequireStringRepMayReplace("InitRandomMT", initstr);
+  RequireStringRep("InitRandomMT", initstr);
 
   /* store array of 624 UInt4 and one UInt4 as counter "mti" and an
      endianness marker */
@@ -448,12 +448,12 @@ Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
   }
 
   /* check the arguments                                                 */
-  RequireSmallIntMayReplace("HASHKEY_BAG", opSeed, "seed");
+  RequireSmallInt("HASHKEY_BAG", opSeed, "seed");
   
   do {
     offs = -1;
 
-    RequireSmallIntMayReplace("HASHKEY_BAG", opOffset, "offset");
+    RequireSmallInt("HASHKEY_BAG", opOffset, "offset");
     offs = INT_INTOBJ(opOffset);
     if ( offs < 0 || offs > SIZE_OBJ(obj)) {
       opOffset = ErrorReturnObj(
@@ -464,7 +464,7 @@ Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
     }
   } while (offs < 0);
 
-  RequireSmallIntMayReplace("HASHKEY_BAG", opMaxLen, "maxlen");
+  RequireSmallInt("HASHKEY_BAG", opMaxLen, "maxlen");
 
   n=SIZE_OBJ(obj)-offs;
 

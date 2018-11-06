@@ -293,7 +293,7 @@ Obj             FuncAPPEND_LIST_INTR (
 
     /* check the type of the first argument                                */
     if ( TNUM_OBJ( list1 ) != T_PLIST ) {
-        RequireSmallListMayReplace("AppendList", list1);
+        RequireSmallList("AppendList", list1);
         if ( ! IS_PLIST( list1 ) ) {
             PLAIN_LIST( list1 );
         }
@@ -303,7 +303,7 @@ Obj             FuncAPPEND_LIST_INTR (
 
     /* check the type of the second argument                               */
     if ( ! IS_PLIST( list2 ) ) {
-        RequireSmallListMayReplace("AppendList", list2);
+        RequireSmallList("AppendList", list2);
         len2 = LEN_LIST( list2 );
     }
     else {
@@ -423,7 +423,7 @@ Obj             FuncPOSITION_SORTED_LIST (
     UInt                h;              /* position, result                */
 
     /* check the first argument                                            */
-    RequireSmallListMayReplace("POSITION_SORTED_LIST", list);
+    RequireSmallList("POSITION_SORTED_LIST", list);
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) ) {
         h = PositionSortedDensePlist( list, obj );
@@ -508,10 +508,10 @@ Obj             FuncPOSITION_SORTED_LIST_COMP (
     UInt                h;              /* position, result                */
 
     /* check the first argument                                            */
-    RequireSmallListMayReplace("POSITION_SORTED_LIST_COMP", list);
+    RequireSmallList("POSITION_SORTED_LIST_COMP", list);
 
     /* check the third argument                                            */
-    RequireFunctionMayReplace("POSITION_SORTED_LIST_COMP", func);
+    RequireFunction("POSITION_SORTED_LIST_COMP", func);
 
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) ) {
@@ -1152,7 +1152,7 @@ Obj             FuncOnTuples (
     UInt                i;              /* loop variable                   */
 
     /* check the type of the first argument                                */
-    RequireSmallListMayReplace("OnTuples", tuple);
+    RequireSmallList("OnTuples", tuple);
 
     /* special case for the empty list */
     if (LEN_LIST(tuple) == 0) {

@@ -85,8 +85,8 @@
 #include "set.h"
 
 
-#define RequireBlistMayReplace(funcname, op, argname) \
-    RequireArgumentConditionMayReplace(funcname, op, argname, IsBlistConv(op), \
+#define RequireBlist(funcname, op, argname) \
+    RequireArgumentCondition(funcname, op, argname, IsBlistConv(op), \
         "must be a boolean list")
 
 /****************************************************************************
@@ -1043,7 +1043,7 @@ Obj FuncSIZE_BLIST (
     Obj                 self,
     Obj                 blist )
 {
-    RequireBlistMayReplace("SizeBlist", blist, "blist");
+    RequireBlist("SizeBlist", blist, "blist");
     return INTOBJ_INT(SizeBlist(blist));
 }
 
@@ -1074,8 +1074,8 @@ Obj FuncBLIST_LIST (
     Obj                 sub )
 {
     /* get and check the arguments                                         */
-    RequireSmallListMayReplace("BlistList", list);
-    RequireSmallListMayReplace("BlistList", sub);
+    RequireSmallList("BlistList", list);
+    RequireSmallList("BlistList", sub);
 
     Int lenList = LEN_LIST( list );
     Obj blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
@@ -1114,9 +1114,9 @@ Obj FuncLIST_BLIST (
     UInt                i;              /* loop variable                   */
 
     /* get and check the first argument                                    */
-    RequireSmallListMayReplace("ListBlist", list);
+    RequireSmallList("ListBlist", list);
     /* get and check the second argument                                   */
-    RequireBlistMayReplace("ListBlist", blist, "blist");
+    RequireBlist("ListBlist", blist, "blist");
     while ( LEN_LIST( list ) != LEN_BLIST( blist ) ) {
         blist = ErrorReturnObj(
             "ListBlist: <blist> must have the same length as <list> (%d)",
@@ -1166,8 +1166,8 @@ Obj FuncPositionNthTrueBlist (
     const UInt *        ptr;
 
     /* Check the arguments. */    
-    RequireBlistMayReplace("ListBlist", blist, "blist");
-    RequirePositiveSmallIntMayReplace("Position", Nth, "nth");
+    RequireBlist("ListBlist", blist, "blist");
+    RequirePositiveSmallInt("Position", Nth, "nth");
     
     nrb = NUMBER_BLOCKS_BLIST(blist);
     if ( ! nrb )  return Fail;
@@ -1216,8 +1216,8 @@ Obj FuncIS_SUB_BLIST (
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    RequireBlistMayReplace("IsSubsetBlist", list1, "blist1");
-    RequireBlistMayReplace("IsSubsetBlist", list2, "blist2");
+    RequireBlist("IsSubsetBlist", list1, "blist1");
+    RequireBlist("IsSubsetBlist", list2, "blist2");
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
         list2 = ErrorReturnObj(
         "IsSubsetBlist: <blist2> must have the same length as <blist1> (%d)",
@@ -1262,8 +1262,8 @@ Obj FuncUNITE_BLIST (
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    RequireBlistMayReplace("UniteBlist", list1, "blist1");
-    RequireBlistMayReplace("UniteBlist", list2, "blist2");
+    RequireBlist("UniteBlist", list1, "blist1");
+    RequireBlist("UniteBlist", list2, "blist2");
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
         list2 = ErrorReturnObj(
            "UniteBlist: <blist2> must have the same length as <blist1> (%d)",
@@ -1310,11 +1310,11 @@ Obj FuncUNITE_BLIST_LIST (
     long                s, t;           /* elements of a range             */
 
     /* get and check the arguments                                         */
-    RequireSmallListMayReplace("UniteBlistList", list);
+    RequireSmallList("UniteBlistList", list);
 
     lenList  = LEN_LIST( list );
 
-    RequireBlistMayReplace("UniteBlistList", blist, "blist");
+    RequireBlist("UniteBlistList", blist, "blist");
     while ( LEN_BLIST(blist) != lenList ) {
         blist = ErrorReturnObj(
           "UniteBlistList: <blist> must have the same length as <list> (%d)",
@@ -1322,7 +1322,7 @@ Obj FuncUNITE_BLIST_LIST (
             "you can replace <blist> via 'return <blist>;'" );
     }
 
-    RequireSmallListMayReplace("UniteBlistList", sub);
+    RequireSmallList("UniteBlistList", sub);
 
     lenSub   = LEN_LIST( sub );
 
@@ -1529,8 +1529,8 @@ Obj FuncINTER_BLIST (
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    RequireBlistMayReplace("IntersectBlist", list1, "blist1");
-    RequireBlistMayReplace("IntersectBlist", list2, "blist2");
+    RequireBlist("IntersectBlist", list1, "blist1");
+    RequireBlist("IntersectBlist", list2, "blist2");
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
         list2 = ErrorReturnObj(
        "IntersectBlist: <blist2> must have the same length as <blist1> (%d)",
@@ -1572,8 +1572,8 @@ Obj FuncSUBTR_BLIST (
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    RequireBlistMayReplace("SubtractBlist", list1, "blist1");
-    RequireBlistMayReplace("SubtractBlist", list2, "blist2");
+    RequireBlist("SubtractBlist", list1, "blist1");
+    RequireBlist("SubtractBlist", list2, "blist2");
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
         list2 = ErrorReturnObj(
         "SubtractBlist: <blist2> must have the same length as <blist1> (%d)",
@@ -1617,8 +1617,8 @@ Obj FuncMEET_BLIST (
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    RequireBlistMayReplace("MeetBlist", list1, "blist1");
-    RequireBlistMayReplace("MeetBlist", list2, "blist2");
+    RequireBlist("MeetBlist", list1, "blist1");
+    RequireBlist("MeetBlist", list2, "blist2");
     while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
         list2 = ErrorReturnObj(
         "MeetBlist: <blist2> must have the same length as <blist1> (%d)",
