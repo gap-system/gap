@@ -13,7 +13,7 @@
 ########################################################################
 # Default rule: build gap
 ########################################################################
-all: gap$(EXEEXT) gac
+all: gap$(EXEEXT) gac libgap.la
 .PHONY: all
 
 # Backwards compatibility: add "default" target as alias for "all"
