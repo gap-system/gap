@@ -146,7 +146,23 @@ extern UInt UInt_ObjInt(Obj i);
 extern Int8 Int8_ObjInt(Obj i);    
 extern UInt8 UInt8_ObjInt(Obj i);    
 
-    
+
+/****************************************************************************
+**
+*F  MakeObjInt(<limbs>, <size>) . . . . . . . . . create a new integer object
+**
+**  Construct an integer object from the limbs at which <limbs> points. The
+**  absolute value of <size> determines the number of limbs. If <size> is
+**  zero, then `INTOBJ_INT(0)` is returned. Otherwise, the sign of the
+**  returned integer object is determined by the sign of <size>.
+**
+**  Note that GAP automatically reduces and normalized the integer object,
+**  i.e., it will discard any leading zeros; and if the integer fits into a
+**  small integer, it will be returned as such.
+*/
+extern Obj MakeObjInt(const UInt * limbs, int size);
+
+
 /****************************************************************************
 **
 **  Reduce and normalize the given large integer object if necessary.
