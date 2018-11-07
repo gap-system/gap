@@ -13,6 +13,7 @@
 #define GAP_ERROR_H
 
 #include "system.h"
+#include "intobj.h"
 
 /****************************************************************************
 **
@@ -186,6 +187,16 @@ extern Obj RACErrorHelper(int          mayReturn,
 #define RequireSmallInt(funcname, op, argname) \
     RequireArgumentCondition(funcname, op, argname, IS_INTOBJ(op), \
         "must be a small integer")
+
+/****************************************************************************
+**
+*F  GetSmallInt
+*/
+static inline Int GetSmallInt(const char * funcname, Obj op, const char * argname)
+{
+    RequireSmallInt(funcname, op, argname);
+    return INT_INTOBJ(op);
+}
 
 
 /****************************************************************************
