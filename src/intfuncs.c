@@ -448,13 +448,10 @@ Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
   }
 
   /* check the arguments                                                 */
-  RequireSmallInt("HASHKEY_BAG", opSeed, "seed");
+  Int seed = GetSmallInt("HASHKEY_BAG", opSeed, "seed");
   
   do {
-    offs = -1;
-
-    RequireSmallInt("HASHKEY_BAG", opOffset, "offset");
-    offs = INT_INTOBJ(opOffset);
+    offs = GetSmallInt("HASHKEY_BAG", opOffset, "offset");
     if ( offs < 0 || offs > SIZE_OBJ(obj)) {
       opOffset = ErrorReturnObj(
         "HashKeyBag: <offset> must be non-negative and less than the bag size",
@@ -464,15 +461,14 @@ Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
     }
   } while (offs < 0);
 
-  RequireSmallInt("HASHKEY_BAG", opMaxLen, "maxlen");
+  /* maximal number of bytes to read */
+  Int maxlen = GetSmallInt("HASHKEY_BAG", opMaxLen, "maxlen");
 
   n=SIZE_OBJ(obj)-offs;
 
-  /* maximal number of bytes to read */
-  Int maxlen=INT_INTOBJ(opMaxLen);
   if ((n>maxlen)&&(maxlen!=-1)) {n=maxlen;}; 
   
-  return INTOBJ_INT(HASHKEY_BAG_NC( obj, (UInt4)INT_INTOBJ(opSeed), offs, (int) n));
+  return INTOBJ_INT(HASHKEY_BAG_NC( obj, (UInt4)seed, offs, (int) n));
 }
 
 Int HASHKEY_MEM_NC(const void * ptr, UInt4 seed, Int read)

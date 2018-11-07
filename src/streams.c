@@ -1428,13 +1428,11 @@ Obj FuncCLOSE_FILE (
     Obj             self,
     Obj             fid )
 {
-    Int             ret;
-
     // check the argument
-    RequireSmallInt("CLOSE_FILE", fid, "fid");
+    Int ifid = GetSmallInt("CLOSE_FILE", fid, "fid");
     
     /* call the system dependent function                                  */
-    ret = SyFclose( INT_INTOBJ(fid) );
+    Int ret = SyFclose( ifid );
     return ret == -1 ? Fail : True;
 }
 
@@ -1469,12 +1467,10 @@ Obj FuncIS_END_OF_FILE (
     Obj             self,
     Obj             fid )
 {
-    Int             ret;
-
     // check the argument
-    RequireSmallInt("IS_END_OF_FILE", fid, "fid");
+    Int ifid = GetSmallInt("IS_END_OF_FILE", fid, "fid");
     
-    ret = SyIsEndOfFile( INT_INTOBJ(fid) );
+    Int ret = SyIsEndOfFile( ifid );
     return ret == -1 ? Fail : ( ret == 0 ? False : True );
 }
 
@@ -1522,9 +1518,8 @@ Obj FuncPOSITION_FILE (
     Obj             fid )
 {
     // check the argument
-    RequireSmallInt("POSITION_FILE", fid, "fid");
+    Int ifid = GetSmallInt("POSITION_FILE", fid, "fid");
 
-    Int ifid = INT_INTOBJ(fid);
     Int ret = SyFtell(ifid);
 
     // Return if failed
@@ -1545,13 +1540,11 @@ Obj FuncREAD_BYTE_FILE (
     Obj             self,
     Obj             fid )
 {
-    Int             ret;
-
     // check the argument
-    RequireSmallInt("READ_BYTE_FILE", fid, "fid");
+    Int ifid = GetSmallInt("READ_BYTE_FILE", fid, "fid");
     
     /* call the system dependent function                                  */
-    ret = SyGetch( INT_INTOBJ(fid) );
+    Int ret = SyGetch( ifid );
 
     return ret == EOF ? Fail : INTOBJ_INT(ret);
 }
@@ -1569,13 +1562,12 @@ Obj FuncREAD_LINE_FILE (
 {
     Char            buf[256];
     Char *          cstr;
-    Int             ifid, len, buflen;
+    Int             len, buflen;
     UInt            lstr;
     Obj             str;
 
     // check the argument
-    RequireSmallInt("READ_LINE_FILE", fid, "fid");
-    ifid = INT_INTOBJ(fid);
+    Int ifid = GetSmallInt("READ_LINE_FILE", fid, "fid");
 
     /* read <fid> until we see a newline or eof or we've read at least
        one byte and more are not immediately available */
@@ -1621,18 +1613,15 @@ Obj FuncREAD_ALL_FILE (
     Obj             limit)
 {
     Char            buf[20000];
-    Int             ifid, len;
+    Int             len;
     UInt            lstr;
     Obj             str;
-    Int             ilim;
     UInt            csize;
 
     // check the argument
-    RequireSmallInt("READ_ALL_FILE", fid, "fid");
-    ifid = INT_INTOBJ(fid);
+    Int ifid = GetSmallInt("READ_ALL_FILE", fid, "fid");
 
-    RequireSmallInt("READ_ALL_FILE", limit, "limit");
-    ilim = INT_INTOBJ(limit);
+    Int ilim = GetSmallInt("READ_ALL_FILE", limit, "limit");
 
     /* read <fid> until we see  eof or we've read at least
        one byte and more are not immediately available */
@@ -1717,10 +1706,10 @@ Obj FuncSEEK_POSITION_FILE (
     Int             ret;
 
     // check the argument
-    RequireSmallInt("SEEK_POSITION_FILE", fid, "fid");
-    RequireSmallInt("SEEK_POSITION_FILE", pos, "pos");
+    Int ifid = GetSmallInt("SEEK_POSITION_FILE", fid, "fid");
+    Int ipos = GetSmallInt("SEEK_POSITION_FILE", pos, "pos");
     
-    ret = SyFseek( INT_INTOBJ(fid), INT_INTOBJ(pos) );
+    ret = SyFseek( ifid, ipos );
     return ret == -1 ? Fail : True;
 }
 
@@ -1734,14 +1723,12 @@ Obj FuncWRITE_BYTE_FILE (
     Obj             fid,
     Obj             ch )
 {
-    Int             ret;
-
     // check the argument
-    RequireSmallInt("WRITE_BYTE_FILE", fid, "fid");
-    RequireSmallInt("WRITE_BYTE_FILE", ch, "ch");
+    Int ifid = GetSmallInt("WRITE_BYTE_FILE", fid, "fid");
+    Int ich = GetSmallInt("WRITE_BYTE_FILE", ch, "ch");
     
     /* call the system dependent function                                  */
-    ret = SyEchoch( INT_INTOBJ(ch), INT_INTOBJ(fid) );
+    Int ret = SyEchoch( ich, ifid );
     return ret == -1 ? Fail : True;
 }
 
@@ -1779,8 +1766,8 @@ Obj FuncREAD_STRING_FILE (
     Obj             fid )
 {
     // check the argument
-    RequireSmallInt("READ_STRING_FILE", fid, "fid");
-    return SyReadStringFid(INT_INTOBJ(fid));
+    Int ifid = GetSmallInt("READ_STRING_FILE", fid, "fid");
+    return SyReadStringFid(ifid);
 }
 
 /****************************************************************************
@@ -1789,9 +1776,7 @@ Obj FuncREAD_STRING_FILE (
 */
 Obj FuncFD_OF_FILE(Obj self,Obj fid)
 {
-    RequireSmallInt("FD_OF_FILE", fid, "fid");
-
-    Int fd = INT_INTOBJ(fid);
+    Int fd = GetSmallInt("FD_OF_FILE", fid, "fid");
     Int fdi = SyBufFileno(fd);
     return INTOBJ_INT(fdi);
 }
@@ -1799,9 +1784,7 @@ Obj FuncFD_OF_FILE(Obj self,Obj fid)
 #ifdef HPCGAP
 Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
 {
-    RequireSmallInt("RAW_MODE_FILE", fid, "fid");
-
-    Int fd = INT_INTOBJ(fid);
+    Int fd = GetSmallInt("RAW_MODE_FILE", fid, "fid");
     if (onoff == False || onoff == Fail) {
         syStopraw(fd);
         return False;
@@ -1946,8 +1929,8 @@ Obj FuncExecuteProcess (
     // check the argument
     RequireStringRep("ExecuteProcess", dir);
     RequireStringRep("ExecuteProcess", prg);
-    RequireSmallInt("ExecuteProcess", in, "in");
-    RequireSmallInt("ExecuteProcess", out, "out");
+    Int iin = GetSmallInt("ExecuteProcess", in, "in");
+    Int iout = GetSmallInt("ExecuteProcess", out, "out");
     RequireSmallList("ExecuteProcess", args);
 
     /* create an argument array                                            */
@@ -1969,8 +1952,8 @@ Obj FuncExecuteProcess (
     /* execute the process                                                 */
     res = SyExecuteProcess( CSTR_STRING(dir),
                             CSTR_STRING(prg),
-                            INT_INTOBJ(in),
-                            INT_INTOBJ(out),
+                            iin,
+                            iout,
                             ExecCArgs );
 
     if (SyWindow && out == INTOBJ_INT(1)) /* standard output */
