@@ -4529,13 +4529,8 @@ InstallMethod( IsGeneratorsOfMagmaWithInverses,
 #F  Group( <gens>, <id> )
 ##
 InstallGlobalFunction( Group, function( arg )
-
-    if Length( arg ) = 1 and IsDomain( arg[1] ) then
-      Error( "no longer supported ..." );
-#T this was possible in GAP-3 ...
-
-    # special case for matrices, because they may look like lists
-    elif Length( arg ) = 1 and IsMatrix( arg[1] )
+    #  special case for matrices, because they may look like lists
+    if Length( arg ) = 1 and IsMatrix( arg[1] )
                            and IsGeneratorsOfMagmaWithInverses( arg ) then
       return GroupByGenerators( arg );
 

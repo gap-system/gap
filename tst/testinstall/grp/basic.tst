@@ -16,6 +16,12 @@ gap> TrivialGroup(IsPermGroup);
 Group(())
 
 #
+# Creating groups over domains is not supported in GAP4
+#
+gap> Group(Group(()));
+Error, usage: Group(<gen>,...), Group(<gens>), Group(<gens>,<id>)
+
+#
 gap> TrivialGroup(1);
 Error, usage: TrivialGroup( [<filter>] )
 gap> TrivialGroup(IsRing);
