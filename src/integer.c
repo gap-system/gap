@@ -563,7 +563,7 @@ Obj ObjInt_UInt8( UInt8 i )
 #endif
 }
 
-/**************************************************************************
+/****************************************************************************
 **
 ** Convert GAP Integers to various C types -- see header file
 */
@@ -684,7 +684,7 @@ Obj MakeObjInt(const UInt * limbs, int size)
     else if (size == -1)
         obj = ObjInt_UIntInv(limbs[0]);
     else {
-        UInt tnum = (size > 0 : T_INTPOS : T_INTNEG);
+        UInt tnum = (size > 0 ? T_INTPOS : T_INTNEG);
         if (size < 0) size = -size;
         obj = NewBag(tnum, size * sizeof(mp_limb_t));
         memcpy(ADDR_INT(obj), limbs, size * sizeof(mp_limb_t));
