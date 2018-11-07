@@ -19,6 +19,14 @@
 #include "opers.h"
 
 
+#define RequireValue(funcname, val)                                          \
+    do {                                                                     \
+        if (!val)                                                            \
+            ErrorMayQuit(funcname ": method should have returned a value",   \
+                         0, 0);                                              \
+    } while (0);
+
+
 /****************************************************************************
 **
 *F * * * * * * * * * * *  unary arithmetic operations * * * * * * * * * * * *
@@ -43,9 +51,7 @@ Obj ZeroObject (
 {
   Obj val;
   val = DoOperation1Args( ZEROOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("ZEROOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("ZEROOp", val);
   return val;
 }
 
@@ -60,9 +66,7 @@ Obj VerboseZeroObject (
 {
   Obj val;
   val = DoVerboseOperation1Args( ZEROOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("ZEROOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("ZEROOp", val);
   return val;
 }
 
@@ -113,9 +117,7 @@ Obj ZeroMutObject (
 {
   Obj val;
   val = DoOperation1Args( ZeroOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("ZeroOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("ZeroOp", val);
   return val;
 }
 
@@ -130,9 +132,7 @@ Obj VerboseZeroMutObject (
 {
   Obj val;
   val = DoVerboseOperation1Args( ZeroOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("ZeroOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("ZeroOp", val);
   return val;
 }
 
@@ -186,9 +186,7 @@ Obj AInvObject (
 {
   Obj val;
   val = DoOperation1Args( AInvOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("AInvOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("AInvOp", val);
   return val;
 }
 
@@ -202,9 +200,7 @@ Obj VerboseAInvObject (
 {
   Obj val;
   val = DoVerboseOperation1Args( AInvOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("AInvOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("AInvOp", val);
   return val;
 }
 
@@ -247,9 +243,7 @@ Obj AInvMutObject (
 {
   Obj val;
   val = DoOperation1Args( AdditiveInverseOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("AdditiveInverseOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("AdditiveInverseOp", val);
   return val;
 }
 
@@ -263,9 +257,7 @@ Obj VerboseAInvMutObject (
 {
   Obj val;
   val = DoVerboseOperation1Args( AdditiveInverseOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("AdditiveInverseOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("AdditiveInverseOp", val);
   return val;
 }
 
@@ -316,9 +308,7 @@ Obj OneObject (
 {
   Obj val;
   val = DoOperation1Args( OneOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("OneOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("OneOp", val);
   return val;
 }
 
@@ -332,9 +322,7 @@ Obj VerboseOneObject (
 {
   Obj val;
   val = DoVerboseOperation1Args( OneOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("OneOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("OneOp", val);
   return val;
 }
 
@@ -384,9 +372,7 @@ Obj OneMutObject (
 {
   Obj val;
   val = DoOperation1Args( OneMutOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("ONEOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("ONEOp", val);
   return val;
 }
 
@@ -400,9 +386,7 @@ Obj VerboseOneMutObject (
 {
   Obj val;
   val = DoVerboseOperation1Args( OneMutOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("ONEOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("ONEOp", val);
   return val;
 }
 
@@ -453,9 +437,7 @@ Obj InvObject (
 {
   Obj val;
   val = DoOperation1Args( InvOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("InvOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("InvOp", val);
   return val;
 }
 
@@ -469,9 +451,7 @@ Obj VerboseInvObject (
 {
   Obj val;
   val = DoVerboseOperation1Args( InvOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("InvOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("InvOp", val);
   return val;
 }
 
@@ -522,9 +502,7 @@ Obj InvMutObject (
 {
   Obj val;
   val = DoOperation1Args( InvMutOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("INVOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("INVOp", val);
   return val;
 }
 
@@ -538,9 +516,7 @@ Obj VerboseInvMutObject (
 {
   Obj val;
   val = DoVerboseOperation1Args( InvMutOp, obj );
-  while (val == 0)
-    val = ErrorReturnObj("INVOp: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("INVOp", val);
   return val;
 }
 
@@ -744,11 +720,8 @@ Int InUndefined (
     Obj                 opL,
     Obj                 opR )
 {
-    return (ErrorReturnObj(
-        "operations: IN of %s and %s is not defined",
-        (Int)TNAM_OBJ(opL),
-        (Int)TNAM_OBJ(opR),
-        "you can 'return <boolean>;' to give a value for the result" ) == True);
+    ErrorMayQuit("operations: IN of %s and %s is not defined",
+                 (Int)TNAM_OBJ(opL), (Int)TNAM_OBJ(opR));
 }
 
 
@@ -835,9 +808,7 @@ Obj SumObject (
 {
   Obj val;
   val = DoOperation2Args( SumOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("SUM: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("SUM", val);
   return val;
 }
 
@@ -852,9 +823,7 @@ Obj VerboseSumObject (
 {
   Obj val;
   val = DoVerboseOperation2Args( SumOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("SUM: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("SUM", val);
   return val;
 }
 
@@ -926,9 +895,7 @@ Obj DiffObject (
 {
   Obj val;
   val = DoOperation2Args( DiffOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("DIFF: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("DIFF", val);
   return val;
 }
 
@@ -943,9 +910,7 @@ Obj VerboseDiffObject (
 {
   Obj val;
   val = DoVerboseOperation2Args( DiffOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("DIFF: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("DIFF", val);
   return val;
 }
 
@@ -1015,9 +980,7 @@ Obj ProdObject (
 {
   Obj val;
   val = DoOperation2Args( ProdOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("PROD: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("PROD", val);
   return val;
 }
 
@@ -1032,9 +995,7 @@ Obj VerboseProdObject (
 {
   Obj val;
   val = DoVerboseOperation2Args( ProdOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("PROD: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("PROD", val);
   return val;
 }
 
@@ -1105,9 +1066,7 @@ Obj QuoObject (
 {
   Obj val;
   val = DoOperation2Args( QuoOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("QUO: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("QUO", val);
   return val;
 }
 
@@ -1122,9 +1081,7 @@ Obj VerboseQuoObject (
 {
   Obj val;
   val = DoVerboseOperation2Args( QuoOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("QUO: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("QUO", val);
   return val;
 }
 
@@ -1208,9 +1165,7 @@ Obj LQuoObject (
 {
   Obj val;
   val = DoOperation2Args( LQuoOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("LeftQuotient: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("LeftQuotient", val);
   return val;
 }
 
@@ -1225,9 +1180,7 @@ Obj VerboseLQuoObject (
 {
   Obj val;
   val = DoOperation2Args( LQuoOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("LeftQuotient: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("LeftQuotient", val);
   return val;
 }
 
@@ -1311,9 +1264,7 @@ Obj PowObject (
 {
   Obj val;
   val = DoOperation2Args( PowOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("POW: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("POW", val);
   return val;
 }
 
@@ -1329,9 +1280,7 @@ Obj VerbosePowObject (
    
   Obj val;
   val = DoVerboseOperation2Args( PowOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("POW: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("POW", val);
   return val;
 }
 
@@ -1417,9 +1366,7 @@ Obj CommObject (
 {
   Obj val;
   val = DoOperation2Args( CommOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("Comm: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("Comm", val);
   return val;
 }
 
@@ -1434,9 +1381,7 @@ Obj VerboseCommObject (
 {
   Obj val;
   val = DoVerboseOperation2Args( CommOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("Comm: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("Comm", val);
   return val;
 }
 
@@ -1507,9 +1452,7 @@ Obj ModObject (
 {
   Obj val;
   val = DoOperation2Args( ModOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("mod: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("mod", val);
   return val;
 }
 
@@ -1524,9 +1467,7 @@ Obj VerboseModObject (
 {
   Obj val;
   val = DoVerboseOperation2Args( ModOper, opL, opR );
-  while (val == 0)
-    val = ErrorReturnObj("mod: method should have returned a value", 0L, 0L,
-                         "you can supply one by 'return <value>;'");
+  RequireValue("mod", val);
   return val;
 }
 
