@@ -512,11 +512,9 @@ static ALWAYS_INLINE UInt ExecForRangeHelper(Stat stat, UInt nr)
     /* evaluate the range                                                  */
     VisitStatIfHooked(READ_STAT(stat, 1));
     elm = EVAL_EXPR(READ_EXPR(READ_STAT(stat, 1), 0));
-    RequireSmallInt("Range", elm, "first");
-    first = INT_INTOBJ(elm);
+    first = GetSmallInt("Range", elm, "first");
     elm = EVAL_EXPR(READ_EXPR(READ_STAT(stat, 1), 1));
-    RequireSmallInt("Range", elm, "last");
-    last  = INT_INTOBJ(elm);
+    last = GetSmallInt("Range", elm, "last");
 
     /* get the body                                                        */
     body1 = READ_STAT(stat, 2);

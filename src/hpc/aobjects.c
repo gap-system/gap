@@ -1691,8 +1691,7 @@ Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFunc
   addr = ADDR_ATOM(obj);
   MEMBAR_READ();
   len = ALIST_LEN(addr[0].atom);
-  RequireSmallInt(currFuncName, index, "index");
-  n = INT_INTOBJ(index);
+  n = GetSmallInt(currFuncName, index, "index");
   if (n <= 0 || n > len)
     FuncError("Index out of range");
   result = addr[n+1].obj;

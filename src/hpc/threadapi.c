@@ -1463,8 +1463,7 @@ Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj countobj)
 {
     int count;
     RequireChannel("MultiReceiveChannel", channel);
-    RequireSmallInt("MultiReceiveChannel", countobj, "count");
-    count = INT_INTOBJ(countobj);
+    count = GetSmallInt("MultiReceiveChannel", countobj, "count");
     if (count < 0)
         return ArgumentError(
             "MultiReceiveChannel: Size must be non-negative");
@@ -1642,8 +1641,8 @@ int IsBarrier(Obj obj)
 Obj FuncStartBarrier(Obj self, Obj barrier, Obj count)
 {
     RequireBarrier("StartBarrier", barrier);
-    RequireSmallInt("StartBarrier", count, "count");
-    StartBarrier(ObjPtr(barrier), INT_INTOBJ(count));
+    Int c = GetSmallInt("StartBarrier", count, "count");
+    StartBarrier(ObjPtr(barrier), c);
     return (Obj)0;
 }
 
@@ -2050,8 +2049,8 @@ Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "SHARE_NORECURSE: Second argument must be a string or fail");
-    RequireSmallInt("SHARE_NORECURSE", prec, "prec");
-    region->prec = INT_INTOBJ(prec);
+    Int p = GetSmallInt("SHARE_NORECURSE", prec, "prec");
+    region->prec = p;
     if (!MigrateObjects(1, &obj, region, 0))
         return ArgumentError("SHARE_NORECURSE: Thread does not have "
                              "exclusive access to objects");
@@ -2108,8 +2107,8 @@ Obj FuncNEW_REGION(Obj self, Obj name, Obj prec)
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "NEW_REGION: Second argument must be a string or fail");
-    RequireSmallInt("NEW_REGION", prec, "prec");
-    region->prec = INT_INTOBJ(prec);
+    Int p = GetSmallInt("NEW_REGION", prec, "prec");
+    region->prec = p;
     if (name != Fail)
         SetRegionName(region, name);
     return region->obj;
@@ -2128,8 +2127,8 @@ Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "SHARE: Second argument must be a string or fail");
-    RequireSmallInt("SHARE", prec, "prec");
-    region->prec = INT_INTOBJ(prec);
+    Int p = GetSmallInt("SHARE", prec, "prec");
+    region->prec = p;
     reachable = ReachableObjectsFrom(obj);
     if (!MigrateObjects(LEN_PLIST(reachable), ADDR_OBJ(reachable) + 1, region,
                         1))
@@ -2147,8 +2146,8 @@ Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "SHARE_RAW: Second argument must be a string or fail");
-    RequireSmallInt("SHARE_RAW", prec, "prec");
-    region->prec = INT_INTOBJ(prec);
+    Int p = GetSmallInt("SHARE_RAW", prec, "prec");
+    region->prec = p;
     reachable = ReachableObjectsFrom(obj);
     if (!MigrateObjects(LEN_PLIST(reachable), ADDR_OBJ(reachable) + 1, region,
                         0))

@@ -1086,8 +1086,7 @@ Obj             EvalRangeExpr (
 
     /* evaluate the low value                                              */
     val = EVAL_EXPR(READ_EXPR(expr, 0));
-    RequireSmallInt("Range", val, "first");
-    low = INT_INTOBJ( val );
+    low = GetSmallInt("Range", val, "first");
 
     /* evaluate the second value (if present)                              */
     if ( SIZE_EXPR(expr) == 3*sizeof(Expr) ) {

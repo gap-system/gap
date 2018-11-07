@@ -2178,19 +2178,18 @@ void            IntrListExprEnd (
 
         /* get the low value                                               */
         val = ELM_LIST( list, 1 );
-        RequireSmallInt("Range", val, "first");
-        low = INT_INTOBJ( val );
+        low = GetSmallInt("Range", val, "first");
 
         /* get the increment                                               */
         if ( nr == 3 ) {
             val = ELM_LIST( list, 2 );
-            RequireSmallInt("Range", val, "second");
-            if ( INT_INTOBJ(val) == low ) {
+            Int v = GetSmallInt("Range", val, "second");
+            if ( v == low ) {
                 ErrorQuit(
                       "Range: <second> must not be equal to <first> (%d)",
                       (Int)low, 0L );
             }
-            inc = INT_INTOBJ(val) - low;
+            inc = v - low;
         }
         else {
             inc = 1;
@@ -2198,13 +2197,13 @@ void            IntrListExprEnd (
 
         /* get and check the high value                                    */
         val = ELM_LIST( list, LEN_LIST(list) );
-        RequireSmallInt("Range", val, "last");
-        if ( (INT_INTOBJ(val) - low) % inc != 0 ) {
+        Int v = GetSmallInt("Range", val, "last");
+        if ( (v - low) % inc != 0 ) {
             ErrorQuit(
                 "Range: <last>-<first> (%d) must be divisible by <inc> (%d)",
-                (Int)(INT_INTOBJ(val)-low), (Int)inc );
+                (Int)(v-low), (Int)inc );
         }
-        high = INT_INTOBJ(val);
+        high = v;
 
         /* if <low> is larger than <high> the range is empty               */
         if ( (0 < inc && high < low) || (inc < 0 && low < high) ) {

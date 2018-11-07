@@ -1769,10 +1769,7 @@ Obj FuncELM0_GF2VEC (
     Obj                 list,
     Obj                 pos )
 {
-    UInt                p;
-
-    RequireSmallInt("ELM0_GF2VEC", pos, "pos");
-    p = INT_INTOBJ(pos);
+    UInt p = GetSmallInt("ELM0_GF2VEC", pos, "pos");
     if ( LEN_GF2VEC(list) < p ) {
         return Fail;
     }
@@ -1795,10 +1792,7 @@ Obj FuncELM_GF2VEC (
     Obj                 list,
     Obj                 pos )
 {
-    UInt                p;
-
-    RequireSmallInt("ELM_GF2VEC", pos, "pos");
-    p = INT_INTOBJ(pos);
+    UInt p = GetSmallInt("ELM_GF2VEC", pos, "pos");
     if ( LEN_GF2VEC(list) < p ) {
         ErrorReturnVoid(
             "List Element: <list>[%d] must have an assigned value",
@@ -1929,8 +1923,6 @@ Obj FuncASS_GF2VEC (
     Obj                 pos,
     Obj                 elm )
 {
-    UInt                p;
-
     /* check that <list> is mutable                                        */
     if ( ! IS_MUTABLE_OBJ(list) ) {
         ErrorReturnVoid(
@@ -1941,8 +1933,7 @@ Obj FuncASS_GF2VEC (
     }
 
     /* get the position                                                    */
-    RequireSmallInt("ASS_VEC8BIT", pos, "pos");
-    p = INT_INTOBJ(pos);
+    UInt p = GetSmallInt("ASS_VEC8BIT", pos, "pos");
 
     /* if <elm> is Z(2) or 0*Z(2) and the position is OK, keep rep         */
     if ( p <= LEN_GF2VEC(list)+1 ) {
@@ -2010,8 +2001,6 @@ Obj FuncASS_GF2MAT (
     Obj                 pos,
     Obj                 elm )
 {
-    UInt                p;
-
     /* check that <list> is mutable                                        */
     if ( ! IS_MUTABLE_OBJ(list) ) {
         ErrorReturnVoid(
@@ -2022,8 +2011,7 @@ Obj FuncASS_GF2MAT (
     }
 
     /* get the position                                                    */
-    RequireSmallInt("ASS_GF2MAT", pos, "pos");
-    p = INT_INTOBJ(pos);
+    UInt p = GetSmallInt("ASS_GF2MAT", pos, "pos");
 
     /* if <elm> is a GF2 vector and the length is OK, keep the rep         */
     if ( ! IS_GF2VEC_REP(elm)  ) {
@@ -2064,8 +2052,7 @@ Obj FuncASS_GF2MAT (
 */
 Obj FuncELM_GF2MAT( Obj self, Obj mat, Obj row )
 {
-    RequireSmallInt("ELM_GF2MAT", row, "row");
-    UInt r = INT_INTOBJ(row);
+    UInt r = GetSmallInt("ELM_GF2MAT", row, "row");
     if (LEN_GF2MAT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r, LEN_GF2MAT(mat));
     }
@@ -2087,8 +2074,6 @@ Obj FuncUNB_GF2VEC (
     Obj                 list,
     Obj                 pos )
 {
-    UInt                p;
-
     /* check that <list> is mutable                                        */
     if ( ! IS_MUTABLE_OBJ(list) ) {
         ErrorReturnVoid(
@@ -2107,8 +2092,7 @@ Obj FuncUNB_GF2VEC (
     }
 
     /* get the position                                                    */
-    RequireSmallInt("UNB_GF2VEC", pos, "pos");
-    p = INT_INTOBJ(pos);
+    UInt p = GetSmallInt("UNB_GF2VEC", pos, "pos");
 
     /* if we unbind the last position keep the representation              */
     if ( LEN_GF2VEC(list) < p ) {
@@ -2140,8 +2124,6 @@ Obj FuncUNB_GF2MAT (
     Obj                 list,
     Obj                 pos )
 {
-    UInt                p;
-
     /* check that <list> is mutable                                        */
     if ( ! IS_MUTABLE_OBJ(list) ) {
         ErrorReturnVoid(
@@ -2152,8 +2134,7 @@ Obj FuncUNB_GF2MAT (
     }
 
     /* get the position                                                    */
-    RequireSmallInt("UNB_GF2MAT", pos, "pos");
-    p = INT_INTOBJ(pos);
+    UInt p = GetSmallInt("UNB_GF2MAT", pos, "pos");
 
     /* if we unbind the last position keep the representation              */
     if ( p > 1 && LEN_GF2MAT(list) < p ) {

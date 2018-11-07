@@ -245,8 +245,7 @@ Obj FuncCHAR_INT (
 
     /* get and check the integer value                                     */
 again:
-    RequireSmallInt("CHAR_INT", val, "val");
-    chr = INT_INTOBJ(val);
+    chr = GetSmallInt("CHAR_INT", val, "val");
     if ( 255 < chr || chr < 0 ) {
         val = ErrorReturnObj(
             "<val> must be an integer between 0 and 255",
@@ -291,8 +290,7 @@ Obj FuncCHAR_SINT (
 
   /* get and check the integer value                                     */
 agains:
-  RequireSmallInt("CHAR_SINT", val, "val");
-  chr = INT_INTOBJ(val);
+  chr = GetSmallInt("CHAR_SINT", val, "val");
   if ( 127 < chr || chr < -128 ) {
       val = ErrorReturnObj(
 	  "<val> must be an integer between -128 and 127",
