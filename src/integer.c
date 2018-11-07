@@ -15,7 +15,7 @@
 **  Each integer has a unique representation, e.g., an integer that can be
 **  represented as 'T_INT' is never represented as 'T_INTPOS' or 'T_INTNEG'.
 **
-**  In the following, let 'N' be the number of bits in an mp_limb_t (so 32 or
+**  In the following, let 'N' be the number of bits in an UInt (so 32 or
 **  64, depending on the system). 'T_INT' is the type of those integers small
 **  enough to fit into N-3 bits. Therefore the value range of this small
 **  integers is $-2^{N-4}...2^{N-4}-1$. Only these small integers can be used
@@ -46,7 +46,8 @@
 **
 **  These large integers values are represented as low-level GMP integer
 **  objects, that is, in base 2^N. That means that the bag of a large integer
-**  has the following form:
+**  has the following form, where the "digits" are also more commonly referred
+**  to as "limbs".:
 **
 **      +-------+-------+-------+-------+- - - -+-------+-------+-------+
 **      | digit | digit | digit | digit |       | digit | digit | digit |
@@ -56,7 +57,7 @@
 **  The value of this is: $d0 + d1 2^N + d2 (2^N)^2 + ... + d_n (2^N)^n$,
 **  respectively the negative of this if the object type is 'T_INTNEG'.
 **
-**  Each digit is of course stored as a N bit wide unsigned integer.
+**  Each digit resp. limb is stored as a N bit wide unsigned integer.
 **
 **  Note that we require that all large integers be normalized (that is, they
 **  must not contain leading zero limbs) and reduced (they do not fit into a
@@ -98,6 +99,8 @@
  #endif
 #endif
 
+GAP_STATIC_ASSERT(sizeof(mp_limb_t) == sizeof(UInt),
+                  "sizeof(mp_limb_t) != sizeof(UInt)");
 
 static Obj ObjInt_UIntInv( UInt i );
 
@@ -347,26 +350,7 @@ static Obj GMPorINTOBJ_FAKEMPZ( fake_mpz_t fake )
 */
 static Obj GMPorINTOBJ_MPZ( mpz_t v )
 {
-  Int size = v->_mp_size;
-  Obj obj;
-  if ( size == 0 )
-    obj = INTOBJ_INT(0);
-  else if ( size == 1 )
-    obj = ObjInt_UInt( v->_mp_d[0] );
-  else if ( size == -1 )
-    obj = ObjInt_UIntInv( v->_mp_d[0] );
-  else {
-    Int sign = size > 0 ? 1 : -1;
-    if (size < 0)
-      size = -size;
-    obj = NewBag(sign == 1 ? T_INTPOS : T_INTNEG, size * sizeof(mp_limb_t));
-    memcpy(ADDR_INT(obj), v->_mp_d, size * sizeof(mp_limb_t));
-
-    // FIXME: necessary to normalize and reduce???
-    obj = GMP_NORMALIZE( obj );
-    obj = GMP_REDUCE( obj );
-  }
-  return obj;
+    return MakeObjInt((const UInt *)v->_mp_d, v->_mp_size);
 }
 
 
@@ -687,6 +671,34 @@ UInt8 UInt8_ObjInt(Obj i)
     return (UInt8)vall + ((UInt8)valh << 32);
 #endif
 }
+
+
+/****************************************************************************
+**
+*F  MakeObjInt(<limbs>, <size>) . . . . . . . . . create a new integer object
+**
+*/
+Obj MakeObjInt(const UInt * limbs, int size)
+{
+    Obj obj;
+    if (size == 0)
+        obj = INTOBJ_INT(0);
+    else if (size == 1)
+        obj = ObjInt_UInt(limbs[0]);
+    else if (size == -1)
+        obj = ObjInt_UIntInv(limbs[0]);
+    else {
+        UInt tnum = (size > 0 ? T_INTPOS : T_INTNEG);
+        if (size < 0) size = -size;
+        obj = NewBag(tnum, size * sizeof(mp_limb_t));
+        memcpy(ADDR_INT(obj), limbs, size * sizeof(mp_limb_t));
+
+        obj = GMP_NORMALIZE(obj);
+        obj = GMP_REDUCE(obj);
+    }
+    return obj;
+}
+
 
 // This function returns an immediate integer, or
 // an integer object with exactly one limb, and returns
