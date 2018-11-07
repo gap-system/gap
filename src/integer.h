@@ -1,8 +1,8 @@
 /****************************************************************************
 **
 *W  integer.h                   GAP source                     John McDermott
-**                                                           
-**                                                           
+**
+**
 **
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
@@ -25,7 +25,7 @@
 #endif
 
 
-/**************************************************************************
+/****************************************************************************
 **
 **  'IS_LARGEINT' returns 1 if 'obj' is large positive or negative integer
 **  object, and 0 for all other kinds of objects.
@@ -37,7 +37,7 @@ static inline Int IS_LARGEINT(Obj obj)
 }
 
 
-/**************************************************************************
+/****************************************************************************
 **
 **  'IS_INT' returns 1 if 'obj' is either a large or an immediate integer
 **  object, and 0 for all other kinds of objects.
@@ -48,7 +48,7 @@ static inline Int IS_INT(Obj obj)
 }
 
 
-/**************************************************************************
+/****************************************************************************
 **
 **  'ADDR_INT' returns a pointer to the limbs of the large integer 'obj'.
 **  'CONST_ADDR_INT' does the same, but returns a const pointer.
@@ -66,7 +66,7 @@ static inline const UInt * CONST_ADDR_INT(Obj obj)
 }
 
 
-/**************************************************************************
+/****************************************************************************
 **
 **  'SIZE_INT' returns the number of limbs in a large integer object.
 */
@@ -77,7 +77,7 @@ static inline UInt SIZE_INT(Obj obj)
 }
 
 
-/**************************************************************************
+/****************************************************************************
 **
 **  'IS_NEG_INT' returns 1 if 'obj' is a negative large or immediate
 **  integer object, and 0 for all other kinds of objects.
@@ -89,7 +89,7 @@ static inline Int IS_NEG_INT(Obj obj)
     return TNUM_OBJ(obj) == T_INTNEG;
 }
 
-/**************************************************************************
+/****************************************************************************
 **
 **  'IS_POS_INT' returns 1 if 'obj' is a positive large or immediate
 **  integer object, and 0 for all other kinds of objects.
@@ -101,7 +101,7 @@ static inline Int IS_POS_INT(Obj obj)
     return TNUM_OBJ(obj) == T_INTPOS;
 }
 
-/**************************************************************************
+/****************************************************************************
 **
 **  'IS_ODD_INT' returns 1 if 'obj' is an odd large or immediate integer
 **  object, and 0 for all other kinds of objects.
@@ -114,7 +114,7 @@ static inline Int IS_ODD_INT(Obj obj)
 }
 
 
-/**************************************************************************
+/****************************************************************************
 **
 **  'IS_EVEN_INT' returns 1 if 'obj' is an even large or immediate integer
 **  object, and 0 for all other kinds of objects.
@@ -125,10 +125,10 @@ static inline Int IS_EVEN_INT(Obj obj)
 }
 
 
-/**************************************************************************
+/****************************************************************************
 **
 **  The following functions convert Int, UInt or Int8 respectively into
-**  a GAP integer, either an immediate, small integer if possible or 
+**  a GAP integer, either an immediate, small integer if possible or
 **  otherwise a new GAP bag with TNUM T_INTPOS or T_INTNEG.
 */
 extern Obj ObjInt_Int(Int i);
@@ -136,15 +136,16 @@ extern Obj ObjInt_UInt(UInt i);
 extern Obj ObjInt_Int8(Int8 i);
 extern Obj ObjInt_UInt8(UInt8 i);
 
-/**************************************************************************
+
+/****************************************************************************
 **
 **  The following functions convert a GAP integer into an Int, UInt,
 **  Int8 or UInt8 if it is in range. Otherwise it gives an error.
 */
-extern Int Int_ObjInt(Obj i);    
-extern UInt UInt_ObjInt(Obj i);    
-extern Int8 Int8_ObjInt(Obj i);    
-extern UInt8 UInt8_ObjInt(Obj i);    
+extern Int   Int_ObjInt(Obj i);
+extern UInt  UInt_ObjInt(Obj i);
+extern Int8  Int8_ObjInt(Obj i);
+extern UInt8 UInt8_ObjInt(Obj i);
 
 
 /****************************************************************************
@@ -198,7 +199,7 @@ Obj IntStringInternal(Obj string, const Char *str);
 **
 *F  EqInt( <opL>, <opR> ) . . . . . test if two integers are equal
 **
-**  'EqInt' returns 1  if  the two GMP integer arguments <opL> and  
+**  'EqInt' returns 1  if  the two GMP integer arguments <opL> and
 **  <opR> are equal and 0 otherwise.
 */
 extern Int EqInt( Obj opL, Obj opR );
@@ -208,7 +209,7 @@ extern Int EqInt( Obj opL, Obj opR );
 **
 *F  LtInt( <opL>, <opR> )  test if an integer is less than another
 **
-**  'LtInt' returns 1 if the integer <opL> is strictly less than the 
+**  'LtInt' returns 1 if the integer <opL> is strictly less than the
 **  integer <opR> and 0 otherwise.
 */
 extern Int LtInt( Obj opL, Obj opR );
@@ -345,14 +346,19 @@ extern Obj InverseModInt(Obj base, Obj mod);
 */
 extern Int CLog2Int( Int intnum );
 
-// Compute the binomial coefficient of n and k
+
+/****************************************************************************
+**
+*F  BinomialInt(<n>, <k>) . . . .  return the binomial coefficient of n and k
+**
+*/
 extern Obj BinomialInt(Obj n, Obj k);
+
 
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
-
 
 /****************************************************************************
 **
