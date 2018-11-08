@@ -204,7 +204,7 @@ extern Obj TYPE_LIST_GF2VEC_IMM;
 
 /****************************************************************************
 **
-*V  TYPE_LIST_GF2VEC_IMM_LOCKED. . . .  type of an immutable GF2 vector object
+*V  TYPE_LIST_GF2VEC_IMM_LOCKED . . . type of an immutable GF2 vector object
 **                                          with locked representation
 */
 extern Obj TYPE_LIST_GF2VEC_IMM_LOCKED;
