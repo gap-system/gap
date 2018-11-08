@@ -1933,7 +1933,7 @@ Obj FuncASS_GF2VEC (
     }
 
     /* get the position                                                    */
-    UInt p = GetSmallInt("ASS_VEC8BIT", pos, "pos");
+    UInt p = GetSmallInt("ASS_GF2VEC", pos, "pos");
 
     /* if <elm> is Z(2) or 0*Z(2) and the position is OK, keep rep         */
     if ( p <= LEN_GF2VEC(list)+1 ) {
@@ -1953,7 +1953,7 @@ Obj FuncASS_GF2VEC (
 	  {
 	    /*	    Pr("Rewriting GF2 vector over larger field",0,0); */
 	    RewriteGF2Vec(list, SIZE_FF(FLD_FFE(elm)));
-	    FuncASS_VEC8BIT(self, list, pos, elm);
+	    ASS_VEC8BIT(list, pos, elm);
 	  }
         else
 	  {

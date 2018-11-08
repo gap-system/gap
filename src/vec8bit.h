@@ -30,7 +30,7 @@ extern Obj CopyVec8Bit( Obj list, UInt mut );
 
 /****************************************************************************
 **
-*F  IS_VEC8BIT_REP( <obj> )  . . . . . . check that <obj> is in 8bit GFQ vector rep
+*F  IS_VEC8BIT_REP( <obj> ) . . .  check that <obj> is in 8bit GFQ vector rep
 */
 extern Obj IsVec8bitRep;
 
@@ -49,11 +49,10 @@ extern void PlainVec8Bit ( Obj                 list );
 
 /****************************************************************************
 **
-*F  FuncASS_VEC8BIT( <self>, <list>, <pos>, <elm> ) set an elm of an 8bit vector
+*F  ASS_VEC8BIT( <list>, <pos>, <elm> ) . . . .  set an elm of an 8bit vector
 **
 */
-extern Obj FuncASS_VEC8BIT (
-    Obj                 self,
+extern void ASS_VEC8BIT (
     Obj                 list,
     Obj                 pos,
     Obj                 elm );

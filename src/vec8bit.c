@@ -2941,8 +2941,7 @@ Obj FuncELMS_VEC8BIT_RANGE (
 
 static Obj AsInternalFFE;
 
-Obj FuncASS_VEC8BIT (
-		     Obj                 self,
+void ASS_VEC8BIT (
 		     Obj                 list,
 		     Obj                 pos,
 		     Obj                 elm )
@@ -2963,7 +2962,7 @@ Obj FuncASS_VEC8BIT (
             "List Assignment: <list> must be a mutable list",
             0L, 0L,
             "you can 'return;' and ignore the assignment");
-        return 0;
+        return;
     }
 
     /* get the position                                                    */
@@ -2981,7 +2980,7 @@ Obj FuncASS_VEC8BIT (
             if (True == DoFilter(IsLockedRepresentationVector, list)) {
                 ErrorReturnVoid("List assignment would increase length of locked compressed vector", 0, 0,
                                 "You can `return;' to ignore the assignment");
-                return 0;
+                return;
             }
             ResizeWordSizedBag(list, SIZE_VEC8BIT(p, elts));
             SET_LEN_VEC8BIT(list, p);
@@ -3009,7 +3008,7 @@ Obj FuncASS_VEC8BIT (
                 } else {
                     PlainVec8Bit(list);
                     AssPlistFfe(list, p, elm);
-                    return 0;
+                    return;
                 }
             }
 
@@ -3028,7 +3027,7 @@ Obj FuncASS_VEC8BIT (
                 SETELT_FIELDINFO_8BIT(info)
                 [256 * (elts * FELT_FFE_FIELDINFO_8BIT(info)[v] + (p - 1) % elts) +
                  BYTES_VEC8BIT(list)[(p - 1) / elts]];
-            return 0;
+            return;
         }
     }
 
@@ -3040,9 +3039,17 @@ Obj FuncASS_VEC8BIT (
 
     PlainVec8Bit(list);
     AssPlistFfe(list, p, elm);
-    return 0;
 }
 
+Obj FuncASS_VEC8BIT (
+		     Obj                 self,
+		     Obj                 list,
+		     Obj                 pos,
+		     Obj                 elm )
+{
+    ASS_VEC8BIT(list, pos, elm);
+    return 0;
+}
 
 
 /****************************************************************************
@@ -5766,7 +5773,8 @@ Obj FuncSET_MAT_ELM_MAT8BIT( Obj self, Obj mat, Obj row, Obj col, Obj elm )
 
     // TODO: replace the following call by direct access? E.g. so that we can
     // always reject input elements in the "wrong domain"?
-    return FuncASS_VEC8BIT( self, vec, col, elm );
+    ASS_VEC8BIT(vec, col, elm);
+    return 0;
 }
 
 
