@@ -54,7 +54,7 @@
 
 /****************************************************************************
 **
-*F  IS_VEC8BIT_REP( <obj> )  . . . . . . check that <obj> is in 8bit GFQ vector rep
+*F  IS_VEC8BIT_REP( <obj> ) . . .  check that <obj> is in 8bit GFQ vector rep
 **
 ** #define IS_VEC8BIT_REP(obj) \
 **  (TNUM_OBJ(obj)==T_DATOBJ && True == DoFilter(IsVec8bitRep,obj))
@@ -1030,7 +1030,7 @@ void PlainVec8Bit (
 
 /****************************************************************************
 **
-*F  FuncPLAIN_VEC8BIT( <self>, <list> ) . . .  convert back into ordinary list
+*F  FuncPLAIN_VEC8BIT( <self>, <list> ) . . . .  convert back into plain list
 */
 Obj FuncPLAIN_VEC8BIT (
     Obj                 self,
@@ -1536,8 +1536,8 @@ Obj FuncAINV_VEC8BIT_IMMUTABLE( Obj self, Obj vec )
 **
 *F  AddVec8BitVec8BitMultInner( <sum>, <vl>, <vr>, <mult> <start>, <stop> )
 **
-**  This is the real vector add multiple routine. Others are all calls to this
-**  one. It adds <mult>*<vr> to <vl> leaving the result in <sum>
+**  This is the real vector add multiple routine. Others are all calls to
+**  this one. It adds <mult>*<vr> to <vl> leaving the result in <sum>
 ** 
 **  Addition is done from THE BLOCK containing <start> to the one
 **  containing <stop> INCLUSIVE. The remainder of <sum> is unchanged.
@@ -2484,7 +2484,8 @@ Obj FuncNUMBER_VEC8BIT (Obj self, Obj vec)
 
 /****************************************************************************
 **
-*F FuncCOSET_LEADERS_INNER_8BITS( <self>, <veclis>, <weight>, <tofind>, <leaders> )
+*F  FuncCOSET_LEADERS_INNER_8BITS( <self>, <veclis>, <weight>, <tofind>,
+**                                                                <leaders> )
 **
 ** Search for new coset leaders of weight <weight>
 */
@@ -2702,11 +2703,11 @@ Obj FuncQ_VEC8BIT (
 
 /****************************************************************************
 **
-*F  FuncELM0_VEC8BIT( <self>, <list>, <pos> )  . select an elm of an 8bit vector
+*F  FuncELM0_VEC8BIT( <self>, <list>, <pos> ) . select elm of an 8bit vector
 **
-**  'ELM0_VEC8BIT'  returns the element at the  position  <pos> of the boolean
-**  list <list>, or `Fail' if <list> has no assigned  object at <pos>.  It is
-**  the  responsibility of  the caller to   ensure  that <pos> is  a positive
+**  'ELM0_VEC8BIT' returns the element at the position <pos> of the 8bit
+**  vector <list>, or `Fail' if <list> has no assigned  object at <pos>. It
+**  is the responsibility of the caller to ensure that <pos> is a positive
 **  integer.
 */
 
@@ -2735,10 +2736,10 @@ Obj FuncELM0_VEC8BIT (
 
 /****************************************************************************
 **
-*F  FuncELM_VEC8BIT( <self>, <list>, <pos> ) . . select an elm of an 8bit vector
+*F  FuncELM_VEC8BIT( <self>, <list>, <pos> ) . . select elm of an 8bit vector
 **
-**  'ELM_VEC8BIT' returns the element at the position <pos>  of the 8bit vector
-**  <list>.   An  error  is signalled  if  <pos>  is  not bound.    It is the
+**  'ELM_VEC8BIT' returns the element at the position <pos> of the 8bit
+**  vector <list>. An error is signalled if <pos> is not bound. It is the
 **  responsibility of the caller to ensure that <pos> is a positive integer.
 */
 Obj FuncELM_VEC8BIT (
@@ -2770,7 +2771,7 @@ Obj FuncELM_VEC8BIT (
 
 /****************************************************************************
 **
-*F  FuncELMS_VEC8BIT( <self>, <list>, <poss> ) . select elms of an 8 bit vector
+*F  FuncELMS_VEC8BIT( <self>, <list>, <poss> ) . select elms of 8 bit vector
 **
 **  The results are returned in the compressed format
 */
@@ -2930,10 +2931,10 @@ Obj FuncELMS_VEC8BIT_RANGE (
 
 /****************************************************************************
 **
-*F  FuncASS_VEC8BIT( <self>, <list>, <pos>, <elm> ) set an elm of an 8bit vector
+*F  FuncASS_VEC8BIT( <self>, <list>, <pos>, <elm> ) ass. elm of 8bit vector
 **
-**  'ASS_VEC8BIT' assigns the element  <elm> at the position  <pos> to the 8bit
-**  vector <list>.
+**  'ASS_VEC8BIT' assigns the element  <elm> at the position  <pos> to the
+**  8bit vector <list>.
 **
 **  It is the responsibility of the caller  to ensure that <pos> is positive,
 **  and that <elm> is not 0.
@@ -3054,9 +3055,9 @@ Obj FuncASS_VEC8BIT (
 
 /****************************************************************************
 **
-*F  FuncUNB_VEC8BIT( <self>, <list>, <pos> ) . unbind position of a GFQ vector
+*F  FuncUNB_VEC8BIT( <self>, <list>, <pos> )  unbind position of a GFQ vector
 **
-**  'UNB_VEC8BIT' unbind  the element at  the position  <pos> in  a GFQ vector
+**  'UNB_VEC8BIT' unbind  the element at the position <pos> in  a GFQ vector
 **  <list>.
 **
 **  It is the responsibility of the caller  to ensure that <pos> is positive.
@@ -5029,10 +5030,11 @@ Obj FuncQUOTREM_COEFFS_VEC8BIT( Obj self, Obj vl, Obj ll, Obj vrshifted)
 *F  Obj SemiechelonListVec8Bits( <mat>, <transformationneeded> )
 **
 **
-** This is essentially a method for SemiEchelonMat or SemiEchelonMatTransformation
+**  This is essentially a method for SemiEchelonMat or
+**  SemiEchelonMatTransformation.
 **
-** <mat> is assumed by this point to be a list of mutable 8 bit vectors over
-** the same field, which can be overwritten if necessary
+**  <mat> is assumed by this point to be a list of mutable 8 bit vectors over
+**  the same field, which can be overwritten if necessary
 */
 
 static UInt RNheads, RNvectors, RNcoeffs, RNrelns;
@@ -5175,8 +5177,9 @@ Obj SemiEchelonListVec8Bits( Obj mat, UInt TransformationsNeeded )
 
 /****************************************************************************
 **
-*F  UInt TriangulizeListVec8Bits( <mat>, <clearup>, <deterp> ) -- returns the rank
+*F  UInt TriangulizeListVec8Bits( <mat>, <clearup>, <deterp> )
 **
+**  returns the rank
 */
 
 UInt TriangulizeListVec8Bits( Obj mat, UInt clearup, Obj *deterp)
@@ -5306,7 +5309,8 @@ Obj FuncSEMIECHELON_LIST_VEC8BITS( Obj self, Obj mat )
 **
 **  Method for SemiEchelonMatTransformations for plain lists of 8 bit vectors
 **
-** Method selection can guarantee us a plain list of vectors in same characteristic
+**  Method selection can guarantee us a plain list of vectors in same
+**  characteristic
 */
 
 Obj FuncSEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS( Obj self, Obj mat )
@@ -5344,7 +5348,8 @@ Obj FuncSEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS( Obj self, Obj mat )
 **
 **  Method for TriangulizeMat for plain lists of 8 bit vectors
 **
-** Method selection can guarantee us a plain list of vectors in same characteristic
+**  Method selection can guarantee us a plain list of vectors in same
+**  characteristic
 */
 
 Obj FuncTRIANGULIZE_LIST_VEC8BITS( Obj self, Obj mat )
@@ -5380,7 +5385,8 @@ Obj FuncTRIANGULIZE_LIST_VEC8BITS( Obj self, Obj mat )
 **
 **  Method for RankMatDestructive for plain lists of 8 bit vectors
 **
-** Method selection can guarantee us a plain list of vectors in same characteristic
+**  Method selection can guarantee us a plain list of vectors in same
+**  characteristic
 */
 
 Obj FuncRANK_LIST_VEC8BITS( Obj self, Obj mat )
@@ -5415,7 +5421,8 @@ Obj FuncRANK_LIST_VEC8BITS( Obj self, Obj mat )
 **
 **  Method for DeterminantMatDestructive for plain lists of 8 bit vectors
 **
-** Method selection can guarantee us a plain list of vectors in same characteristic
+**  Method selection can guarantee us a plain list of vectors in same
+**  characteristic
 */
 
 Obj FuncDETERMINANT_LIST_VEC8BITS( Obj self, Obj mat )
@@ -5780,9 +5787,8 @@ Obj FuncSET_MAT_ELM_MAT8BIT( Obj self, Obj mat, Obj row, Obj col, Obj elm )
 
 /****************************************************************************
 **
-*f * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * * */
-
-
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
+*/
 
 
 /****************************************************************************

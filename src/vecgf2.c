@@ -59,7 +59,7 @@ Obj TYPE_LIST_GF2VEC_IMM;
 
 /****************************************************************************
 **
-*V  TYPE_LIST_GF2VEC_IMM_LOCKED. . . .  type of an immutable GF2 vector object
+*V  TYPE_LIST_GF2VEC_IMM_LOCKED . . .  type of an immutable GF2 vector object
 **                                          with locked representation
 */
 Obj TYPE_LIST_GF2VEC_IMM_LOCKED;
@@ -198,7 +198,7 @@ CopySection_GF2Vecs(Obj src, Obj dest, UInt smin, UInt dmin, UInt nelts)
 **  Note: The other entries are set to be zero. So use a higher value for <n>
 **        only for vectors, which both have leading zero-entries. 
 **
-**  You  can use  the parameter  <n> for  example for  an  gauss-algorithm on 
+**  You  can use  the parameter  <n> for  example for  an  gauss-algorithm on
 **  gf2-matrices  can be  improved,  because when  using the gauss-algorithm,
 **  you  know that  the leading entries of two vectors to be  added are equal
 **  zero. If <n> = 1 all entries are added. 
@@ -489,15 +489,16 @@ Obj ProdGF2MatGF2Vec ( Obj ml, Obj vr )
 
 /****************************************************************************
 **
-*F  ProdGF2MatGF2MatSimple( <ml>, <mr> )  . .  product of GF2 matrix and GF2 matrix
+*F  ProdGF2MatGF2MatSimple( <ml>, <mr> ) . . . .  product of two GF2 matrices
 *F  ProdGF2MatGF2MatAdvanced( <ml>, <mr>, <greaselevel>, <blocksize> )
-**                                     . .  product of GF2 matrix and GF2 matrix
+**                                     . .  product of twp GF2 matrices
 **
-**  'ProdGF2MatGF2MatSimple'  returns the product  of the  GF2 matrix <ml>  and the
-**  GF2 matrix  <mr>.  This simply calls ProdGF2VecGF2Mat once on each row.
+**  'ProdGF2MatGF2MatSimple' returns the product of the GF2 matrix <ml> and
+**  the GF2 matrix <mr>. This simply calls ProdGF2VecGF2Mat once on each row.
 **
-** ProdGF2MatGF2MatAdvanced uses the specified grease and blocking to accelerate
-** larger matrix multiplies. In this case, the matrix dimensions must be compatible.
+**  ProdGF2MatGF2MatAdvanced uses the specified grease and blocking to
+**  accelerate larger matrix multiplies. In this case, the matrix dimensions
+**  must be compatible.
 */
 
 Obj ProdGF2MatGF2MatSimple( Obj ml, Obj mr )
@@ -894,8 +895,8 @@ Obj FuncPROD_GF2VEC_ANYMAT(Obj self, Obj vec, Obj mat)
 *F  InversePlistGF2VecsDesstructive( <list> )
 **
 **  This is intended to form the core of a method for InverseOp.
-**  by this point it should be checked that list is a plain list of GF2 vectors
-**  of equal lengths. 
+**  by this point it should be checked that list is a plain list of GF2
+**  vectors of equal lengths. 
 */
 Obj InversePlistGF2VecsDesstructive( Obj list )
 {
@@ -1082,7 +1083,8 @@ Obj ShallowCopyVecGF2( Obj vec )
 **
 **  The matrix needs to have mutable rows, so it can't be a GF2 mat
 **
-**  This has changed. There should now be a method for mutable GF2mats as well.
+**  This has changed. There should now be a method for mutable GF2mats as
+**  well.
 **
 **  This function DOES NOT CHECK that the rows are all GF2 vectors
 **
@@ -2280,7 +2282,9 @@ Obj FuncINV_GF2MAT_IMMUTABLE (
 
 /****************************************************************************
 **
-*F  FuncINV_PLIST_GF2VECS_DESTRUCTIVE( <self>, <list> ) . . .invert possible GF2 matrix
+*F  FuncINV_PLIST_GF2VECS_DESTRUCTIVE( <self>, <list> )
+**
+**  invert possible GF2 matrix
 */
 Obj FuncINV_PLIST_GF2VECS_DESTRUCTIVE( Obj self, Obj list )
 {
@@ -2413,8 +2417,8 @@ Obj FuncPROD_GF2VEC_GF2MAT (
 **
 *F  FuncPROD_GF2MAT_GF2MAT( <self>, <ml>, <mr> ) product of GF2 vector/matrix
 **
-**  'FuncPROD_GF2MAT_GF2MAT' returns  the product of the GF2 matricess <ml> and
-**  <mr>.
+**  'FuncPROD_GF2MAT_GF2MAT' returns the product of the GF2 matricess <ml>
+**  and <mr>.
 **
 **  The  product is  again a  GF2 matrix.  It  is  the  responsibility of the
 **  caller to ensure that <ml> and <mr> are  GF2 matrices
@@ -2439,10 +2443,10 @@ Obj FuncPROD_GF2MAT_GF2MAT (
 
 /****************************************************************************
 **
-*F  FuncPROD_GF2MAT_GF2MAT_SIMPLE( <self>, <ml>, <mr> ) product of GF2 vector/matrix
+*F  FuncPROD_GF2MAT_GF2MAT_SIMPLE( <self>, <ml>, <mr> )
 **
-**  'FuncPROD_GF2MAT_GF2MAT' returns  the product of the GF2 matricess <ml> and
-**  <mr>. It never uses grease or blocking.
+**  'FuncPROD_GF2MAT_GF2MAT' returns  the product of the GF2 matricess <ml>
+**  and <mr>. It never uses grease or blocking.
 **
 **  The  product is  again a  GF2 matrix.  It  is  the  responsibility of the
 **  caller to ensure that <ml> and <mr> are  GF2 matrices
@@ -2458,10 +2462,11 @@ Obj FuncPROD_GF2MAT_GF2MAT_SIMPLE (
 
 /****************************************************************************
 **
-*F  FuncPROD_GF2MAT_GF2MAT_ADVANCED( <self>, <ml>, <mr>, <greaselevel>, <blocksize> ) 
+*F  FuncPROD_GF2MAT_GF2MAT_ADVANCED( <self>, <ml>, <mr>, <greaselevel>, 
+**                                                              <blocksize> )
 **
-**  'FuncPROD_GF2MAT_GF2MAT_ADVANCED' returns  the product of the GF2 matricess <ml> and
-**  <mr> using grease level <greaselevel> and block size <blocksize>
+**  'FuncPROD_GF2MAT_GF2MAT_ADVANCED' returns the product of the GF2 matrices
+**  <ml> and <mr> using grease level <greaselevel> and block size <blocksize>
 **
 **  The  product is  again a  GF2 matrix.  It  is  the  responsibility of the
 **  caller to ensure that <ml> and <mr> are  GF2 matrices
@@ -2522,7 +2527,7 @@ Obj FuncADDCOEFFS_GF2VEC_GF2VEC_MULT (
 
 /****************************************************************************
 **
-*F  FuncADDCOEFFS_GF2VEC_GF2VEC_MULT( <self>, <vl>, <vr>, <mul>, <from>, <to> )
+*F  FuncADDCOEFFS_GF2VEC_GF2VEC_MULT(<self>,<vl>,<vr>,<mul>,<from>,<to>)
 **  GF2 vectors
 */
 Obj FuncADDCOEFFS_GF2VEC_GF2VEC_MULT_LIMS (
@@ -3407,7 +3412,7 @@ Obj FuncA_CLOS_VEC_COORDS(
 
 /****************************************************************************
 **
-*F FuncCOSET_LEADERS_INNER_GF2( <self>, <veclis>, <weight>, <tofind>, <leaders> )
+*F  FuncCOSET_LEADERS_INNER_GF2(<self>,<veclis>,<weight>,<tofind>,<leaders>)
 **
 ** Search for new coset leaders of weight <weight>
 */
@@ -4078,7 +4083,8 @@ return ret;
 **
 **  Method for SemiEchelonMat for plain lists of GF2 vectors
 **
-** Method selection can guarantee us a plain list of characteristic 2 vectors 
+**  Method selection can guarantee us a plain list of characteristic 2
+**  vectors
 */
 
 Obj FuncSEMIECHELON_LIST_GF2VECS( Obj self, Obj mat )
@@ -4114,7 +4120,8 @@ Obj FuncSEMIECHELON_LIST_GF2VECS( Obj self, Obj mat )
 **
 **  Method for SemiEchelonMatTransformations for plain lists of GF2 vectors
 **
-** Method selection can guarantee us a plain list of characteristic 2 vectors 
+**  Method selection can guarantee us a plain list of characteristic 2
+**  vectors
 */
 
 Obj FuncSEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS( Obj self, Obj mat )

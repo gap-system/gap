@@ -81,7 +81,7 @@ extern Obj GetFieldInfo8Bit(UInt q);
 **  'LEN_VEC8BIT' returns the logical length of the 8bit GFQ vector <list>,
 **  as a C integer.
 **
-**  Note that 'LEN_VEC8BIT' is a macro, so do not call it with  arguments that
+**  Note that 'LEN_VEC8BIT' is a macro, so do not call it with arguments that
 **  have side effects.
 */
 #define LEN_VEC8BIT(list) ((Int)(CONST_ADDR_OBJ(list)[1]))
@@ -141,11 +141,11 @@ extern Obj GetFieldInfo8Bit(UInt q);
 *F  SET_XXX_FIELDINFO_8BIT( <obj>, <xxx> ) . . .setters needed by ANSI
 **                                         needed for scalar but not pointers
 **
-**  For machines with alignment restrictions. it's important to put all
-**  the word-sized data BEFORE all the byte-sized data (especially FFE_FELT...
-**  which may have odd length
+**  For machines with alignment restrictions. It is important to put all
+**  the word-sized data BEFORE all the byte-sized data; especially
+**  FFE_FELT_FIELDINFO_8BIT which may have odd length
 **
-**  Note ADD has to be last, because it is not there in characteristic 2
+**  Note ADD_* has to be last, because it is not there in characteristic 2
 */
 
 #define Q_FIELDINFO_8BIT(info) ((UInt)(CONST_ADDR_OBJ(info)[1]))
@@ -189,7 +189,7 @@ extern Obj GetFieldInfo8Bit(UInt q);
 
 /****************************************************************************
 **
-*F  InitInfoVec8bit()  . . . . . . . . . . . . . . . . table of init functions
+*F  InitInfoVec8bit() . . . . . . . . . . . . . . . . table of init functions
 */
 extern StructInitInfo * InitInfoVec8bit ( void );
 
