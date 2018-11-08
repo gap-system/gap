@@ -123,7 +123,7 @@ Error, ListBlist: <list> must be a small list (not the value 'fail')
 gap> ListBlist([1,2,3], fail);
 Error, ListBlist: <blist> must be a boolean list (not the value 'fail')
 gap> ListBlist([1,2,3], [true,false]);
-Error, ListBlist: <blist> must have the same length as <list> (3)
+Error, ListBlist: <blist> must have the same length as <list> (not 2 and 3)
 gap> ListBlist([1,2,3], [true,false,true]);
 [ 1, 3 ]
 
@@ -133,7 +133,8 @@ Error, IsSubsetBlist: <blist1> must be a boolean list (not the value 'fail')
 gap> IsSubsetBlist([true,false], fail);
 Error, IsSubsetBlist: <blist2> must be a boolean list (not the value 'fail')
 gap> IsSubsetBlist([true,false,true], [true,false]);
-Error, IsSubsetBlist: <blist2> must have the same length as <blist1> (3)
+Error, IsSubsetBlist: <blist1> must have the same length as <blist2> (not 3 an\
+d 2)
 gap> IsSubsetBlist([true,false,true], [true,false,false]);
 true
 gap> IsSubsetBlist([true,false,true], [true,true,false]);
@@ -145,7 +146,8 @@ Error, UniteBlist: <blist1> must be a boolean list (not the value 'fail')
 gap> UniteBlist([true,false], fail);
 Error, UniteBlist: <blist2> must be a boolean list (not the value 'fail')
 gap> UniteBlist([true,false,true], [true,false]);
-Error, UniteBlist: <blist2> must have the same length as <blist1> (3)
+Error, UniteBlist: <blist1> must have the same length as <blist2> (not 3 and 2\
+)
 gap> x:= [false,true,true,false];;
 gap> UniteBlist(x, [true,true,false,false]);
 gap> x;
@@ -157,7 +159,7 @@ Error, UniteBlistList: <list> must be a small list (not the value 'fail')
 gap> UniteBlistList([1,2], fail, fail);
 Error, UniteBlistList: <blist> must be a boolean list (not the value 'fail')
 gap> UniteBlistList([1,2], [true], fail);
-Error, UniteBlistList: <blist> must have the same length as <list> (2)
+Error, UniteBlistList: <blist> must have the same length as <list> (not 1 and 2)
 gap> UniteBlistList([1,2], [true,false], fail);
 Error, UniteBlistList: <sub> must be a small list (not the value 'fail')
 gap> x:= [true,true,false];;
@@ -171,7 +173,8 @@ Error, IntersectBlist: <blist1> must be a boolean list (not the value 'fail')
 gap> IntersectBlist([true,false], fail);
 Error, IntersectBlist: <blist2> must be a boolean list (not the value 'fail')
 gap> IntersectBlist([true,false,true], [true,false]);
-Error, IntersectBlist: <blist2> must have the same length as <blist1> (3)
+Error, IntersectBlist: <blist1> must have the same length as <blist2> (not 3 a\
+nd 2)
 gap> x:= [false,true,true,false];;
 gap> IntersectBlist(x, [true,true,false,false]);
 gap> x;
@@ -183,7 +186,8 @@ Error, SubtractBlist: <blist1> must be a boolean list (not the value 'fail')
 gap> SubtractBlist([true,false], fail);
 Error, SubtractBlist: <blist2> must be a boolean list (not the value 'fail')
 gap> SubtractBlist([true,false,true], [true,false]);
-Error, SubtractBlist: <blist2> must have the same length as <blist1> (3)
+Error, SubtractBlist: <blist1> must have the same length as <blist2> (not 3 an\
+d 2)
 gap> x:= [false,true,true,false];;
 gap> SubtractBlist(x, [true,true,false,false]);
 gap> x;
@@ -195,7 +199,7 @@ Error, MeetBlist: <blist1> must be a boolean list (not the value 'fail')
 gap> MEET_BLIST([true,false], fail);
 Error, MeetBlist: <blist2> must be a boolean list (not the value 'fail')
 gap> MEET_BLIST([true,false,true], [true,false]);
-Error, MeetBlist: <blist2> must have the same length as <blist1> (3)
+Error, MeetBlist: <blist1> must have the same length as <blist2> (not 3 and 2)
 gap> x:= [false,true,true,false];;
 gap> MEET_BLIST(x, [true,true,false,false]);
 true

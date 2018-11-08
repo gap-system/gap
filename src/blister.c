@@ -459,22 +459,18 @@ Obj ElmsBlist (
 
             /* get <position>                                              */
             Obj p = ELMW_LIST(poss, i);
-            while (!IS_INTOBJ(p)) {
-                p = ErrorReturnObj("List Elements: position is too large for "
-                                   "this type of list",
-                                   0L, 0L,
-                                   "you can supply a new position <pos> via "
-                                   "'return <pos>;'");
+            if (!IS_INTOBJ(p)) {
+                ErrorMayQuit("List Elements: position is too large for "
+                             "this type of list",
+                             0L, 0L);
             }
             pos = INT_INTOBJ(p);
 
             /* select the element                                          */
             if ( lenList < pos ) {
-                ErrorReturnVoid(
+                ErrorMayQuit(
                     "List Elements: <list>[%d] must have an assigned value",
-                    pos, 0L,
-                    "you can assign a value and 'return;'" );
-                return ELMS_LIST( list, poss );
+                    pos, 0L);
             }
 
             /* assign the element into <elms>                              */
@@ -1117,12 +1113,7 @@ Obj FuncLIST_BLIST (
     RequireSmallList("ListBlist", list);
     /* get and check the second argument                                   */
     RequireBlist("ListBlist", blist, "blist");
-    while ( LEN_LIST( list ) != LEN_BLIST( blist ) ) {
-        blist = ErrorReturnObj(
-            "ListBlist: <blist> must have the same length as <list> (%d)",
-            LEN_LIST( list ), 0L,
-            "you can replace <blist> via 'return <blist>;'" );
-    }
+    CheckSameLength("ListBlist", "blist", "list", blist, list);
 
     /* compute the number of 'true'-s                                      */
     n = SizeBlist(blist);
@@ -1218,12 +1209,7 @@ Obj FuncIS_SUB_BLIST (
     /* get and check the arguments                                         */
     RequireBlist("IsSubsetBlist", list1, "blist1");
     RequireBlist("IsSubsetBlist", list2, "blist2");
-    while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
-        list2 = ErrorReturnObj(
-        "IsSubsetBlist: <blist2> must have the same length as <blist1> (%d)",
-            LEN_BLIST(list1), 0L,
-            "you can replace <blist2> via 'return <blist2>;'" );
-    }
+    CheckSameLength("IsSubsetBlist", "blist1", "blist2", list1, list2);
 
     /* test for subset property blockwise                                  */
     ptr1 = CONST_BLOCKS_BLIST(list1);
@@ -1264,12 +1250,7 @@ Obj FuncUNITE_BLIST (
     /* get and check the arguments                                         */
     RequireBlist("UniteBlist", list1, "blist1");
     RequireBlist("UniteBlist", list2, "blist2");
-    while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
-        list2 = ErrorReturnObj(
-           "UniteBlist: <blist2> must have the same length as <blist1> (%d)",
-            LEN_BLIST(list1), 0L,
-            "you can replace <blist2> via 'return <blist2>;'" );
-    }
+    CheckSameLength("UniteBlist", "blist1", "blist2", list1, list2);
 
     /* compute the union by *or*-ing blockwise                             */
     ptr1 = BLOCKS_BLIST(list1);
@@ -1315,13 +1296,7 @@ Obj FuncUNITE_BLIST_LIST (
     lenList  = LEN_LIST( list );
 
     RequireBlist("UniteBlistList", blist, "blist");
-    while ( LEN_BLIST(blist) != lenList ) {
-        blist = ErrorReturnObj(
-          "UniteBlistList: <blist> must have the same length as <list> (%d)",
-            lenList, 0L,
-            "you can replace <blist> via 'return <blist>;'" );
-    }
-
+    CheckSameLength("UniteBlistList", "blist", "list", blist, list);
     RequireSmallList("UniteBlistList", sub);
 
     lenSub   = LEN_LIST( sub );
@@ -1531,12 +1506,7 @@ Obj FuncINTER_BLIST (
     /* get and check the arguments                                         */
     RequireBlist("IntersectBlist", list1, "blist1");
     RequireBlist("IntersectBlist", list2, "blist2");
-    while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
-        list2 = ErrorReturnObj(
-       "IntersectBlist: <blist2> must have the same length as <blist1> (%d)",
-            LEN_BLIST(list1), 0L,
-            "you can replace <blist2> via 'return <blist2>;'" );
-    }
+    CheckSameLength("IntersectBlist", "blist1", "blist2", list1, list2);
 
     /* compute the intersection by *and*-ing blockwise                     */
     ptr1 = BLOCKS_BLIST(list1);
@@ -1574,12 +1544,7 @@ Obj FuncSUBTR_BLIST (
     /* get and check the arguments                                         */
     RequireBlist("SubtractBlist", list1, "blist1");
     RequireBlist("SubtractBlist", list2, "blist2");
-    while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
-        list2 = ErrorReturnObj(
-        "SubtractBlist: <blist2> must have the same length as <blist1> (%d)",
-            LEN_BLIST(list1), 0L,
-            "you can replace <blist2> via 'return <blist2>;'" );
-    }
+    CheckSameLength("SubtractBlist", "blist1", "blist2", list1, list2);
 
     /* compute the difference by operating blockwise                       */
     ptr1 = BLOCKS_BLIST(list1);
@@ -1619,12 +1584,7 @@ Obj FuncMEET_BLIST (
     /* get and check the arguments                                         */
     RequireBlist("MeetBlist", list1, "blist1");
     RequireBlist("MeetBlist", list2, "blist2");
-    while ( LEN_BLIST(list1) != LEN_BLIST(list2) ) {
-        list2 = ErrorReturnObj(
-        "MeetBlist: <blist2> must have the same length as <blist1> (%d)",
-            LEN_BLIST(list1), 0L,
-            "you can replace <blist2> via 'return <blist2>;'" );
-    }
+    CheckSameLength("MeetBlist", "blist1", "blist2", list1, list2);
 
     /* compute the difference by operating blockwise                       */
     ptr1 = CONST_BLOCKS_BLIST(list1);
