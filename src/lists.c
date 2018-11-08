@@ -1348,17 +1348,19 @@ Int IsSSortListDefault (
         return 2L;
     }
 
-    /* a list must be homogeneous to be strictly sorted                    */
-    if ( ! IS_HOMOG_LIST(list) ) {
+    /* get the first element                                               */
+    elm1 = ELM0_LIST(list, 1);
+
+    if (!elm1) {
         return 0L;
     }
 
-    /* get the first element                                               */
-    elm1 = ELMW_LIST( list, 1 );
-
     /* compare each element with its precursor                             */
     for ( i = 2; i <= lenList; i++ ) {
-        elm2 = ELMW_LIST( list, i );
+        elm2 = ELM0_LIST(list, i);
+        if (!elm2) {
+            return 0L;
+        }
         if ( ! LT( elm1, elm2 ) ) {
             return 0L;
         }

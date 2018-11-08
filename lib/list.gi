@@ -1060,8 +1060,8 @@ InstallOtherMethod( IsSSortedList,
 #M  IsSSortedList(<list>)
 ##
 InstallMethod( IsSSortedList,
-    "for a small homogeneous list",
-    [ IsHomogeneousList and IsSmallList ],
+    "for a small list",
+    [ IsSmallList ],
     IS_SSORT_LIST_DEFAULT );
 
 InstallMethod( IsSSortedList,
