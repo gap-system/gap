@@ -1080,7 +1080,7 @@ end);
 InstallMethod( SemidirectProduct,"different representations",true, 
     [ IsGroup and IsFinite, IsGroupHomomorphism, IsGroup and IsFinite], 
     # don't be higher than specific perm/pc methods
-    -20,
+    {} -> 2*(RankFilter(IsGroup) - RankFilter(IsGroup and IsFinite)),
 function( G, aut, N )
 local giso,niso,P,gens,a,Go,No,i;
   Go:=G;
