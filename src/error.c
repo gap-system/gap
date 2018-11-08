@@ -576,7 +576,7 @@ void CheckSameLength(const Char * desc, const Char *leftName, const Char *rightN
         Char message[1024];
         snprintf(message, sizeof(message), "%s: <%s> must have the same length as <%s> (not %d and %d)",
             desc, leftName, rightName, (int)ll, (int)lr);
-        ErrorQuit(message, 0, 0);
+        ErrorMayQuit(message, 0, 0);
     }
 }
 
