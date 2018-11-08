@@ -6,8 +6,8 @@ gap> LocationFunc(f);
 "stream:1"
 
 # Library function
-gap> LocationFunc(OnQuit);
-"GAPROOT/lib/error.g:32"
+gap> LocationFunc(Where);
+"GAPROOT/lib/error.g:79"
 
 # GAP function which was compiled to C code by gac
 gap> LocationFunc(INSTALL_METHOD_FLAGS);
