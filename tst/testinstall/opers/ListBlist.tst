@@ -2,7 +2,8 @@ gap> START_TEST("ListBlist.tst");
 
 #
 gap> ListBlist([],[false,true]);
-Error, ListBlist: <blist> must have the same length as <list> (not 2 and 0)
+Error, ListBlist: <blist> must have the same length as <list> (lengths are 2 a\
+nd 0)
 gap> ListBlist([],[1,2]);
 Error, ListBlist: <blist> must be a boolean list (not a list (plain,cyc))
 gap> ListBlist([],[]);
