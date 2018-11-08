@@ -18,7 +18,7 @@
 **
 */
 
-extern void RewriteGF2Vec( Obj vec, UInt q);
+extern void RewriteGF2Vec(Obj vec, UInt q);
 
 /****************************************************************************
 **
@@ -26,7 +26,7 @@ extern void RewriteGF2Vec( Obj vec, UInt q);
 **
 */
 
-extern Obj CopyVec8Bit( Obj list, UInt mut );
+extern Obj CopyVec8Bit(Obj list, UInt mut);
 
 /****************************************************************************
 **
@@ -34,9 +34,8 @@ extern Obj CopyVec8Bit( Obj list, UInt mut );
 */
 extern Obj IsVec8bitRep;
 
-#define IS_VEC8BIT_REP(obj) \
-  (TNUM_OBJ(obj)==T_DATOBJ && True == DoFilter(IsVec8bitRep,obj))
-
+#define IS_VEC8BIT_REP(obj)                                                  \
+    (TNUM_OBJ(obj) == T_DATOBJ && True == DoFilter(IsVec8bitRep, obj))
 
 
 /****************************************************************************
@@ -45,17 +44,14 @@ extern Obj IsVec8bitRep;
 **
 **  'PlainVec8Bit' converts the  vector <list> to a plain list.
 */
-extern void PlainVec8Bit ( Obj                 list );
+extern void PlainVec8Bit(Obj list);
 
 /****************************************************************************
 **
 *F  ASS_VEC8BIT( <list>, <pos>, <elm> ) . . . .  set an elm of an 8bit vector
 **
 */
-extern void ASS_VEC8BIT (
-    Obj                 list,
-    Obj                 pos,
-    Obj                 elm );
+extern void ASS_VEC8BIT(Obj list, Obj pos, Obj elm);
 
 
 /****************************************************************************
@@ -191,7 +187,7 @@ extern Obj GetFieldInfo8Bit(UInt q);
 **
 *F  InitInfoVec8bit() . . . . . . . . . . . . . . . . table of init functions
 */
-extern StructInitInfo * InitInfoVec8bit ( void );
+extern StructInitInfo * InitInfoVec8bit(void);
 
 
-#endif // GAP_VEC8BIT_H
+#endif    // GAP_VEC8BIT_H
