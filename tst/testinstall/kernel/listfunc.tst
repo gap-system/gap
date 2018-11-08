@@ -73,8 +73,8 @@ Error, SORT_PARA_LIST: <list> must be a small list (not the value 'fail')
 gap> SORT_PARA_LIST([], fail);
 Error, SORT_PARA_LIST: <shadow> must be a small list (not the value 'fail')
 gap> SORT_PARA_LIST([], [1]);
-Error, SORT_PARA_LIST: <list> must have the same length as <shadow> (not 0 and\
- 1)
+Error, SORT_PARA_LIST: <list> must have the same length as <shadow> (lengths a\
+re 0 and 1)
 
 #
 gap> STABLE_SORT_PARA_LIST(fail, fail);
@@ -84,8 +84,8 @@ gap> STABLE_SORT_PARA_LIST([], fail);
 Error, STABLE_SORT_PARA_LIST: <shadow> must be a small list (not the value 'fa\
 il')
 gap> STABLE_SORT_PARA_LIST([], [1]);
-Error, STABLE_SORT_PARA_LIST: <list> must have the same length as <shadow> (no\
-t 0 and 1)
+Error, STABLE_SORT_PARA_LIST: <list> must have the same length as <shadow> (le\
+ngths are 0 and 1)
 
 #
 gap> OnPairs(fail,fail);
