@@ -42,7 +42,7 @@ DeclareCategory( "IsPolynomialRing", IsRing );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareCategory("IsFunctionField",IsRing);
+DeclareCategory("IsFunctionField",IsField);
 
 #############################################################################
 ##
