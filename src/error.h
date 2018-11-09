@@ -132,8 +132,7 @@ ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 **
 *F  RACErrorHelper
 */
-extern Obj RACErrorHelper(int          mayReturn,
-                          const char * funcname,
+extern Obj RACErrorHelper(const char * funcname,
                           Obj          op,
                           const char * argname,
                           const char * msg);
@@ -145,19 +144,7 @@ extern Obj RACErrorHelper(int          mayReturn,
 #define RequireArgumentCondition(funcname, op, argname, cond, msg)           \
     do {                                                                     \
         if (!(cond)) {                                                       \
-            RACErrorHelper(0, funcname, op, argname, msg);                   \
-        }                                                                    \
-    } while (0)
-
-
-/****************************************************************************
-**
-*F  RequireArgumentConditionMayReplace
-*/
-#define RequireArgumentConditionMayReplace(funcname, op, argname, cond, msg) \
-    do {                                                                     \
-        while (!(cond)) {                                                    \
-            op = RACErrorHelper(1, funcname, op, argname, msg);              \
+            RACErrorHelper(funcname, op, argname, msg);                   \
         }                                                                    \
     } while (0)
 
@@ -173,38 +160,10 @@ extern Obj RACErrorHelper(int          mayReturn,
 
 /****************************************************************************
 **
-*F  RequireIntMayReplace
-*/
-#define RequireIntMayReplace(funcname, op, argname) \
-    RequireArgumentConditionMayReplace(funcname, op, argname, IS_INT(op), \
-        "must be an integer")
-
-
-/****************************************************************************
-**
 *F  RequireSmallInt
 */
 #define RequireSmallInt(funcname, op, argname) \
     RequireArgumentCondition(funcname, op, argname, IS_INTOBJ(op), \
-        "must be a small integer")
-
-/****************************************************************************
-**
-*F  GetSmallInt
-*/
-static inline Int GetSmallInt(const char * funcname, Obj op, const char * argname)
-{
-    RequireSmallInt(funcname, op, argname);
-    return INT_INTOBJ(op);
-}
-
-
-/****************************************************************************
-**
-*F  RequireSmallIntMayReplace
-*/
-#define RequireSmallIntMayReplace(funcname, op, argname) \
-    RequireArgumentConditionMayReplace(funcname, op, argname, IS_INTOBJ(op), \
         "must be a small integer")
 
 
@@ -219,28 +178,10 @@ static inline Int GetSmallInt(const char * funcname, Obj op, const char * argnam
 
 /****************************************************************************
 **
-*F  RequirePositiveSmallIntMayReplace
-*/
-#define RequirePositiveSmallIntMayReplace(funcname, op, argname) \
-    RequireArgumentConditionMayReplace(funcname, op, argname, IS_POS_INTOBJ(op), \
-        "must be a positive small integer")
-
-
-/****************************************************************************
-**
 *F  RequireSmallList
 */
 #define RequireSmallList(funcname, op) \
     RequireArgumentCondition(funcname, op, #op, IS_SMALL_LIST(op), \
-        "must be a small list")
-
-
-/****************************************************************************
-**
-*F  RequireSmallListMayReplace
-*/
-#define RequireSmallListMayReplace(funcname, op) \
-    RequireArgumentConditionMayReplace(funcname, op, #op, IS_SMALL_LIST(op), \
         "must be a small list")
 
 
@@ -255,15 +196,6 @@ static inline Int GetSmallInt(const char * funcname, Obj op, const char * argnam
 
 /****************************************************************************
 **
-*F  RequireFunctionMayReplace
-*/
-#define RequireFunctionMayReplace(funcname, op) \
-    RequireArgumentConditionMayReplace(funcname, op, #op, IS_FUNC(op), \
-        "must be a function")
-
-
-/****************************************************************************
-**
 *F  RequireStringRep
 */
 #define RequireStringRep(funcname, op) \
@@ -273,11 +205,13 @@ static inline Int GetSmallInt(const char * funcname, Obj op, const char * argnam
 
 /****************************************************************************
 **
-*F  RequireStringRepMayReplace
+*F  GetSmallInt
 */
-#define RequireStringRepMayReplace(funcname, op) \
-    RequireArgumentConditionMayReplace(funcname, op, #op, IsStringConv(op), \
-        "must be a string")
+static inline Int GetSmallInt(const char * funcname, Obj op, const char * argname)
+{
+    RequireSmallInt(funcname, op, argname);
+    return INT_INTOBJ(op);
+}
 
 
 /****************************************************************************

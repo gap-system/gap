@@ -584,8 +584,7 @@ void CheckSameLength(const Char * desc, const Char *leftName, const Char *rightN
 **
 *F  RACErrorHelper
 */
-Obj RACErrorHelper(int          mayReturn,
-                   const char * funcname,
+Obj RACErrorHelper(const char * funcname,
                    Obj          op,
                    const char * argname,
                    const char * msg)
@@ -614,18 +613,7 @@ Obj RACErrorHelper(int          mayReturn,
         arg1 = (Int)TNAM_OBJ(op);
     }
 
-    if (mayReturn) {
-        char extrabuf[1024] = { 0 };
-        strlcat(extrabuf, "you can replace <", sizeof(extrabuf));
-        strlcat(extrabuf, argname, sizeof(extrabuf));
-        strlcat(extrabuf, "> via 'return <", sizeof(extrabuf));
-        strlcat(extrabuf, argname, sizeof(extrabuf));
-        strlcat(extrabuf, ">;'", sizeof(extrabuf));
-        return ErrorReturnObj(msgbuf, arg1, arg2, extrabuf);
-    }
-    else {
-        ErrorMayQuit(msgbuf, arg1, arg2);
-    }
+    ErrorMayQuit(msgbuf, arg1, arg2);
 }
 
 
