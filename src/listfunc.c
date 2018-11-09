@@ -1607,10 +1607,7 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
 
 Obj FuncLIST_WITH_IDENTICAL_ENTRIES(Obj self, Obj n, Obj obj)
 {
-    if (!IS_NONNEG_INTOBJ(n)) {
-        ErrorQuit("<n> must be a non-negative integer (not a %s)",
-                  (Int)TNAM_OBJ(n), 0L);
-    }
+    RequireNonnegativeSmallInt("LIST_WITH_IDENTICAL_ENTRIES", n);
 
     Obj  list = 0;
     Int  len = INT_INTOBJ(n);

@@ -1967,9 +1967,7 @@ Obj FuncTRYLOCK(Obj self, Obj args)
 
 Obj FuncUNLOCK(Obj self, Obj sp)
 {
-    if (!IS_INTOBJ(sp) || INT_INTOBJ(sp) < 0)
-        return ArgumentError(
-            "UNLOCK: argument must be a non-negative integer");
+    RequireNonnegativeSmallInt("UNLOCK", sp);
     PopRegionLocks(INT_INTOBJ(sp));
     return (Obj)0;
 }
@@ -2371,9 +2369,7 @@ void InitSignals(void)
 Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
 {
     UInt n;
-    if (!IS_INTOBJ(count) || INT_INTOBJ(count) < 0)
-        return ArgumentError("PERIODIC_CHECK: First argument must be a "
-                             "non-negative small integer");
+    RequireNonnegativeSmallInt("PERIODIC_CHECK", count);
     RequireFunction("PERIODIC_CHECK", func);
     /*
      * The following read of SigVTALRMCounter is a dirty read. We don't

@@ -7,7 +7,7 @@ gap> START_TEST("kernel/strinobj.tst");
 gap> s := EmptyString(2);
 ""
 gap> EmptyString(-1);
-Error, <len> must be an non-negative integer (not a integer)
+Error, EmptyString: <len> must be a non-negative integer (not the integer -1)
 
 #
 gap> ShrinkAllocationString(s);
@@ -91,8 +91,8 @@ Error, POSITION_SUBSTRING: <string> must be a string (not the integer 1)
 gap> POSITION_SUBSTRING("abc",2,3);
 Error, POSITION_SUBSTRING: <substr> must be a string (not the integer 2)
 gap> POSITION_SUBSTRING("abc","b",-1);
-Error, POSITION_SUBSTRING: <off> must be a non-negative integer (not a integer\
-)
+Error, POSITION_SUBSTRING: <off> must be a non-negative integer (not the integ\
+er -1)
 
 #
 gap> s:="  abc\n  xyz\n";; NormalizeWhitespace(s); s;

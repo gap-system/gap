@@ -952,8 +952,8 @@ Error, RandomIntegerMT: <mtstr> must be a string (not the value 'fail')
 gap> RandomIntegerMT("abc", 1);
 Error, RandomIntegerMT: <mtstr> must be a string with at least 2500 characters
 gap> RandomIntegerMT(mysource!.state, fail);
-Error, RandomIntegerMT: <nrbits> must be a small non-negative integer (not a b\
-oolean or fail)
+Error, RandomIntegerMT: <nrbits> must be a non-negative integer (not the value\
+ 'fail')
 
 #
 # PrintInt

@@ -823,14 +823,8 @@ Obj             ShallowCopyPlist (
 */
 Obj    FuncEmptyPlist( Obj self, Obj len )
 {
-    Obj                 new;
-
-    if (!IS_INTOBJ(len) || INT_INTOBJ(len) < 0) {
-        ErrorMayQuit("<len> must be a non-negative small integer", 0L, 0L);
-    }
-
-    new = NEW_PLIST(T_PLIST_EMPTY, INT_INTOBJ(len));
-    return new;
+    RequireNonnegativeSmallInt("EmptyPlist", len);
+    return NEW_PLIST(T_PLIST_EMPTY, INT_INTOBJ(len));
 }
 
 /****************************************************************************

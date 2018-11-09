@@ -724,11 +724,7 @@ Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n)
     const UInt4 * ptf4;
     UInt4 * pttmp;
 
-    if (!IS_INTOBJ(n) || INT_INTOBJ(n) < 0) {
-        ErrorQuit("RANK_TRANS_INT: <n> must be a non-negative integer", 0L,
-                  0L);
-        return 0L;
-    }
+    RequireNonnegativeSmallInt("RANK_TRANS_INT", n);
 
     m = INT_INTOBJ(n);
     if (TNUM_OBJ(f) == T_TRANS2) {
@@ -883,11 +879,7 @@ Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
     const Obj *ptker;
     UInt deg, m, i;
 
-    if (!IS_INTOBJ(n) || INT_INTOBJ(n) < 0) {
-        ErrorQuit("FLAT_KERNEL_TRANS_INT: the second argument must be a "
-                  "non-negative integer",
-                  0L, 0L);
-    }
+    RequireNonnegativeSmallInt("FLAT_KERNEL_TRANS_INT", n);
 
     m = INT_INTOBJ(n);
     if (TNUM_OBJ(f) == T_TRANS2) {
@@ -981,11 +973,7 @@ Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
     UInt    i, j, deg, nr, m, rank, min;
     UInt4 * pttmp;
 
-    if (!IS_INTOBJ(n) || INT_INTOBJ(n) < 0) {
-        ErrorQuit("KERNEL_TRANS: the second argument must be a "
-                  "non-negative integer",
-                  0L, 0L);
-    }
+    RequireNonnegativeSmallInt("KERNEL_TRANS", n);
     RequireTransformation("KERNEL_TRANS", f);
 
     m = INT_INTOBJ(n);
@@ -1039,8 +1027,8 @@ Obj FuncPREIMAGES_TRANS_INT(Obj self, Obj f, Obj pt)
     UInt deg, nr, i, j;
     Obj  out;
 
-    RequirePositiveSmallInt("PREIMAGES_TRANS_INT", pt, "pt");
     RequireTransformation("PREIMAGES_TRANS_INT", f);
+    RequirePositiveSmallInt("PREIMAGES_TRANS_INT", pt, "pt");
 
     deg = DEG_TRANS(f);
 
@@ -1132,11 +1120,7 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
     const UInt4 * ptf4;
     const UInt2 * ptf2;
 
-    if (!IS_INTOBJ(n) || INT_INTOBJ(n) < 0) {
-        ErrorQuit("IMAGE_SET_TRANS_INT: the second argument must be a "
-                  "non-negative integer",
-                  0L, 0L);
-    }
+    RequireNonnegativeSmallInt("IMAGE_SET_TRANS_INT", n);
     RequireTransformation("IMAGE_SET_TRANS_INT", f);
 
     m = INT_INTOBJ(n);
@@ -1211,11 +1195,7 @@ Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n)
     UInt    i, deg, m;
     Obj     out;
 
-    if (!IS_INTOBJ(n) || INT_INTOBJ(n) < 0) {
-        ErrorQuit("IMAGE_LIST_TRANS_INT: the second argument must be a "
-                  "non-negative integer",
-                  0L, 0L);
-    }
+    RequireNonnegativeSmallInt("IMAGE_LIST_TRANS_INT", n);
     RequireTransformation("IMAGE_LIST_TRANS_INT", f);
 
     m = INT_INTOBJ(n);
@@ -1748,14 +1728,9 @@ Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg)
     Obj    f;
     UInt   def, dep, i, min, n;
 
-    if (!IS_INTOBJ(deg) || INT_INTOBJ(deg) < 0) {
-        ErrorQuit("AS_TRANS_PERM_INT: the second argument must be a "
-                  "non-negative integer",
-                  0L, 0L);
-    }
-    else if (TNUM_OBJ(p) != T_PERM2 && TNUM_OBJ(p) != T_PERM4) {
-        ErrorQuit("AS_TRANS_PERM_INT: the first argument must be a "
-                  "permutation (not a %s)",
+    RequireNonnegativeSmallInt("AS_TRANS_PERM_INT", deg);
+    if (TNUM_OBJ(p) != T_PERM2 && TNUM_OBJ(p) != T_PERM4) {
+        ErrorQuit("AS_TRANS_PERM_INT: the first argument must be a permutation (not a %s)",
                   (Int)TNAM_OBJ(p), 0L);
     }
 
@@ -2196,12 +2171,7 @@ Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
     UInt   i, n, def;
     Obj    g;
 
-    if (!IS_INTOBJ(m) || INT_INTOBJ(m) < 0) {
-        ErrorQuit(
-            "AS_TRANS_TRANS: the second argument must be a non-negative "
-            "integer (not a %s)",
-            (Int)TNAM_OBJ(m), 0L);
-    }
+    RequireNonnegativeSmallInt("AS_TRANS_TRANS", m);
 
     n = INT_INTOBJ(m);
 
@@ -2268,11 +2238,7 @@ Obj FuncTRIM_TRANS(Obj self, Obj f, Obj m)
     UInt    deg, i;
     UInt4 * ptf;
 
-    if (!IS_INTOBJ(m) || INT_INTOBJ(m) < 0) {
-        ErrorQuit("TRIM_TRANS: the second argument must be a non-negative "
-                  "integer (not a %s)",
-                  (Int)TNAM_OBJ(m), 0L);
-    }
+    RequireNonnegativeSmallInt("TRIM_TRANS", m);
 
     deg = INT_INTOBJ(m);
 

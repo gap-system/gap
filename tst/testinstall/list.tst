@@ -171,9 +171,11 @@ Error, List Elements: <list>[4] must have an assigned value
 
 # ListWithIdenticalEntries: errors
 gap> ListWithIdenticalEntries(fail, true);
-Error, <n> must be a non-negative integer (not a boolean or fail)
+Error, LIST_WITH_IDENTICAL_ENTRIES: <n> must be a non-negative integer (not th\
+e value 'fail')
 gap> ListWithIdenticalEntries(-1, fail);
-Error, <n> must be a non-negative integer (not a integer)
+Error, LIST_WITH_IDENTICAL_ENTRIES: <n> must be a non-negative integer (not th\
+e integer -1)
 
 # ListWithIdenticalEntries: 0 length
 gap> l := ListWithIdenticalEntries(0, 'w');
