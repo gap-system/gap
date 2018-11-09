@@ -1786,14 +1786,14 @@ DeclareGlobalFunction( "PermListList" );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "SortParallel",
-    [ IsDenseList and IsMutable, IsDenseList and IsMutable ] );
+    [ IsList and IsMutable, IsList and IsMutable ] );
 DeclareOperation( "SortParallel",
-    [ IsDenseList and IsMutable, IsDenseList and IsMutable, IsFunction ] );
+    [ IsList and IsMutable, IsList and IsMutable, IsFunction ] );
 
 DeclareOperation( "StableSortParallel",
-    [ IsDenseList and IsMutable, IsDenseList and IsMutable ] );
+    [ IsList and IsMutable, IsList and IsMutable ] );
 DeclareOperation( "StableSortParallel",
-    [ IsDenseList and IsMutable, IsDenseList and IsMutable, IsFunction ] );
+    [ IsList and IsMutable, IsList and IsMutable, IsFunction ] );
 
 
 #############################################################################

@@ -62,6 +62,19 @@ gap> IsSet(a);
 true
 gap> x;
 [ 2, 10, "cheese" ]
+gap> SortBy(a, {z} -> z);
+gap> a;
+[ 2, 10, "cheese" ]
+gap> SortParallel([3,2,1],a);
+gap> a;
+[ "cheese", 10, 2 ]
+gap> l := [1,2,3];
+[ 1, 2, 3 ]
+gap> SortParallel(a,l);
+gap> a;
+[ 2, 10, "cheese" ]
+gap> l;
+[ 3, 2, 1 ]
 gap> Unbind(x[2]);
 gap> a;
 [ 2,, "cheese" ]
