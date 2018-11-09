@@ -6,12 +6,13 @@
 # s1 directly.  Finally do not slow down with assertions that don't need
 # testing here
 
-gap> START_TEST("noassert");
+gap> START_TEST("2018-05-24-IntermediateSubgroups.tst");
 gap> SetAssertionLevel(0);;
 gap> g:=SU(IsPermGroup,4,4);;
 gap> sy:=SylowSubgroup(g,2);;
-gap> n:=Filtered(NormalSubgroups(sy),x->IsAbelian(x) and Size(x)=256);;
-gap> sub:=Normalizer(g,n[1]);;
+gap> hom:=NaturalHomomorphismByNormalSubgroup(sy, DerivedSubgroup(sy));;
+gap> n:=First(NormalSubgroups(Image(hom)), x->Size(x)=4 and IsAbelian(PreImage(hom,x)));;
+gap> sub:=Normalizer(g, PreImage(hom,n));;
 gap> g:=Action(g,RightTransversal(g,sub),OnRight);;
 gap> NrMovedPoints(g);Size(g);
 325
@@ -25,4 +26,4 @@ gap> n1:= Normalizer( g, s1 );;  Size( n1 );
 gap> int:=IntermediateGroup(g,s1);;
 gap> IsGroup(int);
 true
-gap> STOP_TEST("noassert");
+gap> STOP_TEST("2018-05-24-IntermediateSubgroups.tst");
