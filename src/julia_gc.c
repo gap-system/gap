@@ -362,7 +362,6 @@ static jl_module_t *   Module;
 static jl_datatype_t * datatype_mptr;
 static jl_datatype_t * datatype_bag;
 static jl_datatype_t * datatype_largebag;
-static Bag *           StackBottomBags;
 static UInt            StackAlignBags;
 static jl_ptls_t       JuliaTLS, SaveTLS;
 static size_t          max_pool_obj_size;
@@ -474,15 +473,32 @@ static void TryMark(void * p)
     }
 }
 
+static void TryMarkRangeReverse(void * start, void * end)
+{
+    if (lt_ptr(end, start)) {
+        SWAP(void *, start, end);
+    }
+    char * p = (char *)(align_ptr(start));
+    char * q = (char *)end - sizeof(void *);
+    while (!lt_ptr(q, p)) {
+        void * addr = *(void **)q;
+        if (addr)
+            TryMark(addr);
+        q -= StackAlignBags;
+    }
+}
+
 static void TryMarkRange(void * start, void * end)
 {
     if (lt_ptr(end, start)) {
         SWAP(void *, start, end);
     }
-    char * p = align_ptr(start);
+    char * p = (char *)align_ptr(start);
     char * q = (char *)end - sizeof(void *) + StackAlignBags;
     while (lt_ptr(p, q)) {
-        TryMark(*(void **)p);
+        void * addr = *(void **)p;
+        if (addr)
+            TryMark(addr);
         p += StackAlignBags;
     }
 }
@@ -502,6 +518,14 @@ void GapRootScanner(int full)
     // mark our Julia module (this contains references to our custom data
     // types, which thus also will not be collected prematurely)
     JMark(Module);
+    jl_task_t * task = JuliaTLS->current_task;
+    size_t      size;
+    int         tid;
+    // We figure out the end of the stack from the current task. While
+    // `stack_bottom` is passed to InitBags(), we cannot use that if
+    // current_task != root_task.
+    char * stackend = (char *)jl_task_stack_buffer(task, &size, &tid);
+    stackend += size;
 
     // allow installing a custom marking function. This is used for
     // integrating GAP (possibly linked as a shared library) with other code
@@ -514,7 +538,7 @@ void GapRootScanner(int full)
     syJmp_buf registers;
     sySetjmp(registers);
     TryMarkRange(registers, (char *)registers + sizeof(syJmp_buf));
-    TryMarkRange((char *)registers + sizeof(syJmp_buf), StackBottomBags);
+    TryMarkRange((char *)registers + sizeof(syJmp_buf), stackend);
 
     // mark all global objects
     for (Int i = 0; i < GlobalCount; i++) {
@@ -529,9 +553,29 @@ void GapTaskScanner(jl_task_t * task, int root_task)
 {
     size_t size;
     int    tid;
-    void * stack = jl_task_stack_buffer(task, &size, &tid);
+    char * stack = (char *)jl_task_stack_buffer(task, &size, &tid);
     if (stack && tid < 0) {
-        TryMarkRange(stack, (char *)stack + size);
+        if (task->copy_stack) {
+            // We know which part of the task stack is actually used,
+            // so we shorten the range we have to scan.
+            stack = stack + size - task->copy_stack;
+            size = task->copy_stack;
+        }
+        volatile jl_jmp_buf * old_safe_restore =
+            (volatile jl_jmp_buf *)JuliaTLS->safe_restore;
+        jl_jmp_buf exc_buf;
+        if (!jl_setjmp(exc_buf, 0)) {
+            // The bottom of the stack may be protected with
+            // guard pages; accessing these results in segmentation
+            // faults. Julia catches those segmentation faults and
+            // longjmps to JuliaTLS->safe_restore; we use this
+            // mechamism to abort stack scanning when a protected
+            // page is hit. For this to work, we must scan the stack
+            // from top to bottom, so we see any guard pages last.
+            JuliaTLS->safe_restore = &exc_buf;
+            TryMarkRangeReverse(stack, stack + size);
+        }
+        JuliaTLS->safe_restore = (jl_jmp_buf *)old_safe_restore;
     }
 }
 
@@ -633,7 +677,6 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     GAP_ASSERT(jl_is_datatype(datatype_mptr));
     GAP_ASSERT(jl_is_datatype(datatype_bag));
     GAP_ASSERT(jl_is_datatype(datatype_largebag));
-    StackBottomBags = stack_bottom;
     StackAlignBags = stack_align;
 }
 
@@ -647,7 +690,7 @@ UInt CollectBags(UInt size, UInt full)
 void RetypeBag(Bag bag, UInt new_type)
 {
     BagHeader * header = BAG_HEADER(bag);
-    UInt old_type = header->type;
+    UInt        old_type = header->type;
 
 #ifdef COUNT_BAGS
     /* update the statistics      */
@@ -685,8 +728,6 @@ void RetypeBag(Bag bag, UInt new_type)
         // of supporting a feature nobody uses right now, we error out and
         // wait to see if somebody complains.
         Panic("cannot change bag type to one which requires a 'free' callback");
-
-
     }
     header->type = new_type;
 }
@@ -805,7 +846,8 @@ inline void MarkBag(Bag bag)
             MarkCacheCollisions++;
 #endif
         MarkCache[hash] = bag;
-    } else {
+    }
+    else {
 #ifdef STAT_MARK_CACHE
         MarkCacheHits++;
 #endif
