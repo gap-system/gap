@@ -1,6 +1,5 @@
-# We want Ubuntu 14.04 "Trust" instead of 12.04 "Precise" to get newer
-# and less buggy gcov
-dist: trusty
+# Force Ubuntu 16.04 "Xenial" to get newer GCC, binutils etc.
+dist: xenial
 language: c
 
 env:
@@ -45,7 +44,7 @@ matrix:
           - libreadline-dev
           - libboost-dev            # for NormalizInterface
           - libmpfr-dev             # for float
-          - libmpfi-dev             # for float
+          - libmpfi0-dev            # for float
           - libmpc-dev              # for float
           #- libfplll-dev           # for float
           - pari-gp                 # for alnuth
@@ -62,7 +61,7 @@ matrix:
           - libcurl4-openssl-dev:i386 # for curlInterface
           - libboost-dev:i386       # for NormalizInterface
           - libmpfr-dev:i386        # for float
-          - libmpfi-dev:i386        # for float
+          - libmpfi0-dev:i386       # for float
           - libmpc-dev:i386         # for float
           #- libfplll-dev:i386      # for float
           - pari-gp:i386            # for alnuth
