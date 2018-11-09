@@ -2118,8 +2118,15 @@ int GAP_rl_func(int count, int key)
          /* display matches */
          if (!IS_LIST(data)) return 0;
          dlen = LEN_LIST(data);
-         char **strs = (char**)malloc((dlen+1) * sizeof(char*));
+         // +2, so we have a null at the end, as this must be
+         // in 'argv' format
+         char **strs = (char**)calloc(dlen+2, sizeof(char*));
          max = 0;
+         // TODO: Make this the current partially typed
+         // identifier which is, I think, the first argument to
+         // rl_display_match_list
+         char partial[] = {'\0'};
+         strs[0] = partial;
          for (i=1; i <= dlen; i++) {
             if (!IsStringConv(ELM_LIST(data, i))) {
                free(strs);
