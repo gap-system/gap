@@ -2120,7 +2120,6 @@ Int             IsSSortPlist (
     Obj                 fam=0;    /* initialize to help compiler */
     Int                 isHom;
     
-        
     /* get the length                                                      */
     lenList = LEN_PLIST( list );
 
@@ -2179,7 +2178,7 @@ Int             IsSSortPlist (
 	if (isHom)
 	  SET_FILT_LIST( list, FN_IS_HOMOG);
 	else
-	  SET_FILT_LIST( list, FN_IS_HOMOG);
+	  SET_FILT_LIST( list, FN_IS_NHOMOG);
 	SET_FILT_LIST( list, FN_IS_SSORT );
       }
       return 2L;

@@ -290,6 +290,26 @@ gap> l;
 gap> TNAM_OBJ(l);
 "list (plain,rect table)"
 
+# Check TNUM behaviours
+gap> x := [1,,"cheese"];;
+gap> x[2] := 2;;
+gap> IsSSortedList(x);;
+gap> TNAM_OBJ(x);
+"list (plain,dense)"
+gap> x := [1,,"cheese"];;
+gap> x[2] := 2;
+2
+gap> y := Immutable(x);;
+gap> IsIdenticalObj(x,y);
+false
+gap> TNAM_OBJ(x);
+"list (plain)"
+gap> TNAM_OBJ(y);
+"list (plain,imm)"
+gap> IsSSortedList(y);;
+gap> TNAM_OBJ(y);
+"list (plain,dense,nhom,ssort,imm)"
+
 # String, for a range
 gap> l := [5 .. 10];
 [ 5 .. 10 ]
