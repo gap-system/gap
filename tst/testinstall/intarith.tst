@@ -517,7 +517,7 @@ true
 gap> AbsInt(fail);
 Error, AbsRat: argument must be a rational or integer (not a boolean or fail)
 gap> ABS_INT(fail);
-Error, AbsInt: argument must be an integer (not a boolean or fail)
+Error, AbsInt: <x> must be an integer (not the value 'fail')
 
 #
 # SignInt
@@ -527,7 +527,7 @@ gap> List(data, SignInt);
 gap> SignInt(fail);
 Error, SignRat: argument must be a rational or integer (not a boolean or fail)
 gap> SIGN_INT(fail);
-Error, SignInt: argument must be an integer (not a boolean or fail)
+Error, SignInt: <x> must be an integer (not the value 'fail')
 
 #
 # QuotientMod
@@ -587,7 +587,7 @@ Error, IntHexString: invalid character in hex-string
 gap> IntHexString("56BC75E2D63100000@");
 Error, IntHexString: invalid character in hex-string
 gap> IntHexString(0);
-Error, IntHexString: argument must be string (not a integer)
+Error, IntHexString: <str> must be a string (not the integer 0)
 gap> IntHexString("-1000000000000000");
 -1152921504606846976
 
@@ -597,7 +597,7 @@ gap> IntHexString("-1000000000000000");
 gap> List(data, Log2Int);
 [ 66, 66, 13, 0, -1, 0, 13, 66, 66 ]
 gap> Log2Int("abc");
-Error, Log2Int: argument must be an integer (not a list (string))
+Error, Log2Int: <n> must be an integer (not a list (string))
 gap> List([-5..5], Log2Int);
 [ 2, 2, 1, 1, 0, -1, 0, 1, 1, 2, 2 ]
 gap> ForAll([2..100], x -> Log2Int(2^x) = x and
@@ -1430,11 +1430,14 @@ gap> Filtered([-100..100], n -> false <> IsProbablyPrimeInt(2^255+n));
 gap> IS_PROBAB_PRIME_INT(fail, 1);
 Error, IsProbablyPrimeInt: <n> must be an integer (not the value 'fail')
 gap> IS_PROBAB_PRIME_INT(1, fail);
-Error, IsProbablyPrimeInt: <reps> must be an integer (not the value 'fail')
+Error, IsProbablyPrimeInt: <reps> must be a positive small integer (not the va\
+lue 'fail')
 gap> IS_PROBAB_PRIME_INT(1, 2^100);
-Error, IsProbablyPrimeInt: <reps> must be a small positive integer
+Error, IsProbablyPrimeInt: <reps> must be a positive small integer (not a larg\
+e positive integer)
 gap> IS_PROBAB_PRIME_INT(1, 0);
-Error, IsProbablyPrimeInt: <reps> must be a small positive integer
+Error, IsProbablyPrimeInt: <reps> must be a positive small integer (not the in\
+teger 0)
 
 #
 # test SmallestRootInt

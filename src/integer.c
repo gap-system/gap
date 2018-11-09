@@ -854,9 +854,7 @@ Obj FuncIntHexString( Obj self,  Obj str )
   const UInt1 *p;
   UInt *limbs;
 
-  if (! IsStringConv(str))
-    ErrorMayQuit("IntHexString: argument must be string (not a %s)",
-                 (Int)TNAM_OBJ(str), 0L);
+  RequireStringRep("IntHexString", str);
 
   len = GET_LEN_STRING(str);
   if (len == 0) {
@@ -981,11 +979,12 @@ Int CLog2Int(Int a)
 */
 Obj FuncLog2Int( Obj self, Obj integer)
 {
-  if ( IS_INTOBJ(integer) ) {
-    return INTOBJ_INT(CLog2Int(INT_INTOBJ(integer)));
-  }
+    RequireInt("Log2Int", integer, "n");
 
-  if ( IS_LARGEINT(integer) ) {
+    if (IS_INTOBJ(integer)) {
+        return INTOBJ_INT(CLog2Int(INT_INTOBJ(integer)));
+    }
+
     UInt len = SIZE_INT(integer) - 1;
     UInt a = CLog2UInt( CONST_ADDR_INT(integer)[len] );
 
@@ -999,13 +998,6 @@ Obj FuncLog2Int( Obj self, Obj integer)
     return SumInt(ProdInt(INTOBJ_INT(len), INTOBJ_INT(GMP_LIMB_BITS)),
                    INTOBJ_INT(a));
 #endif
-  }
-  else {
-    ErrorMayQuit("Log2Int: argument must be an integer (not a %s)",
-                 (Int)TNAM_OBJ(integer), 0L);
-    /* please picky cc                                                     */
-    return (Obj) 0L;
-  }
 }
 
 /****************************************************************************
@@ -1360,16 +1352,12 @@ Obj AbsInt( Obj op )
   return Fail;
 }
 
-Obj FuncABS_INT(Obj self, Obj op)
+Obj FuncABS_INT(Obj self, Obj x)
 {
-  Obj res;
-  res = AbsInt( op );
-  if ( res == Fail ) {
-    ErrorMayQuit( "AbsInt: argument must be an integer (not a %s)",
-                  (Int)TNAM_OBJ(op), 0L );
-  }
-  CHECK_INT(res);
-  return res;
+    RequireInt("AbsInt", x, "x");
+    Obj res = AbsInt(x);
+    CHECK_INT(res);
+    return res;
 }
 
 /****************************************************************************
@@ -1395,16 +1383,12 @@ Obj SignInt( Obj op )
   return Fail;
 }
 
-Obj FuncSIGN_INT(Obj self, Obj op)
+Obj FuncSIGN_INT(Obj self, Obj x)
 {
-  Obj res;
-  res = SignInt( op );
-  if ( res == Fail ) {
-    ErrorMayQuit( "SignInt: argument must be an integer (not a %s)",
-                  (Int)TNAM_OBJ(op), 0L );
-  }
-  CHECK_INT(res);
-  return res;
+    RequireInt("SignInt", x, "x");
+    Obj res = SignInt(x);
+    CHECK_INT(res);
+    return res;
 }
 
 
@@ -2607,9 +2591,7 @@ Obj FuncIS_PROBAB_PRIME_INT(Obj self, Obj n, Obj reps)
   Int res;
 
   REQUIRE_INT_ARG( "IsProbablyPrimeInt", "n", n );
-  REQUIRE_INT_ARG( "IsProbablyPrimeInt", "reps", reps );
-  if ( ! IS_POS_INTOBJ(reps) )
-    ErrorMayQuit( "IsProbablyPrimeInt: <reps> must be a small positive integer", 0L, 0L );
+  RequirePositiveSmallInt( "IsProbablyPrimeInt", reps, "reps" );
 
   CHECK_INT(n);
 
@@ -2807,7 +2789,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(INVMODINT, 2, "base, mod"),
     GVAR_FUNC(HexStringInt, 1, "gmp"),
     GVAR_FUNC(IntHexString, 1, "string"),
-    GVAR_FUNC(Log2Int, 1, "gmp"),
+    GVAR_FUNC(Log2Int, 1, "n"),
     GVAR_FUNC(STRING_INT, 1, "gmp"),
     GVAR_FUNC(INT_STRING, 1, "string"),
     GVAR_FUNC(RandomIntegerMT, 2, "mtstr, nrbits"),

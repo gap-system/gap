@@ -1405,13 +1405,7 @@ Obj FuncADD_ROW_VECTOR_3( Obj self,
   UInt i;
   UInt len = LEN_LIST(list1);
   Obj el1, el2;
-  if (LEN_LIST(list2) != len)
-    {
-      list2 = ErrorReturnObj("AddRowVector: lists must be the same length",
-                             0L, 0L, 
-                             "you can replace second list <list2> via 'return <list2>;'");
-      return CALL_3ARGS(AddRowVectorOp, list1, list2,mult);
-    }
+  CheckSameLength("AddRowVector", "list1", "list2", list1, list2);
   for (i = 1; i <= len; i++)
     {
       el1 = ELMW_LIST(list1,i);
@@ -1442,14 +1436,7 @@ Obj FuncADD_ROW_VECTOR_3_FAST ( Obj self,
   UInt i;
   Obj e1,e2, prd, sum;
   UInt len = LEN_PLIST(list1);
-  if (LEN_PLIST(list2) != len)
-    {
-      list2 = ErrorReturnObj("AddRowVector: lists must be the same length",
-                             0L, 0L, 
-                             "you can replace second list <list2> via 'return <list2>;'");
-      return CALL_3ARGS(AddRowVectorOp, list1, list2, mult);
-    }
-      
+  CheckSameLength("AddRowVector", "list1", "list2", list1, list2);
   for (i = 1; i <= len; i++)
     {
       e1 = ELM_PLIST(list1,i);
@@ -1487,13 +1474,7 @@ Obj FuncADD_ROW_VECTOR_2( Obj self,
   UInt i;
   Obj el1,el2;
   UInt len = LEN_LIST(list1);
-  if (LEN_LIST(list2) != len)
-    {
-      list2 = ErrorReturnObj("AddRowVector: lists must be the same length",
-                             0L, 0L, 
-                             "you can replace second list <list2> via 'return <list2>;'");
-      return CALL_2ARGS(AddRowVectorOp, list1, list2);
-    }
+  CheckSameLength("AddRowVector", "list1", "list2", list1, list2);
   for (i = 1; i <= len; i++)
     {
       el1 = ELMW_LIST(list1,i);
@@ -1522,13 +1503,7 @@ Obj FuncADD_ROW_VECTOR_2_FAST ( Obj self,
   UInt i;
   Obj e1,e2, sum;
   UInt len = LEN_PLIST(list1);
-  if (LEN_PLIST(list2) != len)
-    {
-      list2 = ErrorReturnObj("AddRowVector: lists must be the same length",
-                             0L, 0L, 
-                             "you can replace second list <list2> via 'return <list2>;'");
-      return CALL_2ARGS(AddRowVectorOp, list1, list2);
-    }
+  CheckSameLength("AddRowVector", "list1", "list2", list1, list2);
   for (i = 1; i <= len; i++)
     {
       e1 = ELM_PLIST(list1,i);

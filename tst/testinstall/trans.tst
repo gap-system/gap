@@ -31,9 +31,11 @@ true
 
 # Test TransformationListListNC 
 gap> TransformationListListNC("a", [1, 2, 3]);
-Error, TransformationListListNC: <src> and <ran> must have equal length,
+Error, TransformationListListNC: <src> must have the same length as <ran> (len\
+gths are 1 and 3)
 gap> TransformationListListNC([1], [1, 2, 3]);
-Error, TransformationListListNC: <src> and <ran> must have equal length,
+Error, TransformationListListNC: <src> must have the same length as <ran> (len\
+gths are 1 and 3)
 gap> TransformationListListNC("abc", [1, 2, 3]);
 Error, TransformationListListNC: <src>[3] must be a small integer (not a chara\
 cter)
@@ -53,11 +55,11 @@ gap> TransformationListListNC([1, 2, 3], [65537, 65537, 65537]);
 gap> TransformationListListNC([2, 1, 3], [4, 4, 4]);
 Transformation( [ 4, 4, 4, 4 ] )
 gap> TransformationListListNC((), ());
-Error, TransformationListListNC: <src> must be a list (not a permutation (smal\
-l))
+Error, TransformationListListNC: <src> must be a small list (not a permutation\
+ (small))
 gap> TransformationListListNC([], ());
-Error, TransformationListListNC: <ran> must be a list (not a permutation (smal\
-l))
+Error, TransformationListListNC: <ran> must be a small list (not a permutation\
+ (small))
 gap> TransformationListListNC([], []);
 IdentityTransformation
 

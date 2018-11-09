@@ -48,13 +48,13 @@ gap> INTLIST_STRING("ABC", 1);
 gap> INTLIST_STRING("ABC", -1);
 [ 65, 66, 67 ]
 gap> INTLIST_STRING(1, -1);
-Error, <val> must be a string, not a integer)
+Error, INTLIST_STRING: <val> must be a string (not the integer 1)
 
 #
 gap> SINTLIST_STRING("ABC");
 [ 65, 66, 67 ]
 gap> SINTLIST_STRING(1);
-Error, <val> must be a string, not a integer)
+Error, INTLIST_STRING: <val> must be a string (not the integer 1)
 
 #
 gap> STRING_SINTLIST([ 65, 66, 67 ]);
@@ -69,7 +69,7 @@ ain,hom)
 
 #
 gap> REVNEG_STRING(1);
-Error, <val> must be a string, not a integer)
+Error, REVNEG_STRING: <val> must be a string (not the integer 1)
 
 #
 gap> CONV_STRING(1);
@@ -114,7 +114,7 @@ gap> s:="abc";; TranslateString(s,UPPERCASETRANSTABLE); s;
 gap> TranslateString(1,1);
 Error, TranslateString: <string> must be a string (not the integer 1)
 gap> TranslateString("abc",1);
-Error, TranslateString: <trans> must be a string (not a integer)
+Error, TranslateString: <trans> must be a string (not the integer 1)
 gap> TranslateString("abc","def");
 Error, TranslateString: <trans> must have length >= 256
 
