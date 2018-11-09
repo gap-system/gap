@@ -369,19 +369,9 @@ Obj FuncTransformationListListNC(Obj self, Obj src, Obj ran)
     UInt2 * ptf2;
     UInt4 * ptf4;
 
-    if (!IS_SMALL_LIST(src)) {
-        ErrorQuit("TransformationListListNC: <src> must be a list (not a %s)",
-                  (Int)TNAM_OBJ(src), 0L);
-    }
-    if (!IS_SMALL_LIST(ran)) {
-        ErrorQuit("TransformationListListNC: <ran> must be a list (not a %s)",
-                  (Int)TNAM_OBJ(ran), 0L);
-    }
-    if (LEN_LIST(src) != LEN_LIST(ran)) {
-        ErrorQuit("TransformationListListNC: <src> and <ran> must have equal "
-                  "length,",
-                  0L, 0L);
-    }
+    RequireSmallList("TransformationListListNC", src);
+    RequireSmallList("TransformationListListNC", ran);
+    CheckSameLength("TransformationListListNC", "src", "ran", src, ran);
 
     deg = 0;
     for (i = LEN_LIST(src); 1 <= i; i--) {

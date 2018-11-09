@@ -1239,12 +1239,7 @@ Obj             FuncCYCLE_LENGTH_PERM_INT (
 {
     /* evaluate and check the arguments                                    */
     RequirePermutation("CycleLengthPermInt", perm);
-    while (!IS_POS_INTOBJ(point)) {
-        point = ErrorReturnObj(
-         "CycleLengthPermInt: <point> must be a positive integer (not a %s)",
-            (Int)TNAM_OBJ(point), 0L,
-            "you can replace <point> via 'return <point>;'" );
-    }
+    RequirePositiveSmallInt("CycleLengthPermInt", point, "point");
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
         return CYCLE_LENGTH_PERM_INT<UInt2>(perm, point);

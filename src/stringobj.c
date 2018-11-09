@@ -331,12 +331,7 @@ Obj FuncINTLIST_STRING (
   const UInt1 *p;
 
   /* test whether val is a string, convert to compact rep if necessary */
-  while (! IsStringConv(val)) {
-     val = ErrorReturnObj(
-         "<val> must be a string, not a %s)",
-         (Int)TNAM_OBJ(val), 0L,
-         "you can replace <val> via 'return <val>;'" );
-  }
+  RequireStringRep("INTLIST_STRING", val);
 
   l=GET_LEN_STRING(val);
   n=NEW_PLIST(T_PLIST,l);
@@ -431,12 +426,7 @@ Obj FuncREVNEG_STRING (
   UInt1 *q;
 
   /* test whether val is a string, convert to compact rep if necessary */
-  while (! IsStringConv(val)) {
-     val = ErrorReturnObj(
-         "<val> must be a string, not a %s)",
-         (Int)TNAM_OBJ(val), 0L,
-         "you can replace <val> via 'return <val>;'" );
-  }
+  RequireStringRep("REVNEG_STRING", val);
 
   l=GET_LEN_STRING(val);
   n=NEW_STRING(l);
@@ -1634,18 +1624,10 @@ Obj FuncTranslateString (
   RequireStringRep("TranslateString", string);
   
   // check whether <trans> is a string of length at least 256
-  while ( ! IsStringConv( trans ) || GET_LEN_STRING( trans ) < 256 ) {
-    if ( ! IsStringConv( trans ) ) {
-      trans = ErrorReturnObj(
-           "TranslateString: <trans> must be a string (not a %s)",
-           (Int)TNAM_OBJ(trans), 0L,
-           "you can replace <trans> via 'return <trans>;'" );
-    } else if ( GET_LEN_STRING( trans ) < 256 ) {
-      trans = ErrorReturnObj(
-           "TranslateString: <trans> must have length >= 256",
-           0L, 0L,
-           "you can replace <trans> via 'return <trans>;'" );
-    }
+  RequireStringRep("TranslateString", trans);
+  if ( GET_LEN_STRING( trans ) < 256 ) {
+      ErrorMayQuit("TranslateString: <trans> must have length >= 256",
+                   0, 0 );
   }
 
   /* now change string in place */

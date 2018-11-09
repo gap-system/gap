@@ -680,9 +680,7 @@ Obj FuncACTIVATE_PROFILING(Obj self,
     OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
     profileState.visitedDepths = NEW_PLIST(T_PLIST, 0);
 
-    if ( ! IsStringConv( filename ) ) {
-        ErrorMayQuit("<filename> must be a string",0,0);
-    }
+    RequireStringRep("ACTIVATE_PROFILING", filename);
 
     if(coverage != True && coverage != False) {
       ErrorMayQuit("<coverage> must be a boolean",0,0);
