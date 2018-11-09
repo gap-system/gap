@@ -504,8 +504,7 @@ gap> AS_TRANS_PERM_INT((1, 2, 3), -1);
 Error, AS_TRANS_PERM_INT: <deg> must be a non-negative integer (not the intege\
 r -1)
 gap> AS_TRANS_PERM_INT("a", 3);
-Error, AS_TRANS_PERM_INT: the first argument must be a permutation (not a list\
- (string))
+Error, AS_TRANS_PERM_INT: <p> must be a permutation (not a list (string))
 gap> AS_TRANS_PERM_INT((1, 2, 3), 0);
 IdentityTransformation
 gap> AS_TRANS_PERM_INT((1, 2, 3), 1);
@@ -539,8 +538,7 @@ Transformation( [ 2, 1 ] )
 gap> AS_TRANS_PERM((1, 2, 3));
 Transformation( [ 2, 3, 1 ] )
 gap> AS_TRANS_PERM("a");
-Error, AS_TRANS_PERM: the first argument must be a permutation (not a list (st\
-ring))
+Error, AS_TRANS_PERM: <p> must be a permutation (not a list (string))
 gap> AS_TRANS_PERM((1, 65537));
 <transformation on 65537 pts with rank 65537>
 gap> AS_TRANS_PERM((1, 65537) * (1, 65537));
@@ -1117,7 +1115,7 @@ true
 gap> POW_KER_PERM([1 .. 100] * 0 + 1, (1,2,3)(65537, 65538)) = [1 .. 100] * 0 + 1;
 true
 gap> POW_KER_PERM([1, 2], 1);
-Error, POW_KER_TRANS: the argument must be a permutation (not a integer)
+Error, POW_KER_TRANS: <p> must be a permutation (not the integer 1)
 gap> POW_KER_PERM(1, 2);
 Error, Length: <list> must be a list (not a integer)
 gap> Set(SymmetricGroup(3), p -> POW_KER_PERM([1, 1, 2], p)); 
