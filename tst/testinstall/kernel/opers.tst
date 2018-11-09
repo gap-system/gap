@@ -11,27 +11,27 @@ gap> flags2 := FLAGS_FILTER(IsPGroup and IsMutable);
 
 #
 gap> HASH_FLAGS(fail);
-Error, <flags> must be a flags list (not a boolean or fail)
+Error, HASH_FLAGS: <flags> must be a flags list (not the value 'fail')
 gap> HASH_FLAGS(flags);
 2
 
 #
 gap> TRUES_FLAGS(fail);
-Error, <flags> must be a flags list (not a boolean or fail)
+Error, TRUES_FLAGS: <flags> must be a flags list (not the value 'fail')
 gap> TRUES_FLAGS(flags);
 [ 1 ]
 
 #
 gap> SIZE_FLAGS(fail);
-Error, <flags> must be a flags list (not a boolean or fail)
+Error, SIZE_FLAGS: <flags> must be a flags list (not the value 'fail')
 gap> SIZE_FLAGS(flags);
 1
 
 #
 gap> IS_EQUAL_FLAGS(fail, flags);
-Error, <flags1> must be a flags list (not a boolean or fail)
+Error, IS_EQUAL_FLAGS: <flags1> must be a flags list (not the value 'fail')
 gap> IS_EQUAL_FLAGS(flags, fail);
-Error, <flags2> must be a flags list (not a boolean or fail)
+Error, IS_EQUAL_FLAGS: <flags2> must be a flags list (not the value 'fail')
 gap> IS_EQUAL_FLAGS(flags, flags);
 true
 gap> IS_EQUAL_FLAGS(flags, flags2);
@@ -41,9 +41,9 @@ false
 
 #
 gap> IS_SUBSET_FLAGS(fail, flags);
-Error, <flags1> must be a flags list (not a boolean or fail)
+Error, IS_SUBSET_FLAGS: <flags1> must be a flags list (not the value 'fail')
 gap> IS_SUBSET_FLAGS(flags, fail);
-Error, <flags2> must be a flags list (not a boolean or fail)
+Error, IS_SUBSET_FLAGS: <flags2> must be a flags list (not the value 'fail')
 gap> IS_SUBSET_FLAGS(flags, flags);
 true
 gap> IS_SUBSET_FLAGS(flags, flags2);
@@ -53,9 +53,9 @@ true
 
 #
 gap> SUB_FLAGS(fail, flags);
-Error, <flags1> must be a flags list (not a boolean or fail)
+Error, SUB_FLAGS: <flags1> must be a flags list (not the value 'fail')
 gap> SUB_FLAGS(flags, fail);
-Error, <flags2> must be a flags list (not a boolean or fail)
+Error, SUB_FLAGS: <flags2> must be a flags list (not the value 'fail')
 gap> emptyFlags := SUB_FLAGS(flags, flags);
 <flag list>
 gap> TRUES_FLAGS(emptyFlags);
@@ -74,9 +74,9 @@ false
 
 #
 gap> AND_FLAGS(fail, flags);
-Error, <flags1> must be a flags list (not a boolean or fail)
+Error, AND_FLAGS: <flags1> must be a flags list (not the value 'fail')
 gap> AND_FLAGS(flags, fail);
-Error, <flags2> must be a flags list (not a boolean or fail)
+Error, AND_FLAGS: <flags2> must be a flags list (not the value 'fail')
 gap> TRUES_FLAGS(AND_FLAGS(flags, flags));
 [ 1 ]
 gap> TRUES_FLAGS(AND_FLAGS(emptyFlags, flags));
@@ -90,13 +90,14 @@ true
 
 #
 gap> WITH_HIDDEN_IMPS_FLAGS(fail);
-Error, <flags> must be a flags list (not a boolean or fail)
+Error, WITH_HIDDEN_IMPS_FLAGS: <flags> must be a flags list (not the value 'fa\
+il')
 gap> TRUES_FLAGS(WITH_HIDDEN_IMPS_FLAGS(flags));
 [ 1, 2 ]
 
 #
 gap> WITH_IMPS_FLAGS(fail);
-Error, <flags> must be a flags list (not a boolean or fail)
+Error, WITH_IMPS_FLAGS: <flags> must be a flags list (not the value 'fail')
 gap> TRUES_FLAGS(WITH_IMPS_FLAGS(flags));
 [ 1, 2 ]
 
