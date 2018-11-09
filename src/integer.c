@@ -2242,19 +2242,13 @@ Obj FuncLCM_INT(Obj self, Obj opL, Obj opR)
 /****************************************************************************
 **
 */
-Obj FuncFACTORIAL_INT(Obj self, Obj opN)
+Obj FuncFACTORIAL_INT(Obj self, Obj n)
 {
-    REQUIRE_INT_ARG("Factorial", "n", opN);
-    if (!IS_INTOBJ(opN))
-        ErrorMayQuit("Factorial: <n> must be a small integer", 0L, 0L);
-
-    Int n = INT_INTOBJ(opN);
-    if (n < 0)
-        ErrorMayQuit("Factorial: <n> must be nonnegative", 0L, 0L);
+    RequireNonnegativeSmallInt("Factorial", n);
 
     mpz_t mpzResult;
     mpz_init(mpzResult);
-    mpz_fac_ui(mpzResult, n);
+    mpz_fac_ui(mpzResult, INT_INTOBJ(n));
 
     // convert mpzResult into a GAP integer object.
     Obj result = GMPorINTOBJ_MPZ(mpzResult);
@@ -2666,12 +2660,7 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
          0L, 0L,
          "you can replace <mtstr> via 'return <mtstr>;'" );
   }
-  while ((! IS_INTOBJ(nrbits)) || INT_INTOBJ(nrbits) < 0) {
-     nrbits = ErrorReturnObj(
-         "RandomIntegerMT: <nrbits> must be a small non-negative integer (not a %s)",
-         (Int)TNAM_OBJ(nrbits), 0L,
-         "you can replace <mtstr> via 'return <mtstr>;'" );
-  }
+  RequireNonnegativeSmallInt("RandomIntegerMT", nrbits);
   n = INT_INTOBJ(nrbits);
 
   /* small int case */

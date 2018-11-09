@@ -206,13 +206,7 @@ void LoadChar( Obj c )
 Obj    FuncEmptyString( Obj self, Obj len )
 {
     Obj                 new;
-    while ( ! IS_NONNEG_INTOBJ(len) ) {
-        len = ErrorReturnObj(
-            "<len> must be an non-negative integer (not a %s)",
-            (Int)TNAM_OBJ(len), 0L,
-            "you can replace <len> via 'return <len>;'" );
-    }
-
+    RequireNonnegativeSmallInt("EmptyString", len);
     new = NEW_STRING(INT_INTOBJ(len));
     SET_LEN_STRING(new, 0);
     return new;
@@ -1498,12 +1492,8 @@ Obj FuncPOSITION_SUBSTRING(
   RequireStringRep("POSITION_SUBSTRING", substr);
 
   /* check wether <off> is a non-negative integer  */
-  while ( ! IS_INTOBJ(off) || (ipos = INT_INTOBJ(off)) < 0 ) {
-    off = ErrorReturnObj(
-          "POSITION_SUBSTRING: <off> must be a non-negative integer (not a %s)",
-          (Int)TNAM_OBJ(off), 0L,
-          "you can replace <off> via 'return <off>;'");
-  }
+  RequireNonnegativeSmallInt("POSITION_SUBSTRING", off);
+  ipos = INT_INTOBJ(off);
 
   /* special case for the empty string */
   lenss = GET_LEN_STRING(substr);

@@ -713,9 +713,7 @@ Obj FuncACTIVATE_PROFILING(Obj self,
 
     profileState.lastOutputtedTime = getTicks();
 
-    if( ! IS_INTOBJ(resolution) ) {
-      ErrorMayQuit("<resolution> must be an integer",0,0);
-    }
+    RequireNonnegativeSmallInt("ACTIVATE_PROFILING", resolution);
 
     HashLock(&profileState);
 
@@ -725,9 +723,6 @@ Obj FuncACTIVATE_PROFILING(Obj self,
       return Fail;
     }
     int tick = INT_INTOBJ(resolution);
-    if(tick < 0) {
-        ErrorMayQuit("<resolution> must be a non-negative integer",0,0);
-    }
     profileState.minimumProfileTick = tick;
 
 

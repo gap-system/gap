@@ -21,7 +21,7 @@ gap> SIGN_INT(-100000000000);
 
 #
 gap> FACTORIAL_INT(fail);
-Error, Factorial: <n> must be an integer (not the value 'fail')
+Error, Factorial: <n> must be a non-negative integer (not the value 'fail')
 
 #
 #

@@ -178,6 +178,15 @@ extern Obj RACErrorHelper(const char * funcname,
 
 /****************************************************************************
 **
+*F  RequireNonnegativeSmallInt
+*/
+#define RequireNonnegativeSmallInt(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, IS_NONNEG_INTOBJ(op), \
+        "must be a non-negative integer")
+
+
+/****************************************************************************
+**
 *F  RequireSmallList
 */
 #define RequireSmallList(funcname, op) \
