@@ -62,6 +62,9 @@ static Obj ArglistObj;
 *F * * * * * * * * * * * * internal flags functions * * * * * * * * * * * * *
 */
 
+#define RequireFlags(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, TNUM_OBJ(op) == T_FLAGS, \
+        "must be a flags list")
 
 /****************************************************************************
 **
@@ -162,11 +165,7 @@ Obj FuncHASH_FLAGS (
     Int                  i;
 
     /* do some trivial checks                                              */
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
-            flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags), 0L,
-            "you can replace <flags> via 'return <flags>;'" );
-    }
+    RequireFlags("HASH_FLAGS", flags);
     if ( HASH_FLAGS(flags) != 0 ) {
         return HASH_FLAGS(flags);
     }
@@ -232,11 +231,7 @@ Obj FuncTRUES_FLAGS (
     UInt                i;              /* loop variable                   */
 
     /* get and check the first argument                                    */
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
-        flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags), 0L,
-            "you can replace <flags> via 'return <flags>;'" );
-    }
+    RequireFlags("TRUES_FLAGS", flags);
     if ( TRUES_FLAGS(flags) != 0 ) {
         return TRUES_FLAGS(flags);
     }
@@ -283,11 +278,7 @@ Obj FuncSIZE_FLAGS (
     UInt                n;              /* number of bits in flags         */
 
     /* get and check the first argument                                    */
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
-        flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags), 0L,
-            "you can replace <flags> via 'return <flags>;'" );
-    }
+    RequireFlags("SIZE_FLAGS", flags);
     if ( TRUES_FLAGS(flags) != 0 ) {
         return INTOBJ_INT( LEN_PLIST( TRUES_FLAGS(flags) ) );
     }
@@ -362,16 +353,8 @@ Obj FuncIS_EQUAL_FLAGS (
     Obj                 flags2 )
 {
     /* do some trivial checks                                              */
-    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
-        flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags1), 0L,
-            "you can replace <flags1> via 'return <flags1>;'" );
-    }
-    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
-        flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags2), 0L,
-            "you can replace <flags2> via 'return <flags2>;'" );
-    }
+    RequireFlags("IS_EQUAL_FLAGS", flags1);
+    RequireFlags("IS_EQUAL_FLAGS", flags2);
 
     return EqFlags(flags1, flags2) ? True : False;
 }
@@ -433,16 +416,8 @@ Obj FuncIS_SUBSET_FLAGS (
     Obj                 flags2 )
 {
     /* do some correctness checks                                            */
-    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
-        flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags1), 0L,
-            "you can replace <flags1> via 'return <flags1>;'" );
-    }
-    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
-        flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags2), 0L,
-            "you can replace <flags2> via 'return <flags2>;'" );
-    }
+    RequireFlags("IS_SUBSET_FLAGS", flags1);
+    RequireFlags("IS_SUBSET_FLAGS", flags2);
     
     return IS_SUBSET_FLAGS(flags1, flags2) ? True : False;
 }
@@ -467,16 +442,8 @@ Obj FuncSUB_FLAGS (
     Int                 i;
 
     /* do some trivial checks                                              */
-    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
-        flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags1), 0L,
-            "you can replace <flags1> via 'return <flags1>;'" );
-    }
-    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
-        flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags2), 0L,
-            "you can replace <flags2> via 'return <flags2>;'" );
-    }
+    RequireFlags("SUB_FLAGS", flags1);
+    RequireFlags("SUB_FLAGS", flags2);
 
     /* do the real work                                                    */
     len1   = LEN_FLAGS(flags1);
@@ -545,16 +512,8 @@ Obj FuncAND_FLAGS (
 #endif
 
     /* do some trivial checks                                              */
-    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
-        flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags1), 0L,
-            "you can replace <flags1> via 'return <flags1>;'" );
-    }
-    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
-        flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags2), 0L,
-            "you can replace <flags2> via 'return <flags2>;'" );
-    }
+    RequireFlags("AND_FLAGS", flags1);
+    RequireFlags("AND_FLAGS", flags2);
 
     if (flags1 == flags2)
         return flags1;
@@ -735,11 +694,7 @@ static Int WITH_HIDDEN_IMPS_HIT=0;
 Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 {
     // do some trivial checks, so we can use IS_SUBSET_FLAGS
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
-            flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags), 0L,
-            "you can replace <flags> via 'return <flags>;'" );
-    }
+    RequireFlags("WITH_HIDDEN_IMPS_FLAGS", flags);
 
 #ifdef HPCGAP
     RegionWriteLock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
@@ -863,11 +818,7 @@ static Int WITH_IMPS_FLAGS_HIT=0;
 Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 {
     // do some trivial checks, so we can use IS_SUBSET_FLAGS
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
-            flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags), 0L,
-            "you can replace <flags> via 'return <flags>;'" );
-    }
+    RequireFlags("WITH_IMPS_FLAGS", flags);
 
     Int changed, lastand, i, j, stop, imps_length;
     Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % IMPS_CACHE_LENGTH;
