@@ -18,7 +18,7 @@ fi
 SRCDIR=${SRCDIR:-$PWD}
 
 # Make sure any Error() immediately exits GAP with exit code 1.
-GAP="bin/gap.sh --quitonbreak -q"
+GAP="bin/gap.sh --quitonbreak --nointeract --alwaystrace -q"
 
 # change into BUILDDIR (creating it if necessary), and turn it into an absolute path
 if [[ -n "$BUILDDIR" ]]
@@ -38,12 +38,15 @@ if LoadPackage("profiling") <> true then
     FORCE_QUIT_GAP(1);
 fi;
 d := Directory("$COVDIR");;
+Print("Scanning for coverage data...\n");
 covs := [];;
 for f in DirectoryContents(d) do
     if f in [".", ".."] then continue; fi;
-    Add(covs, Filename(d, f));
+    f := Filename(d, f);
+    Add(covs, f);
+    Print("  ", f, "\n");
 od;
-Print("Merging coverage results\n");
+Print("Merging ", Length(covs), " coverage files...\n");
 r := MergeLineByLineProfiles(covs);;
 Print("Outputting JSON\n");
 OutputJsonCoverage(r, "gap-coverage.json");;

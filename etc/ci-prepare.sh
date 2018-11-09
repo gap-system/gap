@@ -40,8 +40,8 @@ fi
 
 
 # configure and make GAP
-"$SRCDIR/configure" $CONFIGFLAGS --enable-Werror
-make V=1 -j4
+time "$SRCDIR/configure" $CONFIGFLAGS --enable-Werror
+time make V=1 -j4
 
 # download packages; instruct wget to retry several times if the
 # connection is refused, to work around intermittent failures
