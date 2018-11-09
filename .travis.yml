@@ -31,7 +31,11 @@ matrix:
           - libreadline-dev:i386
 
     # compiler packages and run package tests
-    - env: TEST_SUITES=testpackages
+    # don't use --coverage in CFLAGS, it causes the weird `atexit` bug in
+    # digraphs and other kernel extensions using C++ code (due to GCC's
+    # `profiler_trace.h` calling `atexit`; but that fails in loadable modules
+    # for technical reasons)
+    - env: TEST_SUITES=testpackages CFLAGS="-O2" LDFLAGS=
       addons:
         apt_packages:
           - gcc-multilib
@@ -47,7 +51,7 @@ matrix:
           - pari-gp                 # for alnuth
           - libzmq3-dev             # for ZeroMQInterface
 
-    - env: TEST_SUITES=testpackages ABI=32
+    - env: TEST_SUITES=testpackages CFLAGS="-O2" LDFLAGS= ABI=32
       addons:
         apt_packages:
           - gcc-multilib
