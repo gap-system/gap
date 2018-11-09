@@ -2460,15 +2460,15 @@ InstallMethod( SortingPerm,
 #M  SortParallel( <list>, <list2> ) . . . . . . .  sort two lists in parallel
 ##
 InstallMethod( SortParallel,
-    "for two dense and mutable lists",
-    [ IsDenseList and IsMutable,
-      IsDenseList and IsMutable ],
+    "for two mutable lists",
+    [ IsList and IsMutable,
+      IsList and IsMutable ],
     SORT_PARA_LIST );
 
 InstallMethod( StableSortParallel,
-    "for two dense and mutable lists",
-    [ IsDenseList and IsMutable,
-      IsDenseList and IsMutable ],
+    "for two mutable lists",
+    [ IsList and IsMutable,
+      IsList and IsMutable ],
     STABLE_SORT_PARA_LIST );
     
 #############################################################################
@@ -2494,16 +2494,16 @@ InstallMethod( StableSortParallel,
 #M  SortParallel( <list>, <list2>, <func> )
 ##
 InstallMethod( SortParallel,
-    "for two dense and mutable lists, and function",
-    [ IsDenseList and IsMutable,
-      IsDenseList and IsMutable,
+    "for mutable lists, and function",
+    [ IsList and IsMutable,
+      IsList and IsMutable,
       IsFunction ],
     SORT_PARA_LIST_COMP );
 
 InstallMethod( StableSortParallel,
-    "for two dense and mutable lists, and function",
-    [ IsDenseList and IsMutable,
-      IsDenseList and IsMutable,
+    "for two mutable lists, and function",
+    [ IsList and IsMutable,
+      IsList and IsMutable,
       IsFunction ],
     STABLE_SORT_PARA_LIST_COMP );
 
