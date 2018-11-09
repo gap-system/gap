@@ -7,8 +7,8 @@ env:
   global:
     - CFLAGS="--coverage -O2"
     - LDFLAGS="--coverage"
-    # default config flags: enable debug asserts, and treat compiler warnings as errors
-    - CONFIGFLAGS="--enable-debug --enable-Werror"
+    # default config flags: enable debug asserts
+    - CONFIGFLAGS="--enable-debug"
 
 addons:
   apt_packages:
@@ -22,7 +22,7 @@ matrix:
     # the same in 32 bit mode, and with debugging turned off, to (a) make it
     # a lot faster, and (b) to make sure nobody accidentally put some vital
     # computing into code that is only run when debugging is on.
-    - env: TEST_SUITES="docomp testtravis" ABI=32 CONFIGFLAGS="--enable-Werror"
+    - env: TEST_SUITES="docomp testtravis" ABI=32 CONFIGFLAGS=""
       addons:
         apt_packages:
           - gcc-multilib
@@ -95,7 +95,7 @@ matrix:
     - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=64 BUILDDIR=build
     # for 32bit mode, also turn off debugging (see elsewhere in this file for
     # an explanation)
-    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS="--enable-Werror"
+    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS=""
       addons:
         apt_packages:
           - gcc-multilib
