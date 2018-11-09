@@ -135,6 +135,14 @@ static Obj ObjInt_UIntInv( UInt i );
 
 #define REQUIRE_INT_ARG(funcname, argname, op) RequireInt(funcname, op, argname)
 
+#define RequireNonzero(funcname, op, argname) \
+    do { \
+      if (op == INTOBJ_INT(0) ) { \
+        ErrorMayQuit(funcname ": <" argname "> must be nonzero", 0, 0); \
+      } \
+    } while (0)
+
+
 GAP_STATIC_ASSERT( sizeof(mp_limb_t) == sizeof(UInt), "gmp limb size incompatible with GAP word size");
 
     
@@ -1485,10 +1493,7 @@ static Obj ProdIntObj ( Obj n, Obj op )
   else if ( IS_NEG_INT(n) ) {
     res = AINV( op );
     if ( res == Fail ) {
-      return ErrorReturnObj(
-                            "Operations: <obj> must have an additive inverse",
-                            0L, 0L,
-                            "you can supply an inverse <inv> for <obj> via 'return <inv>;'" );
+      ErrorMayQuit("Operations: <obj> must have an additive inverse", 0, 0);
     }
     res = PROD( AINV( n ), res );
   }
@@ -1566,11 +1571,7 @@ Obj PowInt ( Obj gmpL, Obj gmpR )
   }
   else if ( gmpL == INTOBJ_INT(0) ) {
     if ( IS_NEG_INT( gmpR ) ) {
-      gmpL = ErrorReturnObj(
-                            "Integer operands: <base> must not be zero",
-                            0L, 0L,
-                            "you can replace the integer <base> via 'return <base>;'" );
-      return POW( gmpL, gmpR );
+      ErrorMayQuit("Integer operands: <base> must not be zero", 0, 0);
     }
     pow = INTOBJ_INT(0);
   }
@@ -1583,11 +1584,7 @@ Obj PowInt ( Obj gmpL, Obj gmpR )
 
   /* power with a large exponent */
   else if ( ! IS_INTOBJ(gmpR) ) {
-    gmpR = ErrorReturnObj(
-                          "Integer operands: <exponent> is too large",
-                          0L, 0L,
-                          "you can replace the integer <exponent> via 'return <exponent>;'" );
-    return POW( gmpL, gmpR );
+    ErrorMayQuit("Integer operands: <exponent> is too large", 0, 0);
   }
   
   /* power with a negative exponent */
@@ -1647,10 +1644,7 @@ Obj             PowObjInt ( Obj op, Obj n )
   else if ( IS_NEG_INT(n) ) {
     res = INV_MUT( op );
     if ( res == Fail ) {
-      return ErrorReturnObj(
-                            "Operations: <obj> must have an inverse",
-                            0L, 0L,
-                            "you can supply an inverse <inv> for <obj> via 'return <inv>;'" );
+      ErrorMayQuit("Operations: <obj> must have an inverse", 0, 0);
     }
     res = POW( res, AINV( n ) );
   }
@@ -1718,13 +1712,7 @@ Obj ModInt(Obj opL, Obj opR)
   CHECK_INT(opR);
 
   /* pathological case first                                             */
-  if ( opR == INTOBJ_INT(0) ) {
-    opR = ErrorReturnObj(
-                         "Integer operations: <divisor> must be nonzero",
-                         0L, 0L,
-                         "you can replace the integer <divisor> via 'return <divisor>;'" );
-    return MOD( opL, opR );
-  }
+  RequireNonzero("Integer operations", opR, "divisor");
 
   /* compute the remainder of two small integers                           */
   if ( ARE_INTOBJS( opL, opR ) ) {
@@ -1859,13 +1847,7 @@ Obj QuoInt(Obj opL, Obj opR)
   CHECK_INT(opR);
 
   /* pathological case first                                             */
-  if ( opR == INTOBJ_INT(0) ) {
-    opR = ErrorReturnObj(
-                         "Integer operations: <divisor> must be nonzero",
-                         0L, 0L,
-                         "you can replace the integer <divisor> via 'return <divisor>;'" );
-    return QUO( opL, opR );
-  }
+  RequireNonzero("Integer operations", opR, "divisor");
 
   /* divide two small integers                                             */
   if ( ARE_INTOBJS( opL, opR ) ) {
@@ -1997,9 +1979,7 @@ Obj RemInt(Obj opL, Obj opR)
   CHECK_INT(opR);
 
   /* pathological case first                                             */
-  if ( opR == INTOBJ_INT(0) ) {
-    ErrorMayQuit( "Integer operations: <divisor> must be nonzero", 0L, 0L  );
-  }
+  RequireNonzero("Integer operations", opR, "divisor");
 
   /* compute the remainder of two small integers                           */
   if ( ARE_INTOBJS( opL, opR ) ) {
@@ -2377,8 +2357,7 @@ Obj FuncPVALUATION_INT(Obj self, Obj n, Obj p)
   CHECK_INT(n);
   CHECK_INT(p);
 
-  if ( p == INTOBJ_INT(0) )
-    ErrorMayQuit( "PValuation: <p> must be nonzero", 0L, 0L  );
+  RequireNonzero("PValuation", p, "p");
 
   if (SIZE_INT_OR_INTOBJ(n) == 1 && SIZE_INT_OR_INTOBJ(p) == 1) {
     UInt N = AbsOfSmallInt(n);
@@ -2476,8 +2455,7 @@ Obj InverseModInt(Obj base, Obj mod)
     CHECK_INT(base);
     CHECK_INT(mod);
 
-    if (mod == INTOBJ_INT(0))
-        ErrorMayQuit("InverseModInt: <mod> must be nonzero", 0L, 0L);
+    RequireNonzero("InverseModInt", mod, "mod");
     if (mod == INTOBJ_INT(1) || mod == INTOBJ_INT(-1))
         return INTOBJ_INT(0);
     if (base == INTOBJ_INT(0))
@@ -2553,8 +2531,7 @@ Obj FuncPOWERMODINT(Obj self, Obj base, Obj exp, Obj mod)
   CHECK_INT(exp);
   CHECK_INT(mod);
 
-  if ( mod == INTOBJ_INT(0) )
-    ErrorMayQuit( "PowerModInt: <mod> must be nonzero", 0L, 0L  );
+  RequireNonzero("PowerModInt", mod, "mod");
   if ( mod == INTOBJ_INT(1) || mod == INTOBJ_INT(-1) )
     return INTOBJ_INT(0);
 
@@ -2636,11 +2613,10 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
   UInt4 *mt;
   UInt4 *pt;
   RequireStringRep("RandomIntegerMT", mtstr);
-  while ((! IsStringConv(mtstr)) || GET_LEN_STRING(mtstr) < 2500) {
-     mtstr = ErrorReturnObj(
+  if (GET_LEN_STRING(mtstr) < 2500) {
+     ErrorMayQuit(
          "RandomIntegerMT: <mtstr> must be a string with at least 2500 characters",
-         0L, 0L,
-         "you can replace <mtstr> via 'return <mtstr>;'" );
+         0, 0);
   }
   RequireNonnegativeSmallInt("RandomIntegerMT", nrbits);
   n = INT_INTOBJ(nrbits);
