@@ -59,6 +59,10 @@
 #define MIN(a, b) (a < b ? a : b)
 #define MAX(a, b) (a < b ? b : a)
 
+#define RequireTransformation(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, IS_TRANS(op), \
+        "must be a transformation")
+
 
 static ModuleStateOffset TransStateOffset = -1;
 
@@ -580,9 +584,7 @@ Obj FuncLEFT_ONE_TRANS(Obj self, Obj f)
         ker = KER_TRANS(f);
     }
     else {
-        ErrorQuit("LEFT_ONE_TRANS: the first argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
+        RequireTransformation("LEFT_ONE_TRANS", f);
         return 0L;
     }
 
@@ -614,9 +616,7 @@ Obj FuncRIGHT_ONE_TRANS(Obj self, Obj f)
         deg = DEG_TRANS4(f);
     }
     else {
-        ErrorQuit("RIGHT_ONE_TRANS: the first argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
+        RequireTransformation("RIGHT_ONE_TRANS", f);
         return 0L;
     }
 
@@ -693,9 +693,7 @@ Obj FuncDegreeOfTransformation(Obj self, Obj f)
         }
         return EXT_TRANS(f);
     }
-    ErrorQuit("DegreeOfTransformation: the argument must be a transformation "
-              "(not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("DegreeOfTransformation", f);
     return 0L;
 }
 
@@ -712,9 +710,7 @@ Obj FuncRANK_TRANS(Obj self, Obj f)
         return SumInt(INTOBJ_INT(RANK_TRANS4(f) - DEG_TRANS4(f)),
                       FuncDegreeOfTransformation(self, f));
     }
-    ErrorQuit("RANK_TRANS: the argument must be a transformation "
-              "(not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("RANK_TRANS", f);
     return 0L;
 }
 
@@ -769,8 +765,7 @@ Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n)
             return INTOBJ_INT(rank);
         }
     }
-    ErrorQuit("RANK_TRANS_INT: <f> must be a transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("RANK_TRANS_INT", f);
     return 0L;
 }
 
@@ -849,9 +844,7 @@ Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
         return INTOBJ_INT(rank);
     }
 
-    ErrorQuit("RANK_TRANS_LIST: the first argument must be a transformation "
-              "(not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("RANK_TRANS_LIST", f);
     return 0L;
 }
 
@@ -878,9 +871,7 @@ Obj FuncFLAT_KERNEL_TRANS(Obj self, Obj f)
         return KER_TRANS(f);
     }
 
-    ErrorQuit("FLAT_KERNEL_TRANS: the first argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("FLAT_KERNEL_TRANS", f);
     return 0L;
 }
 
@@ -978,9 +969,7 @@ Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
             return new;
         }
     }
-    ErrorQuit("FLAT_KERNEL_TRANS_INT: the first argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("FLAT_KERNEL_TRANS_INT", f);
     return 0L;
 }
 
@@ -997,11 +986,7 @@ Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
                   "non-negative integer",
                   0L, 0L);
     }
-    else if (!IS_TRANS(f)) {
-        ErrorQuit("KERNEL_TRANS: the first argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-    }
+    RequireTransformation("KERNEL_TRANS", f);
 
     m = INT_INTOBJ(n);
 
@@ -1055,11 +1040,7 @@ Obj FuncPREIMAGES_TRANS_INT(Obj self, Obj f, Obj pt)
     Obj  out;
 
     RequirePositiveSmallInt("PREIMAGES_TRANS_INT", pt, "pt");
-    if (!IS_TRANS(f)) {
-        ErrorQuit("PREIMAGES_TRANS_INT: the first argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-    }
+    RequireTransformation("PREIMAGES_TRANS_INT", f);
 
     deg = DEG_TRANS(f);
 
@@ -1119,9 +1100,7 @@ Obj FuncUNSORTED_IMAGE_SET_TRANS(Obj self, Obj f)
         }
         return IMG_TRANS(f);
     }
-    ErrorQuit("UNSORTED_IMAGE_SET_TRANS: the argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("UNSORTED_IMAGE_SET_TRANS", f);
     return 0L;
 }
 
@@ -1158,11 +1137,7 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
                   "non-negative integer",
                   0L, 0L);
     }
-    else if (!IS_TRANS(f)) {
-        ErrorQuit("IMAGE_SET_TRANS_INT: the first argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-    }
+    RequireTransformation("IMAGE_SET_TRANS_INT", f);
 
     m = INT_INTOBJ(n);
     deg = DEG_TRANS(f);
@@ -1241,11 +1216,7 @@ Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n)
                   "non-negative integer",
                   0L, 0L);
     }
-    else if (!IS_TRANS(f)) {
-        ErrorQuit("IMAGE_LIST_TRANS_INT: the first argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-    }
+    RequireTransformation("IMAGE_LIST_TRANS_INT", f);
 
     m = INT_INTOBJ(n);
 
@@ -1308,9 +1279,7 @@ Obj FuncIS_ID_TRANS(Obj self, Obj f)
         }
         return True;
     }
-    ErrorQuit("IS_ID_TRANS: the first argument must be a transformation "
-              "(not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("IS_ID_TRANS", f);
     return 0L;
 }
 
@@ -1343,9 +1312,7 @@ Obj FuncIS_IDEM_TRANS(Obj self, Obj f)
         }
         return True;
     }
-    ErrorQuit("IS_IDEM_TRANS: the argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("IS_IDEM_TRANS", f);
     return 0L;
 }
 
@@ -1365,11 +1332,7 @@ Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
     Obj     ord, out;
     Int     cyc;
 
-    if (!IS_TRANS(f)) {
-        ErrorQuit("IndexPeriodOfTransformation: the argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-    }
+    RequireTransformation("IndexPeriodOfTransformation", f);
 
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
@@ -1625,12 +1588,8 @@ Obj FuncInverseOfTransformation(Obj self, Obj f)
     UInt   deg, i;
     Obj    g;
 
-    if (!IS_TRANS(f)) {
-        ErrorQuit("InverseOfTransformation: the argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-    }
-    else if (FuncIS_ID_TRANS(self, f) == True) {
+    RequireTransformation("InverseOfTransformation", f);
+    if (FuncIS_ID_TRANS(self, f) == True) {
         return f;
     }
 
@@ -1766,9 +1725,7 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
                   (Int)deg, 0L);
         return 0L;
     }
-    ErrorQuit("ON_KERNEL_ANTI_ACTION: the argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("ON_KERNEL_ANTI_ACTION", f);
     return 0L;
 }
 
@@ -1956,9 +1913,7 @@ Obj FuncAS_PERM_TRANS(Obj self, Obj f)
         }
         return p;
     }
-    ErrorQuit("AS_PERM_TRANS: the first argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("AS_PERM_TRANS", f);
     return 0L;
 }
 
@@ -2030,9 +1985,7 @@ Obj FuncPermutationOfImage(Obj self, Obj f)
         }
         return p;
     }
-    ErrorQuit("PermutationOfImage: the first argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("PermutationOfImage", f);
     return 0L;
 }
 
@@ -2047,11 +2000,8 @@ Obj FuncPermLeftQuoTransformationNC(Obj self, Obj f, Obj g)
     UInt   def, deg, i, min, max;
     Obj    perm;
 
-    if (!IS_TRANS(f) || !IS_TRANS(g)) {
-        ErrorQuit("PermLeftQuoTransformationNC: the arguments must both be "
-                  "transformations (not %s and %s)",
-                  (Int)TNAM_OBJ(f), (Int)TNAM_OBJ(g));
-    }
+    RequireTransformation("PermLeftQuoTransformationNC", f);
+    RequireTransformation("PermLeftQuoTransformationNC", g);
 
     def = DEG_TRANS(f);
     deg = DEG_TRANS(g);
@@ -2225,9 +2175,7 @@ Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
         }
         return g;
     }
-    ErrorQuit("RestrictedTransformation: the first argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("RestrictedTransformation", f);
     return 0L;
 }
 
@@ -2307,9 +2255,7 @@ Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
         }
         return g;
     }
-    ErrorQuit("AS_TRANS_TRANS: the first argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("AS_TRANS_TRANS", f);
     return 0L;
 }
 
@@ -2366,9 +2312,7 @@ Obj FuncTRIM_TRANS(Obj self, Obj f, Obj m)
         return (Obj)0;
     }
 
-    ErrorQuit("TRIM_TRANS: the first argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("TRIM_TRANS", f);
     return 0L;
 }
 
@@ -2433,9 +2377,7 @@ Obj FuncLARGEST_MOVED_PT_TRANS(Obj self, Obj f)
         }
         return INTOBJ_INT(i);
     }
-    ErrorQuit("LARGEST_MOVED_PT_TRANS: the first argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("LARGEST_MOVED_PT_TRANS", f);
     return 0L;
 }
 
@@ -2483,9 +2425,7 @@ Obj FuncLARGEST_IMAGE_PT(Obj self, Obj f)
         }
         return INTOBJ_INT(max);
     }
-    ErrorQuit("LARGEST_IMAGE_PT: the first argument must be a transformation "
-              "(not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("LARGEST_IMAGE_PT", f);
     return 0L;
 }
 
@@ -2500,13 +2440,8 @@ Obj FuncSMALLEST_MOVED_PT_TRANS(Obj self, Obj f)
     const UInt4 * ptf4;
     UInt    i, deg;
 
-    if (!IS_TRANS(f)) {
-        ErrorQuit("SMALLEST_MOVED_PTS_TRANS: the first argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-        return 0L;
-    }
-    else if (FuncIS_ID_TRANS(self, f) == True) {
+    RequireTransformation("SMALLEST_MOVED_PTS_TRANS", f);
+    if (FuncIS_ID_TRANS(self, f) == True) {
         return Fail;
     }
 
@@ -2542,13 +2477,8 @@ Obj FuncSMALLEST_IMAGE_PT(Obj self, Obj f)
     const UInt4 * ptf4;
     UInt    i, min, deg;
 
-    if (!IS_TRANS(f)) {
-        ErrorQuit("SMALLEST_IMAGE_PT: the first argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-        return 0L;
-    }
-    else if (FuncIS_ID_TRANS(self, f) == True) {
+    RequireTransformation("SMALLEST_IMAGE_PT", f);
+    if (FuncIS_ID_TRANS(self, f) == True) {
         return Fail;
     }
 
@@ -2606,9 +2536,7 @@ Obj FuncNR_MOVED_PTS_TRANS(Obj self, Obj f)
         }
         return INTOBJ_INT(nr);
     }
-    ErrorQuit("NR_MOVED_PTS_TRANS: the first argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("NR_MOVED_PTS_TRANS", f);
     return 0L;
 }
 
@@ -2622,12 +2550,7 @@ Obj FuncMOVED_PTS_TRANS(Obj self, Obj f)
     const UInt2 * ptf2;
     const UInt4 * ptf4;
 
-    if (!IS_TRANS(f)) {
-        ErrorQuit("MOVED_PTS_TRANS: the first argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-        return 0L;
-    }
+    RequireTransformation("MOVED_PTS_TRANS", f);
 
     len = 0;
     if (TNUM_OBJ(f) == T_TRANS2) {
@@ -2678,11 +2601,7 @@ Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
     const UInt4 * ptf4;
     UInt4 * seen;
 
-    if (!IS_TRANS(f)) {
-        ErrorQuit("COMPONENT_REPS_TRANS: the argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-    }
+    RequireTransformation("COMPONENT_REPS_TRANS", f);
 
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
@@ -2818,11 +2737,7 @@ Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f)
     const UInt4 * ptf4;
     UInt4 * ptseen;
 
-    if (!IS_TRANS(f)) {
-        ErrorQuit("NR_COMPONENTS_TRANS: the argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-    }
+    RequireTransformation("NR_COMPONENTS_TRANS", f);
 
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
     ptseen = ResizeInitTmpTrans(deg);
@@ -2871,11 +2786,7 @@ Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
     UInt    deg, i, pt, csize, nr, index, pos;
     Obj     out, comp;
 
-    if (!IS_TRANS(f)) {
-        ErrorQuit("COMPONENTS_TRANS: the argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-    }
+    RequireTransformation("COMPONENTS_TRANS", f);
 
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
@@ -2990,11 +2901,7 @@ Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
     const UInt4 * ptf4;
     UInt4 * ptseen;
 
-    if (!IS_TRANS(f)) {
-        ErrorQuit("COMPONENT_TRANS_INT: the first argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-    }
+    RequireTransformation("COMPONENT_TRANS_INT", f);
     RequirePositiveSmallInt("COMPONENT_TRANS_INT", pt, "pt");
 
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
@@ -3049,11 +2956,7 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
     const UInt4 * ptf4;
     UInt4 * ptseen;
 
-    if (!IS_TRANS(f)) {
-        ErrorQuit("CYCLE_TRANS_INT: the first argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-    }
+    RequireTransformation("CYCLE_TRANS_INT", f);
     RequirePositiveSmallInt("CYCLE_TRANS_INT", pt, "pt");
 
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
@@ -3114,12 +3017,7 @@ Obj FuncCYCLES_TRANS(Obj self, Obj f)
     UInt    deg, i, pt, nr;
     Obj     out, comp;
 
-    if (!IS_TRANS(f)) {
-        ErrorQuit("CYCLES_TRANS: the argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-    }
-
+    RequireTransformation("CYCLES_TRANS", f);
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
     if (deg == 0) {
@@ -3210,14 +3108,9 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
     UInt    deg, i, j, pt, nr;
     Obj     out, comp, list_i;
 
-    if (!IS_TRANS(f)) {
-        ErrorQuit("CYCLES_TRANS_LIST: the first argument must be a "
-                  "transformation (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-    }
-    else if (!IS_LIST(list)) {
-        ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a "
-                  "list (not a %s)",
+    RequireTransformation("CYCLES_TRANS_LIST", f);
+    if (!IS_LIST(list)) {
+        ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a list (not a %s)",
                   (Int)TNAM_OBJ(f), 0L);
     }
 
@@ -3402,9 +3295,7 @@ Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
         }
         return g;
     }
-    ErrorQuit("INV_LIST_TRANS: the second argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("INV_LIST_TRANS", f);
     return 0L;
 }
 
@@ -3429,12 +3320,8 @@ Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g)
     UInt4 *ptsrc, *ptdst, *ptp;
     UInt   def, deg, i, j, max, min;
 
-    if (!IS_TRANS(f) || !IS_TRANS(g)) {
-        ErrorQuit(
-            "TRANS_IMG_CONJ: the arguments must both be transformations "
-            "(not %s and %s)",
-            (Int)TNAM_OBJ(f), (Int)TNAM_OBJ(g));
-    }
+    RequireTransformation("TRANS_IMG_CONJ", f);
+    RequireTransformation("TRANS_IMG_CONJ", g);
 
     def = DEG_TRANS(f);
     deg = DEG_TRANS(g);
@@ -3785,9 +3672,7 @@ Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
             return g;
         }
     }
-    ErrorQuit("INV_KER_TRANS: the argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("INV_KER_TRANS", f);
     return 0L;
 }
 
@@ -3851,9 +3736,7 @@ Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
         REMOVE_DUPS_PLIST_INTOBJ(res);
         return res;
     }
-    ErrorQuit("OnPosIntSetsTrans: the argument must be a "
-              "transformation (not a %s)",
-              (Int)TNAM_OBJ(f), 0L);
+    RequireTransformation("OnPosIntSetsTrans", f);
     return 0L;
 }
 
