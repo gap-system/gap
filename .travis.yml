@@ -116,10 +116,13 @@ matrix:
     - env: TEST_SUITES="testlibgap"
 
 script:
+  - set -e
   - gcov --version
-  - bash etc/ci-prepare.sh && bash etc/ci.sh
+  - bash etc/ci-prepare.sh
+  - bash etc/ci.sh
 
 after_script:
+  - set -e
   - bash etc/ci-gather-coverage.sh
   - bash <(curl -s https://codecov.io/bash)
 
