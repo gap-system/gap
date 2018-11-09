@@ -19,6 +19,7 @@
 #define GAP_LISTS_H
 
 #include "error.h"
+#include "io.h"
 #include "objects.h"
 
 /****************************************************************************
@@ -814,7 +815,7 @@ extern  Obj             TYPES_LIST_FAM (
 *F * * * * * * * * * * * * * important filters  * * * * * * * * * * * * * * *
 */
 
-enum {
+typedef enum {
     /** filter number for 'IsSSortedList' */
     FN_IS_SSORT,
 
@@ -840,7 +841,7 @@ enum {
     FN_IS_RECT,
 
     LAST_FN = FN_IS_RECT
-};
+} FilterNumber;
 
 
 /****************************************************************************
@@ -854,6 +855,11 @@ enum {
 **
 **  The macro  'SET_FILT_LIST' is  used  to  set  the filter  for a  list  by
 **  changing its type number.
+**
+**  Two values are treated specially:
+**    0 : The default. This tnum should not change.
+**   (UInt)-1 : It is an error to apply this filter (for example,
+**              marking an empty list as not sorted)
 */
 extern UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 
@@ -862,17 +868,18 @@ extern UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 **
 *F  SET_FILT_LIST( <list>, <fnum> ) . . . . . . . . . . . . . .  set a filter
 */
-#define SET_FILT_LIST(list,fn) \
-  do { \
-    UInt     n; \
-    n = SetFiltListTNums[TNUM_OBJ(list)][fn]; \
-    if ( n != (UInt)-1 ) \
-      RetypeBagIfWritable( list, n ); \
-     else { \
-      Pr( "#E  SET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
-      Pr( "%s:%d\n", (Int)__FILE__, (Int)__LINE__); \
-      }  \
-  } while (0)
+static inline void SET_FILT_LIST(Obj list, FilterNumber fn)
+{
+    UInt n = SetFiltListTNums[TNUM_OBJ(list)][fn];
+    if (n == 0) {
+        return;
+    }
+    if (n != (UInt)-1)
+        RetypeBagIfWritable(list, n);
+    else {
+        Pr("#E  SET_FILT_LIST[%s][%d]\n", (Int)TNAM_OBJ(list), fn);
+    }
+}
 
 /****************************************************************************
 **
@@ -891,6 +898,8 @@ extern Obj FuncSET_FILTER_LIST ( Obj self, Obj list, Obj filter );
 **
 **  The macro 'RESET_FILT_LIST' is used  to  set  the filter  for a  list  by
 **  changing its type number.
+**
+**  The same special values are used as SetFiltListTNums.
 */
 extern UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 
@@ -899,18 +908,18 @@ extern UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 **
 *F  RESET_FILT_LIST( <list>, <fnum> ) . . . . . . . . . . . .  reset a filter
 */
-#define RESET_FILT_LIST(list,fn) \
-  do { \
-    UInt     n; \
-    n = ResetFiltListTNums[TNUM_OBJ(list)][fn]; \
-    if ( n != (UInt) -1 ) \
-      RetypeBag( list, n ); \
-    else  { \
-      Pr( "#E  RESET_FILT_LIST[%s][%d] in ", (Int)TNAM_OBJ(list), fn ); \
-      Pr( "%s:%d\n", (Int)__FILE__, (Int)__LINE__); \
-      }  \
-  } while (0)
-
+static inline void RESET_FILT_LIST(Obj list, FilterNumber fn)
+{
+    UInt n = ResetFiltListTNums[TNUM_OBJ(list)][fn];
+    if (n == 0) {
+        return;
+    }
+    if (n != (UInt)-1)
+        RetypeBag(list, n);
+    else {
+        Pr("#E  RESET_FILT_LIST[%s][%d]\n", (Int)TNAM_OBJ(list), fn);
+    }
+}
 
 /****************************************************************************
 **
@@ -944,17 +953,13 @@ extern UInt ClearFiltsTNums [ LAST_REAL_TNUM ];
 **
 *F  CLEAR_FILTS_LIST( <list> )  . . . . . . . . . . . . . .  clear properties
 */
-#define CLEAR_FILTS_LIST(list) \
-  do { \
-    UInt     n; \
-    n = ClearFiltsTNums[TNUM_OBJ(list)]; \
-    if ( n > 0 ) \
-      RetypeBag( list, n ); \
-/*    else if ( n < 0 ) { \
-      Pr( "#E  CLEAR_FILTS_LIST[%s] in ", (Int)TNAM_OBJ(list), 0 ); \
-      Pr( "%s:%d\n", (Int)__FILE__, (Int)__LINE__); \
-      } */ \
-  } while (0)
+static inline void CLEAR_FILTS_LIST(Obj list)
+{
+    UInt n = ClearFiltsTNums[TNUM_OBJ(list)];
+    if (n > 0) {
+        RetypeBag(list, n);
+    }
+}
 
 
 /****************************************************************************
