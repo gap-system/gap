@@ -44,26 +44,15 @@ do
     rm -rf pargap*
     # skip PolymakeInterface: no polynmake installed (TODO: is there a polymake package we can use)
     rm -rf PolymakeInterface*
+    # skip xgap: no X11 headers, and no means to test it
+    rm -rf xgap*
 
     # HACK to work out timestamp issues with anupq
     touch anupq*/configure* anupq*/Makefile* anupq*/aclocal.m4
 
-    # HACK: skip building digraphs for now -- it doesn't link reliably on travis
-    rm -rf digraphs-*
-
-    # HACK: skip building semigroups-3.x for now -- it requires GCC >= 5, which Travis doesn't have
-    rm -rf semigroups-3.*
-
-    # HACK: skip building float for now -- it doesn't link reliably on travis
-    rm -rf float-*
-
-    if [[ x"$ABI" == "x32" ]]
-    then
-      # HACK: disable NormalizInterface in 32bit mode for now. Version
-      # 0.9.8 doesn't make it easy to support 32bit. With the next
-      # release of the package, this will hopefully change.
-      rm -rf NormalizInterface-0.9.8
-    fi
+    # HACK: workaround GMP 5 bug causing "error: '::max_align_t' has not been declared",
+    # see <https://gcc.gnu.org/gcc-4.9/porting_to.html>
+    printf "%s\n" 1 i "#include <stddef.h>" . w | ed float*/src/mp_poly.C
 
     # reset CFLAGS and LDFLAGS before compiling packages, to prevent
     # them from being compiled with coverage gathering, because
