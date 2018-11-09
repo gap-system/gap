@@ -1187,12 +1187,7 @@ Obj FuncLARGEST_MOVED_POINT_PERM(Obj self, Obj perm)
 {
 
     /* check the argument                                                  */
-    while (TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4) {
-        perm = ErrorReturnObj(
-            "LargestMovedPointPerm: <perm> must be a permutation (not a %s)",
-            (Int)TNAM_OBJ(perm), 0L,
-            "you can replace <perm> via 'return <perm>;'");
-    }
+    RequirePermutation("LargestMovedPointPerm", perm);
 
     return INTOBJ_INT(LargestMovedPointPerm(perm));
 }
@@ -1243,12 +1238,7 @@ Obj             FuncCYCLE_LENGTH_PERM_INT (
     Obj                 point )
 {
     /* evaluate and check the arguments                                    */
-    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
-        perm = ErrorReturnObj(
-            "CycleLengthPermInt: <perm> must be a permutation (not a %s)",
-            (Int)TNAM_OBJ(perm), 0L,
-            "you can replace <perm> via 'return <perm>;'" );
-    }
+    RequirePermutation("CycleLengthPermInt", perm);
     while (!IS_POS_INTOBJ(point)) {
         point = ErrorReturnObj(
          "CycleLengthPermInt: <point> must be a positive integer (not a %s)",
@@ -1323,12 +1313,7 @@ Obj             FuncCYCLE_PERM_INT (
 {
 
     /* evaluate and check the arguments                                    */
-    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
-        perm = ErrorReturnObj(
-            "CyclePermInt: <perm> must be a permutation (not a %s)",
-            (Int)TNAM_OBJ(perm), 0L,
-            "you can replace <perm> via 'return <perm>;'" );
-    }
+    RequirePermutation("CyclePermInt", perm);
     RequirePositiveSmallInt("CyclePermInt", point, "point");
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
@@ -1454,12 +1439,7 @@ static inline Obj CYCLE_STRUCT_PERM(Obj perm)
 Obj FuncCYCLE_STRUCT_PERM(Obj self, Obj perm)
 {
     /* evaluate and check the arguments                                    */
-    while (TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4) {
-        perm = ErrorReturnObj(
-            "CycleStructPerm: <perm> must be a permutation (not a %s)",
-            (Int)TNAM_OBJ(perm), 0L,
-            "you can replace <perm> via 'return <perm>;'");
-    }
+    RequirePermutation("CycleStructPerm", perm);
 
     if (TNUM_OBJ(perm) == T_PERM2) {
         return CYCLE_STRUCT_PERM<UInt2>(perm);
@@ -1537,12 +1517,7 @@ Obj             FuncORDER_PERM (
     Obj                 perm )
 {
     /* check arguments and extract permutation                             */
-    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
-        perm = ErrorReturnObj(
-            "OrderPerm: <perm> must be a permutation (not a %s)",
-            (Int)TNAM_OBJ(perm), 0L,
-            "you can replace <perm> via 'return <perm>;'" );
-    }
+    RequirePermutation("OrderPerm", perm);
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
         return ORDER_PERM<UInt2>(perm);
@@ -1619,12 +1594,7 @@ Obj             FuncSIGN_PERM (
     Obj                 perm )
 {
     /* check arguments and extract permutation                             */
-    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
-        perm = ErrorReturnObj(
-            "SignPerm: <perm> must be a permutation (not a %s)",
-            (Int)TNAM_OBJ(perm), 0L,
-            "you can replace <perm> via 'return <perm>;'" );
-    }
+    RequirePermutation("SignPerm", perm);
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
         return SIGN_PERM<UInt2>(perm);
@@ -1743,12 +1713,7 @@ Obj             FuncSMALLEST_GENERATOR_PERM (
     Obj                 perm )
 {
     /* check arguments and extract permutation                             */
-    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
-        perm = ErrorReturnObj(
-            "SmallestGeneratorPerm: <perm> must be a permutation (not a %s)",
-            (Int)TNAM_OBJ(perm), 0L,
-            "you can replace <perm> via 'return <perm>;'" );
-    }
+    RequirePermutation("SmallestGeneratorPerm", perm);
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
         return SMALLEST_GENERATOR_PERM<UInt2>(perm);
@@ -1867,12 +1832,7 @@ Obj             FuncRESTRICTED_PERM (
     Obj 		test )
 {
     /* check arguments and extract permutation                             */
-    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
-        perm = ErrorReturnObj(
-            "RestrictedPerm: <perm> must be a permutation (not a %s)",
-            (Int)TNAM_OBJ(perm), 0L,
-            "you can replace <perm> via 'return <perm>;'" );
-    }
+    RequirePermutation("RestrictedPerm", perm);
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
         return RESTRICTED_PERM<UInt2>(perm, dom, test);
@@ -1898,12 +1858,7 @@ Obj             FuncTRIM_PERM (
     UInt4*	addr;
 
     /* check arguments and extract permutation */
-    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
-        perm = ErrorReturnObj(
-            "TRIM_PERM: <perm> must be a permutation (not a %s)",
-            (Int)TNAM_OBJ(perm), 0L,
-            "you can replace <perm> via 'return <perm>;'" );
-    }
+    RequirePermutation("TRIM_PERM", perm);
 
     deg = INT_INTOBJ(n);
     /*T a test might be useful here */

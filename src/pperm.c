@@ -2215,7 +2215,7 @@ Obj FuncRESTRICTED_PPERM(Obj self, Obj f, Obj set)
 // be a set of positive integers
 Obj FuncAS_PPERM_PERM(Obj self, Obj p, Obj set)
 {
-    GAP_ASSERT(IS_PERM2(p) || IS_PERM4(p));
+    GAP_ASSERT(IS_PERM(p));
     GAP_ASSERT(IS_LIST(set));
 
     UInt   i, j, n, deg, codeg, dep;

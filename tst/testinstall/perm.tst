@@ -309,8 +309,8 @@ gap> LARGEST_MOVED_POINT_PERM((2,3));
 gap> LARGEST_MOVED_POINT_PERM((2,70000));
 70000
 gap> LARGEST_MOVED_POINT_PERM(fail);
-Error, LargestMovedPointPerm: <perm> must be a permutation (not a boolean or f\
-ail)
+Error, LargestMovedPointPerm: <perm> must be a permutation (not the value 'fai\
+l')
 
 #
 # CycleLengthPermInt, CyclePermInt
@@ -348,7 +348,7 @@ gap> Order( (1,2,3,4)(70,71,72) );
 gap> Order( (1,2,3,4)(70000,71000,72000) );
 12
 gap> ORDER_PERM(fail);
-Error, OrderPerm: <perm> must be a permutation (not a boolean or fail)
+Error, OrderPerm: <perm> must be a permutation (not the value 'fail')
 
 #
 # SignPerm
@@ -358,7 +358,7 @@ gap> List(permSml, SignPerm);
 gap> List(permBig, SignPerm);
 [ 1, -1, -1, 1, 1, -1 ]
 gap> SIGN_PERM(fail);
-Error, SignPerm: <perm> must be a permutation (not a boolean or fail)
+Error, SignPerm: <perm> must be a permutation (not the value 'fail')
 
 #
 # DistancePerms

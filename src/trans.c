@@ -1729,10 +1729,7 @@ Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg)
     UInt   def, dep, i, min, n;
 
     RequireNonnegativeSmallInt("AS_TRANS_PERM_INT", deg);
-    if (TNUM_OBJ(p) != T_PERM2 && TNUM_OBJ(p) != T_PERM4) {
-        ErrorQuit("AS_TRANS_PERM_INT: the first argument must be a permutation (not a %s)",
-                  (Int)TNAM_OBJ(p), 0L);
-    }
+    RequirePermutation("AS_TRANS_PERM_INT", p);
 
     n = INT_INTOBJ(deg);
 
@@ -1814,11 +1811,7 @@ Obj FuncAS_TRANS_PERM(Obj self, Obj p)
     const UInt4 * ptPerm4;
     UInt    sup;
 
-    if (TNUM_OBJ(p) != T_PERM2 && TNUM_OBJ(p) != T_PERM4) {
-        ErrorQuit("AS_TRANS_PERM: the first argument must be a "
-                  "permutation (not a %s)",
-                  (Int)TNAM_OBJ(p), 0L);
-    }
+    RequirePermutation("AS_TRANS_PERM", p);
 
     // find largest moved point
     if (TNUM_OBJ(p) == T_PERM2) {
@@ -3527,10 +3520,7 @@ Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
         }
         return out;
     }
-
-    ErrorQuit("POW_KER_TRANS: the argument must be a "
-              "permutation (not a %s)",
-              (Int)TNAM_OBJ(p), 0L);
+    RequirePermutation("POW_KER_TRANS", p);
     return 0L;
 }
 

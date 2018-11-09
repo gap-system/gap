@@ -111,6 +111,12 @@ static inline void SET_STOREDINV_PERM(Obj perm, Obj inv)
 #define IS_PERM2(perm)  (TNUM_OBJ(perm) == T_PERM2)
 #define IS_PERM4(perm)  (TNUM_OBJ(perm) == T_PERM4)
 
+static inline int IS_PERM(Obj f)
+{
+    return (TNUM_OBJ(f) == T_PERM2 || TNUM_OBJ(f) == T_PERM4);
+}
+
+
 /****************************************************************************
 **
 *V  IdentityPerm  . . . . . . . . . . . . . . . . . . .  identity permutation

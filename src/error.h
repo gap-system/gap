@@ -214,6 +214,15 @@ extern Obj RACErrorHelper(const char * funcname,
 
 /****************************************************************************
 **
+*F  RequirePermutation
+*/
+#define RequirePermutation(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, IS_PERM(op), \
+        "must be a permutation")
+
+
+/****************************************************************************
+**
 *F  GetSmallInt
 */
 static inline Int GetSmallInt(const char * funcname, Obj op, const char * argname)
