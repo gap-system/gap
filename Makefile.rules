@@ -1013,7 +1013,7 @@ testlibgap: ${LIBGAPTESTS}
 .PHONY: testlibgap
 
 coverage:
-	gcov -o . $(SOURCES)
+	gcov -p -o . $(SOURCES)
 
 .PHONY: testinstall testmanuals testobsoletes teststandard testbugfix
 .PHONY: testpackage testpackages testpackagesload testpackagesvars
