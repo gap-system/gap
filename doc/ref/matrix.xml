@@ -429,6 +429,7 @@ See also chapter <Ref Chap="Integral matrices and lattices"/>
 <Heading>Matrices as Linear Mappings</Heading>
 
 <#Include Label="CharacteristicPolynomial">
+<#Include Label="RationalCanonicalFormTransform">
 <#Include Label="JordanDecomposition">
 <#Include Label="BlownUpMat">
 <#Include Label="BlownUpVector">
@@ -613,6 +614,15 @@ grease and level <A>b</A> blocking.
 <#Include Label="AsBlockMatrix">
 <#Include Label="BlockMatrix">
 <#Include Label="MatrixByBlockMatrix">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Linear Programming">
+<Heading>Linear Programming</Heading>
+
+<#Include Label="SimplexMethod">
 
 </Section>
 </Chapter>
