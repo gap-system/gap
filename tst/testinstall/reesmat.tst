@@ -244,6 +244,14 @@ gap> T := Semigroup(RMSElement(R, 2, S.1, 1));
 <subsemigroup of 2x1 Rees matrix semigroup with 1 generator>
 gap> IsSimpleSemigroup(T);
 true
+gap> S := FreeSemigroup(1);
+<free semigroup on the generators [ s1 ]>
+gap> S := S / [[S.1, S.1 ^ 4]];
+<fp semigroup on the generators [ s1 ]>
+gap> R := ReesMatrixSemigroup(S, [[S.1, S.1 ^ 2], [S.1, S.1 ^ 3]]);
+<Rees matrix semigroup 2x2 over <fp semigroup on the generators [ s1 ]>>
+gap> IsSimpleSemigroup(R);
+true
 
 # IsZeroSimpleSemigroup: for a Rees 0-matrix semigroup
 gap> S := Semigroup([Transformation([1, 1]), Transformation([2, 2])]);

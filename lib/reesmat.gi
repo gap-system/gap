@@ -123,6 +123,19 @@ InstallMethod(IsSimpleSemigroup,
 [IsReesMatrixSubsemigroup and HasUnderlyingSemigroup],
 R-> IsSimpleSemigroup(UnderlyingSemigroup(R)));
 
+# This next method for `IsSimpleSemigroup` additionally requires the filter
+# `IsFinite`, but is otherwise identical.  In the Semigroups package, there are
+# some more general methods installed for `IsSimpleSemigroup` which include the
+# filter `IsFinite`. When the rank of `IsFinite` is sufficiently large, these
+# methods can beat the above method. The above method is a more specific method
+# and should always be the one chosen for Rees matrix subsemigroups with known
+# underlying semigroup, whether finite or infinite.
+
+InstallMethod(IsSimpleSemigroup, 
+"for finite subsemigroup of a Rees matrix semigroup with underlying semigroup", 
+[IsReesMatrixSubsemigroup and HasUnderlyingSemigroup and IsFinite],
+R -> IsSimpleSemigroup(UnderlyingSemigroup(R)));
+
 # check that the matrix has no rows or columns consisting entirely of 0s
 # and that the underlying semigroup is simple
 
