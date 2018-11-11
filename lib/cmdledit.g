@@ -967,8 +967,9 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
   if (not IsBound(cf.tabcompnam) and cf.tabcount = 2) or 
      (IsBound(cf.tabcompnam) and cf.tabcount in [2,4]) then
     if Length(cand) > 0 then
+      # we prepend the partial word which was completed
       return GAPInfo.CommandLineEditFunctions.Functions.DisplayMatches(
-                                                               Set(cand));
+                                        Concatenation([word], Set(cand)));
     else
       # ring the bell
       return GAPInfo.CommandLineEditFunctions.Functions.RingBell();
