@@ -2117,15 +2117,17 @@ int GAP_rl_func(int count, int key)
       if (hook == 1) {
          /* display matches */
          if (!IS_LIST(data)) return 0;
-         dlen = LEN_LIST(data);
-         char **strs = (char**)malloc((dlen+1) * sizeof(char*));
+         /* -1, because first is word to be completed */
+         dlen = LEN_LIST(data)-1;
+         /* +2, must be in 'argv' format, terminated by 0 */
+         char **strs = (char**)calloc(dlen+2, sizeof(char*));
          max = 0;
-         for (i=1; i <= dlen; i++) {
-            if (!IsStringConv(ELM_LIST(data, i))) {
+         for (i=0; i <= dlen; i++) {
+            if (!IsStringConv(ELM_LIST(data, i+1))) {
                free(strs);
                return 0;
             }
-            strs[i] = CSTR_STRING(ELM_LIST(data, i));
+            strs[i] = CSTR_STRING(ELM_LIST(data, i+1));
             if (max < strlen(strs[i])) max = strlen(strs[i]);
          }
          rl_display_match_list(strs, dlen, max);
