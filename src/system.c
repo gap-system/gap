@@ -1160,6 +1160,7 @@ void InitSystem (
     InitSysFiles();
 
 #ifdef HAVE_LIBREADLINE
+    rl_readline_name = "GAP";
     rl_initialize ();
 #endif
     
