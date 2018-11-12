@@ -607,39 +607,3 @@ void SwapMasterPoint(Bag bag1, Bag bag2)
     SET_PTR_BAG(bag1, ptr2);
     SET_PTR_BAG(bag2, ptr1);
 }
-
-void MarkBag(Bag bag)
-{
-}
-
-void MarkNoSubBags(Bag bag)
-{
-}
-
-void MarkOneSubBags(Bag bag)
-{
-}
-
-void MarkTwoSubBags(Bag bag)
-{
-}
-
-void MarkThreeSubBags(Bag bag)
-{
-}
-
-void MarkFourSubBags(Bag bag)
-{
-}
-
-void MarkAllSubBags(Bag bag)
-{
-}
-
-void MarkAllButFirstSubBags(Bag bag)
-{
-}
-
-void MarkArrayOfBags(const Bag array[], UInt count)
-{
-}
