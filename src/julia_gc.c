@@ -52,8 +52,6 @@ static UInt MarkCacheHits, MarkCacheAttempts, MarkCacheCollisions;
 #endif
 
 
-TNumInfoBags InfoBags[NUM_TYPES];
-
 UInt SizeAllBags;
 
 static inline Bag * DATA(BagHeader * bag)

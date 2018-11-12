@@ -26,8 +26,6 @@
 #include "hpc/guards.h"
 #endif
 
-TNumInfoBags InfoBags[NUM_TYPES];
-
 UInt8 SizeAllBags;
 
 static inline Bag * DATA(BagHeader * bag)
