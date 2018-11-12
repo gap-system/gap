@@ -366,6 +366,13 @@ const Char * TNAM_TNUM(UInt tnum);
 
 /****************************************************************************
 **
+*F  SET_TNAM_TNUM( <obj> ) . . . . . . . . . . . . . . set the name of a type
+*/
+void SET_TNAM_TNUM(UInt tnum, const Char *name);
+
+
+/****************************************************************************
+**
 *F  TNAM_OBJ( <obj> ) . . . . . . . . . . . . . name of the type of an object
 */
 static inline const Char * TNAM_OBJ(Obj obj)
