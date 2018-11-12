@@ -61,6 +61,16 @@ typedef struct {
 
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;
 
+
+/****************************************************************************
+**
+*V  NameOfType[<type>] . . . . . . . . . . . . . . . . . . . . names of types
+**
+**  'NameOfType[<type>]' is the name of the type <type>.
+*/
+static const char * NameOfType[NUM_TYPES];
+
+
 /****************************************************************************
 **
 *F  RegisterPackageTNUM( <name>, <typeObjFunc> )
@@ -86,7 +96,7 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) )
     HashUnlock(0);
 #endif
 
-    InfoBags[tnum].name = name;
+    SET_TNAM_TNUM(tnum, name);
     TypeObjFuncs[tnum] = typeObjFunc;
 
     return tnum;
@@ -94,7 +104,13 @@ Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) )
 
 const Char * TNAM_TNUM(UInt tnum)
 {
-    return InfoBags[tnum].name;
+    return NameOfType[tnum];
+}
+
+void SET_TNAM_TNUM(UInt tnum, const Char *name)
+{
+    GAP_ASSERT(NameOfType[tnum] == 0);
+    NameOfType[tnum] = name;
 }
 
 

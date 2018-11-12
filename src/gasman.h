@@ -665,10 +665,6 @@ extern  UInt                    NrHalfDeadBags;
 **  'InfoBags[<type>]'  is a structure containing information for bags of the
 **  type <type>.
 **
-**  'InfoBags[<type>].name' is the name of the type <type>.   Note that it is
-**  the responsibility  of  the  application using  {\Gasman}   to enter this
-**  name.
-**
 **  'InfoBags[<type>].nrLive' is the number of  bags of type <type> that  are
 **  currently live.
 **
@@ -685,7 +681,6 @@ extern  UInt                    NrHalfDeadBags;
 **  'COUNT_BAGS' defined.
 */
 typedef struct  {
-    const Char *            name;
 #ifdef COUNT_BAGS
     UInt                    nrLive;
     UInt                    nrAll;

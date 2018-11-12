@@ -439,7 +439,7 @@ void InitBagNamesFromTable(const StructBagNames * tab)
     Int i;
 
     for (i = 0; tab[i].tnum != -1; i++) {
-        InfoBags[tab[i].tnum].name = tab[i].name;
+        SET_TNAM_TNUM(tab[i].tnum, tab[i].name);
     }
 }
 
