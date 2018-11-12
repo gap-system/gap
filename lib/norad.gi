@@ -552,7 +552,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 	# work in quotient modules first
 	module:=GModuleByMats(Concatenation(ngm,npm),f);
 	sumos:=Reversed(MTX.BasesCompositionSeries(module));
-  Info(InfoFitFree,2,"module layers ",List(sumos,Length));
+	Info(InfoFitFree,2,"module layers ",List(sumos,Length));
 	sumos:=sumos{[2..Length(sumos)]};
 
 	for fs in sumos do
@@ -1013,7 +1013,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 
               # construct the map reps->preimages and map the gens we want (to work
               # in the right coordinates)
-              map:=GroupGeneralMappingByImages(uf,G,map,l);
+              map:=GroupGeneralMappingByImagesNC(uf,G,map,l);
               l:=List(uff,x->ImagesRepresentative(map,x));
             fi;
 
