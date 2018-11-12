@@ -29,6 +29,7 @@ default: all
 ########################################################################
 SOURCES =
 SOURCES += src/ariths.c
+SOURCES += src/bags.c
 SOURCES += src/blister.c
 SOURCES += src/bool.c
 ifeq ($(HPCGAP),yes)

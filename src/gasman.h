@@ -869,7 +869,13 @@ extern void MarkAllButFirstSubBags( Bag bag );
 **  harm in  calling 'MarkBag' for  something   that is not actually  a  bag
 **  identifier.
 */
+#ifdef USE_BOEHM_GC
+static inline void MarkBag( Bag bag )
+{
+}
+#else
 extern void MarkBag( Bag bag );
+#endif
 
 
 /****************************************************************************
