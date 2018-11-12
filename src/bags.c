@@ -4,6 +4,15 @@
 
 #include "gasman.h"
 
+/****************************************************************************
+**
+*V  InfoBags[<type>]  . . . . . . . . . . . . . . . . .  information for bags
+*/
+#ifdef COUNT_BAGS
+TNumInfoBags InfoBags[NUM_TYPES];
+#endif
+
+
 inline void MarkArrayOfBags(const Bag array[], UInt count)
 {
     for (UInt i = 0; i < count; i++) {

@@ -680,16 +680,16 @@ extern  UInt                    NrHalfDeadBags;
 **  This  information is only  kept if {\Gasman} is  compiled with the option
 **  'COUNT_BAGS' defined.
 */
-typedef struct  {
 #ifdef COUNT_BAGS
+typedef struct  {
     UInt                    nrLive;
     UInt                    nrAll;
     UInt                    sizeLive;
     UInt                    sizeAll;
-#endif
 } TNumInfoBags;
 
 extern  TNumInfoBags            InfoBags [ 256 ];
+#endif
 
 
 #ifdef HPCGAP

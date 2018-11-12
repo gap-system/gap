@@ -440,12 +440,6 @@ UInt                    NrHalfDeadBags;
 
 /****************************************************************************
 **
-*V  InfoBags[<type>]  . . . . . . . . . . . . . . . . .  information for bags
-*/
-TNumInfoBags            InfoBags [ NUM_TYPES ];
-
-/****************************************************************************
-**
 *F  IS_BAG_ID -- check if a value looks like a masterpointer id
 */
 static inline UInt IS_BAG_ID(void * ptr)
