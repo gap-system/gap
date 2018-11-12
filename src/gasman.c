@@ -421,7 +421,6 @@ static Bag MarkedBags;
 /****************************************************************************
 **
 *V  NrAllBags . . . . . . . . . . . . . . . . .  number of all bags allocated
-*V  SizeAllBags . . . . . . . . . . . . . .  total size of all bags allocated
 *V  NrLiveBags  . . . . . . . . . .  number of bags that survived the last gc
 *V  SizeLiveBags  . . . . . . .  total size of bags that survived the last gc
 *V  NrDeadBags  . . . . . . . number of bags that died since the last full gc
@@ -430,7 +429,6 @@ static Bag MarkedBags;
 **                            but may still be weakly pointed to
 */
 UInt                    NrAllBags;
-UInt8                   SizeAllBags;
 UInt                    NrLiveBags;
 UInt                    SizeLiveBags;
 UInt                    NrDeadBags;

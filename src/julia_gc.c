@@ -52,8 +52,6 @@ static UInt MarkCacheHits, MarkCacheAttempts, MarkCacheCollisions;
 #endif
 
 
-UInt SizeAllBags;
-
 static inline Bag * DATA(BagHeader * bag)
 {
     return (Bag *)(((char *)bag) + sizeof(BagHeader));

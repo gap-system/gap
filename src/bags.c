@@ -13,6 +13,9 @@ TNumInfoBags InfoBags[NUM_TYPES];
 #endif
 
 
+UInt8 SizeAllBags;
+
+
 inline void MarkArrayOfBags(const Bag array[], UInt count)
 {
     for (UInt i = 0; i < count; i++) {
