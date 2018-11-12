@@ -26,8 +26,6 @@
 #include "hpc/guards.h"
 #endif
 
-UInt8 SizeAllBags;
-
 static inline Bag * DATA(BagHeader * bag)
 {
     return (Bag *)(((char *)bag) + sizeof(BagHeader));

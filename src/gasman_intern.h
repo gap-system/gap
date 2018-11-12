@@ -10,6 +10,76 @@
 
 /****************************************************************************
 **
+*V  NrAllBags . . . . . . . . . . . . . . . . .  number of all bags allocated
+*V  SizeAllBags . . . . . . . . . . . . . .  total size of all bags allocated
+*V  NrLiveBags  . . . . . . . . . .  number of bags that survived the last gc
+*V  SizeLiveBags  . . . . . . .  total size of bags that survived the last gc
+*V  NrDeadBags  . . . . . . . number of bags that died since the last full gc
+*V  SizeDeadBags  . . . . total size of bags that died since the last full gc
+**
+**  'NrAllBags'
+**
+**  'NrAllBags' is the number of bags allocated since Gasman was initialized.
+**  It is incremented for each 'NewBag' call.
+**
+**  'NrLiveBags'
+**
+**  'NrLiveBags' is the number of bags that were  live after the last garbage
+**  collection.  So after a full  garbage collection it is simply  the number
+**  of bags that have been found to be still live by this garbage collection.
+**  After a partial garbage collection it is the sum of the previous value of
+**  'NrLiveBags', which is the number  of live old  bags, and  the number  of
+**  bags that  have been found to  be still live  by this garbage collection,
+**  which is  the number of live   young  bags.   This  value  is used in the
+**  information messages,  and to find  out  how  many  free  identifiers are
+**  available.
+**
+**  'SizeLiveBags'
+**
+**  'SizeLiveBags' is  the total size of bags  that were  live after the last
+**  garbage collection.  So after a full garbage  collection it is simply the
+**  total size of bags that have been found to  be still live by this garbage
+**  collection.  After  a partial  garbage  collection it  is the sum  of the
+**  previous value of  'SizeLiveBags', which is the total   size of live  old
+**  bags, and the total size of bags that have been found to be still live by
+**  this garbage  collection,  which is  the  total size of  live young bags.
+**  This value is used in the information messages.
+**
+**  'NrDeadBags'
+**
+**  'NrDeadBags' is  the number of bags that died since the last full garbage
+**  collection.   So after a  full garbage  collection this is zero.  After a
+**  partial  garbage  collection it  is  the  sum  of the  previous value  of
+**  'NrDeadBags' and the  number of bags that  have been found to be dead  by
+**  this garbage collection.  This value is used in the information messages.
+**
+**  'SizeDeadBags'
+**
+**  'SizeDeadBags' is  the total size  of bags that  died since the last full
+**  garbage collection.  So  after a full   garbage collection this  is zero.
+**  After a partial garbage collection it is the sum of the previous value of
+**  'SizeDeadBags' and the total size of bags that have been found to be dead
+**  by  this garbage  collection.   This  value  is used  in the  information
+**  message.
+**
+**  'NrHalfDeadBags'
+**
+**  'NrHalfDeadBags'  is  the number of  bags  that  have  been  found to  be
+**  reachable only by way of weak pointers since the last garbage collection.
+**  The bodies of these bags are deleted, but their identifiers are marked so
+**  that weak pointer objects can recognize this situation.
+*/
+
+extern  UInt                    NrAllBags;
+extern  UInt                    NrLiveBags;
+extern  UInt                    SizeLiveBags;
+extern  UInt                    NrDeadBags;
+extern  UInt8                   SizeDeadBags;
+extern  UInt                    NrHalfDeadBags;
+
+
+/****************************************************************************
+**
 *F  MarkBagWeakly(<bag>) . . . . . . . . . . . . .  mark a bag as weakly live
 **
 **  'MarkBagWeakly' is an alternative to MarkBag, intended to be used by the
