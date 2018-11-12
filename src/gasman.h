@@ -874,15 +874,6 @@ extern void MarkBag( Bag bag );
 
 /****************************************************************************
 **
-**  MARK_BAG is provided for backwards compatibility with existing code. New
-**  code should use MarkBag directly instead.
-**
-*/
-#define MARK_BAG(bag)   MarkBag(bag)
-
-
-/****************************************************************************
-**
 *F  MarkArrayOfBags(<array>,<count>) . . . . . . .  mark all bags in an array
 **
 **  'MarkArrayOfBags' iterates over <count> all bags in the given array,
