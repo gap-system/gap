@@ -115,6 +115,7 @@ endif
 ifeq ($(HPCGAP),yes)
   SOURCES += src/hpc/aobjects.c
   SOURCES += src/hpc/misc.c
+  SOURCES += src/hpc/region.c
   SOURCES += src/hpc/serialize.c
   SOURCES += src/hpc/thread.c
   SOURCES += src/hpc/threadapi.c

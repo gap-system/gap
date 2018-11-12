@@ -8,43 +8,23 @@
 **  where the non-boehm versions of these methods live.
 **/
 
-#include "system.h"
+#include "boehm_gc.h"
+
 #include "gapstate.h"
 #include "gasman.h"
 #include "objects.h"
 #include "sysmem.h"
-
-#ifdef HPCGAP
-#include "hpc/misc.h"
-#include "hpc/thread.h"
-#include "hpc/guards.h"
-#endif
 
 #ifdef TRACK_CREATOR
 #include "calls.h"
 #include "vars.h"
 #endif
 
-#ifndef USE_BOEHM_GC
-#error This file can only be used when the Boehm GC collector is enabled
-#endif
-
 #ifdef HPCGAP
-#include <pthread.h>
-#define GC_THREADS
+#include "hpc/misc.h"
+#include "hpc/thread.h"
+#include "hpc/guards.h"
 #endif
-
-#define LARGE_GC_SIZE (8192 * sizeof(UInt))
-#define TL_GC_SIZE (256 * sizeof(UInt))
-
-#ifndef DISABLE_GC
-#include <gc/gc.h>
-#include <gc/gc_inline.h>
-#include <gc/gc_typed.h>
-#include <gc/gc_mark.h>
-#endif
-
-
 
 TNumInfoBags InfoBags[NUM_TYPES];
 
@@ -85,13 +65,6 @@ Bag MakeBagReadOnly(Bag bag)
     MEMBAR_WRITE();
     SET_REGION(bag, ReadOnlyRegion);
     return bag;
-}
-
-Region * RegionBag(Bag bag)
-{
-    Region * result = REGION(bag);
-    MEMBAR_READ();
-    return result;
 }
 
 #endif // HPCGAP
@@ -259,37 +232,6 @@ void * AllocateBagMemory(int gc_type, int type, UInt size)
                                        NULL);
     return result;
 }
-
-#ifdef HPCGAP
-
-void LockFinalizer(void * lock, void * data)
-{
-    pthread_rwlock_destroy(lock);
-}
-
-Region * NewRegion(void)
-{
-    Region *           result;
-    pthread_rwlock_t * lock;
-    Obj                region_obj;
-#ifndef DISABLE_GC
-    result = GC_malloc(sizeof(Region) + (MAX_THREADS + 1));
-    lock = GC_malloc_atomic(sizeof(*lock));
-    GC_register_finalizer(lock, LockFinalizer, NULL, NULL, NULL);
-#else
-    result = calloc(1, sizeof(Region) + (MAX_THREADS + 1));
-    lock = malloc(sizeof(*lock));
-#endif
-    pthread_rwlock_init(lock, NULL);
-    region_obj = NewBag(T_REGION, sizeof(Region *));
-    MakeBagPublic(region_obj);
-    *(Region **)(ADDR_OBJ(region_obj)) = result;
-    result->obj = region_obj;
-    result->lock = lock;
-    return result;
-}
-
-#endif
 
 void * AllocateMemoryBlock(UInt size)
 {
