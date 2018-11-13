@@ -1877,8 +1877,8 @@ DeclareAttribute( "MinimalNormalSubgroups", IsGroup );
 ##  returns a list of all normal subgroups of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> g:=SymmetricGroup(4);;NormalSubgroups(g);
-##  [ Sym( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ), Group([ (1,4)(2,3), (1,3)
-##    (2,4) ]), Group(()) ]
+##  [ Sym( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ), Group([ (1,4)(2,3), (1,2)
+##    (3,4) ]), Group(()) ]
 ##  ]]></Example>
 ##  <P/>
 ##  The algorithm for the computation of normal subgroups is described in
@@ -3234,7 +3234,7 @@ DeclareOperation("CentralizerModulo", [IsGroup,IsGroup,IsObject]);
 ##  [ <pc group of size 12 with 3 generators>, Group([ y3, y*y3 ]), Group([ y*y3 ]) ]
 ##  gap> g:=SymmetricGroup(4);;
 ##  gap> PCentralSeries(g,2);
-##  [ Sym( [ 1 .. 4 ] ), Group([ (1,2,3), (2,3,4) ]) ]
+##  [ Sym( [ 1 .. 4 ] ), Group([ (1,2,3), (1,3,4) ]) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
