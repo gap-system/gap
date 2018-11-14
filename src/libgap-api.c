@@ -208,7 +208,7 @@ int GAP_IsSmallInt(Obj obj)
     return obj && IS_INTOBJ(obj);
 }
 
-int GAP_IsLargInt(Obj obj)
+int GAP_IsLargeInt(Obj obj)
 {
     return obj && IS_LARGEINT(obj);
 }
