@@ -214,11 +214,10 @@ Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
 
     /* check the argument                                                  */
     RequireStringRep("LOAD_DYN", filename);
-    while (!IS_INTOBJ(crc) && crc != False) {
-        crc = ErrorReturnObj(
+    if (!IS_INTOBJ(crc) && crc != False) {
+        ErrorMayQuit(
             "LOAD_DYN: <crc> must be a small integer or 'false' (not a %s)",
-            (Int)TNAM_OBJ(crc), 0L,
-            "you can replace <crc> via 'return <crc>;'");
+            (Int)TNAM_OBJ(crc), 0);
     }
 
     /* try to read the module                                              */
@@ -291,11 +290,10 @@ Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
 
     /* check the argument                                                  */
     RequireStringRep("LOAD_STAT", filename);
-    while (!IS_INTOBJ(crc) && crc != False) {
-        crc = ErrorReturnObj(
+    if (!IS_INTOBJ(crc) && crc != False) {
+        ErrorMayQuit(
             "LOAD_STAT: <crc> must be a small integer or 'false' (not a %s)",
-            (Int)TNAM_OBJ(crc), 0L,
-            "you can replace <crc> via 'return <crc>;'");
+            (Int)TNAM_OBJ(crc), 0);
     }
 
     /* try to find the module                                              */

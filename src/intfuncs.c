@@ -428,8 +428,6 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
 Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
 {
   Int n;
-  Int offs;
-
   if ( IS_INTOBJ(obj) )
     return obj;
 
@@ -449,17 +447,13 @@ Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
 
   /* check the arguments                                                 */
   Int seed = GetSmallInt("HASHKEY_BAG", opSeed, "seed");
-  
-  do {
-    offs = GetSmallInt("HASHKEY_BAG", opOffset, "offset");
-    if ( offs < 0 || offs > SIZE_OBJ(obj)) {
-      opOffset = ErrorReturnObj(
-        "HashKeyBag: <offset> must be non-negative and less than the bag size",
-        0L, 0L,
-        "you can replace <offset> via 'return <offset>;'" );      
-      offs = -1; 
-    }
-  } while (offs < 0);
+
+  Int offs = GetSmallInt("HASHKEY_BAG", opOffset, "offset");
+  if (offs < 0 || offs > SIZE_OBJ(obj)) {
+      ErrorMayQuit("HashKeyBag: <offset> must be non-negative and less than "
+                   "the bag size",
+                   0, 0);
+  }
 
   /* maximal number of bytes to read */
   Int maxlen = GetSmallInt("HASHKEY_BAG", opMaxLen, "maxlen");
