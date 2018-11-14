@@ -4,12 +4,13 @@
 
 #include "ariths.h"
 #include "bool.h"
-#include "opers.h"
 #include "calls.h"
 #include "gap.h"
 #include "gapstate.h"
 #include "gvars.h"
+#include "integer.h"
 #include "lists.h"
+#include "opers.h"
 #include "plist.h"
 #include "streams.h"
 #include "stringobj.h"
@@ -192,6 +193,47 @@ Obj GAP_CallFuncArray(Obj func, UInt narg, Obj args[])
     return result;
 }
 
+
+////
+//// integers
+////
+
+int GAP_IsInt(Obj obj)
+{
+    return obj && IS_INT(obj);
+}
+
+int GAP_IsSmallInt(Obj obj)
+{
+    return obj && IS_INTOBJ(obj);
+}
+
+int GAP_IsLargInt(Obj obj)
+{
+    return obj && IS_LARGEINT(obj);
+}
+
+Obj GAP_MakeObjInt(const UInt * limbs, Int size)
+{
+    return MakeObjInt(limbs, size);
+}
+
+Int GAP_SizeInt(Obj obj)
+{
+    RequireInt("GAP_SizeInt", obj, "obj");
+    if (obj == INTOBJ_INT(0))
+        return 0;
+    Int size = (IS_INTOBJ(obj) ? 1 : SIZE_INT(obj));
+    return IS_POS_INT(obj) ? size : -size;
+}
+
+const UInt * GAP_AddrInt(Obj obj)
+{
+    if (obj && IS_LARGEINT(obj))
+        return CONST_ADDR_INT(obj);
+    else
+        return 0;
+}
 
 ////
 //// lists

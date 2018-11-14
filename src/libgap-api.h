@@ -83,6 +83,49 @@ extern Obj GAP_CallFuncArray(Obj func, UInt narg, Obj args[]);
 
 
 ////
+//// integers
+////
+
+// Returns 1 if <obj> is a GAP integer, 0 if not.
+extern int GAP_IsInt(Obj obj);
+
+// Returns 1 if <obj> is a GAP small (aka immediate) integer, 0 if not.
+extern int GAP_IsSmallInt(Obj obj);
+
+// Returns 1 if <obj> is a GAP large integer, 0 if not.
+extern int GAP_IsLargInt(Obj obj);
+
+
+// Construct an integer object from the limbs at which <limbs> points (for a
+// definition of "limbs", please consult the comment at the top of
+// `integer.c`). The absolute value of <size> determines the number of limbs.
+// If <size> is zero, then `INTOBJ_INT(0)` is returned. Otherwise, the sign
+// of the returned integer object is determined by the sign of <size>.
+// //
+// Note that GAP automatically reduces and normalized the integer object,
+// i.e., it will discard any leading zeros; and if the integer fits into a
+// small integer, it will be returned as such.
+extern Obj GAP_MakeObjInt(const UInt * limbs, Int size);
+
+// If <obj> is a GAP integer, returns the number of limbs needed to store the
+// integer, times the sign. If <obj> is the integer 0, then 0 is returned. If
+// <obj> is any other small integer, then 1 or -1 is returned, depending on
+// its sign.
+//
+// If <obj> is not a GAP integer, an error is raised.
+extern Int GAP_SizeInt(Obj obj);
+
+// Returns a pointer to the limbs of a the GAP large integer <obj>.
+// If <obj> is not a GAP large integer, then NULL is returned.
+//
+// Note: The pointer returned by this function is only valid until the next
+// GAP garbage collection. In particular, if you use any GAP APIs, then you
+// should assume that the pointer became stale. Barring that, you may safely
+// copy, inspect, or even modify the content of the string buffer.
+extern const UInt * GAP_AddrInt(Obj obj);
+
+
+////
 //// lists
 ////
 
