@@ -791,6 +791,11 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
         }
     }
     else {
+        if (CALL_1ARGS(IsOutputStream, destination) != True) {
+            ErrorQuit("%s: <outstream> must be an output stream",
+                      (Int)funcname, 0L);
+            return 0;
+        }
         i = OpenOutputStream(destination);
         if (!i) {
             ErrorQuit("%s: cannot open stream for output", (Int)funcname, 0L);
