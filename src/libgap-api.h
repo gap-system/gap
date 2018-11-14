@@ -190,5 +190,11 @@ extern Obj GAP_MakeString(const char * string);
 // terminated C string.
 extern Obj GAP_MakeImmString(const char * string);
 
+// Returns the value of the GAP char <obj>.
+// If <obj> is not a GAP character object, it returns -1.
+extern Int GAP_ValueOfChar(Obj obj);
+
+// Returns the char Obj corresponding to <obj>
+extern Obj GAP_CharWithValue(UChar obj);
 
 #endif

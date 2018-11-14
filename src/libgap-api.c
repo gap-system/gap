@@ -300,3 +300,16 @@ char * GAP_CSTR_STRING(Obj string)
         return 0;
     return CSTR_STRING(string);
 }
+
+Int GAP_ValueOfChar(Obj obj)
+{
+    if (TNUM_OBJ(obj) != T_CHAR) {
+        return -1;
+    }
+    return (Int)CHAR_VALUE(obj);
+}
+
+Obj GAP_CharWithValue(UChar obj)
+{
+    return ObjsChar[obj];
+}
