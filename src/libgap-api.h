@@ -93,7 +93,7 @@ extern int GAP_IsInt(Obj obj);
 extern int GAP_IsSmallInt(Obj obj);
 
 // Returns 1 if <obj> is a GAP large integer, 0 if not.
-extern int GAP_IsLargInt(Obj obj);
+extern int GAP_IsLargeInt(Obj obj);
 
 
 // Construct an integer object from the limbs at which <limbs> points (for a
