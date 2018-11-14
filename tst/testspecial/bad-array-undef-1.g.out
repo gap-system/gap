@@ -9,5 +9,5 @@ Error, Variable: 'm' must have an assigned value in
   return l[m]; at *stdin*:5 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:7
-you can 'return;' after assigning a value
+type 'quit;' to quit to outer loop
 brk> QUIT;

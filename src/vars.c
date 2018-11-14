@@ -92,11 +92,10 @@ Obj             ObjLVar (
     UInt                lvar )
 {
     Obj                 val;            /* value result                    */
-    while ( (val = OBJ_LVAR(lvar)) == 0 ) {
-        ErrorReturnVoid(
-            "Variable: '%g' must have an assigned value",
-            (Int)NAME_LVAR( lvar ), 0L,
-            "you can 'return;' after assigning a value" );
+    val = OBJ_LVAR(lvar);
+    if (val == 0) {
+        ErrorMayQuit("Variable: '%g' must have an assigned value",
+                     (Int)NAME_LVAR(lvar), 0);
     }
     return val;
 }
@@ -351,11 +350,10 @@ Obj             EvalRefHVar (
     UInt                hvar = READ_EXPR(expr, 0);
 
     /* get and check the value of the higher variable                      */
-    while ( (val = OBJ_HVAR(hvar)) == 0 ) {
-        ErrorReturnVoid(
-            "Variable: '%g' must have an assigned value",
-            (Int)NAME_HVAR(hvar), 0L,
-            "you can 'return;' after assigning a value" );
+    val = OBJ_HVAR(hvar);
+    if (val == 0) {
+        ErrorMayQuit("Variable: '%g' must have an assigned value",
+                     (Int)NAME_HVAR(hvar), 0);
     }
 
     /* return the value                                                    */
@@ -465,11 +463,10 @@ Obj             EvalRefGVar (
     Obj                 val;            /* value, result                   */
 
     /* get and check the value of the global variable                      */
-    while ( (val = ValAutoGVar( READ_EXPR(expr, 0) )) == 0 ) {
-        ErrorReturnVoid(
-            "Variable: '%g' must have an assigned value",
-            (Int)NameGVar( READ_EXPR(expr, 0) ), 0L,
-            "you can 'return;' after assigning a value" );
+    val = ValAutoGVar(READ_EXPR(expr, 0));
+    if (val == 0) {
+        ErrorMayQuit("Variable: '%g' must have an assigned value",
+                     (Int)NameGVar(READ_EXPR(expr, 0)), 0);
     }
 
     /* return the value                                                    */

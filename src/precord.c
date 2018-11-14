@@ -339,13 +339,9 @@ Obj ElmPRec (
 
     if (FindPRec(rec,rnam,&i,1))
         return GET_ELM_PREC( rec, i );
-    else {
-        ErrorReturnVoid(
-            "Record Element: '<rec>.%g' must have an assigned value",
-            (Int)NAME_RNAM(rnam), 0L,
-            "you can 'return;' after assigning a value" );
-        return ELM_REC( rec, rnam );
-    }
+
+    ErrorMayQuit("Record Element: '<rec>.%g' must have an assigned value",
+                 (Int)NAME_RNAM(rnam), 0);
 }
 
 
@@ -365,10 +361,7 @@ void UnbPRec (
 
     // Accept T_PREC and T_COMOBJ, reject T_PREC+IMMUTABLE
     if (TNUM_OBJ(rec) == T_PREC+IMMUTABLE) {
-        ErrorReturnVoid(
-            "Record Unbind: <rec> must be a mutable record",
-            0L, 0L,
-            "you can 'return;' and ignore the unbind" );
+        ErrorMayQuit("Record Unbind: <rec> must be a mutable record", 0, 0);
     }
 
     if (FindPRec( rec, rnam, &i, 1 )) {
@@ -408,10 +401,8 @@ void AssPRec (
 
     // Accept T_PREC and T_COMOBJ, reject T_PREC+IMMUTABLE
     if (TNUM_OBJ(rec) == T_PREC+IMMUTABLE) {
-        ErrorReturnVoid(
-            "Record Assignment: <rec> must be a mutable record",
-            0L, 0L,
-            "you can 'return;' and ignore the assignment" );
+        ErrorMayQuit("Record Assignment: <rec> must be a mutable record", 0,
+                     0);
     }
 
     /* get the length of the record                                        */

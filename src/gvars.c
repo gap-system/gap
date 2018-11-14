@@ -323,12 +323,9 @@ void            AssGVar (
     }
 
     /* make certain that the variable is not read only                     */
-    while ( (REREADING != True) &&
-            (ELM_GVAR_LIST( WriteGVars, gvar ) == INTOBJ_INT(0)) ) {
-        ErrorReturnVoid(
-            "Variable: '%g' is read only",
-            (Int)NameGVar(gvar), 0L,
-            "you can 'return;' after making it writable" );
+    if ((REREADING != True) &&
+        (ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(0))) {
+        ErrorMayQuit("Variable: '%g' is read only", (Int)NameGVar(gvar), 0);
     }
 
     /* assign the value to the global variable                             */
@@ -437,11 +434,11 @@ Obj             ValAutoGVar (
         CALL_1ARGS( func, arg );
 
         /* if this is still an automatic variable, this is an error        */
-        while ( (val = ValGVar(gvar)) == 0 ) {
-            ErrorReturnVoid(
-       "Variable: automatic variable '%g' must get a value by function call",
-                (Int)NameGVar(gvar), 0L,
-                "you can 'return;' after assigning a value" );
+        val = ValGVar(gvar);
+        if (val == 0) {
+            ErrorMayQuit("Variable: automatic variable '%g' must get a value "
+                         "by function call",
+                         (Int)NameGVar(gvar), 0);
         }
 
     }
@@ -1098,17 +1095,16 @@ Obj FuncVAL_GVAR (
     Obj                 self,
    Obj                 gvar )
 {
-  Obj val;
+    Obj val;
+
     // check the argument
     RequireStringRep("VAL_GVAR", gvar);
 
     /* get the value */
     val = ValAutoGVar( GVarName( CONST_CSTR_STRING(gvar) ) );
 
-    while (val == (Obj) 0)
-      val = ErrorReturnObj("VAL_GVAR: No value bound to %g",
-                           (Int)gvar, (Int) 0,
-                           "you can return a value" );
+    if (val == 0)
+        ErrorMayQuit("VAL_GVAR: No value bound to %g", (Int)gvar, 0);
     return val;
 }
 
