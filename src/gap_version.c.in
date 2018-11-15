@@ -14,5 +14,5 @@
 *V  SyBuildVersion  . . . . . . . . . . . . . . . . source version for build
 *V  SyBuildDateTime . . . . . . . . . . . . . . . . . date and time of build
 */
-const Char * SyBuildVersion  = "@GAP_VERSION@";
+const Char * SyBuildVersion  = "@PACKAGE_VERSION@";
 const Char * SyBuildDateTime = "today";

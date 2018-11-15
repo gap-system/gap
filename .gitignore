@@ -1,4 +1,12 @@
-/GNUmakefile
+.deps/
+.libs/
+*.la
+*.lo
+*.o
+.dirstamp
+Makefile
+Makefile.in
+/aclocal.m4
 /autom4te.cache/
 /cnf/GAP-VERSION-FILE
 /cnf/GAP-CFLAGS
@@ -7,6 +15,15 @@
 /cnf/GAP-LDFLAGS
 /cnf/GAP-LIBS
 /cnf/GAP-OBJS
+/cnf/ar-lib
+/cnf/compile
+/cnf/config.*
+/cnf/depcomp
+/cnf/install-sh
+/cnf/ltmain.sh
+/cnf/missing
+/cnf/m4/lt*.m4
+/cnf/m4/libtool.m4
 /config.log
 /config.status
 /configure
@@ -84,9 +101,6 @@ doc/gapmacrodoc.idx
 /src/TAGS
 
 /builds/
-
-/libgap.la
-.libs/
 
 /tst/testlibgap/basic
 /tst/testlibgap/basic.out

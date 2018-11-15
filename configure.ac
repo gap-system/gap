@@ -6,6 +6,7 @@ AC_INIT([GAP], [4.dev], [support@gap-system.org], [gap], [http://www.gap-system.
 
 AC_CONFIG_SRCDIR([src/gap.c])
 AC_CONFIG_AUX_DIR([cnf])
+AC_CONFIG_MACRO_DIR([cnf/m4])
 
 AC_CONFIG_HEADERS([gen/config.h:src/config.h.in])
 AC_CONFIG_COMMANDS([gen/stamp-h], [echo timestamp > gen/stamp-h])
@@ -97,8 +98,11 @@ AC_PROG_MKDIR_P
 dnl
 dnl Setup libtool (for interfacing with GAP kernel extension)
 dnl
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 LT_PREREQ([2.4.2])
 LT_INIT([disable-static dlopen win32-dll])
+
+AM_INIT_AUTOMAKE([1.10 foreign subdir-objects -Wall])
 
 
 dnl
@@ -187,6 +191,13 @@ AS_IF([test "x$enable_hpcgap" = xyes],
     # HACK, see https://github.com/fingolfin/gap/issues/9
     AC_DEFINE([MAX_GC_THREADS], [4], [maximum number of GC threads])
     ])
+AM_CONDITIONAL([HPCGAP], [test "$enable_hpcgap" = yes])
+
+AC_ARG_ENABLE([gapmpi],
+    [AS_HELP_STRING([--enable-gapmpi], [enable HPC-GAP-MPI])],
+    [],
+    [enable_gapmpi=no])
+AM_CONDITIONAL([GAPMPI], [test "$enable_gapmpi" = yes])
 
 dnl
 dnl User setting: garbage collector to use
@@ -202,17 +213,20 @@ AS_IF([test "x$with_gc" = xdefault],
     [
     AS_IF([test "x$enable_hpcgap" = xyes], [with_gc=boehm], [with_gc=gasman])
     ])
+AM_CONDITIONAL([USE_BOEHM_GC], [test "$with_gc" = boehm])
+AM_CONDITIONAL([USE_GASMAN], [test "$with_gc" = gasman])
+AM_CONDITIONAL([USE_JULIA_GC], [test "$with_gc" = julia])
 AS_CASE([$with_gc],
     [none|no],  [AC_MSG_ERROR([cannot run GAP without a garbage collector])],
-    [boehm],    [AC_SUBST([GC_SOURCES], [src/boehm_gc.c])
+    [boehm],    [
                  AC_DEFINE([USE_BOEHM_GC],  [1], [define as 1 if Boehm GC is used])
                 ],
     [gasman],   [AS_IF([test "x$enable_hpcgap" = xyes],
                     [AC_MSG_ERROR([GASMAN can not be used with HPC-GAP])])
-                 AC_SUBST([GC_SOURCES], [src/gasman.c])
+                 AM_CONDITIONAL([USE_GASMAN], [true])
                  AC_DEFINE([USE_GASMAN],    [1], [define as 1 if GASMAN is used])
                 ],
-    [julia],    [AC_SUBST([GC_SOURCES], [src/julia_gc.c])
+    [julia],    [
                  AC_DEFINE([USE_JULIA_GC],  [1], [define as 1 if the Julia GC is used])
                 ],
     [*],        [AC_MSG_ERROR([Invalid gc method '$with_gc', use default|none|gasman|boehm|julia])],
@@ -305,8 +319,7 @@ AC_ARG_WITH([gmp],
 
 BUILD_GMP=no
 GMP_CPPFLAGS=
-GMP_LDFLAGS=
-GMP_LIBS="-lgmp"
+GMP_LIBS=""
 AS_CASE([$with_gmp],
   [builtin],[
     # user explicitly requested to use builtin GMP
@@ -316,11 +329,11 @@ AS_CASE([$with_gmp],
   [no],[
     AC_MSG_ERROR([Building without GMP is not supported])
   ],
-  [system],[with_gmp=yes],  dnl supported for backwards compatibility with old build system
-  [yes],[],
+  [system],[with_gmp=yes; GMP_LIBS="-lgmp"],  dnl supported for backwards compatibility with old build system
+  [yes],[GMP_LIBS="-lgmp"],
   [*],[
     GMP_CPPFLAGS="-I${with_gmp}/include"
-    GMP_LDFLAGS="-L${with_gmp}/lib"
+    GMP_LIBS="-L${with_gmp}/lib -lgmp"
   ]
 )
 
@@ -342,19 +355,18 @@ AS_IF([test $BUILD_GMP = no],
 AS_IF([test x$BUILD_GMP = xyes],[
   BUILD_GMP=yes
   GMP_CPPFLAGS='-I${abs_builddir}/extern/install/gmp/include'
-  GMP_LDFLAGS='${abs_builddir}/extern/install/gmp/lib/libgmp.la'
-  GMP_LIBS=
+  GMP_LIBS='extern/install/gmp/lib/libgmp.la'
 ])
 
 AC_SUBST([BUILD_GMP])
 AC_SUBST([GMP_CPPFLAGS])
-AC_SUBST([GMP_LDFLAGS])
 AC_SUBST([GMP_LIBS])
 
 dnl Some packages check the USE_GMP flag; retain it for now to
 dnl allow these packages to work correctly for now. We should
 dnl remove this eventually.
 AC_DEFINE([USE_GMP], [1], [for backwards compatibility])
+AM_CONDITIONAL([BUILD_GMP], [test "$BUILD_GMP" = yes])
 
 
 dnl Find zlib
@@ -365,8 +377,7 @@ AC_ARG_WITH([zlib],
 
 BUILD_ZLIB=no
 ZLIB_CPPFLAGS=
-ZLIB_LDFLAGS=
-ZLIB_LIBS="-lz"
+ZLIB_LIBS=""
 AS_CASE([$with_zlib],
   [builtin],[
     # user explicitly requested to use builtin zlib
@@ -376,11 +387,11 @@ AS_CASE([$with_zlib],
   [no],[
     AC_MSG_ERROR([Building without zlib is not supported])
   ],
-  [system],[with_zlib=yes],  dnl supported for backwards compatibility with old build system
-  [yes],[],
+  [system],[with_zlib=yes; ZLIB_LIBS="-lz"],  dnl supported for backwards compatibility with old build system
+  [yes],[ZLIB_LIBS="-lz"],
   [*],[
     ZLIB_CPPFLAGS="-I${with_zlib}/include"
-    ZLIB_LDFLAGS="-L${with_zlib}/lib"
+    ZLIB_LIBS="-L${with_zlib}/lib -lz"
   ]
 )
 
@@ -405,20 +416,18 @@ AS_IF([test x$BUILD_ZLIB = xyes],[
   ZLIB_CPPFLAGS='-I${abs_builddir}/extern/install/zlib/include'
   AS_CASE([$host_os],
     [*cygwin*],[
-      ZLIB_LDFLAGS='-L${abs_builddir}/extern/install/zlib/lib/ -lz'
+      ZLIB_LIBS='-Lextern/install/zlib/lib/ -lz'
     ],
     [*],[
-      ZLIB_LDFLAGS='${abs_builddir}/extern/install/zlib/lib/libz.a'
+      ZLIB_LIBS='extern/install/zlib/lib/libz.a'
     ]
   )
-
-  ZLIB_LIBS=
 ])
 
 AC_SUBST([BUILD_ZLIB])
 AC_SUBST([ZLIB_CPPFLAGS])
-AC_SUBST([ZLIB_LDFLAGS])
 AC_SUBST([ZLIB_LIBS])
+AM_CONDITIONAL([BUILD_ZLIB], [test "$BUILD_ZLIB" = yes])
 
 
 dnl Find GNU readline
@@ -431,15 +440,14 @@ dnl Now check if we can find GNU readline. We go to some extra efforts to
 dnl ensure it is GNU readline, and not e.g. BSD editline wrappers for
 dnl readline, which do not suffice for GAP.
 AS_IF([test "x$with_readline" != xno],[
-  READLINE_LIBS="-lreadline"
   AS_CASE([x"$with_readline"],
     [xyes|x],[
       READLINE_CPPFLAGS=
-      READLINE_LDFLAGS=
+      READLINE_LIBS="-lreadline"
     ],
     [*],[
       READLINE_CPPFLAGS="-I$with_readline/include"
-      READLINE_LDFLAGS="-L$with_readline/lib"
+      READLINE_LIBS="-L$with_readline/lib -lreadline"
     ]
   )
 
@@ -451,14 +459,13 @@ AS_IF([test "x$with_readline" != xno],[
     AC_DEFINE([HAVE_LIBREADLINE], [1], [Define if you have libreadline])
   ],[
     AS_CASE([x"$with_readline"],
-      [x], [READLINE_CPPFLAGS= READLINE_LDFLAGS= READLINE_LIBS=],
+      [x], [READLINE_CPPFLAGS= READLINE_LIBS=],
       [*], [AC_MSG_FAILURE([--with-readline was given, but test for readline failed])]
     )
   ])
 ])
 
 AC_SUBST([READLINE_CPPFLAGS])
-AC_SUBST([READLINE_LDFLAGS])
 AC_SUBST([READLINE_LIBS])
 
 
@@ -521,25 +528,19 @@ AS_IF([test "x$with_gc" = xboehm],
   # As a side benefit, users do not have to worry about installing dependencies.
 
   BUILD_LIBATOMIC_OPS=yes
-  LIBATOMIC_OPS_CPPFLAGS='-I${abs_builddir}/extern/install/libatomic_ops/include'
-  LIBATOMIC_OPS_LDFLAGS='${abs_builddir}/extern/install/libatomic_ops/lib/libatomic_ops.la'
-  LIBATOMIC_OPS_LIBS=
+  LIBATOMIC_OPS_CPPFLAGS='-I${top_builddir}/extern/install/libatomic_ops/include'
+  LIBATOMIC_OPS_LIBS='${top_builddir}/extern/install/libatomic_ops/lib/libatomic_ops.la'
   AC_SUBST([BUILD_LIBATOMIC_OPS])
   AC_SUBST([LIBATOMIC_OPS_CPPFLAGS])
-  AC_SUBST([LIBATOMIC_OPS_LDFLAGS])
   AC_SUBST([LIBATOMIC_OPS_LIBS])
 
   ATOMIC_OPS_CFLAGS=$LIBATOMIC_OPS_CPPFLAGS
-  ATOMIC_OPS_LIBS=$LIBATOMIC_OPS_LDFLAGS
-
 
   BUILD_BOEHM_GC=yes
-  BOEHM_GC_CPPFLAGS='-I${abs_builddir}/extern/install/gc/include'
-  BOEHM_GC_LDFLAGS='${abs_builddir}/extern/install/gc/lib/libgc.la'
-  BOEHM_GC_LIBS=
+  BOEHM_GC_CPPFLAGS='-I${top_builddir}/extern/install/gc/include'
+  BOEHM_GC_LIBS='${top_builddir}/extern/install/gc/lib/libgc.la'
   AC_SUBST([BUILD_BOEHM_GC])
   AC_SUBST([BOEHM_GC_CPPFLAGS])
-  AC_SUBST([BOEHM_GC_LDFLAGS])
   AC_SUBST([BOEHM_GC_LIBS])
   ]
 )
@@ -590,20 +591,6 @@ AS_IF([test "x$enable_compat_mode" = xyes],
     AS_IF([test x$BUILD_GMP = xyes],[
       AC_CONFIG_FILES([bin/$GAPARCH/extern/gmp/include/gmp.h:cnf/compat/gmp.h.in])
     ])
-    AS_IF([test "x$srcdir" = x.],
-        [
-            AC_MSG_NOTICE([in-tree build])
-        ],
-        [
-            AC_MSG_NOTICE([out-of-tree build])
-            # FIXME: the following config command works if invoked
-            # explicitly, but for some reason is not added to the list
-            # of automatic command
-            AC_CONFIG_COMMANDS([src/compiled.h],
-                [
-                echo "#include \"$ac_abs_top_srcdir/src/compiled.h\"" > src/compiled.h
-                ])
-        ])
     ])
 
 
@@ -646,6 +633,7 @@ case "$host_os" in
 esac
 
 AC_SUBST([SYS_IS_CYGWIN32], [$CYGWIN])
+AM_CONDITIONAL([SYS_IS_CYGWIN32], [test "$CYGWIN" = yes])
 SYS_IS_DARWIN=$DARWIN
 AC_SUBST([SYS_IS_DARWIN])
 
@@ -758,7 +746,7 @@ AS_IF([test "x$enable_hpcgap" = xyes],[
 dnl
 dnl Output everything
 dnl
-AC_CONFIG_FILES([GNUmakefile])
+AC_CONFIG_FILES([Makefile gen/gap_version.c:src/gap_version.c.in])
 AC_CONFIG_FILES([doc/make_doc], [chmod +x doc/make_doc])
 AC_CONFIG_FILES([gac:cnf/gac.in], [chmod +x gac])
 AC_OUTPUT
