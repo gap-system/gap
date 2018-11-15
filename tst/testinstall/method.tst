@@ -9,6 +9,12 @@ Error, required filters [ "IsInt", "IsRat", "IsCyc", "IsExtAElement",
     , "IsMultiplicativeElementWithInverse", "IsZDFRE", "IsAssociativeElement",
   "IsAdditivelyCommutativeElement", "IsCommutativeElement", "IsCyclotomic" ]
 for 1st argument do not match a declaration of Size
+gap> InstallTrueMethod( IsInternalRep, IsList );
+Error, <tofilt> must not involve new representation filters
+gap> InstallTrueMethod( IsDenseCoeffVectorRep, IsList );
+Error, <tofilt> must not involve new representation filters
+gap> InstallTrueMethod( IsInternalRep, IsSmallIntRep );
+gap> InstallTrueMethod( IsList and IsInternalRep, IsList and IsSmallIntRep );
 
 # Check names are set correctly
 gap> cheese := NewOperation("cheese", [IsObject]);
@@ -27,4 +33,4 @@ gap> List(Concatenation(funcs, ranks), NameFunction);
 [ "cheese method", "cheese for a list", "func3", 
   "Priority calculation for cheese", 
   "Priority calculation for cheese for a list", "rank3" ]
-gap> STOP_TEST("method.tst", 1);
+gap> STOP_TEST("method.tst");

@@ -687,11 +687,14 @@ InstallGlobalFunction( "InstallHandlingByNiceBasis",
     filter:= ValueGlobal( name );
 
     # Install the detection of the filter.
+    # The mechanism is safe only if the domain can store
+    # its nice variant, thus we will install it only for cases where
+    # 'IsAttributeStoringRep' is guaranteed.
     entry:= First( NiceBasisFiltersInfo,
                    x -> IsIdenticalObj( filter, x[1] ) );
     entry[3] := record.detect;
+    filter:= filter and IsFreeLeftModule and IsAttributeStoringRep;
     InstallTrueMethod( IsHandledByNiceBasis, filter );
-    filter:= IsFreeLeftModule and filter;
 
     # Install the methods.
     InstallMethod( NiceFreeLeftModuleInfo,

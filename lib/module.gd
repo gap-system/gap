@@ -247,9 +247,7 @@ DeclareProperty( "IsFullMatrixModule", IsFreeLeftModule, 20 );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareCategory( "IsHandledByNiceBasis",
-    IsFreeLeftModule and IsAttributeStoringRep );
-#T individually choose for each repres. in this category?
+DeclareCategory( "IsHandledByNiceBasis", IsFreeLeftModule );
 #T why not `DeclareFilter' ?
 
 
