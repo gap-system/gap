@@ -1971,8 +1971,7 @@ void            IntrPermCycle (
 
         /* get and check current entry for the cycle                       */
         val = PopObj();
-        RequirePositiveSmallInt("Permutation", val, "expr");
-        c = INT_INTOBJ(val);
+        c = GetPositiveSmallInt("Permutation", val, "expr");
         if (c > MAX_DEG_PERM4)
           ErrorQuit( "Permutation literal exceeds maximum permutation degree",
                      0, 0);
@@ -3489,8 +3488,7 @@ void            IntrAssPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    RequirePositiveSmallInt("PosObj Assignment", pos, "position");
-    p = INT_INTOBJ(pos);
+    p = GetPositiveSmallInt("PosObj Assignment", pos, "position");
 
     /* get the list (checking is done by 'ASS_LIST')                       */
     list = PopObj();
@@ -3516,8 +3514,7 @@ void            IntrUnbPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    RequirePositiveSmallInt("PosObj Assignment", pos, "position");
-    p = INT_INTOBJ(pos);
+    p = GetPositiveSmallInt("PosObj Assignment", pos, "position");
 
     /* get the list (checking is done by 'UNB_LIST')                       */
     list = PopObj();
@@ -3549,8 +3546,7 @@ void            IntrElmPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    RequirePositiveSmallInt("PosObj Element", pos, "position");
-    p = INT_INTOBJ( pos );
+    p = GetPositiveSmallInt("PosObj Element", pos, "position");
 
     /* get the list (checking is done by 'ELM_LIST')                       */
     list = PopObj();
@@ -3577,8 +3573,7 @@ void            IntrIsbPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    RequirePositiveSmallInt("PosObj Element", pos, "position");
-    p = INT_INTOBJ( pos );
+    p = GetPositiveSmallInt("PosObj Element", pos, "position");
 
     /* get the list (checking is done by 'ISB_LIST')                       */
     list = PopObj();

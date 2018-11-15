@@ -821,19 +821,15 @@ Obj PowIntPerm(Obj opL, Obj opR)
 {
     Int                 img;            /* image (result)                  */
 
+    GAP_ASSERT(TNUM_OBJ(opL) == T_INTPOS || TNUM_OBJ(opL) == T_INT);
+
     /* large positive integers (> 2^28-1) are fixed by any permutation     */
     if ( TNUM_OBJ(opL) == T_INTPOS )
         return opL;
 
-    /* permutations do not act on negative integers                        */
-    img = INT_INTOBJ( opL );
-    if ( img <= 0 ) {
-        opL = ErrorReturnObj(
-            "Perm. Operations: <point> must be a positive integer (not %d)",
-            (Int)img, 0L,
-            "you can replace <point> via 'return <point>;'" );
-        return POW( opL, opR );
-    }
+    img = INT_INTOBJ(opL);
+    RequireArgumentCondition("PowIntPerm", opL, "point", img > 0,
+                             "must be a positive integer");
 
     /* compute the image                                                   */
     if ( img <= DEG_PERM<T>(opR) ) {
@@ -868,19 +864,15 @@ Obj QuoIntPerm(Obj opL, Obj opR)
     Int                 img;            /* image (left operand)            */
     const T *           ptR;            /* pointer to the permutation      */
 
+    GAP_ASSERT(TNUM_OBJ(opL) == T_INTPOS || TNUM_OBJ(opL) == T_INT);
+
     /* large positive integers (> 2^28-1) are fixed by any permutation     */
     if ( TNUM_OBJ(opL) == T_INTPOS )
         return opL;
 
-    /* permutations do not act on negative integers                        */
     img = INT_INTOBJ(opL);
-    if ( img <= 0 ) {
-        opL = ErrorReturnObj(
-            "Perm. Operations: <point> must be a positive integer (not %d)",
-            (Int)img, 0L,
-            "you can replace <point> via 'return <point>;'" );
-        return QUO( opL, opR );
-    }
+    RequireArgumentCondition("QuoIntPerm", opL, "point", img > 0,
+                             "must be a positive integer");
 
     Obj inv = STOREDINV_PERM(opR);
 
@@ -1123,12 +1115,7 @@ Obj             FuncPermList (
     Obj                 list )
 {
     /* check the arguments                                                 */
-    while ( ! IS_SMALL_LIST( list ) ) {
-        list = ErrorReturnObj(
-            "PermList: <list> must be a list (not a %s)",
-            (Int)TNAM_OBJ(list), 0L,
-            "you can replace <list> via 'return <list>;'" );
-    }
+    RequireSmallList("PermList", list);
 
     UInt len = LEN_LIST( list );
     if ( len <= 65536 ) {
