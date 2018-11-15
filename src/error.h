@@ -183,6 +183,13 @@ static inline Int GetSmallInt(const char * funcname, Obj op, const char * argnam
     return INT_INTOBJ(op);
 }
 
+static inline Int
+GetPositiveSmallInt(const char * funcname, Obj op, const char * argname)
+{
+    RequirePositiveSmallInt(funcname, op, argname);
+    return INT_INTOBJ(op);
+}
+
 
 /****************************************************************************
 **
