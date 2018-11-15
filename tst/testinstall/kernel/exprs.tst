@@ -37,6 +37,12 @@ gap> f(1,1,1);
 Error, Range: <second> must not be equal to <first> (1)
 gap> f(1,3,4);
 Error, Range: <last>-<first> (3) must be divisible by <inc> (2)
+gap> f(2^100,1,2);
+Error, Range: <first> must be a small integer (not a large positive integer)
+gap> f(1,2^100,2);
+Error, Range: <second> must be a small integer (not a large positive integer)
+gap> f(1,2,2^200);
+Error, Range: <last> must be a small integer (not a large positive integer)
 
 # EvalRecExpr
 gap> f:={a,b} -> rec( (a) := b );;
