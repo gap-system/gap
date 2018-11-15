@@ -207,8 +207,13 @@ gap> List(permAll, x -> x^-3);
 #
 # PowIntPerm
 #
+gap> (-1)^(1,2);
+Error, PowIntPerm: <point> must be a positive integer (not the integer -1)
+gap> (-2^100)^(1,2);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `^' on 2 arguments
 gap> 0^(1,2);
-Error, Perm. Operations: <point> must be a positive integer (not 0)
+Error, PowIntPerm: <point> must be a positive integer (not the integer 0)
 gap> n:=10^30;;
 gap> ForAll(permAll, g -> n^g = n);
 true
@@ -222,8 +227,13 @@ gap> List([1,2,3,4,1000],n->List(permBig, g->n^g));
 #
 # QuoIntPerm
 #
+gap> (-1)/(1,2);
+Error, QuoIntPerm: <point> must be a positive integer (not the integer -1)
+gap> (-2^100)/(1,2);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `*' on 2 arguments
 gap> 0/(1,2);
-Error, Perm. Operations: <point> must be a positive integer (not 0)
+Error, QuoIntPerm: <point> must be a positive integer (not the integer 0)
 gap> n:=10^30;;
 gap> ForAll(permAll, g -> n/g = n);
 true
@@ -280,7 +290,7 @@ true
 
 # PermList error handling
 gap> PermList(1);
-Error, PermList: <list> must be a list (not a integer)
+Error, PermList: <list> must be a small list (not the integer 1)
 
 # PermList error handling for T_PERM2
 gap> PermList([1,,3]);

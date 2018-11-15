@@ -1152,17 +1152,16 @@ Obj FuncPositionNthTrueBlist (
     Obj                 Nth )
 {
     UInt                nrb;
-    Int                 nth,  pos,  i;
+    Int                 pos, i;
     UInt                m,  mask;
     const UInt *        ptr;
 
     /* Check the arguments. */    
     RequireBlist("ListBlist", blist, "blist");
-    RequirePositiveSmallInt("Position", Nth, "nth");
-    
+    Int nth = GetPositiveSmallInt("Position", Nth, "nth");
+
     nrb = NUMBER_BLOCKS_BLIST(blist);
     if ( ! nrb )  return Fail;
-    nth = INT_INTOBJ( Nth );
     pos = 0;
     ptr = CONST_BLOCKS_BLIST(blist);
     i = 1;

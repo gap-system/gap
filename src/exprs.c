@@ -833,8 +833,7 @@ Obj             EvalPermExpr (
 
             /* get and check current entry for the cycle                   */
             val = EVAL_EXPR(READ_EXPR(cycle, j - 1));
-            RequirePositiveSmallInt("Permutation", val, "expr");
-            c = INT_INTOBJ(val);
+            c = GetPositiveSmallInt("Permutation", val, "expr");
             if (c > MAX_DEG_PERM4)
               ErrorMayQuit( "Permutation literal exceeds maximum permutation degree",
                             0, 0);
