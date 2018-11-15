@@ -582,12 +582,12 @@ void CheckSameLength(const Char * desc, const Char *leftName, const Char *rightN
 
 /****************************************************************************
 **
-*F  RACErrorHelper
+*F  RequireArgument
 */
-Obj RACErrorHelper(const char * funcname,
-                   Obj          op,
-                   const char * argname,
-                   const char * msg)
+Obj RequireArgument(const char * funcname,
+                    Obj          op,
+                    const char * argname,
+                    const char * msg)
 {
     char msgbuf[1024] = { 0 };
     Int  arg1 = 0;

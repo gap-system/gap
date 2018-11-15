@@ -132,10 +132,10 @@ ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 **
 *F  RACErrorHelper
 */
-extern Obj RACErrorHelper(const char * funcname,
-                          Obj          op,
-                          const char * argname,
-                          const char * msg);
+extern Obj RequireArgument(const char * funcname,
+                           Obj          op,
+                           const char * argname,
+                           const char * msg);
 
 /****************************************************************************
 **
@@ -144,7 +144,7 @@ extern Obj RACErrorHelper(const char * funcname,
 #define RequireArgumentCondition(funcname, op, argname, cond, msg)           \
     do {                                                                     \
         if (!(cond)) {                                                       \
-            RACErrorHelper(funcname, op, argname, msg);                   \
+            RequireArgument(funcname, op, argname, msg);                     \
         }                                                                    \
     } while (0)
 
