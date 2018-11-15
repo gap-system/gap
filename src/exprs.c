@@ -1090,21 +1090,12 @@ Obj             EvalRangeExpr (
     /* evaluate the second value (if present)                              */
     if ( SIZE_EXPR(expr) == 3*sizeof(Expr) ) {
         val = EVAL_EXPR(READ_EXPR(expr, 1));
-        while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) == low ) {
-            if ( ! IS_INTOBJ(val) ) {
-                val = ErrorReturnObj(
-                    "Range: <second> must be a small integer (not a %s)",
-                    (Int)TNAM_OBJ(val), 0,
-                    "you can replace <second> via 'return <second>;'" );
-            }
-            else {
-                val = ErrorReturnObj(
-                    "Range: <second> must not be equal to <first> (%d)",
-                    (Int)low, 0L,
-                    "you can replace the integer <second> via 'return <second>;'" );
-            }
+        Int ival = GetSmallInt("Range", val, "second");
+        if (ival == low) {
+            ErrorMayQuit("Range: <second> must not be equal to <first> (%d)",
+                         (Int)low, 0);
         }
-        inc = INT_INTOBJ(val) - low;
+        inc = ival - low;
     }
     else {
         inc = 1;
@@ -1112,21 +1103,12 @@ Obj             EvalRangeExpr (
 
     /* evaluate and check the high value                                   */
     val = EVAL_EXPR(READ_EXPR(expr, SIZE_EXPR(expr) / sizeof(Expr) - 1));
-    while ( ! IS_INTOBJ(val) || (INT_INTOBJ(val) - low) % inc != 0 ) {
-        if ( ! IS_INTOBJ(val) ) {
-            val = ErrorReturnObj(
-                "Range: <last> must be a small integer (not a %s)",
-                (Int)TNAM_OBJ(val), 0,
-                "you can replace <last> via 'return <last>;'" );
-        }
-        else {
-            val = ErrorReturnObj(
-                "Range: <last>-<first> (%d) must be divisible by <inc> (%d)",
-                (Int)(INT_INTOBJ(val)-low), (Int)inc,
-                "you can replace the integer <last> via 'return <last>;'" );
-        }
+    high = GetSmallInt("Range", val, "last");
+    if ((high - low) % inc != 0) {
+        ErrorMayQuit(
+            "Range: <last>-<first> (%d) must be divisible by <inc> (%d)",
+            (Int)(high - low), (Int)inc);
     }
-    high = INT_INTOBJ(val);
 
     /* if <low> is larger than <high> the range is empty                   */
     if ( (0 < inc && high < low) || (inc < 0 && low < high) ) {
