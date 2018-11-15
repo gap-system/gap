@@ -1248,7 +1248,7 @@ local som,elvth,fct,gens,new,l,i,j,a,b,bound;
 
   elvth:=One(G);
   fct:=function(G) 
-    elvth:=elvth*Product(List([1..Random([1..5])],x->Random(GeneratorsOfGroup(G))^Random([-3..3])));
+    elvth:=elvth*Product([1..Random(1,5)],x->Random(GeneratorsOfGroup(G))^Random(-3,3));
     return elvth;
   end;
 
