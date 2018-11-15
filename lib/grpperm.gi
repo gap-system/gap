@@ -1243,7 +1243,7 @@ local som,elvth,fct,gens,new,l,i,j,a,b,bound;
   som:=MovedPoints(G);
   bound:=Int(LogInt(Length(som)^5,3)/2); #Dixon Bound
   if Length(som)>100 then
-    som:=som{List([1..100],x->Random([1..Length(som)]))};
+    som:=som{List([1..100],x->Random(1, Length(som)))};
   fi;
 
   elvth:=One(G);
