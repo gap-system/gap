@@ -471,21 +471,22 @@ clean:
 LTINSTALL=$(LIBTOOL) --mode=install $(INSTALL)
 
 install: install-libgap install-headers
-	@echo "Warning, 'make install' has not yet been fully implemented"
-	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(bindir)
-	$(QUIET_INSTALL)$(INSTALL) gap $(DESTDIR)$(bindir)
-	$(QUIET_INSTALL)$(INSTALL) gac $(DESTDIR)$(bindir)
-
-install-headers:
-	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap
-	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
-	$(QUIET_INSTALL)$(INSTALL) -m 0644 $(srcdir)/src/*.h $(DESTDIR)$(includedir)/gap
-	$(QUIET_INSTALL)$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
-	# TODO: take care of config.h
-
-install-libgap: libgap.la
-	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
-	$(QUIET_INSTALL)$(LTINSTALL) libgap.la $(DESTDIR)$(libdir)
+	@echo "Error, 'make install' has not yet been implemented"
+	exit 1
+# 	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(bindir)
+# 	$(QUIET_INSTALL)$(INSTALL) gap $(DESTDIR)$(bindir)
+# 	$(QUIET_INSTALL)$(INSTALL) gac $(DESTDIR)$(bindir)
+# 
+# install-headers:
+# 	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap
+# 	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
+# 	$(QUIET_INSTALL)$(INSTALL) -m 0644 $(srcdir)/src/*.h $(DESTDIR)$(includedir)/gap
+# 	$(QUIET_INSTALL)$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
+# 	# TODO: take care of config.h
+# 
+# install-libgap: libgap.la
+# 	$(QUIET_INSTALL)$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
+# 	$(QUIET_INSTALL)$(LTINSTALL) libgap.la $(DESTDIR)$(libdir)
 
 
 .PHONY: install install-libgap
