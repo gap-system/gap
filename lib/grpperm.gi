@@ -1232,9 +1232,72 @@ end );
 ##
 #M  IsSolvableGroup( <G> )  . . . . . . . . . . . . . . . .  solvability test
 ##
+
+# fast test for finding iteratively nontrivial commutators in a permutation group.
+# if this goes on too long the group may not be solvable. This can be much faster
+# for large degree groups than to use the full pcgs machinery (which uses the same
+# idea but builds a pcgs on the way).
+BindGlobal("QuickUnsolvabilityTestPerm",function(G)
+local som,elvth,fct,gens,new,l,i,j,a,b,bound;
+  # a few moved points
+  som:=MovedPoints(G);
+  bound:=Int(LogInt(Length(som)^5,3)/2); #Dixon Bound
+  if Length(som)>100 then
+    som:=som{List([1..100],x->Random(1, Length(som)))};
+  fi;
+
+  elvth:=One(G);
+  fct:=function(G) 
+    elvth:=elvth*Product([1..Random(1,5)],x->Random(GeneratorsOfGroup(G))^Random(-3,3));
+    return elvth;
+  end;
+
+  gens:=GeneratorsOfGroup(G);
+  # find one nontrivial commutator
+  new:=fail;
+  i:=1;
+  while i<=Length(gens) and new=fail do
+    j:=i+1;
+    while j<=Length(gens) and new=fail do
+      if ForAny(som,x->(x^gens[i])^gens[j]<>(x^gens[j])^gens[i]) then
+        new:=Comm(gens[i],gens[j]);
+      fi;
+      j:=j+1;
+    od;
+    i:=i+1;
+  od;
+  if new=fail then return fail;fi;
+
+  # now take commutators with conjugates to get down
+  i:=1;
+  repeat
+    gens:=new;
+    j:=1;
+    new:=fail;
+    l:=[gens];
+    while j<=10 and new=fail do
+      a:=Random(l)^fct(G);
+      b:=First(l,b->ForAny(som,x->(x^a)^b<>(x^b)^a));
+      if b<>fail then
+        new:=Comm(a,b);
+      else
+        Add(l,a);
+      fi;
+      j:=j+1;
+    od;
+    if new=fail then
+      return fail;
+    fi;
+    i:=i+1;
+  until i>bound;
+  return true;
+end);
+  
 InstallMethod( IsSolvableGroup,"for permgrp", true, [ IsPermGroup ], 0,
 function(G)
 local pcgs;
+  if QuickUnsolvabilityTestPerm(G)=true then return false;fi;
+
   pcgs:=TryPcgsPermGroup( G, false, false, true );
   if IsPcgs(pcgs) then
     SetIndicesEANormalSteps(pcgs,pcgs!.permpcgsNormalSteps);
