@@ -87,26 +87,27 @@ typedef UInt    RNam;
 
 /* checks, should go into 'gap.c'  * * * * * * * * * * * * * * * * * * * * */
 
-#define CHECK_BOUND(obj,name) \
- if ( obj == 0 ) ErrorQuitBound(name);
+#define CHECK_BOUND(obj, name)                                               \
+    if (obj == 0)                                                            \
+        ErrorQuit("variable '%s' must have an assigned value", (Int)name, 0L);
 
-#define CHECK_FUNC_RESULT(obj) \
- if ( obj == 0 ) ErrorQuitFuncResult();
+#define CHECK_FUNC_RESULT(obj)                                               \
+    if (obj == 0)                                                            \
+        ErrorQuit("function must return a value", 0L, 0L);
 
-#define CHECK_INT_SMALL(obj) \
- if ( ! IS_INTOBJ(obj) ) ErrorQuitIntSmall(obj);
+#define CHECK_INT_SMALL(obj) RequireSmallInt(0, obj, "obj");
 
-#define CHECK_INT_SMALL_POS(obj) \
- if ( ! IS_POS_INTOBJ(obj) ) ErrorQuitIntSmallPos(obj);
+#define CHECK_INT_SMALL_POS(obj) RequirePositiveSmallInt(0, obj, "obj");
 
-#define CHECK_INT_POS(obj) \
- if ( ! IS_POS_INT(obj) ) ErrorQuitIntPos(obj);
+#define CHECK_INT_POS(obj)                                                   \
+    if (!IS_POS_INT(obj))                                                    \
+        RequireArgument(0, obj, "obj", "must be a positive integer");
 
-#define CHECK_BOOL(obj) \
- if ( obj != True && obj != False ) ErrorQuitBool(obj);
+#define CHECK_BOOL(obj)                                                      \
+    if (obj != True && obj != False)                                         \
+        RequireArgument(0, obj, "obj", "must be 'true' or 'false'");
 
-#define CHECK_FUNC(obj) \
- if ( TNUM_OBJ(obj) != T_FUNCTION ) ErrorQuitFunc(obj);
+#define CHECK_FUNC(obj) RequireFunction(0, obj);
 
 #define CHECK_NR_ARGS(narg,args) \
  if ( narg != LEN_PLIST(args) ) ErrorQuitNrArgs(narg,args);
