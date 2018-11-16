@@ -47,54 +47,6 @@ extern void ErrorMayQuit(const Char * msg, Int arg1, Int arg2) NORETURN;
 
 /****************************************************************************
 **
-*F  ErrorQuitBound( <name> )  . . . . . . . . . . . . . . .  unbound variable
-*/
-extern void ErrorQuitBound(const Char * name);
-
-
-/****************************************************************************
-**
-*F  ErrorQuitFuncResult() . . . . . . . . . . . . . . . . must return a value
-*/
-extern void ErrorQuitFuncResult(void) NORETURN;
-
-
-/****************************************************************************
-**
-*F  ErrorQuitIntSmall( <obj> )  . . . . . . . . . . . . . not a small integer
-*/
-extern void ErrorQuitIntSmall(Obj obj) NORETURN;
-
-
-/****************************************************************************
-**
-*F  ErrorQuitIntSmallPos( <obj> ) . . . . . . .  not a positive small integer
-*/
-extern void ErrorQuitIntSmallPos(Obj obj) NORETURN;
-
-/****************************************************************************
-**
-*F  ErrorQuitIntPos( <obj> ) . . . . . . .  not a positive  integer
-*/
-extern void ErrorQuitIntPos(Obj obj) NORETURN;
-
-
-/****************************************************************************
-**
-*F  ErrorQuitBool( <obj> )  . . . . . . . . . . . . . . . . . . not a boolean
-*/
-extern void ErrorQuitBool(Obj obj) NORETURN;
-
-
-/****************************************************************************
-**
-*F  ErrorQuitFunc( <obj> )  . . . . . . . . . . . . . . . . .  not a function
-*/
-extern void ErrorQuitFunc(Obj obj) NORETURN;
-
-
-/****************************************************************************
-**
 *F  ErrorQuitNrArgs( <narg>, <args> ) . . . . . . . wrong number of arguments
 */
 extern void ErrorQuitNrArgs(Int narg, Obj args) NORETURN;
@@ -130,7 +82,7 @@ ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 
 /****************************************************************************
 **
-*F  RACErrorHelper
+*F  RequireArgument
 */
 extern Obj RequireArgument(const char * funcname,
                            Obj          op,

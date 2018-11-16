@@ -401,79 +401,6 @@ void ErrorQuit(const Char * msg, Int arg1, Int arg2)
 
 /****************************************************************************
 **
-*F  ErrorQuitBound( <name> )  . . . . . . . . . . . . . . .  unbound variable
-*/
-void ErrorQuitBound(const Char * name)
-{
-    ErrorQuit("variable '%s' must have an assigned value", (Int)name, 0L);
-}
-
-
-/****************************************************************************
-**
-*F  ErrorQuitFuncResult() . . . . . . . . . . . . . . . . must return a value
-*/
-void ErrorQuitFuncResult(void)
-{
-    ErrorQuit("function must return a value", 0L, 0L);
-}
-
-
-/****************************************************************************
-**
-*F  ErrorQuitIntSmall( <obj> )  . . . . . . . . . . . . . not a small integer
-*/
-void ErrorQuitIntSmall(Obj obj)
-{
-    ErrorQuit("<obj> must be a small integer (not a %s)", (Int)TNAM_OBJ(obj),
-              0L);
-}
-
-
-/****************************************************************************
-**
-*F  ErrorQuitIntSmallPos( <obj> ) . . . . . . .  not a positive small integer
-*/
-void ErrorQuitIntSmallPos(Obj obj)
-{
-    ErrorQuit("<obj> must be a positive small integer (not a %s)",
-              (Int)TNAM_OBJ(obj), 0L);
-}
-
-/****************************************************************************
-**
-*F  ErrorQuitIntPos( <obj> ) . . . . . . .  not a positive small integer
-*/
-void ErrorQuitIntPos(Obj obj)
-{
-    ErrorQuit("<obj> must be a positive integer (not a %s)",
-              (Int)TNAM_OBJ(obj), 0L);
-}
-
-
-/****************************************************************************
-**
-*F  ErrorQuitBool( <obj> )  . . . . . . . . . . . . . . . . . . not a boolean
-*/
-void ErrorQuitBool(Obj obj)
-{
-    ErrorQuit("<obj> must be 'true' or 'false' (not a %s)",
-              (Int)TNAM_OBJ(obj), 0L);
-}
-
-
-/****************************************************************************
-**
-*F  ErrorQuitFunc( <obj> )  . . . . . . . . . . . . . . . . .  not a function
-*/
-void ErrorQuitFunc(Obj obj)
-{
-    ErrorQuit("<obj> must be a function (not a %s)", (Int)TNAM_OBJ(obj), 0L);
-}
-
-
-/****************************************************************************
-**
 *F  ErrorQuitNrArgs( <narg>, <args> ) . . . . . . . wrong number of arguments
 */
 void ErrorQuitNrArgs(Int narg, Obj args)
@@ -593,10 +520,15 @@ Obj RequireArgument(const char * funcname,
     Int  arg1 = 0;
     Int  arg2 = 0;
 
-    strlcat(msgbuf, funcname, sizeof(msgbuf));
-    strlcat(msgbuf, ": <", sizeof(msgbuf));
-    strlcat(msgbuf, argname, sizeof(msgbuf));
-    strlcat(msgbuf, "> ", sizeof(msgbuf));
+    if (funcname) {
+        strlcat(msgbuf, funcname, sizeof(msgbuf));
+        strlcat(msgbuf, ": ", sizeof(msgbuf));
+    }
+    if (argname) {
+        strlcat(msgbuf, "<", sizeof(msgbuf));
+        strlcat(msgbuf, argname, sizeof(msgbuf));
+        strlcat(msgbuf, "> ", sizeof(msgbuf));
+    }
     strlcat(msgbuf, msg, sizeof(msgbuf));
     if (IS_INTOBJ(op)) {
         strlcat(msgbuf, " (not the integer %d)", sizeof(msgbuf));
