@@ -696,6 +696,14 @@ function()
     fi;
 end);
 
+
+############################################################################
+##
+#X  Name Synonyms for different spellings
+##
+ReadLib("transatl.g");
+
+
 CallAndInstallPostRestore( function()
     READ_GAP_ROOT( "gap.ini" );
 end );
@@ -789,13 +797,6 @@ CallAndInstallPostRestore( function()
     # user preference `UseColorPrompt'
     ColorPrompt( UserPreference( "UseColorPrompt" ) );
 end );
-
-
-############################################################################
-##
-#X  Name Synonyms for different spellings
-##
-ReadLib("transatl.g");
 
 
 #############################################################################
