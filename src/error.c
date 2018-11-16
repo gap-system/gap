@@ -548,7 +548,7 @@ void ErrorMayQuit(const Char * msg, Int arg1, Int arg2)
 void CheckIsPossList(const Char * desc, Obj poss)
 {
     if ( ! IS_POSS_LIST( poss ) ) {
-        ErrorQuit("%s: <positions> must be a dense list of positive integers",
+        ErrorMayQuit("%s: <positions> must be a dense list of positive integers",
             (Int)desc, 0 );
     }
 }
@@ -560,7 +560,7 @@ void CheckIsPossList(const Char * desc, Obj poss)
 void CheckIsDenseList(const Char * desc, const Char * listName, Obj list)
 {
     if (!IS_DENSE_LIST(list)) {
-        ErrorQuit("%s: <%s> must be a dense list", (Int)desc, (Int)listName);
+        ErrorMayQuit("%s: <%s> must be a dense list", (Int)desc, (Int)listName);
     }
 }
 
