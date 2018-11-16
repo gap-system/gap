@@ -47,15 +47,15 @@ extern void ErrorMayQuit(const Char * msg, Int arg1, Int arg2) NORETURN;
 
 /****************************************************************************
 **
-*F  ErrorQuitNrArgs( <narg>, <args> ) . . . . . . . wrong number of arguments
+*F  ErrorMayQuitNrArgs( <narg>, <actual> ) . . . .  wrong number of arguments
 */
-extern void ErrorQuitNrArgs(Int narg, Obj args) NORETURN;
+extern void ErrorMayQuitNrArgs(Int narg, Int actual) NORETURN;
 
 /****************************************************************************
 **
-*F  ErrorQuitNrAtLeastArgs( <narg>, <args> ) . . . . . . not enough arguments
+*F  ErrorMayQuitNrAtLeastArgs( <narg>, <actual> ) . . .  not enough arguments
 */
-extern void ErrorQuitNrAtLeastArgs(Int narg, Obj args) NORETURN;
+extern void ErrorMayQuitNrAtLeastArgs(Int narg, Int actual) NORETURN;
 
 /****************************************************************************
 **

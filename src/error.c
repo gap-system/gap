@@ -401,23 +401,23 @@ void ErrorQuit(const Char * msg, Int arg1, Int arg2)
 
 /****************************************************************************
 **
-*F  ErrorQuitNrArgs( <narg>, <args> ) . . . . . . . wrong number of arguments
+*F  ErrorMayQuitNrArgs( <narg>, <actual> ) . . . .  wrong number of arguments
 */
-void ErrorQuitNrArgs(Int narg, Obj args)
+void ErrorMayQuitNrArgs(Int narg, Int actual)
 {
-    ErrorQuit("Function Calls: number of arguments must be %d (not %d)", narg,
-              LEN_PLIST(args));
+    ErrorMayQuit("Function: number of arguments must be %d (not %d)",
+                 narg, actual);
 }
 
 /****************************************************************************
 **
-*F  ErrorQuitNrAtLeastArgs( <narg>, <args> ) . . . . . . not enough arguments
+*F  ErrorMayQuitNrAtLeastArgs( <narg>, <actual> ) . . .  not enough arguments
 */
-void ErrorQuitNrAtLeastArgs(Int narg, Obj args)
+void ErrorMayQuitNrAtLeastArgs(Int narg, Int actual)
 {
-    ErrorQuit(
-        "Function Calls: number of arguments must be at least %d (not %d)",
-        narg, LEN_PLIST(args));
+    ErrorMayQuit(
+        "Function: number of arguments must be at least %d (not %d)",
+        narg, actual);
 }
 
 /****************************************************************************
