@@ -523,7 +523,7 @@ static Obj FuncRETURN_NOTHING(Obj self, Obj arg)
 */
 static Obj FuncRuntime(Obj self)
 {
-  return INTOBJ_INT( SyTime() );
+    return ObjInt_UInt(SyTime());
 }
 
 
@@ -531,11 +531,10 @@ static Obj FuncRUNTIMES(Obj self)
 {
   Obj    res;
   res = NEW_PLIST(T_PLIST, 4);
-  SET_LEN_PLIST(res, 4);
-  SET_ELM_PLIST(res, 1, INTOBJ_INT( SyTime() ));
-  SET_ELM_PLIST(res, 2, INTOBJ_INT( SyTimeSys() ));
-  SET_ELM_PLIST(res, 3, INTOBJ_INT( SyTimeChildren() ));
-  SET_ELM_PLIST(res, 4, INTOBJ_INT( SyTimeChildrenSys() ));
+  ASS_LIST(res, 1, ObjInt_UInt(SyTime()));
+  ASS_LIST(res, 2, ObjInt_UInt(SyTimeSys()));
+  ASS_LIST(res, 3, ObjInt_UInt(SyTimeChildren()));
+  ASS_LIST(res, 4, ObjInt_UInt(SyTimeChildrenSys()));
   return res;
 }
 
@@ -691,9 +690,8 @@ static Obj FuncSizeScreen(Obj self, Obj args)
 
   /* make and return the size of the screen                              */
   size = NEW_PLIST( T_PLIST, 2 );
-  SET_LEN_PLIST( size, 2 );
-  SET_ELM_PLIST( size, 1, INTOBJ_INT(SyNrCols) );
-  SET_ELM_PLIST( size, 2, INTOBJ_INT(SyNrRows)  );
+  PushPlist(size, ObjInt_UInt(SyNrCols));
+  PushPlist(size, ObjInt_UInt(SyNrRows));
   return size;
 
 }
@@ -1013,17 +1011,16 @@ static Obj FuncGASMAN_STATS(Obj self)
 
 static Obj FuncGASMAN_MESSAGE_STATUS(Obj self)
 {
-  return INTOBJ_INT(SyMsgsFlagBags);
+    return ObjInt_UInt(SyMsgsFlagBags);
 }
 
 static Obj FuncGASMAN_LIMITS(Obj self)
 {
   Obj list;
   list = NEW_PLIST_IMM(T_PLIST_CYC, 3);
-  SET_LEN_PLIST(list,3);
-  SET_ELM_PLIST(list, 1, INTOBJ_INT(SyStorMin));
-  SET_ELM_PLIST(list, 2, INTOBJ_INT(SyStorMax));
-  SET_ELM_PLIST(list, 3, INTOBJ_INT(SyStorKill));
+  PushPlist(list, ObjInt_Int(SyStorMin));
+  PushPlist(list, ObjInt_Int(SyStorMax));
+  PushPlist(list, ObjInt_Int(SyStorKill));
   return list;
 }
 
@@ -1139,9 +1136,9 @@ static Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
     }
 #ifdef USE_GASMAN
     if ((void **) o >= (void **) MptrBags && (void **) o < (void **) MptrEndBags) {
-        return INTOBJ_INT( ((void **) o - (void **) MptrBags) + 1 );
+        return ObjInt_UInt(((void **)o - (void **)MptrBags) + 1);
     } else {
-        return INTOBJ_INT( 0 );
+        return INTOBJ_INT(0);
     }
 #else
     return ObjInt_UInt((UInt)o / sizeof(Obj));
