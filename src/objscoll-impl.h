@@ -501,7 +501,7 @@ Int Solution(
         i = (SIZE_OBJ(ww)-sizeof(Obj)-1) / sizeof(Int);
         ResizeBag( ww, num*sizeof(Int)+sizeof(Obj)+1 );
         qtr = (Int*)(ADDR_OBJ(ww)+1);
-        for ( i = i+1;  i <= num;  i++ )
+        for ( i = i+1;  i < num;  i++ )
             qtr[i] = 0;
     }
 
@@ -517,7 +517,7 @@ Int Solution(
         i = (SIZE_OBJ(uu)-sizeof(Obj)-1) / sizeof(Int);
         ResizeBag( uu, num*sizeof(Int)+sizeof(Obj)+1 );
         qtr = (Int*)(ADDR_OBJ(uu)+1);
-        for ( i = i+1;  i <= num;  i++ )
+        for ( i = i+1;  i < num;  i++ )
             qtr[i] = 0;
     }
 
