@@ -131,7 +131,7 @@ static Obj FuncGAP_CRC(Obj self, Obj filename)
     RequireStringRep("GAP_CRC", filename);
 
     /* compute the crc value                                               */
-    return INTOBJ_INT(SyGAPCRC(CONST_CSTR_STRING(filename)));
+    return ObjInt_Int(SyGAPCRC(CONST_CSTR_STRING(filename)));
 }
 
 
@@ -261,7 +261,7 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
 
     /* check the crc value                                                 */
     if (crc != False) {
-        crc1 = INTOBJ_INT(info->crc);
+        crc1 = ObjInt_Int(info->crc);
         if (!EQ(crc, crc1)) {
             if (SyDebugLoading) {
                 Pr("#I  LOAD_DYN: crc values do not match, gap ", 0L, 0L);
@@ -316,7 +316,7 @@ static Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
 
     /* check the crc value                                                 */
     if (crc != False) {
-        crc1 = INTOBJ_INT(info->crc);
+        crc1 = ObjInt_Int(info->crc);
         if (!EQ(crc, crc1)) {
             if (SyDebugLoading) {
                 Pr("#I  LOAD_STAT: crc values do not match, gap ", 0L, 0L);
@@ -359,20 +359,18 @@ static Obj FuncSHOW_STAT(Obj self)
 
     /* make a list of modules with crc values                              */
     modules = NEW_PLIST(T_PLIST, 2 * im);
-    SET_LEN_PLIST(modules, 2 * im);
 
-    for (k = 0, im = 1; CompInitFuncs[k]; k++) {
+    for (k = 0; CompInitFuncs[k]; k++) {
         info = (*(CompInitFuncs[k]))();
         if (info == 0) {
             continue;
         }
         name = MakeImmString(info->name);
 
-        SET_ELM_PLIST(modules, im, name);
+        PushPlist(modules, name);
 
         /* compute the crc value                                           */
-        SET_ELM_PLIST(modules, im + 1, INTOBJ_INT(info->crc));
-        im += 2;
+        PushPlist(modules, ObjInt_Int(info->crc));
     }
 
     return modules;

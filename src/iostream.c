@@ -26,6 +26,7 @@
 
 #include "bool.h"
 #include "error.h"
+#include "integer.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
@@ -432,7 +433,7 @@ static Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
     if (pty < 0)
         return Fail;
     else
-        return INTOBJ_INT(pty);
+        return ObjInt_Int(pty);
 }
 
 
@@ -531,7 +532,7 @@ static Obj FuncWRITE_IOSTREAM(Obj self, Obj stream, Obj string, Obj len)
     ConvString(string);
     UInt result = WriteToPty(pty, CSTR_STRING(string), INT_INTOBJ(len));
     HashUnlock(PtyIOStreams);
-    return INTOBJ_INT(result);
+    return ObjInt_Int(result);
 }
 
 static Obj FuncREAD_IOSTREAM(Obj self, Obj stream, Obj len)
@@ -633,7 +634,7 @@ static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
-    Obj result = INTOBJ_INT(PtyIOStreams[pty].ptyFD);
+    Obj result = ObjInt_Int(PtyIOStreams[pty].ptyFD);
     HashUnlock(PtyIOStreams);
     return result;
 }
