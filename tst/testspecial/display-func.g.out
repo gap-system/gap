@@ -1,0 +1,24 @@
+gap> # We test this here to avoid problems with filenames
+gap> 
+gap> # Use AssertionLevel as it is small so hopefully
+gap> # won't change or move very often
+gap> Display(AssertionLevel);
+# GAPROOT/lib/assert.gi:43
+function (  )
+    return CurrentAssertionLevel;
+end
+gap> Print(AssertionLevel);
+function (  )
+    return CurrentAssertionLevel;
+end
+gap> f := {x} -> x;
+function( x ) ... end
+gap> Display(f);
+function ( x )
+    return x;
+end
+gap> Print(f);
+function ( x )
+    return x;
+end
+gap> QUIT;

@@ -62,8 +62,18 @@ end);
 
 InstallMethod(DisplayString, "for a function, using string stream", [IsFunction and IsInternalRep],
 function(fun)
-    local  s, stream;
-    s := "";
+    local  s, stream, line, file;
+
+    file := FilenameFunc(fun);
+    line := StartlineFunc(fun);
+
+    # Filenames starting with '*' are special streams such as *stdin*
+    if line <> fail and file <> fail and file <> "stream" and not StartsWith(file, "*") then
+        s := StringFormatted("# {}:{}\n", file, line);
+    else
+        s := "";
+    fi;
+
     stream := OutputTextString(s, true);
     PrintTo(stream, fun);
     CloseStream(stream);
