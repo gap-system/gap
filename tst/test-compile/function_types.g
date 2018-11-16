@@ -23,4 +23,12 @@ runtest := function()
     f4(1);
     f4(1,2);
     f4(1,2,3);
+
+    BreakOnError := false;
+
+    CALL_WITH_CATCH({} -> f1(), []);
+    CALL_WITH_CATCH({} -> f1(1,2), []);
+    CALL_WITH_CATCH({} -> f2(1,2,3), []);
+    CALL_WITH_CATCH({} -> f4(), []);
+
 end;

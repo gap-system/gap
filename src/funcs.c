@@ -552,12 +552,8 @@ static Obj DoExecFuncXargs(Obj func, Obj args)
 
     /* check the number of arguments                                       */
     len = NARG_FUNC( func );
-    while ( len != LEN_PLIST( args ) ) {
-        args = ErrorReturnObj(
-            "Function Calls: number of arguments must be %d (not %d)",
-            len, LEN_PLIST( args ),
-            "you can replace the <list> of arguments via 'return <list>;'" );
-        PLAIN_LIST( args );
+    if (len != LEN_PLIST(args)) {
+        ErrorMayQuitNrArgs(len, LEN_PLIST(args));
     }
 
 #ifdef HPCGAP

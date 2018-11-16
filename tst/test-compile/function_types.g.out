@@ -6,3 +6,7 @@ f3:[ 2, 3, 4 ]
 f4:1:[  ]
 f4:1:[ 2 ]
 f4:1:[ 2, 3 ]
+Error, Function: number of arguments must be 1 (not 0)
+Error, Function: number of arguments must be 1 (not 2)
+Error, Function: number of arguments must be 2 (not 3)
+Error, Function: number of arguments must be at least 1 (not 0)

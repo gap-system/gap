@@ -1,10 +1,12 @@
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "94037544"
+#define FILE_CRC  "-15431547"
 
 /* global variables used in handlers */
 static GVar G_Print;
 static Obj  GF_Print;
+static GVar G_CALL__WITH__CATCH;
+static Obj  GF_CALL__WITH__CATCH;
 static GVar G_f1;
 static Obj  GF_f1;
 static GVar G_f2;
@@ -14,11 +16,12 @@ static Obj  GF_f3;
 static GVar G_f4;
 static Obj  GF_f4;
 static GVar G_runtest;
+static GVar G_BreakOnError;
 
 /* record names used in handlers */
 
 /* information for the functions */
-static Obj  NameFunc[7];
+static Obj  NameFunc[11];
 static Obj FileName;
 
 /* handler for function 2 */
@@ -144,11 +147,105 @@ static Obj  HdlrFunc5 (
  return 0;
 }
 
+/* handler for function 7 */
+static Obj  HdlrFunc7 (
+ Obj  self )
+{
+ Obj t_1 = 0;
+ Obj t_2 = 0;
+ Bag oldFrame;
+ 
+ /* allocate new stack frame */
+ SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
+ 
+ /* return f1(  ); */
+ t_2 = GF_f1;
+ t_1 = CALL_0ARGS( t_2 );
+ CHECK_FUNC_RESULT( t_1 )
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return t_1;
+ 
+ /* return; */
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+}
+
+/* handler for function 8 */
+static Obj  HdlrFunc8 (
+ Obj  self )
+{
+ Obj t_1 = 0;
+ Obj t_2 = 0;
+ Bag oldFrame;
+ 
+ /* allocate new stack frame */
+ SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
+ 
+ /* return f1( 1, 2 ); */
+ t_2 = GF_f1;
+ t_1 = CALL_2ARGS( t_2, INTOBJ_INT(1), INTOBJ_INT(2) );
+ CHECK_FUNC_RESULT( t_1 )
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return t_1;
+ 
+ /* return; */
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+}
+
+/* handler for function 9 */
+static Obj  HdlrFunc9 (
+ Obj  self )
+{
+ Obj t_1 = 0;
+ Obj t_2 = 0;
+ Bag oldFrame;
+ 
+ /* allocate new stack frame */
+ SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
+ 
+ /* return f2( 1, 2, 3 ); */
+ t_2 = GF_f2;
+ t_1 = CALL_3ARGS( t_2, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) );
+ CHECK_FUNC_RESULT( t_1 )
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return t_1;
+ 
+ /* return; */
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+}
+
+/* handler for function 10 */
+static Obj  HdlrFunc10 (
+ Obj  self )
+{
+ Obj t_1 = 0;
+ Obj t_2 = 0;
+ Bag oldFrame;
+ 
+ /* allocate new stack frame */
+ SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
+ 
+ /* return f4(  ); */
+ t_2 = GF_f4;
+ t_1 = CALL_0ARGS( t_2 );
+ CHECK_FUNC_RESULT( t_1 )
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return t_1;
+ 
+ /* return; */
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+}
+
 /* handler for function 6 */
 static Obj  HdlrFunc6 (
  Obj  self )
 {
  Obj t_1 = 0;
+ Obj t_2 = 0;
+ Obj t_3 = 0;
  Bag oldFrame;
  
  /* allocate new stack frame */
@@ -185,6 +282,74 @@ static Obj  HdlrFunc6 (
  /* f4( 1, 2, 3 ); */
  t_1 = GF_f4;
  CALL_3ARGS( t_1, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) );
+ 
+ /* BreakOnError := false; */
+ t_1 = False;
+ AssGVar( G_BreakOnError, t_1 );
+ 
+ /* CALL_WITH_CATCH( function (  )
+      return f1(  );
+  end, [  ] ); */
+ t_1 = GF_CALL__WITH__CATCH;
+ t_2 = NewFunction( NameFunc[7], 0, 0, HdlrFunc7 );
+ SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
+ t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
+ SET_STARTLINE_BODY(t_3, 29);
+ SET_ENDLINE_BODY(t_3, 29);
+ SET_FILENAME_BODY(t_3, FileName);
+ SET_BODY_FUNC(t_2, t_3);
+ CHANGED_BAG( STATE(CurrLVars) );
+ t_3 = NEW_PLIST( T_PLIST, 0 );
+ SET_LEN_PLIST( t_3, 0 );
+ CALL_2ARGS( t_1, t_2, t_3 );
+ 
+ /* CALL_WITH_CATCH( function (  )
+      return f1( 1, 2 );
+  end, [  ] ); */
+ t_1 = GF_CALL__WITH__CATCH;
+ t_2 = NewFunction( NameFunc[8], 0, 0, HdlrFunc8 );
+ SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
+ t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
+ SET_STARTLINE_BODY(t_3, 30);
+ SET_ENDLINE_BODY(t_3, 30);
+ SET_FILENAME_BODY(t_3, FileName);
+ SET_BODY_FUNC(t_2, t_3);
+ CHANGED_BAG( STATE(CurrLVars) );
+ t_3 = NEW_PLIST( T_PLIST, 0 );
+ SET_LEN_PLIST( t_3, 0 );
+ CALL_2ARGS( t_1, t_2, t_3 );
+ 
+ /* CALL_WITH_CATCH( function (  )
+      return f2( 1, 2, 3 );
+  end, [  ] ); */
+ t_1 = GF_CALL__WITH__CATCH;
+ t_2 = NewFunction( NameFunc[9], 0, 0, HdlrFunc9 );
+ SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
+ t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
+ SET_STARTLINE_BODY(t_3, 31);
+ SET_ENDLINE_BODY(t_3, 31);
+ SET_FILENAME_BODY(t_3, FileName);
+ SET_BODY_FUNC(t_2, t_3);
+ CHANGED_BAG( STATE(CurrLVars) );
+ t_3 = NEW_PLIST( T_PLIST, 0 );
+ SET_LEN_PLIST( t_3, 0 );
+ CALL_2ARGS( t_1, t_2, t_3 );
+ 
+ /* CALL_WITH_CATCH( function (  )
+      return f4(  );
+  end, [  ] ); */
+ t_1 = GF_CALL__WITH__CATCH;
+ t_2 = NewFunction( NameFunc[10], 0, 0, HdlrFunc10 );
+ SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
+ t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
+ SET_STARTLINE_BODY(t_3, 32);
+ SET_ENDLINE_BODY(t_3, 32);
+ SET_FILENAME_BODY(t_3, FileName);
+ SET_BODY_FUNC(t_2, t_3);
+ CHANGED_BAG( STATE(CurrLVars) );
+ t_3 = NEW_PLIST( T_PLIST, 0 );
+ SET_LEN_PLIST( t_3, 0 );
+ CALL_2ARGS( t_1, t_2, t_3 );
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -271,13 +436,26 @@ static Obj  HdlrFunc1 (
       f4( 1 );
       f4( 1, 2 );
       f4( 1, 2, 3 );
+      BreakOnError := false;
+      CALL_WITH_CATCH( function (  )
+            return f1(  );
+        end, [  ] );
+      CALL_WITH_CATCH( function (  )
+            return f1( 1, 2 );
+        end, [  ] );
+      CALL_WITH_CATCH( function (  )
+            return f2( 1, 2, 3 );
+        end, [  ] );
+      CALL_WITH_CATCH( function (  )
+            return f4(  );
+        end, [  ] );
       return;
   end; */
  t_1 = NewFunction( NameFunc[6], 0, 0, HdlrFunc6 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 17);
- SET_ENDLINE_BODY(t_2, 26);
+ SET_ENDLINE_BODY(t_2, 34);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -298,11 +476,13 @@ static Int PostRestore ( StructInitInfo * module )
  
  /* global variables used in handlers */
  G_Print = GVarName( "Print" );
+ G_CALL__WITH__CATCH = GVarName( "CALL_WITH_CATCH" );
  G_f1 = GVarName( "f1" );
  G_f2 = GVarName( "f2" );
  G_f3 = GVarName( "f3" );
  G_f4 = GVarName( "f4" );
  G_runtest = GVarName( "runtest" );
+ G_BreakOnError = GVarName( "BreakOnError" );
  
  /* record names used in handlers */
  
@@ -313,6 +493,10 @@ static Int PostRestore ( StructInitInfo * module )
  NameFunc[4] = 0;
  NameFunc[5] = 0;
  NameFunc[6] = 0;
+ NameFunc[7] = 0;
+ NameFunc[8] = 0;
+ NameFunc[9] = 0;
+ NameFunc[10] = 0;
  
  /* return success */
  return 0;
@@ -326,6 +510,7 @@ static Int InitKernel ( StructInitInfo * module )
  
  /* global variables used in handlers */
  InitFopyGVar( "Print", &GF_Print );
+ InitFopyGVar( "CALL_WITH_CATCH", &GF_CALL__WITH__CATCH );
  InitFopyGVar( "f1", &GF_f1 );
  InitFopyGVar( "f2", &GF_f2 );
  InitFopyGVar( "f3", &GF_f3 );
@@ -345,6 +530,14 @@ static Int InitKernel ( StructInitInfo * module )
  InitGlobalBag( &(NameFunc[5]), "function_types.g:NameFunc[5]("FILE_CRC")" );
  InitHandlerFunc( HdlrFunc6, "function_types.g:HdlrFunc6("FILE_CRC")" );
  InitGlobalBag( &(NameFunc[6]), "function_types.g:NameFunc[6]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc7, "function_types.g:HdlrFunc7("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[7]), "function_types.g:NameFunc[7]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc8, "function_types.g:HdlrFunc8("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[8]), "function_types.g:NameFunc[8]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc9, "function_types.g:HdlrFunc9("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[9]), "function_types.g:NameFunc[9]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc10, "function_types.g:HdlrFunc10("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[10]), "function_types.g:NameFunc[10]("FILE_CRC")" );
  
  /* return success */
  return 0;
@@ -380,7 +573,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_DYNAMIC,
  .name        = "function_types.g",
- .crc         = 94037544,
+ .crc         = -15431547,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

@@ -1475,11 +1475,10 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
   UInt ct;
 
   GAP_ASSERT(IS_PLIST(args));
-  if (LEN_PLIST(args) != 7)
-    {
+  if (LEN_PLIST(args) != 7) {
       ErrorMayQuit("COPY_LIST_ENTRIES: number of arguments must be 7, not %d",
                    (Int)LEN_PLIST(args), 0L);
-    }
+  }
   srclist = ELM_PLIST(args,1);
   GAP_ASSERT(srclist != 0);
   if (!IS_PLIST(srclist))

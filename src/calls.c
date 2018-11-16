@@ -343,16 +343,10 @@ Obj NargError(Obj func, Int actual)
 
   if (narg >= 0) {
     assert(narg != actual);
-    return ErrorReturnObj(
-			  "Function: number of arguments must be %d (not %d)",
-			  narg, actual,
-			  "you can replace the argument list <args> via 'return <args>;'" );
+    ErrorMayQuitNrArgs(narg, actual);
   } else {
     assert(-narg-1 > actual);
-    return ErrorReturnObj(
-        "Function: number of arguments must be at least %d (not %d)",
-        -narg-1, actual,
-        "you can replace the argument list <args> via 'return <args>;'" );
+    ErrorMayQuitNrAtLeastArgs(-narg - 1, actual);
   }
 }
 
