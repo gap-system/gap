@@ -6,7 +6,7 @@ gap> DeclareRepresentation( "IsTestListObjRep", IsTestListObj and IsComponentObj
 gap> BindGlobal( "TestListObjType", NewType(TestListObjFamily, IsTestListObjRep));;
 gap> BindGlobal( "TestListObjTypeMutable", NewType(TestListObjFamily,
 >                                        IsTestListObjRep and IsMutable));;
-gap> Wrap := {x} -> Objectify(TestListObjTypeMutable, rec(l := x));;
+gap> wrap := {x} -> Objectify(TestListObjTypeMutable, rec(l := x));;
 gap> InstallMethod(ViewString, [ IsTestListObjRep ], {x} -> STRINGIFY(x!.l));;
 gap> InstallMethod(\[\], [ IsTestListObjRep, IsPosInt ], {x,i} -> x!.l[i]);;
 gap> InstallMethod(\[\]\:\=, [ IsTestListObjRep and IsMutable, IsPosInt, IsObject ],
@@ -15,8 +15,8 @@ gap> InstallMethod( Length, [ IsTestListObjRep ], {x} -> Length(x!.l));
 gap> InstallMethod( IsBound\[\], [ IsTestListObjRep, IsPosInt ], {x,i} -> IsBound(x!.l[i]));;
 gap> x := [10,20,"cheese"];;
 gap> y := [10,20,"cheese"];;
-gap> a := Wrap(x);;
-gap> b := Wrap(y);;
+gap> a := wrap(x);;
+gap> b := wrap(y);;
 gap> a[2];
 20
 gap> a = b;
