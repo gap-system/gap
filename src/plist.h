@@ -352,10 +352,6 @@ extern void AssPlistFfe   (
     Int                 pos,
     Obj                 val );
 
-extern Int KTNumPlist (
-    Obj                 list,
-    Obj                 *famfirst);
-
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
