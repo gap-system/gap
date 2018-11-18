@@ -6194,7 +6194,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
 
         /* loop over the entries of the tuple                              */
         for (i = len; 1 <= i; i--, ptset--) {
-            if (IS_INTOBJ(*ptset) && 0 < INT_INTOBJ(*ptset)) {
+            if (IS_POS_INTOBJ(*ptset)) {
                 k = INT_INTOBJ(*ptset);
                 if (k <= deg && ptf2[k - 1] != 0) {
                     tmp = INTOBJ_INT(ptf2[k - 1]);
@@ -6219,7 +6219,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
 
         /* loop over the entries of the tuple                              */
         for (i = len; 1 <= i; i--, ptset--) {
-            if (IS_INTOBJ(*ptset) && 0 < INT_INTOBJ(*ptset)) {
+            if (IS_POS_INTOBJ(*ptset)) {
                 k = INT_INTOBJ(*ptset);
                 if (k <= deg && ptf4[k - 1] != 0) {
                     tmp = INTOBJ_INT(ptf4[k - 1]);
@@ -6296,7 +6296,7 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
         deg = DEG_PPERM2(f);
         /* loop over the entries of the tuple                              */
         for (i = 1; i <= len; i++, pttup++) {
-            if (IS_INTOBJ(*pttup) && 0 < INT_INTOBJ(*pttup)) {
+            if (IS_POS_INTOBJ(*pttup)) {
                 k = INT_INTOBJ(*pttup);
                 if (k <= deg && ptf2[k - 1] != 0) {
                     reslen++;
@@ -6319,7 +6319,7 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
         deg = DEG_PPERM4(f);
         /* loop over the entries of the tuple                              */
         for (i = 1; i <= len; i++, pttup++) {
-            if (IS_INTOBJ(*pttup) && 0 < INT_INTOBJ(*pttup)) {
+            if (IS_POS_INTOBJ(*pttup)) {
                 k = INT_INTOBJ(*pttup);
                 if (k <= deg && ptf4[k - 1] != 0) {
                     reslen++;

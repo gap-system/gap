@@ -5055,7 +5055,7 @@ Obj OnSetsTrans(Obj set, Obj f)
         // loop over the entries of the tuple
         isint = 1;
         for (i = len; 1 <= i; i--, ptset--, ptres--) {
-            if (IS_INTOBJ(*ptset) && 0 < INT_INTOBJ(*ptset)) {
+            if (IS_POS_INTOBJ(*ptset)) {
                 k = INT_INTOBJ(*ptset);
                 if (k <= deg) {
                     k = ptf2[k - 1] + 1;
@@ -5080,7 +5080,7 @@ Obj OnSetsTrans(Obj set, Obj f)
         // loop over the entries of the tuple
         isint = 1;
         for (i = len; 1 <= i; i--, ptset--, ptres--) {
-            if (IS_INTOBJ(*ptset) && 0 < INT_INTOBJ(*ptset)) {
+            if (IS_POS_INTOBJ(*ptset)) {
                 k = INT_INTOBJ(*ptset);
                 if (k <= deg) {
                     k = ptf4[k - 1] + 1;
@@ -5150,7 +5150,7 @@ Obj OnTuplesTrans(Obj tup, Obj f)
 
         // loop over the entries of the tuple
         for (i = len; 1 <= i; i--, pttup--, ptres--) {
-            if (IS_INTOBJ(*pttup) && 0 < INT_INTOBJ(*pttup)) {
+            if (IS_POS_INTOBJ(*pttup)) {
                 k = INT_INTOBJ(*pttup);
                 if (k <= deg) {
                     k = ptf2[k - 1] + 1;
@@ -5178,7 +5178,7 @@ Obj OnTuplesTrans(Obj tup, Obj f)
 
         // loop over the entries of the tuple
         for (i = len; 1 <= i; i--, pttup--, ptres--) {
-            if (IS_INTOBJ(*pttup) && 0 < INT_INTOBJ(*pttup)) {
+            if (IS_POS_INTOBJ(*pttup)) {
                 k = INT_INTOBJ(*pttup);
                 if (k <= deg) {
                     k = ptf4[k - 1] + 1;

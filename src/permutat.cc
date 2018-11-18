@@ -2083,7 +2083,6 @@ static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
     res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(tup), T_PLIST, len);
     SET_LEN_PLIST(res, len);
 
-
     /* get the pointer                                                 */
     ptTup = CONST_ADDR_OBJ(tup) + len;
     ptRes = ADDR_OBJ(res) + len;
@@ -2092,12 +2091,12 @@ static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
 
     /* loop over the entries of the tuple                              */
     for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
-        if (IS_INTOBJ(*ptTup) && (0 < INT_INTOBJ(*ptTup))) {
+        if (IS_POS_INTOBJ(*ptTup)) {
             k = INT_INTOBJ( *ptTup );
-            if (k > lmp) {
-                tmp = *ptTup;
-            } else
+            if (k <= lmp)
                 tmp = INTOBJ_INT( ptPrm[k-1] + 1 );
+            else
+                tmp = *ptTup;
             *ptRes = tmp;
         }
         else {
@@ -2170,9 +2169,9 @@ static inline Obj OnSetsPerm_(Obj set, Obj perm)
     /* loop over the entries of the tuple                              */
     isint = 1;
     for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
-        if ( IS_INTOBJ( *ptTup ) && 0 < INT_INTOBJ( *ptTup ) ) {
+        if (IS_POS_INTOBJ(*ptTup)) {
             k = INT_INTOBJ( *ptTup );
-            if ( k <= lmp )
+            if (k <= lmp)
                 tmp = INTOBJ_INT( ptPrm[k-1] + 1 );
             else
                 tmp = INTOBJ_INT( k );
