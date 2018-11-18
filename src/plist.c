@@ -214,9 +214,7 @@ static Obj TYPE_LIST_HOM;
 
 static Obj TypePlistWithKTNum( Obj list, UInt *ktnum );
 
-Int KTNumPlist (
-    Obj                 list,
-    Obj                 *famfirst)
+static Int KTNumPlist(Obj list, Obj * famfirst)
 {
     Int                 isHom   = 1;    /* is <list> homogeneous           */
     Int                 isDense = 1;    /* is <list> dense                 */

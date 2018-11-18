@@ -24,7 +24,44 @@
 
 /****************************************************************************
 **
-*F  SumFFEVecFFE(<elmL>,<vecR>) . . . .  sum of a finite field elm and a vector
+*F  IsVecFFE(<obj>) . . . . . . . test if <obj> is a homogeneous list of FFEs
+**
+**  'IsVecFFE' returns 1 if <obj> is a dense and non-empty plain list, whose
+**  elements are all finite field elements defined over the same field, and
+**  otherwise returns 0.
+**
+**  One may think of this as an optimized special case of 'KTNumPlist'.
+*/
+Int IsVecFFE(Obj obj)
+{
+    UInt tnum = TNUM_OBJ(obj);
+    if (tnum == T_PLIST_FFE || tnum == T_PLIST_FFE + IMMUTABLE)
+        return 1;
+
+    // must be a plain list of length >= 1
+    if (!IS_PLIST(obj) || LEN_PLIST(obj) == 0)
+        return 0;
+
+    Obj x = ELM_PLIST(obj, 1);
+    if (!IS_FFE(x))
+        return 0;
+
+    const FF  fld = FLD_FFE(x);
+    const Int len = LEN_PLIST(obj);
+    for (Int i = 2; i <= len; i++) {
+        x = ELM_PLIST(obj, i);
+        if (!IS_FFE(x) || FLD_FFE(x) != fld)
+            return 0;
+    }
+    RetypeBag(obj,
+              (tnum & IMMUTABLE) ? T_PLIST_FFE + IMMUTABLE : T_PLIST_FFE);
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  SumFFEVecFFE(<elmL>,<vecR>) . . .  sum of a finite field elm and a vector
 **
 **  'SumFFEVecFFE' returns the sum of the fin field elm <elmL> and the vector
 **  <vecR>.  The sum is a  list, where each element is  the sum of <elmL> and
@@ -645,7 +682,6 @@ Obj FuncADD_ROWVECTOR_VECFFES_3( Obj self, Obj vecL, Obj vecR, Obj mult )
     FF  fld;
     const FFV *succ;
     UInt len;
-    UInt xtype;
     UInt i;
 
     if (!IS_FFE(mult))
@@ -654,12 +690,10 @@ Obj FuncADD_ROWVECTOR_VECFFES_3( Obj self, Obj vecL, Obj vecR, Obj mult )
     if (VAL_FFE(mult) == 0)
         return (Obj) 0;
 
-    xtype = KTNumPlist(vecL, (Obj *) 0);
-    if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE + IMMUTABLE)
+    if (!IsVecFFE(vecL))
         return TRY_NEXT_METHOD;
 
-    xtype = KTNumPlist(vecR, (Obj *) 0);
-    if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE + IMMUTABLE)
+    if (!IsVecFFE(vecR))
         return TRY_NEXT_METHOD;
 
 
@@ -749,7 +783,6 @@ Obj FuncMULT_VECTOR_VECFFES( Obj self, Obj vec, Obj mult )
     FF  fld;
     const FFV *succ;
     UInt len;
-    UInt xtype;
     UInt i;
 
     if (!IS_FFE(mult))
@@ -758,9 +791,7 @@ Obj FuncMULT_VECTOR_VECFFES( Obj self, Obj vec, Obj mult )
     if (VAL_FFE(mult) == 1)
         return (Obj) 0;
 
-    xtype = KTNumPlist(vec, (Obj *) 0);
-    if (xtype != T_PLIST_FFE &&
-    xtype != T_PLIST_FFE + IMMUTABLE)
+    if (!IsVecFFE(vec))
         return TRY_NEXT_METHOD;
 
     /* check the lengths                                                   */
@@ -824,15 +855,12 @@ Obj FuncADD_ROWVECTOR_VECFFES_2( Obj self, Obj vecL, Obj vecR )
     FF  fld;
     const FFV *succ;
     UInt len;
-    UInt xtype;
     UInt i;
 
-    xtype = KTNumPlist(vecL, (Obj *) 0);
-    if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE + IMMUTABLE)
+    if (!IsVecFFE(vecL))
         return TRY_NEXT_METHOD;
 
-    xtype = KTNumPlist(vecR, (Obj *) 0);
-    if (xtype != T_PLIST_FFE && xtype != T_PLIST_FFE + IMMUTABLE)
+    if (!IsVecFFE(vecR))
         return TRY_NEXT_METHOD;
 
     /* check the lengths                                                   */
@@ -1016,19 +1044,6 @@ Obj ZeroVecFFE( Obj vec )
     for (i = 1; i <= len; i++)
         SET_ELM_PLIST(res, i, z);
     return res;
-}
-
-UInt IsVecFFE(Obj vec)
-{
-    UInt tn;
-    tn = TNUM_OBJ(vec);
-    if (tn >= T_PLIST_FFE && tn <= T_PLIST_FFE + IMMUTABLE)
-        return 1;
-    if (!IS_PLIST(vec))
-        return 0;
-    TYPE_OBJ(vec); /* force a full inspection of the list */
-    tn = TNUM_OBJ(vec);
-    return tn >= T_PLIST_FFE && tn <= T_PLIST_FFE + IMMUTABLE;
 }
 
 
