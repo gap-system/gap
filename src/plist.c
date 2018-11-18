@@ -917,12 +917,9 @@ Obj CopyPlist (
     GAP_ASSERT(IS_MUTABLE_OBJ(list));
 
     /* make a copy                                                         */
-    if ( mut ) {
-        copy = NewBag( TNUM_OBJ(list), SIZE_OBJ(list) );
-    }
-    else {
-        copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
-    }
+    copy = NewBag(TNUM_OBJ(list), SIZE_OBJ(list));
+    if (!mut)
+        MakeImmutableNoRecurse(copy);
     ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(list)[0];
 
     /* leave a forwarding pointer                                          */
@@ -2572,7 +2569,7 @@ void MakeImmutablePlistInHom(Obj list)
 {
     // change the tnum first, to avoid infinite recursion for objects that
     // contain themselves
-    RetypeBag(list, IMMUTABLE_TNUM(TNUM_OBJ(list)));
+    MakeImmutableNoRecurse(list);
 
     // FIXME HPC-GAP: there is a potential race here: <list> becomes public
     // the moment we change its type, but it's not ready for public access
@@ -2599,7 +2596,7 @@ void MakeImmutablePlistInHom(Obj list)
 
 void MakeImmutablePlistNoMutElms( Obj list )
 {
-  RetypeBag( list, IMMUTABLE_TNUM(TNUM_OBJ(list)));
+    MakeImmutableNoRecurse(list);
 }
 
 /****************************************************************************

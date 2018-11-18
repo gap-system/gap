@@ -457,12 +457,8 @@ Obj FuncTRANS_IMG_KER_NC(Obj self, Obj img, Obj ker)
     if (!IS_PLIST(copy_ker)) {
         PLAIN_LIST(copy_ker);
     }
-    if (IS_MUTABLE_OBJ(copy_img)) {
-        RetypeBag(copy_img, TNUM_OBJ(copy_img) + IMMUTABLE);
-    }
-    if (IS_MUTABLE_OBJ(copy_ker)) {
-        RetypeBag(copy_ker, TNUM_OBJ(copy_ker) + IMMUTABLE);
-    }
+    MakeImmutableNoRecurse(copy_img);
+    MakeImmutableNoRecurse(copy_ker);
 
     deg = LEN_LIST(copy_ker);
 
@@ -515,12 +511,8 @@ Obj FuncIDEM_IMG_KER_NC(Obj self, Obj img, Obj ker)
     if (!IS_PLIST(copy_ker)) {
         PLAIN_LIST(copy_ker);
     }
-    if (IS_MUTABLE_OBJ(copy_img)) {
-        RetypeBag(copy_img, TNUM_OBJ(copy_img) + IMMUTABLE);
-    }
-    if (IS_MUTABLE_OBJ(copy_ker)) {
-        RetypeBag(copy_ker, TNUM_OBJ(copy_ker) + IMMUTABLE);
-    }
+    MakeImmutableNoRecurse(copy_img);
+    MakeImmutableNoRecurse(copy_ker);
 
     deg = LEN_LIST(copy_ker);
     rank = LEN_LIST(copy_img);

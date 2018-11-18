@@ -351,7 +351,7 @@ extern Int IsStringConv (
 */
 static inline void MakeImmutableString(Obj str)
 {
-    RetypeBag(str, IMMUTABLE_TNUM(TNUM_OBJ(str)));
+    MakeImmutableNoRecurse(str);
 }
 
 

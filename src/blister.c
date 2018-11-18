@@ -212,12 +212,9 @@ Obj DoCopyBlist(Obj list, Int mut)
     Obj copy;
 
     /* make a copy                                                         */
-    if ( mut ) {
-      copy = NewBag( MUTABLE_TNUM(TNUM_OBJ(list)), SIZE_OBJ(list) );
-    }
-    else {
-      copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
-    }
+    copy = NewBag(MUTABLE_TNUM(TNUM_OBJ(list)), SIZE_OBJ(list));
+    if (!mut)
+        MakeImmutableNoRecurse(copy);
 
     /* copy the subvalues                                                  */
     memcpy(ADDR_OBJ(copy), CONST_ADDR_OBJ(list),
@@ -1605,7 +1602,7 @@ Obj FuncMEET_BLIST (
 
 void MakeImmutableBlist( Obj blist )
 {
-  RetypeBag(blist, IMMUTABLE_TNUM(TNUM_OBJ(blist)));
+    MakeImmutableNoRecurse(blist);
 }
 
 /****************************************************************************

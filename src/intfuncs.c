@@ -685,7 +685,7 @@ Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
         AssPRec(ms, RNamName("booleanSetters"), bsetters);
     }
     SortPRecRNam(ms, 0);
-    RetypeBag(ms, T_PREC + IMMUTABLE);
+    MakeImmutableNoRecurse(ms);
     return ms;
 }
 
