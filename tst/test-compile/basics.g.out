@@ -59,12 +59,21 @@ setting x to 2 ...
 [ 1,, 3, [ 4, 5 ], rec(
       x := [ 6, rec(
                ) ] ) ]
+[ 1, 2, 3, 4 ]
+l[1] = 1
+l[2] = 2
+l[3] = 3
+l[4] = 4
 rec(
   a := 1,
   b := 2,
-  c := 3 )
+  c := 3,
+  d := 42,
+  e := 23 )
 x.a = 1
 x.b = 2
+x.d = 42
+x.e = 23
 Testing IsBound and Unbind for lvar
 true
 false

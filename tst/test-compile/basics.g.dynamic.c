@@ -1,6 +1,6 @@
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "-35519163"
+#define FILE_CRC  "127577812"
 
 /* global variables used in handlers */
 static GVar G_PushOptions;
@@ -37,6 +37,7 @@ static RNam R_myopt;
 static RNam R_x;
 static RNam R_a;
 static RNam R_b;
+static RNam R_d;
 
 /* information for the functions */
 static Obj  NameFunc[13];
@@ -921,6 +922,7 @@ static Obj  HdlrFunc8 (
 static Obj  HdlrFunc9 (
  Obj  self )
 {
+ Obj l_l = 0;
  Obj l_x = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
@@ -928,6 +930,7 @@ static Obj  HdlrFunc9 (
  Obj t_4 = 0;
  Obj t_5 = 0;
  Obj t_6 = 0;
+ (void)l_l;
  (void)l_x;
  Bag oldFrame;
  
@@ -978,6 +981,63 @@ static Obj  HdlrFunc9 (
  SortPRecRNam( t_3, 0 );
  CALL_1ARGS( t_1, t_2 );
  
+ /* l := [  ]; */
+ t_1 = NEW_PLIST( T_PLIST, 0 );
+ SET_LEN_PLIST( t_1, 0 );
+ l_l = t_1;
+ 
+ /* l[1] := 1; */
+ C_ASS_LIST_FPL_INTOBJ( l_l, INTOBJ_INT(1), INTOBJ_INT(1) )
+ 
+ /* l[1 + 1] := 2; */
+ C_SUM_INTOBJS( t_1, INTOBJ_INT(1), INTOBJ_INT(1) )
+ CHECK_INT_POS( t_1 )
+ C_ASS_LIST_FPL_INTOBJ( l_l, t_1, INTOBJ_INT(2) )
+ 
+ /* l![3] := 3; */
+ AssPosObj( l_l, 3, INTOBJ_INT(3) );
+ 
+ /* l![2 + 2] := 4; */
+ C_SUM_INTOBJS( t_1, INTOBJ_INT(2), INTOBJ_INT(2) )
+ CHECK_INT_SMALL_POS( t_1 )
+ AssPosObj( l_l, INT_INTOBJ(t_1), INTOBJ_INT(4) );
+ 
+ /* Display( l ); */
+ t_1 = GF_Display;
+ CALL_1ARGS( t_1, l_l );
+ 
+ /* Print( "l[1] = ", l[1], "\n" ); */
+ t_1 = GF_Print;
+ t_2 = MakeString( "l[1] = " );
+ C_ELM_LIST_FPL( t_3, l_l, INTOBJ_INT(1) )
+ t_4 = MakeString( "\n" );
+ CALL_3ARGS( t_1, t_2, t_3, t_4 );
+ 
+ /* Print( "l[2] = ", l[1 + 1], "\n" ); */
+ t_1 = GF_Print;
+ t_2 = MakeString( "l[2] = " );
+ C_SUM_INTOBJS( t_4, INTOBJ_INT(1), INTOBJ_INT(1) )
+ CHECK_INT_POS( t_4 )
+ C_ELM_LIST_FPL( t_3, l_l, t_4 )
+ t_4 = MakeString( "\n" );
+ CALL_3ARGS( t_1, t_2, t_3, t_4 );
+ 
+ /* Print( "l[3] = ", l![3], "\n" ); */
+ t_1 = GF_Print;
+ t_2 = MakeString( "l[3] = " );
+ t_3 = ElmPosObj( l_l, 3 );
+ t_4 = MakeString( "\n" );
+ CALL_3ARGS( t_1, t_2, t_3, t_4 );
+ 
+ /* Print( "l[4] = ", l![2 + 2], "\n" ); */
+ t_1 = GF_Print;
+ t_2 = MakeString( "l[4] = " );
+ C_SUM_INTOBJS( t_4, INTOBJ_INT(2), INTOBJ_INT(2) )
+ CHECK_INT_SMALL_POS( t_4 )
+ t_3 = ElmPosObj( l_l, INT_INTOBJ(t_4) );
+ t_4 = MakeString( "\n" );
+ CALL_3ARGS( t_1, t_2, t_3, t_4 );
+ 
  /* x := rec(
     a := 1 ); */
  t_1 = NEW_PREC( 1 );
@@ -997,6 +1057,13 @@ static Obj  HdlrFunc9 (
  C_SUM_FIA( t_2, t_3, t_4 )
  ASS_REC( l_x, RNamObj(t_1), t_2 );
  
+ /* x!.d := 42; */
+ AssComObj( l_x, R_d, INTOBJ_INT(42) );
+ 
+ /* x!.("e") := 23; */
+ t_1 = MakeString( "e" );
+ AssComObj( l_x, RNamObj(t_1), INTOBJ_INT(23) );
+ 
  /* Display( x ); */
  t_1 = GF_Display;
  CALL_1ARGS( t_1, l_x );
@@ -1013,6 +1080,21 @@ static Obj  HdlrFunc9 (
  t_2 = MakeString( "x.b = " );
  t_4 = MakeString( "b" );
  t_3 = ELM_REC( l_x, RNamObj(t_4) );
+ t_4 = MakeString( "\n" );
+ CALL_3ARGS( t_1, t_2, t_3, t_4 );
+ 
+ /* Print( "x.d = ", x!.d, "\n" ); */
+ t_1 = GF_Print;
+ t_2 = MakeString( "x.d = " );
+ t_3 = ElmComObj( l_x, R_d );
+ t_4 = MakeString( "\n" );
+ CALL_3ARGS( t_1, t_2, t_3, t_4 );
+ 
+ /* Print( "x.e = ", x!.("e"), "\n" ); */
+ t_1 = GF_Print;
+ t_2 = MakeString( "x.e = " );
+ t_4 = MakeString( "e" );
+ t_3 = ElmComObj( l_x, RNamObj(t_4) );
  t_4 = MakeString( "\n" );
  CALL_3ARGS( t_1, t_2, t_3, t_4 );
  
@@ -1693,26 +1775,40 @@ static Obj  HdlrFunc1 (
  AssGVar( G_test__tilde, t_1 );
  
  /* test_list_rec_exprs := function (  )
-      local x;
+      local l, x;
       Display( [  ] );
       Display( [ 1, 2, 3 ] );
       Display( [ 1,, 3, [ 4, 5 ], rec(
               x := [ 6, rec(
                        ) ] ) ] );
+      l := [  ];
+      l[1] := 1;
+      l[1 + 1] := 2;
+      l![3] := 3;
+      l![2 + 2] := 4;
+      Display( l );
+      Print( "l[1] = ", l[1], "\n" );
+      Print( "l[2] = ", l[1 + 1], "\n" );
+      Print( "l[3] = ", l![3], "\n" );
+      Print( "l[4] = ", l![2 + 2], "\n" );
       x := rec(
           a := 1 );
       x.b := 2;
       x.("c") := x.a + x.("b");
+      x!.d := 42;
+      x!.("e") := 23;
       Display( x );
       Print( "x.a = ", x.a, "\n" );
       Print( "x.b = ", x.("b"), "\n" );
+      Print( "x.d = ", x!.d, "\n" );
+      Print( "x.e = ", x!.("e"), "\n" );
       return;
   end; */
  t_1 = NewFunction( NameFunc[9], 0, 0, HdlrFunc9 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_2, 187);
- SET_ENDLINE_BODY(t_2, 200);
+ SET_ENDLINE_BODY(t_2, 215);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -1772,8 +1868,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[10], 0, 0, HdlrFunc10 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, 207);
- SET_ENDLINE_BODY(t_2, 266);
+ SET_STARTLINE_BODY(t_2, 222);
+ SET_ENDLINE_BODY(t_2, 281);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -1820,8 +1916,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[11], 0, 0, HdlrFunc11 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, 272);
- SET_ENDLINE_BODY(t_2, 313);
+ SET_STARTLINE_BODY(t_2, 287);
+ SET_ENDLINE_BODY(t_2, 328);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -1842,8 +1938,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[12], 0, 0, HdlrFunc12 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_2, 319);
- SET_ENDLINE_BODY(t_2, 331);
+ SET_STARTLINE_BODY(t_2, 334);
+ SET_ENDLINE_BODY(t_2, 346);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -1884,6 +1980,7 @@ static Int PostRestore ( StructInitInfo * module )
  R_x = RNamName( "x" );
  R_a = RNamName( "a" );
  R_b = RNamName( "b" );
+ R_d = RNamName( "d" );
  
  /* information for the functions */
  NameFunc[1] = 0;
@@ -1985,7 +2082,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_DYNAMIC,
  .name        = "basics.g",
- .crc         = -35519163,
+ .crc         = 127577812,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

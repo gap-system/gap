@@ -185,18 +185,33 @@ end;
 #
 #
 test_list_rec_exprs := function()
-    local x;
+    local l, x;
 
     Display( [ ] );
     Display( [ 1, 2, 3 ] );
     Display( [ 1, , 3, [ 4, 5 ], rec( x := [ 6, rec(), ] ) ] );
 
+    l := [];
+    l[1] := 1;
+    l[1 + 1] := 2;
+    l![3] := 3;
+    l![2+2] := 4;
+    Display(l);
+    Print("l[1] = ", l[1], "\n");
+    Print("l[2] = ", l[1+1], "\n");
+    Print("l[3] = ", l![3], "\n");
+    Print("l[4] = ", l![2+2], "\n");
+
     x := rec(a:=1);
     x.b := 2;
     x.("c") := x.a + x.("b");
+    x!.d := 42;
+    x!.("e") := 23;
     Display(x);
     Print("x.a = ", x.a, "\n");
     Print("x.b = ", x.("b"), "\n");
+    Print("x.d = ", x!.d, "\n");
+    Print("x.e = ", x!.("e"), "\n");
 end;
 
 
