@@ -175,12 +175,9 @@ Obj CopyPRec (
     GAP_ASSERT(IS_MUTABLE_OBJ(rec));
 
     /* make a copy                                                     */
-    if ( mut ) {
-        copy = NewBag( TNUM_OBJ(rec), SIZE_OBJ(rec) );
-    }
-    else {
-        copy = NewBag( IMMUTABLE_TNUM(TNUM_OBJ(rec)), SIZE_OBJ(rec) );
-    }
+    copy = NewBag(T_PREC, SIZE_OBJ(rec));
+    if (!mut)
+        MakeImmutableNoRecurse(copy);
     memcpy(ADDR_OBJ(copy), CONST_ADDR_OBJ(rec), SIZE_OBJ(rec));
 
     // leave a forwarding pointer
@@ -224,7 +221,7 @@ void MakeImmutablePRec(Obj rec)
 {
     // change the tnum first, to avoid infinite recursion for objects that
     // contain themselves
-    RetypeBag(rec, IMMUTABLE_TNUM(TNUM_OBJ(rec)));
+    MakeImmutableNoRecurse(rec);
 
     // FIXME HPC-GAP: there is a potential race here: <rec> becomes public
     // the moment we change its type, but it's not ready for public access

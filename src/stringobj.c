@@ -545,12 +545,9 @@ Obj CopyString (
     GAP_ASSERT(IS_MUTABLE_OBJ(list));
 
     /* make object for  copy                                               */
-    if ( mut ) {
-        copy = NewBag( TNUM_OBJ(list), SIZE_OBJ(list) );
-    }
-    else {
-        copy = NewBag( IMMUTABLE_TNUM( TNUM_OBJ(list) ), SIZE_OBJ(list) );
-    }
+    copy = NewBag(TNUM_OBJ(list), SIZE_OBJ(list));
+    if (!mut)
+        MakeImmutableNoRecurse(copy);
     ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(list)[0];
 
     /* leave a forwarding pointer                                          */

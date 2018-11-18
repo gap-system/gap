@@ -528,6 +528,24 @@ static inline void SET_TYPE_OBJ(Obj obj, Obj type)
 */
 extern void MakeImmutable( Obj obj );
 
+
+/****************************************************************************
+**
+*F  MakeImmutableNoRecurse( <obj> ) . . set immutable flag on internal object
+**
+**  This is an unsafe helper function, for use in functions installed as
+**  handlers in 'MakeImmutableObjFuncs' for internal objects tracking their
+**  mutability, i.e., in the range FIRST_IMM_MUT_TNUM to LAST_IMM_MUT_TNUM.
+**  It only modifies the TNUM, and does not make subobjects immutable.
+*/
+static inline void MakeImmutableNoRecurse(Obj obj)
+{
+    UInt type = TNUM_OBJ(obj);
+    GAP_ASSERT((FIRST_IMM_MUT_TNUM <= type) && (type <= LAST_IMM_MUT_TNUM));
+    RetypeBag(obj, type | IMMUTABLE);
+}
+
+
 /****************************************************************************
 **
 *F  CheckedMakeImmutable( <obj> )  . . . . . . . . . make an object immutable
