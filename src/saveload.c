@@ -539,7 +539,6 @@ static Char * GetKernelDescription(void)
 static void WriteSaveHeader( void )
 {
   UInt i;
-  UInt globalcount = 0;
   
   SaveCStr("GAP workspace");
   SaveCStr(GetKernelDescription());
@@ -553,10 +552,10 @@ static void WriteSaveHeader( void )
   WriteEndiannessMarker();
   
   SaveCStr("Counts and Sizes");
-  for (i = 0; i < GlobalBags.nr; i++)
-    if (GlobalBags.cookie[i] != NULL)
-      globalcount++;
-  SaveUInt(globalcount);
+  for (i = 0; i < GlobalBags.nr; i++) {
+      GAP_ASSERT(GlobalBags.cookie[i] != NULL);
+  }
+  SaveUInt(GlobalBags.nr);
   SaveUInt(NextSaveIndex-1);
   SaveUInt(AllocBags - MptrEndBags);
 
@@ -566,11 +565,9 @@ static void WriteSaveHeader( void )
   SaveCStr("Kernel to WS refs");
   for (i = 0; i < GlobalBags.nr; i++)
     {
-      if (GlobalBags.cookie[i] != NULL)
-	{
-	  SaveCStr((const Char *)GlobalBags.cookie[i]);
-	  SaveSubObj(*(GlobalBags.addr[i]));
-	}
+      GAP_ASSERT(GlobalBags.cookie[i] != NULL);
+      SaveCStr((const Char *)GlobalBags.cookie[i]);
+      SaveSubObj(*(GlobalBags.addr[i]));
     }
 }
 #endif
@@ -651,7 +648,6 @@ void LoadWorkspace( Char * fname )
 
 #else
   UInt nGlobs, nBags, i, maxSize;
-  UInt globalcount = 0;
   Char buf[256];
   Obj * glob;
 
@@ -726,26 +722,20 @@ void LoadWorkspace( Char * fname )
                                  lookup */
   for (i = 0; i < GlobalBags.nr; i++)
     {
-      if (GlobalBags.cookie[i] != NULL)
-	globalcount++;
-      else
-	*(GlobalBags.addr[i]) = (Bag) 0;
+      GAP_ASSERT(GlobalBags.cookie[i] != NULL);
     }
-  if (nGlobs != globalcount)
-    {
-      Pr("Wrong number of global bags in saved workspace %d %d\n",
-         nGlobs, globalcount);
-      SyExit(1);
+    // TODO: the goal here is to stop exporting `GlobalBags` completely...
+    if (nGlobs != GlobalBags.nr) {
+        Panic("Wrong number of global bags in saved workspace %d %d",
+              (int)nGlobs, (int)GlobalBags.nr);
     }
-  for (i = 0; i < globalcount; i++)
-    {
-      LoadCStr(buf,256);
-      glob = GlobalByCookie(buf);
-      if (glob == (Obj *)0)
-        {
-          Pr("Global object cookie from workspace not found in kernel %s\n",
-             (Int)buf,0L);
-          SyExit(1);
+    for (i = 0; i < nGlobs; i++) {
+        LoadCStr(buf, 256);
+        glob = GlobalByCookie(buf);
+        if (glob == (Obj *)0) {
+            Panic(
+                "Global object cookie from workspace not found in kernel %s",
+                buf);
         }
       *glob = LoadSubObj();
       if (SyDebugLoading)
