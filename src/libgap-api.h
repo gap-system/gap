@@ -78,8 +78,23 @@ extern Obj GAP_Fail;
 extern Obj GAP_CallFuncList(Obj func, Obj args);
 
 // Call the GAP object <func> as a function with arguments given
-// as an array <args> with <narg> entries
+// as an array <args> with <narg> entries.
 extern Obj GAP_CallFuncArray(Obj func, UInt narg, Obj args[]);
+
+
+////
+//// floats
+////
+
+// Returns 1 if <obj> is a GAP machine float, 0 if not.
+extern Int GAP_IsMacFloat(Obj obj);
+
+// Returns the value of the GAP machine float object <obj>.
+// If <obj> is not a machine float object, an error is raised.
+extern double GAP_ValueMacFloat(Obj obj);
+
+// Returns a new GAP machine float with value <x>.
+extern Obj GAP_NewMacFloat(double x);
 
 
 ////

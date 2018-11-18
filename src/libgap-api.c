@@ -10,6 +10,7 @@
 #include "gvars.h"
 #include "integer.h"
 #include "lists.h"
+#include "macfloat.h"
 #include "opers.h"
 #include "plist.h"
 #include "streams.h"
@@ -191,6 +192,29 @@ Obj GAP_CallFuncArray(Obj func, UInt narg, Obj args[])
     }
 
     return result;
+}
+
+
+////
+//// floats
+////
+
+Int GAP_IsMacFloat(Obj obj)
+{
+    return IS_MACFLOAT(obj);
+}
+
+double GAP_ValueMacFloat(Obj obj)
+{
+    if (!IS_MACFLOAT(obj)) {
+        ErrorMayQuit("<obj> is not a MacFloat", 0, 0);
+    }
+    return (double)VAL_MACFLOAT(obj);
+}
+
+Obj GAP_NewMacFloat(double x)
+{
+    return NEW_MACFLOAT(x);
 }
 
 
