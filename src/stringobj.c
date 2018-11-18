@@ -1852,32 +1852,29 @@ Obj FuncSMALLINT_STR( Obj self, Obj str )
 **  larger or equal to the length of <string>.
 **  
 */
-void UnbString (
-  Obj     string,
-  Int     pos )
+void UnbString(Obj string, Int pos)
 {
-        Int len;
-        len = GET_LEN_STRING(string);
-	
-        /* only do something special if last character is to be, and can be, 
-         * unbound */
-        if (len < pos) return;
-        if (len != pos) {
-                UnbListDefault(string, pos);
-                return;
-        }
-        if (! IS_MUTABLE_OBJ(string)) {
-                UnbPlistImm(string, pos);
-                return;
-        }
-        /* maybe the string becomes sorted */
-        CLEAR_FILTS_LIST(string);
-        CHARS_STRING(string)[pos-1] = (UInt1)0;
-        SET_LEN_STRING(string, len-1);
-} 
-            
+    GAP_ASSERT(IS_MUTABLE_OBJ(string));
 
-  
+    Int len;
+    len = GET_LEN_STRING(string);
+
+    // only do something special if last character is to be, and can be,
+    // unbound
+    if (len < pos)
+        return;
+    if (len != pos) {
+        UnbListDefault(string, pos);
+        return;
+    }
+
+    // maybe the string becomes sorted
+    CLEAR_FILTS_LIST(string);
+    CHARS_STRING(string)[pos - 1] = (UInt1)0;
+    SET_LEN_STRING(string, len - 1);
+}
+
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * * */

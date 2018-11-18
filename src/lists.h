@@ -480,6 +480,11 @@ extern void UnbListDefault( Obj list, Int  pos );
 static inline void UNB_LIST(Obj list, Int pos)
 {
     GAP_ASSERT(pos > 0);
+    UInt tnum = TNUM_OBJ(list);
+    if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM &&
+        (tnum & IMMUTABLE)) {
+        ErrorMayQuit("List Unbind: <list> must be a mutable list", 0, 0);
+    }
     (*UnbListFuncs[TNUM_OBJ(list)])(list, pos);
 }
 
@@ -515,8 +520,7 @@ static inline void ASS_LIST(Obj list, Int pos, Obj obj)
     UInt tnum = TNUM_OBJ(list);
     if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM &&
         (tnum & IMMUTABLE)) {
-        ErrorReturnVoid("List Assignment: <list> must be a mutable list", 0,
-                        0, "you can 'return;' and ignore the assignment");
+        ErrorMayQuit("List Assignment: <list> must be a mutable list", 0, 0);
     }
     (*AssListFuncs[TNUM_OBJ(list)])(list, pos, obj);
 }
@@ -567,8 +571,7 @@ static inline void ASSS_LIST(Obj list, Obj poss, Obj objs)
     UInt tnum = TNUM_OBJ(list);
     if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM &&
         (tnum & IMMUTABLE)) {
-        ErrorReturnVoid("List Assignments: <list> must be a mutable list", 0,
-                        0, "you can 'return;' and ignore the assignment");
+        ErrorMayQuit("List Assignments: <list> must be a mutable list", 0, 0);
     }
     (*AsssListFuncs[TNUM_OBJ(list)])(list, poss, objs);
 }

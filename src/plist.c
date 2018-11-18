@@ -1577,16 +1577,6 @@ void UnbPlist (
     }
 }
 
-void            UnbPlistImm (
-    Obj                 list,
-    Int                 pos )
-{
-    ErrorReturnVoid(
-        "List Unbind: <list> must be a mutable list",
-        0L, 0L,
-        "you can 'return;' and ignore the unbind" );
-}
-
 
 /****************************************************************************
 **
@@ -3634,7 +3624,6 @@ static Int InitKernel (
     /* install the list unbind methods                                     */
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         UnbListFuncs    [ t1            ] = UnbPlist;
-        UnbListFuncs    [ t1+IMMUTABLE  ] = UnbPlistImm;
     }
 
 
