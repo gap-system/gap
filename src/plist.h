@@ -341,7 +341,6 @@ static inline Obj NewPlistFromArray(const Obj * list, Int length)
 /****************************************************************************
 **
 *F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list
-*F  UnbPlistImm( <list>, <pos> ) . . . .  unbind an element from a plain list
 */
 extern void AssPlistEmpty (
     Obj                 list,
@@ -356,10 +355,6 @@ extern void AssPlistFfe   (
 extern Int KTNumPlist (
     Obj                 list,
     Obj                 *famfirst);
-
-void            UnbPlistImm (
-    Obj                 list,
-    Int                 pos );
 
 /****************************************************************************
 **
