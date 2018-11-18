@@ -720,7 +720,10 @@ Int IsWeakDeadBag(Bag bag)
 void CallbackForAllBags(void (*func)(Bag))
 {
     for (Bag bag = (Bag)MptrBags; bag < (Bag)MptrEndBags; bag++) {
-        if (IS_BAG_BODY(*bag)) {
+        CANARY_DISABLE_VALGRIND();
+        Int is_bag = IS_BAG_BODY(*bag);
+        CANARY_ENABLE_VALGRIND();
+        if (is_bag) {
             (*func)(bag);
         }
     }
