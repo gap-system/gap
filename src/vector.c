@@ -23,7 +23,6 @@
 #include "modules.h"
 #include "plist.h"
 
-#define IS_IMM_PLIST(list)  ((TNUM_OBJ(list) - T_PLIST) % 2)
 
 /****************************************************************************
 **
@@ -158,8 +157,8 @@ Obj             SumVectorVector (
         lenmin = lenR;
         len = lenL;
     }
-    vecS = NEW_PLIST((IS_IMM_PLIST(vecL) && IS_IMM_PLIST(vecR)) ?
-                      T_PLIST_CYC + IMMUTABLE : T_PLIST_CYC, len);
+    vecS = NEW_PLIST_WITH_MUTABILITY(
+        IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecS, len);
 
     /* loop over the elements and add                                      */
@@ -327,8 +326,8 @@ Obj             DiffVectorVector (
         lenmin = lenR;
         len = lenL;
     }
-    vecD = NEW_PLIST((IS_IMM_PLIST(vecL) && IS_IMM_PLIST(vecR)) ?
-    T_PLIST_CYC + IMMUTABLE : T_PLIST_CYC, len);
+    vecD = NEW_PLIST_WITH_MUTABILITY(
+        IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecD, len);
 
     /* loop over the elements and subtract                                   */
