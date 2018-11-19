@@ -667,8 +667,8 @@ Obj ZeroVector( Obj vec )
 {
     UInt i, len;
     Obj res;
-    assert(TNUM_OBJ(vec) >= T_PLIST_CYC && \
-    TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT + IMMUTABLE);
+    GAP_ASSERT(TNUM_OBJ(vec) >= T_PLIST_CYC &&
+               TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT + IMMUTABLE);
     len = LEN_PLIST(vec);
     res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vec), T_PLIST_CYC, len);
     SET_LEN_PLIST(res, len);
@@ -681,8 +681,8 @@ Obj ZeroMutVector( Obj vec )
 {
     UInt i, len;
     Obj res;
-    assert(TNUM_OBJ(vec) >= T_PLIST_CYC && \
-    TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT + IMMUTABLE);
+    GAP_ASSERT(TNUM_OBJ(vec) >= T_PLIST_CYC &&
+               TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT + IMMUTABLE);
     len = LEN_PLIST(vec);
     res = NEW_PLIST(T_PLIST_CYC, len);
     SET_LEN_PLIST(res, len);

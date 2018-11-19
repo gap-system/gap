@@ -1017,8 +1017,8 @@ Obj ZeroMutVecFFE( Obj vec )
     UInt i, len;
     Obj res;
     Obj z;
-    assert(TNUM_OBJ(vec) >= T_PLIST_FFE && \
-    TNUM_OBJ(vec) <= T_PLIST_FFE + IMMUTABLE);
+    GAP_ASSERT(TNUM_OBJ(vec) >= T_PLIST_FFE &&
+               TNUM_OBJ(vec) <= T_PLIST_FFE + IMMUTABLE);
     len = LEN_PLIST(vec);
     assert(len);
     res  = NEW_PLIST(T_PLIST_FFE, len);
@@ -1034,8 +1034,8 @@ Obj ZeroVecFFE( Obj vec )
     UInt i, len;
     Obj res;
     Obj z;
-    assert(TNUM_OBJ(vec) >= T_PLIST_FFE && \
-    TNUM_OBJ(vec) <= T_PLIST_FFE + IMMUTABLE);
+    GAP_ASSERT(TNUM_OBJ(vec) >= T_PLIST_FFE &&
+               TNUM_OBJ(vec) <= T_PLIST_FFE + IMMUTABLE);
     len = LEN_PLIST(vec);
     assert(len);
     res  = NEW_PLIST(TNUM_OBJ(vec), len);
