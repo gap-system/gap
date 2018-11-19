@@ -75,6 +75,8 @@ gap> for i in [1..MAPvals] do
 >   Print("Invalid OBJ_MAP_VALUES");
 > fi;
 > od;
+
+#
 gap> for i in [1..MAPvals] do
 > REMOVE_OBJ_MAP(x, i);
 > if ForAny([1..i], z -> FIND_OBJ_MAP(x, z, -1) <> -1) then
@@ -90,4 +92,25 @@ gap> for i in [1..MAPvals] do
 >   Print("Invalid OBJ_MAP_VALUES");
 > fi;
 > od;
+
+#
+gap> ADD_OBJ_MAP(fail, fail, fail);
+Error, ADD_OBJ_MAP: <objmap> must be a mutable object map (not the value 'fail\
+')
+gap> FIND_OBJ_MAP(fail, fail, fail);
+Error, FIND_OBJ_MAP: <objmap> must be an object map (not the value 'fail')
+gap> CONTAINS_OBJ_MAP(fail, fail);
+Error, CONTAINS_OBJ_MAP: <objmap> must be an object map (not the value 'fail')
+gap> REMOVE_OBJ_MAP(fail, fail);
+Error, REMOVE_OBJ_MAP: <objmap> must be a mutable object map (not the value 'f\
+ail')
+gap> CLEAR_OBJ_MAP(fail);
+Error, CLEAR_OBJ_MAP: <objmap> must be a mutable object map (not the value 'fa\
+il')
+gap> OBJ_MAP_VALUES(fail);
+Error, OBJ_MAP_VALUES: <objmap> must be an object map (not the value 'fail')
+gap> OBJ_MAP_KEYS(fail);
+Error, OBJ_MAP_KEYS: <objmap> must be an object map (not the value 'fail')
+
+#
 gap> STOP_TEST( "objmap.tst", 1);
