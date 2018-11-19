@@ -888,6 +888,11 @@ Obj FuncINTER_RANGE( Obj self, Obj r1, Obj r2)
   Int low1, low2, inc1, inc2, lowi, inci, g, x, y;
   UInt len1, len2, leni;
   
+  if (!IS_RANGE(r1) || !IS_MUTABLE_OBJ(r1))
+      RequireArgument("INTER_RANGE", r1, "range1", "must be a mutable range");
+  if (!IS_RANGE(r2))
+      RequireArgument("INTER_RANGE", r2, "range2", "must be a range");
+
   low1 = GET_LOW_RANGE(r1);
   low2 = GET_LOW_RANGE(r2);
   inc1 = GET_INC_RANGE(r1);

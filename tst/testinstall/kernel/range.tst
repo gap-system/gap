@@ -38,4 +38,17 @@ gap> a := [-9,-5..3];; INTER_RANGE(a,[-21,-18..6]); a;
 [ -9, 3 ]
 
 #
+gap> INTER_RANGE(fail, fail);
+Error, INTER_RANGE: <range1> must be a mutable range (not the value 'fail')
+gap> INTER_RANGE([0..9], fail);
+Error, INTER_RANGE: <range2> must be a range (not the value 'fail')
+gap> r := MakeImmutable([0..9]);
+[ 0 .. 9 ]
+gap> INTER_RANGE(r, [-1..1]);
+Error, INTER_RANGE: <range1> must be a mutable range (not a list (range,ssort,\
+imm))
+gap> r;
+[ 0 .. 9 ]
+
+#
 gap> STOP_TEST("kernel/set.tst", 1);
