@@ -1023,9 +1023,9 @@ static Obj FuncOBJ_MAP_KEYS(Obj self, Obj map)
 *V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
 */
 static StructBagNames BagNames[] = {
-  { T_OBJSET,           "object set" },
+  { T_OBJSET          , "object set" },
   { T_OBJSET+IMMUTABLE, "immutable object set" },
-  { T_OBJMAP,           "object map" },
+  { T_OBJMAP          , "object map" },
   { T_OBJMAP+IMMUTABLE, "immutable object map" },
   { -1, "" }
 };

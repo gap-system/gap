@@ -888,7 +888,7 @@ static Int InitKernel (
     IsCopyableObjFuncs[ T_PREC +IMMUTABLE ] = AlwaysYes;
 
 #ifdef USE_THREADSAFE_COPYING
-    SetTraversalMethod(T_PREC,            TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
+    SetTraversalMethod(T_PREC           , TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
     SetTraversalMethod(T_PREC +IMMUTABLE, TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
 #else
     /* install into copy function tables                                  */
