@@ -65,7 +65,7 @@ Obj TYPE_PREC_IMMUTABLE;
 
 Obj TypePRec(Obj prec)
 {
-    return IS_MUTABLE_PLAIN_OBJ(prec) ? TYPE_PREC_MUTABLE : TYPE_PREC_IMMUTABLE;
+    return IS_MUTABLE_OBJ(prec) ? TYPE_PREC_MUTABLE : TYPE_PREC_IMMUTABLE;
 }
 
 /****************************************************************************

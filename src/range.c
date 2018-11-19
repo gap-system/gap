@@ -75,8 +75,8 @@ Obj TYPE_RANGE_NSORT_MUTABLE;
 
 Obj TypeRangeNSort(Obj list)
 {
-    return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_RANGE_NSORT_MUTABLE
-                                      : TYPE_RANGE_NSORT_IMMUTABLE;
+    return IS_MUTABLE_OBJ(list) ? TYPE_RANGE_NSORT_MUTABLE
+                                : TYPE_RANGE_NSORT_IMMUTABLE;
 }
 
     
@@ -92,8 +92,8 @@ Obj TYPE_RANGE_SSORT_MUTABLE;
 
 Obj TypeRangeSSort(Obj list)
 {
-    return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_RANGE_SSORT_MUTABLE
-                                      : TYPE_RANGE_SSORT_IMMUTABLE;
+    return IS_MUTABLE_OBJ(list) ? TYPE_RANGE_SSORT_MUTABLE
+                                : TYPE_RANGE_SSORT_IMMUTABLE;
 }
 
 

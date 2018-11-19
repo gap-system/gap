@@ -694,7 +694,7 @@ static Obj TypePlistWithKTNum (
 
 Obj TypePlistNDense(Obj list)
 {
-    if (IS_MUTABLE_PLAIN_OBJ(list))
+    if (IS_MUTABLE_OBJ(list))
         return TYPE_LIST_NDENSE_MUTABLE;
     else
         return TYPE_LIST_NDENSE_IMMUTABLE;
@@ -704,7 +704,7 @@ Obj TypePlistNDense(Obj list)
 
 Obj TypePlistDenseNHom(Obj list)
 {
-    if (IS_MUTABLE_PLAIN_OBJ(list))
+    if (IS_MUTABLE_OBJ(list))
         return TYPE_LIST_DENSE_NHOM_MUTABLE;
     else
         return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
@@ -712,7 +712,7 @@ Obj TypePlistDenseNHom(Obj list)
 
 Obj TypePlistDenseNHomSSort(Obj list)
 {
-    if (IS_MUTABLE_PLAIN_OBJ(list))
+    if (IS_MUTABLE_OBJ(list))
         return TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE;
     else
         return TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE;
@@ -720,7 +720,7 @@ Obj TypePlistDenseNHomSSort(Obj list)
 
 Obj TypePlistDenseNHomNSort(Obj list)
 {
-    if (IS_MUTABLE_PLAIN_OBJ(list))
+    if (IS_MUTABLE_OBJ(list))
         return TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE;
     else
         return TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE;
@@ -728,7 +728,7 @@ Obj TypePlistDenseNHomNSort(Obj list)
 
 Obj TypePlistEmpty(Obj list)
 {
-    if (IS_MUTABLE_PLAIN_OBJ(list))
+    if (IS_MUTABLE_OBJ(list))
         return TYPE_LIST_EMPTY_MUTABLE;
     else
         return TYPE_LIST_EMPTY_IMMUTABLE;

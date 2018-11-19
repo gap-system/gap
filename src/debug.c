@@ -225,7 +225,6 @@ VoidFunc debug_func_pointers[] = {
     (VoidFunc)IS_MODULE_DYNAMIC,
     (VoidFunc)IS_MODULE_STATIC,
     (VoidFunc)IS_MUTABLE_OBJ,
-    (VoidFunc)IS_MUTABLE_PLAIN_OBJ,
     (VoidFunc)IS_NEG_INT,
     (VoidFunc)IS_NONNEG_INTOBJ,
     (VoidFunc)IS_ODD_INT,

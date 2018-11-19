@@ -113,11 +113,10 @@ Obj TypeBlist(Obj list)
 {
     /* special case for the empty blist                                    */
     if ( LEN_BLIST(list) == 0 ) {
-        return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_BLIST_EMPTY_MUT
-                                          : TYPE_BLIST_EMPTY_IMM;
+        return IS_MUTABLE_OBJ(list) ? TYPE_BLIST_EMPTY_MUT
+                                    : TYPE_BLIST_EMPTY_IMM;
     } else {
-        return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_BLIST_MUT
-                                          : TYPE_BLIST_IMM;
+        return IS_MUTABLE_OBJ(list) ? TYPE_BLIST_MUT : TYPE_BLIST_IMM;
     }
 }
 
@@ -125,11 +124,11 @@ Obj TypeBlistNSort(Obj list)
 {
     /* special case for the empty blist                                    */
     if ( LEN_BLIST(list) == 0 ) {
-        return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_BLIST_EMPTY_MUT
-                                          : TYPE_BLIST_EMPTY_IMM;
+        return IS_MUTABLE_OBJ(list) ? TYPE_BLIST_EMPTY_MUT
+                                    : TYPE_BLIST_EMPTY_IMM;
     } else {
-        return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_BLIST_NSORT_MUT
-                                          : TYPE_BLIST_NSORT_IMM;
+        return IS_MUTABLE_OBJ(list) ? TYPE_BLIST_NSORT_MUT
+                                    : TYPE_BLIST_NSORT_IMM;
     }
 }
 
@@ -137,11 +136,11 @@ Obj TypeBlistSSort(Obj list)
 {
     /* special case for the empty blist                                    */
     if ( LEN_BLIST(list) == 0 ) {
-        return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_BLIST_EMPTY_MUT
-                                          : TYPE_BLIST_EMPTY_IMM;
+        return IS_MUTABLE_OBJ(list) ? TYPE_BLIST_EMPTY_MUT
+                                    : TYPE_BLIST_EMPTY_IMM;
     } else {
-        return IS_MUTABLE_PLAIN_OBJ(list) ? TYPE_BLIST_SSORT_MUT
-                                          : TYPE_BLIST_SSORT_IMM;
+        return IS_MUTABLE_OBJ(list) ? TYPE_BLIST_SSORT_MUT
+                                    : TYPE_BLIST_SSORT_IMM;
     }
 }
 
