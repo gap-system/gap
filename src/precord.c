@@ -614,15 +614,14 @@ Obj FuncREC_NAMES (
     Obj                 rec )
 {
     /* check the argument                                                  */
-    switch (TNUM_OBJ(rec)) {
-      case T_PREC:
-      case T_PREC+IMMUTABLE:
+    if (IS_PREC(rec)) {
         return InnerRecNames(rec);
-#ifdef HPCGAP
-      case T_AREC:
-        return InnerRecNames(FromAtomicRecord(rec));
-#endif
     }
+#ifdef HPCGAP
+    if (TNUM_OBJ(rec) == T_AREC) {
+        return InnerRecNames(FromAtomicRecord(rec));
+    }
+#endif
     ErrorMayQuit("RecNames: <rec> must be a record (not a %s)",
                  (Int)TNAM_OBJ(rec), 0L);
     return Fail;

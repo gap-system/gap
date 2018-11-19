@@ -1100,9 +1100,7 @@ static Obj FuncAtomicRecord(Obj self, Obj args)
       if (IS_POS_INTOBJ(arg)) {
         return NewAtomicRecord(INT_INTOBJ(arg));
       }
-      switch (TNUM_OBJ(arg)) {
-        case T_PREC:
-        case T_PREC+IMMUTABLE:
+      if (IS_PREC(arg)) {
           return NewAtomicRecordFrom(arg);
       }
       ArgumentError("AtomicRecord: argument must be a positive small integer or a record");
