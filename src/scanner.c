@@ -195,7 +195,7 @@ void Match (
 {
     Char                errmsg [256];
 
-    if (STATE(InterpreterStartLine) == 0) {
+    if (STATE(InterpreterStartLine) == 0 && symbol != S_ILLEGAL) {
         STATE(InterpreterStartLine) = STATE(SymbolStartLine);
     }
 
