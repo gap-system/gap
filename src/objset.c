@@ -759,41 +759,20 @@ static Obj FuncOBJ_SET(Obj self, Obj arg) {
 }
 
 /**
- *  `CheckArgument()`
- *  -----------------
- *
- *  Utility function to check that an argument is an object set
- *  or map. The parameters `t1` and `t2` are allowed TNUMs, usually
- *  the mutable and immutable version. The parameter `t2` can also
- *  be negative if only one `tnum` is allowed. In this case, `t1`
- *  must be the mutable version.
- */
-
-static void CheckArgument(const char *func, Obj obj, Int t1, Int t2) {
-  Int tnum = TNUM_OBJ(obj);
-  if (t2 < 0 && tnum == t1+IMMUTABLE) {
-    ErrorQuit("%s: First argument must be a mutable %s",
-      (Int)func,
-      (Int)TNAM_TNUM(t1));
-  }
-  if (tnum != t1 && tnum != t2) {
-    ErrorQuit("%s: First argument must be an %s",
-      (Int)func,
-      (Int)TNAM_TNUM(t1));
-  }
-}
-
-/**
  *  `FuncADD_OBJ_SET()`
  *  -------------------
  *
  *  GAP function to add `obj` to `set`.
  */
 
-static Obj FuncADD_OBJ_SET(Obj self, Obj set, Obj obj) {
-  CheckArgument("ADD_OBJ_SET", set, T_OBJSET, -1);
-  AddObjSet(set, obj);
-  return (Obj) 0;
+static Obj FuncADD_OBJ_SET(Obj self, Obj set, Obj obj)
+{
+    RequireArgumentCondition("ADD_OBJ_SET", set, "objset",
+                             TNUM_OBJ(set) == T_OBJSET,
+                             "must be a mutable object set");
+
+    AddObjSet(set, obj);
+    return 0;
 }
 
 /**
@@ -803,10 +782,14 @@ static Obj FuncADD_OBJ_SET(Obj self, Obj set, Obj obj) {
  *  GAP function to remove `obj` from `set`.
  */
 
-static Obj FuncREMOVE_OBJ_SET(Obj self, Obj set, Obj obj) {
-  CheckArgument("REMOVE_OBJ_SET", set, T_OBJSET, -1);
-  RemoveObjSet(set, obj);
-  return (Obj) 0;
+static Obj FuncREMOVE_OBJ_SET(Obj self, Obj set, Obj obj)
+{
+    RequireArgumentCondition("REMOVE_OBJ_SET", set, "objset",
+                             TNUM_OBJ(set) == T_OBJSET,
+                             "must be a mutable object set");
+
+    RemoveObjSet(set, obj);
+    return 0;
 }
 
 /**
@@ -817,11 +800,15 @@ static Obj FuncREMOVE_OBJ_SET(Obj self, Obj set, Obj obj) {
  *  `false`.
  */
 
-static Obj FuncFIND_OBJ_SET(Obj self, Obj set, Obj obj) {
-  Int pos;
-  CheckArgument("FIND_OBJ_SET", set, T_OBJSET, T_OBJSET+IMMUTABLE);
-  pos = FindObjSet(set, obj);
-  return pos >= 0 ? True : False;
+static Obj FuncFIND_OBJ_SET(Obj self, Obj set, Obj obj)
+{
+    RequireArgumentCondition("FIND_OBJ_SET", set, "objset",
+                             TNUM_OBJ(set) == T_OBJSET ||
+                                 TNUM_OBJ(set) == T_OBJSET + IMMUTABLE,
+                             "must be an object set");
+
+    Int pos = FindObjSet(set, obj);
+    return pos >= 0 ? True : False;
 }
 
 /**
@@ -831,10 +818,14 @@ static Obj FuncFIND_OBJ_SET(Obj self, Obj set, Obj obj) {
  *  GAP function to remove all objects from `set`.
  */
 
-static Obj FuncCLEAR_OBJ_SET(Obj self, Obj set) {
-  CheckArgument("CLEAR_OBJ_SET", set, T_OBJSET, -1);
-  ClearObjSet(set);
-  return (Obj) 0;
+static Obj FuncCLEAR_OBJ_SET(Obj self, Obj set)
+{
+    RequireArgumentCondition("CLEAR_OBJ_SET", set, "objset",
+                             TNUM_OBJ(set) == T_OBJSET,
+                             "must be a mutable object set");
+
+    ClearObjSet(set);
+    return 0;
 }
 
 /**
@@ -844,9 +835,14 @@ static Obj FuncCLEAR_OBJ_SET(Obj self, Obj set) {
  *  GAP function to return values in set as a list.
  */
 
-static Obj FuncOBJ_SET_VALUES(Obj self, Obj set) {
-  CheckArgument("OBJ_SET_VALUES", set, T_OBJSET, -1);
-  return ObjSetValues(set);
+static Obj FuncOBJ_SET_VALUES(Obj self, Obj set)
+{
+    RequireArgumentCondition("OBJ_SET_VALUES", set, "objset",
+                             TNUM_OBJ(set) == T_OBJSET ||
+                                 TNUM_OBJ(set) == T_OBJSET + IMMUTABLE,
+                             "must be an object set");
+
+    return ObjSetValues(set);
 }
 
 /**
@@ -894,10 +890,14 @@ static Obj FuncOBJ_MAP(Obj self, Obj arg) {
  *  GAP function to add a (key, value) pair to an object map.
  */
 
-static Obj FuncADD_OBJ_MAP(Obj self, Obj map, Obj key, Obj value) {
-  CheckArgument("ADD_OBJ_MAP", map, T_OBJMAP, -1);
-  AddObjMap(map, key, value);
-  return (Obj) 0;
+static Obj FuncADD_OBJ_MAP(Obj self, Obj map, Obj key, Obj value)
+{
+    RequireArgumentCondition("ADD_OBJ_MAP", map, "objmap",
+                             TNUM_OBJ(map) == T_OBJMAP,
+                             "must be a mutable object map");
+
+    AddObjMap(map, key, value);
+    return 0;
 }
 
 /**
@@ -909,13 +909,17 @@ static Obj FuncADD_OBJ_MAP(Obj self, Obj map, Obj key, Obj value) {
  *  otherwise.
  */
 
-static Obj FuncFIND_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue) {
-  Int pos;
-  CheckArgument("FIND_OBJ_MAP", map, T_OBJMAP, T_OBJMAP+IMMUTABLE);
-  pos = FindObjMap(map, key);
-  if (pos < 0)
-    return defvalue;
-  return ADDR_OBJ(map)[OBJSET_HDRSIZE + 2 * pos + 1];
+static Obj FuncFIND_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue)
+{
+    RequireArgumentCondition("FIND_OBJ_MAP", map, "objmap",
+                             TNUM_OBJ(map) == T_OBJMAP ||
+                                 TNUM_OBJ(map) == T_OBJMAP + IMMUTABLE,
+                             "must be an object map");
+
+    Int pos = FindObjMap(map, key);
+    if (pos < 0)
+        return defvalue;
+    return ADDR_OBJ(map)[OBJSET_HDRSIZE + 2 * pos + 1];
 }
 
 /**
@@ -926,11 +930,15 @@ static Obj FuncFIND_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue) {
  *  function returns true if such an entry exists, false otherwise.
  */
 
-static Obj FuncCONTAINS_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue) {
-  Int pos;
-  CheckArgument("FIND_OBJ_MAP", map, T_OBJMAP, T_OBJMAP+IMMUTABLE);
-  pos = FindObjMap(map, key);
-  return pos >= 0 ? True : False;
+static Obj FuncCONTAINS_OBJ_MAP(Obj self, Obj map, Obj key)
+{
+    RequireArgumentCondition("CONTAINS_OBJ_MAP", map, "objmap",
+                             TNUM_OBJ(map) == T_OBJMAP ||
+                                 TNUM_OBJ(map) == T_OBJMAP + IMMUTABLE,
+                             "must be an object map");
+
+    Int pos = FindObjMap(map, key);
+    return pos >= 0 ? True : False;
 }
 
 /**
@@ -941,10 +949,14 @@ static Obj FuncCONTAINS_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue) {
  *  exists.
  */
 
-static Obj FuncREMOVE_OBJ_MAP(Obj self, Obj map, Obj key) {
-  CheckArgument("REMOVE_OBJ_MAP", map, T_OBJMAP, -1);
-  RemoveObjMap(map, key);
-  return (Obj) 0;
+static Obj FuncREMOVE_OBJ_MAP(Obj self, Obj map, Obj key)
+{
+    RequireArgumentCondition("REMOVE_OBJ_MAP", map, "objmap",
+                             TNUM_OBJ(map) == T_OBJMAP,
+                             "must be a mutable object map");
+
+    RemoveObjMap(map, key);
+    return 0;
 }
 
 /**
@@ -954,10 +966,14 @@ static Obj FuncREMOVE_OBJ_MAP(Obj self, Obj map, Obj key) {
  *  GAP function to remove all objects from `map`.
  */
 
-static Obj FuncCLEAR_OBJ_MAP(Obj self, Obj map) {
-  CheckArgument("CLEAR_OBJ_MAP", map, T_OBJMAP, -1);
-  ClearObjMap(map);
-  return (Obj) 0;
+static Obj FuncCLEAR_OBJ_MAP(Obj self, Obj map)
+{
+    RequireArgumentCondition("CLEAR_OBJ_MAP", map, "objmap",
+                             TNUM_OBJ(map) == T_OBJMAP,
+                             "must be a mutable object map");
+
+    ClearObjMap(map);
+    return 0;
 }
 
 /**
@@ -967,9 +983,14 @@ static Obj FuncCLEAR_OBJ_MAP(Obj self, Obj map) {
  *  GAP function to return values in set as a list.
  */
 
-static Obj FuncOBJ_MAP_VALUES(Obj self, Obj map) {
-  CheckArgument("OBJ_MAP_VALUES", map, T_OBJMAP, -1);
-  return ObjMapValues(map);
+static Obj FuncOBJ_MAP_VALUES(Obj self, Obj map)
+{
+    RequireArgumentCondition("OBJ_MAP_VALUES", map, "objmap",
+                             TNUM_OBJ(map) == T_OBJMAP ||
+                                 TNUM_OBJ(map) == T_OBJMAP + IMMUTABLE,
+                             "must be an object map");
+
+    return ObjMapValues(map);
 }
 
 
@@ -980,9 +1001,14 @@ static Obj FuncOBJ_MAP_VALUES(Obj self, Obj map) {
  *  GAP function to return keys in set as a list.
  */
 
-static Obj FuncOBJ_MAP_KEYS(Obj self, Obj map) {
-  CheckArgument("OBJ_MAP_KEYS", map, T_OBJMAP, -1);
-  return ObjMapKeys(map);
+static Obj FuncOBJ_MAP_KEYS(Obj self, Obj map)
+{
+    RequireArgumentCondition("OBJ_MAP_KEYS", map, "objmap",
+                             TNUM_OBJ(map) == T_OBJMAP ||
+                                 TNUM_OBJ(map) == T_OBJMAP + IMMUTABLE,
+                             "must be an object map");
+
+    return ObjMapKeys(map);
 }
 
 
