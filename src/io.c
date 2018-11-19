@@ -500,6 +500,7 @@ UInt OpenInput (
         GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
         IO()->Input->ptr = STATE(In);
         IO()->Input->symbol = STATE(Symbol);
+        IO()->Input->interpreterStartLine = STATE(InterpreterStartLine);
     }
 
     /* enter the file identifier and the file name                         */
@@ -521,6 +522,7 @@ UInt OpenInput (
     STATE(In) = IO()->Input->line;
     STATE(In)[0] = STATE(In)[1] = '\0';
     STATE(Symbol) = S_ILLEGAL;
+    STATE(InterpreterStartLine) = 0;
     IO()->Input->number = 1;
 
     /* indicate success                                                    */
