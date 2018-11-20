@@ -89,10 +89,14 @@
 // generation and execution. Otherwise, we always mark the line as
 // read, and mark as executed if STATE(IntrReturning) and STATE(IntrIgnoring)
 // are both false.
-#define INTERPRETER_PROFILE_HOOK()                                           \
+//
+// IgnoreLevel gives the highest value of IntrIgnoring which means this
+// statement is NOT ignored (this is usually, but not always, 0)
+#define INTERPRETER_PROFILE_HOOK(ignoreLevel)                                \
     if (!STATE(IntrCoding)) {                                                \
         InterpreterHook(GetInputFilenameID(), STATE(InterpreterStartLine),   \
-                        STATE(IntrReturning) || STATE(IntrIgnoring));        \
+                        STATE(IntrReturning) ||                              \
+                            (STATE(IntrIgnoring) > ignoreLevel));            \
     }                                                                        \
     STATE(InterpreterStartLine) = 0;
 
@@ -100,7 +104,7 @@
 // Put the profiling hook into SKIP_IF_RETURNING, as this is run in
 // (nearly) every part of the interpreter, avoid lots of extra code.
 #define SKIP_IF_RETURNING()                                                  \
-    INTERPRETER_PROFILE_HOOK();                                              \
+    INTERPRETER_PROFILE_HOOK(0);                                             \
     SKIP_IF_RETURNING_NO_PROFILE_HOOK();
 
 // Need to
@@ -635,7 +639,7 @@ Int            IntrIfEndBody (
     UInt                i;              /* loop variable                   */
 
     /* explicitly check interpreter hooks, as not using SKIP_IF_RETURNING  */
-    INTERPRETER_PROFILE_HOOK();
+    INTERPRETER_PROFILE_HOOK(0);
 
     /* ignore or code                                                      */
     if ( STATE(IntrReturning) > 0 ) { return 0; }
@@ -659,8 +663,10 @@ Int            IntrIfEndBody (
 void            IntrIfEnd (
     UInt                nr )
 {
-    /* ignore or code                                                      */
-    SKIP_IF_RETURNING();
+    // ignore or code
+    INTERPRETER_PROFILE_HOOK(1);
+    SKIP_IF_RETURNING_NO_PROFILE_HOOK();
+
     if ( STATE(IntrIgnoring)  > 1 ) { STATE(IntrIgnoring)--; return; }
 
     // if one branch was executed (ignoring the others), reset IntrIgnoring
@@ -3921,8 +3927,13 @@ void            IntrInfoEnd( UInt narg )
      Obj args;    /* gathers up the arguments to be printed */
 
     /* ignore or code                                                      */
-    SKIP_IF_RETURNING();
-    if ( STATE(IntrIgnoring)  > 1 ) { STATE(IntrIgnoring)--; return; }
+    INTERPRETER_PROFILE_HOOK(1);
+    SKIP_IF_RETURNING_NO_PROFILE_HOOK();
+
+    if (STATE(IntrIgnoring) > 1) {
+        STATE(IntrIgnoring)--;
+        return;
+    }
     if ( STATE(IntrCoding)    > 0 ) { CodeInfoEnd( narg ); return; }
 
 
@@ -4022,9 +4033,13 @@ void             IntrAssertAfterCondition ( void )
 
 void             IntrAssertEnd2Args ( void )
 {
-      /* ignore or code                                                      */
-    SKIP_IF_RETURNING();
-    if ( STATE(IntrIgnoring)  > 2 ) { STATE(IntrIgnoring) -= 2; return; }
+    /* ignore or code                                                      */
+    INTERPRETER_PROFILE_HOOK(2);
+    SKIP_IF_RETURNING_NO_PROFILE_HOOK();
+    if (STATE(IntrIgnoring) > 2) {
+        STATE(IntrIgnoring) -= 2;
+        return;
+    }
     if ( STATE(IntrCoding)    > 0 ) { CodeAssertEnd2Args(); return; }
 
 
@@ -4042,7 +4057,8 @@ void             IntrAssertEnd3Args ( void )
 {
   Obj message;
   /* ignore or code                                                      */
-  SKIP_IF_RETURNING();
+  INTERPRETER_PROFILE_HOOK(2);
+  SKIP_IF_RETURNING_NO_PROFILE_HOOK();
   if ( STATE(IntrIgnoring)  > 2 ) { STATE(IntrIgnoring) -= 2; return; }
   if ( STATE(IntrCoding)    > 0 ) { CodeAssertEnd3Args(); return; }
 
