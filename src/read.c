@@ -616,7 +616,7 @@ static void ReadReferenceModifiers(TypSymbolSet follow)
 */
 static LHSRef ReadVar(TypSymbolSet follow)
 {
-    LHSRef ref = { .type = R_INVALID, .var = 0, .nest0 = 0 };
+    LHSRef ref = { R_INVALID, {0}, {0} };
 
     Obj  nams;                      // list of names of local vars.
     Obj  lvars;                     // environment
