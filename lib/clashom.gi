@@ -3061,6 +3061,8 @@ local cl;
   cl:=ConjugacyClassesForSmallGroup(G);
   if cl<>fail then
     return cl;
+  elif IsSolvableGroup( G ) and CanEasilyComputePcgs(G) then
+    return ConjugacyClassesForSolvableGroup(G);
   elif IsSimpleGroup( G ) then
     cl:=ClassesFromClassical(G);
     if cl=fail then
