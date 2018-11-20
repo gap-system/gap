@@ -433,40 +433,33 @@ InstallGlobalFunction(ConjugacyClassesForSmallGroup,function(G)
   fi;
 end);
 
+InstallGlobalFunction( ConjugacyClassesForSolvableGroup,
+  function( G )
+  local   cls,  cl,  c;
 
-InstallMethod( ConjugacyClasses, "for groups: try random search",
+  cls := [  ];
+  for cl  in ClassesSolvableGroup( G, 0 )  do
+    c := ConjugacyClass( G, cl.representative, cl.centralizer );
+    Assert(2,Centralizer(G,cl.representative)=cl.centralizer);
+    Add( cls, c );
+  od;
+  Assert(1,Sum(cls,Size)=Size(G));
+  return cls;
+end );
+
+InstallMethod( ConjugacyClasses, "for groups: try solvable method and random search",
   [ IsGroup and IsFinite ],
 function(G)
 local cl;
   cl:=ConjugacyClassesForSmallGroup(G);
   if cl<>fail then
     return cl;
+  elif IsSolvableGroup( G ) and CanEasilyComputePcgs(G) then
+    return ConjugacyClassesForSolvableGroup(G);
   else
     return ConjugacyClassesByRandomSearch(G);
   fi;
 end);
-
-InstallMethod( ConjugacyClasses, "try solvable method",
-    [ IsGroup and IsFinite ],
-    function( G )
-    local   cls,  cl,  c;
-
-  cl:=ConjugacyClassesForSmallGroup(G);
-  if cl<>fail then
-    return cl;
-  elif IsSolvableGroup( G ) and CanEasilyComputePcgs(G) then
-      cls := [  ];
-      for cl  in ClassesSolvableGroup( G, 0 )  do
-	  c := ConjugacyClass( G, cl.representative, cl.centralizer );
-	  Assert(2,Centralizer(G,cl.representative)=cl.centralizer);
-	  Add( cls, c );
-      od;
-      Assert(1,Sum(cls,Size)=Size(G));
-      return cls;
-  else
-      TryNextMethod();
-  fi;
-end );
 
 #############################################################################
 ##

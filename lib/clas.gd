@@ -250,6 +250,9 @@ DeclareGlobalFunction( "ConjugacyClassesByOrbits" );
 # `noaction' option is not set, otherwise it returns `fail'.
 DeclareGlobalFunction( "ConjugacyClassesForSmallGroup" );
 
+DeclareGlobalFunction( "ConjugacyClassesForSolvableGroup" );
+
+
 #############################################################################
 ##
 #F  ConjugacyClassesByHomomorphicImage( <G>, <hom> )
