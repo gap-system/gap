@@ -105,8 +105,6 @@ enum {
     OFFSET_FIRST_STAT = sizeof(StatHeader)+sizeof(BodyHeader)
 };
 
-
-
 /****************************************************************************
 **
 *S  T_<name>  . . . . . . . . . . . . . .  symbolic names for statement types
@@ -280,9 +278,25 @@ enum STAT_TNUM {
 **  'ADDR_STAT' returns   the  absolute address of the    memory block of the
 **  statement <stat>.
 */
-#define ADDR_STAT(stat) ((Stat *)(((char *)STATE(PtrBody)) + (stat)))
-#define CONST_ADDR_STAT(stat)                                                \
-    ((const Stat *)(((const char *)STATE(PtrBody)) + (stat)))
+static inline Stat * ADDR_BODY_STAT(const Stat * body, Stat stat)
+{
+    return ((Stat *)(((char *)(body)) + (stat)));
+}
+static inline const Stat * CONST_ADDR_BODY_STAT(const Stat * body, Stat stat)
+{
+    return ((const Stat *)(((const char *)(body)) + (stat)));
+}
+static inline const Stat * READ_BODY_STAT(const Stat * body, Stat stat, UInt idx)
+{
+    return (const Stat *)CONST_ADDR_BODY_STAT(body, stat)[idx];
+}
+static inline void WRITE_BODY_STAT(const Stat * body, Stat stat, UInt idx, Stat val)
+{
+    ADDR_BODY_STAT(body, stat)[idx] = val;
+}
+
+#define ADDR_STAT(stat) ADDR_BODY_STAT(STATE(PtrBody), stat)
+#define CONST_ADDR_STAT(stat) CONST_ADDR_BODY_STAT(STATE(PtrBody), stat)
 
 #define READ_STAT(stat, idx) (CONST_ADDR_STAT(stat)[idx])
 #define WRITE_STAT(stat, idx, val) ADDR_STAT(stat)[idx] = val
