@@ -407,23 +407,23 @@ local oper,narg,args,verbos,fams,flags,i,j,methods,flag,flag2,
 end);
 
 BIND_GLOBAL("ApplicableMethod",function(arg)
-local i,l,ok,errstr;
+local i,l,ok;
   ok:=false;
-  errstr:="#I  usage: ApplicableMethod(<opr>,<arglist>[,<verbosity>[,<nr>]])\n";
   if Length(arg)<2 then 
     Print("#I  ApplicableMethod requires at least two arguments\n"); 
-  elif not IsList(arg[2]) then 
-    Print("#I  argument 2 must be a list of arguments for the operation\n" ); 
   elif not IsFunction(arg[1]) then 
-    Print("#I  argument 1 must be the name of an operation\n" );
+    Print("#I  argument 1 must be the name of a function\n");
   else 
     ok := true;
   fi;
   if not ok then 
-    Print(errstr);
-    return fail;
+    Error("usage: ApplicableMethod(<opr>,<arglist>[,<verbosity>[,<nr>]])\n");
   fi;
   l:=ShallowCopy(arg[2]);
+  if not IsList(l) then 
+    Print("#I  replacing second argument arg2 by the list [arg2]\n");
+    l:=[l];
+  fi;
   for i in [1..Length(l)] do
     if i=1 and IS_CONSTRUCTOR(arg[1]) then
       l[i]:=l[i];

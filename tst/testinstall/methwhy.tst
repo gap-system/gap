@@ -3,8 +3,8 @@ gap> START_TEST("methwhy.tst");
 #
 gap> ApplicableMethod();
 #I  ApplicableMethod requires at least two arguments
-#I  usage: ApplicableMethod(<opr>,<arglist>[,<verbosity>[,<nr>]])
-fail
+Error, usage: ApplicableMethod(<opr>,<arglist>[,<verbosity>[,<nr>]])
+
 
 #
 gap> foobar := NewOperation("foobar", [IsObject]);
@@ -44,10 +44,13 @@ gap> Display(ApplicableMethod(foobar, [ ['a'] ], 1));
 function ( x )
     return StartsWith( x, "foo" );
 end
-gap> ApplicableMethod(foobar, 'a', 1);   
-#I  argument 2 must be a list of arguments for the operation
-#I  usage: ApplicableMethod(<opr>,<arglist>[,<verbosity>[,<nr>]])
-fail
+gap> ApplicableMethod(foobar, [ ['a'] ], 1, 2);
+#I  Searching Method for foobar with 1 arguments:
+#I  Total: 4 entries, of which 3 are applicable:
+#I  Method 2, applicable method number 2, value: 42
+#I  ``foobar: for a list''
+#I   at stream:1
+<Attribute "Length">
 gap> ApplicableMethod(foobar, [ ['a'] ], 1, 3);
 #I  Searching Method for foobar with 1 arguments:
 #I  Total: 4 entries, of which 3 are applicable:
@@ -84,7 +87,7 @@ gap> Display(ApplicableMethod(foobar, [fail], 1));
 function ( x )
     return fail;
 end
-gap> ApplicableMethod(foobar, [fail], 4);
+gap> Display(ApplicableMethod(foobar, [fail], 4));
 #I  Searching Method for foobar with 1 arguments:
 #I  Total: 4 entries, of which 1 is applicable:
 #I  Method 1, value: 2*SUM_FLAGS+1
@@ -102,7 +105,9 @@ gap> ApplicableMethod(foobar, [fail], 4);
 #I  Method 4, applicable method number 1, value: 0
 #I  ``foobar''
 #I   at stream:1
-function( x ) ... end
+function ( x )
+    return fail;
+end
 gap> ApplicableMethod(foobar, [fail], 6);; 
 #I  Searching Method for foobar with 1 arguments:
 #I  Total: 4 entries, of which 1 is applicable:
@@ -203,18 +208,33 @@ gap> ApplicableMethod(foobar, [1, []], 2);
 #I  ``foobar: for 2 integers''
 #I   at stream:2
 fail
+gap> ApplicableMethod(foobar, [1, []], 4);
+#I  Searching Method for foobar with 2 arguments:
+#I  Total: 2 entries, of which 0 are applicable:
+#I  there are no applicable methods with these parameters
+#I  Method 1, value: 17
+#I  ``foobar: for two lists''
+#I   at stream:1
+#I   - 1st argument needs [ "IsList" ]
+#I  Method 2, value: 0
+#I  ``foobar: for 2 integers''
+#I   at stream:2
+#I   - 2nd argument needs [ "IsInt" ]
+fail
 
 #
 # check 0-6 arguments
 #
-gap> ApplicableMethod(foobar, [], 4);
+gap> Display(ApplicableMethod(foobar, [], 4));
 #I  Searching Method for foobar with 0 arguments:
 #I  Total: 1 entries, of which 1 is applicable:
 #I  Method 1, applicable method number 1, value: 0
 #I  ``foobar: for no argument''
 #I   at stream:1
-function(  ) ... end
-gap> ApplicableMethod(foobar, [1], 4, 1);
+function (  )
+    return 1;
+end
+gap> Display(ApplicableMethod(foobar, [1], 4, 1));
 #I  Searching Method for foobar with 1 arguments:
 #I  Total: 4 entries, of which 2 are applicable:
 #I  Method 1, value: 2*SUM_FLAGS+1
@@ -228,7 +248,9 @@ gap> ApplicableMethod(foobar, [1], 4, 1);
 #I  Method 3, applicable method number 1, value: 1
 #I  ``foobar: for an integer''
 #I   at stream:1
-function( x ) ... end
+function ( x )
+    return 1;
+end
 gap> ApplicableMethod(foobar, [1], 4, 2);
 #I  Searching Method for foobar with 1 arguments:
 #I  Total: 4 entries, of which 2 are applicable:
@@ -298,6 +320,20 @@ gap> ApplicableMethod( foobar, [9], 1, 1 );
 #I  foobar is a function, not an operation
 #I  and requires at least 2 arguments
 fail
+
+#
+# now not returning 'fail' when the second argument fails to be a list, 
+# but replacing arg2 by [arg2] and then carrying on:
+#
+gap> g := Group(());;
+gap> Display(ApplicableMethod(Size,g));
+#I  replacing second argument arg2 by the list [arg2]
+function ( C )
+    if IsFinite( C ) then
+        TryNextMethod();
+    fi;
+    return infinity;
+end
 
 #
 gap> STOP_TEST("methwhy.tst");
