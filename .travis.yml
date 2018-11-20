@@ -14,12 +14,17 @@ addons:
     - libgmp-dev
     - libreadline-dev
 
+#
+# The following test jobs are roughly sorted by duration, from longest to
+# shortest.
+#
 matrix:
   include:
     # general test suite (subsumes testinstall tests, too)
     - env: TEST_SUITES="docomp testtravis"
+
     # the same in 32 bit mode, and with debugging turned off, to (a) make it
-    # a lot faster, and (b) to make sure nobody accidentally put some vital
+    # a lot faster, and (b) to make sure nobody accidentally puts some vital
     # computing into code that is only run when debugging is on.
     - env: TEST_SUITES="docomp testtravis" ABI=32 CONFIGFLAGS=""
       addons:
@@ -28,6 +33,9 @@ matrix:
           - g++-multilib
           - libgmp-dev:i386
           - libreadline-dev:i386
+
+    # HPC-GAP builds (for efficiency, we don't build all combinations)
+    - env: TEST_SUITES="docomp testtravis" ABI=64 HPCGAP=yes
 
     # compiler packages and run package tests
     # don't use --coverage in CFLAGS, it causes the weird `atexit` bug in
@@ -50,6 +58,7 @@ matrix:
           - pari-gp                 # for alnuth
           - libzmq3-dev             # for ZeroMQInterface
 
+    # compiler packages and run package tests in 32 bit mode
     - env: TEST_SUITES=testpackages CFLAGS="-O2" LDFLAGS= ABI=32
       addons:
         apt_packages:
@@ -87,8 +96,11 @@ matrix:
     # run tests contained in the manual
     - env: TEST_SUITES=testmanuals
 
-    # HPC-GAP builds (for efficiency, we don't build all combinations)
-    - env: TEST_SUITES="docomp testtravis" ABI=64 HPCGAP=yes
+    # run bugfix regression tests
+    - env: TEST_SUITES=testbugfix
+
+    # test Julia integration
+    - env: TEST_SUITES="testinstall" JULIA=yes
 
     # out of tree builds -- these are mainly done to verify that the build
     # system work in this scenario. Since we don't expect the test results to
@@ -96,7 +108,8 @@ matrix:
     # setting NO_COVERAGE=1; this has the extra benefit of also running the
     # tests at least once with the ReproducibleBehaviour option turned off.
     - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=64 BUILDDIR=build
-    # for 32bit mode, also turn off debugging (see elsewhere in this file for
+
+    # same as above, but in 32 bit mode, also turn off debugging (see elsewhere in this file for
     # an explanation)
     - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS=""
       addons:
@@ -106,13 +119,7 @@ matrix:
           #- libgmp-dev:i386    # do not install GMP, to test that GAP can build its own
           - libreadline-dev:i386
 
-    # test Julia integration
-    - env: TEST_SUITES="testinstall" JULIA=yes
-
-    # run bugfix regression tests
-    - env: TEST_SUITES=testbugfix
-
-    # test error reporting and compiling (quickest job in this test suite)
+    # test error reporting and compiling
     - env: TEST_SUITES="testspecial test-compile"
 
     # test libgap
