@@ -12,7 +12,7 @@
 ##  end;
 
 InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
-  local lines, inp, pos, outp, ign, commands, i, skipstate, checkifelseendif;
+  local lines, inp, pos, outp, ign, commands, i, skipstate, checkifelseendif, foundcmd;
   lines := SplitString(str, "\n", "");
   inp := [];
   pos := [];
@@ -21,6 +21,9 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
   commands := [];
   i := 1;
   checkifelseendif := l -> ForAny(["#@if","#@else","#@fi"], x -> StartsWith(l, x));
+  # Set to true if we find a #@if, #@else or #@endif. Used to check these do not
+  # occur in the middle of a single input/output test block.
+  foundcmd := false;
   # skipstate represents the current status of '#@if/#@else/#@fi'
   # 0: not in a '#@if'
   # 1: in a #@if with a true condition
@@ -31,6 +34,8 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
   skipstate := 0;
   while i <= Length(lines) do
     if checkifelseendif(lines[i]) then
+        foundcmd := true;
+        Add(ign, i);
         if StartsWith(lines[i], "#@if") then
             if skipstate <> 0 then
                 Error("Invalid test file: Nested #@if");
@@ -61,6 +66,7 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
     fi;
 
     if skipstate < 0 then
+        Add(ign, i);
         i := i + 1;
         continue;
     fi;
@@ -94,16 +100,23 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
         i := i+1;
       od;
     elif Length(lines[i]) > 4 and lines[i]{[1..5]} = "gap> " then
+      foundcmd := false;
       Add(outp, "");
       Add(inp, lines[i]{[6..Length(lines[i])]});
       Add(inp[Length(inp)], '\n');
       Add(pos, i);
       i := i+1;
     elif Length(lines[i]) > 1 and lines[i]{[1..2]} = "> " then
+      if foundcmd then
+        Error("#@ commands cannot occur in the middle of a single test");
+      fi;
       Append(inp[Length(inp)], lines[i]{[3..Length(lines[i])]});
       Add(inp[Length(inp)], '\n');
       i := i+1;
     elif Length(outp) > 0 then
+      if foundcmd then
+        Error("#@ commands cannot occur in the middle of a single test");
+      fi;
       Append(outp[Length(outp)], lines[i]);
       Add(outp[Length(outp)], '\n');
       i := i+1;
@@ -283,7 +296,9 @@ end);
 ##  <P/>
 ##  Lines which begin "#@" define special configuration options for tests.
 ##  The <C>#@local</C> and <C>#@exec</C> options can only be used before
-##  any &GAP; input.
+##  any &GAP; input, and the other commands can only be used between
+##  individual tests (just before a line starting <C>gap></C>, or at end
+##  of the file).
 ##  Currently defined options are:
 ##  <List>
 ##  <Mark>#@local identifierlist</Mark>
