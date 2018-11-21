@@ -223,22 +223,24 @@ local oper,narg,args,verbos,fams,flags,i,j,methods,flag,flag2,
   if not IsOperation(oper) then 
     nam:=FilenameFunc(oper); 
     if nam=fail then 
-      Print("#I  ",oper," is not recognised as the name of an operation\n"); 
+      Info(InfoWarning, 1, oper, 
+        " is not recognised as the name of an operation"); 
       return fail;
     fi;
     if verbos>0 then 
-      Print("#I  ",NameFunction(oper)," is a function, not an operation\n"); 
+      Info(InfoWarning, 1, NameFunction(oper), 
+        " is a function, not an operation"); 
     fi;
     naf:=NumberArgumentsFunction(oper);
     if naf>0 and naf<>narg then 
-      Print("#I  and requires ",naf," arguments\n");
+      Info(InfoWarning, 1, "and requires ",naf," arguments");
       return fail; 
     elif -naf>narg then 
-      Print("#I  and requires at least ",-naf," arguments\n");
+      Info(InfoWarning, 1, "and requires at least ",-naf," arguments");
       return fail; 
     fi;
     if verbos>0 then 
-      Print("#I  and is located at: ",LocationFunc(oper),"\n"); 
+      Info(InfoWarning, 1, "and is located at: ",LocationFunc(oper)); 
     fi;
     return oper;
   fi; 
@@ -264,7 +266,8 @@ local oper,narg,args,verbos,fams,flags,i,j,methods,flag,flag2,
   methods:=MethodsOperation(oper,narg);
   nummeth:=Length(methods);
   if nummeth=0 then 
-    Print("#I  no method found for this operation with these arguments\n"); 
+    Info(InfoWarning, 1, 
+        "no method found for this operation with this number of arguments"); 
     return fail;
   fi;
   applic := [ ];
@@ -410,9 +413,9 @@ BIND_GLOBAL("ApplicableMethod",function(arg)
 local i,l,ok;
   ok:=false;
   if Length(arg)<2 then 
-    Print("#I  ApplicableMethod requires at least two arguments\n"); 
+    Info(InfoWarning, 1,"ApplicableMethod requires at least two arguments"); 
   elif not IsFunction(arg[1]) then 
-    Print("#I  argument 1 must be the name of a function\n");
+    Info(InfoWarning, 1,"argument 1 must be the name of a function");
   else 
     ok := true;
   fi;
@@ -421,7 +424,7 @@ local i,l,ok;
   fi;
   l:=ShallowCopy(arg[2]);
   if not IsList(l) then 
-    Print("#I  replacing second argument arg2 by the list [arg2]\n");
+    Info(InfoWarning, 1,"replacing second argument arg2 by the list [arg2]");
     l:=[l];
   fi;
   for i in [1..Length(l)] do

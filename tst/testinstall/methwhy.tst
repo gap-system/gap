@@ -298,6 +298,9 @@ gap> ApplicableMethod(foobar, [1..6], 1);
 #I  ``foobar: for 6 integers''
 #I   at stream:6
 function( x, y... ) ... end
+gap> ApplicableMethod(foobar, [1..7], 1);
+#I  no method found for this operation with this number of arguments
+fail
 
 #
 # check ApplicableMethod when applied to a function 
