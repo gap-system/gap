@@ -94,6 +94,15 @@ then
   # IO's src/io.c with GAP's.
   CFLAGS= LDFLAGS= "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR" io* profiling*
 
+  #
+  # Factint is incompatible with HPCGAP and interferes with some tests
+  #
+  
+  if [[ $HPCGAP = yes ]]
+  then
+     rm -rf $SRCDIR/pkg/FactInt*
+  fi
+  
   popd
 
 fi
