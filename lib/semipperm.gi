@@ -94,17 +94,17 @@ InstallMethod(CodegreeOfPartialPermSemigroup,
 s-> DegreeOfPartialPermSemigroup(s));
 
 InstallMethod(RankOfPartialPermSemigroup,
-"for a partial perm semigroup",
+"for a partial perm semigroup with generators of semigroup",
 [IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
 S -> RankOfPartialPermCollection(GeneratorsOfSemigroup(S)));
 
 InstallMethod(RankOfPartialPermSemigroup,
-"for a partial perm semigroup",
-[IsPartialPermSemigroup and HasGeneratorsOfGroup],
-S -> RankOfPartialPermCollection(GeneratorsOfGroup(S)));
+"for a partial perm monoid",
+[IsPartialPermMonoid],
+S -> RankOfPartialPerm(One(S)));
 
 InstallMethod(RankOfPartialPermCollection,
-"for a partial perm semigroup",
+"for a partial perm semigroup with generators of semigroup",
 [IsPartialPermSemigroup and HasGeneratorsOfSemigroup],
 s-> RankOfPartialPermCollection(GeneratorsOfSemigroup(s)));
 
