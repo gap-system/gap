@@ -66,45 +66,29 @@
 ##  <#/GAPDoc>
 ##
 BindGlobal("Reread",
-        function(arg)
-    local res;
+        function(input)
     MakeReadWriteGlobal("REREADING");
     REREADING := true;
     MakeReadOnlyGlobal("REREADING");
-    if LEN_LIST(arg) > 1 then
-        res := CallFuncList( Read, arg );
-    else
-        CallFuncList( Read, arg );
-    fi;
+    Read( input );
     MakeReadWriteGlobal("REREADING");
     REREADING := false;
     MakeReadOnlyGlobal("REREADING");
-    if LEN_LIST(arg) > 1 then
-        return res;
-    fi;
 end);
 
 
 BindGlobal("RereadAndCheckFunc", 
-        function( arg )
+        function( path )
     local func;
-    func := CallFuncList(ReadAndCheckFunc, arg);
-    return function( arg )
-        local res;
+    func := ReadAndCheckFunc(path);
+    return function( name )
         MakeReadWriteGlobal("REREADING");
         REREADING := true;
         MakeReadOnlyGlobal("REREADING");
-        if LEN_LIST(arg) > 1 then
-            res := CallFuncList(func,arg);
-        else
-            CallFuncList(func,arg);
-        fi;
+        func( name );
         MakeReadWriteGlobal("REREADING");
         REREADING := false;
         MakeReadOnlyGlobal("REREADING");
-        if LEN_LIST(arg) > 1 then
-            return res;
-        fi;
     end;
 end);
 

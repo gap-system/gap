@@ -300,9 +300,7 @@ InstallGlobalFunction( "IMFLoad", function ( dim )
     if not IsBound( IMFList ) then
         name := "imf.grp";
         Info( InfoImf, 2, "loading secondary file ", name );
-        if not ReadGrp( name, "imf" )  then
-            Error( "cannot load secondary file ", name );
-        fi;
+        ReadGrp( name );
     fi;
 
     # check whether we actually need to load a matrix file
@@ -315,9 +313,7 @@ InstallGlobalFunction( "IMFLoad", function ( dim )
             name := Concatenation( "imf", String( dim ), ".grp" );
         fi;
         Info( InfoImf, 2, "loading secondary file ", name );
-        if not ReadGrp( name, "imf" )  then
-            Error( "cannot load secondary file ", name );
-        fi;
+        ReadGrp( name );
     fi;
 
     return;
