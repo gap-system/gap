@@ -39,6 +39,11 @@ BIND_GLOBAL( "OnQuit",  # care to ensure it always has a definition. - GG
     if IsBound(ResetMethodReordering) and IsFunction(ResetMethodReordering) then
         ResetMethodReordering();
     fi;
+    if REREADING = true then
+        MakeReadWriteGlobal("REREADING");
+        REREADING := false;
+        MakeReadOnlyGlobal("REREADING");
+    fi;
 end);
 
 

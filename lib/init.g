@@ -313,30 +313,18 @@ end );
 
 #############################################################################
 ##
-#F  ReadAndCheckFunc( <path>[,<libname>] )
+#F  ReadAndCheckFunc( <path> )
 ##
-##  `ReadAndCheckFunc' creates a function that reads in a file named
-##  `<name>.<ext>'.
-##  If a second argument <libname> is given, GAP return `true' or `false'
-##  according to the read status, otherwise an error is signalled if the file
-##  cannot be read.
+##  `ReadAndCheckFunc' creates a function that take an argument <name>, and
+##  then reads in a file named <name> from <path>.
 ##  This can be used for partial reading of the library.
 ##
-BIND_GLOBAL("ReadAndCheckFunc",function( arg )
-  local  path,  prefix;
+BIND_GLOBAL("ReadAndCheckFunc",function( path )
 
-    path := IMMUTABLE_COPY_OBJ(arg[1]);
+    path := IMMUTABLE_COPY_OBJ(path);
 
-    if LEN_LIST(arg) = 1  then
-        prefix := IMMUTABLE_COPY_OBJ("");
-    else
-        prefix := IMMUTABLE_COPY_OBJ(arg[2]);
-    fi;
-
-    return function( arg )
-        local  name,  ext,  libname, error;
-
-        name := arg[1];
+    return function( name )
+        local  libname, error;
 
         # create a filename from <path> and <name>
         libname := SHALLOW_COPY_OBJ(path);
@@ -346,20 +334,8 @@ BIND_GLOBAL("ReadAndCheckFunc",function( arg )
         error := not READ_GAP_ROOT(libname);
 
         if error then
-          if LEN_LIST( arg )=1 then
-            Error( "the library file '", libname, "' must exist and ",
-                   "be readable");
-          else
-            return false;
-          fi;
-        elif path<>"pkg" then
-          # check the revision entry
-          ext := SHALLOW_COPY_OBJ(prefix);
-          APPEND_LIST_INTR(ext,ReplacedString( name, ".", "_" ));
-        fi;
-
-        if LEN_LIST(arg)>1 then
-          return true;
+          Error( "the library file '", libname, "' must exist and ",
+                 "be readable");
         fi;
 
     end;
