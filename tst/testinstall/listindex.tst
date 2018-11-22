@@ -223,38 +223,35 @@ gap> CopyListEntries(l,1,1,l,3,2,2); l;
 
 #
 gap> CopyListEntries();
-Error, COPY_LIST_ENTRIES: number of arguments must be 7, not 0
+Error, Function: number of arguments must be 7 (not 0)
 gap> CopyListEntries("abc",3,-1,l,4,-3,2);
-Error, COPY_LIST_ENTRIES: source must be a plain list not a list (string)
+Error, CopyListEntries: <fromlst> must be a plain list (not a list (string))
 gap> CopyListEntries(s,3,-1,"abc",4,-3,2);
-Error, COPY_LIST_ENTRIES: destination must be a mutable plain list not a list \
-(string)
+Error, CopyListEntries: <tolst> must be a mutable plain list (not a list (stri\
+ng))
 gap> CopyListEntries(s,3,-1,Immutable([1,2,3]),4,-3,2);
-Error, COPY_LIST_ENTRIES: destination must be a mutable plain list not a list \
-(plain,cyc,imm)
+Error, CopyListEntries: <tolst> must be a mutable plain list (not a list (plai\
+n,cyc,imm))
 gap> CopyListEntries(s, "cheese", 1, l, 1, 1, 2);
-Error, COPY_LIST_ENTRIES: argument 2  must be a small integer, not a list (str\
-ing)
+Error, CopyListEntries: <fromind> must be a small integer (not a list (string)\
+)
 gap> CopyListEntries(s, 1, "cheese", l, 1, 1, 2);
-Error, COPY_LIST_ENTRIES: argument 3  must be a small integer, not a list (str\
-ing)
+Error, CopyListEntries: <fromstep> must be a small integer (not a list (string\
+))
 gap> CopyListEntries(s, 1, 1, l, "cheese", 1, 2);
-Error, COPY_LIST_ENTRIES: argument 5  must be a small integer, not a list (str\
-ing)
+Error, CopyListEntries: <toind> must be a small integer (not a list (string))
 gap> CopyListEntries(s, 1, 1, l, 1, "cheese", 2);
-Error, COPY_LIST_ENTRIES: argument 6  must be a small integer, not a list (str\
-ing)
+Error, CopyListEntries: <tostep> must be a small integer (not a list (string))
 gap> CopyListEntries(s, 1, 1, l, 1, 1, "cheese");
-Error, COPY_LIST_ENTRIES: argument 7  must be a small integer, not a list (str\
-ing)
+Error, CopyListEntries: <n> must be a small integer (not a list (string))
 gap> CopyListEntries(s,0,1,l,1,1,2);
-Error, COPY_LIST_ENTRIES: list indices must be positive integers
+Error, CopyListEntries: list indices must be positive integers
 gap> CopyListEntries(s,1,-1,l,1,1,2);
-Error, COPY_LIST_ENTRIES: list indices must be positive integers
+Error, CopyListEntries: list indices must be positive integers
 gap> CopyListEntries(s,1,1,l,1,-1,2);
-Error, COPY_LIST_ENTRIES: list indices must be positive integers
+Error, CopyListEntries: list indices must be positive integers
 gap> CopyListEntries(s,1,1,l,0,1,2);
-Error, COPY_LIST_ENTRIES: list indices must be positive integers
+Error, CopyListEntries: list indices must be positive integers
 
 #
 gap> x := [1,3,4];;
