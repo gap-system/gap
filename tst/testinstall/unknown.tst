@@ -78,6 +78,12 @@ gap> u ^ 1;
 Unknown(1)
 gap> u ^ 2;
 Unknown(18)
+
+#
+gap> Unknown(123);
+Unknown(123)
+
+#
 gap> STOP_TEST( "unknown.tst", 1);
 
 #############################################################################

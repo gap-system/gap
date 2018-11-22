@@ -29,7 +29,7 @@ InstallMethod(\[\],
     if elm <> fail or IsBoundElmWPObj(wp,pos) then
         return elm;
     else
-        Error("<wpobj>[<pos>] must have a value.");
+        Error("<wpobj>[<pos>] must have a value");
     fi;
 end);
 

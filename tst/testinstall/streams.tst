@@ -58,6 +58,25 @@ gap> ReadAll(stream, 3);
 "new"
 gap> CloseStream(stream);
 
+# test PrintFormattingStatus
+gap> stream := OutputTextFile( fname, false );;
+gap> PrintFormattingStatus(stream);
+true
+gap> PrintTo( stream, "a very long line that GAP is going to wrap at 80 chars by default if we don't do anything about it\n");
+gap> CloseStream(stream);
+gap> StringFile(fname);
+"a very long line that GAP is going to wrap at 80 chars by default if we don't\
+ \\\ndo anything about it\n"
+gap> stream := OutputTextFile( fname, false );;
+gap> SetPrintFormattingStatus(stream, false);
+gap> PrintFormattingStatus(stream);
+false
+gap> PrintTo( stream, "a very long line that GAP is going to wrap at 80 chars by default if we don't do anything about it\n");
+gap> CloseStream(stream);
+gap> StringFile(fname);
+"a very long line that GAP is going to wrap at 80 chars by default if we don't\
+ do anything about it\n"
+
 #
 # string streams
 #
@@ -102,6 +121,12 @@ fail
 # Assume this file does not exist
 gap> InputTextFile("/filewhichdoesnotexist/lspdsiodfsjfdsjofdsjkfd/fdsjkfds");
 fail
+
+# some input validation
+gap> PrintTo(fail);
+Error, first argument must be a filename or output stream
+gap> AppendTo(fail);
+Error, first argument must be a filename or output stream
 
 #
 gap> STOP_TEST( "streams.tst", 1);
