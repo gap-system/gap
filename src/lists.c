@@ -206,11 +206,7 @@ Obj FuncLEN_LIST (
 Int LenListError (
     Obj                 list )
 {
-    list = ErrorReturnObj(
-        "Length: <list> must be a list (not a %s)",
-        (Int)TNAM_OBJ(list), 0L,
-        "you can replace <list> via 'return <list>;'" );
-    return LEN_LIST( list );
+    RequireArgument("Length", list, "list", "must be a list");
 }
 
 
@@ -220,11 +216,9 @@ Int LenListObject (
     Obj                 len;
 
     len = FuncLENGTH( LengthAttr, obj );
-    while (!IS_NONNEG_INTOBJ(len)) {
-        len = ErrorReturnObj(
-            "Length: method must return a nonnegative value (not a %s)",
-            (Int)TNAM_OBJ(len), 0L,
-            "you can replace value <length> via 'return <length>;'" );
+    if (!IS_NONNEG_INTOBJ(len)) {
+        RequireArgument("Length", len, 0,
+                        "method must return a non-negative value");
     }
     return INT_INTOBJ( len );
 }
@@ -246,11 +240,7 @@ Obj             (*LengthFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 Obj LengthError (
     Obj                 list )
 {
-    list = ErrorReturnObj(
-        "Length: <list> must be a list (not a %s)",
-        (Int)TNAM_OBJ(list), 0L,
-        "you can replace <list> via 'return <list>;'" );
-    return LENGTH( list );
+    RequireArgument("Length", list, "list", "must be a list");
 }
 
 
@@ -298,11 +288,7 @@ Int             IsbListError (
     Obj                 list,
     Int                 pos )
 {
-    list = ErrorReturnObj(
-        "IsBound: <list> must be a list (not a %s)",
-        (Int)TNAM_OBJ(list), 0L,
-        "you can replace <list> via 'return <list>;'" );
-    return ISB_LIST( list, pos );
+    RequireArgument("IsBound", list, "list", "must be a list");
 }
 
 Int             IsbListObject (
@@ -381,17 +367,7 @@ Obj ElmDefListObject(Obj list, Int pos, Obj def)
 
 Obj FuncELM_DEFAULT_LIST(Obj self, Obj list, Obj pos, Obj def)
 {
-    // Dispath ensures 'list' is a list, and 'pos' is an int.
-    // just need to check 'pos' is a small int which is > 0.
-    if (!IS_INTOBJ(pos)) {
-        ErrorMayQuit("GetWithDefault: <pos> must be an integer (not a %s)",
-                     (Int)TNAM_OBJ(pos), 0);
-    }
-
-    Int ipos = INT_INTOBJ(pos);
-    if (ipos < 1) {
-        ErrorMayQuit("GetWithDefault: <pos> must be >= 0", 0, 0);
-    }
+    Int ipos = GetPositiveSmallInt("GetWithDefault", pos, "pos");
     return ELM_DEFAULT_LIST(list, ipos, def);
 }
 
@@ -414,11 +390,7 @@ Obj Elm0ListError (
     Obj                 list,
     Int                 pos )
 {
-    list = ErrorReturnObj(
-        "List Element: <list> must be a list (not a %s)",
-        (Int)TNAM_OBJ(list), 0L,
-        "you can replace <list> via 'return <list>;'" );
-    return ELM0_LIST( list, pos );
+    RequireArgument("List Element", list, "list", "must be a list");
 }
 
 
@@ -524,11 +496,7 @@ Obj ElmListError (
     Obj                 list,
     Int                 pos )
 {
-    list = ErrorReturnObj(
-        "List Element: <list> must be a list (not a %s)",
-        (Int)TNAM_OBJ(list), 0L,
-        "you can replace <list> via 'return <list>;'" );
-    return ELM_LIST( list, pos );
+    RequireArgument("List Element", list, "list", "must be a list");
 }
 
 
@@ -630,11 +598,7 @@ Obj ElmsListError (
     Obj                 list,
     Obj                 poss )
 {
-    list = ErrorReturnObj(
-        "List Elements: <list> must be a list (not a %s)",
-        (Int)TNAM_OBJ(list), 0L,
-        "you can replace <list> via 'return <list>;'" );
-    return ELMS_LIST( list, poss );
+    RequireArgument("List Elements", list, "list", "must be a list");
 }
 
 
@@ -867,11 +831,7 @@ void            UnbListError (
     Obj                 list,
     Int                 pos )
 {
-    list = ErrorReturnObj(
-        "Unbind: <list> must be a list (not a %s)",
-        (Int)TNAM_OBJ(list), 0L,
-        "you can replace <list> via 'return <list>;'" );
-    UNB_LIST( list, pos );
+    RequireArgument("Unbind", list, "list", "must be a list");
 }
 
 void            UnbListDefault (
@@ -931,11 +891,7 @@ void            AssListError (
     Int                 pos,
     Obj                 obj )
 {
-    list = ErrorReturnObj(
-        "List Assignment: <list> must be a list (not a %s)",
-        (Int)TNAM_OBJ(list), 0L,
-        "you can replace <list> via 'return <list>;'" );
-    ASS_LIST( list, pos, obj );
+    RequireArgument("List Assignment", list, "list", "must be a list");
 }
 
 void            AssListDefault (
@@ -1023,11 +979,7 @@ void            AsssListError (
     Obj                 poss,
     Obj                 objs )
 {
-    list = ErrorReturnObj(
-        "List Assignments: <list> must be a list (not a %s)",
-        (Int)TNAM_OBJ(list), 0L,
-        "you can replace <list> via 'return <list>;'" );
-    ASSS_LIST( list, poss, objs );
+    RequireArgument("List Assignments", list, "list", "must be a list");
 }
 
 void            AsssListDefault (
@@ -1491,12 +1443,9 @@ Obj             PosListHandler3 (
     Obj                 obj,
     Obj                 start )
 {
-    while ( TNUM_OBJ(start) != T_INTPOS &&
-            (! IS_NONNEG_INTOBJ(start) ) ) {
-        start = ErrorReturnObj(
-            "Position: <start> must be a nonnegative integer (not a %s)",
-            (Int)TNAM_OBJ(start), 0L,
-            "you can replace <start> via 'return <start>;'" );
+    if (TNUM_OBJ(start) != T_INTPOS && !IS_NONNEG_INTOBJ(start)) {
+        RequireArgument("Position", start, "start",
+                        "must be a non-negative integer");
     }
     return POS_LIST( list, obj, start );
 }
@@ -1506,11 +1455,7 @@ Obj             PosListError (
     Obj                 obj,
     Obj                 start )
 {
-    list = ErrorReturnObj(
-        "Position: <list> must be a list (not a %s)",
-        (Int)TNAM_OBJ(list), 0L,
-        "you can replace <list> via 'return <list>;'" );
-    return POS_LIST( list, obj, start );
+    RequireArgument("Position", list, "list", "must be a list");
 }
 
 Obj             PosListDefault (
@@ -1675,9 +1620,7 @@ void            ElmsListLevel (
        Resolving this properly requires some more discussion. But until
        then, this change at least prevents hard crashes. */
     if (!IS_PLIST(lists)) {
-        ErrorMayQuit(
-            "List Elements: <lists> must be a list (not a %s)",
-            (Int)TNAM_OBJ(lists), 0L );
+        RequireArgument("List Elements", lists, "lists", "must be a list");
     }
 
     /* if <level> is one, perform the replacements                         */

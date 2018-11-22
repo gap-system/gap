@@ -25,7 +25,7 @@ gap> CHAR_INT(65);
 
 #
 gap> INT_CHAR(1);
-Error, <val> must be a character (not a integer)
+Error, INT_CHAR: <val> must be a character (not the integer 1)
 gap> INT_CHAR('A');
 65
 
@@ -39,7 +39,7 @@ gap> CHAR_SINT(65);
 
 #
 gap> SINT_CHAR(1);
-Error, <val> must be a character (not a integer)
+Error, SINT_CHAR: <val> must be a character (not the integer 1)
 gap> SINT_CHAR('A');
 65
 
@@ -63,10 +63,11 @@ gap> STRING_SINTLIST([ 65, 66, 67 ]);
 gap> STRING_SINTLIST([ 65 .. 67 ]);
 "ABC"
 gap> STRING_SINTLIST(1);
-Error, <val> must be a plain list of small integers or a range, not a integer
+Error, STRING_SINTLIST: <val> must be a plain list of small integers or a rang\
+e (not the integer 1)
 gap> STRING_SINTLIST([ 'B' ]);
-Error, <val> must be a plain list of small integers or a range, not a list (pl\
-ain,hom)
+Error, STRING_SINTLIST: <val> must be a plain list of small integers or a rang\
+e (not a list (plain,hom))
 
 #
 gap> REVNEG_STRING(1);
@@ -74,11 +75,11 @@ Error, REVNEG_STRING: <val> must be a string (not the integer 1)
 
 #
 gap> CONV_STRING(1);
-Error, ConvString: <string> must be a string (not a integer)
+Error, ConvString: <string> must be a string (not the integer 1)
 
 #
 gap> COPY_TO_STRING_REP(1);
-Error, CopyToStringRep: <string> must be a string (not a integer)
+Error, CopyToStringRep: <string> must be a string (not the integer 1)
 
 #
 gap> POSITION_SUBSTRING("abc","x",0);

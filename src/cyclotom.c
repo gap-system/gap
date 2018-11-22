@@ -1662,12 +1662,10 @@ Obj FuncCONDUCTOR (
     }
 
     /* check the argument                                                  */
-    while ( !IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT && TNUM_OBJ(cyc) != T_CYC
-         && ! IS_SMALL_LIST(cyc) ) {
-        cyc = ErrorReturnObj(
-            "Conductor: <cyc> must be a cyclotomic or a small list (not a %s)",
-            (Int)TNAM_OBJ(cyc), 0L,
-            "you can replace <cyc> via 'return <cyc>;'" );
+    if (!IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT && TNUM_OBJ(cyc) != T_CYC &&
+        !IS_SMALL_LIST(cyc)) {
+        RequireArgument("Conductor", cyc, "cyc",
+                        "must be a cyclotomic or a small list");
     }
 
     /* handle cyclotomics                                                  */
@@ -1738,11 +1736,8 @@ Obj FuncCOEFFS_CYC (
     }
 
     /* check the argument                                                  */
-    while ( !IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT && TNUM_OBJ(cyc) != T_CYC ) {
-        cyc = ErrorReturnObj(
-            "COEFFSCYC: <cyc> must be a cyclotomic (not a %s)",
-            (Int)TNAM_OBJ(cyc), 0L,
-            "you can replace <cyc> via 'return <cyc>;'" );
+    if (!IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT && TNUM_OBJ(cyc) != T_CYC) {
+        RequireArgument("COEFFSCYC", cyc, "cyc", "must be a cyclotomic");
     }
 
     /* if <cyc> is rational just put it in a list of length 1              */
@@ -1980,8 +1975,8 @@ Obj FuncCycList (
 
     /* get and check the argument                                          */
     if ( ! IS_PLIST( list ) || ! IS_DENSE_LIST( list ) ) {
-        ErrorQuit( "CycList: <list> must be a dense plain list (not a %s)",
-                   (Int)TNAM_OBJ( list ), 0L );
+        RequireArgument("CycList", list, "list",
+                        "must be a dense plain list");
     }
 
     /* enlarge the buffer if necessary                                     */
@@ -1996,8 +1991,8 @@ Obj FuncCycList (
             // reset ResultCyc, otherwise the next operation using it will see
             // our left-over garbage data
             SET_LEN_PLIST( ResultCyc, 0 );
-            ErrorQuit( "CycList: each entry must be a rational (not a %s)",
-                       (Int)TNAM_OBJ( val ), 0L );
+            RequireArgument("CycList", val, 0,
+                            "each entry must be a rational");
         }
         res[i] = val;
     }

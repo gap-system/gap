@@ -2101,9 +2101,7 @@ Obj FuncGetBottomLVars( Obj self )
 Obj FuncParentLVars( Obj self, Obj lvars )
 {
   if (!IS_LVARS_OR_HVARS(lvars)) {
-    ErrorQuit( "<lvars> must be an lvars (not a %s)",
-               (Int)TNAM_OBJ(lvars), 0L );
-    return 0;
+      RequireArgument("ParentLVars", lvars, "lvars", "must be an lvars");
   }
   Obj parent = PARENT_LVARS(lvars);
   return parent ? parent : Fail;

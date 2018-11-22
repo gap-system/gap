@@ -1886,18 +1886,14 @@ static Obj  FuncMONOM_TOT_DEG_LEX ( Obj self, Obj u, Obj  v ) {
 
   Obj  total;
   Obj  lexico;
- 
-  while ( !(T_PLIST<=TNUM_OBJ(u) && TNUM_OBJ(u)<=LAST_PLIST_TNUM)
-          || !IS_DENSE_LIST(u)) {
-      u = ErrorReturnObj(
-      "MONOM_TOT_DEG_LEX: first <list> must be a dense plain list (not a %s)", 
-      (Int)TNAM_OBJ(u), 0L, "you can replace <list> via 'return <list>;'" );
+
+  if (!IS_PLIST(u) || !IS_DENSE_LIST(u)) {
+      RequireArgument("MONOM_TOT_DEG_LEX", u, "u",
+                      "must be a dense plain list");
   }
-  while ( !(T_PLIST<=TNUM_OBJ(v) && TNUM_OBJ(v)<=LAST_PLIST_TNUM) ||
-          !IS_DENSE_LIST(v)) {
-      v = ErrorReturnObj(
-      "MONOM_TOT_DEG_LEX: first <list> must be a dense plain list (not a %s)", 
-      (Int)TNAM_OBJ(v), 0L, "you can replace <list> via 'return <list>;'" );
+  if (!IS_PLIST(v) || !IS_DENSE_LIST(v)) {
+      RequireArgument("MONOM_TOT_DEG_LEX", v, "v",
+                      "must be a dense plain list");
   }
     
   lu = LEN_PLIST( u );
@@ -1968,18 +1964,12 @@ static Obj  FuncMONOM_GRLEX( Obj self, Obj u, Obj  v ) {
   Int4 i, lu, lv;
 
   Obj  total,ai,bi;
- 
-  while ( !(T_PLIST<=TNUM_OBJ(u) && TNUM_OBJ(u)<=LAST_PLIST_TNUM)
-          || !IS_DENSE_LIST(u)) {
-      u = ErrorReturnObj(
-      "MONOM_TOT_DEG_LEX: first <list> must be a dense plain list (not a %s)", 
-      (Int)TNAM_OBJ(u), 0L, "you can replace <list> via 'return <list>;'" );
+
+  if (!IS_PLIST(u) || !IS_DENSE_LIST(u)) {
+      RequireArgument("MONOM_GRLEX", u, "u", "must be a dense plain list");
   }
-  while ( !(T_PLIST<=TNUM_OBJ(v) && TNUM_OBJ(v)<=LAST_PLIST_TNUM) ||
-          !IS_DENSE_LIST(v)) {
-      v = ErrorReturnObj(
-      "MONOM_TOT_DEG_LEX: first <list> must be a dense plain list (not a %s)", 
-      (Int)TNAM_OBJ(v), 0L, "you can replace <list> via 'return <list>;'" );
+  if (!IS_PLIST(v) || !IS_DENSE_LIST(v)) {
+      RequireArgument("MONOM_GRLEX", v, "v", "must be a dense plain list");
   }
     
   lu = LEN_PLIST( u );
@@ -2217,8 +2207,8 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(INV_MAT_DEFAULT_SAME_MUTABILITY, 1, "mat"),
     GVAR_FUNC(INV_MAT_DEFAULT_IMMUTABLE, 1, "mat"),
     GVAR_FUNC(ADD_TO_LIST_ENTRIES_PLIST_RANGE, 3, "list, range, x"),
-    GVAR_FUNC(MONOM_TOT_DEG_LEX, 2, "monomial, monomial"),
-    GVAR_FUNC(MONOM_GRLEX, 2, "monomial, monomial"),
+    GVAR_FUNC(MONOM_TOT_DEG_LEX, 2, "u, v"),
+    GVAR_FUNC(MONOM_GRLEX, 2, "u, v"),
     GVAR_FUNC(ZIPPED_SUM_LISTS, 4, "list,list,zero,funclist"),
     GVAR_FUNC(MONOM_PROD, 2, "monomial, monomial"),
     { 0, 0, 0, 0, 0 }

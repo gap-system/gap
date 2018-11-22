@@ -5775,25 +5775,15 @@ Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
 */
 Obj FuncMAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col)
 {
-    if (!IS_POS_INTOBJ(row)) {
-        ErrorMayQuit("row index must be a small positive integer, not a %s",
-                     (Int)TNAM_OBJ(row), 0L);
-    }
-    if (!IS_POS_INTOBJ(col)) {
-        ErrorMayQuit(
-            "column index must be a small positive integer, not a %s",
-            (Int)TNAM_OBJ(col), 0L);
-    }
+    UInt r = GetPositiveSmallInt("MAT_ELM_MAT8BIT", row, "row");
+    UInt c = GetPositiveSmallInt("MAT_ELM_MAT8BIT", col, "col");
 
-    UInt r = INT_INTOBJ(row);
     if (LEN_MAT8BIT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,
                      LEN_MAT8BIT(mat));
     }
 
     Obj vec = ELM_MAT8BIT(mat, r);
-
-    UInt c = INT_INTOBJ(col);
     if (LEN_VEC8BIT(vec) < c) {
         ErrorMayQuit("column index %d exceeds %d, the number of columns", c,
                      LEN_VEC8BIT(vec));
@@ -5810,17 +5800,9 @@ Obj FuncMAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col)
 */
 Obj FuncSET_MAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
 {
-    if (!IS_POS_INTOBJ(row)) {
-        ErrorMayQuit("row index must be a small positive integer, not a %s",
-                     (Int)TNAM_OBJ(row), 0L);
-    }
-    if (!IS_POS_INTOBJ(col)) {
-        ErrorMayQuit(
-            "column index must be a small positive integer, not a %s",
-            (Int)TNAM_OBJ(col), 0L);
-    }
+    UInt r = GetPositiveSmallInt("MAT_ELM_MAT8BIT", row, "row");
+    UInt c = GetPositiveSmallInt("MAT_ELM_MAT8BIT", col, "col");
 
-    UInt r = INT_INTOBJ(row);
     if (LEN_MAT8BIT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,
                      LEN_MAT8BIT(mat));
@@ -5830,8 +5812,6 @@ Obj FuncSET_MAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
     if (!IS_MUTABLE_OBJ(vec)) {
         ErrorMayQuit("row %d is immutable", r, 0);
     }
-
-    UInt c = INT_INTOBJ(col);
     if (LEN_VEC8BIT(vec) < c) {
         ErrorMayQuit("column index %d exceeds %d, the number of columns", c,
                      LEN_VEC8BIT(vec));

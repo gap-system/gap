@@ -3,9 +3,9 @@ gap> f := function()
 > end;
 function(  ) ... end
 gap> f();
-Error, List Element: <list> must be a list (not a integer) in
+Error, List Element: <list> must be a list (not the integer 1) in
   return 1[1]; at *stdin*:3 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:5
-you can replace <list> via 'return <list>;'
+type 'quit;' to quit to outer loop
 brk> QUIT;

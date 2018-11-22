@@ -308,18 +308,18 @@ false
 
 #
 gap> CONDUCTOR(fail);
-Error, Conductor: <cyc> must be a cyclotomic or a small list (not a boolean or\
- fail)
+Error, Conductor: <cyc> must be a cyclotomic or a small list (not the value 'f\
+ail')
 gap> CONDUCTOR([1,fail]);
 Error, Conductor: <list>[2] must be a cyclotomic (not a boolean or fail)
 
 #
 gap> COEFFS_CYC(false);
-Error, COEFFSCYC: <cyc> must be a cyclotomic (not a boolean or fail)
+Error, COEFFSCYC: <cyc> must be a cyclotomic (not the value 'false')
 
 #
 gap> CycList([1,fail]);
-Error, CycList: each entry must be a rational (not a boolean or fail)
+Error, CycList: each entry must be a rational (not the value 'fail')
 
 #
 # Some tests for some operations on certain pre-defined infinite collections

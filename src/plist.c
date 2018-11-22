@@ -834,11 +834,9 @@ Obj    FuncEmptyPlist( Obj self, Obj len )
 */
 Obj   FuncShrinkAllocationPlist( Obj self, Obj plist )
 {
-    while ( ! IS_PLIST(plist) ) {
-        plist = ErrorReturnObj(
-            "<plist> must be a plain list (not a %s)",
-            (Int)TNAM_OBJ(plist), 0,
-            "you can replace <plist> via 'return <plist>;'" );
+    if (!IS_PLIST(plist)) {
+        RequireArgument("ShrinkAllocationPlist", plist, "plist",
+                        "must be a plain list");
     }
     SHRINK_PLIST(plist, LEN_PLIST(plist));
     return (Obj)0;
@@ -2516,11 +2514,8 @@ Obj FuncASS_PLIST_DEFAULT (
     /* check the arguments                                                 */
     RequirePositiveSmallInt("List Assignment", pos, "pos");
     p = INT_INTOBJ(pos);
-    while ( ! IS_PLIST(plist) || ! IS_PLIST_MUTABLE(plist) ) {
-        plist = ErrorReturnObj(
-            "<list> must be a mutable plain list (not a %s)",
-            (Int)TNAM_OBJ(plist), 0,
-            "you can replace <list> via 'return <list>;'" );
+    if (!IS_PLIST(plist) || !IS_PLIST_MUTABLE(plist)) {
+        RequireArgument(0, plist, "list", "must be a mutable plain list");
     }
 
     /* call `AssPlistXXX'                                                  */

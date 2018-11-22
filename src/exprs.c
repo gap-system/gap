@@ -103,11 +103,8 @@ Obj             EvalUnknownBool (
     val = EVAL_EXPR( expr );
 
     /* check that the value is either 'true' or 'false'                    */
-    while ( val != True && val != False ) {
-        val = ErrorReturnObj(
-            "<expr> must be 'true' or 'false' (not a %s)",
-            (Int)TNAM_OBJ(val), 0L,
-            "you can replace <expr> via 'return <expr>;'" );
+    if (val != True && val != False) {
+        RequireArgument(0, val, "expr", "must be 'true' or 'false'");
     }
 
     /* return the value                                                    */
@@ -191,9 +188,8 @@ Obj             EvalAnd (
     
     /* signal an error                                                     */
     else {
-        ErrorQuit(
-            "<expr> must be 'true' or 'false' or a filter (not a %s)",
-            (Int)TNAM_OBJ(opL), 0L );
+        RequireArgument(0, opL, "expr",
+                        "must be 'true' or 'false' or a filter");
     }
     
     /* please 'lint'                                                       */

@@ -145,9 +145,11 @@ gap> s := [];; Add(s, 0, -1);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `Add' on 3 arguments
 gap> s := [];; GetWithDefault(s, 0, -1);
-Error, GetWithDefault: <pos> must be >= 0
+Error, GetWithDefault: <pos> must be a positive small integer (not the integer\
+ 0)
 gap> s := [];; GetWithDefault(s, "cheese", -1);
-Error, GetWithDefault: <pos> must be an integer (not a list (string))
+Error, GetWithDefault: <pos> must be a positive small integer (not a list (str\
+ing))
 gap> t := [];; GetWithDefault(t, 1, -1);
 -1
 gap> t := [6];; GetWithDefault(t, 1, -1);
