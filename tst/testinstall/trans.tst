@@ -95,10 +95,11 @@ gap> RANK_TRANS_INT(Transformation([1, 2, 1]), 0);
 gap> RANK_TRANS_INT(Transformation([1, 2, 1]), 2);
 2
 gap> RANK_TRANS_INT(Transformation([1, 2, 1]), -2);
-Error, RANK_TRANS_INT: <n> must be a non-negative integer (not the integer -2)
+Error, RANK_TRANS_INT: <n> must be a non-negative small integer (not the integ\
+er -2)
 gap> RANK_TRANS_INT(Transformation([1, 2, 1]), "a");
-Error, RANK_TRANS_INT: <n> must be a non-negative integer (not a list (string)\
-)
+Error, RANK_TRANS_INT: <n> must be a non-negative small integer (not a list (s\
+tring))
 gap> RANK_TRANS_INT("a", 2);
 Error, RANK_TRANS_INT: <f> must be a transformation (not a list (string))
 gap> RANK_TRANS_INT(Transformation([65537], [1]), 10);
@@ -221,11 +222,11 @@ Error, FLAT_KERNEL_TRANS: <f> must be a transformation (not a list (string))
 
 # Test FLAT_KERNEL_TRANS_INT
 gap> FLAT_KERNEL_TRANS_INT(IdentityTransformation, -1);
-Error, FLAT_KERNEL_TRANS_INT: <n> must be a non-negative integer (not the inte\
-ger -1)
+Error, FLAT_KERNEL_TRANS_INT: <n> must be a non-negative small integer (not th\
+e integer -1)
 gap> FLAT_KERNEL_TRANS_INT(IdentityTransformation, "a");
-Error, FLAT_KERNEL_TRANS_INT: <n> must be a non-negative integer (not a list (\
-string))
+Error, FLAT_KERNEL_TRANS_INT: <n> must be a non-negative small integer (not a \
+list (string))
 gap> FLAT_KERNEL_TRANS_INT(IdentityTransformation, 10);
 [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
 gap> FLAT_KERNEL_TRANS_INT(IdentityTransformation, 0);
@@ -301,11 +302,11 @@ gap> FLAT_KERNEL_TRANS(f);
 
 # Test IMAGE_SET_TRANS_INT
 gap> IMAGE_SET_TRANS_INT(IdentityTransformation, -1);
-Error, IMAGE_SET_TRANS_INT: <n> must be a non-negative integer (not the intege\
-r -1)
+Error, IMAGE_SET_TRANS_INT: <n> must be a non-negative small integer (not the \
+integer -1)
 gap> IMAGE_SET_TRANS_INT(IdentityTransformation, "a");
-Error, IMAGE_SET_TRANS_INT: <n> must be a non-negative integer (not a list (st\
-ring))
+Error, IMAGE_SET_TRANS_INT: <n> must be a non-negative small integer (not a li\
+st (string))
 gap> IMAGE_SET_TRANS_INT(IdentityTransformation, 10);
 [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
 gap> IMAGE_SET_TRANS_INT(IdentityTransformation, 0);
@@ -344,11 +345,11 @@ Error, IMAGE_SET_TRANS_INT: <f> must be a transformation (not a list (string))
 
 # Test IMAGE_LIST_TRANS_INT
 gap> IMAGE_LIST_TRANS_INT(IdentityTransformation, -1);
-Error, IMAGE_LIST_TRANS_INT: <n> must be a non-negative integer (not the integ\
-er -1)
+Error, IMAGE_LIST_TRANS_INT: <n> must be a non-negative small integer (not the\
+ integer -1)
 gap> IMAGE_LIST_TRANS_INT(IdentityTransformation, "a");
-Error, IMAGE_LIST_TRANS_INT: <n> must be a non-negative integer (not a list (s\
-tring))
+Error, IMAGE_LIST_TRANS_INT: <n> must be a non-negative small integer (not a l\
+ist (string))
 gap> IMAGE_LIST_TRANS_INT(IdentityTransformation, 10);
 [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
 gap> IMAGE_LIST_TRANS_INT(IdentityTransformation, 0);
@@ -388,9 +389,11 @@ Error, IMAGE_LIST_TRANS_INT: <f> must be a transformation (not a list (string)\
 
 # Test KERNEL_TRANS 1
 gap> KERNEL_TRANS(IdentityTransformation, -1);
-Error, KERNEL_TRANS: <n> must be a non-negative integer (not the integer -1)
+Error, KERNEL_TRANS: <n> must be a non-negative small integer (not the integer\
+ -1)
 gap> KERNEL_TRANS(IdentityTransformation, "a");
-Error, KERNEL_TRANS: <n> must be a non-negative integer (not a list (string))
+Error, KERNEL_TRANS: <n> must be a non-negative small integer (not a list (str\
+ing))
 gap> KERNEL_TRANS(IdentityTransformation, 10);
 [ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ], [ 8 ], [ 9 ], [ 10 ] ]
 gap> KERNEL_TRANS(IdentityTransformation, 0);
@@ -501,11 +504,11 @@ gap> PREIMAGES_TRANS_INT(Transformation([65537 .. 70000], [65537 .. 70000] * 0 +
 
 # Test AS_TRANS_PERM_INT
 gap> AS_TRANS_PERM_INT((1, 2, 3), "a");
-Error, AS_TRANS_PERM_INT: <deg> must be a non-negative integer (not a list (st\
-ring))
+Error, AS_TRANS_PERM_INT: <deg> must be a non-negative small integer (not a li\
+st (string))
 gap> AS_TRANS_PERM_INT((1, 2, 3), -1);
-Error, AS_TRANS_PERM_INT: <deg> must be a non-negative integer (not the intege\
-r -1)
+Error, AS_TRANS_PERM_INT: <deg> must be a non-negative small integer (not the \
+integer -1)
 gap> AS_TRANS_PERM_INT("a", 3);
 Error, AS_TRANS_PERM_INT: <p> must be a permutation (not a list (string))
 gap> AS_TRANS_PERM_INT((1, 2, 3), 0);
@@ -622,10 +625,11 @@ gap> RestrictedTransformation(Transformation([1], [65537]), [1]);
 
 # Test AS_TRANS_TRANS
 gap> AS_TRANS_TRANS(IdentityTransformation, -1);
-Error, AS_TRANS_TRANS: <m> must be a non-negative integer (not the integer -1)
+Error, AS_TRANS_TRANS: <m> must be a non-negative small integer (not the integ\
+er -1)
 gap> AS_TRANS_TRANS(IdentityTransformation, "a");
-Error, AS_TRANS_TRANS: <m> must be a non-negative integer (not a list (string)\
-)
+Error, AS_TRANS_TRANS: <m> must be a non-negative small integer (not a list (s\
+tring))
 gap> AS_TRANS_TRANS(IdentityTransformation, 3);
 IdentityTransformation
 gap> AS_TRANS_TRANS(IdentityTransformation, 10);
@@ -661,9 +665,11 @@ Error, AS_TRANS_TRANS: <f> must be a transformation (not a list (string))
 
 # Test TRIM_TRANS
 gap> TRIM_TRANS(IdentityTransformation, -1);
-Error, TRIM_TRANS: <m> must be a non-negative integer (not the integer -1)
+Error, TRIM_TRANS: <m> must be a non-negative small integer (not the integer -\
+1)
 gap> TRIM_TRANS(IdentityTransformation, "a");
-Error, TRIM_TRANS: <m> must be a non-negative integer (not a list (string))
+Error, TRIM_TRANS: <m> must be a non-negative small integer (not a list (strin\
+g))
 gap> TRIM_TRANS(IdentityTransformation, 3);
 gap> TRIM_TRANS(IdentityTransformation, 10);
 gap> TRIM_TRANS(IdentityTransformation, 0);
