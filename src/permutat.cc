@@ -2308,8 +2308,7 @@ Obj Array2Perm (
 
             /* get and check current entry for the cycle                   */
             val = ELM_LIST( cycle, j );
-            RequirePositiveSmallInt("Permutation", val, "expr");
-            c = INT_INTOBJ(val);
+            c = GetPositiveSmallInt("Permutation", val, "expr");
             if (c > MAX_DEG_PERM4)
               ErrorMayQuit( "Permutation literal exceeds maximum permutation degree",
                             0, 0);
@@ -2329,10 +2328,9 @@ Obj Array2Perm (
             /* check that the cycles are disjoint                          */
             ptr4 = ADDR_PERM4( perm );
             if ( (p != 0 && p == c) || (ptr4[c-1] != c-1) ) {
-                return ErrorReturnObj(
+                ErrorMayQuit(
                     "Permutation: cycles must be disjoint and duplicate-free",
-                    0L, 0L,
-                    "you can replace the permutation <perm> via 'return <perm>;'" );
+                    0, 0);
             }
 
             /* enter the previous entry at current location                */
@@ -2347,7 +2345,9 @@ Obj Array2Perm (
         /* enter first (last popped) entry at last (first popped) location */
         ptr4 = ADDR_PERM4( perm );
         if (ptr4[l-1] != l-1) {
-            ErrorQuit("Permutation: cycles must be disjoint and duplicate-free", 0L, 0L );
+            ErrorMayQuit(
+                "Permutation: cycles must be disjoint and duplicate-free", 0,
+                0);
         }
         ptr4[l-1] = p-1;
 
