@@ -188,9 +188,10 @@ brk> quit;
 gap> 
 gap> # verify issue #1373 is fixed
 gap> InstallMethod( Matrix, [IsFilter, IsSemiring, IsMatrixObj], {a,b,c} -> fail );
-Error, <oper> must be an operation in
+Error, FLAGS_FILTER: <oper> must be an operation (not a function) in
   <<compiled GAP code>> from GAPROOT/lib/oper1.g:377 in function INSTALL_METHOD called from 
 <<compiled GAP code>> from GAPROOT/lib/oper1.g:337 in function InstallMethod called from
 <function "InstallMethod">( <arguments> )
  called from read-eval loop at *stdin*:42
-gap> QUIT;
+type 'quit;' to quit to outer loop
+brk> QUIT;

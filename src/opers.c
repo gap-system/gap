@@ -66,6 +66,11 @@ static Obj ArglistObj;
     RequireArgumentCondition(funcname, op, #op, TNUM_OBJ(op) == T_FLAGS, \
         "must be a flags list")
 
+#define RequireOperation(op)                                                 \
+    RequireArgumentCondition(CSTR_STRING(NAME_FUNC(self)), op, #op,          \
+                             IS_OPERATION(op), "must be an operation")
+
+
 /****************************************************************************
 **
 *F  PrintFlags( <flags> ) . . . . . . . . . . . . . . . .  print a flags list
@@ -1354,9 +1359,7 @@ Obj FuncFLAG1_FILTER (
 {
     Obj                 flag1;
 
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-    }
+    RequireOperation(oper);
     flag1 = FLAG1_FILT( oper );
     if ( flag1 == 0 )
         flag1 = INTOBJ_INT(0);
@@ -1373,9 +1376,7 @@ Obj FuncSET_FLAG1_FILTER (
     Obj                 oper,
     Obj                 flag1 )
 {
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-    }
+    RequireOperation(oper);
     SET_FLAG1_FILT(oper, flag1);
     return 0;
 }
@@ -1391,9 +1392,7 @@ Obj FuncFLAG2_FILTER (
 {
     Obj                 flag2;
 
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-    }
+    RequireOperation(oper);
     flag2 = FLAG2_FILT( oper );
     if ( flag2 == 0 )
         flag2 = INTOBJ_INT(0);
@@ -1410,9 +1409,7 @@ Obj FuncSET_FLAG2_FILTER (
     Obj                 oper,
     Obj                 flag2 )
 {
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-    }
+    RequireOperation(oper);
     SET_FLAG2_FILT(oper, flag2);
     return 0;
 }
@@ -1428,9 +1425,7 @@ Obj FuncFLAGS_FILTER (
 {
     Obj                 flags;
 
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-    }
+    RequireOperation(oper);
     flags = FLAGS_FILT( oper );
     if ( flags == 0 )
         flags = False;
@@ -1447,9 +1442,7 @@ Obj FuncSET_FLAGS_FILTER (
     Obj                 oper,
     Obj                 flags )
 {
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-    }
+    RequireOperation(oper);
     SET_FLAGS_FILT(oper, flags);
     return 0;
 }
@@ -1465,9 +1458,7 @@ Obj FuncSETTER_FILTER (
 {
     Obj                 setter;
 
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-    }
+    RequireOperation(oper);
     setter = SetterFilter( oper );
     if ( setter == 0 )  setter = False;
     return setter;
@@ -1483,9 +1474,7 @@ Obj FuncSET_SETTER_FILTER (
     Obj                 oper,
     Obj                 setter )
 {
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-    }
+    RequireOperation(oper);
     SET_SETTR_FILT(oper, setter);
     return 0;
 }
@@ -1501,9 +1490,7 @@ Obj FuncTESTER_FILTER (
 {
     Obj                 tester;
 
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-    }
+    RequireOperation(oper);
     tester = TesterFilter( oper );
     if ( tester == 0 )  tester = False;
     return tester;
@@ -1519,9 +1506,7 @@ Obj FuncSET_TESTER_FILTER (
     Obj                 oper,
     Obj                 tester )
 {
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-    }
+    RequireOperation(oper);
     if ( SIZE_OBJ(oper) != sizeof(OperBag) ) {
         ResizeBag( oper, sizeof(OperBag) );
     }
@@ -2526,10 +2511,8 @@ Obj DoAttribute (
     
     /* call the operation to compute the value                             */
     val = DoOperation1Args( self, obj );
-    while (val == (Obj) 0) {
-        val = ErrorReturnObj("Method for an attribute must return a value",
-                             0L, 0L,
-                             "you can supply a value <val> via 'return <val>;'");
+    if (val == 0) {
+        ErrorMayQuit("Method for an attribute must return a value", 0, 0);
     }
     val = CopyObj( val, 0 );
     
@@ -3463,12 +3446,8 @@ Obj FuncMETHODS_OPERATION (
     Int                 n;
     Obj                 meth;
 
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-    }
-    if ( !IS_INTOBJ(narg) || INT_INTOBJ(narg) < 0 ) {
-        ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
-    }
+    RequireOperation(oper);
+    RequireNonnegativeSmallInt("METHODS_OPERATION", narg);
     n = INT_INTOBJ( narg );
     meth = MethsOper( oper, (UInt)n );
 #ifdef HPCGAP
@@ -3492,12 +3471,8 @@ Obj FuncCHANGED_METHODS_OPERATION (
     Int                 n;
     Int                 i;
 
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-    }
-    if ( !IS_INTOBJ(narg) || INT_INTOBJ(narg) < 0 ) {
-        ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
-    }
+    RequireOperation(oper);
+    RequireNonnegativeSmallInt("CHANGED_METHODS_OPERATION", narg);
 #ifdef HPCGAP
     if (!PreThreadCreation) {
         ErrorQuit("Methods may only be changed before thread creation",0L,0L);
@@ -3525,12 +3500,8 @@ Obj FuncSET_METHODS_OPERATION (
 {
     Int                 n;
 
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-    }
-    if ( !IS_INTOBJ(narg) || INT_INTOBJ(narg) < 0 ) {
-        ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
-    }
+    RequireOperation(oper);
+    RequireNonnegativeSmallInt("SET_METHODS_OPERATION", narg);
     n = INT_INTOBJ( narg );
 #ifdef HPCGAP
     MEMBAR_WRITE();
@@ -3824,9 +3795,7 @@ Obj FuncTRACE_METHODS (
     Obj                 oper )
 {
     /* check the argument                                                  */
-    if (!IS_OPERATION(oper)) {
-        ErrorQuit( "<oper> must be an operation", 0L, 0L );
-    }
+    RequireOperation(oper);
 
     /* install trace handler                                               */
     ChangeDoOperations( oper, 1 );
@@ -3846,9 +3815,7 @@ Obj FuncUNTRACE_METHODS (
 {
 
     /* check the argument                                                  */
-    if (!IS_OPERATION(oper)) {
-        ErrorQuit( "<oper> must be an operation", 0L, 0L );
-    }
+    RequireOperation(oper);
 
     /* install trace handler                                               */
     ChangeDoOperations( oper, 0 );
