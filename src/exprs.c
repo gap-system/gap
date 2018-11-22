@@ -849,10 +849,9 @@ Obj             EvalPermExpr (
             /* check that the cycles are disjoint                          */
             ptr4 = ADDR_PERM4( perm );
             if ( (p != 0 && p == c) || (ptr4[c-1] != c-1) ) {
-                return ErrorReturnObj(
+                ErrorMayQuit(
                     "Permutation: cycles must be disjoint and duplicate-free",
-                    0L, 0L,
-                    "you can replace the permutation <perm> via 'return <perm>;'" );
+                    0, 0);
             }
 
             /* enter the previous entry at current location                */
@@ -867,7 +866,9 @@ Obj             EvalPermExpr (
         /* enter first (last popped) entry at last (first popped) location */
         ptr4 = ADDR_PERM4( perm );
         if (ptr4[l-1] != l-1) {
-            ErrorQuit("Permutation: cycles must be disjoint and duplicate-free", 0L, 0L );
+            ErrorMayQuit(
+                "Permutation: cycles must be disjoint and duplicate-free", 0,
+                0);
         }
         ptr4[l-1] = p-1;
 
