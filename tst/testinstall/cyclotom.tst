@@ -280,11 +280,14 @@ gap> for n in [120,122,125,127,128] do
 gap> GetCyclotomicsLimit();
 1000000
 gap> SetCyclotomicsLimit(1/2);
-Error, Cyclotomic Field size limit must be a small integer, not a rational 
+Error, SetCyclotomicsLimit: <newlimit> must be a positive small integer (not a\
+ rational)
 gap> SetCyclotomicsLimit(0);
-Error, Cyclotomic Field size limit must be positive
+Error, SetCyclotomicsLimit: <newlimit> must be a positive small integer (not t\
+he integer 0)
 gap> SetCyclotomicsLimit(100);
-Error, Cyclotomic Field size limit must not be less than old limit of 1000000
+Error, SetCyclotomicsLimit: <newlimit> must not be less than old limit of 1000\
+000
 gap> SetCyclotomicsLimit(1000000);
 
 #

@@ -852,42 +852,30 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
   return n;
 }
 
-Obj FuncSetCyclotomicsLimit(Obj self, Obj NewLimit) {
-  UInt ok;
-  Int limit;
-  UInt ulimit;
-  do {
-    ok = 1;
-    if (!IS_INTOBJ(NewLimit)) {
-      ok = 0;
-      NewLimit = ErrorReturnObj("Cyclotomic Field size limit must be a small integer, not a %s ",(Int)TNAM_OBJ(NewLimit), 0L, "You can return a new value");
-    } else {
-      limit = INT_INTOBJ(NewLimit);
-      if (limit <= 0) {
-	ok = 0;
-	NewLimit = ErrorReturnObj("Cyclotomic Field size limit must be positive",0L, 0L, "You can return a new value");
-      } else {
-	ulimit = limit;
-	if (ulimit < CyclotomicsLimit) {
-	  ok = 0;
-	NewLimit = ErrorReturnObj("Cyclotomic Field size limit must not be less than old limit of %d",CyclotomicsLimit, 0L, "You can return a new value");
-	}
-#ifdef SYS_IS_64_BIT
-	else if (ulimit > (1L << 32)) {
-	  ok = 0;
-	  NewLimit = ErrorReturnObj("Cyclotomic field size limit must be less than 2^32", 0L, 0L,  "You can return a new value");
-	}
-#endif
-	
-      }
+Obj FuncSetCyclotomicsLimit(Obj self, Obj newlimit)
+{
+    UInt ulimit =
+        GetPositiveSmallInt("SetCyclotomicsLimit", newlimit, "newlimit");
+
+    if (ulimit < CyclotomicsLimit) {
+        ErrorMayQuit("SetCyclotomicsLimit: <newlimit> must not be less than "
+                     "old limit of %d",
+                     CyclotomicsLimit, 0);
     }
-  } while (!ok);
-  CyclotomicsLimit = ulimit;
-  return (Obj) 0L;
+#ifdef SYS_IS_64_BIT
+    if (ulimit > (1L << 32)) {
+        ErrorMayQuit("Cyclotomic field size limit must be less than 2^32", 0,
+                     0);
+    }
+#endif
+
+    CyclotomicsLimit = ulimit;
+    return 0;
 }
 
-Obj FuncGetCyclotomicsLimit( Obj self) {
-  return INTOBJ_INT(CyclotomicsLimit);
+Obj FuncGetCyclotomicsLimit(Obj self)
+{
+    return INTOBJ_INT(CyclotomicsLimit);
 }
 
 /****************************************************************************
