@@ -724,11 +724,9 @@ Obj ElmsListDefault (
             /* select the element                                          */
             elm = ELM0_LIST( list, pos );
             if ( elm == 0 ) {
-                ErrorReturnVoid(
+                ErrorMayQuit(
                     "List Elements: <list>[%d] must have an assigned value",
-                    (Int)pos, 0L,
-                    "you can 'return;' after assigning a value" );
-                return ELMS_LIST( list, poss );
+                    (Int)pos, 0);
             }
 
             /* assign the element into <elms>                              */
@@ -754,18 +752,14 @@ Obj ElmsListDefault (
 
         /* check that no <position> is larger than 'LEN_LIST(<list>)'      */
         if ( lenList < pos ) {
-            ErrorReturnVoid(
+            ErrorMayQuit(
                 "List Elements: <list>[%d] must have an assigned value",
-                (Int)pos, 0L,
-                "you can 'return;' after assigning a value" );
-            return ELMS_LIST( list, poss );
+                (Int)pos, 0);
         }
         if ( lenList < pos + (lenPoss-1) * inc ) {
-            ErrorReturnVoid(
+            ErrorMayQuit(
                 "List Elements: <list>[%d] must have an assigned value",
-                (Int)pos + (lenPoss-1) * inc, 0L,
-                "you can 'return;' after assigning a value" );
-            return ELMS_LIST( list, poss );
+                (Int)pos + (lenPoss - 1) * inc, 0);
         }
 
         /* make the result list                                            */
@@ -778,11 +772,9 @@ Obj ElmsListDefault (
             /* select the element                                          */
             elm = ELMV0_LIST( list, pos );
             if ( elm == 0 ) {
-                ErrorReturnVoid(
+                ErrorMayQuit(
                     "List Elements: <list>[%d] must have an assigned value",
-                    (Int)pos, 0L,
-                    "you can 'return;' after assigning a value" );
-                return ELMS_LIST( list, poss );
+                    (Int)pos, 0);
             }
 
             /* assign the element to <elms>                                */

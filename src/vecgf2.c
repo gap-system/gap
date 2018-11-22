@@ -1737,10 +1737,8 @@ Obj FuncELM_GF2VEC(Obj self, Obj list, Obj pos)
 {
     UInt p = GetSmallInt("ELM_GF2VEC", pos, "pos");
     if (LEN_GF2VEC(list) < p) {
-        ErrorReturnVoid(
-            "List Element: <list>[%d] must have an assigned value", p, 0L,
-            "you can 'return;' after assigning a value");
-        return ELM_LIST(list, p);
+        ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
+                     p, 0);
     }
     else {
         return ELM_GF2VEC(list, p);

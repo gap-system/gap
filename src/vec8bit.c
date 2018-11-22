@@ -2758,10 +2758,8 @@ Obj FuncELM_VEC8BIT(Obj self, Obj list, Obj pos)
     RequirePositiveSmallInt("ELM_VEC8BIT", pos, "position");
     p = INT_INTOBJ(pos);
     if (LEN_VEC8BIT(list) < p) {
-        ErrorReturnVoid(
-            "List Element: <list>[%d] must have an assigned value", p, 0L,
-            "you can 'return;' after assigning a value");
-        return ELM_LIST(list, p);
+        ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
+                     p, 0);
     }
     else {
         info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));

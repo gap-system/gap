@@ -1525,24 +1525,24 @@ Obj ElmPosObj(Obj obj, Int idx)
         // positional objects.
         const Bag * contents = CONST_PTR_BAG(obj);
         MEMBAR_READ(); /* essential memory barrier */
-        while (SIZE_BAG_CONTENTS(contents) / sizeof(Obj) - 1 < idx) {
-            ErrorReturnVoid(
+        if (SIZE_BAG_CONTENTS(contents) / sizeof(Obj) - 1 < idx) {
+            ErrorMayQuit(
                 "PosObj Element: <PosObj>![%d] must have an assigned value",
-                (Int)idx, 0L, "you can 'return;' after assigning a value");
+                (Int)idx, 0);
         }
         elm = contents[idx];
 #else
-        while (SIZE_OBJ(obj) / sizeof(Obj) - 1 < idx) {
-            ErrorReturnVoid(
+        if (SIZE_OBJ(obj) / sizeof(Obj) - 1 < idx) {
+            ErrorMayQuit(
                 "PosObj Element: <PosObj>![%d] must have an assigned value",
-                (Int)idx, 0L, "you can 'return;' after assigning a value");
+                (Int)idx, 0);
         }
         elm = ELM_PLIST(obj, idx);
 #endif
-        while (elm == 0) {
-            ErrorReturnVoid(
+        if (elm == 0) {
+            ErrorMayQuit(
                 "PosObj Element: <PosObj>![%d] must have an assigned value",
-                (Int)idx, 0L, "you can 'return;' after assigning a value");
+                (Int)idx, 0);
         }
     }
 #ifdef HPCGAP

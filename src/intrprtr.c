@@ -2575,12 +2575,10 @@ void            IntrRefLVar (
     /* or in the break loop */
 
     else {
-        while ((val = OBJ_LVAR(lvar))==0) {
-            ErrorReturnVoid(
-                            "Variable: '%g' must have an assigned value",
-                            (Int)NAME_LVAR( (UInt)( lvar )), 0L,
-                            "you can 'return;' after assigning a value" );
-
+        val = OBJ_LVAR(lvar);
+        if (val == 0) {
+            ErrorMayQuit("Variable: '%g' must have an assigned value",
+                         (Int)NAME_LVAR(lvar), 0);
         }
         PushObj(val);
     }
@@ -2662,12 +2660,10 @@ void            IntrRefHVar (
       CodeRefHVar( hvar );
     /* or debugging */
     else {
-        while ((val = OBJ_HVAR(hvar))==0) {
-            ErrorReturnVoid(
-                            "Variable: '%g' must have an assigned value",
-                            (Int)NAME_HVAR( (UInt)( hvar )), 0L,
-                            "you can 'return;' after assigning a value" );
-
+        val = OBJ_HVAR(hvar);
+        while (val == 0) {
+            ErrorMayQuit("Variable: '%g' must have an assigned value",
+                         (Int)NAME_HVAR((UInt)(hvar)), 0);
         }
         PushObj(val);
     }
