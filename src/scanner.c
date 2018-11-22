@@ -16,6 +16,7 @@
 
 #include "scanner.h"
 
+#include "error.h"
 #include "gapstate.h"
 #include "gaputils.h"
 #include "io.h"
@@ -42,7 +43,7 @@ static void SyntaxErrorOrWarning(const Char * msg, UInt error)
     if (STATE(NrErrLine) == 0) {
 
         // open error output
-        OpenOutput("*errout*");
+        OpenErrorOutput();
 
         // print the message ...
         if (error)
