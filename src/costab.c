@@ -106,11 +106,7 @@ Obj FuncApplyRel (
 
     /* check the application list                                          */
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
-    if ( ! IS_PLIST(app) ) {
-        ErrorQuit( "<app> must be a plain list (not a %s)",
-                   (Int)TNAM_OBJ(app), 0L );
-        return 0;
-    }
+    RequirePlainList(0, app);
     if ( LEN_PLIST(app) != 4 ) {
         ErrorQuit( "<app> must be a list of length 4 not %d",
                    (Int) LEN_PLIST(app), 0L );
@@ -125,11 +121,7 @@ Obj FuncApplyRel (
 
     /* get and check the relator (well, only a little bit)                 */
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
-    if ( ! IS_PLIST(rel) ) {
-        ErrorQuit( "<rel> must be a plain list (not a %s)",
-                   (Int)TNAM_OBJ(rel), 0L );
-        return 0;
-    }
+    RequirePlainList(0, rel);
 
     /* fix right pointer if requested                                      */
     if ( rp == -1 )
@@ -398,11 +390,7 @@ Obj FuncMakeConsequences (
     Obj                 hdTmp;          /* temporary variable              */
 
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
-    if ( ! IS_PLIST(list) ) {
-        ErrorQuit( "<list> must be a plain list (not a %s)",
-                   (Int)TNAM_OBJ(list), 0L );
-        return 0;
-    }
+    RequirePlainList(0, list);
 
     objTable  = ELM_PLIST( list, 1 );
     objNext   = ELM_PLIST( list, 2 );
@@ -590,11 +578,7 @@ Obj FuncMakeConsequencesPres (
     Int                 i;              /* loop variable                   */
 
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
-    if ( ! IS_PLIST(list) ) {
-        ErrorQuit( "<list> must be a plain list (not a %s)",
-                   (Int)TNAM_OBJ(list), 0L );
-        return 0;
-    }
+    RequirePlainList(0, list);
 
     objTable  = ELM_PLIST( list, 1 );
     objDefs1  = ELM_PLIST( list, 2 );
@@ -686,7 +670,7 @@ Obj FuncMakeConsequencesPres (
 */
 Obj FuncStandardizeTableC (
     Obj                 self,
-    Obj                 list,
+    Obj                 table,
     Obj                 stan )
 {
     Obj *               ptTable;        /* pointer to table                */
@@ -701,13 +685,10 @@ Obj FuncStandardizeTableC (
     Obj                 tmp;            /* temporary for swap              */
     UInt                j, k, nloop;    /* loop variables                  */
 
+    RequirePlainList(0, table);
+
     /* get the arguments                                                   */
-    objTable = list;
-    if ( ! IS_PLIST(objTable) ) {
-        ErrorQuit( "<table> must be a plain list (not a %s)",
-                   (Int)TNAM_OBJ(objTable), 0L );
-        return 0;
-    }
+    objTable = table;
     ptTable = BASE_PTR_PLIST(objTable) - 1;
     nrgen    = LEN_PLIST(objTable) / 2;
     for ( j = 1;  j <= nrgen*2;  j++ ) {
@@ -1146,11 +1127,7 @@ Obj FuncApplyRel2 (
     Int                 tmp;
 
     /* get and check the application list                                  */
-    if ( ! IS_PLIST(app) ) {
-        ErrorQuit( "<app> must be a plain list (not a %s)",
-                   (Int)TNAM_OBJ(app), 0L );
-        return 0;
-    }
+    RequirePlainList(0, app);
     if ( LEN_PLIST(app) != 9 ) {
         ErrorQuit( "<app> must be a list of length 9 not %d",
                    (Int) LEN_PLIST(app), 0L );
@@ -1166,11 +1143,7 @@ Obj FuncApplyRel2 (
 
     /* get and check the relator (well, only a little bit)                 */
     objRel = rel;
-    if ( ! IS_PLIST(rel) ) {
-        ErrorQuit( "<rel> must be a plain list (not a %s)", 
-                   (Int)TNAM_OBJ(rel), 0L );
-        return 0;
-    }
+    RequirePlainList(0, rel);
 
     /* fix right pointer if requested                                      */
     if ( rp == -1 )
@@ -1178,19 +1151,11 @@ Obj FuncApplyRel2 (
 
     /* get and check the numbers list parallel to the relator              */
     objNums = nums;
-    if ( ! IS_PLIST(objNums) ) {
-        ErrorQuit( "<nums> must be a plain list (not a %s)", 
-                   (Int)TNAM_OBJ(objNums), 0L );
-        return 0;
-    }
+    RequirePlainList(0, nums);
 
     /* get and check the corresponding factors list                        */
     objTable2 = ptApp[6];
-    if ( ! IS_PLIST(objTable2) ) {
-        ErrorQuit( "<nums> must be a plain list (not a %s)", 
-                   (Int)TNAM_OBJ(objTable2), 0L );
-        return 0;
-    }
+    RequirePlainList(0, objTable2);
 
     /* get the tree type                                                   */
     treeType = INT_INTOBJ( ptApp[5] );
@@ -1236,11 +1201,7 @@ Obj FuncApplyRel2 (
 
         /* get and check the corresponding word                            */
         word = ptApp[7];
-        if ( ! IS_PLIST(word) ) {
-            ErrorQuit( "<word> must be a plain list (not a %s)", 
-                       (Int)TNAM_OBJ(word), 0L );
-            return 0;
-        }
+        RequirePlainList(0, word);
 
         /* handle the abelianized case                                     */
         if ( treeType == 0 ) {
@@ -1403,11 +1364,7 @@ Obj FuncCopyRel (
     Int                 leng;           /* length of the given word        */
 
     /* Get and check argument                                              */
-    if ( ! IS_PLIST(rel) ) {
-        ErrorQuit( "<rel> must be a plain list (not a %s)",
-                   (Int)TNAM_OBJ(rel), 0L );
-        return 0;
-    }
+    RequirePlainList(0, rel);
     leng = LEN_PLIST(rel);
 
     /*  Allocate a bag for the copy                                        */
@@ -1447,11 +1404,7 @@ Obj FuncMakeCanonical (
     Int                 ii, jj, kk;     /* integer variables               */
 
     /* Get and check the argument                                          */
-    if ( ! IS_PLIST(rel) ) {
-        ErrorQuit( "<rel> must be a plain list (not a %s)",
-                   (Int)TNAM_OBJ(rel), 0L );
-        return 0;
-    }
+    RequirePlainList(0, rel);
     leng  = LEN_PLIST(rel);
     if (leng == 0) {
         return 0;
@@ -1867,8 +1820,8 @@ Obj FuncTreeEntry(
 */
 Obj FuncStandardizeTable2C (
     Obj                 self,
-    Obj                 list,
-    Obj                 list2,
+    Obj                 table,
+    Obj                 table2,
     Obj                 stan )
 {
     Obj *               ptTable;        /* pointer to table                */
@@ -1886,13 +1839,11 @@ Obj FuncStandardizeTable2C (
     Obj                 tmp;            /* temporary for swap              */
     UInt                j, k, nloop;    /* loop variables                  */
 
+    RequirePlainList(0, table);
+    RequirePlainList(0, table2);
+
     /* get the arguments                                                   */
-    objTable = list;
-    if ( ! IS_PLIST(objTable) ) {
-        ErrorQuit( "<table> must be a plain list (not a %s)",
-                   (Int)TNAM_OBJ(objTable), 0L );
-        return 0;
-    }
+    objTable = table;
     ptTable = BASE_PTR_PLIST(objTable) - 1;
     nrgen   = LEN_PLIST(objTable) / 2;
     for ( j = 1;  j <= nrgen*2;  j++ ) {
@@ -1904,12 +1855,7 @@ Obj FuncStandardizeTable2C (
             return 0;
         }
     }
-    objTable2 = list2;
-    if ( ! IS_PLIST(objTable2) ) {
-        ErrorQuit( "<table2> must be a plain list (not a %s)",
-                   (Int)TNAM_OBJ(objTable), 0L );
-        return 0;
-    }
+    objTable2 = table2;
     ptTabl2 = BASE_PTR_PLIST(objTable2) - 1;
     if ( IS_INTOBJ(stan) && INT_INTOBJ(stan) == 1 ) {
        /* use semilenlex standard                                          */
@@ -2010,11 +1956,7 @@ Obj FuncAddAbelianRelator (
     Int                 i, j;           /* loop variables                  */
 
     /* check the arguments                                                 */
-    if ( ! IS_PLIST(rels) ) {
-        ErrorQuit( "<rels> must be a plain list (not a %s)",
-            (Int)TNAM_OBJ(rels), 0L );
-        return 0;
-    }
+    RequirePlainList(0, rels);
     ptRels = BASE_PTR_PLIST(rels) - 1;
     if ( !IS_INTOBJ(number) ) {
         ErrorQuit( "<number> must be a small integer (not a %s)",

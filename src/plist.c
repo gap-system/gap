@@ -834,10 +834,7 @@ Obj    FuncEmptyPlist( Obj self, Obj len )
 */
 Obj   FuncShrinkAllocationPlist( Obj self, Obj plist )
 {
-    if (!IS_PLIST(plist)) {
-        RequireArgument("ShrinkAllocationPlist", plist, "plist",
-                        "must be a plain list");
-    }
+    RequirePlainList("ShrinkAllocationPlist", plist);
     SHRINK_PLIST(plist, LEN_PLIST(plist));
     return (Obj)0;
 }
