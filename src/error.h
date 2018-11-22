@@ -32,6 +32,14 @@ Int RegisterBreakloopObserver(intfunc func);
 
 /****************************************************************************
 **
+*F  OpenErrorOutput()  . . . . . . . open the file or stream assigned to the
+**                                   ERROR_OUTPUT global variable defined in
+**                                   error.g, or "*errout*" otherwise
+*/
+extern UInt OpenErrorOutput();
+
+/****************************************************************************
+**
 *F  ErrorQuit( <msg>, <arg1>, <arg2> )  . . . . . . . . . . .  print and quit
 */
 extern void ErrorQuit(const Char * msg, Int arg1, Int arg2) NORETURN;
