@@ -62,17 +62,17 @@ gap> m:=IdentityMatrix( Integers, 0 ); Display(m);
 
 # some error checking
 gap> m:=IdentityMatrix( GF(2), -1 );
-Error, LIST_WITH_IDENTICAL_ENTRIES: <n> must be a non-negative integer (not th\
-e integer -1)
+Error, LIST_WITH_IDENTICAL_ENTRIES: <n> must be a non-negative small integer (\
+not the integer -1)
 gap> m:=IdentityMatrix( GF(3), -1 );
-Error, LIST_WITH_IDENTICAL_ENTRIES: <n> must be a non-negative integer (not th\
-e integer -1)
+Error, LIST_WITH_IDENTICAL_ENTRIES: <n> must be a non-negative small integer (\
+not the integer -1)
 gap> m:=IdentityMatrix( GF(4), -1 );
-Error, LIST_WITH_IDENTICAL_ENTRIES: <n> must be a non-negative integer (not th\
-e integer -1)
+Error, LIST_WITH_IDENTICAL_ENTRIES: <n> must be a non-negative small integer (\
+not the integer -1)
 gap> m:=IdentityMatrix( Integers mod 4, -1 );
-Error, LIST_WITH_IDENTICAL_ENTRIES: <n> must be a non-negative integer (not th\
-e integer -1)
+Error, LIST_WITH_IDENTICAL_ENTRIES: <n> must be a non-negative small integer (\
+not the integer -1)
 
 #
 gap> STOP_TEST("IdentityMatrix.tst");

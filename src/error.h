@@ -142,7 +142,7 @@ extern Obj RequireArgument(const char * funcname,
 */
 #define RequireNonnegativeSmallInt(funcname, op) \
     RequireArgumentCondition(funcname, op, #op, IS_NONNEG_INTOBJ(op), \
-        "must be a non-negative integer")
+        "must be a non-negative small integer")
 
 
 /****************************************************************************

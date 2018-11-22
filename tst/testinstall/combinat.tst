@@ -16,9 +16,11 @@ gap> Print(List( [0..10], Factorial ),"\n");
 gap> Factorial( 50 );
 30414093201713378043612608166064768844377641568960512000000000000
 gap> Factorial(-1);
-Error, Factorial: <n> must be a non-negative integer (not the integer -1)
+Error, Factorial: <n> must be a non-negative small integer (not the integer -1\
+)
 gap> Factorial(fail);
-Error, Factorial: <n> must be a non-negative integer (not the value 'fail')
+Error, Factorial: <n> must be a non-negative small integer (not the value 'fai\
+l')
 
 #F  Binomial( <n>, <k> )  . . . . . . . . .  binomial coefficient of integers
 gap> Print(List( [-8..8], k -> Binomial( 0, k ) ),"\n");
