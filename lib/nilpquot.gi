@@ -4,13 +4,16 @@
 ##
 ##
 
+# TODO: document this function? it is used in various packages by now
+BindGlobal( "LeftNormedComm", function( list )
+    local c, i;
 
-LeftNormedComm := function( list )
-    local   n;
-
-    n := Length( list );
-
-    if n = 1 then return list[1]; fi;
-
-    return Comm( LeftNormedComm( list{[1..n-1]} ), list[n] );
-end;
+    if not IsList(list) or Length(list) = 0 then
+        Error("<list> must be a non-empty list");
+    fi;
+    c := list[1];
+    for i in [2..Length(list)] do
+        c := Comm(c, list[i]);
+    od;
+    return c;
+end );

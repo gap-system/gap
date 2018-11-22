@@ -288,6 +288,16 @@ Error, Cyclotomic Field size limit must not be less than old limit of 1000000
 gap> SetCyclotomicsLimit(1000000);
 
 #
+gap> List([1..10], n -> Order(E(n)));
+[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+gap> Order(1 + E(4));
+infinity
+gap> Order(2);
+infinity
+gap> Order(0);
+Error, argument must be nonzero
+
+#
 # test handling of invalid inputs
 #
 

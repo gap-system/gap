@@ -1,4 +1,6 @@
 gap> START_TEST("memoize.tst");
+
+#
 gap> func := function(x) Print("Check:",x,"\n"); return x*x; end;;
 gap> f1 := MemoizePosIntFunction(func);;
 gap> f1(1);
@@ -79,4 +81,10 @@ Check:10
 100
 gap> f3(6); # f3 disables flushing
 36
+
+#
+gap> MemoizePosIntFunction(func, rec(invalid_OPTION := 1));
+Error, Invalid option: invalid_OPTION
+
+#
 gap> STOP_TEST("memoize.tst", 1);

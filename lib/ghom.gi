@@ -276,16 +276,14 @@ function( hom, elm )
   fi;
 end );
 
-InstallAttributeMethodByGroupGeneralMappingByImages
-  ( CoKernelOfMultiplicativeGeneralMapping, IsGroup );
-InstallAttributeMethodByGroupGeneralMappingByImages
-  ( KernelOfMultiplicativeGeneralMapping, IsGroup );
-InstallAttributeMethodByGroupGeneralMappingByImages( PreImagesRange, IsGroup );
-InstallAttributeMethodByGroupGeneralMappingByImages( ImagesSource, IsGroup );
-InstallAttributeMethodByGroupGeneralMappingByImages( IsSingleValued, IsBool );
-InstallAttributeMethodByGroupGeneralMappingByImages( IsInjective, IsBool );
-InstallAttributeMethodByGroupGeneralMappingByImages( IsTotal, IsBool );
-InstallAttributeMethodByGroupGeneralMappingByImages( IsSurjective, IsBool );
+InstallAttributeMethodByGroupGeneralMappingByImages( CoKernelOfMultiplicativeGeneralMapping );
+InstallAttributeMethodByGroupGeneralMappingByImages( KernelOfMultiplicativeGeneralMapping );
+InstallAttributeMethodByGroupGeneralMappingByImages( PreImagesRange );
+InstallAttributeMethodByGroupGeneralMappingByImages( ImagesSource );
+InstallAttributeMethodByGroupGeneralMappingByImages( IsSingleValued );
+InstallAttributeMethodByGroupGeneralMappingByImages( IsInjective );
+InstallAttributeMethodByGroupGeneralMappingByImages( IsTotal );
+InstallAttributeMethodByGroupGeneralMappingByImages( IsSurjective );
 
 
 #############################################################################
