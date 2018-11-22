@@ -548,11 +548,7 @@ Obj             QuoRat (
 
     /* division by zero is an error                                        */
     if ( numR == INTOBJ_INT( 0L ) ) {
-        opR = ErrorReturnObj(
-            "Rational operations: <divisor> must not be zero",
-            0L, 0L,
-            "you can replace <divisor> via 'return <divisor>;'" );
-        return QUO( opL, opR );
+        ErrorMayQuit("Rational operations: <divisor> must not be zero", 0, 0);
     }
 
     /* we multiply the left numerator with the right denominator           */

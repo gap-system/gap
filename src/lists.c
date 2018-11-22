@@ -523,10 +523,8 @@ Obj ELMB_LIST(Obj list, Obj pos)
     Obj                 elm;
 
     elm = DoOperation2Args( ElmListOper, list, pos );
-    while ( elm == 0 ) {
-        elm = ErrorReturnObj(
-            "List access method must return a value", 0L, 0L,
-            "you can supply a value <val> via 'return <val>;'" );
+    if (elm == 0) {
+        ErrorMayQuit("List access method must return a value", 0, 0);
     }
     return elm;
 }
@@ -550,10 +548,8 @@ Obj ELM2_LIST(Obj list, Obj pos1, Obj pos2)
     }
 
     Obj elm = DoOperation3Args( ElmListOper, list, pos1, pos2 );
-    while ( elm == 0 ) {
-        elm = ErrorReturnObj(
-            "List access method must return a value", 0L, 0L,
-            "you can supply a value <val> via 'return <val>;'" );
+    if (elm == 0) {
+        ErrorMayQuit("List access method must return a value", 0, 0);
     }
     return elm;
 }
@@ -617,10 +613,8 @@ Obj ElmsListObject (
     Obj                 elm;
 
     elm = DoOperation2Args( ElmsListOper, list, poss );
-    while ( elm == 0 ) {
-        elm = ErrorReturnObj(
-            "List multi-access method must return a value", 0L, 0L,
-            "you can supply a value <val> via 'return <val>;'");
+    if (elm == 0) {
+        ErrorMayQuit("List multi-access method must return a value", 0, 0);
     }
     return elm;
 }
@@ -676,12 +670,10 @@ Obj ElmsListDefault (
 
             /* get <position>                                              */
             Obj p = ELMW_LIST(poss, i);
-            while (!IS_INTOBJ(p)) {
-                p = ErrorReturnObj("List Elements: position is too large for "
-                                   "this type of list",
-                                   0L, 0L,
-                                   "you can supply a new position <pos> via "
-                                   "'return <pos>;'");
+            if (!IS_INTOBJ(p)) {
+                ErrorMayQuit("List Elements: position is too large for "
+                             "this type of list",
+                             0, 0);
             }
             pos = INT_INTOBJ(p);
 
@@ -928,10 +920,8 @@ void ASSB_LIST (
 void ASS2_LIST(Obj list, Obj pos1, Obj pos2, Obj obj)
 {
     if (!IS_MUTABLE_OBJ(list)) {
-        ErrorReturnVoid(
-            "Matrix Assignment: <mat> must be a mutable matrix",
-            0L, 0L,
-            "you can 'return;' and ignore the assignment" );
+        ErrorMayQuit("Matrix Assignment: <mat> must be a mutable matrix", 0,
+                     0);
     }
     if (IS_POS_INTOBJ(pos1) && IS_POS_INTOBJ(pos2) && IS_PLIST(list)) {
         Int p1 = INT_INTOBJ(pos1);
@@ -1999,9 +1989,7 @@ Obj FuncSET_FILTER_LIST (
 
     /* setting of filter failed                                            */
 error:
-    ErrorReturnVoid( "filter not possible for %s",
-                     (Int)TNAM_OBJ(list), 0,
-                     "you can 'return;'" );
+    ErrorMayQuit("filter not possible for %s", (Int)TNAM_OBJ(list), 0);
     return 0;
 }
 
@@ -2035,9 +2023,7 @@ Obj FuncRESET_FILTER_LIST (
         RetypeBag( list, new );
     }
     else if ( new < 0 ) {
-        ErrorReturnVoid( "filter not possible for %s",
-                         (Int)TNAM_OBJ(list), 0,
-                         "you can 'return;'" );
+        ErrorMayQuit("filter not possible for %s", (Int)TNAM_OBJ(list), 0);
     }
     return 0;
 }

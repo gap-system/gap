@@ -1860,14 +1860,10 @@ Obj FuncCLONE_OBJ (
 
     /* check <src>                                                         */
     if ( IS_INTOBJ(src) ) {
-        ErrorReturnVoid( "small integers cannot be cloned", 0, 0,
-                         "you can 'return;' to skip the cloning" );
-        return 0;
+        ErrorMayQuit("small integers cannot be cloned", 0, 0);
     }
     if ( IS_FFE(src) ) {
-        ErrorReturnVoid( "finite field elements cannot be cloned", 0, 0,
-                         "you can 'return;' to skip the cloning" );
-        return 0;
+        ErrorMayQuit("finite field elements cannot be cloned", 0, 0);
     }
 
 #ifdef HPCGAP
@@ -1875,21 +1871,15 @@ Obj FuncCLONE_OBJ (
         case T_AREC:
         case T_ACOMOBJ:
         case T_TLREC:
-          ErrorReturnVoid( "cannot clone %ss",
-                           (Int)TNAM_OBJ(src), 0,
-                           "you can 'return;' to skip the cloning" );
-          return 0;
+            ErrorMayQuit("cannot clone %ss", (Int)TNAM_OBJ(src), 0);
     }
     if (!REGION(dst)) {
-        ErrorReturnVoid( "CLONE_OBJ() cannot overwrite public objects", 0, 0,
-                         "you can 'return;' to skip the cloning" );
-        return 0;
+        ErrorMayQuit("CLONE_OBJ() cannot overwrite public objects", 0, 0);
     }
     if (REGION(src) != REGION(dst) && REGION(src)) {
-        ErrorReturnVoid( "objects can only be cloned to replace objects within"
-                         "the same region or if the object is public", 0, 0,
-                         "you can 'return;' to skip the cloning" );
-        return 0;
+        ErrorMayQuit("objects can only be cloned to replace objects within"
+                     "the same region or if the object is public",
+                     0, 0);
     }
 #endif
     /* check <dst>                                                         

@@ -84,12 +84,7 @@ void            AddPlist3 (
   UInt len;
 
     if ( ! IS_PLIST_MUTABLE(list) ) {
-        list = ErrorReturnObj(
-                "List Assignment: <list> must be a mutable list",
-                0L, 0L,
-                "you can replace <list> via 'return <list>;'" );
-        FuncADD_LIST( 0, list, obj );
-        return;
+        ErrorMayQuit("List Assignment: <list> must be a mutable list", 0, 0);
     }
     /* in order to be optimistic when building list call assignment        */
     len = LEN_PLIST( list );
@@ -179,11 +174,7 @@ Obj            RemList (
     Obj result;
     pos = LEN_LIST( list ) ;
     if ( pos == 0L ) {
-        list = ErrorReturnObj(
-                "Remove: <list> must not be empty",
-                0L, 0L,
-                "you can replace <list> via 'return <list>;'" );
-        return RemList(list);
+        ErrorMayQuit("Remove: <list> must not be empty", 0, 0);
     }
     result = ELM_LIST(list, pos);
     UNB_LIST(list, pos);
@@ -200,19 +191,11 @@ static Obj RemPlist(Obj list)
     Obj removed; 
 
     if ( ! IS_PLIST_MUTABLE(list) ) {
-        list = ErrorReturnObj(
-                "Remove: <list> must be a mutable list",
-                0L, 0L,
-                "you can replace <list> via 'return <list>;'" );
-        return FuncREM_LIST( 0, list);
+        ErrorMayQuit("Remove: <list> must be a mutable list", 0, 0);
     }
     pos = LEN_PLIST( list );
     if ( pos == 0L ) {
-        list = ErrorReturnObj(
-                "Remove: <list> must not be empty",
-                0L, 0L,
-                "you can replace <list> via 'return <list>;'" );
-        return FuncREM_LIST( 0, list);
+        ErrorMayQuit("Remove: <list> must not be empty", 0, 0);
     }
     removed = ELM_PLIST(list, pos);
     SET_ELM_PLIST(list, pos, (Obj)0L);
@@ -272,12 +255,9 @@ Obj             FuncAPPEND_LIST_INTR (
     Int                 i;              /* loop variable                   */
 
     /* check the mutability of the first argument */
-    while ( !IS_MUTABLE_OBJ( list1) )
-      list1 = ErrorReturnObj (
-                "Append: <list1> must be a mutable list",
-                0L, 0L,
-                "you can replace <list1> via 'return <list1>;'");
-    
+    if (!IS_MUTABLE_OBJ(list1))
+        ErrorMayQuit("Append: <list1> must be a mutable list", 0, 0);
+
 
     /* handle the case of strings now */
     if (IS_STRING_REP(list1) && IS_STRING_REP(list2)) {
@@ -1106,11 +1086,9 @@ Obj             FuncOnPairs (
     Obj                 tmp;            /* temporary                       */
 
     /* check the type of the first argument                                */
-    while ( ! IS_SMALL_LIST( pair ) || LEN_LIST( pair ) != 2 ) {
-        pair = ErrorReturnObj(
-            "OnPairs: <pair> must be a list of length 2 (not a %s)",
-            (Int)TNAM_OBJ(pair), 0L,
-            "you can replace <pair> via 'return <pair>;'" );
+    if (!IS_SMALL_LIST(pair) || LEN_LIST(pair) != 2) {
+        ErrorMayQuit("OnPairs: <pair> must be a list of length 2 (not a %s)",
+                     (Int)TNAM_OBJ(pair), 0);
     }
 
     /* create a new bag for the result                                     */

@@ -1407,12 +1407,10 @@ Obj             ElmsPlistDense (
 
             /* get <position>                                              */
             Obj p = ELMW_LIST(poss, i);
-            while (!IS_INTOBJ(p)) {
-                p = ErrorReturnObj("List Elements: position is too large for "
-                                   "this type of list",
-                                   0L, 0L,
-                                   "you can supply a new position <pos> via "
-                                   "'return <pos>;'");
+            if (!IS_INTOBJ(p)) {
+                ErrorMayQuit("List Elements: position is too large for "
+                             "this type of list",
+                             0, 0);
             }
             pos = INT_INTOBJ(p);
 

@@ -238,13 +238,9 @@ Obj FuncCHAR_INT (
     Int             chr;
 
     /* get and check the integer value                                     */
-again:
     chr = GetSmallInt("CHAR_INT", val, "val");
     if ( 255 < chr || chr < 0 ) {
-        val = ErrorReturnObj(
-            "<val> must be an integer between 0 and 255",
-            0L, 0L, "you can replace <val> via 'return <val>;'" );
-        goto again;
+        ErrorMayQuit("<val> must be an integer between 0 and 255", 0, 0);
     }
 
     /* return the character                                                */
@@ -280,13 +276,9 @@ Obj FuncCHAR_SINT (
   Int             chr;
 
   /* get and check the integer value                                     */
-agains:
   chr = GetSmallInt("CHAR_SINT", val, "val");
   if ( 127 < chr || chr < -128 ) {
-      val = ErrorReturnObj(
-	  "<val> must be an integer between -128 and 127",
-	  0L, 0L, "you can replace <val> via 'return <val>;'" );
-      goto agains;
+      ErrorMayQuit("<val> must be an integer between -128 and 127", 0, 0);
   }
 
     /* return the character                                                */
@@ -901,12 +893,10 @@ Obj ElmsString (
 
             /* get <position>                                              */
             Obj p = ELMW_LIST(poss, i);
-            while (!IS_INTOBJ(p)) {
-                p = ErrorReturnObj("List Elements: position is too large for "
-                                   "this type of list",
-                                   0L, 0L,
-                                   "you can supply a new position <pos> via "
-                                   "'return <pos>;'");
+            if (!IS_INTOBJ(p)) {
+                ErrorMayQuit("List Elements: position is too large for "
+                             "this type of list",
+                             0, 0);
             }
             pos = INT_INTOBJ(p);
 
