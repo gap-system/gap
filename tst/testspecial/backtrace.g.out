@@ -48,13 +48,13 @@ gap>
 gap> 
 gap> f:=function() if 1 then return 1; fi; return 2; end;;
 gap> f();
-Error, <expr> must be 'true' or 'false' (not a integer) in
+Error, <expr> must be 'true' or 'false' (not the integer 1) in
   if 1 then
     return 1;
 fi; at *stdin*:15 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:16
-you can replace <expr> via 'return <expr>;'
+type 'quit;' to quit to outer loop
 brk> Where();
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
@@ -63,7 +63,7 @@ gap>
 gap> 
 gap> f:=function() if 1 < 0 then return 1; elif 1 then return 2; fi; return 3; end;;
 gap> f();
-Error, <expr> must be 'true' or 'false' (not a integer) in
+Error, <expr> must be 'true' or 'false' (not the integer 1) in
   if 1 < 0 then
     return 1;
 elif 1 then
@@ -71,7 +71,7 @@ elif 1 then
 fi; at *stdin*:18 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:19
-you can replace <expr> via 'return <expr>;'
+type 'quit;' to quit to outer loop
 brk> Where();
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
@@ -80,13 +80,13 @@ gap>
 gap> 
 gap> f:=function() while 1 do return 1; od; return 2; end;;
 gap> f();
-Error, <expr> must be 'true' or 'false' (not a integer) in
+Error, <expr> must be 'true' or 'false' (not the integer 1) in
   while 1 do
     return 1;
 od; at *stdin*:21 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:22
-you can replace <expr> via 'return <expr>;'
+type 'quit;' to quit to outer loop
 brk> Where();
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
@@ -133,13 +133,13 @@ gap>
 gap> 
 gap> f:=function() local x; repeat x:=1; until 1; return 2; end;;
 gap> f();
-Error, <expr> must be 'true' or 'false' (not a integer) in
+Error, <expr> must be 'true' or 'false' (not the integer 1) in
   repeat
     x := 1;
 until 1; at *stdin*:30 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:31
-you can replace <expr> via 'return <expr>;'
+type 'quit;' to quit to outer loop
 brk> Where();
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
@@ -179,7 +179,7 @@ Error, List Element: <list>[2] must have an assigned value in
 return l[2, 1]; at *stdin*:39 called from
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:40
-you can 'return;' after assigning a value
+type 'quit;' to quit to outer loop
 brk> Where();
 return l[2, 1]; at *stdin*:39 called from
 <function "f">( <arguments> )

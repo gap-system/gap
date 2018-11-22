@@ -100,15 +100,15 @@ gap> IsAssociative and IsAssociative;
 
 # test error handling in executor
 gap> function() return not 1; end();
-Error, <expr> must be 'true' or 'false' (not a integer)
+Error, <expr> must be 'true' or 'false' (not the integer 1)
 gap> function() return false or 1; end();
-Error, <expr> must be 'true' or 'false' (not a integer)
+Error, <expr> must be 'true' or 'false' (not the integer 1)
 gap> function() return 1 or false; end();
-Error, <expr> must be 'true' or 'false' (not a integer)
+Error, <expr> must be 'true' or 'false' (not the integer 1)
 gap> function() return true and 1; end();
-Error, <expr> must be 'true' or 'false' (not a integer)
+Error, <expr> must be 'true' or 'false' (not the integer 1)
 gap> function() return 1 and true; end();
-Error, <expr> must be 'true' or 'false' or a filter (not a integer)
+Error, <expr> must be 'true' or 'false' or a filter (not the integer 1)
 gap> function() return ReturnTrue and ReturnTrue; end();
 Error, <expr> must be 'true' or 'false' or a filter (not a function)
 gap> function() return ReturnTrue and true; end();

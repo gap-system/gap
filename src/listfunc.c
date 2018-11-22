@@ -1218,11 +1218,8 @@ Obj             FuncOnSets (
     UInt                status;        /* the elements are mutable        */
 
     /* check the type of the first argument                                */
-    while ( !HAS_FILT_LIST(set, FN_IS_SSORT) && ! IsSet( set ) ) {
-        set = ErrorReturnObj(
-            "OnSets: <set> must be a set (not a %s)",
-            (Int)TNAM_OBJ(set), 0L,
-            "you can replace <set> via 'return <set>;'" );
+    if (!HAS_FILT_LIST(set, FN_IS_SSORT) && !IsSet(set)) {
+        RequireArgument("OnSets", set, "set", "must be a set");
     }
 
     /* special case for the empty list */

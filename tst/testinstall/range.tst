@@ -142,7 +142,7 @@ gap> Position([-5, -3..5], 5, 5);
 gap> Position([-5, -3..5], 5, 6);
 fail
 gap> Position([-5, -3..5], 5, fail);
-Error, Position: <start> must be a nonnegative integer (not a boolean or fail)
+Error, Position: <start> must be a non-negative integer (not the value 'fail')
 
 #
 gap> Position([5, 3..-5], 0);
@@ -156,7 +156,7 @@ gap> Position([5, 3..-5], -5, 5);
 gap> Position([5, 3..-5], -5, 6);
 fail
 gap> Position([5, 3..-5], -5, fail);
-Error, Position: <start> must be a nonnegative integer (not a boolean or fail)
+Error, Position: <start> must be a non-negative integer (not the value 'fail')
 
 #
 gap> IsRange([]);

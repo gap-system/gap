@@ -64,6 +64,12 @@
 #endif
 
 
+#define RequireRational(funcname, op)                                        \
+    RequireArgumentCondition(funcname, op, #op,                              \
+                             TNUM_OBJ(op) == T_RAT || IS_INT(op),            \
+                             "must be a rational")
+
+
 /****************************************************************************
 **
 *F  TypeRat( <rat> )  . . . . . . . . . . . . . . . . . .  type of a rational
@@ -308,13 +314,8 @@ Obj AbsRat( Obj op )
 
 Obj FuncABS_RAT( Obj self, Obj op )
 {
-    Obj res;
-    res = ( TNUM_OBJ(op) == T_RAT ) ? AbsRat(op) : AbsInt(op);
-    if (res == Fail) {
-        ErrorMayQuit("AbsRat: argument must be a rational or integer (not a %s)",
-                     (Int)TNAM_OBJ(op), 0L);
-    }
-    return res;
+    RequireRational("AbsRat", op);
+    return (TNUM_OBJ(op) == T_RAT) ? AbsRat(op) : AbsInt(op);
 }
 
 /****************************************************************************
@@ -329,13 +330,8 @@ Obj SignRat( Obj op )
 
 Obj FuncSIGN_RAT( Obj self, Obj op )
 {
-    Obj res;
-    res = ( TNUM_OBJ(op) == T_RAT ) ? SignRat(op) : SignInt(op);
-    if (res == Fail) {
-        ErrorMayQuit("SignRat: argument must be a rational or integer (not a %s)",
-                     (Int)TNAM_OBJ(op), 0L);
-    }
-    return res;
+    RequireRational("SignRat", op);
+    return (TNUM_OBJ(op) == T_RAT) ? SignRat(op) : SignInt(op);
 }
 
 
@@ -756,12 +752,7 @@ Obj             FuncNUMERATOR_RAT (
     Obj                 rat )
 {
     /* check the argument                                                   */
-    while ( TNUM_OBJ(rat) != T_RAT && !IS_INT(rat) ) {
-        rat = ErrorReturnObj(
-            "NumeratorRat: <rat> must be a rational (not a %s)",
-            (Int)TNAM_OBJ(rat), 0L,
-            "you can replace <rat> via 'return <rat>;'" );
-    }
+    RequireRational("NumeratorRat", rat);
 
     /* return the numerator                                                */
     if ( TNUM_OBJ(rat) == T_RAT ) {
@@ -788,12 +779,7 @@ Obj             FuncDENOMINATOR_RAT (
     Obj                 rat )
 {
     /* check the argument                                                  */
-    while ( TNUM_OBJ(rat) != T_RAT && !IS_INT(rat) ) {
-        rat = ErrorReturnObj(
-            "DenominatorRat: <rat> must be a rational (not a %s)",
-            (Int)TNAM_OBJ(rat), 0L,
-            "you can replace <rat> via 'return <rat>;'" );
-    }
+    RequireRational("DenominatorRat", rat);
 
     /* return the denominator                                              */
     if ( TNUM_OBJ(rat) == T_RAT ) {
@@ -851,12 +837,12 @@ static StructGVarFilt GVarFilts [] = {
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(NUMERATOR_RAT, 1, "rat"),
     GVAR_FUNC(DENOMINATOR_RAT, 1, "rat"),
-    GVAR_FUNC(ABS_RAT, 1, "rat"),
-    GVAR_FUNC(SIGN_RAT, 1, "rat"),
+    GVAR_FUNC(ABS_RAT, 1, "op"),
+    GVAR_FUNC(SIGN_RAT, 1, "op"),
     { 0, 0, 0, 0, 0 }
 
 };

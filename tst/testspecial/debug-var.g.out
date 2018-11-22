@@ -51,7 +51,7 @@ Error, Variable: 'unbound_higher' must have an assigned value in
 g( 10 ) at *stdin*:12 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:12
-you can 'return;' after assigning a value
+type 'quit;' to quit to outer loop
 brk_2> quit;
 brk> 
 brk> z; # access local
@@ -67,7 +67,7 @@ Error, Variable: 'unbound_local' must have an assigned value in
 g( 10 ) at *stdin*:12 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:17
-you can 'return;' after assigning a value
+type 'quit;' to quit to outer loop
 brk_2> quit;
 brk> 
 brk> return;

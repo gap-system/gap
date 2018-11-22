@@ -518,7 +518,7 @@ true
 gap> AbsInt(-2^60) = 2^60;  # corner case on 64bit systems
 true
 gap> AbsInt(fail);
-Error, AbsRat: argument must be a rational or integer (not a boolean or fail)
+Error, AbsRat: <op> must be a rational (not the value 'fail')
 gap> ABS_INT(fail);
 Error, AbsInt: <x> must be an integer (not the value 'fail')
 
@@ -528,7 +528,7 @@ Error, AbsInt: <x> must be an integer (not the value 'fail')
 gap> List(data, SignInt);
 [ -1, -1, -1, -1, 0, 1, 1, 1, 1 ]
 gap> SignInt(fail);
-Error, SignRat: argument must be a rational or integer (not a boolean or fail)
+Error, SignRat: <op> must be a rational (not the value 'fail')
 gap> SIGN_INT(fail);
 Error, SignInt: <x> must be an integer (not the value 'fail')
 

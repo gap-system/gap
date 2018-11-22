@@ -261,11 +261,8 @@ Obj FuncINT_CHAR (
     Obj             val )
 {
     /* get and check the character                                         */
-    while ( TNUM_OBJ(val) != T_CHAR ) {
-        val = ErrorReturnObj(
-            "<val> must be a character (not a %s)",
-            (Int)TNAM_OBJ(val), 0L,
-            "you can replace <val> via 'return <val>;'" );
+    if (TNUM_OBJ(val) != T_CHAR) {
+        RequireArgument("INT_CHAR", val, "val", "must be a character");
     }
 
     /* return the character                                                */
@@ -305,16 +302,13 @@ Obj FuncSINT_CHAR (
     Obj             self,
     Obj             val )
 {
-  /* get and check the character                                         */
-  while ( TNUM_OBJ(val) != T_CHAR ) {
-      val = ErrorReturnObj(
-	  "<val> must be a character (not a %s)",
-	  (Int)TNAM_OBJ(val), 0L,
-	  "you can replace <val> via 'return <val>;'" );
-  }
+    /* get and check the character                                         */
+    if (TNUM_OBJ(val) != T_CHAR) {
+        RequireArgument("SINT_CHAR", val, "val", "must be a character");
+    }
 
-  /* return the character                                                */
-  return INTOBJ_INT(SINT_CHAR(CHAR_VALUE(val)));
+    /* return the character                                                */
+    return INTOBJ_INT(SINT_CHAR(CHAR_VALUE(val)));
 }
 
 /****************************************************************************
@@ -378,12 +372,10 @@ Obj FuncSTRING_SINTLIST (
    * integers ? */
 
   /* general code */
-  while (!IS_RANGE(val) && !IS_PLIST(val)) {
-again:
-       val = ErrorReturnObj(
-           "<val> must be a plain list of small integers or a range, not a %s",
-           (Int)TNAM_OBJ(val), 0L,
-           "you can replace <val> via 'return <val>;'" );
+  if (!IS_RANGE(val) && !IS_PLIST(val)) {
+  again:
+      RequireArgument("STRING_SINTLIST", val, "val",
+                      "must be a plain list of small integers or a range");
   }
   if (! IS_RANGE(val) ) {
     l=LEN_PLIST(val);
@@ -1398,11 +1390,8 @@ Obj FuncCONV_STRING (
     Obj                 string )
 {
     /* check whether <string> is a string                                  */
-    while ( ! IS_STRING( string ) ) {
-        string = ErrorReturnObj(
-            "ConvString: <string> must be a string (not a %s)",
-            (Int)TNAM_OBJ(string), 0L,
-            "you can replace <string> via 'return <string>;'" );
+    if (!IS_STRING(string)) {
+        RequireArgument("ConvString", string, "string", "must be a string");
     }
 
     /* convert to the string representation                                */
@@ -1435,11 +1424,8 @@ Obj FuncCOPY_TO_STRING_REP (
     Obj                 obj )
 {
     /* check whether <obj> is a string                                  */
-    while (!IS_STRING(obj)) {
-        obj = ErrorReturnObj(
-            "CopyToStringRep: <string> must be a string (not a %s)",
-            (Int)TNAM_OBJ(obj), 0L,
-            "you can replace <string> via 'return <string>;'" );
+    if (!IS_STRING(obj)) {
+        RequireArgument("CopyToStringRep", obj, "string", "must be a string");
     }
     return CopyToStringRep(obj);
 }

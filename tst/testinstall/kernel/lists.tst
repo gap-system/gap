@@ -29,7 +29,7 @@ false
 
 #
 gap> ISB_LIST(1,2);
-Error, IsBound: <list> must be a list (not a integer)
+Error, IsBound: <list> must be a list (not the integer 1)
 gap> ISB_LIST([1],1);
 true
 gap> ISB_LIST([1],2);
@@ -43,7 +43,7 @@ Error, no 1st choice method found for `IsBound[]' on 2 arguments
 
 #
 gap> UNB_LIST(1,2);
-Error, Unbind: <list> must be a list (not a integer)
+Error, Unbind: <list> must be a list (not the integer 1)
 gap> UNB_LIST([1],1);
 gap> UNB_LIST([1],2);
 
@@ -53,7 +53,7 @@ gap> ELM0_LIST([1],1);
 gap> ELM0_LIST([1],2);
 fail
 gap> ELM0_LIST(1,2);
-Error, List Element: <list> must be a list (not a integer)
+Error, List Element: <list> must be a list (not the integer 1)
 
 #
 gap> ELM_LIST([1],1);
@@ -61,7 +61,7 @@ gap> ELM_LIST([1],1);
 gap> ELM_LIST([1],2);
 Error, List Element: <list>[2] must have an assigned value
 gap> ELM_LIST(1,2);
-Error, List Element: <list> must be a list (not a integer)
+Error, List Element: <list> must be a list (not the integer 1)
 
 #
 gap> ELMS_LIST(1,1);
@@ -83,9 +83,9 @@ gap> ELMS_LIST([1,2,3],[1..2]);
 
 #
 gap> ELMS_LIST_DEFAULT(1,1);
-Error, Length: <list> must be a list (not a integer)
+Error, Length: <list> must be a list (not the integer 1)
 gap> ELMS_LIST_DEFAULT([1],1);
-Error, Length: <list> must be a list (not a integer)
+Error, Length: <list> must be a list (not the integer 1)
 gap> ELMS_LIST_DEFAULT([1],[2]);
 Error, List Elements: <list>[2] must have an assigned value
 gap> ELMS_LIST_DEFAULT([1,2,3],[1,3]);
@@ -101,7 +101,7 @@ gap> ELMS_LIST_DEFAULT([1,2,3],[1..2]);
 
 #
 gap> ASS_LIST(1,1,1);
-Error, List Assignment: <list> must be a list (not a integer)
+Error, List Assignment: <list> must be a list (not the integer 1)
 gap> l:=[];; ASS_LIST(l,1,1); l;
 [ 1 ]
 
@@ -111,7 +111,7 @@ Error, List Assignment: <rhss> must be a dense list
 gap> ASSS_LIST([1],1,[1]);
 Error, List Assignment: <positions> must be a dense list of positive integers
 gap> ASSS_LIST(1,[1],[1]);
-Error, List Assignments: <list> must be a list (not a integer)
+Error, List Assignments: <list> must be a list (not the integer 1)
 gap> l:=[];; ASSS_LIST(l,[1],[1]); l;
 [ 1 ]
 
@@ -121,7 +121,7 @@ Error, List Assignment: <rhss> must be a dense list
 gap> ASSS_LIST_DEFAULT([1],1,[1]);
 Error, List Assignment: <positions> must be a dense list of positive integers
 gap> ASSS_LIST_DEFAULT(1,[1],[1]);
-Error, List Assignment: <list> must be a list (not a integer)
+Error, List Assignment: <list> must be a list (not the integer 1)
 gap> l:=[];; ASSS_LIST_DEFAULT(l,[1],[1]); l;
 [ 1 ]
 

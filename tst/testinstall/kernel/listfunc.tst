@@ -97,7 +97,7 @@ Error, OnTuples: <tuple> must be a small list (not the value 'fail')
 
 #
 gap> OnSets(fail,fail);
-Error, OnSets: <set> must be a set (not a boolean or fail)
+Error, OnSets: <set> must be a set (not the value 'fail')
 gap> empty:=[];;
 gap> IsIdenticalObj(empty, OnSets(empty, ()));
 false
@@ -107,7 +107,7 @@ true
 
 #
 gap> STRONGLY_CONNECTED_COMPONENTS_DIGRAPH(fail);
-Error, Length: <list> must be a list (not a boolean or fail)
+Error, Length: <list> must be a list (not the value 'fail')
 gap> STRONGLY_CONNECTED_COMPONENTS_DIGRAPH([]);
 [  ]
 
