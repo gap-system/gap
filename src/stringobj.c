@@ -273,13 +273,13 @@ Obj FuncCHAR_SINT (
     Obj             self,
     Obj             val )
 {
-  Int             chr;
+    Int chr;
 
-  /* get and check the integer value                                     */
-  chr = GetSmallInt("CHAR_SINT", val, "val");
-  if ( 127 < chr || chr < -128 ) {
-      ErrorMayQuit("<val> must be an integer between -128 and 127", 0, 0);
-  }
+    /* get and check the integer value                                     */
+    chr = GetSmallInt("CHAR_SINT", val, "val");
+    if (127 < chr || chr < -128) {
+        ErrorMayQuit("<val> must be an integer between -128 and 127", 0, 0);
+    }
 
     /* return the character                                                */
     return ObjsChar[CHAR_SINT(chr)];
