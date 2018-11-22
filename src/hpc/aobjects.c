@@ -1275,16 +1275,10 @@ Obj ElmAList(Obj list, Int pos)
   MEMBAR_READ();
   len = ALIST_LEN((UInt)addr[0].atom);
   Obj result;
-  while (pos < 1 || pos > len) {
-    Obj posobj;
-    do {
-      posobj = ErrorReturnObj(
-        "Atomic List Element: <pos>=%d is an invalid index for <list>",
-        (Int) pos, 0L,
-        "you can replace value <pos> via 'return <pos>;'" );
-    } while (!IS_INTOBJ(posobj));
-    pos = INT_INTOBJ(posobj);
-  }
+  if (pos < 1 || pos > len) {
+      ErrorMayQuit(
+          "Atomic List Element: <pos>=%d is an invalid index for <list>",
+          (Int)pos, 0);
   }
 
   result = addr[1 + pos].obj;
@@ -1309,15 +1303,10 @@ void AssFixAList(Obj list, Int pos, Obj obj)
 {
   UInt pol = (UInt)CONST_ADDR_ATOM(list)[0].atom;
   UInt len = ALIST_LEN(pol);
-  while (pos < 1 || pos > len) {
-    Obj posobj;
-    do {
-      posobj = ErrorReturnObj(
-        "Atomic List Element: <pos>=%d is an invalid index for <list>",
-        (Int) pos, 0L,
-        "you can replace value <pos> via 'return <pos>;'" );
-    } while (!IS_INTOBJ(posobj));
-    pos = INT_INTOBJ(posobj);
+  if (pos < 1 || pos > len) {
+      ErrorMayQuit(
+          "Atomic List Element: <pos>=%d is an invalid index for <list>",
+          (Int)pos, 0);
   }
   switch (ALIST_POL(pol)) {
     case ALIST_RW:

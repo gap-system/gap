@@ -24,7 +24,7 @@ Error, Rational operations: <divisor> must not be zero in
   1 / 0 at *stdin*:9 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:10
-you can replace <divisor> via 'return <divisor>;'
+type 'quit;' to quit to outer loop
 brk> Where();
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1

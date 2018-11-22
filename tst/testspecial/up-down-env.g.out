@@ -9,7 +9,7 @@ f( lvl - 1 ) at *stdin*:2 called from
 f( lvl - 1 ) at *stdin*:2 called from
 f( lvl - 1 ) at *stdin*:2 called from
 ...  at *stdin*:3
-you can replace <divisor> via 'return <divisor>;'
+type 'quit;' to quit to outer loop
 brk> UpEnv(1); lvl;
 0
 brk> DownEnv(1); lvl;
