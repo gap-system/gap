@@ -655,15 +655,6 @@ distclean-extern:
 	rm -rf extern/install
 
 
-########################################################################
-# Compatibility mode
-#
-# If enabled, we prepare the environment to look like it did with
-# the old build system, thus enabling existing packages with kernel
-# extensions to be compiled against this version of GAP/
-########################################################################
-ifeq ($(COMPAT_MODE),yes)
-
 # regenerate sysinfo.gap if necessary
 all: sysinfo.gap
 sysinfo.gap: config.status $(srcdir)/Makefile.rules cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS cnf/GAP-LDFLAGS cnf/GAP-LIBS
@@ -687,6 +678,16 @@ sysinfo.gap: config.status $(srcdir)/Makefile.rules cnf/GAP-CFLAGS cnf/GAP-CPPFL
 	@echo "GAP_OBJS=\"$(OBJS)\"" >> $@
 	@echo "" >> $@
 	@echo "JULIA=\"$(JULIA)\"" >> $@
+
+
+########################################################################
+# Compatibility mode
+#
+# If enabled, we prepare the environment to look like it did with
+# the old build system, thus enabling existing packages with kernel
+# extensions to be compiled against this version of GAP/
+########################################################################
+ifeq ($(COMPAT_MODE),yes)
 
 # regenerate bin/gap.sh if necessary
 all: bin/gap.sh
