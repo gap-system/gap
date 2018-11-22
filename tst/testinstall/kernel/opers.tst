@@ -132,43 +132,43 @@ Error, usage: NewFilter( <name> )
 
 #
 gap> FLAG1_FILTER(fail);
-Error, <oper> must be an operation
+Error, FLAG1_FILTER: <oper> must be an operation (not the value 'fail')
 gap> FLAG1_FILTER(Normalizer);
 0
 gap> SET_FLAG1_FILTER(fail, 1);
-Error, <oper> must be an operation
+Error, SET_FLAG1_FILTER: <oper> must be an operation (not the value 'fail')
 
 #
 gap> FLAG2_FILTER(fail);
-Error, <oper> must be an operation
+Error, FLAG2_FILTER: <oper> must be an operation (not the value 'fail')
 gap> FLAG2_FILTER(Normalizer);
 0
 gap> SET_FLAG2_FILTER(fail, 1);
-Error, <oper> must be an operation
+Error, SET_FLAG2_FILTER: <oper> must be an operation (not the value 'fail')
 
 #
 gap> FLAGS_FILTER(fail);
-Error, <oper> must be an operation
+Error, FLAGS_FILTER: <oper> must be an operation (not the value 'fail')
 gap> FLAGS_FILTER(Normalizer);
 false
 gap> SET_FLAGS_FILTER(fail, 1);
-Error, <oper> must be an operation
+Error, SET_FLAGS_FILTER: <oper> must be an operation (not the value 'fail')
 
 #
 gap> SETTER_FILTER(fail);
-Error, <oper> must be an operation
+Error, SETTER_FILTER: <oper> must be an operation (not the value 'fail')
 gap> SETTER_FILTER(Normalizer);
 false
 gap> SET_SETTER_FILTER(fail, 1);
-Error, <oper> must be an operation
+Error, SET_SETTER_FILTER: <oper> must be an operation (not the value 'fail')
 
 #
 gap> TESTER_FILTER(fail);
-Error, <oper> must be an operation
+Error, TESTER_FILTER: <oper> must be an operation (not the value 'fail')
 gap> TESTER_FILTER(Normalizer);
 false
 gap> SET_TESTER_FILTER(fail, 1);
-Error, <oper> must be an operation
+Error, SET_TESTER_FILTER: <oper> must be an operation (not the value 'fail')
 
 #
 #
@@ -212,24 +212,29 @@ Error, operation already installed
 
 #
 gap> METHODS_OPERATION(fail,1);
-Error, <oper> must be an operation
+Error, METHODS_OPERATION: <oper> must be an operation (not the value 'fail')
 gap> METHODS_OPERATION(Size,-1);
-Error, <narg> must be a nonnegative integer
+Error, METHODS_OPERATION: <narg> must be a non-negative small integer (not the\
+ integer -1)
 gap> METHODS_OPERATION(Size,0);
 [  ]
 
 # note: CHANGED_METHODS_OPERATION is not usable on HPC-GAP
 gap> CHANGED_METHODS_OPERATION(fail,1);
-Error, <oper> must be an operation
+Error, CHANGED_METHODS_OPERATION: <oper> must be an operation (not the value '\
+fail')
 gap> CHANGED_METHODS_OPERATION(Size,-1);
-Error, <narg> must be a nonnegative integer
+Error, CHANGED_METHODS_OPERATION: <narg> must be a non-negative small integer \
+(not the integer -1)
 gap> if not IsHPCGAP then CHANGED_METHODS_OPERATION(Size,0); fi;
 
 #
 gap> SET_METHODS_OPERATION (fail,1,[]);
-Error, <oper> must be an operation
+Error, SET_METHODS_OPERATION: <oper> must be an operation (not the value 'fail\
+')
 gap> SET_METHODS_OPERATION (Size,-1,[]);
-Error, <narg> must be a nonnegative integer
+Error, SET_METHODS_OPERATION: <narg> must be a non-negative small integer (not\
+ the integer -1)
 gap> SET_METHODS_OPERATION (Size,0,[]);
 
 #
@@ -267,7 +272,7 @@ gap> g:= Group( (1,2,3), (1,2) );;  Size( g );
 gap> TraceMethods();
 Error, `TraceMethods' require at least one argument
 gap> TraceMethods([ 1 ]);
-Error, <oper> must be an operation
+Error, TRACE_METHODS: <oper> must be an operation (not the integer 1)
 gap> TraceMethods( [ Size ] );
 gap> UntraceMethods( [ Size ] );
 
@@ -311,7 +316,7 @@ gap> MakeReadOnlyGlobal("NEXT_VMETHOD_PRINT_INFO");
 gap> UntraceMethods();
 Error, `UntraceMethods' require at least one argument
 gap> UntraceMethods([ 1 ]);
-Error, <oper> must be an operation
+Error, UNTRACE_METHODS: <oper> must be an operation (not the integer 1)
 gap> UntraceMethods( [ IsCyclic ] );
 
 #
