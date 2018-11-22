@@ -183,6 +183,15 @@ extern Obj RequireArgument(const char * funcname,
 
 /****************************************************************************
 **
+*F  RequirePlainList
+*/
+#define RequirePlainList(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, IS_PLIST(op), \
+        "must be a plain list")
+
+
+/****************************************************************************
+**
 *F  GetSmallInt
 */
 static inline Int GetSmallInt(const char * funcname, Obj op, const char * argname)

@@ -47,11 +47,7 @@ void CheckTietzeStack (
     Obj * *             ptTietze )
 {
     /*  check the Tietze stack                                             */
-    if ( ! IS_PLIST(tietze) ) {
-        ErrorQuit( "<tietze> must be a plain list (not a %s)",
-                   (Int)TNAM_OBJ(tietze), 0L );
-        return;
-    }
+    RequirePlainList(0, tietze);
     if ( LEN_PLIST(tietze) != TZ_LENGTHTIETZE ) {
         ErrorQuit( "<tietze> must have length %d (not %d)",
                    (Int)TZ_LENGTHTIETZE, (Int)LEN_PLIST(tietze) );
