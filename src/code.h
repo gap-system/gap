@@ -74,6 +74,10 @@ typedef struct {
     Obj endline;
 } BodyHeader;
 
+
+void SetCoderCurrentFunc(const Obj func);
+const Stat * GetCoderCurrentFunc(void);
+
 static inline BodyHeader *BODY_HEADER(Obj body)
 {
     GAP_ASSERT(TNUM_OBJ(body) == T_BODY);
@@ -280,9 +284,9 @@ enum STAT_TNUM {
 **  'ADDR_STAT' returns   the  absolute address of the    memory block of the
 **  statement <stat>.
 */
-#define ADDR_STAT(stat) ((Stat *)(((char *)STATE(PtrBody)) + (stat)))
+#define ADDR_STAT(stat) ((Stat *)(((char *)GetCoderCurrentFunc()) + (stat)))
 #define CONST_ADDR_STAT(stat)                                                \
-    ((const Stat *)(((const char *)STATE(PtrBody)) + (stat)))
+    ((const Stat *)(((const char *)GetCoderCurrentFunc()) + (stat)))
 
 #define READ_STAT(stat, idx) (CONST_ADDR_STAT(stat)[idx])
 #define WRITE_STAT(stat, idx, val) ADDR_STAT(stat)[idx] = val

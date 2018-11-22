@@ -47,15 +47,16 @@ GAP_STATIC_ASSERT(sizeof(StatHeader) == 8, "StatHeader has wrong size");
 static Obj TYPE_KERNEL_OBJECT;
 
 
+struct CodeState {
+
 /****************************************************************************
 **
 *V  PtrBody . . . . . . . . . . . . . . . . . . . . . pointer to current body
 **
 **  'PtrBody' is a pointer to the current body.
 */
-/* TL: Stat * PtrBody; */
 
-struct CodeState {
+Stat * PtrBody;
 
 /****************************************************************************
 **
@@ -107,6 +108,17 @@ static inline void PopOffsBody( void ) {
     GAP_ASSERT(CS(OffsBodyCount));
     CS(OffsBody) = CS(OffsBodyStack)[--CS(OffsBodyCount)];
 }
+
+extern inline void SetCoderCurrentFunc(const Obj func)
+{
+    CS(PtrBody) = (Stat *)PTR_BAG(BODY_FUNC(func));
+}
+
+extern inline const Stat * GetCoderCurrentFunc(void)
+{
+    return CS(PtrBody);
+}
+
 
 // filename
 
@@ -216,7 +228,7 @@ static Stat NewStatWithProf (
     while (bodySize < CS(OffsBody))
         bodySize *= 2;
     ResizeBag(body, bodySize);
-    STATE(PtrBody) = (Stat*)PTR_BAG(body);
+    CS(PtrBody) = (Stat *)PTR_BAG(body);
 
     /* enter type and size                                                 */
     STAT_HEADER(stat)->line = line;

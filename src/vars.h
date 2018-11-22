@@ -22,6 +22,7 @@
 
 #include "calls.h"
 #include "gapstate.h"
+#include "code.h"
 #include "objects.h"
 
 
@@ -210,7 +211,7 @@ static inline Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc)
   // switch to new lvars
   STATE(CurrLVars) = new_lvars;
   STATE(PtrLVars) = (Obj *)hdr;
-  STATE(PtrBody) = (Stat *)ADDR_OBJ(BODY_FUNC(func));
+  SetCoderCurrentFunc(func);
 
   return old;
 }
@@ -232,7 +233,7 @@ static inline void SWITCH_TO_OLD_LVARS(Obj old)
     LVarsHeader * hdr = (LVarsHeader *)ADDR_OBJ(old);
     STATE(CurrLVars) = old;
     STATE(PtrLVars) = (Obj *)hdr;
-    STATE(PtrBody) = (Stat *)ADDR_OBJ(BODY_FUNC(hdr->func));
+    SetCoderCurrentFunc(hdr->func);
 }
 
 static inline void SWITCH_TO_OLD_LVARS_AND_FREE(Obj old)

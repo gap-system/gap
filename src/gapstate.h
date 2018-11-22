@@ -72,9 +72,6 @@ typedef struct GAPState {
     Obj  ReturnObjStat;
     UInt (**CurrExecStatFuncs)(Stat);
 
-    /* From code.c */
-    Stat * PtrBody;
-
     /* From opers.c */
 #if defined(HPCGAP)
     Obj   MethodCache;

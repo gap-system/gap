@@ -2731,7 +2731,7 @@ UInt ReadEvalFile(Obj *evalResult)
 */
 void            ReadEvalError ( void )
 {
-    STATE(PtrBody)  = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC()));
+    SetCoderCurrentFunc(CURR_FUNC());
     STATE(PtrLVars) = PTR_BAG(STATE(CurrLVars));
     syLongjmp( &(STATE(ReadJmpError)), 1 );
 }
