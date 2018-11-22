@@ -1446,18 +1446,8 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
 **
 *F  FuncCOPY_LIST_ENTRIES( <self>, <args> ) . . mass move of list entries
 **
+**  Argument names in the manual: fromlst, fromind, fromstep, tolst, toind, tostep, n
 */
-
-static inline Int GetIntObj( Obj list, UInt pos)
-{
-  Obj entry = ELM_PLIST(list, pos);
-  GAP_ASSERT(entry);
-  if (!IS_INTOBJ(entry)) {
-      ErrorMayQuit("COPY_LIST_ENTRIES: argument %d  must be a small integer, not a %s",
-                   (Int)pos, (Int)TNAM_OBJ(entry));
-  }
-  return INT_INTOBJ(entry);
-}
 
 Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
 {  
@@ -1476,37 +1466,33 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
 
   GAP_ASSERT(IS_PLIST(args));
   if (LEN_PLIST(args) != 7) {
-      ErrorMayQuit("COPY_LIST_ENTRIES: number of arguments must be 7, not %d",
-                   (Int)LEN_PLIST(args), 0L);
+      ErrorMayQuitNrArgs(7, LEN_PLIST(args));
   }
-  srclist = ELM_PLIST(args,1);
+  srclist = ELM_PLIST(args, 1);
   GAP_ASSERT(srclist != 0);
   if (!IS_PLIST(srclist))
-    {
-      ErrorMayQuit("COPY_LIST_ENTRIES: source must be a plain list not a %s",
-                   (Int)TNAM_OBJ(srclist), 0L);
-    }
+      RequireArgument("CopyListEntries", srclist, "fromlst",
+                      "must be a plain list");
 
-  srcstart = GetIntObj(args,2);
-  srcinc = GetIntObj(args,3);
+  srcstart = GetSmallInt("CopyListEntries", ELM_PLIST(args, 2), "fromind");
+  srcinc = GetSmallInt("CopyListEntries", ELM_PLIST(args, 3), "fromstep");
   dstlist = ELM_PLIST(args,4);
   GAP_ASSERT(dstlist != 0);
-  while (!IS_PLIST(dstlist) || !IS_MUTABLE_OBJ(dstlist))
-    {
-      ErrorMayQuit("COPY_LIST_ENTRIES: destination must be a mutable plain list not a %s",
-                   (Int)TNAM_OBJ(dstlist), 0L);
-    }
-  dststart = GetIntObj(args,5);
-  dstinc = GetIntObj(args,6);
-  number = GetIntObj(args,7);
-  
+  if (!IS_PLIST(dstlist) || !IS_MUTABLE_OBJ(dstlist))
+      RequireArgument("CopyListEntries", dstlist, "tolst",
+                      "must be a mutable plain list");
+  dststart = GetSmallInt("CopyListEntries", ELM_PLIST(args, 5), "toind");
+  dstinc = GetSmallInt("CopyListEntries", ELM_PLIST(args, 6), "tostep");
+  number = GetSmallInt("CopyListEntries", ELM_PLIST(args, 7), "n");
+
   if (number == 0)
     return (Obj) 0;
   
   if ( srcstart <= 0 || dststart <= 0 ||
        srcstart + (number-1)*srcinc <= 0 || dststart + (number-1)*dstinc <= 0)
     {
-      ErrorMayQuit("COPY_LIST_ENTRIES: list indices must be positive integers",0L,0L);
+      ErrorMayQuit("CopyListEntries: list indices must be positive integers",
+                   0, 0);
     }
 
   srcmax = (srcinc > 0) ? srcstart + (number-1)*srcinc : srcstart;
