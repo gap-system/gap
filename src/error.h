@@ -82,12 +82,20 @@ ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 
 /****************************************************************************
 **
-*F  RequireArgument
+*F  RequireArgument( <funcname>, <op>, <argname>, <msg>)
+**
+**  Raises an error via ErrorMayQuit with an error message of this form:
+**    funcname: <argname> msg (not a %s)
+**  Here, %s is replaced by a brief text which describes the type or content
+**  of <op>.
+**
+**  If funcname is 0, then 'funcname: ' is omitted from the message.
+**  If argname is 0, then '<argname> ' is omitted from the message.
 */
 extern Obj RequireArgument(const char * funcname,
                            Obj          op,
                            const char * argname,
-                           const char * msg);
+                           const char * msg) NORETURN;
 
 /****************************************************************************
 **
