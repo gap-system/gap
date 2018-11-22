@@ -841,7 +841,11 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
 
   /* Handle the soft limit */
   while (n > CyclotomicsLimit) {
-    ErrorReturnVoid("This computation requires a cyclotomic field of degree %d, larger than the current limit of %d", n, (Int)CyclotomicsLimit, "You may return after raising the limit with SetCyclotomicsLimit");
+      ErrorReturnVoid(
+          "This computation requires a cyclotomic field of degree %d, larger "
+          "than the current limit of %d",
+          n, (Int)CyclotomicsLimit,
+          "You may return after raising the limit with SetCyclotomicsLimit");
   }
   
   /* Finish up */
@@ -1682,11 +1686,12 @@ Obj FuncCONDUCTOR (
         n = 1;
         for ( i = 1; i <= LEN_LIST( list ); i++ ) {
             cyc = ELMV_LIST( list, i );
-            while ( !IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT && TNUM_OBJ(cyc) != T_CYC ) {
-                cyc = ErrorReturnObj(
+            if (!IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT &&
+                TNUM_OBJ(cyc) != T_CYC) {
+                // RequireArgument("Conductor", op, "argname", "msg");
+                ErrorMayQuit(
                     "Conductor: <list>[%d] must be a cyclotomic (not a %s)",
-                    (Int)i, (Int)TNAM_OBJ(cyc),
-                    "you can replace the list element with <cyc> via 'return <cyc>;'" );
+                    (Int)i, (Int)TNAM_OBJ(cyc));
             }
             if ( IS_INT(cyc) || TNUM_OBJ(cyc) == T_RAT ) {
                 m = 1;
