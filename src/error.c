@@ -33,12 +33,48 @@
 
 
 static Obj ErrorInner;
+static Obj ERROR_OUTPUT = NULL;
 
 
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * * error functions * * * * * * * * * * * * * * *
 */
+
+/****************************************************************************
+**
+*F  OpenErrorOutput()  . . . . . . . open the file or stream assigned to the
+**                                   ERROR_OUTPUT global variable defined in
+**                                   error.g, or "*errout*" otherwise
+*/
+UInt OpenErrorOutput( void )
+{
+    /* Try to print the output to stream. Use *errout* as a fallback. */
+    UInt ret = 0;
+
+    if (ERROR_OUTPUT != NULL) {
+        if (IsStringConv(ERROR_OUTPUT)) {
+            ret = OpenOutput(CONST_CSTR_STRING(ERROR_OUTPUT));
+        }
+        else {
+            ret = OpenOutputStream(ERROR_OUTPUT);
+        }
+    }
+
+    if (!ret) {
+        /* It may be we already tried and failed to open *errout* above but
+         * but this is an extreme case so it can't hurt to try again
+         * anyways */
+        if ((ret = OpenOutput("*errout*"))) {
+            Pr("failed to open error stream\n", 0, 0);
+        }
+        else {
+            Panic("failed to open *errout*");
+        }
+    }
+
+    return ret;
+}
 
 
 /****************************************************************************
@@ -581,6 +617,7 @@ static Int InitKernel(StructInitInfo * module)
     InitHdlrFuncsFromTable(GVarFuncs);
 
     ImportFuncFromLibrary("ErrorInner", &ErrorInner);
+    ImportGVarFromLibrary("ERROR_OUTPUT", &ERROR_OUTPUT);
 
     // return success
     return 0;
