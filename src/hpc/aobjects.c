@@ -920,25 +920,21 @@ static AtomicRecordPolicy GetARecordUpdatePolicy(Obj record)
 
 Obj ElmARecord(Obj record, UInt rnam)
 {
-  Obj result;
-  for (;;) {
-    result = GetARecordField(record, rnam);
-    if (result)
-      return result;
-    ErrorReturnVoid("Record: '<atomic record>.%g' must have an assigned value",
-      (UInt)NAME_RNAM(rnam), 0L,
-      "you can 'return;' after assigning a value" );
-  }
+    Obj result = GetARecordField(record, rnam);
+    if (!result)
+        ErrorMayQuit(
+            "Record: '<atomic record>.%g' must have an assigned value",
+            (UInt)NAME_RNAM(rnam), 0);
+    return result;
 }
 
 void AssARecord(Obj record, UInt rnam, Obj value)
 {
-   Obj result = SetARecordField(record, rnam, value);
-   if (!result)
-     ErrorReturnVoid("Record: '<atomic record>.%g' already has an assigned value",
-       (UInt)NAME_RNAM(rnam), 0L,
-       "you can 'return';");
-
+    Obj result = SetARecordField(record, rnam, value);
+    if (!result)
+        ErrorMayQuit(
+            "Record: '<atomic record>.%g' already has an assigned value",
+            (UInt)NAME_RNAM(rnam), 0);
 }
 
 void UnbARecord(Obj record, UInt rnam) {
@@ -1042,15 +1038,12 @@ Obj GetTLRecordField(Obj record, UInt rnam)
 
 Obj ElmTLRecord(Obj record, UInt rnam)
 {
-  Obj result;
-  for (;;) {
-    result = GetTLRecordField(record, rnam);
-    if (result)
-      return result;
-    ErrorReturnVoid("Record: '<thread-local record>.%g' must have an assigned value",
-      (UInt)NAME_RNAM(rnam), 0L,
-      "you can 'return;' after assigning a value" );
-  }
+    Obj result = GetTLRecordField(record, rnam);
+    if (!result)
+        ErrorMayQuit(
+            "Record: '<thread-local record>.%g' must have an assigned value",
+            (UInt)NAME_RNAM(rnam), 0);
+    return result;
 }
 
 void AssTLRecord(Obj record, UInt rnam, Obj value)
@@ -1292,17 +1285,16 @@ Obj ElmAList(Obj list, Int pos)
     } while (!IS_INTOBJ(posobj));
     pos = INT_INTOBJ(posobj);
   }
-  for (;;) {
-    result = addr[1+pos].obj;
-    if (result) {
-      MEMBAR_READ();
-      return result;
-    }
-    ErrorReturnVoid(
-        "Atomic List Element: <list>[%d] must have an assigned value",
-        (Int)pos, 0L,
-        "you can 'return;' after assigning a value" );
   }
+
+  result = addr[1 + pos].obj;
+  if (!result)
+      ErrorMayQuit(
+          "Atomic List Element: <list>[%d] must have an assigned value",
+          (Int)pos, 0);
+
+  MEMBAR_READ();
+  return result;
 }
 
 Int IsbAList(Obj list, Int pos) {

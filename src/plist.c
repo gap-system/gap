@@ -1160,11 +1160,8 @@ Obj             ElmPlist (
 
     /* check the position                                                  */
     if ( LEN_PLIST( list ) < pos ) {
-        ErrorReturnVoid(
-            "List Element: <list>[%d] must have an assigned value",
-            (Int)pos, 0L,
-            "you can 'return;' after assigning a value" );
-        return ELM_LIST( list, pos );
+        ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
+                     (Int)pos, 0);
     }
 
     /* select the element                                                  */
@@ -1172,11 +1169,8 @@ Obj             ElmPlist (
 
     /* check the element                                                   */
     if ( elm == 0 ) {
-        ErrorReturnVoid(
-            "List Element: <list>[%d] must have an assigned value",
-            (Int)pos, 0L,
-            "you can 'return;' after assigning a value" );
-        return ELM_LIST( list, pos );
+        ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
+                     (Int)pos, 0);
     }
 
     /* return the element                                                  */
@@ -1191,11 +1185,8 @@ Obj             ElmPlistDense (
 
     /* check the position                                                  */
     if ( LEN_PLIST( list ) < pos ) {
-        ErrorReturnVoid(
-            "List Element: <list>[%d] must have an assigned value",
-            (Int)pos, 0L,
-            "you can 'return;' after assigning a value" );
-        return ELM_LIST( list, pos );
+        ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
+                     (Int)pos, 0);
     }
 
     /* select the element                                                  */
@@ -1216,11 +1207,8 @@ Obj             ElmvPlist (
 
     /* check the element                                                   */
     if ( elm == 0 ) {
-        ErrorReturnVoid(
-            "List Element: <list>[%d] must have an assigned value",
-            (Int)pos, 0L,
-            "you can 'return;' after assigning a value" );
-        return ELM_LIST( list, pos );
+        ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
+                     (Int)pos, 0);
     }
 
     /* return the element                                                  */
@@ -1291,21 +1279,17 @@ Obj             ElmsPlist (
             /* get <position>                                              */
             pos = INT_INTOBJ( ELMW_LIST( poss, i ) );
             if ( lenList < pos ) {
-                ErrorReturnVoid(
+                ErrorMayQuit(
                     "List Elements: <list>[%d] must have an assigned value",
-                    (Int)pos, 0L,
-                    "you can 'return;' after assigning a value" );
-                return ELMS_LIST( list, poss );
+                    (Int)pos, 0);
             }
 
             /* select the element                                          */
             elm = ELM_PLIST( list, pos );
             if ( elm == 0 ) {
-                ErrorReturnVoid(
+                ErrorMayQuit(
                     "List Elements: <list>[%d] must have an assigned value",
-                    (Int)pos, 0L,
-                    "you can 'return;' after assigning a value" );
-                return ELMS_LIST( list, poss );
+                    (Int)pos, 0);
             }
 
             /* assign the element into <elms>                              */
@@ -1331,18 +1315,14 @@ Obj             ElmsPlist (
 
         /* check that no <position> is larger than 'LEN_LIST(<list>)'      */
         if ( lenList < pos ) {
-            ErrorReturnVoid(
+            ErrorMayQuit(
                 "List Elements: <list>[%d] must have an assigned value",
-                (Int)pos, 0L,
-                "you can 'return;' after assigning a value" );
-            return ELMS_LIST( list, poss );
+                (Int)pos, 0);
         }
         if ( lenList < pos + (lenPoss-1) * inc ) {
-            ErrorReturnVoid(
+            ErrorMayQuit(
                 "List Elements: <list>[%d] must have an assigned value",
-                (Int)pos + (lenPoss-1) * inc, 0L,
-                "you can 'return;' after assigning a value" );
-            return ELMS_LIST( list, poss );
+                (Int)pos + (lenPoss - 1) * inc, 0);
         }
 
         /* make the result list                                            */
@@ -1355,11 +1335,9 @@ Obj             ElmsPlist (
             /* select the element                                          */
             elm = ELM_PLIST( list, pos );
             if ( elm == 0 ) {
-                ErrorReturnVoid(
+                ErrorMayQuit(
                     "List Elements: <list>[%d] must have an assigned value",
-                    (Int)pos, 0L,
-                    "you can 'return;' after assigning a value" );
-                return ELMS_LIST( list, poss );
+                    (Int)pos, 0);
             }
 
             /* assign the element to <elms>                                */
@@ -1445,11 +1423,9 @@ Obj             ElmsPlistDense (
 
             /* select the element                                          */
             if ( lenList < pos ) {
-                ErrorReturnVoid(
+                ErrorMayQuit(
                     "List Elements: <list>[%d] must have an assigned value",
-                    (Int)pos, 0L,
-                    "you can 'return;' after assigning a value" );
-                return ELMS_LIST( list, poss );
+                    (Int)pos, 0);
             }
 
             /* select the element                                          */
@@ -1478,18 +1454,14 @@ Obj             ElmsPlistDense (
 
         /* check that no <position> is larger than 'LEN_LIST(<list>)'      */
         if ( pos < 1 || lenList < pos ) {
-            ErrorReturnVoid(
+            ErrorMayQuit(
                 "List Elements: <list>[%d] must have an assigned value",
-                (Int)pos, 0L,
-                "you can 'return;' after assigning a value" );
-            return ELMS_LIST( list, poss );
+                (Int)pos, 0);
         }
         if ( pos+(lenPoss-1) * inc < 1 || lenList < pos+(lenPoss-1) * inc ) {
-            ErrorReturnVoid(
+            ErrorMayQuit(
                 "List Elements: <list>[%d] must have an assigned value",
-                (Int)pos + (lenPoss-1) * inc, 0L,
-                "you can 'return;' after assigning a value" );
-            return ELMS_LIST( list, poss );
+                (Int)pos + (lenPoss - 1) * inc, 0);
         }
 
         /* make the result list                                            */

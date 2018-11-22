@@ -303,11 +303,8 @@ Obj             ElmRange (
 {
     /* check the position                                                  */
     if ( GET_LEN_RANGE( list ) < pos ) {
-        ErrorReturnVoid(
-            "List Element: <list>[%d] must have an assigned value",
-            (Int)pos, 0L,
-            "you can 'return;' after assigning a value" );
-        return ELM_LIST( list, pos );
+        ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
+                     (Int)pos, 0);
     }
 
     /* return the selected element                                         */
@@ -375,11 +372,9 @@ Obj             ElmsRange (
 
             /* select the element                                          */
             if ( lenList < pos ) {
-                ErrorReturnVoid(
+                ErrorMayQuit(
                     "List Elements: <list>[%d] must have an assigned value",
-                    (Int)pos, 0L,
-                    "you can 'return;' after assigning a value" );
-                return ELMS_LIST( list, poss );
+                    (Int)pos, 0);
             }
 
             /* select the element                                          */
@@ -405,18 +400,14 @@ Obj             ElmsRange (
 
         /* check that no <position> is larger than 'LEN_LIST(<list>)'      */
         if ( lenList < pos ) {
-            ErrorReturnVoid(
+            ErrorMayQuit(
                 "List Elements: <list>[%d] must have an assigned value",
-                (Int)pos, 0L,
-                "you can 'return;' after assigning a value" );
-            return ELMS_LIST( list, poss );
+                (Int)pos, 0);
         }
         if ( lenList < pos + (lenPoss-1) * inc ) {
-            ErrorReturnVoid(
+            ErrorMayQuit(
                 "List Elements: <list>[%d] must have an assigned value",
-                (Int)(pos + (lenPoss-1) * inc), 0L,
-                "you can 'return;' after assigning a value" );
-            return ELMS_LIST( list, poss );
+                (Int)(pos + (lenPoss - 1) * inc), 0);
         }
 
         /* make the result range                                           */

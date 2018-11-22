@@ -382,11 +382,8 @@ Obj ElmBlist (
 
     /* check the position                                                  */
     if ( LEN_BLIST( list ) < pos ) {
-        ErrorReturnVoid(
-            "List Element: <list>[%d] must have an assigned value",
-            pos, 0L,
-            "you can assign a value and 'return;'" );
-        return ELM_LIST( list, pos );
+        ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
+                     pos, 0);
     }
 
     /* select and return the element                                       */
@@ -496,18 +493,14 @@ Obj ElmsBlist (
 
         /* check that no <position> is larger than 'LEN_LIST(<list>)'      */
         if ( lenList < pos ) {
-            ErrorReturnVoid(
-                "List Elements: <list>[%d] must have an assigned value",
-                pos, 0L,
-                "you can assign a value and 'return;'" );
-            return ELMS_LIST( list, poss );
+            ErrorMayQuit(
+                "List Elements: <list>[%d] must have an assigned value", pos,
+                0);
         }
         if ( lenList < pos + (lenPoss-1) * inc ) {
-            ErrorReturnVoid(
+            ErrorMayQuit(
                 "List Elements: <list>[%d] must have an assigned value",
-                pos+(lenPoss-1)*inc, 0L,
-                "you can assign a value and 'return;'" );
-            return ELMS_LIST( list, poss );
+                pos + (lenPoss - 1) * inc, 0);
         }
 
         /* make the result list                                            */
