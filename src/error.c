@@ -65,7 +65,8 @@ UInt OpenErrorOutput( void )
         /* It may be we already tried and failed to open *errout* above but
          * but this is an extreme case so it can't hurt to try again
          * anyways */
-        if ((ret = OpenOutput("*errout*"))) {
+        ret = OpenOutput("*errout*");
+        if (ret) {
             Pr("failed to open error stream\n", 0, 0);
         }
         else {
