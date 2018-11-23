@@ -787,19 +787,16 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
             }
             ErrorQuit("%s: cannot open '%g' for output", (Int)funcname,
                       (Int)destination);
-            return 0;
         }
     }
     else {
         if (CALL_1ARGS(IsOutputStream, destination) != True) {
             ErrorQuit("%s: <outstream> must be an output stream",
                       (Int)funcname, 0L);
-            return 0;
         }
         i = OpenOutputStream(destination);
         if (!i) {
             ErrorQuit("%s: cannot open stream for output", (Int)funcname, 0L);
-            return 0;
         }
     }
 
@@ -836,7 +833,6 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
     /* close the output file again, and return nothing                     */
     if ( ! CloseOutput() ) {
         ErrorQuit( "%s: cannot close output", (Int)funcname, 0L );
-        return 0;
     }
 
     return 0;
