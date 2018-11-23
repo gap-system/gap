@@ -34,6 +34,7 @@
 
 static Obj ErrorInner;
 static Obj ERROR_OUTPUT = NULL;
+static Obj IsOutputStream;
 
 
 /****************************************************************************
@@ -57,7 +58,9 @@ UInt OpenErrorOutput( void )
             ret = OpenOutput(CONST_CSTR_STRING(ERROR_OUTPUT));
         }
         else {
-            ret = OpenOutputStream(ERROR_OUTPUT);
+            if (CALL_1ARGS(IsOutputStream, ERROR_OUTPUT) == True) {
+                ret = OpenOutputStream(ERROR_OUTPUT);
+            }
         }
     }
 
@@ -618,6 +621,7 @@ static Int InitKernel(StructInitInfo * module)
     InitHdlrFuncsFromTable(GVarFuncs);
 
     ImportFuncFromLibrary("ErrorInner", &ErrorInner);
+    ImportFuncFromLibrary("IsOutputStream", &IsOutputStream);
     ImportGVarFromLibrary("ERROR_OUTPUT", &ERROR_OUTPUT);
 
     // return success
