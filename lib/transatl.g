@@ -5,7 +5,7 @@
 ##
 #Y  Copyright (C) 2005 The GAP Group
 ##
-##  This file contains synonym declarations for function sthat are spelled
+##  This file contains synonym declarations for functions that are spelled
 ##  differently on different sides of the Atlantic, such as
 ##  `Stabilizer/Stabiliser' and `Solvable/Soluble'.
 ##
