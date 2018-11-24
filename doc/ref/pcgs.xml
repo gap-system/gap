@@ -186,7 +186,7 @@ these exponents can be looked up and do not need to be computed.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Subgroups of Polycyclic Groups - Induced Pcgs">
-<Heading>Subgroups of Polycyclic Groups - Induced Pcgs</Heading>
+<Heading>Subgroups of Polycyclic Groups &ndash; Induced Pcgs</Heading>
 
 Let <A>U</A> be a subgroup of <A>G</A> and let <A>P</A> be a pcgs of <A>G</A> as above such
 that <A>P</A> determines the subnormal series

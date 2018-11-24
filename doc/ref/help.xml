@@ -292,7 +292,7 @@ in your <F>gap.ini</F> file (see&nbsp;<Ref Sect="sect:gap.ini"/>).
 <Mark><C>"less"</C> or <C>"more"</C></Mark>
 <Item>
   This is the same as <C>"screen"</C> but additionally the user preferences
-  <C>"Pager"</C> and <C>""PagerOptions"</C> are set,
+  <C>"Pager"</C> and <C>"PagerOptions"</C> are set,
   see the section&nbsp;<Ref Sect="The Pager Command"/> for more details.
 </Item>
 </List>
