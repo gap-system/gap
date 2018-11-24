@@ -86,14 +86,14 @@ For documentation on ideals for magmas, see <Ref Func="Magma"/>.
 </Section>
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Congruences for semigroups">
-<Heading>Congruences for semigroups</Heading>
+<Section Label="Congruences on semigroups">
+<Heading>Congruences on semigroups</Heading>
 
 An equivalence or a congruence on a semigroup is the
 equivalence or congruence on the semigroup considered as a magma.
 So, to deal with equivalences and congruences on semigroups,
 magma functions are used.
-For documentation on equivalences and congruences for magmas,
+For documentation on equivalences and congruences on magmas,
 see <Ref Func="Magma"/>.
 
 <#Include Label="IsSemigroupCongruence">

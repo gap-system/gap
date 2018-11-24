@@ -42,16 +42,18 @@
     for the core part of the &GAP; system by the &GAP; Group.
     <P/>
     Most parts of this distribution, including the core part of the &GAP; 
-    system are distributed under the terms of the GNU General Public License, 
-    see <URL>http://www.gnu.org/licenses/gpl.html</URL> or the file 
-    <F>GPL</F> in the <F>etc</F> directory of the &GAP; 
+    system are distributed under the terms of the GNU General Public License
+    Version 2,
+    see <URL>http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</URL> or the
+    <F>LICENSE</F> file in the root directory of the &GAP;
     installation.
     <P/>
     More detailed information about copyright and licenses of parts of this
     distribution can be found in Section 
     <Ref Sect="Copyright and License"/> of this manual.
     <P/>
-    &GAP; is developed over a long time and has many authors and contributors.
+    &GAP; has been developed over a long time and has many authors and
+    contributors.
     More detailed information can be found in Section
     <Ref Sect="Authors and Maintainers"/> of this manual.
   </Copyright>

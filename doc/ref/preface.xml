@@ -16,27 +16,29 @@
 
 Welcome to &GAP;. 
 This is one of three manuals documenting the core part of &GAP;, 
-the other being the <E>&GAP; Tutorial</E>
-<Alt Only="HTML">(see <Ref BookName="tut" Label="Preface"/>)</Alt>.
-and the document called <E><Q>&GAP; - Changes from Earlier Versions</Q></E>
-<Alt Only="HTML">(see <Ref BookName="Changes" Label="Preface"/>)</Alt>.
+the others being the <E>&GAP; Tutorial</E>
+<Alt Only="HTML">(see <Ref BookName="tut" Label="Preface"/>)</Alt>
+and the document called
+<E><Q>&GAP; - Changes from Earlier Versions</Q></E><Alt Only="HTML"> (see
+<Ref BookName="Changes" Label="Preface"/>)</Alt>.
 <P/>
 This preface serves not only to introduce <Q>The &GAP; Reference Manual</Q>, 
 but also as an introduction to the whole system.
 <P/>
 &GAP; stands  for  <E>Groups, Algorithms  and Programming</E>.  The  name was
-chosen to reflect  the aim of  the  system, which  is introduced in  this
+chosen to reflect the original aim of the  system, which  is introduced in  this
 reference manual.  Since  that  choice,  the  system has become   somewhat
 broader,    and  you will  also   find information   about algorithms and
 programming  for other   algebraic structures,   such as semigroups   and
 algebras.
 <P/>
-This manual, the <E>&GAP; reference manual</E> contains the official definitions
+This manual, the <E>&GAP; Reference Manual</E> contains the official definitions
 of &GAP; functions. It should contain all the information needed to 
 use &GAP;, and is not intended to be read cover-to-cover.
 <P/>
-To get started a new user may first look at parts of the <E>&GAP; Tutorial</E> 
-<Alt Only="HTML">(see <Ref BookName="tut" Label="Preface"/>)</Alt>. 
+To get started a new user may first look at parts of the
+<E>&GAP; Tutorial</E><Alt Only="HTML"> (see
+<Ref BookName="tut" Label="Preface"/>)</Alt>. 
 <P/>
 A lot of the functionality of the system and a number of
 contributed extensions are provided as <Q>&GAP; packages</Q>
@@ -72,10 +74,9 @@ provide copyright and licensing information.
 &GAP; is the work of very many people, many of whom still maintain
 parts of the system. A complete list of authors, and an approximation
 to the current list of maintainers can be found on the &GAP;
-World Wide Web site at
+website at
  <URL>https://www.gap-system.org/Contacts/People/authors.html</URL> and 
  <URL>https://www.gap-system.org/Contacts/People/modules.html</URL>.
-
 
 All &GAP; packages have their
 own authors and maintainers. It should however be noted that some
@@ -94,12 +95,13 @@ a refereeing system for modules, and we would note, in particular
 that, although it does not use the standard package interface, the
 library of small groups has been refereed and accepted on exactly the
 same basis as the accepted  packages.
+<!-- TODO update the previous paragraph -->
 <P/>
 We also include with this distribution a
 number of packages which have not (yet) gone through our refereeing
 process. Some may be accepted in the future, in other cases the
 authors have chosen not to submit them.  More information can be found
-on our World Wide Web site 
+on our website 
 (see Section <Ref Sect="Further Information about GAP"/>).
 <P/>
 
@@ -112,7 +114,7 @@ on our World Wide Web site
 		 <Heading>Acknowledgements</Heading>
 
 Very many people have worked on, and contributed to, &GAP; over the
-years since its inception. On our Web site you will find the prefaces
+years since its inception. On our website you will find the prefaces
 to the previous releases, each of which acknowledges people who have
 made special contributions to that release. Even so, it is appropriate
 to mention here Joachim Neubüser whose vision of a free,

@@ -17,14 +17,14 @@ is <E>free of charge</E> (except possibly for the immediate costs of delivering
 it to you), you are <E>free to pass it on</E> within certain limits, and 
 all of the workings of the system are <E>open for you to examine and change</E>.
 Details of these conditions can be found in Section 
-<Ref Chap="Copyright and License" BookName="ref"/>.
+<Ref Sect="Copyright and License" BookName="ref"/>.
 <P/>
 The system is <Q>extensible</Q> in that you can write your own  programs  in
 the &GAP; language, and use them in just the same way  as  the  programs
 which form part of the system  (the  <Q>library</Q>).  Indeed,  we  actively
 support the contribution, refereeing and distribution  of  extensions  to
 the system, in the form of <Q>&GAP; packages</Q>.  Further details of  this
-can be found in chapter <Ref BookName="ref" Chap="Using and Developing GAP Packages"/>,
+can be found in Chapter <Ref BookName="ref" Chap="Using and Developing GAP Packages"/>,
 and on our website.
 <P/>
 Development of &GAP; began at Lehrstuhl D für Mathematik,
@@ -40,8 +40,9 @@ A sign of the further internationalization of the project was the
 Colorado State University, Fort Collins.
 <P/>
 More information on the motivation and development of &GAP; to date,
-can be found on our Web pages in a section entitled <Q>Release history
-and Prefaces</Q>.
+can be found on our website in a section entitled
+<Q>Some History of &GAP;</Q>:
+<URL>https://www.gap-system.org/Doc/History/history.html</URL>.
 <P/>
 For those readers who have used an earlier version of &GAP;, an
 overview of the changes from &GAP;&nbsp;4.4 and a brief 
@@ -56,7 +57,7 @@ a number of packages. The core system consists of four main parts.
     <List>
     <Item>
       automatic dynamic storage management, which the user needn't bother
-      about in his programming;
+      about when programming;
     </Item>
     <Item>
       a   set of  time-critical basic   functions, e.g.   <Q>arithmetic</Q>,
@@ -90,11 +91,12 @@ A much larger <E>library of &GAP; functions</E> that
   implement algebraic and other algorithms.  Since this is written
   entirely in the &GAP; language, the &GAP; language is both the
   main implementation language and the user language of the system.
-  Therefore the user can as easily as the original programmers
+  Therefore a user can, as easily as the original programmers,
   investigate and vary algorithms of the library and add new ones to
-  it, first for own use and eventually for the benefit of all &GAP;
+  it, first for their own use and eventually for the benefit of all &GAP;
   users.
 </Item>
+<!-- Is the following point now out of date? -->
 <Item>
 A <E>library of group theoretical data</E> which contains
   various libraries of groups, including the library of small groups
@@ -128,6 +130,7 @@ recent versions ready for release at this time, new packages and new
 versions may be released at any time and can be easily installed in
 your copy of &GAP;.
 <P/>
+<!-- TODO update this paragraph -->
 With &GAP; there are two packages (the library of ordinary and
 Brauer character tables, and the library of tables of marks) which
 contain functionality developed from parts of the &GAP; core
