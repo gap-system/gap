@@ -291,7 +291,7 @@ For example, the category test function for partial permutations is
       consists of integers.  <P/>
       
       This function is the analogue in the context of
-      partial permutations of <Ref Func="Permutation" BookName="ref" 
+      partial permutations of <Ref Func="Permutation"
         Label="for a group, an action domain, etc."/> or 
       <Ref Func="TransformationOp"/>.<P/>
       
@@ -965,7 +965,7 @@ gap> LeftOne(f);
   <Meth Name="One" Arg="f" Label="for a partial perm"/>
   <Returns>A partial permutation.</Returns>
   <Description>
-    As described in <Ref Attr="OneImmutable" BookName="ref"/>,
+    As described in <Ref Attr="OneImmutable"/>,
     <C>One</C> returns the multiplicative neutral element of the partial
     permutation <A>f</A>, which is the identity partial permutation on the
     union of the domain and image of <A>f</A>. Equivalently, the one of
@@ -983,7 +983,7 @@ gap> One(f);
   <Meth Name="MultiplicativeZero" Arg="f" Label="for a partial perm"/>
   <Returns>The empty partial permutation.</Returns>
   <Description>
-    As described in <Ref Attr="MultiplicativeZero" BookName="ref"/>,
+    As described in <Ref Attr="MultiplicativeZero"/>,
     <C>Zero</C> returns the multiplicative zero element of the partial
     permutation <A>f</A>, which is the empty partial permutation. 
     <Example>
@@ -1692,7 +1692,7 @@ false]]></Example>
        <Mark>Partial permutation semigroups</Mark>
        <Item>
          If <A>S</A> is a partial permutation semigroup that does not satisfy
-         <Ref Prop="IsMonoid" BookName="ref"/> but where
+         <Ref Func="IsMonoid"/> but where
          <C>MultiplicativeNeutralElement(<A>S</A>)&lt;>fail</C>, then
          <C>IsomorphismPartialPermMonoid(<A>S</A>)</C> returns an isomorphism
          from <A>S</A> to an inverse monoid of partial permutations.

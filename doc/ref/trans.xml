@@ -313,7 +313,7 @@ Transformation( [ 2, 4, 2, 6, 6, 7, 8, 2, 10, 10, 11, 8 ] )
       <P/>
       
       This function is the analogue in the context of transformations of 
-      <Ref Func="Permutation" BookName="ref" 
+      <Ref Func="Permutation"
         Label = "for a group, an action domain, etc."/>.
       <P/>
       
@@ -609,7 +609,7 @@ gap> PermutationOfImage( f );
       </Index>
       returns <C><A>g</A> ^ -1 * <A>f</A> * <A>g</A></C> when
       <A>f</A> is a transformation and <A>g</A> is a permutation
-      <Ref Oper="\^" BookName="ref"/>.  
+      <Ref Oper="\^"/>.  
       This operation requires essentially the same number of steps as
       multiplying a transformation by a permutation, which is
       approximately one third of the number required to first invert
