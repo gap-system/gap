@@ -28,7 +28,9 @@ local d, prop;
 
   # test/set a few properties and attributes from factors
 
-  for prop in [IsFinite, IsNilpotentGroup, IsAbelian, IsSolvableGroup] do
+  for prop in [IsFinite, IsNilpotentGroup, IsAbelian, IsSolvableGroup, IsBand,
+               IsInverseSemigroup, IsRegularSemigroup, IsIdempotentGenerated,
+               IsLeftZeroSemigroup, IsRightZeroSemigroup, IsZeroSemigroup] do
     if ForAll(arg, Tester(prop)) then
       Setter(prop)(d, ForAll(arg, prop));
     fi;
