@@ -395,7 +395,7 @@ gap> GeneratorsOfInverseMonoid(S);
 gap> S := FreeSemigroup(2);
 <free semigroup on the generators [ s1, s2 ]>
 gap> T := Subsemigroup(S, []);
-<semigroup of size 0, with 0 generators>
+<empty semigroup>
 gap> IsTrivial(T);
 false
 gap> IsEmpty(T);
@@ -500,6 +500,14 @@ gap> DisplaySemigroup(S);
 Rank 2:  [H size = 1, 1 L-class, 1 R-class]
 Rank 2:  [H size = 1, 1 L-class, 1 R-class]
 Rank 1: *[H size = 1, 1 L-class, 1 R-class]
+
+# test printing an empty semigroup
+gap> S := FullTransformationMonoid(1);;
+gap> Subsemigroup(S, []);
+<empty transformation semigroup>
+gap> S := SymmetricInverseMonoid(1);;
+gap> Subsemigroup(S, []);
+<empty partial perm semigroup>
 
 #
 gap> STOP_TEST( "semigrp.tst", 1);

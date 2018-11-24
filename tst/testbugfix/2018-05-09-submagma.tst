@@ -40,7 +40,7 @@ false
 
 #
 gap> sub:=Submagma(mgm,[]);
-<commutative semigroup with 0 generators>
+<empty semigroup>
 gap> Size(sub);
 0
 gap> IsTrivial(sub);
