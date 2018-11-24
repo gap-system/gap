@@ -1257,5 +1257,14 @@ InstallMethod( AsSubmagma,
 
 #############################################################################
 ##
+#M  IsEmpty( <M> )  . . . . . . . . . . . . . . test whether a magma is empty
+##
+InstallMethod(IsEmpty, "for a magma with generators of magma",
+[IsMagma and HasGeneratorsOfMagma],
+M -> IsEmpty(GeneratorsOfMagma(M)));
+
+
+#############################################################################
+##
 #E
 

@@ -10,7 +10,7 @@ true
 gap> Size(t);
 infinity
 gap> t := Subsemigroup(s, []);
-<semigroup of size 0, with 0 generators>
+<empty semigroup>
 gap> HasSize(t);
 true
 gap> Size(t);

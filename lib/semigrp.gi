@@ -38,7 +38,9 @@ function(S)
 
   str := "\><";
 
-  if HasIsTrivial(S) and IsTrivial(S) then
+  if IsEmpty(S) then
+    Append(str, "\>empty\< ");
+  elif HasIsTrivial(S) and IsTrivial(S) then
     Append(str, "\>trivial\< ");
   else
     if HasIsFinite(S) and not IsFinite(S) then
@@ -49,7 +51,7 @@ function(S)
     fi;
   fi;
 
-  if not IsGroup(S) then
+  if not IsGroup(S) and not IsEmpty(S) then
     if HasIsTrivial(S) and IsTrivial(S) then
       # do nothing
     elif HasIsZeroSimpleSemigroup(S) and IsZeroSimpleSemigroup(S) then
@@ -72,7 +74,10 @@ function(S)
 
   Append(str, SemigroupViewStringPrefix(S));
 
-  if HasIsMonoid(S) and IsMonoid(S) then
+  if IsEmpty(S) then
+    Append(str, "\>semigroup\<>\<");
+    return str;
+  elif HasIsMonoid(S) and IsMonoid(S) then
     Append(str, "\>monoid\< ");
     if HasGeneratorsOfInverseMonoid(S) then
       nrgens := Length(GeneratorsOfInverseMonoid(S));
@@ -108,9 +113,7 @@ function(S)
   if nrgens > 1 or nrgens = 0 then
     Append(str, "s");
   fi;
-  Append(str, "\<");
-
-  Append(str, ">\<");
+  Append(str, "\<>\<");
 
   return str;
 end);
