@@ -106,16 +106,6 @@ InstallMethod( DimensionOfMatrixGroup, "from one",
 #T why not delegate to `Representative' instead of installing
 #T different methods?
 
-#############################################################################
-##
-#M  One( <mat-grp> )
-##
-InstallOtherMethod( One,
-    "for matrix group, call `IdentityMat'",
-    [ IsMatrixGroup ],
-    grp -> ImmutableMatrix(DefaultFieldOfMatrixGroup(grp),
-             IdentityMat( DimensionOfMatrixGroup( grp ),
-	     DefaultFieldOfMatrixGroup( grp ) ) ));
 
 #############################################################################
 ##
