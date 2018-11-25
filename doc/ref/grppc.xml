@@ -121,8 +121,8 @@ chapter&nbsp;<Ref Chap="Polycyclic Groups"/>.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="The family pcgs">
-<Heading>The family pcgs</Heading>
+<Section Label="The Family Pcgs">
+<Heading>The Family Pcgs</Heading>
 
 Clearly, the generators of a power-conjugate presentation of
 a pc group <M>G</M> form a pcgs of the pc group. This pcgs is called
@@ -137,8 +137,8 @@ the <E>family pcgs</E>.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Elements of Pc groups">
-<Heading>Elements of Pc groups</Heading>
+<Section Label="Elements of Pc Groups">
+<Heading>Elements of Pc Groups</Heading>
 
 <ManSection>
 <Heading>Comparison of elements of pc groups</Heading>
@@ -188,8 +188,8 @@ f2^2*f3*f4
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Pc groups versus fp groups">
-<Heading>Pc groups versus fp groups</Heading>
+<Section Label="Pc Groups versus Fp Groups">
+<Heading>Pc Groups versus Fp Groups</Heading>
 
 In theory pc groups are finitely presented groups.  In practice the
 arithmetic in pc groups is different from the arithmetic in fp
