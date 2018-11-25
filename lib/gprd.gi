@@ -31,8 +31,10 @@ local d, prop;
   for prop in [IsFinite, IsNilpotentGroup, IsAbelian, IsSolvableGroup, IsBand,
                IsInverseSemigroup, IsRegularSemigroup, IsIdempotentGenerated,
                IsLeftZeroSemigroup, IsRightZeroSemigroup, IsZeroSemigroup] do
-    if ForAll(arg, Tester(prop)) then
-      Setter(prop)(d, ForAll(arg, prop));
+    if ForAny(arg, x -> Tester(prop)(x) and not prop(x)) then
+      Setter(prop)(d, false);
+    elif ForAll(arg, x -> Tester(prop)(x) and prop(x)) then
+      Setter(prop)(d, true);
     fi;
   od;
     
