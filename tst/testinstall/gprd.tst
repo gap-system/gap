@@ -47,6 +47,10 @@ true
 gap> d3 := DirectProduct(g2, g2);;
 gap> HasIsFinite(d3) and not IsFinite(d3);
 true
+gap> g3 := SymmetricGroup(5);;
+gap> d4 := DirectProduct(g1, g2, g3);;
+gap> HasIsFinite(d4) and not IsFinite(d4);
+true
 
 #
 gap> STOP_TEST("gprd.tst");
