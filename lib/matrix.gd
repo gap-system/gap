@@ -2105,8 +2105,8 @@ DeclareGlobalFunction( "SimplexMethod" );
 ##
 ##  <Description>
 ##  <Index>Frobenius Normal Form</Index>
-##  For a matrix <A>A</A> return a matrix <A>P</A> such that
-##  <M><A>A</A>^<A>P</A></M> is in rational canonical form (also called
+##  For a matrix <C>A</C>, return a matrix <C>P</C> such that
+##  <M>A^{P}</M> is in rational canonical form (also called
 ##  Frobenius normal form). The algorithm used is the basic textbook
 ##  version and thus not of optimal complexity.
 ##  <Example><![CDATA[
