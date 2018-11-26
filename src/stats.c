@@ -41,20 +41,38 @@
 
 #include <assert.h>
 
+struct StatsState {
+/****************************************************************************
+**
+*V  ReturnObjStat . . . . . . . . . . . . . . . .  result of return-statement
+**
+**  'ReturnObjStat'  is   the result of the   return-statement  that was last
+**  executed.  It is set  in  'ExecReturnObj' and  used in the  handlers that
+**  interpret functions.
+*/
+Obj ReturnObjStat;
+UInt (**CurrExecStatFuncs)(Stat);
+};
+
+static ModuleStateOffset StatsStateOffset = -1;
+extern inline struct StatsState * StatsState(void)
+{
+    return (struct StatsState *)StateSlotsAtOffset(StatsStateOffset);
+}
 
 inline UInt EXEC_STAT(Stat stat)
 {
     UInt tnum = TNUM_STAT(stat);
     SET_BRK_CALL_TO(stat);
-    return (*STATE(CurrExecStatFuncs)[ tnum ]) ( stat );
+    return (*StatsState()->CurrExecStatFuncs[ tnum ]) ( stat );
 }
 
 inline Obj EXEC_STAT_RETURN_OBJ(Stat stat)
 {
     Obj result;
     EXEC_STAT(stat);
-    result = STATE(ReturnObjStat);
-    STATE(ReturnObjStat) = 0L;
+    result = StatsState()->ReturnObjStat;
+    StatsState()->ReturnObjStat = 0L;
     return result;
 }
 
@@ -78,17 +96,6 @@ inline Obj EXEC_STAT_RETURN_OBJ(Stat stat)
 **  executed.
 */
 UInt            (* ExecStatFuncs[256]) ( Stat stat );
-
-
-/****************************************************************************
-**
-*V  ReturnObjStat . . . . . . . . . . . . . . . .  result of return-statement
-**
-**  'ReturnObjStat'  is   the result of the   return-statement  that was last
-**  executed.  It is set  in  'ExecReturnObj' and  used in the  handlers that
-**  interpret functions.
-*/
-/* TL: Obj             ReturnObjStat; */
 
 
 /****************************************************************************
@@ -117,7 +124,7 @@ UInt            ExecUnknownStat (
 #ifdef HPCGAP
 UInt HaveInterrupt(void)
 {
-    return STATE(CurrExecStatFuncs) == IntrExecStatFuncs;
+    return StatsState()->CurrExecStatFuncs == IntrExecStatFuncs;
 }
 #endif
 
@@ -985,7 +992,7 @@ UInt            ExecReturnObj (
 #endif
 
     /* evaluate the expression                                             */
-    STATE(ReturnObjStat) = EVAL_EXPR(READ_STAT(stat, 0));
+    StatsState()->ReturnObjStat = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* return up to function interpreter                                   */
     return STATUS_RETURN_VAL;
@@ -1015,8 +1022,8 @@ UInt            ExecReturnVoid (
     }
 #endif
 
-    /* set 'STATE(ReturnObjStat)' to void                                         */
-    STATE(ReturnObjStat) = 0;
+    /* set 'StatsState()->ReturnObjStat' to void                                         */
+    StatsState()->ReturnObjStat = 0;
 
     /* return up to function interpreter                                   */
     return STATUS_RETURN_VOID;
@@ -1026,7 +1033,7 @@ UInt (* IntrExecStatFuncs[256]) ( Stat stat );
 
 static inline Int BreakLoopPending(void)
 {
-     return STATE(CurrExecStatFuncs) == IntrExecStatFuncs;
+     return StatsState()->CurrExecStatFuncs == IntrExecStatFuncs;
 }
 
 
@@ -1039,8 +1046,8 @@ static inline Int BreakLoopPending(void)
 
 static void UnInterruptExecStat(void)
 {
-    assert(STATE(CurrExecStatFuncs) != ExecStatFuncs);
-    STATE(CurrExecStatFuncs) = ExecStatFuncs;
+    assert(StatsState()->CurrExecStatFuncs != ExecStatFuncs);
+    StatsState()->CurrExecStatFuncs = ExecStatFuncs;
 }
 
 
@@ -1127,7 +1134,7 @@ UInt ExecIntrStat (
 void InterruptExecStat ( void )
 {
     /* remember the original entries from the table 'ExecStatFuncs'        */
-    STATE(CurrExecStatFuncs) = IntrExecStatFuncs;
+    StatsState()->CurrExecStatFuncs = IntrExecStatFuncs;
 }
 
 
@@ -1564,7 +1571,7 @@ static Int InitKernel (
     UInt                i;              /* loop variable                   */
 
     /* make the global bags known to Gasman                                */
-    InitGlobalBag( &STATE(ReturnObjStat), "src/stats.c:ReturnObjStat" );
+    InitGlobalBag( &StatsState()->ReturnObjStat, "src/stats.c:ReturnObjStat" );
 
     /* connect to external functions                                       */
     ImportFuncFromLibrary( "Iterator",       &ITERATOR );
@@ -1664,12 +1671,12 @@ static Int InitKernel (
 
 static Int InitModuleState(void)
 {
-    STATE(CurrExecStatFuncs) = ExecStatFuncs;
+    StatsState()->CurrExecStatFuncs = ExecStatFuncs;
 #ifdef HPCGAP
     MEMBAR_FULL();
     if (GetThreadState(TLS(threadID)) >= TSTATE_INTERRUPT) {
         MEMBAR_FULL();
-        STATE(CurrExecStatFuncs) = IntrExecStatFuncs;
+        StatsState()->CurrExecStatFuncs = IntrExecStatFuncs;
     }
 #endif
 
@@ -1688,6 +1695,9 @@ static StructInitInfo module = {
     .name = "stats",
     .initKernel = InitKernel,
     .initModuleState = InitModuleState,
+
+    .moduleStateSize = sizeof(struct StatsState),
+    .moduleStateOffsetPtr = &StatsStateOffset,
 };
 
 StructInitInfo * InitInfoStats ( void )

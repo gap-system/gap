@@ -68,10 +68,6 @@ typedef struct GAPState {
 
     Char * In;
 
-    /* From stats.c */
-    Obj  ReturnObjStat;
-    UInt (**CurrExecStatFuncs)(Stat);
-
     /* From code.c */
     Stat * PtrBody;
 
