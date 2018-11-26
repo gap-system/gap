@@ -771,7 +771,7 @@ static void SetInterrupt(int threadID)
 {
     ThreadLocalStorage * tls = thread_data[threadID].tls;
     MEMBAR_FULL();
-    ((GAPState *)tls)->CurrExecStatFuncs = IntrExecStatFuncs;
+    SetCurrExecStatFuncs(IntrExecStatFuncs);
 }
 
 static int LockAndUpdateThreadState(int threadID, int oldState, int newState)
@@ -861,7 +861,7 @@ static void InterruptCurrentThread(int locked, Stat stat)
         return;
     if (!locked)
         pthread_mutex_lock(thread->lock);
-    STATE(CurrExecStatFuncs) = ExecStatFuncs;
+    SetCurrExecStatFuncs(ExecStatFuncs);
     SET_BRK_CALL_TO(stat);
     state = GetThreadState(TLS(threadID));
     if ((state & TSTATE_MASK) == TSTATE_INTERRUPTED)

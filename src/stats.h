@@ -29,6 +29,8 @@
 */
 extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 
+extern void SetCurrExecStatFuncs(UInt (**newExecStatFuncs)(Stat));
+
 /****************************************************************************
 **
 *F  EXEC_STAT(<stat>) . . . . . . . . . . . . . . . . . . execute a statement

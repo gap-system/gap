@@ -60,6 +60,11 @@ extern inline struct StatsState * StatsState(void)
     return (struct StatsState *)StateSlotsAtOffset(StatsStateOffset);
 }
 
+extern inline void SetCurrExecStatFuncs(UInt (**newExecStatFuncs)(Stat))
+{
+    StatsState()->CurrExecStatFuncs = newExecStatFuncs;
+}
+
 inline UInt EXEC_STAT(Stat stat)
 {
     UInt tnum = TNUM_STAT(stat);
