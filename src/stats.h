@@ -47,7 +47,10 @@ extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 **  <stat>.
 */
 extern UInt EXEC_STAT(Stat stat);
-
+//
+// Execute the statement stat and return its return value
+//
+extern Obj EXEC_STAT_RETURN_OBJ(Stat stat);
 
 /****************************************************************************
 **

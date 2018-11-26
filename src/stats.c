@@ -49,6 +49,14 @@ inline UInt EXEC_STAT(Stat stat)
     return (*STATE(CurrExecStatFuncs)[ tnum ]) ( stat );
 }
 
+inline Obj EXEC_STAT_RETURN_OBJ(Stat stat)
+{
+    Obj result;
+    EXEC_STAT(stat);
+    result = STATE(ReturnObjStat);
+    STATE(ReturnObjStat) = 0L;
+    return result;
+}
 
 #define EXEC_STAT_IN_LOOP(stat) \
     { \
