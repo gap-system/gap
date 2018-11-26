@@ -5,9 +5,7 @@ This chapter contains an overview of the most important changes
 introduced in &GAP; 4.10.0 release (the first public release of &GAP; 4.10).
 Later it will also contain information about subsequent update 
 releases for &GAP; 4.10.
-<P/>
-
-These changes are also listed on the Wiki page
+These changes are also listed on the Wiki page:<P/>
 <URL>https://github.com/gap-system/GAP/wiki/gap-4.10-release-notes</URL>.
 
 <Section Label="GAP4.10.0">
@@ -203,7 +201,8 @@ Relevant pull requests:
 
 </Item>
 <Item><URL><LinkText>&Hash;2136</LinkText><Link>https://github.com/gap-system/gap/pull/2136</Link></URL>
-      Add <C>shortname</C> entry to record returned by <C>IsomorphismTypeInfoFiniteSimpleGroup</C>
+  Add a <C>shortname</C> component to the record that is returned by
+  the attribute <C>IsomorphismTypeInfoFiniteSimpleGroup</C>
 </Item>
 <Item><URL><LinkText>&Hash;2181</LinkText><Link>https://github.com/gap-system/gap/pull/2181</Link></URL>
       Implement <C>Union(X,Y)</C>, where <C>X</C> and <C>Y</C> are in

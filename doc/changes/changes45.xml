@@ -428,7 +428,7 @@ or x86_64 compatible processors provided by Frank Lübeck, see
 <Item>
 <Package>BOB</Package>, a tool for Linux and Mac OS X to download and build 
 &GAP; and its packages from source provided by M. Neunhöffer:
-<URL>http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob.html</URL>.
+<URL>https://gap-system.github.io/bob</URL>.
 </Item>
 
 <Item>
