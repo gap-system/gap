@@ -423,13 +423,6 @@ void RecursionDepthTrap( void )
 
 #endif
 
-static Obj PopReturnObjStat(void)
-{
-    Obj returnObjStat = STATE(ReturnObjStat);
-    STATE(ReturnObjStat) = (Obj)0;
-    return returnObjStat;
-}
-
 #ifdef HPCGAP
 
 static void LockFuncArgs(Obj func, Int narg, const Obj * args)
@@ -470,7 +463,8 @@ static void LockFuncArgs(Obj func, Int narg, const Obj * args)
 
 static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg)
 {
-    Bag                 oldLvars;       /* old values bag                  */
+    Bag oldLvars; /* old values bag */
+    Obj result;
     CHECK_RECURSION_BEFORE
 
 #ifdef HPCGAP
@@ -487,7 +481,7 @@ static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg)
         ASS_LVAR( i+1, arg[i] );
 
     /* execute the statement sequence                                      */
-    EXEC_STAT( OFFSET_FIRST_STAT );
+    result = EXEC_CURR_FUNC();
 #ifdef HPCGAP
     CLEAR_LOCK_STACK();
 #endif
@@ -498,7 +492,7 @@ static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg)
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return PopReturnObjStat();
+    return result;
 }
 
 static Obj DoExecFunc0args(Obj func)
@@ -544,9 +538,10 @@ static Obj DoExecFunc6args(Obj func, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj
 
 static Obj DoExecFuncXargs(Obj func, Obj args)
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    UInt                len;            /* number of arguments             */
-    UInt                i;              /* loop variable                   */
+    Bag  oldLvars; /* old values bag */
+    UInt len;      /* number of arguments */
+    UInt i;        /* loop variable */
+    Obj  result;
 
     CHECK_RECURSION_BEFORE
 
@@ -571,7 +566,7 @@ static Obj DoExecFuncXargs(Obj func, Obj args)
     }
 
     /* execute the statement sequence                                      */
-    EXEC_STAT( OFFSET_FIRST_STAT );
+    result = EXEC_CURR_FUNC();
 #ifdef HPCGAP
     CLEAR_LOCK_STACK();
 #endif
@@ -582,17 +577,17 @@ static Obj DoExecFuncXargs(Obj func, Obj args)
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return PopReturnObjStat();
+    return result;
 }
 
 
 static Obj DoPartialUnWrapFunc(Obj func, Obj args)
 {
-    Bag                 oldLvars;       /* old values bag                  */
-    UInt                named;          /* number of arguments             */
-    UInt                i;              /* loop variable                   */
+    Bag  oldLvars; /* old values bag */
+    UInt named;    /* number of arguments */
+    UInt i;        /* loop variable */
     UInt len;
-    Obj argx;
+    Obj  argx, result;
 
     CHECK_RECURSION_BEFORE
 
@@ -624,7 +619,7 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
     ASS_LVAR(named+1, args);
 
     /* execute the statement sequence                                      */
-    EXEC_STAT( OFFSET_FIRST_STAT );
+    result = EXEC_CURR_FUNC();
 #ifdef HPCGAP
     CLEAR_LOCK_STACK();
 #endif
@@ -635,7 +630,7 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
     CHECK_RECURSION_AFTER
 
     /* return the result                                                   */
-    return PopReturnObjStat();
+    return result;
 }
 
 /****************************************************************************

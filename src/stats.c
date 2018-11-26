@@ -49,15 +49,23 @@ inline UInt EXEC_STAT(Stat stat)
     return (*STATE(CurrExecStatFuncs)[ tnum ]) ( stat );
 }
 
+extern inline Obj EXEC_CURR_FUNC(void)
+{
+    Obj result;
+    EXEC_STAT(OFFSET_FIRST_STAT);
+    result = STATE(ReturnObjStat);
+    STATE(ReturnObjStat) = 0L;
+    return result;
+}
 
-#define EXEC_STAT_IN_LOOP(stat) \
-    { \
-        UInt status = EXEC_STAT(stat); \
-        if (status != 0) { \
-            if (status == STATUS_CONTINUE) \
-                continue; \
-            return (status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID)); \
-        } \
+#define EXEC_STAT_IN_LOOP(stat)                                              \
+    {                                                                        \
+        UInt status = EXEC_STAT(stat);                                       \
+        if (status != 0) {                                                   \
+            if (status == STATUS_CONTINUE)                                   \
+                continue;                                                    \
+            return (status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));      \
+        }                                                                    \
     }
 
 /****************************************************************************

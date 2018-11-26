@@ -48,6 +48,10 @@ extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 */
 extern UInt EXEC_STAT(Stat stat);
 
+// Executes the current function and returns its return value
+// if the last statement was T_RETURN_OBJ, or null if the last
+// statement was T_RETURN_VOID
+extern Obj EXEC_CURR_FUNC(void);
 
 /****************************************************************************
 **
