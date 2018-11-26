@@ -5,9 +5,7 @@ This chapter contains an overview of the most important changes
 introduced in &GAP; 4.9.1 release (the 1st public release of &GAP; 4.9).
 Later it will also contain information about subsequent update 
 releases for &GAP; 4.9.
-<P/>
-
-These changes are also listed on the Wiki page
+These changes are also listed on the Wiki page:<P/>
 <URL>https://github.com/gap-system/GAP/wiki/gap-4.9-release-notes</URL>.
 
 <Section Label="GAP491">
