@@ -1,3 +1,4 @@
+#@if IsHPCGAP
 # Tests for HPC-GAP channels
 #
 # TODO: right now these tests are all using a single thread; add some which
@@ -62,3 +63,4 @@ gap> TryReceiveChannel(ch, fail);
 99
 gap> TryReceiveChannel(ch, fail);
 fail
+#@fi

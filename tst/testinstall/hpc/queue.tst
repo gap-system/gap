@@ -1,3 +1,4 @@
+#@if IsHPCGAP
 #
 # test queue.g code
 #
@@ -113,3 +114,4 @@ gap> QueueHead(q);
 0
 gap> QueueTail(q);
 3
+#@fi

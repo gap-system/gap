@@ -1,3 +1,4 @@
+#@if IsHPCGAP
 #
 # run some of the demos from hpcgap/demo/
 #
@@ -14,3 +15,4 @@ Factoring 2^44+1 -> [ 17, 353, 2931542417 ] (SieveFactor)
 
 #
 gap> STOP_TEST( "demo.tst", 1 );
+#@fi
