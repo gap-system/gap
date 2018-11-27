@@ -1115,7 +1115,7 @@ Obj             FuncPermList (
     Obj                 list )
 {
     /* check the arguments                                                 */
-    RequireSmallList("PermList", list);
+    CheckIsPossList("PermList", list);
 
     UInt len = LEN_LIST( list );
     if ( len <= 65536 ) {
@@ -2502,30 +2502,19 @@ Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
     Int mytabs[DEGREELIMITONSTACK+1];
     Int mytabd[DEGREELIMITONSTACK+1];
 
-    if (!IS_LIST(src) ) {
-        ErrorMayQuit("first argument must be a list (not a %s)", (Int)TNAM_OBJ(src), 0L);
-    }
-    if (!IS_LIST(dst) ) {
-        ErrorMayQuit("second argument must be a list (not a %s)", (Int)TNAM_OBJ(dst), 0L);
-    }
+    CheckIsPossList("MappingPermListList", src);
+    CheckIsPossList("MappingPermListList", dst);
+    CheckSameLength("MappingPermListList", "src", "dst", src, dst);
+
     l = LEN_LIST(src);
-    if (l != LEN_LIST(dst)) {
-        ErrorMayQuit( "arguments must be lists of equal length", 0L, 0L);
-    }
     d = 0;
     for (i = 1;i <= l;i++) {
         obj = ELM_LIST(src, i);
-        if (!IS_POS_INTOBJ(obj)) {
-            ErrorMayQuit("first argument must be a list of positive integers", 0L, 0L);
-        }
         x = INT_INTOBJ(obj);
         if (x > d) d = x;
     }
     for (i = 1;i <= l;i++) {
         obj = ELM_LIST(dst, i);
-        if (!IS_POS_INTOBJ(obj)) {
-            ErrorMayQuit("second argument must be a list of positive integers", 0L, 0L);
-        }
         x = INT_INTOBJ(obj);
         if (x > d) d = x;
     }

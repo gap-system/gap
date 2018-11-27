@@ -1376,14 +1376,8 @@ Int             IsPossListDefault (
 
         /* if it's a small integer and non-positive then
            it's not a poss list */
-        if ( IS_INTOBJ(elm)) {
-          if (INT_INTOBJ(elm) <= 0)
-            return  0L;
-        }
-        /* or if it's not a small integer or a positive large integer then it's
-           not a poss list */
-        else if (TNUM_OBJ(elm) != T_INTPOS)
-          return 0L;
+        if ( !IS_POS_INTOBJ(elm))
+          return  0L;
     }
 
     /* the list is a positions list                                        */

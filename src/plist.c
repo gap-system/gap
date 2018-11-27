@@ -2301,14 +2301,8 @@ Int             IsPossPlist (
         if ( !CheckReadAccess(elm) )
 	  return 0L;
 #endif
-	if (IS_INTOBJ(elm))
-	  {
-	    if (INT_INTOBJ(elm) <= 0 )
-	      return 0L;
-	  }
-	else
-	  if (TNUM_OBJ(elm) != T_INTPOS)
-	    return 0L;
+	if (!IS_POS_INTOBJ(elm))
+          return 0L;
     }
 
     /* no problems found                                                   */

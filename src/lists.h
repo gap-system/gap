@@ -118,13 +118,13 @@ static inline Int IS_HOMOG_LIST(Obj list)
 *V  IsPossListFuncs[<type>] . . . . . . table of positions list test function
 **
 **  'IS_POSS_LIST' returns  1 if the list  <list> is  a dense list containing
-**  only positive  integers and 0 otherwise, i.e.,  if either <list> is not a
-**  list, or if it is not dense,  or if it contains  an element that is not a
-**  positive integer.
+**  only positive small integers and 0 otherwise, i.e., if either <list> is
+**  not a list, or if it is not dense, or if it contains an element that is
+**  not a positive small integer.
 **
 **  A package  implementing a list type  <type> must provide such  a function
 **  and install  it  in 'IsPossListFuncs[<type>]'.   This function  must loop
-**  over the list  and  test for holes   and elements that are  not  positive
+**  over the list and test for holes and elements that are not positive small
 **  integers, unless the type of the list guarantees already that the list is
 **  acceptable (e.g. a range with positive <low> and <high> values).
 */
