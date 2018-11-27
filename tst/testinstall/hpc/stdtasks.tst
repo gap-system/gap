@@ -1,3 +1,4 @@
+#@if IsHPCGAP
 gap> START_TEST("stdtasks.tst");
 
 #
@@ -74,3 +75,4 @@ true
 
 #
 gap> STOP_TEST( "stdtasks.tst", 1 );
+#@fi

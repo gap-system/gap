@@ -1,3 +1,4 @@
+#@if IsHPCGAP
 #
 # Test the HPC-GAP serialization code
 #
@@ -213,3 +214,4 @@ gap> DeserializeNativeString("\000\377");
 Error, Bad deserialization input
 gap> DeserializeNativeString("\000\205");
 1
+#@fi

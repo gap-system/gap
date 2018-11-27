@@ -1,3 +1,4 @@
+#@if IsHPCGAP
 gap> START_TEST("atomic_compare.tst");
 
 # Comparisons of atomic lists
@@ -141,4 +142,6 @@ Error, atomic objects cannot be copied
 gap> StructuralCopy(a);
 Error, atomic objects cannot be copied
 
+#
 gap> STOP_TEST("atomic_compare.tst");
+#@fi

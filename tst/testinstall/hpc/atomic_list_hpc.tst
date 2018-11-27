@@ -1,3 +1,4 @@
+#@if IsHPCGAP
 gap> START_TEST("atomic_list_hpc.tst");
 
 # Tests which only make sense in HPC-GAP
@@ -72,3 +73,4 @@ Error, no 1st choice method found for `Add' on 3 arguments
 
 #
 gap> STOP_TEST("atomic_list.tst");
+#@fi

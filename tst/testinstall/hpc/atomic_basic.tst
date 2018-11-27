@@ -27,6 +27,49 @@ F
 gap> f := function(x) atomic L do return x+1; od; end;;
 gap> f(1);
 2
+#@if IsHPCGAP
+gap> Print(f,"\n");
+function ( x )
+    atomic L do
+        return x + 1;
+    od;
+    return;
+end
+gap> g := function(x) atomic readwrite L do return x+1; od; end;;
+gap> Print(g,"\n");
+function ( x )
+    atomic readwrite L do
+        return x + 1;
+    od;
+    return;
+end
+gap> h := function(x) atomic readonly L do return x+1; od; end;;
+gap> Print(h,"\n");
+function ( x )
+    atomic readonly L do
+        return x + 1;
+    od;
+    return;
+end
+gap> h2 := function(x) atomic readonly L,M do return x+1; od; end;;
+gap> Print(h2,"\n");
+function ( x )
+    atomic readonly L, M do
+        return x + 1;
+    od;
+    return;
+end
+gap> h3 := atomic function(x) end;;
+gap> Print(h3, "\n");
+atomic function ( x )
+    return;
+end
+gap> h4 := atomic function(readwrite x, readonly y, z) end;;
+gap> Print(h4, "\n");
+atomic function ( readwrite x, readonly y, z )
+    return;
+end
+#@else
 gap> Print(f,"\n");
 function ( x )
     return x + 1;
@@ -57,6 +100,7 @@ gap> Print(h4, "\n");
 function ( x, y, z )
     return;
 end
+#@fi
 gap> h5 := function(readwrite x, readonly y, z) end;;
 Syntax error: 'readwrite' argument of non-atomic function in stream:1
 h5 := function(readwrite x, readonly y, z) end;;
