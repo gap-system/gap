@@ -3,30 +3,30 @@ function(  ) ... end
 gap> y := f();
 Error, recursion depth trap (5000)
 Stack trace:
-*[1] x := f(  );
+*[1] f(  )
    @ *stdin*:2
- [2] x := f(  );
+ [2] f(  )
    @ *stdin*:2
- [3] x := f(  );
+ [3] f(  )
    @ *stdin*:2
- [4] x := f(  );
+ [4] f(  )
    @ *stdin*:2
- [5] x := f(  );
+ [5] f(  )
    @ *stdin*:2
 ...  at *stdin*:3
 you may 'return;'
 brk> return; # try once more
 Error, recursion depth trap (10000)
 Stack trace:
-*[1] x := f(  );
+*[1] f(  )
    @ *stdin*:2
- [2] x := f(  );
+ [2] f(  )
    @ *stdin*:2
- [3] x := f(  );
+ [3] f(  )
    @ *stdin*:2
- [4] x := f(  );
+ [4] f(  )
    @ *stdin*:2
- [5] x := f(  );
+ [5] f(  )
    @ *stdin*:2
 ...  at *stdin*:3
 you may 'return;'

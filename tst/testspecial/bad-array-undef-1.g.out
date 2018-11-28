@@ -7,7 +7,7 @@ function(  ) ... end
 gap> f();
 Error, Variable: 'm' must have an assigned value
 Stack trace:
-*[1] return l[m];
+*[1] l[m]
    @ *stdin*:5
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:7

@@ -128,7 +128,7 @@ static Obj EvalUnknownExpr(Expr expr)
 **  are   not a priori    known  to evaluate  to a    boolean value  (such as
 **  function calls).
 */
-static Obj EvalUnknownBool(Expr expr)
+Obj EvalUnknownBool(Expr expr)
 {
     Obj                 val;            // value, result
 

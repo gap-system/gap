@@ -8,15 +8,15 @@ function( lvl ) ... end
 gap> f(7);
 Error, Rational operations: <divisor> must not be zero
 Stack trace:
-*[1] return 1 / lvl + f( lvl - 1 );
+*[1] 1 / lvl
    @ *stdin*:7
- [2] return 1 / lvl + f( lvl - 1 );
+ [2] f( lvl - 1 )
    @ *stdin*:7
- [3] return 1 / lvl + f( lvl - 1 );
+ [3] f( lvl - 1 )
    @ *stdin*:7
- [4] return 1 / lvl + f( lvl - 1 );
+ [4] f( lvl - 1 )
    @ *stdin*:7
- [5] return 1 / lvl + f( lvl - 1 );
+ [5] f( lvl - 1 )
    @ *stdin*:7
 ...  at *stdin*:8
 type 'quit;' to quit to outer loop

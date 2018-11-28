@@ -5,7 +5,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
  [2] testError( "Invalid test file: #@ command found in the middle of a single test" );
    @ GAPROOT/lib/test.gi:LINE
- [3] pf := ParseTestInput( full, opts.ignoreComments, fnam );
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
@@ -18,7 +18,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
  [2] testError( "Invalid test file" );
    @ GAPROOT/lib/test.gi:LINE
- [3] pf := ParseTestInput( full, opts.ignoreComments, fnam );
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
@@ -31,7 +31,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
  [2] testError( "Invalid test file: Nested #@if" );
    @ GAPROOT/lib/test.gi:LINE
- [3] pf := ParseTestInput( full, opts.ignoreComments, fnam );
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
@@ -44,7 +44,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
  [2] testError( "Invalid test file: two #@else" );
    @ GAPROOT/lib/test.gi:LINE
- [3] pf := ParseTestInput( full, opts.ignoreComments, fnam );
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
@@ -57,7 +57,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
  [2] testError( "Invalid test file: Continuation prompt '> ' followed by a tab, expected a regular space" );
    @ GAPROOT/lib/test.gi:LINE
- [3] pf := ParseTestInput( full, opts.ignoreComments, fnam );
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
@@ -70,7 +70,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
  [2] testError( "Invalid test file: #@elif after #@else" );
    @ GAPROOT/lib/test.gi:LINE
- [3] pf := ParseTestInput( full, opts.ignoreComments, fnam );
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
@@ -83,7 +83,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
  [2] testError( "Invalid test file: #@elif without #@if" );
    @ GAPROOT/lib/test.gi:LINE
- [3] pf := ParseTestInput( full, opts.ignoreComments, fnam );
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
@@ -96,7 +96,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
  [2] testError( "Invalid test file: Unterminated #@if" );
    @ GAPROOT/lib/test.gi:LINE
- [3] pf := ParseTestInput( full, opts.ignoreComments, fnam );
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
@@ -109,7 +109,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
  [2] testError( "Invalid test file" );
    @ GAPROOT/lib/test.gi:LINE
- [3] pf := ParseTestInput( full, opts.ignoreComments, fnam );
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
