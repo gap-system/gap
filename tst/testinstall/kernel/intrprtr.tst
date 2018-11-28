@@ -5,7 +5,7 @@ gap> START_TEST("kernel/intrprtr.tst");
 
 # test Assert with two arguments
 gap> Assert(0, 0);
-Error, <condition> in Assert must yield 'true' or 'false' (not a integer)
+Error, Assert: <cond> must be 'true' or 'false' (not the integer 0)
 gap> Assert(0, true);
 gap> Assert(0, false);
 Error, Assertion failure
@@ -15,7 +15,7 @@ gap> Assert(100, false);
 
 # test Assert with three arguments
 gap> Assert(0, 0, "message\n");
-Error, <condition> in Assert must yield 'true' or 'false' (not a integer)
+Error, Assert: <cond> must be 'true' or 'false' (not the integer 0)
 gap> Assert(0, true, "message\n");
 gap> Assert(0, false, "message\n");
 message

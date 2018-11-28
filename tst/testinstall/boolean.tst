@@ -68,15 +68,15 @@ true
 
 # test error handling in interpreter
 gap> not 1;
-Error, <expr> must be 'true' or 'false' (not a integer)
+Error, <expr> must be 'true' or 'false' (not the integer 1)
 gap> false or 1;
-Error, <expr> must be 'true' or 'false' (not a integer)
+Error, <expr> must be 'true' or 'false' (not the integer 1)
 gap> 1 or false;
-Error, <expr> must be 'true' or 'false' (not a integer)
+Error, <expr> must be 'true' or 'false' (not the integer 1)
 gap> true and 1;
-Error, <expr> must be 'true' or 'false' (not a integer)
+Error, <expr> must be 'true' or 'false' (not the integer 1)
 gap> 1 and true;
-Error, <expr> must be 'true' or 'false' or a filter (not a integer)
+Error, <expr> must be 'true' or 'false' or a filter (not the integer 1)
 gap> ReturnTrue and ReturnTrue;
 Error, <expr> must be 'true' or 'false' or a filter (not a function)
 gap> ReturnTrue and true;

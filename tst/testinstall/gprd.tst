@@ -54,4 +54,3 @@ true
 
 #
 gap> STOP_TEST("gprd.tst");
-

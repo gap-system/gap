@@ -12,7 +12,7 @@ gap> START_TEST("interpreter.tst");
 # non boolean expression as condition
 #
 gap> if 1 then fi;
-Error, <expr> must be 'true' or 'false' (not a integer)
+Error, <expr> must be 'true' or 'false' (not the integer 1)
 
 #
 # 'quit' inside functions

@@ -907,11 +907,9 @@ UInt ExecAssert2Args (
     level = EVAL_EXPR(READ_STAT(stat, 0));
     if ( ! LT(CurrentAssertionLevel, level) )  {
         decision = EVAL_EXPR(READ_STAT(stat, 1));
-        while ( decision != True && decision != False ) {
-         decision = ErrorReturnObj(
-          "Assertion condition must evaluate to 'true' or 'false', not a %s",
-          (Int)TNAM_OBJ(decision), 0L,
-          "you may 'return true;' or 'return false;'");
+        if (decision != True && decision != False) {
+            RequireArgument("Assert", decision, "cond",
+                            "must be 'true' or 'false'");
         }
         if ( decision == False ) {
             ErrorReturnVoid( "Assertion failure", 0L, 0L, "you may 'return;'");
@@ -939,11 +937,9 @@ UInt ExecAssert3Args (
     level = EVAL_EXPR(READ_STAT(stat, 0));
     if ( ! LT(CurrentAssertionLevel, level) ) {
         decision = EVAL_EXPR(READ_STAT(stat, 1));
-        while ( decision != True && decision != False ) {
-            decision = ErrorReturnObj(
-            "Assertion condition must evaluate to 'true' or 'false', not a %s",
-            (Int)TNAM_OBJ(decision), 0L,
-            "you may 'return true;' or 'return false;'");
+        if (decision != True && decision != False) {
+            RequireArgument("Assert", decision, "cond",
+                            "must be 'true' or 'false'");
         }
         if ( decision == False ) {
             message = EVAL_EXPR(READ_STAT(stat, 2));

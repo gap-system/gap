@@ -622,9 +622,7 @@ void            IntrIfBeginBody ( void )
     /* get and check the condition                                         */
     cond = PopObj();
     if ( cond != True && cond != False ) {
-        ErrorQuit(
-            "<expr> must be 'true' or 'false' (not a %s)",
-            (Int)TNAM_OBJ(cond), 0L );
+        RequireArgument(0, cond, "expr", "must be 'true' or 'false'");
     }
 
     /* if the condition is 'false', ignore the body                        */
@@ -1294,15 +1292,13 @@ void            IntrOr ( void )
             PushObj( opR );
         }
         else {
-            ErrorQuit( "<expr> must be 'true' or 'false' (not a %s)",
-                       (Int)TNAM_OBJ(opR), 0L );
+            RequireArgument(0, opR, "expr", "must be 'true' or 'false'");
         }
     }
 
     /* signal an error                                                     */
     else {
-        ErrorQuit( "<expr> must be 'true' or 'false' (not a %s)",
-                   (Int)TNAM_OBJ(opL), 0L );
+        RequireArgument(0, opL, "expr", "must be 'true' or 'false'");
     }
 }
 
@@ -1368,9 +1364,7 @@ void            IntrAnd ( void )
             PushObj( opR );
         }
         else {
-            ErrorQuit(
-                "<expr> must be 'true' or 'false' (not a %s)",
-                (Int)TNAM_OBJ(opR), 0L );
+            RequireArgument(0, opR, "expr", "must be 'true' or 'false'");
         }
     }
 
@@ -1381,9 +1375,8 @@ void            IntrAnd ( void )
 
     /* signal an error                                                     */
     else {
-        ErrorQuit(
-            "<expr> must be 'true' or 'false' or a filter (not a %s)",
-            (Int)TNAM_OBJ(opL), 0L );
+        RequireArgument(0, opL, "expr",
+                        "must be 'true' or 'false' or a filter");
     }
 }
 
@@ -1409,9 +1402,7 @@ void            IntrNot ( void )
     /* get and check the operand                                           */
     op = PopObj();
     if ( op != True && op != False ) {
-        ErrorQuit(
-            "<expr> must be 'true' or 'false' (not a %s)",
-            (Int)TNAM_OBJ(op), 0L );
+        RequireArgument(0, op, "expr", "must be 'true' or 'false'");
     }
 
     /* negate the operand                                                  */
@@ -4022,9 +4013,8 @@ void             IntrAssertAfterCondition ( void )
     if (condition == True)
       STATE(IntrIgnoring)= 2;
     else if (condition != False)
-        ErrorQuit(
-            "<condition> in Assert must yield 'true' or 'false' (not a %s)",
-            (Int)TNAM_OBJ(condition), 0L );
+        RequireArgument("Assert", condition, "cond",
+                        "must be 'true' or 'false'");
 }
 
 void             IntrAssertEnd2Args ( void )
