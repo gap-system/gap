@@ -55,6 +55,14 @@ inline ExecStatus EXEC_STAT(Stat stat)
     return (*STATE(CurrExecStatFuncs)[ tnum ]) ( stat );
 }
 
+static inline void SET_BRK_CALL_TO_EXPR(Expr expr, Stat stat)
+{
+    if (!(expr & 3))
+        SET_BRK_CALL_TO(expr);
+    else
+        SET_BRK_CALL_TO(stat);
+}
+
 extern inline Obj EXEC_CURR_FUNC(void)
 {
     Obj result;
@@ -218,6 +226,7 @@ static ExecStatus ExecIf(Stat stat)
 
     /* if the condition evaluates to 'true', execute the if-branch body    */
     cond = READ_STAT(stat, 0);
+    SET_BRK_CALL_TO_EXPR(cond, stat);
     if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
         /* execute the if-branch body and leave                            */
@@ -236,6 +245,7 @@ static ExecStatus ExecIfElse(Stat stat)
 
     /* if the condition evaluates to 'true', execute the if-branch body    */
     cond = READ_STAT(stat, 0);
+    SET_BRK_CALL_TO_EXPR(cond, stat);
     if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
         /* execute the if-branch body and leave                            */
@@ -243,8 +253,6 @@ static ExecStatus ExecIfElse(Stat stat)
         return EXEC_STAT( body );
 
     }
-
-    SET_BRK_CALL_TO(stat);
 
     /* otherwise execute the else-branch body and leave                    */
     body = READ_STAT(stat, 3);
@@ -266,6 +274,7 @@ static ExecStatus ExecIfElif(Stat stat)
 
         /* if the condition evaluates to 'true', execute the branch body   */
         cond = READ_STAT(stat, 2 * (i - 1));
+        SET_BRK_CALL_TO_EXPR(cond, stat);
         if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
             /* execute the branch body and leave                           */
@@ -273,8 +282,6 @@ static ExecStatus ExecIfElif(Stat stat)
             return EXEC_STAT( body );
 
         }
-
-        SET_BRK_CALL_TO(stat);
     }
 
     return STATUS_END;
@@ -295,6 +302,7 @@ static ExecStatus ExecIfElifElse(Stat stat)
 
         /* if the condition evaluates to 'true', execute the branch body   */
         cond = READ_STAT(stat, 2 * (i - 1));
+        SET_BRK_CALL_TO_EXPR(cond, stat);
         if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
             /* execute the branch body and leave                           */
@@ -303,7 +311,6 @@ static ExecStatus ExecIfElifElse(Stat stat)
 
         }
 
-        SET_BRK_CALL_TO(stat);
     }
 
     /* otherwise execute the else-branch body and leave                    */
@@ -661,7 +668,7 @@ static ALWAYS_INLINE ExecStatus ExecWhileHelper(Stat stat, UInt nr)
     body3 = (nr >= 3) ? READ_STAT(stat, 3) : 0;
 
     /* while the condition evaluates to 'true', execute the body           */
-    while ( EVAL_BOOL_EXPR( cond ) != False ) {
+    while ( SET_BRK_CALL_TO_EXPR(cond, stat), EVAL_BOOL_EXPR( cond ) != False ) {
 
 #if !defined(HAVE_SIGNAL)
         /* test for an interrupt                                           */
@@ -676,8 +683,6 @@ static ALWAYS_INLINE ExecStatus ExecWhileHelper(Stat stat, UInt nr)
             EXEC_STAT_IN_LOOP(body2);
         if (nr >= 3)
             EXEC_STAT_IN_LOOP(body3);
-
-        SET_BRK_CALL_TO(stat);
     }
 
     return STATUS_END;
@@ -748,7 +753,7 @@ static ALWAYS_INLINE ExecStatus ExecRepeatHelper(Stat stat, UInt nr)
         if (nr >= 3)
             EXEC_STAT_IN_LOOP(body3);
 
-        SET_BRK_CALL_TO(stat);
+        SET_BRK_CALL_TO_EXPR(cond, stat);
 
     } while ( EVAL_BOOL_EXPR( cond ) == False );
 
@@ -927,7 +932,6 @@ static ExecStatus ExecAssert3Args(Stat stat)
         if (cond == False) {
             message = EVAL_EXPR(READ_STAT(stat, 2));
             if ( message != (Obj) 0 ) {
-                SET_BRK_CALL_TO( stat );
                 if (IS_STRING_REP( message ))
                     PrintString1( message );
                 else

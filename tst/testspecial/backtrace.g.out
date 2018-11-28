@@ -35,7 +35,7 @@ gap> ###########################################################################
 gap> f:=function() if true = 1/0 then return 1; fi; return 2; end;;
 gap> f();
 Error, Rational operations: <divisor> must not be zero in
-  1 / 0 at *stdin*:15 called from 
+  true = 1 / 0 at *stdin*:15 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:16
 type 'quit;' to quit to outer loop
@@ -328,18 +328,18 @@ gap> l := [[1]];; f := {} -> l[2,1];;
 gap> f();
 Error, List Element: <list>[2] must have an assigned value in
   return m[i][j]; at GAPROOT/lib/matrix.gi:LINE called from 
-ELM_LIST( m, row, col ) at *stdin*:54 called from
+return ELM_LIST( m, row, col ); at *stdin*:54 called from
 return l[2, 1]; at *stdin*:55 called from
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:56
 type 'quit;' to quit to outer loop
 brk> Where();
-ELM_LIST( m, row, col ) at *stdin*:54 called from
+return ELM_LIST( m, row, col ); at *stdin*:54 called from
 return l[2, 1]; at *stdin*:55 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
-ELM_LIST( m, row, col ) at *stdin*:54
+return ELM_LIST( m, row, col ); at *stdin*:54
   arguments:
     m := [ [ 1 ] ]
     row := 2
@@ -371,9 +371,9 @@ gap>
 gap> # Verify issue #3044 is fixed
 gap> function() if 1 <> 2 and 3 then return 42;; fi; end();
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  1 <> 2 and 3 at *stdin*:45 called from 
+  1 <> 2 and 3 at *stdin*:64 called from 
 <function "unknown">( <arguments> )
- called from read-eval loop at *stdin*:45
+ called from read-eval loop at *stdin*:64
 type 'quit;' to quit to outer loop
 brk> Where();
 <function "unknown">( <arguments> )
@@ -383,9 +383,9 @@ gap>
 gap> 
 gap> function() if 1 = 2 or 3 then return 42;; fi; end();
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  1 = 2 or 3 at *stdin*:47 called from 
+  1 = 2 or 3 at *stdin*:66 called from 
 <function "unknown">( <arguments> )
- called from read-eval loop at *stdin*:47
+ called from read-eval loop at *stdin*:66
 type 'quit;' to quit to outer loop
 brk> Where();
 <function "unknown">( <arguments> )
@@ -395,9 +395,9 @@ gap>
 gap> 
 gap> function() if 1 <> 2 and not 3 then return 42;; fi; end();
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  not 3 at *stdin*:49 called from 
+  1 <> 2 and not 3 at *stdin*:68 called from 
 <function "unknown">( <arguments> )
- called from read-eval loop at *stdin*:49
+ called from read-eval loop at *stdin*:68
 type 'quit;' to quit to outer loop
 brk> Where();
 <function "unknown">( <arguments> )
@@ -407,9 +407,9 @@ gap>
 gap> 
 gap> function() if not 3 then return 42;; fi; end();
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  not 3 at *stdin*:51 called from 
+  not 3 at *stdin*:70 called from 
 <function "unknown">( <arguments> )
- called from read-eval loop at *stdin*:51
+ called from read-eval loop at *stdin*:70
 type 'quit;' to quit to outer loop
 brk> Where();
 <function "unknown">( <arguments> )
@@ -419,9 +419,9 @@ gap>
 gap> 
 gap> function() if 3 or false then return 42;; fi; end();
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  3 or false at *stdin*:53 called from 
+  3 or false at *stdin*:72 called from 
 <function "unknown">( <arguments> )
- called from read-eval loop at *stdin*:53
+ called from read-eval loop at *stdin*:72
 type 'quit;' to quit to outer loop
 brk> Where();
 <function "unknown">( <arguments> )
@@ -431,9 +431,9 @@ gap>
 gap> 
 gap> function() if 3 and false then return 42;; fi; end();
 Error, <expr> must be 'true' or 'false' or a filter (not the integer 3) in
-  3 and false at *stdin*:55 called from 
+  3 and false at *stdin*:74 called from 
 <function "unknown">( <arguments> )
- called from read-eval loop at *stdin*:55
+ called from read-eval loop at *stdin*:74
 type 'quit;' to quit to outer loop
 brk> Where();
 <function "unknown">( <arguments> )
@@ -444,19 +444,19 @@ gap>
 gap> l:=[ function() if 1 <> 2 and ~ then return 42;; fi; end ];;
 gap> l[1]();
 Error, '~' does not have a value here in
-  1 <> 2 and ~ at *stdin*:57 called from 
+  1 <> 2 and ~ at *stdin*:76 called from 
 <function "unknown">( <arguments> )
- called from read-eval loop at *stdin*:58
+ called from read-eval loop at *stdin*:77
 gap> Where();
-not in any function at *stdin*:59
+not in any function at *stdin*:78
 gap> #quit;
 gap> 
 gap> 
 gap> function() if 1 <> 2 and ((1,2,2) = (1,2,3)) then return 42;; fi; end();
 Error, Permutation: cycles must be disjoint and duplicate-free in
-  1 <> 2 and (1,2,2) = (1,2,3) at *stdin*:63 called from 
+  1 <> 2 and (1,2,2) = (1,2,3) at *stdin*:82 called from 
 <function "unknown">( <arguments> )
- called from read-eval loop at *stdin*:63
+ called from read-eval loop at *stdin*:82
 type 'quit;' to quit to outer loop
 brk> Where();
 <function "unknown">( <arguments> )
@@ -467,9 +467,9 @@ gap>
 gap> f:=function(b,c) if 1=2 or (b and c) then return 42;; fi; end;;
 gap> f(3,true);
 Error, <expr> must be 'true' or 'false' or a filter (not the integer 3) in
-  b and c at *stdin*:65 called from 
+  1 = 2 or b and c at *stdin*:84 called from 
 <function "f">( <arguments> )
- called from read-eval loop at *stdin*:66
+ called from read-eval loop at *stdin*:85
 type 'quit;' to quit to outer loop
 brk> Where();
 <function "f">( <arguments> )
@@ -478,9 +478,9 @@ brk> quit;
 gap> 
 gap> f(true,3);
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  b and c at *stdin*:65 called from 
+  1 = 2 or b and c at *stdin*:84 called from 
 <function "f">( <arguments> )
- called from read-eval loop at *stdin*:67
+ called from read-eval loop at *stdin*:86
 type 'quit;' to quit to outer loop
 brk> Where();
 <function "f">( <arguments> )
@@ -491,9 +491,9 @@ gap>
 gap> f:=function(b,c) if 1=1 and (b or c) then return 42;; fi; end;;
 gap> f(3,false);
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  b or c at *stdin*:69 called from 
+  1 = 1 and (b or c) at *stdin*:88 called from 
 <function "f">( <arguments> )
- called from read-eval loop at *stdin*:70
+ called from read-eval loop at *stdin*:89
 type 'quit;' to quit to outer loop
 brk> Where();
 <function "f">( <arguments> )
@@ -502,13 +502,24 @@ brk> quit;
 gap> 
 gap> f(false,3);
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  b or c at *stdin*:69 called from 
+  1 = 1 and (b or c) at *stdin*:88 called from 
 <function "f">( <arguments> )
- called from read-eval loop at *stdin*:71
+ called from read-eval loop at *stdin*:90
 type 'quit;' to quit to outer loop
 brk> Where();
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> quit;
 gap> 
+gap> 
+gap> function(x) if (1 = 2) = x[1] then return 42;; fi; end([]);
+Error, List Element: <list>[1] must have an assigned value in
+  (1 = 2) = x[1] at *stdin*:92 called from 
+<function "unknown">( <arguments> )
+ called from read-eval loop at *stdin*:92
+type 'quit;' to quit to outer loop
+brk> Where();
+<function "unknown">( <arguments> )
+ called from read-eval loop at *errin*:1
+brk> quit;
 gap> QUIT;

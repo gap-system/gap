@@ -182,3 +182,7 @@ f(false,3);
 Where();
 quit;
 
+
+function(x) if (1 = 2) = x[1] then return 42;; fi; end([]);
+Where();
+quit;

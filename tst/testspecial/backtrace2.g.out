@@ -89,7 +89,7 @@ gap> test:= function( n )
 > end;;
 gap> test( 1 );
 Error, Rational operations: <divisor> must not be zero in
-  1 / 0 at *stdin*:35 called from 
+  return 1 / 0; at *stdin*:35 called from 
 test( n + 1 ); at *stdin*:37 called from
 test( n + 1 ); at *stdin*:37 called from
 <function "test">( <arguments> )
@@ -153,7 +153,7 @@ gap> test:= function( n )
 gap> test( 1 );
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `IsCommutative' on 1 arguments at GAPROOT/lib/methsel2.g:LINE called from
-IsAbelian( 1 ) at *stdin*:47 called from
+return IsAbelian( 1 ); at *stdin*:47 called from
 test( n + 1 ); at *stdin*:49 called from
 test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
@@ -161,49 +161,49 @@ test( n + 1 ); at *stdin*:49 called from
 type 'quit;' to quit to outer loop
 brk> n; Where();
 3
-IsAbelian( 1 ) at *stdin*:47 called from
+return IsAbelian( 1 ); at *stdin*:47 called from
 test( n + 1 ); at *stdin*:49 called from
 test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> DownEnv(); n; Where();
 3
-IsAbelian( 1 ) at *stdin*:47 called from
+return IsAbelian( 1 ); at *stdin*:47 called from
 test( n + 1 ); at *stdin*:49 called from
 test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:2
 brk> DownEnv(); n; Where();
 2
-IsAbelian( 1 ) at *stdin*:47 called from
+return IsAbelian( 1 ); at *stdin*:47 called from
 test( n + 1 ); at *stdin*:49 called from
 test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:3
 brk> DownEnv(); n; Where();
 1
-IsAbelian( 1 ) at *stdin*:47 called from
+return IsAbelian( 1 ); at *stdin*:47 called from
 test( n + 1 ); at *stdin*:49 called from
 test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:4
 brk> UpEnv(); n; Where();
 2
-IsAbelian( 1 ) at *stdin*:47 called from
+return IsAbelian( 1 ); at *stdin*:47 called from
 test( n + 1 ); at *stdin*:49 called from
 test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:5
 brk> UpEnv(); n; Where();
 3
-IsAbelian( 1 ) at *stdin*:47 called from
+return IsAbelian( 1 ); at *stdin*:47 called from
 test( n + 1 ); at *stdin*:49 called from
 test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:6
 brk> UpEnv(); n; Where();
 3
-IsAbelian( 1 ) at *stdin*:47 called from
+return IsAbelian( 1 ); at *stdin*:47 called from
 test( n + 1 ); at *stdin*:49 called from
 test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
