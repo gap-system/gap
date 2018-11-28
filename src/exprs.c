@@ -165,6 +165,7 @@ static Obj EvalOr(Expr expr)
     Expr                tmp;            // temporary expression
 
     // evaluate and test the left operand
+    SET_BRK_CALL_TO(expr);
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_BOOL_EXPR( tmp );
     if ( opL != False ) {
@@ -172,6 +173,7 @@ static Obj EvalOr(Expr expr)
     }
 
     // evaluate and test the right operand
+    SET_BRK_CALL_TO(expr);
     tmp = READ_EXPR(expr, 1);
     return EVAL_BOOL_EXPR( tmp );
 }
@@ -198,8 +200,11 @@ static Obj EvalAnd(Expr expr)
     Expr                tmp;            // temporary expression
 
     // if the left operand is 'false', this is the result
+    SET_BRK_CALL_TO(expr);
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
+
+    SET_BRK_CALL_TO(expr);
     if      ( opL == False ) {
         return opL;
     }
@@ -243,6 +248,7 @@ static Obj EvalNot(Expr expr)
     Expr                tmp;            // temporary expression
 
     // evaluate the operand to a boolean
+    SET_BRK_CALL_TO(expr);
     tmp = READ_EXPR(expr, 0);
     op = EVAL_BOOL_EXPR( tmp );
 
