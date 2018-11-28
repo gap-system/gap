@@ -148,11 +148,11 @@ gap>
 gap> 
 gap> f:=function() local x; Assert(0, 1); return 2; end;;
 gap> f();
-Error, Assertion condition must evaluate to 'true' or 'false', not a integer in
+Error, Assert: <cond> must be 'true' or 'false' (not the integer 1) in
   Assert( 0, 1 ); at *stdin*:33 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:34
-you may 'return true;' or 'return false;'
+type 'quit;' to quit to outer loop
 brk> Where();
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
@@ -161,11 +161,11 @@ gap>
 gap> 
 gap> f:=function() local x; Assert(0, 1, "hello"); return 2; end;;
 gap> f();
-Error, Assertion condition must evaluate to 'true' or 'false', not a integer in
+Error, Assert: <cond> must be 'true' or 'false' (not the integer 1) in
   Assert( 0, 1, "hello" ); at *stdin*:36 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:37
-you may 'return true;' or 'return false;'
+type 'quit;' to quit to outer loop
 brk> Where();
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1

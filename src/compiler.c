@@ -1319,9 +1319,8 @@ CVar CompAnd (
 
     /* signal an error                                                     */
     Emit( "else {\n" );
-    Emit( "ErrorQuit(\n"
-            "\"<expr> must be 'true' or 'false' or a filter (not a %%s)\",\n"
-            "(Int)TNAM_OBJ(%c), 0L );\n", left );
+    Emit( "RequireArgument(0, %c, \"expr\",\n"
+            "\"must be 'true' or 'false' or a filter\" );\n", left );
     Emit( "}\n" );
 
     /* we know precious little about the result                            */

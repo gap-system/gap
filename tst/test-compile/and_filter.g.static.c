@@ -44,9 +44,8 @@ static Obj  HdlrFunc3 (
   t_1 = NewAndFilter( t_2, INTOBJ_INT(1) );
  }
  else {
-  ErrorQuit(
-  "<expr> must be 'true' or 'false' or a filter (not a %s)",
-  (Int)TNAM_OBJ(t_2), 0L );
+  RequireArgument(0, t_2, "expr",
+  "must be 'true' or 'false' or a filter" );
  }
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -116,9 +115,8 @@ static Obj  HdlrFunc5 (
   t_1 = NewAndFilter( t_2, t_4 );
  }
  else {
-  ErrorQuit(
-  "<expr> must be 'true' or 'false' or a filter (not a %s)",
-  (Int)TNAM_OBJ(t_2), 0L );
+  RequireArgument(0, t_2, "expr",
+  "must be 'true' or 'false' or a filter" );
  }
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -159,9 +157,8 @@ static Obj  HdlrFunc6 (
   t_1 = NewAndFilter( t_2, t_4 );
  }
  else {
-  ErrorQuit(
-  "<expr> must be 'true' or 'false' or a filter (not a %s)",
-  (Int)TNAM_OBJ(t_2), 0L );
+  RequireArgument(0, t_2, "expr",
+  "must be 'true' or 'false' or a filter" );
  }
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -199,9 +196,8 @@ static Obj  HdlrFunc2 (
   t_2 = NewAndFilter( t_3, INTOBJ_INT(1) );
  }
  else {
-  ErrorQuit(
-  "<expr> must be 'true' or 'false' or a filter (not a %s)",
-  (Int)TNAM_OBJ(t_3), 0L );
+  RequireArgument(0, t_3, "expr",
+  "must be 'true' or 'false' or a filter" );
  }
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -272,9 +268,8 @@ static Obj  HdlrFunc2 (
   t_2 = NewAndFilter( t_3, t_5 );
  }
  else {
-  ErrorQuit(
-  "<expr> must be 'true' or 'false' or a filter (not a %s)",
-  (Int)TNAM_OBJ(t_3), 0L );
+  RequireArgument(0, t_3, "expr",
+  "must be 'true' or 'false' or a filter" );
  }
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
