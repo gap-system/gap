@@ -21,7 +21,7 @@ gap>
 gap> f:=function() if true = 1/0 then return 1; fi; return 2; end;;
 gap> f();
 Error, Rational operations: <divisor> must not be zero in
-  1 / 0 at *stdin*:9 called from 
+  true = 1 / 0 at *stdin*:9 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:10
 type 'quit;' to quit to outer loop
@@ -224,7 +224,7 @@ gap>
 gap> 
 gap> function() if 1 <> 2 and not 3 then return 42;; fi; end();
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  not 3 at *stdin*:49 called from 
+  1 <> 2 and not 3 at *stdin*:49 called from 
 <function "unknown">( <arguments> )
  called from read-eval loop at *stdin*:49
 type 'quit;' to quit to outer loop
@@ -296,7 +296,7 @@ gap>
 gap> f:=function(b,c) if 1=2 or (b and c) then return 42;; fi; end;;
 gap> f(3,true);
 Error, <expr> must be 'true' or 'false' or a filter (not the integer 3) in
-  b and c at *stdin*:65 called from 
+  1 = 2 or b and c at *stdin*:65 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:66
 type 'quit;' to quit to outer loop
@@ -307,7 +307,7 @@ brk> quit;
 gap> 
 gap> f(true,3);
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  b and c at *stdin*:65 called from 
+  1 = 2 or b and c at *stdin*:65 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:67
 type 'quit;' to quit to outer loop
@@ -320,7 +320,7 @@ gap>
 gap> f:=function(b,c) if 1=1 and (b or c) then return 42;; fi; end;;
 gap> f(3,false);
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  b or c at *stdin*:69 called from 
+  1 = 1 and (b or c) at *stdin*:69 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:70
 type 'quit;' to quit to outer loop
@@ -331,7 +331,7 @@ brk> quit;
 gap> 
 gap> f(false,3);
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  b or c at *stdin*:69 called from 
+  1 = 1 and (b or c) at *stdin*:69 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:71
 type 'quit;' to quit to outer loop
@@ -340,4 +340,15 @@ brk> Where();
  called from read-eval loop at *errin*:1
 brk> quit;
 gap> 
+gap> 
+gap> function(x) if (1 = 2) = x[1] then return 42;; fi; end([]);
+Error, List Element: <list>[1] must have an assigned value in
+  1 = 2 = x[1] at *stdin*:73 called from 
+<function "unknown">( <arguments> )
+ called from read-eval loop at *stdin*:73
+type 'quit;' to quit to outer loop
+brk> Where();
+<function "unknown">( <arguments> )
+ called from read-eval loop at *errin*:1
+brk> quit;
 gap> QUIT;

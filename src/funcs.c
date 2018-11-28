@@ -150,7 +150,6 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call)
     }
 
     // call the function
-    SET_BRK_CALL_TO( call );
     if (TNUM_OBJ(func) != T_FUNCTION) {
         result = DoOperation2Args(CallFuncListOper, func, args);
     }
