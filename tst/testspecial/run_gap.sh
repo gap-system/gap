@@ -14,6 +14,6 @@ gfile="$2"
 #    so the output is usable on other machines
 GAPROOT=$(cd ../..; pwd)
 ( echo "LogTo(\"${outfile}.tmp\");" ; cat "$gfile" ; echo "QUIT;" ) |
-    "$gap" -r -A -b -x 200 2>/dev/null >/dev/null
+    "$gap" -r -A -b -x 800 2>/dev/null >/dev/null
 sed "s:${GAPROOT//:/\\:}:GAPROOT:g" < "${outfile}.tmp"
 rm "${outfile}.tmp"
