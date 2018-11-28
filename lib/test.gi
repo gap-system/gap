@@ -15,8 +15,8 @@
 ##    return First([1..Length(a)],  i-> not IsBound(b[i]) or b[i] <> a[i]);
 ##  end;
 
-InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
-  local lines, inp, pos, outp, ign, commands, i, skipstate, checkifelseendif, foundcmd;
+InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
+  local lines, inp, pos, outp, ign, commands, i, skipstate, checkifelseendif, foundcmd, testError;
   lines := SplitString(str, "\n", "");
   inp := [];
   pos := [];
@@ -24,6 +24,13 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
   ign := [];
   commands := [];
   i := 1;
+  testError := function(s)
+     if IsStream(fnam) then
+        ErrorNoReturn(s, " in test stream, line ", i);
+    else
+        ErrorNoReturn(s, " at ", fnam, ":", i);
+    fi;
+  end;
   checkifelseendif := l -> ForAny(["#@if","#@else","#@fi"], x -> StartsWith(l, x));
   # Set to true if we find a #@if, #@else or #@endif. Used to check these do not
   # occur in the middle of a single input/output test block.
@@ -42,7 +49,7 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
         Add(ign, i);
         if StartsWith(lines[i], "#@if") then
             if skipstate <> 0 then
-                Error("Invalid test file: Nested #@if");
+                testError("Invalid test file: Nested #@if");
             fi;
             if EvalString(lines[i]{[5..Length(lines[i])]}) then
                 skipstate := 1;
@@ -51,16 +58,16 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
             fi;
         elif StartsWith(lines[i], "#@else") then
             if skipstate = 0 then
-                Error("Invalid test file: #@else without #@if");
+                testError("Invalid test file: #@else without #@if");
             elif AbsoluteValue(skipstate) = 2 then
-                Error("Invalid test file: two #@else");
+                testError("Invalid test file: two #@else");
             else
                 # change 1 -> -2, -1 -> 2
                 skipstate := skipstate * -2;
             fi;
         else # Must be #@fi
             if skipstate = 0 then
-                Error("Invalid test file: #@fi without #@if");
+                testError("Invalid test file: #@fi without #@if");
             fi;
             skipstate := 0;
         fi;
@@ -111,27 +118,30 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments)
       Add(pos, i);
       i := i+1;
     elif Length(lines[i]) > 1 and lines[i]{[1..2]} = "> " then
+      if Length(outp) > 0 and Length(outp[Length(outp)]) > 0 then
+        testError("Invalid test file: '> ' continuation found in the middle of a test output");
+      fi;
       if foundcmd then
-        Error("#@ commands cannot occur in the middle of a single test");
+        testError("Invalid test file: #@ command found in the middle of a single test");
       fi;
       Append(inp[Length(inp)], lines[i]{[3..Length(lines[i])]});
       Add(inp[Length(inp)], '\n');
       i := i+1;
     elif Length(outp) > 0 then
       if foundcmd then
-        Error("#@ commands cannot occur in the middle of a single test");
+        testError("Invalid test file: #@ command found in the middle of a single test");
       fi;
       Append(outp[Length(outp)], lines[i]);
       Add(outp[Length(outp)], '\n');
       i := i+1;
     else
-      Error("Invalid data at line ", i, " of test file");
+      testError("Invalid test file");
       i := i+1;
     fi;
   od;
 
   if skipstate <> 0 then
-    Error("Invalid test file: Unterminated #@if");
+    testError("Invalid test file: Unterminated #@if");
   fi;
 
   Add(pos, ign);
@@ -150,7 +160,7 @@ InstallGlobalFunction(ParseTestFile, function(arg)
   if str = fail then
     ErrorNoReturn("Cannot read file ",fnam,"\n");
   fi;
-  return ParseTestInput(str, ignorecomments);
+  return ParseTestInput(str, ignorecomments, fnam);
 end);
 
 InstallGlobalFunction(RunTests, function(arg)
@@ -553,7 +563,7 @@ InstallGlobalFunction("Test", function(arg)
   fi;
   
   # split input into GAP input, GAP output and comments
-  pf := ParseTestInput(full, opts.ignoreComments);
+  pf := ParseTestInput(full, opts.ignoreComments, fnam);
 
   # Warn if we have not found any tests in the file
   if IsEmpty(pf.inp) then

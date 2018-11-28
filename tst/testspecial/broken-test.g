@@ -1,0 +1,14 @@
+Test("broken-test-1.tst", rec(width := 800));
+quit;
+Test("broken-test-2.tst", rec(width := 800));
+quit;
+Test("broken-test-3.tst", rec(width := 800));
+quit;
+Test("broken-test-4.tst", rec(width := 800));
+quit;
+Test("broken-test-5.tst", rec(width := 800));
+quit;
+Test("invalidtestfile.tst", rec(width := 800));
+quit;
+Test("empty.tst", rec(width := 800));
+Test("tinytest.tst", rec(width := 800));
