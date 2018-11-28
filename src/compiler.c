@@ -2843,13 +2843,7 @@ CVar CompRefLVar (
     CVar                val;            /* value, result                   */
     LVar                lvar;           /* local variable                  */
 
-    /* get the local variable                                              */
-    if ( IS_REFLVAR(expr) ) {
-        lvar = LVAR_REFLVAR(expr);
-    }
-    else {
-        lvar = (LVar)(READ_EXPR(expr, 0));
-    }
+    lvar = LVAR_REFLVAR(expr);
 
     /* emit the code to get the value                                      */
     if ( CompGetUseHVar( lvar ) ) {
