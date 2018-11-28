@@ -15,7 +15,7 @@ Error, breakpoint
 Stack trace:
 *[1] Error( "breakpoint" );
    @ *stdin*:9
- [2] g( 10 )
+ [2] return g( 10 ) + y;
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:14
@@ -40,7 +40,7 @@ Error, Variable: 'unbound_global' must have a value
 Stack trace:
 *[1] Error( "breakpoint" );
    @ *stdin*:9
- [2] g( 10 )
+ [2] return g( 10 ) + y;
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:6
@@ -57,7 +57,7 @@ Error, Variable: 'unbound_higher' must have an assigned value
 Stack trace:
 *[1] Error( "breakpoint" );
    @ *stdin*:9
- [2] g( 10 )
+ [2] return g( 10 ) + y;
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:12
@@ -76,7 +76,7 @@ Error, Variable: 'unbound_local' must have an assigned value
 Stack trace:
 *[1] Error( "breakpoint" );
    @ *stdin*:9
- [2] g( 10 )
+ [2] return g( 10 ) + y;
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:17
@@ -103,7 +103,7 @@ Error, breakpoint
 Stack trace:
 *[1] Error( "breakpoint" );
    @ *stdin*:9
- [2] g( 10 )
+ [2] return g( 10 ) + y;
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:23
@@ -116,7 +116,7 @@ Stack trace:
    @ *stdin*:20
  [2] Error( "breakpoint" );
    @ *stdin*:9
- [3] g( 10 )
+ [3] return g( 10 ) + y;
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
@@ -137,7 +137,7 @@ Stack trace:
    @ *stdin*:20
  [2] Error( "breakpoint" );
    @ *stdin*:9
- [3] g( 10 )
+ [3] return g( 10 ) + y;
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:6
@@ -150,7 +150,7 @@ Stack trace:
    @ *stdin*:20
  [2] Error( "breakpoint" );
    @ *stdin*:9
- [3] g( 10 )
+ [3] return g( 10 ) + y;
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:9
@@ -161,7 +161,7 @@ Stack trace:
    @ *stdin*:20
  [2] Error( "breakpoint" );
    @ *stdin*:9
- [3] g( 10 )
+ [3] return g( 10 ) + y;
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:10
@@ -172,7 +172,7 @@ Stack trace:
    @ *stdin*:20
  [2] Error( "breakpoint" );
    @ *stdin*:9
- [3] g( 10 )
+ [3] return g( 10 ) + y;
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:11
@@ -183,7 +183,7 @@ Stack trace:
    @ *stdin*:20
  [2] Error( "breakpoint" );
    @ *stdin*:9
- [3] g( 10 )
+ [3] return g( 10 ) + y;
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:12

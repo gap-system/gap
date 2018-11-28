@@ -71,30 +71,30 @@ rec(
 gap> String(r);
 Error, recursion depth trap (5000)
 Stack trace:
-*[1] String( record.(nam) )
+*[1] Append( str, String( record.(nam) ) );
    @ GAPROOT/lib/record.gi:LINE
- [2] String( record.(nam) )
+ [2] Append( str, String( record.(nam) ) );
    @ GAPROOT/lib/record.gi:LINE
- [3] String( record.(nam) )
+ [3] Append( str, String( record.(nam) ) );
    @ GAPROOT/lib/record.gi:LINE
- [4] String( record.(nam) )
+ [4] Append( str, String( record.(nam) ) );
    @ GAPROOT/lib/record.gi:LINE
- [5] String( record.(nam) )
+ [5] Append( str, String( record.(nam) ) );
    @ GAPROOT/lib/record.gi:LINE
 ...  at *stdin*:4
 you may 'return;'
 brk> return; # try once more
 Error, recursion depth trap (5000)
 Stack trace:
-*[1] String( record.(nam) )
+*[1] Append( str, String( record.(nam) ) );
    @ GAPROOT/lib/record.gi:LINE
- [2] String( record.(nam) )
+ [2] Append( str, String( record.(nam) ) );
    @ GAPROOT/lib/record.gi:LINE
- [3] String( record.(nam) )
+ [3] Append( str, String( record.(nam) ) );
    @ GAPROOT/lib/record.gi:LINE
- [4] String( record.(nam) )
+ [4] Append( str, String( record.(nam) ) );
    @ GAPROOT/lib/record.gi:LINE
- [5] String( record.(nam) )
+ [5] Append( str, String( record.(nam) ) );
    @ GAPROOT/lib/record.gi:LINE
 ...  at *stdin*:4
 you may 'return;'

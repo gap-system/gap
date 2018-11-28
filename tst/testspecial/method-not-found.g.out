@@ -3,7 +3,7 @@ gap> f:=a->a+a;; f(());
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `+' on 2 arguments
 Stack trace:
-*[1] a + a
+*[1] return a + a;
    @ *stdin*:3
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:3

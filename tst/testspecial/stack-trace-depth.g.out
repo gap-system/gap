@@ -36,13 +36,13 @@ Error, foo
 Stack trace:
 *[1] Error( "foo" );
    @ *stdin*:3
- [2] f11(  )
+ [2] return f11(  );
    @ *stdin*:6
- [3] f10(  )
+ [3] return f10(  );
    @ *stdin*:9
- [4] f9(  )
+ [4] return f9(  );
    @ *stdin*:12
- [5] f8(  )
+ [5] return f8(  );
    @ *stdin*:15
 ...  at *stdin*:35
 you can 'quit;' to quit to outer loop, or
@@ -51,25 +51,25 @@ brk> SetUserPreference("WhereDepth", 12);
 brk> Where();
 * [1] Error( "foo" );
     @ *stdin*:3
-  [2] f11(  )
+  [2] return f11(  );
     @ *stdin*:6
-  [3] f10(  )
+  [3] return f10(  );
     @ *stdin*:9
-  [4] f9(  )
+  [4] return f9(  );
     @ *stdin*:12
-  [5] f8(  )
+  [5] return f8(  );
     @ *stdin*:15
-  [6] f7(  )
+  [6] return f7(  );
     @ *stdin*:18
-  [7] f6(  )
+  [7] return f6(  );
     @ *stdin*:21
-  [8] f5(  )
+  [8] return f5(  );
     @ *stdin*:24
-  [9] f4(  )
+  [9] return f4(  );
     @ *stdin*:27
- [10] f3(  )
+ [10] return f3(  );
     @ *stdin*:30
- [11] f2(  )
+ [11] return f2(  );
     @ *stdin*:33
 <function "f1">( <arguments> )
  called from read-eval loop at *errin*:2
@@ -77,13 +77,13 @@ brk> SetUserPreference("WhereDepth", 5);
 brk> Where();
 *[1] Error( "foo" );
    @ *stdin*:3
- [2] f11(  )
+ [2] return f11(  );
    @ *stdin*:6
- [3] f10(  )
+ [3] return f10(  );
    @ *stdin*:9
- [4] f9(  )
+ [4] return f9(  );
    @ *stdin*:12
- [5] f8(  )
+ [5] return f8(  );
    @ *stdin*:15
 ...  at *errin*:4
 brk> quit;
