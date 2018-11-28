@@ -118,3 +118,67 @@ quit;
 ##  Verify issue #1373 is fixed
 ##
 InstallMethod( Matrix, [IsFilter, IsSemiring, IsMatrixObj], {a,b,c} -> fail );
+quit;
+
+
+# Reproduce issue #3044
+function() if 1 <> 2 and 3 then return 42;; fi; end();
+Where();
+quit;
+
+
+function() if 1 = 2 or 3 then return 42;; fi; end();
+Where();
+quit;
+
+
+function() if 1 <> 2 and not 3 then return 42;; fi; end();
+Where();
+quit;
+
+
+function() if not 3 then return 42;; fi; end();
+Where();
+quit;
+
+
+function() if 3 or false then return 42;; fi; end();
+Where();
+quit;
+
+
+function() if 3 and false then return 42;; fi; end();
+Where();
+quit;
+
+
+l:=[ function() if 1 <> 2 and ~ then return 42;; fi; end ];;
+l[1]();
+Where();
+#quit;
+
+
+function() if 1 <> 2 and ((1,2,2) = (1,2,3)) then return 42;; fi; end();
+Where();
+quit;
+
+
+f:=function(b,c) if 1=2 or (b and c) then return 42;; fi; end;;
+f(3,true);
+Where();
+quit;
+
+f(true,3);
+Where();
+quit;
+
+
+f:=function(b,c) if 1=1 and (b or c) then return 42;; fi; end;;
+f(3,false);
+Where();
+quit;
+
+f(false,3);
+Where();
+quit;
+
