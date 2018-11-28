@@ -49,14 +49,6 @@ inline UInt EXEC_STAT(Stat stat)
     return (*STATE(CurrExecStatFuncs)[ tnum ]) ( stat );
 }
 
-static inline void SET_BRK_CALL_TO_EXPR(Expr expr, Stat stat)
-{
-    if (!(expr & 3))
-        SET_BRK_CALL_TO(expr);
-    else
-        SET_BRK_CALL_TO(stat);
-}
-
 extern inline Obj EXEC_CURR_FUNC(void)
 {
     Obj result;
@@ -226,7 +218,6 @@ UInt            ExecIf (
 
     /* if the condition evaluates to 'true', execute the if-branch body    */
     cond = READ_STAT(stat, 0);
-    SET_BRK_CALL_TO_EXPR(cond, stat);
     if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
         /* execute the if-branch body and leave                            */
@@ -247,7 +238,6 @@ UInt            ExecIfElse (
 
     /* if the condition evaluates to 'true', execute the if-branch body    */
     cond = READ_STAT(stat, 0);
-    SET_BRK_CALL_TO_EXPR(cond, stat);
     if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
         /* execute the if-branch body and leave                            */
@@ -277,7 +267,6 @@ UInt            ExecIfElif (
 
         /* if the condition evaluates to 'true', execute the branch body   */
         cond = READ_STAT(stat, 2 * (i - 1));
-        SET_BRK_CALL_TO_EXPR(cond, stat);
         if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
             /* execute the branch body and leave                           */
@@ -307,7 +296,6 @@ UInt            ExecIfElifElse (
 
         /* if the condition evaluates to 'true', execute the branch body   */
         cond = READ_STAT(stat, 2 * (i - 1));
-        SET_BRK_CALL_TO_EXPR(cond, stat);
         if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
             /* execute the branch body and leave                           */
@@ -678,7 +666,7 @@ static ALWAYS_INLINE UInt ExecWhileHelper(Stat stat, UInt nr)
     body3 = (nr >= 3) ? READ_STAT(stat, 3) : 0;
 
     /* while the condition evaluates to 'true', execute the body           */
-    while ( SET_BRK_CALL_TO_EXPR(cond, stat), EVAL_BOOL_EXPR( cond ) != False ) {
+    while ( EVAL_BOOL_EXPR( cond ) != False ) {
 
 #if !defined(HAVE_SIGNAL)
         /* test for an interrupt                                           */
@@ -693,6 +681,8 @@ static ALWAYS_INLINE UInt ExecWhileHelper(Stat stat, UInt nr)
             EXEC_STAT_IN_LOOP(body2);
         if (nr >= 3)
             EXEC_STAT_IN_LOOP(body3);
+
+        SET_BRK_CALL_TO(stat);
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -764,7 +754,7 @@ static ALWAYS_INLINE UInt ExecRepeatHelper(Stat stat, UInt nr)
         if (nr >= 3)
             EXEC_STAT_IN_LOOP(body3);
 
-        SET_BRK_CALL_TO_EXPR(cond, stat);
+        SET_BRK_CALL_TO(stat);
 
     } while ( EVAL_BOOL_EXPR( cond ) == False );
 
