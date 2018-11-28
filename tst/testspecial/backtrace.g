@@ -78,7 +78,7 @@ InstallMethod( Matrix, [IsFilter, IsSemiring, IsMatrixObj], {a,b,c} -> fail );
 quit;
 
 
-# Reproduce issue #3044
+# Verify issue #3044 is fixed
 function() if 1 <> 2 and 3 then return 42;; fi; end();
 Where();
 quit;
