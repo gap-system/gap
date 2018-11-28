@@ -371,7 +371,7 @@ gap>
 gap> # Verify issue #3044 is fixed
 gap> function() if 1 <> 2 and 3 then return 42;; fi; end();
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  1 <> 2 at *stdin*:45 called from 
+  1 <> 2 and 3 at *stdin*:45 called from 
 <function "unknown">( <arguments> )
  called from read-eval loop at *stdin*:45
 type 'quit;' to quit to outer loop
@@ -383,7 +383,7 @@ gap>
 gap> 
 gap> function() if 1 = 2 or 3 then return 42;; fi; end();
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  1 = 2 at *stdin*:47 called from 
+  1 = 2 or 3 at *stdin*:47 called from 
 <function "unknown">( <arguments> )
  called from read-eval loop at *stdin*:47
 type 'quit;' to quit to outer loop
@@ -395,7 +395,7 @@ gap>
 gap> 
 gap> function() if 1 <> 2 and not 3 then return 42;; fi; end();
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  1 <> 2 at *stdin*:49 called from 
+  not 3 at *stdin*:49 called from 
 <function "unknown">( <arguments> )
  called from read-eval loop at *stdin*:49
 type 'quit;' to quit to outer loop
@@ -407,9 +407,7 @@ gap>
 gap> 
 gap> function() if not 3 then return 42;; fi; end();
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  if not 3 then
-    return 42;
-fi; at *stdin*:51 called from 
+  not 3 at *stdin*:51 called from 
 <function "unknown">( <arguments> )
  called from read-eval loop at *stdin*:51
 type 'quit;' to quit to outer loop
@@ -421,9 +419,7 @@ gap>
 gap> 
 gap> function() if 3 or false then return 42;; fi; end();
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  if 3 or false then
-    return 42;
-fi; at *stdin*:53 called from 
+  3 or false at *stdin*:53 called from 
 <function "unknown">( <arguments> )
  called from read-eval loop at *stdin*:53
 type 'quit;' to quit to outer loop
@@ -435,9 +431,7 @@ gap>
 gap> 
 gap> function() if 3 and false then return 42;; fi; end();
 Error, <expr> must be 'true' or 'false' or a filter (not the integer 3) in
-  if 3 and false then
-    return 42;
-fi; at *stdin*:55 called from 
+  3 and false at *stdin*:55 called from 
 <function "unknown">( <arguments> )
  called from read-eval loop at *stdin*:55
 type 'quit;' to quit to outer loop
@@ -450,7 +444,7 @@ gap>
 gap> l:=[ function() if 1 <> 2 and ~ then return 42;; fi; end ];;
 gap> l[1]();
 Error, '~' does not have a value here in
-  1 <> 2 at *stdin*:57 called from 
+  1 <> 2 and ~ at *stdin*:57 called from 
 <function "unknown">( <arguments> )
  called from read-eval loop at *stdin*:58
 gap> Where();
@@ -460,7 +454,7 @@ gap>
 gap> 
 gap> function() if 1 <> 2 and ((1,2,2) = (1,2,3)) then return 42;; fi; end();
 Error, Permutation: cycles must be disjoint and duplicate-free in
-  1 <> 2 at *stdin*:63 called from 
+  1 <> 2 and (1,2,2) = (1,2,3) at *stdin*:63 called from 
 <function "unknown">( <arguments> )
  called from read-eval loop at *stdin*:63
 type 'quit;' to quit to outer loop
@@ -473,7 +467,7 @@ gap>
 gap> f:=function(b,c) if 1=2 or (b and c) then return 42;; fi; end;;
 gap> f(3,true);
 Error, <expr> must be 'true' or 'false' or a filter (not the integer 3) in
-  1 = 2 at *stdin*:65 called from 
+  b and c at *stdin*:65 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:66
 type 'quit;' to quit to outer loop
@@ -484,7 +478,7 @@ brk> quit;
 gap> 
 gap> f(true,3);
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  1 = 2 at *stdin*:65 called from 
+  b and c at *stdin*:65 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:67
 type 'quit;' to quit to outer loop
@@ -497,7 +491,7 @@ gap>
 gap> f:=function(b,c) if 1=1 and (b or c) then return 42;; fi; end;;
 gap> f(3,false);
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  1 = 1 at *stdin*:69 called from 
+  b or c at *stdin*:69 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:70
 type 'quit;' to quit to outer loop
@@ -508,7 +502,7 @@ brk> quit;
 gap> 
 gap> f(false,3);
 Error, <expr> must be 'true' or 'false' (not the integer 3) in
-  1 = 1 at *stdin*:69 called from 
+  b or c at *stdin*:69 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:71
 type 'quit;' to quit to outer loop
