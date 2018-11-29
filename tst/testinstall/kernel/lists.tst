@@ -14,10 +14,6 @@ false
 # TODO: need to create custom list type to test this
 
 #
-gap> SET_FILTER_LIST(fail,fail);
-Error, <oper> must be an operation
-
-#
 gap> enum:=Enumerator(Integers);
 <enumerator of Integers>
 gap> IsList(enum);

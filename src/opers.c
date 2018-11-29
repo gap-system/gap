@@ -2895,7 +2895,7 @@ Obj DoSetProperty (
     if ( IS_PLIST(obj) || IS_RANGE(obj) || IS_STRING_REP(obj)
            || IS_BLIST_REP(obj) )  {
         if ( val == True ) {
-            FuncSET_FILTER_LIST( 0, obj, self );
+            SET_FILTER_LIST( obj, self );
         }
     }
     else {
