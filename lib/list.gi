@@ -3760,21 +3760,6 @@ InstallMethod( ViewObj,
 
 #############################################################################
 ##
-#M  SetIsSSortedList( <list>, <val> ) . . . . . . . . method for kernel lists
-##
-InstallMethod( SetIsSSortedList,
-        "method for an internal list and a Boolean",
-        [IsList and IsInternalRep, IsBool],
-        function(l,val)
-    if val then
-        SET_FILTER_LIST(l, IS_SSORT_LIST);
-    else
-        SET_FILTER_LIST(l, IS_NSORT_LIST);
-    fi;
-end);
-
-#############################################################################
-##
 #F  PlainListCopy( <list> ) . . . . . . . . . . make a plain list copy of
 ##                                          a list
 ##
