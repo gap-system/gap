@@ -765,14 +765,6 @@ local type, newtype;
                or IsNoImmediateMethodsObject(obj) ) then
         RunImmediateMethods( obj, SUB_FLAGS( newtype![POS_FLAGS_TYPE], type![POS_FLAGS_TYPE] ) );
       fi;
-    elif IS_PLIST_REP( obj )  then
-        SET_FILTER_LIST( obj, filter );
-    elif IS_STRING_REP( obj )  then
-        SET_FILTER_LIST( obj, filter );
-    elif IS_BLIST( obj )  then
-        SET_FILTER_LIST( obj, filter );
-    elif IS_RANGE( obj )  then
-        SET_FILTER_LIST( obj, filter );
     else
         Error("cannot set filter for internal object");
     fi;
@@ -809,14 +801,6 @@ BIND_GLOBAL( "ResetFilterObj", function ( obj, filter )
         SET_TYPE_COMOBJ( obj, SupType2( TYPE_OBJ(obj), filter ) );
     elif IS_DATOBJ( obj ) then
         SET_TYPE_DATOBJ( obj, SupType2( TYPE_OBJ(obj), filter ) );
-    elif IS_PLIST_REP( obj )  then
-        RESET_FILTER_LIST( obj, filter );
-    elif IS_STRING_REP( obj )  then
-        RESET_FILTER_LIST( obj, filter );
-    elif IS_BLIST( obj )  then
-        RESET_FILTER_LIST( obj, filter );
-    elif IS_RANGE( obj )  then
-        RESET_FILTER_LIST( obj, filter );
     else
         Error("cannot reset filter for internal object");
     fi;

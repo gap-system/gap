@@ -1996,41 +1996,6 @@ error:
 
 /****************************************************************************
 **
-*F  FuncRESET_FILTER_LIST( <self>, <list>, <filter> ) . . . . .  reset filter
-*/
-Obj FuncRESET_FILTER_LIST (
-    Obj             self,
-    Obj             list,
-    Obj             filter )
-{
-    Int             fn;
-    Int             new;
-
-    /* this could be done by a table lookup                                */
-    if ( filter == IsSSortListProp ) {
-        fn = FN_IS_SSORT;
-    }
-    else if ( filter == IsNSortListProp ) {
-        fn = FN_IS_NSORT;
-    }
-    else {
-        return 0;
-    }
-
-    /* try to set the filter                                               */
-    new = ResetFiltListTNums[TNUM_OBJ(list)][fn];
-    if ( new > 0 ) {
-        RetypeBag( list, new );
-    }
-    else if ( new < 0 ) {
-        ErrorMayQuit("filter not possible for %s", (Int)TNAM_OBJ(list), 0);
-    }
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F * * * * * * * * * * * functions with checking  * * * * * * * * * * * * * *
 */
 
@@ -2150,7 +2115,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(IS_POSS_LIST_DEFAULT, 1, "list"),
     GVAR_FUNC(POS_LIST_DEFAULT, 3, "list, obj, start"),
     GVAR_FUNC(SET_FILTER_LIST, 2, "list, filter"),
-    GVAR_FUNC(RESET_FILTER_LIST, 2, "list, filter"),
     { 0, 0, 0, 0, 0 }
 
 };
