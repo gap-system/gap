@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "-62573183"
+#define FILE_CRC  "98793349"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
@@ -150,6 +150,8 @@ static GVar G_IsNoImmediateMethodsObject;
 static Obj  GF_IsNoImmediateMethodsObject;
 static GVar G_RunImmediateMethods;
 static Obj  GF_RunImmediateMethods;
+static GVar G_ErrorNoReturn;
+static Obj  GF_ErrorNoReturn;
 static GVar G_IGNORE__IMMEDIATE__METHODS;
 static Obj  GC_IGNORE__IMMEDIATE__METHODS;
 static GVar G_ResetFilterObj;
@@ -2037,6 +2039,18 @@ static Obj  HdlrFunc28 (
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
  
+ /* type := TYPE_OBJ( obj ); */
+ t_2 = GF_TYPE__OBJ;
+ t_1 = CALL_1ARGS( t_2, a_obj );
+ CHECK_FUNC_RESULT( t_1 )
+ l_type = t_1;
+ 
+ /* newtype := Subtype2( type, filter ); */
+ t_2 = GF_Subtype2;
+ t_1 = CALL_2ARGS( t_2, l_type, a_filter );
+ CHECK_FUNC_RESULT( t_1 )
+ l_newtype = t_1;
+ 
  /* if IS_POSOBJ( obj ) then */
  t_3 = GF_IS__POSOBJ;
  t_2 = CALL_1ARGS( t_3, a_obj );
@@ -2045,50 +2059,9 @@ static Obj  HdlrFunc28 (
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
-  /* type := TYPE_OBJ( obj ); */
-  t_2 = GF_TYPE__OBJ;
-  t_1 = CALL_1ARGS( t_2, a_obj );
-  CHECK_FUNC_RESULT( t_1 )
-  l_type = t_1;
-  
-  /* newtype := Subtype2( type, filter ); */
-  t_2 = GF_Subtype2;
-  t_1 = CALL_2ARGS( t_2, l_type, a_filter );
-  CHECK_FUNC_RESULT( t_1 )
-  l_newtype = t_1;
-  
   /* SET_TYPE_POSOBJ( obj, newtype ); */
   t_1 = GF_SET__TYPE__POSOBJ;
   CALL_2ARGS( t_1, a_obj, l_newtype );
-  
-  /* if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then */
-  t_4 = GC_IGNORE__IMMEDIATE__METHODS;
-  CHECK_BOUND( t_4, "IGNORE_IMMEDIATE_METHODS" )
-  CHECK_BOOL( t_4 )
-  t_3 = (Obj)(UInt)(t_4 != False);
-  t_2 = t_3;
-  if ( ! t_2 ) {
-   t_6 = GF_IsNoImmediateMethodsObject;
-   t_5 = CALL_1ARGS( t_6, a_obj );
-   CHECK_FUNC_RESULT( t_5 )
-   CHECK_BOOL( t_5 )
-   t_4 = (Obj)(UInt)(t_5 != False);
-   t_2 = t_4;
-  }
-  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
-  if ( t_1 ) {
-   
-   /* RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) ); */
-   t_1 = GF_RunImmediateMethods;
-   t_3 = GF_SUB__FLAGS;
-   t_4 = ElmPosObj( l_newtype, 2 );
-   t_5 = ElmPosObj( l_type, 2 );
-   t_2 = CALL_2ARGS( t_3, t_4, t_5 );
-   CHECK_FUNC_RESULT( t_2 )
-   CALL_2ARGS( t_1, a_obj, t_2 );
-   
-  }
-  /* fi */
   
  }
  
@@ -2101,50 +2074,9 @@ static Obj  HdlrFunc28 (
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( t_1 ) {
    
-   /* type := TYPE_OBJ( obj ); */
-   t_2 = GF_TYPE__OBJ;
-   t_1 = CALL_1ARGS( t_2, a_obj );
-   CHECK_FUNC_RESULT( t_1 )
-   l_type = t_1;
-   
-   /* newtype := Subtype2( type, filter ); */
-   t_2 = GF_Subtype2;
-   t_1 = CALL_2ARGS( t_2, l_type, a_filter );
-   CHECK_FUNC_RESULT( t_1 )
-   l_newtype = t_1;
-   
    /* SET_TYPE_COMOBJ( obj, newtype ); */
    t_1 = GF_SET__TYPE__COMOBJ;
    CALL_2ARGS( t_1, a_obj, l_newtype );
-   
-   /* if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then */
-   t_4 = GC_IGNORE__IMMEDIATE__METHODS;
-   CHECK_BOUND( t_4, "IGNORE_IMMEDIATE_METHODS" )
-   CHECK_BOOL( t_4 )
-   t_3 = (Obj)(UInt)(t_4 != False);
-   t_2 = t_3;
-   if ( ! t_2 ) {
-    t_6 = GF_IsNoImmediateMethodsObject;
-    t_5 = CALL_1ARGS( t_6, a_obj );
-    CHECK_FUNC_RESULT( t_5 )
-    CHECK_BOOL( t_5 )
-    t_4 = (Obj)(UInt)(t_5 != False);
-    t_2 = t_4;
-   }
-   t_1 = (Obj)(UInt)( ! ((Int)t_2) );
-   if ( t_1 ) {
-    
-    /* RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) ); */
-    t_1 = GF_RunImmediateMethods;
-    t_3 = GF_SUB__FLAGS;
-    t_4 = ElmPosObj( l_newtype, 2 );
-    t_5 = ElmPosObj( l_type, 2 );
-    t_2 = CALL_2ARGS( t_3, t_4, t_5 );
-    CHECK_FUNC_RESULT( t_2 )
-    CALL_2ARGS( t_1, a_obj, t_2 );
-    
-   }
-   /* fi */
    
   }
   
@@ -2157,63 +2089,51 @@ static Obj  HdlrFunc28 (
    t_1 = (Obj)(UInt)(t_2 != False);
    if ( t_1 ) {
     
-    /* type := TYPE_OBJ( obj ); */
-    t_2 = GF_TYPE__OBJ;
-    t_1 = CALL_1ARGS( t_2, a_obj );
-    CHECK_FUNC_RESULT( t_1 )
-    l_type = t_1;
-    
-    /* newtype := Subtype2( type, filter ); */
-    t_2 = GF_Subtype2;
-    t_1 = CALL_2ARGS( t_2, l_type, a_filter );
-    CHECK_FUNC_RESULT( t_1 )
-    l_newtype = t_1;
-    
     /* SET_TYPE_DATOBJ( obj, newtype ); */
     t_1 = GF_SET__TYPE__DATOBJ;
     CALL_2ARGS( t_1, a_obj, l_newtype );
-    
-    /* if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then */
-    t_4 = GC_IGNORE__IMMEDIATE__METHODS;
-    CHECK_BOUND( t_4, "IGNORE_IMMEDIATE_METHODS" )
-    CHECK_BOOL( t_4 )
-    t_3 = (Obj)(UInt)(t_4 != False);
-    t_2 = t_3;
-    if ( ! t_2 ) {
-     t_6 = GF_IsNoImmediateMethodsObject;
-     t_5 = CALL_1ARGS( t_6, a_obj );
-     CHECK_FUNC_RESULT( t_5 )
-     CHECK_BOOL( t_5 )
-     t_4 = (Obj)(UInt)(t_5 != False);
-     t_2 = t_4;
-    }
-    t_1 = (Obj)(UInt)( ! ((Int)t_2) );
-    if ( t_1 ) {
-     
-     /* RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) ); */
-     t_1 = GF_RunImmediateMethods;
-     t_3 = GF_SUB__FLAGS;
-     t_4 = ElmPosObj( l_newtype, 2 );
-     t_5 = ElmPosObj( l_type, 2 );
-     t_2 = CALL_2ARGS( t_3, t_4, t_5 );
-     CHECK_FUNC_RESULT( t_2 )
-     CALL_2ARGS( t_1, a_obj, t_2 );
-     
-    }
-    /* fi */
     
    }
    
    /* else */
    else {
     
-    /* Error( "cannot set filter for internal object" ); */
-    t_1 = GF_Error;
+    /* ErrorNoReturn( "cannot set filter for internal object" ); */
+    t_1 = GF_ErrorNoReturn;
     t_2 = MakeString( "cannot set filter for internal object" );
     CALL_1ARGS( t_1, t_2 );
     
    }
   }
+ }
+ /* fi */
+ 
+ /* if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then */
+ t_4 = GC_IGNORE__IMMEDIATE__METHODS;
+ CHECK_BOUND( t_4, "IGNORE_IMMEDIATE_METHODS" )
+ CHECK_BOOL( t_4 )
+ t_3 = (Obj)(UInt)(t_4 != False);
+ t_2 = t_3;
+ if ( ! t_2 ) {
+  t_6 = GF_IsNoImmediateMethodsObject;
+  t_5 = CALL_1ARGS( t_6, a_obj );
+  CHECK_FUNC_RESULT( t_5 )
+  CHECK_BOOL( t_5 )
+  t_4 = (Obj)(UInt)(t_5 != False);
+  t_2 = t_4;
+ }
+ t_1 = (Obj)(UInt)( ! ((Int)t_2) );
+ if ( t_1 ) {
+  
+  /* RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) ); */
+  t_1 = GF_RunImmediateMethods;
+  t_3 = GF_SUB__FLAGS;
+  t_4 = ElmPosObj( l_newtype, 2 );
+  t_5 = ElmPosObj( l_type, 2 );
+  t_2 = CALL_2ARGS( t_3, t_4, t_5 );
+  CHECK_FUNC_RESULT( t_2 )
+  CALL_2ARGS( t_1, a_obj, t_2 );
+  
  }
  /* fi */
  
@@ -3330,29 +3250,19 @@ static Obj  HdlrFunc1 (
  
  /* BIND_GLOBAL( "SetFilterObj", function ( obj, filter )
       local type, newtype;
+      type := TYPE_OBJ( obj );
+      newtype := Subtype2( type, filter );
       if IS_POSOBJ( obj ) then
-          type := TYPE_OBJ( obj );
-          newtype := Subtype2( type, filter );
           SET_TYPE_POSOBJ( obj, newtype );
-          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then
-              RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
-          fi;
       elif IS_COMOBJ( obj ) then
-          type := TYPE_OBJ( obj );
-          newtype := Subtype2( type, filter );
           SET_TYPE_COMOBJ( obj, newtype );
-          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then
-              RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
-          fi;
       elif IS_DATOBJ( obj ) then
-          type := TYPE_OBJ( obj );
-          newtype := Subtype2( type, filter );
           SET_TYPE_DATOBJ( obj, newtype );
-          if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then
-              RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
-          fi;
       else
-          Error( "cannot set filter for internal object" );
+          ErrorNoReturn( "cannot set filter for internal object" );
+      fi;
+      if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then
+          RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
       fi;
       return;
   end ); */
@@ -3362,7 +3272,7 @@ static Obj  HdlrFunc1 (
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, 741);
- SET_ENDLINE_BODY(t_4, 771);
+ SET_ENDLINE_BODY(t_4, 761);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3395,8 +3305,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[29], 2, 0, HdlrFunc29 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 793);
- SET_ENDLINE_BODY(t_4, 807);
+ SET_STARTLINE_BODY(t_4, 783);
+ SET_ENDLINE_BODY(t_4, 797);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3481,8 +3391,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[30], -1, 0, HdlrFunc30 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 857);
- SET_ENDLINE_BODY(t_4, 923);
+ SET_STARTLINE_BODY(t_4, 847);
+ SET_ENDLINE_BODY(t_4, 913);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3574,6 +3484,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_IsReadOnlyPositionalObjectRep = GVarName( "IsReadOnlyPositionalObjectRep" );
  G_IsNoImmediateMethodsObject = GVarName( "IsNoImmediateMethodsObject" );
  G_RunImmediateMethods = GVarName( "RunImmediateMethods" );
+ G_ErrorNoReturn = GVarName( "ErrorNoReturn" );
  G_IGNORE__IMMEDIATE__METHODS = GVarName( "IGNORE_IMMEDIATE_METHODS" );
  G_ResetFilterObj = GVarName( "ResetFilterObj" );
  G_Ignore = GVarName( "Ignore" );
@@ -3711,6 +3622,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "IsReadOnlyPositionalObjectRep", &GC_IsReadOnlyPositionalObjectRep );
  InitFopyGVar( "IsNoImmediateMethodsObject", &GF_IsNoImmediateMethodsObject );
  InitFopyGVar( "RunImmediateMethods", &GF_RunImmediateMethods );
+ InitFopyGVar( "ErrorNoReturn", &GF_ErrorNoReturn );
  InitCopyGVar( "IGNORE_IMMEDIATE_METHODS", &GC_IGNORE__IMMEDIATE__METHODS );
  InitCopyGVar( "ResetFilterObj", &GC_ResetFilterObj );
  InitFopyGVar( "ResetFilterObj", &GF_ResetFilterObj );
@@ -3820,7 +3732,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/type1.g",
- .crc         = -62573183,
+ .crc         = 98793349,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

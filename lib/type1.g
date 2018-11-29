@@ -730,43 +730,33 @@ end );
 ##  <Description>
 ##  <Ref Func="SetFilterObj"/> sets the value of <A>filter</A>
 ##  (and of all filters implied by <A>filter</A>) for <A>obj</A> to
-##  <K>true</K>,
+##  <K>true</K>.
+##  <P/>
+##  This may trigger immediate methods.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-#T document that immediate methods will be triggered?
-#T (then also in SetTypeObj and ChangeTypeObj ...)
 ##
 Unbind( SetFilterObj );
 BIND_GLOBAL( "SetFilterObj", function ( obj, filter )
 local type, newtype;
 
+    type:= TYPE_OBJ( obj );
+    newtype:= Subtype2( type, filter );
     if IS_POSOBJ( obj ) then
-      type:= TYPE_OBJ( obj );
-      newtype:= Subtype2( type, filter );
       SET_TYPE_POSOBJ( obj, newtype );
-      if not ( IGNORE_IMMEDIATE_METHODS
-               or IsNoImmediateMethodsObject(obj) ) then
-        RunImmediateMethods( obj, SUB_FLAGS( newtype![POS_FLAGS_TYPE], type![POS_FLAGS_TYPE] ) );
-      fi;
     elif IS_COMOBJ( obj ) then
-      type:= TYPE_OBJ( obj );
-      newtype:= Subtype2( type, filter );
       SET_TYPE_COMOBJ( obj, newtype );
-      if not ( IGNORE_IMMEDIATE_METHODS
-               or IsNoImmediateMethodsObject(obj) ) then
-        RunImmediateMethods( obj, SUB_FLAGS( newtype![POS_FLAGS_TYPE], type![POS_FLAGS_TYPE] ) );
-      fi;
     elif IS_DATOBJ( obj ) then
-      type:= TYPE_OBJ( obj );
-      newtype:= Subtype2( type, filter );
       SET_TYPE_DATOBJ( obj, newtype );
-      if not ( IGNORE_IMMEDIATE_METHODS
-               or IsNoImmediateMethodsObject(obj) ) then
-        RunImmediateMethods( obj, SUB_FLAGS( newtype![POS_FLAGS_TYPE], type![POS_FLAGS_TYPE] ) );
-      fi;
     else
-        Error("cannot set filter for internal object");
+        ErrorNoReturn("cannot set filter for internal object");
+    fi;
+    
+    # run immediate methods
+    if not ( IGNORE_IMMEDIATE_METHODS
+             or IsNoImmediateMethodsObject(obj) ) then
+      RunImmediateMethods( obj, SUB_FLAGS( newtype![POS_FLAGS_TYPE], type![POS_FLAGS_TYPE] ) );
     fi;
 end );
 
