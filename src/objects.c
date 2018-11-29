@@ -819,26 +819,12 @@ void MakeImmutableError( Obj obj)
 
 void MakeImmutableComObj( Obj obj)
 {
-/*UInt i; */
-  /* 
-  for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i += 2 ) {
-       MakeImmutable(CONST_ADDR_OBJ(obj)[i]);
-       CHANGED_BAG(obj);
-    }
-  */
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
   CALL_1ARGS( PostMakeImmutableOp, obj);
 }
 
 void MakeImmutablePosObj( Obj obj)
 {
-/*UInt i; */
-  /* 
-  for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i += 1 ) {
-       MakeImmutable(CONST_ADDR_OBJ(obj)[i]);
-       CHANGED_BAG(obj);
-    }
-  */
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
   CALL_1ARGS( PostMakeImmutableOp, obj);
   

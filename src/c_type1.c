@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "-66698575"
+#define FILE_CRC  "-62573183"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
@@ -12,14 +12,6 @@ static GVar G_IS__LIST;
 static Obj  GF_IS__LIST;
 static GVar G_ADD__LIST;
 static Obj  GF_ADD__LIST;
-static GVar G_IS__PLIST__REP;
-static Obj  GF_IS__PLIST__REP;
-static GVar G_IS__BLIST;
-static Obj  GF_IS__BLIST;
-static GVar G_IS__RANGE;
-static Obj  GF_IS__RANGE;
-static GVar G_IS__STRING__REP;
-static Obj  GF_IS__STRING__REP;
 static GVar G_Error;
 static Obj  GF_Error;
 static GVar G_TYPE__OBJ;
@@ -77,10 +69,6 @@ static GVar G_fail;
 static Obj  GC_fail;
 static GVar G_LEN__LIST;
 static Obj  GF_LEN__LIST;
-static GVar G_SET__FILTER__LIST;
-static Obj  GF_SET__FILTER__LIST;
-static GVar G_RESET__FILTER__LIST;
-static Obj  GF_RESET__FILTER__LIST;
 static GVar G_GASMAN;
 static Obj  GF_GASMAN;
 static GVar G_InstallAttributeFunction;
@@ -2216,78 +2204,14 @@ static Obj  HdlrFunc28 (
     
    }
    
-   /* elif IS_PLIST_REP( obj ) then */
+   /* else */
    else {
-    t_3 = GF_IS__PLIST__REP;
-    t_2 = CALL_1ARGS( t_3, a_obj );
-    CHECK_FUNC_RESULT( t_2 )
-    CHECK_BOOL( t_2 )
-    t_1 = (Obj)(UInt)(t_2 != False);
-    if ( t_1 ) {
-     
-     /* SET_FILTER_LIST( obj, filter ); */
-     t_1 = GF_SET__FILTER__LIST;
-     CALL_2ARGS( t_1, a_obj, a_filter );
-     
-    }
     
-    /* elif IS_STRING_REP( obj ) then */
-    else {
-     t_3 = GF_IS__STRING__REP;
-     t_2 = CALL_1ARGS( t_3, a_obj );
-     CHECK_FUNC_RESULT( t_2 )
-     CHECK_BOOL( t_2 )
-     t_1 = (Obj)(UInt)(t_2 != False);
-     if ( t_1 ) {
-      
-      /* SET_FILTER_LIST( obj, filter ); */
-      t_1 = GF_SET__FILTER__LIST;
-      CALL_2ARGS( t_1, a_obj, a_filter );
-      
-     }
-     
-     /* elif IS_BLIST( obj ) then */
-     else {
-      t_3 = GF_IS__BLIST;
-      t_2 = CALL_1ARGS( t_3, a_obj );
-      CHECK_FUNC_RESULT( t_2 )
-      CHECK_BOOL( t_2 )
-      t_1 = (Obj)(UInt)(t_2 != False);
-      if ( t_1 ) {
-       
-       /* SET_FILTER_LIST( obj, filter ); */
-       t_1 = GF_SET__FILTER__LIST;
-       CALL_2ARGS( t_1, a_obj, a_filter );
-       
-      }
-      
-      /* elif IS_RANGE( obj ) then */
-      else {
-       t_3 = GF_IS__RANGE;
-       t_2 = CALL_1ARGS( t_3, a_obj );
-       CHECK_FUNC_RESULT( t_2 )
-       CHECK_BOOL( t_2 )
-       t_1 = (Obj)(UInt)(t_2 != False);
-       if ( t_1 ) {
-        
-        /* SET_FILTER_LIST( obj, filter ); */
-        t_1 = GF_SET__FILTER__LIST;
-        CALL_2ARGS( t_1, a_obj, a_filter );
-        
-       }
-       
-       /* else */
-       else {
-        
-        /* Error( "cannot set filter for internal object" ); */
-        t_1 = GF_Error;
-        t_2 = MakeString( "cannot set filter for internal object" );
-        CALL_1ARGS( t_1, t_2 );
-        
-       }
-      }
-     }
-    }
+    /* Error( "cannot set filter for internal object" ); */
+    t_1 = GF_Error;
+    t_2 = MakeString( "cannot set filter for internal object" );
+    CALL_1ARGS( t_1, t_2 );
+    
    }
   }
  }
@@ -2396,78 +2320,14 @@ static Obj  HdlrFunc29 (
     
    }
    
-   /* elif IS_PLIST_REP( obj ) then */
+   /* else */
    else {
-    t_3 = GF_IS__PLIST__REP;
-    t_2 = CALL_1ARGS( t_3, a_obj );
-    CHECK_FUNC_RESULT( t_2 )
-    CHECK_BOOL( t_2 )
-    t_1 = (Obj)(UInt)(t_2 != False);
-    if ( t_1 ) {
-     
-     /* RESET_FILTER_LIST( obj, filter ); */
-     t_1 = GF_RESET__FILTER__LIST;
-     CALL_2ARGS( t_1, a_obj, a_filter );
-     
-    }
     
-    /* elif IS_STRING_REP( obj ) then */
-    else {
-     t_3 = GF_IS__STRING__REP;
-     t_2 = CALL_1ARGS( t_3, a_obj );
-     CHECK_FUNC_RESULT( t_2 )
-     CHECK_BOOL( t_2 )
-     t_1 = (Obj)(UInt)(t_2 != False);
-     if ( t_1 ) {
-      
-      /* RESET_FILTER_LIST( obj, filter ); */
-      t_1 = GF_RESET__FILTER__LIST;
-      CALL_2ARGS( t_1, a_obj, a_filter );
-      
-     }
-     
-     /* elif IS_BLIST( obj ) then */
-     else {
-      t_3 = GF_IS__BLIST;
-      t_2 = CALL_1ARGS( t_3, a_obj );
-      CHECK_FUNC_RESULT( t_2 )
-      CHECK_BOOL( t_2 )
-      t_1 = (Obj)(UInt)(t_2 != False);
-      if ( t_1 ) {
-       
-       /* RESET_FILTER_LIST( obj, filter ); */
-       t_1 = GF_RESET__FILTER__LIST;
-       CALL_2ARGS( t_1, a_obj, a_filter );
-       
-      }
-      
-      /* elif IS_RANGE( obj ) then */
-      else {
-       t_3 = GF_IS__RANGE;
-       t_2 = CALL_1ARGS( t_3, a_obj );
-       CHECK_FUNC_RESULT( t_2 )
-       CHECK_BOOL( t_2 )
-       t_1 = (Obj)(UInt)(t_2 != False);
-       if ( t_1 ) {
-        
-        /* RESET_FILTER_LIST( obj, filter ); */
-        t_1 = GF_RESET__FILTER__LIST;
-        CALL_2ARGS( t_1, a_obj, a_filter );
-        
-       }
-       
-       /* else */
-       else {
-        
-        /* Error( "cannot reset filter for internal object" ); */
-        t_1 = GF_Error;
-        t_2 = MakeString( "cannot reset filter for internal object" );
-        CALL_1ARGS( t_1, t_2 );
-        
-       }
-      }
-     }
-    }
+    /* Error( "cannot reset filter for internal object" ); */
+    t_1 = GF_Error;
+    t_2 = MakeString( "cannot reset filter for internal object" );
+    CALL_1ARGS( t_1, t_2 );
+    
    }
   }
  }
@@ -3491,14 +3351,6 @@ static Obj  HdlrFunc1 (
           if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then
               RunImmediateMethods( obj, SUB_FLAGS( newtype![2], type![2] ) );
           fi;
-      elif IS_PLIST_REP( obj ) then
-          SET_FILTER_LIST( obj, filter );
-      elif IS_STRING_REP( obj ) then
-          SET_FILTER_LIST( obj, filter );
-      elif IS_BLIST( obj ) then
-          SET_FILTER_LIST( obj, filter );
-      elif IS_RANGE( obj ) then
-          SET_FILTER_LIST( obj, filter );
       else
           Error( "cannot set filter for internal object" );
       fi;
@@ -3510,7 +3362,7 @@ static Obj  HdlrFunc1 (
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
  SET_STARTLINE_BODY(t_4, 741);
- SET_ENDLINE_BODY(t_4, 779);
+ SET_ENDLINE_BODY(t_4, 771);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3533,14 +3385,6 @@ static Obj  HdlrFunc1 (
           SET_TYPE_COMOBJ( obj, SupType2( TYPE_OBJ( obj ), filter ) );
       elif IS_DATOBJ( obj ) then
           SET_TYPE_DATOBJ( obj, SupType2( TYPE_OBJ( obj ), filter ) );
-      elif IS_PLIST_REP( obj ) then
-          RESET_FILTER_LIST( obj, filter );
-      elif IS_STRING_REP( obj ) then
-          RESET_FILTER_LIST( obj, filter );
-      elif IS_BLIST( obj ) then
-          RESET_FILTER_LIST( obj, filter );
-      elif IS_RANGE( obj ) then
-          RESET_FILTER_LIST( obj, filter );
       else
           Error( "cannot reset filter for internal object" );
       fi;
@@ -3551,8 +3395,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[29], 2, 0, HdlrFunc29 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 801);
- SET_ENDLINE_BODY(t_4, 823);
+ SET_STARTLINE_BODY(t_4, 793);
+ SET_ENDLINE_BODY(t_4, 807);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3637,8 +3481,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[30], -1, 0, HdlrFunc30 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
- SET_STARTLINE_BODY(t_4, 873);
- SET_ENDLINE_BODY(t_4, 939);
+ SET_STARTLINE_BODY(t_4, 857);
+ SET_ENDLINE_BODY(t_4, 923);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -3662,10 +3506,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_IS__REC = GVarName( "IS_REC" );
  G_IS__LIST = GVarName( "IS_LIST" );
  G_ADD__LIST = GVarName( "ADD_LIST" );
- G_IS__PLIST__REP = GVarName( "IS_PLIST_REP" );
- G_IS__BLIST = GVarName( "IS_BLIST" );
- G_IS__RANGE = GVarName( "IS_RANGE" );
- G_IS__STRING__REP = GVarName( "IS_STRING_REP" );
  G_Error = GVarName( "Error" );
  G_TYPE__OBJ = GVarName( "TYPE_OBJ" );
  G_FAMILY__OBJ = GVarName( "FAMILY_OBJ" );
@@ -3694,8 +3534,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_COMPACT__TYPE__IDS = GVarName( "COMPACT_TYPE_IDS" );
  G_fail = GVarName( "fail" );
  G_LEN__LIST = GVarName( "LEN_LIST" );
- G_SET__FILTER__LIST = GVarName( "SET_FILTER_LIST" );
- G_RESET__FILTER__LIST = GVarName( "RESET_FILTER_LIST" );
  G_GASMAN = GVarName( "GASMAN" );
  G_InstallAttributeFunction = GVarName( "InstallAttributeFunction" );
  G_InstallOtherMethod = GVarName( "InstallOtherMethod" );
@@ -3803,10 +3641,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "IS_REC", &GF_IS__REC );
  InitFopyGVar( "IS_LIST", &GF_IS__LIST );
  InitFopyGVar( "ADD_LIST", &GF_ADD__LIST );
- InitFopyGVar( "IS_PLIST_REP", &GF_IS__PLIST__REP );
- InitFopyGVar( "IS_BLIST", &GF_IS__BLIST );
- InitFopyGVar( "IS_RANGE", &GF_IS__RANGE );
- InitFopyGVar( "IS_STRING_REP", &GF_IS__STRING__REP );
  InitFopyGVar( "Error", &GF_Error );
  InitCopyGVar( "TYPE_OBJ", &GC_TYPE__OBJ );
  InitFopyGVar( "TYPE_OBJ", &GF_TYPE__OBJ );
@@ -3836,8 +3670,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "COMPACT_TYPE_IDS", &GF_COMPACT__TYPE__IDS );
  InitCopyGVar( "fail", &GC_fail );
  InitFopyGVar( "LEN_LIST", &GF_LEN__LIST );
- InitFopyGVar( "SET_FILTER_LIST", &GF_SET__FILTER__LIST );
- InitFopyGVar( "RESET_FILTER_LIST", &GF_RESET__FILTER__LIST );
  InitFopyGVar( "GASMAN", &GF_GASMAN );
  InitFopyGVar( "InstallAttributeFunction", &GF_InstallAttributeFunction );
  InitFopyGVar( "InstallOtherMethod", &GF_InstallOtherMethod );
@@ -3988,7 +3820,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/type1.g",
- .crc         = -66698575,
+ .crc         = -62573183,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
