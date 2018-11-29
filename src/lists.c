@@ -1957,21 +1957,13 @@ UInt ClearFiltsTNums [ LAST_REAL_TNUM ];
 
 /****************************************************************************
 **
-*F  FuncSET_FILTER_LIST( <self>, <list>, <filter> ) . . . . . . .  set filter
+*F  SET_FILTER_LIST( <list>, <filter> ) . . . . . . . . . . . . .  set filter
 */
-Obj FuncSET_FILTER_LIST (
-    Obj             self,
-    Obj             list,
-    Obj             filter )
+Obj SET_FILTER_LIST(Obj list, Obj filter)
 {
     Int             new;
     Obj             flags;
 
-    if ( ! IS_OPERATION(filter) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
-    }
-    /* this could be done by a table lookup                                */
     flags = FLAGS_FILT(filter);
     if (FuncIS_SUBSET_FLAGS(0,flags,FLAGS_FILT(IsSSortListProp))==True) {
         new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_DENSE];
@@ -2114,7 +2106,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(IS_SSORT_LIST_DEFAULT, 1, "list"),
     GVAR_FUNC(IS_POSS_LIST_DEFAULT, 1, "list"),
     GVAR_FUNC(POS_LIST_DEFAULT, 3, "list, obj, start"),
-    GVAR_FUNC(SET_FILTER_LIST, 2, "list, filter"),
     { 0, 0, 0, 0, 0 }
 
 };

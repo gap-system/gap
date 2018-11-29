@@ -886,9 +886,9 @@ static inline void SET_FILT_LIST(Obj list, FilterNumber fn)
 
 /****************************************************************************
 **
-*F  FuncSET_FILTER_LIST( <self>, <list>, <filter> ) . . . . . . .  set filter
+*F  SET_FILTER_LIST( <list>, <filter> ) . . . . . . . . . . . . .  set filter
 */
-extern Obj FuncSET_FILTER_LIST ( Obj self, Obj list, Obj filter );
+extern Obj SET_FILTER_LIST(Obj list, Obj filter);
 
 /****************************************************************************
 **
