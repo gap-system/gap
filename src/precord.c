@@ -44,6 +44,7 @@
 #ifdef HPCGAP
 #include "hpc/aobjects.h"
 #include "hpc/traverse.h"
+#include "hpc/guards.h"
 #endif
 
 /****************************************************************************
@@ -249,7 +250,14 @@ UInt PositionPRec(Obj rec, UInt rnam, int cleanup)
     UInt high = LEN_PREC(rec);
     if (high > 0 && GET_RNAM_PREC(rec, high) > 0) {
         /* DIRTY! Not everything sorted! */
+#ifdef HPCGAP
+        // FIXME: Need to sort records before making them
+        // readonly or sharing them. This can be done in
+        // the traversal routines (in principle).
+        if (cleanup && CheckExclusiveWriteAccess(rec)) {
+#else
         if (cleanup) {
+#endif
             SortPRecRNam(rec,0);
         } else {
             /* We are not allowed to cleanup, so we live with it, we

@@ -1216,6 +1216,10 @@ Region * CurrentRegion(void)
     return TLS(currentRegion);
 }
 
+#ifdef DEBUG_GUARDS
+extern GVarDescriptor GUARD_ERROR_STACK;
+#endif
+
 #ifdef VERBOSE_GUARDS
 
 static void PrintGuardError(char *       buffer,
@@ -1284,5 +1288,79 @@ void ReadGuardError(Obj o)
         (Int)o, (Int)TNAM_OBJ(o));
 }
 #endif
+
+// These are temporary debugging functions.
+
+static Int NumReadErrors = 0;
+static Int NumWriteErrors = 0;
+volatile int GuardDummy;
+
+#ifdef DEBUG_GUARDS
+
+#include <execinfo.h>
+
+#define BACKTRACE_DEPTH 128
+
+void SetGuardErrorStack(void)
+{
+    void *  callstack[BACKTRACE_DEPTH];
+    int     depth = backtrace(callstack, BACKTRACE_DEPTH);
+    char ** calls = backtrace_symbols(callstack, depth);
+    Obj     stack = NEW_PLIST_IMM(T_PLIST, depth);
+    SET_LEN_PLIST(stack, depth - 1);
+    for (int i = 1; i < depth; i++) {
+        char * p = calls[i] + 1;
+        char * q = p;
+        while (*p) {
+            if (p[-1] == ' ' && p[0] == ' ')
+                p++;
+            else
+                *q++ = *p++;
+        }
+        *q++ = 0;
+        SET_ELM_PLIST(stack, i, MakeImmString(calls[i]));
+    }
+    free(calls);
+    SetGVar(&GUARD_ERROR_STACK, stack);
+}
+#endif
+
+PURE_FUNC int HandleReadGuardError(Bag bag)
+{
+    NumReadErrors++;
+    // We shift some of the rarer checks here to
+    // avoid overloading ReadCheck().
+    if (REGION(bag)->alt_owner == GetTLS())
+        return 0;
+    if (TLS(DisableGuards))
+        return 0;
+    SetGVar(&LastInaccessibleGVar, bag);
+#ifdef DEBUG_GUARDS
+    SetGuardErrorStack();
+#endif
+    ErrorMayQuit(
+        "Attempt to read object %i of type %s without having read access",
+        (Int)bag, (Int)TNAM_OBJ(bag));
+    return 0;
+}
+
+PURE_FUNC int HandleWriteGuardError(Bag bag)
+{
+    NumWriteErrors++;
+    // We shift some of the rarer checks here to
+    // avoid overloading ReadCheck().
+    if (REGION(bag)->alt_owner == GetTLS())
+        return 0;
+    if (TLS(DisableGuards))
+        return 0;
+    SetGVar(&LastInaccessibleGVar, bag);
+#ifdef DEBUG_GUARDS
+    SetGuardErrorStack();
+#endif
+    ErrorMayQuit(
+        "Attempt to write object %i of type %s without having write access",
+        (Int)bag, (Int)TNAM_OBJ(bag));
+    return 0;
+}
 
 #endif
