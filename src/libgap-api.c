@@ -40,9 +40,10 @@ static inline Obj NewPlistFromArray(const Obj * list, Int length)
 void GAP_Initialize(int              argc,
                     char **          argv,
                     GAP_CallbackFunc markBagsCallback,
-                    GAP_CallbackFunc errorCallback)
+                    GAP_CallbackFunc errorCallback,
+                    int              handleSignals)
 {
-    InitializeGap(&argc, argv);
+    InitializeGap(&argc, argv, handleSignals);
     SetExtraMarkFuncBags(markBagsCallback);
     STATE(JumpToCatchCallback) = errorCallback;
 

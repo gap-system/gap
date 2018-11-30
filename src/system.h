@@ -535,18 +535,16 @@ Int RegisterSyLongjmpObserver(voidfunc);
 
 /****************************************************************************
 **
-*F  InitSystem( <argc>, <argv> )  . . . . . . . . . initialize system package
+*F  InitSystem( <argc>, <argv>, <handleSignals> ) . initialize system package
 **
 **  'InitSystem' is called very early during the initialization from  'main'.
 **  It is passed the command line array  <argc>, <argv>  to look for options.
 **
 **  For UNIX it initializes the default files 'stdin', 'stdout' and 'stderr',
-**  installs the handler 'syAnswerIntr' to answer the user interrupts
-**  '<ctr>-C', scans the command line for options, sets up the GAP root paths,
-**  locates the '.gaprc' file (if any), and more.
+**  and if handleSignals is non-zero installs the handler 'syAnswerIntr' to
+**  answer the user interrupts '<ctr>-C', scans the command line for options,
+**  sets up the GAP root paths, locates the '.gaprc' file (if any), and more.
 */
-extern void InitSystem (
-            Int                 argc,
-            Char *              argv [] );
+void InitSystem(Int argc, Char * argv[], UInt handleSignals);
 
 #endif // GAP_SYSTEM_H

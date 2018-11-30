@@ -62,8 +62,7 @@ void test_eval(const char * cmd)
 int main(int argc, char ** argv)
 {
     printf("# Initializing GAP...\n");
-    GAP_Initialize(argc, argv, 0, 0);
-    CollectBags(0, 1);    // full GC
+    GAP_Initialize(argc, argv, 0, 0, 1);
     test_eval("1+2+3;");
     test_eval("g:=FreeGroup(2);");
     test_eval("a:=g.1;");

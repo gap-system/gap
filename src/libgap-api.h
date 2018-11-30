@@ -141,10 +141,11 @@ static inline int GAP_Error_Postjmp_(int JumpRet)
 typedef void (*GAP_CallbackFunc)(void);
 
 // TODO: document this function
-extern void GAP_Initialize(int              argc,
-                           char **          argv,
-                           GAP_CallbackFunc markBagsCallback,
-                           GAP_CallbackFunc errorCallback);
+void GAP_Initialize(int              argc,
+                    char **          argv,
+                    GAP_CallbackFunc markBagsCallback,
+                    GAP_CallbackFunc errorCallback,
+                    int              handleSignals);
 
 
 ////

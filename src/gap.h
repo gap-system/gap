@@ -119,11 +119,9 @@ enum {
 
 /****************************************************************************
 **
-*F  InitializeGap( <argc>, <argv> ) . . . . . . . . . . . . . . . .  init GAP
+*F  InitializeGap( <argc>, <argv>, <handleSignals> )  . . . . . . .  init GAP
 */
-extern void InitializeGap (
-            int *               pargc,
-            char *              argv [] );
+void InitializeGap(int * pargc, char * argv[], UInt handleSignals);
 
 
 #endif // GAP_GAP_H
