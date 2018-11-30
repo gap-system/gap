@@ -29,6 +29,7 @@
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"
+#include "hpc/thread.h"
 #endif
 
 /****************************************************************************
@@ -397,10 +398,12 @@ static Obj FuncDEGREE_FFE_DEFAULT(Obj self, Obj ffe)
 */
 Obj TypeFFE(Obj ffe)
 {
-    if (VAL_FFE(ffe) == 0)
-        return ELM_PLIST(TypeFF0, FLD_FFE(ffe));
-    else
-        return ELM_PLIST(TypeFF, FLD_FFE(ffe));
+    Obj types = (VAL_FFE(ffe) == 0) ? TypeFF0 : TypeFF;
+#ifdef HPCGAP
+    return ATOMIC_ELM_PLIST(types, FLD_FFE(ffe));
+#else
+    return ELM_PLIST(types, FLD_FFE(ffe));
+#endif
 }
 
 
@@ -1363,6 +1366,9 @@ static Obj FuncLOG_FFE_DEFAULT(Obj self, Obj opZ, Obj opR)
 **  the smallest integer <i> such that '<i> * <z>^0 = <z>'.
 */
 static Obj IntFF;
+#ifdef HPCGAP
+static Int NumFF;
+#endif
 
 static Obj INT_FF(FF ff)
 {
@@ -1374,7 +1380,12 @@ static Obj INT_FF(FF ff)
     UInt                i;              /* loop variable                   */
 
     /* if the conversion table is not already known, construct it          */
+#ifdef HPCGAP
+    if ( NumFF < ff || (MEMBAR_READ(), ATOMIC_ELM_PLIST(IntFF, ff) == 0)) {
+        HashLock(&IntFF);
+#else
     if ( LEN_PLIST(IntFF) < ff || ELM_PLIST(IntFF,ff) == 0 ) {
+#endif
         q = SIZE_FF( ff );
         p = CHAR_FF( ff );
         conv = NEW_PLIST_IMM( T_PLIST, p-1 );
@@ -1385,11 +1396,23 @@ static Obj INT_FF(FF ff)
             SET_ELM_PLIST( conv, (z-1)/((q-1)/(p-1))+1, INTOBJ_INT(i) );
             z = succ[ z ];
         }
+#ifdef HPCGAP
+        GrowPlist(IntFF, ff);
+        ATOMIC_SET_ELM_PLIST( IntFF, ff, conv );
+        MEMBAR_WRITE();
+        NumFF = LEN_PLIST(IntFF);
+        HashUnlock(&IntFF);
+#else
         AssPlist( IntFF, ff, conv );
+#endif
     }
 
     /* return the conversion table                                           */
+#ifdef HPCGAP
+    return ATOMIC_ELM_PLIST( IntFF, ff);
+#else
     return ELM_PLIST( IntFF, ff );
+#endif
 }
 
 
@@ -1632,6 +1655,13 @@ static Int InitLibrary (
 
     IntFF = NEW_PLIST( T_PLIST, NUM_SHORT_FINITE_FIELDS );
     SET_LEN_PLIST( IntFF, NUM_SHORT_FINITE_FIELDS );
+
+#ifdef HPCGAP
+    MakeBagPublic(SuccFF);
+    MakeBagPublic(TypeFF);
+    MakeBagPublic(TypeFF0);
+    MakeBagPublic(IntFF);
+#endif
 
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );

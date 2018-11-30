@@ -55,6 +55,10 @@
 #include "ffdata.h"
 #include "objects.h"
 
+#ifdef HPCGAP
+#include "hpc/aobjects.h"
+#endif
+
 
 /****************************************************************************
 **
@@ -116,7 +120,11 @@ typedef UInt2       FF;
 **  Note that 'SUCC_FF' is a macro, so do not call  it  with  arguments  that
 **  side effects.
 */
+#ifdef HPCGAP
+#define SUCC_FF(ff)             ((const FFV*)(1+CONST_ADDR_OBJ( ATOMIC_ELM_PLIST( SuccFF, ff ) )))
+#else
 #define SUCC_FF(ff)             ((const FFV*)(1+CONST_ADDR_OBJ( ELM_PLIST( SuccFF, ff ) )))
+#endif
 
 extern  Obj             SuccFF;
 
