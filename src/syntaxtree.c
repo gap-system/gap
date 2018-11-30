@@ -161,6 +161,9 @@ static Obj SyntaxTreeIntExpr(Obj result, Expr expr)
         value = OBJ_INTEXPR(expr);
     else {
         size = SIZE_EXPR(expr) / sizeof(UInt) - 1;
+        if (T_INTNEG == READ_EXPR(expr, 0))
+            size = -size;
+
         value = MakeObjInt(CONST_ADDR_EXPR(expr) + 1, size);
     }
 
@@ -776,7 +779,7 @@ Obj FuncSYNTAX_TREE(Obj self, Obj func)
 }
 
 static StructGVarFunc GVarFuncs[] = { GVAR_FUNC(SYNTAX_TREE, 1, "function"),
-                                      { 0 } };
+                                      { 0, 0, 0, 0, 0 } };
 
 static Int InitKernel(StructInitInfo * module)
 {
