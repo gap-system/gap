@@ -127,7 +127,7 @@ matrix:
 
 script:
   - set -e
-  - gcov --version
+  - etc/travis_fastfail.sh
   - bash etc/ci-prepare.sh
   - bash etc/ci.sh
 
