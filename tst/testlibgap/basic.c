@@ -5,7 +5,7 @@
 int main(int argc, char ** argv)
 {
     printf("# Initializing GAP...\n");
-    GAP_Initialize(argc, argv, 0, 0);
+    GAP_Initialize(argc, argv, 0, 0, 1);
     test_eval("1+2+3;");
     test_eval("g:=FreeGroup(2);");
     test_eval("a:=g.1;");

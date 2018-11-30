@@ -1041,7 +1041,8 @@ UInt SyOriginalArgc;
 
 void InitSystem (
     Int                 argc,
-    Char *              argv [] )
+    Char *              argv [],
+    UInt                handleSignals )
 {
     Char *              *ptrlist;
     UInt                i;             /* loop variable                   */
@@ -1098,7 +1099,9 @@ void InitSystem (
     rl_initialize ();
 #endif
     
-    SyInstallAnswerIntr();
+    if (handleSignals) {
+        SyInstallAnswerIntr();
+    }
 
 #if defined(SYS_DEFAULT_PATHS)
     SySetGapRootPath( SYS_DEFAULT_PATHS );
