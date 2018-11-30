@@ -436,7 +436,7 @@ int realmain( int argc, char * argv[] )
   SetupGAPLocation(argc, argv);
 
   /* initialize everything and read init.g which runs the GAP session */
-  InitializeGap( &argc, argv );
+  InitializeGap( &argc, argv, 1 );
   if (!STATE(UserHasQUIT)) {         /* maybe the user QUIT from the initial
                                    read of init.g  somehow*/
     /* maybe compile in which case init.g got skipped */
@@ -1698,10 +1698,11 @@ static Obj POST_RESTORE;
 
 void InitializeGap (
     int *               pargc,
-    char *              argv [] )
+    char *              argv [],
+    UInt                handleSignals )
 {
     /* initialize the basic system and gasman                              */
-    InitSystem( *pargc, argv );
+    InitSystem( *pargc, argv, handleSignals );
 
     /* Initialise memory  -- have to do this here to make sure we are at top of C stack */
     InitBags(SyStorMin,

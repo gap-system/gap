@@ -5,7 +5,7 @@
 #include "common.h"
 int main(int argc, char ** argv)
 {
-    GAP_Initialize(argc, argv, 0, 0);
+    GAP_Initialize(argc, argv, 0, 0, 1);
     test_eval("g:=FreeGroup(2);");
     test_eval("a:=g.1;");
     test_eval("b:=g.2;");
