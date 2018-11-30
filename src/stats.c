@@ -246,8 +246,6 @@ UInt            ExecIfElse (
 
     }
 
-    SET_BRK_CALL_TO(stat);
-
     /* otherwise execute the else-branch body and leave                    */
     body = READ_STAT(stat, 3);
     return EXEC_STAT( body );
@@ -276,8 +274,6 @@ UInt            ExecIfElif (
             return EXEC_STAT( body );
 
         }
-
-        SET_BRK_CALL_TO(stat);
     }
 
     /* return 0 (to indicate that no leave-statement was executed)         */
@@ -308,7 +304,6 @@ UInt            ExecIfElifElse (
 
         }
 
-        SET_BRK_CALL_TO(stat);
     }
 
     /* otherwise execute the else-branch body and leave                    */
@@ -944,7 +939,6 @@ UInt ExecAssert3Args (
         if ( decision == False ) {
             message = EVAL_EXPR(READ_STAT(stat, 2));
             if ( message != (Obj) 0 ) {
-                SET_BRK_CALL_TO( stat );
                 if (IS_STRING_REP( message ))
                     PrintString1( message );
                 else

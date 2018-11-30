@@ -48,6 +48,18 @@
 
 /****************************************************************************
 **
+*V  EvalExprFuncs[<type>]  . . . . . evaluator for expressions of type <type>
+**
+**  'EvalExprFuncs'  is the dispatch table   that contains for  every type of
+**  expressions a pointer  to the  evaluator  for expressions of this   type,
+**  i.e., the function that should be  called to evaluate expressions of this
+**  type.
+*/
+extern  Obj             (* EvalExprFuncs [256]) ( Expr expr );
+
+
+/****************************************************************************
+**
 *F  EVAL_EXPR(<expr>) . . . . . . . . . . . . . . . .  evaluate an expression
 **
 **  'EVAL_EXPR' evaluates the expression <expr>.
@@ -61,37 +73,21 @@
 **  Note that 'EVAL_EXPR' does not use 'TNUM_EXPR', since it also handles the
 **  two special cases that 'TNUM_EXPR' handles.
 */
-#define EVAL_EXPR(expr) \
-                        (IS_REFLVAR(expr) ? OBJ_REFLVAR(expr) : \
-                         (IS_INTEXPR(expr) ? OBJ_INTEXPR(expr) : \
-                          (*EvalExprFuncs[ TNUM_STAT(expr) ])( expr ) ))
-
-
-/****************************************************************************
-**
-*V  EvalExprFuncs[<type>]  . . . . . evaluator for expressions of type <type>
-**
-**  'EvalExprFuncs'  is the dispatch table   that contains for  every type of
-**  expressions a pointer  to the  evaluator  for expressions of this   type,
-**  i.e., the function that should be  called to evaluate expressions of this
-**  type.
-*/
-extern  Obj             (* EvalExprFuncs [256]) ( Expr expr );
-
-
-/****************************************************************************
-**
-*F  EVAL_BOOL_EXPR(<expr>)  . . . . evaluate an expression to a boolean value
-**
-**  'EVAL_BOOL_EXPR' evaluates   the expression  <expr> and  checks  that the
-**  value is either  'true' or 'false'.  If the  expression does not evaluate
-**  to 'true' or 'false', then an error is signalled.
-**
-**  'EVAL_BOOL_EXPR' returns the  value of <expr> (which  is either 'true' or
-**  'false').
-*/
-#define EVAL_BOOL_EXPR(expr) \
-                        ( (*EvalBoolFuncs[ TNUM_EXPR( expr ) ])( expr ) )
+#include "code.h"
+#include "vars.h"
+static inline Obj EVAL_EXPR(Expr expr)
+{
+    if (IS_REFLVAR(expr))
+        return OBJ_REFLVAR(expr);
+    if (IS_INTEXPR(expr))
+        return OBJ_INTEXPR(expr);
+    Stat oldStat = BRK_CALL_TO();
+    SET_BRK_CALL_TO(expr);
+    UInt tnum = TNUM_STAT(expr);
+    Obj val = (*EvalExprFuncs[tnum])( expr );
+    SET_BRK_CALL_TO(oldStat);
+    return val;
+}
 
 
 /****************************************************************************
@@ -105,6 +101,32 @@ extern  Obj             (* EvalExprFuncs [256]) ( Expr expr );
 */
 extern  Obj             (* EvalBoolFuncs [256]) ( Expr expr );
 
+
+/****************************************************************************
+**
+*F  EVAL_BOOL_EXPR(<expr>)  . . . . evaluate an expression to a boolean value
+**
+**  'EVAL_BOOL_EXPR' evaluates   the expression  <expr> and  checks  that the
+**  value is either  'true' or 'false'.  If the  expression does not evaluate
+**  to 'true' or 'false', then an error is signalled.
+**
+**  'EVAL_BOOL_EXPR' returns the  value of <expr> (which  is either 'true' or
+**  'false').
+*/
+extern Obj EvalUnknownBool(Expr expr);
+
+static inline Obj EVAL_BOOL_EXPR(Expr expr)
+{
+    UInt tnum = TNUM_STAT(expr);
+    if (EvalUnknownBool == EvalBoolFuncs[tnum]) {
+        return EvalUnknownBool(expr);
+    }
+    Stat oldStat = BRK_CALL_TO();
+    SET_BRK_CALL_TO(expr);
+    Obj val = (*EvalBoolFuncs[tnum])( expr );
+    SET_BRK_CALL_TO(oldStat);
+    return val;
+}
 
 /****************************************************************************
 **
