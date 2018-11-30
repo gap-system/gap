@@ -4,7 +4,8 @@ set -ex
 
 SRCDIR=${SRCDIR:-$PWD}
 
-# for debugging purposes print the environment and info about the HEAD commit
+# print some data useful for debugging issues with the build
+gcov --version
 printenv | sort
 git show --pretty=fuller -s
 
