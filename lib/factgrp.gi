@@ -1151,6 +1151,9 @@ function(G,N)
   return GenericFindActionKernel(G,N);
 end);
 
+RedispatchOnCondition(FindActionKernel,IsIdenticalObj,[IsGroup,IsGroup],
+  [IsGroup and IsFinite,IsGroup],0);
+
 InstallMethod(FindActionKernel,"general case: can't do",IsIdenticalObj,
   [IsGroup,IsGroup],0,
 function(G,N)
@@ -1400,6 +1403,12 @@ local h;
   fi;
   if h=fail then
     # now we try to find a suitable operation
+
+    # redispatch upon finiteness test, as following will fail in infinite case
+    if not HasIsFinite(G) and IsFinite(G) then
+      return NaturalHomomorphismByNormalSubgroupOp(G,N);
+    fi;
+
     h:=FindActionKernel(G,N);
     if h<>fail then
       Info(InfoFactor,1,"Action of degree ",
@@ -1414,6 +1423,15 @@ local h;
   # return the map
   return h;
 end);
+
+RedispatchOnCondition(NaturalHomomorphismByNormalSubgroupNCOrig,IsIdenticalObj,
+  [IsGroup,IsGroup],[IsGroup and IsFinite,IsGroup],0);
+
+RedispatchOnCondition(NaturalHomomorphismByNormalSubgroupInParent,true,
+  [IsGroup],[IsGroup and IsFinite],0);
+
+RedispatchOnCondition(FactorGroupNC,IsIdenticalObj,
+  [IsGroup,IsGroup],[IsGroup and IsFinite,IsGroup],0);
 
 #############################################################################
 ##
