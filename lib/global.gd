@@ -79,6 +79,23 @@ DeclareGlobalFunction("ValueGlobal");
 ##
 DeclareGlobalFunction("IsBoundGlobal");
 
+#############################################################################
+##
+#F  IsAutoGlobal( <name> )  . . . . . check if a global is automatic
+##
+##  <ManSection>
+##  <Func Name="IsAutoGlobal" Arg='name'/>
+##
+##  <Description>
+##  IsAutoGlobal ( <A>name</A> ) returns true if there is a global variable
+##  named <A>name</A>, declared using 
+##  <Ref Func="DeclareAutoreadableVariables"/>, which has not yet been
+##  accessed. This means reading this variable's value will cause code
+##  to be executed.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction("IsAutoGlobal");
 
 #############################################################################
 ##
