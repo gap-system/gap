@@ -135,7 +135,7 @@ GAPInfo.UseReadline := true;
 ##  <ManSection >
 ##  <Func Arg="[fname], [app]" Name="SaveCommandLineHistory" />
 ##  <Returns><K>fail</K> or number of saved lines</Returns>
-##  <Func Arg="[fname]" Name="ReadCommandLineHistory" />
+##  <Func Arg="[fname], [app]" Name="ReadCommandLineHistory" />
 ##  <Returns><K>fail</K> or number of added lines</Returns>
 ##  
 ##  <Description>
@@ -148,8 +148,8 @@ GAPInfo.UseReadline := true;
 ##  is overwritten.
 ##  <P/>
 ##  The  second command  is  the  converse, it  reads  the  lines from  file
-##  <A>fname</A> and <Emph>prepends</Emph> them  to the current command line
-##  history.
+##  <A>fname</A>. If the optional argument <A>app</A> is true the lines
+##  are appended to the history, else it <Emph>prepends</Emph> them.
 ##  <P/>
 ##  By  default, the command line history stores up to 1000 input lines.
 ##  command  line  history. This number may be restricted or enlarged via
@@ -716,12 +716,9 @@ BindGlobal("SaveCommandLineHistory", function(arg)
 end);
 
 BindGlobal("ReadCommandLineHistory", function(arg)
-  local hist, max, fnam, s;
+  local hist, max, fnam, s, append;
   hist := GAPInfo.History.Lines;
   max := UserPreference("HistoryMaxLines");
-  if Length(hist) >= max then
-    return 0;
-  fi;
   if Length(arg) > 0 and IsString(arg[1]) then
     fnam := arg[1];
   else
@@ -731,17 +728,38 @@ BindGlobal("ReadCommandLineHistory", function(arg)
       fnam := UserHomeExpand("~/.gap_hist");
     fi;
   fi;
+  if true in arg then
+    append := true;
+  else
+    append := false;
+  fi;
   s := StringFile(fnam);
   if s = fail then
     return fail;
   fi;
-  GAPInfo.History.Last := 0;
+
   s := SplitString(s, "", "\n");
-  if Length(s) + Length(hist)  > max then
-    s := s{[Length(s)-max+Length(hist)+1..Length(s)]};
+
+  if append then
+    if Length(s) > max then
+        s := s{[1..max]};
+    fi;
+    Append(hist, s);
+    if Length(hist) > max then
+        hist := hist{[Length(hist) - max..Length(hist)]};
+    fi;
+  else
+    if Length(hist) >= max then
+        return 0;
+    fi;
+    if Length(s) + Length(hist)  > max then
+        s := s{[Length(s)-max+Length(hist)+1..Length(s)]};
+    fi;
+    hist := Concatenation(s, hist);
   fi;
-  hist{[Length(s)+1..Length(s)+Length(hist)]} := hist;
-  hist{[1..Length(s)]} := s;
+  GAPInfo.History.Lines := hist;
+  GAPInfo.History.Last := 0;
+  GAPInfo.History.Pos := Length(hist) + 1;
   return Length(s);
 end);
 
