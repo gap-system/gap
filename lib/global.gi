@@ -97,6 +97,21 @@ InstallGlobalFunction( IsBoundGlobal,
 end);
 
 
+#############################################################################
+##
+#M  IsAutoGlobal ( <name> )  . . . .  check if a global is automatic
+## 
+
+
+InstallGlobalFunction( IsAutoGlobal, 
+        function (name)
+    local isauto;
+    CheckGlobalName( name );
+    isauto := IS_AUTO_GVAR(name);
+    Info( InfoGlobal, 3, 
+          "IsAutoGlobal: called for ", name, " returned ", isauto);
+    return isauto;
+end);
 
 #############################################################################
 ##

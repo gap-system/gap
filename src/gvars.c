@@ -1085,6 +1085,21 @@ Obj FuncISB_GVAR (
 #endif
 }
 
+/****************************************************************************
+**
+*F  FuncIS_AUTO_GVAR( <self>, <gvar> ) . . check if a global variable is auto
+*/
+
+Obj FuncIS_AUTO_GVAR (
+    Obj                 self,
+    Obj                 gvar )
+{
+    // check the argument
+    RequireStringRep("IS_AUTO_GVAR", gvar);
+    Obj expr = ExprGVar(GVarName( CONST_CSTR_STRING(gvar) ) );
+    return (expr && !IS_INTOBJ(expr)) ? True : False;
+}
+
 
 /****************************************************************************
 **
@@ -1493,6 +1508,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(IDENTS_GVAR, 0, ""),
     GVAR_FUNC(IDENTS_BOUND_GVARS, 0, ""),
     GVAR_FUNC(ISB_GVAR, 1, "gvar"),
+    GVAR_FUNC(IS_AUTO_GVAR, 1, "gvar"),
     GVAR_FUNC(ASS_GVAR, 2, "gvar, value"),
     GVAR_FUNC(VAL_GVAR, 1, "gvar"),
     GVAR_FUNC(UNB_GVAR, 1, "gvar"),
