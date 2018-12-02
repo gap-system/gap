@@ -72,7 +72,7 @@ DeclareGlobalFunction("ValueGlobal");
 ##  <Func Name="IsBoundGlobal" Arg='name'/>
 ##
 ##  <Description>
-##  IsBoundGlobal ( <A>name</A> ) returns true if a value currently bound
+##  IsBoundGlobal ( <A>name</A> ) returns true if a value is currently bound
 ##  to the global variable named by the string <A>name</A> and false otherwise
 ##  </Description>
 ##  </ManSection>
