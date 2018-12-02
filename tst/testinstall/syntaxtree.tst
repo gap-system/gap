@@ -16,7 +16,7 @@ Error, SYNTAX_TREE: <function> must be a plain GAP function (not a function)
 # Just try compiling all functions we can find in the workspace
 # to see nothing crashes.
 gap> for n in NamesGVars() do
->        if IsBoundGlobal(n) then
+>        if IsBoundGlobal(n) and not IsAutoGlobal(n) then
 >            v := ValueGlobal(n);
 >            if IsFunction(v) and not IsKernelFunction(v) then
 >                SYNTAX_TREE(v);
