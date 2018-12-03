@@ -11,7 +11,7 @@
 #############################################################################
 ##
 ##  <#GAPDoc Label="[1]{listcoef}">
-##  The following operations all perform arithmetic on row vectors.
+##  The following operations all perform arithmetic on row vectors,
 ##  given as homogeneous lists of the same length, containing
 ##  elements of a commutative ring.
 ##  <P/>
