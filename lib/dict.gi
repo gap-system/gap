@@ -305,7 +305,7 @@ end);
 #F  NewDictionary(<objcoll>,<look>)
 ##
 InstallGlobalFunction(NewDictionary,function(arg)
-local hashfun,obj,dom,lookup;
+local hashfun,obj,dom,lookup,maxblist;
   obj:=arg[1];
   lookup:=arg[2];
   if Length(arg)>2 then
@@ -319,20 +319,25 @@ local hashfun,obj,dom,lookup;
     dom:=UnderlyingCollection(dom);
   fi;
 
+  maxblist:=ValueOption("blistlimit");
+  if not IsInt(maxblist) then
+    #2^25 plist (for the lookup list that will hold e.g. positions)
+    # is 128MB size on a 32-bit system.
+    maxblist:=2^25;
+  fi;
+
   # are we given a domain, which can index very quickly?
   if dom<>fail and IsList(dom) and
     (IsQuickPositionList(dom) or
       (not IsMutable(dom) and IsSSortedList(dom) and
        CanEasilySortElements(dom[1]) )  )
-       #2^22 plist (for position lookup) is 16MB size
-      and Length(dom)<2^22 then
+      and Length(dom)<=maxblist then
     Info(InfoHash,1,obj," Position dictionary");
     return DictionaryByPosition(dom,lookup);
   elif dom<>fail and IsFreeLeftModule(dom) and
     IsFFECollection(LeftActingDomain(dom)) and
     Size(LeftActingDomain(dom))<=256
-    #2^22 plist (for position lookup) is 16MB size
-    and Size(dom)<2^22 then
+    and Size(dom)<=maxblist then
     # FF vector space: use enumerator for position
     Info(InfoHash,1,obj," Position dictionary for vector space");
     return DictionaryByPosition(Enumerator(dom),lookup);
