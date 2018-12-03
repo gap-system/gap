@@ -326,6 +326,7 @@ local  classes,    # classes to be constructed, the result
 	depthlev,   # depth at which N starts
 	one,zero,
 	vec,
+        dict,
 	kern,img;
 
     depthlev:=DepthOfPcElement(home,N[1]);
@@ -465,20 +466,28 @@ local  classes,    # classes to be constructed, the result
       #k:=ExternalOrbitsStabilizers( xset );
 
       # do the orbits stuff ourselves
-      blist:=BlistList([1..Length(aff)],[]);
+      dict:=NewDictionary(aff[1],true,aff); # keep the dictionary to avoid
+                                            # recreating blist.
+
+      if not IsPositionDictionary(dict) then
+        blist:=BlistList([1..Length(aff)],[]);
+      else
+        blist:=dict!.blist;
+      fi;
       next:=1;
       k:=[];
       while next<>fail do
-        S:=Pcs_OrbitStabilizer(gens,aff,aff[next],imgs,OnRight);
-	# tick off
-	if IsPositionDictionary(S.dictionary) then
-	  UniteBlist(blist,S.dictionary!.blist);
-	else
+	if IsPositionDictionary(dict) then
+          S:=Pcs_OrbitStabilizer(gens,aff,aff[next],imgs,OnRight,dict);
+          #S.dictionary!.vals:=[]; #Not really that expensive to keep
+        else
+          S:=Pcs_OrbitStabilizer(gens,aff,aff[next],imgs,OnRight);
 	  for i in S.orbit do
 	    blist[PositionCanonical(aff,i)]:=true;
 	  od;
 	fi;
 	Unbind(S.dictionary);
+        S.orbit:=S.orbit{[1]}; # save memory
 
 	Add(k,S);
 
