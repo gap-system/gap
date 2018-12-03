@@ -315,10 +315,12 @@ DeclareAttribute( "PcgsElementaryAbelianSeries", IsGroup );
 #############################################################################
 ##
 #A  IndicesEANormalSteps(<pcgs>)
+#A  IndicesEANormalStepsBounded(<pcgs>,<bound>)
 ##
 ##  <#GAPDoc Label="IndicesEANormalSteps">
 ##  <ManSection>
 ##  <Attr Name="IndicesEANormalSteps" Arg='pcgs'/>
+##  <Attr Name="IndicesEANormalStepsBounded" Arg='pcgs,bound'/>
 ##
 ##  <Description>
 ##  Let <A>pcgs</A> be a pcgs obtained as corresponding to a series of normal
@@ -343,11 +345,15 @@ DeclareAttribute( "PcgsElementaryAbelianSeries", IsGroup );
 ##  <P/>
 ##  Typically, <Ref Func="IndicesEANormalSteps"/> is set by
 ##  <Ref Func="PcgsElementaryAbelianSeries" Label="for a group"/>.
+##  <P/>
+##  The variant <Ref Func="IndicesEANormalStepsBounded"/> will aim to ensure
+##  that no factor will be larger than the given bound.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "IndicesEANormalSteps", IsPcgs );
+DeclareGlobalFunction( "IndicesEANormalStepsBounded" );
 
 #############################################################################
 ##
@@ -368,6 +374,8 @@ DeclareAttribute( "IndicesEANormalSteps", IsPcgs );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute("EANormalSeriesByPcgs",IsPcgs);
+
+DeclareGlobalFunction( "BoundedRefinementEANormalSeries" );
 
 #############################################################################
 ##

@@ -1491,7 +1491,79 @@ InstallPcgsSeriesFromIndices(CentralNormalSeriesByPcgs,
 InstallPcgsSeriesFromIndices(PCentralNormalSeriesByPcgsPGroup,
   IndicesPCentralNormalStepsPGroup);
 
+#############################################################################
+##
+#M  IndicesEANormalStepsBounded( <pcgs>,<bound> )
+##
+InstallGlobalFunction(IndicesEANormalStepsBounded,function(pcgs,bound)
+local rel,ind,gp,i,j,try;
+  rel:=RelativeOrders(pcgs);
+  ind:=IndicesEANormalSteps(pcgs);
+  gp:=GroupOfPcgs(pcgs);
+  i:=2;
+  while i<=Length(ind) do
+    if rel[ind[i-1]]^(ind[i]-ind[i-1])>bound then
+      # too large, try to make smaller while keeping pcgs
+      j:=ind[i-1]+1;
+      try:=true;
+      while try and j<ind[i] do
+        if IsNormal(gp,SubgroupByPcgs(gp,
+          InducedPcgsByPcSequenceNC(pcgs,pcgs{[j..Length(pcgs)]}))) then
+          # found normal in between
+          ind:=Concatenation(ind{[1..i-1]},[j],ind{[i..Length(ind)]});
+          try:=false;
+        else
+          j:=j+1;
+        fi;
+      od;
+      if try then i:=i+1;fi;
+    else
+      i:=i+1;
+    fi;
+  od;
+  return ind;
+end);
 
+#############################################################################
+##
+#M  BoundedRefinementEANormalSeries( <home>,<bound> )
+##
+## try to make series factors smaller, even if at cost of changing pcgs
+InstallGlobalFunction(BoundedRefinementEANormalSeries,function(home,ind,bound)
+local pcgs,rel,gp,i,indp,inds,module,sub;
+  pcgs:=home;
+  rel:=RelativeOrders(pcgs);
+  gp:=GroupOfPcgs(pcgs);
+  i:=2;
+  while i<=Length(ind) do
+    if rel[ind[i-1]]^(ind[i]-ind[i-1])>bound then
+      # too large, try to find submodule
+      indp:=InducedPcgsByPcSequenceNC(pcgs,pcgs{[ind[i-1]..Length(pcgs)]});
+      inds:=indp 
+        mod InducedPcgsByPcSequenceNC(pcgs,pcgs{[ind[i]..Length(pcgs)]});
+      module:=GModuleByMats(LinearActionLayer(gp,inds),GF(rel[ind[i-1]]));
+      if not MTX.IsIrreducible(module) then
+        # the subbasis will be part of the pcgs
+        sub:=MTX.Subbasis(module);
+        sub:=List(sub,x->PcElementByExponentsNC(inds,x));
+        Append(sub,pcgs{[ind[i]..Length(pcgs)]});
+        sub:=InducedPcgsByPcSequenceNC(pcgs,sub);
+        sub:=CanonicalPcgs(sub);
+        inds:=indp mod sub;
+        if Length(inds)=0 then Error("EE");fi;
+        # make new pcgs indices, relative orders stay the same
+        pcgs:=Concatenation(pcgs{[1..ind[i-1]-1]},inds!.pcSequence,sub);
+        pcgs:=PcgsByPcSequence(ElementsFamily(FamilyObj(home)),pcgs);
+        ind:=Concatenation(ind{[1..i-1]},[ind[i-1]+Length(inds)],
+          ind{[i..Length(ind)]});
+        SetIndicesChiefNormalSteps(pcgs,ind);
+      fi;
+    else
+      i:=i+1;
+    fi;
+  od;
+  return [pcgs,ind];
+end);
 
 
 
