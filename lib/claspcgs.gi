@@ -658,6 +658,22 @@ local  G,  home,  # the group and the home pcgs
   fi;
   indstep:=IndicesEANormalSteps(home);
 
+  # is the series large (but can be rectified)?
+  step:=IndicesEANormalStepsBounded(home,2^15);
+  if indstep<>step then
+    indstep:=step;
+    eas:=List(indstep,x->SubgroupByPcgs(GroupOfPcgs(home),
+      InducedPcgsByPcSequence(home,home{[x..Length(home)]})));
+  fi;
+
+  # is the series still large (and merits changing the pcgs)?
+  if Maximum(List([2..Length(eas)],x->IndexNC(eas[x-1],eas[x])))>2^15 then
+    step:=BoundedRefinementEANormalSeries(home,indstep,2^15);
+    home:=step[1];
+    indstep:=step[2];
+    eas:=ChiefNormalSeriesByPcgs(home);
+  fi;
+
   # check to which factors we want to lift
 
   mustlift:=List(eas,i->false);
