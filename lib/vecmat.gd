@@ -419,11 +419,23 @@ DeclareOperation( "ImmutableVector",[IsObject,IsRowVector]);
 ##  <Oper Name="NumberFFVector" Arg='vec, sz'/>
 ##
 ##  <Description>
-##  returns an integer that gives the position of the finite field row vector
+##  returns an integer that gives the position minus one of the finite field row vector
 ##  <A>vec</A> in the sorted list of all row vectors over the field with
 ##  <A>sz</A> elements in the same dimension as <A>vec</A>.
 ##  <Ref Func="NumberFFVector"/> returns <K>fail</K> if the vector cannot be
 ##  represented over the field with <A>sz</A> elements.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> v:=[0,1,2,0]*Z(3);;
+##  gap> NumberFFVector(v, 3);
+##  21
+##  gap> NumberFFVector(Zero(v),3);
+##  0
+##  gap> V:=EnumeratorSorted(GF(3)^4);
+##  <enumerator of ( GF(3)^4 )>
+##  gap> V[21+1] = v;
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
