@@ -3209,6 +3209,22 @@ InstallMethod( HallSubgroupOp,
 
 #############################################################################
 ##
+#M  HallSubgroupOp( <G>, <pi> ) . . . . . . . . . . . . .  for a finite group
+##
+InstallMethod( HallSubgroupOp,
+    "fallback method for a finite group",
+    [ IsGroup and IsFinite, IsList ],
+    function( G, pi )
+    local iso, H;
+
+    iso := IsomorphismPermGroup( G );
+    H := HallSubgroup( ImagesSource( iso ), pi );
+    return PreImagesSet(iso, H);
+    end );
+
+
+#############################################################################
+##
 #M  NormalHallSubgroupsFromSylows( <G> )
 ##
 InstallGlobalFunction( NormalHallSubgroupsFromSylows, function( arg )
