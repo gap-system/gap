@@ -1321,22 +1321,6 @@ Obj FuncIS_SSORT_LIST_DEFAULT (
 
 /****************************************************************************
 **
-*F  IsNSortListProp( <list> ) . . . . . . . . . . . . list which are unsorted
-**
-*/
-Obj IsNSortListProp;
-
-Obj FuncIS_NSORT_LIST (
-    Obj                 self,
-    Obj                 obj )
-{
-    ErrorQuit( "not ready yet", 0L, 0L );
-    return (Obj)0L;
-}
-
-
-/****************************************************************************
-**
 *F  IS_POSS_LIST(<list>)  . . . . . . . . . . . . .  test for positions lists
 *V  IsPossListFuncs[<type>] . . . . . . table of positions list test function
 **
@@ -1973,10 +1957,6 @@ Obj SET_FILTER_LIST(Obj list, Obj filter)
         new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_SSORT];
         if ( new > 0 )  RetypeBag( list, new );  else goto error;
     }
-    if (FuncIS_SUBSET_FLAGS(0,flags,FLAGS_FILT(IsNSortListProp))==True) {
-        new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_NSORT];
-        if ( new > 0 )  RetypeBag( list, new );  else goto error;
-    }
     return 0;
 
     /* setting of filter failed                                            */
@@ -2063,7 +2043,6 @@ static StructGVarAttr GVarAttrs [] = {
 static StructGVarProp GVarProps [] = {
 
     GVAR_FILTER(IS_SSORT_LIST, "obj", &IsSSortListProp),
-    GVAR_FILTER(IS_NSORT_LIST, "obj", &IsNSortListProp),
     GVAR_FILTER(IS_POSS_LIST, "obj", &IsPossListProp),
     { 0, 0, 0, 0, 0 }
 

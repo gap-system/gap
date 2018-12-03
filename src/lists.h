@@ -645,12 +645,6 @@ extern Obj IsSSortListProp;
 
 /****************************************************************************
 **
-*F  IsNSortListProp
-*/
-extern Obj IsNSortListProp;
-
-/****************************************************************************
-**
 *F  POS_LIST(<list>,<obj>,<start>)  . . . . . . . . find an element in a list
 *V  PosListFuncs[<type>]  . . . . . . . . . . .  table of searching functions
 **
