@@ -23,7 +23,7 @@ BUILDDIR=$PWD
 
 if [[ $HPCGAP = yes ]]
 then
-  CONFIGFLAGS="$CONFIGFLAGS --enable-hpcgap"
+  CONFIGFLAGS="--enable-hpcgap $CONFIGFLAGS"
 fi
 
 
@@ -36,12 +36,12 @@ then
   pushd julia-*
   JULIA_PATH=$(pwd)
   popd
-  CONFIGFLAGS="$CONFIGFLAGS --with-gc=julia --with-julia=$JULIA_PATH"
+  CONFIGFLAGS="--with-gc=julia --with-julia=$JULIA_PATH $CONFIGFLAGS"
 fi
 
 
 # configure and make GAP
-time "$SRCDIR/configure" $CONFIGFLAGS --enable-Werror
+time "$SRCDIR/configure" --enable-Werror $CONFIGFLAGS
 time make V=1 -j4
 
 # download packages; instruct wget to retry several times if the
