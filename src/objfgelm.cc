@@ -85,7 +85,9 @@ extern "C" {
 #ifdef HPCGAP
 #include "hpc/guards.h"
 #endif
-}
+
+} // extern "C"
+
 
 // OverflowType<UIntN> is a type which is larger enough to detect
 // overflow of multiplication of two IntN values. For 8 and 16 bit
