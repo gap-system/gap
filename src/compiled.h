@@ -11,7 +11,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#define GAP_IN_EXTERN_C
 #endif
 
 #include "ariths.h"
@@ -291,8 +290,7 @@ static inline Obj C_NORMALIZE_64BIT( Obj o) {
 #endif
 
 #ifdef __cplusplus
-}
-#undef GAP_IN_EXTERN_C
+} // extern "C"
 #endif
     
 #endif // GAP_COMPILED_H

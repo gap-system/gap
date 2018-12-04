@@ -80,7 +80,7 @@ SOURCES += src/objset.c
 SOURCES += src/opers.c
 SOURCES += src/permutat.cc
 SOURCES += src/plist.c
-SOURCES += src/pperm.c
+SOURCES += src/pperm.cc
 SOURCES += src/precord.c
 SOURCES += src/profile.c
 SOURCES += src/range.c
@@ -99,7 +99,7 @@ SOURCES += src/sysfiles.c
 SOURCES += src/sysmem.c
 SOURCES += src/system.c
 SOURCES += src/tietze.c
-SOURCES += src/trans.c
+SOURCES += src/trans.cc
 SOURCES += src/vars.c
 SOURCES += src/vec8bit.c
 SOURCES += src/vecffe.c
@@ -338,6 +338,8 @@ DEPFLAGS = -MQ "$@" -MMD -MP -MF $(DEPFILE)
 $(srcdir)/src/objfgelm.c:
 $(srcdir)/src/objpcgel.c:
 $(srcdir)/src/permutat.c:
+$(srcdir)/src/pperm.c:
+$(srcdir)/src/trans.c:
 
 # Build rule for C++ source files
 obj/%.lo: %.cc cnf/GAP-CXXFLAGS cnf/GAP-CPPFLAGS libtool

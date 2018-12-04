@@ -39,6 +39,8 @@
 *
 *****************************************************************************/
 
+extern "C" {
+
 #include "trans.h"
 
 #include "ariths.h"
@@ -55,6 +57,9 @@
 #include "permutat.h"
 #include "plist.h"
 #include "saveload.h"
+
+} // extern "C"
+
 
 #define MIN(a, b) (a < b ? a : b)
 #define MAX(a, b) (a < b ? b : a)
@@ -857,7 +862,7 @@ Obj FuncFLAT_KERNEL_TRANS(Obj self, Obj f)
 
 Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
 {
-    Obj new, *ptnew;
+    Obj newObj, *ptnew;
     const Obj *ptker;
     UInt deg, m, i;
 
@@ -873,15 +878,14 @@ Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
             return KER_TRANS(f);
         }
         else if (m == 0) {
-            new = NewEmptyPlist();
-            return new;
+            return NewEmptyPlist();
         }
         else {
-            new = NEW_PLIST(T_PLIST_CYC_NSORT, m);
-            SET_LEN_PLIST(new, m);
+            newObj = NEW_PLIST(T_PLIST_CYC_NSORT, m);
+            SET_LEN_PLIST(newObj, m);
 
             ptker = CONST_ADDR_OBJ(KER_TRANS(f)) + 1;
-            ptnew = ADDR_OBJ(new) + 1;
+            ptnew = ADDR_OBJ(newObj) + 1;
 
             // copy the kernel set up to minimum of m, deg
             if (m < deg) {
@@ -900,7 +904,7 @@ Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
                     *ptnew++ = INTOBJ_INT(i + RANK_TRANS2(f));
                 }
             }
-            return new;
+            return newObj;
         }
     }
     else if (TNUM_OBJ(f) == T_TRANS4) {
@@ -913,15 +917,14 @@ Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
             return KER_TRANS(f);
         }
         else if (m == 0) {
-            new = NewEmptyPlist();
-            return new;
+            return NewEmptyPlist();
         }
         else {
-            new = NEW_PLIST(T_PLIST_CYC_NSORT, m);
-            SET_LEN_PLIST(new, m);
+            newObj = NEW_PLIST(T_PLIST_CYC_NSORT, m);
+            SET_LEN_PLIST(newObj, m);
 
             ptker = CONST_ADDR_OBJ(KER_TRANS(f)) + 1;
-            ptnew = ADDR_OBJ(new) + 1;
+            ptnew = ADDR_OBJ(newObj) + 1;
 
             // copy the kernel set up to minimum of m, deg
             if (m < deg) {
@@ -940,7 +943,7 @@ Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
                     *ptnew++ = INTOBJ_INT(i + RANK_TRANS4(f));
                 }
             }
-            return new;
+            return newObj;
         }
     }
     RequireTransformation("FLAT_KERNEL_TRANS_INT", f);
@@ -1094,7 +1097,7 @@ Obj FuncIMAGE_SET_TRANS(Obj self, Obj f)
 
 Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
 {
-    Obj     im, new;
+    Obj     im, newObj;
     UInt    deg, m, len, i, j, rank;
     Obj *   ptnew;
     const Obj *ptim;
@@ -1112,11 +1115,10 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
         return FuncIMAGE_SET_TRANS(self, f);
     }
     else if (m == 0) {
-        new = ImmutableEmptyPlist;
-        return new;
+        return ImmutableEmptyPlist;
     }
     else if (m < deg) {
-        new = NEW_PLIST_IMM(T_PLIST_CYC, m);
+        newObj = NEW_PLIST_IMM(T_PLIST_CYC, m);
         pttmp = ResizeInitTmpTrans(deg);
 
         if (TNUM_OBJ(f) == T_TRANS2) {
@@ -1126,7 +1128,7 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
                 j = ptf2[i];
                 if (pttmp[j] == 0) {
                     pttmp[j] = ++rank;
-                    SET_ELM_PLIST(new, rank, INTOBJ_INT(j + 1));
+                    SET_ELM_PLIST(newObj, rank, INTOBJ_INT(j + 1));
                 }
             }
         }
@@ -1137,35 +1139,35 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
                 j = ptf4[i];
                 if (pttmp[j] == 0) {
                     pttmp[j] = ++rank;
-                    SET_ELM_PLIST(new, rank, INTOBJ_INT(j + 1));
+                    SET_ELM_PLIST(newObj, rank, INTOBJ_INT(j + 1));
                 }
             }
         }
-        SHRINK_PLIST(new, (Int)rank);
-        SET_LEN_PLIST(new, (Int)rank);
-        SortPlistByRawObj(new);
-        RetypeBag(new, T_PLIST_CYC_SSORT + IMMUTABLE);
+        SHRINK_PLIST(newObj, (Int)rank);
+        SET_LEN_PLIST(newObj, (Int)rank);
+        SortPlistByRawObj(newObj);
+        RetypeBag(newObj, T_PLIST_CYC_SSORT + IMMUTABLE);
     }
     else {
         // m > deg and so m is at least 1!
         im = FuncIMAGE_SET_TRANS(self, f);
         len = LEN_PLIST(im);
-        new = NEW_PLIST(T_PLIST_CYC_SSORT, m - deg + len);
-        SET_LEN_PLIST(new, m - deg + len);
+        newObj = NEW_PLIST(T_PLIST_CYC_SSORT, m - deg + len);
+        SET_LEN_PLIST(newObj, m - deg + len);
 
-        ptnew = ADDR_OBJ(new) + 1;
+        ptnew = ADDR_OBJ(newObj) + 1;
         ptim = CONST_ADDR_OBJ(im) + 1;
 
         // copy the image set
         for (i = 0; i < len; i++) {
             *ptnew++ = *ptim++;
         }
-        // add new points
+        // add newObj points
         for (i = deg + 1; i <= m; i++) {
             *ptnew++ = INTOBJ_INT(i);
         }
     }
-    return new;
+    return newObj;
 }
 
 // Returns the image list [(1)f .. (n)f] of the transformation f.
@@ -5497,15 +5499,22 @@ static Int InitModuleState(void)
 *F  InitInfoTrans()  . . . . . . . . . . . . . . . table of init functions
 */
 static StructInitInfo module = {
-    // init struct using C99 designated initializers; for a full list of
-    // fields, please refer to the definition of StructInitInfo
-    .type = MODULE_BUILTIN,
-    .name = "trans",
-    .initKernel = InitKernel,
-    .initLibrary = InitLibrary,
-    .moduleStateSize = sizeof(TransModuleState),
-    .moduleStateOffsetPtr = &TransStateOffset,
-    .initModuleState = InitModuleState,
+ /* type        = */ MODULE_BUILTIN,
+ /* name        = */ "trans",
+ /* revision_c  = */ 0,
+ /* revision_h  = */ 0,
+ /* version     = */ 0,
+ /* crc         = */ 0,
+ /* initKernel  = */ InitKernel,
+ /* initLibrary = */ InitLibrary,
+ /* checkInit   = */ 0,
+ /* preSave     = */ 0,
+ /* postSave    = */ 0,
+ /* postRestore = */ 0,
+ /* moduleStateSize      = */ sizeof(TransModuleState),
+ /* moduleStateOffsetPtr = */ &TransStateOffset,
+ /* initModuleState      = */ InitModuleState,
+ /* destroyModuleState   = */ 0,
 };
 
 StructInitInfo * InitInfoTrans(void)

@@ -69,7 +69,7 @@ extern "C" {
 #include "sysfiles.h"
 #include "trans.h"
 
-}
+} // extern "C"
 
 
 #ifdef GAP_KERNEL_DEBUG

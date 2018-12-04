@@ -10,6 +10,8 @@
  *
  *****************************************************************************/
 
+extern "C" {
+
 #include "pperm.h"
 
 #include "ariths.h"
@@ -27,6 +29,8 @@
 #include "permutat.h"
 #include "plist.h"
 #include "saveload.h"
+
+} // extern "C"
 
 
 #define MAX(a, b) (a < b ? b : a)
@@ -6734,16 +6738,22 @@ static Int InitModuleState(void)
  *F InitInfoPPerm()   . . . . . . . . . . . . . . . table of init functions
  */
 static StructInitInfo module = {
-    // init struct using C99 designated initializers; for a full list of
-    // fields, please refer to the definition of StructInitInfo
-    .type = MODULE_BUILTIN,
-    .name = "pperm",
-    .initKernel = InitKernel,
-    .initLibrary = InitLibrary,
-
-    .moduleStateSize = sizeof(PPermModuleState),
-    .moduleStateOffsetPtr = &PPermStateOffset,
-    .initModuleState = InitModuleState,
+ /* type        = */ MODULE_BUILTIN,
+ /* name        = */ "pperm",
+ /* revision_c  = */ 0,
+ /* revision_h  = */ 0,
+ /* version     = */ 0,
+ /* crc         = */ 0,
+ /* initKernel  = */ InitKernel,
+ /* initLibrary = */ InitLibrary,
+ /* checkInit   = */ 0,
+ /* preSave     = */ 0,
+ /* postSave    = */ 0,
+ /* postRestore = */ 0,
+ /* moduleStateSize      = */ sizeof(PPermModuleState),
+ /* moduleStateOffsetPtr = */ &PPermStateOffset,
+ /* initModuleState      = */ InitModuleState,
+ /* destroyModuleState   = */ 0,
 };
 
 StructInitInfo * InitInfoPPerm(void)
