@@ -100,7 +100,7 @@ matrix:
     - env: TEST_SUITES=testbugfix
 
     # test Julia integration
-    - env: TEST_SUITES="testinstall" JULIA=yes
+    - env: TEST_SUITES="testinstall" JULIA=yes CONFIGFLAGS="--disable-Werror"
 
     # out of tree builds -- these are mainly done to verify that the build
     # system work in this scenario. Since we don't expect the test results to
