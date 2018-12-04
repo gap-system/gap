@@ -162,19 +162,24 @@ ssize_t echoandcheck(int fid, const char *buf, size_t count) {
   int ret;
   if (syBuf[fid].type == gzip_socket) {
       ret = gzwrite(syBuf[fid].gzfp, buf, count);
-      if (ret < 0)
+      if (ret < 0) {
           ErrorQuit(
               "Could not write to compressed file, see 'LastSystemError();'\n",
               0L, 0L);
+      }
   }
   else {
       ret = write(syBuf[fid].echo, buf, count);
-      if (ret < 0)
-          ErrorQuit("Could not write to file descriptor %d, see "
-                    "'LastSystemError();'\n",
-                    syBuf[fid].fp, 0L);
+      if (ret < 0) {
+          if (syBuf[fid].fp == fileno(stdout) || syBuf[fid].fp == fileno(stderr)) {
+              Panic("Could not write to stdout/stderr.");
+          } else {
+              ErrorQuit("Could not write to file descriptor %d, see "
+                        "'LastSystemError();'\n",
+                        syBuf[fid].fp, 0L);
+          }
+      }
   }
-
   return ret;
 }
 
@@ -1639,17 +1644,23 @@ static ssize_t SyWriteandcheck(Int fid, const void * buf, size_t count)
     int ret;
     if (syBuf[fid].type == gzip_socket) {
         ret = gzwrite(syBuf[fid].gzfp, buf, count);
-        if (ret < 0)
+        if (ret < 0) {
             ErrorQuit(
                 "Cannot write to compressed file, see 'LastSystemError();'\n",
                 0L, 0L);
+        }
     }
     else {
         ret = write(syBuf[fid].fp, buf, count);
-        if (ret < 0)
-            ErrorQuit("Cannot write to file descriptor %d, see "
-                      "'LastSystemError();'\n",
-                      syBuf[fid].fp, 0L);
+        if (ret < 0) {
+            if (syBuf[fid].fp == fileno(stdout) || syBuf[fid].fp == fileno(stderr)) {
+                Panic("Could not write to stdout/stderr.");
+            } else {
+                ErrorQuit("Cannot write to file descriptor %d, see "
+                          "'LastSystemError();'\n",
+                          syBuf[fid].fp, 0L);
+            }
+        }
     }
 
     return ret;
