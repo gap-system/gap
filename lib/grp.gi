@@ -4398,55 +4398,48 @@ end);
 InstallMethod( GroupWithGenerators,
     "generic method for collection",
     [ IsCollection ],
-function( gens )
-local G,typ;
+    function( gens )
+    local typ;
 
-  typ:=MakeGroupyType(FamilyObj(gens),
+    gens:= AsList( gens );
+    typ:= MakeGroupyType( FamilyObj( gens ),
           IsGroup and IsAttributeStoringRep 
           and HasIsEmpty and HasGeneratorsOfMagmaWithInverses,
           gens,false,true);
 
-  G:=rec();
-  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens));
-
-  return G;
+    return ObjectifyWithAttributes( rec(), typ,
+               GeneratorsOfMagmaWithInverses, gens );
 end );
 
 InstallMethod( GroupWithGenerators,
     "generic method for collection and identity element",
-    IsCollsElms, [ IsCollection, IsMultiplicativeElementWithInverse ],
-function( gens, id )
-local G,typ;
+    IsCollsElms,
+    [ IsCollection, IsMultiplicativeElementWithInverse ],
+    function( gens, id )
+    local typ;
 
-  typ:=MakeGroupyType(FamilyObj(gens),
+    gens:= AsList( gens );
+    typ:= MakeGroupyType( FamilyObj( gens ),
           IsGroup and IsAttributeStoringRep 
             and HasIsEmpty and HasGeneratorsOfMagmaWithInverses and HasOne,
             gens,id,true);
 
-  G:=rec();
-  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens),
-                          One,id);
-
-  return G;
+    return ObjectifyWithAttributes( rec(), typ,
+               GeneratorsOfMagmaWithInverses, gens, One, id );
 end );
 
-InstallMethod( GroupWithGenerators,"method for empty list and element",
-  [ IsList and IsEmpty, IsMultiplicativeElementWithInverse ],
-  function( empty, id )
-local G,fam,typ;
+InstallMethod( GroupWithGenerators,
+    "method for empty list and element",
+    [ IsList and IsEmpty, IsMultiplicativeElementWithInverse ],
+    function( empty, id )
+    local typ;
 
-  fam:= CollectionsFamily( FamilyObj( id ) );
+    typ:= NewType( CollectionsFamily( FamilyObj( id ) ),
+              IsGroup and IsAttributeStoringRep and
+              HasGeneratorsOfMagmaWithInverses and HasOne and IsTrivial );
 
-  typ:=IsGroup and IsAttributeStoringRep
-        and HasGeneratorsOfMagmaWithInverses and HasOne and IsTrivial;
-  typ:=NewType(fam,typ);
-
-  G:= rec();
-  ObjectifyWithAttributes( G, typ,
-                            GeneratorsOfMagmaWithInverses, empty,
-                            One, id );
-
-  return G;
+    return ObjectifyWithAttributes( rec(), typ,
+               GeneratorsOfMagmaWithInverses, empty, One, id );
 end );
 
 
@@ -4456,14 +4449,45 @@ end );
 #M  GroupByGenerators( <gens>, <id> )
 ##
 InstallMethod( GroupByGenerators,
-    "delegate to `GroupWithGenerators'",
+    "replace domain by suitable list, and call `GroupWithGenerators'",
     [ IsCollection ],
+    function( gens )
+    if HasGeneratorsOfMagmaWithInverses( gens ) then
+      gens:= GeneratorsOfMagmaWithInverses( gens );
+    elif HasGeneratorsOfMagmaWithOne( gens ) then
+      gens:= GeneratorsOfMagmaWithOne( gens );
+    elif HasGeneratorsOfMagma( gens ) then
+      gens:= GeneratorsOfMagma( gens );
+    fi;
+
+    return GroupWithGenerators( gens );
+    end );
+
+InstallMethod( GroupByGenerators,
+    "replace domain by suitable list, and call `GroupWithGenerators'",
+    IsCollsElms,
+    [ IsCollection, IsMultiplicativeElementWithInverse ],
+    function( gens, id )
+    if HasGeneratorsOfMagmaWithInverses( gens ) then
+      gens:= GeneratorsOfMagmaWithInverses( gens );
+    elif HasGeneratorsOfMagmaWithOne( gens ) then
+      gens:= GeneratorsOfMagmaWithOne( gens );
+    elif HasGeneratorsOfMagma( gens ) then
+      gens:= GeneratorsOfMagma( gens );
+    fi;
+
+    return GroupWithGenerators( gens, id );
+    end );
+
+InstallMethod( GroupByGenerators,
+    "delegate to `GroupWithGenerators'",
+    [ IsCollection and IsList ],
     GroupWithGenerators );
 
 InstallMethod( GroupByGenerators,
     "delegate to `GroupWithGenerators'",
     IsCollsElms,
-    [ IsCollection, IsMultiplicativeElementWithInverse ],
+    [ IsCollection and IsList, IsMultiplicativeElementWithInverse ],
     GroupWithGenerators );
 
 InstallMethod( GroupByGenerators,
