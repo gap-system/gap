@@ -34,6 +34,11 @@
 #include "sysopt.h"    // for SyInitializing
 
 
+#define RequireMutableSet(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, IS_MUTABLE_OBJ(op) && IsSet(op), \
+        "must be a mutable proper set")
+
+
 /****************************************************************************
 **
 *F  IsSet( <list> ) . . . . . . . . . . . . . . . . . test if a list is a set
@@ -409,12 +414,7 @@ Obj FuncADD_SET (
   UInt                wasTab;
     
   /* check the arguments                                                 */
-  while ( ! IS_MUTABLE_OBJ(set) || ! IsSet(set) ) {
-    set = ErrorReturnObj(
-			 "AddSet: <set> must be a mutable proper set (not a %s)",
-			 (Int)TNAM_OBJ(set), 0L,
-			 "you can replace <set> via 'return <set>;'" );
-  }
+  RequireMutableSet("AddSet", set);
   len = LEN_LIST(set);
 
   /* perform the binary search to find the position                      */
@@ -533,12 +533,7 @@ Obj FuncREM_SET (
     Obj                 *ptr;
 
     /* check the arguments                                                 */
-    while ( ! IS_MUTABLE_OBJ(set) || ! IsSet(set) ) {
-        set = ErrorReturnObj(
-            "RemoveSet: <set> must be a mutable proper set (not a %s)",
-            (Int)TNAM_OBJ(set), 0L,
-            "you can replace <set> via 'return <set>;'" );
-    }
+    RequireMutableSet("RemoveSet", set);
     len = LEN_LIST(set);
 
     /* perform the binary search to find the position                      */
@@ -600,12 +595,7 @@ Obj FuncUNITE_SET (
     Obj                 TmpUnion;
 
     /* check the arguments                                                 */
-    while ( ! IS_MUTABLE_OBJ(set1) || ! IsSet(set1) ) {
-        set1 = ErrorReturnObj(
-            "UniteSet: <set1> must be a mutable proper set (not a %s)",
-            (Int)TNAM_OBJ(set1), 0L,
-            "you can replace <set1> via 'return <set1>;'" );
-    }
+    RequireMutableSet("UniteSet", set1);
     RequireSmallList("UniteSet", set2);
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 
@@ -773,12 +763,7 @@ Obj FuncINTER_SET (
     UInt                lenr;           /* length  of result set           */
 
     /* check the arguments                                                 */
-    while ( ! IS_MUTABLE_OBJ(set1) || ! IsSet(set1) ) {
-        set1 = ErrorReturnObj(
-            "IntersectSet: <set1> must be a mutable proper set (not a %s)",
-            (Int)TNAM_OBJ(set1), 0L,
-            "you can replace <set1> via 'return <set1>;'" );
-    }
+    RequireMutableSet("IntersectSet", set1);
     RequireSmallList("IntersectSet", set2);
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 
@@ -946,12 +931,7 @@ Obj FuncSUBTR_SET (
     UInt                ll;           
 
     /* check the arguments                                                 */
-    while ( ! IS_MUTABLE_OBJ(set1) || ! IsSet(set1) ) {
-        set1 = ErrorReturnObj(
-            "SubtractSet: <set1> must be a mutable proper set (not a %s)",
-            (Int)TNAM_OBJ(set1), 0L,
-            "you can replace <set1> via 'return <set1>;'" );
-    }
+    RequireMutableSet("SubtractSet", set1);
     RequireSmallList("SubtractSet", set2);
     if ( ! IsSet(set2) )  set2 = SetList(set2);
 
