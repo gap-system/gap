@@ -16,7 +16,9 @@
 #ifndef GAP_EXPRS_H
 #define GAP_EXPRS_H
 
+#include "code.h"
 #include "system.h"
+#include "vars.h"
 
 /****************************************************************************
 **
@@ -25,10 +27,16 @@
 **  'OBJ_REFLVAR'  returns  the value of  the reference  to a  local variable
 **  <expr>.
 */
-#define OBJ_REFLVAR(expr)       \
-                        (OBJ_LVAR( LVAR_REFLVAR( expr ) ) != 0 ? \
-                         OBJ_LVAR( LVAR_REFLVAR( expr ) ) : \
-                         ObjLVar( LVAR_REFLVAR( expr ) ) )
+static inline Obj OBJ_REFLVAR(Expr expr)
+{
+    Int lvar = LVAR_REFLVAR(expr);
+    if (OBJ_LVAR(lvar) != 0) {
+        return OBJ_LVAR(lvar);
+    }
+    else {
+        return ObjLVar(lvar);
+    }
+}
 
 /****************************************************************************
 **
@@ -43,7 +51,23 @@
 **  (immediate) integer values having the same representation.
 */
 
-#define OBJ_INTEXPR(expr)   ((Obj)(expr))
+static inline Obj OBJ_INTEXPR(Expr expr)
+{
+    GAP_ASSERT(IS_INTOBJ((Obj)expr));
+    return (Obj)expr;
+}
+
+
+/****************************************************************************
+**
+*V  EvalExprFuncs[<type>]  . . . . . evaluator for expressions of type <type>
+**
+**  'EvalExprFuncs'  is the dispatch table   that contains for  every type of
+**  expressions a pointer  to the  evaluator  for expressions of this   type,
+**  i.e., the function that should be  called to evaluate expressions of this
+**  type.
+*/
+extern Obj (*EvalExprFuncs[256])(Expr expr);
 
 
 /****************************************************************************
@@ -61,22 +85,31 @@
 **  Note that 'EVAL_EXPR' does not use 'TNUM_EXPR', since it also handles the
 **  two special cases that 'TNUM_EXPR' handles.
 */
-#define EVAL_EXPR(expr) \
-                        (IS_REFLVAR(expr) ? OBJ_REFLVAR(expr) : \
-                         (IS_INTEXPR(expr) ? OBJ_INTEXPR(expr) : \
-                          (*EvalExprFuncs[ TNUM_STAT(expr) ])( expr ) ))
+
+static inline Obj EVAL_EXPR(Expr expr)
+{
+    if (IS_REFLVAR(expr)) {
+        return OBJ_REFLVAR(expr);
+    }
+    else if (IS_INTEXPR(expr)) {
+        return OBJ_INTEXPR(expr);
+    }
+    else {
+        return (*EvalExprFuncs[TNUM_STAT(expr)])(expr);
+    }
+}
 
 
 /****************************************************************************
 **
-*V  EvalExprFuncs[<type>]  . . . . . evaluator for expressions of type <type>
+*V  EvalBoolFuncs[<type>] . . boolean evaluator for expression of type <type>
 **
-**  'EvalExprFuncs'  is the dispatch table   that contains for  every type of
-**  expressions a pointer  to the  evaluator  for expressions of this   type,
-**  i.e., the function that should be  called to evaluate expressions of this
-**  type.
+**  'EvalBoolFuncs'  is  the dispatch table that  contains  for every type of
+**  expression a pointer to a boolean evaluator for expressions of this type,
+**  i.e., a pointer to  a function which  is  guaranteed to return a  boolean
+**  value that should be called to evaluate expressions of this type.
 */
-extern  Obj             (* EvalExprFuncs [256]) ( Expr expr );
+extern Obj (*EvalBoolFuncs[256])(Expr expr);
 
 
 /****************************************************************************
@@ -90,20 +123,10 @@ extern  Obj             (* EvalExprFuncs [256]) ( Expr expr );
 **  'EVAL_BOOL_EXPR' returns the  value of <expr> (which  is either 'true' or
 **  'false').
 */
-#define EVAL_BOOL_EXPR(expr) \
-                        ( (*EvalBoolFuncs[ TNUM_EXPR( expr ) ])( expr ) )
-
-
-/****************************************************************************
-**
-*V  EvalBoolFuncs[<type>] . . boolean evaluator for expression of type <type>
-**
-**  'EvalBoolFuncs'  is  the dispatch table that  contains  for every type of
-**  expression a pointer to a boolean evaluator for expressions of this type,
-**  i.e., a pointer to  a function which  is  guaranteed to return a  boolean
-**  value that should be called to evaluate expressions of this type.
-*/
-extern  Obj             (* EvalBoolFuncs [256]) ( Expr expr );
+static inline Obj EVAL_BOOL_EXPR(Expr expr)
+{
+    return (*EvalBoolFuncs[TNUM_EXPR(expr)])(expr);
+}
 
 
 /****************************************************************************
