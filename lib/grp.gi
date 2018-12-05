@@ -4838,11 +4838,19 @@ end);
 ##
 InstallMethod( MinimalNormalSubgroups,
     "generic search in NormalSubgroups",
-    [ IsGroup and IsFinite and HasNormalSubgroups],
+    [ IsGroup and IsFinite],
     function (G)
 
     local grps, sizes, n, min, i, j, k, size;
-    
+
+    # force an IsNilpotent check
+    # should have and IsSolvable check, as well,
+    # but methods for solvable groups are only in CRISP
+    # which aggeressively checks for solvability, anyway
+    if (not HasIsNilpotentGroup(G) and IsNilpotentGroup(G)) then
+      return MinimalNormalSubgroups( G );
+    fi;
+
     grps := ShallowCopy (NormalSubgroups (G));
     sizes := List (grps, Size);
     n := Length (grps);
@@ -4874,38 +4882,6 @@ InstallMethod( MinimalNormalSubgroups,
     return min;
   end);
 
-
-##############################################################################
-##
-#F  MinimalNormalSubgroups( <G> )
-##
-InstallMethod( MinimalNormalSubgroups,
-    "compute from conjugacy classes",
-    [ IsGroup and IsFinite ],
-    function( G )
-    local nt, c, r, U;
-
-    # force an IsNilpotent check
-    # should have and IsSolvable check, as well,
-    # but methods for solvable groups are only in CRISP
-    # which aggeressively checks for solvability, anyway
-    if (not HasIsNilpotentGroup(G) and IsNilpotentGroup(G)) then
-      return MinimalNormalSubgroups( G );
-    fi;
-
-    nt:= [];
-    for c in ConjugacyClasses( G ) do
-      r:= Representative( c );
-      if IsPrimeInt( Order( r ) ) then
-        U:= NormalClosure( G, SubgroupNC( G, [ r ] ) );
-        if ForAll( nt, N -> not IsSubset( U, N ) ) then
-          nt:= Filtered( nt, N -> not IsSubset( N, U ) );
-          Add( nt, U );
-        fi;
-      fi;
-    od;
-    return nt;
-    end );
 
 RedispatchOnCondition(MinimalNormalSubgroups, true,
     [IsGroup],
@@ -4946,7 +4922,7 @@ InstallMethod( MinimalNormalSubgroups, "for nilpotent groups",
               [ IsGroup and IsNilpotentGroup ],
   # IsGroup and IsFinite ranks higher than IsGroup and IsNilpotentGroup
   # so we have to increase the rank, otherwise the method for computation
-  # by conjugacy classes above is selected.
+  # by NormalSubgroups above is selected.
   {} -> RankFilter( IsGroup and IsFinite and IsNilpotentGroup )
   - RankFilter( IsGroup and IsNilpotentGroup ),
   function(G)
