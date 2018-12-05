@@ -45,19 +45,19 @@ false
 gap> ADD_SET;
 function( set, val ) ... end
 gap> ADD_SET(1,1);
-Error, AddSet: <set> must be a mutable proper set (not a integer)
+Error, AddSet: <set> must be a mutable proper set (not the integer 1)
 
 #
 gap> REM_SET;
 function( set, val ) ... end
 gap> REM_SET(1,1);
-Error, RemoveSet: <set> must be a mutable proper set (not a integer)
+Error, RemoveSet: <set> must be a mutable proper set (not the integer 1)
 
 #
 gap> UNITE_SET;
 function( set1, set2 ) ... end
 gap> UNITE_SET(1,1);
-Error, UniteSet: <set1> must be a mutable proper set (not a integer)
+Error, UniteSet: <set1> must be a mutable proper set (not the integer 1)
 gap> UNITE_SET([],1);
 Error, UniteSet: <set2> must be a small list (not the integer 1)
 gap> UNITE_SET([],[]);
@@ -66,7 +66,7 @@ gap> UNITE_SET([],[]);
 gap> INTER_SET;
 function( set1, set2 ) ... end
 gap> INTER_SET(1,1);
-Error, IntersectSet: <set1> must be a mutable proper set (not a integer)
+Error, IntersectSet: <set1> must be a mutable proper set (not the integer 1)
 gap> INTER_SET([],1);
 Error, IntersectSet: <set2> must be a small list (not the integer 1)
 gap> INTER_SET([],[]);
@@ -75,7 +75,7 @@ gap> INTER_SET([],[]);
 gap> SUBTR_SET;
 function( set1, set2 ) ... end
 gap> SUBTR_SET(1,1);
-Error, SubtractSet: <set1> must be a mutable proper set (not a integer)
+Error, SubtractSet: <set1> must be a mutable proper set (not the integer 1)
 gap> SUBTR_SET([],1);
 Error, SubtractSet: <set2> must be a small list (not the integer 1)
 gap> SUBTR_SET([],[]);
