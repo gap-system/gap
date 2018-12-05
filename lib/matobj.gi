@@ -631,9 +631,30 @@ and an int",
     od;
   end );
 
+
+############################################################################
+##
+#M  \^( <vecobj>, <matobj> )
+##
+InstallMethod( \^,
+    [ IsVectorObj, IsMatrixObj ],
+    \* );
+
+
 #
 # Compatibility code: Install MatrixObj methods for IsMatrix.
 #
+
+
+############################################################################
+##
+#M  RowsOfMatrix( <matobj> )
+##
+InstallMethod( RowsOfMatrix,
+    [ IsMatrix ],
+    Immutable );
+
+
 InstallOtherMethod( NumberRows, "for a plist matrix",
   [ IsMatrix ], Length);
 InstallOtherMethod( NumberColumns, "for a plist matrix",

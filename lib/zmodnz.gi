@@ -1111,7 +1111,7 @@ InstallMethod( DefaultRingByGenerators,
 InstallMethod( DefaultFieldOfMatrixGroup,
     "for a matrix group over a ring Z/nZ",
     [ IsMatrixGroup and IsZmodnZObjNonprimeCollCollColl ],
-    G -> ZmodnZ( Characteristic( Representative( G )[1][1] ) ) );
+    G -> ZmodnZ( Characteristic( Representative( G )[1,1] ) ) );
 
 
 #############################################################################

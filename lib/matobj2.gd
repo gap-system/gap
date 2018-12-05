@@ -1153,6 +1153,26 @@ DeclareOperation( "Unpack", [IsRowListMatrix] );
 
 
 ############################################################################
+##
+#A  RowsOfMatrix( <matrixobj> )
+##
+##  Called with an object in <Ref Cat="IsMatrixObj"/>, this function
+##  returns a plain list of objects in <Ref Cat="IsVectorObj"/>,
+##  where the <M>i</M>-th entry describes the <M>i</M>-th row of the input.
+##
+##  This function is used for creating an isomorphic permutation group
+##  of a matrix group that consists of matrix objects.
+##  <!-- If 'NicomorphismOfGeneralMatrixGroup' would be documented then
+##  one could insert a reference to it. -->
+##
+##  We assume that the matrix knows how to create suitable vector objects;
+##  entering a template vector as the second argument is not an option
+##  in this situation.
+##
+DeclareAttribute( "RowsOfMatrix", IsMatrixObj );
+
+
+############################################################################
 ############################################################################
 # Operations for RowList-matrices:
 ############################################################################
@@ -1226,11 +1246,27 @@ DeclareOperation( "ListOp", [IsRowListMatrix, IsFunction] );
 # DeclareOperation( "*", [IsVectorObj, IsMatrixObj] );
 # DeclareOperation( "*", [IsMatrixObj, IsVectorObj] );
 
-# TODO: the following does the same as "*", but is useful 
-# as convenience for Orbit-ish operations.
-# We otherwise discourage its use in "naked" code -- use * instead
-# DeclareOperation( "^", [IsVectorObj, IsMatrixObj] );
 
+############################################################################
+##
+#O  \^( <vecobj>, <matobj> )
+##
+##  One of &GAP;'s strategies to study (small) matrix groups is
+##  to compute a faithful permutation representations of the action on
+##  orbits of row vectors, via right multiplication,
+##  see <Ref Sect="Nice Monomorphisms"/>.
+##  The code in question uses <Ref Func="OnPoints"/> as the default action,
+##  which means that the operation <C>\\\^</C> gets called.
+##  Therefore, we declare this operation for the case that the two arguments
+##  are in <Ref Cat="IsVectorObj"/> and <Ref Cat="IsMatrixObj"/>,
+##  and install the multiplication as a method for this situation;
+##  thus one need not install individual <C>\\\^</C> methods
+##  in special cases.
+##  <P/>
+##  For other code dealing with the multiplication of vectors and matrices,
+##  it is recommended to use the multiplication <C>\\\*</C> directly.
+##
+DeclareOperation( "^", [ IsVectorObj, IsMatrixObj ] );
 
 
 ############################################################################
