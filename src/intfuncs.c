@@ -55,7 +55,7 @@ void initGRMT(UInt4 *mt, UInt4 s)
     mt[0]= s & 0xffffffffUL;
     for (mti=1; mti<624; mti++) {
         mt[mti] =
-	    (1812433253UL * (mt[mti-1] ^ (mt[mti-1] >> 30)) + mti);
+            (1812433253UL * (mt[mti-1] ^ (mt[mti-1] >> 30)) + mti);
         mt[mti] &= 0xffffffffUL;
     }
     /* store mti as last entry of mt[] */

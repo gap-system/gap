@@ -545,9 +545,7 @@ extern void PrintKernelFunction(Obj func);
 **  i.e., it is equivalent to '<func>( <list>[1], <list>[2]... )'.
 */
 
-extern Obj CallFuncList(
-			Obj func,
-			Obj list);
+extern Obj CallFuncList(Obj func, Obj list);
 
 extern Obj CallFuncListOper;
 

@@ -1307,7 +1307,7 @@ void InitSystem (
         if (!IgnoreGapRC) {
           SySetGapRootPath(DotGapPath);
         }
-		
+
         strxcpy(DotGapPath, getenv("HOME"), sizeof(DotGapPath));
         strxcat(DotGapPath, "/Library/Preferences/GAP;", sizeof(DotGapPath));
 # elif defined(__CYGWIN__)

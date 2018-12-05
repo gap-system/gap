@@ -199,10 +199,10 @@ Obj LeadingExponentOfPcElement(Obj self, Obj pcgs, Obj w)
 template <typename UIntN>
 Obj ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
 {
-    UInt	len;		/* length of pcgs */
-    Obj		el;		/* exponents list */
+    UInt        len;            /* length of pcgs */
+    Obj         el;             /* exponents list */
     UInt        le;
-    UInt	indx;
+    UInt        indx;
     UInt        expm;           /* signed exponent mask                    */
     UInt        exps;           /* sign exponent mask                      */
     UInt        ebits;          /* number of exponent bits                 */
@@ -232,14 +232,14 @@ Obj ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
       gen = ((*ptr) >> ebits) + 1;
       for (j=le; j< gen;j++) {
         /* zero out intermediate entries */
-	SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
-	indx++;
+        SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
+        indx++;
       }
 
       if ( (*ptr) & exps )
-	  SET_ELM_PLIST(el,indx,INTOBJ_INT(((*ptr)&expm)-exps));
+          SET_ELM_PLIST(el,indx,INTOBJ_INT(((*ptr)&expm)-exps));
       else
-	  SET_ELM_PLIST(el,indx,INTOBJ_INT((*ptr)&expm));
+          SET_ELM_PLIST(el,indx,INTOBJ_INT((*ptr)&expm));
       indx++;
       le=gen+1;
     }

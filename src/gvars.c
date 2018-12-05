@@ -164,12 +164,12 @@ static void UnlockGVars(void) {
 // it by ValGVar everywhere? The difference is of course the memory barrier,
 // which might cause a performance penalty (OTOH, not using it right now might
 // or might not be a bug?!?)
-#define VAL_GVAR_INTERN(gvar)          (PtrGVars[GVAR_BUCKET(gvar)] \
-				[GVAR_INDEX(gvar)-1])
+#define VAL_GVAR_INTERN(gvar)   (PtrGVars[GVAR_BUCKET(gvar)] \
+                                    [GVAR_INDEX(gvar)-1])
 
 #else
 
-#define VAL_GVAR_INTERN(gvar)          PtrGVars[ (gvar) ]
+#define VAL_GVAR_INTERN(gvar)   PtrGVars[ (gvar) ]
 
 #endif
 

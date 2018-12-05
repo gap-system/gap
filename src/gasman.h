@@ -157,12 +157,12 @@ static inline UInt TNUM_BAG(Bag bag) {
 **  To test that all of them are set, compare the result to the original
 **  flags, e.g.
 **
-**  	if (TEST_BAG_FLAG(obj, FLAG1 | FLAG2 ) == (FLAG1 | FLAG2)) ...
+**      if (TEST_BAG_FLAG(obj, FLAG1 | FLAG2 ) == (FLAG1 | FLAG2)) ...
 **
 **  Similary, if you wish to test that FLAG1 is set and FLAG2 is not set,
 **  use:
 **
-**  	if (TEST_BAG_FLAG(obj, FLAG1 | FLAG2 ) == FLAG1) ...
+**      if (TEST_BAG_FLAG(obj, FLAG1 | FLAG2 ) == FLAG1) ...
 **
 **  Each flag must be a an integer with exactly one bit set, e.g. a value
 **  of the form (1 << i). Currently, 'i' must be in the range from 0 to

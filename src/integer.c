@@ -111,7 +111,7 @@ static Obj ObjInt_UIntInv( UInt i );
 #endif
 
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901)
-#  define CURRENT_FUNCTION	__func__
+#  define CURRENT_FUNCTION  __func__
 #elif defined(_MSC_VER)
 #  define CURRENT_FUNCTION __FUNCTION__
 #else

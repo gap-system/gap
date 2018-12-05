@@ -63,7 +63,7 @@ extern Obj EXEC_CURR_FUNC(void);
 **  event.
 */
 
-extern  UInt 		(* IntrExecStatFuncs[256]) ( Stat stat );
+extern UInt (* IntrExecStatFuncs[256]) ( Stat stat );
 
 
 /****************************************************************************

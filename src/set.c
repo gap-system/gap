@@ -149,7 +149,7 @@ Obj SetList (
         if ( elm != 0 ) {
             lenSet += 1;
             SET_ELM_PLIST( set, lenSet, elm );
-	    CHANGED_BAG(set);	/* in case elm had to be made, not just extracted  */
+            CHANGED_BAG(set);   /* in case elm had to be made, not just extracted  */
         }
     }
     SET_LEN_PLIST( set, lenSet );
@@ -165,17 +165,17 @@ Obj SetList (
     switch(status)
       {
       case 0:
-	break;
-	
+        break;
+        
       case 1:
-	SET_FILT_LIST(set, FN_IS_NHOMOG);
-	SET_FILT_LIST(set, FN_IS_SSORT);
-	break;
-	
+        SET_FILT_LIST(set, FN_IS_NHOMOG);
+        SET_FILT_LIST(set, FN_IS_SSORT);
+        break;
+        
       case 2:
-	SET_FILT_LIST( set, FN_IS_HOMOG );
-	SET_FILT_LIST( set, FN_IS_SSORT );
-	break;
+        SET_FILT_LIST( set, FN_IS_HOMOG );
+        SET_FILT_LIST( set, FN_IS_SSORT );
+        break;
       }
 
     /* return set                                                          */
@@ -399,16 +399,16 @@ Obj             FuncIS_SUBSET_SET (
 **  of changing <set>.
 */
 Obj FuncADD_SET (
-		 Obj                 self,
-		 Obj                 set,
-		 Obj                 obj )
+                 Obj                 self,
+                 Obj                 set,
+                 Obj                 obj )
 {
   UInt                len;            /* logical length of the list      */
   UInt                pos;            /* position                        */
   UInt                isCyc;          /* True if the set being added to consists
-					 of kernel cyclotomics           */
+                                         of kernel cyclotomics           */
   UInt                notpos;         /* position of an original element
-					 (not the new one)               */
+                                         (not the new one)               */
   UInt                wasHom;
   UInt                wasNHom;
   UInt                wasTab;
@@ -442,55 +442,55 @@ Obj FuncADD_SET (
       /* the result of addset is always dense */
       SET_FILT_LIST( set, FN_IS_DENSE );
 
-				/* if the object we added was not
+                                /* if the object we added was not
                                    mutable then we might be able to
                                    conclude more */
       if ( ! IS_MUTABLE_OBJ(obj) ) {
-				/* a one element list is automatically
+                                /* a one element list is automatically
                                    homogenous  and ssorted */
-	if (len == 0 )
-	  {
-	    if (TNUM_OBJ(obj) <= T_CYC)
-	      RetypeBagIfWritable( set, T_PLIST_CYC_SSORT);
-	    else
-	      {
-		SET_FILT_LIST( set, FN_IS_HOMOG );
-		SET_FILT_LIST( set, FN_IS_SSORT );
-		if (IS_HOMOG_LIST(obj))	/* it might be a table */
-		  SET_FILT_LIST( set, FN_IS_TABLE );
-	      }
-	  }
-	else
-	  {
-	    /* Now determine homogeneity */
-	    if (isCyc)
-	      if (TNUM_OBJ(obj) <= T_CYC)
-		RetypeBagIfWritable( set, T_PLIST_CYC_SSORT);
-	      else
-		{
-		  RESET_FILT_LIST(set, FN_IS_HOMOG);
-		  SET_FILT_LIST(set, FN_IS_NHOMOG);
-		}
-	    else if (wasHom)
-	      {
-		if (!SyInitializing) {
-		  notpos = (pos == 1) ? 2 : 1;
-		  if (FAMILY_OBJ(ELM_PLIST(set,notpos)) == FAMILY_OBJ(obj))
-		    {
-		      SET_FILT_LIST(set, FN_IS_HOMOG);
-		      if (wasTab) {
-			if (IS_HOMOG_LIST( obj ))
-			  SET_FILT_LIST(set, FN_IS_TABLE);
-		      }
-		    }
+        if (len == 0 )
+          {
+            if (TNUM_OBJ(obj) <= T_CYC)
+              RetypeBagIfWritable( set, T_PLIST_CYC_SSORT);
+            else
+              {
+                SET_FILT_LIST( set, FN_IS_HOMOG );
+                SET_FILT_LIST( set, FN_IS_SSORT );
+                if (IS_HOMOG_LIST(obj)) /* it might be a table */
+                  SET_FILT_LIST( set, FN_IS_TABLE );
+              }
+          }
+        else
+          {
+            /* Now determine homogeneity */
+            if (isCyc)
+              if (TNUM_OBJ(obj) <= T_CYC)
+                RetypeBagIfWritable( set, T_PLIST_CYC_SSORT);
+              else
+                {
+                  RESET_FILT_LIST(set, FN_IS_HOMOG);
+                  SET_FILT_LIST(set, FN_IS_NHOMOG);
+                }
+            else if (wasHom)
+              {
+                if (!SyInitializing) {
+                  notpos = (pos == 1) ? 2 : 1;
+                  if (FAMILY_OBJ(ELM_PLIST(set,notpos)) == FAMILY_OBJ(obj))
+                    {
+                      SET_FILT_LIST(set, FN_IS_HOMOG);
+                      if (wasTab) {
+                        if (IS_HOMOG_LIST( obj ))
+                          SET_FILT_LIST(set, FN_IS_TABLE);
+                      }
+                    }
 
-		  else
-		    SET_FILT_LIST(set, FN_IS_NHOMOG);
-		}
-	      }
-	    else if (wasNHom)
-	      SET_FILT_LIST(set, FN_IS_NHOMOG);
-	  }
+                  else
+                    SET_FILT_LIST(set, FN_IS_NHOMOG);
+                }
+              }
+            else if (wasNHom)
+              SET_FILT_LIST(set, FN_IS_NHOMOG);
+          }
       }
       SET_FILT_LIST( set, FN_IS_SSORT );
     }
@@ -544,8 +544,8 @@ Obj FuncREM_SET (
 
         ptr = PTR_BAG(set) + pos;
         for ( i = pos; i < len; i++ ) {
-	    *ptr = *(ptr+1);
-	    ptr ++;
+            *ptr = *(ptr+1);
+            ptr ++;
         }
         SET_ELM_PLIST( set, len, 0 );
         SET_LEN_PLIST( set, len-1 );
@@ -650,13 +650,13 @@ Obj FuncUNITE_SET (
         RetypeBag( set1, MUTABLE_TNUM(TNUM_OBJ(set2)) );
     } else if ( 0 != LEN_PLIST(set2)) {
       if (HAS_FILT_LIST(set1, FN_IS_HOMOG)) {
-	if( !HAS_FILT_LIST(set2, FN_IS_HOMOG))
-	  RESET_FILT_LIST(set1, FN_IS_HOMOG);
-	else if (!SyInitializing &&
-		 FAMILY_OBJ(ELM_PLIST(set1,1)) != FAMILY_OBJ(ELM_PLIST(set2,1)))
-	  {
-	    RetypeBag(set1, T_PLIST_DENSE_NHOM);
-	  }
+        if( !HAS_FILT_LIST(set2, FN_IS_HOMOG))
+          RESET_FILT_LIST(set1, FN_IS_HOMOG);
+        else if (!SyInitializing &&
+                 FAMILY_OBJ(ELM_PLIST(set1,1)) != FAMILY_OBJ(ELM_PLIST(set2,1)))
+          {
+            RetypeBag(set1, T_PLIST_DENSE_NHOM);
+          }
       }
     }
 
@@ -731,23 +731,23 @@ static UInt InterSetInner2( Obj set1, Obj set2, Obj setr, UInt len1, UInt len2)
       top = len2;
       found = 0;
       while (bottom <= top)
-	{
-	  middle = (bottom + top)/2;
-	  e2 = ELM_PLIST(set2,middle);
-	  if (LT(e1,e2))
-	    top = middle-1;
-	  else if (EQ(e1,e2)) {
-	    lenr++;
-	    SET_ELM_PLIST(setr,lenr,e1);
-	    i2 = middle+1;
-	    found = 1;
-	    break;
-	  }
-	  else
-	    bottom = middle+1;
-	}
+        {
+          middle = (bottom + top)/2;
+          e2 = ELM_PLIST(set2,middle);
+          if (LT(e1,e2))
+            top = middle-1;
+          else if (EQ(e1,e2)) {
+            lenr++;
+            SET_ELM_PLIST(setr,lenr,e1);
+            i2 = middle+1;
+            found = 1;
+            break;
+          }
+          else
+            bottom = middle+1;
+        }
       if (!found)
-	i2 = bottom;
+        i2 = bottom;
     }
   return lenr;
 }
@@ -774,31 +774,31 @@ Obj FuncINTER_SET (
     /* decide how to do the calculation and do it */
     if (len1 < len2) 
       {
-	UInt x = len2;
-	UInt ll = 0;
-	while (x > 0)
-	  {
-	    ll++;
-	    x >>= 1;
-	  }
-	if (len1*ll < len2)
-	  lenr = InterSetInner2(set1,set2,set1,len1,len2);
-	else
-	  lenr = InterSetInner1(set1,set2,len1,len2);
+        UInt x = len2;
+        UInt ll = 0;
+        while (x > 0)
+          {
+            ll++;
+            x >>= 1;
+          }
+        if (len1*ll < len2)
+          lenr = InterSetInner2(set1,set2,set1,len1,len2);
+        else
+          lenr = InterSetInner1(set1,set2,len1,len2);
       }
     else
       {
-	UInt x = len1;
-	UInt ll = 0;
-	while (x > 0)
-	  {
-	    ll++;
-	    x >>= 1;
-	  }
-	if (len2*ll < len1)
-	  lenr = InterSetInner2(set2,set1,set1,len2,len1);
-	else
-	  lenr = InterSetInner1(set1,set2,len1,len2);
+        UInt x = len1;
+        UInt ll = 0;
+        while (x > 0)
+          {
+            ll++;
+            x >>= 1;
+          }
+        if (len2*ll < len1)
+          lenr = InterSetInner2(set2,set1,set1,len2,len1);
+        else
+          lenr = InterSetInner1(set1,set2,len1,len2);
       }
 
     /* resize the result or clear the rest of the bag                      */
@@ -811,22 +811,22 @@ Obj FuncINTER_SET (
     }
     else if ( lenr == 1) {
       if (TNUM_OBJ(ELM_PLIST(set1,1)) <= T_CYC)
-	RetypeBag(set1, T_PLIST_CYC_SSORT);
+        RetypeBag(set1, T_PLIST_CYC_SSORT);
       else
-	RetypeBag(set1, T_PLIST_HOM_SSORT);
+        RetypeBag(set1, T_PLIST_HOM_SSORT);
     }
     else
       {
-	if ( TNUM_OBJ(set2) >= T_PLIST_CYC )
-	  RetypeBag(set1, MUTABLE_TNUM( TNUM_OBJ(set2)));
-	else
-	  {
-	    RESET_FILT_LIST(set1, FN_IS_NHOMOG);
-	    if ( HAS_FILT_LIST( set2, FN_IS_HOMOG )) {
-	      SET_FILT_LIST(set1, FN_IS_HOMOG );
-	      SET_FILT_LIST(set1, FN_IS_SSORT );
-	    }
-	  }
+        if ( TNUM_OBJ(set2) >= T_PLIST_CYC )
+          RetypeBag(set1, MUTABLE_TNUM( TNUM_OBJ(set2)));
+        else
+          {
+            RESET_FILT_LIST(set1, FN_IS_NHOMOG);
+            if ( HAS_FILT_LIST( set2, FN_IS_HOMOG )) {
+              SET_FILT_LIST(set1, FN_IS_HOMOG );
+              SET_FILT_LIST(set1, FN_IS_SSORT );
+            }
+          }
       }
 
     /* return void, this is a procedure                                    */
@@ -896,25 +896,25 @@ static UInt SubtrSetInner2( Obj set1, Obj set2, UInt len1, UInt len2)
       top = len2;
       found = 0;
       while (bottom <= top)
-	{
-	  middle = (bottom + top)/2;
-	  e2 = ELM_PLIST(set2,middle);
-	  if (LT(e1,e2))
-	    top = middle-1;
-	  else if (EQ(e1,e2)) {
-	    found = 1;
-	    i2 = middle+1;
-	    break;
-	  }
-	  else
-	    bottom = middle+1;
-	}
+        {
+          middle = (bottom + top)/2;
+          e2 = ELM_PLIST(set2,middle);
+          if (LT(e1,e2))
+            top = middle-1;
+          else if (EQ(e1,e2)) {
+            found = 1;
+            i2 = middle+1;
+            break;
+          }
+          else
+            bottom = middle+1;
+        }
       if (!found)
-	{
-	  lenr++;
-	  SET_ELM_PLIST(set1,lenr,e1);
-	  i2 = bottom;
-	}
+        {
+          lenr++;
+          SET_ELM_PLIST(set1,lenr,e1);
+          i2 = bottom;
+        }
     }
   return lenr;
 }
@@ -943,8 +943,8 @@ Obj FuncSUBTR_SET (
     ll = 0;
     while (x > 0)
       {
-	ll++;
-	x >>= 1;
+        ll++;
+        x >>= 1;
       }
     if (len1*ll < len2)
       lenr = SubtrSetInner2(set1,set2,len1,len2);
@@ -961,9 +961,9 @@ Obj FuncSUBTR_SET (
     }
     else if ( lenr == 1) {
       if (TNUM_OBJ(ELM_PLIST(set1,1)) <= T_CYC)
-	RetypeBag(set1, T_PLIST_CYC_SSORT);
+        RetypeBag(set1, T_PLIST_CYC_SSORT);
       else
-	RetypeBag(set1, T_PLIST_HOM_SSORT);
+        RetypeBag(set1, T_PLIST_HOM_SSORT);
     }
     else
       RESET_FILT_LIST(set1, FN_IS_NHOMOG);

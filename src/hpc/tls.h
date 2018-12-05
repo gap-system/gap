@@ -36,8 +36,8 @@ typedef struct ThreadLocalStorage
   syJmp_buf threadExit;
 
   /* From scanner.c */
-  Obj		  DefaultOutput;
-  Obj		  DefaultInput;
+  Obj DefaultOutput;
+  Obj DefaultInput;
 
   /* Profiling */
   UInt CountActive;

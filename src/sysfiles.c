@@ -3409,7 +3409,7 @@ Char * SyFindGapRootFile ( const Char * filename, Char * buffer, size_t bufferSi
             if (strlcpy( buffer, SyGapRootPaths[k], bufferSize ) >= bufferSize)
                 continue;
             if (strlcat( buffer, filename, bufferSize ) >= bufferSize)
-            	continue;
+                continue;
             if ( SyIsReadableFile(buffer) == 0 ) {
                 return buffer;
             }
