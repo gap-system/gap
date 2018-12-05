@@ -505,8 +505,8 @@ void PushBinaryOp (
 *F  CodeFuncCallOptionsEndElmEmpty() .. .  . . . . .code options, end element
 *F  CodeFuncCallOptionsEnd(<nr>)  . . . . . . . . . . . . . code options, end
 **
-**  The net effect of all of these is to leave a record expression on the stack
-**  containing the options record. It will be picked up by
+**  The net effect of all of these is to leave a record expression on the
+**  stack containing the options record. It will be picked up by
 **  CodeFuncCallEnd()
 **
 */
@@ -601,10 +601,10 @@ Obj CodeEnd(UInt error)
         GAP_ASSERT(CS(CountExpr) == 0);
         GAP_ASSERT(CS(OffsBodyCount) == 0);
 
-        /* we must be back to 'STATE(CurrLVars)'                                  */
+        // we must be back to 'STATE(CurrLVars)'
         GAP_ASSERT(STATE(CurrLVars) == CS(CodeLVars));
 
-        /* 'CodeFuncExprEnd' left the function already in 'CS(CodeResult)'     */
+        // 'CodeFuncExprEnd' left the function already in 'CS(CodeResult)'
         return CS(CodeResult);
     }
 
@@ -843,7 +843,7 @@ void CodeFuncExprEnd(UInt nr)
         PushExpr( expr );
     }
 
-    /* otherwise, make the function and store it in 'CS(CodeResult)'           */
+    // otherwise, make the function and store it in 'CS(CodeResult)'
     else {
         CS(CodeResult) = MakeFunction(fexp);
     }
@@ -920,8 +920,8 @@ Int CodeIfEndBody (
     Expr cond = PopExpr();
     PushExpr(cond);
 
-    // if the condition is 'true', signal interpreter to set IntrIgnoring to 1,
-    // so that other branches of the if-statement are ignored
+    // if the condition is 'true', signal interpreter to set IntrIgnoring to
+    // 1, so that other branches of the if-statement are ignored
     return TNUM_EXPR(cond) == T_TRUE_EXPR;
 }
 
@@ -1069,42 +1069,41 @@ void CodeForEnd ( void )
 
 /****************************************************************************
 **
-*F  CodeAtomicBegin()  . . . . . . .  code atomic-statement, begin of statement
-*F  CodeAtomicBeginBody()  . . . . . . . . code atomic-statement, begin of body
-*F  CodeAtomicEndBody( <nr> )  . . . . . . . code atomic-statement, end of body
-*F  CodeAtomicEnd()  . . . . . . . . .  code atomic-statement, end of statement
+*F  CodeAtomicBegin() . . . . . . . code atomic-statement, begin of statement
+*F  CodeAtomicBeginBody() . . . . . . .  code atomic-statement, begin of body
+*F  CodeAtomicEndBody( <nr> ) . . . . . .  code atomic-statement, end of body
+*F  CodeAtomicEnd() . . . . . . . . . code atomic-statement, end of statement
 **
-**  'CodeAtomicBegin'  is an action to  code a atomic-statement.   It is called
-**  when the  reader encounters the 'atomic',  i.e., *before* the condition is
+**  'CodeAtomicBegin' is an action to code a atomic-statement. It is called
+**  when the reader encounters the 'atomic', i.e., *before* the condition is
 **  read.
 **
-**  'CodeAtomicBeginBody'  is  an action   to code a  atomic-statement.   It is
-**  called when  the reader encounters  the beginning  of the statement body,
+**  'CodeAtomicBeginBody' is an action  to code a atomic-statement. It is
+**  called when the reader encounters the beginning of the statement body,
 **  i.e., *after* the condition is read.
 **
-**  'CodeAtomicEndBody' is an action to  code a atomic-statement.  It is called
-**  when the reader encounters  the end of  the statement body.  <nr> is  the
+**  'CodeAtomicEndBody' is an action to code a atomic-statement. It is called
+**  when the reader encounters the end of the statement body. <nr> is the
 **  number of statements in the body.
 **
-**  'CodeAtomicEnd' is an action to code a atomic-statement.  It is called when
-**  the reader encounters  the end  of the  statement, i.e., immediate  after
-**  'CodeAtomicEndBody'.
+**  'CodeAtomicEnd' is an action to code a atomic-statement. It is called
+**  when the reader encounters the end of the statement, i.e., immediate
+**  after 'CodeAtomicEndBody'.
 */
-
 void CodeAtomicBegin ( void )
 {
 }
 
 void CodeAtomicBeginBody ( UInt nrexprs )
 {
-  PushExpr(INTEXPR_INT(nrexprs)); 
+    PushExpr(INTEXPR_INT(nrexprs));
 }
 
 void CodeAtomicEndBody (
     UInt                nrstats )
 {
 #ifdef HPCGAP
-    Stat                stat;           /* atomic-statement, result         */
+    Stat                stat;           /* atomic-statement, result        */
     Stat                stat1;          /* single statement of body        */
     UInt                i;              /* loop variable                   */
     UInt nrexprs;
@@ -1115,13 +1114,13 @@ void CodeAtomicEndBody (
 
     nrexprs = INT_INTEXPR(PopExpr());
     
-    /* allocate the atomic-statement                                        */
+    /* allocate the atomic-statement                                       */
     stat = NewStat( T_ATOMIC, sizeof(Stat) + nrexprs*2*sizeof(Stat) );
     
     /* enter the statement sequence */
     WRITE_STAT(stat, 0, stat1);
 
-    /* enter the expressions                                                */
+    /* enter the expressions                                               */
     for ( i = 2*nrexprs; 1 <= i; i -= 2 ) {
         e = PopExpr();
         qual = PopExpr();
@@ -1129,7 +1128,7 @@ void CodeAtomicEndBody (
         WRITE_STAT(stat, i - 1, qual);
     }
 
-    /* push the atomic-statement                                            */
+    /* push the atomic-statement                                           */
     PushStat( stat );
 #else
     Stat stat  = PopSeqStat( nrstats );
@@ -1148,23 +1147,20 @@ void CodeAtomicEnd ( void )
 
 /****************************************************************************
 **
-*F  CodeQualifiedExprBegin()  . . . code readonly/readwrite expression start
-*F  CodeQualifiedExprEnd()  . . . . . code readonly/readwrite expression end
+*F  CodeQualifiedExprBegin() . . . . code readonly/readwrite expression start
+*F  CodeQualifiedExprEnd() . . . . . . code readonly/readwrite expression end
 **
 **  These functions code the beginning and end of the readonly/readwrite
 **  qualified expressions of an atomic statement.
 */
-
 void CodeQualifiedExprBegin(UInt qual) 
 {
-  PushExpr(INTEXPR_INT(qual));
+    PushExpr(INTEXPR_INT(qual));
 }
 
 void CodeQualifiedExprEnd(void) 
 {
 }
-
-
 
 
 /****************************************************************************
@@ -1304,19 +1300,19 @@ void            CodeBreak ( void )
 
 /****************************************************************************
 **
-*F  CodeContinue() . . . . . . . . . . . . . . . . . . . .  code continue-statement
+*F  CodeContinue() . . . . . . . . . . . . . . . . .  code continue-statement
 **
-**  'CodeContinue' is the  action to code a  continue-statement.  It is called when
-**  the reader encounters a 'continue;'.
+**  'CodeContinue' is the action to code a continue-statement. It is called
+**  when the reader encounters a 'continue;'.
 */
 void            CodeContinue ( void )
 {
-    Stat                stat;           /* continue-statement, result         */
+    Stat                stat;           /* continue-statement, result      */
 
-    /* allocate the continue-statement                                        */
+    /* allocate the continue-statement                                     */
     stat = NewStat( T_CONTINUE, 0 * sizeof(Expr) );
 
-    /* push the continue-statement                                            */
+    /* push the continue-statement                                         */
     PushStat( stat );
 }
 
@@ -3118,9 +3114,9 @@ void CodeAssertEnd3Args ( void )
 **  organised to regular boundaries based on the types Stat and Expr, which
 **  are currently both UInt
 **
-**  String literals should really be saved byte-wise, to be safe across machines
-**  of different endianness, but this would mean parsing the bag as we save it
-**  which it would be nice to avoid just now.
+**  String literals should really be saved byte-wise, to be safe across
+**  machines of different endianness, but this would mean parsing the bag as
+**  we save it which it would be nice to avoid just now.
 */
 void SaveBody ( Obj body )
 {

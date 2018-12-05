@@ -453,7 +453,7 @@ void            IntrFuncCallEnd (
       }
       val = DoOperation2Args(CallFuncListOper, func, args);
     } else {
-      /* call the function                                                   */
+      /* call the function                                                 */
       if      ( 0 == nr ) { val = CALL_0ARGS( func ); }
       else if ( 1 == nr ) { val = CALL_1ARGS( func, a1 ); }
       else if ( 2 == nr ) { val = CALL_2ARGS( func, a1, a2 ); }
@@ -576,10 +576,10 @@ void            IntrIfBegin ( void )
 
     // if IntrIgnoring is positive, increment it, as IntrIgnoring == 1 has a
     // special meaning when parsing if-statements -- it is used to skip
-    // interpreting or coding branches of the if-statement which never will be
-    // executed, either because a previous branch is always executed (i.e., it
-    // has a 'true' condition), or else because the current branch has a
-    // 'false' condition
+    // interpreting or coding branches of the if-statement which never will
+    // be executed, either because a previous branch is always executed
+    // (i.e., it has a 'true' condition), or else because the current branch
+    // has a 'false' condition
     if ( STATE(IntrIgnoring)  > 0 ) { STATE(IntrIgnoring)++; return; }
     if ( STATE(IntrCoding)    > 0 ) { CodeIfBegin(); return; }
 
@@ -858,7 +858,7 @@ void            IntrWhileEnd ( void )
 
 /****************************************************************************
 **
-*F  IntrQualifiedExprBegin( UInt qual ) . . . . . . interpret expression guarded
+*F  IntrQualifiedExprBegin( UInt qual ) . . . .  interpret expression guarded
 **                                       by readwrite or readonly
 *F  IntrQualifiedExprEnd( ) 
 **                                       by readwrite or readonly
@@ -888,30 +888,30 @@ void IntrQualifiedExprEnd( void )
 
 /****************************************************************************
 **
-*F  IntrAtomicBegin()  . . . . . interpret atomic-statement, begin of statement
-*F  IntrAtomicBeginBody(<nrexprs>)  . . . . .  interpret atomic-statement, begin of body
-*F  IntrAtomicEndBody(<nrstats>)  . . . . .  interpret atomic-statement, end of body
-*F  IntrAtomicEnd()  . . . . . . . interpret atomic-statement, end of statement
+*F  IntrAtomicBegin() . . . .  interpret atomic-statement, begin of statement
+*F  IntrAtomicBeginBody(<nrexprs>)  interpret atomic-statement, begin of body
+*F  IntrAtomicEndBody(<nrstats>) . .  interpret atomic-statement, end of body
+*F  IntrAtomicEnd() . . . . . .  interpret atomic-statement, end of statement
 **
-**  'IntrAtomicBegin' is   an action to  interpret   a atomic-statement.  It is
-**  called when the    reader encounters the    'atomic', i.e., *before*   the
+**  'IntrAtomicBegin' is an action to interpret an atomic-statement. It is
+**  called when the reader encounters the 'atomic', i.e., *before* the
 **  expressions to be locked are read.
 **
-**  'IntrAtomicBeginBody' is an action  to interpret a atomic-statement.  It is
-**  called when the reader encounters  the  beginning of the statement  body,
-**  i.e., *after* the expressions to be locked are read. <nrexprs> is the number
-** of expressions to be locked
+**  'IntrAtomicBeginBody' is an action to interpret an atomic-statement. It
+**  is called when the reader encounters the beginning of the statement body,
+**  i.e., *after* the expressions to be locked are read. <nrexprs> is the
+**  number of expressions to be locked
 **
-**  'IntrAtomicEndBody' is  an action to interpret   a atomic-statement.  It is
-**  called when the reader encounters the end of the statement body.  <nrstats> is
-**  the number of statements in the body.
+**  'IntrAtomicEndBody' is an action to interpret an atomic-statement. It is
+**  called when the reader encounters the end of the statement body.
+**  <nrstats> is the number of statements in the body.
 **
-**  'IntrAtomicEnd' is an action to interpret a atomic-statement.  It is called
-**  when  the reader encounters  the  end of  the  statement, i.e., immediate
-**  after 'IntrAtomicEndBody'.
+**  'IntrAtomicEnd' is an action to interpret an atomic-statement. It is
+**  called when the reader encounters the end of the statement, i.e.,
+**  immediately after 'IntrAtomicEndBody'.
 **
-**  These functions only do something meaningful inside HPC-GAP; in plain GAP,
-**  they are simply placeholders.
+**  These functions only do something meaningful inside HPC-GAP; in plain
+**  GAP, they are simply placeholders.
 */
 void            IntrAtomicBegin ( void )
 {
@@ -1072,13 +1072,13 @@ void            IntrBreak ( void )
 
 /****************************************************************************
 **
-*F  IntrContinue() . . . . . . . . . . . . . . . . . . interpret continue-statement
+*F  IntrContinue() . . . . . . . . . . . . . . . interpret continue-statement
 **
-**  'IntrContinue'  is the action to interpret  a continue-statement.  It is called
-**  when the reader encounters a 'continue;'.
+**  'IntrContinue' is the action to interpret a continue-statement. It is
+**  called when the reader encounters a 'continue;'.
 **
-**  Continue-statements are  always coded (if  they are not ignored), since they
-**  can only appear in loops.
+**  Continue-statements are always coded (if they are not ignored), since
+**  they can only appear in loops.
 */
 void            IntrContinue ( void )
 {
@@ -1238,7 +1238,7 @@ void IntrHelp(Obj topic)
 **
 **  'IntrOrL' is an action to interpret an or-expression.   It is called when
 **  the reader encounters the 'or' keyword, i.e., *after* the left operand is
-**  read by *before* the right operand is read.
+**  read but *before* the right operand is read.
 **
 **  'IntrOr' is an action to  interpret an or-expression.   It is called when
 **  the reader encountered  the  end of  the  expression, i.e., *after*  both
@@ -1310,7 +1310,7 @@ void            IntrOr ( void )
 **
 **  'IntrAndL' is  an action  to interpret an   and-expression.  It is called
 **  when the reader  encounters the  'and'  keyword, i.e., *after*  the  left
-**  operand is read by *before* the right operand is read.
+**  operand is read but *before* the right operand is read.
 **
 **  'IntrAnd' is an action to interpret an and-expression.  It is called when
 **  the reader encountered   the end of   the expression, i.e., *after*  both
@@ -2910,13 +2910,13 @@ void            IntrAssList ( Int narg )
     rhs = PopObj();
     
     if (narg == 1) {
-      /* get the position                                                    */
+      /* get the position                                                  */
       pos = PopObj();
 
-      /* get the list (checking is done by 'ASS_LIST' or 'ASSB_LIST')        */
+      /* get the list (checking is done by 'ASS_LIST' or 'ASSB_LIST')      */
       list = PopObj();
 
-      /* assign to the element of the list                                   */
+      /* assign to the element of the list                                 */
       if (IS_POS_INTOBJ(pos)) {
         ASS_LIST( list, INT_INTOBJ(pos), rhs );
       }
@@ -2988,7 +2988,7 @@ void            IntrAssListLevel (
 
     ixs = NEW_PLIST(T_PLIST, narg);
     for (i = narg; i > 0; i--) {
-      /* get and check the position                                          */
+      /* get and check the position                                        */
       pos = PopObj();
       SET_ELM_PLIST(ixs, i, pos);
       CHANGED_BAG(ixs);
@@ -3050,13 +3050,13 @@ void            IntrUnbList ( Int narg )
     if ( STATE(IntrCoding)    > 0 ) { CodeUnbList( narg); return; }
 
     if (narg == 1) {
-      /* get and check the position                                          */
+      /* get and check the position                                        */
       pos = PopObj();
       
-      /* get the list (checking is done by 'UNB_LIST' or 'UNBB_LIST')        */
+      /* get the list (checking is done by 'UNB_LIST' or 'UNBB_LIST')      */
       list = PopObj();
 
-      /* unbind the element                                                  */
+      /* unbind the element                                                */
       if (IS_POS_INTOBJ(pos)) {
         UNB_LIST( list, INT_INTOBJ(pos) );
       }
@@ -3098,13 +3098,13 @@ void            IntrElmList ( Int narg )
     if ( STATE(IntrCoding)    > 0 ) { CodeElmList( narg ); return; }
 
     if (narg == 1) {
-      /* get the position                                                    */
+      /* get the position                                                  */
       pos = PopObj();
 
-      /* get the list (checking is done by 'ELM_LIST')                       */
+      /* get the list (checking is done by 'ELM_LIST')                     */
       list = PopObj();
 
-      /* get the element of the list                                         */
+      /* get the element of the list                                       */
       if (IS_POS_INTOBJ(pos)) {
         elm = ELM_LIST( list, INT_INTOBJ( pos ) );
       }
@@ -3228,13 +3228,13 @@ void            IntrIsbList ( Int narg )
     if ( STATE(IntrCoding)    > 0 ) { CodeIsbList(narg); return; }
 
     if (narg == 1) {
-      /* get and check the position                                          */
+      /* get and check the position                                        */
       pos = PopObj();
       
-      /* get the list (checking is done by 'ISB_LIST' or 'ISBB_LIST')        */
+      /* get the list (checking is done by 'ISB_LIST' or 'ISBB_LIST')      */
       list = PopObj();
       
-      /* get the result                                                      */
+      /* get the result                                                    */
       if (IS_POS_INTOBJ(pos)) {
         isb = ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
       }
@@ -3956,8 +3956,9 @@ void            IntrInfoEnd( UInt narg )
 **
 *F  IntrAssertAfterCondition() called after the second argument has been read
 **
-**  At this point we know whether there is an assertion failure. We still need
-**  to read the third argument if any, to decide what to do about it One of:
+**  At this point we know whether there is an assertion failure. We still
+**  need to read the third argument if any, to decide what to do about it;
+**  one of:
 **
 *F  IntrAssertEnd2Args() . . . . called after reading the closing parenthesis
 *F  IntrAssertEnd3Args() . . . . called after reading the closing parenthesis
@@ -3965,9 +3966,9 @@ void            IntrInfoEnd( UInt narg )
 *V  CurrentAssertionLevel  . .  . . . . . . . . . . . .  copy of GAP variable
 **
 **
-**  STATE(IntrIgnoring) is increased by (a total of) 2 if an assertion either is not
-**  tested (because we were Ignoring when we got to it, or due to level)
-**  or is tested and passes
+**  STATE(IntrIgnoring) is increased by (a total of) 2 if an assertion either
+**  is not tested (because we were Ignoring when we got to it, or due to
+**  level) or is tested and passes
 */
 
 Obj              CurrentAssertionLevel;
