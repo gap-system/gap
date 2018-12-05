@@ -4031,31 +4031,40 @@ end);
 ##
 #M  DefaultScalarDomainOfMatrixList
 ##
-InstallMethod(DefaultScalarDomainOfMatrixList, "generic: form ring",
-  [IsListOrCollection],
-function(l)
-local i,j,k,fg,f;
-  # try to find out the field
-  if Length(l)=0 or ForAny(l,i->not IsMatrix(i)) then
-    Error("<l> must be a list of matrices");
-  fi;
-  fg:=[l[1][1,1]];
-  if Characteristic(fg)=0 then
-    f:=DefaultField(fg);
-  else
-    f:=DefaultRing(fg);
-  fi;
-  for i in l do
-    for j in i do
-      for k in j do
-        if not k in f then
-          Add(fg,k);
-          f:=DefaultRing(fg);
-        fi;
+InstallMethod( DefaultScalarDomainOfMatrixList,
+    "generic: form ring",
+    [ IsList ],
+    function(l)
+    local B, i,j,k,fg,f;
+    # try to find out the field
+    if Length( l ) = 0 or ForAny( l, i -> not IsMatrixObj( i ) ) then
+      Error( "<l> must be a nonempty list of matrices" );
+    elif ForAll( l, HasBaseDomain ) then
+      B:= BaseDomain( l[1] );
+      if ForAll( l, x -> B = BaseDomain( x ) ) then
+        return B;
+      fi;
+    elif ForAll( l, IsMatrix ) then
+      fg:=[l[1][1,1]];
+      if Characteristic(fg)=0 then
+        f:=DefaultField(fg);
+      else
+        f:=DefaultRing(fg);
+      fi;
+      for i in l do
+        for j in i do
+          for k in j do
+            if not k in f then
+              Add(fg,k);
+              f:=DefaultRing(fg);
+            fi;
+          od;
+        od;
       od;
-    od;
-  od;
-  return f;
+      return f;
+    fi;
+    Error( "all entries in <l> must either be lists of lists ",
+           "or have the same BaseDomain" );
 end);
 
 
