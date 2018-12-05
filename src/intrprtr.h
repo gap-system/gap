@@ -113,7 +113,7 @@ extern  void            IntrFuncCallBegin ( void );
 
 extern  void            IntrFuncCallEnd (
             UInt                funccall,
-	    UInt                options,
+            UInt                options,
             UInt                nr );
 
 /****************************************************************************
@@ -159,7 +159,7 @@ extern  void            IntrFuncExprBegin (
             Int                 narg,
             Int                 nloc,
             Obj                 nams,
-	    Int                 startLine);
+            Int                 startLine);
 
 extern void IntrFuncExprEnd(UInt nr);
 

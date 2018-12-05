@@ -101,8 +101,8 @@ static inline void ATOMIC_SET_ELM_PLIST(Obj list, UInt index, Obj value) {
   Obj *contents = ADDR_OBJ(list);
   MEMBAR_WRITE(); /* ensure that contents[index] becomes visible to
                    * other threads only after value has become visible,
-		   * too.
-		   */
+                   * too.
+                   */
   contents[index] = value;
 #endif
 }

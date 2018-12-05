@@ -2401,8 +2401,8 @@ void CodeUnbList ( Int narg )
 *F  CodeElmsListLevel( <level> )  .  code multiple selection of several lists
 */
 static void CodeElmListUniv (
-		      Expr                ref,
-		      Int narg)
+                      Expr                ref,
+                      Int narg)
 {
     Expr                list;           /* list expression                 */
     Expr                pos;            /* position expression             */

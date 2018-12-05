@@ -1432,10 +1432,10 @@ Obj FuncCOPY_TO_STRING_REP (
 **  returned.
 */
 Obj FuncPOSITION_SUBSTRING( 
-			   Obj                  self,
-			   Obj                  string,
-			   Obj                  substr,
-			   Obj                  off )
+                           Obj                  self,
+                           Obj                  string,
+                           Obj                  substr,
+                           Obj                  off )
 {
   Int    ipos, i, j, lens, lenss, max;
   const UInt1  *s, *ss;
@@ -1486,8 +1486,8 @@ Obj FuncPOSITION_SUBSTRING(
 **  
 */ 
 Obj FuncNormalizeWhitespace (
-			      Obj     self,
-			      Obj     string )
+                              Obj     self,
+                              Obj     string )
 {
   UInt1  *s, c;
   Int i, j, len, white;
@@ -1503,9 +1503,9 @@ Obj FuncNormalizeWhitespace (
     c = s[j];
     if (c == ' ' || c == '\n' || c == '\t' || c == '\r') {
       if (! white) {
-	i++;
-	s[i] = ' ';
-	white = 1;
+        i++;
+        s[i] = ' ';
+        white = 1;
       }
     }
     else {
@@ -1534,8 +1534,8 @@ Obj FuncNormalizeWhitespace (
 */ 
 
 Obj FuncREMOVE_CHARACTERS (
-			      Obj     self,
-			      Obj     string,
+                              Obj     self,
+                              Obj     string,
                               Obj     rem     )
 {
   UInt1  *s;
@@ -1579,8 +1579,8 @@ Obj FuncREMOVE_CHARACTERS (
 **    
 */ 
 Obj FuncTranslateString (
-			      Obj     self,
-			      Obj     string,
+                              Obj     self,
+                              Obj     string,
                               Obj     trans     )
 {
   Int j, len;
@@ -1616,8 +1616,8 @@ Obj FuncTranslateString (
 **  separate empty strings.
 */ 
 Obj FuncSplitStringInternal (
-			      Obj     self,
-			      Obj     string,
+                              Obj     self,
+                              Obj     string,
                               Obj     seps,
                               Obj     wspace    )
 {

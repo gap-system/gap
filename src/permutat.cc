@@ -1811,7 +1811,7 @@ Obj             FuncRESTRICTED_PERM (
     Obj                 self,
     Obj                 perm,
     Obj                 dom,
-    Obj 		test )
+    Obj                 test )
 {
     /* check arguments and extract permutation                             */
     RequirePermutation("RestrictedPerm", perm);
@@ -1832,12 +1832,12 @@ Obj             FuncRESTRICTED_PERM (
 ##  useful to save memory
 */
 Obj             FuncTRIM_PERM (
-    Obj			self,
+    Obj                 self,
     Obj                 perm,
     Obj                 n )
 {
-    UInt	deg,rdeg,i;
-    UInt4*	addr;
+    UInt        deg,rdeg,i;
+    UInt4*      addr;
 
     /* check arguments and extract permutation */
     RequirePermutation("TRIM_PERM", perm);
@@ -1855,17 +1855,17 @@ Obj             FuncTRIM_PERM (
           ResizeBag(perm, SIZEBAG_PERM4(rdeg));
       }
       else {
-	/* Convert to 2Byte rep: move the points up */
+        /* Convert to 2Byte rep: move the points up */
         addr=ADDR_PERM4(perm);
-	for (i=0;i<=rdeg;i++) {
-	  ((UInt2*)addr)[i]=(UInt2)addr[i];
-	}
-	RetypeBag( perm, T_PERM2 );
+        for (i=0;i<=rdeg;i++) {
+          ((UInt2*)addr)[i]=(UInt2)addr[i];
+        }
+        RetypeBag( perm, T_PERM2 );
         ResizeBag(perm, SIZEBAG_PERM2(rdeg));
       }
     }
 
-  return (Obj)0;
+    return (Obj)0;
 }
 
 /****************************************************************************
@@ -1905,24 +1905,24 @@ SPLIT_PARTITION(Obj Ppoints, Obj Qnum, Obj jval, Obj g, Obj lst)
     ptPerm=CONST_ADDR_PERM<T>(g);
     while ( (a<b)) {
       do {
-	b--;
-	if (b<blim) {
-	  /* too many points got moved out */
-	  return INTOBJ_INT(-1);
-	}
+        b--;
+        if (b<blim) {
+          /* too many points got moved out */
+          return INTOBJ_INT(-1);
+        }
       } while (ELM_PLIST(Qnum,
                IMAGE(INT_INTOBJ(ELM_PLIST(Ppoints,b))-1,ptPerm,deg)+1)==jval);
       do {
-	a++;
+        a++;
       } while ((a<b)
-	      &&(!(ELM_PLIST(Qnum,
+              &&(!(ELM_PLIST(Qnum,
                    IMAGE(INT_INTOBJ(ELM_PLIST(Ppoints,a))-1,ptPerm,deg)+1)==jval)));
       /* swap */
       if (a<b) {
-	tmp=ELM_PLIST(Ppoints,a);
-	SET_ELM_PLIST(Ppoints,a,ELM_PLIST(Ppoints,b));
-	SET_ELM_PLIST(Ppoints,b,tmp);
-	cnt++;
+        tmp=ELM_PLIST(Ppoints,a);
+        SET_ELM_PLIST(Ppoints,a,ELM_PLIST(Ppoints,b));
+        SET_ELM_PLIST(Ppoints,b,tmp);
+        cnt++;
       }
     }
 
@@ -2041,7 +2041,7 @@ static inline Obj SMALLEST_IMG_TUP_PERM(Obj tup, Obj perm)
 }
 
 Obj             FuncSMALLEST_IMG_TUP_PERM (
-    Obj			self,
+    Obj                 self,
     Obj                 tup,
     Obj                 perm )
 {
@@ -2409,12 +2409,12 @@ Obj FuncAGESTC( Obj self, Obj args)
       lj = ELM_PLIST(labels, INT_INTOBJ(oj));
       img = myquo(pt, lj);
       if (img <= LEN_PLIST(translabels) && (Obj)0 != ELM_PLIST(translabels,img)) 
-	ASS_LIST(cycles, i, True);
+        ASS_LIST(cycles, i, True);
       else {
-	ASS_LIST(translabels, img, oj);
-	ASS_LIST(transversal, img, lj);
-	ASS_LIST(orbit, ++len2, INTOBJ_INT(img));
-	ASS_LIST(cycles, len2, False);
+        ASS_LIST(translabels, img, oj);
+        ASS_LIST(transversal, img, lj);
+        ASS_LIST(orbit, ++len2, INTOBJ_INT(img));
+        ASS_LIST(cycles, len2, False);
       }
     }
   }
@@ -2425,12 +2425,12 @@ Obj FuncAGESTC( Obj self, Obj args)
       lj = ELM_PLIST(labels, INT_INTOBJ(oj));
       img = myquo(pt, lj);
       if (img <= LEN_PLIST(translabels) && (Obj)0 != ELM_PLIST(translabels,img)) 
-	ASS_LIST(cycles, i, True);
+        ASS_LIST(cycles, i, True);
       else {
-	ASS_LIST(translabels, img, oj);
-	ASS_LIST(transversal, img, lj);
-	ASS_LIST(orbit, ++len2, INTOBJ_INT(img));
-	ASS_LIST(cycles, len2, False);
+        ASS_LIST(translabels, img, oj);
+        ASS_LIST(transversal, img, lj);
+        ASS_LIST(orbit, ++len2, INTOBJ_INT(img));
+        ASS_LIST(cycles, len2, False);
       }
     }
     i++;
@@ -2456,9 +2456,9 @@ Obj FuncAGEST( Obj self, Obj orbit, Obj newlabs,  Obj labels, Obj translabels, O
       lj = ELM_PLIST(labels, INT_INTOBJ(oj));
       img = myquo(pt,lj);
       if (img > LEN_PLIST(translabels) || (Obj)0 == ELM_PLIST(translabels,img)) {
-	ASS_LIST(translabels, img, oj);
-	ASS_LIST(transversal, img, lj);
-	ASS_LIST(orbit, ++len2, INTOBJ_INT(img));
+        ASS_LIST(translabels, img, oj);
+        ASS_LIST(transversal, img, lj);
+        ASS_LIST(orbit, ++len2, INTOBJ_INT(img));
       }
     }
   }
@@ -2468,11 +2468,11 @@ Obj FuncAGEST( Obj self, Obj orbit, Obj newlabs,  Obj labels, Obj translabels, O
       oj = ELM_PLIST(genlabels, j);
       lj = ELM_PLIST(labels, INT_INTOBJ(oj));
       img = myquo(pt, lj);
-	if (img > LEN_PLIST(translabels) || (Obj)0 == ELM_PLIST(translabels,img)) {
-	  ASS_LIST(translabels, img, oj);
-	  ASS_LIST(transversal, img, lj);
-	  ASS_LIST(orbit, ++len2, INTOBJ_INT(img));
-	}
+        if (img > LEN_PLIST(translabels) || (Obj)0 == ELM_PLIST(translabels,img)) {
+          ASS_LIST(translabels, img, oj);
+          ASS_LIST(transversal, img, lj);
+          ASS_LIST(orbit, ++len2, INTOBJ_INT(img));
+        }
     }
     i++;
   }
@@ -2689,8 +2689,8 @@ Obj FuncSCR_SIFT_HELPER(Obj self, Obj S, Obj g, Obj n)
     dg = DEG_PERM4(g);
 
   if (dg > nn) /* In this case the caller has messed up or 
-		  g just ends with a lot of fixed points which we can 
-		  ignore */
+                  g just ends with a lot of fixed points which we can 
+                  ignore */
     dg = nn;
 
   /* Copy g into the buffer */
@@ -2749,55 +2749,55 @@ Obj FuncSCR_SIFT_HELPER(Obj self, Obj S, Obj g, Obj n)
     else {
       while (bpt != im) {
 
-	/* Ugly -- eight versions of the loop */
-	if (useP2) {
-	  UInt2 *ptR = ADDR_PERM2(result);
-	  if (IS_PERM2(t)) {
-	    const UInt2 *ptT = CONST_ADDR_PERM2(t);
-	    UInt dt = DEG_PERM2(t);
-	    if (dt >= nn)
-	      for (i = 0; i < nn; i++) 
-		ptR[i] = ptT[ptR[i]];
-	    else
-	      for ( i = 0; i < nn; i++)
-		ptR[i] = IMAGE(ptR[i], ptT, dt);
-	  }
-	  else {
-	    const UInt4 *ptT = CONST_ADDR_PERM4(t);
-	    UInt dt = DEG_PERM4(t);
-	    if (dt >= nn)
-	      for ( i = 0; i < nn; i++)
-		ptR[i] = (UInt2) ptT[ptR[i]];
-	    else
-	      for ( i = 0; i < nn; i++)
-		ptR[i] = (UInt2)IMAGE(ptR[i], ptT, dt);
-	  }
-	  im = (Int)ptR[bpt];
-	} else {
-	  UInt4 *ptR = ADDR_PERM4(result);
-	  if (IS_PERM2(t)) {
-	    const UInt2 *ptT = CONST_ADDR_PERM2(t);
-	    UInt dt = DEG_PERM2(t);
-	    if (dt >= nn)
-	      for ( i = 0; i < nn; i++)
-		ptR[i] = (UInt4)ptT[ptR[i]];
-	    else
-	      for ( i = 0; i < nn; i++)
-		ptR[i] = (UInt4)IMAGE(ptR[i], ptT, dt);
-	  }
-	  else {
-	    const UInt4 *ptT = CONST_ADDR_PERM4(t);
-	    UInt dt = DEG_PERM4(t);
-	    if (dt >= nn)
-	      for ( i = 0; i < nn; i++)
-		ptR[i] = ptT[ptR[i]];
-	    else
-	      for ( i = 0; i < nn; i++)
-		ptR[i] = IMAGE(ptR[i], ptT, dt);
-	  }
-	  im = (Int)ptR[bpt];
-	}
-	t = ELM_PLIST(trans,im+1);
+        /* Ugly -- eight versions of the loop */
+        if (useP2) {
+          UInt2 *ptR = ADDR_PERM2(result);
+          if (IS_PERM2(t)) {
+            const UInt2 *ptT = CONST_ADDR_PERM2(t);
+            UInt dt = DEG_PERM2(t);
+            if (dt >= nn)
+              for (i = 0; i < nn; i++) 
+                ptR[i] = ptT[ptR[i]];
+            else
+              for ( i = 0; i < nn; i++)
+                ptR[i] = IMAGE(ptR[i], ptT, dt);
+          }
+          else {
+            const UInt4 *ptT = CONST_ADDR_PERM4(t);
+            UInt dt = DEG_PERM4(t);
+            if (dt >= nn)
+              for ( i = 0; i < nn; i++)
+                ptR[i] = (UInt2) ptT[ptR[i]];
+            else
+              for ( i = 0; i < nn; i++)
+                ptR[i] = (UInt2)IMAGE(ptR[i], ptT, dt);
+          }
+          im = (Int)ptR[bpt];
+        } else {
+          UInt4 *ptR = ADDR_PERM4(result);
+          if (IS_PERM2(t)) {
+            const UInt2 *ptT = CONST_ADDR_PERM2(t);
+            UInt dt = DEG_PERM2(t);
+            if (dt >= nn)
+              for ( i = 0; i < nn; i++)
+                ptR[i] = (UInt4)ptT[ptR[i]];
+            else
+              for ( i = 0; i < nn; i++)
+                ptR[i] = (UInt4)IMAGE(ptR[i], ptT, dt);
+          }
+          else {
+            const UInt4 *ptT = CONST_ADDR_PERM4(t);
+            UInt dt = DEG_PERM4(t);
+            if (dt >= nn)
+              for ( i = 0; i < nn; i++)
+                ptR[i] = ptT[ptR[i]];
+            else
+              for ( i = 0; i < nn; i++)
+                ptR[i] = IMAGE(ptR[i], ptT, dt);
+          }
+          im = (Int)ptR[bpt];
+        }
+        t = ELM_PLIST(trans,im+1);
       }
     }
     stb = ElmPRec(stb, RN_stabilizer);

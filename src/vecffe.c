@@ -913,8 +913,8 @@ Obj FuncADD_ROWVECTOR_VECFFES_2( Obj self, Obj vecL, Obj vecR )
 **  instead of allocating a new for each product and sum.
 */
 Obj             ProdVecFFEMatFFE (
-				  Obj                 vecL,
-				  Obj                 matR )
+                                  Obj                 vecL,
+                                  Obj                 matR )
 {
     Obj                 vecP;           /* handle of the product           */
     Obj *               ptrP;           /* pointer into the product        */

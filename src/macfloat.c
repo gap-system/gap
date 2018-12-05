@@ -336,16 +336,16 @@ Obj SumIntMacfloat( Obj i, Obj f )
 **
 */
 
-#define MAKEMATHPRIMITIVE(NAME,name)			\
-  Obj Func##NAME##_MACFLOAT( Obj self, Obj f )		\
-  {							\
-    return NEW_MACFLOAT(MATH(name)(VAL_MACFLOAT(f)));	\
+#define MAKEMATHPRIMITIVE(NAME,name)                    \
+  Obj Func##NAME##_MACFLOAT( Obj self, Obj f )          \
+  {                                                     \
+    return NEW_MACFLOAT(MATH(name)(VAL_MACFLOAT(f)));   \
   }
 
-#define MAKEMATHPRIMITIVE2(NAME,name)					\
-  Obj Func##NAME##_MACFLOAT( Obj self, Obj f, Obj g)			\
-  {									\
-    return NEW_MACFLOAT(MATH(name)(VAL_MACFLOAT(f),VAL_MACFLOAT(g)));	\
+#define MAKEMATHPRIMITIVE2(NAME,name)                                   \
+  Obj Func##NAME##_MACFLOAT( Obj self, Obj f, Obj g)                    \
+  {                                                                     \
+    return NEW_MACFLOAT(MATH(name)(VAL_MACFLOAT(f),VAL_MACFLOAT(g)));   \
   }
 
 MAKEMATHPRIMITIVE(COS,cos)

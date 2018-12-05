@@ -1885,18 +1885,15 @@ Obj FuncASS_GF2VEC(Obj self, Obj list, Obj pos, Obj elm)
         }
         else if (IS_FFE(elm) && CHAR_FF(FLD_FFE(elm)) == 2 &&
                  DEGR_FF(FLD_FFE(elm)) <= 8) {
-            //	    Pr("Rewriting GF2 vector over larger field",0,0);
             RewriteGF2Vec(list, SIZE_FF(FLD_FFE(elm)));
             ASS_VEC8BIT(list, pos, elm);
         }
         else {
-            // 	    Pr("arbitrary assignment (GF2)",0,0);
             PlainGF2Vec(list);
             ASS_LIST(list, p, elm);
         }
     }
     else {
-        //       Pr("arbitrary assignment 2 (GF2)",0,0);
         PlainGF2Vec(list);
         ASS_LIST(list, p, elm);
     }

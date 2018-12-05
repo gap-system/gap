@@ -527,7 +527,7 @@ Obj ElmsBlist (
                     bit = 1;
                 }
             }
-	}
+        }
     }
     /* return the result                                                   */
     return elms;
@@ -1579,7 +1579,7 @@ Obj FuncMEET_BLIST (
     ptr2 = CONST_BLOCKS_BLIST(list2);
     for ( i = NUMBER_BLOCKS_BLIST(list1); 0 < i; i-- ) 
       { 
-	if (*ptr1++ & *ptr2++) return True;
+        if (*ptr1++ & *ptr2++) return True;
       }
 
     return False;
@@ -1801,7 +1801,7 @@ static Int InitKernel (
         InitMarkFuncBags( t1 +IMMUTABLE          , MarkNoSubBags  );
     }
 
-    /* Make immutable blists public					   */
+    /* Make immutable blists public                                        */
 #ifdef HPCGAP
     for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
         MakeBagTypePublic( t1 + IMMUTABLE );

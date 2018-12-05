@@ -407,19 +407,10 @@ extern void LockCurrentOutput(Int lock);
 **  must pass 0L if you don't make use of an argument to please lint.
 */
 
-extern  void            Pr (
-            const Char *    format,
-            Int                 arg1,
-            Int                 arg2 );
+extern void Pr(const Char *format, Int arg1, Int arg2);
 
-
-extern  void            SPrTo (
-			       Char * buffer,
-			       UInt maxlen,
-            const Char *    format,
-            Int                 arg1,
-            Int                 arg2 );
-
+extern void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1,
+                  Int arg2);
 
 
 /****************************************************************************

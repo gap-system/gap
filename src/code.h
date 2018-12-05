@@ -229,7 +229,7 @@ enum STAT_TNUM {
     END_ENUM_RANGE(LAST_STAT_TNUM),
 };
 
-#define T_NO_STAT		(Stat)(-1)
+#define T_NO_STAT               (Stat)(-1)
 
 
 
@@ -1202,8 +1202,8 @@ extern  void            CodeElmList ( Int narg );
 extern  void            CodeElmsList ( void );
 
 extern  void            CodeElmListLevel (
-					  Int narg,
-					  UInt level);
+                                          Int narg,
+                                          UInt level);
 
 extern  void            CodeElmsListLevel (
             UInt                level );

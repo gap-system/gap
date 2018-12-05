@@ -834,7 +834,6 @@ Obj NewVec8Bit(Obj list, UInt q)
     UInt p;             // char
     UInt d;             // degree
     FF   f;             // field
-                        // Obj                 x;	/ an element
     Obj     info;       // field info object
     UInt    elts;       // elements per byte
     UInt1 * settab;     // element setting table

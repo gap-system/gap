@@ -770,10 +770,10 @@ UInt            ExecUnbList (
     } else {
       ixs = NEW_PLIST(T_PLIST, narg);
       for (i = 1; i <= narg; i++) {
-	/* evaluate the position                                               */
+        /* evaluate the position                                               */
         pos = EVAL_EXPR(READ_STAT(stat, i));
         SET_ELM_PLIST(ixs,i,pos);
-	CHANGED_BAG(ixs);
+        CHANGED_BAG(ixs);
       }
       SET_LEN_PLIST(ixs, narg);
       UNBB_LIST(list, ixs);
@@ -1003,14 +1003,14 @@ Obj             EvalIsbList (
     } else {
       ixs = NEW_PLIST(T_PLIST, narg);
       for (i = 1; i <= narg; i++) {
-	pos = EVAL_EXPR( READ_EXPR(expr, i) );
-	SET_ELM_PLIST(ixs,i,pos);
-	CHANGED_BAG(ixs);
+        pos = EVAL_EXPR( READ_EXPR(expr, i) );
+        SET_ELM_PLIST(ixs,i,pos);
+        CHANGED_BAG(ixs);
       }
       SET_LEN_PLIST(ixs, narg);
       return ISBB_LIST(list, ixs) ? True : False;
     }
-	
+        
 }
 
 
@@ -1113,7 +1113,7 @@ void            PrintElmList (
 }
 
 void PrintElm2List (
-		     Expr expr )
+                     Expr expr )
 {
     Pr("%2>",0L,0L);
     PrintExpr(READ_EXPR(expr, 0));
@@ -1125,7 +1125,7 @@ void PrintElm2List (
 }
 
 void PrintElmListLevel (
-		     Expr expr )
+                     Expr expr )
 {
   Int i;
   Int narg = SIZE_EXPR(expr)/sizeof(Expr) -2 ;

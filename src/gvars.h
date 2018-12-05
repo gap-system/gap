@@ -174,7 +174,7 @@ extern void MakeConstantGVar (
 #ifdef HPCGAP
 extern void MakeThreadLocalVar (
     UInt                gvar,
-    UInt		rnam );
+    UInt                rnam );
 #endif
 
 extern Int IsReadOnlyGVar (

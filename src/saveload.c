@@ -60,7 +60,7 @@ static Int OpenForSave( Obj fname )
   if (SaveFile == -1)
     {
       Pr("Couldn't open file %s to save workspace\n",
-	 (UInt)CONST_CSTR_STRING(fname),0L);
+         (UInt)CONST_CSTR_STRING(fname),0L);
       return 1;
     }
   LBPointer = LoadBuffer;
@@ -801,9 +801,9 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
       Pr("Type: %d ",type,0);
       relative = LoadUInt();
       if (relative)
-	Pr("GAP root relative ", 0L, 0L);
+        Pr("GAP root relative ", 0L, 0L);
       else
-	Pr("absolute ", 0L, 0L);
+        Pr("absolute ", 0L, 0L);
       LoadCStr(buf,256);
       Pr("  %s\n",(Int)buf,0L);
     }
