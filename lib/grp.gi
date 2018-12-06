@@ -4401,13 +4401,14 @@ InstallMethod( GroupWithGenerators,
 function( gens )
 local G,typ;
 
+  gens:=AsList(gens);
   typ:=MakeGroupyType(FamilyObj(gens),
           IsGroup and IsAttributeStoringRep 
           and HasIsEmpty and HasGeneratorsOfMagmaWithInverses,
           gens,false,true);
 
   G:=rec();
-  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens));
+  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,gens);
 
   return G;
 end );
@@ -4418,13 +4419,14 @@ InstallMethod( GroupWithGenerators,
 function( gens, id )
 local G,typ;
 
+  gens:=AsList(gens);
   typ:=MakeGroupyType(FamilyObj(gens),
           IsGroup and IsAttributeStoringRep 
             and HasIsEmpty and HasGeneratorsOfMagmaWithInverses and HasOne,
             gens,id,true);
 
   G:=rec();
-  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens),
+  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,gens,
                           One,id);
 
   return G;
