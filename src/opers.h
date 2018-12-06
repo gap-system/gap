@@ -448,9 +448,8 @@ static inline Obj SAFE_ELM_FLAGS(Obj list, UInt pos)
 **  <list> to True.  <pos> must be a positive integer less than or
 **  equal to the length of <hdList>.
 */
-static inline void SET_ELM_FLAGS(Obj list, UInt pos, Obj val)
+static inline void SET_ELM_FLAGS(Obj list, UInt pos)
 {
-    GAP_ASSERT(val == True);
     GAP_ASSERT(TNUM_OBJ(list) == T_FLAGS);
     GAP_ASSERT(pos <= LEN_FLAGS(list));
     BLOCKS_FLAGS(list)[(pos - 1) >> LBIPEB] |= MASK_POS_FLAGS(pos);
