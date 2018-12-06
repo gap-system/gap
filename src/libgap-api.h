@@ -16,6 +16,134 @@
 #include "system.h"
 
 
+#ifdef __GNUC__
+#define GAP_unlikely(x) __builtin_expect(!!(x), 0)
+#else
+#define GAP_unlikely(x) (x)
+#endif
+
+
+#ifndef GAP_ENTER_DEBUG
+#define GAP_ENTER_DEBUG 0
+#endif
+
+
+extern syJmp_buf * GAP_GetReadJmpError(void);
+extern void GAP_EnterDebugMessage_(char * message, char * file, int line);
+extern void GAP_EnterStack_(void *);
+extern void GAP_LeaveStack_(void);
+extern int GAP_Error_Prejmp_(const char *, int);
+extern void GAP_Error_Postjmp_Returning_(void);
+
+
+static inline int GAP_Error_Postjmp_(int JumpRet)
+{
+    if (GAP_unlikely(JumpRet != 0)) {
+        GAP_Error_Postjmp_Returning_();
+        return 0;
+    }
+
+    return 1;
+}
+
+
+#if GAP_ENTER_DEBUG
+#define GAP_ENTER_DEBUG_MESSAGE(message, file, line)                         \
+    GAP_EnterDebugMessage_(message, file, line)
+#else
+#define GAP_ENTER_DEBUG_MESSAGE(message, file, line)                         \
+    do {                                                                     \
+    } while (0)
+#endif
+
+
+// Code which uses the GAP API and/or which keeps references to any GAP
+// objects in local variables must be bracketed by uses of GAP_EnterStack()
+// and GAP_LeaveStack(), in particular when using the GASMAN garbage
+// collector; otherwise GAP objects may be garbage collected while still in
+// use.
+//
+// In general user code should use the more general GAP_Enter()/Leave() macros
+// defined below, as these also specify a terminal point for unhandled GAP
+// errors to bubble up to.  However, GAP_EnterStack() and GAP_LeaveStack()
+// should still be used in the defintion of a custom error handling callback as
+// passed to GAP_Initialize().  Using the more general GAP_Enter() in this case
+// will result in crashes if the error handler is entered recursively (you
+// don't want the GAP error handling code to cause a longjmp into the error
+// callback itself since then the error callback will never be returned from).
+#ifdef __GNUC__
+#define GAP_EnterStack()                                                     \
+    do {                                                                     \
+        GAP_ENTER_DEBUG_MESSAGE("EnterStack", __FILE__, __LINE__);           \
+        GAP_EnterStack_(__builtin_frame_address(0));                         \
+    } while (0)
+#elif defined(USE_GASMAN)
+#error GASMAN requires a way to get the current stack frame base address     \
+       for the GAP_EnterStack() macro; normally this uses the                \
+       __builtin_frame_address GNU extension so if this is not available     \
+       it is necessary to provide your own implementation here.
+#else
+// If we're not using GASMAN in the first place GAP_EnterStack_() is not
+// strictly needed, and can just be called with a dummy value
+#define GAP_EnterStack()                                                     \
+    do {                                                                     \
+        GAP_ENTER_DEBUG_MESSAGE("EnterStack", __FILE__, __LINE__);           \
+        GAP_EnterStack_(0);                                                  \
+    } while (0)
+#endif
+
+#define GAP_LeaveStack()                                                     \
+    GAP_LeaveStack_();
+
+
+#define GAP_Error_Setjmp()                                                   \
+    (GAP_unlikely(GAP_Error_Prejmp_(__FILE__, __LINE__)) ||                  \
+     GAP_Error_Postjmp_(sySetjmp(*GAP_GetReadJmpError())))
+
+
+// Code which uses the GAP API exposed by this header file should sandwich any
+// such calls between uses of the GAP_Enter() and GAP_Leave() macro as follows:
+// 
+// int ok = GAP_Enter();
+// if (ok) {
+//     ... // any number of calls to GAP APIs
+// }
+// GAP_Leave();
+// 
+// This is in particular crucial if your code keeps references to any GAP
+// functions in local variables: Calling GAP_Enter() ensures that GAP is aware
+// of such references, and will not garbage collect the referenced objects.
+// Failing to use these macros properly can lead to crashes, or worse, silent
+// memory corruption. You have been warned!
+// 
+// Note that due to the implementation of these macros, you unfortunately
+// cannot "simplify" the above example code to:
+//
+// if (GAP_Enter()) { ... } GAP_Leave();
+//
+// Some notes on the implementation:
+//
+// GAP_Enter() is a combination of GAP_Error_Setjmp() and GAP_EnterStack().
+// It must call GAP_Error_Setjmp() first, to ensure that writing
+// ``int ok = GAP_Enter();'' works as intended (the value assigned to ok then
+// is the return value of GAP_Error_Setjmp).
+//
+// * GAP_EnterStack() defined and explained above must be a macro since it
+//   needs to figure out (to the extent possible) the base address of the stack
+//   frame from which it is called.
+//
+// * GAP_Error_Setjmp() effectively calls setjmp to the STATE(ReadJmpError)
+//   longjmp buffer, so that read errors which occur in GAP that are not
+//   otherwise "handled" by a TRY_IF_NO_ERROR { } block have a logical place
+//   to return to.  It returns 1 if no error occurred, and 0 if returning from
+//   an error.
+#define GAP_Enter()                                                          \
+    GAP_Error_Setjmp();                                                      \
+    GAP_EnterStack()
+
+#define GAP_Leave() GAP_LeaveStack()
+
+
 ////
 //// Setup and initialisation
 ////
