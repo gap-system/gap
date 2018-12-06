@@ -14,9 +14,9 @@
 #ifndef GAP_OPERS_H
 #define GAP_OPERS_H
 
-#include "system.h"
+#include "bool.h"
 #include "calls.h"
-
+#include "system.h"
 
 /****************************************************************************
 **
@@ -285,28 +285,44 @@ static inline Obj NEW_FLAGS(UInt len)
 **
 **  returns the list of trues of <flags> or 0 if the list is not known yet.
 */
-#define TRUES_FLAGS(flags)              (CONST_ADDR_OBJ(flags)[0])
+static inline Obj TRUES_FLAGS(Obj flags)
+{
+    GAP_ASSERT(TNUM_OBJ(flags) == T_FLAGS);
+    return CONST_ADDR_OBJ(flags)[0];
+}
 
 
 /****************************************************************************
 **
 *F  SET_TRUES_FLAGS( <flags>, <trues> ) . set number of trues of a flags list
 */
-#define SET_TRUES_FLAGS(flags,trues)    (ADDR_OBJ(flags)[0] = trues)
+static inline void SET_TRUES_FLAGS(Obj flags, Obj trues)
+{
+    GAP_ASSERT(TNUM_OBJ(flags) == T_FLAGS);
+    ADDR_OBJ(flags)[0] = trues;
+}
 
 
 /****************************************************************************
 **
 *F  HASH_FLAGS( <flags> ) . . . . . . . . . . . .  hash value of <flags> or 0
 */
-#define HASH_FLAGS(flags)               (CONST_ADDR_OBJ(flags)[1])
+static inline Obj HASH_FLAGS(Obj flags)
+{
+    GAP_ASSERT(TNUM_OBJ(flags) == T_FLAGS);
+    return CONST_ADDR_OBJ(flags)[1];
+}
 
 
 /****************************************************************************
 **
 *F  SET_HASH_FLAGS( <flags>, <hash> ) . . . . . . . . . . . . . . .  set hash
 */
-#define SET_HASH_FLAGS(flags,hash)      (ADDR_OBJ(flags)[1] = hash)
+static inline void SET_HASH_FLAGS(Obj flags, Obj hash)
+{
+    GAP_ASSERT(TNUM_OBJ(flags) == T_FLAGS);
+    ADDR_OBJ(flags)[1] = hash;
+}
 
 
 /****************************************************************************
@@ -322,15 +338,22 @@ static inline UInt LEN_FLAGS(Obj flags)
 **
 *F  AND_CACHE_FLAGS( <flags> )  . . . . . . . . . 'and' cache of a flags list
 */
-#define AND_CACHE_FLAGS(list)           (CONST_ADDR_OBJ(list)[2])
+static inline Obj AND_CACHE_FLAGS(Obj list)
+{
+    GAP_ASSERT(TNUM_OBJ(list) == T_FLAGS);
+    return CONST_ADDR_OBJ(list)[2];
+}
 
 
 /****************************************************************************
 **
 *F  SET_AND_CACHE_FLAGS( <flags>, <len> ) set the 'and' cache of a flags list
 */
-#define SET_AND_CACHE_FLAGS(flags,andc)  (ADDR_OBJ(flags)[2]=(andc))
-
+static inline void SET_AND_CACHE_FLAGS(Obj flags, Obj andc)
+{
+    GAP_ASSERT(TNUM_OBJ(flags) == T_FLAGS);
+    ADDR_OBJ(flags)[2] = andc;
+}
 
 /****************************************************************************
 **
@@ -346,7 +369,11 @@ static inline UInt NRB_FLAGS(Obj flags)
 **
 *F  BLOCKS_FLAGS( <flags> ) . . . . . . . . . . . . data area of a flags list
 */
-#define BLOCKS_FLAGS(flags)             ((UInt*)(ADDR_OBJ(flags)+3))
+static inline UInt * BLOCKS_FLAGS(Obj flags)
+{
+    GAP_ASSERT(TNUM_OBJ(flags) == T_FLAGS);
+    return (UInt *)(ADDR_OBJ(flags) + 3);
+}
 
 
 /****************************************************************************
@@ -357,12 +384,13 @@ static inline UInt NRB_FLAGS(Obj flags)
 **  flags list <list> as a UInt value, which is also a  valid left hand side.
 **  <pos>  must be a positive  integer  less than or  equal  to the length of
 **  <list>.
-**
-**  Note that 'BLOCK_ELM_FLAGS' is a macro, so do not call it  with arguments
-**  that have side effects.
 */
-#define BLOCK_ELM_FLAGS(list, pos)      (BLOCKS_FLAGS(list)[((pos)-1) >> LBIPEB])
-
+static inline UInt BLOCK_ELM_FLAGS(Obj list, UInt pos)
+{
+    GAP_ASSERT(TNUM_OBJ(list) == T_FLAGS);
+    GAP_ASSERT(pos <= LEN_FLAGS(list));
+    return BLOCKS_FLAGS(list)[(pos - 1) >> LBIPEB];
+}
 
 /****************************************************************************
 **
@@ -372,10 +400,11 @@ static inline UInt NRB_FLAGS(Obj flags)
 **  '(<pos>-1) % BIPEB',
 **  useful for accessing the <pos>-th element of a 'FLAGS' list.
 **
-**  Note that 'MASK_POS_FLAGS'  is a macro, so  do not call it with arguments
-**  that have side effects.
 */
-#define MASK_POS_FLAGS(pos)             (((UInt) 1)<<(((pos)-1) & (BIPEB-1)))
+static inline UInt MASK_POS_FLAGS(UInt pos)
+{
+    return ((UInt)1) << ((pos - 1) & (BIPEB - 1));
+}
 
 
 /****************************************************************************
@@ -386,24 +415,29 @@ static inline UInt NRB_FLAGS(Obj flags)
 **  is either 'true' or 'false'.  <pos> must  be a positive integer less than
 **  or equal to the length of <hdList>.
 **
-**  Note that 'ELM_FLAGS' is a macro, so do not call it  with arguments  that
-**  have side effects.
-**
 **  'C_ELM_FLAGS' returns a result which it is better to use inside the kernel
 **  since the C compiler can't know that True != False. Using C_ELM_FLAGS
 **  gives slightly nicer C code and potential for a little more optimisation.
 */
-#define C_ELM_FLAGS(list, pos)                                               \
-    ((BLOCK_ELM_FLAGS(list, pos) & MASK_POS_FLAGS(pos)) ? 1 : 0)
+static inline Int C_ELM_FLAGS(Obj list, UInt pos)
+{
+     return (BLOCK_ELM_FLAGS(list, pos) & MASK_POS_FLAGS(pos)) != 0;
+}
 
-#define ELM_FLAGS(list, pos) (C_ELM_FLAGS(list, pos) ? True : False)
+static inline Obj ELM_FLAGS(Obj list, UInt pos)
+{
+    return C_ELM_FLAGS(list, pos) ? True : False;
+}
 
 static inline Int SAFE_C_ELM_FLAGS(Obj flags, UInt pos)
 {
     return (pos <= LEN_FLAGS(flags)) ? C_ELM_FLAGS(flags, pos) : 0;
 }
 
-#define SAFE_ELM_FLAGS(list, pos) (SAFE_C_ELM_FLAGS(list, pos) ? True : False)
+static inline Obj SAFE_ELM_FLAGS(Obj list, UInt pos)
+{
+    return SAFE_C_ELM_FLAGS(list, pos) ? True : False;
+}
 
 
 /****************************************************************************
@@ -411,16 +445,17 @@ static inline Int SAFE_C_ELM_FLAGS(Obj flags, UInt pos)
 *F  SET_ELM_FLAGS( <list>, <pos>, <val> ) . .  set an element of a flags list
 **
 **  'SET_ELM_FLAGS' sets  the element at position <pos>   in the flags list
-**  <list> to the value <val>.  <pos> must be a positive integer less than or
-**  equal to the length of <hdList>.  <val> must be either 'true' or 'false'.
-**
-**  Note that  'SET_ELM_FLAGS' is  a macro, so do not  call it with arguments
-**  that have side effects.
+**  <list> to True.  <pos> must be a positive integer less than or
+**  equal to the length of <hdList>.
 */
-#define SET_ELM_FLAGS(list,pos,val)  \
- ((val) == True ? \
-  (BLOCK_ELM_FLAGS(list, pos) |= MASK_POS_FLAGS(pos)) : \
-  (BLOCK_ELM_FLAGS(list, pos) &= ~MASK_POS_FLAGS(pos)))
+static inline void SET_ELM_FLAGS(Obj list, UInt pos, Obj val)
+{
+    GAP_ASSERT(val == True);
+    GAP_ASSERT(TNUM_OBJ(list) == T_FLAGS);
+    GAP_ASSERT(pos <= LEN_FLAGS(list));
+    BLOCKS_FLAGS(list)[(pos - 1) >> LBIPEB] |= MASK_POS_FLAGS(pos);
+}
+
 
 /****************************************************************************
 **
