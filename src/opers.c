@@ -1148,7 +1148,7 @@ Obj NewFilter (
     SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(getter, INTOBJ_INT(0));
     flags = NEW_FLAGS( flag1 );
-    SET_ELM_FLAGS( flags, flag1, True );
+    SET_ELM_FLAGS( flags, flag1 );
     SET_FLAGS_FILT(getter, flags);
     SET_IS_FILTER(getter);
     CHANGED_BAG(getter);
@@ -2753,7 +2753,7 @@ static Obj MakeTester( Obj name, Int flag1, Int flag2)
     SET_FLAG1_FILT(tester, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(tester, INTOBJ_INT(flag2));
     flags = NEW_FLAGS( flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
+    SET_ELM_FLAGS( flags, flag2 );
     SET_FLAGS_FILT(tester, flags);
     SET_SETTR_FILT(tester, 0);
     SET_TESTR_FILT(tester, ReturnTrueFilter);
@@ -3048,8 +3048,8 @@ Obj NewProperty (
     SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(getter, INTOBJ_INT(flag2));
     flags = NEW_FLAGS( flag2 );
-    SET_ELM_FLAGS( flags, flag2, True );
-    SET_ELM_FLAGS( flags, flag1, True );
+    SET_ELM_FLAGS( flags, flag2 );
+    SET_ELM_FLAGS( flags, flag1 );
     SET_FLAGS_FILT(getter, flags);
     SET_SETTR_FILT(getter, setter);
     SET_TESTR_FILT(getter, tester);
