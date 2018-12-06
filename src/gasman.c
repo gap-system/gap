@@ -1140,6 +1140,13 @@ void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func)
 
 GAP_STATIC_ASSERT((sizeof(BagHeader) % sizeof(Bag)) == 0, "BagHeader size must be multiple of word size");
 
+
+void SetStackBottomBags(void * StackBottom)
+{
+    StackBottomBags = StackBottom;
+}
+
+
 void            InitBags (
     UInt                initial_size,
     Bag *               stack_bottom,

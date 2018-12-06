@@ -10,6 +10,8 @@
 
 // LibGAP API - API for using GAP as shared library.
 
+#include <signal.h>
+
 #include "libgap-api.h"
 
 #include "ariths.h"
@@ -17,6 +19,7 @@
 #include "calls.h"
 #include "gap.h"
 #include "gapstate.h"
+#include "gasman.h"
 #include "gvars.h"
 #include "integer.h"
 #include "lists.h"
@@ -25,6 +28,7 @@
 #include "plist.h"
 #include "streams.h"
 #include "stringobj.h"
+
 
 //
 // Setup and initialisation
@@ -345,4 +349,66 @@ Int GAP_ValueOfChar(Obj obj)
 Obj GAP_CharWithValue(UChar obj)
 {
     return ObjsChar[obj];
+}
+
+syJmp_buf * GAP_GetReadJmpError(void)
+{
+    return &(STATE(ReadJmpError));
+}
+
+
+static volatile sig_atomic_t EnterStackCount = 0;
+
+
+// These are wrapped by the macros GAP_EnterStack() and GAP_LeaveStack()
+// respectively.
+void GAP_EnterStack_(void * StackTop)
+{
+    if (EnterStackCount < 0) {
+        EnterStackCount = -EnterStackCount;
+    }
+    else {
+        if (EnterStackCount == 0) {
+#ifdef USE_GASMAN
+            SetStackBottomBags(StackTop);
+#endif
+        }
+        EnterStackCount++;
+    }
+}
+
+void GAP_LeaveStack_(void)
+{
+    EnterStackCount--;
+}
+
+void GAP_EnterDebugMessage(char * message, char * file, int line)
+{
+    fprintf(stderr, "%s: %d; %s:%d\n", message, EnterStackCount, file,
+            line);
+}
+
+int GAP_Error_Prejmp_(const char * file, int line)
+{
+    GAP_ENTER_DEBUG_MESSAGE("Error_Prejmp", file, line);
+    if (EnterStackCount > 0) {
+        return 1;
+    }
+    return 0;
+}
+
+/* Helper function for GAP_Error_Postjmp_ (see libgap-api.h) which manipulates
+ * EnterStackCount in the (generally unlikely) case of returning from a longjmp
+ */
+void GAP_Error_Postjmp_Returning_(void)
+{
+    /* This only should have been called from the outer-most
+     * GAP_EnterStack() call so make sure it resets the EnterStackCount;
+     * We set EnterStackCount to its negative which indicates to
+     * GAP_EnterStack that we just returned from a long jump and should
+     * reset EnterStackCount to its value at the return point rather than
+     * increment it again */
+    if (EnterStackCount > 0) {
+        EnterStackCount = -EnterStackCount;
+    }
 }
