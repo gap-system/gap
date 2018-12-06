@@ -1193,6 +1193,13 @@ void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func)
 }
 
 
+
+void SetStackBottomBags(void * StackBottom)
+{
+    StackBottomBags = StackBottom;
+}
+
+
 void            InitBags (
     UInt                initial_size,
     Bag *               stack_bottom,

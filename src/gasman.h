@@ -973,6 +973,8 @@ typedef void            (* TNumCollectFuncBags) ( void );
 extern  void            InitCollectFuncBags (
             TNumCollectFuncBags before_func,
             TNumCollectFuncBags after_func );
+
+extern void SetStackBottomBags(void * StackBottom);
 #endif
 
 // ExtraMarkFuncBags, if not NULL, is called during garbage collection
