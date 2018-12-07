@@ -1199,8 +1199,3 @@ InstallOtherMethod(RootFFE,"without field",true,
 function(z,k)
   return RootFFE(Characteristic(z)^DegreeFFE(z),z,k);
 end);
-
-
-#############################################################################
-##
-#E

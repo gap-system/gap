@@ -1117,9 +1117,3 @@ DeclareGlobalFunction("ERepAssWorProd");
 ##  </ManSection>
 ##
 DeclareGlobalFunction("ERepAssWorInv");
-
-
-#############################################################################
-##
-#E
-

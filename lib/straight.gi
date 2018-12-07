@@ -3018,8 +3018,3 @@ InstallMethod( LargestNrSlots, "for a straight line program",
     # Return the result.
     return maxnrslots;
   end );
-
-#############################################################################
-##
-#E
-

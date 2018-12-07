@@ -455,9 +455,3 @@ DeclareOperation( "EvaluateOverlapBAN",
         [ IsPolycyclicCollector, IsList, IsList, IsInt, IsInt, IsInt ] );
 DeclareOperation( "EvaluateOverlapANA",
         [ IsPolycyclicCollector, IsList, IsList, IsInt, IsInt ] );
-
-
-#############################################################################
-##
-#E
-

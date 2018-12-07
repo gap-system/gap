@@ -80,9 +80,3 @@ DeclareGlobalFunction( "MagmaIsomorphismByFunctionsNC");
 ##  <#/GAPDoc>
 ##
 DeclareOperation("NaturalHomomorphismByGenerators",[IsMagma, IsMagma]);
-
-
-#############################################################################
-##
-#E
-

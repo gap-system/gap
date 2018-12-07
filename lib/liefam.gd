@@ -252,9 +252,3 @@ DeclareAttribute( "UnderlyingRingElement", IsLieObject );
 ##
 DeclareHandlingByNiceBasis( "IsLieObjectsModule",
     "for free left modules of Lie objects" );
-
-
-#############################################################################
-##
-#E
-

@@ -15,7 +15,3 @@ gap> List([1..8], i -> IsIdenticalObj(x[i], y[i]));
 gap> List([1..8], i -> IsIdenticalObj(x[i], z[i]));
 [ true, true, false, true, false, false, false, false ]
 gap> STOP_TEST( "CyclotomicField.tst", 1);
-
-#############################################################################
-##
-#E

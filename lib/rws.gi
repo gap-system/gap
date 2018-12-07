@@ -414,9 +414,3 @@ InstallMethod(IsReducedForm,
 	function(rws,w)
 		return ReducedForm(rws,w)=w;
 	end);
-
-#############################################################################
-##
-
-#E  rws.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

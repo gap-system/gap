@@ -196,9 +196,3 @@ DeclareGlobalFunction("HeuGcdIntPolsCoeffs"); # univariate version
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("PolynomialModP");
-
-
-#############################################################################
-##
-#E
-

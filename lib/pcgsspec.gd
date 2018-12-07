@@ -265,9 +265,3 @@ InstallTrueMethod( IsPcgs, IsInducedPcgsWrtSpecialPcgs );
 ##
 DeclareProperty( "IsCanonicalPcgsWrtSpecialPcgs", IsPcgs );
 InstallTrueMethod( IsPcgs, IsCanonicalPcgsWrtSpecialPcgs );
-
-
-#############################################################################
-##  
-#E
-

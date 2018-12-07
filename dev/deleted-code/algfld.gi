@@ -882,9 +882,3 @@ function(r,pol,opt)
     return AlgExtSquareHensel(r,pol,opt);
   fi;
 end);
-
-
-#############################################################################
-##
-#E
-

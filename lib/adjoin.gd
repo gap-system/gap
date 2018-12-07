@@ -56,7 +56,3 @@ DeclareAttribute("MonoidByAdjoiningIdentityElt", IsMultiplicativeElement and IsA
 ##
 
 DeclareAttribute("UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt", IsMonoidByAdjoiningIdentityElt);
-
-#############################################################################
-##
-#E  adjoin.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

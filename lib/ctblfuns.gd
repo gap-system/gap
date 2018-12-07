@@ -2976,9 +2976,3 @@ DeclareGlobalFunction( "CollapsedMat" );
 ##  </ManSection>
 ##
 DeclareGlobalFunction( "CharacterTableQuaternionic" );
-
-
-#############################################################################
-##
-#E
-

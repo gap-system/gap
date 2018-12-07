@@ -2017,8 +2017,3 @@ InstallMethod(Factors,"fallback error message",IsCollsElms,
 function(R,p)
   Error("GAP currently cannot factor ",p," over ",R);
 end);
-
-#############################################################################
-##
-#E  ratfun.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

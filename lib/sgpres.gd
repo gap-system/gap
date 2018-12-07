@@ -1042,8 +1042,3 @@ DeclareGlobalFunction("CopiedAugmentedCosetTable");
 DeclareGlobalFunction("NEWTC_CosetEnumerator");
 DeclareGlobalFunction("NEWTC_PresentationMTC");
 DeclareGlobalFunction("NEWTC_CyclicSubgroupOrder");
-
-#############################################################################
-##  
-#E
-

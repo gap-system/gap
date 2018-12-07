@@ -1444,7 +1444,3 @@ local hom,m;
   List(m,Size); # force
   return List(m,i->PreImage(hom,i));
 end);
-
-#############################################################################
-##
-#E  pcgsperm.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

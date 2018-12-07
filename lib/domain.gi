@@ -388,9 +388,3 @@ InstallGlobalFunction( InstallAccessToGenerators,
         end );
 
     end );
-
-
-#############################################################################
-##
-#E
-

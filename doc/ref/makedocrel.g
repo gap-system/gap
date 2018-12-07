@@ -29,8 +29,3 @@ MakeGAPDocDoc( GAPInfo.ManualDataRef.pathtodoc,
 GAPDocManualLabFromSixFile( "ref", "manual.six" );;
 
 CopyHTMLStyleFiles(".");
-
-#############################################################################
-##
-#E
-

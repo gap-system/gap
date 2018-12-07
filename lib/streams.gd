@@ -1348,8 +1348,3 @@ DeclareGlobalFunction( "UnInstallCharReadHookFunc" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "InputFromUser" );
-
-
-#############################################################################
-##
-#E

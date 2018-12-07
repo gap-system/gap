@@ -519,8 +519,3 @@ DeclareSynonym("EmbeddingConjugates",ContainingConjugates);
 ##  <#/GAPDoc>
 ##
 DeclareOperation("MinimalFaithfulPermutationDegree",[IsGroup and IsFinite]);
-
-#############################################################################
-##
-#E
-

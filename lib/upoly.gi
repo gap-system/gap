@@ -230,9 +230,3 @@ InstallMethod( IsPrimitivePolynomial,
 
     return true;
     end );
-
-
-#############################################################################
-##
-#E
-

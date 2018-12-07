@@ -339,9 +339,3 @@ InstallGlobalFunction( Exec, function( arg )
     Process( dir, shell, InputTextUser(), OutputTextUser(), [ cs, cmd ] );
 
 end );
-
-
-#############################################################################
-##
-#E
-

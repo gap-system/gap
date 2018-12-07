@@ -411,9 +411,3 @@ DeclareAttribute( "RightActingRingOfIdeal", IsRing );
 DeclareOperation( "AsLeftIdeal", [ IsRing, IsRing ] );
 DeclareOperation( "AsRightIdeal", [ IsRing, IsRing ] );
 DeclareOperation( "AsTwoSidedIdeal", [ IsRing, IsRing ] );
-
-
-#############################################################################
-##
-#E
-

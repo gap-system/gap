@@ -1785,7 +1785,3 @@ InstallMethod(ViewString, "for integer", [IsInt], function(n)
     return String(n);
   fi;
 end);
-
-#############################################################################
-##
-#E

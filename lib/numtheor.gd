@@ -810,9 +810,3 @@ DeclareGlobalFunction( "TwoSquares" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PValuation" );
-
-
-#############################################################################
-##
-#E
-

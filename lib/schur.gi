@@ -743,8 +743,3 @@ InstallMethod(EpimorphismNonabelianExteriorSquare, "Naive method", true,
 ##
 InstallMethod(IsCentralFactor, "Naive method", true, [IsGroup], 0,
     G -> IsTrivial(Epicentre(G)));
-
-#############################################################################
-##
-#E
-##

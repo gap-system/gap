@@ -397,10 +397,3 @@ function( filter, deg )
     fi;
     return GroupByPcgs(Pcgs(SymmetricGroupCons(IsPermGroup,[1..deg])));
 end );
-
-
-#############################################################################
-##
-
-#E
-

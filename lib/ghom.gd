@@ -674,9 +674,3 @@ DeclareAttribute( "ImagesSmallestGenerators",
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "RegularActionHomomorphism", IsGroup );
-
-
-#############################################################################
-##
-#E
-

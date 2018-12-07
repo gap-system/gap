@@ -104,9 +104,3 @@ BIND_GLOBAL("RereadLib",RereadAndCheckFunc("lib"));
 #F  RereadGrp( <name> ) . . . . . . . . . . . . . . . . . . group library files
 ##
 BIND_GLOBAL("RereadGrp",RereadAndCheckFunc("grp"));
-    
-
-#############################################################################
-##
-#E
-

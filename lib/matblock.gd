@@ -103,9 +103,3 @@ DeclareAttribute( "MatrixByBlockMatrix", IsMatrix );
 ##
 DeclareGlobalFunction( "AsBlockMatrix" );
 #T ConvertToBlockMatrixRep?
-
-
-#############################################################################
-##
-#E
-

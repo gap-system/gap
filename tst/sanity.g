@@ -117,9 +117,3 @@ local deg,sz,anzdeg,anzsz,i,j;
   until deg>TRANSDEGREES and sz>1000;
   Print("passed!\n");
 end;
-
-
-
-#############################################################################
-##
-#E  sanity.g . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

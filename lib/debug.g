@@ -186,9 +186,3 @@ SetDebugCount := function(f,count)
 
   DEBUG.LIST[nr].count := count;
 end;
-
-
-#############################################################################
-##
-#E
-

@@ -500,9 +500,3 @@ DeclareOperation( "MinimalPolynomial",
 ##  <#/GAPDoc>
 ##
 DeclareOperation("FunctionField",[IsRing,IsObject]);
-
-
-#############################################################################
-##
-#E
-

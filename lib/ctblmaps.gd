@@ -2498,9 +2498,3 @@ DeclareGlobalFunction( "FusionsAllowedByRestrictions" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ConsiderStructureConstants" );
-
-
-#############################################################################
-##
-#E
-

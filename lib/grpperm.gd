@@ -546,8 +546,3 @@ DeclareGlobalFunction("LogPerm");
 
 # use for pcgs conversion
 DeclareGlobalFunction("CreateIsomorphicPcGroup");
-
-#############################################################################
-##
-#E
-

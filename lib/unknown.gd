@@ -185,9 +185,3 @@ LargestUnknown := 0;
 ##
 DeclareOperation( "Unknown", [] );
 DeclareOperation( "Unknown", [ IsPosInt ] );
-
-
-#############################################################################
-##
-#E
-

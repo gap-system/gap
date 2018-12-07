@@ -658,7 +658,3 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
     fi;    
     Print(" ) ... end");
 end);
-
-#############################################################################
-##
-#E

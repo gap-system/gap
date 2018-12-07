@@ -406,8 +406,3 @@ InstallGlobalFunction(RemoveDirectoryRecursively,
     end;
     return Dowork(dirname);
   end );
-
-
-#############################################################################
-##
-#E

@@ -911,8 +911,3 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
     od;
     return obj;
 end );
-
-
-#############################################################################
-##
-#E

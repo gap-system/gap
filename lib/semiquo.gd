@@ -86,9 +86,3 @@ DeclareGlobalFunction("HomomorphismQuotientSemigroup");
 DeclareAttribute("QuotientSemigroupPreimage", IsQuotientSemigroup);
 DeclareAttribute("QuotientSemigroupCongruence", IsQuotientSemigroup);
 DeclareAttribute("QuotientSemigroupHomomorphism", IsQuotientSemigroup);
-
-
-#############################################################################
-##
-#E
-

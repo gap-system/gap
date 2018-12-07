@@ -1490,8 +1490,3 @@ local n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
     return [];
   fi;
 end);
-
-#############################################################################
-##
-#E
-

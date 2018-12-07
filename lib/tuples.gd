@@ -177,9 +177,3 @@ direct product elements families" );
 DeclareOperation( "DirectProductElement", [ IsList ]);
 DeclareOperation( "DirectProductElementNC",
     [ IsDirectProductElementFamily, IsList ]);
-
-
-#############################################################################
-##
-#E
-

@@ -558,9 +558,3 @@ DeclareGlobalFunction("DeterminantIntMat");
 ##  </ManSection>
 ##
 DeclareGlobalFunction("SNFofREF");
-
-
-#############################################################################
-##
-#E
-

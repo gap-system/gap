@@ -1119,9 +1119,3 @@ InstallMethod( TransformingPermutationsCharacterTables,
     # Return the result.
     return trans;
     end );
-
-
-#############################################################################
-##
-#E
-

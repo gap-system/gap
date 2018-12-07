@@ -211,9 +211,3 @@ DeclareGlobalFunction("PrimalityProof_Verify");
 
 ##  Section 5
 DeclareGlobalVariable("PrimesProofs");
-
-
-#############################################################################
-##
-#E
-

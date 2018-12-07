@@ -1069,8 +1069,3 @@ InstallMethod( IsGeneratorsOfMagmaWithInverses,
           "no groups of floats allowed because of incompatible ^" );
     return false;
     end );
-
-
-#############################################################################
-##
-#E

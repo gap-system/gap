@@ -58,7 +58,3 @@ gap> List(com,i->Number(com,j->RepresentativeAction(g,i,j)<>fail));
 
 # that's all, folks
 gap> STOP_TEST( "onecohom.tst", 1);
-
-#############################################################################
-##
-#E

@@ -835,9 +835,3 @@ DeclareGlobalFunction( "PermCandidates" );
 ##  </ManSection>
 ##
 DeclareGlobalFunction( "PermCandidatesFaithful" );
-
-
-#############################################################################
-##
-#E
-

@@ -122,7 +122,3 @@ Error, Matrix Assignment: <mat> must be a mutable matrix
 
 #
 gap> STOP_TEST( "matblock.tst", 1);
-
-#############################################################################
-##
-#E

@@ -368,7 +368,3 @@ gap> CloseMutableBasis( mb, [ [ 0, 1 ], [ 1, 0 ] ] );
 gap> IsContainedInSpan( mb, [ [ 1, 1 ], [ 1, 1 ] ] );
 true
 gap> STOP_TEST( "vspcmat.tst", 1);
-
-#############################################################################
-##
-#E

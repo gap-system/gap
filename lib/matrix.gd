@@ -2128,9 +2128,3 @@ DeclareGlobalFunction( "SimplexMethod" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "RationalCanonicalFormTransform" );
-
-
-#############################################################################
-##
-#E
-

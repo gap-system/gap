@@ -147,7 +147,3 @@ DeclareOperation("SchurCoverOfSymmetricGroup",[IsPosInt,IsInt,IsInt]);
 ##  <#/GAPDoc>
 ##
 DeclareOperation("DoubleCoverOfAlternatingGroup",[IsPosInt,IsInt]);
-
-#############################################################################
-##
-#E

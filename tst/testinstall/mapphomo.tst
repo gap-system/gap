@@ -75,7 +75,3 @@ fail
 gap> GroupHomomorphismByImages(G, H, [], []);
 fail
 gap> STOP_TEST( "mapphomo.tst", 1);
-
-#############################################################################
-##
-#E

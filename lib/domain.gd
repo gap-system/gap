@@ -472,9 +472,3 @@ BIND_GLOBAL( "RepresentativeFromGenerators", function( GeneratorsOfStruct )
            return Representative( D );
            end;
 end );
-
-
-#############################################################################
-##
-#E
-

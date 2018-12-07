@@ -383,9 +383,3 @@ DeclareGlobalVariable( "CharTableDoubleCoverSymmetric",
 ##
 DeclareGlobalVariable( "CharTableDoubleCoverAlternating",
     "generic char. table of the Schur double cover of alternating groups" );
-
-
-#############################################################################
-##
-#E
-

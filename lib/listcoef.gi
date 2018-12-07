@@ -1574,10 +1574,3 @@ InstallMethod( AddToListEntries, "fast kernel method", true,
 InstallValue(TYPE_LOWINDEX_DATA,
   NewType(NewFamily("LowIndexDataFamily",IsObject),
     IsObject and IsDataObjectRep));
-
-#############################################################################
-##
-#E  listcoef.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
-
-

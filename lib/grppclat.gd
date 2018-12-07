@@ -325,9 +325,3 @@ DeclareGlobalFunction("SizeConsiderFunction");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("ExactSizeConsiderFunction");
-
-
-#############################################################################
-##
-#E
-

@@ -238,9 +238,3 @@ DeclareHandlingByNiceBasis( "IsFpAlgebraElementsSpace",
 ##  defined by the generalized Cartan matrix <A>.
 ##
 DeclareGlobalFunction( "FpAlgebraByGeneralizedCartanMatrix" );
-
-
-#############################################################################
-##
-#E
-

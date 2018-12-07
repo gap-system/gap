@@ -946,9 +946,3 @@ DeclareSynonymAttr( "IsAdditiveGroupToGroupGeneralMapping",
 
 DeclareSynonymAttr( "IsAdditiveGroupToGroupHomomorphism",
     IsAdditiveGroupToGroupGeneralMapping and IsMapping );
-
-
-#############################################################################
-##
-#E
-

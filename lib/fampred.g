@@ -437,9 +437,3 @@ IsRingCollsMagmaRingColls := function( FamR, FamRM )
            and IsBound( ElementsFamily( FamRM )!.familyRing )
            and IsIdenticalObj( ElementsFamily( FamRM )!.familyRing, FamR );
 end;
-
-
-#############################################################################
-##
-#E  fampred.g . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

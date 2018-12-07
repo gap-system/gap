@@ -17,10 +17,3 @@
 ##
 TYPE_WPOBJ := NewType( ListsFamily,
     IsWeakPointerObject and IsInternalRep and IsSmallList and IsMutable );
-
-
-#############################################################################
-##
-#E
-##
-

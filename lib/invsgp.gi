@@ -498,6 +498,3 @@ InstallMethod( IsRegularSemigroupElement,
 function(s, x)
 return x in s;
 end);
-
-#EOF
-

@@ -2347,8 +2347,3 @@ InstallGlobalFunction(ReducedPermdegree,function(g)
   SetSize(Image(hom),Size(g));
   return hom;
 end);
-
-#############################################################################
-##
-#E
-

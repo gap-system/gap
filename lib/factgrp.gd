@@ -400,9 +400,3 @@ DeclareGlobalFunction("PullBackNaturalHomomorphismsPool");
 ##  </ManSection>
 ##
 DeclareGlobalFunction("EraseNaturalHomomorphismsPool");
-
-
-#############################################################################
-##
-#E
-

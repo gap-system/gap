@@ -894,7 +894,3 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "StructureDescription", IsGroup );
-
-#############################################################################
-##
-#E

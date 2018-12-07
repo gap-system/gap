@@ -796,9 +796,3 @@ DeclareProperty("IsWreathProductOrdering",IsOrdering);
 ##  <#/GAPDoc>
 ##
 DeclareAttribute("LevelsOfGenerators",IsOrdering and IsWreathProductOrdering);
-
-
-#############################################################################
-##
-#E
-

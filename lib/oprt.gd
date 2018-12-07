@@ -2615,8 +2615,3 @@ DeclareGlobalFunction("OnTuplesTuples");
 ##  </ManSection>
 ##
 DeclareOperation("DomainForAction",[IsObject,IsListOrCollection,IsFunction]);
-
-
-#############################################################################
-##
-#E

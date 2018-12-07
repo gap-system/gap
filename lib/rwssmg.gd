@@ -169,9 +169,3 @@ DeclareAttribute("FamilyForRewritingSystem", IsRewritingSystem);
 ##  </ManSection>
 ##
 DeclareGlobalFunction("ReduceLetterRepWordsRewSys");
-
-
-#############################################################################
-##
-#E
-

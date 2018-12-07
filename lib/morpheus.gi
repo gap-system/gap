@@ -2516,9 +2516,3 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
   Info(InfoMorph,1,Length(emb)," found -> ",Length(cl)," homs");
   return cl;
 end);
-
-
-#############################################################################
-##
-#E
-

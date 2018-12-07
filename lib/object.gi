@@ -705,7 +705,3 @@ BIND_GLOBAL( "TYPE_KERNEL_OBJECT",
           IsObject and IsKernelDataObjectRep));
 
 InstallMethod( String, [IsKernelDataObjectRep], o->MakeImmutable("<kernel object>"));
-
-#############################################################################
-##
-#E

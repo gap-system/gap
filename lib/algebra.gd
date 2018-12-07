@@ -2176,9 +2176,3 @@ DeclareSynonym( "IsLieNilpotentElement", IsNilpotentElement);
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "Grading", IsAlgebra );
-
-
-#############################################################################
-##
-#E
-

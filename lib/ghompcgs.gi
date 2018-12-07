@@ -682,9 +682,3 @@ end );
 InstallMethod( IsomorphismPcGroup,
     [ IsPcGroup ], SUM_FLAGS,
     IdentityMapping );
-
-
-#############################################################################
-##
-#E
-

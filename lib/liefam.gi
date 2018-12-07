@@ -603,9 +603,3 @@ InstallMethod( RightIdealByGenerators,
     true,
     [ IsLieAlgebra, IsList and IsEmpty ], 0,
     IdealByGeneratorsForLieAlgebra );
-
-
-#############################################################################
-##
-#E
-

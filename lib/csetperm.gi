@@ -522,9 +522,3 @@ function(a,b)
   return CanonicalRepresentativeOfExternalSet(a)
          <CanonicalRepresentativeOfExternalSet(b);
 end);
-
-
-#############################################################################
-##
-#E  csetperm.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

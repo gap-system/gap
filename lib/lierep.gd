@@ -1016,9 +1016,3 @@ DeclareCategory( "IsVectorSearchTable", IsSearchTable );
 ##  </ManSection>
 ##
 DeclareGlobalFunction( "VectorSearchTable" );
-
-
-#############################################################################
-##
-#E
-

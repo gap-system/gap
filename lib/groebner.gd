@@ -555,9 +555,3 @@ DeclareSynonym("ReducedGrobnerBasis",ReducedGroebnerBasis);
 ##  <#/GAPDoc>
 ##
 DeclareAttribute("StoredGroebnerBasis",IsPolynomialRingIdeal);
-
-
-#############################################################################
-##
-#E
-

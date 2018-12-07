@@ -1099,9 +1099,3 @@ STOP_TEST := function( file, args... )
     Unbind( GAPInfo.TestData.START_TIME );
     Unbind( GAPInfo.TestData.START_NAME );
 end;
-
-
-#############################################################################
-##
-#E
-

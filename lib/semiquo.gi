@@ -106,8 +106,3 @@ InstallMethod( ViewObj,
     Print( "<quotient of ",QuotientSemigroupPreimage(S)," by ",
 			QuotientSemigroupCongruence(S),">");
     end );
-
-
-#############################################################################
-##
-#E

@@ -185,9 +185,3 @@ DeclareGlobalFunction( "IsCheapConwayPolynomial" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "RandomPrimitivePolynomial" );
-
-
-#############################################################################
-##
-#E
-

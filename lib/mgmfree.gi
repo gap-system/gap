@@ -445,9 +445,3 @@ InstallAccessToGenerators( IsMagmaWithOne and IsWordCollection
                                           and IsWholeFamily,
                            "free magma-with-one containing the whole family",
                            GeneratorsOfMagmaWithOne );
-
-
-#############################################################################
-##
-#E
-

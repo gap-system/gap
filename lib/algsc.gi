@@ -1173,8 +1173,3 @@ InstallMethod( Intersection2,
     end );
 
 # analogous for closure?
-
-#############################################################################
-##
-#E
-

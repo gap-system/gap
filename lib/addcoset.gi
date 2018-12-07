@@ -293,9 +293,3 @@ InstallMethod( ViewObj,
 #T      fi;
 #T      return SpaceCoset( C.factorDen, scalar * C.representative );
 #T      end;
-
-
-#############################################################################
-##
-#E  addcoset.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-

@@ -444,7 +444,3 @@ InstallMethod( ViewString, "for rationals", [IsRat], function(r)
   return Concatenation(ViewString(NumeratorRat(r)), "/\>\<",
                        ViewString(DenominatorRat(r)));
 end);
-#############################################################################
-##
-#E
-

@@ -847,8 +847,3 @@ local G,PG,cl,c,i,r,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
   SetConjugacyClasses(PG,c);
   return [act,PG,c];
 end);
-
-#############################################################################
-##
-#E
-

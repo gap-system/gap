@@ -342,9 +342,3 @@ local home;
   fi;
   return ZassenhausIntersection(home,InducedPcgs(home,G),InducedPcgs(home,H));
 end );
-
-
-#############################################################################
-##
-#E  grppcpint.gi  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

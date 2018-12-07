@@ -756,8 +756,3 @@ local pats,spats,lpats,result,pa,lp,dom,lens,h,orbs,p,rep,cln,allorbs,
   return result;
 
 end);
-
-#############################################################################
-##
-#E  oprtglat.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

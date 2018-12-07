@@ -34,8 +34,3 @@
 ##  `IsSPGeneralMapping'.
 ##
 DeclareGlobalFunction("GroupToAdditiveGroupHomomorphismByFunction");
-
-#############################################################################
-##
-#E
-

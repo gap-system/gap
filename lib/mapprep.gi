@@ -1961,9 +1961,3 @@ InstallMethod(RestrictedMapping,"use GeneralRestrictedMapping",
 function(hom, U)
   return GeneralRestrictedMapping (hom, U, Range(hom));
 end);
-
-
-#############################################################################
-##
-#E
-

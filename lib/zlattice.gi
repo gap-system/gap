@@ -2045,9 +2045,3 @@ InstallGlobalFunction( LLLint, function( arg )
   od;
   return b;
 end );
-
-
-#############################################################################
-##
-#E
-

@@ -1479,9 +1479,3 @@ DeclareGlobalFunction( "LiftedInducedPcgs" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PcgsByPcgs" );
-
-
-#############################################################################
-##  
-#E
-

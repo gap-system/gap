@@ -804,9 +804,3 @@ InstallGlobalFunction( FpAlgebraByGeneralizedCartanMatrix, function( F, A )
     # Return the algebra.
     return a / rels;
 end );
-
-
-#############################################################################
-##
-#E
-

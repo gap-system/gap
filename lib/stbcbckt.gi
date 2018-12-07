@@ -3190,8 +3190,3 @@ end;
 
 InstallMethod(TwoClosure,"permutation group",true,[IsPermGroup],0,
   TwoClosurePermGroup);
-
-
-#############################################################################
-##
-#E

@@ -35,7 +35,3 @@ true
 gap> ForAll(AllSmallGroups(12),g -> IsInternallyConsistent(TableOfMarks(g)));
 true
 gap> STOP_TEST( "ctblfuns.tst", 1);
-
-#############################################################################
-##
-#E

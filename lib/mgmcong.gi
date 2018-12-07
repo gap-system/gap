@@ -1104,8 +1104,3 @@ InstallMethod( ImagesElm,
     function( rel, elm )
         return Set(Enumerator(EquivalenceClassOfElement(rel,elm)));
     end);
-
-#############################################################################
-##
-#E
-

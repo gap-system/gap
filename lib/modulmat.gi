@@ -333,9 +333,3 @@ InstallMethod( IsCanonicalBasisFullMatrixModule,
     [ IsBasis ],
     B ->     IsFullMatrixModule( UnderlyingLeftModule( B ) )
          and IsCanonicalBasis( B ) );
-
-
-#############################################################################
-##
-#E
-

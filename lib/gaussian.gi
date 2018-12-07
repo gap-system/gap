@@ -312,7 +312,3 @@ InstallMethod( Factors,
     # return the result
     return facs;
     end );
-
-#############################################################################
-##
-#E

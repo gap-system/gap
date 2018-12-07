@@ -432,8 +432,3 @@ local pg,ph,kg,kh,ig,ih,mg,mh,S,info;
   SetSubdirectProductInfo(S,info);
   return S;
 end);
-
-#############################################################################
-##
-#E
-

@@ -1683,9 +1683,3 @@ InstallMethod( IsGeneratorsOfMagmaWithInverses,
     "for a collection of free magma ring elements",
     [ IsElementOfMagmaRingModuloRelationsCollection ],
     mgmringelms -> ForAll( mgmringelms, x -> Inverse( x ) <> fail ) );
-
-
-#############################################################################
-##
-#E
-

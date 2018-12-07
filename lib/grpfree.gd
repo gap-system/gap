@@ -92,9 +92,3 @@ DeclareSynonym( "IsElementOfFreeGroupFamily",IsAssocWordWithInverseFamily );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "FreeGroup" );
-
-
-#############################################################################
-##
-#E
-

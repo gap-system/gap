@@ -1772,9 +1772,3 @@ DeclareCategory( "IsUnivariatePolynomialsFamily", IsFamily );
 
 #needed as ``forward''-declaration.
 DeclareGlobalFunction("MultivariateFactorsPolynomial");
-
-
-#############################################################################
-##
-#E
-

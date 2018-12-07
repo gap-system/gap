@@ -58,7 +58,3 @@ false
 gap> Unbind(img); Unbind(iso); Unbind(g); Unbind(hom); Unbind(u);
 gap> Unbind(g); Unbind(gd); Unbind(G); Unbind(cl); Unbind(pcgs);
 gap> STOP_TEST( "grpmat.tst", 1);
-
-#############################################################################
-##
-#E

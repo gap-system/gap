@@ -672,9 +672,3 @@ InstallOtherMethod( DimensionsMat,
     "for an ordinary block matrix",
     [ IsOrdinaryMatrix and IsBlockMatrixRep ],
     m -> [ m!.nrb * m!.rpb, m!.ncb * m!.cpb ] );
-
-
-#############################################################################
-##
-#E
-

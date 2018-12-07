@@ -1064,10 +1064,3 @@ local N,h,opfun;
   N:=Stabilizer(G,CanonicalPcgs(InducedPcgs(h,U)),opfun);
   return N;
 end);
-
-
-
-#############################################################################
-##
-#E  grppcnrm.gi	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

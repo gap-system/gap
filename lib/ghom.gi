@@ -1625,9 +1625,3 @@ end);
 # methods to assume that they are invoked with a finite group, we
 # redispatch upon that condition.
 RedispatchOnCondition(RegularActionHomomorphism,true,[IsGroup],[IsFinite],0);
-
-
-#############################################################################
-##
-#E
-

@@ -236,8 +236,3 @@ InstallMethod(ComplementClassesRepresentativesSolvableNC,"using cohomology",
   IsIdenticalObj,
   [IsGroup,IsGroup],1,
   ComplementClassesRepresentativesSolvableWBG);
-
-#############################################################################
-##
-#E  grpcompl.gi
-##

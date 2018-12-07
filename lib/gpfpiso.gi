@@ -864,8 +864,3 @@ InstallOtherMethod( IsomorphismFpGroupBySubnormalSeries, "for groups", true,
 function( G, series )
     return IsomorphismFpGroupBySubnormalSeries( G, series, "F" );
 end);
-
-#############################################################################
-##
-#E
-

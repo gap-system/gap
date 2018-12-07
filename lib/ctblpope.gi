@@ -2891,9 +2891,3 @@ InstallGlobalFunction( PermCharInfoRelative, function( tbl, tbl2, permchars )
                                   letter:= "I" ),
                 ATLAS     := ATLAS );
     end );
-
-
-#############################################################################
-##
-#E
-

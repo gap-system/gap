@@ -64,8 +64,3 @@ WriteExamplesTst( testdir, GAPInfo.ManualDataTut );
 
 #
 QUIT_GAP(0);
-
-#############################################################################
-##
-#E
-

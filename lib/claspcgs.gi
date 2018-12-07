@@ -1855,7 +1855,3 @@ InstallGlobalFunction( CentralStepRatClPGroup,
     fi;
     return classes;
 end );
-        
-#############################################################################
-##
-#E  claspcgs.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

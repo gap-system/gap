@@ -57,10 +57,3 @@
 DeclareCategoryKernel( "IsWeakPointerObject",
     IsList and IsSmallList,
     IsWPObj );
-
-
-#############################################################################
-##
-
-#E  wpobj.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

@@ -516,8 +516,3 @@ BIND_GLOBAL( "RankFilter", function( filter )
     od;
     return rank;
 end );
-
-
-#############################################################################
-##
-#E

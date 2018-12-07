@@ -87,9 +87,3 @@
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("ArithmeticElementCreator");
-
-
-#############################################################################
-##
-#E
-

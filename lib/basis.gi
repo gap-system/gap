@@ -1483,8 +1483,3 @@ InstallMethod( IsCanonicalBasis,
     "for a basis with replaced left module, and a vector",
     [ IsBasis and IsBasisWithReplacedLeftModuleRep ],
     B -> IsCanonicalBasis( B!.basisWithWrongModule ) );
-
-
-#############################################################################
-##
-#E

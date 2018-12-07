@@ -938,9 +938,3 @@ DeclareGlobalFunction("StringOfMemoryAmount");
 DeclareGlobalFunction("StringFormatted");
 DeclareGlobalFunction("PrintFormatted");
 DeclareGlobalFunction("PrintToFormatted");
-
-
-
-#############################################################################
-##
-#E

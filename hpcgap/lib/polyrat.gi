@@ -2183,8 +2183,3 @@ local f, cof;
    return UnivariatePolynomial(f,cof*One(f),
              IndeterminateNumberOfUnivariateRationalFunction(pol));
 end);
-
-#############################################################################
-##
-#E  polyrat.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

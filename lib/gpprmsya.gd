@@ -179,8 +179,3 @@ DeclareGlobalFunction("NormalizerParentSA");
 ##  </ManSection>
 ##
 DeclareGlobalFunction("MaximalSubgroupsSymmAlt");
-
-#############################################################################
-##
-#E
-

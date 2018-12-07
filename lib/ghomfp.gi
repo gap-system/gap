@@ -1292,8 +1292,3 @@ local s,r,fam,fas,fpf,mapi;
     if IsPcGroup(s) then SetIsomorphismPcGroup(r,fpf);fi;
   fi;
 end);
-
-#############################################################################
-##
-#E
-##

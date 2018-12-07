@@ -553,9 +553,3 @@ DeclareGlobalFunction( "SubsemiringWithOneAndZeroNC" );
 ##  </ManSection>
 ##
 DeclareAttribute( "CentralIdempotentsOfSemiring", IsSemiring );
-
-
-#############################################################################
-##
-#E
-

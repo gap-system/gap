@@ -222,9 +222,3 @@ InstallMethod( \*,
     function( emptyvec1, emptyvec2 )
     return Zero( ElementsFamily( FamilyObj( emptyvec1 ) ) );
     end );
-
-
-#############################################################################
-##
-#E  rvecempt.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-

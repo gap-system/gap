@@ -133,9 +133,3 @@ local   input,command,exec,result,blank,semic,hash,process,l,view,estream;
       process();
     fi;
 end );
-
-
-#############################################################################
-##
-#E
-

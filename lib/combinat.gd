@@ -1492,9 +1492,3 @@ DeclareGlobalFunction("Bernoulli");
 ##  <#/GAPDoc>
 ##
 DeclareAttribute("Permanent", IsMatrix);
-
-
-#############################################################################
-##
-#E
-

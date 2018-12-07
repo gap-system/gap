@@ -43,12 +43,3 @@ end );
 InstallGlobalFunction( AssertionLevel, function()
     return CurrentAssertionLevel;
 end );
-
-        
-#############################################################################
-##
-#E  assert.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##
-
-        
-

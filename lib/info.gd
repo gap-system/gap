@@ -148,9 +148,3 @@ BIND_GLOBAL("DefaultInfoOutput", MakeImmutable("*Print*"));
 ##
 ##  If <value> is not a number, the bar graph display is terminated.
 DeclareGlobalFunction("CompletionBar");
-
-#############################################################################
-##
-#E  info.gd ends here
-##
-

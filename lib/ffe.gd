@@ -674,9 +674,3 @@ DeclareAttribute( "AsInternalFFE", IsFFE);
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "RootFFE", [ IsObject, IsFFE, IsObject ] );
-
-
-#############################################################################
-##
-#E
-

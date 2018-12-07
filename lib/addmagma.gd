@@ -663,9 +663,3 @@ DeclareSynonym( "ClosureAdditiveGroup",
     ClosureNearAdditiveGroup );
 DeclareSynonym( "ClosureAdditiveMagmaWithInverses",
     ClosureNearAdditiveGroup );
-
-
-#############################################################################
-##
-#E
-

@@ -3443,8 +3443,3 @@ InstallMethod( IsInjective, "for a linear action homomorphism",
     fi;                 
     return true;
   end );
-
-
-#############################################################################
-##
-#E

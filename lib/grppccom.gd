@@ -184,9 +184,3 @@ DeclareGlobalFunction("COSolvableFactor");
 ##  <#/GAPDoc>
 ##
 DeclareOperation("ComplementClassesRepresentatives",[IsGroup,IsGroup]);
-
-
-#############################################################################
-##
-#E
-

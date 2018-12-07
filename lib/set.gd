@@ -241,9 +241,3 @@ DeclareOperation( "IntersectSet", [ IsList and IsMutable, IsList ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "SubtractSet", [ IsList and IsMutable, IsList ] );
-
-
-#############################################################################
-##
-#E
-

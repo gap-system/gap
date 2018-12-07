@@ -511,9 +511,3 @@ InstallOtherMethod( \*,
     fi;
     return DirectProductElement( List( dpelm, entry -> nonlist * entry ) );
     end );
-
-
-#############################################################################
-##
-#E
-

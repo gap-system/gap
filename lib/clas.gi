@@ -901,9 +901,3 @@ InstallGlobalFunction( RationalClassesInEANS, function( G, E )
     od;
     return rcls;
 end );
-
-
-#############################################################################
-##
-#E
-

@@ -4044,8 +4044,3 @@ local i, image, invword, j, newim, num, oldnumgens,replace,mn,oldi;
 
     fi;
 end );
-
-
-#############################################################################
-##
-#E  tietze.gi  . . . . . . . . . . . . . . . . . . . . . . . . . .. ends here

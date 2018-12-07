@@ -1614,8 +1614,3 @@ InstallMethod( \+, "univariate + rat", true,
     [ IsPolynomialFunction and IsUnivariateRationalFunction, IsRat ],
     -RankFilter(IsRat),#fallback method is low ranked
   function(l,c) return SumCoeffUnivfunc(c*FamilyObj(l)!.oneCoefficient,l); end);
-
-#############################################################################
-##
-#E
-##

@@ -916,10 +916,3 @@ function( coll, l, r, a, n )
         status := CollectWordOrFail( coll, r, GetPowerNC( coll, a ) );
     until status = true;
 end );
-
-#############################################################################
-##
-
-
-#E  rwspcclt.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

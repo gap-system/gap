@@ -1262,9 +1262,3 @@ InstallMethod( AsSubmagma,
 InstallMethod(IsEmpty, "for a magma with generators of magma",
 [IsMagma and HasGeneratorsOfMagma],
 M -> IsEmpty(GeneratorsOfMagma(M)));
-
-
-#############################################################################
-##
-#E
-

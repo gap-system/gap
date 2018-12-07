@@ -421,7 +421,3 @@ DeclareOperation("Cyc", [IsFloat]);
 FLOAT := fail; # record holding all float information
 
 # MAX_FLOAT_LITERAL_CACHE_SIZE := 1000; # this could be set to avoid saturating the cache, in case some code evaluates lots of function expressions
-
-#############################################################################
-##
-#E

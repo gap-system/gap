@@ -117,9 +117,3 @@ DeclareRepresentation( "IsPcgsToPcgsGeneralMappingByImages",
         "rangePcgs", "rangePcgsPreimages" ] );
 DeclareSynonym( "IsPcgsToPcgsHomomorphism",
   IsPcgsToPcgsGeneralMappingByImages and IsMapping);
-
-
-#############################################################################
-##
-#E
-

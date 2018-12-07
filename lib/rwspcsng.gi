@@ -1738,10 +1738,3 @@ InstallMethod( ReducedQuotient,
       Is32BitsAssocWord ],
     0,
     FinPowConjCol_ReducedQuotient );
-
-
-#############################################################################
-##
-
-#F  rwspcsng.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

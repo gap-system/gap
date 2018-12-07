@@ -795,9 +795,3 @@ DeclareGlobalFunction( "ANFAutomorphism" );
 ##  </ManSection>
 ##
 DeclareAttribute( "ExponentOfPowering", IsMapping );
-
-
-#############################################################################
-##
-#E
-

@@ -42,8 +42,3 @@ DeclareGlobalFunction( "TailOfPcgsPermGroup" );
 DeclareGlobalFunction( "PcgsMemberPcSeriesPermGroup" );
 
 DeclareGlobalFunction( "PermgroupSuggestPcgs" );
-
-#############################################################################
-##
-#E  pcgsperm.gd
-##  

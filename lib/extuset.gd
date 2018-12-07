@@ -100,11 +100,3 @@ DeclareAttribute( "GeneratorsOfExtUSet", IsExtUSet );
 #A  UpperActingDomain( <D> )
 ##
 DeclareAttribute( "UpperActingDomain", IsExtRSet );
-
-
-#############################################################################
-##
-#E  extuset.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-

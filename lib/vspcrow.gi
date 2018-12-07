@@ -1930,9 +1930,3 @@ function( U )
     null := NullspaceMat( TransposedMat( base ) );
     return VectorSpace( LeftActingDomain(U), null, Zero(U), "basis" );
 end );
-
-
-#############################################################################
-##
-#E
-

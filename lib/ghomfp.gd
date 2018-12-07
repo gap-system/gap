@@ -353,8 +353,3 @@ DeclareGlobalFunction("LargerQuotientBySubgroupAbelianization");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("ProcessEpimorphismToNewFpGroup");
-
-#############################################################################
-##
-#E
-

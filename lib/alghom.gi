@@ -1809,9 +1809,3 @@ InstallMethod( IsomorphismSCFLMLOR,
     "for s.c. FLMLOR (return the identity mapping)",
     [ IsFLMLOR and IsSCAlgebraObjCollection ], SUM_FLAGS,
     IdentityMapping );
-
-
-#############################################################################
-##
-#E
-

@@ -1490,9 +1490,3 @@ DeclareOperation( "LcmOp",
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "PadicValuation", [ IsRingElement, IsPosInt ] );
-
-
-#############################################################################
-##  
-#E
-

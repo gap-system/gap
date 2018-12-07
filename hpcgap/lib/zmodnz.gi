@@ -1130,9 +1130,3 @@ InstallMethod( DefaultFieldOfMatrixGroup,
 ##  an internal FFE, so this method just returns fail
 ##
 InstallMethod(AsInternalFFE, [IsZmodpZObj], ReturnFail);
-
-
-#############################################################################
-##
-#E
-

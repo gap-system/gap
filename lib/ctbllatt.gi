@@ -1712,11 +1712,3 @@ InstallGlobalFunction( DnLatticeIterative, function( tbl, red )
     until dnlat.irreducibles=[] and red1.irreducibles=[];
     return rec( irreducibles:=irred, remainders:=reduc , norms := norms );
 end );
-
-
-#############################################################################
-##
-#E  ctbllatt.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-

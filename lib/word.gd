@@ -473,9 +473,3 @@ DeclareSynonym( "IsFreeMagma", IsNonassocWordCollection and IsMagma );
 ##  </ManSection>
 ##
 DeclareSynonym( "NonassocWord", ObjByExtRep );
-
-
-#############################################################################
-##
-#E
-

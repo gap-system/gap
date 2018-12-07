@@ -267,7 +267,3 @@ DeclareOperation( "RandomSource", [IsOperation, IsObject] );
 ##
 DeclareGlobalFunction("InstallMethodWithRandomSource");
 DeclareGlobalFunction("InstallOtherMethodWithRandomSource");
-
-#############################################################################
-##
-#E

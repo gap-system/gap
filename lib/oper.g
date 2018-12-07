@@ -2058,8 +2058,3 @@ BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
 
     Assert(2, CHECK_ALL_METHOD_RANKS());
 end );
-
-
-#############################################################################
-##
-#E

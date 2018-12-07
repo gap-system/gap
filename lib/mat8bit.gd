@@ -67,8 +67,3 @@ InstallTrueMethod( IsListDefault, IsList and Is8BitMatrixRep );
 ##
 
 DeclareGlobalFunction( "RepresentationsOfMatrix" );
-
-#############################################################################
-##
-#E
-

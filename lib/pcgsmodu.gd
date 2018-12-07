@@ -178,9 +178,3 @@ DeclareProperty( "IsNumeratorParentPcgsFamilyPcgs", IsModuloPcgs );
 DeclareOperation( "ExponentsConjugateLayer",
   [IsModuloPcgs,IsMultiplicativeElementWithInverse,
                 IsMultiplicativeElementWithInverse] );
-
-
-#############################################################################
-##  
-#E
-

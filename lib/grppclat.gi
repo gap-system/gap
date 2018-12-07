@@ -1308,8 +1308,3 @@ function(c,a,n,b,m)
     ForAll(GeneratorsOfGroup(a),x->ForAll(GeneratorsOfGroup(b),y->Comm(x,y)
     in m));
 end);
-
-#############################################################################
-##
-#E  grppclat.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

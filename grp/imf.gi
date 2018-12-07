@@ -651,9 +651,3 @@ InstallGlobalFunction( "OrbitShortVectors", function ( gens, rep )
     # up the function PositionSorted in IsomorphismPermGroupImfGroup.  
     return Immutable( Set( orbit ) );
 end );
-
-
-#############################################################################
-##
-#E
-

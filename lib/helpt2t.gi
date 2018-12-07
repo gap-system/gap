@@ -1134,7 +1134,3 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
   return rec(lines := lines, start := start);
 
 end);
-
-#############################################################################
-##
-#E

@@ -1123,9 +1123,3 @@ InstallMethod( InvariantBilinearForm,
     Q:= InvariantQuadraticForm( matgrp ).matrix;
     return rec( matrix:= ( Q + TransposedMat( Q ) ) );
     end );
-
-
-#############################################################################
-##
-#E
-

@@ -232,9 +232,3 @@ DeclareGlobalFunction( "OrbitShortVectors" );
 ##  The default value of n is 1.
 ##
 DeclareGlobalFunction( "IsomorphismPermGroupImfGroup" );
-
-
-#############################################################################
-##
-#E
-

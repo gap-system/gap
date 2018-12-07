@@ -248,7 +248,3 @@ DeclareGlobalFunction("IsomorphismFpMonoidInversesFirst");
 ##  </ManSection>
 ##
 DeclareGlobalFunction("IsomorphismFpMonoidGeneratorsFirst");
-
-#############################################################################
-##
-#E

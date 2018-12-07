@@ -43,8 +43,3 @@ DeclareGlobalFunction("MinimumGroupOnSubgroupsOrbit");
 ##  very similar subgroups and thus not part of the default
 ##  SubgroupsOrbitsAndNormalizers method.
 DeclareGlobalFunction("PermPreConjtestGroups");
-
-#############################################################################
-##
-#E  oprtglat.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

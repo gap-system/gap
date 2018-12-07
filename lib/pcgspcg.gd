@@ -46,9 +46,3 @@ InstallTrueMethod(IsParentPcgsFamilyPcgs,IsFamilyPcgs);
 ##  </ManSection>
 ##
 DeclareGlobalFunction("DoExponentsConjLayerFampcgs");
-
-
-#############################################################################
-##  
-#E
-

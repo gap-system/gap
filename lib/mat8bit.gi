@@ -1067,9 +1067,3 @@ InstallMethod(PostMakeImmutable, [Is8BitMatrixRep],
         MakeImmutable(m![i]);
     od;
 end);
-
-
-#############################################################################
-##
-#E
-##

@@ -312,9 +312,3 @@ DeclareGlobalFunction("HideGlobalVariables");
 ##  </ManSection>
 ##
 DeclareGlobalFunction("UnhideGlobalVariables");
-
-
-#############################################################################
-##
-#E
-

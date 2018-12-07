@@ -2189,9 +2189,3 @@ DeclareOperation( "UnderlyingElement", [ IsObject ] );
 ##  <#/GAPDoc>
 ##
 DeclareProperty("IsIdempotent", IsMultiplicativeElement);
-
-
-#############################################################################
-##
-#E
-

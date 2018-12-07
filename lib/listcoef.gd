@@ -699,9 +699,3 @@ DeclareOperation("AddToListEntries", [ IsList and
 # data types for low index memory blocks. Created here to avoid having to
 # read the fp group stuff early
 DeclareGlobalVariable("TYPE_LOWINDEX_DATA");
-
-
-#############################################################################
-##
-#E
-

@@ -1603,9 +1603,3 @@ end );
 InstallGlobalFunction( OnTuplesTuples, function(e,g)
   return List(e,i->OnTuples(i,g));
 end );
-
-
-#############################################################################
-##
-#E
-

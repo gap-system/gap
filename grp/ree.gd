@@ -61,9 +61,3 @@ BindGlobal( "ReeGroup", function ( arg )
 end );
 
 DeclareSynonym( "Ree", ReeGroup );
-
-
-#############################################################################
-##
-#E
-

@@ -97,9 +97,3 @@ InstallMethod( ExponentOfPcElement, "via nicoemorphism", true,
                    ImagesRepresentative( NiceMonomorphism( pcgs ), g ),
                    pos );
 end );
-
-
-#############################################################################
-##
-#E  pcgsnice.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-

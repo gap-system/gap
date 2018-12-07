@@ -138,11 +138,3 @@ DeclareAttribute( "GeneratorsOfExtRSet", IsExtRSet );
 #A  RightActingDomain( <D> )
 ##
 DeclareAttribute( "RightActingDomain", IsExtRSet );
-
-
-#############################################################################
-##
-#E  extrset.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-

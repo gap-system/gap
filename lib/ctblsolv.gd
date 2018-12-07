@@ -375,9 +375,3 @@ DeclareGlobalFunction( "CoveringTriplesCharacters" );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "IrrConlon", IsGroup );
-
-
-#############################################################################
-##
-#E
-

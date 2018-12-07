@@ -1453,9 +1453,3 @@ local   pcgs, g,ord,cord,ppc,q,r,gcd,p1,p2,i,j,e1,pows,exps,rord;
 
   return ppc;
 end );
-
-
-#############################################################################
-##
-#E  pcgspcg.gi	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

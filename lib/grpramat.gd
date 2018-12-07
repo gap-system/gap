@@ -355,8 +355,3 @@ DeclareAttribute( "NormalizerInGLnZBravaisGroup", IsCyclotomicMatrixGroup );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "InvariantLattice", IsCyclotomicMatrixGroup );
-
-#############################################################################
-##
-#E
-

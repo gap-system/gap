@@ -556,9 +556,3 @@ DeclareGlobalFunction( "CentrePcGroup" );
 ##  </ManSection>
 ##
 DeclareAttribute( "OmegaSeries", IsGroup );
-
-
-#############################################################################
-##
-#E
-

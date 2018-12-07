@@ -347,7 +347,3 @@ BIND_GLOBAL("UserHomeExpand", function(str)
     return str;
   fi;
 end);
-
-#############################################################################
-##
-#E
