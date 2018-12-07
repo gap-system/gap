@@ -4401,6 +4401,13 @@ InstallMethod( GroupWithGenerators,
 function( gens )
 local G,typ;
 
+  if IsGroup(gens) then
+    Info( InfoPerformance, 1,
+      "Calling `GroupWithGenerators' on a group usually is very inefficient.");
+    Info( InfoPerformance, 1,
+      "Use the list of generators of the group instead.");
+  fi;
+
   gens:=AsList(gens);
   typ:=MakeGroupyType(FamilyObj(gens),
           IsGroup and IsAttributeStoringRep 
@@ -4418,6 +4425,13 @@ InstallMethod( GroupWithGenerators,
     IsCollsElms, [ IsCollection, IsMultiplicativeElementWithInverse ],
 function( gens, id )
 local G,typ;
+
+  if IsGroup(gens) then
+    Info( InfoPerformance, 1,
+      "Calling `GroupWithGenerators' on a group usually is very inefficient.");
+    Info( InfoPerformance, 1,
+      "Use the list of generators of the group instead.");
+  fi;
 
   gens:=AsList(gens);
   typ:=MakeGroupyType(FamilyObj(gens),
