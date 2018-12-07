@@ -85,9 +85,3 @@ NEXT_VMETHOD_PRINT_INFO := function ( methods, i, arity)
     fi;
     Print("\n");
 end;
-
-
-#############################################################################
-##
-#E  methsel.g . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

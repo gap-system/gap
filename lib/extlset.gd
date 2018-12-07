@@ -234,9 +234,3 @@ DeclareAttribute( "GeneratorsOfExtLSet", IsExtLSet );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "LeftActingDomain", IsExtLSet );
-
-
-#############################################################################
-##
-#E
-

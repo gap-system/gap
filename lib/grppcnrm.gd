@@ -25,10 +25,3 @@ DeclareInfoClass( "InfoPcNormalizer" );
 DeclareAttribute(
     "NormalizerInHomePcgs",
     IsGroup and HasHomePcgs );
-
-
-#############################################################################
-##
-
-#E  grppcnrm.gd	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

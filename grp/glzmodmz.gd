@@ -26,7 +26,3 @@ DeclareGlobalFunction( "SizeOfGLdZmodmZ" );
 ##  over the residue class ring <A>R</A>, which must be modulo an odd prime
 ##  power.
 DeclareGlobalFunction("ConstructFormPreservingGroup");
-
-#############################################################################
-##
-#E  glzmodmz.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

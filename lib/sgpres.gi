@@ -3626,8 +3626,3 @@ end);
 #####################################
 # The following code is not used any longer and is relics of the old Mtc
 # implementation.
-
-#############################################################################
-##
-#E  sgpres.gi  . . . . . . . . . . . . . . . . . . . . . . . . . .. ends here
-

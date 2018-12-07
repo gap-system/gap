@@ -441,9 +441,3 @@ DeclareOperation( "ImmutableVector",[IsObject,IsRowVector]);
 ##  <#/GAPDoc>
 ##
 DeclareOperation("NumberFFVector", [IsRowVector,IsPosInt]);
-  
-  
-#############################################################################
-##
-#E
-

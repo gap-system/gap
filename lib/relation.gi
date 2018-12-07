@@ -2183,7 +2183,3 @@ function(rel)
     fi;
     return AsPermutation(Transformation(Flat(Successors(rel))));
 end);
-
-#############################################################################
-##
-#E

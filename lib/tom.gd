@@ -2309,9 +2309,3 @@ BindGlobal( "TableOfMarksComponents", MakeImmutable([
       "PermutationTom",             PermutationTom,
       "ClassNamesTom",              ClassNamesTom,
     ]) );
-
-
-#############################################################################
-##
-#E
-

@@ -300,16 +300,3 @@ InstallOtherMethod(SparseStructureOfList,
     od;
     return [def, poss, vals];
 end);
-            
-
-
-              
-#############################################################################
-##
-#E
-        
-
-            
-
-
-    

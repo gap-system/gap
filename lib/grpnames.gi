@@ -2024,7 +2024,3 @@ InstallMethod( ViewObj,
     if HasName(G) then TryNextMethod(); fi;
     Print(StructureDescription(G));
   end );
-
-#############################################################################
-##
-#E  grpnames.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

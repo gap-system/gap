@@ -4556,9 +4556,3 @@ if not IsBound( CharacterTableFromLibrary ) then
              "call `LoadPackage( \"CTblLib\" )' if you want to use it" );
       end );
 fi;
-
-
-#############################################################################
-##
-#E
-

@@ -3970,9 +3970,3 @@ InstallMethod( DirectSumDecomposition,
     fi;
     return List( CentralIdempotentsOfAlgebra( A ), x -> Ideal( A, [ x ] ) );
 end );
-
-
-#############################################################################
-##
-#E
-

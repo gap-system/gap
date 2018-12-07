@@ -41,10 +41,3 @@
 ##
 DeclareGlobalFunction("SetAssertionLevel");
 DeclareGlobalFunction("AssertionLevel");
-
-        
-#############################################################################
-##
-#E  assert.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here  
-##
-

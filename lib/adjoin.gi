@@ -172,7 +172,3 @@ InstallMethod(ViewObj, [IsMonoidByAdjoiningIdentityElt],
     fi;
     ViewObj(me![1]);
 end);
-
-#############################################################################
-##
-#E  adjoin.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends 

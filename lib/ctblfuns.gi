@@ -5233,9 +5233,3 @@ InstallGlobalFunction( CollapsedMat, function( mat, maps )
 #T do I really need the component 'mat'?
                 fusion:= fusion );
 end );
-
-
-#############################################################################
-##
-#E
-

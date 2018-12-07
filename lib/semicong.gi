@@ -333,8 +333,3 @@ InstallMethod( ViewObj,
                Length(GeneratingPairsOfMagmaCongruence( S )), 
                " generating pairs>" );
     end );
-
-#############################################################################
-##
-#E
-

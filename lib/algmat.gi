@@ -1753,9 +1753,3 @@ InstallMethod( IsomorphismMatrixFLMLOR,
 #T     N.spaceGenerators:= gens;
 #T     return N;
 #T     end;
-
-
-#############################################################################
-##
-#E
-

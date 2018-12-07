@@ -2176,9 +2176,3 @@ InstallValue( CharTableDoubleCoverAlternating, MakeImmutable( rec(
                             [ 1 .. Length( tbl.Irr ) ] }{ fus1 }, chars ) ) );
         end,
     domain:= IsPosInt ) ) );
-
-
-#############################################################################
-##
-#E
-

@@ -88,8 +88,3 @@ InstallMethod( String,
 InstallMethod( ViewString, "for a boolean",
     true, [ IsBool ], 5, 
     String );
- 
-#############################################################################
-##
-#E
-

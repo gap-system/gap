@@ -1500,9 +1500,3 @@ DeclareAttribute( "PCentralLieAlgebra", IsGroup );
 ##
 DeclareAttribute( "NaturalHomomorphismOfLieAlgebraFromNilpotentGroup",
     IsAlgebra and IsLieAlgebra );
-
-
-#############################################################################
-##
-#E
-

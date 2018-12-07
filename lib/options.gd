@@ -205,9 +205,3 @@ DeclareGlobalFunction( "DisplayOptionsStack");
 ##  <#/GAPDoc>
 ##
 DeclareInfoClass("InfoOptions");
-
-
-#############################################################################
-##
-#E
-

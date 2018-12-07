@@ -173,9 +173,3 @@ DeclareGlobalFunction( "RandomIsomorphismTest" );
 ##  </ManSection>
 ##
 DeclareGlobalFunction( "ReducedByIsomorphisms" );
-
-
-#############################################################################
-##
-#E
-

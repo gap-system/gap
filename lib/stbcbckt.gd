@@ -193,9 +193,3 @@ DeclareGlobalFunction( "PartitionStabilizerPermGroup" );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "TwoClosure", IsPermGroup );
-
-
-#############################################################################
-##
-#E
-

@@ -240,9 +240,3 @@ local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
   return D;
 
 end);
-
-
-#############################################################################
-##
-#E  ctblperm.gi
-##

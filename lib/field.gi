@@ -1348,9 +1348,3 @@ InstallMethod( PreImagesSet,
     UseSubsetRelation( Source( hom ), elms );
     return elms;
     end );
-
-
-#############################################################################
-##
-#E
-

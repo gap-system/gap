@@ -172,7 +172,3 @@ end);
 BIND_GLOBAL("ActivateProfileColour",function(b)
     return ACTIVATE_COLOR_PROFILING(b);
 end);
-
-#############################################################################
-##
-#E

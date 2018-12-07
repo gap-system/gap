@@ -235,8 +235,3 @@ IsSSortedList( PERFRec.notAvailable );
 IsSSortedList( PERFRec.nameSimpleGroup );
 IsSSortedList( PERFRec.sizeNumberSimpleGroup );
 IsSSortedList( PERFRec.sizes );
-
-#############################################################################
-##
-#E  perf0.grp . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

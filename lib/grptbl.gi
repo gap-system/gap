@@ -427,9 +427,3 @@ InstallMethod( MultiplicationTable,
     "for a magma",
     [ IsMagma ],
     M -> MultiplicationTable( AsSSortedList( M ) ) );
-
-
-#############################################################################
-##
-#E
-

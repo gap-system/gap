@@ -691,7 +691,3 @@ DeclareObsoleteSynonym( "RecFields", "RecNames" );
 if GAPInfo.CommandLineOptions.D then InfoRead1 := Print; fi;
 if not IsBound(InfoRead1) then InfoRead1 := Ignore; fi;
 if not IsBound(InfoRead2) then InfoRead2 := Ignore; fi;
-
-#############################################################################
-##
-#E

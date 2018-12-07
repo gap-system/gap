@@ -275,9 +275,3 @@ InstallTrueMethod( IsFinite,
     IsZmodnZObjNonprimeCollCollColl and IsRingElementCollCollColl
                                     and IsGroup
                                     and IsFinitelyGeneratedGroup );
-
-
-#############################################################################
-##
-#E
-

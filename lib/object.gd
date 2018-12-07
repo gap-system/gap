@@ -870,8 +870,3 @@ DeclareRepresentation( "IsPackedElementDefaultRep", IsAtomicPositionalObjectRep,
 ##  </ManSection>
 ##
 DeclareOperation( "PostMakeImmutable", [IsObject]);
-
-
-#############################################################################
-##
-#E

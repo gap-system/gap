@@ -1220,9 +1220,3 @@ DeclareHandlingByNiceBasis( "IsDirectSumElementsSpace",
 ##
 DeclareOperation( "TranslatorSubalgebra", 
 [ IsAlgebraModule, IsFreeLeftModule, IsFreeLeftModule ] );
-
-
-#############################################################################
-##
-#E
-

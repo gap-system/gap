@@ -364,9 +364,3 @@ DeclareHandlingByNiceBasis( "IsLinearMappingsModule",
 #M  IsFiniteDimensional( <A> )  . . . . .  hom FLMLORs are finite dimensional
 ##
 InstallTrueMethod( IsFiniteDimensional, IsLinearMappingsModule );
-
-
-#############################################################################
-##
-#E
-

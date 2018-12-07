@@ -230,11 +230,3 @@ DeclareAttribute( "GeneratorsOfMagmaIdeal", IsMagmaIdeal );
 ##  is the underlying operation of `MagmaIdeal' 
 ##
 DeclareOperation( "MagmaIdealByGenerators", [IsMagma, IsCollection ] );
-
-
-
-
-#############################################################################
-##
-#E
-

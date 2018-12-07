@@ -2232,8 +2232,3 @@ InstallMethod( End,
 
 #T InstallMethod( Field, true, [ IsGeneralMappingCollection ], 0, ... );
 #T InstallMethod( DefaultField, true, [ IsGeneralMappingCollection ], 0, ... );
-
-#############################################################################
-##
-#E
-

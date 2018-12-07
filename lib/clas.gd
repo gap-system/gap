@@ -436,9 +436,3 @@ DeclareGlobalFunction( "RationalClassesSolvableGroup" );
 ##
 
 DeclareGlobalFunction( "CentralizerSizeLimitConsiderFunction" );
-
-
-#############################################################################
-##
-#E
-

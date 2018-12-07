@@ -372,9 +372,3 @@ DeclareGlobalFunction("DisplayInformationPerfectGroups");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("SizeNumbersPerfectGroups");
-
-
-#############################################################################
-##
-#E
-

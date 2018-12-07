@@ -746,8 +746,3 @@ local H,hom,permgens,fpgens;
   SetIsSurjective(hom,true);
   return hom;
 end);
-
-#############################################################################
-##
-#E  perf.grp . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

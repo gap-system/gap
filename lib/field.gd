@@ -1017,9 +1017,3 @@ DeclareHandlingByNiceBasis( "IsFieldElementsSpace",
 ##  </ManSection>
 ##
 DeclareOperation( "NthRoot", [ IsField, IsScalar, IsPosInt ] );
-
-
-#############################################################################
-##
-#E
-

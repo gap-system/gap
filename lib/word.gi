@@ -269,10 +269,3 @@ InstallMethod( OneOp,
     true,
     [ IsNonassocWordWithOne ], 0,
     x -> ObjByExtRep( FamilyObj( x ), 0 ) );
-
-
-#############################################################################
-##
-#E
-##
-

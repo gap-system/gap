@@ -1353,8 +1353,3 @@ DeclareGlobalFunction("CanMapFiniteAbelianInvariants");
 
 # used in homomorphisms
 DeclareGlobalVariable("TRIVIAL_FP_GROUP");
-
-#############################################################################
-##
-#E
-

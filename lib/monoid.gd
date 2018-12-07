@@ -266,11 +266,3 @@ DeclareGlobalFunction( "FreeMonoid" );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsFinitelyGeneratedMonoid", IsMonoid );
-
-
-
-
-#############################################################################
-##
-#E
-

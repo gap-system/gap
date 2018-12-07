@@ -696,9 +696,3 @@ InstallGlobalFunction( ValueMolienSeries, function( series, i )
 
     return value / series.size;
 end );
-
-
-#############################################################################
-##
-#E
-

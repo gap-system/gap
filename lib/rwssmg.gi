@@ -363,8 +363,3 @@ function(rws)
 return GeneratorsOfMonoid(FreeMonoidOfRewritingSystem(rws));
 
 end);
-
-#############################################################################
-##
-#E
-

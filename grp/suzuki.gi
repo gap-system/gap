@@ -96,7 +96,3 @@ function ( filter, q )
   if q > 2 then SetIsSimpleGroup(G,true); fi;
   return G;
 end );
-
-#############################################################################
-##
-#E  suzuki.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

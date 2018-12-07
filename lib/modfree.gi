@@ -538,9 +538,3 @@ InstallMethod( PrintObj,
     function( V )
     Print( "FreeLeftModule( ", LeftActingDomain( V ), ", ... )" );
     end );
-
-
-#############################################################################
-##
-#E
-

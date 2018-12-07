@@ -1190,9 +1190,3 @@ InstallEqMethodForMappingsFromGenerators( IsField,
     GeneratorsOfField,
     IsFieldHomomorphism,
     " that is a field homomorphism" );
-
-
-#############################################################################
-##
-#E
-

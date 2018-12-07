@@ -272,9 +272,3 @@ CompileFunc := function( arg )
         arguments.checklistelements );
 
 end;
-
-
-#############################################################################
-##
-
-#E  compiler.g  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

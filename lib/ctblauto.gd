@@ -237,9 +237,3 @@ DeclareOperation( "TransformingPermutations", [ IsMatrix, IsMatrix ] );
 ##
 DeclareOperation( "TransformingPermutationsCharacterTables",
     [ IsNearlyCharacterTable, IsNearlyCharacterTable ] );
-
-
-#############################################################################
-##
-#E
-

@@ -269,9 +269,3 @@ DeclareGlobalFunction( "GroupByMultiplicationTable" );
 ##
 DeclareAttribute( "MultiplicationTable", IsHomogeneousList );
 DeclareAttribute( "MultiplicationTable", IsMagma );
-
-
-#############################################################################
-##
-#E
-

@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "98793349"
+#define FILE_CRC  "-118122373"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
@@ -4034,7 +4034,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/type1.g",
- .crc         = 98793349,
+ .crc         = -118122373,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

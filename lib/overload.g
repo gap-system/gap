@@ -383,8 +383,3 @@ DeclareSynonym( "RemoveElmList", Remove);
 if IsHPCGAP then
     MakeImmutable(SOLVABILITY_IMPLYING_FUNCTIONS);
 fi;
-
-#############################################################################
-##
-#E
-

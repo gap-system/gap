@@ -440,9 +440,3 @@ function( filter, dom )
     SetIsSymmetricGroup( alt, true );
     return alt;
 end );
-
-
-#############################################################################
-##
-#E
-

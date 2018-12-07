@@ -39,9 +39,3 @@ DeclareGlobalFunction( "ImageOnAbelianCSPG" );
 #T  Eventually this function should be moved to another file.
 ##
 DeclareGlobalFunction( "ChiefSeriesOfGroup" );
-
-
-#############################################################################
-##
-#E
-

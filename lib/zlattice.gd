@@ -542,9 +542,3 @@ DeclareGlobalFunction( "OrthogonalEmbeddings" );
 ##
 DeclareGlobalFunction( "LLLint" );
 #T The code was converted from Maple to GAP by Alexander.
-
-
-#############################################################################
-##
-#E
-

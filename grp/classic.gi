@@ -1926,9 +1926,3 @@ PermConstructor(SymplecticGroupCons,[IsPermGroup,IsInt,IsObject],
 
 PermConstructor(OmegaCons,[IsPermGroup,IsInt,IsObject],
   IsMatrixGroup and IsFinite);
-
-
-#############################################################################
-##
-#E
-

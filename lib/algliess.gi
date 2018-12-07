@@ -1633,11 +1633,3 @@ InstallGlobalFunction( SimpleLieAlgebra, function( type, n, F )
     fi;
     return A;
 end );
-
-
-#############################################################################
-##
-#E  algliess.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-

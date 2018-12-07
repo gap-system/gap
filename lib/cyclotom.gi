@@ -2071,9 +2071,3 @@ function (A,B)
   if i = fail then TryNextMethod(); fi;
   return CompareCyclotomicCollectionHelper_Semirings[i];
 end );
-
-
-#############################################################################
-##
-#E
-

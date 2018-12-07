@@ -797,9 +797,3 @@ InstallOtherMethod( ClosureAdditiveGroup,
     od;
     return C;
     end );
-
-
-#############################################################################
-##
-#E
-

@@ -942,9 +942,3 @@ DeclareAttribute( "LargestNrSlots", IsStraightLineProgram );
 ##
 DeclareInfoClass( "InfoSLP" );
 SetInfoLevel(InfoSLP,1);
-
-
-#############################################################################
-##
-#E
-

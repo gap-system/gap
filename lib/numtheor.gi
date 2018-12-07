@@ -1378,9 +1378,3 @@ local v;
   fi;
   return PVALUATION_INT(NumeratorRat(n),p) - PVALUATION_INT(DenominatorRat(n),p);
 end);
-
-
-#############################################################################
-##
-#E  numtheor.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-

@@ -19,7 +19,3 @@ gap> GeneralisedEigenspaces(GF(3),A);
 [ <vector space over GF(3), with 1 generators>, 
   <vector space over GF(3), with 3 generators> ]
 gap> STOP_TEST( "eigen.tst", 1);
-
-#############################################################################
-##
-#E  

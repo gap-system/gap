@@ -1000,8 +1000,3 @@ DeclareGlobalFunction( "SmallestRootInt" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PrintFactorsInt" );
-
-
-#############################################################################
-##
-#E

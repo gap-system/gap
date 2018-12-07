@@ -96,7 +96,3 @@ InstallTrueMethod( IsCollection, IsSparseRowVector );
 
 DeclareGlobalFunction( "SparseVectorBySortedList");
 DeclareGlobalFunction( "SparseVectorBySortedListNC");
-
-#############################################################################
-##
-#E

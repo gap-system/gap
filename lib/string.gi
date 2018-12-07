@@ -1392,7 +1392,3 @@ InstallGlobalFunction(PrintFormatted, function(args...)
     # directed
     Print(CallFuncList(StringFormatted, args));
 end);
-
-#############################################################################
-##
-#E

@@ -272,9 +272,3 @@ DeclareAttribute( "SocleDimensions", IsGroup );
 ##  </ManSection>
 ##
 DeclareAttribute( "ModuleOfExtension", IsGroup );
-
-
-#############################################################################
-##
-#E
-

@@ -97,9 +97,3 @@ DeclareOperation(
 DeclareOperation(
     "GroupByRwsNC",
     [ IsRewritingSystem ] );
-
-
-#############################################################################
-##
-#E
-

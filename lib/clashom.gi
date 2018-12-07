@@ -3084,8 +3084,3 @@ function(G)
   if IsPermGroup(G) or IsPcGroup(G) then TryNextMethod();fi;
   return ConjugacyClassesViaRadical(G);
 end);
-
-
-#############################################################################
-##
-#E

@@ -195,9 +195,3 @@ DeclareGlobalFunction( "SmallestPrimeDivisor" );
 ##  (<size> = 1 suppresses this extra feature.)
 ##
 DeclareGlobalFunction( "CollectedPartition" );
-
-
-#############################################################################
-##
-#E
-

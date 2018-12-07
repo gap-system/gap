@@ -1326,8 +1326,3 @@ local wu, l, symbols, offset, occurrences, n, no, translate, findpatterns, nams,
   od;
   return r;
 end);
-
-#############################################################################
-##
-#E
-

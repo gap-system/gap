@@ -91,7 +91,3 @@ DeclareGlobalFunction("EmbeddingWreathInWreath");
 ##  S_n$. This function calculates the wreath product $W2=\Aut(T)\wr S$ and
 ##  the embedding.
 DeclareGlobalFunction("EmbedFullAutomorphismWreath");
-
-#############################################################################
-##
-#E  permdeco.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

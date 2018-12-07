@@ -693,5 +693,3 @@ DeclareOperation( "SetHashEntry", [ IsHash and IsMutable, IsObject, IsObject ] )
 ##  This operation has not yet been implemented
 ##
 ##DeclareOperation( "AddHashEntryAtLastIndex", [ IsHash and IsMutable, IsObject ] );
-
-#E

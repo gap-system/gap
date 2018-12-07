@@ -965,9 +965,3 @@ end );
 ##  </ManSection>
 ##
 DeclareAttribute( "MagmaGeneratorsOfFamily", IsFamily );
-
-
-#############################################################################
-##
-#E
-

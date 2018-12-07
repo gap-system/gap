@@ -77,9 +77,3 @@ DeclareAttribute("ReesCongruenceOfSemigroupIdeal", IsMagmaIdeal);
 DeclareGlobalFunction( "EnumeratorOfSemigroupIdeal" );
 DeclareGlobalFunction( "IsBound_LeftSemigroupIdealEnumerator" );
 DeclareGlobalFunction( "IsBound_RightSemigroupIdealEnumerator" );
-
-
-#############################################################################
-##
-#E
-

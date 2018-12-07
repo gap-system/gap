@@ -135,9 +135,3 @@ InstallTrueMethod(IsRightSemigroupCongruence,IsSemigroupCongruence);
 ##  <#/GAPDoc>
 ##
 DeclareProperty("IsReesCongruence", IsSemigroupCongruence );
-
-
-#############################################################################
-##
-#E
-

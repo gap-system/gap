@@ -1190,11 +1190,3 @@ function( pcgs, ind )
     pcgs!.depthsInParent[ind]) # depth of the element in the parent
                                 {pcgs!.depthsInParent};
 end );
-
-
-
-#############################################################################
-##
-
-#E  pcgs.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

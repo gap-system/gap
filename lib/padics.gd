@@ -292,9 +292,3 @@ DeclareGlobalVariable( "PADICS_FAMILIES");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PadicExtensionNumberFamily" );
-
-
-#############################################################################
-##
-#E
-

@@ -244,8 +244,3 @@ function( endo, elm )
 	poselm := Position(EnumeratorSorted(Source(endo)), elm);
 	return [EnumeratorSorted(Source(endo))[poselm^(endo!.transformation)]];
 end);
-
-############################################################################
-##
-#E
-

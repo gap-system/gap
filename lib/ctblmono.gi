@@ -2593,9 +2593,3 @@ InstallGlobalFunction( MinimalNonmonomialGroup, function( p, factsize )
 
     return K;
 end );
-
-
-#############################################################################
-##
-#E
-

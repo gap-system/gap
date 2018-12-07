@@ -487,8 +487,3 @@ BIND_GLOBAL("PageSource", function ( fun, nr... )
         Pager(rec(lines := StringFile(f), formatted := true, start := l));
     fi;
 end);
-
-#############################################################################
-##
-#E
-

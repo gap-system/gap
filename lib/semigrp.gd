@@ -703,7 +703,3 @@ InstallTrueMethod(IsZeroSemigroup, IsInverseSemigroup and IsTrivial);
 
 DeclareOperation("SemigroupViewStringPrefix", [IsSemigroup]);
 DeclareOperation("SemigroupViewStringSuffix", [IsSemigroup]);
-
-#############################################################################
-##
-#E

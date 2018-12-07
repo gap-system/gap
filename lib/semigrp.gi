@@ -1286,10 +1286,3 @@ end);
 InstallMethod(IsRegularSemigroup, "for generic semigroup",
     [ IsSemigroup ],
     S -> ForAll( GreensDClasses(S), IsRegularDClass ) );
-
-
-
-#############################################################################
-##
-#E
-

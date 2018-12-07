@@ -446,9 +446,3 @@ DeclareGlobalFunction("CorrespondingGeneratorsByModuloPcgs");
 ##  </ManSection>
 ##
 DeclareGlobalFunction("NORMALIZE_IGS");
-
-
-#############################################################################
-##  
-#E
-

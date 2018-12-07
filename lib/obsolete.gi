@@ -957,8 +957,3 @@ BIND_GLOBAL( "SetFeatureObj", function ( obj, filter, val )
         ResetFilterObj( obj, filter );
     fi;
 end );
-
-#############################################################################
-##
-#E
-

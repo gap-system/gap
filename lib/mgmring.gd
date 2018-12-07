@@ -720,9 +720,3 @@ DeclareCategory( "IsElementOfMagmaRingModuloSpanOfZeroFamily",
 ##
 DeclareHandlingByNiceBasis( "IsSpaceOfElementsOfMagmaRing",
     "for free left modules of magma rings modulo relations" );
-
-
-#############################################################################
-##
-#E
-

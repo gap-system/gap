@@ -48,8 +48,3 @@ DeclareAttribute("CosetTableOfFpSemigroup", IsRightMagmaCongruence);
 ##
 
 SemigroupTCInitialTableSize:= 5000000;
-
-#############################################################################
-##
-#E
-

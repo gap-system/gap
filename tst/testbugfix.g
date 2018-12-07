@@ -18,7 +18,3 @@ TestDirectory( [ DirectoriesLibrary( "tst/testbugfix") ] ,
 
 # Should never get here
 FORCE_QUIT_GAP(1);
-
-#############################################################################
-##
-#E

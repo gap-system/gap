@@ -4622,8 +4622,3 @@ DeclareOperation( "LowIndexSubgroups",
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("NormalizerViaRadical");
-
-#############################################################################
-##
-#E
-

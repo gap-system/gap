@@ -747,9 +747,3 @@ Please specify directory to write gap.ini file.");
   Info(InfoWarning, 1, "File ", target, " successfully written.");
   return true;
 end );
-
-
-#############################################################################
-##
-#E
-

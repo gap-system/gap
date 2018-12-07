@@ -226,9 +226,3 @@ DeclareGlobalFunction("AllModulesSQ");
 ##  </ManSection>
 ##
 DeclareGlobalFunction("EAPrimeLayerSQ");
-
-
-#############################################################################
-##
-#E
-

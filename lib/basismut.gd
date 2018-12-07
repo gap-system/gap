@@ -262,9 +262,3 @@ DeclareOperation( "CloseMutableBasis",
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "IsContainedInSpan", [ IsMutableBasis, IsVector ] );
-
-
-#############################################################################
-##
-#E
-

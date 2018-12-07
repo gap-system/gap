@@ -1176,8 +1176,3 @@ DeclareOperation( "UglyVector",
 ##  </ManSection>
 ##
 DeclareGlobalFunction( "BasisWithReplacedLeftModule" );
-
-
-#############################################################################
-##
-#E

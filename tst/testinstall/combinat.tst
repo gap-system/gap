@@ -505,7 +505,3 @@ gap> Bernoulli( 80 );
 
 # thats it for the combinatorical package  ##################################
 gap> STOP_TEST( "combinat.tst", 1);
-
-#############################################################################
-##
-#E

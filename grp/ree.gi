@@ -82,7 +82,3 @@ local theta, m, f, bas, one, zero, x, h, r, gens, G, i;
 end );
 
 PermConstructor(ReeGroupCons,[IsPermGroup,IsObject], IsMatrixGroup);
-
-#############################################################################
-##
-#E  ree.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . .  ends here

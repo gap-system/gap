@@ -108,7 +108,3 @@ infinity<infinity gives correct result? true
 
 #
 gap> STOP_TEST( "infinity.tst", 1);
-
-#############################################################################
-##
-#E

@@ -31,9 +31,3 @@ DeclareCategory( "IsAdditiveCoset",
 #O  AdditiveCoset( <A>, <a> )
 ##
 DeclareOperation( "AdditiveCoset", [ IsAdditiveGroup, IsAdditiveElement ] );
-
-
-#############################################################################
-##
-#E
-

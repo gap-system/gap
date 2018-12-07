@@ -567,7 +567,3 @@ NAMES_OF_SMALL_GROUPS :=
  "C2 x ((C5 x C5) : C2)",
  "C10 x C10" ] ];
 MakeReadOnlyGlobal( "NAMES_OF_SMALL_GROUPS" );
-
-#############################################################################
-##
-#E  grpnames.g . . . . . . . . . . . . . . . . . . . . . . . . . .  ends here

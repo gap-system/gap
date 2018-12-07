@@ -115,9 +115,3 @@ DeclareOperation( "RingHomomorphismByImagesNC",
 ##
 DeclareOperation( "NaturalHomomorphismByIdeal",
     [ IsRing, IsRing ] );
-
-
-#############################################################################
-##
-#E
-

@@ -141,9 +141,3 @@ DeclareHandlingByNiceBasis( "IsSCAlgebraObjSpace",
 ##
 InstallTrueMethod( IsFiniteDimensional,
     IsFreeLeftModule and IsSCAlgebraObjCollection );
-
-
-#############################################################################
-##
-#E
-

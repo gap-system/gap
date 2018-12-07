@@ -874,9 +874,3 @@ DeclareSynonym( "IntersectBlist", INTER_BLIST );
 ##  <#/GAPDoc>
 ##
 DeclareSynonym( "SubtractBlist", SUBTR_BLIST );
-
-
-#############################################################################
-##
-#E
-

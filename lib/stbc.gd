@@ -857,6 +857,3 @@ DeclareGlobalFunction( "VerifySGS" );
 DeclareGlobalFunction( "ExtensionOnBlocks" );
 DeclareGlobalFunction( "ClosureRandomPermGroup" );
 #
-#############################################################################
-##
-#E

@@ -475,9 +475,3 @@ DeclareGlobalFunction( "DnLattice" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "DnLatticeIterative" );
-
-
-#############################################################################
-##
-#E
-

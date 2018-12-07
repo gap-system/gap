@@ -352,9 +352,3 @@ DeclareAttribute("IsomorphismFpSemigroup",IsSemigroup);
 ##  <#/GAPDoc>
 ##
 DeclareOperation("FpGrpMonSmgOfFpGrpMonSmgElement",[IsMultiplicativeElement]);
-
-
-#############################################################################
-##
-#E
-

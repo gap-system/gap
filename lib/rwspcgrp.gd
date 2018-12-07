@@ -204,9 +204,3 @@ DeclareOperation(
 DeclareOperation(
     "PolycyclicFactorGroupByRelators",
     [ IsFamily, IsList, IsList ] );
-
-
-#############################################################################
-##
-#E
-

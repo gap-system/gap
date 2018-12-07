@@ -130,8 +130,3 @@ DeclareGlobalFunction("ReduceWordUsingRewritingSystem");
 ##  </ManSection>
 ##
 DeclareAttribute( "TzRules", IsKnuthBendixRewritingSystem );
-
-#############################################################################
-##
-#E
-

@@ -166,9 +166,3 @@ InstallMethod( \in, true, [ IsPerm, IsRationalClassPermGroupRep ], 0,
                            TrivialSubgroup( G ),
                            StabilizerOfExternalSet( cl ) ) <> fail );
 end );
-
-
-#############################################################################
-##
-#E
-

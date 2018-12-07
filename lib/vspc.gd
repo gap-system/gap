@@ -814,9 +814,3 @@ DeclareAttribute( "OrthogonalSpaceInFullRowSpace", IsGaussianSpace );
 ##  </ManSection>
 ##
 DeclareProperty( "IsVectorSpaceHomomorphism", IsGeneralMapping );
-
-
-#############################################################################
-##
-#E
-

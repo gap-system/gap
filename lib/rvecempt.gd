@@ -26,9 +26,3 @@
 ##  is an empty row vector whose family is the collections family of <F>.
 ##
 DeclareAttribute( "EmptyRowVector", IsFamily );
-
-
-#############################################################################
-##
-#E
-

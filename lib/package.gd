@@ -1301,9 +1301,3 @@ DeclareGlobalFunction( "Cite" );
 DeclareGlobalFunction( "ShowPackageVariables" );
 
 DeclareGlobalFunction( "PackageVariablesInfo" );
-
-
-#############################################################################
-##
-#E
-

@@ -213,8 +213,3 @@ DeclareGlobalFunction( "CompanionMat" );
 ##  </ManSection>
 ##
 DeclareGlobalFunction( "AllIrreducibleMonicPolynomials" );
-
-#############################################################################
-##
-#E
-

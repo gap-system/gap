@@ -1510,9 +1510,3 @@ DeclareGlobalFunction( "CopyMappingAttributes" );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "MappingGeneratorsImages", IsGeneralMapping );
-
-
-#############################################################################
-##
-#E
-

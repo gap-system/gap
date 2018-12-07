@@ -854,9 +854,3 @@ InstallMethod(IsIdempotent,"multiplicative element",
 function(x)
   return x*x = x;
 end);
-
-
-#############################################################################
-##
-#E
-

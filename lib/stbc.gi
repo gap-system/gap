@@ -1842,7 +1842,3 @@ local sz;
   Print("<stabilizer chain record, Base ",BaseStabChain(r),
         ", Orbit length ",Length(r.orbit),", Size: ",sz,">");
 end);
-
-#############################################################################
-##
-#E

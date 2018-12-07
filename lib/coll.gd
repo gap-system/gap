@@ -3250,8 +3250,3 @@ DeclareOperation( "CanComputeIsSubset", [IsObject,IsObject] );
 DeclareFilter( "CanComputeSize" );
 
 InstallTrueMethod( CanComputeSize, HasSize );
-
-#############################################################################
-##
-#E
-

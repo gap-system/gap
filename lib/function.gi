@@ -104,7 +104,3 @@ InstallMethod( ViewString,
 function(op)
     return VIEW_STRING_OPERATION(op);
 end);
-
-#############################################################################
-##
-#E

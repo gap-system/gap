@@ -160,10 +160,3 @@ BIND_CONSTANT := function( name, val)
     return val;
 end;
 MAKE_READ_ONLY_GLOBAL("BIND_CONSTANT");
-
-#############################################################################
-##
-#E  global.g . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-

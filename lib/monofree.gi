@@ -291,9 +291,3 @@ InstallMethod( ViewObj,
              GeneratorsOfMagmaWithOne( M ), ">" );
     fi;
     end );
-
-
-#############################################################################
-##
-#E
-

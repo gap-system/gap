@@ -1177,9 +1177,3 @@ InstallMethod( ImmutableBasis,
 #T mutable bases for Gaussian row and matrix spaces are always semi-ech.
 #T (note that we construct a mutable basis only if we want to do successive
 #T closures)
-
-
-#############################################################################
-##
-#E
-

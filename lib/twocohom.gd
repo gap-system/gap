@@ -182,9 +182,3 @@ DeclareOperation( "TwoCoboundaries", [ IsPcGroup, IsObject ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "TwoCohomology", [ IsPcGroup, IsObject ] );
-
-
-#############################################################################
-##
-#E
-

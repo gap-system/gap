@@ -12,8 +12,3 @@ MakeGAPDocDoc( GAPInfo.ManualDataDev.pathtodoc,
                "MathJax" );
 
 CopyHTMLStyleFiles(".");
-
-#############################################################################
-##
-#E
-

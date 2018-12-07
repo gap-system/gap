@@ -443,9 +443,3 @@ InstallMethod( ViewObj,
     Print( "<semigroup ideal with ", Length(GeneratorsOfMagmaIdeal( S )),
            " generators>" );
     end );
-
-
-#############################################################################
-##
-#E
-

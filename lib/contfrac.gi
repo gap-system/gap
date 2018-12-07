@@ -101,7 +101,3 @@ InstallGlobalFunction( ContinuedFractionApproximationOfRoot,
     M := Product(a,a_i->[[a_i,1],[1,0]]);
     return M[1][1]/M[2][1];
   end );
-
-#############################################################################
-##
-#E  contfrac.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

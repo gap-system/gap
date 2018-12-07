@@ -726,9 +726,3 @@ DeclareAttribute( "DimensionOfVectors", IsFreeLeftModule );
 InstallTrueMethod( IsFiniteDimensional, IsRowModule and IsFreeLeftModule );
 InstallTrueMethod( IsFiniteDimensional,
     IsMatrixModule and IsFreeLeftModule );
-
-
-#############################################################################
-##
-#E
-

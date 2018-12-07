@@ -277,9 +277,3 @@ BIND_GLOBAL( "ShowArgument", NONAVAILABLE_SHOW_FUNC );
 BIND_GLOBAL( "ShowDetails", NONAVAILABLE_SHOW_FUNC );
 BIND_GLOBAL( "ShowMethods", NONAVAILABLE_SHOW_FUNC );
 BIND_GLOBAL( "ShowOtherMethods", NONAVAILABLE_SHOW_FUNC );
-
-
-#############################################################################
-##
-#E
-

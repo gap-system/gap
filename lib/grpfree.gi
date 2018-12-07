@@ -609,9 +609,3 @@ InstallAccessToGenerators( IsSubgroupFpGroup and IsGroupOfFamily
                                              and IsFreeGroup,
                            "free group containing the whole family",
                            GeneratorsOfMagmaWithInverses );
-
-
-#############################################################################
-##
-#E
-

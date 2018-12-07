@@ -465,9 +465,3 @@ DeclareGlobalFunction("RepresentationsPermutationIrreducibleCharacters");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("NthRootsInGroup");
-
-
-#############################################################################
-##
-#E
-

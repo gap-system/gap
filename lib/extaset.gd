@@ -66,11 +66,3 @@ DeclareAttribute( "GeneratorsOfExtASet", IsExtASet );
 ##
 DeclareAttribute( "AdditivelyActingDomain",
     IsExtASet );
-
-
-#############################################################################
-##
-#E  extaset.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-

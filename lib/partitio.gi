@@ -458,8 +458,3 @@ InstallGlobalFunction( CollectedPartition, function( P, size )
     od;
     return Partition( C );
 end );
-
-#############################################################################
-##
-#E
-

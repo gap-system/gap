@@ -1534,8 +1534,3 @@ InstallMethod( UseFactorRelation,
    fi;
    TryNextMethod();
    end );
-
-#############################################################################
-##
-#E  factgrp.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

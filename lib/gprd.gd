@@ -565,9 +565,3 @@ InstallTrueMethod(IsGeneratorsOfMagmaWithInverses,
 
 DeclareRepresentation("IsWreathProductElementDefaultRep",
   IsWreathProductElement and IsPositionalObjectRep,[]);
-
-
-#############################################################################
-##
-#E
-

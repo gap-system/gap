@@ -1487,8 +1487,3 @@ InstallMethod( \=,
 ##
 InstallRingAgnosticGcdMethod("integers", true,true,
     [ IsIntegers, IsInt, IsInt ], 0,GcdInt);
-
-#############################################################################
-##
-#E
-

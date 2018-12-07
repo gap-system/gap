@@ -630,7 +630,3 @@ local au, agens, agau, a2, w2, ogens, ngens, oe, ne, emb, i, j;
   emb:=GroupHomomorphismByImagesNC(w,w2,ogens,ngens);
   return [emb,w2,a2[1],Image(a2[2])];
 end);
-
-#############################################################################
-##
-#E  permdeco.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

@@ -897,9 +897,3 @@ DeclareProperty( "IsMinimalNonmonomial", IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "MinimalNonmonomialGroup" );
-
-
-#############################################################################
-##
-#E
-

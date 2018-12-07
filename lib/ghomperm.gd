@@ -89,9 +89,3 @@ DeclareGlobalFunction( "StabChainPermGroupToPermGroupGeneralMappingByImages" );
 DeclareGlobalFunction( "MakeStabChainLong" );
 DeclareGlobalFunction( "ImageKernelBlocksHomomorphism" );
 DeclareGlobalFunction( "PreImageSetStabBlocksHomomorphism" );
-
-
-#############################################################################
-##
-#E
-

@@ -997,9 +997,3 @@ InstallOtherMethod(PcgsElementaryAbelianSeries, "if special pcgs is known",
 
 InstallMethod(PcgsElementaryAbelianSeries,"for PCgroups via SpecialPcgs",
   true,[IsPcGroup],0,PcgsElAbSerFromSpecPcgs);
-
-
-#############################################################################
-##
-#E  pcgsspec.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

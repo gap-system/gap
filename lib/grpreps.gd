@@ -74,9 +74,3 @@ DeclareOperation( "RegularModule", [ IsGroup, IsField ] );
 
 #############################################################################
 DeclareGlobalFunction( "RegularModuleByGens" );
-
-
-#############################################################################
-##
-#E
-

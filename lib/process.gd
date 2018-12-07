@@ -202,8 +202,3 @@ DeclareGlobalFunction("ShortFileNameWindows");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "Exec" );
-
-#############################################################################
-##
-#E
-

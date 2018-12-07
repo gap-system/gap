@@ -1696,12 +1696,3 @@ local e;
   e:=DepthOfPcElement(pcgs!.shadowImagePcgs,e);
   return e;
 end);
-
-
-
-
-#############################################################################
-##
-#E
-##
-

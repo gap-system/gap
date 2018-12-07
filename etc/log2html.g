@@ -66,7 +66,3 @@ Log2HTML := function ( logfilename )
                            ".log",".html")),false);
   WriteAll(output,s2); CloseStream(output);
 end;
-
-#############################################################################
-##
-#E  log2html.g . . . . . . . . . . . . . . . . . . . . . . . . . .  ends here

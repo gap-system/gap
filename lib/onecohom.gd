@@ -482,9 +482,3 @@ DeclareGlobalFunction("ComplementClassesRepresentativesEA");
 ##
 #T DeclareGlobalFunction("OCPPrimeSets");
 #T up to now no function is installed
-
-
-#############################################################################
-##
-#E
-

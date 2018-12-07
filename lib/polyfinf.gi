@@ -806,8 +806,3 @@ local c,b,l;
   l:=Lcm(l);
   return GF(Characteristic(f)^(l*DegreeOverPrimeField(b)));
 end);
-
-#############################################################################
-##
-#E  polyfinf.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

@@ -981,9 +981,3 @@ DeclareAttribute( "RationalizedMat", IsMatrix );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "DenominatorCyc" );
-
-
-#############################################################################
-##
-#E
-

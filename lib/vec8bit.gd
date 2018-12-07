@@ -75,9 +75,3 @@ DeclareGlobalVariable( "TYPE_FIELDINFO_8BIT" );
 InstallTrueMethod( IsConstantTimeAccessList, IsList and Is8BitVectorRep );
 InstallTrueMethod( IsSmallList, IsList and Is8BitVectorRep );
 InstallTrueMethod( IsListDefault, IsList and Is8BitVectorRep );
-
-
-#############################################################################
-##
-#E
-

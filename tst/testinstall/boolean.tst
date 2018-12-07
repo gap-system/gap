@@ -132,7 +132,3 @@ gap> function() return IsAssociative and IsAssociative; end();
 
 #
 gap> STOP_TEST( "boolean.tst", 1);
-
-#############################################################################
-##
-#E

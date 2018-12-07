@@ -975,9 +975,3 @@ Postprocess:= function( filename )
               "##  <Description>" );
     PrintTo( filename{ [ 1 .. Length( filename ) - 4 ] }, str );
 end;
-
-
-#############################################################################
-##
-#E
-

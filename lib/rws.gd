@@ -847,9 +847,3 @@ DeclareOperation(
 #V  InfoConfluence
 ##
 DeclareInfoClass("InfoConfluence");
-
-
-#############################################################################
-##
-#E
-

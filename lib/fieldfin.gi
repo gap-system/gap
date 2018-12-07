@@ -916,9 +916,3 @@ InstallMethod( GaloisGroup,
     [ IsField and IsFinite ],
     F -> GroupByGenerators(
             [ FrobeniusAutomorphismI( F, Size( LeftActingDomain(F) ) ) ] ) );
-
-
-#############################################################################
-##
-#E
-

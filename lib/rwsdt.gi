@@ -832,8 +832,3 @@ function(dtrws, l)
     od;
     return InfBits_AssocWord( dtrws![PC_DEFAULT_TYPE], res );
 end  );
-
-#############################################################################
-##
-#E  rwsdt.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

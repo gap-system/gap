@@ -61,8 +61,3 @@ BindGlobal( "SuzukiGroup", function ( arg )
 end );
 
 DeclareSynonym( "Sz", SuzukiGroup );
-
-
-#############################################################################
-##
-#E

@@ -26,8 +26,3 @@
 ##  it acts). This could be very expensive.
 ##
 DeclareAttribute("TransformationRepresentation", IsEndoMapping);
-
-############################################################################
-##
-#E
-

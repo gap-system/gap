@@ -555,8 +555,3 @@ DeclareGlobalFunction( "AffineActionByMatrixGroup" );
 DeclareGlobalFunction( "BlowUpIsomorphism" );
 
 DeclareGlobalFunction( "BasisVectorsForMatrixAction" );
-
-#############################################################################
-##
-#E
-

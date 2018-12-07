@@ -1815,9 +1815,3 @@ InstallGlobalFunction( "UnInstallCharReadHookFunc",
 
 # to be bound means active:
 Unbind(OnCharReadHookActive);
-
-
-#############################################################################
-##
-#E
-

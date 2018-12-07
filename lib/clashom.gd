@@ -49,7 +49,3 @@ DeclareGlobalFunction("ConjugacyClassesFittingFreeGroup");
 ##  computes the classes of a group <G> by lifting the classes of G/Rad(G)
 ##  using affine actions. It returns a list of conjugacy classes.
 DeclareGlobalFunction("ConjugacyClassesViaRadical");
-
-#############################################################################
-##
-#E  clashom.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

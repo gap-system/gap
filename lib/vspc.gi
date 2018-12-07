@@ -644,9 +644,3 @@ InstallMethod( IsVectorSpaceHomomorphism,
     F:= LeftActingDomain( S );
     return ( F = LeftActingDomain( R ) ) and IsLinearMapping( F, map );
     end );
-
-
-#############################################################################
-##
-#E
-

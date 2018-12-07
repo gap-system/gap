@@ -4488,9 +4488,3 @@ InstallGlobalFunction( ConsiderStructureConstants,
     # Return the maps that satisfy the condition.
     return fusions;
 end );
-
-
-#############################################################################
-##
-#E
-

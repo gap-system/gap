@@ -469,9 +469,3 @@ DeclareSynonymAttr( "IsomorphismSCAlgebra", IsomorphismSCFLMLOR );
 ##
 DeclareOperation( "RepresentativeLinearOperation",
     [ IsFLMLOR, IsVector, IsVector, IsFunction ] );
-
-
-#############################################################################
-##
-#E
-

@@ -676,8 +676,3 @@ BIND_GLOBAL("CHARS_LALPHA",
   Immutable(SSortedList("abcdefghijklmnopqrstuvwxyz")));
 BIND_GLOBAL("CHARS_SYMBOLS",Immutable(SSortedList(
   " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")));
-
-
-#############################################################################
-##
-#E

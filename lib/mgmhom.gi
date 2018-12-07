@@ -50,8 +50,3 @@ function( G, H, imgfn, preimgfn )
 	SetIsMagmaHomomorphism(hom, true);
 	return hom;
 end );
-
-#############################################################################
-##
-#E
-

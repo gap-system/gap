@@ -586,9 +586,3 @@ end);
 ##  printConwayData(f);
 ##  CloseStream(f);
 ##  # and then distribute into conwdat?.g
-
-
-#############################################################################
-##
-#E
-

@@ -115,7 +115,3 @@ gap> IsomorphismSimplifiedFpGroup(F/rels);
 
 #
 gap> STOP_TEST( "grpfp.tst", 1);
-
-#############################################################################
-##
-#E

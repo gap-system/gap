@@ -4432,9 +4432,3 @@ InstallMethod( FaithfulModule,
     return LeftModuleByHomomorphismToMatAlg( L, f );
 
 end );
-
-
-#############################################################################
-##
-#E
-

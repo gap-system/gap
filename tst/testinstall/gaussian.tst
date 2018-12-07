@@ -94,7 +94,3 @@ gap> Factors( GaussianIntegers, 1+2*E(4) );
 gap> Factors( GaussianIntegers, 5-E(4) );
 [ 1-E(4), 3+2*E(4) ]
 gap> STOP_TEST( "gaussian.tst", 1);
-
-#############################################################################
-##
-#E

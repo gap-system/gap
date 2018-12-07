@@ -1122,8 +1122,3 @@ function( enum, elm )
   elm:=ImageElm(enum!.morphism,elm);
   return PositionCanonical(enum!.niceEnumerator,elm);
 end );
-
-#############################################################################
-##
-#E  grpnice.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

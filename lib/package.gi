@@ -3410,8 +3410,3 @@ InstallGlobalFunction( ShowPackageVariables, function( arg )
       Print( result );
     fi;
     end );
-
-
-#############################################################################
-##
-#E

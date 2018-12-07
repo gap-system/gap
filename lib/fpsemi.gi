@@ -401,10 +401,3 @@ function(f, s)
 	# now create the homomorphism from the fp semi	
 	return MagmaHomomorphismByFunctionNC(f, s, e->UnderlyingElement(e)^psi);
 end);
-
-
-
-#############################################################################
-##
-#E
-

@@ -194,9 +194,3 @@ DeclareGlobalFunction("EpimorphismNilpotentQuotient");
 ##  </ManSection>
 ##
 DeclareOperation("Nucleus",[IsPQuotientSystem,IsGroup]);
-
-
-#############################################################################
-##
-#E
-

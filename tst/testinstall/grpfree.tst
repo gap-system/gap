@@ -78,7 +78,3 @@ Error, no 2nd choice method found for `FactorSemigroup' on 2 arguments
 
 #
 gap> STOP_TEST( "grpfree.tst", 1);
-
-#############################################################################
-##
-#E

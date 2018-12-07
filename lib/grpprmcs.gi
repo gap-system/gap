@@ -2863,9 +2863,3 @@ InstallOtherMethod( ChiefSeriesThrough,
     true,
     [ IsGroup, IsGroup, IsList ], 0,
     ChiefSeriesOfGroup );
-
-
-#############################################################################
-##
-#E
-

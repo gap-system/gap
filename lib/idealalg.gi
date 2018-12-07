@@ -534,9 +534,3 @@ InstallMethod( IsFiniteDimensional,
       TryNextMethod();
     fi;
     end );
-
-
-#############################################################################
-##
-#E
-

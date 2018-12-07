@@ -579,10 +579,3 @@ function(S,r)
 
 	return MagmaHomomorphismByFunctionNC(S, ts, isofun);
 end);
-
-
-
-
-############################################################################
-#E
-

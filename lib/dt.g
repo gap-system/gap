@@ -700,8 +700,3 @@ BindGlobal( "Calcreps2", function(pr, max, dtbound)
     od;
     return reps;
 end );
-
-
-#############################################################################
-##
-#E  dt.g  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

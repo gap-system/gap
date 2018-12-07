@@ -315,9 +315,3 @@ InstallMethod( String,
     "for an unknown in default representation",
     [ IsUnknown and IsUnknownDefaultRep ],
     unknown -> Concatenation( "Unknown(", String( unknown![1] ), ")" ) );
-
-
-#############################################################################
-##
-#E
-

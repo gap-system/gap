@@ -996,7 +996,3 @@ DeclareGlobalFunction("EquivalenceRelationByPairs");
 DeclareGlobalFunction("EquivalenceRelationByPairsNC");
 
 #############################################################################
-#############################################################################
-##
-#E
-

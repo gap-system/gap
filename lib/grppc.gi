@@ -2825,9 +2825,3 @@ local   pcgs;
 	     factorhom:=NaturalHomomorphismByNormalSubgroupNC(G,G));
 
 end );
-
-
-#############################################################################
-##
-#E
-

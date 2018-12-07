@@ -120,9 +120,3 @@ DeclareGlobalFunction("SetGasmanMessageStatus");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("GasmanLimits");
-
-
-#############################################################################
-##
-#E
-  

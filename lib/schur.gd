@@ -279,9 +279,3 @@ DeclareGlobalFunction("CorestEval");
 ##  </ManSection>
 ##
 DeclareGlobalFunction("RelatorFixedMultiplier");
-
-
-#############################################################################
-##
-#E
-

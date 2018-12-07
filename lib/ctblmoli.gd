@@ -262,9 +262,3 @@ DeclareGlobalFunction( "SummandMolienSeries" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ValueMolienSeries" );
-
-
-#############################################################################
-##
-#E
-
