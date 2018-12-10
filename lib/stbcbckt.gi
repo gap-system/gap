@@ -1327,6 +1327,9 @@ InstallGlobalFunction( PartitionBacktrack,
                     image.level := rbase.lev[ d ];
                     if IsSlicedPerm( image.perm )  then
                         image.perm!.length := oldprm;
+                         # Here and below the code that refers to `rgtObj` was used to avoid multiplication
+                         # of permutations. It has been commented out for a long time, but accidentally remained
+                         # documented in `doc/ref/stbchain.xml` until its withdrawal in 2018.
 #                        image.perm!.rgtObj := oldrgt;
                     else
                         image.perm := oldprm;
