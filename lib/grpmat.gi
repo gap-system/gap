@@ -287,7 +287,13 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
     fi;
 
     if not IsZero(v) then
-      dict := NewDictionary( v, true , field ^ NumberRows( One( G ) ) );
+      # do not go positional dictionary if we know it to be overkill
+      if HasSize(G) then
+        dict := NewDictionary( v, true , field ^ Length( One( G ))
+                  :blistlimi:=Maximum(10,Size(field))*Size(G) );
+      else
+        dict := NewDictionary( v, true , field ^ Length( One( G ) ) );
+      fi;
       # force `img' over field
       if (Size(field)=2 and not IsGF2VectorRep(img)) or
 	 (Size(field)>2 and Size(field)<=256 and not (Is8BitVectorRep(img)
