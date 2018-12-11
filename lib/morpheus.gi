@@ -27,6 +27,9 @@ InstallMethod(Order,"for automorphisms",true,[IsGroupHomomorphism],0,
 function(hom)
 local map,phi,o,lo,i,j,start,img,d,nat,ser,jord,first;
   d:=Source(hom);
+  if not (HasIsFinite(d) and IsFinite(d)) then
+    TryNextMethod();
+  fi;
   if Size(d)<=10000 then
     ser:=[d,TrivialSubgroup(d)]; # no need to be clever if small
   else
