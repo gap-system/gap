@@ -177,10 +177,9 @@ extern Obj GMP_NORMALIZE( Obj gmp );
 
 /****************************************************************************
 **
-*F  PrintInt( <int> ) . . . . . . . . . . . . . . . print an integer constant
+*F  PrintInt( <op> ) . . . . . . . . . . . . . . . .  print an integer object
 **
-**  'PrintInt'  prints  the integer  <int>   in the  usual  decimal notation.
-**  'PrintInt' handles objects of type 'T_INT', 'T_INTPOS' and 'T_INTNEG'.
+**  'PrintInt' prints the integer <op> in the usual decimal notation.
 */
 extern void PrintInt( Obj op );
 
@@ -197,17 +196,17 @@ Obj IntStringInternal(Obj string, const Char *str);
 
 /****************************************************************************
 **
-*F  EqInt( <opL>, <opR> ) . . . . . test if two integers are equal
+*F  EqInt( <opL>, <opR> ) . . . . . . . . . .  test if two integers are equal
 **
-**  'EqInt' returns 1  if  the two GMP integer arguments <opL> and
-**  <opR> are equal and 0 otherwise.
+**  'EqInt' returns 1 if the two integer arguments <opL> and <opR> are equal
+**  and 0 otherwise.
 */
 extern Int EqInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
 **
-*F  LtInt( <opL>, <opR> )  test if an integer is less than another
+*F  LtInt( <opL>, <opR> ) . . . . . . test if an integer is less than another
 **
 **  'LtInt' returns 1 if the integer <opL> is strictly less than the
 **  integer <opR> and 0 otherwise.
@@ -217,24 +216,28 @@ extern Int LtInt( Obj opL, Obj opR );
 
 /****************************************************************************
 **
-*F  SumInt( <opL>, <opR> )  . . . . . . . . .  sum of two integers
+*F  SumInt( <opL>, <opR> ) . . . . . . . . . . . . . . .  sum of two integers
 **
-**  'SumInt' returns the sum of the two integer arguments <opL> and
-**  <opR>.
-**
+**  'SumInt' returns the sum of the two integer arguments <opL> and <opR>.
 */
 extern Obj SumInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
 **
-*F  DiffInt( <opL>, <opR> ) . . . . difference of two integers
+*F  DiffInt( <opL>, <opR> ) . . . . . . . . . . .  difference of two integers
 **
 **  'DiffInt' returns the difference of the two integer arguments <opL>
 **  and <opR>.
-**
 */
 extern Obj DiffInt( Obj opL, Obj opR );
+
+
+/****************************************************************************
+**
+*F  AInvInt( <op> ) . . . . . . . . . . . . .  additive inverse of an integer
+*/
+extern Obj AInvInt(Obj op);
 
 
 /****************************************************************************
@@ -253,61 +256,55 @@ extern Obj SignInt( Obj op );
 
 /****************************************************************************
 **
-*F  ProdInt( <opL>, <opR> ) . . . . .  product of two integers
+*F  ProdInt( <opL>, <opR> ) . . . . . . . . . . . . . product of two integers
 **
-**  'ProdInt' returns the product of the two integer arguments <opL>
-**  and <opR>.
-**
+**  'ProdInt' returns the product of the two  integer  arguments  <opL>  and
+**  <opR>.
 */
 extern Obj ProdInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
 **
-*F  ModInt( <opL>, <opR> ) representative of res class of an integer
+*F  ModInt( <opL>, <opR> ) . .  representative of residue class of an integer
 **
 **  'ModInt' returns the smallest positive representative of the residue
-**  class of the  integer  <opL>  modulo  the  integer  <opR>.
-**
+**  class of the integer <opL> modulo the integer <opR>.
 */
 extern Obj ModInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
 **
-*F  PowInt( <opL>, <opR> )  . . . . . . . . power of an integer
+*F  PowInt( <opL>, <opR> ) . . . . . . . . . . . . . . .  power of an integer
 **
-**  'PowInt' returns the <opR>-th power of the integer <opL>.
-**
+**  'PowInt' returns the <opR>-th (an integer) power of the integer <opL>.
 */
 extern Obj PowInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
 **
-*F  QuoInt( <opL>, <opR> )  . . . . . quotient of two integers
+*F  QuoInt( <opL>, <opR> ) . . . . . . . . . . . . . quotient of two integers
 **
-**  'QuoInt' returns the integer part of the two integers <opL> and
-**  <opR>.
-**
+**  'QuoInt' returns the integer part of the two integers <opL> and <opR>.
 */
 extern Obj QuoInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
 **
-*F  RemInt( <opL>, <opR> )  . . . .  remainder of two integers
+*F  RemInt( <opL>, <opR> ) . . . . . . . . . . . .  remainder of two integers
 **
-**  'RemInt' returns the remainder of the quotient of the integers
-**  <opL> and <opR>.
-**
+**  'RemInt' returns the remainder of the quotient of the integers <opL> and
+**  <opR>.
 */
 extern Obj RemInt( Obj opL, Obj opR );
 
 
 /****************************************************************************
 **
-*F  GcdInt( <opL>, <opR> )  . . . . . . .  gcd of two integers
+*F  GcdInt( <opL>, <opR> ) . . . . . . . . . . . . . . .  gcd of two integers
 **
 **  'GcdInt' returns the gcd of the two integers <opL> and <opR>.
 */
@@ -316,7 +313,7 @@ extern Obj GcdInt( Obj opL, Obj opR );
 
 /****************************************************************************
 **
-*F  LcmInt( <opL>, <opR> )  . . . . . . .  lcm of two integers
+*F  LcmInt( <opL>, <opR> )  . . . . . . . . . . . . . . . lcm of two integers
 **
 **  'LcmInt' returns the lcm of the two integers <opL> and <opR>.
 */
@@ -325,24 +322,15 @@ extern Obj LcmInt( Obj opL, Obj opR );
 
 /****************************************************************************
 **
-*F  AInvInt( <op> ) . . . . . . . . . . . . .  additive inverse of an integer
-**
-*/
-extern Obj AInvInt( Obj op );
-
-
-/****************************************************************************
-**
 *F  InverseModInt( <op> ) . . . .  mult. inverse of an integer modulo another
-**
 */
 extern Obj InverseModInt(Obj base, Obj mod);
 
 
 /****************************************************************************
 **
-**  Compute log2 of the absolute value of an Int, i.e. the index of the highest
-**  set bit. For input 0, return -1.
+**  Compute log2 of the absolute value of an Int, i.e. the index of the
+**  highest set bit. For input 0, return -1.
 */
 extern Int CLog2Int( Int intnum );
 
@@ -350,7 +338,6 @@ extern Int CLog2Int( Int intnum );
 /****************************************************************************
 **
 *F  BinomialInt(<n>, <k>) . . . .  return the binomial coefficient of n and k
-**
 */
 extern Obj BinomialInt(Obj n, Obj k);
 

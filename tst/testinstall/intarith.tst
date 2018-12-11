@@ -316,9 +316,9 @@ Error, Integer operations: <divisor> must be nonzero
 gap> QuoInt(bigPos, 0);
 Error, Integer operations: <divisor> must be nonzero
 gap> QuoInt(fail,1);
-Error, QuoInt: <left> must be an integer (not the value 'fail')
+Error, QuoInt: <a> must be an integer (not the value 'fail')
 gap> QuoInt(1,fail);
-Error, QuoInt: <right> must be an integer (not the value 'fail')
+Error, QuoInt: <b> must be an integer (not the value 'fail')
 
 # corner cases
 gap> QuoInt(-2^28, -1);
@@ -366,9 +366,9 @@ Error, Integer operations: <divisor> must be nonzero
 gap> RemInt(bigPos, 0);
 Error, Integer operations: <divisor> must be nonzero
 gap> RemInt(fail,1);
-Error, RemInt: <left> must be an integer (not the value 'fail')
+Error, RemInt: <a> must be an integer (not the value 'fail')
 gap> RemInt(1,fail);
-Error, RemInt: <right> must be an integer (not the value 'fail')
+Error, RemInt: <b> must be an integer (not the value 'fail')
 
 # corner cases
 gap> RemInt(-2^28, 2^28);
@@ -439,9 +439,9 @@ true
 
 #
 gap> GcdInt(fail,1);
-Error, GcdInt: <left> must be an integer (not the value 'fail')
+Error, GcdInt: <a> must be an integer (not the value 'fail')
 gap> GcdInt(1,fail);
-Error, GcdInt: <right> must be an integer (not the value 'fail')
+Error, GcdInt: <b> must be an integer (not the value 'fail')
 
 # corner cases
 gap> GcdInt(0, 0);
@@ -486,9 +486,9 @@ true
 
 #
 gap> LcmInt(fail,1);
-Error, LcmInt: <left> must be an integer (not the value 'fail')
+Error, LcmInt: <a> must be an integer (not the value 'fail')
 gap> LcmInt(1,fail);
-Error, LcmInt: <right> must be an integer (not the value 'fail')
+Error, LcmInt: <b> must be an integer (not the value 'fail')
 
 # corner cases
 gap> LcmInt(0, 0);
@@ -520,7 +520,7 @@ true
 gap> AbsInt(fail);
 Error, AbsRat: <op> must be a rational (not the value 'fail')
 gap> ABS_INT(fail);
-Error, AbsInt: <x> must be an integer (not the value 'fail')
+Error, AbsInt: <n> must be an integer (not the value 'fail')
 
 #
 # SignInt
@@ -530,7 +530,7 @@ gap> List(data, SignInt);
 gap> SignInt(fail);
 Error, SignRat: <op> must be a rational (not the value 'fail')
 gap> SIGN_INT(fail);
-Error, SignInt: <x> must be an integer (not the value 'fail')
+Error, SignInt: <n> must be an integer (not the value 'fail')
 
 #
 # QuotientMod
@@ -571,7 +571,7 @@ gap> dataHex := List(data, HexStringInt);
 [ "-56BC75E2D63100001", "-56BC75E2D63100000", "-2710", "-1", "0", "1", 
   "2710", "56BC75E2D63100000", "56BC75E2D63100001" ]
 gap> HexStringInt("abc");
-Error, HexStringInt: <op> must be an integer (not a list (string))
+Error, HexStringInt: <n> must be an integer (not a list (string))
 gap> List(dataHex, IntHexString) = data;
 true
 gap> dataHex;  # HexStringInt used to destroy its argument
