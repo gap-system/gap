@@ -254,7 +254,7 @@ Obj GAP_MakeObjInt(const UInt * limbs, Int size)
 
 Int GAP_SizeInt(Obj obj)
 {
-    RequireInt("GAP_SizeInt", obj, "obj");
+    RequireInt("GAP_SizeInt", obj);
     if (obj == INTOBJ_INT(0))
         return 0;
     Int size = (IS_INTOBJ(obj) ? 1 : SIZE_INT(obj));

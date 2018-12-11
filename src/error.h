@@ -124,8 +124,8 @@ extern Obj RequireArgument(const char * funcname,
 **
 *F  RequireInt
 */
-#define RequireInt(funcname, op, argname) \
-    RequireArgumentCondition(funcname, op, argname, IS_INT(op), \
+#define RequireInt(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, IS_INT(op), \
         "must be an integer")
 
 
