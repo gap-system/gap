@@ -61,7 +61,8 @@ InstallGlobalFunction( StraightLineProgramNC, function( arg )
     # Get the arguments.
     if   Length( arg ) = 1 and not IsString( arg[1] ) then
       lines  := arg[1];
-    elif Length( arg ) = 2 and IsString( arg[1] ) then
+    elif Length( arg ) = 2 and IsString( arg[1] )
+                           and IsList( arg[2] ) then
       lines:= [];
       if not StringToStraightLineProgram( arg[1], arg[2], lines ) then
         return fail;
@@ -857,9 +858,6 @@ InstallGlobalFunction( "IntegratedStraightLineProgram",
     for prog in listofprogs do
 
       proglines:= LinesOfStraightLineProgram( prog );
-      if IsEmpty( proglines ) then
-        Error( "each in <listofprogs> must return a single element" );
-      fi;
 
       # Set the positions used up to here.
       offset:= nextoffset;
@@ -921,8 +919,16 @@ InstallGlobalFunction( "IntegratedStraightLineProgram",
 
         else
 
-          # Lines describing a list of words to be returned are forbidden.
-          Error( "each in <listofprogs> must return a single element" );
+          # The line describes a list of words to be returned.
+          line:= List( line, ShallowCopy );
+          for newline in line do
+            for j in [ 1, 3 .. Length( newline )-1 ] do
+              if shiftgens or n < newline[j] then
+                newline[j]:= newline[j] + offset;
+              fi;
+            od;
+          od;
+          Append( results, line );
 
         fi;
 
