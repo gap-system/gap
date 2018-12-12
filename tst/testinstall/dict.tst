@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  dict.tst                   GAP library                Markus Pfeiffer
-##
-##
-#Y  Copyright (C)  2015, The GAP Group
-##
 #@local dict,i
 gap> START_TEST("dict.tst");
 gap> dict := NewDictionary(1, false);

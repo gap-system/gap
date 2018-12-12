@@ -1,10 +1,5 @@
 #############################################################################
 ##
-#W  helpsys.tst                GAP library                     Frank Lübeck
-##
-##
-#Y  Copyright (C)  2004,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 ##  This produces the text version of each help section which can be reached
 ##  from GAPs help system.
 ##

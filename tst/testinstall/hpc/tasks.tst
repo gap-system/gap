@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  tasks.tst                 GAP tests                   Alexander Konovalov
-##
-##
-#Y  Copyright (C)  2012
-##
 gap> START_TEST("tasks.tst");
 gap> CallAsTask := function(arg)
 > return TaskResult( RunTask( CallFuncList, arg[1], arg{[2..Length(arg)]} ) );

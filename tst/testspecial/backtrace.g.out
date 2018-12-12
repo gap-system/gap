@@ -6,7 +6,7 @@ gap> f := function()
 function(  ) ... end
 gap> f();
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `[]:=' on 3 arguments at GAPROOT/lib/methsel2.g:250 called from
+Error, no 1st choice method found for `[]:=' on 3 arguments at GAPROOT/lib/methsel2.g:249 called from
 l[[ 1 .. 3 ]] := 1; at *stdin*:5 called from
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:7
@@ -95,7 +95,7 @@ gap>
 gap> 
 gap> f:=function() local i; for i in 1 do return 1; od; return 2; end;;
 gap> f();
-Error, You cannot loop over the integer 1 did you mean the range [1..1] at GAPROOT/lib/integer.gi:1742 called from
+Error, You cannot loop over the integer 1 did you mean the range [1..1] at GAPROOT/lib/integer.gi:1737 called from
 for i in 1 do
     return 1;
 od; at *stdin*:24 called from
@@ -115,7 +115,7 @@ gap>
 gap> f:=function() local i; for i in true do return 1; od; return 2; end;;
 gap> f();
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `Iterator' on 1 arguments at GAPROOT/lib/methsel2.g:250 called from
+Error, no 1st choice method found for `Iterator' on 1 arguments at GAPROOT/lib/methsel2.g:249 called from
 for i in true do
     return 1;
 od; at *stdin*:27 called from
@@ -175,7 +175,7 @@ gap> # Verify issue #2656 is fixed
 gap> l := [[1]];; f := {} -> l[2,1];;
 gap> f();
 Error, List Element: <list>[2] must have an assigned value in
-  return m[i][j]; at GAPROOT/lib/matrix.gi:29 called from 
+  return m[i][j]; at GAPROOT/lib/matrix.gi:26 called from 
 return l[2, 1]; at *stdin*:39 called from
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:40
@@ -189,8 +189,8 @@ gap>
 gap> # verify issue #1373 is fixed
 gap> InstallMethod( Matrix, [IsFilter, IsSemiring, IsMatrixObj], {a,b,c} -> fail );
 Error, FLAGS_FILTER: <oper> must be an operation (not a function) in
-  <<compiled GAP code>> from GAPROOT/lib/oper1.g:377 in function INSTALL_METHOD called from 
-<<compiled GAP code>> from GAPROOT/lib/oper1.g:337 in function InstallMethod called from
+  <<compiled GAP code>> from GAPROOT/lib/oper1.g:378 in function INSTALL_METHOD called from 
+<<compiled GAP code>> from GAPROOT/lib/oper1.g:338 in function InstallMethod called from
 <function "InstallMethod">( <arguments> )
  called from read-eval loop at *stdin*:42
 type 'quit;' to quit to outer loop

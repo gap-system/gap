@@ -1,11 +1,5 @@
 #############################################################################
 ##
-#W  grpauto.tst                 GAP tests                    Alexander Hulpke
-#W                                                           Max Horn
-##
-##
-#Y  Copyright (C)  2016
-##
 ## Warning: most of the later tests need more than the default memory allocation
 
 #

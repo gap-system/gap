@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  wpobj.g                        GAP library                Steve Linton
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Steve Linton.
 ##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
 ##
-#Y  Copyright (C)  1997,  
-#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
-#Y  Copyright (C) 2002 The GAP Group
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file contains the weak pointer type that might have to be known very
 ##  early in the bootstrap stage (therefore they are not in wpobj.gi)

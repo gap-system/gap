@@ -1,8 +1,3 @@
-#############################################################################
-##
-#W  float.tst                   GAP Tests                         Stefan Kohl
-##
-##
 #@local neginf,posinf,r,nan,l,f,g
 gap> START_TEST("float.tst");
 

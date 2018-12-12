@@ -1,15 +1,3 @@
-#############################################################################
-##
-#W  cyclotom.tst                GAP library                     Thomas Breuer
-##
-##
-#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
-##  This file is being maintained by Thomas Breuer.
-##  Please do not make any changes without consulting him.
-##  (This holds also for minor changes such as the removal of whitespace or
-##  the correction of typos.)
-##
 #@local a,cyc,gm,i,l1,l2,l3,mat,n,r,x,y,z,sets
 gap> START_TEST("cyclotom.tst");
 

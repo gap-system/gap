@@ -1,7 +1,3 @@
-#############################################################################
-##
-#W  zmodnze.tst                  GAP library              Alexander Konovalov
-##
 #@local R,a,b,c,d
 gap> START_TEST("zmodnze.tst");
 gap> R:=RingInt(CF(4)) mod 5;

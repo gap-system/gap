@@ -1,17 +1,20 @@
+#############################################################################
+##
+##  This file is part of GAP, a system for computational discrete algebra.
+##
+##  SPDX-License-Identifier: GPL-2.0-or-later
+##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
+##
+
 ############################################################################
-# 
-# matobj2.gd
-#                                                        by Max Neunhöffer
-#
-##  Copyright (C) 2007  Max Neunhöffer, Lehrstuhl D f. Math., RWTH Aachen
-##  This file is free software, see license information at the end.
 #
 # This file together with matobj1.gd formally define the interface to the 
 # new style vectors and matrices in GAP.
 # In this file all the operations, attributes and constructors are
 # defined. It is read later in the GAP library reading process.
 #
-############################################################################
 
 # TODO: make sure to document what exactly a new matrix obj implementation has to
 # provide, and that we provide default implementations for everything else.

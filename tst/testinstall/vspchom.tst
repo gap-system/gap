@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  vspchom.tst                 GAP library                     Thomas Breuer
-##
-##
-#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 #@local a,b,bf,bm,bt,bv,bw,comp1,comp2,comp3,endo,endoendo,f,funs,hom,id,m
 #@local map,map1,map2,map3,map4,map5,map6,map7,map8,mb,nathom,sub,sum,t
 #@local triv,v,w,zero

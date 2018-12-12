@@ -1,12 +1,5 @@
 #@local A,B,C,ExampleRing,I,O,P,Q,R,T,b,coker,f,gensq,id,ker,m1,m2,map,pols
 #@local pr,q,x,y,z
-#############################################################################
-##
-#W  alghom.tst                  GAP library                     Thomas Breuer
-##
-##
-#Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 gap> START_TEST("alghom.tst");
 
 # An example of a non-homomorphism which is total but not single-valued.

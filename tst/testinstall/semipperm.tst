@@ -1,9 +1,3 @@
-#############################################################################
-##
-#W  semipperm.tst
-#Y  James D. Mitchell
-##
-#############################################################################
 #@local BruteForceInverseCheck,BruteForceIsoCheck,I,PPermDisplayLimit
 #@local PPermNotation,S,inv,x,f,T
 

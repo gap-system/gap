@@ -1,11 +1,3 @@
-#############################################################################
-##
-#W  fldabnum.tst                GAP library                     Thomas Breuer
-##
-##
-#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
-##
 #@local aut,auts,c,f,g,id,pol,x
 gap> START_TEST("fldabnum.tst");
 gap> CF( 1 ); CF( 6 ); CF( 4 ); CF( 5 ); CF( 36 );

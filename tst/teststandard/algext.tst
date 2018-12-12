@@ -1,7 +1,5 @@
 #############################################################################
 ##
-#W  algext.tst                   GAP library		     Frank Lübeck
-##
 ##  Test of algebraic extensions.
 ##
 gap> START_TEST("algext.tst");

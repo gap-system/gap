@@ -1,10 +1,5 @@
 #############################################################################
 ##
-#W  teststandard.g                   GAP library                      Frank Celler
-##
-##
-#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 ##  This file runs all tests from 'tst/testinstall' and 'tst/teststandard'
 ##  directories of the GAP distribution.
 ##

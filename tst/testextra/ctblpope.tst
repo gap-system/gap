@@ -1,9 +1,5 @@
 #############################################################################
 ##
-#W  ctblpope.tst                GAP tests                       Thomas Breuer
-##
-#Y  Copyright (C) 2017
-##
 ##  excluded from 'testinstall.g' as it takes considerable time
 ##
 

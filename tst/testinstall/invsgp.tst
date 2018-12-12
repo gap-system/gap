@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  invsgp.tst                 GAP library                  James D. Mitchell
-##
-##
-#Y  Copyright (C) 2016
-##
 #@local S
 gap> START_TEST("invsgp.tst");
 

@@ -1,11 +1,12 @@
 #############################################################################
-##  
-#W  helpdef.gd                  GAP Library       Frank Celler / Frank Lübeck
-##  
-##  
-#Y  Copyright (C)  2001,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
-#Y  Copyright (C) 2002 The GAP Group
+##
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Frank Celler / Frank Lübeck.
+##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
+##
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##  
 ##  The  files  helpdef.g{d,i}  contain  the  `default'  help  book  handler
 ##  functions, which implement access of GAP's online help to help documents

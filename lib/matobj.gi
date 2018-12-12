@@ -1,15 +1,18 @@
+#############################################################################
+##
+##  This file is part of GAP, a system for computational discrete algebra.
+##
+##  SPDX-License-Identifier: GPL-2.0-or-later
+##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
+##
+
 ############################################################################
-#
-# matobj.gi
-#                                                        by Max Neunhöffer
-#
-##  Copyright (C) 2007  Max Neunhöffer, University of St Andrews
-##  This file is free software, see license information at the end.
 #
 # This file contains some generic methods for the vector/matrix interface
 # defined in matobj1.gd and matobj2.gd.
 #
-############################################################################
 
 
 # Install fallback methods for m[i,j] which delegate MatElm resp. SetMatElm,

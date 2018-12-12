@@ -1,7 +1,5 @@
 #############################################################################
 ##
-#W  coll.tst
-##
 ##  Test operations defined in coll.gd
 ##
 gap> START_TEST("coll.tst");

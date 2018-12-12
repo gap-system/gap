@@ -1,10 +1,5 @@
 #############################################################################
 ##
-#W  vspcmat.tst                 GAP library                     Thomas Breuer
-##
-##
-#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 ##  (The test file 'vspcrow.tst' should contain the same tests.)
 ##
 #@local b,bv,c,c1,c2,f,lc,mb,n,u,uu,uuu,uuuu,v,w,ww,z

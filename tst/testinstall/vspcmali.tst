@@ -1,10 +1,5 @@
 #############################################################################
 ##
-#W  vspcmali.tst                GAP library                     Thomas Breuer
-##
-##
-#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 ##  This file ontains tests for vector spaces of Lie matrices.
 ##
 ##  (The test files 'vspcrow.tst' and 'vspcmat.tst' should contain the same

@@ -1,10 +1,5 @@
 #############################################################################
 ##
-#W  ffeconway.tst                GAP tests                   Martin Schönert
-##
-##
-#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 ##  This  file  tests  the large finite fields.
 ##
 #@local fieldpairs,fieldsizes,iF,iPI,iW,izs,zs,iFI,x

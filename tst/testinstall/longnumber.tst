@@ -1,10 +1,5 @@
 #############################################################################
 ##
-#A  longnumber.tst               GAP 4.0 library                Steve Linton
-##
-##
-#Y  Copyright 2011,   The GAP Group
-##  to be listed in testinstall.g
 ##  these tests deal with various cases in long integer parsing where the number has
 ##  to be read in one two or three blocks, which may sometimes be exactly filled or
 ##  sometimes end with a partial block.

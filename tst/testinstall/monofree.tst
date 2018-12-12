@@ -1,7 +1,3 @@
-#############################################################################
-##
-#W  monofree.tst
-##
 #@local F,M,M2,a,b,enum,first50,firstfifty,gens,iter,i
 gap> START_TEST("monofree.tst");
 gap> M := FreeMonoid(0);

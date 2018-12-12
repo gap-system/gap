@@ -1,9 +1,3 @@
-#############################################################################
-##
-#W  semitran.tst
-#Y  James D. Mitchell
-##
-#############################################################################
 #@local BruteForceAntiIsoCheck,BruteForceInverseCheck,BruteForceIsoCheck
 #@local G,H,I,S,T,enum,inv,map
 gap> START_TEST("semitran.tst");

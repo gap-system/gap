@@ -1,10 +1,5 @@
 #############################################################################
 ##
-#W  doublecoset.tst                                     Alexander Hulpke
-##
-##
-#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 ##  This  file  tests for double coset calculations
 ##
 gap> START_TEST("doublecoset3.tst");

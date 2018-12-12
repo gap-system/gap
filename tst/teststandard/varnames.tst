@@ -1,8 +1,5 @@
 #############################################################################
 ##
-#W  varnames.tst                GAP Tests                 Alexander Konovalov
-##
-##
 ##  Exclude from testinstall.g: too sensitive to the context
 ##
 gap> START_TEST("varnames.tst");

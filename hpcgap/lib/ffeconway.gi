@@ -1,9 +1,12 @@
 #############################################################################
 ##
-#W  ffeconway.gi               GAP library                       Steve Linton
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Steve Linton.
 ##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
 ##
-#Y  Copyright (C) 2005 The GAP Group
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file contains methods for `FFE's represented as library objects by
 ##  coefficients of polynomials modulo the Conway polynomial.

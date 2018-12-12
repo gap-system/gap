@@ -1,9 +1,3 @@
-#############################################################################
-##
-#W  trans.tst
-#Y  James D. Mitchell
-##
-#############################################################################
 #@local S,b,comps,display,e,f,g,h,imglist,imgset,ind,ker,m,max,notation,p,per
 #@local q,tmp,val,x,y
 

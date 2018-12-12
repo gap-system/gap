@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  unknown.tst                GAP Library                      Thomas Breuer
-##
-##
-#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 #@local u
 gap> START_TEST("unknown.tst");
 gap> LargestUnknown:= 0;;

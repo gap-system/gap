@@ -1,10 +1,12 @@
 #############################################################################
 ##
-#W  wordlett.gi                  GAP library                 Alexander Hulpke
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Alexander Hulpke.
 ##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
 ##
-#Y  (C) 2001 School Math and Comp. Sci., University of St Andrews, Scotland
-#Y  Copyright (C) 2002 The GAP Group
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This  file contains  methods for   associative words  in letter
 ##  representation

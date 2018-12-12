@@ -1,7 +1,14 @@
-##############################################################################
-##  operdebug.g                                                   Frank Lübeck
+#############################################################################
+##
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Frank Lübeck.
+##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
+##
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##  
-##  Non-documented  utilities to  write out  infos  about all  methods of  all
+##  Undocumented  utilities to  write out  infos  about all  methods of  all
 ##  operations with  location and rank, and  to write out all  filters by name
 ##  and their rank. These can be useful to debug larger changes that influence
 ##  the ranking of filters and methods.

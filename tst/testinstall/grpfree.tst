@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  grpfree.tst                GAP-4 library                    Thomas Breuer
-##
-##
-#Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
-##
 #@local a,b,enum,F,H,first50,firstfifty,g,gens,iter,rho,i,G
 gap> START_TEST("grpfree.tst");
 gap> g:= FreeGroup( "a", "b" );

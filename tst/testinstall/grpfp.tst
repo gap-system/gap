@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  grpfp.tst                   GAP library                     Thomas Breuer
-##
-##
-#Y  Copyright 2005,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
-##
 #@local a,b,c2,e,f,g,iter,l,s,F,rels
 gap> START_TEST("grpfp.tst");
 gap> f:= FreeGroup( "a", "b" );;  a := f.1;;  b := f.2;;

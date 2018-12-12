@@ -84,11 +84,11 @@ function ( object... )
 end
 gap> Print(INSTALL_METHOD_FLAGS,"\n");
 function ( <<arg-1>>, <<arg-2>>, <<arg-3>>, <<arg-4>>, <<arg-5>>, <<arg-6>> )
-    <<compiled GAP code>> from GAPROOT/lib/oper1.g:146
+    <<compiled GAP code>> from GAPROOT/lib/oper1.g:147
 end
 gap> Display(InstallMethod);
 function ( <<arg-1>>... )
-    <<compiled GAP code>> from GAPROOT/lib/oper1.g:337
+    <<compiled GAP code>> from GAPROOT/lib/oper1.g:338
 end
 gap> [1..2];
 [ 1, 2 ]

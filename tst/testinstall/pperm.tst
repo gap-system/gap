@@ -1,9 +1,3 @@
-#############################################################################
-##
-#W  pperm.tst
-#Y  James D. Mitchell
-##
-#############################################################################
 #@local display,e,f,g,h,i,notationpp,notationt,p,x,PPerm4,Perm4,im,coll
 ##
 ## takes around 4 seconds to run

@@ -1,10 +1,5 @@
 #############################################################################
 ##
-#W  arithlst.tst                GAP library                     Thomas Breuer
-##
-##
-#Y  Copyright (C)  2000,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 ##  Exclude from testinstall.g because it runs too long.
 ##
 gap> START_TEST("arithlst.tst");

@@ -1,0 +1,123 @@
+GAP, a system for computational discrete algebra.
+
+GAP is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+GAP is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GAP; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
+
+Copyright (C) 1988-2018 by its authors, which include:
+
+* Ákos Seress
+* Alex Wegner
+* Alexander Hulpke
+* Alexander Konovalov
+* Alice Niemeyer
+* Andreas Distler
+* Andrew Solomon
+* Ansgar Kaup
+* Arne Storjohann
+* Bernhard Reinke
+* Bettina Eick
+* Bill Allombert
+* Björn Assmann
+* Blair Archibald
+* Bohdan Majewski
+* Burkhard Höfling
+* Charles R.B. Wright
+* Chris Jefferson
+* Chris Wensley
+* Christian Sievers
+* Christopher Russell
+* Claus Fieker
+* Colva M. Roney-Dougal
+* Craig A. Struble
+* David Joyner
+* Derek F. Holt
+* Dmitrii Pasechnik
+* Emma Ahrens
+* Erik M. Bray
+* Erzsébet Horváth
+* Etaoin Shrdlu
+* Felix Noeske
+* Ferenc Ràkòczi
+* Florian Heiderich
+* Frank Celler
+* Frank Lübeck
+* Franz Gähler
+* Gábor Horváth
+* Gaurav Dhingra
+* Gene Cooperman
+* Glen Whitney
+* Götz Pfeiffer
+* Greg Gamble
+* Hans Ulrich Besche
+* Heiko Theißen
+* Isabel M. Araújo
+* Jack Schmidt
+* James Mitchell
+* James Williams
+* Jan de Muijnck-Hughes
+* Jendrik Brachter
+* Jens Hollmann
+* Jens Rosenboom
+* Jerome Benoit
+* Jerry James
+* Joachim Neubüser
+* Johannes Meier
+* John McDermott
+* Jürgen Mnich
+* Jürgen Müller
+* Juergen Wisliceny
+* Laurent Bartholdi
+* Lucas Jones
+* Lukas Maas
+* Marco Costantini
+* Markus Baumeister
+* Markus Pfeiffer
+* Martin Schönert
+* Max Horn
+* Max Neunhöffer
+* Michael Smith
+* Michael Torpey
+* Mohamed Barakat
+* Oliver Bonten
+* Paul Smith
+* Reimer Behrends
+* Rob Wainwright
+* Robert Arthur
+* Robert F. Morse
+* Russ Woodroofe
+* Sandeep Murthy
+* Sarah Rees
+* Scott Murray
+* Sebastian Gutsche
+* Sergio Siccha
+* Soley Jonsdottir
+* Stefan Kohl
+* Steve Linton
+* Susanne Keitemeier
+* Thomas Bischops
+* Thomas Breuer
+* Thomas Merkwitz
+* Udo Polis
+* Ute Schiffer
+* Vinay Wagh
+* Vladimir Janjic
+* Volker Braun
+* Volkmar Felsch
+* Werner Nickel
+* Wilf Wilson
+* Willem de Graaf
+* Wolfgang Merkwitz
+
+and others

@@ -1,7 +1,5 @@
 #############################################################################
 ##
-#W  dt.tst
-##
 ##  Test the (undocumented!) deep thought collector code implemented by
 ##  src/dt.{c,h}, src/dteval.{c,h}, lib/dt.g, lib/rwsdt.gi, lib/rwspcclt.gd
 ##

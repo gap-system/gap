@@ -1,11 +1,3 @@
-#############################################################################
-##
-#W  union.tst                GAP library                     Chris Jefferson
-##
-##
-#Y  Copyright (C)  2014,  University of St Andrews
-##
-##
 gap> START_TEST("union.tst");
 gap> for i in [-4..4] do
 >      for j in [-3,-2,-1,1,2,3] do

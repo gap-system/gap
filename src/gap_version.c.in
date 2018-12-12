@@ -1,8 +1,11 @@
 /****************************************************************************
 **
-*W  gap_version.c
+**  This file is part of GAP, a system for computational discrete algebra.
 **
-*Y  Copyright (C) 2016-2017 The GAP Group
+**  Copyright of GAP belongs to its developers, whose names are too numerous
+**  to list here. Please refer to the COPYRIGHT file for details.
+**
+**  SPDX-License-Identifier: GPL-2.0-or-later
 **
 **  This file contains the GAP build version
 */

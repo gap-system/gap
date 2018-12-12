@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  randlist.tst                   GAP library                Frank Lübeck
-##
-##
-#Y  Copyright (C)  2016, The GAP Group
-##
 gap> START_TEST("randlist.tst");
 #@if 8*GAPInfo.BytesPerVariable = 32
 gap> l := [1..2^(8*GAPInfo.BytesPerVariable-4)-1];
