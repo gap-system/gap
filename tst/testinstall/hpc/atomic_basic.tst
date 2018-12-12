@@ -1,10 +1,5 @@
 #############################################################################
 ##
-#W  atomic_base.tst         GAP Library                    Chris Jefferson
-##
-##
-#Y  Copyright (C)  2014,  University of St Andrews
-##
 ##  This test checks the 'atomic' statement for compatability with original
 ##  GAP. It does not do any interesting thread-safe behaviour
 ##

@@ -1,10 +1,4 @@
 #@if IsHPCGAP
-#############################################################################
-##
-#W  comprvec.tst               GAP Library                Alexander Konovalov
-##
-##  Testing conversion to compressed vector representation
-##
 gap> START_TEST("comprvec.tst");
 gap> z:=[Z(2),Z(2),0*Z(2)];
 [ Z(2)^0, Z(2)^0, 0*Z(2) ]
@@ -96,8 +90,4 @@ true
 gap> IsIdenticalObj(z,v);   
 false
 gap> STOP_TEST( "comprvec.tst", 1 );
-
-#############################################################################
-##
-#E
 #@fi

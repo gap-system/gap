@@ -1,10 +1,12 @@
 #############################################################################
 ##
-#W  autsr.gi                GAP library                      Alexander Hulpke
-#W                                                           Soley Jonsdottir
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Alexander Hulpke, Soley Jonsdottir.
 ##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
 ##
-#Y  Copyright (C) 2016 The GAP Group
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This  file  contains an implementation of the Cannon/Holt automorphism
 ##  group algorithm.

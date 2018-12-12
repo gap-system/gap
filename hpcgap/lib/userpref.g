@@ -1,9 +1,12 @@
 #############################################################################
 ##
-#W  userpref.g                  GAP library                     Thomas Breuer
-#W                                                               Frank Lübeck
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Thomas Breuer, Frank Lübeck.
 ##
-#Y  Copyright (C) 2012 The GAP Group
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
+##
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file contains the functions dealing with the administration of
 ##  user preferences (declaring, setting, accessing).

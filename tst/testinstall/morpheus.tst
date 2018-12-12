@@ -1,10 +1,5 @@
 #############################################################################
 ##
-#W  morpheus.tst                GAP tests                    Alexander Hulpke
-##
-##
-#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 ##  This  file  tests the automorphism routines
 ##
 #@local a,autd8,d8,g,inn,iso1,iso2,iso3,iso4,p,r,s4

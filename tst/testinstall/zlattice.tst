@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  zlattice.tst                GAP library                     Thomas Breuer
-##
-##
-#Y  Copyright (C)  1999,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 #@local
 gap> START_TEST("zlattice.tst");
 

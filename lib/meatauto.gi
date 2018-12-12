@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  meatauto.gi                  GAP Library                    Michael Smith
-#W                                                           Alexander Hulpke
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Michael Smith, Alexander Hulpke.
 ##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
 ##
-#Y  Copyright 1996 -- School of Mathematical Sciences, ANU   
-#Y  Copyright (C)  2004,  The GAP Group
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file contains meataxe type routines to compute module homomorphisms
 ##  for modules that are not necessarily irreducible. They are mainly a

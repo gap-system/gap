@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  algsc.tst                   GAP library                     Thomas Breuer
-##
-##
-#Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
-##
 #@local T0,T1,T2,T3,a,b,c,coeff,der,e,fam,g,gens,i,id,j,k,l1,l2,l3,lcs,orb
 #@local TestMonomialUseLattice_Orig,permgrp,ps,q,s,s1,s2,s3,sc,t,theta
 #@local U,ucs,v,vecs,vectors,w,z,A,V,W

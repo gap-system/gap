@@ -1,9 +1,12 @@
 #############################################################################
 ##
-#W  suzuki.gi                   GAP library                       Stefan Kohl
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Stefan Kohl.
 ##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
 ##
-#Y  (C) 1999 School Math and Comp. Sci., University of St Andrews, Scotland
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file contains constructors for the Suzuki groups.
 ##

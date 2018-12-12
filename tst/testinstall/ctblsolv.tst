@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  ctblsolv.tst               GAP Library                      Thomas Breuer
-##
-##
-#Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 #@local G,pair
 gap> START_TEST("ctblsolv.tst");
 gap> CharacterDegrees( SmallGroup( 256, 529 ) );

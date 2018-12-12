@@ -1,10 +1,5 @@
 #############################################################################
 ##
-#W  vspcrow.tst                 GAP library                     Thomas Breuer
-##
-##
-#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 ##  (The test file `vspcmat.tst' should contain the same tests,
 ##  applied to matrix spaces.)
 ##

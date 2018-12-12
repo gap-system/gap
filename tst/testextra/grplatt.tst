@@ -1,10 +1,5 @@
 #############################################################################
 ##
-#W  grplatt.tst                GAP tests                     Alexander Hulpke
-##
-##
-#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 ##  This  file  tests the subgroup lattice program
 ##
 ##  Exclude from testinstall.g as it takes considerable time.

@@ -1,7 +1,3 @@
-#############################################################################
-##
-#W  CyclotomicField.tst      GAP Library                      Chris Jefferson
-##
 gap> START_TEST("CyclotomicField.tst");
 gap> x := List([1..8], CyclotomicField);
 [ Rationals, Rationals, CF(3), GaussianRationals, CF(5), CF(3), CF(7), CF(8) ]

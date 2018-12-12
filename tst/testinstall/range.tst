@@ -1,8 +1,3 @@
-#############################################################################
-##
-#W  range.tst                   GAP Library             Christopher Jefferson
-##
-##
 #@local g,ranges,x,y,z,a,f
 gap> START_TEST("range.tst");
 

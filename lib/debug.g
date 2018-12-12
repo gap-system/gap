@@ -1,12 +1,12 @@
 #############################################################################
 ##
-#W  debug.g                      GAP library                    Thomas Breuer
-#W                                                          & Max Neunhöffer
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Thomas Breuer, Max Neunhöffer.
 ##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
 ##
-#Y  Copyright (C)  2003,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 2003 School Math and Comp. Sci., University of St Andrews, Scotland
-#Y  Copyright (C) 2003 The GAP Group
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file contains some global variables and functions to support
 ##  debugging of functions in GAP. See `etc/vim/debugvim.txt' for details.

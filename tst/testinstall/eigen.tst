@@ -1,11 +1,3 @@
-#############################################################################
-##
-#W  eigen.tst                   GAP library		       Gene Cooperman
-#W							     and Scott Murray
-##
-##
-#Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 #@local A
 gap> START_TEST("eigen.tst");
 gap> A := GL(4,3).1;

@@ -1,10 +1,5 @@
 #############################################################################
 ##
-#W  grpperm.tst                 GAP tests                    Alexander Hulpke
-##
-##
-#Y  Copyright (C)  1997
-##
 ##  Exclude from testinstall.g as it takes considerable time.
 ##
 gap> START_TEST("grpperm.tst");

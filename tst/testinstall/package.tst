@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  package.tst               GAP Library                       Thomas Breuer
-##
-##
-#Y  Copyright (C)  2005,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 #@local entry,equ,pair,sml,oldTermEncoding,pkginfo,info,mockpkgpath,p,n
 gap> START_TEST("package.tst");
 

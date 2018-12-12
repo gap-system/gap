@@ -1,17 +1,12 @@
 #############################################################################
 ##
-#W  integer.gi                  GAP library                     Thomas Breuer
-#W                                                             & Frank Celler
-#W                                                              & Stefan Kohl
-#W                                                            & Werner Nickel
-#W                                                           & Alice Niemeyer
-#W                                                         & Martin Schönert
-#W                                                              & Alex Wegner
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Thomas Breuer, Frank Celler, Stefan Kohl, Werner Nickel, Alice Niemeyer, Martin Schönert, Alex Wegner.
 ##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
 ##
-#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
-#Y  Copyright (C) 2002 The GAP Group
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 
 

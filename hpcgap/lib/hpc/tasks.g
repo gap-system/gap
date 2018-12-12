@@ -1,3 +1,13 @@
+#############################################################################
+##
+##  This file is part of GAP, a system for computational discrete algebra.
+##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
+##
+##  SPDX-License-Identifier: GPL-2.0-or-later
+##
+
 BindGlobal ("TASK_MANAGER_REQUESTS", MakeReadOnlyObj (rec ( 
         BLOCK_ME := 1,
         RESUME_IDLE_WORKER := 2,

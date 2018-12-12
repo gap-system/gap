@@ -1,9 +1,12 @@
 #############################################################################
 ##
-#W  basicprm.gi                 GAP Library                      Frank Celler
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Frank Celler.
 ##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file  contains the methods  for  the construction  of the basic perm
 ##  group types.

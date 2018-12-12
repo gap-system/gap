@@ -1,14 +1,18 @@
 #############################################################################
-#
-# matobjplist.gi
-#                                                        by Max Neunhöffer
-#
-# Copyright (C) 2006 by Lehrstuhl D für Mathematik, RWTH Aachen
+##
+##  This file is part of GAP, a system for computational discrete algebra.
+##
+##  SPDX-License-Identifier: GPL-2.0-or-later
+##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
+##
+
+############################################################################
 #
 # This file is a sample implementation for new style vectors and matrices.
 # It stores matrices as dense lists of lists with wrapping.
 #
-############################################################################
 
 ############################################################################
 # Constructors:

@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  reemat.tst                  GAP library                 J. D. Mitchell
-##
-##
-#Y  Copyright (C) 2013 The GAP Group
-##
 gap> START_TEST("reesmat.tst");
 
 #

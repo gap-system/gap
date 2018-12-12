@@ -1,7 +1,5 @@
 #############################################################################
 ##
-#W  strings.tst                GAP tests                  Alexander Konovalov
-##
 ##  This file tests output methods (mainly for strings)
 ##
 #@local OldCopyToStringRep,a2000,a3000,at2000,at3000,cp1,cp2,cp3

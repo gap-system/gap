@@ -1,9 +1,12 @@
 #############################################################################
 ##
-#W  queue.gd                    GAP library                   Reimer Behrends
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Reimer Behrends.
 ##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
 ##
-#Y  Copyright (C) 2013 The GAP Group
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file implements queues. These can be used both as FIFO queues,
 ##  as deques, and as stacks.

@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  ctblsymm.tst               GAP Library                      Thomas Breuer
-##
-##
-#Y  Copyright (C)  2018,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 gap> START_TEST( "ctblsymm.tst" );
 
 #

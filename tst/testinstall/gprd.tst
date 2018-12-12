@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  gprd.tst                   GAP library                Wilf A. Wilson
-##
-##
-#Y  Copyright (C)  2018, The GAP Group
-##
 #@local g1,g2,g3,d1,d2,d3,d4
 gap> START_TEST("gprd.tst");
 

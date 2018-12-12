@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  ratfun.tst                  GAP Tests                    Alexander Hulpke
-##
-##
-#Y  (C) 1998 School Math. and Comp. Sci., University of St Andrews, Scotland
-##
 gap> START_TEST("ratfun_gf5.tst");
 
 #

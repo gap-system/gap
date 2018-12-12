@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  oprt.tst                GAP-4 library                    ALexander Hulpke
-##
-##
-#Y  Copyright 1997,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
-##
 #@local G,c5,d,eo,es,ess
 gap> START_TEST("oprt.tst");
 gap> c5:=CyclicGroup(IsPermGroup,5);;

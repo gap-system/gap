@@ -1,9 +1,11 @@
 /****************************************************************************
 **
-*W  debug.h                     GAP source               Chris Jefferson
+**  This file is part of GAP, a system for computational discrete algebra.
 **
+**  Copyright of GAP belongs to its developers, whose names are too numerous
+**  to list here. Please refer to the COPYRIGHT file for details.
 **
-*Y  Copyright (C)  2017, University of St Andrews, Scotland
+**  SPDX-License-Identifier: GPL-2.0-or-later
 **
 **  This file declares kernel debugging functionality.
 **

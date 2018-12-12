@@ -1,11 +1,3 @@
-#############################################################################
-##
-#W  threads.tst               GAP tests                       Chris Jefferson
-##
-##
-##
-#Y  Copyright (C) 2017
-##
 gap> START_TEST("threads.tst");
 gap> if IsHPCGAP or ARCH_IS_WINDOWS() then tasks := 100; else tasks := 10; fi;;
 gap> taskssum := (tasks*(tasks+1))/2;;

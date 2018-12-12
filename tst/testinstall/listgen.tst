@@ -1,10 +1,3 @@
-#############################################################################
-##
-#A  listgen.tst               GAP 4.0 library                   Thomas Breuer
-##
-##
-#Y  Copyright 1996,    Lehrstuhl D für Mathematik,   RWTH Aachen,    Germany
-##
 #@local g,h,l,l2,p2,perm,t,filt,lcpy,permsp
 gap> START_TEST("listgen.tst");
 gap> List( [ 1 .. 10 ], x -> x^2 );

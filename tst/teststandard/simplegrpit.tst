@@ -1,12 +1,3 @@
-#############################################################################
-##
-#W  simplegrpit.tst          GAP Library                     Markus Pfeiffer
-##
-##
-#Y  Copyright (C)  2015,  The GAP Group
-##
-##
-
 ## The independence test is not really correct because the simple groups
 ## iterator is not required to output the finite simple groups in order.
 gap> START_TEST("simplegrpit.tst");

@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  grppcnrm.tst                GAP library                      Frank Celler
-##
-##
-#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 gap> START_TEST("grppcnrm.tst");
 
 #############################################################################

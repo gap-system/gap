@@ -1,8 +1,5 @@
 #############################################################################
 ##
-#W  stabchain.tst                   GAP library		     Markus Pfeiffer
-##
-##
 ##  Test orbit algorithms, which use hashing
 ##  Also a few direct tests of SCRSift, since I have been working on it.
 ##     SL

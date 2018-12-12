@@ -1,12 +1,12 @@
 #############################################################################
 ##
-#W  grplatt.gi                GAP library                   Martin Schönert,
-#W                                                          Alexander Hulpke
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Martin Schönert, Alexander Hulpke.
 ##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-#Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
-#Y  Copyright (C) 2002 The GAP Group
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This  file  contains declarations for subgroup latices
 ##

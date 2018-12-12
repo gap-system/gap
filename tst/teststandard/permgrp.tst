@@ -1,9 +1,5 @@
 #############################################################################
 ##
-#W  permgrp.tst                GAP Library                     
-##
-##
-##
 ##  Some tests for permutation groups and friends(takes a few seconds to run)
 ##
 gap> START_TEST("permgrp.tst");

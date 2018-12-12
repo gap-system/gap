@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  ffe.tst                     GAP library                     Thomas Breuer
-##
-##
-#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 #@local Rochambeau,e,F,f1,f2,f3,p,pol,qs,r,x,bigPrime,z,odds,evens
 #@local r1,r2,r3,sf1,sf2,sf3,q,q2
 gap> START_TEST("ffe.tst");

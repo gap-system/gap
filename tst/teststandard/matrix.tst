@@ -1,10 +1,4 @@
 #############################################################################
-##
-#W  matrix.tst                  GAP Tests                     Robert F. Morse
-##  
-##
-##
-#Y  (C) 1998 School Math. and Comp. Sci., University of St Andrews, Scotland
 ##  
 ##  Exclude from testinstall.g: why? (takes a few seconds to run)
 ##

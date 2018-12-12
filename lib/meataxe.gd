@@ -1,11 +1,12 @@
 #############################################################################
 ##
-#W  meataxe.gd                   GAP Library                       Derek Holt
-#W                                                                 Sarah Rees
-#W                                                           Alexander Hulpke
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include Derek Holt, Sarah Rees, Alexander Hulpke.
 ##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
 ##
-#Y  (C) 1998-2001 School Math. Sci., University of St Andrews, Scotland
+##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file contains the declarations for the 'Smash'-MeatAxe modified for
 ##  GAP4 and using the standard MeatAxe interface.  It defines the MeatAxe

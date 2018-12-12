@@ -1,7 +1,3 @@
-#############################################################################
-##
-#W  mapphomo.tst                  GAP Tests                    Max Horn
-##
 #@local G,G0,H,H0,a,b,hom,gens,imgs
 gap> START_TEST("mapphomo.tst");
 gap> G:=SymmetricGroup(4);; gens:=[(1,2,3), (2,3,4)];; G0 := Subgroup(G, gens);;

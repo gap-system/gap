@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  ctbl.tst                   GAP Library                      Thomas Breuer
-##
-##
-#Y  Copyright (C)  1998,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 #@local g,t
 gap> START_TEST("ctbl.tst");
 

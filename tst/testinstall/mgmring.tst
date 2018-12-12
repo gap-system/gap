@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  mgmring.tst                 GAP library                     Thomas Breuer
-##
-##
-#Y  Copyright (C)  1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 #@local centre,img,m,membrm,r,rembrm,rm
 gap> START_TEST("mgmring.tst");
 gap> r:= GF(3);;

@@ -1,10 +1,3 @@
-#############################################################################
-##
-#W  algmat.tst                  GAP library                     Thomas Breuer
-##
-##
-#Y  Copyright (C)  1996,  Lehrstuhl D für Mathematik,  RWTH Aachen,  Germany
-##
 #@local a,b,c,cen,cenu,cenv,d,f,fullcen,l,mat,n,r,rada,radc,sum
 #@local u,ua,ub,uc,ud,uz,v,z,zero
 gap> START_TEST("algmat.tst");

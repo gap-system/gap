@@ -1,11 +1,3 @@
-#############################################################################
-##
-#W  weakptr.tst                GAP Library                       Steve Linton
-##
-##
-#Y  Copyright (C)  1997, 
-##
-##
 gap> START_TEST("weakptr.tst");
 
 #

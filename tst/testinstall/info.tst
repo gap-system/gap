@@ -1,11 +1,3 @@
-#############################################################################
-##
-#W  info.tst
-##
-##
-#Y  Copyright (C)  2015
-##
-##
 gap> START_TEST("info.tst");
 gap> InfoTest1 := NewInfoClass("InfoTest1");;
 gap> InfoTest2 := NewInfoClass("InfoTest2");;

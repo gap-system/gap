@@ -1,12 +1,12 @@
 #############################################################################
 ##
-#W  pperm.gi
-##Y  Copyright (C) 2011-13                                James D. Mitchell
+##  This file is part of GAP, a system for computational discrete algebra.
+##  This files's authors include James D. Mitchell.
 ##
-###  Licensing information can be found in the README file of this package.
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
 ##
-#############################################################################
-##
+##  SPDX-License-Identifier: GPL-2.0-or-later
 
 InstallMethod(IsGeneratorsOfMagmaWithInverses,
  "for a partial perm collection",
