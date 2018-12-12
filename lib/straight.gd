@@ -132,8 +132,8 @@ DeclareCategory( "IsStraightLineProgram", IsObject );
 ##   Label="for a string and a list of generators names"/>
 ##
 ##  <Description>
-##  In the first form, <A>lines</A> must be a list of lists that defines
-##  a unique straight line program
+##  In the first form, <A>lines</A> must be a nonempty list of lists
+##  that defines a unique straight line program
 ##  (see&nbsp;<Ref Func="IsStraightLineProgram"/>); in this case
 ##  <Ref Func="StraightLineProgram" Label="for a list of lines (and the number of generators)"/>
 ##  returns this program, otherwise an error is signalled.
@@ -147,7 +147,7 @@ DeclareCategory( "IsStraightLineProgram", IsObject );
 ##  <Ref Func="StraightLineProgram" Label="for a list of lines (and the number of generators)"/>
 ##  returns <K>fail</K>.
 ##  <P/>
-##  In the second form, <A>string</A> must be a string describing an
+##  In the second form, <A>string</A> must be a nonempty string describing an
 ##  arithmetic expression in terms of the strings in the list <A>gens</A>,
 ##  where multiplication is denoted by concatenation, powering is denoted by
 ##  <C>^</C>, and round brackets <C>(</C>, <C>)</C> may be used.
@@ -444,16 +444,20 @@ DeclareGlobalFunction( "CompositionOfStraightLinePrograms" );
 ##
 ##  <Description>
 ##  For a nonempty dense list <A>listofprogs</A> of straight line programs
+##  <M>p_1, p_2, \ldots, p_m</M>, say,
 ##  that have the same number <M>n</M>, say, of inputs
-##  (see&nbsp;<Ref Func="NrInputsOfStraightLineProgram"/>) and for which the
-##  results (see&nbsp;<Ref Func="ResultOfStraightLineProgram"/>) are single
-##  elements (i.e., <E>not</E> lists of elements),
+##  (see&nbsp;<Ref Func="NrInputsOfStraightLineProgram"/>),
 ##  <Ref Func="IntegratedStraightLineProgram"/> returns a straight line
-##  program <A>prog</A> with <M>n</M> inputs such that for each
-##  <M>n</M>-tuple <A>gens</A> of generators,
-##  <C>ResultOfStraightLineProgram( <A>prog</A>, <A>gens</A> )</C>
-##  is equal to the list
-##  <C>List( <A>listofprogs</A>, <A>p</A> -&tgt; ResultOfStraightLineProgram( <A>p</A>, <A>gens</A> )</C>.
+##  program <M>prog</M> with <M>n</M> inputs such that for each
+##  <M>n</M>-tuple <M>gens</M> of generators,
+##  <C>ResultOfStraightLineProgram( </C><M>prog, gens</M><C> )</C>
+##  is the concatenation of the lists <M>r_1, r_2, \ldots, r_m</M>,
+##  where <M>r_i</M> is equal to
+##  <C>ResultOfStraightLineProgram( </C><M>p_i, gens</M><C> )</C>
+##  if this result is a list of elements,
+##  and otherwise <M>r_i</M> is equal to the list of length one
+##  that contains this result.
+##
 ##  <Example><![CDATA[
 ##  gap> f:= FreeGroup( "x", "y" );;  gens:= GeneratorsOfGroup( f );;
 ##  gap> prg1:= StraightLineProgram([ [ [ 1, 2 ], 1 ], [ 1, 2, 2, -1 ] ], 2);;
@@ -468,6 +472,9 @@ DeclareGlobalFunction( "CompositionOfStraightLinePrograms" );
 ##  gap> prg:= IntegratedStraightLineProgram( [ prg3, prg1, prg2 ] );;
 ##  gap> ResultOfStraightLineProgram( prg, gens );
 ##  [ x^3*y^4, x^4*y^-1, x^3*y^4 ]
+##  gap> prg:= IntegratedStraightLineProgram( [ prg, prg ] );;
+##  gap> ResultOfStraightLineProgram( prg, gens );
+##  [ x^3*y^4, x^4*y^-1, x^3*y^4, x^3*y^4, x^4*y^-1, x^3*y^4 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
