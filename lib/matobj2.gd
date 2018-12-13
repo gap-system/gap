@@ -312,7 +312,7 @@ DeclareGlobalFunction( "ConcatenationOfVectors" );
 
 ##  <#GAPDoc Label="MatObj_ExtractSubVector">
 ##  <ManSection>
-##    <Func Arg="V,l" Name="ExtractSubVector" Label="for IsVectorObj,IsList"/>
+##    <Oper Arg="V,l" Name="ExtractSubVector" Label="for IsVectorObj,IsList"/>
 ##    <Returns>a vector object</Returns>
 ##    <Description>
 ##      Returns a new vector containing the entries of <A>V</A>

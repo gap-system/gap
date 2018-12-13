@@ -2075,7 +2075,7 @@ DeclareOperation("BaseField",[IsObject]);
 ##
 ##  <#GAPDoc Label="SimplexMethod">
 ##  <ManSection>
-##  <Oper Name="SimplexMethod" Arg='A,b,c'/>
+##  <Func Name="SimplexMethod" Arg='A,b,c'/>
 ##
 ##  <Description>
 ##  Find a rational vector <A>x</A> that maximizes <M><A>x</A>\cdot<A>c</A></M>, subject
