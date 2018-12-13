@@ -193,7 +193,7 @@ In this case, the result can be stored as the value of the attribute
 This attribute is considered by a call
 <C>Blocks( <A>G</A>, <A>D</A>, <A>opr</A> )</C>
 (i.e., without <A>seed</A>) in the same way as
-<Ref Func="Orbits"/> considers <C>OrbitsAttr</C>.
+<Ref Oper="Orbits" Label="attribute"/> considers <C>OrbitsAttr</C>.
 <P/>
 To set this up,
 the declaration file <F>lib/oprt.gd</F> contains the following lines:
