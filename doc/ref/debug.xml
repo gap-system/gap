@@ -453,12 +453,12 @@ memory it allocated).
 
 <ManSection>
 <Func Name="Sleep" Arg='time'/>
-<Func Name="NanoSleep" Arg='time'/>
+<Func Name="MicroSleep" Arg='time'/>
 
 <Description>
 These functions make GAP stop execution for a given period of time. The time
-to stop is given to <Ref Func="Sleep"/> in seconds and <Ref Func="NanoSleep"/>
-in nanoseconds.
+to stop is given to <Ref Func="Sleep"/> in seconds and <Ref Func="MicroSleep"/>
+in microseconds.
 </Description>
 </ManSection>
 
