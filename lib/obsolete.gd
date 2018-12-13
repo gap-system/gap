@@ -560,7 +560,6 @@ DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
 ##
 #F  IsSemilatticeAsSemigroup( <S> ) is the semigroup <S> a semilattice
 ##
-##  <#GAPDoc Label="IsSemilatticeAsSemigroup">
 ##  <ManSection>
 ##  <Prop Name="IsSemilatticeAsSemigroup" Arg='S'/>
 ##
@@ -577,7 +576,6 @@ DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
 ##    beta-releases.  #  It should <E>not</E> be used in new code.
 ##  </Description>
 ##  </ManSection>
-##  <#/GAPDoc>
 ##
 ##  Not used in any redistributed packages (11/2017)
 #DeclareSynonymAttr( "IsSemilatticeAsSemigroup", IsSemilattice );
