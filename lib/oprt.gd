@@ -479,7 +479,7 @@ end);
 ##  in the former case, a property is returned, in the latter case an
 ##  attribute that is not a property.
 ##  <P/>
-##  For example, to set up the operation <Ref Func="Orbits"/>,
+##  For example, to set up the operation <Ref Oper="Orbits" Label="operation"/>,
 ##  the declaration file <F>lib/oprt.gd</F> contains the following line of
 ##  code:
 ##  <Log><![CDATA[
@@ -495,7 +495,7 @@ end);
 ##  ]]></Log>
 ##  which are usually entered in calls to <Ref Func="OrbitsishOperation"/>.
 ##  <P/>
-##  The new operation, e.g., <Ref Func="Orbits"/>,
+##  The new operation, e.g., <Ref Oper="Orbits" Label="operation"/>,
 ##  can be called either as <C>Orbits( <A>xset</A> )</C> for an external set
 ##  <A>xset</A>, or as <C>Orbits( <A>G</A> )</C> for a permutation group
 ##  <A>G</A>, meaning the orbits on the moved
