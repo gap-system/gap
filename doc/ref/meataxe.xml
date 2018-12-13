@@ -416,8 +416,8 @@ see&nbsp;<Ref Func="MTX.NormedBasisAndBaseChange"/>)
 </ManSection>
 
 <ManSection>
-<Func Name="MTX.InducedActionMatrix" Arg='mat, sub'/>
-<Func Name="MTX.InducedActionMatrixNB" Arg='mat, sub'/>
+<Func Name="MTX.InducedActionSubMatrix" Arg='mat, sub'/>
+<Func Name="MTX.InducedActionSubMatrixNB" Arg='mat, sub'/>
 <Func Name="MTX.InducedActionFactorMatrix" Arg='mat, sub[, compl]'/>
 
 <Description>
