@@ -151,7 +151,13 @@ void ViewObjHandler ( Obj obj )
 UInt QUITTINGGVar;
 
 
-static char **sysenviron;
+static char **sysenviron = NULL;
+
+#if defined(_POSIX_) || defined(__USE_POSIX)
+extern char **environ;
+#else
+static char **environ = NULL;
+#endif
 
 /*
 TL: Obj ShellContext = 0;
@@ -1319,6 +1325,7 @@ Obj FuncSHOULD_QUIT_ON_BREAK( Obj self)
 Obj FuncKERNEL_INFO(Obj self) {
   Obj res = NEW_PREC(0);
   UInt r,lenvec,lenstr,lenstr2;
+  Char **env;
   Char *p;
   Obj tmp,list,str;
   UInt i,j;
@@ -1372,6 +1379,12 @@ Obj FuncKERNEL_INFO(Obj self) {
   }
   r = RNamName("COMMAND_LINE");
   AssPRec(res,r, tmp);
+
+  if (sysenviron != NULL) {
+    env = sysenviron;
+  } else {
+    env = environ;
+  }
 
   tmp = NEW_PREC(0);
   for (i = 0; sysenviron[i]; i++) {
@@ -1725,7 +1738,7 @@ static Obj POST_RESTORE;
 void InitializeGap (
     int *               pargc,
     char *              argv [],
-    char *              environ [] )
+    char *              envp [] )
 {
     /* initialize the basic system and gasman                              */
     InitSystem( *pargc, argv );
@@ -1744,7 +1757,11 @@ void InitializeGap (
     STATE(UserHasQuit) = 0;
     STATE(JumpToCatchCallback) = 0;
 
-    sysenviron = environ;
+    // Only save envp to sysenviron if it is not the same as the global environ
+    // variable
+    if (envp != environ) {
+        sysenviron = envp;
+    }
 
     // get info structures for the built in modules
     ModulesSetup();
