@@ -88,7 +88,11 @@ local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r;
 	    serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
 	    );
   Add(cache,[ffs,r]); # keep
-  SetSize(U,Product(RelativeOrders(k))*Size(Image(rest)));
+  if Length(k)=0 then
+    SetSize(U,Size(Image(rest)));
+  else
+    SetSize(U,Product(RelativeOrders(k))*Size(Image(rest)));
+  fi;
   return r;
 
 end);
