@@ -453,7 +453,7 @@ DeclareGlobalFunction("LowLayerSubgroups");
 ##
 ##  <#GAPDoc Label="ContainedConjugates">
 ##  <ManSection>
-##  <Func Name="ContainedConjugates" Arg='G, A, B'/>
+##  <Oper Name="ContainedConjugates" Arg='G, A, B'/>
 ##
 ##  <Description>
 ##  For <M>A,B \leq G</M> this operation returns representatives of the <A>A</A>
@@ -478,7 +478,7 @@ DeclareSynonym("EmbeddedConjugates",ContainedConjugates);
 ##
 ##  <#GAPDoc Label="ContainingConjugates">
 ##  <ManSection>
-##  <Func Name="ContainingConjugates" Arg='G, A, B'/>
+##  <Oper Name="ContainingConjugates" Arg='G, A, B'/>
 ##
 ##  <Description>
 ##  For <M>A,B \leq G</M> this operation returns all <A>G</A> conjugates of <A>A</A> 
@@ -503,7 +503,7 @@ DeclareSynonym("EmbeddingConjugates",ContainingConjugates);
 ##
 ##  <#GAPDoc Label="MinimalFaithfulPermutationDegree">
 ##  <ManSection>
-##  <Func Name="MinimalFaithfulPermutationDegree" Arg='G'/>
+##  <Oper Name="MinimalFaithfulPermutationDegree" Arg='G'/>
 ##
 ##  <Description>
 ##  For  a finite group <A>G</A> this operation calculates the least

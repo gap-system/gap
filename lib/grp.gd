@@ -871,7 +871,7 @@ DeclareAttribute( "AbelianRank", IsGroup );
 ##
 ##  <#GAPDoc Label="IsInfiniteAbelianizationGroup:grp">
 ##  <ManSection>
-##  <Attr Name="IsInfiniteAbelianizationGroup" Arg='G'/>
+##  <Prop Name="IsInfiniteAbelianizationGroup" Arg='G'/>
 ##
 ##  <Description>
 ##  <Index Subkey="for groups" Key="IsInfiniteAbelianizationGroup">

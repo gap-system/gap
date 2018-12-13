@@ -104,7 +104,7 @@ Floating-point numbers may be created using the single function
 <Ref Func="Float"/>, which accepts as arguments rational, string,
 or floating-point numbers. Floating-point numbers may
 also be created, in any floating-point representation, using
-<Ref Func="NewFloat"/> as in <C>NewFloat(IsIEEE754FloatRep,355/113)</C>,
+<Ref Constr="NewFloat"/> as in <C>NewFloat(IsIEEE754FloatRep,355/113)</C>,
 by supplying the category filter of the desired new floating-point number;
 or using <Ref Func="MakeFloat"/> as in <C>NewFloat(1.0,355/113)</C>,
 by supplying a sample floating-point number.
@@ -235,7 +235,7 @@ Complex arithmetic may be implemented in packages, and is present in
 <Package>float</Package>. Complex numbers are treated as usual
 numbers; they may be input with an extra "i" as in
 <C>-0.5+0.866i</C>. They may also be created using <Ref
-Oper="NewFloat"/> with three arguments: the float filter, the real
+Constr="NewFloat"/> with three arguments: the float filter, the real
 part, and the imaginary part.
 <P/>
 

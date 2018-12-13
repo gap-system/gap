@@ -48,49 +48,49 @@ end);
 ## <#GAPDoc Label="Float-Math-Commands">
 ## <ManSection>
 ##   <Heading>Standard mathematical operations</Heading>
-##   <Oper Name="Cos" Arg="f"/>
-##   <Oper Name="Sin" Arg="f"/>
-##   <Oper Name="Tan" Arg="f"/>
-##   <Oper Name="Sec" Arg="f"/>
-##   <Oper Name="Csc" Arg="f"/>
-##   <Oper Name="Cot" Arg="f"/>
-##   <Oper Name="Asin" Arg="f"/>
-##   <Oper Name="Acos" Arg="f"/>
-##   <Oper Name="Atan" Arg="f"/>
-##   <Oper Name="Cosh" Arg="f"/>
-##   <Oper Name="Sinh" Arg="f"/>
-##   <Oper Name="Tanh" Arg="f"/>
-##   <Oper Name="Sech" Arg="f"/>
-##   <Oper Name="Csch" Arg="f"/>
-##   <Oper Name="Coth" Arg="f"/>
-##   <Oper Name="Asinh" Arg="f"/>
-##   <Oper Name="Acosh" Arg="f"/>
-##   <Oper Name="Atanh" Arg="f"/>
+##   <Attr Name="Cos" Arg="f"/>
+##   <Attr Name="Sin" Arg="f"/>
+##   <Attr Name="Tan" Arg="f"/>
+##   <Attr Name="Sec" Arg="f"/>
+##   <Attr Name="Csc" Arg="f"/>
+##   <Attr Name="Cot" Arg="f"/>
+##   <Attr Name="Asin" Arg="f"/>
+##   <Attr Name="Acos" Arg="f"/>
+##   <Attr Name="Atan" Arg="f"/>
+##   <Attr Name="Cosh" Arg="f"/>
+##   <Attr Name="Sinh" Arg="f"/>
+##   <Attr Name="Tanh" Arg="f"/>
+##   <Attr Name="Sech" Arg="f"/>
+##   <Attr Name="Csch" Arg="f"/>
+##   <Attr Name="Coth" Arg="f"/>
+##   <Attr Name="Asinh" Arg="f"/>
+##   <Attr Name="Acosh" Arg="f"/>
+##   <Attr Name="Atanh" Arg="f"/>
 ##   <Oper Name="Log" Arg="f"/>
-##   <Oper Name="Log2" Arg="f"/>
-##   <Oper Name="Log10" Arg="f"/>
-##   <Oper Name="Log1p" Arg="f"/>
-##   <Oper Name="Exp" Arg="f"/>
-##   <Oper Name="Exp2" Arg="f"/>
-##   <Oper Name="Exp10" Arg="f"/>
-##   <Oper Name="Expm1" Arg="f"/>
-##   <Oper Name="CubeRoot" Arg="f"/>
-##   <Oper Name="Square" Arg="f"/>
-##   <Oper Name="Ceil" Arg="f"/>
-##   <Oper Name="Floor" Arg="f"/>
-##   <Oper Name="Round" Arg="f"/>
-##   <Oper Name="Trunc" Arg="f"/>
+##   <Attr Name="Log2" Arg="f"/>
+##   <Attr Name="Log10" Arg="f"/>
+##   <Attr Name="Log1p" Arg="f"/>
+##   <Attr Name="Exp" Arg="f"/>
+##   <Attr Name="Exp2" Arg="f"/>
+##   <Attr Name="Exp10" Arg="f"/>
+##   <Attr Name="Expm1" Arg="f"/>
+##   <Attr Name="CubeRoot" Arg="f"/>
+##   <Attr Name="Square" Arg="f"/>
+##   <Attr Name="Ceil" Arg="f"/>
+##   <Attr Name="Floor" Arg="f"/>
+##   <Attr Name="Round" Arg="f"/>
+##   <Attr Name="Trunc" Arg="f"/>
 ##   <Oper Name="Atan2" Arg="y x"/>
-##   <Oper Name="FrExp" Arg="f"/>
+##   <Attr Name="FrExp" Arg="f"/>
 ##   <Oper Name="LdExp" Arg="f exp"/>
-##   <Oper Name="AbsoluteValue" Arg="f" Label="for floats"/>
-##   <Oper Name="Norm" Arg="f" Label="for floats"/>
+##   <Attr Name="AbsoluteValue" Arg="f" Label="for floats"/>
+##   <Attr Name="Norm" Arg="f" Label="for floats"/>
 ##   <Oper Name="Hypothenuse" Arg="x y"/>
-##   <Oper Name="Frac" Arg="f"/>
-##   <Oper Name="SinCos" Arg="f"/>
-##   <Oper Name="Erf" Arg="f"/>
-##   <Oper Name="Zeta" Arg="f"/>
-##   <Oper Name="Gamma" Arg="f"/>
+##   <Attr Name="Frac" Arg="f"/>
+##   <Attr Name="SinCos" Arg="f"/>
+##   <Attr Name="Erf" Arg="f"/>
+##   <Attr Name="Zeta" Arg="f"/>
+##   <Attr Name="Gamma" Arg="f"/>
 ##   <Description>
 ##     Standard math functions.
 ##   </Description>
@@ -270,7 +270,7 @@ DeclareGlobalFunction("RootsFloat");
 ## </ManSection>
 ## <ManSection>
 ##   <Attr Name="AbsoluteDiameter" Arg="x"/>
-##   <Attr Name="Diameter" Arg="x"/>
+##   <Oper Name="Diameter" Arg="x"/>
 ##   <Description>
 ##     Returns the absolute diameter of the interval <A>x</A>, namely
 ##     the difference <C>Sup(x)-Inf(x)</C>.
@@ -338,7 +338,7 @@ DeclareOperation("BisectInterval", [IsFloatInterval]);
 ## <ManSection>
 ##   <Heading>Float creators</Heading>
 ##   <Func Name="Float" Arg="obj"/>
-##   <Oper Name="NewFloat" Arg="filter, obj"/>
+##   <Constr Name="NewFloat" Arg="filter, obj"/>
 ##   <Oper Name="MakeFloat" Arg="sample obj, obj"/>
 ##   <Returns>A new floating-point number, based on <A>obj</A></Returns>
 ##   <Description>
@@ -385,7 +385,7 @@ DeclareOperation("BisectInterval", [IsFloatInterval]);
 ## </ManSection>
 ##
 ## <ManSection>
-##   <Attr Name="Cyc" Arg="f [degree]" Label="for floats"/>
+##   <Oper Name="Cyc" Arg="f [degree]" Label="for floats"/>
 ##   <Returns>A cyclotomic approximation to <A>f</A></Returns>
 ##   <Description>
 ##     This command constructs a cyclotomic approximation to the
