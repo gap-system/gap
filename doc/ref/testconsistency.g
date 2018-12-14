@@ -125,12 +125,16 @@ od;
 Print( "****************************************************************\n" );
 Print( "*** Checking types in cross-references \n" );
 Print( "****************************************************************\n" );
+# get all ref elements
 y := XMLElements( r, [ "Ref" ] );
 Print( "Found ", Length(y), " Ref elements " );
+# select only those which point to the reference manual
 yint := Filtered( y, elt ->
       not IsBound(elt.attributes.BookName) or
       (IsBound(elt.attributes.BookName) and elt.attributes.BookName="ref"));
 Print( "including ", Length(yint), " within the Reference manual\n" );
+# select only those which refer to one of these given in the list `types`:
+# "Func", "Oper", "Meth", "Filt", "Prop", "Attr", "Var", "Fam", "InfoClass"
 y := Filtered( yint, elt -> ForAny( types, t -> IsBound(elt.attributes.(t))));
 
 referrcount:=0;
@@ -169,14 +173,13 @@ for elt in y do
       elif Length(matches2) > 1 then
         Error("Multiple labels - this should not happen!");
       else
-        match := matches[1];
+        match := matches2[1];
       fi;
     fi;
     if match.name <> type then
       pos:=OriginalPositionDocument(doc[2],elt.start);
-      if display_warnings then
-        Print( pos[1], ":", pos[2], " : Ref to ", elt.attributes.(type), " uses ", type, " instead of ", match.name, "\n" );
-      fi;
+      Print( pos[1], ":", pos[2], " : Ref to ", elt.attributes.(type), " uses ", type, " instead of ", match.name, "\n" );
+      Print( "./fixconsistency.sh '",  ReplacedString(elt.attributes.(type), """\""", """\\\"""), "' ", type, " ", match.name, " ", pos[1], " ", pos[2], "\n" );
       warncount:=warncount+1;
     fi;
   fi;
@@ -193,13 +196,8 @@ Print( "Found ", errcount, " errors in ManSection types \n");
 Print( "Selected ", Length(y), " Ref elements referring to ManSections \n" );
 Print( "Found ", referrcount, " errors and ", warncount, " warnings in Ref elements \n");
 
-if display_warnings then
-  Print("To suppress warnings, use CheckManSectionTypes(doc,false) or with one argument\n");
-else
-  Print("To show warnings, use CheckManSectionTypes(doc,true); \n");
-fi;
 Print( "****************************************************************\n" );
-return errcount=0;
+return referrcount=0 and warncount=0;
 end;
 
 
