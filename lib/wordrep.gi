@@ -215,8 +215,9 @@ local a,n,t,
       str;
 
   n:=Length(names);
-  if PRINTWORDPOWERS=true 
-   or (IsInt(PRINTWORDPOWERS) and Length(l)<PRINTWORDPOWERS) then
+  if (PRINTWORDPOWERS=true 
+   or (IsInt(PRINTWORDPOWERS) and Length(l)<PRINTWORDPOWERS)) and
+     ValueOption("printnopowers")<>true then
     if Length(l)>0 and n=infinity then
       n:=2*(AbsInt(Maximum(l))+1); 
     fi;

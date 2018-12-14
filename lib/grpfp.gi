@@ -1060,8 +1060,9 @@ function ( fgens, grels, fsgens )
   if Length(fgens)=0 then
     return [];
   fi;
-  # call the TC plugin
-  return TCENUM.CosetTableFromGensAndRels(fgens,grels,fsgens);
+  # call the TC plugin. Option ensures no factorization takes place in printing
+  # (which can confuse the ACE interface).
+  return TCENUM.CosetTableFromGensAndRels(fgens,grels,fsgens:printnopowers:=true);
 end);
 
 # this function implements the library version of the Todd-Coxeter routine.
