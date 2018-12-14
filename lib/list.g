@@ -22,13 +22,13 @@
 ##  <Filt Name="IsListDefault" Arg='list' Type='Category'/>
 ##
 ##  <Description>
-##  For a list <A>list</A>, <Ref Func="IsListDefault"/> indicates that the
+##  For a list <A>list</A>, <Ref Filt="IsListDefault"/> indicates that the
 ##  default methods for arithmetic operations of lists, such as pointwise
 ##  addition and multiplication as inner product or matrix product,
 ##  shall be applicable to <A>list</A>.
 ##  <P/>
-##  <Ref Func="IsListDefault"/> implies <Ref Func="IsGeneralizedRowVector"/>
-##  and <Ref Func="IsMultiplicativeGeneralizedRowVector"/>.
+##  <Ref Filt="IsListDefault"/> implies <Ref Filt="IsGeneralizedRowVector"/>
+##  and <Ref Filt="IsMultiplicativeGeneralizedRowVector"/>.
 ##  <P/>
 ##  All internally represented lists are in this category,
 ##  and also all lists in the representations <C>IsGF2VectorRep</C>,
@@ -39,9 +39,9 @@
 ##  <!--  strings and blists:-->
 ##  <!--  It does not really make sense to have them in <C>IsGeneralizedRowVector</C>.-->
 ##  Note that the result of an arithmetic operation with lists in
-##  <Ref Func="IsListDefault"/> will in general be an internally represented
+##  <Ref Filt="IsListDefault"/> will in general be an internally represented
 ##  list, so most <Q>wrapped list objects</Q> will not lie in
-##  <Ref Func="IsListDefault"/>.
+##  <Ref Filt="IsListDefault"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> v:= [ 1, 2 ];;  m:= [ v, 2*v ];;
@@ -422,7 +422,7 @@ DeclareRepresentationKernel( "IsRangeRep",
 ##  is ignored.
 ##  <P/>
 ##  If you change a mutable range that is represented in the compact way,
-##  by assignment, <Ref Func="Add"/> or <Ref Func="Append"/>,
+##  by assignment, <Ref Oper="Add"/> or <Ref Oper="Append"/>,
 ##  the range will be converted to the ordinary representation, even if the
 ##  change is such that the resulting list is still a proper range.
 ##  <P/>

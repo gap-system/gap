@@ -39,10 +39,10 @@
 ##  <A>C</A>.
 ##  <P/>
 ##  Each field in &GAP; is represented as a vector space over a subfield
-##  (see&nbsp;<Ref Func="IsField"/>), thus each field is in fact a
+##  (see&nbsp;<Ref Filt="IsField"/>), thus each field is in fact a
 ##  field extension in a natural way,
 ##  which is used by functions such as
-##  <Ref Func="Norm"/> and <Ref Func="Trace" Label="for a field element"/>
+##  <Ref Attr="Norm"/> and <Ref Attr="Trace" Label="for a field element"/>
 ##  (see&nbsp;<Ref Sect="Galois Action"/>).
 ##  <#/GAPDoc>
 ##
@@ -62,8 +62,8 @@
 ##
 ##  <Description>
 ##  A <E>field</E> is a commutative division ring
-##  (see&nbsp;<Ref Func="IsDivisionRing"/>
-##  and&nbsp;<Ref Func="IsCommutative"/>).
+##  (see&nbsp;<Ref Filt="IsDivisionRing"/>
+##  and&nbsp;<Ref Prop="IsCommutative"/>).
 ##  <Example><![CDATA[
 ##  gap> IsField( GaloisField(16) );           # the field with 16 elements
 ##  true
@@ -116,7 +116,7 @@ DeclareAttribute( "PrimeField", IsDivisionRing );
 ##
 ##  <Description>
 ##  A division ring is a prime field if it is equal to its prime field
-##  (see&nbsp;<Ref Func="PrimeField"/>).
+##  (see&nbsp;<Ref Attr="PrimeField"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -140,7 +140,7 @@ InstallIsomorphismMaintenance( IsPrimeField,
 ##  is the defining polynomial of the field <A>F</A> as a field extension
 ##  over the left acting domain of <A>F</A>.
 ##  A root of the defining polynomial can be computed with
-##  <Ref Func="RootOfDefiningPolynomial"/>.
+##  <Ref Attr="RootOfDefiningPolynomial"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -158,7 +158,7 @@ DeclareAttribute( "DefiningPolynomial", IsField );
 ##
 ##  <Description>
 ##  is the degree of the field <A>F</A> over its prime field
-##  (see&nbsp;<Ref Func="PrimeField"/>).
+##  (see&nbsp;<Ref Attr="PrimeField"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -198,7 +198,7 @@ DeclareAttribute( "GeneratorsOfDivisionRing", IsDivisionRing );
 ##  <Description>
 ##  generators with respect to addition, multiplication, and taking
 ##  inverses.
-##  This attribute is the same as <Ref Func="GeneratorsOfDivisionRing"/>.
+##  This attribute is the same as <Ref Attr="GeneratorsOfDivisionRing"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -217,10 +217,10 @@ DeclareSynonymAttr( "GeneratorsOfField", GeneratorsOfDivisionRing );
 ##  <Description>
 ##  Let <A>F</A> be a field that is a Galois extension of its subfield
 ##  <C>LeftActingDomain( <A>F</A> )</C>.
-##  Then <Ref Func="NormalBase"/> returns a list of elements in <A>F</A>
+##  Then <Ref Attr="NormalBase"/> returns a list of elements in <A>F</A>
 ##  that form a normal basis of <A>F</A>, that is,
 ##  a vector space basis that is closed under the action of the Galois group
-##  (see&nbsp;<Ref Oper="GaloisGroup" Label="of field"/>) of <A>F</A>.
+##  (see&nbsp;<Ref Attr="GaloisGroup" Label="of field"/>) of <A>F</A>.
 ##  <P/>
 ##  If a second argument <A>elm</A> is given,
 ##  it is used as a hint for the algorithm to find a normal basis with the
@@ -273,7 +273,7 @@ DeclareAttribute( "PrimitiveElement", IsDivisionRing );
 ##  A <E>primitive root</E> of a finite field is a generator of its
 ##  multiplicative group.
 ##  A primitive root is always a primitive element
-##  (see&nbsp;<Ref Func="PrimitiveElement"/>),
+##  (see&nbsp;<Ref Attr="PrimitiveElement"/>),
 ##  the converse is in general not true.
 ##  <!-- % For example, <C>Z(9)^2</C> is a primitive element for <C>GF(9)</C> but not a -->
 ##  <!-- % primitive root. -->
@@ -302,7 +302,7 @@ DeclareAttribute( "PrimitiveRoot", IsField and IsFinite );
 ##  is a root in the field <A>F</A> of its defining polynomial as a field
 ##  extension over the left acting domain of <A>F</A>.
 ##  The defining polynomial can be computed with
-##  <Ref Func="DefiningPolynomial"/>.
+##  <Ref Attr="DefiningPolynomial"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -330,7 +330,7 @@ DeclareAttribute( "RootOfDefiningPolynomial", IsField );
 ##  then the returned division ring is viewed as a vector space over
 ##  <A>F</A>.
 ##  <P/>
-##  <Ref Func="AsField"/> is just a synonym for <Ref Func="AsDivisionRing"/>.
+##  <Ref Oper="AsField"/> is just a synonym for <Ref Oper="AsDivisionRing"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -417,8 +417,8 @@ DeclareOperation( "FieldExtension", [ IsField, IsUnivariatePolynomial ] );
 ##  are defined as the minimal polynomial
 ##  (see&nbsp;<Ref Sect="MinimalPolynomial" Label="over a field"/>)
 ##  and the characteristic polynomial
-##  (see&nbsp;<Ref Func="CharacteristicPolynomial"/> and
-##  <Ref Func="TracePolynomial"/>) of <M>M_{\alpha}</M>.
+##  (see&nbsp;<Ref Attr="CharacteristicPolynomial"/> and
+##  <Ref Oper="TracePolynomial"/>) of <M>M_{\alpha}</M>.
 ##  (Note that <M>\mu_{\alpha}</M> depends only on <M>K</M> whereas
 ##  <M>\chi_{\alpha}</M> depends on both <M>L</M> and <M>K</M>.)
 ##  <P/>
@@ -459,13 +459,13 @@ DeclareOperation( "FieldExtension", [ IsField, IsUnivariatePolynomial ] );
 ##
 ##  <#GAPDoc Label="[3]{field}">
 ##  The default methods for field elements are as follows.
-##  <Ref Func="MinimalPolynomial"/> solves a system of linear equations,
-##  <Ref Func="TracePolynomial"/> computes the appropriate power of the
+##  <Ref Oper="MinimalPolynomial"/> solves a system of linear equations,
+##  <Ref Oper="TracePolynomial"/> computes the appropriate power of the
 ##  minimal
 ##  polynomial,
-##  <Ref Func="Norm"/> and <Ref Func="Trace" Label="for a field element"/>
+##  <Ref Attr="Norm"/> and <Ref Attr="Trace" Label="for a field element"/>
 ##  values are obtained as coefficients of the characteristic polynomial,
-##  and <Ref Func="Conjugates"/> uses the factorization of the
+##  and <Ref Attr="Conjugates"/> uses the factorization of the
 ##  characteristic polynomial.
 ##  <P/>
 ##  For elements in finite fields and cyclotomic fields, one wants to do the
@@ -476,12 +476,12 @@ DeclareOperation( "FieldExtension", [ IsField, IsUnivariatePolynomial ] );
 ##  if a field is in the category
 ##  <C>IsFieldControlledByGaloisGroup</C> then
 ##  the default methods are the following.
-##  <Ref Func="Conjugates"/> returns the sorted list of images
+##  <Ref Attr="Conjugates"/> returns the sorted list of images
 ##  (with multiplicity) of the element under the Galois group,
-##  <Ref Func="Norm"/> computes the product of the conjugates,
-##  <Ref Func="Trace" Label="for a field element"/> computes the sum of the
+##  <Ref Attr="Norm"/> computes the product of the conjugates,
+##  <Ref Attr="Trace" Label="for a field element"/> computes the sum of the
 ##  conjugates,
-##  <Ref Func="TracePolynomial"/> and <Ref Func="MinimalPolynomial"/> compute
+##  <Ref Oper="TracePolynomial"/> and <Ref Oper="MinimalPolynomial"/> compute
 ##  the product of linear factors <M>x - c</M> with <M>c</M> ranging over the
 ##  conjugates and the set of conjugates, respectively.
 ##  <#/GAPDoc>
@@ -528,7 +528,7 @@ InstallTrueMethod( IsFieldControlledByGaloisGroup,
 ##  <Attr Name="Conjugates" Arg='[L, [K, ]]z'/>
 ##
 ##  <Description>
-##  <Ref Func="Conjugates"/> returns the list of <E>conjugates</E>
+##  <Ref Attr="Conjugates"/> returns the list of <E>conjugates</E>
 ##  of the field element <A>z</A>.
 ##  If two fields <A>L</A> and <A>K</A> are given then the conjugates are
 ##  computed w.r.t.&nbsp;the field extension <A>L</A><M> > </M><A>K</A>,
@@ -579,7 +579,7 @@ DeclareOperation( "Conjugates", [ IsField, IsScalar ] );
 ##  <Attr Name="Norm" Arg='[L, [K, ]]z'/>
 ##
 ##  <Description>
-##  <Ref Func="Norm"/> returns the norm of the field element <A>z</A>.
+##  <Ref Attr="Norm"/> returns the norm of the field element <A>z</A>.
 ##  If two fields <A>L</A> and <A>K</A> are given then the norm is computed
 ##  w.r.t.&nbsp;the field extension <A>L</A><M> > </M><A>K</A>,
 ##  if only one field <A>L</A> is given then
@@ -608,7 +608,7 @@ DeclareOperation( "Norm", [ IsField, IsField, IsScalar ] );
 ##  <Attr Name="Trace" Arg='mat' Label="for a matrix"/>
 ##
 ##  <Description>
-##  <Ref Func="Trace" Label="for a field element"/> returns the trace of the
+##  <Ref Attr="Trace" Label="for a field element"/> returns the trace of the
 ##  field element <A>z</A>.
 ##  If two fields <A>L</A> and <A>K</A> are given then the trace is computed
 ##  w.r.t.&nbsp;the field extension <M><A>L</A> > <A>K</A></M>,
@@ -620,7 +620,7 @@ DeclareOperation( "Norm", [ IsField, IsField, IsScalar ] );
 ##  <P/>
 ##  The <E>trace of a matrix</E> is the sum of its diagonal entries.
 ##  Note that this is <E>not</E> compatible with the definition of
-##  <Ref Func="Trace" Label="for a field element"/> for field elements,
+##  <Ref Attr="Trace" Label="for a field element"/> for field elements,
 ##  so the one-argument version is not suitable when matrices shall be
 ##  regarded as field elements.
 ##  <!-- forbid <C>Trace</C> as short form for <C>TraceMat</C>?-->
@@ -655,7 +655,7 @@ DeclareOperation( "Trace", [ IsField, IsField, IsScalar ] );
 ##  <E>characteristic polynomial</E> of <A>z</A> w.r.t.&nbsp;the field
 ##  extension <M><A>L</A> > <A>K</A></M>.
 ##  Therefore methods are installed for
-##  <Ref Func="CharacteristicPolynomial"/>
+##  <Ref Attr="CharacteristicPolynomial"/>
 ##  that call <Ref Oper="TracePolynomial"/> in the case of field extensions.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -719,20 +719,20 @@ DeclareAttribute( "GaloisGroup", IsField );
 ##
 ##  <Description>
 ##  For a cyclotomic number <A>z</A>,
-##  <Ref Func="ComplexConjugate"/> returns
+##  <Ref Attr="ComplexConjugate"/> returns
 ##  <C>GaloisCyc( <A>z</A>, -1 )</C>,
-##  see&nbsp;<Ref Func="GaloisCyc" Label="for a cyclotomic"/>.
+##  see&nbsp;<Ref Oper="GaloisCyc" Label="for a cyclotomic"/>.
 ##  For a quaternion <M><A>z</A> = c_1 e + c_2 i + c_3 j + c_4 k</M>,
-##  <Ref Func="ComplexConjugate"/> returns
+##  <Ref Attr="ComplexConjugate"/> returns
 ##  <M>c_1 e - c_2 i - c_3 j - c_4 k</M>,
-##  see&nbsp;<Ref Func="IsQuaternion"/>.
+##  see&nbsp;<Ref Filt="IsQuaternion"/>.
 ##  <P/>
-##  When <Ref Func="ComplexConjugate"/> is called with a list then the result
-##  is the list of return values of <Ref Func="ComplexConjugate"/>
+##  When <Ref Attr="ComplexConjugate"/> is called with a list then the result
+##  is the list of return values of <Ref Attr="ComplexConjugate"/>
 ##  for the list entries in the corresponding positions.
 ##  <P/>
-##  When <Ref Func="ComplexConjugate"/> is defined for an object <A>z</A>
-##  then <Ref Func="RealPart"/> and <Ref Func="ImaginaryPart"/> return
+##  When <Ref Attr="ComplexConjugate"/> is defined for an object <A>z</A>
+##  then <Ref Attr="RealPart"/> and <Ref Attr="ImaginaryPart"/> return
 ##  <C>(<A>z</A> + ComplexConjugate( <A>z</A> )) / 2</C> and
 ##  <C>(<A>z</A> - ComplexConjugate( <A>z</A> )) / 2 i</C>, respectively,
 ##  where <C>i</C> denotes the corresponding imaginary unit.
@@ -772,7 +772,7 @@ DeclareAttribute( "ImaginaryPart", IsList );
 ##
 ##  <Description>
 ##  Called with a field <A>F</A> and a list <A>gens</A> of scalars,
-##  <Ref Func="DivisionRingByGenerators"/> returns the division ring over
+##  <Ref Oper="DivisionRingByGenerators"/> returns the division ring over
 ##  <A>F</A> generated by <A>gens</A>.
 ##  The unary version returns the division ring as vector space over
 ##  <C>FieldOverItselfByGenerators( <A>gens</A> )</C>.
@@ -946,7 +946,7 @@ DeclareGlobalFunction( "SubfieldNC" );
 ##  the prime field of <M>F</M>,
 ##  and an appropriate power of <M>f</M> is a generator of the Galois group
 ##  of <M>F</M> over a subfield
-##  (see&nbsp;<Ref Oper="GaloisGroup" Label="of field"/>).
+##  (see&nbsp;<Ref Attr="GaloisGroup" Label="of field"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> f := GF(16);

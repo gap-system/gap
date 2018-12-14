@@ -23,7 +23,7 @@ particular representation.
 (Exceptions are <Ref Func="WreathProductImprimitiveAction"/>
 and <Ref Func="WreathProductProductAction"/>
 which are construction that makes sense only for permutation groups,
-see&nbsp;<Ref Func="WreathProduct"/>).
+see&nbsp;<Ref Oper="WreathProduct"/>).
 <P/>
 &GAP; however will try to choose an efficient representation, so products
 of permutation groups or pc groups often will be represented as a group of
@@ -105,7 +105,7 @@ by permuting the components.
 <P/>
 Note that &GAP; always considers the domain of a permutation group to be the
 points moved by elements of the group as returned by
-<Ref Func="MovedPoints" Label="for a list or collection of permutations"/>,
+<Ref Attr="MovedPoints" Label="for a list or collection of permutations"/>,
 i.e. it is not possible to have a domain to include fixed points, I.e.
 <M>P = \langle (1,2,3) \rangle</M> and 
 <M>P = \langle (1,3,5) \rangle</M> result in isomorphic wreath products.

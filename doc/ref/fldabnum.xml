@@ -20,7 +20,7 @@
 Besides the usual construction using
 <Ref Func="Field" Label="for several generators"/> or
 <Ref Func="DefaultField" Label="for cyclotomics"/>
-(see&nbsp;<Ref Meth="DefaultField" Label="for cyclotomics"/>),
+(see&nbsp;<Ref Func="DefaultField" Label="for cyclotomics"/>),
 abelian number fields consisting of cyclotomics can be created with
 <Ref Func="CyclotomicField" Label="for (subfield and) conductor"/>
 and <Ref Func="AbelianNumberField"/>.
@@ -37,8 +37,8 @@ and <Ref Func="AbelianNumberField"/>.
 <Heading>Operations for Abelian Number Fields</Heading>
 
 For operations for elements of abelian number fields, e.g.,
-<Ref Func="Conductor" Label="for a cyclotomic"/> or
-<Ref Func="ComplexConjugate"/>,
+<Ref Attr="Conductor" Label="for a cyclotomic"/> or
+<Ref Attr="ComplexConjugate"/>,
 see Chapter&nbsp;<Ref Chap="Cyclotomic Numbers"/>.
 
 <ManSection>
@@ -94,7 +94,7 @@ The field automorphisms of the cyclotomic field <M>&QQ;_n</M>
 are given by the linear maps <M>*k</M> on <M>&QQ;_n</M>
 that are defined by <C>E</C><M>(n)^{{*k}} = </M><C>E</C><M>(n)^k</M>,
 where <M>1 \leq k &lt; n</M> and <C>Gcd</C><M>( n, k ) = 1</M> hold
-(see&nbsp;<Ref Func="GaloisCyc" Label="for a cyclotomic"/>).
+(see&nbsp;<Ref Oper="GaloisCyc" Label="for a cyclotomic"/>).
 Note that this action is <E>not</E> equal to exponentiation of cyclotomics,
 i.e., for general cyclotomics <M>z</M>, <M>z^{{*k}}</M> is different from
 <M>z^k</M>.
@@ -142,7 +142,7 @@ Generators of <M>(&ZZ; / n &ZZ;)^{*}</M> can be computed using
 <Ref Func="GeneratorsPrimeResidues"/>.
 <P/>
 In &GAP;, a field extension <M>L / L'</M> is given by the field
-object <M>L</M> with <Ref Func="LeftActingDomain"/> value <M>L'</M>
+object <M>L</M> with <Ref Attr="LeftActingDomain"/> value <M>L'</M>
 (see&nbsp;<Ref Sect="Integral Bases of Abelian Number Fields"/>).
 <P/>
 <Example><![CDATA[

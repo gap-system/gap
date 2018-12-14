@@ -323,8 +323,8 @@ end );
 ##  <A>opr</A> expects its methods to require certain filters for their
 ##  arguments.
 ##  For example, the argument of a method for the operation
-##  <Ref Func="Zero"/> must be
-##  in the category <Ref Func="IsAdditiveElementWithZero"/>.
+##  <Ref Attr="Zero"/> must be
+##  in the category <Ref Filt="IsAdditiveElementWithZero"/>.
 ##  It is not possible to use <Ref Func="InstallMethod"/> to install
 ##  a method for which the entries of <A>args-filts</A> do not imply
 ##  the respective requirements of the operation <A>opr</A>.
@@ -751,7 +751,7 @@ end);
 ##  There are several functions that require as first argument a domain,
 ##  e.g., a  group, and as second argument something much simpler,
 ##  e.g., a prime.
-##  <Ref Func="SylowSubgroup"/> is an example.
+##  <Ref Oper="SylowSubgroup"/> is an example.
 ##  Since its value depends on two arguments, it cannot be an attribute,
 ##  yet one would like to store the Sylow subgroups once they have been
 ##  computed.
@@ -774,16 +774,16 @@ end);
 ##  in particular at most one Sylow <A>p</A> subgroup of <A>G</A> is stored
 ##  for each prime <A>p</A>.
 ##  This attribute value is maintained by the function
-##  <Ref Func="SylowSubgroup"/>,
+##  <Ref Oper="SylowSubgroup"/>,
 ##  which calls the operation <C>SylowSubgroupOp( <A>G</A>, <A>p</A> )</C>
 ##  to do the real work, if the prime <A>p</A> cannot be found in the list.
 ##  So methods that do the real work should be installed
 ##  for <C>SylowSubgroupOp</C>
-##  and not for <Ref Func="SylowSubgroup"/>.
+##  and not for <Ref Oper="SylowSubgroup"/>.
 ##  <P/>
 ##  The same mechanism works for other functions as well,
-##  e.g., for <Ref Func="PCore"/>,
-##  but also for <Ref Func="HallSubgroup"/>,
+##  e.g., for <Ref Oper="PCore"/>,
+##  but also for <Ref Oper="HallSubgroup"/>,
 ##  where the second argument is not a prime but a set of primes.
 ##  <P/>
 ##  <Ref Func="KeyDependentOperation"/> declares the two operations and the
@@ -806,7 +806,7 @@ end);
 ##  and raise an error if appropriate.
 ##  <P/>
 ##  For example, to set up the three objects
-##  <Ref Func="SylowSubgroup"/>,
+##  <Ref Oper="SylowSubgroup"/>,
 ##  <C>SylowSubgroupOp</C>,
 ##  <C>ComputedSylowSubgroups</C> together,
 ##  the declaration file <F>lib/grp.gd</F> contains the following line of
@@ -845,11 +845,11 @@ end);
 ##  <C>SylowSubgroupOp</C> (which are installed to do
 ##  the real work).
 ##  Note that no methods need be installed for
-##  <Ref Func="SylowSubgroup"/> and
+##  <Ref Oper="SylowSubgroup"/> and
 ##  <C>ComputedSylowSubgroups</C>.
 ##  If a method is installed with <Ref Func="InstallMethod"/>
 ##  for a wrapper operation such as
-##  <Ref Func="SylowSubgroup"/> then a warning is signalled
+##  <Ref Oper="SylowSubgroup"/> then a warning is signalled
 ##  provided the <Ref InfoClass="InfoWarning"/> level
 ##  is at least <C>1</C>.
 ##  (Use <Ref Func="InstallMethod"/> in order to suppress the
@@ -997,7 +997,7 @@ end );
 ##  If supplied, <A>info</A> should be a short but informative string
 ##  that describes these conditions.
 ##  This can be used to enforce tests like
-##  <Ref Func="IsFinite"/> in situations when all
+##  <Ref Prop="IsFinite"/> in situations when all
 ##  existing methods require this property.
 ##  The list <A>cond</A> may have unbound entries in which case
 ##  the corresponding argument is ignored for further tests.

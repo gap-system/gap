@@ -46,7 +46,7 @@ DeclareInfoClass("InfoLattice");
 ##  Is the representation &GAP; uses for conjugacy classes of subgroups.
 ##  It can be used to check whether an object is a class of subgroups.
 ##  The second representation
-##  <Ref Func="IsConjugacyClassSubgroupsByStabilizerRep"/> in
+##  <Ref Filt="IsConjugacyClassSubgroupsByStabilizerRep"/> in
 ##  addition is an external orbit by stabilizer and will compute its
 ##  elements via a transversal of the stabilizer.
 ##  </Description>
@@ -73,14 +73,14 @@ DeclareRepresentation("IsConjugacyClassSubgroupsByStabilizerRep",
 ##  This class is an external set,
 ##  so functions such as <Ref Attr="Representative"/>,
 ##  (which returns <A>U</A>),
-##  <Ref Func="ActingDomain"/> (which returns <A>G</A>),
-##  <Ref Func="StabilizerOfExternalSet"/> (which returns the normalizer of
-##  <A>U</A>), and <Ref Func="AsList"/> work for it.
+##  <Ref Attr="ActingDomain"/> (which returns <A>G</A>),
+##  <Ref Attr="StabilizerOfExternalSet"/> (which returns the normalizer of
+##  <A>U</A>), and <Ref Attr="AsList"/> work for it.
 ##  <P/>
 ##  (The use of the <C>[]</C>
 ##  list access to select elements of the class is considered obsolescent
 ##  and will be removed in future versions.
-##  Use <Ref Func="ClassElementLattice"/> instead.)
+##  Use <Ref Oper="ClassElementLattice"/> instead.)
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;IsNaturalSymmetricGroup(g);;
@@ -109,7 +109,7 @@ DeclareOperation("ConjugacyClassSubgroups", [IsGroup,IsGroup]);
 ##  For a class <A>C</A> of subgroups, obtained by a lattice computation,
 ##  this operation returns the <A>n</A>-th conjugate subgroup in the class.
 ##  <P/>
-##  <E>Because of other methods installed, calling <Ref Func="AsList"/> with
+##  <E>Because of other methods installed, calling <Ref Attr="AsList"/> with
 ##  <A>C</A> can give a different arrangement of the class elements!</E>
 ##  <P/>
 ##  The &GAP; package <Package>XGAP</Package> permits a graphical display of
@@ -233,7 +233,7 @@ DeclareGlobalFunction("LatticeViaRadical");
 ##  <Description>
 ##  For a lattice <A>lat</A> of subgroups this attribute contains the maximal
 ##  subgroup relations among the subgroups of the lattice.
-##  It is a list corresponding to the <Ref Func="ConjugacyClassesSubgroups"/>
+##  It is a list corresponding to the <Ref Attr="ConjugacyClassesSubgroups"/>
 ##  value of the lattice, each entry giving a list of the maximal subgroups
 ##  of the representative of this class.
 ##  Every maximal subgroup is indicated by a list of the form <M>[ c, n ]</M>
@@ -241,9 +241,9 @@ DeclareGlobalFunction("LatticeViaRadical");
 ##  maximal subgroup of the representative. 
 ##  <P/>
 ##  The number <M>n</M> corresponds to access via
-##  <Ref Func="ClassElementLattice"/>
-##  and <E>not</E> necessarily the <Ref Func="AsList"/> arrangement!
-##  See also <Ref Func="MinimalSupergroupsLattice"/>.
+##  <Ref Oper="ClassElementLattice"/>
+##  and <E>not</E> necessarily the <Ref Attr="AsList"/> arrangement!
+##  See also <Ref Attr="MinimalSupergroupsLattice"/>.
 ##  <Example><![CDATA[
 ##  gap> MaximalSubgroupsLattice(l);
 ##  [ [  ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], 
@@ -282,7 +282,7 @@ DeclareAttribute("MaximalSubgroupsLattice",IsLatticeSubgroupsRep);
 ##  <Description>
 ##  For a lattice <A>lat</A> of subgroups this attribute contains the minimal
 ##  supergroup relations among the subgroups of the lattice.
-##  It is a list corresponding to the <Ref Func="ConjugacyClassesSubgroups"/>
+##  It is a list corresponding to the <Ref Attr="ConjugacyClassesSubgroups"/>
 ##  value of the lattice, each entry giving a list of the minimal supergroups
 ##  of the representative of this class.
 ##  Every minimal supergroup is indicated by a list of the form
@@ -290,9 +290,9 @@ DeclareAttribute("MaximalSubgroupsLattice",IsLatticeSubgroupsRep);
 ##  number <M>c</M> is a minimal supergroup of the representative.
 ##  <P/>
 ##  The number <M>n</M> corresponds to access via
-##  <Ref Func="ClassElementLattice"/>
-##  and <E>not</E> necessarily the <Ref Func="AsList"/> arrangement!
-##  See also <Ref Func="MaximalSubgroupsLattice"/>.
+##  <Ref Oper="ClassElementLattice"/>
+##  and <E>not</E> necessarily the <Ref Attr="AsList"/> arrangement!
+##  See also <Ref Attr="MaximalSubgroupsLattice"/>.
 ##  <Example><![CDATA[
 ##  gap> MinimalSupergroupsLattice(l);
 ##  [ [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], 

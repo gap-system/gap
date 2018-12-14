@@ -110,7 +110,7 @@ DeclareGlobalFunction( "StandardScalarProduct" );
 ##  <M>A</M> and <M>b</M>.
 ##  <P/>
 ##  &GAP; provides the following functions for this purpose
-##  (see also&nbsp;<Ref Func="InverseMatMod"/>).
+##  (see also&nbsp;<Ref Oper="InverseMatMod"/>).
 ##  <#/GAPDoc>
 ##
 
@@ -127,7 +127,7 @@ DeclareGlobalFunction( "StandardScalarProduct" );
 ##  For a <M>m \times n</M> matrix <A>A</A> of cyclotomics that has rank
 ##  <M>m \leq n</M>, and a list <A>B</A> of cyclotomic vectors,
 ##  each of length <M>n</M>,
-##  <Ref Func="Decomposition"/> tries to find integral solutions
+##  <Ref Oper="Decomposition"/> tries to find integral solutions
 ##  of the linear equation systems <C><A>x</A> * <A>A</A> = <A>B</A>[i]</C>,
 ##  by computing the <M>p</M>-adic series of hypothetical solutions.
 ##  <P/>
@@ -255,7 +255,7 @@ DeclareGlobalFunction( "IntegralizedMat" );
 ##
 ##  <Description>
 ##  <Ref Func="DecompositionInt"/> does the same as
-##  <Ref Func="Decomposition"/>,
+##  <Ref Oper="Decomposition"/>,
 ##  except that <A>A</A> and <A>B</A> must be integral matrices,
 ##  and <A>depth</A> must be a nonnegative integer.
 ##  </Description>

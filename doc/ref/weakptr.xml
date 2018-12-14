@@ -193,8 +193,8 @@ true
 <Heading>Accessing Weak Pointer Objects as Lists</Heading>
 
 Weak pointer objects are members of <C>ListsFamily</C>
-and the categories <Ref Func="IsList"/>
-and <Ref Func="IsMutable"/>.
+and the categories <Ref Filt="IsList"/>
+and <Ref Filt="IsMutable"/>.
 Methods based  on  the low-level functions in  the previous
 section, are  installed for the list  access operations,  enabling them to be
 used as lists.    However, it is  <E>not recommended</E>  that  these be used   in
@@ -210,7 +210,7 @@ access to <C>w[i]</C> is safe.
 <Section Label="Copying Weak Pointer Objects">
 <Heading>Copying Weak Pointer Objects</Heading>
 
-A <Ref Func="ShallowCopy"/> method is installed,
+A <Ref Oper="ShallowCopy"/> method is installed,
 which makes a new weak pointer object
 containing the same objects as the original.
 <P/>

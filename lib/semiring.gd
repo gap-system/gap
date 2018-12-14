@@ -81,7 +81,7 @@ InstallFactorMaintenance( IsRDistributive,
 ##  <Description>
 ##  is <K>true</K> if the collection <A>C</A> is both left and right
 ##  distributive
-##  (see <Ref Func="IsLDistributive"/>, <Ref Func="IsRDistributive"/>),
+##  (see <Ref Prop="IsLDistributive"/>, <Ref Prop="IsRDistributive"/>),
 ##  and <K>false</K> otherwise.
 ##  <Example><![CDATA[
 ##  gap> IsDistributive( Integers );

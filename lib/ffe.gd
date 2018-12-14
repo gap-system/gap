@@ -37,7 +37,7 @@
 ##      (see section&nbsp;<Ref Sect="Residue Class Rings"/>) or
 ##  (3) if the Conway polynomial of degree <A>d</A> over the field with
 ##      <A>p</A> elements is known, or can be computed
-##      (see <Ref Oper="ConwayPolynomial"/>).
+##      (see <Ref Func="ConwayPolynomial"/>).
 ##  <P/>
 ##  If you attempt to construct an element of <C>GF(<A>p^d</A>)</C> for which
 ##  <A>d</A> <M>> 1</M> and the relevant Conway polynomial is not known,
@@ -65,16 +65,16 @@
 ##  <P/>
 ##  The additive neutral element is <C>0 * Z(<A>p</A>)</C>.
 ##  It is different from the integer <C>0</C> in subtle ways.
-##  First <C>IsInt( 0 * Z(<A>p</A>)  )</C> (see <Ref Func="IsInt"/>) is
+##  First <C>IsInt( 0 * Z(<A>p</A>)  )</C> (see <Ref Filt="IsInt"/>) is
 ##  <K>false</K> and <C>IsFFE( 0 * Z(<A>p</A>) )</C>
-##  (see <Ref Func="IsFFE"/>) is <K>true</K>, whereas it is
+##  (see <Ref Filt="IsFFE"/>) is <K>true</K>, whereas it is
 ##  just the other way around for the integer <C>0</C>.
 ##  <P/>
 ##  The multiplicative neutral element is <C>Z(<A>p</A>)^0</C>.
 ##  It is different from the integer <C>1</C> in subtle ways.
-##  First <C>IsInt( Z(<A>p</A>)^0 )</C> (see <Ref Func="IsInt"/>)
+##  First <C>IsInt( Z(<A>p</A>)^0 )</C> (see <Ref Filt="IsInt"/>)
 ##  is <K>false</K> and <C>IsFFE( Z(<A>p</A>)^0 )</C>
-##  (see <Ref Func="IsFFE"/>) is <K>true</K>, whereas it
+##  (see <Ref Filt="IsFFE"/>) is <K>true</K>, whereas it
 ##  is just the other way around for the integer <C>1</C>.
 ##  Also <C>1+1</C> is <C>2</C>,
 ##  whereas, e.g., <C>Z(2)^0 + Z(2)^0</C> is <C>0 * Z(2)</C>.
@@ -137,9 +137,9 @@
 ##
 ##  <#GAPDoc Label="[2]{ffe}">
 ##  Since finite field elements are scalars,
-##  the operations <Ref Func="Characteristic"/>,
-##  <Ref Func="One"/>, <Ref Func="Zero"/>, <Ref Func="Inverse"/>,
-##  <Ref Func="AdditiveInverse"/>, <Ref Func="Order"/> can be applied to
+##  the operations <Ref Attr="Characteristic"/>,
+##  <Ref Attr="One"/>, <Ref Attr="Zero"/>, <Ref Attr="Inverse"/>,
+##  <Ref Attr="AdditiveInverse"/>, <Ref Attr="Order"/> can be applied to
 ##  them (see&nbsp;<Ref Sect="Attributes and Properties of Elements"/>).
 ##  Contrary to the situation with other scalars,
 ##  <Ref Attr="Order"/> is defined also for the zero element
@@ -202,17 +202,17 @@
 ##  <Filt Name="IsFFECollCollColl" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  Objects in the category <Ref Func="IsFFE"/> are used to implement
+##  Objects in the category <Ref Filt="IsFFE"/> are used to implement
 ##  elements of finite fields.
 ##  In this manual, the term <E>finite field element</E> always means an
-##  object in <Ref Func="IsFFE"/>.
+##  object in <Ref Filt="IsFFE"/>.
 ##  All finite field elements of the same characteristic form a family in
 ##  &GAP; (see&nbsp;<Ref Sect="Families"/>).
 ##  Any collection of finite field elements
-##  (see&nbsp;<Ref Func="IsCollection"/>) lies in
-##  <Ref Func="IsFFECollection"/>, and a collection of such collections
+##  (see&nbsp;<Ref Filt="IsCollection"/>) lies in
+##  <Ref Filt="IsFFECollection"/>, and a collection of such collections
 ##  (e.g., a matrix of finite field elements) lies in
-##  <Ref Func="IsFFECollColl"/>.
+##  <Ref Filt="IsFFECollColl"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -247,7 +247,7 @@ DeclareCategoryCollections( "IsFFECollColl" );
 ##  The exact behaviour of this comparison depends on which of two categories
 ##  the field elements belong to:
 ##  <P/>
-##  Finite field elements are ordered in &GAP; (by <Ref Func="\&lt;"/>)
+##  Finite field elements are ordered in &GAP; (by <Ref Oper="\&lt;"/>)
 ##  first by characteristic and then by their degree
 ##  (i.e. the sizes of the smallest fields containing them).
 ##  Amongst irreducible elements of a given field, the ordering 
@@ -258,7 +258,7 @@ DeclareCategoryCollections( "IsFFECollColl" );
 ##  by their coefficients with respect to the canonical basis of the field.
 ##  <P/>
 ##  Elements in <Ref Filt="IsLogOrderedFFE"/> are ordered according to their
-##  discrete logarithms with respect to the <Ref Func="PrimitiveElement"/>
+##  discrete logarithms with respect to the <Ref Attr="PrimitiveElement"/>
 ##  attribute of the field.
 ##  For the comparison of finite field elements with other &GAP; objects,
 ##  see&nbsp;<Ref Sect="Comparisons"/>.
@@ -422,18 +422,18 @@ DeclareOperation( "LargeGaloisField", [IS_INT, IS_INT] );
 ##  the new field is constructed as polynomial extension of <M>S</M>
 ##  with this polynomial;
 ##  in this case, <A>pol</A> is accessible as the value of
-##  <Ref Func="DefiningPolynomial"/> for the new field,
+##  <Ref Attr="DefiningPolynomial"/> for the new field,
 ##  and a root of <A>pol</A> in the new field is accessible as the value of
-##  <Ref Func="RootOfDefiningPolynomial"/>.
+##  <Ref Attr="RootOfDefiningPolynomial"/>.
 ##  <P/>
 ##  Note that the subfield over which a field was constructed determines over
 ##  which  field  the  Galois  group,  conjugates,   norm,   trace,   minimal
 ##  polynomial, and trace polynomial are  computed
-##  (see&nbsp;<Ref Oper="GaloisGroup" Label="of field"/>,
-##  <Ref Func="Conjugates"/>, <Ref Func="Norm"/>,
+##  (see&nbsp;<Ref Attr="GaloisGroup" Label="of field"/>,
+##  <Ref Attr="Conjugates"/>, <Ref Attr="Norm"/>,
 ##  <Ref Attr="Trace" Label="for a field element"/>,
 ##  <Ref Oper="MinimalPolynomial" Label="over a field"/>,
-##  <Ref Func="TracePolynomial"/>).
+##  <Ref Oper="TracePolynomial"/>).
 ##  <P/>
 ##  The field is regarded as a vector space
 ##  (see&nbsp;<Ref Chap="Vector Spaces"/>) over the given subfield,
@@ -476,7 +476,7 @@ DeclareSynonym( "GF", GaloisField );
 ##  <Meth Name="DegreeFFE" Arg='mat' Label="for a matrix of FFEs"/>
 ##
 ##  <Description>
-##  <Ref Func="DegreeFFE" Label="for a FFE"/> returns the degree of the
+##  <Ref Attr="DegreeFFE" Label="for a FFE"/> returns the degree of the
 ##  smallest finite field <A>F</A> containing the element <A>z</A>,
 ##  respectively all elements of the row vector <A>vec</A> over a finite
 ##  field (see&nbsp;<Ref Chap="Row Vectors"/>),
@@ -507,7 +507,7 @@ DeclareAttribute( "DegreeFFE", IsFFE  );
 ##  <Oper Name="LogFFE" Arg='z, r'/>
 ##
 ##  <Description>
-##  <Ref Func="LogFFE"/> returns the discrete logarithm of the element
+##  <Ref Oper="LogFFE"/> returns the discrete logarithm of the element
 ##  <A>z</A> in a finite field with respect to the root <A>r</A>.
 ##  An error is signalled if <A>z</A> is zero.
 ##  <K>fail</K> is returned if <A>z</A> is not a power of <A>r</A>.
@@ -551,7 +551,7 @@ DeclareOperation( "LogFFE", [ IsFFE, IsFFE ] );
 ##  (see&nbsp;<Ref Func="PrimitiveRootMod"/>).
 ##  <P/>
 ##  <Ref Attr="IntFFE"/> is installed as a method for the operation
-##  <Ref Func="Int"/> with argument a finite field element.
+##  <Ref Attr="Int"/> with argument a finite field element.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> IntFFE( Z(13) );  PrimitiveRootMod( 13 );
@@ -584,14 +584,14 @@ DeclareAttribute( "IntFFE", IsFFE  );
 ##
 ##  <Description>
 ##  For a finite prime field element <A>z</A>,
-##  <Ref Func="IntFFESymm" Label="for a FFE"/> returns the corresponding
+##  <Ref Attr="IntFFESymm" Label="for a FFE"/> returns the corresponding
 ##  integer of smallest absolute value.
-##  That is, <Ref Func="IntFFESymm" Label="for a FFE"/> returns the integer
+##  That is, <Ref Attr="IntFFESymm" Label="for a FFE"/> returns the integer
 ##  <M>i</M> of smallest absolute value such that
 ##  <M>i</M><C> * One( </C><A>z</A><C> ) = </C><A>z</A> holds.
 ##  <P/>
 ##  For a vector <A>vec</A> of FFEs, the operation returns the result of
-##  applying <Ref Func="IntFFESymm" Label="for a vector of FFEs"/>
+##  applying <Ref Attr="IntFFESymm" Label="for a vector of FFEs"/>
 ##  to every entry of the vector.
 ##  <P/>
 ##  The  correspondence between elements from a finite prime field of
@@ -628,7 +628,7 @@ DeclareAttribute( "IntFFESymm", IsFFE  );
 ##
 ##  <Description>
 ##  is the list of integers corresponding to the vector <A>vecffe</A> of
-##  finite field elements in a prime field (see&nbsp;<Ref Func="IntFFE"/>).
+##  finite field elements in a prime field (see&nbsp;<Ref Attr="IntFFE"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

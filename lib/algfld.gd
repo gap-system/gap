@@ -115,7 +115,7 @@ DeclareOperation( "AlgebraicElementsFamily",
 ##  <A>K</A>.
 ##  The  polynomial <A>f</A> is the <Ref Attr="DefiningPolynomial"/> value
 ##  of <A>L</A> and the attribute
-##  <Ref Func="RootOfDefiningPolynomial"/>
+##  <Ref Attr="RootOfDefiningPolynomial"/>
 ##  of <A>L</A> holds a root of <A>f</A> in <A>L</A>.
 ##  By default this root is printed as <C>a</C>, this string can be
 ##  overwritten with the optional argument <A>nam</A>. <P/>

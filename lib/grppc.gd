@@ -163,7 +163,7 @@ DeclareAttribute( "InducedPcgsWrtFamilyPcgs", IsGroup );
 ##  If <A>pcgs</A> has a parent pcgs,
 ##  then the result is induced with respect to this parent pcgs.
 ##  <P/>
-##  <Ref Func="InducedPcgs"/> is a wrapper function only.
+##  <Ref Oper="InducedPcgs"/> is a wrapper function only.
 ##  Therefore, methods for computing computing an induced pcgs
 ##  should be installed for the operation <C>InducedPcgsOp</C>.
 ##  </Description>

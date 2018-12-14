@@ -40,7 +40,7 @@
 ##  are contained in <A>H</A>.
 ##  (<Ref Func="GroupHomomorphismByImages"/> creates
 ##  a group general mapping by images and
-##  tests whether it is in <Ref Func="IsMapping"/>.)
+##  tests whether it is in <Ref Filt="IsMapping"/>.)
 ##  <Example><![CDATA[
 ##  gap> map:=GroupGeneralMappingByImages(g,h,gens,[(1,2,3),(1,2)]);
 ##  [ (1,2,3,4), (1,2) ] -> [ (1,2,3), (1,2) ]
@@ -78,7 +78,7 @@ DeclareOperation( "GroupGeneralMappingByImagesNC",
 ##  images in <A>H</A>.
 ##  <P/>
 ##  If omitted, the arguments <A>gens</A> and <A>imgs</A> default to
-##  the <Ref Func="GeneratorsOfGroup"/> value of <A>G</A> and <A>H</A>,
+##  the <Ref Attr="GeneratorsOfGroup"/> value of <A>G</A> and <A>H</A>,
 ##  respectively. If <A>H</A> is not given the mapping is automatically
 ##  considered as surjective.
 ##  <P/>
@@ -90,11 +90,11 @@ DeclareOperation( "GroupGeneralMappingByImagesNC",
 ##  This test can be quite expensive. If one is certain that the mapping of
 ##  the generators extends to a homomorphism,
 ##  one can avoid the checks by calling
-##  <Ref Func="GroupHomomorphismByImagesNC"/>.
+##  <Ref Oper="GroupHomomorphismByImagesNC"/>.
 ##  (There also is the possibility to
 ##  construct potentially multi-valued mappings with
-##  <Ref Func="GroupGeneralMappingByImages"/> and to test with
-##  <Ref Func="IsMapping"/> whether they are indeed homomorphisms.)
+##  <Ref Oper="GroupGeneralMappingByImages"/> and to test with
+##  <Ref Filt="IsMapping"/> whether they are indeed homomorphisms.)
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -111,7 +111,7 @@ DeclareGlobalFunction( "GroupHomomorphismByImages" );
 ##  <Oper Name="GroupHomomorphismByImagesNC" Arg='G, H[[, gens], imgs]'/>
 ##
 ##  <Description>
-##  <Ref Func="GroupHomomorphismByImagesNC"/> creates a homomorphism as
+##  <Ref Oper="GroupHomomorphismByImagesNC"/> creates a homomorphism as
 ##  <Ref Func="GroupHomomorphismByImages"/> does, however it does not test
 ##  whether <A>gens</A> generates <A>G</A> and that the mapping of
 ##  <A>gens</A> to <A>imgs</A> indeed defines a group homomorphism.
@@ -120,12 +120,12 @@ DeclareGlobalFunction( "GroupHomomorphismByImages" );
 ##  Results are unpredictable if the conditions do not hold.
 ##  <P/>
 ##  If omitted, the arguments <A>gens</A> and <A>imgs</A> default to
-##  the <Ref Func="GeneratorsOfGroup"/> value of <A>G</A> and <A>H</A>,
+##  the <Ref Attr="GeneratorsOfGroup"/> value of <A>G</A> and <A>H</A>,
 ##  respectively.
 ##  <P/>
 ##  (For creating a possibly multi-valued mapping from <A>G</A> to <A>H</A>
 ##  that respects multiplication and inverses,
-##  <Ref Func="GroupGeneralMappingByImages"/> can be used.)
+##  <Ref Oper="GroupGeneralMappingByImages"/> can be used.)
 ##  <!-- If we could guarantee that it does not matter whether we construct the-->
 ##  <!-- homomorphism directly or whether we construct first a general mapping-->
 ##  <!-- and ask it for  being a homomorphism,-->
@@ -238,7 +238,7 @@ DeclareRepresentation( "IsGroupGeneralMappingByAsGroupGeneralMappingByImages",
 ##  returns a group general mapping that which implements the same abstract
 ##  mapping. (Some operations can be performed more effective in this
 ##  representation, see
-##  also&nbsp;<Ref Func="IsGroupGeneralMappingByAsGroupGeneralMappingByImages"/>.)
+##  also&nbsp;<Ref Filt="IsGroupGeneralMappingByAsGroupGeneralMappingByImages"/>.)
 ##  <Example><![CDATA[
 ##  gap> AsGroupGeneralMappingByImages(hom);
 ##  [ (1,2,3,4), (1,2) ] -> [ (1,2), (1,2) ]
@@ -309,8 +309,8 @@ end;
 ##  with the image of <A>G</A> this permits efficient computations in the factor
 ##  group.
 ##  The homomorphism returned is not necessarily surjective, so
-##  <Ref Func="ImagesSource"/> should be used instead of 
-##  <Ref Func="Range" Label="of a general mapping"/>
+##  <Ref Attr="ImagesSource"/> should be used instead of 
+##  <Ref Attr="Range" Label="of a general mapping"/>
 ##  to get a group isomorphic to the factor group.
 ##  The <C>NC</C> variant does not check whether <A>N</A> is normal in
 ##  <A>G</A>.
@@ -362,12 +362,12 @@ DeclareGlobalFunction( "NaturalHomomorphismByNormalSubgroup" );
 ##  <Description>
 ##  Let <A>G</A> be a group, and <A>g</A> an element in the same family as
 ##  the elements of <A>G</A>.
-##  <Ref Func="ConjugatorIsomorphism"/> returns the isomorphism from <A>G</A>
+##  <Ref Oper="ConjugatorIsomorphism"/> returns the isomorphism from <A>G</A>
 ##  to <C><A>G</A>^<A>g</A></C> defined by <M>h \mapsto h^{<A>g</A>}</M>
 ##  for all <M>h \in <A>G</A></M>.
 ##  <P/>
-##  If <A>g</A> normalizes <A>G</A> then <Ref Func="ConjugatorIsomorphism"/>
-##  does the same as <Ref Func="ConjugatorAutomorphismNC"/>.
+##  If <A>g</A> normalizes <A>G</A> then <Ref Oper="ConjugatorIsomorphism"/>
+##  does the same as <Ref Oper="ConjugatorAutomorphismNC"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -397,7 +397,7 @@ DeclareOperation( "ConjugatorIsomorphism",
 ##  in this case,
 ##  the isomorphism from <A>G</A> to <C><A>G</A>^<A>g</A></C> induced by
 ##  conjugation with <A>g</A> can be constructed with
-##  <Ref Func="ConjugatorIsomorphism"/>.
+##  <Ref Oper="ConjugatorIsomorphism"/>.
 ##  <P/>
 ##  <Ref Oper="ConjugatorAutomorphismNC"/> does the same as
 ##  <Ref Func="ConjugatorAutomorphism"/>,
@@ -433,7 +433,7 @@ DeclareOperation( "ConjugatorAutomorphismNC",
 ##  in this case,
 ##  the isomorphism from <A>G</A> to <C><A>G</A>^<A>g</A></C> induced by
 ##  conjugation with <A>g</A> can be constructed
-##  with <Ref Func="ConjugatorIsomorphism"/>
+##  with <Ref Oper="ConjugatorIsomorphism"/>
 ##  or with <Ref Func="ConjugatorAutomorphism"/>.
 ##  <P/>
 ##  <Ref Oper="InnerAutomorphismNC"/> does the same as
@@ -463,7 +463,7 @@ DeclareOperation( "InnerAutomorphismNC",
 ##
 ##  <Description>
 ##  Let <A>hom</A> be a group general mapping
-##  (see&nbsp;<Ref Func="IsGroupGeneralMapping"/>) with source <M>G</M>, say.
+##  (see&nbsp;<Ref Filt="IsGroupGeneralMapping"/>) with source <M>G</M>, say.
 ##  <Ref Prop="IsConjugatorIsomorphism"/> returns <K>true</K> if <A>hom</A>
 ##  is induced by conjugation of <M>G</M> by an element <M>g</M> that lies in
 ##  <M>G</M> or in a group into which <M>G</M> is naturally embedded
@@ -483,10 +483,10 @@ DeclareOperation( "InnerAutomorphismNC",
 ##  If <Ref Prop="IsConjugatorIsomorphism"/> returns <K>true</K> for
 ##  <A>hom</A> then an element <M>g</M> that induces <A>hom</A> can be
 ##  accessed as value of the attribute
-##  <Ref Func="ConjugatorOfConjugatorIsomorphism"/>.
+##  <Ref Attr="ConjugatorOfConjugatorIsomorphism"/>.
 ##  <P/>
 ##  <Ref Prop="IsConjugatorAutomorphism"/> returns <K>true</K> if <A>hom</A>
-##  is an automorphism (see&nbsp;<Ref Func="IsEndoGeneralMapping"/>)
+##  is an automorphism (see&nbsp;<Ref Prop="IsEndoGeneralMapping"/>)
 ##  that is regarded as a conjugator isomorphism
 ##  by <Ref Prop="IsConjugatorIsomorphism"/>, and <K>false</K> otherwise.
 ##  <P/>
@@ -519,12 +519,12 @@ InstallTrueMethod( IsConjugatorAutomorphism, IsInnerAutomorphism );
 ##
 ##  <Description>
 ##  For a conjugator isomorphism <A>hom</A>
-##  (see&nbsp;<Ref Func="ConjugatorIsomorphism"/>),
-##  <Ref Func="ConjugatorOfConjugatorIsomorphism"/> returns an element
+##  (see&nbsp;<Ref Oper="ConjugatorIsomorphism"/>),
+##  <Ref Attr="ConjugatorOfConjugatorIsomorphism"/> returns an element
 ##  <M>g</M> such that mapping under <A>hom</A> is induced by conjugation
 ##  with <M>g</M>.
 ##  <P/>
-##  To avoid problems with <Ref Func="IsInnerAutomorphism"/>,
+##  To avoid problems with <Ref Prop="IsInnerAutomorphism"/>,
 ##  it is guaranteed that the conjugator is taken from the source of
 ##  <A>hom</A> if possible.
 ##  <P/>
@@ -599,7 +599,7 @@ DeclareGlobalFunction( "MakeMapping" );
 ##  full multiplication table.
 ##  <P/>
 ##  <Ref Func="GroupHomomorphismByFunction" Label="by function (and inverse function) between two domains"/>
-##  creates a mapping which lies in <Ref Func="IsSPGeneralMapping"/>.
+##  creates a mapping which lies in <Ref Filt="IsSPGeneralMapping"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> hom:=GroupHomomorphismByFunction(g,h,

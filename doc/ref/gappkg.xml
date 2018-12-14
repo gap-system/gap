@@ -396,7 +396,7 @@ It may also be created using the <Package>PackageMaker</Package> mentioned above
 A &GAP; package <E>must</E> have a file <F>init.g</F>. 
 Typical <F>init.g</F> and <F>read.g</F> files should normally consist 
 entirely of <Ref Func="ReadPackage"/> commands (and possibly 
-also <Ref Func="Read"/> commands) for reading further files
+also <Ref Oper="Read"/> commands) for reading further files
 of the package. If the <Q>declaration</Q> and <Q>implementation</Q> parts of 
 the package are separated (and this is recommended), there should be a 
 <F>read.g</F> file. 
@@ -1248,7 +1248,7 @@ if this is not the case).
 This is especially important if the package is loaded automatically.
 <P/>
 The easiest way to accomplish this is to use
-<Ref Func="Filename" Label="for a directory and a string"/>
+<Ref Oper="Filename" Label="for a directory and a string"/>
 for checking for the actual binaries in the path given by
 <Ref Func="DirectoriesPackagePrograms"/>
 for the respective package.
@@ -1513,7 +1513,7 @@ in the <F>PackageInfo.g</F> to be included in the &GAP; standard test suite.
 This file can either consist of calls of <Ref Func="TestDirectory"/> or
 <Ref Func="Test"/> (in this case, it is common to call it <F>testall.g</F>)
 or be itself a test file having an extension <F>.tst</F> and supposed to be 
-read via <Ref Oper="Test"/>. It is assumed that the
+read via <Ref Func="Test"/>. It is assumed that the
 latter case occurs if and only if the file contains the substring<P/>
 &nbsp;<C>"gap> START_TEST("</C>
 <P/>

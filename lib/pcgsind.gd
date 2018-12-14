@@ -67,7 +67,7 @@ DeclareOperation( "InducedPcgsByPcSequenceNC", [ IsPcgs, IsList ] );
 ##  exponent of the element of <A>igs</A> that has depth <A>i</A> in the
 ##  parent.
 ##  (It cannot be assigned to a component in the object created by
-##  <Ref Func="InducedPcgsByPcSequenceNC"/> as the
+##  <Ref Oper="InducedPcgsByPcSequenceNC"/> as the
 ##  permutation group methods call it from within the postprocessing,
 ##  before this postprocessing however no coefficients may be computed.)
 ##  </Description>
@@ -251,7 +251,7 @@ DeclareAttribute( "CanonicalPcgs", IsInducedPcgs );
 ##
 ##  <Description>
 ##  An induced pcgs is canonical if the matrix of the exponent vectors of
-##  the elements of <A>pcgs</A> with respect to the <Ref Func="ParentPcgs"/>
+##  the elements of <A>pcgs</A> with respect to the <Ref Attr="ParentPcgs"/>
 ##  value of <A>pcgs</A> is in Hermite normal form
 ##  (see <Cite Key="SOGOS"/>). While a subgroup can have various
 ##  induced pcgs with respect to a parent pcgs a canonical pcgs is unique.
@@ -284,20 +284,20 @@ InstallTrueMethod(IsInducedPcgs, IsCanonicalPcgs);
 ##  for polycyclic groups.
 ##  Many algorithms require a pcgs that corresponds to an
 ##  elementary abelian series
-##  (see&nbsp;<Ref Func="PcgsElementaryAbelianSeries" Label="for a group"/>)
+##  (see&nbsp;<Ref Attr="PcgsElementaryAbelianSeries" Label="for a group"/>)
 ##  or even a special pcgs (see&nbsp;<Ref Sect="Special Pcgs"/>).
 ##  If the family pcgs has the required
 ##  properties, it will be used for these purposes, if not &GAP; has to work
 ##  with respect to a new pcgs which is <E>not</E> the family pcgs and thus
 ##  takes longer for elementary calculations like
-##  <Ref Func="ExponentsOfPcElement"/>.
+##  <Ref Oper="ExponentsOfPcElement"/>.
 ##  <P/>
 ##  Therefore, if the family pcgs chosen for arithmetic is not of importance
 ##  it might be worth to <E>change</E> to another, nicer, pcgs to speed up
 ##  calculations.
 ##  This can be achieved, for example, by using the 
-##  <Ref Func="Range" Label="of a general mapping"/> value
-##  of the isomorphism obtained by <Ref Func="IsomorphismSpecialPcGroup"/>.
+##  <Ref Attr="Range" Label="of a general mapping"/> value
+##  of the isomorphism obtained by <Ref Attr="IsomorphismSpecialPcGroup"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

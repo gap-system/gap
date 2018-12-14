@@ -223,12 +223,12 @@ As another example, note that an element and a collection containing
 this element never lie in the same family,
 by the general implementation of collections;
 namely, the family of a collection of elements in the family <A>Fam</A>
-is the collections family of <A>Fam</A> (see&nbsp;<Ref Func="CollectionsFamily"/>).
+is the collections family of <A>Fam</A> (see&nbsp;<Ref Attr="CollectionsFamily"/>).
 This means that for a collection, we need not (because we cannot)
 decide about its family.
 <P/>
 A few functions in &GAP; return families,
-see <Ref Func="CollectionsFamily"/> and <Ref Func="ElementsFamily"/>.
+see <Ref Attr="CollectionsFamily"/> and <Ref Attr="ElementsFamily"/>.
 
 <#Include Label="NewFamily">
 
@@ -305,7 +305,7 @@ Second, preferably only few low level functions should use <C>!.</C>,
 whereas this operator should not occur in <Q>user interactions</Q>.
 <P/>
 Note that even if <A>cobj</A> claims that it is immutable, i.e.,
-if <A>cobj</A> is not in the category <Ref Func="IsMutable"/>,
+if <A>cobj</A> is not in the category <Ref Filt="IsMutable"/>,
 access and assignment via <C>!.</C> and <C>!.:=</C> work.
 This is necessary for being able to store newly discovered information
 in immutable objects.
@@ -348,17 +348,17 @@ InstallMethod( Iterator,
 After the above method installation, one can already ask for
 <C>Iterator( Integers )</C>.
 Note that exactly the domain of integers is described by
-the filter <Ref Func="IsIntegers"/>.
+the filter <Ref Filt="IsIntegers"/>.
 <P/>
 By the call to <Ref Func="NewType"/>, the returned object lies in the family
 containing all iterators, which is <C>IteratorsFamily</C>,
-it lies in the category <Ref Func="IsIterator"/>
+it lies in the category <Ref Filt="IsIterator"/>
 and in the representation <C>IsIntegersIteratorCompRep</C>;
 furthermore, it has the component <C>counter</C> with value <C>0</C>.
 <P/>
 What is missing now are methods for the two basic operations
-of iterators, namely <Ref Func="IsDoneIterator"/> and
-<Ref Func="NextIterator"/>.
+of iterators, namely <Ref Oper="IsDoneIterator"/> and
+<Ref Oper="NextIterator"/>.
 The former must always return <K>false</K>, since there are infinitely
 many integers.
 The latter must return the next integer in the iteration,
@@ -413,7 +413,7 @@ Second, preferably only few low level functions should use <C>![]</C>,
 whereas this operator should not occur in <Q>user interactions</Q>.
 <P/>
 Note that even if <A>pobj</A> claims that it is immutable, i.e.,
-if <A>pobj</A> is not in the category <Ref Func="IsMutable"/>,
+if <A>pobj</A> is not in the category <Ref Filt="IsMutable"/>,
 access and assignment via <C>![]</C> work.
 This is necessary for being able to store newly discovered information
 in immutable objects.
@@ -449,17 +449,17 @@ InstallMethod( Iterator,
 After the above method installation, one can already ask for
 <C>Iterator( Integers )</C>.
 Note that exactly the domain of integers is described by
-the filter <Ref Func="IsIntegers"/>.
+the filter <Ref Filt="IsIntegers"/>.
 <P/>
 By the call to <Ref Func="NewType"/>, the returned object lies in the family
 containing all iterators, which is <C>IteratorsFamily</C>,
-it lies in the category <Ref Func="IsIterator"/>
+it lies in the category <Ref Filt="IsIterator"/>
 and in the representation <C>IsIntegersIteratorPosRep</C>;
 furthermore, the first position has value <C>0</C>.
 <P/>
 What is missing now are methods for the two basic operations
-of iterators, namely <Ref Func="IsDoneIterator"/>
-and <Ref Func="NextIterator"/>.
+of iterators, namely <Ref Oper="IsDoneIterator"/>
+and <Ref Oper="NextIterator"/>.
 The former must always return <K>false</K>, since there are infinitely
 many integers.
 The latter must return the next integer in the iteration,
@@ -490,7 +490,7 @@ in Section&nbsp;<Ref Sect="Component Objects"/> and <Ref Sect="Positional Object
 The call <C>Iterator( Integers )</C> will cause one of the methods to be
 selected, and for the returned iterator, which will have one of the
 representations we constructed,
-the right <Ref Func="NextIterator"/> method will be chosen.
+the right <Ref Oper="NextIterator"/> method will be chosen.
 
 </Section>
 
@@ -506,16 +506,16 @@ features, or one wants that some objects also behave as lists.
 An example can be found in&nbsp;<Ref Sect="Example -- Constructing Enumerators"/>.
 <P/>
 A <E>list</E> in &GAP; is an object in the category
-<Ref Func="IsList"/>.
-Basic operations for lists are <Ref Func="Length"/>,
-<Ref Func="\[\]"/>,
-and <Ref Func="IsBound\[\]"/>
+<Ref Filt="IsList"/>.
+Basic operations for lists are <Ref Attr="Length"/>,
+<Ref Oper="\[\]"/>,
+and <Ref Oper="IsBound\[\]"/>
 (see&nbsp;<Ref Sect="Basic Operations for Lists"/>).
 <P/>
 Note that the access to the position <A>pos</A> in the list <A>list</A>
 via <C><A>list</A>[<A>pos</A>]</C> is handled by the call
 <C>\[\]( <A>list</A>, <A>pos</A> )</C>
-to the operation <Ref Func="\[\]"/>.
+to the operation <Ref Oper="\[\]"/>.
 To explain the somewhat strange name <C>\[\]</C> of this operation,
 note that non-alphanumeric characters like <C>[</C> and <C>]</C> may occur in
 &GAP; variable names only if they are escaped by a <C>\</C> character.
@@ -523,11 +523,11 @@ note that non-alphanumeric characters like <C>[</C> and <C>]</C> may occur in
 Analogously, the check <C>IsBound( <A>list</A>[<A>pos</A>] )</C> whether the position
 <A>pos</A> of the list <A>list</A> is bound is handled by the call
 <C>IsBound\[\]( <A>list</A>, <A>pos</A> )</C> to the operation
-<Ref Func="IsBound\[\]"/>.
+<Ref Oper="IsBound\[\]"/>.
 <P/>
 For mutable lists, also assignment to positions and unbinding of
-positions via the operations <Ref Func="\[\]\:\="/>
-and <Ref Func="Unbind\[\]"/>
+positions via the operations <Ref Oper="\[\]\:\="/>
+and <Ref Oper="Unbind\[\]"/>
 are basic operations.
 The assignment <C><A>list</A>[<A>pos</A>]:= <A>val</A></C>
 is handled by the call
@@ -535,20 +535,20 @@ is handled by the call
 and <C>Unbind( <A>list</A>[<A>pos</A>] )</C> is handled by the call
 <C>Unbind\[\]( <A>list</A>, <A>pos</A> )</C>.
 <P/>
-All other operations for lists, e.g., <Ref Func="Add"/>,
-<Ref Func="Append"/>, <Ref Func="Sum"/>,
+All other operations for lists, e.g., <Ref Oper="Add"/>,
+<Ref Oper="Append"/>, <Ref Func="Sum"/>,
 are based on these operations.
 This means that it is sufficient to install methods for the new list
 objects only for the basic operations.
 <P/>
 So if one wants to implement new list objects then one creates them
-as objects in the category <Ref Func="IsList"/>,
-and installs methods for <Ref Func="Length"/>,
-<Ref Func="\[\]"/>,
-and <Ref Func="IsBound\[\]"/>.
+as objects in the category <Ref Filt="IsList"/>,
+and installs methods for <Ref Attr="Length"/>,
+<Ref Oper="\[\]"/>,
+and <Ref Oper="IsBound\[\]"/>.
 If the new lists shall be mutable, one needs to install also methods
-for <Ref Func="\[\]\:\="/> and
-<Ref Func="Unbind\[\]"/>.
+for <Ref Oper="\[\]\:\="/> and
+<Ref Oper="Unbind\[\]"/>.
 <P/>
 One application for this is the implementation of <E>enumerators</E>
 for domains.
@@ -588,8 +588,8 @@ i.e., bijections to the positive integers.
 In &GAP;, this can be implemented via <E>enumerators</E>
 (see&nbsp;<Ref Sect="Enumerators"/>).
 These are lists containing the elements in a specified ordering,
-and the operations <Ref Func="Position"/>
-and list access via <Ref Func="\[\]"/> define the
+and the operations <Ref Oper="Position"/>
+and list access via <Ref Oper="\[\]"/> define the
 desired bijection.
 For implementing such an enumerator, one mainly needs to install the
 appropriate functions for these operations.
@@ -598,7 +598,7 @@ A general setup for creating such lists is given by
 <Ref Func="EnumeratorByFunctions" Label="for a domain and a record"/>.
 <P/>
 If the set in question is a domain <A>D</A> for which a
-<Ref Func="Size"/> method is
+<Ref Attr="Size"/> method is
 available then all one has to do is to write down the functions for
 computing the <M>n</M>-th element of the list and for computing the position
 of a given &GAP; object in the list, to put them into the components
@@ -606,9 +606,9 @@ of a given &GAP; object in the list, to put them into the components
 <Ref Func="EnumeratorByFunctions" Label="for a domain and a record"/>
 with the domain <A>D</A> and this record as arguments.
 For example, the following lines of code install an
-<Ref Func="Enumerator"/> method
+<Ref Attr="Enumerator"/> method
 for the case that <A>D</A> is the domain of rational integers.
-(Note that <Ref Func="IsIntegers"/> is a filter
+(Note that <Ref Filt="IsIntegers"/> is a filter
 that describes exactly the domain of rational integers.)
 <P/>
 <Log><![CDATA[
@@ -747,15 +747,15 @@ A general setup for implementing new iterators is provided by
 <Ref Func="IteratorByFunctions"/>.
 <P/>
 All one has to do is to write down the functions for
-<Ref Func="NextIterator"/>,
-<Ref Func="IsDoneIterator"/>,
-and <Ref Func="ShallowCopy"/>, and to call
+<Ref Oper="NextIterator"/>,
+<Ref Oper="IsDoneIterator"/>,
+and <Ref Oper="ShallowCopy"/>, and to call
 <Ref Func="IteratorByFunctions"/> with this record as argument.
 For example, the following lines of code install an
-<Ref Func="Iterator"/> method
+<Ref Oper="Iterator"/> method
 for the case that the argument is the domain of rational integers.
 <P/>
-(Note that <Ref Func="IsIntegers"/> is a filter
+(Note that <Ref Filt="IsIntegers"/> is a filter
 that describes exactly the domain of rational integers.)
 <P/>
 <Log><![CDATA[
@@ -815,11 +815,11 @@ represented in a special way.
 In such cases it might be useful either to support no arithmetics at all
 for the new lists, or to enable the default arithmetic methods.
 The former can be achieved by not setting the filters
-<Ref Func="IsGeneralizedRowVector"/> and
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/>
+<Ref Filt="IsGeneralizedRowVector"/> and
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>
 in the types of the lists,
 the latter can be achieved by setting the filter
-<Ref Func="IsListDefault"/>.
+<Ref Filt="IsListDefault"/>.
 (for details,
 see&nbsp;<Ref Sect="Filters Controlling the Arithmetic Behaviour of Lists"/>).
 An example for <Q>wrapped lists</Q> with default behaviour are vector space
@@ -837,7 +837,7 @@ product of matrices shall not be applicable,
 although the results will be equal to those of the default methods
 in the sense that their entries at corresponding positions are equal.
 <P/>
-So one does not set the filter <Ref Func="IsListDefault"/>
+So one does not set the filter <Ref Filt="IsListDefault"/>
 in such cases,
 and thus one can implement one's own methods for arithmetic operations.
 <!-- % It should be stated explicitly what <Q>arithmetic operations</Q> means! -->
@@ -852,8 +852,8 @@ other kinds of lists may be handled if this appears to be useful.
 For the last situation, interaction between a new kind of lists and other
 kinds of lists, &GAP; provides already a setup.
 Namely, there are the categories
-<Ref Func="IsGeneralizedRowVector"/> and
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/>,
+<Ref Filt="IsGeneralizedRowVector"/> and
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>,
 which are concerned with the
 additive and the multiplicative behaviour, respectively, of lists. 
 For lists in these filters, the structure of the results of arithmetic
@@ -862,7 +862,7 @@ operations is prescribed (see&nbsp;<Ref Sect="Additive Arithmetic for Lists"/> a
 <P/>
 For example,
 if one implements block matrices in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/>
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>
 then automatically the product of such a block matrix and a (plain) list
 of such block matrices will be defined as the obvious list of matrix
 products, and a default method for plain lists will handle this
@@ -870,22 +870,22 @@ multiplication.
 (Note that this method will rely on a method for computing the product of
 the block matrices, and of course no default method is available for that.)
 Conversely, if the block matrices are not in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/>
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>
 then the product of a block matrix
 and a (plain) list of block matrices is not defined.
 (There is no default method for it, and one can define the result and
 provide a method for computing it.)
 <P/>
 Thus if one decides to set the filters
-<Ref Func="IsGeneralizedRowVector"/> and
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/>
+<Ref Filt="IsGeneralizedRowVector"/> and
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>
 for the new lists,
 on the one hand one loses freedom in defining arithmetic behaviour,
 but on the other hand one gains several default methods for a more
 or less natural behaviour.
 <P/>
-If a list in the filter <Ref Func="IsGeneralizedRowVector"/>
-(<Ref Func="IsMultiplicativeGeneralizedRowVector"/>)
+If a list in the filter <Ref Filt="IsGeneralizedRowVector"/>
+(<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>)
 lies in <C>IsAttributeStoringRep</C>,
 the values of additive (multiplicative) nesting depth is stored in
 the list and need not be calculated for each arithmetic operation.
@@ -980,14 +980,14 @@ following two operations.
 <Oper Name="ObjByExtRep" Arg='fam, data'/>
 
 <Description>
-<Ref Func="ExtRepOfObj"/> returns the external representation of its argument,
-and <Ref Func="ObjByExtRep"/> returns an object in the family <A>fam</A>
+<Ref Oper="ExtRepOfObj"/> returns the external representation of its argument,
+and <Ref Oper="ObjByExtRep"/> returns an object in the family <A>fam</A>
 that has external representation <A>data</A>.
 <P/>
 Of course,
 <C>ObjByExtRep( FamilyObj( <A>obj</A> ), ExtRepOfObj( <A>obj</A> ) )</C>
 must be equal to <A>obj</A> w.r.t. the operation
-<Ref Func="\="/>.
+<Ref Oper="\="/>.
 But it is <E>not</E> required that equal objects have equal external
 representations.
 <P/>
@@ -1006,7 +1006,7 @@ for the objects in the new representation.
 <Heading>Mutability and Copying</Heading>
 
 Any &GAP; object is either mutable or immutable. This can be tested
-with the function <Ref Func="IsMutable"/>.
+with the function <Ref Filt="IsMutable"/>.
 The intended meaning of (im)mutability is a mathematical one:
 an immutable object should never change in
 such a way that it represents a different Element. Objects <E>may</E>
@@ -1031,7 +1031,7 @@ Error, List Assignment: <list> must be a mutable list
 <P/>
 For external objects, the situation is different. An external object which
 claims to be immutable (i.e. its type does not contain
-<Ref Func="IsMutable"/>)
+<Ref Filt="IsMutable"/>)
 should not admit any methods which change the element it represents.
 The kernel does <E>not</E> prevent the use of <C>!.</C> and <C>![</C>
 to change the underlying data structure.
@@ -1080,24 +1080,24 @@ Error, The list you are trying to assign to is immutable
 ]]></Example>
 <P/>
 When we consider copying objects, another filter
-<Ref Func="IsCopyable"/>, enters the game and we find that
-<Ref Func="ShallowCopy"/> and
+<Ref Filt="IsCopyable"/>, enters the game and we find that
+<Ref Oper="ShallowCopy"/> and
 <Ref Func="StructuralCopy"/> behave quite
 differently. Objects can be divided for this purpose into three:
 mutable objects, immutable but copyable objects, and non-copyable
 objects (called constants).
 <P/>
 A mutable or copyable object should have a method for the operation
-<Ref Func="ShallowCopy"/>,
+<Ref Oper="ShallowCopy"/>,
 which should make a new mutable object, sharing its top-level
 subobjects with the original. The exact definition of top-level subobject may
 be defined by the implementor for new kinds of object.
 <P/>
-<Ref Func="ShallowCopy"/> applied to a constant
+<Ref Oper="ShallowCopy"/> applied to a constant
 simply returns the constant.
 <P/>
 <Ref Func="StructuralCopy"/> is expected to be much less used
-than <Ref Func="ShallowCopy"/>.
+than <Ref Oper="ShallowCopy"/>.
 Applied to a mutable object, it returns a new mutable
 object which shares no mutable sub-objects with the input. Applied to
 an immutable object (even a copyable one), it just returns the
@@ -1128,7 +1128,7 @@ anything else.
 <P/>
 Both <Ref Func="Immutable"/> and
 <Ref Func="MakeImmutable"/> work on external objects by just
-resetting the <Ref Func="IsMutable"/> filter
+resetting the <Ref Filt="IsMutable"/> filter
 in the object's type. This should make
 ineligible any methods that might change the object. As a consequence,
 you must allow for the possibility of immutable versions of any
@@ -1140,8 +1140,8 @@ following:
 <Enum>
   <Item>
     You decide if your objects should be mutable or copyable or constants, by
-    fixing whether their type includes <Ref Func="IsMutable"/>
-    or <Ref Func="IsCopyable"/>.
+    fixing whether their type includes <Ref Filt="IsMutable"/>
+    or <Ref Filt="IsCopyable"/>.
   </Item>
   <Item>
     You install methods for your objects respecting that decision:
@@ -1152,13 +1152,13 @@ following:
       </Item>
       <Mark>for copyables:</Mark>
       <Item>
-        you provide a method for <Ref Func="ShallowCopy"/>;
+        you provide a method for <Ref Oper="ShallowCopy"/>;
       </Item>
       <Mark>for mutables:</Mark>
       <Item>
         you may have methods that change the underlying elements
         and these should explicitly require
-        <Ref Func="IsMutable"/>.
+        <Ref Filt="IsMutable"/>.
       </Item>
     </List>
   </Item>

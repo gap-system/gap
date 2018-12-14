@@ -48,7 +48,7 @@
 ##  <A>cpb</A>, and the zero element as <A>zero</A>.
 ##  <P/>
 ##  Note that all blocks must be ordinary matrices
-##  (see&nbsp;<Ref Func="IsOrdinaryMatrix"/>),
+##  (see&nbsp;<Ref Filt="IsOrdinaryMatrix"/>),
 ##  and also the block matrix is an ordinary matrix.
 ##  <Example><![CDATA[
 ##  gap> M := BlockMatrix([[1,1,[[1, 2],[ 3, 4]]],

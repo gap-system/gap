@@ -66,7 +66,7 @@
 ##  ]]></Example>
 ##  <P/>
 ##  (<E>Interactively</E>, the function
-##  <Ref Func="AssignGeneratorVariables"/> provides a shorthand for this.)
+##  <Ref Oper="AssignGeneratorVariables"/> provides a shorthand for this.)
 ##  This allows us to define <C>w</C> more conveniently:
 ##  <P/>
 ##  <Example><![CDATA[
@@ -94,14 +94,14 @@
 ##  <Filt Name="IsAssocWordWithInverse" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  <Ref Func="IsAssocWord"/> is the category of associative words
+##  <Ref Filt="IsAssocWord"/> is the category of associative words
 ##  in free semigroups,
-##  <Ref Func="IsAssocWordWithOne"/> is the category of associative words
+##  <Ref Filt="IsAssocWordWithOne"/> is the category of associative words
 ##  in free monoids
-##  (which admit the operation <Ref Func="One"/> to compute an identity),
-##  <Ref Func="IsAssocWordWithInverse"/> is the category of associative words
+##  (which admit the operation <Ref Attr="One"/> to compute an identity),
+##  <Ref Filt="IsAssocWordWithInverse"/> is the category of associative words
 ##  in free groups (which have an inverse).
-##  See&nbsp;<Ref Func="IsWord"/> for more general categories of words.
+##  See&nbsp;<Ref Filt="IsWord"/> for more general categories of words.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -195,7 +195,7 @@ DeclareCategory( "IsInfBitsFamily", IsSyllableWordsFamily );
 ##
 ##  <Description>
 ##  A word in syllable representation stores generator/exponents pairs (as
-##  given by <Ref Func="ExtRepOfObj"/>.
+##  given by <Ref Oper="ExtRepOfObj"/>.
 ##  Syllable access is fast, letter access is slow for such words.
 ##  </Description>
 ##  </ManSection>
@@ -213,7 +213,7 @@ DeclareRepresentation( "IsSyllableAssocWordRep", IsAssocWord, [] );
 ##
 ##  <Description>
 ##  A word in letter representation stores a list of generator/inverses
-##  numbers (as given by <Ref Func="LetterRepAssocWord"/>).
+##  numbers (as given by <Ref Oper="LetterRepAssocWord"/>).
 ##  Letter access is fast, syllable access is slow for such words.
 ##  </Description>
 ##  </ManSection>
@@ -237,7 +237,7 @@ fi;
 ##  <Filt Name="IsWLetterAssocWordRep" Arg='obj' Type='Representation'/>
 ##
 ##  <Description>
-##  these two subrepresentations of <Ref Func="IsLetterAssocWordRep"/>
+##  these two subrepresentations of <Ref Filt="IsLetterAssocWordRep"/>
 ##  indicate whether the word is stored as a list of bytes (in a string)
 ##  or as a list of integers).
 ##  </Description>
@@ -280,7 +280,7 @@ DeclareCategory( "IsLetterWordsFamily", IsAssocWordFamily );
 ##  <Filt Name="IsWLetterWordsFamily" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  These two subcategories of <Ref Func="IsLetterWordsFamily"/> specify the
+##  These two subcategories of <Ref Filt="IsLetterWordsFamily"/> specify the
 ##  type of letter representation to be used.
 ##  </Description>
 ##  </ManSection>
@@ -333,8 +333,8 @@ DeclareGlobalFunction( "FreelyReducedLetterRepWord" );
 ##  <Filt Name="IsFreeGroup" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  Any group consisting of elements in <Ref Func="IsAssocWordWithInverse"/>
-##  lies in the filter <Ref Func="IsFreeGroup"/>;
+##  Any group consisting of elements in <Ref Filt="IsAssocWordWithInverse"/>
+##  lies in the filter <Ref Filt="IsFreeGroup"/>;
 ##  this holds in particular for any group created with
 ##  <Ref Func="FreeGroup" Label="for given rank"/>,
 ##  or any subgroup of such a group.
@@ -487,17 +487,17 @@ DeclareOperation( "AssignGeneratorVariables", [IsDomain] );
 ##  <Index Subkey="of words">quotient</Index>
 ##  <Index Subkey="of words">power</Index>
 ##  <Index Subkey="of a word">conjugate</Index>
-##  Besides the multiplication <Ref Func="\*"/>, the arithmetical operators
-##  <Ref Func="One"/> (if the word lies in a family with identity)
-##  and (if the generators are invertible) <Ref Func="Inverse"/>,
-##  <Ref Func="\/"/>,<Ref Func="\^"/>,
+##  Besides the multiplication <Ref Oper="\*"/>, the arithmetical operators
+##  <Ref Attr="One"/> (if the word lies in a family with identity)
+##  and (if the generators are invertible) <Ref Attr="Inverse"/>,
+##  <Ref Oper="\/"/>,<Ref Oper="\^"/>,
 ##  <Index Key="Comm" Subkey="for words"><C>Comm</C></Index>
-##  <Ref Func="Comm"/>, and
+##  <Ref Oper="Comm"/>, and
 ##  <Index Key="LeftQuotient" Subkey="for words"><C>LeftQuotient</C></Index>
-##  <Ref Func="LeftQuotient"/> are applicable to associative words,
+##  <Ref Oper="LeftQuotient"/> are applicable to associative words,
 ##  see&nbsp;<Ref Sect="Arithmetic Operations for Elements"/>.
 ##  <P/>
-##  See also <Ref Func="MappedWord"/>, an operation that is applicable to
+##  See also <Ref Oper="MappedWord"/>, an operation that is applicable to
 ##  arbitrary words.
 ##  <P/>
 ##  See Section <Ref Sect="Representations for Associative Words"/>
@@ -521,7 +521,7 @@ DeclareOperation( "AssignGeneratorVariables", [IsDomain] );
 ##  <Description>
 ##  <Index Subkey="of a word">length</Index>
 ##  For an associative word <A>w</A>,
-##  <Ref Func="Length" Label="for a associative word"/> returns
+##  <Ref Attr="Length" Label="for a associative word"/> returns
 ##  the number of letters in <A>w</A>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -577,7 +577,7 @@ DeclareOperation( "Subword", [ IsAssocWord, IsPosInt, IsPosInt ] );
 ##  <Description>
 ##  Let <A>w</A> and <A>sub</A> be associative words,
 ##  and <A>from</A> a positive integer.
-##  <Ref Func="PositionWord"/> returns the position of the first occurrence
+##  <Ref Oper="PositionWord"/> returns the position of the first occurrence
 ##  of <A>sub</A> as a subword of <A>w</A>, starting at position <A>from</A>.
 ##  If there is no such occurrence, <K>fail</K> is returned.
 ##  Indexing is done with origin 1.
@@ -586,7 +586,7 @@ DeclareOperation( "Subword", [ IsAssocWord, IsPosInt, IsPosInt ] );
 ##  is the smallest integer <M>i</M> larger than or equal to <A>from</A> such
 ##  that <C>Subword( <A>w</A>, </C><M>i</M><C>,</C>
 ##  <M>i</M><C>+Length( <A>sub</A> )-1 ) =</C>
-##  <A>sub</A>, see&nbsp;<Ref Func="Subword"/>.
+##  <A>sub</A>, see&nbsp;<Ref Oper="Subword"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> w;  PositionWord( w, a/b, 1 );
@@ -627,7 +627,7 @@ DeclareOperation( "PositionWord", [ IsAssocWord, IsAssocWord, IsPosInt ] );
 ##  Let <A>w</A> be an associative word.
 ##  <P/>
 ##  In the first form,
-##  <Ref Func="SubstitutedWord" Label="replace an interval by a given word"/>
+##  <Ref Oper="SubstitutedWord" Label="replace an interval by a given word"/>
 ##  returns the associative word obtained by replacing the subword of
 ##  <A>w</A> that begins at position <A>from</A> and ends at position
 ##  <A>to</A> by the associative word <A>by</A>.
@@ -638,10 +638,10 @@ DeclareOperation( "PositionWord", [ IsAssocWord, IsAssocWord, IsPosInt ] );
 ##  is the product of the three words
 ##  <C>Subword( <A>w</A>, 1, <A>from</A>-1 )</C>, <A>by</A>,
 ##  and <C>Subword( <A>w</A>, <A>to</A>+1, Length( <A>w</A> ) )</C>,
-##  see&nbsp;<Ref Func="Subword"/>.
+##  see&nbsp;<Ref Oper="Subword"/>.
 ##  <P/>
 ##  In the second form,
-##  <Ref Func="SubstitutedWord" Label="replace a subword by a given word"/>
+##  <Ref Oper="SubstitutedWord" Label="replace a subword by a given word"/>
 ##  returns the associative word obtained by replacing the first occurrence
 ##  of the associative word <A>sub</A> of <A>w</A>, starting at position
 ##  <A>from</A>, by the associative word <A>by</A>;
@@ -676,7 +676,7 @@ DeclareOperation( "SubstitutedWord",
 ##
 ##  <Description>
 ##  For an associative word <A>w</A>, a generator <A>gen</A>,
-##  and an associative word <A>by</A>, <Ref Func="EliminatedWord"/> returns
+##  and an associative word <A>by</A>, <Ref Oper="EliminatedWord"/> returns
 ##  the associative word obtained by replacing each occurrence of <A>gen</A>
 ##  in <A>w</A> by <A>by</A>.
 ##  <Example><![CDATA[
@@ -703,7 +703,7 @@ DeclareOperation( "EliminatedWord",
 ##
 ##  <Description>
 ##  For an associative word <A>w</A> and a generator <A>gen</A>,
-##  <Ref Func="ExponentSumWord"/> returns the number of times <A>gen</A>
+##  <Ref Oper="ExponentSumWord"/> returns the number of times <A>gen</A>
 ##  appears in <A>w</A> minus the number of times its inverse appears in
 ##  <A>w</A>.
 ##  If both <A>gen</A> and its inverse do not occur in <A>w</A> then <M>0</M>
@@ -749,7 +749,7 @@ DeclareOperation( "ExponentSumWord", [ IsAssocWord, IsAssocWord ] );
 ##  <Attr Name="NumberSyllables" Arg='w'/>
 ##
 ##  <Description>
-##  <Ref Func="NumberSyllables"/> returns the number of syllables of the
+##  <Ref Attr="NumberSyllables"/> returns the number of syllables of the
 ##  associative word <A>w</A>.
 ##  </Description>
 ##  </ManSection>
@@ -768,7 +768,7 @@ DeclareSynonymAttr( "NrSyllables", NumberSyllables );
 ##  <Oper Name="ExponentSyllable" Arg='w, i'/>
 ##
 ##  <Description>
-##  <Ref Func="ExponentSyllable"/> returns the exponent of the <A>i</A>-th
+##  <Ref Oper="ExponentSyllable"/> returns the exponent of the <A>i</A>-th
 ##  syllable of the associative word <A>w</A>.
 ##  </Description>
 ##  </ManSection>
@@ -786,7 +786,7 @@ DeclareOperation( "ExponentSyllable", [ IsAssocWord, IsPosInt ] );
 ##  <Oper Name="GeneratorSyllable" Arg='w, i'/>
 ##
 ##  <Description>
-##  <Ref Func="GeneratorSyllable"/> returns the number of the generator that
+##  <Ref Oper="GeneratorSyllable"/> returns the number of the generator that
 ##  is involved in the <A>i</A>-th syllable of the associative word <A>w</A>.
 ##  </Description>
 ##  </ManSection>
@@ -804,7 +804,7 @@ DeclareOperation( "GeneratorSyllable", [ IsAssocWord, IsInt ] );
 ##  <Oper Name="SubSyllables" Arg='w, from, to'/>
 ##
 ##  <Description>
-##  <Ref Func="SubSyllables"/> returns the subword of the associative word
+##  <Ref Oper="SubSyllables"/> returns the subword of the associative word
 ##  <A>w</A> that consists of the syllables from positions <A>from</A> to
 ##  <A>to</A>, where <A>from</A> and <A>to</A> must be positive integers,
 ##  and indexing is done with origin 1.
@@ -870,7 +870,7 @@ DeclareOperation( "LetterRepAssocWord", [ IsAssocWord ] );
 ##
 ##  <Description>
 ##  takes a letter representation <A>lrep</A>
-##  (see <Ref Func="LetterRepAssocWord"/>) and returns an associative word in
+##  (see <Ref Oper="LetterRepAssocWord"/>) and returns an associative word in
 ##  family <A>fam</A> corresponding to this letter representation.
 ##  <P/>
 ##  If <A>gens</A> is given, the numbers in the letter

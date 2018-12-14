@@ -21,16 +21,16 @@
 ##  &GAP; provides various functions to construct these groups.
 ##  The functions always permit (but do not require) one to indicate
 ##  a filter (see&nbsp;<Ref Sect="Filters"/>),
-##  for example <Ref Prop="IsPermGroup"/>, <Ref Prop="IsMatrixGroup"/> or
-##  <Ref Prop="IsPcGroup"/>, in which the group shall be constructed.
+##  for example <Ref Filt="IsPermGroup"/>, <Ref Filt="IsMatrixGroup"/> or
+##  <Ref Filt="IsPcGroup"/>, in which the group shall be constructed.
 ##  There always is a default filter corresponding to a <Q>natural</Q> way
 ##  to describe the group in question.
 ##  Note that not every group can be constructed in every filter,
-##  there may be theoretical restrictions (<Ref Prop="IsPcGroup"/> only works
+##  there may be theoretical restrictions (<Ref Filt="IsPcGroup"/> only works
 ##  for solvable groups) or methods may be available only for a few filters.
 ##  <P/>
 ##  Certain filters may admit additional hints.
-##  For example, groups constructed in <Ref Prop="IsMatrixGroup"/> may be
+##  For example, groups constructed in <Ref Filt="IsMatrixGroup"/> may be
 ##  constructed over a specified field, which can be given as second argument
 ##  of the function that constructs the group;
 ##  The default field is <Ref Var="Rationals"/>.
@@ -62,7 +62,7 @@ DeclareConstructor( "TrivialGroupCons", [ IsGroup ] );
 ##  <Description>
 ##  constructs a trivial group in the category given by the filter
 ##  <A>filter</A>.
-##  If <A>filter</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  If <A>filter</A> is not given it defaults to <Ref Filt="IsPcGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section
 ##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
@@ -120,9 +120,9 @@ DeclareConstructor( "AbelianGroupCons", [ IsGroup, IsList ] );
 ##  is taken as an infinite cyclic group, otherwise as a cyclic group of
 ##  order <A>ints</A>[i].
 ##
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPcGroup"/>,
 ##  unless any 0 or <C>infinity</C> is contained in  <A>ints</A>, in which
-##  the default filter is switched to  <Ref Func="IsFpGroup"/>.
+##  the default filter is switched to  <Ref Filt="IsFpGroup"/>.
 ##  The generators of the group returned are the elements corresponding to
 ##  the factors <M>C_{{<A>ints</A>[i]}}</M> and hence the integers in <A>ints</A>.
 ##  For more information on possible values of <A>filt</A> see section
@@ -185,7 +185,7 @@ DeclareConstructor( "AlternatingGroupCons", [ IsGroup, IsInt ] );
 ##  <Description>
 ##  constructs the alternating group of degree <A>deg</A> in the category given
 ##  by the filter <A>filt</A>.
-##  If <A>filt</A> is not given it defaults to <Ref Prop="IsPermGroup"/>.
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section
 ##  (<Ref Sect="Basic Groups"/>).
 ##  In the second version, the function constructs the alternating group on
@@ -239,9 +239,9 @@ DeclareConstructor( "CyclicGroupCons", [ IsGroup, IsInt ] );
 ##  <Description>
 ##  constructs the cyclic group of size <A>n</A> in the category given by the
 ##  filter <A>filt</A>.
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPcGroup"/>,
 ##  unless <A>n</A> equals <Ref Var="infinity"/>, in which case the
-##  default filter is switched to  <Ref Func="IsFpGroup"/>.
+##  default filter is switched to  <Ref Filt="IsFpGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section
 ##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
@@ -310,9 +310,9 @@ DeclareConstructor( "DihedralGroupCons", [ IsGroup, IsInt ] );
 ##  <Description>
 ##  constructs the dihedral group of size <A>n</A> in the category given by the
 ##  filter <A>filt</A>.
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPcGroup"/>,
 ##  unless <A>n</A> equals <Ref Var="infinity"/>, in which case the
-##  default filter is switched to  <Ref Func="IsFpGroup"/>.
+##  default filter is switched to  <Ref Filt="IsFpGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section
 ##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
@@ -374,7 +374,7 @@ DeclareSynonym("QuaternionGroupCons", DicyclicGroupCons);
 ##  multiple of 4. The synonym <Ref Func="QuaternionGroup"/> for
 ##  <Ref Func="DicyclicGroup" /> is provided for backward compatibility, but will
 ##  print a warning if <A>n</A> is not a power of <M>2</M>.
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPcGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section
 ##  (<Ref Sect="Basic Groups"/>).
 ##  Methods are also available for permutation and matrix groups (of minimal
@@ -488,7 +488,7 @@ DeclareConstructor( "ElementaryAbelianGroupCons", [ IsGroup, IsInt ] );
 ##  <Description>
 ##  constructs the elementary abelian group of size <A>n</A> in the category
 ##  given by the filter <A>filt</A>.
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPcGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section
 ##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
@@ -539,7 +539,7 @@ DeclareConstructor( "FreeAbelianGroupCons", [ IsGroup, IsInt ] );
 ##  <Description>
 ##  constructs the free abelian group of rank <A>n</A> in the category
 ##  given by the filter <A>filt</A>.
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsFpGroup"/>.
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsFpGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section
 ##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
@@ -599,7 +599,7 @@ DeclareConstructor( "ExtraspecialGroupCons", [ IsGroup, IsInt, IsObject ] );
 ##  <C>"+"</C>, <C>'-'</C>, <C>"-"</C>.
 ##  For <M>p = 2</M>, only the above plus or minus signs are admissible.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsPcGroup"/>.
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPcGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section
 ##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
@@ -655,7 +655,7 @@ DeclareConstructor( "MathieuGroupCons", [ IsGroup, IsInt ] );
 ##  constructs the Mathieu group of degree <A>degree</A> in the category
 ##  given by the filter <A>filt</A>, where <A>degree</A> must be in the set
 ##  <M>\{ 9, 10, 11, 12, 21, 22, 23, 24 \}</M>.
-##  If <A>filt</A> is not given it defaults to <Ref Prop="IsPermGroup"/>.
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section
 ##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
@@ -709,7 +709,7 @@ DeclareConstructor( "SymmetricGroupCons", [ IsGroup, IsInt ] );
 ##  <Description>
 ##  constructs the symmetric group of degree <A>deg</A> in the category
 ##  given by the filter <A>filt</A>.
-##  If <A>filt</A> is not given it defaults to <Ref Prop="IsPermGroup"/>.
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section
 ##  (<Ref Sect="Basic Groups"/>).
 ##  In the second version, the function constructs the symmetric group on

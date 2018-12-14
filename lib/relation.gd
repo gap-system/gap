@@ -32,13 +32,13 @@
 ##  <P/>
 ##  In &GAP;, a relation is conceptually represented as a general mapping
 ##  from <M>X</M> to itself.
-##  The category <Ref Func="IsBinaryRelation"/> is a synonym for
-##  <Ref Func="IsEndoGeneralMapping"/>.
+##  The category <Ref Prop="IsBinaryRelation"/> is a synonym for
+##  <Ref Prop="IsEndoGeneralMapping"/>.
 ##  Attributes and properties of relations in &GAP; are supported for
 ##  relations, via considering relations as a subset of <M>X \times X</M>,
 ##  or as a directed graph;
 ##  examples include finding the strongly connected components of a relation,
-##  via <Ref Func="StronglyConnectedComponents"/>,
+##  via <Ref Oper="StronglyConnectedComponents"/>,
 ##  or enumerating the tuples of the relation.
 ##  <#/GAPDoc>
 ##
@@ -71,7 +71,7 @@
 ##
 ##  <Description>
 ##  is   exactly   the   same   category   as   (i.e.    a    synonym    for)
-##  <Ref Func="IsEndoGeneralMapping"/>.
+##  <Ref Prop="IsEndoGeneralMapping"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -263,13 +263,13 @@ DeclareGlobalFunction("AsBinaryRelationOnPoints");
 ##  If the underlying domain of the relation is not <M>\{ 1, \ldots, n \}</M>,
 ##  for some positive integer <M>n</M>, then an error is signalled.
 ##  <P/>
-##  The returned value of <Ref Func="Successors"/> is a list of lists where
+##  The returned value of <Ref Attr="Successors"/> is a list of lists where
 ##  the lists are ordered as the elements according to the sorted order of
 ##  the underlying set of <A>R</A>.
 ##  Each list consists of the images of the element whose index is the same
 ##  as the list with the underlying set in sorted order.
 ##  <P/>
-##  The <Ref Func="Successors"/> of a relation is the adjacency list
+##  The <Ref Attr="Successors"/> of a relation is the adjacency list
 ##  representation of the relation.
 ##  <Example><![CDATA[
 ##  gap> r1:=BinaryRelationOnPoints([[2],[3],[1]]);;
@@ -344,7 +344,7 @@ DeclareSynonym("UnderlyingDomainOfBinaryRelation",Source);
 ##  <M>x</M> is an element of the image set <M>R(x)</M>.
 ##  <P/>
 ##  A reflexive binary relation is necessarily a total endomorphic
-##  mapping (tested via <Ref Func="IsTotal"/>).
+##  mapping (tested via <Ref Prop="IsTotal"/>).
 ##  <Example><![CDATA[
 ##  gap> IsReflexiveBinaryRelation(BinaryRelationOnPoints([[1,3],[2],[3]]));
 ##  true
@@ -607,7 +607,7 @@ DeclareOperation("SymmetricClosureBinaryRelation", [IsBinaryRelation]);
 ##  <A>R</A>.
 ##  E.g., if <A>R</A> is symmetric then its transitive closure is also.
 ##  <P/>
-##  <Ref Func="TransitiveClosureBinaryRelation"/> is a modified version of
+##  <Ref Oper="TransitiveClosureBinaryRelation"/> is a modified version of
 ##  the Floyd-Warshall method of solving the all-pairs shortest-paths problem
 ##  on a directed graph.
 ##  Its asymptotic runtime is <M>O(n^3)</M> where <M>n</M> is the size of the
@@ -649,7 +649,7 @@ DeclareOperation("HasseDiagramBinaryRelation", [IsBinaryRelation]);
 ##  <Description>
 ##  returns <K>true</K> if the binary relation <A>rel</A> is a Hasse Diagram
 ##  of a partial order, i.e., was computed via
-##  <Ref Func="HasseDiagramBinaryRelation"/>.
+##  <Ref Oper="HasseDiagramBinaryRelation"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -780,7 +780,7 @@ DeclareAttribute("GeneratorsOfEquivalenceRelationPartition",
 ##  <P/>
 ##  The list of lists do not need to be in any order nor do the
 ##  elements in the blocks
-##  (see <Ref Func="EquivalenceRelationPartition"/>).
+##  (see <Ref Attr="EquivalenceRelationPartition"/>).
 ##  a list of elements of <A>domain</A>
 ##  The partition <A>list</A> is a
 ##  list of lists, each of these is a list of elements of <A>domain</A>
@@ -859,11 +859,11 @@ DeclareGlobalFunction("EquivalenceRelationByRelation");
 ##  <Oper Name="MeetEquivalenceRelations" Arg='equiv1, equiv2'/>
 ##
 ##  <Description>
-##  <Ref Func="JoinEquivalenceRelations"/> returns the smallest
+##  <Ref Oper="JoinEquivalenceRelations"/> returns the smallest
 ##  equivalence relation containing both the equivalence relations
 ##  <A>equiv1</A> and <A>equiv2</A>.
 ##  <P/>
-##  <Ref Func="MeetEquivalenceRelations"/> returns the
+##  <Ref Oper="MeetEquivalenceRelations"/> returns the
 ##  intersection of the two equivalence relations
 ##  <A>equiv1</A> and <A>equiv2</A>.
 ##  </Description>

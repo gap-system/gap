@@ -89,7 +89,7 @@ In this section let <M>u</M> denote an element of the term algebra
 <Oper Name="ReducedZero" Arg='rws'/>
 
 <Description>
-The result of <Ref Prop="ReducedProduct"/> is <M>w</M> where 
+The result of <Ref Oper="ReducedProduct"/> is <M>w</M> where 
 <M>[w]</M> equals [<A>u</A>][<A>v</A>] in <M>A</M> and <M>w</M> 
 is in reduced form.
 <P/>
@@ -198,7 +198,7 @@ Note, that the elements <C>red</C> (free monoid) <C>melm</C> (fp monoid) and <C>
 Under Unix, it is possible to use the <Package>kbmag</Package> package
 to replace the built-in rewriting by this packages efficient C implementation.
 You can do this (after loading the <Package>kbmag</Package> package)
-by assigning the variable <Ref Func="KB_REW"/> to <C>KBMAG_REW</C>.
+by assigning the variable <Ref Var="KB_REW"/> to <C>KBMAG_REW</C>.
 Assignment to <C>GAPKB_REW</C> reverts to the built-in implementation.
 <Log><![CDATA[
 gap> LoadPackage("kbmag");

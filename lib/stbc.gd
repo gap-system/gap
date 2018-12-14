@@ -227,7 +227,7 @@ DeclareGlobalVariable( "DefaultStabChainOptions",
 ##  Let <A>base</A> be a base for a permutation group <M>G</M>, and let
 ##  <A>sgs</A> be a strong generating set for <M>G</M> with respect to
 ##  <A>base</A>; <A>one</A> must be the appropriate identity element of
-##  <M>G</M> (see <Ref Oper="One"/>, in most cases this will be <C>()</C>).
+##  <M>G</M> (see <Ref Attr="One"/>, in most cases this will be <C>()</C>).
 ##  This function constructs a stabilizer chain without the need to find
 ##  Schreier generators;
 ##  so this is much faster than the other algorithms.

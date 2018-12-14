@@ -55,13 +55,13 @@ BIND_GLOBAL( "DirectoriesFamily", NewFamily( "DirectoriesFamily" ) );
 ##
 ##  <Description>
 ##  returns a directory object for the string <A>string</A>.
-##  <Ref Func="Directory"/> understands <C>"."</C> for
+##  <Ref Oper="Directory"/> understands <C>"."</C> for
 ##  <Q>current directory</Q>, that is,
 ##  the directory in which &GAP; was started.
 ##  It also understands absolute paths.
 ##  <P/>
 ##  If the variable <C>GAPInfo.UserHome</C> is defined (this may depend on
-##  the operating system) then <Ref Func="Directory"/> understands a string
+##  the operating system) then <Ref Oper="Directory"/> understands a string
 ##  with a leading <C>~</C> (tilde) character for a path relative to the
 ##  user's home directory (but a  string beginning with <C>"~other_user"</C>
 ##  is <E>not</E> interpreted as a path relative to <C>other_user</C>'s
@@ -141,16 +141,16 @@ DeclareGlobalFunction( "DirectoryDesktop" );
 ##
 ##  <Description>
 ##  If the first argument is a directory object <A>dir</A>,
-##  <Ref Func="Filename" Label="for a directory and a string"/> returns the
+##  <Ref Oper="Filename" Label="for a directory and a string"/> returns the
 ##  (system dependent) filename as a string for the file with name
 ##  <A>name</A> in the directory <A>dir</A>.
-##  <Ref Func="Filename" Label="for a directory and a string"/> returns the
+##  <Ref Oper="Filename" Label="for a directory and a string"/> returns the
 ##  filename regardless of whether the directory contains a file with name
 ##  <A>name</A> or not.
 ##  <P/>
 ##  If the first argument is a list <A>list-of-dirs</A>
 ##  (possibly of length 1) of directory objects, then
-##  <Ref Func="Filename" Label="for a list of directories and a string"/>
+##  <Ref Oper="Filename" Label="for a list of directories and a string"/>
 ##  searches the directories in order, and returns the filename for the file
 ##  <A>name</A> in the first directory which contains a file <A>name</A> or
 ##  <K>fail</K> if no directory contains a file <A>name</A>.
@@ -158,7 +158,7 @@ DeclareGlobalFunction( "DirectoryDesktop" );
 ##  <E>For example</E>,
 ##  in order to locate the system program <C>date</C> use
 ##  <Ref Func="DirectoriesSystemPrograms"/> together with the second form of
-##  <Ref Func="Filename" Label="for a list of directories and a string"/>.
+##  <Ref Oper="Filename" Label="for a list of directories and a string"/>.
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> path := DirectoriesSystemPrograms();;
@@ -168,7 +168,7 @@ DeclareGlobalFunction( "DirectoryDesktop" );
 ##  <P/>
 ##  In order to locate the library file <F>files.gd</F> use
 ##  <Ref Func="DirectoriesLibrary"/> together with the second form of
-##  <Ref Func="Filename" Label="for a list of directories and a string"/>.
+##  <Ref Oper="Filename" Label="for a list of directories and a string"/>.
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> path := DirectoriesLibrary();;
@@ -178,7 +178,7 @@ DeclareGlobalFunction( "DirectoryDesktop" );
 ##  <P/>
 ##  In order to construct filenames for new files in a temporary directory
 ##  use <Ref Func="DirectoryTemporary"/> together with the first form of
-##  <Ref Func="Filename" Label="for a directory and a string"/>.
+##  <Ref Oper="Filename" Label="for a directory and a string"/>.
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> tmpdir := DirectoryTemporary();;
@@ -209,7 +209,7 @@ DeclareOperation( "ExternalFilename", [ IsList, IsString ] );
 ##  reads the input from the file with the filename <A>filename</A>,
 ##  which must be given as a string.
 ##  <P/>
-##  <Ref Func="Read"/> first opens the file <A>filename</A>.
+##  <Ref Oper="Read"/> first opens the file <A>filename</A>.
 ##  If the file does not exist, or if &GAP; cannot open it,
 ##  e.g., because of access restrictions, an error is signalled.
 ##  <P/>
@@ -224,8 +224,8 @@ DeclareOperation( "ExternalFilename", [ IsList, IsString ] );
 ##  If <C>stderr</C> is not connected to a terminal,
 ##  no break loop is entered.
 ##  If this break loop is left with <K>quit</K> (or <B>Ctrl-D</B>),
-##  &GAP; exits from the <Ref Func="Read"/> command, and from all enclosing
-##  <Ref Func="Read"/> commands, so that control is normally returned to an
+##  &GAP; exits from the <Ref Oper="Read"/> command, and from all enclosing
+##  <Ref Oper="Read"/> commands, so that control is normally returned to an
 ##  interactive prompt.
 ##  The <K>QUIT</K> statement (see&nbsp;<Ref Sect="Leaving GAP"/>) can also
 ##  be used in the break loop to exit &GAP; immediately.
@@ -357,7 +357,7 @@ end);
 ##  different directories in the filespace a list of directories is returned.
 ##  In order to find an existing file in a &GAP; root directory you should
 ##  pass that list to
-##  <Ref Func="Filename" Label="for a directory and a string"/> as the first
+##  <Ref Oper="Filename" Label="for a directory and a string"/> as the first
 ##  argument.
 ##  In order to create a filename for a new file inside a &GAP; root
 ##  directory you should pass the first entry of that list.

@@ -20,7 +20,7 @@ They appear as values of the conditions in <K>if</K>-statements
 and <K>while</K>-loops.
 Booleans are also important as return values of <E>filters</E>
 (see&nbsp;<Ref Sect="Filters"/>)
-such as <Ref Prop="IsFinite"/> and <Ref Func="IsBool"/>.
+such as <Ref Prop="IsFinite"/> and <Ref Filt="IsBool"/>.
 Note that it is a convention that the name of a function that
 returns <K>true</K> or <K>false</K> according to the outcome,
 starts with <C>Is</C>.
@@ -50,7 +50,7 @@ The value <K>fail</K> is used to indicate situations when an operation could
 not be performed for the given arguments, either because of shortcomings of
 the arguments or because of restrictions in the implementation or
 computability.
-So for example <Ref Func="Position"/> will return <K>fail</K>
+So for example <Ref Oper="Position"/> will return <K>fail</K>
 if the point searched for is not in the list.
 <P/>
 <K>fail</K> is simply an object that is different from every other object

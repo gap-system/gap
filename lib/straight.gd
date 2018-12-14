@@ -27,7 +27,7 @@
 ##  <#GAPDoc Label="[1]{straight}">
 ##  <E>Straight line programs</E> describe an efficient way for evaluating an
 ##  abstract word at concrete generators,
-##  in a more efficient way than with <Ref Func="MappedWord"/>.
+##  in a more efficient way than with <Ref Oper="MappedWord"/>.
 ##  For example,
 ##  the associative word <M>ababbab</M> of length <M>7</M> can be computed
 ##  from the generators <M>a</M>, <M>b</M> with only four multiplications,
@@ -79,7 +79,7 @@
 ##  <P/>
 ##  Special methods applicable to straight line programs are installed for
 ##  the operations <Ref Oper="Display"/>,
-##  <Ref Func="IsInternallyConsistent"/>, <Ref Oper="PrintObj"/>,
+##  <Ref Oper="IsInternallyConsistent"/>, <Ref Oper="PrintObj"/>,
 ##  and <Ref Oper="ViewObj"/>.
 ##  <P/>
 ##  For a straight line program <A>prog</A>,
@@ -134,7 +134,7 @@ DeclareCategory( "IsStraightLineProgram", IsObject );
 ##  <Description>
 ##  In the first form, <A>lines</A> must be a nonempty list of lists
 ##  that defines a unique straight line program
-##  (see&nbsp;<Ref Func="IsStraightLineProgram"/>); in this case
+##  (see&nbsp;<Ref Filt="IsStraightLineProgram"/>); in this case
 ##  <Ref Func="StraightLineProgram" Label="for a list of lines (and the number of generators)"/>
 ##  returns this program, otherwise an error is signalled.
 ##  The optional argument <A>nrgens</A> specifies the number of input
@@ -256,7 +256,7 @@ DeclareAttribute( "NrInputsOfStraightLineProgram", IsStraightLineProgram );
 ##
 ##  <Description>
 ##  <Ref Oper="ResultOfStraightLineProgram"/> evaluates the straight line
-##  program (see&nbsp;<Ref Func="IsStraightLineProgram"/>) <A>prog</A>
+##  program (see&nbsp;<Ref Filt="IsStraightLineProgram"/>) <A>prog</A>
 ##  at the group elements in the list <A>gens</A>.
 ##  <P/>
 ##  The <E>result</E> of a straight line program with lines
@@ -369,7 +369,7 @@ DeclareOperation( "ResultOfStraightLineProgram",
 ##  <Description>
 ##  <Ref Func="StringOfResultOfStraightLineProgram"/> returns a string
 ##  that describes the result of the straight line program
-##  (see&nbsp;<Ref Func="IsStraightLineProgram"/>) <A>prog</A>
+##  (see&nbsp;<Ref Filt="IsStraightLineProgram"/>) <A>prog</A>
 ##  as word(s) in terms of the strings in the list <A>gensnames</A>.
 ##  If the result of <A>prog</A> is a single element then the return value of
 ##  <Ref Func="StringOfResultOfStraightLineProgram"/> is a string consisting
@@ -446,7 +446,7 @@ DeclareGlobalFunction( "CompositionOfStraightLinePrograms" );
 ##  For a nonempty dense list <A>listofprogs</A> of straight line programs
 ##  <M>p_1, p_2, \ldots, p_m</M>, say,
 ##  that have the same number <M>n</M>, say, of inputs
-##  (see&nbsp;<Ref Func="NrInputsOfStraightLineProgram"/>),
+##  (see&nbsp;<Ref Attr="NrInputsOfStraightLineProgram"/>),
 ##  <Ref Func="IntegratedStraightLineProgram"/> returns a straight line
 ##  program <M>prog</M> with <M>n</M> inputs such that for each
 ##  <M>n</M>-tuple <M>gens</M> of generators,

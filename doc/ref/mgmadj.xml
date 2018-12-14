@@ -5,7 +5,7 @@
   <Description>
   <C>IsMagmaWithZeroAdjoined</C> returns <K>true</K> if the magma <A>M</A> was
   created using <Ref Attr="InjectionZeroMagma"/> or 
-  <Ref Oper="MagmaWithZeroAdjoined"/> and returns <K>false</K> if it was not.
+  <Ref Attr="MagmaWithZeroAdjoined"/> and returns <K>false</K> if it was not.
 <Example><![CDATA[
 gap> S:=Semigroup(Transformation([1,1,1]), Transformation([1,3,2]));;
 gap> IsMagmaWithZeroAdjoined(S);
@@ -28,7 +28,7 @@ true
   which is the multiplicative zero of the resulting magma.
   The elements of the new magma form a family of elements in the 
   category <Ref Filt="IsMultiplicativeElementWithZero"/> and the magma
-  itself satisfies <Ref Prop="IsMagmaWithZeroAdjoined"/>.<P/>
+  itself satisfies <Ref Filt="IsMagmaWithZeroAdjoined"/>.<P/>
   
   <C>MagmaWithZeroAdjoined</C> is just shorthand for
   <C>Range(InjectionZeroMagma(<A>M</A>)))</C>.<P/>

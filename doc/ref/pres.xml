@@ -23,7 +23,7 @@ to <Ref Sect="Tietze Transformations that introduce new Generators"/>).
 <!-- %%  The code for presentations was designed and implemented by Volkmar Felsch. -->
 If you only want to get new presentations for subgroups of a finitely
 presented group (and do not want to manipulate presentations yourself),
-chances are that the operation <Ref Func="IsomorphismFpGroup"/> already does
+chances are that the operation <Ref Attr="IsomorphismFpGroup"/> already does
 what you want
 (see&nbsp;<Ref Sect="New Presentations and Presentations for Subgroups"/>).
 

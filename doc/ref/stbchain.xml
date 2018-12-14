@@ -19,7 +19,7 @@ and <Ref Chap="Permutation Groups"/>.
 <Heading>Generalized Conjugation Technique</Heading>
 
 The command <C>ConjugateGroup( <A>G</A>, <A>p</A> )</C>
-(see&nbsp;<Ref Func="ConjugateGroup"/>)
+(see&nbsp;<Ref Oper="ConjugateGroup"/>)
 for a  permutation  group  <A>G</A>  with  stabilizer  chain
 equips its result also with a stabilizer chain, namely with the chain  of
 <A>G</A> conjugate by <A>p</A>. Conjugating a stabilizer chain by a permutation <A>p</A>
@@ -257,7 +257,7 @@ which an R-base is made up:
 </List>
 <P/>
 As  our guiding example, we  present  code for the function
-<Ref Func="Centralizer" Label="for a magma and a submagma"/>
+<Ref Oper="Centralizer" Label="for a magma and a submagma"/>
 which calculates the centralizer of an element <M>g</M> in the group <M>G</M>.
 (The real code is more general and has a few more subtleties.)
 <P/>
@@ -332,7 +332,7 @@ The list numbers below refer to the line numbers of the code above.
     a list of points starting with the most wanted ones, can  be  given
     as an optional third argument to <C>NextRBasePoint</C>
     (actually, this is done in the real code for
-    <Ref Func="Centralizer" Label="for a magma and a submagma"/>).
+    <Ref Oper="Centralizer" Label="for a magma and a submagma"/>).
   </Item>
   <Mark>6.</Mark>
   <Item>
@@ -503,7 +503,7 @@ did above for the R-base black box <M>R</M>. Most of the components change as
   </Item>
 </List>
 <P/>
-As declared in the above code for <Ref Func="Centralizer" Label="for a magma and a submagma"/>,
+As declared in the above code for <Ref Oper="Centralizer" Label="for a magma and a submagma"/>,
 the refinement is performed by the function
 <C>Refinement.Centralizer</C><M>( R, I, \Pi</M><C>.cellno</C><M>[p], p, where )</M>.
 The  functions in the  record
@@ -800,7 +800,7 @@ So far  we
 have  not used the  fact that  the characteristic  factors are elementary
 abelian, but we will do so from  here on.
 Our first task is to implement an enumerator
-(see <Ref Func="AsList"/> and
+(see <Ref Attr="AsList"/> and
 <Ref Sect="Enumerators"/>)
 for a coset of a characteristic factor in a solvable  group  <M>G</M>.
 We assume that such a coset <M>g N/M</M> is given by
@@ -808,7 +808,7 @@ We assume that such a coset <M>g N/M</M> is given by
 <List>
   <Mark>(1)</Mark>
   <Item>
-    a pcgs for  the group  <M>G</M> (see  <Ref Func="Pcgs"/>),
+    a pcgs for  the group  <M>G</M> (see  <Ref Attr="Pcgs"/>),
     let <M>n = </M><C>Length( </C><M>pcgs</M><C> )</C>;
   </Item>
   <Mark>(2)</Mark>
@@ -844,8 +844,8 @@ EnumeratorCosetSolvableFactor := function( pcgs, range, g )
 end;
 ]]></Log>
 <P/>
-The definition of the operations <Ref Func="Length"/>,
-<Ref Func="\[\]"/> and <Ref Func="Position"/>
+The definition of the operations <Ref Attr="Length"/>,
+<Ref Oper="\[\]"/> and <Ref Oper="Position"/>
 is now
 straightforward. The  code has sometimes  been  abbreviated and is  meant
 <Q>cum grano salis</Q>,  e.g.,  the declaration of  the local  variables has

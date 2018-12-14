@@ -43,16 +43,16 @@ InstallMethod( \=,
 ##  <#GAPDoc Label="[1]{object.gi}">
 ##  Only for the following kinds of objects, an ordering via <C>&lt;</C> of objects
 ##  in <E>different</E> families (see&nbsp;<Ref Sect="Families"/>) is supported.
-##  Rationals (see&nbsp;<Ref Func="IsRat"/>) are smallest,
-##  next are cyclotomics (see&nbsp;<Ref Func="IsCyclotomic"/>),
-##  followed by finite field elements (see&nbsp;<Ref Func="IsFFE"/>);
+##  Rationals (see&nbsp;<Ref Filt="IsRat"/>) are smallest,
+##  next are cyclotomics (see&nbsp;<Ref Filt="IsCyclotomic"/>),
+##  followed by finite field elements (see&nbsp;<Ref Filt="IsFFE"/>);
 ##  finite field elements in different characteristics are compared
 ##  via their characteristics,
-##  next are permutations (see&nbsp;<Ref Func="IsPerm"/>),
+##  next are permutations (see&nbsp;<Ref Filt="IsPerm"/>),
 ##  followed by the boolean values <K>true</K>, <K>false</K>, and <K>fail</K>
-##  (see&nbsp;<Ref Func="IsBool"/>),
-##  characters (such as <C>{</C>}a{'}', see&nbsp;<Ref Func="IsChar"/>),
-##  and lists (see&nbsp;<Ref Func="IsList"/>) are largest;
+##  (see&nbsp;<Ref Filt="IsBool"/>),
+##  characters (such as <C>{</C>}a{'}', see&nbsp;<Ref Filt="IsChar"/>),
+##  and lists (see&nbsp;<Ref Filt="IsList"/>) are largest;
 ##  note that two lists can be compared with <C>&lt;</C> if and only if their
 ##  elements are again objects that can be compared with <C>&lt;</C>.
 ##  <P/>

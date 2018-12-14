@@ -349,8 +349,8 @@ DeclareOperation("BisectInterval", [IsFloatInterval]);
 ##
 ##     <P/> If <A>obj</A> is a rational number, the created number is created
 ##     with sufficient precision so that the number can (usually) be converted
-##     back to the original number (see <Ref Oper="Rat" BookName="ref"/> and
-##     <Ref Oper="Rat"/>). For an integer, the precision, if unspecified, is
+##     back to the original number (see <Ref Attr="Rat" BookName="ref"/> and
+##     <Ref Attr="Rat"/>). For an integer, the precision, if unspecified, is
 ##     chosen sufficient so that <C>Int(Float(obj))=obj</C> always holds, but
 ##     at least 64 bits.
 ##

@@ -52,7 +52,7 @@ MeatAxe, a module is a record with components
 <Mark><C>dimension</C></Mark>
 <Item>
    The dimension of the vector space (this is the common length of
-   the row vectors (see&nbsp;<Ref Func="DimensionOfVectors"/>)).
+   the row vectors (see&nbsp;<Ref Attr="DimensionOfVectors"/>)).
 </Item>
 <Mark><C>field</C></Mark>
 <Item>
@@ -87,7 +87,7 @@ Called with a permutation group <A>G</A> and a field <A>F</A> (<A>F</A> may be i
 <M>M</M> over <A>F</A>
 for the group of permutation matrices that acts on the canonical basis of
 <M>M</M> in the same way as <A>G</A> acts on the points up to its largest
-moved point (see&nbsp;<Ref Func="LargestMovedPoint" Label="for a list or collection of permutations"/>).
+moved point (see&nbsp;<Ref Attr="LargestMovedPoint" Label="for a list or collection of permutations"/>).
 </Description>
 </ManSection>
 

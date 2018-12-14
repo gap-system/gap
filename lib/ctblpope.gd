@@ -466,7 +466,7 @@ DeclareGlobalFunction( "TestPerm5" );
 ##  it depends on a preprocessing step, where the inequalities
 ##  arising from the condition <M>\pi(g) \geq 0</M> are transformed into
 ##  a system of inequalities that guides the search
-##  (see&nbsp;<Ref Func="Inequalities"/>).
+##  (see&nbsp;<Ref Oper="Inequalities"/>).
 ##  So the following commands compute the list of 39 possible permutation
 ##  characters of the Mathieu group <M>M_{11}</M>.
 ##  <P/>
@@ -491,7 +491,7 @@ DeclareGlobalFunction( "TestPerm5" );
 ##  (which might also be a range containing all divisors of the group order)
 ##  you want to look for;
 ##  additionally, the record component <C>ineq</C> can take the inequalities
-##  computed by <Ref Func="Inequalities"/> if they are needed more than once.
+##  computed by <Ref Oper="Inequalities"/> if they are needed more than once.
 ##  <P/>
 ##  If a positive integer is given as the second argument <A>cond</A>,
 ##  <Ref Func="PermChars"/> returns the list of all

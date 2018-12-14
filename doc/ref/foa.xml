@@ -75,7 +75,7 @@ groups, meaning the natural action on the set of its moved points.
 The definition of <Ref Sect="Orbits"/> says that a method
 should be a function
 with arguments <A>G</A>, <A>D</A>, <A>gens</A>, <A>oprs</A>, and <A>opr</A>,
-as in the case of the operation <Ref Func="ExternalSet"/>
+as in the case of the operation <Ref Oper="ExternalSet"/>
 when specified via <A>gens</A> and <A>oprs</A>
 (see&nbsp;<Ref Sect="External Sets"/>).
 All other syntax variants allowed for <Ref Sect="Orbits"/>
@@ -136,7 +136,7 @@ as follows.
 <Subsection Label="Example: Orbit and OrbitOp">
 <Heading>Example: Orbit and OrbitOp</Heading>
 
-For example, to setup the function <Ref Func="Orbit"/>
+For example, to setup the function <Ref Oper="Orbit"/>
 and its operation <C>OrbitOp</C>,
 the declaration file <F>lib/oprt.gd</F> contains the following line of code:
 <Log><![CDATA[
@@ -155,11 +155,11 @@ The relation test via <A>famrel</A> is used to provide a uniform
 construction of the wrapper functions created by
 <Ref Func="OrbitishFO"/>,
 in spite of the different syntax of the specific functions.
-For example, <Ref Func="Orbit"/> admits the calls
+For example, <Ref Oper="Orbit"/> admits the calls
 <C>Orbit( <A>G</A>, <A>D</A>, <A>pnt</A>, <A>opr</A> )</C>
 and <C>Orbit( <A>G</A>, <A>pnt</A>, <A>opr</A> )</C>,
 i.e., the second argument <A>D</A> may be omitted;
-<Ref Func="Blocks" Label="for a group, an action domain, etc."/>
+<Ref Oper="Blocks" Label="for a group, an action domain, etc."/>
 admits the calls
 <C>Blocks( <A>G</A>, <A>D</A>, <A>seed</A>, <A>opr</A> )</C> and
 <C>Blocks( <A>G</A>, <A>D</A>, <A>opr</A> )</C>,
@@ -176,9 +176,9 @@ Plenty of examples are contained in the implementation file
 <F>lib/oprt.gi</F>.
 <P/>
 In order to handle a few special cases
-(currently <Ref Func="Blocks" Label="for a group, an action domain, etc."/>
+(currently <Ref Oper="Blocks" Label="for a group, an action domain, etc."/>
 and
-<Ref Func="MaximalBlocks" Label="for a group, an action domain, etc."/>),
+<Ref Oper="MaximalBlocks" Label="for a group, an action domain, etc."/>),
 also the following form of <Ref Func="OrbitishFO"/> is supported.
 <P/>
 <C>OrbitishFO( <A>name</A>, <A>reqs</A>, <A>famrel</A>, <A>attr</A> )</C>
@@ -193,7 +193,7 @@ In this case, the result can be stored as the value of the attribute
 This attribute is considered by a call
 <C>Blocks( <A>G</A>, <A>D</A>, <A>opr</A> )</C>
 (i.e., without <A>seed</A>) in the same way as
-<Ref Oper="Orbits" Label="attribute"/> considers <C>OrbitsAttr</C>.
+<Ref Attr="Orbits" Label="attribute"/> considers <C>OrbitsAttr</C>.
 <P/>
 To set this up,
 the declaration file <F>lib/oprt.gd</F> contains the following lines:

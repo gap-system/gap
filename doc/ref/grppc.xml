@@ -16,7 +16,7 @@
 <!-- % -->
 Pc groups are polycyclic groups that use the polycyclic presentation for
 element arithmetic. This presentation gives them a <Q>natural</Q> pcgs,
-the <Ref Func="FamilyPcgs"/> with respect to which pcgs operations as
+the <Ref Attr="FamilyPcgs"/> with respect to which pcgs operations as
 described in chapter&nbsp;<Ref Chap="Polycyclic Groups"/> are
 particularly efficient.
 <P/>
@@ -238,7 +238,7 @@ Note that the pc presentation has to be confluent in order to
 work with the pc group in &GAP;.
 <P/>
 (If you have already a suitable pcgs in another representation, use
-<Ref Func="PcGroupWithPcgs"/>, see below.)
+<Ref Attr="PcGroupWithPcgs"/>, see below.)
 <P/>
 One way is to define a finitely presented group with a
 pc presentation in &GAP; and then convert this presentation
@@ -250,7 +250,7 @@ Another way is to create and manipulate a collector of a pc group by hand
 and to use it to define a pc group.
 &GAP; provides different collectors for different collecting strategies;
 at the moment, there are two collectors to choose from:
-the single collector for finite pc groups (see <Ref Func="SingleCollector"/>)
+the single collector for finite pc groups (see <Ref Oper="SingleCollector"/>)
 and the combinatorial collector for finite <M>p</M>-groups.
 See <Cite Key="Sims94"/> for further information on collecting strategies.
 <P/>
@@ -264,12 +264,12 @@ representation in the free group
 (see&nbsp;<Ref Sect="Representations for Associative Words"/>).
 <P/>
 Note that in the end, the collector has to be converted to a group,
-see <Ref Func="GroupByRws"/>.
+see <Ref Oper="GroupByRws"/>.
 <P/>
 With these methods a pc group with arbitrary defining pcgs can be
 constructed. However, for almost all applications within &GAP; we need
 to have a pc group whose defining pcgs is a prime order pcgs,
-see <Ref Func="IsomorphismRefinedPcGroup"/> and <Ref Func="RefinedPcGroup"/>.
+see <Ref Attr="IsomorphismRefinedPcGroup"/> and <Ref Attr="RefinedPcGroup"/>.
 
 <#Include Label="PcGroupFpGroup">
 
@@ -295,7 +295,7 @@ Let <M>f_1, \ldots, f_n</M> be the generators of the underlying free group
 of the collector <A>coll</A>.
 <P/>
 For <A>i</A> <M>&lt;</M> <A>j</A>,
-<Ref Func="SetConjugate"/> sets the conjugate <M>f_j^{{f_i}}</M> to equal
+<Ref Oper="SetConjugate"/> sets the conjugate <M>f_j^{{f_i}}</M> to equal
 <A>w</A>, which is assumed to be a word in <M>f_{{i+1}}, \ldots, f_n</M>.
 </Description>
 </ManSection>
@@ -308,7 +308,7 @@ Let <M>f_1, \ldots, f_n</M> be the generators of the underlying free group
 of the collector <A>coll</A>.
 <P/>
 For <A>i</A> <M>&lt;</M> <A>j</A>,
-<Ref Func="SetCommutator"/> sets the commutator of <M>f_j</M> and <M>f_i</M>
+<Ref Oper="SetCommutator"/> sets the commutator of <M>f_j</M> and <M>f_i</M>
 to equal <A>w</A>, which is assumed to be a word in
 <M>f_{{i+1}}, \ldots, f_n</M>.
 </Description>
@@ -322,7 +322,7 @@ Let <M>f_1, \ldots, f_n</M> be the generators of the underlying free group
 of the collector <A>coll</A>,
 and let <M>r_i</M> be the corresponding relative orders.
 <P/>
-<Ref Func="SetPower"/> sets the power <M>f_i^{{r_i}}</M> to equal <A>w</A>,
+<Ref Oper="SetPower"/> sets the power <M>f_i^{{r_i}}</M> to equal <A>w</A>,
 which is assumed to be a word in <M>f_{{i+1}}, \ldots, f_n</M>.
 </Description>
 </ManSection>
@@ -437,7 +437,7 @@ be represented as pc groups again.
 <P/>
 To define the elementary abelian group <M>M</M> together with an action of
 <M>G</M> on <M>M</M> we consider <M>M</M> as a MeatAxe module for <M>G</M>
-over a finite field (section&nbsp;<Ref Func="IrreducibleModules"/>
+over a finite field (section&nbsp;<Ref Oper="IrreducibleModules"/>
 describes functions that can be used to obtain certain modules).
 For further information on meataxe modules see Chapter
 <Ref Chap="The MeatAxe"/>.
@@ -507,7 +507,7 @@ gap> List(last, IdSmallGroup);
   [ 8, 3 ], [ 8, 4 ] ]
 ]]></Example>
 <P/>
-Note that the extensions returned by <Ref Func="Extensions"/> are computed
+Note that the extensions returned by <Ref Oper="Extensions"/> are computed
 up to equivalence, but not up to isomorphism.
 </Description>
 </ManSection>

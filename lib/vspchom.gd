@@ -55,7 +55,7 @@
 ##  <A>gens</A> need not generate <A>V</A> as a left <M>R</M>-module,
 ##  and if the specification does not define a linear mapping then the result
 ##  will be multi-valued; hence in general it is not a mapping
-##  (see&nbsp;<Ref Func="IsMapping"/>).
+##  (see&nbsp;<Ref Filt="IsMapping"/>).
 ##  <Example><![CDATA[
 ##  gap> V:= Rationals^2;;
 ##  gap> W:= VectorSpace( Rationals, [ [1,2,3], [1,0,1] ] );;
@@ -97,7 +97,7 @@ DeclareOperation( "LeftModuleGeneralMappingByImages",
 ##  mapping) then <K>fail</K> is returned.
 ##  For creating a possibly multi-valued mapping from <A>V</A> to <A>W</A>
 ##  that respects addition, multiplication, and scalar multiplication,
-##  <Ref Func="LeftModuleGeneralMappingByImages"/> can be used.
+##  <Ref Oper="LeftModuleGeneralMappingByImages"/> can be used.
 ##  <P/>
 ##  <Ref Oper="LeftModuleHomomorphismByImagesNC"/> does the same as
 ##  <Ref Func="LeftModuleHomomorphismByImages"/>,
@@ -260,7 +260,7 @@ DeclareProperty( "IsFullHomModule", IsFreeLeftModule );
 ##  and range contain exactly one identity entry and otherwise zeros.
 ##  <P/>
 ##  Note that this is not a canonical basis
-##  (see&nbsp;<Ref Func="CanonicalBasis"/>)
+##  (see&nbsp;<Ref Attr="CanonicalBasis"/>)
 ##  because it depends on the stored bases of source and range.
 ##  <Example><![CDATA[
 ##  gap> IsPseudoCanonicalBasisFullHomModule( Basis( H ) );
@@ -284,7 +284,7 @@ DeclareProperty( "IsPseudoCanonicalBasisFullHomModule", IsBasis );
 ##  <Description>
 ##  For a field <A>F</A> and two vector spaces <A>V</A> and <A>W</A>
 ##  that can be regarded as <A>F</A>-modules
-##  (see&nbsp;<Ref Func="AsLeftModule"/>),
+##  (see&nbsp;<Ref Oper="AsLeftModule"/>),
 ##  <Ref Oper="Hom"/> returns the <A>F</A>-vector space of
 ##  all <A>F</A>-linear mappings from <A>V</A> to <A>W</A>.
 ##  <Example><![CDATA[
@@ -313,7 +313,7 @@ DeclareOperation( "Hom", [ IsRing, IsLeftModule, IsLeftModule ] );
 ##
 ##  <Description>
 ##  For a field <A>F</A> and a vector space <A>V</A> that can be regarded as
-##  an <A>F</A>-module (see&nbsp;<Ref Func="AsLeftModule"/>),
+##  an <A>F</A>-module (see&nbsp;<Ref Oper="AsLeftModule"/>),
 ##  <Ref Oper="End"/> returns the <A>F</A>-algebra of all <A>F</A>-linear
 ##  mappings from <A>V</A> to <A>V</A>.
 ##  <Example><![CDATA[
@@ -349,7 +349,7 @@ DeclareOperation( "End", [ IsRing, IsLeftModule ] );
 ##  Then the <Ref Attr="NiceFreeLeftModuleInfo"/> value of <A>V</A> is
 ##  a record with the components <C>basissource</C> (a basis <M>B_S</M> of
 ##  <M>S</M>) and <C>basisrange</C> (a basis <M>B_R</M> of <M>R</M>),
-##  and the <Ref Func="NiceVector"/> value of <M>v \in <A>V</A></M>
+##  and the <Ref Oper="NiceVector"/> value of <M>v \in <A>V</A></M>
 ##  is defined as the matrix of the <M>F</M>-linear mapping <M>v</M>
 ##  w.r.t.&nbsp;the bases <M>B_S</M> and <M>B_R</M>.
 ##  </Description>

@@ -17,10 +17,10 @@
 ##  given as homogeneous lists of the same length, containing
 ##  elements of a commutative ring.
 ##  <P/>
-##  There are two reasons for using <Ref Func="AddRowVector"/>
+##  There are two reasons for using <Ref Oper="AddRowVector"/>
 ##  in preference to arithmetic operators.
 ##  Firstly, the three argument form has no single-step equivalent.
-##  Secondly <Ref Func="AddRowVector"/> changes its first argument in-place,
+##  Secondly <Ref Oper="AddRowVector"/> changes its first argument in-place,
 ##  rather than allocating a new vector to hold the result,
 ##  and may thus produce less garbage.
 ##  <#/GAPDoc>
@@ -66,7 +66,7 @@ DeclareOperation(
 ##  <Oper Name="AddCoeffs" Arg='list1[, poss1], list2[, poss2[, mul]]'/>
 ##
 ##  <Description>
-##  <Ref Func="AddCoeffs"/> adds the entries of
+##  <Ref Oper="AddCoeffs"/> adds the entries of
 ##  <A>list2</A><C>{</C><A>poss2</A><C>}</C>, multiplied by the scalar
 ##  <A>mul</A>, to <A>list1</A><C>{</C><A>poss1</A><C>}</C>.
 ##  Unbound entries in <A>list1</A> are assumed to be zero.
@@ -208,7 +208,7 @@ DeclareOperation(
 ##  If <A>len1</A> and <A>len2</A> are omitted, they default to the lengths
 ##  of <A>list1</A> and <A>list2</A>.
 ##  Let <A>exp</A> be a positive integer.
-##  <Ref Func="PowerModCoeffs"/> returns the coefficient list of the
+##  <Ref Oper="PowerModCoeffs"/> returns the coefficient list of the
 ##  remainder when dividing the <A>exp</A>-th power of <M>p1</M> by
 ##  <M>p2</M>.
 ##  The coefficients are reduced already while powers are computed,
@@ -269,7 +269,7 @@ DeclareOperation(
 ##  (<A>list2</A>).
 ##  If <A>len1</A> and <A>len2</A> are omitted,
 ##  they default to the lengths of <A>list1</A> and <A>list2</A>.
-##  <Ref Func="ReduceCoeffs"/> changes <A>list1</A> to the coefficient list
+##  <Ref Oper="ReduceCoeffs"/> changes <A>list1</A> to the coefficient list
 ##  of the remainder when dividing <A>p1</A> by <A>p2</A>.
 ##  This operation changes <A>list1</A> which therefore must be a mutable
 ##  list.
@@ -305,7 +305,7 @@ DeclareOperation(
 ##  (<A>list2</A>).
 ##  If <A>len1</A> and <A>len2</A> are omitted,
 ##  they default to the lengths of <A>list1</A> and <A>list2</A>.
-##  <Ref Func="ReduceCoeffsMod"/> changes <A>list1</A> to the
+##  <Ref Oper="ReduceCoeffsMod"/> changes <A>list1</A> to the
 ##  coefficient list of the remainder when dividing
 ##  <A>p1</A> by <A>p2</A> modulo <A>modulus</A>,
 ##  which must be a positive integer.
@@ -637,13 +637,13 @@ DeclareOperation("DistancesDistributionMatFFEVecFFE",
 ##  length of <A>vec</A> must be equal, and all elements must lie in the
 ##  field <A>f</A>.
 ##  The rows of <A>mat</A> must be linearly independent.
-##  <Ref Func="AClosestVectorCombinationsMatFFEVecFFE"/> returns a vector
+##  <Ref Oper="AClosestVectorCombinationsMatFFEVecFFE"/> returns a vector
 ##  from these that is closest to the vector <A>vec</A>.
 ##  If it finds a vector of distance at most <A>stop</A>,
 ##  which must be a nonnegative integer, then it stops immediately
 ##  and returns this vector.
 ##  <P/>
-##  <Ref Func="AClosestVectorCombinationsMatFFEVecFFECoords"/> returns a
+##  <Ref Oper="AClosestVectorCombinationsMatFFEVecFFECoords"/> returns a
 ##  length 2 list containing the same closest vector and also a vector
 ##  <A>v</A> with exactly <A>l</A> non-zero entries,
 ##  such that <A>v</A> times <A>mat</A> is the closest vector.

@@ -45,9 +45,9 @@
 
   A subsemigroup of a Rees matrix semigroup is not necessarily a Rees matrix
   semigroup.  Every semigroup consisting of elements of a Rees matrix semigroup
-  satisfies the property <Ref Attr="IsReesMatrixSubsemigroup"/> and every
+  satisfies the property <Ref Filt="IsReesMatrixSubsemigroup"/> and every
   semigroup of Rees 0-matrix semigroup elements satisfies 
-  <Ref Attr="IsReesZeroMatrixSubsemigroup"/>. <P/>
+  <Ref Filt="IsReesZeroMatrixSubsemigroup"/>. <P/>
     
   Rees matrix and 0-matrix semigroups can be created using the operations 
   <Ref Oper="ReesMatrixSemigroup"/> and <Ref Oper="ReesZeroMatrixSemigroup"/>,
@@ -268,9 +268,9 @@ gap> MultiplicativeZero(R);
     <Returns><K>true</K> or <K>false</K>.</Returns>
     <Description>
     Every semigroup consisting of elements of a Rees matrix
-    semigroup satisfies the property <Ref Attr="IsReesMatrixSubsemigroup"/> and
+    semigroup satisfies the property <Ref Filt="IsReesMatrixSubsemigroup"/> and
     every semigroup of Rees 0-matrix semigroup elements satisfies 
-    <Ref Attr="IsReesZeroMatrixSubsemigroup"/>.   <P/>
+    <Ref Filt="IsReesZeroMatrixSubsemigroup"/>.   <P/>
     Note that a subsemigroup of a Rees matrix semigroup is not necessarily a
     Rees matrix semigroup.  
    
@@ -376,8 +376,8 @@ false]]></Example>
 
       Arbitrary subsemigroups of Rees matrix or 0-matrix semigroups do not have
       a matrix. Such a subsemigroup <A>R</A> has a matrix if and
-      only if it satisfies <Ref Attr="IsReesMatrixSemigroup"/> or <Ref
-        Attr="IsReesZeroMatrixSemigroup"/>.
+      only if it satisfies <Ref Prop="IsReesMatrixSemigroup"/> or
+      <Ref Prop="IsReesZeroMatrixSemigroup"/>.
       <Example><![CDATA[
 gap> G:=AlternatingGroup(5);;
 gap> mat:=[[(), (), ()], [(), (), ()]];;
@@ -408,8 +408,8 @@ gap> Matrix(R);
 
       Arbitrary subsemigroups of Rees matrix or 0-matrix semigroups do not have
       rows or columns. Such a subsemigroup <A>R</A> has rows and columns  if and
-      only if it satisfies <Ref Attr="IsReesMatrixSemigroup"/> or <Ref
-        Attr="IsReesZeroMatrixSemigroup"/>.
+      only if it satisfies <Ref Prop="IsReesMatrixSemigroup"/> or
+      <Ref Prop="IsReesZeroMatrixSemigroup"/>.
     <Example><![CDATA[
 gap> G:=Group((1,2,3));;                      
 gap> mat:=List([1..100], x-> List([1..200], x->Random(G)));;
@@ -435,8 +435,8 @@ gap> Columns(R);
       
       Arbitrary subsemigroups of Rees matrix or 0-matrix semigroups do not have
       an underlying semigroup. Such a subsemigroup <A>R</A> has an underlying
-      semigroup if and only if it satisfies <Ref Attr="IsReesMatrixSemigroup"/>
-      or <Ref Attr="IsReesZeroMatrixSemigroup"/>.
+      semigroup if and only if it satisfies <Ref Prop="IsReesMatrixSemigroup"/>
+      or <Ref Prop="IsReesZeroMatrixSemigroup"/>.
     <Example><![CDATA[
 gap> S:=Semigroup(Transformation( [ 2, 1, 1, 2, 1 ] ), 
 > Transformation( [ 3, 4, 3, 4, 4 ] ), Transformation([ 3, 4, 3, 4, 3 ] ),

@@ -83,7 +83,7 @@ pseudo random integers between <M>-10</M> and
 <M>10</M> distributed according to a binomial distribution.
 To generate uniformly distributed integers from a range,
 use the construction <C>Random( [ <A>low</A> .. <A>high</A> ] )</C>
-&nbsp;(see&nbsp;<Ref Meth="Random" Label="for lower and upper bound"/>).
+&nbsp;(see&nbsp;<Ref Oper="Random" Label="for lower and upper bound"/>).
 </Description>
 </ManSection>
 
@@ -175,7 +175,7 @@ modulo 32.
 <Section Label="Random Sources">
 <Heading>Random Sources</Heading>
 
-&GAP; provides <Ref Func="Random" Label="for a list or collection"/> methods
+&GAP; provides <Ref Oper="Random" Label="for a list or collection"/> methods
 for many collections of objects. 
 On a lower level these methods use <E>random sources</E> which provide 
 random integers and random choices from lists. 

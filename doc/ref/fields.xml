@@ -67,7 +67,7 @@ returns the minimal polynomial of <A>z</A> over the field <A>F</A>.
 This is a generator of the ideal in <M><A>F</A>[x]</M> of all polynomials
 which vanish on <A>z</A>.
 (This definition is consistent with the general definition of
-<Ref Func="MinimalPolynomial"/> for rings.)
+<Ref Oper="MinimalPolynomial"/> for rings.)
 <P/>
 <Example><![CDATA[
 gap> MinimalPolynomial( Rationals, E(8) );

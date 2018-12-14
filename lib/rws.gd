@@ -57,8 +57,8 @@
 ##  <#GAPDoc Label="[2]{rws}">
 ##  The key point to note about rewriting systems is that they have 
 ##  properties such as
-##  <Ref Func="IsConfluent" Label="for a rewriting system"/>
-##  and attributes such as <Ref Func="Rules"/>, however
+##  <Ref Prop="IsConfluent" Label="for a rewriting system"/>
+##  and attributes such as <Ref Attr="Rules"/>, however
 ##  they are rarely stored, but rather computed afresh each time they
 ##  are asked for, from data stored in the private members of the rewriting
 ##  system object.  This is because a rewriting system often evolves
@@ -86,7 +86,7 @@
 ##  In particular, since we don't use the filter
 ##  <C>IsAttributeStoringRep</C>
 ##  in the <Ref Func="Objectify"/>,
-##  whenever <Ref Func="IsConfluent" Label="for a rewriting system"/> is
+##  whenever <Ref Prop="IsConfluent" Label="for a rewriting system"/> is
 ##  called,
 ##  the appropriate method to determine confluence is called. 
 ##  <#/GAPDoc>
@@ -420,7 +420,7 @@ DeclareSynonym("OrderOfRewritingSystem", OrderingOfRewritingSystem);
 ##
 ##  <Description>
 ##  For a rewriting system <A>rws</A>,
-##  <Ref Func="IsConfluent" Label="for a rewriting system"/> returns
+##  <Ref Prop="IsConfluent" Label="for a rewriting system"/> returns
 ##  <K>true</K> if and only if <A>rws</A> is confluent. 
 ##  A rewriting system is <E>confluent</E> if, for every two words 
 ##  <M>u</M> and <M>v</M> in the free algebra <M>T</M> which represent the

@@ -228,7 +228,7 @@ DeclareGlobalFunction( "GroupByMultiplicationTable" );
 ##
 ##  <Description>
 ##  For a list <A>elms</A> of elements that form a magma <M>M</M>,
-##  <Ref Func="MultiplicationTable" Label="for a list of elements"/> returns
+##  <Ref Attr="MultiplicationTable" Label="for a list of elements"/> returns
 ##  a square matrix <M>A</M> of positive integers such that
 ##  <M>A[i][j] = k</M> holds if and only if
 ##  <A>elms</A><M>[i] *</M> <A>elms</A><M>[j] =</M> <A>elms</A><M>[k]</M>.
@@ -236,7 +236,7 @@ DeclareGlobalFunction( "GroupByMultiplicationTable" );
 ##  using <Ref Func="MagmaByMultiplicationTable"/>.
 ##  <P/>
 ##  For a magma <A>M</A>,
-##  <Ref Func="MultiplicationTable" Label="for a magma"/> returns
+##  <Ref Attr="MultiplicationTable" Label="for a magma"/> returns
 ##  the multiplication table w.r.t.&nbsp;the sorted list of elements of
 ##  <A>M</A>.
 ##  <P/>

@@ -68,7 +68,7 @@ true
 <P/>
 To relieve you of the tedium of typing the above assignments,
 <E>when working interactively</E>,
-there is the function <Ref Func="AssignGeneratorVariables"/>.
+there is the function <Ref Oper="AssignGeneratorVariables"/>.
 <P/>
 Note that the generators of the free group are different from the
 generators of the FpGroup (even though they are displayed by the same
@@ -187,7 +187,7 @@ is attempted and the words are compared via their normal form.
 <P/>
 If only elements in a subgroup are to be tested for equality it thus can be
 useful to translate the problem in a new finitely presented group by
-rewriting (see <Ref Func="IsomorphismFpGroup"/>);
+rewriting (see <Ref Attr="IsomorphismFpGroup"/>);
 <P/>
 The equality test of elements underlies many <Q>basic</Q> calculations,
 such as the order of an element,
@@ -215,7 +215,7 @@ to implement, the ordering of elements is depending on a method chosen by
 of an FpGroup. The only guarantee given for the <C>&lt;</C>
 ordering for such elements is that it will stay the same for one family
 during its lifetime.
-The attribute <Ref Func="FpElmComparisonMethod"/> is used to obtain
+The attribute <Ref Attr="FpElmComparisonMethod"/> is used to obtain
 a comparison function for a family of FpGroup elements.
 </Description>
 </ManSection>
@@ -241,7 +241,7 @@ a comparison function for a family of FpGroup elements.
 <Description>
 Let <A>elm</A> be an element of a group whose elements are represented as
 words with further properties.
-Then <Ref Func="UnderlyingElement" Label="fp group elements"/> returns
+Then <Ref Oper="UnderlyingElement" Label="fp group elements"/> returns
 the word from the free group that is used as a representative for <A>elm</A>.
 <P/>
 <Example><![CDATA[
@@ -273,7 +273,7 @@ available).
 Most methods for finitely presented groups rely on coset enumeration.
 See&nbsp;<Ref Sect="Coset Tables and Coset Enumeration"/> for details.
 <P/>
-The command <Ref Func="IsomorphismPermGroup"/> can be used to obtain
+The command <Ref Attr="IsomorphismPermGroup"/> can be used to obtain
 a faithful permutation representation,
 if such a representation of small degree exists.
 (Otherwise it might run very long or fail.)
@@ -298,7 +298,7 @@ Group([ (1,2)(3,4)(5,7)(6,8)(9,10)(11,12),
  Label="for finitely presented groups"/>
 
 <Description>
-The default algorithm for <Ref Func="PseudoRandom"/>
+The default algorithm for <Ref Oper="PseudoRandom"/>
 makes little sense for finitely presented or free groups,
 as it produces words that are extremely long.
 <P/>
@@ -451,7 +451,7 @@ time using <Ref Func="StandardizeTable"/>.
 
 <Index Key="IsomorphismFpGroup" Subkey="for subgroups of fp groups">
 <C>IsomorphismFpGroup</C></Index>
-<Ref Func="IsomorphismFpGroup"/> is also used to compute
+<Ref Attr="IsomorphismFpGroup"/> is also used to compute
 a new finitely presented group that is isomorphic to the given subgroup
 of a finitely presented group.
 (This is typically the only method to compute with subgroups of a finitely
@@ -545,11 +545,11 @@ An important class of algorithms for finitely presented groups are the
 presented group. There are algorithms for epimorphisms onto abelian groups,
 <M>p</M>-groups and solvable groups.
 (The <Q>low index</Q> algorithm
-&ndash;<Ref Func="LowIndexSubgroupsFpGroup"/>&ndash;
+&ndash;<Ref Oper="LowIndexSubgroupsFpGroup"/>&ndash;
 can be considered as well as an algorithm that produces permutation group
 quotients.)
 <P/>
-<Ref Func="MaximalAbelianQuotient"/>,
+<Ref Attr="MaximalAbelianQuotient"/>,
 as defined for general groups, returns the largest abelian
 quotient of the given group.
 
@@ -580,7 +580,7 @@ gap> Size(Image(hom));
 Using variations of coset enumeration it is possible to compute the abelian
 invariants of a subgroup of a finitely presented group without computing a
 complete presentation for the subgroup in the first place.
-Typically, the operation <Ref Func="AbelianInvariants"/> when called for
+Typically, the operation <Ref Attr="AbelianInvariants"/> when called for
 subgroups should automatically take care of this,
 but in case you want to have further control about the methods used,
 the following operations might be of use.
@@ -604,7 +604,7 @@ test whether a given finitely presented group is actually finite.
 <P/>
 Therefore testing the finiteness of a finitely presented group
 can be problematic.
-What &GAP; actually does upon a call of <Ref Func="IsFinite"/>
+What &GAP; actually does upon a call of <Ref Prop="IsFinite"/>
 (or if it is &ndash;probably implicitly&ndash; asked for a faithful
 permutation representation)
 is to test whether it can find (via coset enumeration) a
@@ -619,16 +619,16 @@ On the other hand, a couple of methods exist, that might prove that a group
 is infinite. Again, none is guaranteed to work in every case:
 <P/>
 The first method is to find (for example via the low index algorithm,
-see&nbsp;<Ref Func="LowIndexSubgroupsFpGroup"/>) a subgroup <M>U</M>
+see&nbsp;<Ref Oper="LowIndexSubgroupsFpGroup"/>) a subgroup <M>U</M>
 such that <M>[U:U']</M> is infinite.
 If <M>U</M> has finite index, this can be checked by
-<Ref Func="IsInfiniteAbelianizationGroup"/>.
+<Ref Prop="IsInfiniteAbelianizationGroup"/>.
 <P/>
 Note that this test has been done traditionally by checking the
-<Ref Func="AbelianInvariants"/>
+<Ref Attr="AbelianInvariants"/>
 (see section&nbsp;<Ref Sect="Abelian Invariants for Subgroups"/>)
 of <M>U</M>,
-<Ref Func="IsInfiniteAbelianizationGroup"/> does a
+<Ref Prop="IsInfiniteAbelianizationGroup"/> does a
 similar calculation but stops as soon as it is known whether <M>0</M> is an
 invariant without computing the actual values. This can be notably faster.
 <P/>

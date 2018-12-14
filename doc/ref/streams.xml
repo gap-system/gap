@@ -52,7 +52,7 @@ makes the UNIX C-library function <C>select</C> accessible from &GAP;
 for streams. The functionality is as described in the man page (see
 
 UNIX file descriptors (integers) for streams. They can be obtained via
-<Ref Func="FileDescriptorOfStream"/> for streams
+<Ref Oper="FileDescriptorOfStream"/> for streams
 to local processes and to local files. The argument <A>timeoutsec</A> is a
 timeout in seconds as in the <C>struct timeval</C> on the C level. The argument
 <A>timeoutusec</A> is

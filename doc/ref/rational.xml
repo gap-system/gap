@@ -67,8 +67,8 @@ gap> 121/11;  # rationals with denominator 1 (when canceled) are integers
 <Description>
 <Ref Oper="Random" Label="for rationals"/> for rationals returns
 pseudo random rationals which are the quotient of two random integers.
-See the description of <Ref Func="Random" Label="for integers"/> for details.
-(Also see&nbsp;<Ref Func="Random" Label="for a list or collection"/>.)
+See the description of <Ref Meth="Random" Label="for integers"/> for details.
+(Also see&nbsp;<Ref Oper="Random" Label="for a list or collection"/>.)
 </Description>
 </ManSection>
 

@@ -85,7 +85,7 @@ DeclareAttribute( "AbsoluteValue" ,  IsCyclotomic  );
 ##  <Oper Name="RoundCyc" Arg='cyc'/>
 ##
 ##  <Description>
-##  is a cyclotomic integer <M>z</M> (see <Ref Func="IsIntegralCyclotomic"/>)
+##  is a cyclotomic integer <M>z</M> (see <Ref Prop="IsIntegralCyclotomic"/>)
 ##  near to the cyclotomic <A>cyc</A> in the following sense:
 ##  Let <C>c</C> be the <M>i</M>-th coefficient in the external
 ##  representation (see&nbsp;<Ref Func="CoeffsCyc"/>) of <A>cyc</A>.
@@ -137,7 +137,7 @@ DeclareOperation( "RoundCycDown" , [ IsCyclotomic ] );
 ##  <Description>
 ##  <Index Subkey="for cyclotomics">coefficients</Index>
 ##  Let <A>cyc</A> be a cyclotomic with conductor <M>n</M>
-##  (see <Ref Func="Conductor" Label="for a cyclotomic"/>).
+##  (see <Ref Attr="Conductor" Label="for a cyclotomic"/>).
 ##  If <A>N</A> is not a multiple of <M>n</M> then <Ref Func="CoeffsCyc"/>
 ##  returns <K>fail</K> because <A>cyc</A> cannot be expressed in terms of
 ##  <A>N</A>-th roots of unity.
@@ -176,7 +176,7 @@ DeclareGlobalFunction( "CoeffsCyc" );
 ##
 ##  <Description>
 ##  <Ref Func="IsGaussInt"/> returns <K>true</K> if the object <A>x</A> is
-##  a Gaussian integer (see&nbsp;<Ref Func="GaussianIntegers"/>),
+##  a Gaussian integer (see&nbsp;<Ref Var="GaussianIntegers"/>),
 ##  and <K>false</K> otherwise.
 ##  Gaussian integers are of the form <M>a + b</M><C>*E(4)</C>,
 ##  where <M>a</M> and <M>b</M> are integers.
@@ -197,7 +197,7 @@ DeclareGlobalFunction( "IsGaussInt" );
 ##
 ##  <Description>
 ##  <Ref Func="IsGaussRat"/> returns <K>true</K> if the object <A>x</A> is
-##  a Gaussian rational (see&nbsp;<Ref Func="GaussianRationals"/>),
+##  a Gaussian rational (see&nbsp;<Ref Var="GaussianRationals"/>),
 ##  and <K>false</K> otherwise.
 ##  Gaussian rationals are of the form <M>a + b</M><C>*E(4)</C>,
 ##  where <M>a</M> and <M>b</M> are rationals.
@@ -393,7 +393,7 @@ DeclareGlobalFunction( "EH" );
 ##  In any case, <C>EI(</C><A>N</A><C>) = E(4) * ER(</C><A>N</A><C>)</C>.
 ##  <P/>
 ##  <Ref Func="ER"/> is installed as method for the operation
-##  <Ref Func="Sqrt"/>, for rational argument.
+##  <Ref Oper="Sqrt"/>, for rational argument.
 ##  <P/>
 ##  From a theorem of Gauss we know that
 ##  <M>b_{<A>N</A>} =</M>
@@ -848,7 +848,7 @@ DeclareGlobalFunction( "Quadratic" );
 ##
 ##  <Description>
 ##  Let <A>mat</A> be a matrix of cyclotomics.
-##  <Ref Func="GaloisMat"/> calculates the complete orbits under
+##  <Ref Attr="GaloisMat"/> calculates the complete orbits under
 ##  the operation of the Galois group of the (irrational) entries of
 ##  <A>mat</A>,
 ##  and the permutations of rows corresponding to the generators of the
@@ -858,7 +858,7 @@ DeclareGlobalFunction( "Quadratic" );
 ##  only the first one is considered for the permutations,
 ##  and a warning will be printed.
 ##  <P/>
-##  <Ref Func="GaloisMat"/> returns a record with the components <C>mat</C>,
+##  <Ref Attr="GaloisMat"/> returns a record with the components <C>mat</C>,
 ##  <C>galoisfams</C>, and <C>generators</C>.
 ##  <P/>
 ##  <List>
@@ -945,7 +945,7 @@ DeclareAttribute( "GaloisMat", IsMatrix );
 ##  returns the list of rationalized rows of <A>mat</A>,
 ##  which must be a matrix of cyclotomics.
 ##  This is the set of sums over orbits under the action of the Galois group
-##  of the entries of <A>mat</A> (see <Ref Func="GaloisMat"/>),
+##  of the entries of <A>mat</A> (see <Ref Attr="GaloisMat"/>),
 ##  so the operation may be viewed as a kind of trace on the rows.
 ##  <P/>
 ##  Note that no two rows of <A>mat</A> should be equal.
@@ -971,10 +971,10 @@ DeclareAttribute( "RationalizedMat", IsMatrix );
 ##  <Func Name="DenominatorCyc" Arg='cyc'/>
 ##
 ##  <Description>
-##  For a cyclotomic number <A>cyc</A> (see&nbsp;<Ref Func="IsCyclotomic"/>),
+##  For a cyclotomic number <A>cyc</A> (see&nbsp;<Ref Filt="IsCyclotomic"/>),
 ##  this function returns the smallest positive integer <M>n</M> such that
 ##  <M>n</M><C> * </C><A>cyc</A> is a cyclotomic integer
-##  (see&nbsp;<Ref Func="IsIntegralCyclotomic"/>).
+##  (see&nbsp;<Ref Prop="IsIntegralCyclotomic"/>).
 ##  For rational numbers <A>cyc</A>, the result is the same as that of
 ##  <Ref Func="DenominatorRat"/>.
 ##  </Description>

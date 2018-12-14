@@ -54,11 +54,11 @@ gap> Order( [ [ 1, 1 ], [ 0, 1 ] ] * Indeterminate( Rationals ) );
 <P/>
 <Index Subkey="of a group">order</Index>
 Since groups are domains, the recommended command to compute the order
-of a group is <Ref Func="Size"/>.
-For convenience, group orders can also be computed with <Ref Func="Order"/>.
+of a group is <Ref Attr="Size"/>.
+For convenience, group orders can also be computed with <Ref Attr="Order"/>.
 <P/>
-The operation <Ref Func="Comm"/> can be used to compute the commutator of
-two elements, the operation <Ref Func="LeftQuotient"/> computes the
+The operation <Ref Oper="Comm"/> can be used to compute the commutator of
+two elements, the operation <Ref Oper="LeftQuotient"/> computes the
 product <M>x^{{-1}} y</M>.
 
 </Section>
@@ -227,8 +227,8 @@ free generators, that will map on this element again.
 <Heading>Normal Structure</Heading>
 
 For the operations
-<Ref Func="Centralizer" Label="for a magma and a submagma"/> and
-<Ref Func="Centre"/>, see Chapter&nbsp;<Ref Chap="Magmas"/>.
+<Ref Oper="Centralizer" Label="for a magma and a submagma"/> and
+<Ref Attr="Centre"/>, see Chapter&nbsp;<Ref Chap="Magmas"/>.
 
 <Index>normalizer</Index>
 <#Include Label="Normalizer">
@@ -248,7 +248,7 @@ For the operations
 
 The centre of a group (the subgroup of those elements that commute with all
 other elements of the group) can be computed by the operation
-<Ref Func="Centre"/>.
+<Ref Attr="Centre"/>.
 
 <#Include Label="TrivialSubgroup">
 <#Include Label="CommutatorSubgroup">
@@ -276,17 +276,17 @@ a group <M>G</M> is solvable if and only if one of the following conditions hold
 <Enum>
 <Item>
     For each prime <M>p</M> dividing the order of <M>G</M>,
-    there exists a <M>p</M>-complement (see&nbsp;<Ref Func="SylowComplement"/>).
+    there exists a <M>p</M>-complement (see&nbsp;<Ref Oper="SylowComplement"/>).
 </Item>
 <Item>
     For each set <M>P</M> of primes dividing the order of <M>G</M>,
-    there exists a <M>P</M>-Hall subgroup (see&nbsp;<Ref Func="HallSubgroup"/>).
+    there exists a <M>P</M>-Hall subgroup (see&nbsp;<Ref Oper="HallSubgroup"/>).
 </Item>
 <Item>
-    <M>G</M> has a Sylow system (see&nbsp;<Ref Func="SylowSystem"/>).
+    <M>G</M> has a Sylow system (see&nbsp;<Ref Attr="SylowSystem"/>).
 </Item>
 <Item>
-    <M>G</M> has a complement system (see&nbsp;<Ref Func="ComplementSystem"/>).
+    <M>G</M> has a complement system (see&nbsp;<Ref Attr="ComplementSystem"/>).
 </Item>
 </Enum>
 
@@ -325,8 +325,8 @@ algebras, contrary to the situation with finiteness or commutativity.
 In such cases, the name of the function for groups got a suffix <C>Group</C>
 to distinguish different meanings for different structures.
 <P/>
-Some functions, such as <Ref Func="IsPSolvable"/> and
-<Ref Func="IsPNilpotent"/>, although they are mathematical
+Some functions, such as <Ref Oper="IsPSolvable"/> and
+<Ref Oper="IsPNilpotent"/>, although they are mathematical
 properties, are not properties in the sense of &GAP;
 (see&nbsp;<Ref Sect="Attributes"/> and <Ref Sect="Properties"/>),
 as they depend on a parameter.
@@ -370,7 +370,7 @@ The manual contains more such attributes documented in this manual, for
 example, <Ref Attr="NrConjugacyClasses"/>, 
 <Ref Attr="NilpotencyClassOfGroup"/> and others.
 <P/>
-Note also that some functions, such as <Ref Func="EulerianFunction"/>,
+Note also that some functions, such as <Ref Oper="EulerianFunction"/>,
 are mathematical attributes, but not &GAP; attributes
 (see <Ref Sect="Attributes"/>) as they are depending on a parameter.
 
@@ -573,7 +573,7 @@ Additional attributes and properties of a group can be derived
 from computing its Schur cover.
 For example, if <M>G</M> is a finitely presented group, the
 derived subgroup of a Schur cover of <M>G</M> is invariant and isomorphic to
-the <Ref Func="NonabelianExteriorSquare"/> value of <M>G</M>,
+the <Ref Oper="NonabelianExteriorSquare"/> value of <M>G</M>,
 see <Cite Key="BJR87"/>. 
 
 <Index Subkey="see EpimorphismSchurCover">Darstellungsgruppe</Index>

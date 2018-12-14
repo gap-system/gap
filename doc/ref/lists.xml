@@ -37,7 +37,7 @@ special kind of lists.
 <P/>
 Several operations for lists,
 such as <Ref Func="Intersection" Label="for a list"/> and
-<Ref Func="Random" Label="for a list or collection"/>,
+<Ref Oper="Random" Label="for a list or collection"/>,
 will be described in Chapter&nbsp;<Ref Chap="Collections"/>,
 in particular see&nbsp;<Ref Sect="Lists and Collections"/>.
 
@@ -77,7 +77,7 @@ Each list constructed this way is mutable
 The basic operations for lists are element access
 (see&nbsp;<Ref Sect="List Elements"/>),
 assignment of elements to a list (see&nbsp;<Ref Sect="List Assignment"/>),
-fetching the length of a list (see&nbsp;<Ref Func="Length"/>),
+fetching the length of a list (see&nbsp;<Ref Attr="Length"/>),
 the test for a hole at a given position, and unbinding an element at a given
 position (see&nbsp;<Ref Sect="IsBound and Unbind for Lists"/>).
 <P/>
@@ -85,7 +85,7 @@ The term basic operation means that each other list operation can be
 formulated in terms of the basic operations.
 (But note that often a more efficient method than this one is implemented.)
 <P/>
-Any &GAP; object <A>list</A> in the category <Ref Func="IsList"/> is regarded
+Any &GAP; object <A>list</A> in the category <Ref Filt="IsList"/> is regarded
 as a list, and if methods for the basic list operations are installed for
 <A>list</A> then <A>list</A> can be used also for the other list operations.
 <P/>
@@ -98,7 +98,7 @@ elements (see also&nbsp;<Ref Sect="Enumerators"/>);
 for example, the elements might be described by an algorithm, such as the
 elements list of a group.
 For this reduction of space requirements, however, a price in access time
-may have to be paid (see&nbsp;<Ref Func="ConstantTimeAccessList"/>).
+may have to be paid (see&nbsp;<Ref Attr="ConstantTimeAccessList"/>).
 <P/>
 <Index Subkey="operation">list element</Index>
 <Index Subkey="operation">list boundedness test</Index>
@@ -133,7 +133,7 @@ special kind of lists.
 Similarly,
 <Ref Oper="IsBound\[\]"/> is used explicitly mainly in method installations.
 In other situations, one can simply call
-<Ref Func="IsBound" Label="for a list index"/>,
+<Ref Oper="IsBound" Label="for a list index"/>,
 which then delegates to <Ref Oper="IsBound\[\]"/>
 if the first argument is a list,
 and to <Ref Oper="IsBound\."/> if the first argument is a record.
@@ -292,7 +292,7 @@ gap> l[ l[1] ] := 10;; l;       # <index> may be an expression
 ]]></Example>
 <P/>
 If the index <A>ix</A> is an integer larger than the length of the list <A>list</A>
-(see <Ref Func="Length"/>),
+(see <Ref Attr="Length"/>),
 the list is automatically enlarged to make room for the new element.
 Note that it is possible to generate lists with holes that way.
 <P/>
@@ -303,7 +303,7 @@ gap> l[ 10 ] := 1;; l;             # now <list> has a hole
 [ 3, [ 4, 5, 6 ], 10, "another entry",,,,,, 1 ]
 ]]></Example>
 <P/>
-The  function <Ref Func="Add"/> should be used if you want to add an
+The  function <Ref Oper="Add"/> should be used if you want to add an
 element to the end of the list.
 <P/>
 Note that assigning to a list changes the list,
@@ -426,7 +426,7 @@ and incrementing the position by <A>tostep</A> each time.
 Unbound positions of <A>fromlst</A> are simply copied to <A>tolst</A>.
 <P/>
 <Ref Func="CopyListEntries"/> is used in methods for
-the operations <Ref Func="Add"/> and <Ref Func="Remove"/>.
+the operations <Ref Oper="Add"/> and <Ref Oper="Remove"/>.
 </Description>
 </ManSection>
 
@@ -577,17 +577,17 @@ l1[1] := 2;
 <Section Label="Duplication of Lists">
 <Heading>Duplication of Lists</Heading>
 
-Here we describe the meaning of <Ref Func="ShallowCopy"/> and
+Here we describe the meaning of <Ref Oper="ShallowCopy"/> and
 <Ref Func="StructuralCopy"/> for lists.
 For the general definition of these functions,
 see&nbsp;<Ref Sect="Duplication of Objects"/>.
 <P/>
 <Index Key="ShallowCopy" Subkey="for lists"><C>ShallowCopy</C></Index>
-The subobjects (see&nbsp;<Ref Func="ShallowCopy"/>) of a list are exactly
+The subobjects (see&nbsp;<Ref Oper="ShallowCopy"/>) of a list are exactly
 its elements.
 <P/>
 This means that for any list <A>list</A>,
-<Ref Func="ShallowCopy"/> returns a mutable <E>new</E> list <A>new</A>
+<Ref Oper="ShallowCopy"/> returns a mutable <E>new</E> list <A>new</A>
 that is <E>not identical</E> to any other list
 (see&nbsp;<Ref Sect="Identical Lists"/>),
 and whose elements are identical to the elements of <A>list</A>.
@@ -605,7 +605,7 @@ In both cases, modifying the copy <A>new</A> resp.&nbsp;<A>scp</A> by
 assignments (see&nbsp;<Ref Sect="List Assignment"/>) does not modify
 the original object <A>list</A>.
 <P/>
-<Ref Func="ShallowCopy"/> basically executes the following code for lists.
+<Ref Oper="ShallowCopy"/> basically executes the following code for lists.
 <Log><![CDATA[
 new := [];
 for i in [ 1 .. Length( list ) ] do
@@ -682,7 +682,7 @@ tests whether there is a positive integer <M>i</M> such that
 <A>list</A><M>[i] =</M> <A>obj</A> holds.
 <P/>
 If the list <A>list</A> knows that it is strictly sorted
-(see&nbsp;<Ref Func="IsSSortedList"/>),
+(see&nbsp;<Ref Prop="IsSSortedList"/>),
 the membership test is much quicker, because a binary search can be used
 instead of the linear search used for arbitrary lists,
 see <Ref Meth="\in" Label="for strictly sorted lists"/>.
@@ -738,12 +738,12 @@ which is usually called simply the length of the list.
 Aside from the implications for the performance you need not be aware
 of the physical length.
 In fact all you can ever observe, for example by calling
-<Ref Func="Length"/>, is the logical length.
+<Ref Attr="Length"/>, is the logical length.
 <P/>
-Suppose that <Ref Func="Length"/> would have to take the physical length
+Suppose that <Ref Attr="Length"/> would have to take the physical length
 and then test how many entries at the end of a list are unassigned,
 to compute the logical length of the list. That would take too much time.
-In order to make <Ref Func="Length"/>, and other functions that need to know
+In order to make <Ref Attr="Length"/>, and other functions that need to know
 the logical length, more efficient,
 the length of a list is stored along with the list.
 <P/>
@@ -860,7 +860,7 @@ row vectors and matrices are special kinds of lists.
 However, it is the wide variety of list objects because of which we
 prescribe arithmetic operations <E>not for all</E> of them.
 (Keep in mind that <Q>list</Q> means just an object in the category
-<Ref Func="IsList"/>.)
+<Ref Filt="IsList"/>.)
 <P/>
 (Due to the intended generality and flexibility,
 the definitions given in the following sections are quite technical.
@@ -875,7 +875,7 @@ multiplied in the usual way, via the infix operators <C>+</C> and <C>*</C>;
 and we want also Lie matrices, with the same additive behaviour but with
 the multiplication defined by the Lie bracket.
 Both kinds of matrices shall be lists, with the usual access to their rows,
-with <Ref Func="Length"/> returning the number of rows etc.
+with <Ref Attr="Length"/> returning the number of rows etc.
 <P/>
 For the categories and attributes that control the arithmetic behaviour
 of lists,
@@ -923,24 +923,24 @@ and&nbsp;<Ref Sect="Matrices over Finite Fields"/>.
 In this general context, we define the results of additive operations
 only in the following situations.
 For unary operations (zero and additive inverse),
-the unique argument must be in <Ref Func="IsGeneralizedRowVector"/>;
+the unique argument must be in <Ref Filt="IsGeneralizedRowVector"/>;
 for binary operations (addition and subtraction),
-at least one argument must be in <Ref Func="IsGeneralizedRowVector"/>,
+at least one argument must be in <Ref Filt="IsGeneralizedRowVector"/>,
 and the other either is not a list or also in
-<Ref Func="IsGeneralizedRowVector"/>.
+<Ref Filt="IsGeneralizedRowVector"/>.
 <P/>
 (For non-list &GAP; objects, defining the results of unary operations is not
 an issue here,
 and if at least one argument is a list not in
-<Ref Func="IsGeneralizedRowVector"/>,
+<Ref Filt="IsGeneralizedRowVector"/>,
 it shall be left to this argument whether the result in question is defined
 and what it is.)
 
 <Subsection Label="Zero for lists">
 <Heading>Zero for lists</Heading>
 
-The zero (see&nbsp;<Ref Func="Zero"/>) of a list <M>x</M> in
-<Ref Func="IsGeneralizedRowVector"/>
+The zero (see&nbsp;<Ref Attr="Zero"/>) of a list <M>x</M> in
+<Ref Filt="IsGeneralizedRowVector"/>
 is defined as the list whose entry at position <M>i</M> is the zero of
 <M>x[i]</M> if this entry is bound, and is unbound otherwise.
 <P/>
@@ -956,8 +956,8 @@ LieObject( [ [ 0, 0 ], [ 0, 0 ] ] )
 <Subsection Label="AdditiveInverse for lists">
 <Heading>AdditiveInverse for lists</Heading>
 
-The additive inverse (see&nbsp;<Ref Func="AdditiveInverse"/>) of a list
-<M>x</M> in <Ref Func="IsGeneralizedRowVector"/> is defined as the list
+The additive inverse (see&nbsp;<Ref Attr="AdditiveInverse"/>) of a list
+<M>x</M> in <Ref Filt="IsGeneralizedRowVector"/> is defined as the list
 whose entry at position <M>i</M> is the additive inverse of <M>x[i]</M>
 if this entry is bound, and is unbound otherwise.
 <P/>
@@ -973,19 +973,19 @@ gap> AdditiveInverse( [ 1, 2, 3 ] );  AdditiveInverse( [ [ 1, 2 ], 3 ] );
 <Heading>Addition of lists</Heading>
 
 <Index Subkey="list and non-list">addition</Index>
-If <M>x</M> and <M>y</M> are in <Ref Func="IsGeneralizedRowVector"/>
+If <M>x</M> and <M>y</M> are in <Ref Filt="IsGeneralizedRowVector"/>
 and have the same additive nesting depth
-(see&nbsp;<Ref Func="NestingDepthA"/>),
+(see&nbsp;<Ref Attr="NestingDepthA"/>),
 <!-- % By definition, this depth is nonzero. -->
 the sum <M>x + y</M> is defined <E>pointwise</E>,
 in the sense that the result is a list whose entry at position <M>i</M> is
 <M>x[i] + y[i]</M> if these entries are bound,
-is a shallow copy (see&nbsp;<Ref Func="ShallowCopy"/>) of <M>x[i]</M> or
+is a shallow copy (see&nbsp;<Ref Oper="ShallowCopy"/>) of <M>x[i]</M> or
 <M>y[i]</M> if the other argument is not bound at position <M>i</M>,
 and is unbound if both <M>x</M> and <M>y</M> are unbound at position <M>i</M>.
 <P/>
-If <M>x</M> is in <Ref Func="IsGeneralizedRowVector"/> and <M>y</M> is
-in <Ref Func="IsGeneralizedRowVector"/> and has lower additive nesting depth,
+If <M>x</M> is in <Ref Filt="IsGeneralizedRowVector"/> and <M>y</M> is
+in <Ref Filt="IsGeneralizedRowVector"/> and has lower additive nesting depth,
 or is neither a list nor a domain,
 the sum <M>x + y</M> is defined as a list whose entry at position <M>i</M> is
 <M>x[i] + y</M> if <M>x</M> is bound at position <M>i</M>,
@@ -1026,8 +1026,8 @@ gap> l1 + [];
 
 <Index Subkey="difference">list and non-list</Index>
 For two &GAP; objects <M>x</M> and <M>y</M> of which one is in
-<Ref Func="IsGeneralizedRowVector"/> and the other is also in
-<Ref Func="IsGeneralizedRowVector"/>
+<Ref Filt="IsGeneralizedRowVector"/> and the other is also in
+<Ref Filt="IsGeneralizedRowVector"/>
 or is neither a list nor a domain, <M>x - y</M> is defined as <M>x + (-y)</M>.
 <P/>
 <Example><![CDATA[
@@ -1054,16 +1054,16 @@ gap> l1 - [];
 In this general context, we define the results of multiplicative operations
 only in the following situations.
 For unary operations (one and inverse), the unique argument must be in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/>;
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>;
 for binary operations (multiplication and division),
 at least one argument must be in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/>,
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>,
 and the other either not a list or also in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/>.
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>.
 <P/>
 (For non-list &GAP; objects, defining the results of unary operations is not
 an issue here, and if at least one argument is a list not in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/>,
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>,
 it shall be left to this argument whether the result in question is defined
 and what it is.)
 
@@ -1071,8 +1071,8 @@ and what it is.)
 <Subsection Label="One for lists">
 <Heading>One for lists</Heading>
 
-The one (see&nbsp;<Ref Func="One"/>) of a dense list <A>x</A> in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/> such that <A>x</A> has
+The one (see&nbsp;<Ref Attr="One"/>) of a dense list <A>x</A> in
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/> such that <A>x</A> has
 even multiplicative nesting depth and has the same length
 as each of its rows is defined as the usual identity matrix
 on the outer two levels,
@@ -1092,8 +1092,8 @@ gap> One( [ [ [ [ 1 ] ], [ [ 2 ] ] ], [ [ [ 3 ] ], [ [ 4 ] ] ] ] );
 <Subsection Label="Inverse for lists">
 <Heading>Inverse for lists</Heading>
 
-The inverse (see&nbsp;<Ref Func="Inverse"/>) of an invertible square table
-<A>x</A> in <Ref Func="IsMultiplicativeGeneralizedRowVector"/> whose entries
+The inverse (see&nbsp;<Ref Attr="Inverse"/>) of an invertible square table
+<A>x</A> in <Ref Filt="IsMultiplicativeGeneralizedRowVector"/> whose entries
 lie in a common field is defined as the usual inverse <M>y</M>, i.e.,
 a square matrix over the same field such that <M><A>x</A> y</M> and
 <M>y <A>x</A></M> is equal to <C>One( <A>x</A> )</C>.
@@ -1111,7 +1111,7 @@ gap> Inverse( [ [ 1, 2 ], [ 3, 4 ] ] );
 <Index Subkey="product">list and non-list</Index>
 There are three possible computations that might be triggered by a
 multiplication involving a list in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/>.
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>.
 Namely, <M>x * y</M> might be
 <List>
 <Mark>(I)</Mark>
@@ -1175,12 +1175,12 @@ Note that this is asymmetric.
 Now we can state the general multiplication rules.
 <P/>
 If exactly one argument is in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/>
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>
 then we regard the other argument (which is then neither a list nor a domain)
 as a scalar, and specify result (L) or (R), depending on ordering.
 <P/>
 In the remaining cases, both <M>x</M> and <M>y</M> are in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/>,
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>,
 and we distinguish the possibilities by their multiplicative nesting depths.
 An argument with <E>odd</E> multiplicative nesting depth is regarded
 as a vector,
@@ -1228,8 +1228,8 @@ true
 
 <Index Subkey="quotient">list and non-list</Index>
 For two &GAP; objects <M>x</M> and <M>y</M> of which one is in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/> and the other is also in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/> or is neither a list
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/> and the other is also in
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/> or is neither a list
 nor a domain, <M>x / y</M> is defined as <M>x * y^{{-1}}</M>.
 <P/>
 <Example><![CDATA[
@@ -1246,18 +1246,18 @@ gap> [ 1, 2, 3 ] / 2;  [ 1, 2 ] / [ [ 1, 2 ], [ 3, 4 ] ];
 <Index Subkey="mod">list and non-list</Index>
 <Index Subkey="lists">mod</Index>
 If <A>x</A> and <A>y</A> are in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/> and have the
-same multiplicative nesting depth (see&nbsp;<Ref Func="NestingDepthM"/>),
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/> and have the
+same multiplicative nesting depth (see&nbsp;<Ref Attr="NestingDepthM"/>),
 <!-- % By definition, this depth is nonzero. -->
 <C><A>x</A> mod <A>y</A></C> is defined <E>pointwise</E>,
 in the sense that the result is a list whose entry at position <M>i</M> is
 <C><A>x</A>[i] mod <A>y</A>[i]</C> if these entries are bound,
-is a shallow copy (see&nbsp;<Ref Func="ShallowCopy"/>) of <M>x[i]</M> or
+is a shallow copy (see&nbsp;<Ref Oper="ShallowCopy"/>) of <M>x[i]</M> or
 <M>y[i]</M> if the other argument is not bound at position <M>i</M>,
 and is unbound if both <M>x</M> and <M>y</M> are unbound at position <M>i</M>.
 <P/>
-If <M>x</M> is in <Ref Func="IsMultiplicativeGeneralizedRowVector"/> and
-<M>y</M> is in <Ref Func="IsMultiplicativeGeneralizedRowVector"/> and has
+If <M>x</M> is in <Ref Filt="IsMultiplicativeGeneralizedRowVector"/> and
+<M>y</M> is in <Ref Filt="IsMultiplicativeGeneralizedRowVector"/> and has
 lower multiplicative nesting depth or is neither a list nor a domain,
 <C><A>x</A> mod <A>y</A></C> is defined as a list whose entry at position
 <M>i</M> is <C><A>x</A>[i] mod <A>y</A></C> if <A>x</A> is bound at position
@@ -1281,8 +1281,8 @@ gap> [ 10, 12, 14, 16 ] mod [ 3, 5, 7 ];
 
 <Index Subkey="left quotient">list and non-list</Index>
 For two &GAP; objects <M>x</M> and <M>y</M> of which one is in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/> and the other is also in
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/> or is neither a list nor
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/> and the other is also in
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/> or is neither a list nor
 a domain,
 <C>LeftQuotient( <A>x</A>, <A>y</A> )</C> is defined as <M>x^{{-1}} * y</M>.
 <P/>
@@ -1313,12 +1313,12 @@ but since the methods used are in general not recursive,
 in particular for efficient multiplication of compressed matrices,
 such a general definition would be a burden in these cases.)
 Instead we consider,
-for a list <M>x</M> in <Ref Func="IsGeneralizedRowVector"/>,
+for a list <M>x</M> in <Ref Filt="IsGeneralizedRowVector"/>,
 the sequence <M>x = x_1, x_2, \ldots x_n</M> where <M>x_{{i+1}}</M> is
 the first bound entry in <M>x_i</M> if exists
 (that is, if <M>x_i</M> is a nonempty list),
 and <M>n</M> is the largest <M>i</M> such that <M>x_i</M> lies in
-<Ref Func="IsGeneralizedRowVector"/>.
+<Ref Filt="IsGeneralizedRowVector"/>.
 The <E>immutability level</E> of <M>x</M> is defined as infinity
 if <M>x</M> is immutable,
 and otherwise the number of <M>x_i</M> which are immutable.
@@ -1359,15 +1359,15 @@ and since &GAP; does not support mutable integers, the result is immutable.
 <P/>
 For unary arithmetic operations, there are three operations available,
 an attribute that returns an immutable result
-(<Ref Func="Zero"/>, <Ref Func="AdditiveInverse"/>, <Ref Func="One"/>,
-<Ref Func="Inverse"/>),
+(<Ref Attr="Zero"/>, <Ref Attr="AdditiveInverse"/>, <Ref Attr="One"/>,
+<Ref Attr="Inverse"/>),
 an operation that returns a result that is mutable
 <!-- at least on the outer level, or shall more be guaranteed? -->
 (<Ref Oper="ZeroOp"/>, <Ref Oper="AdditiveInverseOp"/>,
 <Ref Oper="OneOp"/>, <Ref Oper="InverseOp"/>),
 and an operation whose result has the same immutability level as the argument
-(<Ref Func="ZeroSM"/>, <Ref Func="AdditiveInverseSM"/>,
-<Ref Func="OneSM"/>, <Ref Func="InverseSM"/>).
+(<Ref Oper="ZeroSM"/>, <Ref Oper="AdditiveInverseSM"/>,
+<Ref Oper="OneSM"/>, <Ref Oper="InverseSM"/>).
 The last kind of operations is equivalent to the corresponding infix
 operations <C>0 * <A>list</A></C>, <C>- <A>list</A></C>,
 <C><A>list</A>^0</C>, and <C><A>list</A>^-1</C>.
@@ -1442,7 +1442,7 @@ false
 For such lists these property values must be computed anew
 each time the property is asked for.
 For example, if <A>list</A> is a list of mutable row vectors then the call of
-<Ref Func="Position"/> with <A>list</A> as first argument
+<Ref Oper="Position"/> with <A>list</A> as first argument
 cannot take advantage of the fact that <A>list</A> is in fact sorted.
 One solution is to call explicitly <Ref Func="PositionSorted"/>
 in such a situation, another solution is to replace <A>list</A> by an immutable
@@ -1491,7 +1491,7 @@ Searching objects in a list works much quicker if the list is known to be
 sorted.
 Currently &GAP; exploits the sortedness of a list automatically only if
 the list is <E>strictly sorted</E>, which is indicated by the property
-<Ref Func="IsSSortedList"/>.
+<Ref Prop="IsSSortedList"/>.
 <P/>
 Remember that a list of <E>mutable</E> objects cannot store that it is
 strictly sorted but has to test it anew whenever it is asked
@@ -1501,7 +1501,7 @@ Therefore &GAP; cannot take advantage of the sortedness of a list if this
 list has mutable entries.
 Moreover, if a sorted list <A>list</A> with mutable elements is used
 as an argument of a function that <E>expects</E> this argument to be sorted,
-for example <Ref Func="UniteSet"/> or <Ref Func="RemoveSet"/>,
+for example <Ref Oper="UniteSet"/> or <Ref Oper="RemoveSet"/>,
 then it is checked whether <A>list</A> is in fact sorted;
 this check can have the effect actually to slow down the computations,
 compared to computations with sorted lists of immutable elements
@@ -1532,12 +1532,12 @@ such as <Ref Func="Intersection" Label="for a list"/>
 and <Ref Func="Union" Label="for a list"/>, 
 are described in Chapter&nbsp;<Ref Chap="Collections"/>.
 In particular, for the construction of proper sets,
-see&nbsp;<Ref Func="SSortedList"/> and <Ref Func="AsSSortedList"/>.
+see&nbsp;<Ref Oper="SSortedList"/> and <Ref Attr="AsSSortedList"/>.
 For finding positions in sorted lists, see&nbsp;<Ref Func="PositionSorted"/>.
 <P/>
 There are nondestructive counterparts of the functions
-<Ref Func="UniteSet"/>, <Ref Func="IntersectSet"/>, and
-<Ref Func="SubtractSet"/> available for proper sets.
+<Ref Oper="UniteSet"/>, <Ref Oper="IntersectSet"/>, and
+<Ref Oper="SubtractSet"/> available for proper sets.
 These are <C>UnionSet</C>, <C>IntersectionSet</C>, and
 <Ref Oper="Difference"/>.
 The former two are methods for the more general operations
@@ -1560,7 +1560,7 @@ of equal elements in <A>set</A> the element in the result is identical
 
 <Description>
 For a list <A>list</A> that stores that it is strictly sorted,
-the test with <Ref Func="\in" Label="for strictly sorted lists"/>
+the test with <Ref Meth="\in" Label="for strictly sorted lists"/>
 whether the object <A>obj</A> is an entry of <A>list</A> uses binary search.
 This test can be entered also with the infix notation
 <A>obj</A> <K>in</K> <A>list</A>.
@@ -1685,7 +1685,7 @@ with possibly slightly different meaning for lists and non-list collections.
 
 The following functions are generalizations of
 <Ref Func="List" Label="for a collection"/>,
-<Ref Func="Set"/>, <Ref Func="Sum"/>, and <Ref Func="Product"/>.
+<Ref Oper="Set"/>, <Ref Func="Sum"/>, and <Ref Func="Product"/>.
 
 <#Include Label="ListX">
 <#Include Label="SetX">
@@ -1806,7 +1806,7 @@ elements, say, for which it is very easy to enumerate all elements
 using <M>q</M>-adic expansions of integers.
 <P/>
 Using this enumeration can be even quicker than a binary search in a sorted
-list of vectors, see <Ref Func="IsQuickPositionList"/>.
+list of vectors, see <Ref Filt="IsQuickPositionList"/>.
 <P/>
 On the one hand, element access to an enumerator may take more time than
 element access to an internally represented list containing the same
@@ -1823,12 +1823,12 @@ namely the particular order of elements and the possibility to find the
 position of elements.
 For such cases, &GAP; provides iterators (see&nbsp;<Ref Sect="Iterators"/>).
 <P/>
-The functions <Ref Func="Enumerator"/> and
-<Ref Func="EnumeratorSorted"/> return enumerators of domains.
+The functions <Ref Attr="Enumerator"/> and
+<Ref Attr="EnumeratorSorted"/> return enumerators of domains.
 Most of the special implementations of enumerators in the &GAP; library
 are based on the general interface that is provided by
 <Ref Func="EnumeratorByFunctions" Label="for a domain and a record"/>;
-one generic example is <Ref Func="EnumeratorByBasis"/>,
+one generic example is <Ref Attr="EnumeratorByBasis"/>,
 which can be used to get an enumerator of a finite dimensional free module.
 <P/>
 Also enumerators for non-domains can be implemented via

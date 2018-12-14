@@ -49,15 +49,15 @@ functions that create magmas from generators
 (see <Ref Func="Magma"/>, <Ref Func="MagmaWithOne"/>,
 <Ref Func="MagmaWithInverses"/>),
 the underlying operations for which methods can be installed
-(see <Ref Func="MagmaByGenerators"/>, <Ref Func="MagmaWithOneByGenerators"/>,
-<Ref Func="MagmaWithInversesByGenerators"/>),
+(see <Ref Oper="MagmaByGenerators"/>, <Ref Oper="MagmaWithOneByGenerators"/>,
+<Ref Oper="MagmaWithInversesByGenerators"/>),
 functions for forming submagmas
 (see <Ref Func="Submagma"/>, <Ref Func="SubmagmaWithOne"/>,
 <Ref Func="SubmagmaWithInverses"/>),
 and functions that form a magma equal to a given collection
-(see <Ref Func="AsMagma"/>, <Ref Func="AsSubmagma"/>).
+(see <Ref Attr="AsMagma"/>, <Ref Oper="AsSubmagma"/>).
 <P/>
-<Ref Func="InjectionZeroMagma"/> creates a new magma which is the original
+<Ref Attr="InjectionZeroMagma"/> creates a new magma which is the original
 magma with a zero adjoined.
 
 <#Include Label="Magma">
@@ -95,7 +95,7 @@ a magma with only few elements is via a multiplication table.
 <Section Label="Attributes and Properties for Magmas">
 <Heading>Attributes and Properties for Magmas</Heading>
 
-<E>Note</E> that <Ref Func="IsAssociative"/> and <Ref Func="IsCommutative"/>
+<E>Note</E> that <Ref Prop="IsAssociative"/> and <Ref Prop="IsCommutative"/>
 always refer to the multiplication of a domain.
 If a magma <A>M</A> has also an <E>additive structure</E>,
 e.g., if <A>M</A> is a ring (see&nbsp;<Ref Chap="Rings"/>),

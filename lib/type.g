@@ -63,10 +63,10 @@ end );
 ##  <P/>
 ##  For example, if one wants to create a category of group elements
 ##  then <A>super</A> should be
-##  <Ref Func="IsMultiplicativeElementWithInverse"/>
+##  <Ref Filt="IsMultiplicativeElementWithInverse"/>
 ##  or a subcategory of it.
 ##  If no specific supercategory of <A>cat</A> is known,
-##  <A>super</A> may be <Ref Func="IsObject"/>.
+##  <A>super</A> may be <Ref Filt="IsObject"/>.
 ##  <P/>
 ##  The optional third argument <A>rank</A> denotes the incremental rank
 ##  (see&nbsp;<Ref Sect="Filters"/>) of <A>cat</A>,

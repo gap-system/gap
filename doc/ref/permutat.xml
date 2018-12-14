@@ -35,7 +35,7 @@ In the names of the &GAP; functions that deal with permutations,
 the word <Q>Permutation</Q> is usually abbreviated to <Q>Perm</Q>,
 to save typing.
 For example,
-the category test function for permutations is <Ref Func="IsPerm"/>.
+the category test function for permutations is <Ref Filt="IsPerm"/>.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->

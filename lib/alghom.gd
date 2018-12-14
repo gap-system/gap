@@ -80,7 +80,7 @@ DeclareOperation( "AlgebraGeneralMappingByImages",
 ##  <P/>
 ##  One can avoid the checks by calling <Ref Oper="AlgebraHomomorphismByImagesNC"/>,
 ##  and one can construct multi-valued mappings with
-##  <Ref Func="AlgebraGeneralMappingByImages"/>.
+##  <Ref Oper="AlgebraGeneralMappingByImages"/>.
 ##  <Example><![CDATA[
 ##  gap> T:= EmptySCTable( 2, 0 );;
 ##  gap> SetEntrySCTable( T, 1, 1, [1,1] ); SetEntrySCTable( T, 2, 2, [1,2] );
@@ -118,7 +118,7 @@ DeclareGlobalFunction( "AlgebraHomomorphismByImages" );
 ##  <P/>
 ##  For creating a possibly multi-valued mapping from <A>A</A> to <A>B</A> that
 ##  respects addition, multiplication, and scalar multiplication,
-##  <Ref Func="AlgebraGeneralMappingByImages"/> can be used.
+##  <Ref Oper="AlgebraGeneralMappingByImages"/> can be used.
 ##  <!-- see the comment in the declaration of <Ref Func="GroupHomomorphismByImagesNC"/>!-->
 ##  <P/>
 ##  For the definitions of the algebras <C>A</C> and <C>B</C> in the next example we refer
@@ -145,7 +145,7 @@ DeclareOperation( "AlgebraHomomorphismByImagesNC",
 ##  <Oper Name="AlgebraWithOneGeneralMappingByImages" Arg='A, B, gens, imgs'/>
 ##
 ##  <Description>
-##  This function is analogous to <Ref Func="AlgebraGeneralMappingByImages"/>;
+##  This function is analogous to <Ref Oper="AlgebraGeneralMappingByImages"/>;
 ##  the only difference being that the identity of <A>A</A> is automatically
 ##  mapped to the identity of <A>B</A>.
 ##  <Example><![CDATA[
@@ -191,9 +191,9 @@ DeclareOperation( "AlgebraWithOneGeneralMappingByImages",
 ##  then <K>fail</K> is returned.
 ##  <P/>
 ##  One can avoid the checks by calling
-##  <Ref Func="AlgebraWithOneHomomorphismByImagesNC"/>,
+##  <Ref Oper="AlgebraWithOneHomomorphismByImagesNC"/>,
 ##  and one can construct multi-valued mappings with
-##  <Ref Func="AlgebraWithOneGeneralMappingByImages"/>.
+##  <Ref Oper="AlgebraWithOneGeneralMappingByImages"/>.
 ##  <Example><![CDATA[
 ##  gap> m1:= NullMat( 2, 2 );; m1[1][1]:=1;;
 ##  gap> m2:= NullMat( 2, 2 );; m2[2][2]:=1;;
@@ -222,7 +222,7 @@ DeclareGlobalFunction( "AlgebraWithOneHomomorphismByImages" );
 ##  <Oper Name="AlgebraWithOneHomomorphismByImagesNC" Arg='A, B, gens, imgs'/>
 ##
 ##  <Description>
-##  <Ref Func="AlgebraWithOneHomomorphismByImagesNC"/> is the operation that
+##  <Ref Oper="AlgebraWithOneHomomorphismByImagesNC"/> is the operation that
 ##  is called by the function
 ##  <Ref Func="AlgebraWithOneHomomorphismByImages"/>.
 ##  Its methods may assume that <A>gens</A> generates <A>A</A> and that the
@@ -233,7 +233,7 @@ DeclareGlobalFunction( "AlgebraWithOneHomomorphismByImages" );
 ##  For creating a possibly multi-valued mapping from <A>A</A> to <A>B</A>
 ##  that respects addition, multiplication, identity, and scalar
 ##  multiplication,
-##  <Ref Func="AlgebraWithOneGeneralMappingByImages"/> can be used.
+##  <Ref Oper="AlgebraWithOneGeneralMappingByImages"/> can be used.
 ##  <P/>
 ##  <!-- see the comment in the declaration of <C>GroupHomomorphismByImagesNC</C>!-->
 ##  <Example><![CDATA[
@@ -269,7 +269,7 @@ DeclareOperation( "AlgebraWithOneHomomorphismByImagesNC",
 ##   Label="action on a free left module"/>
 ##
 ##  <Description>
-##  <Ref Func="OperationAlgebraHomomorphism" Label="action w.r.t. a basis of the module"/>
+##  <Ref Oper="OperationAlgebraHomomorphism" Label="action w.r.t. a basis of the module"/>
 ##  returns an algebra homomorphism from the <M>F</M>-algebra <A>A</A> into
 ##  a matrix algebra over <M>F</M> that describes the <M>F</M>-linear action
 ##  of <A>A</A> on the basis <A>B</A> of a free left module
@@ -410,16 +410,16 @@ DeclareSynonymAttr( "IsomorphismMatrixAlgebra", IsomorphismMatrixFLMLOR );
 ##
 ##  <Description>
 ##  For a basis <A>B</A> of an algebra <M>A</M>, say,
-##  <Ref Func="IsomorphismSCAlgebra" Label="w.r.t. a given basis"/> returns
+##  <Ref Attr="IsomorphismSCAlgebra" Label="w.r.t. a given basis"/> returns
 ##  an algebra isomorphism from <M>A</M> to an algebra <M>S</M> given by
 ##  structure constants
 ##  (see&nbsp;<Ref Sect="Constructing Algebras by Structure Constants"/>),
 ##  such that the canonical basis of <M>S</M> is the image of <A>B</A>.
 ##  <P/>
 ##  For an algebra <A>A</A>,
-##  <Ref Func="IsomorphismSCAlgebra" Label="for an algebra"/> chooses
+##  <Ref Attr="IsomorphismSCAlgebra" Label="for an algebra"/> chooses
 ##  a basis of <A>A</A> and returns the
-##  <Ref Func="IsomorphismSCAlgebra" Label="w.r.t. a given basis"/>
+##  <Ref Attr="IsomorphismSCAlgebra" Label="w.r.t. a given basis"/>
 ##  value for that basis.
 ##  <P/>
 ##  <Example><![CDATA[

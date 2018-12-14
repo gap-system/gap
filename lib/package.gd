@@ -466,7 +466,7 @@ DeclareGlobalFunction( "IsPackageLoaded" );
 ##  <P/>
 ##  If you want to see the log messages already during the package loading
 ##  process, you can set the level of the info class
-##  <Ref Var="InfoPackageLoading"/> to one of the severity values
+##  <Ref InfoClass="InfoPackageLoading"/> to one of the severity values
 ##  listed above;
 ##  afterwards the messages with at most this severity are shown immediately
 ##  when they arise.
@@ -864,7 +864,7 @@ DeclareGlobalFunction( "LoadAllPackages" );
 ##  <P/>
 ##  Let <A>pkgname</A> and <A>pkgpath</A> be strings denoting the name of a
 ##  &GAP; package and the path to a directory where a version of this package
-##  can be found (i.&nbsp;e., calling <Ref Func="Directory"/> with the
+##  can be found (i.&nbsp;e., calling <Ref Oper="Directory"/> with the
 ##  argument <A>pkgpath</A> will yield a directory that contains the file
 ##  <F>PackageInfo.g</F> of the package).
 ##  <P/>

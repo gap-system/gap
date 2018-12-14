@@ -257,7 +257,7 @@ DeclareGlobalFunction("AllHomomorphisms");
 ##  <Ref Func="AllSubgroups"/> returns a list of all subgroups of <A>G</A>,
 ##  intended primarily for use in class for small examples.
 ##  This list will quickly get very long and in general use of
-##  <Ref Func="ConjugacyClassesSubgroups"/> is recommended.
+##  <Ref Attr="ConjugacyClassesSubgroups"/> is recommended.
 ##  <Example><![CDATA[
 ##  gap> AllSubgroups(SymmetricGroup(3));
 ##  [ Group(()), Group([ (2,3) ]), Group([ (1,2) ]), Group([ (1,3) ]), 

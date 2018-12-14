@@ -39,7 +39,7 @@ The fundamental attributes of a partial permutation are:
   <Item> The <E>degree</E> of a partial permutation <C>f</C> is just the largest
     positive integer where <C>f</C> is defined. In other words, the degree of
     <C>f</C> is the largest element in the domain of <C>f</C>; 
-    see <Ref Attr="DegreeOfPartialPerm"/>. 
+    see <Ref Func="DegreeOfPartialPerm"/>. 
   </Item>
   <Mark>Image list</Mark>
   <Item>
@@ -64,12 +64,12 @@ The fundamental attributes of a partial permutation are:
     largest positive integer of the form <C>i^f</C> for any <C>i</C>
     in the domain of <C>f</C>. In other words, the codegree of <C>f</C> is
     the largest element in the image of <C>f</C>; see 
-    <Ref Attr="CodegreeOfPartialPerm"/>. 
+    <Ref Func="CodegreeOfPartialPerm"/>. 
   </Item>
  <Mark>Rank</Mark>
   <Item>The <E>rank</E> of a partial permutation <C>f</C> is the size of its
     domain, or equivalently the size of its image set or image list; see 
-    <Ref Attr="RankOfPartialPerm"/>.
+    <Ref Func="RankOfPartialPerm"/>.
   </Item>
 </List>
 
@@ -86,11 +86,11 @@ The fundamental attributes of a partial permutation are:
   If <C>S</C> is a semigroup and <C>s</C> is an element of <C>S</C>, then an
   element <C>t</C> in <C>S</C> is a <E>semigroup inverse</E> for <C>s</C> if 
   <C>s*t*s=s</C> and <C>t*s*t=t</C>; see, for example,
-  <Ref Oper="InverseOfTransformation"/>. A semigroup in which every element has
+  <Ref Func="InverseOfTransformation"/>. A semigroup in which every element has
   a unique semigroup inverse is called an <E>inverse semigroup</E>.<P/> 
 
   Every partial permutation belongs to a symmetric inverse monoid; see 
-  <Ref Func="SymmetricInverseSemigroup"/>. Inverse semigroups of partial
+  <Ref Oper="SymmetricInverseSemigroup"/>. Inverse semigroups of partial
   permutations are hence inverse subsemigroups of the symmetric inverse
   monoids. <P/>
 
@@ -125,12 +125,12 @@ The fundamental attributes of a partial permutation are:
   <C>f*f^-1</C> is a left identity for <C>f</C> and <C>f^-1*f</C> is a right
   identity. These products will be referred to here 
   as the <E>left one</E> and <E>right one</E> of the partial permutation
-  <C>f</C>; see <Ref Oper="LeftOne" Label="for a partial perm"/>.  The
+  <C>f</C>; see <Ref Attr="LeftOne" Label="for a partial perm"/>.  The
   <E>one</E> of a partial permutation is just the identity on the
   union of its domain and its image, and the <E>zero</E> of a partial
   permutation is just the empty partial permutation; see 
-  <Ref Oper="One" Label="for a partial perm"/> and
-  <Ref Oper="MultiplicativeZero" Label="for a partial perm"/>.
+  <Ref Meth="One" Label="for a partial perm"/> and
+  <Ref Meth="MultiplicativeZero" Label="for a partial perm"/>.
   <P/>
 
   If <C>S</C> is an arbitrary inverse semigroup, the <E>natural partial
@@ -142,7 +142,7 @@ The fundamental attributes of a partial permutation are:
   natural partial order if and only
   if <C>f</C> is a restriction of <C>g</C>. The natural partial order is a meet
   semilattice, in other words, every pair of elements has a greatest lower
-  bound; see <Ref Oper="MeetOfPartialPerms"/>.<P/> 
+  bound; see <Ref Func="MeetOfPartialPerms"/>.<P/> 
 
   Note that unlike permutations, partial permutations do not fix unspecified
   points but are simply undefined on such points; see Chapter 
@@ -178,8 +178,8 @@ For example, the category test function for partial permutations is
     Every partial permutation in &GAP; belongs to the category
     <C>IsPartialPerm</C>. Basic operations for partial permutations are 
     <Ref Attr="DomainOfPartialPerm"/>, <Ref Attr="ImageListOfPartialPerm"/>, 
-    <Ref Attr="ImageSetOfPartialPerm"/>, <Ref Attr="RankOfPartialPerm"/>,
-    <Ref Attr="DegreeOfPartialPerm"/>, multiplication of two partial 
+    <Ref Attr="ImageSetOfPartialPerm"/>, <Ref Func="RankOfPartialPerm"/>,
+    <Ref Func="DegreeOfPartialPerm"/>, multiplication of two partial 
     permutations is via <K>*</K>, and exponentiation with the first argument
     a positive integer <C>i</C> and second argument a partial permutation
     <C>f</C> where the result is the image <C>i^f</C> of the point <C>i</C>
@@ -293,7 +293,7 @@ For example, the category test function for partial permutations is
       This function is the analogue in the context of
       partial permutations of <Ref Func="Permutation"
         Label="for a group, an action domain, etc."/> or 
-      <Ref Func="TransformationOp"/>.<P/>
+      <Ref Oper="TransformationOp"/>.<P/>
       
       If <A>obj</A> does not map the elements of <A>list</A> injectively,
       then <K>fail</K> is returned.<P/>
@@ -1005,8 +1005,8 @@ gap> MultiplicativeZero(f);
   types of objects, or that other types of &GAP; objects can be represented by
   partial permutations. Partial permutations which are
   mathematically permutations can be converted into permutations in &GAP; using
-  the function <Ref Oper="AsPermutation"/>.  Similarly, a partial permutation
-  can be converted into a transformation using <Ref Oper="AsTransformation"/>.
+  the function <Ref Attr="AsPermutation"/>.  Similarly, a partial permutation
+  can be converted into a transformation using <Ref Attr="AsTransformation"/>.
   <P/>
   
   In this section we describe functions for converting other types of objects
@@ -1502,12 +1502,12 @@ generators, and more. <P/>
 
 Since a partial permutation semigroup is also a partial permutation collection, there are special methods for <Ref Attr="DomainOfPartialPermCollection"/>, 
 <Ref Attr="ImageOfPartialPermCollection"/>, 
-<Ref Attr="FixedPointsOfPartialPerm" Label="for a partial perm coll"/>, 
-<Ref Attr="MovedPoints" Label="for a partial perm coll"/>, 
-<Ref Attr="NrFixedPoints" Label="for a partial perm coll"/>, 
-<Ref Attr="NrMovedPoints" Label="for a partial perm coll"/>,
-<Ref Attr="LargestMovedPoint" Label="for a partial perm coll"/>, and 
-<Ref Attr="SmallestMovedPoint" Label="for a partial perm coll"/> 
+<Ref Meth="FixedPointsOfPartialPerm" Label="for a partial perm coll"/>, 
+<Ref Meth="MovedPoints" Label="for a partial perm coll"/>, 
+<Ref Meth="NrFixedPoints" Label="for a partial perm coll"/>, 
+<Ref Meth="NrMovedPoints" Label="for a partial perm coll"/>,
+<Ref Meth="LargestMovedPoint" Label="for a partial perm coll"/>, and 
+<Ref Meth="SmallestMovedPoint" Label="for a partial perm coll"/> 
 when applied to a partial permutation semigroup. 
 
 <ManSection>
@@ -1518,11 +1518,11 @@ when applied to a partial permutation semigroup.
     A <E>partial perm semigroup</E> is simply a semigroup consisting of partial
     permutations, which may or may not be an inverse semigroup. An object
     <A>obj</A> in &GAP; is a partial perm semigroup if and only if it satisfies
-    <Ref Prop="IsSemigroup"/> and <Ref Filt="IsPartialPermCollection"/>.<P/>
+    <Ref Filt="IsSemigroup"/> and <Ref Filt="IsPartialPermCollection"/>.<P/>
 
     A <E>partial perm monoid</E> is a monoid consisting of partial
     permutations. An object in &GAP; is a partial perm monoid if it satisfies 
-    <Ref Prop="IsMonoid"/> and <Ref Filt="IsPartialPermCollection"/>.<P/> 
+    <Ref Filt="IsMonoid"/> and <Ref Filt="IsPartialPermCollection"/>.<P/> 
 
 Note that it is possible for a partial perm semigroup to have a
 multiplicative neutral element (i.e. an identity element) but not to satisfy
@@ -1692,7 +1692,7 @@ false]]></Example>
        <Mark>Partial permutation semigroups</Mark>
        <Item>
          If <A>S</A> is a partial permutation semigroup that does not satisfy
-         <Ref Func="IsMonoid"/> but where
+         <Ref Filt="IsMonoid"/> but where
          <C>MultiplicativeNeutralElement(<A>S</A>)&lt;>fail</C>, then
          <C>IsomorphismPartialPermMonoid(<A>S</A>)</C> returns an isomorphism
          from <A>S</A> to an inverse monoid of partial permutations.
@@ -1704,9 +1704,9 @@ false]]></Example>
         <C>IsomorphismPartialPermMonoid</C> returns an isomorphism from
         <A>S</A> to an inverse monoid of partial permutations on the set
         <C>MovedPoints(<A>S</A>)</C> obtained using 
-        <Ref Func="AsPartialPerm" Label="for a permutation"/>.
+        <Ref Meth="AsPartialPerm" Label="for a permutation"/>.
         The inverse of this isomorphism is obtained using 
-        <Ref Func="AsPermutation"/>.
+        <Ref Attr="AsPermutation"/>.
       </Item>
 
       <Mark>Transformation semigroups</Mark>

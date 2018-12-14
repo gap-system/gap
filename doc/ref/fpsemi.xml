@@ -55,7 +55,7 @@ false
 ]]></Example>
 <P/>
 However, one can build a finitely presented semigroup isomorphic
-to that finitely presented monoid (see <Ref Func="IsomorphismFpSemigroup"/>).
+to that finitely presented monoid (see <Ref Attr="IsomorphismFpSemigroup"/>).
 <P/>
 Also note that is not possible to refer to the generators by their names.
 These names are not variables, but just display figures.
@@ -276,7 +276,7 @@ reduction ordering <A>wordord</A>.
 This procedure gives a standard way of finding a transformation
 representation of a finitely presented semigroup. Usually
 one does not explicitly call this procedure but uses
-<Ref Func="IsomorphismTransformationSemigroup"/>.
+<Ref Attr="IsomorphismTransformationSemigroup"/>.
 <!--or <Ref Func="HomomorphismTransformationSemigroup"/>-->
 
 <#Include Label="CosetTableOfFpSemigroup">

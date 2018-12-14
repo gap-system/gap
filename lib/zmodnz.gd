@@ -38,7 +38,7 @@
 ##  The elements in the rings <M>Z / n Z</M> are in the category
 ##  <Ref Filt="IsZmodnZObj"/>.
 ##  If <M>n</M> is a prime then the elements are of course also in the
-##  category <Ref Func="IsFFE"/>,
+##  category <Ref Filt="IsFFE"/>,
 ##  otherwise they are in <Ref Filt="IsZmodnZObjNonprime"/>.
 ##  <Ref Filt="IsZmodpZObj"/> is an abbreviation of
 ##  <C>IsZmodnZObj and IsFFE</C>.

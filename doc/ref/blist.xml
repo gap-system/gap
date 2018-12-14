@@ -110,7 +110,7 @@ representation of the list  is changed to  the compact representation.
 <P/>
 If you change a  boolean list that is  represented in  the compact
 representation by assignment (see <Ref Sect="List Assignment"/>) or
-<Ref Func="Add"/>
+<Ref Oper="Add"/>
 in such a way that the list remains a boolean list  it will remain
 represented in the compact representation.  Note that changing a list
 that is not represented in the compact representation, whether it is a

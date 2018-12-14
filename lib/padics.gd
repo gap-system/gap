@@ -161,7 +161,7 @@ DeclareOperation( "Valuation",  [ IsObject ] );
 ##  <Description>
 ##  (see also <Ref Oper="PadicNumber" Label="for pure padics"/>).
 ##  <P/>
-##  <Ref Func="PadicNumber"
+##  <Ref Oper="PadicNumber"
 ##   Label="for a p-adic extension family and a rational"/>
 ##  creates a <M>p</M>-adic number in the
 ##  <M>p</M>-adic numbers family <A>fam</A>.
@@ -219,7 +219,7 @@ DeclareOperation( "PadicNumber", [ IsPadicNumberFamily, IsObject ] );
 ##  <Oper Name="ShiftedPadicNumber" Arg='padic, int'/>
 ##
 ##  <Description>
-##  <Ref Func="ShiftedPadicNumber"/> takes a <M>p</M>-adic number
+##  <Ref Oper="ShiftedPadicNumber"/> takes a <M>p</M>-adic number
 ##  <A>padic</A> and an integer <A>shift</A>
 ##  and returns the <M>p</M>-adic number <M>c</M>,
 ##  that is <A>padic</A> <C>*</C> <M>p</M><C>^</C><A>shift</A>.

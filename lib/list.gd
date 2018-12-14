@@ -147,7 +147,7 @@ InstallTrueMethod(HasLength,IsPlistRep);
 ##  <Oper Name="IsBound" Arg='list[n]' Label="for a list index"/>
 ##
 ##  <Description>
-##  <Ref Func="IsBound" Label="for a list index"/> returns <K>true</K>
+##  <Ref Oper="IsBound" Label="for a list index"/> returns <K>true</K>
 ##  if the list <A>list</A> has an element at index <A>n</A>,
 ##  and <K>false</K> otherwise.
 ##  <A>list</A> must evaluate to a list, or to an object for which a suitable
@@ -186,7 +186,7 @@ DeclareOperationKernel( "[]",
 ##  <Oper Name="GetWithDefault" Arg='list, n, default'/>
 ##
 ##  <Description>
-##  <Ref Func="GetWithDefault"/> returns the <A>n</A>th element of the list
+##  <Ref Oper="GetWithDefault"/> returns the <A>n</A>th element of the list
 ##  <A>list</A>, if <A>list</A> has a value at index <A>n</A>, and
 ##  <A>default</A> otherwise.
 ##  <P/>
@@ -252,11 +252,11 @@ DeclareOperationKernel( "Elm0List",
 ##  <Oper Name="Unbind" Arg='list[n]' Label="unbind a list entry"/>
 ##
 ##  <Description>
-##  <Ref Func="Unbind" Label="unbind a list entry"/> deletes the element with
+##  <Ref Oper="Unbind" Label="unbind a list entry"/> deletes the element with
 ##  index <A>n</A> in the mutable list <A>list</A>.  That is, after
-##  execution of <Ref Func="Unbind" Label="unbind a list entry"/>,
+##  execution of <Ref Oper="Unbind" Label="unbind a list entry"/>,
 ##  <A>list</A> no longer has an assigned value with index <A>n</A>.
-##  Thus <Ref Func="Unbind" Label="unbind a list entry"/> can be used to
+##  Thus <Ref Oper="Unbind" Label="unbind a list entry"/> can be used to
 ##  produce holes in a list.
 ##  Note that it is not an error to unbind a nonexistant list element.
 ##  <A>list</A> must evaluate to a list, or to an object for which a suitable
@@ -270,13 +270,13 @@ DeclareOperationKernel( "Elm0List",
 ##  [ , 2,,,, 7,,,, 11 ]
 ##  ]]></Example>
 ##  <P/>
-##  Note that <Ref Func="IsBound" Label="for a list index"/> and
-##  <Ref Func="Unbind" Label="unbind a list entry"/> are special
+##  Note that <Ref Oper="IsBound" Label="for a list index"/> and
+##  <Ref Oper="Unbind" Label="unbind a list entry"/> are special
 ##  in that they do not evaluate their argument,
-##  otherwise <Ref Func="IsBound" Label="for a list index"/>
+##  otherwise <Ref Oper="IsBound" Label="for a list index"/>
 ##  would always signal an error when it is supposed to return <K>false</K>
 ##  and there would be no way to tell
-##  <Ref Func="Unbind" Label="unbind a list entry"/>
+##  <Ref Oper="Unbind" Label="unbind a list entry"/>
 ##  which component to remove.
 ##  </Description>
 ##  </ManSection>
@@ -479,14 +479,14 @@ InstallTrueMethod( IsFinite, IsHomogeneousList and IsInternalRep );
 ##  <Index Subkey="sorted">list</Index> and <K>false</K> otherwise.
 ##  <P/>
 ##  A list <A>list</A> is <E>sorted</E> if it is dense
-##  (see&nbsp;<Ref Func="IsDenseList"/>)
+##  (see&nbsp;<Ref Filt="IsDenseList"/>)
 ##  and satisfies the relation <M><A>list</A>[i] \leq <A>list</A>[j]</M>
 ##  whenever <M>i &lt; j</M>.
 ##  Note that a sorted list is not necessarily duplicate free
-##  (see&nbsp;<Ref Func="IsDuplicateFree"/> and <Ref Func="IsSSortedList"/>).
+##  (see&nbsp;<Ref Prop="IsDuplicateFree"/> and <Ref Prop="IsSSortedList"/>).
 ##  <P/>
 ##  Many sorted lists are in fact homogeneous
-##  (see&nbsp;<Ref Func="IsHomogeneousList"/>),
+##  (see&nbsp;<Ref Filt="IsHomogeneousList"/>),
 ##  but also non-homogeneous lists may be sorted
 ##  (see&nbsp;<Ref Sect="Comparison Operations for Elements"/>).
 ##  <P/>
@@ -494,7 +494,7 @@ InstallTrueMethod( IsFinite, IsHomogeneousList and IsInternalRep );
 ##  by binary search, see&nbsp;<Ref Sect="Sorted Lists and Sets"/>.
 ##  <P/>
 ##  Note that  &GAP; cannot  compare (by  less than)  arbitrary objects.
-##  This can cause  that <Ref Func="IsSortedList"/> runs  into an error,
+##  This can cause  that <Ref Prop="IsSortedList"/> runs  into an error,
 ##  if <A>obj</A> is a list with some non-comparable entries.
 ##  </Description>
 ##  </ManSection>
@@ -523,11 +523,11 @@ InstallTrueMethod( IsList, IsSortedList );
 ##  <Ref Prop="IsSet"/> is just a synonym for <Ref Prop="IsSSortedList"/>.
 ##  <P/>
 ##  A list <A>list</A> is <E>strictly sorted</E> if it is sorted
-##  (see&nbsp;<Ref Func="IsSortedList"/>)
+##  (see&nbsp;<Ref Prop="IsSortedList"/>)
 ##  and satisfies the relation <M><A>list</A>[i] &lt; <A>list</A>[j]</M>
 ##  whenever <M>i &lt; j</M>.
 ##  In particular, such lists are duplicate free
-##  (see&nbsp;<Ref Func="IsDuplicateFree"/>).
+##  (see&nbsp;<Ref Prop="IsDuplicateFree"/>).
 ##  <P/>
 ##  (Currently there is little special treatment of lists that are sorted
 ##  but not strictly sorted.
@@ -535,7 +535,7 @@ InstallTrueMethod( IsList, IsSortedList );
 ##  that they are sorted but not strictly sorted.)
 ##  <P/>
 ##  Note that  &GAP; cannot  compare (by  less than)  arbitrary objects.
-##  This can cause  that <Ref Func="IsSSortedList"/> runs  into an error,
+##  This can cause  that <Ref Prop="IsSSortedList"/> runs  into an error,
 ##  if <A>obj</A> is a list with some non-comparable entries.
 ##  </Description>
 ##  </ManSection>
@@ -563,7 +563,7 @@ InstallTrueMethod( IsSSortedList, IsList and IsEmpty );
 ##  list or collection, and it is duplicate free;
 ##  <Index>duplicate free</Index>
 ##  otherwise it returns <K>false</K>.
-##  <Ref Prop="IsDuplicateFreeList"/> is a synonym for
+##  <Ref Filt="IsDuplicateFreeList"/> is a synonym for
 ##  <C>IsDuplicateFree and IsList</C>.
 ##  <P/>
 ##  A list is <E>duplicate free</E> if it is dense and does not contain equal
@@ -571,7 +571,7 @@ InstallTrueMethod( IsSSortedList, IsList and IsEmpty );
 ##  Every domain (see&nbsp;<Ref Sect="Domains"/>) is duplicate free.
 ##  <P/>
 ##  Note that  &GAP; cannot  compare arbitrary objects (by equality).
-##  This can cause  that <Ref Func="IsDuplicateFree"/> runs  into an error,
+##  This can cause  that <Ref Prop="IsDuplicateFree"/> runs  into an error,
 ##  if <A>obj</A> is a list with some non-comparable entries.
 ##  </Description>
 ##  </ManSection>
@@ -710,12 +710,12 @@ DeclareOperation( "PositionsOp", [ IsList, IsObject ] );
 ##  The definition of this associate depends on <A>list</A>.
 ##  For internally represented lists it is defined as the element itself
 ##  (and <Ref Oper="PositionCanonical"/> thus defaults to
-##  <Ref Func="Position"/>,
+##  <Ref Oper="Position"/>,
 ##  but for example for certain enumerators
 ##  (see&nbsp;<Ref Sect="Enumerators"/>)
 ##  other canonical associates can be defined.
 ##  <P/>
-##  For example <Ref Func="RightTransversal"/> defines the
+##  For example <Ref Oper="RightTransversal"/> defines the
 ##  canonical associate to be the element in the transversal defining the
 ##  same coset of a subgroup in a group.
 ##  <P/>
@@ -797,12 +797,12 @@ DeclareOperation( "PositionNthOccurrence", [ IsList, IsObject, IS_INT ] );
 ##  is returned.
 ##  <P/>
 ##  <Ref Func="PositionSorted"/> uses binary search,
-##  whereas <Ref Func="Position"/> can in general
+##  whereas <Ref Oper="Position"/> can in general
 ##  use only linear search, see the remark at the beginning
 ##  of&nbsp;<Ref Sect="Sorted Lists and Sets"/>.
 ##  For sorting lists, see&nbsp;<Ref Sect="Sorting Lists"/>,
 ##  for testing whether a list is sorted,
-##  see&nbsp;<Ref Func="IsSortedList"/> and <Ref Func="IsSSortedList"/>.
+##  see&nbsp;<Ref Prop="IsSortedList"/> and <Ref Prop="IsSSortedList"/>.
 ##  <P/>
 ##  Specialized functions for certain kinds of lists must be installed 
 ##  as methods for the operation <C>PositionSortedOp</C>.
@@ -960,7 +960,7 @@ DeclareGlobalFunction( "PositionMinimum" );
 ##  [ 1, 3, 4, 8, 9, 11 ]
 ##  ]]></Example>
 ##  <P/>
-##  <Ref Func="PositionProperty"/> allows you to extract the position of the
+##  <Ref Oper="PositionProperty"/> allows you to extract the position of the
 ##  first element in a list that satisfies a certain property.
 ##  </Description>
 ##  </ManSection>
@@ -1265,7 +1265,7 @@ DeclareGlobalFunction( "Apply" );
 ##  <P/>
 ##  Note that <Ref Func="Concatenation" Label="for several lists"/> creates
 ##  a new list and leaves its arguments unchanged,
-##  while <Ref Func="Append"/> changes its first argument.
+##  while <Ref Oper="Append"/> changes its first argument.
 ##  For computing the union of proper sets,
 ##  <Ref Func="Union" Label="for a list"/> can be used,
 ##  see also <Ref Sect="Sorted Lists and Sets"/>.
@@ -1360,7 +1360,7 @@ DeclareOperation( "Collected", [ IsList ] );
 ##  Therefore <Ref Oper="DuplicateFreeList"/> can be used even if the
 ##  elements of <A>list</A> do not lie in the same family.
 ##  Otherwise, if <A>list</A> contains objects that can be compared with
-##  <Ref Func="\&lt;"/> then it is much more efficient to use 
+##  <Ref Oper="\&lt;"/> then it is much more efficient to use 
 ##  <Ref Oper="Set"/> instead of <Ref Oper="DuplicateFreeList"/>.
 ##  <P/>
 ##  <Ref Oper="Unique"/> is a synonym for <Ref Oper="DuplicateFreeList"/>.
@@ -1388,7 +1388,7 @@ DeclareSynonym( "Unique", DuplicateFreeList );
 ##  <Attr Name="AsDuplicateFreeList" Arg='list'/>
 ##
 ##  <Description>
-##  returns the same result as <Ref Func="DuplicateFreeList"/>,
+##  returns the same result as <Ref Oper="DuplicateFreeList"/>,
 ##  except that the result is immutable.
 ##  </Description>
 ##  </ManSection>
@@ -1444,7 +1444,7 @@ DeclareOperation( "DifferenceLists", [IsList, IsList] );
 ##  ]]></Example>
 ##  <P/>
 ##  To reconstruct a matrix from the list obtained by applying
-##  <Ref Func="Flat"/> to the matrix,
+##  <Ref Oper="Flat"/> to the matrix,
 ##  the sublist operator can be used, as follows.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -1551,7 +1551,7 @@ DeclareOperation( "Shuffle", [IsDenseList and IsMutable] );
 ##  <Description>
 ##  Let <A>list1</A> and <A>list2</A> be two dense, but not necessarily
 ##  homogeneous lists
-##  (see&nbsp;<Ref Func="IsDenseList"/>, <Ref Func="IsHomogeneousList"/>),
+##  (see&nbsp;<Ref Filt="IsDenseList"/>, <Ref Filt="IsHomogeneousList"/>),
 ##  such that for each <M>i</M>, the entries in both lists at position
 ##  <M>i</M> can be compared via <C>&lt;</C>.
 ##  <Ref Func="IsLexicographicallyLess"/> returns <K>true</K> if <A>list1</A>
@@ -1594,7 +1594,7 @@ DeclareGlobalFunction( "IsLexicographicallyLess" );
 ##  <P/>
 ##  <Ref Oper="Sort"/> does not return anything,
 ##  it just changes the argument <A>list</A>.
-##  Use <Ref Func="ShallowCopy"/> if you want to keep <A>list</A>.
+##  Use <Ref Oper="ShallowCopy"/> if you want to keep <A>list</A>.
 ##  Use <Ref Func="Reversed"/> if you want to get a new list that is
 ##  sorted in decreasing order.
 ##  <P/>
@@ -1654,13 +1654,13 @@ DeclareOperation( "StableSortBy", [IsList and IsMutable, IsFunction ] );
 ##  that can be applied to <A>list</A> to obtain the sorted list.
 ##  The one argument form sorts via the operator <C>&lt;</C>,
 ##  the two argument form sorts w.r.t. the function <A>func</A>.
-##  The permutation returned by <Ref Func="Sortex"/> will keep
+##  The permutation returned by <Ref Oper="Sortex"/> will keep
 ##  elements which compare equal in the same relative order.
 ##  (If the list is not homogeneous it is the user's responsibility to ensure
 ##  that <C>&lt;</C> is defined for all element pairs,
 ##  see&nbsp;<Ref Sect="Comparison Operations for Elements"/>)
 ##  <P/>
-##  <Ref Func="Permuted"/> allows you to rearrange a list according to
+##  <Ref Oper="Permuted"/> allows you to rearrange a list according to
 ##  a given permutation.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -1749,7 +1749,7 @@ DeclareGlobalFunction( "PermListList" );
 ##
 ##  <Description>
 ##  <Ref Oper="SortParallel"/> sorts the list <A>list1</A> in increasing order
-##  just as <Ref Func="Sort"/> does.
+##  just as <Ref Oper="Sort"/> does.
 ##  In parallel it applies the same exchanges that are necessary to sort
 ##  <A>list1</A> to the list <A>list2</A>,
 ##  which must of course have at least as many elements as <A>list1</A> does.
@@ -1976,7 +1976,7 @@ DeclareGlobalFunction( "Cartesian" );
 ##  list <A>list</A> permuted according to the permutation <A>perm</A>.
 ##  That is <C><A>new</A>[<A>i</A>^<A>perm</A>] = <A>list</A>[<A>i</A>]</C>.
 ##  <P/>
-##  <Ref Func="Sortex"/> allows you to compute a permutation that must
+##  <Ref Oper="Sortex"/> allows you to compute a permutation that must
 ##  be applied to a list in order to get the sorted list.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -2036,7 +2036,7 @@ DeclareGlobalFunction( "IteratorList" );
 ##  If <A>func</A> returns <K>false</K> for all elements of <A>list</A>
 ##  then <Ref Func="First"/> returns <K>fail</K>.
 ##  <P/>
-##  <Ref Func="PositionProperty"/> allows you to find the
+##  <Ref Oper="PositionProperty"/> allows you to find the
 ##  position of the first element in a list that satisfies a certain
 ##  property.
 ##  <P/>

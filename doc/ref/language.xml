@@ -895,7 +895,7 @@ the same syntax as the components of a record expression. The one
 exception to this is that a component name may appear without a value,
 in which case the value <K>true</K> is silently inserted.
 <P/>
-The following example shows a call to <Ref Func="Size"/> passing the options
+The following example shows a call to <Ref Attr="Size"/> passing the options
 <C>hard</C> (with the value <K>true</K>)
 and <C>tcselection</C> (with the string <C>"external"</C> as value).
 <P/>
@@ -959,7 +959,7 @@ respective chapter.
 Note that <C>&lt;</C> implements a <E>total ordering</E> of objects (which
 can be used for example to sort a list of elements). Therefore in general
 <C>&lt;</C> will not be compatible with any inclusion relation (which can be
-tested using <Ref Func="IsSubset"/>). (For
+tested using <Ref Oper="IsSubset"/>). (For
 example, it is possible to compare permutation groups with <C>&lt;</C> in a
 total ordering of all permutation groups, but this ordering is not
 compatible with the relation of being a subgroup.)
@@ -1285,7 +1285,7 @@ gap> Append( l, [3,4,5] );  # a call to the procedure Append
 <P/>
 There are a few exceptions of &GAP; functions that do both return
 a value and produce some effect.
-An example is <Ref Func="Sortex"/> which sorts a list
+An example is <Ref Oper="Sortex"/> which sorts a list
 and returns the corresponding permutation of the entries.
 
 </Section>
@@ -1775,7 +1775,7 @@ possibility:  having  optional  arguments  and  having  any   number   of
 arguments.
 <P/>
 The  following  example  shows  one  way  that  the  function
-<Ref Func="Position"/> might be encoded  and  demonstrates  the
+<Ref Oper="Position"/> might be encoded  and  demonstrates  the
 <Q>optional argument</Q> scenario.
 <P/>
 <Example><![CDATA[
@@ -1835,7 +1835,7 @@ user had written <C>arg...</C>.
 Note that if a function <A>f</A> is defined as above
 then <C>NumberArgumentsFunction(<A>f</A>)</C> returns
 minus the number of formal arguments (including the final argument)
-(see&nbsp;<Ref Func="NumberArgumentsFunction"/>).
+(see&nbsp;<Ref Oper="NumberArgumentsFunction"/>).
 <P/>
 Using the <C>...</C> notation on a function <A>f</A> with only a single
 named argument tells &GAP; that when it encounters <A>f</A> that it should
@@ -1843,7 +1843,7 @@ form a list out of the arguments of <A>f</A>.
 What if one wishes to do the <Q>opposite</Q>:
 tell &GAP; that a list should be <Q>unwrapped</Q> and passed as several
 arguments to a function.
-The function <Ref Func="CallFuncList"/> is provided for this purpose.
+The function <Ref Oper="CallFuncList"/> is provided for this purpose.
 <P/>
 Also see Chapter&nbsp;<Ref Chap="Functions"/>.
 <P/>

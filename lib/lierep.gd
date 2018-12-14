@@ -61,7 +61,7 @@
 ##  So <M>0</M>-cochains have a different representation: they are just
 ##  represented by the list <C>[ v_c ]</C>.
 ##  <P/>
-##  Cochains are constructed using the function <Ref Func="Cochain"/>,
+##  Cochains are constructed using the function <Ref Oper="Cochain"/>,
 ##  if <A>c</A> is a cochain, then its corresponding list is returned by
 ##  <C>ExtRepOfObj( <A>c</A> )</C>.
 ##  <#/GAPDoc>

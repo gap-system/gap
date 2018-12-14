@@ -45,7 +45,7 @@ They differ in whether or not the result is
 mutable or immutable (see&nbsp;<Ref Sect="Mutability and Copyability"/>),
 guaranteed to be sorted,
 or guaranteed to admit list access in constant time
-(see&nbsp;<Ref Func="IsConstantTimeAccessList"/>).
+(see&nbsp;<Ref Filt="IsConstantTimeAccessList"/>).
 
 <#Include Label="IsListOrCollection">
 <#Include Label="Enumerator">

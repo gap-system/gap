@@ -58,7 +58,7 @@ DeclareSynonymAttr( "IsMonoid", IsMagmaWithOne and IsAssociative );
 ##  <P/>
 ##  It is <E>not</E> checked whether the underlying multiplication is
 ##  associative, use <Ref Func="MagmaWithOne"/> and
-##  <Ref Func="IsAssociative"/>
+##  <Ref Prop="IsAssociative"/>
 ##  if you want to check whether a magma-with-one is in fact a monoid.
 ##  </Description>
 ##  </ManSection>
@@ -116,7 +116,7 @@ DeclareOperation( "MonoidByGenerators", [ IsCollection ] );
 ##
 ##  <Description>
 ##  If <A>C</A> is a collection whose elements form a monoid, 
-##  then <Ref Func="AsMonoid"/> returns this monoid.
+##  then <Ref Oper="AsMonoid"/> returns this monoid.
 ##  Otherwise <K>fail</K> is returned.
 ##  </Description>
 ##  </ManSection>
@@ -136,7 +136,7 @@ DeclareOperation( "AsMonoid", [IsCollection] );
 ##  <Description>
 ##  Let <A>D</A> be a domain and <A>C</A> a collection.
 ##  If <A>C</A> is a subset of <A>D</A> that forms a monoid then
-##  <Ref Func="AsSubmonoid"/>
+##  <Ref Oper="AsSubmonoid"/>
 ##  returns this monoid, with parent <A>D</A>.
 ##  Otherwise <K>fail</K> is returned.
 ##  </Description>
@@ -157,7 +157,7 @@ DeclareOperation( "AsSubmonoid", [ IsDomain, IsCollection ] );
 ##  <Description>
 ##  Monoid generators of a monoid <A>M</A> are the same as
 ##  magma-with-one generators
-##  (see&nbsp;<Ref Func="GeneratorsOfMagmaWithOne"/>).
+##  (see&nbsp;<Ref Attr="GeneratorsOfMagmaWithOne"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -174,7 +174,7 @@ DeclareSynonymAttr( "GeneratorsOfMonoid", GeneratorsOfMagmaWithOne );
 ##  <Attr Name="TrivialSubmonoid" Arg='M'/>
 ##
 ##  <Description>
-##  is just a synonym for <Ref Func="TrivialSubmagmaWithOne"/>.
+##  is just a synonym for <Ref Attr="TrivialSubmagmaWithOne"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -230,9 +230,9 @@ DeclareSynonymAttr( "TrivialSubmonoid", TrivialSubmagmaWithOne );
 ##  and the other generators by <A>name</A> and an appended number.
 ##  <P/>
 ##  If the extra argument <A>wfilt</A> is given, it must be either
-##  <Ref Func="IsSyllableWordsFamily"/> or <Ref Func="IsLetterWordsFamily"/>
-##  or <Ref Func="IsWLetterWordsFamily"/> or
-##  <Ref Func="IsBLetterWordsFamily"/>.
+##  <Ref Filt="IsSyllableWordsFamily"/> or <Ref Filt="IsLetterWordsFamily"/>
+##  or <Ref Filt="IsWLetterWordsFamily"/> or
+##  <Ref Filt="IsBLetterWordsFamily"/>.
 ##  This filter then specifies the representation used for the elements of
 ##  the free monoid
 ##  (see&nbsp;<Ref Sect="Representations for Associative Words"/>).

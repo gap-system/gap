@@ -38,7 +38,7 @@ DeclareConstructor( "SuzukiGroupCons", [ IsGroup, IsInt ] );
 ##  over the field with <A>q</A> elements, where <A>q</A> is a non-square
 ##  power of <M>2</M>.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the Suzuki group itself.
 ##  For more information on possible values of <A>filt</A> see section
 ##  (<Ref Sect="Basic Groups"/>).

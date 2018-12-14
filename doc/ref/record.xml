@@ -36,7 +36,7 @@ gap> rec( a := 1, b := rec( c := 2 ) ); # record may contain records
 rec( a := 1, b := rec( c := 2 ) )
 ]]></Example>
 <P/>
-We may use the <Ref Func="Display"/> function to illustrate the hierarchy of
+We may use the <Ref Oper="Display"/> function to illustrate the hierarchy of
 the record components.
 <P/>
 <Example><![CDATA[
@@ -140,9 +140,9 @@ rec(
 <P/>
 Note that assigning to a record changes the record.
 <P/>
-The function <Ref Func="IsBound" Label="for a record component"/>
+The function <Ref Oper="IsBound" Label="for a record component"/>
 can be used to test if a record has a component with a certain name,
-the function <Ref Func="Unbind" Label="unbind a record component"/>
+the function <Ref Oper="Unbind" Label="unbind a record component"/>
 can be used to remove a component with a certain name again.
 <P/>
 <Example><![CDATA[
@@ -268,12 +268,12 @@ f := function ( r ) return r; end;
 r2 := f( r1 );
 ]]></Log>
 <P/>
-The functions <Ref Func="StructuralCopy"/> and <Ref Func="ShallowCopy"/>
+The functions <Ref Func="StructuralCopy"/> and <Ref Oper="ShallowCopy"/>
 accept a record and return a new record that is equal to the
 old record but that is <E>not</E> identical to the old record.
 The difference between <Ref Func="StructuralCopy"/> and
-<Ref Func="ShallowCopy"/> is that in the case of
-<Ref Func="ShallowCopy"/> the corresponding components of the new and the
+<Ref Oper="ShallowCopy"/> is that in the case of
+<Ref Oper="ShallowCopy"/> the corresponding components of the new and the
 old records will be identical,
 whereas in the case of <Ref Func="StructuralCopy"/> they will only be equal.
 So in the following example <C>r1</C> and <C>r2</C> are not identical records.
@@ -368,7 +368,7 @@ true
 <Oper Name="IsBound" Arg='r.name' Label="for a record component"/>
 
 <Description>
-<Ref Func="IsBound" Label="for a record component"/> returns <K>true</K>
+<Ref Oper="IsBound" Label="for a record component"/> returns <K>true</K>
 if the record <A>r</A> has a component with the name <A>name</A>
 (which must be an identifier) and <K>false</K> otherwise.
 <A>r</A> must evaluate to a record, otherwise an error is signalled.
@@ -388,9 +388,9 @@ false
 <Oper Name="Unbind" Arg='r.name' Label="unbind a record component"/>
 
 <Description>
-<Ref Func="Unbind" Label="unbind a record component"/> deletes the component
+<Ref Oper="Unbind" Label="unbind a record component"/> deletes the component
 with the name <A>name</A> in the record <A>r</A>. That is, after
-execution of <Ref Func="Unbind" Label="unbind a record component"/>,
+execution of <Ref Oper="Unbind" Label="unbind a record component"/>,
 <A>r</A> no longer has a record component with this name.
 Note that it is not an error to unbind a nonexisting record component.
 <A>r</A> must evaluate to a record, otherwise an error is signalled.
@@ -403,13 +403,13 @@ gap> Unbind( r.c ); r;
 rec( b := 2 )
 ]]></Example>
 <P/>
-Note that <Ref Func="IsBound" Label="for a record component"/> and
-<Ref Func="Unbind" Label="unbind a record component"/> are special
+Note that <Ref Oper="IsBound" Label="for a record component"/> and
+<Ref Oper="Unbind" Label="unbind a record component"/> are special
 in that they do not evaluate their argument,
-otherwise <Ref Func="IsBound" Label="for a record component"/>
+otherwise <Ref Oper="IsBound" Label="for a record component"/>
 would always signal an error when it is supposed to return <K>false</K>
 and there would be no way to tell
-<Ref Func="Unbind" Label="unbind a record component"/>
+<Ref Oper="Unbind" Label="unbind a record component"/>
 which component to remove.
 </Description>
 </ManSection>

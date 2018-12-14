@@ -22,7 +22,7 @@
 ##  <P/>
 ##  This is not appropriate for some applications in character theory.
 ##  For example, if one wants to induce a character of a group to a
-##  supergroup (see&nbsp;<Ref Func="InducedClassFunction"
+##  supergroup (see&nbsp;<Ref Oper="InducedClassFunction"
 ##  Label="for the character table of a supergroup"/>)
 ##  but the class fusion is only a parametrized map
 ##  (see Chapter&nbsp;<Ref Chap="Maps Concerning Character Tables"/>),
@@ -108,7 +108,7 @@
 ##  cyclotomics are row vectors and
 ##  they can be added and multiplied in the usual way.
 ##  Consequently, lists of such row vectors of equal length are (ordinary)
-##  matrices (see&nbsp;<Ref Func="IsOrdinaryMatrix"/>).
+##  matrices (see&nbsp;<Ref Filt="IsOrdinaryMatrix"/>).
 ##  </Subsection>
 ##  <#/GAPDoc>
 ##

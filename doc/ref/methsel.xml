@@ -35,7 +35,7 @@ and logical implications.
 <Heading>Operations and Methods</Heading>
 <P/>
 Operations are functions in the category
-<Ref Func="IsOperation"/>.
+<Ref Filt="IsOperation"/>.
 <P/>
 So on the one hand, <E>operations</E> are &GAP; functions, that is,
 they can be applied to arguments and return a result or cause a
@@ -52,7 +52,7 @@ of the arguments,
 the underlying mechanism is described in the following sections.
 <P/>
 Examples of operations are the binary infix operators <C>=</C>, <C>+</C> etc.,
-and <Ref Func="PrintObj"/> is the operation that is called
+and <Ref Oper="PrintObj"/> is the operation that is called
 for each argument of <Ref Func="Print"/>.
 <P/>
 Also all attributes and properties are operations.
@@ -187,7 +187,7 @@ according to decreasing rank of the methods.
 <P/>
 For example, since every finite group of odd order is solvable,
 one may install a method for the property
-<Ref Func="IsSolvableGroup"/> that checks
+<Ref Prop="IsSolvableGroup"/> that checks
 whether the size of the argument is an odd integer,
 returns <K>true</K> if so,
 and gives up otherwise.
@@ -198,7 +198,7 @@ and the type  has   really changed, then  the  method  should not  exit   using
 <C>TryNextMethod()</C> but  should call the operation again,  as the new information
 in the type may   cause  some methods  previously   judged inapplicable to   be
 applicable. For  example, if  the  above method  for
-<Ref Func="IsSolvableGroup"/> actually
+<Ref Prop="IsSolvableGroup"/> actually
 computes the size, (rather than  just examining  a  stored size), then it  must
 take care to check whether the type of the group has changed.
 </Description>
@@ -264,8 +264,8 @@ one can install also <E>immediate methods</E>.
 <Index>overload</Index>
 Usually an operation stands for a mathematical concept,
 and the name of the operation describes this uniquely.
-Examples are the property <Ref Func="IsFinite"/>
-and the attribute <Ref Func="Size"/>.
+Examples are the property <Ref Prop="IsFinite"/>
+and the attribute <Ref Attr="Size"/>.
 But there are cases where the same mathematical term is used 
 to denote different concepts,
 for example <C>Degree</C> is defined for polynomials, group characters,
@@ -277,16 +277,16 @@ It is in principle possible to install methods for the operation
 <C>Rank</C> that are applicable to the different types of arguments,
 corresponding to the different contexts.
 But this is not the approach taken in the &GAP; library.
-Instead there are operations such as <Ref Func="RankMat"/>
-for matrices and <Ref Func="DegreeOfCharacter"/>
+Instead there are operations such as <Ref Attr="RankMat"/>
+for matrices and <Ref Attr="DegreeOfCharacter"/>
 (in fact these are attributes)
 which are installed as methods of the <Q>ambiguous</Q> operations
 <C>Rank</C> and <C>Degree</C>.
 <P/>
 The idea is to distinguish between on the one hand different ways
 to compute the same thing (e.g.&nbsp;different methods for
-<Ref Func="\="/>,
-<Ref Func="Size"/>, etc.),
+<Ref Oper="\="/>,
+<Ref Attr="Size"/>, etc.),
 and on the other hand genuinely different things
 (such as the degree of a polynomial and a permutation action).
 <P/>
@@ -295,7 +295,7 @@ The latter is provided as a user convenience where mathematical usage
 forces it on us <E>and</E> where no conflicts arise.
 In programming the library, we use the underlying mathematically
 precise operations or attributes,
-such as <Ref Func="RankMat"/> and
+such as <Ref Attr="RankMat"/> and
 <C>RankOperation</C>.
 These should be attributes if appropriate, and the only role of the
 operation <C>Rank</C> is to decide which attribute the user meant.
@@ -308,7 +308,7 @@ which is defined as <M>\{ x \in M | a * x = x * a \forall a \in M \}</M>
 for a magma <M>M</M>, and as <M>\{ x \in L | l * x = 0 \forall l \in L \}</M>
 for a Lie algebra <M>L</M>.
 Here it is <E>not</E> possible to introduce an operation
-<Ref Func="Centre"/> that
+<Ref Attr="Centre"/> that
 delegates to attributes <C>CentreOfMagma</C> and <C>CentreOfLieAlgebra</C>,
 depending on the type of the argument.
 This is because any Lie algebra in &GAP; is also a magma,

@@ -41,7 +41,7 @@
 ##  is set to <K>true</K>.
 ##  In particular, assignment to read-only global variables is permitted,
 ##  calls to <Ref Func="NewRepresentation"/>
-##  and <Ref Func="NewInfoClass"/> with parameters identical to those
+##  and <Ref Oper="NewInfoClass"/> with parameters identical to those
 ##  of an existing representation or info class will return the existing
 ##  object, and methods installed with
 ##  <Ref Func="InstallMethod"/> may sometimes displace

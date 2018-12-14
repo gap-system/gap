@@ -228,7 +228,7 @@ DeclareSynonymAttr("AssociatedSemigroup", ParentAttr);
 ##  semigroup, then <C>GreensHClasses</C> returns the Green's <M>H</M>-classes
 ##  of the semigroup contained in the Green's class <A>S</A>.
 ##  <P/>
-##  <Ref Func="EquivalenceClasses" Label="attribute"/> for a Green's relation
+##  <Ref Attr="EquivalenceClasses" Label="attribute"/> for a Green's relation
 ##  lead to one of these functions.
 ##  </Description>
 ##  </ManSection>
@@ -277,7 +277,7 @@ DeclareOperation("IsGreensLessThanOrEqual", [IsGreensClass, IsGreensClass]);
 ##
 ##  <Description>
 ##  are attributes reflecting the natural ordering over the various Green's
-##  classes. <Ref Func="RClassOfHClass"/> and <Ref Func="LClassOfHClass"/>
+##  classes. <Ref Attr="RClassOfHClass"/> and <Ref Attr="LClassOfHClass"/>
 ##  return the <M>R</M> and <M>L</M> classes, respectively,
 ##  in which an <M>H</M> class is contained.
 ##  </Description>

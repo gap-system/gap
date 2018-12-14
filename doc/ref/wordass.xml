@@ -92,8 +92,8 @@ or semigroup, a letter representation is used by default.
 <P/>
 Depending on the task in mind, either of these two representations will
 perform better in time or in memory use and algorithms that are syllable or
-letter based (for example <Ref Func="GeneratorSyllable"/> and
-<Ref Func="Subword"/>) perform substantially better in the corresponding
+letter based (for example <Ref Oper="GeneratorSyllable"/> and
+<Ref Oper="Subword"/>) perform substantially better in the corresponding
 representation.
 For example when creating pc groups (see&nbsp;<Ref Chap="Pc Groups"/>),
 it is advantageous to use a syllable representation while calculations in

@@ -23,7 +23,7 @@
 ##  <Cite Key="Sch90"/> and <Cite Key="Hulpke93"/>.
 ##  <P/>
 ##  Called with a group <M>G</M>, the function
-##  <Ref Func="CharacterTable" Label="for a group"/> returns a character
+##  <Ref Oper="CharacterTable" Label="for a group"/> returns a character
 ##  table object that stores already information such as class lengths,
 ##  but not the irreducible characters.
 ##  The routines that compute the irreducibles may use the information that
@@ -53,13 +53,13 @@
 ##  so the runtime of the character calculation depends on how large the
 ##  chosen prime is.
 ##  <P/>
-##  The routine stores a Dixon record (see&nbsp;<Ref Func="DixonRecord"/>)
+##  The routine stores a Dixon record (see&nbsp;<Ref Attr="DixonRecord"/>)
 ##  in the group that helps routines that identify classes,
-##  for example <Ref Func="FusionConjugacyClasses" Label="for two groups"/>,
+##  for example <Ref Oper="FusionConjugacyClasses" Label="for two groups"/>,
 ##  to work much faster.
 ##  Note that interrupting Dixon-Schneider calculations will prevent &GAP;
 ##  from cleaning up the Dixon record;
-##  when the computation by <Ref Func="IrrDixonSchneider"/> is complete,
+##  when the computation by <Ref Attr="IrrDixonSchneider"/> is complete,
 ##  the possibly large record is shrunk to an acceptable size.
 ##  <#/GAPDoc>
 ##
@@ -290,7 +290,7 @@ DeclareGlobalFunction("BestSplittingMatrix");
 ##  This function does all the initializations for the Dixon-Schneider
 ##  algorithm. This includes calculation of conjugacy classes, power maps,
 ##  linear characters and character morphisms.
-##  It returns a record (see&nbsp;<Ref Func="DixonRecord"/> and
+##  It returns a record (see&nbsp;<Ref Attr="DixonRecord"/> and
 ##  Section <Ref Sect="Components of a Dixon Record"/>)
 ##  that can be used when calculating the irreducible characters of <A>G</A>
 ##  interactively.

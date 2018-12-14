@@ -464,7 +464,7 @@ DeclareGlobalFunction("OCOneCocycles");
 ##  <Description>
 ##  computes complement classes to an elementary abelian normal subgroup
 ##  <A>N</A> via 1-Cohomology. Normally, a user program should call
-##  <Ref Func="ComplementClassesRepresentatives"/> instead, which also works
+##  <Ref Oper="ComplementClassesRepresentatives"/> instead, which also works
 ##  for a solvable (not necessarily elementary abelian) <A>N</A>.
 ##  </Description>
 ##  </ManSection>

@@ -16,7 +16,7 @@ Together with the domains closed under multiplication <C>*</C>
 (see&nbsp;<Ref Chap="Magmas"/>),
 they are the basic algebraic structures.
 In many cases, the addition is commutative
-(see&nbsp;<Ref Func="IsAdditivelyCommutative"/>),
+(see&nbsp;<Ref Prop="IsAdditivelyCommutative"/>),
 the domain is called an <E>additive magma</E> then.
 Every module (see&nbsp;<Ref Chap="Modules"/>),
 vector space (see&nbsp;<Ref Chap="Vector Spaces"/>),
@@ -53,9 +53,9 @@ functions that create additive magmas from generators
 <Ref Func="NearAdditiveMagmaWithZero"/>,
 <Ref Func="NearAdditiveGroup"/>),
 the underlying operations for which methods can be installed
-(see <Ref Func="NearAdditiveMagmaByGenerators"/>,
-<Ref Func="NearAdditiveMagmaWithZeroByGenerators"/>,
-<Ref Func="NearAdditiveGroupByGenerators"/>)
+(see <Ref Oper="NearAdditiveMagmaByGenerators"/>,
+<Ref Oper="NearAdditiveMagmaWithZeroByGenerators"/>,
+<Ref Oper="NearAdditiveGroupByGenerators"/>)
 and functions for forming additive submagmas
 (see <Ref Func="SubnearAdditiveMagma"/>,
 <Ref Func="SubnearAdditiveMagmaWithZero"/>,

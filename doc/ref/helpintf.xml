@@ -152,7 +152,7 @@ be anything, but it should be in some way meaningful.
   may contain upper and lower case letters or some  markup).  There  may  be
   other components in <A>info</A> which are needed by the  functions  below,  but
   their names and formats are  not  prescribed.  The  <A>stream</A>  argument  is
-  typically generated using <Ref Func="InputTextFile"/>, e.g.
+  typically generated using <Ref Oper="InputTextFile"/>, e.g.
 <P/>
 <Log><![CDATA[
 gap> dirs := DirectoriesLibrary( "doc/ref" );;

@@ -77,7 +77,7 @@ DeclareGlobalFunction( "ConwayPol" );
 ##  the canonical epimorphism that maps the integers onto <M>GF(p)</M>.
 ##  <P/>
 ##  <M>\Phi_{{n,p}}</M> is <E>primitive</E> over <M>GF(p)</M>
-##  (see&nbsp;<Ref Func="IsPrimitivePolynomial"/>).
+##  (see&nbsp;<Ref Oper="IsPrimitivePolynomial"/>).
 ##  That is, <M>\Phi_{{n,p}}</M> is irreducible, monic,
 ##  and is the minimal polynomial of a primitive root of <M>GF(p^n)</M>.
 ##  <P/>
@@ -170,7 +170,7 @@ DeclareGlobalFunction( "IsCheapConwayPolynomial" );
 ##  <M>|<A>F</A>|^n-1</M>. 
 ##  If <A>i</A> is given then the polynomial is written in variable number
 ##  <A>i</A> over <A>F</A>
-##  (see&nbsp;<Ref Func="Indeterminate" Label="for a ring (and a number)"/>),
+##  (see&nbsp;<Ref Oper="Indeterminate" Label="for a ring (and a number)"/>),
 ##  the default for <A>i</A> is 1.
 ##  <P/>
 ##  Alternatively, <A>F</A> can be a prime power q, then <A>F</A> = GF(q) is

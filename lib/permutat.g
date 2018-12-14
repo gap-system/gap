@@ -38,7 +38,7 @@
 ##  is used to represent each image internally. Error messages should be given
 ##  if any command would require creating a permutation exceeding this limit. 
 ##  <P/>
-##  The operation <Ref Func="RestrictedPerm"/> reduces the storage degree of
+##  The operation <Ref Oper="RestrictedPerm"/> reduces the storage degree of
 ##  its result and therefore can be used to save memory if intermediate
 ##  calculations in large degree result in a small degree result.
 ##  <P/>
@@ -57,7 +57,7 @@
 ##  9
 ##  ]]></Example>
 ##  <P/>
-##  The operation <Ref Func="Permuted"/> can be used to permute the entries
+##  The operation <Ref Oper="Permuted"/> can be used to permute the entries
 ##  of a list according to a permutation.
 ##  <#/GAPDoc>
 ##
@@ -73,9 +73,9 @@
 ##
 ##  <Description>
 ##  Each <E>permutation</E> in &GAP; lies in the category
-##  <Ref Func="IsPerm"/>.
+##  <Ref Filt="IsPerm"/>.
 ##  Basic operations for permutations are
-##  <Ref Func="LargestMovedPoint" Label="for a permutation"/>,
+##  <Ref Attr="LargestMovedPoint" Label="for a permutation"/>,
 ##  multiplication of two permutations via <C>*</C>,
 ##  and exponentiation <C>^</C> with first argument a positive integer
 ##  <M>i</M> and second argument a permutation <M>\pi</M>,
@@ -157,7 +157,7 @@ InstallMethod( SmallestGeneratorPerm,"for internally represented permutation",
 ##  <A>perm</A> is the identity.
 ##  For <A>C</A> a collection or list of permutations,
 ##  the smallest value of
-##  <Ref Func="SmallestMovedPoint" Label="for a permutation"/> for the
+##  <Ref Attr="SmallestMovedPoint" Label="for a permutation"/> for the
 ##  elements of <A>C</A> is returned
 ##  (and <Ref Var="infinity"/> if <A>C</A> is empty).
 ##  </Description>
@@ -188,7 +188,7 @@ DeclareSynonymAttr( "SmallestMovedPointPerm", SmallestMovedPoint );
 ##  if such an integer exists, and <C>0</C> if <A>perm</A> is the identity.
 ##  For <A>C</A> a collection or list of permutations,
 ##  the largest value of
-##  <Ref Func="LargestMovedPoint" Label="for a permutation"/> for the
+##  <Ref Attr="LargestMovedPoint" Label="for a permutation"/> for the
 ##  elements of <A>C</A> is returned (and <C>0</C> if <A>C</A> is empty).
 ##  </Description>
 ##  </ManSection>
@@ -216,7 +216,7 @@ DeclareSynonymAttr( "LargestMovedPointPerm", LargestMovedPoint );
 ##  is the number of positive integers that are moved by <A>perm</A>,
 ##  respectively by at least one element in the collection <A>C</A>.
 ##  (The actual moved points are returned by
-##  <Ref Func="MovedPoints" Label="for a permutation"/>.)
+##  <Ref Attr="MovedPoints" Label="for a permutation"/>.)
 ##  <Example><![CDATA[
 ##  gap> SmallestMovedPointPerm((4,5,6)(7,2,8));
 ##  2
@@ -457,7 +457,7 @@ SetOne( PermutationsFamily, () );
 ##  <M>l</M><C>[</C><M>i</M><C>]</C> <M>= i</M><C>^</C><A>perm</A>,
 ##  where <M>i</M> lies between 1
 ##  and the largest point moved by <A>perm</A>
-##  (see&nbsp;<Ref Func="LargestMovedPoint" Label="for a permutation"/>).
+##  (see&nbsp;<Ref Attr="LargestMovedPoint" Label="for a permutation"/>).
 ##  <P/>
 ##  An optional second argument specifies the length of the desired list.
 ##  </Description>
@@ -548,7 +548,7 @@ end );
 ##  <Oper Name="RestrictedPermNC" Arg='perm, list'/>
 ##
 ##  <Description>
-##  <Ref Func="RestrictedPerm"/> returns the new permutation
+##  <Ref Oper="RestrictedPerm"/> returns the new permutation
 ##  that acts on the points in the list <A>list</A> in the same way as
 ##  the permutation <A>perm</A>,
 ##  and that fixes those points that are not in <A>list</A>. The resulting
@@ -559,7 +559,7 @@ end );
 ##  <A>list</A>,
 ##  i.e., <A>list</A> must be the union of cycles of <A>perm</A>.
 ##  <P/>
-##  <Ref Func="RestrictedPermNC"/> does not check whether <A>list</A>
+##  <Ref Oper="RestrictedPermNC"/> does not check whether <A>list</A>
 ##  is a union of cycles.
 ##  <P/>
 ##  <Example><![CDATA[

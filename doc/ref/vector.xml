@@ -45,9 +45,9 @@ and the following sections,
 here we reiterate that definition, in the language of vectors.
 <P/>
 Note that the additive behaviour sketched below is defined only for lists in
-the category <Ref Func="IsGeneralizedRowVector"/>,
+the category <Ref Filt="IsGeneralizedRowVector"/>,
 and the multiplicative behaviour is defined only for lists in the category
-<Ref Func="IsMultiplicativeGeneralizedRowVector"/>.
+<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>.
 <P/>
 <Index Subkey="vectors">addition</Index>
 <C><A>vec1</A> + <A>vec2</A></C>

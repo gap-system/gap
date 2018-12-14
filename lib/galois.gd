@@ -69,7 +69,7 @@ DeclareAttribute("GaloisType",IsRationalFunction);
 ##  <Description>
 ##  Let <A>f</A> be an irreducible polynomial with rational coefficients. This
 ##  function returns a list of the most likely type(s) of Gal(<A>f</A>)
-##  (see <Ref Func="GaloisType"/>), based
+##  (see <Ref Attr="GaloisType"/>), based
 ##  on factorization modulo a set of primes.
 ##  It is very fast, but the result is only probabilistic.
 ##  <P/>

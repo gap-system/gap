@@ -18,7 +18,7 @@
 ##  stabilizer chains, which are (mutable or immutable) records that do not
 ##  need to know about the groups they describe,
 ##  whereas each (immutable) basis stores the underlying left module
-##  (see&nbsp;<Ref Func="UnderlyingLeftModule"/>).
+##  (see&nbsp;<Ref Attr="UnderlyingLeftModule"/>).
 ##  <P/>
 ##  So immutable bases and mutable bases are different categories of objects.
 ##  The only thing they have in common is that one can ask both for
@@ -32,11 +32,11 @@
 ##  hence these objects are unable to store attribute values.
 ##  <P/>
 ##  Basic operations for immutable bases are
-##  <Ref Func="NrBasisVectors"/>, <Ref Func="IsContainedInSpan"/>,
-##  <Ref Func="CloseMutableBasis"/>,
-##  <Ref Func="ImmutableBasis"/>,
-##  <Ref Func="Coefficients"/>, and <Ref Func="BasisVectors"/>.
-##  <Ref Func="ShallowCopy"/> for a mutable basis returns a mutable
+##  <Ref Oper="NrBasisVectors"/>, <Ref Oper="IsContainedInSpan"/>,
+##  <Ref Oper="CloseMutableBasis"/>,
+##  <Ref Oper="ImmutableBasis"/>,
+##  <Ref Oper="Coefficients"/>, and <Ref Attr="BasisVectors"/>.
+##  <Ref Oper="ShallowCopy"/> for a mutable basis returns a mutable
 ##  plain list containing the current basis vectors.
 ##  <!-- Also <Ref Attr="LeftActingDomain"/> (or the analogy for it) should be a basic-->
 ##  <!-- operation; up to now, apparantly one can avoid it,-->
@@ -225,7 +225,7 @@ DeclareOperation( "ImmutableBasis", [ IsMutableBasis, IsFreeLeftModule ] );
 ##  mean that <A>v</A> is simply added to the basis vectors of <A>MB</A>.
 ##  Usually a linear combination of <A>v</A> and the other basis vectors is added,
 ##  and also the old basis vectors may be modified, for example in order to
-##  keep the list of basis vectors echelonized (see&nbsp;<Ref Func="IsSemiEchelonized"/>).
+##  keep the list of basis vectors echelonized (see&nbsp;<Ref Prop="IsSemiEchelonized"/>).
 ##  <Example><![CDATA[
 ##  gap> MB:= MutableBasis( Rationals, [ [ 1, 1, 3 ], [ 2, 2, 1 ] ] );
 ##  <mutable basis over Rationals, 2 vectors>
