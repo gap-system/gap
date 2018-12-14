@@ -65,7 +65,11 @@ local s,sg,o,gi;
   o:=One(Range(hom));
   # take the images corresponding to the free gens in case of reordering or
   # duplicates
-  gi:=MappingGeneratorsImages(hom)[2]{hom!.genpositions};
+  #gi:=MappingGeneratorsImages(hom)[2]{ListPerm(PermList(hom!.genpositions)^-1,
+  #  Length(hom!.genpositions))};
+  gi:=[];
+  gi{hom!.genpositions}:=MappingGeneratorsImages(hom)[2];
+
   return ForAll(RelatorsOfFpGroup(s),i->MappedWord(i,sg,gi)=o);
 end);
 
@@ -88,7 +92,10 @@ local s, bas, sg, o, gi, l, p, rel, start, i;
   o:=One(Range(hom));
   # take the images corresponding to the free gens in case of reordering or
   # duplicates
-  gi:=MappingGeneratorsImages(hom)[2]{hom!.genpositions};
+  #gi:=MappingGeneratorsImages(hom)[2]{ListPerm(PermList(hom!.genpositions)^-1,
+  #  Length(hom!.genpositions))};
+  gi:=[];
+  gi{hom!.genpositions}:=MappingGeneratorsImages(hom)[2];
   for rel in RelatorsOfFpGroup(s) do
     l:=LetterRepAssocWord(rel);
     for start in bas do

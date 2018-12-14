@@ -31,7 +31,21 @@ local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r;
 
   pcisom:=ffs.pcisom;
 
-  rest:=RestrictedMapping(ffs.factorhom,U);
+  #rest:=RestrictedMapping(ffs.factorhom,U);
+  if IsPermGroup(U) and AssertionLevel()>1 then
+    rest:=GroupHomomorphismByImages(U,Range(ffs.factorhom),GeneratorsOfGroup(U),
+      List(GeneratorsOfGroup(U),x->ImagesRepresentative(ffs.factorhom,x)));
+  else
+    RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+    rest:=GroupHomomorphismByImagesNC(U,Range(ffs.factorhom),GeneratorsOfGroup(U),
+      List(GeneratorsOfGroup(U),x->ImagesRepresentative(ffs.factorhom,x)));
+    RUN_IN_GGMBI:=false;
+  fi;
+  Assert(1,rest<>fail);
+
+  if HasRecogDecompinfoHomomorphism(ffs.factorhom) then
+    SetRecogDecompinfoHomomorphism(rest,RecogDecompinfoHomomorphism(ffs.factorhom));
+  fi;
 
   # in radical?
   if ForAll(MappingGeneratorsImages(rest)[2],IsOne) then
@@ -74,7 +88,11 @@ local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r;
 	    serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
 	    );
   Add(cache,[ffs,r]); # keep
-  SetSize(U,Product(RelativeOrders(k))*Size(Image(rest)));
+  if Length(k)=0 then
+    SetSize(U,Size(Image(rest)));
+  else
+    SetSize(U,Product(RelativeOrders(k))*Size(Image(rest)));
+  fi;
   return r;
 
 end);
@@ -139,7 +157,7 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths;
     rest:=GroupHomomorphismByImagesNC(U,Range(hom),gens,imgs);
     RUN_IN_GGMBI:=false;
   fi;
-  if rest=fail then Error("can't build homomorphism"); fi;
+  Assert(1,rest<>fail);
 
   if HasRecogDecompinfoHomomorphism(hom) then
     SetRecogDecompinfoHomomorphism(rest,RecogDecompinfoHomomorphism(hom));
