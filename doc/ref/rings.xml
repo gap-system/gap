@@ -11,7 +11,7 @@
 <Heading>Rings</Heading>
 
 This chapter deals with domains that are additive groups
-(see <Ref Func="IsAdditiveGroup"/> closed under multiplication <C>*</C>.
+(see <Ref Filt="IsAdditiveGroup"/> closed under multiplication <C>*</C>.
 Such a domain, if <C>*</C> and <C>+</C> are distributive,
 is called a <E>ring</E> in &GAP;.
 Each division ring, field (see&nbsp;<Ref Chap="Fields and Division Rings"/>),
@@ -22,7 +22,7 @@ and matrix rings.
 <!-- % residue class rings ? -->
 <P/>
 In the case of a <E>ring-with-one</E>, additional multiplicative structure is
-present, see&nbsp;<Ref Func="IsRingWithOne"/>. There is a little support in &GAP;
+present, see&nbsp;<Ref Filt="IsRingWithOne"/>. There is a little support in &GAP;
 for rings that have no additional structure: it is possible to perform some
 computations for small finite rings; infinite rings are handled by &GAP; in 
 an acceptable way in the case that they are algebras. 
@@ -32,7 +32,7 @@ and a related functionality for multiplicative semigroups of near-rings is
 available in the <Package>Smallsemi</Package> package.
 <P/>
 Several functions for ring elements,
-such as <Ref Func="IsPrime"/> and <Ref Func="Factors"/>,
+such as <Ref Oper="IsPrime"/> and <Ref Oper="Factors"/>,
 are defined only relative to a ring <A>R</A>,
 which can be entered as an optional argument;
 if <A>R</A> is omitted then a <E>default ring</E> is formed

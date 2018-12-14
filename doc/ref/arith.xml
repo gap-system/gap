@@ -55,9 +55,9 @@ Instead of defining <E>new</E> operations for the <E>given</E> objects,
 With this construction, matrix Lie algebras consist of matrices that are
 different from the matrices with associative multiplication;
 technically, the type of a matrix determines how it is multiplied with
-other matrices (see&nbsp;<Ref Func="IsMatrix"/>).
+other matrices (see&nbsp;<Ref Filt="IsMatrix"/>).
 A matrix with the Lie bracket as its multiplication can be created with
-the function <Ref Func="LieObject"/>
+the function <Ref Attr="LieObject"/>
 from a matrix with the usual associative multiplication.
 <P/>
 Group rings (more general: magma rings,
@@ -187,8 +187,8 @@ We decide to show <C>a</C> as <C><A>3</A></C> by
 <Ref Func="View"/>, and to show the construction
 <C>MyObject( 3 )</C> by <Ref Func="Print"/>;
 the methods are installed for the underlying operations
-<Ref Func="ViewObj"/> and
-<Ref Func="PrintObj"/>.
+<Ref Oper="ViewObj"/> and
+<Ref Oper="PrintObj"/>.
 <Log><![CDATA[
 InstallMethod( ViewObj,
     "for object in `IsMyObject'",
@@ -225,19 +225,19 @@ InstallMethod( \*,
 ]]></Log>
 <P/>
 When we enter the above code, &GAP; runs into an error.
-This is due to the fact that the operation <Ref Func="\*"/>
+This is due to the fact that the operation <Ref Oper="\*"/>
 is declared for two arguments that lie in the category
-<Ref Func="IsMultiplicativeElement"/>.
+<Ref Filt="IsMultiplicativeElement"/>.
 One could circumvent the check whether the method matches the
 declaration of the operation, by calling <Ref Func="InstallOtherMethod"/>
 instead of <Ref Func="InstallMethod"/>.
 But it would make sense if our objects would lie in
-<Ref Func="IsMultiplicativeElement"/>,
+<Ref Filt="IsMultiplicativeElement"/>,
 for example because some generic methods
 for objects with multiplication would be available then,
 such as powering by positive integers via repeated squaring.
 So we want that <C>IsMyObject</C> implies
-<Ref Func="IsMultiplicativeElement"/>.
+<Ref Filt="IsMultiplicativeElement"/>.
 The easiest way to achieve such implications is to use the
 implied filter as second argument of the <Ref Func="DeclareCategory"/> call;
 but since we do not want to start anew,
@@ -277,7 +277,7 @@ note that this is necessary in order to decide about the uniqueness
 of neutral and inverse elements.
 In our situation, equality is defined in the obvious way.
 For being able to form sets of our objects,
-also an ordering via <Ref Func="\&lt;"/> is defined for them.
+also an ordering via <Ref Oper="\&lt;"/> is defined for them.
 <P/>
 <Log><![CDATA[
 InstallMethod( \=,
@@ -356,10 +356,10 @@ Further note that after the installations shown below,
 also <C>One( MyObject( 1 ) )</C> is defined.
 <P/>
 (For technical reasons, we do not install the intended methods for
-the attributes <Ref Func="One"/> and
-<Ref Func="Inverse"/> but for the operations
-<Ref Func="OneOp"/>
-and <Ref Func="InverseOp"/>.
+the attributes <Ref Attr="One"/> and
+<Ref Attr="Inverse"/> but for the operations
+<Ref Oper="OneOp"/>
+and <Ref Oper="InverseOp"/>.
 This is because for certain kinds of objects &ndash;mainly matrices&ndash;
 one wants to support a method to compute a <E>mutable</E> identity or
 inverse, and the attribute needs only a method that takes this
@@ -467,7 +467,7 @@ Currently this fails, due to missing methods for computing
 several kinds of generators from field generators,
 for computing the characteristic in the case that the family does not
 know this in advance,
-for checking with <Ref Func="AsField"/> whether a domain
+for checking with <Ref Oper="AsField"/> whether a domain
 is in fact a field, for computing the closure as a field.)
 <P/>
 It should be emphasized that the mechanism described above may be not
@@ -492,7 +492,7 @@ So the addition is not implemented for the elements in <M>M</M> or
 &ndash;more precisely&ndash; for an isomorphic copy.
 In some sense, the addition is installed <Q>for the multiplication</Q>,
 and as mentioned in Section&nbsp;<Ref Sect="New Arithmetic Operations vs. New Objects"/>,
-there is only one multiplication <Ref Func="\*"/> in &GAP;.
+there is only one multiplication <Ref Oper="\*"/> in &GAP;.
 
 </Section>
 </Chapter>

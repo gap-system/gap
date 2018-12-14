@@ -16,7 +16,7 @@
 ##
 ##  <#GAPDoc Label="[1]{liefam}">
 ##  Let <C>x</C> be a ring element, then <C>LieObject(x)</C> 
-##  (see&nbsp;<Ref Func="LieObject"/>) wraps <C>x</C> up into an
+##  (see&nbsp;<Ref Attr="LieObject"/>) wraps <C>x</C> up into an
 ##  object that contains the same data (namely <C>x</C>). The multiplication
 ##  <C>*</C> for Lie objects is formed by taking the commutator. More exactly,
 ##  if <C>l1</C> and <C>l2</C> are the Lie objects corresponding to
@@ -181,7 +181,7 @@ DeclareAttribute( "UnderlyingFamily", IsObject );
 ##  Let <A>obj</A> be a ring element. Then <C>LieObject( <A>obj</A> )</C> is the
 ##  corresponding Lie object. If <A>obj</A> lies in the family <C>F</C>,
 ##  then <C>LieObject( <A>obj</A> )</C> lies in the family <C>LieFamily( F )</C>
-##  (see&nbsp;<Ref Func="LieFamily"/>).
+##  (see&nbsp;<Ref Attr="LieFamily"/>).
 ##  <Example><![CDATA[
 ##  gap> m:= [ [ 1, 0 ], [ 0, 1 ] ];;
 ##  gap> lo:= LieObject( m );
@@ -213,7 +213,7 @@ DeclareAttribute( "LieObject", IsRingElement );
 ##  the ring element <C>r</C> used to construct <A>obj</A>.
 ##  If <C>r</C> lies in the family <C>F</C>, then <A>obj</A>
 ##  lies in the family <C>LieFamily( F )</C>
-##  (see&nbsp;<Ref Func="LieFamily"/>).
+##  (see&nbsp;<Ref Attr="LieFamily"/>).
 ##  <Example><![CDATA[
 ##  gap> lo:= LieObject( [ [ 1, 0 ], [ 0, 1 ] ] );
 ##  LieObject( [ [ 1, 0 ], [ 0, 1 ] ] )

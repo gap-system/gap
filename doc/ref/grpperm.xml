@@ -32,11 +32,11 @@
 <Heading>The Natural Action</Heading>
 
 The functions
-<Ref Func="MovedPoints" Label="for a list or collection of permutations"/>,
-<Ref Func="NrMovedPoints" Label="for a list or collection of permutations"/>,
-<Ref Func="LargestMovedPoint" Label="for a list or collection of permutations"/>,
+<Ref Attr="MovedPoints" Label="for a list or collection of permutations"/>,
+<Ref Attr="NrMovedPoints" Label="for a list or collection of permutations"/>,
+<Ref Attr="LargestMovedPoint" Label="for a list or collection of permutations"/>,
 and
-<Ref Func="SmallestMovedPoint" Label="for a list or collection of permutations"/>
+<Ref Attr="SmallestMovedPoint" Label="for a list or collection of permutations"/>
 are defined for arbitrary collections of
 permutations (see&nbsp;<Ref Sect="Moved Points of Permutations"/>),
 in particular they can be applied to permutation groups.
@@ -54,10 +54,10 @@ The action of a permutation group on the positive integers is a group
 action (via the acting function <Ref Func="OnPoints"/>).
 Therefore all action functions can be applied
 (see the Chapter&nbsp;<Ref Chap="Group Actions"/>),
-for example <Ref Func="Orbit"/>, <Ref Func="Stabilizer"/>,
-<Ref Func="Blocks" Label="for a group, an action domain, etc."/>,
-<Ref Func="IsTransitive" Label="for a group, an action domain, etc."/>,
-<Ref Func="IsPrimitive" Label="for a group, an action domain, etc."/>.
+for example <Ref Oper="Orbit"/>, <Ref Func="Stabilizer"/>,
+<Ref Oper="Blocks" Label="for a group, an action domain, etc."/>,
+<Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>,
+<Ref Oper="IsPrimitive" Label="for a group, an action domain, etc."/>.
 <P/>
 If one has a list of group generators and is interested in the moved points
 (see above) or orbits, it may be useful to avoid the explicit construction
@@ -111,8 +111,8 @@ or alternating group on the set of its moved points;
 if so then the group is called a <E>natural</E> symmetric or alternating
 group, respectively.
 <P/>
-The functions <Ref Func="IsSymmetricGroup"/> and
-<Ref Func="IsAlternatingGroup"/> can be used to check whether a given group
+The functions <Ref Prop="IsSymmetricGroup"/> and
+<Ref Prop="IsAlternatingGroup"/> can be used to check whether a given group
 (not necessarily a permutation group)
 is isomorphic to a symmetric or alternating group.
 <P/>
@@ -389,11 +389,11 @@ When stabilizer chains of a group <M>G</M> are created
 with <C>random</C> value less than <M>1000</M>,
 this is noted in the group <M>G</M>,
 by setting of the record component <C>random</C>
-in the value of the attribute <Ref Func="StabChainOptions"/>
+in the value of the attribute <Ref Attr="StabChainOptions"/>
 for <M>G</M>.
 As errors induced by the random methods might propagate,
 any group or homomorphism created from <M>G</M> inherits a <C>random</C>
-component in its <Ref Func="StabChainOptions"/> value from the corresponding
+component in its <Ref Attr="StabChainOptions"/> value from the corresponding
 component for <M>G</M>.
 <P/>
 A lot of algorithms dealing with permutation groups use randomized
@@ -611,7 +611,7 @@ solvable.
 On the other hand, proving nonsolvability can be expensive for higher
 degrees. Therefore &GAP; will automatically test a permutation group for
 solvability, only if the degree is not exceeding <M>100</M>.
-(See also the <C>tryPcgs</C> component of <Ref Func="StabChainOptions"/>.)
+(See also the <C>tryPcgs</C> component of <Ref Attr="StabChainOptions"/>.)
 It is therefore beneficial to tell a group of larger degree, which is known
 to be solvable, that it is, using <C>SetIsSolvableGroup(<A>G</A>,true)</C>.
 <P/>

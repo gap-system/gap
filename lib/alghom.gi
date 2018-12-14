@@ -1315,7 +1315,7 @@ InstallOtherMethod( RepresentativeLinearOperation,
 ##
 ##  <Description>
 ##  For an algebra <A>A</A> and an ideal <A>I</A> in <A>A</A>,
-##  the return value of <Ref Func="NaturalHomomorphismByIdeal"/>
+##  the return value of <Ref Oper="NaturalHomomorphismByIdeal"/>
 ##  is a homomorphism of algebras, in particular the range of this mapping
 ##  is also an algebra.
 ##  <P/>

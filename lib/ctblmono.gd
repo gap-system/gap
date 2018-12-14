@@ -149,7 +149,7 @@ DeclareAttribute( "Alpha", IsGroup );
 ##  For a group <A>G</A>, <Ref Attr="Delta"/> returns the list
 ##  <M>[ 1, alp[2] - alp[1], \ldots, alp[<A>n</A>] - alp[<A>n</A>-1] ]</M>,
 ##  where <M>alp = </M><C>Alpha( <A>G</A> )</C>
-##  (see&nbsp;<Ref Func="Alpha"/>).
+##  (see&nbsp;<Ref Attr="Alpha"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

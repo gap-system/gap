@@ -842,7 +842,7 @@ DeclareCategory( "IsRootSystem", IsObject );
 ##  <Description>
 ##  Category of root systems that come from (semisimple) Lie algebras. 
 ##  They often have special attributes such as 
-##  <Ref Func="UnderlyingLieAlgebra"/>, 
+##  <Ref Attr="UnderlyingLieAlgebra"/>, 
 ##  <Ref Attr="PositiveRootVectors"/>,
 ##  <Ref Attr="NegativeRootVectors"/>, 
 ##  <Ref Attr="CanonicalGenerators"/>.
@@ -1418,7 +1418,7 @@ DeclareGlobalFunction( "NilpotentQuotientOfFpLieAlgebra" );
 ##  <Description>
 ##  Let <A>G</A> be a nontrivial <M>p</M>-group,
 ##  and let <M><A>G</A> = G_1 \supset G_2 \supset \cdots \supset G_m = 1</M>
-##  be its Jennings series (see&nbsp;<Ref Func="JenningsSeries"/>).
+##  be its Jennings series (see&nbsp;<Ref Attr="JenningsSeries"/>).
 ##  Then the quotients <M>G_i / G_{{i+1}}</M> are elementary abelian
 ##  <M>p</M>-groups,
 ##  i.e., they can be viewed as vector spaces over <C>GF</C><M>(p)</M>.
@@ -1451,7 +1451,7 @@ DeclareAttribute( "JenningsLieAlgebra", IsGroup );
 ##  <C>PCentralLieAlgebra( <A>G</A> )</C> does the same as 
 ##  <Ref Attr="JenningsLieAlgebra"/> except that the
 ##  <M>p</M>-central series is used instead of the Jennings series
-##  (see&nbsp;<Ref Func="PCentralSeries"/>). This function also returns 
+##  (see&nbsp;<Ref Oper="PCentralSeries"/>). This function also returns 
 ##  a graded Lie algebra. However, it is not necessarily restricted.
 ##  <Example><![CDATA[
 ##  gap> G:= SmallGroup( 3^6, 123 );

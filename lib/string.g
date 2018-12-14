@@ -52,17 +52,17 @@ DeclareCategoryCollections( "IsChar" );
 ##  <Filt Name="IsString" Arg='obj'/>
 ##
 ##  <Description>
-##  A <E>string</E> is a dense list (see&nbsp;<Ref Func="IsList"/>,
-##  <Ref Func="IsDenseList"/>) of characters (see&nbsp;<Ref Func="IsChar"/>);
+##  A <E>string</E> is a dense list (see&nbsp;<Ref Filt="IsList"/>,
+##  <Ref Filt="IsDenseList"/>) of characters (see&nbsp;<Ref Filt="IsChar"/>);
 ##  thus strings are always homogeneous
-##  (see&nbsp;<Ref Func="IsHomogeneousList"/>).
+##  (see&nbsp;<Ref Filt="IsHomogeneousList"/>).
 ##  <P/>
 ##  A string literal can either be entered as the list of characters
 ##  or by writing the characters between <E>doublequotes</E> <C>"</C>.
 ##  &GAP; will always output strings in the latter format.
 ##  However, the input via the double quote syntax enables &GAP; to store
 ##  the string in an efficient compact internal representation.
-##  See <Ref Func="IsStringRep"/> below for more details.
+##  See <Ref Filt="IsStringRep"/> below for more details.
 ##  <P/>
 ##  Each character, in particular those which cannot be typed directly from
 ##  the keyboard, can also be typed in three digit octal notation, or
@@ -114,11 +114,11 @@ InstallTrueMethod( IsString, IsCharCollection and IsList );
 ##  <Filt Name="IsStringRep" Arg='obj' Type='Representation'/>
 ##
 ##  <Description>
-##  <Ref Func="IsStringRep"/> is a special (internal) representation of dense
+##  <Ref Filt="IsStringRep"/> is a special (internal) representation of dense
 ##  lists of characters.
 ##  Dense lists of characters can be converted into this representation
 ##  using <Ref Func="ConvertToStringRep"/>.
-##  Note that calling <Ref Func="IsString"/> does <E>not</E> change the
+##  Note that calling <Ref Filt="IsString"/> does <E>not</E> change the
 ##  representation.
 ##  </Description>
 ##  </ManSection>
@@ -139,10 +139,10 @@ DeclareRepresentationKernel( "IsStringRep",
 ##  <Description>
 ##  If <A>obj</A> is a dense internally represented list of characters then
 ##  <Ref Func="ConvertToStringRep"/> changes the representation to
-##  <Ref Func="IsStringRep"/>.
+##  <Ref Filt="IsStringRep"/>.
 ##  This is useful in particular for converting the empty list <C>[]</C>,
 ##  which usually is in <C>IsPlistRep</C>,
-##  to <Ref Func="IsStringRep"/>.
+##  to <Ref Filt="IsStringRep"/>.
 ##  If <A>obj</A> is not a string then <Ref Func="ConvertToStringRep"/>
 ##  signals an error.
 ##  </Description>
@@ -163,7 +163,7 @@ BIND_GLOBAL( "ConvertToStringRep", CONV_STRING );
 ##  If <A>obj</A> is a dense internally represented list of characters then
 ##  <Ref Func="CopyToStringRep"/> copies <A>obj</A> to a new object with
 ##  representation 
-##  <Ref Func="IsStringRep"/>.
+##  <Ref Filt="IsStringRep"/>.
 ##  If <A>obj</A> is not a string then <Ref Func="CopyToStringRep"/>
 ##  signals an error.
 ##  </Description>
@@ -253,7 +253,7 @@ fi;
 ##
 ##  <Description>
 ##  <Ref Func="IsEmptyString"/> returns <K>true</K> if <A>str</A> is the
-##  empty string in the representation <Ref Func="IsStringRep"/>,
+##  empty string in the representation <Ref Filt="IsStringRep"/>,
 ##  and <K>false</K> otherwise.
 ##  Note that the empty list <C>[]</C> and the empty string <C>""</C> have
 ##  the same type, the recommended way to distinguish them is via

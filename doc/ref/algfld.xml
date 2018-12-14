@@ -61,7 +61,7 @@ gap> a*(1/a);
 <P/>
 The external representation of algebraic extension elements are the
 polynomial coefficients in the primitive element <C>a</C>,
-the operations <Ref Func="ExtRepOfObj"/> and <Ref Func="ObjByExtRep"/>
+the operations <Ref Oper="ExtRepOfObj"/> and <Ref Oper="ObjByExtRep"/>
 can be used for conversion.
 <P/>
 <Example><![CDATA[

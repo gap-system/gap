@@ -51,7 +51,7 @@ Here are some examples of such name changes.
 </Row>
 <Row>
   <Item><C>FunctionOperation</C></Item>
-  <Item><Ref Func="FunctionAction"/></Item>
+  <Item><Ref Attr="FunctionAction"/></Item>
 </Row>
 </Table>
 
@@ -164,7 +164,7 @@ Here are some further name changes.
 </Row>
 <Row>
   <Item><C>NormedVectors</C></Item>
-  <Item><Ref Func="NormedRowVectors"/></Item>
+  <Item><Ref Attr="NormedRowVectors"/></Item>
 </Row>
 <Row>
   <Item><C>MutableIdentityMat</C></Item>

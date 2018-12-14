@@ -41,14 +41,14 @@
 ##  <M>F \subseteq S \times R</M>,
 ##  where <M>S</M> and <M>R</M> are the source and the range of <A>mapp</A>,
 ##  respectively.
-##  Then <Ref Func="RespectsMultiplication"/> returns <K>true</K> if
+##  Then <Ref Prop="RespectsMultiplication"/> returns <K>true</K> if
 ##  <M>S</M> and <M>R</M> are magmas such that
 ##  <M>(s_1,r_1), (s_2,r_2) \in F</M> implies
 ##  <M>(s_1 * s_2,r_1 * r_2) \in F</M>,
 ##  and <K>false</K> otherwise.
 ##  <P/>
 ##  If <A>mapp</A> is single-valued then
-##  <Ref Func="RespectsMultiplication"/> returns <K>true</K>
+##  <Ref Prop="RespectsMultiplication"/> returns <K>true</K>
 ##  if and only if the equation
 ##  <C><A>s1</A>^<A>mapp</A> * <A>s2</A>^<A>mapp</A> =
 ##  (<A>s1</A> * <A>s2</A>)^<A>mapp</A></C>
@@ -73,12 +73,12 @@ DeclareProperty( "RespectsMultiplication", IsGeneralMapping );
 ##  <M>F \subseteq <A>S</A> \times <A>R</A></M>,
 ##  where <A>S</A> and <A>R</A> are the source and the range of <A>mapp</A>,
 ##  respectively.
-##  Then <Ref Func="RespectsOne"/> returns <K>true</K> if
+##  Then <Ref Prop="RespectsOne"/> returns <K>true</K> if
 ##  <A>S</A> and <A>R</A> are magmas-with-one such that
 ##  <M>( </M><C>One(<A>S</A>)</C><M>, </M><C>One(<A>R</A>)</C><M> ) \in F</M>,
 ##  and <K>false</K> otherwise.
 ##  <P/>
-##  If <A>mapp</A> is single-valued then <Ref Func="RespectsOne"/> returns
+##  If <A>mapp</A> is single-valued then <Ref Prop="RespectsOne"/> returns
 ##  <K>true</K> if and only if the equation
 ##  <C>One( <A>S</A> )^<A>mapp</A> = One( <A>R</A> )</C>
 ##  holds.
@@ -102,13 +102,13 @@ DeclareProperty( "RespectsOne", IsGeneralMapping );
 ##  <M>F \subseteq <A>S</A> \times <A>R</A></M>,
 ##  where <A>S</A> and <A>R</A> are the source and the range of <A>mapp</A>,
 ##  respectively.
-##  Then <Ref Func="RespectsInverses"/> returns <K>true</K> if
+##  Then <Ref Prop="RespectsInverses"/> returns <K>true</K> if
 ##  <A>S</A> and <A>R</A> are magmas-with-inverses such that,
 ##  for <M>s \in <A>S</A></M> and <M>r \in <A>R</A></M>, 
 ##  <M>(s,r) \in F</M> implies <M>(s^{{-1}},r^{{-1}}) \in F</M>,
 ##  and <K>false</K> otherwise.
 ##  <P/>
-##  If <A>mapp</A> is single-valued then <Ref Func="RespectsInverses"/>
+##  If <A>mapp</A> is single-valued then <Ref Prop="RespectsInverses"/>
 ##  returns <K>true</K> if and only if the equation
 ##  <C>Inverse( <A>s</A> )^<A>mapp</A> = Inverse( <A>s</A>^<A>mapp</A> )</C>
 ##  holds for all <A>s</A> in <M>S</M>.
@@ -166,7 +166,7 @@ DeclareSynonymAttr( "IsGroupHomomorphism",
 ##
 ##  <Description>
 ##  Let <A>mapp</A> be a general mapping.
-##  Then <Ref Func="KernelOfMultiplicativeGeneralMapping"/> returns
+##  Then <Ref Attr="KernelOfMultiplicativeGeneralMapping"/> returns
 ##  the set of all elements in the source of <A>mapp</A> that have
 ##  the identity of the range in their set of images.
 ##  <P/>
@@ -190,7 +190,7 @@ DeclareAttribute( "KernelOfMultiplicativeGeneralMapping",
 ##
 ##  <Description>
 ##  Let <A>mapp</A> be a general mapping.
-##  Then <Ref Func="CoKernelOfMultiplicativeGeneralMapping"/> returns
+##  Then <Ref Attr="CoKernelOfMultiplicativeGeneralMapping"/> returns
 ##  the set of all elements in the range of <A>mapp</A> that have
 ##  the identity of the source in their set of preimages.
 ##  <P/>
@@ -222,13 +222,13 @@ DeclareAttribute( "CoKernelOfMultiplicativeGeneralMapping",
 ##  <M>F \subseteq S \times R</M>,
 ##  where <M>S</M> and <M>R</M> are the source and the range of <A>mapp</A>,
 ##  respectively.
-##  Then <Ref Func="RespectsAddition"/> returns <K>true</K> if
+##  Then <Ref Prop="RespectsAddition"/> returns <K>true</K> if
 ##  <M>S</M> and <M>R</M> are additive magmas such that
 ##  <M>(s_1,r_1), (s_2,r_2) \in F</M> implies
 ##  <M>(s_1 + s_2,r_1 + r_2) \in F</M>,
 ##  and <K>false</K> otherwise.
 ##  <P/>
-##  If <A>mapp</A> is single-valued then <Ref Func="RespectsAddition"/>
+##  If <A>mapp</A> is single-valued then <Ref Prop="RespectsAddition"/>
 ##  returns <K>true</K> if and only if the equation
 ##  <C><A>s1</A>^<A>mapp</A> + <A>s2</A>^<A>mapp</A> =
 ##  (<A>s1</A>+<A>s2</A>)^<A>mapp</A></C>
@@ -253,13 +253,13 @@ DeclareProperty( "RespectsAddition", IsGeneralMapping );
 ##  <M>F \subseteq <A>S</A> \times <A>R</A></M>,
 ##  where <A>S</A> and <A>R</A> are the source and the range of <A>mapp</A>,
 ##  respectively.
-##  Then <Ref Func="RespectsZero"/> returns <K>true</K> if
+##  Then <Ref Prop="RespectsZero"/> returns <K>true</K> if
 ##  <A>S</A> and <A>R</A> are additive-magmas-with-zero such that
 ##  <M>( </M><C>Zero(<A>S</A>)</C><M>,
 ##  </M><C>Zero(<A>R</A>)</C><M> ) \in F</M>,
 ##  and <K>false</K> otherwise.
 ##  <P/>
-##  If <A>mapp</A> is single-valued then <Ref Func="RespectsZero"/> returns
+##  If <A>mapp</A> is single-valued then <Ref Prop="RespectsZero"/> returns
 ##  <K>true</K> if and only if the equation
 ##  <C>Zero( <A>S</A> )^<A>mapp</A> = Zero( <A>R</A> )</C>
 ##  holds.
@@ -283,13 +283,13 @@ DeclareProperty( "RespectsZero", IsGeneralMapping );
 ##  <M>F \subseteq S \times R</M>,
 ##  where <M>S</M> and <M>R</M> are the source and the range of <A>mapp</A>,
 ##  respectively.
-##  Then <Ref Func="RespectsAdditiveInverses"/> returns <K>true</K> if
+##  Then <Ref Prop="RespectsAdditiveInverses"/> returns <K>true</K> if
 ##  <M>S</M> and <M>R</M> are additive-magmas-with-inverses such that
 ##  <M>(s,r) \in F</M> implies <M>(-s,-r) \in F</M>,
 ##  and <K>false</K> otherwise.
 ##  <P/>
 ##  If <A>mapp</A> is single-valued then
-##  <Ref Func="RespectsAdditiveInverses"/> returns <K>true</K>
+##  <Ref Prop="RespectsAdditiveInverses"/> returns <K>true</K>
 ##  if and only if the equation
 ##  <C>AdditiveInverse( <A>s</A> )^<A>mapp</A> =
 ##  AdditiveInverse( <A>s</A>^<A>mapp</A> )</C>
@@ -320,13 +320,13 @@ InstallTrueMethod( RespectsZero,
 ##  <Filt Name="IsAdditiveGroupHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
-##  <Ref Prop="IsAdditiveGroupGeneralMapping"/>
+##  <Ref Filt="IsAdditiveGroupGeneralMapping"/>
 ##  specifies whether a general mapping <A>mapp</A> respects
 ##  addition (see <Ref Prop="RespectsAddition"/>) and respects
 ##  additive inverses (see <Ref Prop="RespectsAdditiveInverses"/>).
 ##  <P/>
-##  <Ref Prop="IsAdditiveGroupHomomorphism"/> is a synonym for the meet of
-##  <Ref Prop="IsAdditiveGroupGeneralMapping"/> and <Ref Prop="IsMapping"/>.
+##  <Ref Filt="IsAdditiveGroupHomomorphism"/> is a synonym for the meet of
+##  <Ref Filt="IsAdditiveGroupGeneralMapping"/> and <Ref Filt="IsMapping"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -348,7 +348,7 @@ DeclareSynonymAttr( "IsAdditiveGroupHomomorphism",
 ##
 ##  <Description>
 ##  Let <A>mapp</A> be a general mapping.
-##  Then <Ref Func="KernelOfAdditiveGeneralMapping"/> returns
+##  Then <Ref Attr="KernelOfAdditiveGeneralMapping"/> returns
 ##  the set of all elements in the source of <A>mapp</A> that have
 ##  the zero of the range in their set of images.
 ##  </Description>
@@ -368,7 +368,7 @@ DeclareAttribute( "KernelOfAdditiveGeneralMapping", IsGeneralMapping );
 ##
 ##  <Description>
 ##  Let <A>mapp</A> be a general mapping.
-##  Then <Ref Func="CoKernelOfAdditiveGeneralMapping"/> returns
+##  Then <Ref Attr="CoKernelOfAdditiveGeneralMapping"/> returns
 ##  the set of all elements in the range of <A>mapp</A> that have
 ##  the zero of the source in their set of preimages.
 ##  </Description>
@@ -396,7 +396,7 @@ DeclareAttribute( "CoKernelOfAdditiveGeneralMapping", IsGeneralMapping );
 ##  <M>F \subseteq S \times R</M>,
 ##  where <M>S</M> and <M>R</M> are the source and the range of <A>mapp</A>,
 ##  respectively.
-##  Then <Ref Func="RespectsScalarMultiplication"/> returns <K>true</K> if
+##  Then <Ref Prop="RespectsScalarMultiplication"/> returns <K>true</K> if
 ##  <M>S</M> and <M>R</M> are left modules with the left acting domain
 ##  <M>D</M> of <M>S</M> contained in the left acting domain of <M>R</M>
 ##  and such that
@@ -404,7 +404,7 @@ DeclareAttribute( "CoKernelOfAdditiveGeneralMapping", IsGeneralMapping );
 ##  <M>c \in D</M>, and <K>false</K> otherwise.
 ##  <P/>
 ##  If <A>mapp</A> is single-valued then
-##  <Ref Func="RespectsScalarMultiplication"/> returns
+##  <Ref Prop="RespectsScalarMultiplication"/> returns
 ##  <K>true</K> if and only if the equation
 ##  <C><A>c</A> * <A>s</A>^<A>mapp</A> =
 ##  (<A>c</A> * <A>s</A>)^<A>mapp</A></C>
@@ -429,13 +429,13 @@ InstallTrueMethod( RespectsAdditiveInverses, RespectsScalarMultiplication );
 ##  <Filt Name="IsLeftModuleHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
-##  <Ref Prop="IsLeftModuleGeneralMapping"/>
+##  <Ref Filt="IsLeftModuleGeneralMapping"/>
 ##  specifies whether a general mapping <A>mapp</A> satisfies the property
-##  <Ref Prop="IsAdditiveGroupGeneralMapping"/> and respects scalar 
+##  <Ref Filt="IsAdditiveGroupGeneralMapping"/> and respects scalar 
 ##  multiplication (see <Ref Prop="RespectsScalarMultiplication"/>).
 ##  <P/>
-##  <Ref Prop="IsLeftModuleHomomorphism"/> is a synonym for the meet of
-##  <Ref Prop="IsLeftModuleGeneralMapping"/> and <Ref Prop="IsMapping"/>.
+##  <Ref Filt="IsLeftModuleHomomorphism"/> is a synonym for the meet of
+##  <Ref Filt="IsLeftModuleGeneralMapping"/> and <Ref Filt="IsMapping"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -457,7 +457,7 @@ DeclareSynonymAttr( "IsLeftModuleHomomorphism",
 ##
 ##  <Description>
 ##  For a field <A>F</A> and a general mapping <A>mapp</A>,
-##  <Ref Func="IsLinearMapping"/> returns <K>true</K> if <A>mapp</A> is an
+##  <Ref Oper="IsLinearMapping"/> returns <K>true</K> if <A>mapp</A> is an
 ##  <A>F</A>-linear mapping, and <K>false</K> otherwise.
 ##  <P/>
 ##  A mapping <M>f</M> is a linear mapping (or vector space homomorphism)
@@ -490,13 +490,13 @@ DeclareOperation( "IsLinearMapping", [ IsDomain, IsGeneralMapping ] );
 ##  <Filt Name="IsRingHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
-##  <Ref Prop="IsRingGeneralMapping"/> specifies whether a general mapping
+##  <Ref Filt="IsRingGeneralMapping"/> specifies whether a general mapping
 ##  <A>mapp</A> satisfies the property 
-##  <Ref Prop="IsAdditiveGroupGeneralMapping"/> and respects multiplication 
+##  <Ref Filt="IsAdditiveGroupGeneralMapping"/> and respects multiplication 
 ##  (see <Ref Prop="RespectsMultiplication"/>).
 ##  <P/>
-##  <Ref Prop="IsRingHomomorphism"/> is a synonym for the meet of
-##  <Ref Prop="IsRingGeneralMapping"/> and <Ref Prop="IsMapping"/>.
+##  <Ref Filt="IsRingHomomorphism"/> is a synonym for the meet of
+##  <Ref Filt="IsRingGeneralMapping"/> and <Ref Filt="IsMapping"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -542,13 +542,13 @@ DeclareSynonymAttr( "IsRingWithOneHomomorphism",
 ##  <Filt Name="IsAlgebraHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
-##  <Ref Prop="IsAlgebraGeneralMapping"/> specifies whether a general 
+##  <Ref Filt="IsAlgebraGeneralMapping"/> specifies whether a general 
 ##  mapping <A>mapp</A> satisfies both properties 
-##  <Ref Prop="IsRingGeneralMapping"/> and 
-##  (see <Ref Prop="IsLeftModuleGeneralMapping"/>).
+##  <Ref Filt="IsRingGeneralMapping"/> and 
+##  (see <Ref Filt="IsLeftModuleGeneralMapping"/>).
 ##  <P/>
-##  <Ref Prop="IsAlgebraHomomorphism"/> is a synonym for the meet of
-##  <Ref Prop="IsAlgebraGeneralMapping"/> and <Ref Prop="IsMapping"/>.
+##  <Ref Filt="IsAlgebraHomomorphism"/> is a synonym for the meet of
+##  <Ref Filt="IsAlgebraGeneralMapping"/> and <Ref Filt="IsMapping"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -571,13 +571,13 @@ DeclareSynonymAttr( "IsAlgebraHomomorphism",
 ##  <Filt Name="IsAlgebraWithOneHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
-##  <Ref Prop="IsAlgebraWithOneGeneralMapping"/>
+##  <Ref Filt="IsAlgebraWithOneGeneralMapping"/>
 ##  specifies whether a general mapping <A>mapp</A> satisfies both 
-##  properties <Ref Prop="IsAlgebraGeneralMapping"/> and 
+##  properties <Ref Filt="IsAlgebraGeneralMapping"/> and 
 ##  <Ref Prop="RespectsOne"/>.
 ##  <P/>
-##  <Ref Prop="IsAlgebraWithOneHomomorphism"/> is a synonym for the meet of
-##  <Ref Prop="IsAlgebraWithOneGeneralMapping"/> and <Ref Prop="IsMapping"/>.
+##  <Ref Filt="IsAlgebraWithOneHomomorphism"/> is a synonym for the meet of
+##  <Ref Filt="IsAlgebraWithOneGeneralMapping"/> and <Ref Filt="IsMapping"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

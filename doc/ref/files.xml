@@ -30,7 +30,7 @@ MacOS.
 <P/>
 Section <Ref Sect="Directories"/> describes how to construct directory objects
 for the common &GAP; and system directories.
-Using the command <Ref Func="Filename" Label="for a directory and a string"/>
+Using the command <Ref Oper="Filename" Label="for a directory and a string"/>
 it is possible to construct a filename pointing to a file in these
 directories.
 There are also functions to test for accessibility of files,
@@ -299,7 +299,7 @@ There is an upper limit of 15 on the number of output files
 that may be open simultaneously.
 <P/>
 <E>Note</E> that one should be careful not to write to a logfile
-(see <Ref Func="LogTo" Label="for a filename"/>) with
+(see <Ref Oper="LogTo" Label="for a filename"/>) with
 <Ref Func="PrintTo"/> or <Ref Func="AppendTo"/>.
 <!-- % The same holds of course for the redirection of output to a file. -->
 </Description>
@@ -312,18 +312,18 @@ that may be open simultaneously.
 <Oper Name="LogTo" Arg='' Label="stop logging"/>
 
 <Description>
-Calling <Ref Func="LogTo" Label="for a filename"/> with a string
+Calling <Ref Oper="LogTo" Label="for a filename"/> with a string
 <A>filename</A> causes the subsequent interaction to be logged to the file
 with the name <A>filename</A>,
 i.e., everything you see on your terminal will also appear in this file.
-(<Ref Func="LogTo" Label="for streams"/> may also be used to log to a stream.)
+(<Ref Oper="LogTo" Label="for streams"/> may also be used to log to a stream.)
 This file must of course be writable by &GAP;, otherwise an error is
 signalled.
-Note that <Ref Func="LogTo" Label="for a filename"/> will overwrite the
+Note that <Ref Oper="LogTo" Label="for a filename"/> will overwrite the
 previous contents of this file if it already existed.
 <P/>
 Called without arguments,
-<Ref Func="LogTo" Label="stop logging"/> stops logging to a file or stream.
+<Ref Oper="LogTo" Label="stop logging"/> stops logging to a file or stream.
 </Description>
 </ManSection>
 
@@ -334,19 +334,19 @@ Called without arguments,
 <Oper Name="InputLogTo" Arg='' Label="stop logging input"/>
 
 <Description>
-Calling <Ref Func="InputLogTo" Label="for a filename"/> with a string
+Calling <Ref Oper="InputLogTo" Label="for a filename"/> with a string
 <A>filename</A> causes the subsequent input to be logged to the file
 with the name <A>filename</A>,
 i.e., everything you type on your terminal will also appear in this file.
-Note that <Ref Func="InputLogTo" Label="for a filename"/> and
-<Ref Func="LogTo" Label="for a filename"/> cannot be used at the same time
-while <Ref Func="InputLogTo" Label="for a filename"/> and
-<Ref Func="OutputLogTo" Label="for a filename"/> can.
-Note that <Ref Func="InputLogTo" Label="for a filename"/> will overwrite the
+Note that <Ref Oper="InputLogTo" Label="for a filename"/> and
+<Ref Oper="LogTo" Label="for a filename"/> cannot be used at the same time
+while <Ref Oper="InputLogTo" Label="for a filename"/> and
+<Ref Oper="OutputLogTo" Label="for a filename"/> can.
+Note that <Ref Oper="InputLogTo" Label="for a filename"/> will overwrite the
 previous contents of this file if it already existed.
 <P/>
 Called without arguments,
-<Ref Func="InputLogTo" Label="stop logging input"/> stops logging to a file
+<Ref Oper="InputLogTo" Label="stop logging input"/> stops logging to a file
 or stream.
 </Description>
 </ManSection>
@@ -358,19 +358,19 @@ or stream.
 <Oper Name="OutputLogTo" Arg='' Label="stop logging output"/>
 
 <Description>
-Calling <Ref Func="OutputLogTo" Label="for a filename"/> with a string
+Calling <Ref Oper="OutputLogTo" Label="for a filename"/> with a string
 <A>filename</A> causes the subsequent output to be logged to the file
 with the name <A>filename</A>,
 i.e., everything &GAP; prints on your terminal will also appear in this file.
-Note that <Ref Func="OutputLogTo" Label="for a filename"/> and
-<Ref Func="LogTo" Label="for a filename"/> cannot be used at the same time
-while <Ref Func="InputLogTo" Label="for a filename"/> and
-<Ref Func="OutputLogTo" Label="for a filename"/> can.
-Note that <Ref Func="OutputLogTo" Label="for a filename"/> will overwrite the
+Note that <Ref Oper="OutputLogTo" Label="for a filename"/> and
+<Ref Oper="LogTo" Label="for a filename"/> cannot be used at the same time
+while <Ref Oper="InputLogTo" Label="for a filename"/> and
+<Ref Oper="OutputLogTo" Label="for a filename"/> can.
+Note that <Ref Oper="OutputLogTo" Label="for a filename"/> will overwrite the
 previous contents of this file if it already existed.
 <P/>
 Called without arguments,
-<Ref Func="OutputLogTo" Label="stop logging output"/> stops logging to a file
+<Ref Oper="OutputLogTo" Label="stop logging output"/> stops logging to a file
 or stream.
 </Description>
 </ManSection>

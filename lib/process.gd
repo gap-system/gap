@@ -89,11 +89,11 @@
 ##  <P/>
 ##  <A>prg</A> is the filename of the program to launch,
 ##  for portability it should be the result of
-##  <Ref Func="Filename" Label="for a directory and a string"/>
+##  <Ref Oper="Filename" Label="for a directory and a string"/>
 ##  and should pass <Ref Func="IsExecutableFile"/>.
-##  Note that <Ref Func="Process"/> does <E>no</E> searching through a list
+##  Note that <Ref Oper="Process"/> does <E>no</E> searching through a list
 ##  of directories, this is done by
-##  <Ref Func="Filename" Label="for a directory and a string"/>.
+##  <Ref Oper="Filename" Label="for a directory and a string"/>.
 ##  <P/>
 ##  <A>stream-in</A> is the input stream that delivers the characters to the
 ##  process.
@@ -103,7 +103,7 @@
 ##  from which no characters have been read, or the result of a call to
 ##  <Ref Oper="InputTextString"/>.
 ##  <P/>
-##  <Ref Func="Process"/> is free to consume <E>all</E> the input even if the program itself
+##  <Ref Oper="Process"/> is free to consume <E>all</E> the input even if the program itself
 ##  does not require any input at all.
 ##  <P/>
 ##  <A>stream-out</A> is the output stream which receives the characters from the

@@ -460,7 +460,7 @@ DeclareAttribute( "ONanScottType", IsPermGroup );
 ##  groups,
 ##  therefore the type is indicated by a record with components
 ##  <C>series</C>, <C>parameter</C> (both as described under
-##  <Ref Func="IsomorphismTypeInfoFiniteSimpleGroup" Label="for a group"/>),
+##  <Ref Attr="IsomorphismTypeInfoFiniteSimpleGroup" Label="for a group"/>),
 ##  and <C>width</C> for the number of direct factors.
 ##  <P/>
 ##  If <A>G</A> does not have a faithful primitive action,

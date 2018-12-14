@@ -183,8 +183,8 @@ For this reason this list is an attribute of the basis <M>B</M>.
 
 In this section we show functions for calculating with the adjoint
 representation of a Lie algebra (and the corresponding trace form,
-called the Killing form) (see also <Ref Func="AdjointBasis"/> and 
-<Ref Func="IndicesOfAdjointBasis"/>).
+called the Killing form) (see also <Ref Attr="AdjointBasis"/> and 
+<Ref Attr="IndicesOfAdjointBasis"/>).
 <P/>
 <#Include Label="AdjointMatrix">
 <#Include Label="AdjointAssociativeAlgebra">

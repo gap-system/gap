@@ -104,13 +104,13 @@
 ##  underlying ordinary tables.
 ##  <P/>
 ##  For (computing and) accessing the <M>n</M>-th power map of a character
-##  table, <Ref Func="PowerMap"/> can be used;
+##  table, <Ref Oper="PowerMap"/> can be used;
 ##  if the <M>n</M>-th power map cannot be uniquely determined then
-##  <Ref Func="PowerMap"/> returns <K>fail</K>.
+##  <Ref Oper="PowerMap"/> returns <K>fail</K>.
 ##  <P/>
 ##  The list of all possible <M>p</M>-th power maps of a table in the sense
 ##  that certain necessary conditions are satisfied can be computed with
-##  <Ref Func="PossiblePowerMaps"/>.
+##  <Ref Oper="PossiblePowerMaps"/>.
 ##  This provides a default strategy, the subroutines are listed in
 ##  Section&nbsp;<Ref Sect="Subroutines for the Construction of Power Maps"/>.
 ##  <#/GAPDoc>
@@ -196,7 +196,7 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##  <Ref Oper="PossiblePowerMaps"/> returns the list of all maps that have
 ##  the following properties of the <M>p</M>-th power map of <A>tbl</A>.
 ##  (Representative orders are used only if the
-##  <Ref Func="OrdersClassRepresentatives"/> value of <A>tbl</A> is known.
+##  <Ref Attr="OrdersClassRepresentatives"/> value of <A>tbl</A> is known.
 ##
 ##  <Enum>
 ##  <Item>
@@ -240,7 +240,7 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##    If <M>p</M> is larger than the order <M>m</M> of an element
 ##    <M>g \in G</M> then the class of <M>g^p</M> is determined by the power
 ##    maps for primes dividing the residue of <M>p</M> modulo <M>m</M>.
-##    If these power maps are stored in the <Ref Func="ComputedPowerMaps"/>
+##    If these power maps are stored in the <Ref Attr="ComputedPowerMaps"/>
 ##    value of <A>tbl</A> then this information is used.
 ##    This criterion is checked in <Ref Func="ConsiderSmallerPowerMaps"/>.
 ##  </Item>
@@ -409,10 +409,10 @@ DeclareGlobalFunction( "PowerMapByComposition" );
 ##
 ##  <#GAPDoc Label="[3]{ctblmaps}">
 ##  The permutation group of matrix automorphisms
-##  (see&nbsp;<Ref Func="MatrixAutomorphisms"/>)
+##  (see&nbsp;<Ref Oper="MatrixAutomorphisms"/>)
 ##  acts on the possible power maps returned by
-##  <Ref Func="PossiblePowerMaps"/>
-##  by permuting a list via <Ref Func="Permuted"/>
+##  <Ref Oper="PossiblePowerMaps"/>
+##  by permuting a list via <Ref Oper="Permuted"/>
 ##  and then mapping the images via <Ref Func="OnPoints"/>.
 ##  Note that by definition, the group of <E>table</E> automorphisms
 ##  acts trivially.
@@ -431,7 +431,7 @@ DeclareGlobalFunction( "PowerMapByComposition" );
 ##  <Description>
 ##  returns the orbit of the power map <A>map</A> under the action of the
 ##  permutation group <A>permgrp</A>
-##  via a combination of <Ref Func="Permuted"/> and <Ref Func="OnPoints"/>.
+##  via a combination of <Ref Oper="Permuted"/> and <Ref Func="OnPoints"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -452,7 +452,7 @@ DeclareGlobalFunction( "OrbitPowerMaps" );
 ##  returns a list of orbit representatives of the power maps in the list
 ##  <A>listofmaps</A> under the action of the permutation group
 ##  <A>permgrp</A>
-##  via a combination of <Ref Func="Permuted"/> and <Ref Func="OnPoints"/>.
+##  via a combination of <Ref Oper="Permuted"/> and <Ref Func="OnPoints"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> tbl:= CharacterTable( "3.McL" );;
@@ -525,7 +525,7 @@ DeclareGlobalFunction( "RepresentativesPowerMaps" );
 ##  Character tables of the &GAP; character table library store various
 ##  class fusions that are regarded as important,
 ##  for example fusions from maximal subgroups
-##  (see&nbsp;<Ref Func="ComputedClassFusions"/>
+##  (see&nbsp;<Ref Attr="ComputedClassFusions"/>
 ##  and <Ref Attr="Maxes" BookName="ctbllib"/> in the manual for the &GAP;
 ##  Character Table Library).
 ##  <P/>
@@ -537,27 +537,27 @@ DeclareGlobalFunction( "RepresentativesPowerMaps" );
 ##  <P/>
 ##  For (computing and) accessing the class fusion between two character
 ##  tables,
-##  <Ref Func="FusionConjugacyClasses" Label="for two character tables"/>
+##  <Ref Oper="FusionConjugacyClasses" Label="for two character tables"/>
 ##  can be used;
 ##  if the class fusion cannot be uniquely determined then
-##  <Ref Func="FusionConjugacyClasses" Label="for two character tables"/>
+##  <Ref Oper="FusionConjugacyClasses" Label="for two character tables"/>
 ##  returns <K>fail</K>.
 ##  <P/>
 ##  The list of all possible class fusion between two tables in the sense
 ##  that certain necessary conditions are satisfied can be computed with
-##  <Ref Func="PossibleClassFusions"/>.
+##  <Ref Oper="PossibleClassFusions"/>.
 ##  This provides a default strategy, the subroutines are listed in
 ##  Section <Ref Sect="Subroutines for the Construction of Class Fusions"/>.
 ##  <P/>
 ##  It should be noted that all the following functions except
-##  <Ref Func="FusionConjugacyClasses" Label="for two character tables"/>
+##  <Ref Oper="FusionConjugacyClasses" Label="for two character tables"/>
 ##  deal only with the situation of class fusions from subgroups.
 ##  The computation of <E>factor fusions</E> from a character table to the
 ##  table of a factor group is not dealt with here.
 ##  Since the ordinary character table of a group <M>G</M> determines the
 ##  character tables of all factor groups of <M>G</M>, the factor fusion to a
 ##  given character table of a factor group of <M>G</M> is determined up to
-##  table automorphisms (see&nbsp;<Ref Func="AutomorphismsOfTable"/>) once
+##  table automorphisms (see&nbsp;<Ref Attr="AutomorphismsOfTable"/>) once
 ##  the class positions of the kernel of the natural epimorphism have been
 ##  fixed.
 ##  <#/GAPDoc>
@@ -728,7 +728,7 @@ DeclareOperation( "FusionConjugacyClassesOp",
 ##  For storing fusions and accessing stored fusions,
 ##  see also&nbsp;<Ref Func="GetFusionMap"/>, <Ref Func="StoreFusion"/>.
 ##  For accessing the identifiers of tables that store a fusion into a
-##  given character table, see&nbsp;<Ref Func="NamesOfFusionSources"/>.
+##  given character table, see&nbsp;<Ref Attr="NamesOfFusionSources"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -767,7 +767,7 @@ DeclareAttributeSuppCT( "ComputedClassFusions",
 ##  If no appropriate fusion is found, <Ref Func="GetFusionMap"/> returns
 ##  <K>fail</K>.
 ##  For the computation of class fusions, see
-##  <Ref Func="FusionConjugacyClasses" Label="for two character tables"/>.
+##  <Ref Oper="FusionConjugacyClasses" Label="for two character tables"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -794,7 +794,7 @@ DeclareGlobalFunction( "GetFusionMap" );
 ##  <P/>
 ##  <A>fusion</A> can either be a fusion map (that is, the list of positions
 ##  of the image classes) or a record as described
-##  in&nbsp;<Ref Func="ComputedClassFusions"/>.
+##  in&nbsp;<Ref Attr="ComputedClassFusions"/>.
 ##  <P/>
 ##  If fusions to <A>destination</A> are already stored on <A>source</A> then
 ##  another fusion can be stored only if it has a record component
@@ -892,7 +892,7 @@ DeclareAttributeSuppCT( "NamesOfFusionSources",
 ##  </Item>
 ##  <Item>
 ##    The table automorphisms of <A>tbl</A>
-##    (see&nbsp;<Ref Func="AutomorphismsOfTable"/>) are
+##    (see&nbsp;<Ref Attr="AutomorphismsOfTable"/>) are
 ##    used in order to compute only orbit representatives.
 ##    (But note that the list returned by <Ref Oper="PossibleClassFusions"/>
 ##    contains the full orbits.)
@@ -1006,11 +1006,11 @@ DeclareOperation( "PossibleClassFusions",
 ##
 ##  <#GAPDoc Label="[5]{ctblmaps}">
 ##  The permutation groups of table automorphisms
-##  (see&nbsp;<Ref Func="AutomorphismsOfTable"/>)
+##  (see&nbsp;<Ref Attr="AutomorphismsOfTable"/>)
 ##  of the subgroup table <A>subtbl</A> and the supergroup table <A>tbl</A>
 ##  act on the possible class fusions from <A>subtbl</A> to <A>tbl</A>
-##  that are returned by <Ref Func="PossibleClassFusions"/>,
-##  the former by permuting a list via <Ref Func="Permuted"/>,
+##  that are returned by <Ref Oper="PossibleClassFusions"/>,
+##  the former by permuting a list via <Ref Oper="Permuted"/>,
 ##  the latter by mapping the images via <Ref Func="OnPoints"/>.
 ##  <P/>
 ##  If a set of possible fusions with certain properties was computed
@@ -1883,7 +1883,7 @@ DeclareGlobalFunction( "ContainedPossibleCharacters" );
 ##  <A>constituents</A> is a list of (values lists of) rational characters of
 ##  an ordinary character table <A>tbl</A>,
 ##  <A>moduls</A> is the list of centralizer orders of <A>tbl</A>
-##  (see&nbsp;<Ref Func="SizesCentralizers"/>),
+##  (see&nbsp;<Ref Attr="SizesCentralizers"/>),
 ##  and <A>func</A> checks whether a vector in the lattice mentioned above
 ##  has nonnegative integral scalar product in <A>tbl</A> with all entries of
 ##  <A>constituents</A>.
@@ -1946,7 +1946,7 @@ DeclareGlobalFunction( "ContainedCharacters" );
 ##  <Ref Func="InitPowerMap"/> returns a parametrized map that is a first
 ##  approximation of the <A>prime</A>-th powermap of <A>tbl</A>,
 ##  using the conditions 1.&nbsp;and 2.&nbsp;listed in the description of
-##  <Ref Func="PossiblePowerMaps"/>.
+##  <Ref Oper="PossiblePowerMaps"/>.
 ##  <P/>
 ##  If there are classes for which no images are possible, according to these
 ##  criteria, then <K>fail</K> is returned.
@@ -2007,7 +2007,7 @@ DeclareGlobalFunction( "InitPowerMap" );
 ##  <Ref Func="Congruences" Label="for character tables"/>
 ##  replaces the entries of <A>approxmap</A> by improved values,
 ##  according to condition 3.&nbsp;listed in the description
-##  of <Ref Func="PossiblePowerMaps"/>.
+##  of <Ref Oper="PossiblePowerMaps"/>.
 ##  <P/>
 ##  For each class for which no images are possible according to the tests,
 ##  the new value of <A>approxmap</A> is an empty list.
@@ -2041,7 +2041,7 @@ DeclareGlobalFunction( "Congruences" );
 ##  <Description>
 ##  <Ref Func="ConsiderKernels"/> replaces the entries of <A>approxmap</A> by
 ##  improved values, according to condition 4.&nbsp;listed in the description
-##  of <Ref Func="PossiblePowerMaps"/>.
+##  of <Ref Oper="PossiblePowerMaps"/>.
 ##  <P/>
 ##  <Ref Func="Congruences" Label="for character tables"/>
 ##  returns <K>true</K> if the orders of the
@@ -2077,13 +2077,13 @@ DeclareGlobalFunction( "ConsiderKernels" );
 ##  <Ref Func="ConsiderSmallerPowerMaps"/> replaces the entries of
 ##  <A>approxmap</A> by improved values,
 ##  according to condition 5.&nbsp;listed in the description of
-##  <Ref Func="PossiblePowerMaps"/>.
+##  <Ref Oper="PossiblePowerMaps"/>.
 ##  <P/>
 ##  <Ref Func="ConsiderSmallerPowerMaps"/> returns <K>true</K> if each class
 ##  admits at least one image after the checks, otherwise <K>false</K> is
 ##  returned.
 ##  If no element orders of <A>tbl</A> are stored
-##  (see&nbsp;<Ref Func="OrdersClassRepresentatives"/>) then <K>true</K> is
+##  (see&nbsp;<Ref Attr="OrdersClassRepresentatives"/>) then <K>true</K> is
 ##  returned without any tests.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -2174,7 +2174,7 @@ DeclareGlobalFunction( "MinusCharacter" );
 ##  <Ref Func="PowerMapsAllowedBySymmetrizations"/> replaces the entries of
 ##  <A>approxmap</A> by improved values,
 ##  according to condition 6.&nbsp;listed in the description of
-##  <Ref Func="PossiblePowerMaps"/>.
+##  <Ref Oper="PossiblePowerMaps"/>.
 ##  <P/>
 ##  More precisely, the strategy used is as follows.
 ##  <P/>
@@ -2262,7 +2262,7 @@ DeclareSynonym( "PowerMapsAllowedBySymmetrisations",
 ##  <Ref Func="InitFusion"/> returns a parametrized map that is a first
 ##  approximation of the class fusion from <A>subtbl</A> to <A>tbl</A>,
 ##  using condition&nbsp;1.&nbsp;listed in the description of
-##  <Ref Func="PossibleClassFusions"/>.
+##  <Ref Oper="PossibleClassFusions"/>.
 ##  <P/>
 ##  If there are classes for which no images are possible, according to this
 ##  criterion, then <K>fail</K> is returned.
@@ -2296,7 +2296,7 @@ DeclareGlobalFunction( "InitFusion" );
 ##  <Ref Func="CheckPermChar"/> replaces the entries of the parametrized map
 ##  <A>approxmap</A> by improved values,
 ##  according to condition&nbsp;3.&nbsp;listed in the description of
-##  <Ref Func="PossibleClassFusions"/>.
+##  <Ref Oper="PossibleClassFusions"/>.
 ##  <P/>
 ##  <Ref Func="CheckPermChar"/> returns <K>true</K> if no inconsistency
 ##  occurred, and <K>false</K> otherwise.
@@ -2329,7 +2329,7 @@ DeclareGlobalFunction( "CheckPermChar" );
 ##  <Ref Func="ConsiderTableAutomorphisms"/> replaces the entries of the
 ##  parametrized map <A>approxmap</A> by improved values, according to
 ##  condition&nbsp;4.&nbsp;listed in the description of
-##  <Ref Func="PossibleClassFusions"/>.
+##  <Ref Oper="PossibleClassFusions"/>.
 ##  <P/>
 ##  Afterwards exactly one representative of fusion maps (contained in
 ##  <A>approxmap</A>) in each orbit under the action of the permutation group
@@ -2388,7 +2388,7 @@ DeclareGlobalFunction( "ConsiderTableAutomorphisms" );
 ##  <Ref Func="FusionsAllowedByRestrictions"/> replaces the entries of
 ##  <A>approxmap</A> by improved values,
 ##  according to condition 5.&nbsp;listed in the description of
-##  <Ref Func="PossibleClassFusions"/>.
+##  <Ref Oper="PossibleClassFusions"/>.
 ##  <P/>
 ##  More precisely, the strategy used is as follows.
 ##  <P/>
@@ -2486,7 +2486,7 @@ DeclareGlobalFunction( "FusionsAllowedByRestrictions" );
 ##  is not bigger than
 ##  <C>ClassMultiplicationCoefficient</C><M>( <A>tbl</A>, \sigma[i],
 ##  \sigma[j], \sigma[k] )</M>;
-##  see&nbsp;<Ref Func="ClassMultiplicationCoefficient"
+##  see&nbsp;<Ref Oper="ClassMultiplicationCoefficient"
 ##  Label="for character tables"/>
 ##  for the definition of class multiplication coefficients/structure
 ##  constants.

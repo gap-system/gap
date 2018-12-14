@@ -271,7 +271,7 @@ DeclareAttribute( "DepthOfUpperTriangularMatrix", IsMatrix );
 ##  These methods assume implicitly that <A>mat</A> is defined over an
 ##  integral domain whose quotient field is implemented in &GAP;. For
 ##  matrices defined over an arbitrary commutative ring with one 
-##  see&nbsp;<Ref Func="DeterminantMatDivFree"/>.
+##  see&nbsp;<Ref Oper="DeterminantMatDivFree"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -863,7 +863,7 @@ DeclareGlobalFunction( "SemiEchelonMatsNoCo" );
 ##  <Description>
 ##  A list of matrices over a field <M>F</M> is in semi-echelon form if the
 ##  list of row vectors obtained on concatenating the rows of each matrix
-##  is a semi-echelonized matrix (see <Ref Func="SemiEchelonMat"/>).
+##  is a semi-echelonized matrix (see <Ref Attr="SemiEchelonMat"/>).
 ##  <P/>
 ##  <Ref Oper="SemiEchelonMats"/> returns a record that contains information about
 ##  a semi-echelonized form of the list <A>mats</A> of matrices.
@@ -935,7 +935,7 @@ DeclareOperation( "SemiEchelonMatsDestructive", [ IsList ] );
 ##  <Ref Attr="TransposedMatImmutable"/> and <Ref Attr="TransposedMatAttr"/> 
 ##  are synonyms of <Ref Attr="TransposedMat"/>,
 ##  and <Ref Oper="TransposedMatOp"/> is a synonym of <Ref Oper="TransposedMatMutable"/>,
-##  in analogy to operations such as <Ref Func="Zero"/>.
+##  in analogy to operations such as <Ref Attr="Zero"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1577,7 +1577,7 @@ DeclareGlobalFunction( "DiagonalMat" );
 ##  vector.
 ##  <P/>
 ##  More precisely, if <A>coeffs</A> is the coefficients list of a vector
-##  <M>v</M> w.r.t. a basis <M>B</M> (see&nbsp;<Ref Func="Basis"/>), say,
+##  <M>v</M> w.r.t. a basis <M>B</M> (see&nbsp;<Ref Attr="Basis"/>), say,
 ##  then the returned matrix describes the
 ##  reflection in <M>v</M> w.r.t. <M>B</M> as a map on a row space,
 ##  with action from the right.
@@ -1586,7 +1586,7 @@ DeclareGlobalFunction( "DiagonalMat" );
 ##  order of the reflection.
 ##  The default is a reflection of order 2.
 ##  For triflections one should choose a third root of unity etc.
-##  (see&nbsp;<Ref Func="E"/>).
+##  (see&nbsp;<Ref Oper="E"/>).
 ##  <P/>
 ##  <A>conj</A> is a function of one argument that conjugates a ring element.
 ##  The default is <Ref Attr="ComplexConjugate"/>.
@@ -1876,7 +1876,7 @@ DeclareSynonym("OnSubspacesByCanonicalBasisGF2",OnSubspacesByCanonicalBasis);
 ##  <P/>
 ##  If fields <A>F</A> and <A>E</A> are given, then <A>F</A> must be a
 ##  subfield of <A>E</A>, and <A>mat</A> must have entries in <A>E</A>.
-##  Then <Ref Oper="CharacteristicPolynomial"/> returns the characteristic
+##  Then <Ref Attr="CharacteristicPolynomial"/> returns the characteristic
 ##  polynomial of the <A>F</A>-linear mapping induced by <A>mat</A> 
 ##  on the underlying <A>E</A>-vector space of <A>mat</A>. In this case, 
 ##  the characteristic polynomial is computed using <Ref Func="BlownUpMat"/>
@@ -1890,16 +1890,16 @@ DeclareSynonym("OnSubspacesByCanonicalBasisGF2",OnSubspacesByCanonicalBasis);
 ##  <C>CharacteristicPolynomial(<A>F</A>, <A>E</A>, <A>mat</A>)</C> is a
 ##  multiple of the  minimal polynomial
 ##  <C>MinimalPolynomial(<A>F</A>, <A>mat</A>)</C>
-##  (see&nbsp;<Ref Func="MinimalPolynomial"/>).
+##  (see&nbsp;<Ref Oper="MinimalPolynomial"/>).
 ##  <P/>
 ##  Note that, up to &GAP; version 4.4.6,
-##  <Ref Oper="CharacteristicPolynomial"/> only  allowed to specify one field
+##  <Ref Attr="CharacteristicPolynomial"/> only  allowed to specify one field
 ##  (corresponding to <A>F</A>) as an argument.
 ##  That usage has been disabled because its definition turned out to be 
 ##  ambiguous and may have lead to unexpected results. (To ensure
 ##  backward compatibility, it is still possible to use the old form 
 ##  if <A>F</A> contains the default field of the matrix,
-##  see&nbsp;<Ref Func="DefaultFieldOfMatrix"/>,
+##  see&nbsp;<Ref Attr="DefaultFieldOfMatrix"/>,
 ##  but this feature will disappear in future versions of &GAP;.)
 ##  <Example><![CDATA[
 ##  gap> CharacteristicPolynomial( [ [ 1, 1 ], [ 0, 1 ] ] );

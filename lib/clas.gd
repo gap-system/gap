@@ -58,21 +58,21 @@ DeclareRepresentation( "IsConjugacyClassPermGroupRep",
 ##  <Description>
 ##  creates the conjugacy class in <A>G</A> with representative <A>g</A>.
 ##  This class is an external set, so functions such as
-##  <Ref Func="Representative"/> (which returns <A>g</A>),
-##  <Ref Func="ActingDomain"/> (which returns <A>G</A>),
-##  <Ref Func="StabilizerOfExternalSet"/> (which returns the centralizer of
-##  <A>g</A>) and <Ref Func="AsList"/> work for it.
+##  <Ref Attr="Representative"/> (which returns <A>g</A>),
+##  <Ref Attr="ActingDomain"/> (which returns <A>G</A>),
+##  <Ref Attr="StabilizerOfExternalSet"/> (which returns the centralizer of
+##  <A>g</A>) and <Ref Attr="AsList"/> work for it.
 ##  <P/>
-##  A conjugacy class is an external orbit (see <Ref Func="ExternalOrbit"/>)
+##  A conjugacy class is an external orbit (see <Ref Oper="ExternalOrbit"/>)
 ##  of group elements with the group acting by conjugation on it.
 ##  Thus element tests or operation representatives can be computed.
 ##  The attribute
-##  <Ref Func="Centralizer" Label="for a class of objects in a magma"/>
+##  <Ref Attr="Centralizer" Label="for a class of objects in a magma"/>
 ##  gives the centralizer of the representative (which is the same result as
-##  <Ref Func="StabilizerOfExternalSet"/>).
+##  <Ref Attr="StabilizerOfExternalSet"/>).
 ##  (This is a slight abuse of notation: This is <E>not</E> the centralizer
 ##  of the class as a <E>set</E> which would be the standard behaviour of
-##  <Ref Func="Centralizer" Label="for a class of objects in a magma"/>.)
+##  <Ref Attr="Centralizer" Label="for a class of objects in a magma"/>.)
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -128,7 +128,7 @@ InstallTrueMethod( IsFinite, IsRationalClassGroupRep and IsDomain );
 ##  to the order of <M>g</M>.
 ##  Thus a rational class can be interpreted as a conjugacy class of cyclic
 ##  subgroups.
-##  A rational class is an external set (<Ref Func="IsExternalSet"/>) of
+##  A rational class is an external set (<Ref Filt="IsExternalSet"/>) of
 ##  group elements with the group acting by conjugation on it, but not an
 ##  external orbit.
 ##  </Description>
@@ -173,7 +173,7 @@ DeclareAttribute( "DecomposedRationalClass",IsRationalClassGroupRep );
 ##  &GAP; as <C>Units( Integers mod <A>n</A> )</C>,
 ##  the unit group of a residue class ring.
 ##  The Galois group of a rational class <A>ratcl</A> is stored in the
-##  attribute <Ref Func="GaloisGroup" Label="of rational class of a group"/>
+##  attribute <Ref Attr="GaloisGroup" Label="of rational class of a group"/>
 ##  as a subgroup of this group.
 ##  </Description>
 ##  </ManSection>
@@ -195,7 +195,7 @@ DeclareAttribute( "GaloisGroup", IsRationalClassGroupRep );
 ##  This works very efficiently for almost simple groups.
 ##  <P/>
 ##  This function is also accessible via the option <C>random</C> to
-##  the function <Ref Func="ConjugacyClass"/>.
+##  the function <Ref Oper="ConjugacyClass"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -219,7 +219,7 @@ DeclareGlobalFunction( "ConjugacyClassesByRandomSearch" );
 ##  thus a membership test will be quick as well.
 ##  <P/>
 ##  This function is also accessible via the option <C>action</C> to
-##  the function <Ref Func="ConjugacyClass"/>.
+##  the function <Ref Oper="ConjugacyClass"/>.
 ##  <P/>
 ##  Typically, for small groups (roughly of order up to <M>10^3</M>)
 ##  the computation of classes as orbits under the action is fastest;
@@ -314,7 +314,7 @@ DeclareGlobalFunction( "GeneralStepClEANS" );
 ##  <Mark><C>pcgs</C></Mark>
 ##  <Item>
 ##  is a pcgs that will be used for the calculation.
-##  The attribute <Ref Func="EANormalSeriesByPcgs"/> must return an
+##  The attribute <Ref Attr="EANormalSeriesByPcgs"/> must return an
 ##  appropriate series of normal subgroups with elementary abelian factors
 ##  among them. The algorithm will step down this series.
 ##  In the case of

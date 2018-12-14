@@ -13,15 +13,15 @@
 ##  <#GAPDoc Label="[1]{semiquo}">
 ##  For a semigroup <M>S</M>,
 ##  elements of a quotient semigroup are equivalence classes of 
-##  elements of the <Ref Func="QuotientSemigroupPreimage"/> value
+##  elements of the <Ref Attr="QuotientSemigroupPreimage"/> value
 ##  under the congruence given by the value of
-##  <Ref Func="QuotientSemigroupCongruence"/>.
+##  <Ref Attr="QuotientSemigroupCongruence"/>.
 ##  <P/>
 ##  It is probably most useful for calculating the elements of 
 ##  the equivalence classes by using <Ref Func="Elements"/> or by looking at
-##  the images of elements of <Ref Func="QuotientSemigroupPreimage"/> under
-##  the map returned by <Ref Func="QuotientSemigroupHomomorphism"/>,
-##  which maps the <Ref Func="QuotientSemigroupPreimage"/> value to <A>S</A>.
+##  the images of elements of <Ref Attr="QuotientSemigroupPreimage"/> under
+##  the map returned by <Ref Attr="QuotientSemigroupHomomorphism"/>,
+##  which maps the <Ref Attr="QuotientSemigroupPreimage"/> value to <A>S</A>.
 ##  <P/>
 ##  For intensive computations in a quotient semigroup, it is probably
 ##  worthwhile finding another representation as the equality test 

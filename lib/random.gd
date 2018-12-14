@@ -29,7 +29,7 @@
 ##  random  integer between  <A>low</A>  and  <A>high</A> (inclusive),  <Ref
 ##  Oper="Init"/>, <Ref Oper="State"/> and <Ref Oper="Reset"/>.
 ##  <P/>
-##  Use <Ref Func="RandomSource"/> to construct new random sources.
+##  Use <Ref Oper="RandomSource"/> to construct new random sources.
 ##  <P/>
 ##  One idea behind providing several independent (pseudo) random sources is
 ##  to make algorithms which use some sort of random choices deterministic.
@@ -90,7 +90,7 @@ DeclareOperation( "Random", [IsRandomSource, IsInt, IsInt] );
 ##
 ##  <Description>
 ##  These are the basic operations for which random sources (see
-##  <Ref Func="IsRandomSource"/>) must have methods. 
+##  <Ref Filt="IsRandomSource"/>) must have methods. 
 ##  <P/>
 ##  <Ref Oper="State"/> should return a data structure which allows to recover the state
 ##  of the random source such that a sequence of random calls using this 
@@ -155,7 +155,7 @@ DeclareOperation( "Init", [IsRandomSource, IsObject] );
 ##  Currently, the &GAP; library provides three types of random sources,
 ##  distinguished by the three listed categories.
 ##  <P/>
-##  <Ref  Var="IsMersenneTwister"/>  are random  sources  which  use a  fast
+##  <Ref  Filt="IsMersenneTwister"/>  are random  sources  which  use a  fast
 ##  random generator  of 32  bit numbers, called  the Mersenne  twister. The
 ##  pseudo  random  sequence has  a  period  of <M>2^{19937}-1</M>  and  the
 ##  numbers have a <M>623</M>-dimensional equidistribution. For more details

@@ -244,9 +244,9 @@ DeclareOperation( "IsIncomparableUnder" ,[IsOrdering,IsObject,IsObject]);
 ##  <Oper Name="OrderingByLessThanFunctionNC" Arg='fam, lt[, l]'/>
 ##
 ##  <Description>
-##  Called with two arguments, <Ref Func="OrderingByLessThanFunctionNC"/>
+##  Called with two arguments, <Ref Oper="OrderingByLessThanFunctionNC"/>
 ##  returns the ordering on the elements of the elements of the family
-##  <A>fam</A>, according to the <Ref Func="LessThanFunction"/> value given
+##  <A>fam</A>, according to the <Ref Attr="LessThanFunction"/> value given
 ##  by <A>lt</A>,
 ##  where <A>lt</A> is a function that takes two
 ##  arguments in <A>fam</A> and returns <K>true</K> or <K>false</K>.
@@ -254,9 +254,9 @@ DeclareOperation( "IsIncomparableUnder" ,[IsOrdering,IsObject,IsObject]);
 ##  Called with three arguments, for a family <A>fam</A>,
 ##  a function <A>lt</A> that takes two arguments in <A>fam</A> and returns
 ##  <K>true</K> or <K>false</K>, and a list <A>l</A>
-##  of properties of orderings, <Ref Func="OrderingByLessThanFunctionNC"/>
+##  of properties of orderings, <Ref Oper="OrderingByLessThanFunctionNC"/>
 ##  returns the ordering on the elements of <A>fam</A> with
-##  <Ref Func="LessThanFunction"/> value given by <A>lt</A>
+##  <Ref Attr="LessThanFunction"/> value given by <A>lt</A>
 ##  and with the properties from <A>l</A> set to <K>true</K>.
 ##  </Description>
 ##  </ManSection>
@@ -274,9 +274,9 @@ DeclareOperation( "OrderingByLessThanFunctionNC" ,[IsFamily,IsFunction]);
 ##
 ##  <Description>
 ##  Called with two arguments,
-##  <Ref Func="OrderingByLessThanOrEqualFunctionNC"/> returns the ordering on
+##  <Ref Oper="OrderingByLessThanOrEqualFunctionNC"/> returns the ordering on
 ##  the elements of the elements of the family <A>fam</A> according to
-##  the <Ref Func="LessThanOrEqualFunction"/> value given by <A>lteq</A>,
+##  the <Ref Attr="LessThanOrEqualFunction"/> value given by <A>lteq</A>,
 ##  where <A>lteq</A> is a function that takes two arguments in <A>fam</A>
 ##  and returns <K>true</K> or <K>false</K>.
 ##  <P/>
@@ -284,9 +284,9 @@ DeclareOperation( "OrderingByLessThanFunctionNC" ,[IsFamily,IsFunction]);
 ##  a function <A>lteq</A> that takes two arguments in <A>fam</A> and returns
 ##  <K>true</K> or <K>false</K>, and a list <A>l</A>
 ##  of properties of orderings,
-##  <Ref Func="OrderingByLessThanOrEqualFunctionNC"/>
+##  <Ref Oper="OrderingByLessThanOrEqualFunctionNC"/>
 ##  returns the ordering on the elements of <A>fam</A> with
-##  <Ref Func="LessThanOrEqualFunction"/> value given by <A>lteq</A>
+##  <Ref Attr="LessThanOrEqualFunction"/> value given by <A>lteq</A>
 ##  and with the properties from <A>l</A> set to <K>true</K>.
 ##  <P/>
 ##  Notice that these functions do not check whether <A>fam</A> and <A>lt</A>
@@ -445,7 +445,7 @@ DeclareSynonym( "IsReductionOrdering",
 ##  This could be indeed the ordering of the generators in the ordering,
 ##  but, for example, if a weight is associated to each generator
 ##  then this is not true anymore.
-##  See the example for <Ref Func="WeightLexOrdering"/>.
+##  See the example for <Ref Oper="WeightLexOrdering"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -465,14 +465,14 @@ DeclareAttribute("OrderingOnGenerators",IsOrdering and
 ##  Let <A>D</A> be a free semigroup, a free monoid, or the elements
 ##  family of such a domain.
 ##  Called with only argument <A>D</A>,
-##  <Ref Func="LexicographicOrdering"/> returns the lexicographic
+##  <Ref Oper="LexicographicOrdering"/> returns the lexicographic
 ##  ordering on the elements of <A>D</A>.
 ##  <P/>
 ##  The optional argument <A>gens</A> can be either the list of free
 ##  generators of <A>D</A>, in the desired order,
 ##  or a list of the positions of these generators,
 ##  in the desired order,
-##  and <Ref Func="LexicographicOrdering"/> returns the lexicographic
+##  and <Ref Oper="LexicographicOrdering"/> returns the lexicographic
 ##  ordering on the elements of <A>D</A> with the ordering on the
 ##  generators as given.
 ##  <Example><![CDATA[
@@ -505,14 +505,14 @@ DeclareOperation("LexicographicOrdering",
 ##  Let <A>D</A> be a free semigroup, a free monoid, or the elements
 ##  family of such a domain.
 ##  Called with only argument <A>D</A>,
-##  <Ref Func="ShortLexOrdering"/> returns the shortlex
+##  <Ref Oper="ShortLexOrdering"/> returns the shortlex
 ##  ordering on the elements of <A>D</A>.
 ##  <P/>
 ##  The optional argument <A>gens</A> can be either the list of free
 ##  generators of <A>D</A>, in the desired order,
 ##  or a list of the positions of these generators,
 ##  in the desired order,
-##  and <Ref Func="ShortLexOrdering"/> returns the shortlex
+##  and <Ref Oper="ShortLexOrdering"/> returns the shortlex
 ##  ordering on the elements of <A>D</A> with the ordering on the
 ##  generators as given.
 ##  </Description>
@@ -585,7 +585,7 @@ DeclareGlobalFunction( "IsShortLexLessThanOrEqual" );
 ##  generators of <A>D</A>, in the desired order,
 ##  or a list of the positions of these generators, in the desired order.
 ##  Let <A>wt</A> be a list of weights.
-##  <Ref Func="WeightLexOrdering"/> returns the weightlex
+##  <Ref Oper="WeightLexOrdering"/> returns the weightlex
 ##  ordering on the elements of <A>D</A> with the ordering on the
 ##  generators and weights of the generators as given.
 ##  </Description>
@@ -608,7 +608,7 @@ DeclareOperation("WeightLexOrdering",
 ##  returns a list with length the size of the alphabet of the family.
 ##  This list gives the weight of each of the letters of the alphabet
 ##  which are used for weightlex orderings with respect to the
-##  ordering given by <Ref Func="OrderingOnGenerators"/>.
+##  ordering given by <Ref Attr="OrderingOnGenerators"/>.
 ##  <Example><![CDATA[
 ##  gap> f := FreeSemigroup(3);
 ##  <free semigroup on the generators [ s1, s2, s3 ]>
@@ -662,14 +662,14 @@ DeclareProperty("IsWeightLexOrdering",IsOrdering and
 ##  Let <A>D</A> be a free semigroup, a free monoid, or the elements
 ##  family of such a domain.
 ##  Called with only argument <A>D</A>,
-##  <Ref Func="BasicWreathProductOrdering"/> returns the basic wreath product
+##  <Ref Oper="BasicWreathProductOrdering"/> returns the basic wreath product
 ##  ordering on the elements of <A>D</A>.
 ##  <P/>
 ##  The optional argument <A>gens</A> can be either the list of free
 ##  generators of <A>D</A>, in the desired order,
 ##  or a list of the positions of these generators,
 ##  in the desired order,
-##  and <Ref Func="BasicWreathProductOrdering"/> returns the lexicographic
+##  and <Ref Oper="BasicWreathProductOrdering"/> returns the lexicographic
 ##  ordering on the elements of <A>D</A> with the ordering on the
 ##  generators as given.
 ##  </Description>
@@ -740,7 +740,7 @@ DeclareGlobalFunction( "IsBasicWreathLessThanOrEqual" );
 ##  or a list of the positions of these generators, in the desired order,
 ##  and let <A>levels</A> be a list of levels for the generators.
 ##  If <A>gens</A> is omitted then the default ordering is taken.
-##  <Ref Func="WreathProductOrdering"/> returns the wreath product
+##  <Ref Oper="WreathProductOrdering"/> returns the wreath product
 ##  ordering on the elements of <A>D</A> with the ordering on the
 ##  generators as given.
 ##  </Description>
@@ -777,7 +777,7 @@ DeclareProperty("IsWreathProductOrdering",IsOrdering);
 ##  <Description>
 ##  for a wreath product ordering <A>ord</A>, returns the levels
 ##  of the generators as given at creation
-##  (with respect to <Ref Func="OrderingOnGenerators"/>).
+##  (with respect to <Ref Attr="OrderingOnGenerators"/>).
 ##  <Example><![CDATA[
 ##  gap> f := FreeSemigroup(3);
 ##  <free semigroup on the generators [ s1, s2, s3 ]>

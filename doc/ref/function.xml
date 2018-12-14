@@ -107,7 +107,7 @@ returns the concatenation of the lists given as arguments.
 If the name of a function contains the word <Q><C>Of</C></Q> then the return 
 value is thought of as information deduced from the arguments.
 Usually such functions are attributes (see&nbsp;<Ref Sect="Attributes"/>).
-Examples are <Ref Oper="GeneratorsOfGroup"/>, which returns a list of 
+Examples are <Ref Attr="GeneratorsOfGroup"/>, which returns a list of 
 generators for the group entered as argument, or <Ref Func="DiagonalOfMat"/>.
 <P/>
 
@@ -141,15 +141,15 @@ which may, for example:
 <Item>
 know more about its own structure (and so support more operations) than its 
 input (e.g. if the elements of the collection form a group, 
-then this group can be constructed using <Ref Oper="AsGroup"/>);
+then this group can be constructed using <Ref Attr="AsGroup"/>);
 </Item>
 <Item>
-discard its additional structure (e.g. <Ref Oper="AsList"/> applied to a 
+discard its additional structure (e.g. <Ref Attr="AsList"/> applied to a 
 group will return a list of its elements); 
 </Item>
 <Item>
 contain all elements of the original object without duplicates
-(like e.g. <Ref Oper="AsSet"/> does if its argument is a list of elements
+(like e.g. <Ref Attr="AsSet"/> does if its argument is a list of elements
 from the same family);
 </Item>
 <Item>
@@ -179,7 +179,7 @@ omits the check.
 <P/>
 
 Needless to say, all these rules are not followed slavishly, for example 
-there is one operation <Ref Oper="Zero"/> instead of two operations
+there is one operation <Ref Attr="Zero"/> instead of two operations
 <C>ZeroOfElement</C> and <C>ZeroOfAdditiveGroup</C>.
 
 </Section>

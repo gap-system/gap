@@ -2141,13 +2141,13 @@ DeclareSynonym( "IsLieNilpotentElement", IsNilpotentElement);
 ##  </List>
 ##  We note that there are no methods to compute a grading of an 
 ##  arbitrary algebra; however some algebras get a natural grading when
-##  they are constructed (see <Ref Func="JenningsLieAlgebra"/>, 
+##  they are constructed (see <Ref Attr="JenningsLieAlgebra"/>, 
 ##  <Ref Func="NilpotentQuotientOfFpLieAlgebra"/>).
 ##  <P/>
 ##  We note also that these components may be not enough to handle 
 ##  the grading efficiently, and another record component may be needed.
 ##  For instance in a Lie algebra <M>L</M> constructed by 
-##  <Ref Func="JenningsLieAlgebra"/>, the length of the of the range
+##  <Ref Attr="JenningsLieAlgebra"/>, the length of the of the range
 ##  <C>[ Grading(L)!.min_degree .. Grading(L)!.max_degree ]</C> may be 
 ##  non-polynomial in the dimension of <M>L</M>.
 ##  To handle efficiently this situation, an optional component can be 

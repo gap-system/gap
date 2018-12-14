@@ -472,7 +472,7 @@ TCENUM:=GAPTCENUM;
 ##  <Index Key="TCENUM"><C>TCENUM</C></Index>
 ##  <Index Key="GAPTCENUM"><C>GAPTCENUM</C></Index>
 ##  is an internal function which is called by the functions
-##  <Ref Func="CosetTable"/>, <Ref Func="CosetTableInWholeGroup"/>
+##  <Ref Oper="CosetTable"/>, <Ref Attr="CosetTableInWholeGroup"/>
 ##  and others.
 ##  It is, in fact, the proper working horse that performs a Todd-Coxeter
 ##  coset enumeration.
@@ -623,11 +623,11 @@ DeclareGlobalFunction("StandardizeTable2");
 ##  It overrides a <C>silent</C> option
 ##  (see&nbsp;<Ref Func="CosetTableFromGensAndRels"/>) with <K>false</K>.
 ##  <P/>
-##  The variant <Ref Func="TryCosetTableInWholeGroup"/> does not override the
+##  The variant <Ref Oper="TryCosetTableInWholeGroup"/> does not override the
 ##  <C>silent</C> option with <K>false</K> in case a coset table is only
 ##  wanted if not too expensive.
 ##  It will store a result that is not <K>fail</K> in the attribute
-##  <Ref Func="CosetTableInWholeGroup"/>.
+##  <Ref Attr="CosetTableInWholeGroup"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -669,7 +669,7 @@ DeclareAttribute( "CosetTableNormalClosureInWholeGroup", IsGroup );
 ##  Traces the coset number <A>pt</A> under the word <A>word</A> through the
 ##  coset table <A>tab</A>.
 ##  (Note: <A>word</A> must be in the free group, use
-##  <Ref Func="UnderlyingElement" Label="fp group elements"/> if in doubt.)
+##  <Ref Oper="UnderlyingElement" Label="fp group elements"/> if in doubt.)
 ##  <Example><![CDATA[
 ##  gap> TracedCosetFpGroup(tab,UnderlyingElement(g.1),2);
 ##  4
@@ -695,7 +695,7 @@ DeclareGlobalFunction("TracedCosetFpGroup");
 ##  and returns the subgroup of <A>fpfam</A><C>!.wholeGroup</C> defined by
 ##  this coset table. The function will not check whether the coset table is
 ##  standardized.
-##  See also&nbsp;<Ref Func="CosetTableBySubgroup"/>.
+##  See also&nbsp;<Ref Oper="CosetTableBySubgroup"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -714,7 +714,7 @@ DeclareGlobalFunction("SubgroupOfWholeGroupByCosetTable");
 ##  <Description>
 ##  takes a FpGroup family <A>fpfam</A>, a finitely generated group <A>Q</A>
 ##  such that the fp generators of <A>fpfam</A> can be mapped by an
-##  epimorphism <M>phi</M> onto the <Ref Func="GeneratorsOfGroup"/> value
+##  epimorphism <M>phi</M> onto the <Ref Attr="GeneratorsOfGroup"/> value
 ##  of <A>Q</A>, and a subgroup <A>U</A> of <A>Q</A>.
 ##  It returns the subgroup of <A>fpfam</A><C>!.wholeGroup</C> which is
 ##  the full preimage of <A>U</A> under <M>phi</M>.
@@ -754,7 +754,7 @@ DeclareRepresentation("IsSubgroupOfWholeGroupByQuotientRep",
 ##
 ##  <Description>
 ##  if <A>U</A> is a subgroup in quotient representation
-##  (<Ref Func="IsSubgroupOfWholeGroupByQuotientRep"/>),
+##  (<Ref Filt="IsSubgroupOfWholeGroupByQuotientRep"/>),
 ##  this function returns the
 ##  defining homomorphism from the whole group to <A>U</A><C>!.quot</C>.
 ##  </Description>
@@ -773,10 +773,10 @@ DeclareGlobalFunction("DefiningQuotientHomomorphism");
 ##
 ##  <Description>
 ##  returns the same subgroup in the representation
-##  <Ref Func="AsSubgroupOfWholeGroupByQuotient"/>.
+##  <Ref Attr="AsSubgroupOfWholeGroupByQuotient"/>.
 ##  <P/>
 ##  See also <Ref Func="SubgroupOfWholeGroupByCosetTable"/>
-##  and <Ref Func="CosetTableBySubgroup"/>.
+##  and <Ref Oper="CosetTableBySubgroup"/>.
 ##  <P/>
 ##  This technique is used by &GAP; for example to represent the derived
 ##  subgroup, which is obtained from the quotient <M>G/G'</M>.
@@ -812,17 +812,17 @@ DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 ##  subgroup <A>H</A> of <A>G</A> and that have index less than or equal to
 ##  <A>index</A>.
 ##  <P/>
-##  <Ref Func="LowIndexSubgroupsFpGroupIterator"/> returns an iterator
+##  <Ref Oper="LowIndexSubgroupsFpGroupIterator"/> returns an iterator
 ##  (see&nbsp;<Ref Sect="Iterators"/>)
 ##  that can be used to run over these subgroups,
-##  and <Ref Func="LowIndexSubgroupsFpGroup"/> returns the list of these
+##  and <Ref Oper="LowIndexSubgroupsFpGroup"/> returns the list of these
 ##  subgroups.
 ##  If one is interested only in one or a few subgroups up to a given index
 ##  then preferably the iterator should be used.
 ##  <P/>
 ##  If the optional argument <A>excluded</A> has been specified, then it is
 ##  expected to be a list of words in the free generators of the underlying
-##  free group of <A>G</A>, and <Ref Func="LowIndexSubgroupsFpGroup"/>
+##  free group of <A>G</A>, and <Ref Oper="LowIndexSubgroupsFpGroup"/>
 ##  returns only those subgroups of index at most <A>index</A> that contain
 ##  <A>H</A>, but do not contain any conjugate of any of the group elements
 ##  defined by these words.
@@ -845,7 +845,7 @@ DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 ##  ]]></Example>
 ##  <P/>
 ##  By default, the algorithm computes no generating sets for the subgroups.
-##  This can be enforced with <Ref Func="GeneratorsOfGroup"/>:
+##  This can be enforced with <Ref Attr="GeneratorsOfGroup"/>:
 ##  <Example><![CDATA[
 ##  gap> GeneratorsOfGroup(li[2]);
 ##  [ a, b*a*b^-1 ]
@@ -895,7 +895,7 @@ DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 ##  ]]></Example>
 ##  <P/>
 ##  If a particular image group is desired, the operation
-##  <Ref Func="GQuotients"/>
+##  <Ref Oper="GQuotients"/>
 ##  (see&nbsp;<Ref Sect="Quotient Methods"/>) can be useful as well.
 ##  </Description>
 ##  </ManSection>
@@ -946,11 +946,11 @@ DeclareGlobalFunction("MostFrequentGeneratorFpGroup");
 ##  <Oper Name="FreeGeneratorsOfWholeGroup" Arg='U'/>
 ##
 ##  <Description>
-##  <Ref Func="FreeGeneratorsOfFpGroup"/> returns the underlying free
+##  <Ref Attr="FreeGeneratorsOfFpGroup"/> returns the underlying free
 ##  generators corresponding to the generators of the finitely presented
 ##  group <A>G</A> which must be a full FpGroup.
 ##  <P/>
-##  <Ref Func="FreeGeneratorsOfWholeGroup"/> also works for subgroups of an
+##  <Ref Oper="FreeGeneratorsOfWholeGroup"/> also works for subgroups of an
 ##  FpGroup and returns the free generators of the full group that defines
 ##  the family.
 ##  </Description>
@@ -973,7 +973,7 @@ DeclareOperation( "FreeGeneratorsOfWholeGroup",
 ##  <Description>
 ##  returns the relators of the finitely presented group <A>G</A> as words
 ##  in the free generators provided by the
-##  <Ref Func="FreeGeneratorsOfFpGroup"/> value of <A>G</A>.
+##  <Ref Attr="FreeGeneratorsOfFpGroup"/> value of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> f := FreeGroup( "a", "b" );;
 ##  gap> g := f / [ f.1^5, f.2^2, f.1^f.2*f.1 ];
@@ -1018,7 +1018,7 @@ DeclareAttribute("RelatorsOfFpGroup",IsSubgroupFpGroup and IsGroupOfFamily);
 ##  returns the underlying free group for the finitely presented group
 ##  <A>G</A>.
 ##  This is the group generated by the free generators provided by the
-##  <Ref Func="FreeGeneratorsOfFpGroup"/> value of <A>G</A>.
+##  <Ref Attr="FreeGeneratorsOfFpGroup"/> value of <A>G</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1232,7 +1232,7 @@ DeclareAttribute( "StoredExcludedOrders",IsSubgroupFpGroup,"mutable");
 ##  Note that the criterion uses the number of generators and
 ##  relations in the presentation of <A>G</A>.
 ##  Reduction of the presentation via Tietze transformations
-##  (<Ref Func="IsomorphismSimplifiedFpGroup"/>) therefore might
+##  (<Ref Attr="IsomorphismSimplifiedFpGroup"/>) therefore might
 ##  produce an isomorphic group, for which the criterion will work better.
 ##  <Example><![CDATA[
 ##  gap> g:=FibonacciGroup(2,9);

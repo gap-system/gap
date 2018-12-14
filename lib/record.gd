@@ -163,7 +163,7 @@ DeclareAttribute( "RecNames", IsRecord );
 ##  <P/>
 ##  For a record <A>comobj</A>,
 ##  <Ref Func="NamesOfComponents"/> returns the result of
-##  <Ref Func="RecNames"/>.
+##  <Ref Attr="RecNames"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

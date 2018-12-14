@@ -34,11 +34,11 @@ DeclareInfoClass( "InfoSchur" );
 ##  returns one (of possibly several) Schur covers of the group <A>G</A>.
 ##  <P/>
 ##  At the moment this cover is represented as a finitely presented group
-##  and <Ref Func="IsomorphismPermGroup"/> would be needed to convert it to a
+##  and <Ref Attr="IsomorphismPermGroup"/> would be needed to convert it to a
 ##  permutation group.
 ##  <P/>
 ##  If also the relation to <A>G</A> is needed,
-##  <Ref Func="EpimorphismSchurCover"/> should be used.
+##  <Ref Attr="EpimorphismSchurCover"/> should be used.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;
 ##  gap> epi:=EpimorphismSchurCover(g);
@@ -56,7 +56,7 @@ DeclareInfoClass( "InfoSchur" );
 ##  If the group becomes bigger, Schur Cover calculations might become
 ##  unfeasible.
 ##  <P/>
-##  There is another operation, <Ref Func="AbelianInvariantsMultiplier"/>,
+##  There is another operation, <Ref Attr="AbelianInvariantsMultiplier"/>,
 ##  which only returns the structure of the Schur Multiplier,
 ##  and which should work for larger groups as well.
 ##  </Description>
@@ -76,7 +76,7 @@ DeclareAttribute( "SchurCover", IsGroup );
 ##  <Description>
 ##  returns an epimorphism <M>epi</M> from a group <M>D</M> onto <A>G</A>.
 ##  The group <M>D</M> is one (of possibly several) Schur covers of <A>G</A>.
-##  The group <M>D</M> can be obtained as the <Ref Func="Source"/> value of
+##  The group <M>D</M> can be obtained as the <Ref Attr="Source"/> value of
 ##  <A>epi</A>.
 ##  The kernel of <M>epi</M> is the Schur multiplier of <A>G</A>.
 ##  If <A>pl</A> is given as a list of primes,

@@ -114,8 +114,8 @@ and the higher the level, the more information that will be displayed. At
 creation, an info class has level 0. By default, all built-in GAP info classes
 have level 0, except for the following info classes, which have level 1:
 <List>
-  <Item><Ref Func="InfoWarning"/>,</Item>
-  <Item><Ref Func="InfoPackageLoading"/>,</Item>
+  <Item><Ref InfoClass="InfoWarning"/>,</Item>
+  <Item><Ref InfoClass="InfoPackageLoading"/>,</Item>
   <Item><C>InfoDebug</C>,</Item>
   <Item><C>InfoPerformance</C>,</Item>
   <Item><C>InfoTempDirectories</C>,</Item>
@@ -266,7 +266,7 @@ redirected.
 is an info class to which general warnings are sent at level 1,
 which is its default level.
 More specialised warnings are shown via calls of <Ref Func="Info"/> at
-<Ref Func="InfoWarning"/> level 2,
+<Ref InfoClass="InfoWarning"/> level 2,
 e.g.&nbsp;information about the autoloading of &GAP; packages and the
 initial line matched when displaying an on-line help topic.
 </Description>

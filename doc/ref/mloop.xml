@@ -91,7 +91,7 @@ Syntax error: Expression expected
 The first line tells you what is wrong about the input, in this case the
 <C>*</C> operator takes two expressions as operands, so obviously the right
 one is missing.
-If the input came from a file (see&nbsp;<Ref Func="Read"/>), this line
+If the input came from a file (see&nbsp;<Ref Oper="Read"/>), this line
 will also contain the filename and the line number. The second line is a
 copy of the input. And the third line contains a caret pointing to the
 place in the previous line where &GAP; realized that something is wrong.
@@ -228,7 +228,7 @@ All three operations have corresponding operations which do not print
 anything to standard output but return the output as a string. These
 are <Ref Oper="DisplayString"/>, <Ref Oper="ViewString"/> and
 <Ref Oper="PrintString"/> (corresponding to <Ref Oper="PrintObj"/>).
-Additionally, there is <Ref Oper="String"/> which is very similar
+Additionally, there is <Ref Attr="String"/> which is very similar
 to <Ref Oper="PrintString"/> but does not insert control characters
 for line breaks.
 
@@ -254,7 +254,7 @@ following table:
     <HorLine/>
     <Row> <Item><Ref Oper="PrintString"/></Item> </Row>
     <HorLine/>
-    <Row> <Item><Ref Oper="String"/></Item> </Row>
+    <Row> <Item><Ref Attr="String"/></Item> </Row>
     <HorLine/>
 </Table>
 
@@ -309,7 +309,7 @@ A method for <Ref Oper="PrintObj"/> which prints the result of <Ref
 
 <Item>
     A method for <Ref Oper="PrintString"/> which returns the result
-    of <Ref Oper="String"/>
+    of <Ref Attr="String"/>
 </Item>
 
 </List>
@@ -323,7 +323,7 @@ This subsection describes what methods for printing and viewing one
 should implement for new &GAP; objects.
 
 <P/>
-One should at the very least install a <Ref Oper="String"/> method to
+One should at the very least install a <Ref Attr="String"/> method to
 allow printing. Using the standard delegations this enables a limited
 form of viewing, displaying and printing.
 
@@ -339,7 +339,7 @@ matters, one should install a separate <Ref Oper="PrintObj"/> method.
 
 <P/>
 One should usually install a <Ref Oper="ViewString"/> method,
-unless the above <Ref Oper="String"/> method is good enough for
+unless the above <Ref Attr="String"/> method is good enough for
 <Ref Oper="ViewObj"/> purposes. Performance and memory should never
 matter here, so it is usually unnecessary to install a separate <Ref
 Oper="ViewObj"/> method.
@@ -354,7 +354,7 @@ If the performance and memory usage for <Ref Oper="Display"/> matters,
 one should install a separate <Ref Oper="Display"/> method.
 
 <P/>
-Note that if only a <Ref Oper="String"/> method is installed, then
+Note that if only a <Ref Attr="String"/> method is installed, then
 <Ref Oper="ViewObj"/> works and <Ref Oper="ViewString"/> returns <Ref
 Var="DEFAULTVIEWSTRING"/>. Likewise, <Ref Oper="Display"/> works and
 <Ref Oper="DisplayString"/> returns <Ref Var="DEFAULTDISPLAYSTRING"/>. If
@@ -446,7 +446,7 @@ one can install additionally a method for <Ref Oper="ViewObj"/>.
 
 When setting up examples, in particular if for beginning users, it sometimes
 can be convenient to hide the structure behind a printing name. For many
-objects, such as groups, this can be done using <Ref Func="SetName"/>. If the
+objects, such as groups, this can be done using <Ref Oper="SetName"/>. If the
 objects however is represented internally, for example permutations
 representing group elements, this function is not applicable. Instead the
 function <Ref Func="SetNameObject"/> can be used to interface with the
@@ -544,7 +544,7 @@ If the break loop was entered because you interrupted &GAP;,
 then you can continue by typing <C>return;</C>.
 If the break loop was entered due to an error,
 you may have to modify the value of a variable before typing <C>return;</C>
-(see the example for&nbsp;<Ref Func="IsDenseList"/>) or you may have to
+(see the example for&nbsp;<Ref Filt="IsDenseList"/>) or you may have to
 return an object <A>obj</A>
 (by typing: <C>return <A>obj</A>;</C>) to continue the computation;
 in any case, the message printed on entering the break loop will 
@@ -593,7 +593,7 @@ In cases where a break loop is entered during a function that was  called
 with options (see Chapter&nbsp;<Ref Chap="Options Stack"/>),
 a <C>quit;</C> will also cause the
 options stack to be reset  and  an  <C>Info</C>-ed  warning  stating  this  is
-emitted at <Ref Var="InfoWarning"/> level 1
+emitted at <Ref InfoClass="InfoWarning"/> level 1
 (see Chapter&nbsp;<Ref Sect="Info Functions"/>).
 <!-- %This is actually controlled by -->
 <!-- % -->
@@ -1260,8 +1260,8 @@ respectively.
 
 In most cases, it is preferable to create longer input (in particular &GAP;
 programs) separately in an editor,
-and to read in the result via <Ref Func="Read"/>.
-Note that <Ref Func="Read"/> by default reads from the directory
+and to read in the result via <Ref Oper="Read"/>.
+Note that <Ref Oper="Read"/> by default reads from the directory
 in which &GAP; was started (respectively under Windows the directory
 containing the &GAP; binary),
 so you might have to give an absolute path to the file.
@@ -1353,8 +1353,8 @@ Note that those parameters can also be set with the command line options
 (see Section&nbsp;<Ref Sect="Command Line Options"/>).
 <P/>
 To check/change whether line breaking occurs for files and streams 
-see&nbsp;<Ref Func="PrintFormattingStatus"/>
-and&nbsp;<Ref Func="SetPrintFormattingStatus"/>.
+see&nbsp;<Ref Oper="PrintFormattingStatus"/>
+and&nbsp;<Ref Oper="SetPrintFormattingStatus"/>.
 <P/>
 The line length must be between <M>20</M> and <M>4096</M> characters
 (inclusive) and the number of lines must be at least <M>10</M>.
@@ -1398,7 +1398,7 @@ At the moment, teaching mode changes the following things
 <Mark>Prime Field Elements</Mark>
 <Item>
 Elements of fields of prime order are printed as
-<Ref Func="ZmodnZObj" Label="for two integers"/>
+<Ref Oper="ZmodnZObj" Label="for two integers"/>
 instead as power of a primitive root.
 </Item>
 <Mark>Quadratic Irrationalities</Mark>

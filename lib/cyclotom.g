@@ -25,15 +25,15 @@
 ##  <Description>
 ##  <Index Key="CyclotomicsFamily"><C>CyclotomicsFamily</C></Index>
 ##  Every object in the family <C>CyclotomicsFamily</C> lies in the category
-##  <Ref Func="IsCyclotomic"/>.
+##  <Ref Filt="IsCyclotomic"/>.
 ##  This covers integers, rationals, proper cyclotomics, the object
 ##  <Ref Var="infinity"/>,
 ##  and unknowns (see Chapter&nbsp;<Ref Chap="Unknowns"/>).
 ##  All these objects except <Ref Var="infinity"/> and unknowns
-##  lie also in the category <Ref Func="IsCyc"/>,
+##  lie also in the category <Ref Filt="IsCyc"/>,
 ##  <Ref Var="infinity"/> lies in (and can be detected from) the category
-##  <Ref Func="IsInfinity"/>,
-##  and unknowns lie in <Ref Func="IsUnknown"/>.
+##  <Ref Filt="IsInfinity"/>,
+##  and unknowns lie in <Ref Filt="IsUnknown"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> IsCyclotomic(0); IsCyclotomic(1/2*E(3)); IsCyclotomic( infinity );
@@ -86,8 +86,8 @@ DeclareCategoryCollections( "IsCyclotomicCollColl" );
 ##
 ##  <Description>
 ##  <Index Subkey="for a rational">test</Index>
-##  Every rational number lies in the category <Ref Func="IsRat"/>,
-##  which is a subcategory of <Ref Func="IsCyc"/>.
+##  Every rational number lies in the category <Ref Filt="IsRat"/>,
+##  which is a subcategory of <Ref Filt="IsCyc"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> IsRat( 2/3 );
@@ -115,8 +115,8 @@ DeclareCategoryKernel( "IsRat", IsCyc, IS_RAT );
 ##  <Filt Name="IsInt" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  Every rational integer lies in the category <Ref Func="IsInt"/>,
-##  which is a subcategory of <Ref Func="IsRat"/>.
+##  Every rational integer lies in the category <Ref Filt="IsInt"/>,
+##  which is a subcategory of <Ref Filt="IsRat"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -134,7 +134,7 @@ DeclareCategoryKernel( "IsInt", IsRat, IS_INT );
 ##
 ##  <Description>
 ##  Every positive rational number lies in the category
-##  <Ref Func="IsPosRat"/>.
+##  <Ref Filt="IsPosRat"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -151,7 +151,7 @@ DeclareCategory( "IsPosRat", IsRat );
 ##  <Filt Name="IsPosInt" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  Every positive integer lies in the category <Ref Func="IsPosInt"/>.
+##  Every positive integer lies in the category <Ref Filt="IsPosInt"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -169,7 +169,7 @@ DeclareSynonym( "IsPosInt", IsInt and IsPosRat );
 ##
 ##  <Description>
 ##  Every negative rational number lies in the category
-##  <Ref Func="IsNegRat"/>.
+##  <Ref Filt="IsNegRat"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -429,8 +429,8 @@ SetIsUFDFamily( CyclotomicsFamily, true );
 ##  They are larger or smaller than all other objects in this family
 ##  respectively.
 ##  <Ref Var="infinity"/> is mainly used as return value of operations such
-##  as <Ref Func="Size"/>
-##  and <Ref Func="Dimension"/> for infinite and infinite dimensional domains,
+##  as <Ref Attr="Size"/>
+##  and <Ref Attr="Dimension"/> for infinite and infinite dimensional domains,
 ##  respectively.
 ##  <P/>
 ##  Some arithmetic operations are provided for convenience when using
@@ -445,9 +445,9 @@ SetIsUFDFamily( CyclotomicsFamily, true );
 ##  Often it is useful to distinguish <Ref Var="infinity"/>
 ##  from <Q>proper</Q> cyclotomics.
 ##  For that, <Ref Var="infinity"/> lies in the category
-##  <Ref Func="IsInfinity"/> but not in <Ref Func="IsCyc"/>,
-##  and the other cyclotomics lie in the category <Ref Func="IsCyc"/> but not
-##  in <Ref Func="IsInfinity"/>.
+##  <Ref Filt="IsInfinity"/> but not in <Ref Filt="IsCyc"/>,
+##  and the other cyclotomics lie in the category <Ref Filt="IsCyc"/> but not
+##  in <Ref Filt="IsInfinity"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> s:= Size( Rationals );
@@ -670,11 +670,11 @@ DeclareAttribute( "Conductor", IsCyclotomicCollection );
 ##  of the <M>n</M>-th cyclotomic field
 ##  (see&nbsp;<Ref Sect="Galois Groups of Abelian Number Fields"/>);
 ##  to get the Galois automorphisms themselves,
-##  use <Ref Oper="GaloisGroup" Label="of field"/>.
+##  use <Ref Attr="GaloisGroup" Label="of field"/>.
 ##  <P/>
 ##  The <E>complex conjugate</E> of <A>cyc</A> is
 ##  <C>GaloisCyc( <A>cyc</A>, -1 )</C>,
-##  which can also be computed using <Ref Func="ComplexConjugate"/>.
+##  which can also be computed using <Ref Attr="ComplexConjugate"/>.
 ##  <P/>
 ##  For a list or matrix <A>list</A> of cyclotomics,
 ##  <Ref Oper="GaloisCyc" Label="for a list of cyclotomics"/> returns
@@ -797,7 +797,7 @@ BIND_GLOBAL( "DenominatorRat", DENOMINATOR_RAT );
 ##  and the sign of it is the product of the signs of <A>n</A> and <A>m</A>.
 ##  <P/>
 ##  <Ref Func="QuoInt"/> is used in a method for the general operation
-##  <Ref Func="EuclideanQuotient"/>.
+##  <Ref Oper="EuclideanQuotient"/>.
 ##  <Example><![CDATA[
 ##  gap> QuoInt(5,3);  QuoInt(-5,3);  QuoInt(5,-3);  QuoInt(-5,-3);
 ##  1
@@ -835,7 +835,7 @@ BIND_GLOBAL( "QuoInt", QUO_INT );
 ##  Dividing by <C>0</C> signals an error.
 ##  <P/>
 ##  <Ref Func="RemInt"/> is used in a method for the general operation
-##  <Ref Func="EuclideanRemainder"/>.
+##  <Ref Oper="EuclideanRemainder"/>.
 ##  <Example><![CDATA[
 ##  gap> RemInt(5,3);  RemInt(-5,3);  RemInt(5,-3);  RemInt(-5,-3);
 ##  2
@@ -977,10 +977,10 @@ InstallMethod( Int,
 ##  <Meth Name="String" Arg='cyc' Label="for a cyclotomic"/>
 ##  
 ##  <Description>
-##  The operation <Ref Func="String" Label="for a cyclotomic"/>
+##  The operation <Ref Meth="String" Label="for a cyclotomic"/>
 ##  returns for a cyclotomic <A>cyc</A> a string corresponding to the way
-##  the cyclotomic is printed by <Ref Func="ViewObj"/> and
-##  <Ref Func="PrintObj"/>.
+##  the cyclotomic is printed by <Ref Oper="ViewObj"/> and
+##  <Ref Oper="PrintObj"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> String( E(5)+1/2*E(5)^2 ); String( 17/3 );

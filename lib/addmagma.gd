@@ -45,22 +45,22 @@ DeclareCategory( "IsNearAdditiveMagma",
 ##
 ##  <Description>
 ##  A <E>near-additive magma-with-zero</E> in &GAP; is a near-additive magma
-##  <M>A</M> with an operation <C>0*</C> (or <Ref Func="Zero"/>)
+##  <M>A</M> with an operation <C>0*</C> (or <Ref Attr="Zero"/>)
 ##  that yields the zero element of <M>A</M>.
 ##  <P/>
 ##  So a near-additive magma-with-zero <A>A</A> does always contain a unique
 ##  additively neutral element <M>z</M>,
 ##  i.e., <M>z + a = a = a + z</M> holds for all <M>a \in A</M>
-##  (see&nbsp;<Ref Func="AdditiveNeutralElement"/>).
+##  (see&nbsp;<Ref Attr="AdditiveNeutralElement"/>).
 ##  This zero element <M>z</M> can be computed with the operation
-##  <Ref Func="Zero"/>, by applying this function to <M>A</M> or to any
+##  <Ref Attr="Zero"/>, by applying this function to <M>A</M> or to any
 ##  element <M>a</M> in <M>A</M>.
 ##  The zero element can be computed also as <C>0 * </C><M>a</M>,
 ##  for any <M>a</M> in <M>A</M>.
 ##  <P/>
 ##  <E>Note</E> that it may happen that
 ##  a near-additive magma containing a zero does <E>not</E> lie in the
-##  category <Ref Func="IsNearAdditiveMagmaWithZero"/>
+##  category <Ref Filt="IsNearAdditiveMagmaWithZero"/>
 ##  (see&nbsp;<Ref Sect="Domain Categories"/>).
 ##  </Description>
 ##  </ManSection>
@@ -85,13 +85,13 @@ DeclareCategory( "IsNearAdditiveMagmaWithZero",
 ##  <M>A</M> with an operation <C>-1*</C><M>: A \rightarrow A</M> that maps
 ##  each element <M>a</M> of <M>A</M> to its additive inverse
 ##  <C>-1*</C><M>a</M> (or <C>AdditiveInverse( </C><A>a</A><C> )</C>,
-##  see&nbsp;<Ref Func="AdditiveInverse"/>).
+##  see&nbsp;<Ref Attr="AdditiveInverse"/>).
 ##  <P/>
 ##  The addition <C>+</C> of <M>A</M> is assumed to be associative,
 ##  so a near-additive group is not more than a
 ##  <E>near-additive magma-with-inverses</E>.
-##  <Ref Func="IsNearAdditiveMagmaWithInverses"/> is just a synonym for
-##  <Ref Func="IsNearAdditiveGroup"/>,
+##  <Ref Filt="IsNearAdditiveMagmaWithInverses"/> is just a synonym for
+##  <Ref Filt="IsNearAdditiveGroup"/>,
 ##  and can be used alternatively in all function names involving the string
 ##  <C>"NearAdditiveGroup"</C>.
 ##  <P/>
@@ -123,7 +123,7 @@ DeclareSynonym( "IsNearAdditiveMagmaWithInverses", IsNearAdditiveGroup );
 ##  <M>a + b = b + a</M> holds.
 ##  <P/>
 ##  Note that the commutativity of the <E>multiplication</E> <C>*</C> in a
-##  multiplicative structure can be tested with <Ref Func="IsCommutative"/>.
+##  multiplicative structure can be tested with <Ref Prop="IsCommutative"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -165,8 +165,8 @@ InstallTrueMethod( IsAdditiveElementWithInverseCollection,
 ##  An <E>additive magma</E> in &GAP; is a domain <M>A</M> with an
 ##  associative and commutative addition
 ##  <C>+</C><M>: A \times A \rightarrow A</M>,
-##  see&nbsp;<Ref Func="IsNearAdditiveMagma"/> and
-##  <Ref Func="IsAdditivelyCommutative"/>.
+##  see&nbsp;<Ref Filt="IsNearAdditiveMagma"/> and
+##  <Ref Prop="IsAdditivelyCommutative"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -185,21 +185,21 @@ DeclareSynonym( "IsAdditiveMagma",
 ##
 ##  <Description>
 ##  An <E>additive magma-with-zero</E> in &GAP; is an additive magma <M>A</M>
-##  (see <Ref Func="IsAdditiveMagma"/> with an operation <C>0*</C>
-##  (or <Ref Func="Zero"/>) that yields the zero of <M>A</M>.
+##  (see <Ref Filt="IsAdditiveMagma"/> with an operation <C>0*</C>
+##  (or <Ref Attr="Zero"/>) that yields the zero of <M>A</M>.
 ##  <P/>
 ##  So an additive magma-with-zero <M>A</M> does always contain a unique
 ##  additively neutral element <M>z</M>, i.e.,
 ##  <M>z + a = a = a + z</M> holds for all <M>a \in A</M>
-##  (see&nbsp;<Ref Func="AdditiveNeutralElement"/>).
+##  (see&nbsp;<Ref Attr="AdditiveNeutralElement"/>).
 ##  This element <M>z</M> can be computed with the operation
-##  <Ref Func="Zero"/> as <C>Zero( </C><M>A</M><C> )</C>,
+##  <Ref Attr="Zero"/> as <C>Zero( </C><M>A</M><C> )</C>,
 ##  and <M>z</M> is also equal to <C>Zero( </C><M>a</M><C> )</C> and to
 ##  <C>0*</C><M>a</M> for each element <M>a</M> in <M>A</M>.
 ##  <P/>
 ##  <E>Note</E> that it may happen that
 ##  an additive magma containing a zero does <E>not</E> lie in the category
-##  <Ref Func="IsAdditiveMagmaWithZero"/>
+##  <Ref Filt="IsAdditiveMagmaWithZero"/>
 ##  (see&nbsp;<Ref Sect="Domain Categories"/>).
 ##  </Description>
 ##  </ManSection>
@@ -224,13 +224,13 @@ DeclareSynonym( "IsAdditiveMagmaWithZero",
 ##  with an operation <C>-1*</C><M>: A \rightarrow A</M> that maps
 ##  each element <M>a</M> of <M>A</M> to its additive inverse
 ##  <C>-1*</C><M>a</M> (or <C>AdditiveInverse( </C><M>a</M><C> )</C>,
-##  see&nbsp;<Ref Func="AdditiveInverse"/>).
+##  see&nbsp;<Ref Attr="AdditiveInverse"/>).
 ##  <P/>
 ##  The addition <C>+</C> of <M>A</M> is assumed to be commutative and
 ##  associative, so an additive group is not more than an
 ##  <E>additive magma-with-inverses</E>.
-##  <Ref Func="IsAdditiveMagmaWithInverses"/> is just a synonym for
-##  <Ref Func="IsAdditiveGroup"/>,
+##  <Ref Filt="IsAdditiveMagmaWithInverses"/> is just a synonym for
+##  <Ref Filt="IsAdditiveGroup"/>,
 ##  and can be used alternatively in all function names involving the string
 ##  <C>"AdditiveGroup"</C>.
 ##  <P/>
@@ -292,7 +292,7 @@ DeclareSynonym( "AdditiveMagma", NearAdditiveMagma );
 ##  returns the (near-)additive magma-with-zero <M>A</M> that is generated by
 ##  the elements in the list <A>gens</A>, that is,
 ##  the closure of <A>gens</A> under addition <C>+</C> and
-##  <Ref Func="Zero"/>.
+##  <Ref Attr="Zero"/>.
 ##  The family <A>Fam</A> of <M>A</M> can be entered as first argument;
 ##  this is obligatory if <A>gens</A> is empty
 ##  (and hence <M>A</M> is trivial).
@@ -316,8 +316,8 @@ DeclareSynonym( "AdditiveMagmaWithZero", NearAdditiveMagmaWithZero );
 ##  <Description>
 ##  returns the (near-)additive group <M>A</M> that is generated by
 ##  the elements in the list <A>gens</A>, that is,
-##  the closure of <A>gens</A> under addition <C>+</C>, <Ref Func="Zero"/>,
-##  and <Ref Func="AdditiveInverse"/>.
+##  the closure of <A>gens</A> under addition <C>+</C>, <Ref Attr="Zero"/>,
+##  and <Ref Attr="AdditiveInverse"/>.
 ##  The family <A>Fam</A> of <M>A</M> can be entered as first argument;
 ##  this is obligatory if <A>gens</A> is empty
 ##  (and hence <M>A</M> is trivial).
@@ -543,7 +543,7 @@ DeclareSynonymAttr( "GeneratorsOfAdditiveMagma",
 ##  is a list of elements of the near-additive magma-with-zero
 ##  <A>A</A> that generates <A>A</A> as a near-additive magma-with-zero,
 ##  that is,
-##  the closure of this list under addition and <Ref Func="Zero"/>
+##  the closure of this list under addition and <Ref Attr="Zero"/>
 ##  is <A>A</A>.
 ##  </Description>
 ##  </ManSection>
@@ -571,7 +571,7 @@ DeclareSynonymAttr( "GeneratorsOfAdditiveMagmaWithZero",
 ##  that generates <A>A</A> as a near-additive group,
 ##  that is, the closure of this list under addition,
 ##  taking the zero element, and taking additive inverses
-##  (see&nbsp;<Ref Func="AdditiveInverse"/>) is <A>A</A>.
+##  (see&nbsp;<Ref Attr="AdditiveInverse"/>) is <A>A</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -626,7 +626,7 @@ DeclareSynonymAttr( "TrivialSubadditiveMagmaWithZero",
 ##  can have an additive neutral element <M>z</M>;
 ##  in this case, <M>z</M> <E>cannot</E> be obtained as
 ##  <C>Zero( <A>A</A> )</C> or as <C>0*</C><M>a</M>
-##  for an element <M>a</M> in <A>A</A>, see&nbsp;<Ref Func="Zero"/>.
+##  for an element <M>a</M> in <A>A</A>, see&nbsp;<Ref Attr="Zero"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

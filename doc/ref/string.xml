@@ -66,7 +66,7 @@ gap> Concatenation( s1{ [ 1 .. 6 ] }, s1{ [ 1 .. 4 ] } );
 <Description>
 If a string is displayed by <Ref Func="View"/>,
 for example as result of an evaluation (see&nbsp;<Ref Sect="Main Loop"/>),
-or by <Ref Func="ViewObj"/> and <Ref Func="PrintObj"/>,
+or by <Ref Oper="ViewObj"/> and <Ref Oper="PrintObj"/>,
 it is displayed with enclosing doublequotes.
 (But note that there is an ambiguity for the empty string which is also an
 empty list of arbitrary &GAP; objects;
@@ -79,7 +79,7 @@ The difference between <Ref Func="ViewObj" Label="for a string"/> and
 notation, while  <Ref Func="ViewObj" Label="for a string"/> sends all
 printable characters to the output stream.
 -->
-The output of <Ref Func="PrintObj" Label="for a string"/> can be read back
+The output of <Ref Meth="PrintObj" Label="for a string"/> can be read back
 into &GAP;.
 <P/>
 Strings behave differently from other &GAP; objects with respect to

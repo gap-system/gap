@@ -48,14 +48,14 @@ DeclareInfoClass( "InfoPoly" );
 ##  <Description>
 ##  A rational function is an element of the quotient field of a polynomial
 ##  ring over an UFD. It is represented as a quotient of two polynomials,
-##  its numerator (see&nbsp;<Ref Func="NumeratorOfRationalFunction"/>) and
-##  its denominator (see&nbsp;<Ref Func="DenominatorOfRationalFunction"/>)
+##  its numerator (see&nbsp;<Ref Attr="NumeratorOfRationalFunction"/>) and
+##  its denominator (see&nbsp;<Ref Attr="DenominatorOfRationalFunction"/>)
 ##  <P/>
 ##  A polynomial function is an element of a polynomial ring (not
 ##  necessarily an UFD), or a rational function.
 ##  <P/>
-##  &GAP; considers <Ref Func="IsRationalFunction"/> as a subcategory of
-##  <Ref Func="IsPolynomialFunction"/>.
+##  &GAP; considers <Ref Filt="IsRationalFunction"/> as a subcategory of
+##  <Ref Filt="IsPolynomialFunction"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -97,10 +97,10 @@ DeclareCategory("IsRationalFunctionsFamilyElement",
 ##  <Filt Name="IsRationalFunctionsFamily" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  <Ref Func="IsPolynomialFunctionsFamily"/> is the category of a family of
+##  <Ref Filt="IsPolynomialFunctionsFamily"/> is the category of a family of
 ##  polynomials.
 ##  For families over an UFD, the category becomes
-##  <Ref Func="IsRationalFunctionsFamily"/> (as rational functions and
+##  <Ref Filt="IsRationalFunctionsFamily"/> (as rational functions and
 ##  quotients are only provided for families over an UFD.)
 ##  <!--  1996/10/14 fceller can this be done with <C>CategoryFamily</C>?-->
 ##  <P/>
@@ -145,8 +145,8 @@ DeclareCategory("IsRationalFunctionOverField", IsRationalFunction );
 ##  <Description>
 ##  creates a   family  containing rational functions  with   coefficients
 ##  in <A>fam</A>. 
-##  All elements of the <Ref Func="RationalFunctionsFamily"/> are
-##  rational functions (see&nbsp;<Ref Func="IsRationalFunction"/>).
+##  All elements of the <Ref Attr="RationalFunctionsFamily"/> are
+##  rational functions (see&nbsp;<Ref Filt="IsRationalFunction"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -289,7 +289,7 @@ DeclareAttribute( "AsPolynomial",
 ##  <Description>
 ##  A rational function is univariate if its numerator and its denominator
 ##  are both polynomials in the same one indeterminate. The attribute
-##  <Ref Func="IndeterminateNumberOfUnivariateRationalFunction"/> can be used to obtain
+##  <Ref Attr="IndeterminateNumberOfUnivariateRationalFunction"/> can be used to obtain
 ##  the number of this common indeterminate.
 ##  </Description>
 ##  </ManSection>
@@ -328,7 +328,7 @@ DeclareSynonymAttr("IsUnivariatePolynomial",
 ##  is a monomial. Therefore every univariate polynomial is a
 ##  Laurent polynomial.
 ##  <P/>
-##  The attribute <Ref Func="CoefficientsOfLaurentPolynomial"/> gives a
+##  The attribute <Ref Attr="CoefficientsOfLaurentPolynomial"/> gives a
 ##  compact representation as Laurent polynomial.
 ##  </Description>
 ##  </ManSection>
@@ -386,8 +386,8 @@ InstallTrueMethod( IsConstantRationalFunction,IsZeroRationalFunction );
 ##  <Description>
 ##  is the default representation of rational functions. A rational function
 ##  in this representation is defined by the attributes
-##  <Ref Func="ExtRepNumeratorRatFun"/> and
-##  <Ref Func="ExtRepDenominatorRatFun"/>,
+##  <Ref Attr="ExtRepNumeratorRatFun"/> and
+##  <Ref Attr="ExtRepDenominatorRatFun"/>,
 ##  the values of which are external representations of polynomials.
 ##  </Description>
 ##  </ManSection>
@@ -409,8 +409,8 @@ DeclareRepresentation("IsRationalFunctionDefaultRep",
 ##  <Description>
 ##  is the default representation of polynomials. A polynomial
 ##  in this representation is defined by the components
-##  and <Ref Func="ExtRepNumeratorRatFun"/> where
-##  <Ref Func="ExtRepNumeratorRatFun"/> is the
+##  and <Ref Attr="ExtRepNumeratorRatFun"/> where
+##  <Ref Attr="ExtRepNumeratorRatFun"/> is the
 ##  external representation of the polynomial.
 ##  </Description>
 ##  </ManSection>
@@ -432,8 +432,8 @@ DeclareRepresentation("IsPolynomialDefaultRep",
 ##  <Description>
 ##  This representation is used for Laurent polynomials and univariate
 ##  polynomials. It represents a Laurent polynomial via the attributes
-##  <Ref Func="CoefficientsOfLaurentPolynomial"/> and
-##  <Ref Func="IndeterminateNumberOfLaurentPolynomial"/>.
+##  <Ref Attr="CoefficientsOfLaurentPolynomial"/> and
+##  <Ref Attr="IndeterminateNumberOfLaurentPolynomial"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -550,10 +550,10 @@ DeclareOperation("ZeroCoefficientRatFun",[IsPolynomialFunction]);
 ##
 ##  <Description>
 ##  returns the external representation of a polynomial. The difference to
-##  <Ref Func="ExtRepNumeratorRatFun"/> is that rational functions might know
+##  <Ref Attr="ExtRepNumeratorRatFun"/> is that rational functions might know
 ##  to be a polynomial but can still have a non-vanishing denominator.
 ##  In this case
-##  <Ref Func="ExtRepPolynomialRatFun"/> has to call a quotient routine.
+##  <Ref Attr="ExtRepPolynomialRatFun"/> has to call a quotient routine.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -606,12 +606,12 @@ DeclareSynonym( "CoefficientsOfUnivariateLaurentPolynomial",
 ##  number of a given indeterminate.)
 ##  <P/>
 ##  A constant rational function might not possess an indeterminate number. In
-##  this case <Ref Func="IndeterminateNumberOfUnivariateRationalFunction"/>
+##  this case <Ref Attr="IndeterminateNumberOfUnivariateRationalFunction"/>
 ##  will default to a value of 1.
 ##  Therefore two univariate polynomials may be considered to be in the same
 ##  univariate polynomial ring if their indeterminates have the same number
 ##  or one if of them is constant.  (see also&nbsp;<Ref Func="CIUnivPols"/>
-##  and&nbsp;<Ref Func="IsLaurentPolynomialDefaultRep"/>).
+##  and&nbsp;<Ref Filt="IsLaurentPolynomialDefaultRep"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -622,12 +622,12 @@ DeclareAttribute( "IndeterminateNumberOfUnivariateRationalFunction",
 
 ##  <#GAPDoc Label="[2]{ratfun}">
 ##  Algorithms should use only the attributes
-##  <Ref Func="ExtRepNumeratorRatFun"/>,
-##  <Ref Func="ExtRepDenominatorRatFun"/>,
-##  <Ref Func="ExtRepPolynomialRatFun"/>,
-##  <Ref Func="CoefficientsOfLaurentPolynomial"/> and
+##  <Ref Attr="ExtRepNumeratorRatFun"/>,
+##  <Ref Attr="ExtRepDenominatorRatFun"/>,
+##  <Ref Attr="ExtRepPolynomialRatFun"/>,
+##  <Ref Attr="CoefficientsOfLaurentPolynomial"/> and
 ##  &ndash;if the univariate function is not constant&ndash;
-##  <Ref Func="IndeterminateNumberOfUnivariateRationalFunction"/> as the
+##  <Ref Attr="IndeterminateNumberOfUnivariateRationalFunction"/> as the
 ##  low-level interface to work with a polynomial.
 ##  They should not refer to the actual representation used.
 ##  <#/GAPDoc>
@@ -666,12 +666,12 @@ DeclareSynonym( "UnivariateLaurentPolynomialByCoefficients",
 ##
 ##  <Description>
 ##  creates a Laurent polynomial in the family <A>fam</A> with [<A>cofs</A>,<A>val</A>] as
-##  value of <Ref Func="CoefficientsOfLaurentPolynomial"/>. No coefficient shifting is
+##  value of <Ref Attr="CoefficientsOfLaurentPolynomial"/>. No coefficient shifting is
 ##  performed.  This is the lowest level function to create a Laurent
 ##  polynomial but will rely on the coefficients being shifted properly and
 ##  will not perform any tests. Unless this is guaranteed for the
 ##  parameters,
-##  <Ref Func="LaurentPolynomialByCoefficients"/> should be used.
+##  <Ref Oper="LaurentPolynomialByCoefficients"/> should be used.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -691,7 +691,7 @@ DeclareSynonym("LaurentPolynomialByExtRep",LaurentPolynomialByExtRepNC);
 ##
 ##  <Description>
 ##  constructs a polynomial
-##  (in the representation <Ref Func="IsPolynomialDefaultRep"/>)
+##  (in the representation <Ref Filt="IsPolynomialDefaultRep"/>)
 ##  in the rational function family <A>rfam</A>, the polynomial itself is given
 ##  by the external representation <A>extrep</A>.
 ##  <P/>
@@ -729,7 +729,7 @@ DeclareGlobalFunction( "PolynomialByExtRepNC" );
 ##
 ##  <Description>
 ##  constructs a rational function (in the representation
-##  <Ref Func="IsRationalFunctionDefaultRep"/>) in the rational function
+##  <Ref Filt="IsRationalFunctionDefaultRep"/>) in the rational function
 ##  family <A>rfam</A>,
 ##  the rational function itself is given by the external representations
 ##  <A>num</A> and <A>den</A> for numerator and denominator.
@@ -810,7 +810,7 @@ DeclareGlobalFunction( "RationalFunctionByExtRepWithCancellation" );
 ##  <Description>
 ##  returns the indeterminate in which the univariate rational
 ##  function <A>rfun</A> is expressed. (cf.
-##  <Ref Func="IndeterminateNumberOfUnivariateRationalFunction"/>.)
+##  <Ref Attr="IndeterminateNumberOfUnivariateRationalFunction"/>.)
 ##  <Example><![CDATA[
 ##  gap> IndeterminateNumberOfUnivariateRationalFunction(z);
 ##  3
@@ -859,14 +859,14 @@ DeclareSynonymAttr("IndeterminateNumberOfUnivariateLaurentPolynomial",
 ##  <Oper Name="SetIndeterminateName" Arg='fam,nr,name'/>
 ##
 ##  <Description>
-##  <Ref Func="SetIndeterminateName"/> assigns the name <A>name</A> to
+##  <Ref Oper="SetIndeterminateName"/> assigns the name <A>name</A> to
 ##  indeterminate <A>nr</A> in the rational functions family <A>fam</A>.
 ##  It issues an error if the indeterminate was already named.
 ##  <P/>
-##  <Ref Func="IndeterminateName"/> returns the name of the <A>nr</A>-th
+##  <Ref Oper="IndeterminateName"/> returns the name of the <A>nr</A>-th
 ##  indeterminate (and returns <K>fail</K> if no name has been assigned).
 ##  <P/>
-##  <Ref Func="HasIndeterminateName"/> tests whether indeterminate <A>nr</A>
+##  <Ref Oper="HasIndeterminateName"/> tests whether indeterminate <A>nr</A>
 ##  has already been assigned a name.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -911,7 +911,7 @@ DeclareOperation( "SetIndeterminateName",
 ##  <Attr Name="CoefficientsOfUnivariatePolynomial" Arg='pol'/>
 ##
 ##  <Description>
-##  <Ref Func="CoefficientsOfUnivariatePolynomial"/> returns the coefficient
+##  <Ref Attr="CoefficientsOfUnivariatePolynomial"/> returns the coefficient
 ##  list of the polynomial <A>pol</A>, sorted in ascending order.
 ##  (It returns the empty list if <A>pol</A> is 0.)
 ##  </Description>
@@ -971,7 +971,7 @@ BindGlobal("DEGREE_ZERO_LAURPOL",Ninfinity);
 ##  <A>fam</A> and in the indeterminate <A>ind</A> with the coefficients given by
 ##  <A>coefs</A>. This function should be used in algorithms to create
 ##  polynomials as it avoids overhead associated with
-##  <Ref Func="UnivariatePolynomial"/>.
+##  <Ref Oper="UnivariatePolynomial"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1013,7 +1013,7 @@ DeclareOperation( "UnivariatePolynomial",
 ##  polynomials <A>n</A> and <A>d</A> and a valuation <A>val</A> such that
 ##  <M><A>rfun</A> = x^{<A>val</A>} \cdot <A>n</A> / <A>d</A></M>
 ##  where <M>x</M> is the variable with the number given by
-##  <Ref Func="IndeterminateNumberOfUnivariateRationalFunction"/>.
+##  <Ref Attr="IndeterminateNumberOfUnivariateRationalFunction"/>.
 ##  Numerator and denominator are guaranteed to be cancelled.
 ##  </Description>
 ##  </ManSection>
@@ -1087,7 +1087,7 @@ DeclareOperation( "UnivariateRationalFunctionByCoefficients",
 ##  than one would expect:
 ##  For example for a matrix <M>M</M>, the values <M>M+M^0</M> and <M>M+1</M>
 ##  are <E>different</E>.
-##  As <Ref Func="Value" Label="for rat. function, a list of indeterminates, a value (and a one)"/>
+##  As <Ref Oper="Value" Label="for rat. function, a list of indeterminates, a value (and a one)"/>
 ##  defaults to the one of the coefficient ring,
 ##  when evaluating matrices in polynomials always the correct <A>one</A>
 ##  should be given!
@@ -1230,7 +1230,7 @@ DeclareOperation( "LeadingMonomial", [ IsPolynomialFunction ] );
 ##
 ##  <Description>
 ##  returns the leading coefficient (that is the coefficient of the leading
-##  monomial, see&nbsp;<Ref Func="LeadingMonomial"/>) of the polynomial <A>pol</A>.
+##  monomial, see&nbsp;<Ref Oper="LeadingMonomial"/>) of the polynomial <A>pol</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1270,7 +1270,7 @@ DeclareGlobalFunction("LeadingMonomialPosExtRep");
 ##  <Oper Name="PolynomialCoefficientsOfPolynomial" Arg='pol, ind'/>
 ##
 ##  <Description>
-##  <Ref Func="PolynomialCoefficientsOfPolynomial"/> returns the
+##  <Ref Oper="PolynomialCoefficientsOfPolynomial"/> returns the
 ##  coefficient list (whose entries are polynomials not involving the
 ##  indeterminate <A>ind</A>) describing the polynomial <A>pol</A> viewed as
 ##  a polynomial in <A>ind</A>. 
@@ -1322,7 +1322,7 @@ DeclareOperation("DegreeIndeterminate",[IsPolynomial,IsPosInt]);
 ##
 ##  <Description>
 ##  If <A>ratfun</A> is a univariate rational function then
-##  <Ref Func="Derivative"/> returns the <E>derivative</E> of <A>ufun</A> by
+##  <Ref Attr="Derivative"/> returns the <E>derivative</E> of <A>ufun</A> by
 ##  its indeterminate.
 ##  For a rational function <A>ratfun</A>,
 ##  the derivative by the indeterminate <A>ind</A> is returned,
@@ -1379,7 +1379,7 @@ DeclareOperation( "Resultant",[ IsPolynomial, IsPolynomial, IsPosInt]);
 ##
 ##  <Description>
 ##  If <A>pol</A> is a univariate polynomial then
-##  <Ref Func="Discriminant"/> returns the <E>discriminant</E> of <A>pol</A>
+##  <Ref Oper="Discriminant"/> returns the <E>discriminant</E> of <A>pol</A>
 ##  by its indeterminate.
 ##  The two-argument form returns the discriminant of a polynomial <A>pol</A>
 ##  by the indeterminate number <A>ind</A>, regarding <A>pol</A> as univariate

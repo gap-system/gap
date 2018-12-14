@@ -94,14 +94,14 @@ gap> a:=g/f;
 <P/>
 Note that the quotient <C><A>f</A>/<A>g</A></C> of two polynomials might be represented as
 a rational function again. If <A>g</A> is known to divide <A>f</A> the call
-<C>Quotient(<A>f</A>,<A>g</A>)</C> (see&nbsp;<Ref Func="Quotient"/>) should be used instead.
+<C>Quotient(<A>f</A>,<A>g</A>)</C> (see&nbsp;<Ref Oper="Quotient"/>) should be used instead.
 <P/>
 <Index Subkey="Laurent polynomials">mod</Index>
 <C><A>f</A> mod <A>g</A></C>
 <!-- %\><C><A>f</A> mod <A>int</A></C>{mod!integer polynomial} -->
 <P/>
 For two Laurent polynomials <A>f</A> and <A>g</A>, <C><A>f</A> mod <A>g</A></C> is the Euclidean
-remainder (see&nbsp;<Ref Func="EuclideanRemainder"/>) of <A>f</A> modulo <A>g</A>.
+remainder (see&nbsp;<Ref Oper="EuclideanRemainder"/>) of <A>f</A> modulo <A>g</A>.
 <!-- % For a polynomial <A>f</A> over the integers and an integer <A>int</A>, <C><A>f</A> mod <A>int</A></C> -->
 <!-- % is the polynomial over the integers obtained by reducing the coefficients -->
 <!-- % of <A>f</A> modulo <A>int</A>. -->
@@ -116,8 +116,8 @@ represented as a quotient of coprime polynomials. In certain unfortunate
 situations this might lead to a degree explosion.
 To ensure cancellation you can use
 <Ref Func="Gcd" Label="for (a ring and) several elements"/> on the
-<Ref Func="NumeratorOfRationalFunction"/> and
-<Ref Func="DenominatorOfRationalFunction"/> values
+<Ref Attr="NumeratorOfRationalFunction"/> and
+<Ref Attr="DenominatorOfRationalFunction"/> values
 of a given rational function.
 <P/>
 All polynomials as well as all the univariate polynomials in the same
@@ -250,9 +250,9 @@ We remark that some functions for multivariate polynomials (which will be
 defined in the following sections) permit a different syntax for univariate
 polynomials which drops the requirement to specify the indeterminate.
 Examples are
-<Ref Func="Value" Label="for rat. function, a list of indeterminates, a value (and a one)"/>,
-<Ref Func="Discriminant"/>, <Ref Func="Derivative"/>,
-<Ref Func="LeadingCoefficient"/> and <Ref Func="LeadingMonomial"/>:
+<Ref Oper="Value" Label="for rat. function, a list of indeterminates, a value (and a one)"/>,
+<Ref Oper="Discriminant"/>, <Ref Attr="Derivative"/>,
+<Ref Oper="LeadingCoefficient"/> and <Ref Oper="LeadingMonomial"/>:
 <Example><![CDATA[
 gap> p:=UnivariatePolynomial(Rationals,[1,2,3,4],1);
 4*x^3+3*x^2+2*x+1
@@ -327,7 +327,7 @@ and over algebraic extensions of these
 <Description>
 returns a list of the irreducible factors of the polynomial
 <A>poly</A> in the polynomial ring <A>R</A>. (That is factors over the
-<Ref Func="CoefficientsRing"/> value of <A>R</A>.)
+<Ref Attr="CoefficientsRing"/> value of <A>R</A>.)
 <P/>
 For univariate factorizations, it is possible to pass a record <A>opt</A>
 as a third argument. This record can contain the following components:
@@ -449,7 +449,7 @@ If you need to work with a polynomial ring and its indeterminates the
 following two approaches will produce a ring that contains given variables
 (see section&nbsp;<Ref Sect="Indeterminates"/> for details about the internal numbering):
 Either, first create the ring and then get the indeterminates with
-<Ref Func="IndeterminatesOfPolynomialRing"/>. 
+<Ref Attr="IndeterminatesOfPolynomialRing"/>. 
 <P/>
 <Example><![CDATA[
 gap> r := PolynomialRing(Rationals,["a","b"]);;
@@ -538,8 +538,8 @@ If <M>a &lt; b</M> then <M>ca &lt; cb</M> for all monomials
 <M>a, b</M> and <M>c</M>.
 <P/>
 Each monomial ordering provides the two functions
-<Ref Func="MonomialComparisonFunction"/> and
-<Ref Func="MonomialExtrepComparisonFun"/> to compare monomials.
+<Ref Attr="MonomialComparisonFunction"/> and
+<Ref Attr="MonomialExtrepComparisonFun"/> to compare monomials.
 These functions work as <Q>is less than</Q>,
 i.e. they return <K>true</K> if and only if the left argument is smaller.
 <P/>
@@ -668,8 +668,8 @@ They are represented by lists, using numbers
 <#Include Label="[1]{ratfun}">
 <P/>
 The attributes that give a representation of a a rational function as a Laurent polynomial are
-<Ref Func="CoefficientsOfLaurentPolynomial"/>
-and <Ref Func="IndeterminateNumberOfUnivariateRationalFunction"/>.
+<Ref Attr="CoefficientsOfLaurentPolynomial"/>
+and <Ref Attr="IndeterminateNumberOfUnivariateRationalFunction"/>.
 <P/>
 <#Include Label="[2]{ratfun}">
 <#Include Label="IsRationalFunctionDefaultRep">

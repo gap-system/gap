@@ -17,13 +17,13 @@ Of course the general functionality for fields
 to finite fields.
 <P/>
 In the following, the term <E>finite field element</E> is used to denote
-&GAP; objects in the category <Ref Func="IsFFE"/>,
+&GAP; objects in the category <Ref Filt="IsFFE"/>,
 and <E>finite field</E> means a field consisting of such elements.
 Note that in principle we must distinguish these fields from (abstract)
 finite fields.
 For example, the image of the embedding of a finite field into a field of
 rational functions in the same characteristic is of course a finite field
-but its elements are not in <Ref Func="IsFFE"/>,
+but its elements are not in <Ref Filt="IsFFE"/>,
 and in fact &GAP; does currently not support such fields.
 <P/>
 Special representations exist for row vectors and matrices over small
@@ -137,8 +137,8 @@ true
 Note from the second example above, that these elements are not always
 written over the smallest possible field before being output.
 <P/>
-The <Ref Func="ViewObj" Label="for a ffe"/> and
-<Ref Func="Display" Label="for a ffe"/> methods
+The <Ref Meth="ViewObj" Label="for a ffe"/> and
+<Ref Meth="Display" Label="for a ffe"/> methods
 for these large finite field elements use a slightly more compact,
 but mathematically equivalent representation.
 The primitive root is represented by <C>z</C>; its <M>i</M>-th power by
@@ -149,8 +149,8 @@ gap> Z(5,20)^100;
 z2+z4+4z5+2z6+z8+3z9+4z10+3z12+z13+2z14+4z16+3z17+2z18+2z19
 ]]></Example>
 <P/>
-This output format is always used for <Ref Func="Display" Label="for a ffe"/>.
-For <Ref Func="ViewObj" Label="for a ffe"/> it is used only if its length
+This output format is always used for <Ref Meth="Display" Label="for a ffe"/>.
+For <Ref Meth="ViewObj" Label="for a ffe"/> it is used only if its length
 would not exceed the number of lines specified in the user preference 
 <C>ViewLength</C> (see <Ref Func="SetUserPreference"/>. Longer output is 
 replaced by <C>&lt;&lt;an element of GF(<A>p</A>, <A>d</A>)>></C>.

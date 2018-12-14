@@ -138,7 +138,7 @@ to create a group of residue
 classes or a group of matrices of residue classes.
 This is because &GAP; assumes that group elements can be multiplied via
 the infix operator <C>*</C> (equivalently,
-via the operation <Ref Func="\*"/>).
+via the operation <Ref Oper="\*"/>).
 Note that in fact the multiplication of two lists <M>[ k_1, n ]</M>,
 <M>[ k_2, n ]</M> is defined, but we have
 <M>[ k_1, n ] * [ k_2, n ] = k_1 * k_2 + n * n</M>, the standard scalar
@@ -221,13 +221,13 @@ gap> cat:= CategoryCollections( cat );;
 <P/>
 So all elements in the rings <M>&ZZ; / n&ZZ;</M> will lie in the category
 <C>IsMyZmodnZObj</C>, which is a subcategory of
-<Ref Func="IsScalar"/>.
+<Ref Filt="IsScalar"/>.
 The latter means that one can add, subtract, multiply and divide
 two such elements that lie in the same family,
 with the obvious restriction that the second operand of a division
 must be invertible.
 (The name <C>IsMyZmodnZObj</C> is chosen because
-<Ref Func="IsZmodnZObj"/> is already
+<Ref Filt="IsZmodnZObj"/> is already
 defined in &GAP;, for an implementation of residue classes that is
 very similar to the one developed in this manual chapter.
 Using this different name, one can simply enter the &GAP; code of this
@@ -372,12 +372,12 @@ When storing <C>n</C> with the <C>!.</C> operator as value of the component
 <C>modulus</C>, we used that all families are in fact represented as
 component objects (see&nbsp;<Ref Sect="Component Objects"/>).
 <P/>
-We see that we can use <Ref Func="RingWithOneByGenerators"/>
+We see that we can use <Ref Oper="RingWithOneByGenerators"/>
 to construct a ring with one if we have the appropriate generators.
-The construction via <Ref Func="RingWithOneByGenerators"/>
+The construction via <Ref Oper="RingWithOneByGenerators"/>
 makes sure
-that <Ref Func="IsRingWithOne"/>
-(and <Ref Func="IsRing"/>) is <K>true</K> for each output of
+that <Ref Filt="IsRingWithOne"/>
+(and <Ref Filt="IsRing"/>) is <K>true</K> for each output of
 <C>MyZmodnZ</C>.
 So the main problem is to create the identity element of the ring,
 which in our case suffices to generate the ring.
@@ -393,11 +393,11 @@ Giving a name to the ring causes that it will be printed
 via printing the name.
 (By the way:
 This name <C>(Integers mod <A>n</A>)</C> looks like a call to
-<Ref Func="\mod"/>
+<Ref Oper="\mod"/>
 with the arguments <Ref Var="Integers"/> and <A>n</A>;
 a construction of the ring via this call seems to be more natural than
 by calling <C>MyZmodnZ</C>; later we shall install a
-<Ref Func="\mod"/> method
+<Ref Oper="\mod"/> method
 in order to admit this construction.)
 <P/>
 Now we can read the above code into &GAP;,
@@ -417,9 +417,9 @@ explicitly stored in the ring.
 Already the questions whether the ring is finite and how many elements
 it has, cannot be answered by &GAP;.
 Clearly we know the answers, and we could store them in the ring,
-by setting the value of the property <Ref Func="IsFinite"/>
+by setting the value of the property <Ref Prop="IsFinite"/>
 to <K>true</K> and the value of the attribute
-<Ref Func="Size"/> to <A>n</A>
+<Ref Attr="Size"/> to <A>n</A>
 (the argument of the call to <C>MyZmodnZ</C>).
 If we do not want to do so then &GAP; could only try to find out the number
 of elements of the ring via forming the closure of the generators
@@ -432,26 +432,26 @@ operations if the elements are to behave as we want.
 <P/>
 We start with a method for showing elements nicely on the screen.
 There are different operations for this purpose.
-One of them is <Ref Func="PrintObj"/>,
+One of them is <Ref Oper="PrintObj"/>,
 which is called for each argument in an explicit call to
 <Ref Func="Print"/>.
-Another one is <Ref Func="ViewObj"/>,
+Another one is <Ref Oper="ViewObj"/>,
 which is called in the read-eval-print loop for each object.
-<Ref Func="ViewObj"/> shall produce short and human readable
+<Ref Oper="ViewObj"/> shall produce short and human readable
 information about the object in question,
-whereas <Ref Func="PrintObj"/> shall produce information that
+whereas <Ref Oper="PrintObj"/> shall produce information that
 may be longer and is (if reasonable) readable by &GAP;.
 We cannot satisfy the latter requirement for a
-<Ref Func="PrintObj"/> method
+<Ref Oper="PrintObj"/> method
 because there is no way to make a family &GAP; readable.
 So we decide to display the expression <C>( k mod n )</C> for an object
 that is given by the residue <C>k</C> and the modulus <C>n</C>,
-which would be fine as a <Ref Func="ViewObj"/> method.
-Since the default for <Ref Func="ViewObj"/> is to call
-<Ref Func="PrintObj"/>,
-and since no other <Ref Func="ViewObj"/> method is applicable
+which would be fine as a <Ref Oper="ViewObj"/> method.
+Since the default for <Ref Oper="ViewObj"/> is to call
+<Ref Oper="PrintObj"/>,
+and since no other <Ref Oper="ViewObj"/> method is applicable
 to our elements,
-we need only a <Ref Func="PrintObj"/> method.
+we need only a <Ref Oper="PrintObj"/> method.
 <P/>
 <Example><![CDATA[
 gap> InstallMethod( PrintObj,
@@ -463,7 +463,7 @@ gap> InstallMethod( PrintObj,
 ]]></Example>
 <P/>
 So we installed a method for the operation
-<Ref Func="PrintObj"/> (first argument),
+<Ref Oper="PrintObj"/> (first argument),
 and we gave it a suitable information message (second argument),
 see&nbsp;<Ref Sect="ApplicableMethod"/> and&nbsp;<Ref Sect="Tracing Methods"/> for applications of
 this information string.
@@ -551,28 +551,28 @@ gap> InstallMethod( AdditiveInverseOp,
 ]]></Example>
 <P/>
 Here the new approach starts to pay off.
-The method for the operation <Ref Func="\+"/> allows us
+The method for the operation <Ref Oper="\+"/> allows us
 to use the infix operator <C>+</C> for residue classes.
-The method for <Ref Func="ZeroOp"/> is used when we call
-this operation or the attribute <Ref Func="Zero"/> explicitly,
-and <Ref Func="ZeroOp"/> it is also used when we ask for
+The method for <Ref Oper="ZeroOp"/> is used when we call
+this operation or the attribute <Ref Attr="Zero"/> explicitly,
+and <Ref Oper="ZeroOp"/> it is also used when we ask for
 <C>0 * <A>rescl</A></C>, where <A>rescl</A> is a residue class.
 <P/>
-(Note that <Ref Func="Zero"/> and
-<Ref Func="ZeroOp"/> are distinguished
+(Note that <Ref Attr="Zero"/> and
+<Ref Oper="ZeroOp"/> are distinguished
 because <C>0 * <A>obj</A></C> is guaranteed to return a <E>mutable</E> result
 whenever a mutable version of this result exists in &GAP;
 &ndash;for example if <A>obj</A> is a matrix&ndash;
-whereas <Ref Func="Zero"/> is an attribute and therefore
+whereas <Ref Attr="Zero"/> is an attribute and therefore
 returns <E>immutable</E> results;
 for our example there is no difference since the residue classes are
 always immutable,
 nevertheless we have to install the method for
-<Ref Func="ZeroOp"/>.
-The same holds for <Ref Func="AdditiveInverse"/>,
-<Ref Func="One"/>, and <Ref Func="Inverse"/>.)
+<Ref Oper="ZeroOp"/>.
+The same holds for <Ref Attr="AdditiveInverse"/>,
+<Ref Attr="One"/>, and <Ref Attr="Inverse"/>.)
 <P/>
-Similarly, <Ref Func="AdditiveInverseOp"/> can be either
+Similarly, <Ref Oper="AdditiveInverseOp"/> can be either
 called directly or via the unary <C>-</C> operator;
 so we can compute the additive inverse of the
 residue class <A>rescl</A> as <C>-<A>rescl</A></C>.
@@ -632,11 +632,11 @@ Similarly we install the methods dealing with the multiplicative
 structure.
 We need methods to multiply two of our objects,
 and to compute identity and inverse.
-The operation <Ref Func="OneOp"/> is called when we ask for
+The operation <Ref Oper="OneOp"/> is called when we ask for
 <C><A>rescl</A>^0</C>,
-and <Ref Func="InverseOp"/> is called when we ask for
+and <Ref Oper="InverseOp"/> is called when we ask for
 <C><A>rescl</A>^-1</C>.
-Note that the method for <Ref Func="InverseOp"/> returns
+Note that the method for <Ref Oper="InverseOp"/> returns
 <K>fail</K> if the argument is not invertible.
 <P/>
 <Example><![CDATA[
@@ -707,18 +707,18 @@ gap> z^-1;
 <P/>
 There are some other operations in &GAP; that we may want to accept
 our elements as arguments.
-An example is the operation <Ref Func="Int"/> that returns,
+An example is the operation <Ref Attr="Int"/> that returns,
 e.g.,
 the integral part of a rational number or the integer corresponding to
 an element in a finite prime field.
-For our objects, we may define that <Ref Func="Int"/> returns
+For our objects, we may define that <Ref Attr="Int"/> returns
 the normalized residue.
 <P/>
 Note that we <E>define</E> this behaviour for elements
 but we <E>implement</E> it for objects in the representation <C>IsMyModulusRep</C>.
 This means that if someone implements another representation of
 residue classes then this person must be careful to implement
-<Ref Func="Int"/>
+<Ref Attr="Int"/>
 methods for objects in this new representation compatibly with our
 definition, i.e., such that the result is independent of the representation.
 <P/>
@@ -730,11 +730,11 @@ gap> InstallMethod( Int,
 ]]></Example>
 <P/>
 Another example of an operation for which we might want to install
-a method is <Ref Func="\mod"/>.
+a method is <Ref Oper="\mod"/>.
 We make the ring print itself as
 <Ref Var="Integers"/> mod the modulus,
 and then it is reasonable to allow a construction this way,
-which makes the <Ref Func="PrintObj"/> output of the ring
+which makes the <Ref Oper="PrintObj"/> output of the ring
 &GAP; readable.
 <P/>
 <Example><![CDATA[
@@ -767,16 +767,16 @@ installing methods for existing operations is usually not possible or
 at least not recommended.
 For example, installing the function <C>resclass_sum</C> defined in
 Section&nbsp;<Ref Sect="A First Attempt to Implement Elements of Residue Class Rings"/>
-as a <Ref Func="\+"/> method for adding two lists of length two
+as a <Ref Oper="\+"/> method for adding two lists of length two
 (with integer entries) would not be compatible with the general
 definition of the addition of two lists of same length.
-Installing a method for the operation <Ref Func="Int"/>
+Installing a method for the operation <Ref Attr="Int"/>
 that takes a list
 <C>[ <A>k</A>, <A>n</A> ]</C> and returns <A>k</A> would in principle be possible,
-since there is no <Ref Func="Int"/> method for lists yet,
+since there is no <Ref Attr="Int"/> method for lists yet,
 but it is not sensible to do so because one can think of other
 interpretations of such a list where different
-<Ref Func="Int"/> methods could
+<Ref Attr="Int"/> methods could
 be installed with the same right.
 <P/>
 As mentioned in Section&nbsp;<Ref Sect="Why Proceed in a Different Way?"/>,
@@ -864,7 +864,7 @@ may not be available.
 For example, many questions about a finite matrix group can be delegated
 to an isomorphic permutation group via a so-called <Q>nice monomorphism</Q>;
 this can be controlled by the filter
-<Ref Func="IsHandledByNiceMonomorphism"/>.
+<Ref Prop="IsHandledByNiceMonomorphism"/>.
 <P/>
 By the way, also groups of (invertible) residue classes can be formed,
 but this may be of minor interest.
@@ -936,7 +936,7 @@ gap> InstallMethod( Units,
 >    end );
 ]]></Example>
 <P/>
-The <Ref Func="Units"/> method has the disadvantage
+The <Ref Attr="Units"/> method has the disadvantage
 that the result is returned as a list
 (in fact this list is also strictly sorted).
 We could improve the implementation by returning the units as a group;
@@ -962,7 +962,7 @@ gap> InstallMethod( Units,
 <P/>
 Each ring <M>&ZZ; / n&ZZ;</M> is finite,
 and we could install a method that returns <K>true</K> when
-<Ref Func="IsFinite"/> is
+<Ref Prop="IsFinite"/> is
 called with <M>&ZZ; / n&ZZ;</M> as argument.
 But we can do this more elegantly via installing a <E>logical implication</E>.
 <P/>
@@ -973,7 +973,7 @@ gap> InstallTrueMethod( IsFinite,
 <P/>
 In effect, every domain that consists of elements in <C>IsMyZmodnZObj</C>
 will automatically store that it is finite,
-even if <Ref Func="IsFinite"/> is not called for it.
+even if <Ref Prop="IsFinite"/> is not called for it.
 
 </Section>
 
@@ -987,14 +987,14 @@ has at least two disadvantages.
 First, if <M>p</M> is a prime then the ring <M>&ZZ; / p&ZZ;</M> is in fact a field,
 but the return values of <C>MyZmodnZ</C> are never regarded as fields because
 they are not in the category
-<Ref Func="IsMagmaWithInversesIfNonzero"/>.
+<Ref Filt="IsMagmaWithInversesIfNonzero"/>.
 Second, and this makes the example really interesting,
 there are already elements of finite prime fields implemented in &GAP;,
 and we may want to identify them with elements in <M>&ZZ; / p&ZZ;</M>.
 <P/>
 To be more precise,
 elements of finite fields in &GAP; lie in the category
-<Ref Func="IsFFE"/>,
+<Ref Filt="IsFFE"/>,
 and there is already a representation,
 <C>IsInternalRep</C>, of these elements
 via discrete logarithms.
@@ -1053,10 +1053,10 @@ But now we introduce two subcategories, namely <C>IsMyZmodnZObjNonprime</C>
 for all elements in rings <M>&ZZ; / n&ZZ;</M> where <M>n</M> is not a prime,
 and <C>IsMyZmodpZObj</C> for elements in finite prime fields.
 All objects in the latter are automatically known to lie in the
-category <Ref Func="IsFFE"/> of finite field elements.
+category <Ref Filt="IsFFE"/> of finite field elements.
 <P/>
 It would be reasonable if also those internally represented elements
-in the category <Ref Func="IsFFE"/> that do in fact lie
+in the category <Ref Filt="IsFFE"/> that do in fact lie
 in a prime field
 would also  lie in the category <C>IsMyZmodnZObj</C> (and thus in fact in
 <C>IsMyZmodpZObj</C>).
@@ -1112,7 +1112,7 @@ does not contain the whole family of its elements, since all finite field
 elements of a fixed characteristic lie in the same family.
 Further note that we cannot expect a family of finite field elements
 to have a component <C>modulus</C>,
-so we use <Ref Func="Characteristic"/> to get the modulus.
+so we use <Ref Attr="Characteristic"/> to get the modulus.
 Requiring that <C>Fam!.modulus</C> works also if <C>Fam</C> is a family of
 finite field elements would violate the rule
 that an extension of &GAP; should not force changes in existing code,
@@ -1222,22 +1222,22 @@ gap> InstallMethod( \<,
 ]]></Log>
 <P/>
 Now we install the same methods for the arithmetic operations
-<Ref Func="\+"/>, <Ref Func="ZeroOp"/>,
-<Ref Func="AdditiveInverseOp"/>,
-<C>\-</C>, <Ref Func="\*"/>,
-and <Ref Func="OneOp"/>
+<Ref Oper="\+"/>, <Ref Oper="ZeroOp"/>,
+<Ref Oper="AdditiveInverseOp"/>,
+<C>\-</C>, <Ref Oper="\*"/>,
+and <Ref Oper="OneOp"/>
 as in the previous section, without listing them below.
-Also the same <Ref Func="Int"/> method is installed
+Also the same <Ref Attr="Int"/> method is installed
 for objects in <C>IsMyZmodnZObj</C>.
 Note that it is compatible with the definition of
-<Ref Func="Int"/> for finite
+<Ref Attr="Int"/> for finite
 field elements.
-And of course the same method for <Ref Func="\mod"/> is
+And of course the same method for <Ref Oper="\mod"/> is
 installed.
 <P/>
 We have to be careful, however, with the methods for
-<Ref Func="InverseOp"/>,
-<Ref Func="\/"/>, and <Ref Func="\^"/>.
+<Ref Oper="InverseOp"/>,
+<Ref Oper="\/"/>, and <Ref Oper="\^"/>.
 These methods and the missing methods for arithmetic operations with
 one argument in <C>IsMyModulusRep</C> and the other in <C>IsInternalRep</C>
 are given below.
@@ -1292,7 +1292,7 @@ gap> InstallMethod( InverseOp,
 >    end );
 ]]></Log>
 <P/>
-The operation <Ref Func="DegreeFFE" Label="for a FFE"/> is defined
+The operation <Ref Attr="DegreeFFE" Label="for a FFE"/> is defined
 for finite field elements,
 we need a method for objects in <C>IsMyZmodpZObj</C>.
 Note that we need not require <C>IsMyModulusRep</C> since no access to
@@ -1305,10 +1305,10 @@ gap> InstallMethod( DegreeFFE,
 >    z -> 1 );
 ]]></Log>
 <P/>
-The methods for <Ref Func="Enumerator"/>,
-<Ref Func="Random" Label="for a list or collection"/>,
-<Ref Func="Size"/>,
-and <Ref Func="Units"/>,
+The methods for <Ref Attr="Enumerator"/>,
+<Ref Oper="Random" Label="for a list or collection"/>,
+<Ref Attr="Size"/>,
+and <Ref Attr="Units"/>,
 that we had installed in the previous section had all assumed that
 their argument contains the whole family of its elements.
 So these methods make sense only for the nonprime case.
@@ -1371,19 +1371,19 @@ of an other one.
 The solution for this problem is to keep a global list of all results of
 <C>MyZmodnZ</C> in the current &GAP; session, and to return the stored values
 whenever possible.
-Note that this approach would admit <Ref Func="PrintObj"/>
+Note that this approach would admit <Ref Oper="PrintObj"/>
 methods that produce &GAP; readable output.
 <P/>
-One can improve the <Ref Func="Units"/> method for the full
+One can improve the <Ref Attr="Units"/> method for the full
 ring in such a way
 that a group is returned and not only a list of its elements;
-then the result of <Ref Func="Units"/> can be used,
+then the result of <Ref Attr="Units"/> can be used,
 e.&nbsp;g., as input for the operation
-<Ref Func="SylowSubgroup"/>.
+<Ref Oper="SylowSubgroup"/>.
 <P/>
 To make computations more efficient,
 one can install methods for <C>\-</C>,
-<Ref Func="\/"/>, and <Ref Func="\^"/>;
+<Ref Oper="\/"/>, and <Ref Oper="\^"/>;
 one reason for doing so may be that this avoids the unnecessary construction
 of the additive or multiplicative inverse, or of intermediate powers.
 <P/>
@@ -1413,7 +1413,7 @@ For example, suppose two objects in <C>IsMyZmodnZObj</C> shall be added.
 Then we must not use the type of one of the arguments in a call of
 <Ref Func="Objectify"/>, because the argument may have knowledge that is not
 correct for the result of the addition.
-One may think of the property <Ref Func="IsOne"/>
+One may think of the property <Ref Prop="IsOne"/>
 that may hold for both arguments but certainly not for their sum.
 <P/>
 For comparing two objects in <C>IsMyZmodpZObj</C> via <Q><C>&lt;</C></Q>,
@@ -1426,7 +1426,7 @@ via <Q><C>&lt;</C></Q> for objects in <C>IsMyZmodpZObj</C>
 if the modulus is large enough.
 This is possible by introducing two categories <C>IsMyZmodpZObjSmall</C>
 and <C>IsMyZmodpZObjLarge</C>, which are subcategories of <C>IsMyZmodpZObj</C>,
-and to install different <Ref Func="\&lt;"/> methods
+and to install different <Ref Oper="\&lt;"/> methods
 for pairs of objects
 in these categories.
 

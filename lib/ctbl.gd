@@ -458,7 +458,7 @@ end );
 ##  namely the <E>group</E>, the <E>conjugacy classes</E> stored in the table
 ##  (see <Ref Attr="ConjugacyClasses" Label="for character tables"/> below)
 ##  and the <E>identification</E> of the conjugacy classes of table and group
-##  (see&nbsp;<Ref Func="IdentificationOfConjugacyClasses"/> below).
+##  (see&nbsp;<Ref Attr="IdentificationOfConjugacyClasses"/> below).
 ##  <P/>
 ##  Character tables constructed from groups know these values upon
 ##  construction,
@@ -511,7 +511,7 @@ DeclareAttributeSuppCT( "UnderlyingGroup", IsOrdinaryTable, [] );
 ##
 ##  <Description>
 ##  For a character table <A>tbl</A> with known underlying group <M>G</M>,
-##  the <Ref Func="ConjugacyClasses" Label="for character tables"/> value of
+##  the <Ref Attr="ConjugacyClasses" Label="for character tables"/> value of
 ##  <A>tbl</A> is a list of conjugacy classes of <M>G</M>.
 ##  All those lists stored in the table that are related to the ordering
 ##  of conjugacy classes (such as sizes of centralizers and conjugacy
@@ -604,13 +604,13 @@ DeclareAttributeSuppCT( "IdentificationOfConjugacyClasses", IsOrdinaryTable,
 ##  isomorphic to) <A>G</A>, such that <A>G</A> does not store its
 ##  <Ref Attr="OrdinaryCharacterTable" Label="for a group"/> value.
 ##  <Ref Func="CharacterTableWithStoredGroup"/> calls
-##  <Ref Func="CompatibleConjugacyClasses"/>,
+##  <Ref Oper="CompatibleConjugacyClasses"/>,
 ##  trying to identify the classes of <A>G</A> with the columns of
 ##  <A>tbl</A>.
 ##  <P/>
 ##  If this identification is unique up to automorphisms of <A>tbl</A>
-##  (see&nbsp;<Ref Func="AutomorphismsOfTable"/>) then <A>tbl</A> is stored
-##  as <Ref Attr="CharacterTable" Label="for a group"/> value of <A>G</A>,
+##  (see&nbsp;<Ref Attr="AutomorphismsOfTable"/>) then <A>tbl</A> is stored
+##  as <Ref Oper="CharacterTable" Label="for a group"/> value of <A>G</A>,
 ##  and a new character table is returned that is equivalent to <A>tbl</A>,
 ##  is sorted in the same way as <A>tbl</A>, and has the values of
 ##  <Ref Attr="UnderlyingGroup" Label="for character tables"/>,
@@ -622,10 +622,10 @@ DeclareAttributeSuppCT( "IdentificationOfConjugacyClasses", IsOrdinaryTable,
 ##  <P/>
 ##  If a record is present as the third argument <A>info</A>,
 ##  its meaning is the same as the optional argument <A>arec</A> for
-##  <Ref Func="CompatibleConjugacyClasses"/>.
+##  <Ref Oper="CompatibleConjugacyClasses"/>.
 ##  <P/>
 ##  If a list is entered as third argument <A>info</A>
-##  it is used as value of <Ref Func="IdentificationOfConjugacyClasses"/>,
+##  it is used as value of <Ref Attr="IdentificationOfConjugacyClasses"/>,
 ##  relative to the
 ##  <Ref Attr="ConjugacyClasses" Label="for character tables"/>
 ##  value of <A>G</A>, without further checking,
@@ -655,7 +655,7 @@ DeclareGlobalFunction( "CharacterTableWithStoredGroup" );
 ##  <M>l[i]</M> is the position in <A>ccl</A> of the class corresponding to
 ##  the <M>i</M>-th column of <A>tbl</A>, if this identification is unique up
 ##  to automorphisms of <A>tbl</A>
-##  (see&nbsp;<Ref Func="AutomorphismsOfTable"/>);
+##  (see&nbsp;<Ref Attr="AutomorphismsOfTable"/>);
 ##  if &GAP; cannot identify the classes, <K>fail</K> is returned.
 ##  <P/>
 ##  If <A>tbl</A> is the first argument then it must be an ordinary character
@@ -683,7 +683,7 @@ DeclareGlobalFunction( "CharacterTableWithStoredGroup" );
 ##   class lengths (see&nbsp;<Ref Attr="SizesConjugacyClasses"/>),
 ##  </Item>
 ##  <Item>
-##   power maps (see&nbsp;<Ref Func="PowerMap"/>,
+##   power maps (see&nbsp;<Ref Oper="PowerMap"/>,
 ##   <Ref Attr="ComputedPowerMaps"/>),
 ##  </Item>
 ##  <Item>
@@ -700,7 +700,7 @@ DeclareGlobalFunction( "CharacterTableWithStoredGroup" );
 ##  <Item>
 ##    if <M>G</M> is a permutation group or matrix group then the value of
 ##    this component is regarded as the list of values of the natural
-##    character (see&nbsp;<Ref Func="NaturalCharacter" Label="for a group"/>)
+##    character (see&nbsp;<Ref Attr="NaturalCharacter" Label="for a group"/>)
 ##    of <A>G</A>, w.r.t.&nbsp;the ordering of classes in <A>tbl</A>,
 ##  </Item>
 ##  <Mark><C>bijection</C> </Mark>
@@ -784,19 +784,19 @@ DeclareGlobalFunction( "CompatibleConjugacyClassesDefault" );
 ##  <Mark><C><A>tbl1</A> * <A>tbl2</A></C></Mark>
 ##  <Item>
 ##      the direct product of two character tables
-##      (see&nbsp;<Ref Func="CharacterTableDirectProduct"/>),
+##      (see&nbsp;<Ref Oper="CharacterTableDirectProduct"/>),
 ##  </Item>
 ##  <Mark><C><A>tbl</A> / <A>list</A></C></Mark>
 ##  <Item>
 ##      the table of the factor group modulo the normal subgroup spanned by
 ##      the classes in the list <A>list</A>
-##      (see&nbsp;<Ref Func="CharacterTableFactorGroup"/>),
+##      (see&nbsp;<Ref Oper="CharacterTableFactorGroup"/>),
 ##  </Item>
 ##  <Mark><C><A>tbl</A> mod <A>p</A></C></Mark>
 ##  <Item>
 ##      the <A>p</A>-modular Brauer character table corresponding to
 ##      the ordinary character table <A>tbl</A>
-##      (see&nbsp;<Ref Attr="BrauerTable"
+##      (see&nbsp;<Ref Oper="BrauerTable"
 ##  Label="for a character table, and a prime integer"/>),
 ##  </Item>
 ##  <Mark><C><A>tbl</A>.<A>name</A></C></Mark>
@@ -908,18 +908,18 @@ InstallIsomorphismMaintenance( CharacterDegrees,
 ##  For a group <A>G</A>, <Ref Attr="Irr" Label="for a group"/> may delegate
 ##  to its character table only if the irreducibles are already stored there.
 ##  <P/>
-##  (If <A>G</A> is <A>p</A>-solvable (see&nbsp;<Ref Attr="IsPSolvable"/>)
+##  (If <A>G</A> is <A>p</A>-solvable (see&nbsp;<Ref Oper="IsPSolvable"/>)
 ##  then the <A>p</A>-modular irreducible characters can be computed by the
 ##  Fong-Swan Theorem; in all other cases, there may be no method.)
 ##  <P/>
 ##  Note that the ordering of columns in the
 ##  <Ref Attr="Irr" Label="for a group"/> matrix of the
 ##  group <A>G</A> refers to the ordering of conjugacy classes in the
-##  <Ref Attr="CharacterTable" Label="for a group"/> value of <A>G</A>,
+##  <Ref Oper="CharacterTable" Label="for a group"/> value of <A>G</A>,
 ##  which may differ from the ordering of conjugacy classes in <A>G</A>
 ##  (see <Ref Sect="The Interface between Character Tables and Groups"/>).
 ##  As an extreme example, for a character table obtained from sorting the
-##  classes of the <Ref Attr="CharacterTable" Label="for a group"/>
+##  classes of the <Ref Oper="CharacterTable" Label="for a group"/>
 ##  value of <A>G</A>,
 ##  the ordering of columns in the <Ref Attr="Irr" Label="for a group"/>
 ##  matrix respects the
@@ -932,7 +932,7 @@ InstallIsomorphismMaintenance( CharacterDegrees,
 ##  The ordering of the entries in the attribute
 ##  <Ref Attr="Irr" Label="for a group"/> of a group
 ##  need <E>not</E> coincide with the ordering of its
-##  <Ref Func="IrreducibleRepresentations"/> value.
+##  <Ref Attr="IrreducibleRepresentations"/> value.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Irr( SymmetricGroup( 4 ) );
@@ -1302,9 +1302,9 @@ DeclareGlobalFunction( "CharacterTable_IsNilpotentNormalSubgroup" );
 ##
 ##  <#GAPDoc Label="[6]{ctbl}">
 ##  The following three <E>attributes for character tables</E>
-##  &ndash;<Ref Func="OrdersClassRepresentatives"/>,
-##  <Ref Func="SizesCentralizers"/>, and
-##  <Ref Func="SizesConjugacyClasses"/>&ndash; would make sense
+##  &ndash;<Ref Attr="OrdersClassRepresentatives"/>,
+##  <Ref Attr="SizesCentralizers"/>, and
+##  <Ref Attr="SizesConjugacyClasses"/>&ndash; would make sense
 ##  also for groups but are in fact <E>not</E> used for groups.
 ##  This is because the values depend on the ordering of conjugacy classes
 ##  stored as the value of
@@ -1412,7 +1412,7 @@ DeclareAttributeSuppCT( "SizesConjugacyClasses", IsNearlyCharacterTable,
 ##  <Description>
 ##  is the permutation group of all column permutations of the character
 ##  table <A>tbl</A> that leave the set of irreducibles and each power map of
-##  <A>tbl</A> invariant (see also&nbsp;<Ref Func="TableAutomorphisms"/>).
+##  <A>tbl</A> invariant (see also&nbsp;<Ref Oper="TableAutomorphisms"/>).
 ##  <Example><![CDATA[
 ##  gap> tbl:= CharacterTable( "Dihedral", 8 );;
 ##  gap> AutomorphismsOfTable( tbl );
@@ -1500,7 +1500,7 @@ DeclareAttributeSuppCT( "UnderlyingCharacteristic",
 ##  The position of the class with name <A>name</A> in <A>tbl</A> can be
 ##  accessed as <C><A>tbl</A>.<A>name</A></C>.
 ##  <P/>
-##  When <Ref Oper="ClassNames"/> is called with two arguments, the second
+##  When <Ref Attr="ClassNames"/> is called with two arguments, the second
 ##  being the string <C>"ATLAS"</C>, the class names returned obey the
 ##  convention used in the &ATLAS; of Finite Groups
 ##  <Cite Key="CCN85" Where="Chapter 7, Section 5"/>.
@@ -1711,7 +1711,7 @@ Append( SupportedCharacterTableInfo,
 ##  <Ref Attr="InverseClasses"/> returns the list mapping
 ##  each conjugacy class to its inverse class.
 ##  This list can be regarded as <M>(-1)</M>-st power map of <A>tbl</A>
-##  (see&nbsp;<Ref Func="PowerMap"/>).
+##  (see&nbsp;<Ref Oper="PowerMap"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> InverseClasses( CharacterTable( "A5" ) );
@@ -1844,9 +1844,9 @@ DeclareAttribute( "ClassRoots", IsCharacterTable );
 ##  <Attr Name="ClassPositionsOfMinimalNormalSubgroups" Arg='ordtbl'/>
 ##
 ##  <Description>
-##  correspond to <Ref Func="NormalSubgroups"/>,
-##  <Ref Func="MaximalNormalSubgroups"/>,
-##  <Ref Func="MinimalNormalSubgroups"/>
+##  correspond to <Ref Attr="NormalSubgroups"/>,
+##  <Ref Attr="MaximalNormalSubgroups"/>,
+##  <Ref Attr="MinimalNormalSubgroups"/>
 ##  for the group of the ordinary character table <A>ordtbl</A>.
 ##  <P/>
 ##  The entries of the result lists are sorted according to increasing
@@ -2102,7 +2102,7 @@ DeclareGlobalFunction( "CharacterTable_UpperCentralSeriesFactor" );
 ##  <Attr Name="ClassPositionsOfLowerCentralSeries" Arg='tbl'/>
 ##
 ##  <Description>
-##  corresponds to <Ref Func="LowerCentralSeriesOfGroup"/>
+##  corresponds to <Ref Attr="LowerCentralSeriesOfGroup"/>
 ##  for the group of the ordinary character table <A>ordtbl</A>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -2129,7 +2129,7 @@ DeclareAttribute( "ClassPositionsOfLowerCentralSeries", IsOrdinaryTable );
 ##  <Attr Name="ClassPositionsOfUpperCentralSeries" Arg='ordtbl'/>
 ##
 ##  <Description>
-##  corresponds to <Ref Func="UpperCentralSeriesOfGroup"/>
+##  corresponds to <Ref Attr="UpperCentralSeriesOfGroup"/>
 ##  for the group of the ordinary character table <A>ordtbl</A>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -2176,7 +2176,7 @@ DeclareSynonymAttr( "ClassPositionsOfSolubleResiduum",
 ##  <Attr Name="ClassPositionsOfSupersolvableResiduum" Arg='ordtbl'/>
 ##
 ##  <Description>
-##  corresponds to <Ref Func="SupersolvableResiduum"/>
+##  corresponds to <Ref Attr="SupersolvableResiduum"/>
 ##  for the group of the ordinary character table <A>ordtbl</A>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -2228,7 +2228,7 @@ DeclareOperation( "ClassPositionsOfPCore", [ IsOrdinaryTable, IsPosInt ] );
 ##  <Description>
 ##  is the sorted list of the positions of all conjugacy classes of the
 ##  ordinary character table <A>ordtbl</A> that form the normal closure
-##  (see&nbsp;<Ref Func="NormalClosure"/>) of the conjugacy classes at
+##  (see&nbsp;<Ref Oper="NormalClosure"/>) of the conjugacy classes at
 ##  positions in the list <A>classes</A>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -2311,7 +2311,7 @@ DeclareOperation( "ClassPositionsOfNormalClosure",
 ##  Two ordinary irreducible characters <M>\chi, \psi</M> of a group <M>G</M>
 ##  are said to lie in the same <M>p</M>-<E>block</E> if the images of their
 ##  central characters <M>\omega_{\chi}, \omega_{\psi}</M>
-##  (see&nbsp;<Ref Func="CentralCharacter"/>) under the
+##  (see&nbsp;<Ref Attr="CentralCharacter"/>) under the
 ##  natural ring epimorphism <M>R \rightarrow R / M</M> are equal,
 ##  where <M>R</M> denotes the ring of algebraic integers in the complex
 ##  number field, and <M>M</M> is a maximal ideal in <M>R</M> with
@@ -2366,7 +2366,7 @@ DeclareAttributeSuppCT( "ComputedPrimeBlockss", IsOrdinaryTable, "mutable",
 ##  Let <A>p</A> be a prime integer, <A>omega1</A> and <A>omega2</A> be two
 ##  central characters (or their values lists) of a character table,
 ##  and <A>relevant</A> be a list of positions as is stored in the component
-##  <C>relevant</C> of a record returned by <Ref Func="PrimeBlocks"/>.
+##  <C>relevant</C> of a record returned by <Ref Oper="PrimeBlocks"/>.
 ##  <P/>
 ##  <Ref Func="SameBlock"/> returns <K>true</K> if <A>omega1</A> and
 ##  <A>omega2</A> are equal modulo any maximal ideal in the ring of complex
@@ -2428,7 +2428,7 @@ DeclareGlobalFunction( "SameBlock" );
 ##  <Mark><C>decmat</C></Mark>
 ##  <Item>
 ##    the decomposition matrix of the block,
-##    it is stored automatically when <Ref Func="DecompositionMatrix"/>
+##    it is stored automatically when <Ref Oper="DecompositionMatrix"/>
 ##    is called for the block,
 ##  </Item>
 ##  <Mark><C>decinv</C></Mark>
@@ -2481,7 +2481,7 @@ DeclareAttributeSuppCT( "BlocksInfo", IsNearlyCharacterTable, "mutable",
 ##  decomposition matrix of the block of <A>modtbl</A> with number
 ##  <A>blocknr</A>;
 ##  the matrix is stored as value of the <C>decmat</C> component of the
-##  <A>blocknr</A>-th entry of the <Ref Func="BlocksInfo"/> list of
+##  <A>blocknr</A>-th entry of the <Ref Attr="BlocksInfo"/> list of
 ##  <A>modtbl</A>.
 ##  <P/>
 ##  An ordinary irreducible character is in block <M>i</M> if and only if all
@@ -2491,7 +2491,7 @@ DeclareAttributeSuppCT( "BlocksInfo", IsNearlyCharacterTable, "mutable",
 ##  scalar product with an ordinary irreducible character in block <M>i</M>.
 ##  <P/>
 ##  <Ref Oper="DecompositionMatrix"/> is based on the more general function
-##  <Ref Func="Decomposition"/>.
+##  <Ref Oper="Decomposition"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> modtbl:= CharacterTable( "L3(2)" ) mod 2;
@@ -2524,7 +2524,7 @@ DeclareOperation( "DecompositionMatrix", [ IsBrauerTable, IsPosInt ] );
 ##
 ##  <Description>
 ##  is a string that contains La&TeX; code to print a decomposition matrix
-##  (see&nbsp;<Ref Func="DecompositionMatrix"/>) nicely.
+##  (see&nbsp;<Ref Oper="DecompositionMatrix"/>) nicely.
 ##  <P/>
 ##  The optional argument <A>options</A>, if present, must be a record with
 ##  components
@@ -2617,14 +2617,14 @@ DeclareGlobalFunction( "LaTeXStringDecompositionMatrix" );
 ##
 ##  <Description>
 ##  For two character tables <A>tbl</A> and <A>subtbl</A>,
-##  <Ref Func="Index" Label="for two character tables"/> returns the
+##  <Ref Oper="Index" Label="for two character tables"/> returns the
 ##  quotient of the <Ref Attr="Size" Label="for a character table"/> values
 ##  of <A>tbl</A> and <A>subtbl</A>.
 ##  The containment of the underlying groups of <A>subtbl</A> and <A>tbl</A>
 ##  is <E>not</E> checked;
 ##  so the distinction between 
-##  <Ref Func="Index" Label="for a group and its subgroup"/> 
-##  and <Ref Func="IndexNC" Label="for a group and its subgroup"/>
+##  <Ref Oper="Index" Label="for a group and its subgroup"/> 
+##  and <Ref Oper="IndexNC" Label="for a group and its subgroup"/>
 ##  is not made for character tables.
 ##  </Description>
 ##  </ManSection>
@@ -2655,7 +2655,7 @@ DeclareOperation( "IndexNC",
 ##
 ##  <Description>
 ##  <Ref Oper="IsPSolvableCharacterTable"/> for the ordinary character table
-##  <A>tbl</A> corresponds to <Ref Func="IsPSolvable"/> for the group of
+##  <A>tbl</A> corresponds to <Ref Oper="IsPSolvable"/> for the group of
 ##  <A>tbl</A>, <A>p</A> must be either a prime integer or <C>0</C>.
 ##  <P/>
 ##  The default method uses the attribute
@@ -2789,7 +2789,7 @@ DeclareAttributeSuppCT( "ComputedIndicators", IsCharacterTable, "mutable",
 ##  polyhedral subgroups of isomorphism type <M>V_4</M>, <M>D_{2n}</M>,
 ##  <M>A_4</M>, <M>S_4</M>, and <M>A_5</M> can be derived from the class
 ##  multiplication coefficient
-##  (see&nbsp;<Ref Func="ClassMultiplicationCoefficient"
+##  (see&nbsp;<Ref Oper="ClassMultiplicationCoefficient"
 ##  Label="for character tables"/>)
 ##  and the number of Galois
 ##  conjugates of a class (see&nbsp;<Ref Oper="ClassOrbit"/>).
@@ -2853,7 +2853,7 @@ DeclareGlobalFunction( "NrPolyhedralSubgroups" );
 ##  <P/>
 ##  On the other hand the knowledge of the class multiplication coefficients
 ##  admits the computation of the irreducible characters of <M>G</M>,
-##  see&nbsp;<Ref Func="IrrDixonSchneider"/>.
+##  see&nbsp;<Ref Attr="IrrDixonSchneider"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2877,7 +2877,7 @@ DeclareOperation( "ClassMultiplicationCoefficient",
 ##  For an ordinary character table <A>tbl</A> and a class position <A>i</A>,
 ##  <C>MatClassMultCoeffsCharTable</C> returns the matrix
 ##  <M>[ a_{ijk} ]_{{j,k}}</M> of structure constants
-##  (see&nbsp;<Ref Func="ClassMultiplicationCoefficient"
+##  (see&nbsp;<Ref Oper="ClassMultiplicationCoefficient"
 ##  Label="for character tables"/>).
 ##  <P/>
 ##  <Example><![CDATA[
@@ -2922,7 +2922,7 @@ DeclareGlobalFunction( "MatClassMultCoeffsCharTable" );
 ##  <M>g_i \in C_i</M> with <M>g_1 g_2 \cdots g_n = 1</M>.
 ##  Note the difference to the definition of the class multiplication
 ##  coefficients in 
-##  <Ref Func="ClassMultiplicationCoefficient"
+##  <Ref Oper="ClassMultiplicationCoefficient"
 ##  Label="for character tables"/>.
 ##  <P/>
 ##  <M>n(C_1, C_2, \ldots, C_n)</M> is computed using the formula
@@ -2987,7 +2987,7 @@ DeclareGlobalFunction( "ClassStructureCharTable" );
 ##  <E>is currently not supported and will be described in a chapter of its
 ##  own when it becomes available</E>.
 ##  <P/>
-##  The operation <Ref Func="CharacterTable" Label="for a group"/>
+##  The operation <Ref Oper="CharacterTable" Label="for a group"/>
 ##  can be used for the cases 1. to 3.
 ##  <#/GAPDoc>
 ##
@@ -3289,8 +3289,8 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  <Description>
 ##  The default <Ref Oper="PrintObj"/> method for character tables
 ##  does the same as <Ref Oper="ViewObj"/>,
-##  except that <Ref Func="PrintObj"/> is used for the group instead of
-##  <Ref Func="ViewObj"/>.
+##  except that <Ref Oper="PrintObj"/> is used for the group instead of
+##  <Ref Oper="ViewObj"/>.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -3333,7 +3333,7 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  <P/>
 ##  The next line gives the name of each class.
 ##  If no class names are stored on <A>tbl</A>,
-##  <Ref Func="ClassNames"/> is called.
+##  <Ref Attr="ClassNames"/> is called.
 ##  <P/>
 ##  Preceded by a name <C>P<A>n</A></C>, the next lines show the <A>n</A>th
 ##  power maps of <A>tbl</A> in terms of the former shown class names.
@@ -3348,8 +3348,8 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  <P/>
 ##  Once a name for an irrational value is found, it is used all over the
 ##  printed table.
-##  Moreover the complex conjugate (see&nbsp;<Ref Func="ComplexConjugate"/>,
-##  <Ref Func="GaloisCyc" Label="for a cyclotomic"/>)
+##  Moreover the complex conjugate (see&nbsp;<Ref Attr="ComplexConjugate"/>,
+##  <Ref Oper="GaloisCyc" Label="for a cyclotomic"/>)
 ##  and the star of an irrationality (see&nbsp;<Ref Func="StarCyc"/>) are
 ##  represented by that very name preceded by a <C>/</C> and a <C>*</C>,
 ##  respectively.
@@ -3369,7 +3369,7 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##    as an optional argument in the call to <Ref Oper="Display"/>,
 ##  </Item>
 ##  <Item>
-##    as the value of the attribute <Ref Func="DisplayOptions"/>
+##    as the value of the attribute <Ref Attr="DisplayOptions"/>
 ##    if this value is stored in the table,
 ##  </Item>
 ##  <Item>
@@ -3410,7 +3410,7 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  <Item>
 ##    <K>true</K> enables the printing of the second Frobenius Schur
 ##    indicator, a list of integers enables the printing of the corresponding
-##    indicators (see&nbsp;<Ref Func="Indicator"/>),
+##    indicators (see&nbsp;<Ref Oper="Indicator"/>),
 ##  </Item>
 ##  <Mark><C>letter</C></Mark>
 ##  <Item>
@@ -3671,7 +3671,7 @@ DeclareGlobalFunction( "PrintCharacterTable" );
 ##  and <A>tbl2</A>.
 ##  <P/>
 ##  The matrix of irreducibles of this table is the Kronecker product
-##  (see&nbsp;<Ref Func="KroneckerProduct"/>) of the irreducibles of
+##  (see&nbsp;<Ref Oper="KroneckerProduct"/>) of the irreducibles of
 ##  <A>tbl1</A> and <A>tbl2</A>.
 ##  <P/>
 ##  Products of ordinary and Brauer character tables are supported.
@@ -3692,7 +3692,7 @@ DeclareGlobalFunction( "PrintCharacterTable" );
 ##  components.
 ##  <!-- generalize this to arbitrarily many arguments!-->
 ##  <P/>
-##  The attribute <Ref Func="FactorsOfDirectProduct"/>
+##  The attribute <Ref Attr="FactorsOfDirectProduct"/>
 ##  is set to the lists of arguments.
 ##  <P/>
 ##  The <C>*</C> operator for two character tables
@@ -4019,7 +4019,7 @@ DeclareGlobalFunction( "PermutationToSortCharacters" );
 ##  If no second argument is given then a permutation is used that yields
 ##  irreducible characters of increasing degree for the result.
 ##  For the succession of characters in the result,
-##  see&nbsp;<Ref Func="SortedCharacters"/>.
+##  see&nbsp;<Ref Oper="SortedCharacters"/>.
 ##  <P/>
 ##  The result has all those attributes and properties of <A>tbl</A> that are
 ##  stored in <Ref Var="SupportedCharacterTableInfo"/> and do not depend
@@ -4176,7 +4176,7 @@ DeclareOperation( "CharacterTableWithSortedClasses",
 ##  <A>tbl</A> modulo the normal subgroup formed by the classes whose
 ##  positions are contained in the list <A>kernel</A>;
 ##  <M>F</M> must be permutation equivalent to the table <A>facttbl</A>,
-##  in the sense of <Ref Func="TransformingPermutationsCharacterTables"/>,
+##  in the sense of <Ref Oper="TransformingPermutationsCharacterTables"/>,
 ##  otherwise <K>fail</K> is returned.
 ##  The classes of <A>tbl</A> are sorted such that the preimages
 ##  of a class of <M>F</M> are consecutive,
@@ -4200,8 +4200,8 @@ DeclareOperation( "CharacterTableWithSortedClasses",
 ##  necessary, see&nbsp;<Ref Sect="Conventions for Character Tables"/>.
 ##  <P/>
 ##  <Ref Func="SortedCharacterTable" Label="w.r.t. a normal subgroup"/>
-##  uses <Ref Func="CharacterTableWithSortedClasses"/> and
-##  <Ref Func="CharacterTableWithSortedCharacters"/>.
+##  uses <Ref Oper="CharacterTableWithSortedClasses"/> and
+##  <Ref Oper="CharacterTableWithSortedCharacters"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -4225,7 +4225,7 @@ DeclareGlobalFunction( "SortedCharacterTable" );
 ##  <P/>
 ##  This attribute value is bound only if <A>tbl</A> was obtained from another
 ##  table by permuting the classes,
-##  using <Ref Func="CharacterTableWithSortedClasses"/>
+##  using <Ref Oper="CharacterTableWithSortedClasses"/>
 ##  or <Ref Func="SortedCharacterTable" Label="w.r.t. a normal subgroup"/>.
 ##  <P/>
 ##  It is necessary because the original table and the sorted table have the
@@ -4354,8 +4354,8 @@ DeclareAttributeSuppCT( "ClassPermutation", IsNearlyCharacterTable,
 ##  lists, and will be available for the next call.
 ##  <P/>
 ##  For example, if you are dealing with kernels of characters using the
-##  <Ref Func="KernelOfCharacter"/> function you make use of this feature
-##  because <Ref Func="KernelOfCharacter"/> calls
+##  <Ref Attr="KernelOfCharacter"/> function you make use of this feature
+##  because <Ref Attr="KernelOfCharacter"/> calls
 ##  <Ref Func="NormalSubgroupClasses"/>.
 ##  </Description>
 ##  </ManSection>

@@ -33,8 +33,8 @@ for example certain integral bases of fields of cyclotomics,
 can be found in Chapter&nbsp;<Ref Chap="Abelian Number Fields"/>.
 For more general operations that take a field extension as a
 &ndash;possibly optional&ndash; argument,
-e.g., <Ref Func="Trace" Label="for a field element"/> or
-<Ref Func="Coefficients"/>,
+e.g., <Ref Attr="Trace" Label="for a field element"/> or
+<Ref Oper="Coefficients"/>,
 see Chapter&nbsp;<Ref Chap="Fields and Division Rings"/>.
 
 
@@ -87,11 +87,11 @@ The relation between rationals is the natural one,
 rationals are smaller than irrational cyclotomics,
 and <Ref Var="infinity"/> is the largest cyclotomic.
 For two irrational cyclotomics with different conductors
-(see <Ref Func="Conductor" Label="for a cyclotomic"/>),
+(see <Ref Attr="Conductor" Label="for a cyclotomic"/>),
 the one with smaller conductor is regarded as smaller.
 Two irrational cyclotomics with same conductor are compared via their
 external representation
-(see <Ref Func="ExtRepOfObj" Label="for a cyclotomic"/>).
+(see <Ref Meth="ExtRepOfObj" Label="for a cyclotomic"/>).
 <P/>
 For comparisons of cyclotomics and other &GAP; objects,
 see Section&nbsp;<Ref Sect="Comparisons"/>.
@@ -164,7 +164,7 @@ with irrationalities in character tables
 For the representation of cyclotomics one has to recall that the
 <M>n</M>-th cyclotomic field <M>&QQ;(e_n)</M> is a vector space of dimension
 <M>\varphi(n)</M> over the rationals where <M>\varphi</M> denotes Euler's
-phi-function (see&nbsp;<Ref Func="Phi"/>).
+phi-function (see&nbsp;<Ref Oper="Phi"/>).
 <P/>
 A special integral basis of cyclotomic fields is chosen that allows one to
 easily convert arbitrary sums of roots of unity into the
@@ -192,7 +192,7 @@ gap> ( E(5) + E(5)^4 ) * E(5);
 An internally represented cyclotomic is always represented in the smallest
 cyclotomic field it is contained in.
 The internal coefficients list coincides with the external representation
-returned by <Ref Func="ExtRepOfObj" Label="for a cyclotomic"/>.
+returned by <Ref Meth="ExtRepOfObj" Label="for a cyclotomic"/>.
 <P/>
 To avoid calculations becoming unintentionally very long, or consuming
 very large amounts of memory,
@@ -216,7 +216,7 @@ Then each matrix entry could be described by two rational coefficients,
 whereas the representation in the smallest cyclotomic field requires
 <M>p-1</M> rational coefficients for each entry.
 So it is worth thinking about using elements in a field constructed with
-<Ref Func="AlgebraicExtension"/> when natural embeddings
+<Ref Oper="AlgebraicExtension"/> when natural embeddings
 of cyclotomic fields are not needed.
 
 <!-- % show an example? -->

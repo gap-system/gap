@@ -112,7 +112,7 @@ DeclareCategory( "IsGaussianIntegers", IsEuclideanRing and IsFLMLOR
 ##  <Ref Var="GaussianIntegers"/> is the ring <M>&ZZ;[\sqrt{{-1}}]</M>
 ##  of Gaussian integers.
 ##  This is a subring of the cyclotomic field
-##  <Ref Func="GaussianRationals"/>.
+##  <Ref Var="GaussianRationals"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -209,9 +209,9 @@ SetInfoLevel( InfoPrimeInt, 1 );
 ##  -<A>n</A> if <A>n</A> is negative and 0 if <A>n</A> is 0.
 ##  <P/>
 ##  <Ref Func="AbsInt"/> is a special case of the general operation
-##  <Ref Func="EuclideanDegree"/>.
+##  <Ref Oper="EuclideanDegree"/>.
 ##  <P/>
-##  See also <Ref Func="AbsoluteValue"/>.
+##  See also <Ref Attr="AbsoluteValue"/>.
 ##
 ##  <Example><![CDATA[
 ##  gap> AbsInt( 33 );
@@ -367,7 +367,7 @@ DeclareGlobalFunction( "CoefficientsMultiadic" );
 ##  <P/>
 ##  <Ref Func="DivisorsInt"/> may call <Ref Func="FactorsInt"/>
 ##  to obtain the prime factors.
-##  <Ref Func="Sigma"/> and <Ref Func="Tau"/> compute the sum and the
+##  <Ref Oper="Sigma"/> and <Ref Oper="Tau"/> compute the sum and the
 ##  number of positive divisors, respectively.
 ##  <Example><![CDATA[
 ##  gap> DivisorsInt( 1 ); DivisorsInt( 20 ); DivisorsInt( 541 );
@@ -709,7 +709,7 @@ DeclareGlobalFunction( "IsPrimePowerInt" );
 ##  returns the least common multiple of the integers <A>m</A> and <A>n</A>.
 ##  <P/>
 ##  <Ref Func="LcmInt"/> is a method used by the general operation
-##  <Ref Oper="Lcm" Label="for (a ring and) several elements"/>.
+##  <Ref Func="Lcm" Label="for (a ring and) several elements"/>.
 ##  <Example><![CDATA[
 ##  gap> LcmInt( 123, 66 );
 ##  2706

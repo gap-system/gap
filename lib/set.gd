@@ -16,7 +16,7 @@
 ##  where <A>set</A> must be a proper set,
 ##  otherwise an error is signalled;
 ##  If the second argument <A>obj</A> is a list that is not a proper set
-##  then <Ref Func="Set"/> is silently applied to it first.
+##  then <Ref Oper="Set"/> is silently applied to it first.
 ##  <#/GAPDoc>
 ##
 
@@ -55,13 +55,13 @@ DeclareSynonym( "SSortedListList", LIST_SORTED_LIST );
 ##  <E>when viewed as sets</E>, that is if every element of <A>list1</A> is
 ##  an element of <A>list2</A> and vice versa.
 ##  Either argument of <Ref Oper="IsEqualSet"/> may also be a list that is
-##  not a proper set, in which case <Ref Func="Set"/> is applied to it first.
+##  not a proper set, in which case <Ref Oper="Set"/> is applied to it first.
 ##  <P/>
 ##  If both lists are proper sets then they are of course equal if and only
 ##  if they are also equal as lists.
 ##  Thus <C>IsEqualSet( <A>list1</A>, <A>list2</A> )</C> is equivalent to
 ##  <C>Set( <A>list1</A>  ) = Set( <A>list2</A> )</C>
-##  (see&nbsp;<Ref Func="Set"/>), but the former is more efficient.
+##  (see&nbsp;<Ref Oper="Set"/>), but the former is more efficient.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> IsEqualSet( [2,3,5,7,11], [11,7,5,3,2] );
@@ -88,7 +88,7 @@ DeclareOperation( "IsEqualSet", [ IsList, IsList ] );
 ##  tests whether every element of <A>list2</A> is contained in <A>list1</A>.
 ##  Either argument of <Ref Oper="IsSubsetSet"/> may also be a list
 ##  that is not a proper set,
-##  in which case <Ref Func="Set"/> is applied to it first.
+##  in which case <Ref Oper="Set"/> is applied to it first.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -172,7 +172,7 @@ DeclareOperation( "RemoveSet", [ IsList and IsMutable, IsObject ] );
 ##  <Index Subkey="of sets">union</Index>
 ##  unites the proper set <A>set</A> with <A>list</A>.
 ##  This is equivalent to adding all elements of <A>list</A> to <A>set</A>
-##  (see&nbsp;<Ref Func="AddSet"/>).
+##  (see&nbsp;<Ref Oper="AddSet"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> set := [ 2, 3, 5, 7, 11 ];;

@@ -106,13 +106,13 @@ or floating-point numbers. Floating-point numbers may
 also be created, in any floating-point representation, using
 <Ref Constr="NewFloat"/> as in <C>NewFloat(IsIEEE754FloatRep,355/113)</C>,
 by supplying the category filter of the desired new floating-point number;
-or using <Ref Func="MakeFloat"/> as in <C>NewFloat(1.0,355/113)</C>,
+or using <Ref Oper="MakeFloat"/> as in <C>NewFloat(1.0,355/113)</C>,
 by supplying a sample floating-point number.
 <P/>
 
 Floating-point numbers may also be converted to other &GAP; formats
-using the usual commands <Ref Oper="Int"/>, <Ref Oper="Rat"/>,
-<Ref Oper="String"/>.
+using the usual commands <Ref Attr="Int"/>, <Ref Attr="Rat"/>,
+<Ref Attr="String"/>.
 <P/>
 
 Exact conversion to and from floating-point format may be done using
@@ -143,9 +143,9 @@ should be used instead of <C>=</C>.
 <P/>
 
 The category a floating-point belongs to can be checked using the
-filters <Ref Filt="IsFinite"/>, <Ref Filt="IsPInfinity"/>,
-<Ref Filt="IsNInfinity"/>, <Ref Filt="IsXInfinity"/>,
-<Ref Filt="IsNaN"/>.
+filters <Ref Prop="IsFinite"/>, <Ref Prop="IsPInfinity"/>,
+<Ref Prop="IsNInfinity"/>, <Ref Prop="IsXInfinity"/>,
+<Ref Prop="IsNaN"/>.
 <P/>
 
 Comparisons between floating-point numbers and rationals are

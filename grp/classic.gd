@@ -116,10 +116,10 @@ DeclareConstructor( "GeneralLinearGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 ##  The third and the fourth form construct the general linear group over the
 ##  finite field with <A>q</A> elements.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the general linear group as a matrix group in
-##  its natural action (see also&nbsp;<Ref Func="IsNaturalGL"/>,
-##  <Ref Func="IsNaturalGLnZ"/>).
+##  its natural action (see also&nbsp;<Ref Prop="IsNaturalGL"/>,
+##  <Ref Prop="IsNaturalGLnZ"/>).
 ##  <P/>
 ##  Currently supported rings <A>R</A> are finite fields,
 ##  the ring <Ref Var="Integers"/>,
@@ -206,13 +206,13 @@ DeclareConstructor( "GeneralOrthogonalGroupCons",
 ##  general orthogonal group GO( <A>e</A>, <A>d</A>, <A>q</A> ) of those
 ##  <M><A>d</A> \times <A>d</A></M> matrices over the field with <A>q</A>
 ##  elements that respect a non-singular quadratic form
-##  (see&nbsp;<Ref Func="InvariantQuadraticForm"/>) specified by <A>e</A>,
+##  (see&nbsp;<Ref Attr="InvariantQuadraticForm"/>) specified by <A>e</A>,
 ##  in the category given by the filter <A>filt</A>.
 ##  <P/>
 ##  The value of <A>e</A> must be <M>0</M> for odd <A>d</A> (and can
 ##  optionally be  omitted in this case), respectively one of <M>1</M> or
 ##  <M>-1</M> for even <A>d</A>.
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the general orthogonal group itself.
 ##  <P/>
 ##  <!--
@@ -277,7 +277,7 @@ DeclareConstructor( "GeneralUnitaryGroupCons",
 ##  that respect a fixed nondegenerate sesquilinear form,
 ##  in the category given by the filter <A>filt</A>.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the general unitary group itself.
 ##  <P/>
 ##  <!--
@@ -351,10 +351,10 @@ DeclareConstructor( "SpecialLinearGroupCons", [ IsGroup, IsInt, IsRing ] );
 ##  The third and the fourth form construct the special linear group over the
 ##  finite field with <A>q</A> elements.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the special linear group as a matrix group in
-##  its natural action (see also&nbsp;<Ref Func="IsNaturalSL"/>,
-##  <Ref Func="IsNaturalSLnZ"/>).
+##  its natural action (see also&nbsp;<Ref Prop="IsNaturalSL"/>,
+##  <Ref Prop="IsNaturalSLnZ"/>).
 ##  <P/>
 ##  Currently supported rings <A>R</A> are finite fields,
 ##  the ring <Ref Var="Integers"/>,
@@ -434,7 +434,7 @@ DeclareConstructor( "SpecialOrthogonalGroupCons",
 ##  see <Ref Oper="Omega" Label="construct an orthogonal group"/>,
 ##  which is always of index <M>2</M> in SO( <A>e</A>, <A>d</A>, <A>q</A> ).
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the special orthogonal group itself.
 ##  <P/>
 ##  <!--
@@ -506,7 +506,7 @@ DeclareConstructor( "SpecialUnitaryGroupCons",
 ##  nondegenerate sesquilinear form,
 ##  in the category given by the filter <A>filt</A>.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the special unitary group itself.
 ##  <P/>
 ##  <!--
@@ -582,7 +582,7 @@ DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 ##  that respect a fixed nondegenerate symplectic form,
 ##  in the category given by the filter <A>filt</A>.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the symplectic group itself.
 ##  <P/>
 ##  At the moment finite fields or residue class rings 
@@ -649,7 +649,7 @@ DeclareConstructor( "OmegaCons", [ IsGroup, IsInt, IsPosInt, IsPosInt ] );
 ##  group <M>\Omega</M>( <A>e</A>, <A>d</A>, <A>q</A> ) of those
 ##  <M><A>d</A> \times <A>d</A></M> matrices over the field with <A>q</A>
 ##  elements that respect a non-singular quadratic form
-##  (see&nbsp;<Ref Func="InvariantQuadraticForm"/>) specified by <A>e</A>,
+##  (see&nbsp;<Ref Attr="InvariantQuadraticForm"/>) specified by <A>e</A>,
 ##  and that have square spinor norm in odd characteristic
 ##  or Dickson invariant <M>0</M> in even characteristic, respectively,
 ##  in the category given by the filter <A>filt</A>. For odd <A>q</A>,
@@ -660,7 +660,7 @@ DeclareConstructor( "OmegaCons", [ IsGroup, IsInt, IsPosInt, IsPosInt ] );
 ##  The value of <A>e</A> must be <M>0</M> for odd <A>d</A> (and can
 ##  optionally be omitted in this case), respectively one of <M>1</M> or
 ##  <M>-1</M> for even <A>d</A>.
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the group
 ##  <M>\Omega</M>( <A>e</A>, <A>d</A>, <A>q</A> ) itself.
 ##  <P/>
@@ -719,7 +719,7 @@ DeclareConstructor( "GeneralSemilinearGroupCons",
 ##  semilinear mappings of the vector space
 ##  <C>GF( </C><A>q</A><C> )^</C><A>d</A>.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group consists of matrices of dimension
 ##  <A>d</A> <M>f</M> over the field with <M>p</M> elements,
 ##  where <A>q</A> <M>= p^f</M>, for a prime integer <M>p</M>.
@@ -772,7 +772,7 @@ DeclareConstructor( "SpecialSemilinearGroupCons",
 ##  (see <Ref Func="GeneralSemilinearGroup"/>)
 ##  whose linear part has determinant one.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsMatrixGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group consists of matrices of dimension
 ##  <A>d</A> <M>f</M> over the field with <M>p</M> elements,
 ##  where <A>q</A> <M>= p^f</M>, for a prime integer <M>p</M>.
@@ -849,7 +849,7 @@ end);
 ##  matrices over the field with <A>q</A> elements, modulo the
 ##  centre, in the category given by the filter <A>filt</A>.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsPermGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,
 ##  and the returned group is the action on lines of the underlying vector
 ##  space.
 ##  <P/>
@@ -881,7 +881,7 @@ DECLARE_PROJECTIVE_GROUPS_OPERATION("GeneralLinearGroup","GL",1,
 ##  identity of the field, modulo the centre,
 ##  in the category given by the filter <A>filt</A>.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsPermGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,
 ##  and the returned group is the action on lines of the underlying vector
 ##  space.
 ##  </Description>
@@ -912,7 +912,7 @@ DECLARE_PROJECTIVE_GROUPS_OPERATION("SpecialLinearGroup","SL",1,
 ##  a fixed nondegenerate sesquilinear form,
 ##  modulo the centre, in the category given by the filter <A>filt</A>.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsPermGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,
 ##  and the returned group is the action on lines of the underlying vector
 ##  space.
 ##  </Description>
@@ -943,7 +943,7 @@ DECLARE_PROJECTIVE_GROUPS_OPERATION("GeneralUnitaryGroup","GU",2,
 ##  a fixed nondegenerate sesquilinear form and have determinant 1,
 ##  modulo the centre, in the category given by the filter <A>filt</A>.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsPermGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,
 ##  and the returned group is the action on lines of the underlying vector
 ##  space.
 ##  </Description>
@@ -976,7 +976,7 @@ DECLARE_PROJECTIVE_GROUPS_OPERATION("SpecialUnitaryGroup","SU",2,
 ##  symplectic form, modulo the centre,
 ##  in the category given by the filter <A>filt</A>.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsPermGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,
 ##  and the returned group is the action on lines of the underlying vector
 ##  space.
 ##  </Description>
@@ -1010,7 +1010,7 @@ DeclareSynonym( "PSp", PSP );
 ##  (see <Ref Oper="Omega" Label="construct an orthogonal group"/>),
 ##  in the category given by the filter <A>filt</A>.
 ##  <P/>
-##  If <A>filt</A> is not given it defaults to <Ref Func="IsPermGroup"/>,
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,
 ##  and the returned group is the action on lines of the underlying vector
 ##  space.
 ##  </Description>

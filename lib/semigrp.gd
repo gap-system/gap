@@ -100,7 +100,7 @@ DeclareOperation("InversesOfSemigroupElement",
 ##  not as a list of generators.
 ##  <P/>
 ##  It is <E>not</E> checked whether the underlying multiplication is
-##  associative, use <Ref Func="Magma"/> and <Ref Func="IsAssociative"/>
+##  associative, use <Ref Func="Magma"/> and <Ref Prop="IsAssociative"/>
 ##  if you want to check whether a magma is in fact a semigroup.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -175,7 +175,7 @@ DeclareOperation( "SemigroupByGenerators", [ IsCollection ] );
 ##
 ##  <Description>
 ##  If <A>C</A> is a collection whose elements form a semigroup
-##  (see&nbsp;<Ref Func="IsSemigroup"/>) then <Ref Func="AsSemigroup"/>
+##  (see&nbsp;<Ref Filt="IsSemigroup"/>) then <Ref Oper="AsSemigroup"/>
 ##  returns this semigroup.
 ##  Otherwise <K>fail</K> is returned.
 ##  </Description>
@@ -195,7 +195,7 @@ DeclareOperation( "AsSemigroup", [IsCollection]);
 ##  <Description>
 ##  Let <A>D</A> be a domain and <A>C</A> a collection.
 ##  If <A>C</A> is a subset of <A>D</A> that forms a semigroup then
-##  <Ref Func="AsSubsemigroup"/>
+##  <Ref Oper="AsSubsemigroup"/>
 ##  returns this semigroup, with parent <A>D</A>.
 ##  Otherwise <K>fail</K> is returned.
 ##  </Description>
@@ -215,7 +215,7 @@ DeclareOperation( "AsSubsemigroup", [ IsDomain, IsCollection ] );
 ##
 ##  <Description>
 ##  Semigroup generators of a semigroup <A>D</A> are the same as magma
-##  generators, see&nbsp;<Ref Func="GeneratorsOfMagma"/>.
+##  generators, see&nbsp;<Ref Attr="GeneratorsOfMagma"/>.
 ##  <Example><![CDATA[
 ##  gap> GeneratorsOfSemigroup(s);
 ##  [ Transformation( [ 2, 3, 4, 1 ] ), Transformation( [ 2, 2 ] ) ]
@@ -239,7 +239,7 @@ DeclareSynonymAttr( "GeneratorsOfSemigroup", GeneratorsOfMagma );
 ##  <Description>
 ##  This property reflects whether the list or collection <A>C</A> generates
 ##  a semigroup.
-##  <Ref Prop="IsAssociativeElementCollection"/> implies 
+##  <Ref Filt="IsAssociativeElementCollection"/> implies 
 ##  &nbsp;<Ref Prop="IsGeneratorsOfSemigroup"/>,
 ##  but is not used directly in semigroup code, because of conflicts
 ##  with matrices.
@@ -323,9 +323,9 @@ DeclareAttribute("CayleyGraphDualSemigroup",IsSemigroup);
 ##  and the other generators by <A>name</A> and an appended number.
 ##  <P/>
 ##  If the extra argument <A>wfilt</A> is given, it must be either
-##  <Ref Func="IsSyllableWordsFamily"/> or <Ref Func="IsLetterWordsFamily"/>
-##  or <Ref Func="IsWLetterWordsFamily"/> or
-##  <Ref Func="IsBLetterWordsFamily"/>.
+##  <Ref Filt="IsSyllableWordsFamily"/> or <Ref Filt="IsLetterWordsFamily"/>
+##  or <Ref Filt="IsWLetterWordsFamily"/> or
+##  <Ref Filt="IsBLetterWordsFamily"/>.
 ##  This filter then specifies the representation used for the elements of
 ##  the free semigroup
 ##  (see&nbsp;<Ref Sect="Representations for Associative Words"/>).

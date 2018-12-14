@@ -57,7 +57,7 @@
 ##  <P/>
 ##  <E>Class function objects</E> in &GAP; are not just plain lists,
 ##  they store the character table of the group <M>G</M> as value of the
-##  attribute <Ref Func="UnderlyingCharacterTable"/>.
+##  attribute <Ref Attr="UnderlyingCharacterTable"/>.
 ##  The group <M>G</M> itself is accessible only via the character table
 ##  and thus only if the character table stores its group, as value of the
 ##  attribute <Ref Attr="UnderlyingGroup" Label="for character tables"/>.
@@ -152,7 +152,7 @@ DeclareGlobalFunction( "CharacterString" );
 ##  possibilities.
 ##  <P/>
 ##  The main idea behind class function objects is that a class function
-##  object is equal to its values list in the sense of <Ref Func="\="/>,
+##  object is equal to its values list in the sense of <Ref Oper="\="/>,
 ##  so class function objects can be used wherever their values lists
 ##  can be used,
 ##  but there are operations for class function objects that do not work
@@ -165,7 +165,7 @@ DeclareGlobalFunction( "CharacterString" );
 ##  rather than returning just values lists,
 ##  for example <Ref Attr="Irr" Label="for a group"/> lists
 ##  consist of class function objects,
-##  and <Ref Func="TrivialCharacter" Label="for a group"/>
+##  and <Ref Attr="TrivialCharacter" Label="for a group"/>
 ##  returns a class function object.
 ##  <P/>
 ##  Here is an <E>example</E> that shows both approaches.
@@ -255,7 +255,7 @@ DeclareGlobalFunction( "CharacterString" );
 ##  ]]></Example>
 ##  <P/>
 ##  Non-normal subgroups cannot be described this way,
-##  so for example inertia subgroups (see&nbsp;<Ref Func="InertiaSubgroup"/>)
+##  so for example inertia subgroups (see&nbsp;<Ref Oper="InertiaSubgroup"/>)
 ##  can in general not be computed from character tables without access to
 ##  their groups.
 ##  <#/GAPDoc>
@@ -268,8 +268,8 @@ DeclareGlobalFunction( "CharacterString" );
 ##
 ##  <#GAPDoc Label="[2]{ctblfuns}">
 ##  Basic operations for class functions are
-##  <Ref Func="UnderlyingCharacterTable"/>,
-##  <Ref Func="ValuesOfClassFunction"/>,
+##  <Ref Attr="UnderlyingCharacterTable"/>,
+##  <Ref Attr="ValuesOfClassFunction"/>,
 ##  and the basic operations for lists
 ##  (see&nbsp;<Ref Sect="Basic Operations for Lists"/>).
 ##  <#/GAPDoc>
@@ -289,16 +289,16 @@ DeclareGlobalFunction( "CharacterString" );
 ##  the character table of <M>G</M> is stored as value of
 ##  <Ref Attr="UnderlyingCharacterTable"/>.
 ##  The ordering of entries in the list <A>psi</A>
-##  (see&nbsp;<Ref Func="ValuesOfClassFunction"/>)
+##  (see&nbsp;<Ref Attr="ValuesOfClassFunction"/>)
 ##  refers to the ordering of conjugacy classes in this character table.
 ##  <P/>
 ##  If <A>psi</A> is an ordinary class function then the underlying character
 ##  table is the ordinary character table of <M>G</M>
-##  (see&nbsp;<Ref Func="OrdinaryCharacterTable" Label="for a group"/>),
+##  (see&nbsp;<Ref Attr="OrdinaryCharacterTable" Label="for a group"/>),
 ##  if <A>psi</A> is a class function in characteristic <M>p \neq 0</M> then
 ##  the underlying character table is the <M>p</M>-modular Brauer table of
 ##  <M>G</M>
-##  (see&nbsp;<Ref Func="BrauerTable"
+##  (see&nbsp;<Ref Oper="BrauerTable"
 ##  Label="for a group, and a prime integer"/>).
 ##  So the underlying characteristic of <A>psi</A> can be read off from the
 ##  underlying character table.
@@ -321,7 +321,7 @@ DeclareAttribute( "UnderlyingCharacterTable", IsClassFunction );
 ##  is the list of values of the class function <A>psi</A>,
 ##  the <M>i</M>-th entry being the value on the <M>i</M>-th conjugacy class
 ##  of the underlying character table
-##  (see&nbsp;<Ref Func="UnderlyingCharacterTable"/>).
+##  (see&nbsp;<Ref Attr="UnderlyingCharacterTable"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> g:= SymmetricGroup( 4 );
@@ -355,9 +355,9 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  3. Comparison of Class Functions
 ##
 ##  <#GAPDoc Label="[3]{ctblfuns}">
-##  With respect to <Ref Func="\="/> and <Ref Func="\&lt;"/>,
+##  With respect to <Ref Oper="\="/> and <Ref Oper="\&lt;"/>,
 ##  class functions behave equally to their lists of values
-##  (see&nbsp;<Ref Func="ValuesOfClassFunction"/>).
+##  (see&nbsp;<Ref Attr="ValuesOfClassFunction"/>).
 ##  So two class functions are equal if and only if their lists of values are
 ##  equal, no matter whether they are class functions of the same character
 ##  table, of the same group but w.r.t.&nbsp;different class ordering,
@@ -411,17 +411,17 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  is a more interesting operation than the vector product of plain lists.
 ##  (Another candidate for a multiplication of compatible class functions
 ##  would have been the inner product, which is implemented via the function
-##  <Ref Func="ScalarProduct" Label="for characters"/>.
+##  <Ref Oper="ScalarProduct" Label="for characters"/>.
 ##  In terms of filters, the arithmetic of class functions is based on the
-##  decision that they lie in <Ref Func="IsGeneralizedRowVector"/>,
+##  decision that they lie in <Ref Filt="IsGeneralizedRowVector"/>,
 ##  with additive nesting depth <M>1</M>, but they do <E>not</E> lie in
-##  <Ref Func="IsMultiplicativeGeneralizedRowVector"/>.
+##  <Ref Filt="IsMultiplicativeGeneralizedRowVector"/>.
 ##  <P/>
 ##  More specifically, the scalar multiple of a class function with a
 ##  cyclotomic is a class function,
 ##  and the sum and the difference of two class functions
 ##  of the same underlying character table
-##  (see&nbsp;<Ref Func="UnderlyingCharacterTable"/>)
+##  (see&nbsp;<Ref Attr="UnderlyingCharacterTable"/>)
 ##  are again class functions of this table.
 ##  The sum and the difference of a class function and a list that is
 ##  <E>not</E> a class function are plain lists,
@@ -527,7 +527,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  <Index Subkey="of group element using powering operator">character value</Index>
 ##  <Index Subkey="meaning for class functions">power</Index>
 ##  <Index Subkey="for class functions"><C>^</C></Index>
-##  The <E>powering</E> operator <Ref Func="\^"/> has several meanings
+##  The <E>powering</E> operator <Ref Oper="\^"/> has several meanings
 ##  for class functions.
 ##  The power of a class function by a nonnegative integer is clearly the
 ##  tensor power.
@@ -535,10 +535,10 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  underlying group or by a Galois automorphism is the conjugate class
 ##  function.
 ##  (As a consequence, the application of the permutation induced by such an
-##  action cannot be denoted by <Ref Func="\^"/>; instead one can use
-##  <Ref Func="Permuted"/>.)
+##  action cannot be denoted by <Ref Oper="\^"/>; instead one can use
+##  <Ref Oper="Permuted"/>.)
 ##  The power of a class function by a group or a character table is the
-##  induced class function (see&nbsp;<Ref Func="InducedClassFunction"
+##  induced class function (see&nbsp;<Ref Oper="InducedClassFunction"
 ##  Label="for the character table of a supergroup"/>).
 ##  The power of a group element by a class function is the class function
 ##  value at (the conjugacy class containing) this element.
@@ -601,9 +601,9 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##
 ##  <Description>
 ##  The operations
-##  <Ref Func="ComplexConjugate" Label="for a class function"/>,
-##  <Ref Func="GaloisCyc" Label="for a class function"/>,
-##  and <Ref Func="Permuted" Label="for a class function"/> return
+##  <Ref Attr="ComplexConjugate" Label="for a class function"/>,
+##  <Ref Oper="GaloisCyc" Label="for a class function"/>,
+##  and <Ref Meth="Permuted" Label="for a class function"/> return
 ##  a class function when they are called with a class function;
 ##  The complex conjugate of a class function that is known to be a (virtual)
 ##  character is again known to be a (virtual) character, and applying an
@@ -628,11 +628,11 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  <Attr Name="Order" Arg='chi' Label="for a class function"/>
 ##
 ##  <Description>
-##  By definition of <Ref Func="Order"/> for arbitrary monoid elements,
-##  the return value of <Ref Func="Order"/> for a character must be its
+##  By definition of <Ref Attr="Order"/> for arbitrary monoid elements,
+##  the return value of <Ref Attr="Order"/> for a character must be its
 ##  multiplicative order.
 ##  The <E>determinantal order</E>
-##  (see&nbsp;<Ref Func="DeterminantOfCharacter"/>) of a character <A>chi</A>
+##  (see&nbsp;<Ref Attr="DeterminantOfCharacter"/>) of a character <A>chi</A>
 ##  can be computed as <C>Order( Determinant( <A>chi</A> ) )</C>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -728,12 +728,12 @@ DeclareOperation( "CorrespondingPermutations",
 ##  <Meth Name="ViewObj" Arg='chi' Label="for class functions"/>
 ##
 ##  <Description>
-##  The default <Ref Func="ViewObj"/> methods for class functions
+##  The default <Ref Oper="ViewObj"/> methods for class functions
 ##  print one of the strings <C>"ClassFunction"</C>,
 ##  <C>"VirtualCharacter"</C>, <C>"Character"</C> (depending on whether the
 ##  class function is known to be a character or virtual character,
-##  see&nbsp;<Ref Func="IsCharacter"/>, <Ref Func="IsVirtualCharacter"/>),
-##  followed by the <Ref Func="ViewObj"/> output for the underlying character
+##  see&nbsp;<Ref Prop="IsCharacter"/>, <Ref Prop="IsVirtualCharacter"/>),
+##  followed by the <Ref Oper="ViewObj"/> output for the underlying character
 ##  table (see&nbsp;<Ref Sect="Printing Character Tables"/>),
 ##  and the list of values.
 ##  The table is chosen (and not the group) in order to distinguish class
@@ -746,8 +746,8 @@ DeclareOperation( "CorrespondingPermutations",
 ##  <Meth Name="PrintObj" Arg='chi' Label="for class functions"/>
 ##
 ##  <Description>
-##  The default <Ref Func="PrintObj"/> method for class functions
-##  does the same as <Ref Func="ViewObj"/>,
+##  The default <Ref Oper="PrintObj"/> method for class functions
+##  does the same as <Ref Oper="ViewObj"/>,
 ##  except that the character table is is <Ref Func="Print"/>-ed instead of
 ##  <Ref Func="View"/>-ed.
 ##  <P/>
@@ -757,7 +757,7 @@ DeclareOperation( "CorrespondingPermutations",
 ##  just this was not known at the time when the class function was printed.
 ##  <P/>
 ##  In order to reduce the space that is needed to print a class function,
-##  it may be useful to give a name (see&nbsp;<Ref Func="Name"/>) to the
+##  it may be useful to give a name (see&nbsp;<Ref Attr="Name"/>) to the
 ##  underlying character table.
 ##  </Description>
 ##  </ManSection>
@@ -766,8 +766,8 @@ DeclareOperation( "CorrespondingPermutations",
 ##  <Meth Name="Display" Arg='chi' Label="for class functions"/>
 ##
 ##  <Description>
-##  The default <Ref Func="Display"/> method for a class function <A>chi</A>
-##  calls <Ref Func="Display"/> for its underlying character table
+##  The default <Ref Oper="Display"/> method for a class function <A>chi</A>
+##  calls <Ref Oper="Display"/> for its underlying character table
 ##  (see&nbsp;<Ref Sect="Printing Character Tables"/>),
 ##  with <A>chi</A> as the only entry in the <C>chars</C> list of the options
 ##  record.
@@ -847,7 +847,7 @@ DeclareOperation( "ClassFunction", [ IsGroup, IsDenseList ] );
 ##  <Description>
 ##  <Ref Oper="VirtualCharacter" Label="for a character table and a list"/>
 ##  returns the virtual character
-##  (see&nbsp;<Ref Func="IsVirtualCharacter"/>)
+##  (see&nbsp;<Ref Prop="IsVirtualCharacter"/>)
 ##  of the character table <A>tbl</A> or the group <A>G</A>,
 ##  respectively, with values given by the list <A>values</A>.
 ##  <P/>
@@ -875,7 +875,7 @@ DeclareOperation( "VirtualCharacter", [ IsGroup, IsDenseList ] );
 ##
 ##  <Description>
 ##  <Ref Oper="Character" Label="for a character table and a list"/>
-##  returns the character (see&nbsp;<Ref Func="IsCharacter"/>)
+##  returns the character (see&nbsp;<Ref Prop="IsCharacter"/>)
 ##  of the character table <A>tbl</A> or the group <A>G</A>,
 ##  respectively, with values given by the list <A>values</A>.
 ##  <P/>
@@ -919,7 +919,7 @@ DeclareOperation( "Character", [ IsGroup, IsDenseList ] );
 ##  <Ref Func="ClassFunctionSameType"/> returns the class function
 ##  <M>\psi</M> of <A>tbl</A> with values list <A>values</A>,
 ##  constructed with
-##  <Ref Func="ClassFunction" Label="for a character table and a list"/>.
+##  <Ref Oper="ClassFunction" Label="for a character table and a list"/>.
 ##  <P/>
 ##  If <A>chi</A> is known to be a (virtual) character then <M>\psi</M>
 ##  is also known to be a (virtual) character.
@@ -992,7 +992,7 @@ DeclareAttribute( "TrivialCharacter", IsGroup );
 ##  <Ref Attr="NaturalCharacter" Label="for a group"/>
 ##  returns the (ordinary) character of the natural permutation
 ##  representation of <A>G</A> on the set of moved points (see
-##  <Ref Func="MovedPoints" Label="for a list or collection of permutations"/>),
+##  <Ref Attr="MovedPoints" Label="for a list or collection of permutations"/>),
 ##  that is, the value on each class is the number of points among the moved
 ##  points of <A>G</A> that are fixed by any permutation in that class.
 ##  <P/>
@@ -1057,7 +1057,7 @@ DeclareAttribute( "NaturalCharacter", IsGeneralMapping );
 ##  To compute the permutation character of a
 ##  <E>transitive permutation group</E>
 ##  <A>G</A> on the cosets of a point stabilizer <A>U</A>,
-##  the attribute <Ref Func="NaturalCharacter" Label="for a group"/>
+##  the attribute <Ref Attr="NaturalCharacter" Label="for a group"/>
 ##  of <A>G</A> can be used instead of
 ##  <C>PermutationCharacter( <A>G</A>, <A>U</A> )</C>.
 ##  <P/>
@@ -1135,7 +1135,7 @@ DeclareOperation( "IsCharacter", [ IsCharacterTable, IsHomogeneousList ] );
 ##  <Description>
 ##  <Index>virtual character</Index>
 ##  A <E>virtual character</E> is a class function that can be written as the
-##  difference of two proper characters (see&nbsp;<Ref Func="IsCharacter"/>).
+##  difference of two proper characters (see&nbsp;<Ref Prop="IsCharacter"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1169,7 +1169,7 @@ InstallTrueMethod( IsVirtualCharacter, IsCharacter );
 ##  two characters.
 ##  For ordinary characters this can be checked using the scalar product
 ##  of class functions
-##  (see&nbsp;<Ref Func="ScalarProduct" Label="for characters"/>).
+##  (see&nbsp;<Ref Oper="ScalarProduct" Label="for characters"/>).
 ##  For Brauer characters there is no generic method for checking
 ##  irreducibility.
 ##  <P/>
@@ -1333,7 +1333,7 @@ DeclareOperation( "Norm", [ IsOrdinaryTable, IsHomogeneousList ] );
 ##  <Description>
 ##  <Index Subkey="of a character">centre</Index>
 ##  For a character <A>chi</A> of the group <M>G</M>, say,
-##  <Ref Func="CentreOfCharacter"/> returns the <E>centre</E> of <A>chi</A>,
+##  <Ref Attr="CentreOfCharacter"/> returns the <E>centre</E> of <A>chi</A>,
 ##  that is, the normal subgroup of all those elements of <M>G</M> for which
 ##  the quotient of the value of <A>chi</A> by the degree of <A>chi</A> is
 ##  a root of unity.
@@ -1371,7 +1371,7 @@ DeclareSynonym( "CenterOfCharacter", CentreOfCharacter );
 ##
 ##  <Description>
 ##  is the list of positions of classes forming the centre of the character
-##  <A>chi</A> (see&nbsp;<Ref Func="CentreOfCharacter"/>).
+##  <A>chi</A> (see&nbsp;<Ref Attr="CentreOfCharacter"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> List( Irr( S4 ), ClassPositionsOfCentre );
@@ -1451,15 +1451,15 @@ DeclareAttribute( "DegreeOfCharacter", IsClassFunction );
 ##  Let <A>chi</A> be a character of the group <M>H</M>, say,
 ##  and <A>tbl</A> the character table of <M>H</M>;
 ##  if the argument <A>tbl</A> is not given then the underlying character
-##  table of <A>chi</A> (see&nbsp;<Ref Func="UnderlyingCharacterTable"/>) is
+##  table of <A>chi</A> (see&nbsp;<Ref Attr="UnderlyingCharacterTable"/>) is
 ##  used instead.
 ##  Furthermore, let <A>G</A> be a group that contains <M>H</M> as a normal
 ##  subgroup.
 ##  <P/>
-##  <Ref Func="InertiaSubgroup"/> returns the stabilizer in <A>G</A> of
+##  <Ref Oper="InertiaSubgroup"/> returns the stabilizer in <A>G</A> of
 ##  <A>chi</A>, w.r.t.&nbsp;the action of <A>G</A> on the classes of <M>H</M>
 ##  via conjugation.
-##  In other words, <Ref Func="InertiaSubgroup"/> returns the group of all
+##  In other words, <Ref Oper="InertiaSubgroup"/> returns the group of all
 ##  those elements <M>g \in <A>G</A></M> that satisfy
 ##  <M><A>chi</A>^g = <A>chi</A></M>.
 ##  <P/>
@@ -1488,12 +1488,12 @@ DeclareOperation( "InertiaSubgroup",
 ##
 ##  <Description>
 ##  For a class function <A>chi</A> of the group <M>G</M>, say,
-##  <Ref Func="KernelOfCharacter"/> returns the normal subgroup of <M>G</M>
+##  <Ref Attr="KernelOfCharacter"/> returns the normal subgroup of <M>G</M>
 ##  that is formed by those conjugacy classes for which the value of
 ##  <A>chi</A> equals the degree of <A>chi</A>.
 ##  If the underlying character table of <A>chi</A> does not store the group
 ##  <M>G</M> then an error is signalled.
-##  (See&nbsp;<Ref Func="ClassPositionsOfKernel"/> for a way to handle the
+##  (See&nbsp;<Ref Attr="ClassPositionsOfKernel"/> for a way to handle the
 ##  kernel implicitly,
 ##  by listing the positions of conjugacy classes in the kernel.)
 ##  <P/>
@@ -1552,7 +1552,7 @@ DeclareAttribute( "ClassPositionsOfKernel", IsHomogeneousList );
 ##  <Ref Oper="CycleStructureClass"/> returns a list describing
 ##  the cycle structure of each element in class <A>class</A> in the
 ##  underlying permutation representation, in the same format as the result
-##  of <Ref Func="CycleStructurePerm"/>.
+##  of <Ref Attr="CycleStructurePerm"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> nat:= NaturalCharacter( S4 );
@@ -1580,9 +1580,9 @@ DeclareOperation( "CycleStructureClass", [ IsClassFunction, IsPosInt ] );
 ##  <Description>
 ##  For a permutation character <A>chi</A> of the group <M>G</M> that
 ##  corresponds to an action on the <M>G</M>-set <M>\Omega</M>
-##  (see&nbsp;<Ref Func="PermutationCharacter"
+##  (see&nbsp;<Ref Oper="PermutationCharacter"
 ##  Label="for a group, an action domain, and a function"/>),
-##  <Ref Prop="IsTransitive" Label="for a group, an action domain, etc."/>
+##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>
 ##  returns <K>true</K> if the action of <M>G</M> on <M>\Omega</M> is
 ##  transitive, and <K>false</K> otherwise.
 ##  </Description>
@@ -1604,7 +1604,7 @@ DeclareOperation( "IsTransitive", [ IsCharacterTable, IsHomogeneousList ] );
 ##  <Description>
 ##  For a permutation character <A>chi</A> of the group <M>G</M>
 ##  that corresponds to an action on the <M>G</M>-set <M>\Omega</M>
-##  (see&nbsp;<Ref Func="PermutationCharacter"
+##  (see&nbsp;<Ref Oper="PermutationCharacter"
 ##  Label="for a group, an action domain, and a function"/>),
 ##  <Ref Attr="Transitivity" Label="for a character"/> returns the maximal
 ##  nonnegative integer <M>k</M> such that the action of <M>G</M> on
@@ -1636,7 +1636,7 @@ DeclareOperation( "Transitivity", [ IsOrdinaryTable, IsHomogeneousList ] );
 ##  <Description>
 ##  <Index>central character</Index>
 ##  For a character <A>chi</A> of the group <M>G</M>, say,
-##  <Ref Func="CentralCharacter"/> returns
+##  <Ref Attr="CentralCharacter"/> returns
 ##  the <E>central character</E> of <A>chi</A>.
 ##  <P/>
 ##  The central character of <M>\chi</M> is the class function
@@ -1662,14 +1662,14 @@ DeclareOperation( "CentralCharacter",
 ##
 ##  <Description>
 ##  <Index>determinant character</Index>
-##  <Ref Func="DeterminantOfCharacter"/> returns the
+##  <Ref Attr="DeterminantOfCharacter"/> returns the
 ##  <E>determinant character</E> of the character <A>chi</A>.
 ##  This is defined to be the character obtained by taking the determinant of
 ##  representing matrices of any representation affording <A>chi</A>;
-##  the determinant can be computed using <Ref Func="EigenvaluesChar"/>.
+##  the determinant can be computed using <Ref Oper="EigenvaluesChar"/>.
 ##  <P/>
-##  It is also possible to call <Ref Func="Determinant"/> instead of
-##  <Ref Func="DeterminantOfCharacter"/>.
+##  It is also possible to call <Ref Oper="Determinant"/> instead of
+##  <Ref Attr="DeterminantOfCharacter"/>.
 ##  <P/>
 ##  Note that the determinant character is well-defined for virtual
 ##  characters.
@@ -1703,7 +1703,7 @@ DeclareOperation( "DeterminantOfCharacter",
 ##  of order <M>n</M>, let <M>M</M> be a matrix of a representation affording
 ##  <A>chi</A>.
 ##  <P/>
-##  <Ref Func="EigenvaluesChar"/> returns the list of length <M>n</M>
+##  <Ref Oper="EigenvaluesChar"/> returns the list of length <M>n</M>
 ##  where at position <M>k</M> the multiplicity
 ##  of <C>E</C><M>(n)^k = \exp(2 \pi i k / n)</M>
 ##  as an eigenvalue of <M>M</M> is stored.
@@ -1712,8 +1712,8 @@ DeclareOperation( "DeterminantOfCharacter",
 ##  <C><A>chi</A>[ <A>class</A> ] = List( [ 1 .. n ], k -> E(n)^k )
 ##           * EigenvaluesChar( <A>tbl</A>, <A>chi</A>, <A>class</A> )</C>.
 ##  <P/>
-##  It is also possible to call <Ref Func="Eigenvalues"/> instead of
-##  <Ref Func="EigenvaluesChar"/>.
+##  It is also possible to call <Ref Oper="Eigenvalues"/> instead of
+##  <Ref Oper="EigenvaluesChar"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> chi:= Irr( CharacterTable( "A5" ) )[2];
@@ -1742,7 +1742,7 @@ DeclareOperation( "EigenvaluesChar",
 ##  <Description>
 ##  Let <A>chars1</A> and <A>chars2</A> be lists of (values lists of) class
 ##  functions of the same character table.
-##  <Ref Func="Tensored"/> returns the list of tensor products of all entries
+##  <Ref Oper="Tensored"/> returns the list of tensor products of all entries
 ##  in <A>chars1</A> with all entries in <A>chars2</A>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -2463,7 +2463,7 @@ DeclareSynonym( "RefinedSymmetrisations", RefinedSymmetrizations );
 ##  <P/>
 ##  <E>Note</E>:
 ##  If <A>chars</A> is a list of character objects
-##  (see&nbsp;<Ref Func="IsCharacter"/>) then also
+##  (see&nbsp;<Ref Prop="IsCharacter"/>) then also
 ##  the result consists of class function objects.
 ##  It is not checked whether all characters in <A>chars</A> do really have
 ##  indicator <M>+1</M>;
@@ -2521,7 +2521,7 @@ DeclareGlobalFunction( "OrthogonalComponents" );
 ##  <P/>
 ##  <E>Note</E>:
 ##  If <A>chars</A> is a list of character objects
-##  (see&nbsp;<Ref Func="IsCharacter"/>) then also
+##  (see&nbsp;<Ref Prop="IsCharacter"/>) then also
 ##  the result consists of class function objects.
 ##  It is not checked whether all characters in <A>chars</A> do really have
 ##  indicator <M>-1</M>;

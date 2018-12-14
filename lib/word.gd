@@ -59,22 +59,22 @@
 ##  Interesting cases of free multiplicative structures are those of
 ##  free semigroups, free monoids, and free groups,
 ##  where the multiplication is associative
-##  (see&nbsp;<Ref Func="IsAssociative"/>),
+##  (see&nbsp;<Ref Prop="IsAssociative"/>),
 ##  which are described in Chapter&nbsp;<Ref Chap="Associative Words"/>,
 ##  and also the case of free magmas,
 ##  where the multiplication is nonassociative
-##  (see&nbsp;<Ref Func="IsNonassocWord"/>).
+##  (see&nbsp;<Ref Filt="IsNonassocWord"/>).
 ##  <P/>
 ##  Elements in free magmas
 ##  (see&nbsp;<Ref Func="FreeMagma" Label="for given rank"/>)
-##  lie in the category <Ref Func="IsWord"/>;
+##  lie in the category <Ref Filt="IsWord"/>;
 ##  similarly, elements in free magmas-with-one
 ##  (see&nbsp;<Ref Func="FreeMagmaWithOne" Label="for given rank"/>) 
-##  lie in the category <Ref Func="IsWordWithOne"/>, and so on.
+##  lie in the category <Ref Filt="IsWordWithOne"/>, and so on.
 ##  <P/>
-##  <Ref Func="IsWord"/> is mainly a <Q>common roof</Q> for the two
+##  <Ref Filt="IsWord"/> is mainly a <Q>common roof</Q> for the two
 ##  <E>disjoint</E> categories
-##  <Ref Func="IsAssocWord"/> and <Ref Func="IsNonassocWord"/>
+##  <Ref Filt="IsAssocWord"/> and <Ref Filt="IsNonassocWord"/>
 ##  of associative and nonassociative words.
 ##  This means that associative words are <E>not</E> regarded as special
 ##  cases of nonassociative words.
@@ -84,7 +84,7 @@
 ##  and <Ref Sect="The External Representation for Associative Words"/>).
 ##  <P/>
 ##  Note that elements in finitely presented groups and also elements in
-##  polycyclic groups in &GAP; are <E>not</E> in <Ref Func="IsWord"/>
+##  polycyclic groups in &GAP; are <E>not</E> in <Ref Filt="IsWord"/>
 ##  although they are usually called words,
 ##  see Chapters&nbsp;<Ref Chap="Finitely Presented Groups"/>
 ##  and&nbsp;<Ref Chap="Pc Groups"/>.
@@ -153,8 +153,8 @@ DeclareSynonym( "IsWordWithInverse",
 ##  <Filt Name="IsWordCollection" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  <Ref Func="IsWordCollection"/> is the collections category
-##  (see&nbsp;<Ref Func="CategoryCollections"/>) of <Ref Func="IsWord"/>.
+##  <Ref Filt="IsWordCollection"/> is the collections category
+##  (see&nbsp;<Ref Func="CategoryCollections"/>) of <Ref Filt="IsWord"/>.
 ##  <Example><![CDATA[
 ##  gap> IsWordCollection( m );  IsWordCollection( s );
 ##  true
@@ -183,7 +183,7 @@ DeclareCategoryCollections( "IsWord" );
 ##  A <E>nonassociative word</E> in &GAP; is an element in a free magma or
 ##  a free magma-with-one (see&nbsp;<Ref Sect="Free Magmas"/>).
 ##  <P/>
-##  The default methods for <Ref Func="ViewObj"/> and <Ref Func="PrintObj"/>
+##  The default methods for <Ref Oper="ViewObj"/> and <Ref Oper="PrintObj"/>
 ##  show nonassociative words as products of letters,
 ##  where the succession of multiplications is determined by round brackets.
 ##  <P/>
@@ -192,7 +192,7 @@ DeclareCategoryCollections( "IsWord" );
 ##  (Also associative words can be interpreted as such programs,
 ##  except that the exact succession of multiplications is not prescribed
 ##  due to the associativity.)
-##  The function <Ref Func="MappedWord"/> implements a way to
+##  The function <Ref Oper="MappedWord"/> implements a way to
 ##  apply such a program.
 ##  A more general way is provided by straight line programs
 ##  (see&nbsp;<Ref Sect="Straight Line Programs"/>).
@@ -200,7 +200,7 @@ DeclareCategoryCollections( "IsWord" );
 ##  Note that associative words
 ##  (see Chapter&nbsp;<Ref Chap="Associative Words"/>)
 ##  are <E>not</E> regarded as special cases of nonassociative words
-##  (see&nbsp;<Ref Func="IsWord"/>).
+##  (see&nbsp;<Ref Filt="IsWord"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -220,11 +220,11 @@ DeclareSynonym( "IsNonassocWordWithOne", IsNonassocWord and IsWordWithOne );
 ##  <Filt Name="IsNonassocWordWithOneCollection" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  <Ref Func="IsNonassocWordCollection"/> is the collections category
+##  <Ref Filt="IsNonassocWordCollection"/> is the collections category
 ##  (see&nbsp;<Ref Func="CategoryCollections"/>) of
-##  <Ref Func="IsNonassocWord"/>,
-##  and <Ref Func="IsNonassocWordWithOneCollection"/> is the collections
-##  category of <Ref Func="IsNonassocWordWithOne"/>.
+##  <Ref Filt="IsNonassocWord"/>,
+##  and <Ref Filt="IsNonassocWordWithOneCollection"/> is the collections
+##  category of <Ref Filt="IsNonassocWordWithOne"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -290,7 +290,7 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  <Ref Func="FreeGroup" Label="for given rank"/> etc. consists of words
 ##  over a new alphabet.
 ##  In particular, there is no <Q>universal</Q> empty word,
-##  every families of words in <Ref Func="IsWordWithOne"/> has its own
+##  every families of words in <Ref Filt="IsWordWithOne"/> has its own
 ##  empty word.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -337,12 +337,12 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  <Oper Name="MappedWord" Arg='w, gens, imgs'/>
 ##
 ##  <Description>
-##  <Ref Func="MappedWord"/> returns the object that is obtained by replacing
+##  <Ref Oper="MappedWord"/> returns the object that is obtained by replacing
 ##  each occurrence in the word <A>w</A> of a generator in the list
 ##  <A>gens</A> by the corresponding object in the list <A>imgs</A>.
 ##  The lists <A>gens</A> and <A>imgs</A> must of course have the same length.
 ##  <P/>
-##  <Ref Func="MappedWord"/> needs to do some preprocessing to get internal
+##  <Ref Oper="MappedWord"/> needs to do some preprocessing to get internal
 ##  generator numbers etc. When mapping many (several thousand) words, an
 ##  explicit loop over the words syllables might be faster.
 ##  <P/>
@@ -354,7 +354,7 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  then those may be omitted from <A>gens</A> and <A>imgs</A>.
 ##  In this situation, the special case that the lists <A>gens</A>
 ##  and <A>imgs</A> have only length <M>1</M> is handled more efficiently by
-##  <Ref Func="EliminatedWord"/>.
+##  <Ref Oper="EliminatedWord"/>.
 ##  <Example><![CDATA[
 ##  gap> m:= FreeMagma( "a", "b" );;  gens:= GeneratorsOfMagma( m );;
 ##  gap> a:= gens[1];  b:= gens[2];
@@ -392,9 +392,9 @@ DeclareOperation( "MappedWord", [ IsWord, IsWordCollection, IsList ] );
 ##  object generated by these words.
 ##  Each such free object defines a unique alphabet,
 ##  and its generators are simply the words of length one over this alphabet;
-##  These generators can be accessed via <Ref Func="GeneratorsOfMagma"/> in
+##  These generators can be accessed via <Ref Attr="GeneratorsOfMagma"/> in
 ##  the case of a free magma,
-##  and via <Ref Func="GeneratorsOfMagmaWithOne"/> in the case of a free
+##  and via <Ref Attr="GeneratorsOfMagmaWithOne"/> in the case of a free
 ##  magma-with-one.
 ##  <#/GAPDoc>
 ##
@@ -440,7 +440,7 @@ DeclareSynonym( "IsFreeMagma", IsNonassocWordCollection and IsMagma );
 ##  <P/>
 ##  One can create a nonassociative word from a family of words and the
 ##  external representation of a nonassociative word using
-##  <Ref Func="ObjByExtRep"/>.
+##  <Ref Oper="ObjByExtRep"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> m:= FreeMagma( 2 );;  gens:= GeneratorsOfMagma( m );

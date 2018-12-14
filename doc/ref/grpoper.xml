@@ -21,7 +21,7 @@ We call <M>\Omega</M> the <E>domain</E> of the action.
 In &GAP;, <M>\Omega</M> can be a duplicate-free collection (an object that
 permits access to its elements via the <M>\Omega[n]</M> operation,
 for example a list),
-it does not need to be sorted (see&nbsp;<Ref Func="IsSet"/>).
+it does not need to be sorted (see&nbsp;<Ref Prop="IsSet"/>).
 <P/>
 The acting function <M>\mu</M> is a binary &GAP; function
 that returns the image <M>\mu( x, g )</M> for a point
@@ -61,7 +61,7 @@ and underly the actions mechanism.
 The syntax which is used by the operations for group actions is quite
 flexible.
 For example we can call the operation
-<Ref Func="OrbitsDomain" Label="for a group and an action domain"/>
+<Ref Oper="OrbitsDomain" Label="for a group and an action domain"/>
 for the orbits of the group <A>G</A> on the domain <A>Omega</A>
 in the following ways:
 <P/>
@@ -76,7 +76,7 @@ in the following ways:
 <Mark><C>OrbitsDomain</C><M>( G, \Omega, gens, acts[, \mu] )</M></Mark>
 <Item>
   This second version of
-  <Ref Func="OrbitsDomain" Label="for a group and an action domain"/>
+  <Ref Oper="OrbitsDomain" Label="for a group and an action domain"/>
   permits one to implement an action induced by a homomorphism:
   If the group <M>H</M> acts on <M>\Omega</M> via <M>\mu</M> and
   <M>\varphi \colon G \rightarrow H</M> is a homomorphism,
@@ -168,7 +168,7 @@ This is not verified by &GAP; and results are unpredictable otherwise.
 <Meth Name="Permuted" Arg='list, perm' Label="as a permutation action"/>
 
 <Description>
-The following example demonstrates <Ref Func="Permuted"/> being used
+The following example demonstrates <Ref Oper="Permuted"/> being used
 to implement a permutation action on a domain:
 <P/>
 <Example><![CDATA[
@@ -269,10 +269,10 @@ When a group <M>G</M> acts on a domain <M>\Omega</M>,
 an enumeration of <M>Omega</M> yields a homomorphism from <M>G</M> into
 the symmetric group on <M>\{ 1, \ldots, |\Omega| \}</M>.
 In &GAP;, the enumeration of <M>\Omega</M> is provided by the
-<Ref Func="Enumerator"/> value of <M>\Omega</M>
+<Ref Attr="Enumerator"/> value of <M>\Omega</M>
 which of course is <M>\Omega</M> itself if it is a list.
 <P/>
-For an action homomorphism, the operation <Ref Func="UnderlyingExternalSet"/>
+For an action homomorphism, the operation <Ref Attr="UnderlyingExternalSet"/>
 will return the external set on <M>\Omega</M> which affords the action.
 
 <#Include Label="ActionHomomorphism">
@@ -369,22 +369,22 @@ consider the underlying domain <M>\Omega</M> but the group action as well.
 This concept is implemented in &GAP; via <E>external sets</E>.
 <P/>
 The constituents of an external set are stored in the attributes
-<Ref Func="ActingDomain"/>, <Ref Func="FunctionAction"/> and
-<Ref Func="HomeEnumerator"/>.
+<Ref Attr="ActingDomain"/>, <Ref Attr="FunctionAction"/> and
+<Ref Attr="HomeEnumerator"/>.
 <P/>
 Most operations for actions are applicable as an attribute for an external
 set.
 <P/>
 The most prominent external subsets are orbits,
-see <Ref Func="ExternalOrbit"/>.
+see <Ref Oper="ExternalOrbit"/>.
 <P/>
 Many subsets of a group, such as conjugacy classes or cosets
-(see&nbsp;<Ref Func="ConjugacyClass"/> and <Ref Func="RightCoset"/>)
+(see&nbsp;<Ref Oper="ConjugacyClass"/> and <Ref Oper="RightCoset"/>)
 are implemented as external orbits.
 <P/>
 External sets also are implicitly underlying action homomorphisms,
-see <Ref Func="UnderlyingExternalSet"/>
-and <Ref Func="SurjectiveActionHomomorphismAttr"/>.
+see <Ref Attr="UnderlyingExternalSet"/>
+and <Ref Attr="SurjectiveActionHomomorphismAttr"/>.
 
 <#Include Label="IsExternalSet">
 <#Include Label="ExternalSet">

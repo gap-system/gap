@@ -192,12 +192,12 @@ true
 The &GAP; package <Package>TomLib</Package> provides access to several
 hundred tables of marks of almost simple groups and their maximal subgroups.
 If this package is installed then the tables from this database can be
-accessed via <Ref Func="TableOfMarks" Label="for a string"/> with argument
+accessed via <Ref Attr="TableOfMarks" Label="for a string"/> with argument
 a string.
 If also the &GAP; Character Table Library is installed and contains the
 ordinary character table of the group for which one wants to fetch the table
 of marks then one can also call
-<Ref Func="TableOfMarks" Label="for a string"/>
+<Ref Attr="TableOfMarks" Label="for a string"/>
 <!-- This reference is not correct.
      The Character Table Library or the ``Interface'' section above
      should document this method,

@@ -222,7 +222,7 @@ included in the selection, or a list of such  values.  For  the  function
 <Ref BookName="smallgrp" Func="AllSmallGroups"/> the first such function must be
 <Ref Attr="Size"/>, and, unlike  the
 other library selection functions,  it  supports  an  alternative  syntax
-where <Ref Func="Size"/> is omitted
+where <Ref Attr="Size"/> is omitted
 (see&nbsp;<Ref BookName="smallgrp" Func="AllSmallGroups"/>).
 Also, see <Ref BookName="primgrp" Func="AllIrreducibleSolvableGroups"/>,
 for details pertaining to this function.
@@ -710,7 +710,7 @@ i.m.f.&nbsp;integral matrix groups of dimension <A>dim</A>:
       the sizes  of the  orbits  of short vectors  (these  sizes  are the
       degrees of the  faithful permutation representations  which you may
       construct using the functions 
-      <Ref Func="IsomorphismPermGroup" Label="for Imf matrix groups"/> or
+      <Ref Meth="IsomorphismPermGroup" Label="for Imf matrix groups"/> or
       <Ref Func="IsomorphismPermGroupImfGroup"/> below),
 </Item>
 <Item>
@@ -907,7 +907,7 @@ The resulting record contains six or seven components:
 <Item>
       the elementary divisors of the associated Gram matrix  <A>F</A>  (in the
       same format as the result of the function
-      <Ref Func="ElementaryDivisorsMat"/>,
+      <Ref Oper="ElementaryDivisorsMat"/>,
 </Item>
 <Mark><C>minimalNorm</C> </Mark>
 <Item>
@@ -1001,7 +1001,7 @@ gap> for m in GeneratorsOfGroup( G ) do PrintArray( m ); od;
   [  0,  0,  0,  0,  1 ] ]
 ]]></Example>
 <P/>
-The attributes <Ref Func="Size"/> and <C>IsSolvable</C> will be
+The attributes <Ref Attr="Size"/> and <C>IsSolvable</C> will be
 properly set in the resulting matrix group <M>G</M>.
 In addition, it has two attributes <C>IsImfMatrixGroup</C> and
 <C>ImfRecord</C> where the first one is just a logical flag set to
@@ -1026,7 +1026,7 @@ Moreover, it has the two components
 </List>
 <P/>
 The  last one  of  these  components  will be  required  by the  function
-<Ref Func="IsomorphismPermGroup" Label="for Imf matrix groups"/> below.
+<Ref Meth="IsomorphismPermGroup" Label="for Imf matrix groups"/> below.
 <P/>
 <Example><![CDATA[
 gap> Size( G );
@@ -1053,7 +1053,7 @@ Hence we recommend that you do your computations, whenever possible,
 in the isomorphic permutation group which is induced by the action of
 <M>G</M> on one of the orbits of the associated short vectors.
 You may call one of the following functions
-<Ref Func="IsomorphismPermGroup" Label="for Imf matrix groups"/> or
+<Ref Meth="IsomorphismPermGroup" Label="for Imf matrix groups"/> or
 <Ref Func="IsomorphismPermGroupImfGroup"/> to get an isomorphism to such a
 permutation group (note that these &GAP;&nbsp;4 functions have replaced the
 &GAP;&nbsp;3 functions <C>PermGroup</C> and <C>PermGroupImfGroup</C>).
@@ -1135,7 +1135,7 @@ to a permutation group <M>P</M> acting on the <A>n</A>-th orbit,
 by its action on <M>S</M>.
 <P/>
 The only difference to the above function
-<Ref Func="IsomorphismPermGroup" Label="for Imf matrix groups"/> is that
+<Ref Meth="IsomorphismPermGroup" Label="for Imf matrix groups"/> is that
 you can specify the orbit to be used.
 In fact, as the orbits of short vectors are sorted by increasing sizes,
 the function <C>IsomorphismPermGroup( <A>G</A> )</C> has been implemented

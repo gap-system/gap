@@ -46,7 +46,7 @@ exponent of a nilpotent group (it is the product of the exponents of the
 Sylow subgroups).
 <P/>
 The first task is to find which operation is used by &GAP;
-(it is <Ref Func="Exponent"/>) and how it is declared.
+(it is <Ref Attr="Exponent"/>) and how it is declared.
 We can find this in the Reference Manual (in our particular case
 in section&nbsp;<Ref Sect="Numerical Group Attributes"/>)
 and the declaration in the library file <F>lib/grp.gd</F>.
@@ -60,7 +60,7 @@ DeclareAttribute("Exponent",IsGroup);
 ]]></Log>
 <P/>
 Similarly we find that the filter
-<Ref Func="IsNilpotentGroup"/> 
+<Ref Prop="IsNilpotentGroup"/> 
 represents the concept of being nilpotent.
 <P/>
 We then write a function that implements the new algorithm which takes the
@@ -111,11 +111,11 @@ normalizers in a nilpotent permutation group.
 (Such an algorithm can be found for example in
 <Cite Key="luksrakocziwright97"/>.)
 <P/>
-We already know <Ref Func="IsNilpotentGroup"/>,
-the filter <Ref Func="IsPermGroup"/> 
+We already know <Ref Prop="IsNilpotentGroup"/>,
+the filter <Ref Filt="IsPermGroup"/> 
 represents the concept of being a group of permutations.
 <P/>
-&GAP; uses <Ref Func="Normalizer" Label="for two groups"/>
+&GAP; uses <Ref Oper="Normalizer" Label="for two groups"/>
 to compute normalizers,
 however the declaration is a bit more complicated.
 In the library we find
@@ -195,7 +195,7 @@ rank (so it will be used before other methods). The first thing to do in the
 actual function then is to test the property and to bail out with
 <Ref Func="TryNextMethod"/> if it turns out to be <K>false</K>.
 <P/>
-The above <Ref Func="Exponent"/> example thus would become:
+The above <Ref Attr="Exponent"/> example thus would become:
 <!-- %T The above example mentioned nilpotency ... -->
 <Log><![CDATA[
 InstallMethod(Exponent,"test abelianity", [IsGroup],
@@ -211,7 +211,7 @@ end);
 The value <Q>50</Q> used in this example is quite arbitrary. A better way is to
 use values that are given by the system inherently: We want this method
 still to be ranked as high,
-<E>as if it had</E> the <Ref Func="IsAbelian"/> requirement.
+<E>as if it had</E> the <Ref Prop="IsAbelian"/> requirement.
 So we have &GAP; compute the extra rank of this:
 <Log><![CDATA[
 InstallMethod(Exponent,"test abelianity", [IsGroup],
@@ -222,8 +222,8 @@ InstallMethod(Exponent,"test abelianity", [IsGroup],
 function(G)
 ]]></Log>
 the slightly complicated construction of addition and subtraction is
-necessary because <Ref Func="IsGroup"/> and
-<Ref Func="IsAbelian"/> might imply the <E>same</E>
+necessary because <Ref Filt="IsGroup"/> and
+<Ref Prop="IsAbelian"/> might imply the <E>same</E>
 elementary filters which we otherwise would count twice.
 <P/>
 A somehow similar situation occurs with matrix groups. Most methods for
@@ -271,12 +271,12 @@ DeclareOperation("SylowNormalizer",[IsGroup,IsPosInt]);
 ]]></Log>
 as well.)
 <P/>
-The filters <Ref Func="IsGroup"/> and
-<Ref Func="IsPosInt"/> given are <E>only</E> used to test that
+The filters <Ref Filt="IsGroup"/> and
+<Ref Filt="IsPosInt"/> given are <E>only</E> used to test that
 <Ref Func="InstallMethod"/> installs methods with suitable 
 arguments and will be completely ignored when using
 <Ref Func="InstallOtherMethod"/>. Technically one could
-therefore simply use <Ref Func="IsObject"/> for all arguments
+therefore simply use <Ref Filt="IsObject"/> for all arguments
 in the declaration. The
 main point of using more specific filters here is to help documenting with
 which arguments the function is to be used (so for example a call
@@ -420,8 +420,8 @@ local g
 end;
 ]]></Log>
 <P/>
-It also is a good idea to install a <Ref Func="PrintObj"/>
-and possibly also a <Ref Func="ViewObj"/> method
+It also is a good idea to install a <Ref Oper="PrintObj"/>
+and possibly also a <Ref Oper="ViewObj"/> method
 &ndash;otherwise testing becomes quite hard:
 <P/>
 <Log><![CDATA[
@@ -584,7 +584,7 @@ declare <C>IsMGroup</C> as a property for solvable groups:
 <Log><![CDATA[
 IsMGroup:=NewProperty("IsMGroup",IsSolvableGroup);
 ]]></Log>
-The filter <Ref Func="IsSolvableGroup"/> in this declaration
+The filter <Ref Prop="IsSolvableGroup"/> in this declaration
 <E>only</E> means that methods
 for <C>IsMGroup</C> by default can only be installed for groups that are (and
 know to be) solvable (though they could be installed for more general
@@ -628,7 +628,7 @@ example a <Q>word length</Q> function). This is exactly what categories are
 intended for and therefore we use one.
 <P/>
 First, we declare the category. All objects in this category are groups and
-so we inherit the supercategory <Ref Func="IsGroup"/>:
+so we inherit the supercategory <Ref Filt="IsGroup"/>:
 <P/>
 <Log><![CDATA[
 DeclareCategory("IsGroupWithWordLength",IsGroup);
@@ -637,7 +637,7 @@ DeclareCategory("IsGroupWithWordLength",IsGroup);
 We also define the operation which is <Q>enabled</Q> by this category, the word
 length of a group element, which is defined for a group and an element
 (remember that group elements are described by the category 
-<Ref Func="IsMultiplicativeElementWithInverse"/>):
+<Ref Filt="IsMultiplicativeElementWithInverse"/>):
 <P/>
 <Log><![CDATA[
 DeclareOperation("WordLengthOfElement",[IsGroupWithWordLength,
@@ -663,7 +663,7 @@ there is a decomposition, but also the decomposition itself.)
 <P/>
 We also want this to be applicable to every group and not only for groups
 which have been explicitly constructed via
-<Ref Func="SemidirectProduct" Label="for acting group, action, and a group"/>.
+<Ref Oper="SemidirectProduct" Label="for acting group, action, and a group"/>.
 <P/>
 Instead we simply declare an attribute
 <C>SemidirectProductDecomposition</C> for groups.

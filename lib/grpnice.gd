@@ -96,12 +96,12 @@ DeclareGlobalFunction("RestrictedNiceMonomorphism");
 ##  <Prop Name="IsCanonicalNiceMonomorphism" Arg='nhom'/>
 ##
 ##  <Description>
-##  A nice monomorphism (see <Ref Func="NiceMonomorphism"/> <A>nhom</A> is
+##  A nice monomorphism (see <Ref Attr="NiceMonomorphism"/> <A>nhom</A> is
 ##  canonical if the image set will only depend on the set of group elements
-##  but not on the generating set and <Ref Func="\&lt;"/> comparison
+##  but not on the generating set and <Ref Oper="\&lt;"/> comparison
 ##  of group elements translates through the nice monomorphism.
 ##  This implies that equal objects will always have equal
-##  <Ref Func="NiceObject"/> values.
+##  <Ref Attr="NiceObject"/> values.
 ##  In some situations however this condition would be expensive to
 ##  achieve, therefore it is not guaranteed for every nice monomorphism.
 ##  </Description>
@@ -134,9 +134,9 @@ DeclareAttribute( "CanonicalNiceMonomorphism", IsObject );
 ##  <Attr Name="NiceObject" Arg='obj'/>
 ##
 ##  <Description>
-##  The <Ref Func="NiceObject"/> value of <A>obj</A> is the image of
+##  The <Ref Attr="NiceObject"/> value of <A>obj</A> is the image of
 ##  <A>obj</A> under the mapping stored as the value of
-##  <Ref Func="NiceMonomorphism"/> for <A>obj</A>.
+##  <Ref Attr="NiceMonomorphism"/> for <A>obj</A>.
 ##  <P/>
 ##  A typical example are finite matrix groups, which use a faithful action
 ##  on vectors to translate all calculations in a permutation group.
@@ -171,7 +171,7 @@ DeclareAttribute(
 ##  <Description>
 ##  If this property is <K>true</K>, high-valued methods that translate all
 ##  calculations in <A>obj</A> in the image under the
-##  <Ref Func="NiceMonomorphism"/> value of <A>obj</A>
+##  <Ref Attr="NiceMonomorphism"/> value of <A>obj</A>
 ##  become available for <A>obj</A>.
 ##  </Description>
 ##  </ManSection>

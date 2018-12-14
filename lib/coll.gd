@@ -26,10 +26,10 @@
 ##  Note that a list is never a domain, and a domain is never a list.
 ##  A list is a collection if and only if it is nonempty and homogeneous.
 ##  <P/>
-##  Basic operations for collections are <Ref Func="Size"/>
-##  and <Ref Func="Enumerator"/>;
+##  Basic operations for collections are <Ref Attr="Size"/>
+##  and <Ref Attr="Enumerator"/>;
 ##  for <E>finite</E> collections,
-##  <Ref Func="Enumerator"/> admits to delegate the other
+##  <Ref Attr="Enumerator"/> admits to delegate the other
 ##  operations for collections
 ##  (see&nbsp;<Ref Sect="Attributes and Properties for Collections"/>
 ##  and&nbsp;<Ref Sect="Operations for Collections"/>)
@@ -52,10 +52,10 @@
 ##  <Description>
 ##  Several functions are defined for both lists and collections,
 ##  for example <Ref Func="Intersection" Label="for a list"/>,
-##  <Ref Func="Iterator"/>,
-##  and <Ref Func="Random" Label="for a list or collection"/>.
-##  <Ref Func="IsListOrCollection"/> is a supercategory of
-##  <Ref Func="IsList"/> and <Ref Func="IsCollection"/>
+##  <Ref Oper="Iterator"/>,
+##  and <Ref Oper="Random" Label="for a list or collection"/>.
+##  <Ref Filt="IsListOrCollection"/> is a supercategory of
+##  <Ref Filt="IsList"/> and <Ref Filt="IsCollection"/>
 ##  (that is, all lists and collections lie in this category),
 ##  which is used to describe the arguments of functions such as the ones
 ##  listed above.
@@ -99,14 +99,14 @@ DeclareCategory( "IsCollection", IsListOrCollection );
 ##  <Attr Name="CollectionsFamily" Arg='Fam'/>
 ##
 ##  <Description>
-##  For a family <A>Fam</A>, <Ref Func="CollectionsFamily"/> returns the
+##  For a family <A>Fam</A>, <Ref Attr="CollectionsFamily"/> returns the
 ##  family of all collections over <A>Fam</A>,
 ##  that is, of all dense lists and domains that consist of objects in
 ##  <A>Fam</A>.
 ##  <P/>
 ##  The <Ref Func="NewFamily"/> call in the standard method of
-##  <Ref Func="CollectionsFamily"/> is executed with second argument
-##  <Ref Func="IsCollection"/>,
+##  <Ref Attr="CollectionsFamily"/> is executed with second argument
+##  <Ref Filt="IsCollection"/>,
 ##  since every object in the collections family must be a collection,
 ##  and with third argument the collections categories of the involved
 ##  categories in the implied filter of <A>Fam</A>.
@@ -153,10 +153,10 @@ DeclareCategoryFamily( "IsCollection" );
 ##
 ##  <Description>
 ##  If <A>Fam</A> is a collections family
-##  (see&nbsp;<Ref Func="IsCollectionFamily"/>)
-##  then <Ref Func="ElementsFamily"/>
+##  (see&nbsp;<Ref Filt="IsCollectionFamily"/>)
+##  then <Ref Attr="ElementsFamily"/>
 ##  returns the family from which <A>Fam</A> was created
-##  by <Ref Func="CollectionsFamily"/>.
+##  by <Ref Attr="CollectionsFamily"/>.
 ##  The way a collections family is created, it always has its elements
 ##  family stored.
 ##  If <A>Fam</A> is not a collections family then an error is signalled.
@@ -215,9 +215,9 @@ fi;
 ##  <C>CollectionsFamily( <A>Fam</A> )</C>.
 ##  <P/>
 ##  For example, the construction of
-##  <Ref Var="PermutationsFamily"/> guarantees that
+##  <Ref Fam="PermutationsFamily"/> guarantees that
 ##  each of its elements lies in the filter
-##  <Ref Func="IsPerm"/>,
+##  <Ref Filt="IsPerm"/>,
 ##  and each collection of permutations (permutation group or dense list of
 ##  permutations) lies in the category <C>CategoryCollections( IsPerm )</C>.
 ##  <C>CategoryCollections( IsPerm )</C>.
@@ -532,7 +532,7 @@ InstallMethod( UseSubsetRelation,
 ##  for a domain <M>D</M> in the filter <A>super_req</A>,
 ##  and a domain <M>S</M> in the filter <A>sub_req</A>,
 ##  the call <C>UseSubsetRelation</C><M>( D, S )</M>
-##  (see&nbsp;<Ref Func="UseSubsetRelation"/>)
+##  (see&nbsp;<Ref Oper="UseSubsetRelation"/>)
 ##  sets a known value of <A>opr</A> for <M>D</M> as value of <A>opr</A> also
 ##  for <M>S</M>.
 ##  A typical example for which <Ref Func="InstallSubsetMaintenance"/> is
@@ -811,7 +811,7 @@ InstallMethod( UseIsomorphismRelation,
 ##  that for a domain <M>D</M> in the filter <A>old_req</A>,
 ##  and a domain <M>E</M> in the filter <A>new_req</A>,
 ##  the call <C>UseIsomorphismRelation</C><M>( D, E )</M>
-##  (see&nbsp;<Ref Func="UseIsomorphismRelation"/>)
+##  (see&nbsp;<Ref Oper="UseIsomorphismRelation"/>)
 ##  sets a known value of <A>opr</A> for <M>D</M> as value of <A>opr</A> also
 ##  for <M>E</M>.
 ##  A typical example for which <Ref Func="InstallIsomorphismMaintenance"/>
@@ -978,7 +978,7 @@ InstallMethod( UseFactorRelation,
 ##  for collections <M>N</M>, <M>D</M>, <M>F</M> in the filters
 ##  <A>numer_req</A>, <A>denom_req</A>, and <A>factor_req</A>, respectively,
 ##  the call <C>UseFactorRelation</C><M>( N, D, F )</M>
-##  (see&nbsp;<Ref Func="UseFactorRelation"/>)
+##  (see&nbsp;<Ref Oper="UseFactorRelation"/>)
 ##  sets a known value of <A>opr</A> for <M>N</M> as value of <A>opr</A> also
 ##  for <M>F</M>.
 ##  A typical example for which <Ref Func="InstallFactorMaintenance"/> is
@@ -996,7 +996,7 @@ InstallMethod( UseFactorRelation,
 ##  case of isomorphisms.
 ##  So one need <E>not</E> install an isomorphism maintained method when
 ##  a factor maintained method is already installed.
-##  For example, <Ref Func="UseIsomorphismRelation"/>
+##  For example, <Ref Oper="UseIsomorphismRelation"/>
 ##  will transfer a known <Ref Prop="IsFinite"/> value because of the
 ##  installed factor maintained method.
 ##  </Description>
@@ -1057,37 +1057,37 @@ end );
 ##  for example it is possible to construct an iterator of some infinite
 ##  domains, such as the field of rational numbers.
 ##  <P/>
-##  <Ref Func="Iterator"/> returns a mutable <E>iterator</E> <M>iter</M> for
+##  <Ref Oper="Iterator"/> returns a mutable <E>iterator</E> <M>iter</M> for
 ##  its argument.
 ##  If this argument is a list (which may contain holes),
 ##  then <M>iter</M> iterates over the elements (but not the holes) of this
 ##  list in the same order (see&nbsp;<Ref Func="IteratorList"/> for details).
 ##  If this argument is a collection but not a list then <M>iter</M> iterates
 ##  over the elements of this collection in an unspecified order,
-##  which may change for repeated calls of <Ref Func="Iterator"/>.
-##  Because iterators returned by <Ref Func="Iterator"/> are mutable
+##  which may change for repeated calls of <Ref Oper="Iterator"/>.
+##  Because iterators returned by <Ref Oper="Iterator"/> are mutable
 ##  (see&nbsp;<Ref Sect="Mutability and Copyability"/>),
-##  each call of <Ref Func="Iterator"/> for the same argument returns a
+##  each call of <Ref Oper="Iterator"/> for the same argument returns a
 ##  <E>new</E> iterator.
-##  Therefore <Ref Func="Iterator"/> is not an attribute
+##  Therefore <Ref Oper="Iterator"/> is not an attribute
 ##  (see&nbsp;<Ref Sect="Attributes"/>).
 ##  <P/>
-##  The only operations for iterators are <Ref Func="IsDoneIterator"/>,
-##  <Ref Func="NextIterator"/>, and <Ref Func="ShallowCopy"/>.
+##  The only operations for iterators are <Ref Oper="IsDoneIterator"/>,
+##  <Ref Oper="NextIterator"/>, and <Ref Oper="ShallowCopy"/>.
 ##  In particular, it is only possible to access the next element of the
-##  iterator with <Ref Func="NextIterator"/> if there is one,
-##  and this can be checked with <Ref Func="IsDoneIterator"/>
-##  For an iterator <M>iter</M>, <Ref Func="ShallowCopy"/> returns a
+##  iterator with <Ref Oper="NextIterator"/> if there is one,
+##  and this can be checked with <Ref Oper="IsDoneIterator"/>
+##  For an iterator <M>iter</M>, <Ref Oper="ShallowCopy"/> returns a
 ##  mutable iterator <M>new</M> that iterates over the remaining elements
 ##  independent of <M>iter</M>;
-##  the results of <Ref Func="IsDoneIterator"/> for <M>iter</M> and
+##  the results of <Ref Oper="IsDoneIterator"/> for <M>iter</M> and
 ##  <M>new</M> are equal,
 ##  and if <M>iter</M> is mutable then also the results of
-##  <Ref Func="NextIterator"/> for <M>iter</M> and <M>new</M> are equal;
+##  <Ref Oper="NextIterator"/> for <M>iter</M> and <M>new</M> are equal;
 ##  note that <C>=</C> is not defined for iterators,
 ##  so the equality of two iterators cannot be checked with <C>=</C>.
 ##  <P/>
-##  When <Ref Func="Iterator"/> is called for a <E>mutable</E> collection
+##  When <Ref Oper="Iterator"/> is called for a <E>mutable</E> collection
 ##  <M>C</M> then it is not defined whether <M>iter</M> respects changes to
 ##  <M>C</M> occurring after the construction of <M>iter</M>,
 ##  except if the documentation explicitly promises a certain behaviour.
@@ -1099,11 +1099,11 @@ end );
 ##  <P/>
 ##  In some situations, one can construct iterators with a special
 ##  succession of elements,
-##  see&nbsp;<Ref Func="IteratorByBasis"/> for the possibility to loop over
+##  see&nbsp;<Ref Oper="IteratorByBasis"/> for the possibility to loop over
 ##  the elements of a vector space w.r.t.&nbsp;a given basis.
 ##  <!-- (also for perm. groups, w.r.t. a given stabilizer chain?)-->
 ##  <P/>
-##  For lists, <Ref Func="Iterator"/> is implemented by
+##  For lists, <Ref Oper="Iterator"/> is implemented by
 ##  <Ref Func="IteratorList"/>.
 ##  For collections <M>C</M> that are not lists, the default method is
 ##  <C>IteratorList( Enumerator( </C><M>C</M><C> ) )</C>.
@@ -1159,7 +1159,7 @@ DeclareOperation( "Iterator", [ IsListOrCollection ] );
 ##  <Oper Name="IteratorSorted" Arg='listorcoll'/>
 ##
 ##  <Description>
-##  <Ref Func="IteratorSorted"/> returns a mutable iterator.
+##  <Ref Oper="IteratorSorted"/> returns a mutable iterator.
 ##  The argument must be a collection or a list that is not
 ##  necessarily dense but whose elements lie in the same family
 ##  (see&nbsp;<Ref Sect="Families"/>).
@@ -1222,12 +1222,12 @@ DeclareOperation( "IsDoneIterator", [ IsIterator ] );
 ##  <Description>
 ##  Let <A>iter</A> be a mutable iterator for the list or collection <M>C</M>.
 ##  If <C>IsDoneIterator( <A>iter</A> )</C> is <K>false</K> then
-##  <Ref Func="NextIterator"/> is applicable to <A>iter</A>,
+##  <Ref Oper="NextIterator"/> is applicable to <A>iter</A>,
 ##  and the result is the next element of <M>C</M>,
 ##  according to the succession defined by <A>iter</A>.
 ##  <P/>
 ##  If <C>IsDoneIterator( <A>iter</A> )</C> is <K>true</K> then it is not
-##  defined what happens when <Ref Func="NextIterator"/> is called for
+##  defined what happens when <Ref Oper="NextIterator"/> is called for
 ##  <A>iter</A>;
 ##  that is, it may happen that an error is signalled or that something
 ##  meaningless is returned, or even that &GAP; crashes.
@@ -1270,7 +1270,7 @@ DeclareOperation( "NextIterator", [ IsIterator and IsMutable ] );
 ##  <Description>
 ##  is a mutable iterator for the collection <C>[ <A>elm</A> ]</C> that
 ##  consists of exactly one element <A>elm</A>
-##  (see&nbsp;<Ref Func="IsTrivial"/>).
+##  (see&nbsp;<Ref Prop="IsTrivial"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1288,9 +1288,9 @@ DeclareGlobalFunction( "TrivialIterator" );
 ##
 ##  <Description>
 ##  <Ref Func="IteratorByFunctions"/> returns a (mutable) iterator
-##  <A>iter</A> for which <Ref Func="NextIterator"/>,
-##  <Ref Func="IsDoneIterator"/>,
-##  and <Ref Func="ShallowCopy"/>
+##  <A>iter</A> for which <Ref Oper="NextIterator"/>,
+##  <Ref Oper="IsDoneIterator"/>,
+##  and <Ref Oper="ShallowCopy"/>
 ##  are computed via prescribed functions.
 ##  <P/>
 ##  Let <A>record</A> be a record with at least the following components.
@@ -1299,13 +1299,13 @@ DeclareGlobalFunction( "TrivialIterator" );
 ##  <Item>
 ##      a function taking one argument <A>iter</A>,
 ##      which returns the next element of <A>iter</A>
-##      (see&nbsp;<Ref Func="NextIterator"/>);
+##      (see&nbsp;<Ref Oper="NextIterator"/>);
 ##      for that, the components of <A>iter</A> are changed,
 ##  </Item>
 ##  <Mark><C>IsDoneIterator</C></Mark>
 ##  <Item>
 ##      a function taking one argument <A>iter</A>,
-##      which returns the <Ref Func="IsDoneIterator"/> value of <A>iter</A>,
+##      which returns the <Ref Oper="IsDoneIterator"/> value of <A>iter</A>,
 ##  </Item>
 ##  <Mark><C>ShallowCopy</C></Mark>
 ##  <Item>
@@ -1313,7 +1313,7 @@ DeclareGlobalFunction( "TrivialIterator" );
 ##      which returns a record for which <Ref Func="IteratorByFunctions"/>
 ##      can be called in order to create a new iterator that is independent
 ##      of <A>iter</A> but behaves like <A>iter</A> w.r.t. the operations
-##      <Ref Func="NextIterator"/> and <Ref Func="IsDoneIterator"/>.
+##      <Ref Oper="NextIterator"/> and <Ref Oper="IsDoneIterator"/>.
 ##  </Item>
 ##  <Mark><C>ViewObj</C> and <C>PrintObj</C></Mark>
 ##  <Item>
@@ -1350,7 +1350,7 @@ DeclareGlobalFunction( "IteratorByFunctions" );
 ##  <Prop Name="IsEmpty" Arg='listorcoll'/>
 ##
 ##  <Description>
-##  <Ref Func="IsEmpty"/> returns <K>true</K> if the collection or list
+##  <Ref Prop="IsEmpty"/> returns <K>true</K> if the collection or list
 ##  <A>listorcoll</A> is <E>empty</E> (that is it contains no elements),
 ##  and <K>false</K> otherwise.
 ##  </Description>
@@ -1391,9 +1391,9 @@ InstallFactorMaintenance( IsTrivial,
 ##  <Prop Name="IsNonTrivial" Arg='C'/>
 ##
 ##  <Description>
-##  <Ref Func="IsNonTrivial"/> returns <K>true</K> if the collection <A>C</A>
+##  <Ref Prop="IsNonTrivial"/> returns <K>true</K> if the collection <A>C</A>
 ##  is empty or consists of at least two elements
-##  (see&nbsp;<Ref Func="IsTrivial"/>).
+##  (see&nbsp;<Ref Prop="IsTrivial"/>).
 ##  <P/>
 ##  <!-- I need this to distinguish trivial rings-with-one from fields!-->
 ##  <!-- (indication to introduce antifilters?)-->
@@ -1435,15 +1435,15 @@ InstallTrueMethod( HasIsNonTrivial, IsTrivial );
 ##
 ##  <Description>
 ##  <Index Subkey="for a list or collection">finiteness test</Index>
-##  <Ref Func="IsFinite"/> returns <K>true</K> if the collection <A>C</A>
+##  <Ref Prop="IsFinite"/> returns <K>true</K> if the collection <A>C</A>
 ##  is finite, and <K>false</K> otherwise.
 ##  <P/>
-##  The default method for <Ref Func="IsFinite"/> checks the size
-##  (see&nbsp;<Ref Func="Size"/>) of <A>C</A>.
+##  The default method for <Ref Prop="IsFinite"/> checks the size
+##  (see&nbsp;<Ref Attr="Size"/>) of <A>C</A>.
 ##  <P/>
-##  Methods for <Ref Func="IsFinite"/> may call <Ref Func="Size"/>,
-##  but methods for <Ref Func="Size"/> must <E>not</E> call
-##  <Ref Func="IsFinite"/>.
+##  Methods for <Ref Prop="IsFinite"/> may call <Ref Attr="Size"/>,
+##  but methods for <Ref Attr="Size"/> must <E>not</E> call
+##  <Ref Prop="IsFinite"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1506,7 +1506,7 @@ DeclareProperty( "IsWholeFamily", IsCollection );
 ##  <Ref Attr="Size"/> returns the size of the list or collection
 ##  <A>listorcoll</A>, which is either an integer or <Ref Var="infinity"/>.
 ##  If the argument is a list then the result is its length
-##  (see&nbsp;<Ref Func="Length"/>).
+##  (see&nbsp;<Ref Attr="Length"/>).
 ##  <P/>
 ##  The default method for <Ref Attr="Size"/> checks the length of an
 ##  enumerator of <A>listorcoll</A>.
@@ -1546,10 +1546,10 @@ InstallIsomorphismMaintenance( Size, IsCollection, IsCollection );
 ##  It is not even guaranteed that <Ref Attr="Representative"/> returns
 ##  the same representative if it is called several times for one collection.
 ##  The main difference between <Ref Attr="Representative"/> and
-##  <Ref Func="Random" Label="for a list or collection"/>
+##  <Ref Oper="Random" Label="for a list or collection"/>
 ##  is that <Ref Attr="Representative"/> is free
 ##  to choose a value that is cheap to compute,
-##  while <Ref Func="Random" Label="for a list or collection"/>
+##  while <Ref Oper="Random" Label="for a list or collection"/>
 ##  must make an effort to randomly distribute its answers.
 ##  <P/>
 ##  If <A>C</A> is a domain then there are methods for
@@ -1578,7 +1578,7 @@ DeclareAttribute( "Representative", IsListOrCollection );
 ##  <Description>
 ##  <Index Subkey="of a list or collection">representative</Index>
 ##  returns the smallest element in the collection <A>C</A>, w.r.t.&nbsp;the
-##  ordering <Ref Func="\&lt;"/>.
+##  ordering <Ref Oper="\&lt;"/>.
 ##  While the operation defaults to comparing all elements,
 ##  better methods are installed for some collections.
 ##  <P/>
@@ -1610,7 +1610,7 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##
 ##  <Description>
 ##  <!-- to get this on top of results for ?Random -->
-##  <Index Key="Random"><Ref Func="Random" 
+##  <Index Key="Random"><Ref Oper="Random" 
 ##                           Label="for a list or collection"/></Index> 
 ##  <Ref Oper="Random" Label="for a list or collection"/> returns a
 ##  (pseudo-)random element of the list or collection <A>listorcoll</A>.
@@ -1635,7 +1635,7 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##  difficult and require substantial runtime (for example for large
 ##  finite groups). If speed is more important than a guaranteed
 ##  distribution, 
-##  the operation <Ref Func="PseudoRandom"/> should be used instead.
+##  the operation <Ref Oper="PseudoRandom"/> should be used instead.
 ##  <P/>
 ##  Note that <Ref Oper="Random" Label="for a list or collection"/>
 ##  is of course <E>not</E> an attribute.
@@ -1761,7 +1761,7 @@ DeclareAttribute( "PseudoRandomSeed", IsListOrCollection, "mutable" );
 ##  <Attr Name="Enumerator" Arg='listorcoll'/>
 ##
 ##  <Description>
-##  <Ref Func="Enumerator"/> returns an immutable list <M>enum</M>.
+##  <Ref Attr="Enumerator"/> returns an immutable list <M>enum</M>.
 ##  If the argument is a list (which may contain holes),
 ##  then <C>Length( </C><M>enum</M><C> )</C> is the length of this list,
 ##  and <M>enum</M> contains the elements (and holes) of this list in the
@@ -1771,9 +1771,9 @@ DeclareAttribute( "PseudoRandomSeed", IsListOrCollection, "mutable" );
 ##  elements of <A>C</A>,
 ##  and <M>enum</M> contains the different elements of the collection in an
 ##  unspecified order, which may change for repeated calls of
-##  <Ref Func="Enumerator"/>.
+##  <Ref Attr="Enumerator"/>.
 ##  <M>enum[pos]</M> may not execute in constant time
-##  (see&nbsp;<Ref Func="IsConstantTimeAccessList"/>),
+##  (see&nbsp;<Ref Filt="IsConstantTimeAccessList"/>),
 ##  and the size of <M>enum</M> in memory is as small as is feasible.
 ##  <P/>
 ##  For lists, the default method is <Ref Func="Immutable"/>.
@@ -1795,7 +1795,7 @@ DeclareAttribute( "Enumerator", IsListOrCollection );
 ##  <Attr Name="EnumeratorSorted" Arg='listorcoll'/>
 ##
 ##  <Description>
-##  <Ref Func="EnumeratorSorted"/> returns an immutable list <M>enum</M>.
+##  <Ref Attr="EnumeratorSorted"/> returns an immutable list <M>enum</M>.
 ##  The argument must be a collection or a list <A>listorcoll</A>
 ##  which may contain holes but whose elements lie in the same family
 ##  (see&nbsp;<Ref Sect="Families"/>).
@@ -1804,7 +1804,7 @@ DeclareAttribute( "Enumerator", IsListOrCollection );
 ##  and <M>enum</M> contains the different elements in sorted order,
 ##  w.r.t.&nbsp;<C>&lt;</C>.
 ##  <M>enum[pos]</M> may not execute in constant time
-##  (see&nbsp;<Ref Func="IsConstantTimeAccessList"/>),
+##  (see&nbsp;<Ref Filt="IsConstantTimeAccessList"/>),
 ##  and the size of <M>enum</M> in memory is as small as is feasible.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -1874,9 +1874,9 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 ##  <Description>
 ##  <Ref Func="EnumeratorByFunctions" Label="for a domain and a record"/>
 ##  returns an immutable, dense, and duplicate-free list <M>enum</M> for
-##  which <Ref Func="IsBound" Label="for a list index"/>,
-##  element access via <Ref Func="\[\]"/>,
-##  <Ref Func="Length"/>, and <Ref Func="Position"/>
+##  which <Ref Oper="IsBound" Label="for a list index"/>,
+##  element access via <Ref Oper="\[\]"/>,
+##  <Ref Attr="Length"/>, and <Ref Oper="Position"/>
 ##  are computed via prescribed functions.
 ##  <P/>
 ##  Let <A>record</A> be a record with at least the following components.
@@ -1896,10 +1896,10 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 ##  <Item>
 ##      a function taking two arguments <A>enum</A> and <A>elm</A>,
 ##      which returns <C>Position( <A>enum</A>, <A>elm</A> )</C>
-##      (see&nbsp;<Ref Func="Position"/>);
+##      (see&nbsp;<Ref Oper="Position"/>);
 ##      it cannot be assumed that <A>elm</A> is really contained in
 ##      <A>enum</A> (and <K>fail</K> must be returned if not);
-##      note that for the three argument version of <Ref Func="Position"/>,
+##      note that for the three argument version of <Ref Oper="Position"/>,
 ##      the method that is available for duplicate-free lists suffices.
 ##  </Item>
 ##  </List>
@@ -1910,8 +1910,8 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 ##  If the first argument is a domain <A>D</A> then <A>enum</A> lists the
 ##  elements of <A>D</A> (in general <A>enum</A> is <E>not</E> sorted),
 ##  and methods for <Ref Attr="Length"/>,
-##  <Ref Func="IsBound" Label="for a list index"/>,
-##  and <Ref Func="PrintObj"/> may use <A>D</A>.
+##  <Ref Oper="IsBound" Label="for a list index"/>,
+##  and <Ref Oper="PrintObj"/> may use <A>D</A>.
 ##  <!-- is this really true for Length?-->
 ##  <P/>
 ##  If one wants to describe the result without creating a domain then the
@@ -1929,7 +1929,7 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 ##  <Item>
 ##      a function taking the argument <A>enum</A>,
 ##      which returns the length of <A>enum</A>
-##      (see&nbsp;<Ref Func="Length"/>).
+##      (see&nbsp;<Ref Attr="Length"/>).
 ##  </Item>
 ##  </List>
 ##  <P/>
@@ -1941,7 +1941,7 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 ##      a function taking two arguments <A>enum</A> and <A>k</A>,
 ##      which returns <C>IsBound( <A>enum</A>[ <A>k</A> ] )</C>
 ##      (see&nbsp;<Ref Sect="Basic Operations for Lists"/>);
-##      if this component is missing then <Ref Func="Length"/> is used for
+##      if this component is missing then <Ref Attr="Length"/> is used for
 ##      computing the result,
 ##  </Item>
 ##  <Mark><C>Membership</C></Mark>
@@ -1958,9 +1958,9 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 ##      a function taking one argument <A>enum</A>, which returns a list with
 ##      the property that the access to each of its elements will take
 ##      roughly the same time
-##      (see&nbsp;<Ref Func="IsConstantTimeAccessList"/>);
+##      (see&nbsp;<Ref Filt="IsConstantTimeAccessList"/>);
 ##      if this component is missing then
-##      <Ref Func="ConstantTimeAccessList"/> is used for computing the result,
+##      <Ref Attr="ConstantTimeAccessList"/> is used for computing the result,
 ##  </Item>
 ##  <Mark><C>ViewObj</C> and <C>PrintObj</C></Mark>
 ##  <Item>
@@ -1973,15 +1973,15 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 ##  </List>
 ##  <P/>
 ##  If the result is known to have additional properties such as being
-##  strictly sorted (see&nbsp;<Ref Func="IsSSortedList"/>) then it can be
+##  strictly sorted (see&nbsp;<Ref Prop="IsSSortedList"/>) then it can be
 ##  useful to set these properties after the construction of the enumerator,
 ##  before it is used for the first time.
 ##  And in the case that a new sorted enumerator of a domain is implemented
 ##  via <Ref Func="EnumeratorByFunctions" Label="for a domain and a record"/>,
 ##  and this construction is
-##  installed as a method for the operation <Ref Func="Enumerator"/>,
+##  installed as a method for the operation <Ref Attr="Enumerator"/>,
 ##  then it should be installed also as a method for
-##  <Ref Func="EnumeratorSorted"/>.
+##  <Ref Attr="EnumeratorSorted"/>.
 ##  <P/>
 ##  Note that it is <E>not</E> checked that
 ##  <Ref Func="EnumeratorByFunctions" Label="for a domain and a record"/>
@@ -1993,7 +1993,7 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 ##  <P/>
 ##  It would be easy to implement a slightly generalized setup for
 ##  enumerators that need not be duplicate-free (where the three argument
-##  version of <Ref Func="Position"/> is supported),
+##  version of <Ref Oper="Position"/> is supported),
 ##  but the resulting overhead for the methods seems not to be justified.
 ##  </Description>
 ##  </ManSection>
@@ -2063,7 +2063,7 @@ DeclareAttribute( "UnderlyingCollection", IsListOrCollection );
 ##  and <A>new</A> contains the different elements of <A>C</A> in an
 ##  unspecified order which may change for repeated calls.
 ##  <C><A>new</A>[<A>pos</A>]</C> executes in constant time
-##  (see&nbsp;<Ref Func="IsConstantTimeAccessList"/>),
+##  (see&nbsp;<Ref Filt="IsConstantTimeAccessList"/>),
 ##  and the size of <A>new</A> is proportional to its length.
 ##  The generic method for this case is
 ##  <C>ShallowCopy( Enumerator( <A>C</A> ) )</C>.
@@ -2100,7 +2100,7 @@ DeclareOperation( "ListOp", [ IsListOrCollection, IsFunction ] );
 ##  <Oper Name="SortedList" Arg='listorcoll'/>
 ##
 ##  <Description>
-##  <Ref Func="SortedList"/> returns a new mutable and dense list <A>new</A>.
+##  <Ref Oper="SortedList"/> returns a new mutable and dense list <A>new</A>.
 ##  The argument must be a collection or list <A>listorcoll</A> which may
 ##  contain holes but whose elements lie in the same family
 ##  (see&nbsp;<Ref Sect="Families"/>).
@@ -2109,7 +2109,7 @@ DeclareOperation( "ListOp", [ IsListOrCollection, IsFunction ] );
 ##  and <A>new</A> contains the elements in sorted order,
 ##  w.r.t.&nbsp;<C>&lt;=</C>.
 ##  <C><A>new</A>[<A>pos</A>]</C> executes in constant time
-##  (see&nbsp;<Ref Func="IsConstantTimeAccessList"/>),
+##  (see&nbsp;<Ref Filt="IsConstantTimeAccessList"/>),
 ##  and the size of <A>new</A> in memory is proportional to its length.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -2141,7 +2141,7 @@ DeclareOperation( "SortedList", [ IsListOrCollection ] );
 ##  <Oper Name="Set" Arg='C'/>
 ##
 ##  <Description>
-##  <Ref Func="SSortedList"/> (<Q>strictly sorted list</Q>) returns a new
+##  <Ref Oper="SSortedList"/> (<Q>strictly sorted list</Q>) returns a new
 ##  dense, mutable, and duplicate free list <A>new</A>.
 ##  The argument must be a collection or list <A>listorcoll</A>
 ##  which may contain holes but whose elements lie in the same family
@@ -2149,12 +2149,12 @@ DeclareOperation( "SortedList", [ IsListOrCollection ] );
 ##  <C>Length( <A>new</A> )</C> is the number of different elements of
 ##  <A>listorcoll</A>,
 ##  and <A>new</A> contains the different elements in strictly sorted order,
-##  w.r.t.&nbsp;<Ref Func="\&lt;"/>.
+##  w.r.t.&nbsp;<Ref Oper="\&lt;"/>.
 ##  <C><A>new</A>[<A>pos</A>]</C> executes in constant time
-##  (see&nbsp;<Ref Func="IsConstantTimeAccessList"/>),
+##  (see&nbsp;<Ref Filt="IsConstantTimeAccessList"/>),
 ##  and the size of <A>new</A> in memory is proportional to its length.
 ##  <P/>
-##  <Ref Func="Set"/> is simply a synonym for <Ref Func="SSortedList"/>.
+##  <Ref Oper="Set"/> is simply a synonym for <Ref Oper="SSortedList"/>.
 ##  <!-- <P/> -->
 ##  <!--  For collections that are not lists, the default method is-->
 ##  <!--  <C>ShallowCopy( EnumeratorSorted( <A>C</A> ) )</C>.-->
@@ -2187,9 +2187,9 @@ DeclareSynonym( "Set", SSortedList );
 ##  <Attr Name="AsList" Arg='listorcoll'/>
 ##
 ##  <Description>
-##  <Ref Func="AsList"/> returns a immutable list <A>imm</A>.
+##  <Ref Attr="AsList"/> returns a immutable list <A>imm</A>.
 ##  If the argument is a list (which may contain holes),
-##  then <C>Length( <A>imm</A> )</C> is the <Ref Func="Length"/> value of
+##  then <C>Length( <A>imm</A> )</C> is the <Ref Attr="Length"/> value of
 ##  this list,
 ##  and <A>imm</A> contains the elements (and holes) of of the list
 ##  in the same order.
@@ -2197,13 +2197,13 @@ DeclareSynonym( "Set", SSortedList );
 ##  then <C>Length( <A>imm</A> )</C> is the number of different elements
 ##  of this collection, and <A>imm</A> contains the different elements of
 ##  the collection in an unspecified order,
-##  which may change for repeated calls of <Ref Func="AsList"/>.
+##  which may change for repeated calls of <Ref Attr="AsList"/>.
 ##  <C><A>imm</A>[<A>pos</A>]</C> executes in constant time
-##  (see&nbsp;<Ref Func="IsConstantTimeAccessList"/>),
+##  (see&nbsp;<Ref Filt="IsConstantTimeAccessList"/>),
 ##  and the size of <A>imm</A> in memory is proportional to its length.
 ##  <P/>
 ##  If you expect to do many element tests in the resulting list, it might
-##  be worth to use a sorted list instead, using <Ref Func="AsSSortedList"/>.
+##  be worth to use a sorted list instead, using <Ref Attr="AsSSortedList"/>.
 ##  <!-- <P/> -->
 ##  <!--  For both lists and collections, the default method is-->
 ##  <!--  <C>ConstantTimeAccessList( Enumerator( <A>C</A> ) )</C>.-->
@@ -2235,7 +2235,7 @@ DeclareAttribute( "AsList", IsListOrCollection );
 ##  <Attr Name="AsSortedList" Arg='listorcoll'/>
 ##
 ##  <Description>
-##  <Ref Func="AsSortedList"/> returns a dense and immutable list <A>imm</A>.
+##  <Ref Attr="AsSortedList"/> returns a dense and immutable list <A>imm</A>.
 ##  The argument must be a collection or list <A>listorcoll</A>
 ##  which may contain holes but whose elements lie in the same family
 ##  (see&nbsp;<Ref Sect="Families"/>).
@@ -2243,11 +2243,11 @@ DeclareAttribute( "AsList", IsListOrCollection );
 ##  and <A>imm</A> contains the elements in sorted order,
 ##  w.r.t.&nbsp;<C>&lt;=</C>.
 ##  <C><A>new</A>[<A>pos</A>]</C> executes in constant time
-##  (see&nbsp;<Ref Func="IsConstantTimeAccessList"/>),
+##  (see&nbsp;<Ref Filt="IsConstantTimeAccessList"/>),
 ##  and the size of <A>imm</A> in memory is proportional to its length.
 ##  <P/>
-##  The only difference to the operation <Ref Func="SortedList"/>
-##  is that <Ref Func="AsSortedList"/> returns an <E>immutable</E> list.
+##  The only difference to the operation <Ref Oper="SortedList"/>
+##  is that <Ref Attr="AsSortedList"/> returns an <E>immutable</E> list.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> l:= AsSortedList( [ 1, 3, 3,, 2 ] );
@@ -2279,7 +2279,7 @@ DeclareAttribute( "AsSortedList", IsListOrCollection );
 ##
 ##  <Description>
 ##  <Index Subkey="of a list or collection">elements</Index>
-##  <Ref Func="AsSSortedList"/> (<Q>as strictly sorted list</Q>) returns
+##  <Ref Attr="AsSSortedList"/> (<Q>as strictly sorted list</Q>) returns
 ##  a dense, immutable, and duplicate free list <A>imm</A>.
 ##  The argument must be a collection or list <A>listorcoll</A>
 ##  which may contain holes but whose elements lie in the same family
@@ -2287,16 +2287,16 @@ DeclareAttribute( "AsSortedList", IsListOrCollection );
 ##  <C>Length( <A>imm</A> )</C> is the number of different elements
 ##  of <A>listorcoll</A>,
 ##  and <A>imm</A> contains the different elements in strictly sorted order,
-##  w.r.t.&nbsp;<Ref Func="\&lt;"/>.
+##  w.r.t.&nbsp;<Ref Oper="\&lt;"/>.
 ##  <C><A>imm</A>[<A>pos</A>]</C> executes in constant time
-##  (see&nbsp;<Ref Func="IsConstantTimeAccessList"/>),
+##  (see&nbsp;<Ref Filt="IsConstantTimeAccessList"/>),
 ##  and the size of <A>imm</A> in memory is proportional to its length.
 ##  <P/>
 ##  Because the comparisons required for sorting can be very expensive for
-##  some kinds of objects, you should use <Ref Func="AsList"/> instead
+##  some kinds of objects, you should use <Ref Attr="AsList"/> instead
 ##  if you do not require the result to be sorted.
 ##  <P/>
-##  The only difference to the operation <Ref Func="SSortedList"/>
+##  The only difference to the operation <Ref Oper="SSortedList"/>
 ##  is that <Ref Attr="AsSSortedList"/> returns an <E>immutable</E> list.
 ##  <P/>
 ##  <Ref Attr="AsSet"/> is simply a synonym for <Ref Attr="AsSSortedList"/>.
@@ -2362,7 +2362,7 @@ DeclareOperation( "AsSSortedListNonstored", [IsListOrCollection] );
 ##  <Func Name="Elements" Arg='C'/>
 ##
 ##  <Description>
-##  <Ref Func="Elements"/> does the same as <Ref Func="AsSSortedList"/>,
+##  <Ref Func="Elements"/> does the same as <Ref Attr="AsSSortedList"/>,
 ##  that is, the return value is a strictly sorted list of the elements in
 ##  the list or collection <A>C</A>.
 ##  <P/>
@@ -2370,10 +2370,10 @@ DeclareOperation( "AsSSortedListNonstored", [IsListOrCollection] );
 ##  In many situations, the sortedness of the <Q>element list</Q> for a
 ##  collection is in fact not needed, and one can save a lot of time by
 ##  asking for a list that is <E>not</E> necessarily sorted,
-##  using <Ref Func="AsList"/>.
+##  using <Ref Attr="AsList"/>.
 ##  If one is really interested in the strictly sorted list of elements in
-##  <A>C</A> then one should use <Ref Func="AsSet"/> or
-##  <Ref Func="AsSSortedList"/> instead.
+##  <A>C</A> then one should use <Ref Attr="AsSet"/> or
+##  <Ref Attr="AsSSortedList"/> instead.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2565,7 +2565,7 @@ DeclareOperation( "ProductOp", [ IsListOrCollection ] );
 ##  The elements of that list however are identical to the corresponding
 ##  elements of the argument list (see&nbsp;<Ref Sect="Identical Lists"/>).
 ##  <P/>
-##  List assignment using the operator <Ref Func="\{\}"/>
+##  List assignment using the operator <Ref Oper="\{\}"/>
 ##  (see&nbsp;<Ref Sect="List Assignment"/>) can be used to extract
 ##  elements of a list according to indices given in another list.
 ##  <P/>
@@ -2616,11 +2616,11 @@ DeclareOperation( "FilteredOp", [ IsListOrCollection, IsFunction ] );
 ##  <Description>
 ##  Called with a list <A>listorcoll</A>, <Ref Func="Number"/> returns the
 ##  number of bound entries in this list.
-##  For dense lists <Ref Func="Number"/>, <Ref Func="Length"/>,
-##  and <Ref Func="Size"/> return the same value;
+##  For dense lists <Ref Func="Number"/>, <Ref Attr="Length"/>,
+##  and <Ref Attr="Size"/> return the same value;
 ##  for lists with holes <Ref Func="Number"/> returns the number of bound
-##  entries, <Ref Func="Length"/> returns the largest index of a bound entry,
-##  and <Ref Func="Size"/> signals an error.
+##  entries, <Ref Attr="Length"/> returns the largest index of a bound entry,
+##  and <Ref Attr="Size"/> signals an error.
 ##  <P/>
 ##  Called with two arguments, a list or collection <A>listorcoll</A> and a
 ##  unary function <A>func</A>, <Ref Func="Number"/> returns the number of
@@ -2845,7 +2845,7 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##    [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ]
 ##  ]]></Example>
 ##  <P/>
-##  In the following example, <Ref Func="\&lt;"/> is the comparison
+##  In the following example, <Ref Oper="\&lt;"/> is the comparison
 ##  operation:
 ##  <P/>
 ##  <Example><![CDATA[
@@ -3004,7 +3004,7 @@ DeclareOperation( "IsSubset", [ IsListOrCollection, IsListOrCollection ] );
 ##  Each argument or element of <A>list</A> respectively may also be a
 ##  homogeneous list that is not a proper set,
 ##  in which case <Ref Func="Intersection" Label="for a list"/> silently
-##  applies <Ref Func="Set"/> to it first.
+##  applies <Ref Oper="Set"/> to it first.
 ##  <P/>
 ##  The result of <Ref Func="Intersection" Label="for a list"/> is the set
 ##  of elements that lie in every of the collections <A>C1</A>, <A>C2</A>,
@@ -3012,12 +3012,12 @@ DeclareOperation( "IsSubset", [ IsListOrCollection, IsListOrCollection ] );
 ##  If the result is a list then it is mutable and new, i.e., not identical
 ##  to any of <A>C1</A>, <A>C2</A>, etc.
 ##  <P/>
-##  Methods can be installed for the operation <Ref Func="Intersection2"/>
+##  Methods can be installed for the operation <Ref Oper="Intersection2"/>
 ##  that takes only two arguments.
 ##  <Ref Func="Intersection" Label="for a list"/> calls
-##  <Ref Func="Intersection2"/>.
+##  <Ref Oper="Intersection2"/>.
 ##  <P/>
-##  Methods for <Ref Func="Intersection2"/> should try to maintain as much
+##  Methods for <Ref Oper="Intersection2"/> should try to maintain as much
 ##  structure as possible, for example the intersection of two permutation
 ##  groups is again a permutation group.
 ##  <P/>
@@ -3078,7 +3078,7 @@ DeclareOperation( "Intersection2",
 ##  Each argument or element of <A>list</A> respectively may also be a
 ##  homogeneous list that is not a proper set,
 ##  in which case <Ref Func="Union" Label="for a list"/> silently applies
-##  <Ref Func="Set"/> to it first.
+##  <Ref Oper="Set"/> to it first.
 ##  <P/>
 ##  The result of <Ref Func="Union" Label="for a list"/> is the set of
 ##  elements that lie in any of the collections <A>C1</A>, <A>C2</A>, etc.
@@ -3087,7 +3087,7 @@ DeclareOperation( "Intersection2",
 ##  <P/>
 ##  Methods can be installed for the operation <Ref Oper="Union2"/>
 ##  that takes only two arguments.
-##  <Ref Func="Union" Label="for a list"/> calls <Ref Func="Union2"/>.
+##  <Ref Func="Union" Label="for a list"/> calls <Ref Oper="Union2"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Union( [ (1,2,3), (1,2,3,4) ], Group( (1,2,3), (1,2) ) );
@@ -3123,13 +3123,13 @@ DeclareOperation( "Union2", [ IsListOrCollection, IsListOrCollection ] );
 ##
 ##  <Description>
 ##  <Index Subkey="of collections">set difference</Index>
-##  <Ref Func="Difference"/> returns the set difference of the collections
+##  <Ref Oper="Difference"/> returns the set difference of the collections
 ##  <A>C1</A> and <A>C2</A>.
 ##  Either argument may also be a homogeneous list that is not a proper set,
-##  in which case <Ref Func="Difference"/> silently applies <Ref Func="Set"/>
+##  in which case <Ref Oper="Difference"/> silently applies <Ref Oper="Set"/>
 ##  to it first.
 ##  <P/>
-##  The result of <Ref Func="Difference"/> is the set of elements that lie in
+##  The result of <Ref Oper="Difference"/> is the set of elements that lie in
 ##  <A>C1</A> but not in <A>C2</A>.
 ##  Note that <A>C2</A> need not be a subset of <A>C1</A>.
 ##  The elements of <A>C2</A>, however, that are not elements of <A>C1</A>
@@ -3169,9 +3169,9 @@ DeclareOperation( "Difference", [ IsListOrCollection, IsListOrCollection ] );
 ##  algorithm can test whether an efficient equality test is available
 ##  for elements of a certain kind.
 ##  <P/>
-##  <Ref Func="CanEasilyCompareElements"/> indicates whether the elements in
+##  <Ref Prop="CanEasilyCompareElements"/> indicates whether the elements in
 ##  the family <A>fam</A> of <A>obj</A> can be easily compared with
-##  <Ref Func="\="/>.
+##  <Ref Oper="\="/>.
 ##  <P/>
 ##  The default method for this property is to ask the family of <A>obj</A>,
 ##  the default method for the family is to return <K>false</K>.
@@ -3183,7 +3183,7 @@ DeclareOperation( "Difference", [ IsListOrCollection, IsListOrCollection ] );
 ##  idea to store a value <K>false</K> too early in a family. Instead the
 ##  function <Ref Func="CanEasilyCompareElementsFamily"/> should be called
 ##  for the family of <A>obj</A> which returns <K>false</K> if the value of
-##  <Ref Func="CanEasilyCompareElements"/> is not known for the family
+##  <Ref Prop="CanEasilyCompareElements"/> is not known for the family
 ##  without computing it. (This is in fact what the above mentioned family
 ##  dispatch does.)
 ##  <P/>
@@ -3194,11 +3194,11 @@ DeclareOperation( "Difference", [ IsListOrCollection, IsListOrCollection ] );
 ##  This guarantees that code which directly asks the family gets a right
 ##  answer.
 ##  <P/>
-##  The property <Ref Func="CanEasilySortElements"/> and the function
+##  The property <Ref Prop="CanEasilySortElements"/> and the function
 ##  <Ref Func="CanEasilySortElementsFamily"/> behave exactly in the same way,
 ##  except that they indicate that objects can be compared via
-##  <Ref Func="\&lt;"/>.
-##  This property implies <Ref Func="CanEasilyCompareElements"/>,
+##  <Ref Oper="\&lt;"/>.
+##  This property implies <Ref Prop="CanEasilyCompareElements"/>,
 ##  as the ordering must be total.
 ##  </Description>
 ##  </ManSection>
@@ -3221,7 +3221,7 @@ InstallTrueMethod(CanEasilyCompareElements,CanEasilySortElements);
 ##  <Oper Name="CanComputeIsSubset" Arg='A, B'/>
 ##
 ##  <Description>
-##  This filter indicates that &GAP; can test (via <Ref Func="IsSubset"/>)
+##  This filter indicates that &GAP; can test (via <Ref Oper="IsSubset"/>)
 ##  whether <A>B</A> is a subset of <A>A</A>.
 ##  </Description>
 ##  </ManSection>

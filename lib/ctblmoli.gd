@@ -35,7 +35,7 @@
 ##  The default for <A>chi</A> is the trivial character of <A>tbl</A>.
 ##  <P/>
 ##  The return value of <Ref Func="MolienSeries"/> stores a value for the
-##  attribute <Ref Func="MolienSeriesInfo"/>.
+##  attribute <Ref Attr="MolienSeriesInfo"/>.
 ##  This admits the computation of coefficients of the series with
 ##  <Ref Func="ValueMolienSeries"/>.
 ##  Furthermore, this attribute gives access to numerator and denominator
@@ -101,11 +101,11 @@ DeclareGlobalFunction( "MolienSeriesWithGivenDenominator" );
 ##  <Ref Func="MolienSeries"/>,
 ##  a representation as quotient of polynomials is known such that the
 ##  denominator is a product of terms of the form <M>(1-z^r)^k</M>.
-##  This information is encoded as value of <Ref Func="MolienSeriesInfo"/>.
-##  Additionally, there is a special <Ref Func="PrintObj"/> method
+##  This information is encoded as value of <Ref Attr="MolienSeriesInfo"/>.
+##  Additionally, there is a special <Ref Oper="PrintObj"/> method
 ##  for Molien series based on this.
 ##  <P/>
-##  <Ref Func="MolienSeriesInfo"/> returns a record that describes the
+##  <Ref Attr="MolienSeriesInfo"/> returns a record that describes the
 ##  rational function <A>ratfun</A> as a Molien series.
 ##  The components of this record are
 ##
@@ -113,12 +113,12 @@ DeclareGlobalFunction( "MolienSeriesWithGivenDenominator" );
 ##  <Mark><C>numer</C></Mark>
 ##  <Item>
 ##       numerator of <A>ratfun</A> (in general a multiple of the numerator
-##       one gets by <Ref Func="NumeratorOfRationalFunction"/>),
+##       one gets by <Ref Attr="NumeratorOfRationalFunction"/>),
 ##  </Item>
 ##  <Mark><C>denom</C></Mark>
 ##  <Item>
 ##       denominator of <A>ratfun</A> (in general a multiple of the
-##       denominator one gets by <Ref Func="NumeratorOfRationalFunction"/>),
+##       denominator one gets by <Ref Attr="NumeratorOfRationalFunction"/>),
 ##  </Item>
 ##  <Mark><C>ratfun</C></Mark>
 ##  <Item>

@@ -500,7 +500,7 @@ compressed over different fields.
 <P/>
 This is enforced by the filter <C>IsLockedRepresentationVector</C>.  When a
 vector becomes part of a compressed matrix, this filter is set for it.
-Assignment, <Ref Func="Unbind" Label="unbind a list entry"/>,  
+Assignment, <Ref Oper="Unbind" Label="unbind a list entry"/>,  
 <Ref Func="ConvertToVectorRep" Label="for a list (and a field)"/> and
 <Ref Func="ConvertToMatrixRep" Label="for a list (and a field)"/>
 are all prevented from altering a vector with this filter.

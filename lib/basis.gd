@@ -19,9 +19,9 @@
 ##  <M>B = [ v_1, v_2, \ldots, v_n ]</M> in <M>V</M> such that <M>V</M> is generated as a
 ##  left <M>F</M>-module by these vectors and such that <M>B</M> is linearly
 ##  independent over <M>F</M>.
-##  The integer <M>n</M> is the dimension of <M>V</M> (see&nbsp;<Ref Func="Dimension"/>).
+##  The integer <M>n</M> is the dimension of <M>V</M> (see&nbsp;<Ref Attr="Dimension"/>).
 ##  In particular, as each basis is a list (see Chapter&nbsp;<Ref Chap="Lists"/>),
-##  it has a length (see&nbsp;<Ref Func="Length"/>), and the <M>i</M>-th vector of <M>B</M> can be
+##  it has a length (see&nbsp;<Ref Attr="Length"/>), and the <M>i</M>-th vector of <M>B</M> can be
 ##  accessed as <M>B[i]</M>.
 ##  <Example><![CDATA[
 ##  gap> V:= Rationals^3;
@@ -41,10 +41,10 @@
 ##  <P/>
 ##  Besides the basic operations for lists
 ##  (see&nbsp;<Ref Sect="Basic Operations for Lists"/>),
-##  the <E>basic operations for bases</E> are <Ref Func="BasisVectors"/>,
-##  <Ref Func="Coefficients"/>,
-##  <Ref Func="LinearCombination"/>,
-##  and <Ref Func="UnderlyingLeftModule"/>.
+##  the <E>basic operations for bases</E> are <Ref Attr="BasisVectors"/>,
+##  <Ref Oper="Coefficients"/>,
+##  <Ref Oper="LinearCombination"/>,
+##  and <Ref Attr="UnderlyingLeftModule"/>.
 ##  These and other operations for arbitrary bases are described
 ##  in&nbsp;<Ref Sect="Operations for Vector Space Bases"/>.
 ##  <P/>
@@ -54,7 +54,7 @@
 ##  &GAP; supports the following three kinds of bases.
 ##  <P/>
 ##  <E>Relative bases</E> delegate the work to other bases of the same
-##  free left module, via basechange matrices (see&nbsp;<Ref Func="RelativeBasis"/>).
+##  free left module, via basechange matrices (see&nbsp;<Ref Oper="RelativeBasis"/>).
 ##  <P/>
 ##  <E>Bases handled by nice bases</E> delegate the work to bases
 ##  of isomorphic left modules over the same left acting domain
@@ -64,7 +64,7 @@
 ##  <P/>
 ##  For example, in the case of a Gaussian row or matrix space <A>V</A>
 ##  (see&nbsp;<Ref Sect="Row and Matrix Spaces"/>),
-##  <C>Basis( <A>V</A> )</C> is a semi-echelonized basis (see&nbsp;<Ref Func="IsSemiEchelonized"/>)
+##  <C>Basis( <A>V</A> )</C> is a semi-echelonized basis (see&nbsp;<Ref Prop="IsSemiEchelonized"/>)
 ##  that uses Gaussian elimination; such a basis is of the third kind.
 ##  <C>Basis( <A>V</A>, <A>vectors</A> )</C> is either semi-echelonized or a relative basis.
 ##  Other examples of bases of the third kind are canonical bases of finite
@@ -89,8 +89,8 @@
 ##  <Description>
 ##  In &GAP;, a <E>basis</E> of a free left module is an object that knows
 ##  how to compute coefficients w.r.t.&nbsp;its basis vectors
-##  (see&nbsp;<Ref Func="Coefficients"/>).
-##  Bases are constructed by <Ref Func="Basis"/>.
+##  (see&nbsp;<Ref Oper="Coefficients"/>).
+##  Bases are constructed by <Ref Attr="Basis"/>.
 ##  Each basis is an immutable list,
 ##  the <M>i</M>-th entry being the <M>i</M>-th basis vector.
 ##  <P/>
@@ -141,8 +141,8 @@ DeclareSynonym( "IsFiniteBasisDefault",
 ##
 ##  <Description>
 ##  If the underlying free left module <M>V</M> of the basis <A>B</A>
-##  supports a canonical basis (see&nbsp;<Ref Func="CanonicalBasis"/>) then
-##  <Ref Func="IsCanonicalBasis"/> returns <K>true</K> if <A>B</A> is equal
+##  supports a canonical basis (see&nbsp;<Ref Attr="CanonicalBasis"/>) then
+##  <Ref Prop="IsCanonicalBasis"/> returns <K>true</K> if <A>B</A> is equal
 ##  to the canonical basis of <M>V</M>,
 ##  and <K>false</K> otherwise.
 ##  </Description>
@@ -163,13 +163,13 @@ InstallTrueMethod( IsBasis, IsCanonicalBasis );
 ##
 ##  <Description>
 ##  <Index Subkey="for row spaces">canonical basis</Index>
-##  <Ref Func="IsCanonicalBasisFullRowModule"/> returns <K>true</K> if
-##  <A>B</A> is the canonical basis (see&nbsp;<Ref Func="IsCanonicalBasis"/>)
-##  of a full row module (see&nbsp;<Ref Func="IsFullRowModule"/>),
+##  <Ref Prop="IsCanonicalBasisFullRowModule"/> returns <K>true</K> if
+##  <A>B</A> is the canonical basis (see&nbsp;<Ref Prop="IsCanonicalBasis"/>)
+##  of a full row module (see&nbsp;<Ref Prop="IsFullRowModule"/>),
 ##  and <K>false</K> otherwise.
 ##  <P/>
 ##  The <E>canonical basis</E> of a Gaussian row space is defined as the
-##  unique semi-echelonized (see&nbsp;<Ref Func="IsSemiEchelonized"/>) basis
+##  unique semi-echelonized (see&nbsp;<Ref Prop="IsSemiEchelonized"/>) basis
 ##  with the additional property that for <M>j > i</M> the position of the
 ##  pivot of row <M>j</M> is bigger than the position of the pivot of row
 ##  <M>i</M>, and that each pivot column contains exactly one nonzero entry.
@@ -195,13 +195,13 @@ InstallTrueMethod( IsSmallList,
 ##
 ##  <Description>
 ##  <Index Subkey="for matrix spaces">canonical basis</Index>
-##  <Ref Func="IsCanonicalBasisFullMatrixModule"/> returns <K>true</K> if
-##  <A>B</A> is the canonical basis (see&nbsp;<Ref Func="IsCanonicalBasis"/>)
-##  of a full matrix module (see&nbsp;<Ref Func="IsFullMatrixModule"/>),
+##  <Ref Prop="IsCanonicalBasisFullMatrixModule"/> returns <K>true</K> if
+##  <A>B</A> is the canonical basis (see&nbsp;<Ref Prop="IsCanonicalBasis"/>)
+##  of a full matrix module (see&nbsp;<Ref Prop="IsFullMatrixModule"/>),
 ##  and <K>false</K> otherwise.
 ##  <P/>
 ##  The <E>canonical basis</E> of a Gaussian matrix space is defined as the
-##  unique semi-echelonized (see&nbsp;<Ref Func="IsSemiEchelonized"/>) basis
+##  unique semi-echelonized (see&nbsp;<Ref Prop="IsSemiEchelonized"/>) basis
 ##  for which the list of concatenations of the basis vectors forms the
 ##  canonical basis of the corresponding Gaussian row space.
 ##  </Description>
@@ -276,17 +276,17 @@ DeclareProperty( "IsNormalBasis", IsBasis );
 ##
 ##  <Description>
 ##  Let <A>B</A> be a basis of a Gaussian row or matrix space <M>V</M>, say
-##  (see&nbsp;<Ref Func="IsGaussianSpace"/>) over the field <M>F</M>.
+##  (see&nbsp;<Ref Filt="IsGaussianSpace"/>) over the field <M>F</M>.
 ##  <P/>
 ##  If <M>V</M> is a row space then <A>B</A> is semi-echelonized if the matrix formed
 ##  by its basis vectors has the property that the first nonzero element in
 ##  each row is the identity of <M>F</M>,
 ##  and all values exactly below these pivot elements are the zero of <M>F</M>
-##  (cf.&nbsp;<Ref Func="SemiEchelonMat"/>).
+##  (cf.&nbsp;<Ref Attr="SemiEchelonMat"/>).
 ##  <P/>
 ##  If <M>V</M> is a matrix space then <A>B</A> is semi-echelonized if the matrix
 ##  obtained by replacing each basis vector by the concatenation of its rows
-##  is semi-echelonized (see above, cf.&nbsp;<Ref Func="SemiEchelonMats"/>).
+##  is semi-echelonized (see above, cf.&nbsp;<Ref Oper="SemiEchelonMats"/>).
 ##  <Example><![CDATA[
 ##  gap> V:= GF(2)^2;;
 ##  gap> B1:= Basis( V, [ [ 0, 1 ], [ 1, 0 ] ] * Z(2) );;
@@ -375,7 +375,7 @@ DeclareAttribute( "EnumeratorByBasis", IsBasis );
 ##  <Description>
 ##  Let <A>B</A> be a basis of a free left module <M>R</M>, say,
 ##  that is also a ring.
-##  In this case <Ref Func="StructureConstantsTable"/> returns
+##  In this case <Ref Attr="StructureConstantsTable"/> returns
 ##  a structure constants table <M>T</M> in sparse representation,
 ##  as used for structure constants algebras
 ##  (see Section&nbsp;<Ref Sect="Algebras" BookName="tut"/>
@@ -445,7 +445,7 @@ DeclareAttribute( "StructureConstantsTable", IsBasis );
 ##  would have to store the basis vectors and the coefficient domain
 ##  separately.
 ##  Storing the module allows one for example to deal with bases whose basis
-##  vectors have not yet been computed yet (see&nbsp;<Ref Func="Basis"/>);
+##  vectors have not yet been computed yet (see&nbsp;<Ref Attr="Basis"/>);
 ##  furthermore, in some cases it is convenient to test membership of a
 ##  vector in the module before computing coefficients w.r.t.&nbsp;a basis.
 ##  <!-- this happens for example for finite fields and cyclotomic fields-->
@@ -497,7 +497,7 @@ DeclareOperation( "Coefficients", [ IsBasis, IsVector ] );
 ##  <Oper Name="LinearCombination" Arg='B, coeff'/>
 ##
 ##  <Description>
-##  If <A>B</A> is a basis object (see <Ref Func="IsBasis"/>)
+##  If <A>B</A> is a basis object (see <Ref Filt="IsBasis"/>)
 ##  or a homogeneous list of length <M>n</M>, say,
 ##  and <A>coeff</A> is a row vector of the same length,
 ##  <Ref Oper="LinearCombination"/> returns the vector
@@ -528,8 +528,8 @@ DeclareOperation( "LinearCombination",
 ##  <Oper Name="SiftedVector" Arg='B, v'/>
 ##
 ##  <Description>
-##  Let <A>B</A> be a semi-echelonized basis (see&nbsp;<Ref Func="IsSemiEchelonized"/>) of a
-##  Gaussian row or matrix space <M>V</M> (see&nbsp;<Ref Func="IsGaussianSpace"/>),
+##  Let <A>B</A> be a semi-echelonized basis (see&nbsp;<Ref Prop="IsSemiEchelonized"/>) of a
+##  Gaussian row or matrix space <M>V</M> (see&nbsp;<Ref Filt="IsGaussianSpace"/>),
 ##  and <A>v</A> a row vector or matrix, respectively, of the same dimension as
 ##  the elements in <M>V</M>.
 ##  <C>SiftedVector</C> returns the <E>residuum</E> of <A>v</A> with respect to <A>B</A>, which
@@ -653,12 +653,12 @@ DeclareOperation( "BasisNC", [ IsFreeLeftModule, IsHomogeneousList ] );
 ##
 ##  <Description>
 ##  Let <A>V</A> be a Gaussian row or matrix vector space over the field
-##  <M>F</M> (see&nbsp;<Ref Func="IsGaussianSpace"/>,
-##  <Ref Func="IsRowSpace"/>, <Ref Func="IsMatrixSpace"/>).
+##  <M>F</M> (see&nbsp;<Ref Filt="IsGaussianSpace"/>,
+##  <Ref Filt="IsRowSpace"/>, <Ref Filt="IsMatrixSpace"/>).
 ##  <P/>
 ##  Called with <A>V</A> as the only argument,
 ##  <Ref Attr="SemiEchelonBasis"/> returns a basis of <A>V</A>
-##  that has the property <Ref Func="IsSemiEchelonized"/>.
+##  that has the property <Ref Prop="IsSemiEchelonized"/>.
 ##  <P/>
 ##  If additionally a list <A>vectors</A> of vectors in <A>V</A> is given
 ##  that forms a semi-echelonized basis of <A>V</A>
@@ -756,16 +756,16 @@ DeclareOperation( "RelativeBasisNC", [ IsBasis, IsHomogeneousList ] );
 ##  (Note that it may happen that also <M>C</M> delegates questions to a
 ##  <Q>nicer</Q> basis.)
 ##  The basis <M>B</M> indicates the intended behaviour by the filter
-##  <Ref Func="IsBasisByNiceBasis"/>,
+##  <Ref Filt="IsBasisByNiceBasis"/>,
 ##  and stores <M>C</M> as value of the attribute <Ref Attr="NiceBasis"/>.
 ##  <M>V</M> indicates the intended behaviour by the filter
 ##  <Ref Filt="IsHandledByNiceBasis"/>, and stores <M>W</M> as value
-##  of the attribute <Ref Func="NiceFreeLeftModule"/>.
+##  of the attribute <Ref Attr="NiceFreeLeftModule"/>.
 ##  <P/>
 ##  The bijection between <M>V</M> and <M>W</M> is implemented by the
-##  functions <Ref Func="NiceVector"/> and <Ref Func="UglyVector"/>;
+##  functions <Ref Oper="NiceVector"/> and <Ref Oper="UglyVector"/>;
 ##  additional data needed to compute images and preimages can be stored
-##  as value of <Ref Func="NiceFreeLeftModuleInfo"/>.
+##  as value of <Ref Attr="NiceFreeLeftModuleInfo"/>.
 ##  <#/GAPDoc>
 ##
 
@@ -815,7 +815,7 @@ DeclareOperation( "RelativeBasisNC", [ IsBasis, IsHomogeneousList ] );
 ##  </Item>
 ##  <Mark><C>UglyVector</C></Mark>
 ##  <Item>
-##      the <Ref Func="UglyVector"/> method for left modules <M>V</M> in <M>f</M>;
+##      the <Ref Oper="UglyVector"/> method for left modules <M>V</M> in <M>f</M>;
 ##      called with <M>V</M> and a vector <M>r</M> in the <C>NiceFreeLeftModule</C> value
 ##      of <M>V</M>, this function returns the vector <M>v \in V</M> to which <M>r</M> is
 ##      associated.
@@ -827,7 +827,7 @@ DeclareOperation( "RelativeBasisNC", [ IsBasis, IsHomogeneousList ] );
 ##  <C>DeclareHandlingByNiceBasis</C> and <C>InstallHandlingByNiceBasis</C>,
 ##  which causes the installation of the necessary methods and adds the pair
 ##  <M>[ f, </M><C><A>record</A>.detect</C><M> ]</M> to the global list <C>NiceBasisFiltersInfo</C>.
-##  The <Ref Func="LeftModuleByGenerators"/> methods call
+##  The <Ref Oper="LeftModuleByGenerators"/> methods call
 ##  <Ref Func="CheckForHandlingByNiceBasis"/>, which sets the appropriate filter
 ##  for the desired left module if applicable.
 ##  </Description>
@@ -851,7 +851,7 @@ DeclareGlobalFunction( "InstallHandlingByNiceBasis" );
 ##  nice bases is given by the global list <C>NiceBasisFiltersInfo</C>.
 ##  Examples of such vector spaces are vector spaces of field elements
 ##  (but not the fields themselves) and non-Gaussian row and matrix spaces
-##  (see&nbsp;<Ref Func="IsGaussianSpace"/>).
+##  (see&nbsp;<Ref Filt="IsGaussianSpace"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1021,7 +1021,7 @@ DeclareHandlingByNiceBasis( "IsSpaceOfRationalFunctions",
 ##
 ##  <Description>
 ##  This filter indicates that the basis <A>B</A> delegates tasks such as the
-##  computation of coefficients (see&nbsp;<Ref Func="Coefficients"/>) to a basis of an
+##  computation of coefficients (see&nbsp;<Ref Oper="Coefficients"/>) to a basis of an
 ##  isomorphic <Q>nicer</Q> free left module.
 ##  <!--  Any object in <C>IsBasisByNiceBasis</C> must be a <E>small</E> list in the sense of-->
 ##  <!--  <Ref Prop="IsSmallList"/>.-->
@@ -1054,8 +1054,8 @@ DeclareCategory( "IsBasisByNiceBasis", IsBasis and IsSmallList );
 ##  stored in <A>B</A> are in fact not basis vectors.
 ##  <P/>
 ##  The attributes <C>GeneratorsOfLeftModule</C> of the underlying left modules
-##  of <A>B</A> and the result of <C>NiceBasis</C> correspond via <Ref Func="NiceVector"/> and
-##  <Ref Func="UglyVector"/>.
+##  of <A>B</A> and the result of <C>NiceBasis</C> correspond via <Ref Oper="NiceVector"/> and
+##  <Ref Oper="UglyVector"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -42,7 +42,7 @@
 ##  Whereas it is  cheap  to append  to a  stream, streams do  consume system
 ##  resources, and only a  limited number can  be open at any time, therefore
 ##  it is   necessary   to close   a  stream  as   soon as   possible  using
-##  <Ref Func="CloseStream"/>.   If creating  a stream
+##  <Ref Oper="CloseStream"/>.   If creating  a stream
 ##  failed then <Ref Func="LastSystemError"/> can be used to get
 ##  information about the failure. 
 ##  <#/GAPDoc>
@@ -496,12 +496,12 @@ DeclareOperation( "SeekPositionStream", [ IsInputStream, IsInt ] );
 ##  It will block as long as necessary for the write operation to
 ##  complete (for example for a child process to clear its input buffer )
 ##  <P/>
-##  A default method is installed which implements <Ref Func="WriteAll"/>
-##  by repeated calls to <Ref Func="WriteByte"/>.
+##  A default method is installed which implements <Ref Oper="WriteAll"/>
+##  by repeated calls to <Ref Oper="WriteByte"/>.
 ##  <P/>
 ##  When printing or appending to a stream (using <Ref Func="PrintTo"/>,
 ##  or <Ref Func="AppendTo"/> or when logging to a stream),
-##  the kernel generates a call to <Ref Func="WriteAll"/> for each line
+##  the kernel generates a call to <Ref Oper="WriteAll"/> for each line
 ##  output.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -537,7 +537,7 @@ DeclareOperation( "WriteAll", [ IsOutputStream, IsString ] );
 ##  <A>output-stream</A>.  The function  returns <K>true</K> if  the write succeeds and
 ##  <K>fail</K> otherwise.
 ##  <P/>
-##  <Ref Func="WriteByte"/> is the basic operation for output streams. If a <Ref Func="WriteByte"/>
+##  <Ref Oper="WriteByte"/> is the basic operation for output streams. If a <Ref Oper="WriteByte"/>
 ##  method is installed for a user-defined type of stream, then all the other
 ##  output stream operations will work (although possibly not at peak
 ##  efficiency).
@@ -560,8 +560,8 @@ DeclareOperation( "WriteByte", [ IsOutputStream, IsInt ] );
 ##  appends  <A>string</A> to <A>output-stream</A>.   A  final newline is written.
 ##  The function returns <K>true</K> if the write succeeds and <K>fail</K> otherwise.
 ##  <P/>
-##  A default method is installed which implements <Ref Func="WriteLine"/> by repeated
-##  calls to <Ref Func="WriteByte"/>.
+##  A default method is installed which implements <Ref Oper="WriteLine"/> by repeated
+##  calls to <Ref Oper="WriteByte"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -930,20 +930,20 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  but may be unhelpful if the output is to be passed as input to another
 ##  program.
 ##  It is possible to turn off this behaviour for a stream using the
-##  <Ref Func="SetPrintFormattingStatus"/> operation, and to test whether it
-##  is on or off using <Ref Func="PrintFormattingStatus"/>.
+##  <Ref Oper="SetPrintFormattingStatus"/> operation, and to test whether it
+##  is on or off using <Ref Oper="PrintFormattingStatus"/>.
 ##  <P/>
-##  <Ref Func="SetPrintFormattingStatus"/> sets whether output sent to the
-##  output stream <A>stream</A> via <Ref Oper="PrintTo"/>,
-##  <Ref Oper="AppendTo"/>, etc. 
+##  <Ref Oper="SetPrintFormattingStatus"/> sets whether output sent to the
+##  output stream <A>stream</A> via <Ref Func="PrintTo"/>,
+##  <Ref Func="AppendTo"/>, etc. 
 ##  will be formatted with line breaks and 
 ##  indentation.  If  the  second  argument <A>newstatus</A> is <K>true</K> 
 ##  then output will be so formatted, and if <K>false</K> then it will not. 
 ##  If the stream is not a text stream, only <K>false</K> is allowed.
 ##  <P/>
-##  <Ref Func="PrintFormattingStatus"/> returns <K>true</K> if output sent to
-##  the output text stream <A>stream</A>  via <Ref Oper="PrintTo"/>,
-##  <Ref Oper="AppendTo"/>, etc.  
+##  <Ref Oper="PrintFormattingStatus"/> returns <K>true</K> if output sent to
+##  the output text stream <A>stream</A>  via <Ref Func="PrintTo"/>,
+##  <Ref Func="AppendTo"/>, etc.  
 ##  will be formatted with line breaks and
 ##  indentation, and <K>false</K> otherwise.
 ##  For non-text streams, it returns <K>false</K>.
@@ -951,8 +951,8 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  functions refer to the formatting status of the standard output (so usually
 ##  the users terminal screen).<P/>
 ##  These functions do not influence the behaviour of the low level functions 
-##  <Ref Func="WriteByte"/>, 
-##  <Ref Func="WriteLine"/> or  <Ref Func="WriteAll"/> which always write
+##  <Ref Oper="WriteByte"/>, 
+##  <Ref Oper="WriteLine"/> or  <Ref Oper="WriteAll"/> which always write
 ##  without formatting.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -1069,7 +1069,7 @@ end );
 ##  <Description>
 ##  causes the subsequent interaction to  be  logged  to  the  output  stream
 ##  <A>stream</A>. It works in precisely  the  same  way  as  it  does  for  files
-##  (see&nbsp;<Ref Func="LogTo" Label="for a filename"/>).
+##  (see&nbsp;<Ref Oper="LogTo" Label="for a filename"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1089,7 +1089,7 @@ DeclareOperation( "LogTo", [ IsOutputStream ] );
 ##  causes the subsequent input to be logged to the output stream
 ##  <A>stream</A>.
 ##  It works just like it does for files
-##  (see&nbsp;<Ref Func="InputLogTo" Label="for a filename"/>).
+##  (see&nbsp;<Ref Oper="InputLogTo" Label="for a filename"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1110,7 +1110,7 @@ DeclareSynonym( "LogInputTo",InputLogTo);
 ##  causes the subsequent output to be logged to the output stream
 ##  <A>stream</A>.
 ##  It works just like it does for files
-##  (see&nbsp;<Ref Func="OutputLogTo" Label="for a filename"/>).
+##  (see&nbsp;<Ref Oper="OutputLogTo" Label="for a filename"/>).
 ##  <P/>
 ##  </Description>
 ##  </ManSection>

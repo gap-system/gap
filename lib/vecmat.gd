@@ -236,10 +236,10 @@ DeclareGlobalFunction( "CopyToVectorRepNC");
 ##
 ##  <Description>
 ##
-##  This function is more technical version of <Ref Func="ImmutableMatrix"/>,
+##  This function is more technical version of <Ref Oper="ImmutableMatrix"/>,
 ##  which will never copy a matrix (or any rows of it) but may fail if it
 ##  encounters rows locked in the wrong representation, or various other
-##  more technical problems. Most users should use <Ref Func="ImmutableMatrix"/>
+##  more technical problems. Most users should use <Ref Oper="ImmutableMatrix"/>
 ##  instead. The NC versions of the function do less checking of the 
 ##  argument and may cause unpredictable results or crashes if given 
 ##  unsuitable arguments.
@@ -423,7 +423,7 @@ DeclareOperation( "ImmutableVector",[IsObject,IsRowVector]);
 ##  returns an integer that gives the position minus one of the finite field row vector
 ##  <A>vec</A> in the sorted list of all row vectors over the field with
 ##  <A>sz</A> elements in the same dimension as <A>vec</A>.
-##  <Ref Func="NumberFFVector"/> returns <K>fail</K> if the vector cannot be
+##  <Ref Oper="NumberFFVector"/> returns <K>fail</K> if the vector cannot be
 ##  represented over the field with <A>sz</A> elements.
 ##  <P/>
 ##  <Example><![CDATA[

@@ -94,7 +94,7 @@ However, partitions provide an efficient way of representing equivalence
 relations.  Moreover, only the non-singleton classes
 or blocks are listed allowing for small equivalence relations to be
 represented on infinite sets. Hence the main attribute of equivalence 
-relations is <Ref Func="EquivalenceRelationPartition"/>
+relations is <Ref Attr="EquivalenceRelationPartition"/>
 which provides the partition induced by the given equivalence.
 
 <#Include Label="EquivalenceRelationByPartition">

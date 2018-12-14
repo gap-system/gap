@@ -18,7 +18,7 @@ in Chapter&nbsp;<Ref Chap="Domains" BookName="tut"/>.
 There are only few <E>operations</E> especially for domains
 (see&nbsp;<Ref Sect="Operations for Domains"/>),
 operations such as <Ref Func="Intersection" Label="for a list"/>
-and <Ref Func="Random" Label="for a list or collection"/>
+and <Ref Oper="Random" Label="for a list or collection"/>
 are defined for the more
 general situation of collections (see Chapter&nbsp;<Ref Chap="Collections"/>).
 
@@ -287,13 +287,13 @@ and <A>Rep</A> describes the representation of the elements in <M>E</M>.
 If no domain <M>E</M> with the required properties exists then <K>fail</K> is
 returned.
 <P/>
-For example, <Ref Func="IsomorphismPermGroup"/> takes a
+For example, <Ref Attr="IsomorphismPermGroup"/> takes a
 group as its argument and returns a group homomorphism
 (see&nbsp;<Ref Chap="Group Homomorphisms"/>) onto an isomorphic permutation group
 (see Chapter&nbsp;<Ref Chap="Permutation Groups"/>) provided the original
 group is finite;
-for infinite groups, <Ref Func="IsomorphismPermGroup"/> returns <K>fail</K>.
-Similarly, <Ref Func="IsomorphismPcGroup"/> returns a group
+for infinite groups, <Ref Attr="IsomorphismPermGroup"/> returns <K>fail</K>.
+Similarly, <Ref Attr="IsomorphismPcGroup"/> returns a group
 homomorphism from its argument to a polycyclicly presented group
 (see&nbsp;<Ref Chap="Pc Groups"/>) if the argument is polycyclic,
 and <K>fail</K> otherwise.
@@ -315,9 +315,9 @@ For example, if <A>D</A> was constructed by
 <Ref Func="Monoid" Label="for various generators"/>
 then <A>D</A> is in general not regarded as a group in &GAP;,
 even if <A>D</A> is in fact closed under taking inverses.
-In this case, <Ref Func="IsGroup"/> returns <K>false</K> for <A>D</A>.
+In this case, <Ref Filt="IsGroup"/> returns <K>false</K> for <A>D</A>.
 The operational structure determines which operations are applicable for
-a domain, so for example <Ref Func="SylowSubgroup"/> is not defined for
+a domain, so for example <Ref Oper="SylowSubgroup"/> is not defined for
 <A>D</A> and therefore will signal an error.
 <P/>
 <Index Key="IsStruct"><C>Is<A>Struct</A></C></Index>
@@ -328,7 +328,7 @@ The functions <C>Is<A>Struct</A></C> implement the tests whether a domain
 <C>Is<A>Struct</A></C> is a filter (see&nbsp;<Ref Chap="Types of Objects"/>)
 that involves certain categories (see&nbsp;<Ref Sect="Categories"/>)
 and usually also certain properties (see&nbsp;<Ref Sect="Properties"/>).
-For example, <Ref Func="IsGroup"/> is equivalent to
+For example, <Ref Filt="IsGroup"/> is equivalent to
 <C>IsMagmaWithInverses and IsAssociative</C>,
 the first being a category and the second being a property.
 <P/>
@@ -338,23 +338,23 @@ Here are some typical examples.
 <P/>
 <List>
 <Item>
-    <Ref Func="IsDomain"/> is implied by each domain category,
+    <Ref Filt="IsDomain"/> is implied by each domain category,
 </Item>
 <Item>
-    <Ref Func="IsMagma"/> is implied by each category that describes the
+    <Ref Filt="IsMagma"/> is implied by each category that describes the
     closure under multiplication <C>*</C>,
 </Item>
 <Item>
-    <Ref Func="IsAdditiveMagma"/> is implied by each category that describes
+    <Ref Filt="IsAdditiveMagma"/> is implied by each category that describes
     the closure under addition <C>+</C>,
 </Item>
 <Item>
-    <Ref Func="IsMagmaWithOne"/> implies <Ref Func="IsMagma"/>;
+    <Ref Filt="IsMagmaWithOne"/> implies <Ref Filt="IsMagma"/>;
     a <E>magma-with-one</E> is a magma such that each element
     (and thus also the magma itself) can be asked for its zeroth power,
 </Item>
 <Item>
-    <Ref Func="IsMagmaWithInverses"/> implies <Ref Func="IsMagmaWithOne"/>;
+    <Ref Filt="IsMagmaWithInverses"/> implies <Ref Filt="IsMagmaWithOne"/>;
     a <E>magma-with-inverses</E> is a magma such that each element
     can be asked for its inverse;
     important special cases are <E>groups</E>,
@@ -451,13 +451,13 @@ since this is equivalent to the checks whether <A>S</A> is a <A>Struct</A> and <
 is a subset of <A>D</A>.
 Note that in many cases, only the subset relation is what one really wants
 to check, and that appropriate methods for the operation
-<Ref Func="IsSubset"/> are available for many special situations,
+<Ref Oper="IsSubset"/> are available for many special situations,
 such as the test whether a group is contained in another group,
 where only generators need to be checked.
 <P/>
 If a function <C>IsSub<A>struct</A></C> is available in &GAP; then it is implemented
 as first a call to <C>Is<A>Struct</A></C> for the second argument and then a call to
-<Ref Func="IsSubset"/> for the two arguments.
+<Ref Oper="IsSubset"/> for the two arguments.
 
 </Section>
 
@@ -582,7 +582,7 @@ Domains are often constructed relative to other domains.
 The probably most usual case is to form a <E>subset</E> of a domain,
 for example the intersection
 (see&nbsp;<Ref Func="Intersection" Label="for a list"/>) of two domains,
-or a Sylow subgroup of a given group (see&nbsp;<Ref Func="SylowSubgroup"/>).
+or a Sylow subgroup of a given group (see&nbsp;<Ref Oper="SylowSubgroup"/>).
 <P/>
 In such a situation, the new domain can gain knowledge by exploiting that
 several attributes are maintained under taking subsets.
@@ -593,12 +593,12 @@ and so on.
 Since usually the new domain has access to the knowledge of the old domain(s)
 only when it is created (see&nbsp;<Ref Sect="Constructing Subdomains"/> for the exception),
 this is the right moment to take advantage of the subset relation,
-using <Ref Func="UseSubsetRelation"/>.
+using <Ref Oper="UseSubsetRelation"/>.
 <P/>
 Analogous relations occur when a <E>factor structure</E> is created from a
-domain and a subset (see <Ref Func="UseFactorRelation"/>),
+domain and a subset (see <Ref Oper="UseFactorRelation"/>),
 and when a domain <E>isomorphic</E> to a given one is created
-(see <Ref Func="UseIsomorphismRelation"/>).
+(see <Ref Oper="UseIsomorphismRelation"/>).
 <P/>
 The functions <Ref Func="InstallSubsetMaintenance"/>,
 <Ref Func="InstallIsomorphismMaintenance"/>, and
@@ -608,7 +608,7 @@ or forming factor structures or isomorphic domains.
 This is used only when a new attribute is created,
 see&nbsp;<Ref Sect="Creating Attributes and Properties"/>.
 For the attributes already available,
-such as <Ref Func="IsFinite"/> and <Ref Func="IsCommutative"/>,
+such as <Ref Prop="IsFinite"/> and <Ref Prop="IsCommutative"/>,
 the maintenances are already notified.
 
 <#Include Label="UseSubsetRelation">
@@ -636,7 +636,7 @@ of these elements.
 For example, a domain closed under multiplication <C>*</C> (a so-called magma,
 see Chapter&nbsp;<Ref Chap="Magmas"/>) makes sense only if its elements can be multiplied,
 and the latter is indicated by the category
-<Ref Func="IsMultiplicativeElement"/> for each element.
+<Ref Filt="IsMultiplicativeElement"/> for each element.
 Again note that the underlying idea is that a domain is regarded as
 <E>generated</E> by given elements, and that these elements carry information
 about the desired domain.
@@ -645,10 +645,10 @@ see&nbsp;<Ref Sect="Categories"/>.
 <P/>
 More special categories of this kind are described in the contexts where
 they arise,
-they are <Ref Func="IsRowVector"/>,
-<Ref Func="IsMatrix"/>,
-<Ref Func="IsOrdinaryMatrix"/>,
-and <Ref Func="IsLieMatrix"/>.
+they are <Ref Filt="IsRowVector"/>,
+<Ref Filt="IsMatrix"/>,
+<Ref Filt="IsOrdinaryMatrix"/>,
+and <Ref Filt="IsLieMatrix"/>.
 <P/>
 <#Include Label="IsExtAElement">
 <#Include Label="IsNearAdditiveElement">
@@ -688,17 +688,17 @@ category (see&nbsp;<Ref Func="CategoryCollections"/>).
 <P/>
 For example, the multiplication of permutations is associative,
 and it is stored in the family of permutations that each permutation lies
-in <Ref Func="IsAssociativeElement"/>.
+in <Ref Filt="IsAssociativeElement"/>.
 As a consequence, each magma consisting of permutations
 (more precisely: each collection that lies in the family
 <C>CollectionsFamily( PermutationsFamily )</C>,
-see&nbsp;<Ref Func="CollectionsFamily"/>)
+see&nbsp;<Ref Attr="CollectionsFamily"/>)
 automatically lies in <C>CategoryCollections( IsAssociativeElement )</C>.
 A magma in this category is always known to be associative, via a logical
 implication (see&nbsp;<Ref Sect="Logical Implications"/>).
 <P/>
 Similarly, if a family knows that all its elements are in the categories
-<Ref Func="IsJacobianElement"/> and <Ref Func="IsZeroSquaredElement"/>,
+<Ref Filt="IsJacobianElement"/> and <Ref Filt="IsZeroSquaredElement"/>,
 then each algebra of these elements is automatically known to be a
 Lie algebra (see Chapter&nbsp;<Ref Chap="Algebras"/>).
 

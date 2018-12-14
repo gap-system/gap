@@ -232,7 +232,7 @@ DeclareGlobalFunction("KuKGenerators");
 ##  [ f1^2, f2^3, (f1*f2)^5, f1*f3^-1 ]
 ##  ]]></Example>
 ##  <P/>
-##  <Ref Func="IsomorphismSimplifiedFpGroup"/> uses Tietze transformations
+##  <Ref Attr="IsomorphismSimplifiedFpGroup"/> uses Tietze transformations
 ##  to simplify the presentation, see <Ref Sect="SimplifiedFpGroup"/>.
 ##  </Description>
 ##  </ManSection>

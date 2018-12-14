@@ -88,7 +88,7 @@ it as a set. In particular, two sets <M>A</M> and <M>B</M> are equal if and only
 <P/>
 There are two types of object in &GAP; which exhibit this kind of behaviour
 with respect to equality, namely domains (see Section&nbsp;<Ref Sect="Domains"/>) and lists 
-whose elements are strictly sorted see <Ref Func="IsSSortedList"/>.
+whose elements are strictly sorted see <Ref Prop="IsSSortedList"/>.
 In general, <E>set</E> in this manual
 will mean an object of one of these types.
 <P/>
@@ -151,7 +151,7 @@ suppose <M>a</M> is immutable and <M>O</M> is some operation on <M>a</M>,
 then if <M>a = b</M> evaluates to <K>true</K> before executing <M>O(a)</M>,
 <M>a = b</M> also evaluates to <K>true</K> afterwards. 
 (Examples for operations <M>O</M> that change mutable objects are
-<Ref Func="Add"/> and <Ref Func="Unbind" Label="unbind a list entry"/>
+<Ref Oper="Add"/> and <Ref Oper="Unbind" Label="unbind a list entry"/>
 which are used to change list objects, see Chapter&nbsp;<Ref Chap="Lists"/>.)
 An immutable object <E>may</E> change, for example to store
 new information, or to adopt a more efficient representation,
@@ -224,14 +224,14 @@ An interesting example of mutable (and thus copyable) objects is
 provided by <E>iterators</E>, see&nbsp;<Ref Sect="Iterators"/>.
 (Of course an immutable form of an iterator is not very useful,
 but clearly <Ref Func="Immutable"/> will yield such an object.)
-Every call of <Ref Func="NextIterator"/> changes a mutable iterator until it is
+Every call of <Ref Oper="NextIterator"/> changes a mutable iterator until it is
 exhausted, and this is the only way to change an iterator.
-<Ref Func="ShallowCopy"/> for an iterator <A>iter</A> is defined so as to return a
+<Ref Oper="ShallowCopy"/> for an iterator <A>iter</A> is defined so as to return a
 mutable iterator that has no mutable data in common with <A>iter</A>,
-and that behaves equally to <A>iter</A> w.r.t.&nbsp;<Ref Func="IsDoneIterator"/> and (if <A>iter</A>
-is mutable) <Ref Func="NextIterator"/>.
+and that behaves equally to <A>iter</A> w.r.t.&nbsp;<Ref Oper="IsDoneIterator"/> and (if <A>iter</A>
+is mutable) <Ref Oper="NextIterator"/>.
 Note that this meaning of the <Q>shallow copy</Q> of an iterator
-that is returned by <Ref Func="ShallowCopy"/> is not as obvious as for lists and records,
+that is returned by <Ref Oper="ShallowCopy"/> is not as obvious as for lists and records,
 and must be explicitly defined.
 
 </Subsection>
@@ -242,10 +242,10 @@ and must be explicitly defined.
 
 Many operations return immutable results, among those in particular
 attributes (see&nbsp;<Ref Sect="Attributes"/>).  Examples of attributes are <Ref Attr="Size"/>,
-<Ref Func="Zero"/>, <Ref Func="AdditiveInverse"/>, <Ref Func="One"/>, and <Ref Func="Inverse"/>.  Arithmetic
+<Ref Attr="Zero"/>, <Ref Attr="AdditiveInverse"/>, <Ref Attr="One"/>, and <Ref Attr="Inverse"/>.  Arithmetic
 operations, such as the binary infix operations <C>+</C>, <C>-</C>, <C>*</C>, <C>/</C>,
-<C>^</C>, <K>mod</K>, the unary <C>-</C>, and operations such as <Ref Func="Comm"/> and
-<Ref Func="LeftQuotient"/>, return <E>mutable</E> results, <E>except</E> if all arguments
+<C>^</C>, <K>mod</K>, the unary <C>-</C>, and operations such as <Ref Oper="Comm"/> and
+<Ref Oper="LeftQuotient"/>, return <E>mutable</E> results, <E>except</E> if all arguments
 are immutable.  So the product of two matrices or of a vector and a
 matrix is immutable if and only if the two matrices or both the vector
 and the matrix are immutable (see also&nbsp;<Ref Sect="Arithmetic for Lists"/>). There
@@ -265,13 +265,13 @@ and <C><A>obj</A>^-1</C> is equivalent to <C>InverseSM( <A>obj</A> )</C>.
 The <Q>SM</Q> stands for <Q>same mutability</Q>, and indicates that the result is
 mutable if and only if the argument is mutable.
 <P/>
-The operations <Ref Func="ZeroOp"/>, <Ref Func="AdditiveInverseOp"/>, <Ref Func="OneOp"/>, and <Ref Func="InverseOp"/>
+The operations <Ref Oper="ZeroOp"/>, <Ref Oper="AdditiveInverseOp"/>, <Ref Oper="OneOp"/>, and <Ref Oper="InverseOp"/>
 return <E>mutable</E> results whenever a mutable version of the result exists,
-contrary to the attributes <Ref Func="Zero"/>, <Ref Func="AdditiveInverse"/>, <Ref Func="One"/>, and <Ref Func="Inverse"/>.
+contrary to the attributes <Ref Attr="Zero"/>, <Ref Attr="AdditiveInverse"/>, <Ref Attr="One"/>, and <Ref Attr="Inverse"/>.
 <P/>
 If one introduces new arithmetic objects then one need not install
-methods for the attributes <Ref Func="One"/>, <Ref Func="Zero"/>, etc.
-The methods for the associated operations <Ref Func="OneOp"/> and <Ref Func="ZeroOp"/>
+methods for the attributes <Ref Attr="One"/>, <Ref Attr="Zero"/>, etc.
+The methods for the associated operations <Ref Oper="OneOp"/> and <Ref Oper="ZeroOp"/>
 will be called, and then the results made immutable. 
 <P/>
 All methods installed for the arithmetic operations must obey the rule
@@ -286,8 +286,8 @@ matrix partly as a data structure, and manipulate and change its
 entries.  For this, the matrix needs to be mutable, and the rule that
 attribute values are immutable is an obstacle.  For these situations,
 a number of additional operations are provided, for example
-<Ref Func="TransposedMatMutable"/> constructs a mutable matrix (contrary to the
-attribute <Ref Func="TransposedMat"/>), while <Ref Func="TriangulizeMat"/> modifies a mutable
+<Ref Oper="TransposedMatMutable"/> constructs a mutable matrix (contrary to the
+attribute <Ref Attr="TransposedMat"/>), while <Ref Oper="TriangulizeMat"/> modifies a mutable
 matrix (in place) into upper triangular form.
 <P/>
 Note that being immutable does not forbid an object to store
@@ -320,8 +320,8 @@ continues to represent the same mathematical object.
 
 There are a number of general operations which can be applied, in
 principle, to any object in &GAP;. Some of these are documented
-elsewhere &ndash;see <Ref Func="String"/>, <Ref Func="PrintObj"/> and
-<Ref Func="Display"/>. Others are mainly somewhat technical.
+elsewhere &ndash;see <Ref Attr="String"/>, <Ref Oper="PrintObj"/> and
+<Ref Oper="Display"/>. Others are mainly somewhat technical.
 
 
 <ManSection>

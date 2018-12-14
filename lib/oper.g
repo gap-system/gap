@@ -472,14 +472,14 @@ end );
 ##  For example, the size of a permutation group can be computed very cheaply
 ##  if a stabilizer chain of the group is known.
 ##  So it is reasonable to install an immediate method for
-##  <Ref Func="Size"/> with requirement
+##  <Ref Attr="Size"/> with requirement
 ##  <C>IsGroup and Tester( <A>stab</A> )</C>,
 ##  where <A>stab</A> is the attribute corresponding to the stabilizer chain.
 ##  <P/>
 ##  Another example would be the implementation of the conclusion that
 ##  every finite group of prime power order is nilpotent.
 ##  This could be done by installing an immediate method for the attribute
-##  <Ref Func="IsNilpotentGroup"/> with requirement
+##  <Ref Prop="IsNilpotentGroup"/> with requirement
 ##  <C>IsGroup and Tester( Size )</C>.
 ##  This method would then check whether the size is a finite prime power,
 ##  return <K>true</K> in this case and otherwise call
@@ -580,14 +580,14 @@ end );
 ##  ]]></Log>
 ##  <P/>
 ##  This example gives an explanation for the two calls of the
-##  <Q>system getter</Q> for <Ref Func="Size"/>.
+##  <Q>system getter</Q> for <Ref Attr="Size"/>.
 ##  Namely, there are immediate methods that access the known size
 ##  of the group.
 ##  Note that the group <C>g</C> was known to be finitely generated already
 ##  before the size was computed,
 ##  the calls of the immediate method for
-##  <Ref Func="IsFinitelyGeneratedGroup"/> after the call of
-##  <Ref Func="Size"/> have other arguments than <C>g</C>.
+##  <Ref Prop="IsFinitelyGeneratedGroup"/> after the call of
+##  <Ref Attr="Size"/> have other arguments than <C>g</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1144,9 +1144,9 @@ end );
 ##  This is exactly because of the possibility to install methods
 ##  that do not require <A>filter</A>.
 ##  <P/>
-##  For example, the attribute <Ref Func="Size"/> was created
+##  For example, the attribute <Ref Attr="Size"/> was created
 ##  with second argument a list or a collection,
-##  but there is also a method for <Ref Func="Size"/> that is
+##  but there is also a method for <Ref Attr="Size"/> that is
 ##  applicable to a character table,
 ##  which is neither a list nor a collection.
 ##  <P/>
@@ -1172,7 +1172,7 @@ end );
 ##  For example, there is an attribute <C>ComputedSylowSubgroups</C>
 ##  for the list holding those Sylow subgroups of a group that have been
 ##  computed already by the function
-##  <Ref Func="SylowSubgroup"/>,
+##  <Ref Oper="SylowSubgroup"/>,
 ##  and this list is mutable because one may want to enter groups into it
 ##  as they are computed.
 ##  <!-- in the current implementation, one can overwrite values of mutable-->

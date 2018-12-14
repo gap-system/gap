@@ -64,7 +64,7 @@ DeclareOperation( "RingGeneralMappingByImages",
 ##  One can avoid the checks by calling
 ##  <Ref Oper="RingHomomorphismByImagesNC"/>,
 ##  and one can construct multi-valued mappings with
-##  <Ref Func="RingGeneralMappingByImages"/>.
+##  <Ref Oper="RingGeneralMappingByImages"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -90,7 +90,7 @@ DeclareGlobalFunction( "RingHomomorphismByImages" );
 ##  <P/>
 ##  For creating a possibly multi-valued mapping from <A>R</A> to <A>S</A>
 ##  that respects addition and multiplication,
-##  <Ref Func="RingGeneralMappingByImages"/> can be used.
+##  <Ref Oper="RingGeneralMappingByImages"/> can be used.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

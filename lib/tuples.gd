@@ -30,22 +30,22 @@ DeclareInfoClass( "InfoDirectProductElements" );
 ##  <Filt Name="IsDirectProductElement" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  <Ref Func="IsDirectProductElement"/> is a subcategory of the meet of
-##  <Ref Func="IsDenseList"/>,
-##  <Ref Func="IsMultiplicativeElementWithInverse"/>,
-##  <Ref Func="IsAdditiveElementWithInverse"/>,
-##  and <Ref Func="IsCopyable"/>,
+##  <Ref Filt="IsDirectProductElement"/> is a subcategory of the meet of
+##  <Ref Filt="IsDenseList"/>,
+##  <Ref Filt="IsMultiplicativeElementWithInverse"/>,
+##  <Ref Filt="IsAdditiveElementWithInverse"/>,
+##  and <Ref Filt="IsCopyable"/>,
 ##  where the arithmetic operations (addition, zero, additive inverse,
 ##  multiplication, powering, one, inverse) are defined componentwise.
 ##  <P/>
 ##  Note that each of these operations will cause an error message if
 ##  its result for at least one component cannot be formed.
 ##  <P/>
-##  For an object in the filter <Ref Func="IsDirectProductElement"/>,
-##  <Ref Func="ShallowCopy"/> returns a mutable plain list with the same
+##  For an object in the filter <Ref Filt="IsDirectProductElement"/>,
+##  <Ref Oper="ShallowCopy"/> returns a mutable plain list with the same
 ##  entries.
 ##  The sum and the product of a direct product element and a list in
-##  <Ref Func="IsListDefault"/> is the list of sums and products,
+##  <Ref Filt="IsListDefault"/> is the list of sums and products,
 ##  respectively.
 ##  The sum and the product of a direct product element and an object
 ##  that is neither a list nor a collection

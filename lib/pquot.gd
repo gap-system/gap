@@ -37,7 +37,7 @@ DeclareGlobalFunction( "AbelianPQuotient" );
 ##  in form  of a quotient system.
 ##  The quotient system can be converted into an epimorphism from <A>F</A>
 ##  onto the <A>p</A>-group computed by the function
-##  <Ref Func="EpimorphismQuotientSystem"/>. 
+##  <Ref Oper="EpimorphismQuotientSystem"/>. 
 ##  <P/>
 ##  For a group <M>G</M> define the exponent-<M>p</M> central series of
 ##  <M>G</M> inductively by <M>{\cal P}_1(G) = G</M> and
@@ -169,7 +169,7 @@ DeclareOperation( "EpimorphismQuotientSystem", [IsQuotientSystem] );
 ##  ]]></Example>
 ##  <P/>
 ##  A related operation which is also applicable to finitely presented groups is
-##  <Ref Func="GQuotients"/>, which computes all epimorphisms from a
+##  <Ref Oper="GQuotients"/>, which computes all epimorphisms from a
 ##  (finitely presented) group <A>F</A> onto a given (finite) group <A>G</A>.
 ##  <P/>
 ##  <Example><![CDATA[

@@ -106,9 +106,9 @@ See <Ref Sect="Operations for Booleans"/> for more details.
 <P/>
 For example, <C>IsList and IsEmpty</C> is a filter that returns <K>true</K> if
 its argument is an empty list, and <K>false</K> otherwise.
-The filter <Ref Func="IsGroup"/> is defined as the intersection of
-the category <Ref Func="IsMagmaWithInverses"/>
-and the property <Ref Func="IsAssociative"/>.
+The filter <Ref Filt="IsGroup"/> is defined as the intersection of
+the category <Ref Filt="IsMagmaWithInverses"/>
+and the property <Ref Prop="IsAssociative"/>.
 <P/>
 A filter that is not the meet of other filters is called a <E>simple
 filter</E>.
@@ -248,7 +248,7 @@ defined.  For example, the category <Ref Filt="IsMatrix"/> is a subcategory
 of <Ref Filt="IsMultiplicativeElementWithInverse"/>. Clearly not every 
 matrix has a multiplicative inverse. But the category <Ref Filt="IsMatrix"/> 
 makes each matrix an admissible argument of the operation 
-<Ref Oper="Inverse"/>, which may sometimes return <K>fail</K>.
+<Ref Attr="Inverse"/>, which may sometimes return <K>fail</K>.
 Likewise, two matrices can be multiplied only if they are of appropriate
 shapes.
 <P/>
@@ -267,10 +267,10 @@ categories of domains of these elements.
             IsExtLSet
             IsExtRSet
 ]]></Log>
-Of course <Ref Func="IsDomain"/> is a subcategory of <Ref Func="IsObject"/>.
+Of course <Ref Filt="IsDomain"/> is a subcategory of <Ref Filt="IsObject"/>.
 A domain that is
 closed under multiplication <C>*</C> is called a magma and it lies in the
-category <Ref Func="IsMagma"/>.
+category <Ref Filt="IsMagma"/>.
 If a magma is closed under taking the identity,
 it lies in <Ref Filt="IsMagmaWithOne"/>, and if it is also closed under 
 taking inverses, it lies in <Ref Filt="IsMagmaWithInverses"/>. The category
@@ -386,7 +386,7 @@ structures in an inconsistent state. If necessary, a new object can be
 constructed.
 <P/>
 Several attributes have methods for more than one argument.  For example
-<Ref Prop="IsTransitive" Label="for a group, an action domain, etc."/>
+<Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>
 is an attribute for a <M>G</M>-set that
 can also be called for the two arguments, being a group <M>G</M> and its action
 domain.  If attributes are called with more than one argument then the
@@ -396,11 +396,11 @@ Properties are a special form of attributes that have the value <K>true</K>
 or <K>false</K>, see section&nbsp;<Ref Sect="Properties"/>.
 <P/>
 Examples of attributes for multiplicative elements are
-<Ref Func="Inverse"/>, <Ref Func="One"/>,
-and <Ref Func="Order"/>.
-<Ref Func="Size"/> is an attribute for domains,
-<Ref Func="Centre"/> is an attribute for magmas,
-and <Ref Func="DerivedSubgroup"/> is an attribute for groups.
+<Ref Attr="Inverse"/>, <Ref Attr="One"/>,
+and <Ref Attr="Order"/>.
+<Ref Attr="Size"/> is an attribute for domains,
+<Ref Attr="Centre"/> is an attribute for magmas,
+and <Ref Attr="DerivedSubgroup"/> is an attribute for groups.
 
 <#Include Label="KnownAttributesOfObject">
 
@@ -453,7 +453,7 @@ resp.&nbsp;<Ref Func="DeclareProperty"/>
 (see&nbsp;<Ref Sect="Global Variables in the Library"/>),
 tester and setter are automatically made accessible by the names
 <C>Has<A>attr</A></C> and <C>Set<A>attr</A></C>, respectively.
-For example, the tester for <Ref Func="Size"/> is called <C>HasSize</C>,
+For example, the tester for <Ref Attr="Size"/> is called <C>HasSize</C>,
 and the setter is called <C>SetSize</C>.
 <P/>
 <Example><![CDATA[
@@ -561,9 +561,9 @@ for example a mutable list all of whose entries are immutable can store
 whether it is strictly sorted. When the object is mutated (for example
 by list assignment) the type may need to be adjusted.
 <P/>
-Important properties for domains are <Ref Func="IsAssociative"/>,
-<Ref Func="IsCommutative"/>, <Ref Func="IsAnticommutative"/>,
-<Ref Func="IsLDistributive"/> and <Ref Func="IsRDistributive"/>,
+Important properties for domains are <Ref Prop="IsAssociative"/>,
+<Ref Prop="IsCommutative"/>, <Ref Prop="IsAnticommutative"/>,
+<Ref Prop="IsLDistributive"/> and <Ref Prop="IsRDistributive"/>,
 which mean that the multiplication of elements in the domain satisfies
 <M>( a * b ) * c = a * ( b * c )</M>, <M>a * b = b * a</M>,
 <M>a * b = - ( b * a )</M>, <M>a * ( b + c ) = a * b + a * c</M>,

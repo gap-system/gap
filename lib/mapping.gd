@@ -21,8 +21,8 @@
 ##  <M>S</M>, <M>R</M>, and <M>Rel</M> are generalized domains
 ##  (see <Ref Chap="Domains"/>).
 ##  The corresponding attributes for general mappings are
-##  <Ref Func="Source"/>, <Ref Func="Range" Label="of a general mapping"/>,
-##  and <Ref Func="UnderlyingRelation"/>.
+##  <Ref Attr="Source"/>, <Ref Attr="Range" Label="of a general mapping"/>,
+##  and <Ref Attr="UnderlyingRelation"/>.
 ##  <!-- what about the family predicates if the source/range is not a -->
 ##  <!-- collection? -->
 ##  <P/>
@@ -38,7 +38,7 @@
 ##  <P/>
 ##  Each element of an underlying relation of a general mapping lies in the
 ##  category of direct product elements
-##  (see&nbsp;<Ref Func="IsDirectProductElement"/>).
+##  (see&nbsp;<Ref Filt="IsDirectProductElement"/>).
 ##  <P/>
 ##  For each <M>s \in S</M>, the set <M>\{ r \in R | (s,r) \in Rel \}</M>
 ##  is called the set of <E>images</E> of <M>s</M>.
@@ -56,9 +56,9 @@
 ##  <#/GAPDoc>
 ##
 ##  <#GAPDoc Label="[2]{mapping}">
-##  <Ref Func="Source"/> and <Ref Func="Range" Label="of a general mapping"/> 
+##  <Ref Attr="Source"/> and <Ref Attr="Range" Label="of a general mapping"/> 
 ##  are basic operations for general mappings.
-##  <Ref Func="UnderlyingRelation"/> is secondary, its default method sets up
+##  <Ref Attr="UnderlyingRelation"/> is secondary, its default method sets up
 ##  a domain that delegates tasks to the general mapping.
 ##  (Note that this allows one to handle also infinite relations by generic
 ##  methods if source or range of the general mapping is finite.)
@@ -66,27 +66,27 @@
 ##  The distinction between basic operations and secondary operations for
 ##  general mappings may be a little bit complicated.
 ##  Namely, each general mapping must be in one of the two categories
-##  <Ref Func="IsNonSPGeneralMapping"/>, <Ref Func="IsSPGeneralMapping"/>.
-##  (The category <Ref Func="IsGeneralMapping"/> is defined as the disjoint
+##  <Ref Filt="IsNonSPGeneralMapping"/>, <Ref Filt="IsSPGeneralMapping"/>.
+##  (The category <Ref Filt="IsGeneralMapping"/> is defined as the disjoint
 ##  union of these two.)
 ##  <P/>
-##  For general mappings of the first category, <Ref Func="ImagesElm"/> and
-##  <Ref Func="PreImagesElm"/> are basic operations.
+##  For general mappings of the first category, <Ref Oper="ImagesElm"/> and
+##  <Ref Oper="PreImagesElm"/> are basic operations.
 ##  (Note that in principle it is possible to delegate
-##  from <Ref Func="PreImagesElm"/> to <Ref Func="ImagesElm"/>.)
-##  Methods for the secondary operations <Ref Func="ImageElm"/>,
-##  <Ref Func="PreImageElm"/>, <Ref Func="ImagesSet"/>,
-##  <Ref Func="PreImagesSet"/>, <Ref Func="ImagesRepresentative"/>,
-##  and <Ref Func="PreImagesRepresentative"/> may use
-##  <Ref Func="ImagesElm"/> and <Ref Func="PreImagesElm"/>, respectively,
-##  and methods for <Ref Func="ImagesElm"/>, <Ref Func="PreImagesElm"/>
+##  from <Ref Oper="PreImagesElm"/> to <Ref Oper="ImagesElm"/>.)
+##  Methods for the secondary operations <Ref Oper="ImageElm"/>,
+##  <Ref Oper="PreImageElm"/>, <Ref Oper="ImagesSet"/>,
+##  <Ref Oper="PreImagesSet"/>, <Ref Oper="ImagesRepresentative"/>,
+##  and <Ref Oper="PreImagesRepresentative"/> may use
+##  <Ref Oper="ImagesElm"/> and <Ref Oper="PreImagesElm"/>, respectively,
+##  and methods for <Ref Oper="ImagesElm"/>, <Ref Oper="PreImagesElm"/>
 ##  must <E>not</E> call the secondary operations.
 ##  In particular, there are no generic methods for
-##  <Ref Func="ImagesElm"/> and <Ref Func="PreImagesElm"/>.
+##  <Ref Oper="ImagesElm"/> and <Ref Oper="PreImagesElm"/>.
 ##  <P/>
-##  Methods for <Ref Func="ImagesSet"/> and <Ref Func="PreImagesSet"/> must
-##  <E>not</E> use <Ref Func="PreImagesRange"/> and
-##  <Ref Func="ImagesSource"/>, e.g.,
+##  Methods for <Ref Oper="ImagesSet"/> and <Ref Oper="PreImagesSet"/> must
+##  <E>not</E> use <Ref Attr="PreImagesRange"/> and
+##  <Ref Attr="ImagesSource"/>, e.g.,
 ##  compute the intersection of the set in question with the preimage of the
 ##  range resp. the image of the source.
 ##  <P/>
@@ -94,31 +94,31 @@
 ##  preserving general mappings), the situation is different.
 ##  The set of preimages under a group homomorphism, for example, is either
 ##  empty or can be described as a coset of the (multiplicative) kernel.
-##  So it is reasonable to have <Ref Func="ImagesRepresentative"/>,
-##  <Ref Func="PreImagesRepresentative"/>,
-##  <Ref Func="KernelOfMultiplicativeGeneralMapping"/>, and
-##  <Ref Func="CoKernelOfMultiplicativeGeneralMapping"/> as basic operations
-##  here, and to make <Ref Func="ImagesElm"/> and <Ref Func="PreImagesElm"/>
+##  So it is reasonable to have <Ref Oper="ImagesRepresentative"/>,
+##  <Ref Oper="PreImagesRepresentative"/>,
+##  <Ref Attr="KernelOfMultiplicativeGeneralMapping"/>, and
+##  <Ref Attr="CoKernelOfMultiplicativeGeneralMapping"/> as basic operations
+##  here, and to make <Ref Oper="ImagesElm"/> and <Ref Oper="PreImagesElm"/>
 ##  secondary operations that may delegate to these.
 ##  <P/>
 ##  In order to avoid infinite recursions,
 ##  we must distinguish between the two different types of mappings.
 ##  <P/>
-##  (Note that the basic domain operations such as <Ref Func="AsList"/>
+##  (Note that the basic domain operations such as <Ref Attr="AsList"/>
 ##  for the underlying relation of a general mapping may use either
-##  <Ref Func="ImagesElm"/> or <Ref Func="ImagesRepresentative"/> and the
+##  <Ref Oper="ImagesElm"/> or <Ref Oper="ImagesRepresentative"/> and the
 ##  appropriate cokernel.
-##  Conversely, if <Ref Func="AsList"/> for the underlying relation is known
-##  then <Ref Func="ImagesElm"/> resp. <Ref Func="ImagesRepresentative"/>
+##  Conversely, if <Ref Attr="AsList"/> for the underlying relation is known
+##  then <Ref Oper="ImagesElm"/> resp. <Ref Oper="ImagesRepresentative"/>
 ##  may delegate to it,
 ##  the general mapping gets the property
-##  <Ref Func="IsConstantTimeAccessGeneralMapping"/> for this;
+##  <Ref Prop="IsConstantTimeAccessGeneralMapping"/> for this;
 ##  note that this is not allowed if only an enumerator of the underlying
 ##  relation is known.)
 ##  <P/>
 ##  Secondary operations are
-##  <Ref Func="IsInjective"/>, <Ref Func="IsSingleValued"/>,
-##  <Ref Func="IsSurjective"/>, <Ref Func="IsTotal"/>;
+##  <Ref Prop="IsInjective"/>, <Ref Prop="IsSingleValued"/>,
+##  <Ref Prop="IsSurjective"/>, <Ref Prop="IsTotal"/>;
 ##  they may use the basic operations, and must not be used by them.
 ##  <#/GAPDoc>
 ##
@@ -145,21 +145,21 @@
 ##  General mappings are in the category of multiplicative elements with
 ##  inverses.
 ##  Similar to matrices, not every general mapping has an inverse or an
-##  identity, and we define the behaviour of <Ref Func="One"/> and
-##  <Ref Func="Inverse"/> for general mappings as follows.
-##  <Ref Func="One"/> returns <K>fail</K> when called for a general mapping
+##  identity, and we define the behaviour of <Ref Attr="One"/> and
+##  <Ref Attr="Inverse"/> for general mappings as follows.
+##  <Ref Attr="One"/> returns <K>fail</K> when called for a general mapping
 ##  whose source and range differ,
-##  otherwise <Ref Func="One"/> returns the identity mapping of the source.
+##  otherwise <Ref Attr="One"/> returns the identity mapping of the source.
 ##  (Note that the source may differ from the preimage).
-##  <Ref Func="Inverse"/> returns <K>fail</K> when called for a non-bijective
+##  <Ref Attr="Inverse"/> returns <K>fail</K> when called for a non-bijective
 ##  general mapping or for a general mapping whose source and range differ;
-##  otherwise <Ref Func="Inverse"/> returns the inverse mapping.
+##  otherwise <Ref Attr="Inverse"/> returns the inverse mapping.
 ##  <P/>
 ##  Besides the usual inverse of multiplicative elements, which means that
 ##  <C>Inverse( <A>g</A> ) * <A>g</A> = <A>g</A> * Inverse( <A>g</A> )
 ##  = One( <A>g</A> )</C>,
 ##  for general mappings we have the attribute
-##  <Ref Func="InverseGeneralMapping"/>.
+##  <Ref Attr="InverseGeneralMapping"/>.
 ##  If <A>F</A> is a general mapping with source <M>S</M>, range <M>R</M>,
 ##  and underlying relation <M>Rel</M> then
 ##  <C>InverseGeneralMapping( <A>F</A> )</C> has source <M>R</M>,
@@ -168,13 +168,13 @@
 ##  For a general mapping that has an inverse in the usual sense,
 ##  i.e., for a bijection of the source, of course both concepts coincide.
 ##  <P/>
-##  <Ref Func="Inverse"/> may delegate to
-##  <Ref Func="InverseGeneralMapping"/>.
-##  <Ref Func="InverseGeneralMapping"/> must not delegate to
-##  <Ref Func="Inverse"/>,
-##  but a known value of <Ref Func="Inverse"/> may be fetched.
+##  <Ref Attr="Inverse"/> may delegate to
+##  <Ref Attr="InverseGeneralMapping"/>.
+##  <Ref Attr="InverseGeneralMapping"/> must not delegate to
+##  <Ref Attr="Inverse"/>,
+##  but a known value of <Ref Attr="Inverse"/> may be fetched.
 ##  So methods to compute the inverse of a general mapping should be
-##  installed for <Ref Func="InverseGeneralMapping"/>.
+##  installed for <Ref Attr="InverseGeneralMapping"/>.
 ##  <P/>
 ##  (Note that in many respects, general mappings behave similar to matrices,
 ##  for example one can define left and right identities and inverses, which
@@ -182,12 +182,12 @@
 ##  <#/GAPDoc>
 ##
 ##  <#GAPDoc Label="[4]{mapping}">
-##  Methods for the operations <Ref Func="ImagesElm"/>,
-##  <Ref Func="ImagesRepresentative"/>,
-##  <Ref Func="ImagesSet"/>, <Ref Func="ImageElm"/>,
-##  <Ref Func="PreImagesElm"/>,
-##  <Ref Func="PreImagesRepresentative"/>, <Ref Func="PreImagesSet"/>,
-##  and <Ref Func="PreImageElm"/> take two arguments, a general mapping
+##  Methods for the operations <Ref Oper="ImagesElm"/>,
+##  <Ref Oper="ImagesRepresentative"/>,
+##  <Ref Oper="ImagesSet"/>, <Ref Oper="ImageElm"/>,
+##  <Ref Oper="PreImagesElm"/>,
+##  <Ref Oper="PreImagesRepresentative"/>, <Ref Oper="PreImagesSet"/>,
+##  and <Ref Oper="PreImageElm"/> take two arguments, a general mapping
 ##  <A>map</A> and an element or collection of elements <A>elm</A>.
 ##  These methods must <E>not</E> check whether <A>elm</A> lies in the source
 ##  or the range of <A>map</A>.
@@ -220,10 +220,10 @@ fi;
 ##  <Filt Name="IsGeneralMapping" Arg='map' Type='Category'/>
 ##
 ##  <Description>
-##  Each general mapping lies in the category <Ref Func="IsGeneralMapping"/>.
+##  Each general mapping lies in the category <Ref Filt="IsGeneralMapping"/>.
 ##  It implies the categories
-##  <Ref Func="IsMultiplicativeElementWithInverse"/>
-##  and <Ref Func="IsAssociativeElement"/>;
+##  <Ref Filt="IsMultiplicativeElementWithInverse"/>
+##  and <Ref Filt="IsAssociativeElement"/>;
 ##  for a discussion of these implications,
 ##  see&nbsp;<Ref Sect="Arithmetic Operations for General Mappings"/>.
 ##  </Description>
@@ -352,11 +352,11 @@ DeclareAttribute( "FamiliesOfGeneralMappingsAndRanges",
 ##
 ##  <Description>
 ##  is <K>true</K> if the underlying relation of the general mapping
-##  <A>map</A> knows its <Ref Func="AsList"/> value,
+##  <A>map</A> knows its <Ref Attr="AsList"/> value,
 ##  and <K>false</K> otherwise.
 ##  <P/>
 ##  In the former case, <A>map</A> is allowed to use this list for calls to
-##  <Ref Func="ImagesElm"/> etc.
+##  <Ref Oper="ImagesElm"/> etc.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -443,7 +443,7 @@ DeclareProperty( "IsSingleValued", IsGeneralMapping );
 ##  <P/>
 ##  Equivalently, the general mapping <A>map</A> is a mapping if and only if
 ##  it is total and single-valued
-##  (see&nbsp;<Ref Func="IsTotal"/>, <Ref Func="IsSingleValued"/>).
+##  (see&nbsp;<Ref Prop="IsTotal"/>, <Ref Prop="IsSingleValued"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -526,8 +526,8 @@ DeclareSynonym("IsOnto",IsSurjective);
 ##
 ##  <Description>
 ##  A general mapping <A>map</A> is <E>bijective</E> if and only if it is
-##  an injective and surjective mapping (see&nbsp;<Ref Func="IsMapping"/>,
-##  <Ref Func="IsInjective"/>, <Ref Func="IsSurjective"/>).
+##  an injective and surjective mapping (see&nbsp;<Ref Filt="IsMapping"/>,
+##  <Ref Prop="IsInjective"/>, <Ref Prop="IsSurjective"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -581,12 +581,12 @@ DeclareAttribute( "Source", IsGeneralMapping );
 ##  <Description>
 ##  The <E>underlying relation</E> of a general mapping <A>map</A> is the
 ##  domain of pairs <M>(s,r)</M>, with <M>s</M> in the source and <M>r</M> in
-##  the range of <A>map</A> (see&nbsp;<Ref Func="Source"/>,
-##  <Ref Func="Range" Label="of a general mapping"/>),
+##  the range of <A>map</A> (see&nbsp;<Ref Attr="Source"/>,
+##  <Ref Attr="Range" Label="of a general mapping"/>),
 ##  and <M>r \in</M> <C>ImagesElm( <A>map</A>, </C><M>s</M><C> )</C>.
 ##  <P/>
 ##  Each element of the underlying relation is represented by
-##  a direct product element (see&nbsp;<Ref Func="IsDirectProductElement"/>).
+##  a direct product element (see&nbsp;<Ref Filt="IsDirectProductElement"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -678,13 +678,13 @@ DeclareAttribute( "IdentityMapping", IsCollection );
 ##  <Description>
 ##  The <E>inverse general mapping</E> of a general mapping <A>map</A> is
 ##  the general mapping whose underlying relation
-##  (see&nbsp;<Ref Func="UnderlyingRelation"/>) contains a pair <M>(r,s)</M>
+##  (see&nbsp;<Ref Attr="UnderlyingRelation"/>) contains a pair <M>(r,s)</M>
 ##  if and only if the underlying relation of <A>map</A> contains the pair
 ##  <M>(s,r)</M>.
 ##  <P/>
 ##  See the introduction to Chapter&nbsp;<Ref Chap="Mappings"/>
 ##  for the subtleties concerning the difference between
-##  <Ref Func="InverseGeneralMapping"/> and <Ref Func="Inverse"/>.
+##  <Ref Attr="InverseGeneralMapping"/> and <Ref Attr="Inverse"/>.
 ##  <P/>
 ##  Note that the inverse general mapping of a mapping <A>map</A> is
 ##  in general only a general mapping.
@@ -709,7 +709,7 @@ DeclareAttribute( "InverseGeneralMapping", IsGeneralMapping );
 ##  The <E>restricted inverse general mapping</E> of a general
 ##  mapping <A>map</A> is
 ##  the general mapping whose underlying relation
-##  (see&nbsp;<Ref Func="UnderlyingRelation"/>) contains a pair <M>(r,s)</M>
+##  (see&nbsp;<Ref Attr="UnderlyingRelation"/>) contains a pair <M>(r,s)</M>
 ##  if and only if the underlying relation of <A>map</A> contains the pair
 ##  <M>(s,r)</M>, and whose domain is restricted to the image of <A>map</A>
 ##  and whose range is the domain of <A>map</A>.
@@ -732,7 +732,7 @@ DeclareAttribute( "RestrictedInverseGeneralMapping", IsGeneralMapping );
 ##  <Description>
 ##  is the set of images of the source of the general mapping <A>map</A>.
 ##  <P/>
-##  <Ref Func="ImagesSource"/> delegates to <Ref Func="ImagesSet"/>,
+##  <Ref Attr="ImagesSource"/> delegates to <Ref Oper="ImagesSet"/>,
 ##  it is introduced only to store the image of <A>map</A> as attribute
 ##  value.
 ##  </Description>
@@ -753,7 +753,7 @@ DeclareAttribute( "ImagesSource", IsGeneralMapping );
 ##  <Description>
 ##  is the set of preimages of the range of the general mapping <A>map</A>.
 ##  <P/>
-##  <Ref Func="PreImagesRange"/> delegates to <Ref Func="PreImagesSet"/>,
+##  <Ref Attr="PreImagesRange"/> delegates to <Ref Oper="PreImagesSet"/>,
 ##  it is introduced only to store the preimage of <A>map</A> as attribute
 ##  value.
 ##  </Description>
@@ -773,7 +773,7 @@ DeclareAttribute( "PreImagesRange", IsGeneralMapping );
 ##
 ##  <Description>
 ##  If <A>elm</A> is an element of the source of the general mapping
-##  <A>map</A> then <Ref Func="ImagesElm"/> returns the set of all images
+##  <A>map</A> then <Ref Oper="ImagesElm"/> returns the set of all images
 ##  of <A>elm</A> under <A>map</A>.
 ##  <P/>
 ##  Anything may happen if <A>elm</A> is not an element of the source of
@@ -795,7 +795,7 @@ DeclareOperation( "ImagesElm", [ IsGeneralMapping, IsObject ] );
 ##
 ##  <Description>
 ##  If <A>elm</A> is an element of the source of the general mapping
-##  <A>map</A> then <Ref Func="ImagesRepresentative"/> returns either
+##  <A>map</A> then <Ref Oper="ImagesRepresentative"/> returns either
 ##  a representative of the set of images of <A>elm</A> under <A>map</A>
 ##  or <K>fail</K>, the latter if and only if <A>elm</A> has no images under
 ##  <A>map</A>.
@@ -819,7 +819,7 @@ DeclareOperation( "ImagesRepresentative", [ IsGeneralMapping, IsObject ] );
 ##
 ##  <Description>
 ##  If <A>elms</A> is a subset of the source of the general mapping
-##  <A>map</A> then <Ref Func="ImagesSet"/> returns the set of all images of
+##  <A>map</A> then <Ref Oper="ImagesSet"/> returns the set of all images of
 ##  <A>elms</A> under <A>map</A>.
 ##  <P/>
 ##  The result will be either a proper set or a domain.
@@ -843,7 +843,7 @@ DeclareOperation( "ImagesSet", [ IsGeneralMapping, IsListOrCollection ] );
 ##  <Description>
 ##  If <A>elm</A> is an element of the source of the total and single-valued
 ##  mapping <A>map</A> then
-##  <Ref Func="ImageElm"/> returns the unique image of <A>elm</A> under
+##  <Ref Oper="ImageElm"/> returns the unique image of <A>elm</A> under
 ##  <A>map</A>.
 ##  <P/>
 ##  Anything may happen if <A>elm</A> is not an element of the source of
@@ -898,9 +898,9 @@ DeclareOperation( "ImageElm", [ IsMapping, IsObject ] );
 ##  entries do in general <E>not</E> correspond.)
 ##  <P/>
 ##  <Ref Func="Image" Label="set of images of the source of a general mapping"/>
-##  delegates to <Ref Func="ImagesSource"/> when called
-##  with one argument, and to <Ref Func="ImageElm"/> resp.
-##  <Ref Func="ImagesSet"/> when called with two arguments.
+##  delegates to <Ref Attr="ImagesSource"/> when called
+##  with one argument, and to <Ref Oper="ImageElm"/> resp.
+##  <Ref Oper="ImagesSet"/> when called with two arguments.
 ##  <P/>
 ##  If the second argument is not an element or a subset of the source of
 ##  the first argument, an error is signalled.
@@ -947,9 +947,9 @@ DeclareGlobalFunction( "Image" );
 ##  entries do in general <E>not</E> correspond.)
 ##  <P/>
 ##  <Ref Func="Images" Label="set of images of the source of a general mapping"/>
-##  delegates to <Ref Func="ImagesSource"/> when called
-##  with one argument, and to <Ref Func="ImagesElm"/> resp.
-##  <Ref Func="ImagesSet"/> when called with two arguments.
+##  delegates to <Ref Attr="ImagesSource"/> when called
+##  with one argument, and to <Ref Oper="ImagesElm"/> resp.
+##  <Ref Oper="ImagesSet"/> when called with two arguments.
 ##  <P/>
 ##  If the second argument is not an element or a subset of the source of
 ##  the first argument, an error is signalled.
@@ -970,7 +970,7 @@ DeclareGlobalFunction( "Images" );
 ##
 ##  <Description>
 ##  If <A>elm</A> is an element of the range of the general mapping
-##  <A>map</A> then <Ref Func="PreImagesElm"/> returns the set of all
+##  <A>map</A> then <Ref Oper="PreImagesElm"/> returns the set of all
 ##  preimages of <A>elm</A> under <A>map</A>.
 ##  <P/>
 ##  Anything may happen if <A>elm</A> is not an element of the range of
@@ -993,7 +993,7 @@ DeclareOperation( "PreImagesElm", [ IsGeneralMapping, IsObject ] );
 ##  <Description>
 ##  If <A>elm</A> is an element of the range of the injective and surjective
 ##  general mapping <A>map</A> then
-##  <Ref Func="PreImageElm"/> returns the unique preimage of <A>elm</A> under
+##  <Ref Oper="PreImageElm"/> returns the unique preimage of <A>elm</A> under
 ##  <A>map</A>.
 ##  <P/>
 ##  Anything may happen if <A>elm</A> is not an element of the range of
@@ -1017,7 +1017,7 @@ DeclareOperation( "PreImageElm",
 ##
 ##  <Description>
 ##  If <A>elm</A> is an element of the range of the general mapping
-##  <A>map</A> then <Ref Func="PreImagesRepresentative"/> returns either a
+##  <A>map</A> then <Ref Oper="PreImagesRepresentative"/> returns either a
 ##  representative of the set of preimages of <A>elm</A> under <A>map</A> or
 ##  <K>fail</K>, the latter if and only if <A>elm</A>
 ##  has no preimages under <A>map</A>.
@@ -1042,7 +1042,7 @@ DeclareOperation( "PreImagesRepresentative",
 ##
 ##  <Description>
 ##  If <A>elms</A> is a subset of the range of the general mapping <A>map</A>
-##  then <Ref Func="PreImagesSet"/> returns the set of all preimages of
+##  then <Ref Oper="PreImagesSet"/> returns the set of all preimages of
 ##  <A>elms</A> under <A>map</A>.
 ##  <P/>
 ##  Anything may happen if <A>elms</A> is not a subset of the range of
@@ -1096,9 +1096,9 @@ DeclareOperation( "PreImagesSet", [ IsGeneralMapping, IsListOrCollection ] );
 ##  entries do in general <E>not</E> correspond.)
 ##  <P/>
 ##  <Ref Func="PreImage" Label="set of preimages of the range of a general mapping"/>
-##  delegates to <Ref Func="PreImagesRange"/> when
+##  delegates to <Ref Attr="PreImagesRange"/> when
 ##  called with one argument,
-##  and to <Ref Func="PreImageElm"/> resp. <Ref Func="PreImagesSet"/> when
+##  and to <Ref Oper="PreImageElm"/> resp. <Ref Oper="PreImagesSet"/> when
 ##  called with two arguments.
 ##  <P/>
 ##  If the second argument is not an element or a subset of the range of
@@ -1146,9 +1146,9 @@ DeclareGlobalFunction( "PreImage" );
 ##  entries do in general <E>not</E> correspond.)
 ##  <P/>
 ##  <Ref Func="PreImages" Label="set of preimages of the range of a general mapping"/>
-##  delegates to <Ref Func="PreImagesRange"/> when
+##  delegates to <Ref Attr="PreImagesRange"/> when
 ##  called with one argument,
-##  and to <Ref Func="PreImagesElm"/> resp. <Ref Func="PreImagesSet"/> when
+##  and to <Ref Oper="PreImagesElm"/> resp. <Ref Oper="PreImagesSet"/> when
 ##  called with two arguments.
 ##  <P/>
 ##  If the second argument is not an element or a subset of the range of
@@ -1171,13 +1171,13 @@ DeclareGlobalFunction( "PreImages" );
 ##  <Func Name="CompositionMapping2General" Arg='map2, map1'/>
 ##
 ##  <Description>
-##  <Ref Func="CompositionMapping2"/> returns the composition of <A>map2</A>
+##  <Ref Oper="CompositionMapping2"/> returns the composition of <A>map2</A>
 ##  and <A>map1</A>,
 ##  this is the general mapping that maps an element first under <A>map1</A>,
 ##  and then maps the images under <A>map2</A>.
 ##  <P/>
 ##  (Note the reverse ordering of arguments in the composition via
-##  the multiplication <Ref Func="\*"/>.
+##  the multiplication <Ref Oper="\*"/>.
 ##  <P/>
 ##  <Ref Func="CompositionMapping2General"/> is the method that forms a
 ##  composite mapping with two constituent mappings.
@@ -1203,14 +1203,14 @@ DeclareGlobalFunction("CompositionMapping2General");
 ##  <Description>
 ##  <Ref Func="CompositionMapping"/> allows one to compose arbitrarily many
 ##  general mappings,
-##  and delegates each step to <Ref Func="CompositionMapping2"/>.
+##  and delegates each step to <Ref Oper="CompositionMapping2"/>.
 ##  <P/>
-##  Additionally, the properties <Ref Func="IsInjective"/> and
-##  <Ref Func="IsSingleValued"/> are maintained;
+##  Additionally, the properties <Ref Prop="IsInjective"/> and
+##  <Ref Prop="IsSingleValued"/> are maintained;
 ##  if the source of the <M>i+1</M>-th general mapping is identical to
 ##  the range of the <M>i</M>-th general mapping,
-##  also <Ref Func="IsTotal"/> and <Ref Func="IsSurjective"/> are maintained.
-##  (So one should not call <Ref Func="CompositionMapping2"/> directly
+##  also <Ref Prop="IsTotal"/> and <Ref Prop="IsSurjective"/> are maintained.
+##  (So one should not call <Ref Oper="CompositionMapping2"/> directly
 ##  if one wants to maintain these properties.)
 ##  <P/>
 ##  Depending on the types of <A>map1</A> and <A>map2</A>,
@@ -1219,7 +1219,7 @@ DeclareGlobalFunction("CompositionMapping2General");
 ##  if both mappings preserve the same algebraic structures and &GAP; can
 ##  decompose elements of the source of <A>map2</A> into generators) or as an
 ##  (iterated) composition
-##  (see&nbsp;<Ref Func="IsCompositionMappingRep"/>).
+##  (see&nbsp;<Ref Filt="IsCompositionMappingRep"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1258,7 +1258,7 @@ DeclareRepresentation( "IsCompositionMappingRep",
 ##
 ##  <Description>
 ##  If <A>map</A> is stored in the representation
-##  <Ref Func="IsCompositionMappingRep"/> as composition of two mappings
+##  <Ref Filt="IsCompositionMappingRep"/> as composition of two mappings
 ##  <A>map1</A> and <A>map2</A>, this function returns the
 ##  two constituent mappings in a list <C>[ <A>map1</A>, <A>map2</A> ]</C>.
 ##  </Description>
@@ -1345,7 +1345,7 @@ DeclareGlobalFunction( "GeneralRestrictedMapping" );
 ##  or in the second form, some domain indexed by the positive integer
 ##  <A>i</A>.
 ##  The precise natures of the various methods are described elsewhere:
-##  for Lie algebras, see <Ref Func="LieFamily"/>; for group  products,
+##  for Lie algebras, see <Ref Attr="LieFamily"/>; for group  products,
 ##  see&nbsp;<Ref Sect="Embeddings and Projections for Group Products"/>
 ##  for a general description, or for examples
 ##  see&nbsp;<Ref Sect="Direct Products"/> for direct products,
@@ -1446,7 +1446,7 @@ DeclareGlobalFunction( "GeneralMappingByElements" );
 ##  <P/>
 ##  The mapping returned by
 ##  <Ref Func="MappingByFunction" Label="by function (and inverse function) between two domains"/> lies in the
-##  filter <Ref Func="IsNonSPGeneralMapping"/>,
+##  filter <Ref Filt="IsNonSPGeneralMapping"/>,
 ##  see&nbsp;<Ref Sect="Technical Matters Concerning General Mappings"/>.
 ##  </Description>
 ##  </ManSection>

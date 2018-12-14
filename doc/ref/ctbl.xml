@@ -63,7 +63,7 @@ as well as the list handling
 &ndash;it is an important feature of character theoretic methods
 that questions about groups are translated into manipulations of lists;
 on the other hand, the datatype of cyclotomics
-(see Chapter&nbsp;<Ref Func="Cyclotomics"/>)
+(see Chapter&nbsp;<Ref Var="Cyclotomics"/>)
 was added to the &GAP; kernel because of the character theory algorithms.
 For developing further code, also other areas of &GAP;'s library became
 interesting, such as permutation groups, finite fields, and polynomials.
@@ -340,13 +340,13 @@ The following few conventions should be noted.
 Several algorithms are available for computing the irreducible characters of
 a finite group <M>G</M>.
 The default method for arbitrary finite groups is to use the Dixon-Schneider
-algorithm (see&nbsp;<Ref Func="IrrDixonSchneider"/>).
+algorithm (see&nbsp;<Ref Attr="IrrDixonSchneider"/>).
 For supersolvable groups,
-Conlon's algorithm can be used (see&nbsp;<Ref Func="IrrConlon"/>).
+Conlon's algorithm can be used (see&nbsp;<Ref Attr="IrrConlon"/>).
 For abelian-by-supersolvable groups,
 the Baum-Clausen algorithm for computing the irreducible representations
-(see&nbsp;<Ref Func="IrreducibleRepresentations"/>) can be used to compute
-the irreducible characters (see&nbsp;<Ref Func="IrrBaumClausen"/>).
+(see&nbsp;<Ref Attr="IrreducibleRepresentations"/>) can be used to compute
+the irreducible characters (see&nbsp;<Ref Attr="IrrBaumClausen"/>).
 <P/>
 These functions are installed in methods for
 <Ref Attr="Irr" Label="for a group"/>,
@@ -368,7 +368,7 @@ but explicitly calling one of them will <E>not</E> set the
 
 This section describes functions that return certain modules of a given
 group.
-(Extensions by modules can be formed by the command <Ref Func="Extensions"/>.)
+(Extensions by modules can be formed by the command <Ref Oper="Extensions"/>.)
 
 <#Include Label="IrreducibleModules">
 <#Include Label="AbsoluteIrreducibleModules">
@@ -405,7 +405,7 @@ Note that there is no <Q>safety net</Q>:
 The routines (being somehow internal) do no error checking,
 and assume the information given is correct.
 <P/>
-When the info level of <Ref Func="InfoCharacterTable"/> if positive,
+When the info level of <Ref InfoClass="InfoCharacterTable"/> if positive,
 information about the progress of splitting is printed.
 (The default value is zero.)
 
@@ -449,7 +449,7 @@ see <Ref Sect="An Example of Advanced Dixon-Schneider Calculations"/>.
 </Item>
 <Mark><C>characterTable</C></Mark>
 <Item>
-   the <Ref Func="CharacterTable" Label="for a group"/> value of <M>G</M>
+   the <Ref Oper="CharacterTable" Label="for a group"/> value of <M>G</M>
    (whose irreducible characters are not yet known),
 </Item>
 <Mark><C>ClassElement( <A>D</A>, <A>el</A> )</C></Mark>

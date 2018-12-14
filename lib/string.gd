@@ -588,8 +588,8 @@ MakeReadOnlyGlobal("ReplacedString"); # function defined in `init.g'.
 ##  <P/>
 ##  <Ref Func="EvalString"/> is intended for <E>single</E> expressions.
 ##  A sequence of commands may be interpreted by using the functions
-##  <Ref Func="InputTextString"/> and
-##  <Ref Func="ReadAsFunction" Label="for streams"/> together;
+##  <Ref Oper="InputTextString"/> and
+##  <Ref Oper="ReadAsFunction" Label="for streams"/> together;
 ##  see <Ref Sect="Operations for Input Streams"/> for an example.
 ##  <P/>
 ##  If <Ref Func="EvalString"/> is used inside a function, then it doesn't
@@ -687,7 +687,7 @@ DeclareGlobalFunction( "JoinStringsWithSeparator" );
 ##  <A>str</A>.
 ##  If your string contains several newline characters and you really want to
 ##  split <A>str</A> into lines at the newline characters (and remove those
-##  newline characters) then you should use <Ref Func="SplitString"/>, e.g.
+##  newline characters) then you should use <Ref Oper="SplitString"/>, e.g.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> str := "The quick brown fox\njumps over the lazy dog.\n";
@@ -915,7 +915,7 @@ DeclareGlobalFunction("StringOfMemoryAmount");
 ##  produces <C>{</C> and <C>}}</C> produces <C>}</C>.
 ##  <P/>
 ##  The <C>format</C> decides how the variable is printed. <C>format</C> must be one
-##  of  <C>s</C> (which uses <Ref Oper="String"/>), <C>v</C> (which uses
+##  of  <C>s</C> (which uses <Ref Attr="String"/>), <C>v</C> (which uses
 ##  <Ref Oper="ViewString"/>) or <C>d</C> (which calls <Ref Oper="DisplayString"/>).
 ##  The default value for <C>format</C> is <C>s</C>.
 ##  </Description>

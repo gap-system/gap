@@ -251,7 +251,7 @@ DeclareGlobalFunction( "SetCrystGroupDefaultAction" );
 ##
 ##  <Description>
 ##  test whether <A>G</A> coincides with its Bravais group
-##  (see <Ref Func="BravaisGroup"/>).
+##  (see <Ref Attr="BravaisGroup"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

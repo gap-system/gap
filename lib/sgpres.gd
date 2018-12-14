@@ -332,7 +332,7 @@ DeclareOperation( "AugmentedCosetTableNormalClosure", [ IsGroup, IsGroup ] );
 ##  returns a coset table for the action of <A>G</A> on the cosets of
 ##  <A>H</A>.
 ##  The columns of the table correspond to the
-##  <Ref Func="GeneratorsOfGroup"/> value of <A>G</A>.
+##  <Ref Attr="GeneratorsOfGroup"/> value of <A>G</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -590,7 +590,7 @@ PresentationNormalClosure := PresentationNormalClosureRrs;
 ##  (see there for details),
 ##  the function <Ref Func="PresentationSubgroupMtc"/> returns a list of the
 ##  primary subgroup generators of <A>H</A> in the attribute
-##  <Ref Func="PrimaryGeneratorWords"/> of <M>P</M>.
+##  <Ref Attr="PrimaryGeneratorWords"/> of <M>P</M>.
 ##  In fact, this list is not very exciting here
 ##  because it is just a shallow copy of the value of
 ##  <Ref Func="GeneratorsOfPresentation"/> of <A>H</A>, however it is
@@ -725,7 +725,7 @@ DeclareGlobalFunction("PresentationSubgroupMtc");
 ##  Hence, all we need in addition is a list of words in the generators of
 ##  <A>G</A> which express the primary subgroup generators.
 ##  In fact, such a list is provided in the attribute
-##  <Ref Func="PrimaryGeneratorWords"/> of the resulting presentation.
+##  <Ref Attr="PrimaryGeneratorWords"/> of the resulting presentation.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

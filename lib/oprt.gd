@@ -35,7 +35,7 @@ DeclareSynonym( "InfoOperation",InfoAction );
 ##  Currently the domain&nbsp;<M>\Omega</M> must always be finite.
 ##  If <M>\Omega</M> is not a list,
 ##  an enumerator for <M>\Omega</M> is automatically chosen,
-##  see <Ref Func="Enumerator"/>.
+##  see <Ref Attr="Enumerator"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -147,7 +147,7 @@ DeclareAttribute( "ActingDomain", IsExternalSet );
 ##  returns an enumerator of the action domain with which the external set
 ##  <A>xset</A> was defined.
 ##  For external subsets, this is in general different from the
-##  <Ref Func="Enumerator"/> value of <A>xset</A>,
+##  <Ref Attr="Enumerator"/> value of <A>xset</A>,
 ##  which enumerates only the subset.
 ##  <Example><![CDATA[
 ##  gap> ActingDomain(e);
@@ -300,7 +300,7 @@ DeclareAttribute( "FunctionAction", IsExternalSet );
 ##  <Attr Name="StabilizerOfExternalSet" Arg='xset'/>
 ##
 ##  <Description>
-##  computes the stabilizer of the <Ref Func="Representative"/> value of
+##  computes the stabilizer of the <Ref Attr="Representative"/> value of
 ##  the external set <A>xset</A>.
 ##  The stabilizer will have the acting group of <A>xset</A> as its parent.
 ##  <Example><![CDATA[
@@ -332,7 +332,7 @@ DeclareAttribute( "StabilizerOfExternalSet", IsExternalSet );
 ##  orbit.
 ##  &GAP; does not know methods for arbitrary external sets to compute a
 ##  canonical representative,
-##  see <Ref Func="CanonicalRepresentativeDeterminatorOfExternalSet"/>.
+##  see <Ref Attr="CanonicalRepresentativeDeterminatorOfExternalSet"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -357,7 +357,7 @@ DeclareAttribute( "CanonicalRepresentativeOfExternalSet", IsExternalSet );
 ##  conjugating element, respectively.
 ##  An external set is only guaranteed to be able to compute a canonical
 ##  representative if it has a
-##  <Ref Func="CanonicalRepresentativeDeterminatorOfExternalSet"/>.
+##  <Ref Attr="CanonicalRepresentativeDeterminatorOfExternalSet"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -473,7 +473,7 @@ end);
 ##  <C>pnt</C>.)
 ##  <P/>
 ##  For property testing functions such as
-##  <Ref Func="IsTransitive" Label="for a group, an action domain, etc."/>,
+##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>,
 ##  the fourth argument <A>AorP</A> must be
 ##  <Ref Func="NewProperty"/>,
 ##  otherwise it must be <Ref Func="NewAttribute"/>;
@@ -706,7 +706,7 @@ end );
 ##  <Func Name="OrbitishFO" Arg='name, reqs, famrel, usetype, realenum'/>
 ##
 ##  <Description>
-##  is used to create operations like <Ref Func="Orbit"/>.
+##  is used to create operations like <Ref Oper="Orbit"/>.
 ##  This function is analogous to <Ref Func="OrbitsishOperation"/>,
 ##  but for operations <A>orbish</A> like
 ##  <C>Orbit( <A>G</A>, <A>Omega</A>, <A>pnt</A> )</C>.
@@ -723,7 +723,7 @@ end );
 ##  between the second and third argument of
 ##  <C><A>name</A>( <A>G</A>, <A>D</A>, <A>pnt</A> )</C>.
 ##  For example, <A>famrel</A> is <C>IsCollsElms</C> in the case of
-##  <Ref Func="Orbit"/> because <A>pnt</A> must be an element
+##  <Ref Oper="Orbit"/> because <A>pnt</A> must be an element
 ##  of <A>D</A>.
 ##  Similarly, in the call <C>Blocks( <A>G</A>, <A>D</A>, <A>seed</A> )</C>,
 ##  <A>seed</A> must be a subset of <A>D</A>,
@@ -741,7 +741,7 @@ end );
 ##  <P/>
 ##  If the 5th argument is set to <K>true</K>, the action for an external set
 ##  should use the enumerator, otherwise it uses the
-##  <Ref Func="HomeEnumerator"/> value. This will
+##  <Ref Attr="HomeEnumerator"/> value. This will
 ##  make a difference for external orbits as part of a larger domain.
 ##  </Description>
 ##  </ManSection>
@@ -906,7 +906,7 @@ end );
 ##  By default the homomorphism returned by
 ##  <Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/>
 ##  is not necessarily surjective (its 
-##  <Ref Func="Range" Label="of a general mapping"/> value is the full
+##  <Ref Attr="Range" Label="of a general mapping"/> value is the full
 ##  symmetric group) to avoid unnecessary computation of the image.
 ##  If the optional string argument <C>"surjective"</C> is given,
 ##  a surjective homomorphism is created.
@@ -936,11 +936,11 @@ end );
 ##  6
 ##  ]]></Example>
 ##  <P/>
-##  When acting on a domain, the operation <Ref Func="PositionCanonical"/>
+##  When acting on a domain, the operation <Ref Oper="PositionCanonical"/>
 ##  is used to determine the position of elements in the domain.
 ##  This can be used to act on a domain given by a list of representatives
-##  for which <Ref Func="PositionCanonical"/> is implemented,
-##  for example the return value of <Ref Func="RightTransversal"/>.
+##  for which <Ref Oper="PositionCanonical"/> is implemented,
+##  for example the return value of <Ref Oper="RightTransversal"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1038,26 +1038,26 @@ DeclareGlobalFunction("MultiActionsHomomorphism");
 ##   Arg='G, start[, gens, acts][, act]'/>
 ##
 ##  <Description>
-##  <Ref Func="SparseActionHomomorphism"/> computes the action homomorphism
+##  <Ref Oper="SparseActionHomomorphism"/> computes the action homomorphism
 ##  (see <Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/>)
 ##  with arguments <A>G</A>, <M>D</M>, and the optional arguments given,
 ##  where <M>D</M> is the union of the <A>G</A>-orbits of all points in
 ##  <A>start</A>.
-##  In the <Ref Func="Orbit"/> calls that are used to create <M>D</M>,
+##  In the <Ref Oper="Orbit"/> calls that are used to create <M>D</M>,
 ##  again the optional arguments given are entered.)
 ##  <P/>
 ##  If <A>G</A> acts on a very large domain not surjectively
 ##  this may yield a permutation image of
 ##  substantially smaller degree than by action on the whole domain.
 ##  <P/>
-##  The operation <Ref Func="SparseActionHomomorphism"/> will only use
-##  <Ref Func="\="/> comparisons of points in the orbit.
-##  Therefore it can be used even if no good <Ref Func="\&lt;"/>
+##  The operation <Ref Oper="SparseActionHomomorphism"/> will only use
+##  <Ref Oper="\="/> comparisons of points in the orbit.
+##  Therefore it can be used even if no good <Ref Oper="\&lt;"/>
 ##  comparison method for these points is available.
 ##  However the image group will depend on the
 ##  generators <A>gens</A> of <A>G</A>.
 ##  <P/>
-##  The operation <Ref Func="SortedSparseActionHomomorphism"/> in contrast
+##  The operation <Ref Oper="SortedSparseActionHomomorphism"/> in contrast
 ##  will sort the orbit and thus produce an image group which does not
 ##  depend on these generators.
 ##  <P/>
@@ -1222,7 +1222,7 @@ OrbitishFO( "ExternalSubset",
 ##
 ##  <Description>
 ##  constructs the external subset on the orbit of <A>pnt</A>. The
-##  <Ref Func="Representative"/> value of this external set is <A>pnt</A>.
+##  <Ref Attr="Representative"/> value of this external set is <A>pnt</A>.
 ##  <Example><![CDATA[
 ##  gap> e:=ExternalOrbit(g,g,(1,2,3));
 ##  (1,2,3)^G
@@ -1314,7 +1314,7 @@ OrbitsishOperation( "Orbits", OrbitsishReq, false, NewAttribute );
 ##  <Ref Func="OnPoints"/> if no action function is given.
 ##  <P/>
 ##  This operation is often faster than
-##  <Ref Func="Orbits" Label="operation"/>.
+##  <Ref Oper="Orbits" Label="operation"/>.
 ##  The domain <A>Omega</A> must be closed under the action of <A>G</A>,
 ##  otherwise an error can occur.
 ##  <P/>
@@ -1405,7 +1405,7 @@ OrbitsishOperation( "OrbitLengths", OrbitsishReq, false, NewAttribute );
 ##  computes the lengths of all the orbits of <A>G</A> on <A>Omega</A>.
 ##  <P/>
 ##  This operation is often faster than
-##  <Ref Func="OrbitLengths" Label="for a group, a set of seeds, etc."/>.
+##  <Ref Oper="OrbitLengths" Label="for a group, a set of seeds, etc."/>.
 ##  The domain <A>Omega</A> must be closed under the action of <A>G</A>,
 ##  otherwise an error can occur.
 ##  <Example><![CDATA[
@@ -1484,11 +1484,11 @@ OrbitsishOperation( "ExternalOrbits", OrbitsishReq, true, NewAttribute );
 ##
 ##  <Description>
 ##  In addition to
-##  <Ref Func="ExternalOrbits" Label="for a group, an action domain, etc."/>,
+##  <Ref Oper="ExternalOrbits" Label="for a group, an action domain, etc."/>,
 ##  this operation also computes the stabilizers of the representatives of
 ##  the external orbits at the same time.
 ##  (This can be quicker than computing the
-##  <Ref Func="ExternalOrbits" Label="for a group, an action domain, etc."/>
+##  <Ref Oper="ExternalOrbits" Label="for a group, an action domain, etc."/>
 ##  value first and the stabilizers afterwards.)
 ##  <Example><![CDATA[
 ##  gap> e:=ExternalOrbitsStabilizers(g,AsList(g));
@@ -1815,9 +1815,9 @@ OrbitsishOperation( "IsSemiRegular", OrbitsishReq, false, NewProperty );
 ##  <P/>
 ##  <Index>regular</Index>
 ##  An action is <E>regular</E> if it is both semiregular
-##  (see&nbsp;<Ref Func="IsSemiRegular" Label="for a group, an action domain, etc."/>)
+##  (see&nbsp;<Ref Oper="IsSemiRegular" Label="for a group, an action domain, etc."/>)
 ##  and transitive
-##  (see&nbsp;<Ref Prop="IsTransitive" Label="for a group, an action domain, etc."/>).
+##  (see&nbsp;<Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>).
 ##  In this case every point <A>pnt</A> of <A>Omega</A> defines a one-to-one
 ##  correspondence between <A>G</A> and <A>Omega</A>.
 ##  <Example><![CDATA[
@@ -1877,7 +1877,7 @@ OrbitsishOperation( "RankAction", OrbitsishReq, false, NewAttribute );
 ##  the permutation domain <A>Omega</A>
 ##  (a list of objects that are permuted).
 ##  If an external set <A>xset</A> is given,
-##  the permutation domain is the <Ref Func="HomeEnumerator"/> value
+##  the permutation domain is the <Ref Attr="HomeEnumerator"/> value
 ##  of this external set (see Section&nbsp;<Ref Sect="External Sets"/>).
 ##  Note that the points of the returned permutation refer to the positions 
 ##  in <A>Omega</A>, even if <A>Omega</A> itself consists of integers.
@@ -2044,7 +2044,7 @@ DeclareOperation( "CycleLengthsOp",
 ##  The indeterminates used by
 ##  <Ref Func="CycleIndex" Label="for a permutation and an action domain"/>
 ##  are the indeterminates <M>1</M> to <M>n</M> over the rationals
-##  (see&nbsp;<Ref Func="Indeterminate" Label="for a ring (and a number)"/>).
+##  (see&nbsp;<Ref Oper="Indeterminate" Label="for a ring (and a number)"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> g:=TransitiveGroup(6,8);
@@ -2217,7 +2217,7 @@ DeclareGlobalFunction( "StabilizerPcgs" );
 ##  remaining action domain (the bits set initially to <K>false</K>) can be
 ##  used to stop if the orbit cannot grow any longer.
 ##  Another use of the bit list is if <A>Omega</A> is an enumerator which can
-##  determine <Ref Func="PositionCanonical"/> values very quickly.
+##  determine <Ref Oper="PositionCanonical"/> values very quickly.
 ##  In this situation it can be
 ##  worth to search images not in the orbit found so far, but via their
 ##  position in <A>Omega</A> and use a the bit list to keep track whether the
@@ -2251,7 +2251,7 @@ DeclareGlobalFunction( "StabilizerOfBlockNC" );
 ##  Let <A>G</A> be a group and <M><A>M</A> \geq <A>N</A></M> be subgroups
 ##  of a common parent that are normal under <A>G</A>, such that
 ##  the subfactor <M><A>M</A>/<A>N</A></M> is elementary abelian.
-##  The operation <Ref Func="AbelianSubfactorAction"/> returns a list
+##  The operation <Ref Oper="AbelianSubfactorAction"/> returns a list
 ##  <C>[ <A>phi</A>, <A>alpha</A>, <A>bas</A> ]</C> where
 ##  <A>bas</A> is a list of elements of <A>M</A> which are representatives
 ##  for a basis of <M><A>M</A>/<A>N</A></M>,
@@ -2442,7 +2442,7 @@ DeclareOperation( "AbelianSubfactorAction",[IsGroup,IsGroup,IsGroup] );
 ##  <Description>
 ##  Let <A>vec</A> be a <E>normed</E> row vector, that is,
 ##  its first nonzero entry is normed to the identity of the relevant field,
-##  see <Ref Func="NormedRowVector"/>.
+##  see <Ref Attr="NormedRowVector"/>.
 ##  The function <Ref Func="OnLines"/> returns the row vector obtained from
 ##  first multiplying <A>vec</A> from the right with <A>g</A>
 ##  (via <Ref Func="OnRight"/>) and then normalizing the resulting row vector

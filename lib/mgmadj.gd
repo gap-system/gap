@@ -20,7 +20,7 @@
 ##  <Returns>A multiplicative zero element.</Returns>
 ##  <Description>
 ##  for an element <A>elt</A> in the category 
-##  <Ref Func="IsMultiplicativeElementWithZero"/>,
+##  <Ref Filt="IsMultiplicativeElementWithZero"/>,
 ##  <C>MultiplicativeZeroOp</C> 
 ##  returns the element <M>z</M> in the family <M>F</M> of <A>elt</A>
 ##  with the property that <M>z * m = z = m * z</M> holds for all
@@ -28,10 +28,10 @@
 ##  <P/>
 ##
 ##  Families of elements in the category
-##  <Ref Func="IsMultiplicativeElementWithZero"/>
+##  <Ref Filt="IsMultiplicativeElementWithZero"/>
 ##  often arise from adjoining a new zero to an existing magma. 
 ##  See&nbsp;<Ref Attr="InjectionZeroMagma"/> or 
-##  <Ref Func="MagmaWithZeroAdjoined"/> for details.
+##  <Ref Attr="MagmaWithZeroAdjoined"/> for details.
 ##  <Example><![CDATA[
 ##  gap> G:=AlternatingGroup(5);;
 ##  gap> x:=Representative(MagmaWithZeroAdjoined(G));

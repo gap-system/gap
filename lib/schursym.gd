@@ -19,7 +19,7 @@
 ##  The covering groups of symmetric groups were classified in <Cite
 ##  Key="Schur1911"/>; an inductive procedure to construct faithful,
 ##  irreducible representations of minimal degree over all fields was presented
-##  in <Cite Key="Maas2010"/>. Methods for <Ref Func="EpimorphismSchurCover"/> are
+##  in <Cite Key="Maas2010"/>. Methods for <Ref Attr="EpimorphismSchurCover"/> are
 ##  provided for natural symmetric groups which use these representations. For
 ##  alternating groups, the restriction of these representations are provided,
 ##  but they may not be irreducible.  In the case of degree <M>6</M> and

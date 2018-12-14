@@ -16,10 +16,10 @@ They are implemented as a special class of mappings,
 so in particular all operations for mappings, such as
 <Ref Func="Image" Label="set of images of the source of a general mapping"/>,
 <Ref Func="PreImage" Label="set of preimages of the range of a general mapping"/>,
-<Ref Func="PreImagesRepresentative"/>,
-<Ref Func="KernelOfMultiplicativeGeneralMapping"/>,
-<Ref Func="Source"/>, <Ref Func="Range" Label="of a general mapping"/>, 
-<Ref Func="IsInjective"/> and <Ref Func="IsSurjective"/>
+<Ref Oper="PreImagesRepresentative"/>,
+<Ref Attr="KernelOfMultiplicativeGeneralMapping"/>,
+<Ref Attr="Source"/>, <Ref Attr="Range" Label="of a general mapping"/>, 
+<Ref Prop="IsInjective"/> and <Ref Prop="IsSurjective"/>
 (see chapter&nbsp;<Ref Chap="Mappings"/>, in particular
 section&nbsp;<Ref Sect="Mappings that Respect Multiplication"/>)
 are applicable to them.
@@ -85,7 +85,7 @@ than for general mappings are available.)
 Group homomorphisms will map groups to groups by just mapping the set of
 generators.
 <P/>
-<Ref Func="KernelOfMultiplicativeGeneralMapping"/> can be used to compute
+<Ref Attr="KernelOfMultiplicativeGeneralMapping"/> can be used to compute
 the kernel of a group homomorphism.
 <P/>
 <Example><![CDATA[
@@ -126,14 +126,14 @@ gap> List(GeneratorsOfGroup(up),TraceMat);
 ]]></Example>
 <P/>
 For an automorphism <A>aut</A>,
-<Ref Func="Inverse"/>
+<Ref Attr="Inverse"/>
 <Index Subkey="group homomorphism">Inverse</Index>
 returns the inverse automorphism <M><A>aut</A>^{{-1}}</M>.
 However if <A>hom</A> is a bijective homomorphism between
 different groups, or if <A>hom</A> is injective and considered to be
 a bijection to its image,
-the operation <Ref Func="InverseGeneralMapping"/> should be used instead.
-(See&nbsp;<Ref Func="Inverse"/> for a further discussion of this problem.)
+the operation <Ref Attr="InverseGeneralMapping"/> should be used instead.
+(See&nbsp;<Ref Attr="Inverse"/> for a further discussion of this problem.)
 <P/>
 <Example><![CDATA[
 gap> iso:=IsomorphismPcGroup(g);
@@ -165,7 +165,7 @@ to avoid unnecessarily expensive calculations.
 <P/>
 In short, it is always worth to tell a mapping that it is a homomorphism
 (this can be done by calling <C>SetIsMapping</C>)
-(or to create it directly with <Ref Func="GroupHomomorphismByImagesNC"/>).
+(or to create it directly with <Ref Oper="GroupHomomorphismByImagesNC"/>).
 <P/>
 The basic operations required are to compute image and preimage of elements
 and to test whether a mapping is a homomorphism. Their cost
@@ -177,11 +177,11 @@ will differ depending on the type of the mapping.
 <Heading>Mappings given on generators</Heading>
 
 See <Ref Func="GroupHomomorphismByImages"/> and
-<Ref Func="GroupGeneralMappingByImages"/>.
+<Ref Oper="GroupGeneralMappingByImages"/>.
 <P/>
 Computing images requires to express an element of the source as word in the
 generators. If it cannot be done effectively (this is determined by
-<Ref Func="KnowsHowToDecompose"/> which returns <K>true</K> for
+<Ref Prop="KnowsHowToDecompose"/> which returns <K>true</K> for
 example for arbitrary permutation groups, for Pc groups or for finitely
 presented groups with the images of the free generators) the span of the
 generators has to be computed elementwise which can be very expensive and
@@ -193,7 +193,7 @@ generators and their images.
 The test whether a mapping is a homomorphism requires
 the computation of a presentation for the source and evaluation of its
 relators in the images of its generators. For larger groups this can be
-expensive and <Ref Func="GroupHomomorphismByImagesNC"/> should be used
+expensive and <Ref Oper="GroupHomomorphismByImagesNC"/> should be used
 if the mapping is known to be a homomorphism.
 
 </Subsection>
@@ -210,10 +210,10 @@ The calculation of images is determined by the acting function used and
 &ndash;for large domains&ndash; is often dominated by the search for the
 position of an image in a list of the domain elements.
 This can be improved by sorting this list if an efficient method for
-<Ref Func="\&lt;"/> to compare elements of the domain is available.
+<Ref Oper="\&lt;"/> to compare elements of the domain is available.
 <P/>
 Once the images of a generating set are computed, computing preimages
-(which is done via <Ref Func="AsGroupGeneralMappingByImages"/>)
+(which is done via <Ref Attr="AsGroupGeneralMappingByImages"/>)
 and computing the kernel behaves the same as for a homomorphism
 created with <Ref Func="GroupHomomorphismByImages"/> from a permutation
 group.
@@ -256,7 +256,7 @@ in preimages of the presentations generators.
 <P/>
 The calculation of the
 <Ref Func="Image" Label="set of images of the source of a general mapping"/>
-(respectively <Ref Func="ImagesSource"/>) value requires to map
+(respectively <Ref Attr="ImagesSource"/>) value requires to map
 a generating set of the source,
 testing surjectivity is a comparison for equality with the range.
 <P/>
@@ -265,7 +265,7 @@ Testing injectivity is a test for triviality of the kernel.
 The comparison of mappings is based on a lexicographic comparison of a
 sorted element list of the source.
 For group homomorphisms, this can be simplified,
-using <Ref Func="ImagesSmallestGenerators"/>
+using <Ref Attr="ImagesSmallestGenerators"/>
 
 </Subsection>
 
@@ -293,7 +293,7 @@ will lose much automatic deduction. So please restrict the use of these to
 cases where the standard approach does not work.)
 <List>
 <Item>
-  Compute only images (or the <Ref Func="PreImagesRepresentative"/>) of
+  Compute only images (or the <Ref Oper="PreImagesRepresentative"/>) of
   group elements.
   Do not compute the images of (sub)groups or the full preimage of a subgroup.
 </Item>
@@ -301,7 +301,7 @@ cases where the standard approach does not work.)
   Create action homomorphisms as <Q>surjective</Q> (see
   <Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/>),
   otherwise the range is set to be the full symmetric group.
-  However do not compute <Ref Func="Range" Label="of a general mapping"/> or
+  However do not compute <Ref Attr="Range" Label="of a general mapping"/> or
   <Ref Func="Image" Label="set of images of the source of a general mapping"/>
   values,
   but only the images of a generator set.
@@ -332,7 +332,7 @@ the group, which is in a <Q>better</Q> representation. The way to achieve this
 in &GAP; is via <E>nice monomorphisms</E>.
 <P/>
 For this mechanism to work, of course there must be effective methods to
-evaluate the <Ref Func="NiceMonomorphism"/> value on elements and to take
+evaluate the <Ref Attr="NiceMonomorphism"/> value on elements and to take
 preimages under it.
 As by definition no good algorithms exist for the source group,
 normally this can only be achieved by using the result of a call to
@@ -392,10 +392,10 @@ to form groups of automorphisms.
 Usually the best way to calculate in a group of automorphisms is to
 translate all calculations to an isomorphic group in a representation, for
 which better algorithms are available, say a permutation group. This
-translation can be done automatically using <Ref Func="NiceMonomorphism"/>.
+translation can be done automatically using <Ref Attr="NiceMonomorphism"/>.
 <P/>
 Once a group knows to be a group of automorphisms (this can be achieved
-by testing or setting the property <Ref Func="IsGroupOfAutomorphisms"/>),
+by testing or setting the property <Ref Prop="IsGroupOfAutomorphisms"/>),
 &GAP; will try itself to find such a nice monomorphism once calculations in
 the automorphism group are done.
 <P/>
@@ -404,7 +404,7 @@ necessarily be extended from a subgroup to the whole group. Thus when
 working with a group of automorphisms, it can be beneficial to 
 enforce calculation of the nice monomorphism for the whole group
 (for example by explicitly calling
-<Ref Func="Random" Label="for a list or collection"/> and ignoring
+<Ref Oper="Random" Label="for a list or collection"/> and ignoring
 the result &ndash;it will be stored internally) at the start of the
 calculation.
 Otherwise &GAP; might first calculate a nice monomorphism for the subgroup,
@@ -415,7 +415,7 @@ If a good domain for a faithful permutation action is known already, a
 homomorphism for the action on it can be created using
 <Ref Func="NiceMonomorphismAutomGroup"/>.
 It might be stored by <C>SetNiceMonomorphism</C>
-(see <Ref Func="NiceMonomorphism"/>).
+(see <Ref Attr="NiceMonomorphism"/>).
 <P/>
 Another nice way of representing automorphisms as permutations has been
 described in <Cite Key="Sims97"/>.

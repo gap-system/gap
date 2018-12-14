@@ -279,7 +279,7 @@ end);
 ##  This means that after the above implication has been installed,
 ##  one can rely on the fact that every object in the filter
 ##  <C>IsGroup and IsCyclic</C> will also be in the filter
-##  <Ref Func="IsCommutative"/>.
+##  <Ref Prop="IsCommutative"/>.
 ##  <P/>
 ##  Adding logical implications can change the rank of filters (see
 ##  <Ref Func="RankFilter"/>) and consequently the rank, and so choice of

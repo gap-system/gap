@@ -48,7 +48,7 @@ It is possible to use transformations in &GAP; without reference to the
 degree, much as it is possible to use permutations in this way.
 However, for backwards compatibility, and because it is sometimes
 useful, it is possible to access the degree of a transformation using
-<Ref Attr="DegreeOfTransformation"/>. Certain attributes of
+<Ref Func="DegreeOfTransformation"/>. Certain attributes of
 transformations are also calculated with respect to the degree, such as
 the rank, image set, or kernel (these values can also be calculated with
 respect to any positive integer). So, it is possible to ignore the
@@ -117,13 +117,13 @@ stored using 32-bit integers.
     <Description>
     Every transformation in &GAP; belongs to the category
     <C>IsTransformation</C>. Basic operations for transformations are 
-    <Ref Attr="ImageListOfTransformation"/>, 
+    <Ref Oper="ImageListOfTransformation"/>, 
     <Ref Attr="ImageSetOfTransformation"/>,
     <Ref Attr="KernelOfTransformation"/>, 
     <Ref Attr="FlatKernelOfTransformation"/>, 
     <Ref Attr="RankOfTransformation" 
       Label="for a transformation and a list"/>,
-    <Ref Attr="DegreeOfTransformation"/>, 
+    <Ref Func="DegreeOfTransformation"/>, 
     multiplication of two transformations via <K>*</K>, and
     exponentiation with the first argument a positive integer <C>i</C>
     and second argument a transformation <C>f</C> where the result is
@@ -438,7 +438,7 @@ Transformation( [ 4, 4, 4, 4, 4, 4 ] )
   represented as a transformation.  
   <P/>
 
-  The operations <Ref Oper="AsPermutation"/> and <Ref Oper="AsPartialPerm" 
+  The operations <Ref Attr="AsPermutation"/> and <Ref Meth="AsPartialPerm" 
   Label="for a transformation and a positive integer"/> can be used to
   convert transformations into permutations or partial permutations,
   where appropriate.  In this section we describe functions for
@@ -464,7 +464,7 @@ Transformation( [ 4, 4, 4, 4, 4, 4 ] )
       
       If no non-negative integer <A>n</A> is specified, then the largest
       moved point of <A>f</A> is used as the value for <A>n</A>; see
-      <Ref Func="LargestMovedPoint" Label="for a permutation"/>.
+      <Ref Attr="LargestMovedPoint" Label="for a permutation"/>.
     </Item>
 
     <Mark>for transformations</Mark>      
@@ -1223,7 +1223,7 @@ gap> IndexPeriodOfTransformation( Transformation( [ 1, 3, 2 ] ) );
       that the transformation <C><A>f</A> ^ n</C> is an idempotent.  The
       smallest idempotent power of <A>f</A> is the least multiple of the
       period of <A>f</A> that is greater than or equal to the index of
-      <A>f</A>; see <Ref Attr="IndexPeriodOfTransformation"/>.
+      <A>f</A>; see <Ref Func="IndexPeriodOfTransformation"/>.
 
       <Example><![CDATA[
 gap> f := Transformation( [ 6, 7, 4, 1, 7, 4, 6, 1, 3, 4 ] );;
@@ -1541,11 +1541,11 @@ Since a transformation semigroup is also a transformation collection,
 there are special methods for 
 <Ref Attr="MovedPoints" Label="for a transformation coll"/>,
 <Ref Attr="NrMovedPoints" Label="for a transformation coll"/>,
-<Ref Attr="LargestMovedPoint" Label="for a transformation coll"/>,
-<Ref Attr="SmallestMovedPoint" Label="for a transformation coll"/>,
-<Ref Attr="LargestImageOfMovedPoint" Label="for a transformation coll"/>, 
+<Ref Meth="LargestMovedPoint" Label="for a transformation coll"/>,
+<Ref Meth="SmallestMovedPoint" Label="for a transformation coll"/>,
+<Ref Meth="LargestImageOfMovedPoint" Label="for a transformation coll"/>, 
 and
-<Ref Attr="SmallestImageOfMovedPoint" Label="for a transformation coll"/>,
+<Ref Meth="SmallestImageOfMovedPoint" Label="for a transformation coll"/>,
 when applied to a transformation semigroup.
 
 <!-- *************************************************************** -->
@@ -1557,13 +1557,13 @@ when applied to a transformation semigroup.
 <Description>
 A <E>transformation semigroup</E> is simply a semigroup consisting of
 transformations. An object <A>obj</A> is a transformation semigroup in
-&GAP; if it satisfies <Ref Prop="IsSemigroup"/> and <Ref
+&GAP; if it satisfies <Ref Filt="IsSemigroup"/> and <Ref
   Filt="IsTransformationCollection"/>.
 <P/>
 
 A  <E>transformation monoid</E> is a monoid consisting of
 transformations.  An object <A>obj</A> is a transformation monoid in
-&GAP; if it satisfies <Ref Prop="IsMonoid"/> and <Ref
+&GAP; if it satisfies <Ref Filt="IsMonoid"/> and <Ref
   Filt="IsTransformationCollection"/>.
 <P/>
 
@@ -1589,8 +1589,8 @@ Transformation( [ 1, 2, 3, 4, 5, 6, 7, 8, 10, 10 ] )
 gap> IsMonoid( S );
 false
 ]]></Example>
-In this example <C>S</C> cannot be converted into a monoid using <Ref
-  Attr="AsMonoid"/> since the <Ref Attr="One"/> of any element in
+In this example <C>S</C> cannot be converted into a monoid using
+<Ref Oper="AsMonoid"/> since the <Ref Attr="One"/> of any element in
 <C>S</C> differs from the multiplicative neutral element. 
 <P/>
 

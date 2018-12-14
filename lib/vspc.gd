@@ -60,15 +60,15 @@ DeclareSynonym( "IsLeftOperatorRingWithOne",
 ##
 ##  <Description>
 ##  A <E>vector space</E> in &GAP; is a free left module
-##  (see&nbsp;<Ref Func="IsFreeLeftModule"/>) over a division ring
+##  (see&nbsp;<Ref Filt="IsFreeLeftModule"/>) over a division ring
 ##  (see Chapter&nbsp;<Ref Chap="Fields and Division Rings"/>).
 ##  <P/>
 ##  Whenever we talk about an <M>F</M>-vector space <A>V</A> then <A>V</A> is
-##  an additive group (see&nbsp;<Ref Func="IsAdditiveGroup"/>) on which the
+##  an additive group (see&nbsp;<Ref Filt="IsAdditiveGroup"/>) on which the
 ##  division ring <M>F</M> acts via multiplication from the left such that
 ##  this action and the addition in <A>V</A> are left and right distributive.
 ##  The division ring <M>F</M> can be accessed as value of the attribute
-##  <Ref Func="LeftActingDomain"/>.
+##  <Ref Attr="LeftActingDomain"/>.
 ##  <P/>
 ##  Vector spaces in &GAP; are always <E>left</E> vector spaces,
 ##  <Ref Filt="IsLeftVectorSpace"/> and <Ref Filt="IsVectorSpace"/> are
@@ -147,7 +147,7 @@ InstallTrueMethod( IsGaussianSpace,
 ##  get, because a ring is usually not represented as a vector space.
 ##  <P/>
 ##  The field of coefficients is stored as the value of the attribute
-##  <Ref Func="LeftActingDomain"/> of <A>D</A>.
+##  <Ref Attr="LeftActingDomain"/> of <A>D</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -206,7 +206,7 @@ DeclareSynonymAttr( "GeneratorsOfVectorSpace",
 ##  The defining property of a canonical basis is that its vectors are
 ##  uniquely determined by the vector space.
 ##  If canonical bases exist for two vector spaces over the same left acting
-##  domain (see&nbsp;<Ref Func="LeftActingDomain"/>) then the equality of
+##  domain (see&nbsp;<Ref Attr="LeftActingDomain"/>) then the equality of
 ##  these vector spaces can be decided by comparing the canonical bases.
 ##  <P/>
 ##  The exact meaning of a canonical basis depends on the type of <A>V</A>.
@@ -218,8 +218,8 @@ DeclareSynonymAttr( "GeneratorsOfVectorSpace",
 ##  defines a canonical basis for these spaces then the
 ##  <Ref Attr="CanonicalBasis"/> method one installs
 ##  (see&nbsp;<Ref Func="InstallMethod"/>)
-##  must <E>not</E> call <Ref Func="Basis"/>.
-##  On the other hand, one probably should install a <Ref Func="Basis"/>
+##  must <E>not</E> call <Ref Attr="Basis"/>.
+##  On the other hand, one probably should install a <Ref Attr="Basis"/>
 ##  method that simply calls <Ref Attr="CanonicalBasis"/>,
 ##  the value of the method
 ##  (see&nbsp;<Ref Sect="Method Installation"/> and
@@ -393,14 +393,14 @@ DeclareHandlingByNiceBasis( "IsNonGaussianMatrixSpace",
 ##
 ##  <Description>
 ##  For a finite Gaussian row space <A>V</A>
-##  (see&nbsp;<Ref Func="IsRowSpace"/>, <Ref Func="IsGaussianSpace"/>),
+##  (see&nbsp;<Ref Filt="IsRowSpace"/>, <Ref Filt="IsGaussianSpace"/>),
 ##  <Ref Attr="NormedRowVectors"/> returns a list of those nonzero
 ##  vectors in <A>V</A> that have a one in the first nonzero component.
 ##  <P/>
 ##  The result list can be used as action domain for the action of a matrix
 ##  group via <Ref Func="OnLines"/>, which yields the natural action on
 ##  one-dimensional subspaces of <A>V</A>
-##  (see also&nbsp;<Ref Func="Subspaces"/>).
+##  (see also&nbsp;<Ref Attr="Subspaces"/>).
 ##  <Example><![CDATA[
 ##  gap> vecs:= NormedRowVectors( GF(3)^2 );
 ##  [ [ 0*Z(3), Z(3)^0 ], [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], 
@@ -458,7 +458,7 @@ DeclareSynonymAttr( "TrivialSubspace", TrivialSubmodule );
 ##  The optional string <C>"basis"</C> indicates that <A>gens</A> is known to
 ##  be linearly independent over <A>F</A>, in particular the dimension of the
 ##  vector space is immediately set;
-##  note that <Ref Func="Basis"/> need <E>not</E> return the basis formed by
+##  note that <Ref Attr="Basis"/> need <E>not</E> return the basis formed by
 ##  <A>gens</A> if the string <C>"basis"</C> is given as an argument.
 ##  <!-- crossref. to <C>FreeLeftModule</C> as soon as the modules chapter
 ##       is reliable!-->
@@ -488,7 +488,7 @@ DeclareGlobalFunction( "VectorSpace" );
 ##  <A>gens</A> that is a subset of <A>V</A>,
 ##  <Ref Func="Subspace"/> returns the <M>F</M>-vector space spanned by
 ##  <A>gens</A>; if <A>gens</A> is empty then the trivial subspace
-##  (see&nbsp;<Ref Func="TrivialSubspace"/>) of <A>V</A> is returned.
+##  (see&nbsp;<Ref Attr="TrivialSubspace"/>) of <A>V</A> is returned.
 ##  The parent (see&nbsp;<Ref Sect="Parents"/>) of the returned vector space
 ##  is set to <A>V</A>.
 ##  <P/>
@@ -568,7 +568,7 @@ DeclareSynonym( "AsVectorSpace", AsLeftModule );
 ##  If <A>U</A> is a subset of <A>V</A> such that the elements of <A>U</A>
 ##  form an <M>F</M>-vector space then <Ref Oper="AsSubspace"/> returns this
 ##  vector space, with parent set to <A>V</A>
-##  (see&nbsp;<Ref Func="AsVectorSpace"/>).
+##  (see&nbsp;<Ref Oper="AsVectorSpace"/>).
 ##  Otherwise <K>fail</K> is returned.
 ##  <Example><![CDATA[
 ##  gap> V:= VectorSpace( Rationals, [ [ 1, 2, 3 ], [ 1, 1, 1 ] ] );;
@@ -631,7 +631,7 @@ DeclareGlobalFunction( "Intersection2Spaces" );
 ##  <Description>
 ##  For a field <A>F</A> and a nonnegative integer <A>n</A>,
 ##  <Ref Func="FullRowSpace"/> returns the <A>F</A>-vector space that
-##  consists of all row vectors (see&nbsp;<Ref Func="IsRowVector"/>) of
+##  consists of all row vectors (see&nbsp;<Ref Filt="IsRowVector"/>) of
 ##  length <A>n</A> with entries in <A>F</A>.
 ##  <P/>
 ##  An alternative to construct this vector space is via
@@ -664,7 +664,7 @@ DeclareSynonym( "RowSpace", FullRowModule );
 ##  For a field <A>F</A> and two positive integers <A>m</A> and <A>n</A>,
 ##  <Ref Func="FullMatrixSpace"/> returns the <A>F</A>-vector space that
 ##  consists of all <A>m</A> by <A>n</A> matrices
-##  (see&nbsp;<Ref Func="IsMatrix"/>) with entries in <A>F</A>.
+##  (see&nbsp;<Ref Filt="IsMatrix"/>) with entries in <A>F</A>.
 ##  <P/>
 ##  If <A>m</A><C> = </C><A>n</A> then the result is in fact an algebra
 ##  (see&nbsp;<Ref Func="FullMatrixAlgebra"/>).
@@ -696,8 +696,8 @@ DeclareSynonym( "MatSpace", FullMatrixModule );
 ##
 ##  <Description>
 ##  The domain of all subspaces of a (finite) vector space or of all
-##  subspaces of fixed dimension, as returned by <Ref Func="Subspaces"/>
-##  (see&nbsp;<Ref Func="Subspaces"/>) lies in the category
+##  subspaces of fixed dimension, as returned by <Ref Attr="Subspaces"/>
+##  (see&nbsp;<Ref Attr="Subspaces"/>) lies in the category
 ##  <Ref Filt="IsSubspacesVectorSpace"/>.
 ##  <Example><![CDATA[
 ##  gap> D:= Subspaces( GF(3)^3 );
@@ -740,10 +740,10 @@ InstallTrueMethod( IsFinite, IsSubspacesVectorSpace );
 ##
 ##  <Description>
 ##  Called with a finite vector space <A>v</A>,
-##  <Ref Oper="Subspaces"/> returns the domain of all subspaces of <A>V</A>.
+##  <Ref Attr="Subspaces"/> returns the domain of all subspaces of <A>V</A>.
 ##  <P/>
 ##  Called with <A>V</A> and a nonnegative integer <A>k</A>,
-##  <Ref Oper="Subspaces"/> returns the domain of all <A>k</A>-dimensional
+##  <Ref Attr="Subspaces"/> returns the domain of all <A>k</A>-dimensional
 ##  subspaces of <A>V</A>.
 ##  <P/>
 ##  Special <Ref Attr="Size"/> and <Ref Oper="Iterator"/> methods are
