@@ -194,15 +194,13 @@ void InitMainThread(void)
     TLS(CountActive) = 1;
 }
 
-static NOINLINE void RunThreadedMain2(int (*mainFunction)(int, char **, char **),
+static NOINLINE void RunThreadedMain2(int (*mainFunction)(int, char **),
                              int     argc,
-                             char ** argv,
-                             char ** environ);
+                             char ** argv);
 
-void RunThreadedMain(int (*mainFunction)(int, char **, char **),
+void RunThreadedMain(int (*mainFunction)(int, char **),
                      int     argc,
-                     char ** argv,
-                     char ** environ)
+                     char ** argv)
 {
 #ifndef HAVE_NATIVE_TLS
 #ifdef STACK_GROWS_UP
@@ -229,13 +227,12 @@ void RunThreadedMain(int (*mainFunction)(int, char **, char **),
     }
 #endif
 #endif
-    RunThreadedMain2(mainFunction, argc, argv, environ);
+    RunThreadedMain2(mainFunction, argc, argv);
 }
 
-static void RunThreadedMain2(int (*mainFunction)(int, char **, char **),
+static void RunThreadedMain2(int (*mainFunction)(int, char **),
                              int     argc,
-                             char ** argv,
-                             char ** environ)
+                             char ** argv)
 {
     int                    i;
     static pthread_mutex_t main_thread_mutex;
@@ -265,7 +262,7 @@ static void RunThreadedMain2(int (*mainFunction)(int, char **, char **),
     InitSignals();
     if (sySetjmp(TLS(threadExit)))
         exit(0);
-    exit((*mainFunction)(argc, argv, environ));
+    exit((*mainFunction)(argc, argv));
 }
 
 void CreateMainRegion(void)

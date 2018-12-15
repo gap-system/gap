@@ -36,6 +36,7 @@
 #include "stats.h"   // for ClearError
 #include "streams.h"
 #include "stringobj.h"
+#include "sysenv.h"
 #include "sysfiles.h"
 #include "sysmem.h"
 #include "sysopt.h"
@@ -151,8 +152,6 @@ void ViewObjHandler ( Obj obj )
 */
 UInt QUITTINGGVar;
 
-
-static char **sysenviron;
 
 /*
 TL: Obj ShellContext = 0;
@@ -434,7 +433,7 @@ Obj FuncSHELL (Obj self, Obj args)
   return res;
 }
 
-int realmain( int argc, char * argv[], char * environ[] )
+int realmain( int argc, char * argv[] )
 {
   UInt                type;                   /* result of compile       */
   Obj                 func;                   /* function (compiler)     */
@@ -443,7 +442,7 @@ int realmain( int argc, char * argv[], char * environ[] )
   SetupGAPLocation(argc, argv);
 
   /* initialize everything and read init.g which runs the GAP session */
-  InitializeGap( &argc, argv, environ );
+  InitializeGap( &argc, argv );
   if (!STATE(UserHasQUIT)) {         /* maybe the user QUIT from the initial
                                    read of init.g  somehow*/
     /* maybe compile in which case init.g got skipped */
@@ -469,17 +468,17 @@ int realmain( int argc, char * argv[], char * environ[] )
 }
 
 #if !defined(COMPILECYGWINDLL)
-int main ( int argc, char * argv[], char * environ[] )
+int main ( int argc, char * argv[] )
 {
 #if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
   InstallBacktraceHandlers();
 #endif
 
 #ifdef HPCGAP
-  RunThreadedMain(realmain, argc, argv, environ);
+  RunThreadedMain(realmain, argc, argv);
   return 0;
 #else
-  return realmain(argc, argv, environ);
+  return realmain(argc, argv);
 #endif
 }
 
@@ -1400,17 +1399,17 @@ Obj FuncKERNEL_INFO(Obj self) {
   AssPRec(res,r, tmp);
 
   tmp = NEW_PREC(0);
-  for (i = 0; sysenviron[i]; i++) {
-    for (p = sysenviron[i]; *p != '='; p++)
+  for (i = 0; environ[i]; i++) {
+    for (p = environ[i]; *p != '='; p++)
       ;
-    lenstr2 = (UInt) (p-sysenviron[i]);
+    lenstr2 = (UInt) (p-environ[i]);
     p++;   /* Move pointer behind = character */
     lenstr = strlen(p);
     if (lenstr2 > lenstr)
         str = NEW_STRING(lenstr2);
     else
         str = NEW_STRING(lenstr);
-    strncat(CSTR_STRING(str),sysenviron[i],lenstr2);
+    strncat(CSTR_STRING(str),environ[i],lenstr2);
     r = RNamName(CSTR_STRING(str));
     *(CSTR_STRING(str)) = 0;
     strncat(CSTR_STRING(str),p, lenstr);
@@ -1750,8 +1749,7 @@ static Obj POST_RESTORE;
 
 void InitializeGap (
     int *               pargc,
-    char *              argv [],
-    char *              environ [] )
+    char *              argv [] )
 {
     /* initialize the basic system and gasman                              */
     InitSystem( *pargc, argv );
@@ -1769,8 +1767,6 @@ void InitializeGap (
     STATE(UserHasQUIT) = 0;
     STATE(UserHasQuit) = 0;
     STATE(JumpToCatchCallback) = 0;
-
-    sysenviron = environ;
 
     // get info structures for the built in modules
     ModulesSetup();

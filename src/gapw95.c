@@ -1,6 +1,6 @@
-extern int realmain(int argc, char *argv[], char *environ[]);
+extern int realmain(int argc, char *argv[]);
 
-int main(int argc,char *argv[], char *environ[])
+int main(int argc, char *argv[])
 {
-  return realmain(argc,argv,environ);
+    return realmain(argc, argv);
 }

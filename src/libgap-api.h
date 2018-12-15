@@ -15,7 +15,6 @@ typedef void (*GAP_CallbackFunc)(void);
 // TODO: document this function
 extern void GAP_Initialize(int              argc,
                            char **          argv,
-                           char **          env,
                            GAP_CallbackFunc markBagsCallback,
                            GAP_CallbackFunc errorCallback);
 

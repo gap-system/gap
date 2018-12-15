@@ -33,6 +33,7 @@
 #include "records.h"
 #include "stats.h"
 #include "stringobj.h"
+#include "sysenv.h"
 #include "sysopt.h"
 
 #include "hpc/thread.h"
@@ -3075,12 +3076,6 @@ void SySetErrorNo ( void )
 #endif
 #ifndef WIFEXITED
 # define WIFEXITED(stat_val) (((stat_val) & 255) == 0)
-#endif
-
-#ifdef SYS_IS_CYGWIN32
-// cygwin declares environ in unistd.h
-#else
-extern char ** environ;
 #endif
 
 void NullSignalHandler(int scratch) {}

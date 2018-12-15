@@ -123,8 +123,7 @@ enum {
 */
 extern void InitializeGap (
             int *               pargc,
-            char *              argv [],
-            char *              environ [] );
+            char *              argv [] );
 
 
 #endif // GAP_GAP_H
