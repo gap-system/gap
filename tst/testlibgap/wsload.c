@@ -12,7 +12,7 @@ int main(int argc, char ** argv)
     args[argc] = lpar;
     args[argc+1] = wsname;
     args[argc+2] = NULL;
-    GAP_Initialize(argc+2, args, environ, 0L, 0L);
+    GAP_Initialize(argc+2, args, 0, 0);
     printf("# looking at saved stuff...\n");
     test_eval("g;");
     test_eval("a;");

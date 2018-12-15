@@ -8,9 +8,23 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-extern int realmain(int argc, char *argv[]);
+#ifndef GAP_SYSENV_H
+#define GAP_SYSENV_H
 
-int main(int argc, char *argv[])
-{
-    return realmain(argc, argv);
-}
+#ifdef SYS_IS_CYGWIN32
+
+// cygwin declares environ in unistd.h
+#include <unistd.h>
+
+#elif defined(__APPLE__)
+
+#include <crt_externs.h>
+#define environ (*_NSGetEnviron())
+
+#elif !defined(environ)
+
+extern char ** environ;
+
+#endif
+
+#endif    // GAP_SYSENV_H

@@ -31,11 +31,10 @@
 //
 void GAP_Initialize(int              argc,
                     char **          argv,
-                    char **          env,
                     GAP_CallbackFunc markBagsCallback,
                     GAP_CallbackFunc errorCallback)
 {
-    InitializeGap(&argc, argv, env);
+    InitializeGap(&argc, argv);
     SetExtraMarkFuncBags(markBagsCallback);
     STATE(JumpToCatchCallback) = errorCallback;
 
