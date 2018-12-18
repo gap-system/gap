@@ -1317,7 +1317,7 @@ Obj FuncSHOULD_QUIT_ON_BREAK( Obj self)
 
 Obj FuncKERNEL_INFO(Obj self) {
   Obj res = NEW_PREC(0);
-  UInt r,lenvec,lenstr,lenstr2;
+  UInt r,lenvec;
   Char *p;
   Obj tmp,list,str;
   UInt i,j;
@@ -1376,19 +1376,15 @@ Obj FuncKERNEL_INFO(Obj self) {
   for (i = 0; environ[i]; i++) {
     for (p = environ[i]; *p != '='; p++)
       ;
-    lenstr2 = (UInt) (p-environ[i]);
+    p = strchr(environ[i], '=');
+    if (!p) {
+        // should never happen...
+        // FIXME: should we print a warning here?
+        continue;
+    }
+    r = RNamNameWithLen(environ[i], p - environ[i]);
     p++;   /* Move pointer behind = character */
-    lenstr = strlen(p);
-    if (lenstr2 > lenstr)
-        str = NEW_STRING(lenstr2);
-    else
-        str = NEW_STRING(lenstr);
-    strncat(CSTR_STRING(str),environ[i],lenstr2);
-    r = RNamName(CONST_CSTR_STRING(str));
-    *(CSTR_STRING(str)) = 0;
-    strncat(CSTR_STRING(str),p, lenstr);
-    SET_LEN_STRING(str, lenstr);
-    SHRINK_STRING(str);
+    str = MakeString(p);
     AssPRec(tmp,r , str);
   }
   r = RNamName("ENVIRONMENT");
