@@ -29,10 +29,10 @@
 #include "modules.h"
 #include "plist.h"
 #include "precord.h"
-#include "records.h"
 #include "read.h"
+#include "records.h"
 #include "saveload.h"
-#include "stats.h"   // for ClearError
+#include "stats.h"    // for ClearError
 #include "streams.h"
 #include "stringobj.h"
 #include "sysenv.h"
