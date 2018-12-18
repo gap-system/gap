@@ -45,12 +45,6 @@
 GAP_STATIC_ASSERT(sizeof(void *) == SIZEOF_VOID_P, "sizeof(void *) is wrong");
 
 
-#ifndef HAVE_DOTGAPRC
-/* define as 1 if the user resource file is ".gaprc" */
-#define HAVE_DOTGAPRC           1
-#endif
-
-
 /****************************************************************************
 **
 *S  GAP_PATH_MAX . . . . . . . . . . . .  size for buffers storing file paths
