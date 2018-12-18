@@ -928,9 +928,9 @@ void ModulesSetup(void)
         StructInitInfo * info = InitFuncsBuiltinModules[i]();
         Modules[NrModules++].info = info;
         if (SyDebugLoading) {
-            FPUTS_TO_STDERR("#I  InitInfo(builtin ");
-            FPUTS_TO_STDERR(info->name);
-            FPUTS_TO_STDERR(")\n");
+            fputs("#I  InitInfo(builtin ", stderr);
+            fputs(info->name, stderr);
+            fputs(")\n", stderr);
         }
 
         RegisterModuleState(info);
@@ -944,9 +944,9 @@ void ModulesInitKernel(void)
         StructInitInfo * info = Modules[i].info;
         if (info->initKernel) {
             if (SyDebugLoading) {
-                FPUTS_TO_STDERR("#I  InitKernel(builtin ");
-                FPUTS_TO_STDERR(info->name);
-                FPUTS_TO_STDERR(")\n");
+                fputs("#I  InitKernel(builtin ", stderr);
+                fputs(info->name, stderr);
+                fputs(")\n", stderr);
             }
             Int ret = info->initKernel(info);
             if (ret) {
@@ -962,9 +962,9 @@ void ModulesInitLibrary(void)
         StructInitInfo * info = Modules[i].info;
         if (info->initLibrary) {
             if (SyDebugLoading) {
-                FPUTS_TO_STDERR("#I  InitLibrary(builtin ");
-                FPUTS_TO_STDERR(info->name);
-                FPUTS_TO_STDERR(")\n");
+                fputs("#I  InitLibrary(builtin ", stderr);
+                fputs(info->name, stderr);
+                fputs(")\n", stderr);
             }
             Int ret = info->initLibrary(info);
             if (ret) {
@@ -980,9 +980,9 @@ void ModulesCheckInit(void)
         StructInitInfo * info = Modules[i].info;
         if (info->checkInit) {
             if (SyDebugLoading) {
-                FPUTS_TO_STDERR("#I  CheckInit(builtin ");
-                FPUTS_TO_STDERR(info->name);
-                FPUTS_TO_STDERR(")\n");
+                fputs("#I  CheckInit(builtin ", stderr);
+                fputs(info->name, stderr);
+                fputs(")\n", stderr);
             }
             Int ret = info->checkInit(info);
             if (ret) {
@@ -998,9 +998,9 @@ void ModulesInitModuleState(void)
         StructInitInfo * info = Modules[i].info;
         if (info->initModuleState) {
             if (SyDebugLoading) {
-                FPUTS_TO_STDERR("#I  InitModuleState(");
-                FPUTS_TO_STDERR(info->name);
-                FPUTS_TO_STDERR(")\n");
+                fputs("#I  InitModuleState(", stderr);
+                fputs(info->name, stderr);
+                fputs(")\n", stderr);
             }
             Int ret = info->initModuleState();
             if (ret) {
@@ -1016,9 +1016,9 @@ void ModulesDestroyModuleState(void)
         StructInitInfo * info = Modules[i].info;
         if (info->destroyModuleState) {
             if (SyDebugLoading) {
-                FPUTS_TO_STDERR("#I  DestroyModuleState(");
-                FPUTS_TO_STDERR(info->name);
-                FPUTS_TO_STDERR(")\n");
+                fputs("#I  DestroyModuleState(", stderr);
+                fputs(info->name, stderr);
+                fputs(")\n", stderr);
             }
             Int ret = info->destroyModuleState();
             if (ret) {
@@ -1062,9 +1062,9 @@ void ModulesPostRestore(void)
         StructInitInfo * info = Modules[i].info;
         if (info->postRestore) {
             if (SyDebugLoading) {
-                FPUTS_TO_STDERR("#I  PostRestore(builtin ");
-                FPUTS_TO_STDERR(info->name);
-                FPUTS_TO_STDERR(")\n");
+                fputs("#I  PostRestore(builtin ", stderr);
+                fputs(info->name, stderr);
+                fputs(")\n", stderr);
             }
             Int ret = info->postRestore(info);
             if (ret) {

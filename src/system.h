@@ -78,8 +78,6 @@ enum {
 };
 
 
-#define FPUTS_TO_STDERR(str) fputs (str, stderr)
-
 /****************************************************************************
 **
 *T  Wrappers for various compiler attributes
