@@ -1354,11 +1354,9 @@ Obj FuncKERNEL_INFO(Obj self) {
   r = RNamName("GAP_ROOT_PATHS");
   AssPRec(res,r,list);
   /* And also the DotGapPath if available */
-#ifdef HAVE_DOTGAPRC
   tmp = MakeImmString( DotGapPath );
   r = RNamName("DOT_GAP_PATH");
   AssPRec(res,r,tmp);
-#endif
     
   /* make command line and environment available to GAP level       */
   for (lenvec=0; SyOriginalArgv[lenvec]; lenvec++);

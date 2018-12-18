@@ -138,9 +138,7 @@ Int SyDebugLoading;
 **
 */
 Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
-#ifdef HAVE_DOTGAPRC
 Char DotGapPath[GAP_PATH_MAX];
-#endif
 
 /****************************************************************************
 **
@@ -1290,7 +1288,6 @@ void InitSystem (
     }
     */
 
-#ifdef HAVE_DOTGAPRC
     /* the users home directory                                            */
     if ( getenv("HOME") != 0 ) {
         strxcpy(DotGapPath, getenv("HOME"), sizeof(DotGapPath));
@@ -1331,7 +1328,6 @@ void InitSystem (
           }
         }
     }
-#endif
 
 
     /* now we start                                                        */
