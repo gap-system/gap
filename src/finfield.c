@@ -33,8 +33,8 @@
 
 Obj SuccFF;
 
-Obj TypeFF;
-Obj TypeFF0;
+static Obj TypeFF;
+static Obj TypeFF0;
 
 static Obj TYPE_FFE;
 static Obj TYPE_FFE0;
@@ -319,13 +319,12 @@ Obj FuncDEGREE_FFE_DEFAULT (
 **  'TypeFFE' is the function in 'TypeObjFuncs' for  elements in small finite
 **  fields.
 */
-Obj             TypeFFE (
-    Obj                 ffe )
+Obj TypeFFE(Obj ffe)
 {
-  if (VAL_FFE(ffe) == 0)
-    return TYPE_FF0( FLD_FFE( ffe ) );
-  else
-    return TYPE_FF( FLD_FFE( ffe ) );
+    if (VAL_FFE(ffe) == 0)
+        return ELM_PLIST(TypeFF0, FLD_FFE(ffe));
+    else
+        return ELM_PLIST(TypeFF, FLD_FFE(ffe));
 }
 
 
