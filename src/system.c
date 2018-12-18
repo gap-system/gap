@@ -425,46 +425,6 @@ size_t strlcat (
 
 #endif /* !HAVE_STRLCAT */
 
-size_t strlncat (
-    char *dst,
-    const char *src,
-    size_t len,
-    size_t n)
-{
-    /* Keep a copy of the original dst. */
-    const char * const orig_dst = dst;
-
-    /* Find the end of the dst string, so that we can append after it. */
-    while (*dst != 0 && len > 0) {
-        dst++;
-        len--;
-    }
-
-    /* We can only append anything if there is free space left in the
-       destination buffer. */
-    if (len > 0) {
-        /* One byte goes away for the terminating zero. */
-        len--;
-
-        /* Do the actual work and append from src to dst, until we either
-           appended everything, or reached the dst buffer's end. */
-        while (*src != 0 && len > 0 && n > 0) {
-            *dst++ = *src++;
-            len--;
-            n--;
-        }
-
-        /* Terminate, terminate, terminate! */
-        *dst = 0;
-    }
-
-    /* Compute the final result. */
-    len = strlen(src);
-    if (n < len)
-        len = n;
-    return (dst - orig_dst) + len;
-}
-
 size_t strxcpy (
     char *dst,
     const char *src,
@@ -481,17 +441,6 @@ size_t strxcat (
     size_t len)
 {
     size_t res = strlcat(dst, src, len);
-    assert(res < len);
-    return res;
-}
-
-size_t strxncat (
-    char *dst,
-    const char *src,
-    size_t len,
-    size_t n)
-{
-    size_t res = strlncat(dst, src, len, n);
     assert(res < len);
     return res;
 }
