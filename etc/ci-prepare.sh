@@ -4,7 +4,8 @@ set -ex
 
 SRCDIR=${SRCDIR:-$PWD}
 
-# for debugging purposes print the environment and info about the HEAD commit
+# print some data useful for debugging issues with the build
+gcov --version
 printenv | sort
 git show --pretty=fuller -s
 
@@ -40,13 +41,13 @@ then
   pushd julia-*
   JULIA_PATH=$(pwd)
   popd
-  CONFIGFLAGS="$CONFIGFLAGS --with-gc=julia --with-julia=$JULIA_PATH"
+  CONFIGFLAGS="--with-gc=julia --with-julia=$JULIA_PATH $CONFIGFLAGS"
 fi
 
 
 # configure and make GAP
-"$SRCDIR/configure" $CONFIGFLAGS --enable-Werror
-make V=1 -j4
+time "$SRCDIR/configure" --enable-Werror $CONFIGFLAGS
+time make V=1 -j4
 
 # download packages; instruct wget to retry several times if the
 # connection is refused, to work around intermittent failures
@@ -63,12 +64,6 @@ fi
 
 # check that GAP is at least able to start
 echo 'Print("GAP started successfully\n");QUIT_GAP(0);' | ./gap -T
-
-# TEMPORARY FIX : factint is not HPC-GAP compatible
-if [[ $HPCGAP = yes ]]
-then
-    rm -rf pkg/factint*
-fi
 
 # packages must be placed inside SRCDIR, as only that
 # is a GAP root, while BUILDDIR is not.
@@ -89,14 +84,6 @@ then
     CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
   fi
 
-  # TODO: get rid of this hack (packages should get include paths from sysinfo.gap resp. gac)
-  if [[ $HPCGAP = yes ]]
-  then
-    # Add flags so that Boehm GC and libatomic headers are found
-    CPPFLAGS="-I$PWD/extern/install/gc/include -I$PWD/extern/install/libatomic_ops/include $CPPFLAGS"
-    export CPPFLAGS
-  fi
-
   # We need to compile the profiling package in order to generate coverage
   # reports; and also the IO package, as the profiling package depends on it.
   pushd "$SRCDIR/pkg"
@@ -113,6 +100,15 @@ then
   # IO's src/io.c with GAP's.
   CFLAGS= LDFLAGS= "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR" io* profiling*
 
+  #
+  # Factint is incompatible with HPCGAP and interferes with some tests
+  #
+  
+  if [[ $HPCGAP = yes ]]
+  then
+     rm -rf $SRCDIR/pkg/FactInt*
+  fi
+  
   popd
 
 fi

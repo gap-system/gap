@@ -1,28 +1,32 @@
-# We want Ubuntu 14.04 "Trust" instead of 12.04 "Precise" to get newer
-# and less buggy gcov
-dist: trusty
+# Force Ubuntu 16.04 "Xenial" to get newer GCC, binutils etc.
+dist: xenial
 language: c
 
 env:
   global:
     - CFLAGS="--coverage -O2"
     - LDFLAGS="--coverage"
-    # default config flags: enable debug asserts, and treat compiler warnings as errors
-    - CONFIGFLAGS="--enable-debug --enable-Werror"
+    # default config flags: enable debug asserts
+    - CONFIGFLAGS="--enable-debug"
 
 addons:
   apt_packages:
     - libgmp-dev
     - libreadline-dev
 
+#
+# The following test jobs are roughly sorted by duration, from longest to
+# shortest.
+#
 matrix:
   include:
     # general test suite (subsumes testinstall tests, too)
     - env: TEST_SUITES="docomp testtravis"
+
     # the same in 32 bit mode, and with debugging turned off, to (a) make it
-    # a lot faster, and (b) to make sure nobody accidentally put some vital
+    # a lot faster, and (b) to make sure nobody accidentally puts some vital
     # computing into code that is only run when debugging is on.
-    - env: TEST_SUITES="docomp testtravis" ABI=32 CONFIGFLAGS="--enable-Werror"
+    - env: TEST_SUITES="docomp testtravis" ABI=32 CONFIGFLAGS=""
       addons:
         apt_packages:
           - gcc-multilib
@@ -30,8 +34,15 @@ matrix:
           - libgmp-dev:i386
           - libreadline-dev:i386
 
+    # HPC-GAP builds (for efficiency, we don't build all combinations)
+    - env: TEST_SUITES="docomp testtravis" ABI=64 HPCGAP=yes
+
     # compiler packages and run package tests
-    - env: TEST_SUITES=testpackages
+    # don't use --coverage in CFLAGS, it causes the weird `atexit` bug in
+    # digraphs and other kernel extensions using C++ code (due to GCC's
+    # `profiler_trace.h` calling `atexit`; but that fails in loadable modules
+    # for technical reasons)
+    - env: TEST_SUITES=testpackages CFLAGS="-O2" LDFLAGS=
       addons:
         apt_packages:
           - gcc-multilib
@@ -41,13 +52,14 @@ matrix:
           - libreadline-dev
           - libboost-dev            # for NormalizInterface
           - libmpfr-dev             # for float
-          - libmpfi-dev             # for float
+          - libmpfi0-dev            # for float
           - libmpc-dev              # for float
           #- libfplll-dev           # for float
           - pari-gp                 # for alnuth
           - libzmq3-dev             # for ZeroMQInterface
 
-    - env: TEST_SUITES=testpackages ABI=32
+    # compiler packages and run package tests in 32 bit mode
+    - env: TEST_SUITES=testpackages CFLAGS="-O2" LDFLAGS= ABI=32
       addons:
         apt_packages:
           - gcc-multilib
@@ -58,7 +70,7 @@ matrix:
           - libcurl4-openssl-dev:i386 # for curlInterface
           - libboost-dev:i386       # for NormalizInterface
           - libmpfr-dev:i386        # for float
-          - libmpfi-dev:i386        # for float
+          - libmpfi0-dev:i386       # for float
           - libmpc-dev:i386         # for float
           #- libfplll-dev:i386      # for float
           - pari-gp:i386            # for alnuth
@@ -84,8 +96,11 @@ matrix:
     # run tests contained in the manual
     - env: TEST_SUITES=testmanuals
 
-    # HPC-GAP builds (for efficiency, we don't build all combinations)
-    - env: TEST_SUITES="docomp testtravis" ABI=64 HPCGAP=yes
+    # run bugfix regression tests
+    - env: TEST_SUITES=testbugfix
+
+    # test Julia integration
+    - env: TEST_SUITES="testinstall" JULIA=yes CONFIGFLAGS="--disable-Werror"
 
     # out of tree builds -- these are mainly done to verify that the build
     # system work in this scenario. Since we don't expect the test results to
@@ -93,9 +108,10 @@ matrix:
     # setting NO_COVERAGE=1; this has the extra benefit of also running the
     # tests at least once with the ReproducibleBehaviour option turned off.
     - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=64 BUILDDIR=build
-    # for 32bit mode, also turn off debugging (see elsewhere in this file for
+
+    # same as above, but in 32 bit mode, also turn off debugging (see elsewhere in this file for
     # an explanation)
-    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS="--enable-Werror"
+    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS=""
       addons:
         apt_packages:
           - gcc-multilib
@@ -103,23 +119,20 @@ matrix:
           #- libgmp-dev:i386    # do not install GMP, to test that GAP can build its own
           - libreadline-dev:i386
 
-    # test Julia integration
-    - env: TEST_SUITES="testinstall" JULIA=yes
-
-    # run bugfix regression tests
-    - env: TEST_SUITES=testbugfix
-
-    # test error reporting and compiling (quickest job in this test suite)
+    # test error reporting and compiling
     - env: TEST_SUITES="testspecial test-compile"
 
     # test libgap
     - env: TEST_SUITES="testlibgap"
 
 script:
-  - gcov --version
-  - bash etc/ci-prepare.sh && bash etc/ci.sh
+  - set -e
+  - etc/travis_fastfail.sh
+  - bash etc/ci-prepare.sh
+  - bash etc/ci.sh
 
 after_script:
+  - set -e
   - bash etc/ci-gather-coverage.sh
   - bash <(curl -s https://codecov.io/bash)
 
