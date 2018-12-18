@@ -42,6 +42,46 @@ static Obj TYPE_FFE0;
 // used for successor bags
 static Obj TYPE_KERNEL_OBJECT;
 
+
+/****************************************************************************
+**
+*F  LookupPrimePower(<q>) . . . . . . . .  search for a prime power in tables
+**
+**  Searches the tables of prime powers from ffdata.c for q, returns the
+**  index of q in SizeFF if it is present and 0 if not (the 0 position of
+**  SizeFF is unused).
+*/
+static FF LookupPrimePower(UInt q)
+{
+    UInt l, n;
+    FF   ff;
+    UInt e;
+
+    /* search through the finite field table                               */
+    l = 1;
+    n = NUM_SHORT_FINITE_FIELDS;
+    ff = 0;
+    while (l <= n && SizeFF[l] <= q && q <= SizeFF[n]) {
+        /* interpolation search */
+        /* cuts iterations roughly in half compared to binary search at
+         * the expense of additional divisions. */
+        e = (q - SizeFF[l] + 1) * (n - l) / (SizeFF[n] - SizeFF[l] + 1);
+        ff = l + e;
+        if (SizeFF[ff] == q)
+            break;
+        if (SizeFF[ff] < q)
+            l = ff + 1;
+        else
+            n = ff - 1;
+    }
+    if (ff < 1 || ff > NUM_SHORT_FINITE_FIELDS)
+        return 0;
+    if (SizeFF[ff] != q)
+        return 0;
+    return ff;
+}
+
+
 /****************************************************************************
 **
 *F  FiniteField(<p>,<d>)  . . . make the small finite field with <q> elements
@@ -66,28 +106,8 @@ FF              FiniteField (
     for (i = 1; i <= d; i++)
         q *= p;
 
-    /* search through the finite field table                               */
-    l = 1;
-    n = NUM_SHORT_FINITE_FIELDS;
-    ff = 0;
-    while (l <= n && SizeFF[l] <= q && q <= SizeFF[n]) {
-        /* interpolation search */
-        /* cuts iterations roughly in half compared to binary search at
-         * the expense of additional divisions. */
-        e = (q - SizeFF[l] + 1) * (n - l) / (SizeFF[n] - SizeFF[l] + 1);
-        ff = l + e;
-        if (SizeFF[ff] == q)
-            break;
-        if (SizeFF[ff] < q)
-            l = ff + 1;
-        else
-            n = ff - 1;
-    }
-    if (ff < 1 || ff > NUM_SHORT_FINITE_FIELDS)
-        return 0;
+    ff = LookupPrimePower(q);
     if (CharFF[ff] != p)
-        return 0;
-    if (SizeFF[ff] != q)
         return 0;
 #ifdef HPCGAP
     /* Important correctness concern here:
