@@ -1546,7 +1546,7 @@ end );
 ##
 #V  Refinements . . . . . . . . . . . . . . .  record of refinement processes
 ##
-InstallValue( Refinements, rec() );
+InstallValue( Refinements, AtomicRecord() );
 
 #############################################################################
 ##
@@ -1859,12 +1859,6 @@ function( rbase, image, G, f, Q, strat )
     return MeetPartitionStrat( rbase, image, Q, t, strat );
 end);
 Refinements.(STBBCKT_STRING_TWOCLOSURE):=Refinements_TwoClosure;
-
-#############################################################################
-##
-## After construction, make Refinements immutable for thread-safety
-##
-MakeImmutable(Refinements);
 
 
 #############################################################################
