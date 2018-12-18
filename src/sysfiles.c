@@ -2246,7 +2246,6 @@ Char * readlineFgets (
     UInt                block)
 {
   char *                 rlres = (char*)NULL;
-  UInt                   len;
 
   current_rl_fid = fid;
   if (!ISINITREADLINE) initreadline();
@@ -2275,11 +2274,11 @@ Char * readlineFgets (
   }
   /* maybe add to history, we use key 0 for this function */
   GAP_rl_func(0, 0);
-  len = strlen(rlres);
-  strncpy(line, rlres, len);
+  strlcpy(line, rlres, length);
+  // FIXME: handle the case where rlres contains more than length
+  // characters better?
   free(rlres);
-  line[len] = '\n';
-  line[len+1] = '\0';
+  strlcat(line, "\n", length);
 
   /* send the whole line (unclipped) to the window handler               */
   syWinPut( fid, (*line != '\0' ? "@r" : "@x"), line );
