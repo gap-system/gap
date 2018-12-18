@@ -947,7 +947,7 @@ static UInt ParseMemory( Char * s)
     }      
   }
   if (!IsDigit(symbol))
-    FPUTS_TO_STDERR("Unrecognised memory unit ignored");
+    fputs("Unrecognised memory unit ignored", stderr);
   return size;
 }
 
@@ -980,7 +980,7 @@ static Int storePosInteger( Char **argv, void *Where )
     p++;
   }
   if (p == argv[0] || *p || n == 0)
-    FPUTS_TO_STDERR("Argument not a positive integer");
+    fputs("Argument not a positive integer", stderr);
   *where = n;
   return 1;
 }
@@ -1176,8 +1176,9 @@ void InitSystem (
         if (argv[1][0] == '-' ) {
 
           if ( strlen(argv[1]) != 2 && argv[1][1] != '-') {
-            FPUTS_TO_STDERR("gap: sorry, options must not be grouped '");
-            FPUTS_TO_STDERR(argv[1]);  FPUTS_TO_STDERR("'.\n");
+            fputs("gap: sorry, options must not be grouped '", stderr);
+            fputs(argv[1], stderr);
+            fputs("'.\n", stderr);
             goto usage;
           }
 
@@ -1193,11 +1194,13 @@ void InitSystem (
           if (argc < 2 + options[i].minargs)
             {
               Char buf[2];
-              FPUTS_TO_STDERR("gap: option "); FPUTS_TO_STDERR(argv[1]);
-              FPUTS_TO_STDERR(" requires at least ");
+              fputs("gap: option ", stderr);
+              fputs(argv[1], stderr);
+              fputs(" requires at least ", stderr);
               buf[0] = options[i].minargs + '0';
               buf[1] = '\0';
-              FPUTS_TO_STDERR(buf); FPUTS_TO_STDERR(" arguments\n");
+              fputs(buf, stderr);
+              fputs(" arguments\n", stderr);
               goto usage;
             }
           if (options[i].handler) {
@@ -1335,11 +1338,11 @@ void InitSystem (
 
     /* print a usage message                                               */
 usage:
- FPUTS_TO_STDERR("usage: gap [OPTIONS] [FILES]\n");
- FPUTS_TO_STDERR("       run the Groups, Algorithms and Programming system, Version ");
- FPUTS_TO_STDERR(SyBuildVersion);
- FPUTS_TO_STDERR("\n");
- FPUTS_TO_STDERR("       use '-h' option to get help.\n");
- FPUTS_TO_STDERR("\n");
+ fputs("usage: gap [OPTIONS] [FILES]\n", stderr);
+ fputs("       run the Groups, Algorithms and Programming system, Version ", stderr);
+ fputs(SyBuildVersion, stderr);
+ fputs("\n", stderr);
+ fputs("       use '-h' option to get help.\n", stderr);
+ fputs("\n", stderr);
  SyExit( 1 );
 }
