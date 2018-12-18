@@ -3,7 +3,9 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
 
 #define MAX_FF 65536
 
@@ -15,7 +17,7 @@ unsigned      num_ff;
 
 void make_primes()
 {
-    unsigned i, j;
+    unsigned long i, j;
     for (i = 2; i <= MAX_FF; i++)
         is_prime[i] = 1;
     for (i = 2; i * i <= MAX_FF; i++) {
@@ -28,7 +30,7 @@ void make_primes()
 
 void make_ff()
 {
-    unsigned i, j, d;
+    unsigned long i, j, d;
     for (i = 2; i <= MAX_FF; i++) {
         if (is_prime[i]) {
             for (j = i, d = 1; j <= MAX_FF; j *= i, d++) {
@@ -41,74 +43,74 @@ void make_ff()
     }
 }
 
-void emit_code(int header)
+void emit_code(FILE * dest, int header)
 {
     unsigned i, j;
     if (header) {
-        printf("#ifndef GAP_FFDATA_H\n");
-        printf("#define GAP_FFDATA_H\n");
-        printf("\n");
-        printf("enum {\n");
-        printf("    NUM_SHORT_FINITE_FIELDS = %d\n", num_ff);
-        printf("};\n");
-        printf("\n");
-        printf("extern unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1];\n");
-        printf("extern unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1];\n");
-        printf("extern unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1];\n");
-        printf("\n");
-        printf("#endif // GAP_FFDATA_H\n");
+        fprintf(dest, "#ifndef GAP_FFDATA_H\n");
+        fprintf(dest, "#define GAP_FFDATA_H\n");
+        fprintf(dest, "\n");
+        fprintf(dest, "enum {\n");
+        fprintf(dest, "    NUM_SHORT_FINITE_FIELDS = %d\n", num_ff);
+        fprintf(dest, "};\n");
+        fprintf(dest, "\n");
+        fprintf(dest, "extern unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        fprintf(dest, "extern unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        fprintf(dest, "extern unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        fprintf(dest, "\n");
+        fprintf(dest, "#endif // GAP_FFDATA_H\n");
     }
     else {
-        printf("#include \"ffdata.h\"\n");
-        printf("\n");
-        printf("/* Entries are ordered by value of p^d; can use binary search\n");
-        printf(" * to find them. Indices start at 1.\n");
-        printf(" */\n");
-        printf("\n");
-        printf("unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
-        printf(" %3d,", 0);
+        fprintf(dest, "#include \"ffdata.h\"\n");
+        fprintf(dest, "\n");
+        fprintf(dest, "/* Entries are ordered by value of p^d; can use binary search\n");
+        fprintf(dest, " * to find them. Indices start at 1.\n");
+        fprintf(dest, " */\n");
+        fprintf(dest, "\n");
+        fprintf(dest, "unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
+        fprintf(dest, " %3d,", 0);
         for (i = 0, j = 1; i <= MAX_FF; i++) {
             if (is_ff[i]) {
-                printf("%3d,", deg[i]);
+                fprintf(dest, "%3d,", deg[i]);
                 j++;
                 j %= 16;
                 if (!j)
-                    printf("\n ");
+                    fprintf(dest, "\n ");
             }
         }
         if (j)
-            printf("\n");
-        printf("};\n");
-        printf("\n");
-        printf("unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
-        printf(" %6d,", 0);
+            fprintf(dest, "\n");
+        fprintf(dest, "};\n");
+        fprintf(dest, "\n");
+        fprintf(dest, "unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
+        fprintf(dest, " %6d,", 0);
         for (i = 0, j = 1; i <= MAX_FF; i++) {
             if (is_ff[i]) {
-                printf("%6d,", ch[i]);
+                fprintf(dest, "%6d,", ch[i]);
                 j++;
                 j %= 8;
                 if (!j)
-                    printf("\n ");
+                    fprintf(dest, "\n ");
             }
         }
         if (j)
-            printf("\n");
-        printf("};\n");
-        printf("\n");
-        printf("unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
-        printf(" %6d,", 0);
+            fprintf(dest, "\n");
+        fprintf(dest, "};\n");
+        fprintf(dest, "\n");
+        fprintf(dest, "unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
+        fprintf(dest, " %6d,", 0);
         for (i = 0, j = 1; i <= MAX_FF; i++) {
             if (is_ff[i]) {
-                printf("%6d,", i);
+                fprintf(dest, "%6d,", i);
                 j++;
                 j %= 8;
                 if (!j)
-                    printf("\n ");
+                    fprintf(dest, "\n ");
             }
         }
         if (j)
-            printf("\n");
-        printf("};\n");
+            fprintf(dest, "\n");
+        fprintf(dest, "};\n");
     }
 }
 
@@ -118,11 +120,11 @@ int main(int argc, char * argv[])
     make_primes();
     make_ff();
     if (!opt)
-        emit_code(0);
+        emit_code(stdout, 0);
     else if (!strcmp(opt, "h") || !strcmp(opt, ".h") || !strcmp(opt, "-h"))
-        emit_code(1);
+        emit_code(stdout, 1);
     else if (!strcmp(opt, "c") || !strcmp(opt, ".c") || !strcmp(opt, "-c"))
-        emit_code(0);
+        emit_code(stdout, 0);
     else {
         fprintf(stderr, "Usage: ffgen [-h|-c]\n");
         fprintf(stderr, "  -h for header file\n");
