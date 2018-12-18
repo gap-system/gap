@@ -10,10 +10,10 @@
 
 #include "system.h"
 
-#include "compiled.h"
-#include "hookintrprtr.h"
 #include "calls.h"
+#include "compiled.h"
 #include "fibhash.h"
+#include "hookintrprtr.h"
 
 #ifdef HPCGAP
 #include "hpc/region.h"

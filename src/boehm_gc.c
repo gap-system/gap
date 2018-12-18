@@ -26,9 +26,9 @@
 #endif
 
 #ifdef HPCGAP
+#include "hpc/guards.h"
 #include "hpc/misc.h"
 #include "hpc/thread.h"
-#include "hpc/guards.h"
 #endif
 
 static inline Bag * DATA(BagHeader * bag)

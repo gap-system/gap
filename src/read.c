@@ -26,8 +26,8 @@
 #include "scanner.h"
 #include "stats.h"
 #include "stringobj.h"
-#include "vars.h"
 #include "sysopt.h"
+#include "vars.h"
 
 #ifdef HPCGAP
 #include "hpc/thread.h"

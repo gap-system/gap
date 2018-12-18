@@ -15,6 +15,7 @@
 **/
 
 #include "code.h"
+#include "fibhash.h"
 #include "funcs.h"
 #include "gapstate.h"
 #include "gasman.h"
@@ -23,7 +24,6 @@
 #include "sysmem.h"
 #include "system.h"
 #include "vars.h"
-#include "fibhash.h"
 
 #include <stdio.h>
 #include <stdlib.h>

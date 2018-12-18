@@ -23,6 +23,6 @@ MaxEmptyLinesToKeep: 2
 PointerBindsToType: Middle
 SpacesBeforeTrailingComments: 4
 UseTab: Never
-SortIncludes: false
+SortIncludes: true
 
 AlwaysBreakTemplateDeclarations: true
