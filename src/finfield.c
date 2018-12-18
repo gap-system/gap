@@ -10,43 +10,7 @@
 **  This file contains the  functions  to compute  with elements  from  small
 **  finite fields.
 **
-**  Finite fields  are an  important   domain in computational   group theory
-**  because the classical matrix groups are defined over those finite fields.
-**  In GAP we  support  small  finite  fields  with  up  to  65536  elements,
-**  larger fields can be realized  as polynomial domains over smaller fields.
-**
-**  Elements in small finite fields are  represented  as  immediate  objects.
-**
-**      +----------------+-------------+---+
-**      |     <value>    |   <field>   |010|
-**      +----------------+-------------+---+
-**
-**  The least significant 3 bits of such an immediate object are always  010,
-**  flagging the object as an object of a small finite field.
-**
-**  The next 13 bits represent the small finite field where the element lies.
-**  They are simply an index into a global table of small finite fields.
-**
-**  The most significant 16 bits represent the value of the element.
-**
-**  If the  value is 0,  then the element is the  zero from the finite field.
-**  Otherwise the integer is the logarithm of this  element with respect to a
-**  fixed generator of the multiplicative group of the finite field plus one.
-**  In the following desriptions we denote this generator always with $z$, it
-**  is an element of order $o-1$, where $o$ is the order of the finite field.
-**  Thus 1 corresponds to $z^{1-1} = z^0 = 1$, i.e., the  one from the field.
-**  Likewise 2 corresponds to $z^{2-1} = z^1 = z$, i.e., the root itself.
-**
-**  This representation  makes multiplication very easy,  we only have to add
-**  the values and subtract 1 , because  $z^{a-1} * z^{b-1} = z^{(a+b-1)-1}$.
-**  Addition is reduced to * by the formula $z^a +  z^b = z^b * (z^{a-b}+1)$.
-**  This makes it neccessary to know the successor $z^a + 1$ of every value.
-**
-**  The  finite field  bag contains  the  successor for  every nonzero value,
-**  i.e., 'SUCC_FF(<ff>)[<a>]' is  the successor of  the element <a>, i.e, it
-**  is the  logarithm  of $z^{a-1} +   1$.  This list  is  usually called the
-**  Zech-Logarithm  table.  The zeroth  entry in the  finite field bag is the
-**  order of the finite field minus one.
+**  The concepts of this kernel module are documented in finfield.h
 */
 
 #include "finfield.h"
