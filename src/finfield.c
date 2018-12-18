@@ -52,41 +52,43 @@ FF              FiniteField (
     UInt                p,
     UInt                d )
 {
-    FF                  ff;             /* finite field, result            */
-    Obj                 tmp;            /* temporary bag                   */
-    Obj                 succBag;        /* successor table bag             */
-    FFV *               succ;           /* successor table                 */
-    FFV *               indx;           /* index table                     */
-    UInt                q;              /* size of finite field            */
-    UInt                poly;           /* Conway polynomial of extension  */
-    UInt                i, l, f, n, e;  /* loop variables                  */
+    FF    ff;            /* finite field, result            */
+    Obj   tmp;           /* temporary bag                   */
+    Obj   succBag;       /* successor table bag             */
+    FFV * succ;          /* successor table                 */
+    FFV * indx;          /* index table                     */
+    UInt  q;             /* size of finite field            */
+    UInt  poly;          /* Conway polynomial of extension  */
+    UInt  i, l, f, n, e; /* loop variables                  */
 
     /* calculate size of field */
     q = 1;
-    for ( i = 1; i <= d; i++ ) q *= p;
+    for (i = 1; i <= d; i++)
+        q *= p;
 
     /* search through the finite field table                               */
-    l = 1; n = NUM_SHORT_FINITE_FIELDS;
+    l = 1;
+    n = NUM_SHORT_FINITE_FIELDS;
     ff = 0;
     while (l <= n && SizeFF[l] <= q && q <= SizeFF[n]) {
-      /* interpolation search */
-      /* cuts iterations roughly in half compared to binary search at
-       * the expense of additional divisions. */
-      e = (q - SizeFF[l]+1) * (n-l) / (SizeFF[n]-SizeFF[l]+1);
-      ff = l + e;
-      if (SizeFF[ff] == q)
-        break;
-      if (SizeFF[ff] < q)
-        l = ff+1;
-      else
-        n = ff-1;
+        /* interpolation search */
+        /* cuts iterations roughly in half compared to binary search at
+         * the expense of additional divisions. */
+        e = (q - SizeFF[l] + 1) * (n - l) / (SizeFF[n] - SizeFF[l] + 1);
+        ff = l + e;
+        if (SizeFF[ff] == q)
+            break;
+        if (SizeFF[ff] < q)
+            l = ff + 1;
+        else
+            n = ff - 1;
     }
     if (ff < 1 || ff > NUM_SHORT_FINITE_FIELDS)
-      return 0;
+        return 0;
     if (CharFF[ff] != p)
-      return 0;
+        return 0;
     if (SizeFF[ff] != q)
-      return 0;
+        return 0;
 #ifdef HPCGAP
     /* Important correctness concern here:
      *
@@ -105,62 +107,67 @@ FF              FiniteField (
      * tables.
      */
     if (ATOMIC_ELM_PLIST(TypeFF0, ff))
-      return ff;
+        return ff;
 #else
     if (ELM_PLIST(TypeFF0, ff))
-      return ff;
+        return ff;
 #endif
 
-    /* allocate a bag for the successor table and one for a temporary         */
-    tmp  = NewBag( T_DATOBJ, sizeof(Obj) + q * sizeof(FFV) );
-    SET_TYPE_DATOBJ(tmp, TYPE_KERNEL_OBJECT );
+    /* allocate a bag for the successor table and one for a temporary */
+    tmp = NewBag(T_DATOBJ, sizeof(Obj) + q * sizeof(FFV));
+    SET_TYPE_DATOBJ(tmp, TYPE_KERNEL_OBJECT);
 
-    succBag = NewBag( T_DATOBJ, sizeof(Obj) + q * sizeof(FFV) );
-    SET_TYPE_DATOBJ(succBag, TYPE_KERNEL_OBJECT );
+    succBag = NewBag(T_DATOBJ, sizeof(Obj) + q * sizeof(FFV));
+    SET_TYPE_DATOBJ(succBag, TYPE_KERNEL_OBJECT);
 
-    indx = (FFV*)(1+ADDR_OBJ( tmp ));
-    succ = (FFV*)(1+ADDR_OBJ( succBag ));
+    indx = (FFV *)(1 + ADDR_OBJ(tmp));
+    succ = (FFV *)(1 + ADDR_OBJ(succBag));
 
     /* if q is a prime find the smallest primitive root $e$, use $x - e$   */
     /*N 1990/02/04 mschoene there are few dumber ways to find prim. roots  */
-    if ( d == 1 ) {
-        for ( e = 1, i = 1; i != p-1; ++e ) {
-            for ( f = e, i = 1; f != 1; ++i )
+    if (d == 1) {
+        for (e = 1, i = 1; i != p - 1; ++e) {
+            for (f = e, i = 1; f != 1; ++i)
                 f = (f * e) % p;
         }
-        poly = p-(e-1);
+        poly = p - (e - 1);
     }
 
     /* otherwise look up the polynomial used to construct this field       */
     else {
-        for ( i = 0; PolsFF[i] != q; i += 2 ) ;
-        poly = PolsFF[i+1];
+        for (i = 0; PolsFF[i] != q; i += 2)
+            ;
+        poly = PolsFF[i + 1];
     }
 
     /* construct 'indx' such that 'e = x^(indx[e]-1) % poly' for every e   */
-    indx[ 0 ] = 0;
-    for ( e = 1, n = 0; n < q-1; ++n ) {
-        indx[ e ] = n + 1;
+    indx[0] = 0;
+    for (e = 1, n = 0; n < q - 1; ++n) {
+        indx[e] = n + 1;
         /* e =p*e mod poly =x*e mod poly =x*x^n mod poly =x^{n+1} mod poly */
-        if ( p != 2 ) {
-            f = p * (e % (q/p));  l = ((p-1) * (e / (q/p))) % p;  e = 0;
-            for ( i = 1; i < q; i *= p )
-                e = e + i * ((f/i + l * (poly/i)) % p);
+        if (p != 2) {
+            f = p * (e % (q / p));
+            l = ((p - 1) * (e / (q / p))) % p;
+            e = 0;
+            for (i = 1; i < q; i *= p)
+                e = e + i * ((f / i + l * (poly / i)) % p);
         }
         else {
-            if ( 2*e & q )  e = 2*e ^ poly ^ q;
-            else            e = 2*e;
+            if (2 * e & q)
+                e = 2 * e ^ poly ^ q;
+            else
+                e = 2 * e;
         }
     }
 
     /* construct 'succ' such that 'x^(n-1)+1 = x^(succ[n]-1)' for every n  */
-    succ[ 0 ] = q-1;
-    for ( e = 1, f = p-1; e < q; e++ ) {
-        if ( e < f ) {
-            succ[ indx[e] ] = indx[ e+1 ];
+    succ[0] = q - 1;
+    for (e = 1, f = p - 1; e < q; e++) {
+        if (e < f) {
+            succ[indx[e]] = indx[e + 1];
         }
         else {
-            succ[ indx[e] ] = indx[ e+1-p ];
+            succ[indx[e]] = indx[e + 1 - p];
             f += p;
         }
     }
@@ -168,22 +175,22 @@ FF              FiniteField (
     /* enter the finite field in the tables                                */
 #ifdef HPCGAP
     MakeBagReadOnly(succBag);
-    ATOMIC_SET_ELM_PLIST_ONCE( SuccFF, ff, succBag );
+    ATOMIC_SET_ELM_PLIST_ONCE(SuccFF, ff, succBag);
     CHANGED_BAG(SuccFF);
-    tmp = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
-    ATOMIC_SET_ELM_PLIST_ONCE( TypeFF, ff, tmp );
+    tmp = CALL_1ARGS(TYPE_FFE, INTOBJ_INT(p));
+    ATOMIC_SET_ELM_PLIST_ONCE(TypeFF, ff, tmp);
     CHANGED_BAG(TypeFF);
-    tmp = CALL_1ARGS( TYPE_FFE0, INTOBJ_INT(p) );
-    ATOMIC_SET_ELM_PLIST_ONCE( TypeFF0, ff, tmp );
+    tmp = CALL_1ARGS(TYPE_FFE0, INTOBJ_INT(p));
+    ATOMIC_SET_ELM_PLIST_ONCE(TypeFF0, ff, tmp);
     CHANGED_BAG(TypeFF0);
 #else
-    ASS_LIST( SuccFF, ff, succBag );
+    ASS_LIST(SuccFF, ff, succBag);
     CHANGED_BAG(SuccFF);
-    tmp = CALL_1ARGS( TYPE_FFE, INTOBJ_INT(p) );
-    ASS_LIST( TypeFF, ff, tmp );
+    tmp = CALL_1ARGS(TYPE_FFE, INTOBJ_INT(p));
+    ASS_LIST(TypeFF, ff, tmp);
     CHANGED_BAG(TypeFF);
-    tmp = CALL_1ARGS( TYPE_FFE0, INTOBJ_INT(p) );
-    ASS_LIST( TypeFF0, ff, tmp );
+    tmp = CALL_1ARGS(TYPE_FFE0, INTOBJ_INT(p));
+    ASS_LIST(TypeFF0, ff, tmp);
     CHANGED_BAG(TypeFF0);
 #endif
 
@@ -1473,33 +1480,30 @@ Obj FuncZ (
 
 Obj FuncZ2 ( Obj self, Obj p, Obj d)
 {
-  FF ff;
-  Int ip,id,id1;
-  UInt q;
-  if (ARE_INTOBJS(p,d))
-    {
-      ip = INT_INTOBJ(p);
-      id = INT_INTOBJ(d);
-      if (ip > 1 && id > 0 && id <= 16 && ip < 65536)
-        {
-          id1 = id;
-          q = ip;
-          while (--id1 > 0 && q <= 65536)
-            q *= ip;
-          if (q <= 65536)
-            {
-              /* get the finite field                                                */
-              ff = FiniteField( ip, id );
+    FF   ff;
+    Int  ip, id, id1;
+    UInt q;
+    if (ARE_INTOBJS(p, d)) {
+        ip = INT_INTOBJ(p);
+        id = INT_INTOBJ(d);
+        if (ip > 1 && id > 0 && id <= 16 && ip < 65536) {
+            id1 = id;
+            q = ip;
+            while (--id1 > 0 && q <= 65536)
+                q *= ip;
+            if (q <= 65536) {
+                /* get the finite field */
+                ff = FiniteField(ip, id);
 
-              if ( ff == 0 || CHAR_FF(ff) != ip )
-                ErrorMayQuit("Z: <p> must be a prime", 0, 0);
+                if (ff == 0 || CHAR_FF(ff) != ip)
+                    ErrorMayQuit("Z: <p> must be a prime", 0, 0);
 
-              /* make the root                                                       */
-              return NEW_FFE( ff, (ip == 2 && id == 1 ? 1 : 2) );
+                /* make the root */
+                return NEW_FFE(ff, (ip == 2 && id == 1 ? 1 : 2));
             }
         }
     }
-  return CALL_2ARGS(ZOp, p, d);
+    return CALL_2ARGS(ZOp, p, d);
 }
 
 
