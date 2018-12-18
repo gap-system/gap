@@ -353,24 +353,6 @@ size_t strlcat (
 
 /****************************************************************************
 **
-*F  strlncat( <dst>, <src>, <len>, <n> )
-**
-**  Append at most <n> characters from <src> to buffer <dst> of size <len>.
-**  At most <len>-1 characters will be copied.
-**  Afterwards, <dst> is always 'NUL' terminated (unless <len> == 0).
-**
-**  Returns initial length of <dst> plus the minimum of <n> and
-**  'strlen(<src>)'; hence if the return value is greater or equal than
-**  <len>, truncation occurred.
-*/
-size_t strlncat (
-    char *dst,
-    const char *src,
-    size_t len,
-    size_t n);
-
-/****************************************************************************
-**
 *F  strxcpy( <dst>, <src>, <len> )
 **
 **  Copy <src> to buffer <dst> of size <len>.
@@ -398,23 +380,6 @@ size_t strxcat (
     char *dst,
     const char *src,
     size_t len);
-
-/****************************************************************************
-**
-*F  strxncat( <dst>, <src>, <len>, <n> )
-**
-**  Append not more than <n> characters from <src> to buffer <dst> of size
-**  <len>.
-**  If an overflow would occur, trigger an assertion.
-**
-**  This should be used with caution; in general, proper error handling is
-**  preferable.
-**/
-size_t strxncat (
-    char *dst,
-    const char *src,
-    size_t len,
-    size_t n);
 
 
 typedef const struct init_info StructInitInfo;
