@@ -68,13 +68,20 @@ static void HPC_UnlockNames(void)
 #endif
 
 
-static inline UInt HashString( const Char * name )
+static inline UInt HashString( const Char * name, UInt len )
 {
     UInt hash = 0;
-    while ( *name ) {
+    while ( len-- > 0 ) {
         hash = 65599 * hash + *name++;
     }
     return hash;
+}
+
+static inline int EqString(Obj str, const Char * name, UInt len)
+{
+    if (GET_LEN_STRING(str) != len)
+        return 0;
+    return memcmp(CONST_CSTR_STRING(str), name, len) == 0;
 }
 
 /****************************************************************************
@@ -87,6 +94,11 @@ static inline UInt HashString( const Char * name )
 UInt            RNamName (
     const Char *        name )
 {
+    return RNamNameWithLen(name, strlen(name));
+}
+
+UInt RNamNameWithLen(const Char * name, UInt len)
+{
     Obj                 rnam;           /* record name (as imm intobj)     */
     UInt                pos;            /* hash position                   */
     Char                namx [1024];    /* temporary copy of <name>        */
@@ -96,14 +108,14 @@ UInt            RNamName (
     UInt                i;              /* loop variable                   */
     UInt                sizeRNam;
 
-    if (strlen(name) > 1023) {
+    if (len > 1023) {
         // Note: We can't pass 'name' here, as it might get moved by garbage collection
         ErrorQuit("Record names must consist of at most 1023 characters", 0, 0);
         return 0;
     }
 
     /* start looking in the table at the following hash position           */
-    const UInt hash = HashString( name );
+    const UInt hash = HashString( name, len );
 
 #ifdef HPCGAP
     HPC_LockNames(0); /* try a read lock first */
@@ -113,7 +125,7 @@ UInt            RNamName (
     sizeRNam = LEN_PLIST(HashRNam);
     pos = (hash % sizeRNam) + 1;
     while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
-         && strncmp( CONST_CSTR_STRING( NAME_RNAM( INT_INTOBJ(rnam) ) ), name, 1023 ) ) {
+         && !EqString( NAME_RNAM( INT_INTOBJ(rnam) ), name, len ) ) {
         pos = (pos % sizeRNam) + 1;
     }
     if (rnam != 0) {
@@ -130,7 +142,7 @@ UInt            RNamName (
       sizeRNam = LEN_PLIST(HashRNam);
       pos = (hash % sizeRNam) + 1;
       while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
-           && strncmp( CONST_CSTR_STRING( NAME_RNAM( INT_INTOBJ(rnam) ) ), name, 1023 ) ) {
+           && !EqString( NAME_RNAM( INT_INTOBJ(rnam) ), name, len ) ) {
           pos = (pos % sizeRNam) + 1;
       }
     }
@@ -142,7 +154,8 @@ UInt            RNamName (
 
     /* if we did not find the global variable, make a new one and enter it */
     /* (copy the name first, to avoid a stale pointer in case of a GC)     */
-    strlcpy( namx, name, sizeof(namx) );
+    memcpy( namx, name, len );
+    namx[len] = 0;
     string = MakeImmString(namx);
 
     const UInt countRNam = PushPlist(NamesRNam, string);
@@ -164,7 +177,8 @@ UInt            RNamName (
         for ( i = 1; i <= (sizeRNam-1)/2; i++ ) {
             rnam2 = ELM_PLIST( table, i );
             if ( rnam2 == 0 )  continue;
-            pos = HashString( CONST_CSTR_STRING( NAME_RNAM( INT_INTOBJ(rnam2) ) ) );
+            string = NAME_RNAM( INT_INTOBJ(rnam2) );
+            pos = HashString( CONST_CSTR_STRING( string ), GET_LEN_STRING( string) );
             pos = (pos % sizeRNam) + 1;
             while ( ELM_PLIST( HashRNam, pos ) != 0 ) {
                 pos = (pos % sizeRNam) + 1;
