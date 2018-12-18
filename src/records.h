@@ -37,6 +37,8 @@ extern Obj NAME_RNAM(UInt rnam);
 extern  UInt            RNamName (
             const Char *        name );
 
+extern UInt RNamNameWithLen(const Char * name, UInt len);
+
 
 /****************************************************************************
 **
