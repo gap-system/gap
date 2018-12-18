@@ -122,23 +122,6 @@ extern  Obj             SuccFF;
 
 /****************************************************************************
 **
-*F  TYPE_FF(<ff>) . . . . . . . . . . . . . . .  type of a small finite field
-**
-**  'TYPE_FF' returns the type of elements of the small finite field <ff>.
-**  'TYPE_FF0' returns the type of the zero of <ff>
-**
-**  Note that  'TYPE_FF' is a macro, so  do not call  it  with arguments that
-**  have side effects.
-*/
-#define TYPE_FF(ff)             (ELM_PLIST( TypeFF, ff ))
-#define TYPE_FF0(ff)             (ELM_PLIST( TypeFF0, ff ))
-
-extern  Obj             TypeFF;
-extern  Obj             TypeFF0;
-
-
-/****************************************************************************
-**
 *T  FFV . . . . . . . . type of the values of elements of small finite fields
 **
 **  'FFV'  is the  type used  to represent  the values  of elements  of small
