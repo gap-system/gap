@@ -5134,7 +5134,7 @@ InstallMethod(StoredExcludedOrders,"fp group",true,
 
 InstallGlobalFunction(ExcludedOrders,
 function(arg)
-local f,a,i,j,gens,tstord,excl,p,s;
+local f,a,b,i,j,gens,tstord,excl,p,s;
   f:=arg[1];
   s:=StoredExcludedOrders(f);
   gens:=FreeGeneratorsOfFpGroup(f);
@@ -5170,24 +5170,32 @@ local f,a,i,j,gens,tstord,excl,p,s;
       else
 	p:=PresentationFpGroup(f,0);
 	AddRelator(p,p!.generators[i]^j);
+        TzInitGeneratorImages(p);
 	TzGoGo(p);
 	if Length(p!.generators)=0 then
 	  AddSet(excl[i],j);
 	  AddSet(s[i][1],j);
 	else
 	  if i=1 then
-	    a:=[gens[2]];
+	    b:=[gens[2]];
 	  else
-	    a:=[gens[1]];
+	    b:=[gens[1]];
 	  fi;
 	  a:=CosetTableFromGensAndRels(gens,
-	       Concatenation(RelatorsOfFpGroup(f),[gens[i]^j]),a:
+	       Concatenation(RelatorsOfFpGroup(f),[gens[i]^j]),b:
 	       max:=15999,silent);
-	  if IsList(a) and Length(a[1])=1 and
-	     # now we can try the size
-	     Size(FpGroupPresentation(p))=1 then
-	    AddSet(excl[i],j);
-	    AddSet(s[i][1],j);
+          if IsList(a) and Length(a[1])=1 then
+            a:=FpGroupPresentation(p);
+            b:=List(b,x->MappedWord(x,FreeGeneratorsOfFpGroup(f),TzImagesOldGens(p)));
+            b:=List(b,x->MappedWord(x,p!.generators,GeneratorsOfGroup(a)));
+            # now we can try the size. Ensure we use the generator we know
+            a:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(a),RelatorsOfFpGroup(a),
+              List(b,UnderlyingElement), true, false : cyclic := true,
+              limit := 50000 );
+            if NEWTC_CyclicSubgroupOrder(a)=1 then
+              AddSet(excl[i],j);
+              AddSet(s[i][1],j);
+            fi;
 	  fi;
 	fi;
       fi;

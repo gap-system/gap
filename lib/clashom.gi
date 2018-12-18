@@ -738,6 +738,11 @@ local clT,	# classes T
 			  dsz:=DivisorsInt(scj);
 			fi;
 			while not minlen in dsz do
+                          # workaround rare problem -- try again
+                          if First(dsz,i->i>=minlen)=fail then
+                            return ConjugacyClassesSubwreath(
+                              F,M,n,autT,T,Lloc,components,embeddings,projections);
+                          fi;
 			  # minimum gcd multiple to get at least the
 			  # smallest divisor
 			  minlen:=minlen+
