@@ -145,6 +145,30 @@ typedef UInt2           FFV;
 
 /****************************************************************************
 **
+*F  PROD_FFV(<a>,<b>,<f>) . . . . . . . . . . . product of finite field value
+**
+**  'PROD_FFV' returns the product of the two finite field values <a> and <b>
+**  from the finite field pointed to by the pointer <f>.
+**
+**  Note that 'PROD_FFV' may only be used if the  operands are represented in
+**  the  same finite field.  If you  want to multiply  two elements where one
+**  lies in a subfield of the other use 'ProdFFEFFE'.
+**
+**  Use 'PROD_FFV' only with arguments that are  variables or array elements,
+**  because it is a macro and arguments with side effects will behave strange,
+**  and  because it is  a complex macro so most  C compilers will be upset by
+**  complex arguments.  Especially do not use 'NEG_FFV(PROD_FFV(a,b,f),f)'.
+**
+**  If one of the values is 0 the product is 0.
+**  If $a+b <= o$ we have $a * b ~ z^{a-1} * z^{b-1} = z^{(a+b-1)-1} ~ a+b-1$
+**  otherwise   we   have $a * b ~ z^{(a+b-2)-(o-1)} = z^{(a+b-o)-1} ~ a+b-o$
+*/
+#define PROD1_FFV(a,b,f) ( (a)-1<=*(f)-(b) ? (a)-1+(b) : (a)-1-(*(f)-(b)) )
+#define PROD_FFV(a,b,f) ( (a)==0 || (b)==0 ? 0 : PROD1_FFV(a,b,f) )
+
+
+/****************************************************************************
+**
 *F  SUM_FFV(<a>,<b>,<f>)  . . . . . . . . . . . .  sum of finite field values
 **
 **  'SUM_FFV' returns the sum of the two finite field values <a> and <b> from
@@ -192,30 +216,6 @@ typedef UInt2           FFV;
 #define NEG2_FFV(a,f)   ( (a)<=*(f)/2 ? (a)+*(f)/2 : (a)-*(f)/2 )
 #define NEG1_FFV(a,f)   ( *(f)%2==1 ? (a) : NEG2_FFV(a,f) )
 #define NEG_FFV(a,f)    ( (a)==0 ? 0 : NEG1_FFV(a,f) )
-
-
-/****************************************************************************
-**
-*F  PROD_FFV(<a>,<b>,<f>) . . . . . . . . . . . product of finite field value
-**
-**  'PROD_FFV' returns the product of the two finite field values <a> and <b>
-**  from the finite field pointed to by the pointer <f>.
-**
-**  Note that 'PROD_FFV' may only be used if the  operands are represented in
-**  the  same finite field.  If you  want to multiply  two elements where one
-**  lies in a subfield of the other use 'ProdFFEFFE'.
-**
-**  Use 'PROD_FFV' only with arguments that are  variables or array elements,
-**  because it is a macro and arguments with side effects will behave strange,
-**  and  because it is  a complex macro so most  C compilers will be upset by
-**  complex arguments.  Especially do not use 'NEG_FFV(PROD_FFV(a,b,f),f)'.
-**
-**  If one of the values is 0 the product is 0.
-**  If $a+b <= o$ we have $a * b ~ z^{a-1} * z^{b-1} = z^{(a+b-1)-1} ~ a+b-1$
-**  otherwise   we   have $a * b ~ z^{(a+b-2)-(o-1)} = z^{(a+b-o)-1} ~ a+b-o$
-*/
-#define PROD1_FFV(a,b,f) ( (a)-1<=*(f)-(b) ? (a)-1+(b) : (a)-1-(*(f)-(b)) )
-#define PROD_FFV(a,b,f) ( (a)==0 || (b)==0 ? 0 : PROD1_FFV(a,b,f) )
 
 
 /****************************************************************************
