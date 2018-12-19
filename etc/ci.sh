@@ -127,6 +127,7 @@ GAPInput
 
   makemanuals)
     make doc
+    make check-manuals
     ;;
 
   testmanuals)
