@@ -238,7 +238,8 @@ Print( with, " with examples \n");
 Print( without , " without examples \n");
 end;
 
-CheckDocCoverage(doc);
+# Uncomment next line to add ManSections without examples to the test log
+# CheckDocCoverage(doc);
 QUIT_GAP( CheckManSectionTypes(doc) );
 
 

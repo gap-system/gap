@@ -754,9 +754,8 @@ clean-doc:
 # Manual consistency check
 check-manuals: all
 	$(MKDIR_P) dev/log
-	((cd doc/ref ; \
-	  echo 'Read("testconsistency.g");' | $(TESTGAP) ) \
-	  > `date -u +dev/log/check_manuals_%Y-%m-%d-%H-%M` 2>&1 )
+	( cd doc/ref ; echo 'Read("testconsistency.g");' | $(TESTGAP) | \
+	               tee `date -u +../../dev/log/check_manuals_%Y-%m-%d-%H-%M` )
 
 .PHONY: doc clean-doc manuals check-manuals
 
