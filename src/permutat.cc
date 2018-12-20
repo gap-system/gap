@@ -1195,18 +1195,16 @@ Obj FuncLARGEST_MOVED_POINT_PERM(Obj self, Obj perm)
 **  Note that the order of the arguments to this function has been  reversed.
 */
 template <typename T>
-static inline Obj CYCLE_LENGTH_PERM_INT(Obj perm, Obj point)
+static inline Obj CYCLE_LENGTH_PERM_INT(Obj perm, UInt pnt)
 {
     const T *           ptPerm;         /* pointer to the permutation      */
     UInt                deg;            /* degree of the permutation       */
-    UInt                pnt;            /* value of the point              */
     UInt                len;            /* length of cycle (result)        */
     UInt                p;              /* loop variable                   */
 
     /* get pointer to the permutation, the degree, and the point       */
     ptPerm = CONST_ADDR_PERM<T>(perm);
     deg = DEG_PERM<T>(perm);
-    pnt = INT_INTOBJ(point)-1;
 
     /* now compute the length by looping over the cycle                */
     len = 1;
@@ -1223,15 +1221,17 @@ Obj             FuncCYCLE_LENGTH_PERM_INT (
     Obj                 perm,
     Obj                 point )
 {
+    UInt                pnt;            /* value of the point              */
+
     /* evaluate and check the arguments                                    */
     RequirePermutation("CycleLengthPermInt", perm);
-    RequirePositiveSmallInt("CycleLengthPermInt", point, "point");
+    pnt = GetPositiveSmallInt("CycleLengthPermInt", point) - 1;
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
-        return CYCLE_LENGTH_PERM_INT<UInt2>(perm, point);
+        return CYCLE_LENGTH_PERM_INT<UInt2>(perm, pnt);
     }
     else {
-        return CYCLE_LENGTH_PERM_INT<UInt4>(perm, point);
+        return CYCLE_LENGTH_PERM_INT<UInt4>(perm, pnt);
     }
 }
 
@@ -1248,20 +1248,18 @@ Obj             FuncCYCLE_LENGTH_PERM_INT (
 **  integer, under the permutation <perm> as a list.
 */
 template <typename T>
-static inline Obj CYCLE_PERM_INT(Obj perm, Obj point)
+static inline Obj CYCLE_PERM_INT(Obj perm, UInt pnt)
 {
     Obj                 list;           /* handle of the list (result)     */
     Obj *               ptList;         /* pointer to the list             */
     const T *           ptPerm;         /* pointer to the permutation      */
     UInt                deg;            /* degree of the permutation       */
-    UInt                pnt;            /* value of the point              */
     UInt                len;            /* length of the cycle             */
     UInt                p;              /* loop variable                   */
 
     /* get pointer to the permutation, the degree, and the point       */
     ptPerm = CONST_ADDR_PERM<T>(perm);
     deg = DEG_PERM<T>(perm);
-    pnt = INT_INTOBJ(point)-1;
 
     /* now compute the length by looping over the cycle                */
     len = 1;
@@ -1292,16 +1290,17 @@ Obj             FuncCYCLE_PERM_INT (
     Obj                 perm,
     Obj                 point )
 {
+    UInt                pnt;            /* value of the point              */
 
     /* evaluate and check the arguments                                    */
     RequirePermutation("CyclePermInt", perm);
-    RequirePositiveSmallInt("CyclePermInt", point, "point");
+    pnt = GetPositiveSmallInt("CyclePermInt", point) - 1;
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
-        return CYCLE_PERM_INT<UInt2>(perm, point);
+        return CYCLE_PERM_INT<UInt2>(perm, pnt);
     }
     else {
-        return CYCLE_PERM_INT<UInt4>(perm, point);
+        return CYCLE_PERM_INT<UInt4>(perm, pnt);
     }
 }
 

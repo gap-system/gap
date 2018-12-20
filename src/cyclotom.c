@@ -1535,7 +1535,7 @@ Obj FuncE (
     }
 
     /* get and check the argument                                          */
-    RequirePositiveSmallInt("E", n, "n");
+    GetPositiveSmallInt("E", n);
 
     /* for $e_1$ return 1 and for $e_2$ return -1                          */
     if ( n == INTOBJ_INT(1) )
