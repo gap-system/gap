@@ -1711,8 +1711,8 @@ Obj FuncFinPowConjCol_ReducedQuotient ( Obj self, Obj sc, Obj w, Obj u )
 */
 Obj FuncSET_SCOBJ_MAX_STACK_SIZE ( Obj self, Obj size )
 {
-    RequirePositiveSmallInt("SET_SCOBJ_MAX_STACK_SIZE", size, "size");
-    CollectorsState()->SC_MAX_STACK_SIZE = INT_INTOBJ(size);
+    CollectorsState()->SC_MAX_STACK_SIZE =
+        GetPositiveSmallInt("SET_SCOBJ_MAX_STACK_SIZE", size);
     return 0;
 }
 

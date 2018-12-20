@@ -817,8 +817,8 @@ UInt LcmDegree(UInt d, UInt d1)
 */
 Obj FuncCONV_VEC8BIT(Obj self, Obj list, Obj q)
 {
-    RequirePositiveSmallInt("CONV_VEC8BIT", q, "q");
-    ConvVec8Bit(list, INT_INTOBJ(q));
+    UInt iq = GetPositiveSmallInt("CONV_VEC8BIT", q);
+    ConvVec8Bit(list, iq);
     return 0;
 }
 
@@ -938,8 +938,8 @@ Obj NewVec8Bit(Obj list, UInt q)
 */
 Obj FuncCOPY_VEC8BIT(Obj self, Obj list, Obj q)
 {
-    RequirePositiveSmallInt("COPY_VEC8BIT", q, "q");
-    return NewVec8Bit(list, INT_INTOBJ(q));
+    UInt iq = GetPositiveSmallInt("COPY_VEC8BIT", q);
+    return NewVec8Bit(list, iq);
 }
 
 /****************************************************************************
@@ -1456,11 +1456,9 @@ Obj FuncZERO_VEC8BIT(Obj self, Obj vec)
 
 Obj FuncZERO_VEC8BIT_2(Obj self, Obj q, Obj len)
 {
-    if (!ARE_INTOBJS(q, len))
-        ErrorQuit("ZERO_VEC8BIT_2: arguments must be small integers, not a "
-                  "%s and a %s",
-                  (Int)TNAM_OBJ(q), (Int)TNAM_OBJ(len));
-    return ZeroVec8Bit(INT_INTOBJ(q), INT_INTOBJ(len), 1L);
+    UInt iq = GetPositiveSmallInt("ZERO_VEC8BIT_2", q);
+    RequireNonnegativeSmallInt("ZERO_VEC8BIT_2", len);
+    return ZeroVec8Bit(iq, INT_INTOBJ(len), 1);
 }
 
 /****************************************************************************
@@ -3368,21 +3366,21 @@ Obj FuncCONV_MAT8BIT(Obj self, Obj list, Obj q)
     Obj  tmp;
     Obj  type;
 
-    RequirePositiveSmallInt("CONV_MAT8BIT", q, "q");
+    UInt iq = GetPositiveSmallInt("CONV_MAT8BIT", q);
     PLAIN_LIST(list);
     len = LEN_PLIST(list);
     mut = IS_MUTABLE_OBJ(list);
     GROW_PLIST(list, len + 1);
     for (i = len; i >= 1; i--) {
         tmp = ELM_PLIST(list, i);
-        type = TypeVec8BitLocked(INT_INTOBJ(q), IS_MUTABLE_OBJ(tmp));
+        type = TypeVec8BitLocked(iq, IS_MUTABLE_OBJ(tmp));
         SetTypeDatObj(tmp, type);
         SET_ELM_MAT8BIT(list, i, tmp);
         CHANGED_BAG(list);
     }
     SET_LEN_MAT8BIT(list, len);
     RetypeBag(list, T_POSOBJ);
-    type = TypeMat8Bit(INT_INTOBJ(q), mut);
+    type = TypeMat8Bit(iq, mut);
     SET_TYPE_POSOBJ(list, type);
     return 0;
 }

@@ -2561,13 +2561,13 @@ Obj FuncIS_PROBAB_PRIME_INT(Obj self, Obj n, Obj reps)
   Int res;
 
   RequireInt("IsProbablyPrimeInt", n);
-  RequirePositiveSmallInt( "IsProbablyPrimeInt", reps, "reps" );
+  UInt r = GetPositiveSmallInt("IsProbablyPrimeInt", reps);
 
   CHECK_INT(n);
 
   FAKEMPZ_GMPorINTOBJ( n_mpz, n );
 
-  res = mpz_probab_prime_p( MPZ_FAKEMPZ(n_mpz), INT_INTOBJ(reps) );
+  res = mpz_probab_prime_p(MPZ_FAKEMPZ(n_mpz), r);
 
   if (res == 2) return True; /* definitely prime */
   if (res == 0) return False; /* definitely not prime */

@@ -1023,18 +1023,17 @@ Obj FuncPREIMAGES_TRANS_INT(Obj self, Obj f, Obj pt)
     Obj  out;
 
     RequireTransformation("PREIMAGES_TRANS_INT", f);
-    RequirePositiveSmallInt("PREIMAGES_TRANS_INT", pt, "pt");
+    i = GetPositiveSmallInt("PREIMAGES_TRANS_INT", pt) - 1;
 
     deg = DEG_TRANS(f);
 
-    if ((UInt)INT_INTOBJ(pt) > deg) {
+    if (i >= deg) {
         out = NEW_PLIST(T_PLIST_CYC, 1);
         SET_LEN_PLIST(out, 1);
         SET_ELM_PLIST(out, 1, pt);
         return out;
     }
 
-    i = INT_INTOBJ(pt) - 1;
     out = NEW_PLIST(T_PLIST_CYC_SSORT, 0);
     nr = 0;
 
@@ -2855,10 +2854,9 @@ Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
     UInt4 * ptseen;
 
     RequireTransformation("COMPONENT_TRANS_INT", f);
-    RequirePositiveSmallInt("COMPONENT_TRANS_INT", pt, "pt");
+    cpt = GetPositiveSmallInt("COMPONENT_TRANS_INT", pt) - 1;
 
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
-    cpt = INT_INTOBJ(pt) - 1;
 
     if (cpt >= deg) {
         out = NEW_PLIST(T_PLIST_CYC_SSORT, 1);
@@ -2910,10 +2908,9 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
     UInt4 * ptseen;
 
     RequireTransformation("CYCLE_TRANS_INT", f);
-    RequirePositiveSmallInt("CYCLE_TRANS_INT", pt, "pt");
+    cpt = GetPositiveSmallInt("CYCLE_TRANS_INT", pt) - 1;
 
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
-    cpt = INT_INTOBJ(pt) - 1;
 
     if (cpt >= deg) {
         out = NEW_PLIST(T_PLIST_CYC_SSORT, 1);
@@ -4986,17 +4983,15 @@ Obj LQuoPerm4Trans4(Obj opL, Obj opR)
 ** Apply a transformation to a point
 *******************************************************************************/
 
-Obj PowIntTrans2(Obj i, Obj f)
+Obj PowIntTrans2(Obj point, Obj f)
 {
     Int img;
 
-    if (TNUM_OBJ(i) == T_INTPOS) {
-        return i;
+    if (TNUM_OBJ(point) == T_INTPOS) {
+        return point;
     }
 
-    RequirePositiveSmallInt("Tran. Operations", i, "point");
-
-    img = INT_INTOBJ(i);
+    img = GetPositiveSmallInt("Tran. Operations", point);
 
     if ((UInt)img <= DEG_TRANS2(f)) {
         img = (CONST_ADDR_TRANS2(f))[img - 1] + 1;
@@ -5005,17 +5000,15 @@ Obj PowIntTrans2(Obj i, Obj f)
     return INTOBJ_INT(img);
 }
 
-Obj PowIntTrans4(Obj i, Obj f)
+Obj PowIntTrans4(Obj point, Obj f)
 {
     Int img;
 
-    if (TNUM_OBJ(i) == T_INTPOS) {
-        return i;
+    if (TNUM_OBJ(point) == T_INTPOS) {
+        return point;
     }
 
-    RequirePositiveSmallInt("Tran. Operations", i, "point");
-
-    img = INT_INTOBJ(i);
+    img = GetPositiveSmallInt("Tran. Operations", point);
 
     if ((UInt)img <= DEG_TRANS4(f)) {
         img = (CONST_ADDR_TRANS4(f))[img - 1] + 1;
