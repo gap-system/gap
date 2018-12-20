@@ -501,33 +501,28 @@ InstallMethod(IsReduced,
 "for a Knuth Bendix rewriting system", true,
 [IsKnuthBendixRewritingSystem and IsKnuthBendixRewritingSystemRep and IsMutable], 0,
 function(kbrws)
-  local i,copy_of_kbrws,u;
+  local i, copy_of_kbrws, u, tzr;
 
   # if the rws already knows it is reduced return true
   if kbrws!.reduced then return true; fi;
 
-  for i in [1..Length(Rules(kbrws))] do
+  tzr := TzRules(kbrws);
+  for i in [1..Length(tzr)] do
 
-    u := Rules(kbrws)[i];
+    u := tzr[i];
 
-    #TODO
     copy_of_kbrws := ShallowCopy(kbrws);
     copy_of_kbrws!.tzrules := [];
     Append(copy_of_kbrws!.tzrules,kbrws!.tzrules{[1..i-1]});
     Append(copy_of_kbrws!.tzrules,kbrws!.tzrules
             {[i+1..Length(kbrws!.tzrules)]});
 
-    if ReduceLetterRepWordsRewSys(copy_of_kbrws!.tzrules,u[1])<>u[1] then
-      return false;
-    fi;
-    if ReduceLetterRepWordsRewSys(copy_of_kbrws!.tzrules,u[2])<>u[2] then
+    if ReduceLetterRepWordsRewSys(copy_of_kbrws!.tzrules,u[1])<>u[1] or
+       ReduceLetterRepWordsRewSys(copy_of_kbrws!.tzrules,u[2])<>u[2] then
        return false;
     fi;
-
   od;
-
   return true;
-
 end);
 
 
