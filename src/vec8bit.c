@@ -2727,7 +2727,7 @@ Obj FuncELM0_VEC8BIT(Obj self, Obj list, Obj pos)
     Obj  info;
     UInt elts;
 
-    p = GetPositiveSmallIntEx("ELM0_VEC8BIT", pos, "position");
+    p = GetPositiveSmallInt("ELM0_VEC8BIT", pos);
     if (LEN_VEC8BIT(list) < p) {
         return Fail;
     }
@@ -2755,7 +2755,7 @@ Obj FuncELM_VEC8BIT(Obj self, Obj list, Obj pos)
     Obj  info;
     UInt elts;
 
-    p = GetPositiveSmallIntEx("ELM_VEC8BIT", pos, "position");
+    p = GetPositiveSmallInt("ELM_VEC8BIT", pos);
     if (LEN_VEC8BIT(list) < p) {
         ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
                      p, 0);
@@ -2962,7 +2962,7 @@ void ASS_VEC8BIT(Obj list, Obj pos, Obj elm)
     }
 
     // get the position
-    p = GetPositiveSmallIntEx("ASS_VEC8BIT", pos, "position");
+    p = GetPositiveSmallInt("ASS_VEC8BIT", pos);
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     chr = P_FIELDINFO_8BIT(info);
@@ -3075,7 +3075,7 @@ Obj FuncUNB_VEC8BIT(Obj self, Obj list, Obj pos)
     }
 
     // get the position
-    p = GetPositiveSmallIntEx("UNB_VEC8BIT", pos, "position");
+    p = GetPositiveSmallInt("UNB_VEC8BIT", pos);
 
     // if we unbind the last position keep the representation
     if (LEN_VEC8BIT(list) < p) {
@@ -3855,7 +3855,7 @@ Obj FuncINV_MAT8BIT_IMMUTABLE(Obj self, Obj mat)
 **
 */
 
-Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
+Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj pos, Obj obj)
 {
     UInt len;
     UInt len1;
@@ -3863,19 +3863,19 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
     UInt q;
     UInt q1, q2;
     Obj  row;
-    UInt pos;
+    UInt p;
     Obj  type;
 
-    pos = GetPositiveSmallIntEx("ASS_MAT8BIT", p, "position");
+    p = GetPositiveSmallInt("ASS_MAT8BIT", pos);
 
     len = LEN_MAT8BIT(mat);
     if (!IS_VEC8BIT_REP(obj) && !IS_GF2VEC_REP(obj))
         goto cantdo;
 
-    if (pos > len + 1)
+    if (p > len + 1)
         goto cantdo;
 
-    if (len == 1 && pos == 1) {
+    if (len == 1 && p == 1) {
         if (IS_VEC8BIT_REP(obj)) {
             q = FIELD_VEC8BIT(obj);
             goto cando;
@@ -3932,19 +3932,19 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
     goto cantdo;
 
 cando:
-    if (pos > len) {
-        ResizeWordSizedBag(mat, sizeof(Obj) * (pos + 2));
-        SET_LEN_MAT8BIT(mat, pos);
+    if (p > len) {
+        ResizeWordSizedBag(mat, sizeof(Obj) * (p + 2));
+        SET_LEN_MAT8BIT(mat, p);
     }
     type = TypeVec8BitLocked(q, IS_MUTABLE_OBJ(obj));
     SetTypeDatObj(obj, type);
-    SET_ELM_MAT8BIT(mat, pos, obj);
+    SET_ELM_MAT8BIT(mat, p, obj);
     CHANGED_BAG(mat);
     return (Obj)0;
 
 cantdo:
     PlainMat8Bit(mat);
-    ASS_LIST(mat, pos, obj);
+    ASS_LIST(mat, p, obj);
     CHANGED_BAG(mat);
 
     return (Obj)0;
@@ -3953,12 +3953,12 @@ cantdo:
 
 /****************************************************************************
 **
-*F  FuncELM_MAT8BIT( <self>, <mat>, <row> ) .  select a row of an 8bit matrix
+*F  FuncELM_MAT8BIT( <self>, <mat>, <pos> ) .  select a row of an 8bit matrix
 **
 */
-Obj FuncELM_MAT8BIT(Obj self, Obj mat, Obj row)
+Obj FuncELM_MAT8BIT(Obj self, Obj mat, Obj pos)
 {
-    UInt r = GetPositiveSmallIntEx("ELM_MAT8BIT", row, "position");
+    UInt r = GetPositiveSmallInt("ELM_MAT8BIT", pos);
     if (LEN_MAT8BIT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,
                      LEN_MAT8BIT(mat));

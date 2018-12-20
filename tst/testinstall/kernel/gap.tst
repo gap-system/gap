@@ -168,7 +168,7 @@ gap> Sleep(1);
 
 #
 gap>    MicroSleep(fail);
-Error, MicroSleep: <usecs> must be a small integer (not the value 'fail')
+Error, MicroSleep: <msecs> must be a small integer (not the value 'fail')
 gap> MicroSleep(0);
 gap> MicroSleep(1);
 
