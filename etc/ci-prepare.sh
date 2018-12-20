@@ -30,9 +30,10 @@ fi
 if [[ $JULIA = yes ]]
 then
   # TODO: once Julia 1.1 is released, switch to stable Julia versions here?
-  wget https://julialangnightlies-s3.julialang.org/bin/linux/x64/julia-latest-linux64.tar.gz
-  tar xvf julia-latest-linux64.tar.gz
-  rm julia-latest-linux64.tar.gz
+  wget https://julialangnightlies-s3.julialang.org/bin/linux/x64/1.1/julia-b55b85cd99-linux64.tar.gz
+  #wget https://julialangnightlies-s3.julialang.org/bin/linux/x64/julia-latest-linux64.tar.gz
+  tar xvf julia-*-linux64.tar.gz
+  rm julia-*-linux64.tar.gz
   pushd julia-*
   JULIA_PATH=$(pwd)
   popd
