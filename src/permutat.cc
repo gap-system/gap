@@ -2307,7 +2307,7 @@ Obj Array2Perm (
 
             /* get and check current entry for the cycle                   */
             val = ELM_LIST( cycle, j );
-            c = GetPositiveSmallInt("Permutation", val, "expr");
+            c = GetPositiveSmallIntEx("Permutation", val, "expr");
             if (c > MAX_DEG_PERM4)
               ErrorMayQuit( "Permutation literal exceeds maximum permutation degree",
                             0, 0);

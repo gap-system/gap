@@ -1968,7 +1968,7 @@ void            IntrPermCycle (
 
         /* get and check current entry for the cycle                       */
         val = PopObj();
-        c = GetPositiveSmallInt("Permutation", val, "expr");
+        c = GetPositiveSmallIntEx("Permutation", val, "expr");
         if (c > MAX_DEG_PERM4)
           ErrorQuit( "Permutation literal exceeds maximum permutation degree",
                      0, 0);
@@ -2174,12 +2174,12 @@ void            IntrListExprEnd (
 
         /* get the low value                                               */
         val = ELM_LIST( list, 1 );
-        low = GetSmallInt("Range", val, "first");
+        low = GetSmallIntEx("Range", val, "first");
 
         /* get the increment                                               */
         if ( nr == 3 ) {
             val = ELM_LIST( list, 2 );
-            Int v = GetSmallInt("Range", val, "second");
+            Int v = GetSmallIntEx("Range", val, "second");
             if ( v == low ) {
                 ErrorQuit(
                       "Range: <second> must not be equal to <first> (%d)",
@@ -2193,7 +2193,7 @@ void            IntrListExprEnd (
 
         /* get and check the high value                                    */
         val = ELM_LIST( list, LEN_LIST(list) );
-        Int v = GetSmallInt("Range", val, "last");
+        Int v = GetSmallIntEx("Range", val, "last");
         if ( (v - low) % inc != 0 ) {
             ErrorQuit(
                 "Range: <last>-<first> (%d) must be divisible by <inc> (%d)",
@@ -3477,7 +3477,7 @@ void            IntrAssPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    p = GetPositiveSmallInt("PosObj Assignment", pos, "position");
+    p = GetPositiveSmallIntEx("PosObj Assignment", pos, "position");
 
     /* get the list (checking is done by 'ASS_LIST')                       */
     list = PopObj();
@@ -3503,7 +3503,7 @@ void            IntrUnbPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    p = GetPositiveSmallInt("PosObj Assignment", pos, "position");
+    p = GetPositiveSmallIntEx("PosObj Assignment", pos, "position");
 
     /* get the list (checking is done by 'UNB_LIST')                       */
     list = PopObj();
@@ -3535,7 +3535,7 @@ void            IntrElmPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    p = GetPositiveSmallInt("PosObj Element", pos, "position");
+    p = GetPositiveSmallIntEx("PosObj Element", pos, "position");
 
     /* get the list (checking is done by 'ELM_LIST')                       */
     list = PopObj();
@@ -3562,7 +3562,7 @@ void            IntrIsbPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    p = GetPositiveSmallInt("PosObj Element", pos, "position");
+    p = GetPositiveSmallIntEx("PosObj Element", pos, "position");
 
     /* get the list (checking is done by 'ISB_LIST')                       */
     list = PopObj();
