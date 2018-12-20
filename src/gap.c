@@ -1212,7 +1212,7 @@ Obj FuncSleep( Obj self, Obj secs )
 
 Obj FuncMicroSleep( Obj self, Obj msecs )
 {
-    Int s = GetSmallIntEx("MicroSleep", msecs, "usecs");
+    Int s = GetSmallInt("MicroSleep", msecs);
 
     if (s > 0)
         SyUSleep((UInt)s);

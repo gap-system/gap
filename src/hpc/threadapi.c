@@ -1460,15 +1460,11 @@ Obj FuncReceiveAnyChannelWithIndex(Obj self, Obj args)
     }
 }
 
-Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj countobj)
+Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj count)
 {
-    int count;
     RequireChannel("MultiReceiveChannel", channel);
-    count = GetSmallIntEx("MultiReceiveChannel", countobj, "count");
-    if (count < 0)
-        return ArgumentError(
-            "MultiReceiveChannel: Size must be non-negative");
-    return MultiReceiveChannel(ObjPtr(channel), count);
+    RequireNonnegativeSmallInt("MultiReceiveChannel", count);
+    return MultiReceiveChannel(ObjPtr(channel), INT_INTOBJ(count));
 }
 
 Obj FuncInspectChannel(Obj self, Obj channel)

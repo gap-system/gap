@@ -166,24 +166,6 @@ UInt4 nextrandMT_int32(UInt4* mt)
     return y;
 }
 
-/****************************************************************************
-**
-*F  FuncHASHKEY_BAG(<self>,<obj>,<seed>,<offset>,<maxlen>)
-**
-**  'FuncHASHKEY_BAG' implements the internal function 'HASHKEY_BAG'.
-**
-**  'HASHKEY_BAG( <obj>, <seed>, <offset>, <maxlen> )'
-**
-**  takes a non-immediate object and a small integer <seed> and computes a
-**  hash value for the contents of the bag from these. (For this to be
-**  usable in algorithms, we need that objects of this kind are stored uniquely
-**  internally.
-**  The offset and the maximum number of bytes to process both count in
-**  bytes. The values passed to these parameters might depend on the word 
-**  length of the computer.
-**  A <maxlen> value of -1 indicates infinity.
-*/
-
 
 //-----------------------------------------------------------------------------
 // MurmurHash3 was written by Austin Appleby, and is placed in the public
@@ -423,7 +405,25 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
 }
 #endif
 
-Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
+
+/****************************************************************************
+**
+*F  FuncHASHKEY_BAG(<self>,<obj>,<seed>,<offset>,<maxlen>)
+**
+**  'FuncHASHKEY_BAG' implements the internal function 'HASHKEY_BAG'.
+**
+**  'HASHKEY_BAG( <obj>, <seed>, <offset>, <maxlen> )'
+**
+**  takes a non-immediate object and a small integer <seed> and computes a
+**  hash value for the contents of the bag from these. For this to be usable
+**  in algorithms, we need that objects of this kind are stored uniquely
+**  internally.
+**  The offset and the maximum number of bytes to process both count in
+**  bytes. The values passed to these parameters might depend on the word
+**  length of the computer.
+**  A <maxlen> value of -1 indicates infinity.
+*/
+Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj seed, Obj offset, Obj maxlen)
 {
   Int n;
   if ( IS_INTOBJ(obj) )
@@ -444,9 +444,9 @@ Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
   }
 
   /* check the arguments                                                 */
-  Int seed = GetSmallIntEx("HASHKEY_BAG", opSeed, "seed");
+  Int s = GetSmallInt("HASHKEY_BAG", seed);
 
-  Int offs = GetSmallIntEx("HASHKEY_BAG", opOffset, "offset");
+  Int offs = GetSmallInt("HASHKEY_BAG", offset);
   if (offs < 0 || offs > SIZE_OBJ(obj)) {
       ErrorMayQuit("HashKeyBag: <offset> must be non-negative and less than "
                    "the bag size",
@@ -454,13 +454,15 @@ Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj opSeed, Obj opOffset, Obj opMaxLen)
   }
 
   /* maximal number of bytes to read */
-  Int maxlen = GetSmallIntEx("HASHKEY_BAG", opMaxLen, "maxlen");
+  Int imaxlen = GetSmallInt("HASHKEY_BAG", maxlen);
 
   n=SIZE_OBJ(obj)-offs;
 
-  if ((n>maxlen)&&(maxlen!=-1)) {n=maxlen;}; 
-  
-  return INTOBJ_INT(HASHKEY_BAG_NC( obj, (UInt4)seed, offs, (int) n));
+  if (n > imaxlen && imaxlen != -1) {
+      n = imaxlen;
+  }
+
+  return INTOBJ_INT(HASHKEY_BAG_NC(obj, (UInt4)s, offs, (int)n));
 }
 
 Int HASHKEY_MEM_NC(const void * ptr, UInt4 seed, Int read)
@@ -698,10 +700,10 @@ Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
 
-    GVAR_FUNC(HASHKEY_BAG, 4, "obj, int,int,int"),
+    GVAR_FUNC(HASHKEY_BAG, 4, "obj, seed, offset, maxlen"),
     GVAR_FUNC(InitRandomMT, 1, "initstr"),
     GVAR_FUNC(MAKE_BITFIELDS, -1, "widths"),
     GVAR_FUNC(BUILD_BITFIELDS, -2, "widths, vals"),
