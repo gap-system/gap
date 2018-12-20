@@ -788,7 +788,9 @@ InstallMethod( ShallowCopy,
                   reduced := false,
                   tzrules:= StructuralCopy(kbrws!.tzrules),
                   pairs2check:= [],
-                  ordering :=kbrws!.ordering)));
+                  ordering :=kbrws!.ordering,
+                  freefam := kbrws!.freefam,
+                  tzordering := kbrws!.tzordering)));
 
 ###############################################################################
 ##
