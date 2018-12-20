@@ -367,7 +367,7 @@ Obj ElmDefListObject(Obj list, Int pos, Obj def)
 
 Obj FuncELM_DEFAULT_LIST(Obj self, Obj list, Obj pos, Obj def)
 {
-    Int ipos = GetPositiveSmallInt("GetWithDefault", pos, "pos");
+    Int ipos = GetPositiveSmallInt("GetWithDefault", pos);
     return ELM_DEFAULT_LIST(list, ipos, def);
 }
 

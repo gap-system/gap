@@ -1715,7 +1715,7 @@ Obj FuncLEN_GF2VEC(Obj self, Obj list)
 */
 Obj FuncELM0_GF2VEC(Obj self, Obj list, Obj pos)
 {
-    UInt p = GetSmallInt("ELM0_GF2VEC", pos, "pos");
+    UInt p = GetSmallInt("ELM0_GF2VEC", pos);
     if (LEN_GF2VEC(list) < p) {
         return Fail;
     }
@@ -1735,7 +1735,7 @@ Obj FuncELM0_GF2VEC(Obj self, Obj list, Obj pos)
 */
 Obj FuncELM_GF2VEC(Obj self, Obj list, Obj pos)
 {
-    UInt p = GetSmallInt("ELM_GF2VEC", pos, "pos");
+    UInt p = GetSmallInt("ELM_GF2VEC", pos);
     if (LEN_GF2VEC(list) < p) {
         ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
                      p, 0);
@@ -1865,7 +1865,7 @@ Obj FuncASS_GF2VEC(Obj self, Obj list, Obj pos, Obj elm)
     }
 
     // get the position
-    UInt p = GetSmallInt("ASS_GF2VEC", pos, "pos");
+    UInt p = GetSmallInt("ASS_GF2VEC", pos);
 
     // if <elm> is Z(2) or 0*Z(2) and the position is OK, keep rep
     if (p <= LEN_GF2VEC(list) + 1) {
@@ -1933,7 +1933,7 @@ Obj FuncASS_GF2MAT(Obj self, Obj list, Obj pos, Obj elm)
     }
 
     // get the position
-    UInt p = GetSmallInt("ASS_GF2MAT", pos, "pos");
+    UInt p = GetSmallInt("ASS_GF2MAT", pos);
 
     // if <elm> is a GF2 vector and the length is OK, keep the rep
     if (!IS_GF2VEC_REP(elm)) {
@@ -1976,7 +1976,7 @@ Obj FuncASS_GF2MAT(Obj self, Obj list, Obj pos, Obj elm)
 */
 Obj FuncELM_GF2MAT(Obj self, Obj mat, Obj row)
 {
-    UInt r = GetSmallInt("ELM_GF2MAT", row, "row");
+    UInt r = GetSmallInt("ELM_GF2MAT", row);
     if (LEN_GF2MAT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,
                      LEN_GF2MAT(mat));
@@ -2010,7 +2010,7 @@ Obj FuncUNB_GF2VEC(Obj self, Obj list, Obj pos)
     }
 
     // get the position
-    UInt p = GetSmallInt("UNB_GF2VEC", pos, "pos");
+    UInt p = GetSmallInt("UNB_GF2VEC", pos);
 
     // if we unbind the last position keep the representation
     if (LEN_GF2VEC(list) < p) {
@@ -2047,7 +2047,7 @@ Obj FuncUNB_GF2MAT(Obj self, Obj list, Obj pos)
     }
 
     // get the position
-    UInt p = GetSmallInt("UNB_GF2MAT", pos, "pos");
+    UInt p = GetSmallInt("UNB_GF2MAT", pos);
 
     // if we unbind the last position keep the representation
     if (p > 1 && LEN_GF2MAT(list) < p) {

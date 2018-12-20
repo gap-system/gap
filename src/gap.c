@@ -1188,7 +1188,7 @@ Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
 
 Obj FuncSleep( Obj self, Obj secs )
 {
-    Int s = GetSmallInt("Sleep", secs, "secs");
+    Int s = GetSmallInt("Sleep", secs);
 
     if (s > 0)
         SySleep((UInt)s);
@@ -1212,7 +1212,7 @@ Obj FuncSleep( Obj self, Obj secs )
 
 Obj FuncMicroSleep( Obj self, Obj msecs )
 {
-    Int s = GetSmallInt("MicroSleep", msecs, "usecs");
+    Int s = GetSmallIntEx("MicroSleep", msecs, "usecs");
 
     if (s > 0)
         SyUSleep((UInt)s);

@@ -1394,7 +1394,7 @@ Obj FuncCLOSE_FILE (
     Obj             fid )
 {
     // check the argument
-    Int ifid = GetSmallInt("CLOSE_FILE", fid, "fid");
+    Int ifid = GetSmallInt("CLOSE_FILE", fid);
     
     /* call the system dependent function                                  */
     Int ret = SyFclose( ifid );
@@ -1433,7 +1433,7 @@ Obj FuncIS_END_OF_FILE (
     Obj             fid )
 {
     // check the argument
-    Int ifid = GetSmallInt("IS_END_OF_FILE", fid, "fid");
+    Int ifid = GetSmallInt("IS_END_OF_FILE", fid);
     
     Int ret = SyIsEndOfFile( ifid );
     return ret == -1 ? Fail : ( ret == 0 ? False : True );
@@ -1483,7 +1483,7 @@ Obj FuncPOSITION_FILE (
     Obj             fid )
 {
     // check the argument
-    Int ifid = GetSmallInt("POSITION_FILE", fid, "fid");
+    Int ifid = GetSmallInt("POSITION_FILE", fid);
 
     Int ret = SyFtell(ifid);
 
@@ -1506,7 +1506,7 @@ Obj FuncREAD_BYTE_FILE (
     Obj             fid )
 {
     // check the argument
-    Int ifid = GetSmallInt("READ_BYTE_FILE", fid, "fid");
+    Int ifid = GetSmallInt("READ_BYTE_FILE", fid);
     
     /* call the system dependent function                                  */
     Int ret = SyGetch( ifid );
@@ -1532,7 +1532,7 @@ Obj FuncREAD_LINE_FILE (
     Obj             str;
 
     // check the argument
-    Int ifid = GetSmallInt("READ_LINE_FILE", fid, "fid");
+    Int ifid = GetSmallInt("READ_LINE_FILE", fid);
 
     /* read <fid> until we see a newline or eof or we've read at least
        one byte and more are not immediately available */
@@ -1584,9 +1584,9 @@ Obj FuncREAD_ALL_FILE (
     UInt            csize;
 
     // check the argument
-    Int ifid = GetSmallInt("READ_ALL_FILE", fid, "fid");
+    Int ifid = GetSmallInt("READ_ALL_FILE", fid);
 
-    Int ilim = GetSmallInt("READ_ALL_FILE", limit, "limit");
+    Int ilim = GetSmallInt("READ_ALL_FILE", limit);
 
     /* read <fid> until we see  eof or we've read at least
        one byte and more are not immediately available */
@@ -1671,8 +1671,8 @@ Obj FuncSEEK_POSITION_FILE (
     Int             ret;
 
     // check the argument
-    Int ifid = GetSmallInt("SEEK_POSITION_FILE", fid, "fid");
-    Int ipos = GetSmallInt("SEEK_POSITION_FILE", pos, "pos");
+    Int ifid = GetSmallInt("SEEK_POSITION_FILE", fid);
+    Int ipos = GetSmallInt("SEEK_POSITION_FILE", pos);
     
     ret = SyFseek( ifid, ipos );
     return ret == -1 ? Fail : True;
@@ -1689,8 +1689,8 @@ Obj FuncWRITE_BYTE_FILE (
     Obj             ch )
 {
     // check the argument
-    Int ifid = GetSmallInt("WRITE_BYTE_FILE", fid, "fid");
-    Int ich = GetSmallInt("WRITE_BYTE_FILE", ch, "ch");
+    Int ifid = GetSmallInt("WRITE_BYTE_FILE", fid);
+    Int ich = GetSmallInt("WRITE_BYTE_FILE", ch);
     
     /* call the system dependent function                                  */
     Int ret = SyEchoch( ich, ifid );
@@ -1731,7 +1731,7 @@ Obj FuncREAD_STRING_FILE (
     Obj             fid )
 {
     // check the argument
-    Int ifid = GetSmallInt("READ_STRING_FILE", fid, "fid");
+    Int ifid = GetSmallInt("READ_STRING_FILE", fid);
     return SyReadStringFid(ifid);
 }
 
@@ -1741,7 +1741,7 @@ Obj FuncREAD_STRING_FILE (
 */
 Obj FuncFD_OF_FILE(Obj self,Obj fid)
 {
-    Int fd = GetSmallInt("FD_OF_FILE", fid, "fid");
+    Int fd = GetSmallInt("FD_OF_FILE", fid);
     Int fdi = SyBufFileno(fd);
     return INTOBJ_INT(fdi);
 }
@@ -1749,7 +1749,7 @@ Obj FuncFD_OF_FILE(Obj self,Obj fid)
 #ifdef HPCGAP
 Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
 {
-    Int fd = GetSmallInt("RAW_MODE_FILE", fid, "fid");
+    Int fd = GetSmallInt("RAW_MODE_FILE", fid);
     if (onoff == False || onoff == Fail) {
         syStopraw(fd);
         return False;
@@ -1894,8 +1894,8 @@ Obj FuncExecuteProcess (
     // check the argument
     RequireStringRep("ExecuteProcess", dir);
     RequireStringRep("ExecuteProcess", prg);
-    Int iin = GetSmallInt("ExecuteProcess", in, "in");
-    Int iout = GetSmallInt("ExecuteProcess", out, "out");
+    Int iin = GetSmallInt("ExecuteProcess", in);
+    Int iout = GetSmallInt("ExecuteProcess", out);
     RequireSmallList("ExecuteProcess", args);
 
     /* create an argument array                                            */

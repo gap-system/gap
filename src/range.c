@@ -759,8 +759,8 @@ Obj Range2Check (
 {
     Obj                 range;
     Int                 f, l;
-    f = GetSmallInt("Range", first, "first");
-    l = GetSmallInt("Range", last, "last");
+    f = GetSmallInt("Range", first);
+    l = GetSmallInt("Range", last);
     if ( f > l ) {
         range = NEW_PLIST( T_PLIST, 0 );
     }
@@ -794,9 +794,9 @@ Obj Range3Check (
             "Range: <second> must not be equal to <first> (%d)",
             (Int)INT_INTOBJ(first), 0L );
     }
-    Int f = GetSmallInt("Range", first, "first");
-    Int i = GetSmallInt("Range", second, "second") - f;
-    Int l = GetSmallInt("Range", last, "last");
+    Int f = GetSmallInt("Range", first);
+    Int i = GetSmallInt("Range", second) - f;
+    Int l = GetSmallInt("Range", last);
     if ( (l - f) % i != 0 ) {
         ErrorQuit(
             "Range: <last>-<first> (%d) must be divisible by <inc> (%d)",

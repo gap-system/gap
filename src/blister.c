@@ -1146,7 +1146,7 @@ Obj FuncPositionNthTrueBlist (
 
     /* Check the arguments. */    
     RequireBlist("ListBlist", blist, "blist");
-    Int nth = GetPositiveSmallInt("Position", Nth, "nth");
+    Int nth = GetPositiveSmallIntEx("Position", Nth, "nth");
 
     nrb = NUMBER_BLOCKS_BLIST(blist);
     if ( ! nrb )  return Fail;

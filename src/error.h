@@ -203,20 +203,30 @@ extern Obj RequireArgument(const char * funcname,
 
 /****************************************************************************
 **
-*F  GetSmallInt
+*F  GetSmallIntEx, GetSmallInt
 */
-static inline Int GetSmallInt(const char * funcname, Obj op, const char * argname)
+static inline Int
+GetSmallIntEx(const char * funcname, Obj op, const char * argname)
 {
     RequireSmallInt(funcname, op, argname);
     return INT_INTOBJ(op);
 }
 
+#define GetSmallInt(funcname, op) GetSmallIntEx(funcname, op, #op)
+
+/****************************************************************************
+**
+*F  GetPositiveSmallIntEx, GetPositiveSmallInt
+*/
 static inline Int
-GetPositiveSmallInt(const char * funcname, Obj op, const char * argname)
+GetPositiveSmallIntEx(const char * funcname, Obj op, const char * argname)
 {
     RequirePositiveSmallInt(funcname, op, argname);
     return INT_INTOBJ(op);
 }
+
+#define GetPositiveSmallInt(funcname, op)                                    \
+    GetPositiveSmallIntEx(funcname, op, #op)
 
 
 /****************************************************************************

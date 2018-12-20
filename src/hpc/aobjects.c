@@ -1614,7 +1614,7 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncN
   Int n;
   Bag *contents;
   Bag result;
-  n = GetPositiveSmallInt(currFuncName, index, "index");
+  n = GetPositiveSmallInt(currFuncName, index);
   ReadGuard(obj);
 #ifndef WARD_ENABLED
   contents = PTR_BAG(obj);
@@ -1670,7 +1670,7 @@ Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFunc
   addr = ADDR_ATOM(obj);
   MEMBAR_READ();
   len = ALIST_LEN(addr[0].atom);
-  n = GetSmallInt(currFuncName, index, "index");
+  n = GetSmallInt(currFuncName, index);
   if (n <= 0 || n > len)
     FuncError("Index out of range");
   result = addr[n+1].obj;

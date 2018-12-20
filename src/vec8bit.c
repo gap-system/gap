@@ -2727,7 +2727,7 @@ Obj FuncELM0_VEC8BIT(Obj self, Obj list, Obj pos)
     Obj  info;
     UInt elts;
 
-    p = GetPositiveSmallInt("ELM0_VEC8BIT", pos, "position");
+    p = GetPositiveSmallIntEx("ELM0_VEC8BIT", pos, "position");
     if (LEN_VEC8BIT(list) < p) {
         return Fail;
     }
@@ -2755,7 +2755,7 @@ Obj FuncELM_VEC8BIT(Obj self, Obj list, Obj pos)
     Obj  info;
     UInt elts;
 
-    p = GetPositiveSmallInt("ELM_VEC8BIT", pos, "position");
+    p = GetPositiveSmallIntEx("ELM_VEC8BIT", pos, "position");
     if (LEN_VEC8BIT(list) < p) {
         ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
                      p, 0);
@@ -2962,7 +2962,7 @@ void ASS_VEC8BIT(Obj list, Obj pos, Obj elm)
     }
 
     // get the position
-    p = GetPositiveSmallInt("ASS_VEC8BIT", pos, "position");
+    p = GetPositiveSmallIntEx("ASS_VEC8BIT", pos, "position");
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     chr = P_FIELDINFO_8BIT(info);
@@ -3075,7 +3075,7 @@ Obj FuncUNB_VEC8BIT(Obj self, Obj list, Obj pos)
     }
 
     // get the position
-    p = GetPositiveSmallInt("UNB_VEC8BIT", pos, "position");
+    p = GetPositiveSmallIntEx("UNB_VEC8BIT", pos, "position");
 
     // if we unbind the last position keep the representation
     if (LEN_VEC8BIT(list) < p) {
@@ -3866,7 +3866,7 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
     UInt pos;
     Obj  type;
 
-    pos = GetPositiveSmallInt("ASS_MAT8BIT", p, "position");
+    pos = GetPositiveSmallIntEx("ASS_MAT8BIT", p, "position");
 
     len = LEN_MAT8BIT(mat);
     if (!IS_VEC8BIT_REP(obj) && !IS_GF2VEC_REP(obj))
@@ -3958,7 +3958,7 @@ cantdo:
 */
 Obj FuncELM_MAT8BIT(Obj self, Obj mat, Obj row)
 {
-    UInt r = GetPositiveSmallInt("ELM_MAT8BIT", row, "position");
+    UInt r = GetPositiveSmallIntEx("ELM_MAT8BIT", row, "position");
     if (LEN_MAT8BIT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,
                      LEN_MAT8BIT(mat));
@@ -5770,8 +5770,8 @@ Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
 */
 Obj FuncMAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col)
 {
-    UInt r = GetPositiveSmallInt("MAT_ELM_MAT8BIT", row, "row");
-    UInt c = GetPositiveSmallInt("MAT_ELM_MAT8BIT", col, "col");
+    UInt r = GetPositiveSmallInt("MAT_ELM_MAT8BIT", row);
+    UInt c = GetPositiveSmallInt("MAT_ELM_MAT8BIT", col);
 
     if (LEN_MAT8BIT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,
@@ -5795,8 +5795,8 @@ Obj FuncMAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col)
 */
 Obj FuncSET_MAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
 {
-    UInt r = GetPositiveSmallInt("MAT_ELM_MAT8BIT", row, "row");
-    UInt c = GetPositiveSmallInt("MAT_ELM_MAT8BIT", col, "col");
+    UInt r = GetPositiveSmallInt("MAT_ELM_MAT8BIT", row);
+    UInt c = GetPositiveSmallInt("MAT_ELM_MAT8BIT", col);
 
     if (LEN_MAT8BIT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,

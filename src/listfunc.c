@@ -1449,16 +1449,16 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
       RequireArgument("CopyListEntries", srclist, "fromlst",
                       "must be a plain list");
 
-  srcstart = GetSmallInt("CopyListEntries", ELM_PLIST(args, 2), "fromind");
-  srcinc = GetSmallInt("CopyListEntries", ELM_PLIST(args, 3), "fromstep");
+  srcstart = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 2), "fromind");
+  srcinc = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 3), "fromstep");
   dstlist = ELM_PLIST(args,4);
   GAP_ASSERT(dstlist != 0);
   if (!IS_PLIST(dstlist) || !IS_MUTABLE_OBJ(dstlist))
       RequireArgument("CopyListEntries", dstlist, "tolst",
                       "must be a mutable plain list");
-  dststart = GetSmallInt("CopyListEntries", ELM_PLIST(args, 5), "toind");
-  dstinc = GetSmallInt("CopyListEntries", ELM_PLIST(args, 6), "tostep");
-  number = GetSmallInt("CopyListEntries", ELM_PLIST(args, 7), "n");
+  dststart = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 5), "toind");
+  dstinc = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 6), "tostep");
+  number = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 7), "n");
 
   if (number == 0)
     return (Obj) 0;

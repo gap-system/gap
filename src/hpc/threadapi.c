@@ -1464,7 +1464,7 @@ Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj countobj)
 {
     int count;
     RequireChannel("MultiReceiveChannel", channel);
-    count = GetSmallInt("MultiReceiveChannel", countobj, "count");
+    count = GetSmallIntEx("MultiReceiveChannel", countobj, "count");
     if (count < 0)
         return ArgumentError(
             "MultiReceiveChannel: Size must be non-negative");
@@ -1642,7 +1642,7 @@ int IsBarrier(Obj obj)
 Obj FuncStartBarrier(Obj self, Obj barrier, Obj count)
 {
     RequireBarrier("StartBarrier", barrier);
-    Int c = GetSmallInt("StartBarrier", count, "count");
+    Int c = GetSmallInt("StartBarrier", count);
     StartBarrier(ObjPtr(barrier), c);
     return (Obj)0;
 }
@@ -2048,7 +2048,7 @@ Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "SHARE_NORECURSE: Second argument must be a string or fail");
-    Int p = GetSmallInt("SHARE_NORECURSE", prec, "prec");
+    Int p = GetSmallInt("SHARE_NORECURSE", prec);
     region->prec = p;
     if (!MigrateObjects(1, &obj, region, 0))
         return ArgumentError("SHARE_NORECURSE: Thread does not have "
@@ -2106,7 +2106,7 @@ Obj FuncNEW_REGION(Obj self, Obj name, Obj prec)
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "NEW_REGION: Second argument must be a string or fail");
-    Int p = GetSmallInt("NEW_REGION", prec, "prec");
+    Int p = GetSmallInt("NEW_REGION", prec);
     region->prec = p;
     if (name != Fail)
         SetRegionName(region, name);
@@ -2126,7 +2126,7 @@ Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "SHARE: Second argument must be a string or fail");
-    Int p = GetSmallInt("SHARE", prec, "prec");
+    Int p = GetSmallInt("SHARE", prec);
     region->prec = p;
     reachable = ReachableObjectsFrom(obj);
     if (!MigrateObjects(LEN_PLIST(reachable), ADDR_OBJ(reachable) + 1, region,
@@ -2145,7 +2145,7 @@ Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "SHARE_RAW: Second argument must be a string or fail");
-    Int p = GetSmallInt("SHARE_RAW", prec, "prec");
+    Int p = GetSmallInt("SHARE_RAW", prec);
     region->prec = p;
     reachable = ReachableObjectsFrom(obj);
     if (!MigrateObjects(LEN_PLIST(reachable), ADDR_OBJ(reachable) + 1, region,
