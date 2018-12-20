@@ -2727,8 +2727,7 @@ Obj FuncELM0_VEC8BIT(Obj self, Obj list, Obj pos)
     Obj  info;
     UInt elts;
 
-    RequirePositiveSmallInt("ELM0_VEC8BIT", pos, "position");
-    p = INT_INTOBJ(pos);
+    p = GetPositiveSmallInt("ELM0_VEC8BIT", pos, "position");
     if (LEN_VEC8BIT(list) < p) {
         return Fail;
     }
@@ -2756,8 +2755,7 @@ Obj FuncELM_VEC8BIT(Obj self, Obj list, Obj pos)
     Obj  info;
     UInt elts;
 
-    RequirePositiveSmallInt("ELM_VEC8BIT", pos, "position");
-    p = INT_INTOBJ(pos);
+    p = GetPositiveSmallInt("ELM_VEC8BIT", pos, "position");
     if (LEN_VEC8BIT(list) < p) {
         ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
                      p, 0);
@@ -2964,8 +2962,7 @@ void ASS_VEC8BIT(Obj list, Obj pos, Obj elm)
     }
 
     // get the position
-    RequirePositiveSmallInt("ASS_VEC8BIT", pos, "position");
-    p = INT_INTOBJ(pos);
+    p = GetPositiveSmallInt("ASS_VEC8BIT", pos, "position");
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     chr = P_FIELDINFO_8BIT(info);
@@ -3078,8 +3075,7 @@ Obj FuncUNB_VEC8BIT(Obj self, Obj list, Obj pos)
     }
 
     // get the position
-    RequirePositiveSmallInt("UNB_VEC8BIT", pos, "position");
-    p = INT_INTOBJ(pos);
+    p = GetPositiveSmallInt("UNB_VEC8BIT", pos, "position");
 
     // if we unbind the last position keep the representation
     if (LEN_VEC8BIT(list) < p) {
@@ -3870,8 +3866,7 @@ Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj p, Obj obj)
     UInt pos;
     Obj  type;
 
-    RequirePositiveSmallInt("ASS_MAT8BIT", p, "position");
-    pos = INT_INTOBJ(p);
+    pos = GetPositiveSmallInt("ASS_MAT8BIT", p, "position");
 
     len = LEN_MAT8BIT(mat);
     if (!IS_VEC8BIT_REP(obj) && !IS_GF2VEC_REP(obj))
@@ -3963,8 +3958,7 @@ cantdo:
 */
 Obj FuncELM_MAT8BIT(Obj self, Obj mat, Obj row)
 {
-    RequirePositiveSmallInt("ELM_MAT8BIT", row, "position");
-    UInt r = INT_INTOBJ(row);
+    UInt r = GetPositiveSmallInt("ELM_MAT8BIT", row, "position");
     if (LEN_MAT8BIT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,
                      LEN_MAT8BIT(mat));

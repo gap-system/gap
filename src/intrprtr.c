@@ -3171,10 +3171,6 @@ void            IntrElmListLevel ( Int narg,
       CHANGED_BAG(ixs);
     }
     SET_LEN_PLIST(ixs, narg);
-      
-    /* /\* get and check the position                                          *\/ */
-    /* pos = PopObj(); */
-    /* RequirePositiveSmallInt("List Element", pos, "position"); */
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
     /* checking it is nested <level>+1 deep is done by 'ElmListLevel')     */

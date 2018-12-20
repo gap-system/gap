@@ -1614,8 +1614,7 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncN
   Int n;
   Bag *contents;
   Bag result;
-  RequirePositiveSmallInt(currFuncName, index, "index");
-  n = INT_INTOBJ(index);
+  n = GetPositiveSmallInt(currFuncName, index, "index");
   ReadGuard(obj);
 #ifndef WARD_ENABLED
   contents = PTR_BAG(obj);

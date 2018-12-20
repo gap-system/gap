@@ -79,4 +79,3 @@ gap> ResultOfStraightLineProgram( prg, gens );
 
 #
 gap> STOP_TEST( "straight.tst" );
-
