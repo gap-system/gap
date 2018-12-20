@@ -319,8 +319,7 @@ Obj FuncLengthWPObj(Obj self, Obj wp)
 Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 {
     RequireWPObj("SetElmWPObj", wp);
-    RequirePositiveSmallInt("SetElmWPObj", pos, "pos");
-    UInt ipos = INT_INTOBJ(pos);
+    UInt ipos = GetPositiveSmallInt("SetElmWPObj", pos, "pos");
 
 #ifdef USE_BOEHM_GC
   /* Ensure reference remains visible to GC in case val is
@@ -364,8 +363,7 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 Int IsBoundElmWPObj( Obj wp, Obj pos)
 {
     RequireWPObj("IsBoundElmWPObj", wp);
-    RequirePositiveSmallInt("IsBoundElmWPObj", pos, "pos");
-    UInt ipos = INT_INTOBJ(pos);
+    UInt ipos = GetPositiveSmallInt("IsBoundElmWPObj", pos, "pos");
 
 #ifdef HPCGAP
   volatile
@@ -410,8 +408,7 @@ Obj FuncIsBoundElmWPObj( Obj self, Obj wp, Obj pos)
 Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 {
     RequireWPObj("UnbindElmWPObj", wp);
-    RequirePositiveSmallInt("UnbindElmWPObj", pos, "pos");
-    UInt ipos = INT_INTOBJ(pos);
+    UInt ipos = GetPositiveSmallInt("UnbindElmWPObj", pos, "pos");
 
   Int len = LengthWPObj(wp);
   if ( ipos <= len ) {
@@ -487,8 +484,7 @@ Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
 Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
 {
     RequireWPObj("ElmWPObj", wp);
-    RequirePositiveSmallInt("ElmWPObj", pos, "pos");
-    Int ipos = INT_INTOBJ(pos);
+    UInt ipos = GetPositiveSmallInt("ElmWPObj", pos, "pos");
 
     return ElmDefWPList(wp, ipos, Fail);
 }
