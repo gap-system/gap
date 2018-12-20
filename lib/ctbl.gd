@@ -3102,10 +3102,33 @@ DeclareOperation( "CharacterTable", [ IsString ] );
 ##  returns its <A>p</A>-modular
 ##  character table if &GAP; can compute this table, and <K>fail</K>
 ##  otherwise.
-##  The <A>p</A>-modular table can be computed for <A>p</A>-solvable groups
-##  (using the Fong-Swan Theorem) and in the case that <A>ordtbl</A> is a
-##  table from the &GAP; character table library for which also the
-##  <A>p</A>-modular table is contained in the table library.
+##  <P/>
+##  The <A>p</A>-modular table can be computed in the following cases.
+##  <P/>
+##  <List>
+##  <Item>
+##    The group is <A>p</A>-solvable (see <Ref Oper="IsPSolvable"/>,
+##    apply the Fong-Swan Theorem);
+##  </Item>
+##  <Item>
+##    the Sylow <A>p</A>-subgroup of <A>G</A> is cyclic,
+##    and all <A>p</A>-modular Brauer characters of <A>G</A>
+##    lift to ordinary characters
+##    (note that this situation can be detected from the ordinary
+##    character table of <A>G</A>);
+##  </Item>
+##  <Item>
+##    the table <A>ordtbl</A> stores information how it was constructed from
+##    other tables (as a direct product or as an isoclinic variant,
+##    for example),
+##    and the Brauer tables of the source tables can be computed;
+##  </Item>
+##  <Item>
+##    <A>ordtbl</A> is a table from the &GAP; character table library
+##    for which also the <A>p</A>-modular table is contained in the table
+##    library.
+##  </Item>
+##  </List>
 ##  <P/>
 ##  The default method for a group and a prime delegates to
 ##  <Ref Oper="BrauerTable" Label="for a group, and a prime integer"/>

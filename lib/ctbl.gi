@@ -4167,7 +4167,8 @@ InstallMethod( BrauerTableOp,
     "for ordinary character table, and positive integer",
     [ IsOrdinaryTable, IsPosInt ],
     function( tbl, p )
-    local result, modtbls, id, fusions, pos, source;
+    local result, modtbls, id, fusions, pos, source, ppart, n, bl, inv,
+          choice, fusion, rest, b, brest, brestset, l;
 
     result:= fail;
 
@@ -4201,6 +4202,52 @@ InstallMethod( BrauerTableOp,
       if modtbls <> fail then
         # (This function takes care of a class permutation in `tbl'.)
         result:= CharacterTableIsoclinic( modtbls, tbl );
+      fi;
+    else
+      ppart:= 1;
+      n:= Size( tbl );
+      while n mod p = 0 do
+        ppart:= ppart * p;
+        n:= n / p;
+      od;
+      if ppart in OrdersClassRepresentatives( tbl ) then
+        # The Sylow 'p'-subgroup is cyclic.
+        result:= CharacterTableRegular( tbl, p );
+        bl:= PrimeBlocks( tbl, p );
+        inv:= InverseMap( bl.block );
+        choice:= [];
+        fusion:= GetFusionMap( result, tbl );
+        rest:= List( Irr( tbl ), x -> ValuesOfClassFunction( x ){ fusion } );
+        for b in [ 1 .. Length( bl.defect ) ] do
+          if bl.defect[b] = 0 then
+            Add( choice, inv[b] );
+          else
+            brest:= rest{ inv[b] };
+            brestset:= Set( brest );
+            l:= Length( brestset );
+            if l = 1 then
+              # There is only one irreducible Brauer character in the block.
+              Add( choice, inv[b][1] );
+            elif Sum( brestset{ [ 1 .. l-1 ] } ) = brestset[l] then
+              Append( choice,
+                      inv[b]{ List( [ 1 .. l-1 ],
+                                    i -> Position( brest, brestset[i] ) ) } );
+            else
+              # Not all Brauer characters lift to characteristic zero.
+              result:= fail;
+              break;
+            fi;
+          fi;
+        od;
+        if result <> fail then
+          # The irreducibles shall be sorted as in the ordinary table.
+          Sort( choice );
+
+          # Set the attributes.
+          SetIrr( result, List( choice, i -> Character( result, rest[i] ) ) );
+          SetInfoText( result,
+              "computed using that all Brauer characters lift to char. zero" );
+        fi;
       fi;
     fi;
 
