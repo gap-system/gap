@@ -18,6 +18,7 @@
 ##  <ManSection>
 ##  <Func Name="Z" Arg='p^d' Label="for field size"/>
 ##  <Func Name="Z" Arg='p, d' Label="for prime and degree"/>
+##  <Var Name="MAXSIZE_GF_INTERNAL"/>
 ##
 ##  <Description>
 ##  For creating elements of a finite field,
@@ -30,8 +31,8 @@
 ##  <P/>
 ##  &GAP; can represent elements of all finite fields
 ##  <C>GF(<A>p^d</A>)</C> such that either
-##  (1) <A>p^d</A> <M>&lt;= 65536</M> (in which case an extremely efficient
-##      internal representation is used);
+##  (1) <A>p^d</A> <M>&lt;=</M> <C>MAXSIZE_GF_INTERNAL</C> (in which case an 
+##      efficient internal representation is used);
 ##  (2) d = 1, (in which case, for large <A>p</A>, the field is represented
 ##      using the machinery of residue class rings
 ##      (see section&nbsp;<Ref Sect="Residue Class Rings"/>) or
@@ -39,6 +40,11 @@
 ##      <A>p</A> elements is known, or can be computed
 ##      (see <Ref Func="ConwayPolynomial"/>).
 ##  <P/>
+##
+##  <C>MAXSIZE_GF_INTERNAL</C> may depend on the word size of your computer
+##  and the version of &GAP; but will typically be either <M>2^{16}</M> or
+##  <M>2^{24}</M>.<P/>
+##  
 ##  If you attempt to construct an element of <C>GF(<A>p^d</A>)</C> for which
 ##  <A>d</A> <M>> 1</M> and the relevant Conway polynomial is not known,
 ##  and not necessarily easy to find
@@ -107,14 +113,15 @@
 ##  0*Z(2)
 ##  gap> a*a;
 ##  Z(2^5)^2
-##  gap> b := Z(3,12);
+##  gap> b := Z(3,20);
 ##  z
 ##  gap> b*b;
 ##  z2
 ##  gap> b+b;
 ##  2z
 ##  gap> Print(b^100,"\n");
-##  Z(3)^0+Z(3,12)^5+Z(3,12)^6+2*Z(3,12)^8+Z(3,12)^10+Z(3,12)^11
+##  2*Z(3,20)^2+Z(3,20)^4+Z(3,20)^6+Z(3,20)^7+2*Z(3,20)^9+2*Z(3,20)^10+2*Z\
+##  (3,20)^12+2*Z(3,20)^15+2*Z(3,20)^17+Z(3,20)^18+Z(3,20)^19
 ##  ]]></Example>
 ##  <Log><![CDATA[
 ##  gap> Z(11,40);
@@ -270,7 +277,7 @@ DeclareCategoryCollections( "IsFFECollColl" );
 ##  true
 ##  gap> Z(256) > Z(101);
 ##  false
-##  gap> Z(2,20) < Z(2,20)^2; # this illustrates the lexicographic ordering
+##  gap> Z(2,30) < Z(2,30)^2; # this illustrates the lexicographic ordering
 ##  false
 ##  ]]></Example>
 ##  </Description>
