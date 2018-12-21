@@ -89,5 +89,28 @@ true
 gap> ForAny( ComputedPrimeBlockss( t ), IsMutable );
 false
 
+# create certain Brauer tables ...
+# ... of p-solvable groups
+gap> t:= CharacterTable( SymmetricGroup( 4 ) );;
+gap> IsCharacterTable( t mod 2 );
+true
+gap> IsCharacterTable( t mod 3 );
+true
+
+# ... where all Brauer characters lift to characteristic zero
+gap> g:= PSL(2,5);;
+gap> t:= CharacterTable( g );;
+gap> IsCharacterTable( t mod 3 );
+true
+gap> IsCharacterTable( t mod 5 );
+true
+
+# ... where the Brauer tables of the factors of a product can be computed
+gap> g:= AlternatingGroup( 5 );;
+gap> t:= CharacterTable( g );;
+gap> t:= CharacterTableDirectProduct( t, t );;
+gap> IsCharacterTable( t mod 5 );
+true
+
 ##
 gap> STOP_TEST( "ctbl.tst", 1);
