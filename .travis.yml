@@ -14,6 +14,8 @@ addons:
   apt_packages:
     - libgmp-dev
     - libreadline-dev
+    - python
+    - python-pip
 
 #
 # The following test jobs are roughly sorted by duration, from longest to
@@ -129,6 +131,7 @@ matrix:
 script:
   - set -e
   - etc/travis_fastfail.sh
+  - pip install --user gcovr
   - bash etc/ci-prepare.sh
   - bash etc/ci.sh
 

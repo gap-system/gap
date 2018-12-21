@@ -60,10 +60,8 @@ if Length(covs) > 0 then
     Print("Outputting JSON for Codecov...\n");
     OutputJsonCoverage(r, "gap-coverage.json");;
 
-    if IsBound(GAPInfo.SystemEnvironment.TRAVIS_JOB_ID) then
-        Print("Outputting JSON for Coveralls...\n");
-        OutputCoverallsJsonCoverage(r, "gap-coveralls.json", prefix);
-    fi;
+    Print("Outputting JSON for Coveralls...\n");
+    OutputCoverallsJsonCoverage(r, "gap-coveralls.json", prefix);
 else
     # Don't error, because we might want to gather
     # gcov coverage, so just inform that we didn't find
@@ -72,8 +70,18 @@ else
 fi;
 GAPInput
 
-# upload to coveralls.io
 if [[ -f gap-coveralls.json ]]
 then
-  curl -F json_file=@gap-coveralls.json "https://coveralls.io/api/v1/jobs"
+  # generate kernel coverage reports by running gcov
+  python etc/ci-gcovr-coverage.py -r . --output c-coveralls.json --exclude-directories pkg/ --exclude-directories extern/
+
+  python etc/ci-coveralls-merge.py
 fi
+
+# upload to coveralls.io
+# TODO: perhaps fold into python script?
+if [[ -f merged-coveralls.json ]]
+then
+  curl -F json_file=@merged-coveralls.json "https://coveralls.io/api/v1/jobs"
+fi
+
