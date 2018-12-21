@@ -1613,6 +1613,9 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
     SET_HDLR_FUNC(ValGVar(GVarName("Z")), 2, FuncZ2);
 
+    // expose MAXSIZE_GF_INTERNAL from ffdata.h to the GAP library
+    ExportAsConstantGVar(MAXSIZE_GF_INTERNAL);
+
     return 0;
 }
 
