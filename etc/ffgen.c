@@ -6,8 +6,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-#define MAX_FF 65536
+/* These next lines control the size of internal finite field elements
+   in GAP. Changes here will propagate as needed */
+#if (SIZEOF_VOID_P == 8)
+#define MAX_FF (1 << 24)
+#else
+#define MAX_FF (1 << 16)
+#endif
 
 unsigned char is_prime[MAX_FF + 1];
 unsigned char is_ff[MAX_FF + 1];
