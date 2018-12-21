@@ -138,15 +138,15 @@ GF(7)
 #
 # large prime field
 #
-gap> p:= NextPrimeInt( MAXSIZE_GF_INTERNAL );
-65537
+gap> p:= NextPrimeInt( 2^32 );
+4294967311
 gap> Famp:= ElementsFamily( FamilyObj( Integers mod p ) );;
 gap> z1:= ZmodnZObj( Famp, -3 );
-ZmodpZObj( 65534, 65537 )
+ZmodpZObj( 4294967308, 4294967311 )
 gap> z2:= ZmodnZObj( Famp,  1 );
-ZmodpZObj( 1, 65537 )
+ZmodpZObj( 1, 4294967311 )
 gap> z3:= ZmodnZObj( Famp, 10 );
-ZmodpZObj( 10, 65537 )
+ZmodpZObj( 10, 4294967311 )
 gap> z1 = z2; z2 = z3;
 false
 false
@@ -161,51 +161,51 @@ gap> z1 = Zero( GF(p) ); Zero( GF(p) ) = z1;
 false
 false
 gap> z1 + z2; z1 + z3; z2 + z3; z1 + 1; 2 + z2;
-ZmodpZObj( 65535, 65537 )
-ZmodpZObj( 7, 65537 )
-ZmodpZObj( 11, 65537 )
-ZmodpZObj( 65535, 65537 )
-ZmodpZObj( 3, 65537 )
+ZmodpZObj( 4294967309, 4294967311 )
+ZmodpZObj( 7, 4294967311 )
+ZmodpZObj( 11, 4294967311 )
+ZmodpZObj( 4294967309, 4294967311 )
+ZmodpZObj( 3, 4294967311 )
 gap> z1 - z2; z1 - z3; z2 - z3; z1 - 1; 2 - z2;
-ZmodpZObj( 65533, 65537 )
-ZmodpZObj( 65524, 65537 )
-ZmodpZObj( 65528, 65537 )
-ZmodpZObj( 65533, 65537 )
-ZmodpZObj( 1, 65537 )
+ZmodpZObj( 4294967307, 4294967311 )
+ZmodpZObj( 4294967298, 4294967311 )
+ZmodpZObj( 4294967302, 4294967311 )
+ZmodpZObj( 4294967307, 4294967311 )
+ZmodpZObj( 1, 4294967311 )
 gap> z1 * z2; z1 * z3; z2 * z3; z1 * 1; 2 * z2;
-ZmodpZObj( 65534, 65537 )
-ZmodpZObj( 65507, 65537 )
-ZmodpZObj( 10, 65537 )
-ZmodpZObj( 65534, 65537 )
-ZmodpZObj( 2, 65537 )
+ZmodpZObj( 4294967308, 4294967311 )
+ZmodpZObj( 4294967281, 4294967311 )
+ZmodpZObj( 10, 4294967311 )
+ZmodpZObj( 4294967308, 4294967311 )
+ZmodpZObj( 2, 4294967311 )
 gap> z1 / z2; z1 / z3; z2 / z3; z1 / 1; 2 / z2;
-ZmodpZObj( 65534, 65537 )
-ZmodpZObj( 58983, 65537 )
-ZmodpZObj( 45876, 65537 )
-ZmodpZObj( 65534, 65537 )
-ZmodpZObj( 2, 65537 )
+ZmodpZObj( 4294967308, 4294967311 )
+ZmodpZObj( 1288490193, 4294967311 )
+ZmodpZObj( 3865470580, 4294967311 )
+ZmodpZObj( 4294967308, 4294967311 )
+ZmodpZObj( 2, 4294967311 )
 gap> z2^3; z2^(-2); z2^0;
-ZmodpZObj( 1, 65537 )
-ZmodpZObj( 1, 65537 )
-ZmodpZObj( 1, 65537 )
+ZmodpZObj( 1, 4294967311 )
+ZmodpZObj( 1, 4294967311 )
+ZmodpZObj( 1, 4294967311 )
 gap> DegreeFFE( z1 ); DegreeFFE( z2 ); DegreeFFE( z3 );
 1
 1
 1
 gap> Int( z1 ); Int( z2 ); Int( z3 );
-65534
+4294967308
 1
 10
 gap> SquareRoots( GF(p), z1 );
-[  ]
+[ ZmodpZObj( 122581002, 4294967311 ), ZmodpZObj( 4172386309, 4294967311 ) ]
 gap> SquareRoots( GF(p), z2 );
-[ ZmodpZObj( 1, 65537 ), ZmodpZObj( 65536, 65537 ) ]
+[ ZmodpZObj( 1, 4294967311 ), ZmodpZObj( 4294967310, 4294967311 ) ]
 gap> SquareRoots( GF(p), z3 );
-[  ]
+[ ZmodpZObj( 495820313, 4294967311 ), ZmodpZObj( 3799146998, 4294967311 ) ]
 gap> ModulusOfZmodnZObj( z1 );
-65537
+4294967311
 gap> DefaultRingByGenerators( [ z1 ] );
-GF(65537)
+GF(4294967311)
 
 #
 # ring that is not a field

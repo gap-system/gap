@@ -14,7 +14,7 @@ gap> CallAsTask(ZmodnZ,33);
 (Integers mod 33)
 gap> CallAsTask(ZmodnZ,70001);
 GF(70001)
-gap> CallAsTask( Z, 2, 17);
+gap> CallAsTask( Z, 2, 35);
 z
 gap> z:=CallAsTask( Z, 65537, 2 );
 z
