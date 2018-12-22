@@ -513,6 +513,10 @@ InstallOtherMethod( Rat, "for floats", [ IsFloat ],
 
     local  M, a_i, i, sign, maxdenom, maxpartial;
 
+    if not IsFinite(x) then
+        Error("cannot convert float ", x, " to rational");
+    fi;
+
     i := 0; M := [[1,0],[0,1]];
     maxdenom := ValueOption("maxdenom");
     maxpartial := ValueOption("maxpartial");
