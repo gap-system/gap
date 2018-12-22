@@ -31,6 +31,10 @@
 #include "saveload.h"
 #include "stringobj.h"
 
+#define RequireMacFloat(funcname, op) \
+    RequireArgumentCondition(funcname, op, #op, IS_MACFLOAT(op), \
+        "must be a macfloat")
+
 
 /****************************************************************************
 **
@@ -397,12 +401,19 @@ Obj FuncSIGNBIT_MACFLOAT( Obj self, Obj f )
 
 extern Obj FuncIntHexString(Obj,Obj);
 
-Obj FuncINTFLOOR_MACFLOAT( Obj self, Obj obj )
+Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat)
 {
+    RequireMacFloat("INTFLOOR_MACFLOAT", macfloat);
+
+    Double f = VAL_MACFLOAT(macfloat);
+    if (isnan(f))
+        ErrorQuit("cannot convert float nan to integer", 0, 0);
+    if (isinf(f))
+        ErrorQuit("cannot convert float %s to integer", (Int)(f > 0 ? "inf" : "-inf"), 0);
+
 #ifdef HAVE_TRUNC
-  Double f = trunc(VAL_MACFLOAT(obj));
+  f = trunc(f);
 #else
-  Double f = VAL_MACFLOAT(obj);
   if (f >= 0.0)
     f = floor(f);
   else

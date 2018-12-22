@@ -99,6 +99,12 @@ gap> Int(1.e22);
 10000000000000000000000
 gap> Int(-1.e22);
 -10000000000000000000000
+gap> Int(posinf);
+Error, cannot convert float inf to integer
+gap> Int(neginf);
+Error, cannot convert float -inf to integer
+gap> Int(nan);
+Error, cannot convert float nan to integer
 
 #
 # convert floats to rationals
@@ -109,6 +115,12 @@ gap> Rat(0.5);
 1/2
 gap> Rat(0.0);
 0
+gap> Rat(posinf);
+Error, cannot convert float inf to rational
+gap> Rat(neginf);
+Error, cannot convert float -inf to rational
+gap> Rat(nan);
+Error, cannot convert float nan to rational
 
 #
 # Print / View / Display for floats
