@@ -74,9 +74,6 @@ else
 fi;
 GAPInput
 
-# generate kernel coverage reports by running gcov
-make coverage
-
 # upload to coveralls.io
 if [[ -f gap-coveralls.json ]]
 then
