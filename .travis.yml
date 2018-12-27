@@ -8,6 +8,7 @@ env:
     - LDFLAGS="--coverage"
     # default config flags: enable debug asserts
     - CONFIGFLAGS="--enable-debug"
+    - COVERALLS_PARALLEL=true
 
 addons:
   apt_packages:
@@ -142,3 +143,4 @@ notifications:
     on_pull_requests: false
     on_success: change # default: always
     on_failure: change # default: always
+  webhooks: https://coveralls.io/webhook
