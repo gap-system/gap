@@ -140,6 +140,7 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
         # suggest-attribute=format is disabled because it gives too many false
         # positives
         AX_APPEND_FLAG([-Werror],ax_warn_cflags_variable)
+        AX_APPEND_FLAG([-Werror],ax_warn_cxxflags_variable)
 
         AX_APPEND_COMPILE_FLAGS([ dnl
             [$ax_compiler_no_suggest_attribute_flags] dnl
