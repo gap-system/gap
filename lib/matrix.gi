@@ -2577,7 +2577,7 @@ InstallMethod( IsMonomialMatrix,
     if Length( M ) <> len  then
         return false;
     fi;
-    found:= BlistList( M, [] );
+    found:= ListWithIdenticalEntries( len, false );
     for row  in M  do
         j := PositionNonZero( row );
         if len < j or found[j]  then
