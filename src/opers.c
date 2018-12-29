@@ -710,7 +710,6 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
     Int hash_loop = 0;
     Obj cacheval;
     Obj old_with, old_flags, new_with, new_flags;
-    Int old_moving;
     Obj with = flags;
     
     for(hash_loop = 0; hash_loop < 3; ++hash_loop)
@@ -752,31 +751,25 @@ Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 
     /* add to hash table, shuffling old values along (last one falls off) */
     hash = base_hash;
-    
-    old_moving = 1;
+
     new_with = with;
     new_flags = flags;
-    
-    for(hash_loop = 0; old_moving && hash_loop < 3; ++hash_loop) {
-      old_moving = 0;
-      if(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+1))
-      {
-        old_flags = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+1);
-        old_with = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+2);
-        old_moving = 1;
-      }
 
-      SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash * 2 + 1, new_flags);
-      SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash * 2 + 2, new_with);
+    for (hash_loop = 0; hash_loop < 3; ++hash_loop) {
+        old_flags = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash * 2 + 1);
+        old_with = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash * 2 + 2);
 
-      if(old_moving)
-      {
+        SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash * 2 + 1, new_flags);
+        SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash * 2 + 2, new_with);
+
+        if (!old_flags)
+            break;
+
         new_flags = old_flags;
         new_with = old_with;
         hash = (hash * 311 + 61) % HIDDEN_IMPS_CACHE_LENGTH;
-      }
     }
-    
+
     CHANGED_BAG(WITH_HIDDEN_IMPS_FLAGS_CACHE);
 #ifdef HPCGAP
     RegionWriteUnlock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
@@ -830,7 +823,6 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
     Int hash_loop = 0;
     Obj cacheval;
     Obj old_with, old_flags, new_with, new_flags;
-    Int old_moving;
     Obj with = flags;
     Obj imp;
     Obj trues;
@@ -896,31 +888,25 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
     /* add to hash table, shuffling old values along (last one falls off) */
     hash = base_hash;
     
-    old_moving = 1;
     new_with = with;
     new_flags = flags;
-    
-    for(hash_loop = 0; old_moving && hash_loop < 3; ++hash_loop) {
-      old_moving = 0;
-      if(ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+1))
-      {
+
+    for (hash_loop = 0; hash_loop < 3; ++hash_loop) {
         old_flags = ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+1);
         old_with = ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+2);
-        old_moving = 1;
-      }
 
-      SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash * 2 + 1, new_flags);
-      SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash * 2 + 2, new_with);
-      CHANGED_BAG(WITH_IMPS_FLAGS_CACHE);
+        SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash * 2 + 1, new_flags);
+        SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash * 2 + 2, new_with);
 
-      if(old_moving)
-      {
+        if (!old_flags)
+            break;
+
         new_flags = old_flags;
         new_with = old_with;
         hash = (hash * 311 + 61) % IMPS_CACHE_LENGTH;
-      }
     }
-    
+
+    CHANGED_BAG(WITH_IMPS_FLAGS_CACHE);
 #ifdef HPCGAP
     RegionWriteUnlock(REGION(IMPLICATIONS_SIMPLE));
 #endif
