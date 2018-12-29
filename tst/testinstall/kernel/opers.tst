@@ -214,28 +214,41 @@ Error, operation already installed
 gap> METHODS_OPERATION(fail,1);
 Error, METHODS_OPERATION: <oper> must be an operation (not the value 'fail')
 gap> METHODS_OPERATION(Size,-1);
-Error, METHODS_OPERATION: <narg> must be a non-negative small integer (not the\
- integer -1)
+Error, METHODS_OPERATION: <narg> must be an integer between 0 and 6 (not the i\
+nteger -1)
 gap> METHODS_OPERATION(Size,0);
 [  ]
+gap> METHODS_OPERATION(Size,6);
+[  ]
+gap> METHODS_OPERATION(Size,7);
+Error, METHODS_OPERATION: <narg> must be an integer between 0 and 6 (not the i\
+nteger 7)
 
 # note: CHANGED_METHODS_OPERATION is not usable on HPC-GAP
 gap> CHANGED_METHODS_OPERATION(fail,1);
 Error, CHANGED_METHODS_OPERATION: <oper> must be an operation (not the value '\
 fail')
 gap> CHANGED_METHODS_OPERATION(Size,-1);
-Error, CHANGED_METHODS_OPERATION: <narg> must be a non-negative small integer \
-(not the integer -1)
+Error, CHANGED_METHODS_OPERATION: <narg> must be an integer between 0 and 6 (n\
+ot the integer -1)
 gap> if not IsHPCGAP then CHANGED_METHODS_OPERATION(Size,0); fi;
+gap> if not IsHPCGAP then CHANGED_METHODS_OPERATION(Size,6); fi;
+gap> CHANGED_METHODS_OPERATION(Size,7);
+Error, CHANGED_METHODS_OPERATION: <narg> must be an integer between 0 and 6 (n\
+ot the integer 7)
 
 #
 gap> SET_METHODS_OPERATION (fail,1,[]);
 Error, SET_METHODS_OPERATION: <oper> must be an operation (not the value 'fail\
 ')
 gap> SET_METHODS_OPERATION (Size,-1,[]);
-Error, SET_METHODS_OPERATION: <narg> must be a non-negative small integer (not\
- the integer -1)
+Error, SET_METHODS_OPERATION: <narg> must be an integer between 0 and 6 (not t\
+he integer -1)
 gap> SET_METHODS_OPERATION (Size,0,[]);
+gap> SET_METHODS_OPERATION (Size,6,[]);
+gap> SET_METHODS_OPERATION (Size,7,[]);
+Error, SET_METHODS_OPERATION: <narg> must be an integer between 0 and 6 (not t\
+he integer 7)
 
 #
 gap> f:=SETTER_FUNCTION("foobar", IsPGroup);;

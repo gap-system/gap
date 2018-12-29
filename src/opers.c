@@ -3146,13 +3146,13 @@ void SaveOperationExtras (
     SaveSubObj(header->setter);
     SaveSubObj(header->tester);
     SaveSubObj(header->extra);
-    for (UInt i = 0; i <= 7; i++)
+    for (UInt i = 0; i <= MAX_OPER_ARGS; i++)
         SaveSubObj(header->methods[i]);
 #ifdef HPCGAP
     // FIXME: We probably don't want to save/restore the cache?
     // (and that would include "normal" GAP, too...)
 #else
-    for (UInt i = 0; i <= 7; i++)
+    for (UInt i = 0; i <= MAX_OPER_ARGS; i++)
         SaveSubObj(header->cache[i]);
 #endif
 }
@@ -3177,13 +3177,13 @@ void LoadOperationExtras (
     header->setter = LoadSubObj();
     header->tester = LoadSubObj();
     header->extra = LoadSubObj();
-    for (UInt i = 0; i <= 7; i++)
+    for (UInt i = 0; i <= MAX_OPER_ARGS; i++)
         header->methods[i] = LoadSubObj();
 #ifdef HPCGAP
     // FIXME: We probably don't want to save/restore the cache?
     // (and that would include "normal" GAP, too...)
 #else
-    for (UInt i = 0; i <= 7; i++)
+    for (UInt i = 0; i <= MAX_OPER_ARGS; i++)
         header->cache[i] = LoadSubObj();
 #endif
 }
@@ -3432,8 +3432,10 @@ Obj FuncMETHODS_OPERATION (
     Obj                 meth;
 
     RequireOperation(oper);
-    RequireNonnegativeSmallInt("METHODS_OPERATION", narg);
-    n = INT_INTOBJ( narg );
+    n = IS_INTOBJ(narg) ? INT_INTOBJ(narg) : -1;
+    if (n < 0 || n > MAX_OPER_ARGS)
+        RequireArgument("METHODS_OPERATION", narg, "narg",
+                        "must be an integer between 0 and 6");
     meth = MethsOper( oper, (UInt)n );
 #ifdef HPCGAP
     MEMBAR_READ();
@@ -3457,13 +3459,15 @@ Obj FuncCHANGED_METHODS_OPERATION (
     Int                 i;
 
     RequireOperation(oper);
-    RequireNonnegativeSmallInt("CHANGED_METHODS_OPERATION", narg);
+    n = IS_INTOBJ(narg) ? INT_INTOBJ(narg) : -1;
+    if (n < 0 || n > MAX_OPER_ARGS)
+        RequireArgument("CHANGED_METHODS_OPERATION", narg, "narg",
+                        "must be an integer between 0 and 6");
 #ifdef HPCGAP
     if (!PreThreadCreation) {
         ErrorQuit("Methods may only be changed before thread creation",0L,0L);
     }
 #endif
-    n = INT_INTOBJ( narg );
     cacheBag = CacheOper( oper, (UInt) n );
     cache = ADDR_OBJ( cacheBag );
     for ( i = 1;  i < SIZE_OBJ(cacheBag) / sizeof(Obj);  i++ ) {
@@ -3486,8 +3490,10 @@ Obj FuncSET_METHODS_OPERATION (
     Int                 n;
 
     RequireOperation(oper);
-    RequireNonnegativeSmallInt("SET_METHODS_OPERATION", narg);
-    n = INT_INTOBJ( narg );
+    n = IS_INTOBJ(narg) ? INT_INTOBJ(narg) : -1;
+    if (n < 0 || n > MAX_OPER_ARGS)
+        RequireArgument("SET_METHODS_OPERATION", narg, "narg",
+                        "must be an integer between 0 and 6");
 #ifdef HPCGAP
     MEMBAR_WRITE();
 #endif
