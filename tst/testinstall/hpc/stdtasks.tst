@@ -40,15 +40,31 @@ gap> TaskResult(t);
 25
 
 #
-gap> task1 := DelayTask(x->SortedList(x), [3,2,1]);;
-gap> task2 := DelayTask(x->SortedList(x), [6,5,4]);;
-gap> which := WaitAnyTask(task1, task2);;
-gap> which in [ 1, 2 ];
-true
+gap> task1 := DelayTask(SortedList, [3,2,1]);;
+gap> task2 := DelayTask(SortedList, [2^15, 2^15-1 .. 1]);;
+gap> which := WaitAnyTask(task1, task2);
+1
+gap> WaitTasks(task1, task2);
 gap> TaskResult(task1);
 [ 1, 2, 3 ]
-gap> TaskResult(task2);
-[ 4, 5, 6 ]
+gap> TaskResult(task2) = [1..2^15];
+true
+
+#
+gap> task1 := DelayTask(MicroSleep, 10000);;
+gap> task2 := DelayTask(MicroSleep, 50000);;
+gap> WaitAnyTask(task1, task2);
+1
+gap> WaitTasks(task1, task2);
+gap> WaitAnyTask(task1, task2);
+1
+gap> task1 := DelayTask(MicroSleep, 50000);;
+gap> task2 := DelayTask(MicroSleep, 10000);;
+gap> WaitAnyTask(task1, task2);
+2
+gap> WaitTasks(task1, task2);
+gap> WaitAnyTask(task1, task2);
+1
 
 #
 gap> task := RunTask(function()
@@ -62,7 +78,11 @@ gap> TaskResult(task);
 
 #
 gap> m := NewMilestone();;
+gap> IsMilestoneAchieved(m);
+false
 gap> AchieveMilestone(m);
+gap> IsMilestoneAchieved(m);
+true
 
 #
 gap> m := NewMilestone([1,2]);;
