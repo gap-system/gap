@@ -18,6 +18,11 @@
 #include "calls.h"
 #include "system.h"
 
+
+enum {
+    MAX_OPER_ARGS = 6
+};
+
 /****************************************************************************
 **
 **
@@ -42,10 +47,10 @@ typedef struct {
     Obj tester;
 
     // method list of an operation
-    Obj methods[8];
+    Obj methods[MAX_OPER_ARGS+1];
 
     // cache of an operation
-    Obj cache[8];
+    Obj cache[MAX_OPER_ARGS+1];
 
     // small integer encoding a set of bit flags with information about the
     // operation, see OperExtras below
@@ -177,13 +182,13 @@ static inline void SET_TESTR_FILT(Obj oper, Obj x)
 */
 static inline Obj METHS_OPER(Obj oper, Int i)
 {
-    GAP_ASSERT(0 <= i && i < 8);
+    GAP_ASSERT(0 <= i && i <= MAX_OPER_ARGS);
     return CONST_OPER(oper)->methods[i];
 }
 
 static inline void SET_METHS_OPER(Obj oper, Int i, Obj x)
 {
-    GAP_ASSERT(0 <= i && i < 8);
+    GAP_ASSERT(0 <= i && i <= MAX_OPER_ARGS);
     OPER(oper)->methods[i] = x;
 }
 
@@ -194,13 +199,13 @@ static inline void SET_METHS_OPER(Obj oper, Int i, Obj x)
 */
 static inline Obj CACHE_OPER(Obj oper, Int i)
 {
-    GAP_ASSERT(0 <= i && i < 8);
+    GAP_ASSERT(0 <= i && i <= MAX_OPER_ARGS);
     return CONST_OPER(oper)->cache[i];
 }
 
 static inline void SET_CACHE_OPER(Obj oper, Int i, Obj x)
 {
-    GAP_ASSERT(0 <= i && i < 8);
+    GAP_ASSERT(0 <= i && i <= MAX_OPER_ARGS);
     OPER(oper)->cache[i] = x;
 }
 
