@@ -113,7 +113,7 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths;
     for i in U{[1..Length(U)-1]} do # last one is length+1
       p:=PositionProperty(r,x->x>=i);
       if p<>fail and p<=Length(ipcgs) and not p in l then
-	Add(l,p);
+        Add(l,p);
       fi;
     od;
     Add(l,Length(ipcgs)+1);

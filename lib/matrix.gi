@@ -476,8 +476,16 @@ BindGlobal( "Matrix_CharacteristicPolynomialSameField",
             vec[i] := zero;
         fi;
     od;
-    Assert(3, IsZero(Value(cp,imat)));
     Assert(2, Length(CoefficientsOfUnivariatePolynomial(cp)) = n+1);
+    if AssertionLevel()>=3 then
+      # cannot use Value(cp,imat), as this uses characteristic polynomial
+      n:=Zero(imat);
+      one:=One(imat);
+      for i in Reversed(CoefficientsOfUnivariatePolynomial(cp)) do
+        n:=n*imat+(i*one);
+      od;
+      Assert(3,IsZero(n));
+    fi;
     Info(InfoMatrix,1,"Characteristic Polynomial returns ", cp);
     return cp;
 end );
