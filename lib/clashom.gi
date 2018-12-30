@@ -2391,8 +2391,15 @@ local r,	#radical
       hom:=ser.factorhom;
       ntrihom:=true;
       f:=Image(hom);
+      # if lift setup is inherited, f might not be trivial-fitting
+      if Size(RadicalGroup(f))>1 then
+        # this is proper recursion
+        cl:=ConjugacyClasses(f:onlysizes:=false);
+        cl:=List(cl,x->[Representative(x),Centralizer(x)]);
+      else
       # we need centralizers
-      cl:=ConjugacyClassesFittingFreeGroup(f:onlysizes:=false);
+        cl:=ConjugacyClassesFittingFreeGroup(f:onlysizes:=false);
+      fi;
       fants:=Filtered(NormalSubgroups(f),x->Size(x)>1 and Size(x)<Size(f));
     else
       if IsPermGroup(G) then
