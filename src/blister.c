@@ -1288,6 +1288,11 @@ Obj FuncUNITE_BLIST_LIST (
 
     lenSub   = LEN_LIST( sub );
 
+    // if the sublist is empty, nothing has to be done
+    if (lenSub == 0) {
+        return 0;
+    }
+
     /* for a range as subset of a range, it is extremely easy               */
     if ( IS_RANGE(list) && IS_RANGE(sub) && GET_INC_RANGE( list ) == 1
           && GET_INC_RANGE( sub ) == 1) {
