@@ -34,12 +34,12 @@
 **  'NEW_RANGE' returns a new range.  Note that  you must set the length, the
 **  low value, and the increment before you can use the range.
 */
-static inline Obj NEW_RANGE_NSORT(void)
+EXPORT_INLINE Obj NEW_RANGE_NSORT(void)
 {
     return NewBag(T_RANGE_NSORT, 3 * sizeof(Obj));
 }
 
-static inline Obj NEW_RANGE_SSORT(void)
+EXPORT_INLINE Obj NEW_RANGE_SSORT(void)
 {
     return NewBag(T_RANGE_SSORT, 3 * sizeof(Obj));
 }
@@ -53,7 +53,7 @@ static inline Obj NEW_RANGE_SSORT(void)
 **  a range, but  the kernel does not know  this yet.  Use  'IsRange' to test
 **  whether a list is a range.
 */
-static inline Int IS_RANGE(Obj val)
+EXPORT_INLINE Int IS_RANGE(Obj val)
 {
     return TNUM_OBJ(val) >= T_RANGE_NSORT &&
            TNUM_OBJ(val) <= T_RANGE_SSORT + IMMUTABLE;
@@ -67,7 +67,7 @@ static inline Int IS_RANGE(Obj val)
 **  'SET_LEN_RANGE' sets the length  of the range <list>  to the value <len>,
 **  which must be a C integer larger than 1.
 */
-static inline void SET_LEN_RANGE(Obj list, Int len)
+EXPORT_INLINE void SET_LEN_RANGE(Obj list, Int len)
 {
     GAP_ASSERT(IS_RANGE(list));
     ADDR_OBJ(list)[0] = INTOBJ_INT(len);
@@ -81,7 +81,7 @@ static inline void SET_LEN_RANGE(Obj list, Int len)
 **  'GET_LEN_RANGE' returns the  logical length of  the range <list>, as  a C
 **  integer.
 */
-static inline Int GET_LEN_RANGE(Obj list)
+EXPORT_INLINE Int GET_LEN_RANGE(Obj list)
 {
     GAP_ASSERT(IS_RANGE(list));
     return INT_INTOBJ(CONST_ADDR_OBJ(list)[0]);
@@ -95,7 +95,7 @@ static inline Int GET_LEN_RANGE(Obj list)
 **  'SET_LOW_RANGE' sets the  first element of the range  <list> to the value
 **  <low>, which must be a C integer.
 */
-static inline void SET_LOW_RANGE(Obj list, Int low)
+EXPORT_INLINE void SET_LOW_RANGE(Obj list, Int low)
 {
     GAP_ASSERT(IS_RANGE(list));
     ADDR_OBJ(list)[1] = INTOBJ_INT(low);
@@ -109,7 +109,7 @@ static inline void SET_LOW_RANGE(Obj list, Int low)
 **  'GET_LOW_RANGE' returns the first  element  of the  range  <list> as a  C
 **  integer.
 */
-static inline Int GET_LOW_RANGE(Obj list)
+EXPORT_INLINE Int GET_LOW_RANGE(Obj list)
 {
     GAP_ASSERT(IS_RANGE(list));
     return INT_INTOBJ(CONST_ADDR_OBJ(list)[1]);
@@ -123,7 +123,7 @@ static inline Int GET_LOW_RANGE(Obj list)
 **  'SET_INC_RANGE' sets  the  increment of  the range  <list>   to the value
 **  <inc>, which must be a C integer.
 */
-static inline void SET_INC_RANGE(Obj list, Int inc)
+EXPORT_INLINE void SET_INC_RANGE(Obj list, Int inc)
 {
     GAP_ASSERT(IS_RANGE(list));
     ADDR_OBJ(list)[2] = INTOBJ_INT(inc);
@@ -136,7 +136,7 @@ static inline void SET_INC_RANGE(Obj list, Int inc)
 **
 **  'GET_INC_RANGE' returns the increment of the range <list> as a C integer.
 */
-static inline Int GET_INC_RANGE(Obj list)
+EXPORT_INLINE Int GET_INC_RANGE(Obj list)
 {
     GAP_ASSERT(IS_RANGE(list));
     return INT_INTOBJ(CONST_ADDR_OBJ(list)[2]);
@@ -150,7 +150,7 @@ static inline Int GET_INC_RANGE(Obj list)
 **  'GET_ELM_RANGE' return  the <pos>-th element  of the range <list>.  <pos>
 **  must be a positive integer less than or equal to the length of <list>.
 */
-static inline Obj GET_ELM_RANGE(Obj list, Int pos)
+EXPORT_INLINE Obj GET_ELM_RANGE(Obj list, Int pos)
 {
     Int val;
     GAP_ASSERT(IS_RANGE(list));

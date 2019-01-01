@@ -45,7 +45,7 @@ void StopKeepAlive(Obj);
 #define KEPTALIVE(obj) (ADDR_OBJ(obj)[1])
 StructInitInfo *InitInfoThreadAPI(void);
 
-static inline Monitor *MonitorPtr(Obj obj)
+EXPORT_INLINE Monitor *MonitorPtr(Obj obj)
 {
   assert(TNUM_OBJ(obj) == T_MONITOR);
   return (Monitor *)(PTR_BAG(obj));

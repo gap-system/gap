@@ -50,12 +50,12 @@ Region *NewRegion(void);
 **
 **  RegionBag() also contains a memory barrier.
 */
-static inline Region * REGION(Obj bag)
+EXPORT_INLINE Region * REGION(Obj bag)
 {
     return ((Region **)bag)[1];
 }
 
-static inline void SET_REGION(Obj bag, Region * region)
+EXPORT_INLINE void SET_REGION(Obj bag, Region * region)
 {
     ((Region **)bag)[1] = region;
 }

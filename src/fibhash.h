@@ -25,7 +25,7 @@
 
 #define FIB_HASH_BITS (SIZEOF_VOID_P * 8)
 
-static inline UInt FibHash(UInt word, unsigned bits)
+EXPORT_INLINE UInt FibHash(UInt word, unsigned bits)
 {
   return (word * FIB_HASH_MULT) >>
     (FIB_HASH_BITS - bits);

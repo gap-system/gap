@@ -219,7 +219,7 @@ extern Obj RequireArgumentEx(const char * funcname,
 **
 *F  GetSmallIntEx, GetSmallInt
 */
-static inline Int
+EXPORT_INLINE Int
 GetSmallIntEx(const char * funcname, Obj op, const char * argname)
 {
     RequireSmallInt(funcname, op, argname);
@@ -233,7 +233,7 @@ GetSmallIntEx(const char * funcname, Obj op, const char * argname)
 **
 *F  GetPositiveSmallIntEx, GetPositiveSmallInt
 */
-static inline Int
+EXPORT_INLINE Int
 GetPositiveSmallIntEx(const char * funcname, Obj op, const char * argname)
 {
     RequirePositiveSmallInt(funcname, op, argname);

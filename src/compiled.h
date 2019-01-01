@@ -77,6 +77,9 @@ extern "C" {
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"
+#include "hpc/serialize.h"
+#include "hpc/threadapi.h"
+#include "hpc/traverse.h"
 #endif
 
 extern Obj InfoDecision;
@@ -223,14 +226,14 @@ extern  Obj             GF_NEXT_ITER;
    The allocation may need to be bigger than size bytes 
    due to limb size or other aspects of the representation */
 
-static inline  Obj C_MAKE_INTEGER_BAG( UInt size, UInt type)  {
+EXPORT_INLINE  Obj C_MAKE_INTEGER_BAG( UInt size, UInt type)  {
   /* Round size up to nearest multiple of INTEGER_UNIT_SIZE */
   return NewBag(type,INTEGER_UNIT_SIZE*
                 ((size + INTEGER_UNIT_SIZE-1)/INTEGER_UNIT_SIZE));
 }
 
 
-static inline void C_SET_LIMB4(Obj bag, UInt limbnumber, UInt4 value)  {
+EXPORT_INLINE void C_SET_LIMB4(Obj bag, UInt limbnumber, UInt4 value)  {
 
 #if INTEGER_UNIT_SIZE == 4
   ((UInt4 *)ADDR_OBJ(bag))[limbnumber] = value;
@@ -250,7 +253,7 @@ static inline void C_SET_LIMB4(Obj bag, UInt limbnumber, UInt4 value)  {
 
 
 
-static inline void C_SET_LIMB8(Obj bag, UInt limbnumber, UInt8 value)  { 
+EXPORT_INLINE void C_SET_LIMB8(Obj bag, UInt limbnumber, UInt8 value)  { 
 #if INTEGER_UNIT_SIZE == 8
   ((UInt8 *)ADDR_OBJ(bag))[limbnumber] = value;
 #elif INTEGER_UNIT_SIZE == 4
@@ -273,22 +276,22 @@ static inline void C_SET_LIMB8(Obj bag, UInt limbnumber, UInt8 value)  {
 
  
 #ifdef SYS_IS_64_BIT 
-static inline Obj C_MAKE_MED_INT( Int8 value ) {
+EXPORT_INLINE Obj C_MAKE_MED_INT( Int8 value ) {
   return INTOBJ_INT(value);
 }
 
-static inline Obj C_NORMALIZE_64BIT(Obj o) {
+EXPORT_INLINE Obj C_NORMALIZE_64BIT(Obj o) {
   return GMP_REDUCE(o);
 }
 
 
 #else
-static inline Obj C_MAKE_MED_INT( Int8 value )
+EXPORT_INLINE Obj C_MAKE_MED_INT( Int8 value )
 {
     return ObjInt_Int8(value);
 }
 
-static inline Obj C_NORMALIZE_64BIT( Obj o) {
+EXPORT_INLINE Obj C_NORMALIZE_64BIT( Obj o) {
   return o;
 }
 

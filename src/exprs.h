@@ -27,7 +27,7 @@
 **  'OBJ_REFLVAR'  returns  the value of  the reference  to a  local variable
 **  <expr>.
 */
-static inline Obj OBJ_REFLVAR(Expr expr)
+EXPORT_INLINE Obj OBJ_REFLVAR(Expr expr)
 {
     Int lvar = LVAR_REFLVAR(expr);
     if (OBJ_LVAR(lvar) != 0) {
@@ -51,7 +51,7 @@ static inline Obj OBJ_REFLVAR(Expr expr)
 **  (immediate) integer values having the same representation.
 */
 
-static inline Obj OBJ_INTEXPR(Expr expr)
+EXPORT_INLINE Obj OBJ_INTEXPR(Expr expr)
 {
     GAP_ASSERT(IS_INTOBJ((Obj)expr));
     return (Obj)expr;
@@ -86,7 +86,7 @@ extern Obj (*EvalExprFuncs[256])(Expr expr);
 **  two special cases that 'TNUM_EXPR' handles.
 */
 
-static inline Obj EVAL_EXPR(Expr expr)
+EXPORT_INLINE Obj EVAL_EXPR(Expr expr)
 {
     if (IS_REFLVAR(expr)) {
         return OBJ_REFLVAR(expr);
@@ -123,7 +123,7 @@ extern Obj (*EvalBoolFuncs[256])(Expr expr);
 **  'EVAL_BOOL_EXPR' returns the  value of <expr> (which  is either 'true' or
 **  'false').
 */
-static inline Obj EVAL_BOOL_EXPR(Expr expr)
+EXPORT_INLINE Obj EVAL_BOOL_EXPR(Expr expr)
 {
     return (*EvalBoolFuncs[TNUM_EXPR(expr)])(expr);
 }

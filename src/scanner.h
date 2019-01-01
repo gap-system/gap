@@ -233,7 +233,7 @@ typedef UInt            TypSymbolSet;
 /* TL: extern  UInt            NrErrLine; */
 
 
-static inline int IsIdent(char c)
+EXPORT_INLINE int IsIdent(char c)
 {
     return IsAlpha(c) || c == '_' || c == '@';
 }

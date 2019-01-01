@@ -24,57 +24,57 @@
 *F  DEG_PERM4(<perm>) . . . . . . . . . . . . . degree of (large) permutation
 *F  ADDR_PERM4(<perm>)  . . . . . . . absolute address of (large) permutation
 */
-static inline UInt SIZEBAG_PERM2(UInt deg)
+EXPORT_INLINE UInt SIZEBAG_PERM2(UInt deg)
 {
     return sizeof(Obj) + deg * sizeof(UInt2);
 }
 
-static inline Obj NEW_PERM2(UInt deg)
+EXPORT_INLINE Obj NEW_PERM2(UInt deg)
 {
     return NewBag(T_PERM2, SIZEBAG_PERM2(deg));
 }
 
-static inline UInt DEG_PERM2(Obj perm)
+EXPORT_INLINE UInt DEG_PERM2(Obj perm)
 {
     return (SIZE_OBJ(perm) - sizeof(Obj)) / sizeof(UInt2);
 }
 
-static inline UInt2 * ADDR_PERM2(Obj perm)
+EXPORT_INLINE UInt2 * ADDR_PERM2(Obj perm)
 {
     return (UInt2 *)(ADDR_OBJ(perm) + 1);
 }
 
-static inline const UInt2 * CONST_ADDR_PERM2(Obj perm)
+EXPORT_INLINE const UInt2 * CONST_ADDR_PERM2(Obj perm)
 {
     return (const UInt2 *)(CONST_ADDR_OBJ(perm) + 1);
 }
 
-static inline UInt SIZEBAG_PERM4(UInt deg)
+EXPORT_INLINE UInt SIZEBAG_PERM4(UInt deg)
 {
     return sizeof(Obj) + deg * sizeof(UInt4);
 }
 
-static inline Obj NEW_PERM4(UInt deg)
+EXPORT_INLINE Obj NEW_PERM4(UInt deg)
 {
     return NewBag(T_PERM4, SIZEBAG_PERM4(deg));
 }
 
-static inline UInt DEG_PERM4(Obj perm)
+EXPORT_INLINE UInt DEG_PERM4(Obj perm)
 {
     return (SIZE_OBJ(perm) - sizeof(Obj)) / sizeof(UInt4);
 }
 
-static inline UInt4 * ADDR_PERM4(Obj perm)
+EXPORT_INLINE UInt4 * ADDR_PERM4(Obj perm)
 {
     return (UInt4 *)(ADDR_OBJ(perm) + 1);
 }
 
-static inline const UInt4 * CONST_ADDR_PERM4(Obj perm)
+EXPORT_INLINE const UInt4 * CONST_ADDR_PERM4(Obj perm)
 {
     return (const UInt4 *)(CONST_ADDR_OBJ(perm) + 1);
 }
 
-static inline Obj STOREDINV_PERM(Obj perm)
+EXPORT_INLINE Obj STOREDINV_PERM(Obj perm)
 {
     return ADDR_OBJ(perm)[0];
 }
@@ -82,7 +82,7 @@ static inline Obj STOREDINV_PERM(Obj perm)
 /* SET_STOREDINV_PERM should only be used in neither perm, nor inv has
    a stored inverse already.  It's OK (although inefficient) if perm and inv
    are identical */
-static inline void SET_STOREDINV_PERM(Obj perm, Obj inv)
+EXPORT_INLINE void SET_STOREDINV_PERM(Obj perm, Obj inv)
 {
     /* check for the possibility that inv is in a different representation to
        perm. It could be that perm actually acts on < 2^16 points but is in
@@ -110,7 +110,7 @@ static inline void SET_STOREDINV_PERM(Obj perm, Obj inv)
 #define IS_PERM2(perm)  (TNUM_OBJ(perm) == T_PERM2)
 #define IS_PERM4(perm)  (TNUM_OBJ(perm) == T_PERM4)
 
-static inline int IS_PERM(Obj f)
+EXPORT_INLINE int IS_PERM(Obj f)
 {
     return (TNUM_OBJ(f) == T_PERM2 || TNUM_OBJ(f) == T_PERM4);
 }

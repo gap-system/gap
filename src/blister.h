@@ -27,7 +27,7 @@
 **
 *F  IS_BLIST_REP( <list> )  . . . . .  check if <list> is in boolean list rep
 */
-static inline Int IS_BLIST_REP(Obj list)
+EXPORT_INLINE Int IS_BLIST_REP(Obj list)
 {
     return T_BLIST <= TNUM_OBJ(list) &&
            TNUM_OBJ(list) <= T_BLIST_SSORT + IMMUTABLE;
@@ -42,7 +42,7 @@ static inline Int IS_BLIST_REP(Obj list)
 **  <plen> elements must at least have.
 **
 */
-static inline Int SIZE_PLEN_BLIST(Int plen)
+EXPORT_INLINE Int SIZE_PLEN_BLIST(Int plen)
 {
     GAP_ASSERT(plen >= 0);
     return sizeof(Obj) + (plen + BIPEB - 1) / BIPEB * sizeof(UInt);
@@ -56,7 +56,7 @@ static inline Int SIZE_PLEN_BLIST(Int plen)
 **  integer.
 **
 */
-static inline Int LEN_BLIST(Obj list)
+EXPORT_INLINE Int LEN_BLIST(Obj list)
 {
     GAP_ASSERT(IS_BLIST_REP(list));
     return INT_INTOBJ(CONST_ADDR_OBJ(list)[0]);
@@ -68,7 +68,7 @@ static inline Int LEN_BLIST(Obj list)
 *F  NUMBER_BLOCKS_BLIST(<list>) . . . . . . . . number of UInt blocks in list
 **
 */
-static inline Int NUMBER_BLOCKS_BLIST(Obj blist)
+EXPORT_INLINE Int NUMBER_BLOCKS_BLIST(Obj blist)
 {
     GAP_ASSERT(IS_BLIST_REP(blist));
     return (LEN_BLIST(blist) + BIPEB - 1) / BIPEB;
@@ -83,7 +83,7 @@ static inline Int NUMBER_BLOCKS_BLIST(Obj blist)
 **  <len>, which must be a positive C integer.
 **
 */
-static inline void SET_LEN_BLIST(Obj list, Int len)
+EXPORT_INLINE void SET_LEN_BLIST(Obj list, Int len)
 {
     GAP_ASSERT(IS_BLIST_REP(list));
     GAP_ASSERT(len >= 0);
@@ -98,12 +98,12 @@ static inline void SET_LEN_BLIST(Obj list, Int len)
 **  returns a pointer to the start of the data of the Boolean list
 **
 */
-static inline UInt * BLOCKS_BLIST(Obj list)
+EXPORT_INLINE UInt * BLOCKS_BLIST(Obj list)
 {
     return ((UInt *)(ADDR_OBJ(list) + 1));
 }
 
-static inline const UInt * CONST_BLOCKS_BLIST(Obj list)
+EXPORT_INLINE const UInt * CONST_BLOCKS_BLIST(Obj list)
 {
     return ((const UInt *)(CONST_ADDR_OBJ(list) + 1));
 }
@@ -116,12 +116,12 @@ static inline const UInt * CONST_BLOCKS_BLIST(Obj list)
 **  <pos>-th element of the boolean list <list>. <pos> must be a positive
 **  integer less than or equal to the length of <list>.
 */
-static inline UInt * BLOCK_ELM_BLIST_PTR(Obj list, UInt pos)
+EXPORT_INLINE UInt * BLOCK_ELM_BLIST_PTR(Obj list, UInt pos)
 {
     return BLOCKS_BLIST(list) + ((pos)-1) / BIPEB;
 }
 
-static inline const UInt * CONST_BLOCK_ELM_BLIST_PTR(Obj list, UInt pos)
+EXPORT_INLINE const UInt * CONST_BLOCK_ELM_BLIST_PTR(Obj list, UInt pos)
 {
     return CONST_BLOCKS_BLIST(list) + ((pos)-1) / BIPEB;
 }
@@ -134,7 +134,7 @@ static inline const UInt * CONST_BLOCK_ELM_BLIST_PTR(Obj list, UInt pos)
 **  '(<pos>-1) % BIPEB',
 **  useful for accessing the <pos>-th element of a blist.
 */
-static inline UInt MASK_POS_BLIST(UInt pos)
+EXPORT_INLINE UInt MASK_POS_BLIST(UInt pos)
 {
     return ((UInt)1) << (pos - 1) % BIPEB;
 }
@@ -147,7 +147,7 @@ static inline UInt MASK_POS_BLIST(UInt pos)
 **  boolean list <list> is 1, and otherwise 0. <pos> must be a positive
 **  integer less than or equal to the length of <list>.
 */
-static inline Int TEST_BIT_BLIST(Obj list, UInt pos)
+EXPORT_INLINE Int TEST_BIT_BLIST(Obj list, UInt pos)
 {
     return *CONST_BLOCK_ELM_BLIST_PTR(list, pos) & MASK_POS_BLIST(pos);
 }
@@ -160,7 +160,7 @@ static inline Int TEST_BIT_BLIST(Obj list, UInt pos)
 **  either 'true' or 'false'.  <pos> must  be a positive integer less than or
 **  equal to the length of <list>.
 */
-static inline Obj ELM_BLIST(Obj list, UInt pos)
+EXPORT_INLINE Obj ELM_BLIST(Obj list, UInt pos)
 {
     return TEST_BIT_BLIST(list, pos) ? True : False;
 }
@@ -174,12 +174,12 @@ static inline Obj ELM_BLIST(Obj list, UInt pos)
 **  to 1 resp. 0.  <pos> must be a positive integer less than or equal to
 **  the length of <list>.
 */
-static inline void SET_BIT_BLIST(Obj list, UInt pos)
+EXPORT_INLINE void SET_BIT_BLIST(Obj list, UInt pos)
 {
     *BLOCK_ELM_BLIST_PTR(list, pos) |= MASK_POS_BLIST(pos);
 }
 
-static inline void CLEAR_BIT_BLIST(Obj list, UInt pos)
+EXPORT_INLINE void CLEAR_BIT_BLIST(Obj list, UInt pos)
 {
     *BLOCK_ELM_BLIST_PTR(list, pos) &= ~MASK_POS_BLIST(pos);
 }
@@ -222,7 +222,7 @@ static inline void CLEAR_BIT_BLIST(Obj list, UInt pos)
 **
 */
 
-static inline UInt COUNT_TRUES_BLOCK( UInt block )  {  
+EXPORT_INLINE UInt COUNT_TRUES_BLOCK( UInt block )  {  
 #if USE_POPCNT && defined(HAVE___BUILTIN_POPCOUNTL)  
   return __builtin_popcountl(block);
 #else
@@ -268,7 +268,7 @@ static inline UInt COUNT_TRUES_BLOCK( UInt block )  {
 *T  monitor this situation periodically. 
 */
 
-static inline UInt COUNT_TRUES_BLOCKS(const UInt * ptr, UInt nblocks)
+EXPORT_INLINE UInt COUNT_TRUES_BLOCKS(const UInt * ptr, UInt nblocks)
 {
     UInt n = 0;
     while (nblocks >= 4) {
@@ -345,7 +345,7 @@ extern void ConvBlist (
 */
 
 /* constructs a mask that selects bits <from> to <to> inclusive of a UInt */
-static inline UInt MaskForCopyBits(UInt from, UInt to)
+EXPORT_INLINE UInt MaskForCopyBits(UInt from, UInt to)
 {
     return ((to == BIPEB - 1) ? 0 : (1L << (to + 1))) - (1L << from);
 }
@@ -356,7 +356,7 @@ static inline UInt MaskForCopyBits(UInt from, UInt to)
    single word (so endbits + shift must be < BIPEB and frombits +
    shift must be non-negative */
 
-static inline void
+EXPORT_INLINE void
 CopyInWord(UInt * to, UInt startbit, UInt endbit, UInt from, Int shift)
 {
     UInt m = MaskForCopyBits(startbit + shift, endbit + shift);

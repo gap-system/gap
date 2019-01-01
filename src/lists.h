@@ -37,7 +37,7 @@
 */
 extern  Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
-static inline Int IS_LIST(Obj obj)
+EXPORT_INLINE Int IS_LIST(Obj obj)
 {
     return (*IsListFuncs[TNUM_OBJ(obj)])(obj);
 }
@@ -59,7 +59,7 @@ static inline Int IS_LIST(Obj obj)
 */
 extern Int (*IsSmallListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static inline Int IS_SMALL_LIST(Obj obj)
+EXPORT_INLINE Int IS_SMALL_LIST(Obj obj)
 {
     return (*IsSmallListFuncs[TNUM_OBJ(obj)])(obj);
 }
@@ -82,7 +82,7 @@ extern Int (*IsDenseListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
 extern Int IsDenseListDefault(Obj list);
 
-static inline Int IS_DENSE_LIST(Obj list)
+EXPORT_INLINE Int IS_DENSE_LIST(Obj list)
 {
     return (*IsDenseListFuncs[TNUM_OBJ(list)])(list);
 }
@@ -107,7 +107,7 @@ extern Int (*IsHomogListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
 extern Int IsHomogListDefault(Obj list);
 
-static inline Int IS_HOMOG_LIST(Obj list)
+EXPORT_INLINE Int IS_HOMOG_LIST(Obj list)
 {
     return (*IsHomogListFuncs[TNUM_OBJ(list)])(list);
 }
@@ -133,7 +133,7 @@ extern Int (*IsPossListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
 extern Int IsPossListDefault(Obj list);
 
-static inline Int IS_POSS_LIST(Obj list)
+EXPORT_INLINE Int IS_POSS_LIST(Obj list)
 {
     return (*IsPossListFuncs[TNUM_OBJ(list)])(list);
 }
@@ -148,7 +148,7 @@ static inline Int IS_POSS_LIST(Obj list)
 */
 extern  Int             (*LenListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-static inline Int LEN_LIST(Obj list)
+EXPORT_INLINE Int LEN_LIST(Obj list)
 {
     return (*LenListFuncs[TNUM_OBJ(list)])(list);
 }
@@ -167,7 +167,7 @@ static inline Int LEN_LIST(Obj list)
 */
 extern  Obj             (*LengthFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-static inline Obj LENGTH(Obj list)
+EXPORT_INLINE Obj LENGTH(Obj list)
 {
     return (*LengthFuncs[TNUM_OBJ(list)])(list);
 }
@@ -190,7 +190,7 @@ static inline Obj LENGTH(Obj list)
 
 extern  Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-static inline Int ISB_LIST(Obj list, Int pos)
+EXPORT_INLINE Int ISB_LIST(Obj list, Int pos)
 {
     return (*IsbListFuncs[TNUM_OBJ(list)])(list, pos);
 }
@@ -225,7 +225,7 @@ extern Obj (*Elm0ListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  signalled if <list>  is  not a list.  It   is the responsibility   of the
 **  caller to ensure that <pos> is a positive integer.
 */
-static inline Obj ELM0_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELM0_LIST(Obj list, Int pos)
 {
     return (*Elm0ListFuncs[TNUM_OBJ(list)])(list, pos);
 }
@@ -250,7 +250,7 @@ extern Obj (*ElmDefListFuncs[LAST_REAL_TNUM + 1])(Obj list, Int pos, Obj def);
 **  An error is signalled if <list> is not a list. It is the responsibility
 **  of the caller to ensure that <pos> is a positive integer.
 */
-static inline Obj ELM_DEFAULT_LIST(Obj list, Int pos, Obj def)
+EXPORT_INLINE Obj ELM_DEFAULT_LIST(Obj list, Int pos, Obj def)
 {
     return (*ElmDefListFuncs[TNUM_OBJ(list)])(list, pos, def);
 }
@@ -276,7 +276,7 @@ extern  Obj (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  that <list> is a list and that <pos> is less than  or equal to the length
 **  of <list>.
 */
-static inline Obj ELMV0_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELMV0_LIST(Obj list, Int pos)
 {
     GAP_ASSERT(pos > 0);
     GAP_ASSERT(pos <= LEN_LIST(list));
@@ -314,7 +314,7 @@ extern Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 */
 extern Obj ELMB_LIST( Obj list, Obj pos );
 
-static inline Obj ELM_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELM_LIST(Obj list, Int pos)
 {
     Obj ret = (*ElmListFuncs[TNUM_OBJ(list)])(list, pos);
     GAP_ASSERT(ret != 0);
@@ -355,7 +355,7 @@ extern Obj (*ElmvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  that <list> is a list and that <pos> is less  than or equal to the length
 **  of <list>.
 */
-static inline Obj ELMV_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELMV_LIST(Obj list, Int pos)
 {
     GAP_ASSERT(pos > 0);
     GAP_ASSERT(pos <= LEN_LIST(list));
@@ -382,7 +382,7 @@ extern Obj (*ElmwListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  'ELMW_LIST' does the same as 'ELMV_LIST', but  the caller also guarantees
 **  that <list> has an assigned object at the position <pos>.
 */
-static inline Obj ELMW_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELMW_LIST(Obj list, Int pos)
 {
     GAP_ASSERT(pos > 0);
     GAP_ASSERT(pos <= LEN_LIST(list));
@@ -421,7 +421,7 @@ extern Obj (*ElmsListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss );
 **  It is the responsibility of the  caller to ensure  that <poss> is a dense
 **  list of positive integers.
 */
-static inline Obj ELMS_LIST(Obj list, Obj poss)
+EXPORT_INLINE Obj ELMS_LIST(Obj list, Obj poss)
 {
     GAP_ASSERT(IS_POSS_LIST(poss));
     return (*ElmsListFuncs[TNUM_OBJ(list)])(list, poss);
@@ -477,7 +477,7 @@ extern void UNBB_LIST( Obj list, Obj pos );
 
 extern void UnbListDefault( Obj list, Int  pos );
 
-static inline void UNB_LIST(Obj list, Int pos)
+EXPORT_INLINE void UNB_LIST(Obj list, Int pos)
 {
     GAP_ASSERT(pos > 0);
     UInt tnum = TNUM_OBJ(list);
@@ -513,7 +513,7 @@ extern  void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, O
 
 extern void ASSB_LIST( Obj list, Obj pos, Obj obj );
 
-static inline void ASS_LIST(Obj list, Int pos, Obj obj)
+EXPORT_INLINE void ASS_LIST(Obj list, Int pos, Obj obj)
 {
     GAP_ASSERT(pos > 0);
     GAP_ASSERT(obj != 0);
@@ -563,7 +563,7 @@ extern  void            AsssListDefault (
             Obj                 poss,
             Obj                 objs );
 
-static inline void ASSS_LIST(Obj list, Obj poss, Obj objs)
+EXPORT_INLINE void ASSS_LIST(Obj list, Obj poss, Obj objs)
 {
     GAP_ASSERT(IS_POSS_LIST(poss));
     GAP_ASSERT(IS_DENSE_LIST(objs));
@@ -606,7 +606,7 @@ extern  Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 extern  Int             IsTableListDefault (
             Obj                 list );
 
-static inline Int IS_TABLE_LIST(Obj list)
+EXPORT_INLINE Int IS_TABLE_LIST(Obj list)
 {
     return (*IsTableListFuncs[TNUM_OBJ(list)])(list);
 }
@@ -631,7 +631,7 @@ extern  Int             (*IsSSortListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 extern  Int             IsSSortListDefault (
             Obj                 list );
 
-static inline Int IS_SSORT_LIST(Obj list)
+EXPORT_INLINE Int IS_SSORT_LIST(Obj list)
 {
     return (*IsSSortListFuncs[TNUM_OBJ(list)])(list);
 }
@@ -664,7 +664,7 @@ extern  Obj             PosListDefault (
             Obj                 obj,
             Obj                 start );
 
-static inline Obj POS_LIST(Obj list, Obj obj, Obj start)
+EXPORT_INLINE Obj POS_LIST(Obj list, Obj obj, Obj start)
 {
     return (*PosListFuncs[TNUM_OBJ(list)])(list, obj, start);
 }
@@ -793,7 +793,7 @@ extern  void            AsssListLevel (
 
 extern  void            (*PlainListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-static inline void PLAIN_LIST(Obj list)
+EXPORT_INLINE void PLAIN_LIST(Obj list)
 {
     ((*PlainListFuncs[TNUM_OBJ(list)])(list));
 }
@@ -865,7 +865,7 @@ extern UInt SetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 **
 *F  SET_FILT_LIST( <list>, <fnum> ) . . . . . . . . . . . . . .  set a filter
 */
-static inline void SET_FILT_LIST(Obj list, FilterNumber fn)
+EXPORT_INLINE void SET_FILT_LIST(Obj list, FilterNumber fn)
 {
     UInt n = SetFiltListTNums[TNUM_OBJ(list)][fn];
     if (n == 0) {
@@ -905,7 +905,7 @@ extern UInt ResetFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 **
 *F  RESET_FILT_LIST( <list>, <fnum> ) . . . . . . . . . . . .  reset a filter
 */
-static inline void RESET_FILT_LIST(Obj list, FilterNumber fn)
+EXPORT_INLINE void RESET_FILT_LIST(Obj list, FilterNumber fn)
 {
     UInt n = ResetFiltListTNums[TNUM_OBJ(list)][fn];
     if (n == 0) {
@@ -950,7 +950,7 @@ extern UInt ClearFiltsTNums [ LAST_REAL_TNUM ];
 **
 *F  CLEAR_FILTS_LIST( <list> )  . . . . . . . . . . . . . .  clear properties
 */
-static inline void CLEAR_FILTS_LIST(Obj list)
+EXPORT_INLINE void CLEAR_FILTS_LIST(Obj list)
 {
     UInt n = ClearFiltsTNums[TNUM_OBJ(list)];
     if (n > 0) {

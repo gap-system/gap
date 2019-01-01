@@ -74,7 +74,7 @@ typedef struct {
     Obj endline;
 } BodyHeader;
 
-static inline BodyHeader *BODY_HEADER(Obj body)
+EXPORT_INLINE BodyHeader *BODY_HEADER(Obj body)
 {
     GAP_ASSERT(TNUM_OBJ(body) == T_BODY);
     return (BodyHeader *)ADDR_OBJ(body);

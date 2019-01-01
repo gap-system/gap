@@ -59,7 +59,7 @@ Obj LengthAList(Obj list);
 **  markuspf: renamed new to new_ for compatibility with C++ packages.
 */
 
-static inline int CompareAndSwapObj(Obj *addr, Obj old, Obj new_) {
+EXPORT_INLINE int CompareAndSwapObj(Obj *addr, Obj old, Obj new_) {
 #ifndef WARD_ENABLED
   return COMPARE_AND_SWAP((AtomicUInt *) addr,
     (AtomicUInt) old, (AtomicUInt) new_);
@@ -106,7 +106,7 @@ static inline int CompareAndSwapObj(Obj *addr, Obj old, Obj new_) {
 */
 
 
-static inline void ATOMIC_SET_ELM_PLIST(Obj list, UInt index, Obj value) {
+EXPORT_INLINE void ATOMIC_SET_ELM_PLIST(Obj list, UInt index, Obj value) {
 #ifndef WARD_ENABLED
   Obj *contents = ADDR_OBJ(list);
   MEMBAR_WRITE(); /* ensure that contents[index] becomes visible to
@@ -117,7 +117,7 @@ static inline void ATOMIC_SET_ELM_PLIST(Obj list, UInt index, Obj value) {
 #endif
 }
 
-static inline Obj ATOMIC_SET_ELM_PLIST_ONCE(Obj list, UInt index, Obj value) {
+EXPORT_INLINE Obj ATOMIC_SET_ELM_PLIST_ONCE(Obj list, UInt index, Obj value) {
 #ifndef WARD_ENABLED
   Obj *contents = ADDR_OBJ(list);
   Obj result;
@@ -138,7 +138,7 @@ static inline Obj ATOMIC_SET_ELM_PLIST_ONCE(Obj list, UInt index, Obj value) {
 #endif
 }
 
-static inline Obj ATOMIC_ELM_PLIST(Obj list, UInt index) {
+EXPORT_INLINE Obj ATOMIC_ELM_PLIST(Obj list, UInt index) {
 #ifndef WARD_ENABLED
   const Obj *contents = CONST_ADDR_OBJ(list);
   Obj result;

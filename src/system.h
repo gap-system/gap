@@ -45,6 +45,24 @@
 GAP_STATIC_ASSERT(sizeof(void *) == SIZEOF_VOID_P, "sizeof(void *) is wrong");
 
 
+// EXPORT_INLINE is used for most inline functions declared in our header
+// files; it is set to `inline` by default, except in debug.c, where it is set
+// to `extern inline`, to ensure exactly one instance of the function is
+// actually emitted.
+//
+// We make an exception for HPC-GAP, were we default to `static inline`
+// instead, to avoid warnings in code using atomic_ops functions; this is OK,
+// as we don't support a libgap version of HPC-GAP right now, and if we ever
+// wanted to, a lot more work (and planning) would have to be invested into
+// that anyway.
+#ifndef EXPORT_INLINE
+#ifdef HPCGAP
+#define EXPORT_INLINE static inline
+#else
+#define EXPORT_INLINE inline
+#endif
+#endif
+
 /****************************************************************************
 **
 *S  GAP_PATH_MAX . . . . . . . . . . . .  size for buffers storing file paths
