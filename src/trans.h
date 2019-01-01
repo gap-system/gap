@@ -13,30 +13,30 @@
 
 #include "objects.h"
 
-static inline int IS_TRANS(Obj f)
+EXPORT_INLINE int IS_TRANS(Obj f)
 {
     return (TNUM_OBJ(f) == T_TRANS2 || TNUM_OBJ(f) == T_TRANS4);
 }
 
-static inline Obj NEW_TRANS2(UInt deg)
+EXPORT_INLINE Obj NEW_TRANS2(UInt deg)
 {
     GAP_ASSERT(deg <= 65536);
     return NewBag(T_TRANS2, deg * sizeof(UInt2) + 3 * sizeof(Obj));
 }
 
-static inline UInt2 * ADDR_TRANS2(Obj f)
+EXPORT_INLINE UInt2 * ADDR_TRANS2(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_TRANS2);
     return ((UInt2 *)((Obj *)(ADDR_OBJ(f)) + 3));
 }
 
-static inline const UInt2 * CONST_ADDR_TRANS2(Obj f)
+EXPORT_INLINE const UInt2 * CONST_ADDR_TRANS2(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_TRANS2);
     return ((const UInt2 *)((const Obj *)(CONST_ADDR_OBJ(f)) + 3));
 }
 
-static inline UInt DEG_TRANS2(Obj f)
+EXPORT_INLINE UInt DEG_TRANS2(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_TRANS2);
     return ((UInt)(SIZE_OBJ(f) - 3 * sizeof(Obj)) / sizeof(UInt2));
@@ -44,26 +44,26 @@ static inline UInt DEG_TRANS2(Obj f)
 
 UInt RANK_TRANS2(Obj f);
 
-static inline Obj NEW_TRANS4(UInt deg)
+EXPORT_INLINE Obj NEW_TRANS4(UInt deg)
 {
     // No assert here since we allow creating new T_TRANS4's when the degree
     // is low enough to fit in a T_TRANS2.
     return NewBag(T_TRANS4, deg * sizeof(UInt4) + 3 * sizeof(Obj));
 }
 
-static inline UInt4 * ADDR_TRANS4(Obj f)
+EXPORT_INLINE UInt4 * ADDR_TRANS4(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_TRANS4);
     return ((UInt4 *)((Obj *)(ADDR_OBJ(f)) + 3));
 }
 
-static inline const UInt4 * CONST_ADDR_TRANS4(Obj f)
+EXPORT_INLINE const UInt4 * CONST_ADDR_TRANS4(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_TRANS4);
     return ((const UInt4 *)((const Obj *)(CONST_ADDR_OBJ(f)) + 3));
 }
 
-static inline UInt DEG_TRANS4(Obj f)
+EXPORT_INLINE UInt DEG_TRANS4(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_TRANS4);
     return ((UInt)(SIZE_OBJ(f) - 3 * sizeof(Obj)) / sizeof(UInt4));
@@ -71,7 +71,7 @@ static inline UInt DEG_TRANS4(Obj f)
 
 UInt RANK_TRANS4(Obj f);
 
-static inline Obj NEW_TRANS(UInt deg)
+EXPORT_INLINE Obj NEW_TRANS(UInt deg)
 {
     if (deg < 65536) {
         return NEW_TRANS2(deg);
@@ -81,13 +81,13 @@ static inline Obj NEW_TRANS(UInt deg)
     }
 }
 
-static inline UInt DEG_TRANS(Obj f)
+EXPORT_INLINE UInt DEG_TRANS(Obj f)
 {
     GAP_ASSERT(IS_TRANS(f));
     return (TNUM_OBJ(f) == T_TRANS2 ? DEG_TRANS2(f) : DEG_TRANS4(f));
 }
 
-static inline UInt RANK_TRANS(Obj f)
+EXPORT_INLINE UInt RANK_TRANS(Obj f)
 {
     GAP_ASSERT(IS_TRANS(f));
     return (TNUM_OBJ(f) == T_TRANS2 ? RANK_TRANS2(f) : RANK_TRANS4(f));

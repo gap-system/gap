@@ -73,7 +73,7 @@ extern Obj TRY_NEXT_METHOD;
 **
 *F  IS_OPERATION( <obj> ) . . . . . . . . . . check if object is an operation
 */
-static inline Int IS_OPERATION(Obj obj)
+EXPORT_INLINE Int IS_OPERATION(Obj obj)
 {
     return TNUM_OBJ(obj) == T_FUNCTION && SIZE_OBJ(obj) == sizeof(OperBag);
 }
@@ -83,13 +83,13 @@ static inline Int IS_OPERATION(Obj obj)
 **
 *F  OPER
 */
-static inline OperBag * OPER(Obj oper)
+EXPORT_INLINE OperBag * OPER(Obj oper)
 {
     GAP_ASSERT(IS_OPERATION(oper));
     return (OperBag *)ADDR_OBJ(oper);
 }
 
-static inline const OperBag * CONST_OPER(Obj oper)
+EXPORT_INLINE const OperBag * CONST_OPER(Obj oper)
 {
     GAP_ASSERT(IS_OPERATION(oper));
     return (const OperBag *)CONST_ADDR_OBJ(oper);
@@ -100,12 +100,12 @@ static inline const OperBag * CONST_OPER(Obj oper)
 **
 *F  FLAG1_FILT( <oper> )  . . . . . . . . . .  flag 1 list of an 'and' filter
 */
-static inline Obj FLAG1_FILT(Obj oper)
+EXPORT_INLINE Obj FLAG1_FILT(Obj oper)
 {
     return CONST_OPER(oper)->flag1;
 }
 
-static inline void SET_FLAG1_FILT(Obj oper, Obj x)
+EXPORT_INLINE void SET_FLAG1_FILT(Obj oper, Obj x)
 {
     OPER(oper)->flag1 = x;
 }
@@ -115,12 +115,12 @@ static inline void SET_FLAG1_FILT(Obj oper, Obj x)
 **
 *F  FLAG2_FILT( <oper> )  . . . . . . . . . .  flag 2 list of an 'and' filter
 */
-static inline Obj FLAG2_FILT(Obj oper)
+EXPORT_INLINE Obj FLAG2_FILT(Obj oper)
 {
     return CONST_OPER(oper)->flag2;
 }
 
-static inline void SET_FLAG2_FILT(Obj oper, Obj x)
+EXPORT_INLINE void SET_FLAG2_FILT(Obj oper, Obj x)
 {
     OPER(oper)->flag2 = x;
 }
@@ -130,12 +130,12 @@ static inline void SET_FLAG2_FILT(Obj oper, Obj x)
 **
 *F  FLAGS_FILT( <oper> )  . . . . . . . . . . . . . . . . . flags of a filter
 */
-static inline Obj FLAGS_FILT(Obj oper)
+EXPORT_INLINE Obj FLAGS_FILT(Obj oper)
 {
     return CONST_OPER(oper)->flags;
 }
 
-static inline void SET_FLAGS_FILT(Obj oper, Obj x)
+EXPORT_INLINE void SET_FLAGS_FILT(Obj oper, Obj x)
 {
     OPER(oper)->flags = x;
 }
@@ -145,12 +145,12 @@ static inline void SET_FLAGS_FILT(Obj oper, Obj x)
 **
 *F  SETTER_FILT( <oper> ) . . . . . . . . . . . . . . . .  setter of a filter
 */
-static inline Obj SETTR_FILT(Obj oper)
+EXPORT_INLINE Obj SETTR_FILT(Obj oper)
 {
     return CONST_OPER(oper)->setter;
 }
 
-static inline void SET_SETTR_FILT(Obj oper, Obj x)
+EXPORT_INLINE void SET_SETTR_FILT(Obj oper, Obj x)
 {
     OPER(oper)->setter = x;
 }
@@ -160,12 +160,12 @@ static inline void SET_SETTR_FILT(Obj oper, Obj x)
 **
 *F  TESTR_FILT( <oper> )  . . . . . . . . . . . . . . . .  tester of a filter
 */
-static inline Obj TESTR_FILT(Obj oper)
+EXPORT_INLINE Obj TESTR_FILT(Obj oper)
 {
     return CONST_OPER(oper)->tester;
 }
 
-static inline void SET_TESTR_FILT(Obj oper, Obj x)
+EXPORT_INLINE void SET_TESTR_FILT(Obj oper, Obj x)
 {
     OPER(oper)->tester = x;
 }
@@ -175,13 +175,13 @@ static inline void SET_TESTR_FILT(Obj oper, Obj x)
 **
 *F  METHS_OPER( <oper> )  . . . . . . . . . . . . method list of an operation
 */
-static inline Obj METHS_OPER(Obj oper, Int i)
+EXPORT_INLINE Obj METHS_OPER(Obj oper, Int i)
 {
     GAP_ASSERT(0 <= i && i < 8);
     return CONST_OPER(oper)->methods[i];
 }
 
-static inline void SET_METHS_OPER(Obj oper, Int i, Obj x)
+EXPORT_INLINE void SET_METHS_OPER(Obj oper, Int i, Obj x)
 {
     GAP_ASSERT(0 <= i && i < 8);
     OPER(oper)->methods[i] = x;
@@ -192,13 +192,13 @@ static inline void SET_METHS_OPER(Obj oper, Int i, Obj x)
 **
 *F  CACHE_OPER( <oper> )  . . . . . . . . . . . . . . . cache of an operation
 */
-static inline Obj CACHE_OPER(Obj oper, Int i)
+EXPORT_INLINE Obj CACHE_OPER(Obj oper, Int i)
 {
     GAP_ASSERT(0 <= i && i < 8);
     return CONST_OPER(oper)->cache[i];
 }
 
-static inline void SET_CACHE_OPER(Obj oper, Int i, Obj x)
+EXPORT_INLINE void SET_CACHE_OPER(Obj oper, Int i, Obj x)
 {
     GAP_ASSERT(0 <= i && i < 8);
     OPER(oper)->cache[i] = x;
@@ -210,7 +210,7 @@ static inline void SET_CACHE_OPER(Obj oper, Int i, Obj x)
 *F  ENABLED_ATTR( <oper> ) . . . . true if the operation is an attribute and
 **                                 storing is enabled (default) else false
 */
-static inline Int ENABLED_ATTR(Obj oper)
+EXPORT_INLINE Int ENABLED_ATTR(Obj oper)
 {
     Obj val = CONST_OPER(oper)->extra;
     Int v = val ? INT_INTOBJ(val) : 0;
@@ -223,7 +223,7 @@ static inline Int ENABLED_ATTR(Obj oper)
 *F  SET_ENABLED_ATTR( <oper>, <on> ) . set a new value that records whether 
 **                                       storing is enabled for an operation
 */
-static inline void SET_ENABLED_ATTR(Obj oper, Int on)
+EXPORT_INLINE void SET_ENABLED_ATTR(Obj oper, Int on)
 {
     Obj val = CONST_OPER(oper)->extra;
     Int v = val ? INT_INTOBJ(val) : 0;
@@ -238,7 +238,7 @@ static inline void SET_ENABLED_ATTR(Obj oper, Int on)
 **
 *F  IS_FILTER( <oper> ) . . . . . . . . . . . . . check if object is a filter
 */
-static inline Int IS_FILTER(Obj oper)
+EXPORT_INLINE Int IS_FILTER(Obj oper)
 {
     if (!IS_OPERATION(oper))
         return 0;
@@ -252,7 +252,7 @@ static inline Int IS_FILTER(Obj oper)
 **
 *F  SET_IS_FILTER( <oper> ) . . . . . . . . . . .  mark operation as a filter
 */
-static inline void SET_IS_FILTER(Obj oper)
+EXPORT_INLINE void SET_IS_FILTER(Obj oper)
 {
     Obj val = CONST_OPER(oper)->extra;
     Int v = val ? INT_INTOBJ(val) : 0;
@@ -271,7 +271,7 @@ static inline void SET_IS_FILTER(Obj oper)
 **
 *F  NEW_FLAGS( <flags>, <len> ) . . . . . . . . . . . . . . .  new flags list
 */
-static inline Obj NEW_FLAGS(UInt len)
+EXPORT_INLINE Obj NEW_FLAGS(UInt len)
 {
     UInt size = (3 + ((len+BIPEB-1) >> LBIPEB)) * sizeof(Obj);
     Obj flags = NewBag(T_FLAGS, size);
@@ -285,7 +285,7 @@ static inline Obj NEW_FLAGS(UInt len)
 **
 **  returns the list of trues of <flags> or 0 if the list is not known yet.
 */
-static inline Obj TRUES_FLAGS(Obj flags)
+EXPORT_INLINE Obj TRUES_FLAGS(Obj flags)
 {
     GAP_ASSERT(TNUM_OBJ(flags) == T_FLAGS);
     return CONST_ADDR_OBJ(flags)[0];
@@ -296,7 +296,7 @@ static inline Obj TRUES_FLAGS(Obj flags)
 **
 *F  SET_TRUES_FLAGS( <flags>, <trues> ) . set number of trues of a flags list
 */
-static inline void SET_TRUES_FLAGS(Obj flags, Obj trues)
+EXPORT_INLINE void SET_TRUES_FLAGS(Obj flags, Obj trues)
 {
     GAP_ASSERT(TNUM_OBJ(flags) == T_FLAGS);
     ADDR_OBJ(flags)[0] = trues;
@@ -307,7 +307,7 @@ static inline void SET_TRUES_FLAGS(Obj flags, Obj trues)
 **
 *F  HASH_FLAGS( <flags> ) . . . . . . . . . . . .  hash value of <flags> or 0
 */
-static inline Obj HASH_FLAGS(Obj flags)
+EXPORT_INLINE Obj HASH_FLAGS(Obj flags)
 {
     GAP_ASSERT(TNUM_OBJ(flags) == T_FLAGS);
     return CONST_ADDR_OBJ(flags)[1];
@@ -318,7 +318,7 @@ static inline Obj HASH_FLAGS(Obj flags)
 **
 *F  SET_HASH_FLAGS( <flags>, <hash> ) . . . . . . . . . . . . . . .  set hash
 */
-static inline void SET_HASH_FLAGS(Obj flags, Obj hash)
+EXPORT_INLINE void SET_HASH_FLAGS(Obj flags, Obj hash)
 {
     GAP_ASSERT(TNUM_OBJ(flags) == T_FLAGS);
     ADDR_OBJ(flags)[1] = hash;
@@ -329,7 +329,7 @@ static inline void SET_HASH_FLAGS(Obj flags, Obj hash)
 **
 *F  LEN_FLAGS( <flags> )  . . . . . . . . . . . . . .  length of a flags list
 */
-static inline UInt LEN_FLAGS(Obj flags)
+EXPORT_INLINE UInt LEN_FLAGS(Obj flags)
 {
     return (SIZE_OBJ(flags) / sizeof(Obj) - 3) << LBIPEB;
 };
@@ -338,7 +338,7 @@ static inline UInt LEN_FLAGS(Obj flags)
 **
 *F  AND_CACHE_FLAGS( <flags> )  . . . . . . . . . 'and' cache of a flags list
 */
-static inline Obj AND_CACHE_FLAGS(Obj list)
+EXPORT_INLINE Obj AND_CACHE_FLAGS(Obj list)
 {
     GAP_ASSERT(TNUM_OBJ(list) == T_FLAGS);
     return CONST_ADDR_OBJ(list)[2];
@@ -349,7 +349,7 @@ static inline Obj AND_CACHE_FLAGS(Obj list)
 **
 *F  SET_AND_CACHE_FLAGS( <flags>, <len> ) set the 'and' cache of a flags list
 */
-static inline void SET_AND_CACHE_FLAGS(Obj flags, Obj andc)
+EXPORT_INLINE void SET_AND_CACHE_FLAGS(Obj flags, Obj andc)
 {
     GAP_ASSERT(TNUM_OBJ(flags) == T_FLAGS);
     ADDR_OBJ(flags)[2] = andc;
@@ -359,7 +359,7 @@ static inline void SET_AND_CACHE_FLAGS(Obj flags, Obj andc)
 **
 *F  NRB_FLAGS( <flags> )  . . . . . .  number of basic blocks of a flags list
 */
-static inline UInt NRB_FLAGS(Obj flags)
+EXPORT_INLINE UInt NRB_FLAGS(Obj flags)
 {
     return SIZE_OBJ(flags) / sizeof(Obj) - 3;
 };
@@ -369,7 +369,7 @@ static inline UInt NRB_FLAGS(Obj flags)
 **
 *F  BLOCKS_FLAGS( <flags> ) . . . . . . . . . . . . data area of a flags list
 */
-static inline UInt * BLOCKS_FLAGS(Obj flags)
+EXPORT_INLINE UInt * BLOCKS_FLAGS(Obj flags)
 {
     GAP_ASSERT(TNUM_OBJ(flags) == T_FLAGS);
     return (UInt *)(ADDR_OBJ(flags) + 3);
@@ -385,7 +385,7 @@ static inline UInt * BLOCKS_FLAGS(Obj flags)
 **  <pos>  must be a positive  integer  less than or  equal  to the length of
 **  <list>.
 */
-static inline UInt BLOCK_ELM_FLAGS(Obj list, UInt pos)
+EXPORT_INLINE UInt BLOCK_ELM_FLAGS(Obj list, UInt pos)
 {
     GAP_ASSERT(TNUM_OBJ(list) == T_FLAGS);
     GAP_ASSERT(pos <= LEN_FLAGS(list));
@@ -401,7 +401,7 @@ static inline UInt BLOCK_ELM_FLAGS(Obj list, UInt pos)
 **  useful for accessing the <pos>-th element of a 'FLAGS' list.
 **
 */
-static inline UInt MASK_POS_FLAGS(UInt pos)
+EXPORT_INLINE UInt MASK_POS_FLAGS(UInt pos)
 {
     return ((UInt)1) << ((pos - 1) & (BIPEB - 1));
 }
@@ -419,22 +419,22 @@ static inline UInt MASK_POS_FLAGS(UInt pos)
 **  since the C compiler can't know that True != False. Using C_ELM_FLAGS
 **  gives slightly nicer C code and potential for a little more optimisation.
 */
-static inline Int C_ELM_FLAGS(Obj list, UInt pos)
+EXPORT_INLINE Int C_ELM_FLAGS(Obj list, UInt pos)
 {
      return (BLOCK_ELM_FLAGS(list, pos) & MASK_POS_FLAGS(pos)) != 0;
 }
 
-static inline Obj ELM_FLAGS(Obj list, UInt pos)
+EXPORT_INLINE Obj ELM_FLAGS(Obj list, UInt pos)
 {
     return C_ELM_FLAGS(list, pos) ? True : False;
 }
 
-static inline Int SAFE_C_ELM_FLAGS(Obj flags, UInt pos)
+EXPORT_INLINE Int SAFE_C_ELM_FLAGS(Obj flags, UInt pos)
 {
     return (pos <= LEN_FLAGS(flags)) ? C_ELM_FLAGS(flags, pos) : 0;
 }
 
-static inline Obj SAFE_ELM_FLAGS(Obj list, UInt pos)
+EXPORT_INLINE Obj SAFE_ELM_FLAGS(Obj list, UInt pos)
 {
     return SAFE_C_ELM_FLAGS(list, pos) ? True : False;
 }
@@ -448,7 +448,7 @@ static inline Obj SAFE_ELM_FLAGS(Obj list, UInt pos)
 **  <list> to True.  <pos> must be a positive integer less than or
 **  equal to the length of <hdList>.
 */
-static inline void SET_ELM_FLAGS(Obj list, UInt pos)
+EXPORT_INLINE void SET_ELM_FLAGS(Obj list, UInt pos)
 {
     GAP_ASSERT(TNUM_OBJ(list) == T_FLAGS);
     GAP_ASSERT(pos <= LEN_FLAGS(list));

@@ -44,7 +44,7 @@
 **  'IS_FFE'  returns 1  if the  object <o>  is  an  (immediate) finite field
 **  element and 0 otherwise.
 */
-static inline Int IS_FFE(Obj o)
+EXPORT_INLINE Int IS_FFE(Obj o)
 {
     return (Int)o & 0x02;
 }
@@ -307,7 +307,7 @@ GAP_STATIC_ASSERT(LAST_REAL_TNUM <= 254, "LAST_REAL_TNUM is too large");
 **
 **  For immediate objects, objects flags are always 0.
 */
-static inline uint8_t TEST_OBJ_FLAG(Obj obj, uint8_t flag)
+EXPORT_INLINE uint8_t TEST_OBJ_FLAG(Obj obj, uint8_t flag)
 {
     if (IS_BAG_REF(obj))
         return TEST_BAG_FLAG(obj, flag);
@@ -315,13 +315,13 @@ static inline uint8_t TEST_OBJ_FLAG(Obj obj, uint8_t flag)
         return 0;
 }
 
-static inline void SET_OBJ_FLAG(Obj obj, uint8_t flag)
+EXPORT_INLINE void SET_OBJ_FLAG(Obj obj, uint8_t flag)
 {
     if (IS_BAG_REF(obj))
         SET_BAG_FLAG(obj, flag);
 }
 
-static inline void CLEAR_OBJ_FLAG(Obj obj, uint8_t flag)
+EXPORT_INLINE void CLEAR_OBJ_FLAG(Obj obj, uint8_t flag)
 {
     if (IS_BAG_REF(obj))
         CLEAR_BAG_FLAG(obj, flag);
@@ -347,7 +347,7 @@ enum {
 **
 **  'TNUM_OBJ' returns the type of the object <obj>.
 */
-static inline UInt TNUM_OBJ(Obj obj)
+EXPORT_INLINE UInt TNUM_OBJ(Obj obj)
 {
     if (IS_INTOBJ(obj))
         return T_INT;
@@ -375,7 +375,7 @@ void SET_TNAM_TNUM(UInt tnum, const Char *name);
 **
 *F  TNAM_OBJ( <obj> ) . . . . . . . . . . . . . name of the type of an object
 */
-static inline const Char * TNAM_OBJ(Obj obj)
+EXPORT_INLINE const Char * TNAM_OBJ(Obj obj)
 {
     return TNAM_TNUM(TNUM_OBJ(obj));
 }
@@ -387,7 +387,7 @@ static inline const Char * TNAM_OBJ(Obj obj)
 **
 **  'SIZE_OBJ' returns the size of the object <obj>.
 */
-static inline UInt SIZE_OBJ(Obj obj)
+EXPORT_INLINE UInt SIZE_OBJ(Obj obj)
 {
     return SIZE_BAG(obj);
 }
@@ -400,12 +400,12 @@ static inline UInt SIZE_OBJ(Obj obj)
 **  'ADDR_OBJ' returns the absolute address of the memory block of the object
 **  <obj>.
 */
-static inline Obj *ADDR_OBJ(Obj obj)
+EXPORT_INLINE Obj *ADDR_OBJ(Obj obj)
 {
     return PTR_BAG(obj);
 }
 
-static inline const Obj *CONST_ADDR_OBJ(Obj obj)
+EXPORT_INLINE const Obj *CONST_ADDR_OBJ(Obj obj)
 {
     return CONST_PTR_BAG(obj);
 }
@@ -482,7 +482,7 @@ enum {
 **  'TYPE_OBJ' returns the type of the object <obj>.
 */
 extern Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
-static inline Obj TYPE_OBJ(Obj obj)
+EXPORT_INLINE Obj TYPE_OBJ(Obj obj)
 {
     UInt tnum = TNUM_OBJ(obj);
     return (*TypeObjFuncs[tnum])(obj);
@@ -496,7 +496,7 @@ static inline Obj TYPE_OBJ(Obj obj)
 **  'SET_TYPE_OBJ' sets the kind <kind>of the object <obj>.
 */
 extern void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj kind );
-static inline void SET_TYPE_OBJ(Obj obj, Obj type)
+EXPORT_INLINE void SET_TYPE_OBJ(Obj obj, Obj type)
 {
     UInt tnum = TNUM_OBJ(obj);
     (*SetTypeObjFuncs[tnum])(obj, type);
@@ -538,7 +538,7 @@ extern void MakeImmutable( Obj obj );
 **  mutability, i.e., in the range FIRST_IMM_MUT_TNUM to LAST_IMM_MUT_TNUM.
 **  It only modifies the TNUM, and does not make subobjects immutable.
 */
-static inline void MakeImmutableNoRecurse(Obj obj)
+EXPORT_INLINE void MakeImmutableNoRecurse(Obj obj)
 {
     UInt type = TNUM_OBJ(obj);
     GAP_ASSERT((FIRST_IMM_MUT_TNUM <= type) && (type <= LAST_IMM_MUT_TNUM));
@@ -566,7 +566,7 @@ extern void CheckedMakeImmutable( Obj obj );
 **  change due to assignments), and 0 otherwise.
 */
 extern Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
-static inline Int IS_MUTABLE_OBJ(Obj obj)
+EXPORT_INLINE Int IS_MUTABLE_OBJ(Obj obj)
 {
     UInt tnum = TNUM_OBJ(obj);
     if (/*FIRST_CONSTANT_TNUM <= tnum &&*/ tnum <= LAST_CONSTANT_TNUM)
@@ -638,7 +638,7 @@ extern void LoadObjError( Obj obj );
 **  copied into a mutable object), and 0 otherwise.
 */
 extern Int (*IsCopyableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
-static inline Int IS_COPYABLE_OBJ(Obj obj)
+EXPORT_INLINE Int IS_COPYABLE_OBJ(Obj obj)
 {
     UInt tnum = TNUM_OBJ(obj);
     return (IsCopyableObjFuncs[tnum])(obj);
@@ -653,7 +653,7 @@ static inline Int IS_COPYABLE_OBJ(Obj obj)
 **  'SHALLOW_COPY_OBJ' makes a shallow copy of the object <obj>.
 */
 extern Obj (*ShallowCopyObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
-static inline Obj SHALLOW_COPY_OBJ(Obj obj)
+EXPORT_INLINE Obj SHALLOW_COPY_OBJ(Obj obj)
 {
     UInt tnum = TNUM_OBJ(obj);
     return (ShallowCopyObjFuncs[tnum])(obj);
@@ -802,7 +802,7 @@ extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
 **
 *F  IS_COMOBJ( <obj> )  . . . . . . . . . . . is an object a component object
 */
-static inline Int IS_COMOBJ(Obj obj)
+EXPORT_INLINE Int IS_COMOBJ(Obj obj)
 {
     return TNUM_OBJ(obj) == T_COMOBJ;
 }
@@ -812,7 +812,7 @@ static inline Int IS_COMOBJ(Obj obj)
 **
 *F  TYPE_COMOBJ( <obj> )  . . . . . . . . . . . .  type of a component object
 */
-static inline Obj TYPE_COMOBJ(Obj obj)
+EXPORT_INLINE Obj TYPE_COMOBJ(Obj obj)
 {
     return CONST_ADDR_OBJ(obj)[0];
 }
@@ -822,7 +822,7 @@ static inline Obj TYPE_COMOBJ(Obj obj)
 **
 *F  SET_TYPE_COMOBJ( <obj>, <val> ) . . .  set the type of a component object
 */
-static inline void SET_TYPE_COMOBJ(Obj obj, Obj val)
+EXPORT_INLINE void SET_TYPE_COMOBJ(Obj obj, Obj val)
 {
     ADDR_OBJ(obj)[0] = val;
 }
@@ -845,7 +845,7 @@ extern Int  IsbComObj(Obj obj, UInt rnam);
 **
 *F  IS_POSOBJ( <obj> )  . . . . . . . . . .  is an object a positional object
 */
-static inline Int IS_POSOBJ(Obj obj)
+EXPORT_INLINE Int IS_POSOBJ(Obj obj)
 {
     return TNUM_OBJ(obj) == T_POSOBJ;
 }
@@ -855,7 +855,7 @@ static inline Int IS_POSOBJ(Obj obj)
 **
 *F  TYPE_POSOBJ( <obj> )  . . . . . . . . . . . . type of a positional object
 */
-static inline Obj TYPE_POSOBJ(Obj obj)
+EXPORT_INLINE Obj TYPE_POSOBJ(Obj obj)
 {
     return CONST_ADDR_OBJ(obj)[0];
 }
@@ -865,7 +865,7 @@ static inline Obj TYPE_POSOBJ(Obj obj)
 **
 *F  SET_TYPE_POSOBJ( <obj>, <val> ) . . . set the type of a positional object
 */
-static inline void SET_TYPE_POSOBJ(Obj obj, Obj val)
+EXPORT_INLINE void SET_TYPE_POSOBJ(Obj obj, Obj val)
 {
     ADDR_OBJ(obj)[0] = val;
 }
@@ -888,7 +888,7 @@ extern Int  IsbPosObj(Obj obj, Int idx);
 **
 *F  IS_DATOBJ( <obj> )  . . . . . . . . . . . . .  is an object a data object
 */
-static inline Int IS_DATOBJ(Obj obj)
+EXPORT_INLINE Int IS_DATOBJ(Obj obj)
 {
     return TNUM_OBJ(obj) == T_DATOBJ;
 }
@@ -898,7 +898,7 @@ static inline Int IS_DATOBJ(Obj obj)
 **
 *F  TYPE_DATOBJ( <obj> )  . . . . . . . . . . . . . . . type of a data object
 */
-static inline Obj TYPE_DATOBJ(Obj obj)
+EXPORT_INLINE Obj TYPE_DATOBJ(Obj obj)
 {
     return CONST_ADDR_OBJ(obj)[0];
 }
@@ -910,7 +910,7 @@ static inline Obj TYPE_DATOBJ(Obj obj)
 **
 **  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
 */
-static inline void SET_TYPE_DATOBJ(Obj obj, Obj val)
+EXPORT_INLINE void SET_TYPE_DATOBJ(Obj obj, Obj val)
 {
     ADDR_OBJ(obj)[0] = val;
 }

@@ -138,28 +138,28 @@ void DeactivatePrintHooks(struct PrintHooks * hook);
         }                                                                    \
     } while (0)
 
-static inline void VisitStatIfHooked(Stat stat)
+EXPORT_INLINE void VisitStatIfHooked(Stat stat)
 {
     GAP_HOOK_LOOP(visitStat, stat);
 }
 
-static inline void HookedLineIntoFunction(Obj func)
+EXPORT_INLINE void HookedLineIntoFunction(Obj func)
 {
     GAP_HOOK_LOOP(enterFunction, func);
 }
 
 
-static inline void HookedLineOutFunction(Obj func)
+EXPORT_INLINE void HookedLineOutFunction(Obj func)
 {
     GAP_HOOK_LOOP(leaveFunction, func);
 }
 
-static inline void RegisterStatWithHook(Stat func)
+EXPORT_INLINE void RegisterStatWithHook(Stat func)
 {
     GAP_HOOK_LOOP(registerStat, func);
 }
 
-static inline void InterpreterHook(Int file, Int line, Int skipped)
+EXPORT_INLINE void InterpreterHook(Int file, Int line, Int skipped)
 {
     GAP_HOOK_LOOP(registerInterpretedStat, file, line);
     if (!skipped) {

@@ -53,7 +53,7 @@ void SetRecursionDepth(Int depth);
 extern UInt RecursionTrapInterval;
 extern void RecursionDepthTrap( void );
 
-static inline void CheckRecursionBefore( void )
+EXPORT_INLINE void CheckRecursionBefore( void )
 {
     IncRecursionDepth();
     if ( RecursionTrapInterval &&

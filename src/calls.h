@@ -120,76 +120,76 @@ typedef struct {
     // additional data follows for operations
 } FuncBag;
 
-static inline FuncBag * FUNC(Obj func)
+EXPORT_INLINE FuncBag * FUNC(Obj func)
 {
     GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
     return (FuncBag *)ADDR_OBJ(func);
 }
 
-static inline const FuncBag * CONST_FUNC(Obj func)
+EXPORT_INLINE const FuncBag * CONST_FUNC(Obj func)
 {
     GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
     return (const FuncBag *)CONST_ADDR_OBJ(func);
 }
 
 
-static inline ObjFunc HDLR_FUNC(Obj func, Int i)
+EXPORT_INLINE ObjFunc HDLR_FUNC(Obj func, Int i)
 {
     GAP_ASSERT(0 <= i && i < 8);
     return CONST_FUNC(func)->handlers[i];
 }
 
-static inline Obj NAME_FUNC(Obj func)
+EXPORT_INLINE Obj NAME_FUNC(Obj func)
 {
     return CONST_FUNC(func)->name;
 }
 
-static inline Int NARG_FUNC(Obj func)
+EXPORT_INLINE Int NARG_FUNC(Obj func)
 {
     return INT_INTOBJ(CONST_FUNC(func)->nargs);
 }
 
-static inline Obj NAMS_FUNC(Obj func)
+EXPORT_INLINE Obj NAMS_FUNC(Obj func)
 {
     return CONST_FUNC(func)->namesOfLocals;
 }
 
 extern Obj NAMI_FUNC(Obj func, Int i);
 
-static inline Obj PROF_FUNC(Obj func)
+EXPORT_INLINE Obj PROF_FUNC(Obj func)
 {
     return CONST_FUNC(func)->prof;
 }
 
-static inline UInt NLOC_FUNC(Obj func)
+EXPORT_INLINE UInt NLOC_FUNC(Obj func)
 {
     return INT_INTOBJ(CONST_FUNC(func)->nloc);
 }
 
-static inline Obj BODY_FUNC(Obj func)
+EXPORT_INLINE Obj BODY_FUNC(Obj func)
 {
     return CONST_FUNC(func)->body;
 }
 
-static inline Obj ENVI_FUNC(Obj func)
+EXPORT_INLINE Obj ENVI_FUNC(Obj func)
 {
     return CONST_FUNC(func)->envi;
 }
 
-static inline Obj FEXS_FUNC(Obj func)
+EXPORT_INLINE Obj FEXS_FUNC(Obj func)
 {
     return CONST_FUNC(func)->fexs;
 }
 
 #ifdef HPCGAP
-static inline Obj LCKS_FUNC(Obj func)
+EXPORT_INLINE Obj LCKS_FUNC(Obj func)
 {
     return CONST_FUNC(func)->locks;
 }
 
 #endif
 
-static inline void SET_HDLR_FUNC(Obj func, Int i, ObjFunc hdlr)
+EXPORT_INLINE void SET_HDLR_FUNC(Obj func, Int i, ObjFunc hdlr)
 {
     GAP_ASSERT(0 <= i && i < 8);
     FUNC(func)->handlers[i] = hdlr;
@@ -197,44 +197,44 @@ static inline void SET_HDLR_FUNC(Obj func, Int i, ObjFunc hdlr)
 
 extern void SET_NAME_FUNC(Obj func, Obj name);
 
-static inline void SET_NARG_FUNC(Obj func, Int nargs)
+EXPORT_INLINE void SET_NARG_FUNC(Obj func, Int nargs)
 {
     FUNC(func)->nargs = INTOBJ_INT(nargs);
 }
 
-static inline void SET_NAMS_FUNC(Obj func, Obj namesOfLocals)
+EXPORT_INLINE void SET_NAMS_FUNC(Obj func, Obj namesOfLocals)
 {
     FUNC(func)->namesOfLocals = namesOfLocals;
 }
 
-static inline void SET_PROF_FUNC(Obj func, Obj prof)
+EXPORT_INLINE void SET_PROF_FUNC(Obj func, Obj prof)
 {
     FUNC(func)->prof = prof;
 }
 
-static inline void SET_NLOC_FUNC(Obj func, UInt nloc)
+EXPORT_INLINE void SET_NLOC_FUNC(Obj func, UInt nloc)
 {
     FUNC(func)->nloc = INTOBJ_INT(nloc);
 }
 
-static inline void SET_BODY_FUNC(Obj func, Obj body)
+EXPORT_INLINE void SET_BODY_FUNC(Obj func, Obj body)
 {
     GAP_ASSERT(TNUM_OBJ(body) == T_BODY);
     FUNC(func)->body = body;
 }
 
-static inline void SET_ENVI_FUNC(Obj func, Obj envi)
+EXPORT_INLINE void SET_ENVI_FUNC(Obj func, Obj envi)
 {
     FUNC(func)->envi = envi;
 }
 
-static inline void SET_FEXS_FUNC(Obj func, Obj fexs)
+EXPORT_INLINE void SET_FEXS_FUNC(Obj func, Obj fexs)
 {
     FUNC(func)->fexs = fexs;
 }
 
 #ifdef HPCGAP
-static inline void SET_LCKS_FUNC(Obj func, Obj locks)
+EXPORT_INLINE void SET_LCKS_FUNC(Obj func, Obj locks)
 {
     FUNC(func)->locks = locks;
 }
@@ -250,42 +250,42 @@ static inline void SET_LCKS_FUNC(Obj func, Obj locks)
 extern Int IsKernelFunction(Obj func);
 
 
-static inline ObjFunc_0ARGS HDLR_0ARGS(Obj func)
+EXPORT_INLINE ObjFunc_0ARGS HDLR_0ARGS(Obj func)
 {
     return (ObjFunc_0ARGS)HDLR_FUNC(func, 0);
 }
 
-static inline ObjFunc_1ARGS HDLR_1ARGS(Obj func)
+EXPORT_INLINE ObjFunc_1ARGS HDLR_1ARGS(Obj func)
 {
     return (ObjFunc_1ARGS)HDLR_FUNC(func, 1);
 }
 
-static inline ObjFunc_2ARGS HDLR_2ARGS(Obj func)
+EXPORT_INLINE ObjFunc_2ARGS HDLR_2ARGS(Obj func)
 {
     return (ObjFunc_2ARGS)HDLR_FUNC(func, 2);
 }
 
-static inline ObjFunc_3ARGS HDLR_3ARGS(Obj func)
+EXPORT_INLINE ObjFunc_3ARGS HDLR_3ARGS(Obj func)
 {
     return (ObjFunc_3ARGS)HDLR_FUNC(func, 3);
 }
 
-static inline ObjFunc_4ARGS HDLR_4ARGS(Obj func)
+EXPORT_INLINE ObjFunc_4ARGS HDLR_4ARGS(Obj func)
 {
     return (ObjFunc_4ARGS)HDLR_FUNC(func, 4);
 }
 
-static inline ObjFunc_5ARGS HDLR_5ARGS(Obj func)
+EXPORT_INLINE ObjFunc_5ARGS HDLR_5ARGS(Obj func)
 {
     return (ObjFunc_5ARGS)HDLR_FUNC(func, 5);
 }
 
-static inline ObjFunc_6ARGS HDLR_6ARGS(Obj func)
+EXPORT_INLINE ObjFunc_6ARGS HDLR_6ARGS(Obj func)
 {
     return (ObjFunc_6ARGS)HDLR_FUNC(func, 6);
 }
 
-static inline ObjFunc_1ARGS HDLR_XARGS(Obj func)
+EXPORT_INLINE ObjFunc_1ARGS HDLR_XARGS(Obj func)
 {
     return (ObjFunc_1ARGS)HDLR_FUNC(func, 7);
 }
@@ -296,7 +296,7 @@ extern Obj NargError(Obj func, Int actual);
 **
 *F  IS_FUNC( <obj> )  . . . . . . . . . . . . . check if object is a function
 */
-static inline int IS_FUNC(Obj obj)
+EXPORT_INLINE int IS_FUNC(Obj obj)
 {
     return TNUM_OBJ(obj) == T_FUNCTION;
 }
@@ -326,42 +326,42 @@ static inline int IS_FUNC(Obj obj)
 **  callee,  or it collects the  arguments in a list  if  the callee allows a
 **  variable number of arguments.
 */
-static inline Obj CALL_0ARGS(Obj f)
+EXPORT_INLINE Obj CALL_0ARGS(Obj f)
 {
     return HDLR_0ARGS(f)(f);
 }
 
-static inline Obj CALL_1ARGS(Obj f, Obj a1)
+EXPORT_INLINE Obj CALL_1ARGS(Obj f, Obj a1)
 {
     return HDLR_1ARGS(f)(f, a1);
 }
 
-static inline Obj CALL_2ARGS(Obj f, Obj a1, Obj a2)
+EXPORT_INLINE Obj CALL_2ARGS(Obj f, Obj a1, Obj a2)
 {
     return HDLR_2ARGS(f)(f, a1, a2);
 }
 
-static inline Obj CALL_3ARGS(Obj f, Obj a1, Obj a2, Obj a3)
+EXPORT_INLINE Obj CALL_3ARGS(Obj f, Obj a1, Obj a2, Obj a3)
 {
     return HDLR_3ARGS(f)(f, a1, a2, a3);
 }
 
-static inline Obj CALL_4ARGS(Obj f, Obj a1, Obj a2, Obj a3, Obj a4)
+EXPORT_INLINE Obj CALL_4ARGS(Obj f, Obj a1, Obj a2, Obj a3, Obj a4)
 {
     return HDLR_4ARGS(f)(f, a1, a2, a3, a4);
 }
 
-static inline Obj CALL_5ARGS(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
+EXPORT_INLINE Obj CALL_5ARGS(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
 {
     return HDLR_5ARGS(f)(f, a1, a2, a3, a4, a5);
 }
 
-static inline Obj CALL_6ARGS(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
+EXPORT_INLINE Obj CALL_6ARGS(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
 {
     return HDLR_6ARGS(f)(f, a1, a2, a3, a4, a5, a6);
 }
 
-static inline Obj CALL_XARGS(Obj f, Obj as)
+EXPORT_INLINE Obj CALL_XARGS(Obj f, Obj as)
 {
     return HDLR_XARGS(f)(f, as);
 }
@@ -382,42 +382,42 @@ static inline Obj CALL_XARGS(Obj f, Obj as)
 **  call  the  real  handler  stored  in the   profiling  information of  the
 **  function.
 */
-static inline Obj CALL_0ARGS_PROF(Obj f)
+EXPORT_INLINE Obj CALL_0ARGS_PROF(Obj f)
 {
     return HDLR_0ARGS(PROF_FUNC(f))(f);
 }
 
-static inline Obj CALL_1ARGS_PROF(Obj f, Obj a1)
+EXPORT_INLINE Obj CALL_1ARGS_PROF(Obj f, Obj a1)
 {
     return HDLR_1ARGS(PROF_FUNC(f))(f, a1);
 }
 
-static inline Obj CALL_2ARGS_PROF(Obj f, Obj a1, Obj a2)
+EXPORT_INLINE Obj CALL_2ARGS_PROF(Obj f, Obj a1, Obj a2)
 {
     return HDLR_2ARGS(PROF_FUNC(f))(f, a1, a2);
 }
 
-static inline Obj CALL_3ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3)
+EXPORT_INLINE Obj CALL_3ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3)
 {
     return HDLR_3ARGS(PROF_FUNC(f))(f, a1, a2, a3);
 }
 
-static inline Obj CALL_4ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3, Obj a4)
+EXPORT_INLINE Obj CALL_4ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3, Obj a4)
 {
     return HDLR_4ARGS(PROF_FUNC(f))(f, a1, a2, a3, a4);
 }
 
-static inline Obj CALL_5ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
+EXPORT_INLINE Obj CALL_5ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
 {
     return HDLR_5ARGS(PROF_FUNC(f))(f, a1, a2, a3, a4, a5);
 }
 
-static inline Obj CALL_6ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
+EXPORT_INLINE Obj CALL_6ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
 {
     return HDLR_6ARGS(PROF_FUNC(f))(f, a1, a2, a3, a4, a5, a6);
 }
 
-static inline Obj CALL_XARGS_PROF(Obj f, Obj as)
+EXPORT_INLINE Obj CALL_XARGS_PROF(Obj f, Obj as)
 {
     return HDLR_XARGS(PROF_FUNC(f))(f, as);
 }

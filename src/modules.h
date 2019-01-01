@@ -60,17 +60,17 @@ enum {
     MODULE_DYNAMIC = GAP_KERNEL_API_VERSION * 10 + 2,
 };
 
-static inline Int IS_MODULE_BUILTIN(UInt type)
+EXPORT_INLINE Int IS_MODULE_BUILTIN(UInt type)
 {
     return type % 10 == 0;
 }
 
-static inline Int IS_MODULE_STATIC(UInt type)
+EXPORT_INLINE Int IS_MODULE_STATIC(UInt type)
 {
     return type % 10 == 1;
 }
 
-static inline Int IS_MODULE_DYNAMIC(UInt type)
+EXPORT_INLINE Int IS_MODULE_DYNAMIC(UInt type)
 {
     return type % 10 == 2;
 }

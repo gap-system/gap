@@ -113,7 +113,7 @@ typedef struct GAPState {
 
 #if defined(HPCGAP)
 
-static inline GAPState * ActiveGAPState(void)
+EXPORT_INLINE GAPState * ActiveGAPState(void)
 {
     return (GAPState *)GetTLS();
 }
@@ -122,7 +122,7 @@ static inline GAPState * ActiveGAPState(void)
 
 extern GAPState MainGAPState;
 
-static inline GAPState * ActiveGAPState(void)
+EXPORT_INLINE GAPState * ActiveGAPState(void)
 {
     return &MainGAPState;
 }
@@ -135,7 +135,7 @@ static inline GAPState * ActiveGAPState(void)
 // Offset into StateSlots
 typedef Int ModuleStateOffset;
 
-static inline void * StateSlotsAtOffset(ModuleStateOffset offset)
+EXPORT_INLINE void * StateSlotsAtOffset(ModuleStateOffset offset)
 {
     GAP_ASSERT(0 <= offset && offset < STATE_SLOTS_SIZE);
     return &STATE(StateSlots)[offset];

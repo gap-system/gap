@@ -30,7 +30,7 @@
 #define ARRAY_SIZE(arr)     ( sizeof(arr) / sizeof((arr)[0]) )
 
 
-static inline Int AlwaysYes(Obj obj) { return 1; }
-static inline Int AlwaysNo(Obj obj) { return 0; }
+EXPORT_INLINE Int AlwaysYes(Obj obj) { return 1; }
+EXPORT_INLINE Int AlwaysNo(Obj obj) { return 0; }
 
 #endif // GAP_UTILS_H

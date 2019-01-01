@@ -49,12 +49,12 @@ static ALWAYS_INLINE Bag WriteGuard(Bag bag)
   return bag;
 }
 
-static inline Bag ImpliedWriteGuard(Bag bag)
+EXPORT_INLINE Bag ImpliedWriteGuard(Bag bag)
 {
   return bag;
 }
 
-static inline int CheckWriteAccess(Bag bag)
+EXPORT_INLINE int CheckWriteAccess(Bag bag)
 {
   Region *region;
   if (!IS_BAG_REF(bag))
@@ -64,7 +64,7 @@ static inline int CheckWriteAccess(Bag bag)
     || TLS(DisableGuards) >= 2;
 }
 
-static inline int CheckExclusiveWriteAccess(Bag bag)
+EXPORT_INLINE int CheckExclusiveWriteAccess(Bag bag)
 {
   Region *region;
   if (!IS_BAG_REF(bag))

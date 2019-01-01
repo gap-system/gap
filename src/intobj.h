@@ -59,7 +59,7 @@ a
 **  'IS_INTOBJ' returns 1 if the object <o> is an (immediate) integer object,
 **  and 0 otherwise.
 */
-static inline Int IS_INTOBJ(Obj o)
+EXPORT_INLINE Int IS_INTOBJ(Obj o)
 {
     return (Int)o & 0x01;
 }
@@ -72,7 +72,7 @@ static inline Int IS_INTOBJ(Obj o)
 **  'IS_POS_INTOBJ' returns 1 if the object <o> is an (immediate) integer
 **  object encoding a positive integer, and 0 otherwise.
 */
-static inline Int IS_POS_INTOBJ(Obj o)
+EXPORT_INLINE Int IS_POS_INTOBJ(Obj o)
 {
     return ((Int)o & 0x01) && ((Int)o > 0x01);
 }
@@ -84,7 +84,7 @@ static inline Int IS_POS_INTOBJ(Obj o)
 **  'IS_NONNEG_INTOBJ' returns 1 if the object <o> is an (immediate) integer
 **  object encoding a non-negative integer, and 0 otherwise.
 */
-static inline Int IS_NONNEG_INTOBJ(Obj o)
+EXPORT_INLINE Int IS_NONNEG_INTOBJ(Obj o)
 {
     return ((Int)o & 0x01) && ((Int)o > 0);
 }
@@ -97,7 +97,7 @@ static inline Int IS_NONNEG_INTOBJ(Obj o)
 **  'ARE_INTOBJS' returns 1 if the objects <o1> and <o2> are both (immediate)
 **  integer objects.
 */
-static inline Int ARE_INTOBJS(Obj o1, Obj o2)
+EXPORT_INLINE Int ARE_INTOBJS(Obj o1, Obj o2)
 {
     return (Int)o1 & (Int)o2 & 0x01;
 }
@@ -112,7 +112,7 @@ static inline Int ARE_INTOBJS(Obj o1, Obj o2)
 /* Note that the C standard does not define what >> does here if the
  * value is negative. So we have to be careful if the C compiler
  * chooses to do a logical right shift. */
-static inline Int INT_INTOBJ(Obj o)
+EXPORT_INLINE Int INT_INTOBJ(Obj o)
 {
     GAP_ASSERT(IS_INTOBJ(o));
 #ifdef HAVE_ARITHRIGHTSHIFT
@@ -129,7 +129,7 @@ static inline Int INT_INTOBJ(Obj o)
 **
 **  'INTOBJ_INT' converts the C integer <i> to an (immediate) integer object.
 */
-static inline Obj INTOBJ_INT(Int i)
+EXPORT_INLINE Obj INTOBJ_INT(Int i)
 {
     Obj o;
     GAP_ASSERT(INT_INTOBJ_MIN <= i && i <= INT_INTOBJ_MAX);
@@ -163,7 +163,7 @@ static inline Obj INTOBJ_INT(Int i)
 //
 // Check whether the sign and guard bit of the given word match.
 //
-static inline int DETECT_INTOBJ_OVERFLOW(UInt o)
+EXPORT_INLINE int DETECT_INTOBJ_OVERFLOW(UInt o)
 {
     const UInt BITS_IN_UINT = sizeof(UInt) * 8;
     // extract sign bit + guard bit
@@ -184,7 +184,7 @@ static inline int DETECT_INTOBJ_OVERFLOW(UInt o)
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The sum itself is stored in <o>.
 */
-static inline int sum_intobjs(Obj * o, Obj l, Obj r)
+EXPORT_INLINE int sum_intobjs(Obj * o, Obj l, Obj r)
 {
     const Int tmp = (Int)l + (Int)r - 1;
     if (DETECT_INTOBJ_OVERFLOW(tmp))
@@ -203,7 +203,7 @@ static inline int sum_intobjs(Obj * o, Obj l, Obj r)
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The difference itself is stored in <o>.
 */
-static inline int diff_intobjs(Obj * o, Obj l, Obj r)
+EXPORT_INLINE int diff_intobjs(Obj * o, Obj l, Obj r)
 {
     const Int tmp = (Int)l - (Int)r + 1;
     if (DETECT_INTOBJ_OVERFLOW(tmp))
@@ -226,7 +226,7 @@ static inline int diff_intobjs(Obj * o, Obj l, Obj r)
 
 #if SIZEOF_VOID_P == SIZEOF_INT && defined(HAVE_ARITHRIGHTSHIFT) &&          \
     defined(HAVE___BUILTIN_SMUL_OVERFLOW)
-static inline Obj prod_intobjs(int l, int r)
+EXPORT_INLINE Obj prod_intobjs(int l, int r)
 {
     int prod;
     if (__builtin_smul_overflow(l >> 1, r ^ 1, &prod))
@@ -235,7 +235,7 @@ static inline Obj prod_intobjs(int l, int r)
 }
 #elif SIZEOF_VOID_P == SIZEOF_LONG && defined(HAVE_ARITHRIGHTSHIFT) &&       \
     defined(HAVE___BUILTIN_SMULL_OVERFLOW)
-static inline Obj prod_intobjs(long l, long r)
+EXPORT_INLINE Obj prod_intobjs(long l, long r)
 {
     long prod;
     if (__builtin_smull_overflow(l >> 1, r ^ 1, &prod))
@@ -244,7 +244,7 @@ static inline Obj prod_intobjs(long l, long r)
 }
 #elif SIZEOF_VOID_P == SIZEOF_LONG_LONG && defined(HAVE_ARITHRIGHTSHIFT) &&  \
     defined(HAVE___BUILTIN_SMULLL_OVERFLOW)
-static inline Obj prod_intobjs(long long l, long long r)
+EXPORT_INLINE Obj prod_intobjs(long long l, long long r)
 {
     long long prod;
     if (__builtin_smulll_overflow(l >> 1, r ^ 1, &prod))
@@ -259,7 +259,7 @@ typedef Int4 HalfInt;
 typedef Int2 HalfInt;
 #endif
 
-static inline Obj prod_intobjs(Int l, Int r)
+EXPORT_INLINE Obj prod_intobjs(Int l, Int r)
 {
     if (l == (Int)INTOBJ_INT(0) || r == (Int)INTOBJ_INT(0))
         return INTOBJ_INT(0);

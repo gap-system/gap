@@ -45,7 +45,7 @@ extern Obj ObjsChar[256];
 **
 *F  CHAR_VALUE( <charObj> )
 */
-static inline UChar CHAR_VALUE(Obj charObj)
+EXPORT_INLINE UChar CHAR_VALUE(Obj charObj)
 {
     GAP_ASSERT(TNUM_OBJ(charObj) == T_CHAR);
     return *(const UChar *)CONST_ADDR_OBJ(charObj);
@@ -56,7 +56,7 @@ static inline UChar CHAR_VALUE(Obj charObj)
 **
 *F  SET_CHAR_VALUE( <charObj>, <c> )
 */
-static inline void SET_CHAR_VALUE(Obj charObj, UChar c)
+EXPORT_INLINE void SET_CHAR_VALUE(Obj charObj, UChar c)
 {
     GAP_ASSERT(TNUM_OBJ(charObj) == T_CHAR);
     *(UChar *)CONST_ADDR_OBJ(charObj) = c;
@@ -69,7 +69,7 @@ static inline void SET_CHAR_VALUE(Obj charObj, UChar c)
 **
 **  'SINT_CHAR' converts the character a (a UInt1) into a signed (C) integer.
 */
-static inline Int SINT_CHAR(UInt1 a)
+EXPORT_INLINE Int SINT_CHAR(UInt1 a)
 {
     return a < 128 ? (Int)a : (Int)a-256;
 }
@@ -81,7 +81,7 @@ static inline Int SINT_CHAR(UInt1 a)
 **
 **  'CHAR_SINT' converts the signed (C) integer n into an (UInt1) character.
 */
-static inline UInt1 CHAR_SINT(Int n)
+EXPORT_INLINE UInt1 CHAR_SINT(Int n)
 {
     return (UInt1)(n >= 0 ? n : n+256);
 }
@@ -96,7 +96,7 @@ static inline UInt1 CHAR_SINT(Int n)
 **
 *F  IS_STRING_REP( <list> ) . . . . . . . .  check if <list> is in string rep
 */
-static inline Int IS_STRING_REP(Obj list)
+EXPORT_INLINE Int IS_STRING_REP(Obj list)
 {
     return (T_STRING <= TNUM_OBJ(list) &&
             TNUM_OBJ(list) <= T_STRING_SSORT + IMMUTABLE);
@@ -108,7 +108,7 @@ static inline Int IS_STRING_REP(Obj list)
 *F  SIZEBAG_STRINGLEN( <len> ) . . . . size of Bag for string of length <len>
 **
 */
-static inline UInt SIZEBAG_STRINGLEN(UInt len)
+EXPORT_INLINE UInt SIZEBAG_STRINGLEN(UInt len)
 {
     return len + 1 + sizeof(UInt);
 }
@@ -127,25 +127,25 @@ static inline UInt SIZEBAG_STRINGLEN(UInt len)
 **  GET_LEN_STRING.
 */
 
-static inline Char * CSTR_STRING(Obj list)
+EXPORT_INLINE Char * CSTR_STRING(Obj list)
 {
     GAP_ASSERT(IS_STRING_REP(list));
     return (Char *)ADDR_OBJ(list) + sizeof(UInt);
 }
 
-static inline const Char * CONST_CSTR_STRING(Obj list)
+EXPORT_INLINE const Char * CONST_CSTR_STRING(Obj list)
 {
     GAP_ASSERT(IS_STRING_REP(list));
     return (const Char *)CONST_ADDR_OBJ(list) + sizeof(UInt);
 }
 
-static inline UChar * CHARS_STRING(Obj list)
+EXPORT_INLINE UChar * CHARS_STRING(Obj list)
 {
     GAP_ASSERT(IS_STRING_REP(list));
     return (UChar *)ADDR_OBJ(list) + sizeof(UInt);
 }
 
-static inline const UChar * CONST_CHARS_STRING(Obj list)
+EXPORT_INLINE const UChar * CONST_CHARS_STRING(Obj list)
 {
     GAP_ASSERT(IS_STRING_REP(list));
     return (const UChar *)CONST_ADDR_OBJ(list) + sizeof(UInt);
@@ -158,7 +158,7 @@ static inline const UChar * CONST_CHARS_STRING(Obj list)
 **  'GET_LEN_STRING' returns the length of the string <list>, as a C integer.
 */
 
-static inline UInt GET_LEN_STRING(Obj list)
+EXPORT_INLINE UInt GET_LEN_STRING(Obj list)
 {
     GAP_ASSERT(IS_STRING_REP(list));
     return *((const UInt *)CONST_ADDR_OBJ(list));
@@ -171,7 +171,7 @@ static inline UInt GET_LEN_STRING(Obj list)
 **  'SET_LEN_STRING' sets length of the string <list> to C integer <len>.
 */
 
-static inline void SET_LEN_STRING(Obj list, Int len)
+EXPORT_INLINE void SET_LEN_STRING(Obj list, Int len)
 {
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(len >= 0);
@@ -202,7 +202,7 @@ extern  Int             GrowString (
             Obj                 list,
             UInt                need );
 
-static inline void GROW_STRING(Obj list, Int len)
+EXPORT_INLINE void GROW_STRING(Obj list, Int len)
 {
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(len >= 0);
@@ -217,7 +217,7 @@ static inline void GROW_STRING(Obj list, Int len)
 **
 **  'SHRINK_STRING' gives back not needed memory allocated by string.
 */
-static inline void SHRINK_STRING(Obj list)
+EXPORT_INLINE void SHRINK_STRING(Obj list)
 {
     GAP_ASSERT(IS_STRING_REP(list));
     ResizeBag(list, SIZEBAG_STRINGLEN(GET_LEN_STRING((list))));
@@ -231,7 +231,7 @@ static inline void SHRINK_STRING(Obj list)
 **  It assumes that the data area in <str> is large enough. It does not add
 **  a terminating null character and not change the length of the string.
 */
-static inline void COPY_CHARS(Obj str, const UChar * pnt, Int n)
+EXPORT_INLINE void COPY_CHARS(Obj str, const UChar * pnt, Int n)
 {
     GAP_ASSERT(IS_STRING_REP(str));
     GAP_ASSERT(n >= 0);
@@ -272,7 +272,7 @@ extern void PrintString1 (
 */
 extern  Int             (*IsStringFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
-static inline Int IS_STRING(Obj obj)
+EXPORT_INLINE Int IS_STRING(Obj obj)
 {
     return (*IsStringFuncs[TNUM_OBJ(obj)])(obj);
 }
@@ -349,7 +349,7 @@ extern Int IsStringConv (
 **
 *F  MakeImmutableString( <str> ) . . . . . . make a string immutable in place
 */
-static inline void MakeImmutableString(Obj str)
+EXPORT_INLINE void MakeImmutableString(Obj str)
 {
     MakeImmutableNoRecurse(str);
 }
@@ -359,7 +359,7 @@ static inline void MakeImmutableString(Obj str)
 // MakeString and MakeImmString are inlineable so 'strlen' can be optimised
 // away for constant strings.
 
-static inline Obj MakeString(const Char * cstr)
+EXPORT_INLINE Obj MakeString(const Char * cstr)
 {
     size_t len = strlen(cstr);
     Obj    result = NEW_STRING(len);
@@ -367,7 +367,7 @@ static inline Obj MakeString(const Char * cstr)
     return result;
 }
 
-static inline Obj MakeImmString(const Char * cstr)
+EXPORT_INLINE Obj MakeImmString(const Char * cstr)
 {
     Obj result = MakeString(cstr);
     MakeImmutableString(result);

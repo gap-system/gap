@@ -36,7 +36,7 @@ extern Obj NEW_PREC(UInt len);
 **
 *F  IS_PREC( <rec> ) . . . . . . . . .  check if <rec> is in plain record rep
 */
-static inline Int IS_PREC(Obj rec)
+EXPORT_INLINE Int IS_PREC(Obj rec)
 {
     UInt tnum = TNUM_OBJ(rec);
     return tnum == T_PREC || tnum == T_PREC+IMMUTABLE;
@@ -55,7 +55,7 @@ static inline Int IS_PREC(Obj rec)
 **  the same memory layout as precs), as the precs APIs using it for
 **  assertion checks are in practice invoked on such objects, too.
 */
-static inline Int IS_PREC_OR_COMOBJ(Obj rec)
+EXPORT_INLINE Int IS_PREC_OR_COMOBJ(Obj rec)
 {
     UInt tnum = TNUM_OBJ(rec);
     return tnum == T_PREC || tnum == T_PREC+IMMUTABLE || tnum == T_COMOBJ;
@@ -69,7 +69,7 @@ static inline Int IS_PREC_OR_COMOBJ(Obj rec)
 **  'CAPACITY_PREC' returns the maximum capacity of a PREC.
 **
 */
-static inline UInt CAPACITY_PREC(Obj rec)
+EXPORT_INLINE UInt CAPACITY_PREC(Obj rec)
 {
     return SIZE_OBJ(rec) / (2 * sizeof(Obj)) - 1;
 }
@@ -81,7 +81,7 @@ static inline UInt CAPACITY_PREC(Obj rec)
 **
 **  'LEN_PREC' returns the number of components of the plain record <rec>.
 */
-static inline UInt LEN_PREC(Obj rec)
+EXPORT_INLINE UInt LEN_PREC(Obj rec)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     return ((const UInt *)(CONST_ADDR_OBJ(rec)))[1];
@@ -94,7 +94,7 @@ static inline UInt LEN_PREC(Obj rec)
 **
 **  'SET_LEN_PREC' sets the number of components of the plain record <rec>.
 */
-static inline void SET_LEN_PREC(Obj rec, UInt nr)
+EXPORT_INLINE void SET_LEN_PREC(Obj rec, UInt nr)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     ((UInt *)(ADDR_OBJ(rec)))[1] = nr;
@@ -108,7 +108,7 @@ static inline void SET_LEN_PREC(Obj rec, UInt nr)
 **  'SET_RNAM_PREC' sets   the name of  the  <i>-th  record component  of the
 **  record <rec> to the record name <rnam>.
 */
-static inline void SET_RNAM_PREC(Obj rec, UInt i, UInt rnam)
+EXPORT_INLINE void SET_RNAM_PREC(Obj rec, UInt i, UInt rnam)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(i <= CAPACITY_PREC(rec));
@@ -123,7 +123,7 @@ static inline void SET_RNAM_PREC(Obj rec, UInt i, UInt rnam)
 **  'GET_RNAM_PREC' returns the record name of the <i>-th record component of
 **  the record <rec>.
 */
-static inline UInt GET_RNAM_PREC(Obj rec, UInt i)
+EXPORT_INLINE UInt GET_RNAM_PREC(Obj rec, UInt i)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(i <= CAPACITY_PREC(rec));
@@ -138,7 +138,7 @@ static inline UInt GET_RNAM_PREC(Obj rec, UInt i)
 **  'SET_ELM_PREC' sets  the value  of  the  <i>-th  record component of  the
 **  record <rec> to the value <val>.
 */
-static inline void SET_ELM_PREC(Obj rec, UInt i, Obj val)
+EXPORT_INLINE void SET_ELM_PREC(Obj rec, UInt i, Obj val)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(i <= CAPACITY_PREC(rec));
@@ -153,7 +153,7 @@ static inline void SET_ELM_PREC(Obj rec, UInt i, Obj val)
 **  'GET_ELM_PREC' returns the value  of the <i>-th  record component of  the
 **  record <rec>.
 */
-static inline Obj GET_ELM_PREC(Obj rec, UInt i)
+EXPORT_INLINE Obj GET_ELM_PREC(Obj rec, UInt i)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(i <= CAPACITY_PREC(rec));

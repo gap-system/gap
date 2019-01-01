@@ -115,7 +115,7 @@ enum {
 **
 **  'BAG_HEADER' returns the header of the bag with the identifier <bag>.
 */
-static inline BagHeader * BAG_HEADER(Bag bag) {
+EXPORT_INLINE BagHeader * BAG_HEADER(Bag bag) {
     GAP_ASSERT(bag);
     return (((BagHeader *)*bag) - 1);
 }
@@ -137,7 +137,7 @@ static inline BagHeader * BAG_HEADER(Bag bag) {
 **  to  call  to  mark all subbags  of a  given bag (see "InitMarkFuncBags").
 **  Apart from that {\Gasman} does not care at all about types.
 */
-static inline UInt TNUM_BAG(Bag bag) {
+EXPORT_INLINE UInt TNUM_BAG(Bag bag) {
     return BAG_HEADER(bag)->type;
 }
 
@@ -168,17 +168,17 @@ static inline UInt TNUM_BAG(Bag bag) {
 **  of the form (1 << i). Currently, 'i' must be in the range from 0 to
 **  7 (inclusive).
 */
-static inline uint8_t TEST_BAG_FLAG(Bag bag, uint8_t flag)
+EXPORT_INLINE uint8_t TEST_BAG_FLAG(Bag bag, uint8_t flag)
 {
     return BAG_HEADER(bag)->flags & flag;
 }
 
-static inline void SET_BAG_FLAG(Bag bag, uint8_t flag)
+EXPORT_INLINE void SET_BAG_FLAG(Bag bag, uint8_t flag)
 {
     BAG_HEADER(bag)->flags |= flag;
 }
 
-static inline void CLEAR_BAG_FLAG(Bag bag, uint8_t flag)
+EXPORT_INLINE void CLEAR_BAG_FLAG(Bag bag, uint8_t flag)
 {
     BAG_HEADER(bag)->flags &= ~flag;
 }
@@ -192,7 +192,7 @@ static inline void CLEAR_BAG_FLAG(Bag bag, uint8_t flag)
 **
 **  See also 'IS_INTOBJ' and 'IS_FFE'.
 */
-static inline Int IS_BAG_REF(Obj bag)
+EXPORT_INLINE Int IS_BAG_REF(Obj bag)
 {
     return bag && !((Int)bag & 0x03);
 }
@@ -213,7 +213,7 @@ static inline Int IS_BAG_REF(Obj bag)
 **  the size of a bag when it allocates it with 'NewBag' and may later change
 **  it with 'ResizeBag' (see "NewBag" and "ResizeBag").
 */
-static inline UInt SIZE_BAG(Bag bag) {
+EXPORT_INLINE UInt SIZE_BAG(Bag bag) {
     return BAG_HEADER(bag)->size;
 }
 
@@ -227,7 +227,7 @@ static inline UInt SIZE_BAG(Bag bag) {
 **  atomic operations that require a memory barrier in between dereferencing
 **  the bag pointer and accessing the contents of the bag.
 */
-static inline UInt SIZE_BAG_CONTENTS(const void *ptr) {
+EXPORT_INLINE UInt SIZE_BAG_CONTENTS(const void *ptr) {
     return ((const BagHeader *)ptr)[-1].size;
 }
 
@@ -299,19 +299,19 @@ static inline UInt SIZE_BAG_CONTENTS(const void *ptr) {
 **  the application  must inform {\Gasman}  that it  has changed  the bag, by
 **  calling 'CHANGED_BAG(old)' in the above example (see "CHANGED_BAG").
 */
-static inline Bag *PTR_BAG(Bag bag)
+EXPORT_INLINE Bag *PTR_BAG(Bag bag)
 {
     GAP_ASSERT(bag != 0);
     return *(Bag**)bag;
 }
 
-static inline const Bag *CONST_PTR_BAG(Bag bag)
+EXPORT_INLINE const Bag *CONST_PTR_BAG(Bag bag)
 {
     GAP_ASSERT(bag != 0);
     return *(const Bag**)bag;
 }
 
-static inline void SET_PTR_BAG(Bag bag, Bag *val)
+EXPORT_INLINE void SET_PTR_BAG(Bag bag, Bag *val)
 {
     GAP_ASSERT(bag != 0);
     *(Bag**)bag = val;
@@ -358,7 +358,7 @@ static inline void SET_PTR_BAG(Bag bag, Bag *val)
 
 #if defined(USE_BOEHM_GC)
 
-static inline void CHANGED_BAG(Bag bag)
+EXPORT_INLINE void CHANGED_BAG(Bag bag)
 {
 }
 
@@ -388,7 +388,7 @@ extern void CHANGED_BAG(Bag b);
 
 extern Bag * YoungBags;
 extern Bag   ChangedBags;
-static inline void CHANGED_BAG(Bag bag)
+EXPORT_INLINE void CHANGED_BAG(Bag bag)
 {
     if (CONST_PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
         LINK_BAG(bag) = ChangedBags;
@@ -452,7 +452,7 @@ extern  Bag             NewBag (
 
 // NewWordSizedBag is the same as NewBag, except it rounds 'size' up to
 // the next multiple of sizeof(UInt)
-static inline Bag NewWordSizedBag(UInt type, UInt size)
+EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size)
 {
     UInt padding = 0;
     if(size % sizeof(UInt) != 0) {
@@ -534,7 +534,7 @@ extern  UInt            ResizeBag (
 
 // ResizedWordSizedBag is the same as ResizeBag, except it round 'size'
 // up to the next multiple of sizeof(UInt)
-static inline UInt ResizeWordSizedBag(Bag bag, UInt size)
+EXPORT_INLINE UInt ResizeWordSizedBag(Bag bag, UInt size)
 {
     UInt padding = 0;
     if(size % sizeof(UInt) != 0) {
@@ -799,7 +799,7 @@ extern void MarkAllButFirstSubBags( Bag bag );
 **  identifier.
 */
 #ifdef USE_BOEHM_GC
-static inline void MarkBag( Bag bag )
+EXPORT_INLINE void MarkBag( Bag bag )
 {
 }
 #else

@@ -66,7 +66,7 @@ extern  UInt            RNamObj (
 */
 extern Int (*IsRecFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static inline Int IS_REC(Obj obj)
+EXPORT_INLINE Int IS_REC(Obj obj)
 {
     return (*IsRecFuncs[TNUM_OBJ(obj)])(obj);
 }
@@ -82,7 +82,7 @@ static inline Int IS_REC(Obj obj)
 */
 extern Obj (*ElmRecFuncs[LAST_REAL_TNUM + 1])(Obj rec, UInt rnam);
 
-static inline Obj ELM_REC(Obj rec, UInt rnam)
+EXPORT_INLINE Obj ELM_REC(Obj rec, UInt rnam)
 {
     return (*ElmRecFuncs[TNUM_OBJ(rec)])(rec, rnam);
 }
@@ -98,7 +98,7 @@ static inline Obj ELM_REC(Obj rec, UInt rnam)
 */
 extern Int (*IsbRecFuncs[LAST_REAL_TNUM + 1])(Obj rec, UInt rnam);
 
-static inline Int ISB_REC(Obj rec, UInt rnam)
+EXPORT_INLINE Int ISB_REC(Obj rec, UInt rnam)
 {
     return (*IsbRecFuncs[TNUM_OBJ(rec)])(rec, rnam);
 }
@@ -113,7 +113,7 @@ static inline Int ISB_REC(Obj rec, UInt rnam)
 */
 extern void (*AssRecFuncs[LAST_REAL_TNUM + 1])(Obj rec, UInt rnam, Obj obj);
 
-static inline void ASS_REC(Obj rec, UInt rnam, Obj obj)
+EXPORT_INLINE void ASS_REC(Obj rec, UInt rnam, Obj obj)
 {
     return (*AssRecFuncs[TNUM_OBJ(rec)])(rec, rnam, obj);
 }
@@ -127,7 +127,7 @@ static inline void ASS_REC(Obj rec, UInt rnam, Obj obj)
 */
 extern void (*UnbRecFuncs[LAST_REAL_TNUM + 1])(Obj rec, UInt rnam);
 
-static inline void UNB_REC(Obj rec, UInt rnam)
+EXPORT_INLINE void UNB_REC(Obj rec, UInt rnam)
 {
     return (*UnbRecFuncs[TNUM_OBJ(rec)])(rec, rnam);
 }
