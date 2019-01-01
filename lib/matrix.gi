@@ -131,11 +131,11 @@ InstallMethod( IsGeneralizedCartanMatrix,
 
     local n, i, j;
 
-    if Length( A ) <> Length( A[1] ) then
+    if NrRows( A ) <> NrCols( A ) then
       Error( "<A> must be a square matrix" );
     fi;
 
-    n:= Length( A );
+    n:= NrRows( A );
     for i in [ 1 .. n ] do
       if A[i,i] <> 2 then
         return false;
@@ -166,9 +166,9 @@ InstallOtherMethod( IsDiagonalMat,
     function( mat )
    local  i, j,z;
     if IsEmpty(mat) then return true;fi;
-    z:=Zero(mat[1,1]);
-    for i  in [ 1 .. Length( mat ) ]  do
-        for j  in [ 1 .. Length( mat[i] ) ]  do
+    z:=ZeroOfBaseDomain(mat);
+    for i  in [ 1 .. NrRows( mat ) ]  do
+        for j  in [ 1 .. NrCols( mat ) ]  do
             if mat[i,j] <> z and i <> j  then
                 return false;
             fi;
@@ -190,8 +190,8 @@ InstallOtherMethod( IsUpperTriangularMat,
     function( mat )
     local  i, j,z;
     if IsEmpty(mat) then return true;fi;
-    z:=Zero(mat[1,1]);
-    for i  in [ 1 .. Length( mat ) ]  do
+    z:=ZeroOfBaseDomain(mat);
+    for i  in [ 1 .. NrRows( mat ) ]  do
         for j  in [ 1 .. i-1]  do
             if mat[i,j] <> z  then
                 return false;
@@ -211,9 +211,9 @@ InstallOtherMethod( IsLowerTriangularMat,
     function( mat )
     local  i, j,z;
     if IsEmpty(mat) then return true;fi;
-    z:=Zero(mat[1,1]);
-    for i  in [ 1 .. Length( mat ) ]  do
-        for j  in [ i+1 .. Length( mat[i] ) ]  do
+    z:=ZeroOfBaseDomain(mat);
+    for i  in [ 1 .. NrRows( mat ) ]  do
+        for j  in [ i+1 .. NrCols( mat ) ]  do
             if mat[i,j] <> z  then
                 return false;
             fi;
@@ -231,11 +231,11 @@ InstallGlobalFunction( DiagonalOfMat, function ( mat )
 
     diag := [];
     i := 1;
-    while i <= Length(mat) and i <= Length(mat[1]) do
+    while i <= NrRows(mat) and i <= NrCols(mat) do
         diag[i] := mat[i,i];
         i := i + 1;
     od;
-    while 1 <= Length(mat) and i <= Length(mat[1]) do
+    while 1 <= NrRows(mat) and i <= NrCols(mat) do
         diag[i] := mat[1,1] - mat[1,1];
         i := i + 1;
     od;
@@ -370,8 +370,8 @@ end );
 ##
 BindGlobal( "Matrix_OrderPolynomialInner", function( fld, mat, vec, vecs)
     local d, w, p, one, zero, zeroes, piv,  pols, x, t;
-    Info(InfoMatrix,2,"Order Polynomial Inner on ",Length(mat[1]),
-         " x ",Length(mat)," matrix over ",fld," with ",
+    Info(InfoMatrix,2,"Order Polynomial Inner on ",NrRows(mat),
+         " x ",NrCols(mat)," matrix over ",fld," with ",
          Number(vecs)," basis vectors already given");
     d := Length(vec);
     pols := [];
@@ -451,16 +451,16 @@ BindGlobal( "Matrix_CharacteristicPolynomialSameField",
     function( fld, mat, ind)
     local i, n, ords, base, imat, vec, one,cp,op,zero,fam;
     Info(InfoMatrix,1,"Characteristic Polynomial called on ",
-         Length(mat[1])," x ",Length(mat)," matrix over ",fld);
+         NrRows(mat)," x ",NrCols(mat)," matrix over ",fld);
     imat := ImmutableMatrix(fld,mat);
-    n := Length(mat);
+    n := NrRows(mat);
     base := [];
     vec := ZeroOp(mat[1]);
     one := One(fld);
     zero := Zero(fld);
     fam := ElementsFamily(FamilyObj(fld));
     cp:=[one];
-    if Is8BitMatrixRep(mat) and Length(mat)>0 then
+    if Is8BitMatrixRep(mat) and NrRows(mat)>0 then
       # stay in the same field as matrix
       ConvertToVectorRepNC(cp,Q_VEC8BIT(mat[1]));
     fi;
@@ -489,16 +489,16 @@ BindGlobal( "Matrix_MinimalPolynomialSameField", function( fld, mat, ind )
           processVec, mp, dim, span,op,w, piv,j,ring;
 
     Info(InfoMatrix,1,"Minimal Polynomial called on ",
-         Length(mat[1])," x ",Length(mat)," matrix over ",fld);
+         NrRows(mat)," x ",NrCols(mat)," matrix over ",fld);
     imat := ImmutableMatrix(fld,mat);
-    n := Length(imat);
+    n := NrRows(imat);
     base := [];
     dim := 0; # should be number of bound positions in base
     one := One(fld);
     zero := Zero(fld);
     fam := ElementsFamily(FamilyObj(fld));
     mp:=[one];
-    if Is8BitMatrixRep(mat) and Length(mat)>0 then
+    if Is8BitMatrixRep(mat) and NrRows(mat)>0 then
       # stay in the same field as matrix
       ConvertToVectorRepNC(mp,Q_VEC8BIT(mat[1]));
     fi;
@@ -565,7 +565,7 @@ InstallMethod( Display,
 function( m )
     local   deg,  chr,  zero,  w,  t,  x,  v,  f,  z,  y;
 
-    if Length(m[1]) = 0 then
+    if NrCols(m) = 0 then
         TryNextMethod();
     fi;
     if  IsZmodnZObj(m[1,1]) then
@@ -581,7 +581,7 @@ function( m )
       # get the degree and characteristic
       deg  := Lcm( List( m, DegreeFFE ) );
       chr  := Characteristic(m[1,1]);
-      zero := Zero(m[1,1]);
+      zero := ZeroOfBaseDomain(m);
 
       # if it is a finite prime field,  use integers for display
       if deg = 1  then
@@ -802,8 +802,8 @@ function ( mat )
     local   m, rank;
 
     # check that the argument is an invertible square matrix
-    m := Length(mat);
-    if m <> Length(mat[1])  then
+    m := NrRows(mat);
+    if m <> NrCols(mat)  then
         Error( "Order: <mat> must be a square matrix" );
     fi;
     rank:= RankMat( mat );
@@ -838,7 +838,7 @@ local ord,i,vec,v,o;
 
   # loop over the standard basis vectors
   ord := 1;
-  for i  in [1..Length(mat)]  do
+  for i  in [1..NrRows(mat)]  do
 
     # compute the length of the orbit of the <i>th standard basis vector
     # (equivalently, of the orbit of `mat[<i>]',
@@ -900,8 +900,8 @@ end);
 #     fi;
 # 
 #     # Check that the argument is an invertible square matrix.
-#     m:= Length( cycmat );
-#     if m <> Length( cycmat[1] ) then
+#     m:= NrRows( cycmat );
+#     if m <> NrCols( cycmat ) then
 #       Error( "Order: <cycmat> must be a square matrix" );
 #     elif RankMat( cycmat ) <> m  then
 #       Error( "Order: <cycmat> must be invertible" );
@@ -921,7 +921,7 @@ end);
 #     # is bounded by the dimension of the matrix.
 # #T compute this (approximatively) for arbitrary cyclotomics
 # #T (by the way: why isn't this function called `AbsRat'?)
-#     if IsInt( trace ) and Length( cycmat ) < AbsInt( trace ) then
+#     if IsInt( trace ) and NrRows( cycmat ) < AbsInt( trace ) then
 #       return infinity;
 #     fi;
 # 
@@ -1011,8 +1011,8 @@ InstallMethod( Order,
           ordpowdet, I;
 
     # Check that the argument is an invertible square matrix.
-    dim:= Length( mat );
-    if dim <> Length( mat[1] ) then
+    dim:= NrRows( mat );
+    if dim <> NrCols( mat ) then
       Error( "Order: <mat> must be a square matrix" );
     fi;
 
@@ -1038,7 +1038,7 @@ InstallMethod( Order,
 
     # If the order is finite then the absolute value of the trace
     # is bounded by the dimension of the matrix.
-    if IsInt( trace ) and Length( mat ) < AbsInt( trace ) then
+    if IsInt( trace ) and NrRows( mat ) < AbsInt( trace ) then
       return infinity;
     fi;
 
@@ -1049,11 +1049,11 @@ InstallMethod( Order,
 
       # Check whether the trace is larger than the dimension.
       tracemat := BlownUpMat( Basis(F), [[ trace ]] );
-      if   AbsInt(Trace(tracemat)) > Length(mat) * Length(tracemat)
+      if   AbsInt(Trace(tracemat)) > NrRows(mat) * NrRows(tracemat)
       then return infinity; fi;
 
       mat:= BlownUpMat( Basis( F ), mat );
-      dim:= Length( mat );
+      dim:= NrRows( mat );
     fi;
 
     # Convert to an integer matrix if necessary.
@@ -1102,12 +1102,12 @@ InstallMethod( Order, "ordinary matrix of finite field elements", true,
     
     # the following limit is very crude but seems to work OK. It picks small
     # orders but still does not cost too much if the order gets larger.
-    if Length(mat) <> Length(mat[1]) then
+    if NrRows(mat) <> NrCols(mat) then
         Error("Order of non-square matrix is not defined");
     fi;
     o:=Characteristic(mat[1,1])^DegreeFFE(mat[1,1]); # size of field of
                                                      # first entry
-    o:=QuoInt(Length(mat),o)*5; 
+    o:=QuoInt(NrRows(mat),o)*5; 
 
     o:=OrderMatTrial(mat,o);
     if o<>fail then
@@ -1130,7 +1130,7 @@ InstallMethod( IsZero,
     local ncols,  # number of columns
           row;    # loop over rows in 'obj'
 
-    ncols:= DimensionsMat( mat )[2];
+    ncols:= NrCols( mat );
     for row in mat do
       if PositionNonZero( row ) <= ncols then
         return false;
@@ -1259,8 +1259,8 @@ function( mat )
     local   dim,  zero,  i,  j;
 
     # find the correct layer of <m>
-    dim  := Length(mat);
-    zero := Zero(mat[1,1]);
+    dim  := NrRows(mat);
+    zero := ZeroOfBaseDomain(mat);
     for i  in [ 1 .. dim-1 ]  do
         for j  in [ 1 .. dim-i ]  do
             if mat[j,i+j] <> zero  then
@@ -1313,9 +1313,9 @@ InstallMethod( DeterminantMatDestructive,
     local   det, sgn, row, zero, m, i, j, k, mult, row2, piv;
 
     # check that the argument is a square matrix and get the size
-    m := Length(mat);
-    zero := Zero(mat[1,1]);
-    if m <> Length(mat[1])  then
+    m := NrRows(mat);
+    zero := ZeroOfBaseDomain(mat);
+    if m <> NrCols(mat)  then
         Error("DeterminantMat: <mat> must be a square matrix");
     fi;
 
@@ -1388,11 +1388,11 @@ function( mat )
     Info( InfoMatrix, 1, "DeterminantMat called" );
 
     # check that the argument is a square matrix, and get the size
-    m := Length(mat);
-    if m = 0 or m <> Length(mat[1])  then
+    m := NrRows(mat);
+    if m = 0 or m <> NrCols(mat)  then
         Error( "<mat> must be a square matrix at least 1x1" );
     fi;
-    zero := Zero(mat[1,1]);
+    zero := ZeroOfBaseDomain(mat);
 
     # normalize rows using the inverse
     if IsFFECollColl(mat)  then
@@ -1614,7 +1614,7 @@ InstallOtherMethod( DimensionsMat,
     [ IsMatrix ],
     function( A )
     if IsRectangularTable(A) then
-        return [ Length(A), Length(A[1]) ];
+        return [ NrRows(A), NrCols(A) ];
     else
         return fail;
     fi;
@@ -1629,8 +1629,8 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
   transform:=arg[3];
   divide:=arg[4];
 
-  l:=Length(M);
-  n:=Length(M[1]);
+  l:=NrRows(M);
+  n:=NrCols(M);
 
   basmat:=fail;
   if transform then
@@ -1762,7 +1762,7 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
   end;
 
   start:=1;
-  while start<=Length(M) and start<=n do
+  while start<=NrRows(M) and start<=n do
 
     # find element of lowest degree and move it into pivot
     # hope is this will reduce the total number of iterations by making
@@ -1938,12 +1938,12 @@ InstallOtherMethod( MutableTransposedMat,
     function( mat )
     local trn, n, m, j;
 
-    m:= Length( mat );
+    m:= NrRows( mat );
     if m = 0 then return []; fi;
 
     # initialize the transposed
     m:= [ 1 .. m ];
-    n:= [ 1 .. Length( mat[1] ) ];
+    n:= [ 1 .. NrCols( mat ) ];
     trn:= [];
 
     # copy the entries
@@ -2013,10 +2013,10 @@ InstallMethod( MutableTransposedMatDestructive,
     local   m,  n,  min,  i,  j,  store;
 
 
-    m:= Length( mat );
+    m:= NrRows( mat );
     if m = 0 then return []; fi;
 
-    n:= Length( mat[1] );
+    n:= NrCols( mat );
     min:= Minimum( m, n );
 
     # swap the entries in the "square part" of the matrix.
@@ -2095,25 +2095,25 @@ InstallMethod( TriangulizedNullspaceMatNT,
     local   nullspace, m, n, min, empty, i, k, row, zero, one;#
 
     TriangulizeMat( mat );
-    m := Length(mat);
-    n := Length(mat[1]);
-    zero := Zero( mat[1,1] );
-    one  := One( mat[1,1] );
+    m := NrRows(mat);
+    n := NrCols(mat);
+    zero := ZeroOfBaseDomain( mat );
+    one  := OneOfBaseDomain( mat );
     min := Minimum( m, n );
 
     # insert empty rows to bring the leading term of each row on the diagonal
     empty := 0*mat[1];
     i := 1;
-    while i <= Length(mat)  do
+    while i <= NrRows(mat)  do
         if i < n  and mat[i,i] = zero  then
-            for k in Reversed([i..Minimum(Length(mat),n-1)])  do
+            for k in Reversed([i..Minimum(NrRows(mat),n-1)])  do
                 mat[k+1] := mat[k];
             od;
             mat[i] := empty;
         fi;
         i := i+1;
     od;
-    for i  in [ Length(mat)+1 .. n ]  do
+    for i  in [ NrRows(mat)+1 .. n ]  do
         mat[i] := empty;
     od;
 
@@ -2279,10 +2279,10 @@ InstallMethod( SemiEchelonMatDestructive,
           row,       # the row of current interest
           inv;       # inverse of a matrix entry
 
-    nrows:= Length( mat );
-    ncols:= Length( mat[1] );
+    nrows:= NrRows( mat );
+    ncols:= NrCols( mat );
 
-    zero:= Zero( mat[1,1] );
+    zero:= ZeroOfBaseDomain( mat );
 
     heads:= ListWithIdenticalEntries( ncols, 0 );
     nzheads := [];
@@ -2371,8 +2371,8 @@ InstallMethod( SemiEchelonMatTransformationDestructive,
           relations, # basis vectors of the null space of 'mat'
           row, head, x, row2,f;
 
-    nrows := Length( mat );
-    ncols := Length( mat[1] );
+    nrows := NrRows( mat );
+    ncols := NrCols( mat );
     
     f := DefaultFieldOfMatrix(mat);
     if f = fail then
@@ -2449,9 +2449,9 @@ InstallGlobalFunction( SemiEchelonMatsNoCo, function( mats )
           scalar,
           x;
 
-    zero:= Zero( mats[1][1,1] );
-    m:= Length( mats[1]    );
-    n:= Length( mats[1][1] );
+    zero:= ZeroOfBaseDomain( mats[1] );
+    m:= NrRows( mats[1] );
+    n:= NrCols( mats[1] );
 
     # Compute an echelonized basis.
     vectors := [];
@@ -2570,8 +2570,8 @@ InstallMethod( IsMonomialMatrix,
           row,   # loop over rows
           j;     # position of first non-zero element
 
-    len:= Length( M[1] );
-    if Length( M ) <> len  then
+    len:= NrCols( M );
+    if NrRows( M ) <> len  then
         return false;
     fi;
     found:= ListWithIdenticalEntries( len, false );
@@ -2600,12 +2600,12 @@ InstallMethod( InverseMatMod,
 function( mat, m )
     local   n,  MM, inv,  perm,  i,  pj,  elem,  liste,  l;
 
-    if Length(mat) <> Length(mat[1])  then
+    if NrRows(mat) <> NrCols(mat)  then
         Error( "<mat> must be a square matrix" );
     fi;
 
     MM := List( mat, x -> List( x, y -> y mod m ) );
-    n  := Length(MM);
+    n  := NrRows(MM);
 
     # construct the identity matrix
     inv := IdentityMat( n, Cyclotomics );
@@ -2677,7 +2677,7 @@ InstallOtherMethod(ExteriorPower,
   "for matrices", true,[IsMatrix,IsPosInt],
 function ( A, m )
 local  basis;
-  basis := Combinations( [ 1 .. Length( A ) ], m );
+  basis := Combinations( [ 1 .. NrRows( A ) ], m );
   return List( basis, i->List( basis, j->DeterminantMat( A{i}{j} )));
 end);
 
@@ -2690,7 +2690,7 @@ InstallOtherMethod(SymmetricPower,
 function ( A, m )
 local  basis, f;
   f := j->Product( List( Collected( j ), x->x[2]), Factorial );
-  basis := UnorderedTuples( [ 1 .. Length( A ) ], m );
+  basis := UnorderedTuples( [ 1 .. NrRows( A ) ], m );
   return List( basis, i-> List( basis, j->Permanent( A{i}{j}) / f( i )));
 end);
 
@@ -2710,10 +2710,10 @@ InstallMethod( SolutionMatDestructive,
         function( mat, vec )
     local i,ncols,sem, vno, z,x, row, sol;
     ncols := Length(vec);
-    z := Zero(mat[1,1]);
-    sol := ListWithIdenticalEntries(Length(mat),z);
+    z := ZeroOfBaseDomain(mat);
+    sol := ListWithIdenticalEntries(NrRows(mat),z);
     ConvertToVectorRepNC(sol);
-    if ncols <> Length(mat[1]) then
+    if ncols <> NrCols(mat) then
         Error("SolutionMat: matrix and vector incompatible");
     fi;
     sem := SemiEchelonMatTransformationDestructive(mat);
@@ -2745,14 +2745,14 @@ end);
 #
 #    # solve <mat> * x = <vec>.
 #    vec  := ShallowCopy( vec );
-#    l    := Length( mat );
+#    l    := NrRows( mat );
 #    r    := 0;
-#    zero := Zero( mat[1,1] );
+#    zero := ZeroOfBaseDomain( mat );
 #    Info( InfoMatrix, 1, "SolutionMat called" );
 #
 #    # Run through all columns of the matrix.
 #    c := 1;
-#    while c <= Length( mat[ 1 ] ) and r < l  do
+#    while c <= NrCols( mat ) and r < l  do
 #
 #        # Find a nonzero entry in this column.
 #        s := r + 1;
@@ -2771,7 +2771,7 @@ end);
 #            v := vec[ s ];  vec[ s ] := vec[ r ];  vec[ r ] := tmp * v;
 #
 #            # Clear all entries in this column.
-#            for s  in [ 1 .. Length( mat ) ]  do
+#            for s  in [ 1 .. NrRows( mat ) ]  do
 #                if s <> r and mat[ s , c ] <> zero  then
 #                    tmp := mat[ s , c ];
 #                    mat[ s ] := mat[ s ] - tmp * mat[ r ];
@@ -2787,7 +2787,7 @@ end);
 #        if vec[ i ] <> zero  then return fail;  fi;
 #    od;
 #    h := [];
-#    s := Length( mat[ 1 ] );
+#    s := NrCols( mat );
 #    v := Zero( mat[ 1 , 1 ] );
 #    r := 1;
 #    c := 1;
@@ -2856,9 +2856,9 @@ function( M1, M2 )
       return [ M2, M1 ];
     elif Length( M2 ) = 0 then
       return [ M1, M2 ];
-    elif Length( M1[1] ) <> Length( M2[1] ) then
+    elif NrCols( M1 ) <> NrCols( M2 ) then
       Error( "dimensions of matrices are not compatible" );
-    elif Zero( M1[1,1] ) <> Zero( M2[1,1] ) then
+    elif ZeroOfBaseDomain( M1 ) <> ZeroOfBaseDomain( M2 ) then
       Error( "fields of matrices are not compatible" );
     fi;
 
@@ -2922,9 +2922,9 @@ InstallMethod( TriangulizeMat,
     if not IsEmpty( mat ) then
 
        # get the size of the matrix
-       m := Length(mat);
-       n := Length(mat[1]);
-       zero := Zero( mat[1,1] );
+       m := NrRows(mat);
+       n := NrCols(mat);
+       zero := ZeroOfBaseDomain( mat );
 
        # make sure that the rows are mutable
        for i in [ 1 .. m ] do
@@ -3011,7 +3011,7 @@ function( mat, l )
     local   dim,  exp,  i;
 
     # collect exponents in <e>
-    dim := Length(mat);
+    dim := NrRows(mat);
     exp := [];
 
     # run through the diagonal
@@ -3040,7 +3040,7 @@ InstallGlobalFunction( BaseFixedSpace, function( matrices )
           j;
 
     I := matrices[1]^0;
-    size := Length(I);
+    size := NrRows(I);
     E := List( [ 1 .. size ], x -> [] );
     for M  in matrices  do
         N := M - I;
@@ -3328,7 +3328,7 @@ InstallGlobalFunction( NullspaceModQ, function( E, q )
     B    := One( field ) * E;
     null := NullspaceMat( B );
     if null = []  then
-        return [ListWithIdenticalEntries (Length(E),0)];
+        return [ListWithIdenticalEntries (NrRows(E),0)];
     fi;
 
     # set up
@@ -3847,7 +3847,7 @@ InstallGlobalFunction( DirectSumMat, function (arg)
         if Length(m)=0 then
             return 0;
         else
-            return Length(m[1]);
+            return NrCols(m);
         fi;
     end;
     r:=1; m:=[ ];
@@ -3881,7 +3881,7 @@ InstallMethod( TraceMat, "method for lists", [ IsList ],
 
     # check that the element is a square matrix
     m := Length(mat);
-    if m <> Length(mat[1])  then
+    if m <> NrCols(mat)  then
         Error("TraceMat: <mat> must be a square matrix");
     fi;
 
@@ -4184,10 +4184,10 @@ local idx,i;
    if L=[1..Length(L)] then
      TriangulizeMat(M);
    else
-     idx:=Concatenation(L,Filtered([1..Length(M[1])],x->not x in L));
+     idx:=Concatenation(L,Filtered([1..NrCols(M)],x->not x in L));
      for i in [1..Length(M)] do M[i]:=M[i]{idx}; od;
      TriangulizeMat(M);
-     idx:=ListPerm(PermList(idx)^-1,Length(M[1]));
+     idx:=ListPerm(PermList(idx)^-1,NrCols(M));
      for i in [1..Length(M)] do M[i]:=M[i]{idx}; od;
    fi;
 

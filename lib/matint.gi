@@ -153,8 +153,8 @@ InstallGlobalFunction(SNFofREF , function(R,destroy)
 local k,g,b,ii,m1,m2,t,tt,si,n,m,i,j,r,jj,piv,d,gt,tmp,A,T,TT,kk;
 
   Info(InfoMatInt,1,"SNFofREF - initializing work matrix");
-  n := Length(R);
-  m := Length(R[1]);
+  n := NrRows(R);
+  m := NrCols(R);
 
   piv := List(R,x->PositionProperty(x,y->y<>0));
   r := PositionProperty(piv,x->x=fail);
@@ -589,7 +589,7 @@ end);
 
 InstallOtherMethod(TriangulizedIntegerMat,"empty matrix",true,[IsList],0,
 function(mat)
-  if Length(mat)<>1 or (not IsList(mat[1])) or Length(mat[1])<>0 then
+  if NrRows(mat)<>1 or (not IsList(mat[1])) or NrCols(mat)<>0 then
     TryNextMethod();
   fi;
   return DoNFIM(mat,0).normal;
@@ -607,7 +607,7 @@ end);
 
 InstallOtherMethod(TriangulizedIntegerMatTransform,"empty matrix",true,[IsList],0,
 function(mat)
-  if Length(mat)<>1 or (not IsList(mat[1])) or Length(mat[1])<>0 then
+  if NrRows(mat)<>1 or (not IsList(mat[1])) or NrCols(mat)<>0 then
     TryNextMethod();
   fi;
   return NormalFormIntMat(mat,4);
@@ -639,7 +639,7 @@ end);
 
 InstallOtherMethod(HermiteNormalFormIntegerMat,"empty matrix",true,[IsList],0,
 function(mat)
-  if Length(mat)<>1 or (not IsList(mat[1])) or Length(mat[1])<>0 then
+  if NrRows(mat)<>1 or (not IsList(mat[1])) or NrCols(mat)<>0 then
     TryNextMethod();
   fi;
   return DoNFIM(mat,2).normal;
@@ -659,7 +659,7 @@ end);
 InstallOtherMethod(HermiteNormalFormIntegerMatTransform,"empty matrix",
   true,[IsList],0,
 function(mat)
-  if Length(mat)<>1 or (not IsList(mat[1])) or Length(mat[1])<>0 then
+  if NrRows(mat)<>1 or (not IsList(mat[1])) or NrCols(mat)<>0 then
     TryNextMethod();
   fi;
   return NormalFormIntMat(mat,6);
@@ -681,7 +681,7 @@ end);
 
 InstallOtherMethod(SmithNormalFormIntegerMat,"empty matrix",true,[IsList],0,
 function(mat)
-  if Length(mat)<>1 or (not IsList(mat[1])) or Length(mat[1])<>0 then
+  if NrRows(mat)<>1 or (not IsList(mat[1])) or NrCols(mat)<>0 then
     TryNextMethod();
   fi;
   return DoNFIM(mat,1).normal;
@@ -701,7 +701,7 @@ end);
 InstallOtherMethod(SmithNormalFormIntegerMatTransforms,"empty matrix",
   true,[IsList],0,
 function(mat)
-  if Length(mat)<>1 or (not IsList(mat[1])) or Length(mat[1])<>0 then
+  if NrRows(mat)<>1 or (not IsList(mat[1])) or NrCols(mat)<>0 then
     TryNextMethod();
   fi;
   return NormalFormIntMat(mat,13);
@@ -840,7 +840,7 @@ function( mat,v )
 local norm, rs, t, M, r;
   if IsZero(mat) then
     if IsZero(v) then
-      return ListWithIdenticalEntries( Length(mat), 0 );
+      return ListWithIdenticalEntries( NrRows(mat), 0 );
     else
       return fail;
     fi;
@@ -907,7 +907,7 @@ local sig, n, m, A, r, c2, c1, j, k, c, i, g, q;
   n := Length(mat)+2;
   # Crossover point roughly 20x20 matrices, so farm the work if smaller..
   if n<22 then return DeterminantMat(mat);fi;
-  m := Length(mat[1])+2;
+  m := NrCols(mat)+2;
 
   if not n=m then
     Error( "DeterminantIntMat: <mat> must be a square matrix" );
