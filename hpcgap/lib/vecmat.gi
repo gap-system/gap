@@ -681,10 +681,10 @@ InstallMethod( PrintObj,
 function( mat )
     local   i, j;
     Print( "\>\>[ \>\>" );
-    for i  in [ 1 .. Length(mat) ]  do
+    for i  in [ 1 .. NrRows(mat) ]  do
         if 1 < i  then Print( "\<,\< \>\>" );  fi;
         Print( "\>\>[ \>\>" );
-        for j  in [ 1 .. Length(mat[i]) ]  do
+        for j  in [ 1 .. NrCols(mat) ]  do
             if 1 < j  then Print( "\<,\< \>\>" );  fi;
             Print( mat[i][j] );
         od;
@@ -705,19 +705,11 @@ InstallMethod( ViewObj,
     0,
 
 function( mat )
-    if Length(mat) = 0  then
-        if IsMutable(mat)  then
-            Print( "<a 0x0 matrix over GF2>" );
-        else
-            Print( "<an immutable 0x0 matrix over GF2>" );
-        fi;
+    if IsMutable(mat)  then
+        Print("<a ",NrRows(mat),"x",NrCols(mat)," matrix over GF2>");
     else
-        if IsMutable(mat)  then
-            Print("<a ",Length(mat),"x",Length(mat[1])," matrix over GF2>");
-        else
-            Print( "<an immutable ", Length(mat), "x", Length(mat[1]),
-                   " matrix over GF2>" );
-        fi;
+        Print( "<an immutable ", NrRows(mat), "x", NrCols(mat),
+               " matrix over GF2>" );
     fi;
 end );
 
@@ -876,7 +868,7 @@ InstallMethod( InverseSameMutability,
     fi;
     if IsMutable(m) then
         if not IsMutable(m[1]) then
-            for i in [1..Length(m)] do
+            for i in [1..NrRows(m)] do
                 MakeImmutable(inv[i]);
             od;
         fi;
@@ -926,8 +918,8 @@ InstallMethod( OneOp,
         0,
         function(mat)
     local len;
-    len := Length(mat);
-    if len <> Length(mat[1]) then
+    len := NrRows(mat);
+    if len <> NrCols(mat) then
         return fail;
     fi;
     return GF2IdentityMatrix(len, 0);
@@ -945,8 +937,8 @@ InstallMethod( One,
     0,
         function(mat)
     local len;
-    len := Length(mat);
-    if len <> Length(mat[1]) then
+    len := NrRows(mat);
+    if len <> NrCols(mat) then
         return fail;
     fi;
     return GF2IdentityMatrix(len, 2);
@@ -964,11 +956,11 @@ InstallMethod( OneSameMutability,
     0,
         function(mat)
     local len,row1;
-    len := Length(mat);
-    row1 := mat[1];
-    if len <> Length(row1) then
+    len := NrRows(mat);
+    if len <> NrCols(mat) then
         return fail;
     fi;
+    row1 := mat[1];
     if not IsMutable(mat) then
         return GF2IdentityMatrix(len, 2);
     elif IsMutable(mat) and not IsMutable(row1) then
@@ -1609,7 +1601,7 @@ local sf, rep, ind, ind2, row, i,big,l;
   # get the indices of the rows that need changing the representation.
   ind:=[]; # rows to convert
   ind2:=[]; # rows to rebuild 
-  for i in [1..Length(matrix)] do
+  for i in [1..NrRows(matrix)] do
     if not rep(matrix[i]) then
       if big or IsLockedRepresentationVector(matrix[i]) 
         or (IsMutable(matrix[i]) and not change) then

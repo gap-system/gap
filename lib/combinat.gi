@@ -1304,8 +1304,8 @@ InstallMethod(Permanent,
 function ( mat )
     local m, n;
 
-    m := Length(mat);
-    n := Length(mat[1]);
+    m := NrRows(mat);
+    n := NrCols(mat);
     while n<m do
         Error("Matrix may not have fewer columns than rows");
     od;
