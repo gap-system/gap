@@ -99,7 +99,7 @@
 #   define AO_HAVE_compare_and_swap_release
 # endif
 
-# if AO_CHAR_TS_T
+# if defined(AO_CHAR_TS_T)
 #   define AO_TS_COMPARE_AND_SWAP_FULL(a,o,n) \
                                 AO_char_compare_and_swap_full(a,o,n)
 #   define AO_TS_COMPARE_AND_SWAP_ACQUIRE(a,o,n) \
@@ -109,7 +109,7 @@
 #   define AO_TS_COMPARE_AND_SWAP(a,o,n) AO_char_compare_and_swap(a,o,n)
 # endif
 
-# if AO_AO_TS_T
+# if defined(AO_AO_TS_T)
 #   define AO_TS_COMPARE_AND_SWAP_FULL(a,o,n) AO_compare_and_swap_full(a,o,n)
 #   define AO_TS_COMPARE_AND_SWAP_ACQUIRE(a,o,n) \
                                 AO_compare_and_swap_acquire(a,o,n)
@@ -118,8 +118,8 @@
 #   define AO_TS_COMPARE_AND_SWAP(a,o,n) AO_compare_and_swap(a,o,n)
 # endif
 
-# if (AO_AO_TS_T && defined(AO_HAVE_compare_and_swap_full)) \
-     || (AO_CHAR_TS_T && defined(AO_HAVE_char_compare_and_swap_full))
+# if (defined(AO_AO_TS_T) && defined(AO_HAVE_compare_and_swap_full)) \
+     || (defined(AO_CHAR_TS_T) && defined(AO_HAVE_char_compare_and_swap_full))
     AO_INLINE AO_TS_VAL_t
     AO_test_and_set_full(volatile AO_TS_t *addr)
     {
@@ -131,8 +131,8 @@
 #   define AO_HAVE_test_and_set_full
 # endif /* AO_HAVE_compare_and_swap_full */
 
-# if (AO_AO_TS_T && defined(AO_HAVE_compare_and_swap_acquire)) \
-     || (AO_CHAR_TS_T && defined(AO_HAVE_char_compare_and_swap_acquire))
+# if (defined(AO_AO_TS_T) && defined(AO_HAVE_compare_and_swap_acquire)) \
+     || (defined(AO_CHAR_TS_T) && defined(AO_HAVE_char_compare_and_swap_acquire))
     AO_INLINE AO_TS_VAL_t
     AO_test_and_set_acquire(volatile AO_TS_t *addr)
     {
@@ -144,8 +144,8 @@
 #   define AO_HAVE_test_and_set_acquire
 # endif /* AO_HAVE_compare_and_swap_acquire */
 
-# if (AO_AO_TS_T && defined(AO_HAVE_compare_and_swap_release)) \
-     || (AO_CHAR_TS_T && defined(AO_HAVE_char_compare_and_swap_release))
+# if (defined(AO_AO_TS_T) && defined(AO_HAVE_compare_and_swap_release)) \
+     || (defined(AO_CHAR_TS_T) && defined(AO_HAVE_char_compare_and_swap_release))
     AO_INLINE AO_TS_VAL_t
     AO_test_and_set_release(volatile AO_TS_t *addr)
     {
@@ -157,8 +157,8 @@
 #   define AO_HAVE_test_and_set_release
 # endif /* AO_HAVE_compare_and_swap_release */
 
-# if (AO_AO_TS_T && defined(AO_HAVE_compare_and_swap)) \
-     || (AO_CHAR_TS_T && defined(AO_HAVE_char_compare_and_swap))
+# if (defined(AO_AO_TS_T) && defined(AO_HAVE_compare_and_swap)) \
+     || (defined(AO_CHAR_TS_T) && defined(AO_HAVE_char_compare_and_swap))
     AO_INLINE AO_TS_VAL_t
     AO_test_and_set(volatile AO_TS_t *addr)
     {
