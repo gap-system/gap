@@ -187,7 +187,7 @@ static Obj PopObj(void)
     return val;
 }
 
-static Obj PopVoidObj(void)
+Obj PopVoidObj(void)
 {
     Obj val = PopPlist( STATE(StackObj) );
 
@@ -200,7 +200,7 @@ static Obj PopVoidObj(void)
     return val;
 }
 
-static inline void StartFakeFuncExpr(Int startLine)
+void StartFakeFuncExpr(Int startLine)
 {
     assert(STATE(IntrCoding) == 0);
 
@@ -229,7 +229,7 @@ static inline void StartFakeFuncExpr(Int startLine)
     CodeFuncExprBegin(0, 0, nams, startLine);
 }
 
-static inline void FinishAndCallFakeFuncExpr(void)
+void FinishAndCallFakeFuncExpr(void)
 {
     assert(STATE(IntrCoding) == 0);
 
@@ -246,10 +246,12 @@ static inline void FinishAndCallFakeFuncExpr(void)
         PopPlist(STATE(StackNams));
 
     // call the function
-    CALL_0ARGS(func);
+    Obj ret = CALL_0ARGS(func);
 
-    // push void
-    PushVoidObj();
+    if(ret)
+        PushObj(ret);
+    else
+        PushVoidObj();
 }
 
 /****************************************************************************

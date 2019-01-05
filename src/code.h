@@ -848,6 +848,7 @@ extern  void            CodeBreak ( void );
 **  the expression <expr>.
 */
 extern  void            CodeReturnObj ( void );
+extern  void            CodeReturnMaybeObj ( void );
 
 
 /****************************************************************************

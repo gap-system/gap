@@ -251,7 +251,6 @@ Char GET_NEXT_CHAR(void)
         // partial prompt from now on
         STATE(Prompt) = SyQuiet ? "" : "> ";
     }
-
     return *STATE(In);
 }
 

@@ -1342,6 +1342,13 @@ void CodeReturnObj ( void )
 }
 
 
+void CodeReturnMaybeObj ( void )
+{
+    if(CS(CountExpr) >= 1) {
+        CodeReturnMaybeObj();
+    }
+}
+
 /****************************************************************************
 **
 *F  CodeReturnVoid()  . . . . . . . . . . . . . .  code return-void-statement

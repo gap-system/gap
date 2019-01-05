@@ -2406,8 +2406,17 @@ static void            ReadQUIT (
 **              |  'atomic' <QualifiedExpression> { ',' <QualifiedExpression> } 'do' <Statements> 'od' ';'
 **              |  ';'
 */
+
+void StartFakeFuncExpr(Int startLine);
+void FinishAndCallFakeFuncExpr(void);
+
 static Int TryReadStatement(TypSymbolSet follow)
 {
+    if(STATE(IntrCoding) == 0)
+        StartFakeFuncExpr(0);
+    STATE(IntrCoding)++;
+
+    int ret = 1;
     switch (STATE(Symbol)) {
     case S_IDENT:     ReadCallVarAss(follow,'s'); break;
     case S_UNBIND:    ReadUnbind(    follow    ); break;
@@ -2426,9 +2435,14 @@ static Int TryReadStatement(TypSymbolSet follow)
     case S_QUIT:      SyntaxError("'quit;' cannot be used in this context"); break;
     case S_QQUIT:     SyntaxError("'QUIT;' cannot be used in this context"); break;
     case S_HELP:      SyntaxError("'?' cannot be used in this context"); break;
-    default:         return 0;
+    default:          ret = 0;
     }
-    return 1;
+
+    STATE(IntrCoding)--;
+    if(STATE(IntrCoding) == 0)
+        FinishAndCallFakeFuncExpr();
+
+    return ret;
 }
 
 static UInt ReadStats (
@@ -2547,9 +2561,14 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 
     IntrBegin( context );
 
+    if(STATE(IntrCoding) == 0)
+        StartFakeFuncExpr(0);
+    STATE(IntrCoding)++;
+
+
     switch (STATE(Symbol)) {
     /* read an expression or an assignment or a procedure call             */
-    case S_IDENT:     ReadExpr(    S_SEMICOLON|S_EOF, 'x' ); break;
+    case S_IDENT:     {ReadExpr(    S_SEMICOLON|S_EOF, 'x' ); CodeReturnMaybeObj();} break;
 
     // otherwise read a statement -- first handle some which are different on
     // the top level than inside a function, if/else or loop
@@ -2561,9 +2580,15 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     default:
         if (!TryReadStatement(S_SEMICOLON | S_EOF)) {
             // not a statement, but perhaps it is an expression
-            ReadExpr(S_SEMICOLON | S_EOF, 'r');
+            { ReadExpr(S_SEMICOLON | S_EOF, 'r'); CodeReturnMaybeObj();}
         }
     }
+
+    STATE(IntrCoding)--;
+    if(STATE(IntrCoding) == 0) {
+        FinishAndCallFakeFuncExpr();
+    }
+
 
     /* every statement must be terminated by a semicolon                  */
     if (!IS_IN(STATE(Symbol), S_SEMICOLON) && STATE(Symbol) != S_HELP) {
