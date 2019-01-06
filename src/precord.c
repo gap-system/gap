@@ -795,11 +795,6 @@ static Int InitKernel (
     InitMarkFuncBags( T_PREC                     , MarkPRecSubBags );
     InitMarkFuncBags( T_PREC +IMMUTABLE          , MarkPRecSubBags );
 
-#ifdef HPCGAP
-    // Immutable records are public
-    MakeBagTypePublic( T_PREC +IMMUTABLE );
-#endif
-
     // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
