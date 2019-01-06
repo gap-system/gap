@@ -381,6 +381,9 @@ GAP_CPPFLAGS += "-DCOMPILECYGWINDLL"
 # increase stack size, the default is too small (see issue #1522)
 GAP_LDFLAGS += -Wl,--stack,16777216
 
+# Allow multiple definitions so we can declare a function multiple times with 'extern inline'
+GAP_LDFLAGS += -Wl,--allow-multiple-definition
+
 # Special build rules for CYGWIN / Windows: In order to allow kernel
 # extensions, we employ a trick: GAP itself is compiled into DLL, in which 
 # GAP's standard main function is renamed. And gap.exe is a tiny binary which
