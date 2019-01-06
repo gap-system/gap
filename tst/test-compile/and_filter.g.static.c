@@ -44,7 +44,7 @@ static Obj  HdlrFunc3 (
   t_1 = NewAndFilter( t_2, INTOBJ_INT(1) );
  }
  else {
-  RequireArgument(0, t_2, "expr",
+  RequireArgumentEx(0, t_2, "<expr>",
   "must be 'true' or 'false' or a filter" );
  }
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -115,7 +115,7 @@ static Obj  HdlrFunc5 (
   t_1 = NewAndFilter( t_2, t_4 );
  }
  else {
-  RequireArgument(0, t_2, "expr",
+  RequireArgumentEx(0, t_2, "<expr>",
   "must be 'true' or 'false' or a filter" );
  }
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -157,7 +157,7 @@ static Obj  HdlrFunc6 (
   t_1 = NewAndFilter( t_2, t_4 );
  }
  else {
-  RequireArgument(0, t_2, "expr",
+  RequireArgumentEx(0, t_2, "<expr>",
   "must be 'true' or 'false' or a filter" );
  }
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -196,7 +196,7 @@ static Obj  HdlrFunc2 (
   t_2 = NewAndFilter( t_3, INTOBJ_INT(1) );
  }
  else {
-  RequireArgument(0, t_3, "expr",
+  RequireArgumentEx(0, t_3, "<expr>",
   "must be 'true' or 'false' or a filter" );
  }
  t_3 = MakeString( "\n" );
@@ -268,7 +268,7 @@ static Obj  HdlrFunc2 (
   t_2 = NewAndFilter( t_3, t_5 );
  }
  else {
-  RequireArgument(0, t_3, "expr",
+  RequireArgumentEx(0, t_3, "<expr>",
   "must be 'true' or 'false' or a filter" );
  }
  t_3 = MakeString( "\n" );

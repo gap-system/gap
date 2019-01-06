@@ -74,9 +74,9 @@ extern "C" {
 #define MIN(a, b) (a < b ? a : b)
 #define MAX(a, b) (a < b ? b : a)
 
-#define RequireTransformation(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, IS_TRANS(op), \
-        "must be a transformation")
+#define RequireTransformation(funcname, op)                                  \
+    RequireArgumentCondition(funcname, op, IS_TRANS(op),                     \
+                             "must be a transformation")
 
 
 static ModuleStateOffset TransStateOffset = -1;

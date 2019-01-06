@@ -1317,7 +1317,7 @@ CVar CompAnd (
 
     /* signal an error                                                     */
     Emit( "else {\n" );
-    Emit( "RequireArgument(0, %c, \"expr\",\n"
+    Emit( "RequireArgumentEx(0, %c, \"<expr>\",\n"
             "\"must be 'true' or 'false' or a filter\" );\n", left );
     Emit( "}\n" );
 

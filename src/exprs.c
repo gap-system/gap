@@ -104,7 +104,7 @@ Obj             EvalUnknownBool (
 
     /* check that the value is either 'true' or 'false'                    */
     if (val != True && val != False) {
-        RequireArgument(0, val, "expr", "must be 'true' or 'false'");
+        RequireArgumentEx(0, val, "<expr>", "must be 'true' or 'false'");
     }
 
     /* return the value                                                    */
@@ -188,8 +188,8 @@ Obj             EvalAnd (
     
     /* signal an error                                                     */
     else {
-        RequireArgument(0, opL, "expr",
-                        "must be 'true' or 'false' or a filter");
+        RequireArgumentEx(0, opL, "<expr>",
+                          "must be 'true' or 'false' or a filter");
     }
     
     /* please 'lint'                                                       */
@@ -829,7 +829,7 @@ Obj             EvalPermExpr (
 
             /* get and check current entry for the cycle                   */
             val = EVAL_EXPR(READ_EXPR(cycle, j - 1));
-            c = GetPositiveSmallIntEx("Permutation", val, "expr");
+            c = GetPositiveSmallIntEx("Permutation", val, "<expr>");
             if (c > MAX_DEG_PERM4)
               ErrorMayQuit( "Permutation literal exceeds maximum permutation degree",
                             0, 0);
@@ -1082,12 +1082,12 @@ Obj             EvalRangeExpr (
 
     /* evaluate the low value                                              */
     val = EVAL_EXPR(READ_EXPR(expr, 0));
-    low = GetSmallIntEx("Range", val, "first");
+    low = GetSmallIntEx("Range", val, "<first>");
 
     /* evaluate the second value (if present)                              */
     if ( SIZE_EXPR(expr) == 3*sizeof(Expr) ) {
         val = EVAL_EXPR(READ_EXPR(expr, 1));
-        Int ival = GetSmallIntEx("Range", val, "second");
+        Int ival = GetSmallIntEx("Range", val, "<second>");
         if (ival == low) {
             ErrorMayQuit("Range: <second> must not be equal to <first> (%d)",
                          (Int)low, 0);
@@ -1100,7 +1100,7 @@ Obj             EvalRangeExpr (
 
     /* evaluate and check the high value                                   */
     val = EVAL_EXPR(READ_EXPR(expr, SIZE_EXPR(expr) / sizeof(Expr) - 1));
-    high = GetSmallIntEx("Range", val, "last");
+    high = GetSmallIntEx("Range", val, "<last>");
     if ((high - low) % inc != 0) {
         ErrorMayQuit(
             "Range: <last>-<first> (%d) must be divisible by <inc> (%d)",

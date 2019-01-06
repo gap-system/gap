@@ -99,17 +99,17 @@ typedef UInt    RNam;
     if (obj == 0)                                                            \
         ErrorQuit("function must return a value", 0L, 0L);
 
-#define CHECK_INT_SMALL(obj) RequireSmallInt(0, obj, "obj");
+#define CHECK_INT_SMALL(obj) RequireSmallInt(0, obj, "<obj>");
 
-#define CHECK_INT_SMALL_POS(obj) RequirePositiveSmallInt(0, obj, "obj");
+#define CHECK_INT_SMALL_POS(obj) RequirePositiveSmallInt(0, obj, "<obj>");
 
 #define CHECK_INT_POS(obj)                                                   \
     if (!IS_POS_INT(obj))                                                    \
-        RequireArgument(0, obj, "obj", "must be a positive integer");
+        RequireArgumentEx(0, obj, "<obj>", "must be a positive integer");
 
 #define CHECK_BOOL(obj)                                                      \
     if (obj != True && obj != False)                                         \
-        RequireArgument(0, obj, "obj", "must be 'true' or 'false'");
+        RequireArgumentEx(0, obj, "<obj>", "must be 'true' or 'false'");
 
 #define CHECK_FUNC(obj) RequireFunction(0, obj);
 

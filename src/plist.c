@@ -2509,7 +2509,7 @@ Obj FuncASS_PLIST_DEFAULT (
     /* check the arguments                                                 */
     p = GetPositiveSmallInt("List Assignment", pos);
     if (!IS_PLIST(plist) || !IS_PLIST_MUTABLE(plist)) {
-        RequireArgument(0, plist, "list", "must be a mutable plain list");
+        RequireArgumentEx(0, plist, "<list>", "must be a mutable plain list");
     }
 
     /* call `AssPlistXXX'                                                  */

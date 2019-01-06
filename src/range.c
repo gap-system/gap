@@ -878,9 +878,10 @@ Obj FuncINTER_RANGE( Obj self, Obj r1, Obj r2)
   UInt len1, len2, leni;
   
   if (!IS_RANGE(r1) || !IS_MUTABLE_OBJ(r1))
-      RequireArgument("INTER_RANGE", r1, "range1", "must be a mutable range");
+      RequireArgumentEx("INTER_RANGE", r1, "<range1>",
+                        "must be a mutable range");
   if (!IS_RANGE(r2))
-      RequireArgument("INTER_RANGE", r2, "range2", "must be a range");
+      RequireArgumentEx("INTER_RANGE", r2, "<range2>", "must be a range");
 
   low1 = GET_LOW_RANGE(r1);
   low2 = GET_LOW_RANGE(r2);

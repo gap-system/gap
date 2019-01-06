@@ -1197,7 +1197,7 @@ Obj             FuncOnSets (
 
     /* check the type of the first argument                                */
     if (!HAS_FILT_LIST(set, FN_IS_SSORT) && !IsSet(set)) {
-        RequireArgument("OnSets", set, "set", "must be a set");
+        RequireArgument("OnSets", set, "must be a set");
     }
 
     /* special case for the empty list */
@@ -1446,19 +1446,19 @@ Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
   srclist = ELM_PLIST(args, 1);
   GAP_ASSERT(srclist != 0);
   if (!IS_PLIST(srclist))
-      RequireArgument("CopyListEntries", srclist, "fromlst",
-                      "must be a plain list");
+      RequireArgumentEx("CopyListEntries", srclist, "<fromlst>",
+                        "must be a plain list");
 
-  srcstart = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 2), "fromind");
-  srcinc = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 3), "fromstep");
+  srcstart = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 2), "<fromind>");
+  srcinc = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 3), "<fromstep>");
   dstlist = ELM_PLIST(args,4);
   GAP_ASSERT(dstlist != 0);
   if (!IS_PLIST(dstlist) || !IS_MUTABLE_OBJ(dstlist))
-      RequireArgument("CopyListEntries", dstlist, "tolst",
-                      "must be a mutable plain list");
-  dststart = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 5), "toind");
-  dstinc = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 6), "tostep");
-  number = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 7), "n");
+      RequireArgumentEx("CopyListEntries", dstlist, "<tolst>",
+                        "must be a mutable plain list");
+  dststart = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 5), "<toind>");
+  dstinc = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 6), "<tostep>");
+  number = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 7), "<n>");
 
   if (number == 0)
     return (Obj) 0;

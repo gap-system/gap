@@ -1888,12 +1888,10 @@ static Obj  FuncMONOM_TOT_DEG_LEX ( Obj self, Obj u, Obj  v ) {
   Obj  lexico;
 
   if (!IS_PLIST(u) || !IS_DENSE_LIST(u)) {
-      RequireArgument("MONOM_TOT_DEG_LEX", u, "u",
-                      "must be a dense plain list");
+      RequireArgument("MONOM_TOT_DEG_LEX", u, "must be a dense plain list");
   }
   if (!IS_PLIST(v) || !IS_DENSE_LIST(v)) {
-      RequireArgument("MONOM_TOT_DEG_LEX", v, "v",
-                      "must be a dense plain list");
+      RequireArgument("MONOM_TOT_DEG_LEX", v, "must be a dense plain list");
   }
     
   lu = LEN_PLIST( u );
@@ -1966,10 +1964,10 @@ static Obj  FuncMONOM_GRLEX( Obj self, Obj u, Obj  v ) {
   Obj  total,ai,bi;
 
   if (!IS_PLIST(u) || !IS_DENSE_LIST(u)) {
-      RequireArgument("MONOM_GRLEX", u, "u", "must be a dense plain list");
+      RequireArgument("MONOM_GRLEX", u, "must be a dense plain list");
   }
   if (!IS_PLIST(v) || !IS_DENSE_LIST(v)) {
-      RequireArgument("MONOM_GRLEX", v, "v", "must be a dense plain list");
+      RequireArgument("MONOM_GRLEX", v, "must be a dense plain list");
   }
     
   lu = LEN_PLIST( u );

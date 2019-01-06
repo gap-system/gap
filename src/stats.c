@@ -520,9 +520,9 @@ static ALWAYS_INLINE UInt ExecForRangeHelper(Stat stat, UInt nr)
     /* evaluate the range                                                  */
     VisitStatIfHooked(READ_STAT(stat, 1));
     elm = EVAL_EXPR(READ_EXPR(READ_STAT(stat, 1), 0));
-    first = GetSmallIntEx("Range", elm, "first");
+    first = GetSmallIntEx("Range", elm, "<first>");
     elm = EVAL_EXPR(READ_EXPR(READ_STAT(stat, 1), 1));
-    last = GetSmallIntEx("Range", elm, "last");
+    last = GetSmallIntEx("Range", elm, "<last>");
 
     /* get the body                                                        */
     body1 = READ_STAT(stat, 2);
@@ -908,8 +908,8 @@ UInt ExecAssert2Args (
     if ( ! LT(CurrentAssertionLevel, level) )  {
         decision = EVAL_EXPR(READ_STAT(stat, 1));
         if (decision != True && decision != False) {
-            RequireArgument("Assert", decision, "cond",
-                            "must be 'true' or 'false'");
+            RequireArgumentEx("Assert", decision, "<cond>",
+                              "must be 'true' or 'false'");
         }
         if ( decision == False ) {
             ErrorReturnVoid( "Assertion failure", 0L, 0L, "you may 'return;'");
@@ -938,8 +938,8 @@ UInt ExecAssert3Args (
     if ( ! LT(CurrentAssertionLevel, level) ) {
         decision = EVAL_EXPR(READ_STAT(stat, 1));
         if (decision != True && decision != False) {
-            RequireArgument("Assert", decision, "cond",
-                            "must be 'true' or 'false'");
+            RequireArgumentEx("Assert", decision, "<cond>",
+                              "must be 'true' or 'false'");
         }
         if ( decision == False ) {
             message = EVAL_EXPR(READ_STAT(stat, 2));

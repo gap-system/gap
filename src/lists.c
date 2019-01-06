@@ -206,7 +206,7 @@ Obj FuncLEN_LIST (
 Int LenListError (
     Obj                 list )
 {
-    RequireArgument("Length", list, "list", "must be a list");
+    RequireArgument("Length", list, "must be a list");
 }
 
 
@@ -217,8 +217,8 @@ Int LenListObject (
 
     len = FuncLENGTH( LengthAttr, obj );
     if (!IS_NONNEG_INTOBJ(len)) {
-        RequireArgument("Length", len, 0,
-                        "method must return a non-negative value");
+        RequireArgumentEx("Length", len, 0,
+                          "method must return a non-negative value");
     }
     return INT_INTOBJ( len );
 }
@@ -240,7 +240,7 @@ Obj             (*LengthFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 Obj LengthError (
     Obj                 list )
 {
-    RequireArgument("Length", list, "list", "must be a list");
+    RequireArgument("Length", list, "must be a list");
 }
 
 
@@ -288,7 +288,7 @@ Int             IsbListError (
     Obj                 list,
     Int                 pos )
 {
-    RequireArgument("IsBound", list, "list", "must be a list");
+    RequireArgument("IsBound", list, "must be a list");
 }
 
 Int             IsbListObject (
@@ -390,7 +390,7 @@ Obj Elm0ListError (
     Obj                 list,
     Int                 pos )
 {
-    RequireArgument("List Element", list, "list", "must be a list");
+    RequireArgument("List Element", list, "must be a list");
 }
 
 
@@ -496,7 +496,7 @@ Obj ElmListError (
     Obj                 list,
     Int                 pos )
 {
-    RequireArgument("List Element", list, "list", "must be a list");
+    RequireArgument("List Element", list, "must be a list");
 }
 
 
@@ -594,7 +594,7 @@ Obj ElmsListError (
     Obj                 list,
     Obj                 poss )
 {
-    RequireArgument("List Elements", list, "list", "must be a list");
+    RequireArgument("List Elements", list, "must be a list");
 }
 
 
@@ -823,7 +823,7 @@ void            UnbListError (
     Obj                 list,
     Int                 pos )
 {
-    RequireArgument("Unbind", list, "list", "must be a list");
+    RequireArgument("Unbind", list, "must be a list");
 }
 
 void            UnbListDefault (
@@ -883,7 +883,7 @@ void            AssListError (
     Int                 pos,
     Obj                 obj )
 {
-    RequireArgument("List Assignment", list, "list", "must be a list");
+    RequireArgument("List Assignment", list, "must be a list");
 }
 
 void            AssListDefault (
@@ -969,7 +969,7 @@ void            AsssListError (
     Obj                 poss,
     Obj                 objs )
 {
-    RequireArgument("List Assignments", list, "list", "must be a list");
+    RequireArgument("List Assignments", list, "must be a list");
 }
 
 void            AsssListDefault (
@@ -1418,8 +1418,7 @@ Obj             PosListHandler3 (
     Obj                 start )
 {
     if (TNUM_OBJ(start) != T_INTPOS && !IS_NONNEG_INTOBJ(start)) {
-        RequireArgument("Position", start, "start",
-                        "must be a non-negative integer");
+        RequireArgument("Position", start, "must be a non-negative integer");
     }
     return POS_LIST( list, obj, start );
 }
@@ -1429,7 +1428,7 @@ Obj             PosListError (
     Obj                 obj,
     Obj                 start )
 {
-    RequireArgument("Position", list, "list", "must be a list");
+    RequireArgument("Position", list, "must be a list");
 }
 
 Obj             PosListDefault (
@@ -1594,7 +1593,7 @@ void            ElmsListLevel (
        Resolving this properly requires some more discussion. But until
        then, this change at least prevents hard crashes. */
     if (!IS_PLIST(lists)) {
-        RequireArgument("List Elements", lists, "lists", "must be a list");
+        RequireArgument("List Elements", lists, "must be a list");
     }
 
     /* if <level> is one, perform the replacements                         */
