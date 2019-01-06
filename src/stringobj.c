@@ -2042,9 +2042,6 @@ static Int InitKernel (
     }
 
 #ifdef HPCGAP
-    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
-      MakeBagTypePublic( t1 + IMMUTABLE );
-    }
     MakeBagTypePublic(T_CHAR);
 #endif
 
