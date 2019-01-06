@@ -251,7 +251,7 @@ function(low, high)
 end );
 
 
-(function()
+tmpfunc := function()
     local func;
     func := function(installType)
         return function(args...)
@@ -312,7 +312,9 @@ end );
     end;
     InstallGlobalFunction("InstallMethodWithRandomSource", func(InstallMethod));
     InstallGlobalFunction("InstallOtherMethodWithRandomSource", func(InstallOtherMethod));
-end)();
+end;
+
+tmpfunc();
 
 # This method must rank below Random(SomeRandomSource, IsList)
 # for any random source SomeRandomSource, to avoid an infinite loop.
