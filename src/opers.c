@@ -61,12 +61,12 @@ static Obj ArglistObj;
 *F * * * * * * * * * * * * internal flags functions * * * * * * * * * * * * *
 */
 
-#define RequireFlags(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, TNUM_OBJ(op) == T_FLAGS, \
-        "must be a flags list")
+#define RequireFlags(funcname, op)                                           \
+    RequireArgumentCondition(funcname, op, TNUM_OBJ(op) == T_FLAGS,          \
+                             "must be a flags list")
 
 #define RequireOperation(op)                                                 \
-    RequireArgumentCondition(CSTR_STRING(NAME_FUNC(self)), op, #op,          \
+    RequireArgumentCondition(CSTR_STRING(NAME_FUNC(self)), op,               \
                              IS_OPERATION(op), "must be an operation")
 
 
@@ -3434,7 +3434,7 @@ Obj FuncMETHODS_OPERATION (
     RequireOperation(oper);
     n = IS_INTOBJ(narg) ? INT_INTOBJ(narg) : -1;
     if (n < 0 || n > MAX_OPER_ARGS)
-        RequireArgument("METHODS_OPERATION", narg, "narg",
+        RequireArgument("METHODS_OPERATION", narg,
                         "must be an integer between 0 and 6");
     meth = MethsOper( oper, (UInt)n );
 #ifdef HPCGAP
@@ -3461,7 +3461,7 @@ Obj FuncCHANGED_METHODS_OPERATION (
     RequireOperation(oper);
     n = IS_INTOBJ(narg) ? INT_INTOBJ(narg) : -1;
     if (n < 0 || n > MAX_OPER_ARGS)
-        RequireArgument("CHANGED_METHODS_OPERATION", narg, "narg",
+        RequireArgument("CHANGED_METHODS_OPERATION", narg,
                         "must be an integer between 0 and 6");
 #ifdef HPCGAP
     if (!PreThreadCreation) {
@@ -3492,7 +3492,7 @@ Obj FuncSET_METHODS_OPERATION (
     RequireOperation(oper);
     n = IS_INTOBJ(narg) ? INT_INTOBJ(narg) : -1;
     if (n < 0 || n > MAX_OPER_ARGS)
-        RequireArgument("SET_METHODS_OPERATION", narg, "narg",
+        RequireArgument("SET_METHODS_OPERATION", narg,
                         "must be an integer between 0 and 6");
 #ifdef HPCGAP
     MEMBAR_WRITE();

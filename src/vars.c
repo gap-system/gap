@@ -1546,7 +1546,7 @@ UInt            ExecAssPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_STAT(stat, 1));
-    p = GetPositiveSmallIntEx("PosObj Assignment", pos, "position");
+    p = GetPositiveSmallIntEx("PosObj Assignment", pos, "<position>");
 
     /* evaluate the right hand side                                        */
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
@@ -1578,7 +1578,7 @@ UInt            ExecUnbPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_STAT(stat, 1));
-    p = GetPositiveSmallIntEx("PosObj Assignment", pos, "position");
+    p = GetPositiveSmallIntEx("PosObj Assignment", pos, "<position>");
 
     /* unbind the element                                                  */
     UnbPosObj(list, p);
@@ -1608,7 +1608,7 @@ Obj             EvalElmPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_EXPR(expr, 1));
-    p = GetPositiveSmallIntEx("PosObj Element", pos, "position");
+    p = GetPositiveSmallIntEx("PosObj Element", pos, "<position>");
 
     /* special case for plain lists (use generic code to signal errors)    */
     elm = ElmPosObj(list, p);
@@ -1638,7 +1638,7 @@ Obj             EvalIsbPosObj (
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_EXPR(expr, 1));
-    p = GetPositiveSmallIntEx("PosObj Element", pos, "position");
+    p = GetPositiveSmallIntEx("PosObj Element", pos, "<position>");
 
     /* get the result                                                      */
     isb = IsbPosObj(list, p) ? True : False;
@@ -2097,7 +2097,7 @@ Obj FuncGetBottomLVars( Obj self )
 Obj FuncParentLVars( Obj self, Obj lvars )
 {
   if (!IS_LVARS_OR_HVARS(lvars)) {
-      RequireArgument("ParentLVars", lvars, "lvars", "must be an lvars");
+      RequireArgument("ParentLVars", lvars, "must be an lvars");
   }
   Obj parent = PARENT_LVARS(lvars);
   return parent ? parent : Fail;

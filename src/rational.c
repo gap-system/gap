@@ -67,7 +67,7 @@
 
 
 #define RequireRational(funcname, op)                                        \
-    RequireArgumentCondition(funcname, op, #op,                              \
+    RequireArgumentCondition(funcname, op,                                   \
                              TNUM_OBJ(op) == T_RAT || IS_INT(op),            \
                              "must be a rational")
 

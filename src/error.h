@@ -93,7 +93,7 @@ ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 
 /****************************************************************************
 **
-*F  RequireArgument( <funcname>, <op>, <argname>, <msg>)
+*F  RequireArgumentEx( <funcname>, <op>, <argname>, <msg>)
 **
 **  Raises an error via ErrorMayQuit with an error message of this form:
 **    funcname: <argname> msg (not a %s)
@@ -103,102 +103,116 @@ ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 **  If funcname is 0, then 'funcname: ' is omitted from the message.
 **  If argname is 0, then '<argname> ' is omitted from the message.
 */
-extern Obj RequireArgument(const char * funcname,
-                           Obj          op,
-                           const char * argname,
-                           const char * msg) NORETURN;
+extern Obj RequireArgumentEx(const char * funcname,
+                             Obj          op,
+                             const char * argname,
+                             const char * msg) NORETURN;
+
+#define NICE_ARGNAME(op) "<" #op ">"
+
+/****************************************************************************
+**
+*F  RequireArgument
+*/
+#define RequireArgument(funcname, op, msg)                                   \
+    RequireArgumentEx(funcname, op, NICE_ARGNAME(op), msg)
+
+/****************************************************************************
+**
+*F  RequireArgumentConditionEx
+*/
+#define RequireArgumentConditionEx(funcname, op, argname, cond, msg)         \
+    do {                                                                     \
+        if (!(cond)) {                                                       \
+            RequireArgumentEx(funcname, op, argname, msg);                   \
+        }                                                                    \
+    } while (0)
 
 /****************************************************************************
 **
 *F  RequireArgumentCondition
 */
-#define RequireArgumentCondition(funcname, op, argname, cond, msg)           \
-    do {                                                                     \
-        if (!(cond)) {                                                       \
-            RequireArgument(funcname, op, argname, msg);                     \
-        }                                                                    \
-    } while (0)
+#define RequireArgumentCondition(funcname, op, cond, msg)                    \
+    RequireArgumentConditionEx(funcname, op, NICE_ARGNAME(op), cond, msg)
 
 
 /****************************************************************************
 **
 *F  RequireInt
 */
-#define RequireInt(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, IS_INT(op), \
-        "must be an integer")
+#define RequireInt(funcname, op)                                             \
+    RequireArgumentCondition(funcname, op, IS_INT(op), "must be an integer")
 
 
 /****************************************************************************
 **
 *F  RequireSmallInt
 */
-#define RequireSmallInt(funcname, op, argname) \
-    RequireArgumentCondition(funcname, op, argname, IS_INTOBJ(op), \
-        "must be a small integer")
+#define RequireSmallInt(funcname, op, argname)                               \
+    RequireArgumentConditionEx(funcname, op, argname, IS_INTOBJ(op),         \
+                               "must be a small integer")
 
 
 /****************************************************************************
 **
 *F  RequirePositiveSmallInt
 */
-#define RequirePositiveSmallInt(funcname, op, argname) \
-    RequireArgumentCondition(funcname, op, argname, IS_POS_INTOBJ(op), \
-        "must be a positive small integer")
+#define RequirePositiveSmallInt(funcname, op, argname)                       \
+    RequireArgumentConditionEx(funcname, op, argname, IS_POS_INTOBJ(op),     \
+                               "must be a positive small integer")
 
 
 /****************************************************************************
 **
 *F  RequireNonnegativeSmallInt
 */
-#define RequireNonnegativeSmallInt(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, IS_NONNEG_INTOBJ(op), \
-        "must be a non-negative small integer")
+#define RequireNonnegativeSmallInt(funcname, op)                             \
+    RequireArgumentCondition(funcname, op, IS_NONNEG_INTOBJ(op),             \
+                             "must be a non-negative small integer")
 
 
 /****************************************************************************
 **
 *F  RequireSmallList
 */
-#define RequireSmallList(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, IS_SMALL_LIST(op), \
-        "must be a small list")
+#define RequireSmallList(funcname, op)                                       \
+    RequireArgumentCondition(funcname, op, IS_SMALL_LIST(op),                \
+                             "must be a small list")
 
 
 /****************************************************************************
 **
 *F  RequireFunction
 */
-#define RequireFunction(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, IS_FUNC(op), \
-        "must be a function")
+#define RequireFunction(funcname, op)                                        \
+    RequireArgumentCondition(funcname, op, IS_FUNC(op), "must be a function")
 
 
 /****************************************************************************
 **
 *F  RequireStringRep
 */
-#define RequireStringRep(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, IsStringConv(op), \
-        "must be a string")
+#define RequireStringRep(funcname, op)                                       \
+    RequireArgumentCondition(funcname, op, IsStringConv(op),                 \
+                             "must be a string")
 
 
 /****************************************************************************
 **
 *F  RequirePermutation
 */
-#define RequirePermutation(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, IS_PERM(op), \
-        "must be a permutation")
+#define RequirePermutation(funcname, op)                                     \
+    RequireArgumentCondition(funcname, op, IS_PERM(op),                      \
+                             "must be a permutation")
 
 
 /****************************************************************************
 **
 *F  RequirePlainList
 */
-#define RequirePlainList(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, IS_PLIST(op), \
-        "must be a plain list")
+#define RequirePlainList(funcname, op)                                       \
+    RequireArgumentCondition(funcname, op, IS_PLIST(op),                     \
+                             "must be a plain list")
 
 
 /****************************************************************************
@@ -212,7 +226,8 @@ GetSmallIntEx(const char * funcname, Obj op, const char * argname)
     return INT_INTOBJ(op);
 }
 
-#define GetSmallInt(funcname, op) GetSmallIntEx(funcname, op, #op)
+#define GetSmallInt(funcname, op)                                            \
+    GetSmallIntEx(funcname, op, NICE_ARGNAME(op))
 
 /****************************************************************************
 **
@@ -226,7 +241,7 @@ GetPositiveSmallIntEx(const char * funcname, Obj op, const char * argname)
 }
 
 #define GetPositiveSmallInt(funcname, op)                                    \
-    GetPositiveSmallIntEx(funcname, op, #op)
+    GetPositiveSmallIntEx(funcname, op, NICE_ARGNAME(op))
 
 
 /****************************************************************************

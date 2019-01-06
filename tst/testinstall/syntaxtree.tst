@@ -1,17 +1,15 @@
 
 #
 gap> SYNTAX_TREE(1);
-Error, SYNTAX_TREE: <function> must be a plain GAP function (not the integer 1\
-)
+Error, SYNTAX_TREE: <func> must be a plain GAP function (not the integer 1)
 gap> SYNTAX_TREE(\+);
-Error, SYNTAX_TREE: <function> must be a plain GAP function (not a function)
+Error, SYNTAX_TREE: <func> must be a plain GAP function (not a function)
 gap> SyntaxTree(1);
-Error, SYNTAX_TREE: <function> must be a plain GAP function (not the integer 1\
-)
+Error, SYNTAX_TREE: <func> must be a plain GAP function (not the integer 1)
 gap> SyntaxTree(x -> x);
 <syntax tree>
 gap> SyntaxTree(\+);
-Error, SYNTAX_TREE: <function> must be a plain GAP function (not a function)
+Error, SYNTAX_TREE: <func> must be a plain GAP function (not a function)
 
 # Just try compiling all functions we can find in the workspace
 # to see nothing crashes.

@@ -34,9 +34,9 @@
 #include "sysopt.h"    // for SyInitializing
 
 
-#define RequireMutableSet(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, IS_MUTABLE_OBJ(op) && IsSet(op), \
-        "must be a mutable proper set")
+#define RequireMutableSet(funcname, op)                                      \
+    RequireArgumentCondition(funcname, op, IS_MUTABLE_OBJ(op) && IsSet(op),  \
+                             "must be a mutable proper set")
 
 
 /****************************************************************************

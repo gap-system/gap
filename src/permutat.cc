@@ -827,8 +827,8 @@ Obj PowIntPerm(Obj opL, Obj opR)
         return opL;
 
     img = INT_INTOBJ(opL);
-    RequireArgumentCondition("PowIntPerm", opL, "point", img > 0,
-                             "must be a positive integer");
+    RequireArgumentConditionEx("PowIntPerm", opL, "<point>", img > 0,
+                               "must be a positive integer");
 
     /* compute the image                                                   */
     if ( img <= DEG_PERM<T>(opR) ) {
@@ -870,8 +870,8 @@ Obj QuoIntPerm(Obj opL, Obj opR)
         return opL;
 
     img = INT_INTOBJ(opL);
-    RequireArgumentCondition("QuoIntPerm", opL, "point", img > 0,
-                             "must be a positive integer");
+    RequireArgumentConditionEx("QuoIntPerm", opL, "<point>", img > 0,
+                               "must be a positive integer");
 
     Obj inv = STOREDINV_PERM(opR);
 
@@ -2306,7 +2306,7 @@ Obj Array2Perm (
 
             /* get and check current entry for the cycle                   */
             val = ELM_LIST( cycle, j );
-            c = GetPositiveSmallIntEx("Permutation", val, "expr");
+            c = GetPositiveSmallIntEx("Permutation", val, "<expr>");
             if (c > MAX_DEG_PERM4)
               ErrorMayQuit( "Permutation literal exceeds maximum permutation degree",
                             0, 0);

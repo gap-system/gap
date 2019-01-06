@@ -552,12 +552,12 @@ void CheckSameLength(const Char * desc, const Char *leftName, const Char *rightN
 
 /****************************************************************************
 **
-*F  RequireArgument
+*F  RequireArgumentEx
 */
-Obj RequireArgument(const char * funcname,
-                    Obj          op,
-                    const char * argname,
-                    const char * msg)
+Obj RequireArgumentEx(const char * funcname,
+                      Obj          op,
+                      const char * argname,
+                      const char * msg)
 {
     char msgbuf[1024] = { 0 };
     Int  arg1 = 0;
@@ -568,9 +568,8 @@ Obj RequireArgument(const char * funcname,
         strlcat(msgbuf, ": ", sizeof(msgbuf));
     }
     if (argname) {
-        strlcat(msgbuf, "<", sizeof(msgbuf));
         strlcat(msgbuf, argname, sizeof(msgbuf));
-        strlcat(msgbuf, "> ", sizeof(msgbuf));
+        strlcat(msgbuf, " ", sizeof(msgbuf));
     }
     strlcat(msgbuf, msg, sizeof(msgbuf));
     if (IS_INTOBJ(op)) {

@@ -79,21 +79,20 @@ gap> for i in [1..setvals] do
 
 #
 gap> ADD_OBJ_SET(fail, fail);
-Error, ADD_OBJ_SET: <objset> must be a mutable object set (not the value 'fail\
-')
+Error, ADD_OBJ_SET: <set> must be a mutable object set (not the value 'fail')
 gap> REMOVE_OBJ_SET(fail, fail);
-Error, REMOVE_OBJ_SET: <objset> must be a mutable object set (not the value 'f\
-ail')
+Error, REMOVE_OBJ_SET: <set> must be a mutable object set (not the value 'fail\
+')
 gap> FIND_OBJ_SET(fail, fail);
-Error, FIND_OBJ_SET: <objset> must be an object set (not the value 'fail')
+Error, FIND_OBJ_SET: <set> must be an object set (not the value 'fail')
 gap> CLEAR_OBJ_SET(fail);
-Error, CLEAR_OBJ_SET: <objset> must be a mutable object set (not the value 'fa\
-il')
+Error, CLEAR_OBJ_SET: <set> must be a mutable object set (not the value 'fail'\
+)
 gap> OBJ_SET_VALUES(fail);
-Error, OBJ_SET_VALUES: <objset> must be an object set (not the value 'fail')
+Error, OBJ_SET_VALUES: <set> must be an object set (not the value 'fail')
 gap> CLEAR_OBJ_SET(fail);
-Error, CLEAR_OBJ_SET: <objset> must be a mutable object set (not the value 'fa\
-il')
+Error, CLEAR_OBJ_SET: <set> must be a mutable object set (not the value 'fail'\
+)
 
 #
 gap> STOP_TEST( "objset.tst", 1);

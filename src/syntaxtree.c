@@ -777,15 +777,14 @@ Obj FuncSYNTAX_TREE(Obj self, Obj func)
     Obj result;
 
     if (!IS_FUNC(func) || IsKernelFunction(func) || IS_OPERATION(func)) {
-        RequireArgument("SYNTAX_TREE", func, "function",
-                        "must be a plain GAP function");
+        RequireArgument("SYNTAX_TREE", func, "must be a plain GAP function");
     }
 
     result = NewSyntaxTreeNode("T_FUNC_EXPR");
     return SyntaxTreeFunc(result, func);
 }
 
-static StructGVarFunc GVarFuncs[] = { GVAR_FUNC(SYNTAX_TREE, 1, "function"),
+static StructGVarFunc GVarFuncs[] = { GVAR_FUNC(SYNTAX_TREE, 1, "func"),
                                       { 0, 0, 0, 0, 0 } };
 
 static Int InitKernel(StructInitInfo * module)

@@ -267,7 +267,7 @@ static Obj  HdlrFunc2 (
   t_5 = NewAndFilter( t_6, a_tester );
  }
  else {
-  RequireArgument(0, t_6, "expr",
+  RequireArgumentEx(0, t_6, "<expr>",
   "must be 'true' or 'false' or a filter" );
  }
  SET_ELM_PLIST( t_4, 1, t_5 );

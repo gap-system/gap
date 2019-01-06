@@ -1667,7 +1667,7 @@ Obj FuncCONDUCTOR (
     /* check the argument                                                  */
     if (!IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT && TNUM_OBJ(cyc) != T_CYC &&
         !IS_SMALL_LIST(cyc)) {
-        RequireArgument("Conductor", cyc, "cyc",
+        RequireArgument("Conductor", cyc,
                         "must be a cyclotomic or a small list");
     }
 
@@ -1687,7 +1687,6 @@ Obj FuncCONDUCTOR (
             cyc = ELMV_LIST( list, i );
             if (!IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT &&
                 TNUM_OBJ(cyc) != T_CYC) {
-                // RequireArgument("Conductor", op, "argname", "msg");
                 ErrorMayQuit(
                     "Conductor: <list>[%d] must be a cyclotomic (not a %s)",
                     (Int)i, (Int)TNAM_OBJ(cyc));
@@ -1741,7 +1740,7 @@ Obj FuncCOEFFS_CYC (
 
     /* check the argument                                                  */
     if (!IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT && TNUM_OBJ(cyc) != T_CYC) {
-        RequireArgument("COEFFSCYC", cyc, "cyc", "must be a cyclotomic");
+        RequireArgument("COEFFSCYC", cyc, "must be a cyclotomic");
     }
 
     /* if <cyc> is rational just put it in a list of length 1              */
@@ -1979,8 +1978,7 @@ Obj FuncCycList (
 
     /* get and check the argument                                          */
     if ( ! IS_PLIST( list ) || ! IS_DENSE_LIST( list ) ) {
-        RequireArgument("CycList", list, "list",
-                        "must be a dense plain list");
+        RequireArgument("CycList", list, "must be a dense plain list");
     }
 
     /* enlarge the buffer if necessary                                     */
@@ -1995,8 +1993,8 @@ Obj FuncCycList (
             // reset ResultCyc, otherwise the next operation using it will see
             // our left-over garbage data
             SET_LEN_PLIST( ResultCyc, 0 );
-            RequireArgument("CycList", val, 0,
-                            "each entry must be a rational");
+            RequireArgumentEx("CycList", val, 0,
+                              "each entry must be a rational");
         }
         res[i] = val;
     }

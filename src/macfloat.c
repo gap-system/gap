@@ -32,7 +32,7 @@
 #include "stringobj.h"
 
 #define RequireMacFloat(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, IS_MACFLOAT(op), \
+    RequireArgumentCondition(funcname, op, IS_MACFLOAT(op), \
         "must be a macfloat")
 
 

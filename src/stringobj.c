@@ -257,7 +257,7 @@ Obj FuncINT_CHAR (
 {
     /* get and check the character                                         */
     if (TNUM_OBJ(val) != T_CHAR) {
-        RequireArgument("INT_CHAR", val, "val", "must be a character");
+        RequireArgument("INT_CHAR", val, "must be a character");
     }
 
     /* return the character                                                */
@@ -295,7 +295,7 @@ Obj FuncSINT_CHAR (
 {
     /* get and check the character                                         */
     if (TNUM_OBJ(val) != T_CHAR) {
-        RequireArgument("SINT_CHAR", val, "val", "must be a character");
+        RequireArgument("SINT_CHAR", val, "must be a character");
     }
 
     /* return the character                                                */
@@ -365,7 +365,7 @@ Obj FuncSTRING_SINTLIST (
   /* general code */
   if (!IS_RANGE(val) && !IS_PLIST(val)) {
   again:
-      RequireArgument("STRING_SINTLIST", val, "val",
+      RequireArgument("STRING_SINTLIST", val,
                       "must be a plain list of small integers or a range");
   }
   if (! IS_RANGE(val) ) {
@@ -1381,7 +1381,7 @@ Obj FuncCONV_STRING (
 {
     /* check whether <string> is a string                                  */
     if (!IS_STRING(string)) {
-        RequireArgument("ConvString", string, "string", "must be a string");
+        RequireArgument("ConvString", string, "must be a string");
     }
 
     /* convert to the string representation                                */
@@ -1409,15 +1409,13 @@ Obj FuncIS_STRING_REP (
 **
 *F  FuncCOPY_TO_STRING_REP( <self>, <obj> ) . copy a string into string rep
 */
-Obj FuncCOPY_TO_STRING_REP (
-    Obj                 self,
-    Obj                 obj )
+Obj FuncCOPY_TO_STRING_REP(Obj self, Obj string)
 {
-    /* check whether <obj> is a string                                  */
-    if (!IS_STRING(obj)) {
-        RequireArgument("CopyToStringRep", obj, "string", "must be a string");
+    /* check whether <string> is a string                                 */
+    if (!IS_STRING(string)) {
+        RequireArgument("CopyToStringRep", string, "must be a string");
     }
-    return CopyToStringRep(obj);
+    return CopyToStringRep(string);
 }
 
 /****************************************************************************

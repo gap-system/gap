@@ -768,8 +768,7 @@ static Obj FuncOBJ_SET(Obj self, Obj arg) {
 
 static Obj FuncADD_OBJ_SET(Obj self, Obj set, Obj obj)
 {
-    RequireArgumentCondition("ADD_OBJ_SET", set, "objset",
-                             TNUM_OBJ(set) == T_OBJSET,
+    RequireArgumentCondition("ADD_OBJ_SET", set, TNUM_OBJ(set) == T_OBJSET,
                              "must be a mutable object set");
 
     AddObjSet(set, obj);
@@ -785,8 +784,7 @@ static Obj FuncADD_OBJ_SET(Obj self, Obj set, Obj obj)
 
 static Obj FuncREMOVE_OBJ_SET(Obj self, Obj set, Obj obj)
 {
-    RequireArgumentCondition("REMOVE_OBJ_SET", set, "objset",
-                             TNUM_OBJ(set) == T_OBJSET,
+    RequireArgumentCondition("REMOVE_OBJ_SET", set, TNUM_OBJ(set) == T_OBJSET,
                              "must be a mutable object set");
 
     RemoveObjSet(set, obj);
@@ -803,7 +801,7 @@ static Obj FuncREMOVE_OBJ_SET(Obj self, Obj set, Obj obj)
 
 static Obj FuncFIND_OBJ_SET(Obj self, Obj set, Obj obj)
 {
-    RequireArgumentCondition("FIND_OBJ_SET", set, "objset",
+    RequireArgumentCondition("FIND_OBJ_SET", set,
                              TNUM_OBJ(set) == T_OBJSET ||
                                  TNUM_OBJ(set) == T_OBJSET + IMMUTABLE,
                              "must be an object set");
@@ -821,8 +819,7 @@ static Obj FuncFIND_OBJ_SET(Obj self, Obj set, Obj obj)
 
 static Obj FuncCLEAR_OBJ_SET(Obj self, Obj set)
 {
-    RequireArgumentCondition("CLEAR_OBJ_SET", set, "objset",
-                             TNUM_OBJ(set) == T_OBJSET,
+    RequireArgumentCondition("CLEAR_OBJ_SET", set, TNUM_OBJ(set) == T_OBJSET,
                              "must be a mutable object set");
 
     ClearObjSet(set);
@@ -838,7 +835,7 @@ static Obj FuncCLEAR_OBJ_SET(Obj self, Obj set)
 
 static Obj FuncOBJ_SET_VALUES(Obj self, Obj set)
 {
-    RequireArgumentCondition("OBJ_SET_VALUES", set, "objset",
+    RequireArgumentCondition("OBJ_SET_VALUES", set,
                              TNUM_OBJ(set) == T_OBJSET ||
                                  TNUM_OBJ(set) == T_OBJSET + IMMUTABLE,
                              "must be an object set");
@@ -893,8 +890,7 @@ static Obj FuncOBJ_MAP(Obj self, Obj arg) {
 
 static Obj FuncADD_OBJ_MAP(Obj self, Obj map, Obj key, Obj value)
 {
-    RequireArgumentCondition("ADD_OBJ_MAP", map, "objmap",
-                             TNUM_OBJ(map) == T_OBJMAP,
+    RequireArgumentCondition("ADD_OBJ_MAP", map, TNUM_OBJ(map) == T_OBJMAP,
                              "must be a mutable object map");
 
     AddObjMap(map, key, value);
@@ -912,7 +908,7 @@ static Obj FuncADD_OBJ_MAP(Obj self, Obj map, Obj key, Obj value)
 
 static Obj FuncFIND_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue)
 {
-    RequireArgumentCondition("FIND_OBJ_MAP", map, "objmap",
+    RequireArgumentCondition("FIND_OBJ_MAP", map,
                              TNUM_OBJ(map) == T_OBJMAP ||
                                  TNUM_OBJ(map) == T_OBJMAP + IMMUTABLE,
                              "must be an object map");
@@ -933,7 +929,7 @@ static Obj FuncFIND_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue)
 
 static Obj FuncCONTAINS_OBJ_MAP(Obj self, Obj map, Obj key)
 {
-    RequireArgumentCondition("CONTAINS_OBJ_MAP", map, "objmap",
+    RequireArgumentCondition("CONTAINS_OBJ_MAP", map,
                              TNUM_OBJ(map) == T_OBJMAP ||
                                  TNUM_OBJ(map) == T_OBJMAP + IMMUTABLE,
                              "must be an object map");
@@ -952,8 +948,7 @@ static Obj FuncCONTAINS_OBJ_MAP(Obj self, Obj map, Obj key)
 
 static Obj FuncREMOVE_OBJ_MAP(Obj self, Obj map, Obj key)
 {
-    RequireArgumentCondition("REMOVE_OBJ_MAP", map, "objmap",
-                             TNUM_OBJ(map) == T_OBJMAP,
+    RequireArgumentCondition("REMOVE_OBJ_MAP", map, TNUM_OBJ(map) == T_OBJMAP,
                              "must be a mutable object map");
 
     RemoveObjMap(map, key);
@@ -969,8 +964,7 @@ static Obj FuncREMOVE_OBJ_MAP(Obj self, Obj map, Obj key)
 
 static Obj FuncCLEAR_OBJ_MAP(Obj self, Obj map)
 {
-    RequireArgumentCondition("CLEAR_OBJ_MAP", map, "objmap",
-                             TNUM_OBJ(map) == T_OBJMAP,
+    RequireArgumentCondition("CLEAR_OBJ_MAP", map, TNUM_OBJ(map) == T_OBJMAP,
                              "must be a mutable object map");
 
     ClearObjMap(map);
@@ -986,7 +980,7 @@ static Obj FuncCLEAR_OBJ_MAP(Obj self, Obj map)
 
 static Obj FuncOBJ_MAP_VALUES(Obj self, Obj map)
 {
-    RequireArgumentCondition("OBJ_MAP_VALUES", map, "objmap",
+    RequireArgumentCondition("OBJ_MAP_VALUES", map,
                              TNUM_OBJ(map) == T_OBJMAP ||
                                  TNUM_OBJ(map) == T_OBJMAP + IMMUTABLE,
                              "must be an object map");
@@ -1004,7 +998,7 @@ static Obj FuncOBJ_MAP_VALUES(Obj self, Obj map)
 
 static Obj FuncOBJ_MAP_KEYS(Obj self, Obj map)
 {
-    RequireArgumentCondition("OBJ_MAP_KEYS", map, "objmap",
+    RequireArgumentCondition("OBJ_MAP_KEYS", map,
                              TNUM_OBJ(map) == T_OBJMAP ||
                                  TNUM_OBJ(map) == T_OBJMAP + IMMUTABLE,
                              "must be an object map");
@@ -1036,22 +1030,22 @@ static StructBagNames BagNames[] = {
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(OBJ_SET, -1, "[list]"),
-    GVAR_FUNC(ADD_OBJ_SET, 2, "objset, obj"),
-    GVAR_FUNC(REMOVE_OBJ_SET, 2, "objset, obj"),
-    GVAR_FUNC(FIND_OBJ_SET, 2, "objset, obj"),
-    GVAR_FUNC(CLEAR_OBJ_SET, 1, "objset"),
-    GVAR_FUNC(OBJ_SET_VALUES, 1, "objset"),
+    GVAR_FUNC(ADD_OBJ_SET, 2, "set, obj"),
+    GVAR_FUNC(REMOVE_OBJ_SET, 2, "set, obj"),
+    GVAR_FUNC(FIND_OBJ_SET, 2, "set, obj"),
+    GVAR_FUNC(CLEAR_OBJ_SET, 1, "set"),
+    GVAR_FUNC(OBJ_SET_VALUES, 1, "set"),
     GVAR_FUNC(OBJ_MAP, -1, "[list]"),
-    GVAR_FUNC(ADD_OBJ_MAP, 3, "objmap, key, value"),
-    GVAR_FUNC(REMOVE_OBJ_MAP, 2, "objmap, obj"),
-    GVAR_FUNC(FIND_OBJ_MAP, 3, "objmap, obj, default"),
-    GVAR_FUNC(CONTAINS_OBJ_MAP, 2, "objmap, obj"),
-    GVAR_FUNC(CLEAR_OBJ_MAP, 1, "objmap"),
-    GVAR_FUNC(OBJ_MAP_VALUES, 1, "objmap"),
-    GVAR_FUNC(OBJ_MAP_KEYS, 1, "objmap"),
+    GVAR_FUNC(ADD_OBJ_MAP, 3, "map, key, value"),
+    GVAR_FUNC(REMOVE_OBJ_MAP, 2, "map, obj"),
+    GVAR_FUNC(FIND_OBJ_MAP, 3, "map, obj, default"),
+    GVAR_FUNC(CONTAINS_OBJ_MAP, 2, "map, obj"),
+    GVAR_FUNC(CLEAR_OBJ_MAP, 1, "map"),
+    GVAR_FUNC(OBJ_MAP_VALUES, 1, "map"),
+    GVAR_FUNC(OBJ_MAP_KEYS, 1, "map"),
     { 0, 0, 0, 0, 0 }
 
 };

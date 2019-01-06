@@ -43,25 +43,24 @@
 #include <pthread.h>
 
 
-#define RequireThread(funcname, op, argname) \
-    RequireArgumentCondition(funcname, op, argname, TNUM_OBJ(op) == T_THREAD, \
-        "must be a thread object")
+#define RequireThread(funcname, op, argname)                                 \
+    RequireArgumentConditionEx(funcname, op, "<" argname ">",                \
+                               TNUM_OBJ(op) == T_THREAD,                     \
+                               "must be a thread object")
 
-#define RequireChannel(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, IsChannel(op), \
-        "must be a channel")
+#define RequireChannel(funcname, op)                                         \
+    RequireArgumentCondition(funcname, op, IsChannel(op), "must be a channel")
 
-#define RequireSemaphore(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, TNUM_OBJ(op) == T_SEMAPHORE, \
-        "must be a semaphore")
+#define RequireSemaphore(funcname, op)                                       \
+    RequireArgumentCondition(funcname, op, TNUM_OBJ(op) == T_SEMAPHORE,      \
+                             "must be a semaphore")
 
-#define RequireBarrier(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, IsBarrier(op), \
-        "must be a barrier")
+#define RequireBarrier(funcname, op)                                         \
+    RequireArgumentCondition(funcname, op, IsBarrier(op), "must be a barrier")
 
-#define RequireSyncVar(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, IsSyncVar(op), \
-        "must be a synchronization variable")
+#define RequireSyncVar(funcname, op)                                         \
+    RequireArgumentCondition(funcname, op, IsSyncVar(op),                    \
+                             "must be a synchronization variable")
 
 
 struct WaitList {

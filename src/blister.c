@@ -84,9 +84,9 @@
 #include "set.h"
 
 
-#define RequireBlist(funcname, op, argname) \
-    RequireArgumentCondition(funcname, op, argname, IsBlistConv(op), \
-        "must be a boolean list")
+#define RequireBlist(funcname, op, argname)                                  \
+    RequireArgumentConditionEx(funcname, op, "<" argname ">",                \
+                               IsBlistConv(op), "must be a boolean list")
 
 /****************************************************************************
 **
@@ -1146,7 +1146,7 @@ Obj FuncPositionNthTrueBlist (
 
     /* Check the arguments. */    
     RequireBlist("ListBlist", blist, "blist");
-    Int nth = GetPositiveSmallIntEx("Position", Nth, "nth");
+    Int nth = GetPositiveSmallIntEx("Position", Nth, "<nth>");
 
     nrb = NUMBER_BLOCKS_BLIST(blist);
     if ( ! nrb )  return Fail;

@@ -95,22 +95,21 @@ gap> for i in [1..MAPvals] do
 
 #
 gap> ADD_OBJ_MAP(fail, fail, fail);
-Error, ADD_OBJ_MAP: <objmap> must be a mutable object map (not the value 'fail\
-')
+Error, ADD_OBJ_MAP: <map> must be a mutable object map (not the value 'fail')
 gap> FIND_OBJ_MAP(fail, fail, fail);
-Error, FIND_OBJ_MAP: <objmap> must be an object map (not the value 'fail')
+Error, FIND_OBJ_MAP: <map> must be an object map (not the value 'fail')
 gap> CONTAINS_OBJ_MAP(fail, fail);
-Error, CONTAINS_OBJ_MAP: <objmap> must be an object map (not the value 'fail')
+Error, CONTAINS_OBJ_MAP: <map> must be an object map (not the value 'fail')
 gap> REMOVE_OBJ_MAP(fail, fail);
-Error, REMOVE_OBJ_MAP: <objmap> must be a mutable object map (not the value 'f\
-ail')
+Error, REMOVE_OBJ_MAP: <map> must be a mutable object map (not the value 'fail\
+')
 gap> CLEAR_OBJ_MAP(fail);
-Error, CLEAR_OBJ_MAP: <objmap> must be a mutable object map (not the value 'fa\
-il')
+Error, CLEAR_OBJ_MAP: <map> must be a mutable object map (not the value 'fail'\
+)
 gap> OBJ_MAP_VALUES(fail);
-Error, OBJ_MAP_VALUES: <objmap> must be an object map (not the value 'fail')
+Error, OBJ_MAP_VALUES: <map> must be an object map (not the value 'fail')
 gap> OBJ_MAP_KEYS(fail);
-Error, OBJ_MAP_KEYS: <objmap> must be an object map (not the value 'fail')
+Error, OBJ_MAP_KEYS: <map> must be an object map (not the value 'fail')
 
 #
 gap> STOP_TEST( "objmap.tst", 1);

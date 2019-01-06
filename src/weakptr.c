@@ -41,9 +41,9 @@
 #include "julia.h"
 #endif
 
-#define RequireWPObj(funcname, op) \
-    RequireArgumentCondition(funcname, op, #op, TNUM_OBJ(op) == T_WPOBJ, \
-        "must be a weak pointer object")
+#define RequireWPObj(funcname, op)                                           \
+    RequireArgumentCondition(funcname, op, TNUM_OBJ(op) == T_WPOBJ,          \
+                             "must be a weak pointer object")
 
 
 /****************************************************************************

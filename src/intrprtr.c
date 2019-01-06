@@ -622,7 +622,7 @@ void            IntrIfBeginBody ( void )
     /* get and check the condition                                         */
     cond = PopObj();
     if ( cond != True && cond != False ) {
-        RequireArgument(0, cond, "expr", "must be 'true' or 'false'");
+        RequireArgumentEx(0, cond, "<expr>", "must be 'true' or 'false'");
     }
 
     /* if the condition is 'false', ignore the body                        */
@@ -1292,13 +1292,13 @@ void            IntrOr ( void )
             PushObj( opR );
         }
         else {
-            RequireArgument(0, opR, "expr", "must be 'true' or 'false'");
+            RequireArgumentEx(0, opR, "<expr>", "must be 'true' or 'false'");
         }
     }
 
     /* signal an error                                                     */
     else {
-        RequireArgument(0, opL, "expr", "must be 'true' or 'false'");
+        RequireArgumentEx(0, opL, "<expr>", "must be 'true' or 'false'");
     }
 }
 
@@ -1364,7 +1364,7 @@ void            IntrAnd ( void )
             PushObj( opR );
         }
         else {
-            RequireArgument(0, opR, "expr", "must be 'true' or 'false'");
+            RequireArgumentEx(0, opR, "<expr>", "must be 'true' or 'false'");
         }
     }
 
@@ -1375,8 +1375,8 @@ void            IntrAnd ( void )
 
     /* signal an error                                                     */
     else {
-        RequireArgument(0, opL, "expr",
-                        "must be 'true' or 'false' or a filter");
+        RequireArgumentEx(0, opL, "<expr>",
+                          "must be 'true' or 'false' or a filter");
     }
 }
 
@@ -1402,7 +1402,7 @@ void            IntrNot ( void )
     /* get and check the operand                                           */
     op = PopObj();
     if ( op != True && op != False ) {
-        RequireArgument(0, op, "expr", "must be 'true' or 'false'");
+        RequireArgumentEx(0, op, "<expr>", "must be 'true' or 'false'");
     }
 
     /* negate the operand                                                  */
@@ -1968,7 +1968,7 @@ void            IntrPermCycle (
 
         /* get and check current entry for the cycle                       */
         val = PopObj();
-        c = GetPositiveSmallIntEx("Permutation", val, "expr");
+        c = GetPositiveSmallIntEx("Permutation", val, "<expr>");
         if (c > MAX_DEG_PERM4)
           ErrorQuit( "Permutation literal exceeds maximum permutation degree",
                      0, 0);
@@ -2174,12 +2174,12 @@ void            IntrListExprEnd (
 
         /* get the low value                                               */
         val = ELM_LIST( list, 1 );
-        low = GetSmallIntEx("Range", val, "first");
+        low = GetSmallIntEx("Range", val, "<first>");
 
         /* get the increment                                               */
         if ( nr == 3 ) {
             val = ELM_LIST( list, 2 );
-            Int v = GetSmallIntEx("Range", val, "second");
+            Int v = GetSmallIntEx("Range", val, "<second>");
             if ( v == low ) {
                 ErrorQuit(
                       "Range: <second> must not be equal to <first> (%d)",
@@ -2193,7 +2193,7 @@ void            IntrListExprEnd (
 
         /* get and check the high value                                    */
         val = ELM_LIST( list, LEN_LIST(list) );
-        Int v = GetSmallIntEx("Range", val, "last");
+        Int v = GetSmallIntEx("Range", val, "<last>");
         if ( (v - low) % inc != 0 ) {
             ErrorQuit(
                 "Range: <last>-<first> (%d) must be divisible by <inc> (%d)",
@@ -3477,7 +3477,7 @@ void            IntrAssPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    p = GetPositiveSmallIntEx("PosObj Assignment", pos, "position");
+    p = GetPositiveSmallIntEx("PosObj Assignment", pos, "<position>");
 
     /* get the list (checking is done by 'ASS_LIST')                       */
     list = PopObj();
@@ -3503,7 +3503,7 @@ void            IntrUnbPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    p = GetPositiveSmallIntEx("PosObj Assignment", pos, "position");
+    p = GetPositiveSmallIntEx("PosObj Assignment", pos, "<position>");
 
     /* get the list (checking is done by 'UNB_LIST')                       */
     list = PopObj();
@@ -3535,7 +3535,7 @@ void            IntrElmPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    p = GetPositiveSmallIntEx("PosObj Element", pos, "position");
+    p = GetPositiveSmallIntEx("PosObj Element", pos, "<position>");
 
     /* get the list (checking is done by 'ELM_LIST')                       */
     list = PopObj();
@@ -3562,7 +3562,7 @@ void            IntrIsbPosObj ( void )
 
     /* get and check the position                                          */
     pos = PopObj();
-    p = GetPositiveSmallIntEx("PosObj Element", pos, "position");
+    p = GetPositiveSmallIntEx("PosObj Element", pos, "<position>");
 
     /* get the list (checking is done by 'ISB_LIST')                       */
     list = PopObj();
@@ -4010,8 +4010,8 @@ void             IntrAssertAfterCondition ( void )
     if (condition == True)
       STATE(IntrIgnoring)= 2;
     else if (condition != False)
-        RequireArgument("Assert", condition, "cond",
-                        "must be 'true' or 'false'");
+        RequireArgumentEx("Assert", condition, "<cond>",
+                          "must be 'true' or 'false'");
 }
 
 void             IntrAssertEnd2Args ( void )

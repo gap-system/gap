@@ -922,7 +922,7 @@ static Obj  HdlrFunc3 (
       t_3 = NewAndFilter( l_match, t_5 );
      }
      else {
-      RequireArgument(0, l_match, "expr",
+      RequireArgumentEx(0, l_match, "<expr>",
       "must be 'true' or 'false' or a filter" );
      }
      l_match = t_3;
@@ -2697,7 +2697,7 @@ static Obj  HdlrFunc7 (
      t_5 = NewAndFilter( l_cats, t_7 );
     }
     else {
-     RequireArgument(0, l_cats, "expr",
+     RequireArgumentEx(0, l_cats, "<expr>",
      "must be 'true' or 'false' or a filter" );
     }
     l_cats = t_5;
@@ -3206,7 +3206,7 @@ static Obj  HdlrFunc15 (
   t_1 = NewAndFilter( t_2, t_4 );
  }
  else {
-  RequireArgument(0, t_2, "expr",
+  RequireArgumentEx(0, t_2, "<expr>",
   "must be 'true' or 'false' or a filter" );
  }
  SWITCH_TO_OLD_FRAME(oldFrame);
