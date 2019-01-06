@@ -872,7 +872,7 @@ true
 gap> e[3];
 (1,2,4)
 gap> e[3] := false;
-Error, The list you are trying to assign to is immutable
+Error, List Assignment: <list> must be a mutable list
 ]]></Example>
 <P/>
 When we consider copying objects, another filter

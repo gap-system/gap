@@ -55,4 +55,4 @@ Error, List Element: <list> must be a list (not the integer 1)
 gap> v{[1..5]}[1] := 1;
 Error, List Assignments: <objs> must be a dense list (not the integer 1)
 gap> v{[1..5]}{[1..5]}:=ListWithIdenticalEntries(5,[1..5]);
-Error, List Assignments: <list> must be a list (not the integer 1)
+Error, List Assignments: <list> must be a mutable list
