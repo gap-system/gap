@@ -467,7 +467,7 @@ EXPORT_INLINE void UNB_LIST(Obj list, Int pos)
     GAP_ASSERT(pos > 0);
     UInt tnum = TNUM_OBJ(list);
     if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM &&
-        (tnum & IMMUTABLE)) {
+        !IS_MUTABLE_OBJ(list)) {
         ErrorMayQuit("List Unbind: <list> must be a mutable list", 0, 0);
     }
     (*UnbListFuncs[TNUM_OBJ(list)])(list, pos);
@@ -504,7 +504,7 @@ EXPORT_INLINE void ASS_LIST(Obj list, Int pos, Obj obj)
     GAP_ASSERT(obj != 0);
     UInt tnum = TNUM_OBJ(list);
     if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM &&
-        (tnum & IMMUTABLE)) {
+        !IS_MUTABLE_OBJ(list)) {
         ErrorMayQuit("List Assignment: <list> must be a mutable list", 0, 0);
     }
     (*AssListFuncs[TNUM_OBJ(list)])(list, pos, obj);
@@ -552,7 +552,7 @@ EXPORT_INLINE void ASSS_LIST(Obj list, Obj poss, Obj objs)
     GAP_ASSERT(LEN_LIST(poss) == LEN_LIST(objs));
     UInt tnum = TNUM_OBJ(list);
     if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM &&
-        (tnum & IMMUTABLE)) {
+        !IS_MUTABLE_OBJ(list)) {
         ErrorMayQuit("List Assignments: <list> must be a mutable list", 0, 0);
     }
     (*AsssListFuncs[TNUM_OBJ(list)])(list, poss, objs);
