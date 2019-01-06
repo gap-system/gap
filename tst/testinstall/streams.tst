@@ -92,6 +92,14 @@ gap> ReadAllLine(stream, false, line -> 0 < Length(line) and line[Length(line)] 
 gap> ReadAllLine(stream);
 fail
 
+# Test reading longer file
+gap> dir := DirectoriesLibrary("tst/testinstall/files");;
+gap> fname := Filename(dir, "testdata");;
+gap> file := InputTextFile( fname );;
+gap> repeat
+>  line := ReadLine( file );
+> until line = fail;
+
 # Invalid files
 gap> PrintTo("/", "out");
 Error, PrintTo: cannot open '/' for output

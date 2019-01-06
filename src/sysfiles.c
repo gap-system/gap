@@ -2057,9 +2057,6 @@ void HandleCharReadHook(int stdinfd)
 
 Int HasAvailableBytes( UInt fid )
 {
-#if !defined(HAVE_SELECT)
-  Int ret;
-#endif
   UInt bufno;
   if (!SyBufInUse(fid))
     return -1;
@@ -2072,7 +2069,8 @@ Int HasAvailableBytes( UInt fid )
     }
 
 #ifdef HAVE_SELECT
-  {
+  // All sockets other than raw sockets are always ready
+  if (syBuf[fid].type == raw_socket) {
     fd_set set;
     struct timeval tv;
     FD_ZERO( &set);
@@ -2081,11 +2079,10 @@ Int HasAvailableBytes( UInt fid )
     tv.tv_usec = 0;
     return select( syBuf[fid].fp + 1, &set, NULL, NULL, &tv);
   }
-#else
-    /* best guess */
-  ret =  SyIsEndOfFile( fid);
-  return (ret != -1 && ret != 1);
 #endif
+  /* best guess */
+  Int ret = SyIsEndOfFile(fid);
+  return (ret != -1 && ret != 1);
 }
 
 
