@@ -8,7 +8,9 @@ Error, constructors must have at least one argument
 gap> c := NewConstructor("foobar",[IsObject]);
 <Constructor "foobar">
 gap> c(1);
-Error, Constructor: the first argument must be a filter not a integer
+Error, Constructor: the first argument must be a filter (not the integer 1)
+gap> c(c);
+Error, Constructor: the first argument must be a filter (not a function)
 gap> c(IsInt);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `foobar' on 1 arguments

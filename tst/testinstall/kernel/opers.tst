@@ -176,7 +176,7 @@ Error, SET_TESTER_FILTER: <oper> must be an operation (not the value 'fail')
 
 # DoOperationNArgs
 gap> SymmetricGroupCons(1,2);
-Error, Constructor: the first argument must be a filter not a integer
+Error, Constructor: the first argument must be a filter (not the integer 1)
 
 #
 gap> NEW_OPERATION(fail);
