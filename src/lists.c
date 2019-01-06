@@ -2288,12 +2288,11 @@ static Int CheckInit (
 
 
     // fix unknown list types
-    for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i +=2 ) {
+    for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
         GAP_ASSERT( TNAM_TNUM(i) );
-        GAP_ASSERT( TNAM_TNUM(i + IMMUTABLE) );
     }
 
-    for (i = FIRST_LIST_TNUM; i <= LAST_LIST_TNUM; i += 2) {
+    for (i = FIRST_LIST_TNUM; i <= LAST_LIST_TNUM; i++) {
         GAP_ASSERT(UnbListFuncs[i]);
         GAP_ASSERT(AssListFuncs[i]);
     }
@@ -2311,7 +2310,7 @@ static Int CheckInit (
     // check that all relevant `ClearFiltListTNums' are installed
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
         if ( ClearFiltsTNums[i] == 0 ) {
-            Pr( "#W  ClearFiltsListTNums [%s] missing\n",
+            Pr( "#W  ClearFiltsTNums [%s] missing\n",
                     (Int)TNAM_TNUM(i), 0);
             success = 0;
         }
@@ -2393,39 +2392,7 @@ static Int CheckInit (
     // check implications
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
 
-        if ( (i & IMMUTABLE) == 0 ) {
-            if ( ClearFiltsTNums[i]+IMMUTABLE != ClearFiltsTNums[i+IMMUTABLE]) {
-                Pr( "#W  ClearFiltsTNums [%s] mismatch between mutable and immutable\n",
-                    (Int)TNAM_TNUM(i), 0 );
-                success = 0;
-            }
-            for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
-
-                if ( HasFiltListTNums[i][fnums[j]] !=
-                     HasFiltListTNums[i+IMMUTABLE][fnums[j]]) {
-                    Pr( "#W  HasFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
-                        (Int)TNAM_TNUM(i), (Int)fnams[j] );
-                    success = 0;
-                }
-
-                if ( (SetFiltListTNums[i][fnums[j]] | IMMUTABLE) !=
-                     SetFiltListTNums[i+IMMUTABLE][fnums[j]]) {
-                    Pr( "#W  SetFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
-                        (Int)TNAM_TNUM(i), (Int)fnams[j] );
-                    success = 0;
-                }
-
-                if ( (ResetFiltListTNums[i][fnums[j]] | IMMUTABLE) !=
-                     ResetFiltListTNums[i+IMMUTABLE][fnums[j]]) {
-                    Pr( "#W  ResetFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
-                        (Int)TNAM_TNUM(i), (Int)fnams[j] );
-                    success = 0;
-                }
-
-            }
-        }
-
-        if ( i == T_PLIST_EMPTY || i == T_PLIST_EMPTY+IMMUTABLE ) {
+        if ( i == T_PLIST_EMPTY ) {
             if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty -> dense ] missing\n",
