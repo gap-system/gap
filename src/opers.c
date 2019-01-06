@@ -65,6 +65,10 @@ static Obj ArglistObj;
     RequireArgumentCondition(funcname, op, TNUM_OBJ(op) == T_FLAGS,          \
                              "must be a flags list")
 
+#define RequireFilter(funcname, op, argname)                                                 \
+    RequireArgumentConditionEx(funcname, op, argname,          \
+                             IS_FILTER(op), "must be a filter")
+
 #define RequireOperation(op)                                                 \
     RequireArgumentCondition(CSTR_STRING(NAME_FUNC(self)), op,               \
                              IS_OPERATION(op), "must be an operation")
@@ -1189,13 +1193,8 @@ Obj NewAndFilter (
     Obj                 str;
     char*               s;
 
-    if (!IS_FILTER(oper1))
-        ErrorQuit("<oper1> must be a filter (not a %s)", (Int)TNAM_OBJ(oper1),
-                  0);
-
-    if (!IS_FILTER(oper2))
-        ErrorQuit("<oper2> must be a filter (not a %s)", (Int)TNAM_OBJ(oper2),
-                  0);
+    RequireFilter(0, oper1, "<oper1>");
+    RequireFilter(0, oper2, "<oper2>");
 
     if ( oper1 == ReturnTrueFilter )
         return oper2;
@@ -1988,14 +1987,7 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
         types[1] = TYPE_OBJ_FEO(arg2);
     case 1:
         if (constructor) {
-            while (!IS_OPERATION(arg1)) {
-                arg1 = ErrorReturnObj("Constructor: the first argument must "
-                                      "be a filter not a %s",
-                                      (Int)TNAM_OBJ(arg1), 0L,
-                                      "you can replace the first argument "
-                                      "<arg1> via 'return <arg1>;'");
-            }
-
+            RequireFilter("Constructor", arg1, "the first argument");
             types[0] = FLAGS_FILT(arg1);
         }
         else
