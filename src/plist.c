@@ -110,8 +110,7 @@ void             GrowPlist (
 **  Here begins a new attempt by Steve to describe how it all works:
 **
 **  We begin with the TNUMs attached to the objects. They are defined in
-**  objects.h and consist of the following, each of which can be qualified by
-**  adding the constant IMMUTABLE.
+**  objects.h and consist of the following.
 **
 **   T_PLIST                    nothing is known
 **   T_PLIST_NDENSE             known to have a hole
@@ -246,7 +245,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
     // special case for empty list
     if ( lenList == 0 ) {
         res = T_PLIST_EMPTY;
-        RetypeBagSM(list, res);
+        RetypeBagIfWritable(list, res);
         if (famfirst != (Obj *) 0)
           *famfirst = (Obj) 0;
         return res;
