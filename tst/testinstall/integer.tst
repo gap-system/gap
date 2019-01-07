@@ -65,6 +65,18 @@ gap> FactorsInt(n) = [ n ];
 true
 
 #
+gap> StringPP(-3);
+"-3"
+gap> StringPP(0);
+"0"
+gap> StringPP(-10);
+"-2*5"
+gap> StringPP(10);
+"2*5"
+gap> StringPP(10000);
+"2^4*5^4"
+
+#
 gap> Filtered([-4..20], IsPrimePowerInt);
 [ -3, -2, 2, 3, 4, 5, 7, 8, 9, 11, 13, 16, 17, 19 ]
 gap> IsPrimePowerInt(1009^1009);

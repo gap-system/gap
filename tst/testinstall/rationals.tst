@@ -43,6 +43,16 @@ gap> Rat("3-5");
 fail
 gap> Rat(3.7e-1);                                                  
 37/100
+gap> Rat("-");
+fail
+gap> Rat("1/2/3");
+fail
+gap> Rat("1.2.3");
+fail
+gap> Rat("1.2/2");
+3/5
+gap> Rat("2.4/1.2");
+2
 
 # division by zero
 gap> 0/0;

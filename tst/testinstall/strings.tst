@@ -3,7 +3,7 @@
 ##  This file tests output methods (mainly for strings)
 ##
 #@local OldCopyToStringRep,a2000,a3000,at2000,at3000,cp1,cp2,cp3
-#@local ret2000,ret3000,s,tmp,x,tmpdir,fname,dir
+#@local ret2000,ret3000,s,tmp,x,tmpdir,fname,dir,filename
 gap> START_TEST("strings.tst");
 
 # FFE
@@ -75,6 +75,9 @@ gap> "
 Syntax error: String must not include <newline> in stream:1
 "
 ^
+gap> "abc" + "def";
+Error, concatenating strings via + is not supported, use Concatenation(<a>,<b>\
+) instead
 
 # Empty string
 gap> x:="";
@@ -254,7 +257,16 @@ true
 
 # Working with CSV files
 gap> dir := DirectoriesLibrary("tst/testinstall/files");;
-gap> s := ReadCSV( Filename(dir, "example.csv"), ';' );
+gap> filename := Filename(dir, "example.csv");;
+gap> s := ReadCSV( filename, ';' );
+[ rec( f := 2, f1 := 1, f_2 := 3 ), rec( f1 := 4, f_2 := 6 ), rec( f1 := 7 ), 
+  rec( f := 11, f_2 := 12 ), rec( f := "yy", f1 := "x", f_2 := "zzz" ) ]
+
+# Check without .csv
+gap> s := ReadCSV( filename{[1..Length(filename)-4]}, ';' );
+[ rec( f := 2, f1 := 1, f_2 := 3 ), rec( f1 := 4, f_2 := 6 ), rec( f1 := 7 ), 
+  rec( f := 11, f_2 := 12 ), rec( f := "yy", f1 := "x", f_2 := "zzz" ) ]
+gap> s := ReadCSV( filename{[1..Length(filename)-4]}, ";" );
 [ rec( f := 2, f1 := 1, f_2 := 3 ), rec( f1 := 4, f_2 := 6 ), rec( f1 := 7 ), 
   rec( f := 11, f_2 := 12 ), rec( f := "yy", f1 := "x", f_2 := "zzz" ) ]
 gap> tmpdir := DirectoryTemporary();;
