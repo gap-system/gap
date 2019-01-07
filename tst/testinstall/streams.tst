@@ -26,6 +26,30 @@ gap> CloseStream(stream);
 gap> stream;
 closed-stream
 
+# partial reads
+gap> stream := InputTextFile( fname );;
+gap> ReadAll(stream, 2);
+"12"
+gap> CloseStream(stream);
+gap> stream;
+closed-stream
+
+# too long partial read
+gap> stream := InputTextFile( fname );;
+gap> ReadAll(stream, 5);
+"123"
+gap> CloseStream(stream);
+gap> stream;
+closed-stream
+
+# error partial read
+gap> stream := InputTextFile( fname );;
+gap> ReadAll(stream, -1);
+Error, ReadAll: negative limit is not allowed
+gap> CloseStream(stream);
+gap> stream;
+closed-stream
+
 # append to initial data
 gap> stream := OutputTextFile( fname, true );;
 gap> PrintTo( stream, "4");
@@ -82,7 +106,18 @@ gap> StringFile(fname);
 #
 
 # output
-gap> res:="";;
+gap> res:="abc";;
+gap> stream := OutputTextString(res, true);
+OutputTextString(3)
+gap> res;
+"abc"
+gap> PrintTo( stream, "1" );
+gap> res;
+"abc1"
+gap> stream := OutputTextString(res, false);
+OutputTextString(0)
+gap> res;
+""
 gap> stream := OutputTextString(res, true);
 OutputTextString(0)
 gap> PrintTo( stream, "1");
@@ -93,6 +128,10 @@ gap> PrintTo( stream, "another line\n", "last line without newline");
 gap> CloseStream(stream);
 gap> res;
 "123\n567\nsome line\nanother line\nlast line without newline"
+gap> OutputTextString("abc");
+Error, Usage OutputTextString( <string>, <append> )
+gap> OutputTextString(Immutable("abc"), true);
+Error, <str> must be mutable
 
 # input
 gap> stream := InputTextString( res );
@@ -111,6 +150,24 @@ gap> ReadAllLine(stream, false, line -> 0 < Length(line) and line[Length(line)] 
 "last line without newline"
 gap> ReadAllLine(stream);
 fail
+gap> stream := InputTextString( res );
+InputTextString(0,56)
+gap> ReadAll(stream, 3);
+"123"
+gap> ReadAll(stream, -1);
+Error, ReadAll: negative limit is not allowed
+gap> ReadAll(stream, 0);
+""
+gap> ReadAll(stream, 1000);
+"\n567\nsome line\nanother line\nlast line without newline"
+gap> SeekPositionStream(stream, -1);
+fail
+gap> SeekPositionStream(stream, 1000);
+fail
+gap> SeekPositionStream(stream, 1);
+true
+gap> ReadLine(stream);
+"23\n"
 
 # Test reading longer file
 gap> dir := DirectoriesLibrary("tst/testinstall/files");;
@@ -135,6 +192,20 @@ gap> PrintTo(fail);
 Error, first argument must be a filename or output stream
 gap> AppendTo(fail);
 Error, first argument must be a filename or output stream
+
+# None stream
+gap> stream := OutputTextNone();
+OutputTextNone()
+gap> PrintObj(stream); Print("\n");
+OutputTextNone()
+gap> WriteAll(stream, "abc");
+true
+gap> WriteByte(stream, 3);
+true
+gap> WriteByte(stream, 300);
+Error, <byte> must an integer between 0 and 255
+gap> SetPrintFormattingStatus(stream, fail);
+Error, Print formatting status must be true or false
 
 #
 gap> STOP_TEST( "streams.tst", 1);

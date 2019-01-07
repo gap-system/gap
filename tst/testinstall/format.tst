@@ -79,4 +79,9 @@ gap> PrintToFormatted([1,2], "abc");
 Error, Usage: PrintToFormatted(<stream>, <string>, <data>...)
 gap> PrintToFormatted("*stdout*", [1,2]);
 Error, Usage: PrintToFormatted(<stream>, <string>, <data>...)
+gap> PrintFormatted("abc{}{}{}\n", 2, 3);
+Error, out of bounds -- used 
+3 replacement fields without id when there are only 2 arguments
+gap> PrintFormatted("abc{3}\n", 2);
+Error, out of bounds -- asked for {3} when there are only 1 arguments
 gap> STOP_TEST("format.tst",1);
