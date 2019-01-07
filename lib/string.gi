@@ -1353,7 +1353,7 @@ InstallGlobalFunction(PrintToFormatted, function(stream, s, data...)
                 ErrorNoReturn("first data argument must be a record when using {",toprint.id,"}");
             fi;
             if not IsBound(data[1].(toprint.id)) then
-                ErrorNoReturn("no record member '",toprint[1].id,"'");
+                ErrorNoReturn("no record member '",toprint.id,"'");
             fi;
             var := data[1].(toprint.id);
         fi;
