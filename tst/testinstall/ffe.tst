@@ -16,15 +16,15 @@ gap> List([2,3,4,5,7,8,9,25,37^3], Z);
 
 # input validation
 gap> Z(fail);
-Error, Z: <q> must be a positive prime power (not a boolean or fail)
+Error, Z: <q> must be a positive prime power (not the value 'fail')
 gap> Z(0);
-Error, Z: <q> must be a positive prime power (not a integer)
+Error, Z: <q> must be a positive prime power (not the integer 0)
 gap> Z(1);
-Error, Z: <q> must be a positive prime power (not a integer)
+Error, Z: <q> must be a positive prime power (not the integer 1)
 gap> Z(-2);
-Error, Z: <q> must be a positive prime power (not a integer)
+Error, Z: <q> must be a positive prime power (not the integer -2)
 gap> Z(6);
-Error, Z: <q> must be a positive prime power (not a integer)
+Error, Z: <q> must be a positive prime power (not the integer 6)
 
 # variant with two arguments
 gap> Z(0,1);
@@ -58,10 +58,12 @@ gap> Z(bigPrime^2) = Z(bigPrime,2);
 true
 
 # verify some edge cases which previously were accepted (incorrectly)
+gap> Z(6,3);
+Error, Z: <p> must be a prime (not the integer 6)
 gap> Z(9,1);
-Error, Z: <p> must be a prime
+Error, Z: <p> must be a prime (not the integer 9)
 gap> Z(9,2);
-Error, Z: <p> must be a prime
+Error, Z: <p> must be a prime (not the integer 9)
 gap> Z(2^16,1);
 Error, Z: <p> must be a prime
 gap> Z(2^16,2);
@@ -70,6 +72,20 @@ gap> Z(2^17,1);
 Error, Z: <p> must be a prime
 gap> Z(2^17,2);
 Error, Z: <p> must be a prime
+
+# Invoking Z(p,d) with p not a prime used to crash gap, which we fixed.
+# However, invocations like `Z(4,5)` still would erroneously trigger the
+# creation of a type object for fields of size p^d (in the example: 1024),
+# with the non-prime value p set as characteristic. This could then corrupt
+# subsequent computations.
+gap> Z(4,5);
+Error, Z: <p> must be a prime (not the integer 4)
+gap> FieldByGenerators(GF(2), [ Z(1024) ]);
+GF(2^10)
+gap> Characteristic(Z(1024));
+2
+gap> Characteristic(FamilyObj(Z(1024)));
+2
 
 #
 # Constructing finite fields and their subfields
