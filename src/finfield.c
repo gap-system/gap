@@ -61,6 +61,15 @@ static Obj TYPE_FFE;
 static Obj TYPE_FFE0;
 static Obj TYPE_KERNEL_OBJECT;
 
+/****************************************************************************
+**
+*V  PrimitiveRootMod
+**
+**  Local copy of GAP function PrimitiveRootMod, used when initializing new
+**  fields.
+*/
+static Obj PrimitiveRootMod;
+
 
 /****************************************************************************
 **
@@ -119,6 +128,7 @@ FF              FiniteField (
     UInt  q;             /* size of finite field            */
     UInt  poly;          /* Conway polynomial of extension  */
     UInt  i, l, f, n, e; /* loop variables                  */
+    Obj   root;          /* will be a primitive root mod p  */
 
     /* calculate size of field */
     q = 1;
@@ -163,11 +173,20 @@ FF              FiniteField (
     succ = (FFV *)(1 + ADDR_OBJ(succBag));
 
     /* if q is a prime find the smallest primitive root $e$, use $x - e$   */
-    /*N 1990/02/04 mschoene there are few dumber ways to find prim. roots  */
+
     if (d == 1) {
-        for (e = 1, i = 1; i != p - 1; ++e) {
-            for (f = e, i = 1; f != 1; ++i)
-                f = (f * e) % p;
+        if (p < 65537) {
+            /* for smaller primes we do this in the kernel for performance and
+            bootstrapping reasons */
+            for (e = 1, i = 1; i != p - 1; ++e) {
+                for (f = e, i = 1; f != 1; ++i)
+                    f = (f * e) % p;
+            }
+        }
+        else {
+            /* Otherwise we ask the library */
+            root = CALL_1ARGS(PrimitiveRootMod, INTOBJ_INT(p));
+            e = INT_INTOBJ(root) + 1;
         }
         poly = p - (e - 1);
     }
@@ -1604,6 +1623,7 @@ static Int InitKernel (
     ImportFuncFromLibrary( "TYPE_FFE", &TYPE_FFE );
     ImportFuncFromLibrary( "TYPE_FFE0", &TYPE_FFE0 );
     ImportFuncFromLibrary( "ZOp", &ZOp );
+    InitFopyGVar( "PrimitiveRootMod", &PrimitiveRootMod );
     TypeObjFuncs[ T_FFE ] = TypeFFE;
 
     /* create the fields and integer conversion bags                       */
