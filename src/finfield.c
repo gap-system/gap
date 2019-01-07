@@ -31,15 +31,34 @@
 #include "hpc/aobjects.h"
 #endif
 
-Obj SuccFF;
+/****************************************************************************
+**
+*V  SuccFF  . . . . .  Tables for finite fields which are computed on demand
+*V  TypeFF
+*V  TypeFF0
+**
+**  SuccFF holds a plain list of successor lists.
+**  TypeFF holds the types of typical elements of the finite fields.
+**  TypeFF0 holds the types of the zero elements of the finite fields.
+*/
 
+Obj SuccFF;
 static Obj TypeFF;
 static Obj TypeFF0;
 
+
+/****************************************************************************
+**
+*V  TYPE_FFE  . . . . . kernel copy of GAP function TYPE_FFE
+*V  TYPE_FFE0 . . . . . kernel copy of GAP function TYPE_FFE0
+*V  TYPE_KERNEL_OBJECT .local copy of GAP variable TYPE_KERNEL_OBJECT used to
+**                      type successor bags
+**
+**  These GAP functions are called to compute types of finite field elemnents
+*/
+
 static Obj TYPE_FFE;
 static Obj TYPE_FFE0;
-
-// used for successor bags
 static Obj TYPE_KERNEL_OBJECT;
 
 
