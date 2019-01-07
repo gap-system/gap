@@ -112,32 +112,29 @@ static FF LookupPrimePower(UInt q)
 
 /****************************************************************************
 **
-*F  FiniteField(<p>,<d>)  . . . make the small finite field with <q> elements
+*F  FiniteField(<p>,<d>) .  make the small finite field with <p>^<d> elements
+*F  FiniteFieldBySize(<q>) . .  make the small finite field with <q> elements
 **
-**  'FiniteField' returns the small finite field with <p>^<d> elements.
+**  The work is done in the Lookup function above, and in FiniteFieldBySize
+**  where the successor tables are computed.
 */
-FF              FiniteField (
-    UInt                p,
-    UInt                d )
+
+FF FiniteFieldBySize(UInt q)
 {
     FF    ff;            /* finite field, result            */
     Obj   tmp;           /* temporary bag                   */
     Obj   succBag;       /* successor table bag             */
     FFV * succ;          /* successor table                 */
     FFV * indx;          /* index table                     */
-    UInt  q;             /* size of finite field            */
+    UInt  p;             /* characteristic of the field     */
     UInt  poly;          /* Conway polynomial of extension  */
     UInt  i, l, f, n, e; /* loop variables                  */
     Obj   root;          /* will be a primitive root mod p  */
 
-    /* calculate size of field */
-    q = 1;
-    for (i = 1; i <= d; i++)
-        q *= p;
-
     ff = LookupPrimePower(q);
-    if (CharFF[ff] != p)
+    if (!ff)
         return 0;
+
 #ifdef HPCGAP
     /* Important correctness concern here:
      *
@@ -162,6 +159,9 @@ FF              FiniteField (
         return ff;
 #endif
 
+    // determine the characteristic of the field
+    p = CHAR_FF(ff);
+
     /* allocate a bag for the successor table and one for a temporary */
     tmp = NewBag(T_DATOBJ, sizeof(Obj) + q * sizeof(FFV));
     SET_TYPE_DATOBJ(tmp, TYPE_KERNEL_OBJECT);
@@ -174,10 +174,11 @@ FF              FiniteField (
 
     /* if q is a prime find the smallest primitive root $e$, use $x - e$   */
 
-    if (d == 1) {
+    if (DEGR_FF(ff) == 1) {
         if (p < 65537) {
             /* for smaller primes we do this in the kernel for performance and
-            bootstrapping reasons */
+            bootstrapping reasons
+            TODO -- review the threshold */
             for (e = 1, i = 1; i != p - 1; ++e) {
                 for (f = e, i = 1; f != 1; ++i)
                     f = (f * e) % p;
@@ -253,6 +254,21 @@ FF              FiniteField (
 #endif
 
     /* return the finite field                                             */
+    return ff;
+}
+
+FF FiniteField(UInt p, UInt d)
+{
+    UInt q, i;
+    FF   ff;
+
+    q = 1;
+    for (i = 1; i <= d; i++)
+        q *= p;
+
+    ff = FiniteFieldBySize(q);
+    if (ff != 0 && CHAR_FF(ff) != p)
+        return 0;
     return ff;
 }
 
@@ -1480,17 +1496,11 @@ Obj FuncINT_FFE_DEFAULT (
 */
 static Obj ZOp;
 
-
-
-
 Obj FuncZ (
     Obj                 self,
     Obj                 q )
 {
     FF                  ff;             /* the finite field                */
-    UInt                p;              /* characteristic                  */
-    UInt                d;              /* degree                          */
-    UInt                r;              /* temporary                       */
 
     /* check the argument                                                  */
     if ( (IS_INTOBJ(q) && (INT_INTOBJ(q) > 65536)) ||
@@ -1498,42 +1508,17 @@ Obj FuncZ (
       return CALL_1ARGS(ZOp, q);
     
     if ( !IS_INTOBJ(q) || INT_INTOBJ(q)<=1 ) {
-        q = ErrorReturnObj(
-            "Z: <q> must be a positive prime power (not a %s)",
-            (Int)TNAM_OBJ(q), 0L,
-            "you can replace <q> via 'return <q>;'" );
-        return FuncZ( self, q );
+        RequireArgument("Z", q, "must be a positive prime power");
     }
 
-    /* compute the prime and check that <q> is a prime power               */
-    if ( INT_INTOBJ(q) % 2 == 0 ) {
-        p = 2;
-    }
-    else {
-        p = 3;
-        while ( INT_INTOBJ(q) % p != 0 ) {
-            p += 2;
-        }
-    }
-    d = 1;
-    r = p;
-    while ( r < INT_INTOBJ(q) ) {
-        d = d + 1;
-        r = r * p;
-    }
-    if ( r != INT_INTOBJ(q) ) {
-        q = ErrorReturnObj(
-            "Z: <q> must be a positive prime power (not a %s)",
-            (Int)TNAM_OBJ(q), 0L,
-            "you can replace <q> via 'return <q>;'" );
-        return FuncZ( self, q );
-    }
+    ff = FiniteFieldBySize(INT_INTOBJ(q));
 
-    /* get the finite field                                                */
-    ff = FiniteField( p, d );
+    if (!ff) {
+        RequireArgument("Z", q, "must be a positive prime power");
+    }
 
     /* make the root                                                       */
-    return NEW_FFE( ff, (p == 2 && d == 1 ? 1 : 2) );
+    return NEW_FFE(ff, (q == INTOBJ_INT(2)) ? 1 : 2);
 }
 
 Obj FuncZ2 ( Obj self, Obj p, Obj d)
@@ -1554,7 +1539,7 @@ Obj FuncZ2 ( Obj self, Obj p, Obj d)
                 ff = FiniteField(ip, id);
 
                 if (ff == 0 || CHAR_FF(ff) != ip)
-                    ErrorMayQuit("Z: <p> must be a prime", 0, 0);
+                    RequireArgument("Z", p, "must be a prime");
 
                 /* make the root */
                 return NEW_FFE(ff, (ip == 2 && id == 1 ? 1 : 2));

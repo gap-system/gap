@@ -348,13 +348,14 @@ EXPORT_INLINE Obj NEW_FFE(FF fld, FFV val)
 
 /****************************************************************************
 **
-*F  FiniteField(<p>,<d>)  . . . make the small finite field with <q> elements
+*F  FiniteField(<p>,<d>) .  make the small finite field with <p>^<d> elements
+*F  FiniteFieldBySize(<q>) . .  make the small finite field with <q> elements
 **
 **  'FiniteField' returns the small finite field with <p>^<d> elements.
+**  'FiniteFieldBySize' returns the small finite field with <q> elements.
 */
-extern  FF              FiniteField (
-            UInt                p,
-            UInt                d );
+extern FF FiniteField(UInt p, UInt d);
+extern FF FiniteFieldBySize(UInt q);
 
 
 /****************************************************************************
