@@ -497,6 +497,23 @@ extern  void            RetypeBagIfWritable (
 #define RetypeBagIfWritable(x,y)     RetypeBag(x,y)
 #endif
 
+
+/****************************************************************************
+**
+**  'RetypeBagSM' works like 'RetypeBag', but ensures that the given bag
+**  returns the same mutability (SM).
+**
+**  FIXME: for now, this checks the tnums; later, this will be turned
+**  into a check for an object flag
+*/
+extern void RetypeBagSM(Bag bag, UInt new_type);
+#ifdef HPCGAP
+extern void RetypeBagSMIfWritable(Bag bag, UInt new_type);
+#else
+#define RetypeBagSMIfWritable(x,y)   RetypeBagSM(x,y)
+#endif
+
+
 /****************************************************************************
 **
 *F  ResizeBag(<bag>,<new>)  . . . . . . . . . . . .  change the size of a bag

@@ -1096,7 +1096,7 @@ Obj FuncIMAGE_SET_TRANS(Obj self, Obj f)
 
     if (!IS_SSORT_LIST(out)) {
         SortPlistByRawObj(out);
-        RetypeBag(out, T_PLIST_CYC_SSORT + IMMUTABLE);
+        RetypeBagSM(out, T_PLIST_CYC_SSORT);
         return out;
     }
     return out;
@@ -1155,7 +1155,7 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
         SHRINK_PLIST(newObj, (Int)rank);
         SET_LEN_PLIST(newObj, (Int)rank);
         SortPlistByRawObj(newObj);
-        RetypeBag(newObj, T_PLIST_CYC_SSORT + IMMUTABLE);
+        RetypeBagSM(newObj, T_PLIST_CYC_SSORT);
     }
     else {
         // m > deg and so m is at least 1!
@@ -5101,8 +5101,7 @@ Obj OnSetsTrans(Obj set, Obj f)
         SortPlistByRawObj(res);
         REMOVE_DUPS_PLIST_INTOBJ(res);
 
-        RetypeBag(res, IS_PLIST_MUTABLE(set) ? T_PLIST_CYC_SSORT
-                                             : T_PLIST_CYC_SSORT + IMMUTABLE);
+        RetypeBagSM(res, T_PLIST_CYC_SSORT);
     }
     else {
         SortDensePlist(res);

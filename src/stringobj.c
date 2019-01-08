@@ -1307,7 +1307,7 @@ void ConvString (
     CHARS_STRING(tmp)[lenString] = '\0';
 
     /* copy back to string  */
-    RetypeBag( string, IS_MUTABLE_OBJ(string)?T_STRING:T_STRING+IMMUTABLE );
+    RetypeBagSM( string, T_STRING );
     ResizeBag( string, SIZEBAG_STRINGLEN(lenString) );
     /* copy data area from tmp */
     memcpy(ADDR_OBJ(string), CONST_ADDR_OBJ(tmp), SIZE_OBJ(tmp));

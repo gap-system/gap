@@ -729,7 +729,7 @@ void PlainBlist (
 
     /* resize the list and retype it, in this order                        */
     len = LEN_BLIST(list);
-    RetypeBag( list, IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST+IMMUTABLE );
+    RetypeBagSM( list, T_PLIST );
     GROW_PLIST( list, (UInt)len );
     SET_LEN_PLIST( list, len );
 
@@ -826,7 +826,7 @@ void ConvBlist (
             bit = 1;
         }
     }
-    RetypeBag( list, IS_MUTABLE_OBJ(list) ? T_BLIST : T_BLIST+IMMUTABLE );
+    RetypeBagSM( list, T_BLIST );
     ResizeBag( list, SIZE_PLEN_BLIST(len) );
     SET_LEN_BLIST( list, len );
 }

@@ -364,7 +364,7 @@ Obj             ZeroListDefault (
           RetypeBag(res, TNUM_OBJ(list));
         else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
                  TNUM_OBJ(list) < T_PLIST_FFE)
-          RetypeBag(res, IS_MUTABLE_OBJ(list) ? T_PLIST_CYC : T_PLIST_CYC+IMMUTABLE);
+          RetypeBagSM(res, T_PLIST_CYC);
         else if (HAS_FILT_LIST(list, FN_IS_DENSE))
           {
             SET_FILT_LIST( res, FN_IS_DENSE );
@@ -590,7 +590,7 @@ Obj AInvListDefault (
           RetypeBag(res, TNUM_OBJ(list));
         else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
                  TNUM_OBJ(list) < T_PLIST_FFE)
-          RetypeBag(res, IS_MUTABLE_OBJ(list) ? T_PLIST_CYC : T_PLIST_CYC+IMMUTABLE );
+          RetypeBagSM(res, T_PLIST_CYC);
         else if (HAS_FILT_LIST(list, FN_IS_DENSE))
           {
             SET_FILT_LIST( res, FN_IS_DENSE );

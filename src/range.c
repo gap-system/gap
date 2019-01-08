@@ -597,7 +597,7 @@ void            PlainRange (
     inc     = GET_INC_RANGE( list );
 
     /* change the type of the list, and allocate enough space              */
-    RetypeBag( list, IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST + IMMUTABLE );
+    RetypeBagSM( list, T_PLIST );
     GROW_PLIST( list, lenList );
     SET_LEN_PLIST( list, lenList );
 
@@ -681,13 +681,7 @@ Int             IsRange (
         /* if <list> is a range, convert to the compact representation   */
         isRange = (len < i);
         if ( isRange ) {
-            if ( IS_MUTABLE_OBJ(list) ) {
-                RetypeBag( list, (0 < inc ? T_RANGE_SSORT : T_RANGE_NSORT) );
-            }
-            else {
-                RetypeBag( list, (0 < inc ? T_RANGE_SSORT : T_RANGE_NSORT)
-                                 + IMMUTABLE );
-            }
+            RetypeBagSM( list, (0 < inc ? T_RANGE_SSORT : T_RANGE_NSORT) );
             ResizeBag( list, 3 * sizeof(Obj) );
             SET_LEN_RANGE( list, len );
             SET_LOW_RANGE( list, low );

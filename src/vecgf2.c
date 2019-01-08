@@ -1254,8 +1254,6 @@ void PlainGF2Vec(Obj list)
     Int  len;          // length of <list>
     UInt i;            // loop variable
     Obj  first = 0;    // first entry
-    UInt tnum;
-
 
     // check for representation lock
     if (True == DoFilter(IsLockedRepresentationVector, list))
@@ -1265,13 +1263,8 @@ void PlainGF2Vec(Obj list)
     // resize the list and retype it, in this order
     len = LEN_GF2VEC(list);
 
-    if (len == 0)
-        tnum = T_PLIST_EMPTY;
-    else
-        tnum = T_PLIST_FFE;
-    if (!IS_MUTABLE_OBJ(list))
-        tnum += IMMUTABLE;
-    RetypeBag(list, tnum);
+    RetypeBagSM(list, (len == 0) ? T_PLIST_EMPTY : T_PLIST_FFE);
+
     GROW_PLIST(list, (UInt)len);
     SET_LEN_PLIST(list, len);
 
@@ -1310,7 +1303,7 @@ void PlainGF2Mat(Obj list)
 
     // resize the list and retype it, in this order
     len = LEN_GF2MAT(list);
-    RetypeBag(list, IS_MUTABLE_OBJ(list) ? T_PLIST : T_PLIST + IMMUTABLE);
+    RetypeBagSM(list, T_PLIST);
     SET_LEN_PLIST(list, len);
 
     // shift the entries to the left
