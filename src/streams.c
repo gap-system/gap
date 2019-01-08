@@ -1579,6 +1579,7 @@ Obj FuncREAD_ALL_FILE (
 {
     Char            buf[20000];
     Int             len;
+    // Length of string read this loop (or negative for error)
     UInt            lstr;
     Obj             str;
     UInt            csize;
@@ -1598,6 +1599,7 @@ Obj FuncREAD_ALL_FILE (
  getmore:
 #endif
     while (ilim == -1 || len < ilim ) {
+      lstr = 0;
       if ( len > 0 && !HasAvailableBytes(ifid))
           break;
       if (SyBufIsTTY(ifid)) {
@@ -1650,7 +1652,8 @@ Obj FuncREAD_ALL_FILE (
     }
     len = j;
     SET_LEN_STRING(str, len);
-    if (ilim != -1 && len < ilim)
+    // If we have not yet read enough, and have read at least one character this loop, then read more
+    if (ilim != -1 && len < ilim && lstr > 0)
         goto getmore;
 #endif
     ResizeBag( str, SIZEBAG_STRINGLEN(len) );
