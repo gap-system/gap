@@ -1932,16 +1932,17 @@ void            IntrCharExpr (
 *F  IntrPermCycle(<nr>) . . . . . .  interpret literal permutation expression
 *F  IntrPerm(<nr>)  . . . . . . . .  interpret literal permutation expression
 */
+static Obj GetFromStack(Obj cycle, Int j)
+{
+    return PopObj();
+}
+
 void            IntrPermCycle (
     UInt                nrx,
     UInt                nrc )
 {
     Obj                 perm;           /* permutation                     */
-    UInt4 *             ptr4;           /* pointer into perm               */
-    Obj                 val;            /* one entry as value              */
-    UInt                c, p, l;        /* entries in permutation          */
     UInt                m;              /* maximal entry in permutation    */
-    UInt                j, k;           /* loop variable                   */
 
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
@@ -1953,58 +1954,14 @@ void            IntrPermCycle (
     if ( nrc == 1 ) {
         m = 0;
         perm = NEW_PERM4( 0 );
-        ptr4 = ADDR_PERM4( perm );
     }
     else {
         const UInt countObj = LEN_PLIST(STATE(StackObj));
         m = INT_INTOBJ( ELM_LIST( STATE(StackObj), countObj - nrx ) );
         perm = ELM_LIST( STATE(StackObj), countObj - nrx - 1 );
-        ptr4 = ADDR_PERM4( perm );
     }
 
-    /* multiply the permutation with the cycle                             */
-    c = p = l = 0;
-    for ( j = nrx; 1 <= j; j-- ) {
-
-        /* get and check current entry for the cycle                       */
-        val = PopObj();
-        c = GetPositiveSmallIntEx("Permutation", val, "<expr>");
-        if (c > MAX_DEG_PERM4)
-          ErrorQuit( "Permutation literal exceeds maximum permutation degree",
-                     0, 0);
-
-        /* if necessary resize the permutation                             */
-        if (DEG_PERM4(perm) < c) {
-            ResizeBag(perm, SIZEBAG_PERM4((c + 1023) / 1024 * 1024));
-            ptr4 = ADDR_PERM4( perm );
-            for (k = m + 1; k <= DEG_PERM4(perm); k++) {
-                ptr4[k-1] = k-1;
-            }
-        }
-        if ( m < c ) {
-            m = c;
-        }
-
-        /* check that the cycles are disjoint                              */
-        if ( (p != 0 && p == c) || (ptr4[c-1] != c-1) ) {
-            ErrorQuit(
-                "Permutation: cycles must be disjoint and duplicate-free",
-                0L, 0L );
-        }
-
-        /* enter the previous entry at current location                    */
-        if ( p != 0 ) { ptr4[c-1] = p-1; }
-        else          { l = c;          }
-
-        /* remember current entry for next round                           */
-        p = c;
-    }
-
-    /* enter first (last popped) entry at last (first popped) location     */
-    if (ptr4[l-1] != l-1) {
-        ErrorQuit("Permutation: cycles must be disjoint and duplicate-free", 0L, 0L );
-    }
-    ptr4[l-1] = p-1;
+    m = ScanPermCycle(perm, m, 0, nrx, GetFromStack);
 
     /* push the permutation (if necessary, drop permutation first)         */
     if ( nrc != 1 ) { PopObj(); PopObj(); }

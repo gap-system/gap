@@ -795,17 +795,20 @@ Obj             EvalCharExpr (
 **
 **  'EvalPermExpr' evaluates the permutation expression <expr>.
 */
+static Obj GetFromExpr(Obj cycle, Int j)
+{
+    return EVAL_EXPR(READ_EXPR((Expr)cycle, j - 1));
+}
+
 Obj             EvalPermExpr (
     Expr                expr )
 {
     Obj                 perm;           /* permutation, result             */
     UInt4 *             ptr4;           /* pointer into perm               */
     UInt2 *             ptr2;           /* pointer into perm               */
-    Obj                 val;            /* one entry as value              */
-    UInt                c, p, l;        /* entries in permutation          */
     UInt                m;              /* maximal entry in permutation    */
     Expr                cycle;          /* one cycle of permutation        */
-    UInt                i, j, k;        /* loop variable                   */
+    UInt                i, k;           /* loop variable                   */
 
     /* special case for identity permutation                               */
     if ( SIZE_EXPR(expr) == 0 ) {
@@ -823,55 +826,9 @@ Obj             EvalPermExpr (
         // Need to inform profiling this cycle expression is executed, as
         // we never call EVAL_EXPR on it.
         VisitStatIfHooked(cycle);
-        /* loop over the entries of the cycle                              */
-        c = p = l = 0;
-        for ( j = SIZE_EXPR(cycle)/sizeof(Expr); 1 <= j; j-- ) {
 
-            /* get and check current entry for the cycle                   */
-            val = EVAL_EXPR(READ_EXPR(cycle, j - 1));
-            c = GetPositiveSmallIntEx("Permutation", val, "<expr>");
-            if (c > MAX_DEG_PERM4)
-              ErrorMayQuit( "Permutation literal exceeds maximum permutation degree",
-                            0, 0);
-
-            /* if necessary resize the permutation                         */
-            if (DEG_PERM4(perm) < c) {
-                ResizeBag(perm, SIZEBAG_PERM4((c + 1023) / 1024 * 1024));
-                ptr4 = ADDR_PERM4(perm);
-                for (k = m + 1; k <= DEG_PERM4(perm); k++) {
-                    ptr4[k-1] = k-1;
-                }
-            }
-            if ( m < c ) {
-                m = c;
-            }
-
-            /* check that the cycles are disjoint                          */
-            ptr4 = ADDR_PERM4( perm );
-            if ( (p != 0 && p == c) || (ptr4[c-1] != c-1) ) {
-                ErrorMayQuit(
-                    "Permutation: cycles must be disjoint and duplicate-free",
-                    0, 0);
-            }
-
-            /* enter the previous entry at current location                */
-            ptr4 = ADDR_PERM4( perm );
-            if ( p != 0 ) { ptr4[c-1] = p-1; }
-            else          { l = c;          }
-
-            /* remember current entry for next round                       */
-            p = c;
-        }
-
-        /* enter first (last popped) entry at last (first popped) location */
-        ptr4 = ADDR_PERM4( perm );
-        if (ptr4[l-1] != l-1) {
-            ErrorMayQuit(
-                "Permutation: cycles must be disjoint and duplicate-free", 0,
-                0);
-        }
-        ptr4[l-1] = p-1;
-
+        m = ScanPermCycle(perm, m, (Obj)cycle,
+                          SIZE_EXPR(cycle) / sizeof(Expr), GetFromExpr);
     }
 
     /* if possible represent the permutation with short entries            */
