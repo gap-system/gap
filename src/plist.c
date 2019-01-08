@@ -400,7 +400,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
           {
             res = (lenList == 1) ? T_PLIST_CYC_SSORT : T_PLIST_CYC;
             /* This is a hack */
-            RetypeBag(list, res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE ));
+            RetypeBagSM(list, res);
           }
         else if (IS_FFE(ELM_PLIST(list,1)))
           {
@@ -418,7 +418,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
             if (isFFE)
               {
                 res = T_PLIST_FFE;
-                RetypeBag(list, res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE ));
+                RetypeBagSM(list, res);
               }
             else
               res = T_PLIST_HOM;
@@ -491,7 +491,7 @@ Int KTNumHomPlist (
           res = T_PLIST_CYC;
 
         /* This is a hack */
-        RetypeBag(list, res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE ));
+        RetypeBagSM(list, res);
         goto finish;
       }
     if (IS_FFE(elm))
@@ -510,7 +510,7 @@ Int KTNumHomPlist (
         if (isFFE)
           {
             res = T_PLIST_FFE;
-            RetypeBag(list, res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE ));
+            RetypeBagSM(list, res);
             goto finish;
           }
       }
@@ -1995,7 +1995,7 @@ Int             IsDensePlist (
 
     /* special case for empty list                                         */
     if ( lenList == 0 ) {
-        RetypeBagIfWritable(list, IS_MUTABLE_OBJ(list) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
+        RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
         return 1L;
     }
 
@@ -2075,7 +2075,7 @@ Int             IsSSortPlist (
 
     /* special case for the empty list                                     */
     if ( lenList == 0 ) {
-        RetypeBagIfWritable(list, IS_MUTABLE_OBJ(list) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
+        RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
         return 2L;
     }
 
@@ -2162,7 +2162,7 @@ Int             IsSSortPlistDense (
 
     /* special case for the empty list                                     */
     if ( lenList == 0 ) {
-        RetypeBagIfWritable(list, IS_MUTABLE_OBJ(list) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
+        RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
         return 2L;
     }
 
@@ -2230,7 +2230,7 @@ Int             IsSSortPlistHom (
 
     /* special case for the empty list                                     */
     if ( lenList == 0 ) {
-        RetypeBagIfWritable(list, IS_MUTABLE_OBJ(list) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
+        RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
         return 2L;
     }
 

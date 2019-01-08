@@ -959,7 +959,6 @@ void PlainVec8Bit(Obj list)
     UInt    elts;
     Obj     info;
     UInt1 * gettab;
-    UInt    tnum;
     Obj     fieldobj;
     Char *  startblank;
     Char *  endblank;
@@ -977,14 +976,7 @@ void PlainVec8Bit(Obj list)
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
 
-
-    if (len == 0)
-        tnum = T_PLIST_EMPTY;
-    else
-        tnum = T_PLIST_FFE;
-    if (!IS_MUTABLE_OBJ(list))
-        tnum += IMMUTABLE;
-    RetypeBag(list, tnum);
+    RetypeBagSM(list, (len == 0) ? T_PLIST_EMPTY : T_PLIST_FFE);
 
     GROW_PLIST(list, (UInt)len);
     SET_LEN_PLIST(list, len);
@@ -3329,8 +3321,7 @@ void PlainMat8Bit(Obj mat)
     UInt i, l;
     Obj  row;
     l = LEN_MAT8BIT(mat);
-    RetypeBag(mat,
-              IS_MUTABLE_OBJ(mat) ? T_PLIST_TAB : T_PLIST_TAB + IMMUTABLE);
+    RetypeBagSM(mat, T_PLIST_TAB);
     SET_LEN_PLIST(mat, l);
     for (i = 1; i <= l; i++) {
         row = ELM_MAT8BIT(mat, i);

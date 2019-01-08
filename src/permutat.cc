@@ -2189,8 +2189,7 @@ static inline Obj OnSetsPerm_(Obj set, Obj perm)
     // sort the result
     if (isint) {
         SortPlistByRawObj(res);
-        RetypeBag(res, IS_PLIST_MUTABLE(set) ? T_PLIST_CYC_SSORT
-                                             : T_PLIST_CYC_SSORT + IMMUTABLE);
+        RetypeBagSM(res, T_PLIST_CYC_SSORT);
     }
     else {
         SortDensePlist(res);

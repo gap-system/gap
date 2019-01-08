@@ -306,7 +306,7 @@ static Obj SORT_PLIST_INTOBJ(Obj res)
         return res;
 
     SortPlistByRawObj(res);
-    RetypeBag(res, T_PLIST_CYC_SSORT + IMMUTABLE);
+    RetypeBagSM(res, T_PLIST_CYC_SSORT);
     return res;
 }
 
@@ -6253,8 +6253,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
         }
     }
     if (reslen == 0) {
-        RetypeBag(res, IS_PLIST_MUTABLE(set) ? T_PLIST_EMPTY
-                                             : T_PLIST_EMPTY + IMMUTABLE);
+        RetypeBagSM(res, T_PLIST_EMPTY);
         return res;
     }
     ResizeBag(res, (reslen + 1) * sizeof(Obj));
@@ -6263,8 +6262,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
     // sort the result
     if (isint) {
         SortPlistByRawObj(res);
-        RetypeBag(res, IS_PLIST_MUTABLE(set) ? T_PLIST_CYC_SSORT
-                                             : T_PLIST_CYC_SSORT + IMMUTABLE);
+        RetypeBagSM(res, T_PLIST_CYC_SSORT);
     }
     else {
         SortDensePlist(res);
@@ -6415,13 +6413,11 @@ Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
     SET_LEN_PLIST(res, reslen);
 
     if (reslen == 0) {
-        RetypeBag(res, IS_PLIST_MUTABLE(set) ? T_PLIST_EMPTY
-                                             : T_PLIST_EMPTY + IMMUTABLE);
+        RetypeBagSM(res, T_PLIST_EMPTY);
     }
     else {
         SortPlistByRawObj(res);
-        RetypeBag(res, IS_PLIST_MUTABLE(set) ? T_PLIST_CYC_SSORT
-                                             : T_PLIST_CYC_SSORT + IMMUTABLE);
+        RetypeBagSM(res, T_PLIST_CYC_SSORT);
     }
 
     return res;

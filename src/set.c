@@ -68,7 +68,7 @@ Int IsSet (
 
         /* if <list> is the empty list, it is a set (:-)                     */
         if ( LEN_PLIST(list) == 0 ) {
-            RetypeBagIfWritable(list, IS_MUTABLE_OBJ(list) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
+            RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
             isSet = 1;
         }
 
@@ -90,7 +90,7 @@ Int IsSet (
         /* if <list> is the empty list, it is a set (:-)                     */
         if ( LEN_LIST(list) == 0 ) {
             PLAIN_LIST( list );
-            RetypeBagIfWritable(list, IS_MUTABLE_OBJ(list) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE);
+            RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
             isSet = 1;
         }
 

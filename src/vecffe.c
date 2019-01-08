@@ -54,8 +54,7 @@ Int IsVecFFE(Obj obj)
         if (!IS_FFE(x) || FLD_FFE(x) != fld)
             return 0;
     }
-    RetypeBag(obj,
-              (tnum & IMMUTABLE) ? T_PLIST_FFE + IMMUTABLE : T_PLIST_FFE);
+    RetypeBagSM(obj, T_PLIST_FFE);
     return 1;
 }
 
