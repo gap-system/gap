@@ -1323,7 +1323,7 @@ Obj CopyToStringRep(
     copy = NEW_STRING(lenString);
 
     if ( IS_STRING_REP(string) ) {
-        memcpy(CHARS_STRING(copy), CONST_CHARS_STRING(string),
+        memcpy(CHARS_STRING(copy), CHARS_STRING(string),
             GET_LEN_STRING(string));
         /* XXX no error checks? */
     } else {
