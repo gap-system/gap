@@ -42,8 +42,8 @@ gap> TaskResult(t);
 #
 gap> task1 := DelayTask(SortedList, [3,2,1]);;
 gap> task2 := DelayTask(SortedList, [2^15, 2^15-1 .. 1]);;
-gap> which := WaitAnyTask(task1, task2);
-1
+gap> WaitAnyTask(task1, task2) in [1, 2];
+true
 gap> WaitTasks(task1, task2);
 gap> TaskResult(task1);
 [ 1, 2, 3 ]
