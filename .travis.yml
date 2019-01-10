@@ -135,7 +135,7 @@ script:
 after_script:
   - set -e
   - bash etc/ci-gather-coverage.sh
-  - bash <(curl -s https://codecov.io/bash) -f "!./pkg/*" -f "!./extern/*" -f "!./build/*"
+  - bash etc/ci-run-codecov.sh
 
 notifications:
   slack:
