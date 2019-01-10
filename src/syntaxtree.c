@@ -49,15 +49,24 @@ typedef struct {
 
 // We put compilers for statements and expressions into the same static array,
 // assuming that the set of their respective ids are disjoint.
-static const CompilerT Compilers[];
+static const CompilerT Compilers[256];
 #define COMPILER_ARITY(...) (sizeof((ArgT[]){ __VA_ARGS__ }) / sizeof(ArgT))
 #define COMPILER(tnum, compiler, ...)                                        \
     [tnum] = {                                                               \
         tnum, compiler, #tnum, COMPILER_ARITY(__VA_ARGS__), { __VA_ARGS__ }  \
     }
 
+#define COMPILER0(tnum, compiler)                                            \
+    [tnum] = {                                                               \
+        tnum, compiler, #tnum, 0, { { 0 } }  \
+    }
+
+
 #define COMPILER_(tnum, ...)                                                 \
     COMPILER(tnum, SyntaxTreeDefaultCompiler, __VA_ARGS__)
+
+#define COMPILER0_(tnum)                                                     \
+    COMPILER0(tnum, SyntaxTreeDefaultCompiler)
 
 #define ARG(name, func)                                                      \
     {                                                                        \
@@ -551,59 +560,59 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
     return result;
 }
 
-static const CompilerT Compilers[] = {
-    COMPILER(T_PROCCALL_0ARGS, SyntaxTreeFunccall),
-    COMPILER(T_PROCCALL_1ARGS, SyntaxTreeFunccall),
-    COMPILER(T_PROCCALL_2ARGS, SyntaxTreeFunccall),
-    COMPILER(T_PROCCALL_3ARGS, SyntaxTreeFunccall),
-    COMPILER(T_PROCCALL_4ARGS, SyntaxTreeFunccall),
-    COMPILER(T_PROCCALL_5ARGS, SyntaxTreeFunccall),
-    COMPILER(T_PROCCALL_6ARGS, SyntaxTreeFunccall),
-    COMPILER(T_PROCCALL_XARGS, SyntaxTreeFunccall),
+static const CompilerT Compilers[256] = {
+    COMPILER0(T_PROCCALL_0ARGS, SyntaxTreeFunccall),
+    COMPILER0(T_PROCCALL_1ARGS, SyntaxTreeFunccall),
+    COMPILER0(T_PROCCALL_2ARGS, SyntaxTreeFunccall),
+    COMPILER0(T_PROCCALL_3ARGS, SyntaxTreeFunccall),
+    COMPILER0(T_PROCCALL_4ARGS, SyntaxTreeFunccall),
+    COMPILER0(T_PROCCALL_5ARGS, SyntaxTreeFunccall),
+    COMPILER0(T_PROCCALL_6ARGS, SyntaxTreeFunccall),
+    COMPILER0(T_PROCCALL_XARGS, SyntaxTreeFunccall),
 
     COMPILER_(T_PROCCALL_OPTS,
               ARG_("opts"),
               ARG_("call")),
 
-    COMPILER_(T_EMPTY),
+    COMPILER0_(T_EMPTY),
 
-    COMPILER(T_SEQ_STAT, SyntaxTreeSeqStat),
-    COMPILER(T_SEQ_STAT2, SyntaxTreeSeqStat),
-    COMPILER(T_SEQ_STAT3, SyntaxTreeSeqStat),
-    COMPILER(T_SEQ_STAT4, SyntaxTreeSeqStat),
-    COMPILER(T_SEQ_STAT5, SyntaxTreeSeqStat),
-    COMPILER(T_SEQ_STAT6, SyntaxTreeSeqStat),
-    COMPILER(T_SEQ_STAT7, SyntaxTreeSeqStat),
+    COMPILER0(T_SEQ_STAT, SyntaxTreeSeqStat),
+    COMPILER0(T_SEQ_STAT2, SyntaxTreeSeqStat),
+    COMPILER0(T_SEQ_STAT3, SyntaxTreeSeqStat),
+    COMPILER0(T_SEQ_STAT4, SyntaxTreeSeqStat),
+    COMPILER0(T_SEQ_STAT5, SyntaxTreeSeqStat),
+    COMPILER0(T_SEQ_STAT6, SyntaxTreeSeqStat),
+    COMPILER0(T_SEQ_STAT7, SyntaxTreeSeqStat),
 
-    COMPILER(T_IF, SyntaxTreeIf),
-    COMPILER(T_IF_ELSE, SyntaxTreeIf),
-    COMPILER(T_IF_ELIF, SyntaxTreeIf),
-    COMPILER(T_IF_ELIF_ELSE, SyntaxTreeIf),
+    COMPILER0(T_IF, SyntaxTreeIf),
+    COMPILER0(T_IF_ELSE, SyntaxTreeIf),
+    COMPILER0(T_IF_ELIF, SyntaxTreeIf),
+    COMPILER0(T_IF_ELIF_ELSE, SyntaxTreeIf),
 
-    COMPILER(T_FOR, SyntaxTreeFor),
-    COMPILER(T_FOR2, SyntaxTreeFor),
-    COMPILER(T_FOR3, SyntaxTreeFor),
+    COMPILER0(T_FOR, SyntaxTreeFor),
+    COMPILER0(T_FOR2, SyntaxTreeFor),
+    COMPILER0(T_FOR3, SyntaxTreeFor),
 
-    COMPILER(T_FOR_RANGE, SyntaxTreeFor),
-    COMPILER(T_FOR_RANGE2, SyntaxTreeFor),
-    COMPILER(T_FOR_RANGE3, SyntaxTreeFor),
+    COMPILER0(T_FOR_RANGE, SyntaxTreeFor),
+    COMPILER0(T_FOR_RANGE2, SyntaxTreeFor),
+    COMPILER0(T_FOR_RANGE3, SyntaxTreeFor),
 
-    COMPILER(T_WHILE, SyntaxTreeWhile),
-    COMPILER(T_WHILE2, SyntaxTreeWhile),
-    COMPILER(T_WHILE3, SyntaxTreeWhile),
+    COMPILER0(T_WHILE, SyntaxTreeWhile),
+    COMPILER0(T_WHILE2, SyntaxTreeWhile),
+    COMPILER0(T_WHILE3, SyntaxTreeWhile),
 
-    COMPILER(T_REPEAT, SyntaxTreeRepeat),
-    COMPILER(T_REPEAT2, SyntaxTreeRepeat),
-    COMPILER(T_REPEAT3, SyntaxTreeRepeat),
+    COMPILER0(T_REPEAT, SyntaxTreeRepeat),
+    COMPILER0(T_REPEAT2, SyntaxTreeRepeat),
+    COMPILER0(T_REPEAT3, SyntaxTreeRepeat),
 
 #ifdef HPCGAP
-    COMPILER_(T_ATOMIC),
+    COMPILER0_(T_ATOMIC),
 #endif
 
-    COMPILER_(T_BREAK),
-    COMPILER_(T_CONTINUE),
+    COMPILER0_(T_BREAK),
+    COMPILER0_(T_CONTINUE),
     COMPILER_(T_RETURN_OBJ, ARG_("obj")),
-    COMPILER_(T_RETURN_VOID),
+    COMPILER0_(T_RETURN_VOID),
 
     COMPILER_(T_ASS_LVAR, ARG("lvar", SyntaxTreeArgcompInt), ARG_("rhs")),
     COMPILER_(T_UNB_LVAR, ARG("lvar", SyntaxTreeArgcompInt)),
@@ -647,22 +656,22 @@ static const CompilerT Compilers[] = {
     COMPILER_(T_UNB_COMOBJ_NAME, ARG_("comobj"), ARG("rnam", SyntaxTreeRNam)),
     COMPILER_(T_UNB_COMOBJ_EXPR, ARG_("comobj"), ARG_("expression")),
 
-    COMPILER(T_INFO, SyntaxTreeInfo),
+    COMPILER0(T_INFO, SyntaxTreeInfo),
     COMPILER_(T_ASSERT_2ARGS, ARG_("level"), ARG_("condition")),
     COMPILER_(
         T_ASSERT_3ARGS, ARG_("level"), ARG_("condition"), ARG_("message")),
 
     /* Statements */
-    COMPILER(T_FUNCCALL_0ARGS, SyntaxTreeFunccall),
-    COMPILER(T_FUNCCALL_1ARGS, SyntaxTreeFunccall),
-    COMPILER(T_FUNCCALL_2ARGS, SyntaxTreeFunccall),
-    COMPILER(T_FUNCCALL_3ARGS, SyntaxTreeFunccall),
-    COMPILER(T_FUNCCALL_4ARGS, SyntaxTreeFunccall),
-    COMPILER(T_FUNCCALL_5ARGS, SyntaxTreeFunccall),
-    COMPILER(T_FUNCCALL_6ARGS, SyntaxTreeFunccall),
-    COMPILER(T_FUNCCALL_XARGS, SyntaxTreeFunccall),
+    COMPILER0(T_FUNCCALL_0ARGS, SyntaxTreeFunccall),
+    COMPILER0(T_FUNCCALL_1ARGS, SyntaxTreeFunccall),
+    COMPILER0(T_FUNCCALL_2ARGS, SyntaxTreeFunccall),
+    COMPILER0(T_FUNCCALL_3ARGS, SyntaxTreeFunccall),
+    COMPILER0(T_FUNCCALL_4ARGS, SyntaxTreeFunccall),
+    COMPILER0(T_FUNCCALL_5ARGS, SyntaxTreeFunccall),
+    COMPILER0(T_FUNCCALL_6ARGS, SyntaxTreeFunccall),
+    COMPILER0(T_FUNCCALL_XARGS, SyntaxTreeFunccall),
 
-    COMPILER(T_FUNC_EXPR, SyntaxTreeFuncExpr),
+    COMPILER0(T_FUNC_EXPR, SyntaxTreeFuncExpr),
 
     COMPILER_(T_FUNCCALL_OPTS, ARG_("opts"), ARG_("call")),
 
@@ -687,26 +696,26 @@ static const CompilerT Compilers[] = {
 
     COMPILER(T_INTEXPR, SyntaxTreeEvalCompiler, ARG_("value")),
     COMPILER(T_INT_EXPR, SyntaxTreeEvalCompiler, ARG_("value")),
-    COMPILER_(T_TRUE_EXPR),
-    COMPILER_(T_FALSE_EXPR),
-    COMPILER_(T_TILDE_EXPR),
+    COMPILER0_(T_TRUE_EXPR),
+    COMPILER0_(T_FALSE_EXPR),
+    COMPILER0_(T_TILDE_EXPR),
     COMPILER(T_CHAR_EXPR, SyntaxTreeEvalCompiler, ARG_("value")),
-    COMPILER(T_PERM_EXPR, SyntaxTreePermExpr),
-    COMPILER_(T_PERM_CYCLE),
-    COMPILER(T_LIST_EXPR, SyntaxTreeListExpr),
-    COMPILER(T_LIST_TILDE_EXPR, SyntaxTreeListExpr),
-    COMPILER(T_RANGE_EXPR, SyntaxTreeRangeExpr),
+    COMPILER0(T_PERM_EXPR, SyntaxTreePermExpr),
+    COMPILER0_(T_PERM_CYCLE),
+    COMPILER0(T_LIST_EXPR, SyntaxTreeListExpr),
+    COMPILER0(T_LIST_TILDE_EXPR, SyntaxTreeListExpr),
+    COMPILER0(T_RANGE_EXPR, SyntaxTreeRangeExpr),
     COMPILER(T_STRING_EXPR, SyntaxTreeEvalCompiler, ARG_("string")),
-    COMPILER(T_REC_EXPR, SyntaxTreeRecExpr),
-    COMPILER_(T_REC_TILDE_EXPR),
+    COMPILER0(T_REC_EXPR, SyntaxTreeRecExpr),
+    COMPILER0_(T_REC_TILDE_EXPR),
 
     COMPILER(T_FLOAT_EXPR_EAGER, SyntaxTreeEvalCompiler, ARG_("value")),
-    COMPILER(T_FLOAT_EXPR_LAZY, SyntaxTreeFloatLazy),
+    COMPILER0(T_FLOAT_EXPR_LAZY, SyntaxTreeFloatLazy),
 
     // T_REFLVAR is encoded differently from all other
     //           references to LVARs, so we have to treat
     //           them specially here
-    COMPILER(T_REFLVAR, SyntaxTreeRefLVar),
+    COMPILER0(T_REFLVAR, SyntaxTreeRefLVar),
     COMPILER_(T_ISB_LVAR, ARG("lvar", SyntaxTreeArgcompInt)),
 
     COMPILER_(T_REF_HVAR, ARG("hvar", SyntaxTreeArgcompInt)),
@@ -717,7 +726,7 @@ static const CompilerT Compilers[] = {
 
     // TODO: can this be unified?
     COMPILER_(T_ELM_LIST, ARG_("list"), ARG_("pos")),
-    COMPILER(T_ELM2_LIST, SyntaxTreeElmList),
+    COMPILER0(T_ELM2_LIST, SyntaxTreeElmList),
     COMPILER_(T_ELMS_LIST, ARG_("list"), ARG_("poss")),
     COMPILER_(T_ELM_LIST_LEV, ARG_("lists"), ARG_("pos"), ARG_("level")),
     COMPILER_(T_ELMS_LIST_LEV, ARG_("lists"), ARG_("poss"), ARG_("level")),
