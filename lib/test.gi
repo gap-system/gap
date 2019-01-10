@@ -118,9 +118,6 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
       Add(pos, i);
       i := i+1;
     elif Length(lines[i]) > 1 and lines[i]{[1..2]} = "> " then
-      if Length(outp) > 0 and Length(outp[Length(outp)]) > 0 then
-        testError("Invalid test file: '> ' continuation found in the middle of a test output");
-      fi;
       if foundcmd then
         testError("Invalid test file: #@ command found in the middle of a single test");
       fi;

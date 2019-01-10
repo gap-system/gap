@@ -1,5 +1,3 @@
-Test("broken-test-1.tst", rec(width := 800));
-quit;
 Test("broken-test-2.tst", rec(width := 800));
 quit;
 Test("broken-test-3.tst", rec(width := 800));
