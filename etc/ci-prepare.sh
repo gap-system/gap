@@ -29,13 +29,14 @@ fi
 
 if [[ $JULIA = yes ]]
 then
+  pushd extern
   # TODO: once Julia 1.1 is released, switch to stable Julia versions here?
   # or maybe use Travis' `language: julia` feature?
   wget https://julialang-s3.julialang.org/bin/linux/x64/1.1/julia-1.1.0-rc1-linux-x86_64.tar.gz
   #wget https://julialangnightlies-s3.julialang.org/bin/linux/x64/julia-latest-linux64.tar.gz
   tar xvf julia-*.tar.gz
   rm julia-*.tar.gz
-  pushd julia-*
+  cd julia-*
   JULIA_PATH=$(pwd)
   popd
   CONFIGFLAGS="--with-gc=julia --with-julia=$JULIA_PATH $CONFIGFLAGS"
