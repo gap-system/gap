@@ -1640,8 +1640,8 @@ void ResetOutputIndent(void)
 **          to a string in STRING_REP format which is printed in '%s' format
 **  '%G'    the corresponding argument is the address of an Obj which points
 **          to a string in STRING_REP format which is printed in '%S' format
-**  '%C'    the corresponding argument is the address of  a  null  terminated
-**          character string which is printed with C escapes.
+**  '%C'    the corresponding argument is the address of an Obj which points
+**          to a string in STRING_REP format which is printed with C escapes
 **  '%d'    the corresponding argument is a signed integer, which is printed.
 **          Between the '%' and the 'd' an integer might be used  to  specify
 **          the width of a field in which the integer is right justified.  If
@@ -1836,6 +1836,9 @@ static inline void FormatOutput(
     /* '%C' print a string with the necessary C escapes            */
     else if ( *p == 'C' ) {
 
+      arg1obj = (Obj)arg1;
+      arg1 = (Int)CONST_CSTR_STRING(arg1obj);
+
       /* compute how many characters this identifier requires    */
       for ( const Char * q = (const Char *)arg1; *q != '\0' && prec > 0; q++ ) {
         if      ( *q == '\n'  ) { prec -= 2; }
@@ -1854,7 +1857,12 @@ static inline void FormatOutput(
       while ( prec-- > 0 )  put_a_char(state, ' ');
 
       /* print the string                                        */
-      for ( const Char * q = (const Char *)arg1; *q != '\0'; q++ ) {
+      Int i = 0;
+      while (1) {
+        const Char* q = CONST_CSTR_STRING(arg1obj) + i++;
+        if (*q == 0)
+            break;
+
         if      ( *q == '\n'  ) { put_a_char(state, '\\'); put_a_char(state, 'n');  }
         else if ( *q == '\t'  ) { put_a_char(state, '\\'); put_a_char(state, 't');  }
         else if ( *q == '\r'  ) { put_a_char(state, '\\'); put_a_char(state, 'r');  }
