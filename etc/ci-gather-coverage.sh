@@ -62,9 +62,7 @@ if Length(covs) > 0 then
 
     if IsBound(GAPInfo.SystemEnvironment.TRAVIS_JOB_ID) then
         Print("Outputting JSON for Coveralls...\n");
-        OutputCoverallsJsonCoverage(r, "gap-coveralls.json",
-                GAPInfo.SystemEnvironment.TRAVIS_JOB_ID,
-                prefix);
+        OutputCoverallsJsonCoverage(r, "gap-coveralls.json", prefix);
     fi;
 else
     # Don't error, because we might want to gather
