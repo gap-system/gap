@@ -53,15 +53,15 @@ true
 #
 gap> task1 := DelayTask(MicroSleep, 10000);;
 gap> task2 := DelayTask(MicroSleep, 50000);;
-gap> WaitAnyTask(task1, task2);
-1
+gap> WaitAnyTask(task1, task2) in [1,2];
+true
 gap> WaitTasks(task1, task2);
 gap> WaitAnyTask(task1, task2);
 1
 gap> task1 := DelayTask(MicroSleep, 50000);;
 gap> task2 := DelayTask(MicroSleep, 10000);;
-gap> WaitAnyTask(task1, task2);
-2
+gap> WaitAnyTask(task1, task2) in [1,2];
+true
 gap> WaitTasks(task1, task2);
 gap> WaitAnyTask(task1, task2);
 1
