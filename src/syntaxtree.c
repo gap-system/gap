@@ -561,12 +561,11 @@ static const CompilerT Compilers[] = {
     COMPILER(T_PROCCALL_6ARGS, SyntaxTreeFunccall),
     COMPILER(T_PROCCALL_XARGS, SyntaxTreeFunccall),
 
-    COMPILER(T_PROCCALL_OPTS,
-             SyntaxTreeDefaultCompiler,
-             ARG_("opts"),
-             ARG_("call")),
+    COMPILER_(T_PROCCALL_OPTS,
+              ARG_("opts"),
+              ARG_("call")),
 
-    COMPILER(T_EMPTY, SyntaxTreeDefaultCompiler),
+    COMPILER_(T_EMPTY),
 
     COMPILER(T_SEQ_STAT, SyntaxTreeSeqStat),
     COMPILER(T_SEQ_STAT2, SyntaxTreeSeqStat),
@@ -598,7 +597,7 @@ static const CompilerT Compilers[] = {
     COMPILER(T_REPEAT3, SyntaxTreeRepeat),
 
 #ifdef HPCGAP
-    COMPILER(T_ATOMIC, SyntaxTreeDefaultCompiler),
+    COMPILER_(T_ATOMIC),
 #endif
 
     COMPILER_(T_BREAK),
