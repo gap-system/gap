@@ -72,6 +72,11 @@ typedef struct {
     // if non-zero, this is an immediate integer encoding the line
     // number where a function ends
     Obj endline;
+
+    // if non-zero, this points to a dense plist containing constant values
+    // referenced by the code in this function body
+    Obj values;
+
 } BodyHeader;
 
 EXPORT_INLINE BodyHeader *BODY_HEADER(Obj body)
@@ -93,6 +98,9 @@ UInt GET_STARTLINE_BODY(Obj body);
 void SET_STARTLINE_BODY(Obj body, UInt val);
 UInt GET_ENDLINE_BODY(Obj body);
 void SET_ENDLINE_BODY(Obj body, UInt val);
+
+extern Obj GET_VALUE_FROM_CURRENT_BODY(Int ix);
+
 
 /****************************************************************************
 **

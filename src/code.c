@@ -182,6 +182,12 @@ void SET_ENDLINE_BODY(Obj body, UInt val)
     BODY_HEADER(body)->endline = val ? INTOBJ_INT(val) : 0;
 }
 
+Obj GET_VALUE_FROM_CURRENT_BODY(Int ix)
+{
+    Obj values = ((BodyHeader *)STATE(PtrBody))->values;
+    return ELM_PLIST(values, ix);
+}
+
 
 /****************************************************************************
 **
@@ -488,6 +494,22 @@ void PushBinaryOp (
 
     /* push the binary operator                                            */
     PushExpr( binop );
+}
+
+
+/****************************************************************************
+**
+*F  PushValue( <val> ) . . . . . . . . . . . . . . store value in values list
+**
+**  'PushValue' pushes a value into the value list of the body, and returns
+**  the index at which the value was inserted.
+*/
+static Int PushValue(Obj val)
+{
+    BodyHeader * header = (BodyHeader *)STATE(PtrBody);
+    if (!header->values)
+        header->values = NEW_PLIST(T_PLIST, 4);
+    return PushPlist(header->values, val);
 }
 
 
@@ -822,6 +844,11 @@ void CodeFuncExprEnd(UInt nr)
 
     // make the function expression list immutable
     MakeImmutable( FEXS_FUNC( fexp ) );
+
+    // make the body values list (if any) immutable
+    Obj values = ((BodyHeader *)STATE(PtrBody))->values;
+    if (values)
+        MakeImmutable(values);
 
     /* make the body smaller                                               */
     ResizeBag(BODY_FUNC(fexp), CS(OffsBody));
@@ -1537,9 +1564,8 @@ void CodeIntExpr(Obj val)
     /* otherwise stuff the value into the values list                      */
     else {
         GAP_ASSERT(TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG);
-        expr = NewExpr( T_INT_EXPR, sizeof(UInt) + SIZE_OBJ(val) );
-        WRITE_EXPR(expr, 0, TNUM_OBJ(val));
-        memcpy((UInt *)ADDR_EXPR(expr)+1, CONST_ADDR_OBJ(val), (size_t)SIZE_OBJ(val));
+        expr = NewExpr( T_INT_EXPR, sizeof(UInt) );
+        WRITE_EXPR(expr, 0, PushValue(val));
     }
 
     /* push the expression                                                 */
@@ -1734,16 +1760,10 @@ void CodeListExprEnd (
 void CodeStringExpr (
     Obj              str )
 {
-    Expr                string;         /* string, result                  */
+    GAP_ASSERT(IS_STRING_REP(str));
 
-    /* allocate the string expression                                      */
-    string = NewExpr( T_STRING_EXPR, SIZEBAG_STRINGLEN(GET_LEN_STRING(str)) );
-
-    /* copy the string                                                     */
-    memcpy( ADDR_EXPR(string), CONST_ADDR_OBJ(str),
-                        SIZEBAG_STRINGLEN(GET_LEN_STRING(str)) );
-
-    /* push the string                                                     */
+    Expr string = NewExpr( T_STRING_EXPR, sizeof(UInt) );
+    WRITE_EXPR(string, 0, PushValue(str));
     PushExpr( string );
 }
 
@@ -1758,7 +1778,6 @@ enum {
 };
 static UInt NextFloatExprNumber = 3;
 
-Obj        EAGER_FLOAT_LITERAL_CACHE = 0;
 static Obj CONVERT_FLOAT_LITERAL_EAGER;
 
 
@@ -1843,15 +1862,7 @@ static void CodeEagerFloatExpr(Obj str, Char mark)
     UInt l = GET_LEN_STRING(str);
     Expr fl = NewExpr(T_FLOAT_EXPR_EAGER, sizeof(UInt) * 3 + l + 1);
     Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
-    UInt ix;
-    assert(EAGER_FLOAT_LITERAL_CACHE);
-#ifdef HPCGAP
-    assert(TNUM_OBJ(EAGER_FLOAT_LITERAL_CACHE) == T_ALIST);
-    ix = AddAList(EAGER_FLOAT_LITERAL_CACHE, v);
-#else
-    assert(IS_PLIST(EAGER_FLOAT_LITERAL_CACHE));
-    ix = PushPlist(EAGER_FLOAT_LITERAL_CACHE, v);
-#endif
+    UInt ix = PushValue(v);
     WRITE_EXPR(fl, 0, ix);
     WRITE_EXPR(fl, 1, l);
     WRITE_EXPR(fl, 2, (UInt)mark);
@@ -3176,7 +3187,7 @@ static Int InitKernel (
     InitBagNamesFromTable( BagNames );
 
     /* install the marking functions for function body bags                */
-    InitMarkFuncBags( T_BODY, MarkThreeSubBags );
+    InitMarkFuncBags( T_BODY, MarkFourSubBags );
 
     SaveObjFuncs[ T_BODY ] = SaveBody;
     LoadObjFuncs[ T_BODY ] = LoadBody;
@@ -3196,7 +3207,6 @@ static Int InitKernel (
     InitGlobalBag(&CS(StackExpr), "CS(StackExpr)");
 
     /* some functions and globals needed for float conversion */
-    InitGlobalBag( &EAGER_FLOAT_LITERAL_CACHE, "EAGER_FLOAT_LITERAL_CACHE" );
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 
     ImportGVarFromLibrary( "TYPE_KERNEL_OBJECT", &TYPE_KERNEL_OBJECT );
@@ -3205,26 +3215,6 @@ static Int InitKernel (
     return 0;
 }
 
-
-/****************************************************************************
-**
-*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
-*/
-static Int InitLibrary (
-    StructInitInfo *    module )
-{
-    Obj cache;
-
-#ifdef HPCGAP
-    cache = NewAtomicList(T_ALIST, 1);
-#else
-    cache = NEW_PLIST_IMM(T_PLIST, 1000L);
-#endif
-    EAGER_FLOAT_LITERAL_CACHE = cache;
-
-    /* return success                                                      */
-    return 0;
-}
 
 /****************************************************************************
 **
@@ -3292,7 +3282,6 @@ static StructInitInfo module = {
     .type = MODULE_BUILTIN,
     .name = "code",
     .initKernel = InitKernel,
-    .initLibrary = InitLibrary,
     .preSave = PreSave,
     .postRestore = PostRestore,
 

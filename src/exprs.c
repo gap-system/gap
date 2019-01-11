@@ -721,15 +721,8 @@ Obj             EvalPow (
 Obj             EvalIntExpr (
     Expr                expr )
 {
-    Obj                 val;            /* integer, result                 */
-
-    /* allocate the integer                                                */
-    val = NewBag(READ_EXPR(expr, 0), SIZE_EXPR(expr) - sizeof(UInt));
-    memcpy(ADDR_OBJ(val), ((const UInt *)CONST_ADDR_EXPR(expr)) + 1,
-           SIZE_EXPR(expr) - sizeof(UInt));
-
-    /* return the value                                                    */
-    return val;
+    UInt ix = READ_EXPR(expr, 0);
+    return  GET_VALUE_FROM_CURRENT_BODY(ix);
 }
 
 /****************************************************************************
@@ -1107,15 +1100,9 @@ Obj             EvalRangeExpr (
 Obj             EvalStringExpr (
     Expr                expr )
 {
-    Obj                 string;         /* string value, result            */
-    UInt                 len;           /* size of expression              */
-
-    len = READ_EXPR(expr, 0);
-    string = NEW_STRING(len);
-    memcpy(ADDR_OBJ(string), CONST_ADDR_EXPR(expr), SIZEBAG_STRINGLEN(len));
-
-    /* return the string                                                   */
-    return string;
+    UInt ix = READ_EXPR(expr, 0);
+    Obj string = GET_VALUE_FROM_CURRENT_BODY(ix);
+    return SHALLOW_COPY_OBJ(string);
 }
 
 /****************************************************************************
@@ -1171,13 +1158,10 @@ Obj             EvalFloatExprLazy (
 **  'EvalFloatExpr'   evaluates the  float  expression  <expr>  to a float
 **  value.
 */
-extern Obj EAGER_FLOAT_LITERAL_CACHE;
-
 Obj EvalFloatExprEager(Expr expr)
 {
     UInt ix = READ_EXPR(expr, 0);
-    Obj fl = ELM_LIST(EAGER_FLOAT_LITERAL_CACHE, ix);
-    return fl;
+    return  GET_VALUE_FROM_CURRENT_BODY(ix);
 }
 
 
@@ -1684,7 +1668,10 @@ void            PrintRangeExpr (
 void            PrintStringExpr (
     Expr                expr )
 {
-    PrintString(EvalStringExpr(expr));
+    UInt ix = READ_EXPR(expr, 0);
+    Obj string =  GET_VALUE_FROM_CURRENT_BODY(ix);
+
+    PrintString(string);
 }
 
 /****************************************************************************
