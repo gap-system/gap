@@ -1696,6 +1696,7 @@ void            PrintStringExpr (
 void            PrintFloatExprLazy (
     Expr                expr )
 {
+  // FIXME: this code is not GC safe
   Pr("%s", (Int)(((const char *)CONST_ADDR_EXPR(expr) + 2*sizeof(UInt))), 0L);
 }
 
@@ -1708,6 +1709,7 @@ void            PrintFloatExprLazy (
 void            PrintFloatExprEager (
     Expr                expr )
 {
+  // FIXME: this code is not GC safe
   Char mark;
   Pr("%s", (Int)(((const char *)CONST_ADDR_EXPR(expr) + 3*sizeof(UInt))), 0L);
   Pr("_",0L,0L);
