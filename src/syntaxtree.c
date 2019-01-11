@@ -123,6 +123,21 @@ static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
     return result;
 }
 
+static Obj SyntaxTreeEvalCompiler(Obj result, Expr expr)
+{
+    UInt      tnum;
+    CompilerT comp;
+
+    // TODO: GAP_ASSERT tnum range
+    tnum = TNUM_EXPR(expr);
+    comp = Compilers[tnum];
+    GAP_ASSERT(comp.arity == 1);
+
+    AssPRec(result, RNamName(comp.args[0].argname), EVAL_EXPR(expr));
+    return result;
+}
+
+
 static Obj SyntaxTreeFunccall(Obj result, Expr expr)
 {
     Obj  func;
@@ -156,32 +171,6 @@ static Obj SyntaxTreeFuncExpr(Obj result, Expr expr)
 
     SyntaxTreeFunc(result, fexp);
 
-    return result;
-}
-
-static Obj SyntaxTreeIntExpr(Obj result, Expr expr)
-{
-    Obj  value;
-    UInt size;
-
-    if (IS_INTEXPR(expr))
-        value = OBJ_INTEXPR(expr);
-    else {
-        size = SIZE_EXPR(expr) / sizeof(UInt) - 1;
-        if (T_INTNEG == READ_EXPR(expr, 0))
-            size = -size;
-
-        value = MakeObjInt(CONST_ADDR_EXPR(expr) + 1, size);
-    }
-
-    AssPRec(result, RNamName("value"), value);
-
-    return result;
-}
-
-static Obj SyntaxTreeCharExpr(Obj result, Expr expr)
-{
-    AssPRec(result, RNamName("value"), ObjsChar[(UChar)READ_EXPR(expr, 0)]);
     return result;
 }
 
@@ -272,22 +261,6 @@ static Obj SyntaxTreeRangeExpr(Obj result, Expr expr)
     return result;
 }
 
-// TODO: Can we use EvalStringExpr? Indeed can we use EvalXexpr
-//       for more/all "basic" datatypes?
-static Obj SyntaxTreeStringExpr(Obj result, Expr expr)
-{
-    Obj  string;
-    UInt len;
-
-    len = READ_EXPR(expr, 0);
-    string = NEW_STRING(len);
-    memcpy(ADDR_OBJ(string), CONST_ADDR_EXPR(expr), SIZEBAG_STRINGLEN(len));
-
-    AssPRec(result, RNamName("string"), string);
-
-    return result;
-}
-
 static Obj SyntaxTreeRecExpr(Obj result, Expr expr)
 {
     Obj  key;
@@ -323,16 +296,6 @@ static Obj SyntaxTreeRecExpr(Obj result, Expr expr)
     }
     AssPRec(result, RNamName("keyvalue"), list);
 
-    return result;
-}
-
-/* TODO: Slightly ugly hack */
-extern Obj EAGER_FLOAT_LITERAL_CACHE;
-static Obj SyntaxTreeFloatEager(Obj result, Expr expr)
-{
-    UInt ix = READ_EXPR(expr, 0);
-    AssPRec(result, RNamName("value"),
-            ELM_LIST(EAGER_FLOAT_LITERAL_CACHE, ix));
     return result;
 }
 
@@ -723,22 +686,22 @@ static const CompilerT Compilers[] = {
     COMPILER_(T_MOD, ARG_("left"), ARG_("right")),
     COMPILER_(T_POW, ARG_("left"), ARG_("right")),
 
-    COMPILER(T_INTEXPR, SyntaxTreeIntExpr),
-    COMPILER(T_INT_EXPR, SyntaxTreeIntExpr),
+    COMPILER(T_INTEXPR, SyntaxTreeEvalCompiler, ARG_("value")),
+    COMPILER(T_INT_EXPR, SyntaxTreeEvalCompiler, ARG_("value")),
     COMPILER_(T_TRUE_EXPR),
     COMPILER_(T_FALSE_EXPR),
     COMPILER_(T_TILDE_EXPR),
-    COMPILER(T_CHAR_EXPR, SyntaxTreeCharExpr),
+    COMPILER(T_CHAR_EXPR, SyntaxTreeEvalCompiler, ARG_("value")),
     COMPILER(T_PERM_EXPR, SyntaxTreePermExpr),
     COMPILER_(T_PERM_CYCLE),
     COMPILER(T_LIST_EXPR, SyntaxTreeListExpr),
     COMPILER(T_LIST_TILDE_EXPR, SyntaxTreeListExpr),
     COMPILER(T_RANGE_EXPR, SyntaxTreeRangeExpr),
-    COMPILER(T_STRING_EXPR, SyntaxTreeStringExpr),
+    COMPILER(T_STRING_EXPR, SyntaxTreeEvalCompiler, ARG_("string")),
     COMPILER(T_REC_EXPR, SyntaxTreeRecExpr),
     COMPILER_(T_REC_TILDE_EXPR),
 
-    COMPILER(T_FLOAT_EXPR_EAGER, SyntaxTreeFloatEager),
+    COMPILER(T_FLOAT_EXPR_EAGER, SyntaxTreeEvalCompiler, ARG_("value")),
     COMPILER(T_FLOAT_EXPR_LAZY, SyntaxTreeFloatLazy),
 
     // T_REFLVAR is encoded differently from all other
