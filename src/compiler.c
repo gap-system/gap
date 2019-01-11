@@ -688,14 +688,14 @@ void            Emit (
             }
 
             // emit a C string
-            else if ( *p == 's' || *p == 'S' || *p == 'C' ) {
+            else if ( *p == 's' || *p == 'S' ) {
                 const Char f[] = { '%', *p, 0 };
                 string = va_arg( ap, Char* );
                 Pr( f, (Int)string, 0L );
             }
 
             // emit a GAP string
-            else if ( *p == 'g' || *p == 'G' ) { 
+            else if ( *p == 'g' || *p == 'G' || *p == 'C' ) { 
                 const Char f[] = { '%', *p, 0 };
                 Obj str = va_arg( ap, Obj );
                 Pr( f, (Int)str, 0L );
@@ -2665,15 +2665,16 @@ CVar CompStringExpr (
     Expr                expr )
 {
     CVar                string;         /* string value, result            */
+    Obj                 str;            // the actual string object
 
     /* allocate a new temporary for the string                             */
     string = CVAR_TEMP( NewTemp( "string" ) );
 
+    // get the string of this expression
+    str = EVAL_EXPR(expr);
+
     /* create the string and copy the stuff                                */
-    Emit( "%c = MakeString( \"%C\" );\n",
-          /* the sizeof(UInt) offset is to get past the length of the string
-             which is now stored in the front of the literal */
-          string, sizeof(UInt)+ (const Char*)CONST_ADDR_EXPR(expr) );
+    Emit( "%c = MakeString( \"%C\" );\n", string, str);
 
     /* we know that the result is a list                                   */
     SetInfoCVar( string, W_LIST );
