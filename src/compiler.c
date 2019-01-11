@@ -2279,10 +2279,13 @@ CVar CompIntExpr (
         return CVAR_INTG( INT_INTEXPR(expr) );
     }
     else {
+        // get the actual integer
+        Obj obj = EVAL_EXPR(expr);
+
         val = CVAR_TEMP( NewTemp( "val" ) );
-        siz = SIZE_EXPR(expr) - sizeof(UInt);
-        typ = READ_EXPR(expr, 0);
-        Emit( "%c = C_MAKE_INTEGER_BAG(%d, %d);\n",val, siz, typ);
+        siz = SIZE_OBJ(obj);
+        typ = TNUM_OBJ(obj);
+        Emit( "%c = C_MAKE_INTEGER_BAG(%d, %d);\n", val, siz, typ);
         if ( typ == T_INTPOS ) {
             SetInfoCVar(val, W_INT_POS);
         }
@@ -2291,12 +2294,11 @@ CVar CompIntExpr (
         }
 
         for ( i = 0; i < siz/INTEGER_UNIT_SIZE; i++ ) {
+            UInt limb = CONST_ADDR_INT(obj)[i];
 #if INTEGER_UNIT_SIZE == 4
-            Emit("C_SET_LIMB4( %c, %d, %dL);\n", val, i,
-                 ((UInt4 *)((const UInt *)CONST_ADDR_EXPR(expr) + 1))[i]);
+            Emit("C_SET_LIMB4( %c, %d, %dL);\n", val, i, limb);
 #elif INTEGER_UNIT_SIZE == 8
-            Emit("C_SET_LIMB8( %c, %d, %dLL);\n", val, i,
-                 ((UInt8 *)((const UInt *)CONST_ADDR_EXPR(expr) + 1))[i]);
+            Emit("C_SET_LIMB8( %c, %d, %dLL);\n", val, i, limb);
 #else
             #error unsupported INTEGER_UNIT_SIZE
 #endif
