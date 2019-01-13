@@ -98,6 +98,16 @@ extern inline struct CodeState * CodeState(void)
 #define CS(x) (CodeState()->x)
 
 
+/****************************************************************************
+**
+*F  NewFunctionBody() . . . . . . . . . . . . . .  create a new function body
+*/
+Obj NewFunctionBody(void)
+{
+    return NewBag(T_BODY, sizeof(BodyHeader));
+}
+
+
 static inline void PushOffsBody( void ) {
     GAP_ASSERT(CS(OffsBodyCount) < MAX_FUNC_EXPR_NESTING);
     CS(OffsBodyStack)[CS(OffsBodyCount)++] = CS(OffsBody);

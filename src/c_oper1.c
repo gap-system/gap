@@ -2725,7 +2725,7 @@ static Obj  HdlrFunc7 (
    CHANGED_BAG( t_5 );
    t_6 = NewFunction( NameFunc[8], 1, 0, HdlrFunc8 );
    SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
-   t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
+   t_7 = NewFunctionBody();
    SET_STARTLINE_BODY(t_7, 671);
    SET_ENDLINE_BODY(t_7, 689);
    SET_FILENAME_BODY(t_7, FileName);
@@ -3291,7 +3291,7 @@ static Obj  HdlrFunc11 (
   end; */
   t_1 = NewFunction( NameFunc[12], 1, 0, HdlrFunc12 );
   SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
-  t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
+  t_2 = NewFunctionBody();
   SET_STARTLINE_BODY(t_2, 868);
   SET_ENDLINE_BODY(t_2, 872);
   SET_FILENAME_BODY(t_2, FileName);
@@ -3371,7 +3371,7 @@ static Obj  HdlrFunc11 (
  CHANGED_BAG( t_5 );
  t_6 = NewFunction( NameFunc[13], 1, 0, HdlrFunc13 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
- t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_7 = NewFunctionBody();
  SET_STARTLINE_BODY(t_7, 889);
  SET_ENDLINE_BODY(t_7, 889);
  SET_FILENAME_BODY(t_7, FileName);
@@ -3434,7 +3434,7 @@ static Obj  HdlrFunc11 (
  CHANGED_BAG( t_5 );
  t_6 = NewFunction( NameFunc[14], 2, 0, HdlrFunc14 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
- t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_7 = NewFunctionBody();
  SET_STARTLINE_BODY(t_7, 911);
  SET_ENDLINE_BODY(t_7, 934);
  SET_FILENAME_BODY(t_7, FileName);
@@ -3483,7 +3483,7 @@ static Obj  HdlrFunc11 (
  CHANGED_BAG( t_5 );
  t_6 = NewFunction( NameFunc[15], 2, 0, HdlrFunc15 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
- t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_7 = NewFunctionBody();
  SET_STARTLINE_BODY(t_7, 944);
  SET_ENDLINE_BODY(t_7, 952);
  SET_FILENAME_BODY(t_7, FileName);
@@ -3545,7 +3545,7 @@ static Obj  HdlrFunc11 (
  CHANGED_BAG( t_5 );
  t_6 = NewFunction( NameFunc[16], 3, 0, HdlrFunc16 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
- t_7 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_7 = NewFunctionBody();
  SET_STARTLINE_BODY(t_7, 961);
  SET_ENDLINE_BODY(t_7, 974);
  SET_FILENAME_BODY(t_7, FileName);
@@ -3907,7 +3907,7 @@ static Obj  HdlrFunc17 (
  CHECK_BOUND( t_3, "reqs" )
  t_4 = NewFunction( NameFunc[18], -1, 0, HdlrFunc18 );
  SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
- t_5 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_5 = NewFunctionBody();
  SET_STARTLINE_BODY(t_5, 1040);
  SET_ENDLINE_BODY(t_5, 1056);
  SET_FILENAME_BODY(t_5, FileName);
@@ -4004,7 +4004,7 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "RunImmediateMethods" );
  t_3 = NewFunction( NameFunc[2], 2, 0, HdlrFunc2 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 28);
  SET_ENDLINE_BODY(t_4, 127);
  SET_FILENAME_BODY(t_4, FileName);
@@ -4115,7 +4115,7 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "INSTALL_METHOD_FLAGS" );
  t_3 = NewFunction( NameFunc[3], 6, 0, HdlrFunc3 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 147);
  SET_ENDLINE_BODY(t_4, 289);
  SET_FILENAME_BODY(t_4, FileName);
@@ -4131,7 +4131,7 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "InstallMethod" );
  t_3 = NewFunction( NameFunc[4], -1, 0, HdlrFunc4 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 338);
  SET_ENDLINE_BODY(t_4, 340);
  SET_FILENAME_BODY(t_4, FileName);
@@ -4147,7 +4147,7 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "InstallOtherMethod" );
  t_3 = NewFunction( NameFunc[5], -1, 0, HdlrFunc5 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 365);
  SET_ENDLINE_BODY(t_4, 367);
  SET_FILENAME_BODY(t_4, FileName);
@@ -4317,7 +4317,7 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "INSTALL_METHOD" );
  t_3 = NewFunction( NameFunc[6], 2, 0, HdlrFunc6 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 378);
  SET_ENDLINE_BODY(t_4, 610);
  SET_FILENAME_BODY(t_4, FileName);
@@ -4376,7 +4376,7 @@ static Obj  HdlrFunc1 (
  t_1 = GF_InstallAttributeFunction;
  t_2 = NewFunction( NameFunc[7], 6, 0, HdlrFunc7 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
- t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_3 = NewFunctionBody();
  SET_STARTLINE_BODY(t_3, 629);
  SET_ENDLINE_BODY(t_3, 693);
  SET_FILENAME_BODY(t_3, FileName);
@@ -4391,7 +4391,7 @@ static Obj  HdlrFunc1 (
  t_1 = GF_InstallAttributeFunction;
  t_2 = NewFunction( NameFunc[9], 6, 0, HdlrFunc9 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
- t_3 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_3 = NewFunctionBody();
  SET_STARTLINE_BODY(t_3, 696);
  SET_ENDLINE_BODY(t_3, 702);
  SET_FILENAME_BODY(t_3, FileName);
@@ -4420,7 +4420,7 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "PositionSortedOddPositions" );
  t_3 = NewFunction( NameFunc[10], 2, 0, HdlrFunc10 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 715);
  SET_ENDLINE_BODY(t_4, 739);
  SET_FILENAME_BODY(t_4, FileName);
@@ -4505,7 +4505,7 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "KeyDependentOperation" );
  t_3 = NewFunction( NameFunc[11], 4, 0, HdlrFunc11 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 864);
  SET_ENDLINE_BODY(t_4, 975);
  SET_FILENAME_BODY(t_4, FileName);
@@ -4557,7 +4557,7 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "RedispatchOnCondition" );
  t_3 = NewFunction( NameFunc[17], -1, 0, HdlrFunc17 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 1010);
  SET_ENDLINE_BODY(t_4, 1057);
  SET_FILENAME_BODY(t_4, FileName);
@@ -4852,7 +4852,7 @@ static Int InitLibrary ( StructInitInfo * module )
  func1 = NewFunction(NameFunc[1],0,0,HdlrFunc1);
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
  CHANGED_BAG( STATE(CurrLVars) );
- body1 = NewBag( T_BODY, sizeof(BodyHeader));
+ body1 = NewFunctionBody();
  SET_BODY_FUNC( func1, body1 );
  CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
