@@ -2435,7 +2435,7 @@ static Int InitModuleState(void)
     LVarsHeader * hdr = (LVarsHeader *)ADDR_OBJ(STATE(BottomLVars));
     hdr->func = tmpFunc;
     hdr->parent = Fail;
-    tmpBody = NewBag( T_BODY, sizeof(BodyHeader) );
+    tmpBody = NewFunctionBody();
     SET_BODY_FUNC( tmpFunc, tmpBody );
 
     STATE(CurrLVars) = STATE(BottomLVars);

@@ -173,7 +173,7 @@ static Obj  HdlrFunc1 (
   end; */
  t_1 = NewFunction( NameFunc[2], 2, 0, HdlrFunc2 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
- t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 1);
  SET_ENDLINE_BODY(t_2, 1);
  SET_FILENAME_BODY(t_2, FileName);
@@ -186,7 +186,7 @@ static Obj  HdlrFunc1 (
   end; */
  t_1 = NewFunction( NameFunc[3], 3, 0, HdlrFunc3 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
- t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 2);
  SET_ENDLINE_BODY(t_2, 2);
  SET_FILENAME_BODY(t_2, FileName);
@@ -205,7 +205,7 @@ static Obj  HdlrFunc1 (
   end; */
  t_1 = NewFunction( NameFunc[4], 0, 0, HdlrFunc4 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
- t_2 = NewBag( T_BODY, sizeof(BodyHeader) );
+ t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 4);
  SET_ENDLINE_BODY(t_2, 16);
  SET_FILENAME_BODY(t_2, FileName);
@@ -287,7 +287,7 @@ static Int InitLibrary ( StructInitInfo * module )
  func1 = NewFunction(NameFunc[1],0,0,HdlrFunc1);
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
  CHANGED_BAG( STATE(CurrLVars) );
- body1 = NewBag( T_BODY, sizeof(BodyHeader));
+ body1 = NewFunctionBody();
  SET_BODY_FUNC( func1, body1 );
  CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );

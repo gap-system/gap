@@ -1179,7 +1179,7 @@ CVar CompFuncExpr (
     /* this should probably be done by 'NewFunction'                       */
     Emit( "SET_ENVI_FUNC( %c, STATE(CurrLVars) );\n", func );
     tmp = CVAR_TEMP( NewTemp( "body" ) );
-    Emit( "%c = NewBag( T_BODY, sizeof(BodyHeader) );\n", tmp );
+    Emit( "%c = NewFunctionBody();\n", tmp );
     Emit( "SET_STARTLINE_BODY(%c, %d);\n", tmp, GET_STARTLINE_BODY(BODY_FUNC(fexp)));
     Emit( "SET_ENDLINE_BODY(%c, %d);\n", tmp, GET_ENDLINE_BODY(BODY_FUNC(fexp)));
     Emit( "SET_FILENAME_BODY(%c, FileName);\n",tmp);
@@ -5466,7 +5466,7 @@ Int CompileFunc (
     Emit( "func1 = NewFunction(NameFunc[1],%d,0,HdlrFunc1);\n", NARG_FUNC(ELM_PLIST(CompFunctions,1)) );
     Emit( "SET_ENVI_FUNC( func1, STATE(CurrLVars) );\n" );
     Emit( "CHANGED_BAG( STATE(CurrLVars) );\n" );
-    Emit( "body1 = NewBag( T_BODY, sizeof(BodyHeader));\n" );
+    Emit( "body1 = NewFunctionBody();\n" );
     Emit( "SET_BODY_FUNC( func1, body1 );\n" );
     Emit( "CHANGED_BAG( func1 );\n");
     Emit( "CALL_0ARGS( func1 );\n" );

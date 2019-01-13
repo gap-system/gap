@@ -610,7 +610,7 @@ static void SetupFuncInfo(Obj func, const Char * cookie)
             start = buffer;
         filename = MakeImmString(start);
 
-        Obj body_bag = NewBag(T_BODY, sizeof(BodyHeader));
+        Obj body_bag = NewFunctionBody();
         SET_FILENAME_BODY(body_bag, filename);
         SET_LOCATION_BODY(body_bag, location);
         SET_BODY_FUNC(func, body_bag);
