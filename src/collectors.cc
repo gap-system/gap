@@ -79,8 +79,7 @@ static Obj TYPE_KERNEL_OBJECT;
 **    push a generator <gen>  with exponent <exp> onto the stack.
 **
 **  SC_PUSH_WORD( word, exp )
-**    push <word>  with global exponent <exp>  into the stack, the macro uses
-**    <word> and <exp> only once.
+**    push <word>  with global exponent <exp>  into the stack.
 **
 **  SC_POP_WORD()
 **    remove topmost word from stack
@@ -91,7 +90,7 @@ static Obj TYPE_KERNEL_OBJECT;
         return -1; \
     } \
     *++nw = CONST_DATA_WORD(word); \
-    *++lw = *nw + (INT_INTOBJ((((const Obj*)(*nw))[-1])) - 1); \
+    *++lw = *nw + NPAIRS_WORD(word) - 1; \
     *++pw = *nw; \
     *++ew = (**pw) & expm; \
     *++ge = exp
@@ -258,6 +257,7 @@ Int VectorWord(Obj vv, Obj v, Int num)
 template <typename UIntN>
 static Int SAddWordIntoExpVec(Int *         v,
                               const UIntN * w,
+                              const UIntN * wend,
                               Int           e,
                               Int           ebits,
                               UInt          expm,
@@ -265,8 +265,6 @@ static Int SAddWordIntoExpVec(Int *         v,
                               const Obj *   pow,
                               Int           lpow)
 {
-
-    const UIntN * wend = w + (INT_INTOBJ((((const Obj*)(w))[-1])) - 1);
     Int        i;
     Int        ex;
     Int        start = 0;
@@ -278,8 +276,10 @@ static Int SAddWordIntoExpVec(Int *         v,
             ex = v[i] / INT_INTOBJ(ro[i]);
             v[i] -= ex * INT_INTOBJ(ro[i]);
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
+                const UIntN * sub = CONST_DATA_WORD(pow[i]);
+                const UIntN * subend = sub + NPAIRS_WORD(pow[i]) - 1;
                 start = SAddWordIntoExpVec(
-                    v, CONST_DATA_WORD(pow[i]), ex,
+                    v, sub, subend, ex,
                     ebits, expm, ro, pow, lpow  );
             }
         }
@@ -310,8 +310,10 @@ static Int SAddPartIntoExpVec(Int *         v,
             ex = v[i] / INT_INTOBJ(ro[i]);
             v[i] -= ex * INT_INTOBJ(ro[i]);
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
+                const UIntN * sub = CONST_DATA_WORD(pow[i]);
+                const UIntN * subend = sub + NPAIRS_WORD(pow[i]) - 1;
                 start = SAddWordIntoExpVec(
-                    v, CONST_DATA_WORD(pow[i]), ex,
+                    v, sub, subend, ex,
                     ebits, expm, ro, pow, lpow  );
             }
         }
@@ -519,7 +521,7 @@ Int SingleCollectWord(Obj sc, Obj vv, Obj w)
             /* collect a whole word exponent pair                          */
             else if( *pw == *nw && INT_INTOBJ(avc[gn]) == gn ) {
               gn = SAddWordIntoExpVec(
-                   v, *pw, *ge, ebits, expm, ro, pow, lpow  );
+                   v, *nw, *lw, *ge, ebits, expm, ro, pow, lpow  );
               *pw = *lw;
               *ew = *ge = 0;
 
@@ -742,6 +744,7 @@ FinPowConjCol C32Bits_SingleCollector = {
 template <typename UIntN>
 static void AddWordIntoExpVec(Int *         v,
                               const UIntN * w,
+                              const UIntN * wend,
                               Int           e,
                               Int           ebits,
                               UInt          expm,
@@ -749,8 +752,6 @@ static void AddWordIntoExpVec(Int *         v,
                               const Obj *   pow,
                               Int           lpow)
 {
-
-    const UIntN * wend = w + (INT_INTOBJ((((const Obj*)(w))[-1])) - 1);
     Int        i;
     Int        ex;
 
@@ -761,8 +762,10 @@ static void AddWordIntoExpVec(Int *         v,
             ex = v[i] / p;
             v[i] -= ex * p;
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
+                const UIntN * sub = CONST_DATA_WORD(pow[i]);
+                const UIntN * subend = sub + NPAIRS_WORD(pow[i]) - 1;
                 AddWordIntoExpVec(
-                    v, CONST_DATA_WORD(pow[i]), ex,
+                    v, sub, subend, ex,
                     ebits, expm, p, pow, lpow  );
             }
         }
@@ -771,7 +774,7 @@ static void AddWordIntoExpVec(Int *         v,
 
 template <typename UIntN>
 static void AddCommIntoExpVec(Int *         v,
-                              const UIntN * w,
+                              Obj           word,
                               Int           e,
                               Int           ebits,
                               UInt          expm,
@@ -779,8 +782,8 @@ static void AddCommIntoExpVec(Int *         v,
                               const Obj *   pow,
                               Int           lpow)
 {
-
-    const UIntN * wend = w + (INT_INTOBJ((((const Obj*)(w))[-1])) - 1);
+    const UIntN * w = CONST_DATA_WORD(word);
+    const UIntN * wend = w + NPAIRS_WORD(word) - 1;
     Int        i;
     Int        ex;
 
@@ -793,8 +796,10 @@ static void AddCommIntoExpVec(Int *         v,
             ex = v[i] / p;
             v[i] -= ex * p;
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
+                const UIntN * sub = CONST_DATA_WORD(pow[i]);
+                const UIntN * subend = sub + NPAIRS_WORD(pow[i]) - 1;
                 AddWordIntoExpVec(
-                    v, CONST_DATA_WORD(pow[i]), ex,
+                    v, sub, subend, ex,
                     ebits, expm, p, pow, lpow  );
             }
         }
@@ -822,8 +827,10 @@ static void AddPartIntoExpVec(Int *         v,
             ex = v[i] / p;
             v[i] -= ex * p;
             if ( i <= lpow && pow[i] && 0 < NPAIRS_WORD(pow[i]) ) {
+                const UIntN * sub = CONST_DATA_WORD(pow[i]);
+                const UIntN * subend = sub + NPAIRS_WORD(pow[i]) - 1;
                 AddWordIntoExpVec(
-                    v, CONST_DATA_WORD(pow[i]), ex,
+                    v, sub, subend, ex,
                     ebits, expm, p, pow, lpow  );
             }
         }
@@ -1024,8 +1031,10 @@ Int CombiCollectWord(Obj sc, Obj vv, Obj w)
                 ex = v[gn] / p;
                 v[gn] -= ex * p;
                 if ( gn <= lpow && pow[gn] && 0 < NPAIRS_WORD(pow[gn]) ) {
-                    AddWordIntoExpVec(
-                      v, CONST_DATA_WORD(pow[gn]), ex,
+                  const UIntN * sub = CONST_DATA_WORD(pow[gn]);
+                  const UIntN * subend = sub + NPAIRS_WORD(pow[gn]) - 1;
+                  AddWordIntoExpVec(
+                      v, sub, subend, ex,
                       ebits, expm, p, pow, lpow  );
                 }
               }
@@ -1036,7 +1045,7 @@ Int CombiCollectWord(Obj sc, Obj vv, Obj w)
             /* collect a whole word exponent pair                          */
             else if( sp > 1 && *pw == *nw && INT_INTOBJ(avc[gn]) == gn ) {
               AddWordIntoExpVec(
-                   v, *pw, *ge, ebits, expm, p, pow, lpow  );
+                   v, *nw, *lw, *ge, ebits, expm, p, pow, lpow  );
               *pw = *lw;
               *ew = *ge = 0;
 
@@ -1061,8 +1070,8 @@ Int CombiCollectWord(Obj sc, Obj vv, Obj w)
                     if ( v[i] && gn <= LEN_PLIST(cnj[i]) ) {
                         tmp = ELM_PLIST( cnj[i], gn );
                         if ( tmp != 0 && 0 < NPAIRS_WORD(tmp) ) {
-                            AddCommIntoExpVec(
-                                v, CONST_DATA_WORD(tmp), v[i] * (*ew),
+                            AddCommIntoExpVec<UIntN>(
+                                v, tmp, v[i] * (*ew),
                                 ebits, expm, p, pow, lpow );
                         }
                     }
@@ -1085,8 +1094,10 @@ Int CombiCollectWord(Obj sc, Obj vv, Obj w)
                                 v[i] = 0;
                             }
                         }
+                        const UIntN * sub = CONST_DATA_WORD(pow[i]);
+                        const UIntN * subend = sub + NPAIRS_WORD(pow[i]) - 1;
                         AddWordIntoExpVec(
-                             v, CONST_DATA_WORD(pow[i]), ex,
+                             v, sub, subend, ex,
                              ebits, expm, p, pow, lpow  );
                     }
                 }
@@ -1105,8 +1116,8 @@ Int CombiCollectWord(Obj sc, Obj vv, Obj w)
                       if( v[i] && gn <= LEN_PLIST(cnj[i]) ) {
                           tmp = ELM_PLIST( cnj[i], gn );
                           if ( tmp != 0 && 0 < NPAIRS_WORD(tmp) )
-                              AddCommIntoExpVec(
-                                  v, CONST_DATA_WORD(tmp), v[i],
+                              AddCommIntoExpVec<UIntN>(
+                                  v, tmp, v[i],
                                   ebits, expm, p, pow, lpow );
                       }
               }
