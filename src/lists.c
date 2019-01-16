@@ -800,8 +800,6 @@ void ElmsListLevelCheck (
 *V  UnbListFuncs[<type>]  . . . . . . . . . . . . . table of unbind functions
 *F  UnbListError(<list>,<pos>)  . . . . . . . . . . . . error unbind function
 **
-#define UNB_LIST(list,pos) \
-                        ((*UnbListFuncs[TNUM_OBJ(list)])(list,pos))
 */
 void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 

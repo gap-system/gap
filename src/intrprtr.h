@@ -937,7 +937,7 @@ extern Obj              CurrentAssertionLevel;
 
 /****************************************************************************
 **
-*F  IntrSaveWSBegin() . . . . . . . . . . . . . Start interpeting a save WS
+*F  IntrSaveWSBegin() . . . . . . . . . . . . . Start interpreting a save WS
 **
 *F  IntrSaveWSEnd() . . . . . . . . . . . . . . Actually save the workspace
 **
@@ -950,14 +950,18 @@ extern void              IntrSaveWSBegin ( void );
 extern void              IntrSaveWSEnd ( void );     
 
 /****************************************************************************
+**
 *F  IntrContinue() . . . . . . . . . . . . . . . interpret continue-statement
 */
 extern void            IntrContinue ( void );
 
+
 /****************************************************************************
+**
 *F  PushVoidObj() . . . . . . . . . . . . . .  push void value onto the stack
 */
 extern void            PushVoidObj ( void );
+
 
 /****************************************************************************
 **

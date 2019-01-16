@@ -316,13 +316,6 @@ Obj             FuncNameRNam (
 **
 **  'IS_REC' returns a nonzero value if the object <obj> is a  record  and  0
 **  otherwise.
-**
-**  Note that 'IS_REC' is a macro, so do not call  it  with  arguments  that
-**  have side effects.
-**
-**  'IS_REC' is defined in the declaration part of this package as follows
-**
-#define IS_REC(obj)     ((*IsRecFuncs[ TNUM_OBJ(obj) ])( obj ))
 */
 Int             (*IsRecFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
@@ -349,14 +342,6 @@ Int             IsRecObject (
 **  'ELM_REC' returns the element, i.e., the value of the component, with the
 **  record name <rnam> in  the record <rec>.   An error is signalled if <rec>
 **  is not a record or if <rec> has no component with the record name <rnam>.
-**
-**  Note that 'ELM_REC' is  a macro, so do   not call it with arguments  that
-**  have side effects.
-**
-**  'ELM_REC' is defined in the declaration part of this package as follows
-**
-#define ELM_REC(rec,rnam) \
-                        ((*ElmRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
 */
 Obj             (*ElmRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
@@ -402,14 +387,6 @@ Obj             ElmRecObject (
 **  'ISB_REC' returns 1 if the record <rec> has a component with  the  record
 **  name <rnam> and 0 otherwise.  An error is signalled if  <rec>  is  not  a
 **  record.
-**
-**  Note  that 'ISB_REC'  is a macro,  so do not call  it with arguments that
-**  have side effects.
-**
-**  'ISB_REC' is defined in the declaration part of this package as follows
-**
-#define ISB_REC(rec,rnam) \
-                        ((*IsbRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
 */
 Int             (*IsbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
@@ -449,11 +426,6 @@ Int             IsbRecObject (
 **  'ASS_REC' assigns the object <obj>  to  the  record  component  with  the
 **  record name <rnam> in the record <rec>.  An error is signalled  if  <rec>
 **  is not a record.
-**
-**  'ASS_REC' is defined in the declaration part of this package as follows
-**
-#define ASS_REC(rec,rnam,obj) \
-                        ((*AssRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam, obj ))
 */
 void            (*AssRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam, Obj obj );
 
@@ -496,14 +468,6 @@ void            AssRecObject (
 **
 **  'UNB_REC' removes the record component  with the record name <rnam>  from
 **  the record <rec>.
-**
-**  Note that 'UNB_REC' is  a macro, so  do  not call it with  arguments that
-**  have side effects.
-**
-**  'UNB_REC' is defined in the declaration part of this package as follows
-**
-#define UNB_REC(rec,rnam) \
-                        ((*UnbRecFuncs[ TNUM_OBJ(rec) ])( rec, rnam ))
 */
 void            (*UnbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
