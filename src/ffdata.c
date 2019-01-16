@@ -4,7 +4,7 @@
  * to find them. Indices start at 1.
  */
 
-unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1] = {
+const unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1] = {
    0,  1,  1,  2,  1,  1,  3,  2,  1,  1,  4,  1,  1,  1,  2,  3,
    1,  1,  5,  1,  1,  1,  1,  2,  1,  1,  1,  6,  1,  1,  1,  1,
    4,  1,  1,  1,  1,  1,  1,  1,  1,  2,  3,  1,  7,  1,  1,  1,
@@ -422,7 +422,7 @@ unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1] = {
    1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 16,
 };
 
-unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1] = {
+const unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1] = {
       0,     2,     3,     2,     5,     7,     2,     3,
      11,    13,     2,    17,    19,    23,     5,     3,
      29,    31,     2,    37,    41,    43,    47,     7,
@@ -1255,7 +1255,7 @@ unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1] = {
   65497, 65519, 65521,     2,
 };
 
-unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1] = {
+const unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1] = {
       0,     2,     3,     4,     5,     7,     8,     9,
      11,    13,    16,    17,    19,    23,    25,    27,
      29,    31,    32,    37,    41,    43,    47,    49,
