@@ -43,7 +43,6 @@ typedef struct {
 Obj KeepAlive(Obj);
 void StopKeepAlive(Obj);
 #define KEPTALIVE(obj) (ADDR_OBJ(obj)[1])
-StructInitInfo *InitInfoThreadAPI(void);
 
 EXPORT_INLINE Monitor *MonitorPtr(Obj obj)
 {
@@ -62,5 +61,17 @@ void LockMonitors(UInt count, Monitor **monitors);
 void UnlockMonitors(UInt count, Monitor **monitors);
 
 void InitSignals(void);
+
+
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+*F  InitInfoThreadAPI() . . . . . . . . . . . . . . . table of init functions
+*/
+StructInitInfo * InitInfoThreadAPI(void);
 
 #endif // GAP_THREADAPI_H

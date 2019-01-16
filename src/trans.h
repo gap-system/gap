@@ -145,14 +145,14 @@ Int EqPermTrans44(UInt degL, UInt degR, const UInt4 * ptLstart, const UInt4 * pt
 Int HashFuncForTrans(Obj f);
 
 /****************************************************************************
-
-*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * */
-
-/****************************************************************************
-
-*F  InitInfoTrans()  . . . . . . . . . . . . . . . table of init functions
+**
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
+/****************************************************************************
+**
+*F  InitInfoTrans() . . . . . . . . . . . . . . . . . table of init functions
+*/
 StructInitInfo * InitInfoTrans(void);
 
 #endif    // GAP_TRANS_H

@@ -113,15 +113,16 @@ extern Obj OnSetsPPerm(Obj set, Obj f);
 
 Int HashFuncForPPerm(Obj f);
 
-/****************************************************************************
-
-*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * */
 
 /****************************************************************************
-
-*F  InitInfoPPerm()  . . . . . . . . . . . . . . . table of init functions
+**
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
+/****************************************************************************
+**
+*F  InitInfoPPerm() . . . . . . . . . . . . . . . . . table of init functions
+*/
 StructInitInfo * InitInfoPPerm(void);
 
 #endif    // GAP_PPERM_H

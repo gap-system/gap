@@ -16,16 +16,17 @@
 
 #include "system.h"
 
-/****************************************************************************
-**
-*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
-*/
 
 // When a child is forked off, we force profile information to be stored
 // in a new file for the child, to avoid corruption.
 // This function is for use by the IO package
 void InformProfilingThatThisIsAForkedGAP(void);
 
+
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
+*/
 
 /****************************************************************************
 **
