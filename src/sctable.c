@@ -53,8 +53,6 @@
 **  'SCTableEntry' returns the coefficient $c_{i,j}^{k}$ from the structure
 **  constants table <table>.
 */
-Obj SCTableEntryFunc;
-
 Obj FuncSC_TABLE_ENTRY (
     Obj                 self,
     Obj                 table,
@@ -219,8 +217,6 @@ void SCTableProdAdd (
         CHANGED_BAG( res );
     }
 }
-
-Obj SCTableProductFunc;
 
 Obj FuncSC_TABLE_PRODUCT (
     Obj                 self,

@@ -2389,28 +2389,6 @@ Obj FuncADDCOEFFS_GF2VEC_GF2VEC_MULT(Obj self, Obj vl, Obj vr, Obj mul)
 
 /****************************************************************************
 **
-*F  FuncADDCOEFFS_GF2VEC_GF2VEC_MULT(<self>,<vl>,<vr>,<mul>,<from>,<to>)
-**  GF2 vectors
-*/
-Obj FuncADDCOEFFS_GF2VEC_GF2VEC_MULT_LIMS(Obj self, Obj vl, Obj vr, Obj mul)
-{
-    // do nothing if <mul> is zero
-    if (EQ(mul, GF2Zero)) {
-        return INTOBJ_INT(RightMostOneGF2Vec(vl));
-    }
-
-    // add if <mul> is one
-    if (EQ(mul, GF2One)) {
-        return AddCoeffsGF2VecGF2Vec(vl, vr);
-    }
-
-    // try next method
-    return TRY_NEXT_METHOD;
-}
-
-
-/****************************************************************************
-**
 *F  FuncADDCOEFFS_GF2VEC_GF2VEC( <self>, <vl>, <vr> ) . . . . . . GF2 vectors
 */
 Obj FuncADDCOEFFS_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
