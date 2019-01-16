@@ -74,9 +74,9 @@
 **  'DATA_WORD' returns a pointer to the data area of <word>.
 */
 #define DATA_WORD( word ) \
-    ((UIntN *)( (Char*)ADDR_OBJ( (word) ) + 2*sizeof(Obj) ))
+    ((UIntN *)( ADDR_OBJ( word ) + 2 ))
 #define CONST_DATA_WORD( word ) \
-    ((const UIntN *)( (const Char*)CONST_ADDR_OBJ( (word) ) + 2*sizeof(Obj) ))
+    ((const UIntN *)( CONST_ADDR_OBJ( word ) + 2 ))
 
 
 /****************************************************************************

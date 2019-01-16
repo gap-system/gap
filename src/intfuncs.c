@@ -327,7 +327,6 @@ FORCE_INLINE uint64_t fmix8 ( uint64_t k )
 void MurmurHash3_x64_128 ( const void * key, const int len,
                            const UInt4 seed, void * out )
 {
-  const uint8_t * data = (const uint8_t*)key;
   const int nblocks = len / 16;
 
   uint64_t h1 = seed;
@@ -339,7 +338,7 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
   //----------
   // body
 
-  const uint64_t * blocks = (const uint64_t *)(data);
+  const uint64_t * blocks = (const uint64_t *)key;
 
   int i;
   for(i = 0; i < nblocks; i++)
@@ -359,7 +358,7 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
   //----------
   // tail
 
-  const uint8_t * tail = (const uint8_t*)(data + nblocks*16);
+  const uint8_t * tail = (const uint8_t*)key + nblocks*16;
 
   uint64_t k1 = 0;
   uint64_t k2 = 0;

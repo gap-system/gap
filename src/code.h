@@ -30,6 +30,8 @@ typedef struct {
     unsigned int type : 8;
 } StatHeader;
 
+GAP_STATIC_ASSERT((sizeof(StatHeader) % sizeof(Stat)) == 0,
+                  "StatHeader size must be multiple of Stat size");
 
 /****************************************************************************
 **
@@ -294,9 +296,9 @@ enum STAT_TNUM {
 **  'ADDR_STAT' returns   the  absolute address of the    memory block of the
 **  statement <stat>.
 */
-#define ADDR_STAT(stat) ((Stat *)(((char *)STATE(PtrBody)) + (stat)))
+#define ADDR_STAT(stat) ((Stat *)STATE(PtrBody) + (stat) / sizeof(Stat))
 #define CONST_ADDR_STAT(stat)                                                \
-    ((const Stat *)(((const char *)STATE(PtrBody)) + (stat)))
+    ((const Stat *)STATE(PtrBody) + (stat) / sizeof(Stat))
 
 #define READ_STAT(stat, idx) (CONST_ADDR_STAT(stat)[idx])
 #define WRITE_STAT(stat, idx, val) ADDR_STAT(stat)[idx] = val
