@@ -540,8 +540,10 @@ void RewriteVec8Bit(Obj vec, UInt q)
 
     UInt1 *       gettab1, byte1;
     const UInt1 * ptr1;
-    UInt1 *       settab, *ptr, byte;
-    UInt1 *       convtab;
+    const UInt1 * settab;
+    UInt1 *       ptr;
+    UInt1         byte;
+    const UInt1 * convtab;
     const Obj *   convtab1;
     FFV           val;
 
@@ -620,8 +622,10 @@ void RewriteGF2Vec(Obj vec, UInt q)
     UInt         mut = IS_MUTABLE_OBJ(vec);
     const UInt * ptr1;
     UInt         block;
-    UInt1 *      settab, *ptr, byte;
-    UInt1 *      convtab;
+    const UInt1 * settab;
+    UInt1 *       ptr;
+    UInt1         byte;
+    const UInt1 * convtab;
     UInt1        zero, one;
     Int          i;
     Obj          type;
@@ -687,8 +691,8 @@ void ConvVec8Bit(Obj list, UInt q)
     FF      f;            // field
     Obj     info;         // field info object
     UInt    elts;         // elements per byte
-    UInt1 * settab;       // element setting table
-    UInt1 * convtab;      // FFE -> FELT conversion table
+    const UInt1 * settab;       // element setting table
+    const UInt1 * convtab;      // FFE -> FELT conversion table
     Obj firstthree[3];    // the first three entries may get clobbered my the
                           // early bytes
     UInt    e;            // loop variable
@@ -838,8 +842,8 @@ Obj NewVec8Bit(Obj list, UInt q)
     FF   f;             // field
     Obj     info;       // field info object
     UInt    elts;       // elements per byte
-    UInt1 * settab;     // element setting table
-    UInt1 * convtab;    // FFE -> FELT conversion table
+    const UInt1 * settab;     // element setting table
+    const UInt1 * convtab;    // FFE -> FELT conversion table
     UInt    e;          // loop varibale
     UInt1   byte;       // byte under construction
     UInt1 * ptr;        // place to put byte
@@ -2507,10 +2511,10 @@ UInt CosetLeadersInner8Bits(Obj  veclis,
     UInt    i, j;
     UInt    q;
     Obj     info;
-    UInt1 * settab;
+    const UInt1 * settab;
     UInt    elts;
     UInt1 * ptr, *ptrw;
-    UInt1 * gettab;
+    const UInt1 * gettab;
     UInt1 * feltffe;
     Obj     x;
     Obj     vp;
@@ -2776,8 +2780,8 @@ Obj FuncELMS_VEC8BIT(Obj self, Obj list, Obj poss)
     Obj           res;
     UInt          i;
     UInt          elt;
-    UInt1 *       gettab;
-    UInt1 *       settab;
+    const UInt1 * gettab;
+    const UInt1 * settab;
     const UInt1 * ptrS;
     UInt1 *       ptrD;
     UInt          e;
@@ -2848,8 +2852,8 @@ Obj FuncELMS_VEC8BIT_RANGE(Obj self, Obj list, Obj range)
     Obj           res;
     UInt          i;
     UInt          elt;
-    UInt1 *       gettab;
-    UInt1 *       settab;
+    const UInt1 * gettab;
+    const UInt1 * settab;
     const UInt1 * ptrS;
     UInt1 *       ptrD;
     UInt          e;
@@ -3168,7 +3172,8 @@ Obj FuncAPPEND_VEC8BIT(Obj self, Obj vecl, Obj vecr)
     UInt1 *       ptrl;
     const UInt1 * ptrr;
     UInt1         bytel, byter, elt;
-    UInt1 *       gettab, *settab;
+    const UInt1 * gettab;
+    const UInt1 * settab;
     UInt          posl, posr;
 
     if (FIELD_VEC8BIT(vecl) != FIELD_VEC8BIT(vecr))
@@ -3489,12 +3494,12 @@ Obj ProdMat8BitVec8Bit(Obj mat, Obj vec)
 {
     UInt    len, i, q;
     Obj     info;
-    UInt1 * settab;
+    const UInt1 * settab;
     Obj     res;
     Obj     row1;
     UInt1   byte;
     UInt    elts;
-    UInt1 * feltffe;
+    const UInt1 * feltffe;
     UInt1 * ptr;
     Obj     entry;
     len = LEN_MAT8BIT(mat);
@@ -3644,7 +3649,8 @@ Obj InverseMat8Bit(Obj mat, UInt mut)
     Obj         info;
     UInt1 *     ptr;
     UInt        elts;
-    UInt1 *     settab, *gettab;
+    const UInt1 * settab;
+    const UInt1 * gettab;
     UInt1       byte;
     Obj         row, row1, row2;
     const Obj * ffefelt;
@@ -4178,7 +4184,7 @@ void ResizeVec8Bit(Obj vec, UInt newlen, UInt knownclean)
     UInt    len;
     UInt    elts;
     Obj     info;
-    UInt1 * settab;
+    const UInt1 * settab;
     UInt    i;
     UInt1 * ptr, *ptr2, byte;
     len = LEN_VEC8BIT(vec);
@@ -4239,7 +4245,8 @@ void ShiftLeftVec8Bit(Obj vec, UInt amount)
     UInt1 *ptr1, *ptr2, *end;
     UInt1  fbyte, tbyte;
     UInt   from, to;
-    UInt1 *gettab, *settab;
+    const UInt1 *gettab;
+    const UInt1 *settab;
     UInt1  x;
 
     // A couple of trivial cases
@@ -4301,7 +4308,8 @@ void ShiftRightVec8Bit(Obj vec, UInt amount)    // pads with zeros
     UInt1 *ptr1, *ptr2, *end;
     UInt1  fbyte, tbyte;
     Int    from, to;
-    UInt1 *gettab, *settab;
+    const UInt1 *gettab;
+    const UInt1 *settab;
     UInt1  x;
 
     // A trivial cases
@@ -4565,7 +4573,8 @@ void ProdCoeffsVec8Bit(Obj res, Obj vl, UInt ll, Obj vr, UInt lr)
     const UInt1 *ptrl, *ptrr;
     UInt1 *      ptrp, bytel, byter;
     UInt1        byte1, byte2;
-    UInt1 *      gettab, *settab;
+    const UInt1 * gettab;
+    const UInt1 * settab;
     UInt1        partl = 0, partr = 0;
     q = FIELD_VEC8BIT(vl);
     assert(q == FIELD_VEC8BIT(vr));
@@ -4799,8 +4808,8 @@ Obj MakeShiftedVecs(Obj v, UInt len)
     Obj         vn, xi;
     UInt        i, j;
     const Obj * ffefelt;
-    UInt1 *     gettab;
-    UInt1 *     settab;
+    const UInt1 * gettab;
+    const UInt1 * settab;
     UInt        len1;
     UInt1       x;
     UInt1 *     ptr;
@@ -4891,7 +4900,7 @@ void ReduceCoeffsVec8Bit(Obj vl, Obj vrshifted, Obj quot)
     Obj           info;
     UInt          elts;
     Int           i, j, jj;
-    UInt1 *       gettab;
+    const UInt1 * gettab;
     UInt1 *       ptrl1, *ptrl, *qptr = 0;
     const UInt1 * ptrr;
     UInt1         x;
@@ -4899,9 +4908,9 @@ void ReduceCoeffsVec8Bit(Obj vl, Obj vrshifted, Obj quot)
     UInt          p;
     UInt          lr;
     UInt          lrs;
-    UInt1 *       multab, *settab = 0;
-    UInt1 *       addtab = 0;
-    UInt1 *       feltffe;
+    const UInt1 *       multab, *settab = 0;
+    const UInt1 *       addtab = 0;
+    const UInt1 *       feltffe;
     UInt1         y;
     UInt          ll = LEN_VEC8BIT(vl);
     Obj           vrs;
@@ -5068,7 +5077,7 @@ Obj SemiEchelonListVec8Bits(Obj mat, UInt TransformationsNeeded)
     Obj           res;
     UInt          q, elts;
     Obj           info;
-    UInt1 *       settab, *convtab, *gettab;
+    const UInt1 * settab, *convtab, *gettab;
     const Obj *   convtab1;
     UInt1         zero, one;
     UInt1         x = 0;
@@ -5557,7 +5566,7 @@ Obj FuncTRANSPOSED_MAT8BIT(Obj self, Obj mat)
     UInt    i, j, k, n, q, elts;
     UInt1 * ptr;
     Obj     info;
-    UInt1 * gettab = 0, *settab = 0;
+    const UInt1 * gettab = 0, *settab = 0;
     Obj     type;
 
     // check argument
@@ -5659,7 +5668,8 @@ Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
     UInt nrowl, nrowr, ncoll, ncolr, ncol, p, q, i, j, k, l, s, zero, mutable,
         elts;
     Obj           mat, type, row, info, shift[5];
-    UInt1 *       getelt, *setelt, *scalar, *add, *data;
+    UInt1 *       data;
+    const UInt1 * getelt, *setelt, *scalar, *add;
     const UInt1 * datar;
 
     nrowl = LEN_MAT8BIT(matl);
