@@ -19,6 +19,7 @@
 #ifdef GAP_MEM_CHECK
 #include "gasman.h"
 #endif
+#include "profile.h"
 #include "sysfiles.h"
 #include "sysmem.h"
 #include "sysopt.h"
@@ -54,14 +55,6 @@
 #include <mach/mach_time.h>
 #endif
 
-/****************************************************************************
-**  The following function is from profile.c. We put a prototype here
-**  Rather than #include "profile.h" to avoid pulling in large chunks
-**  of the GAP type system
-*/    
-Int enableProfilingAtStartup( Char **argv, void * dummy);
-Int enableMemoryProfilingAtStartup( Char **argv, void * dummy );
-Int enableCodeCoverageAtStartup( Char **argv, void * dummy);
 
 /****************************************************************************
 **

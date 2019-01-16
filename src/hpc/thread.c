@@ -857,8 +857,6 @@ static void PauseCurrentThread(int locked)
         pthread_mutex_unlock(thread->lock);
 }
 
-extern Obj FuncCALL_WITH_CATCH(Obj self, Obj func, Obj args);
-
 static void InterruptCurrentThread(int locked, Stat stat)
 {
     ThreadData * thread = thread_data + TLS(threadID);
@@ -881,7 +879,7 @@ static void InterruptCurrentThread(int locked, Stat stat)
         }
     }
     if (handler)
-        FuncCALL_WITH_CATCH((Obj)0, handler, NEW_PLIST(T_PLIST, 0));
+        CALL_WITH_CATCH(handler, NEW_PLIST(T_PLIST, 0));
     else
         ErrorReturnVoid("system interrupt", 0L, 0L, "you can 'return;'");
     if (!locked)

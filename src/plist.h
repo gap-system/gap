@@ -338,6 +338,14 @@ EXPORT_INLINE Obj NewPlistFromArray(const Obj * list, Int length)
     NewPlistFromArray((Obj[]){ __VA_ARGS__ },                                \
                       ARRAY_SIZE(((Obj[]){ __VA_ARGS__ })))
 
+
+/****************************************************************************
+**
+*F  ShallowCopyPlist( <list>> )
+*/
+extern Obj ShallowCopyPlist(Obj list);
+
+
 /****************************************************************************
 **
 *F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list

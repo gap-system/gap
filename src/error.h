@@ -267,6 +267,13 @@ void CheckSameLength(const Char * desc, const Char *leftName, const Char *rightN
 
 /****************************************************************************
 **
+*F  CALL_WITH_CATCH
+*/
+extern Obj CALL_WITH_CATCH(Obj func, Obj args);
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * *
 */
 
