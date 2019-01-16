@@ -228,18 +228,6 @@ void WaitForMonitor(Monitor * monitor)
     UnlockThread(GetTLS());
 }
 
-static int MonitorOrder(const void * r1, const void * r2)
-{
-    const char * p1 = *(const char **)r1;
-    const char * p2 = *(const char **)r2;
-    return p1 < p2;
-}
-
-void SortMonitors(UInt count, Monitor ** monitors)
-{
-    MergeSort(monitors, count, sizeof(Monitor *), MonitorOrder);
-}
-
 static int ChannelOrder(const void * c1, const void * c2)
 {
     const char * p1 = (const char *)ObjPtr((*(Channel **)c1)->monitor);
@@ -1622,11 +1610,6 @@ void WaitBarrier(Barrier * barrier)
 Obj FuncCreateBarrier(Obj self)
 {
     return CreateBarrier();
-}
-
-Obj FuncDestroyBarrier(Obj self, Obj barrier)
-{
-    return (Obj)0;
 }
 
 int IsBarrier(Obj obj)
