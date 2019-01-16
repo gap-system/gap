@@ -1784,7 +1784,10 @@ void CodeStringExpr (
 enum {
     FLOAT_0_INDEX = 1,    // reserved for constant 0.0
     FLOAT_1_INDEX = 2,    // reserved for constant 1.0
-    MAX_FLOAT_INDEX = INT_INTOBJ_MAX - 1,
+
+    // the maximal index must be less than INT_INTOBJ_MAX and INT_MAX, so
+    // simply hardcode it to 1<<28
+    MAX_FLOAT_INDEX = (1<<28) - 2,
 };
 static UInt NextFloatExprNumber = 3;
 

@@ -80,6 +80,7 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
         AX_APPEND_COMPILE_FLAGS([ dnl
             -Wall dnl
             -Wextra dnl
+            -Wextra-semi dnl
             -Wundef dnl
             -Wwrite-strings dnl
             -Wpointer-arith dnl

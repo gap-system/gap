@@ -448,8 +448,8 @@ extern void Panic_(const char * file, int line, const char * fmt, ...) NORETURN
 **  Returns -1 to represent failure
 **
 */
-extern Int8 SyNanosecondsSinceEpoch();
-extern Int8 SyNanosecondsSinceEpochResolution();
+extern Int8 SyNanosecondsSinceEpoch(void);
+extern Int8 SyNanosecondsSinceEpochResolution(void);
 
 extern const char * const SyNanosecondsSinceEpochMethod;
 extern const Int SyNanosecondsSinceEpochMonotonic;
