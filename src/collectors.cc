@@ -89,7 +89,7 @@ static Obj TYPE_KERNEL_OBJECT;
         CollectorsState()->SC_MAX_STACK_SIZE *= 2; \
         return -1; \
     } \
-    *++nw = CONST_DATA_WORD(word); \
+    *++nw = DATA_WORD(word); \
     *++lw = *nw + NPAIRS_WORD(word) - 1; \
     *++pw = *nw; \
     *++ew = (**pw) & expm; \
@@ -100,7 +100,7 @@ static Obj TYPE_KERNEL_OBJECT;
         CollectorsState()->SC_MAX_STACK_SIZE *= 2; \
         return -1; \
     } \
-    *++nw = CONST_DATA_WORD(gen); \
+    *++nw = DATA_WORD(gen); \
     *++lw = *nw; \
     *++pw = *nw; \
     *++ew = exp; \
@@ -337,11 +337,11 @@ Int SingleCollectWord(Obj sc, Obj vv, Obj w)
     UInt        exps;       /* sign exponent mask                          */
 
     Obj         vnw;        /* word stack                                  */
-    const UIntN ** nw;      /* address of <vnw>                            */
+    UIntN **    nw;         /* address of <vnw>                            */
     Obj         vlw;        /* last syllable stack                         */
-    const UIntN ** lw;      /* address of <vlw>                            */
+    UIntN **    lw;         /* address of <vlw>                            */
     Obj         vpw;        /* current syllable stack                      */
-    const UIntN ** pw;      /* address of <vpw>                            */
+    UIntN **    pw;         /* address of <vpw>                            */
     Obj         vew;        /* unprocessed exponent stack                  */
     UIntN *     ew;         /* address of <vew>                            */
     Obj         vge;        /* global exponent stack                       */
@@ -434,9 +434,9 @@ Int SingleCollectWord(Obj sc, Obj vv, Obj w)
 
     /* from now on we use addresses instead of handles most of the time    */
     v  = (Int*)ADDR_OBJ(vv);
-    nw = (const UIntN**)(CONST_ADDR_OBJ(vnw)+1);
-    lw = (const UIntN**)(CONST_ADDR_OBJ(vlw)+1);
-    pw = (const UIntN**)(CONST_ADDR_OBJ(vpw)+1);
+    nw = (UIntN**)(ADDR_OBJ(vnw)+1);
+    lw = (UIntN**)(ADDR_OBJ(vlw)+1);
+    pw = (UIntN**)(ADDR_OBJ(vpw)+1);
     ew = (UIntN*)(ADDR_OBJ(vew)+1);
     ge = (Int*)(ADDR_OBJ(vge)+1);
 
@@ -851,11 +851,11 @@ Int CombiCollectWord(Obj sc, Obj vv, Obj w)
     UInt        exps;       /* sign exponent mask                          */
 
     Obj         vnw;        /* word stack                                  */
-    const UIntN ** nw;      /* address of <vnw>                            */
+    UIntN **    nw;         /* address of <vnw>                            */
     Obj         vlw;        /* last syllable stack                         */
-    const UIntN ** lw;      /* address of <vlw>                            */
+    UIntN **    lw;         /* address of <vlw>                            */
     Obj         vpw;        /* current syllable stack                      */
-    const UIntN ** pw;      /* address of <vpw>                            */
+    UIntN **    pw;         /* address of <vpw>                            */
     Obj         vew;        /* unprocessed exponent stack                  */
     UIntN *     ew;         /* address of <vew>                            */
     Obj         vge;        /* global exponent stack                       */
@@ -948,9 +948,9 @@ Int CombiCollectWord(Obj sc, Obj vv, Obj w)
 
     /* from now on we use addresses instead of handles most of the time    */
     v  = (Int*)ADDR_OBJ(vv);
-    nw = (const UIntN**)(CONST_ADDR_OBJ(vnw)+1);
-    lw = (const UIntN**)(CONST_ADDR_OBJ(vlw)+1);
-    pw = (const UIntN**)(CONST_ADDR_OBJ(vpw)+1);
+    nw = (UIntN**)(ADDR_OBJ(vnw)+1);
+    lw = (UIntN**)(ADDR_OBJ(vlw)+1);
+    pw = (UIntN**)(ADDR_OBJ(vpw)+1);
     ew = (UIntN*)(ADDR_OBJ(vew)+1);
     ge = (Int*)(ADDR_OBJ(vge)+1);
 

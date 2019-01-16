@@ -725,8 +725,8 @@ Obj ProdGF2MatGF2MatAdvanced(Obj ml, Obj mr, UInt greasesize, UInt blocksize)
 
     // Take direct pointers to all the parts of all the matrices to avoid
     // multiple indirection overheads
-    plrows = (const UInt **)CONST_ADDR_OBJ(lrowptrs);
-    prrows = (const UInt **)CONST_ADDR_OBJ(rrowptrs);
+    plrows = (const UInt **)ADDR_OBJ(lrowptrs);
+    prrows = (const UInt **)ADDR_OBJ(rrowptrs);
     pprows = (UInt **)ADDR_OBJ(prowptrs);
 
     for (i = 0; i < len; i++) {
@@ -810,8 +810,8 @@ Obj ProdGF2MatGF2MatAdvanced(Obj ml, Obj mr, UInt greasesize, UInt blocksize)
                 g.pgrules = pgrules;
                 g.nblocks = nwords;
             }
-            plrows = (const UInt **)CONST_ADDR_OBJ(lrowptrs);
-            prrows = (const UInt **)CONST_ADDR_OBJ(rrowptrs);
+            plrows = (const UInt **)ADDR_OBJ(lrowptrs);
+            prrows = (const UInt **)ADDR_OBJ(rrowptrs);
             pprows = (UInt **)ADDR_OBJ(prowptrs);
             for (i = 0; i < len; i++) {
                 plrows[i] = CONST_BLOCKS_GF2VEC(ELM_GF2MAT(ml, i + 1));
