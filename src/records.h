@@ -117,7 +117,7 @@ extern void (*AssRecFuncs[LAST_REAL_TNUM + 1])(Obj rec, UInt rnam, Obj obj);
 
 EXPORT_INLINE void ASS_REC(Obj rec, UInt rnam, Obj obj)
 {
-    return (*AssRecFuncs[TNUM_OBJ(rec)])(rec, rnam, obj);
+    (*AssRecFuncs[TNUM_OBJ(rec)])(rec, rnam, obj);
 }
 
 /****************************************************************************
@@ -131,7 +131,7 @@ extern void (*UnbRecFuncs[LAST_REAL_TNUM + 1])(Obj rec, UInt rnam);
 
 EXPORT_INLINE void UNB_REC(Obj rec, UInt rnam)
 {
-    return (*UnbRecFuncs[TNUM_OBJ(rec)])(rec, rnam);
+    (*UnbRecFuncs[TNUM_OBJ(rec)])(rec, rnam);
 }
 
 

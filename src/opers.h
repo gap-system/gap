@@ -337,7 +337,8 @@ EXPORT_INLINE void SET_HASH_FLAGS(Obj flags, Obj hash)
 EXPORT_INLINE UInt LEN_FLAGS(Obj flags)
 {
     return (SIZE_OBJ(flags) / sizeof(Obj) - 3) << LBIPEB;
-};
+}
+
 
 /****************************************************************************
 **
@@ -360,6 +361,7 @@ EXPORT_INLINE void SET_AND_CACHE_FLAGS(Obj flags, Obj andc)
     ADDR_OBJ(flags)[2] = andc;
 }
 
+
 /****************************************************************************
 **
 *F  NRB_FLAGS( <flags> )  . . . . . .  number of basic blocks of a flags list
@@ -367,7 +369,7 @@ EXPORT_INLINE void SET_AND_CACHE_FLAGS(Obj flags, Obj andc)
 EXPORT_INLINE UInt NRB_FLAGS(Obj flags)
 {
     return SIZE_OBJ(flags) / sizeof(Obj) - 3;
-};
+}
 
 
 /****************************************************************************
