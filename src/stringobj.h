@@ -59,7 +59,7 @@ EXPORT_INLINE UChar CHAR_VALUE(Obj charObj)
 EXPORT_INLINE void SET_CHAR_VALUE(Obj charObj, UChar c)
 {
     GAP_ASSERT(TNUM_OBJ(charObj) == T_CHAR);
-    *(UChar *)CONST_ADDR_OBJ(charObj) = c;
+    *(UChar *)ADDR_OBJ(charObj) = c;
 }
 
 

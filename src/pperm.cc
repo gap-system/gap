@@ -93,7 +93,7 @@ static inline void ResizeTmpPPerm(UInt len)
 static inline UInt GET_CODEG_PPERM2(Obj f)
 {
     GAP_ASSERT(IS_PPERM(f));
-    return (*(UInt2 *)((const Obj *)(CONST_ADDR_OBJ(f)) + 2));
+    return *(const UInt2 *)(CONST_ADDR_OBJ(f) + 2);
 }
 
 static inline void SET_CODEG_PPERM2(Obj f, UInt2 codeg)
@@ -124,7 +124,7 @@ UInt CODEG_PPERM2(Obj f)
 static inline UInt GET_CODEG_PPERM4(Obj f)
 {
     GAP_ASSERT(IS_PPERM(f));
-    return (*(const UInt4 *)((const Obj *)(CONST_ADDR_OBJ(f)) + 2));
+    return *(const UInt4 *)(CONST_ADDR_OBJ(f) + 2);
 }
 
 static inline void SET_CODEG_PPERM4(Obj f, UInt4 codeg)

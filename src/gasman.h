@@ -308,7 +308,7 @@ EXPORT_INLINE Bag *PTR_BAG(Bag bag)
 EXPORT_INLINE const Bag *CONST_PTR_BAG(Bag bag)
 {
     GAP_ASSERT(bag != 0);
-    return *(const Bag**)bag;
+    return *(const Bag * const *)bag;
 }
 
 EXPORT_INLINE void SET_PTR_BAG(Bag bag, Bag *val)
