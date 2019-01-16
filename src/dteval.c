@@ -42,8 +42,6 @@
 
 static int             evlist, evlistvec;
 
-extern Obj             ShallowCopyPlist( Obj  list );
-
 
 /****************************************************************************
 **

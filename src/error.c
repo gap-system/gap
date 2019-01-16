@@ -251,7 +251,12 @@ Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
 *F  FuncCALL_WITH_CATCH( <self>, <func> )
 **
 */
-Obj FuncCALL_WITH_CATCH(Obj self, Obj func, volatile Obj args)
+Obj FuncCALL_WITH_CATCH(Obj self, Obj func, Obj args)
+{
+    return CALL_WITH_CATCH(func, args);
+}
+
+Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
 {
     volatile syJmp_buf readJmpError;
     volatile Obj       res;

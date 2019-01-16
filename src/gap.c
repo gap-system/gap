@@ -1047,8 +1047,6 @@ Obj FuncGASMAN_LIMITS( Obj self )
 
 #ifdef GAP_MEM_CHECK
 
-extern Int EnableMemCheck;
-
 Obj FuncGASMAN_MEM_CHECK(Obj self, Obj newval)
 {
     EnableMemCheck = INT_INTOBJ(newval);

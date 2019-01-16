@@ -848,8 +848,12 @@ static mp_limb_t hexstr2int( const UInt1 *p, UInt len )
   return n;
 }
 
+static Obj FuncIntHexString(Obj self,  Obj str)
+{
+    return IntHexString(str);
+}
 
-Obj FuncIntHexString( Obj self,  Obj str )
+Obj IntHexString(Obj str)
 {
   Obj res;
   Int  i, len, sign, nd;
@@ -917,6 +921,7 @@ Obj FuncIntHexString( Obj self,  Obj str )
     return res;
   }
 }
+
 
 /****************************************************************************
 **  

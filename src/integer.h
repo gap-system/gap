@@ -182,6 +182,10 @@ extern Obj GMP_NORMALIZE( Obj gmp );
 extern void PrintInt( Obj op );
 
 
+//
+extern Obj IntHexString(Obj str);
+
+
 // Parse a string containing a decimal integer into a GAP integer
 // object. Returns 'fail' if the input is not a valid decimal.
 // This function handles signs.

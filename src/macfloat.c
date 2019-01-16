@@ -26,6 +26,7 @@
 #include "bool.h"
 #include "error.h"
 #include "io.h"
+#include "integer.h"
 #include "modules.h"
 #include "plist.h"
 #include "saveload.h"
@@ -399,8 +400,6 @@ Obj FuncSIGNBIT_MACFLOAT( Obj self, Obj f )
 }
 
 
-extern Obj FuncIntHexString(Obj,Obj);
-
 Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat)
 {
     RequireMacFloat("INTFLOOR_MACFLOAT", macfloat);
@@ -435,7 +434,7 @@ Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat)
     *p-- = d < 10 ? '0'+d : 'a'+d-10;
     f /= 16.0;
   }
-  return FuncIntHexString(self,str);
+  return IntHexString(str);
 }
 
 Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj gapprec, Obj f)
@@ -540,8 +539,6 @@ static StructGVarFunc GVarFuncs [] = {
 **
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-extern Int EqObject (Obj,Obj);
-
 static Int InitKernel (
     StructInitInfo *    module )
 {

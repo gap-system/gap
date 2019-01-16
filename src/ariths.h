@@ -271,6 +271,11 @@ EXPORT_INLINE Int EQ(Obj opL, Obj opR)
 
 extern Obj EqOper;
 
+extern Int EqObject (
+    Obj                 opL,
+    Obj                 opR );
+
+
 
 /****************************************************************************
 **

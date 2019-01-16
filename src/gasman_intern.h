@@ -218,4 +218,8 @@ extern void CheckMasterPointers( void );
 extern void CallbackForAllBags( void (*func)(Bag) );
 
 
+#ifdef GAP_MEM_CHECK
+extern Int EnableMemCheck;
+#endif
+
 #endif
