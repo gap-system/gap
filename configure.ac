@@ -595,9 +595,13 @@ AC_DEFINE_UNQUOTED([GAP_KERNEL_MINOR_VERSION], $gap_kernel_minor_version, [The m
 dnl
 dnl User setting: Compatibility mode (on by default)
 dnl
-AS_IF([test "x$enable_hpcgap" = xyes],
-  [GAPARCH="$host-hpcgap${ABI}-kv${gap_kernel_major_version}"],
-  [GAPARCH="$host-default${ABI}-kv${gap_kernel_major_version}"])
+AS_IF(
+  [test "x$enable_hpcgap" = xyes],
+     [GAPARCH="$host-hpcgap${ABI}-kv${gap_kernel_major_version}"],
+  [test "x$with_julia" != xno],
+     [GAPARCH="$host-julia${ABI}-kv${gap_kernel_major_version}"],
+  # else
+     [GAPARCH="$host-default${ABI}-kv${gap_kernel_major_version}"])
 AS_IF([test "x$ARCHEXT" != "x"],
   [GAPARCH="$GAPARCH-$ARCHEXT"])
 AS_IF([test "x$ARCH" != "x"],
