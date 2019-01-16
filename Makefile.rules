@@ -767,9 +767,11 @@ check-manuals: all
 testinstall: all
 	$(MKDIR_P) dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	        SetUserPreference("ReproducibleBehaviour", true); \
             ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/testinstall1_%Y-%m-%d-%H-%M` )
 	( echo 'SetUserPreference("UseColorsInTerminal",false); LoadAllPackages(); \
+	        SetUserPreference("ReproducibleBehaviour", true); \
             ReadGapRoot( "tst/testinstall.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/testinstall2_%Y-%m-%d-%H-%M` )
 
@@ -781,6 +783,7 @@ testmanuals: all
 	$(MKDIR_P) dev/log
 	((cd doc/tut ; \
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  SetUserPreference("ReproducibleBehaviour", true); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAP);\
 	  echo '============================================================';\
 	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
@@ -789,6 +792,7 @@ testmanuals: all
 	  echo '============================================================';\
 	  cd doc/ref ; \
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  SetUserPreference("ReproducibleBehaviour", true); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAP);\
 	  echo '============================================================';\
 	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
@@ -798,6 +802,7 @@ testmanuals: all
 	( rm -rf doc/tut/EXAMPLEDIFFS*; rm -rf doc/ref/EXAMPLEDIFFS* )
 	((cd doc/tut ; \
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  SetUserPreference("ReproducibleBehaviour", true); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAPauto);\
 	  echo '============================================================';\
 	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
@@ -806,6 +811,7 @@ testmanuals: all
 	  echo '============================================================';\
 	  cd doc/ref ; \
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
+	  SetUserPreference("ReproducibleBehaviour", true); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAPauto);\
 	  echo '============================================================';\
 	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
@@ -816,6 +822,7 @@ testmanuals: all
 	((cd doc/tut ; \
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
 	  LoadAllPackages() ; \
+	  SetUserPreference("ReproducibleBehaviour", true); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAP);\
 	  echo '============================================================';\
 	  cd ../.. ; ff=`ls doc/tut/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
@@ -825,6 +832,7 @@ testmanuals: all
 	  cd doc/ref ; \
 	  echo 'SetUserPreference("UseColorsInTerminal",false); SetAssertionLevel( 2 ); \
 	  LoadAllPackages() ; \
+	  SetUserPreference("ReproducibleBehaviour", true); \
 	  Read("extractexamples.g"); Read("runexamples.g"); ' | $(TESTGAP);\
 	  echo '============================================================';\
 	  cd ../.. ; ff=`ls doc/ref/EXAMPLEDIFFS* 2> /dev/null | wc -l`; \
@@ -981,9 +989,11 @@ testpackagesvars: all
 teststandard: all
 	$(MKDIR_P) dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+          SetUserPreference("ReproducibleBehaviour", true); \
           ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/teststandard1_%Y-%m-%d-%H-%M` )
 	( echo 'SetUserPreference("UseColorsInTerminal",false); LoadAllPackages(); \
+	      SetUserPreference("ReproducibleBehaviour", true); \
           ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
 
@@ -993,9 +1003,11 @@ teststandard: all
 testbugfix: all
 	$(MKDIR_P) dev/log
 	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+	      SetUserPreference("ReproducibleBehaviour", true); \
           ReadGapRoot( "tst/testbugfix.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/testbugfix1_%Y-%m-%d-%H-%M` )
 	( echo 'SetUserPreference("UseColorsInTerminal",false); LoadAllPackages(); \
+	      SetUserPreference("ReproducibleBehaviour", true); \
           ReadGapRoot( "tst/testbugfix.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/testbugfix2_%Y-%m-%d-%H-%M` )
 
