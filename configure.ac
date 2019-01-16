@@ -579,13 +579,25 @@ AS_IF([test "x$with_gc" = xboehm],
   ]
 )
 
+dnl
+dnl Define kernel version
+dnl
+
+
+gap_kernel_major_version=3
+gap_kernel_minor_version=0
+AC_SUBST([gap_kernel_major_version])
+AC_SUBST([gap_kernel_minor_version])
+
+AC_DEFINE_UNQUOTED([GAP_KERNEL_MAJOR_VERSION], $gap_kernel_major_version, [The major version of the kernel ABI])
+AC_DEFINE_UNQUOTED([GAP_KERNEL_MINOR_VERSION], $gap_kernel_minor_version, [The minor version of the kernel ABI])
 
 dnl
 dnl User setting: Compatibility mode (on by default)
 dnl
 AS_IF([test "x$enable_hpcgap" = xyes],
-  [GAPARCH="$host-hpcgap${ABI}"],
-  [GAPARCH="$host-default${ABI}"])
+  [GAPARCH="$host-hpcgap${ABI}-kv${gap_kernel_major_version}"],
+  [GAPARCH="$host-default${ABI}-kv${gap_kernel_major_version}"])
 AS_IF([test "x$ARCHEXT" != "x"],
   [GAPARCH="$GAPARCH-$ARCHEXT"])
 AS_IF([test "x$ARCH" != "x"],
