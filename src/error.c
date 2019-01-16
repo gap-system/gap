@@ -259,13 +259,9 @@ Obj FuncCALL_WITH_CATCH(Obj self, Obj func, volatile Obj args)
     volatile Obj       tilde;
     volatile Int       recursionDepth;
 
-    if (!IS_FUNC(func))
-        ErrorMayQuit(
-            "CALL_WITH_CATCH(<func>, <args>): <func> must be a function", 0,
-            0);
+    RequireFunction("CALL_WITH_CATCH", func);
     if (!IS_LIST(args))
-        ErrorMayQuit("CALL_WITH_CATCH(<func>, <args>): <args> must be a list",
-                     0, 0);
+        RequireArgument("CALL_WITH_CATCH", args, "must be a list");
 #ifdef HPCGAP
     if (!IS_PLIST(args)) {
         args = SHALLOW_COPY_OBJ(args);

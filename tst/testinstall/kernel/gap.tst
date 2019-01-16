@@ -98,9 +98,9 @@ PRINT_CURRENT_STATEMENT( "*errout*", GetCurrentLVars(  ) ); at stream:1
 
 #
 gap> CALL_WITH_CATCH(fail,fail);
-Error, CALL_WITH_CATCH(<func>, <args>): <func> must be a function
+Error, CALL_WITH_CATCH: <func> must be a function (not the value 'fail')
 gap> CALL_WITH_CATCH(x->x,fail);
-Error, CALL_WITH_CATCH(<func>, <args>): <args> must be a list
+Error, CALL_WITH_CATCH: <args> must be a list (not the value 'fail')
 gap> CALL_WITH_CATCH(x->x,[1..3]);
 Error, Function: number of arguments must be 1 (not 3)
 [ false, 0 ]
