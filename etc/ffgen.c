@@ -54,9 +54,9 @@ void emit_code(FILE * dest, int header)
         fprintf(dest, "    NUM_SHORT_FINITE_FIELDS = %d\n", num_ff);
         fprintf(dest, "};\n");
         fprintf(dest, "\n");
-        fprintf(dest, "extern unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1];\n");
-        fprintf(dest, "extern unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1];\n");
-        fprintf(dest, "extern unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        fprintf(dest, "extern const unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        fprintf(dest, "extern const unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        fprintf(dest, "extern const unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1];\n");
         fprintf(dest, "\n");
         fprintf(dest, "#endif // GAP_FFDATA_H\n");
     }
@@ -67,7 +67,7 @@ void emit_code(FILE * dest, int header)
         fprintf(dest, " * to find them. Indices start at 1.\n");
         fprintf(dest, " */\n");
         fprintf(dest, "\n");
-        fprintf(dest, "unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
+        fprintf(dest, "const unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
         fprintf(dest, " %3d,", 0);
         for (i = 0, j = 1; i <= MAX_FF; i++) {
             if (is_ff[i]) {
@@ -82,7 +82,7 @@ void emit_code(FILE * dest, int header)
             fprintf(dest, "\n");
         fprintf(dest, "};\n");
         fprintf(dest, "\n");
-        fprintf(dest, "unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
+        fprintf(dest, "const unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
         fprintf(dest, " %6d,", 0);
         for (i = 0, j = 1; i <= MAX_FF; i++) {
             if (is_ff[i]) {
@@ -97,7 +97,7 @@ void emit_code(FILE * dest, int header)
             fprintf(dest, "\n");
         fprintf(dest, "};\n");
         fprintf(dest, "\n");
-        fprintf(dest, "unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
+        fprintf(dest, "const unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
         fprintf(dest, " %6d,", 0);
         for (i = 0, j = 1; i <= MAX_FF; i++) {
             if (is_ff[i]) {

@@ -19,7 +19,7 @@
 **  entries are the  proper prime powers,  odd entries are the  corresponding
 **  conway polynomials.
 */
-unsigned long PolsFF[] = {
+const unsigned long PolsFF[] = {
        4, 1+2,
        8, 1+2,
       16, 1+2,
