@@ -517,9 +517,13 @@ void PushBinaryOp (
 static Int PushValue(Obj val)
 {
     BodyHeader * header = (BodyHeader *)STATE(PtrBody);
-    if (!header->values)
-        header->values = NEW_PLIST(T_PLIST, 4);
-    return PushPlist(header->values, val);
+    Obj values = header->values;
+    if (!values) {
+        values = NEW_PLIST(T_PLIST, 4);
+        header = (BodyHeader *)STATE(PtrBody);
+        header->values = values;
+    }
+    return PushPlist(values, val);
 }
 
 
