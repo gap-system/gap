@@ -1037,22 +1037,6 @@ void AsssString (
 
 /****************************************************************************
 **
-*F  IsHomogString(<list>) . . . .  homogeneous list test function for strings
-**
-**  'IsHomogString' returns  1 if  the string  <list>  is homogeneous.  Every
-**  nonempty string is homogeneous.
-**
-**  'IsHomogString' is the function in 'IsHomogListFuncs' for strings.
-*/
-Int IsHomogString (
-    Obj                 list )
-{
-    return (0 < GET_LEN_STRING(list));
-}
-
-
-/****************************************************************************
-**
 *F  IsSSortString(<list>) . . . . . . . strictly sorted list test for strings
 **
 **  'IsSSortString'  returns 1 if the string  <list> is strictly sorted and 0
@@ -2164,8 +2148,8 @@ static Int InitKernel (
         AsssListFuncs   [ t1            ] = AsssString;
         IsDenseListFuncs[ t1            ] = AlwaysYes;
         IsDenseListFuncs[ t1 +IMMUTABLE ] = AlwaysYes;
-        IsHomogListFuncs[ t1            ] = IsHomogString;
-        IsHomogListFuncs[ t1 +IMMUTABLE ] = IsHomogString;
+        IsHomogListFuncs[ t1            ] = AlwaysYes;
+        IsHomogListFuncs[ t1 +IMMUTABLE ] = AlwaysYes;
         IsSSortListFuncs[ t1            ] = IsSSortString;
         IsSSortListFuncs[ t1 +IMMUTABLE ] = IsSSortString;
         IsPossListFuncs [ t1            ] = IsPossString;

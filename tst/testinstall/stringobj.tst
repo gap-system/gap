@@ -5153,4 +5153,16 @@ gap> ret3000 := """
 > """;;
 gap> ret3000 = List([1..3000], x -> '\n');
 true
+
+#
+gap> IsHomogeneousList([]);
+true
+gap> IsHomogeneousList("");
+true
+gap> IsHomogeneousList("a");
+true
+gap> "IsHomogeneousList" in CategoriesOfObject("");
+true
+
+#
 gap> STOP_TEST( "stringobj.tst", 1);
