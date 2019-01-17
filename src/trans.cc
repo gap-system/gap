@@ -16,9 +16,7 @@
 *  entries image list]
 *
 * The <internal degree> of <f> is just the length of <entries image
-* list>, this is accessed here using <DEG_TRANS2> and <DEG_TRANS4>, in
-* GAP it can be accessed using INT_DEG_TRANS (for debugging purposes
-* only).
+* list>, this is accessed here using <DEG_TRANS2> and <DEG_TRANS4>.
 *
 * Transformations must always have internal degree greater than or equal
 * to the largest point in <entries image list>.
@@ -26,9 +24,7 @@
 * An element of <entries image list> of a transformation in T_TRANS2
 * must be at most 65535 and be UInt2. Hence the internal and external
 * degrees of a T_TRANS2 are at most 65536. If <f> is T_TRANS4, then the
-* elements of <entries image list> must be UInt4. The degree of a
-* T_TRANS4 must be 65537 or higher, i.e. do not call NEW_TRANS4(n) when
-* n < 65537.
+* elements of <entries image list> must be UInt4.
 *
 * The <image set> and <flat kernel> are found relative to the internal
 * degree of the transformation, and must not be changed after they are
@@ -88,6 +84,12 @@ typedef struct {
 // TmpTrans is the same as TmpPerm
 #define TmpTrans MODULE_STATE(Trans).TmpTrans
 
+/****************************************************************************
+**
+*V  IdentityTrans  . . . . . . . . . . . . . . . . .  identity transformation
+**
+**  'IdentityTrans' is an identity transformation.
+*/
 /* mp this will become a ReadOnly object? */
 Obj IdentityTrans;
 
@@ -310,36 +312,6 @@ static void REMOVE_DUPS_PLIST_INTOBJ(Obj res)
         }
     }
 }
-
-/*******************************************************************************
-** GAP level functions for debugging purposes only
-*******************************************************************************/
-
-/*
-Obj FuncHAS_KER_TRANS (Obj self, Obj f) {
-  if (IS_TRANS(f)) {
-    return (KER_TRANS(f) == NULL?False:True);
-  } else {
-    return Fail;
-  }
-}
-
-Obj FuncHAS_IMG_TRANS (Obj self, Obj f) {
-  if (IS_TRANS(f)) {
-    return (IMG_TRANS(f) == NULL?False:True);
-  } else {
-    return Fail;
-  }
-}
-
-Obj FuncINT_DEG_TRANS (Obj self, Obj f) {
-  if (TNUM_OBJ(f) == T_TRANS2) {
-    return INTOBJ_INT(DEG_TRANS2(f));
-  } else if (TNUM_OBJ(f) == T_TRANS4) {
-    return INTOBJ_INT(DEG_TRANS4(f));
-  }
-  return Fail;
-}*/
 
 /*******************************************************************************
 ** GAP level functions for creating transformations
@@ -3704,11 +3676,12 @@ Obj OneTrans(Obj f)
 ** Equality for transformations
 *******************************************************************************/
 
-// The following function is used to check equality of both permutations and
-// transformations, it is written by Chris Jefferson in pull request #280.
-
-Int EqPermTrans22(UInt degL, UInt degR, const UInt2 * ptLstart, const UInt2 * ptRstart)
+Int EqTrans22(Obj opL, Obj opR)
 {
+    UInt degL = DEG_TRANS2(opL);
+    UInt degR = DEG_TRANS2(opR);
+    const UInt2 * ptLstart = CONST_ADDR_TRANS2(opL);
+    const UInt2 * ptRstart = CONST_ADDR_TRANS2(opR);
 
     const UInt2 * ptL;  // pointer to the left operand
     const UInt2 * ptR;  // pointer to the right operand
@@ -3758,8 +3731,12 @@ Int EqPermTrans22(UInt degL, UInt degR, const UInt2 * ptLstart, const UInt2 * pt
     return 1L;
 }
 
-Int EqPermTrans44(UInt degL, UInt degR, const UInt4 * ptLstart, const UInt4 * ptRstart)
+Int EqTrans44(Obj opL, Obj opR)
 {
+    UInt degL = DEG_TRANS4(opL);
+    UInt degR = DEG_TRANS4(opR);
+    const UInt4 * ptLstart = CONST_ADDR_TRANS4(opL);
+    const UInt4 * ptRstart = CONST_ADDR_TRANS4(opR);
 
     const UInt4 * ptL;  // pointer to the left operand
     const UInt4 * ptR;  // pointer to the right operand
@@ -3807,18 +3784,6 @@ Int EqPermTrans44(UInt degL, UInt degR, const UInt4 * ptLstart, const UInt4 * pt
 
     // otherwise they must be equal
     return 1L;
-}
-
-Int EqTrans22(Obj opL, Obj opR)
-{
-    return EqPermTrans22(DEG_TRANS2(opL), DEG_TRANS2(opR),
-                         CONST_ADDR_TRANS2(opL), CONST_ADDR_TRANS2(opR));
-}
-
-Int EqTrans44(Obj opL, Obj opR)
-{
-    return EqPermTrans44(DEG_TRANS4(opL), DEG_TRANS4(opR),
-                         CONST_ADDR_TRANS4(opL), CONST_ADDR_TRANS4(opR));
 }
 
 Int EqTrans24(Obj f, Obj g)
@@ -5309,11 +5274,6 @@ static StructGVarFilt GVarFilts[] = {
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs[] = {
-
-    /*  GVAR_FUNC(HAS_KER_TRANS, 1, "f"),
-      GVAR_FUNC(HAS_IMG_TRANS, 1, "f"),
-      GVAR_FUNC(INT_DEG_TRANS, 1, "f"),
-        */
 
     GVAR_FUNC(TransformationNC, 1, "list"),
     GVAR_FUNC(TransformationListListNC, 2, "src, ran"),
