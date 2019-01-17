@@ -80,7 +80,6 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
         AX_APPEND_COMPILE_FLAGS([ dnl
             -Wall dnl
             -Wextra dnl
-            -Wextra-semi dnl
             -Wundef dnl
             -Wwrite-strings dnl
             -Wpointer-arith dnl
@@ -116,12 +115,14 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
             -Wdouble-promotion dnl
             -Wno-cast-function-type dnl
         ],ax_warn_cflags_variable,[$ax_compiler_flags_test])
+
         # HACK: use the warning flags determined so far also for the C++ compiler.
         # This assumes that the C and C++ compiler are "related" and thus will
         # accept similar warnings flags.
         AS_VAR_SET(ax_warn_cxxflags_variable,[$ax_warn_cflags_variable])
+
+        # Test for warnings that only work in C++, not in C
         if test "$ax_compiler_cxx" = "no" ; then
-            # C-only flags. Warn in C++
             AX_APPEND_COMPILE_FLAGS([ dnl
             -Wnested-externs dnl
             dnl -Wmissing-prototypes dnl
@@ -133,6 +134,15 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
             -Wjump-misses-init dnl
             ],ax_warn_cflags_variable,[$ax_compiler_flags_test])
         fi
+
+        # Test for warnings that only work in C++, not in C
+        AC_LANG_PUSH([C++])
+            AX_APPEND_COMPILE_FLAGS([ dnl
+            -Wextra-semi dnl
+            ],ax_warn_cxxflags_variable,[$ax_compiler_flags_test])
+        AC_LANG_POP([C++])
+
+
     ])
     AS_IF([test "$ax_enable_compile_warnings" = "error"],[
         # "error" flags; -Werror has to be appended unconditionally because
