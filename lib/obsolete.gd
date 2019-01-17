@@ -690,3 +690,48 @@ DeclareObsoleteSynonym( "RecFields", "RecNames" );
 if GAPInfo.CommandLineOptions.D then InfoRead1 := Print; fi;
 if not IsBound(InfoRead1) then InfoRead1 := Ignore; fi;
 if not IsBound(InfoRead2) then InfoRead2 := Ignore; fi;
+
+
+#############################################################################
+##
+#F  HideGlobalVariables(<str1>[,<str2>,...]))
+##
+##  <ManSection>
+##  <Func Name="HideGlobalVariables" Arg='str1[,str2,...]'/>
+##
+##  <Description>
+##  temporarily makes global variables <Q>undefined</Q>. The arguments to
+##  <C>HideGlobalVariables</C> are strings. If there is a global variable defined
+##  whose identifier is equal to one of the strings it will be <Q>hidden</Q>.
+##  This means that identifier and value will be safely stored on a stack
+##  and the variable will be undefined afterwards. A call to
+##  <C>UnhideGlobalVariables</C> will restore the old values.
+##  The main purpose of hiding variables will be for the temporary creation
+##  of global variables for reading in data created by other programs.
+##  </Description>
+##  </ManSection>
+##
+##  This function was never documented.
+##
+##  Still used in anupq, nq, resclasses, rcwa (01/2019)
+DeclareGlobalFunction("HideGlobalVariables");
+
+
+#############################################################################
+##
+#F  UnhideGlobalVariables(<str1>[,<str2>,...])
+#F  UnhideGlobalVariables()
+##
+##  <ManSection>
+##  <Func Name="UnhideGlobalVariables" Arg='str1[,str2,...]'/>
+##  <Func Name="UnhideGlobalVariables" Arg=''/>
+##
+##  <Description>
+##  The second version unhides all variables that are still hidden.
+##  </Description>
+##  </ManSection>
+##
+##  This function was never documented.
+##
+##  Still used in anupq, nq, resclasses, rcwa (01/2019)
+DeclareGlobalFunction("UnhideGlobalVariables");
