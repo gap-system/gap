@@ -1739,6 +1739,11 @@ local   F,      # free group
 	relators,
 	i, k;       # loop variables
 
+    if IsTrivial(G) then
+      return GroupHomomorphismByFunction(G, TRIVIAL_FP_GROUP,
+                                         x->One(TRIVIAL_FP_GROUP),
+                                         x->One(G):noassert);
+    fi;
     # test for internal rep
     if HasGeneratorsOfGroup(G) and 
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then

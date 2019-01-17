@@ -866,6 +866,9 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
   end;
 
   G:=arg[1];
+  if IsTrivial(G) then
+    return LatticeFromClasses(G,[G^G]);
+  fi;
   H:=fail;
   select:=fail;
   if Length(arg)>1 then
@@ -1241,6 +1244,11 @@ InstallMethod(LatticeSubgroups,"via radical",true,[IsGroup and
 
 InstallMethod(LatticeSubgroups,"cyclic extension",true,[IsGroup and
   IsFinite],0, LatticeByCyclicExtension );
+
+InstallMethod(LatticeSubgroups, "for the trivial group", true,
+  [IsGroup and IsTrivial],
+  0,
+  G -> LatticeFromClasses(G,[G^G]));
 
 RedispatchOnCondition( LatticeSubgroups, true,
     [ IsGroup ], [ IsFinite ], 0 );
