@@ -1142,19 +1142,19 @@ Obj             FuncOnTuples (
       }
     }
     /* special case for permutations                                       */
-    if ( TNUM_OBJ(elm) == T_PERM2 || TNUM_OBJ(elm) == T_PERM4 ) {
+    if (IS_PERM(elm)) {
         PLAIN_LIST( tuple );
         return OnTuplesPerm( tuple, elm );
     }
 
     /* special case for transformations                                       */
-    if ( TNUM_OBJ(elm) == T_TRANS2 || TNUM_OBJ(elm) == T_TRANS4 ) {
+    if (IS_TRANS(elm)) {
         PLAIN_LIST( tuple );
         return OnTuplesTrans( tuple, elm );
     }
 
     /* special case for partial perms */
-    if ( TNUM_OBJ(elm) == T_PPERM2 || TNUM_OBJ(elm) == T_PPERM4 ) {
+    if (IS_PPERM(elm)) {
         PLAIN_LIST( tuple );
         return OnTuplesPPerm( tuple, elm );
     }
@@ -1211,19 +1211,19 @@ Obj             FuncOnSets (
     }
         
     /* special case for permutations                                       */
-    if ( TNUM_OBJ(elm) == T_PERM2 || TNUM_OBJ(elm) == T_PERM4 ) {
+    if (IS_PERM(elm)) {
         PLAIN_LIST( set );
         return OnSetsPerm( set, elm );
     }
 
     /* special case for transformations */
-    if ( TNUM_OBJ(elm)== T_TRANS2 || TNUM_OBJ(elm) == T_TRANS4 ){
+    if (IS_TRANS(elm)){
       PLAIN_LIST(set);
       return OnSetsTrans( set, elm);
     }
     
     /* special case for partial perms */
-    if ( TNUM_OBJ(elm)== T_PPERM2 || TNUM_OBJ(elm) == T_PPERM4 ){
+    if (IS_PPERM(elm)){
       PLAIN_LIST(set);
       return OnSetsPPerm( set, elm);
     }

@@ -111,29 +111,6 @@ extern Obj OnTuplesTrans(Obj tup, Obj f);
 */
 extern Obj OnSetsTrans(Obj set, Obj f);
 
-/****************************************************************************
-**
-*V  IdentityTrans  . . . . . . . . . . . . . . . . .  identity transformation
-**
-**  'IdentityTrans' is an identity transformation.
-*/
-extern Obj IdentityTrans;
-
-/****************************************************************************
-**
-*V  EqPermTrans22 . . . . . . . . . . . . . . . . .
-**
-**  The actual equality checking function for Perm2 and Trans2.
-*/
-Int EqPermTrans22(UInt degL, UInt degR, const UInt2 * ptLstart, const UInt2 * ptRstart);
-
-/****************************************************************************
-**
-*V  EqPermTrans44 . . . . . . . . . . . . . . . . .
-**
-**  The actual equality checking function for Perm4 and Trans4.
-*/
-Int EqPermTrans44(UInt degL, UInt degR, const UInt4 * ptLstart, const UInt4 * ptRstart);
 
 /****************************************************************************
 **
