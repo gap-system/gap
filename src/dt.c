@@ -61,6 +61,38 @@
 #include "modules.h"
 #include "plist.h"
 
+static void UnmarkTree(Obj z);
+static UInt Mark(Obj tree, Obj reftree, Int indexx);
+static Int  AlmostEqual(Obj tree1, Int index1, Obj tree2, Int index2);
+static Int  Equal(Obj tree1, Int index1, Obj tree2, Int index2);
+static Obj  Mark2(Obj tree, Int index1, Obj reftree, Int index2);
+static UInt FindTree(Obj tree, Int indexx);
+static Obj  MakeFormulaVector(Obj tree, Obj pr);
+static Int  Leftof(Obj tree1, Int index1, Obj tree2, Int index2);
+static Int  Leftof2(Obj tree1, Int index1, Obj tree2, Int index2);
+static Int  Earlier(Obj tree1, Int index1, Obj tree2, Int index2);
+static void FindNewReps(Obj tree, Obj reps, Obj pr, Obj max);
+static void FindSubs(Obj tree,
+                     Int x,
+                     Obj list1,
+                     Obj list2,
+                     Obj a,
+                     Obj b,
+                     Int al,
+                     Int ar,
+                     Int bl,
+                     Int br,
+                     Obj reps,
+                     Obj pr,
+                     Obj max);
+static void SetSubs(Obj list, Obj a, Obj tree);
+static void UnmarkAEClass(Obj tree, Obj list);
+
+#if 0
+static void TestTree(Obj tree);
+static Obj  Part(Obj list, Int pos1, Int pos2);
+#endif
+
 
 /****************************************************************************
 **
@@ -1307,6 +1339,7 @@ Obj    FuncFindNewReps(
 **  'TestTree' tests if <tree> is a tree. If <tree> is not a tree 'TestTree'
 **  signals an error.
 */
+#if 0
 void  TestTree(
                Obj     tree)
 {
@@ -1342,6 +1375,7 @@ void  TestTree(
                          (DT_RIGHT(tree, 1) - 1)*7                    )    );
     TestTree( Part(tree, (DT_RIGHT(tree, 1) - 1)*7,  LEN_PLIST(tree) ) );
 }
+#endif
 
 
 /****************************************************************************
@@ -1350,6 +1384,7 @@ void  TestTree(
 **
 **  'Part' returns <list>{ [<pos1>+1 .. <pos2>] }.
 */
+#if 0
 Obj    Part(
              Obj      list,
              Int      pos1,
@@ -1367,6 +1402,7 @@ Obj    Part(
     }
     return part;
 }
+#endif
 
 
 /***************************************************************************
