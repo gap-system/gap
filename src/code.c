@@ -107,6 +107,58 @@ Obj NewFunctionBody(void)
     return NewBag(T_BODY, sizeof(BodyHeader));
 }
 
+/****************************************************************************
+**
+*F  ADDR_EXPR(<expr>) . . . . . . . . . . . absolute address of an expression
+**
+**  'ADDR_EXPR' returns  the absolute  address  of  the memory  block of  the
+**  expression <expr>.
+**
+**  Note  that  it is *fatal*  to apply  'ADDR_EXPR'   to expressions of type
+**  'T_REFLVAR' or 'T_INTEXPR'.
+*/
+static Expr * ADDR_EXPR(Expr expr)
+{
+    return (Expr *)STATE(PtrBody) + expr / sizeof(Expr);
+}
+
+/****************************************************************************
+**
+*F  ADDR_STAT(<stat>) . . . . . . . . . . . . absolute address of a statement
+**
+**  'ADDR_STAT' returns   the  absolute address of the    memory block of the
+**  statement <stat>.
+*/
+static Stat * ADDR_STAT(Stat stat)
+{
+    return (Stat *)STATE(PtrBody) + stat / sizeof(Stat);
+}
+
+static void WRITE_EXPR(Expr expr, UInt idx, UInt val)
+{
+    ADDR_EXPR(expr)[idx] = val;
+}
+
+static void WRITE_STAT(Stat stat, UInt idx, UInt val)
+{
+    ADDR_STAT(stat)[idx] = val;
+}
+
+static StatHeader * STAT_HEADER(Stat stat)
+{
+    return (StatHeader *)ADDR_STAT(stat) - 1;
+}
+
+void SET_VISITED_STAT(Stat stat)
+{
+    STAT_HEADER(stat)->visited = 1;
+}
+
+
+#define SET_FUNC_CALL(call,x)   WRITE_EXPR(call, 0, x)
+#define SET_ARGI_CALL(call,i,x) WRITE_EXPR(call, i, x)
+#define SET_ARGI_INFO(info,i,x) WRITE_STAT(info, (i) - 1, x)
+
 
 static inline void PushOffsBody( void ) {
     GAP_ASSERT(CS(OffsBodyCount) < MAX_FUNC_EXPR_NESTING);
