@@ -28,6 +28,9 @@ mkdir -p $COVDIR
 
 for TEST_SUITE in $TEST_SUITES
 do
+  # restore current directory before each test suite
+  cd "$BUILDDIR"
+
   case $TEST_SUITE in
   testspecial | test-compile)
     cd $SRCDIR/tst/$TEST_SUITE

@@ -122,11 +122,8 @@ matrix:
           #- libgmp-dev:i386    # do not install GMP, to test that GAP can build its own
           - libreadline-dev:i386
 
-    # test error reporting and compiling
-    - env: TEST_SUITES="testspecial test-compile"
-
-    # test libgap
-    - env: TEST_SUITES="testlibgap"
+    # test error reporting and compiling as well as libgap
+    - env: TEST_SUITES="testspecial test-compile testlibgap"
 
 script:
   - set -e
