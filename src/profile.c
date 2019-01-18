@@ -534,7 +534,7 @@ static void visitStat(Stat stat)
   int visited = VISITED_STAT(stat);
 
   if (!visited) {
-    STAT_HEADER(stat)->visited = 1;
+    SET_VISITED_STAT(stat);
   }
 
   if (profileState.OutputRepeats || !visited) {

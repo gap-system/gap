@@ -249,7 +249,6 @@ enum STAT_TNUM {
 
 
 
-#define STAT_HEADER(stat) (((StatHeader *)ADDR_STAT(stat)) - 1)
 #define CONST_STAT_HEADER(stat)                                              \
     (((const StatHeader *)CONST_ADDR_STAT(stat)) - 1)
 
@@ -291,17 +290,25 @@ enum STAT_TNUM {
 
 /****************************************************************************
 **
+*F  SET_VISITED_STAT(<stat>) . . . . . . . . . . mark statement as having run
+**
+**  'SET_VISITED_STAT' marks the statement as having been executed while
+**  profiling wass turned on.
+*/
+void SET_VISITED_STAT(Stat stat);
+
+
+/****************************************************************************
+**
 *F  ADDR_STAT(<stat>) . . . . . . . . . . . . absolute address of a statement
 **
 **  'ADDR_STAT' returns   the  absolute address of the    memory block of the
 **  statement <stat>.
 */
-#define ADDR_STAT(stat) ((Stat *)STATE(PtrBody) + (stat) / sizeof(Stat))
 #define CONST_ADDR_STAT(stat)                                                \
     ((const Stat *)STATE(PtrBody) + (stat) / sizeof(Stat))
 
 #define READ_STAT(stat, idx) (CONST_ADDR_STAT(stat)[idx])
-#define WRITE_STAT(stat, idx, val) ADDR_STAT(stat)[idx] = val
 
 /****************************************************************************
 **
@@ -480,11 +487,9 @@ enum EXPR_TNUM {
 **  Note  that  it is *fatal*  to apply  'ADDR_EXPR'   to expressions of type
 **  'T_REFLVAR' or 'T_INTEXPR'.
 */
-#define ADDR_EXPR(expr) ADDR_STAT(expr)
 #define CONST_ADDR_EXPR(expr) CONST_ADDR_STAT(expr)
 
 #define READ_EXPR(expr, idx) (CONST_ADDR_EXPR(expr)[idx])
-#define WRITE_EXPR(expr, idx, val) ADDR_EXPR(expr)[idx] = val
 
 /****************************************************************************
 **
@@ -507,8 +512,6 @@ enum EXPR_TNUM {
 **  'SIZE_NARG_CALL' returns the size a  function call bag  should have for a
 **  function call bag with <narg> arguments.
 */
-#define SET_FUNC_CALL(call,x)   WRITE_EXPR(call, 0, x)
-#define SET_ARGI_CALL(call,i,x) WRITE_EXPR(call, i, x)
 #define FUNC_CALL(call)         READ_EXPR(call, 0)
 #define ARGI_CALL(call,i)       READ_EXPR(call, i)
 #define NARG_SIZE_CALL(size)    (((size) / sizeof(Expr)) - 1)
@@ -531,7 +534,6 @@ enum EXPR_TNUM {
 **  'SIZE_NARG_INFO' returns the size a  function call bag  should have for a
 **  function call bag with <narg> arguments.
 */
-#define SET_ARGI_INFO(info,i,x) WRITE_STAT(info, (i) - 1, x)
 #define ARGI_INFO(info,i)       READ_STAT(info, (i) - 1)
 #define NARG_SIZE_INFO(size)    ((size) / sizeof(Expr))
 #define SIZE_NARG_INFO(narg)    ((narg) * sizeof(Expr))

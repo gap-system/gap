@@ -541,7 +541,7 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
         }
     }
 
-    /* switch to this function (so that 'ADDR_STAT' and 'ADDR_EXPR' work) */
+    /* switch to this function (so that 'READ_STAT' and 'READ_EXPR' work) */
     SWITCH_TO_NEW_LVARS(func, narg, nloc, oldFrame);
     stats = SyntaxTreeCompiler(OFFSET_FIRST_STAT);
     SWITCH_TO_OLD_LVARS(oldFrame);
