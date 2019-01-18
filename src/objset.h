@@ -20,14 +20,14 @@
 #define OBJSET_USED 2
 #define OBJSET_DIRTY 3
 
-Obj NewObjSet();
+Obj NewObjSet(void);
 Int FindObjSet(Obj set, Obj obj);
 void AddObjSet(Obj set, Obj obj);
 void RemoveObjSet(Obj set, Obj obj);
 void ClearObjSet(Obj set);
 Obj ObjSetValues(Obj set);
 
-Obj NewObjMap();
+Obj NewObjMap(void);
 Int FindObjMap(Obj map, Obj key);
 Obj LookupObjMap(Obj map, Obj key);
 void AddObjMap(Obj map, Obj key, Obj value);
