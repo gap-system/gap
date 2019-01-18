@@ -1,4 +1,4 @@
-#@local rm,g,orbs,orb,getOneInt,a,x,y
+#@local R,a,rm,g,orbs,orb,getOneInt
 gap> START_TEST("random.tst");
 gap> ReadGapRoot( "tst/testrandom.g" );
 

@@ -27,7 +27,9 @@
 # checkin(e, C): returns if e is in C (usually checkin is '\in').
 
 randomTestInner := function(filter, global_rs, global_randfunc, randfunc, collection, checkin)
-    local test1, test2, test3, test4, test5, test6, local_rs;
+    local RANDOM_REPS, test1, test2, test3, test4, test5, test6, local_rs;
+
+    RANDOM_REPS := 250;
 
     # We do a single call first, to deal with calling Random causing extra attributes
     # of 'collection' to be set, changing the dispatch
@@ -35,23 +37,23 @@ randomTestInner := function(filter, global_rs, global_randfunc, randfunc, collec
 
     # Firstly, we will generate a base list
     Init(global_rs, 6);
-    test1 := List([1..1000], x -> global_randfunc(collection));
+    test1 := List([1..RANDOM_REPS], x -> global_randfunc(collection));
     # test2 should equal test1
     Init(global_rs, 6);
-    test2 := List([1..1000], x -> global_randfunc(collection));
+    test2 := List([1..RANDOM_REPS], x -> global_randfunc(collection));
     # test3 should also = test1
     Init(global_rs, 6);
-    test3 := List([1..1000], x -> randfunc(global_rs, collection));
+    test3 := List([1..RANDOM_REPS], x -> randfunc(global_rs, collection));
     # test4 should be different (as it came from a different seed)
     Init(global_rs, 8);
-    test4 := List([1..1000], x -> global_randfunc(collection));
+    test4 := List([1..RANDOM_REPS], x -> global_randfunc(collection));
     # test5 should be the same as test4, as it is made from seed 8
     # test6 should be the same as test1. Also, it checks that making test5
     # did not touch the global source at all.
     Init(global_rs, 8);
     local_rs :=  RandomSource(filter, 6);
-    test5 := List([1..1000], x -> randfunc(local_rs, collection));
-    test6 := List([1..1000], x -> global_randfunc(collection));
+    test5 := List([1..RANDOM_REPS], x -> randfunc(local_rs, collection));
+    test6 := List([1..RANDOM_REPS], x -> global_randfunc(collection));
     if ForAny(Concatenation(test1, test2, test3, test4, test5, test6), x -> not (checkin(x, collection)) ) then
         Print("Random member outside collection: ", collection,"\n");
     fi;
