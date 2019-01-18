@@ -92,7 +92,7 @@ extern UInt HaveInterrupt(void);
 /****************************************************************************
 **
 */
-extern UInt TakeInterrupt();
+extern UInt TakeInterrupt(void);
 
 
 /****************************************************************************
@@ -104,7 +104,7 @@ extern UInt TakeInterrupt();
 **  received.  It is never called on systems that do not support signals.  On
 **  those systems the executors test 'SyIsIntr' at regular intervals.
 */
-extern  void            InterruptExecStat ( );
+extern void InterruptExecStat(void);
 
 
 /****************************************************************************
