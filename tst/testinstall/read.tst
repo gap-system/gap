@@ -82,9 +82,6 @@ true
 gap> StringFile( "/" );
 Error, in StringFile: Is a directory (21)
 
-gap> FileString("/dev/full", "outdata", false);
-Error, in FileString: No space left on device (28)
-
 gap> READ_ALL_COMMANDS(InputTextString(""), false, false, false);
 [  ]
 gap> READ_ALL_COMMANDS(InputTextString("a := (3,7,1); y := a^(-1);"), false, false, false);
