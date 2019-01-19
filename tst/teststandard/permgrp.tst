@@ -8,12 +8,16 @@ gap> Size(Normalizer(SymmetricGroup(100),PrimitiveGroup(100,1)));
 gap> g:=Image(RegularActionHomomorphism(AbelianGroup([4,5,5])));;
 gap> Size(Normalizer(SymmetricGroup(100),g));       
 96000
-gap> g:=SymmetricGroup(11);;s:=SylowSubgroup(g,NrMovedPoints(g));;
+
+# the following tests used to choke GAP, because GAP failed to find
+# certain intermediate subgroups, such as M11; as such, the degrees
+# of symmetric groups in these tests are crucial
+gap> g:=SymmetricGroup(11);;s:=SylowSubgroup(g,11);;
 gap> dc:=DoubleCosetRepsAndSizes(g,s,s);;
 gap> Length(dc);Sum(dc,x->x[2])=Size(g);
 329900
 true
-gap> g:=SymmetricGroup(13);;s:=SylowSubgroup(g,NrMovedPoints(g));;
+gap> g:=SymmetricGroup(13);;s:=SylowSubgroup(g,13);;
 gap> ac:=AscendingChain(g,s);;
 gap> Maximum(List([2..Length(ac)],x->Index(ac[x],ac[x-1])))<600000;
 true
