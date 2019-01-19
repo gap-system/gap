@@ -38,14 +38,14 @@ extern void MurmurHash3_x64_128 ( const void * key, const int len,
 // values (should) produce different hash values.
 
 // Hash a block of memory
-Int HASHKEY_MEM_NC (const void* ptr, UInt4 seed, Int read);
+extern Int HASHKEY_MEM_NC(const void * ptr, UInt4 seed, Int read);
 
 // Hash an entire bag
-Int HASHKEY_WHOLE_BAG_NC (Obj obj, UInt4 seed);
+extern Int HASHKEY_WHOLE_BAG_NC(Obj obj, UInt4 seed);
 
 // Hash a bag starting at position 'skip', reading 'read' bytes.
 // Does NOT perform bounds checking
-Int HASHKEY_BAG_NC (Obj obj, UInt4 seed, Int skip, int read);
+extern Int HASHKEY_BAG_NC(Obj obj, UInt4 seed, Int skip, int read);
 
 /****************************************************************************
 **

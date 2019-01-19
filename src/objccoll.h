@@ -46,9 +46,9 @@
 **  collector module.   Therefore,  the  single  collector  module needs   to
 **  include this file.
 */
-Int C8Bits_CombiCollectWord ( Obj, Obj, Obj );
-Int C16Bits_CombiCollectWord ( Obj, Obj, Obj );
-Int C32Bits_CombiCollectWord ( Obj, Obj, Obj );
+extern Int C8Bits_CombiCollectWord(Obj, Obj, Obj);
+extern Int C16Bits_CombiCollectWord(Obj, Obj, Obj);
+extern Int C32Bits_CombiCollectWord(Obj, Obj, Obj);
 
 
 /****************************************************************************

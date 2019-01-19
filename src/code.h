@@ -87,19 +87,19 @@ EXPORT_INLINE BodyHeader *BODY_HEADER(Obj body)
     return (BodyHeader *)ADDR_OBJ(body);
 }
 
-Obj GET_FILENAME_BODY(Obj body);
-void SET_FILENAME_BODY(Obj body, Obj val);
+extern Obj  GET_FILENAME_BODY(Obj body);
+extern void SET_FILENAME_BODY(Obj body, Obj val);
 
-UInt GET_GAPNAMEID_BODY(Obj body);
-void SET_GAPNAMEID_BODY(Obj body, UInt val);
+extern UInt GET_GAPNAMEID_BODY(Obj body);
+extern void SET_GAPNAMEID_BODY(Obj body, UInt val);
 
-Obj GET_LOCATION_BODY(Obj body);
-void SET_LOCATION_BODY(Obj body, Obj val);
+extern Obj  GET_LOCATION_BODY(Obj body);
+extern void SET_LOCATION_BODY(Obj body, Obj val);
 
-UInt GET_STARTLINE_BODY(Obj body);
-void SET_STARTLINE_BODY(Obj body, UInt val);
-UInt GET_ENDLINE_BODY(Obj body);
-void SET_ENDLINE_BODY(Obj body, UInt val);
+extern UInt GET_STARTLINE_BODY(Obj body);
+extern void SET_STARTLINE_BODY(Obj body, UInt val);
+extern UInt GET_ENDLINE_BODY(Obj body);
+extern void SET_ENDLINE_BODY(Obj body, UInt val);
 
 extern Obj GET_VALUE_FROM_CURRENT_BODY(Int ix);
 
@@ -759,13 +759,12 @@ extern  void            CodeForEnd ( void );
 **  'CodeAtomicEndBody'.
 */
 
-void CodeAtomicBegin ( void );
+extern void CodeAtomicBegin(void);
 
-void CodeAtomicBeginBody ( UInt nrexprs );
+extern void CodeAtomicBeginBody(UInt nrexprs);
 
-void CodeAtomicEndBody (
-    UInt                nrstats );
-void CodeAtomicEnd ( void );
+extern void CodeAtomicEndBody(UInt nrstats);
+extern void CodeAtomicEnd(void);
 
 /****************************************************************************
 **
@@ -774,9 +773,9 @@ void CodeAtomicEnd ( void );
 **
 */
 
-void CodeQualifiedExprBegin(UInt qual);
+extern void CodeQualifiedExprBegin(UInt qual);
 
-void CodeQualifiedExprEnd( void );
+extern void CodeQualifiedExprEnd(void);
 
 
 /****************************************************************************

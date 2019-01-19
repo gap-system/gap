@@ -44,9 +44,9 @@ extern void QueueForTraversal(TraversalState *, Obj obj);
 extern Obj ReplaceByCopy(TraversalState *, Obj obj);
 
 
-Obj ReachableObjectsFrom(Obj obj);
-Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm);
-Obj CopyTraversed(Obj traversed);
+extern Obj ReachableObjectsFrom(Obj obj);
+extern Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm);
+extern Obj CopyTraversed(Obj traversed);
 
 //
 // PreMakeImmutableCheck checks whether the given object <obj> can be
@@ -56,7 +56,7 @@ Obj CopyTraversed(Obj traversed);
 //
 // Called by CheckedMakeImmutable().
 //
-int PreMakeImmutableCheck(Obj obj);
+extern int PreMakeImmutableCheck(Obj obj);
 
 
 /****************************************************************************

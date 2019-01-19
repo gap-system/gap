@@ -76,9 +76,9 @@ extern UInt SyAllocPool;
 */
 
 #ifdef GAP_MEM_CHECK
-UInt   GetMembufCount(void);
-void * GetMembuf(UInt i);
-UInt GetMembufSize(void);
+extern UInt   GetMembufCount(void);
+extern void * GetMembuf(UInt i);
+extern UInt   GetMembufSize(void);
 #endif
 
 /****************************************************************************

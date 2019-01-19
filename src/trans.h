@@ -42,7 +42,7 @@ EXPORT_INLINE UInt DEG_TRANS2(Obj f)
     return ((UInt)(SIZE_OBJ(f) - 3 * sizeof(Obj)) / sizeof(UInt2));
 }
 
-UInt RANK_TRANS2(Obj f);
+extern UInt RANK_TRANS2(Obj f);
 
 EXPORT_INLINE Obj NEW_TRANS4(UInt deg)
 {
@@ -69,7 +69,7 @@ EXPORT_INLINE UInt DEG_TRANS4(Obj f)
     return ((UInt)(SIZE_OBJ(f) - 3 * sizeof(Obj)) / sizeof(UInt4));
 }
 
-UInt RANK_TRANS4(Obj f);
+extern UInt RANK_TRANS4(Obj f);
 
 EXPORT_INLINE Obj NEW_TRANS(UInt deg)
 {
@@ -118,8 +118,8 @@ extern Obj OnSetsTrans(Obj set, Obj f);
 **
 **  Returns a hash value for a transformation
 */
+extern Int HashFuncForTrans(Obj f);
 
-Int HashFuncForTrans(Obj f);
 
 /****************************************************************************
 **

@@ -162,7 +162,7 @@ extern Obj Array2Perm (
 **
 *F  LargestMovedPointPerm(perm) . . . . . . . . largest point moved by a perm
 */
-UInt LargestMovedPointPerm(Obj perm);
+extern UInt LargestMovedPointPerm(Obj perm);
 
 
 /****************************************************************************

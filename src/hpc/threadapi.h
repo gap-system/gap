@@ -32,7 +32,7 @@ typedef struct ThreadObject {
     UInt status;
 } ThreadObject;
 
-Obj NewThreadObject(UInt id);
+extern Obj NewThreadObject(UInt id);
 
 
 typedef struct {

@@ -193,7 +193,7 @@ extern Obj IntHexString(Obj str);
 // If <string> is non-NULL, then <str> is ignored, and <string>
 // must reference a GAP string object. If <string> is NULL, then
 // <str> must point to a C string.
-Obj IntStringInternal(Obj string, const Char *str);
+extern Obj IntStringInternal(Obj string, const Char * str);
 
 
 /****************************************************************************

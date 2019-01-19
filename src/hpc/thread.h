@@ -70,8 +70,8 @@ Obj GetRegionName(Region *region);
 Obj GetRegionLockCounters(Region *region);
 void ResetRegionLockCounters(Region *region);
 
-void LockThreadControl(int modify);
-void UnlockThreadControl(void);
+extern void LockThreadControl(int modify);
+extern void UnlockThreadControl(void);
 
 void GCThreadHandler(void);
 

@@ -115,7 +115,8 @@ enum {
 **
 **  'BAG_HEADER' returns the header of the bag with the identifier <bag>.
 */
-EXPORT_INLINE BagHeader * BAG_HEADER(Bag bag) {
+EXPORT_INLINE BagHeader * BAG_HEADER(Bag bag)
+{
     GAP_ASSERT(bag);
     return (((BagHeader *)*bag) - 1);
 }
@@ -137,7 +138,8 @@ EXPORT_INLINE BagHeader * BAG_HEADER(Bag bag) {
 **  to  call  to  mark all subbags  of a  given bag (see "InitMarkFuncBags").
 **  Apart from that {\Gasman} does not care at all about types.
 */
-EXPORT_INLINE UInt TNUM_BAG(Bag bag) {
+EXPORT_INLINE UInt TNUM_BAG(Bag bag)
+{
     return BAG_HEADER(bag)->type;
 }
 
@@ -364,9 +366,9 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag)
 
 #elif defined(USE_JULIA_GC)
 
-void CHANGED_BAG(Bag bag);
+extern void CHANGED_BAG(Bag bag);
 
-int IsGapObj(void *);
+extern int IsGapObj(void *);
 
 #elif defined(MEMORY_CANARY)
 
@@ -644,9 +646,9 @@ extern  TNumInfoBags            InfoBags [ 256 ];
 
 
 #ifdef HPCGAP
-void MakeBagTypePublic(int type);
-Bag MakeBagPublic(Bag bag);
-Bag MakeBagReadOnly(Bag bag);
+extern void MakeBagTypePublic(int type);
+extern Bag  MakeBagPublic(Bag bag);
+extern Bag  MakeBagReadOnly(Bag bag);
 #endif
 
 /****************************************************************************
@@ -961,12 +963,12 @@ extern void InitBags(UInt initialSize, Bag * stackStart, UInt stackAlign);
 extern void FinishBags( void );
 
 #if !defined(USE_GASMAN)
-void *AllocateMemoryBlock(UInt size);
+extern void * AllocateMemoryBlock(UInt size);
 #endif
 
 
 #ifdef GAP_MEM_CHECK
-Int enableMemCheck(Char ** argv, void * dummy);
+extern Int enableMemCheck(Char ** argv, void * dummy);
 #endif
 
 #endif // GAP_GASMAN_H

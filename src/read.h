@@ -130,7 +130,7 @@ extern void PopGlobalForLoopVariable( void );
 **
 **  The current reader context is saved and a new one is started.
 */
-Obj Call0ArgsInNewReader(Obj f);
+extern Obj Call0ArgsInNewReader(Obj f);
 
 /****************************************************************************
 **
@@ -138,7 +138,7 @@ Obj Call0ArgsInNewReader(Obj f);
 **
 **  The current reader context is saved and a new one is started.
 */
-Obj Call1ArgsInNewReader(Obj f,Obj a);
+extern Obj Call1ArgsInNewReader(Obj f, Obj a);
 
 
 /****************************************************************************

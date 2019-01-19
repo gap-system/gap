@@ -169,8 +169,8 @@ EXPORT_INLINE void SET_BRK_CALL_TO(Expr expr)
 *F  FreeLVarsBag( <bag> )  . . . . . . . . . . . . . . . . . . free lvars bag
 */
 
-Bag NewLVarsBag(UInt slots);
-void FreeLVarsBag(Bag bag);
+extern Bag  NewLVarsBag(UInt slots);
+extern void FreeLVarsBag(Bag bag);
 
 /****************************************************************************
 **

@@ -32,7 +32,7 @@
 
 typedef void (*intfunc)(Int);
 
-Int RegisterBreakloopObserver(intfunc func);
+extern Int RegisterBreakloopObserver(intfunc func);
 
 /****************************************************************************
 **
@@ -248,21 +248,26 @@ GetPositiveSmallIntEx(const char * funcname, Obj op, const char * argname)
 **
 *F  CheckIsPossList( <desc>, <poss> ) . . . . . . . . . . check for poss list
 */
-void CheckIsPossList(const Char * desc, Obj poss);
+extern void CheckIsPossList(const Char * desc, Obj poss);
 
 
 /****************************************************************************
 **
 *F  CheckIsDenseList( <desc>, <listName>, <list> ) . . . check for dense list
 */
-void CheckIsDenseList(const Char * desc, const Char * listName, Obj list);
+extern void
+CheckIsDenseList(const Char * desc, const Char * listName, Obj list);
 
 
 /****************************************************************************
 **
 *F  CheckSameLength
 */
-void CheckSameLength(const Char * desc, const Char *leftName, const Char *rightName, Obj left, Obj right);
+extern void CheckSameLength(const Char * desc,
+                            const Char * leftName,
+                            const Char * rightName,
+                            Obj          left,
+                            Obj          right);
 
 
 /****************************************************************************

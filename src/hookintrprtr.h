@@ -16,11 +16,11 @@
 
 #include "system.h"
 
-void InstallEvalBoolFunc(Int, Obj (*)(Expr));
-void InstallEvalExprFunc(Int, Obj (*)(Expr));
-void InstallExecStatFunc(Int, UInt (*)(Stat));
-void InstallPrintStatFunc(Int, void (*)(Stat));
-void InstallPrintExprFunc(Int, void (*)(Expr));
+extern void InstallEvalBoolFunc(Int, Obj (*)(Expr));
+extern void InstallEvalExprFunc(Int, Obj (*)(Expr));
+extern void InstallExecStatFunc(Int, UInt (*)(Stat));
+extern void InstallPrintStatFunc(Int, void (*)(Stat));
+extern void InstallPrintExprFunc(Int, void (*)(Expr));
 
 
 /****************************************************************************
@@ -88,8 +88,8 @@ enum { HookCount = 6 };
 
 extern struct InterpreterHooks * activeHooks[HookCount];
 
-Int ActivateHooks(struct InterpreterHooks * hook);
-Int DeactivateHooks(struct InterpreterHooks * hook);
+extern Int ActivateHooks(struct InterpreterHooks * hook);
+extern Int DeactivateHooks(struct InterpreterHooks * hook);
 
 /****************************************************************************
 **
@@ -107,8 +107,8 @@ struct PrintHooks {
     void (*printExprPassthrough)(Expr stat);
 };
 
-void ActivatePrintHooks(struct PrintHooks * hook);
-void DeactivatePrintHooks(struct PrintHooks * hook);
+extern void ActivatePrintHooks(struct PrintHooks * hook);
+extern void DeactivatePrintHooks(struct PrintHooks * hook);
 
 /****************************************************************************
 **

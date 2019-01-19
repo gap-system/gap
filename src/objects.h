@@ -61,7 +61,8 @@ EXPORT_INLINE Int IS_FFE(Obj o)
 **  If allocation fails (e.g. because no more TNUMs are available),
 **  a negative value is returned.
 */
-Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
+extern Int RegisterPackageTNUM(const char * name,
+                               Obj (*typeObjFunc)(Obj obj));
 
 
 /****************************************************************************
@@ -361,14 +362,14 @@ EXPORT_INLINE UInt TNUM_OBJ(Obj obj)
 **
 *F  TNAM_TNUM( <obj> ) . . . . . . . . . . . . . . . . . . . . name of a type
 */
-const Char * TNAM_TNUM(UInt tnum);
+extern const Char * TNAM_TNUM(UInt tnum);
 
 
 /****************************************************************************
 **
 *F  SET_TNAM_TNUM( <obj> ) . . . . . . . . . . . . . . set the name of a type
 */
-void SET_TNAM_TNUM(UInt tnum, const Char *name);
+extern void SET_TNAM_TNUM(UInt tnum, const Char * name);
 
 
 /****************************************************************************

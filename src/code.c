@@ -3040,7 +3040,7 @@ void CodeIsbComObjExpr ( void )
 **
 */
 
-extern void CodeEmpty( void )
+void CodeEmpty(void)
 {
   Stat stat;
   stat = NewStat(T_EMPTY, 0);

@@ -19,9 +19,11 @@
 // CheckChildStatusChanged.
 #define GAP_HasCheckChildStatusChanged
 
-int CheckChildStatusChanged(int childPID, int status);
+extern int CheckChildStatusChanged(int childPID, int status);
 
-/*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
 /****************************************************************************

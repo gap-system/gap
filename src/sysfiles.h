@@ -70,7 +70,7 @@ extern Int4 SyGAPCRC(
 extern char GAPExecLocation[GAP_PATH_MAX];
 
 // Fills in GAPExecLocation. Is called straight after 'main' starts.
-void SetupGAPLocation(int argc, char ** argv);
+extern void SetupGAPLocation(int argc, char ** argv);
 
 
 /****************************************************************************
@@ -291,10 +291,10 @@ extern void SyFputs (
             Int                 fid );
 
 
-Int SyRead(Int fid, void * ptr, size_t len);
-Int SyWrite(Int fid, const void * ptr, size_t len);
+extern Int SyRead(Int fid, void * ptr, size_t len);
+extern Int SyWrite(Int fid, const void * ptr, size_t len);
 
-Int SyReadWithBuffer(Int fid, void * ptr, size_t len);
+extern Int SyReadWithBuffer(Int fid, void * ptr, size_t len);
 
 /****************************************************************************
 **
@@ -586,7 +586,7 @@ extern Obj SyReadStringFileGeneric(Int fid);
 
 #ifdef USE_CUSTOM_MEMMOVE
 // Internal implementation of memmove, to avoid issues with glibc
-void * SyMemmove(void * dst, const void * src, size_t size);
+extern void * SyMemmove(void * dst, const void * src, size_t size);
 #else
 #define SyMemmove memmove
 #endif

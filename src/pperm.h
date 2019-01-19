@@ -18,7 +18,7 @@ EXPORT_INLINE int IS_PPERM(Obj f)
     return (TNUM_OBJ(f) == T_PPERM2 || TNUM_OBJ(f) == T_PPERM4);
 }
 
-Obj NEW_PPERM2(UInt deg);
+extern Obj NEW_PPERM2(UInt deg);
 
 EXPORT_INLINE UInt2 * ADDR_PPERM2(Obj f)
 {
@@ -39,10 +39,10 @@ EXPORT_INLINE UInt DEG_PPERM2(Obj f)
             sizeof(UInt2));
 }
 
-UInt CODEG_PPERM2(Obj f);
-UInt RANK_PPERM2(Obj f);
+extern UInt CODEG_PPERM2(Obj f);
+extern UInt RANK_PPERM2(Obj f);
 
-Obj NEW_PPERM4(UInt deg);
+extern Obj NEW_PPERM4(UInt deg);
 
 EXPORT_INLINE UInt4 * ADDR_PPERM4(Obj f)
 {
@@ -63,8 +63,8 @@ EXPORT_INLINE UInt DEG_PPERM4(Obj f)
             sizeof(UInt4));
 }
 
-UInt CODEG_PPERM4(Obj f);
-UInt RANK_PPERM4(Obj f);
+extern UInt CODEG_PPERM4(Obj f);
+extern UInt RANK_PPERM4(Obj f);
 
 EXPORT_INLINE UInt DEG_PPERM(Obj f)
 {
@@ -111,7 +111,7 @@ extern Obj OnSetsPPerm(Obj set, Obj f);
 **  Returns a hash value for a partial permutation
 */
 
-Int HashFuncForPPerm(Obj f);
+extern Int HashFuncForPPerm(Obj f);
 
 
 /****************************************************************************

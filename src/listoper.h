@@ -22,13 +22,9 @@
 *F  LtListList(<listL>,<listR>) . . . . . . . . . test if two lists are equal
 **
 */
-extern Int             EqListList (
-    Obj                 listL,
-    Obj                 listR );
+extern Int EqListList(Obj listL, Obj listR);
+extern Int LtListList(Obj listL, Obj listR);
 
-extern Int             LtListList (
-    Obj                 listL,
-    Obj                 listR );
 
 /****************************************************************************
 **
@@ -45,19 +41,10 @@ extern Int             LtListList (
 **  'SumListList' is a generic  function for the third kind  of sum,  that of
 **  two lists.
 */
+extern Obj SumSclList(Obj listL, Obj listR);
+extern Obj SumListScl(Obj listL, Obj listR);
+extern Obj SumListList(Obj listL, Obj listR);
 
-
-Obj             SumSclList (
-    Obj                 listL,
-    Obj                 listR );
-
-Obj             SumListScl (
-    Obj                 listL,
-    Obj                 listR );
-
-Obj             SumListList (
-    Obj                 listL,
-    Obj                 listR );
 
 /****************************************************************************
 **
@@ -74,19 +61,10 @@ Obj             SumListList (
 **  'DiffListList' is  a generic function for the  third  kind of difference,
 **  that of two lists.
 */
+extern Obj DiffSclList(Obj listL, Obj listR);
+extern Obj DiffListScl(Obj listL, Obj listR);
+extern Obj DiffListList(Obj listL, Obj listR);
 
-
-Obj             DiffSclList (
-    Obj                 listL,
-    Obj                 listR );
-
-Obj             DiffListScl (
-    Obj                 listL,
-    Obj                 listR );
-
-Obj             DiffListList (
-    Obj                 listL,
-    Obj                 listR );
 
 /****************************************************************************
 **
@@ -108,18 +86,9 @@ Obj             DiffListList (
 **  vectors, a vector and a matrix, and the product of a vector and a list of
 **  matrices.
 */
-
-Obj             ProdSclList (
-    Obj                 listL,
-    Obj                 listR );
-
-Obj             ProdListScl (
-    Obj                 listL,
-    Obj                 listR );
-
-Obj             ProdListList (
-    Obj                 listL,
-    Obj                 listR );
+extern Obj ProdSclList(Obj listL, Obj listR);
+extern Obj ProdListScl(Obj listL, Obj listR);
+extern Obj ProdListList(Obj listL, Obj listR);
 
 
 /****************************************************************************

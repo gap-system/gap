@@ -20,22 +20,31 @@
 #define OBJSET_USED 2
 #define OBJSET_DIRTY 3
 
-Obj NewObjSet(void);
-Int FindObjSet(Obj set, Obj obj);
-void AddObjSet(Obj set, Obj obj);
-void RemoveObjSet(Obj set, Obj obj);
-void ClearObjSet(Obj set);
-Obj ObjSetValues(Obj set);
+extern Obj  NewObjSet(void);
+extern Int  FindObjSet(Obj set, Obj obj);
+extern void AddObjSet(Obj set, Obj obj);
+extern void RemoveObjSet(Obj set, Obj obj);
+extern void ClearObjSet(Obj set);
+extern Obj  ObjSetValues(Obj set);
 
-Obj NewObjMap(void);
-Int FindObjMap(Obj map, Obj key);
-Obj LookupObjMap(Obj map, Obj key);
-void AddObjMap(Obj map, Obj key, Obj value);
-void RemoveObjMap(Obj map, Obj obj);
-void ClearObjMap(Obj map);
-Obj ObjMapValues(Obj map);
-Obj ObjMapKeys(Obj map);
+extern Obj  NewObjMap(void);
+extern Int  FindObjMap(Obj map, Obj key);
+extern Obj  LookupObjMap(Obj map, Obj key);
+extern void AddObjMap(Obj map, Obj key, Obj value);
+extern void RemoveObjMap(Obj map, Obj obj);
+extern void ClearObjMap(Obj map);
+extern Obj  ObjMapValues(Obj map);
+extern Obj  ObjMapKeys(Obj map);
 
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+*F  InitInfoObjSets() . . . . . . . . . . . . . . . . table of init functions
+*/
 StructInitInfo *InitInfoObjSets( void );
 
 #endif // GAP_OBJSET_H

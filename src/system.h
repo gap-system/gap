@@ -494,7 +494,7 @@ extern void SyUSleep( UInt msecs );
 #define syJmp_buf jmp_buf
 #endif
 
-void syLongjmp(syJmp_buf* buf, int val) NORETURN;
+extern void syLongjmp(syJmp_buf * buf, int val) NORETURN;
 
 /****************************************************************************
 **
@@ -505,7 +505,7 @@ void syLongjmp(syJmp_buf* buf, int val) NORETURN;
 
 typedef void (*voidfunc)(void);
 
-Int RegisterSyLongjmpObserver(voidfunc);
+extern Int RegisterSyLongjmpObserver(voidfunc);
 
 
 /****************************************************************************

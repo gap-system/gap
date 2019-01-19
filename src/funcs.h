@@ -45,10 +45,10 @@ extern void ExecEnd(UInt error);
 **  to protect against stack overflows and the resulting crashes.
 */
 
-void IncRecursionDepth(void);
-void DecRecursionDepth(void);
-Int GetRecursionDepth(void);
-void SetRecursionDepth(Int depth);
+extern void IncRecursionDepth(void);
+extern void DecRecursionDepth(void);
+extern Int  GetRecursionDepth(void);
+extern void SetRecursionDepth(Int depth);
 
 extern UInt RecursionTrapInterval;
 extern void RecursionDepthTrap( void );
