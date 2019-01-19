@@ -636,12 +636,6 @@ EXPORT_INLINE Int IS_SSORT_LIST(Obj list)
     return (*IsSSortListFuncs[TNUM_OBJ(list)])(list);
 }
 
-/****************************************************************************
-**
-*F  IsSSortListProp
-*/
-extern Obj IsSSortListProp;
-
 
 /****************************************************************************
 **

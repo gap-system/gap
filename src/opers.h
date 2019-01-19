@@ -490,63 +490,10 @@ extern Obj SET_FILTER_OBJ;
 extern Obj RESET_FILTER_OBJ;
 
 
-
-/****************************************************************************
-**
-*F  SetterFilter( <oper> )  . . . . . . . . . . . . . . .  setter of a filter
-*/
-extern Obj SetterFilter (
-    Obj                 oper );
-
-
-/****************************************************************************
-**
-*F  SetterAndFilter( <getter> )  . . . . . .  setter of a concatenated filter
-*/
-extern Obj DoSetAndFilter (
-    Obj                 self,
-    Obj                 obj,
-    Obj                 val );
-
-extern Obj SetterAndFilter (
-    Obj                 getter );
-        
-
-/****************************************************************************
-**
-*F  TesterFilter( <oper> )  . . . . . . . . . . . . . . .  tester of a filter
-*/
-extern Obj TesterFilter (
-    Obj                 oper );
-
-
-/****************************************************************************
-**
-*F  TestAndFilter( <getter> )  . . . . . . . .tester of a concatenated filter
-*/
-extern Obj DoTestAndFilter (
-    Obj                 self,
-    Obj                 obj );
-
-extern Obj TesterAndFilter (
-    Obj                 getter );
-
-
 /****************************************************************************
 **
 *F  NewFilter( <name>, <narg>, <nams>, <hdlr> )  . . . . .  make a new filter
 */
-extern Obj NewTesterFilter (
-    Obj                 getter );
-
-extern Obj DoSetFilter (
-    Obj                 self,
-    Obj                 obj,
-    Obj                 val );
-
-extern Obj NewSetterFilter (
-    Obj                 getter );
-
 extern Obj DoFilter (
     Obj                 self,
     Obj                 obj );
@@ -557,17 +504,13 @@ extern Obj NewFilter (
     Obj                 nams,
     ObjFunc             hdlr );
 
-
 extern Obj DoTestAttribute( Obj self, Obj obj);
+
 
 /****************************************************************************
 **
 *F  NewAndFilter( <filt1>, <filt2> ) . . . . . make a new concatenated filter
 */
-extern Obj DoAndFilter (
-    Obj                 self,
-    Obj                 obj );
-
 extern Obj NewAndFilter (
     Obj                 oper1,
     Obj                 oper2 );
@@ -694,10 +637,6 @@ extern Obj NewOperation (
 *F  NewAttribute( <name> )  . . . . . . . . . . . . . .  make a new attribute
 */
 extern  Obj DoAttribute (
-            Obj                 self,
-            Obj                 obj );
-
-extern  Obj DoVerboseAttribute (
             Obj                 self,
             Obj                 obj );
 

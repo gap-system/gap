@@ -69,6 +69,11 @@ struct WaitList {
     ThreadLocalStorage * thread;
 };
 
+typedef struct {
+  pthread_mutex_t lock;
+  struct WaitList *head, *tail;
+} Monitor;
+
 typedef struct Channel {
     Obj  monitor;
     Obj  queue;
@@ -618,7 +623,7 @@ Obj FuncResumeThread(Obj self, Obj thread)
 *F FuncRegionOf ... return region of an object
 **
 */
-
+static Obj PublicRegion;
 
 Obj FuncRegionOf(Obj self, Obj obj)
 {
