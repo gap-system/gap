@@ -65,12 +65,6 @@
 #define SC_RWS_GENERATORS(sc) \
     (CONST_ADDR_OBJ(sc)[SCP_RWS_GENERATORS])
 
-/****************************************************************************
-**
-*F  FuncFinPowConjCol_CollectWordOrFail( <self>, <sc>, <vv>, <w> )
-*/
-extern Obj FuncFinPowConjCol_CollectWordOrFail ( Obj, Obj, Obj, Obj );
-
 
 /****************************************************************************
 **

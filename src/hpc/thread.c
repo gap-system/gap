@@ -60,7 +60,6 @@ typedef struct ThreadData {
 } ThreadData;
 
 Region *LimboRegion, *ReadOnlyRegion;
-Obj     PublicRegion;
 Obj     PublicRegionName;
 
 static int        GlobalPauseInProgress;

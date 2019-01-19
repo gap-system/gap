@@ -62,7 +62,6 @@ void RegionUnlock(Region *region);
 Region *CurrentRegion(void);
 Region *GetRegionOf(Obj obj);
 extern Region *LimboRegion, *ReadOnlyRegion;
-extern Obj PublicRegion;
 extern Obj PublicRegionName;
 
 void SetRegionName(Region *region, Obj name);

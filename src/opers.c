@@ -56,6 +56,10 @@ static Obj ArglistObjVal;
 static Obj ArglistObj;
 
 
+static Obj SetterAndFilter(Obj getter);
+static Obj TesterAndFilter(Obj getter);
+
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * * internal flags functions * * * * * * * * * * * * *
@@ -2430,13 +2434,6 @@ Obj NewConstructor(Obj name)
 
 /****************************************************************************
 **
-*F  DoAttribute( <name> ) . . . . . . . . . . . . . . .  make a new attribute
-*/
-
-
-
-/****************************************************************************
-**
 **  DoTestAttribute( <attr>, <obj> )
 */
 Obj DoTestAttribute (
@@ -2755,7 +2752,6 @@ static void SetupAttribute(Obj attr, Obj setter, Obj tester, Int flag2)
     SET_ENABLED_ATTR(attr,1);
     CHANGED_BAG(attr);
 }
-
   
 
 Obj NewAttribute (
@@ -2780,6 +2776,7 @@ Obj NewAttribute (
 
     return getter;    
 }
+
 
 /****************************************************************************
 **
