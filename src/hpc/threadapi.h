@@ -34,10 +34,6 @@ typedef struct ThreadObject {
 
 Obj NewThreadObject(UInt id);
 
-Obj KeepAlive(Obj);
-void StopKeepAlive(Obj);
-#define KEPTALIVE(obj) (ADDR_OBJ(obj)[1])
-
 extern void InitSignals(void);
 
 
