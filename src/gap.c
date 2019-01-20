@@ -1482,46 +1482,6 @@ Obj FuncTHREAD_UI(Obj self)
 }
 
 
-GVarDescriptor GVarTHREAD_INIT;
-GVarDescriptor GVarTHREAD_EXIT;
-
-void ThreadedInterpreter(void *funcargs) {
-  Obj tmp, func;
-  int i;
-
-  /* initialize everything and begin an interpreter                       */
-  STATE(NrError) = 0;
-  STATE(ThrownObject) = 0;
-
-  IntrBegin( STATE(BottomLVars) );
-  tmp = KEPTALIVE(funcargs);
-  StopKeepAlive(funcargs);
-  func = ELM_PLIST(tmp, 1);
-  for (i=2; i<=LEN_PLIST(tmp); i++)
-  {
-    Obj item = ELM_PLIST(tmp, i);
-    SET_ELM_PLIST(tmp, i-1, item);
-  }
-  SET_LEN_PLIST(tmp, LEN_PLIST(tmp)-1);
-
-  TRY_IF_NO_ERROR {
-    Obj init, exit;
-    if (sySetjmp(TLS(threadExit)))
-      return;
-    init = GVarOptFunction(&GVarTHREAD_INIT);
-    if (init) CALL_0ARGS(init);
-    CallFuncList(func, tmp);
-    exit = GVarOptFunction(&GVarTHREAD_EXIT);
-    if (exit) CALL_0ARGS(exit);
-    PushVoidObj();
-    /* end the interpreter                                                 */
-    IntrEnd(0, NULL);
-  } CATCH_ERROR {
-    IntrEnd(1, NULL);
-    ClearError();
-  } 
-}
-
 #endif
 
 
@@ -1597,11 +1557,6 @@ static Int InitKernel (
     /* establish Fopy of ViewObj                                           */
     ImportFuncFromLibrary(  "ViewObj", 0L );
     ImportFuncFromLibrary(  "Error", &Error );
-
-#ifdef HPCGAP
-    DeclareGVar(&GVarTHREAD_INIT, "THREAD_INIT");
-    DeclareGVar(&GVarTHREAD_EXIT, "THREAD_EXIT");
-#endif
 
 #ifdef HAVE_SELECT
     InitCopyGVar("OnCharReadHookActive",&OnCharReadHookActive);

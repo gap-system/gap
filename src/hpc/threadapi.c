@@ -19,6 +19,7 @@
 #include "funcs.h"
 #include "gapstate.h"
 #include "gvars.h"
+#include "intrprtr.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
@@ -27,6 +28,7 @@
 #include "read.h"
 #include "records.h"
 #include "set.h"
+#include "stats.h"
 #include "stringobj.h"
 
 #include "hpc/guards.h"
@@ -366,6 +368,7 @@ Obj             FirstKeepAlive;
 Obj             LastKeepAlive;
 pthread_mutex_t KeepAliveLock;
 
+#define KEPTALIVE(obj) (ADDR_OBJ(obj)[1])
 #define PREV_KEPT(obj) (ADDR_OBJ(obj)[2])
 #define NEXT_KEPT(obj) (ADDR_OBJ(obj)[3])
 
@@ -405,6 +408,52 @@ void StopKeepAlive(Obj node)
 #endif
 }
 
+static GVarDescriptor GVarTHREAD_INIT;
+static GVarDescriptor GVarTHREAD_EXIT;
+
+static void ThreadedInterpreter(void * funcargs)
+{
+    Obj tmp, func;
+    int i;
+
+    /* initialize everything and begin an interpreter                       */
+    STATE(NrError) = 0;
+    STATE(ThrownObject) = 0;
+
+    IntrBegin(STATE(BottomLVars));
+    tmp = KEPTALIVE(funcargs);
+    StopKeepAlive(funcargs);
+    func = ELM_PLIST(tmp, 1);
+    for (i = 2; i <= LEN_PLIST(tmp); i++) {
+        Obj item = ELM_PLIST(tmp, i);
+        SET_ELM_PLIST(tmp, i - 1, item);
+    }
+    SET_LEN_PLIST(tmp, LEN_PLIST(tmp) - 1);
+
+    TRY_IF_NO_ERROR
+    {
+        Obj init, exit;
+        if (sySetjmp(TLS(threadExit)))
+            return;
+        init = GVarOptFunction(&GVarTHREAD_INIT);
+        if (init)
+            CALL_0ARGS(init);
+        CallFuncList(func, tmp);
+        exit = GVarOptFunction(&GVarTHREAD_EXIT);
+        if (exit)
+            CALL_0ARGS(exit);
+        PushVoidObj();
+        /* end the interpreter */
+        IntrEnd(0, NULL);
+    }
+    CATCH_ERROR
+    {
+        IntrEnd(1, NULL);
+        ClearError();
+    }
+}
+
+
 /****************************************************************************
 **
 *F FuncCreateThread  ... create a new thread
@@ -413,8 +462,6 @@ void StopKeepAlive(Obj node)
 ** the function passed as an argument in it. It returns an integer that
 ** is a unique identifier for the thread.
 */
-
-extern void ThreadedInterpreter(void *);
 
 Obj FuncCreateThread(Obj self, Obj funcargs)
 {
@@ -2682,6 +2729,11 @@ static Int InitKernel(StructInitInfo * module)
     MakeBagTypePublic(T_BARRIER);
 
     PublicRegion = NewBag(T_REGION, sizeof(Region *));
+
+#ifdef HPCGAP
+    DeclareGVar(&GVarTHREAD_INIT, "THREAD_INIT");
+    DeclareGVar(&GVarTHREAD_EXIT, "THREAD_EXIT");
+#endif
 
     return 0;
 }
