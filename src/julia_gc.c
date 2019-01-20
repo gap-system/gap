@@ -364,6 +364,7 @@ static jl_datatype_t * datatype_mptr;
 static jl_datatype_t * datatype_bag;
 static jl_datatype_t * datatype_largebag;
 static UInt            StackAlignBags;
+static Bag *           GapStackBottom;
 static jl_ptls_t       JuliaTLS, SaveTLS;
 static size_t          max_pool_obj_size;
 static size_t          bigval_startoffset;
@@ -527,6 +528,9 @@ void GapRootScanner(int full)
     // current_task != root_task.
     char * stackend = (char *)jl_task_stack_buffer(task, &size, &tid);
     stackend += size;
+    if (JuliaTLS->tid == 0 && JuliaTLS->root_task == task) {
+        stackend = (char *)GapStackBottom;
+    }
 
     // allow installing a custom marking function. This is used for
     // integrating GAP (possibly linked as a shared library) with other code
@@ -589,6 +593,13 @@ static void PreGCHook(int full)
     // a thread-local variable.
     SaveTLS = JuliaTLS;
     JuliaTLS = jl_get_ptls_states();
+    // This is the same code as in VarsBeforeCollectBags() for GASMAN.
+    // It is necessary because ASS_LVAR() and related functionality
+    // does not call CHANGED_BAG() for performance reasons. CHANGED_BAG()
+    // is only called when the current lvars bag is being changed. Thus,
+    // we have to add a write barrier at the start of the GC, too.
+    if (STATE(CurrLVars))
+        CHANGED_BAG(STATE(CurrLVars));
     /* information at the beginning of garbage collections                 */
     SyMsgsBags(full, 0, 0);
     memset(MarkCache, 0, sizeof(MarkCache));
@@ -638,6 +649,7 @@ static uintptr_t JMarkBag(jl_ptls_t ptls, jl_value_t * obj)
 void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
 {
     // HOOK: initialization happens here.
+    GapStackBottom = stack_bottom;
     for (UInt i = 0; i < NUM_TYPES; i++)
         TabMarkFuncBags[i] = MarkAllSubBags;
     // These callbacks need to be set before initialization so
