@@ -520,8 +520,12 @@ static Int PushValue(Obj val)
     Obj values = header->values;
     if (!values) {
         values = NEW_PLIST(T_PLIST, 4);
+        // Recalculate header in case NEW_PLIST caused a GC
         header = (BodyHeader *)STATE(PtrBody);
         header->values = values;
+        GAP_ASSERT(STATE(PtrBody) == (Stat *)PTR_BAG(BODY_FUNC(CURR_FUNC())));
+        // This is the bag PtrBody points at
+        CHANGED_BAG(BODY_FUNC(CURR_FUNC()));
     }
     return PushPlist(values, val);
 }
