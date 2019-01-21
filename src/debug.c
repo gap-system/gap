@@ -67,10 +67,8 @@ void InstallBacktraceHandlers(void)
 {
     signal(SIGSEGV, BacktraceHandler);
     signal(SIGBUS, BacktraceHandler);
-    signal(SIGINT, BacktraceHandler);
     signal(SIGABRT, BacktraceHandler);
     signal(SIGFPE, BacktraceHandler);
-    signal(SIGTERM, BacktraceHandler);
 }
 
 #endif
