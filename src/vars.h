@@ -196,7 +196,10 @@ EXPORT_INLINE void MakeHighVars( Bag bag ) {
 
 EXPORT_INLINE Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc)
 {
-  // make sure old lvars are not garbage collected
+  // As an optimization, we never call CHANGED_BAG on CurrLVars directly,
+  // instead a callback that is run just before any GC takes care of that.
+  // However, that means that when changing the value of CurrLVars, we must
+  // call CHANGED_BAG on the old value.
   Obj old = STATE(CurrLVars);
   CHANGED_BAG( old );
 
@@ -226,6 +229,10 @@ EXPORT_INLINE Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc)
 */
 EXPORT_INLINE void SWITCH_TO_OLD_LVARS(Obj old)
 {
+    // As an optimization, we never call CHANGED_BAG on CurrLVars directly,
+    // instead a callback that is run just before any GC takes care of that.
+    // However, that means that when changing the value of CurrLVars, we must
+    // call CHANGED_BAG on the old value.
     CHANGED_BAG(STATE(CurrLVars));
 
     GAP_ASSERT(IS_LVARS_OR_HVARS(old));

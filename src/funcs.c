@@ -665,8 +665,6 @@ Obj             MakeFunction (
     SET_NLOC_FUNC( func, NLOC_FUNC( fexp ) );
     SET_BODY_FUNC( func, BODY_FUNC( fexp ) );
     SET_ENVI_FUNC( func, STATE(CurrLVars) );
-    /* the 'CHANGED_BAG(STATE(CurrLVars))' is needed because it is delayed        */
-    CHANGED_BAG( STATE(CurrLVars) );
     MakeHighVars(STATE(CurrLVars));
 #ifdef HPCGAP
     SET_LCKS_FUNC( func, LCKS_FUNC( fexp ) );
@@ -804,9 +802,6 @@ void ExecBegin(Obj frame)
 {
     // remember the old execution state
     PushPlist(FuncsState()->ExecState, STATE(CurrLVars));
-
-    // the 'CHANGED_BAG(STATE(CurrLVars))' is needed because it is delayed
-    CHANGED_BAG( STATE(CurrLVars) );
 
     // set up new state
     SWITCH_TO_OLD_LVARS( frame );
