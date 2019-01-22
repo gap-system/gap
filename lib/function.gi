@@ -63,6 +63,11 @@ function(func)
     return result;
 end);
 
+InstallMethod(Display, "for a function", [IsFunction and IsInternalRep],
+function(fun)
+    Print(fun, "\n");
+end);
+
 InstallMethod(DisplayString, "for a function, using string stream", [IsFunction and IsInternalRep],
 function(fun)
     local  s, stream;
