@@ -1,0 +1,9 @@
+gap> Read(InputTextString("1/0"));
+Error, Rational operations: <divisor> must not be zero
+not in any function at stream:1
+type 'quit;' to quit to outer loop
+brk> quit;
+Syntax error: ; expected in stream:1
+gap> 1+1;
+2
+gap> QUIT;

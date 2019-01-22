@@ -1,6 +1,6 @@
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "-49750691"
+#define FILE_CRC  "77795076"
 
 /* global variables used in handlers */
 static GVar G_CALL__WITH__CATCH;
@@ -11,6 +11,8 @@ static GVar G_range3;
 static Obj  GC_range3;
 static GVar G_runtest;
 static GVar G_BreakOnError;
+static GVar G_Display;
+static Obj  GF_Display;
 
 /* record names used in handlers */
 
@@ -148,6 +150,69 @@ static Obj  HdlrFunc4 (
  CHANGED_BAG( t_3 );
  CALL_2ARGS( t_1, t_2, t_3 );
  
+ /* Display( [ 1, 2 .. 2 ] ); */
+ t_1 = GF_Display;
+ t_2 = Range3Check( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(2) );
+ CALL_1ARGS( t_1, t_2 );
+ 
+ /* CALL_WITH_CATCH( range3, [ 2, 2, 2 ] ); */
+ t_1 = GF_CALL__WITH__CATCH;
+ t_2 = GC_range3;
+ CHECK_BOUND( t_2, "range3" )
+ t_3 = NEW_PLIST( T_PLIST, 3 );
+ SET_LEN_PLIST( t_3, 3 );
+ SET_ELM_PLIST( t_3, 1, INTOBJ_INT(2) );
+ SET_ELM_PLIST( t_3, 2, INTOBJ_INT(2) );
+ SET_ELM_PLIST( t_3, 3, INTOBJ_INT(2) );
+ CALL_2ARGS( t_1, t_2, t_3 );
+ 
+ /* Display( [ 2, 4 .. 6 ] ); */
+ t_1 = GF_Display;
+ t_2 = Range3Check( INTOBJ_INT(2), INTOBJ_INT(4), INTOBJ_INT(6) );
+ CALL_1ARGS( t_1, t_2 );
+ 
+ /* CALL_WITH_CATCH( range3, [ 2, 4, 7 ] ); */
+ t_1 = GF_CALL__WITH__CATCH;
+ t_2 = GC_range3;
+ CHECK_BOUND( t_2, "range3" )
+ t_3 = NEW_PLIST( T_PLIST, 3 );
+ SET_LEN_PLIST( t_3, 3 );
+ SET_ELM_PLIST( t_3, 1, INTOBJ_INT(2) );
+ SET_ELM_PLIST( t_3, 2, INTOBJ_INT(4) );
+ SET_ELM_PLIST( t_3, 3, INTOBJ_INT(7) );
+ CALL_2ARGS( t_1, t_2, t_3 );
+ 
+ /* Display( [ 2, 4 .. 2 ] ); */
+ t_1 = GF_Display;
+ t_2 = Range3Check( INTOBJ_INT(2), INTOBJ_INT(4), INTOBJ_INT(2) );
+ CALL_1ARGS( t_1, t_2 );
+ 
+ /* Display( [ 2, 4 .. 0 ] ); */
+ t_1 = GF_Display;
+ t_2 = Range3Check( INTOBJ_INT(2), INTOBJ_INT(4), INTOBJ_INT(0) );
+ CALL_1ARGS( t_1, t_2 );
+ 
+ /* CALL_WITH_CATCH( range3, [ 4, 2, 1 ] ); */
+ t_1 = GF_CALL__WITH__CATCH;
+ t_2 = GC_range3;
+ CHECK_BOUND( t_2, "range3" )
+ t_3 = NEW_PLIST( T_PLIST, 3 );
+ SET_LEN_PLIST( t_3, 3 );
+ SET_ELM_PLIST( t_3, 1, INTOBJ_INT(4) );
+ SET_ELM_PLIST( t_3, 2, INTOBJ_INT(2) );
+ SET_ELM_PLIST( t_3, 3, INTOBJ_INT(1) );
+ CALL_2ARGS( t_1, t_2, t_3 );
+ 
+ /* Display( [ 4, 2 .. 0 ] ); */
+ t_1 = GF_Display;
+ t_2 = Range3Check( INTOBJ_INT(4), INTOBJ_INT(2), INTOBJ_INT(0) );
+ CALL_1ARGS( t_1, t_2 );
+ 
+ /* Display( [ 4, 2 .. 8 ] ); */
+ t_1 = GF_Display;
+ t_2 = Range3Check( INTOBJ_INT(4), INTOBJ_INT(2), INTOBJ_INT(8) );
+ CALL_1ARGS( t_1, t_2 );
+ 
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
@@ -201,13 +266,22 @@ static Obj  HdlrFunc1 (
       CALL_WITH_CATCH( range3, [ 1, 2, 2 ^ 80 ] );
       CALL_WITH_CATCH( range3, [ - 2 ^ 80, 0, 1 ] );
       CALL_WITH_CATCH( range3, [ 0, 2 ^ 80, 2 ^ 81 ] );
+      Display( [ 1, 2 .. 2 ] );
+      CALL_WITH_CATCH( range3, [ 2, 2, 2 ] );
+      Display( [ 2, 4 .. 6 ] );
+      CALL_WITH_CATCH( range3, [ 2, 4, 7 ] );
+      Display( [ 2, 4 .. 2 ] );
+      Display( [ 2, 4 .. 0 ] );
+      CALL_WITH_CATCH( range3, [ 4, 2, 1 ] );
+      Display( [ 4, 2 .. 0 ] );
+      Display( [ 4, 2 .. 8 ] );
       return;
   end; */
  t_1 = NewFunction( NameFunc[4], 0, 0, HdlrFunc4 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 4);
- SET_ENDLINE_BODY(t_2, 16);
+ SET_ENDLINE_BODY(t_2, 26);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  CHANGED_BAG( STATE(CurrLVars) );
@@ -232,6 +306,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_range3 = GVarName( "range3" );
  G_runtest = GVarName( "runtest" );
  G_BreakOnError = GVarName( "BreakOnError" );
+ G_Display = GVarName( "Display" );
  
  /* record names used in handlers */
  
@@ -255,6 +330,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "CALL_WITH_CATCH", &GF_CALL__WITH__CATCH );
  InitCopyGVar( "range2", &GC_range2 );
  InitCopyGVar( "range3", &GC_range3 );
+ InitFopyGVar( "Display", &GF_Display );
  
  /* information for the functions */
  InitGlobalBag( &FileName, "ranges.g:FileName("FILE_CRC")" );
@@ -301,7 +377,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_DYNAMIC,
  .name        = "ranges.g",
- .crc         = -49750691,
+ .crc         = 77795076,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

@@ -3,3 +3,12 @@ Error, Range: <first> must be a small integer (not a large negative integer)
 Error, Range: <last> must be a small integer (not a large positive integer)
 Error, Range: <first> must be a small integer (not a large negative integer)
 Error, Range: <second> must be a small integer (not a large positive integer)
+[ 1 .. 2 ]
+Error, Range: <second> must not be equal to <first> (2)
+[ 2, 4 .. 6 ]
+Error, Range: <last>-<first> (5) must be divisible by <inc> (2)
+[ 2 ]
+[  ]
+Error, Range: <last>-<first> (-3) must be divisible by <inc> (-2)
+[ 4, 2 .. 0 ]
+[  ]
