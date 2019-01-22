@@ -183,6 +183,20 @@ gap> l := "cheese";; Append(l, [true]); l;
 [ 'c', 'h', 'e', 'e', 's', 'e', true ]
 gap> l := "cheese";; Append(l, []); l;
 "cheese"
+gap> Append(l, l); l;
+"cheesecheese"
+gap> l := "chee";; Append(l, l); l;
+"cheechee"
+gap> l := "cheeseXX";; Append(l, l); l;
+"cheeseXXcheeseXX"
+gap> l := [true];; Append(l, l); l;
+[ true, true ]
+gap> Append(l,l); l;
+[ true, true, true, true ]
+gap> l := [];; Append(l,l); l;
+[  ]
+gap> l := [1,2,3,4];; Append(l,l); l;
+[ 1, 2, 3, 4, 1, 2, 3, 4 ]
 gap> Append(Immutable([1,2,3]), [1,2,3]);
 Error, Append: <list1> must be a mutable list
 gap> Append([1,2,3], () );
