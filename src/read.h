@@ -86,7 +86,7 @@
 **  pass 0 for dualSemicolon, in this case it is ignore.
 **
 */
-extern UInt ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon);
+UInt ReadEvalCommand(Obj context, Obj * evalResult, UInt * dualSemicolon);
 
 
 /****************************************************************************
@@ -99,14 +99,14 @@ extern UInt ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon);
 **  It does not expect the  first symbol of its input  already read and  wont
 **  reads to the end of the input (unless an error happens).
 */
-extern UInt ReadEvalFile(Obj *evalResult);
+UInt ReadEvalFile(Obj * evalResult);
 
 
 /****************************************************************************
 **
 *F  ReadEvalError() . . . . . . . . . . . . . . . . . .  return with an error
 */
-extern void ReadEvalError ( void ) NORETURN;
+void ReadEvalError(void) NORETURN;
 
 /****************************************************************************
 **
@@ -119,9 +119,9 @@ extern void ReadEvalError ( void ) NORETURN;
 /* TL: extern Obj StackNams; */
 
 
-extern void PushGlobalForLoopVariable( UInt var);
+void PushGlobalForLoopVariable(UInt var);
 
-extern void PopGlobalForLoopVariable( void );
+void PopGlobalForLoopVariable(void);
 
 
 /****************************************************************************
@@ -138,7 +138,7 @@ Obj Call0ArgsInNewReader(Obj f);
 **
 **  The current reader context is saved and a new one is started.
 */
-Obj Call1ArgsInNewReader(Obj f,Obj a);
+Obj Call1ArgsInNewReader(Obj f, Obj a);
 
 
 /****************************************************************************

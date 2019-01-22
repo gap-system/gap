@@ -98,9 +98,7 @@ EXPORT_INLINE Int CAPACITY_PLIST(Obj list)
     return SIZE_OBJ(list) / sizeof(Obj) - 1;
 }
 
-extern  void             GrowPlist (
-            Obj                 list,
-            UInt                need );
+void GrowPlist(Obj list, UInt need);
 
 /****************************************************************************
 **
@@ -244,10 +242,7 @@ EXPORT_INLINE Int IS_PLIST_MUTABLE(Obj list)
 **
 *F  AssPlist( <list>, <pos>, <val>) . . . . . . . . .  assign to a plain list
 */
-extern void            AssPlist (
-    Obj                 list,
-    Int                 pos,
-    Obj                 val );
+void AssPlist(Obj list, Int pos, Obj val);
 
 /****************************************************************************
 **
@@ -343,22 +338,16 @@ EXPORT_INLINE Obj NewPlistFromArray(const Obj * list, Int length)
 **
 *F  ShallowCopyPlist( <list>> )
 */
-extern Obj ShallowCopyPlist(Obj list);
+Obj ShallowCopyPlist(Obj list);
 
 
 /****************************************************************************
 **
 *F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list
 */
-extern void AssPlistEmpty (
-    Obj                 list,
-    Int                 pos,
-    Obj                 val );
+void AssPlistEmpty(Obj list, Int pos, Obj val);
 
-extern void AssPlistFfe   (
-    Obj                 list,
-    Int                 pos,
-    Obj                 val );
+void AssPlistFfe(Obj list, Int pos, Obj val);
 
 /****************************************************************************
 **

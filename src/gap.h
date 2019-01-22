@@ -57,7 +57,7 @@ extern UInt Time;
 */
 extern UInt ViewObjGVar;
 
-extern void ViewObjHandler ( Obj obj );
+void ViewObjHandler(Obj obj);
 
 
 /****************************************************************************
@@ -121,9 +121,7 @@ enum {
 **
 *F  InitializeGap( <argc>, <argv> ) . . . . . . . . . . . . . . . .  init GAP
 */
-extern void InitializeGap (
-            int *               pargc,
-            char *              argv [] );
+void InitializeGap(int * pargc, char * argv[]);
 
 
 #endif // GAP_GAP_H

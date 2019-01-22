@@ -100,7 +100,7 @@ extern  UInt                    NrHalfDeadBags;
 **  "IsWeakDeadBag". Which should  always be   checked before copying   or
 **  using such an identifier.
 */
-extern void MarkBagWeakly( Bag bag );
+void MarkBagWeakly(Bag bag);
 
 /****************************************************************************
 **
@@ -110,7 +110,7 @@ extern void MarkBagWeakly( Bag bag );
 **  an object which was freed as the only references to it were weak.
 **  This is used for implement weak pointer references.
 */
-extern Int IsWeakDeadBag(Bag bag);
+Int IsWeakDeadBag(Bag bag);
 
 /****************************************************************************
 **
@@ -149,9 +149,7 @@ typedef void            (* TNumSweepFuncBags ) (
             Bag *                dst,
             UInt                 length);
 
-extern  void            InitSweepFuncBags (
-            UInt                tnum,
-            TNumSweepFuncBags    sweep_func );
+void InitSweepFuncBags(UInt tnum, TNumSweepFuncBags sweep_func);
 
 
 /****************************************************************************
@@ -172,20 +170,18 @@ typedef struct {
 extern TNumGlobalBags GlobalBags;
 
 
+void SortGlobals(UInt byWhat);
 
-extern void SortGlobals( UInt byWhat );
-
-extern Bag * GlobalByCookie(
-            const Char *        cookie );
+Bag * GlobalByCookie(const Char * cookie);
 
 
-extern void StartRestoringBags( UInt nBags, UInt maxSize);
+void StartRestoringBags(UInt nBags, UInt maxSize);
 
 
-extern Bag NextBagRestoring( UInt type, UInt flags, UInt size );
+Bag NextBagRestoring(UInt type, UInt flags, UInt size);
 
 
-extern void FinishedRestoringBags( void );
+void FinishedRestoringBags(void);
 
 
 /****************************************************************************
@@ -203,7 +199,7 @@ extern void FinishedRestoringBags( void );
 **  a pointer into the bags area            a real object
 **
 */
-extern void CheckMasterPointers( void );
+void CheckMasterPointers(void);
 
 
 /****************************************************************************
@@ -215,7 +211,7 @@ extern void CheckMasterPointers( void );
 **  collection, by simply  walking the masterpointer area. Not terribly safe.
 **
 */
-extern void CallbackForAllBags( void (*func)(Bag) );
+void CallbackForAllBags(void (*func)(Bag));
 
 
 #ifdef GAP_MEM_CHECK

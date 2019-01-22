@@ -29,7 +29,7 @@
 **  Note that you still have to set the actual length once you have populated
 **  the record!
 */
-extern Obj NEW_PREC(UInt len);
+Obj NEW_PREC(UInt len);
 
 
 /****************************************************************************
@@ -178,7 +178,7 @@ EXPORT_INLINE Obj GET_ELM_PREC(Obj rec, UInt i)
 **  If <cleanup> is 0, this does not happen.
 **/
 
-extern UInt FindPRec( Obj rec, UInt rnam, UInt *pos, int cleanup );
+UInt FindPRec(Obj rec, UInt rnam, UInt * pos, int cleanup);
 
 
 /****************************************************************************
@@ -189,9 +189,7 @@ extern UInt FindPRec( Obj rec, UInt rnam, UInt *pos, int cleanup );
 **  record name <rnam> in  the plain record <rec>.   An error is signalled if
 **  <rec> has no component with record name <rnam>.
 */
-extern  Obj             ElmPRec (
-            Obj                 rec,
-            UInt                rnam );
+Obj ElmPRec(Obj rec, UInt rnam);
 
 
 /****************************************************************************
@@ -201,9 +199,7 @@ extern  Obj             ElmPRec (
 **  'IsbPRec' returns 1 if the record <rec> has a component with  the  record
 **  name <rnam>, and 0 otherwise.
 */
-extern  Int             IsbPRec (
-            Obj                 rec,
-            UInt                rnam );
+Int IsbPRec(Obj rec, UInt rnam);
 
 
 /****************************************************************************
@@ -213,10 +209,7 @@ extern  Int             IsbPRec (
 **  'AssPRec' assigns the value <val> to the record component with the record
 **  name <rnam> in the plain record <rec>.
 */
-extern  void            AssPRec (
-            Obj                 rec,
-            UInt                rnam,
-            Obj                 val );
+void AssPRec(Obj rec, UInt rnam, Obj val);
 
 
 /****************************************************************************
@@ -226,9 +219,7 @@ extern  void            AssPRec (
 **  'UnbPRec'  removes the record component  with the record name <rnam> from
 **  the record <rec>.
 */
-extern  void            UnbPRec (
-            Obj                 rec,
-            UInt                rnam );
+void UnbPRec(Obj rec, UInt rnam);
 
 
 /****************************************************************************
@@ -244,20 +235,17 @@ extern  void            UnbPRec (
 **  If inplace is 0 a garbage collection may be triggered.
 **
 */
-extern  void            SortPRecRNam (
-            Obj                 rec,
-            int                 inplace );
+void SortPRecRNam(Obj rec, int inplace);
 
 
 #ifdef USE_THREADSAFE_COPYING
 typedef struct TraversalState TraversalState;
-extern void TraversePRecord(TraversalState * traversal, Obj obj);
-extern void CopyPRecord(TraversalState * traversal, Obj copy, Obj original);
+void TraversePRecord(TraversalState * traversal, Obj obj);
+void CopyPRecord(TraversalState * traversal, Obj copy, Obj original);
 #endif
 
 
-
-extern void MarkPRecSubBags(Obj bag);
+void MarkPRecSubBags(Obj bag);
 
 
 /****************************************************************************

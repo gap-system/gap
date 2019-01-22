@@ -24,7 +24,7 @@
 **
 **  'NAME_RNAM' returns the name (as an Obj) for the record name <rnam>.
 */
-extern Obj NAME_RNAM(UInt rnam);
+Obj NAME_RNAM(UInt rnam);
 
 
 /****************************************************************************
@@ -34,10 +34,9 @@ extern Obj NAME_RNAM(UInt rnam);
 **  'RNamName' returns  the record name with the  name  <name> (which is  a C
 **  string).
 */
-extern  UInt            RNamName (
-            const Char *        name );
+UInt RNamName(const Char * name);
 
-extern UInt RNamNameWithLen(const Char * name, UInt len);
+UInt RNamNameWithLen(const Char * name, UInt len);
 
 
 /****************************************************************************
@@ -46,8 +45,7 @@ extern UInt RNamNameWithLen(const Char * name, UInt len);
 **
 **  'RNamIntg' returns the record name corresponding to the integer <intg>.
 */
-extern  UInt            RNamIntg (
-            Int                 intg );
+UInt RNamIntg(Int intg);
 
 
 /****************************************************************************
@@ -57,8 +55,7 @@ extern  UInt            RNamIntg (
 **  'RNamObj' returns the record name  corresponding  to  the  object  <obj>,
 **  which currently must be a string or an integer.
 */
-extern  UInt            RNamObj (
-            Obj                 obj );
+UInt RNamObj(Obj obj);
 
 
 /****************************************************************************
@@ -139,18 +136,14 @@ EXPORT_INLINE void UNB_REC(Obj rec, UInt rnam)
 **
 *F  iscomplete_rnam( <name>, <len> )  . . . . . . . . . . . . .  check <name>
 */
-extern UInt iscomplete_rnam (
-            Char *              name,
-            UInt                len );
+UInt iscomplete_rnam(Char * name, UInt len);
 
 
 /****************************************************************************
 **
 *F  completion_rnam( <name>, <len> )  . . . . . . . . . . . . find completion
 */
-extern UInt completion_rnam (
-            Char *              name,
-            UInt                len );
+UInt completion_rnam(Char * name, UInt len);
 
 
 /****************************************************************************

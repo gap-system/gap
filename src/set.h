@@ -31,8 +31,7 @@
 **  copy and finally removes duplicates, which must appear next to each other
 **  now that the copy is sorted.
 */
-extern  Obj             SetList (
-            Obj                 list );
+Obj SetList(Obj list);
 
 
 /****************************************************************************
@@ -49,8 +48,7 @@ extern  Obj             SetList (
 **  to reflect this. If it is not then 'SetList' is called to make a copy of
 **  'list', remove the holes, sort the copy, and remove the duplicates.
 */
-extern  Int             IsSet ( 
-            Obj                 list );
+Int IsSet(Obj list);
 
 
 /****************************************************************************

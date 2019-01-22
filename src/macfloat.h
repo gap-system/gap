@@ -46,7 +46,7 @@ EXPORT_INLINE  Int IS_MACFLOAT(Obj obj)
     return TNUM_OBJ(obj) == T_MACFLOAT;
 }
 
-extern Obj NEW_MACFLOAT(Double val);
+Obj NEW_MACFLOAT(Double val);
 
 
 /****************************************************************************

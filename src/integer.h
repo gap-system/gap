@@ -129,10 +129,10 @@ EXPORT_INLINE Int IS_EVEN_INT(Obj obj)
 **  a GAP integer, either an immediate, small integer if possible or
 **  otherwise a new GAP bag with TNUM T_INTPOS or T_INTNEG.
 */
-extern Obj ObjInt_Int(Int i);
-extern Obj ObjInt_UInt(UInt i);
-extern Obj ObjInt_Int8(Int8 i);
-extern Obj ObjInt_UInt8(UInt8 i);
+Obj ObjInt_Int(Int i);
+Obj ObjInt_UInt(UInt i);
+Obj ObjInt_Int8(Int8 i);
+Obj ObjInt_UInt8(UInt8 i);
 
 
 /****************************************************************************
@@ -140,10 +140,10 @@ extern Obj ObjInt_UInt8(UInt8 i);
 **  The following functions convert a GAP integer into an Int, UInt,
 **  Int8 or UInt8 if it is in range. Otherwise it gives an error.
 */
-extern Int   Int_ObjInt(Obj i);
-extern UInt  UInt_ObjInt(Obj i);
-extern Int8  Int8_ObjInt(Obj i);
-extern UInt8 UInt8_ObjInt(Obj i);
+Int   Int_ObjInt(Obj i);
+UInt  UInt_ObjInt(Obj i);
+Int8  Int8_ObjInt(Obj i);
+UInt8 UInt8_ObjInt(Obj i);
 
 
 /****************************************************************************
@@ -159,7 +159,7 @@ extern UInt8 UInt8_ObjInt(Obj i);
 **  i.e., it will discard any leading zeros; and if the integer fits into a
 **  small integer, it will be returned as such.
 */
-extern Obj MakeObjInt(const UInt * limbs, int size);
+Obj MakeObjInt(const UInt * limbs, int size);
 
 
 /****************************************************************************
@@ -169,8 +169,8 @@ extern Obj MakeObjInt(const UInt * limbs, int size);
 **  TODO: This is an internal implementation detail and ideally should not
 **  be exported; unfortunately, FuncNUMBER_GF2VEC currently needs this.
 */
-extern Obj GMP_REDUCE( Obj gmp );
-extern Obj GMP_NORMALIZE( Obj gmp );
+Obj GMP_REDUCE(Obj gmp);
+Obj GMP_NORMALIZE(Obj gmp);
 
 
 /****************************************************************************
@@ -179,11 +179,11 @@ extern Obj GMP_NORMALIZE( Obj gmp );
 **
 **  'PrintInt' prints the integer <op> in the usual decimal notation.
 */
-extern void PrintInt( Obj op );
+void PrintInt(Obj op);
 
 
 //
-extern Obj IntHexString(Obj str);
+Obj IntHexString(Obj str);
 
 
 // Parse a string containing a decimal integer into a GAP integer
@@ -193,7 +193,7 @@ extern Obj IntHexString(Obj str);
 // If <string> is non-NULL, then <str> is ignored, and <string>
 // must reference a GAP string object. If <string> is NULL, then
 // <str> must point to a C string.
-Obj IntStringInternal(Obj string, const Char *str);
+Obj IntStringInternal(Obj string, const Char * str);
 
 
 /****************************************************************************
@@ -203,7 +203,7 @@ Obj IntStringInternal(Obj string, const Char *str);
 **  'EqInt' returns 1 if the two integer arguments <opL> and <opR> are equal
 **  and 0 otherwise.
 */
-extern Int EqInt( Obj opL, Obj opR );
+Int EqInt(Obj opL, Obj opR);
 
 
 /****************************************************************************
@@ -213,7 +213,7 @@ extern Int EqInt( Obj opL, Obj opR );
 **  'LtInt' returns 1 if the integer <opL> is strictly less than the
 **  integer <opR> and 0 otherwise.
 */
-extern Int LtInt( Obj opL, Obj opR );
+Int LtInt(Obj opL, Obj opR);
 
 
 /****************************************************************************
@@ -222,7 +222,7 @@ extern Int LtInt( Obj opL, Obj opR );
 **
 **  'SumInt' returns the sum of the two integer arguments <opL> and <opR>.
 */
-extern Obj SumInt( Obj opL, Obj opR );
+Obj SumInt(Obj opL, Obj opR);
 
 
 /****************************************************************************
@@ -232,28 +232,28 @@ extern Obj SumInt( Obj opL, Obj opR );
 **  'DiffInt' returns the difference of the two integer arguments <opL>
 **  and <opR>.
 */
-extern Obj DiffInt( Obj opL, Obj opR );
+Obj DiffInt(Obj opL, Obj opR);
 
 
 /****************************************************************************
 **
 *F  AInvInt( <op> ) . . . . . . . . . . . . .  additive inverse of an integer
 */
-extern Obj AInvInt(Obj op);
+Obj AInvInt(Obj op);
 
 
 /****************************************************************************
 **
 *F  AbsInt( <op> ) . . . . . . . . . . . . . . . absolute value of an integer
 */
-extern Obj AbsInt( Obj op );
+Obj AbsInt(Obj op);
 
 
 /****************************************************************************
 **
 *F  SignInt( <op> ) . . . . . . . . . . . . . . . . . . .  sign of an integer
 */
-extern Obj SignInt( Obj op );
+Obj SignInt(Obj op);
 
 
 /****************************************************************************
@@ -263,7 +263,7 @@ extern Obj SignInt( Obj op );
 **  'ProdInt' returns the product of the two  integer  arguments  <opL>  and
 **  <opR>.
 */
-extern Obj ProdInt( Obj opL, Obj opR );
+Obj ProdInt(Obj opL, Obj opR);
 
 
 /****************************************************************************
@@ -273,7 +273,7 @@ extern Obj ProdInt( Obj opL, Obj opR );
 **  'ModInt' returns the smallest positive representative of the residue
 **  class of the integer <opL> modulo the integer <opR>.
 */
-extern Obj ModInt( Obj opL, Obj opR );
+Obj ModInt(Obj opL, Obj opR);
 
 
 /****************************************************************************
@@ -282,7 +282,7 @@ extern Obj ModInt( Obj opL, Obj opR );
 **
 **  'PowInt' returns the <opR>-th (an integer) power of the integer <opL>.
 */
-extern Obj PowInt( Obj opL, Obj opR );
+Obj PowInt(Obj opL, Obj opR);
 
 
 /****************************************************************************
@@ -291,7 +291,7 @@ extern Obj PowInt( Obj opL, Obj opR );
 **
 **  'QuoInt' returns the integer part of the two integers <opL> and <opR>.
 */
-extern Obj QuoInt( Obj opL, Obj opR );
+Obj QuoInt(Obj opL, Obj opR);
 
 
 /****************************************************************************
@@ -301,7 +301,7 @@ extern Obj QuoInt( Obj opL, Obj opR );
 **  'RemInt' returns the remainder of the quotient of the integers <opL> and
 **  <opR>.
 */
-extern Obj RemInt( Obj opL, Obj opR );
+Obj RemInt(Obj opL, Obj opR);
 
 
 /****************************************************************************
@@ -310,7 +310,7 @@ extern Obj RemInt( Obj opL, Obj opR );
 **
 **  'GcdInt' returns the gcd of the two integers <opL> and <opR>.
 */
-extern Obj GcdInt( Obj opL, Obj opR );
+Obj GcdInt(Obj opL, Obj opR);
 
 
 /****************************************************************************
@@ -319,14 +319,14 @@ extern Obj GcdInt( Obj opL, Obj opR );
 **
 **  'LcmInt' returns the lcm of the two integers <opL> and <opR>.
 */
-extern Obj LcmInt( Obj opL, Obj opR );
+Obj LcmInt(Obj opL, Obj opR);
 
 
 /****************************************************************************
 **
 *F  InverseModInt( <op> ) . . . .  mult. inverse of an integer modulo another
 */
-extern Obj InverseModInt(Obj base, Obj mod);
+Obj InverseModInt(Obj base, Obj mod);
 
 
 /****************************************************************************
@@ -334,14 +334,14 @@ extern Obj InverseModInt(Obj base, Obj mod);
 **  Compute log2 of the absolute value of an Int, i.e. the index of the
 **  highest set bit. For input 0, return -1.
 */
-extern Int CLog2Int( Int intnum );
+Int CLog2Int(Int intnum);
 
 
 /****************************************************************************
 **
 *F  BinomialInt(<n>, <k>) . . . .  return the binomial coefficient of n and k
 */
-extern Obj BinomialInt(Obj n, Obj k);
+Obj BinomialInt(Obj n, Obj k);
 
 
 /****************************************************************************

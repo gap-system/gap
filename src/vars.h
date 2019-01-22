@@ -169,7 +169,7 @@ EXPORT_INLINE void SET_BRK_CALL_TO(Expr expr)
 *F  FreeLVarsBag( <bag> )  . . . . . . . . . . . . . . . . . . free lvars bag
 */
 
-Bag NewLVarsBag(UInt slots);
+Bag  NewLVarsBag(UInt slots);
 void FreeLVarsBag(Bag bag);
 
 /****************************************************************************
@@ -305,8 +305,7 @@ EXPORT_INLINE Obj NAME_LVAR_WITH_CONTEXT(Obj context, UInt lvar)
 **
 **  'ObjLVar' returns the value of the local variable <lvar>.
 */
-extern  Obj             ObjLVar (
-            UInt                lvar );
+Obj ObjLVar(UInt lvar);
 
 
 /****************************************************************************
@@ -321,13 +320,13 @@ extern  Obj             ObjLVar (
 **
 **  'NAME_HVAR' returns the name of the higher variable <hvar>.
 */
-extern void ASS_HVAR(UInt hvar, Obj val);
-extern Obj  OBJ_HVAR(UInt hvar);
-extern Obj  NAME_HVAR(UInt hvar);
+void ASS_HVAR(UInt hvar, Obj val);
+Obj  OBJ_HVAR(UInt hvar);
+Obj  NAME_HVAR(UInt hvar);
 
-extern void ASS_HVAR_WITH_CONTEXT(Obj context, UInt hvar, Obj val);
-extern Obj  OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar);
-extern Obj  NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar);
+void ASS_HVAR_WITH_CONTEXT(Obj context, UInt hvar, Obj val);
+Obj  OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar);
+Obj  NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar);
 
 
 /****************************************************************************

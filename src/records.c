@@ -33,7 +33,7 @@ static Obj HashRNam;
 
 static Obj NamesRNam;
 
-inline extern Obj NAME_RNAM(UInt rnam)
+extern inline Obj NAME_RNAM(UInt rnam)
 {
     return ELM_PLIST(NamesRNam, rnam);
 }

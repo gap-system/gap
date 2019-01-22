@@ -80,7 +80,7 @@ EXPORT_INLINE Int IS_SMALL_LIST(Obj obj)
 
 extern Int (*IsDenseListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-extern Int IsDenseListDefault(Obj list);
+Int IsDenseListDefault(Obj list);
 
 EXPORT_INLINE Int IS_DENSE_LIST(Obj list)
 {
@@ -105,7 +105,7 @@ EXPORT_INLINE Int IS_DENSE_LIST(Obj list)
 
 extern Int (*IsHomogListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-extern Int IsHomogListDefault(Obj list);
+Int IsHomogListDefault(Obj list);
 
 EXPORT_INLINE Int IS_HOMOG_LIST(Obj list)
 {
@@ -131,7 +131,7 @@ EXPORT_INLINE Int IS_HOMOG_LIST(Obj list)
 
 extern Int (*IsPossListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-extern Int IsPossListDefault(Obj list);
+Int IsPossListDefault(Obj list);
 
 EXPORT_INLINE Int IS_POSS_LIST(Obj list)
 {
@@ -195,9 +195,9 @@ EXPORT_INLINE Int ISB_LIST(Obj list, Int pos)
     return (*IsbListFuncs[TNUM_OBJ(list)])(list, pos);
 }
 
-extern Int ISBB_LIST( Obj list, Obj pos );
+Int ISBB_LIST(Obj list, Obj pos);
 
-extern Int ISB2_LIST(Obj list, Obj pos1, Obj pos2);
+Int ISB2_LIST(Obj list, Obj pos1, Obj pos2);
 
 
 /****************************************************************************
@@ -312,7 +312,7 @@ extern Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  It is intended as an interface for access to elements of large external
 **  lists, on the rare occasions when the kernel needs to do this.
 */
-extern Obj ELMB_LIST( Obj list, Obj pos );
+Obj ELMB_LIST(Obj list, Obj pos);
 
 EXPORT_INLINE Obj ELM_LIST(Obj list, Int pos)
 {
@@ -331,7 +331,7 @@ EXPORT_INLINE Obj ELM_LIST(Obj list, Int pos)
 **  by method dispatch through the GAP attribute 'ELM_LIST' with three
 **  arguments.
 */
-extern Obj ELM2_LIST(Obj list, Obj pos1, Obj pos2);
+Obj ELM2_LIST(Obj list, Obj pos1, Obj pos2);
 
 
 /****************************************************************************
@@ -432,28 +432,21 @@ EXPORT_INLINE Obj ELMS_LIST(Obj list, Obj poss)
 **
 *F  ElmsListDefault( <list>, <poss> ) . . .  default function for 'ELMS_LIST'
 */
-extern Obj ElmsListDefault (
-            Obj                 list,
-            Obj                 poss );
+Obj ElmsListDefault(Obj list, Obj poss);
 
 
 /****************************************************************************
 **
 *F  ElmsListCheck( <list>, <poss> ) . . . . . . . . .  'ELMS_LIST' with check
 */
-extern Obj ElmsListCheck (
-    Obj                 list,
-    Obj                 poss );
+Obj ElmsListCheck(Obj list, Obj poss);
 
 
 /****************************************************************************
 **
 *F  ElmsListLevelCheck( <lists>, <poss>, <level> ) 'ElmsListLevel' with check
 */
-extern void ElmsListLevelCheck (
-    Obj                 lists,
-    Obj                 poss,
-    Int                 level );
+void ElmsListLevelCheck(Obj lists, Obj poss, Int level);
 
 
 /****************************************************************************
@@ -473,9 +466,9 @@ extern void ElmsListLevelCheck (
 
 extern void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-extern void UNBB_LIST( Obj list, Obj pos );
+void UNBB_LIST(Obj list, Obj pos);
 
-extern void UnbListDefault( Obj list, Int  pos );
+void UnbListDefault(Obj list, Int pos);
 
 EXPORT_INLINE void UNB_LIST(Obj list, Int pos)
 {
@@ -488,7 +481,7 @@ EXPORT_INLINE void UNB_LIST(Obj list, Int pos)
     (*UnbListFuncs[TNUM_OBJ(list)])(list, pos);
 }
 
-extern void UNB2_LIST(Obj list, Obj pos1, Obj pos2);
+void UNB2_LIST(Obj list, Obj pos1, Obj pos2);
 
 
 /****************************************************************************
@@ -511,7 +504,7 @@ extern void UNB2_LIST(Obj list, Obj pos1, Obj pos2);
 
 extern  void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, Obj obj );
 
-extern void ASSB_LIST( Obj list, Obj pos, Obj obj );
+void ASSB_LIST(Obj list, Obj pos, Obj obj);
 
 EXPORT_INLINE void ASS_LIST(Obj list, Int pos, Obj obj)
 {
@@ -535,7 +528,7 @@ EXPORT_INLINE void ASS_LIST(Obj list, Int pos, Obj obj)
 **  handled by method dispatch through the GAP attribute 'ASS_LIST' with
 **  three arguments.
 */
-extern void ASS2_LIST(Obj list, Obj pos1, Obj pos2, Obj obj);
+void ASS2_LIST(Obj list, Obj pos1, Obj pos2, Obj obj);
 
 
 /****************************************************************************
@@ -558,10 +551,7 @@ extern void ASS2_LIST(Obj list, Obj pos1, Obj pos2, Obj obj);
 */
 extern  void            (*AsssListFuncs[LAST_REAL_TNUM+1]) (Obj list, Obj poss, Obj objs);
 
-extern  void            AsssListDefault (
-            Obj                 list,
-            Obj                 poss,
-            Obj                 objs );
+void AsssListDefault(Obj list, Obj poss, Obj objs);
 
 EXPORT_INLINE void ASSS_LIST(Obj list, Obj poss, Obj objs)
 {
@@ -580,10 +570,7 @@ EXPORT_INLINE void ASSS_LIST(Obj list, Obj poss, Obj objs)
 **
 *F  AssListObject( <list>, <pos>, <obj> ) . . . . . . . assign to list object
 */
-extern void AssListObject (
-    Obj                 list,
-    Int                 pos,
-    Obj                 obj );
+void AssListObject(Obj list, Int pos, Obj obj);
 
 
 /****************************************************************************
@@ -603,8 +590,7 @@ extern void AssListObject (
 
 extern  Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-extern  Int             IsTableListDefault (
-            Obj                 list );
+Int IsTableListDefault(Obj list);
 
 EXPORT_INLINE Int IS_TABLE_LIST(Obj list)
 {
@@ -628,8 +614,7 @@ EXPORT_INLINE Int IS_TABLE_LIST(Obj list)
 
 extern  Int             (*IsSSortListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-extern  Int             IsSSortListDefault (
-            Obj                 list );
+Int IsSSortListDefault(Obj list);
 
 EXPORT_INLINE Int IS_SSORT_LIST(Obj list)
 {
@@ -653,10 +638,7 @@ EXPORT_INLINE Int IS_SSORT_LIST(Obj list)
 
 extern  Obj             (*PosListFuncs[LAST_REAL_TNUM+1]) (Obj list, Obj obj, Obj start);
 
-extern  Obj             PosListDefault (
-            Obj                 list,
-            Obj                 obj,
-            Obj                 start );
+Obj PosListDefault(Obj list, Obj obj, Obj start);
 
 EXPORT_INLINE Obj POS_LIST(Obj list, Obj obj, Obj start)
 {
@@ -683,10 +665,7 @@ EXPORT_INLINE Obj POS_LIST(Obj list, Obj obj, Obj start)
 **  require 'ELMS_LIST' (resp.  the   functions implementing 'ELMS_LIST')  to
 **  satisfy this requirements.
 */
-extern  void            ElmListLevel (
-            Obj                 lists,
-            Obj                 pos,
-            Int                 level );
+void ElmListLevel(Obj lists, Obj pos, Int level);
 
 
 /****************************************************************************
@@ -710,10 +689,7 @@ extern  void            ElmListLevel (
 **  require 'ELMS_LIST' (resp.  the   functions implementing 'ELMS_LIST')  to
 **  satisfy this requirements.
 */
-extern  void            ElmsListLevel (
-            Obj                 lists,
-            Obj                 poss,
-            Int                 level );
+void ElmsListLevel(Obj lists, Obj poss, Int level);
 
 
 /****************************************************************************
@@ -737,11 +713,7 @@ extern  void            ElmsListLevel (
 **  require  'ELMS_LIST'  (resp.  the functions implementing  'ELMS_LIST') to
 **  satisfy this requirements.
 */
-extern  void            AssListLevel (
-            Obj                 lists,
-            Obj                 pos,
-            Obj                 objs,
-            Int                 level );
+void AssListLevel(Obj lists, Obj pos, Obj objs, Int level);
 
 
 /****************************************************************************
@@ -766,11 +738,7 @@ extern  void            AssListLevel (
 **  require 'ELMS_LIST' (resp.   the functions  implementing 'ELMS_LIST')  to
 **  satisfy this requirements.
 */
-extern  void            AsssListLevel (
-            Obj                 lists,
-            Obj                 poss,
-            Obj                 objs,
-            Int                 lev );
+void AsssListLevel(Obj lists, Obj poss, Obj objs, Int lev);
 
 
 /****************************************************************************
@@ -797,8 +765,7 @@ EXPORT_INLINE void PLAIN_LIST(Obj list)
 **
 *F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of types of lists over a family
 */
-extern  Obj             TYPES_LIST_FAM (
-            Obj                 fam );
+Obj TYPES_LIST_FAM(Obj fam);
 
 
 /****************************************************************************
@@ -876,7 +843,7 @@ EXPORT_INLINE void SET_FILT_LIST(Obj list, FilterNumber fn)
 **
 *F  SET_FILTER_LIST( <list>, <filter> ) . . . . . . . . . . . . .  set filter
 */
-extern Obj SET_FILTER_LIST(Obj list, Obj filter);
+Obj SET_FILTER_LIST(Obj list, Obj filter);
 
 /****************************************************************************
 **
@@ -963,21 +930,14 @@ EXPORT_INLINE void CLEAR_FILTS_LIST(Obj list)
 **
 *F  AsssListCheck( <list>, <poss>, <rhss> ) . . . . . . . . . . . . ASSS_LIST
 */
-extern void AsssListCheck (
-    Obj                 list,
-    Obj                 poss,
-    Obj                 rhss );
+void AsssListCheck(Obj list, Obj poss, Obj rhss);
 
 
 /****************************************************************************
 **
 *F  AsssListLevelCheck( <lists>, <poss>, <rhss>, <level> )  . . AsssListLevel
 */
-extern void AsssListLevelCheck (
-    Obj                 lists,
-    Obj                 poss,
-    Obj                 rhss,
-    Int                 level );
+void AsssListLevelCheck(Obj lists, Obj poss, Obj rhss, Int level);
 
 
 /****************************************************************************

@@ -468,8 +468,8 @@ EXPORT_INLINE void SET_ELM_FLAGS(Obj list, UInt pos)
 *F  FuncIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) . . . . . . subset test
 */
 
-extern Obj FuncIS_SUBSET_FLAGS( Obj self, Obj flags1, Obj flags2 );
-     
+Obj FuncIS_SUBSET_FLAGS(Obj self, Obj flags1, Obj flags2);
+
 /****************************************************************************
 **
 *F * * * * * * * * * * *  internal filter functions * * * * * * * * * * * * *
@@ -494,26 +494,18 @@ extern Obj RESET_FILTER_OBJ;
 **
 *F  NewFilter( <name>, <narg>, <nams>, <hdlr> )  . . . . .  make a new filter
 */
-extern Obj DoFilter (
-    Obj                 self,
-    Obj                 obj );
+Obj DoFilter(Obj self, Obj obj);
 
-extern Obj NewFilter (
-    Obj                 name,
-    Int                 narg,
-    Obj                 nams,
-    ObjFunc             hdlr );
+Obj NewFilter(Obj name, Int narg, Obj nams, ObjFunc hdlr);
 
-extern Obj DoTestAttribute( Obj self, Obj obj);
+Obj DoTestAttribute(Obj self, Obj obj);
 
 
 /****************************************************************************
 **
 *F  NewAndFilter( <filt1>, <filt2> ) . . . . . make a new concatenated filter
 */
-extern Obj NewAndFilter (
-    Obj                 oper1,
-    Obj                 oper2 );
+Obj NewAndFilter(Obj oper1, Obj oper2);
 
 
 /****************************************************************************
@@ -533,132 +525,60 @@ extern Obj ReturnTrueFilter;
 **
 *F  NewOperation( <name> )  . . . . . . . . . . . . . .  make a new operation
 */
-extern Obj DoOperation0Args (
-            Obj                 oper );
+Obj DoOperation0Args(Obj oper);
 
-extern Obj DoOperation1Args (
-            Obj                 oper,
-            Obj                 arg1 );
+Obj DoOperation1Args(Obj oper, Obj arg1);
 
-extern Obj DoOperation2Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2 );
+Obj DoOperation2Args(Obj oper, Obj arg1, Obj arg2);
 
-extern Obj DoOperation3Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3 );
+Obj DoOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3);
 
-extern Obj DoOperation4Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4 );
+Obj DoOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4);
 
-extern Obj DoOperation5Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4,
-            Obj                 arg5 );
+Obj DoOperation5Args(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5);
 
-extern Obj DoOperation6Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4,
-            Obj                 arg5,
-            Obj                 arg6 );
+Obj DoOperation6Args(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6);
 
-extern Obj DoOperationXArgs (
-            Obj                 self,
-            Obj                 args );
+Obj DoOperationXArgs(Obj self, Obj args);
 
-extern Obj DoVerboseOperation0Args (
-            Obj                 oper );
+Obj DoVerboseOperation0Args(Obj oper);
 
-extern Obj DoVerboseOperation1Args (
-            Obj                 oper,
-            Obj                 arg1 );
+Obj DoVerboseOperation1Args(Obj oper, Obj arg1);
 
-extern Obj DoVerboseOperation2Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2 );
+Obj DoVerboseOperation2Args(Obj oper, Obj arg1, Obj arg2);
 
-extern Obj DoVerboseOperation3Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3 );
+Obj DoVerboseOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3);
 
-extern Obj DoVerboseOperation4Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4 );
+Obj DoVerboseOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4);
 
-extern Obj DoVerboseOperation5Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4,
-            Obj                 arg5 );
+Obj DoVerboseOperation5Args(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5);
 
-extern Obj DoVerboseOperation6Args (
-            Obj                 oper,
-            Obj                 arg1,
-            Obj                 arg2,
-            Obj                 arg3,
-            Obj                 arg4,
-            Obj                 arg5,
-            Obj                 arg6 );
+Obj DoVerboseOperation6Args(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6);
 
-extern Obj DoVerboseOperationXArgs (
-            Obj                 self,
-            Obj                 args );
+Obj DoVerboseOperationXArgs(Obj self, Obj args);
 
-extern Obj NewOperation (
-            Obj                 name,
-            Int                 narg,
-            Obj                 nams,
-            ObjFunc             hdlr );
+Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr);
 
 
 /****************************************************************************
 **
 *F  NewAttribute( <name> )  . . . . . . . . . . . . . .  make a new attribute
 */
-extern  Obj DoAttribute (
-            Obj                 self,
-            Obj                 obj );
+Obj DoAttribute(Obj self, Obj obj);
 
-extern  Obj NewAttribute (
-            Obj                 name,
-            Int                 narg,
-            Obj                 nams,
-            ObjFunc             hdlr );
+Obj NewAttribute(Obj name, Int narg, Obj nams, ObjFunc hdlr);
 
 /****************************************************************************
 **
 *F  NewProperty( <name> ) . . . . . . . . . . . . . . . . make a new property
 */
-extern Obj DoProperty (
-            Obj                 self,
-            Obj                 obj );
+Obj DoProperty(Obj self, Obj obj);
 
-extern Obj NewProperty (
-            Obj                 name,
-            Int                 narg,
-            Obj                 nams,
-            ObjFunc             hdlr );
+Obj NewProperty(Obj name, Int narg, Obj nams, ObjFunc hdlr);
 
 /****************************************************************************
 **
@@ -668,18 +588,14 @@ extern Obj NewProperty (
 **  only   the orignal and not  the  clone will be  completed.  Therefore the
 **  clone must postpone the real cloning.
 */
-extern void InstallMethodArgs (
-    Obj                 oper,
-    Obj                 func );
+void InstallMethodArgs(Obj oper, Obj func);
 
 
 /****************************************************************************
 **
 *F  ChangeDoOperations( <oper>, <verb> )
 */
-extern void ChangeDoOperations (
-            Obj                 oper,
-            Int                 verb );
+void ChangeDoOperations(Obj oper, Int verb);
 
 /****************************************************************************
 **
@@ -691,7 +607,7 @@ extern void ChangeDoOperations (
 **
 */
 
-extern void SaveOperationExtras( Obj oper );
+void SaveOperationExtras(Obj oper);
 
 /****************************************************************************
 **
@@ -703,7 +619,7 @@ extern void SaveOperationExtras( Obj oper );
 **
 */
 
-extern void LoadOperationExtras( Obj oper );
+void LoadOperationExtras(Obj oper);
 
 
 /****************************************************************************

@@ -78,9 +78,9 @@
 **  return-void-statement was interpreted. If 'IntrEnd' returns 'STATUS_QUIT',
 **  then a quit-statement was interpreted.
 */
-extern  void            IntrBegin ( Obj frame );
+void IntrBegin(Obj frame);
 
-extern ExecStatus IntrEnd(UInt error, Obj *result);
+ExecStatus IntrEnd(UInt error, Obj * result);
 
 
 /****************************************************************************
@@ -90,7 +90,7 @@ extern ExecStatus IntrEnd(UInt error, Obj *result);
 **  'IntrAbortCoding' aborts coding, if it is active, and resets the active
 **  lvars to <lvars>.
 */
-extern void IntrAbortCoding(Obj lvars);
+void IntrAbortCoding(Obj lvars);
 
 
 /****************************************************************************
@@ -109,12 +109,9 @@ extern void IntrAbortCoding(Obj lvars);
 **  arguments. <options> is 1 if options were present after the ':' in which
 **  case the options have been read already.
 */
-extern  void            IntrFuncCallBegin ( void );
+void IntrFuncCallBegin(void);
 
-extern  void            IntrFuncCallEnd (
-            UInt                funccall,
-            UInt                options,
-            UInt                nr );
+void IntrFuncCallEnd(UInt funccall, UInt options, UInt nr);
 
 /****************************************************************************
 **
@@ -128,17 +125,17 @@ extern  void            IntrFuncCallEnd (
 **  The net effect of all of these is to leave a record object on the stack
 **  where IntrFuncCallEnd can use it
 */
-extern void            IntrFuncCallOptionsBegin ( void );
+void IntrFuncCallOptionsBegin(void);
 
-extern void            IntrFuncCallOptionsBeginElmName ( UInt rnam );
+void IntrFuncCallOptionsBeginElmName(UInt rnam);
 
-extern void            IntrFuncCallOptionsBeginElmExpr ( void );
+void IntrFuncCallOptionsBeginElmExpr(void);
 
-extern void            IntrFuncCallOptionsEndElm ( void );
+void IntrFuncCallOptionsEndElm(void);
 
-extern void            IntrFuncCallOptionsEndElmEmpty ( void );
+void IntrFuncCallOptionsEndElmEmpty(void);
 
-extern void            IntrFuncCallOptionsEnd ( UInt nr );
+void IntrFuncCallOptionsEnd(UInt nr);
 
 /****************************************************************************
 **
@@ -155,13 +152,9 @@ extern void            IntrFuncCallOptionsEnd ( UInt nr );
 **  called when the reader encounters the end  of a function expression. <nr>
 **  is the number of statements in the body of the function.
 */
-extern  void            IntrFuncExprBegin (
-            Int                 narg,
-            Int                 nloc,
-            Obj                 nams,
-            Int                 startLine);
+void IntrFuncExprBegin(Int narg, Int nloc, Obj nams, Int startLine);
 
-extern void IntrFuncExprEnd(UInt nr);
+void IntrFuncExprEnd(UInt nr);
 
 
 /****************************************************************************
@@ -196,19 +189,17 @@ extern void IntrFuncExprEnd(UInt nr);
 **  the reader  encounters the end of the  statement.  <nr>  is the number of
 **  'if', 'elif', or 'else' branches.
 */
-extern  void            IntrIfBegin ( void );
+void IntrIfBegin(void);
 
-extern  void            IntrIfElif ( void );
+void IntrIfElif(void);
 
-extern  void            IntrIfElse ( void );
+void IntrIfElse(void);
 
-extern  void            IntrIfBeginBody ( void );
+void IntrIfBeginBody(void);
 
-extern  Int             IntrIfEndBody (
-            UInt                nr );
+Int IntrIfEndBody(UInt nr);
 
-extern  void            IntrIfEnd (
-            UInt                nr );
+void IntrIfEnd(UInt nr);
 
 
 /****************************************************************************
@@ -242,16 +233,15 @@ extern  void            IntrIfEnd (
 **  Since loops cannot be interpreted immediately,  the interpreter calls the
 **  coder  to create a  procedure (with no arguments) and  calls that.
 */
-extern  void            IntrForBegin ( void );
+void IntrForBegin(void);
 
-extern  void            IntrForIn ( void );
+void IntrForIn(void);
 
-extern  void            IntrForBeginBody ( void );
+void IntrForBeginBody(void);
 
-extern  void            IntrForEndBody (
-            UInt                nr );
+void IntrForEndBody(UInt nr);
 
-extern  void            IntrForEnd ( void );
+void IntrForEnd(void);
 
 
 /****************************************************************************
@@ -280,18 +270,17 @@ extern  void            IntrForEnd ( void );
 **  Since loops cannot be interpreted immediately,  the interpreter calls the
 **  coder  to create a  procedure (with no arguments) and  calls that.
 */
-extern  void            IntrWhileBegin ( void );
+void IntrWhileBegin(void);
 
-extern  void            IntrWhileBeginBody ( void );
+void IntrWhileBeginBody(void);
 
-extern  void            IntrWhileEndBody (
-            UInt                nr );
+void IntrWhileEndBody(UInt nr);
 
-extern  void            IntrWhileEnd ( void );
+void IntrWhileEnd(void);
 
-extern void IntrQualifiedExprBegin( UInt access);
+void IntrQualifiedExprBegin(UInt access);
 
-extern void IntrQualifiedExprEnd( void);
+void IntrQualifiedExprEnd(void);
 
 
 /****************************************************************************
@@ -322,14 +311,13 @@ extern void IntrQualifiedExprEnd( void);
 **  they are simply placeholders.
 */
 
-extern  void            IntrAtomicBegin ( void );
+void IntrAtomicBegin(void);
 
-extern  void            IntrAtomicBeginBody ( UInt nrexprs );
+void IntrAtomicBeginBody(UInt nrexprs);
 
-extern  void            IntrAtomicEndBody (
-            Int                nrstats );
+void IntrAtomicEndBody(Int nrstats);
 
-extern  void            IntrAtomicEnd ( void );
+void IntrAtomicEnd(void);
 
 #ifdef HPCGAP
 /* TODO: move these constants to a more appropriate location */
@@ -365,14 +353,13 @@ enum {
 **  Since loops cannot be interpreted immediately,  the interpreter calls the
 **  coder  to create a  procedure (with no arguments) and  calls that.
 */
-extern  void            IntrRepeatBegin ( void );
+void IntrRepeatBegin(void);
 
-extern  void            IntrRepeatBeginBody ( void );
+void IntrRepeatBeginBody(void);
 
-extern  void            IntrRepeatEndBody (
-            UInt                nr );
+void IntrRepeatEndBody(UInt nr);
 
-extern  void            IntrRepeatEnd ( void );
+void IntrRepeatEnd(void);
 
 
 /****************************************************************************
@@ -385,7 +372,7 @@ extern  void            IntrRepeatEnd ( void );
 **  Break-statements are  always coded (if  they are not ignored), since they
 **  can only appear in loops.
 */
-extern  void            IntrBreak ( void );
+void IntrBreak(void);
 
 
 /****************************************************************************
@@ -396,7 +383,7 @@ extern  void            IntrBreak ( void );
 **  is  called when  the reader encounters  a  'return  <expr>;', but *after*
 **  reading the expression <expr>.
 */
-extern  void            IntrReturnObj ( void );
+void IntrReturnObj(void);
 
 
 /****************************************************************************
@@ -406,7 +393,7 @@ extern  void            IntrReturnObj ( void );
 **  'IntrReturnVoid' is the action to interpret  a return-void-statement.  It
 **  is called when the reader encounters a 'return;'.
 */
-extern  void            IntrReturnVoid ( void );
+void IntrReturnVoid(void);
 
 
 /****************************************************************************
@@ -416,7 +403,7 @@ extern  void            IntrReturnVoid ( void );
 **  'IntrQuit' is the  action to interpret   a quit-statement.  It  is called
 **  when the reader encounters a 'quit;'.
 */
-extern  void            IntrQuit ( void );
+void IntrQuit(void);
 
 /****************************************************************************
 **
@@ -425,7 +412,7 @@ extern  void            IntrQuit ( void );
 **  'IntrQUIT' is the  action to interpret   a QUIT-statement.  It  is called
 **  when the reader encounters a 'QUIT;'.
 */
-extern  void            IntrQUIT ( void );
+void IntrQUIT(void);
 
 
 /****************************************************************************
@@ -441,9 +428,9 @@ extern  void            IntrQUIT ( void );
 **  the reader encountered  the  end of  the  expression, i.e., *after*  both
 **  operands are read.
 */
-extern  void            IntrOrL ( void );
+void IntrOrL(void);
 
-extern  void            IntrOr ( void );
+void IntrOr(void);
 
 
 /****************************************************************************
@@ -459,9 +446,9 @@ extern  void            IntrOr ( void );
 **  the reader encountered   the end of   the expression, i.e., *after*  both
 **  operands are read.
 */
-extern  void            IntrAndL ( void );
+void IntrAndL(void);
 
-extern  void            IntrAnd ( void );
+void IntrAnd(void);
 
 
 /****************************************************************************
@@ -471,7 +458,7 @@ extern  void            IntrAnd ( void );
 **  'IntrNot' is the action to interpret a not-expression.  It is called when
 **  the reader encounters a not-expression, *after* the operand is read.
 */
-extern  void            IntrNot ( void );
+void IntrNot(void);
 
 
 /****************************************************************************
@@ -487,17 +474,17 @@ extern  void            IntrNot ( void );
 **  actions to interpret the respective operator expression.  They are called
 **  by the reader *after* *both* operands are read.
 */
-extern  void            IntrEq ( void );
+void IntrEq(void);
 
-extern  void            IntrNe ( void );
+void IntrNe(void);
 
-extern  void            IntrLt ( void );
+void IntrLt(void);
 
-extern  void            IntrGe ( void );
+void IntrGe(void);
 
-extern  void            IntrGt ( void );
+void IntrGt(void);
 
-extern  void            IntrLe ( void );
+void IntrLe(void);
 
 
 /****************************************************************************
@@ -507,7 +494,7 @@ extern  void            IntrLe ( void );
 **  'IntrIn'  is the action  to interpret an  in-expression.  It is called by
 **  the reader *after* *both* operands are read.
 */
-extern  void            IntrIn ( void );
+void IntrIn(void);
 
 
 /****************************************************************************
@@ -524,26 +511,26 @@ extern  void            IntrIn ( void );
 **  are  the actions to interpret  the  respective operator expression.  They
 **  are called by the reader *after* *both* operands are read.
 */
-extern  void            IntrSum ( void );
+void IntrSum(void);
 
-extern  void            IntrAInv ( void );
+void IntrAInv(void);
 
-extern  void            IntrDiff ( void );
+void IntrDiff(void);
 
-extern  void            IntrProd ( void );
+void IntrProd(void);
 
-extern  void            IntrQuo ( void );
+void IntrQuo(void);
 
-extern  void            IntrMod ( void );
+void IntrMod(void);
 
-extern  void            IntrPow ( void );
+void IntrPow(void);
 
 
 /****************************************************************************
 **
 *F  IntrIntObjExpr(<val>)
 */
-extern void IntrIntObjExpr(Obj val);
+void IntrIntObjExpr(Obj val);
 
 
 /****************************************************************************
@@ -553,7 +540,7 @@ extern void IntrIntObjExpr(Obj val);
 **  'IntrIntExpr' is the action  to  interpret a literal  integer expression.
 **  <str> is the integer as a (null terminated) C character string.
 */
-extern void IntrIntExpr(Obj string, Char * str);
+void IntrIntExpr(Obj string, Char * str);
 
 
 /****************************************************************************
@@ -563,7 +550,7 @@ extern void IntrIntExpr(Obj string, Char * str);
 **  'IntrFloatExpr' is the action  to  interpret a literal  float expression.
 **  <str> is the float as a (null terminated) C character string.
 */
-extern void IntrFloatExpr(Obj string, Char * str);
+void IntrFloatExpr(Obj string, Char * str);
 
 
 /****************************************************************************
@@ -572,7 +559,7 @@ extern void IntrFloatExpr(Obj string, Char * str);
 **
 **  'IntrTrueExpr' is the action to interpret a literal true expression.
 */
-extern  void            IntrTrueExpr ( void );
+void IntrTrueExpr(void);
 
 
 /****************************************************************************
@@ -581,7 +568,7 @@ extern  void            IntrTrueExpr ( void );
 **
 **  'IntrFalseExpr' is the action to interpret a literal false expression.
 */
-extern  void            IntrFalseExpr ( void );
+void IntrFalseExpr(void);
 
 /****************************************************************************
 **
@@ -589,9 +576,9 @@ extern  void            IntrFalseExpr ( void );
 **
 **  'IntrTildeExpr' is the action to interpret a tilde expression.
 */
-extern  void            IntrTildeExpr ( void );
+void IntrTildeExpr(void);
 
-extern void IntrHelp( Obj topic );
+void IntrHelp(Obj topic);
 
 /****************************************************************************
 **
@@ -600,8 +587,7 @@ extern void IntrHelp( Obj topic );
 **  'IntrCharExpr' is the action to interpret a literal character expression.
 **  <chr> is the C character.
 */
-extern  void            IntrCharExpr (
-            Char                chr );
+void IntrCharExpr(Char chr);
 
 
 /****************************************************************************
@@ -609,12 +595,9 @@ extern  void            IntrCharExpr (
 *F  IntrPermCycle(<nr>) . . . . . .  interpret literal permutation expression
 *F  IntrPerm(<nr>)  . . . . . . . .  interpret literal permutation expression
 */
-extern  void            IntrPermCycle (
-            UInt                nrx,
-            UInt                nrc );
+void IntrPermCycle(UInt nrx, UInt nrc);
 
-extern  void            IntrPerm (
-            UInt                nrc );
+void IntrPerm(UInt nrc);
 
 
 /****************************************************************************
@@ -624,27 +607,20 @@ extern  void            IntrPerm (
 *F  IntrListExprEndElm()  . . . . . . . . .  interpret list expr, end element
 *F  IntrListExprEnd(<nr>,<range>,<top>,<tilde>) . .  interpret list expr, end
 */
-extern  void            IntrListExprBegin (
-            UInt                top );
+void IntrListExprBegin(UInt top);
 
-extern  void            IntrListExprBeginElm (
-            UInt                pos );
+void IntrListExprBeginElm(UInt pos);
 
-extern  void            IntrListExprEndElm ( void );
+void IntrListExprEndElm(void);
 
-extern  void            IntrListExprEnd (
-            UInt                nr,
-            UInt                range,
-            UInt                top,
-            UInt                tilde );
+void IntrListExprEnd(UInt nr, UInt range, UInt top, UInt tilde);
 
 
 /****************************************************************************
 **
 *F  IntrStringExpr(<str>) . . . . . . . . interpret literal string expression
 */
-extern  void            IntrStringExpr (
-            Obj                 string );
+void IntrStringExpr(Obj string);
 
 
 /****************************************************************************
@@ -655,112 +631,87 @@ extern  void            IntrStringExpr (
 *F  IntrRecExprEndElmExpr() . . . . . . .  interpret record expr, end element
 *F  IntrRecExprEnd(<nr>,<top>,<tilde>)  . . . . .  interpret record expr, end
 */
-extern  void            IntrRecExprBegin (
-            UInt                top );
+void IntrRecExprBegin(UInt top);
 
-extern  void            IntrRecExprBeginElmName (
-            UInt                rnam );
+void IntrRecExprBeginElmName(UInt rnam);
 
-extern  void            IntrRecExprBeginElmExpr ( void );
+void IntrRecExprBeginElmExpr(void);
 
-extern  void            IntrRecExprEndElm ( void );
+void IntrRecExprEndElm(void);
 
-extern  void            IntrRecExprEnd (
-            UInt                nr,
-            UInt                top,
-            UInt                tilde );
+void IntrRecExprEnd(UInt nr, UInt top, UInt tilde);
 
 
 /****************************************************************************
 **
 *F  IntrAssLVar(<lvar>) . . . . . . . . . . . . interpret assignment to local
 */
-extern  void            IntrAssLVar (
-            UInt                lvar );
+void IntrAssLVar(UInt lvar);
 
-extern  void            IntrUnbLVar (
-            UInt                lvar );
+void IntrUnbLVar(UInt lvar);
 
 
 /****************************************************************************
 **
 *F  IntrRefLVar(<lvar>) . . . . . . . . . . . .  interpret reference to local
 */
-extern  void            IntrRefLVar (
-            UInt                lvar );
+void IntrRefLVar(UInt lvar);
 
-extern  void            IntrIsbLVar (
-            UInt                lvar );
+void IntrIsbLVar(UInt lvar);
 
 
 /****************************************************************************
 **
 *F  IntrAssHVar(<hvar>) . . . . . . . . . . .  interpret assignment to higher
 */
-extern  void            IntrAssHVar (
-            UInt                hvar );
+void IntrAssHVar(UInt hvar);
 
-extern  void            IntrUnbHVar (
-            UInt                hvar );
+void IntrUnbHVar(UInt hvar);
 
 
 /****************************************************************************
 **
 *F  IntrRefHVar(<hvar>) . . . . . . . . . . . . interpret reference to higher
 */
-extern  void            IntrRefHVar (
-            UInt                hvar );
+void IntrRefHVar(UInt hvar);
 
-extern  void            IntrIsbHVar (
-            UInt                hvar );
+void IntrIsbHVar(UInt hvar);
 
 
 /****************************************************************************
 **
 *F  IntrAssDVar(<dvar>) . . . . . . . . . . . . interpret assignment to debug
 */
-extern  void            IntrAssDVar (
-            UInt                dvar,
-            UInt                depth );
+void IntrAssDVar(UInt dvar, UInt depth);
 
-extern  void            IntrUnbDVar (
-            UInt                dvar,
-            UInt                depth );
+void IntrUnbDVar(UInt dvar, UInt depth);
 
 
 /****************************************************************************
 **
 *F  IntrRefDVar(<dvar>) . . . . . . . . . . . .  interpret reference to debug
 */
-extern  void            IntrRefDVar (
-            UInt                dvar,
-            UInt                depth );
+void IntrRefDVar(UInt dvar, UInt depth);
 
-extern  void            IntrIsbDVar (
-            UInt                dvar,
-            UInt                depth );
+void IntrIsbDVar(UInt dvar, UInt depth);
 
 
 /****************************************************************************
 **
 *F  IntrAssGVar(<gvar>) . . . . . . . . . . .  interpret assignment to global
 */
-extern  void            IntrAssGVar (
-            UInt                gvar );
+void IntrAssGVar(UInt gvar);
 
-extern  void            IntrUnbGVar (
-            UInt                gvar );
+void IntrUnbGVar(UInt gvar);
 
 
 /****************************************************************************
 **
 *F  IntrRefGVar(<gvar>) . . . . . . . . . . . . interpret reference to global
 */
-extern  void            IntrRefGVar (
-            UInt                gvar );
+void IntrRefGVar(UInt gvar);
 
-extern  void            IntrIsbGVar (
-            UInt                gvar );
+void IntrIsbGVar(UInt gvar);
 
 
 /****************************************************************************
@@ -770,17 +721,15 @@ extern  void            IntrIsbGVar (
 *F  IntrAssListLevel(<level>) . . . . . interpret assignment to several lists
 *F  IntrAsssListLevel(<level>)  . . intr multiple assignment to several lists
 */
-extern  void            IntrAssList ( Int narg );
+void IntrAssList(Int narg);
 
-extern  void            IntrAsssList ( void );
+void IntrAsssList(void);
 
-extern  void            IntrAssListLevel ( Int narg,
-            UInt                level );
+void IntrAssListLevel(Int narg, UInt level);
 
-extern  void            IntrAsssListLevel (
-            UInt                level );
+void IntrAsssListLevel(UInt level);
 
-extern  void            IntrUnbList (Int narg );
+void IntrUnbList(Int narg);
 
 
 /****************************************************************************
@@ -790,17 +739,15 @@ extern  void            IntrUnbList (Int narg );
 *F  IntrElmListLevel(<level>) . . . . .  interpret selection of several lists
 *F  IntrElmsListLevel(<level>)  . .  intr multiple selection of several lists
 */
-extern  void            IntrElmList ( Int narg);
+void IntrElmList(Int narg);
 
-extern  void            IntrElmsList ( void );
+void IntrElmsList(void);
 
-extern  void            IntrElmListLevel ( Int narg,
-            UInt                level );
+void IntrElmListLevel(Int narg, UInt level);
 
-extern  void            IntrElmsListLevel (
-            UInt                level );
+void IntrElmsListLevel(UInt level);
 
-extern  void            IntrIsbList ( Int narg );
+void IntrIsbList(Int narg);
 
 
 /****************************************************************************
@@ -808,15 +755,13 @@ extern  void            IntrIsbList ( Int narg );
 *F  IntrAssRecName(<rnam>)  . . . . . . . .  interpret assignment to a record
 *F  IntrAssRecExpr()  . . . . . . . . . . .  interpret assignment to a record
 */
-extern  void            IntrAssRecName (
-            UInt                rnam );
+void IntrAssRecName(UInt rnam);
 
-extern  void            IntrAssRecExpr ( void );
+void IntrAssRecExpr(void);
 
-extern  void            IntrUnbRecName (
-            UInt                rnam );
+void IntrUnbRecName(UInt rnam);
 
-extern  void            IntrUnbRecExpr ( void );
+void IntrUnbRecExpr(void);
 
 
 /****************************************************************************
@@ -824,33 +769,31 @@ extern  void            IntrUnbRecExpr ( void );
 *F  IntrElmRecName(<rnam>)  . . . . . . . . . interpret selection of a record
 *F  IntrElmRecExpr()  . . . . . . . . . . . . interpret selection of a record
 */
-extern  void            IntrElmRecName (
-            UInt                rnam );
+void IntrElmRecName(UInt rnam);
 
-extern  void            IntrElmRecExpr ( void );
+void IntrElmRecExpr(void);
 
-extern  void            IntrIsbRecName (
-            UInt                rnam );
+void IntrIsbRecName(UInt rnam);
 
-extern  void            IntrIsbRecExpr ( void );
+void IntrIsbRecExpr(void);
 
 
 /****************************************************************************
 **
 *F  IntrAssPosObj() . . . . . . . . . . . .  interpret assignment to a posobj
 */
-extern  void            IntrAssPosObj ( void );
+void IntrAssPosObj(void);
 
-extern  void            IntrUnbPosObj ( void );
+void IntrUnbPosObj(void);
 
 
 /****************************************************************************
 **
 *F  IntrElmPosObj() . . . . . . . . . . . . . interpret selection of a posobj
 */
-extern  void            IntrElmPosObj ( void );
+void IntrElmPosObj(void);
 
-extern  void            IntrIsbPosObj ( void );
+void IntrIsbPosObj(void);
 
 
 /****************************************************************************
@@ -858,15 +801,13 @@ extern  void            IntrIsbPosObj ( void );
 *F  IntrAssComObjName(<rnam>) . . . . . . .  interpret assignment to a comobj
 *F  IntrAssComObjExpr() . . . . . . . . . .  interpret assignment to a comobj
 */
-extern  void            IntrAssComObjName (
-            UInt                rnam );
+void IntrAssComObjName(UInt rnam);
 
-extern  void            IntrAssComObjExpr ( void );
+void IntrAssComObjExpr(void);
 
-extern  void            IntrUnbComObjName (
-            UInt                rnam );
+void IntrUnbComObjName(UInt rnam);
 
-extern  void            IntrUnbComObjExpr ( void );
+void IntrUnbComObjExpr(void);
 
 
 /****************************************************************************
@@ -874,22 +815,20 @@ extern  void            IntrUnbComObjExpr ( void );
 *F  IntrElmComObjName(<rnam>) . . . . . . . . interpret selection of a comobj
 *F  IntrElmComObjExpr() . . . . . . . . . . . interpret selection of a comobj
 */
-extern  void            IntrElmComObjName (
-            UInt                rnam );
+void IntrElmComObjName(UInt rnam);
 
-extern  void            IntrElmComObjExpr ( void );
+void IntrElmComObjExpr(void);
 
-extern  void            IntrIsbComObjName (
-            UInt                rnam );
+void IntrIsbComObjName(UInt rnam);
 
-extern  void            IntrIsbComObjExpr ( void );
+void IntrIsbComObjExpr(void);
 
 /****************************************************************************
 **
 *F  IntrEmpty() . . . . . . . . . . . . .  Interpret an empty statement body
 **
 */
-extern void             IntrEmpty ( void );
+void IntrEmpty(void);
 
 /****************************************************************************
 **
@@ -899,13 +838,12 @@ extern void             IntrEmpty ( void );
 *F  InfoCheckLevel( <selectors>, <level> )  . . . check if Info should output
 */
 
-extern void             IntrInfoBegin ( void );
-extern void             IntrInfoMiddle( void );
-extern void             IntrInfoEnd   (
-           UInt                   narg );
-extern Obj              InfoCheckLevel(Obj, Obj);
+void IntrInfoBegin(void);
+void IntrInfoMiddle(void);
+void IntrInfoEnd(UInt narg);
+Obj  InfoCheckLevel(Obj, Obj);
 
-extern void InfoDoPrint(Obj cls, Obj lvl, Obj args);
+void InfoDoPrint(Obj cls, Obj lvl, Obj args);
 
 
 /****************************************************************************
@@ -927,11 +865,11 @@ extern void InfoDoPrint(Obj cls, Obj lvl, Obj args);
 *V  CurrentAssertionLevel . . . .  . . . . . . . . . . . copy of GAP variable
 */
 
-extern void             IntrAssertBegin ( void );
-extern void             IntrAssertAfterLevel ( void );
-extern void             IntrAssertAfterCondition ( void );
-extern void             IntrAssertEnd2Args ( void );
-extern void             IntrAssertEnd3Args ( void );
+void IntrAssertBegin(void);
+void IntrAssertAfterLevel(void);
+void IntrAssertAfterCondition(void);
+void IntrAssertEnd2Args(void);
+void IntrAssertEnd3Args(void);
 
 extern Obj              CurrentAssertionLevel;
 
@@ -945,22 +883,22 @@ extern Obj              CurrentAssertionLevel;
 **  SaveWorkspace command. 
 */
 
-extern void              IntrSaveWSBegin ( void );
+void IntrSaveWSBegin(void);
 
-extern void              IntrSaveWSEnd ( void );     
+void IntrSaveWSEnd(void);
 
 /****************************************************************************
 **
 *F  IntrContinue() . . . . . . . . . . . . . . . interpret continue-statement
 */
-extern void            IntrContinue ( void );
+void IntrContinue(void);
 
 
 /****************************************************************************
 **
 *F  PushVoidObj() . . . . . . . . . . . . . .  push void value onto the stack
 */
-extern void            PushVoidObj ( void );
+void PushVoidObj(void);
 
 
 /****************************************************************************

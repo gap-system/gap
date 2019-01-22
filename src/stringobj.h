@@ -187,7 +187,7 @@ EXPORT_INLINE void SET_LEN_STRING(Obj list, Int len)
 **  sets its length to len. 
 **
 */
-extern Obj NEW_STRING(Int len);
+Obj NEW_STRING(Int len);
 
 /****************************************************************************
 **
@@ -198,9 +198,7 @@ extern Obj NEW_STRING(Int len);
 **
 */
 
-extern  Int             GrowString (
-            Obj                 list,
-            UInt                need );
+Int GrowString(Obj list, UInt need);
 
 EXPORT_INLINE void GROW_STRING(Obj list, Int len)
 {
@@ -248,8 +246,7 @@ EXPORT_INLINE void COPY_CHARS(Obj str, const UChar * pnt, Int n)
 **  No  linebreaks are allowed,  if one must be  inserted  anyhow, it must be
 **  escaped by a backslash '\', which is done in 'Pr'.
 */
-extern void PrintString (
-    Obj                 list );
+void PrintString(Obj list);
 
 
 /****************************************************************************
@@ -259,8 +256,7 @@ extern void PrintString (
 **  'PrintString1' prints the string  constant  in  the  format  used  by  the
 **  'Print' and 'PrintTo' function.
 */
-extern void PrintString1 (
-            Obj                 list );
+void PrintString1(Obj list);
 
 
 /****************************************************************************
@@ -285,8 +281,7 @@ EXPORT_INLINE Int IS_STRING(Obj obj)
 **  'IsString' returns 1 if the object <obj> is a string and 0 otherwise.  It
 **  does not change the representation of <obj>.
 */
-extern Int IsString (
-            Obj                 obj );
+Int IsString(Obj obj);
 
 
 /****************************************************************************
@@ -296,8 +291,7 @@ extern Int IsString (
 **  'CopyToStringRep' copies the string <string> to a new mutable string in
 **  string representation.
 */
-extern Obj CopyToStringRep(
-            Obj                 string );
+Obj CopyToStringRep(Obj string);
 
 
 /****************************************************************************
@@ -308,7 +302,7 @@ extern Obj CopyToStringRep(
 **  equal to <string>. This may return <string> if it already satisfies these
 **  criteria.
 */
-extern Obj ImmutableString(Obj string);
+Obj ImmutableString(Obj string);
 
 
 /****************************************************************************
@@ -317,8 +311,7 @@ extern Obj ImmutableString(Obj string);
 **
 **  'ConvString' converts the string <string> to string representation.
 */
-extern void ConvString (
-            Obj                 string );
+void ConvString(Obj string);
 
 
 /****************************************************************************
@@ -329,8 +322,7 @@ extern void ConvString (
 **  otherwise.   If <obj> is a  string it  changes  its representation to the
 **  string representation.
 */
-extern Int IsStringConv (
-            Obj                 obj );
+Int IsStringConv(Obj obj);
 
 
 /****************************************************************************

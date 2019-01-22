@@ -310,10 +310,7 @@ EXPORT_INLINE UInt COUNT_TRUES_BLOCKS(const UInt * ptr, UInt nblocks)
 **  length  by one.  Otherwise  the boolean list is  converted to an ordinary
 **  list and the assignment is performed the ordinary way.
 */
-extern void AssBlist (
-    Obj                 list,
-    Int                 pos,
-    Obj                 val );
+void AssBlist(Obj list, Int pos, Obj val);
 
 
 /****************************************************************************
@@ -323,8 +320,7 @@ extern void AssBlist (
 **  'ConvBlist' changes the representation of boolean  lists into the compact
 **  representation of type 'T_BLIST' described above.
 */
-extern void ConvBlist (
-    Obj                 list );
+void ConvBlist(Obj list);
 
 
 /****************************************************************************

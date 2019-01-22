@@ -264,12 +264,12 @@ enum { BIPEB = sizeof(UInt) * 8L, LBIPEB = (BIPEB == 64) ? 6L : 5L };
 **
 **  Should be as accurate as possible,  because it  is  used  for  profiling.
 */
-extern UInt SyTime ( void );
+UInt SyTime(void);
 
 /* TODO: Properly document the following three calls */
-extern UInt SyTimeSys ( void );
-extern UInt SyTimeChildren ( void );
-extern UInt SyTimeChildrenSys ( void );
+UInt SyTimeSys(void);
+UInt SyTimeChildren(void);
+UInt SyTimeChildrenSys(void);
 
 /****************************************************************************
 **
@@ -410,18 +410,18 @@ typedef StructInitInfo* (*InitInfoFunc)(void);
 **  If ret is 0 'SyExit' should signal to a calling proccess that all is  ok.
 **  If ret is 1 'SyExit' should signal a  failure  to  the  calling proccess.
 */
-extern void SyExit(UInt ret) NORETURN;
+void SyExit(UInt ret) NORETURN;
 
 
 /****************************************************************************
 **
 *F  Panic( <msg> )
 */
-extern void Panic_(const char * file, int line, const char * fmt, ...) NORETURN
+void Panic_(const char * file, int line, const char * fmt, ...) NORETURN
 #ifdef HAVE_FUNC_ATTRIBUTE_FORMAT
-  __attribute__ ((format (printf, 3, 4)))
+    __attribute__((format(printf, 3, 4)))
 #endif
-;
+    ;
 #define Panic(...) \
     Panic_(__FILE__, __LINE__, __VA_ARGS__)
 
@@ -448,8 +448,8 @@ extern void Panic_(const char * file, int line, const char * fmt, ...) NORETURN
 **  Returns -1 to represent failure
 **
 */
-extern Int8 SyNanosecondsSinceEpoch(void);
-extern Int8 SyNanosecondsSinceEpochResolution(void);
+Int8 SyNanosecondsSinceEpoch(void);
+Int8 SyNanosecondsSinceEpochResolution(void);
 
 extern const char * const SyNanosecondsSinceEpochMethod;
 extern const Int SyNanosecondsSinceEpochMonotonic;
@@ -461,7 +461,7 @@ extern const Int SyNanosecondsSinceEpochMonotonic;
 **  The OS may wake us earlier, for example on receipt of a signal
 */
 
-extern void SySleep( UInt secs );
+void SySleep(UInt secs);
 
 /****************************************************************************
 **
@@ -470,7 +470,7 @@ extern void SySleep( UInt secs );
 **  The OS may wake us earlier, for example on receipt of a signal
 */
 
-extern void SyUSleep( UInt msecs );
+void SyUSleep(UInt msecs);
 
 /****************************************************************************
 **
@@ -494,7 +494,7 @@ extern void SyUSleep( UInt msecs );
 #define syJmp_buf jmp_buf
 #endif
 
-void syLongjmp(syJmp_buf* buf, int val) NORETURN;
+void syLongjmp(syJmp_buf * buf, int val) NORETURN;
 
 /****************************************************************************
 **
@@ -520,8 +520,6 @@ Int RegisterSyLongjmpObserver(voidfunc);
 **  '<ctr>-C', scans the command line for options, sets up the GAP root paths,
 **  locates the '.gaprc' file (if any), and more.
 */
-extern void InitSystem (
-            Int                 argc,
-            Char *              argv [] );
+void InitSystem(Int argc, Char * argv[]);
 
 #endif // GAP_SYSTEM_H

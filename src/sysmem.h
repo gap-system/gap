@@ -78,7 +78,7 @@ extern UInt SyAllocPool;
 #ifdef GAP_MEM_CHECK
 UInt   GetMembufCount(void);
 void * GetMembuf(UInt i);
-UInt GetMembufSize(void);
+UInt   GetMembufSize(void);
 #endif
 
 /****************************************************************************
@@ -88,10 +88,7 @@ UInt GetMembufSize(void);
 **  'SyMsgsBags' is the function that is used by Gasman to  display  messages
 **  during garbage collections.
 */
-extern void SyMsgsBags (
-            UInt                full,
-            UInt                phase,
-            Int                 nr );
+void SyMsgsBags(UInt full, UInt phase, Int nr);
 
 
 /****************************************************************************
@@ -105,7 +102,7 @@ extern void SyMsgsBags (
 **  This function is called by GASMAN after each successfully completed
 **  garbage collection.
 */
-extern void SyMAdviseFree ( void );
+void SyMAdviseFree(void);
 
 /****************************************************************************
 **
@@ -134,9 +131,7 @@ extern void SyMAdviseFree ( void );
 **  If the operating system does not support dynamic memory management, simply
 **  give 'SyAllocBags' a static buffer, from where it returns the blocks.
 */
-extern UInt * * * SyAllocBags (
-            Int                 size,
-            UInt                need );
+UInt *** SyAllocBags(Int size, UInt need);
 
 
 #endif // GAP_SYSMEM_H

@@ -31,17 +31,17 @@ typedef enum {
 
 // set the traversal method (and optionally, helper functions)
 // for all objects with the specified tnum.
-extern void SetTraversalMethod(UInt tnum,
-                               TraversalMethodEnum meth,
-                               TraversalFunction tf,
-                               TraversalCopyFunction cf);
+void SetTraversalMethod(UInt                  tnum,
+                        TraversalMethodEnum   meth,
+                        TraversalFunction     tf,
+                        TraversalCopyFunction cf);
 
 
 // helper to be called from traverse functions
-extern void QueueForTraversal(TraversalState *, Obj obj);
+void QueueForTraversal(TraversalState *, Obj obj);
 
 // helper to be called from copy functions
-extern Obj ReplaceByCopy(TraversalState *, Obj obj);
+Obj ReplaceByCopy(TraversalState *, Obj obj);
 
 
 Obj ReachableObjectsFrom(Obj obj);

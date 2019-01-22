@@ -354,8 +354,8 @@ EXPORT_INLINE Obj NEW_FFE(FF fld, FFV val)
 **  'FiniteField' returns the small finite field with <p>^<d> elements.
 **  'FiniteFieldBySize' returns the small finite field with <q> elements.
 */
-extern FF FiniteField(UInt p, UInt d);
-extern FF FiniteFieldBySize(UInt q);
+FF FiniteField(UInt p, UInt d);
+FF FiniteFieldBySize(UInt q);
 
 
 /****************************************************************************
@@ -368,11 +368,7 @@ extern FF FiniteFieldBySize(UInt q);
 **  the smallest such field.  If  <f1> and <f2> have different characteristic
 **  or the smallest common field, is too large, 'CommonFF' returns 0.
 */
-extern  FF              CommonFF (
-            FF                  f1,
-            UInt                d1,
-            FF                  f2,
-            UInt                d2 );
+FF CommonFF(FF f1, UInt d1, FF f2, UInt d2);
 
 
 /****************************************************************************
@@ -382,8 +378,7 @@ extern  FF              CommonFF (
 **  'CharFFE' returns the characteristic of the small finite field  in  which
 **  the element <ffe> lies.
 */
-extern  UInt            CharFFE (
-            Obj                 ffe );
+UInt CharFFE(Obj ffe);
 
 
 /****************************************************************************
@@ -393,8 +388,7 @@ extern  UInt            CharFFE (
 **  'DegreeFFE' returns the degree of the smallest finite field in which  the
 **  element <ffe> lies.
 */
-extern  UInt            DegreeFFE (
-            Obj                 ffe );
+UInt DegreeFFE(Obj ffe);
 
 
 /****************************************************************************
@@ -406,8 +400,7 @@ extern  UInt            DegreeFFE (
 **  'TypeFFE' is the function in 'TypeObjFuncs' for  elements in small finite
 **  fields.
 */
-extern  Obj             TypeFFE (
-            Obj                 ffe );
+Obj TypeFFE(Obj ffe);
 
 
 /****************************************************************************

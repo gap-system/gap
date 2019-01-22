@@ -40,55 +40,53 @@ Int RegisterBreakloopObserver(intfunc func);
 **                                   ERROR_OUTPUT global variable defined in
 **                                   error.g, or "*errout*" otherwise
 */
-extern UInt OpenErrorOutput(void);
+UInt OpenErrorOutput(void);
 
 /****************************************************************************
 **
 *F  ErrorQuit( <msg>, <arg1>, <arg2> )  . . . . . . . . . . .  print and quit
 */
-extern void ErrorQuit(const Char * msg, Int arg1, Int arg2) NORETURN;
+void ErrorQuit(const Char * msg, Int arg1, Int arg2) NORETURN;
 
 /****************************************************************************
 **
 *F  ErrorMayQuit( <msg>, <arg1>, <arg2> )  . print, enter break loop and quit
 **                                           no option to return anything.
 */
-extern void ErrorMayQuit(const Char * msg, Int arg1, Int arg2) NORETURN;
+void ErrorMayQuit(const Char * msg, Int arg1, Int arg2) NORETURN;
 
 
 /****************************************************************************
 **
 *F  ErrorMayQuitNrArgs( <narg>, <actual> ) . . . .  wrong number of arguments
 */
-extern void ErrorMayQuitNrArgs(Int narg, Int actual) NORETURN;
+void ErrorMayQuitNrArgs(Int narg, Int actual) NORETURN;
 
 /****************************************************************************
 **
 *F  ErrorMayQuitNrAtLeastArgs( <narg>, <actual> ) . . .  not enough arguments
 */
-extern void ErrorMayQuitNrAtLeastArgs(Int narg, Int actual) NORETURN;
+void ErrorMayQuitNrAtLeastArgs(Int narg, Int actual) NORETURN;
 
 /****************************************************************************
 **
 *F  ErrorQuitRange3( <first>, <second>, <last> ) . . .divisibility rules
 */
-extern void ErrorQuitRange3(Obj first, Obj second, Obj last) NORETURN;
+void ErrorQuitRange3(Obj first, Obj second, Obj last) NORETURN;
 
 
 /****************************************************************************
 **
 *F  ErrorReturnObj( <msg>, <arg1>, <arg2>, <msg2> ) . .  print and return obj
 */
-extern Obj
-ErrorReturnObj(const Char * msg, Int arg1, Int arg2, const Char * msg2);
+Obj ErrorReturnObj(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 
 
 /****************************************************************************
 **
 *F  ErrorReturnVoid( <msg>, <arg1>, <arg2>, <msg2> )  . . .  print and return
 */
-extern void
-ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
+void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 
 
 /****************************************************************************
@@ -103,10 +101,10 @@ ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 **  If funcname is 0, then 'funcname: ' is omitted from the message.
 **  If argname is 0, then '<argname> ' is omitted from the message.
 */
-extern Obj RequireArgumentEx(const char * funcname,
-                             Obj          op,
-                             const char * argname,
-                             const char * msg) NORETURN;
+Obj RequireArgumentEx(const char * funcname,
+                      Obj          op,
+                      const char * argname,
+                      const char * msg) NORETURN;
 
 #define NICE_ARGNAME(op) "<" #op ">"
 
@@ -262,14 +260,18 @@ void CheckIsDenseList(const Char * desc, const Char * listName, Obj list);
 **
 *F  CheckSameLength
 */
-void CheckSameLength(const Char * desc, const Char *leftName, const Char *rightName, Obj left, Obj right);
+void CheckSameLength(const Char * desc,
+                     const Char * leftName,
+                     const Char * rightName,
+                     Obj          left,
+                     Obj          right);
 
 
 /****************************************************************************
 **
 *F  CALL_WITH_CATCH
 */
-extern Obj CALL_WITH_CATCH(Obj func, Obj args);
+Obj CALL_WITH_CATCH(Obj func, Obj args);
 
 
 /****************************************************************************

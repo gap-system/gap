@@ -31,32 +31,31 @@
 **  The return value is either True or Fail
 */
 
-extern Obj SaveWorkspace( Obj fname );
+Obj SaveWorkspace(Obj fname);
 
-extern void LoadWorkspace( Char *fname);
+void LoadWorkspace(Char * fname);
 
-extern void SaveUInt1(UInt1 x);
-extern void SaveUInt2(UInt2 x);
-extern void SaveUInt4(UInt4 x);
-extern void SaveUInt(UInt x);
+void SaveUInt1(UInt1 x);
+void SaveUInt2(UInt2 x);
+void SaveUInt4(UInt4 x);
+void SaveUInt(UInt x);
 #ifdef SYS_IS_64_BIT
-extern void SaveUInt8(UInt8 x);
+void SaveUInt8(UInt8 x);
 #endif
-extern void SaveCStr(const Char *s);
-extern void SaveString(Obj string);
-extern void LoadString(Obj string);
-extern void SaveSubObj(Obj o);
+void SaveCStr(const Char * s);
+void SaveString(Obj string);
+void LoadString(Obj string);
+void SaveSubObj(Obj o);
 
-extern UInt1 LoadUInt1( void );
-extern UInt2 LoadUInt2( void );
-extern UInt4 LoadUInt4( void );
-extern UInt LoadUInt( void );
+UInt1 LoadUInt1(void);
+UInt2 LoadUInt2(void);
+UInt4 LoadUInt4(void);
+UInt  LoadUInt(void);
 #ifdef SYS_IS_64_BIT
-extern UInt8 LoadUInt8( void);
+UInt8 LoadUInt8(void);
 #endif
-extern void LoadCStr(Char *buf, UInt maxlen );
-extern Obj LoadSubObj( void );
-
+void LoadCStr(Char * buf, UInt maxlen);
+Obj  LoadSubObj(void);
 
 
 /***************************************************************************

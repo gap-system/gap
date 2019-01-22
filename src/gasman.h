@@ -115,7 +115,8 @@ enum {
 **
 **  'BAG_HEADER' returns the header of the bag with the identifier <bag>.
 */
-EXPORT_INLINE BagHeader * BAG_HEADER(Bag bag) {
+EXPORT_INLINE BagHeader * BAG_HEADER(Bag bag)
+{
     GAP_ASSERT(bag);
     return (((BagHeader *)*bag) - 1);
 }
@@ -137,7 +138,8 @@ EXPORT_INLINE BagHeader * BAG_HEADER(Bag bag) {
 **  to  call  to  mark all subbags  of a  given bag (see "InitMarkFuncBags").
 **  Apart from that {\Gasman} does not care at all about types.
 */
-EXPORT_INLINE UInt TNUM_BAG(Bag bag) {
+EXPORT_INLINE UInt TNUM_BAG(Bag bag)
+{
     return BAG_HEADER(bag)->type;
 }
 
@@ -382,7 +384,7 @@ int IsGapObj(void *);
 **  block.
 */
 
-extern void CHANGED_BAG(Bag b);
+void CHANGED_BAG(Bag b);
 
 #elif defined(USE_GASMAN)
 
@@ -445,9 +447,7 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag)
 **  areas of all bags may  change.  So you  must not keep any  pointers to or
 **  into the data areas of bags over calls to 'NewBag' (see "PTR_BAG").
 */
-extern  Bag             NewBag (
-            UInt                type,
-            UInt                size );
+Bag NewBag(UInt type, UInt size);
 
 
 // NewWordSizedBag is the same as NewBag, except it rounds 'size' up to
@@ -485,14 +485,10 @@ EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size)
 **  data stored in the bag makes sense when the  bag is interpreted  as a bag
 **  of type <type>.
 */
-extern  void            RetypeBag (
-            Bag                 bag,
-            UInt                new_type );
+void RetypeBag(Bag bag, UInt new_type);
 
 #ifdef HPCGAP
-extern  void            RetypeBagIfWritable (
-            Bag                 bag,
-            UInt                new_type );
+void RetypeBagIfWritable(Bag bag, UInt new_type);
 #else
 #define RetypeBagIfWritable(x,y)     RetypeBag(x,y)
 #endif
@@ -506,9 +502,9 @@ extern  void            RetypeBagIfWritable (
 **  FIXME: for now, this checks the tnums; later, this will be turned
 **  into a check for an object flag
 */
-extern void RetypeBagSM(Bag bag, UInt new_type);
+void RetypeBagSM(Bag bag, UInt new_type);
 #ifdef HPCGAP
-extern void RetypeBagSMIfWritable(Bag bag, UInt new_type);
+void RetypeBagSMIfWritable(Bag bag, UInt new_type);
 #else
 #define RetypeBagSMIfWritable(x,y)   RetypeBagSM(x,y)
 #endif
@@ -545,9 +541,7 @@ extern void RetypeBagSMIfWritable(Bag bag, UInt new_type);
 **  data areas of all bags may change.  So you must not keep  any pointers to
 **  or into the data areas of bags over calls to 'ResizeBag' (see "PTR_BAG").
 */
-extern  UInt            ResizeBag (
-            Bag                 bag,
-            UInt                new_size );
+UInt ResizeBag(Bag bag, UInt new_size);
 
 // ResizedWordSizedBag is the same as ResizeBag, except it round 'size'
 // up to the next multiple of sizeof(UInt)
@@ -583,18 +577,14 @@ EXPORT_INLINE UInt ResizeWordSizedBag(Bag bag, UInt size)
 **  of all bags may change.  So you must not keep any pointers to or into the
 **  data areas of bags over calls to 'CollectBags' (see "PTR_BAG").
 */
-extern  UInt            CollectBags (
-            UInt                size,
-            UInt                full );
+UInt CollectBags(UInt size, UInt full);
 
 
 /****************************************************************************
 **
 *F  SwapMasterPoint( <bag1>, <bag2> ) . . . swap pointer of <bag1> and <bag2>
 */
-extern void SwapMasterPoint (
-    Bag                 bag1,
-    Bag                 bag2 );
+void SwapMasterPoint(Bag bag1, Bag bag2);
 
 
 /****************************************************************************
@@ -645,8 +635,8 @@ extern  TNumInfoBags            InfoBags [ 256 ];
 
 #ifdef HPCGAP
 void MakeBagTypePublic(int type);
-Bag MakeBagPublic(Bag bag);
-Bag MakeBagReadOnly(Bag bag);
+Bag  MakeBagPublic(Bag bag);
+Bag  MakeBagReadOnly(Bag bag);
 #endif
 
 /****************************************************************************
@@ -720,8 +710,7 @@ typedef void            (* TNumMsgsFuncBags) (
             UInt                phase,
             Int                 nr );
 
-extern  void            InitMsgsFuncBags (
-            TNumMsgsFuncBags    msgs_func );
+void InitMsgsFuncBags(TNumMsgsFuncBags msgs_func);
 #endif
 
 /****************************************************************************
@@ -746,7 +735,7 @@ extern  void            InitMsgsFuncBags (
 **  {\Gasman} already provides several marking functions, see below.
 */
 typedef void (* TNumMarkFuncBags )( Bag bag );
-extern void InitMarkFuncBags( UInt type, TNumMarkFuncBags mark_func );
+void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func);
 
 
 /****************************************************************************
@@ -758,7 +747,7 @@ extern void InitMarkFuncBags( UInt type, TNumMarkFuncBags mark_func );
 **  simply returns.  For example   in  {\GAP} the  bags for   large  integers
 **  contain only the digits and no identifiers of bags.
 */
-extern void MarkNoSubBags( Bag bag );
+void MarkNoSubBags(Bag bag);
 
 
 /****************************************************************************
@@ -772,10 +761,10 @@ extern void MarkNoSubBags( Bag bag );
 **  the indicated number as bag identifiers as their initial entries.
 **  These functions mark those subbags and return.
 */
-extern void MarkOneSubBags( Bag bag );
-extern void MarkTwoSubBags( Bag bag );
-extern void MarkThreeSubBags( Bag bag );
-extern void MarkFourSubBags( Bag bag );
+void MarkOneSubBags(Bag bag);
+void MarkTwoSubBags(Bag bag);
+void MarkThreeSubBags(Bag bag);
+void MarkFourSubBags(Bag bag);
 
 
 /****************************************************************************
@@ -796,11 +785,11 @@ extern void MarkFourSubBags( Bag bag );
 **  bag identifiers for the elements  of the  list or 0   if an entry has  no
 **  assigned value.
 */
-extern void MarkAllSubBags( Bag bag );
+void MarkAllSubBags(Bag bag);
 
-extern void MarkAllSubBagsDefault ( Bag );
+void MarkAllSubBagsDefault(Bag);
 
-extern void MarkAllButFirstSubBags( Bag bag );
+void MarkAllButFirstSubBags(Bag bag);
 
 /****************************************************************************
 **
@@ -820,7 +809,7 @@ EXPORT_INLINE void MarkBag( Bag bag )
 {
 }
 #else
-extern void MarkBag( Bag bag );
+void MarkBag(Bag bag);
 #endif
 
 
@@ -859,9 +848,7 @@ extern void MarkArrayOfBags(const Bag array[], UInt count);
 **  after a save and load
 */
 
-extern void InitGlobalBag (
-            Bag *               addr,
-            const Char *        cookie );
+void InitGlobalBag(Bag * addr, const Char * cookie);
 
 
 /****************************************************************************
@@ -888,9 +875,7 @@ extern void InitGlobalBag (
 typedef void            (* TNumFreeFuncBags ) (
             Bag                 bag );
 
-extern  void            InitFreeFuncBag (
-            UInt                type,
-            TNumFreeFuncBags    free_func );
+void InitFreeFuncBag(UInt type, TNumFreeFuncBags free_func);
 
 
 /****************************************************************************
@@ -913,10 +898,12 @@ extern  void            InitFreeFuncBag (
 #ifdef USE_GASMAN
 typedef void            (* TNumCollectFuncBags) ( void );
 
-extern  void            InitCollectFuncBags (
-            TNumCollectFuncBags before_func,
-            TNumCollectFuncBags after_func );
+void InitCollectFuncBags(TNumCollectFuncBags before_func,
+                         TNumCollectFuncBags after_func);
+#endif
 
+
+#ifdef USE_GASMAN
 extern void SetStackBottomBags(void * StackBottom);
 #endif
 
@@ -925,7 +912,7 @@ extern void SetStackBottomBags(void * StackBottom);
 // other code bases which use their own form of garbage collection. For
 // example, with Python (for SageMath).
 typedef void (*TNumExtraMarkFuncBags)(void);
-extern void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func);
+void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func);
 
 /****************************************************************************
 **
@@ -953,17 +940,17 @@ extern void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func);
 **  only be at addresses that are a multiple of 'sizeof(Bag)'. This value
 **  depends on the machine, the operating system, and the compiler.
 */
-extern void InitBags(UInt initialSize, Bag * stackStart, UInt stackAlign);
+void InitBags(UInt initialSize, Bag * stackStart, UInt stackAlign);
 
 /****************************************************************************
 **
 *F  FinishBags() end GASMAN and free memory
 */
 
-extern void FinishBags( void );
+void FinishBags(void);
 
 #if !defined(USE_GASMAN)
-void *AllocateMemoryBlock(UInt size);
+void * AllocateMemoryBlock(UInt size);
 #endif
 
 

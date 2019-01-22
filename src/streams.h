@@ -28,7 +28,7 @@
 **
 **  Read the current input as function and close the input stream.
 */
-extern Obj READ_AS_FUNC ( void );
+Obj READ_AS_FUNC(void);
 
 
 /****************************************************************************
@@ -39,7 +39,7 @@ extern Obj READ_AS_FUNC ( void );
 **  search all   directories given   in 'SyGapRootPaths',  check  dynamically
 **  loadable modules and statically linked modules.
 */
-extern Int READ_GAP_ROOT ( const Char * filename );
+Int READ_GAP_ROOT(const Char * filename);
 
 // READ_ALL_COMMANDS reads a string of GAP statements and executes them
 // allowing to capture and process outputs

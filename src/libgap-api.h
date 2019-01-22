@@ -151,10 +151,10 @@ static inline int GAP_Error_Postjmp_(int JumpRet)
 typedef void (*GAP_CallbackFunc)(void);
 
 // TODO: document this function
-extern void GAP_Initialize(int              argc,
-                           char **          argv,
-                           GAP_CallbackFunc markBagsCallback,
-                           GAP_CallbackFunc errorCallback);
+void GAP_Initialize(int              argc,
+                    char **          argv,
+                    GAP_CallbackFunc markBagsCallback,
+                    GAP_CallbackFunc errorCallback);
 
 
 ////
@@ -166,7 +166,7 @@ extern void GAP_Initialize(int              argc,
 // To see an example of how to use this function see tst/testlibgap/basic.c
 //
 // TODO: properly document this function
-extern Obj GAP_EvalString(const char * cmd);
+Obj GAP_EvalString(const char * cmd);
 
 
 ////
@@ -176,25 +176,25 @@ extern Obj GAP_EvalString(const char * cmd);
 // Combines GVarName and ValGVar. For a given string, it returns the value
 // of the gvar with name <name>, or NULL if the global variable is not
 // defined.
-extern Obj GAP_ValueGlobalVariable(const char * name);
+Obj GAP_ValueGlobalVariable(const char * name);
 
 
 ////
 //// arithmetic
 ////
 
-extern int GAP_EQ(Obj a, Obj b);
-extern int GAP_LT(Obj a, Obj b);
-extern int GAP_IN(Obj a, Obj b);
+int GAP_EQ(Obj a, Obj b);
+int GAP_LT(Obj a, Obj b);
+int GAP_IN(Obj a, Obj b);
 
-extern Obj GAP_SUM(Obj a, Obj b);
-extern Obj GAP_DIFF(Obj a, Obj b);
-extern Obj GAP_PROD(Obj a, Obj b);
-extern Obj GAP_QUO(Obj a, Obj b);
-extern Obj GAP_LQUO(Obj a, Obj b);
-extern Obj GAP_POW(Obj a, Obj b);
-extern Obj GAP_COMM(Obj a, Obj b);
-extern Obj GAP_MOD(Obj a, Obj b);
+Obj GAP_SUM(Obj a, Obj b);
+Obj GAP_DIFF(Obj a, Obj b);
+Obj GAP_PROD(Obj a, Obj b);
+Obj GAP_QUO(Obj a, Obj b);
+Obj GAP_LQUO(Obj a, Obj b);
+Obj GAP_POW(Obj a, Obj b);
+Obj GAP_COMM(Obj a, Obj b);
+Obj GAP_MOD(Obj a, Obj b);
 
 
 ////
@@ -212,7 +212,7 @@ extern Obj GAP_Fail;
 
 // Call the GAP object <func> as a function with arguments given
 // as a GAP list <args>.
-extern Obj GAP_CallFuncList(Obj func, Obj args);
+Obj GAP_CallFuncList(Obj func, Obj args);
 
 // Call the GAP object <func> as a function with arguments given
 // as an array <args> with <narg> entries.
@@ -224,14 +224,14 @@ extern Obj GAP_CallFuncArray(Obj func, UInt narg, Obj args[]);
 ////
 
 // Returns 1 if <obj> is a GAP machine float, 0 if not.
-extern Int GAP_IsMacFloat(Obj obj);
+Int GAP_IsMacFloat(Obj obj);
 
 // Returns the value of the GAP machine float object <obj>.
 // If <obj> is not a machine float object, an error is raised.
-extern double GAP_ValueMacFloat(Obj obj);
+double GAP_ValueMacFloat(Obj obj);
 
 // Returns a new GAP machine float with value <x>.
-extern Obj GAP_NewMacFloat(double x);
+Obj GAP_NewMacFloat(double x);
 
 
 ////
@@ -239,13 +239,13 @@ extern Obj GAP_NewMacFloat(double x);
 ////
 
 // Returns 1 if <obj> is a GAP integer, 0 if not.
-extern int GAP_IsInt(Obj obj);
+int GAP_IsInt(Obj obj);
 
 // Returns 1 if <obj> is a GAP small (aka immediate) integer, 0 if not.
-extern int GAP_IsSmallInt(Obj obj);
+int GAP_IsSmallInt(Obj obj);
 
 // Returns 1 if <obj> is a GAP large integer, 0 if not.
-extern int GAP_IsLargeInt(Obj obj);
+int GAP_IsLargeInt(Obj obj);
 
 
 // Construct an integer object from the limbs at which <limbs> points (for a
@@ -257,7 +257,7 @@ extern int GAP_IsLargeInt(Obj obj);
 // Note that GAP automatically reduces and normalized the integer object,
 // i.e., it will discard any leading zeros; and if the integer fits into a
 // small integer, it will be returned as such.
-extern Obj GAP_MakeObjInt(const UInt * limbs, Int size);
+Obj GAP_MakeObjInt(const UInt * limbs, Int size);
 
 // If <obj> is a GAP integer, returns the number of limbs needed to store the
 // integer, times the sign. If <obj> is the integer 0, then 0 is returned. If
@@ -265,7 +265,7 @@ extern Obj GAP_MakeObjInt(const UInt * limbs, Int size);
 // its sign.
 //
 // If <obj> is not a GAP integer, an error is raised.
-extern Int GAP_SizeInt(Obj obj);
+Int GAP_SizeInt(Obj obj);
 
 // Returns a pointer to the limbs of a the GAP large integer <obj>.
 // If <obj> is not a GAP large integer, then NULL is returned.
@@ -274,7 +274,7 @@ extern Int GAP_SizeInt(Obj obj);
 // GAP garbage collection. In particular, if you use any GAP APIs, then you
 // should assume that the pointer became stale. Barring that, you may safely
 // copy, inspect, or even modify the content of the string buffer.
-extern const UInt * GAP_AddrInt(Obj obj);
+const UInt * GAP_AddrInt(Obj obj);
 
 
 ////
@@ -282,26 +282,26 @@ extern const UInt * GAP_AddrInt(Obj obj);
 ////
 
 // Returns 1 if <obj> is a GAP list, 0 if not.
-extern int GAP_IsList(Obj obj);
+int GAP_IsList(Obj obj);
 
 // Returns the length of the given GAP list.
 // If <list> is not a GAP list, an error may be raised.
-extern UInt GAP_LenList(Obj list);
+UInt GAP_LenList(Obj list);
 
 // Assign <val> at position <pos> into the GAP list <list>.
 // If <val> is zero, then this unbinds the list entry.
 // If <list> is not a GAP list, an error may be raised.
-extern void GAP_AssList(Obj list, UInt pos, Obj val);
+void GAP_AssList(Obj list, UInt pos, Obj val);
 
 // Returns the element at the position <pos> in the list <list>.
 // Returns 0 if there is no entry at the given position.
 // Also returns 0 if <pos> is out of bounds, i.e., if <pos> is zero,
 // or larger than the length of the list.
 // If <list> is not a GAP list, an error may be raised.
-extern Obj GAP_ElmList(Obj list, UInt pos);
+Obj GAP_ElmList(Obj list, UInt pos);
 
 // Returns a new empty plain list with capacity <capacity>
-extern Obj GAP_NewPlist(Int capacity);
+Obj GAP_NewPlist(Int capacity);
 
 
 ////
@@ -309,11 +309,11 @@ extern Obj GAP_NewPlist(Int capacity);
 ////
 
 // Returns 1 if <obj> is a GAP string, 0 if not.
-extern int GAP_IsString(Obj obj);
+int GAP_IsString(Obj obj);
 
 // Returns the length of the given GAP string.
 // If <string> is not a GAP string, an error may be raised.
-extern UInt GAP_LenString(Obj string);
+UInt GAP_LenString(Obj string);
 
 // Returns a pointer to the contents of the GAP string <string>.
 // Returns 0 if <string> is not a GAP string.
@@ -332,21 +332,21 @@ extern UInt GAP_LenString(Obj string);
 //    char *buf = malloc(len + 1);
 //    memcpy(buf, GAP_CSTR_STRING(string), len + 1); // copy terminator, too
 //    // .. now we can safely use the content of buf
-extern char * GAP_CSTR_STRING(Obj obj);
+char * GAP_CSTR_STRING(Obj obj);
 
 // Returns a new mutable GAP string containing a copy of the given NULL
 // terminated C string.
-extern Obj GAP_MakeString(const char * string);
+Obj GAP_MakeString(const char * string);
 
 // Returns a immutable GAP string containing a copy of the given NULL
 // terminated C string.
-extern Obj GAP_MakeImmString(const char * string);
+Obj GAP_MakeImmString(const char * string);
 
 // Returns the value of the GAP character object <obj>.
 // If <obj> is not a GAP character object, it returns -1.
-extern Int GAP_ValueOfChar(Obj obj);
+Int GAP_ValueOfChar(Obj obj);
 
 // Returns the GAP character object with value <obj>.
-extern Obj GAP_CharWithValue(UChar obj);
+Obj GAP_CharWithValue(UChar obj);
 
 #endif

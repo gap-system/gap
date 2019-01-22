@@ -16,9 +16,9 @@
 
 #include "system.h"
 
-extern Int enableProfilingAtStartup(Char **argv, void * dummy);
-extern Int enableMemoryProfilingAtStartup(Char **argv, void * dummy);
-extern Int enableCodeCoverageAtStartup(Char **argv, void * dummy);
+Int enableProfilingAtStartup(Char ** argv, void * dummy);
+Int enableMemoryProfilingAtStartup(Char ** argv, void * dummy);
+Int enableCodeCoverageAtStartup(Char ** argv, void * dummy);
 
 
 // When a child is forked off, we force profile information to be stored

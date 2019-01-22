@@ -70,42 +70,42 @@
 **
 *F  FuncFinPowConjCol_ReducedComm( <self>, <sc>, <w>, <u> )
 */
-extern Obj FuncFinPowConjCol_ReducedComm ( Obj, Obj, Obj, Obj );
+Obj FuncFinPowConjCol_ReducedComm(Obj, Obj, Obj, Obj);
 
 
 /****************************************************************************
 **
 *F  FuncFinPowConjCol_ReducedForm( <self>, <sc>, <w> )
 */
-extern Obj FuncFinPowConjCol_ReducedForm ( Obj, Obj, Obj );
+Obj FuncFinPowConjCol_ReducedForm(Obj, Obj, Obj);
 
 
 /****************************************************************************
 **
 *F  FuncFinPowConjCol_ReducedLeftQuotient( <self>, <sc>, <w>, <u> )
 */
-extern Obj FuncFinPowConjCol_ReducedLeftQuotient ( Obj, Obj, Obj, Obj );
+Obj FuncFinPowConjCol_ReducedLeftQuotient(Obj, Obj, Obj, Obj);
 
 
 /****************************************************************************
 **
 *F  FuncFinPowConjCol_ReducedProduct( <self>, <sc>, <w>, <u> )
 */
-extern Obj FuncFinPowConjCol_ReducedProduct ( Obj, Obj, Obj, Obj );
+Obj FuncFinPowConjCol_ReducedProduct(Obj, Obj, Obj, Obj);
 
 
 /****************************************************************************
 **
 *F  FuncFinPowConjCol_ReducedPowerSmallInt( <self>, <sc>, <w>, <pow> )
 */
-extern Obj FuncFinPowConjCol_ReducedPowerSmallInt ( Obj, Obj, Obj, Obj);
+Obj FuncFinPowConjCol_ReducedPowerSmallInt(Obj, Obj, Obj, Obj);
 
 
 /****************************************************************************
 **
 *F  FuncFinPowConjCol_ReducedQuotient( <self>, <sc>, <w>, <u> )
 */
-extern Obj FuncFinPowConjCol_ReducedQuotient ( Obj, Obj, Obj, Obj );
+Obj FuncFinPowConjCol_ReducedQuotient(Obj, Obj, Obj, Obj);
 
 
 /****************************************************************************

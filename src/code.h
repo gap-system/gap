@@ -87,13 +87,13 @@ EXPORT_INLINE BodyHeader *BODY_HEADER(Obj body)
     return (BodyHeader *)ADDR_OBJ(body);
 }
 
-Obj GET_FILENAME_BODY(Obj body);
+Obj  GET_FILENAME_BODY(Obj body);
 void SET_FILENAME_BODY(Obj body, Obj val);
 
 UInt GET_GAPNAMEID_BODY(Obj body);
 void SET_GAPNAMEID_BODY(Obj body, UInt val);
 
-Obj GET_LOCATION_BODY(Obj body);
+Obj  GET_LOCATION_BODY(Obj body);
 void SET_LOCATION_BODY(Obj body, Obj val);
 
 UInt GET_STARTLINE_BODY(Obj body);
@@ -101,7 +101,7 @@ void SET_STARTLINE_BODY(Obj body, UInt val);
 UInt GET_ENDLINE_BODY(Obj body);
 void SET_ENDLINE_BODY(Obj body, UInt val);
 
-extern Obj GET_VALUE_FROM_CURRENT_BODY(Int ix);
+Obj GET_VALUE_FROM_CURRENT_BODY(Int ix);
 
 
 /****************************************************************************
@@ -120,7 +120,7 @@ enum {
 **
 *F  NewFunctionBody() . . . . . . . . . . . . . .  create a new function body
 */
-extern Obj NewFunctionBody(void);
+Obj NewFunctionBody(void);
 
 
 /****************************************************************************
@@ -569,9 +569,9 @@ enum EXPR_TNUM {
 **
 **  ...only function expressions inbetween...
 */
-extern  void            CodeBegin ( void );
+void CodeBegin(void);
 
-extern Obj CodeEnd(UInt error);
+Obj CodeEnd(UInt error);
 
 
 /****************************************************************************
@@ -590,12 +590,9 @@ extern Obj CodeEnd(UInt error);
 **  arguments. <options> is 1 if options were present after the ':' in which
 **  case the options have been read already.
 */
-extern  void            CodeFuncCallBegin ( void );
+void CodeFuncCallBegin(void);
 
-extern  void            CodeFuncCallEnd (
-            UInt                funccall,
-            UInt                options,
-            UInt                nr );
+void CodeFuncCallEnd(UInt funccall, UInt options, UInt nr);
 
 
 /****************************************************************************
@@ -614,13 +611,9 @@ extern  void            CodeFuncCallEnd (
 **  is the number of statements in the body of the function.
 **
 */
-extern void CodeFuncExprBegin (
-            Int                 narg,
-            Int                 nloc,
-            Obj                 nams,
-            Int startLine);
+void CodeFuncExprBegin(Int narg, Int nloc, Obj nams, Int startLine);
 
-extern void CodeFuncExprEnd(UInt nr);
+void CodeFuncExprEnd(UInt nr);
 
 /****************************************************************************
 **
@@ -636,20 +629,19 @@ extern void CodeFuncExprEnd(UInt nr);
 **  CodeFuncCallEnd()
 **
 */
-extern void            CodeFuncCallOptionsBegin ( void );
+void CodeFuncCallOptionsBegin(void);
 
 
-extern void            CodeFuncCallOptionsBeginElmName (
-    UInt                rnam );
+void CodeFuncCallOptionsBeginElmName(UInt rnam);
 
-extern void            CodeFuncCallOptionsBeginElmExpr ( void );
+void CodeFuncCallOptionsBeginElmExpr(void);
 
-extern void            CodeFuncCallOptionsEndElm ( void );
+void CodeFuncCallOptionsEndElm(void);
 
 
-extern void            CodeFuncCallOptionsEndElmEmpty ( void );
+void CodeFuncCallOptionsEndElmEmpty(void);
 
-extern void            CodeFuncCallOptionsEnd ( UInt nr );
+void CodeFuncCallOptionsEnd(UInt nr);
 
 
 /****************************************************************************
@@ -682,19 +674,17 @@ extern void            CodeFuncCallOptionsEnd ( UInt nr );
 **  reader encounters the end of the statement.   <nr> is the number of 'if',
 **  'elif', or 'else' branches.
 */
-extern  void            CodeIfBegin ( void );
+void CodeIfBegin(void);
 
-extern  void            CodeIfElif ( void );
+void CodeIfElif(void);
 
-extern  void            CodeIfElse ( void );
+void CodeIfElse(void);
 
-extern  Int             CodeIfBeginBody ( void );
+Int CodeIfBeginBody(void);
 
-extern  Int             CodeIfEndBody (
-            UInt                nr );
+Int CodeIfEndBody(UInt nr);
 
-extern  void            CodeIfEnd (
-            UInt                nr );
+void CodeIfEnd(UInt nr);
 
 
 /****************************************************************************
@@ -724,16 +714,15 @@ extern  void            CodeIfEnd (
 **  reader encounters  the end of   the  statement, i.e., immediately   after
 **  'CodeForEndBody'.
 */
-extern  void            CodeForBegin ( void );
+void CodeForBegin(void);
 
-extern  void            CodeForIn ( void );
+void CodeForIn(void);
 
-extern  void            CodeForBeginBody ( void );
+void CodeForBeginBody(void);
 
-extern  void            CodeForEndBody (
-            UInt                nr );
+void CodeForEndBody(UInt nr);
 
-extern  void            CodeForEnd ( void );
+void CodeForEnd(void);
 
 /****************************************************************************
 **
@@ -759,13 +748,12 @@ extern  void            CodeForEnd ( void );
 **  'CodeAtomicEndBody'.
 */
 
-void CodeAtomicBegin ( void );
+void CodeAtomicBegin(void);
 
-void CodeAtomicBeginBody ( UInt nrexprs );
+void CodeAtomicBeginBody(UInt nrexprs);
 
-void CodeAtomicEndBody (
-    UInt                nrstats );
-void CodeAtomicEnd ( void );
+void CodeAtomicEndBody(UInt nrstats);
+void CodeAtomicEnd(void);
 
 /****************************************************************************
 **
@@ -776,7 +764,7 @@ void CodeAtomicEnd ( void );
 
 void CodeQualifiedExprBegin(UInt qual);
 
-void CodeQualifiedExprEnd( void );
+void CodeQualifiedExprEnd(void);
 
 
 /****************************************************************************
@@ -802,14 +790,13 @@ void CodeQualifiedExprEnd( void );
 **  the reader encounters  the end  of the  statement, i.e., immediate  after
 **  'CodeWhileEndBody'.
 */
-extern  void            CodeWhileBegin ( void );
+void CodeWhileBegin(void);
 
-extern  void            CodeWhileBeginBody ( void );
+void CodeWhileBeginBody(void);
 
-extern  void            CodeWhileEndBody (
-            UInt                nr );
+void CodeWhileEndBody(UInt nr);
 
-extern  void            CodeWhileEnd ( void );
+void CodeWhileEnd(void);
 
 
 /****************************************************************************
@@ -835,14 +822,13 @@ extern  void            CodeWhileEnd ( void );
 **  when  the reader encounters the end  of the statement,  i.e., *after* the
 **  condition is read.
 */
-extern  void            CodeRepeatBegin ( void );
+void CodeRepeatBegin(void);
 
-extern  void            CodeRepeatBeginBody ( void );
+void CodeRepeatBeginBody(void);
 
-extern  void            CodeRepeatEndBody (
-            UInt                nr );
+void CodeRepeatEndBody(UInt nr);
 
-extern  void            CodeRepeatEnd ( void );
+void CodeRepeatEnd(void);
 
 
 /****************************************************************************
@@ -852,7 +838,7 @@ extern  void            CodeRepeatEnd ( void );
 **  'CodeBreak' is the  action to code a  break-statement.  It is called when
 **  the reader encounters a 'break;'.
 */
-extern  void            CodeBreak ( void );
+void CodeBreak(void);
 
 
 /****************************************************************************
@@ -863,7 +849,7 @@ extern  void            CodeBreak ( void );
 **  called when the reader encounters a 'return <expr>;', but *after* reading
 **  the expression <expr>.
 */
-extern  void            CodeReturnObj ( void );
+void CodeReturnObj(void);
 
 
 /****************************************************************************
@@ -877,8 +863,8 @@ extern  void            CodeReturnObj ( void );
 **  be tracked by profiling. This is used for the implicit return put
 **  at the end of functions.
 */
-extern  void            CodeReturnVoid ( void );
-extern  void            CodeReturnVoidWhichIsNotProfiled ( void );
+void CodeReturnVoid(void);
+void CodeReturnVoidWhichIsNotProfiled(void);
 
 /****************************************************************************
 **
@@ -905,43 +891,43 @@ extern  void            CodeReturnVoidWhichIsNotProfiled ( void );
 **  'CodePow' are the actions to   code the respective operator  expressions.
 **  They are called by the reader *after* *both* operands are read.
 */
-extern  void            CodeOrL ( void );
+void CodeOrL(void);
 
-extern  void            CodeOr ( void );
+void CodeOr(void);
 
-extern  void            CodeAndL ( void );
+void CodeAndL(void);
 
-extern  void            CodeAnd ( void );
+void CodeAnd(void);
 
-extern  void            CodeNot ( void );
+void CodeNot(void);
 
-extern  void            CodeEq ( void );
+void CodeEq(void);
 
-extern  void            CodeNe ( void );
+void CodeNe(void);
 
-extern  void            CodeLt ( void );
+void CodeLt(void);
 
-extern  void            CodeGe ( void );
+void CodeGe(void);
 
-extern  void            CodeGt ( void );
+void CodeGt(void);
 
-extern  void            CodeLe ( void );
+void CodeLe(void);
 
-extern  void            CodeIn ( void );
+void CodeIn(void);
 
-extern  void            CodeSum ( void );
+void CodeSum(void);
 
-extern  void            CodeAInv ( void );
+void CodeAInv(void);
 
-extern  void            CodeDiff ( void );
+void CodeDiff(void);
 
-extern  void            CodeProd ( void );
+void CodeProd(void);
 
-extern  void            CodeQuo ( void );
+void CodeQuo(void);
 
-extern  void            CodeMod ( void );
+void CodeMod(void);
 
-extern  void            CodePow ( void );
+void CodePow(void);
 
 
 /****************************************************************************
@@ -951,7 +937,7 @@ extern  void            CodePow ( void );
 **  'CodeIntExpr' is the action to code a literal integer expression.  <val>
 **  is the integer as a GAP object.
 */
-extern void CodeIntExpr(Obj val);
+void CodeIntExpr(Obj val);
 
 /****************************************************************************
 **
@@ -959,7 +945,7 @@ extern void CodeIntExpr(Obj val);
 **
 **  'CodeTildeExpr' is the action to code a tilde expression.
 */
-extern  void            CodeTildeExpr ( void );
+void CodeTildeExpr(void);
 
 /****************************************************************************
 **
@@ -967,7 +953,7 @@ extern  void            CodeTildeExpr ( void );
 **
 **  'CodeTrueExpr' is the action to code a literal true expression.
 */
-extern  void            CodeTrueExpr ( void );
+void CodeTrueExpr(void);
 
 
 /****************************************************************************
@@ -976,7 +962,7 @@ extern  void            CodeTrueExpr ( void );
 **
 **  'CodeFalseExpr' is the action to code a literal false expression.
 */
-extern  void            CodeFalseExpr ( void );
+void CodeFalseExpr(void);
 
 
 /****************************************************************************
@@ -986,8 +972,7 @@ extern  void            CodeFalseExpr ( void );
 **  'CodeCharExpr'  is the action  to  code a  literal  character expression.
 **  <chr> is the C character.
 */
-extern  void            CodeCharExpr (
-            Char                chr );
+void CodeCharExpr(Char chr);
 
 
 /****************************************************************************
@@ -1004,12 +989,9 @@ extern  void            CodeCharExpr (
 **  called when  the permutation is read completely.   <nrc> is the number of
 **  cycles.
 */
-extern  void            CodePermCycle (
-            UInt                nrx,
-            UInt                nrc );
+void CodePermCycle(UInt nrx, UInt nrc);
 
-extern  void            CodePerm (
-            UInt                nrc );
+void CodePerm(UInt nrc);
 
 
 /****************************************************************************
@@ -1019,37 +1001,28 @@ extern  void            CodePerm (
 *F  CodeListExprEndElm()  . . . . . . . . . code list expression, end element
 *F  CodeListExprEnd(<nr>,<range>,<top>,<tilde>) . . code list expression, end
 */
-extern  void            CodeListExprBegin (
-            UInt                top );
+void CodeListExprBegin(UInt top);
 
-extern  void            CodeListExprBeginElm (
-            UInt                pos );
+void CodeListExprBeginElm(UInt pos);
 
-extern  void            CodeListExprEndElm ( void );
+void CodeListExprEndElm(void);
 
-extern  void            CodeListExprEnd (
-            UInt                nr,
-            UInt                range,
-            UInt                top,
-            UInt                tilde );
+void CodeListExprEnd(UInt nr, UInt range, UInt top, UInt tilde);
 
 
 /****************************************************************************
 **
 *F  CodeStringExpr(<str>) . . . . . . . . . .  code literal string expression
 */
-extern  void            CodeStringExpr (
-            Obj              str );
+void CodeStringExpr(Obj str);
 
 /****************************************************************************
 **
 *F  CodeFloatExpr(<str>) . . . . . . . . . .  code literal float expression
 */
-extern  void            CodeFloatExpr (
-            Char *              str );
+void CodeFloatExpr(Char * str);
 
-extern  void            CodeLongFloatExpr (
-            Obj              str );
+void CodeLongFloatExpr(Obj str);
 
 
 /****************************************************************************
@@ -1060,20 +1033,15 @@ extern  void            CodeLongFloatExpr (
 *F  CodeRecExprEndElmExpr() . . . . . . . code record expression, end element
 *F  CodeRecExprEnd(<nr>,<top>,<tilde>)  . . . . . code record expression, end
 */
-extern  void            CodeRecExprBegin (
-            UInt                top );
+void CodeRecExprBegin(UInt top);
 
-extern  void            CodeRecExprBeginElmName (
-            UInt                rnam );
+void CodeRecExprBeginElmName(UInt rnam);
 
-extern  void            CodeRecExprBeginElmExpr ( void );
+void CodeRecExprBeginElmExpr(void);
 
-extern  void            CodeRecExprEndElm ( void );
+void CodeRecExprEndElm(void);
 
-extern  void            CodeRecExprEnd (
-            UInt                nr,
-            UInt                top,
-            UInt                tilde );
+void CodeRecExprEnd(UInt nr, UInt top, UInt tilde);
 
 
 /****************************************************************************
@@ -1088,11 +1056,9 @@ extern  void            CodeRecExprEnd (
 **  subexpressions.  The  *first* is the local variable,  the *second* is the
 **  right hand side expression.
 */
-extern  void            CodeAssLVar (
-            UInt                lvar );
+void CodeAssLVar(UInt lvar);
 
-extern  void            CodeUnbLVar (
-            UInt                lvar );
+void CodeUnbLVar(UInt lvar);
 
 
 /****************************************************************************
@@ -1106,11 +1072,9 @@ extern  void            CodeUnbLVar (
 **  A   reference to   a local  variable    is represented immediately   (see
 **  'REFLVAR_LVAR').
 */
-extern  void            CodeRefLVar (
-            UInt                lvar );
+void CodeRefLVar(UInt lvar);
 
-extern  void            CodeIsbLVar (
-            UInt                lvar );
+void CodeIsbLVar(UInt lvar);
 
 
 /****************************************************************************
@@ -1125,11 +1089,9 @@ extern  void            CodeIsbLVar (
 **  two subexpressions.  The *first* is the higher  variable, the *second* is
 **  the right hand side expression.
 */
-extern  void            CodeAssHVar (
-            UInt                hvar );
+void CodeAssHVar(UInt hvar);
 
-extern  void            CodeUnbHVar (
-            UInt                hvar );
+void CodeUnbHVar(UInt hvar);
 
 
 /****************************************************************************
@@ -1143,11 +1105,9 @@ extern  void            CodeUnbHVar (
 **  A reference to a higher variable is represented by an expression bag with
 **  one subexpression.  This is the higher variable.
 */
-extern  void            CodeRefHVar (
-            UInt                hvar );
+void CodeRefHVar(UInt hvar);
 
-extern  void            CodeIsbHVar (
-            UInt                hvar );
+void CodeIsbHVar(UInt hvar);
 
 
 /****************************************************************************
@@ -1162,11 +1122,9 @@ extern  void            CodeIsbHVar (
 **  two subexpressions.  The *first* is the  global variable, the *second* is
 **  the right hand side expression.
 */
-extern  void            CodeAssGVar (
-            UInt                gvar );
+void CodeAssGVar(UInt gvar);
 
-extern  void            CodeUnbGVar (
-            UInt                gvar );
+void CodeUnbGVar(UInt gvar);
 
 
 /****************************************************************************
@@ -1179,11 +1137,9 @@ extern  void            CodeUnbGVar (
 **  A reference to a global variable is represented by an expression bag with
 **  one subexpression.  This is the global variable.
 */
-extern  void            CodeRefGVar (
-            UInt                gvar );
+void CodeRefGVar(UInt gvar);
 
-extern  void            CodeIsbGVar (
-            UInt                gvar );
+void CodeIsbGVar(UInt gvar);
 
 
 /****************************************************************************
@@ -1193,17 +1149,15 @@ extern  void            CodeIsbGVar (
 *F  CodeAssListLevel(<level>) . . . . . . .  code assignment to several lists
 *F  CodeAsssListLevel(<level>)  . . code multiple assignment to several lists
 */
-extern  void            CodeAssList ( Int narg );
+void CodeAssList(Int narg);
 
-extern  void            CodeAsssList ( void );
+void CodeAsssList(void);
 
-extern  void            CodeAssListLevel ( Int narg,
-            UInt                level );
+void CodeAssListLevel(Int narg, UInt level);
 
-extern  void            CodeAsssListLevel (
-            UInt                level );
+void CodeAsssListLevel(UInt level);
 
-extern  void            CodeUnbList ( Int narg );
+void CodeUnbList(Int narg);
 
 
 /****************************************************************************
@@ -1213,18 +1167,15 @@ extern  void            CodeUnbList ( Int narg );
 *F  CodeElmListLevel(<level>) . . . . . . . . code selection of several lists
 *F  CodeElmsListLevel(<level>)  . .  code multiple selection of several lists
 */
-extern  void            CodeElmList ( Int narg );
+void CodeElmList(Int narg);
 
-extern  void            CodeElmsList ( void );
+void CodeElmsList(void);
 
-extern  void            CodeElmListLevel (
-                                          Int narg,
-                                          UInt level);
+void CodeElmListLevel(Int narg, UInt level);
 
-extern  void            CodeElmsListLevel (
-            UInt                level );
+void CodeElmsListLevel(UInt level);
 
-extern  void            CodeIsbList ( Int narg );
+void CodeIsbList(Int narg);
 
 
 /****************************************************************************
@@ -1232,15 +1183,13 @@ extern  void            CodeIsbList ( Int narg );
 *F  CodeAssRecName(<rnam>)  . . . . . . . . . . . code assignment to a record
 *F  CodeAssRecExpr()  . . . . . . . . . . . . . . code assignment to a record
 */
-extern  void            CodeAssRecName (
-            UInt                rnam );
+void CodeAssRecName(UInt rnam);
 
-extern  void            CodeAssRecExpr ( void );
+void CodeAssRecExpr(void);
 
-extern  void            CodeUnbRecName (
-            UInt                rnam );
+void CodeUnbRecName(UInt rnam);
 
-extern  void            CodeUnbRecExpr ( void );
+void CodeUnbRecExpr(void);
 
 
 /****************************************************************************
@@ -1248,33 +1197,31 @@ extern  void            CodeUnbRecExpr ( void );
 *F  CodeElmRecName(<rnam>)  . . . . . . . . . . .  code selection of a record
 *F  CodeElmRecExpr()  . . . . . . . . . . . . . .  code selection of a record
 */
-extern  void            CodeElmRecName (
-            UInt                rnam );
+void CodeElmRecName(UInt rnam);
 
-extern  void            CodeElmRecExpr ( void );
+void CodeElmRecExpr(void);
 
-extern  void            CodeIsbRecName (
-            UInt                rnam );
+void CodeIsbRecName(UInt rnam);
 
-extern  void            CodeIsbRecExpr ( void );
+void CodeIsbRecExpr(void);
 
 
 /****************************************************************************
 **
 *F  CodeAssPosObj() . . . . . . . . . . . . . . . . code assignment to a list
 */
-extern  void            CodeAssPosObj ( void );
+void CodeAssPosObj(void);
 
-extern  void            CodeUnbPosObj ( void );
+void CodeUnbPosObj(void);
 
 
 /****************************************************************************
 **
 *F  CodeElmPosObj() . . . . . . . . . . . . . . . .  code selection of a list
 */
-extern  void            CodeElmPosObj ( void );
+void CodeElmPosObj(void);
 
-extern  void            CodeIsbPosObj ( void );
+void CodeIsbPosObj(void);
 
 
 /****************************************************************************
@@ -1282,15 +1229,13 @@ extern  void            CodeIsbPosObj ( void );
 *F  CodeAssComObjName(<rnam>) . . . . . . . . . . code assignment to a record
 *F  CodeAssComObjExpr() . . . . . . . . . . . . . code assignment to a record
 */
-extern  void            CodeAssComObjName (
-            UInt                rnam );
+void CodeAssComObjName(UInt rnam);
 
-extern  void            CodeAssComObjExpr ( void );
+void CodeAssComObjExpr(void);
 
-extern  void            CodeUnbComObjName (
-            UInt                rnam );
+void CodeUnbComObjName(UInt rnam);
 
-extern  void            CodeUnbComObjExpr ( void );
+void CodeUnbComObjExpr(void);
 
 
 /****************************************************************************
@@ -1298,15 +1243,13 @@ extern  void            CodeUnbComObjExpr ( void );
 *F  CodeElmComObjName(<rnam>) . . . . . . . . . .  code selection of a record
 *F  CodeElmComObjExpr() . . . . . . . . . . . . .  code selection of a record
 */
-extern  void            CodeElmComObjName (
-            UInt                rnam );
+void CodeElmComObjName(UInt rnam);
 
-extern  void            CodeElmComObjExpr ( void );
+void CodeElmComObjExpr(void);
 
-extern  void            CodeIsbComObjName (
-            UInt                rnam );
+void CodeIsbComObjName(UInt rnam);
 
-extern  void            CodeIsbComObjExpr ( void );
+void CodeIsbComObjExpr(void);
 
 /****************************************************************************
 **
@@ -1314,7 +1257,7 @@ extern  void            CodeIsbComObjExpr ( void );
 **
 */
 
-extern void CodeEmpty( void );
+void CodeEmpty(void);
 
 /****************************************************************************
 **
@@ -1325,12 +1268,11 @@ extern void CodeEmpty( void );
 **  These  actions deal  with the  Info  statement, which is coded specially,
 **  because not all of its arguments are always evaluated.
 */
-extern  void            CodeInfoBegin ( void );
+void CodeInfoBegin(void);
 
-extern  void            CodeInfoMiddle ( void );
+void CodeInfoMiddle(void);
 
-extern  void            CodeInfoEnd   (
-            UInt                narg );
+void CodeInfoEnd(UInt narg);
 
 
 /****************************************************************************
@@ -1341,18 +1283,18 @@ extern  void            CodeInfoEnd   (
 *F  CodeAssertEnd2Args() . . . . called after reading the closing parenthesis
 *F  CodeAssertEnd3Args() . . . . called after reading the closing parenthesis
 */
-extern  void            CodeAssertBegin ( void );
+void CodeAssertBegin(void);
 
-extern  void            CodeAssertAfterLevel ( void );
+void CodeAssertAfterLevel(void);
 
-extern  void            CodeAssertAfterCondition ( void );
+void CodeAssertAfterCondition(void);
 
-extern  void            CodeAssertEnd2Args ( void );
+void CodeAssertEnd2Args(void);
 
-extern  void            CodeAssertEnd3Args ( void );
+void CodeAssertEnd3Args(void);
 
 /*  CodeContinue() .  . . . . . . . . . . . .  code continue-statement */
-extern  void            CodeContinue ( void );
+void CodeContinue(void);
 
 
 /****************************************************************************
