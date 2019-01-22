@@ -28,8 +28,6 @@
 #include "hpc/traverse.h"
 #endif
 
-extern StructInitInfo * InitInfoGap ( void );
-
 /****************************************************************************
 **
 *V  InitFuncsBuiltinModules . . . . .  list of builtin modules init functions
