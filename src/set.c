@@ -24,6 +24,7 @@
 
 #include "ariths.h"
 #include "bool.h"
+#include "cyclotom.h"
 #include "error.h"
 #include "io.h"
 #include "listfunc.h"
@@ -450,7 +451,7 @@ Obj FuncADD_SET (
                                    homogenous  and ssorted */
         if (len == 0 )
           {
-            if (TNUM_OBJ(obj) <= T_CYC)
+            if (IS_CYC(obj))
               RetypeBagIfWritable( set, T_PLIST_CYC_SSORT);
             else
               {
@@ -464,7 +465,7 @@ Obj FuncADD_SET (
           {
             /* Now determine homogeneity */
             if (isCyc)
-              if (TNUM_OBJ(obj) <= T_CYC)
+              if (IS_CYC(obj))
                 RetypeBagIfWritable( set, T_PLIST_CYC_SSORT);
               else
                 {
@@ -810,7 +811,7 @@ Obj FuncINTER_SET (
         RetypeBag(set1, T_PLIST_EMPTY);
     }
     else if ( lenr == 1) {
-      if (TNUM_OBJ(ELM_PLIST(set1,1)) <= T_CYC)
+      if (IS_CYC(ELM_PLIST(set1,1)))
         RetypeBag(set1, T_PLIST_CYC_SSORT);
       else
         RetypeBag(set1, T_PLIST_HOM_SSORT);
@@ -960,7 +961,7 @@ Obj FuncSUBTR_SET (
         RetypeBag(set1, T_PLIST_EMPTY);
     }
     else if ( lenr == 1) {
-      if (TNUM_OBJ(ELM_PLIST(set1,1)) <= T_CYC)
+      if (IS_CYC(ELM_PLIST(set1,1)))
         RetypeBag(set1, T_PLIST_CYC_SSORT);
       else
         RetypeBag(set1, T_PLIST_HOM_SSORT);

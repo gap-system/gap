@@ -41,6 +41,7 @@
 #include "blister.h"
 #include "bool.h"
 #include "calls.h"
+#include "cyclotom.h"
 #include "error.h"
 #include "finfield.h"
 #include "funcs.h"
@@ -396,7 +397,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
     }
     else if ( isDense &&   isHom && ! isTable ) {
         SET_FILT_LIST( list, areMut ? FN_IS_DENSE : FN_IS_HOMOG );
-        if (TNUM_OBJ(ELM_PLIST(list,1)) <= T_CYC)
+        if (IS_CYC(ELM_PLIST(list,1)))
           {
             res = (lenList == 1) ? T_PLIST_CYC_SSORT : T_PLIST_CYC;
             /* This is a hack */
@@ -481,7 +482,7 @@ Int KTNumHomPlist (
     isNSort = HAS_FILT_LIST(list, FN_IS_NSORT );
 
     /* if it's a kernel cyclotomic then we know where we are*/
-    if (TNUM_OBJ(elm) <= T_CYC)
+    if (IS_CYC(elm))
       {
         if (lenList == 1 || isSSort)
           res = T_PLIST_CYC_SSORT;
@@ -1630,7 +1631,7 @@ void AssPlistCyc   (
         SET_FILT_LIST( list, FN_IS_DENSE );
     }
 #endif
-    else if (TNUM_OBJ(val) > T_CYC) {
+    else if (!IS_CYC(val)) {
         CLEAR_FILTS_LIST(list);
         SET_FILT_LIST( list, FN_IS_DENSE );
     }
@@ -1763,7 +1764,7 @@ void AssPlistHomog (
           {
 
             /* case of replacing the only list element */
-            if (TNUM_OBJ( val ) <= T_CYC)
+            if (IS_CYC( val ))
               {
                 RetypeBag( list, T_PLIST_CYC_SSORT );
               }
@@ -1843,7 +1844,7 @@ void AssPlistEmpty (
         if ( !IS_MUTABLE_OBJ( val) )
           {
             SET_FILT_LIST(list, FN_IS_HOMOG);
-            if ( TNUM_OBJ(val) <= T_CYC )
+            if ( IS_CYC(val) )
               RetypeBag( list, T_PLIST_CYC);
           }
     }

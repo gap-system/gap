@@ -1577,7 +1577,7 @@ Obj FuncIS_CYC (
     Obj                 val )
 {
     /* return 'true' if <obj> is a cyclotomic and 'false' otherwise        */
-    if ( IS_INT(val) || TNUM_OBJ(val) == T_CYC || TNUM_OBJ(val) == T_RAT )
+    if (IS_CYC(val))
         return True;
     else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
         return False;
@@ -1665,8 +1665,7 @@ Obj FuncCONDUCTOR (
     }
 
     /* check the argument                                                  */
-    if (!IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT && TNUM_OBJ(cyc) != T_CYC &&
-        !IS_SMALL_LIST(cyc)) {
+    if (!IS_CYC(cyc) && !IS_SMALL_LIST(cyc)) {
         RequireArgument("Conductor", cyc,
                         "must be a cyclotomic or a small list");
     }
@@ -1739,7 +1738,7 @@ Obj FuncCOEFFS_CYC (
     }
 
     /* check the argument                                                  */
-    if (!IS_INT(cyc) && TNUM_OBJ(cyc) != T_RAT && TNUM_OBJ(cyc) != T_CYC) {
+    if (!IS_CYC(cyc)) {
         RequireArgument("COEFFSCYC", cyc, "must be a cyclotomic");
     }
 
@@ -1802,22 +1801,11 @@ Obj FuncGALOIS_CYC (
     const UInt4 *       exs;            /* pointer to the exponents        */
     Obj *               res;            /* pointer to the result           */
     UInt                i;              /* loop variable                   */
-    UInt                tnumord, tnumcyc;
 
     /* do full operation for any but standard arguments */
-
-    tnumord = TNUM_OBJ(ord);
-    tnumcyc = TNUM_OBJ(cyc);
-    if ( FIRST_EXTERNAL_TNUM <= tnumcyc
-         || FIRST_EXTERNAL_TNUM <= tnumord 
-         || (tnumord != T_INT && tnumord != T_INTNEG && tnumord != T_INTPOS)
-         || ( tnumcyc != T_INT    && tnumcyc != T_RAT
-              && tnumcyc != T_INTPOS && tnumcyc != T_INTNEG
-              && tnumcyc != T_CYC )
-         )
-      {
+    if (!IS_INT(ord) || !IS_CYC(cyc)) {
         return DoOperation2Args( self, cyc, ord );
-      }
+    }
 
     /* get and check <ord>                                                 */
     if ( ! IS_INTOBJ(ord) ) {
@@ -1826,8 +1814,7 @@ Obj FuncGALOIS_CYC (
     o = INT_INTOBJ(ord);
 
     /* every galois automorphism fixes the rationals                       */
-    if ( tnumcyc == T_INT    || tnumcyc == T_RAT
-      || tnumcyc == T_INTPOS || tnumcyc == T_INTNEG ) {
+    if (TNUM_OBJ(cyc) != T_CYC) {
         return cyc;
     }
 

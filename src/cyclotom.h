@@ -14,7 +14,20 @@
 #ifndef GAP_CYCLOTOM_H
 #define GAP_CYCLOTOM_H
 
-#include "system.h"
+#include "objects.h"
+
+
+/****************************************************************************
+**
+*F  IS_CYC . . . . . . . . . . . . . . . . test if the object is a cyclotomic
+**
+**  'IS_CYC' returns 1 if the argument object's tnum indicates that it is an
+**  internal integer, rational or (proper) cyclotomic object, otherwise 0.
+*/
+EXPORT_INLINE Int IS_CYC(Obj o)
+{
+    return TNUM_OBJ(o) <= T_CYC;
+}
 
 /****************************************************************************
 **
