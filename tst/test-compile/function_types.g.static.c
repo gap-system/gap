@@ -298,7 +298,6 @@ static Obj  HdlrFunc6 (
  SET_ENDLINE_BODY(t_3, 29);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG( STATE(CurrLVars) );
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -314,7 +313,6 @@ static Obj  HdlrFunc6 (
  SET_ENDLINE_BODY(t_3, 30);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG( STATE(CurrLVars) );
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -330,7 +328,6 @@ static Obj  HdlrFunc6 (
  SET_ENDLINE_BODY(t_3, 31);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG( STATE(CurrLVars) );
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -346,7 +343,6 @@ static Obj  HdlrFunc6 (
  SET_ENDLINE_BODY(t_3, 32);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG( STATE(CurrLVars) );
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -382,7 +378,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 3);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_f1, t_1 );
  
  /* f2 := function ( a, b )
@@ -396,7 +391,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 7);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_f2, t_1 );
  
  /* f3 := function ( a... )
@@ -410,7 +404,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 11);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_f3, t_1 );
  
  /* f4 := function ( a, b... )
@@ -424,7 +417,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 15);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_f4, t_1 );
  
  /* runtest := function (  )
@@ -458,7 +450,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 34);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_runtest, t_1 );
  
  /* return; */
@@ -558,7 +549,6 @@ static Int InitLibrary ( StructInitInfo * module )
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],0,0,HdlrFunc1);
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
- CHANGED_BAG( STATE(CurrLVars) );
  body1 = NewFunctionBody();
  SET_BODY_FUNC( func1, body1 );
  CHANGED_BAG( func1 );

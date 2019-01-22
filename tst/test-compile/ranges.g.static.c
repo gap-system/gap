@@ -243,7 +243,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 1);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_range2, t_1 );
  
  /* range3 := function ( a, b, c )
@@ -256,7 +255,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 2);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_range3, t_1 );
  
  /* runtest := function (  )
@@ -284,7 +282,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 26);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_runtest, t_1 );
  
  /* return; */
@@ -362,7 +359,6 @@ static Int InitLibrary ( StructInitInfo * module )
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],0,0,HdlrFunc1);
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
- CHANGED_BAG( STATE(CurrLVars) );
  body1 = NewFunctionBody();
  SET_BODY_FUNC( func1, body1 );
  CHANGED_BAG( func1 );

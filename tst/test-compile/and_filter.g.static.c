@@ -226,7 +226,6 @@ static Obj  HdlrFunc2 (
  SET_ENDLINE_BODY(t_4, 5);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  t_2 = CALL_0ARGS( t_3 );
  CHECK_FUNC_RESULT( t_2 )
  t_3 = MakeString( "\n" );
@@ -243,7 +242,6 @@ static Obj  HdlrFunc2 (
  SET_ENDLINE_BODY(t_4, 6);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  t_2 = CALL_0ARGS( t_3 );
  CHECK_FUNC_RESULT( t_2 )
  t_3 = MakeString( "\n" );
@@ -289,7 +287,6 @@ static Obj  HdlrFunc2 (
  SET_ENDLINE_BODY(t_3, 13);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG( STATE(CurrLVars) );
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -305,7 +302,6 @@ static Obj  HdlrFunc2 (
  SET_ENDLINE_BODY(t_3, 16);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG( STATE(CurrLVars) );
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -356,7 +352,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 18);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_runtest, t_1 );
  
  /* return; */
@@ -440,7 +435,6 @@ static Int InitLibrary ( StructInitInfo * module )
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],0,0,HdlrFunc1);
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
- CHANGED_BAG( STATE(CurrLVars) );
  body1 = NewFunctionBody();
  SET_BODY_FUNC( func1, body1 );
  CHANGED_BAG( func1 );

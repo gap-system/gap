@@ -2793,7 +2793,6 @@ static Obj  HdlrFunc7 (
    SET_ENDLINE_BODY(t_7, 689);
    SET_FILENAME_BODY(t_7, FileName);
    SET_BODY_FUNC(t_6, t_7);
-   CHANGED_BAG( STATE(CurrLVars) );
    CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, l_rank, t_6 );
    
   }
@@ -3359,7 +3358,6 @@ static Obj  HdlrFunc11 (
   SET_ENDLINE_BODY(t_2, 872);
   SET_FILENAME_BODY(t_2, FileName);
   SET_BODY_FUNC(t_1, t_2);
-  CHANGED_BAG( STATE(CurrLVars) );
   ASS_LVAR( 2, t_1 );
   
  }
@@ -3439,7 +3437,6 @@ static Obj  HdlrFunc11 (
  SET_ENDLINE_BODY(t_7, 889);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, INTOBJ_INT(0), t_6 );
  
  /* DeclareOperation( name, [ domreq, keyreq ] ); */
@@ -3514,7 +3511,6 @@ static Obj  HdlrFunc11 (
  SET_ENDLINE_BODY(t_7, 934);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, INTOBJ_INT(0), t_6 );
  
  /* str := "Has"; */
@@ -3563,7 +3559,6 @@ static Obj  HdlrFunc11 (
  SET_ENDLINE_BODY(t_7, 952);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, INTOBJ_INT(0), t_6 );
  
  /* str := "Set"; */
@@ -3625,7 +3620,6 @@ static Obj  HdlrFunc11 (
  SET_ENDLINE_BODY(t_7, 974);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, INTOBJ_INT(0), t_6 );
  
  /* return; */
@@ -3987,7 +3981,6 @@ static Obj  HdlrFunc17 (
  SET_ENDLINE_BODY(t_5, 1056);
  SET_FILENAME_BODY(t_5, FileName);
  SET_BODY_FUNC(t_4, t_5);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_6ARGS( t_1, t_2, l_info, l_fampred, t_3, l_val, t_4 );
  
  /* return; */
@@ -4084,7 +4077,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 127);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "METHODS_OPERATION_REGION", NewSpecialRegion( "operation methods" ) ); */
@@ -4205,7 +4197,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 289);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "InstallMethod", function ( arg... )
@@ -4221,7 +4212,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 340);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "InstallOtherMethod", function ( arg... )
@@ -4237,7 +4227,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 367);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* DeclareGlobalFunction( "EvalString" ); */
@@ -4407,7 +4396,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 610);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + (6 + 2); */
@@ -4466,7 +4454,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_3, 693);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_1ARGS( t_1, t_2 );
  
  /* InstallAttributeFunction( function ( name, filter, getter, setter, tester, mutflag )
@@ -4481,7 +4468,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_3, 702);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_1ARGS( t_1, t_2 );
  
  /* BIND_GLOBAL( "PositionSortedOddPositions", function ( list, elm )
@@ -4510,7 +4496,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 739);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* IsPrimeInt := "2b defined"; */
@@ -4595,7 +4580,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 975);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* CallFuncList := "2b defined"; */
@@ -4647,7 +4631,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 1057);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* InstallMethod( ViewObj, "default method using `PrintObj'", true, [ IS_OBJECT ], 0, PRINT_OBJ ); */
@@ -4952,7 +4935,6 @@ static Int InitLibrary ( StructInitInfo * module )
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],0,0,HdlrFunc1);
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
- CHANGED_BAG( STATE(CurrLVars) );
  body1 = NewFunctionBody();
  SET_BODY_FUNC( func1, body1 );
  CHANGED_BAG( func1 );

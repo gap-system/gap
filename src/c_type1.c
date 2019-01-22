@@ -337,7 +337,6 @@ static Obj  HdlrFunc3 (
   SET_ENDLINE_BODY(t_6, 43);
   SET_FILENAME_BODY(t_6, FileName);
   SET_BODY_FUNC(t_5, t_6);
-  CHANGED_BAG( STATE(CurrLVars) );
   CALL_6ARGS( t_1, a_setter, t_2, t_3, t_4, INTOBJ_INT(0), t_5 );
   
  }
@@ -2655,7 +2654,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_3, 27);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_1ARGS( t_1, t_2 );
  
  /* LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + (6 + 2); */
@@ -2685,7 +2683,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_3, 53);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_1ARGS( t_1, t_2 );
  
  /* Subtype := "defined below"; */
@@ -2725,7 +2722,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 143);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "NewFamily2", function ( typeOfFamilies, name )
@@ -2740,7 +2736,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 151);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "NewFamily3", function ( typeOfFamilies, name, req )
@@ -2755,7 +2750,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 159);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "NewFamily4", function ( typeOfFamilies, name, req, imp )
@@ -2770,7 +2764,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 167);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "NewFamily5", function ( typeOfFamilies, name, req, imp, filter )
@@ -2785,7 +2778,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 176);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "NewFamily", function ( arg... )
@@ -2811,7 +2803,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 202);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* NEW_TYPE_CACHE_MISS := 0; */
@@ -2910,7 +2901,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 347);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "NewType3", function ( typeOfTypes, family, filter )
@@ -2925,7 +2915,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 358);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "NewType4", function ( typeOfTypes, family, filter, data )
@@ -2940,7 +2929,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 368);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "NewType", function ( arg... )
@@ -2966,7 +2954,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 395);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "Subtype2", function ( type, filter )
@@ -2981,7 +2968,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 415);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "Subtype3", function ( type, filter, data )
@@ -2996,7 +2982,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 425);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* Unbind( Subtype ); */
@@ -3025,7 +3010,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 451);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "SupType2", function ( type, filter )
@@ -3040,7 +3024,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 472);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "SupType3", function ( type, filter, data )
@@ -3055,7 +3038,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 482);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "SupType", function ( arg... )
@@ -3078,7 +3060,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 499);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "FamilyType", function ( K )
@@ -3093,7 +3074,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 513);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "FlagsType", function ( K )
@@ -3108,7 +3088,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 527);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "DataType", function ( K )
@@ -3123,7 +3102,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 543);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "SetDataType", function ( K, data )
@@ -3139,7 +3117,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 551);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "TypeObj", TYPE_OBJ ); */
@@ -3168,7 +3145,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 650);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "DataObj", function ( obj )
@@ -3183,7 +3159,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 664);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "IsNonAtomicComponentObjectRepFlags", FLAGS_FILTER( IsNonAtomicComponentObjectRep ) ); */
@@ -3242,7 +3217,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 720);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* Unbind( SetFilterObj ); */
@@ -3275,7 +3249,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 762);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "SET_FILTER_OBJ", SetFilterObj ); */
@@ -3309,7 +3282,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 798);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "RESET_FILTER_OBJ", ResetFilterObj ); */
@@ -3395,7 +3367,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 914);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CHANGED_BAG( STATE(CurrLVars) );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* return; */
@@ -3717,7 +3688,6 @@ static Int InitLibrary ( StructInitInfo * module )
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],0,0,HdlrFunc1);
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
- CHANGED_BAG( STATE(CurrLVars) );
  body1 = NewFunctionBody();
  SET_BODY_FUNC( func1, body1 );
  CHANGED_BAG( func1 );
