@@ -2048,6 +2048,8 @@ static Obj FuncContentsLVars(Obj self, Obj lvars)
 
 static void VarsBeforeCollectBags(void)
 {
+  // As an optimization, we never call CHANGED_BAG on CurrLVars directly,
+  // instead thus function is run just before any GC to take care of that.
   if (STATE(CurrLVars))
     CHANGED_BAG( STATE(CurrLVars) );
 }
