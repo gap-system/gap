@@ -105,7 +105,7 @@
 ** Store the current state of the profiler
 */
 
-Obj OutputtedFilenameList;
+static Obj OutputtedFilenameList;
 
 struct StatementLocation
 {
@@ -163,11 +163,11 @@ struct ProfileState
 } profileState;
 
 /* We keep this seperate as it is exported for use in other files */
-UInt profileState_Active;
+static UInt profileState_Active;
 
 
 // Output information about how this profile was configured
-void outputVersionInfo(void)
+static void outputVersionInfo(void)
 {
     const char timeTypeNames[3][10] = { "WallTime", "CPUTime", "Memory" };
     fprintf(profileState.Stream,
@@ -239,7 +239,7 @@ static inline UInt getFilenameIdOfCurrentFunction(void)
 }
 
 
-void HookedLineOutput(Obj func, char type)
+static void HookedLineOutput(Obj func, char type)
 {
   HashLock(&profileState);
   if(profileState_Active && profileState.OutputRepeats)
@@ -277,7 +277,7 @@ void HookedLineOutput(Obj func, char type)
   HashUnlock(&profileState);
 }
 
-void enterFunction(Obj func)
+static void enterFunction(Obj func)
 {
 #ifdef HPCGAP
     if (profileState.profiledThread != TLS(threadID))
@@ -288,7 +288,7 @@ void enterFunction(Obj func)
     HookedLineOutput(func, 'I');
 }
 
-void leaveFunction(Obj func)
+static void leaveFunction(Obj func)
 {
 #ifdef HPCGAP
     if (profileState.profiledThread != TLS(threadID))
@@ -524,7 +524,7 @@ static inline void outputInterpretedStat(Int file, Int line, Int exec)
     printOutput(line, file, exec, 0);
 }
 
-void visitStat(Stat stat)
+static void visitStat(Stat stat)
 {
 #ifdef HPCGAP
   if (profileState.profiledThread != TLS(threadID))
@@ -544,7 +544,7 @@ void visitStat(Stat stat)
   }
 }
 
-void visitInterpretedStat(Int file, Int line)
+static void visitInterpretedStat(Int file, Int line)
 {
 #ifdef HPCGAP
     if (profileState.profiledThread != TLS(threadID))
@@ -565,7 +565,7 @@ void visitInterpretedStat(Int file, Int line)
 ** check we executed something on those lines!
 **/
 
-void registerStat(Stat stat)
+static void registerStat(Stat stat)
 {
     int active;
     HashLock(&profileState);
@@ -576,7 +576,7 @@ void registerStat(Stat stat)
     HashUnlock(&profileState);
 }
 
-void registerInterpretedStat(Int file, Int line)
+static void registerInterpretedStat(Int file, Int line)
 {
     int active;
     HashLock(&profileState);
@@ -597,7 +597,7 @@ struct InterpreterHooks profileHooks = { visitStat,
                                          "line-by-line profiling" };
 
 
-void enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
+static void enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
 {
     if(profileState_Active) {
         Panic("-P or -C can only be passed once\n");
@@ -659,7 +659,7 @@ Int enableMemoryProfilingAtStartup(Char ** argv, void * dummy)
     return 1;
 }
 
-Obj FuncACTIVATE_PROFILING(Obj self,
+static Obj FuncACTIVATE_PROFILING(Obj self,
                            Obj filename, /* filename to write to */
                            Obj coverage,
                            Obj wallTime,
@@ -759,7 +759,7 @@ Obj FuncACTIVATE_PROFILING(Obj self,
     return True;
 }
 
-Obj FuncDEACTIVATE_PROFILING (
+static Obj FuncDEACTIVATE_PROFILING (
     Obj                 self)
 {
   HashLock(&profileState);
@@ -779,7 +779,7 @@ Obj FuncDEACTIVATE_PROFILING (
   return True;
 }
 
-Obj FuncIsLineByLineProfileActive (
+static Obj FuncIsLineByLineProfileActive (
     Obj self)
 {
   if(profileState_Active) {
@@ -797,7 +797,7 @@ Obj FuncIsLineByLineProfileActive (
 ** as being executed.
 */
 
-Int CurrentColour = 0;
+static Int CurrentColour = 0;
 
 static void setColour(void)
 {
@@ -812,7 +812,7 @@ static void setColour(void)
   }
 }
 
-void ProfilePrintStatPassthrough(Stat stat)
+static void ProfilePrintStatPassthrough(Stat stat)
 {
   Int SavedColour = CurrentColour;
   if(VISITED_STAT(stat)) {
@@ -827,7 +827,7 @@ void ProfilePrintStatPassthrough(Stat stat)
   setColour();
 }
 
-void ProfilePrintExprPassthrough(Expr stat)
+static void ProfilePrintExprPassthrough(Expr stat)
 {
   Int SavedColour = -1;
   /* There are two cases we must pass through without touching */
@@ -854,7 +854,7 @@ void ProfilePrintExprPassthrough(Expr stat)
 struct PrintHooks profilePrintHooks =
   {ProfilePrintStatPassthrough, ProfilePrintExprPassthrough};
 
-Obj activate_colored_output_from_profile(void)
+static Obj activate_colored_output_from_profile(void)
 {
     HashLock(&profileState);
 
@@ -874,7 +874,7 @@ Obj activate_colored_output_from_profile(void)
     return True;
 }
 
-Obj deactivate_colored_output_from_profile(void)
+static Obj deactivate_colored_output_from_profile(void)
 {
   HashLock(&profileState);
 
@@ -894,7 +894,7 @@ Obj deactivate_colored_output_from_profile(void)
   return True;
 }
 
-Obj FuncACTIVATE_COLOR_PROFILING(Obj self, Obj arg)
+static Obj FuncACTIVATE_COLOR_PROFILING(Obj self, Obj arg)
 {
   if(arg == True)
   {

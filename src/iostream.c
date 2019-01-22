@@ -275,7 +275,7 @@ static void ChildStatusChanged(int whichsig)
 }
 
 #ifdef HPCGAP
-Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self)
+static Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self)
 {
     ChildStatusChanged(SIGCHLD);
     return (Obj)0;
@@ -407,7 +407,7 @@ static void HandleChildStatusChanges(UInt pty)
     }
 }
 
-Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
+static Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
 {
     Obj    allargs[MAX_ARGS + 1];
     Char * argv[MAX_ARGS + 2];
@@ -523,7 +523,7 @@ static UInt HashLockStreamIfAvailable(Obj stream)
     return pty;
 }
 
-Obj FuncWRITE_IOSTREAM(Obj self, Obj stream, Obj string, Obj len)
+static Obj FuncWRITE_IOSTREAM(Obj self, Obj stream, Obj string, Obj len)
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
@@ -534,7 +534,7 @@ Obj FuncWRITE_IOSTREAM(Obj self, Obj stream, Obj string, Obj len)
     return INTOBJ_INT(result);
 }
 
-Obj FuncREAD_IOSTREAM(Obj self, Obj stream, Obj len)
+static Obj FuncREAD_IOSTREAM(Obj self, Obj stream, Obj len)
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
@@ -550,7 +550,7 @@ Obj FuncREAD_IOSTREAM(Obj self, Obj stream, Obj len)
     return string;
 }
 
-Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
+static Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
@@ -566,7 +566,7 @@ Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
     return string;
 }
 
-Obj FuncKILL_CHILD_IOSTREAM(Obj self, Obj stream)
+static Obj FuncKILL_CHILD_IOSTREAM(Obj self, Obj stream)
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
@@ -577,7 +577,7 @@ Obj FuncKILL_CHILD_IOSTREAM(Obj self, Obj stream)
     return 0;
 }
 
-Obj FuncSIGNAL_CHILD_IOSTREAM(Obj self, Obj stream, Obj sig)
+static Obj FuncSIGNAL_CHILD_IOSTREAM(Obj self, Obj stream, Obj sig)
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
@@ -588,7 +588,7 @@ Obj FuncSIGNAL_CHILD_IOSTREAM(Obj self, Obj stream, Obj sig)
     return 0;
 }
 
-Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream)
+static Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream)
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
@@ -619,7 +619,7 @@ Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream)
     return 0;
 }
 
-Obj FuncIS_BLOCKED_IOSTREAM(Obj self, Obj stream)
+static Obj FuncIS_BLOCKED_IOSTREAM(Obj self, Obj stream)
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
@@ -629,7 +629,7 @@ Obj FuncIS_BLOCKED_IOSTREAM(Obj self, Obj stream)
     return isBlocked ? True : False;
 }
 
-Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
+static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 

@@ -56,7 +56,6 @@ static Obj TypeFF0;
 **
 **  These GAP functions are called to compute types of finite field elemnents
 */
-
 static Obj TYPE_FFE;
 static Obj TYPE_FFE0;
 static Obj TYPE_KERNEL_OBJECT;
@@ -335,7 +334,7 @@ UInt CharFFE (
     return CHAR_FF( FLD_FFE(ffe) );
 }
 
-Obj FuncCHAR_FFE_DEFAULT (
+static Obj FuncCHAR_FFE_DEFAULT (
     Obj                 self,
     Obj                 ffe )
 {
@@ -383,7 +382,7 @@ UInt DegreeFFE (
     return d;
 }
 
-Obj FuncDEGREE_FFE_DEFAULT (
+static Obj FuncDEGREE_FFE_DEFAULT (
     Obj                 self,
     Obj                 ffe )
 {
@@ -425,7 +424,7 @@ Obj TypeFFE(Obj ffe)
 **  Since '=' ought  to be transitive we also  want 'b = c'  to be 'true' and
 **  this is a problem, because they are represented over incompatible fields.
 */
-Int             EqFFE (
+static Int             EqFFE (
     Obj                 opL,
     Obj                 opR )
 {
@@ -483,7 +482,7 @@ Int             EqFFE (
 **  'LtFFEFFE' returns 'True' if the  finite field element <opL> is  strictly
 **  less than the finite field element <opR> and 'False' otherwise.
 */
-Int             LtFFE (
+static Int             LtFFE (
     Obj                 opL,
     Obj                 opR )
 {
@@ -542,7 +541,7 @@ Int             LtFFE (
 **  'PrFFV' prints the value <val> from the finite field <fld>.
 **
 */
-void            PrFFV (
+static void            PrFFV (
     FF                  fld,
     FFV                 val )
 {
@@ -592,7 +591,7 @@ void            PrFFV (
 **
 **  'PrFFE' prints the finite field element <ffe>.
 */
-void            PrFFE (
+static void            PrFFE (
     Obj                 ffe )
 {
     PrFFV( FLD_FFE(ffe), VAL_FFE(ffe) );
@@ -616,7 +615,7 @@ void            PrFFE (
 */
 static Obj SUM_FFE_LARGE;
 
-Obj             SumFFEFFE (
+static Obj             SumFFEFFE (
     Obj                 opL,
     Obj                 opR )
 {
@@ -660,7 +659,7 @@ Obj             SumFFEFFE (
     return NEW_FFE( fX, vX );
 }
 
-Obj             SumFFEInt (
+static Obj             SumFFEInt (
     Obj                 opL,
     Obj                 opR )
 {
@@ -692,7 +691,7 @@ Obj             SumFFEInt (
     return NEW_FFE( fX, vX );
 }
 
-Obj             SumIntFFE (
+static Obj             SumIntFFE (
     Obj                 opL,
     Obj                 opR )
 {
@@ -729,7 +728,7 @@ Obj             SumIntFFE (
 **
 *F  ZeroFFE(<op>) . . . . . . . . . . . . . .  zero of a finite field element
 */
-Obj             ZeroFFE (
+static Obj             ZeroFFE (
     Obj                 op )
 {
     FF                  fX;             /* field of result                 */
@@ -746,7 +745,7 @@ Obj             ZeroFFE (
 **
 *F  AInvFFE(<op>) . . . . . . . . . . additive inverse of finite field element
 */
-Obj             AInvFFE (
+static Obj             AInvFFE (
     Obj                 op )
 {
     FFV                 v, vX;          /* value of operand, result        */
@@ -783,7 +782,7 @@ Obj             AInvFFE (
 */
 static Obj DIFF_FFE_LARGE;
 
-Obj             DiffFFEFFE (
+static Obj             DiffFFEFFE (
     Obj                 opL,
     Obj                 opR )
 {
@@ -828,7 +827,7 @@ Obj             DiffFFEFFE (
     return NEW_FFE( fX, vX );
 }
 
-Obj             DiffFFEInt (
+static Obj             DiffFFEInt (
     Obj                 opL,
     Obj                 opR )
 {
@@ -861,7 +860,7 @@ Obj             DiffFFEInt (
     return NEW_FFE( fX, vX );
 }
 
-Obj             DiffIntFFE (
+static Obj             DiffIntFFE (
     Obj                 opL,
     Obj                 opR )
 {
@@ -912,7 +911,7 @@ Obj             DiffIntFFE (
 */
 static Obj PROD_FFE_LARGE;
 
-Obj             ProdFFEFFE (
+static Obj             ProdFFEFFE (
     Obj                 opL,
     Obj                 opR )
 {
@@ -956,7 +955,7 @@ Obj             ProdFFEFFE (
     return NEW_FFE( fX, vX );
 }
 
-Obj             ProdFFEInt (
+static Obj             ProdFFEInt (
     Obj                 opL,
     Obj                 opR )
 {
@@ -988,7 +987,7 @@ Obj             ProdFFEInt (
     return NEW_FFE( fX, vX );
 }
 
-Obj             ProdIntFFE (
+static Obj             ProdIntFFE (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1025,7 +1024,7 @@ Obj             ProdIntFFE (
 **
 *F  OneFFE(<op>)  . . . . . . . . . . . . . . . one of a finite field element
 */
-Obj             OneFFE (
+static Obj             OneFFE (
     Obj                 op )
 {
     FF                  fX;             /* field of result                 */
@@ -1042,7 +1041,7 @@ Obj             OneFFE (
 **
 *F  InvFFE(<op>)  . . . . . . . . . . . . . . inverse of finite field element
 */
-Obj             InvFFE (
+static Obj             InvFFE (
     Obj                 op )
 {
     FFV                 v, vX;          /* value of operand, result        */
@@ -1080,7 +1079,7 @@ Obj             InvFFE (
 */
 static Obj QUO_FFE_LARGE;
 
-Obj             QuoFFEFFE (
+static Obj             QuoFFEFFE (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1131,7 +1130,7 @@ Obj             QuoFFEFFE (
     return NEW_FFE( fX, vX );
 }
 
-Obj             QuoFFEInt (
+static Obj             QuoFFEInt (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1170,7 +1169,7 @@ Obj             QuoFFEInt (
     return NEW_FFE( fX, vX );
 }
 
-Obj             QuoIntFFE (
+static Obj             QuoIntFFE (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1221,7 +1220,7 @@ Obj             QuoIntFFE (
 **  'PowFFEInt' just does the conversions mentioned  above and then calls the
 **  macro 'POW_FFV' to do the actual exponentiation.
 */
-Obj             PowFFEInt (
+static Obj             PowFFEInt (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1269,7 +1268,7 @@ Obj             PowFFEInt (
 **
 *F  PowFFEFFE( <opL>, <opR> ) . . . . . . conjugate of a finite field element
 */
-Obj PowFFEFFE (
+static Obj PowFFEFFE (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1293,9 +1292,9 @@ Obj PowFFEFFE (
 **  and 'false' otherwise.   'IsFFE' will cause  an  error if  called with an
 **  unbound variable.
 */
-Obj IsFFEFilt;
+static Obj IsFFEFilt;
 
-Obj FuncIS_FFE (
+static Obj FuncIS_FFE (
     Obj                 self,
     Obj                 obj )
 {
@@ -1321,9 +1320,9 @@ Obj FuncIS_FFE (
 **  'LogFFE'  returns the logarithm of  the nonzero finite  field element <z>
 **  with respect to the root <r> which must lie in the same field like <z>.
 */
-Obj LOG_FFE_LARGE;
+static Obj LOG_FFE_LARGE;
 
-Obj FuncLOG_FFE_DEFAULT (
+static Obj FuncLOG_FFE_DEFAULT (
     Obj                 self,
     Obj                 opZ,
     Obj                 opR )
@@ -1411,9 +1410,9 @@ Obj FuncLOG_FFE_DEFAULT (
 **  element <z>, which must of course be  an element  of a prime field, i.e.,
 **  the smallest integer <i> such that '<i> * <z>^0 = <z>'.
 */
-Obj IntFF;
+static Obj IntFF;
 
-Obj INT_FF (
+static Obj INT_FF (
     FF                  ff )
 {
     Obj                 conv;           /* conversion table, result        */
@@ -1444,7 +1443,7 @@ Obj INT_FF (
 
 
 
-Obj FuncINT_FFE_DEFAULT (
+static Obj FuncINT_FFE_DEFAULT (
     Obj                 self,
     Obj                 z )
 {
@@ -1496,7 +1495,7 @@ Obj FuncINT_FFE_DEFAULT (
 */
 static Obj ZOp;
 
-Obj FuncZ (
+static Obj FuncZ (
     Obj                 self,
     Obj                 q )
 {
@@ -1521,7 +1520,7 @@ Obj FuncZ (
     return NEW_FFE(ff, (q == INTOBJ_INT(2)) ? 1 : 2);
 }
 
-Obj FuncZ2 ( Obj self, Obj p, Obj d)
+static Obj FuncZ2 ( Obj self, Obj p, Obj d)
 {
     FF   ff;
     Int  ip, id, id1;

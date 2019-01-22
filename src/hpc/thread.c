@@ -146,7 +146,7 @@ void AddGCRoots(void)
     GC_add_roots(p, (char *)p + sizeof(GAPState));
 }
 
-void RemoveGCRoots(void)
+static void RemoveGCRoots(void)
 {
     void * p = ActiveGAPState();
 #if defined(__CYGWIN__) || defined(__CYGWIN32__)
@@ -306,7 +306,7 @@ static Obj MakeImmString2(const Char * cstr1, const Char * cstr2)
     return result;
 }
 
-void * DispatchThread(void * arg)
+static void * DispatchThread(void * arg)
 {
     ThreadData * this_thread = arg;
     Region *     region;

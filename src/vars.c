@@ -156,7 +156,7 @@ void FreeLVarsBag(Bag bag)
 **  'ExecAssLVar' executes the local  variable assignment statement <stat> to
 **  the local variable that is referenced in <stat>.
 */
-UInt            ExecAssLVar (
+static UInt            ExecAssLVar (
     Stat                stat )
 {
     Obj                 rhs;            /* value of right hand side        */
@@ -169,7 +169,7 @@ UInt            ExecAssLVar (
     return 0;
 }
 
-UInt            ExecUnbLVar (
+static UInt            ExecUnbLVar (
     Stat                stat )
 {
     /* unbind the local variable                                           */
@@ -181,7 +181,7 @@ UInt            ExecUnbLVar (
 
 
 
-Obj             EvalIsbLVar (
+static Obj             EvalIsbLVar (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -200,7 +200,7 @@ Obj             EvalIsbLVar (
 **
 **  'PrintAssLVar' prints the local variable assignment statement <stat>.
 */
-void            PrintAssLVar (
+static void            PrintAssLVar (
     Stat                stat )
 {
     Pr( "%2>", 0L, 0L );
@@ -210,7 +210,7 @@ void            PrintAssLVar (
     Pr( "%2<;", 0L, 0L );
 }
 
-void            PrintUnbLVar (
+static void            PrintUnbLVar (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
@@ -225,13 +225,13 @@ void            PrintUnbLVar (
 **
 **  'PrintRefLVar' prints the local variable reference expression <expr>.
 */
-void            PrintRefLVar (
+static void            PrintRefLVar (
     Expr                expr )
 {
     Pr( "%H", (Int)NAME_LVAR( LVAR_REFLVAR(expr) ), 0L );
 }
 
-void            PrintIsbLVar (
+static void            PrintIsbLVar (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
@@ -312,7 +312,7 @@ Obj NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
 **  'ExecAssHVar' executes the higher variable assignment statement <stat> to
 **  the higher variable that is referenced in <stat>.
 */
-UInt            ExecAssHVar (
+static UInt            ExecAssHVar (
     Stat                stat )
 {
     Obj                 rhs;            /* value of right hand side        */
@@ -325,7 +325,7 @@ UInt            ExecAssHVar (
     return 0;
 }
 
-UInt            ExecUnbHVar (
+static UInt            ExecUnbHVar (
     Stat                stat )
 {
     /* unbind the higher variable                                          */
@@ -343,7 +343,7 @@ UInt            ExecUnbHVar (
 **  'EvalRefLVarXX' evaluates the higher variable reference expression <expr>
 **  to the higher variable that is referenced in <expr>.
 */
-Obj             EvalRefHVar (
+static Obj             EvalRefHVar (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -360,7 +360,7 @@ Obj             EvalRefHVar (
     return val;
 }
 
-Obj             EvalIsbHVar (
+static Obj             EvalIsbHVar (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -379,7 +379,7 @@ Obj             EvalIsbHVar (
 **
 **  'PrintAssHVar' prints the higher variable assignment statement <stat>.
 */
-void            PrintAssHVar (
+static void            PrintAssHVar (
     Stat                stat )
 {
     Pr( "%2>", 0L, 0L );
@@ -389,7 +389,7 @@ void            PrintAssHVar (
     Pr( "%2<;", 0L, 0L );
 }
 
-void            PrintUnbHVar (
+static void            PrintUnbHVar (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
@@ -404,13 +404,13 @@ void            PrintUnbHVar (
 **
 **  'PrintRefHVar' prints the higher variable reference expression <expr>.
 */
-void            PrintRefHVar (
+static void            PrintRefHVar (
     Expr                expr )
 {
     Pr("%H", (Int)NAME_HVAR(READ_EXPR(expr, 0)), 0L);
 }
 
-void            PrintIsbHVar (
+static void            PrintIsbHVar (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
@@ -426,7 +426,7 @@ void            PrintIsbHVar (
 **  'ExecAssGVar' executes the global variable assignment statement <stat> to
 **  the global variable that is referenced in <stat>.
 */
-UInt            ExecAssGVar (
+static UInt            ExecAssGVar (
     Stat                stat )
 {
     Obj                 rhs;            /* value of right hand side        */
@@ -439,7 +439,7 @@ UInt            ExecAssGVar (
     return 0;
 }
 
-UInt            ExecUnbGVar (
+static UInt            ExecUnbGVar (
     Stat                stat )
 {
     /* unbind the global variable                                          */
@@ -457,7 +457,7 @@ UInt            ExecUnbGVar (
 **  'EvalRefGVar' evaluates the  global variable reference expression  <expr>
 **  to the global variable that is referenced in <expr>.
 */
-Obj             EvalRefGVar (
+static Obj             EvalRefGVar (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -473,7 +473,7 @@ Obj             EvalRefGVar (
     return val;
 }
 
-Obj             EvalIsbGVar (
+static Obj             EvalIsbGVar (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -492,7 +492,7 @@ Obj             EvalIsbGVar (
 **
 **  'PrVarAss' prints the global variable assignment statement <stat>.
 */
-void            PrintAssGVar (
+static void            PrintAssGVar (
     Stat                stat )
 {
     Pr( "%2>", 0L, 0L );
@@ -502,7 +502,7 @@ void            PrintAssGVar (
     Pr( "%2<;", 0L, 0L );
 }
 
-void            PrintUnbGVar (
+static void            PrintUnbGVar (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
@@ -517,13 +517,13 @@ void            PrintUnbGVar (
 **
 **  'PrintRefGVar' prints the global variable reference expression <expr>.
 */
-void            PrintRefGVar (
+static void            PrintRefGVar (
     Expr                expr )
 {
     Pr("%H", (Int)NameGVar(READ_STAT(expr, 0)), 0L);
 }
 
-void            PrintIsbGVar (
+static void            PrintIsbGVar (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
@@ -539,7 +539,7 @@ void            PrintIsbGVar (
 **  'ExecAssList'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>] := <rhs>;'.
 */
-UInt            ExecAssList (
+static UInt            ExecAssList (
     Expr                stat )
 {
     Obj                 list;           /* list, left operand              */
@@ -587,7 +587,7 @@ UInt            ExecAssList (
 **  'ExecAss2List'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>,<position>] := <rhs>;'.
 */
-UInt            ExecAss2List (
+static UInt            ExecAss2List (
     Expr                stat )
 {
     Obj                 list;           /* list, left operand              */
@@ -619,7 +619,7 @@ UInt            ExecAss2List (
 **  'ExecAsssList' executes the list assignment statement  <stat> of the form
 **  '<list>{<positions>} := <rhss>;'.
 */
-UInt            ExecAsssList (
+static UInt            ExecAsssList (
     Expr                stat )
 {
     Obj                 list;           /* list, left operand              */
@@ -660,7 +660,7 @@ UInt            ExecAsssList (
 **  a  list, and 'ExecAssListLevel' assigns the  element '<rhss>[<i>]' to the
 **  list '<list>[<i>]' at <position>.
 */
-UInt            ExecAssListLevel (
+static UInt            ExecAssListLevel (
     Expr                stat )
 {
     Obj                 lists;          /* lists, left operand             */
@@ -710,7 +710,7 @@ UInt            ExecAssListLevel (
 **  a list, and 'ExecAsssListLevel' assigns the elements '<rhss>[<i>]' to the
 **  list '<list>[<i>]' at the positions <positions>.
 */
-UInt            ExecAsssListLevel (
+static UInt            ExecAsssListLevel (
     Expr                stat )
 {
     Obj                 lists;          /* lists, left operand             */
@@ -747,7 +747,7 @@ UInt            ExecAsssListLevel (
 **  'ExecUnbList'  executes the list   unbind  statement <stat> of the   form
 **  'Unbind( <list>[<position>] );'.
 */
-UInt            ExecUnbList (
+static UInt            ExecUnbList (
     Expr                stat )
 {
     Obj                 list;           /* list, left operand              */
@@ -792,7 +792,7 @@ UInt            ExecUnbList (
 **  'EvalElmList' evaluates the list  element expression  <expr> of the  form
 **  '<list>[<position>]'.
 */
-Obj             EvalElmList (
+static Obj             EvalElmList (
     Expr                expr )
 {
     Obj                 elm;            /* element, result                 */
@@ -838,7 +838,7 @@ Obj             EvalElmList (
 **  'EvalElm2List' evaluates the list  element expression  <expr> of the  form
 **  '<list>[<pos1>,<pos2>]'.
 */
-Obj             EvalElm2List (
+static Obj             EvalElm2List (
     Expr                expr )
 {
     Obj                 elm;            /* element, result                 */
@@ -867,7 +867,7 @@ Obj             EvalElm2List (
 **  'EvalElmsList' evaluates the  list element expression  <expr> of the form
 **  '<list>{<positions>}'.
 */
-Obj             EvalElmsList (
+static Obj             EvalElmsList (
     Expr                expr )
 {
     Obj                 elms;           /* elements, result                */
@@ -902,7 +902,7 @@ Obj             EvalElmsList (
 **  must be a  list of lists  and 'EvalElmListLevel'  selects the element  at
 **  <position> from each of the lists and returns the list of those values.
 */
-Obj             EvalElmListLevel (
+static Obj             EvalElmListLevel (
     Expr                expr )
 {
     Obj                 lists;          /* lists, left operand             */
@@ -948,7 +948,7 @@ Obj             EvalElmListLevel (
 **  <positions>  from each   of the lists  and  returns   the  list  of those
 **  sublists.
 */
-Obj             EvalElmsListLevel (
+static Obj             EvalElmsListLevel (
     Expr                expr )
 {
     Obj                 lists;          /* lists, left operand             */
@@ -981,7 +981,7 @@ Obj             EvalElmsListLevel (
 **  'EvalIsbList'  evaluates the list  isbound expression  <expr> of the form
 **  'IsBound( <list>[<position>] )'.
 */
-Obj             EvalIsbList (
+static Obj             EvalIsbList (
     Expr                expr )
 {
     Obj                 list;           /* list, left operand              */
@@ -1023,7 +1023,7 @@ Obj             EvalIsbList (
 **
 **  Linebreaks are preferred before the ':='.
 */
-void            PrintAssList (
+static void            PrintAssList (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
@@ -1036,7 +1036,7 @@ void            PrintAssList (
     Pr("%2<;",0L,0L);
 }
 
-void            PrintAss2List (
+static void            PrintAss2List (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
@@ -1051,7 +1051,7 @@ void            PrintAss2List (
     Pr("%2<;",0L,0L);
 }
 
-void            PrintUnbList (
+static void            PrintUnbList (
     Stat                stat )
 {
   Int narg = SIZE_STAT(stat)/sizeof(Stat) -1;
@@ -1079,7 +1079,7 @@ void            PrintUnbList (
 **
 **  Linebreaks are preferred before the ':='.
 */
-void            PrintAsssList (
+static void            PrintAsssList (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
@@ -1102,7 +1102,7 @@ void            PrintAsssList (
 **
 **  Linebreaks are preferred after the '['.
 */
-void            PrintElmList (
+static void            PrintElmList (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
@@ -1112,7 +1112,7 @@ void            PrintElmList (
     Pr("%<]",0L,0L);
 }
 
-void PrintElm2List (
+static void PrintElm2List (
                      Expr expr )
 {
     Pr("%2>",0L,0L);
@@ -1124,7 +1124,7 @@ void PrintElm2List (
     Pr("%<]",0L,0L);
 }
 
-void PrintElmListLevel (
+static void PrintElmListLevel (
                      Expr expr )
 {
   Int i;
@@ -1141,7 +1141,7 @@ void PrintElmListLevel (
 }
 
 
-void            PrintIsbList (
+static void            PrintIsbList (
     Expr                expr )
 {
   Int narg = SIZE_EXPR(expr)/sizeof(Expr) - 1;
@@ -1169,7 +1169,7 @@ void            PrintIsbList (
 **
 **  Linebreaks are preferred after the '{'.
 */
-void            PrintElmsList (
+static void            PrintElmsList (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
@@ -1187,7 +1187,7 @@ void            PrintElmsList (
 **  'ExecAssRecName' executes the record  assignment statement <stat>  of the
 **  form '<record>.<name> := <rhs>;'.
 */
-UInt            ExecAssRecName (
+static UInt            ExecAssRecName (
     Stat                stat )
 {
     Obj                 record;         /* record, left operand            */
@@ -1218,7 +1218,7 @@ UInt            ExecAssRecName (
 **  'ExecAssRecExpr'  executes the record assignment  statement <stat> of the
 **  form '<record>.(<name>) := <rhs>;'.
 */
-UInt            ExecAssRecExpr (
+static UInt            ExecAssRecExpr (
     Stat                stat )
 {
     Obj                 record;         /* record, left operand            */
@@ -1249,7 +1249,7 @@ UInt            ExecAssRecExpr (
 **  'ExecUnbRecName' executes the record  unbind statement <stat> of the form
 **  'Unbind( <record>.<name> );'.
 */
-UInt            ExecUnbRecName (
+static UInt            ExecUnbRecName (
     Stat                stat )
 {
     Obj                 record;         /* record, left operand            */
@@ -1276,7 +1276,7 @@ UInt            ExecUnbRecName (
 **  'ExecUnbRecExpr' executes the record  unbind statement <stat> of the form
 **  'Unbind( <record>.(<name>) );'.
 */
-UInt            ExecUnbRecExpr (
+static UInt            ExecUnbRecExpr (
     Stat                stat )
 {
     Obj                 record;         /* record, left operand            */
@@ -1303,7 +1303,7 @@ UInt            ExecUnbRecExpr (
 **  'EvalElmRecName' evaluates the   record element expression  <expr> of the
 **  form '<record>.<name>'.
 */
-Obj             EvalElmRecName (
+static Obj             EvalElmRecName (
     Expr                expr )
 {
     Obj                 elm;            /* element, result                 */
@@ -1331,7 +1331,7 @@ Obj             EvalElmRecName (
 **  'EvalElmRecExpr'  evaluates the record   element expression <expr> of the
 **  form '<record>.(<name>)'.
 */
-Obj             EvalElmRecExpr (
+static Obj             EvalElmRecExpr (
     Expr                expr )
 {
     Obj                 elm;            /* element, result                 */
@@ -1359,7 +1359,7 @@ Obj             EvalElmRecExpr (
 **  'EvalElmRecName' evaluates the   record isbound expression  <expr> of the
 **  form 'IsBound( <record>.<name> )'.
 */
-Obj             EvalIsbRecName (
+static Obj             EvalIsbRecName (
     Expr                expr )
 {
     Obj                 record;         /* the record, left operand        */
@@ -1383,7 +1383,7 @@ Obj             EvalIsbRecName (
 **  'EvalIsbRecExpr' evaluates  the record isbound  expression  <expr> of the
 **  form 'IsBound( <record>.(<name>) )'.
 */
-Obj             EvalIsbRecExpr (
+static Obj             EvalIsbRecExpr (
     Expr                expr )
 {
     Obj                 record;         /* the record, left operand        */
@@ -1407,7 +1407,7 @@ Obj             EvalIsbRecExpr (
 **  'PrintAssRecName' prints the  record  assignment statement <stat>  of the
 **  form '<record>.<name> := <rhs>;'.
 */
-void            PrintAssRecName (
+static void            PrintAssRecName (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
@@ -1420,7 +1420,7 @@ void            PrintAssRecName (
     Pr("%2<;",0L,0L);
 }
 
-void            PrintUnbRecName (
+static void            PrintUnbRecName (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
@@ -1440,7 +1440,7 @@ void            PrintUnbRecName (
 **  'PrintAssRecExpr' prints the  record  assignment statement <stat>  of the
 **  form '<record>.(<name>) := <rhs>;'.
 */
-void            PrintAssRecExpr (
+static void            PrintAssRecExpr (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
@@ -1453,7 +1453,7 @@ void            PrintAssRecExpr (
     Pr("%2<;",0L,0L);
 }
 
-void            PrintUnbRecExpr (
+static void            PrintUnbRecExpr (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
@@ -1473,7 +1473,7 @@ void            PrintUnbRecExpr (
 **  'PrintElmRecName' prints the record element expression <expr> of the form
 **  '<record>.<name>'.
 */
-void            PrintElmRecName (
+static void            PrintElmRecName (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
@@ -1483,7 +1483,7 @@ void            PrintElmRecName (
     Pr("%<",0L,0L);
 }
 
-void            PrintIsbRecName (
+static void            PrintIsbRecName (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
@@ -1503,7 +1503,7 @@ void            PrintIsbRecName (
 **  'PrintElmRecExpr' prints the record element expression <expr> of the form
 **  '<record>.(<name>)'.
 */
-void            PrintElmRecExpr (
+static void            PrintElmRecExpr (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
@@ -1513,7 +1513,7 @@ void            PrintElmRecExpr (
     Pr(")%<",0L,0L);
 }
 
-void            PrintIsbRecExpr (
+static void            PrintIsbRecExpr (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
@@ -1533,7 +1533,7 @@ void            PrintIsbRecExpr (
 **  'ExecAssPosObj'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>] := <rhs>;'.
 */
-UInt            ExecAssPosObj (
+static UInt            ExecAssPosObj (
     Expr                stat )
 {
     Obj                 list;           /* list, left operand              */
@@ -1566,7 +1566,7 @@ UInt            ExecAssPosObj (
 **  'ExecUnbPosObj'  executes the list   unbind  statement <stat> of the   form
 **  'Unbind( <list>[<position>] );'.
 */
-UInt            ExecUnbPosObj (
+static UInt            ExecUnbPosObj (
     Expr                stat )
 {
     Obj                 list;           /* list, left operand              */
@@ -1595,7 +1595,7 @@ UInt            ExecUnbPosObj (
 **  'EvalElmPosObj' evaluates the list  element expression  <expr> of the  form
 **  '<list>[<position>]'.
 */
-Obj             EvalElmPosObj (
+static Obj             EvalElmPosObj (
     Expr                expr )
 {
     Obj                 elm;            /* element, result                 */
@@ -1625,7 +1625,7 @@ Obj             EvalElmPosObj (
 **  'EvalElmPosObj'  evaluates the list  isbound expression  <expr> of the form
 **  'IsBound( <list>[<position>] )'.
 */
-Obj             EvalIsbPosObj (
+static Obj             EvalIsbPosObj (
     Expr                expr )
 {
     Obj                 isb;            /* isbound, result                 */
@@ -1657,7 +1657,7 @@ Obj             EvalIsbPosObj (
 **
 **  Linebreaks are preferred before the ':='.
 */
-void            PrintAssPosObj (
+static void            PrintAssPosObj (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
@@ -1670,7 +1670,7 @@ void            PrintAssPosObj (
     Pr("%2<;",0L,0L);
 }
 
-void            PrintUnbPosObj (
+static void            PrintUnbPosObj (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
@@ -1692,7 +1692,7 @@ void            PrintUnbPosObj (
 **
 **  Linebreaks are preferred after the '['.
 */
-void            PrintElmPosObj (
+static void            PrintElmPosObj (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
@@ -1702,7 +1702,7 @@ void            PrintElmPosObj (
     Pr("%<]",0L,0L);
 }
 
-void            PrintIsbPosObj (
+static void            PrintIsbPosObj (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
@@ -1722,7 +1722,7 @@ void            PrintIsbPosObj (
 **  'ExecAssComObjName' executes the  record assignment statement <stat> of the
 **  form '<record>.<name> := <rhs>;'.
 */
-UInt            ExecAssComObjName (
+static UInt            ExecAssComObjName (
     Stat                stat )
 {
     Obj                 record;         /* record, left operand            */
@@ -1753,7 +1753,7 @@ UInt            ExecAssComObjName (
 **  'ExecAssComObjExpr' executes the record assignment  statement <stat> of the
 **  form '<record>.(<name>) := <rhs>;'.
 */
-UInt            ExecAssComObjExpr (
+static UInt            ExecAssComObjExpr (
     Stat                stat )
 {
     Obj                 record;         /* record, left operand            */
@@ -1784,7 +1784,7 @@ UInt            ExecAssComObjExpr (
 **  'ExecUnbComObjName' executes the record unbind statement <stat> of the form
 **  'Unbind( <record>.<name> );'.
 */
-UInt            ExecUnbComObjName (
+static UInt            ExecUnbComObjName (
     Stat                stat )
 {
     Obj                 record;         /* record, left operand            */
@@ -1811,7 +1811,7 @@ UInt            ExecUnbComObjName (
 **  'ExecUnbComObjExpr' executes the record unbind statement <stat> of the form
 **  'Unbind( <record>.(<name>) );'.
 */
-UInt            ExecUnbComObjExpr (
+static UInt            ExecUnbComObjExpr (
     Stat                stat )
 {
     Obj                 record;         /* record, left operand            */
@@ -1838,7 +1838,7 @@ UInt            ExecUnbComObjExpr (
 **  'EvalElmComObjName' evaluates the  record element expression  <expr> of the
 **  form '<record>.<name>'.
 */
-Obj             EvalElmComObjName (
+static Obj             EvalElmComObjName (
     Expr                expr )
 {
     Obj                 elm;            /* element, result                 */
@@ -1866,7 +1866,7 @@ Obj             EvalElmComObjName (
 **  'EvalElmComObjExpr' evaluates the  record element expression  <expr> of the
 **  form '<record>.(<name>)'.
 */
-Obj             EvalElmComObjExpr (
+static Obj             EvalElmComObjExpr (
     Expr                expr )
 {
     Obj                 elm;            /* element, result                 */
@@ -1894,7 +1894,7 @@ Obj             EvalElmComObjExpr (
 **  'EvalIsbComObjName' evaluates  the record isbound  expression <expr> of the
 **  form 'IsBound( <record>.<name> )'.
 */
-Obj             EvalIsbComObjName (
+static Obj             EvalIsbComObjName (
     Expr                expr )
 {
     Obj                 isb;            /* element, result                 */
@@ -1922,7 +1922,7 @@ Obj             EvalIsbComObjName (
 **  'EvalIsbComObjExpr'  evaluates the record isbound  expression <expr> of the
 **  form 'IsBound( <record>.(<name>) )'.
 */
-Obj             EvalIsbComObjExpr (
+static Obj             EvalIsbComObjExpr (
     Expr                expr )
 {
     Obj                 isb;            /* element, result                 */
@@ -1950,7 +1950,7 @@ Obj             EvalIsbComObjExpr (
 **  'PrintAssComObjName' prints the  record assignment statement <stat>  of the
 **  form '<record>.<name> := <rhs>;'.
 */
-void            PrintAssComObjName (
+static void            PrintAssComObjName (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
@@ -1963,7 +1963,7 @@ void            PrintAssComObjName (
     Pr("%2<;",0L,0L);
 }
 
-void            PrintUnbComObjName (
+static void            PrintUnbComObjName (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
@@ -1983,7 +1983,7 @@ void            PrintUnbComObjName (
 **  'PrintAssComObjExpr' prints the  record assignment statement <stat>  of the
 **  form '<record>.(<name>) := <rhs>;'.
 */
-void            PrintAssComObjExpr (
+static void            PrintAssComObjExpr (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
@@ -1996,7 +1996,7 @@ void            PrintAssComObjExpr (
     Pr("%2<;",0L,0L);
 }
 
-void            PrintUnbComObjExpr (
+static void            PrintUnbComObjExpr (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
@@ -2016,7 +2016,7 @@ void            PrintUnbComObjExpr (
 **  'PrintElmComObjName' prints the  record  element expression <expr> of   the
 **  form '<record>.<name>'.
 */
-void            PrintElmComObjName (
+static void            PrintElmComObjName (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
@@ -2026,7 +2026,7 @@ void            PrintElmComObjName (
     Pr("%<",0L,0L);
 }
 
-void            PrintIsbComObjName (
+static void            PrintIsbComObjName (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
@@ -2046,7 +2046,7 @@ void            PrintIsbComObjName (
 **  'PrintElmComObjExpr' prints the record   element expression <expr>  of  the
 **  form '<record>.(<name>)'.
 */
-void            PrintElmComObjExpr (
+static void            PrintElmComObjExpr (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
@@ -2056,7 +2056,7 @@ void            PrintElmComObjExpr (
     Pr(")%<",0L,0L);
 }
 
-void            PrintIsbComObjExpr (
+static void            PrintIsbComObjExpr (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
@@ -2082,19 +2082,19 @@ void            PrintIsbComObjExpr (
 */
 
 
-Obj FuncGetCurrentLVars( Obj self )
+static Obj FuncGetCurrentLVars( Obj self )
 {
   // Need to promote to High Vars, else bag will be freed when function exits
   MakeHighVars(STATE(CurrLVars));
   return STATE(CurrLVars);
 }
 
-Obj FuncGetBottomLVars( Obj self )
+static Obj FuncGetBottomLVars( Obj self )
 {
   return STATE(BottomLVars);
 }
 
-Obj FuncParentLVars( Obj self, Obj lvars )
+static Obj FuncParentLVars( Obj self, Obj lvars )
 {
   if (!IS_LVARS_OR_HVARS(lvars)) {
       RequireArgument("ParentLVars", lvars, "must be an lvars");
@@ -2103,7 +2103,7 @@ Obj FuncParentLVars( Obj self, Obj lvars )
   return parent ? parent : Fail;
 }
 
-Obj FuncContentsLVars (Obj self, Obj lvars )
+static Obj FuncContentsLVars (Obj self, Obj lvars )
 {
   Obj contents = NEW_PREC(0);
   Obj func = FUNC_LVARS(lvars);
@@ -2131,13 +2131,13 @@ Obj FuncContentsLVars (Obj self, Obj lvars )
 */
 #ifdef USE_GASMAN
 
-void VarsBeforeCollectBags ( void )
+static void VarsBeforeCollectBags ( void )
 {
   if (STATE(CurrLVars))
     CHANGED_BAG( STATE(CurrLVars) );
 }
 
-void VarsAfterCollectBags ( void )
+static void VarsAfterCollectBags ( void )
 {
   if (STATE(CurrLVars))
     {
@@ -2155,7 +2155,7 @@ void VarsAfterCollectBags ( void )
 **
 */
 
-void SaveLVars( Obj lvars )
+static void SaveLVars( Obj lvars )
 {
   UInt len,i;
   const Obj *ptr;
@@ -2174,7 +2174,7 @@ void SaveLVars( Obj lvars )
 **
 */
 
-void LoadLVars( Obj lvars )
+static void LoadLVars( Obj lvars )
 {
   UInt len,i;
   Obj *ptr;
@@ -2188,14 +2188,14 @@ void LoadLVars( Obj lvars )
     *ptr++ = LoadSubObj();
 }
 
-Obj TYPE_LVARS;
+static Obj TYPE_LVARS;
 
-Obj TypeLVars( Obj lvars )
+static Obj TypeLVars( Obj lvars )
 {
   return TYPE_LVARS;
 }
 
-void PrintLVars( Obj lvars )
+static void PrintLVars( Obj lvars )
 {
   Pr("<lvars bag>", 0,0);
 }

@@ -92,9 +92,9 @@ Obj ObjsChar [256];
 **
 **  'TypeChar' is the function in 'TypeObjFuncs' for character values.
 */
-Obj TYPE_CHAR;
+static Obj TYPE_CHAR;
 
-Obj TypeChar (
+static Obj TypeChar (
     Obj                 chr )
 {
     return TYPE_CHAR;
@@ -108,7 +108,7 @@ Obj TypeChar (
 **  'EqChar'  returns 'true'  if the two  characters <charL>  and <charR> are
 **  equal, and 'false' otherwise.
 */
-Int EqChar (
+static Int EqChar (
     Obj                 charL,
     Obj                 charR )
 {
@@ -123,7 +123,7 @@ Int EqChar (
 **  'LtChar' returns  'true' if the    character <charL>  is less than    the
 **  character <charR>, and 'false' otherwise.
 */
-Int LtChar (
+static Int LtChar (
     Obj                 charL,
     Obj                 charR )
 {
@@ -137,7 +137,7 @@ Int LtChar (
 **
 **  'PrChar' prints the character <chr>.
 */
-void PrintChar (
+static void PrintChar (
     Obj                 val )
 {
     UChar               chr;
@@ -171,7 +171,7 @@ void PrintChar (
 *F  SaveChar( <char> )  . . . . . . . . . . . . . . . . . .  save a character
 **
 */
-void SaveChar ( Obj c )
+static void SaveChar ( Obj c )
 {
     SaveUInt1( CHAR_VALUE(c));
 }
@@ -182,7 +182,7 @@ void SaveChar ( Obj c )
 *F  LoadChar( <char> )  . . . . . . . . . . . . . . . . . .  load a character
 **
 */
-void LoadChar( Obj c )
+static void LoadChar( Obj c )
 {
     SET_CHAR_VALUE(c, LoadUInt1());
 }
@@ -202,7 +202,7 @@ void LoadChar( Obj c )
 **  Returns an empty string, with space for <len> characters preallocated.
 **
 */
-Obj    FuncEmptyString( Obj self, Obj len )
+static Obj    FuncEmptyString( Obj self, Obj len )
 {
     Obj                 new;
     RequireNonnegativeSmallInt("EmptyString", len);
@@ -219,7 +219,7 @@ Obj    FuncEmptyString( Obj self, Obj len )
 **  compact representation).
 **
 */
-Obj   FuncShrinkAllocationString( Obj self, Obj str )
+static Obj   FuncShrinkAllocationString( Obj self, Obj str )
 {
     RequireStringRep("ShrinkAllocationString", str);
     SHRINK_STRING(str);
@@ -230,7 +230,7 @@ Obj   FuncShrinkAllocationString( Obj self, Obj str )
 **
 *F  FuncCHAR_INT( <self>, <int> ) . . . . . . . . . . . . . . char by integer
 */
-Obj FuncCHAR_INT (
+static Obj FuncCHAR_INT (
     Obj             self,
     Obj             val )
 {
@@ -251,7 +251,7 @@ Obj FuncCHAR_INT (
 **
 *F  FuncINT_CHAR( <self>, <char> )  . . . . . . . . . . . . . integer by char
 */
-Obj FuncINT_CHAR (
+static Obj FuncINT_CHAR (
     Obj             self,
     Obj             val )
 {
@@ -268,7 +268,7 @@ Obj FuncINT_CHAR (
 **
 *F  FuncCHAR_SINT( <self>, <int> ) . . . . . . . . . . char by signed integer
 */
-Obj FuncCHAR_SINT (
+static Obj FuncCHAR_SINT (
     Obj             self,
     Obj             val )
 {
@@ -289,7 +289,7 @@ Obj FuncCHAR_SINT (
 **
 *F  FuncSINT_CHAR( <self>, <char> ) . . . . . . . . .  signed integer by char
 */
-Obj FuncSINT_CHAR (
+static Obj FuncSINT_CHAR (
     Obj             self,
     Obj             val )
 {
@@ -306,7 +306,7 @@ Obj FuncSINT_CHAR (
 **
 *F  FuncSINTLIST_STRING( <self>, <string> ) signed integer list by string
 */
-Obj FuncINTLIST_STRING (
+static Obj FuncINTLIST_STRING (
     Obj             self,
     Obj             val,
     Obj             sign )
@@ -339,7 +339,7 @@ Obj FuncINTLIST_STRING (
   return n;
 }
 
-Obj FuncSINTLIST_STRING (
+static Obj FuncSINTLIST_STRING (
     Obj             self,
     Obj             val )
 {
@@ -350,7 +350,7 @@ Obj FuncSINTLIST_STRING (
 **
 *F  FuncSTRING_SINTLIST( <self>, <string> ) string by signed integer list
 */
-Obj FuncSTRING_SINTLIST (
+static Obj FuncSTRING_SINTLIST (
     Obj             self,
     Obj             val )
 {
@@ -399,7 +399,7 @@ Obj FuncSTRING_SINTLIST (
 **
 *F  FuncREVNEG_STRING( <self>, <string> ) string by signed integer list
 */
-Obj FuncREVNEG_STRING (
+static Obj FuncREVNEG_STRING (
     Obj             self,
     Obj             val )
 {
@@ -489,7 +489,7 @@ Int             GrowString (
 static Obj TYPES_STRING;
 
 
-Obj TypeString (
+static Obj TypeString (
     Obj                 list )
 {
     return ELM_PLIST(TYPES_STRING, TNUM_OBJ(list) - T_STRING + 1);
@@ -518,7 +518,7 @@ Obj TypeString (
 **
 **  'CopyString' is the function in 'CopyObjFuncs' for strings.
 */
-Obj CopyString (
+static Obj CopyString (
     Obj                 list,
     Int                 mut )
 {
@@ -660,7 +660,7 @@ void PrintString1 (
 **  'EqString'  returns  'true' if the  two  strings <listL>  and <listR> are
 **  equal and 'false' otherwise.
 */
-Int EqString (
+static Int EqString (
     Obj                 listL,
     Obj                 listR )
 {
@@ -682,7 +682,7 @@ Int EqString (
 **  'LtString' returns 'true' if  the string <listL> is  less than the string
 **  <listR> and 'false' otherwise.
 */
-Int LtString (
+static Int LtString (
     Obj                 listL,
     Obj                 listR )
 {
@@ -716,7 +716,7 @@ Int LtString (
 **
 **  'LenString' is the function in 'LenListFuncs' for strings.
 */
-Int LenString (
+static Int LenString (
     Obj                 list )
 {
     return GET_LEN_STRING( list );
@@ -733,7 +733,7 @@ Int LenString (
 **
 **  'IsbString'  is the function in 'IsbListFuncs'  for strings.
 */
-Int IsbString (
+static Int IsbString (
     Obj                 list,
     Int                 pos )
 {
@@ -793,7 +793,7 @@ static inline void SET_ELM_STRING(Obj list, Int pos, Obj val)
 **  'Elm0String'  is the function on 'Elm0ListFuncs'  for strings.
 **  'Elm0vString' is the function in 'Elm0vListFuncs' for strings.
 */
-Obj Elm0String (
+static Obj Elm0String (
     Obj                 list,
     Int                 pos )
 {
@@ -805,7 +805,7 @@ Obj Elm0String (
     }
 }
 
-Obj Elm0vString (
+static Obj Elm0vString (
     Obj                 list,
     Int                 pos )
 {
@@ -832,7 +832,7 @@ Obj Elm0vString (
 **  'ElmfString' is the function in 'ElmfListFuncs' for strings.
 **  'ElmwString' is the function in 'ElmwListFuncs' for strings.
 */
-Obj ElmString (
+static Obj ElmString (
     Obj                 list,
     Int                 pos )
 {
@@ -863,7 +863,7 @@ Obj ElmString (
 **
 **  'ElmsString' is the function in 'ElmsListFuncs' for strings.
 */
-Obj ElmsString (
+static Obj ElmsString (
     Obj                 list,
     Obj                 poss )
 {
@@ -969,7 +969,7 @@ Obj ElmsString (
 **  'AssString' keeps <list> in string representation if possible.
 **  
 */
-void AssString (
+static void AssString (
     Obj                 list,
     Int                 pos,
     Obj                 val )
@@ -1023,7 +1023,7 @@ void AssString (
 **  <poss> can be important if <list> should stay in string representation.
 **   
 */
-void AsssString (
+static void AsssString (
     Obj                 list,
     Obj                 poss,
     Obj                 vals )
@@ -1044,7 +1044,7 @@ void AsssString (
 **
 **  'IsSSortString' is the function in 'IsSSortListFuncs' for strings.
 */
-Int IsSSortString (
+static Int IsSSortString (
     Obj                 list )
 {
     Int                 len;
@@ -1073,7 +1073,7 @@ Int IsSSortString (
 **
 **  'IsPossString' is the function in 'TabIsPossList' for strings.
 */
-Int IsPossString (
+static Int IsPossString (
     Obj                 list )
 {
     return GET_LEN_STRING( list ) == 0;
@@ -1090,7 +1090,7 @@ Int IsPossString (
 **
 **  'PosString' is the function in 'PosListFuncs' for strings.
 */ 
-Obj PosString (
+static Obj PosString (
     Obj                 list,
     Obj                 val,
     Obj                 start )
@@ -1134,7 +1134,7 @@ Obj PosString (
 **
 **  'PlainString' is the function in 'PlainListFuncs' for strings.
 */
-void PlainString (
+static void PlainString (
     Obj                 list )
 {
     Int                 lenList;        /* logical length of the string    */
@@ -1169,9 +1169,9 @@ void PlainString (
 */
 Int (*IsStringFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
-Obj IsStringFilt;
+static Obj IsStringFilt;
 
-Int IsStringList (
+static Int IsStringList (
     Obj                 list )
 {
     Int                 lenList;
@@ -1194,13 +1194,13 @@ Int IsStringList (
     return (lenList < i);
 }
 
-Int IsStringListHom (
+static Int IsStringListHom (
     Obj                 list )
 {
     return (TNUM_OBJ( ELM_LIST(list,1) ) == T_CHAR);
 }
 
-Int IsStringObject (
+static Int IsStringObject (
     Obj                 obj )
 {
     return (DoFilter( IsStringFilt, obj ) != False);
@@ -1334,7 +1334,7 @@ Int IsStringConv (
 **
 *F  FuncIS_STRING( <self>, <obj> )  . . . . . . . . .  test value is a string
 */
-Obj FuncIS_STRING (
+static Obj FuncIS_STRING (
     Obj                 self,
     Obj                 obj )
 {
@@ -1346,7 +1346,7 @@ Obj FuncIS_STRING (
 **
 *F  FuncIS_STRING_CONV( <self>, <obj> ) . . . . . . . . . . check and convert
 */
-Obj FuncIS_STRING_CONV (
+static Obj FuncIS_STRING_CONV (
     Obj                 self,
     Obj                 obj )
 {
@@ -1359,7 +1359,7 @@ Obj FuncIS_STRING_CONV (
 **
 *F  FuncCONV_STRING( <self>, <string> ) . . . . . . . . convert to string rep
 */
-Obj FuncCONV_STRING (
+static Obj FuncCONV_STRING (
     Obj                 self,
     Obj                 string )
 {
@@ -1380,9 +1380,9 @@ Obj FuncCONV_STRING (
 **
 *F  FuncIS_STRING_REP( <self>, <obj> )  . . . . test if value is a string rep
 */
-Obj IsStringRepFilt;
+static Obj IsStringRepFilt;
 
-Obj FuncIS_STRING_REP (
+static Obj FuncIS_STRING_REP (
     Obj                 self,
     Obj                 obj )
 {
@@ -1393,7 +1393,7 @@ Obj FuncIS_STRING_REP (
 **
 *F  FuncCOPY_TO_STRING_REP( <self>, <obj> ) . copy a string into string rep
 */
-Obj FuncCOPY_TO_STRING_REP(Obj self, Obj string)
+static Obj FuncCOPY_TO_STRING_REP(Obj self, Obj string)
 {
     /* check whether <string> is a string                                 */
     if (!IS_STRING(string)) {
@@ -1412,7 +1412,7 @@ Obj FuncCOPY_TO_STRING_REP(Obj self, Obj string)
 **  <off>+1, is  returned if such  a substring exists. Otherwise `fail' is
 **  returned.
 */
-Obj FuncPOSITION_SUBSTRING( 
+static Obj FuncPOSITION_SUBSTRING( 
                            Obj                  self,
                            Obj                  string,
                            Obj                  substr,
@@ -1466,7 +1466,7 @@ Obj FuncPOSITION_SUBSTRING(
 **  substituted by a single space.
 **  
 */ 
-Obj FuncNormalizeWhitespace (
+static Obj FuncNormalizeWhitespace (
                               Obj     self,
                               Obj     string )
 {
@@ -1514,7 +1514,7 @@ Obj FuncNormalizeWhitespace (
 **    
 */ 
 
-Obj FuncREMOVE_CHARACTERS (
+static Obj FuncREMOVE_CHARACTERS (
                               Obj     self,
                               Obj     string,
                               Obj     rem     )
@@ -1559,7 +1559,7 @@ Obj FuncREMOVE_CHARACTERS (
 **  in <string> in place, <string>[i] = <trans>[<string>[i]] 
 **    
 */ 
-Obj FuncTranslateString (
+static Obj FuncTranslateString (
                               Obj     self,
                               Obj     string,
                               Obj     trans     )
@@ -1596,7 +1596,7 @@ Obj FuncTranslateString (
 **  The difference of <seps> and <wspace> is that characters in <wspace> don't
 **  separate empty strings.
 */ 
-Obj FuncSplitStringInternal (
+static Obj FuncSplitStringInternal (
                               Obj     self,
                               Obj     string,
                               Obj     seps,
@@ -1698,7 +1698,7 @@ Obj FuncSplitStringInternal (
 ** within a string.
 */
 
-Obj FuncFIND_ALL_IN_STRING(Obj self, Obj string, Obj chars)
+static Obj FuncFIND_ALL_IN_STRING(Obj self, Obj string, Obj chars)
 {
   Obj result;
   UInt i, len, matches;
@@ -1737,7 +1737,7 @@ Obj FuncFIND_ALL_IN_STRING(Obj self, Obj string, Obj chars)
 ** returns it also as its result.
 */
 
-Obj FuncNORMALIZE_NEWLINES(Obj self, Obj string)
+static Obj FuncNORMALIZE_NEWLINES(Obj self, Obj string)
 {
   UInt i, j, len;
   Char *s;
@@ -1769,7 +1769,7 @@ Obj FuncNORMALIZE_NEWLINES(Obj self, Obj string)
 ** options
 */
 
-Obj FuncSMALLINT_STR( Obj self, Obj str )
+static Obj FuncSMALLINT_STR( Obj self, Obj str )
 {
   const Char *string = CONST_CSTR_STRING(str);
   Int x = 0;
@@ -1798,7 +1798,7 @@ Obj FuncSMALLINT_STR( Obj self, Obj str )
 **  larger or equal to the length of <string>.
 **  
 */
-void UnbString(Obj string, Int pos)
+static void UnbString(Obj string, Int pos)
 {
     GAP_ASSERT(IS_MUTABLE_OBJ(string));
 

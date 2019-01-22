@@ -34,9 +34,9 @@
 #include "stringobj.h"
 
 
-Obj TYPE_ALIST;
-Obj TYPE_AREC;
-Obj TYPE_TLREC;
+static Obj TYPE_ALIST;
+static Obj TYPE_AREC;
+static Obj TYPE_TLREC;
 
 #define ALIST_LEN(x) ((x) >> 2)
 #define ALIST_POL(x) ((x) & 3)
@@ -68,7 +68,7 @@ typedef union AtomicObj
 
 static UInt UsageCap[sizeof(UInt)*8];
 
-Obj TypeAList(Obj obj)
+static Obj TypeAList(Obj obj)
 {
   Obj result;
   const Obj *addr = CONST_ADDR_OBJ(obj);
@@ -77,7 +77,7 @@ Obj TypeAList(Obj obj)
   return result != NULL ? result : TYPE_ALIST;
 }
 
-Obj TypeARecord(Obj obj)
+static Obj TypeARecord(Obj obj)
 {
   Obj result;
   MEMBAR_READ();
@@ -85,12 +85,12 @@ Obj TypeARecord(Obj obj)
   return result != NULL ? result : TYPE_AREC;
 }
 
-Obj TypeTLRecord(Obj obj)
+static Obj TypeTLRecord(Obj obj)
 {
   return TYPE_TLREC;
 }
 
-void SetTypeAList(Obj obj, Obj kind)
+static void SetTypeAList(Obj obj, Obj kind)
 {
   switch (TNUM_OBJ(obj)) {
     case T_ALIST:
@@ -111,7 +111,7 @@ void SetTypeAList(Obj obj, Obj kind)
   MEMBAR_WRITE();
 }
 
-void SetTypeARecord(Obj obj, Obj kind)
+static void SetTypeARecord(Obj obj, Obj kind)
 {
   ADDR_OBJ(obj)[0] = kind;
   CHANGED_BAG(obj);
@@ -947,7 +947,7 @@ Int IsbARecord(Obj record, UInt rnam)
   return GetARecordField(record, rnam) != (Obj) 0;
 }
 
-Obj ShallowCopyARecord(Obj obj)
+static Obj ShallowCopyARecord(Obj obj)
 {
   Obj copy, inner, innerCopy;
   HashLock(obj);
@@ -1037,7 +1037,7 @@ Obj GetTLRecordField(Obj record, UInt rnam)
   return GET_ELM_PREC(tlrecord, pos);
 }
 
-Obj ElmTLRecord(Obj record, UInt rnam)
+static Obj ElmTLRecord(Obj record, UInt rnam)
 {
     Obj result = GetTLRecordField(record, rnam);
     if (!result)
@@ -1062,7 +1062,7 @@ void AssTLRecord(Obj record, UInt rnam, Obj value)
   AssPRec(tlrecord, rnam, value);
 }
 
-void UnbTLRecord(Obj record, UInt rnam)
+static void UnbTLRecord(Obj record, UInt rnam)
 {
   Obj contents, *table;
   Obj tlrecord;
@@ -1078,7 +1078,7 @@ void UnbTLRecord(Obj record, UInt rnam)
 }
 
 
-Int IsbTLRecord(Obj record, UInt rnam)
+static Int IsbTLRecord(Obj record, UInt rnam)
 {
   return GetTLRecordField(record, rnam) != (Obj) 0;
 }
@@ -1292,7 +1292,7 @@ Obj ElmAList(Obj list, Int pos)
   return result;
 }
 
-Int IsbAList(Obj list, Int pos) {
+static Int IsbAList(Obj list, Int pos) {
   const AtomicObj *addr = CONST_ADDR_ATOM(list);
   UInt len;
   MEMBAR_READ();
@@ -1300,7 +1300,7 @@ Int IsbAList(Obj list, Int pos) {
   return pos >= 1 && pos <= len && addr[1+pos].obj;
 }
 
-void AssFixAList(Obj list, Int pos, Obj obj)
+static void AssFixAList(Obj list, Int pos, Obj obj)
 {
   UInt pol = (UInt)CONST_ADDR_ATOM(list)[0].atom;
   UInt len = ALIST_LEN(pol);
@@ -1333,7 +1333,7 @@ void AssFixAList(Obj list, Int pos, Obj obj)
 // than the existing length.
 // If this function returns, then the code has a (possibly shared)
 // HashLock on the list, which must be released by the caller.
-void EnlargeAList(Obj list, Int pos)
+static void EnlargeAList(Obj list, Int pos)
 {
     HashLockShared(list);
     AtomicObj * addr = ADDR_ATOM(list);
@@ -1413,7 +1413,7 @@ void AssAList(Obj list, Int pos, Obj obj)
   HashUnlock(list);
 }
 
-Obj AtomicCompareSwapAList(Obj list, Int pos, Obj old, Obj new)
+static Obj AtomicCompareSwapAList(Obj list, Int pos, Obj old, Obj new)
 {
     if (pos < 1) {
         ErrorQuit(
@@ -1489,7 +1489,7 @@ UInt AddAList(Obj list, Obj obj)
   return len+1;
 }
 
-void UnbAList(Obj list, Int pos)
+static void UnbAList(Obj list, Int pos)
 {
   AtomicObj *addr;
   UInt len, pol;
@@ -1508,13 +1508,13 @@ void UnbAList(Obj list, Int pos)
   HashUnlockShared(list);
 }
 
-Int InitAObjectsState(void)
+static Int InitAObjectsState(void)
 {
     TLS(tlRecords) = (Obj)0;
     return 0;
 }
 
-Int DestroyAObjectsState(void)
+static Int DestroyAObjectsState(void)
 {
     Obj  records;
     UInt i, len;
@@ -1529,7 +1529,7 @@ Int DestroyAObjectsState(void)
 
 #endif /* WARD_ENABLED */
 
-Obj MakeAtomic(Obj obj) {
+static Obj MakeAtomic(Obj obj) {
   if (IS_LIST(obj))
       return NewAtomicListFrom(T_ALIST, obj);
   else if (TNUM_OBJ(obj) == T_PREC)
@@ -1538,7 +1538,7 @@ Obj MakeAtomic(Obj obj) {
     return (Obj) 0;
 }
 
-Obj FuncMakeWriteOnceAtomic(Obj self, Obj obj) {
+static Obj FuncMakeWriteOnceAtomic(Obj self, Obj obj) {
   switch (TNUM_OBJ(obj)) {
     case T_ALIST:
     case T_FIXALIST:
@@ -1561,7 +1561,7 @@ Obj FuncMakeWriteOnceAtomic(Obj self, Obj obj) {
   return obj;
 }
 
-Obj FuncMakeReadWriteAtomic(Obj self, Obj obj) {
+static Obj FuncMakeReadWriteAtomic(Obj self, Obj obj) {
   switch (TNUM_OBJ(obj)) {
     case T_ALIST:
     case T_FIXALIST:
@@ -1584,7 +1584,7 @@ Obj FuncMakeReadWriteAtomic(Obj self, Obj obj) {
   return obj;
 }
 
-Obj FuncMakeStrictWriteOnceAtomic(Obj self, Obj obj) {
+static Obj FuncMakeStrictWriteOnceAtomic(Obj self, Obj obj) {
   switch (TNUM_OBJ(obj)) {
     case T_ALIST:
     case T_FIXALIST:
@@ -1610,7 +1610,7 @@ Obj FuncMakeStrictWriteOnceAtomic(Obj self, Obj obj) {
 
 #define FuncError(message)  ErrorQuit("%s: %s", (Int)currFuncName, (Int)message)
 
-Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
+static Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
   Int n;
   Bag *contents;
   Bag result;
@@ -1660,7 +1660,7 @@ Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncN
 #endif
 }
 
-Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
+static Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
   UInt n;
   UInt len;
   AtomicObj anew;
@@ -1692,19 +1692,19 @@ Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval, const char *currFunc
 }
 
 
-Obj BindOnceComObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
+static Obj BindOnceComObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
   FuncError("not yet implemented");
   return (Obj) 0;
 }
 
 
-Obj BindOnceAComObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
+static Obj BindOnceAComObj(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
   FuncError("not yet implemented");
   return (Obj) 0;
 }
 
 
-Obj BindOnce(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
+static Obj BindOnce(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
   switch (TNUM_OBJ(obj)) {
     case T_POSOBJ:
       return BindOncePosObj(obj, index, new, eval, currFuncName);
@@ -1720,13 +1720,13 @@ Obj BindOnce(Obj obj, Obj index, Obj *new, int eval, const char *currFuncName) {
   }
 }
 
-Obj FuncBindOnce(Obj self, Obj obj, Obj index, Obj new) {
+static Obj FuncBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
   result = BindOnce(obj, index, &new, 0, "BindOnce");
   return result ? result : new;
 }
 
-Obj FuncStrictBindOnce(Obj self, Obj obj, Obj index, Obj new) {
+static Obj FuncStrictBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
   result = BindOnce(obj, index, &new, 0, "StrictBindOnce");
   if (result)
@@ -1734,19 +1734,19 @@ Obj FuncStrictBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   return result;
 }
 
-Obj FuncTestBindOnce(Obj self, Obj obj, Obj index, Obj new) {
+static Obj FuncTestBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
   result = BindOnce(obj, index, &new, 0, "TestBindOnce");
   return result ? False : True;
 }
 
-Obj FuncBindOnceExpr(Obj self, Obj obj, Obj index, Obj new) {
+static Obj FuncBindOnceExpr(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
   result = BindOnce(obj, index, &new, 1, "BindOnceExpr");
   return result ? result : new;
 }
 
-Obj FuncTestBindOnceExpr(Obj self, Obj obj, Obj index, Obj new) {
+static Obj FuncTestBindOnceExpr(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
   result = BindOnce(obj, index, &new, 1, "TestBindOnceExpr");
   return result ? False : True;
@@ -1819,33 +1819,35 @@ static StructGVarFunc GVarFuncs[] = {
 
 // Forbid comparision and copying of atomic objects, because they
 // cannot be done in a thread-safe manner
-Int AtomicRecordErrorNoCompare(Obj arg1, Obj arg2)
+static Int AtomicRecordErrorNoCompare(Obj arg1, Obj arg2)
 {
     ErrorQuit("atomic records cannot be compared with other records", 0, 0);
     // Make compiler happy
     return 0;
 }
 
-Int AtomicListErrorNoCompare(Obj arg1, Obj arg2)
+static Int AtomicListErrorNoCompare(Obj arg1, Obj arg2)
 {
     ErrorQuit("atomic lists cannot be compared with other lists", 0, 0);
     // Make compiler happy
     return 0;
 }
 
-Obj AtomicErrorNoShallowCopy(Obj arg1)
+static Obj AtomicErrorNoShallowCopy(Obj arg1)
 {
     ErrorQuit("atomic objects cannot be copied", 0, 0);
     // Make compiler happy
     return 0;
 }
 
-Obj AtomicErrorNoCopy(Obj arg1, Int arg2)
+#if !defined(USE_THREADSAFE_COPYING)
+static Obj AtomicErrorNoCopy(Obj arg1, Int arg2)
 {
     ErrorQuit("atomic objects cannot be copied", 0, 0);
     // Make compiler happy
     return 0;
 }
+#endif
 
 /****************************************************************************
 **

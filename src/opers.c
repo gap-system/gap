@@ -82,7 +82,7 @@ static Obj TesterAndFilter(Obj getter);
 **
 *F  PrintFlags( <flags> ) . . . . . . . . . . . . . . . .  print a flags list
 */
-void PrintFlags (
+static void PrintFlags (
     Obj                 flags )
 {
     Pr( "<flag list>", 0L, 0L );
@@ -95,7 +95,7 @@ void PrintFlags (
 */
 static Obj TYPE_FLAGS;
 
-Obj TypeFlags (
+static Obj TypeFlags (
     Obj                 flags )
 {
     return TYPE_FLAGS;
@@ -107,7 +107,7 @@ Obj TypeFlags (
 *F  SaveFlags( <flags> )  . . . . . . . . . . . . . . . . . save a flags list
 **
 */
-void SaveFlags (
+static void SaveFlags (
     Obj         flags )
 {
     UInt        i, len, *ptr;
@@ -128,7 +128,7 @@ void SaveFlags (
 *F  LoadFlags( <flags> )  . . . . . . . . . . . . . . . . . load a flags list
 **
 */
-void LoadFlags(
+static void LoadFlags(
     Obj         flags )
 {
     Obj         sub;
@@ -166,7 +166,7 @@ void LoadFlags(
 */
 #define HASH_FLAGS_SIZE (Int4)67108879L
 
-Obj FuncHASH_FLAGS (
+static Obj FuncHASH_FLAGS (
     Obj                 self,
     Obj                 flags )
 {
@@ -230,7 +230,7 @@ Obj FuncHASH_FLAGS (
 **
 **  see 'FuncPositionsTruesBlist' in "blister.c" for information.
 */
-Obj FuncTRUES_FLAGS (
+static Obj FuncTRUES_FLAGS (
     Obj                 self,
     Obj                 flags )
 {
@@ -281,7 +281,7 @@ Obj FuncTRUES_FLAGS (
 **
 **  see 'FuncSIZE_FLAGS'
 */
-Obj FuncSIZE_FLAGS (
+static Obj FuncSIZE_FLAGS (
     Obj                 self,
     Obj                 flags )
 {
@@ -310,7 +310,7 @@ Obj FuncSIZE_FLAGS (
 **
 *F  EqFlags( <flags1>, <flags2> ) . . . . . . . . . . equality of flags lists
 */
-Int EqFlags(Obj flags1, Obj flags2)
+static Int EqFlags(Obj flags1, Obj flags2)
 {
     Int                 len1;
     Int                 len2;
@@ -359,7 +359,7 @@ Int EqFlags(Obj flags1, Obj flags2)
 **
 *F  FuncIS_EQUAL_FLAGS( <self>, <flags1>, <flags2> )  equality of flags lists
 */
-Obj FuncIS_EQUAL_FLAGS (
+static Obj FuncIS_EQUAL_FLAGS (
     Obj                 self,
     Obj                 flags1,
     Obj                 flags2 )
@@ -438,7 +438,7 @@ Obj FuncIS_SUBSET_FLAGS (
 **
 *F  FuncSUB_FLAGS( <self>, <flags1>, <flags2> ) . . .  substract a flags list
 */
-Obj FuncSUB_FLAGS (
+static Obj FuncSUB_FLAGS (
     Obj                 self,
     Obj                 flags1,
     Obj                 flags2 )
@@ -497,7 +497,7 @@ static Int AndFlagsCacheMiss;
 static Int AndFlagsCacheLost;
 #endif
 
-Obj FuncAND_FLAGS (
+static Obj FuncAND_FLAGS (
     Obj                 self,
     Obj                 flags1,
     Obj                 flags2 )
@@ -638,18 +638,18 @@ Obj FuncAND_FLAGS (
     return flags;
 }
 
-Obj HIDDEN_IMPS;
-Obj WITH_HIDDEN_IMPS_FLAGS_CACHE;
+static Obj HIDDEN_IMPS;
+static Obj WITH_HIDDEN_IMPS_FLAGS_CACHE;
 enum { HIDDEN_IMPS_CACHE_LENGTH = 20003 };
 
 /* Forward declaration of FuncFLAGS_FILTER */
-Obj FuncFLAGS_FILTER(Obj self, Obj oper);
+static Obj FuncFLAGS_FILTER(Obj self, Obj oper);
     
 /****************************************************************************
 **
 *F  FuncInstallHiddenTrueMethod( <filter>, <filters> ) Add a hidden true method
 */
-Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
+static Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
 {
     Obj imp = FuncFLAGS_FILTER(0, filter);
     Obj imps = FuncFLAGS_FILTER(0, filters);
@@ -672,7 +672,7 @@ Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
 **
 *F  FuncCLEAR_HIDDEN_IMP_CACHE( <self>, <flags> ) . . . .clear cache of flags
 */
-Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
+static Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
 {
   Int i;
   Obj flags = FuncFLAGS_FILTER(0, filter);
@@ -703,7 +703,7 @@ Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
 static Int WITH_HIDDEN_IMPS_MISS=0;
 static Int WITH_HIDDEN_IMPS_HIT=0;
 #endif
-Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
+static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 {
     // do some trivial checks, so we can use IS_SUBSET_FLAGS
     RequireFlags("WITH_HIDDEN_IMPS_FLAGS", flags);
@@ -795,7 +795,7 @@ enum { IMPS_CACHE_LENGTH = 21001 };
 **
 *F  FuncCLEAR_IMP_CACHE( <self>, <flags> ) . . . . . . . clear cache of flags
 */
-Obj FuncCLEAR_IMP_CACHE(Obj self)
+static Obj FuncCLEAR_IMP_CACHE(Obj self)
 {
   Int i;
 #ifdef HPCGAP
@@ -820,7 +820,7 @@ Obj FuncCLEAR_IMP_CACHE(Obj self)
 static Int WITH_IMPS_FLAGS_MISS=0;
 static Int WITH_IMPS_FLAGS_HIT=0;
 #endif
-Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
+static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 {
     // do some trivial checks, so we can use IS_SUBSET_FLAGS
     RequireFlags("WITH_IMPS_FLAGS", flags);
@@ -921,7 +921,7 @@ Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
     return with;
 }
 
-Obj FuncWITH_IMPS_FLAGS_STAT(Obj self)
+static Obj FuncWITH_IMPS_FLAGS_STAT(Obj self)
 {
     Obj res;
     res = NEW_PLIST(T_PLIST, 3);
@@ -954,7 +954,7 @@ static Int CountFlags;
 **
 *F  SetterFilter( <oper> )  . . . . . . . . . . . . . . .  setter of a filter
 */
-Obj SetterFilter (
+static Obj SetterFilter (
     Obj                 oper )
 {
     Obj                 setter;
@@ -970,7 +970,7 @@ Obj SetterFilter (
 **
 *F  SetterAndFilter( <getter> )  . . . . . .  setter of a concatenated filter
 */
-Obj DoSetAndFilter (
+static Obj DoSetAndFilter (
     Obj                 self,
     Obj                 obj,
     Obj                 val )
@@ -996,7 +996,7 @@ Obj DoSetAndFilter (
 }
 
 
-Obj SetterAndFilter (
+static Obj SetterAndFilter (
     Obj                 getter )
 {
     Obj                 setter;
@@ -1022,7 +1022,7 @@ Obj SetterAndFilter (
 **
 *F  TesterFilter( <oper> )  . . . . . . . . . . . . . . .  tester of a filter
 */
-Obj TesterFilter (
+static Obj TesterFilter (
     Obj                 oper )
 {
     Obj                 tester;
@@ -1038,7 +1038,7 @@ Obj TesterFilter (
 **
 *F  TestAndFilter( <getter> )  . . . . . . . .tester of a concatenated filter
 */
-Obj TesterAndFilter (
+static Obj TesterAndFilter (
     Obj                 getter )
 {
     Obj                 tester;
@@ -1058,7 +1058,7 @@ Obj TesterAndFilter (
 **
 *F  NewFilter( <name>, <narg>, <nams>, <hdlr> )  . . . . .  make a new filter
 */
-Obj DoSetFilter (
+static Obj DoSetFilter (
     Obj                 self,
     Obj                 obj,
     Obj                 val )
@@ -1086,7 +1086,7 @@ Obj DoSetFilter (
     return 0;
 }
 
-Obj NewSetterFilter (
+static Obj NewSetterFilter (
     Obj                 getter )
 {
     Obj                 setter;
@@ -1155,7 +1155,7 @@ Obj NewFilter (
     return getter;    
 }
 
-Obj FuncIS_FILTER(Obj self, Obj obj)
+static Obj FuncIS_FILTER(Obj self, Obj obj)
 {
     return IS_FILTER(obj) ? True : False;
 }
@@ -1165,7 +1165,7 @@ Obj FuncIS_FILTER(Obj self, Obj obj)
 **
 *F  NewAndFilter( <filt1>, <filt2> ) . . . . . make a new concatenated filter
 */
-Obj DoAndFilter (
+static Obj DoAndFilter (
     Obj                 self,
     Obj                 obj )
 {
@@ -1234,7 +1234,7 @@ Obj NewAndFilter (
     return getter;
 }
 
-Obj FuncIS_AND_FILTER( Obj self, Obj filt )
+static Obj FuncIS_AND_FILTER( Obj self, Obj filt )
 {
   return (IS_FUNC(filt) && HDLR_FUNC(filt, 1) == DoAndFilter) ? True : False;
 }
@@ -1251,7 +1251,7 @@ Obj ReturnTrueFilter;
 **
 *F  NewReturnTrueFilter() . . . . . . . . . . create a new return true filter
 */
-Obj DoSetReturnTrueFilter (
+static Obj DoSetReturnTrueFilter (
     Obj                 self,
     Obj                 obj,
     Obj                 val )
@@ -1264,7 +1264,7 @@ Obj DoSetReturnTrueFilter (
     return 0;
 }
 
-Obj SetterReturnTrueFilter (
+static Obj SetterReturnTrueFilter (
     Obj                 getter )
 {
     Obj                 setter;
@@ -1279,14 +1279,14 @@ Obj SetterReturnTrueFilter (
     return setter;    
 }
 
-Obj DoReturnTrueFilter (
+static Obj DoReturnTrueFilter (
     Obj                 self,
     Obj                 obj )
 {
     return True;
 }
 
-Obj NewReturnTrueFilter ( void )
+static Obj NewReturnTrueFilter ( void )
 {
     Obj                 getter;
     Obj                 setter;
@@ -1323,7 +1323,7 @@ Obj NewReturnTrueFilter ( void )
 **
 *F  FuncNEW_FILTER( <self>, <name> )  . . . . . . . . . . . . .  new filter
 */
-Obj FuncNEW_FILTER (
+static Obj FuncNEW_FILTER (
     Obj                 self,
     Obj                 name )
 {
@@ -1341,7 +1341,7 @@ Obj FuncNEW_FILTER (
 **
 *F  FuncFLAG1_FILTER( <self>, <oper> )  . . . . . . . . . . . .  `FLAG1_FILT'
 */
-Obj FuncFLAG1_FILTER (
+static Obj FuncFLAG1_FILTER (
     Obj                 self,
     Obj                 oper )
 {
@@ -1359,7 +1359,7 @@ Obj FuncFLAG1_FILTER (
 **
 *F  FuncSET_FLAG1_FILTER( <self>, <oper>, <flag1> ) . . . .  set `FLAG1_FILT'
 */
-Obj FuncSET_FLAG1_FILTER (
+static Obj FuncSET_FLAG1_FILTER (
     Obj                 self,
     Obj                 oper,
     Obj                 flag1 )
@@ -1374,7 +1374,7 @@ Obj FuncSET_FLAG1_FILTER (
 **
 *F  FuncFLAG2_FILTER( <self>, <oper> )  . . . . . . . . . . . .  `FLAG2_FILT'
 */
-Obj FuncFLAG2_FILTER (
+static Obj FuncFLAG2_FILTER (
     Obj                 self,
     Obj                 oper )
 {
@@ -1392,7 +1392,7 @@ Obj FuncFLAG2_FILTER (
 **
 *F  FuncSET_FLAG2_FILTER( <self>, <oper>, <flag2> ) . . . .  set `FLAG2_FILT'
 */
-Obj FuncSET_FLAG2_FILTER (
+static Obj FuncSET_FLAG2_FILTER (
     Obj                 self,
     Obj                 oper,
     Obj                 flag2 )
@@ -1407,7 +1407,7 @@ Obj FuncSET_FLAG2_FILTER (
 **
 *F  FuncFLAGS_FILTER( <self>, <oper> )  . . . . . . . . . . . .  `FLAGS_FILT'
 */
-Obj FuncFLAGS_FILTER (
+static Obj FuncFLAGS_FILTER (
     Obj                 self,
     Obj                 oper )
 {
@@ -1425,7 +1425,7 @@ Obj FuncFLAGS_FILTER (
 **
 *F  FuncSET_FLAGS_FILTER( <self>, <oper>, <flags> ) . . . .  set `FLAGS_FILT'
 */
-Obj FuncSET_FLAGS_FILTER (
+static Obj FuncSET_FLAGS_FILTER (
     Obj                 self,
     Obj                 oper,
     Obj                 flags )
@@ -1440,7 +1440,7 @@ Obj FuncSET_FLAGS_FILTER (
 **
 *F  FuncSETTER_FILTER( <self>, <oper> ) . . . . . . . . .  setter of a filter
 */
-Obj FuncSETTER_FILTER (
+static Obj FuncSETTER_FILTER (
     Obj                 self,
     Obj                 oper )
 {
@@ -1457,7 +1457,7 @@ Obj FuncSETTER_FILTER (
 **
 *F  FuncSET_SETTER_FILTER( <self>, <oper>, <setter> )  set setter of a filter
 */
-Obj FuncSET_SETTER_FILTER (
+static Obj FuncSET_SETTER_FILTER (
     Obj                 self,
     Obj                 oper,
     Obj                 setter )
@@ -1472,7 +1472,7 @@ Obj FuncSET_SETTER_FILTER (
 **
 *F  FuncTESTER_FILTER( <self>, <oper> ) . . . . . . . . .  tester of a filter
 */
-Obj FuncTESTER_FILTER (
+static Obj FuncTESTER_FILTER (
     Obj                 self,
     Obj                 oper )
 {
@@ -1489,7 +1489,7 @@ Obj FuncTESTER_FILTER (
 **
 *F  FuncSET_TESTER_FILTER( <self>, <oper>, <tester> )  set tester of a filter
 */
-Obj FuncSET_TESTER_FILTER (
+static Obj FuncSET_TESTER_FILTER (
     Obj                 self,
     Obj                 oper,
     Obj                 tester )
@@ -1595,7 +1595,7 @@ static void FixTypeIDs( Bag b ) {
 
 #endif
 
-Obj FuncCOMPACT_TYPE_IDS( Obj self )
+static Obj FuncCOMPACT_TYPE_IDS( Obj self )
 {
 #ifdef USE_GASMAN
   NextTypeID = INT_INTOBJ_MIN;
@@ -2284,51 +2284,51 @@ Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr)
 *F  DoConstructorXArgs( <oper> )
 */
 
-Obj DoConstructor0Args(Obj oper)
+static Obj DoConstructor0Args(Obj oper)
 {
     ErrorQuit("constructors must have at least one argument", 0L, 0L);
     return 0;
 }
 
-Obj DoConstructor1Args(Obj oper, Obj arg1)
+static Obj DoConstructor1Args(Obj oper, Obj arg1)
 {
     return DoOperationNArgs(oper, 1, 0, 1, arg1, 0, 0,
                             0, 0, 0);
 }
 
-Obj DoConstructor2Args(Obj oper, Obj arg1, Obj arg2)
+static Obj DoConstructor2Args(Obj oper, Obj arg1, Obj arg2)
 {
     return DoOperationNArgs(oper, 2, 0, 1, arg1, arg2,
                             0, 0, 0, 0);
 }
 
-Obj DoConstructor3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
+static Obj DoConstructor3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
 {
     return DoOperationNArgs(oper, 3, 0, 1, arg1, arg2,
                             arg3, 0, 0, 0);
 }
 
-Obj DoConstructor4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
+static Obj DoConstructor4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
     return DoOperationNArgs(oper, 4, 0, 1, arg1, arg2,
                             arg3, arg4, 0, 0);
 }
 
-Obj DoConstructor5Args(
+static Obj DoConstructor5Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
     return DoOperationNArgs(oper, 5, 0, 1, arg1, arg2,
                             arg3, arg4, arg5, 0);
 }
 
-Obj DoConstructor6Args(
+static Obj DoConstructor6Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
     return DoOperationNArgs(oper, 6, 0, 1, arg1, arg2,
                             arg3, arg4, arg5, arg6);
 }
 
-Obj DoConstructorXArgs(Obj self, Obj args)
+static Obj DoConstructorXArgs(Obj self, Obj args)
 {
     ErrorQuit("sorry: cannot yet have X argument constructors", 0L, 0L);
     return 0;
@@ -2347,52 +2347,52 @@ Obj DoConstructorXArgs(Obj self, Obj args)
 *F  DoVerboseConstructorXArgs( <oper> )
 */
 
-Obj DoVerboseConstructor0Args(Obj oper)
+static Obj DoVerboseConstructor0Args(Obj oper)
 {
     ErrorQuit("constructors must have at least one argument", 0L, 0L);
     return 0;
 }
 
-Obj DoVerboseConstructor1Args(Obj oper, Obj arg1)
+static Obj DoVerboseConstructor1Args(Obj oper, Obj arg1)
 {
     return DoOperationNArgs(oper, 1, 1, 1, arg1,
                             0, 0, 0, 0, 0);
 }
 
-Obj DoVerboseConstructor2Args(Obj oper, Obj arg1, Obj arg2)
+static Obj DoVerboseConstructor2Args(Obj oper, Obj arg1, Obj arg2)
 {
     return DoOperationNArgs(oper, 2, 1, 1, arg1,
                             arg2, 0, 0, 0, 0);
 }
 
-Obj DoVerboseConstructor3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
+static Obj DoVerboseConstructor3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
 {
     return DoOperationNArgs(oper, 3, 1, 1, arg1,
                             arg2, arg3, 0, 0, 0);
 }
 
-Obj DoVerboseConstructor4Args(
+static Obj DoVerboseConstructor4Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
     return DoOperationNArgs(oper, 4, 1, 1, arg1,
                             arg2, arg3, arg4, 0, 0);
 }
 
-Obj DoVerboseConstructor5Args(
+static Obj DoVerboseConstructor5Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
     return DoOperationNArgs(oper, 5, 1, 1, arg1,
                             arg2, arg3, arg4, arg5, 0);
 }
 
-Obj DoVerboseConstructor6Args(
+static Obj DoVerboseConstructor6Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
     return DoOperationNArgs(oper, 6, 1, 1, arg1,
                             arg2, arg3, arg4, arg5, arg6);
 }
 
-Obj DoVerboseConstructorXArgs(Obj self, Obj args)
+static Obj DoVerboseConstructorXArgs(Obj self, Obj args)
 {
     ErrorQuit("sorry: cannot yet have X argument constructors", 0L, 0L);
     return 0;
@@ -2403,7 +2403,7 @@ Obj DoVerboseConstructorXArgs(Obj self, Obj args)
 **
 *F  NewConstructor( <name>> )
 */
-Obj NewConstructor(Obj name)
+static Obj NewConstructor(Obj name)
 {
     Obj                 oper;
 
@@ -2515,7 +2515,7 @@ Obj DoAttribute (
 */
 #define DoVerboseSetAttribute  DoVerboseOperation2Args
 
-Obj DoVerboseAttribute (
+static Obj DoVerboseAttribute (
     Obj                 self,
     Obj                 obj )
 {
@@ -2568,7 +2568,7 @@ Obj DoVerboseAttribute (
 **
 **  DoMutableAttribute( <attr>, <obj> )
 */
-Obj DoMutableAttribute (
+static Obj DoMutableAttribute (
     Obj                 self,
     Obj                 obj )
 {
@@ -2615,7 +2615,7 @@ Obj DoMutableAttribute (
 **
 **  DoVerboseMutableAttribute( <attr>, <obj> )
 */
-Obj DoVerboseMutableAttribute (
+static Obj DoVerboseMutableAttribute (
     Obj                 self,
     Obj                 obj )
 {
@@ -2784,7 +2784,7 @@ Obj NewAttribute (
 **  should not have any one-argument declarations) into an attribute
 */
 
-void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr ) 
+static void ConvertOperationIntoAttribute( Obj oper, ObjFunc hdlr ) 
 {
     Obj                 setter;
     Obj                 tester;
@@ -2819,7 +2819,7 @@ Obj RESET_FILTER_OBJ;
 **
 **  DoSetProperty( <prop>, <obj>, <val> )
 */
-Obj DoSetProperty (
+static Obj DoSetProperty (
     Obj                 self,
     Obj                 obj,
     Obj                 val )
@@ -2943,7 +2943,7 @@ Obj DoProperty (
 **
 **  DoVerboseProperty( <prop>, <obj> )
 */
-Obj DoVerboseProperty (
+static Obj DoVerboseProperty (
     Obj                 self,
     Obj                 obj )
 {
@@ -3052,7 +3052,7 @@ Obj NewProperty (
 **
 **  DoUninstalledGlobalFunction( <oper>, <args> )
 */
-Obj DoUninstalledGlobalFunction (
+static Obj DoUninstalledGlobalFunction (
     Obj                 oper,
     Obj                 args )
 {
@@ -3066,7 +3066,7 @@ Obj DoUninstalledGlobalFunction (
 **
 *F  NewGlobalFunction( <name>, <nams> )
 */
-Obj NewGlobalFunction (
+static Obj NewGlobalFunction (
     Obj                 name,
     Obj                 nams )
 {
@@ -3098,7 +3098,7 @@ Obj NewGlobalFunction (
 **
 *F  InstallGlobalFunction( <oper>, <func> ) . . . . . . . . .  clone function
 */
-void InstallGlobalFunction (
+static void InstallGlobalFunction (
     Obj                 oper,
     Obj                 func )
 {
@@ -3189,7 +3189,7 @@ void LoadOperationExtras (
 **
 *F  FuncNEW_OPERATION( <self>, <name> ) . . . . . . . . . . . . new operation
 */
-Obj FuncNEW_OPERATION (
+static Obj FuncNEW_OPERATION (
     Obj                 self,
     Obj                 name )
 {
@@ -3207,7 +3207,7 @@ Obj FuncNEW_OPERATION (
 **
 *F  FuncNEW_CONSTRUCTOR( <self>, <name> ) . . . . . . . . . . new constructor
 */
-Obj FuncNEW_CONSTRUCTOR (
+static Obj FuncNEW_CONSTRUCTOR (
     Obj                 self,
     Obj                 name )
 {
@@ -3220,7 +3220,7 @@ Obj FuncNEW_CONSTRUCTOR (
     return NewConstructor( name );
 }
 
-Obj FuncIS_CONSTRUCTOR(Obj self, Obj x)
+static Obj FuncIS_CONSTRUCTOR(Obj self, Obj x)
 {
     return (IS_FUNC(x) && HDLR_FUNC(x, 1) == DoConstructor1Args) ? True : False;
 }
@@ -3229,7 +3229,7 @@ Obj FuncIS_CONSTRUCTOR(Obj self, Obj x)
 **
 *F  FuncNEW_ATTRIBUTE( <self>, <name> ) . . . . . . . . . . . . new attribute
 */
-Obj FuncNEW_ATTRIBUTE (
+static Obj FuncNEW_ATTRIBUTE (
     Obj                 self,
     Obj                 name )
 {
@@ -3245,7 +3245,7 @@ Obj FuncNEW_ATTRIBUTE (
 **
 *F  FuncOPER_TO_ATTRIBUTE( <self>, oper ) make existing operation into attribute
 */
-Obj FuncOPER_TO_ATTRIBUTE (
+static Obj FuncOPER_TO_ATTRIBUTE (
     Obj                 self,
     Obj                 oper )
 {
@@ -3263,7 +3263,7 @@ Obj FuncOPER_TO_ATTRIBUTE (
 **
 *F  FuncOPER_TO_MUTABLE_ATTRIBUTE( <self>, oper ) make existing operation into attribute
 */
-Obj FuncOPER_TO_MUTABLE_ATTRIBUTE (
+static Obj FuncOPER_TO_MUTABLE_ATTRIBUTE (
     Obj                 self,
     Obj                 oper )
 {
@@ -3282,7 +3282,7 @@ Obj FuncOPER_TO_MUTABLE_ATTRIBUTE (
 **
 *F  FuncNEW_MUTABLE_ATTRIBUTE( <self>, <name> ) . . . . new mutable attribute
 */
-Obj FuncNEW_MUTABLE_ATTRIBUTE (
+static Obj FuncNEW_MUTABLE_ATTRIBUTE (
     Obj                 self,
     Obj                 name )
 {
@@ -3300,7 +3300,7 @@ Obj FuncNEW_MUTABLE_ATTRIBUTE (
 **
 *F  FuncNEW_PROPERTY( <self>, <name> )  . . . . . . . . . . . .  new property
 */
-Obj FuncNEW_PROPERTY (
+static Obj FuncNEW_PROPERTY (
     Obj                 self,
     Obj                 name )
 {
@@ -3318,7 +3318,7 @@ Obj FuncNEW_PROPERTY (
 **
 *F  FuncNEW_GLOBAL_FUNCTION( <self>, <name> ) . . . . . . new global function
 */
-Obj FuncNEW_GLOBAL_FUNCTION (
+static Obj FuncNEW_GLOBAL_FUNCTION (
     Obj                 self,
     Obj                 name )
 {
@@ -3346,7 +3346,7 @@ Obj FuncNEW_GLOBAL_FUNCTION (
 */
 static Obj REREADING;
 
-Obj FuncINSTALL_GLOBAL_FUNCTION (
+static Obj FuncINSTALL_GLOBAL_FUNCTION (
     Obj                 self,
     Obj                 oper,
     Obj                 func )
@@ -3375,7 +3375,7 @@ Obj FuncINSTALL_GLOBAL_FUNCTION (
 */
 static Obj IsOperationFilt;
 
-Obj FuncIS_OPERATION (
+static Obj FuncIS_OPERATION (
     Obj                 self,
     Obj                 obj )
 {
@@ -3395,7 +3395,7 @@ Obj FuncIS_OPERATION (
 **
 *F  FuncMETHODS_OPERATION( <self>, <oper>, <narg> ) . . . . .  list of method
 */
-Obj MethsOper (
+static Obj MethsOper (
     Obj                 oper,
     UInt                i )
 {
@@ -3412,7 +3412,7 @@ Obj MethsOper (
     return methods;
 }
 
-Obj FuncMETHODS_OPERATION (
+static Obj FuncMETHODS_OPERATION (
     Obj                 self,
     Obj                 oper,
     Obj                 narg )
@@ -3437,7 +3437,7 @@ Obj FuncMETHODS_OPERATION (
 **
 *F  FuncCHANGED_METHODS_OPERATION( <self>, <oper>, <narg> ) . . . clear cache
 */
-Obj FuncCHANGED_METHODS_OPERATION (
+static Obj FuncCHANGED_METHODS_OPERATION (
     Obj                 self,
     Obj                 oper,
     Obj                 narg )
@@ -3470,7 +3470,7 @@ Obj FuncCHANGED_METHODS_OPERATION (
 **
 *F  FuncSET_METHODS_OPERATION( <self>, <oper>, <narg>, <list> ) . set methods
 */
-Obj FuncSET_METHODS_OPERATION (
+static Obj FuncSET_METHODS_OPERATION (
     Obj                 self,
     Obj                 oper,
     Obj                 narg,
@@ -3495,7 +3495,7 @@ Obj FuncSET_METHODS_OPERATION (
 **
 *F  FuncSETTER_FUNCTION( <self>, <name>, <filter> )  default attribute setter
 */
-Obj DoSetterFunction (
+static Obj DoSetterFunction (
     Obj                 self,
     Obj                 obj,
     Obj                 value )
@@ -3544,7 +3544,7 @@ Obj DoSetterFunction (
 }
 
 
-Obj FuncSETTER_FUNCTION (
+static Obj FuncSETTER_FUNCTION (
     Obj                 self,
     Obj                 name,
     Obj                 filter )
@@ -3570,7 +3570,7 @@ Obj FuncSETTER_FUNCTION (
 **
 *F  FuncGETTER_FUNCTION( <self>, <name> ) . . . . .  default attribute getter
 */
-Obj DoGetterFunction (
+static Obj DoGetterFunction (
     Obj                 self,
     Obj                 obj )
 {
@@ -3588,7 +3588,7 @@ Obj DoGetterFunction (
 }
 
 
-Obj FuncGETTER_FUNCTION (
+static Obj FuncGETTER_FUNCTION (
     Obj                 self,
     Obj                 name )
 {
@@ -3606,7 +3606,7 @@ Obj FuncGETTER_FUNCTION (
 **
 *F  FuncOPERS_CACHE_INFO( <self> )  . . . . . . .  return cache stats as list
 */
-Obj FuncOPERS_CACHE_INFO (
+static Obj FuncOPERS_CACHE_INFO (
     Obj                        self )
 {
     Obj                 list;
@@ -3678,7 +3678,7 @@ Obj FuncOPERS_CACHE_INFO (
 **
 *F  FuncCLEAR_CACHE_INFO( <self> )  . . . . . . . . . . . . clear cache stats
 */
-Obj FuncCLEAR_CACHE_INFO (
+static Obj FuncCLEAR_CACHE_INFO (
     Obj                        self )
 {
 #ifdef COUNT_OPERS
@@ -3770,7 +3770,7 @@ void ChangeDoOperations (
 **
 *F  FuncTRACE_METHODS( <oper> ) . . . . . . . .  switch tracing of methods on
 */
-Obj FuncTRACE_METHODS (
+static Obj FuncTRACE_METHODS (
     Obj                 self,
     Obj                 oper )
 {
@@ -3789,7 +3789,7 @@ Obj FuncTRACE_METHODS (
 **
 *F  FuncUNTRACE_METHODS( <oper> ) . . . . . . . switch tracing of methods off
 */
-Obj FuncUNTRACE_METHODS (
+static Obj FuncUNTRACE_METHODS (
     Obj                 self,
     Obj                 oper )
 {
@@ -3809,7 +3809,7 @@ Obj FuncUNTRACE_METHODS (
 *F  FuncSET_ATTRIBUTE_STORING( <self>, <attr>, <val> )
 **               switch off or on the setter call of an attribute
 */
-Obj FuncSET_ATTRIBUTE_STORING (
+static Obj FuncSET_ATTRIBUTE_STORING (
     Obj                 self,
     Obj                 attr,
     Obj                 val )
@@ -3823,7 +3823,7 @@ Obj FuncSET_ATTRIBUTE_STORING (
 *F  FuncDO_NOTHING_SETTER(<self> , <obj>, <val> )
 **
 */
-Obj FuncDO_NOTHING_SETTER( Obj self, Obj obj, Obj val)
+static Obj FuncDO_NOTHING_SETTER( Obj self, Obj obj, Obj val)
 {
   return 0;
 }

@@ -45,9 +45,9 @@
 **
 **  'TypeMacfloat' is the function in 'TypeObjFuncs' for macfloatean values.
 */
-Obj TYPE_MACFLOAT;
+static Obj TYPE_MACFLOAT;
 
-Obj TypeMacfloat (
+static Obj TypeMacfloat (
     Obj                 val )
 {  
     return TYPE_MACFLOAT;
@@ -81,7 +81,7 @@ static void PrintMacfloatToBuf(char *buf, size_t bufsize, Double val, int precis
 **
 **  'PrintMacfloat' prints the macfloating value <macfloat>.
 */
-void PrintMacfloat(Obj x)
+static void PrintMacfloat(Obj x)
 {
     Char buf[1024];
     // TODO: should we use PRINTFDIGITS instead of 16?
@@ -97,14 +97,14 @@ void PrintMacfloat(Obj x)
 **  'EqMacfloat' returns 'True' if the two macfloatean values <macfloatL> and <macfloatR> are
 **  equal, and 'False' otherwise.
 */
-Int EqMacfloat (
+static Int EqMacfloat (
     Obj                 macfloatL,
     Obj                 macfloatR )
 {
   return VAL_MACFLOAT(macfloatL) == VAL_MACFLOAT(macfloatR);
 }
 
-Obj FuncEQ_MACFLOAT (
+static Obj FuncEQ_MACFLOAT (
     Obj                 self,
     Obj                 macfloatL,
     Obj                 macfloatR )
@@ -118,7 +118,7 @@ Obj FuncEQ_MACFLOAT (
 *F  LtMacfloat( <macfloatL>, <macfloatR> )  . . . . . . . . .  test if <macfloatL> <  <macfloatR>
 **
 */
-Int LtMacfloat (
+static Int LtMacfloat (
     Obj                 macfloatL,
     Obj                 macfloatR )
 {
@@ -131,7 +131,7 @@ Int LtMacfloat (
 *F  SaveMacfloat( <macfloat> ) . . . . . . . . . . . . . . . . . . . . save a Macfloatean 
 **
 */
-void SaveMacfloat( Obj obj )
+static void SaveMacfloat( Obj obj )
 {
     const UInt1 *data = (const UInt1 *)CONST_ADDR_OBJ(obj);
     for (UInt i = 0; i < sizeof(Double); i++)
@@ -143,7 +143,7 @@ void SaveMacfloat( Obj obj )
 *F  LoadMacfloat( <macfloat> ) . . . . . . . . . . . . . . . . . . . . save a Macfloatean 
 **
 */
-void LoadMacfloat( Obj obj )
+static void LoadMacfloat( Obj obj )
 {
     UInt1 *data = (UInt1 *)ADDR_OBJ(obj);
     for (UInt i = 0; i < sizeof(Double); i++)
@@ -165,7 +165,7 @@ Obj NEW_MACFLOAT( Double val )
 */
 
 
-Obj ZeroMacfloat( Obj f )
+static Obj ZeroMacfloat( Obj f )
 {
   return NEW_MACFLOAT((Double)0.0);
 }
@@ -177,7 +177,7 @@ Obj ZeroMacfloat( Obj f )
 */
 
 
-Obj AInvMacfloat( Obj f )
+static Obj AInvMacfloat( Obj f )
 {
   return NEW_MACFLOAT(-VAL_MACFLOAT(f));
 }
@@ -189,7 +189,7 @@ Obj AInvMacfloat( Obj f )
 */
 
 
-Obj OneMacfloat( Obj f )
+static Obj OneMacfloat( Obj f )
 {
   return NEW_MACFLOAT((Double)1.0);
 }
@@ -201,7 +201,7 @@ Obj OneMacfloat( Obj f )
 */
 
 
-Obj InvMacfloat( Obj f )
+static Obj InvMacfloat( Obj f )
 {
   return NEW_MACFLOAT((Double)1.0/VAL_MACFLOAT(f));
 }
@@ -213,7 +213,7 @@ Obj InvMacfloat( Obj f )
 */
 
 
-Obj ProdMacfloat( Obj fl, Obj fr )
+static Obj ProdMacfloat( Obj fl, Obj fr )
 {
   return NEW_MACFLOAT(VAL_MACFLOAT(fl)*VAL_MACFLOAT(fr));
 }
@@ -225,7 +225,7 @@ Obj ProdMacfloat( Obj fl, Obj fr )
 */
 
 
-Obj PowMacfloat( Obj fl, Obj fr )
+static Obj PowMacfloat( Obj fl, Obj fr )
 {
   return NEW_MACFLOAT(MATH(pow)(VAL_MACFLOAT(fl),VAL_MACFLOAT(fr)));
 }
@@ -237,7 +237,7 @@ Obj PowMacfloat( Obj fl, Obj fr )
 */
 
 
-Obj SumMacfloat( Obj fl, Obj fr )
+static Obj SumMacfloat( Obj fl, Obj fr )
 {
   return NEW_MACFLOAT(VAL_MACFLOAT(fl)+VAL_MACFLOAT(fr));
 }
@@ -249,7 +249,7 @@ Obj SumMacfloat( Obj fl, Obj fr )
 */
 
 
-Obj DiffMacfloat( Obj fl, Obj fr )
+static Obj DiffMacfloat( Obj fl, Obj fr )
 {
   return NEW_MACFLOAT(VAL_MACFLOAT(fl)-VAL_MACFLOAT(fr));
 }
@@ -261,7 +261,7 @@ Obj DiffMacfloat( Obj fl, Obj fr )
 */
 
 
-Obj QuoMacfloat( Obj fl, Obj fr )
+static Obj QuoMacfloat( Obj fl, Obj fr )
 {
   return NEW_MACFLOAT(VAL_MACFLOAT(fl)/VAL_MACFLOAT(fr));
 }
@@ -273,7 +273,7 @@ Obj QuoMacfloat( Obj fl, Obj fr )
 */
 
 
-Obj LQuoMacfloat( Obj fl, Obj fr )
+static Obj LQuoMacfloat( Obj fl, Obj fr )
 {
   return NEW_MACFLOAT(VAL_MACFLOAT(fr)/VAL_MACFLOAT(fl));
 }
@@ -285,7 +285,7 @@ Obj LQuoMacfloat( Obj fl, Obj fr )
 */
 
 
-Obj ModMacfloat( Obj fl, Obj fr )
+static Obj ModMacfloat( Obj fl, Obj fr )
 {
   return NEW_MACFLOAT(MATH(fmod)(VAL_MACFLOAT(fl),VAL_MACFLOAT(fr)));
 }
@@ -297,7 +297,7 @@ Obj ModMacfloat( Obj fl, Obj fr )
 **
 */
 
-Obj FuncMACFLOAT_INT( Obj self, Obj i )
+static Obj FuncMACFLOAT_INT( Obj self, Obj i )
 {
   if (!IS_INTOBJ(i))
     return Fail;
@@ -311,7 +311,7 @@ Obj FuncMACFLOAT_INT( Obj self, Obj i )
 **
 */
 
-Obj FuncMACFLOAT_STRING( Obj self, Obj s )
+static Obj FuncMACFLOAT_STRING( Obj self, Obj s )
 {
     RequireStringRep("MACFLOAT_STRING", s);
 
@@ -329,7 +329,7 @@ Obj FuncMACFLOAT_STRING( Obj self, Obj s )
 **
 */
 
-Obj SumIntMacfloat( Obj i, Obj f )
+static Obj SumIntMacfloat( Obj i, Obj f )
 {
   return NEW_MACFLOAT( (Double)(INT_INTOBJ(i)) + VAL_MACFLOAT(f));
 }
@@ -342,13 +342,13 @@ Obj SumIntMacfloat( Obj i, Obj f )
 */
 
 #define MAKEMATHPRIMITIVE(NAME,name)                    \
-  Obj Func##NAME##_MACFLOAT( Obj self, Obj f )          \
+  static Obj Func##NAME##_MACFLOAT( Obj self, Obj f )          \
   {                                                     \
     return NEW_MACFLOAT(MATH(name)(VAL_MACFLOAT(f)));   \
   }
 
 #define MAKEMATHPRIMITIVE2(NAME,name)                                   \
-  Obj Func##NAME##_MACFLOAT( Obj self, Obj f, Obj g)                    \
+  static Obj Func##NAME##_MACFLOAT( Obj self, Obj f, Obj g)                    \
   {                                                                     \
     return NEW_MACFLOAT(MATH(name)(VAL_MACFLOAT(f),VAL_MACFLOAT(g)));   \
   }
@@ -387,20 +387,20 @@ MAKEMATHPRIMITIVE(ABS,fabs)
 MAKEMATHPRIMITIVE2(ATAN2,atan2)
 MAKEMATHPRIMITIVE2(HYPOT,hypot)
 
-Obj FuncSIGN_MACFLOAT( Obj self, Obj f )
+static Obj FuncSIGN_MACFLOAT( Obj self, Obj f )
 {
   Double vf = VAL_MACFLOAT(f);
   
   return vf == 0. ? INTOBJ_INT(0) : signbit(vf) ? INTOBJ_INT(-1) : INTOBJ_INT(1);
 }
 
-Obj FuncSIGNBIT_MACFLOAT( Obj self, Obj f )
+static Obj FuncSIGNBIT_MACFLOAT( Obj self, Obj f )
 {
   return signbit(VAL_MACFLOAT(f)) ? True : False;
 }
 
 
-Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat)
+static Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat)
 {
     RequireMacFloat("INTFLOOR_MACFLOAT", macfloat);
 
@@ -437,7 +437,7 @@ Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat)
   return IntHexString(str);
 }
 
-Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj gapprec, Obj f)
+static Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj gapprec, Obj f)
 {
   Char buf[1024];
   Obj str;
@@ -449,12 +449,12 @@ Obj FuncSTRING_DIGITS_MACFLOAT( Obj self, Obj gapprec, Obj f)
   return str;
 }
 
-Obj FuncLDEXP_MACFLOAT( Obj self, Obj f, Obj i)
+static Obj FuncLDEXP_MACFLOAT( Obj self, Obj f, Obj i)
 {
   return NEW_MACFLOAT(ldexp(VAL_MACFLOAT(f),INT_INTOBJ(i)));
 }
 
-Obj FuncFREXP_MACFLOAT( Obj self, Obj f)
+static Obj FuncFREXP_MACFLOAT( Obj self, Obj f)
 {
   int i;
   Obj d = NEW_MACFLOAT(frexp (VAL_MACFLOAT(f), &i));

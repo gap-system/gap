@@ -53,9 +53,9 @@ static int             evlist, evlistvec;
 */
 
 /* See below: */
-Obj     Evaluation( Obj vec, Obj xk, Obj power );
+static Obj     Evaluation( Obj vec, Obj xk, Obj power );
 
-void       MultGen(
+static void       MultGen(
                     Obj     xk,
                     UInt    gen,
                     Obj     power,
@@ -119,7 +119,7 @@ void       MultGen(
 **  <xk> and at <power>.
 */
 
-Obj     Evaluation(
+static Obj     Evaluation(
                     Obj     vec,
                     Obj     xk,
                     Obj     power      )
@@ -155,7 +155,7 @@ Obj     Evaluation(
 **  The result is an ordered word and is stored in <xk>.
 */
 
-void        Multbound(
+static void        Multbound(
                   Obj    xk,
                   Obj    y,
                   Int    anf,
@@ -179,7 +179,7 @@ void        Multbound(
 **  The result is an ordered word.
 */
 
-Obj       Multiplybound(
+static Obj       Multiplybound(
                      Obj      x,
                      Obj      y,
                      Int      anf,
@@ -296,9 +296,9 @@ Obj       Multiplybound(
 */
 
 /* See below: */
-Obj Solution( Obj x, Obj y, Obj dtpols );
+static Obj Solution( Obj x, Obj y, Obj dtpols );
 
-Obj      Power(
+static Obj      Power(
                 Obj         x,
                 Obj         n,
                 Obj         dtpols     )
@@ -357,7 +357,7 @@ Obj      Power(
 **  the deep thought polynomials <dtpols>. The result is an ordered word.
 */ 
 
-Obj      Solution( Obj       x,
+static Obj      Solution( Obj       x,
                    Obj       y,
                    Obj       dtpols  )
 
@@ -487,7 +487,7 @@ Obj      Solution( Obj       x,
 **  the deep thought polynomials <dtpols>.
 */
 
-Obj       Commutator( Obj     x,
+static Obj       Commutator( Obj     x,
                       Obj     y,
                       Obj     dtpols  )
 {
@@ -509,7 +509,7 @@ Obj       Commutator( Obj     x,
 **  deep thought polynomials <dtpols>. The result is an ordered word.
 */
 
-Obj       Conjugate( Obj     x,
+static Obj       Conjugate( Obj     x,
                      Obj     y,
                      Obj     dtpols  )
 {
@@ -532,7 +532,7 @@ Obj       Conjugate( Obj     x,
 **  deep thought rewriting system <pcp>..
 */
 
-Obj       Multiplyboundred( Obj     x,
+static Obj       Multiplyboundred( Obj     x,
                             Obj     y,
                             UInt    anf,
                             UInt    end,
@@ -568,7 +568,7 @@ Obj       Multiplyboundred( Obj     x,
 **  system <pcp>.
 */
 
-Obj       Powerred( Obj       x,
+static Obj       Powerred( Obj       x,
                     Obj       n,
                     Obj       pcp  )
 {
@@ -602,7 +602,7 @@ Obj       Powerred( Obj       x,
 **  rewriting system <pcp>.
 */
 
-Obj       Solutionred( Obj       x,
+static Obj       Solutionred( Obj       x,
                        Obj       y,
                        Obj       pcp  )
 {
@@ -636,7 +636,7 @@ Obj       Solutionred( Obj       x,
 **  thought rewriting system <pcp>.
 */
 
-Obj       Commutatorred( Obj    x,
+static Obj       Commutatorred( Obj    x,
                          Obj    y,
                          Obj    pcp  )
 {
@@ -670,7 +670,7 @@ Obj       Commutatorred( Obj    x,
 **  thought rewriting system <pcp>.
 */
 
-Obj       Conjugatered( Obj    x,
+static Obj       Conjugatered( Obj    x,
                          Obj    y,
                          Obj    pcp  )
 {
@@ -701,7 +701,7 @@ Obj       Conjugatered( Obj    x,
 **  compress removes pairs (n,0) from the list of GAP integers <list>.
 */
 
-void     compress( Obj        list )
+static void     compress( Obj        list )
 {    
     UInt    i, skip, len;
     
@@ -736,7 +736,7 @@ void     compress( Obj        list )
 **  FuncDTCompress implements the internal function DTCompress.
 */
 
-Obj      FuncDTCompress( Obj         self, 
+static Obj      FuncDTCompress( Obj         self, 
                        Obj         list  )
 {
     compress(list);
@@ -755,7 +755,7 @@ Obj      FuncDTCompress( Obj         self,
 **  by <pcp>.
 */
 
-void     ReduceWord( Obj      x,
+static void     ReduceWord( Obj      x,
                       Obj      pcp )   
 {
     Obj       powers, exponent;
@@ -829,7 +829,7 @@ void     ReduceWord( Obj      x,
 **  with respect to the deep thought rewriting system <pcp>.
 */
 
-Obj       FuncDTMultiply( Obj      self,
+static Obj       FuncDTMultiply( Obj      self,
                           Obj      x,
                           Obj      y,
                           Obj      pcp    )
@@ -859,7 +859,7 @@ Obj       FuncDTMultiply( Obj      self,
 **  with respect to the deep thought rewriting system <pcp>.
 */
 
-Obj       FuncDTPower( Obj       self,
+static Obj       FuncDTPower( Obj       self,
                        Obj       x,
                        Obj       n,
                        Obj       pcp  )
@@ -885,7 +885,7 @@ Obj       FuncDTPower( Obj       self,
 **  is reduced with respect to the deep thought rewriting system <pcp>.
 */
 
-Obj      FuncDTSolution( Obj     self,
+static Obj      FuncDTSolution( Obj     self,
                          Obj     x,
                          Obj     y,
                          Obj     pcp )
@@ -913,7 +913,7 @@ Obj      FuncDTSolution( Obj     self,
 **  is reduced with respect to the deep thought rewriting system <pcp>.
 */
 
-Obj        FuncDTCommutator( Obj      self,
+static Obj        FuncDTCommutator( Obj      self,
                              Obj      x,
                              Obj      y,
                              Obj      pcp  )
@@ -939,7 +939,7 @@ Obj        FuncDTCommutator( Obj      self,
 **  reduced with respect to the deep thought rewriting system <pcp>.
 */
 
-Obj        FuncDTConjugate( Obj      self,
+static Obj        FuncDTConjugate( Obj      self,
                             Obj      x,
                             Obj      y,
                             Obj      pcp  )
@@ -967,7 +967,7 @@ Obj        FuncDTConjugate( Obj      self,
 **  reduced with respect to the deep thought rewriting system <pcp>.
 */
 
-Obj       FuncDTQuotient( Obj      self,
+static Obj       FuncDTQuotient( Obj      self,
                            Obj      x,
                            Obj      y,
                            Obj      pcp )

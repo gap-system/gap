@@ -97,7 +97,7 @@ Obj IdentityTrans;
 ** Forward declarations
 *******************************************************************************/
 
-Obj FuncIMAGE_SET_TRANS(Obj self, Obj f);
+static Obj FuncIMAGE_SET_TRANS(Obj self, Obj f);
 
 /*******************************************************************************
 ** Internal functions for transformations
@@ -176,7 +176,7 @@ static inline UInt4 * ResizeInitTmpTrans(UInt len)
 // Find the rank, flat kernel, and image set (unsorted) of a transformation of
 // degree at most 65536.
 
-UInt INIT_TRANS2(Obj f)
+static UInt INIT_TRANS2(Obj f)
 {
     UInt    deg, rank, i, j;
     const UInt2 * ptf;
@@ -223,7 +223,7 @@ UInt INIT_TRANS2(Obj f)
 // Find the rank, flat kernel, and image set (unsorted) of a transformation of
 // degree at least 65537.
 
-UInt INIT_TRANS4(Obj f)
+static UInt INIT_TRANS4(Obj f)
 {
     UInt    deg, rank, i, j;
     const UInt4 * ptf;
@@ -320,7 +320,7 @@ static void REMOVE_DUPS_PLIST_INTOBJ(Obj res)
 // Returns a transformation with list of images <list>, this does not check
 // that <list> is really a list or that its entries define a transformation.
 
-Obj FuncTransformationNC(Obj self, Obj list)
+static Obj FuncTransformationNC(Obj self, Obj list)
 {
     UInt    i, deg;
     UInt2 * ptf2;
@@ -349,7 +349,7 @@ Obj FuncTransformationNC(Obj self, Obj list)
 // Returns a transformation that maps <src> to <ran>, this does not check that
 // <src> is duplicate-free.
 
-Obj FuncTransformationListListNC(Obj self, Obj src, Obj ran)
+static Obj FuncTransformationListListNC(Obj self, Obj src, Obj ran)
 {
     Int     deg, i, s, r;
     Obj     f;
@@ -428,7 +428,7 @@ Obj FuncTransformationListListNC(Obj self, Obj src, Obj ran)
 // a transformation, i.e.  that the maximum value in <ker> equals the length
 // of <img>.
 
-Obj FuncTRANS_IMG_KER_NC(Obj self, Obj img, Obj ker)
+static Obj FuncTRANS_IMG_KER_NC(Obj self, Obj img, Obj ker)
 {
     Obj     f, copy_img, copy_ker;
     UInt2 * ptf2;
@@ -482,7 +482,7 @@ Obj FuncTRANS_IMG_KER_NC(Obj self, Obj img, Obj ker)
 // Note that this does not return the same transformation as TRANS_IMG_KER_NC
 // with the same arguments.
 
-Obj FuncIDEM_IMG_KER_NC(Obj self, Obj img, Obj ker)
+static Obj FuncIDEM_IMG_KER_NC(Obj self, Obj img, Obj ker)
 {
     Obj     f, copy_img, copy_ker;
     UInt2 * ptf2;
@@ -539,7 +539,7 @@ Obj FuncIDEM_IMG_KER_NC(Obj self, Obj img, Obj ker)
 // Returns an idempotent transformation e with ker(e) = ker(f), where <f> is a
 // transformation.
 
-Obj FuncLEFT_ONE_TRANS(Obj self, Obj f)
+static Obj FuncLEFT_ONE_TRANS(Obj self, Obj f)
 {
     Obj  ker, img;
     UInt rank, n, i;
@@ -573,7 +573,7 @@ Obj FuncLEFT_ONE_TRANS(Obj self, Obj f)
 // Returns an idempotent transformation e with im(e) = im(f), where <f> is a
 // transformation.
 
-Obj FuncRIGHT_ONE_TRANS(Obj self, Obj f)
+static Obj FuncRIGHT_ONE_TRANS(Obj self, Obj f)
 {
     Obj  ker, img;
     UInt deg, len, i, j, n;
@@ -612,7 +612,7 @@ Obj FuncRIGHT_ONE_TRANS(Obj self, Obj f)
 // Returns the degree of the transformation <f>, i.e. the least value <n> such
 // that <f> fixes [n + 1, n + 2, .. ].
 
-Obj FuncDegreeOfTransformation(Obj self, Obj f)
+static Obj FuncDegreeOfTransformation(Obj self, Obj f)
 {
     UInt    n, i, deg;
     const UInt2 * ptf2;
@@ -669,7 +669,7 @@ Obj FuncDegreeOfTransformation(Obj self, Obj f)
 // Returns the rank of transformation, i.e. number of distinct values in
 // [(1)f .. (n)f] where n = DegreeOfTransformation(f).
 
-Obj FuncRANK_TRANS(Obj self, Obj f)
+static Obj FuncRANK_TRANS(Obj self, Obj f)
 {
     if (TNUM_OBJ(f) == T_TRANS2) {
         return SumInt(INTOBJ_INT(RANK_TRANS2(f) - DEG_TRANS2(f)),
@@ -686,7 +686,7 @@ Obj FuncRANK_TRANS(Obj self, Obj f)
 // Returns the rank of the transformation <f> on [1 .. n], i.e. the number of
 // distinct values in [(1)f .. (n)f].
 
-Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n)
+static Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n)
 {
     UInt    rank, i, m;
     const UInt2 * ptf2;
@@ -739,7 +739,7 @@ Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n)
 // distinct values in [(list[1])f .. (list[n])f], where <list> consists of
 // positive ints.
 
-Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
+static Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
 {
     UInt    rank, i, j, len, def;
     const UInt2 * ptf2;
@@ -820,7 +820,7 @@ Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
 // Returns the flat kernel of transformation on
 // [1 .. DegreeOfTransformation(f)].
 
-Obj FuncFLAT_KERNEL_TRANS(Obj self, Obj f)
+static Obj FuncFLAT_KERNEL_TRANS(Obj self, Obj f)
 {
 
     if (TNUM_OBJ(f) == T_TRANS2) {
@@ -842,7 +842,7 @@ Obj FuncFLAT_KERNEL_TRANS(Obj self, Obj f)
 
 // Returns the flat kernel of the transformation <f> on [1 .. n].
 
-Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
+static Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
 {
     Obj newObj, *ptnew;
     const Obj *ptker;
@@ -934,7 +934,7 @@ Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
 
 // Returns the kernel of a transformation <f> as a partition of [1 .. n].
 
-Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
+static Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
 {
     Obj     ker;
     UInt    i, j, deg, nr, m, rank, min;
@@ -989,7 +989,7 @@ Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
 
 // Returns the set (pt)f ^ -1.
 
-Obj FuncPREIMAGES_TRANS_INT(Obj self, Obj f, Obj pt)
+static Obj FuncPREIMAGES_TRANS_INT(Obj self, Obj f, Obj pt)
 {
     UInt deg, nr, i, j;
     Obj  out;
@@ -1039,7 +1039,7 @@ Obj FuncPREIMAGES_TRANS_INT(Obj self, Obj f, Obj pt)
 // Returns the duplicate free list of images of the transformation f on
 // [1 .. n] where n = DEG_TRANS(f). Note that this might not be sorted.
 
-Obj FuncUNSORTED_IMAGE_SET_TRANS(Obj self, Obj f)
+static Obj FuncUNSORTED_IMAGE_SET_TRANS(Obj self, Obj f)
 {
 
     if (TNUM_OBJ(f) == T_TRANS2) {
@@ -1061,7 +1061,7 @@ Obj FuncUNSORTED_IMAGE_SET_TRANS(Obj self, Obj f)
 // Returns the image set of the transformation f on [1 .. n] where n =
 // DegreeOfTransformation(f).
 
-Obj FuncIMAGE_SET_TRANS(Obj self, Obj f)
+static Obj FuncIMAGE_SET_TRANS(Obj self, Obj f)
 {
 
     Obj out = FuncUNSORTED_IMAGE_SET_TRANS(self, f);
@@ -1076,7 +1076,7 @@ Obj FuncIMAGE_SET_TRANS(Obj self, Obj f)
 
 // Returns the image set of the transformation f on [1 .. n].
 
-Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
+static Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
 {
     Obj     im, newObj;
     UInt    deg, m, len, i, j, rank;
@@ -1153,7 +1153,7 @@ Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
 
 // Returns the image list [(1)f .. (n)f] of the transformation f.
 
-Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n)
+static Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n)
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -1198,7 +1198,7 @@ Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n)
 
 // Test if a transformation is the identity.
 
-Obj FuncIS_ID_TRANS(Obj self, Obj f)
+static Obj FuncIS_ID_TRANS(Obj self, Obj f)
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -1231,7 +1231,7 @@ Obj FuncIS_ID_TRANS(Obj self, Obj f)
 // Returns true if the transformation <f> is an idempotent and false if it is
 // not.
 
-Obj FuncIS_IDEM_TRANS(Obj self, Obj f)
+static Obj FuncIS_IDEM_TRANS(Obj self, Obj f)
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -1268,7 +1268,7 @@ Obj FuncIS_IDEM_TRANS(Obj self, Obj f)
 // Returns the least m and r such that f ^ (m + r) = f ^ m, where f is a
 // transformation.
 
-Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
+static Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -1404,7 +1404,7 @@ Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
 
 // Returns the least integer m such that f ^ m is an idempotent.
 
-Obj FuncSMALLEST_IDEM_POW_TRANS(Obj self, Obj f)
+static Obj FuncSMALLEST_IDEM_POW_TRANS(Obj self, Obj f)
 {
     Obj x, ind, per, pow;
 
@@ -1425,7 +1425,7 @@ Obj FuncSMALLEST_IDEM_POW_TRANS(Obj self, Obj f)
 // Returns True if the transformation or list <t> is injective on the list
 // <l>.
 
-Obj FuncIsInjectiveListTrans(Obj self, Obj l, Obj t)
+static Obj FuncIsInjectiveListTrans(Obj self, Obj l, Obj t)
 {
     UInt    n, i, j;
     const UInt2 * ptt2;
@@ -1524,7 +1524,7 @@ Obj FuncIsInjectiveListTrans(Obj self, Obj l, Obj t)
 // Returns a transformation g such that transformation f * g * f = f and
 // g * f * g = g, where f is a transformation.
 
-Obj FuncInverseOfTransformation(Obj self, Obj f)
+static Obj FuncInverseOfTransformation(Obj self, Obj f)
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -1582,7 +1582,7 @@ Obj FuncInverseOfTransformation(Obj self, Obj f)
 // special case should be removed, and [0] should be replaced by [1 .. n] in
 // the Semigroup package.
 
-Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
+static Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -1684,7 +1684,7 @@ Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
 // transformation is not necessarily a permutation (mathematically), when n is
 // less than the largest moved point of p.
 
-Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg)
+static Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg)
 {
     const UInt2 *ptp2;
     UInt2 *ptf2;
@@ -1770,7 +1770,7 @@ Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg)
 // Returns a transformation <f> such that (i)f = (i)p for all i <= n where <p>
 // is a permutation <p> and <n> is the largest moved point of <p>.
 
-Obj FuncAS_TRANS_PERM(Obj self, Obj p)
+static Obj FuncAS_TRANS_PERM(Obj self, Obj p)
 {
     const UInt2 * ptPerm2;
     const UInt4 * ptPerm4;
@@ -1807,7 +1807,7 @@ Obj FuncAS_TRANS_PERM(Obj self, Obj p)
 // Returns a permutation mathematically equal to the transformation <f> if
 // possible, and returns Fail if it is not possible
 
-Obj FuncAS_PERM_TRANS(Obj self, Obj f)
+static Obj FuncAS_PERM_TRANS(Obj self, Obj f)
 {
     const UInt2 *ptf2;
     const UInt4 *ptf4;
@@ -1853,7 +1853,7 @@ Obj FuncAS_PERM_TRANS(Obj self, Obj f)
 // Returns the permutation of the image of the transformation <f> induced by
 // <f> if possible, and returns Fail if it is not possible.
 
-Obj FuncPermutationOfImage(Obj self, Obj f)
+static Obj FuncPermutationOfImage(Obj self, Obj f)
 {
     const UInt2 *ptf2;
     const UInt4 *ptf4;
@@ -1925,7 +1925,7 @@ Obj FuncPermutationOfImage(Obj self, Obj f)
 // Returns the permutation of the im(f) induced by f ^ -1 * g under the
 // (unchecked) assumption that im(f) = im(g) and ker(f) = ker(g).
 
-Obj FuncPermLeftQuoTransformationNC(Obj self, Obj f, Obj g)
+static Obj FuncPermLeftQuoTransformationNC(Obj self, Obj f, Obj g)
 {
     const UInt2 *ptf2, *ptg2;
     const UInt4 *ptf4, *ptg4;
@@ -2034,7 +2034,7 @@ Obj FuncPermLeftQuoTransformationNC(Obj self, Obj f, Obj g)
 // Returns a transformation g such that (i)g = (i)f for all i in list, and
 // where (i)g = i for every other value of i.
 
-Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
+static Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
 {
     UInt   deg, i, k, len;
     const UInt2 *ptf2;
@@ -2120,7 +2120,7 @@ Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
 // In the first form, this is similar to TRIM_TRANS except that a new
 // transformation is returned.
 
-Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
+static Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
 {
     const UInt2 *ptf2;
     const UInt4 *ptf4;
@@ -2191,7 +2191,7 @@ Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
 // assumed that f is actually a transformation of [1 .. m], i.e. that i ^ f <=
 // m for all i in [1 .. m].
 
-Obj FuncTRIM_TRANS(Obj self, Obj f, Obj m)
+static Obj FuncTRIM_TRANS(Obj self, Obj f, Obj m)
 {
     UInt    deg, i;
     UInt4 * ptf;
@@ -2266,7 +2266,7 @@ Int HashFuncForTrans(Obj f)
     return HASHKEY_BAG_NC(f, (UInt4)255, 3 * sizeof(Obj), (int)2 * deg);
 }
 
-Obj FuncHASH_FUNC_FOR_TRANS(Obj self, Obj f, Obj data)
+static Obj FuncHASH_FUNC_FOR_TRANS(Obj self, Obj f, Obj data)
 {
     return INTOBJ_INT((HashFuncForTrans(f) % INT_INTOBJ(data)) + 1);
 }
@@ -2277,7 +2277,7 @@ Obj FuncHASH_FUNC_FOR_TRANS(Obj self, Obj f, Obj data)
 
 // Returns the largest value i such that (i)f <> i or 0 if no such i exists.
 
-Obj FuncLARGEST_MOVED_PT_TRANS(Obj self, Obj f)
+static Obj FuncLARGEST_MOVED_PT_TRANS(Obj self, Obj f)
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -2307,7 +2307,7 @@ Obj FuncLARGEST_MOVED_PT_TRANS(Obj self, Obj f)
 
 // Returns the largest value in [(1)f .. (n)f] where n = LargestMovedPoint(f).
 
-Obj FuncLARGEST_IMAGE_PT(Obj self, Obj f)
+static Obj FuncLARGEST_IMAGE_PT(Obj self, Obj f)
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -2358,7 +2358,7 @@ Obj FuncLARGEST_IMAGE_PT(Obj self, Obj f)
 // not. Note that this differs from the GAP level function which returns
 // infinity if (i)f = i for all i.
 
-Obj FuncSMALLEST_MOVED_PT_TRANS(Obj self, Obj f)
+static Obj FuncSMALLEST_MOVED_PT_TRANS(Obj self, Obj f)
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -2395,7 +2395,7 @@ Obj FuncSMALLEST_MOVED_PT_TRANS(Obj self, Obj f)
 // this differs from the GAP level function which returns infinity if (i)f = i
 // for all i.
 
-Obj FuncSMALLEST_IMAGE_PT(Obj self, Obj f)
+static Obj FuncSMALLEST_IMAGE_PT(Obj self, Obj f)
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -2433,7 +2433,7 @@ Obj FuncSMALLEST_IMAGE_PT(Obj self, Obj f)
 // Returns the number of values <i> in [1 .. n] such that (i)f <> i, where n =
 // DegreeOfTransformation(f).
 
-Obj FuncNR_MOVED_PTS_TRANS(Obj self, Obj f)
+static Obj FuncNR_MOVED_PTS_TRANS(Obj self, Obj f)
 {
     UInt    nr, i, deg;
     const UInt2 * ptf2;
@@ -2467,7 +2467,7 @@ Obj FuncNR_MOVED_PTS_TRANS(Obj self, Obj f)
 // Returns the set of values <i> in [1 .. n] such that (i)f <> i, where n =
 // DegreeOfTransformation(f).
 
-Obj FuncMOVED_PTS_TRANS(Obj self, Obj f)
+static Obj FuncMOVED_PTS_TRANS(Obj self, Obj f)
 {
     UInt    len, deg, i;
     Obj     out;
@@ -2517,7 +2517,7 @@ Obj FuncMOVED_PTS_TRANS(Obj self, Obj f)
 // ^ k) = j. The least number of representatives is returned and these
 // representatives are partitioned according to the component they belong to.
 
-Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
+static Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
 {
     UInt    deg, i, nr, pt, index;
     Obj     img, out, comp;
@@ -2654,7 +2654,7 @@ Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
 // Returns the number of connected components of the transformation <f>,
 // thought of as a functional digraph with DegreeOfTransformation(f) vertices.
 
-Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f)
+static Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f)
 {
     UInt    nr, m, i, j, deg;
     const UInt2 * ptf2;
@@ -2702,7 +2702,7 @@ Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f)
 // Returns the connected components of the transformation <f>, thought of as a
 // functional digraph with DegreeOfTransformation(f) vertices.
 
-Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
+static Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -2817,7 +2817,7 @@ Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
 // Returns the list of distinct values [pt, (pt)f, (pt)f ^ 2, ..] where <f> is
 // a transformation and <pt> is a positive integer.
 
-Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
+static Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
 {
     UInt    deg, cpt, len;
     Obj     out;
@@ -2871,7 +2871,7 @@ Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
 // Returns the cycle contained in the component of the transformation <f>
 // containing the positive integer <pt>.
 
-Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
+static Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
 {
     UInt    deg, cpt, len, i;
     Obj     out;
@@ -2931,7 +2931,7 @@ Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
 // Returns the cycles of the transformation <f>, thought of as a
 // functional digraph with DegreeOfTransformation(f) vertices.
 
-Obj FuncCYCLES_TRANS(Obj self, Obj f)
+static Obj FuncCYCLES_TRANS(Obj self, Obj f)
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -3022,7 +3022,7 @@ Obj FuncCYCLES_TRANS(Obj self, Obj f)
 // Returns the cycles of the transformation <f> contained in the components of
 // any of the elements in <list>.
 
-Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
+static Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -3153,7 +3153,7 @@ Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
 // it is assumed (and not checked) that the transformation f is injective on
 // list.
 
-Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
+static Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
 {
     const UInt2 *ptf2;
     const UInt4 *ptf4;
@@ -3234,7 +3234,7 @@ Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
 // lists
 // of f and g in the above.
 
-Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g)
+static Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g)
 {
     Obj    perm;
     const UInt2 *ptf2, *ptg2;
@@ -3384,7 +3384,7 @@ Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g)
 // kernel of transformation. This assumes (but doesn't check) that <p> is a
 // permutation of [1 .. Length(<ker>)] regardless of its degree.
 
-Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
+static Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
 {
     UInt    len, rank, i, dep;
     Obj     out;
@@ -3494,7 +3494,7 @@ Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
 // transformation g such that g<f> ^ ker(x) = ker(x) = ker(gfx) and the action
 // of g<f> on ker(x) is the identity.
 
-Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
+static Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
 {
     Obj    g;
     const UInt2 *ptf2;
@@ -3600,7 +3600,7 @@ Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
 // set of <f> on [1 .. n] is returned instead. If the argument <set> is not
 // [0], then the third argument is ignored.
 
-Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
+static Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -3667,7 +3667,7 @@ Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
 
 // Returns the identity transformation.
 
-Obj OneTrans(Obj f)
+static Obj OneTrans(Obj f)
 {
     return IdentityTrans;
 }
@@ -3676,7 +3676,7 @@ Obj OneTrans(Obj f)
 ** Equality for transformations
 *******************************************************************************/
 
-Int EqTrans22(Obj opL, Obj opR)
+static Int EqTrans22(Obj opL, Obj opR)
 {
     UInt degL = DEG_TRANS2(opL);
     UInt degR = DEG_TRANS2(opR);
@@ -3731,7 +3731,7 @@ Int EqTrans22(Obj opL, Obj opR)
     return 1L;
 }
 
-Int EqTrans44(Obj opL, Obj opR)
+static Int EqTrans44(Obj opL, Obj opR)
 {
     UInt degL = DEG_TRANS4(opL);
     UInt degR = DEG_TRANS4(opR);
@@ -3786,7 +3786,7 @@ Int EqTrans44(Obj opL, Obj opR)
     return 1L;
 }
 
-Int EqTrans24(Obj f, Obj g)
+static Int EqTrans24(Obj f, Obj g)
 {
     UInt    i, def, deg;
     const UInt2 * ptf;
@@ -3829,7 +3829,7 @@ Int EqTrans24(Obj f, Obj g)
     return 1L;
 }
 
-Int EqTrans42(Obj f, Obj g)
+static Int EqTrans42(Obj f, Obj g)
 {
     return EqTrans24(g, f);
 }
@@ -3838,7 +3838,7 @@ Int EqTrans42(Obj f, Obj g)
 ** Less than for transformations
 *******************************************************************************/
 
-Int LtTrans22(Obj f, Obj g)
+static Int LtTrans22(Obj f, Obj g)
 {
     UInt   i, def, deg;
     const UInt2 *ptf, *ptg;
@@ -3896,7 +3896,7 @@ Int LtTrans22(Obj f, Obj g)
     return 0L;
 }
 
-Int LtTrans24(Obj f, Obj g)
+static Int LtTrans24(Obj f, Obj g)
 {
     UInt    i, def, deg;
     const UInt2 * ptf;
@@ -3958,7 +3958,7 @@ Int LtTrans24(Obj f, Obj g)
     return 0L;
 }
 
-Int LtTrans42(Obj f, Obj g)
+static Int LtTrans42(Obj f, Obj g)
 {
     UInt    i, def, deg;
     const UInt4 * ptf;
@@ -4020,7 +4020,7 @@ Int LtTrans42(Obj f, Obj g)
     return 0L;
 }
 
-Int LtTrans44(Obj f, Obj g)
+static Int LtTrans44(Obj f, Obj g)
 {
     UInt   i, def, deg;
     const UInt4 *ptf, *ptg;
@@ -4081,7 +4081,7 @@ Int LtTrans44(Obj f, Obj g)
 ** Products for transformations
 *******************************************************************************/
 
-Obj ProdTrans22(Obj f, Obj g)
+static Obj ProdTrans22(Obj f, Obj g)
 {
     const UInt2 *ptf, *ptg;
     UInt2 *ptfg;
@@ -4112,7 +4112,7 @@ Obj ProdTrans22(Obj f, Obj g)
     return fg;
 }
 
-Obj ProdTrans24(Obj f, Obj g)
+static Obj ProdTrans24(Obj f, Obj g)
 {
     const UInt2 * ptf;
     const UInt4 * ptg;
@@ -4150,7 +4150,7 @@ Obj ProdTrans24(Obj f, Obj g)
     return fg;
 }
 
-Obj ProdTrans42(Obj f, Obj g)
+static Obj ProdTrans42(Obj f, Obj g)
 {
     const UInt4 * ptf;
     UInt4 * ptfg;
@@ -4188,7 +4188,7 @@ Obj ProdTrans42(Obj f, Obj g)
     return fg;
 }
 
-Obj ProdTrans44(Obj f, Obj g)
+static Obj ProdTrans44(Obj f, Obj g)
 {
     const UInt4 *ptf, *ptg;
     UInt4 *ptfg;
@@ -4223,7 +4223,7 @@ Obj ProdTrans44(Obj f, Obj g)
 ** Products for a transformation and permutation
 *******************************************************************************/
 
-Obj ProdTrans2Perm2(Obj f, Obj p)
+static Obj ProdTrans2Perm2(Obj f, Obj p)
 {
     const UInt2 *ptf, *ptp;
     UInt2 *ptfp;
@@ -4254,7 +4254,7 @@ Obj ProdTrans2Perm2(Obj f, Obj p)
     return fp;
 }
 
-Obj ProdTrans2Perm4(Obj f, Obj p)
+static Obj ProdTrans2Perm4(Obj f, Obj p)
 {
     const UInt2 * ptf;
     const UInt4 * ptp;
@@ -4289,7 +4289,7 @@ Obj ProdTrans2Perm4(Obj f, Obj p)
     return fp;
 }
 
-Obj ProdTrans4Perm2(Obj f, Obj p)
+static Obj ProdTrans4Perm2(Obj f, Obj p)
 {
     const UInt4 * ptf;
     UInt4 * ptfp;
@@ -4324,7 +4324,7 @@ Obj ProdTrans4Perm2(Obj f, Obj p)
     return fp;
 }
 
-Obj ProdTrans4Perm4(Obj f, Obj p)
+static Obj ProdTrans4Perm4(Obj f, Obj p)
 {
     const UInt4 *ptf, *ptp;
     UInt4 *ptfp;
@@ -4359,7 +4359,7 @@ Obj ProdTrans4Perm4(Obj f, Obj p)
 ** Products for a permutation and transformation
 *******************************************************************************/
 
-Obj ProdPerm2Trans2(Obj p, Obj f)
+static Obj ProdPerm2Trans2(Obj p, Obj f)
 {
     const UInt2 *ptf, *ptp;
     UInt2 *ptpf;
@@ -4390,7 +4390,7 @@ Obj ProdPerm2Trans2(Obj p, Obj f)
     return pf;
 }
 
-Obj ProdPerm2Trans4(Obj p, Obj f)
+static Obj ProdPerm2Trans4(Obj p, Obj f)
 {
     const UInt4 * ptf;
     UInt4 * ptpf;
@@ -4425,7 +4425,7 @@ Obj ProdPerm2Trans4(Obj p, Obj f)
     return pf;
 }
 
-Obj ProdPerm4Trans2(Obj p, Obj f)
+static Obj ProdPerm4Trans2(Obj p, Obj f)
 {
     const UInt2 * ptf;
     const UInt4 * ptp;
@@ -4460,7 +4460,7 @@ Obj ProdPerm4Trans2(Obj p, Obj f)
     return pf;
 }
 
-Obj ProdPerm4Trans4(Obj p, Obj f)
+static Obj ProdPerm4Trans4(Obj p, Obj f)
 {
     const UInt4 *ptf, *ptp;
     UInt4 *ptpf;
@@ -4495,7 +4495,7 @@ Obj ProdPerm4Trans4(Obj p, Obj f)
 ** Conjugate a transformation f by a permutation p: p ^ -1 * f * p
 *******************************************************************************/
 
-Obj PowTrans2Perm2(Obj f, Obj p)
+static Obj PowTrans2Perm2(Obj f, Obj p)
 {
     const UInt2 *ptf, *ptp;
     UInt2 *ptcnj;
@@ -4524,7 +4524,7 @@ Obj PowTrans2Perm2(Obj f, Obj p)
     return cnj;
 }
 
-Obj PowTrans2Perm4(Obj f, Obj p)
+static Obj PowTrans2Perm4(Obj f, Obj p)
 {
     const UInt2 * ptf;
     const UInt4 * ptp;
@@ -4557,7 +4557,7 @@ Obj PowTrans2Perm4(Obj f, Obj p)
     return cnj;
 }
 
-Obj PowTrans4Perm2(Obj f, Obj p)
+static Obj PowTrans4Perm2(Obj f, Obj p)
 {
     const UInt2 * ptp;
     const UInt4 * ptf;
@@ -4590,7 +4590,7 @@ Obj PowTrans4Perm2(Obj f, Obj p)
     return cnj;
 }
 
-Obj PowTrans4Perm4(Obj f, Obj p)
+static Obj PowTrans4Perm4(Obj f, Obj p)
 {
     const UInt4 *ptf, *ptp;
     UInt4 *ptcnj;
@@ -4623,7 +4623,7 @@ Obj PowTrans4Perm4(Obj f, Obj p)
 ** Quotient a transformation f by a permutation p: f * p ^ -1
 *******************************************************************************/
 
-Obj QuoTrans2Perm2(Obj f, Obj p)
+static Obj QuoTrans2Perm2(Obj f, Obj p)
 {
     UInt    def, dep, i;
     const UInt2 * ptf, *ptp;
@@ -4662,7 +4662,7 @@ Obj QuoTrans2Perm2(Obj f, Obj p)
     return quo;
 }
 
-Obj QuoTrans2Perm4(Obj f, Obj p)
+static Obj QuoTrans2Perm4(Obj f, Obj p)
 {
     UInt    def, dep, i;
     const UInt2 * ptf;
@@ -4704,7 +4704,7 @@ Obj QuoTrans2Perm4(Obj f, Obj p)
     return quo;
 }
 
-Obj QuoTrans4Perm2(Obj f, Obj p)
+static Obj QuoTrans4Perm2(Obj f, Obj p)
 {
     UInt    def, dep, i;
     const UInt4 * ptf;
@@ -4747,7 +4747,7 @@ Obj QuoTrans4Perm2(Obj f, Obj p)
     return quo;
 }
 
-Obj QuoTrans4Perm4(Obj f, Obj p)
+static Obj QuoTrans4Perm4(Obj f, Obj p)
 {
     UInt   def, dep, i;
     const UInt4 *ptf, *ptp;
@@ -4790,7 +4790,7 @@ Obj QuoTrans4Perm4(Obj f, Obj p)
 ** Left quotient a transformation f by a permutation p: p ^ -1 * f
 *******************************************************************************/
 
-Obj LQuoPerm2Trans2(Obj opL, Obj opR)
+static Obj LQuoPerm2Trans2(Obj opL, Obj opR)
 {
     UInt   degL, degR, degM, p;
     Obj    mod;
@@ -4827,7 +4827,7 @@ Obj LQuoPerm2Trans2(Obj opL, Obj opR)
     return mod;
 }
 
-Obj LQuoPerm2Trans4(Obj opL, Obj opR)
+static Obj LQuoPerm2Trans4(Obj opL, Obj opR)
 {
     UInt    degL, degR, degM, p;
     Obj     mod;
@@ -4867,7 +4867,7 @@ Obj LQuoPerm2Trans4(Obj opL, Obj opR)
     return mod;
 }
 
-Obj LQuoPerm4Trans2(Obj opL, Obj opR)
+static Obj LQuoPerm4Trans2(Obj opL, Obj opR)
 {
     UInt    degL, degR, degM, p;
     Obj     mod;
@@ -4907,7 +4907,7 @@ Obj LQuoPerm4Trans2(Obj opL, Obj opR)
     return mod;
 }
 
-Obj LQuoPerm4Trans4(Obj opL, Obj opR)
+static Obj LQuoPerm4Trans4(Obj opL, Obj opR)
 {
     UInt   degL, degR, degM, p;
     Obj    mod;
@@ -4948,7 +4948,7 @@ Obj LQuoPerm4Trans4(Obj opL, Obj opR)
 ** Apply a transformation to a point
 *******************************************************************************/
 
-Obj PowIntTrans2(Obj point, Obj f)
+static Obj PowIntTrans2(Obj point, Obj f)
 {
     Int img;
 
@@ -4965,7 +4965,7 @@ Obj PowIntTrans2(Obj point, Obj f)
     return INTOBJ_INT(img);
 }
 
-Obj PowIntTrans4(Obj point, Obj f)
+static Obj PowIntTrans4(Obj point, Obj f)
 {
     Int img;
 
@@ -5169,7 +5169,7 @@ Obj OnTuplesTrans(Obj tup, Obj f)
 *******************************************************************************/
 
 // Save and load
-void SaveTrans2(Obj f)
+static void SaveTrans2(Obj f)
 {
     const UInt2 * ptr;
     UInt    len, i;
@@ -5180,7 +5180,7 @@ void SaveTrans2(Obj f)
     }
 }
 
-void LoadTrans2(Obj f)
+static void LoadTrans2(Obj f)
 {
     UInt2 * ptr;
     UInt    len, i;
@@ -5191,7 +5191,7 @@ void LoadTrans2(Obj f)
     }
 }
 
-void SaveTrans4(Obj f)
+static void SaveTrans4(Obj f)
 {
     const UInt4 * ptr;
     UInt    len, i;
@@ -5202,7 +5202,7 @@ void SaveTrans4(Obj f)
     }
 }
 
-void LoadTrans4(Obj f)
+static void LoadTrans4(Obj f)
 {
     UInt4 * ptr;
     UInt    len, i;
@@ -5213,23 +5213,23 @@ void LoadTrans4(Obj f)
     }
 }
 
-Obj TYPE_TRANS2;
+static Obj TYPE_TRANS2;
 
-Obj TypeTrans2(Obj f)
+static Obj TypeTrans2(Obj f)
 {
     return TYPE_TRANS2;
 }
 
-Obj TYPE_TRANS4;
+static Obj TYPE_TRANS4;
 
-Obj TypeTrans4(Obj f)
+static Obj TypeTrans4(Obj f)
 {
     return TYPE_TRANS4;
 }
 
-Obj IsTransFilt;
+static Obj IsTransFilt;
 
-Obj IsTransHandler(Obj self, Obj val)
+static Obj IsTransHandler(Obj self, Obj val)
 {
     if (TNUM_OBJ(val) == T_TRANS2 || TNUM_OBJ(val) == T_TRANS4) {
         return True;

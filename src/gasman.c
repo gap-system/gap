@@ -282,7 +282,7 @@ Bag *                   MptrEndBags;
 Bag *                   OldBags;
 Bag *                   YoungBags;
 Bag *                   AllocBags;
-UInt                    AllocSizeBags;
+static UInt             AllocSizeBags;
 Bag *                   EndBags;
 
 /* These macros, are (a) for more readable code, but more importantly
@@ -509,7 +509,7 @@ static void CANARY_FORBID_ACCESS_ALL_BAGS(void)
 #define CANARY_ENABLE_VALGRIND() VALGRIND_ENABLE_ERROR_REPORTING
 
 // CHANGED_BAG must be here to disable/enable valgrind
-void CHANGED_BAG(Bag bag)
+static void CHANGED_BAG(Bag bag)
 {
     CANARY_DISABLE_VALGRIND();
     if (CONST_PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
@@ -747,7 +747,7 @@ TNumGlobalBags GlobalBags;
 */
 static UInt GlobalSortingStatus;
 
-void ClearGlobalBags ( void )
+static void ClearGlobalBags ( void )
 {
   UInt i;
   for (i = 0; i < GlobalBags.nr; i++)
@@ -1046,7 +1046,7 @@ void            InitCollectFuncBags (
 
 Int EnableMemCheck = 0;
 
-Int enableMemCheck(Char ** argv, void * dummy)
+static Int enableMemCheck(Char ** argv, void * dummy)
 {
     SyFputs( "# Warning: --enableMemCheck causes SEVERE slowdowns. Starting GAP may take several days!\n", 3 );
     EnableMemCheck = 1;
@@ -1796,7 +1796,7 @@ UInt ResizeBag (
 syJmp_buf RegsBags;
 
 #if defined(SPARC)
-void SparcStackFuncBags( void )
+static void SparcStackFuncBags( void )
 {
   asm (" ta 0x3 ");
   asm (" mov %sp,%o0" );
@@ -1804,7 +1804,7 @@ void SparcStackFuncBags( void )
 #endif
 
 
-void GenStackFuncBags ( void )
+static void GenStackFuncBags ( void )
 {
     Bag *               top;            /* top of stack                    */
     Bag *               p;              /* loop variable                   */
@@ -1839,7 +1839,7 @@ void GenStackFuncBags ( void )
 #endif
 }
 
-UInt FullBags;
+static UInt FullBags;
 
 /*  These are used to overwrite masterpointers which may still be
 linked from weak pointer objects but whose bag bodies have been

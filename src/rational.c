@@ -80,10 +80,10 @@
 **
 **  'TypeRat' is the function in 'TypeObjFuncs' for rationals.
 */
-Obj             TYPE_RAT_POS;
-Obj             TYPE_RAT_NEG;
+static Obj             TYPE_RAT_POS;
+static Obj             TYPE_RAT_NEG;
 
-Obj             TypeRat (
+static Obj             TypeRat (
     Obj                 rat )
 {
     Obj                 num;
@@ -101,7 +101,7 @@ Obj             TypeRat (
 **
 **      <numerator> / <denominator>
 */
-void            PrintRat (
+static void            PrintRat (
     Obj                 rat )
 {
     Pr( "%>", 0L, 0L );
@@ -119,7 +119,7 @@ void            PrintRat (
 **  'EqRat' returns 'true' if the two rationals <ratL> and <ratR>  are  equal
 **  and 'false' otherwise.
 */
-Int             EqRat (
+static Int             EqRat (
     Obj                 opL,
     Obj                 opR )
 {
@@ -157,7 +157,7 @@ Int             EqRat (
 **  'LtRat' returns 'true'  if  the  rational  <ratL>  is  smaller  than  the
 **  rational <ratR> and 'false' otherwise.  Either operand may be an integer.
 */
-Int             LtRat (
+static Int             LtRat (
     Obj                 opL,
     Obj                 opR )
 {
@@ -196,7 +196,7 @@ Int             LtRat (
 **  'SumRat'  returns the   sum of two  rationals  <opL>  and <opR>.   Either
 **  operand may also be an integer.  The sum is reduced.
 */
-Obj             SumRat (
+static Obj             SumRat (
     Obj                 opL,
     Obj                 opR )
 {
@@ -265,7 +265,7 @@ Obj             SumRat (
 **
 *F  ZeroRat(<op>) . . . . . . . . . . . . . . . . . . . .  zero of a rational
 */
-Obj             ZeroRat (
+static Obj             ZeroRat (
     Obj                 op )
 {
     return INTOBJ_INT( 0L );
@@ -276,7 +276,7 @@ Obj             ZeroRat (
 **
 *F  AInvRat(<op>) . . . . . . . . . . . . . .  additive inverse of a rational
 */
-Obj             AInvRat (
+static Obj             AInvRat (
     Obj                 op )
 {
     Obj                 res;
@@ -296,7 +296,7 @@ Obj             AInvRat (
 **
 *F  AbsRat(<op>) . . . . . . . . . . . . . . . . absolute value of a rational
 */
-Obj AbsRat( Obj op )
+static Obj AbsRat( Obj op )
 {
     Obj res;
     Obj tmp;
@@ -314,7 +314,7 @@ Obj AbsRat( Obj op )
 
 }
 
-Obj FuncABS_RAT( Obj self, Obj op )
+static Obj FuncABS_RAT( Obj self, Obj op )
 {
     RequireRational("AbsRat", op);
     return (TNUM_OBJ(op) == T_RAT) ? AbsRat(op) : AbsInt(op);
@@ -324,13 +324,13 @@ Obj FuncABS_RAT( Obj self, Obj op )
 **
 *F  SignRat(<op>) . . . . . . . . . . . . . . . . . . . .  sign of a rational
 */
-Obj SignRat( Obj op )
+static Obj SignRat( Obj op )
 {
     CHECK_RAT(op);
     return SignInt( NUM_RAT(op) );
 }
 
-Obj FuncSIGN_RAT( Obj self, Obj op )
+static Obj FuncSIGN_RAT( Obj self, Obj op )
 {
     RequireRational("SignRat", op);
     return (TNUM_OBJ(op) == T_RAT) ? SignRat(op) : SignInt(op);
@@ -344,7 +344,7 @@ Obj FuncSIGN_RAT( Obj self, Obj op )
 **  'DiffRat' returns the  difference  of  two  rationals  <opL>  and  <opR>.
 **  Either operand may also be an integer.  The difference is reduced.
 */
-Obj             DiffRat (
+static Obj             DiffRat (
     Obj                 opL,
     Obj                 opR )
 {
@@ -416,7 +416,7 @@ Obj             DiffRat (
 **  'ProdRat' returns the  product of two rationals <opL> and  <opR>.  Either
 **  operand may also be an integer.  The product is reduced.
 */
-Obj             ProdRat (
+static Obj             ProdRat (
     Obj                 opL,
     Obj                 opR )
 {
@@ -483,7 +483,7 @@ Obj             ProdRat (
 **
 *F  OneRat(<op>)  . . . . . . . . . . . . . . . . . . . . . one of a rational
 */
-Obj             OneRat (
+static Obj             OneRat (
     Obj                 op )
 {
     return INTOBJ_INT( 1L );
@@ -494,11 +494,11 @@ Obj             OneRat (
 **
 *F  InvRat(<op>)  . . . . . . . . . . . . . . . . . . . inverse of a rational
 */
-extern  Obj             QuoRat (
+static  Obj             QuoRat (
             Obj                 opL,
             Obj                 opR );
 
-Obj             InvRat (
+static Obj             InvRat (
     Obj                 op )
 {
   Obj res;
@@ -518,7 +518,7 @@ Obj             InvRat (
 **  'QuoRat'  returns the quotient of two rationals <opL> and  <opR>.  Either
 **  operand may also be an integer.  The quotient is reduced.
 */
-Obj             QuoRat (
+static Obj             QuoRat (
     Obj                 opL,
     Obj                 opR )
 {
@@ -618,7 +618,7 @@ Obj             QuoRat (
 **  such that $0 \<= t/s \< n$ and $r/s - t/s$ is a multiple of $n$.  This is
 **  rarely needed while computing modular inverses is very useful.
 */
-Obj ModRat(Obj opL, Obj n)
+static Obj ModRat(Obj opL, Obj n)
 {
     // invert the denominator
     Obj d = InverseModInt( DEN_RAT(opL), n );
@@ -642,7 +642,7 @@ Obj ModRat(Obj opL, Obj n)
 **  'PowRat' raises the rational <opL> to the  power  given  by  the  integer
 **  <opR>.  The power is reduced.
 */
-Obj             PowRat (
+static Obj             PowRat (
     Obj                 opL,
     Obj                 opR )
 {
@@ -716,9 +716,9 @@ Obj             PowRat (
 **  'IsRat' returns  'true' if  the  value <val> is  a  rational and  'false'
 **  otherwise.
 */
-Obj             IsRatFilt;
+static Obj             IsRatFilt;
 
-Obj             IsRatHandler (
+static Obj             IsRatHandler (
     Obj                 self,
     Obj                 val )
 {
@@ -745,7 +745,7 @@ Obj             IsRatHandler (
 **
 **  'NumeratorRat' returns the numerator of the rational <rat>.
 */
-Obj             FuncNUMERATOR_RAT (
+static Obj             FuncNUMERATOR_RAT (
     Obj                 self,
     Obj                 rat )
 {
@@ -772,7 +772,7 @@ Obj             FuncNUMERATOR_RAT (
 **
 **  'DenominatorRat' returns the denominator of the rational <rat>.
 */
-Obj             FuncDENOMINATOR_RAT (
+static Obj             FuncDENOMINATOR_RAT (
     Obj                 self,
     Obj                 rat )
 {
@@ -794,7 +794,7 @@ Obj             FuncDENOMINATOR_RAT (
 **
 */
 
-void SaveRat(Obj rat)
+static void SaveRat(Obj rat)
 {
   SaveSubObj(NUM_RAT(rat));
   SaveSubObj(DEN_RAT(rat));
@@ -806,7 +806,7 @@ void SaveRat(Obj rat)
 **
 */
 
-void LoadRat(Obj rat)
+static void LoadRat(Obj rat)
 {
   SET_NUM_RAT(rat, LoadSubObj());
   SET_DEN_RAT(rat, LoadSubObj());

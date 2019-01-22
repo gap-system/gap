@@ -77,7 +77,7 @@ Int             EqListList (
     return 1L;
 }
 
-Obj FuncEQ_LIST_LIST_DEFAULT (
+static Obj FuncEQ_LIST_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -127,7 +127,7 @@ Int             LtListList (
     return (lenL < lenR);
 }
 
-Obj FuncLT_LIST_LIST_DEFAULT (
+static Obj FuncLT_LIST_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -143,14 +143,14 @@ Obj FuncLT_LIST_LIST_DEFAULT (
 **  'InList' returns a   nonzero value if  <objL>  is a  member of  the  list
 **  <listR>, and zero otherwise.
 */
-Int             InList (
+static Int             InList (
     Obj                 objL,
     Obj                 listR )
 {
   return Fail != POS_LIST( listR, objL, INTOBJ_INT(0L) );
 }
 
-Obj FuncIN_LIST_DEFAULT (
+static Obj FuncIN_LIST_DEFAULT (
     Obj                 self,
     Obj                 obj,
     Obj                 list )
@@ -290,7 +290,7 @@ Obj             SumListList (
     return listS;
 }
 
-Obj FuncSUM_SCL_LIST_DEFAULT (
+static Obj FuncSUM_SCL_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -298,7 +298,7 @@ Obj FuncSUM_SCL_LIST_DEFAULT (
     return SumSclList( listL, listR );
 }
 
-Obj FuncSUM_LIST_SCL_DEFAULT (
+static Obj FuncSUM_LIST_SCL_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -306,7 +306,7 @@ Obj FuncSUM_LIST_SCL_DEFAULT (
     return SumListScl( listL, listR );
 }
 
-Obj FuncSUM_LIST_LIST_DEFAULT (
+static Obj FuncSUM_LIST_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -328,7 +328,7 @@ Obj FuncSUM_LIST_LIST_DEFAULT (
 **
 **  'ZeroListDefault' is a generic function for the zero.
 */
-Obj             ZeroListDefault (
+static Obj             ZeroListDefault (
     Obj                 list )
 {
     Obj                 res;
@@ -387,7 +387,7 @@ Obj             ZeroListDefault (
     return res;
 }
 
-Obj FuncZERO_LIST_DEFAULT (
+static Obj FuncZERO_LIST_DEFAULT (
     Obj                 self,
     Obj                 list )
 {
@@ -395,7 +395,7 @@ Obj FuncZERO_LIST_DEFAULT (
 }
 
 
-Obj             ZeroListMutDefault (
+static Obj             ZeroListMutDefault (
     Obj                 list )
 {
     Obj                 res;
@@ -449,7 +449,7 @@ Obj             ZeroListMutDefault (
     return res;
 }
 
-Obj FuncZERO_MUT_LIST_DEFAULT (
+static Obj FuncZERO_MUT_LIST_DEFAULT (
     Obj                 self,
     Obj                 list )
 {
@@ -464,7 +464,7 @@ Obj FuncZERO_MUT_LIST_DEFAULT (
    we want an immutable result, we can (a) reuse a single row of zeros
    (b) record that the result is a rectangular table */
 
-Obj FuncZERO_ATTR_MAT( Obj self, Obj mat )
+static Obj FuncZERO_ATTR_MAT( Obj self, Obj mat )
 {
   Obj zrow;
   UInt len;
@@ -496,7 +496,7 @@ Obj FuncZERO_ATTR_MAT( Obj self, Obj mat )
 **  'AInvListDefault' is a generic function for the additive inverse.
 */
 
-Obj AInvMutListDefault (
+static Obj AInvMutListDefault (
     Obj                 list )
 {
     Obj                 res;
@@ -549,14 +549,14 @@ Obj AInvMutListDefault (
     return res;
 }
 
-Obj FuncAINV_MUT_LIST_DEFAULT (
+static Obj FuncAINV_MUT_LIST_DEFAULT (
     Obj                 self,
     Obj                 list )
 {
     return AInvMutListDefault( list );
 }
 
-Obj AInvListDefault (
+static Obj AInvListDefault (
     Obj                 list )
 {
     Obj                 res;
@@ -613,7 +613,7 @@ Obj AInvListDefault (
     return res;
 }
 
-Obj FuncAINV_LIST_DEFAULT (
+static Obj FuncAINV_LIST_DEFAULT (
     Obj                 self,
     Obj                 list )
 {
@@ -809,7 +809,7 @@ Obj             DiffListList (
     return listD;
 }
 
-Obj FuncDIFF_SCL_LIST_DEFAULT (
+static Obj FuncDIFF_SCL_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -817,7 +817,7 @@ Obj FuncDIFF_SCL_LIST_DEFAULT (
     return DiffSclList( listL, listR );
 }
 
-Obj FuncDIFF_LIST_SCL_DEFAULT (
+static Obj FuncDIFF_LIST_SCL_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -825,7 +825,7 @@ Obj FuncDIFF_LIST_SCL_DEFAULT (
     return DiffListScl( listL, listR );
 }
 
-Obj FuncDIFF_LIST_LIST_DEFAULT (
+static Obj FuncDIFF_LIST_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -987,7 +987,7 @@ Obj             ProdListList (
     return listP;
 }
 
-Obj FuncPROD_SCL_LIST_DEFAULT (
+static Obj FuncPROD_SCL_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -995,7 +995,7 @@ Obj FuncPROD_SCL_LIST_DEFAULT (
     return ProdSclList( listL, listR );
 }
 
-Obj FuncPROD_LIST_SCL_DEFAULT (
+static Obj FuncPROD_LIST_SCL_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR )
@@ -1003,7 +1003,7 @@ Obj FuncPROD_LIST_SCL_DEFAULT (
     return ProdListScl( listL, listR );
 }
 
-Obj FuncPROD_LIST_LIST_DEFAULT (
+static Obj FuncPROD_LIST_LIST_DEFAULT (
     Obj                 self,
     Obj                 listL,
     Obj                 listR,
@@ -1044,7 +1044,7 @@ Obj FuncPROD_LIST_LIST_DEFAULT (
 **  and 2 for a fully mutable result.
 */
 
-Obj             OneMatrix (
+static Obj             OneMatrix (
     Obj                 mat,
     UInt                mut)
 {
@@ -1114,21 +1114,21 @@ Obj             OneMatrix (
     return res;
 }
 
-Obj FuncONE_MATRIX_IMMUTABLE (
+static Obj FuncONE_MATRIX_IMMUTABLE (
     Obj                 self,
     Obj                 list )
 {
     return OneMatrix( list,0 );
 }
 
-Obj FuncONE_MATRIX_SAME_MUTABILITY (
+static Obj FuncONE_MATRIX_SAME_MUTABILITY (
     Obj                 self,
     Obj                 list )
 {
     return OneMatrix( list,1 );
 }
 
-Obj FuncONE_MATRIX_MUTABLE (
+static Obj FuncONE_MATRIX_MUTABLE (
     Obj                 self,
     Obj                 list )
 {
@@ -1154,7 +1154,7 @@ Obj FuncONE_MATRIX_MUTABLE (
 **  calls to AddRowVector, etc.
 */
 
-Obj             InvMatrix (
+static Obj             InvMatrix (
     Obj                 mat,
     UInt                mut)
 {
@@ -1288,17 +1288,17 @@ Obj             InvMatrix (
     return res;
 }
 
-Obj FuncINV_MATRIX_MUTABLE( Obj self, Obj mat)
+static Obj FuncINV_MATRIX_MUTABLE( Obj self, Obj mat)
 {
   return InvMatrix(mat, 2);
 }
 
-Obj FuncINV_MATRIX_SAME_MUTABILITY( Obj self, Obj mat)
+static Obj FuncINV_MATRIX_SAME_MUTABILITY( Obj self, Obj mat)
 {
   return InvMatrix(mat, 1);
 }
 
-Obj FuncINV_MATRIX_IMMUTABLE( Obj self, Obj mat)
+static Obj FuncINV_MATRIX_IMMUTABLE( Obj self, Obj mat)
 {
   return InvMatrix(mat, 0);
 }
@@ -1317,7 +1317,7 @@ Obj FuncINV_MATRIX_IMMUTABLE( Obj self, Obj mat)
 static Obj AddRowVectorOp;   /* BH changed to static */
 static Obj MultVectorLeftOp; /* BH changed to static */
 
-Obj FuncADD_ROW_VECTOR_5( Obj self,
+static Obj FuncADD_ROW_VECTOR_5( Obj self,
                           Obj list1,
                           Obj list2,
                           Obj mult,
@@ -1353,7 +1353,7 @@ Obj FuncADD_ROW_VECTOR_5( Obj self,
 **  This version is specialised to the "fast" case where list1 and list2 are
 **  plain lists of cyclotomics and mult is a small integers
 */
-Obj FuncADD_ROW_VECTOR_5_FAST ( Obj self,
+static Obj FuncADD_ROW_VECTOR_5_FAST ( Obj self,
                                 Obj list1,
                                 Obj list2,
                                 Obj mult,
@@ -1397,7 +1397,7 @@ Obj FuncADD_ROW_VECTOR_5_FAST ( Obj self,
 *T  This could be speeded up still further by using special code for various
 **  types of list -- this version just uses generic list ops
 */
-Obj FuncADD_ROW_VECTOR_3( Obj self,
+static Obj FuncADD_ROW_VECTOR_3( Obj self,
                           Obj list1,
                           Obj list2,
                           Obj mult)
@@ -1428,7 +1428,7 @@ Obj FuncADD_ROW_VECTOR_3( Obj self,
 **  This version is specialised to the "fast" case where list1 and list2 are
 **  plain lists of cyclotomics and mult is a small integers
 */
-Obj FuncADD_ROW_VECTOR_3_FAST ( Obj self,
+static Obj FuncADD_ROW_VECTOR_3_FAST ( Obj self,
                                 Obj list1,
                                 Obj list2,
                                 Obj mult )
@@ -1467,7 +1467,7 @@ Obj FuncADD_ROW_VECTOR_3_FAST ( Obj self,
 *T  This could be speeded up still further by using special code for various
 **  types of list -- this version just uses generic list ops
 */
-Obj FuncADD_ROW_VECTOR_2( Obj self,
+static Obj FuncADD_ROW_VECTOR_2( Obj self,
                           Obj list1,
                           Obj list2)
 {
@@ -1496,7 +1496,7 @@ Obj FuncADD_ROW_VECTOR_2( Obj self,
 **  This version is specialised to the "fast" case where list1 and list2 are
 **  plain lists of cyclotomics 
 */
-Obj FuncADD_ROW_VECTOR_2_FAST ( Obj self,
+static Obj FuncADD_ROW_VECTOR_2_FAST ( Obj self,
                                 Obj list1,
                                 Obj list2 )
 {
@@ -1552,12 +1552,12 @@ static inline Obj MULT_VECTOR_LEFT_RIGHT_2(Obj list, Obj mult, UInt left)
   return 0;
 }
 
-Obj FuncMULT_VECTOR_LEFT_2(Obj self, Obj list, Obj mult)
+static Obj FuncMULT_VECTOR_LEFT_2(Obj self, Obj list, Obj mult)
 {
     return MULT_VECTOR_LEFT_RIGHT_2(list, mult, 1);
 }
 
-Obj FuncMULT_VECTOR_RIGHT_2(Obj self, Obj list, Obj mult)
+static Obj FuncMULT_VECTOR_RIGHT_2(Obj self, Obj list, Obj mult)
 {
     return MULT_VECTOR_LEFT_RIGHT_2(list, mult, 0);
 }
@@ -1573,7 +1573,7 @@ Obj FuncMULT_VECTOR_RIGHT_2(Obj self, Obj list, Obj mult)
 **  multiplier
 */
 
-Obj FuncMULT_VECTOR_2_FAST( Obj self,
+static Obj FuncMULT_VECTOR_2_FAST( Obj self,
                                 Obj list,
                                 Obj mult )
 {
@@ -1604,7 +1604,7 @@ Obj FuncMULT_VECTOR_2_FAST( Obj self,
 */
 
 
-Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
+static Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
                               Obj vec,
                               Obj mat )
 {
@@ -1655,9 +1655,9 @@ Obj FuncPROD_VEC_MAT_DEFAULT( Obj self,
 **
 */
 
-Obj ConvertToMatrixRep;
+static Obj ConvertToMatrixRep;
 
-Obj InvMatWithRowVecs( Obj mat, UInt mut)
+static Obj InvMatWithRowVecs( Obj mat, UInt mut)
 {
   Obj                 res;            /* result                          */
   Obj                 matcopy;        /* copy of mat                     */
@@ -1808,17 +1808,17 @@ Obj InvMatWithRowVecs( Obj mat, UInt mut)
 }
 
 
-Obj FuncINV_MAT_DEFAULT_MUTABLE ( Obj self, Obj mat)
+static Obj FuncINV_MAT_DEFAULT_MUTABLE ( Obj self, Obj mat)
 {
   return InvMatWithRowVecs(mat, 2);
 }
 
-Obj FuncINV_MAT_DEFAULT_SAME_MUTABILITY ( Obj self, Obj mat)
+static Obj FuncINV_MAT_DEFAULT_SAME_MUTABILITY ( Obj self, Obj mat)
 {
   return InvMatWithRowVecs(mat, 1);
 }
 
-Obj FuncINV_MAT_DEFAULT_IMMUTABLE ( Obj self, Obj mat)
+static Obj FuncINV_MAT_DEFAULT_IMMUTABLE ( Obj self, Obj mat)
 {
   return InvMatWithRowVecs(mat, 0);
 }
@@ -1836,7 +1836,7 @@ Obj FuncINV_MAT_DEFAULT_IMMUTABLE ( Obj self, Obj mat)
 ** entries are small integers, as are their sums
 */
 
-Obj FuncADD_TO_LIST_ENTRIES_PLIST_RANGE ( 
+static Obj FuncADD_TO_LIST_ENTRIES_PLIST_RANGE ( 
                               Obj self,
                               Obj list,
                               Obj range,

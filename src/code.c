@@ -243,7 +243,7 @@ static Stat NewStatWithProf (
     return stat;
 }
 
-Stat NewStat (
+static Stat NewStat (
     UInt                type,
     UInt                size)
 {
@@ -258,7 +258,7 @@ Stat NewStat (
 **  'NewExpr' allocates a new expression memory block of  the type <type> and
 **  <size> bytes.  'NewExpr' returns the identifier of the new expression.
 */
-Expr            NewExpr (
+static Expr            NewExpr (
     UInt                type,
     UInt                size )
 {
@@ -459,7 +459,7 @@ static Expr PopExpr(void)
 **  'PushUnaryOp' pushes a   unary  operator expression onto the   expression
 **  stack.  <type> is the type of the operator (currently only 'T_NOT').
 */
-void PushUnaryOp (
+static void PushUnaryOp (
     UInt                type )
 {
     Expr                unop;           /* unary operator, result          */
@@ -484,7 +484,7 @@ void PushUnaryOp (
 **  'PushBinaryOp' pushes a binary   operator expression onto  the expression
 **  stack.  <type> is the type of the operator.
 */
-void PushBinaryOp (
+static void PushBinaryOp (
     UInt                type )
 {
     Expr                binop;          /* binary operator, result         */
@@ -3152,7 +3152,7 @@ void CodeAssertEnd3Args ( void )
 **  machines of different endianness, but this would mean parsing the bag as
 **  we save it which it would be nice to avoid just now.
 */
-void SaveBody ( Obj body )
+static void SaveBody ( Obj body )
 {
   UInt i;
   const UInt *ptr = (const UInt *) CONST_ADDR_OBJ(body);
@@ -3173,7 +3173,7 @@ void SaveBody ( Obj body )
 **  are currently both UInt
 **
 */
-void LoadBody ( Obj body )
+static void LoadBody ( Obj body )
 {
   UInt i;
   UInt *ptr;

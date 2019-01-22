@@ -1426,7 +1426,7 @@ void            IntrNot ( void )
 **  actions to interpret the respective operator expression.  They are called
 **  by the reader *after* *both* operands are read.
 */
-void            IntrXX ( void )
+static void IntrXX(void)
 {
     Obj                 opL;            /* left operand                    */
     Obj                 opR;            /* right operand                   */
@@ -3792,7 +3792,7 @@ enum {
     INFODATA_OUTPUT,
 };
 
-Obj InfoDecision;
+static Obj InfoDecision;
 static Obj IsInfoClassListRep;
 static Obj DefaultInfoHandler;
 

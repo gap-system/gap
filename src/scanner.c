@@ -1012,7 +1012,7 @@ int IsKeyword(const char * str)
     return 0;
 }
 
-Obj FuncALL_KEYWORDS(Obj self)
+static Obj FuncALL_KEYWORDS(Obj self)
 {
     Obj l = NewEmptyPlist();
     for (UInt i = 0; i < ARRAY_SIZE(AllKeywords); i++) {

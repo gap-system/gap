@@ -156,13 +156,13 @@ static Obj IsIntFilt;
 **
 **  'TypeInt' is the function in 'TypeObjFuncs' for integers.
 */
-Obj             TYPE_INT_SMALL_ZERO;
-Obj             TYPE_INT_SMALL_POS;
-Obj             TYPE_INT_SMALL_NEG;
-Obj             TYPE_INT_LARGE_POS;
-Obj             TYPE_INT_LARGE_NEG;
+static Obj             TYPE_INT_SMALL_ZERO;
+static Obj             TYPE_INT_SMALL_POS;
+static Obj             TYPE_INT_SMALL_NEG;
+static Obj             TYPE_INT_LARGE_POS;
+static Obj             TYPE_INT_LARGE_NEG;
 
-Obj             TypeIntSmall (
+static Obj             TypeIntSmall (
     Obj                 val )
 {
     if ( 0 == INT_INTOBJ(val) ) {
@@ -176,12 +176,12 @@ Obj             TypeIntSmall (
     }
 }
 
-Obj TypeIntLargePos ( Obj val )
+static Obj TypeIntLargePos ( Obj val )
 {
     return TYPE_INT_LARGE_POS;
 }
 
-Obj TypeIntLargeNeg ( Obj val )
+static Obj TypeIntLargeNeg ( Obj val )
 {
     return TYPE_INT_LARGE_NEG;
 }
@@ -198,7 +198,7 @@ Obj TypeIntLargeNeg ( Obj val )
 **  'IsInt'  returns 'true'  if the  value  <val>  is a small integer or a
 **  large int, and 'false' otherwise.
 */
-Obj FuncIS_INT ( Obj self, Obj val )
+static Obj FuncIS_INT ( Obj self, Obj val )
 {
   if ( IS_INT(val) ) {
     return True;
@@ -218,7 +218,7 @@ Obj FuncIS_INT ( Obj self, Obj val )
 **
 **
 */
-void SaveInt(Obj op)
+static void SaveInt(Obj op)
 {
     const UInt * ptr = CONST_ADDR_INT(op);
     for (UInt i = 0; i < SIZE_INT(op); i++)
@@ -233,7 +233,7 @@ void SaveInt(Obj op)
 **
 **
 */
-void LoadInt(Obj op)
+static void LoadInt(Obj op)
 {
     UInt * ptr = ADDR_INT(op);
     for (UInt i = 0; i < SIZE_INT(op); i++)
@@ -430,7 +430,8 @@ Obj GMP_REDUCE(Obj op)
 **  the given integer object <op> is normalized and reduced.
 **
 */
-int IS_NORMALIZED_AND_REDUCED( Obj op, const char *func, int line )
+#if DEBUG_GMP
+static int IS_NORMALIZED_AND_REDUCED( Obj op, const char *func, int line )
 {
   mp_size_t size;
   if ( IS_INTOBJ( op ) ) {
@@ -463,6 +464,7 @@ int IS_NORMALIZED_AND_REDUCED( Obj op, const char *func, int line )
   }
   return 1;
 }
+#endif
 
 
 /****************************************************************************
@@ -815,7 +817,7 @@ static Obj StringIntBase(Obj op, int base)
 **  letters a..f are also allowed in <string> instead of A..F.
 **
 */
-Obj FuncHexStringInt(Obj self, Obj n)
+static Obj FuncHexStringInt(Obj self, Obj n)
 {
     RequireInt("HexStringInt", n);
     return StringIntBase(n, 16);
@@ -985,7 +987,7 @@ Int CLog2Int(Int a)
 **
 **  Given to GAP-Level as "Log2Int".
 */
-Obj FuncLog2Int(Obj self, Obj n)
+static Obj FuncLog2Int(Obj self, Obj n)
 {
     RequireInt("Log2Int", n);
 
@@ -1015,7 +1017,7 @@ Obj FuncLog2Int(Obj self, Obj n)
 **  `FuncSTRING_INT' returns an immutable string representing the integer <n>
 **
 */
-Obj FuncSTRING_INT(Obj self, Obj n)
+static Obj FuncSTRING_INT(Obj self, Obj n)
 {
     RequireInt("STRING_INT", n);
     return StringIntBase(n, 10);
@@ -1096,7 +1098,7 @@ Obj IntStringInternal(Obj string, const Char *str)
 **  fail if the string is not a valid integer.
 **
 */
-Obj FuncINT_STRING ( Obj self, Obj string )
+static Obj FuncINT_STRING ( Obj self, Obj string )
 {
     if( !IS_STRING(string) ) {
         return Fail;
@@ -1275,7 +1277,7 @@ inline Obj DiffInt(Obj opL, Obj opR)
 **
 *F  ZeroInt(<op>)  . . . . . . . . . . . . . . . . . . . . . zero of integers
 */
-Obj ZeroInt(Obj op)
+static Obj ZeroInt(Obj op)
 {
     return INTOBJ_INT(0);
 }
@@ -1358,7 +1360,7 @@ Obj AbsInt( Obj op )
   return Fail;
 }
 
-Obj FuncABS_INT(Obj self, Obj n)
+static Obj FuncABS_INT(Obj self, Obj n)
 {
     RequireInt("AbsInt", n);
     Obj res = AbsInt(n);
@@ -1389,7 +1391,7 @@ Obj SignInt( Obj op )
   return Fail;
 }
 
-Obj FuncSIGN_INT(Obj self, Obj n)
+static Obj FuncSIGN_INT(Obj self, Obj n)
 {
     RequireInt("SignInt", n);
     Obj res = SignInt(n);
@@ -1532,7 +1534,7 @@ static Obj ProdIntObj ( Obj n, Obj op )
   return res;
 }
 
-Obj FuncPROD_INT_OBJ ( Obj self, Obj opL, Obj opR )
+static Obj FuncPROD_INT_OBJ ( Obj self, Obj opL, Obj opR )
 {
   return ProdIntObj( opL, opR );
 }
@@ -1542,7 +1544,7 @@ Obj FuncPROD_INT_OBJ ( Obj self, Obj opL, Obj opR )
 **
 *F  OneInt(<op>) . . . . . . . . . . . . . . . . . . . . .  one of an integer
 */
-Obj OneInt ( Obj op )
+static Obj OneInt ( Obj op )
 {
   return INTOBJ_INT( 1 );
 }
@@ -1613,7 +1615,7 @@ Obj PowInt ( Obj opL, Obj opR )
 **
 *F  PowObjInt(<op>,<n>) . . . . . . . . . . power of an object and an integer
 */
-Obj             PowObjInt ( Obj op, Obj n )
+static Obj             PowObjInt ( Obj op, Obj n )
 {
   Obj                 res = 0;        /* result                          */
   UInt                i, k;           /* loop variables                  */
@@ -1682,7 +1684,7 @@ Obj             PowObjInt ( Obj op, Obj n )
   return res;
 }
 
-Obj FuncPOW_OBJ_INT ( Obj self, Obj opL, Obj opR )
+static Obj FuncPOW_OBJ_INT ( Obj self, Obj opL, Obj opR )
 {
   return PowObjInt( opL, opR );
 }
@@ -1941,7 +1943,7 @@ Obj QuoInt(Obj opL, Obj opR)
 **  'Sign( Quo(<a>,<b>) ) = Sign(<a>) * Sign(<b>)'.  Dividing by 0  causes an
 **  error.  'Rem' (see "Rem") can be used to compute the remainder.
 */
-Obj FuncQUO_INT(Obj self, Obj a, Obj b)
+static Obj FuncQUO_INT(Obj self, Obj a, Obj b)
 {
     RequireInt("QuoInt", a);
     RequireInt("QuoInt", b);
@@ -2069,7 +2071,7 @@ Obj RemInt(Obj opL, Obj opR)
 **  same sign as <i> and its absolute value is strictly less than the
 **  absolute value of <k>.  Dividing by 0 causes an error.
 */
-Obj FuncREM_INT(Obj self, Obj a, Obj b)
+static Obj FuncREM_INT(Obj self, Obj a, Obj b)
 {
     RequireInt("RemInt", a);
     RequireInt("RemInt", b);
@@ -2142,7 +2144,7 @@ Obj GcdInt ( Obj opL, Obj opR )
 **  greatest common divisor is never negative, even if the arguments are.  We
 **  define $gcd( a, 0 ) = gcd( 0, a ) = abs( a )$ and $gcd( 0, 0 ) = 0$.
 */
-Obj FuncGCD_INT(Obj self, Obj a, Obj b)
+static Obj FuncGCD_INT(Obj self, Obj a, Obj b)
 {
     RequireInt("GcdInt", a);
     RequireInt("GcdInt", b);
@@ -2195,7 +2197,7 @@ Obj LcmInt(Obj opL, Obj opR)
     return result;
 }
 
-Obj FuncLCM_INT(Obj self, Obj a, Obj b)
+static Obj FuncLCM_INT(Obj self, Obj a, Obj b)
 {
     RequireInt("LcmInt", a);
     RequireInt("LcmInt", b);
@@ -2205,7 +2207,7 @@ Obj FuncLCM_INT(Obj self, Obj a, Obj b)
 /****************************************************************************
 **
 */
-Obj FuncFACTORIAL_INT(Obj self, Obj n)
+static Obj FuncFACTORIAL_INT(Obj self, Obj n)
 {
     RequireNonnegativeSmallInt("Factorial", n);
 
@@ -2307,7 +2309,7 @@ Obj BinomialInt(Obj n, Obj k)
     return result;
 }
 
-Obj FuncBINOMIAL_INT(Obj self, Obj n, Obj k)
+static Obj FuncBINOMIAL_INT(Obj self, Obj n, Obj k)
 {
     RequireInt("Binomial", n);
     RequireInt("Binomial", k);
@@ -2318,7 +2320,7 @@ Obj FuncBINOMIAL_INT(Obj self, Obj n, Obj k)
 /****************************************************************************
 **
 */
-Obj FuncJACOBI_INT(Obj self, Obj n, Obj m)
+static Obj FuncJACOBI_INT(Obj self, Obj n, Obj m)
 {
   fake_mpz_t mpzL, mpzR;
   int result;
@@ -2343,7 +2345,7 @@ Obj FuncJACOBI_INT(Obj self, Obj n, Obj m)
 /****************************************************************************
 **
 */
-Obj FuncPVALUATION_INT(Obj self, Obj n, Obj p)
+static Obj FuncPVALUATION_INT(Obj self, Obj n, Obj p)
 {
   fake_mpz_t mpzN, mpzP;
   mpz_t mpzResult;
@@ -2391,7 +2393,7 @@ Obj FuncPVALUATION_INT(Obj self, Obj n, Obj p)
 /****************************************************************************
 **
 */
-Obj FuncROOT_INT(Obj self, Obj n, Obj k)
+static Obj FuncROOT_INT(Obj self, Obj n, Obj k)
 {
     fake_mpz_t n_mpz, result_mpz;
 
@@ -2506,7 +2508,7 @@ Obj InverseModInt(Obj base, Obj mod)
 /****************************************************************************
 **
 */
-Obj FuncINVMODINT ( Obj self, Obj base, Obj mod )
+static Obj FuncINVMODINT ( Obj self, Obj base, Obj mod )
 {
     RequireInt("InverseModInt", base);
     RequireInt("InverseModInt", mod);
@@ -2517,7 +2519,7 @@ Obj FuncINVMODINT ( Obj self, Obj base, Obj mod )
 /****************************************************************************
 **
 */
-Obj FuncPOWERMODINT(Obj self, Obj base, Obj exp, Obj mod)
+static Obj FuncPOWERMODINT(Obj self, Obj base, Obj exp, Obj mod)
 {
   fake_mpz_t base_mpz, exp_mpz, mod_mpz, result_mpz;
 
@@ -2560,7 +2562,7 @@ Obj FuncPOWERMODINT(Obj self, Obj base, Obj exp, Obj mod)
 /****************************************************************************
 **
 */
-Obj FuncIS_PROBAB_PRIME_INT(Obj self, Obj n, Obj reps)
+static Obj FuncIS_PROBAB_PRIME_INT(Obj self, Obj n, Obj reps)
 {
   fake_mpz_t n_mpz;
   Int res;
@@ -2604,7 +2606,7 @@ Obj FuncIS_PROBAB_PRIME_INT(Obj self, Obj n, Obj reps)
 **  integer digit lengths and different ranges of small integers).
 **  
 */
-Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
+static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
 {
   Obj res;
   Int i, n, q, r, qoff, len;
@@ -2678,31 +2680,31 @@ Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
 **  The following functions only exist to enable use to test the conversion
 **  functions (Int_ObjInt, ObjInt_Int, etc.) via a regular .tst file.
 */
-Obj FuncINTERNAL_TEST_CONV_INT(Obj self, Obj val)
+static Obj FuncINTERNAL_TEST_CONV_INT(Obj self, Obj val)
 {
     Int ival = Int_ObjInt(val);
     return ObjInt_Int(ival);
 }
 
-Obj FuncINTERNAL_TEST_CONV_UINT(Obj self, Obj val)
+static Obj FuncINTERNAL_TEST_CONV_UINT(Obj self, Obj val)
 {
     UInt ival = UInt_ObjInt(val);
     return ObjInt_UInt(ival);
 }
 
-Obj FuncINTERNAL_TEST_CONV_UINTINV(Obj self, Obj val)
+static Obj FuncINTERNAL_TEST_CONV_UINTINV(Obj self, Obj val)
 {
     UInt ival = UInt_ObjInt(val);
     return ObjInt_UIntInv(ival);
 }
 
-Obj FuncINTERNAL_TEST_CONV_INT8(Obj self, Obj val)
+static Obj FuncINTERNAL_TEST_CONV_INT8(Obj self, Obj val)
 {
     Int8 ival = Int8_ObjInt(val);
     return ObjInt_Int8(ival);
 }
 
-Obj FuncINTERNAL_TEST_CONV_UINT8(Obj self, Obj val)
+static Obj FuncINTERNAL_TEST_CONV_UINT8(Obj self, Obj val)
 {
     UInt8 ival = UInt8_ObjInt(val);
     return ObjInt_UInt8(ival);

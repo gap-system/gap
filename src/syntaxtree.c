@@ -734,7 +734,7 @@ static const CompilerT Compilers[] = {
     COMPILER_(T_ISB_COMOBJ_EXPR, ARG_("comobj"), ARG_("expression")),
 };
 
-Obj FuncSYNTAX_TREE(Obj self, Obj func)
+static Obj FuncSYNTAX_TREE(Obj self, Obj func)
 {
     Obj result;
 

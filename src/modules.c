@@ -53,8 +53,8 @@
 #define MAX_MODULE_FILENAMES (MAX_MODULES * 50)
 #endif
 
-Char   LoadedModuleFilenames[MAX_MODULE_FILENAMES];
-Char * NextLoadedModuleFilename = LoadedModuleFilenames;
+static Char   LoadedModuleFilenames[MAX_MODULE_FILENAMES];
+static Char * NextLoadedModuleFilename = LoadedModuleFilenames;
 
 extern const InitInfoFunc InitFuncsBuiltinModules[];
 
@@ -73,8 +73,8 @@ typedef struct {
 
 
 StructInitInfoExt Modules[MAX_MODULES];
-UInt              NrModules;
-UInt              NrBuiltinModules;
+static UInt              NrModules;
+static UInt              NrBuiltinModules;
 
 
 typedef struct {
@@ -125,7 +125,7 @@ static void RegisterModuleState(StructInitInfo * info)
 **
 *F  FuncGAP_CRC( <self>, <name> ) . . . . . . . create a crc value for a file
 */
-Obj FuncGAP_CRC(Obj self, Obj filename)
+static Obj FuncGAP_CRC(Obj self, Obj filename)
 {
     /* check the argument                                                  */
     RequireStringRep("GAP_CRC", filename);
@@ -180,7 +180,7 @@ void ActivateModule(StructInitInfo * info)
 **  return value indicates which error occurred.
 */
 #ifdef HAVE_DLOPEN
-Int SyLoadModule( const Char * name, InitInfoFunc * func )
+static Int SyLoadModule( const Char * name, InitInfoFunc * func )
 {
     void *          init;
     void *          handle;
@@ -208,7 +208,7 @@ Int SyLoadModule( const Char * name, InitInfoFunc * func )
 **
 *F  FuncLOAD_DYN( <self>, <name>, <crc> ) . . .  try to load a dynamic module
 */
-Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
+static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
 {
     StructInitInfo * info;
     Obj              crc1;
@@ -285,7 +285,7 @@ Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
 **
 *F  FuncLOAD_STAT( <self>, <name>, <crc> )  . . . . try to load static module
 */
-Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
+static Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
 {
     StructInitInfo * info = 0;
     Obj              crc1;
@@ -340,7 +340,7 @@ Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
 **
 *F  FuncSHOW_STAT() . . . . . . . . . . . . . . . . . . . show static modules
 */
-Obj FuncSHOW_STAT(Obj self)
+static Obj FuncSHOW_STAT(Obj self)
 {
     Obj              modules;
     Obj              name;
@@ -383,7 +383,7 @@ Obj FuncSHOW_STAT(Obj self)
 **
 *F  FuncLoadedModules( <self> ) . . . . . . . . . . . list all loaded modules
 */
-Obj FuncLoadedModules(Obj self)
+static Obj FuncLoadedModules(Obj self)
 {
     Int              i;
     StructInitInfo * m;
@@ -760,7 +760,7 @@ void ImportFuncFromLibrary(const Char * name, Obj * address)
 **
 *F  FuncExportToKernelFinished( <self> )  . . . . . . . . . . check functions
 */
-Obj FuncExportToKernelFinished(Obj self)
+static Obj FuncExportToKernelFinished(Obj self)
 {
     UInt i;
     Int  errs = 0;

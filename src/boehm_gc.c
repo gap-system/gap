@@ -85,7 +85,7 @@ void InitFreeFuncBag(UInt type, TNumFreeFuncBags finalizer_func)
 
 #ifndef WARD_ENABLED
 
-void StandardFinalizer(void * bagContents, void * data)
+static void StandardFinalizer(void * bagContents, void * data)
 {
     Bag    bag;
     void * bagContents2;
@@ -121,7 +121,7 @@ static unsigned GCMKind[MAX_GC_PREFIX_DESC + 1];
  * the overhead is negligible for large objects.
  */
 
-void BuildPrefixGCDescriptor(unsigned prefix_len)
+static void BuildPrefixGCDescriptor(unsigned prefix_len)
 {
 
     if (prefix_len) {
@@ -195,7 +195,7 @@ static void TLAllocatorInit(void)
 **  references to other bags, and > 0 to indicate a specific memory layout
 **  descriptor.
 **/
-void * AllocateBagMemory(int gc_type, int type, UInt size)
+static void * AllocateBagMemory(int gc_type, int type, UInt size)
 {
     assert(gc_type >= -1);
     void * result = NULL;
@@ -239,7 +239,7 @@ void * AllocateMemoryBlock(UInt size)
     return GC_malloc(size);
 }
 
-int TabMarkTypeBags[NUM_TYPES];
+static int TabMarkTypeBags[NUM_TYPES];
 
 void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
 {

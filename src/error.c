@@ -89,7 +89,7 @@ UInt OpenErrorOutput( void )
 *F  FuncDownEnv( <self>, <level> )  . . . . . . . . .  change the environment
 */
 
-void DownEnvInner(Int depth)
+static void DownEnvInner(Int depth)
 {
     /* if we are asked to go up ... */
     if (depth < 0) {
@@ -115,7 +115,7 @@ void DownEnvInner(Int depth)
     }
 }
 
-Obj FuncDownEnv(Obj self, Obj args)
+static Obj FuncDownEnv(Obj self, Obj args)
 {
     Int depth;
 
@@ -137,7 +137,7 @@ Obj FuncDownEnv(Obj self, Obj args)
     return (Obj)0;
 }
 
-Obj FuncUpEnv(Obj self, Obj args)
+static Obj FuncUpEnv(Obj self, Obj args)
 {
     Int depth;
     if (LEN_PLIST(args) == 0) {
@@ -158,7 +158,7 @@ Obj FuncUpEnv(Obj self, Obj args)
     return (Obj)0;
 }
 
-Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
+static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
 {
     if (context == STATE(BottomLVars))
         return Fail;
@@ -191,7 +191,7 @@ Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
     return retlist;
 }
 
-Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
+static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
 {
     if (context == STATE(BottomLVars))
         return 0;
@@ -251,7 +251,7 @@ Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
 *F  FuncCALL_WITH_CATCH( <self>, <func> )
 **
 */
-Obj FuncCALL_WITH_CATCH(Obj self, Obj func, Obj args)
+static Obj FuncCALL_WITH_CATCH(Obj self, Obj func, Obj args)
 {
     return CALL_WITH_CATCH(func, args);
 }
@@ -329,7 +329,7 @@ Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
     return res;
 }
 
-Obj FuncJUMP_TO_CATCH(Obj self, Obj payload)
+static Obj FuncJUMP_TO_CATCH(Obj self, Obj payload)
 {
     STATE(ThrownObject) = payload;
     if (STATE(JumpToCatchCallback) != 0) {
@@ -339,7 +339,7 @@ Obj FuncJUMP_TO_CATCH(Obj self, Obj payload)
     return 0;
 }
 
-Obj FuncSetUserHasQuit(Obj Self, Obj value)
+static Obj FuncSetUserHasQuit(Obj Self, Obj value)
 {
     STATE(UserHasQuit) = INT_INTOBJ(value);
     if (STATE(UserHasQuit))
@@ -390,7 +390,7 @@ static Obj ErrorMessageToGAPString(const Char * msg, Int arg1, Int arg2)
 }
 
 
-Obj CallErrorInner(const Char * msg,
+static Obj CallErrorInner(const Char * msg,
                    Int          arg1,
                    Int          arg2,
                    UInt         justQuit,

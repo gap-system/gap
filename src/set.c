@@ -198,7 +198,7 @@ Obj SetList (
 **  'SetList' returns a new list even if the list <list> is already a  proper
 **  set, in this case it is equivalent to 'ShallowCopy' (see  "ShallowCopy").
 */
-Obj FuncLIST_SORTED_LIST (
+static Obj FuncLIST_SORTED_LIST (
     Obj                 self,
     Obj                 list )
 {
@@ -240,7 +240,7 @@ Obj FuncLIST_SORTED_LIST (
 **  are equal if every element of  <list1> is also  an element of <list2> and
 **  if every element of <list2> is also an element of <list1>.
 */
-Int             EqSet (
+static Int             EqSet (
     Obj                 listL,
     Obj                 listR )
 {
@@ -270,7 +270,7 @@ Int             EqSet (
     return 1L;
 }
 
-Obj             FuncIS_EQUAL_SET (
+static Obj             FuncIS_EQUAL_SET (
     Obj                 self,
     Obj                 list1,
     Obj                 list2 )
@@ -299,7 +299,7 @@ Obj             FuncIS_EQUAL_SET (
 **  Either  argument may also  be a list that is  not a proper  set, in which
 **  case 'IsSubsetSet' silently applies 'Set' (see "Set") to it first.
 */
-Obj             FuncIS_SUBSET_SET (
+static Obj             FuncIS_SUBSET_SET (
     Obj                 self,
     Obj                 set1,
     Obj                 set2 )
@@ -399,7 +399,7 @@ Obj             FuncIS_SUBSET_SET (
 **  'AddSet' does not return  anything, it is only  called for the side effect
 **  of changing <set>.
 */
-Obj FuncADD_SET (
+static Obj FuncADD_SET (
                  Obj                 self,
                  Obj                 set,
                  Obj                 obj )
@@ -523,7 +523,7 @@ Obj FuncADD_SET (
 **  'RemoveSet'   does   not return anything,  it   is  only called  for  the
 **  side effect of changing <set>.
 */
-Obj FuncREM_SET (
+static Obj FuncREM_SET (
     Obj                 self,
     Obj                 set,
     Obj                 obj )
@@ -581,7 +581,7 @@ Obj FuncREM_SET (
 **
 */
 
-Obj FuncUNITE_SET (
+static Obj FuncUNITE_SET (
     Obj                 self,
     Obj                 set1,
     Obj                 set2 )
@@ -754,7 +754,7 @@ static UInt InterSetInner2( Obj set1, Obj set2, Obj setr, UInt len1, UInt len2)
 }
 
 
-Obj FuncINTER_SET (
+static Obj FuncINTER_SET (
     Obj                 self,
     Obj                 set1,
     Obj                 set2 )
@@ -920,7 +920,7 @@ static UInt SubtrSetInner2( Obj set1, Obj set2, UInt len1, UInt len2)
   return lenr;
 }
 
-Obj FuncSUBTR_SET (
+static Obj FuncSUBTR_SET (
     Obj                 self,
     Obj                 set1,
     Obj                 set2 )

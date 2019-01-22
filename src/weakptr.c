@@ -220,7 +220,7 @@ static inline void GROW_WPOBJ(Obj wp, UInt need)
 **  WP object.
 */
 
-Obj FuncWeakPointerObj(Obj self, Obj list)
+static Obj FuncWeakPointerObj(Obj self, Obj list)
 {
   Obj wp; 
   Int i;
@@ -270,7 +270,7 @@ Obj FuncWeakPointerObj(Obj self, Obj list)
 **  only happens if we have exclusive write access.
 */
 
-Int LengthWPObj(Obj wp)
+static Int LengthWPObj(Obj wp)
 {
   Int changed = 0;
   Int len = STORED_LEN_WPOBJ(wp);
@@ -301,7 +301,7 @@ Int LengthWPObj(Obj wp)
 **  collection, as trailing items may evaporate.
 */
 
-Obj FuncLengthWPObj(Obj self, Obj wp)
+static Obj FuncLengthWPObj(Obj self, Obj wp)
 {
     RequireWPObj("LengthWPObj", wp);
     return INTOBJ_INT(LengthWPObj(wp));
@@ -316,7 +316,7 @@ Obj FuncLengthWPObj(Obj self, Obj wp)
 **  a WP object.
 */
 
-Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
+static Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 {
     RequireWPObj("SetElmWPObj", wp);
     UInt ipos = GetPositiveSmallInt("SetElmWPObj", pos);
@@ -360,7 +360,7 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 ** */
 
 
-Int IsBoundElmWPObj( Obj wp, Obj pos)
+static Int IsBoundElmWPObj( Obj wp, Obj pos)
 {
     RequireWPObj("IsBoundElmWPObj", wp);
     UInt ipos = GetPositiveSmallInt("IsBoundElmWPObj", pos);
@@ -392,7 +392,7 @@ Int IsBoundElmWPObj( Obj wp, Obj pos)
 **  GAP  handler for IsBound  test on WP object.   Remember that bindings can
 **  evaporate in any garbage collection.
 */
-Obj FuncIsBoundElmWPObj( Obj self, Obj wp, Obj pos)
+static Obj FuncIsBoundElmWPObj( Obj self, Obj wp, Obj pos)
 {
   return IsBoundElmWPObj(wp, pos) ? True : False;
 }
@@ -405,7 +405,7 @@ Obj FuncIsBoundElmWPObj( Obj self, Obj wp, Obj pos)
 **  GAP  handler for Unbind on WP object. 
 */
 
-Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
+static Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 {
     RequireWPObj("UnbindElmWPObj", wp);
     UInt ipos = GetPositiveSmallInt("UnbindElmWPObj", pos);
@@ -439,7 +439,7 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
 **
 **  Provide implementation of 'ElmDefListFuncs'.
 */
-Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
+static Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
 {
     GAP_ASSERT(TNUM_OBJ(wp) == T_WPOBJ);
     GAP_ASSERT(ipos >= 1);
@@ -481,7 +481,7 @@ Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
 **  IsBound, relying on the fact  that fail can never  dissapear in a garbage
 **  collection.
 */
-Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
+static Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
 {
     RequireWPObj("ElmWPObj", wp);
     UInt ipos = GetPositiveSmallInt("ElmWPObj", pos);
@@ -498,9 +498,9 @@ Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
 **  same type.
 */
 
-Obj TYPE_WPOBJ;              
+static Obj TYPE_WPOBJ;              
 
-Obj TypeWPObj( Obj wp )
+static Obj TypeWPObj( Obj wp )
 {
   return TYPE_WPOBJ;
 }
@@ -512,7 +512,7 @@ Obj TypeWPObj( Obj wp )
 */
 static Obj IsWPObjFilt;
 
-Obj FuncIsWPObj( Obj self, Obj wp)
+static Obj FuncIsWPObj( Obj self, Obj wp)
 {
   return (TNUM_OBJ(wp) == T_WPOBJ) ? True : False;
 }
@@ -555,7 +555,7 @@ static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
 
 #ifdef USE_THREADSAFE_COPYING
 #ifndef WARD_ENABLED
-void TraverseWPObj(TraversalState * traversal, Obj obj)
+static void TraverseWPObj(TraversalState * traversal, Obj obj)
 {
     UInt  len = STORED_LEN_WPOBJ(obj);
     const Obj * ptr = CONST_ADDR_OBJ(obj) + 1;
@@ -569,7 +569,7 @@ void TraverseWPObj(TraversalState * traversal, Obj obj)
     }
 }
 
-void CopyWPObj(TraversalState * traversal, Obj copy, Obj original)
+static void CopyWPObj(TraversalState * traversal, Obj copy, Obj original)
 {
     UInt  len = STORED_LEN_WPOBJ(original);
     const Obj * ptr = CONST_ADDR_OBJ(original) + 1;
@@ -603,7 +603,7 @@ void CopyWPObj(TraversalState * traversal, Obj copy, Obj original)
 **
 */
 
-Obj CopyObjWPObj (
+static Obj CopyObjWPObj (
     Obj                 obj,
     Int                 mut )
 {
@@ -654,7 +654,7 @@ Obj CopyObjWPObj (
 **
 */
 
-void MakeImmutableWPObj( Obj obj )
+static void MakeImmutableWPObj( Obj obj )
 {
 #ifdef USE_BOEHM_GC
   UInt i;
@@ -725,7 +725,7 @@ void MakeImmutableWPObj( Obj obj )
 **
 *F  CleanObjWPObj(<obj>) . . . . . . . . . . . . . . . . . .  clean WP object
 */
-void CleanObjWPObj (
+static void CleanObjWPObj (
     Obj                 obj )
 {
     UInt                i;              /* loop variable                   */
@@ -748,7 +748,7 @@ void CleanObjWPObj (
 *F  SaveWPObj(<wpobj>)
 */
 
-void SaveWPObj(Obj wpobj)
+static void SaveWPObj(Obj wpobj)
 {
     UInt len = STORED_LEN_WPOBJ(wpobj);
     SaveUInt(len);
@@ -762,7 +762,7 @@ void SaveWPObj(Obj wpobj)
 *F  LoadWPObj(<wpobj>)
 */
 
-void LoadWPObj(Obj wpobj)
+static void LoadWPObj(Obj wpobj)
 {
     const UInt len = LoadUInt();
     STORE_LEN_WPOBJ(wpobj, len);

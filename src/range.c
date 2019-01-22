@@ -70,10 +70,10 @@
 **  'TypeRangeNSort' is the  function in 'TypeObjFuncs' for ranges which are
 **  not strictly sorted.
 */
-Obj TYPE_RANGE_NSORT_IMMUTABLE;
-Obj TYPE_RANGE_NSORT_MUTABLE;
+static Obj TYPE_RANGE_NSORT_IMMUTABLE;
+static Obj TYPE_RANGE_NSORT_MUTABLE;
 
-Obj TypeRangeNSort(Obj list)
+static Obj TypeRangeNSort(Obj list)
 {
     return IS_MUTABLE_OBJ(list) ? TYPE_RANGE_NSORT_MUTABLE
                                 : TYPE_RANGE_NSORT_IMMUTABLE;
@@ -87,10 +87,10 @@ Obj TypeRangeNSort(Obj list)
 **  'TypeRangeSSort' is the function in 'TypeObjFuncs' for ranges which are
 **  strictly sorted.
 */
-Obj TYPE_RANGE_SSORT_IMMUTABLE;
-Obj TYPE_RANGE_SSORT_MUTABLE;
+static Obj TYPE_RANGE_SSORT_IMMUTABLE;
+static Obj TYPE_RANGE_SSORT_MUTABLE;
 
-Obj TypeRangeSSort(Obj list)
+static Obj TypeRangeSSort(Obj list)
 {
     return IS_MUTABLE_OBJ(list) ? TYPE_RANGE_SSORT_MUTABLE
                                 : TYPE_RANGE_SSORT_IMMUTABLE;
@@ -113,7 +113,7 @@ Obj TypeRangeSSort(Obj list)
 **
 **  'CopyRange' is the function in 'CopyObjFuncs' for ranges.
 */
-Obj CopyRange (
+static Obj CopyRange (
     Obj                 list,
     Int                 mut )
 {
@@ -150,7 +150,7 @@ Obj CopyRange (
 **
 **  'PrintRange' handles bags of type 'T_RANGE'.
 */
-void            PrintRange (
+static void            PrintRange (
     Obj                 list )
 {
     Pr( "%2>[ %2>%d",   
@@ -171,7 +171,7 @@ void            PrintRange (
 **  'EqRange' returns 'true' if the two ranges <listL>  and <listR> are equal
 **  and 'false' otherwise.
 */
-Int             EqRange (
+static Int             EqRange (
     Obj                 listL,
     Obj                 listR )
 {
@@ -188,7 +188,7 @@ Int             EqRange (
 **  'LtRange' returns 'true'  if  the range  <listL> is less  than the  range
 **  <listR> and 'false' otherwise.
 */
-Int             LtRange (
+static Int             LtRange (
     Obj                 listL,
     Obj                 listR )
 {
@@ -223,7 +223,7 @@ Int             LtRange (
 **
 **  'LenRange' is the function in 'LenListFuncs' for ranges.
 */
-Int             LenRange (
+static Int             LenRange (
     Obj                 list )
 {
     return GET_LEN_RANGE( list );
@@ -240,7 +240,7 @@ Int             LenRange (
 **
 **  'IsbRange' is the function in 'IsbListFuncs' for ranges.
 */
-Int             IsbRange (
+static Int             IsbRange (
     Obj                 list,
     Int                 pos )
 {
@@ -261,7 +261,7 @@ Int             IsbRange (
 **  that <pos> is  less than or  equal to the  length of <list>, this is  the
 **  responsibility of the caller.
 */
-Obj             Elm0Range (
+static Obj             Elm0Range (
     Obj                 list,
     Int                 pos )
 {
@@ -273,7 +273,7 @@ Obj             Elm0Range (
     }
 }
 
-Obj             Elm0vRange (
+static Obj             Elm0vRange (
     Obj                 list,
     Int                 pos )
 {
@@ -297,7 +297,7 @@ Obj             Elm0vRange (
 **  'ElmRange' is the function in  'ElmListFuncs' for ranges.  'ElmvRange' is
 **  the function in 'ElmvListFuncs' for ranges.
 */
-Obj             ElmRange (
+static Obj             ElmRange (
     Obj                 list,
     Int                 pos )
 {
@@ -311,7 +311,7 @@ Obj             ElmRange (
     return GET_ELM_RANGE( list, pos );
 }
 
-Obj             ElmvRange (
+static Obj             ElmvRange (
     Obj                 list,
     Int                 pos )
 {
@@ -331,7 +331,7 @@ Obj             ElmvRange (
 **
 **  'ElmsRange' is the function in 'ElmsListFuncs' for ranges.
 */
-Obj             ElmsRange (
+static Obj             ElmsRange (
     Obj                 list,
     Obj                 poss )
 {
@@ -438,7 +438,7 @@ Obj             ElmsRange (
 **  same stuff as 'AssPlist'.  This is because a  range is not very likely to
 **  stay a range after the assignment.
 */
-void            AssRange (
+static void            AssRange (
     Obj                 list,
     Int                 pos,
     Obj                 val )
@@ -475,7 +475,7 @@ void            AssRange (
 **  same stuff as 'AsssPlist'.  This is because a range is not very likely to
 **  stay a range after the assignment.
 */
-void            AsssRange (
+static void            AsssRange (
     Obj                 list,
     Obj                 poss,
     Obj                 vals )
@@ -498,7 +498,7 @@ void            AsssRange (
 **
 **  'IsPossRange' is the function in 'IsPossListFuncs' for ranges.
 */
-Int             IsPossRange (
+static Int             IsPossRange (
     Obj                 list )
 {
     /* test if the first element is positive                               */
@@ -583,7 +583,7 @@ Obj             PosRange (
 **
 **  'PlainRange' is the function in 'PlainListFuncs' for ranges.
 */
-void            PlainRange (
+static void            PlainRange (
     Obj                 list )
 {
     Int                 lenList;        /* length of <list>                */
@@ -616,9 +616,9 @@ void            PlainRange (
 **  otherwise.  As a  side effect 'IsRange' converts proper ranges represented
 **  the ordinary way to the compact representation.
 */
-Obj IsRangeFilt;
+static Obj IsRangeFilt;
 
-Int             IsRange (
+static Int             IsRange (
     Obj                 list )
 {
     Int                 isRange;        /* result of the test              */
@@ -707,7 +707,7 @@ Int             IsRange (
 **  a range and 'false' otherwise.  A range is a list without holes such that
 **  the elements are  consecutive integers.
 */
-Obj FuncIS_RANGE (
+static Obj FuncIS_RANGE (
     Obj                 self,
     Obj                 obj )
 {
@@ -722,7 +722,7 @@ Obj FuncIS_RANGE (
 **
 */
 
-void SaveRange( Obj range )
+static void SaveRange( Obj range )
 {
   SaveSubObj(CONST_ADDR_OBJ(range)[0]); /* length */
   SaveSubObj(CONST_ADDR_OBJ(range)[1]); /* base */
@@ -735,7 +735,7 @@ void SaveRange( Obj range )
 **
 */
 
-void LoadRange( Obj range )
+static void LoadRange( Obj range )
 {
   ADDR_OBJ(range)[0] = LoadSubObj(); /* length */
   ADDR_OBJ(range)[1] = LoadSubObj(); /* base */
@@ -826,9 +826,9 @@ Obj Range3Check (
 **
 *F  FuncIS_RANGE_REP( <self>, <obj> ) . . . . . test if value is in range rep
 */
-Obj IsRangeRepFilt;
+static Obj IsRangeRepFilt;
 
-Obj FuncIS_RANGE_REP (
+static Obj FuncIS_RANGE_REP (
     Obj                 self,
     Obj                 obj )
 {
@@ -841,7 +841,7 @@ Obj FuncIS_RANGE_REP (
 **
 */
 
-void MakeImmutableRange( Obj range )
+static void MakeImmutableRange( Obj range )
 {
     MakeImmutableNoRecurse(range);
 }
@@ -866,7 +866,7 @@ static Int egcd (Int a, Int b, Int *lastx, Int *lasty)
   return a;
 } /* returns g=gcd(a,b), with lastx*a+lasty*b = g */
 
-Obj FuncINTER_RANGE( Obj self, Obj r1, Obj r2)
+static Obj FuncINTER_RANGE( Obj self, Obj r1, Obj r2)
 {
   Int low1, low2, inc1, inc2, lowi, inci, g, x, y;
   UInt len1, len2, leni;
