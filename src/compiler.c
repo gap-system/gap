@@ -1186,8 +1186,6 @@ CVar CompFuncExpr (
     Emit( "SET_BODY_FUNC(%c, %c);\n", func, tmp );
     FreeTemp( TEMP_CVAR( tmp ) );
 
-    Emit( "CHANGED_BAG( STATE(CurrLVars) );\n" );
-
     /* we know that the result is a function                               */
     SetInfoCVar( func, W_FUNC );
 
@@ -5468,7 +5466,6 @@ Int CompileFunc (
     Emit( "\n/* create all the functions defined in this module */\n" );
     Emit( "func1 = NewFunction(NameFunc[1],%d,0,HdlrFunc1);\n", NARG_FUNC(ELM_PLIST(CompFunctions,1)) );
     Emit( "SET_ENVI_FUNC( func1, STATE(CurrLVars) );\n" );
-    Emit( "CHANGED_BAG( STATE(CurrLVars) );\n" );
     Emit( "body1 = NewFunctionBody();\n" );
     Emit( "SET_BODY_FUNC( func1, body1 );\n" );
     Emit( "CHANGED_BAG( func1 );\n");

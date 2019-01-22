@@ -212,7 +212,6 @@ static Obj  HdlrFunc3 (
  SET_ENDLINE_BODY(t_2, 42);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  l_vararg__fun = t_1;
  
  /* Print( vararg_fun(  ), "\n" ); */
@@ -340,7 +339,6 @@ static Obj  HdlrFunc3 (
  SET_ENDLINE_BODY(t_2, 73);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  l_vararg__fun = t_1;
  
  /* vararg_fun(  ); */
@@ -1596,7 +1594,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 30);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_test__int__constants, t_1 );
  
  /* test_func_calls := function (  )
@@ -1639,7 +1636,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 94);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_test__func__calls, t_1 );
  
  /* test_cmp_ops := function (  )
@@ -1739,7 +1735,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 145);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_test__cmp__ops, t_1 );
  
  /* test_arith := function (  )
@@ -1757,7 +1752,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 159);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_test__arith, t_1 );
  
  /* test_tilde := function (  )
@@ -1771,7 +1765,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 181);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_test__tilde, t_1 );
  
  /* test_list_rec_exprs := function (  )
@@ -1811,7 +1804,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 215);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_test__list__rec__exprs, t_1 );
  
  /* myglobal := 1; */
@@ -1872,7 +1864,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 281);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_test__IsBound__Unbind, t_1 );
  
  /* test_loops := function (  )
@@ -1920,7 +1911,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 328);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_test__loops, t_1 );
  
  /* runtest := function (  )
@@ -1942,7 +1932,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 346);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG( STATE(CurrLVars) );
  AssGVar( G_runtest, t_1 );
  
  /* return; */
@@ -2067,7 +2056,6 @@ static Int InitLibrary ( StructInitInfo * module )
  /* create all the functions defined in this module */
  func1 = NewFunction(NameFunc[1],0,0,HdlrFunc1);
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
- CHANGED_BAG( STATE(CurrLVars) );
  body1 = NewFunctionBody();
  SET_BODY_FUNC( func1, body1 );
  CHANGED_BAG( func1 );
