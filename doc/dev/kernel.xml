@@ -682,9 +682,9 @@ function bag. This is needed so that it can be identified when loading a
 saved workspace.  <A>cookie</A> should be a  unique &C; string, identifying the
 handler.
 <P/>
-To create a function object, there are four functions
-<C>NewFunction</C>, <C>NewFunctionC</C>, <C>NewFunctionT</C> and 
-<C>NewFunctionCT</C>, defined in the file <File>calls.c</File>.
+To create a function object, there are three functions
+<C>NewFunction</C>, <C>NewFunctionC</C>, and <C>NewFunctionT</C>,
+defined in the file <File>calls.c</File>.
 <P/>
 <C>NewFunction( name, narg, nams, hdlr )</C>
 creates and returns a new function.  <A>name</A> must be  a  &GAP;
@@ -699,7 +699,6 @@ but  expects  <A>name</A>  and <A>nams</A> as &C; strings.
 <C>NewFunctionT</C> also does the same as <C>NewFunction</C>, 
 but has two extra arguments that allow to specify  the
 <A>type</A> and <A>size</A> of the newly created bag.
-<C>NewFunctionCT</C> is a combination of both variations.
 <P/> 
 For example, you can make a function object using the code like:
 <Listing>

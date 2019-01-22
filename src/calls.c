@@ -901,7 +901,7 @@ Obj NewFunctionC (
     const Char *        nams,
     ObjFunc             hdlr )
 {
-    return NewFunctionCT( T_FUNCTION, sizeof(FuncBag), name, narg, nams, hdlr );
+    return NewFunction(MakeImmString(name), narg, ArgStringToList(nams), hdlr);
 }
     
 
@@ -976,33 +976,7 @@ Obj NewFunctionT (
     /* return the function bag                                             */
     return func;
 }
-    
 
-/****************************************************************************
-**
-*F  NewFunctionCT( <type>, <size>, <name>, <narg>, <nams>, <hdlr> )
-**
-**  'NewFunctionCT' does the same as 'NewFunction', but  expects  <name>  and
-**  <nams> as C strings, and allows to specify the <type> and <size>  of  the
-**  newly created bag.
-*/
-Obj NewFunctionCT (
-    UInt                type,
-    UInt                size,
-    const Char *        name_c,
-    Int                 narg,
-    const Char *        nams_c,
-    ObjFunc             hdlr )
-{
-    Obj                 name_o;         /* name as an object               */
-
-    /* convert the name to an object                                       */
-    name_o = MakeImmString(name_c);
-
-    /* make the function                                                   */
-    return NewFunctionT( type, size, name_o, narg, ArgStringToList( nams_c ), hdlr );
-}
-    
 
 /****************************************************************************
 **
