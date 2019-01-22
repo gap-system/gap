@@ -461,7 +461,6 @@ extern void CheckAllHandlers(void);
 *F  NewFunction( <name>, <narg>, <nams>, <hdlr> )  . . .  make a new function
 *F  NewFunctionC( <name>, <narg>, <nams>, <hdlr> ) . . .  make a new function
 *F  NewFunctionT( <type>, <size>, <name>, <narg>, <nams>, <hdlr> )
-*F  NewFunctionCT( <type>, <size>, <name>, <narg>, <nams>, <hdlr> )
 **
 **  'NewFunction' creates and returns a new function.  <name> must be  a  GAP
 **  string containing the name of the function.  <narg> must be the number of
@@ -475,10 +474,6 @@ extern void CheckAllHandlers(void);
 **
 **  'NewFunctionT' does the same as 'NewFunction', but allows to specify  the
 **  <type> and <size> of the newly created bag.
-**
-**  'NewFunctionCT' does the same as 'NewFunction', but  expects  <name>  and
-**  <nams> as C strings, and allows to specify the <type> and <size>  of  the
-**  newly created bag.
 */
 extern Obj NewFunction (
             Obj                 name,
@@ -498,14 +493,6 @@ extern Obj NewFunctionT (
             Obj                 name,
             Int                 narg,
             Obj                 nams,
-            ObjFunc             hdlr );
-    
-extern Obj NewFunctionCT (
-            UInt                type,
-            UInt                size,
-            const Char *        name,
-            Int                 narg,
-            const Char *        nams,
             ObjFunc             hdlr );
     
 
