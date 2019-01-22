@@ -136,7 +136,7 @@ Bag NewLVarsBag(UInt slots)
 */
 void FreeLVarsBag(Bag bag)
 {
-    GAP_ASSERT(TNUM_OBJ(STATE(CurrLVars)) == T_LVARS);
+    GAP_ASSERT(TNUM_OBJ(bag) == T_LVARS);
     UInt slots = (SIZE_BAG(bag) - sizeof(LVarsHeader)) / sizeof(Obj);
     if (slots < ARRAY_SIZE(STATE(LVarsPool))) {
         // clean the bag
