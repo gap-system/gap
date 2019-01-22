@@ -252,9 +252,7 @@ static Obj             TableGVars;
 */
 Obj             ErrorMustEvalToFuncFunc;
 
-static Obj             ErrorMustEvalToFuncHandler (
-    Obj                 self,
-    Obj                 args )
+static Obj ErrorMustEvalToFuncHandler(Obj self, Obj args)
 {
     ErrorQuit(
         "Function Calls: <func> must be a function",
@@ -276,9 +274,7 @@ static Obj             ErrorMustEvalToFuncHandler (
 */
 Obj             ErrorMustHaveAssObjFunc;
 
-static Obj             ErrorMustHaveAssObjHandler (
-    Obj                 self,
-    Obj                 args )
+static Obj ErrorMustHaveAssObjHandler(Obj self, Obj args)
 {
     ErrorQuit(
         "Variable: <<unknown>> must have an assigned value",
@@ -475,7 +471,8 @@ Obj             ValGVarTL (
     return val;
 }
 
-static Obj FuncIsThreadLocalGVar( Obj self, Obj name) {
+static Obj FuncIsThreadLocalGVar(Obj self, Obj name)
+{
   if (!IsStringConv(name))
     ErrorMayQuit("IsThreadLocalGVar: argument must be a string (not a %s)",
                  (Int)TNAM_OBJ(name), 0L);
@@ -488,7 +485,8 @@ static Obj FuncIsThreadLocalGVar( Obj self, Obj name) {
 
 
 #ifdef USE_GVAR_BUCKETS
-static Obj NewGVarBucket(void) {
+static Obj NewGVarBucket(void)
+{
     Obj result = NEW_PLIST(T_PLIST, GVAR_BUCKET_SIZE);
     SET_LEN_PLIST(result, GVAR_BUCKET_SIZE);
 #ifdef HPCGAP
@@ -733,9 +731,7 @@ void MakeThreadLocalVar (
 **  'MakeReadOnlyGVar' make the global  variable with the name <name>  (which
 **  must be a GAP string) read only.
 */
-static Obj FuncMakeReadOnlyGVar (
-    Obj                 self,
-    Obj                 name )
+static Obj FuncMakeReadOnlyGVar(Obj self, Obj name)
 {       
     // check the argument
     RequireStringRep("MakeReadOnlyGVar", name);
@@ -796,9 +792,7 @@ void MakeReadWriteGVar (
 **  'MakeReadWriteGVar' make the global  variable with the name <name>  (which
 **  must be a GAP string) read and writable.
 */
-static Obj FuncMakeReadWriteGVar (
-    Obj                 self,
-    Obj                 name )
+static Obj FuncMakeReadWriteGVar(Obj self, Obj name)
 {
     // check the argument
     RequireStringRep("MakeReadWriteGVar", name);
@@ -877,9 +871,7 @@ static Obj FuncIsConstantGVar(Obj self, Obj name)
 **  cause the execution  of an assignment to  that global variable, otherwise
 **  an error is signalled.
 */
-static Obj             FuncAUTO (
-    Obj                 self,
-    Obj                 args )
+static Obj FuncAUTO(Obj self, Obj args)
 {
     Obj                 func;           /* the function to call            */
     Obj                 arg;            /* the argument to pass            */
@@ -982,8 +974,7 @@ UInt            completion_gvar (
 **
 *F  FuncIDENTS_GVAR( <self> ) . . . . . . . . . .  idents of global variables
 */
-static Obj FuncIDENTS_GVAR (
-    Obj                 self )
+static Obj FuncIDENTS_GVAR(Obj self)
 {
     Obj                 copy;
     UInt                i;
@@ -1010,8 +1001,7 @@ static Obj FuncIDENTS_GVAR (
     return copy;
 }
 
-static Obj FuncIDENTS_BOUND_GVARS (
-    Obj                 self )
+static Obj FuncIDENTS_BOUND_GVARS(Obj self)
 {
     Obj                 copy;
     UInt                i, j;
@@ -1046,10 +1036,7 @@ static Obj FuncIDENTS_BOUND_GVARS (
 **
 *F  FuncASS_GVAR( <self>, <gvar>, <val> ) . . . . assign to a global variable
 */
-static Obj FuncASS_GVAR (
-    Obj                 self,
-    Obj                 gvar,
-    Obj                 val )
+static Obj FuncASS_GVAR(Obj self, Obj gvar, Obj val)
 {
     // check the argument
     RequireStringRep("READ", gvar);
@@ -1063,9 +1050,7 @@ static Obj FuncASS_GVAR (
 **
 *F  FuncISB_GVAR( <self>, <gvar> )  . . check assignment of a global variable
 */
-static Obj FuncISB_GVAR (
-    Obj                 self,
-    Obj                 gvar )
+static Obj FuncISB_GVAR(Obj self, Obj gvar)
 {
     // check the argument
     RequireStringRep("ISB_GVAR", gvar);
@@ -1090,9 +1075,7 @@ static Obj FuncISB_GVAR (
 *F  FuncIS_AUTO_GVAR( <self>, <gvar> ) . . check if a global variable is auto
 */
 
-static Obj FuncIS_AUTO_GVAR (
-    Obj                 self,
-    Obj                 gvar )
+static Obj FuncIS_AUTO_GVAR(Obj self, Obj gvar)
 {
     // check the argument
     RequireStringRep("IS_AUTO_GVAR", gvar);
@@ -1106,9 +1089,7 @@ static Obj FuncIS_AUTO_GVAR (
 *F  FuncVAL_GVAR( <self>, <gvar> )  . . contents of a global variable
 */
 
-static Obj FuncVAL_GVAR (
-    Obj                 self,
-   Obj                 gvar )
+static Obj FuncVAL_GVAR(Obj self, Obj gvar)
 {
     Obj val;
 
@@ -1128,9 +1109,7 @@ static Obj FuncVAL_GVAR (
 *F  FuncUNB_GVAR( <self>, <gvar> )  . . unbind a global variable
 */
 
-static Obj FuncUNB_GVAR (
-    Obj                 self,
-    Obj                 gvar )
+static Obj FuncUNB_GVAR(Obj self, Obj gvar)
 {
     // check the argument
     RequireStringRep("UNB_GVAR", gvar);
@@ -1395,8 +1374,8 @@ void GVarsAfterCollectBags(void)
 
 #ifdef HPCGAP
 
-static GVarDescriptor *FirstDeclaredGVar;
-static GVarDescriptor *LastDeclaredGVar;
+static GVarDescriptor * FirstDeclaredGVar;
+static GVarDescriptor * LastDeclaredGVar;
 
 /****************************************************************************
 **

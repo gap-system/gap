@@ -53,12 +53,7 @@
 **  'SCTableEntry' returns the coefficient $c_{i,j}^{k}$ from the structure
 **  constants table <table>.
 */
-static Obj FuncSC_TABLE_ENTRY (
-    Obj                 self,
-    Obj                 table,
-    Obj                 i,
-    Obj                 j,
-    Obj                 k )
+static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
 {
     Obj                 tmp;            /* temporary                       */
     Obj                 basis;          /* basis  list                     */
@@ -185,11 +180,7 @@ static Obj FuncSC_TABLE_ENTRY (
 **  'SCTableProduct'  returns the product   of  the two elements <list1>  and
 **  <list2> with respect to the structure constants table <table>.
 */
-static void SCTableProdAdd (
-    Obj                 res,
-    Obj                 coeff,
-    Obj                 basis_coeffs,
-    Int                 dim )
+static void SCTableProdAdd(Obj res, Obj coeff, Obj basis_coeffs, Int dim)
 {
     Obj                 basis;
     Obj                 coeffs;
@@ -218,11 +209,7 @@ static void SCTableProdAdd (
     }
 }
 
-static Obj FuncSC_TABLE_PRODUCT (
-    Obj                 self,
-    Obj                 table,
-    Obj                 list1,
-    Obj                 list2 )
+static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
 {
     Obj                 res;            /* result list                     */
     Obj                 row;            /* one row of sc table             */

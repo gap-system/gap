@@ -41,9 +41,7 @@
 **
 *F  CheckTietzeStack( <tietze>, <ptTietze> )
 */
-static void CheckTietzeStack (
-    Obj                 tietze,
-    Obj * *             ptTietze )
+static void CheckTietzeStack(Obj tietze, Obj ** ptTietze)
 {
     /*  check the Tietze stack                                             */
     RequirePlainList(0, tietze);
@@ -60,11 +58,8 @@ static void CheckTietzeStack (
 **
 *F  CheckTietzeRelators( <ptTietze>, <rels>, <ptRels>, <numrels> )
 */
-static void CheckTietzeRelators (
-    Obj *               ptTietze,
-    Obj *               rels,
-    Obj * *             ptRels,
-    Int *              numrels )
+static void
+CheckTietzeRelators(Obj * ptTietze, Obj * rels, Obj ** ptRels, Int * numrels)
 {
     *rels    = ptTietze[TZ_RELATORS];
     *numrels = INT_INTOBJ(ptTietze[TZ_NUMRELS]);
@@ -80,11 +75,8 @@ static void CheckTietzeRelators (
 **
 *F  CheckTietzeInverses( <ptTietze>, <invs>, <ptInvs>, <numgens> )
 */
-static void CheckTietzeInverses (
-    Obj *               ptTietze,
-    Obj *               invs,
-    Obj * *             ptInvs,
-    Int *               numgens )
+static void
+CheckTietzeInverses(Obj * ptTietze, Obj * invs, Obj ** ptInvs, Int * numgens)
 {
     /* get and check the Tietze inverses list                              */
     *invs    = ptTietze[TZ_INVERSES];
@@ -101,11 +93,8 @@ static void CheckTietzeInverses (
 **
 *F  CheckTietzeLengths( <ptTietze>, <numrels>, <lens>, <ptLens> )
 */
-static void CheckTietzeLengths (
-    Obj *               ptTietze,
-    Int                 numrels,
-    Obj *               lens,
-    Obj * *             ptLens )
+static void
+CheckTietzeLengths(Obj * ptTietze, Int numrels, Obj * lens, Obj ** ptLens)
 {
     /*  Get and check the Tietze lengths list                              */
     *lens = ptTietze[TZ_LENGTHS];
@@ -121,11 +110,8 @@ static void CheckTietzeLengths (
 **
 *F  CheckTietzeFlags( <ptTietze>, <numrels>, <flags>, <ptFlags> )
 */
-static void CheckTietzeFlags (
-    Obj *               ptTietze,
-    Int                 numrels,
-    Obj *               flags,
-    Obj * *             ptFlags )
+static void
+CheckTietzeFlags(Obj * ptTietze, Int numrels, Obj * flags, Obj ** ptFlags)
 {
     /* get and check the Tietze flags list                                 */
     *flags = ptTietze[TZ_FLAGS];
@@ -141,12 +127,8 @@ static void CheckTietzeFlags (
 **
 *F  CheckTietzeRelLengths( <ptTietze>, <ptRels>, <ptLens>, <nrels>, <total> )
 */
-static void CheckTietzeRelLengths (
-    Obj *               ptTietze,
-    Obj *               ptRels,
-    Obj *               ptLens,
-    Int                 numrels,
-    Int  *              total )
+static void CheckTietzeRelLengths(
+    Obj * ptTietze, Obj * ptRels, Obj * ptLens, Int numrels, Int * total)
 {
     Int                i;
 
@@ -173,9 +155,7 @@ static void CheckTietzeRelLengths (
 **
 *F  FuncTzSortC( <self>, <stack> )  . . . . . . . sort the relators by length
 */
-static Obj FuncTzSortC (
-    Obj                 self,
-    Obj                 tietze )
+static Obj FuncTzSortC(Obj self, Obj tietze)
 {
     Obj *               ptTietze;       /* pointer to the Tietze stack     */
     Obj                 rels;           /* relators list                   */
@@ -248,9 +228,7 @@ static Obj FuncTzSortC (
 **
 *F  FuncTzRenumberGens( <self>, <stack> ) . .  renumber the Tietze generators
 */
-static Obj FuncTzRenumberGens (
-    Obj                 self,
-    Obj                 tietze )
+static Obj FuncTzRenumberGens(Obj self, Obj tietze)
 {
     Obj *               ptTietze;       /* pointer to this stack           */
     Obj                 rels;           /* handle of the relators list     */
@@ -297,9 +275,7 @@ static Obj FuncTzRenumberGens (
 **
 *F  FuncTzReplaceGens( <self>, <stack> )  replace Tietze generators by others
 */
-static Obj FuncTzReplaceGens (
-    Obj                 self,
-    Obj                 tietze )
+static Obj FuncTzReplaceGens(Obj self, Obj tietze)
 {
     Obj *               ptTietze;       /* pointer to this stack           */
     Obj                 rels;           /* handle of the relators list     */
@@ -422,11 +398,7 @@ static Obj FuncTzReplaceGens (
 **
 *F  FuncTzSubstituteGen( <self>, <stack>, <gennum>, <word> )
 */
-static Obj FuncTzSubstituteGen (
-    Obj                 self,
-    Obj                 tietze,
-    Obj                 gennum,
-    Obj                 word )
+static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
 {
     Obj *               ptTietze;       /* pointer to this stack           */
     Obj                 rels;           /* handle of the relators list     */
@@ -647,9 +619,7 @@ static Obj FuncTzSubstituteGen (
 **
 *F  FuncTzOccurrences( <self>, <args> ) . .  occurrences of Tietze generators
 */
-static Obj FuncTzOccurrences ( 
-    Obj                 self,
-    Obj                 args )
+static Obj FuncTzOccurrences(Obj self, Obj args)
 {
     Obj                 tietze;         /* handle of the Tietze stack      */
     Obj *               ptTietze;       /* pointer to the Tietze stack     */
@@ -853,9 +823,7 @@ static Obj FuncTzOccurrences (
 **
 *F  FuncTzOccurrencesPairs( <self>, <args> )  . . . . .  occurrences of pairs
 */
-static Obj FuncTzOccurrencesPairs (
-    Obj                 self,
-    Obj                 args )
+static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
 {
     Obj                 tietze;         /* handle of the Tietze stack      */
     Obj *               ptTietze;       /* pointer to the Tietze stack     */
@@ -1025,9 +993,7 @@ static Obj FuncTzOccurrencesPairs (
 **
 *F  FuncTzSearchC( <self>, <args> ) . find subword matches in Tietze relators
 */
-static Obj FuncTzSearchC (
-    Obj                 self,
-    Obj                 args )
+static Obj FuncTzSearchC(Obj self, Obj args)
 {
     Obj                 tietze;         /* handle of the Tietze stack      */
     Obj *               ptTietze;       /* pointer to this stack           */
@@ -1511,10 +1477,7 @@ static Obj FuncTzSearchC (
 
 /* rewriting using tz form relators */
 
-static Obj  FuncREDUCE_LETREP_WORDS_REW_SYS (
- Obj  self,
- Obj  tzrules,
- Obj  a_w )
+static Obj FuncREDUCE_LETREP_WORDS_REW_SYS(Obj self, Obj tzrules, Obj a_w)
 {
  UInt n,lt,i,k,p,j,lrul,eq,rlen,newlen,a;
  Obj w,nw,rul;

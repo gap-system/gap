@@ -89,10 +89,9 @@ static void CleanOut( void )
 **
 **  ... more about ApplyRel ...
 */
-static Obj FuncApplyRel (
-    Obj                 self,
-    Obj                 app,            /* handle of the application list  */
-    Obj                 rel )           /* handle of the relator           */
+static Obj FuncApplyRel(Obj self,
+                        Obj app, /* handle of the application list  */
+                        Obj rel) /* handle of the relator           */
 {
     
     Int                 lp;             /* left pointer into relator       */
@@ -370,9 +369,7 @@ static void HandleCoinc (
 **
 *F  FuncMakeConsequences( <self>, <list> )  find consqs of a coset definition
 */
-static Obj FuncMakeConsequences (
-    Obj                 self,
-    Obj                 list )
+static Obj FuncMakeConsequences(Obj self, Obj list)
 {
     Obj                 hdSubs;         /*                                 */
     Obj                 objRels;        /*                                 */
@@ -552,9 +549,7 @@ static Obj FuncMakeConsequences (
 **  This  is a  special version  of  `FuncMakeConsequences'  for the subgroup
 **  presentation routines.
 */
-static Obj FuncMakeConsequencesPres (
-    Obj                 self,
-    Obj                 list )
+static Obj FuncMakeConsequencesPres(Obj self, Obj list)
 {
     Obj                 objDefs1;       /* handle of defs list part 1      */
     Obj                 objDefs2;       /* handle of defs list part 2      */
@@ -665,10 +660,7 @@ static Obj FuncMakeConsequencesPres (
 **  If  not  <stan> = 1  the table  is standardized  using the  (new)  lenlex
 **  standard (this is the default).
 */
-static Obj FuncStandardizeTableC (
-    Obj                 self,
-    Obj                 table,
-    Obj                 stan )
+static Obj FuncStandardizeTableC(Obj self, Obj table, Obj stan)
 {
     Obj *               ptTable;        /* pointer to table                */
     UInt                nrgen;          /* number of rows of the table / 2 */
@@ -1096,11 +1088,7 @@ static void AddCosetFactor2 (
 **
 **  ...more about ApplyRel2...
 */
-static Obj FuncApplyRel2 (
-    Obj                 self,
-    Obj                 app,
-    Obj                 rel,
-    Obj                 nums )
+static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
 {
     Obj *               ptApp;          /* pointer to that list            */
     Obj                 word;           /* handle of resulting word        */
@@ -1351,9 +1339,7 @@ static Obj FuncApplyRel2 (
 **  'FuncCopyRel' returns a copy  of the given RRS  relator such that the bag
 **  of the copy does not exceed the minimal required size.
 */
-static Obj FuncCopyRel ( 
-    Obj                 self,
-    Obj                 rel )           /* the given relator               */
+static Obj FuncCopyRel(Obj self, Obj rel) /* the given relator */
 {
     Obj *               ptRel;          /* pointer to the given relator    */
     Obj                 copy;           /* the copy                        */
@@ -1389,9 +1375,7 @@ static Obj FuncCopyRel (
 **  routines.  It replaces the given relator by its canonical representative.
 **  It does not return anything.
 */
-static Obj FuncMakeCanonical (
-    Obj                 self,
-    Obj                 rel )           /* the given relator               */
+static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
 {
     Obj *               ptRel;          /* pointer to the relator          */
     Obj                 obj1,  obj2;    /* handles 0f relator entries      */
@@ -1545,10 +1529,7 @@ static Obj FuncMakeCanonical (
 **  in the  current generators, if  it finds any, or it  defines a new proper
 **  tree entry, and then returns it.
 */
-static Obj FuncTreeEntry(
-    Obj                 self,
-    Obj                 tree,
-    Obj                 word )
+static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
 {
     Obj *               ptTree1;        /* pointer to that component       */
     Obj *               ptTree2;        /* pointer to that component       */
@@ -1815,11 +1796,7 @@ static Obj FuncTreeEntry(
 **  If  not  <stan> = 1  the table  is standardized  using the  (new)  lenlex
 **  standard (this is the default).
 */
-static Obj FuncStandardizeTable2C (
-    Obj                 self,
-    Obj                 table,
-    Obj                 table2,
-    Obj                 stan )
+static Obj FuncStandardizeTable2C(Obj self, Obj table, Obj table2, Obj stan)
 {
     Obj *               ptTable;        /* pointer to table                */
     Obj *               ptTabl2;        /* pointer to coset factor table   */
@@ -1939,10 +1916,9 @@ static Obj FuncStandardizeTable2C (
 **
 **  'FuncAddAbelianRelator' implements 'AddAbelianRelator(<rels>,<number>)'
 */
-static Obj FuncAddAbelianRelator (
-    Obj                 self,
-    Obj                 rels,           /* relators list                   */
-    Obj                 number )
+static Obj FuncAddAbelianRelator(Obj self,
+                                 Obj rels, /* relators list */
+                                 Obj number)
 {
     Obj *               ptRels;         /* pointer to relators list        */
     Obj *               pt1;            /* pointer to a relator            */
@@ -2018,12 +1994,9 @@ static Obj FuncAddAbelianRelator (
 
 /* new type functions that use different data structures */
 
-static UInt ret1,ret2;
+static UInt ret1, ret2;
 
-static UInt RelatorScan (
-  Obj t,
-  UInt di,
-  Obj r )
+static UInt RelatorScan(Obj t, UInt di, Obj r)
 {
     UInt  m,i,p,a,j;
     UInt  pa=0,pb=0;
@@ -2100,12 +2073,11 @@ static Obj TYPE_LOWINDEX_DATA;
 *F  FuncLOWINDEX_COSET_SCAN( <t>,<r>,<s1>,<s2>)
 **
 */
-static Obj FuncLOWINDEX_COSET_SCAN (
-    Obj                 self,
-    Obj                 t,              /* table */
-    Obj                 r,              /* relators */
-    Obj                 s1,             /* stack */
-    Obj                 s2 )            /* stack */
+static Obj FuncLOWINDEX_COSET_SCAN(Obj self,
+                                   Obj t,  /* table */
+                                   Obj r,  /* relators */
+                                   Obj s1, /* stack */
+                                   Obj s2) /* stack */
 {
   UInt ok,i,j,d,e,x,y,l,sd;
   Obj  rx;
@@ -2187,12 +2159,11 @@ static Obj FuncLOWINDEX_COSET_SCAN (
 *F  FuncLOWINDEX_IS_FIRST( <t>,<n>,<mu>,<nu>)
 **
 */
-static Obj FuncLOWINDEX_IS_FIRST (
-    Obj                 self,
-    Obj                 t,              /* table */
-    Obj                 nobj,              /* relators */
-    Obj                 muo,             /* stack */
-    Obj                 nuo )            /* stack */
+static Obj FuncLOWINDEX_IS_FIRST(Obj self,
+                                 Obj t,    /* table */
+                                 Obj nobj, /* relators */
+                                 Obj muo,  /* stack */
+                                 Obj nuo)  /* stack */
 {
   UInt l,ok,b,g,ga,de,a,n,mm;
   UInt * mu;
@@ -2245,9 +2216,7 @@ static Obj FuncLOWINDEX_IS_FIRST (
 *F  FuncLOWINDEX_PREPARE_RELS( <rels> )
 **
 */
-static Obj FuncLOWINDEX_PREPARE_RELS (
-    Obj                 self,
-    Obj                 r )             /* rels */
+static Obj FuncLOWINDEX_PREPARE_RELS(Obj self, Obj r) /* rels */
 {
    UInt i,j,k,l;
    Obj ri, rel;
@@ -2274,13 +2243,12 @@ static Obj FuncLOWINDEX_PREPARE_RELS (
 *F  FuncTC_QUICK_SCAN( <c>,<o>,<alpha>,<w>)
 **
 */
-static Obj FuncTC_QUICK_SCAN (
-    Obj                 self,
-    Obj                 c,              /* table */
-    Obj                 o,              /* offset */
-    Obj                 a,              /* alpha */
-    Obj                 w,              /* word */
-    Obj                 result )        /* result list */
+static Obj FuncTC_QUICK_SCAN(Obj self,
+                             Obj c,      /* table */
+                             Obj o,      /* offset */
+                             Obj a,      /* alpha */
+                             Obj w,      /* word */
+                             Obj result) /* result list */
 {
   Int f,b,ff,bb,r,i,j,alpha,offset;
 

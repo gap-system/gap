@@ -260,7 +260,7 @@ static Obj  Part(Obj list, Int pos1, Int pos2);
 **  Dt_add is used to store the library function dt_add.
 */
 
-static Obj                    Dt_add;
+static Obj Dt_add;
 
 /****************************************************************************
 **
@@ -268,8 +268,7 @@ static Obj                    Dt_add;
 **
 **  'UnmarkTree' removes all marks of all nodes of the tree <tree>.
 */
-static void  UnmarkTree(
-                  Obj   tree )
+static void UnmarkTree(Obj tree)
 {
     UInt     i, len; /*  loop variable                     */
 
@@ -289,9 +288,7 @@ static void  UnmarkTree(
 **
 **  'UnmarkTree' removes all marks of all nodes of the tree <tree>.
 */
-static Obj  FuncUnmarkTree(
-                     Obj  self,
-                     Obj  tree   )
+static Obj FuncUnmarkTree(Obj self, Obj tree)
 {
     UnmarkTree(tree);
     return  0;
@@ -311,10 +308,7 @@ static Obj  FuncUnmarkTree(
 **  is equal to {1,...,n} for a positive integer n,  'Mark' actually returns
 **  the Maximum of {pos(a) | a almost equal to (<reftree>, index)}.
 */
-static UInt   Mark(
-            Obj   tree,
-            Obj   reftree,
-            Int   indexx  )
+static UInt Mark(Obj tree, Obj reftree, Int indexx)
 {
     UInt  i, /*  loop variable                    */
           m, /*  integer to return                */
@@ -368,11 +362,7 @@ static UInt   Mark(
 **  and <index2> has to be a positive integer less or equal to the number of
 **  nodes of <tree2>.
 */
-static Int     AlmostEqual(
-                     Obj    tree1,
-                     Int    index1,
-                     Obj    tree2,
-                     Int    index2    )
+static Int AlmostEqual(Obj tree1, Int index1, Obj tree2, Int index2)
 {
     UInt   k, schranke; /*   loop variable                                             */
     /*  First the two top nodes of tree(<tree1>, index1) and
@@ -418,11 +408,7 @@ static Int     AlmostEqual(
 **  and <index2> has to be a positive integer less or equal to the number of
 **  nodes of <tree2>.
 */
-static Int     Equal(
-               Obj     tree1,
-               Int     index1,
-               Obj     tree2,
-               Int     index2   )
+static Int Equal(Obj tree1, Int index1, Obj tree2, Int index2)
 {
     UInt   k, schranke; /*  loop variable                                   */
 
@@ -467,11 +453,7 @@ static Int     Equal(
 **  of <tree>,  and <index2> has to be a positive integer less or equal to
 **  the number of nodes of <reftree>.
 */
-static Obj    Mark2(
-              Obj        tree,
-              Int        index1,
-              Obj        reftree,
-              Int        index2   )
+static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
 {
     UInt    i, /*  loop variable                                          */
             len;
@@ -552,9 +534,7 @@ static Obj    Mark2(
 **  does not exist 'Findtree' returns 0 (as C integer).  Note that this holds
 **  if and only if tree(<tree>, index) is marked.
 */
-static UInt    FindTree(
-                 Obj     tree,
-                 Int     indexx )
+static UInt FindTree(Obj tree, Int indexx)
 {
     UInt   i; /*     loop variable                                    */
 
@@ -608,9 +588,7 @@ static UInt    FindTree(
 **  'MakeFormulaVector' only returns correct results if all nodes of <tree>
 **  are unmarked.
 */
-static Obj    MakeFormulaVector(
-                          Obj    tree,
-                          Obj    pr   )
+static Obj MakeFormulaVector(Obj tree, Obj pr)
 {
     UInt  i, /*    denominator of a binomial coefficient              */
           j, /*    loop variable                                      */
@@ -694,10 +672,7 @@ static Obj    MakeFormulaVector(
 **  'MakeFormulaVector' returns the formula vector for the tree <tree> and
 **  the pc-presentation <pr>.
 */
-static Obj    FuncMakeFormulaVector(
-                              Obj      self,
-                              Obj      tree,
-                              Obj      pr            )
+static Obj FuncMakeFormulaVector(Obj self, Obj tree, Obj pr)
 {
     if  (LEN_PLIST(tree) == 5)
         ErrorReturnVoid("<tree> has to be a non-atom", 0L, 0L,
@@ -716,11 +691,7 @@ static Obj    FuncMakeFormulaVector(
 **  tree(<tree1>, index1) and tree(<tree2>, index2) both occur. It is assumed
 **  that tree(<tree1>, index1) is not equal to tree(<tree2>, index2). 
 */
-static Int     Leftof(
-                Obj     tree1,
-                Int     index1,
-                Obj     tree2,
-                Int     index2    )
+static Int Leftof(Obj tree1, Int index1, Obj tree2, Int index2)
 {
     if  ( DT_LENGTH(tree1, index1) ==  1  &&  DT_LENGTH(tree2, index2) == 1 ) {
         if (DT_SIDE(tree1, index1) == LEFT && DT_SIDE(tree2, index2) == RIGHT)
@@ -766,11 +737,7 @@ static Int     Leftof(
 **  tree(<tree1>, index1) and tree(<tree2>, index2) are non-atoms,  then their
 **  right trees and their left trees are not equal. 
 */
-static Int    Leftof2(
-                Obj    tree1,
-                Int    index1,
-                Obj    tree2,
-                Int    index2     )
+static Int Leftof2(Obj tree1, Int index1, Obj tree2, Int index2)
 {
     if  ( DT_GEN(tree2, index2) < DT_GEN(tree1, DT_RIGHT(tree1, index1) )  )
         return  0;
@@ -797,11 +764,7 @@ static Int    Leftof2(
 **  right(tree(<tree2>, index2) ) or left(tree(<tree1>, index1) ) does not
 **  equal left(tree(<tree2>, index2) ). 
 */
-static Int    Earlier(
-                Obj    tree1,
-                Int    index1,
-                Obj    tree2,
-                Int    index2         )
+static Int Earlier(Obj tree1, Int index1, Obj tree2, Int index2)
 {
     if  ( DT_LENGTH(tree1, index1) == 1 )
         return  1;
@@ -830,13 +793,10 @@ static Int    Earlier(
 */
 
 /* See below: */
-static void GetReps( Obj list, Obj reps );
-static void FindNewReps2( Obj tree, Obj reps, Obj pr);
+static void GetReps(Obj list, Obj reps);
+static void FindNewReps2(Obj tree, Obj reps, Obj pr);
 
-static void    GetPols( 
-                Obj    list,
-                Obj    pr,
-                Obj    pols     )
+static void GetPols(Obj list, Obj pr, Obj pols)
 {
     Obj    lreps,
            rreps,
@@ -890,11 +850,7 @@ static void    GetPols(
 **  FuncGetPols implements the internal function GetPols.
 */
 
-static Obj      FuncGetPols(
-                     Obj      self,
-                     Obj      list,
-                     Obj      pr,
-                     Obj      pols      )
+static Obj FuncGetPols(Obj self, Obj list, Obj pr, Obj pols)
 {
     if  (LEN_PLIST(list) != 4)
         ErrorReturnVoid("<list> must be a generalised representative not a tree"
@@ -914,11 +870,9 @@ static Obj      FuncGetPols(
 */
 
 /* See below: */
-static void FindNewReps1( Obj tree, Obj reps);
+static void FindNewReps1(Obj tree, Obj reps);
 
-static void    GetReps( 
-                Obj    list,
-                Obj    reps     )
+static void GetReps(Obj list, Obj reps)
 {
     Obj    lreps,
            rreps,
@@ -999,13 +953,19 @@ static void    GetReps(
 */
 
 /* See below: */
-static void  FindSubs1( Obj tree, Int x, Obj list1, Obj list2, Obj a, Obj b, 
-                 Int al, Int ar, Int bl, Int br, Obj reps );
+static void FindSubs1(Obj tree,
+                      Int x,
+                      Obj list1,
+                      Obj list2,
+                      Obj a,
+                      Obj b,
+                      Int al,
+                      Int ar,
+                      Int bl,
+                      Int br,
+                      Obj reps);
 
-static void   FindNewReps1(
-                    Obj     tree,
-                    Obj     reps
-                                      )
+static void FindNewReps1(Obj tree, Obj reps)
 {
     Obj   y,           /*  stores a copy of <tree>                       */
           lsubs,       /*  stores pos(<subtree>) for all subtrees of
@@ -1089,15 +1049,23 @@ static void   FindNewReps1(
 }
 
 /* See below: */
-static void  FindSubs2( Obj tree, Int x, Obj list1, Obj list2, Obj a, Obj b, 
-                 Int al, Int ar, Int bl, Int br, Obj reps, Obj pr );
+static void FindSubs2(Obj tree,
+                      Int x,
+                      Obj list1,
+                      Obj list2,
+                      Obj a,
+                      Obj b,
+                      Int al,
+                      Int ar,
+                      Int bl,
+                      Int br,
+                      Obj reps,
+                      Obj pr);
 
-static void   FindNewReps2(
-                    Obj     tree,
-                    Obj     reps,
-                    Obj     pr  /*  pc-presentation for a 
-                                 **  nilpotent group <G>                 */
-                                      )
+static void
+FindNewReps2(Obj tree, Obj reps, Obj pr /*  pc-presentation for a
+                                         **  nilpotent group <G> */
+)
 {
     Obj   lsubs,       /*  stores pos(<subtree>) for all subtrees of
                        **  left(<tree>) in a given almost equal class    */
@@ -1184,15 +1152,14 @@ static void   FindNewReps2(
 }
 
 
-static void   FindNewReps(
-                    Obj     tree,
-                    Obj     reps,
-                    Obj     pr,  /*  pc-presentation for a 
-                                 **  nilpotent group <G>                 */
+static void FindNewReps(Obj tree,
+                        Obj reps,
+                        Obj pr, /*  pc-presentation for a
+                                **  nilpotent group <G>                 */
 
-                    Obj     max  /*  every generator <g_i> of <G> with
-                                 **  i > max lies in the center of <G>   */
-                                      )
+                        Obj max /*  every generator <g_i> of <G> with
+                                **  i > max lies in the center of <G>   */
+)
 {
     Obj   y,           /*  stores a copy of <tree>                       */
           lsubs,       /*  stores pos(<subtree>) for all subtrees of
@@ -1314,12 +1281,7 @@ static void   FindNewReps(
 **  'FuncFindNewReps' implements the internal function 'FindNewReps'.
 */
 
-static Obj    FuncFindNewReps(
-                        Obj     self,
-                        Obj     tree,
-                        Obj     reps,
-                        Obj     pr,
-                        Obj     max       )
+static Obj FuncFindNewReps(Obj self, Obj tree, Obj reps, Obj pr, Obj max)
 {
 
     /*  test if <tree> is really a tree                                    */
@@ -1430,28 +1392,27 @@ v**  argument.
 **  FindNewReps2.  FindSubs is called from FindNewReps and calls FindNewReps.
 */
 
-static void  FindSubs1(
-                Obj        tree,
-                Int        x,     /*  subtree of <tree>                     */
-                Obj        list1, /*  list containing all subtrees of
-                                  **  left(<tree>) almost equal to
-                                  **  tree(<tree>, x)                       */
-                                  
-                Obj        list2, /*  list containing all subtrees of
-                                  **  right(<tree>) almost equal to
-                                  **  tree(<tree>, x)                       */
+static void FindSubs1(Obj tree,
+                      Int x,     /*  subtree of <tree>                     */
+                      Obj list1, /*  list containing all subtrees of
+                                 **  left(<tree>) almost equal to
+                                 **  tree(<tree>, x)                       */
 
-                Obj        a,     /*  list to change,  containing the
-                                  **  pos-arguments of the trees in list1   */
+                      Obj list2, /*  list containing all subtrees of
+                                 **  right(<tree>) almost equal to
+                                 **  tree(<tree>, x)                       */
 
-                Obj        b,     /*  list to change,  containing tthe
-                                  **  pos-arguments of the trees in list2   */
-                Int        al,
-                Int        ar,
-                Int        bl,
-                Int        br,
-                Obj        reps  /*  list of representatives for all trees */
-                                        )
+                      Obj a, /*  list to change,  containing the
+                             **  pos-arguments of the trees in list1   */
+
+                      Obj b, /*  list to change,  containing tthe
+                             **  pos-arguments of the trees in list2   */
+                      Int al,
+                      Int ar,
+                      Int bl,
+                      Int br,
+                      Obj reps /*  list of representatives for all trees */
+)
 {
    Int    i;  /*  loop variable                                             */
 
@@ -1507,29 +1468,28 @@ static void  FindSubs1(
 }
 
 
-static void  FindSubs2(
-                Obj        tree,
-                Int        x,     /*  subtree of <tree>                     */
-                Obj        list1, /*  list containing all subtrees of
-                                  **  left(<tree>) almost equal to
-                                  **  tree(<tree>, x)                       */
-                                  
-                Obj        list2, /*  list containing all subtrees of
-                                  **  right(<tree>) almost equal to
-                                  **  tree(<tree>, x)                       */
+static void FindSubs2(Obj tree,
+                      Int x,     /*  subtree of <tree>                     */
+                      Obj list1, /*  list containing all subtrees of
+                                 **  left(<tree>) almost equal to
+                                 **  tree(<tree>, x)                       */
 
-                Obj        a,     /*  list to change,  containing the
-                                  **  pos-arguments of the trees in list1   */
+                      Obj list2, /*  list containing all subtrees of
+                                 **  right(<tree>) almost equal to
+                                 **  tree(<tree>, x)                       */
 
-                Obj        b,     /*  list to change,  containing the
-                                  **  pos-arguments of the trees in list2   */
-                Int        al,
-                Int        ar,
-                Int        bl,
-                Int        br,
-                Obj        reps,  /*  list of representatives for all trees */
-                Obj        pr    /*  pc-presentation                       */
-                                        )
+                      Obj a, /*  list to change,  containing the
+                             **  pos-arguments of the trees in list1   */
+
+                      Obj b, /*  list to change,  containing the
+                             **  pos-arguments of the trees in list2   */
+                      Int al,
+                      Int ar,
+                      Int bl,
+                      Int br,
+                      Obj reps, /*  list of representatives for all trees */
+                      Obj pr    /*  pc-presentation                       */
+)
 {
    Int    i;  /*  loop variable                                             */
 
@@ -1585,30 +1545,29 @@ static void  FindSubs2(
 }
 
 
-static void  FindSubs(
-                Obj        tree,
-                Int        x,     /*  subtree of <tree>                     */
-                Obj        list1, /*  list containing all subtrees of
-                                  **  left(<tree>) almost equal to
-                                  **  tree(<tree>, x)                       */
-                                  
-                Obj        list2, /*  list containing all subtrees of
-                                  **  right(<tree>) almost equal to
-                                  **  tree(<tree>, x)                       */
+static void FindSubs(Obj tree,
+                     Int x,     /*  subtree of <tree>                     */
+                     Obj list1, /*  list containing all subtrees of
+                                **  left(<tree>) almost equal to
+                                **  tree(<tree>, x)                       */
 
-                Obj        a,     /*  list to change,  containing the
-                                  **  pos-arguments of the trees in list1   */
+                     Obj list2, /*  list containing all subtrees of
+                                **  right(<tree>) almost equal to
+                                **  tree(<tree>, x)                       */
 
-                Obj        b,     /*  list to change,  containing the
-                                  **  pos-arguments of the trees in list2   */
-                Int        al,
-                Int        ar,
-                Int        bl,
-                Int        br,
-                Obj        reps,  /*  list of representatives for all trees */
-                Obj        pr,    /*  pc-presentation                       */
-                Obj        max    /*  needed to call 'FindNewReps'          */
-                                        )
+                     Obj a, /*  list to change,  containing the
+                            **  pos-arguments of the trees in list1   */
+
+                     Obj b, /*  list to change,  containing the
+                            **  pos-arguments of the trees in list2   */
+                     Int al,
+                     Int ar,
+                     Int bl,
+                     Int br,
+                     Obj reps, /*  list of representatives for all trees */
+                     Obj pr,   /*  pc-presentation                       */
+                     Obj max   /*  needed to call 'FindNewReps'          */
+)
 {
    Int    i;  /*  loop variable                                             */
 
@@ -1671,10 +1630,7 @@ static void  FindSubs(
 **  'SetSubs' sets the pos-arguments of the subtrees of <tree>,  contained
 **  in <list> according to the entries in the list <a>.
 */
-static void    SetSubs(
-                 Obj       list,
-                 Obj       a,
-                 Obj       tree    )
+static void SetSubs(Obj list, Obj a, Obj tree)
 {
     UInt   i,j;  /*  loop variables                                         */
     UInt   len, len2;
@@ -1698,9 +1654,7 @@ static void    SetSubs(
 **  top node of each of those trees.
 */
 
-static void    UnmarkAEClass(
-                       Obj      tree,
-                       Obj      list  )
+static void UnmarkAEClass(Obj tree, Obj list)
 {
     UInt  i,j, len, len2;
 
@@ -1729,8 +1683,7 @@ static void    UnmarkAEClass(
 **  monomials.  DT_evaluation is called from the library function dt_add.
 */
 
-static Obj    FuncDT_evaluation(Obj      self,
-                    Obj      vector)
+static Obj FuncDT_evaluation(Obj self, Obj vector)
 {
     UInt   res,i;
 

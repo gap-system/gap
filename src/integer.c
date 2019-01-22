@@ -156,14 +156,13 @@ static Obj IsIntFilt;
 **
 **  'TypeInt' is the function in 'TypeObjFuncs' for integers.
 */
-static Obj             TYPE_INT_SMALL_ZERO;
-static Obj             TYPE_INT_SMALL_POS;
-static Obj             TYPE_INT_SMALL_NEG;
-static Obj             TYPE_INT_LARGE_POS;
-static Obj             TYPE_INT_LARGE_NEG;
+static Obj TYPE_INT_SMALL_ZERO;
+static Obj TYPE_INT_SMALL_POS;
+static Obj TYPE_INT_SMALL_NEG;
+static Obj TYPE_INT_LARGE_POS;
+static Obj TYPE_INT_LARGE_NEG;
 
-static Obj             TypeIntSmall (
-    Obj                 val )
+static Obj TypeIntSmall(Obj val)
 {
     if ( 0 == INT_INTOBJ(val) ) {
         return TYPE_INT_SMALL_ZERO;
@@ -176,12 +175,12 @@ static Obj             TypeIntSmall (
     }
 }
 
-static Obj TypeIntLargePos ( Obj val )
+static Obj TypeIntLargePos(Obj val)
 {
     return TYPE_INT_LARGE_POS;
 }
 
-static Obj TypeIntLargeNeg ( Obj val )
+static Obj TypeIntLargeNeg(Obj val)
 {
     return TYPE_INT_LARGE_NEG;
 }
@@ -198,7 +197,7 @@ static Obj TypeIntLargeNeg ( Obj val )
 **  'IsInt'  returns 'true'  if the  value  <val>  is a small integer or a
 **  large int, and 'false' otherwise.
 */
-static Obj FuncIS_INT ( Obj self, Obj val )
+static Obj FuncIS_INT(Obj self, Obj val)
 {
   if ( IS_INT(val) ) {
     return True;
@@ -431,7 +430,7 @@ Obj GMP_REDUCE(Obj op)
 **
 */
 #if DEBUG_GMP
-static int IS_NORMALIZED_AND_REDUCED( Obj op, const char *func, int line )
+static int IS_NORMALIZED_AND_REDUCED(Obj op, const char * func, int line)
 {
   mp_size_t size;
   if ( IS_INTOBJ( op ) ) {
@@ -1098,7 +1097,7 @@ Obj IntStringInternal(Obj string, const Char *str)
 **  fail if the string is not a valid integer.
 **
 */
-static Obj FuncINT_STRING ( Obj self, Obj string )
+static Obj FuncINT_STRING(Obj self, Obj string)
 {
     if( !IS_STRING(string) ) {
         return Fail;
@@ -1534,7 +1533,7 @@ static Obj ProdIntObj ( Obj n, Obj op )
   return res;
 }
 
-static Obj FuncPROD_INT_OBJ ( Obj self, Obj opL, Obj opR )
+static Obj FuncPROD_INT_OBJ(Obj self, Obj opL, Obj opR)
 {
   return ProdIntObj( opL, opR );
 }
@@ -1544,7 +1543,7 @@ static Obj FuncPROD_INT_OBJ ( Obj self, Obj opL, Obj opR )
 **
 *F  OneInt(<op>) . . . . . . . . . . . . . . . . . . . . .  one of an integer
 */
-static Obj OneInt ( Obj op )
+static Obj OneInt(Obj op)
 {
   return INTOBJ_INT( 1 );
 }
@@ -1615,7 +1614,7 @@ Obj PowInt ( Obj opL, Obj opR )
 **
 *F  PowObjInt(<op>,<n>) . . . . . . . . . . power of an object and an integer
 */
-static Obj             PowObjInt ( Obj op, Obj n )
+static Obj PowObjInt(Obj op, Obj n)
 {
   Obj                 res = 0;        /* result                          */
   UInt                i, k;           /* loop variables                  */
@@ -1684,7 +1683,7 @@ static Obj             PowObjInt ( Obj op, Obj n )
   return res;
 }
 
-static Obj FuncPOW_OBJ_INT ( Obj self, Obj opL, Obj opR )
+static Obj FuncPOW_OBJ_INT(Obj self, Obj opL, Obj opR)
 {
   return PowObjInt( opL, opR );
 }
@@ -2508,7 +2507,7 @@ Obj InverseModInt(Obj base, Obj mod)
 /****************************************************************************
 **
 */
-static Obj FuncINVMODINT ( Obj self, Obj base, Obj mod )
+static Obj FuncINVMODINT(Obj self, Obj base, Obj mod)
 {
     RequireInt("InverseModInt", base);
     RequireInt("InverseModInt", mod);

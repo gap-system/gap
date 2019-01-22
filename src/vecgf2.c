@@ -619,7 +619,8 @@ static const UInt * getgreasedata(struct greaseinfo * g, UInt bits)
 }
 
 
-static Obj ProdGF2MatGF2MatAdvanced(Obj ml, Obj mr, UInt greasesize, UInt blocksize)
+static Obj
+ProdGF2MatGF2MatAdvanced(Obj ml, Obj mr, UInt greasesize, UInt blocksize)
 {
     Obj          prod;          // Product Matrix
     UInt         i, j, k, b;    // Loop counters
@@ -3031,18 +3032,19 @@ static Obj FuncDIST_VEC_CLOS_VEC(
     return (Obj)0;
 }
 
-static UInt AClosVec(Obj veclis,    // pointers to matrix vectors and their multiples
-              Obj ovec,      // vector we compute distance to
-              Obj osum,      // position of the sum vector
-              UInt pos,      // recursion depth
-              UInt l,        // length of basis
-              UInt len,      // length of the involved vectors
-              UInt cnt,      // numbr of vectors used
-              UInt stop,     // stop value
-              UInt bd,       // best distance so far
-              Obj  obv,      // best vector so far
-              Obj  coords,    // coefficients to get current vector
-              Obj  bcoords    // coefficients to get best vector
+static UInt
+AClosVec(Obj  veclis,    // pointers to matrix vectors and their multiples
+         Obj  ovec,      // vector we compute distance to
+         Obj  osum,      // position of the sum vector
+         UInt pos,       // recursion depth
+         UInt l,         // length of basis
+         UInt len,       // length of the involved vectors
+         UInt cnt,       // numbr of vectors used
+         UInt stop,      // stop value
+         UInt bd,        // best distance so far
+         Obj  obv,       // best vector so far
+         Obj  coords,    // coefficients to get current vector
+         Obj  bcoords    // coefficients to get best vector
 )
 {
     UInt         di;
@@ -3615,8 +3617,8 @@ static void AddShiftedVecGF2VecGF2(Obj vec1, Obj vec2, UInt len2, UInt off)
 **
 */
 
-static Obj FuncADD_GF2VEC_GF2VEC_SHIFTED(
-    Obj self, Obj vec1, Obj vec2, Obj len2, Obj off)
+static Obj
+FuncADD_GF2VEC_GF2VEC_SHIFTED(Obj self, Obj vec1, Obj vec2, Obj len2, Obj off)
 {
     Int off1, len2a;
     if (!IS_INTOBJ(off))
@@ -3693,7 +3695,8 @@ static Obj ProductCoeffsGF2Vec(Obj vec1, UInt len1, Obj vec2, UInt len2)
 **
 */
 
-static Obj FuncPROD_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
+static Obj
+FuncPROD_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 {
     UInt len1a, len2a;
     Obj  prod;
@@ -3762,7 +3765,8 @@ static void ReduceCoeffsGF2Vec(Obj vec1, Obj vec2, UInt len2, Obj quotient)
 *F  FuncREDUCE_COEFFS_GF2VEC( <self>, <vec1>, <len1>, <vec2>, <len2> )
 **
 */
-static Obj FuncREDUCE_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
+static Obj
+FuncREDUCE_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 {
     UInt last;
     Int  len2a;
@@ -3811,8 +3815,8 @@ static Obj FuncREDUCE_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj 
 *F  FuncQUOTREM_COEFFS_GF2VEC( <self>, <vec1>, <len1>, <vec2>, <len2> )
 **
 */
-static Obj FuncQUOTREM_COEFFS_GF2VEC(
-    Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
+static Obj
+FuncQUOTREM_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 {
     Int len2a;
     Int len1a = INT_INTOBJ(len1);
@@ -4166,7 +4170,8 @@ static Obj FuncMAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col)
 *F  FuncSET_MAT_ELM_GF2MAT( <self>, <mat>, <row>, <col>, <elm> )
 **
 */
-static Obj FuncSET_MAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
+static Obj
+FuncSET_MAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
 {
     if (!IS_POS_INTOBJ(row)) {
         ErrorMayQuit("row index must be a small positive integer, not a %s",

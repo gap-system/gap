@@ -194,7 +194,8 @@ extern inline struct CycModuleState *CycState(void)
 #define LastNCyc    CycState()->LastNCyc
 
 
-static void GrowResultCyc(UInt size) {
+static void GrowResultCyc(UInt size)
+{
     Obj *res;
     UInt i;
     if (ResultCyc == 0) {
@@ -217,10 +218,9 @@ static void GrowResultCyc(UInt size) {
 **
 **  'TypeCyc' is the function in 'TypeObjFuncs' for cyclotomics.
 */
-static Obj             TYPE_CYC;
+static Obj TYPE_CYC;
 
-static Obj             TypeCyc (
-    Obj                 cyc )
+static Obj TypeCyc(Obj cyc)
 {
     return TYPE_CYC;
 }
@@ -235,8 +235,7 @@ static Obj             TypeCyc (
 **  In principle this is very easy, but it is complicated because we  do  not
 **  want to print stuff like '+1*', '-1*', 'E(<n>)^0', 'E(<n>)^1, etc.
 */
-static void            PrintCyc (
-    Obj                 cyc )
+static void PrintCyc(Obj cyc)
 {
     UInt                n;              /* order of the field              */
     UInt                len;            /* number of terms                 */
@@ -317,9 +316,7 @@ static void            PrintCyc (
 **  'EqCyc'  is  pretty  simple because   every    cyclotomic  has a   unique
 **  representation, so we just have to compare the terms.
 */
-static Int             EqCyc (
-    Obj                 opL,
-    Obj                 opR )
+static Int EqCyc(Obj opL, Obj opR)
 {
     UInt                len;            /* number of terms                 */
     const Obj *         cfl;            /* ptr to coeffs of left operand   */
@@ -373,9 +370,7 @@ static Int             EqCyc (
 **  'LtCyc'  is  pretty  simple because   every    cyclotomic  has a   unique
 **  representation, so we just have to compare the terms.
 */
-static Int             LtCyc (
-    Obj                 opL,
-    Obj                 opR )
+static Int LtCyc(Obj opL, Obj opR)
 {
     UInt                lel;            /* nr of terms of left operand     */
     const Obj *         cfl;            /* ptr to coeffs of left operand   */
@@ -419,16 +414,12 @@ static Int             LtCyc (
         return 0L;
 }
 
-static Int             LtCycYes (
-    Obj                 opL,
-    Obj                 opR )
+static Int LtCycYes(Obj opL, Obj opR)
 {
     return 1L;
 }
 
-static Int             LtCycNot (
-    Obj                 opL,
-    Obj                 opR )
+static Int LtCycNot(Obj opL, Obj opR)
 {
     return 0L;
 }
@@ -489,8 +480,7 @@ static Int             LtCycNot (
 **  Those divisions are quite expensive  on  some  processors, e.g., MIPS and
 **  SPARC, and they may singlehanded account for 20 percent of the runtime.
 */
-static void            ConvertToBase (
-    UInt                n )
+static void ConvertToBase(UInt n)
 {
     Obj *               res;            /* pointer to the result           */
     UInt                nn;             /* copy of n to factorize          */
@@ -629,9 +619,7 @@ static void            ConvertToBase (
 **  combination of   linear  independent  roots,  they  would  work  also  if
 **  cyclotomic integers were written as polynomials in $e_n$.
 */
-static Obj             Cyclotomic (
-    UInt                n,
-    UInt                m )
+static Obj Cyclotomic(UInt n, UInt m)
 {
     Obj                 cyc;            /* cyclotomic, result              */
     UInt                len;            /* number of terms                 */
@@ -891,9 +879,7 @@ static Obj FuncGetCyclotomicsLimit(Obj self)
 **  This   function  is lengthy  because  we  try to  use immediate   integer
 **  arithmetic if possible to avoid the function call overhead.
 */
-static Obj             SumCyc (
-    Obj                 opL,
-    Obj                 opR )
+static Obj SumCyc(Obj opL, Obj opR)
 {
     UInt                nl, nr;         /* order of left and right field   */
     UInt                n;              /* order of smallest superfield    */
@@ -977,8 +963,7 @@ static Obj             SumCyc (
 **
 **  'ZeroCyc' returns the additive neutral element of the cyclotomic <op>.
 */
-static Obj             ZeroCyc (
-    Obj                 op )
+static Obj ZeroCyc(Obj op)
 {
     return INTOBJ_INT( 0L );
 }
@@ -990,8 +975,7 @@ static Obj             ZeroCyc (
 **
 **  'AInvCyc' returns the additive inverse element of the cyclotomic <op>.
 */
-static Obj             AInvCyc (
-    Obj                 op )
+static Obj AInvCyc(Obj op)
 {
     Obj                 res;            /* inverse, result                 */
     UInt                len;            /* number of terms                 */
@@ -1042,9 +1026,7 @@ static Obj             AInvCyc (
 **  This   function  is lengthy  because  we  try to  use immediate   integer
 **  arithmetic if possible to avoid the function call overhead.
 */
-static Obj             DiffCyc (
-    Obj                 opL,
-    Obj                 opR )
+static Obj DiffCyc(Obj opL, Obj opR)
 {
     UInt                nl, nr;         /* order of left and right field   */
     UInt                n;              /* order of smallest superfield    */
@@ -1131,9 +1113,7 @@ static Obj             DiffCyc (
 **  This   function  is lengthy  because  we  try to  use immediate   integer
 **  arithmetic if possible to avoid the function call overhead.
 */
-static Obj             ProdCycInt (
-    Obj                 opL,
-    Obj                 opR )
+static Obj ProdCycInt(Obj opL, Obj opR)
 {
     Obj                 hdP;            /* product, result                 */
     UInt                len;            /* number of terms                 */
@@ -1227,9 +1207,7 @@ static Obj             ProdCycInt (
 **  This   function  is lengthy  because  we  try to  use immediate   integer
 **  arithmetic if possible to avoid the function call overhead.
 */
-static Obj             ProdCyc (
-    Obj                 opL,
-    Obj                 opR )
+static Obj ProdCyc(Obj opL, Obj opR)
 {
     UInt                nl, nr;         /* order of left and right field   */
     UInt                n;              /* order of smallest superfield    */
@@ -1360,8 +1338,7 @@ static Obj             ProdCyc (
 **  'OneCyc'  returns  the multiplicative neutral  element  of the cyclotomic
 **  <op>.
 */
-static Obj             OneCyc (
-    Obj                 op )
+static Obj OneCyc(Obj op)
 {
     return INTOBJ_INT( 1L );
 }
@@ -1381,8 +1358,7 @@ static Obj             OneCyc (
 **  can compute the quotient $prd / (op * prd)$ with 'ProdCycInt'.
 *T better multiply only the *different* conjugates?
 */
-static Obj             InvCyc (
-    Obj                 op )
+static Obj InvCyc(Obj op)
 {
     Obj                 prd;            /* product of conjugates           */
     UInt                n;              /* order of the field              */
@@ -1441,9 +1417,7 @@ static Obj             InvCyc (
 **  'PowCyc' returns the <opR>th, which must be  an  integer,  power  of  the
 **  cyclotomic <opL>.  The left operand may also be an integer or a rational.
 */
-static Obj             PowCyc (
-    Obj                 opL,
-    Obj                 opR )
+static Obj PowCyc(Obj opL, Obj opR)
 {
     Obj                 pow;            /* power (result)                  */
     Int                 exp;            /* exponent (right operand)        */
@@ -1523,9 +1497,7 @@ static Obj             PowCyc (
 */
 static Obj EOper;
 
-static Obj FuncE (
-    Obj                 self,
-    Obj                 n )
+static Obj FuncE(Obj self, Obj n)
 {
     Obj *               res;            /* pointer into result bag         */
 
@@ -1572,9 +1544,7 @@ static Obj FuncE (
 */
 static Obj IsCycFilt;
 
-static Obj FuncIS_CYC (
-    Obj                 self,
-    Obj                 val )
+static Obj FuncIS_CYC(Obj self, Obj val)
 {
     /* return 'true' if <obj> is a cyclotomic and 'false' otherwise        */
     if ( IS_INT(val) || TNUM_OBJ(val) == T_CYC || TNUM_OBJ(val) == T_RAT )
@@ -1603,9 +1573,7 @@ static Obj FuncIS_CYC (
 */
 static Obj IsCycIntOper;
 
-static Obj FuncIS_CYC_INT (
-    Obj                 self,
-    Obj                 val )
+static Obj FuncIS_CYC_INT(Obj self, Obj val)
 {
     UInt                len;            /* number of terms                 */
     const Obj *         cfs;            /* pointer to the coefficients     */
@@ -1649,9 +1617,7 @@ static Obj FuncIS_CYC_INT (
 */
 static Obj ConductorAttr;
 
-static Obj FuncCONDUCTOR (
-    Obj                 self,
-    Obj                 cyc )
+static Obj FuncCONDUCTOR(Obj self, Obj cyc)
 {
     UInt                n;              /* N of the cyclotomic, result     */
     UInt                m;              /* N of element of the list        */
@@ -1722,9 +1688,7 @@ static Obj FuncCONDUCTOR (
 */
 static Obj CoeffsCycOper;
 
-static Obj FuncCOEFFS_CYC (
-    Obj                 self,
-    Obj                 cyc )
+static Obj FuncCOEFFS_CYC(Obj self, Obj cyc)
 {
     Obj                 list;           /* list of coefficients, result    */
     UInt                n;              /* order of field                  */
@@ -1786,10 +1750,7 @@ static Obj FuncCOEFFS_CYC (
 */
 static Obj GaloisCycOper;
 
-static Obj FuncGALOIS_CYC (
-    Obj                 self,
-    Obj                 cyc,
-    Obj                 ord )
+static Obj FuncGALOIS_CYC(Obj self, Obj cyc, Obj ord)
 {
     Obj                 gal;            /* galois conjugate, result        */
     Obj                 sum;            /* sum of two coefficients         */
@@ -1962,9 +1923,7 @@ static Obj FuncGALOIS_CYC (
 */
 static Obj CycListOper;
 
-static Obj FuncCycList (
-    Obj                 self,
-    Obj                 list )
+static Obj FuncCycList(Obj self, Obj list)
 {
     UInt                i;              /* loop variable                   */
     Obj *               res;            /* pointer into result bag         */
@@ -2012,7 +1971,7 @@ static Obj FuncCycList (
 **
 **  'MarkCycSubBags' is the marking function for bags of type 'T_CYC'.
 */
-static void MarkCycSubBags( Obj cyc )
+static void MarkCycSubBags(Obj cyc)
 {
     MarkArrayOfBags( COEFS_CYC( cyc ), SIZE_CYC(cyc) );
 }
@@ -2024,7 +1983,7 @@ static void MarkCycSubBags( Obj cyc )
 **
 **  We do not save the XXX_CYC field, since it is not used.
 */
-static void  SaveCyc ( Obj cyc )
+static void SaveCyc(Obj cyc)
 {
   UInt len, i;
   const Obj *coefs;
@@ -2045,7 +2004,7 @@ static void  SaveCyc ( Obj cyc )
 **
 **  We do not load the XXX_CYC field, since it is not used.
 */
-static void  LoadCyc ( Obj cyc )
+static void LoadCyc(Obj cyc)
 {
   UInt len, i;
   Obj *coefs;

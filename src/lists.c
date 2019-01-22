@@ -53,17 +53,14 @@
 */
 Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
-static Obj             IsListFilt;
+static Obj IsListFilt;
 
-static Obj             FuncIS_LIST (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncIS_LIST(Obj self, Obj obj)
 {
     return (IS_LIST( obj ) ? True : False);
 }
 
-static Int             IsListObject (
-    Obj                 obj )
+static Int IsListObject(Obj obj)
 {
     return (DoFilter( IsListFilt, obj ) == True);
 }
@@ -82,13 +79,12 @@ static Int             IsListObject (
 */
 Int             (*IsSmallListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
-static Obj             IsSmallListFilt;
-static Obj             HasIsSmallListFilt;
-static Obj             LengthAttr;
-static Obj             SetIsSmallList;
+static Obj IsSmallListFilt;
+static Obj HasIsSmallListFilt;
+static Obj LengthAttr;
+static Obj SetIsSmallList;
 
-static Int             IsSmallListObject (
-    Obj                 obj )
+static Int IsSmallListObject(Obj obj)
 {
   Obj len;
   if (DoFilter(IsListFilt, obj) != True)
@@ -145,9 +141,7 @@ static Int             IsSmallListObject (
 **    internal types (NOT YET IMPLEMENTED)
 */
 
-static Obj FuncLENGTH (
-    Obj             self,
-    Obj             list )
+static Obj FuncLENGTH(Obj self, Obj list)
 {
     /* internal list types                                                 */
 #ifdef HPCGAP
@@ -187,9 +181,7 @@ static Obj FuncLENGTH (
 */
 Int (*LenListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-static Obj FuncLEN_LIST (
-    Obj                 self,
-    Obj                 list )
+static Obj FuncLEN_LIST(Obj self, Obj list)
 {
     /* special case for plain lists (avoid conversion back and forth)      */
     if ( IS_PLIST(list) ) {
@@ -203,15 +195,13 @@ static Obj FuncLEN_LIST (
 }
 
 
-static Int LenListError (
-    Obj                 list )
+static Int LenListError(Obj list)
 {
     RequireArgument("Length", list, "must be a list");
 }
 
 
-static Int LenListObject (
-    Obj                 obj )
+static Int LenListObject(Obj obj)
 {
     Obj                 len;
 
@@ -237,21 +227,18 @@ static Int LenListObject (
 
 Obj             (*LengthFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-static Obj LengthError (
-    Obj                 list )
+static Obj LengthError(Obj list)
 {
     RequireArgument("Length", list, "must be a list");
 }
 
 
-static Obj LengthObject (
-    Obj                 obj )
+static Obj LengthObject(Obj obj)
 {
     return FuncLENGTH( LengthAttr, obj );
 }
 
-static Obj LengthInternal (
-    Obj                 obj )
+static Obj LengthInternal(Obj obj)
 {
     return INTOBJ_INT(LEN_LIST(obj));
 }
@@ -273,10 +260,7 @@ Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 static Obj             IsbListOper;
 
-static Obj             FuncISB_LIST (
-    Obj                 self,
-    Obj                 list,
-    Obj                 pos )
+static Obj FuncISB_LIST(Obj self, Obj list, Obj pos)
 {
     if (IS_POS_INTOBJ(pos))
         return ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
@@ -284,16 +268,12 @@ static Obj             FuncISB_LIST (
         return ISBB_LIST( list, pos ) ? True : False;
 }
 
-static Int             IsbListError (
-    Obj                 list,
-    Int                 pos )
+static Int IsbListError(Obj list, Int pos)
 {
     RequireArgument("IsBound", list, "must be a list");
 }
 
-static Int             IsbListObject (
-    Obj                 list,
-    Int                 pos )
+static Int IsbListObject(Obj list, Int pos)
 {
     return DoOperation2Args( IsbListOper, list, INTOBJ_INT(pos) ) == True;
 }
@@ -386,9 +366,7 @@ Obj (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **
 *F  Elm0ListError( <list>, <pos> )  . . . . . . . . . . . . . . error message
 */
-static Obj Elm0ListError (
-    Obj                 list,
-    Int                 pos )
+static Obj Elm0ListError(Obj list, Int pos)
 {
     RequireArgument("List Element", list, "must be a list");
 }
@@ -411,9 +389,7 @@ static Obj Elm0ListError (
 */
 static Obj Elm0ListOper;
 
-static Obj Elm0ListObject (
-    Obj                 list,
-    Int                 pos )
+static Obj Elm0ListObject(Obj list, Int pos)
 {
     Obj                 elm;
 
@@ -434,10 +410,7 @@ static Obj Elm0ListObject (
 **
 *F  FuncELM0_LIST( <self>, <list>, <pos> )  . . . . . . operation `ELM0_LIST'
 */
-static Obj FuncELM0_LIST (
-    Obj                 self,
-    Obj                 list,
-    Obj                 pos )
+static Obj FuncELM0_LIST(Obj self, Obj list, Obj pos)
 {
     Obj                 elm;
     elm = ELM0_LIST( list, INT_INTOBJ(pos) );
@@ -492,9 +465,7 @@ Obj (*ElmwListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **
 *F  ElmListError( <list>, <pos> ) . . . . . . . . . . . . . . . error message
 */
-static Obj ElmListError (
-    Obj                 list,
-    Int                 pos )
+static Obj ElmListError(Obj list, Int pos)
 {
     RequireArgument("List Element", list, "must be a list");
 }
@@ -512,7 +483,7 @@ static Obj ElmListError (
 */
 static Obj ElmListOper;
 
-static Obj ElmListObject( Obj list, Int pos)
+static Obj ElmListObject(Obj list, Int pos)
 {
     return ELMB_LIST( list, INTOBJ_INT(pos) );
 }
@@ -590,9 +561,7 @@ Obj (*ElmsListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss );
 **
 *F  ElmsListError(<list>,<poss>)  . . . . . . . . .  error selection function
 */
-static Obj ElmsListError (
-    Obj                 list,
-    Obj                 poss )
+static Obj ElmsListError(Obj list, Obj poss)
 {
     RequireArgument("List Elements", list, "must be a list");
 }
@@ -606,9 +575,7 @@ static Obj ElmsListError (
 */
 static Obj ElmsListOper;
 
-static Obj ElmsListObject (
-    Obj                 list,
-    Obj                 poss )
+static Obj ElmsListObject(Obj list, Obj poss)
 {
     Obj                 elm;
 
@@ -624,10 +591,7 @@ static Obj ElmsListObject (
 **
 *F  FuncELMS_LIST( <self>, <list>, <poss> ) . . . . . . `ELMS_LIST' operation
 */
-static Obj FuncELMS_LIST (
-    Obj                 self,
-    Obj                 list,
-    Obj                 poss )
+static Obj FuncELMS_LIST(Obj self, Obj list, Obj poss)
 {
     return ElmsListCheck( list, poss );
 }
@@ -752,10 +716,7 @@ Obj ElmsListDefault (
 **
 *F  FuncELMS_LIST_DEFAULT( <self>, <list>, <poss> ) . . . . `ElmsListDefault'
 */
-static Obj FuncELMS_LIST_DEFAULT (
-    Obj                 self,
-    Obj                 list,
-    Obj                 poss )
+static Obj FuncELMS_LIST_DEFAULT(Obj self, Obj list, Obj poss)
 {
     return ElmsListDefault( list, poss );
 }
@@ -805,10 +766,7 @@ void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 static Obj             UnbListOper;
 
-static Obj             FuncUNB_LIST (
-    Obj                 self,
-    Obj                 list,
-    Obj                 pos )
+static Obj FuncUNB_LIST(Obj self, Obj list, Obj pos)
 {
     if (IS_POS_INTOBJ(pos))
         UNB_LIST( list, INT_INTOBJ(pos) );
@@ -817,9 +775,7 @@ static Obj             FuncUNB_LIST (
     return 0;
 }
 
-static void            UnbListError (
-    Obj                 list,
-    Int                 pos )
+static void UnbListError(Obj list, Int pos)
 {
     RequireArgument("Unbind", list, "must be a list");
 }
@@ -832,9 +788,7 @@ void            UnbListDefault (
     UNB_LIST( list, pos );
 }
 
-static void            UnbListObject (
-    Obj                 list,
-    Int                 pos )
+static void UnbListObject(Obj list, Int pos)
 {
     DoOperation2Args( UnbListOper, list, INTOBJ_INT(pos) );
 }
@@ -876,18 +830,12 @@ static Obj FuncASS_LIST(Obj self, Obj list, Obj pos, Obj obj)
     return 0;
 }
 
-static void            AssListError (
-    Obj                 list,
-    Int                 pos,
-    Obj                 obj )
+static void AssListError(Obj list, Int pos, Obj obj)
 {
     RequireArgument("List Assignment", list, "must be a list");
 }
 
-static void            AssListDefault (
-    Obj                 list,
-    Int                 pos,
-    Obj                 obj )
+static void AssListDefault(Obj list, Int pos, Obj obj)
 {
     PLAIN_LIST( list );
     ASS_LIST( list, pos, obj );
@@ -952,20 +900,13 @@ void            (*AsssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss, Obj obj
 
 static Obj             AsssListOper;
 
-static Obj             FuncASSS_LIST (
-    Obj                 self,
-    Obj                 list,
-    Obj                 poss,
-    Obj                 objs )
+static Obj FuncASSS_LIST(Obj self, Obj list, Obj poss, Obj objs)
 {
     AsssListCheck( list, poss, objs );
     return 0;
 }
 
-static void            AsssListError (
-    Obj                 list,
-    Obj                 poss,
-    Obj                 objs )
+static void AsssListError(Obj list, Obj poss, Obj objs)
 {
     RequireArgument("List Assignments", list, "must be a list");
 }
@@ -1035,19 +976,12 @@ void            AsssListDefault (
 
 }
 
-static void            AsssListObject (
-    Obj                 list,
-    Obj                 poss,
-    Obj                 objs )
+static void AsssListObject(Obj list, Obj poss, Obj objs)
 {
     DoOperation3Args( AsssListOper, list, poss, objs );
 }
 
-static Obj FuncASSS_LIST_DEFAULT (
-    Obj                 self,
-    Obj                 list,
-    Obj                 poss,
-    Obj                 objs )
+static Obj FuncASSS_LIST_DEFAULT(Obj self, Obj list, Obj poss, Obj objs)
 {
     AsssListDefault( list, poss, objs );
     return 0;
@@ -1066,11 +1000,9 @@ static Obj FuncASSS_LIST_DEFAULT (
 */
 Int             (*IsDenseListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-static Obj             IsDenseListFilt;
+static Obj IsDenseListFilt;
 
-static Obj             FuncIS_DENSE_LIST (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncIS_DENSE_LIST(Obj self, Obj obj)
 {
     return (IS_DENSE_LIST( obj ) ? True : False);
 }
@@ -1100,8 +1032,7 @@ Int             IsDenseListDefault (
     return 1L;
 }
 
-static Int             IsDenseListObject (
-    Obj                 obj )
+static Int IsDenseListObject(Obj obj)
 {
     return (DoFilter( IsDenseListFilt, obj ) == True);
 }
@@ -1120,11 +1051,9 @@ static Int             IsDenseListObject (
 */
 Int             (*IsHomogListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-static Obj             IsHomogListFilt;
+static Obj IsHomogListFilt;
 
-static Obj             FuncIS_HOMOG_LIST (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncIS_HOMOG_LIST(Obj self, Obj obj)
 {
     return (IS_HOMOG_LIST( obj ) ? True : False);
 }
@@ -1164,8 +1093,7 @@ Int             IsHomogListDefault (
     return 1L;
 }
 
-static Int             IsHomogListObject (
-    Obj                 obj )
+static Int IsHomogListObject(Obj obj)
 {
     return (DoFilter( IsHomogListFilt, obj ) == True);
 }
@@ -1183,11 +1111,9 @@ static Int             IsHomogListObject (
 */
 Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-static Obj             IsTableListFilt;
+static Obj IsTableListFilt;
 
-static Obj             FuncIS_TABLE_LIST (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncIS_TABLE_LIST(Obj self, Obj obj)
 {
     return (IS_TABLE_LIST( obj ) ? True : False);
 }
@@ -1235,8 +1161,7 @@ Int             IsTableListDefault (
     return 1L;
 }
 
-static Int             IsTableListObject (
-    Obj                 obj )
+static Int IsTableListObject(Obj obj)
 {
     return (DoFilter( IsTableListFilt, obj ) == True);
 }
@@ -1257,9 +1182,7 @@ Int (*IsSSortListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 static Obj IsSSortListProp;
 
-static Obj FuncIS_SSORT_LIST (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncIS_SSORT_LIST(Obj self, Obj obj)
 {
     return (IS_SSORT_LIST( obj ) ? True : False);
 }
@@ -1303,15 +1226,12 @@ Int IsSSortListDefault (
     return 2L;
 }
 
-static Int             IsSSortListObject (
-    Obj                 obj )
+static Int IsSSortListObject(Obj obj)
 {
     return (DoProperty( IsSSortListProp, obj ) == True);
 }
 
-static Obj FuncIS_SSORT_LIST_DEFAULT (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncIS_SSORT_LIST_DEFAULT(Obj self, Obj obj)
 {
     return (IsSSortListDefault( obj ) ? True : False);
 }
@@ -1329,11 +1249,9 @@ static Obj FuncIS_SSORT_LIST_DEFAULT (
 */
 Int             (*IsPossListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-static Obj             IsPossListProp;
+static Obj IsPossListProp;
 
-static Obj             FuncIS_POSS_LIST (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncIS_POSS_LIST(Obj self, Obj obj)
 {
     return (IS_POSS_LIST(obj) ? True : False);
 }
@@ -1372,15 +1290,12 @@ Int             IsPossListDefault (
     return 1L;
 }
 
-static Int             IsPossListObject (
-    Obj                 obj )
+static Int IsPossListObject(Obj obj)
 {
     return (DoProperty( IsPossListProp, obj ) == True);
 }
 
-static Obj FuncIS_POSS_LIST_DEFAULT (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncIS_POSS_LIST_DEFAULT(Obj self, Obj obj)
 {
     return (IsPossListDefault( obj ) ? True : False);
 }
@@ -1401,19 +1316,12 @@ Obj             (*PosListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj obj, Obj start
 
 static Obj             PosListOper;
 
-static Obj             PosListHandler2 (
-    Obj                 self,
-    Obj                 list,
-    Obj                 obj )
+static Obj PosListHandler2(Obj self, Obj list, Obj obj)
 {
     return POS_LIST( list, obj, INTOBJ_INT(0) );
 }
 
-static Obj             PosListHandler3 (
-    Obj                 self,
-    Obj                 list,
-    Obj                 obj,
-    Obj                 start )
+static Obj PosListHandler3(Obj self, Obj list, Obj obj, Obj start)
 {
     if (TNUM_OBJ(start) != T_INTPOS && !IS_NONNEG_INTOBJ(start)) {
         RequireArgument("Position", start, "must be a non-negative integer");
@@ -1421,10 +1329,7 @@ static Obj             PosListHandler3 (
     return POS_LIST( list, obj, start );
 }
 
-static Obj             PosListError (
-    Obj                 list,
-    Obj                 obj,
-    Obj                 start )
+static Obj PosListError(Obj list, Obj obj, Obj start)
 {
     RequireArgument("Position", list, "must be a list");
 }
@@ -1463,19 +1368,12 @@ Obj             PosListDefault (
     }
 }
 
-static Obj             PosListObject (
-    Obj                 list,
-    Obj                 obj,
-    Obj                 start )
+static Obj PosListObject(Obj list, Obj obj, Obj start)
 {
     return DoOperation3Args( PosListOper, list, obj, start );
 }
 
-static Obj FuncPOS_LIST_DEFAULT (
-    Obj                 self,
-    Obj                 list,
-    Obj                 obj,
-    Obj                 start )
+static Obj FuncPOS_LIST_DEFAULT(Obj self, Obj list, Obj obj, Obj start)
 {
     return PosListDefault( list, obj, start ) ;
 }
@@ -1808,8 +1706,7 @@ void            AsssListLevel (
 */
 void            (*PlainListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-static void            PlainListError (
-    Obj                 list )
+static void PlainListError(Obj list)
 {
     ErrorQuit(
         "Panic: cannot convert <list> (is a %s) to a plain list",
@@ -1821,7 +1718,7 @@ static void            PlainListError (
 **
 *F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of types of lists over a family
 */
-static UInt            TYPES_LIST_FAM_RNam;
+static UInt TYPES_LIST_FAM_RNam;
 
 Obj             TYPES_LIST_FAM (
     Obj                 fam )
@@ -1850,8 +1747,7 @@ Obj             TYPES_LIST_FAM (
 **
 **  'PrintList' simply prints the list.
 */
-static void            PrintListDefault (
-    Obj                 list )
+static void PrintListDefault(Obj list)
 {
     Obj                 elm;
 
@@ -1877,9 +1773,7 @@ static void            PrintListDefault (
     Pr(" %4<]",0L,0L);
 }
 
-static void            PrintPathList (
-    Obj                 list,
-    Int                 indx )
+static void PrintPathList(Obj list, Int indx)
 {
     Pr( "[%d]", indx, 0L );
 }

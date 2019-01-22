@@ -1127,9 +1127,7 @@ static Obj FuncNBits_LengthWord(Obj self, Obj w)
 **
 *F  FuncNBits_NumberSyllables( <self>, <w> )
 */
-static Obj FuncNBits_NumberSyllables (
-    Obj         self,
-    Obj         w )
+static Obj FuncNBits_NumberSyllables(Obj self, Obj w)
 {
     /* return the number of syllables                                      */
     return INTOBJ_INT( NPAIRS_WORD(w) );
@@ -1140,10 +1138,7 @@ static Obj FuncNBits_NumberSyllables (
 * letter rep arithmetic */
 /**************************************************************************
 *F  FuncMULT_WOR_LETTREP( <self>, <a>,<b> ) */
-static Obj FuncMULT_WOR_LETTREP (
-    Obj         self,
-    Obj         a,
-    Obj         b)
+static Obj FuncMULT_WOR_LETTREP(Obj self, Obj a, Obj b)
 {
   UInt l,m,i,j,newlen,as,bs,ae,be;
   Obj n;
@@ -1252,10 +1247,7 @@ static Obj FuncMULT_WOR_LETTREP (
 }
 
 /*F  FuncMULT_BYT_LETTREP( <self>, <a>,<b> ) */
-static Obj FuncMULT_BYT_LETTREP (
-    Obj         self,
-    Obj         a,
-    Obj         b)
+static Obj FuncMULT_BYT_LETTREP(Obj self, Obj a, Obj b)
 {
   UInt l,m,i,j,newlen,as,bs,ae,be;
   Obj n;

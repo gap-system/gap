@@ -360,7 +360,7 @@ static Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 ** */
 
 
-static Int IsBoundElmWPObj( Obj wp, Obj pos)
+static Int IsBoundElmWPObj(Obj wp, Obj pos)
 {
     RequireWPObj("IsBoundElmWPObj", wp);
     UInt ipos = GetPositiveSmallInt("IsBoundElmWPObj", pos);
@@ -392,7 +392,7 @@ static Int IsBoundElmWPObj( Obj wp, Obj pos)
 **  GAP  handler for IsBound  test on WP object.   Remember that bindings can
 **  evaporate in any garbage collection.
 */
-static Obj FuncIsBoundElmWPObj( Obj self, Obj wp, Obj pos)
+static Obj FuncIsBoundElmWPObj(Obj self, Obj wp, Obj pos)
 {
   return IsBoundElmWPObj(wp, pos) ? True : False;
 }
@@ -405,7 +405,7 @@ static Obj FuncIsBoundElmWPObj( Obj self, Obj wp, Obj pos)
 **  GAP  handler for Unbind on WP object. 
 */
 
-static Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
+static Obj FuncUnbindElmWPObj(Obj self, Obj wp, Obj pos)
 {
     RequireWPObj("UnbindElmWPObj", wp);
     UInt ipos = GetPositiveSmallInt("UnbindElmWPObj", pos);
@@ -498,9 +498,9 @@ static Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
 **  same type.
 */
 
-static Obj TYPE_WPOBJ;              
+static Obj TYPE_WPOBJ;
 
-static Obj TypeWPObj( Obj wp )
+static Obj TypeWPObj(Obj wp)
 {
   return TYPE_WPOBJ;
 }
@@ -512,7 +512,7 @@ static Obj TypeWPObj( Obj wp )
 */
 static Obj IsWPObjFilt;
 
-static Obj FuncIsWPObj( Obj self, Obj wp)
+static Obj FuncIsWPObj(Obj self, Obj wp)
 {
   return (TNUM_OBJ(wp) == T_WPOBJ) ? True : False;
 }
@@ -603,9 +603,7 @@ static void CopyWPObj(TraversalState * traversal, Obj copy, Obj original)
 **
 */
 
-static Obj CopyObjWPObj (
-    Obj                 obj,
-    Int                 mut )
+static Obj CopyObjWPObj(Obj obj, Int mut)
 {
     Obj                 copy;           /* copy, result                    */
     Obj                 tmp;            /* temporary variable              */
@@ -654,7 +652,7 @@ static Obj CopyObjWPObj (
 **
 */
 
-static void MakeImmutableWPObj( Obj obj )
+static void MakeImmutableWPObj(Obj obj)
 {
 #ifdef USE_BOEHM_GC
   UInt i;
@@ -725,8 +723,7 @@ static void MakeImmutableWPObj( Obj obj )
 **
 *F  CleanObjWPObj(<obj>) . . . . . . . . . . . . . . . . . .  clean WP object
 */
-static void CleanObjWPObj (
-    Obj                 obj )
+static void CleanObjWPObj(Obj obj)
 {
     UInt                i;              /* loop variable                   */
     Obj                 elm;            /* subobject                       */

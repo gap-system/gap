@@ -1238,11 +1238,7 @@ FinPowConjCol * FinPowConjCollectors [6] =
 **
 *F  CollectWordOrFail( <fc>, <sc>, <vv>, <w> )
 */
-static Obj CollectWordOrFail ( 
-    FinPowConjCol *     fc, 
-    Obj                 sc,
-    Obj                 vv,
-    Obj                 w )
+static Obj CollectWordOrFail(FinPowConjCol * fc, Obj sc, Obj vv, Obj w)
 {
     Int                 i;              /* loop variable                   */
     Obj *               ptr;            /* pointer into the array <vv>     */
@@ -1275,11 +1271,7 @@ static Obj CollectWordOrFail (
 **
 *F  ReducedComm( <fc>, <sc>, <w>, <u> )
 */
-static Obj ReducedComm (
-    FinPowConjCol *     fc,
-    Obj                 sc,
-    Obj                 w,
-    Obj                 u )
+static Obj ReducedComm(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 {
     Obj                 type;       /* type of the returned object         */
     Int                 num;        /* number of gen/exp pairs in <data>   */
@@ -1347,10 +1339,7 @@ static Obj ReducedComm (
 **
 *F  ReducedForm( <fc>, <sc>, <w> )
 */
-static Obj ReducedForm (
-    FinPowConjCol *     fc,
-    Obj                 sc,
-    Obj                 w )
+static Obj ReducedForm(FinPowConjCol * fc, Obj sc, Obj w)
 {
     Int                 num;    /* number of gen/exp pairs in <data>       */
     Int                 i;      /* loop variable for gen/exp pairs         */
@@ -1385,11 +1374,7 @@ static Obj ReducedForm (
 **
 *F  ReducedLeftQuotient( <fc>, <sc>, <w>, <u> )
 */
-static Obj ReducedLeftQuotient ( 
-    FinPowConjCol *     fc,
-    Obj                 sc,
-    Obj                 w,
-    Obj                 u )
+static Obj ReducedLeftQuotient(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 {
     Obj                 type;       /* type of the return objue            */
     Int                 num;        /* number of gen/exp pairs in <data>   */
@@ -1441,11 +1426,7 @@ static Obj ReducedLeftQuotient (
 **
 *F  ReducedProduct( <fc>, <sc>, <w>, <u> )
 */
-static Obj ReducedProduct ( 
-    FinPowConjCol *     fc,
-    Obj                 sc,
-    Obj                 w,
-    Obj                 u )
+static Obj ReducedProduct(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 {
     Obj                 type;       /* type of the return objue            */
     Int                 num;        /* number of gen/exp pairs in <data>   */
@@ -1481,11 +1462,7 @@ static Obj ReducedProduct (
 **
 *F  ReducedPowerSmallInt( <fc>, <sc>, <w>, <pow> )
 */
-static Obj ReducedPowerSmallInt ( 
-    FinPowConjCol *     fc,
-    Obj                 sc,
-    Obj                 w,
-    Obj                 vpow )
+static Obj ReducedPowerSmallInt(FinPowConjCol * fc, Obj sc, Obj w, Obj vpow)
 {
     Obj                 type;       /* type of the return objue            */
     Int                 num;        /* number of gen/exp pairs in <data>   */
@@ -1584,11 +1561,7 @@ static Obj ReducedPowerSmallInt (
 **
 *F  ReducedQuotient( <fc>, <sc>, <w>, <u> )
 */
-static Obj ReducedQuotient ( 
-    FinPowConjCol *     fc,
-    Obj                 sc,
-    Obj                 w,
-    Obj                 u )
+static Obj ReducedQuotient(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 {
     Obj                 type;       /* type of the return objue            */
     Int                 num;        /* number of gen/exp pairs in <data>   */
@@ -1720,7 +1693,7 @@ Obj FuncFinPowConjCol_ReducedQuotient ( Obj self, Obj sc, Obj w, Obj u )
 **
 *F  SET_SCOBJ_MAX_STACK_SIZE( <self>, <size> )
 */
-static Obj FuncSET_SCOBJ_MAX_STACK_SIZE ( Obj self, Obj size )
+static Obj FuncSET_SCOBJ_MAX_STACK_SIZE(Obj self, Obj size)
 {
     CollectorsState()->SC_MAX_STACK_SIZE =
         GetPositiveSmallInt("SET_SCOBJ_MAX_STACK_SIZE", size);

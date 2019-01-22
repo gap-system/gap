@@ -157,16 +157,16 @@ TL: Obj ShellContext = 0;
 TL: Obj BaseShellContext = 0;
 */
 
-static Obj Shell ( Obj context, 
-            UInt canReturnVoid,
-            UInt canReturnObj,
-            UInt lastDepth,
-            UInt setTime,
-            Char *prompt,
-            Obj preCommandHook,
-            UInt catchQUIT,
-            Char *inFile,
-            Char *outFile)
+static Obj Shell(Obj    context,
+                 UInt   canReturnVoid,
+                 UInt   canReturnObj,
+                 UInt   lastDepth,
+                 UInt   setTime,
+                 Char * prompt,
+                 Obj    preCommandHook,
+                 UInt   catchQUIT,
+                 Char * inFile,
+                 Char * outFile)
 {
   UInt time = 0;
   UInt8 mem = 0;
@@ -338,8 +338,7 @@ static Obj Shell ( Obj context,
 }
 
 
-
-static Obj FuncSHELL (Obj self, Obj args)
+static Obj FuncSHELL(Obj self, Obj args)
 {
   Obj context = 0;
   UInt canReturnVoid = 0;
@@ -487,9 +486,7 @@ int main ( int argc, char * argv[] )
 **
 *F  FuncID_FUNC( <self>, <val1> ) . . . . . . . . . . . . . . . return <val1>
 */
-static Obj FuncID_FUNC (
-                 Obj                 self,
-                 Obj                 val1 )
+static Obj FuncID_FUNC(Obj self, Obj val1)
 {
   return val1;
 }
@@ -498,9 +495,7 @@ static Obj FuncID_FUNC (
 **
 *F  FuncRETURN_FIRST( <self>, <args> ) . . . . . . . . Return first argument
 */
-static Obj FuncRETURN_FIRST (
-                 Obj                 self,
-                 Obj                 args )
+static Obj FuncRETURN_FIRST(Obj self, Obj args)
 {
   if (!IS_PLIST(args) || LEN_PLIST(args) < 1)
         ErrorMayQuit("RETURN_FIRST requires one or more arguments",0,0);
@@ -512,9 +507,7 @@ static Obj FuncRETURN_FIRST (
 **
 *F  FuncRETURN_NOTHING( <self>, <arg> ) . . . . . . . . . . . Return nothing
 */
-static Obj FuncRETURN_NOTHING (
-                 Obj                 self,
-                 Obj                 arg )
+static Obj FuncRETURN_NOTHING(Obj self, Obj arg)
 {
   return 0;
 }
@@ -532,14 +525,13 @@ static Obj FuncRETURN_NOTHING (
 **  How much time execution of statements take is of course system dependent.
 **  The accuracy of this number is also system dependent.
 */
-static Obj FuncRuntime (
-                 Obj                 self )
+static Obj FuncRuntime(Obj self)
 {
   return INTOBJ_INT( SyTime() );
 }
 
 
-static Obj FuncRUNTIMES( Obj     self)
+static Obj FuncRUNTIMES(Obj self)
 {
   Obj    res;
   res = NEW_PLIST(T_PLIST, 4);
@@ -625,9 +617,7 @@ static Obj FuncNanosecondsSinceEpochInfo(Obj self)
 **  to leave this value unaffected.  Note that those parameters can  also  be
 **  set with the command line options '-x <x>' and '-y <y>'.
 */
-static Obj FuncSizeScreen (
-                    Obj                 self,
-                    Obj                 args )
+static Obj FuncSizeScreen(Obj self, Obj args)
 {
   Obj                 size;           /* argument and result list        */
   Obj                 elm;            /* one entry from size             */
@@ -719,9 +709,7 @@ static Obj FuncSizeScreen (
 */
 static Obj WindowCmdString;
 
-static Obj FuncWindowCmd (
-                   Obj              self,
-                   Obj             args )
+static Obj FuncWindowCmd(Obj self, Obj args)
 {
   Obj             tmp;
   Obj               list;
@@ -873,9 +861,7 @@ static Obj FuncWindowCmd (
 **
 **  'GASMAN( "display" | "clear" | "collect" | "message" | "partial" )'
 */
-static Obj FuncGASMAN (
-    Obj                 self,
-    Obj                 args )
+static Obj FuncGASMAN(Obj self, Obj args)
 {
     /* check the argument                                                  */
     if ( ! IS_SMALL_LIST(args) || LEN_LIST(args) == 0 ) {
@@ -1029,12 +1015,12 @@ static Obj FuncGASMAN_STATS(Obj self)
   return res;      
 }
 
-static Obj FuncGASMAN_MESSAGE_STATUS( Obj self )
+static Obj FuncGASMAN_MESSAGE_STATUS(Obj self)
 {
   return INTOBJ_INT(SyMsgsFlagBags);
 }
 
-static Obj FuncGASMAN_LIMITS( Obj self )
+static Obj FuncGASMAN_LIMITS(Obj self)
 {
   Obj list;
   list = NEW_PLIST_IMM(T_PLIST_CYC, 3);
@@ -1060,7 +1046,7 @@ static Obj FuncGASMAN_MEM_CHECK(Obj self, Obj newval)
 *F  FuncTotalMemoryAllocated( <self> ) .expert function 'TotalMemoryAllocated'
 */
 
-static Obj FuncTotalMemoryAllocated( Obj self )
+static Obj FuncTotalMemoryAllocated(Obj self)
 {
     return ObjInt_UInt8(SizeAllBags);
 }
@@ -1102,9 +1088,7 @@ static Obj FuncTNAM_OBJ(Obj self, Obj obj)
 **
 *F  FuncOBJ_HANDLE( <self>, <obj> ) . . . . . .  expert function 'OBJ_HANDLE'
 */
-static Obj FuncOBJ_HANDLE (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncOBJ_HANDLE(Obj self, Obj obj)
 {
     UInt                hand;
     UInt                prod;
@@ -1184,7 +1168,7 @@ static Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
 **
 */
 
-static Obj FuncSleep( Obj self, Obj secs )
+static Obj FuncSleep(Obj self, Obj secs)
 {
     Int s = GetSmallInt("Sleep", secs);
 
@@ -1208,7 +1192,7 @@ static Obj FuncSleep( Obj self, Obj secs )
 **
 */
 
-static Obj FuncMicroSleep( Obj self, Obj msecs )
+static Obj FuncMicroSleep(Obj self, Obj msecs)
 {
     Int s = GetSmallInt("MicroSleep", msecs);
 
@@ -1247,7 +1231,7 @@ static int SetExitValue(Obj code)
 **
 */
 
-static Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
+static Obj FuncGAP_EXIT_CODE(Obj self, Obj code)
 {
   if (!SetExitValue(code))
     ErrorQuit("GAP_EXIT_CODE: Argument must be boolean or integer", 0L, 0L);
@@ -1261,7 +1245,7 @@ static Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
 **
 */
 
-static Obj FuncQUIT_GAP( Obj self, Obj args )
+static Obj FuncQUIT_GAP(Obj self, Obj args)
 {
   if ( LEN_LIST(args) == 0 ) {
     SystemErrorCode = 0;
@@ -1281,7 +1265,7 @@ static Obj FuncQUIT_GAP( Obj self, Obj args )
 **
 */
 
-static Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
+static Obj FuncFORCE_QUIT_GAP(Obj self, Obj args)
 {
   if ( LEN_LIST(args) == 0 )
   {
@@ -1300,7 +1284,7 @@ static Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
 **
 */
 
-static Obj FuncSHOULD_QUIT_ON_BREAK( Obj self)
+static Obj FuncSHOULD_QUIT_ON_BREAK(Obj self)
 {
   return SyQuitOnBreak ? True : False;
 }
@@ -1313,7 +1297,8 @@ static Obj FuncSHOULD_QUIT_ON_BREAK( Obj self)
 ** the assortment of global variables previously used
 */
 
-static Obj FuncKERNEL_INFO(Obj self) {
+static Obj FuncKERNEL_INFO(Obj self)
+{
   Obj res = NEW_PREC(0);
   UInt r,lenvec;
   Char *p;
@@ -1462,10 +1447,11 @@ static Obj FuncKERNEL_INFO(Obj self) {
 
 static UInt BreakPointValue;
 
-static Obj FuncBREAKPOINT(Obj self, Obj arg) {
-  if (IS_INTOBJ(arg))
-    BreakPointValue = INT_INTOBJ(arg);
-  return (Obj) 0;
+static Obj FuncBREAKPOINT(Obj self, Obj arg)
+{
+    if (IS_INTOBJ(arg))
+        BreakPointValue = INT_INTOBJ(arg);
+    return (Obj)0;
 }
 
 #ifdef HPCGAP

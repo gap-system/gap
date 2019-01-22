@@ -221,7 +221,7 @@ static Obj FuncREAD_ALL_COMMANDS(
  The second entry, if present, is the return value of
  the command. If it not present, the command returned nothing.
 */
-static Obj FuncREAD_COMMAND_REAL ( Obj self, Obj stream, Obj echo )
+static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
 {
     Int status;
     Obj result;
@@ -532,8 +532,7 @@ Int READ_GAP_ROOT ( const Char * filename )
 **  input   from  '*stdin*'  and  '*errin*'  and  output  to  '*stdout*'  and
 **  '*errout*' will no longer be echoed to a file.
 */
-static Obj FuncCLOSE_LOG_TO (
-    Obj                 self )
+static Obj FuncCLOSE_LOG_TO(Obj self)
 {
     if ( ! CloseLog() ) {
         ErrorQuit("LogTo: can not close the logfile",0L,0L);
@@ -556,9 +555,7 @@ static Obj FuncCLOSE_LOG_TO (
 **  '*stdout*'  and  '*errout*',  to  the  file  with  the  name  <filename>.
 **  The file is created if it does not  exist,  otherwise  it  is  truncated.
 */
-static Obj FuncLOG_TO (
-    Obj                 self,
-    Obj                 filename )
+static Obj FuncLOG_TO(Obj self, Obj filename)
 {
     RequireStringRep("LogTo", filename);
     if ( ! OpenLog( CONST_CSTR_STRING(filename) ) ) {
@@ -575,9 +572,7 @@ static Obj FuncLOG_TO (
 **
 *F  FuncLOG_TO_STREAM( <stream> ) . . . . . . . . . start logging to a stream
 */
-static Obj FuncLOG_TO_STREAM (
-    Obj                 self,
-    Obj                 stream )
+static Obj FuncLOG_TO_STREAM(Obj self, Obj stream)
 {
     if ( ! OpenLogStream(stream) ) {
         ErrorReturnVoid( "LogTo: cannot log to stream", 0L, 0L,
@@ -600,8 +595,7 @@ static Obj FuncLOG_TO_STREAM (
 **  that input from  '*stdin*' and '*errin*' will   no longer be  echoed to a
 **  file.
 */
-static Obj FuncCLOSE_INPUT_LOG_TO (
-    Obj                 self )
+static Obj FuncCLOSE_INPUT_LOG_TO(Obj self)
 {
     if ( ! CloseInputLog() ) {
         ErrorQuit("InputLogTo: can not close the logfile",0L,0L);
@@ -623,9 +617,7 @@ static Obj FuncCLOSE_INPUT_LOG_TO (
 **  files, '*stdin*' and '*errin*' to the file with the name <filename>.  The
 **  file is created if it does not exist, otherwise it is truncated.
 */
-static Obj FuncINPUT_LOG_TO (
-    Obj                 self,
-    Obj                 filename )
+static Obj FuncINPUT_LOG_TO(Obj self, Obj filename)
 {
     RequireStringRep("InputLogTo", filename);
     if ( ! OpenInputLog( CONST_CSTR_STRING(filename) ) ) {
@@ -642,9 +634,7 @@ static Obj FuncINPUT_LOG_TO (
 **
 *F  FuncINPUT_LOG_TO_STREAM( <stream> ) . . . . . . start logging to a stream
 */
-static Obj FuncINPUT_LOG_TO_STREAM (
-    Obj                 self,
-    Obj                 stream )
+static Obj FuncINPUT_LOG_TO_STREAM(Obj self, Obj stream)
 {
     if ( ! OpenInputLogStream(stream) ) {
         ErrorReturnVoid( "InputLogTo: cannot log to stream", 0L, 0L,
@@ -667,8 +657,7 @@ static Obj FuncINPUT_LOG_TO_STREAM (
 **  so that output from '*stdin*' and '*errin*' will no longer be echoed to a
 **  file.
 */
-static Obj FuncCLOSE_OUTPUT_LOG_TO (
-    Obj                 self )
+static Obj FuncCLOSE_OUTPUT_LOG_TO(Obj self)
 {
     if ( ! CloseOutputLog() ) {
         ErrorQuit("OutputLogTo: can not close the logfile",0L,0L);
@@ -690,9 +679,7 @@ static Obj FuncCLOSE_OUTPUT_LOG_TO (
 **  files, '*stdin*' and '*errin*' to the file with the name <filename>.  The
 **  file is created if it does not exist, otherwise it is truncated.
 */
-static Obj FuncOUTPUT_LOG_TO (
-    Obj                 self,
-    Obj                 filename )
+static Obj FuncOUTPUT_LOG_TO(Obj self, Obj filename)
 {
     RequireStringRep("OutputLogTo", filename);
     if ( ! OpenOutputLog( CONST_CSTR_STRING(filename) ) ) {
@@ -709,9 +696,7 @@ static Obj FuncOUTPUT_LOG_TO (
 **
 *F  FuncOUTPUT_LOG_TO_STREAM( <stream> ) . . . . .  start logging to a stream
 */
-static Obj FuncOUTPUT_LOG_TO_STREAM (
-    Obj                 self,
-    Obj                 stream )
+static Obj FuncOUTPUT_LOG_TO_STREAM(Obj self, Obj stream)
 {
     if ( ! OpenOutputLogStream(stream) ) {
         ErrorReturnVoid( "OutputLogTo: cannot log to stream", 0L, 0L,
@@ -726,9 +711,7 @@ static Obj FuncOUTPUT_LOG_TO_STREAM (
 **
 *F  FuncPrint( <self>, <args> ) . . . . . . . . . . . . . . . .  print <args>
 */
-static Obj FuncPrint (
-    Obj                 self,
-    Obj                 args )
+static Obj FuncPrint(Obj self, Obj args)
 {
     volatile Obj        arg;
     volatile UInt       i;
@@ -851,9 +834,7 @@ static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
 **
 *F  FuncPRINT_TO( <self>, <args> )  . . . . . . . . . . . . . .  print <args>
 */
-static Obj FuncPRINT_TO (
-    Obj                 self,
-    Obj                 args )
+static Obj FuncPRINT_TO(Obj self, Obj args)
 {
     return PRINT_OR_APPEND_TO(args, 0);
 }
@@ -863,9 +844,7 @@ static Obj FuncPRINT_TO (
 **
 *F  FuncPRINT_TO_STREAM( <self>, <args> ) . . . . . . . . . . .  print <args>
 */
-static Obj FuncPRINT_TO_STREAM (
-    Obj                 self,
-    Obj                 args )
+static Obj FuncPRINT_TO_STREAM(Obj self, Obj args)
 {
     /* Note that FuncPRINT_TO_STREAM and FuncAPPEND_TO_STREAM do exactly the
        same, they only differ in the function name they print as part
@@ -878,9 +857,7 @@ static Obj FuncPRINT_TO_STREAM (
 **
 *F  FuncAPPEND_TO( <self>, <args> ) . . . . . . . . . . . . . . append <args>
 */
-static Obj FuncAPPEND_TO (
-    Obj                 self,
-    Obj                 args )
+static Obj FuncAPPEND_TO(Obj self, Obj args)
 {
     return PRINT_OR_APPEND_TO(args, 1);
 }
@@ -890,9 +867,7 @@ static Obj FuncAPPEND_TO (
 **
 *F  FuncAPPEND_TO_STREAM( <self>, <args> )  . . . . . . . . . . append <args>
 */
-static Obj FuncAPPEND_TO_STREAM (
-    Obj                 self,
-    Obj                 args )
+static Obj FuncAPPEND_TO_STREAM(Obj self, Obj args)
 {
     /* Note that FuncPRINT_TO_STREAM and FuncAPPEND_TO_STREAM do exactly the
        same, they only differ in the function name they print as part
@@ -907,9 +882,7 @@ static Obj FuncAPPEND_TO_STREAM (
 **
 **  Read the current input and close the input stream.
 */
-static Obj FuncREAD (
-    Obj                 self,
-    Obj                 filename )
+static Obj FuncREAD(Obj self, Obj filename)
 {
    /* check the argument                                                  */
     RequireStringRep("READ", filename);
@@ -932,9 +905,7 @@ static Obj FuncREAD (
 **  a live prompt. This is initially designed for the files read from the
 **  command line.
 */
-static Obj FuncREAD_NORECOVERY (
-    Obj                 self,
-    Obj                 input )
+static Obj FuncREAD_NORECOVERY(Obj self, Obj input)
 {
     if ( IsStringConv( input ) ) {
         if ( ! OpenInput( CONST_CSTR_STRING(input) ) ) {
@@ -964,9 +935,7 @@ static Obj FuncREAD_NORECOVERY (
 **
 *F  FuncREAD_STREAM( <self>, <stream> )   . . . . . . . . . . . read a stream
 */
-static Obj FuncREAD_STREAM (
-    Obj                 self,
-    Obj                 stream )
+static Obj FuncREAD_STREAM(Obj self, Obj stream)
 {
 
     if (CALL_1ARGS(IsInputStream, stream) != True) {
@@ -989,11 +958,10 @@ static Obj FuncREAD_STREAM (
 **  Read data from <instream> in a read-eval-view loop and write all output
 **  to <outstream>.
 */
-static Obj FuncREAD_STREAM_LOOP_WITH_CONTEXT (
-    Obj                 self,
-    Obj                 instream,
-    Obj                 outstream,
-    Obj context )
+static Obj FuncREAD_STREAM_LOOP_WITH_CONTEXT(Obj self,
+                                             Obj instream,
+                                             Obj outstream,
+                                             Obj context)
 {
     Int res;
 
@@ -1028,10 +996,7 @@ static Obj FuncREAD_STREAM_LOOP_WITH_CONTEXT (
     return res ? True : False;
 }
 
-static Obj FuncREAD_STREAM_LOOP (
-    Obj                 self,
-    Obj                 stream,
-    Obj                 catcherrstdout)
+static Obj FuncREAD_STREAM_LOOP(Obj self, Obj stream, Obj catcherrstdout)
 {
     return FuncREAD_STREAM_LOOP_WITH_CONTEXT(self, stream, catcherrstdout,
                                              STATE(BottomLVars));
@@ -1040,9 +1005,7 @@ static Obj FuncREAD_STREAM_LOOP (
 **
 *F  FuncREAD_AS_FUNC( <self>, <filename> )  . . . . . . . . . . . read a file
 */
-static Obj FuncREAD_AS_FUNC (
-    Obj                 self,
-    Obj                 filename )
+static Obj FuncREAD_AS_FUNC(Obj self, Obj filename)
 {
     // check the argument
     RequireStringRep("READ_AS_FUNC", filename);
@@ -1061,9 +1024,7 @@ static Obj FuncREAD_AS_FUNC (
 **
 *F  FuncREAD_AS_FUNC_STREAM( <self>, <filename> ) . . . . . . . . read a file
 */
-static Obj FuncREAD_AS_FUNC_STREAM (
-    Obj                 self,
-    Obj                 stream )
+static Obj FuncREAD_AS_FUNC_STREAM(Obj self, Obj stream)
 {
     if (CALL_1ARGS(IsInputStream, stream) != True) {
         ErrorQuit("READ_AS_FUNC_STREAM: <stream> must be an input stream", 0, 0);
@@ -1083,9 +1044,7 @@ static Obj FuncREAD_AS_FUNC_STREAM (
 **
 *F  FuncREAD_GAP_ROOT( <self>, <filename> ) . . . . . . . . . . . read a file
 */
-static Obj FuncREAD_GAP_ROOT (
-    Obj                 self,
-    Obj                 filename )
+static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
 {
     Char filenamecpy[GAP_PATH_MAX];
 
@@ -1103,8 +1062,7 @@ static Obj FuncREAD_GAP_ROOT (
 **
 *F  FuncTmpName( <self> ) . . . . . . . . . . . . . . return a temporary name
 */
-static Obj FuncTmpName (
-    Obj                 self )
+static Obj FuncTmpName(Obj self)
 {
     Char *              tmp;
     Obj                 name;
@@ -1121,8 +1079,7 @@ static Obj FuncTmpName (
 **
 *F  FuncTmpDirectory( <self> )  . . . . . . . .  return a temporary directory
 */
-static Obj FuncTmpDirectory (
-    Obj                 self )
+static Obj FuncTmpDirectory(Obj self)
 {
     Char *              tmp;
     Obj                 name;
@@ -1139,9 +1096,7 @@ static Obj FuncTmpDirectory (
 **
 *F  FuncRemoveFile( <self>, <name> )  . . . . . . . . . .  remove file <name>
 */
-static Obj FuncRemoveFile (
-    Obj             self,
-    Obj             filename )
+static Obj FuncRemoveFile(Obj self, Obj filename)
 {
     // check the argument
     RequireStringRep("RemoveFile", filename);
@@ -1154,9 +1109,7 @@ static Obj FuncRemoveFile (
 **
 *F  FuncCreateDir( <self>, <name> )  . . . . . . . . . . . . create directory
 */
-static Obj FuncCreateDir (
-    Obj             self,
-    Obj             filename )
+static Obj FuncCreateDir(Obj self, Obj filename)
 {
     // check the argument
     RequireStringRep("CreateDir", filename);
@@ -1169,9 +1122,7 @@ static Obj FuncCreateDir (
 **
 *F  FuncRemoveDir( <self>, <name> )  . . . . . . . . . . . . remove directory
 */
-static Obj FuncRemoveDir (
-    Obj             self,
-    Obj             filename )
+static Obj FuncRemoveDir(Obj self, Obj filename)
 {
     // check the argument
     RequireStringRep("RemoveDir", filename);
@@ -1184,9 +1135,7 @@ static Obj FuncRemoveDir (
 **
 *F  FuncIsDir( <self>, <name> )  . . . . . check whether something is a dir
 */
-static Obj FuncIsDir (
-    Obj             self,
-    Obj             filename )
+static Obj FuncIsDir(Obj self, Obj filename)
 {
     RequireStringRep("IsDir", filename);
 
@@ -1210,8 +1159,7 @@ static Obj FuncIsDir (
 static UInt ErrorMessageRNam;
 static UInt ErrorNumberRNam;
 
-static Obj FuncLastSystemError (
-    Obj             self )
+static Obj FuncLastSystemError(Obj self)
 {
     Obj             err;
     Obj             msg;
@@ -1242,9 +1190,7 @@ static Obj FuncLastSystemError (
 **
 *F  FuncIsExistingFile( <self>, <name> )  . . . . . . does file <name> exists
 */
-static Obj FuncIsExistingFile (
-    Obj             self,
-    Obj             filename )
+static Obj FuncIsExistingFile(Obj self, Obj filename)
 {
     Int             res;
 
@@ -1261,9 +1207,7 @@ static Obj FuncIsExistingFile (
 **
 *F  FuncIsReadableFile( <self>, <name> )  . . . . . . is file <name> readable
 */
-static Obj FuncIsReadableFile (
-    Obj             self,
-    Obj             filename )
+static Obj FuncIsReadableFile(Obj self, Obj filename)
 {
     Int             res;
 
@@ -1280,9 +1224,7 @@ static Obj FuncIsReadableFile (
 **
 *F  FuncIsWritableFile( <self>, <name> )  . . . . . . is file <name> writable
 */
-static Obj FuncIsWritableFile (
-    Obj             self,
-    Obj             filename )
+static Obj FuncIsWritableFile(Obj self, Obj filename)
 {
     Int             res;
 
@@ -1299,9 +1241,7 @@ static Obj FuncIsWritableFile (
 **
 *F  FuncIsExecutableFile( <self>, <name> )  . . . . is file <name> executable
 */
-static Obj FuncIsExecutableFile (
-    Obj             self,
-    Obj             filename )
+static Obj FuncIsExecutableFile(Obj self, Obj filename)
 {
     Int             res;
 
@@ -1318,9 +1258,7 @@ static Obj FuncIsExecutableFile (
 **
 *F  FuncIsDirectoryPath( <self>, <name> ) . . . .  is file <name> a directory
 */
-static Obj FuncIsDirectoryPathString (
-    Obj             self,
-    Obj             filename )
+static Obj FuncIsDirectoryPathString(Obj self, Obj filename)
 {
     Int             res;
 
@@ -1345,9 +1283,7 @@ static Obj FuncIsDirectoryPathString (
 **  reason for the error can be found with 'LastSystemError();' in GAP.
 **
 */
-static Obj FuncSTRING_LIST_DIR (
-    Obj         self,
-    Obj         dirname  )
+static Obj FuncSTRING_LIST_DIR(Obj self, Obj dirname)
 {
     DIR *dir;
     struct dirent *entry;
@@ -1389,9 +1325,7 @@ static Obj FuncSTRING_LIST_DIR (
 **
 *F  FuncCLOSE_FILE( <self>, <fid> ) . . . . . . . . . . . . .  close a stream
 */
-static Obj FuncCLOSE_FILE (
-    Obj             self,
-    Obj             fid )
+static Obj FuncCLOSE_FILE(Obj self, Obj fid)
 {
     // check the argument
     Int ifid = GetSmallInt("CLOSE_FILE", fid);
@@ -1406,9 +1340,7 @@ static Obj FuncCLOSE_FILE (
 **
 *F  FuncINPUT_TEXT_FILE( <self>, <name> ) . . . . . . . . . . . open a stream
 */
-static Obj FuncINPUT_TEXT_FILE (
-    Obj             self,
-    Obj             filename )
+static Obj FuncINPUT_TEXT_FILE(Obj self, Obj filename)
 {
     Int             fid;
 
@@ -1428,9 +1360,7 @@ static Obj FuncINPUT_TEXT_FILE (
 **
 *F  FuncIS_END_OF_FILE( <self>, <fid> ) . . . . . . . . . . .  is end of file
 */
-static Obj FuncIS_END_OF_FILE (
-    Obj             self,
-    Obj             fid )
+static Obj FuncIS_END_OF_FILE(Obj self, Obj fid)
 {
     // check the argument
     Int ifid = GetSmallInt("IS_END_OF_FILE", fid);
@@ -1444,10 +1374,7 @@ static Obj FuncIS_END_OF_FILE (
 **
 *F  FuncOUTPUT_TEXT_FILE( <self>, <name>, <append> )  . . . . . open a stream
 */
-static Obj FuncOUTPUT_TEXT_FILE (
-    Obj             self,
-    Obj             filename,
-    Obj             append )
+static Obj FuncOUTPUT_TEXT_FILE(Obj self, Obj filename, Obj append)
 {
     Int             fid;
 
@@ -1478,9 +1405,7 @@ static Obj FuncOUTPUT_TEXT_FILE (
 **
 *F  FuncPOSITION_FILE( <self>, <fid> )  . . . . . . . . .  position of stream
 */
-static Obj FuncPOSITION_FILE (
-    Obj             self,
-    Obj             fid )
+static Obj FuncPOSITION_FILE(Obj self, Obj fid)
 {
     // check the argument
     Int ifid = GetSmallInt("POSITION_FILE", fid);
@@ -1501,9 +1426,7 @@ static Obj FuncPOSITION_FILE (
 **
 *F  FuncREAD_BYTE_FILE( <self>, <fid> ) . . . . . . . . . . . . . read a byte
 */
-static Obj FuncREAD_BYTE_FILE (
-    Obj             self,
-    Obj             fid )
+static Obj FuncREAD_BYTE_FILE(Obj self, Obj fid)
 {
     // check the argument
     Int ifid = GetSmallInt("READ_BYTE_FILE", fid);
@@ -1521,9 +1444,7 @@ static Obj FuncREAD_BYTE_FILE (
 **  
 **  This uses fgets and works only if there are no zero characters in <fid>.
 */
-static Obj FuncREAD_LINE_FILE (
-    Obj             self,
-    Obj             fid )
+static Obj FuncREAD_LINE_FILE(Obj self, Obj fid)
 {
     Char            buf[256];
     Char *          cstr;
@@ -1572,10 +1493,7 @@ static Obj FuncREAD_LINE_FILE (
 **   (c) we have read <limit> bytes (-1 indicates no limit)
 */
 
-static Obj FuncREAD_ALL_FILE (
-    Obj             self,
-    Obj             fid,
-    Obj             limit)
+static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
 {
     Char            buf[20000];
     Int             len;
@@ -1666,10 +1584,7 @@ static Obj FuncREAD_ALL_FILE (
 **
 *F  FuncSEEK_POSITION_FILE( <self>, <fid>, <pos> )  . seek position of stream
 */
-static Obj FuncSEEK_POSITION_FILE (
-    Obj             self,
-    Obj             fid,
-    Obj             pos )
+static Obj FuncSEEK_POSITION_FILE(Obj self, Obj fid, Obj pos)
 {
     Int             ret;
 
@@ -1686,10 +1601,7 @@ static Obj FuncSEEK_POSITION_FILE (
 **
 *F  FuncWRITE_BYTE_FILE( <self>, <fid>, <byte> )  . . . . . . .  write a byte
 */
-static Obj FuncWRITE_BYTE_FILE (
-    Obj             self,
-    Obj             fid,
-    Obj             ch )
+static Obj FuncWRITE_BYTE_FILE(Obj self, Obj fid, Obj ch)
 {
     // check the argument
     Int ifid = GetSmallInt("WRITE_BYTE_FILE", fid);
@@ -1704,10 +1616,7 @@ static Obj FuncWRITE_BYTE_FILE (
 **
 *F  FuncWRITE_STRING_FILE_NC( <self>, <fid>, <string> ) .write a whole string
 */
-static Obj FuncWRITE_STRING_FILE_NC (
-    Obj             self,
-    Obj             fid,
-    Obj             str )
+static Obj FuncWRITE_STRING_FILE_NC(Obj self, Obj fid, Obj str)
 {
     Int             len = 0, l, ret;
     const char      *ptr;
@@ -1729,9 +1638,7 @@ static Obj FuncWRITE_STRING_FILE_NC (
     return True;
 }
 
-static Obj FuncREAD_STRING_FILE (
-    Obj             self,
-    Obj             fid )
+static Obj FuncREAD_STRING_FILE(Obj self, Obj fid)
 {
     // check the argument
     Int ifid = GetSmallInt("READ_STRING_FILE", fid);
@@ -1742,7 +1649,7 @@ static Obj FuncREAD_STRING_FILE (
 **
 *F  FuncFD_OF_FILE( <fid> )
 */
-static Obj FuncFD_OF_FILE(Obj self,Obj fid)
+static Obj FuncFD_OF_FILE(Obj self, Obj fid)
 {
     Int fd = GetSmallInt("FD_OF_FILE", fid);
     Int fdi = SyBufFileno(fd);
@@ -1763,8 +1670,12 @@ static Obj FuncRAW_MODE_FILE(Obj self, Obj fid, Obj onoff)
 #endif
 
 #ifdef HAVE_SELECT
-static Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist, 
-                   Obj timeoutsec, Obj timeoutusec)
+static Obj FuncUNIXSelect(Obj self,
+                          Obj inlist,
+                          Obj outlist,
+                          Obj exclist,
+                          Obj timeoutsec,
+                          Obj timeoutusec)
 {
   fd_set infds,outfds,excfds;
   struct timeval tv;
@@ -1882,13 +1793,8 @@ static Obj FuncUNIXSelect(Obj self, Obj inlist, Obj outlist, Obj exclist,
 static Obj    ExecArgs  [ 1024 ];
 static Char * ExecCArgs [ 1024 ];
 
-static Obj FuncExecuteProcess (
-    Obj                 self,
-    Obj                 dir,
-    Obj                 prg,
-    Obj                 in,
-    Obj                 out,
-    Obj                 args )
+static Obj
+FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
 {
     Obj                 tmp;
     Int                 res;

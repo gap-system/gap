@@ -35,9 +35,7 @@
 **  'SumIntVector' is an improved version  of  'SumSclList', which  does  not
 **  call 'SUM' if the operands are immediate integers.
 */
-static Obj             SumIntVector (
-    Obj                 elmL,
-    Obj                 vecR )
+static Obj SumIntVector(Obj elmL, Obj vecR)
 {
     Obj                 vecS;           /* handle of the sum               */
     Obj *               ptrS;           /* pointer into the sum            */
@@ -84,9 +82,7 @@ static Obj             SumIntVector (
 **  'SumVectorInt' is an improved version  of  'SumListScl', which  does  not
 **  call 'SUM' if the operands are immediate integers.
 */
-static Obj             SumVectorInt (
-    Obj                 vecL,
-    Obj                 elmR )
+static Obj SumVectorInt(Obj vecL, Obj elmR)
 {
     Obj                 vecS;           /* handle of the sum               */
     Obj *               ptrS;           /* pointer into the sum            */
@@ -133,9 +129,7 @@ static Obj             SumVectorInt (
 **  'SumVectorVector' is an improved version of 'SumListList', which does not
 **  call 'SUM' if the operands are immediate integers.
 */
-static Obj             SumVectorVector (
-    Obj                 vecL,
-    Obj                 vecR )
+static Obj SumVectorVector(Obj vecL, Obj vecR)
 {
     Obj                 vecS;           /* handle of the sum               */
     Obj *               ptrS;           /* pointer into the sum            */
@@ -204,9 +198,7 @@ static Obj             SumVectorVector (
 **  'DiffIntVector'  is an improved  version of 'DiffSclList', which does not
 **  call 'DIFF' if the operands are immediate integers.
 */
-static Obj             DiffIntVector (
-    Obj                 elmL,
-    Obj                 vecR )
+static Obj DiffIntVector(Obj elmL, Obj vecR)
 {
     Obj                 vecD;           /* handle of the difference        */
     Obj *               ptrD;           /* pointer into the difference     */
@@ -253,9 +245,7 @@ static Obj             DiffIntVector (
 **  'DiffVectorInt' is an improved  version of 'DiffListScl', which  does not
 **  call 'DIFF' if the operands are immediate integers.
 */
-static Obj             DiffVectorInt (
-    Obj                 vecL,
-    Obj                 elmR )
+static Obj DiffVectorInt(Obj vecL, Obj elmR)
 {
     Obj                 vecD;           /* handle of the difference        */
     Obj *               ptrD;           /* pointer into the difference     */
@@ -302,9 +292,7 @@ static Obj             DiffVectorInt (
 **  'DiffVectorVector' is an improved  version of  'DiffListList', which does
 **  not call 'DIFF' if the operands are immediate integers.
 */
-static Obj             DiffVectorVector (
-    Obj                 vecL,
-    Obj                 vecR )
+static Obj DiffVectorVector(Obj vecL, Obj vecR)
 {
     Obj                 vecD;           /* handle of the sum               */
     Obj *               ptrD;           /* pointer into the sum            */
@@ -382,9 +370,7 @@ static Obj             DiffVectorVector (
 **  'ProdIntVector'  is an  improved version of 'ProdSclList', which does not
 **  call 'PROD' if the operands are immediate integers.
 */
-static Obj             ProdIntVector (
-    Obj                 elmL,
-    Obj                 vecR )
+static Obj ProdIntVector(Obj elmL, Obj vecR)
 {
     Obj                 vecP;           /* handle of the product           */
     Obj *               ptrP;           /* pointer into the product        */
@@ -431,9 +417,7 @@ static Obj             ProdIntVector (
 **  'ProdVectorInt'  is an  improved version of 'ProdSclList', which does not
 **  call 'PROD' if the operands are immediate integers.
 */
-static Obj             ProdVectorInt (
-    Obj                 vecL,
-    Obj                 elmR )
+static Obj ProdVectorInt(Obj vecL, Obj elmR)
 {
     Obj                 vecP;           /* handle of the product           */
     Obj *               ptrP;           /* pointer into the product        */
@@ -480,9 +464,7 @@ static Obj             ProdVectorInt (
 **  'ProdVectorVector' is an improved version  of 'ProdListList',  which does
 **  not call 'PROD' if the operands are immediate integers.
 */
-static Obj             ProdVectorVector (
-    Obj                 vecL,
-    Obj                 vecR )
+static Obj ProdVectorVector(Obj vecL, Obj vecR)
 {
     Obj                 elmP;           /* product, result                 */
     Obj                 elmS;           /* partial sum of result           */
@@ -546,9 +528,7 @@ static Obj             ProdVectorVector (
 **  We now need to supply a handler for this and install it as a library method,
 **  
 */
-static Obj             ProdVectorMatrix (
-    Obj                 vecL,
-    Obj                 matR )
+static Obj ProdVectorMatrix(Obj vecL, Obj matR)
 {
     Obj                 vecP;           /* handle of the product           */
     Obj *               ptrP;           /* pointer into the product        */
@@ -663,7 +643,7 @@ static Obj FuncPROD_VECTOR_MATRIX(Obj self, Obj vec, Obj mat)
 **  vectors, because it knows what the cyclotomic zero is.
 */
 
-static Obj ZeroVector( Obj vec )
+static Obj ZeroVector(Obj vec)
 {
     UInt i, len;
     Obj res;
@@ -677,7 +657,7 @@ static Obj ZeroVector( Obj vec )
     return res;
 }
 
-static Obj ZeroMutVector( Obj vec )
+static Obj ZeroMutVector(Obj vec)
 {
     UInt i, len;
     Obj res;

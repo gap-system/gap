@@ -1100,7 +1100,8 @@ Obj CopyVec8Bit(Obj list, UInt mut)
 **
 */
 
-static void AddVec8BitVec8BitInner(Obj sum, Obj vl, Obj vr, UInt start, UInt stop)
+static void
+AddVec8BitVec8BitInner(Obj sum, Obj vl, Obj vr, UInt start, UInt stop)
 {
     Obj  info;
     UInt p;
@@ -1295,7 +1296,8 @@ static Obj FuncSUM_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
 **
 */
 
-static void MultVec8BitFFEInner(Obj prod, Obj vec, Obj scal, UInt start, UInt stop)
+static void
+MultVec8BitFFEInner(Obj prod, Obj vec, Obj scal, UInt start, UInt stop)
 {
     Obj           info;
     UInt          elts;
@@ -2272,18 +2274,18 @@ static void OverwriteVec8Bit(Obj dst, Obj src)
         *ptrD++ = *ptrS++;
 }
 
-static UInt AClosVec8Bit(
-    Obj  veclis,    // pointers to matrix vectors and their multiples
-    Obj  vec,       // vector we compute distance to
-    Obj  sum,       // position of the sum vector
-    UInt pos,       // recursion depth
-    UInt l,         // length of basis
-    UInt cnt,       // number of vectors used already
-    UInt stop,      // stop value
-    UInt bd,        // best distance so far
-    Obj  bv,        // best vector so far
-    Obj  coords,
-    Obj  bcoords)
+static UInt
+AClosVec8Bit(Obj  veclis,    // pointers to matrix vectors and their multiples
+             Obj  vec,       // vector we compute distance to
+             Obj  sum,       // position of the sum vector
+             UInt pos,       // recursion depth
+             UInt l,         // length of basis
+             UInt cnt,       // number of vectors used already
+             UInt stop,      // stop value
+             UInt bd,        // best distance so far
+             Obj  bv,        // best vector so far
+             Obj  coords,
+             Obj  bcoords)
 {
     UInt i, j;
     UInt di;
@@ -2494,13 +2496,13 @@ static Obj FuncNUMBER_VEC8BIT(Obj self, Obj vec)
 */
 
 static UInt CosetLeadersInner8Bits(Obj  veclis,
-                            Obj  v,
-                            Obj  w,
-                            UInt weight,
-                            UInt pos,
-                            Obj  leaders,
-                            UInt tofind,
-                            Obj  felts)
+                                   Obj  v,
+                                   Obj  w,
+                                   UInt weight,
+                                   UInt pos,
+                                   Obj  leaders,
+                                   UInt tofind,
+                                   Obj  felts)
 {
     UInt    found = 0;
     UInt    len = LEN_VEC8BIT(v);
@@ -3151,7 +3153,8 @@ static Obj FuncPOSITION_NONZERO_VEC8BIT(Obj self, Obj list, Obj zero)
     return INTOBJ_INT(PositionNonZeroVec8Bit(list, 0));
 }
 
-static Obj FuncPOSITION_NONZERO_VEC8BIT3(Obj self, Obj list, Obj zero, Obj from)
+static Obj
+FuncPOSITION_NONZERO_VEC8BIT3(Obj self, Obj list, Obj zero, Obj from)
 {
     return INTOBJ_INT(PositionNonZeroVec8Bit(list, INT_INTOBJ(from)));
 }
@@ -5792,7 +5795,8 @@ static Obj FuncMAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col)
 *F  FuncSET_MAT_ELM_MAT8BIT( <self>, <mat>, <row>, <col>, <elm> )
 **
 */
-static Obj FuncSET_MAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
+static Obj
+FuncSET_MAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
 {
     UInt r = GetPositiveSmallInt("MAT_ELM_MAT8BIT", row);
     UInt c = GetPositiveSmallInt("MAT_ELM_MAT8BIT", col);

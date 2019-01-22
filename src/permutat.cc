@@ -211,18 +211,16 @@ static inline T * ADDR_TMP_PERM()
 **
 **  'TypePerm' is the function in 'TypeObjFuncs' for permutations.
 */
-static Obj             TYPE_PERM2;
+static Obj TYPE_PERM2;
 
-static Obj             TYPE_PERM4;
+static Obj TYPE_PERM4;
 
-static Obj             TypePerm2 (
-    Obj                 perm )
+static Obj TypePerm2(Obj perm)
 {
     return TYPE_PERM2;
 }
 
-static Obj             TypePerm4 (
-    Obj                 perm )
+static Obj TypePerm4(Obj perm)
 {
     return TYPE_PERM4;
 }
@@ -1002,8 +1000,7 @@ static Obj CommPerm(Obj opL, Obj opR)
 **
 *F  OnePerm( <perm> )
 */
-static Obj OnePerm (
-    Obj                 op )
+static Obj OnePerm(Obj op)
 {
     return IdentityPerm;
 }
@@ -1023,9 +1020,7 @@ static Obj OnePerm (
 */
 static Obj IsPermFilt;
 
-static Obj IsPermHandler (
-    Obj                 self,
-    Obj                 val )
+static Obj IsPermHandler(Obj self, Obj val)
 {
     /* return 'true' if <val> is a permutation and 'false' otherwise       */
     if ( TNUM_OBJ(val) == T_PERM2 || TNUM_OBJ(val) == T_PERM4 ) {
@@ -1109,9 +1104,7 @@ static inline Obj PermList(Obj list)
     return perm;
 }
 
-static Obj             FuncPermList (
-    Obj                 self,
-    Obj                 list )
+static Obj FuncPermList(Obj self, Obj list)
 {
     /* check the arguments                                                 */
     RequireSmallList("PermList", list);
@@ -1216,10 +1209,7 @@ static inline Obj CYCLE_LENGTH_PERM_INT(Obj perm, UInt pnt)
     return INTOBJ_INT(len);
 }
 
-static Obj             FuncCYCLE_LENGTH_PERM_INT (
-    Obj                 self,
-    Obj                 perm,
-    Obj                 point )
+static Obj FuncCYCLE_LENGTH_PERM_INT(Obj self, Obj perm, Obj point)
 {
     UInt                pnt;            /* value of the point              */
 
@@ -1285,10 +1275,7 @@ static inline Obj CYCLE_PERM_INT(Obj perm, UInt pnt)
     return list;
 }
 
-static Obj             FuncCYCLE_PERM_INT (
-    Obj                 self,
-    Obj                 perm,
-    Obj                 point )
+static Obj FuncCYCLE_PERM_INT(Obj self, Obj perm, Obj point)
 {
     UInt                pnt;            /* value of the point              */
 
@@ -1492,9 +1479,7 @@ static inline Obj ORDER_PERM(Obj perm)
     return ord;
 }
 
-static Obj             FuncORDER_PERM (
-    Obj                 self,
-    Obj                 perm )
+static Obj FuncORDER_PERM(Obj self, Obj perm)
 {
     /* check arguments and extract permutation                             */
     RequirePermutation("OrderPerm", perm);
@@ -1569,9 +1554,7 @@ static inline Obj SIGN_PERM(Obj perm)
     return INTOBJ_INT( sign );
 }
 
-static Obj             FuncSIGN_PERM (
-    Obj                 self,
-    Obj                 perm )
+static Obj FuncSIGN_PERM(Obj self, Obj perm)
 {
     /* check arguments and extract permutation                             */
     RequirePermutation("SignPerm", perm);
@@ -1688,9 +1671,7 @@ static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
     return small;
 }
 
-static Obj             FuncSMALLEST_GENERATOR_PERM (
-    Obj                 self,
-    Obj                 perm )
+static Obj FuncSMALLEST_GENERATOR_PERM(Obj self, Obj perm)
 {
     /* check arguments and extract permutation                             */
     RequirePermutation("SmallestGeneratorPerm", perm);
@@ -1805,11 +1786,7 @@ static inline Obj RESTRICTED_PERM(Obj perm, Obj dom, Obj test)
     return rest;
 }
 
-static Obj             FuncRESTRICTED_PERM (
-    Obj                 self,
-    Obj                 perm,
-    Obj                 dom,
-    Obj                 test )
+static Obj FuncRESTRICTED_PERM(Obj self, Obj perm, Obj dom, Obj test)
 {
     /* check arguments and extract permutation                             */
     RequirePermutation("RestrictedPerm", perm);
@@ -1829,10 +1806,7 @@ static Obj             FuncRESTRICTED_PERM (
 **  'TRIM_PERM' trims a permutation to the first <n> points. This can be
 ##  useful to save memory
 */
-static Obj             FuncTRIM_PERM (
-    Obj                 self,
-    Obj                 perm,
-    Obj                 n )
+static Obj FuncTRIM_PERM(Obj self, Obj perm, Obj n)
 {
     UInt        deg,rdeg,i;
     UInt4*      addr;
@@ -1931,13 +1905,8 @@ SPLIT_PARTITION(Obj Ppoints, Obj Qnum, Obj jval, Obj g, Obj lst)
   return INTOBJ_INT(b+1);
 }
 
-static Obj FuncSPLIT_PARTITION(
-    Obj self,
-    Obj Ppoints,
-    Obj Qnum,
-    Obj jval,
-    Obj g,
-    Obj lst)
+static Obj
+FuncSPLIT_PARTITION(Obj self, Obj Ppoints, Obj Qnum, Obj jval, Obj g, Obj lst)
 {
   if (TNUM_OBJ(g)==T_PERM2) {
     return SPLIT_PARTITION<UInt2>(Ppoints, Qnum, jval, g, lst);
@@ -2038,10 +2007,7 @@ static inline Obj SMALLEST_IMG_TUP_PERM(Obj tup, Obj perm)
 
 }
 
-static Obj             FuncSMALLEST_IMG_TUP_PERM (
-    Obj                 self,
-    Obj                 tup,
-    Obj                 perm )
+static Obj FuncSMALLEST_IMG_TUP_PERM(Obj self, Obj tup, Obj perm)
 {
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
         return SMALLEST_IMG_TUP_PERM<UInt2>(tup, perm);
@@ -2402,7 +2368,7 @@ static inline Int myquo(Obj pt, Obj perm)
   
 
 /* Stabilizer chain helper implements AddGeneratorsExtendSchreierTree Inner loop */
-static Obj FuncAGESTC( Obj self, Obj args)
+static Obj FuncAGESTC(Obj self, Obj args)
 {
   Int i,j;
   Obj pt;
@@ -2456,7 +2422,13 @@ static Obj FuncAGESTC( Obj self, Obj args)
 }
 
 /* Stabilizer chain helper implements AddGeneratorsExtendSchreierTree Inner loop */
-static Obj FuncAGEST( Obj self, Obj orbit, Obj newlabs,  Obj labels, Obj translabels, Obj transversal, Obj genlabels)
+static Obj FuncAGEST(Obj self,
+                     Obj orbit,
+                     Obj newlabs,
+                     Obj labels,
+                     Obj translabels,
+                     Obj transversal,
+                     Obj genlabels)
 {
   Int i,j;
   Int len = LEN_PLIST(orbit);
