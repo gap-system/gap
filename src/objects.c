@@ -449,7 +449,7 @@ void PrepareCopy(Obj obj, Obj copy)
 **  'COPY_OBJ'  implements  the first pass  of  'CopyObj', i.e., it makes the
 **  structural copy of <obj> and marks <obj> as already copied.
 */
-extern Obj COPY_OBJ(Obj obj, Int mut)
+Obj COPY_OBJ(Obj obj, Int mut)
 {
     UInt tnum = TNUM_OBJ(obj);
     Obj copy;

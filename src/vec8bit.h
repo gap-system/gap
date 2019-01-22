@@ -20,7 +20,7 @@
 **
 */
 
-extern void RewriteGF2Vec(Obj vec, UInt q);
+void RewriteGF2Vec(Obj vec, UInt q);
 
 /****************************************************************************
 **
@@ -28,7 +28,7 @@ extern void RewriteGF2Vec(Obj vec, UInt q);
 **
 */
 
-extern Obj CopyVec8Bit(Obj list, UInt mut);
+Obj CopyVec8Bit(Obj list, UInt mut);
 
 /****************************************************************************
 **
@@ -46,14 +46,14 @@ extern Obj IsVec8bitRep;
 **
 **  'PlainVec8Bit' converts the  vector <list> to a plain list.
 */
-extern void PlainVec8Bit(Obj list);
+void PlainVec8Bit(Obj list);
 
 /****************************************************************************
 **
 *F  ASS_VEC8BIT( <list>, <pos>, <elm> ) . . . .  set an elm of an 8bit vector
 **
 */
-extern void ASS_VEC8BIT(Obj list, Obj pos, Obj elm);
+void ASS_VEC8BIT(Obj list, Obj pos, Obj elm);
 
 
 /****************************************************************************
@@ -61,7 +61,7 @@ extern void ASS_VEC8BIT(Obj list, Obj pos, Obj elm);
 *F  ZeroVec8Bit( <list> ) . . . make a new 8 bit vector
 **
 */
-extern Obj ZeroVec8Bit(UInt q, UInt len, UInt mut);
+Obj ZeroVec8Bit(UInt q, UInt len, UInt mut);
 
 /****************************************************************************
 **
@@ -69,7 +69,7 @@ extern Obj ZeroVec8Bit(UInt q, UInt len, UInt mut);
 **
 */
 
-extern Obj GetFieldInfo8Bit(UInt q);
+Obj GetFieldInfo8Bit(UInt q);
 
 
 /****************************************************************************
@@ -189,7 +189,7 @@ extern Obj GetFieldInfo8Bit(UInt q);
 **
 *F  InitInfoVec8bit() . . . . . . . . . . . . . . . . table of init functions
 */
-extern StructInitInfo * InitInfoVec8bit(void);
+StructInitInfo * InitInfoVec8bit(void);
 
 
 #endif    // GAP_VEC8BIT_H

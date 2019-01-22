@@ -2637,7 +2637,6 @@ void            IntrIsbHVar (
 **
 *F  IntrAssDVar(<dvar>) . . . . . . . . . . . . interpret assignment to debug
 */
-/* TL: extern  Obj             ErrorLVars; */
 
 void            IntrAssDVar (
     UInt                dvar,

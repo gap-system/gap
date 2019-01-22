@@ -135,12 +135,11 @@ EXPORT_INLINE Obj EVAL_BOOL_EXPR(Expr expr)
 **
 **  'PrintExpr' prints the expression <expr>.
 */
-extern  void            PrintExpr (
-            Expr                expr );
+void PrintExpr(Expr expr);
 
 
-extern void PrintRecExpr1 ( Expr expr ); /* needed for printing
-                                          function calls with options */
+void PrintRecExpr1(Expr expr); /* needed for printing
+                                       function calls with options */
 
 /****************************************************************************
 **

@@ -238,7 +238,7 @@ EXPORT_INLINE int IsIdent(char c)
     return IsAlpha(c) || c == '_' || c == '@';
 }
 
-extern int IsKeyword(const char * str);
+int IsKeyword(const char * str);
 
 
 /****************************************************************************
@@ -279,11 +279,9 @@ extern int IsKeyword(const char * str);
 **  from e.g. the interpreter or coder, let alone any other parts of GAP.
 **
 */
-extern  void            SyntaxError (
-            const Char *        msg );
+void SyntaxError(const Char * msg);
 
-extern  void            SyntaxWarning (
-            const Char *        msg );
+void SyntaxWarning(const Char * msg);
 
 
 /****************************************************************************
@@ -329,10 +327,7 @@ extern  void            SyntaxWarning (
 **  If 'Match' needs to  read a  new line from  '*stdin*' or '*errin*' to get
 **  the next symbol it prints the string pointed to by 'Prompt'.
 */
-extern void Match (
-            UInt                symbol,
-            const Char *        msg,
-            TypSymbolSet        skipto );
+void Match(UInt symbol, const Char * msg, TypSymbolSet skipto);
 
 
 /****************************************************************************
@@ -345,7 +340,7 @@ extern void Match (
 **  cannot detect this without being context aware, we must provide this
 **  function to allow the reader to signal to the scanner about this.
 */
-extern void ScanForFloatAfterDotHACK(void);
+void ScanForFloatAfterDotHACK(void);
 
 /****************************************************************************
 **

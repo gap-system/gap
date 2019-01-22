@@ -19,12 +19,7 @@
 **
 *F  CompileFunc(<output>,<func>,<name>,<magic1>,<magic2>) . . . . . . compile
 */
-extern Int CompileFunc (
-            Obj                 output,
-            Obj                 func,
-            Obj                 name,
-            Int                 magic1,
-            Obj                 magic2 );
+Int CompileFunc(Obj output, Obj func, Obj name, Int magic1, Obj magic2);
 
 
 /****************************************************************************

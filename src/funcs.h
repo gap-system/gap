@@ -25,7 +25,7 @@
 **
 **  'MakeFunction' makes a function from the function expression bag <fexp>.
 */
-extern Obj MakeFunction(Obj fexp);
+Obj MakeFunction(Obj fexp);
 
 /****************************************************************************
 **
@@ -34,8 +34,8 @@ extern Obj MakeFunction(Obj fexp);
 **
 *F  ExecEnd(<error>)  . . . . . . . . . . . . . . . . . . .  end an execution
 */
-extern void ExecBegin(Obj frame);
-extern void ExecEnd(UInt error);
+void ExecBegin(Obj frame);
+void ExecEnd(UInt error);
 
 
 /****************************************************************************
@@ -47,11 +47,11 @@ extern void ExecEnd(UInt error);
 
 void IncRecursionDepth(void);
 void DecRecursionDepth(void);
-Int GetRecursionDepth(void);
+Int  GetRecursionDepth(void);
 void SetRecursionDepth(Int depth);
 
 extern UInt RecursionTrapInterval;
-extern void RecursionDepthTrap( void );
+void        RecursionDepthTrap(void);
 
 EXPORT_INLINE void CheckRecursionBefore( void )
 {

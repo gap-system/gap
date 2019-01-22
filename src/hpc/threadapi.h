@@ -34,7 +34,7 @@ typedef struct ThreadObject {
 
 Obj NewThreadObject(UInt id);
 
-extern void InitSignals(void);
+void InitSignals(void);
 
 
 /****************************************************************************

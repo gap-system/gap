@@ -45,7 +45,7 @@
 
 
 #if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
-extern void InstallBacktraceHandlers(void);
+void InstallBacktraceHandlers(void);
 #endif
 
 #endif

@@ -46,12 +46,12 @@ extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 **  executor, i.e., to the  function that executes statements  of the type of
 **  <stat>.
 */
-extern UInt EXEC_STAT(Stat stat);
+UInt EXEC_STAT(Stat stat);
 
 // Executes the current function and returns its return value
 // if the last statement was T_RETURN_OBJ, or null if the last
 // statement was T_RETURN_VOID
-extern Obj EXEC_CURR_FUNC(void);
+Obj EXEC_CURR_FUNC(void);
 
 /****************************************************************************
 **
@@ -83,7 +83,7 @@ extern UInt (* IntrExecStatFuncs[256]) ( Stat stat );
 **
 */
 #ifdef HPCGAP
-extern UInt HaveInterrupt(void);
+UInt HaveInterrupt(void);
 #else
 #define HaveInterrupt() SyIsIntr()
 #endif
@@ -92,7 +92,7 @@ extern UInt HaveInterrupt(void);
 /****************************************************************************
 **
 */
-extern UInt TakeInterrupt(void);
+UInt TakeInterrupt(void);
 
 
 /****************************************************************************
@@ -104,7 +104,7 @@ extern UInt TakeInterrupt(void);
 **  received.  It is never called on systems that do not support signals.  On
 **  those systems the executors test 'SyIsIntr' at regular intervals.
 */
-extern void InterruptExecStat(void);
+void InterruptExecStat(void);
 
 
 /****************************************************************************
@@ -116,8 +116,7 @@ extern void InterruptExecStat(void);
 **  'PrintStat' simply dispatches  through the table  'PrintStatFuncs' to the
 **  appropriate printer.
 */
-extern  void            PrintStat (
-            Stat                stat );
+void PrintStat(Stat stat);
 
 
 /****************************************************************************
@@ -140,7 +139,7 @@ extern  void            (* PrintStatFuncs[256] ) ( Stat stat );
  * 
  */
 
-extern void ClearError ( void );
+void ClearError(void);
 
 
 /****************************************************************************

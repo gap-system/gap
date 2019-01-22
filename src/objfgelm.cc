@@ -109,7 +109,7 @@ struct OverflowType<UInt4> {
 };
 
 
-extern Obj NewWord(Obj type, UInt npairs)
+Obj NewWord(Obj type, UInt npairs)
 {
     Obj word;
 #ifdef HPCGAP

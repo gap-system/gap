@@ -92,7 +92,7 @@ EXPORT_INLINE UInt RANK_PPERM(Obj f)
 **  PPerm <f>.
 */
 
-extern Obj OnTuplesPPerm(Obj set, Obj f);
+Obj OnTuplesPPerm(Obj set, Obj f);
 
 /****************************************************************************
 **
@@ -102,7 +102,7 @@ extern Obj OnTuplesPPerm(Obj set, Obj f);
 **  partial perm <f>.
 */
 
-extern Obj OnSetsPPerm(Obj set, Obj f);
+Obj OnSetsPPerm(Obj set, Obj f);
 
 /****************************************************************************
 **

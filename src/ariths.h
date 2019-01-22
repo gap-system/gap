@@ -271,10 +271,7 @@ EXPORT_INLINE Int EQ(Obj opL, Obj opR)
 
 extern Obj EqOper;
 
-extern Int EqObject (
-    Obj                 opL,
-    Obj                 opR );
-
+Int EqObject(Obj opL, Obj opR);
 
 
 /****************************************************************************
@@ -609,7 +606,7 @@ EXPORT_INLINE Obj MOD(Obj opL, Obj opR)
 **
 *F  ChangeArithDoOperations( <oper>, <verb> )
 */
-extern void ChangeArithDoOperations(Obj oper, Int verb);
+void ChangeArithDoOperations(Obj oper, Int verb);
 
 
 /****************************************************************************

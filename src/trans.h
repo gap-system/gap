@@ -100,7 +100,7 @@ EXPORT_INLINE UInt RANK_TRANS(Obj f)
 **  'OnTuplesTrans'  returns  the  image  of  the  tuple  <tup>   under  the
 **  transformation <f>.
 */
-extern Obj OnTuplesTrans(Obj tup, Obj f);
+Obj OnTuplesTrans(Obj tup, Obj f);
 
 /****************************************************************************
 **
@@ -109,7 +109,7 @@ extern Obj OnTuplesTrans(Obj tup, Obj f);
 **  'OnSetsTrans' returns the  image of the  tuple <set> under the
 **  transformation <f>.
 */
-extern Obj OnSetsTrans(Obj set, Obj f);
+Obj OnSetsTrans(Obj set, Obj f);
 
 
 /****************************************************************************
@@ -118,8 +118,8 @@ extern Obj OnSetsTrans(Obj set, Obj f);
 **
 **  Returns a hash value for a transformation
 */
-
 Int HashFuncForTrans(Obj f);
+
 
 /****************************************************************************
 **

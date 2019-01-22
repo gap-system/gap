@@ -725,7 +725,7 @@ void SyRedirectStderrToStdOut(void)
 **  Given a 'syBuf' buffer id, return the associated file descriptor, if any.
 **  For gzipped files, -1 is returned.
 */
-extern int SyBufFileno(Int fid)
+int SyBufFileno(Int fid)
 {
     if (fid == -1)
         return -1;

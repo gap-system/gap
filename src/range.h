@@ -169,29 +169,21 @@ EXPORT_INLINE Obj GET_ELM_RANGE(Obj list, Int pos)
 **
 **  'PosRange' is the function in 'PosListFuncs' for ranges.
 */
-extern  Obj             PosRange (
-            Obj                 list,
-            Obj                 val,
-            Obj                 start );
+Obj PosRange(Obj list, Obj val, Obj start);
 
 
 /****************************************************************************
 **
 *F  Range2Check( <first>, <last> )  . . . . . . . . . . . . . construct range
 */
-extern Obj Range2Check (
-    Obj                 first,
-    Obj                 last );
+Obj Range2Check(Obj first, Obj last);
 
 
 /****************************************************************************
 **
 *F  Range3Check( <first>, <second>, <last> )  . . . . . . . . construct range
 */
-extern Obj Range3Check (
-    Obj                 first,
-    Obj                 second,
-    Obj                 last );
+Obj Range3Check(Obj first, Obj second, Obj last);
 
 
 /****************************************************************************

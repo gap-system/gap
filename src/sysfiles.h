@@ -43,9 +43,7 @@ typedef union {
     StructInitInfo * module_info;
 } TypGRF_Data;
 
-extern Int SyFindOrLinkGapRootFile (
-            const Char *    filename,
-            TypGRF_Data *   result );
+Int SyFindOrLinkGapRootFile(const Char * filename, TypGRF_Data * result);
 
 
 /****************************************************************************
@@ -55,8 +53,7 @@ extern Int SyFindOrLinkGapRootFile (
 **  This function should  be clever and handle  white spaces and comments but
 **  one has to certain that such characters are not ignored in strings.
 */
-extern Int4 SyGAPCRC(
-            const Char *    name );
+Int4 SyGAPCRC(const Char * name);
 
 
 /****************************************************************************
@@ -89,10 +86,7 @@ void SetupGAPLocation(int argc, char ** argv);
 **  '@'  characters are duplicated, and   control characters are converted to
 **  '@<chr>', e.g., <newline> is converted to '@J'.
 */
-extern void syWinPut (
-            Int                 fid,
-            const Char *    cmd,
-            const Char *    str );
+void syWinPut(Int fid, const Char * cmd, const Char * str);
 
 
 /****************************************************************************
@@ -105,9 +99,7 @@ extern void syWinPut (
 **  '@J'.  Then  'SyWinCmd' waits for  the window handlers answer and returns
 **  that string.
 */
-extern const Char * SyWinCmd (
-            const Char *    str,
-            UInt                len );
+const Char * SyWinCmd(const Char * str, UInt len);
 
 
 /****************************************************************************
@@ -116,9 +108,9 @@ extern const Char * SyWinCmd (
 */
 
 
-extern UInt SySetBuffering(UInt fid);
+UInt SySetBuffering(UInt fid);
 
-extern void SyRedirectStderrToStdOut(void);
+void SyRedirectStderrToStdOut(void);
 
 /****************************************************************************
 **
@@ -126,7 +118,7 @@ extern void SyRedirectStderrToStdOut(void);
 **
 **  Given a 'syBuf' buffer id, return the associated file descriptor, if any.
 */
-extern int SyBufFileno(Int fid);
+int SyBufFileno(Int fid);
 
 /****************************************************************************
 **
@@ -134,11 +126,11 @@ extern int SyBufFileno(Int fid);
 **
 **  Given a 'syBuf' buffer id, return 1 if it references a TTY, else 0
 */
-extern Int SyBufIsTTY(Int fid);
+Int SyBufIsTTY(Int fid);
 
 
 // HACK: set 'ateof' to true for the given 'syBuf' entry
-extern void SyBufSetEOF(Int fid);
+void SyBufSetEOF(Int fid);
 
 
 /****************************************************************************
@@ -163,9 +155,7 @@ extern void SyBufSetEOF(Int fid);
 **  Right now GAP does not read nonascii files, but if this changes sometimes
 **  'SyFopen' must adjust the mode argument to open the file in binary  mode.
 */
-extern Int SyFopen (
-            const Char *        name,
-            const Char *        mode );
+Int SyFopen(const Char * name, const Char * mode);
 
 
 /****************************************************************************
@@ -175,16 +165,14 @@ extern Int SyFopen (
 **  'SyFclose' closes the file with the identifier <fid>  which  is  obtained
 **  from 'SyFopen'.
 */
-extern Int SyFclose (
-            Int                 fid );
+Int SyFclose(Int fid);
 
 
 /****************************************************************************
 **
 *F  SyIsEndOfFile( <fid> )  . . . . . . . . . . . . . . . end of file reached
 */
-extern Int SyIsEndOfFile (
-    Int                 fid );
+Int SyIsEndOfFile(Int fid);
 
 /****************************************************************************
 **
@@ -200,11 +188,9 @@ extern Int SyIsEndOfFile (
 **
 */
 
-extern UInt syStartraw (
-            Int                 fid );
+UInt syStartraw(Int fid);
 
-extern void syStopraw (
-            Int                 fid );
+void syStopraw(Int fid);
 
 
 /****************************************************************************
@@ -274,10 +260,7 @@ extern Obj OnCharReadHookExcFds;  /* a list of UNIX file descriptors */
 extern Obj OnCharReadHookExcFuncs;/* a list of GAP functions with 0 args */
 #endif
 
-extern Char * SyFgets (
-            Char *              line,
-            UInt                length,
-            Int                 fid );
+Char * SyFgets(Char * line, UInt length, Int fid);
 
 
 /****************************************************************************
@@ -286,9 +269,7 @@ extern Char * SyFgets (
 **
 **  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
 */
-extern void SyFputs (
-            const Char *        line,
-            Int                 fid );
+void SyFputs(const Char * line, Int fid);
 
 
 Int SyRead(Int fid, void * ptr, size_t len);
@@ -306,9 +287,9 @@ Int SyReadWithBuffer(Int fid, void * ptr, size_t len);
 **  'SyIsIntr' returns 1 if the user typed '<ctr>-C' and 0 otherwise.
 */
 
-extern void SyInstallAnswerIntr ( void );
+void SyInstallAnswerIntr(void);
 
-extern UInt SyIsIntr ( void );
+UInt SyIsIntr(void);
 
 
 /****************************************************************************
@@ -321,9 +302,7 @@ extern UInt SyIsIntr ( void );
 **
 *F  SyEchoch( <ch>, <fid> ) . . . . . . . . . . . echo a char to <fid>, local
 */
-extern Int SyEchoch (
-    Int                 ch,
-    Int                 fid );
+Int SyEchoch(Int ch, Int fid);
 
 
 /****************************************************************************
@@ -336,17 +315,14 @@ extern Int SyEchoch (
 **
 *F  SyFtell( <fid> )  . . . . . . . . . . . . . . . . . .  position of stream
 */
-extern Int SyFtell (
-    Int                 fid );
+Int SyFtell(Int fid);
 
 
 /****************************************************************************
 **
 *F  SyFseek( <fid>, <pos> )   . . . . . . . . . . . seek a position of stream
 */
-extern Int SyFseek (
-    Int                 fid,
-    Int                 pos );
+Int SyFseek(Int fid, Int pos);
 
 
 /****************************************************************************
@@ -356,8 +332,7 @@ extern Int SyFseek (
 **  'SyGetch' reads a character from <fid>, which is switch to raw mode if it
 **  is *stdin* or *errin*.
 */
-extern Int SyGetch (
-    Int                 fid );
+Int SyGetch(Int fid);
 
 
 /****************************************************************************
@@ -384,14 +359,14 @@ extern Char SyLastErrorMessage [ 1024 ];
 **
 *F  SyClearErrorNo()  . . . . . . . . . . . . . . . . .  clear error messages
 */
-extern void SyClearErrorNo ( void );
+void SyClearErrorNo(void);
 
 
 /****************************************************************************
 **
 *F  SySetErrorNo()  . . . . . . . . . . . . . . . . . . . . set error message
 */
-extern void SySetErrorNo ( void );
+void SySetErrorNo(void);
 
 
 /****************************************************************************
@@ -408,12 +383,7 @@ extern void SySetErrorNo ( void );
 **  performed, the return  value of the process  is returned if the operation
 **  system supports such a concept.
 */
-extern UInt SyExecuteProcess (
-    Char *                  dir,
-    Char *                  prg,
-    Int                     in,
-    Int                     out,
-    Char *                  args[] );
+UInt SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[]);
 
 
 /****************************************************************************
@@ -424,8 +394,7 @@ extern UInt SyExecuteProcess (
 **  It does not check if the file is readable, writable or excuteable. <name>
 **  is a system dependent description of the file.
 */
-extern Int SyIsExistingFile(
-            const Char * name );
+Int SyIsExistingFile(const Char * name);
 
 
 /****************************************************************************
@@ -435,8 +404,7 @@ extern Int SyIsExistingFile(
 **  'SyIsReadableFile'   returns 0  if the   file  <name> is   readable and
 **  -1 otherwise. <name> is a system dependent description of the file.
 */
-extern Int SyIsReadableFile(
-            const Char * name );
+Int SyIsReadableFile(const Char * name);
 
 
 /****************************************************************************
@@ -446,8 +414,7 @@ extern Int SyIsReadableFile(
 **  'SyIsWriteableFile'   returns 1  if the  file  <name>  is  writable and 0
 **  otherwise. <name> is a system dependent description of the file.
 */
-extern Int SyIsWritableFile(
-            const Char * name );
+Int SyIsWritableFile(const Char * name);
 
 
 /****************************************************************************
@@ -457,8 +424,7 @@ extern Int SyIsWritableFile(
 **  'SyIsExecutableFile' returns 1 if the  file <name>  is  executable and  0
 **  otherwise. <name> is a system dependent description of the file.
 */
-extern Int SyIsExecutableFile(
-            const Char * name );
+Int SyIsExecutableFile(const Char * name);
 
 
 /****************************************************************************
@@ -468,30 +434,26 @@ extern Int SyIsExecutableFile(
 **  'SyIsDirectoryPath' returns 1 if the  file <name>  is a directory  and  0
 **  otherwise. <name> is a system dependent description of the file.
 */
-extern Int SyIsDirectoryPath (
-            const Char * name );
+Int SyIsDirectoryPath(const Char * name);
 
 
 /****************************************************************************
 **
 *F  SyRemoveFile( <name> )  . . . . . . . . . . . . . . .  remove file <name>
 */
-extern Int SyRemoveFile (
-            const Char * name );
+Int SyRemoveFile(const Char * name);
 
 /****************************************************************************
 **
 *F  SyMkDir( <name> )  . . . . . . . . . . . . . . .  remove file <name>
 */
-extern Int SyMkdir (
-            const Char * name );
+Int SyMkdir(const Char * name);
 
 /****************************************************************************
 **
 *F  SyRmdir( <name> )  . . . . . . . . . . . . . . .  remove directory <name>
 */
-extern Int SyRmdir (
-            const Char * name );
+Int SyRmdir(const Char * name);
 
 /****************************************************************************
 **
@@ -501,8 +463,7 @@ extern Int SyRmdir (
 **  for a real directory, 'C' for a character device, 'B' for a block
 **  device 'P' for a FIFO (named pipe) and 'S' for a socket.
 */
-extern Obj SyIsDir (
-            const Char * name );
+Obj SyIsDir(const Char * name);
 
 /****************************************************************************
 **
@@ -511,7 +472,8 @@ extern Obj SyIsDir (
 **  <buffer> must point to a buffer of at least <bufferSize> characters.
 **  The returned pointer will either be NULL, or <buffer>
 */
-extern Char *SyFindGapRootFile(const Char *filename, Char *buffer, size_t bufferSize);
+Char *
+SyFindGapRootFile(const Char * filename, Char * buffer, size_t bufferSize);
 
 
 /****************************************************************************
@@ -526,7 +488,7 @@ extern Char *SyFindGapRootFile(const Char *filename, Char *buffer, size_t buffer
 **
 **  'SyTmpname' creates and returns a new temporary name.
 */
-extern Char * SyTmpname ( void );
+Char * SyTmpname(void);
 
 
 /****************************************************************************
@@ -541,7 +503,7 @@ extern Char * SyTmpname ( void );
 **  would   usually   represent   '/usr/tmp/<hint>_<proc_id>_<cnt>/',   e.g.,
 **  '/usr/tmp/guava_17188_1/'.
 */
-extern Char * SyTmpdir ( const Char * hint );
+Char * SyTmpdir(const Char * hint);
 
 
 /****************************************************************************
@@ -550,19 +512,16 @@ extern Char * SyTmpdir ( const Char * hint );
 **                               set SyNrRows and SyNrCols accordingly
 */
 
-extern void getwindowsize( void );
+void getwindowsize(void);
 
 /***************************************************************************
 **
 *F HasAvailableBytes( <fid> ) returns positive if  a subsequent read to <fid>
 **                            will read at least one byte without blocking
 */
-extern Int HasAvailableBytes( UInt fid );
+Int HasAvailableBytes(UInt fid);
 
-extern Char *SyFgetsSemiBlock ( 
-    Char *              line,
-    UInt                length,
-    Int                 fid);
+Char * SyFgetsSemiBlock(Char * line, UInt length, Int fid);
 
 /***************************************************************************
  **
@@ -575,9 +534,9 @@ extern Char *SyFgetsSemiBlock (
  **     size of file before reading. This does not work for pipes
  */
 
-extern Obj SyReadStringFid(Int fid);
-extern Obj SyReadStringFile(Int fid);
-extern Obj SyReadStringFileGeneric(Int fid);
+Obj SyReadStringFid(Int fid);
+Obj SyReadStringFile(Int fid);
+Obj SyReadStringFileGeneric(Int fid);
 
 
 #if !defined(SYS_IS_64_BIT) && defined(__GNU_LIBRARY__)
@@ -598,7 +557,7 @@ void * SyMemmove(void * dst, const void * src, size_t size);
 
 // This function is called by 'InitSystem', before the usual module
 // initialization.
-extern void InitSysFiles(void);
+void InitSysFiles(void);
 
 /****************************************************************************
 **

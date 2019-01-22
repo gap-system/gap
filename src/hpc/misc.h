@@ -56,7 +56,9 @@ extern UInt SyNumGCThreads;
 **
 */
 
-extern void MergeSort(void *data, UInt count, UInt width,
-  int (*lessThan)(const void *a, const void *));
+void MergeSort(void * data,
+               UInt   count,
+               UInt   width,
+               int (*lessThan)(const void * a, const void *));
 
 #endif  // GAP_HPC_MISC_H

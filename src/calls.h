@@ -155,7 +155,7 @@ EXPORT_INLINE Obj NAMS_FUNC(Obj func)
     return CONST_FUNC(func)->namesOfLocals;
 }
 
-extern Obj NAMI_FUNC(Obj func, Int i);
+Obj NAMI_FUNC(Obj func, Int i);
 
 EXPORT_INLINE Obj PROF_FUNC(Obj func)
 {
@@ -196,7 +196,7 @@ EXPORT_INLINE void SET_HDLR_FUNC(Obj func, Int i, ObjFunc hdlr)
     FUNC(func)->handlers[i] = hdlr;
 }
 
-extern void SET_NAME_FUNC(Obj func, Obj name);
+void SET_NAME_FUNC(Obj func, Obj name);
 
 EXPORT_INLINE void SET_NARG_FUNC(Obj func, Int nargs)
 {
@@ -248,7 +248,7 @@ EXPORT_INLINE void SET_LCKS_FUNC(Obj func, Obj locks)
 **  'IsKernelFunction' returns 1 if <func> is a kernel function (i.e.
 **  compiled from C code), and 0 otherwise.
 */
-extern Int IsKernelFunction(Obj func);
+Int IsKernelFunction(Obj func);
 
 
 EXPORT_INLINE ObjFunc_0ARGS HDLR_0ARGS(Obj func)
@@ -291,7 +291,7 @@ EXPORT_INLINE ObjFunc_1ARGS HDLR_XARGS(Obj func)
     return (ObjFunc_1ARGS)HDLR_FUNC(func, 7);
 }
 
-extern Obj NargError(Obj func, Int actual);
+Obj NargError(Obj func, Int actual);
 
 /****************************************************************************
 **
@@ -487,21 +487,17 @@ EXPORT_INLINE Obj CALL_XARGS_PROF(Obj f, Obj as)
 **  handler
 */
 
-extern void InitHandlerFunc (
-     ObjFunc            hdlr,
-     const Char *       cookie );
+void InitHandlerFunc(ObjFunc hdlr, const Char * cookie);
 
 #ifdef USE_GASMAN
 
-extern const Char * CookieOfHandler(
-     ObjFunc            hdlr );
+const Char * CookieOfHandler(ObjFunc hdlr);
 
-extern ObjFunc HandlerOfCookie (
-     const Char *       cookie );
+ObjFunc HandlerOfCookie(const Char * cookie);
 
-extern void SortHandlers( UInt byWhat );
+void SortHandlers(UInt byWhat);
 
-extern void CheckAllHandlers(void);
+void CheckAllHandlers(void);
 
 #endif
 
@@ -524,26 +520,16 @@ extern void CheckAllHandlers(void);
 **  'NewFunctionT' does the same as 'NewFunction', but allows to specify  the
 **  <type> and <size> of the newly created bag.
 */
-extern Obj NewFunction (
-            Obj                 name,
-            Int                 narg,
-            Obj                 nams,
-            ObjFunc             hdlr );
-    
-extern Obj NewFunctionC (
-            const Char *        name,
-            Int                 narg,
-            const Char *        nams,
-            ObjFunc             hdlr );
-    
-extern Obj NewFunctionT (
-            UInt                type,
-            UInt                size,
-            Obj                 name,
-            Int                 narg,
-            Obj                 nams,
-            ObjFunc             hdlr );
-    
+Obj NewFunction(Obj name, Int narg, Obj nams, ObjFunc hdlr);
+
+Obj NewFunctionC(const Char * name,
+                 Int          narg,
+                 const Char * nams,
+                 ObjFunc      hdlr);
+
+Obj NewFunctionT(
+    UInt type, UInt size, Obj name, Int narg, Obj nams, ObjFunc hdlr);
+
 
 /****************************************************************************
 **
@@ -553,7 +539,7 @@ extern Obj NewFunctionT (
 **  separated argument names, and turns it into a plist of strings, ready
 **  to be passed to 'NewFunction' as <nams>.
 */
-extern Obj ArgStringToList(const Char *nams_c);
+Obj ArgStringToList(const Char * nams_c);
 
 
 /****************************************************************************
@@ -567,10 +553,9 @@ extern Obj ArgStringToList(const Char *nams_c);
 **
 **  'PrintFunction' prints  the   function  <func> .
 */
-extern void PrintFunction (
-    Obj                 func );
+void PrintFunction(Obj func);
 
-extern void PrintKernelFunction(Obj func);
+void PrintKernelFunction(Obj func);
 
 
 /****************************************************************************
@@ -581,7 +566,7 @@ extern void PrintKernelFunction(Obj func);
 **  i.e., it is equivalent to '<func>( <list>[1], <list>[2]... )'.
 */
 
-extern Obj CallFuncList(Obj func, Obj list);
+Obj CallFuncList(Obj func, Obj list);
 
 extern Obj CallFuncListOper;
 

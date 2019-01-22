@@ -61,7 +61,7 @@ EXPORT_INLINE Int IS_FFE(Obj o)
 **  If allocation fails (e.g. because no more TNUMs are available),
 **  a negative value is returned.
 */
-Int RegisterPackageTNUM( const char *name, Obj (*typeObjFunc)(Obj obj) );
+Int RegisterPackageTNUM(const char * name, Obj (*typeObjFunc)(Obj obj));
 
 
 /****************************************************************************
@@ -368,7 +368,7 @@ const Char * TNAM_TNUM(UInt tnum);
 **
 *F  SET_TNAM_TNUM( <obj> ) . . . . . . . . . . . . . . set the name of a type
 */
-void SET_TNAM_TNUM(UInt tnum, const Char *name);
+void SET_TNAM_TNUM(UInt tnum, const Char * name);
 
 
 /****************************************************************************
@@ -526,7 +526,7 @@ EXPORT_INLINE void SET_TYPE_OBJ(Obj obj, Obj type)
 **
 *F  MakeImmutable( <obj> ) . . . . . . . . . . . . . make an object immutable
 */
-extern void MakeImmutable( Obj obj );
+void MakeImmutable(Obj obj);
 
 
 /****************************************************************************
@@ -555,7 +555,7 @@ EXPORT_INLINE void MakeImmutableNoRecurse(Obj obj)
 */
 
 #ifdef HPCGAP
-extern void CheckedMakeImmutable( Obj obj );
+void CheckedMakeImmutable(Obj obj);
 #endif
 
 /****************************************************************************
@@ -588,7 +588,7 @@ EXPORT_INLINE Int IS_MUTABLE_OBJ(Obj obj)
 */
 
 #ifdef HPCGAP
-extern Int IsInternallyMutableObj(Obj obj);
+Int IsInternallyMutableObj(Obj obj);
 #endif
 
 /****************************************************************************
@@ -608,7 +608,7 @@ extern Int IsInternallyMutableObj(Obj obj);
 
 extern void (*SaveObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
-extern void SaveObjError( Obj obj );
+void SaveObjError(Obj obj);
 
 
 /****************************************************************************
@@ -628,7 +628,7 @@ extern void SaveObjError( Obj obj );
 
 extern void (*LoadObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
-extern void LoadObjError( Obj obj );
+void LoadObjError(Obj obj);
 
 /****************************************************************************
 **
@@ -667,9 +667,7 @@ EXPORT_INLINE Obj SHALLOW_COPY_OBJ(Obj obj)
 **  'CopyObj' returns a  structural (deep) copy  of the object <obj>, i.e., a
 **  recursive copy that preserves the structure.
 */
-extern Obj CopyObj (
-    Obj                 obj,
-    Int                 mut );
+Obj CopyObj(Obj obj, Int mut);
 
 
 /****************************************************************************
@@ -683,7 +681,7 @@ extern Obj CopyObj (
 **  have side effects.
 */
 #if !defined(USE_THREADSAFE_COPYING)
-extern Obj COPY_OBJ(Obj obj, Int mut);
+Obj COPY_OBJ(Obj obj, Int mut);
 #endif
 
 /****************************************************************************
@@ -692,7 +690,7 @@ extern Obj COPY_OBJ(Obj obj, Int mut);
 **
 */
 #if !defined(USE_THREADSAFE_COPYING)
-extern void PrepareCopy(Obj obj, Obj copy);
+void PrepareCopy(Obj obj, Obj copy);
 #endif
 
 
@@ -704,7 +702,7 @@ extern void PrepareCopy(Obj obj, Obj copy);
 **  mark from <obj>.
 */
 #if !defined(USE_THREADSAFE_COPYING)
-extern void CLEAN_OBJ(Obj obj);
+void CLEAN_OBJ(Obj obj);
 #endif
 
 
@@ -755,8 +753,7 @@ extern void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 **
 **  'PrintObj' prints the object <obj>.
 */
-extern void PrintObj (
-            Obj                 obj );
+void PrintObj(Obj obj);
 
 
 /****************************************************************************
@@ -777,8 +774,7 @@ extern void (* PrintObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 **
 **  'ViewObj' views the object <obj>.
 */
-extern void ViewObj (
-            Obj                 obj );
+void ViewObj(Obj obj);
 
 
 /****************************************************************************
@@ -835,10 +831,10 @@ EXPORT_INLINE void SET_TYPE_COMOBJ(Obj obj, Obj val)
 *F  ElmComObj( <obj>, <rnam> )
 *F  IsbComObj( <obj>, <rnam> )
 */
-extern void AssComObj(Obj obj, UInt rnam, Obj val);
-extern void UnbComObj(Obj obj, UInt rnam);
-extern Obj  ElmComObj(Obj obj, UInt rnam);
-extern Int  IsbComObj(Obj obj, UInt rnam);
+void AssComObj(Obj obj, UInt rnam, Obj val);
+void UnbComObj(Obj obj, UInt rnam);
+Obj  ElmComObj(Obj obj, UInt rnam);
+Int  IsbComObj(Obj obj, UInt rnam);
 
 
 /****************************************************************************
@@ -878,10 +874,10 @@ EXPORT_INLINE void SET_TYPE_POSOBJ(Obj obj, Obj val)
 *F  ElmPosbj( <obj>, <rnam> )
 *F  IsbPosbj( <obj>, <rnam> )
 */
-extern void AssPosObj(Obj obj, Int idx, Obj val);
-extern void UnbPosObj(Obj obj, Int idx);
-extern Obj  ElmPosObj(Obj obj, Int idx);
-extern Int  IsbPosObj(Obj obj, Int idx);
+void AssPosObj(Obj obj, Int idx, Obj val);
+void UnbPosObj(Obj obj, Int idx);
+Obj  ElmPosObj(Obj obj, Int idx);
+Int  IsbPosObj(Obj obj, Int idx);
 
 
 /****************************************************************************
@@ -915,7 +911,7 @@ EXPORT_INLINE void SET_TYPE_DATOBJ(Obj obj, Obj val)
     ADDR_OBJ(obj)[0] = val;
 }
 
-extern void SetTypeDatObj(Obj obj, Obj type);
+void SetTypeDatObj(Obj obj, Obj type);
 
 
 /****************************************************************************
