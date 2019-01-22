@@ -142,7 +142,7 @@ static inline void SET_STOR_WOUT_PROF(Obj prof, UInt8 n)
 **  'DoWrapXargs' handler,  since in  this  case the function  call mechanism
 **  already requires that the passed arguments are collected in a list.
 */
-Obj DoWrap0args (
+static Obj DoWrap0args (
     Obj                 self )
 {
     Obj                 result;         /* value of function call, result  */
@@ -161,7 +161,7 @@ Obj DoWrap0args (
 **
 *F  DoWrap1args( <self>, <arg1> ) . . . . . . . wrap up 1 arguments in a list
 */
-Obj DoWrap1args (
+static Obj DoWrap1args (
     Obj                 self,
     Obj                 arg1 )
 {
@@ -183,7 +183,7 @@ Obj DoWrap1args (
 **
 *F  DoWrap2args( <self>, <arg1>, ... )  . . . . wrap up 2 arguments in a list
 */
-Obj DoWrap2args (
+static Obj DoWrap2args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2 )
@@ -207,7 +207,7 @@ Obj DoWrap2args (
 **
 *F  DoWrap3args( <self>, <arg1>, ... )  . . . . wrap up 3 arguments in a list
 */
-Obj DoWrap3args (
+static Obj DoWrap3args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
@@ -233,7 +233,7 @@ Obj DoWrap3args (
 **
 *F  DoWrap4args( <self>, <arg1>, ... )  . . . . wrap up 4 arguments in a list
 */
-Obj DoWrap4args (
+static Obj DoWrap4args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
@@ -261,7 +261,7 @@ Obj DoWrap4args (
 **
 *F  DoWrap5args( <self>, <arg1>, ... )  . . . . wrap up 5 arguments in a list
 */
-Obj DoWrap5args (
+static Obj DoWrap5args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
@@ -291,7 +291,7 @@ Obj DoWrap5args (
 **
 *F  DoWrap6args( <self>, <arg1>, ... )  . . . . wrap up 6 arguments in a list
 */
-Obj DoWrap6args (
+static Obj DoWrap6args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
@@ -350,7 +350,7 @@ Obj NargError(Obj func, Int actual)
   }
 }
 
-Obj DoFail0args (
+static Obj DoFail0args (
     Obj                 self )
 {
     Obj                 argx;           /* arguments list (to continue)    */
@@ -363,7 +363,7 @@ Obj DoFail0args (
 **
 *F  DoFail1args( <self>,<arg1> ) . . .  fail a function call with 1 arguments
 */
-Obj DoFail1args (
+static Obj DoFail1args (
     Obj                 self,
     Obj                 arg1 )
 {
@@ -377,7 +377,7 @@ Obj DoFail1args (
 **
 *F  DoFail2args( <self>, <arg1>, ... )  fail a function call with 2 arguments
 */
-Obj DoFail2args (
+static Obj DoFail2args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2 )
@@ -392,7 +392,7 @@ Obj DoFail2args (
 **
 *F  DoFail3args( <self>, <arg1>, ... )  fail a function call with 3 arguments
 */
-Obj DoFail3args (
+static Obj DoFail3args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
@@ -408,7 +408,7 @@ Obj DoFail3args (
 **
 *F  DoFail4args( <self>, <arg1>, ... )  fail a function call with 4 arguments
 */
-Obj DoFail4args (
+static Obj DoFail4args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
@@ -425,7 +425,7 @@ Obj DoFail4args (
 **
 *F  DoFail5args( <self>, <arg1>, ... )  fail a function call with 5 arguments
 */
-Obj DoFail5args (
+static Obj DoFail5args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
@@ -443,7 +443,7 @@ Obj DoFail5args (
 **
 *F  DoFail6args( <self>, <arg1>, ... )  fail a function call with 6 arguments
 */
-Obj DoFail6args (
+static Obj DoFail6args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
@@ -462,7 +462,7 @@ Obj DoFail6args (
 **
 *F  DoFailXargs( <self>, <args> )  . .  fail a function call with X arguments
 */
-Obj DoFailXargs (
+static Obj DoFailXargs (
     Obj                 self,
     Obj                 args )
 {
@@ -1038,7 +1038,7 @@ Obj ArgStringToList(const Char *nams_c) {
 static Obj TYPE_FUNCTION;
 static Obj TYPE_OPERATION;
 
-Obj TypeFunction (
+static Obj TypeFunction (
     Obj                 func )
 {
     return ( IS_OPERATION(func) ? TYPE_OPERATION : TYPE_FUNCTION );
@@ -1184,7 +1184,7 @@ void PrintKernelFunction(Obj func)
 */
 static Obj IsFunctionFilt;
 
-Obj FuncIS_FUNCTION (
+static Obj FuncIS_FUNCTION (
     Obj                 self,
     Obj                 obj )
 {
@@ -1269,7 +1269,7 @@ Obj CallFuncList ( Obj func, Obj list )
 
 }
 
-Obj FuncCALL_FUNC_LIST (
+static Obj FuncCALL_FUNC_LIST (
     Obj                 self,
     Obj                 func,
     Obj                 list )
@@ -1279,7 +1279,7 @@ Obj FuncCALL_FUNC_LIST (
     return CallFuncList(func, list);
 }
 
-Obj FuncCALL_FUNC_LIST_WRAP (
+static Obj FuncCALL_FUNC_LIST_WRAP (
     Obj                 self,
     Obj                 func,
     Obj                 list )
@@ -1315,7 +1315,7 @@ Obj FuncCALL_FUNC_LIST_WRAP (
 static Obj NAME_FUNC_Oper;
 static Obj SET_NAME_FUNC_Oper;
 
-Obj FuncNAME_FUNC (
+static Obj FuncNAME_FUNC (
     Obj                 self,
     Obj                 func )
 {
@@ -1335,7 +1335,7 @@ Obj FuncNAME_FUNC (
     }
 }
 
-Obj FuncSET_NAME_FUNC(
+static Obj FuncSET_NAME_FUNC(
                       Obj self,
                       Obj func,
                       Obj name )
@@ -1357,7 +1357,7 @@ Obj FuncSET_NAME_FUNC(
 */
 static Obj NARG_FUNC_Oper;
 
-Obj FuncNARG_FUNC (
+static Obj FuncNARG_FUNC (
     Obj                 self,
     Obj                 func )
 {
@@ -1376,7 +1376,7 @@ Obj FuncNARG_FUNC (
 */
 static Obj NAMS_FUNC_Oper;
 
-Obj FuncNAMS_FUNC (
+static Obj FuncNAMS_FUNC (
     Obj                 self,
     Obj                 func )
 {
@@ -1397,7 +1397,7 @@ Obj FuncNAMS_FUNC (
 */
 static Obj LOCKS_FUNC_Oper;
 
-Obj FuncLOCKS_FUNC(Obj self, Obj func)
+static Obj FuncLOCKS_FUNC(Obj self, Obj func)
 {
 #ifdef HPCGAP
     Obj locks;
@@ -1423,7 +1423,7 @@ Obj FuncLOCKS_FUNC(Obj self, Obj func)
 */
 static Obj PROF_FUNC_Oper;
 
-Obj FuncPROF_FUNC (
+static Obj FuncPROF_FUNC (
     Obj                 self,
     Obj                 func )
 {
@@ -1447,7 +1447,7 @@ Obj FuncPROF_FUNC (
 **
 *F  FuncCLEAR_PROFILE_FUNC( <self>, <func> )  . . . . . . . . . clear profile
 */
-Obj FuncCLEAR_PROFILE_FUNC(
+static Obj FuncCLEAR_PROFILE_FUNC(
     Obj                 self,
     Obj                 func )
 {
@@ -1482,7 +1482,7 @@ Obj FuncCLEAR_PROFILE_FUNC(
 **
 *F  FuncPROFILE_FUNC( <self>, <func> )  . . . . . . . . . . . . start profile
 */
-Obj FuncPROFILE_FUNC(
+static Obj FuncPROFILE_FUNC(
     Obj                 self,
     Obj                 func )
 {
@@ -1533,7 +1533,7 @@ Obj FuncPROFILE_FUNC(
 **
 *F  FuncIS_PROFILED_FUNC( <self>, <func> )  . . check if function is profiled
 */
-Obj FuncIS_PROFILED_FUNC(
+static Obj FuncIS_PROFILED_FUNC(
     Obj                 self,
     Obj                 func )
 {
@@ -1541,7 +1541,7 @@ Obj FuncIS_PROFILED_FUNC(
     return ( TNUM_OBJ(PROF_FUNC(func)) != T_FUNCTION ) ? False : True;
 }
 
-Obj FuncFILENAME_FUNC(Obj self, Obj func)
+static Obj FuncFILENAME_FUNC(Obj self, Obj func)
 {
     RequireFunction("FILENAME_FUNC", func);
 
@@ -1553,7 +1553,7 @@ Obj FuncFILENAME_FUNC(Obj self, Obj func)
     return Fail;
 }
 
-Obj FuncSTARTLINE_FUNC(Obj self, Obj func)
+static Obj FuncSTARTLINE_FUNC(Obj self, Obj func)
 {
     RequireFunction("STARTLINE_FUNC", func);
 
@@ -1565,7 +1565,7 @@ Obj FuncSTARTLINE_FUNC(Obj self, Obj func)
     return Fail;
 }
 
-Obj FuncENDLINE_FUNC(Obj self, Obj func)
+static Obj FuncENDLINE_FUNC(Obj self, Obj func)
 {
     RequireFunction("ENDLINE_FUNC", func);
 
@@ -1577,7 +1577,7 @@ Obj FuncENDLINE_FUNC(Obj self, Obj func)
     return Fail;
 }
 
-Obj FuncLOCATION_FUNC(Obj self, Obj func)
+static Obj FuncLOCATION_FUNC(Obj self, Obj func)
 {
     RequireFunction("LOCATION_FUNC", func);
 
@@ -1593,7 +1593,7 @@ Obj FuncLOCATION_FUNC(Obj self, Obj func)
 **
 *F  FuncUNPROFILE_FUNC( <self>, <func> )  . . . . . . . . . . .  stop profile
 */
-Obj FuncUNPROFILE_FUNC(
+static Obj FuncUNPROFILE_FUNC(
     Obj                 self,
     Obj                 func )
 {
@@ -1624,7 +1624,7 @@ Obj FuncUNPROFILE_FUNC(
 **  'FuncIsKernelFunction' returns Fail if <func> is not a function, True if
 **  <func> is a kernel function, and False otherwise.
 */
-Obj FuncIsKernelFunction(Obj self, Obj func)
+static Obj FuncIsKernelFunction(Obj self, Obj func)
 {
     if (!IS_FUNC(func))
         return Fail;
@@ -1672,7 +1672,7 @@ static ObjFunc LoadHandler( void )
 *F  SaveFunction( <func> )  . . . . . . . . . . . . . . . . . save a function
 **
 */
-void SaveFunction ( Obj func )
+static void SaveFunction ( Obj func )
 {
   const FuncBag * header = CONST_FUNC(func);
   for (UInt i = 0; i <= 7; i++)
@@ -1694,7 +1694,7 @@ void SaveFunction ( Obj func )
 *F  LoadFunction( <func> )  . . . . . . . . . . . . . . . . . load a function
 **
 */
-void LoadFunction ( Obj func )
+static void LoadFunction ( Obj func )
 {
   FuncBag * header = FUNC(func);
   for (UInt i = 0; i <= 7; i++)
@@ -1719,7 +1719,7 @@ void LoadFunction ( Obj func )
 **
 **  'MarkFunctionSubBags' is the marking function for bags of type 'T_FUNCTION'.
 */
-void MarkFunctionSubBags(Obj func)
+static void MarkFunctionSubBags(Obj func)
 {
     // the first eight slots are pointers to C functions, so we need
     // to skip those for marking

@@ -73,7 +73,7 @@ Obj             (* EvalBoolFuncs [256]) ( Expr expr );
 **  error.  If this is ever called, then  GAP is in  serious trouble, such as
 **  an overwritten type field of an expression.
 */
-Obj             EvalUnknownExpr (
+static Obj             EvalUnknownExpr (
     Expr                expr )
 {
     Pr( "Panic: tried to evaluate an expression of unknown type '%d'\n",
@@ -94,7 +94,7 @@ Obj             EvalUnknownExpr (
 **  are   not a priori    known  to evaluate  to a    boolean value  (such as
 **  function calls).
 */
-Obj             EvalUnknownBool (
+static Obj             EvalUnknownBool (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -126,7 +126,7 @@ Obj             EvalUnknownBool (
 **
 **      if (index > max) or (list[index] = 0)  then ... fi;
 */
-Obj             EvalOr (
+static Obj             EvalOr (
     Expr                expr )
 {
     Obj                 opL;            /* evaluated left operand          */
@@ -159,7 +159,7 @@ Obj             EvalOr (
 **
 **      if (index <= max) and (list[index] = 0)  then ... fi;
 */
-Obj             EvalAnd (
+static Obj             EvalAnd (
     Expr                expr )
 {
     Obj                 opL;            /* evaluated left  operand         */
@@ -205,7 +205,7 @@ Obj             EvalAnd (
 **  i.e., 'true' if the operand is 'false', and 'false' otherwise.  'EvalNot'
 **  is called from 'EVAL_EXPR' to evaluate expressions of type 'T_NOT'.
 */
-Obj             EvalNot (
+static Obj             EvalNot (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -235,7 +235,7 @@ Obj             EvalNot (
 **
 **  'EvalEq' evaluates the operands and then calls the 'EQ' macro.
 */
-Obj             EvalEq (
+static Obj             EvalEq (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -269,7 +269,7 @@ Obj             EvalEq (
 **
 **  'EvalNe' is simply implemented as 'not <objL> = <objR>'.
 */
-Obj             EvalNe (
+static Obj             EvalNe (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -303,7 +303,7 @@ Obj             EvalNe (
 **
 **  'EvalLt' evaluates the operands and then calls the 'LT' macro.
 */
-Obj             EvalLt (
+static Obj             EvalLt (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -337,7 +337,7 @@ Obj             EvalLt (
 **
 **  'EvalGe' is simply implemented as 'not <objL> < <objR>'.
 */
-Obj             EvalGe (
+static Obj             EvalGe (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -371,7 +371,7 @@ Obj             EvalGe (
 **
 **  'EvalGt' is simply implemented as '<objR> < <objL>'.
 */
-Obj             EvalGt (
+static Obj             EvalGt (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -405,7 +405,7 @@ Obj             EvalGt (
 **
 **  'EvalLe' is simply implemented as 'not <objR> < <objR>'.
 */
-Obj             EvalLe (
+static Obj             EvalLe (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -437,7 +437,7 @@ Obj             EvalLe (
 **  'false' otherwise.    'EvalIn' is  called  from  'EVAL_EXPR'  to evaluate
 **  expressions of type 'T_IN'.
 */
-Obj             EvalIn (
+static Obj             EvalIn (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -473,7 +473,7 @@ Obj             EvalIn (
 **
 **  'EvalSum' evaluates the operands and then calls the 'SUM' macro.
 */
-Obj             EvalSum (
+static Obj             EvalSum (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -511,7 +511,7 @@ Obj             EvalSum (
 **
 **  'EvalAInv' evaluates the operand and then calls the 'AINV' macro.
 */
-Obj             EvalAInv (
+static Obj             EvalAInv (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -542,7 +542,7 @@ Obj             EvalAInv (
 **
 **  'EvalDiff' evaluates the operands and then calls the 'DIFF' macro.
 */
-Obj             EvalDiff (
+static Obj             EvalDiff (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -581,7 +581,7 @@ Obj             EvalDiff (
 **
 **  'EvalProd' evaluates the operands and then calls the 'PROD' macro.
 */
-Obj             EvalProd (
+static Obj             EvalProd (
     Expr                expr )
 {
     Obj                 val;            /* result                          */
@@ -620,7 +620,7 @@ Obj             EvalProd (
 **
 **  'EvalQuo' evaluates the operands and then calls the 'QUO' macro.
 */
-Obj             EvalQuo (
+static Obj             EvalQuo (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -654,7 +654,7 @@ Obj             EvalQuo (
 **
 **  'EvalMod' evaluates the operands and then calls the 'MOD' macro.
 */
-Obj             EvalMod (
+static Obj             EvalMod (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -688,7 +688,7 @@ Obj             EvalMod (
 **
 **  'EvalPow' evaluates the operands and then calls the 'POW' macro.
 */
-Obj             EvalPow (
+static Obj             EvalPow (
     Expr                expr )
 {
     Obj                 val;            /* value, result                   */
@@ -718,7 +718,7 @@ Obj             EvalPow (
 **  'EvalIntExpr' evaluates the literal integer expression <expr> and returns
 **  its value.
 */
-Obj             EvalIntExpr (
+static Obj             EvalIntExpr (
     Expr                expr )
 {
     UInt ix = READ_EXPR(expr, 0);
@@ -731,7 +731,7 @@ Obj             EvalIntExpr (
 **
 **  'EvalTildeExpr' evaluates the tilde expression and returns its value.
 */
-Obj             EvalTildeExpr (
+static Obj             EvalTildeExpr (
     Expr                expr )
 {
     if( ! (STATE(Tilde)) ) {
@@ -747,7 +747,7 @@ Obj             EvalTildeExpr (
 **  'EvalTrueExpr' evaluates the  literal true expression <expr> and  returns
 **  its value (True).
 */
-Obj             EvalTrueExpr (
+static Obj             EvalTrueExpr (
     Expr                expr )
 {
     return True;
@@ -761,7 +761,7 @@ Obj             EvalTrueExpr (
 **  'EvalFalseExpr' evaluates the literal false expression <expr> and returns
 **  its value (False).
 */
-Obj             EvalFalseExpr (
+static Obj             EvalFalseExpr (
     Expr                expr )
 {
     return False;
@@ -775,7 +775,7 @@ Obj             EvalFalseExpr (
 **  'EvalCharExpr' evaluates  the   literal character expression <expr>   and
 **  returns its value.
 */
-Obj             EvalCharExpr (
+static Obj             EvalCharExpr (
     Expr                expr )
 {
     return ObjsChar[ READ_EXPR(expr, 0) ];
@@ -793,7 +793,7 @@ static Obj GetFromExpr(Obj cycle, Int j)
     return EVAL_EXPR(READ_EXPR((Expr)cycle, j - 1));
 }
 
-Obj             EvalPermExpr (
+static Obj             EvalPermExpr (
     Expr                expr )
 {
     Obj                 perm;           /* permutation, result             */
@@ -858,7 +858,7 @@ Obj             EvalPermExpr (
 static Obj  ListExpr1(Expr expr, Int tildeInUse);
 static void ListExpr2(Obj list, Expr expr, Int tildeInUse);
 
-Obj             EvalListExpr (
+static Obj             EvalListExpr (
     Expr                expr )
 {
     Obj                 list;         /* list value, result                */
@@ -887,7 +887,7 @@ Obj             EvalListExpr (
 **  expression can  refer to   this  variable and  its subobjects  to  create
 **  objects that are not trees.
 */
-Obj             EvalListTildeExpr (
+static Obj             EvalListTildeExpr (
     Expr                expr )
 {
     Obj                 list;           /* list value, result              */
@@ -1021,7 +1021,7 @@ static ALWAYS_INLINE void ListExpr2(Obj list, Expr expr, Int tildeInUse)
 **
 **  'EvalRangeExpr' evaluates the range expression <expr> to a range value.
 */
-Obj             EvalRangeExpr (
+static Obj             EvalRangeExpr (
     Expr                expr )
 {
     Obj                 range;          /* range, result                   */
@@ -1097,7 +1097,7 @@ Obj             EvalRangeExpr (
 **  'EvalStringExpr'   evaluates the  string  expression  <expr>  to a string
 **  value.
 */
-Obj             EvalStringExpr (
+static Obj             EvalStringExpr (
     Expr                expr )
 {
     UInt ix = READ_EXPR(expr, 0);
@@ -1116,7 +1116,7 @@ static Obj CONVERT_FLOAT_LITERAL;
 static Obj FLOAT_LITERAL_CACHE;
 static Obj MAX_FLOAT_LITERAL_CACHE_SIZE;
 
-Obj             EvalFloatExprLazy (
+static Obj             EvalFloatExprLazy (
     Expr                expr )
 {
     Obj                 string;         /* string value            */
@@ -1158,7 +1158,7 @@ Obj             EvalFloatExprLazy (
 **  'EvalFloatExpr'   evaluates the  float  expression  <expr>  to a float
 **  value.
 */
-Obj EvalFloatExprEager(Expr expr)
+static Obj EvalFloatExprEager(Expr expr)
 {
     UInt ix = READ_EXPR(expr, 0);
     return  GET_VALUE_FROM_CURRENT_BODY(ix);
@@ -1178,7 +1178,7 @@ Obj EvalFloatExprEager(Expr expr)
 static Obj  RecExpr1(Expr expr);
 static void RecExpr2(Obj rec, Expr expr);
 
-Obj             EvalRecExpr (
+static Obj             EvalRecExpr (
     Expr                expr )
 {
     Obj                 rec;            /* record value, result            */
@@ -1207,7 +1207,7 @@ Obj             EvalRecExpr (
 **  expression    can refer to this variable    and its  subobjects to create
 **  objects that are not trees.
 */
-Obj             EvalRecTildeExpr (
+static Obj             EvalRecTildeExpr (
     Expr                expr )
 {
     Obj                 rec;            /* record value, result            */
@@ -1339,7 +1339,7 @@ void            (* PrintExprFuncs[256] ) ( Expr expr );
 **  this  is ever called,   then  GAP is  in  serious   trouble, such as   an
 **  overwritten type field of an expression.
 */
-void            PrintUnknownExpr (
+static void            PrintUnknownExpr (
     Expr                expr )
 {
     Pr( "Panic: tried to print an expression of unknown type '%d'\n",
@@ -1381,7 +1381,7 @@ extern inline struct ExprsState * ExprsState(void)
 **
 **  'PrintNot' print a not operation in the following form: 'not <expr>'.
 */
-void            PrintNot (
+static void            PrintNot (
     Expr                expr )
 {
     UInt                oldPrec;
@@ -1412,7 +1412,7 @@ void            PrintNot (
 **  'PrintBinop'  prints  the   binary operator    expression <expr>,   using
 **  'PrintPrecedence' for parenthesising.
 */
-void            PrintAInv (
+static void            PrintAInv (
     Expr                expr )
 {
     UInt                oldPrec;
@@ -1435,7 +1435,7 @@ void            PrintAInv (
     PrintPrecedence = oldPrec;
 }
 
-void            PrintBinop (
+static void            PrintBinop (
     Expr                expr )
 {
     UInt                oldPrec;        /* old precedence level           */
@@ -1504,7 +1504,7 @@ void            PrintBinop (
 **
 **  'PrintIntExpr' prints the literal integer expression <expr>.
 */
-void            PrintIntExpr (
+static void            PrintIntExpr (
     Expr                expr )
 {
     if ( IS_INTEXPR(expr) ) {
@@ -1520,7 +1520,7 @@ void            PrintIntExpr (
 **
 *F  PrintTildeExpr(<expr>) . . . . . . . . . . . print tilde expression
 */
-void            PrintTildeExpr (
+static void            PrintTildeExpr (
     Expr                expr )
 {
     Pr( "~", 0L, 0L );
@@ -1530,7 +1530,7 @@ void            PrintTildeExpr (
 **
 *F  PrintTrueExpr(<expr>) . . . . . . . . . . . print literal true expression
 */
-void            PrintTrueExpr (
+static void            PrintTrueExpr (
     Expr                expr )
 {
     Pr( "true", 0L, 0L );
@@ -1541,7 +1541,7 @@ void            PrintTrueExpr (
 **
 *F  PrintFalseExpr(<expr>)  . . . . . . . . .  print literal false expression
 */
-void            PrintFalseExpr (
+static void            PrintFalseExpr (
     Expr                expr )
 {
     Pr( "false", 0L, 0L );
@@ -1552,7 +1552,7 @@ void            PrintFalseExpr (
 **
 *F  PrintCharExpr(<expr>) . . . . . . . .  print literal character expression
 */
-void            PrintCharExpr (
+static void            PrintCharExpr (
     Expr                expr )
 {
     UChar               chr;
@@ -1575,7 +1575,7 @@ void            PrintCharExpr (
 **
 **  'PrintPermExpr' prints the permutation expression <expr>.
 */
-void            PrintPermExpr (
+static void            PrintPermExpr (
     Expr                expr )
 {
     Expr                cycle;          /* one cycle of permutation expr.  */
@@ -1610,7 +1610,7 @@ void            PrintPermExpr (
 **
 **  'PrintListExpr' prints the list expression <expr>.
 */
-void            PrintListExpr (
+static void            PrintListExpr (
     Expr                expr )
 {
     Int                 len;            /* logical length of <list>        */
@@ -1642,7 +1642,7 @@ void            PrintListExpr (
 **
 **  'PrintRangeExpr' prints the record expression <expr>.
 */
-void            PrintRangeExpr (
+static void            PrintRangeExpr (
     Expr                expr )
 {
     if ( SIZE_EXPR( expr ) == 2*sizeof(Expr) ) {
@@ -1665,7 +1665,7 @@ void            PrintRangeExpr (
 **
 **  'PrintStringExpr' prints the string expression <expr>.
 */
-void            PrintStringExpr (
+static void            PrintStringExpr (
     Expr                expr )
 {
     UInt ix = READ_EXPR(expr, 0);
@@ -1680,7 +1680,7 @@ void            PrintStringExpr (
 **
 **  'PrintFloatExpr' prints the float expression <expr>.
 */
-void            PrintFloatExprLazy (
+static void            PrintFloatExprLazy (
     Expr                expr )
 {
   // FIXME: this code is not GC safe
@@ -1693,7 +1693,7 @@ void            PrintFloatExprLazy (
 **
 **  'PrintFloatExpr' prints the float expression <expr>.
 */
-void            PrintFloatExprEager (
+static void            PrintFloatExprEager (
     Expr                expr )
 {
   // FIXME: this code is not GC safe
@@ -1743,7 +1743,7 @@ void            PrintRecExpr1 (
     }
 }
 
-void            PrintRecExpr (
+static void            PrintRecExpr (
     Expr                expr )
 {
     Pr("%2>rec(\n%2>",0L,0L);
@@ -1753,7 +1753,7 @@ void            PrintRecExpr (
 }
 
 
-Obj FuncFLUSH_FLOAT_LITERAL_CACHE(Obj self)
+static Obj FuncFLUSH_FLOAT_LITERAL_CACHE(Obj self)
 {
 #ifdef HPCGAP
     FLOAT_LITERAL_CACHE = NewAtomicList(T_ALIST, 0);

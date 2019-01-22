@@ -134,7 +134,7 @@ extern Obj NewWord(Obj type, UInt npairs)
 #define Func16Bits_Equal FuncNBits_Equal<UInt2>
 #define Func32Bits_Equal FuncNBits_Equal<UInt4>
 template <typename UIntN>
-Obj FuncNBits_Equal(Obj self, Obj l, Obj r)
+static Obj FuncNBits_Equal(Obj self, Obj l, Obj r)
 {
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
@@ -168,7 +168,7 @@ Obj FuncNBits_Equal(Obj self, Obj l, Obj r)
 #define Func16Bits_ExponentSums3 FuncNBits_ExponentSums3<UInt2>
 #define Func32Bits_ExponentSums3 FuncNBits_ExponentSums3<UInt4>
 template <typename UIntN>
-Obj FuncNBits_ExponentSums3(Obj self, Obj obj, Obj vstart, Obj vend)
+static Obj FuncNBits_ExponentSums3(Obj self, Obj obj, Obj vstart, Obj vend)
 {
     Int         start;          /* the lowest generator number             */
     Int         end;            /* the highest generator number            */
@@ -252,7 +252,7 @@ Obj FuncNBits_ExponentSums3(Obj self, Obj obj, Obj vstart, Obj vend)
 #define Func16Bits_ExponentSums1 FuncNBits_ExponentSums1<UInt2>
 #define Func32Bits_ExponentSums1 FuncNBits_ExponentSums1<UInt4>
 template <typename UIntN>
-Obj FuncNBits_ExponentSums1(Obj self, Obj obj)
+static Obj FuncNBits_ExponentSums1(Obj self, Obj obj)
 {
     return FuncNBits_ExponentSums3<UIntN>( self, obj,
         INTOBJ_INT(1), INTOBJ_INT(RANK_WORD(obj)) );
@@ -267,7 +267,7 @@ Obj FuncNBits_ExponentSums1(Obj self, Obj obj)
 #define Func16Bits_ExponentSyllable FuncNBits_ExponentSyllable<UInt2>
 #define Func32Bits_ExponentSyllable FuncNBits_ExponentSyllable<UInt4>
 template <typename UIntN>
-Obj FuncNBits_ExponentSyllable(Obj self, Obj w, Obj vi)
+static Obj FuncNBits_ExponentSyllable(Obj self, Obj w, Obj vi)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* signed exponent mask                    */
@@ -307,7 +307,7 @@ Obj FuncNBits_ExponentSyllable(Obj self, Obj w, Obj vi)
 #define Func16Bits_ExtRepOfObj FuncNBits_ExtRepOfObj<UInt2>
 #define Func32Bits_ExtRepOfObj FuncNBits_ExtRepOfObj<UInt4>
 template <typename UIntN>
-Obj FuncNBits_ExtRepOfObj(Obj self, Obj obj)
+static Obj FuncNBits_ExtRepOfObj(Obj self, Obj obj)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* signed exponent mask                    */
@@ -362,7 +362,7 @@ Obj FuncNBits_ExtRepOfObj(Obj self, Obj obj)
 #define Func16Bits_GeneratorSyllable FuncNBits_GeneratorSyllable<UInt2>
 #define Func32Bits_GeneratorSyllable FuncNBits_GeneratorSyllable<UInt4>
 template <typename UIntN>
-Obj FuncNBits_GeneratorSyllable(Obj self, Obj w, Obj vi)
+static Obj FuncNBits_GeneratorSyllable(Obj self, Obj w, Obj vi)
 {
     Int         ebits;          /* number of bits in the exponent          */
     Int         num;            /* number of gen/exp pairs in <data>       */
@@ -393,7 +393,7 @@ Obj FuncNBits_GeneratorSyllable(Obj self, Obj w, Obj vi)
 #define Func16Bits_HeadByNumber FuncNBits_HeadByNumber<UInt2>
 #define Func32Bits_HeadByNumber FuncNBits_HeadByNumber<UInt4>
 template <typename UIntN>
-Obj FuncNBits_HeadByNumber(Obj self, Obj l, Obj r)
+static Obj FuncNBits_HeadByNumber(Obj self, Obj l, Obj r)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        genm;           /* generator mask                          */
@@ -471,7 +471,7 @@ Obj FuncNBits_HeadByNumber(Obj self, Obj l, Obj r)
 #define Func16Bits_Less FuncNBits_Less<UInt2>
 #define Func32Bits_Less FuncNBits_Less<UInt4>
 template <typename UIntN>
-Obj FuncNBits_Less(Obj self, Obj l, Obj r)
+static Obj FuncNBits_Less(Obj self, Obj l, Obj r)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* signed exponent mask                    */
@@ -571,7 +571,7 @@ Obj FuncNBits_Less(Obj self, Obj l, Obj r)
 #define Func16Bits_AssocWord FuncNBits_AssocWord<UInt2>
 #define Func32Bits_AssocWord FuncNBits_AssocWord<UInt4>
 template <typename UIntN>
-Obj FuncNBits_AssocWord(Obj self, Obj type, Obj data)
+static Obj FuncNBits_AssocWord(Obj self, Obj type, Obj data)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
@@ -624,7 +624,7 @@ Obj FuncNBits_AssocWord(Obj self, Obj type, Obj data)
 #define Func16Bits_ObjByVector FuncNBits_ObjByVector<UInt2>
 #define Func32Bits_ObjByVector FuncNBits_ObjByVector<UInt4>
 template <typename UIntN>
-Obj FuncNBits_ObjByVector(Obj self, Obj type, Obj data)
+static Obj FuncNBits_ObjByVector(Obj self, Obj type, Obj data)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
@@ -685,7 +685,7 @@ Obj FuncNBits_ObjByVector(Obj self, Obj type, Obj data)
 #define Func16Bits_Power FuncNBits_Power<UInt2>
 #define Func32Bits_Power FuncNBits_Power<UInt4>
 template <typename UIntN>
-Obj FuncNBits_Power(Obj self, Obj l, Obj r)
+static Obj FuncNBits_Power(Obj self, Obj l, Obj r)
 {
     typedef typename OverflowType<UIntN>::type OInt;
 
@@ -918,7 +918,7 @@ Obj FuncNBits_Power(Obj self, Obj l, Obj r)
 #define Func16Bits_Product FuncNBits_Product<UInt2>
 #define Func32Bits_Product FuncNBits_Product<UInt4>
 template <typename UIntN>
-Obj FuncNBits_Product(Obj self, Obj l, Obj r)
+static Obj FuncNBits_Product(Obj self, Obj l, Obj r)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* signed exponent mask                    */
@@ -1003,7 +1003,7 @@ Obj FuncNBits_Product(Obj self, Obj l, Obj r)
 #define Func16Bits_Quotient FuncNBits_Quotient<UInt2>
 #define Func32Bits_Quotient FuncNBits_Quotient<UInt4>
 template <typename UIntN>
-Obj FuncNBits_Quotient(Obj self, Obj l, Obj r)
+static Obj FuncNBits_Quotient(Obj self, Obj l, Obj r)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* signed exponent mask                    */
@@ -1089,7 +1089,7 @@ Obj FuncNBits_Quotient(Obj self, Obj l, Obj r)
 #define Func16Bits_LengthWord FuncNBits_LengthWord<UInt2>
 #define Func32Bits_LengthWord FuncNBits_LengthWord<UInt4>
 template <typename UIntN>
-Obj FuncNBits_LengthWord(Obj self, Obj w)
+static Obj FuncNBits_LengthWord(Obj self, Obj w)
 {
   UInt npairs,i,ebits,exps,expm;
   Obj len, uexp;
@@ -1127,7 +1127,7 @@ Obj FuncNBits_LengthWord(Obj self, Obj w)
 **
 *F  FuncNBits_NumberSyllables( <self>, <w> )
 */
-Obj FuncNBits_NumberSyllables (
+static Obj FuncNBits_NumberSyllables (
     Obj         self,
     Obj         w )
 {
@@ -1140,7 +1140,7 @@ Obj FuncNBits_NumberSyllables (
 * letter rep arithmetic */
 /**************************************************************************
 *F  FuncMULT_WOR_LETTREP( <self>, <a>,<b> ) */
-Obj FuncMULT_WOR_LETTREP (
+static Obj FuncMULT_WOR_LETTREP (
     Obj         self,
     Obj         a,
     Obj         b)
@@ -1252,7 +1252,7 @@ Obj FuncMULT_WOR_LETTREP (
 }
 
 /*F  FuncMULT_BYT_LETTREP( <self>, <a>,<b> ) */
-Obj FuncMULT_BYT_LETTREP (
+static Obj FuncMULT_BYT_LETTREP (
     Obj         self,
     Obj         a,
     Obj         b)

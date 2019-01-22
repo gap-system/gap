@@ -27,15 +27,17 @@
 #include "hpc/traverse.h"
 #endif
 
-Obj TYPE_OBJSET;
-Obj TYPE_OBJMAP;
+static Obj TYPE_OBJSET;
+static Obj TYPE_OBJMAP;
 
-static Obj TypeObjSet(Obj obj) {
-  return TYPE_OBJSET;
+static Obj TypeObjSet(Obj obj)
+{
+    return TYPE_OBJSET;
 }
 
-static Obj TypeObjMap(Obj obj) {
-  return TYPE_OBJMAP;
+static Obj TypeObjMap(Obj obj)
+{
+    return TYPE_OBJMAP;
 }
 
 /** Object sets and maps --------------------
@@ -81,7 +83,8 @@ static Obj TypeObjMap(Obj obj) {
  *  ---------------------------------------
  */
 
-static void PrintObjSet(Obj set) {
+static void PrintObjSet(Obj set)
+{
   UInt i, size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
   Int comma = 0;
   Pr("OBJ_SET([ ", 0L, 0L);
@@ -99,7 +102,8 @@ static void PrintObjSet(Obj set) {
   Pr(" ])", 0L, 0L);
 }
 
-static void PrintObjMap(Obj map) {
+static void PrintObjMap(Obj map)
+{
   UInt i, size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
   Int comma = 0;
   Pr("OBJ_MAP([ ", 0L, 0L);
@@ -126,12 +130,14 @@ static void PrintObjMap(Obj map) {
  *  These functions are not yet implemented.
  */
 
-static void MarkObjSet(Obj obj) {
+static void MarkObjSet(Obj obj)
+{
   UInt size = CONST_ADDR_WORD(obj)[OBJSET_SIZE];
   MarkArrayOfBags( ADDR_OBJ(obj) + OBJSET_HDRSIZE, size );
 }
 
-static void MarkObjMap(Obj obj) {
+static void MarkObjMap(Obj obj)
+{
   UInt size = CONST_ADDR_WORD(obj)[OBJSET_SIZE];
   MarkArrayOfBags( ADDR_OBJ(obj) + OBJSET_HDRSIZE, 2 * size );
 }
@@ -145,7 +151,8 @@ static void MarkObjMap(Obj obj) {
  */
 
 
-static inline UInt ObjHash(Obj set, Obj obj) {
+static inline UInt ObjHash(Obj set, Obj obj)
+{
   return FibHash((UInt) obj, CONST_ADDR_WORD(set)[OBJSET_BITS]);
 }
 
@@ -179,7 +186,8 @@ Obj NewObjSet(void) {
 
 static void ResizeObjSet(Obj set, UInt bits);
 
-static void CheckObjSetForCleanUp(Obj set, UInt expand) {
+static void CheckObjSetForCleanUp(Obj set, UInt expand)
+{
   UInt size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
   UInt bits = CONST_ADDR_WORD(set)[OBJSET_BITS];
   UInt used = CONST_ADDR_WORD(set)[OBJSET_USED] + expand;
@@ -225,7 +233,8 @@ Int FindObjSet(Obj set, Obj obj) {
  *  Precondition: `set` must not already contain `obj`.
  */
 
-static void AddObjSetNew(Obj set, Obj obj) {
+static void AddObjSetNew(Obj set, Obj obj)
+{
   UInt size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
   UInt hash = ObjHash(set, obj);
   GAP_ASSERT(TNUM_OBJ(set) == T_OBJSET);
@@ -333,7 +342,8 @@ Obj ObjSetValues(Obj set) {
  *  `2^bits`. There must be at least one free entry remaining.
  */
 
-static void ResizeObjSet(Obj set, UInt bits) {
+static void ResizeObjSet(Obj set, UInt bits)
+{
   UInt i, new_size = (1 << bits);
   Int size = ADDR_WORD(set)[OBJSET_SIZE];
   Obj new = NewBag(T_OBJSET, (OBJSET_HDRSIZE+new_size)*sizeof(Bag)*4);
@@ -353,7 +363,7 @@ static void ResizeObjSet(Obj set, UInt bits) {
   CHANGED_BAG(set);
 }
 
-void SaveObjSet(Obj set)
+static void SaveObjSet(Obj set)
 {
     UInt size = ADDR_WORD(set)[OBJSET_SIZE];
     UInt bits = ADDR_WORD(set)[OBJSET_BITS];
@@ -369,7 +379,7 @@ void SaveObjSet(Obj set)
     }
 }
 
-void LoadObjSet(Obj set)
+static void LoadObjSet(Obj set)
 {
     UInt size = LoadUInt();
     UInt bits = LoadUInt();
@@ -388,7 +398,7 @@ void LoadObjSet(Obj set)
 
 #ifdef USE_THREADSAFE_COPYING
 #ifndef WARD_ENABLED
-void TraverseObjSet(TraversalState * traversal, Obj obj)
+static void TraverseObjSet(TraversalState * traversal, Obj obj)
 {
     UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
@@ -398,7 +408,7 @@ void TraverseObjSet(TraversalState * traversal, Obj obj)
     }
 }
 
-void CopyObjSet(TraversalState * traversal, Obj copy, Obj original)
+static void CopyObjSet(TraversalState * traversal, Obj copy, Obj original)
 {
     UInt i, len = *(UInt *)(CONST_ADDR_OBJ(original) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
@@ -438,7 +448,8 @@ Obj NewObjMap(void) {
 
 static void ResizeObjMap(Obj map, UInt bits);
 
-static void CheckObjMapForCleanUp(Obj map, UInt expand) {
+static void CheckObjMapForCleanUp(Obj map, UInt expand)
+{
   UInt size = ADDR_WORD(map)[OBJSET_SIZE];
   UInt bits = ADDR_WORD(map)[OBJSET_BITS];
   UInt used = ADDR_WORD(map)[OBJSET_USED] + expand;
@@ -498,7 +509,8 @@ Obj LookupObjMap(Obj map, Obj obj) {
  *  Precondition: No other entry with key `key` exists within `map`.
  */
 
-static void AddObjMapNew(Obj map, Obj key, Obj value) {
+static void AddObjMapNew(Obj map, Obj key, Obj value)
+{
   UInt size = ADDR_WORD(map)[OBJSET_SIZE];
   UInt hash = ObjHash(map, key);
   for (;;) {
@@ -637,7 +649,8 @@ Obj ObjMapKeys(Obj set) {
  *  Precondition: The number of entries in `map` must be less than `2^bits`.
  */
 
-static void ResizeObjMap(Obj map, UInt bits) {
+static void ResizeObjMap(Obj map, UInt bits)
+{
   UInt i, new_size = (1 << bits);
   UInt size = ADDR_WORD(map)[OBJSET_SIZE];
   GAP_ASSERT(new_size >= size);
@@ -659,7 +672,7 @@ static void ResizeObjMap(Obj map, UInt bits) {
   CHANGED_BAG(new);
 }
 
-void SaveObjMap(Obj map)
+static void SaveObjMap(Obj map)
 {
     UInt size = ADDR_WORD(map)[OBJSET_SIZE];
     UInt bits = ADDR_WORD(map)[OBJSET_BITS];
@@ -677,7 +690,7 @@ void SaveObjMap(Obj map)
     }
 }
 
-void LoadObjMap(Obj map)
+static void LoadObjMap(Obj map)
 {
     UInt size = LoadUInt();
     UInt bits = LoadUInt();
@@ -697,7 +710,7 @@ void LoadObjMap(Obj map)
 
 #ifdef USE_THREADSAFE_COPYING
 #ifndef WARD_ENABLED
-void TraverseObjMap(TraversalState * traversal, Obj obj)
+static void TraverseObjMap(TraversalState * traversal, Obj obj)
 {
     UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
@@ -710,7 +723,7 @@ void TraverseObjMap(TraversalState * traversal, Obj obj)
     }
 }
 
-void CopyObjMap(TraversalState * traversal, Obj copy, Obj original)
+static void CopyObjMap(TraversalState * traversal, Obj copy, Obj original)
 {
     UInt i, len = *(UInt *)(CONST_ADDR_OBJ(original) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
@@ -733,7 +746,8 @@ void CopyObjMap(TraversalState * traversal, Obj copy, Obj original)
  *  of the new set. If no argument is provided, an empty set is created.
  */
 
-static Obj FuncOBJ_SET(Obj self, Obj arg) {
+static Obj FuncOBJ_SET(Obj self, Obj arg)
+{
   Obj result;
   Obj list;
   UInt i, len;
@@ -855,7 +869,8 @@ static Obj FuncOBJ_SET_VALUES(Obj self, Obj set)
  *  provided, an empty map is created.
  */
 
-static Obj FuncOBJ_MAP(Obj self, Obj arg) {
+static Obj FuncOBJ_MAP(Obj self, Obj arg)
+{
   Obj result;
   Obj list;
   UInt i, len;

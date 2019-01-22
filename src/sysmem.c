@@ -182,9 +182,9 @@ static inline UInt SyRoundUpToPagesize(UInt x)
     return r == 0 ? x : x - r + pagesize;
 }
 
-void *     POOL = NULL;
-UInt * * * syWorkspace = NULL;
-UInt       syWorksize = 0;
+static void *     POOL = NULL;
+static UInt * * * syWorkspace = NULL;
+static UInt       syWorksize = 0;
 
 #ifdef GAP_MEM_CHECK
 
@@ -208,17 +208,17 @@ enum { membufcount = 64 };
 static void * membufs[membufcount];
 static UInt   membufSize;
 
-UInt GetMembufCount(void)
+static UInt GetMembufCount(void)
 {
     return membufcount;
 }
 
-void * GetMembuf(UInt i)
+static void * GetMembuf(UInt i)
 {
     return membufs[i];
 }
 
-UInt GetMembufSize(void)
+static UInt GetMembufSize(void)
 {
     return membufSize;
 }
@@ -238,7 +238,7 @@ static int order_pointers(const void * a, const void * b)
     }
 }
 
-void * SyAnonMMap(size_t size)
+static void * SyAnonMMap(size_t size)
 {
     size = SyRoundUpToPagesize(size);
     membufSize = size;
@@ -335,7 +335,8 @@ void SyMAdviseFree(void) {
 #endif
 }
 
-void *SyAnonMMap(size_t size) {
+static void *SyAnonMMap(size_t size)
+{
     void *result;
     size = SyRoundUpToPagesize(size);
 #ifdef SYS_IS_64_BIT
@@ -358,7 +359,7 @@ void *SyAnonMMap(size_t size) {
     return result;
 }
 
-int SyTryToIncreasePool(void)
+static int SyTryToIncreasePool(void)
 /* This tries to increase the pool size by a factor of 3/2, if this
  * worked, then 0 is returned, otherwise -1. */
 {
@@ -383,11 +384,11 @@ int SyTryToIncreasePool(void)
 
 #else
 
-void SyMAdviseFree(void) {
+static void SyMAdviseFree(void) {
     /* do nothing */
 }
 
-int SyTryToIncreasePool(void)
+static int SyTryToIncreasePool(void)
 {
     return -1;   /* Refuse */
 }
@@ -395,9 +396,9 @@ int SyTryToIncreasePool(void)
 #endif
 #endif
 
-int halvingsdone = 0;
+static int halvingsdone = 0;
 
-void SyInitialAllocPool( void )
+static void SyInitialAllocPool( void )
 {
 #ifdef HAVE_SYSCONF
 #ifdef _SC_PAGESIZE
@@ -431,7 +432,7 @@ void SyInitialAllocPool( void )
    /* Now both syWorkspace and SyAllocPool are aligned to pagesize */
 }
 
-UInt ***SyAllocBagsFromPool(Int size, UInt need)
+static UInt ***SyAllocBagsFromPool(Int size, UInt need)
 {
   /* get the storage, but only if we stay within the bounds              */
   /* if ( (0 < size && syWorksize + size <= SyStorMax) */

@@ -447,7 +447,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
 }
 
 
-Int KTNumHomPlist (
+static Int KTNumHomPlist (
     Obj                 list)
 {
     Int                 isTable = 0;    /* are <list>s elms all lists   */
@@ -575,7 +575,7 @@ Int KTNumHomPlist (
     return res;
 }
 
-Obj TypePlist( Obj list)
+static Obj TypePlist( Obj list)
 {
   return TypePlistWithKTNum( list, (UInt *) 0);
 }
@@ -692,7 +692,7 @@ static Obj TypePlistWithKTNum (
 #endif
 }
 
-Obj TypePlistNDense(Obj list)
+static Obj TypePlistNDense(Obj list)
 {
     if (IS_MUTABLE_OBJ(list))
         return TYPE_LIST_NDENSE_MUTABLE;
@@ -702,7 +702,7 @@ Obj TypePlistNDense(Obj list)
 
 #define         TypePlistDense       TypePlist
 
-Obj TypePlistDenseNHom(Obj list)
+static Obj TypePlistDenseNHom(Obj list)
 {
     if (IS_MUTABLE_OBJ(list))
         return TYPE_LIST_DENSE_NHOM_MUTABLE;
@@ -710,7 +710,7 @@ Obj TypePlistDenseNHom(Obj list)
         return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
 }
 
-Obj TypePlistDenseNHomSSort(Obj list)
+static Obj TypePlistDenseNHomSSort(Obj list)
 {
     if (IS_MUTABLE_OBJ(list))
         return TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE;
@@ -718,7 +718,7 @@ Obj TypePlistDenseNHomSSort(Obj list)
         return TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE;
 }
 
-Obj TypePlistDenseNHomNSort(Obj list)
+static Obj TypePlistDenseNHomNSort(Obj list)
 {
     if (IS_MUTABLE_OBJ(list))
         return TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE;
@@ -726,7 +726,7 @@ Obj TypePlistDenseNHomNSort(Obj list)
         return TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE;
 }
 
-Obj TypePlistEmpty(Obj list)
+static Obj TypePlistEmpty(Obj list)
 {
     if (IS_MUTABLE_OBJ(list))
         return TYPE_LIST_EMPTY_MUTABLE;
@@ -734,7 +734,7 @@ Obj TypePlistEmpty(Obj list)
         return TYPE_LIST_EMPTY_IMMUTABLE;
 }
 
-Obj TypePlistHom(Obj list)
+static Obj TypePlistHom(Obj list)
 {
     Int                 tnum;           /* TNUM of <list>                  */
     Obj                 family;         /* family of elements              */
@@ -746,7 +746,7 @@ Obj TypePlistHom(Obj list)
     return TypePlistHomHelper(family, tnum, T_PLIST_HOM, list);
 }
 
-Obj TypePlistCyc(Obj list)
+static Obj TypePlistCyc(Obj list)
 {
     Int                 tnum;           /* TNUM of <list>                  */
     Obj                 family;         /* family of elements              */
@@ -760,7 +760,7 @@ Obj TypePlistCyc(Obj list)
     return TypePlistHomHelper(family, tnum, T_PLIST_CYC, list);
 }
 
-Obj TypePlistFfe(Obj list)
+static Obj TypePlistFfe(Obj list)
 {
     Int                 tnum;           /* TNUM of <list>                  */
     Obj                 family;         /* family of elements              */
@@ -777,7 +777,7 @@ Obj TypePlistFfe(Obj list)
 *F  SetTypePlistToPosObj(<list>, <kind>) .  convert list to positional object
 **
 */
-void SetTypePlistToPosObj(Obj list, Obj kind)
+static void SetTypePlistToPosObj(Obj list, Obj kind)
 {
     RetypeBag(list, T_POSOBJ);
     SET_TYPE_POSOBJ(list, kind);
@@ -819,7 +819,7 @@ Obj             ShallowCopyPlist (
 * Returns an empty plain list, but with space for len entries preallocated.
 *
 */
-Obj    FuncEmptyPlist( Obj self, Obj len )
+static Obj    FuncEmptyPlist( Obj self, Obj len )
 {
     RequireNonnegativeSmallInt("EmptyPlist", len);
     return NEW_PLIST(T_PLIST_EMPTY, INT_INTOBJ(len));
@@ -832,7 +832,7 @@ Obj    FuncEmptyPlist( Obj self, Obj len )
 *  Shrinks the bag of <list> to minimal possible size.
 *
 */
-Obj   FuncShrinkAllocationPlist( Obj self, Obj plist )
+static Obj   FuncShrinkAllocationPlist( Obj self, Obj plist )
 {
     RequirePlainList("ShrinkAllocationPlist", plist);
     SHRINK_PLIST(plist, LEN_PLIST(plist));
@@ -843,9 +843,9 @@ Obj   FuncShrinkAllocationPlist( Obj self, Obj plist )
 **
 *F  FuncIS_PLIST_REP( <self>, <obj> ) . . . . . . . .  handler for `IS_PLIST'
 */
-Obj IsPlistFilt;
+static Obj IsPlistFilt;
 
-Obj FuncIS_PLIST_REP (
+static Obj FuncIS_PLIST_REP (
     Obj                 self,
     Obj                 obj )
 {
@@ -856,7 +856,7 @@ Obj FuncIS_PLIST_REP (
 #ifdef USE_THREADSAFE_COPYING
 #ifndef WARD_ENABLED
 
-void TraversePlist(TraversalState * traversal, Obj obj)
+static void TraversePlist(TraversalState * traversal, Obj obj)
 {
     UInt  len = LEN_PLIST(obj);
     const Obj * ptr = CONST_ADDR_OBJ(obj) + 1;
@@ -866,7 +866,7 @@ void TraversePlist(TraversalState * traversal, Obj obj)
     }
 }
 
-void CopyPlist(TraversalState * traversal, Obj copy, Obj original)
+static void CopyPlist(TraversalState * traversal, Obj copy, Obj original)
 {
     UInt  len = LEN_PLIST(original);
     const Obj * ptr = CONST_ADDR_OBJ(original) + 1;
@@ -900,7 +900,7 @@ void CopyPlist(TraversalState * traversal, Obj copy, Obj original)
 **
 **  'CleanPlist' is the function in 'CleanObjFuncs' for plain lists.
 */
-Obj CopyPlist (
+static Obj CopyPlist (
     Obj                 list,
     Int                 mut )
 {
@@ -938,7 +938,7 @@ Obj CopyPlist (
 **
 *F  CleanPlist( <list> )  . . . . . . . . . . .  clean up a copied plain list
 */
-void CleanPlist (
+static void CleanPlist (
     Obj                 list )
 {
     UInt                i;              /* loop variable                   */
@@ -965,7 +965,7 @@ void CleanPlist (
 **
 **  Is called from the 'EQ' binop so both  operands  are  already  evaluated.
 */
-Int             EqPlist (
+static Int             EqPlist (
     Obj                 left,
     Obj                 right )
 {
@@ -1009,7 +1009,7 @@ Int             EqPlist (
 **
 **  Is called from the 'LT' binop so both operands are already evaluated.
 */
-Int             LtPlist (
+static Int             LtPlist (
     Obj                 left,
     Obj                 right )
 {
@@ -1059,13 +1059,13 @@ Int             LtPlist (
 **
 **  'LenPlist' is the function in 'LenListFuncs' for plain lists.
 */
-Int             LenPlist (
+static Int             LenPlist (
     Obj                 list )
 {
     return LEN_PLIST( list );
 }
 
-Int             LenPlistEmpty (
+static Int             LenPlistEmpty (
     Obj                 list )
 {
     return 0L;
@@ -1080,14 +1080,14 @@ Int             LenPlistEmpty (
 **  and 0 otherwise.  It is the responsibility of the caller to  ensure  that
 **  <pos> is a positive integer.
 */
-Int             IsbPlist (
+static Int             IsbPlist (
     Obj                 list,
     Int                 pos )
 {
     return (pos <= LEN_PLIST( list ) && ELM_PLIST( list, pos ) != 0);
 }
 
-Int             IsbPlistDense (
+static Int             IsbPlistDense (
     Obj                 list,
     Int                 pos )
 {
@@ -1108,7 +1108,7 @@ Int             IsbPlistDense (
 **  <pos>  is less  than or  equal   to the length   of  <list>, this is  the
 **  responsibility of the caller.
 */
-Obj             Elm0Plist (
+static Obj             Elm0Plist (
     Obj                 list,
     Int                 pos )
 {
@@ -1120,7 +1120,7 @@ Obj             Elm0Plist (
     }
 }
 
-Obj             Elm0vPlist (
+static Obj             Elm0vPlist (
     Obj                 list,
     Int                 pos )
 {
@@ -1147,7 +1147,7 @@ Obj             Elm0vPlist (
 **  'ElmPlist'   is the   function    in 'ElmListFuncs'   for  plain   lists.
 **  'ElmvPlist' is the function in 'ElmvListFuncs' for plain lists.
 */
-Obj             ElmPlist (
+static Obj             ElmPlist (
     Obj                 list,
     Int                 pos )
 {
@@ -1172,7 +1172,7 @@ Obj             ElmPlist (
     return elm;
 }
 
-Obj             ElmPlistDense (
+static Obj             ElmPlistDense (
     Obj                 list,
     Int                 pos )
 {
@@ -1191,7 +1191,7 @@ Obj             ElmPlistDense (
     return elm;
 }
 
-Obj             ElmvPlist (
+static Obj             ElmvPlist (
     Obj                 list,
     Int                 pos )
 {
@@ -1210,7 +1210,7 @@ Obj             ElmvPlist (
     return elm;
 }
 
-Obj             ElmvPlistDense (
+static Obj             ElmvPlistDense (
     Obj                 list,
     Int                 pos )
 {
@@ -1238,7 +1238,7 @@ Obj             ElmvPlistDense (
 **  'ElmsPlist' is the function in 'ElmsListFuncs' for plain lists which are
 **  not known to be dense.
 */
-Obj             ElmsPlist (
+static Obj             ElmsPlist (
     Obj                 list,
     Obj                 poss )
 {
@@ -1352,7 +1352,7 @@ Obj             ElmsPlist (
 /* This version for lists which are known to be at least dense
    and might be better */
 
-Obj             ElmsPlistDense (
+static Obj             ElmsPlistDense (
     Obj                 list,
     Obj                 poss )
 {
@@ -1516,7 +1516,7 @@ Obj             ElmsPlistDense (
 **
 **  'UnbPlist' is the function in 'UnbListFuncs' for plain lists.
 */
-void UnbPlist (
+static void UnbPlist (
     Obj                 list,
     Int                 pos )
 {
@@ -1573,7 +1573,7 @@ void            AssPlist (
         CHANGED_BAG( list );
 }
 
-void            AssPlistXXX (
+static void            AssPlistXXX (
     Obj                 list,
     Int                 pos,
     Obj                 val )
@@ -1600,7 +1600,7 @@ void            AssPlistXXX (
       SET_FILT_LIST(list, FN_IS_NDENSE);
 }
 
-void AssPlistCyc   (
+static void AssPlistCyc   (
     Obj                 list,
     Int                 pos,
     Obj                 val )
@@ -1703,7 +1703,7 @@ void AssPlistFfe   (
       }
 }
 
-void AssPlistDense (
+static void AssPlistDense (
     Obj                 list,
     Int                 pos,
     Obj                 val )
@@ -1731,7 +1731,7 @@ void AssPlistDense (
         SET_FILT_LIST( list, FN_IS_NDENSE );
 }
 
-void AssPlistHomog (
+static void AssPlistHomog (
     Obj                 list,
     Int                 pos,
     Obj                 val )
@@ -1874,7 +1874,7 @@ void AssPlistEmpty (
 **
 **  'AsssPlist' is the function in 'AsssListFuncs' for plain lists.
 */
-void            AsssPlist (
+static void            AsssPlist (
     Obj                 list,
     Obj                 poss,
     Obj                 vals )
@@ -1962,7 +1962,7 @@ void            AsssPlist (
     }
 }
 
-void            AsssPlistXXX (
+static void            AsssPlistXXX (
     Obj                 list,
     Obj                 poss,
     Obj                 vals )
@@ -1984,7 +1984,7 @@ void            AsssPlistXXX (
 **
 **  'IsDensePlist' is the function in 'IsDenseListFuncs' for plain lists.
 */
-Int             IsDensePlist (
+static Int             IsDensePlist (
     Obj                 list )
 {
     Int                 lenList;        /* length of <list>                */
@@ -2022,7 +2022,7 @@ Int             IsDensePlist (
 **
 **  'IsHomogPlist' is the function in 'IsHomogListFuncs' for plain lists.
 */
-Int             IsHomogPlist (
+static Int             IsHomogPlist (
     Obj                 list )
 {
     Int                 tnum;
@@ -2040,7 +2040,7 @@ Int             IsHomogPlist (
 **
 **  'IsTablePlist' is the function in 'IsTableListFuncs' for plain lists.
 */
-Int             IsTablePlist (
+static Int             IsTablePlist (
     Obj                 list )
 {
     Int                 tnum;
@@ -2059,7 +2059,7 @@ Int             IsTablePlist (
 **  'IsSSortPlist' is the function in 'IsSSortListFuncs' for plain lists.
 */
 
-Int             IsSSortPlist (
+static Int             IsSSortPlist (
     Obj                 list )
 {
     Int                 lenList;
@@ -2146,7 +2146,7 @@ Int             IsSSortPlist (
     return 0L;
 }
 
-Int             IsSSortPlistDense (
+static Int             IsSSortPlistDense (
     Obj                 list )
 {
     Int                 lenList;
@@ -2217,7 +2217,7 @@ Int             IsSSortPlistDense (
 
 }
 
-Int             IsSSortPlistHom (
+static Int             IsSSortPlistHom (
     Obj                 list )
 {
     Int                 lenList;
@@ -2266,7 +2266,7 @@ Int             IsSSortPlistHom (
 }
 
 
-Obj FuncSET_IS_SSORTED_PLIST(Obj self, Obj list)
+static Obj FuncSET_IS_SSORTED_PLIST(Obj self, Obj list)
 {
   SET_FILT_LIST(list, FN_IS_SSORT);
   return (Obj)0;
@@ -2282,7 +2282,7 @@ Obj FuncSET_IS_SSORTED_PLIST(Obj self, Obj list)
 **
 **  'IsPossPlist' is the function in 'IsPossListFuncs' for plain lists.
 */
-Int             IsPossPlist (
+static Int             IsPossPlist (
     Obj                 list )
 {
     Int                 lenList;        /* length of <list>                */
@@ -2326,7 +2326,7 @@ Int             IsPossPlist (
 **
 **  'PosPlist' is the function in 'PosListFuncs' for plain lists.
 */
-Obj             PosPlist (
+static Obj             PosPlist (
     Obj                 list,
     Obj                 val,
     Obj                 start )
@@ -2362,7 +2362,7 @@ Obj             PosPlist (
     return (lenList < i ? Fail : INTOBJ_INT(i));
 }
 
-Obj             PosPlistDense (
+static Obj             PosPlistDense (
     Obj                 list,
     Obj                 val,
     Obj                 start )
@@ -2399,7 +2399,7 @@ Obj             PosPlistDense (
     return (lenList < i ? Fail : INTOBJ_INT(i));
 }
 
-Obj             PosPlistSort (
+static Obj             PosPlistSort (
     Obj                 list,
     Obj                 val,
     Obj                 start )
@@ -2435,7 +2435,7 @@ Obj             PosPlistSort (
 }
 
 
-Obj             PosPlistHomSort (
+static Obj             PosPlistHomSort (
     Obj                 list,
     Obj                 val,
     Obj                 start )
@@ -2457,7 +2457,7 @@ Obj             PosPlistHomSort (
 **
 **  'PlainPlist' is the function in 'PlainListFuncs' for plain lists.
 */
-void            PlainPlist (
+static void            PlainPlist (
     Obj                 list )
 {
     return;
@@ -2469,7 +2469,7 @@ void            PlainPlist (
 **
 */
 
-void SavePlist( Obj list )
+static void SavePlist( Obj list )
 {
   UInt i;
   SaveUInt(LEN_PLIST(list));
@@ -2484,7 +2484,7 @@ void SavePlist( Obj list )
 **
 */
 
-void LoadPlist( Obj list )
+static void LoadPlist( Obj list )
 {
   UInt i;
   SET_LEN_PLIST(list, LoadUInt());
@@ -2498,7 +2498,7 @@ void LoadPlist( Obj list )
 **
 *F  FuncASS_PLIST_DEFAULT( <self>, <plist>, <pos>, <val> )  . . `AssPlistXXX'
 */
-Obj FuncASS_PLIST_DEFAULT (
+static Obj FuncASS_PLIST_DEFAULT (
     Obj                 self,
     Obj                 plist,
     Obj                 pos,
@@ -2527,7 +2527,7 @@ Obj FuncASS_PLIST_DEFAULT (
 **  here)
 */
 
-void MakeImmutablePlistInHom(Obj list)
+static void MakeImmutablePlistInHom(Obj list)
 {
     // change the tnum first, to avoid infinite recursion for objects that
     // contain themselves
@@ -2557,7 +2557,7 @@ void MakeImmutablePlistInHom(Obj list)
 **  here)
 */
 
-void MakeImmutablePlistNoMutElms( Obj list )
+static void MakeImmutablePlistNoMutElms( Obj list )
 {
     MakeImmutableNoRecurse(list);
 }
@@ -2573,7 +2573,7 @@ void MakeImmutablePlistNoMutElms( Obj list )
 **  it is rectangular
 */
 
-Obj FuncIsRectangularTablePlist( Obj self, Obj plist)
+static Obj FuncIsRectangularTablePlist( Obj self, Obj plist)
 {
   Obj len;
   UInt lenlist;

@@ -89,7 +89,7 @@ static void CleanOut( void )
 **
 **  ... more about ApplyRel ...
 */
-Obj FuncApplyRel (
+static Obj FuncApplyRel (
     Obj                 self,
     Obj                 app,            /* handle of the application list  */
     Obj                 rel )           /* handle of the relator           */
@@ -370,7 +370,7 @@ static void HandleCoinc (
 **
 *F  FuncMakeConsequences( <self>, <list> )  find consqs of a coset definition
 */
-Obj FuncMakeConsequences (
+static Obj FuncMakeConsequences (
     Obj                 self,
     Obj                 list )
 {
@@ -552,7 +552,7 @@ Obj FuncMakeConsequences (
 **  This  is a  special version  of  `FuncMakeConsequences'  for the subgroup
 **  presentation routines.
 */
-Obj FuncMakeConsequencesPres (
+static Obj FuncMakeConsequencesPres (
     Obj                 self,
     Obj                 list )
 {
@@ -665,7 +665,7 @@ Obj FuncMakeConsequencesPres (
 **  If  not  <stan> = 1  the table  is standardized  using the  (new)  lenlex
 **  standard (this is the default).
 */
-Obj FuncStandardizeTableC (
+static Obj FuncStandardizeTableC (
     Obj                 self,
     Obj                 table,
     Obj                 stan )
@@ -1096,7 +1096,7 @@ static void AddCosetFactor2 (
 **
 **  ...more about ApplyRel2...
 */
-Obj FuncApplyRel2 (
+static Obj FuncApplyRel2 (
     Obj                 self,
     Obj                 app,
     Obj                 rel,
@@ -1351,7 +1351,7 @@ Obj FuncApplyRel2 (
 **  'FuncCopyRel' returns a copy  of the given RRS  relator such that the bag
 **  of the copy does not exceed the minimal required size.
 */
-Obj FuncCopyRel ( 
+static Obj FuncCopyRel ( 
     Obj                 self,
     Obj                 rel )           /* the given relator               */
 {
@@ -1389,7 +1389,7 @@ Obj FuncCopyRel (
 **  routines.  It replaces the given relator by its canonical representative.
 **  It does not return anything.
 */
-Obj FuncMakeCanonical (
+static Obj FuncMakeCanonical (
     Obj                 self,
     Obj                 rel )           /* the given relator               */
 {
@@ -1545,7 +1545,7 @@ Obj FuncMakeCanonical (
 **  in the  current generators, if  it finds any, or it  defines a new proper
 **  tree entry, and then returns it.
 */
-Obj FuncTreeEntry(
+static Obj FuncTreeEntry(
     Obj                 self,
     Obj                 tree,
     Obj                 word )
@@ -1815,7 +1815,7 @@ Obj FuncTreeEntry(
 **  If  not  <stan> = 1  the table  is standardized  using the  (new)  lenlex
 **  standard (this is the default).
 */
-Obj FuncStandardizeTable2C (
+static Obj FuncStandardizeTable2C (
     Obj                 self,
     Obj                 table,
     Obj                 table2,
@@ -1939,7 +1939,7 @@ Obj FuncStandardizeTable2C (
 **
 **  'FuncAddAbelianRelator' implements 'AddAbelianRelator(<rels>,<number>)'
 */
-Obj FuncAddAbelianRelator (
+static Obj FuncAddAbelianRelator (
     Obj                 self,
     Obj                 rels,           /* relators list                   */
     Obj                 number )
@@ -2018,9 +2018,9 @@ Obj FuncAddAbelianRelator (
 
 /* new type functions that use different data structures */
 
-UInt ret1,ret2;
+static UInt ret1,ret2;
 
-UInt RelatorScan (
+static UInt RelatorScan (
   Obj t,
   UInt di,
   Obj r )
@@ -2093,14 +2093,14 @@ UInt RelatorScan (
 }
 
 /* data object type for the mangled relators */
-Obj TYPE_LOWINDEX_DATA;
+static Obj TYPE_LOWINDEX_DATA;
 
 /****************************************************************************
 **
 *F  FuncLOWINDEX_COSET_SCAN( <t>,<r>,<s1>,<s2>)
 **
 */
-Obj FuncLOWINDEX_COSET_SCAN (
+static Obj FuncLOWINDEX_COSET_SCAN (
     Obj                 self,
     Obj                 t,              /* table */
     Obj                 r,              /* relators */
@@ -2187,7 +2187,7 @@ Obj FuncLOWINDEX_COSET_SCAN (
 *F  FuncLOWINDEX_IS_FIRST( <t>,<n>,<mu>,<nu>)
 **
 */
-Obj FuncLOWINDEX_IS_FIRST (
+static Obj FuncLOWINDEX_IS_FIRST (
     Obj                 self,
     Obj                 t,              /* table */
     Obj                 nobj,              /* relators */
@@ -2245,7 +2245,7 @@ Obj FuncLOWINDEX_IS_FIRST (
 *F  FuncLOWINDEX_PREPARE_RELS( <rels> )
 **
 */
-Obj FuncLOWINDEX_PREPARE_RELS (
+static Obj FuncLOWINDEX_PREPARE_RELS (
     Obj                 self,
     Obj                 r )             /* rels */
 {
@@ -2274,7 +2274,7 @@ Obj FuncLOWINDEX_PREPARE_RELS (
 *F  FuncTC_QUICK_SCAN( <c>,<o>,<alpha>,<w>)
 **
 */
-Obj FuncTC_QUICK_SCAN (
+static Obj FuncTC_QUICK_SCAN (
     Obj                 self,
     Obj                 c,              /* table */
     Obj                 o,              /* offset */

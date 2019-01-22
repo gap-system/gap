@@ -684,7 +684,7 @@ Obj             MakeFunction (
 **
 **  'EvalFuncExpr' evaluates the function expression <expr> to a function.
 */
-Obj             EvalFuncExpr (
+static Obj             EvalFuncExpr (
     Expr                expr )
 {
     Obj                 fexs;           /* func. expr. list of curr. func. */
@@ -705,7 +705,7 @@ Obj             EvalFuncExpr (
 **
 **  'PrintFuncExpr' prints a function expression.
 */
-void            PrintFuncExpr (
+static void            PrintFuncExpr (
     Expr                expr )
 {
     Obj                 fexs;           /* func. expr. list of curr. func. */
@@ -725,20 +725,20 @@ void            PrintFuncExpr (
 **
 **  'PrintProccall' prints a procedure call.
 */
-extern  void            PrintFunccall (
+static  void            PrintFunccall (
             Expr                call );
 
-extern  void            PrintFunccallOpts (
+static  void            PrintFunccallOpts (
             Expr                call );
 
-void            PrintProccall (
+static void            PrintProccall (
     Stat                call )
 {
     PrintFunccall( call );
     Pr( ";", 0L, 0L );
 }
 
-void            PrintProccallOpts (
+static void            PrintProccallOpts (
     Stat                call )
 {
     PrintFunccallOpts( call );
@@ -773,7 +773,7 @@ static void            PrintFunccall1 (
     }
 }
 
-void            PrintFunccall (
+static void            PrintFunccall (
     Expr                call )
 {
   PrintFunccall1( call );
@@ -783,7 +783,7 @@ void            PrintFunccall (
 }
 
 
-void             PrintFunccallOpts (
+static void             PrintFunccallOpts (
     Expr                call )
 {
     PrintFunccall1(READ_STAT(call, 1));
@@ -824,7 +824,7 @@ void ExecEnd(UInt error)
 **
 */
 
-Obj FuncSetRecursionTrapInterval( Obj self,  Obj interval )
+static Obj FuncSetRecursionTrapInterval( Obj self,  Obj interval )
 {
     while (!IS_INTOBJ(interval) || INT_INTOBJ(interval) <= 5)
         interval = ErrorReturnObj(
@@ -835,7 +835,7 @@ Obj FuncSetRecursionTrapInterval( Obj self,  Obj interval )
     return 0;
 }
 
-Obj FuncGetRecursionDepth( Obj self )
+static Obj FuncGetRecursionDepth( Obj self )
 {
     return INTOBJ_INT(GetRecursionDepth());
 }

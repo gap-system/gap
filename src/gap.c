@@ -101,7 +101,7 @@ UInt Time;
 **  which is automatically assigned the amount of memory allocated while
 **  executing the last command.
 */
-UInt MemoryAllocated;
+static UInt MemoryAllocated;
 
 
 #ifndef HPCGAP
@@ -149,7 +149,7 @@ void ViewObjHandler ( Obj obj )
 **
 *F  main( <argc>, <argv> )  . . . . . . .  main program, read-eval-print loop
 */
-UInt QUITTINGGVar;
+static UInt QUITTINGGVar;
 
 
 /*
@@ -157,7 +157,7 @@ TL: Obj ShellContext = 0;
 TL: Obj BaseShellContext = 0;
 */
 
-Obj Shell ( Obj context, 
+static Obj Shell ( Obj context, 
             UInt canReturnVoid,
             UInt canReturnObj,
             UInt lastDepth,
@@ -339,7 +339,7 @@ Obj Shell ( Obj context,
 
 
 
-Obj FuncSHELL (Obj self, Obj args)
+static Obj FuncSHELL (Obj self, Obj args)
 {
   Obj context = 0;
   UInt canReturnVoid = 0;
@@ -487,7 +487,7 @@ int main ( int argc, char * argv[] )
 **
 *F  FuncID_FUNC( <self>, <val1> ) . . . . . . . . . . . . . . . return <val1>
 */
-Obj FuncID_FUNC (
+static Obj FuncID_FUNC (
                  Obj                 self,
                  Obj                 val1 )
 {
@@ -498,7 +498,7 @@ Obj FuncID_FUNC (
 **
 *F  FuncRETURN_FIRST( <self>, <args> ) . . . . . . . . Return first argument
 */
-Obj FuncRETURN_FIRST (
+static Obj FuncRETURN_FIRST (
                  Obj                 self,
                  Obj                 args )
 {
@@ -512,7 +512,7 @@ Obj FuncRETURN_FIRST (
 **
 *F  FuncRETURN_NOTHING( <self>, <arg> ) . . . . . . . . . . . Return nothing
 */
-Obj FuncRETURN_NOTHING (
+static Obj FuncRETURN_NOTHING (
                  Obj                 self,
                  Obj                 arg )
 {
@@ -532,14 +532,14 @@ Obj FuncRETURN_NOTHING (
 **  How much time execution of statements take is of course system dependent.
 **  The accuracy of this number is also system dependent.
 */
-Obj FuncRuntime (
+static Obj FuncRuntime (
                  Obj                 self )
 {
   return INTOBJ_INT( SyTime() );
 }
 
 
-Obj FuncRUNTIMES( Obj     self)
+static Obj FuncRUNTIMES( Obj     self)
 {
   Obj    res;
   res = NEW_PLIST(T_PLIST, 4);
@@ -561,7 +561,7 @@ Obj FuncRUNTIMES( Obj     self)
 **  function wraps SyNanosecondsSinceEpoch.
 **
 */
-Obj FuncNanosecondsSinceEpoch(Obj self)
+static Obj FuncNanosecondsSinceEpoch(Obj self)
 {
   Int8 val = SyNanosecondsSinceEpoch();
 
@@ -581,7 +581,7 @@ Obj FuncNanosecondsSinceEpoch(Obj self)
 **  contains information about the timers used for FuncNanosecondsSinceEpoch
 **
 */
-Obj FuncNanosecondsSinceEpochInfo(Obj self)
+static Obj FuncNanosecondsSinceEpochInfo(Obj self)
 {
   Obj res, tmp;
   Int8 resolution;
@@ -625,7 +625,7 @@ Obj FuncNanosecondsSinceEpochInfo(Obj self)
 **  to leave this value unaffected.  Note that those parameters can  also  be
 **  set with the command line options '-x <x>' and '-y <y>'.
 */
-Obj FuncSizeScreen (
+static Obj FuncSizeScreen (
                     Obj                 self,
                     Obj                 args )
 {
@@ -719,7 +719,7 @@ Obj FuncSizeScreen (
 */
 static Obj WindowCmdString;
 
-Obj FuncWindowCmd (
+static Obj FuncWindowCmd (
                    Obj              self,
                    Obj             args )
 {
@@ -873,7 +873,7 @@ Obj FuncWindowCmd (
 **
 **  'GASMAN( "display" | "clear" | "collect" | "message" | "partial" )'
 */
-Obj FuncGASMAN (
+static Obj FuncGASMAN (
     Obj                 self,
     Obj                 args )
 {
@@ -1005,7 +1005,7 @@ again:
     return 0;
 }
 
-Obj FuncGASMAN_STATS(Obj self)
+static Obj FuncGASMAN_STATS(Obj self)
 {
   Obj res;
   Obj row;
@@ -1029,12 +1029,12 @@ Obj FuncGASMAN_STATS(Obj self)
   return res;      
 }
 
-Obj FuncGASMAN_MESSAGE_STATUS( Obj self )
+static Obj FuncGASMAN_MESSAGE_STATUS( Obj self )
 {
   return INTOBJ_INT(SyMsgsFlagBags);
 }
 
-Obj FuncGASMAN_LIMITS( Obj self )
+static Obj FuncGASMAN_LIMITS( Obj self )
 {
   Obj list;
   list = NEW_PLIST_IMM(T_PLIST_CYC, 3);
@@ -1047,7 +1047,7 @@ Obj FuncGASMAN_LIMITS( Obj self )
 
 #ifdef GAP_MEM_CHECK
 
-Obj FuncGASMAN_MEM_CHECK(Obj self, Obj newval)
+static Obj FuncGASMAN_MEM_CHECK(Obj self, Obj newval)
 {
     EnableMemCheck = INT_INTOBJ(newval);
     return 0;
@@ -1060,7 +1060,7 @@ Obj FuncGASMAN_MEM_CHECK(Obj self, Obj newval)
 *F  FuncTotalMemoryAllocated( <self> ) .expert function 'TotalMemoryAllocated'
 */
 
-Obj FuncTotalMemoryAllocated( Obj self )
+static Obj FuncTotalMemoryAllocated( Obj self )
 {
     return ObjInt_UInt8(SizeAllBags);
 }
@@ -1073,7 +1073,7 @@ Obj FuncTotalMemoryAllocated( Obj self )
 **  returns the bag size of the object. This does not include the size of
 **  sub-objects.
 */
-Obj FuncSIZE_OBJ(Obj self, Obj obj)
+static Obj FuncSIZE_OBJ(Obj self, Obj obj)
 {
     if (IS_INTOBJ(obj) || IS_FFE(obj))
         return INTOBJ_INT(0);
@@ -1084,7 +1084,7 @@ Obj FuncSIZE_OBJ(Obj self, Obj obj)
 **
 *F  FuncTNUM_OBJ( <self>, <obj> ) . . . . . . . .  expert function 'TNUM_OBJ'
 */
-Obj FuncTNUM_OBJ(Obj self, Obj obj)
+static Obj FuncTNUM_OBJ(Obj self, Obj obj)
 {
     return INTOBJ_INT(TNUM_OBJ(obj));
 }
@@ -1093,7 +1093,7 @@ Obj FuncTNUM_OBJ(Obj self, Obj obj)
 **
 *F  FuncTNAM_OBJ( <self>, <obj> ) . . . . . . . .  expert function 'TNAM_OBJ'
 */
-Obj FuncTNAM_OBJ(Obj self, Obj obj)
+static Obj FuncTNAM_OBJ(Obj self, Obj obj)
 {
     return MakeImmString(TNAM_OBJ(obj));
 }
@@ -1102,7 +1102,7 @@ Obj FuncTNAM_OBJ(Obj self, Obj obj)
 **
 *F  FuncOBJ_HANDLE( <self>, <obj> ) . . . . . .  expert function 'OBJ_HANDLE'
 */
-Obj FuncOBJ_HANDLE (
+static Obj FuncOBJ_HANDLE (
     Obj                 self,
     Obj                 obj )
 {
@@ -1139,7 +1139,7 @@ Obj FuncOBJ_HANDLE (
 **  object non-identical objects will have different handles. The integers
 **  may be large.
 */
-Obj FuncHANDLE_OBJ(Obj self, Obj obj)
+static Obj FuncHANDLE_OBJ(Obj self, Obj obj)
 {
     return ObjInt_UInt((UInt) obj);
 }
@@ -1152,7 +1152,7 @@ HANDLE_OBJ for non-immediate objects, but divided by sizeof(Obj), which gets
 rids of a few zero bits and thus increases the chance of the result value
 to be an immediate integer. */
 
-Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
+static Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
 {
     if (IS_INTOBJ(o) || IS_FFE(o)) {
         return INTOBJ_INT(0);
@@ -1169,7 +1169,7 @@ Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
 }
 
 /* Returns a measure of the size of a GAP function */
-Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
+static Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
 {
     Obj body;
     if (TNUM_OBJ(f) != T_FUNCTION) return Fail;
@@ -1184,7 +1184,7 @@ Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
 **
 */
 
-Obj FuncSleep( Obj self, Obj secs )
+static Obj FuncSleep( Obj self, Obj secs )
 {
     Int s = GetSmallInt("Sleep", secs);
 
@@ -1208,7 +1208,7 @@ Obj FuncSleep( Obj self, Obj secs )
 **
 */
 
-Obj FuncMicroSleep( Obj self, Obj msecs )
+static Obj FuncMicroSleep( Obj self, Obj msecs )
 {
     Int s = GetSmallInt("MicroSleep", msecs);
 
@@ -1247,7 +1247,7 @@ static int SetExitValue(Obj code)
 **
 */
 
-Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
+static Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
 {
   if (!SetExitValue(code))
     ErrorQuit("GAP_EXIT_CODE: Argument must be boolean or integer", 0L, 0L);
@@ -1261,7 +1261,7 @@ Obj FuncGAP_EXIT_CODE( Obj self, Obj code )
 **
 */
 
-Obj FuncQUIT_GAP( Obj self, Obj args )
+static Obj FuncQUIT_GAP( Obj self, Obj args )
 {
   if ( LEN_LIST(args) == 0 ) {
     SystemErrorCode = 0;
@@ -1281,7 +1281,7 @@ Obj FuncQUIT_GAP( Obj self, Obj args )
 **
 */
 
-Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
+static Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
 {
   if ( LEN_LIST(args) == 0 )
   {
@@ -1300,7 +1300,7 @@ Obj FuncFORCE_QUIT_GAP( Obj self, Obj args )
 **
 */
 
-Obj FuncSHOULD_QUIT_ON_BREAK( Obj self)
+static Obj FuncSHOULD_QUIT_ON_BREAK( Obj self)
 {
   return SyQuitOnBreak ? True : False;
 }
@@ -1313,7 +1313,7 @@ Obj FuncSHOULD_QUIT_ON_BREAK( Obj self)
 ** the assortment of global variables previously used
 */
 
-Obj FuncKERNEL_INFO(Obj self) {
+static Obj FuncKERNEL_INFO(Obj self) {
   Obj res = NEW_PREC(0);
   UInt r,lenvec;
   Char *p;
@@ -1460,9 +1460,9 @@ Obj FuncKERNEL_INFO(Obj self) {
 ** condition based on the value of BreakPointValue to other breakpoints.
 */
 
-UInt BreakPointValue;
+static UInt BreakPointValue;
 
-Obj FuncBREAKPOINT(Obj self, Obj arg) {
+static Obj FuncBREAKPOINT(Obj self, Obj arg) {
   if (IS_INTOBJ(arg))
     BreakPointValue = INT_INTOBJ(arg);
   return (Obj) 0;
@@ -1476,7 +1476,7 @@ Obj FuncBREAKPOINT(Obj self, Obj arg) {
 **
 */
 
-Obj FuncTHREAD_UI(Obj self)
+static Obj FuncTHREAD_UI(Obj self)
 {
   return ThreadUI ? True : False;
 }

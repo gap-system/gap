@@ -82,7 +82,8 @@ static Int SORT_COMP_CHECK_EQ(SORT_FUNC_ARGS, Obj a, Obj b) {
         return SORT_COMP(a, b);
 }
 
-void PREFIXNAME(Shell)(SORT_FUNC_ARGS, Int start, Int end) {
+static void PREFIXNAME(Shell)(SORT_FUNC_ARGS, Int start, Int end)
+{
   UInt len; /* length of the list              */
   UInt h;   /* gap width in the shellsort      */
   SORT_CREATE_LOCAL(v);
@@ -204,7 +205,8 @@ static inline Int PREFIXNAME(Partition)(SORT_FUNC_ARGS, Int start, Int end,
   }
 }
 
-void PREFIXNAME(Insertion)(SORT_FUNC_ARGS, Int start, Int end) {
+static void PREFIXNAME(Insertion)(SORT_FUNC_ARGS, Int start, Int end)
+{
   SORT_CREATE_LOCAL(v);
   SORT_CREATE_LOCAL(w);
   UInt i, k; /* loop variables                  */
@@ -227,7 +229,8 @@ void PREFIXNAME(Insertion)(SORT_FUNC_ARGS, Int start, Int end) {
 
 /* This function performs an insertion sort with a limit to the number
  * of swaps performed -- if we pass that limit we abandon the sort */
-Obj PREFIXNAME(LimitedInsertion)(SORT_FUNC_ARGS, Int start, Int end) {
+static Obj PREFIXNAME(LimitedInsertion)(SORT_FUNC_ARGS, Int start, Int end)
+{
   SORT_CREATE_LOCAL(v);
   SORT_CREATE_LOCAL(w);
   UInt i, k;     /* loop variables                        */
@@ -257,7 +260,8 @@ Obj PREFIXNAME(LimitedInsertion)(SORT_FUNC_ARGS, Int start, Int end) {
 
 /* This function assumes it doesn't get called for ranges which are very small
  */
-void PREFIXNAME(CheckBadPivot)(SORT_FUNC_ARGS, Int start, Int end, Int pivot) {
+static void PREFIXNAME(CheckBadPivot)(SORT_FUNC_ARGS, Int start, Int end, Int pivot)
+{
   Int length = end - start;
   if (pivot - start < length / 8) {
     SWAP_INDICES(SORT_ARGS, pivot, pivot + length / 4);
@@ -268,7 +272,9 @@ void PREFIXNAME(CheckBadPivot)(SORT_FUNC_ARGS, Int start, Int end, Int pivot) {
     SWAP_INDICES(SORT_ARGS, pivot - 1, pivot - 1 - length / 4);
   }
 }
-void PREFIXNAME(QuickSort)(SORT_FUNC_ARGS, Int start, Int end, Int depth) {
+
+static void PREFIXNAME(QuickSort)(SORT_FUNC_ARGS, Int start, Int end, Int depth)
+{
   Int pivot, first_pass;
 
   if (end - start < 24) {
@@ -303,8 +309,9 @@ void SORT_FUNC_NAME(SORT_FUNC_ARGS) {
 
 // Merge the consecutive ranges [b1..e1] and [e1+1..e2] in place,
 // Using the temporary buffer 'tempbuf'.
-void PREFIXNAME(MergeRanges)(SORT_FUNC_ARGS, Int b1, Int e1, Int e2,
-                             Obj tempbuf) {
+static void PREFIXNAME(MergeRanges)(SORT_FUNC_ARGS, Int b1, Int e1, Int e2,
+                                    Obj tempbuf)
+{
   Int pos1 = b1;
   Int pos2 = e1 + 1;
   Int resultpos = 1;

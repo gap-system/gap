@@ -270,7 +270,7 @@ UInt            RNamObj (
 **  'RNamObj' returns the record name  corresponding  to  the  object  <obj>,
 **  which currently must be a string or an integer.
 */
-Obj             FuncRNamObj (
+static Obj             FuncRNamObj (
     Obj                 self,
     Obj                 obj )
 {
@@ -288,7 +288,7 @@ Obj             FuncRNamObj (
 **
 **  'NameRName' returns the string corresponding to the record name <rnam>.
 */
-Obj             FuncNameRNam (
+static Obj             FuncNameRNam (
     Obj                 self,
     Obj                 rnam )
 {
@@ -319,16 +319,16 @@ Obj             FuncNameRNam (
 */
 Int             (*IsRecFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
-Obj             IsRecFilt;
+static Obj             IsRecFilt;
 
-Obj             IsRecHandler (
+static Obj             IsRecHandler (
     Obj                 self,
     Obj                 obj )
 {
     return (IS_REC(obj) ? True : False);
 }
 
-Int             IsRecObject (
+static Int             IsRecObject (
     Obj                 obj )
 {
     return (DoFilter( IsRecFilt, obj ) == True);
@@ -345,9 +345,9 @@ Int             IsRecObject (
 */
 Obj             (*ElmRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
-Obj             ElmRecOper;
+static Obj             ElmRecOper;
 
-Obj             ElmRecHandler (
+static Obj             ElmRecHandler (
     Obj                 self,
     Obj                 rec,
     Obj                 rnam )
@@ -355,7 +355,7 @@ Obj             ElmRecHandler (
     return ELM_REC( rec, INT_INTOBJ(rnam) );
 }
 
-Obj             ElmRecError (
+static Obj             ElmRecError (
     Obj                 rec,
     UInt                rnam )
 {
@@ -366,7 +366,7 @@ Obj             ElmRecError (
     return ELM_REC( rec, rnam );
 }
 
-Obj             ElmRecObject (
+static Obj             ElmRecObject (
     Obj                 obj,
     UInt                rnam )
 {
@@ -390,9 +390,9 @@ Obj             ElmRecObject (
 */
 Int             (*IsbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
-Obj             IsbRecOper;
+static Obj             IsbRecOper;
 
-Obj             IsbRecHandler (
+static Obj             IsbRecHandler (
     Obj                 self,
     Obj                 rec,
     Obj                 rnam )
@@ -400,7 +400,7 @@ Obj             IsbRecHandler (
     return (ISB_REC( rec, INT_INTOBJ(rnam) ) ? True : False);
 }
 
-Int             IsbRecError (
+static Int             IsbRecError (
     Obj                 rec,
     UInt                rnam )
 {
@@ -411,7 +411,7 @@ Int             IsbRecError (
     return ISB_REC( rec, rnam );
 }
 
-Int             IsbRecObject (
+static Int             IsbRecObject (
     Obj                 obj,
     UInt                rnam )
 {
@@ -429,9 +429,9 @@ Int             IsbRecObject (
 */
 void            (*AssRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam, Obj obj );
 
-Obj             AssRecOper;
+static Obj             AssRecOper;
 
-Obj             AssRecHandler (
+static Obj             AssRecHandler (
     Obj                 self,
     Obj                 rec,
     Obj                 rnam,
@@ -441,7 +441,7 @@ Obj             AssRecHandler (
     return 0;
 }
 
-void            AssRecError (
+static void            AssRecError (
     Obj                 rec,
     UInt                rnam,
     Obj                 obj )
@@ -453,7 +453,7 @@ void            AssRecError (
     ASS_REC( rec, rnam, obj );
 }
 
-void            AssRecObject (
+static void            AssRecObject (
     Obj                 obj,
     UInt                rnam,
     Obj                 val )
@@ -471,9 +471,9 @@ void            AssRecObject (
 */
 void            (*UnbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
-Obj             UnbRecOper;
+static Obj             UnbRecOper;
 
-Obj             UnbRecHandler (
+static Obj             UnbRecHandler (
     Obj                 self,
     Obj                 rec,
     Obj                 rnam )
@@ -482,7 +482,7 @@ Obj             UnbRecHandler (
     return 0;
 }
 
-void            UnbRecError (
+static void            UnbRecError (
     Obj                 rec,
     UInt                rnam )
 {
@@ -493,7 +493,7 @@ void            UnbRecError (
     UNB_REC( rec, rnam );
 }
         
-void            UnbRecObject (
+static void            UnbRecObject (
     Obj                 obj,
     UInt                rnam )
 {
@@ -552,7 +552,7 @@ UInt            completion_rnam (
     return next != 0;
 }
 
-Obj FuncALL_RNAMES (
+static Obj FuncALL_RNAMES (
     Obj                 self )
 {
     Obj                 copy, s;

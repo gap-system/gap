@@ -202,7 +202,7 @@ int TryLockMonitor(Monitor * monitor)
     return !pthread_mutex_trylock(&monitor->lock);
 }
 
-void UnlockMonitor(Monitor * monitor)
+static void UnlockMonitor(Monitor * monitor)
 {
     pthread_mutex_unlock(&monitor->lock);
 }
@@ -216,7 +216,7 @@ void UnlockMonitor(Monitor * monitor)
  ** again upon exit.
  */
 
-void WaitForMonitor(Monitor * monitor)
+static void WaitForMonitor(Monitor * monitor)
 {
     struct WaitList node;
     node.thread = GetTLS();
@@ -364,9 +364,9 @@ static Obj ArgumentError(const char * message)
 }
 
 /* TODO: register globals */
-Obj             FirstKeepAlive;
-Obj             LastKeepAlive;
-pthread_mutex_t KeepAliveLock;
+static Obj             FirstKeepAlive;
+static Obj             LastKeepAlive;
+static pthread_mutex_t KeepAliveLock;
 
 #define KEPTALIVE(obj) (ADDR_OBJ(obj)[1])
 #define PREV_KEPT(obj) (ADDR_OBJ(obj)[2])
@@ -463,7 +463,7 @@ static void ThreadedInterpreter(void * funcargs)
 ** is a unique identifier for the thread.
 */
 
-Obj FuncCreateThread(Obj self, Obj funcargs)
+static Obj FuncCreateThread(Obj self, Obj funcargs)
 {
     Int  i, n;
     Obj  thread;
@@ -490,7 +490,7 @@ Obj FuncCreateThread(Obj self, Obj funcargs)
 ** The function waits for an existing thread to finish.
 */
 
-Obj FuncWaitThread(Obj self, Obj obj)
+static Obj FuncWaitThread(Obj self, Obj obj)
 {
     const char * error = NULL;
     RequireThread("WaitThread", obj, "thread");
@@ -513,7 +513,7 @@ Obj FuncWaitThread(Obj self, Obj obj)
 **
 */
 
-Obj FuncCurrentThread(Obj self)
+static Obj FuncCurrentThread(Obj self)
 {
     return TLS(threadObject);
 }
@@ -524,7 +524,7 @@ Obj FuncCurrentThread(Obj self)
 **
 */
 
-Obj FuncThreadID(Obj self, Obj thread)
+static Obj FuncThreadID(Obj self, Obj thread)
 {
     RequireThread("ThreadID", thread, "thread");
     return INTOBJ_INT(ThreadID(thread));
@@ -536,7 +536,7 @@ Obj FuncThreadID(Obj self, Obj thread)
 **
 */
 
-Obj FuncKillThread(Obj self, Obj thread)
+static Obj FuncKillThread(Obj self, Obj thread)
 {
     int id;
     if (IS_INTOBJ(thread)) {
@@ -563,7 +563,7 @@ Obj FuncKillThread(Obj self, Obj thread)
 #define AS_STRING(s) #s
 
 
-Obj FuncInterruptThread(Obj self, Obj thread, Obj handler)
+static Obj FuncInterruptThread(Obj self, Obj thread, Obj handler)
 {
     int id;
     if (IS_INTOBJ(thread)) {
@@ -592,7 +592,7 @@ Obj FuncInterruptThread(Obj self, Obj thread, Obj handler)
 **
 */
 
-Obj FuncSetInterruptHandler(Obj self, Obj handler, Obj func)
+static Obj FuncSetInterruptHandler(Obj self, Obj handler, Obj func)
 {
     if (!IS_INTOBJ(handler) || INT_INTOBJ(handler) < 1 ||
         INT_INTOBJ(handler) > MAX_INTERRUPT)
@@ -621,7 +621,7 @@ Obj FuncSetInterruptHandler(Obj self, Obj handler, Obj func)
 */
 
 
-Obj FuncPauseThread(Obj self, Obj thread)
+static Obj FuncPauseThread(Obj self, Obj thread)
 {
     int id;
     if (IS_INTOBJ(thread)) {
@@ -646,7 +646,7 @@ Obj FuncPauseThread(Obj self, Obj thread)
 */
 
 
-Obj FuncResumeThread(Obj self, Obj thread)
+static Obj FuncResumeThread(Obj self, Obj thread)
 {
     int id;
     if (IS_INTOBJ(thread)) {
@@ -672,7 +672,7 @@ Obj FuncResumeThread(Obj self, Obj thread)
 */
 static Obj PublicRegion;
 
-Obj FuncRegionOf(Obj self, Obj obj)
+static Obj FuncRegionOf(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     return region == NULL ? PublicRegion : region->obj;
@@ -688,7 +688,7 @@ Obj FuncRegionOf(Obj self, Obj obj)
 */
 
 
-Obj FuncSetRegionName(Obj self, Obj obj, Obj name)
+static Obj FuncSetRegionName(Obj self, Obj obj, Obj name)
 {
     Region * region = GetRegionOf(obj);
     if (!region)
@@ -700,7 +700,7 @@ Obj FuncSetRegionName(Obj self, Obj obj, Obj name)
     return (Obj)0;
 }
 
-Obj FuncClearRegionName(Obj self, Obj obj)
+static Obj FuncClearRegionName(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     if (!region)
@@ -710,7 +710,7 @@ Obj FuncClearRegionName(Obj self, Obj obj)
     return (Obj)0;
 }
 
-Obj FuncRegionName(Obj self, Obj obj)
+static Obj FuncRegionName(Obj self, Obj obj)
 {
     Obj      result;
     Region * region = GetRegionOf(obj);
@@ -727,7 +727,7 @@ Obj FuncRegionName(Obj self, Obj obj)
 **
 */
 
-Obj FuncIsShared(Obj self, Obj obj)
+static Obj FuncIsShared(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     return (region && !region->fixed_owner) ? True : False;
@@ -739,7 +739,7 @@ Obj FuncIsShared(Obj self, Obj obj)
 **
 */
 
-Obj FuncIsPublic(Obj self, Obj obj)
+static Obj FuncIsPublic(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     return region == NULL ? True : False;
@@ -751,7 +751,7 @@ Obj FuncIsPublic(Obj self, Obj obj)
 **
 */
 
-Obj FuncIsThreadLocal(Obj self, Obj obj)
+static Obj FuncIsThreadLocal(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     return (region && region->fixed_owner && region->owner == GetTLS())
@@ -765,7 +765,7 @@ Obj FuncIsThreadLocal(Obj self, Obj obj)
 **
 */
 
-Obj FuncHaveWriteAccess(Obj self, Obj obj)
+static Obj FuncHaveWriteAccess(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     if (region != NULL &&
@@ -781,7 +781,7 @@ Obj FuncHaveWriteAccess(Obj self, Obj obj)
 **
 */
 
-Obj FuncHaveReadAccess(Obj self, Obj obj)
+static Obj FuncHaveReadAccess(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     if (region != NULL && CheckReadAccess(obj))
@@ -801,24 +801,24 @@ Obj FuncHaveReadAccess(Obj self, Obj obj)
 */
 
 
-Obj FuncHASH_LOCK(Obj self, Obj target)
+static Obj FuncHASH_LOCK(Obj self, Obj target)
 {
     HashLock(target);
     return (Obj)0;
 }
 
-Obj FuncHASH_UNLOCK(Obj self, Obj target)
+static Obj FuncHASH_UNLOCK(Obj self, Obj target)
 {
     HashUnlock(target);
     return (Obj)0;
 }
 
-Obj FuncHASH_LOCK_SHARED(Obj self, Obj target)
+static Obj FuncHASH_LOCK_SHARED(Obj self, Obj target)
 {
     HashLockShared(target);
     return (Obj)0;
 }
-Obj FuncHASH_UNLOCK_SHARED(Obj self, Obj target)
+static Obj FuncHASH_UNLOCK_SHARED(Obj self, Obj target)
 {
     HashUnlockShared(target);
     return (Obj)0;
@@ -833,7 +833,7 @@ Obj FuncHASH_UNLOCK_SHARED(Obj self, Obj target)
 **
 */
 
-Obj FuncHASH_SYNCHRONIZED(Obj self, Obj target, Obj function)
+static Obj FuncHASH_SYNCHRONIZED(Obj self, Obj target, Obj function)
 {
     volatile int locked = 0;
     jmp_buf      readJmpError;
@@ -852,7 +852,7 @@ Obj FuncHASH_SYNCHRONIZED(Obj self, Obj target, Obj function)
     return (Obj)0;
 }
 
-Obj FuncHASH_SYNCHRONIZED_SHARED(Obj self, Obj target, Obj function)
+static Obj FuncHASH_SYNCHRONIZED_SHARED(Obj self, Obj target, Obj function)
 {
     volatile int locked = 0;
     jmp_buf      readJmpError;
@@ -877,7 +877,7 @@ Obj FuncHASH_SYNCHRONIZED_SHARED(Obj self, Obj target, Obj function)
 **
 */
 
-Obj FuncCREATOR_OF(Obj self, Obj obj)
+static Obj FuncCREATOR_OF(Obj self, Obj obj)
 {
 #ifdef TRACK_CREATOR
     Obj result = NEW_PLIST_IMM(T_PLIST, 2);
@@ -901,7 +901,7 @@ Obj FuncCREATOR_OF(Obj self, Obj obj)
 #endif
 }
 
-Obj FuncDISABLE_GUARDS(Obj self, Obj flag)
+static Obj FuncDISABLE_GUARDS(Obj self, Obj flag)
 {
     if (flag == False)
         TLS(DisableGuards) = 0;
@@ -915,7 +915,7 @@ Obj FuncDISABLE_GUARDS(Obj self, Obj flag)
     return (Obj)0;
 }
 
-Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func)
+static Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func)
 {
     Region * volatile oldRegion = TLS(currentRegion);
     Region * volatile region = GetRegionOf(obj);
@@ -939,39 +939,39 @@ Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func)
 }
 
 
-Obj TYPE_THREAD;
-Obj TYPE_SEMAPHORE;
-Obj TYPE_CHANNEL;
-Obj TYPE_BARRIER;
-Obj TYPE_SYNCVAR;
-Obj TYPE_REGION;
+static Obj TYPE_THREAD;
+static Obj TYPE_SEMAPHORE;
+static Obj TYPE_CHANNEL;
+static Obj TYPE_BARRIER;
+static Obj TYPE_SYNCVAR;
+static Obj TYPE_REGION;
 
-Obj TypeThread(Obj obj)
+static Obj TypeThread(Obj obj)
 {
     return TYPE_THREAD;
 }
 
-Obj TypeSemaphore(Obj obj)
+static Obj TypeSemaphore(Obj obj)
 {
     return TYPE_SEMAPHORE;
 }
 
-Obj TypeChannel(Obj obj)
+static Obj TypeChannel(Obj obj)
 {
     return TYPE_CHANNEL;
 }
 
-Obj TypeBarrier(Obj obj)
+static Obj TypeBarrier(Obj obj)
 {
     return TYPE_BARRIER;
 }
 
-Obj TypeSyncVar(Obj obj)
+static Obj TypeSyncVar(Obj obj)
 {
     return TYPE_SYNCVAR;
 }
 
-Obj TypeRegion(Obj obj)
+static Obj TypeRegion(Obj obj)
 {
     return TYPE_REGION;
 }
@@ -991,7 +991,7 @@ static void PrintSyncVar(Obj);
 static void PrintRegion(Obj);
 
 GVarDescriptor LastInaccessibleGVar;
-GVarDescriptor MAX_INTERRUPTGVar;
+static GVarDescriptor MAX_INTERRUPTGVar;
 
 static UInt RNAM_SIGINT;
 static UInt RNAM_SIGCHLD;
@@ -1354,7 +1354,7 @@ static int DestroyChannel(Channel * channel)
 }
 #endif
 
-Obj FuncCreateChannel(Obj self, Obj args)
+static Obj FuncCreateChannel(Obj self, Obj args)
 {
     int capacity;
     switch (LEN_PLIST(args)) {
@@ -1383,7 +1383,7 @@ static int IsChannel(Obj obj)
     return obj && TNUM_OBJ(obj) == T_CHANNEL;
 }
 
-Obj FuncDestroyChannel(Obj self, Obj channel)
+static Obj FuncDestroyChannel(Obj self, Obj channel)
 {
     RequireChannel("DestroyChannel", channel);
     if (!DestroyChannel(ObjPtr(channel)))
@@ -1391,27 +1391,27 @@ Obj FuncDestroyChannel(Obj self, Obj channel)
     return (Obj)0;
 }
 
-Obj FuncTallyChannel(Obj self, Obj channel)
+static Obj FuncTallyChannel(Obj self, Obj channel)
 {
     RequireChannel("TallyChannel", channel);
     return INTOBJ_INT(TallyChannel(ObjPtr(channel)));
 }
 
-Obj FuncSendChannel(Obj self, Obj channel, Obj obj)
+static Obj FuncSendChannel(Obj self, Obj channel, Obj obj)
 {
     RequireChannel("SendChannel", channel);
     SendChannel(ObjPtr(channel), obj, 1);
     return (Obj)0;
 }
 
-Obj FuncTransmitChannel(Obj self, Obj channel, Obj obj)
+static Obj FuncTransmitChannel(Obj self, Obj channel, Obj obj)
 {
     RequireChannel("TransmitChannel", channel);
     SendChannel(ObjPtr(channel), obj, 0);
     return (Obj)0;
 }
 
-Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list)
+static Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list)
 {
     RequireChannel("MultiSendChannel", channel);
     CheckIsDenseList("MultiSendChannel", "list", list);
@@ -1419,7 +1419,7 @@ Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list)
     return (Obj)0;
 }
 
-Obj FuncMultiTransmitChannel(Obj self, Obj channel, Obj list)
+static Obj FuncMultiTransmitChannel(Obj self, Obj channel, Obj list)
 {
     RequireChannel("MultiTransmitChannel", channel);
     CheckIsDenseList("MultiTransmitChannel", "list", list);
@@ -1427,7 +1427,7 @@ Obj FuncMultiTransmitChannel(Obj self, Obj channel, Obj list)
     return (Obj)0;
 }
 
-Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list)
+static Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list)
 {
     RequireChannel("TryMultiSendChannel", channel);
     CheckIsDenseList("TryMultiSendChannel", "list", list);
@@ -1435,7 +1435,7 @@ Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list)
 }
 
 
-Obj FuncTryMultiTransmitChannel(Obj self, Obj channel, Obj list)
+static Obj FuncTryMultiTransmitChannel(Obj self, Obj channel, Obj list)
 {
     RequireChannel("TryMultiTransmitChannel", channel);
     CheckIsDenseList("TryMultiTransmitChannel", "list", list);
@@ -1443,25 +1443,25 @@ Obj FuncTryMultiTransmitChannel(Obj self, Obj channel, Obj list)
 }
 
 
-Obj FuncTrySendChannel(Obj self, Obj channel, Obj obj)
+static Obj FuncTrySendChannel(Obj self, Obj channel, Obj obj)
 {
     RequireChannel("TrySendChannel", channel);
     return TrySendChannel(ObjPtr(channel), obj, 1) ? True : False;
 }
 
-Obj FuncTryTransmitChannel(Obj self, Obj channel, Obj obj)
+static Obj FuncTryTransmitChannel(Obj self, Obj channel, Obj obj)
 {
     RequireChannel("TryTransmitChannel", channel);
     return TrySendChannel(ObjPtr(channel), obj, 0) ? True : False;
 }
 
-Obj FuncReceiveChannel(Obj self, Obj channel)
+static Obj FuncReceiveChannel(Obj self, Obj channel)
 {
     RequireChannel("ReceiveChannel", channel);
     return ReceiveChannel(ObjPtr(channel));
 }
 
-int IsChannelList(Obj list)
+static int IsChannelList(Obj list)
 {
     int len = LEN_PLIST(list);
     int i;
@@ -1471,7 +1471,7 @@ int IsChannelList(Obj list)
     return 1;
 }
 
-Obj FuncReceiveAnyChannel(Obj self, Obj args)
+static Obj FuncReceiveAnyChannel(Obj self, Obj args)
 {
     if (IsChannelList(args))
         return ReceiveAnyChannel(args, 0);
@@ -1485,7 +1485,7 @@ Obj FuncReceiveAnyChannel(Obj self, Obj args)
     }
 }
 
-Obj FuncReceiveAnyChannelWithIndex(Obj self, Obj args)
+static Obj FuncReceiveAnyChannelWithIndex(Obj self, Obj args)
 {
     if (IsChannelList(args))
         return ReceiveAnyChannel(args, 1);
@@ -1499,20 +1499,20 @@ Obj FuncReceiveAnyChannelWithIndex(Obj self, Obj args)
     }
 }
 
-Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj count)
+static Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj count)
 {
     RequireChannel("MultiReceiveChannel", channel);
     RequireNonnegativeSmallInt("MultiReceiveChannel", count);
     return MultiReceiveChannel(ObjPtr(channel), INT_INTOBJ(count));
 }
 
-Obj FuncInspectChannel(Obj self, Obj channel)
+static Obj FuncInspectChannel(Obj self, Obj channel)
 {
     RequireChannel("InspectChannel", channel);
     return InspectChannel(ObjPtr(channel));
 }
 
-Obj FuncTryReceiveChannel(Obj self, Obj channel, Obj obj)
+static Obj FuncTryReceiveChannel(Obj self, Obj channel, Obj obj)
 {
     RequireChannel("TryReceiveChannel", channel);
     return TryReceiveChannel(ObjPtr(channel), obj);
@@ -1530,7 +1530,7 @@ static Obj CreateSemaphore(UInt count)
     return semBag;
 }
 
-Obj FuncCreateSemaphore(Obj self, Obj args)
+static Obj FuncCreateSemaphore(Obj self, Obj args)
 {
     Int count;
     switch (LEN_PLIST(args)) {
@@ -1554,7 +1554,7 @@ Obj FuncCreateSemaphore(Obj self, Obj args)
     return CreateSemaphore(count);
 }
 
-Obj FuncSignalSemaphore(Obj self, Obj semaphore)
+static Obj FuncSignalSemaphore(Obj self, Obj semaphore)
 {
     Semaphore * sem;
     RequireSemaphore("SignalSemaphore", semaphore);
@@ -1567,7 +1567,7 @@ Obj FuncSignalSemaphore(Obj self, Obj semaphore)
     return (Obj)0;
 }
 
-Obj FuncWaitSemaphore(Obj self, Obj semaphore)
+static Obj FuncWaitSemaphore(Obj self, Obj semaphore)
 {
     Semaphore * sem;
     RequireSemaphore("WaitSemaphore", semaphore);
@@ -1584,7 +1584,7 @@ Obj FuncWaitSemaphore(Obj self, Obj semaphore)
     return (Obj)0;
 }
 
-Obj FuncTryWaitSemaphore(Obj self, Obj semaphore)
+static Obj FuncTryWaitSemaphore(Obj self, Obj semaphore)
 {
     Semaphore * sem;
     int         success;
@@ -1601,30 +1601,30 @@ Obj FuncTryWaitSemaphore(Obj self, Obj semaphore)
     return success ? True : False;
 }
 
-void LockBarrier(Barrier * barrier)
+static void LockBarrier(Barrier * barrier)
 {
     LockMonitor(ObjPtr(barrier->monitor));
 }
 
-void UnlockBarrier(Barrier * barrier)
+static void UnlockBarrier(Barrier * barrier)
 {
     UnlockMonitor(ObjPtr(barrier->monitor));
 }
 
-void JoinBarrier(Barrier * barrier)
+static void JoinBarrier(Barrier * barrier)
 {
     barrier->waiting++;
     WaitForMonitor(ObjPtr(barrier->monitor));
     barrier->waiting--;
 }
 
-void SignalBarrier(Barrier * barrier)
+static void SignalBarrier(Barrier * barrier)
 {
     if (barrier->waiting)
         SignalMonitor(ObjPtr(barrier->monitor));
 }
 
-Obj CreateBarrier(void)
+static Obj CreateBarrier(void)
 {
     Bag       barrierBag;
     Barrier * barrier;
@@ -1637,7 +1637,7 @@ Obj CreateBarrier(void)
     return barrierBag;
 }
 
-void StartBarrier(Barrier * barrier, UInt count)
+static void StartBarrier(Barrier * barrier, UInt count)
 {
     LockBarrier(barrier);
     barrier->count = count;
@@ -1645,7 +1645,7 @@ void StartBarrier(Barrier * barrier, UInt count)
     UnlockBarrier(barrier);
 }
 
-void WaitBarrier(Barrier * barrier)
+static void WaitBarrier(Barrier * barrier)
 {
     UInt phaseDelta;
     LockBarrier(barrier);
@@ -1659,17 +1659,17 @@ void WaitBarrier(Barrier * barrier)
         ArgumentError("WaitBarrier: Barrier was reset");
 }
 
-Obj FuncCreateBarrier(Obj self)
+static Obj FuncCreateBarrier(Obj self)
 {
     return CreateBarrier();
 }
 
-int IsBarrier(Obj obj)
+static int IsBarrier(Obj obj)
 {
     return obj && TNUM_OBJ(obj) == T_BARRIER;
 }
 
-Obj FuncStartBarrier(Obj self, Obj barrier, Obj count)
+static Obj FuncStartBarrier(Obj self, Obj barrier, Obj count)
 {
     RequireBarrier("StartBarrier", barrier);
     Int c = GetSmallInt("StartBarrier", count);
@@ -1677,14 +1677,14 @@ Obj FuncStartBarrier(Obj self, Obj barrier, Obj count)
     return (Obj)0;
 }
 
-Obj FuncWaitBarrier(Obj self, Obj barrier)
+static Obj FuncWaitBarrier(Obj self, Obj barrier)
 {
     RequireBarrier("WaitBarrier", barrier);
     WaitBarrier(ObjPtr(barrier));
     return (Obj)0;
 }
 
-void SyncWrite(SyncVar * var, Obj value)
+static void SyncWrite(SyncVar * var, Obj value)
 {
     Monitor * monitor = ObjPtr(var->monitor);
     LockMonitor(monitor);
@@ -1699,7 +1699,7 @@ void SyncWrite(SyncVar * var, Obj value)
     UnlockMonitor(monitor);
 }
 
-int SyncTryWrite(SyncVar * var, Obj value)
+static int SyncTryWrite(SyncVar * var, Obj value)
 {
     Monitor * monitor = ObjPtr(var->monitor);
     LockMonitor(monitor);
@@ -1714,7 +1714,7 @@ int SyncTryWrite(SyncVar * var, Obj value)
     return 1;
 }
 
-Obj CreateSyncVar(void)
+static Obj CreateSyncVar(void)
 {
     Bag       syncvarBag;
     SyncVar * syncvar;
@@ -1727,7 +1727,7 @@ Obj CreateSyncVar(void)
 }
 
 
-Obj SyncRead(SyncVar * var)
+static Obj SyncRead(SyncVar * var)
 {
     Monitor * monitor = ObjPtr(var->monitor);
     LockMonitor(monitor);
@@ -1739,41 +1739,41 @@ Obj SyncRead(SyncVar * var)
     return var->value;
 }
 
-Obj SyncIsBound(SyncVar * var)
+static Obj SyncIsBound(SyncVar * var)
 {
     return var->value ? True : False;
 }
 
-int IsSyncVar(Obj var)
+static int IsSyncVar(Obj var)
 {
     return var && TNUM_OBJ(var) == T_SYNCVAR;
 }
 
-Obj FuncCreateSyncVar(Obj self)
+static Obj FuncCreateSyncVar(Obj self)
 {
     return CreateSyncVar();
 }
 
-Obj FuncSyncWrite(Obj self, Obj syncvar, Obj value)
+static Obj FuncSyncWrite(Obj self, Obj syncvar, Obj value)
 {
     RequireSyncVar("SyncWrite", syncvar);
     SyncWrite(ObjPtr(syncvar), value);
     return (Obj)0;
 }
 
-Obj FuncSyncTryWrite(Obj self, Obj syncvar, Obj value)
+static Obj FuncSyncTryWrite(Obj self, Obj syncvar, Obj value)
 {
     RequireSyncVar("SyncTryWrite", syncvar);
     return SyncTryWrite(ObjPtr(syncvar), value) ? True : False;
 }
 
-Obj FuncSyncRead(Obj self, Obj syncvar)
+static Obj FuncSyncRead(Obj self, Obj syncvar)
 {
     RequireSyncVar("SyncRead", syncvar);
     return SyncRead(ObjPtr(syncvar));
 }
 
-Obj FuncSyncIsBound(Obj self, Obj syncvar)
+static Obj FuncSyncIsBound(Obj self, Obj syncvar)
 {
     RequireSyncVar("SyncIsBound", syncvar);
     return SyncIsBound(ObjPtr(syncvar));
@@ -1896,7 +1896,7 @@ static void PrintRegion(Obj obj)
     Pr(">", 0L, 0L);
 }
 
-Obj FuncIS_LOCKED(Obj self, Obj obj)
+static Obj FuncIS_LOCKED(Obj self, Obj obj)
 {
     Region * region = IS_BAG_REF(obj) ? REGION(obj) : NULL;
     if (!region)
@@ -1904,7 +1904,7 @@ Obj FuncIS_LOCKED(Obj self, Obj obj)
     return INTOBJ_INT(IsLocked(region));
 }
 
-Obj FuncLOCK(Obj self, Obj args)
+static Obj FuncLOCK(Obj self, Obj args)
 {
     int   numargs = LEN_PLIST(args);
     int   count = 0;
@@ -1937,7 +1937,7 @@ Obj FuncLOCK(Obj self, Obj args)
     return Fail;
 }
 
-Obj FuncDO_LOCK(Obj self, Obj args)
+static Obj FuncDO_LOCK(Obj self, Obj args)
 {
     Obj result = FuncLOCK(self, args);
     if (result == Fail)
@@ -1945,7 +1945,7 @@ Obj FuncDO_LOCK(Obj self, Obj args)
     return result;
 }
 
-Obj FuncWRITE_LOCK(Obj self, Obj obj)
+static Obj FuncWRITE_LOCK(Obj self, Obj obj)
 {
     const LockMode modes[] = { LOCK_MODE_READWRITE };
     int result = LockObjects(1, &obj, modes);
@@ -1954,7 +1954,7 @@ Obj FuncWRITE_LOCK(Obj self, Obj obj)
     return INTOBJ_INT(result);
 }
 
-Obj FuncREAD_LOCK(Obj self, Obj obj)
+static Obj FuncREAD_LOCK(Obj self, Obj obj)
 {
     const LockMode modes[] = { LOCK_MODE_READONLY };
     int result = LockObjects(1, &obj, modes);
@@ -1963,7 +1963,7 @@ Obj FuncREAD_LOCK(Obj self, Obj obj)
     return INTOBJ_INT(result);
 }
 
-Obj FuncTRYLOCK(Obj self, Obj args)
+static Obj FuncTRYLOCK(Obj self, Obj args)
 {
     int   numargs = LEN_PLIST(args);
     int   count = 0;
@@ -1996,14 +1996,14 @@ Obj FuncTRYLOCK(Obj self, Obj args)
     return Fail;
 }
 
-Obj FuncUNLOCK(Obj self, Obj sp)
+static Obj FuncUNLOCK(Obj self, Obj sp)
 {
     RequireNonnegativeSmallInt("UNLOCK", sp);
     PopRegionLocks(INT_INTOBJ(sp));
     return (Obj)0;
 }
 
-Obj FuncCURRENT_LOCKS(Obj self)
+static Obj FuncCURRENT_LOCKS(Obj self)
 {
     UInt i, len = TLS(lockStackPointer);
     Obj  result = NEW_PLIST(T_PLIST, len);
@@ -2047,7 +2047,7 @@ MigrateObjects(int count, Obj * objects, Region * target, int retype)
     return 1;
 }
 
-Obj FuncREFINE_TYPE(Obj self, Obj obj)
+static Obj FuncREFINE_TYPE(Obj self, Obj obj)
 {
     if (IS_BAG_REF(obj) && CheckExclusiveWriteAccess(obj)) {
         TYPE_OBJ(obj);
@@ -2055,7 +2055,7 @@ Obj FuncREFINE_TYPE(Obj self, Obj obj)
     return obj;
 }
 
-Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj)
+static Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj)
 {
     if (!MigrateObjects(1, &obj, NULL, 0))
         return ArgumentError("MAKE_PUBLIC_NORECURSE: Thread does not have "
@@ -2063,7 +2063,7 @@ Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj)
     return obj;
 }
 
-Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj)
+static Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj)
 {
     if (!IS_BAG_REF(obj))
         return ArgumentError("FORCE_MAKE_PUBLIC: Argument is a small integer "
@@ -2072,7 +2072,7 @@ Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj)
     return obj;
 }
 
-Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
+static Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
 {
     Region * region = NewRegion();
     if (name != Fail && !IsStringConv(name))
@@ -2088,7 +2088,7 @@ Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
     return obj;
 }
 
-Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
+static Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
 {
     Region * target_region = GetRegionOf(target);
     if (!target_region ||
@@ -2101,7 +2101,7 @@ Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
     return obj;
 }
 
-Obj FuncADOPT_NORECURSE(Obj self, Obj obj)
+static Obj FuncADOPT_NORECURSE(Obj self, Obj obj)
 {
     if (!MigrateObjects(1, &obj, TLS(threadRegion), 0))
         return ArgumentError("ADOPT_NORECURSE: Thread does not have "
@@ -2109,7 +2109,7 @@ Obj FuncADOPT_NORECURSE(Obj self, Obj obj)
     return obj;
 }
 
-Obj FuncREACHABLE(Obj self, Obj obj)
+static Obj FuncREACHABLE(Obj self, Obj obj)
 {
     Obj result = ReachableObjectsFrom(obj);
     if (result == NULL) {
@@ -2120,17 +2120,17 @@ Obj FuncREACHABLE(Obj self, Obj obj)
     return result;
 }
 
-Obj FuncCLONE_REACHABLE(Obj self, Obj obj)
+static Obj FuncCLONE_REACHABLE(Obj self, Obj obj)
 {
     return CopyReachableObjectsFrom(obj, 0, 0, 0);
 }
 
-Obj FuncCLONE_DELIMITED(Obj self, Obj obj)
+static Obj FuncCLONE_DELIMITED(Obj self, Obj obj)
 {
     return CopyReachableObjectsFrom(obj, 1, 0, 0);
 }
 
-Obj FuncNEW_REGION(Obj self, Obj name, Obj prec)
+static Obj FuncNEW_REGION(Obj self, Obj name, Obj prec)
 {
     Region * region = NewRegion();
     if (name != Fail && !IsStringConv(name))
@@ -2143,13 +2143,13 @@ Obj FuncNEW_REGION(Obj self, Obj name, Obj prec)
     return region->obj;
 }
 
-Obj FuncREGION_PRECEDENCE(Obj self, Obj regobj)
+static Obj FuncREGION_PRECEDENCE(Obj self, Obj regobj)
 {
     Region * region = GetRegionOf(regobj);
     return region == NULL ? INTOBJ_INT(0) : INTOBJ_INT(region->prec);
 }
 
-Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
+static Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
 {
     Region * region = NewRegion();
     Obj      reachable;
@@ -2168,7 +2168,7 @@ Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
     return obj;
 }
 
-Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
+static Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
 {
     Region * region = NewRegion();
     Obj      reachable;
@@ -2187,7 +2187,7 @@ Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
     return obj;
 }
 
-Obj FuncADOPT(Obj self, Obj obj)
+static Obj FuncADOPT(Obj self, Obj obj)
 {
     Obj reachable = ReachableObjectsFrom(obj);
     if (!MigrateObjects(LEN_PLIST(reachable), ADDR_OBJ(reachable) + 1,
@@ -2197,7 +2197,7 @@ Obj FuncADOPT(Obj self, Obj obj)
     return obj;
 }
 
-Obj FuncMAKE_PUBLIC(Obj self, Obj obj)
+static Obj FuncMAKE_PUBLIC(Obj self, Obj obj)
 {
     Obj reachable = ReachableObjectsFrom(obj);
     if (!MigrateObjects(LEN_PLIST(reachable), ADDR_OBJ(reachable) + 1, NULL,
@@ -2207,7 +2207,7 @@ Obj FuncMAKE_PUBLIC(Obj self, Obj obj)
     return obj;
 }
 
-Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
+static Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
 {
     Region * target_region = GetRegionOf(target);
     Obj      reachable;
@@ -2223,7 +2223,7 @@ Obj FuncMIGRATE(Obj self, Obj obj, Obj target)
     return obj;
 }
 
-Obj FuncMIGRATE_RAW(Obj self, Obj obj, Obj target)
+static Obj FuncMIGRATE_RAW(Obj self, Obj obj, Obj target)
 {
     Region * target_region = GetRegionOf(target);
     Obj      reachable;
@@ -2239,7 +2239,7 @@ Obj FuncMIGRATE_RAW(Obj self, Obj obj, Obj target)
     return obj;
 }
 
-Obj FuncMakeThreadLocal(Obj self, Obj var)
+static Obj FuncMakeThreadLocal(Obj self, Obj var)
 {
     char * name;
     UInt   gvar;
@@ -2253,7 +2253,7 @@ Obj FuncMakeThreadLocal(Obj self, Obj var)
     return (Obj)0;
 }
 
-Obj FuncMakeReadOnlyObj(Obj self, Obj obj)
+static Obj FuncMakeReadOnlyObj(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     Obj      reachable;
@@ -2267,7 +2267,7 @@ Obj FuncMakeReadOnlyObj(Obj self, Obj obj)
     return obj;
 }
 
-Obj FuncMakeReadOnlyRaw(Obj self, Obj obj)
+static Obj FuncMakeReadOnlyRaw(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     Obj      reachable;
@@ -2281,7 +2281,7 @@ Obj FuncMakeReadOnlyRaw(Obj self, Obj obj)
     return obj;
 }
 
-Obj FuncMakeReadOnlySingleObj(Obj self, Obj obj)
+static Obj FuncMakeReadOnlySingleObj(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     if (!region || region == ReadOnlyRegion)
@@ -2292,39 +2292,39 @@ Obj FuncMakeReadOnlySingleObj(Obj self, Obj obj)
     return obj;
 }
 
-Obj FuncIsReadOnlyObj(Obj self, Obj obj)
+static Obj FuncIsReadOnlyObj(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     return (region == ReadOnlyRegion) ? True : False;
 }
 
-Obj FuncENABLE_AUTO_RETYPING(Obj self)
+static Obj FuncENABLE_AUTO_RETYPING(Obj self)
 {
     AutoRetyping = 1;
     return (Obj)0;
 }
 
-Obj FuncORDERED_READ(Obj self, Obj obj)
+static Obj FuncORDERED_READ(Obj self, Obj obj)
 {
     MEMBAR_READ();
     return obj;
 }
 
-Obj FuncORDERED_WRITE(Obj self, Obj obj)
+static Obj FuncORDERED_WRITE(Obj self, Obj obj)
 {
     MEMBAR_WRITE();
     return obj;
 }
 
-Obj FuncDEFAULT_SIGINT_HANDLER(Obj self)
+static Obj FuncDEFAULT_SIGINT_HANDLER(Obj self)
 {
     /* do nothing */
     return (Obj)0;
 }
 
-UInt SigVTALRMCounter = 0;
+static UInt SigVTALRMCounter = 0;
 
-Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self)
+static Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self)
 {
     SigVTALRMCounter++;
     return (Obj)0;
@@ -2334,7 +2334,7 @@ Obj FuncDEFAULT_SIGVTALRM_HANDLER(Obj self)
     extern void syWindowChangeIntr(int signr);
 #endif
 
-Obj FuncDEFAULT_SIGWINCH_HANDLER(Obj self)
+static Obj FuncDEFAULT_SIGWINCH_HANDLER(Obj self)
 {
 #ifdef SIGWINCH
     syWindowChangeIntr(SIGWINCH);
@@ -2352,7 +2352,7 @@ static void HandleSignal(Obj handlers, UInt rnam)
 
 static sigset_t GAPSignals;
 
-Obj FuncSIGWAIT(Obj self, Obj handlers)
+static Obj FuncSIGWAIT(Obj self, Obj handlers)
 {
     int sig;
     if (!IS_REC(handlers))
@@ -2397,7 +2397,7 @@ void InitSignals(void)
     setitimer(ITIMER_VIRTUAL, &timer, NULL);
 }
 
-Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
+static Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
 {
     UInt n;
     RequireNonnegativeSmallInt("PERIODIC_CHECK", count);
@@ -2419,7 +2419,7 @@ Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
 /*
  * Region lock performance counters
  */
-Obj FuncREGION_COUNTERS_ENABLE(Obj self, Obj obj)
+static Obj FuncREGION_COUNTERS_ENABLE(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
 
@@ -2431,7 +2431,7 @@ Obj FuncREGION_COUNTERS_ENABLE(Obj self, Obj obj)
     return (Obj)0;
 }
 
-Obj FuncREGION_COUNTERS_DISABLE(Obj self, Obj obj)
+static Obj FuncREGION_COUNTERS_DISABLE(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
 
@@ -2443,7 +2443,7 @@ Obj FuncREGION_COUNTERS_DISABLE(Obj self, Obj obj)
     return (Obj)0;
 }
 
-Obj FuncREGION_COUNTERS_GET_STATE(Obj self, Obj obj)
+static Obj FuncREGION_COUNTERS_GET_STATE(Obj self, Obj obj)
 {
     Obj      result;
     Region * region = GetRegionOf(obj);
@@ -2457,7 +2457,7 @@ Obj FuncREGION_COUNTERS_GET_STATE(Obj self, Obj obj)
     return result;
 }
 
-Obj FuncREGION_COUNTERS_GET(Obj self, Obj obj)
+static Obj FuncREGION_COUNTERS_GET(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
 
@@ -2468,7 +2468,7 @@ Obj FuncREGION_COUNTERS_GET(Obj self, Obj obj)
     return GetRegionLockCounters(region);
 }
 
-Obj FuncREGION_COUNTERS_RESET(Obj self, Obj obj)
+static Obj FuncREGION_COUNTERS_RESET(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
 
@@ -2481,21 +2481,21 @@ Obj FuncREGION_COUNTERS_RESET(Obj self, Obj obj)
     return (Obj)0;
 }
 
-Obj FuncTHREAD_COUNTERS_ENABLE(Obj self)
+static Obj FuncTHREAD_COUNTERS_ENABLE(Obj self)
 {
     TLS(CountActive) = 1;
 
     return (Obj)0;
 }
 
-Obj FuncTHREAD_COUNTERS_DISABLE(Obj self)
+static Obj FuncTHREAD_COUNTERS_DISABLE(Obj self)
 {
     TLS(CountActive) = 0;
 
     return (Obj)0;
 }
 
-Obj FuncTHREAD_COUNTERS_GET_STATE(Obj self)
+static Obj FuncTHREAD_COUNTERS_GET_STATE(Obj self)
 {
     Obj result;
 
@@ -2504,14 +2504,14 @@ Obj FuncTHREAD_COUNTERS_GET_STATE(Obj self)
     return result;
 }
 
-Obj FuncTHREAD_COUNTERS_RESET(Obj self)
+static Obj FuncTHREAD_COUNTERS_RESET(Obj self)
 {
     TLS(LocksAcquired) = TLS(LocksContended) = 0;
 
     return (Obj)0;
 }
 
-Obj FuncTHREAD_COUNTERS_GET(Obj self)
+static Obj FuncTHREAD_COUNTERS_GET(Obj self)
 {
     Obj result;
 

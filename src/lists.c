@@ -53,16 +53,16 @@
 */
 Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
-Obj             IsListFilt;
+static Obj             IsListFilt;
 
-Obj             FuncIS_LIST (
+static Obj             FuncIS_LIST (
     Obj                 self,
     Obj                 obj )
 {
     return (IS_LIST( obj ) ? True : False);
 }
 
-Int             IsListObject (
+static Int             IsListObject (
     Obj                 obj )
 {
     return (DoFilter( IsListFilt, obj ) == True);
@@ -82,12 +82,12 @@ Int             IsListObject (
 */
 Int             (*IsSmallListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
-Obj             IsSmallListFilt;
-Obj             HasIsSmallListFilt;
-Obj             LengthAttr;
-Obj             SetIsSmallList;
+static Obj             IsSmallListFilt;
+static Obj             HasIsSmallListFilt;
+static Obj             LengthAttr;
+static Obj             SetIsSmallList;
 
-Int             IsSmallListObject (
+static Int             IsSmallListObject (
     Obj                 obj )
 {
   Obj len;
@@ -145,7 +145,7 @@ Int             IsSmallListObject (
 **    internal types (NOT YET IMPLEMENTED)
 */
 
-Obj FuncLENGTH (
+static Obj FuncLENGTH (
     Obj             self,
     Obj             list )
 {
@@ -187,7 +187,7 @@ Obj FuncLENGTH (
 */
 Int (*LenListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-Obj FuncLEN_LIST (
+static Obj FuncLEN_LIST (
     Obj                 self,
     Obj                 list )
 {
@@ -203,14 +203,14 @@ Obj FuncLEN_LIST (
 }
 
 
-Int LenListError (
+static Int LenListError (
     Obj                 list )
 {
     RequireArgument("Length", list, "must be a list");
 }
 
 
-Int LenListObject (
+static Int LenListObject (
     Obj                 obj )
 {
     Obj                 len;
@@ -237,20 +237,20 @@ Int LenListObject (
 
 Obj             (*LengthFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-Obj LengthError (
+static Obj LengthError (
     Obj                 list )
 {
     RequireArgument("Length", list, "must be a list");
 }
 
 
-Obj LengthObject (
+static Obj LengthObject (
     Obj                 obj )
 {
     return FuncLENGTH( LengthAttr, obj );
 }
 
-Obj LengthInternal (
+static Obj LengthInternal (
     Obj                 obj )
 {
     return INTOBJ_INT(LEN_LIST(obj));
@@ -273,7 +273,7 @@ Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 static Obj             IsbListOper;
 
-Obj             FuncISB_LIST (
+static Obj             FuncISB_LIST (
     Obj                 self,
     Obj                 list,
     Obj                 pos )
@@ -284,14 +284,14 @@ Obj             FuncISB_LIST (
         return ISBB_LIST( list, pos ) ? True : False;
 }
 
-Int             IsbListError (
+static Int             IsbListError (
     Obj                 list,
     Int                 pos )
 {
     RequireArgument("IsBound", list, "must be a list");
 }
 
-Int             IsbListObject (
+static Int             IsbListObject (
     Obj                 list,
     Int                 pos )
 {
@@ -340,7 +340,7 @@ Obj (*Elm0ListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 Obj (*ElmDefListFuncs[LAST_REAL_TNUM + 1])(Obj list, Int pos, Obj def);
 
 // Default implementation of ELM_DEFAULT_LIST
-Obj ElmDefListDefault(Obj list, Int pos, Obj def)
+static Obj ElmDefListDefault(Obj list, Int pos, Obj def)
 {
     Obj val = ELM0_LIST(list, pos);
     if (val) {
@@ -360,12 +360,12 @@ Obj ElmDefListDefault(Obj list, Int pos, Obj def)
 */
 static Obj ElmDefListOper;
 
-Obj ElmDefListObject(Obj list, Int pos, Obj def)
+static Obj ElmDefListObject(Obj list, Int pos, Obj def)
 {
     return DoOperation3Args(ElmDefListOper, list, INTOBJ_INT(pos), def);
 }
 
-Obj FuncELM_DEFAULT_LIST(Obj self, Obj list, Obj pos, Obj def)
+static Obj FuncELM_DEFAULT_LIST(Obj self, Obj list, Obj pos, Obj def)
 {
     Int ipos = GetPositiveSmallInt("GetWithDefault", pos);
     return ELM_DEFAULT_LIST(list, ipos, def);
@@ -386,7 +386,7 @@ Obj (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **
 *F  Elm0ListError( <list>, <pos> )  . . . . . . . . . . . . . . error message
 */
-Obj Elm0ListError (
+static Obj Elm0ListError (
     Obj                 list,
     Int                 pos )
 {
@@ -411,7 +411,7 @@ Obj Elm0ListError (
 */
 static Obj Elm0ListOper;
 
-Obj Elm0ListObject (
+static Obj Elm0ListObject (
     Obj                 list,
     Int                 pos )
 {
@@ -434,7 +434,7 @@ Obj Elm0ListObject (
 **
 *F  FuncELM0_LIST( <self>, <list>, <pos> )  . . . . . . operation `ELM0_LIST'
 */
-Obj FuncELM0_LIST (
+static Obj FuncELM0_LIST (
     Obj                 self,
     Obj                 list,
     Obj                 pos )
@@ -492,7 +492,7 @@ Obj (*ElmwListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **
 *F  ElmListError( <list>, <pos> ) . . . . . . . . . . . . . . . error message
 */
-Obj ElmListError (
+static Obj ElmListError (
     Obj                 list,
     Int                 pos )
 {
@@ -512,7 +512,7 @@ Obj ElmListError (
 */
 static Obj ElmListOper;
 
-Obj ElmListObject( Obj list, Int pos)
+static Obj ElmListObject( Obj list, Int pos)
 {
     return ELMB_LIST( list, INTOBJ_INT(pos) );
 }
@@ -559,7 +559,7 @@ Obj ELM2_LIST(Obj list, Obj pos1, Obj pos2)
 **
 *F  FuncELM_LIST( <self>, <list>, <pos> ) . . . . . . .  operation `ELM_LIST'
 */
-Obj FuncELM_LIST(Obj self, Obj list, Obj pos)
+static Obj FuncELM_LIST(Obj self, Obj list, Obj pos)
 {
     if (IS_POS_INTOBJ(pos))
         return ELM_LIST(list, INT_INTOBJ(pos));
@@ -590,7 +590,7 @@ Obj (*ElmsListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss );
 **
 *F  ElmsListError(<list>,<poss>)  . . . . . . . . .  error selection function
 */
-Obj ElmsListError (
+static Obj ElmsListError (
     Obj                 list,
     Obj                 poss )
 {
@@ -606,7 +606,7 @@ Obj ElmsListError (
 */
 static Obj ElmsListOper;
 
-Obj ElmsListObject (
+static Obj ElmsListObject (
     Obj                 list,
     Obj                 poss )
 {
@@ -624,7 +624,7 @@ Obj ElmsListObject (
 **
 *F  FuncELMS_LIST( <self>, <list>, <poss> ) . . . . . . `ELMS_LIST' operation
 */
-Obj FuncELMS_LIST (
+static Obj FuncELMS_LIST (
     Obj                 self,
     Obj                 list,
     Obj                 poss )
@@ -752,7 +752,7 @@ Obj ElmsListDefault (
 **
 *F  FuncELMS_LIST_DEFAULT( <self>, <list>, <poss> ) . . . . `ElmsListDefault'
 */
-Obj FuncELMS_LIST_DEFAULT (
+static Obj FuncELMS_LIST_DEFAULT (
     Obj                 self,
     Obj                 list,
     Obj                 poss )
@@ -805,7 +805,7 @@ void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 static Obj             UnbListOper;
 
-Obj             FuncUNB_LIST (
+static Obj             FuncUNB_LIST (
     Obj                 self,
     Obj                 list,
     Obj                 pos )
@@ -817,7 +817,7 @@ Obj             FuncUNB_LIST (
     return 0;
 }
 
-void            UnbListError (
+static void            UnbListError (
     Obj                 list,
     Int                 pos )
 {
@@ -832,7 +832,7 @@ void            UnbListDefault (
     UNB_LIST( list, pos );
 }
 
-void            UnbListObject (
+static void            UnbListObject (
     Obj                 list,
     Int                 pos )
 {
@@ -867,7 +867,7 @@ void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, Obj obj )
 
 static Obj AssListOper;
 
-Obj FuncASS_LIST(Obj self, Obj list, Obj pos, Obj obj)
+static Obj FuncASS_LIST(Obj self, Obj list, Obj pos, Obj obj)
 {
     if (IS_POS_INTOBJ(pos))
         ASS_LIST(list, INT_INTOBJ(pos), obj);
@@ -876,7 +876,7 @@ Obj FuncASS_LIST(Obj self, Obj list, Obj pos, Obj obj)
     return 0;
 }
 
-void            AssListError (
+static void            AssListError (
     Obj                 list,
     Int                 pos,
     Obj                 obj )
@@ -884,7 +884,7 @@ void            AssListError (
     RequireArgument("List Assignment", list, "must be a list");
 }
 
-void            AssListDefault (
+static void            AssListDefault (
     Obj                 list,
     Int                 pos,
     Obj                 obj )
@@ -952,7 +952,7 @@ void            (*AsssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss, Obj obj
 
 static Obj             AsssListOper;
 
-Obj             FuncASSS_LIST (
+static Obj             FuncASSS_LIST (
     Obj                 self,
     Obj                 list,
     Obj                 poss,
@@ -962,7 +962,7 @@ Obj             FuncASSS_LIST (
     return 0;
 }
 
-void            AsssListError (
+static void            AsssListError (
     Obj                 list,
     Obj                 poss,
     Obj                 objs )
@@ -1035,7 +1035,7 @@ void            AsssListDefault (
 
 }
 
-void            AsssListObject (
+static void            AsssListObject (
     Obj                 list,
     Obj                 poss,
     Obj                 objs )
@@ -1043,7 +1043,7 @@ void            AsssListObject (
     DoOperation3Args( AsssListOper, list, poss, objs );
 }
 
-Obj FuncASSS_LIST_DEFAULT (
+static Obj FuncASSS_LIST_DEFAULT (
     Obj                 self,
     Obj                 list,
     Obj                 poss,
@@ -1066,9 +1066,9 @@ Obj FuncASSS_LIST_DEFAULT (
 */
 Int             (*IsDenseListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-Obj             IsDenseListFilt;
+static Obj             IsDenseListFilt;
 
-Obj             FuncIS_DENSE_LIST (
+static Obj             FuncIS_DENSE_LIST (
     Obj                 self,
     Obj                 obj )
 {
@@ -1100,7 +1100,7 @@ Int             IsDenseListDefault (
     return 1L;
 }
 
-Int             IsDenseListObject (
+static Int             IsDenseListObject (
     Obj                 obj )
 {
     return (DoFilter( IsDenseListFilt, obj ) == True);
@@ -1120,9 +1120,9 @@ Int             IsDenseListObject (
 */
 Int             (*IsHomogListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-Obj             IsHomogListFilt;
+static Obj             IsHomogListFilt;
 
-Obj             FuncIS_HOMOG_LIST (
+static Obj             FuncIS_HOMOG_LIST (
     Obj                 self,
     Obj                 obj )
 {
@@ -1164,7 +1164,7 @@ Int             IsHomogListDefault (
     return 1L;
 }
 
-Int             IsHomogListObject (
+static Int             IsHomogListObject (
     Obj                 obj )
 {
     return (DoFilter( IsHomogListFilt, obj ) == True);
@@ -1183,9 +1183,9 @@ Int             IsHomogListObject (
 */
 Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-Obj             IsTableListFilt;
+static Obj             IsTableListFilt;
 
-Obj             FuncIS_TABLE_LIST (
+static Obj             FuncIS_TABLE_LIST (
     Obj                 self,
     Obj                 obj )
 {
@@ -1235,7 +1235,7 @@ Int             IsTableListDefault (
     return 1L;
 }
 
-Int             IsTableListObject (
+static Int             IsTableListObject (
     Obj                 obj )
 {
     return (DoFilter( IsTableListFilt, obj ) == True);
@@ -1255,9 +1255,9 @@ Int             IsTableListObject (
 */
 Int (*IsSSortListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-Obj IsSSortListProp;
+static Obj IsSSortListProp;
 
-Obj FuncIS_SSORT_LIST (
+static Obj FuncIS_SSORT_LIST (
     Obj                 self,
     Obj                 obj )
 {
@@ -1303,13 +1303,13 @@ Int IsSSortListDefault (
     return 2L;
 }
 
-Int             IsSSortListObject (
+static Int             IsSSortListObject (
     Obj                 obj )
 {
     return (DoProperty( IsSSortListProp, obj ) == True);
 }
 
-Obj FuncIS_SSORT_LIST_DEFAULT (
+static Obj FuncIS_SSORT_LIST_DEFAULT (
     Obj                 self,
     Obj                 obj )
 {
@@ -1329,9 +1329,9 @@ Obj FuncIS_SSORT_LIST_DEFAULT (
 */
 Int             (*IsPossListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-Obj             IsPossListProp;
+static Obj             IsPossListProp;
 
-Obj             FuncIS_POSS_LIST (
+static Obj             FuncIS_POSS_LIST (
     Obj                 self,
     Obj                 obj )
 {
@@ -1372,13 +1372,13 @@ Int             IsPossListDefault (
     return 1L;
 }
 
-Int             IsPossListObject (
+static Int             IsPossListObject (
     Obj                 obj )
 {
     return (DoProperty( IsPossListProp, obj ) == True);
 }
 
-Obj FuncIS_POSS_LIST_DEFAULT (
+static Obj FuncIS_POSS_LIST_DEFAULT (
     Obj                 self,
     Obj                 obj )
 {
@@ -1401,7 +1401,7 @@ Obj             (*PosListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj obj, Obj start
 
 static Obj             PosListOper;
 
-Obj             PosListHandler2 (
+static Obj             PosListHandler2 (
     Obj                 self,
     Obj                 list,
     Obj                 obj )
@@ -1409,7 +1409,7 @@ Obj             PosListHandler2 (
     return POS_LIST( list, obj, INTOBJ_INT(0) );
 }
 
-Obj             PosListHandler3 (
+static Obj             PosListHandler3 (
     Obj                 self,
     Obj                 list,
     Obj                 obj,
@@ -1421,7 +1421,7 @@ Obj             PosListHandler3 (
     return POS_LIST( list, obj, start );
 }
 
-Obj             PosListError (
+static Obj             PosListError (
     Obj                 list,
     Obj                 obj,
     Obj                 start )
@@ -1463,7 +1463,7 @@ Obj             PosListDefault (
     }
 }
 
-Obj             PosListObject (
+static Obj             PosListObject (
     Obj                 list,
     Obj                 obj,
     Obj                 start )
@@ -1471,7 +1471,7 @@ Obj             PosListObject (
     return DoOperation3Args( PosListOper, list, obj, start );
 }
 
-Obj FuncPOS_LIST_DEFAULT (
+static Obj FuncPOS_LIST_DEFAULT (
     Obj                 self,
     Obj                 list,
     Obj                 obj,
@@ -1808,7 +1808,7 @@ void            AsssListLevel (
 */
 void            (*PlainListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-void            PlainListError (
+static void            PlainListError (
     Obj                 list )
 {
     ErrorQuit(
@@ -1821,7 +1821,7 @@ void            PlainListError (
 **
 *F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of types of lists over a family
 */
-UInt            TYPES_LIST_FAM_RNam;
+static UInt            TYPES_LIST_FAM_RNam;
 
 Obj             TYPES_LIST_FAM (
     Obj                 fam )
@@ -1850,7 +1850,7 @@ Obj             TYPES_LIST_FAM (
 **
 **  'PrintList' simply prints the list.
 */
-void            PrintListDefault (
+static void            PrintListDefault (
     Obj                 list )
 {
     Obj                 elm;
@@ -1877,7 +1877,7 @@ void            PrintListDefault (
     Pr(" %4<]",0L,0L);
 }
 
-void            PrintPathList (
+static void            PrintPathList (
     Obj                 list,
     Int                 indx )
 {

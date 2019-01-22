@@ -79,7 +79,7 @@ extern inline struct CFTLModuleState *CFTLState(void)
   CHANGED_BAG( wst ); CHANGED_BAG( west ); CHANGED_BAG( est ); }
 
                                 
-void AddIn( Obj list, Obj w, Obj e ) {
+static void AddIn( Obj list, Obj w, Obj e ) {
 
   Int    g,  i;
   Obj    r,  s,  t;
@@ -98,7 +98,7 @@ void AddIn( Obj list, Obj w, Obj e ) {
 
 }
 
-Obj CollectPolycyc (
+static Obj CollectPolycyc (
     Obj pcp,
     Obj list,
     Obj word )
@@ -325,7 +325,7 @@ Obj CollectPolycyc (
     return (Obj)0;
 }
 
-Obj FuncCollectPolycyclic (
+static Obj FuncCollectPolycyclic (
     Obj self,
     Obj pcp,
     Obj list,

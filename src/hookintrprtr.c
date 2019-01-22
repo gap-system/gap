@@ -102,19 +102,19 @@ void InstallPrintExprFunc(Int pos, void (*expr)(Expr))
     HashUnlock(&activeHooks);
 }
 
-UInt ProfileExecStatPassthrough(Stat stat)
+static UInt ProfileExecStatPassthrough(Stat stat)
 {
     GAP_HOOK_LOOP(visitStat, stat);
     return OriginalExecStatFuncsForHook[TNUM_STAT(stat)](stat);
 }
 
-Obj ProfileEvalExprPassthrough(Expr stat)
+static Obj ProfileEvalExprPassthrough(Expr stat)
 {
     GAP_HOOK_LOOP(visitStat, stat);
     return OriginalEvalExprFuncsForHook[TNUM_STAT(stat)](stat);
 }
 
-Obj ProfileEvalBoolPassthrough(Expr stat)
+static Obj ProfileEvalBoolPassthrough(Expr stat)
 {
     /* There are two cases we must pass through without touching */
     /* From TNUM_EXPR */

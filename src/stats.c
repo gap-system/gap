@@ -100,7 +100,7 @@ UInt            (* ExecStatFuncs[256]) ( Stat stat );
 **  this  is  ever  called, then   GAP is   in  serious  trouble, such as  an
 **  overwritten type field of a statement.
 */
-UInt            ExecUnknownStat (
+static UInt            ExecUnknownStat (
     Stat                stat )
 {
     Pr(
@@ -153,39 +153,39 @@ static ALWAYS_INLINE UInt ExecSeqStatHelper(Stat stat, UInt nr)
     return 0;
 }
 
-UInt ExecSeqStat(Stat stat)
+static UInt ExecSeqStat(Stat stat)
 {
     // get the number of statements
     UInt nr = SIZE_STAT( stat ) / sizeof(Stat);
     return ExecSeqStatHelper(stat, nr);
 }
 
-UInt ExecSeqStat2(Stat stat)
+static UInt ExecSeqStat2(Stat stat)
 {
     return ExecSeqStatHelper(stat, 2);
 }
 
-UInt ExecSeqStat3(Stat stat)
+static UInt ExecSeqStat3(Stat stat)
 {
     return ExecSeqStatHelper(stat, 3);
 }
 
-UInt ExecSeqStat4(Stat stat)
+static UInt ExecSeqStat4(Stat stat)
 {
     return ExecSeqStatHelper(stat, 4);
 }
 
-UInt ExecSeqStat5(Stat stat)
+static UInt ExecSeqStat5(Stat stat)
 {
     return ExecSeqStatHelper(stat, 5);
 }
 
-UInt ExecSeqStat6(Stat stat)
+static UInt ExecSeqStat6(Stat stat)
 {
     return ExecSeqStatHelper(stat, 6);
 }
 
-UInt ExecSeqStat7(Stat stat)
+static UInt ExecSeqStat7(Stat stat)
 {
     return ExecSeqStatHelper(stat, 7);
 }
@@ -210,7 +210,7 @@ UInt ExecSeqStat7(Stat stat)
 **  fourth subbag is the second body, and so  on.  If the if-statement has an
 **  else-branch, this is represented by a branch without a condition.
 */
-UInt            ExecIf (
+static UInt            ExecIf (
     Stat                stat )
 {
     Expr                cond;           /* condition                       */
@@ -230,7 +230,7 @@ UInt            ExecIf (
     return 0;
 }
 
-UInt            ExecIfElse (
+static UInt            ExecIfElse (
     Stat                stat )
 {
     Expr                cond;           /* condition                       */
@@ -253,7 +253,7 @@ UInt            ExecIfElse (
     return EXEC_STAT( body );
 }
 
-UInt            ExecIfElif (
+static UInt            ExecIfElif (
     Stat                stat )
 {
     Expr                cond;           /* condition                       */
@@ -284,7 +284,7 @@ UInt            ExecIfElif (
     return 0;
 }
 
-UInt            ExecIfElifElse (
+static UInt            ExecIfElifElse (
     Stat                stat )
 {
     Expr                cond;           /* condition                       */
@@ -461,18 +461,18 @@ static ALWAYS_INLINE UInt ExecForHelper(Stat stat, UInt nr)
     return 0;
 }
 
-UInt ExecFor(Stat stat)
+static UInt ExecFor(Stat stat)
 {
     return ExecForHelper(stat, 1);
 }
 
 
-UInt ExecFor2(Stat stat)
+static UInt ExecFor2(Stat stat)
 {
     return ExecForHelper(stat, 2);
 }
 
-UInt ExecFor3(Stat stat)
+static UInt ExecFor3(Stat stat)
 {
     return ExecForHelper(stat, 3);
 }
@@ -555,17 +555,17 @@ static ALWAYS_INLINE UInt ExecForRangeHelper(Stat stat, UInt nr)
     return 0;
 }
 
-UInt ExecForRange(Stat stat)
+static UInt ExecForRange(Stat stat)
 {
     return ExecForRangeHelper(stat, 1);
 }
 
-UInt ExecForRange2(Stat stat)
+static UInt ExecForRange2(Stat stat)
 {
     return ExecForRangeHelper(stat, 2);
 }
 
-UInt ExecForRange3(Stat stat)
+static UInt ExecForRange3(Stat stat)
 {
     return ExecForRangeHelper(stat, 3);
 }
@@ -576,7 +576,7 @@ UInt ExecForRange3(Stat stat)
 */
 
 #ifdef HPCGAP
-UInt ExecAtomic(Stat stat)
+static UInt ExecAtomic(Stat stat)
 {
   Obj tolock[MAX_ATOMIC_OBJS];
   LockMode lockmode[MAX_ATOMIC_OBJS];
@@ -694,17 +694,17 @@ static ALWAYS_INLINE UInt ExecWhileHelper(Stat stat, UInt nr)
     return 0;
 }
 
-UInt ExecWhile(Stat stat)
+static UInt ExecWhile(Stat stat)
 {
     return ExecWhileHelper(stat, 1);
 }
 
-UInt ExecWhile2(Stat stat)
+static UInt ExecWhile2(Stat stat)
 {
     return ExecWhileHelper(stat, 2);
 }
 
-UInt ExecWhile3(Stat stat)
+static UInt ExecWhile3(Stat stat)
 {
     return ExecWhileHelper(stat, 3);
 }
@@ -767,17 +767,17 @@ static ALWAYS_INLINE UInt ExecRepeatHelper(Stat stat, UInt nr)
     return 0;
 }
 
-UInt ExecRepeat(Stat stat)
+static UInt ExecRepeat(Stat stat)
 {
     return ExecRepeatHelper(stat, 1);
 }
 
-UInt ExecRepeat2(Stat stat)
+static UInt ExecRepeat2(Stat stat)
 {
     return ExecRepeatHelper(stat, 2);
 }
 
-UInt ExecRepeat3(Stat stat)
+static UInt ExecRepeat3(Stat stat)
 {
     return ExecRepeatHelper(stat, 3);
 }
@@ -795,7 +795,7 @@ UInt ExecRepeat3(Stat stat)
 **  A break-statement is  represented  by a bag of   type 'T_BREAK' with   no
 **  subbags.
 */
-UInt            ExecBreak (
+static UInt            ExecBreak (
     Stat                stat )
 {
     /* return to the next loop                                             */
@@ -814,7 +814,7 @@ UInt            ExecBreak (
 **  A continue-statement is  represented  by a bag of   type 'T_CONTINUE' with   no
 **  subbags.
 */
-UInt            ExecContinue (
+static UInt            ExecContinue (
     Stat                stat )
 {
     /* return to the next loop                                             */
@@ -827,7 +827,7 @@ UInt            ExecContinue (
 **
 **  Does nothing
 */
-UInt ExecEmpty( Stat stat )
+static UInt ExecEmpty( Stat stat )
 {
   return 0;
 }
@@ -846,7 +846,7 @@ UInt ExecEmpty( Stat stat )
 **  An  info-statement is represented by a  bag of type 'T_INFO' with subbags
 **  for the arguments
 */
-UInt ExecInfo (
+static UInt ExecInfo (
     Stat            stat )
 {
     Obj             selectors;
@@ -898,7 +898,7 @@ UInt ExecInfo (
 **  A 2 argument assert-statement is  represented  by a bag of   type
 **  'T_ASSERT_2ARGS' with subbags for the 2 arguments
 */
-UInt ExecAssert2Args (
+static UInt ExecAssert2Args (
     Stat            stat )
 {
     Obj             level;
@@ -927,7 +927,7 @@ UInt ExecAssert2Args (
 **  A 3 argument assert-statement is  represented  by a bag of   type
 **  'T_ASSERT_3ARGS' with subbags for the 3 arguments
 */
-UInt ExecAssert3Args (
+static UInt ExecAssert3Args (
     Stat            stat )
 {
     Obj             level;
@@ -970,7 +970,7 @@ UInt ExecAssert3Args (
 **  with      one  subbag.    This  subbag     is   the    expression  of the
 **  return-value-statement.
 */
-UInt            ExecReturnObj (
+static UInt            ExecReturnObj (
     Stat                stat )
 {
 #if !defined(HAVE_SIGNAL)
@@ -1001,7 +1001,7 @@ UInt            ExecReturnObj (
 **  A return-void-statement  is represented by  a bag of type 'T_RETURN_VOID'
 **  with no subbags.
 */
-UInt            ExecReturnVoid (
+static UInt            ExecReturnVoid (
     Stat                stat )
 {
 #if !defined(HAVE_SIGNAL)
@@ -1074,7 +1074,7 @@ UInt TakeInterrupt( void )
 **  redispatches after a return from the break-loop.
 */
 
-UInt ExecIntrStat (
+static UInt ExecIntrStat (
     Stat                stat )
 {
 
@@ -1192,7 +1192,7 @@ void            (* PrintStatFuncs[256] ) ( Stat stat );
 **  this  is  ever called,   then GAP  is in  serious   trouble, such  as  an
 **  overwritten type field of a statement.
 */
-void            PrintUnknownStat (
+static void            PrintUnknownStat (
     Stat                stat )
 {
     ErrorQuit(
@@ -1207,7 +1207,7 @@ void            PrintUnknownStat (
 **
 **  'PrintSeqStat' prints the statement sequence <stat>.
 */
-void            PrintSeqStat (
+static void            PrintSeqStat (
     Stat                stat )
 {
     UInt                nr;             /* number of statements            */
@@ -1239,7 +1239,7 @@ void            PrintSeqStat (
 **  Linebreaks are printed after the 'then' and the statements in the bodies.
 **  If necessary one is preferred immediately before the 'then'.
 */
-void            PrintIf (
+static void            PrintIf (
     Stat                stat )
 {
     UInt                i;              /* loop variable                   */
@@ -1282,7 +1282,7 @@ void            PrintIf (
 **  Linebreaks are printed after the 'do' and the statements in the body.  If
 **  necesarry it is preferred immediately before the 'in'.
 */
-void            PrintFor (
+static void            PrintFor (
     Stat                stat )
 {
     UInt                i;              /* loop variable                   */
@@ -1309,7 +1309,7 @@ void            PrintFor (
 **  Linebreaks are printed after the 'do' and the statments  in the body.  If
 **  necessary one is preferred immediately before the 'do'.
 */
-void            PrintWhile (
+static void            PrintWhile (
     Stat                stat )
 {
     UInt                i;              /* loop variable                   */
@@ -1334,7 +1334,7 @@ void            PrintWhile (
 **  necessary one is preferred immediately before the 'do'.
 */
 #ifdef HPCGAP
-void            PrintAtomic (
+static void            PrintAtomic (
     Stat                stat )
 {
   UInt nrexprs;
@@ -1373,7 +1373,7 @@ void            PrintAtomic (
 **  Linebreaks are printed after the 'repeat' and the statements in the body.
 **  If necessary one is preferred after the 'until'.
 */
-void            PrintRepeat (
+static void            PrintRepeat (
     Stat                stat )
 {
     UInt                i;              /* loop variable                   */
@@ -1395,7 +1395,7 @@ void            PrintRepeat (
 **
 **  'PrintBreak' prints the break-statement <stat>.
 */
-void            PrintBreak (
+static void            PrintBreak (
     Stat                stat )
 {
     Pr( "break;", 0L, 0L );
@@ -1407,7 +1407,7 @@ void            PrintBreak (
 **
 **  'PrintContinue' prints the continue-statement <stat>.
 */
-void            PrintContinue (
+static void            PrintContinue (
     Stat                stat )
 {
     Pr( "continue;", 0L, 0L );
@@ -1418,7 +1418,7 @@ void            PrintContinue (
 *F  PrintEmpty(<stat>)
 **
 */
-void             PrintEmpty( Stat stat )
+static void             PrintEmpty( Stat stat )
 {
   Pr( ";", 0L, 0L);
 }
@@ -1430,7 +1430,7 @@ void             PrintEmpty( Stat stat )
 **  'PrintInfo' prints the info-statement <stat>.
 */
 
-void            PrintInfo (
+static void            PrintInfo (
     Stat               stat )
 {
     UInt                i;              /* loop variable                   */
@@ -1460,7 +1460,7 @@ void            PrintInfo (
 **  'PrintAssert2Args' prints the 2 argument assert-statement <stat>.
 */
 
-void            PrintAssert2Args (
+static void            PrintAssert2Args (
     Stat               stat )
 {
 
@@ -1486,7 +1486,7 @@ void            PrintAssert2Args (
 **  'PrintAssert3Args' prints the 3 argument assert-statement <stat>.
 */
 
-void            PrintAssert3Args (
+static void            PrintAssert3Args (
     Stat               stat )
 {
 
@@ -1515,7 +1515,7 @@ void            PrintAssert3Args (
 **
 **  'PrintReturnObj' prints the return-value-statement <stat>.
 */
-void            PrintReturnObj (
+static void            PrintReturnObj (
     Stat                stat )
 {
     Expr expr = READ_STAT(stat, 0);
@@ -1537,7 +1537,7 @@ void            PrintReturnObj (
 **
 **  'PrintReturnVoid' prints the return-void-statement <stat>.
 */
-void            PrintReturnVoid (
+static void            PrintReturnVoid (
     Stat                stat )
 {
     Pr( "return;", 0L, 0L );

@@ -60,10 +60,10 @@
 **
 **  'TypePRec' is the function in 'TypeObjFuncs' for plain records.
 */
-Obj TYPE_PREC_MUTABLE;
-Obj TYPE_PREC_IMMUTABLE;
+static Obj TYPE_PREC_MUTABLE;
+static Obj TYPE_PREC_IMMUTABLE;
 
-Obj TypePRec(Obj prec)
+static Obj TypePRec(Obj prec)
 {
     return IS_MUTABLE_OBJ(prec) ? TYPE_PREC_MUTABLE : TYPE_PREC_IMMUTABLE;
 }
@@ -73,7 +73,7 @@ Obj TypePRec(Obj prec)
 *F  SetTypePRecToComObj( <rec>, <kind> )  convert record to component object
 **
 */
-void SetTypePRecToComObj( Obj rec, Obj kind )
+static void SetTypePRecToComObj( Obj rec, Obj kind )
 {
     RetypeBag(rec, T_COMOBJ);
     SET_TYPE_COMOBJ(rec, kind);
@@ -100,7 +100,7 @@ Obj NEW_PREC(UInt len)
 **
 **  Returns 0 if nothing changed and 1 if enlarged.
 */
-Int             GrowPRec (
+static Int             GrowPRec (
     Obj                 rec,
     UInt                need )
 {
@@ -164,7 +164,7 @@ void CopyPRecord(TraversalState * traversal, Obj copy, Obj original)
 **
 **  'CleanPRec' is the function in 'TabCleanObj' for records.
 */
-Obj CopyPRec (
+static Obj CopyPRec (
     Obj                 rec,
     Int                 mut )
 {
@@ -198,7 +198,7 @@ Obj CopyPRec (
     return copy;
 }
 
-void CleanPRec (
+static void CleanPRec (
     Obj                 rec )
 {
     UInt                i;              /* loop variable                   */
@@ -217,7 +217,7 @@ void CleanPRec (
 *F  MakeImmutablePRec( <rec> )
 */
 
-void MakeImmutablePRec(Obj rec)
+static void MakeImmutablePRec(Obj rec)
 {
     // change the tnum first, to avoid infinite recursion for objects that
     // contain themselves
@@ -431,7 +431,7 @@ void AssPRec (
 */
 extern Obj PrintObjOper;
 
-void PrintPRec (
+static void PrintPRec (
     Obj                 rec )
 {
     DoOperation1Args( PrintObjOper, rec );
@@ -564,7 +564,7 @@ void SortPRecRNam (
 */
 
 
-void PrintPathPRec (
+static void PrintPathPRec (
     Obj                 rec,
     Int                 indx )
 {
@@ -582,7 +582,7 @@ void PrintPathPRec (
 **  'RecNames'  returns a list containing the  names of the components of the
 **  record <rec> as strings.
 */
-Obj InnerRecNames( Obj rec )
+static Obj InnerRecNames( Obj rec )
 {
     Obj                 list;           /* list of record names, result    */
     UInt                rnam;           /* one name of record              */
@@ -609,7 +609,7 @@ Obj InnerRecNames( Obj rec )
     return list;
 }
 
-Obj FuncREC_NAMES (
+static Obj FuncREC_NAMES (
     Obj                 self,
     Obj                 rec )
 {
@@ -633,7 +633,7 @@ Obj FuncREC_NAMES (
 *F  FuncREC_NAMES_COMOBJ( <self>, <rec> ) . . . record names of a record object
 */
 /* same as FuncREC_NAMES except for different argument check  */
-Obj FuncREC_NAMES_COMOBJ (
+static Obj FuncREC_NAMES_COMOBJ (
     Obj                 self,
     Obj                 rec )
 {
@@ -659,7 +659,7 @@ Obj FuncREC_NAMES_COMOBJ (
 **  'EqPRec' returns '1L'  if the two  operands <left> and <right> are equal
 **  and '0L' otherwise.  At least one operand must be a plain record.
 */
-Int EqPRec(Obj left, Obj right)
+static Int EqPRec(Obj left, Obj right)
 {
     UInt                i;              /* loop variable                   */
 
@@ -707,7 +707,7 @@ Int EqPRec(Obj left, Obj right)
 **  <right>, and '0L'  otherwise.  At least  one operand  must be a  plain
 **  record.
 */
-Int LtPRec(Obj left, Obj right)
+static Int LtPRec(Obj left, Obj right)
 {
     UInt                i;              /* loop variable                   */
     Int                 res;            /* result of comparison            */
@@ -763,7 +763,7 @@ Int LtPRec(Obj left, Obj right)
 **
 */
 
-void SavePRec( Obj prec )
+static void SavePRec( Obj prec )
 {
   UInt len,i;
   len = LEN_PREC(prec);
@@ -781,7 +781,7 @@ void SavePRec( Obj prec )
 **
 */
 
-void LoadPRec( Obj prec )
+static void LoadPRec( Obj prec )
 {
   UInt len,i;
   len = LoadUInt();

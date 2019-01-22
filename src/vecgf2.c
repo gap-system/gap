@@ -90,14 +90,14 @@ Obj IsGF2VectorRep;
 **
 *V  GF2One  . . . . . . . . . . . . . . . . . . . . . . . . . . .  one of GF2
 */
-Obj GF2One;
+static Obj GF2One;
 
 
 /****************************************************************************
 **
 *V  GF2Zero . . . . . . . . . . . . . . . . . . . . . . . . . . . zero of GF2
 */
-Obj GF2Zero;
+static Obj GF2Zero;
 
 
 /****************************************************************************
@@ -123,7 +123,7 @@ static inline void AddGF2VecToGF2Vec(UInt * ptS, const UInt * ptV, UInt len)
 **  position of the rightmost Z(2) is returned.
 */
 
-UInt RightMostOneGF2Vec(Obj vec)
+static UInt RightMostOneGF2Vec(Obj vec)
 {
     UInt len;
 
@@ -140,7 +140,7 @@ UInt RightMostOneGF2Vec(Obj vec)
 }
 
 
-Obj AddCoeffsGF2VecGF2Vec(Obj sum, Obj vec)
+static Obj AddCoeffsGF2VecGF2Vec(Obj sum, Obj vec)
 {
     UInt *       ptS;
     const UInt * ptV;
@@ -200,7 +200,7 @@ CopySection_GF2Vecs(Obj src, Obj dest, UInt smin, UInt dmin, UInt nelts)
 **  Note that the caller has to ensure, that <sum> is a gf2-vector with the
 **  correct size.
 */
-Obj AddPartialGF2VecGF2Vec(Obj sum, Obj vl, Obj vr, UInt n)
+static Obj AddPartialGF2VecGF2Vec(Obj sum, Obj vl, Obj vr, UInt n)
 {
     const UInt * ptL;       // bit field of <vl>
     const UInt * ptR;       // bit field of <vr>
@@ -299,7 +299,7 @@ Obj AddPartialGF2VecGF2Vec(Obj sum, Obj vl, Obj vr, UInt n)
 
 #endif
 
-Obj ProdGF2VecGF2Vec(Obj vl, Obj vr)
+static Obj ProdGF2VecGF2Vec(Obj vl, Obj vr)
 {
     const UInt * ptL;     // bit field of <vl>
     const UInt * ptR;     // bit field of <vr>
@@ -355,7 +355,7 @@ Obj ProdGF2VecGF2Vec(Obj vl, Obj vr)
 **  multiplied by the corresponding entry of <vl>.  Note that the  caller has
 **  to ensure, that <vl> is a gf2-vector and <vr> is a gf2-matrix.
 */
-Obj ProdGF2VecGF2Mat(Obj vl, Obj vr)
+static Obj ProdGF2VecGF2Mat(Obj vl, Obj vr)
 {
     UInt         len;    // length of the list
     UInt         stop;
@@ -423,7 +423,7 @@ Obj ProdGF2VecGF2Mat(Obj vl, Obj vr)
 **  Note that the  caller has
 **  to ensure, that <ml> is a GF2 matrix and <vr> is a GF2 vector.
 */
-Obj ProdGF2MatGF2Vec(Obj ml, Obj vr)
+static Obj ProdGF2MatGF2Vec(Obj ml, Obj vr)
 {
     UInt         len;     // length of the vector
     UInt         ln1;     // length of the rows of the mx
@@ -498,7 +498,7 @@ Obj ProdGF2MatGF2Vec(Obj ml, Obj vr)
 **  must be compatible.
 */
 
-Obj ProdGF2MatGF2MatSimple(Obj ml, Obj mr)
+static Obj ProdGF2MatGF2MatSimple(Obj ml, Obj mr)
 {
     Obj  prod;
     UInt i;
@@ -619,7 +619,7 @@ static const UInt * getgreasedata(struct greaseinfo * g, UInt bits)
 }
 
 
-Obj ProdGF2MatGF2MatAdvanced(Obj ml, Obj mr, UInt greasesize, UInt blocksize)
+static Obj ProdGF2MatGF2MatAdvanced(Obj ml, Obj mr, UInt greasesize, UInt blocksize)
 {
     Obj          prod;          // Product Matrix
     UInt         i, j, k, b;    // Loop counters
@@ -830,7 +830,7 @@ Obj ProdGF2MatGF2MatAdvanced(Obj ml, Obj mr, UInt greasesize, UInt blocksize)
 **
 **  method to handle vector*plain list of GF2Vectors reasonably efficiently.
 */
-Obj FuncPROD_GF2VEC_ANYMAT(Obj self, Obj vec, Obj mat)
+static Obj FuncPROD_GF2VEC_ANYMAT(Obj self, Obj vec, Obj mat)
 {
     Obj  res;
     UInt len;
@@ -878,7 +878,7 @@ Obj FuncPROD_GF2VEC_ANYMAT(Obj self, Obj vec, Obj mat)
 **  by this point it should be checked that list is a plain list of GF2
 **  vectors of equal lengths.
 */
-Obj InversePlistGF2VecsDesstructive(Obj list)
+static Obj InversePlistGF2VecsDesstructive(Obj list)
 {
     UInt         len;     // dimension
     Obj          inv;     // result
@@ -967,7 +967,7 @@ Obj InversePlistGF2VecsDesstructive(Obj list)
 **
 */
 
-Obj InverseGF2Mat(Obj mat, UInt mut)
+static Obj InverseGF2Mat(Obj mat, UInt mut)
 {
     UInt         len;    // dimension
     Obj          inv;    // result
@@ -1072,7 +1072,7 @@ Obj ShallowCopyVecGF2(Obj vec)
 static UInt RNheads, RNvectors, RNcoeffs, RNrelns;
 
 
-Obj SemiEchelonListGF2Vecs(Obj mat, UInt TransformationsNeeded)
+static Obj SemiEchelonListGF2Vecs(Obj mat, UInt TransformationsNeeded)
 {
     UInt  nrows, ncols;
     UInt  i, j, h;
@@ -1180,7 +1180,7 @@ Obj SemiEchelonListGF2Vecs(Obj mat, UInt TransformationsNeeded)
 **
 */
 
-UInt TriangulizeListGF2Vecs(Obj mat, UInt clearup)
+static UInt TriangulizeListGF2Vecs(Obj mat, UInt clearup)
 {
     UInt         nrows;
     UInt         ncols;
@@ -1249,7 +1249,7 @@ UInt TriangulizeListGF2Vecs(Obj mat, UInt clearup)
 static Obj IsLockedRepresentationVector;
 
 
-void PlainGF2Vec(Obj list)
+static void PlainGF2Vec(Obj list)
 {
     Int  len;          // length of <list>
     UInt i;            // loop variable
@@ -1296,7 +1296,7 @@ void PlainGF2Vec(Obj list)
 **
 **  'PlainGF2Mat' converts the GF2 matrix <list> to a plain list.
 */
-void PlainGF2Mat(Obj list)
+static void PlainGF2Mat(Obj list)
 {
     Int  len;    // length of <list>
     UInt i;      // loop variable
@@ -1319,7 +1319,7 @@ void PlainGF2Mat(Obj list)
 **
 *F  ConvGF2Vec( <list> )  . . . . . . convert a list into a GF2 vector object
 */
-void ConvGF2Vec(Obj list)
+static void ConvGF2Vec(Obj list)
 {
     Int  len;      // logical length of the vector
     Int  i;        // loop variable
@@ -1391,7 +1391,7 @@ void ConvGF2Vec(Obj list)
 **
 *F  FuncCONV_GF2VEC( <self>, <list> ) . . . . . convert into a GF2 vector rep
 */
-Obj FuncCONV_GF2VEC(Obj self, Obj list)
+static Obj FuncCONV_GF2VEC(Obj self, Obj list)
 {
     // check whether <list> is a GF2 vector
     ConvGF2Vec(list);
@@ -1407,7 +1407,7 @@ Obj FuncCONV_GF2VEC(Obj self, Obj list)
 **
 **  This is a non-destructive counterpart of ConvGF2Vec
 */
-Obj NewGF2Vec(Obj list)
+static Obj NewGF2Vec(Obj list)
 {
     Int  len;      // logical length of the vector
     Int  i;        // loop variable
@@ -1481,7 +1481,7 @@ Obj NewGF2Vec(Obj list)
 **
 **  This is a non-destructive counterpart of FuncCONV_GF2VEC
 */
-Obj FuncCOPY_GF2VEC(Obj self, Obj list)
+static Obj FuncCOPY_GF2VEC(Obj self, Obj list)
 {
     // check whether <list> is a GF2 vector
     list = NewGF2Vec(list);
@@ -1496,7 +1496,7 @@ Obj FuncCOPY_GF2VEC(Obj self, Obj list)
 ** <list> should be a a list of compressed GF2 vectors
 **
 */
-Obj FuncCONV_GF2MAT(Obj self, Obj list)
+static Obj FuncCONV_GF2MAT(Obj self, Obj list)
 {
     UInt len, i;
     Obj  tmp;
@@ -1535,7 +1535,7 @@ Obj FuncCONV_GF2MAT(Obj self, Obj list)
 **
 *F  FuncPLAIN_GF2VEC( <self>, <list> ) . . .  convert back into ordinary list
 */
-Obj FuncPLAIN_GF2VEC(Obj self, Obj list)
+static Obj FuncPLAIN_GF2VEC(Obj self, Obj list)
 {
     // check whether <list> is a GF2 vector
     while (!IS_GF2VEC_REP(list)) {
@@ -1580,7 +1580,7 @@ static const UInt1 revertlist[] = {
 
 // Takes an UInt a on n bits and returns the Uint obtained by reverting the
 // bits
-UInt revertbits(UInt a, Int n)
+static UInt revertbits(UInt a, Int n)
 {
     UInt b, c;
     b = 0;
@@ -1605,7 +1605,7 @@ UInt revertbits(UInt a, Int n)
 *F  Cmp_GF2Vecs( <vl>, <vr> )   compare GF2 vectors -- internal
 **                                    returns -1, 0 or 1
 */
-Int Cmp_GF2VEC_GF2VEC(Obj vl, Obj vr)
+static Int Cmp_GF2VEC_GF2VEC(Obj vl, Obj vr)
 {
     UInt         i;                  // loop variable
     const UInt * bl;                 // block of <vl>
@@ -1678,7 +1678,7 @@ Int Cmp_GF2VEC_GF2VEC(Obj vl, Obj vr)
 **
 *F  FuncEQ_GF2VEC_GF2VEC( <self>, <vl>, <vr> )   test equality of GF2 vectors
 */
-Obj FuncEQ_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
+static Obj FuncEQ_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 {
     // we can do this case MUCH faster if we just want equality
     if (LEN_GF2VEC(vl) != LEN_GF2VEC(vr))
@@ -1691,7 +1691,7 @@ Obj FuncEQ_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 **
 *F  FuncLEN_GF2VEC( <self>, <list> )  . . . . . . . .  length of a GF2 vector
 */
-Obj FuncLEN_GF2VEC(Obj self, Obj list)
+static Obj FuncLEN_GF2VEC(Obj self, Obj list)
 {
     return INTOBJ_INT(LEN_GF2VEC(list));
 }
@@ -1706,7 +1706,7 @@ Obj FuncLEN_GF2VEC(Obj self, Obj list)
 **  the  responsibility of  the caller to   ensure  that <pos> is  a positive
 **  integer.
 */
-Obj FuncELM0_GF2VEC(Obj self, Obj list, Obj pos)
+static Obj FuncELM0_GF2VEC(Obj self, Obj list, Obj pos)
 {
     UInt p = GetSmallInt("ELM0_GF2VEC", pos);
     if (LEN_GF2VEC(list) < p) {
@@ -1726,7 +1726,7 @@ Obj FuncELM0_GF2VEC(Obj self, Obj list, Obj pos)
 **  <list>.   An  error  is signalled  if  <pos>  is  not bound.    It is the
 **  responsibility of the caller to ensure that <pos> is a positive integer.
 */
-Obj FuncELM_GF2VEC(Obj self, Obj list, Obj pos)
+static Obj FuncELM_GF2VEC(Obj self, Obj list, Obj pos)
 {
     UInt p = GetSmallInt("ELM_GF2VEC", pos);
     if (LEN_GF2VEC(list) < p) {
@@ -1749,7 +1749,7 @@ Obj FuncELM_GF2VEC(Obj self, Obj list, Obj pos)
 **  only positive integers.  An error is signalled if an element of <poss> is
 **  larger than the length of <list>.
 */
-Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
+static Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
 {
     Obj elms;       // selected sublist, result
     Int lenList;    // length of <list>
@@ -1848,7 +1848,7 @@ Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
 **  and that <elm> is not 0.
 */
 
-Obj FuncASS_GF2VEC(Obj self, Obj list, Obj pos, Obj elm)
+static Obj FuncASS_GF2VEC(Obj self, Obj list, Obj pos, Obj elm)
 {
     // check that <list> is mutable
     if (!IS_MUTABLE_OBJ(list)) {
@@ -1897,7 +1897,7 @@ Obj FuncASS_GF2VEC(Obj self, Obj list, Obj pos, Obj elm)
 **
 *F  FuncPLAIN_GF2MAT( <self>, <list> ) . . .  convert back into ordinary list
 */
-Obj FuncPLAIN_GF2MAT(Obj self, Obj list)
+static Obj FuncPLAIN_GF2MAT(Obj self, Obj list)
 {
     PlainGF2Mat(list);
 
@@ -1916,7 +1916,7 @@ Obj FuncPLAIN_GF2MAT(Obj self, Obj list)
 **  It is the responsibility of the caller  to ensure that <pos> is positive,
 **  and that <elm> is not 0.
 */
-Obj FuncASS_GF2MAT(Obj self, Obj list, Obj pos, Obj elm)
+static Obj FuncASS_GF2MAT(Obj self, Obj list, Obj pos, Obj elm)
 {
     // check that <list> is mutable
     if (!IS_MUTABLE_OBJ(list)) {
@@ -1967,7 +1967,7 @@ Obj FuncASS_GF2MAT(Obj self, Obj list, Obj pos, Obj elm)
 *F  FuncELM_GF2MAT( <self>, <mat>, <row> ) . . . select a row of a GF2 matrix
 **
 */
-Obj FuncELM_GF2MAT(Obj self, Obj mat, Obj row)
+static Obj FuncELM_GF2MAT(Obj self, Obj mat, Obj row)
 {
     UInt r = GetSmallInt("ELM_GF2MAT", row);
     if (LEN_GF2MAT(mat) < r) {
@@ -1987,7 +1987,7 @@ Obj FuncELM_GF2MAT(Obj self, Obj mat, Obj row)
 **
 **  It is the responsibility of the caller  to ensure that <pos> is positive.
 */
-Obj FuncUNB_GF2VEC(Obj self, Obj list, Obj pos)
+static Obj FuncUNB_GF2VEC(Obj self, Obj list, Obj pos)
 {
     // check that <list> is mutable
     if (!IS_MUTABLE_OBJ(list)) {
@@ -2030,7 +2030,7 @@ Obj FuncUNB_GF2VEC(Obj self, Obj list, Obj pos)
 **
 **  It is the responsibility of the caller  to ensure that <pos> is positive.
 */
-Obj FuncUNB_GF2MAT(Obj self, Obj list, Obj pos)
+static Obj FuncUNB_GF2MAT(Obj self, Obj list, Obj pos)
 {
     // check that <list> is mutable
     if (!IS_MUTABLE_OBJ(list)) {
@@ -2070,7 +2070,7 @@ Obj FuncUNB_GF2MAT(Obj self, Obj list, Obj pos)
 **
 **  return the zero vector over GF2 of the same length as <mat>.
 */
-Obj FuncZERO_GF2VEC(Obj self, Obj mat)
+static Obj FuncZERO_GF2VEC(Obj self, Obj mat)
 {
     Obj  zero;
     UInt len;
@@ -2087,7 +2087,7 @@ Obj FuncZERO_GF2VEC(Obj self, Obj mat)
 **
 **  return the zero vector over GF2 of length <len>
 */
-Obj FuncZERO_GF2VEC_2(Obj self, Obj len)
+static Obj FuncZERO_GF2VEC_2(Obj self, Obj len)
 {
     Obj zero;
 
@@ -2109,7 +2109,7 @@ Obj FuncZERO_GF2VEC_2(Obj self, Obj len)
 **  INVERSE_PLIST_GF2VECS_DESTRUCTIVE
 ** might do just as good a job
 */
-Obj FuncINV_GF2MAT_MUTABLE(Obj self, Obj mat)
+static Obj FuncINV_GF2MAT_MUTABLE(Obj self, Obj mat)
 {
     UInt len;
 
@@ -2133,7 +2133,7 @@ Obj FuncINV_GF2MAT_MUTABLE(Obj self, Obj mat)
 **  INVERSE_PLIST_GF2VECS_DESTRUCTIVE
 ** might do just as good a job
 */
-Obj FuncINV_GF2MAT_SAME_MUTABILITY(Obj self, Obj mat)
+static Obj FuncINV_GF2MAT_SAME_MUTABILITY(Obj self, Obj mat)
 {
     UInt len;
 
@@ -2157,7 +2157,7 @@ Obj FuncINV_GF2MAT_SAME_MUTABILITY(Obj self, Obj mat)
 **  INVERSE_PLIST_GF2VECS_DESTRUCTIVE
 ** might do just as good a job
 */
-Obj FuncINV_GF2MAT_IMMUTABLE(Obj self, Obj mat)
+static Obj FuncINV_GF2MAT_IMMUTABLE(Obj self, Obj mat)
 {
     UInt len;
 
@@ -2183,7 +2183,7 @@ Obj FuncINV_GF2MAT_IMMUTABLE(Obj self, Obj mat)
 **
 **  invert possible GF2 matrix
 */
-Obj FuncINV_PLIST_GF2VECS_DESTRUCTIVE(Obj self, Obj list)
+static Obj FuncINV_PLIST_GF2VECS_DESTRUCTIVE(Obj self, Obj list)
 {
     UInt len, i;
     Obj  row;
@@ -2221,7 +2221,7 @@ Obj FuncINV_PLIST_GF2VECS_DESTRUCTIVE(Obj self, Obj list)
 **  'FuncSUM_GF2VEC_GF2VEC'  is  an improved  version of 'SumListList', which
 **  does not call 'SUM' but uses bit operations instead.
 */
-Obj FuncSUM_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
+static Obj FuncSUM_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 {
     Obj  sum;    // sum, result
     UInt ll, lr;
@@ -2251,7 +2251,7 @@ Obj FuncSUM_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 **                                      . . . . .  sum of GF2 vectors
 **
 */
-Obj FuncMULT_VECTOR_GF2VECS_2(Obj self, Obj vl, Obj mul)
+static Obj FuncMULT_VECTOR_GF2VECS_2(Obj self, Obj vl, Obj mul)
 {
     if (EQ(mul, GF2One))
         return (Obj)0;
@@ -2271,7 +2271,7 @@ Obj FuncMULT_VECTOR_GF2VECS_2(Obj self, Obj vl, Obj mul)
 **  'FuncPROD_GF2VEC_GF2VEC' returns the product of  the two GF2 vectors <vl>
 **  and <vr>.  The product is either `GF2One' or `GF2Zero'.
 */
-Obj FuncPROD_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
+static Obj FuncPROD_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 {
     return ProdGF2VecGF2Vec(vl, vr);
 }
@@ -2287,7 +2287,7 @@ Obj FuncPROD_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 **  The  product is  again a  GF2 vector.  It  is  the  responsibility of the
 **  caller to ensure that <vl> is a  GF2 vector, <vr>  a GF2 matrix.
 */
-Obj FuncPROD_GF2VEC_GF2MAT(Obj self, Obj vl, Obj vr)
+static Obj FuncPROD_GF2VEC_GF2MAT(Obj self, Obj vl, Obj vr)
 {
     return ProdGF2VecGF2Mat(vl, vr);
 }
@@ -2302,7 +2302,7 @@ Obj FuncPROD_GF2VEC_GF2MAT(Obj self, Obj vl, Obj vr)
 **  The  product is  again a  GF2 matrix.  It  is  the  responsibility of the
 **  caller to ensure that <ml> and <mr> are  GF2 matrices
 */
-Obj FuncPROD_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr)
+static Obj FuncPROD_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr)
 {
     UInt lenl = LEN_GF2MAT(ml);
     UInt lenm;
@@ -2326,7 +2326,7 @@ Obj FuncPROD_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr)
 **  The  product is  again a  GF2 matrix.  It  is  the  responsibility of the
 **  caller to ensure that <ml> and <mr> are  GF2 matrices
 */
-Obj FuncPROD_GF2MAT_GF2MAT_SIMPLE(Obj self, Obj ml, Obj mr)
+static Obj FuncPROD_GF2MAT_GF2MAT_SIMPLE(Obj self, Obj ml, Obj mr)
 {
     return ProdGF2MatGF2MatSimple(ml, mr);
 }
@@ -2343,7 +2343,7 @@ Obj FuncPROD_GF2MAT_GF2MAT_SIMPLE(Obj self, Obj ml, Obj mr)
 **  The  product is  again a  GF2 matrix.  It  is  the  responsibility of the
 **  caller to ensure that <ml> and <mr> are  GF2 matrices
 */
-Obj FuncPROD_GF2MAT_GF2MAT_ADVANCED(
+static Obj FuncPROD_GF2MAT_GF2MAT_ADVANCED(
     Obj self, Obj ml, Obj mr, Obj greaselevel, Obj blocksize)
 {
     return ProdGF2MatGF2MatAdvanced(ml, mr, INT_INTOBJ(greaselevel),
@@ -2361,7 +2361,7 @@ Obj FuncPROD_GF2MAT_GF2MAT_ADVANCED(
 **  The  product is  again a  GF2 vector.  It  is  the  responsibility of the
 **  caller to ensure that <vr> is a  GF2 vector, <vl>  a GF2 matrix.
 */
-Obj FuncPROD_GF2MAT_GF2VEC(Obj self, Obj vl, Obj vr)
+static Obj FuncPROD_GF2MAT_GF2VEC(Obj self, Obj vl, Obj vr)
 {
     return ProdGF2MatGF2Vec(vl, vr);
 }
@@ -2371,7 +2371,7 @@ Obj FuncPROD_GF2MAT_GF2VEC(Obj self, Obj vl, Obj vr)
 **
 *F  FuncADDCOEFFS_GF2VEC_GF2VEC_MULT( <self>, <vl>, <vr>, <mul> ) GF2 vectors
 */
-Obj FuncADDCOEFFS_GF2VEC_GF2VEC_MULT(Obj self, Obj vl, Obj vr, Obj mul)
+static Obj FuncADDCOEFFS_GF2VEC_GF2VEC_MULT(Obj self, Obj vl, Obj vr, Obj mul)
 {
     // do nothing if <mul> is zero
     if (EQ(mul, GF2Zero)) {
@@ -2391,7 +2391,7 @@ Obj FuncADDCOEFFS_GF2VEC_GF2VEC_MULT(Obj self, Obj vl, Obj vr, Obj mul)
 **
 *F  FuncADDCOEFFS_GF2VEC_GF2VEC( <self>, <vl>, <vr> ) . . . . . . GF2 vectors
 */
-Obj FuncADDCOEFFS_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
+static Obj FuncADDCOEFFS_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 {
     return AddCoeffsGF2VecGF2Vec(vl, vr);
 }
@@ -2401,7 +2401,7 @@ Obj FuncADDCOEFFS_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 **
 *F  FuncSHRINKCOEFFS_GF2VEC( <self>, <vec> )  . . . . . remove trailing zeros
 */
-Obj FuncSHRINKCOEFFS_GF2VEC(Obj self, Obj vec)
+static Obj FuncSHRINKCOEFFS_GF2VEC(Obj self, Obj vec)
 {
     UInt   len;
     UInt   nbb;
@@ -2457,7 +2457,7 @@ Obj FuncSHRINKCOEFFS_GF2VEC(Obj self, Obj vec)
 **  It is *not* used in the code and can be replaced by a dummy argument.
 */
 
-UInt PositionNonZeroGF2Vec(Obj vec, UInt from)
+static UInt PositionNonZeroGF2Vec(Obj vec, UInt from)
 {
     UInt         len;
     UInt         nbb;
@@ -2508,18 +2508,18 @@ UInt PositionNonZeroGF2Vec(Obj vec, UInt from)
 }
 
 
-Obj FuncPOSITION_NONZERO_GF2VEC(Obj self, Obj vec, Obj zero)
+static Obj FuncPOSITION_NONZERO_GF2VEC(Obj self, Obj vec, Obj zero)
 {
     return INTOBJ_INT(PositionNonZeroGF2Vec(vec, 0));
 }
 
-Obj FuncPOSITION_NONZERO_GF2VEC3(Obj self, Obj vec, Obj zero, Obj from)
+static Obj FuncPOSITION_NONZERO_GF2VEC3(Obj self, Obj vec, Obj zero, Obj from)
 {
     return INTOBJ_INT(PositionNonZeroGF2Vec(vec, INT_INTOBJ(from)));
 }
 
 
-Obj FuncCOPY_SECTION_GF2VECS(
+static Obj FuncCOPY_SECTION_GF2VECS(
     Obj self, Obj src, Obj dest, Obj from, Obj to, Obj howmany)
 {
     Int  ifrom;
@@ -2551,7 +2551,7 @@ Obj FuncCOPY_SECTION_GF2VECS(
 **
 */
 
-Obj FuncAPPEND_GF2VEC(Obj self, Obj vecl, Obj vecr)
+static Obj FuncAPPEND_GF2VEC(Obj self, Obj vecl, Obj vecr)
 {
     UInt lenl, lenr;
     lenl = LEN_GF2VEC(vecl);
@@ -2573,7 +2573,7 @@ Obj FuncAPPEND_GF2VEC(Obj self, Obj vecl, Obj vecr)
 **
 */
 
-Obj FuncSHALLOWCOPY_GF2VEC(Obj self, Obj vec)
+static Obj FuncSHALLOWCOPY_GF2VEC(Obj self, Obj vec)
 {
     return ShallowCopyVecGF2(vec);
 }
@@ -2585,7 +2585,7 @@ Obj FuncSHALLOWCOPY_GF2VEC(Obj self, Obj vec)
 */
 
 
-Obj FuncSUM_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
+static Obj FuncSUM_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
 {
     UInt ll, lr, ls, lm, wl, wr, ws, wm;
     Obj  sum;
@@ -2674,7 +2674,7 @@ Obj FuncSUM_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
 *F  FuncTRANSPOSED_GF2MAT( <self>, <mat>)
 **
 */
-Obj FuncTRANSPOSED_GF2MAT(Obj self, Obj mat)
+static Obj FuncTRANSPOSED_GF2MAT(Obj self, Obj mat)
 {
     UInt l, w;
     Obj  tra, row;
@@ -2763,7 +2763,7 @@ Obj FuncTRANSPOSED_GF2MAT(Obj self, Obj mat)
 *F  FuncNUMBER_GF2VEC( <self>, <vect> )
 **
 */
-Obj FuncNUMBER_GF2VEC(Obj self, Obj vec)
+static Obj FuncNUMBER_GF2VEC(Obj self, Obj vec)
 {
     UInt        len, nd, i;
     UInt        head, a;
@@ -2840,7 +2840,7 @@ Obj FuncNUMBER_GF2VEC(Obj self, Obj vec)
 **
 *F  FuncLT_GF2VEC_GF2VEC( <self>, <vl>, <vr> )   compare GF2 vectors
 */
-Obj FuncLT_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
+static Obj FuncLT_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 {
     return (Cmp_GF2VEC_GF2VEC(vl, vr) < 0) ? True : False;
 }
@@ -2850,7 +2850,7 @@ Obj FuncLT_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 *F  Cmp_GF2MAT_GF2MAT( <ml>, <mr> )   compare GF2 matrices
 */
 
-Int Cmp_GF2MAT_GF2MAT(Obj ml, Obj mr)
+static Int Cmp_GF2MAT_GF2MAT(Obj ml, Obj mr)
 {
     UInt l1, l2, l, i;
     Int  c;
@@ -2874,7 +2874,7 @@ Int Cmp_GF2MAT_GF2MAT(Obj ml, Obj mr)
 *F  FuncEQ_GF2MAT_GF2MAT( <ml>, <mr> )   compare GF2 matrices
 */
 
-Obj FuncEQ_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr)
+static Obj FuncEQ_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr)
 {
     if (ELM_PLIST(ml, 1) != ELM_PLIST(mr, 1))
         return False;
@@ -2886,7 +2886,7 @@ Obj FuncEQ_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr)
 *F  FuncLT_GF2MAT_GF2MAT( <ml>, <mr> )   compare GF2 matrices
 */
 
-Obj FuncLT_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr)
+static Obj FuncLT_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr)
 {
     return (Cmp_GF2MAT_GF2MAT(ml, mr) < 0) ? True : False;
 }
@@ -2899,7 +2899,7 @@ Obj FuncLT_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr)
 **  ptL and ptR for a GF(2) vector of <len> entries.
 **
 */
-UInt DistGF2Vecs(const UInt * ptL, const UInt * ptR, UInt len)
+static UInt DistGF2Vecs(const UInt * ptL, const UInt * ptR, UInt len)
 {
     UInt         sum, m;
     const UInt * end;    // end marker
@@ -2925,7 +2925,7 @@ UInt DistGF2Vecs(const UInt * ptL, const UInt * ptR, UInt len)
 **  'FuncDIST_GF2VEC_GF2VEC' returns the number of position in which two
 **  gf2-vectors <vl>  and  <vr> differ.
 */
-Obj FuncDIST_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
+static Obj FuncDIST_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 {
     UInt   len;    // length of the list
     UInt   off;    // bit offset at the end to clean out
@@ -2965,7 +2965,7 @@ Obj FuncDIST_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 }
 
 
-void DistVecClosVec(
+static void DistVecClosVec(
     Obj  veclis,    // pointers to matrix vectors and their multiples
     Obj  ovec,      // vector we compute distance to
     Obj  d,         // distances list
@@ -3010,7 +3010,7 @@ void DistVecClosVec(
     }
 }
 
-Obj FuncDIST_VEC_CLOS_VEC(
+static Obj FuncDIST_VEC_CLOS_VEC(
     Obj self,
     Obj veclis,    // pointers to matrix vectors and their multiples
     Obj vec,       // vector we compute distance to
@@ -3031,7 +3031,7 @@ Obj FuncDIST_VEC_CLOS_VEC(
     return (Obj)0;
 }
 
-UInt AClosVec(Obj veclis,    // pointers to matrix vectors and their multiples
+static UInt AClosVec(Obj veclis,    // pointers to matrix vectors and their multiples
               Obj ovec,      // vector we compute distance to
               Obj osum,      // position of the sum vector
               UInt pos,      // recursion depth
@@ -3120,7 +3120,7 @@ UInt AClosVec(Obj veclis,    // pointers to matrix vectors and their multiples
 }
 
 
-Obj FuncA_CLOS_VEC(
+static Obj FuncA_CLOS_VEC(
     Obj self,
     Obj veclis,    // pointers to matrix vectors and their multiples
     Obj vec,       // vector we compute distance to
@@ -3152,7 +3152,7 @@ Obj FuncA_CLOS_VEC(
     return best;
 }
 
-Obj FuncA_CLOS_VEC_COORDS(
+static Obj FuncA_CLOS_VEC_COORDS(
     Obj self,
     Obj veclis,    // pointers to matrix vectors and their multiples
     Obj vec,       // vector we compute distance to
@@ -3211,7 +3211,7 @@ Obj FuncA_CLOS_VEC_COORDS(
 ** Search for new coset leaders of weight <weight>
 */
 
-UInt CosetLeadersInnerGF2(
+static UInt CosetLeadersInnerGF2(
     Obj veclis, Obj v, Obj w, UInt weight, UInt pos, Obj leaders, UInt tofind)
 {
     UInt found = 0;
@@ -3271,7 +3271,7 @@ UInt CosetLeadersInnerGF2(
 }
 
 
-Obj FuncCOSET_LEADERS_INNER_GF2(
+static Obj FuncCOSET_LEADERS_INNER_GF2(
     Obj self, Obj veclis, Obj weight, Obj tofind, Obj leaders)
 {
     Obj  v, w;
@@ -3306,7 +3306,7 @@ Obj FuncCOSET_LEADERS_INNER_GF2(
 **
 */
 
-Obj FuncRIGHTMOST_NONZERO_GF2VEC(Obj self, Obj vec)
+static Obj FuncRIGHTMOST_NONZERO_GF2VEC(Obj self, Obj vec)
 {
     return INTOBJ_INT(RightMostOneGF2Vec(vec));
 }
@@ -3317,7 +3317,7 @@ Obj FuncRIGHTMOST_NONZERO_GF2VEC(Obj self, Obj vec)
 **
 */
 
-void ResizeGF2Vec(Obj vec, UInt newlen)
+static void ResizeGF2Vec(Obj vec, UInt newlen)
 {
     UInt   len;
     UInt * ptr;
@@ -3385,7 +3385,7 @@ void ResizeGF2Vec(Obj vec, UInt newlen)
 **
 */
 
-Obj FuncRESIZE_GF2VEC(Obj self, Obj vec, Obj newlen)
+static Obj FuncRESIZE_GF2VEC(Obj self, Obj vec, Obj newlen)
 {
     Int newlen1;
     if (!IS_MUTABLE_OBJ(vec)) {
@@ -3413,7 +3413,7 @@ Obj FuncRESIZE_GF2VEC(Obj self, Obj vec, Obj newlen)
 **
 */
 
-void ShiftLeftGF2Vec(Obj vec, UInt amount)
+static void ShiftLeftGF2Vec(Obj vec, UInt amount)
 {
     UInt  len;
     UInt *ptr1, *ptr2;
@@ -3457,7 +3457,7 @@ void ShiftLeftGF2Vec(Obj vec, UInt amount)
 **
 */
 
-Obj FuncSHIFT_LEFT_GF2VEC(Obj self, Obj vec, Obj amount)
+static Obj FuncSHIFT_LEFT_GF2VEC(Obj self, Obj vec, Obj amount)
 {
     Int amount1;
     if (!IS_MUTABLE_OBJ(vec)) {
@@ -3484,7 +3484,7 @@ Obj FuncSHIFT_LEFT_GF2VEC(Obj self, Obj vec, Obj amount)
 **
 */
 
-void ShiftRightGF2Vec(Obj vec, UInt amount)
+static void ShiftRightGF2Vec(Obj vec, UInt amount)
 {
     UInt  len;
     UInt *ptr1, *ptr2, *ptr0;
@@ -3533,7 +3533,7 @@ void ShiftRightGF2Vec(Obj vec, UInt amount)
 **
 */
 
-Obj FuncSHIFT_RIGHT_GF2VEC(Obj self, Obj vec, Obj amount)
+static Obj FuncSHIFT_RIGHT_GF2VEC(Obj self, Obj vec, Obj amount)
 {
     Int amount1;
     if (!IS_MUTABLE_OBJ(vec)) {
@@ -3562,7 +3562,7 @@ Obj FuncSHIFT_RIGHT_GF2VEC(Obj self, Obj vec, Obj amount)
 **
 */
 
-void AddShiftedVecGF2VecGF2(Obj vec1, Obj vec2, UInt len2, UInt off)
+static void AddShiftedVecGF2VecGF2(Obj vec1, Obj vec2, UInt len2, UInt off)
 {
     UInt *       ptr1;
     const UInt * ptr2;
@@ -3615,7 +3615,7 @@ void AddShiftedVecGF2VecGF2(Obj vec1, Obj vec2, UInt len2, UInt off)
 **
 */
 
-Obj FuncADD_GF2VEC_GF2VEC_SHIFTED(
+static Obj FuncADD_GF2VEC_GF2VEC_SHIFTED(
     Obj self, Obj vec1, Obj vec2, Obj len2, Obj off)
 {
     Int off1, len2a;
@@ -3649,7 +3649,7 @@ Obj FuncADD_GF2VEC_GF2VEC_SHIFTED(
 **
 */
 
-Obj ProductCoeffsGF2Vec(Obj vec1, UInt len1, Obj vec2, UInt len2)
+static Obj ProductCoeffsGF2Vec(Obj vec1, UInt len1, Obj vec2, UInt len2)
 {
     Obj          prod;
     UInt         i, e;
@@ -3693,7 +3693,7 @@ Obj ProductCoeffsGF2Vec(Obj vec1, UInt len1, Obj vec2, UInt len2)
 **
 */
 
-Obj FuncPROD_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
+static Obj FuncPROD_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 {
     UInt len1a, len2a;
     Obj  prod;
@@ -3725,7 +3725,7 @@ Obj FuncPROD_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 **
 */
 
-void ReduceCoeffsGF2Vec(Obj vec1, Obj vec2, UInt len2, Obj quotient)
+static void ReduceCoeffsGF2Vec(Obj vec1, Obj vec2, UInt len2, Obj quotient)
 {
     UInt         len1 = LEN_GF2VEC(vec1);
     UInt         i, j, e;
@@ -3762,7 +3762,7 @@ void ReduceCoeffsGF2Vec(Obj vec1, Obj vec2, UInt len2, Obj quotient)
 *F  FuncREDUCE_COEFFS_GF2VEC( <self>, <vec1>, <len1>, <vec2>, <len2> )
 **
 */
-Obj FuncREDUCE_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
+static Obj FuncREDUCE_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 {
     UInt last;
     Int  len2a;
@@ -3811,7 +3811,7 @@ Obj FuncREDUCE_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 *F  FuncQUOTREM_COEFFS_GF2VEC( <self>, <vec1>, <len1>, <vec2>, <len2> )
 **
 */
-Obj FuncQUOTREM_COEFFS_GF2VEC(
+static Obj FuncQUOTREM_COEFFS_GF2VEC(
     Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 {
     Int len2a;
@@ -3878,7 +3878,7 @@ Obj FuncQUOTREM_COEFFS_GF2VEC(
 **  vectors
 */
 
-Obj FuncSEMIECHELON_LIST_GF2VECS(Obj self, Obj mat)
+static Obj FuncSEMIECHELON_LIST_GF2VECS(Obj self, Obj mat)
 {
     UInt i, len;
     UInt width;
@@ -3913,7 +3913,7 @@ Obj FuncSEMIECHELON_LIST_GF2VECS(Obj self, Obj mat)
 **  vectors
 */
 
-Obj FuncSEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS(Obj self, Obj mat)
+static Obj FuncSEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS(Obj self, Obj mat)
 {
     UInt i, len;
     UInt width;
@@ -3944,7 +3944,7 @@ Obj FuncSEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS(Obj self, Obj mat)
 **
 */
 
-Obj FuncTRIANGULIZE_LIST_GF2VECS(Obj self, Obj mat)
+static Obj FuncTRIANGULIZE_LIST_GF2VECS(Obj self, Obj mat)
 {
     UInt i, len;
     UInt width;
@@ -3976,7 +3976,7 @@ Obj FuncTRIANGULIZE_LIST_GF2VECS(Obj self, Obj mat)
 **
 */
 
-Obj FuncRANK_LIST_GF2VECS(Obj self, Obj mat)
+static Obj FuncRANK_LIST_GF2VECS(Obj self, Obj mat)
 {
     UInt i, len;
     UInt width;
@@ -4007,7 +4007,7 @@ Obj FuncRANK_LIST_GF2VECS(Obj self, Obj mat)
 **
 */
 
-Obj FuncDETERMINANT_LIST_GF2VECS(Obj self, Obj mat)
+static Obj FuncDETERMINANT_LIST_GF2VECS(Obj self, Obj mat)
 {
     UInt i, len;
     UInt width;
@@ -4038,7 +4038,7 @@ Obj FuncDETERMINANT_LIST_GF2VECS(Obj self, Obj mat)
 **
 */
 
-Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
+static Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
 {
     UInt nrowl, nrowr, nrowp, ncoll, ncolr, ncolp, ncol, i, j, k, l, mutable;
     Obj  mat, type, row, shift[BIPEB];
@@ -4131,7 +4131,7 @@ Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
 *F  FuncMAT_ELM_GF2MAT( <self>, <mat>, <row>, <col> )
 **
 */
-Obj FuncMAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col)
+static Obj FuncMAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col)
 {
     if (!IS_POS_INTOBJ(row)) {
         ErrorMayQuit("row index must be a small positive integer, not a %s",
@@ -4166,7 +4166,7 @@ Obj FuncMAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col)
 *F  FuncSET_MAT_ELM_GF2MAT( <self>, <mat>, <row>, <col>, <elm> )
 **
 */
-Obj FuncSET_MAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
+static Obj FuncSET_MAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
 {
     if (!IS_POS_INTOBJ(row)) {
         ErrorMayQuit("row index must be a small positive integer, not a %s",

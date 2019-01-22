@@ -99,16 +99,16 @@
 
 /* The following are imported from the GAP level, we have one type for
  * each blist TNUM. */
-Obj TYPE_BLIST_MUT;
-Obj TYPE_BLIST_IMM;
-Obj TYPE_BLIST_NSORT_MUT;
-Obj TYPE_BLIST_NSORT_IMM;
-Obj TYPE_BLIST_SSORT_MUT;
-Obj TYPE_BLIST_SSORT_IMM;
-Obj TYPE_BLIST_EMPTY_MUT;
-Obj TYPE_BLIST_EMPTY_IMM;
+static Obj TYPE_BLIST_MUT;
+static Obj TYPE_BLIST_IMM;
+static Obj TYPE_BLIST_NSORT_MUT;
+static Obj TYPE_BLIST_NSORT_IMM;
+static Obj TYPE_BLIST_SSORT_MUT;
+static Obj TYPE_BLIST_SSORT_IMM;
+static Obj TYPE_BLIST_EMPTY_MUT;
+static Obj TYPE_BLIST_EMPTY_IMM;
 
-Obj TypeBlist(Obj list)
+static Obj TypeBlist(Obj list)
 {
     /* special case for the empty blist                                    */
     if ( LEN_BLIST(list) == 0 ) {
@@ -119,7 +119,7 @@ Obj TypeBlist(Obj list)
     }
 }
 
-Obj TypeBlistNSort(Obj list)
+static Obj TypeBlistNSort(Obj list)
 {
     /* special case for the empty blist                                    */
     if ( LEN_BLIST(list) == 0 ) {
@@ -131,7 +131,7 @@ Obj TypeBlistNSort(Obj list)
     }
 }
 
-Obj TypeBlistSSort(Obj list)
+static Obj TypeBlistSSort(Obj list)
 {
     /* special case for the empty blist                                    */
     if ( LEN_BLIST(list) == 0 ) {
@@ -149,7 +149,7 @@ Obj TypeBlistSSort(Obj list)
 **
 **   The saving method for the blist tnums
 */
-void SaveBlist (
+static void SaveBlist (
     Obj                 bl )
 {
     UInt                i;
@@ -168,7 +168,7 @@ void SaveBlist (
 **
 **   The loading method for the blist tnums
 */
-void LoadBlist (
+static void LoadBlist (
     Obj                 bl )
 {
     UInt                i;
@@ -205,7 +205,7 @@ void LoadBlist (
 **  'CopyBlist' is the function in 'CopyObjFuncs' for boolean lists.
 */
 
-Obj DoCopyBlist(Obj list, Int mut)
+static Obj DoCopyBlist(Obj list, Int mut)
 {
     Obj copy;
 
@@ -225,7 +225,7 @@ Obj DoCopyBlist(Obj list, Int mut)
 
 #if !defined(USE_THREADSAFE_COPYING)
 
-Obj CopyBlist (
+static Obj CopyBlist (
     Obj                 list,
     Int                 mut )
 {
@@ -244,7 +244,7 @@ Obj CopyBlist (
 #endif // !defined(USE_THREADSAFE_COPYING)
 
 
-Obj ShallowCopyBlist ( Obj list)
+static Obj ShallowCopyBlist ( Obj list)
 {
   return DoCopyBlist(list, 1);
 }
@@ -262,7 +262,7 @@ Obj ShallowCopyBlist ( Obj list)
 **  'EqBlist' returns 'true' if the two boolean lists <listL> and <listR> are
 **  equal and 'false' otherwise.
 */
-Int EqBlist (
+static Int EqBlist (
     Obj                 listL,
     Obj                 listR )
 {
@@ -300,7 +300,7 @@ Int EqBlist (
 **
 **  'LenBlist' is the function in 'LenListFuncs' for boolean lists.
 */
-Int LenBlist (
+static Int LenBlist (
     Obj                 list )
 {
     return LEN_BLIST( list );
@@ -317,7 +317,7 @@ Int LenBlist (
 **
 **  'IsbBlist' is the function in 'IsbListFuncs' for boolean lists.
 */
-Int IsbBlist (
+static Int IsbBlist (
     Obj                 list,
     Int                 pos )
 {
@@ -333,7 +333,7 @@ Int IsbBlist (
 **  <list>, or 0 if  <list>  has no  assigned object  at  <pos>.  It  is  the
 **  responsibility of the caller to ensure that <pos> is a positive integer.
 */
-Obj Elm0Blist (
+static Obj Elm0Blist (
     Obj                 list,
     Int                 pos )
 {
@@ -354,7 +354,7 @@ Obj Elm0Blist (
 **  <pos>  is less  than or  equal   to the length   of  <list>, this is  the
 **  responsibility of the caller.
 */
-Obj Elm0vBlist (
+static Obj Elm0vBlist (
     Obj                 list,
     Int                 pos )
 {
@@ -374,7 +374,7 @@ Obj Elm0vBlist (
 **  'ElmBlist'   is  the  function  in    'ElmListFuncs'  for boolean  lists.
 **  'ElmvBlist' is the function in 'ElmvListFuncs' for boolean lists.
 */
-Obj ElmBlist (
+static Obj ElmBlist (
     Obj                 list,
     Int                 pos )
 {
@@ -398,7 +398,7 @@ Obj ElmBlist (
 **  responsibility of the caller.
 **
 */
-Obj ElmvBlist (
+static Obj ElmvBlist (
     Obj                 list,
     Int                 pos )
 {
@@ -419,7 +419,7 @@ Obj ElmvBlist (
 **
 **  'ElmsBlist' is the function in 'ElmsListFuncs' for boolean lists.
 */
-Obj ElmsBlist (
+static Obj ElmsBlist (
     Obj                 list,
     Obj                 poss )
 {
@@ -611,7 +611,7 @@ void AssBlist (
 **
 **  'PosBlist' is the function in 'PosListFuncs' for boolean lists.
 */
-Obj PosBlist (
+static Obj PosBlist (
     Obj                 list,
     Obj                 val,
     Obj                 start )
@@ -721,7 +721,7 @@ Obj PosBlist (
 **
 **  'PlainBlist' is the function in 'PlainListFuncs' for boolean lists.
 */
-void PlainBlist (
+static void PlainBlist (
     Obj                 list )
 {
     Int                 len;            /* length of <list>                */
@@ -750,7 +750,7 @@ void PlainBlist (
 **  'IsPossBlist' returns  1 if  <list> is  empty, and 0 otherwise, since a
 **  boolean list is a positions list if and only if it is empty.
 */
-Int IsPossBlist (
+static Int IsPossBlist (
     Obj                 list )
 {
     return LEN_BLIST(list) == 0;
@@ -761,7 +761,7 @@ Int IsPossBlist (
 **
 *F  IsHomogBlist( <list> )  . . . . . . . . . . check if <list> is homogenous
 */
-Int IsHomogBlist (
+static Int IsHomogBlist (
     Obj                 list )
 {
     return (0 < LEN_BLIST(list));
@@ -772,7 +772,7 @@ Int IsHomogBlist (
 **
 *F  IsSSortBlist( <list> )  . . . . . . .  check if <list> is strictly sorted
 */
-Int IsSSortBlist (
+static Int IsSSortBlist (
     Obj                 list )
 {
     Int                 isSort;
@@ -840,7 +840,7 @@ void ConvBlist (
 **  list that   has no holes  and contains  only  'true' and  'false',  and 0
 **  otherwise.
 */
-Int IsBlist (
+static Int IsBlist (
     Obj                 list )
 {
     UInt                isBlist;        /* result of the test              */
@@ -888,7 +888,7 @@ Int IsBlist (
 **  boolean lists into the compact representation of type 'T_BLIST' described
 **  above.
 */
-Int IsBlistConv (
+static Int IsBlistConv (
     Obj                 list )
 {
     UInt                isBlist;        /* result of the test              */
@@ -939,7 +939,7 @@ Int IsBlistConv (
 **  The work is done in `COUNT_TRUES_BLOCKS` in blister.h and the algorithms
 **  are documented there.
 */
-UInt SizeBlist (
+static UInt SizeBlist (
     Obj                 blist )
 {
     const UInt *        ptr;            /* pointer to blist                */
@@ -970,9 +970,9 @@ UInt SizeBlist (
 **  otherwise.  A value is a   boolean list if  it is  a lists without  holes
 **  containing only  'true' and 'false'.
 */
-Obj IsBlistFilt;
+static Obj IsBlistFilt;
 
-Obj FuncIS_BLIST (
+static Obj FuncIS_BLIST (
     Obj                 self,
     Obj                 val )
 {
@@ -993,7 +993,7 @@ Obj FuncIS_BLIST (
 **  otherwise.  A value is a   boolean list if  it is  a lists without  holes
 **  containing only  'true' and 'false'.
 */
-Obj FuncIS_BLIST_CONV (
+static Obj FuncIS_BLIST_CONV (
     Obj                 self,
     Obj                 val )
 {
@@ -1007,9 +1007,9 @@ Obj FuncIS_BLIST_CONV (
 **
 *F  FuncIS_BLIST_REP( <self>, <obj> ) . . test if value is a boolean list rep
 */
-Obj IsBlistRepFilt;
+static Obj IsBlistRepFilt;
 
-Obj FuncIS_BLIST_REP (
+static Obj FuncIS_BLIST_REP (
     Obj                 self,
     Obj                 obj )
 {
@@ -1023,7 +1023,7 @@ Obj FuncIS_BLIST_REP (
 **
 **  'FuncSIZE_BLIST' implements the internal function 'SizeBlist'
 */
-Obj FuncSIZE_BLIST (
+static Obj FuncSIZE_BLIST (
     Obj                 self,
     Obj                 blist )
 {
@@ -1050,9 +1050,9 @@ Obj FuncSIZE_BLIST (
 **  arbitrary list that has no holes.
 */
 
-Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub);
+static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub);
 
-Obj FuncBLIST_LIST (
+static Obj FuncBLIST_LIST (
     Obj                 self,
     Obj                 list,
     Obj                 sub )
@@ -1086,7 +1086,7 @@ Obj FuncBLIST_LIST (
 **  same as in <list>.
 **
 */
-Obj FuncLIST_BLIST (
+static Obj FuncLIST_BLIST (
     Obj                 self,
     Obj                 list,
     Obj                 blist )
@@ -1133,7 +1133,7 @@ Obj FuncLIST_BLIST (
 *N  1992/12/15 martin this depends on 'BIPEB' being 32
 *N  Fixed up for 64 SL
 */
-Obj FuncPositionNthTrueBlist (
+static Obj FuncPositionNthTrueBlist (
 
     Obj                 self,
     Obj                 blist,
@@ -1184,7 +1184,7 @@ Obj FuncPositionNthTrueBlist (
 **  the  boolean  list <list1>, which must  have  equal length.  <list2> is a
 **  subset of <list1> if '<list2>[<i>] >= <list1>[<i>]' for all <i>.
 */
-Obj FuncIS_SUB_BLIST (
+static Obj FuncIS_SUB_BLIST (
     Obj                 self,
     Obj                 list1,
     Obj                 list2 )
@@ -1225,7 +1225,7 @@ Obj FuncIS_SUB_BLIST (
 **  <blist2>,  which  must  have the   same  length.  This  is  equivalent to
 **  assigning '<blist1>[<i>] := <blist1>[<i>] or <blist2>[<i>]' for all <i>.
 */
-Obj FuncUNITE_BLIST (
+static Obj FuncUNITE_BLIST (
     Obj                 self,
     Obj                 list1,
     Obj                 list2 )
@@ -1262,7 +1262,7 @@ Obj FuncUNITE_BLIST (
 **  'UniteBlistList'  works like `BlistList', but adds the entries to the
 **  existing <blist>.
 */
-Obj FuncUNITE_BLIST_LIST (
+static Obj FuncUNITE_BLIST_LIST (
     Obj                 self,
     Obj                 list,
     Obj                 blist,
@@ -1486,7 +1486,7 @@ Obj FuncUNITE_BLIST_LIST (
 **  list <list2>, which  must have the  same length.   This is equivalent  to
 **  assigning '<list1>[<i>] := <list1>[<i>] and <list2>[<i>]' for all <i>.
 */
-Obj FuncINTER_BLIST (
+static Obj FuncINTER_BLIST (
     Obj                 self,
     Obj                 list1,
     Obj                 list2 )
@@ -1524,7 +1524,7 @@ Obj FuncINTER_BLIST (
 **  <list1>, which  must have the  same length.  This is equivalent assigning
 **  '<list1>[<i>] := <list1>[<i>] and not <list2>[<i>]' for all <i>.
 */
-Obj FuncSUBTR_BLIST (
+static Obj FuncSUBTR_BLIST (
     Obj                 self,
     Obj                 list1,
     Obj                 list2 )
@@ -1564,7 +1564,7 @@ Obj FuncSUBTR_BLIST (
 **  The lists must have the same length.
 */
 
-Obj FuncMEET_BLIST (
+static Obj FuncMEET_BLIST (
     Obj                 self,
     Obj                 list1,
     Obj                 list2 )
@@ -1596,7 +1596,7 @@ Obj FuncMEET_BLIST (
 *F  MakeImmutableBlist( <blist> )
 */
 
-void MakeImmutableBlist( Obj blist )
+static void MakeImmutableBlist( Obj blist )
 {
     MakeImmutableNoRecurse(blist);
 }

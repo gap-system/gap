@@ -35,7 +35,7 @@
 **  'SumIntVector' is an improved version  of  'SumSclList', which  does  not
 **  call 'SUM' if the operands are immediate integers.
 */
-Obj             SumIntVector (
+static Obj             SumIntVector (
     Obj                 elmL,
     Obj                 vecR )
 {
@@ -84,7 +84,7 @@ Obj             SumIntVector (
 **  'SumVectorInt' is an improved version  of  'SumListScl', which  does  not
 **  call 'SUM' if the operands are immediate integers.
 */
-Obj             SumVectorInt (
+static Obj             SumVectorInt (
     Obj                 vecL,
     Obj                 elmR )
 {
@@ -133,7 +133,7 @@ Obj             SumVectorInt (
 **  'SumVectorVector' is an improved version of 'SumListList', which does not
 **  call 'SUM' if the operands are immediate integers.
 */
-Obj             SumVectorVector (
+static Obj             SumVectorVector (
     Obj                 vecL,
     Obj                 vecR )
 {
@@ -204,7 +204,7 @@ Obj             SumVectorVector (
 **  'DiffIntVector'  is an improved  version of 'DiffSclList', which does not
 **  call 'DIFF' if the operands are immediate integers.
 */
-Obj             DiffIntVector (
+static Obj             DiffIntVector (
     Obj                 elmL,
     Obj                 vecR )
 {
@@ -253,7 +253,7 @@ Obj             DiffIntVector (
 **  'DiffVectorInt' is an improved  version of 'DiffListScl', which  does not
 **  call 'DIFF' if the operands are immediate integers.
 */
-Obj             DiffVectorInt (
+static Obj             DiffVectorInt (
     Obj                 vecL,
     Obj                 elmR )
 {
@@ -302,7 +302,7 @@ Obj             DiffVectorInt (
 **  'DiffVectorVector' is an improved  version of  'DiffListList', which does
 **  not call 'DIFF' if the operands are immediate integers.
 */
-Obj             DiffVectorVector (
+static Obj             DiffVectorVector (
     Obj                 vecL,
     Obj                 vecR )
 {
@@ -382,7 +382,7 @@ Obj             DiffVectorVector (
 **  'ProdIntVector'  is an  improved version of 'ProdSclList', which does not
 **  call 'PROD' if the operands are immediate integers.
 */
-Obj             ProdIntVector (
+static Obj             ProdIntVector (
     Obj                 elmL,
     Obj                 vecR )
 {
@@ -431,7 +431,7 @@ Obj             ProdIntVector (
 **  'ProdVectorInt'  is an  improved version of 'ProdSclList', which does not
 **  call 'PROD' if the operands are immediate integers.
 */
-Obj             ProdVectorInt (
+static Obj             ProdVectorInt (
     Obj                 vecL,
     Obj                 elmR )
 {
@@ -480,7 +480,7 @@ Obj             ProdVectorInt (
 **  'ProdVectorVector' is an improved version  of 'ProdListList',  which does
 **  not call 'PROD' if the operands are immediate integers.
 */
-Obj             ProdVectorVector (
+static Obj             ProdVectorVector (
     Obj                 vecL,
     Obj                 vecR )
 {
@@ -546,7 +546,7 @@ Obj             ProdVectorVector (
 **  We now need to supply a handler for this and install it as a library method,
 **  
 */
-Obj             ProdVectorMatrix (
+static Obj             ProdVectorMatrix (
     Obj                 vecL,
     Obj                 matR )
 {
@@ -648,7 +648,7 @@ Obj             ProdVectorMatrix (
     return vecP;
 }
 
-Obj FuncPROD_VECTOR_MATRIX(Obj self, Obj vec, Obj mat)
+static Obj FuncPROD_VECTOR_MATRIX(Obj self, Obj vec, Obj mat)
 {
     return ProdVectorMatrix(vec, mat);
 }
@@ -663,7 +663,7 @@ Obj FuncPROD_VECTOR_MATRIX(Obj self, Obj vec, Obj mat)
 **  vectors, because it knows what the cyclotomic zero is.
 */
 
-Obj ZeroVector( Obj vec )
+static Obj ZeroVector( Obj vec )
 {
     UInt i, len;
     Obj res;
@@ -677,7 +677,7 @@ Obj ZeroVector( Obj vec )
     return res;
 }
 
-Obj ZeroMutVector( Obj vec )
+static Obj ZeroMutVector( Obj vec )
 {
     UInt i, len;
     Obj res;

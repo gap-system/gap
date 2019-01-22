@@ -47,7 +47,7 @@
 #define UPPER_MASK 0x80000000UL /* most significant w-r bits */
 #define LOWER_MASK 0x7fffffffUL /* least significant r bits */
 
-void initGRMT(UInt4 *mt, UInt4 s)
+static void initGRMT(UInt4 *mt, UInt4 s)
 {
     UInt4 mti;
     mt[0]= s & 0xffffffffUL;
@@ -83,7 +83,7 @@ static inline UInt4 uint4frombytes(const UChar * s, UInt4 pos, UInt4 len)
   return res;
 }
 
-Obj FuncInitRandomMT( Obj self, Obj initstr)
+static Obj FuncInitRandomMT( Obj self, Obj initstr)
 {
   Obj str;
   const UChar *init_key;
@@ -422,7 +422,7 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
 **  length of the computer.
 **  A <maxlen> value of -1 indicates infinity.
 */
-Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj seed, Obj offset, Obj maxlen)
+static Obj FuncHASHKEY_BAG(Obj self, Obj obj, Obj seed, Obj offset, Obj maxlen)
 {
   Int n;
   if ( IS_INTOBJ(obj) )
@@ -618,7 +618,7 @@ static Obj FuncBUILD_BITFIELDS(Obj self, Obj args)
 }
 
 
-Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
+static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
 {
     if (!IS_LIST(widths))
         ErrorMayQuit("MAKE_BITFIELDS: widths must be a list", 0, 0);

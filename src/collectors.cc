@@ -144,7 +144,7 @@ typedef struct {
 *F  WordVectorAndClear( <type>, <vv>, <num> )
 */
 template <typename UIntN>
-Obj WordVectorAndClear(Obj type, Obj vv, Int num)
+static Obj WordVectorAndClear(Obj type, Obj vv, Int num)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
@@ -189,7 +189,7 @@ Obj WordVectorAndClear(Obj type, Obj vv, Int num)
 **  WARNING: This function assumes that <vv> is cleared!
 */
 template <typename UIntN>
-Int VectorWord(Obj vv, Obj v, Int num)
+static Int VectorWord(Obj vv, Obj v, Int num)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
@@ -330,7 +330,7 @@ static Int SAddPartIntoExpVec(Int *         v,
 **  If a stack overflow occurs, we simply stop and return false.
 */
 template <typename UIntN>
-Int SingleCollectWord(Obj sc, Obj vv, Obj w)
+static Int SingleCollectWord(Obj sc, Obj vv, Obj w)
 {
     Int         ebits;      /* number of bits in the exponent              */
     UInt        expm;       /* unsigned exponent mask                      */
@@ -608,7 +608,7 @@ Int SingleCollectWord(Obj sc, Obj vv, Obj w)
 *F  Solution( <sc>, <ww>, <uu>, <func> )
 */
 template <typename UIntN>
-Int Solution(Obj sc, Obj ww, Obj uu, FuncIOOO func)
+static Int Solution(Obj sc, Obj ww, Obj uu, FuncIOOO func)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
@@ -844,7 +844,7 @@ static void AddPartIntoExpVec(Int *         v,
 **  If a stack overflow occurs, we simply stop and return false.
 */
 template <typename UIntN>
-Int CombiCollectWord(Obj sc, Obj vv, Obj w)
+static Int CombiCollectWord(Obj sc, Obj vv, Obj w)
 {
     Int         ebits;      /* number of bits in the exponent              */
     UInt        expm;       /* unsigned exponent mask                      */
@@ -1238,7 +1238,7 @@ FinPowConjCol * FinPowConjCollectors [6] =
 **
 *F  CollectWordOrFail( <fc>, <sc>, <vv>, <w> )
 */
-Obj CollectWordOrFail ( 
+static Obj CollectWordOrFail ( 
     FinPowConjCol *     fc, 
     Obj                 sc,
     Obj                 vv,
@@ -1275,7 +1275,7 @@ Obj CollectWordOrFail (
 **
 *F  ReducedComm( <fc>, <sc>, <w>, <u> )
 */
-Obj ReducedComm (
+static Obj ReducedComm (
     FinPowConjCol *     fc,
     Obj                 sc,
     Obj                 w,
@@ -1347,7 +1347,7 @@ Obj ReducedComm (
 **
 *F  ReducedForm( <fc>, <sc>, <w> )
 */
-Obj ReducedForm (
+static Obj ReducedForm (
     FinPowConjCol *     fc,
     Obj                 sc,
     Obj                 w )
@@ -1385,7 +1385,7 @@ Obj ReducedForm (
 **
 *F  ReducedLeftQuotient( <fc>, <sc>, <w>, <u> )
 */
-Obj ReducedLeftQuotient ( 
+static Obj ReducedLeftQuotient ( 
     FinPowConjCol *     fc,
     Obj                 sc,
     Obj                 w,
@@ -1441,7 +1441,7 @@ Obj ReducedLeftQuotient (
 **
 *F  ReducedProduct( <fc>, <sc>, <w>, <u> )
 */
-Obj ReducedProduct ( 
+static Obj ReducedProduct ( 
     FinPowConjCol *     fc,
     Obj                 sc,
     Obj                 w,
@@ -1481,7 +1481,7 @@ Obj ReducedProduct (
 **
 *F  ReducedPowerSmallInt( <fc>, <sc>, <w>, <pow> )
 */
-Obj ReducedPowerSmallInt ( 
+static Obj ReducedPowerSmallInt ( 
     FinPowConjCol *     fc,
     Obj                 sc,
     Obj                 w,
@@ -1584,7 +1584,7 @@ Obj ReducedPowerSmallInt (
 **
 *F  ReducedQuotient( <fc>, <sc>, <w>, <u> )
 */
-Obj ReducedQuotient ( 
+static Obj ReducedQuotient ( 
     FinPowConjCol *     fc,
     Obj                 sc,
     Obj                 w,
@@ -1720,7 +1720,7 @@ Obj FuncFinPowConjCol_ReducedQuotient ( Obj self, Obj sc, Obj w, Obj u )
 **
 *F  SET_SCOBJ_MAX_STACK_SIZE( <self>, <size> )
 */
-Obj FuncSET_SCOBJ_MAX_STACK_SIZE ( Obj self, Obj size )
+static Obj FuncSET_SCOBJ_MAX_STACK_SIZE ( Obj self, Obj size )
 {
     CollectorsState()->SC_MAX_STACK_SIZE =
         GetPositiveSmallInt("SET_SCOBJ_MAX_STACK_SIZE", size);

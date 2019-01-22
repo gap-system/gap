@@ -260,7 +260,7 @@ static Obj  Part(Obj list, Int pos1, Int pos2);
 **  Dt_add is used to store the library function dt_add.
 */
 
-Obj                    Dt_add;
+static Obj                    Dt_add;
 
 /****************************************************************************
 **
@@ -268,7 +268,7 @@ Obj                    Dt_add;
 **
 **  'UnmarkTree' removes all marks of all nodes of the tree <tree>.
 */
-void  UnmarkTree(
+static void  UnmarkTree(
                   Obj   tree )
 {
     UInt     i, len; /*  loop variable                     */
@@ -289,7 +289,7 @@ void  UnmarkTree(
 **
 **  'UnmarkTree' removes all marks of all nodes of the tree <tree>.
 */
-Obj  FuncUnmarkTree(
+static Obj  FuncUnmarkTree(
                      Obj  self,
                      Obj  tree   )
 {
@@ -311,7 +311,7 @@ Obj  FuncUnmarkTree(
 **  is equal to {1,...,n} for a positive integer n,  'Mark' actually returns
 **  the Maximum of {pos(a) | a almost equal to (<reftree>, index)}.
 */
-UInt   Mark(
+static UInt   Mark(
             Obj   tree,
             Obj   reftree,
             Int   indexx  )
@@ -368,7 +368,7 @@ UInt   Mark(
 **  and <index2> has to be a positive integer less or equal to the number of
 **  nodes of <tree2>.
 */
-Int     AlmostEqual(
+static Int     AlmostEqual(
                      Obj    tree1,
                      Int    index1,
                      Obj    tree2,
@@ -418,7 +418,7 @@ Int     AlmostEqual(
 **  and <index2> has to be a positive integer less or equal to the number of
 **  nodes of <tree2>.
 */
-Int     Equal(
+static Int     Equal(
                Obj     tree1,
                Int     index1,
                Obj     tree2,
@@ -467,7 +467,7 @@ Int     Equal(
 **  of <tree>,  and <index2> has to be a positive integer less or equal to
 **  the number of nodes of <reftree>.
 */
-Obj    Mark2(
+static Obj    Mark2(
               Obj        tree,
               Int        index1,
               Obj        reftree,
@@ -552,7 +552,7 @@ Obj    Mark2(
 **  does not exist 'Findtree' returns 0 (as C integer).  Note that this holds
 **  if and only if tree(<tree>, index) is marked.
 */
-UInt    FindTree(
+static UInt    FindTree(
                  Obj     tree,
                  Int     indexx )
 {
@@ -608,7 +608,7 @@ UInt    FindTree(
 **  'MakeFormulaVector' only returns correct results if all nodes of <tree>
 **  are unmarked.
 */
-Obj    MakeFormulaVector(
+static Obj    MakeFormulaVector(
                           Obj    tree,
                           Obj    pr   )
 {
@@ -694,7 +694,7 @@ Obj    MakeFormulaVector(
 **  'MakeFormulaVector' returns the formula vector for the tree <tree> and
 **  the pc-presentation <pr>.
 */
-Obj    FuncMakeFormulaVector(
+static Obj    FuncMakeFormulaVector(
                               Obj      self,
                               Obj      tree,
                               Obj      pr            )
@@ -716,7 +716,7 @@ Obj    FuncMakeFormulaVector(
 **  tree(<tree1>, index1) and tree(<tree2>, index2) both occur. It is assumed
 **  that tree(<tree1>, index1) is not equal to tree(<tree2>, index2). 
 */
-Int     Leftof(
+static Int     Leftof(
                 Obj     tree1,
                 Int     index1,
                 Obj     tree2,
@@ -766,7 +766,7 @@ Int     Leftof(
 **  tree(<tree1>, index1) and tree(<tree2>, index2) are non-atoms,  then their
 **  right trees and their left trees are not equal. 
 */
-Int    Leftof2(
+static Int    Leftof2(
                 Obj    tree1,
                 Int    index1,
                 Obj    tree2,
@@ -797,7 +797,7 @@ Int    Leftof2(
 **  right(tree(<tree2>, index2) ) or left(tree(<tree1>, index1) ) does not
 **  equal left(tree(<tree2>, index2) ). 
 */
-Int    Earlier(
+static Int    Earlier(
                 Obj    tree1,
                 Int    index1,
                 Obj    tree2,
@@ -830,10 +830,10 @@ Int    Earlier(
 */
 
 /* See below: */
-void GetReps( Obj list, Obj reps );
-void FindNewReps2( Obj tree, Obj reps, Obj pr);
+static void GetReps( Obj list, Obj reps );
+static void FindNewReps2( Obj tree, Obj reps, Obj pr);
 
-void    GetPols( 
+static void    GetPols( 
                 Obj    list,
                 Obj    pr,
                 Obj    pols     )
@@ -890,7 +890,7 @@ void    GetPols(
 **  FuncGetPols implements the internal function GetPols.
 */
 
-Obj      FuncGetPols(
+static Obj      FuncGetPols(
                      Obj      self,
                      Obj      list,
                      Obj      pr,
@@ -914,9 +914,9 @@ Obj      FuncGetPols(
 */
 
 /* See below: */
-void FindNewReps1( Obj tree, Obj reps);
+static void FindNewReps1( Obj tree, Obj reps);
 
-void    GetReps( 
+static void    GetReps( 
                 Obj    list,
                 Obj    reps     )
 {
@@ -999,10 +999,10 @@ void    GetReps(
 */
 
 /* See below: */
-void  FindSubs1( Obj tree, Int x, Obj list1, Obj list2, Obj a, Obj b, 
+static void  FindSubs1( Obj tree, Int x, Obj list1, Obj list2, Obj a, Obj b, 
                  Int al, Int ar, Int bl, Int br, Obj reps );
 
-void   FindNewReps1(
+static void   FindNewReps1(
                     Obj     tree,
                     Obj     reps
                                       )
@@ -1089,10 +1089,10 @@ void   FindNewReps1(
 }
 
 /* See below: */
-void  FindSubs2( Obj tree, Int x, Obj list1, Obj list2, Obj a, Obj b, 
+static void  FindSubs2( Obj tree, Int x, Obj list1, Obj list2, Obj a, Obj b, 
                  Int al, Int ar, Int bl, Int br, Obj reps, Obj pr );
 
-void   FindNewReps2(
+static void   FindNewReps2(
                     Obj     tree,
                     Obj     reps,
                     Obj     pr  /*  pc-presentation for a 
@@ -1184,7 +1184,7 @@ void   FindNewReps2(
 }
 
 
-void   FindNewReps(
+static void   FindNewReps(
                     Obj     tree,
                     Obj     reps,
                     Obj     pr,  /*  pc-presentation for a 
@@ -1314,7 +1314,7 @@ void   FindNewReps(
 **  'FuncFindNewReps' implements the internal function 'FindNewReps'.
 */
 
-Obj    FuncFindNewReps(
+static Obj    FuncFindNewReps(
                         Obj     self,
                         Obj     tree,
                         Obj     reps,
@@ -1340,7 +1340,7 @@ Obj    FuncFindNewReps(
 **  signals an error.
 */
 #if 0
-void  TestTree(
+static void  TestTree(
                Obj     tree)
 {
 
@@ -1385,7 +1385,7 @@ void  TestTree(
 **  'Part' returns <list>{ [<pos1>+1 .. <pos2>] }.
 */
 #if 0
-Obj    Part(
+static Obj    Part(
              Obj      list,
              Int      pos1,
              Int      pos2  )
@@ -1430,7 +1430,7 @@ v**  argument.
 **  FindNewReps2.  FindSubs is called from FindNewReps and calls FindNewReps.
 */
 
-void  FindSubs1(
+static void  FindSubs1(
                 Obj        tree,
                 Int        x,     /*  subtree of <tree>                     */
                 Obj        list1, /*  list containing all subtrees of
@@ -1507,7 +1507,7 @@ void  FindSubs1(
 }
 
 
-void  FindSubs2(
+static void  FindSubs2(
                 Obj        tree,
                 Int        x,     /*  subtree of <tree>                     */
                 Obj        list1, /*  list containing all subtrees of
@@ -1585,7 +1585,7 @@ void  FindSubs2(
 }
 
 
-void  FindSubs(
+static void  FindSubs(
                 Obj        tree,
                 Int        x,     /*  subtree of <tree>                     */
                 Obj        list1, /*  list containing all subtrees of
@@ -1671,7 +1671,7 @@ void  FindSubs(
 **  'SetSubs' sets the pos-arguments of the subtrees of <tree>,  contained
 **  in <list> according to the entries in the list <a>.
 */
-void    SetSubs(
+static void    SetSubs(
                  Obj       list,
                  Obj       a,
                  Obj       tree    )
@@ -1698,7 +1698,7 @@ void    SetSubs(
 **  top node of each of those trees.
 */
 
-void    UnmarkAEClass(
+static void    UnmarkAEClass(
                        Obj      tree,
                        Obj      list  )
 {
@@ -1729,7 +1729,7 @@ void    UnmarkAEClass(
 **  monomials.  DT_evaluation is called from the library function dt_add.
 */
 
-Obj    FuncDT_evaluation(Obj      self,
+static Obj    FuncDT_evaluation(Obj      self,
                     Obj      vector)
 {
     UInt   res,i;

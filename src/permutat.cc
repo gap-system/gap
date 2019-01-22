@@ -211,17 +211,17 @@ static inline T * ADDR_TMP_PERM()
 **
 **  'TypePerm' is the function in 'TypeObjFuncs' for permutations.
 */
-Obj             TYPE_PERM2;
+static Obj             TYPE_PERM2;
 
-Obj             TYPE_PERM4;
+static Obj             TYPE_PERM4;
 
-Obj             TypePerm2 (
+static Obj             TypePerm2 (
     Obj                 perm )
 {
     return TYPE_PERM2;
 }
 
-Obj             TypePerm4 (
+static Obj             TypePerm4 (
     Obj                 perm )
 {
     return TYPE_PERM4;
@@ -242,7 +242,7 @@ Obj             TypePerm4 (
 **  enough to keep a terminal at 9600 baud busy for all but the extrem cases.
 */
 template <typename T>
-void PrintPerm(Obj perm)
+static void PrintPerm(Obj perm)
 {
     UInt                degPerm;        /* degree of the permutation       */
     const T *           ptPerm;         /* pointer to the permutation      */
@@ -301,7 +301,7 @@ void PrintPerm(Obj perm)
 **
 */
 template <typename TL, typename TR>
-Int EqPerm(Obj opL, Obj opR)
+static Int EqPerm(Obj opL, Obj opR)
 {
     UInt                degL;           /* degree of the left operand      */
     const TL *          ptL;            /* pointer to the left operand     */
@@ -349,7 +349,7 @@ Int EqPerm(Obj opL, Obj opR)
 **  respect to the images of 1,2,.., etc.
 */
 template <typename TL, typename TR>
-Int LtPerm(Obj opL, Obj opR)
+static Int LtPerm(Obj opL, Obj opR)
 {
     UInt                degL;           /* degree of the left operand      */
     const TL *          ptL;            /* pointer to the left operand     */
@@ -402,7 +402,7 @@ Int LtPerm(Obj opL, Obj opR)
 **  This is a little bit tuned but should be sufficiently easy to understand.
 */
 template <typename TL, typename TR>
-Obj ProdPerm(Obj opL, Obj opR)
+static Obj ProdPerm(Obj opL, Obj opR)
 {
     typedef typename ResultType<TL,TR>::type Res;
 
@@ -455,7 +455,7 @@ Obj ProdPerm(Obj opL, Obj opR)
 **  Unfortunatly this can not be done in <degree> steps, we need 2 * <degree>
 **  steps.
 */
-Obj QuoPerm(Obj opL, Obj opR)
+static Obj QuoPerm(Obj opL, Obj opR)
 {
     return PROD(opL, INV(opR));
 }
@@ -471,7 +471,7 @@ Obj QuoPerm(Obj opL, Obj opR)
 **  This can be done as fast as a single multiplication or inversion.
 */
 template <typename TL, typename TR>
-Obj LQuoPerm(Obj opL, Obj opR)
+static Obj LQuoPerm(Obj opL, Obj opR)
 {
     typedef typename ResultType<TL,TR>::type Res;
 
@@ -521,7 +521,7 @@ Obj LQuoPerm(Obj opL, Obj opR)
 *F  InvPerm( <perm> ) . . . . . . . . . . . . . . .  inverse of a permutation
 */
 template <typename T>
-Obj InvPerm(Obj perm)
+static Obj InvPerm(Obj perm)
 {
     Obj                 inv;            /* handle of the inverse (result)  */
     T *                 ptInv;          /* pointer to the inverse          */
@@ -561,7 +561,7 @@ Obj InvPerm(Obj perm)
 **  to be faster than binary powering, and does not need  temporary  storage.
 */
 template <typename T>
-Obj PowPermInt(Obj opL, Obj opR)
+static Obj PowPermInt(Obj opL, Obj opR)
 {
     Obj                 pow;            /* handle of the power (result)    */
     T *                 ptP;            /* pointer to the power            */
@@ -816,7 +816,7 @@ Obj PowPermInt(Obj opL, Obj opR)
 **  fixpoint of the permutation and thus simply returned.
 */
 template <typename T>
-Obj PowIntPerm(Obj opL, Obj opR)
+static Obj PowIntPerm(Obj opL, Obj opR)
 {
     Int                 img;            /* image (result)                  */
 
@@ -857,7 +857,7 @@ Obj PowIntPerm(Obj opL, Obj opR)
 static Obj PERM_INVERSE_THRESHOLD;
 
 template <typename T>
-Obj QuoIntPerm(Obj opL, Obj opR)
+static Obj QuoIntPerm(Obj opL, Obj opR)
 {
     T                   pre;            /* preimage (result)               */
     Int                 img;            /* image (left operand)            */
@@ -907,7 +907,7 @@ Obj QuoIntPerm(Obj opL, Obj opR)
 **  <opR>'.
 */
 template <typename TL, typename TR>
-Obj PowPerm(Obj opL, Obj opR)
+static Obj PowPerm(Obj opL, Obj opR)
 {
     typedef typename ResultType<TL,TR>::type Res;
 
@@ -956,7 +956,7 @@ Obj PowPerm(Obj opL, Obj opR)
 **  <opR>, that is defined as '<hd>\^-1 \*\ <opR>\^-1 \*\ <opL> \*\ <opR>'.
 */
 template <typename TL, typename TR>
-Obj CommPerm(Obj opL, Obj opR)
+static Obj CommPerm(Obj opL, Obj opR)
 {
     typedef typename ResultType<TL,TR>::type Res;
 
@@ -1002,7 +1002,7 @@ Obj CommPerm(Obj opL, Obj opR)
 **
 *F  OnePerm( <perm> )
 */
-Obj OnePerm (
+static Obj OnePerm (
     Obj                 op )
 {
     return IdentityPerm;
@@ -1021,9 +1021,9 @@ Obj OnePerm (
 **  'IsPerm' returns 'true' if the value <val> is a permutation and  'false'
 **  otherwise.
 */
-Obj IsPermFilt;
+static Obj IsPermFilt;
 
-Obj IsPermHandler (
+static Obj IsPermHandler (
     Obj                 self,
     Obj                 val )
 {
@@ -1109,7 +1109,7 @@ static inline Obj PermList(Obj list)
     return perm;
 }
 
-Obj             FuncPermList (
+static Obj             FuncPermList (
     Obj                 self,
     Obj                 list )
 {
@@ -1169,7 +1169,7 @@ UInt LargestMovedPointPerm(Obj perm)
 **
 **  GAP-level wrapper for 'LargestMovedPointPerm'.
 */
-Obj FuncLARGEST_MOVED_POINT_PERM(Obj self, Obj perm)
+static Obj FuncLARGEST_MOVED_POINT_PERM(Obj self, Obj perm)
 {
 
     /* check the argument                                                  */
@@ -1216,7 +1216,7 @@ static inline Obj CYCLE_LENGTH_PERM_INT(Obj perm, UInt pnt)
     return INTOBJ_INT(len);
 }
 
-Obj             FuncCYCLE_LENGTH_PERM_INT (
+static Obj             FuncCYCLE_LENGTH_PERM_INT (
     Obj                 self,
     Obj                 perm,
     Obj                 point )
@@ -1285,7 +1285,7 @@ static inline Obj CYCLE_PERM_INT(Obj perm, UInt pnt)
     return list;
 }
 
-Obj             FuncCYCLE_PERM_INT (
+static Obj             FuncCYCLE_PERM_INT (
     Obj                 self,
     Obj                 perm,
     Obj                 point )
@@ -1416,7 +1416,7 @@ static inline Obj CYCLE_STRUCT_PERM(Obj perm)
     return list;
 }
 
-Obj FuncCYCLE_STRUCT_PERM(Obj self, Obj perm)
+static Obj FuncCYCLE_STRUCT_PERM(Obj self, Obj perm)
 {
     /* evaluate and check the arguments                                    */
     RequirePermutation("CycleStructPerm", perm);
@@ -1492,7 +1492,7 @@ static inline Obj ORDER_PERM(Obj perm)
     return ord;
 }
 
-Obj             FuncORDER_PERM (
+static Obj             FuncORDER_PERM (
     Obj                 self,
     Obj                 perm )
 {
@@ -1569,7 +1569,7 @@ static inline Obj SIGN_PERM(Obj perm)
     return INTOBJ_INT( sign );
 }
 
-Obj             FuncSIGN_PERM (
+static Obj             FuncSIGN_PERM (
     Obj                 self,
     Obj                 perm )
 {
@@ -1688,7 +1688,7 @@ static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
     return small;
 }
 
-Obj             FuncSMALLEST_GENERATOR_PERM (
+static Obj             FuncSMALLEST_GENERATOR_PERM (
     Obj                 self,
     Obj                 perm )
 {
@@ -1805,7 +1805,7 @@ static inline Obj RESTRICTED_PERM(Obj perm, Obj dom, Obj test)
     return rest;
 }
 
-Obj             FuncRESTRICTED_PERM (
+static Obj             FuncRESTRICTED_PERM (
     Obj                 self,
     Obj                 perm,
     Obj                 dom,
@@ -1829,7 +1829,7 @@ Obj             FuncRESTRICTED_PERM (
 **  'TRIM_PERM' trims a permutation to the first <n> points. This can be
 ##  useful to save memory
 */
-Obj             FuncTRIM_PERM (
+static Obj             FuncTRIM_PERM (
     Obj                 self,
     Obj                 perm,
     Obj                 n )
@@ -1931,7 +1931,7 @@ SPLIT_PARTITION(Obj Ppoints, Obj Qnum, Obj jval, Obj g, Obj lst)
   return INTOBJ_INT(b+1);
 }
 
-Obj FuncSPLIT_PARTITION(
+static Obj FuncSPLIT_PARTITION(
     Obj self,
     Obj Ppoints,
     Obj Qnum,
@@ -1983,7 +1983,7 @@ static inline Obj DISTANCE_PERMS(Obj opL, Obj opR)
     return INTOBJ_INT(dist);
 }
 
-Obj FuncDISTANCE_PERMS(Obj self, Obj opL, Obj opR)
+static Obj FuncDISTANCE_PERMS(Obj self, Obj opL, Obj opR)
 {
     UInt type = (TNUM_OBJ(opL) == T_PERM2 ? 20 : 40) + (TNUM_OBJ(opR) == T_PERM2 ? 2 : 4);
     switch (type) {
@@ -2038,7 +2038,7 @@ static inline Obj SMALLEST_IMG_TUP_PERM(Obj tup, Obj perm)
 
 }
 
-Obj             FuncSMALLEST_IMG_TUP_PERM (
+static Obj             FuncSMALLEST_IMG_TUP_PERM (
     Obj                 self,
     Obj                 tup,
     Obj                 perm )
@@ -2217,7 +2217,7 @@ Obj             OnSetsPerm (
 *F  SavePerm2( <perm2> )
 **
 */
-void SavePerm2(Obj perm)
+static void SavePerm2(Obj perm)
 {
     SaveSubObj(STOREDINV_PERM(perm));
     UInt len = DEG_PERM2(perm);
@@ -2231,7 +2231,7 @@ void SavePerm2(Obj perm)
 *F  SavePerm4( <perm4> )
 **
 */
-void SavePerm4(Obj perm)
+static void SavePerm4(Obj perm)
 {
     SaveSubObj(STOREDINV_PERM(perm));
     UInt len = DEG_PERM4(perm);
@@ -2245,7 +2245,7 @@ void SavePerm4(Obj perm)
 *F  LoadPerm2( <perm2> )
 **
 */
-void LoadPerm2(Obj perm)
+static void LoadPerm2(Obj perm)
 {
     ADDR_OBJ(perm)[0] = LoadSubObj();    // stored inverse
     UInt len = DEG_PERM2(perm);
@@ -2259,7 +2259,7 @@ void LoadPerm2(Obj perm)
 *F  LoadPerm4( <perm4> )
 **
 */
-void LoadPerm4(Obj perm)
+static void LoadPerm4(Obj perm)
 {
     ADDR_OBJ(perm)[0] = LoadSubObj();    // stored inverse
     UInt len = DEG_PERM4(perm);
@@ -2402,7 +2402,7 @@ static inline Int myquo(Obj pt, Obj perm)
   
 
 /* Stabilizer chain helper implements AddGeneratorsExtendSchreierTree Inner loop */
-Obj FuncAGESTC( Obj self, Obj args)
+static Obj FuncAGESTC( Obj self, Obj args)
 {
   Int i,j;
   Obj pt;
@@ -2456,7 +2456,7 @@ Obj FuncAGESTC( Obj self, Obj args)
 }
 
 /* Stabilizer chain helper implements AddGeneratorsExtendSchreierTree Inner loop */
-Obj FuncAGEST( Obj self, Obj orbit, Obj newlabs,  Obj labels, Obj translabels, Obj transversal, Obj genlabels)
+static Obj FuncAGEST( Obj self, Obj orbit, Obj newlabs,  Obj labels, Obj translabels, Obj transversal, Obj genlabels)
 {
   Int i,j;
   Int len = LEN_PLIST(orbit);
@@ -2506,7 +2506,7 @@ Obj FuncAGEST( Obj self, Obj orbit, Obj newlabs,  Obj labels, Obj translabels, O
 
 #define DEGREELIMITONSTACK 512
 
-Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
+static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
 {
     Int l;
     Int i;
@@ -2677,7 +2677,7 @@ Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
 /* end ); */
 
 
-Obj FuncSCR_SIFT_HELPER(Obj self, Obj S, Obj g, Obj n)
+static Obj FuncSCR_SIFT_HELPER(Obj self, Obj S, Obj g, Obj n)
 {
   Obj stb = S;
   static UInt RN_stabilizer = 0;

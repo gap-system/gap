@@ -44,7 +44,7 @@ ArithMethod1 ZeroFuncs [LAST_REAL_TNUM+1];
 */
 static Obj ZEROOp;
 
-Obj ZeroObject (
+static Obj ZeroObject (
     Obj                 obj )
 
 {
@@ -59,7 +59,7 @@ Obj ZeroObject (
 **
 *F  VerboseZeroObject( <obj> )  . . . . . . . . . . . .  call verbose methsel
 */
-Obj VerboseZeroObject (
+static Obj VerboseZeroObject (
     Obj                 obj )
 
 {
@@ -90,7 +90,7 @@ static void InstallZeroObject ( Int verb )
 **
 *F  FuncZERO( <self>, <obj> ) . . . . . . . . . . . . . . . . . . call 'ZERO'
 */
-Obj FuncZERO (
+static Obj FuncZERO (
     Obj                 self,
     Obj                 obj )
 {
@@ -110,7 +110,7 @@ ArithMethod1 ZeroMutFuncs [LAST_REAL_TNUM+1];
 */
 static Obj ZeroOp;
 
-Obj ZeroMutObject (
+static Obj ZeroMutObject (
     Obj                 obj )
 
 {
@@ -125,7 +125,7 @@ Obj ZeroMutObject (
 **
 *F  VerboseZeroMutObject( <obj> )  . . . . . . . . . . . .  call verbose methsel
 */
-Obj VerboseZeroMutObject (
+static Obj VerboseZeroMutObject (
     Obj                 obj )
 
 {
@@ -156,7 +156,7 @@ static void InstallZeroMutObject ( Int verb )
 **
 *F  FuncZERO_MUT( <self>, <obj> ) . . . . . . . . . . . . . . call 'ZERO_MUT'
 */
-Obj FuncZERO_MUT (
+static Obj FuncZERO_MUT (
     Obj                 self,
     Obj                 obj )
 {
@@ -180,7 +180,7 @@ ArithMethod1 AInvMutFuncs[ LAST_REAL_TNUM + 1];
 */
 static Obj AInvOp;
 
-Obj AInvObject (
+static Obj AInvObject (
     Obj                 obj )
 {
   Obj val;
@@ -194,7 +194,7 @@ Obj AInvObject (
 **
 *F  VerboseAInvObject( <obj> )  . . . . . . . . . . . .  call verbose methsel
 */
-Obj VerboseAInvObject (
+static Obj VerboseAInvObject (
     Obj                 obj )
 {
   Obj val;
@@ -224,7 +224,7 @@ static void InstallAInvObject(Int verb)
 **
 *F  FuncAINV( <self>, <obj> ) . . . . . . . . . . . . . . . . . . call 'AINV'
 */
-Obj FuncAINV (
+static Obj FuncAINV (
     Obj                 self,
     Obj                 obj )
 {
@@ -237,7 +237,7 @@ Obj FuncAINV (
 */
 static Obj AdditiveInverseOp;
 
-Obj AInvMutObject (
+static Obj AInvMutObject (
     Obj                 obj )
 {
   Obj val;
@@ -251,7 +251,7 @@ Obj AInvMutObject (
 **
 *F  VerboseAInvMutObject( <obj> )  . . . . . . . . . . . .  call verbose methsel
 */
-Obj VerboseAInvMutObject (
+static Obj VerboseAInvMutObject (
     Obj                 obj )
 {
   Obj val;
@@ -281,7 +281,7 @@ static void InstallAInvMutObject(Int verb)
 **
 *F  FuncAINV_MUT( <self>, <obj> ) . . . . . . . . . . . . . . . . . . call 'AINV'
 */
-Obj FuncAINV_MUT (
+static Obj FuncAINV_MUT (
     Obj                 self,
     Obj                 obj )
 {
@@ -302,7 +302,7 @@ ArithMethod1 OneFuncs [LAST_REAL_TNUM+1];
 */
 static Obj OneOp;
 
-Obj OneObject (
+static Obj OneObject (
     Obj                 obj )
 {
   Obj val;
@@ -316,7 +316,7 @@ Obj OneObject (
 **
 *F  VerboseOneObject( <obj> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-Obj VerboseOneObject (
+static Obj VerboseOneObject (
     Obj                 obj )
 {
   Obj val;
@@ -346,7 +346,7 @@ static void InstallOneObject ( Int verb )
 **
 *F  FuncONE( <self>, <obj> ) . . . . . . . . . . . . . . . . .  call 'ONE'
 */
-Obj FuncONE (
+static Obj FuncONE (
     Obj                 self,
     Obj                 obj )
 {
@@ -366,7 +366,7 @@ ArithMethod1 OneMutFuncs [LAST_REAL_TNUM+1];
 */
 static Obj OneMutOp;
 
-Obj OneMutObject (
+static Obj OneMutObject (
     Obj                 obj )
 {
   Obj val;
@@ -380,7 +380,7 @@ Obj OneMutObject (
 **
 *F  VerboseOneMutObject( <obj> ) . . .  . . . . . . . . . . . .  call methsel
 */
-Obj VerboseOneMutObject (
+static Obj VerboseOneMutObject (
     Obj                 obj )
 {
   Obj val;
@@ -410,7 +410,7 @@ static void InstallOneMutObject ( Int verb )
 **
 *F  FuncONE_MUT( <self>, <obj> ) . . . . . . . . . . . . . . . .call 'ONE_MUT'
 */
-Obj FuncONE_MUT (
+static Obj FuncONE_MUT (
     Obj                 self,
     Obj                 obj )
 {
@@ -431,7 +431,7 @@ ArithMethod1 InvFuncs [LAST_REAL_TNUM+1];
 */
 static Obj InvOp;
 
-Obj InvObject (
+static Obj InvObject (
     Obj                 obj )
 {
   Obj val;
@@ -445,7 +445,7 @@ Obj InvObject (
 **
 *F  VerboseInvObject( <obj> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-Obj VerboseInvObject (
+static Obj VerboseInvObject (
     Obj                 obj )
 {
   Obj val;
@@ -475,7 +475,7 @@ static void InstallInvObject ( Int verb )
 **
 *F  FuncINV( <self>, <obj> )  . . . . . . . . . . . . . . . . . .  call 'INV'
 */
-Obj FuncINV (
+static Obj FuncINV (
     Obj                 self,
     Obj                 obj )
 {
@@ -496,7 +496,7 @@ ArithMethod1 InvMutFuncs [LAST_REAL_TNUM+1];
 */
 static Obj InvMutOp;
 
-Obj InvMutObject (
+static Obj InvMutObject (
     Obj                 obj )
 {
   Obj val;
@@ -510,7 +510,7 @@ Obj InvMutObject (
 **
 *F  VerboseInvMutObject( <obj> ) . . .  . . . . . . . . . . . .  call methsel
 */
-Obj VerboseInvMutObject (
+static Obj VerboseInvMutObject (
     Obj                 obj )
 {
   Obj val;
@@ -540,7 +540,7 @@ static void InstallInvMutObject ( Int verb )
 **
 *F  FuncINV_MUT( <self>, <obj> )  . . .  . . . . . . . . . .  call 'INV_MUT'
 */
-Obj FuncINV_MUT (
+static Obj FuncINV_MUT (
     Obj                 self,
     Obj                 obj )
 {
@@ -564,7 +564,7 @@ CompaMethod EqFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  EqNot( <opL>, <opR> ) . . . . . . . . . . . . . . . . . . . . . not equal
 */
-Int EqNot (
+static Int EqNot (
     Obj                 opL,
     Obj                 opR )
 {
@@ -590,7 +590,7 @@ Int EqObject (
 **
 *F  VerboseEqObject( <opL>, <opR> ) . . . . . . . . . . . . . .  call methsel
 */
-Int VerboseEqObject (
+static Int VerboseEqObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -622,7 +622,7 @@ static void InstallEqObject ( Int verb )
 **
 *F  FuncEQ( <self>, <opL>, <opR> )  . . . . . . . . . . . . . . . . call 'EQ'
 */
-Obj FuncEQ (
+static Obj FuncEQ (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -651,7 +651,7 @@ CompaMethod LtFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 Obj LtOper;
 
-Int LtObject (
+static Int LtObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -663,7 +663,7 @@ Int LtObject (
 **
 *F  VerboseLtObject( <opL>, <opR> ) . . . . . . . . . . . . . .  call methsel
 */
-Int VerboseLtObject (
+static Int VerboseLtObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -695,7 +695,7 @@ static void InstallLtObject ( Int verb )
 **
 *F  FuncLT( <self>, <opL>, <opR> )  . . . . . . . . . . . . . . . . call 'LT'
 */
-Obj FuncLT (
+static Obj FuncLT (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -715,7 +715,7 @@ CompaMethod InFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  InUndefined( <self>, <opL>, <opR> ) . . . . . . . . . . . . . cannot 'in'
 */
-Int InUndefined (
+static Int InUndefined (
     Obj                 opL,
     Obj                 opR )
 {
@@ -730,7 +730,7 @@ Int InUndefined (
 */
 static Obj InOper;
 
-Int InObject (
+static Int InObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -742,7 +742,7 @@ Int InObject (
 **
 *F  VerboseInObject( <opL>, <opR> ) . . . . . . . . . . . . . .  call methsel
 */
-Int VerboseInObject (
+static Int VerboseInObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -774,7 +774,7 @@ static void InstallInObject ( Int verb )
 **
 *F  FuncIN( <self>, <opL>, <opR> )  . . . . . . . . . . . . . . . . call 'IN'
 */
-Obj FuncIN (
+static Obj FuncIN (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -801,7 +801,7 @@ ArithMethod2    SumFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 Obj SumOper;
 
-Obj SumObject (
+static Obj SumObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -816,7 +816,7 @@ Obj SumObject (
 **
 *F  VerboseSumObject( <opL>, <opR> )  . . . . . . . . . . . . .  call methsel
 */
-Obj VerboseSumObject (
+static Obj VerboseSumObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -851,7 +851,7 @@ static void InstallSumObject ( Int verb )
 **
 *F  FuncSUM( <self>, <opL>, <opR> ) . . . . . . . . . . . . . . .  call 'SUM'
 */
-Obj FuncSUM (
+static Obj FuncSUM (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -871,7 +871,7 @@ ArithMethod2 DiffFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  DiffDefault( <opL>, <opR> ) . . . . . . . . . . . . call 'SUM' and 'AINV'
 */
-Obj DiffDefault (
+static Obj DiffDefault (
     Obj                 opL,
     Obj                 opR )
 {
@@ -888,7 +888,7 @@ Obj DiffDefault (
 */
 static Obj DiffOper;
 
-Obj DiffObject (
+static Obj DiffObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -903,7 +903,7 @@ Obj DiffObject (
 **
 *F  VerboseDiffObject( <opL>, <opR> ) . . . . . . . . . . . . .  call methsel
 */
-Obj VerboseDiffObject (
+static Obj VerboseDiffObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -938,7 +938,7 @@ static void InstallDiffObject ( Int verb )
 **
 *F  FuncDIFF_DEFAULT( <self>, <opL>, <opR> )  . . . . . .  call 'DiffDefault'
 */
-Obj FuncDIFF_DEFAULT (
+static Obj FuncDIFF_DEFAULT (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -951,7 +951,7 @@ Obj FuncDIFF_DEFAULT (
 **
 *F  FuncDIFF( <self>, <opL>, <opR> )  . . . . . . . . . . . . . . call 'DIFF'
 */
-Obj FuncDIFF (
+static Obj FuncDIFF (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -973,7 +973,7 @@ ArithMethod2    ProdFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj ProdOper;
 
-Obj ProdObject (
+static Obj ProdObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -988,7 +988,7 @@ Obj ProdObject (
 **
 *F  VerboseProdObject( <opL>, <opR> ) . . . . . . . . . . . . .  call methsel
 */
-Obj VerboseProdObject (
+static Obj VerboseProdObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1023,7 +1023,7 @@ static void InstallProdObject ( Int verb )
 **
 *F  FuncPROD( <self>, <opL>, <opR> )  . . . . . . . . . . . . . . call 'PROD'
 */
-Obj FuncPROD (
+static Obj FuncPROD (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -1043,7 +1043,7 @@ ArithMethod2 QuoFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  QuoDefault( <opL>, <opR> )  . . . . . . . . . . . . call 'INV' and 'PROD'
 */
-Obj QuoDefault (
+static Obj QuoDefault (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1059,7 +1059,7 @@ Obj QuoDefault (
 */
 static Obj QuoOper;
 
-Obj QuoObject (
+static Obj QuoObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1074,7 +1074,7 @@ Obj QuoObject (
 **
 *F  VerboseQuoObject( <opL>, <opR> )  . . . . . . . . . . . . .  call methsel
 */
-Obj VerboseQuoObject (
+static Obj VerboseQuoObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1109,7 +1109,7 @@ static void InstallQuoObject ( Int verb )
 **
 *F  FuncQUO_DEFAULT( <self>, <opL>, <opR> ) . . . . . . . . call 'QuoDefault'
 */
-Obj FuncQUO_DEFAULT (
+static Obj FuncQUO_DEFAULT (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -1122,7 +1122,7 @@ Obj FuncQUO_DEFAULT (
 **
 *F  FuncQUO( <self>, <opL>, <opR> ) . . . . . . . . . . . . . . .  call 'QUO'
 */
-Obj FuncQUO (
+static Obj FuncQUO (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -1142,7 +1142,7 @@ ArithMethod2 LQuoFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  LQuoDefault( <opL>, <opR> ) . . . . . . . . . . . . call 'INV' and 'PROD'
 */
-Obj LQuoDefault (
+static Obj LQuoDefault (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1158,7 +1158,7 @@ Obj LQuoDefault (
 */
 static Obj LQuoOper;
 
-Obj LQuoObject (
+static Obj LQuoObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1173,7 +1173,7 @@ Obj LQuoObject (
 **
 *F  VerboseLQuoObject( <opL>, <opR> ) . . . . . . . . . . . . .  call methsel
 */
-Obj VerboseLQuoObject (
+static Obj VerboseLQuoObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1208,7 +1208,7 @@ static void InstallLQuoObject ( Int verb )
 **
 *F  FuncLQUO_DEFAULT( <self>, <opL>, <opR> )  . . . . . .  call 'LQuoDefault'
 */
-Obj FuncLQUO_DEFAULT (
+static Obj FuncLQUO_DEFAULT (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -1221,7 +1221,7 @@ Obj FuncLQUO_DEFAULT (
 **
 *F  FuncLQUO( <self>, <opL>, <opR> )  . . . . . . . . . . . . . . call 'LQUO'
 */
-Obj FuncLQUO (
+static Obj FuncLQUO (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -1241,7 +1241,7 @@ ArithMethod2 PowFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  PowDefault( <opL>, <opR> )  . . . . . . . . . . .  call 'LQUO' and 'PROD'
 */
-Obj PowDefault (
+static Obj PowDefault (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1257,7 +1257,7 @@ Obj PowDefault (
 */
 static Obj PowOper;
 
-Obj PowObject (
+static Obj PowObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1272,7 +1272,7 @@ Obj PowObject (
 **
 *F  VerbosePowObject( <opL>, <opR> )  . . . . . . . . . . . . .  call methsel
 */
-Obj VerbosePowObject (
+static Obj VerbosePowObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1308,7 +1308,7 @@ static void InstallPowObject ( Int verb )
 **
 *F  FuncPOW_DEFAULT( <self>, <opL>, <opR> ) . . . . . . . . call 'PowDefault'
 */
-Obj FuncPOW_DEFAULT (
+static Obj FuncPOW_DEFAULT (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -1321,7 +1321,7 @@ Obj FuncPOW_DEFAULT (
 **
 *F  FuncPOW( <self>, <opL>, <opR> ) . . . . . . . . . . . . . . .  call 'POW'
 */
-Obj FuncPOW (
+static Obj FuncPOW (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -1341,7 +1341,7 @@ ArithMethod2 CommFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  CommDefault( <opL>, <opR> ) . . . . . . . . . . .  call 'LQUO' and 'PROD'
 */
-Obj CommDefault (
+static Obj CommDefault (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1359,7 +1359,7 @@ Obj CommDefault (
 */
 static Obj CommOper;
 
-Obj CommObject (
+static Obj CommObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1374,7 +1374,7 @@ Obj CommObject (
 **
 *F  VerboseCommObject( <opL>, <opR> ) . . . . . . . . . . . . .  call methsel
 */
-Obj VerboseCommObject (
+static Obj VerboseCommObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1409,7 +1409,7 @@ static void InstallCommObject ( Int verb )
 **
 *F  FuncCOMM_DEFAULT( <self>, <opL>, <opR> )  . . . . . .  call 'CommDefault'
 */
-Obj FuncCOMM_DEFAULT (
+static Obj FuncCOMM_DEFAULT (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -1422,7 +1422,7 @@ Obj FuncCOMM_DEFAULT (
 **
 *F  FuncCOMM( <self>, <opL>, <opR> )  . . . . . . . . . . . . . . call 'COMM'
 */
-Obj FuncCOMM (
+static Obj FuncCOMM (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
@@ -1445,7 +1445,7 @@ ArithMethod2 ModFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj ModOper;
 
-Obj ModObject (
+static Obj ModObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1460,7 +1460,7 @@ Obj ModObject (
 **
 *F  VerboseModObject( <opL>, <opR> )  . . . . . . . . . . . . .  call methsel
 */
-Obj VerboseModObject (
+static Obj VerboseModObject (
     Obj                 opL,
     Obj                 opR )
 {
@@ -1495,7 +1495,7 @@ static void InstallModObject ( Int verb )
 **
 *F  FuncMOD( <self>, <opL>, <opR> ) . . . . . . . . . . . . . . .  call 'MOD'
 */
-Obj FuncMOD (
+static Obj FuncMOD (
     Obj                 self,
     Obj                 opL,
     Obj                 opR )
