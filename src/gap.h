@@ -124,4 +124,17 @@ enum {
 void InitializeGap(int * pargc, char * argv[]);
 
 
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+*F  InitInfoGap() . . . . . . . . . . . . . . . . . . table of init functions
+*/
+StructInitInfo * InitInfoGap(void);
+
+
 #endif // GAP_GAP_H
