@@ -30,9 +30,7 @@ fi
 if [[ $JULIA = yes ]]
 then
   pushd extern
-  # TODO: once Julia 1.1 is released, switch to stable Julia versions here?
-  # or maybe use Travis' `language: julia` feature?
-  wget https://julialang-s3.julialang.org/bin/linux/x64/1.1/julia-1.1.0-rc2-linux-x86_64.tar.gz
+  wget https://julialang-s3.julialang.org/bin/linux/x64/1.1/julia-1.1.0-linux-x86_64.tar.gz
   tar xvf julia-*.tar.gz
   rm julia-*.tar.gz
   cd julia-*
