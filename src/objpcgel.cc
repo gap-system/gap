@@ -31,7 +31,7 @@ extern "C" {
 **
 *F  FuncNBitsPcWord_Comm( <self>, <left>, <right> )
 */
-static Obj FuncNBitsPcWord_Comm ( Obj self, Obj left, Obj right )
+static Obj FuncNBitsPcWord_Comm(Obj self, Obj left, Obj right)
 {
     return FuncFinPowConjCol_ReducedComm(
         self, COLLECTOR_PCWORD(left), left, right );
@@ -42,7 +42,7 @@ static Obj FuncNBitsPcWord_Comm ( Obj self, Obj left, Obj right )
 **
 *F  FuncNBitsPcWord_Conjugate( <self>, <left>, <right> )
 */
-static Obj FuncNBitsPcWord_Conjugate ( Obj self, Obj left, Obj right )
+static Obj FuncNBitsPcWord_Conjugate(Obj self, Obj left, Obj right)
 {
     left = FuncFinPowConjCol_ReducedProduct(
                 self, COLLECTOR_PCWORD(left), left, right );
@@ -55,7 +55,7 @@ static Obj FuncNBitsPcWord_Conjugate ( Obj self, Obj left, Obj right )
 **
 *F  FuncNBitsPcWord_LeftQuotient( <self>, <left>, <right> )
 */
-static Obj FuncNBitsPcWord_LeftQuotient ( Obj self, Obj left, Obj right )
+static Obj FuncNBitsPcWord_LeftQuotient(Obj self, Obj left, Obj right)
 {
     return FuncFinPowConjCol_ReducedLeftQuotient(
         self, COLLECTOR_PCWORD(left), left, right );
@@ -66,7 +66,7 @@ static Obj FuncNBitsPcWord_LeftQuotient ( Obj self, Obj left, Obj right )
 **
 *F  FuncNBitsPcWord_PowerSmallInt( <self>, <left>, <right> )
 */
-static Obj FuncNBitsPcWord_PowerSmallInt ( Obj self, Obj left, Obj right )
+static Obj FuncNBitsPcWord_PowerSmallInt(Obj self, Obj left, Obj right)
 {
     return FuncFinPowConjCol_ReducedPowerSmallInt(
         self, COLLECTOR_PCWORD(left), left, right );
@@ -77,7 +77,7 @@ static Obj FuncNBitsPcWord_PowerSmallInt ( Obj self, Obj left, Obj right )
 **
 *F  FuncNBitsPcWord_Product( <self>, <left>, <right> )
 */
-static Obj FuncNBitsPcWord_Product ( Obj self, Obj left, Obj right )
+static Obj FuncNBitsPcWord_Product(Obj self, Obj left, Obj right)
 {
     return FuncFinPowConjCol_ReducedProduct(
         self, COLLECTOR_PCWORD(left), left, right );
@@ -88,7 +88,7 @@ static Obj FuncNBitsPcWord_Product ( Obj self, Obj left, Obj right )
 **
 *F  FuncNBitsPcWord_Quotient( <self>, <left>, <right> )
 */
-static Obj FuncNBitsPcWord_Quotient ( Obj self, Obj left, Obj right )
+static Obj FuncNBitsPcWord_Quotient(Obj self, Obj left, Obj right)
 {
     return FuncFinPowConjCol_ReducedQuotient(
         self, COLLECTOR_PCWORD(left), left, right );
@@ -260,7 +260,7 @@ static Obj ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
 **
 *F  Func8Bits_DepthOfPcElement( <self>, <pcgs>, <w> )
 */
-static Obj Func8Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
+static Obj Func8Bits_DepthOfPcElement(Obj self, Obj pcgs, Obj w)
 {
     return DepthOfPcElement<UInt1>(self, pcgs, w);
 }
@@ -270,7 +270,7 @@ static Obj Func8Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
 **
 *F  Func8Bits_ExponentOfPcElement( <self>, <pcgs>, <w>, <pos> )
 */
-static Obj Func8Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
+static Obj Func8Bits_ExponentOfPcElement(Obj self, Obj pcgs, Obj w, Obj pos)
 {
     return ExponentOfPcElement<UInt1>(self, pcgs, w, pos);
 }
@@ -280,7 +280,7 @@ static Obj Func8Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
 **
 *F  Func8Bits_LeadingExponentOfPcElement( <self>, <pcgs>, <w> )
 */
-static Obj Func8Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
+static Obj Func8Bits_LeadingExponentOfPcElement(Obj self, Obj pcgs, Obj w)
 {
     return LeadingExponentOfPcElement<UInt1>(self, pcgs, w);
 }
@@ -289,7 +289,7 @@ static Obj Func8Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
 **
 *F  Func8Bits_ExponentsOfPcElement( <self>, <pcgs>, <w> )
 */
-static Obj Func8Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
+static Obj Func8Bits_ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
 {
     return ExponentsOfPcElement<UInt1>(self, pcgs, w);
 }
@@ -299,7 +299,7 @@ static Obj Func8Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
 **
 *F  Func16Bits_DepthOfPcElement( <self>, <pcgs>, <w> )
 */
-static Obj Func16Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
+static Obj Func16Bits_DepthOfPcElement(Obj self, Obj pcgs, Obj w)
 {
     return DepthOfPcElement<UInt2>(self, pcgs, w);
 }
@@ -309,7 +309,7 @@ static Obj Func16Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
 **
 *F  Func16Bits_ExponentOfPcElement( <self>, <pcgs>, <w>, <pos> )
 */
-static Obj Func16Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
+static Obj Func16Bits_ExponentOfPcElement(Obj self, Obj pcgs, Obj w, Obj pos)
 {
     return ExponentOfPcElement<UInt2>(self, pcgs, w, pos);
 }
@@ -319,7 +319,7 @@ static Obj Func16Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
 **
 *F  Func16Bits_LeadingExponentOfPcElement( <self>, <pcgs>, <w> )
 */
-static Obj Func16Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
+static Obj Func16Bits_LeadingExponentOfPcElement(Obj self, Obj pcgs, Obj w)
 {
     return LeadingExponentOfPcElement<UInt2>(self, pcgs, w);
 }
@@ -328,7 +328,7 @@ static Obj Func16Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
 **
 *F  Func16Bits_ExponentsOfPcElement( <self>, <pcgs>, <w> )
 */
-static Obj Func16Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
+static Obj Func16Bits_ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
 {
     return ExponentsOfPcElement<UInt2>(self, pcgs, w);
 }
@@ -338,7 +338,7 @@ static Obj Func16Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
 **
 *F  Func32Bits_DepthOfPcElement( <self>, <pcgs>, <w> )
 */
-static Obj Func32Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
+static Obj Func32Bits_DepthOfPcElement(Obj self, Obj pcgs, Obj w)
 {
     return DepthOfPcElement<UInt4>(self, pcgs, w);
 }
@@ -348,7 +348,7 @@ static Obj Func32Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
 **
 *F  Func32Bits_ExponentOfPcElement( <self>, <pcgs>, <w>, <pos> )
 */
-static Obj Func32Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
+static Obj Func32Bits_ExponentOfPcElement(Obj self, Obj pcgs, Obj w, Obj pos)
 {
     return ExponentOfPcElement<UInt4>(self, pcgs, w, pos);
 }
@@ -358,7 +358,7 @@ static Obj Func32Bits_ExponentOfPcElement ( Obj self, Obj pcgs, Obj w, Obj pos )
 **
 *F  Func32Bits_LeadingExponentOfPcElement( <self>, <pcgs>, <w> )
 */
-static Obj Func32Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
+static Obj Func32Bits_LeadingExponentOfPcElement(Obj self, Obj pcgs, Obj w)
 {
     return LeadingExponentOfPcElement<UInt4>(self, pcgs, w);
 }
@@ -367,7 +367,7 @@ static Obj Func32Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
 **
 *F  Func32Bits_ExponentsOfPcElement( <self>, <pcgs>, <w> )
 */
-static Obj Func32Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
+static Obj Func32Bits_ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
 {
     return ExponentsOfPcElement<UInt4>(self, pcgs, w);
 }

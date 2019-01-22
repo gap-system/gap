@@ -391,13 +391,13 @@ static Obj ErrorMessageToGAPString(const Char * msg, Int arg1, Int arg2)
 
 
 static Obj CallErrorInner(const Char * msg,
-                   Int          arg1,
-                   Int          arg2,
-                   UInt         justQuit,
-                   UInt         mayReturnVoid,
-                   UInt         mayReturnObj,
-                   Obj          lateMessage,
-                   UInt         printThisStatement)
+                          Int          arg1,
+                          Int          arg2,
+                          UInt         justQuit,
+                          UInt         mayReturnVoid,
+                          UInt         mayReturnObj,
+                          Obj          lateMessage,
+                          UInt         printThisStatement)
 {
     // Must do this before creating any other GAP objects,
     // as one of the args could be a pointer into a Bag.

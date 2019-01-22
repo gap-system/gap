@@ -50,7 +50,7 @@ static Int CompFastIntArith;
 **
 *V  CompFastPlainLists  . option to emit code that handles plain lists faster
 */
-static Int CompFastPlainLists ;
+static Int CompFastPlainLists;
 
 
 /****************************************************************************
@@ -64,7 +64,7 @@ static Int CompFastListFuncs;
 **
 *V  CompCheckTypes  . . . . option to emit code that assumes all types are ok.
 */
-static Int CompCheckTypes ;
+static Int CompCheckTypes;
 
 
 /****************************************************************************
@@ -227,9 +227,7 @@ typedef UInt4           LVar;
 
 #define W_INT_SMALL_POS         (W_INT_SMALL | W_INT_POS)
 
-static void            SetInfoCVar (
-    CVar                cvar,
-    UInt                type )
+static void SetInfoCVar(CVar cvar, UInt type)
 {
     Bag                 info;           /* its info bag                    */
 
@@ -248,8 +246,7 @@ static void            SetInfoCVar (
     }
 }
 
-static Int             GetInfoCVar (
-    CVar                cvar )
+static Int GetInfoCVar(CVar cvar)
 {
     Bag                 info;           /* its info bag                    */
 
@@ -277,15 +274,13 @@ static Int             GetInfoCVar (
     }
 }
 
-static Int             HasInfoCVar (
-    CVar                cvar,
-    Int                 type )
+static Int HasInfoCVar(CVar cvar, Int type)
 {
     return ((GetInfoCVar( cvar ) & type) == type);
 }
 
 
-static Bag             NewInfoCVars ( void )
+static Bag NewInfoCVars(void)
 {
     Bag                 old;
     Bag                 new;
@@ -294,9 +289,7 @@ static Bag             NewInfoCVars ( void )
     return new;
 }
 
-static void            CopyInfoCVars (
-    Bag                 dst,
-    Bag                 src )
+static void CopyInfoCVars(Bag dst, Bag src)
 {
     Int                 i;
     if ( SIZE_BAG(dst) < SIZE_BAG(src) )  ResizeBag( dst, SIZE_BAG(src) );
@@ -315,9 +308,7 @@ static void            CopyInfoCVars (
     }
 }
 
-static void            MergeInfoCVars (
-    Bag                 dst,
-    Bag                 src )
+static void MergeInfoCVars(Bag dst, Bag src)
 {
     Int                 i;
     if ( SIZE_BAG(dst) < SIZE_BAG(src) )  ResizeBag( dst, SIZE_BAG(src) );
@@ -331,9 +322,7 @@ static void            MergeInfoCVars (
     }
 }
 
-static Int             IsEqInfoCVars (
-    Bag                 dst,
-    Bag                 src )
+static Int IsEqInfoCVars(Bag dst, Bag src)
 {
     Int                 i;
     if ( SIZE_BAG(dst) < SIZE_BAG(src) )  ResizeBag( dst, SIZE_BAG(src) );
@@ -368,8 +357,7 @@ static Int             IsEqInfoCVars (
 */
 typedef UInt4           Temp;
 
-static Temp           NewTemp (
-    const Char *        name )
+static Temp NewTemp(const Char * name)
 {
     Temp                temp;           /* new temporary, result           */
     Bag                 info;           /* information bag                 */
@@ -394,8 +382,7 @@ static Temp           NewTemp (
     return temp;
 }
 
-static void            FreeTemp (
-    Temp                temp )
+static void FreeTemp(Temp temp)
 {
     Bag                 info;           /* information bag                 */
 
@@ -441,8 +428,7 @@ static void            FreeTemp (
 */
 typedef UInt4           HVar;
 
-static void            CompSetUseHVar (
-    HVar                hvar )
+static void CompSetUseHVar(HVar hvar)
 {
     Bag                 info;           /* its info bag                    */
     Int                 i;              /* loop variable                   */
@@ -464,8 +450,7 @@ static void            CompSetUseHVar (
 
 }
 
-static Int             CompGetUseHVar (
-    HVar                hvar )
+static Int CompGetUseHVar(HVar hvar)
 {
     Bag                 info;           /* its info bag                    */
     Int                 i;              /* loop variable                   */
@@ -480,8 +465,7 @@ static Int             CompGetUseHVar (
     return (TNUM_LVAR_INFO( info, (hvar & 0xFFFF) ) == W_HIGHER);
 }
 
-static UInt            GetLevlHVar (
-    HVar                hvar )
+static UInt GetLevlHVar(HVar hvar)
 {
     UInt                levl;           /* level of higher variable        */
     Bag                 info;           /* its info bag                    */
@@ -500,8 +484,7 @@ static UInt            GetLevlHVar (
     return levl - 1;
 }
 
-static UInt            GetIndxHVar (
-    HVar                hvar )
+static UInt GetIndxHVar(HVar hvar)
 {
     UInt                indx;           /* index of higher variable        */
     Bag                 info;           /* its info bag                    */
@@ -558,9 +541,7 @@ typedef UInt    GVar;
 
 Bag             CompInfoGVar;
 
-static void            CompSetUseGVar (
-    GVar                gvar,
-    UInt                mode )
+static void CompSetUseGVar(GVar gvar, UInt mode)
 {
     /* only mark in pass 1                                                 */
     if ( CompPass != 1 )  return;
@@ -574,8 +555,7 @@ static void            CompSetUseGVar (
     ((UInt*)PTR_BAG(CompInfoGVar))[gvar] |= mode;
 }
 
-static UInt            CompGetUseGVar (
-    GVar                gvar )
+static UInt CompGetUseGVar(GVar gvar)
 {
     return ((UInt*)PTR_BAG(CompInfoGVar))[gvar];
 }
@@ -603,9 +583,7 @@ typedef UInt    RNam;
 
 Bag             CompInfoRNam;
 
-static void            CompSetUseRNam (
-    RNam                rnam,
-    UInt                mode )
+static void CompSetUseRNam(RNam rnam, UInt mode)
 {
     /* only mark in pass 1                                                 */
     if ( CompPass != 1 )  return;
@@ -619,8 +597,7 @@ static void            CompSetUseRNam (
     ((UInt*)PTR_BAG(CompInfoRNam))[rnam] |= mode;
 }
 
-static UInt            CompGetUseRNam (
-    RNam                rnam )
+static UInt CompGetUseRNam(RNam rnam)
 {
     return ((UInt*)PTR_BAG(CompInfoRNam))[rnam];
 }
@@ -642,13 +619,11 @@ static UInt            CompGetUseRNam (
 **  ('INTOBJ_INT(<int>)'  for integers,  'a_<name>' for arguments, 'l_<name>'
 **  for locals, 't_<nr>' for temporaries), and '%%' outputs a single '%'.
 */
-static Int             EmitIndent;
+static Int EmitIndent;
 
-static Int             EmitIndent2;
+static Int EmitIndent2;
 
-static void            Emit (
-    const char *        fmt,
-    ... )
+static void Emit(const char * fmt, ...)
 {
     Int                 narg;           /* number of arguments             */
     va_list             ap;             /* argument list pointer           */
@@ -802,9 +777,7 @@ static void            Emit (
 **
 *F  CompCheckBound( <obj>, <name> ) emit code to check that <obj> has a value
 */
-static void CompCheckBound (
-    CVar                obj,
-    Obj                 name )
+static void CompCheckBound(CVar obj, Obj name)
 {
     if ( ! HasInfoCVar( obj, W_BOUND ) ) {
         if ( CompCheckTypes ) {
@@ -819,8 +792,7 @@ static void CompCheckBound (
 **
 *F  CompCheckFuncResult( <obj> )  . emit code to check that <obj> has a value
 */
-static void CompCheckFuncResult (
-    CVar                obj )
+static void CompCheckFuncResult(CVar obj)
 {
     if ( ! HasInfoCVar( obj, W_BOUND ) ) {
         if ( CompCheckTypes ) {
@@ -835,8 +807,7 @@ static void CompCheckFuncResult (
 **
 *F  CompCheckIntSmall( <obj> )   emit code to check that <obj> is a small int
 */
-static void CompCheckIntSmall (
-    CVar                obj )
+static void CompCheckIntSmall(CVar obj)
 {
     if ( ! HasInfoCVar( obj, W_INT_SMALL ) ) {
         if ( CompCheckTypes ) {
@@ -852,8 +823,7 @@ static void CompCheckIntSmall (
 **
 *F  CompCheckIntSmallPos( <obj> ) emit code to check that <obj> is a position
 */
-static void CompCheckIntSmallPos (
-    CVar                obj )
+static void CompCheckIntSmallPos(CVar obj)
 {
     if ( ! HasInfoCVar( obj, W_INT_SMALL_POS ) ) {
         if ( CompCheckTypes ) {
@@ -867,8 +837,7 @@ static void CompCheckIntSmallPos (
 **
 *F  CompCheckIntPos( <obj> ) emit code to check that <obj> is a position
 */
-static void CompCheckIntPos (
-    CVar                obj )
+static void CompCheckIntPos(CVar obj)
 {
     if ( ! HasInfoCVar( obj, W_INT_POS ) ) {
         if ( CompCheckTypes ) {
@@ -883,8 +852,7 @@ static void CompCheckIntPos (
 **
 *F  CompCheckBool( <obj> )  . . .  emit code to check that <obj> is a boolean
 */
-static void CompCheckBool (
-    CVar                obj )
+static void CompCheckBool(CVar obj)
 {
     if ( ! HasInfoCVar( obj, W_BOOL ) ) {
         if ( CompCheckTypes ) {
@@ -900,8 +868,7 @@ static void CompCheckBool (
 **
 *F  CompCheckFunc( <obj> )  . . . emit code to check that <obj> is a function
 */
-static void CompCheckFunc (
-    CVar                obj )
+static void CompCheckFunc(CVar obj)
 {
     if ( ! HasInfoCVar( obj, W_FUNC ) ) {
         if ( CompCheckTypes ) {
@@ -925,11 +892,10 @@ static void CompCheckFunc (
 **  'CompExpr' compiles the expression <expr> and returns the C variable that
 **  will contain the result.
 */
-static CVar (* CompExprFuncs[256]) ( Expr expr );
+static CVar (*CompExprFuncs[256])(Expr expr);
 
 
-static CVar CompExpr (
-    Expr                expr )
+static CVar CompExpr(Expr expr)
 {
     return (* CompExprFuncs[ TNUM_EXPR(expr) ])( expr );
 }
@@ -939,8 +905,7 @@ static CVar CompExpr (
 **
 *F  CompUnknownExpr( <expr> ) . . . . . . . . . . . .  log unknown expression
 */
-static CVar CompUnknownExpr (
-    Expr                expr )
+static CVar CompUnknownExpr(Expr expr)
 {
     Emit( "CANNOT COMPILE EXPRESSION OF TNUM %d;\n", TNUM_EXPR(expr) );
     return 0;
@@ -952,10 +917,9 @@ static CVar CompUnknownExpr (
 **
 *F  CompBoolExpr( <expr> )  . . . . . . . compile bool expr and return C bool
 */
-static CVar (* CompBoolExprFuncs[256]) ( Expr expr );
+static CVar (*CompBoolExprFuncs[256])(Expr expr);
 
-static CVar CompBoolExpr (
-    Expr                expr )
+static CVar CompBoolExpr(Expr expr)
 {
     return (* CompBoolExprFuncs[ TNUM_EXPR(expr) ])( expr );
 }
@@ -965,8 +929,7 @@ static CVar CompBoolExpr (
 **
 *F  CompUnknownBool( <expr> ) . . . . . . . . . .  use 'CompExpr' and convert
 */
-static CVar CompUnknownBool (
-    Expr                expr )
+static CVar CompUnknownBool(Expr expr)
 {
     CVar                res;            /* result                          */
     CVar                val;            /* value of expression             */
@@ -998,17 +961,14 @@ static CVar CompUnknownBool (
 static GVar G_Length;
 
 
-
 /****************************************************************************
 **
 *F  CompFunccall0to6Args( <expr> )  . . . T_FUNCCALL_0ARGS...T_FUNCCALL_6ARGS
 */
-static CVar CompRefGVarFopy (
-            Expr                expr );
+static CVar CompRefGVarFopy(Expr expr);
 
 
-static CVar CompFunccall0to6Args (
-    Expr                expr )
+static CVar CompFunccall0to6Args(Expr expr)
 {
     CVar                result;         /* result, result                  */
     CVar                func;           /* function                        */
@@ -1077,8 +1037,7 @@ static CVar CompFunccall0to6Args (
 **
 *F  CompFunccallXArgs( <expr> ) . . . . . . . . . . . . . .  T_FUNCCALL_XARGS
 */
-static CVar CompFunccallXArgs (
-    Expr                expr )
+static CVar CompFunccallXArgs(Expr expr)
 {
     CVar                result;         /* result, result                  */
     CVar                func;           /* function                        */
@@ -1131,8 +1090,7 @@ static CVar CompFunccallXArgs (
 **
 *F  CompFunccallXArgs( <expr> ) . . . . . . . . . . . . . .  T_FUNCCALL_OPTS
 */
-static CVar CompFunccallOpts(
-                      Expr expr)
+static CVar CompFunccallOpts(Expr expr)
 {
   CVar opts = CompExpr(READ_STAT(expr, 0));
   GVar pushOptions;
@@ -1154,8 +1112,7 @@ static CVar CompFunccallOpts(
 **
 *F  CompFuncExpr( <expr> )  . . . . . . . . . . . . . . . . . . . T_FUNC_EXPR
 */
-static CVar CompFuncExpr (
-    Expr                expr )
+static CVar CompFuncExpr(Expr expr)
 {
     CVar                func;           /* function, result                */
     CVar                tmp;            /* dummy body                      */
@@ -1200,8 +1157,7 @@ static CVar CompFuncExpr (
 **
 *F  CompOr( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  T_OR
 */
-static CVar CompOr (
-    Expr                expr )
+static CVar CompOr(Expr expr)
 {
     CVar                val;            /* or, result                      */
     CVar                left;           /* left operand                    */
@@ -1240,8 +1196,7 @@ static CVar CompOr (
 **
 *F  CompOrBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  T_OR
 */
-static CVar CompOrBool (
-    Expr                expr )
+static CVar CompOrBool(Expr expr)
 {
     CVar                val;            /* or, result                      */
     CVar                left;           /* left operand                    */
@@ -1280,8 +1235,7 @@ static CVar CompOrBool (
 **
 *F  CompAnd( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . T_AND
 */
-static CVar CompAnd (
-    Expr                expr )
+static CVar CompAnd(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1339,8 +1293,7 @@ static CVar CompAnd (
 **
 *F  CompAndBool( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . T_AND
 */
-static CVar CompAndBool (
-    Expr                expr )
+static CVar CompAndBool(Expr expr)
 {
     CVar                val;            /* or, result                      */
     CVar                left;           /* left operand                    */
@@ -1379,8 +1332,7 @@ static CVar CompAndBool (
 **
 *F  CompNot( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . T_NOT
 */
-static CVar CompNot (
-    Expr                expr )
+static CVar CompNot(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* operand                         */
@@ -1409,8 +1361,7 @@ static CVar CompNot (
 **
 *F  CompNotBoot( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . T_NOT
 */
-static CVar CompNotBool (
-    Expr                expr )
+static CVar CompNotBool(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* operand                         */
@@ -1439,8 +1390,7 @@ static CVar CompNotBool (
 **
 *F  CompEq( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  T_EQ
 */
-static CVar CompEq (
-    Expr                expr )
+static CVar CompEq(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1477,8 +1427,7 @@ static CVar CompEq (
 **
 *F  CompEqBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  T_EQ
 */
-static CVar CompEqBool (
-    Expr                expr )
+static CVar CompEqBool(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1515,8 +1464,7 @@ static CVar CompEqBool (
 **
 *F  CompNe( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  T_NE
 */
-static CVar CompNe (
-    Expr                expr )
+static CVar CompNe(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1553,8 +1501,7 @@ static CVar CompNe (
 **
 *F  CompNeBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  T_NE
 */
-static CVar CompNeBool (
-    Expr                expr )
+static CVar CompNeBool(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1591,8 +1538,7 @@ static CVar CompNeBool (
 **
 *F  CompLt( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  T_LT
 */
-static CVar CompLt (
-    Expr                expr )
+static CVar CompLt(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1629,8 +1575,7 @@ static CVar CompLt (
 **
 *F  CompLtBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  T_LT
 */
-static CVar CompLtBool (
-    Expr                expr )
+static CVar CompLtBool(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1667,8 +1612,7 @@ static CVar CompLtBool (
 **
 *F  CompGe( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  T_GE
 */
-static CVar CompGe (
-    Expr                expr )
+static CVar CompGe(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1705,8 +1649,7 @@ static CVar CompGe (
 **
 *F  CompGeBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  T_GE
 */
-static CVar CompGeBool (
-    Expr                expr )
+static CVar CompGeBool(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1743,8 +1686,7 @@ static CVar CompGeBool (
 **
 *F  CompGt( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  T_GT
 */
-static CVar CompGt (
-    Expr                expr )
+static CVar CompGt(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1781,8 +1723,7 @@ static CVar CompGt (
 **
 *F  CompGtBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  T_GT
 */
-static CVar CompGtBool (
-    Expr                expr )
+static CVar CompGtBool(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1819,8 +1760,7 @@ static CVar CompGtBool (
 **
 *F  CompLe( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  T_LE
 */
-static CVar CompLe (
-    Expr                expr )
+static CVar CompLe(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1857,8 +1797,7 @@ static CVar CompLe (
 **
 *F  CompLeBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  T_LE
 */
-static CVar            CompLeBool (
-    Expr                expr )
+static CVar CompLeBool(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1895,8 +1834,7 @@ static CVar            CompLeBool (
 **
 *F  CompIn( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  T_IN
 */
-static CVar CompIn (
-    Expr                expr )
+static CVar CompIn(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1928,8 +1866,7 @@ static CVar CompIn (
 **
 *F  CompInBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  T_IN
 */
-static CVar CompInBool (
-    Expr                expr )
+static CVar CompInBool(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -1961,8 +1898,7 @@ static CVar CompInBool (
 **
 *F  CompSum( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . T_SUM
 */
-static CVar CompSum (
-    Expr                expr )
+static CVar CompSum(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -2007,8 +1943,7 @@ static CVar CompSum (
 **
 *F  CompAInv( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  T_AINV
 */
-static CVar CompAInv (
-    Expr                expr )
+static CVar CompAInv(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -2050,8 +1985,7 @@ static CVar CompAInv (
 **
 *F  CompDiff( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  T_DIFF
 */
-static CVar CompDiff (
-    Expr                expr )
+static CVar CompDiff(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -2096,8 +2030,7 @@ static CVar CompDiff (
 **
 *F  CompProd( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  T_PROD
 */
-static CVar CompProd (
-    Expr                expr )
+static CVar CompProd(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -2142,8 +2075,7 @@ static CVar CompProd (
 **
 *F  CompQuo( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . T_QUO
 */
-static CVar CompQuo (
-    Expr                expr )
+static CVar CompQuo(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -2175,8 +2107,7 @@ static CVar CompQuo (
 **
 *F  CompMod( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . T_MOD
 */
-static CVar CompMod (
-    Expr                expr )
+static CVar CompMod(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -2213,8 +2144,7 @@ static CVar CompMod (
 **
 *F  CompPow( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . T_POW
 */
-static CVar CompPow (
-    Expr                expr )
+static CVar CompPow(Expr expr)
 {
     CVar                val;            /* result                          */
     CVar                left;           /* left operand                    */
@@ -2267,8 +2197,7 @@ static CVar CompPow (
 **
 */
 
-static CVar CompIntExpr (
-    Expr                expr )
+static CVar CompIntExpr(Expr expr)
 {
     CVar                val;
     Int                 siz;
@@ -2313,8 +2242,7 @@ static CVar CompIntExpr (
 **
 *F  CompTildeExpr( <expr> )  . . . . . . . . . . . . . . . . . . T_TILDE_EXPR
 */
-static CVar CompTildeExpr (
-    Expr                expr )
+static CVar CompTildeExpr(Expr expr)
 {
     Emit( "if ( ! STATE(Tilde) ) {\n");
     Emit( "    ErrorMayQuit(\"'~' does not have a value here\",0L,0L);\n" );
@@ -2335,8 +2263,7 @@ static CVar CompTildeExpr (
 **
 *F  CompTrueExpr( <expr> )  . . . . . . . . . . . . . . . . . . . T_TRUE_EXPR
 */
-static CVar CompTrueExpr (
-    Expr                expr )
+static CVar CompTrueExpr(Expr expr)
 {
     CVar                val;            /* value, result                   */
 
@@ -2358,8 +2285,7 @@ static CVar CompTrueExpr (
 **
 *F  CompFalseExpr( <expr> ) . . . . . . . . . . . . . . . . . .  T_FALSE_EXPR
 */
-static CVar CompFalseExpr (
-    Expr                expr )
+static CVar CompFalseExpr(Expr expr)
 {
     CVar                val;            /* value, result                   */
 
@@ -2381,8 +2307,7 @@ static CVar CompFalseExpr (
 **
 *F  CompCharExpr( <expr> )  . . . . . . . . . . . . . . . . . . . T_CHAR_EXPR
 */
-static CVar            CompCharExpr (
-    Expr                expr )
+static CVar CompCharExpr(Expr expr)
 {
     CVar                val;            /* result                          */
 
@@ -2404,8 +2329,7 @@ static CVar            CompCharExpr (
 **
 *F  CompPermExpr( <expr> )  . . . . . . . . . . . . . . . . . . . T_PERM_EXPR
 */
-static CVar CompPermExpr (
-    Expr                expr )
+static CVar CompPermExpr(Expr expr)
 {
     CVar                perm;           /* result                          */
     CVar                lcyc;           /* one cycle as list               */
@@ -2468,13 +2392,12 @@ static CVar CompPermExpr (
 **
 *F  CompListExpr( <expr> )  . . . . . . . . . . . . . . . . . . . T_LIST_EXPR
 */
-static CVar CompListExpr1 ( Expr expr );
-static void CompListExpr2 ( CVar list, Expr expr );
-static CVar CompRecExpr1 ( Expr expr );
-static void CompRecExpr2 ( CVar rec, Expr expr );
+static CVar CompListExpr1(Expr expr);
+static void CompListExpr2(CVar list, Expr expr);
+static CVar CompRecExpr1(Expr expr);
+static void CompRecExpr2(CVar rec, Expr expr);
 
-static CVar CompListExpr (
-    Expr                expr )
+static CVar CompListExpr(Expr expr)
 {
     CVar                list;           /* list, result                    */
 
@@ -2491,8 +2414,7 @@ static CVar CompListExpr (
 **
 *F  CompListTildeExpr( <expr> ) . . . . . . . . . . . . . . T_LIST_TILDE_EXPR
 */
-static CVar CompListTildeExpr (
-    Expr                expr )
+static CVar CompListTildeExpr(Expr expr)
 {
     CVar                list;           /* list value, result              */
     CVar                tilde;          /* old value of tilde              */
@@ -2523,8 +2445,7 @@ static CVar CompListTildeExpr (
 **
 *F  CompListExpr1( <expr> ) . . . . . . . . . . . . . . . . . . . . . . local
 */
-static CVar CompListExpr1 (
-    Expr                expr )
+static CVar CompListExpr1(Expr expr)
 {
     CVar                list;           /* list, result                    */
     Int                 len;            /* logical length of the list      */
@@ -2551,9 +2472,7 @@ static CVar CompListExpr1 (
 **
 *F  CompListExpr2( <list>, <expr> ) . . . . . . . . . . . . . . . . . . local
 */
-static void CompListExpr2 (
-    CVar                list,
-    Expr                expr )
+static void CompListExpr2(CVar list, Expr expr)
 {
     CVar                sub;            /* subexpression                   */
     Int                 len;            /* logical length of the list      */
@@ -2607,8 +2526,7 @@ static void CompListExpr2 (
 **
 *F  CompRangeExpr( <expr> ) . . . . . . . . . . . . . . . . . .  T_RANGE_EXPR
 */
-static CVar CompRangeExpr (
-    Expr                expr )
+static CVar CompRangeExpr(Expr expr)
 {
     CVar                range;          /* range, result                   */
     CVar                first;          /* first  element                  */
@@ -2663,8 +2581,7 @@ static CVar CompRangeExpr (
 **
 *F  CompStringExpr( <expr> )  . . . . . . . . . . compile a string expression
 */
-static CVar CompStringExpr (
-    Expr                expr )
+static CVar CompStringExpr(Expr expr)
 {
     CVar                string;         /* string value, result            */
     Obj                 str;            // the actual string object
@@ -2690,8 +2607,7 @@ static CVar CompStringExpr (
 **
 *F  CompRecExpr( <expr> ) . . . . . . . . . . . . . . . . . . . .  T_REC_EXPR
 */
-static CVar CompRecExpr (
-    Expr                expr )
+static CVar CompRecExpr(Expr expr)
 {
     CVar                rec;            /* record value, result            */
 
@@ -2708,8 +2624,7 @@ static CVar CompRecExpr (
 **
 *F  CompRecTildeExpr( <expr> )  . . . . . . . . . . . . . .  T_REC_TILDE_EXPR
 */
-static CVar CompRecTildeExpr (
-    Expr                expr )
+static CVar CompRecTildeExpr(Expr expr)
 {
     CVar                rec;            /* record value, result            */
     CVar                tilde;          /* old value of tilde              */
@@ -2740,8 +2655,7 @@ static CVar CompRecTildeExpr (
 **
 *F  CompRecExpr1( <expr> )  . . . . . . . . . . . . . . . . . . . . . . local
 */
-static CVar CompRecExpr1 (
-    Expr                expr )
+static CVar CompRecExpr1(Expr expr)
 {
     CVar                rec;            /* record value, result            */
     Int                 len;            /* number of components            */
@@ -2767,9 +2681,7 @@ static CVar CompRecExpr1 (
 **
 *F  CompRecExpr2( <rec>, <expr> ) . . . . . . . . . . . . . . . . . . . local
 */
-static void            CompRecExpr2 (
-    CVar                rec,
-    Expr                expr )
+static void CompRecExpr2(CVar rec, Expr expr)
 {
     CVar                rnam;           /* name of component               */
     CVar                sub;            /* value of subexpression          */
@@ -2837,8 +2749,7 @@ static void            CompRecExpr2 (
 **
 *F  CompRefLVar( <expr> ) . . . . . . .  T_REFLVAR
 */
-static CVar CompRefLVar (
-    Expr                expr )
+static CVar CompRefLVar(Expr expr)
 {
     CVar                val;            /* value, result                   */
     LVar                lvar;           /* local variable                  */
@@ -2866,8 +2777,7 @@ static CVar CompRefLVar (
 **
 *F  CompIsbLVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  T_ISB_LVAR
 */
-static CVar CompIsbLVar (
-    Expr                expr )
+static CVar CompIsbLVar(Expr expr)
 {
     CVar                isb;            /* isbound, result                 */
     CVar                val;            /* value                           */
@@ -2906,8 +2816,7 @@ static CVar CompIsbLVar (
 **
 *F  CompRefHVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  T_REF_HVAR
 */
-static CVar CompRefHVar (
-    Expr                expr )
+static CVar CompRefHVar(Expr expr)
 {
     CVar                val;            /* value, result                   */
     HVar                hvar;           /* higher variable                 */
@@ -2935,8 +2844,7 @@ static CVar CompRefHVar (
 **
 *F  CompIsbHVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  T_ISB_HVAR
 */
-static CVar CompIsbHVar (
-    Expr                expr )
+static CVar CompIsbHVar(Expr expr)
 {
     CVar                isb;            /* isbound, result                 */
     CVar                val;            /* value                           */
@@ -2972,8 +2880,7 @@ static CVar CompIsbHVar (
 **
 *F  CompRefGVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  T_REF_GVAR
 */
-static CVar CompRefGVar (
-    Expr                expr )
+static CVar CompRefGVar(Expr expr)
 {
     CVar                val;            /* value, result                   */
     GVar                gvar;           /* higher variable                 */
@@ -3000,8 +2907,7 @@ static CVar CompRefGVar (
 **
 *F  CompRefGVarFopy( <expr> ) . . . . . . . . . . . . . . . . . . . . . local
 */
-static CVar CompRefGVarFopy (
-    Expr                expr )
+static CVar CompRefGVarFopy(Expr expr)
 {
     CVar                val;            /* value, result                   */
     GVar                gvar;           /* higher variable                 */
@@ -3028,8 +2934,7 @@ static CVar CompRefGVarFopy (
 **
 *F  CompIsbGVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  T_ISB_GVAR
 */
-static CVar CompIsbGVar (
-    Expr                expr )
+static CVar CompIsbGVar(Expr expr)
 {
     CVar                isb;            /* isbound, result                 */
     CVar                val;            /* value, result                   */
@@ -3064,8 +2969,7 @@ static CVar CompIsbGVar (
 **
 *F  CompElmList( <expr> ) . . . . . . . . . . . . . . . . . . . .  T_ELM_LIST
 */
-static CVar CompElmList (
-    Expr                expr )
+static CVar CompElmList(Expr expr)
 {
     CVar                elm;            /* element, result                 */
     CVar                list;           /* list                            */
@@ -3111,8 +3015,7 @@ static CVar CompElmList (
 **
 *F  CompElmsList( <expr> )  . . . . . . . . . . . . . . . . . . . T_ELMS_LIST
 */
-static CVar CompElmsList (
-    Expr                expr )
+static CVar CompElmsList(Expr expr)
 {
     CVar                elms;           /* elements, result                */
     CVar                list;           /* list                            */
@@ -3146,8 +3049,7 @@ static CVar CompElmsList (
 **
 *F  CompElmListLev( <expr> )  . . . . . . . . . . . . . . . .  T_ELM_LIST_LEV
 */
-static CVar CompElmListLev (
-    Expr                expr )
+static CVar CompElmListLev(Expr expr)
 {
     CVar                lists;          /* lists                           */
     CVar                pos;            /* position                        */
@@ -3178,8 +3080,7 @@ static CVar CompElmListLev (
 **
 *F  CompElmsListLev( <expr> ) . . . . . . . . . . . . . . . . T_ELMS_LIST_LEV
 */
-static CVar CompElmsListLev (
-    Expr                expr )
+static CVar CompElmsListLev(Expr expr)
 {
     CVar                lists;          /* lists                           */
     CVar                poss;           /* positions                       */
@@ -3209,8 +3110,7 @@ static CVar CompElmsListLev (
 **
 *F  CompIsbList( <expr> ) . . . . . . . . . . . . . . . . . . . .  T_ISB_LIST
 */
-static CVar CompIsbList (
-    Expr                expr )
+static CVar CompIsbList(Expr expr)
 {
     CVar                isb;            /* isbound, result                 */
     CVar                list;           /* list                            */
@@ -3245,8 +3145,7 @@ static CVar CompIsbList (
 **
 *F  CompElmRecName( <expr> )  . . . . . . . . . . . . . . . .  T_ELM_REC_NAME
 */
-static CVar CompElmRecName (
-    Expr                expr )
+static CVar CompElmRecName(Expr expr)
 {
     CVar                elm;            /* element, result                 */
     CVar                record;         /* the record, left operand        */
@@ -3280,8 +3179,7 @@ static CVar CompElmRecName (
 **
 *F  CompElmRecExpr( <expr> )  . . . . . . . . . . . . . . . .  T_ELM_REC_EXPR
 */
-static CVar CompElmRecExpr (
-    Expr                expr )
+static CVar CompElmRecExpr(Expr expr)
 {
     CVar                elm;            /* element, result                 */
     CVar                record;         /* the record, left operand        */
@@ -3315,8 +3213,7 @@ static CVar CompElmRecExpr (
 **
 *F  CompIsbRecName( <expr> )  . . . . . . . . . . . . . . . .  T_ISB_REC_NAME
 */
-static CVar CompIsbRecName (
-    Expr                expr )
+static CVar CompIsbRecName(Expr expr)
 {
     CVar                isb;            /* isbound, result                 */
     CVar                record;         /* the record, left operand        */
@@ -3351,8 +3248,7 @@ static CVar CompIsbRecName (
 **
 *F  CompIsbRecExpr( <expr> )  . . . . . . . . . . . . . . . .  T_ISB_REC_EXPR
 */
-static CVar CompIsbRecExpr (
-    Expr                expr )
+static CVar CompIsbRecExpr(Expr expr)
 {
     CVar                isb;            /* isbound, result                 */
     CVar                record;         /* the record, left operand        */
@@ -3387,8 +3283,7 @@ static CVar CompIsbRecExpr (
 **
 *F  CompElmPosObj( <expr> ) . . . . . . . . . . . . . . . . . .  T_ELM_POSOBJ
 */
-static CVar CompElmPosObj (
-    Expr                expr )
+static CVar CompElmPosObj(Expr expr)
 {
     CVar                elm;            /* element, result                 */
     CVar                list;           /* list                            */
@@ -3423,8 +3318,7 @@ static CVar CompElmPosObj (
 **
 *F  CompIsbPosObj( <expr> ) . . . . . . . . . . . . . . . . . .  T_ISB_POSOBJ
 */
-static CVar CompIsbPosObj (
-    Expr                expr )
+static CVar CompIsbPosObj(Expr expr)
 {
     CVar                isb;            /* isbound, result                 */
     CVar                list;           /* list                            */
@@ -3459,8 +3353,7 @@ static CVar CompIsbPosObj (
 **
 *F  CompElmObjName( <expr> )  . . . . . . . . . . . . . . . T_ELM_COMOBJ_NAME
 */
-static CVar CompElmComObjName (
-    Expr                expr )
+static CVar CompElmComObjName(Expr expr)
 {
     CVar                elm;            /* element, result                 */
     CVar                record;         /* the record, left operand        */
@@ -3495,8 +3388,7 @@ static CVar CompElmComObjName (
 **
 *F  CompElmComObjExpr( <expr> ) . . . . . . . . . . . . . . T_ELM_COMOBJ_EXPR
 */
-static CVar CompElmComObjExpr (
-    Expr                expr )
+static CVar CompElmComObjExpr(Expr expr)
 {
     CVar                elm;            /* element, result                 */
     CVar                record;         /* the record, left operand        */
@@ -3530,8 +3422,7 @@ static CVar CompElmComObjExpr (
 **
 *F  CompIsbComObjName( <expr> ) . . . . . . . . . . . . . . T_ISB_COMOBJ_NAME
 */
-static CVar CompIsbComObjName (
-    Expr                expr )
+static CVar CompIsbComObjName(Expr expr)
 {
     CVar                isb;            /* isbound, result                 */
     CVar                record;         /* the record, left operand        */
@@ -3566,8 +3457,7 @@ static CVar CompIsbComObjName (
 **
 *F  CompIsbComObjExpr( <expr> ) . . . . . . . . . . . . . . T_ISB_COMOBJ_EXPR
 */
-static CVar CompIsbComObjExpr (
-    Expr                expr )
+static CVar CompIsbComObjExpr(Expr expr)
 {
     CVar                isb;            /* isbound, result                 */
     CVar                record;         /* the record, left operand        */
@@ -3610,10 +3500,9 @@ static CVar CompIsbComObjExpr (
 **
 **  'CompStat' compiles the statement <stat>.
 */
-static void (* CompStatFuncs[256]) ( Stat stat );
+static void (*CompStatFuncs[256])(Stat stat);
 
-static void CompStat (
-    Stat                stat )
+static void CompStat(Stat stat)
 {
     (* CompStatFuncs[ TNUM_STAT(stat) ])( stat );
 }
@@ -3623,8 +3512,7 @@ static void CompStat (
 **
 *F  CompUnknownStat( <stat> ) . . . . . . . . . . . . . . . . signal an error
 */
-static void CompUnknownStat (
-    Stat                stat )
+static void CompUnknownStat(Stat stat)
 {
     Emit( "CANNOT COMPILE STATEMENT OF TNUM %d;\n", TNUM_STAT(stat) );
 }
@@ -3641,8 +3529,7 @@ static GVar G_Add;
 **
 *F  CompProccall0to6Args( <stat> )  . . . T_PROCCALL_0ARGS...T_PROCCALL_6ARGS
 */
-static void CompProccall0to6Args (
-    Stat                stat )
+static void CompProccall0to6Args(Stat stat)
 {
     CVar                func;           /* function                        */
     CVar                args[8];        /* arguments                       */
@@ -3706,8 +3593,7 @@ static void CompProccall0to6Args (
 **
 *F  CompProccallXArgs . . . . . . . . . . . . . . . . . . .  T_PROCCALL_XARGS
 */
-static void CompProccallXArgs (
-    Stat                stat )
+static void CompProccallXArgs(Stat stat)
 {
     CVar                func;           /* function                        */
     CVar                argl;           /* argument list                   */
@@ -3755,8 +3641,7 @@ static void CompProccallXArgs (
 **
 *F  CompProccallXArgs( <expr> ) . . . . . . . . . . . . . .  T_PROCCALL_OPTS
 */
-static void CompProccallOpts(
-                      Stat stat)
+static void CompProccallOpts(Stat stat)
 {
   CVar opts = CompExpr(READ_STAT(stat, 0));
   GVar pushOptions;
@@ -3776,8 +3661,7 @@ static void CompProccallOpts(
 **
 *F  CompSeqStat( <stat> ) . . . . . . . . . . . . .  T_SEQ_STAT...T_SEQ_STAT7
 */
-static void CompSeqStat (
-    Stat                stat )
+static void CompSeqStat(Stat stat)
 {
     UInt                nr;             /* number of statements            */
     UInt                i;              /* loop variable                   */
@@ -3796,8 +3680,7 @@ static void CompSeqStat (
 **
 *F  CompIf( <stat> )  . . . . . . . . T_IF/T_IF_ELSE/T_IF_ELIF/T_IF_ELIF_ELSE
 */
-static void CompIf (
-    Stat                stat )
+static void CompIf(Stat stat)
 {
     CVar                cond;           /* condition                       */
     UInt                nr;             /* number of branches              */
@@ -3931,8 +3814,7 @@ static void CompIf (
 **
 *F  CompFor( <stat> ) . . . . . . . T_FOR...T_FOR3/T_FOR_RANGE...T_FOR_RANGE3
 */
-static void CompFor (
-    Stat                stat )
+static void CompFor(Stat stat)
 {
     UInt                var;            /* loop variable                   */
     Char                vart;           /* variable type                   */
@@ -4171,8 +4053,7 @@ static void CompFor (
 **
 *F  CompWhile( <stat> ) . . . . . . . . . . . . . . . . .  T_WHILE...T_WHILE3
 */
-static void CompWhile (
-    Stat                stat )
+static void CompWhile(Stat stat)
 {
     CVar                cond;           /* condition                       */
     Int                 pass;           /* current pass                    */
@@ -4229,8 +4110,7 @@ static void CompWhile (
 **
 *F  CompRepeat( <stat> )  . . . . . . . . . . . . . . .  T_REPEAT...T_REPEAT3
 */
-static void CompRepeat (
-    Stat                stat )
+static void CompRepeat(Stat stat)
 {
     CVar                cond;           /* condition                       */
     Int                 pass;           /* current pass                    */
@@ -4290,8 +4170,7 @@ static void CompRepeat (
 **
 *F  CompBreak( <stat> ) . . . . . . . . . . . . . . . . . . . . . . . T_BREAK
 */
-static void CompBreak (
-    Stat                stat )
+static void CompBreak(Stat stat)
 {
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
@@ -4305,8 +4184,7 @@ static void CompBreak (
 **
 *F  CompContinue( <stat> ) . . . . . . . . . . . . . . . . . . . . T_CONTINUE
 */
-static void CompContinue (
-    Stat                stat )
+static void CompContinue(Stat stat)
 {
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
@@ -4321,8 +4199,7 @@ static void CompContinue (
 **
 *F  CompReturnObj( <stat> ) . . . . . . . . . . . . . . . . . .  T_RETURN_OBJ
 */
-static void CompReturnObj (
-    Stat                stat )
+static void CompReturnObj(Stat stat)
 {
     CVar                obj;            /* returned object                 */
 
@@ -4349,8 +4226,7 @@ static void CompReturnObj (
 **
 *F  CompReturnVoid( <stat> )  . . . . . . . . . . . . . . . . . T_RETURN_VOID
 */
-static void CompReturnVoid (
-    Stat                stat )
+static void CompReturnVoid(Stat stat)
 {
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
@@ -4369,8 +4245,7 @@ static void CompReturnVoid (
 **
 *F  CompAssLVar( <stat> ) . . . . . . . . . . . .  T_ASS_LVAR...T_ASS_LVAR_16
 */
-static void            CompAssLVar (
-    Stat                stat )
+static void CompAssLVar(Stat stat)
 {
     LVar                lvar;           /* local variable                  */
     CVar                rhs;            /* right hand side                 */
@@ -4402,8 +4277,7 @@ static void            CompAssLVar (
 **
 *F  CompUnbLVar( <stat> ) . . . . . . . . . . . . . . . . . . . .  T_UNB_LVAR
 */
-static void CompUnbLVar (
-    Stat                stat )
+static void CompUnbLVar(Stat stat)
 {
     LVar                lvar;           /* local variable                  */
 
@@ -4428,8 +4302,7 @@ static void CompUnbLVar (
 **
 *F  CompAssHVar( <stat> ) . . . . . . . . . . . . . . . . . . . .  T_ASS_HVAR
 */
-static void CompAssHVar (
-    Stat                stat )
+static void CompAssHVar(Stat stat)
 {
     HVar                hvar;           /* higher variable                 */
     CVar                rhs;            /* right hand side                 */
@@ -4457,8 +4330,7 @@ static void CompAssHVar (
 **
 *F  CompUnbHVar( <stat> ) . . . . . . . . . . . . . . . . . . . .  T_UNB_HVAR
 */
-static void CompUnbHVar (
-    Stat                stat )
+static void CompUnbHVar(Stat stat)
 {
     HVar                hvar;           /* higher variable                 */
 
@@ -4479,8 +4351,7 @@ static void CompUnbHVar (
 **
 *F  CompAssGVar( <stat> ) . . . . . . . . . . . . . . . . . . . .  T_ASS_GVAR
 */
-static void CompAssGVar (
-    Stat                stat )
+static void CompAssGVar(Stat stat)
 {
     GVar                gvar;           /* global variable                 */
     CVar                rhs;            /* right hand side                 */
@@ -4507,8 +4378,7 @@ static void CompAssGVar (
 **
 *F  CompUnbGVar( <stat> ) . . . . . . . . . . . . . . . . . . . .  T_UNB_GVAR
 */
-static void            CompUnbGVar (
-    Stat                stat )
+static void CompUnbGVar(Stat stat)
 {
     GVar                gvar;           /* global variable                 */
 
@@ -4528,8 +4398,7 @@ static void            CompUnbGVar (
 **
 *F  CompAssList( <stat> ) . . . . . . . . . . . . . . . . . . . .  T_ASS_LIST
 */
-static void CompAssList (
-    Stat                stat )
+static void CompAssList(Stat stat)
 {
     CVar                list;           /* list                            */
     CVar                pos;            /* position                        */
@@ -4574,8 +4443,7 @@ static void CompAssList (
 **
 *F  CompAsssList( <stat> )  . . . . . . . . . . . . . . . . . . . T_ASSS_LIST
 */
-static void CompAsssList (
-    Stat                stat )
+static void CompAsssList(Stat stat)
 {
     CVar                list;           /* list                            */
     CVar                poss;           /* positions                       */
@@ -4609,8 +4477,7 @@ static void CompAsssList (
 **
 *F  CompAssListLev( <stat> )  . . . . . . . . . . . . . . . .  T_ASS_LIST_LEV
 */
-static void CompAssListLev (
-    Stat                stat )
+static void CompAssListLev(Stat stat)
 {
     CVar                lists;          /* lists                           */
     CVar                pos;            /* position                        */
@@ -4649,8 +4516,7 @@ static void CompAssListLev (
 **
 *F  CompAsssListLev( <stat> ) . . . . . . . . . . . . . . . . T_ASSS_LIST_LEV
 */
-static void CompAsssListLev (
-    Stat                stat )
+static void CompAsssListLev(Stat stat)
 {
     CVar                lists;          /* list                            */
     CVar                poss;           /* positions                       */
@@ -4689,8 +4555,7 @@ static void CompAsssListLev (
 **
 *F  CompUnbList( <stat> ) . . . . . . . . . . . . . . . . . . . .  T_UNB_LIST
 */
-static void CompUnbList (
-    Stat                stat )
+static void CompUnbList(Stat stat)
 {
     CVar                list;           /* list, left operand              */
     CVar                pos;            /* position, left operand          */
@@ -4720,8 +4585,7 @@ static void CompUnbList (
 **
 *F  CompAssRecName( <stat> )  . . . . . . . . . . . . . . . .  T_ASS_REC_NAME
 */
-static void CompAssRecName (
-    Stat                stat )
+static void CompAssRecName(Stat stat)
 {
     CVar                record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -4755,8 +4619,7 @@ static void CompAssRecName (
 **
 *F  CompAssRecExpr( <stat> )  . . . . . . . . . . . . . . . .  T_ASS_REC_EXPR
 */
-static void CompAssRecExpr (
-    Stat                stat )
+static void CompAssRecExpr(Stat stat)
 {
     CVar                record;         /* record, left operand            */
     CVar                rnam;           /* name, left operand              */
@@ -4790,8 +4653,7 @@ static void CompAssRecExpr (
 **
 *F  CompUnbRecName( <stat> )  . . . . . . . . . . . . . . . .  T_UNB_REC_NAME
 */
-static void CompUnbRecName (
-    Stat                stat )
+static void CompUnbRecName(Stat stat)
 {
     CVar                record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -4820,8 +4682,7 @@ static void CompUnbRecName (
 **
 *F  CompUnbRecExpr( <stat> )  . . . . . . . . . . . . . . . .  T_UNB_REC_EXPR
 */
-static void            CompUnbRecExpr (
-    Stat                stat )
+static void CompUnbRecExpr(Stat stat)
 {
     CVar                record;         /* record, left operand            */
     CVar                rnam;           /* name, left operand              */
@@ -4850,8 +4711,7 @@ static void            CompUnbRecExpr (
 **
 *F  CompAssPosObj( <stat> ) . . . . . . . . . . . . . . . . . .  T_ASS_POSOBJ
 */
-static void CompAssPosObj (
-    Stat                stat )
+static void CompAssPosObj(Stat stat)
 {
     CVar                list;           /* list                            */
     CVar                pos;            /* position                        */
@@ -4886,8 +4746,7 @@ static void CompAssPosObj (
 **
 *F  CompUnbPosObj( <stat> ) . . . . . . . . . . . . . . . . . .  T_UNB_POSOBJ
 */
-static void CompUnbPosObj (
-    Stat                stat )
+static void CompUnbPosObj(Stat stat)
 {
     CVar                list;           /* list, left operand              */
     CVar                pos;            /* position, left operand          */
@@ -4917,8 +4776,7 @@ static void CompUnbPosObj (
 **
 *F  CompAssComObjName( <stat> ) . . . . . . . . . . . . . . T_ASS_COMOBJ_NAME
 */
-static void CompAssComObjName (
-    Stat                stat )
+static void CompAssComObjName(Stat stat)
 {
     CVar                record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -4952,8 +4810,7 @@ static void CompAssComObjName (
 **
 *F  CompAssComObjExpr( <stat> ) . . . . . . . . . . . . . . T_ASS_COMOBJ_EXPR
 */
-static void CompAssComObjExpr (
-    Stat                stat )
+static void CompAssComObjExpr(Stat stat)
 {
     CVar                record;         /* record, left operand            */
     CVar                rnam;           /* name, left operand              */
@@ -4987,8 +4844,7 @@ static void CompAssComObjExpr (
 **
 *F  CompUnbComObjName( <stat> ) . . . . . . . . . . . . . . T_UNB_COMOBJ_NAME
 */
-static void CompUnbComObjName (
-    Stat                stat )
+static void CompUnbComObjName(Stat stat)
 {
     CVar                record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -5017,8 +4873,7 @@ static void CompUnbComObjName (
 **
 *F  CompUnbComObjExpr( <stat> ) . . . . . . . . . . . . . . T_UNB_COMOBJ_EXPR
 */
-static void CompUnbComObjExpr (
-    Stat                stat )
+static void CompUnbComObjExpr(Stat stat)
 {
     CVar                record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -5047,8 +4902,7 @@ static void CompUnbComObjExpr (
 **
 *F  CompEmpty( <stat> )  . . . . . . . . . . . . . . . . . . . . . . . T_EMPY
 */
-static void CompEmpty (
-    Stat                stat )
+static void CompEmpty(Stat stat)
 {
     // do nothing
 }
@@ -5057,8 +4911,7 @@ static void CompEmpty (
 **
 *F  CompInfo( <stat> )  . . . . . . . . . . . . . . . . . . . . . . .  T_INFO
 */
-static void CompInfo (
-    Stat                stat )
+static void CompInfo(Stat stat)
 {
     CVar                tmp;
     CVar                sel;
@@ -5098,8 +4951,7 @@ static void CompInfo (
 **
 *F  CompAssert2( <stat> ) . . . . . . . . . . . . . . . . . .  T_ASSERT_2ARGS
 */
-static void CompAssert2 (
-    Stat                stat )
+static void CompAssert2(Stat stat)
 {
     CVar                lev;            /* the level                       */
     CVar                cnd;            /* the condition                   */
@@ -5124,8 +4976,7 @@ static void CompAssert2 (
 **
 *F  CompAssert3( <stat> ) . . . . . . . . . . . . . . . . . .  T_ASSERT_3ARGS
 */
-static void CompAssert3 (
-    Stat                stat )
+static void CompAssert3(Stat stat)
 {
     CVar                lev;            /* the level                       */
     CVar                cnd;            /* the condition                   */
@@ -5166,8 +5017,7 @@ static void CompAssert3 (
 */
 static Obj CompFunctions;
 
-static void CompFunc (
-    Obj                 func )
+static void CompFunc(Obj func)
 {
     Bag                 info;           /* info bag for this function      */
     Int                 narg;           /* number of arguments             */
@@ -5512,9 +5362,7 @@ Int CompileFunc (
 **
 *F  FuncCOMPILE_FUNC( <self>, <output>, <func>, <name>, <magic1>, <magic2> )
 */
-static Obj FuncCOMPILE_FUNC (
-    Obj                 self,
-    Obj                 arg )
+static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
 {
     Obj                 output;
     Obj                 func;

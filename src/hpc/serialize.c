@@ -297,8 +297,8 @@ static int SerializedAlready(Obj obj)
 /* TNum-specific serialization/deserialization functions */
 
 static void RegisterSerializerFunctions(UInt                    tnum,
-                                 SerializationFunction   sfun,
-                                 DeserializationFunction dfun)
+                                        SerializationFunction   sfun,
+                                        DeserializationFunction dfun)
 {
     SerializationFuncByTNum[tnum] = sfun;
     DeserializationFuncByTNum[tnum] = dfun;

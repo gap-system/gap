@@ -243,9 +243,7 @@ static Stat NewStatWithProf (
     return stat;
 }
 
-static Stat NewStat (
-    UInt                type,
-    UInt                size)
+static Stat NewStat(UInt type, UInt size)
 {
     return NewStatWithProf(type, size, GetInputLineNumber());
 }
@@ -258,9 +256,7 @@ static Stat NewStat (
 **  'NewExpr' allocates a new expression memory block of  the type <type> and
 **  <size> bytes.  'NewExpr' returns the identifier of the new expression.
 */
-static Expr            NewExpr (
-    UInt                type,
-    UInt                size )
+static Expr NewExpr(UInt type, UInt size)
 {
     return NewStat(type, size);
 }
@@ -459,8 +455,7 @@ static Expr PopExpr(void)
 **  'PushUnaryOp' pushes a   unary  operator expression onto the   expression
 **  stack.  <type> is the type of the operator (currently only 'T_NOT').
 */
-static void PushUnaryOp (
-    UInt                type )
+static void PushUnaryOp(UInt type)
 {
     Expr                unop;           /* unary operator, result          */
     Expr                op;             /* operand                         */
@@ -484,8 +479,7 @@ static void PushUnaryOp (
 **  'PushBinaryOp' pushes a binary   operator expression onto  the expression
 **  stack.  <type> is the type of the operator.
 */
-static void PushBinaryOp (
-    UInt                type )
+static void PushBinaryOp(UInt type)
 {
     Expr                binop;          /* binary operator, result         */
     Expr                opL;            /* left operand                    */
@@ -3152,7 +3146,7 @@ void CodeAssertEnd3Args ( void )
 **  machines of different endianness, but this would mean parsing the bag as
 **  we save it which it would be nice to avoid just now.
 */
-static void SaveBody ( Obj body )
+static void SaveBody(Obj body)
 {
   UInt i;
   const UInt *ptr = (const UInt *) CONST_ADDR_OBJ(body);
@@ -3173,7 +3167,7 @@ static void SaveBody ( Obj body )
 **  are currently both UInt
 **
 */
-static void LoadBody ( Obj body )
+static void LoadBody(Obj body)
 {
   UInt i;
   UInt *ptr;

@@ -597,7 +597,8 @@ struct InterpreterHooks profileHooks = { visitStat,
                                          "line-by-line profiling" };
 
 
-static void enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
+static void
+enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
 {
     if(profileState_Active) {
         Panic("-P or -C can only be passed once\n");
@@ -660,11 +661,11 @@ Int enableMemoryProfilingAtStartup(Char ** argv, void * dummy)
 }
 
 static Obj FuncACTIVATE_PROFILING(Obj self,
-                           Obj filename, /* filename to write to */
-                           Obj coverage,
-                           Obj wallTime,
-                           Obj recordMem,
-                           Obj resolution)
+                                  Obj filename, /* filename to write to */
+                                  Obj coverage,
+                                  Obj wallTime,
+                                  Obj recordMem,
+                                  Obj resolution)
 {
     if(profileState_Active) {
       return Fail;
@@ -759,8 +760,7 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
     return True;
 }
 
-static Obj FuncDEACTIVATE_PROFILING (
-    Obj                 self)
+static Obj FuncDEACTIVATE_PROFILING(Obj self)
 {
   HashLock(&profileState);
 
@@ -779,8 +779,7 @@ static Obj FuncDEACTIVATE_PROFILING (
   return True;
 }
 
-static Obj FuncIsLineByLineProfileActive (
-    Obj self)
+static Obj FuncIsLineByLineProfileActive(Obj self)
 {
   if(profileState_Active) {
     return True;

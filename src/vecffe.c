@@ -70,9 +70,7 @@ static Int IsVecFFE(Obj obj)
 **  'SumFFEVecFFE' is an improved version  of  'SumSclList', which  does  not
 **  call 'SUM'.
 */
-static Obj             SumFFEVecFFE (
-    Obj                 elmL,
-    Obj                 vecR )
+static Obj SumFFEVecFFE(Obj elmL, Obj vecR)
 {
     Obj                 vecS;           /* handle of the sum               */
     Obj *               ptrS;           /* pointer into the sum            */
@@ -132,9 +130,7 @@ static Obj             SumFFEVecFFE (
 **  'SumVecFFEFFE' is an improved version  of  'SumListScl', which  does  not
 **  call 'SUM'.
 */
-static Obj             SumVecFFEFFE (
-    Obj                 vecL,
-    Obj                 elmR )
+static Obj SumVecFFEFFE(Obj vecL, Obj elmR)
 {
     Obj                 vecS;           /* handle of the sum               */
     Obj *               ptrS;           /* pointer into the sum            */
@@ -193,9 +189,7 @@ static Obj             SumVecFFEFFE (
 **  'SumVecFFEVecFFE' is an improved version of 'SumListList', which does not
 **  call 'SUM'.
 */
-static Obj             SumVecFFEVecFFE (
-    Obj                 vecL,
-    Obj                 vecR )
+static Obj SumVecFFEVecFFE(Obj vecL, Obj vecR)
 {
     Obj                 vecS;           /* handle of the sum               */
     Obj *               ptrS;           /* pointer into the sum            */
@@ -275,9 +269,7 @@ static Obj             SumVecFFEVecFFE (
 **  'DiffFFEVecFFE'  is an improved  version of 'DiffSclList', which does not
 **  call 'DIFF'.
 */
-static Obj             DiffFFEVecFFE (
-    Obj                 elmL,
-    Obj                 vecR )
+static Obj DiffFFEVecFFE(Obj elmL, Obj vecR)
 {
     Obj                 vecD;           /* handle of the difference        */
     Obj *               ptrD;           /* pointer into the difference     */
@@ -338,9 +330,7 @@ static Obj             DiffFFEVecFFE (
 **  'DiffVecFFEFFE' is an improved  version of 'DiffListScl', which  does not
 **  call 'DIFF'.
 */
-static Obj             DiffVecFFEFFE (
-    Obj                 vecL,
-    Obj                 elmR )
+static Obj DiffVecFFEFFE(Obj vecL, Obj elmR)
 {
     Obj                 vecD;           /* handle of the difference        */
     Obj *               ptrD;           /* pointer into the difference     */
@@ -401,9 +391,7 @@ static Obj             DiffVecFFEFFE (
 **  'DiffVecFFEVecFFE' is an improved  version of  'DiffListList', which does
 **  not call 'DIFF'.
 */
-static Obj             DiffVecFFEVecFFE (
-    Obj                 vecL,
-    Obj                 vecR )
+static Obj DiffVecFFEVecFFE(Obj vecL, Obj vecR)
 {
     Obj                 vecD;           /* handle of the difference        */
     Obj *               ptrD;           /* pointer into the difference     */
@@ -488,9 +476,7 @@ static Obj             DiffVecFFEVecFFE (
 **  'ProdFFEVecFFE'  is an  improved version of 'ProdSclList', which does not
 **  call 'PROD'.
 */
-static Obj             ProdFFEVecFFE (
-    Obj                 elmL,
-    Obj                 vecR )
+static Obj ProdFFEVecFFE(Obj elmL, Obj vecR)
 {
     Obj                 vecP;           /* handle of the product           */
     Obj *               ptrP;           /* pointer into the product        */
@@ -549,9 +535,7 @@ static Obj             ProdFFEVecFFE (
 **  'ProdVecFFEFFE'  is an  improved version of 'ProdSclList', which does not
 **  call 'PROD'.
 */
-static Obj             ProdVecFFEFFE (
-    Obj                 vecL,
-    Obj                 elmR )
+static Obj ProdVecFFEFFE(Obj vecL, Obj elmR)
 {
     Obj                 vecP;           /* handle of the product           */
     Obj *               ptrP;           /* pointer into the product        */
@@ -611,9 +595,7 @@ static Obj             ProdVecFFEFFE (
 **  'ProdVecFFEVecFFE' is an improved version  of 'ProdListList',  which does
 **  not call 'PROD'.
 */
-static Obj             ProdVecFFEVecFFE (
-    Obj                 vecL,
-    Obj                 vecR )
+static Obj ProdVecFFEVecFFE(Obj vecL, Obj vecR)
 {
     FFV                 valP;           /* one product                     */
     FFV                 valS;           /* sum of the products             */
@@ -671,7 +653,7 @@ static Obj             ProdVecFFEVecFFE (
 
 static Obj AddRowVectorOp;   /* BH changed to static */
 
-static Obj FuncADD_ROWVECTOR_VECFFES_3( Obj self, Obj vecL, Obj vecR, Obj mult )
+static Obj FuncADD_ROWVECTOR_VECFFES_3(Obj self, Obj vecL, Obj vecR, Obj mult)
 {
     Obj *ptrL;
     const Obj *ptrR;
@@ -774,7 +756,7 @@ static Obj FuncADD_ROWVECTOR_VECFFES_3( Obj self, Obj vecL, Obj vecR, Obj mult )
 
 static Obj MultVectorLeftOp; /* BH changed to static */
 
-static Obj FuncMULT_VECTOR_VECFFES( Obj self, Obj vec, Obj mult )
+static Obj FuncMULT_VECTOR_VECFFES(Obj self, Obj vec, Obj mult)
 {
     Obj *ptr;
     FFV  valM;
@@ -845,7 +827,7 @@ static Obj FuncMULT_VECTOR_VECFFES( Obj self, Obj vec, Obj mult )
 *F  FuncADD_ROWVECTOR_VECFFES_2( <self>, <vecL>, <vecR> )
 **
 */
-static Obj FuncADD_ROWVECTOR_VECFFES_2( Obj self, Obj vecL, Obj vecR )
+static Obj FuncADD_ROWVECTOR_VECFFES_2(Obj self, Obj vecL, Obj vecR)
 {
     Obj *ptrL;
     const Obj *ptrR;
@@ -1012,7 +994,7 @@ Obj             ProdVecFFEMatFFE (
 **  becuase it knows tha the zero is common and the result a vecffe
 */
 
-static Obj ZeroMutVecFFE( Obj vec )
+static Obj ZeroMutVecFFE(Obj vec)
 {
     UInt i, len;
     Obj res;
@@ -1029,7 +1011,7 @@ static Obj ZeroMutVecFFE( Obj vec )
     return res;
 }
 
-static Obj ZeroVecFFE( Obj vec )
+static Obj ZeroVecFFE(Obj vec)
 {
     UInt i, len;
     Obj res;
@@ -1047,12 +1029,12 @@ static Obj ZeroVecFFE( Obj vec )
 }
 
 
-static Obj FuncIS_VECFFE( Obj self, Obj vec)
+static Obj FuncIS_VECFFE(Obj self, Obj vec)
 {
     return IsVecFFE(vec) ? True : False;
 }
 
-static Obj FuncCOMMON_FIELD_VECFFE( Obj self, Obj vec)
+static Obj FuncCOMMON_FIELD_VECFFE(Obj self, Obj vec)
 {
     Obj elm;
     if (!IsVecFFE(vec))
@@ -1061,7 +1043,7 @@ static Obj FuncCOMMON_FIELD_VECFFE( Obj self, Obj vec)
     return INTOBJ_INT(SIZE_FF(FLD_FFE(elm)));
 }
 
-static Obj FuncSMALLEST_FIELD_VECFFE( Obj self, Obj vec)
+static Obj FuncSMALLEST_FIELD_VECFFE(Obj self, Obj vec)
 {
     Obj elm;
     UInt deg, deg1, deg2, i, len, p, q;

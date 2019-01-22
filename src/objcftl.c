@@ -79,7 +79,8 @@ extern inline struct CFTLModuleState *CFTLState(void)
   CHANGED_BAG( wst ); CHANGED_BAG( west ); CHANGED_BAG( est ); }
 
                                 
-static void AddIn( Obj list, Obj w, Obj e ) {
+static void AddIn(Obj list, Obj w, Obj e)
+{
 
   Int    g,  i;
   Obj    r,  s,  t;
@@ -98,10 +99,7 @@ static void AddIn( Obj list, Obj w, Obj e ) {
 
 }
 
-static Obj CollectPolycyc (
-    Obj pcp,
-    Obj list,
-    Obj word )
+static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
 {
     Int    ngens   = INT_INTOBJ( CONST_ADDR_OBJ(pcp)[ PC_NUMBER_OF_GENERATORS ] );
     Obj    commute = CONST_ADDR_OBJ(pcp)[ PC_COMMUTE ];
@@ -325,11 +323,7 @@ static Obj CollectPolycyc (
     return (Obj)0;
 }
 
-static Obj FuncCollectPolycyclic (
-    Obj self,
-    Obj pcp,
-    Obj list,
-    Obj word )
+static Obj FuncCollectPolycyclic(Obj self, Obj pcp, Obj list, Obj word)
 {
   CollectPolycyc( pcp, list, word );
   return (Obj)0;

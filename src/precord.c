@@ -73,7 +73,7 @@ static Obj TypePRec(Obj prec)
 *F  SetTypePRecToComObj( <rec>, <kind> )  convert record to component object
 **
 */
-static void SetTypePRecToComObj( Obj rec, Obj kind )
+static void SetTypePRecToComObj(Obj rec, Obj kind)
 {
     RetypeBag(rec, T_COMOBJ);
     SET_TYPE_COMOBJ(rec, kind);
@@ -100,9 +100,7 @@ Obj NEW_PREC(UInt len)
 **
 **  Returns 0 if nothing changed and 1 if enlarged.
 */
-static Int             GrowPRec (
-    Obj                 rec,
-    UInt                need )
+static Int GrowPRec(Obj rec, UInt need)
 {
     UInt                newsize, want, good;
 
@@ -164,9 +162,7 @@ void CopyPRecord(TraversalState * traversal, Obj copy, Obj original)
 **
 **  'CleanPRec' is the function in 'TabCleanObj' for records.
 */
-static Obj CopyPRec (
-    Obj                 rec,
-    Int                 mut )
+static Obj CopyPRec(Obj rec, Int mut)
 {
     Obj                 copy;           /* copy, result                    */
     Obj                 tmp;            /* temporary variable              */
@@ -198,8 +194,7 @@ static Obj CopyPRec (
     return copy;
 }
 
-static void CleanPRec (
-    Obj                 rec )
+static void CleanPRec(Obj rec)
 {
     UInt                i;              /* loop variable                   */
 
@@ -431,8 +426,7 @@ void AssPRec (
 */
 extern Obj PrintObjOper;
 
-static void PrintPRec (
-    Obj                 rec )
+static void PrintPRec(Obj rec)
 {
     DoOperation1Args( PrintObjOper, rec );
 }
@@ -564,9 +558,7 @@ void SortPRecRNam (
 */
 
 
-static void PrintPathPRec (
-    Obj                 rec,
-    Int                 indx )
+static void PrintPathPRec(Obj rec, Int indx)
 {
     Pr( ".%H", (Int)NAME_RNAM( labs((Int)(GET_RNAM_PREC(rec,indx))) ), 0L );
 }
@@ -582,7 +574,7 @@ static void PrintPathPRec (
 **  'RecNames'  returns a list containing the  names of the components of the
 **  record <rec> as strings.
 */
-static Obj InnerRecNames( Obj rec )
+static Obj InnerRecNames(Obj rec)
 {
     Obj                 list;           /* list of record names, result    */
     UInt                rnam;           /* one name of record              */
@@ -609,9 +601,7 @@ static Obj InnerRecNames( Obj rec )
     return list;
 }
 
-static Obj FuncREC_NAMES (
-    Obj                 self,
-    Obj                 rec )
+static Obj FuncREC_NAMES(Obj self, Obj rec)
 {
     /* check the argument                                                  */
     if (IS_PREC(rec)) {
@@ -633,9 +623,7 @@ static Obj FuncREC_NAMES (
 *F  FuncREC_NAMES_COMOBJ( <self>, <rec> ) . . . record names of a record object
 */
 /* same as FuncREC_NAMES except for different argument check  */
-static Obj FuncREC_NAMES_COMOBJ (
-    Obj                 self,
-    Obj                 rec )
+static Obj FuncREC_NAMES_COMOBJ(Obj self, Obj rec)
 {
     /* check the argument                                                  */
     switch (TNUM_OBJ(rec)) {
@@ -763,7 +751,7 @@ static Int LtPRec(Obj left, Obj right)
 **
 */
 
-static void SavePRec( Obj prec )
+static void SavePRec(Obj prec)
 {
   UInt len,i;
   len = LEN_PREC(prec);
@@ -781,7 +769,7 @@ static void SavePRec( Obj prec )
 **
 */
 
-static void LoadPRec( Obj prec )
+static void LoadPRec(Obj prec)
 {
   UInt len,i;
   len = LoadUInt();

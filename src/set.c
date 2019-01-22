@@ -198,9 +198,7 @@ Obj SetList (
 **  'SetList' returns a new list even if the list <list> is already a  proper
 **  set, in this case it is equivalent to 'ShallowCopy' (see  "ShallowCopy").
 */
-static Obj FuncLIST_SORTED_LIST (
-    Obj                 self,
-    Obj                 list )
+static Obj FuncLIST_SORTED_LIST(Obj self, Obj list)
 {
     Obj                 set;            /* result                          */
 
@@ -240,9 +238,7 @@ static Obj FuncLIST_SORTED_LIST (
 **  are equal if every element of  <list1> is also  an element of <list2> and
 **  if every element of <list2> is also an element of <list1>.
 */
-static Int             EqSet (
-    Obj                 listL,
-    Obj                 listR )
+static Int EqSet(Obj listL, Obj listR)
 {
     Int                 lenL;           /* length of the left operand      */
     Int                 lenR;           /* length of the right operand     */
@@ -270,10 +266,7 @@ static Int             EqSet (
     return 1L;
 }
 
-static Obj             FuncIS_EQUAL_SET (
-    Obj                 self,
-    Obj                 list1,
-    Obj                 list2 )
+static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2)
 {
     /* check the arguments, convert to sets if necessary                   */
     RequireSmallList("IsEqualSet", list1);
@@ -299,10 +292,7 @@ static Obj             FuncIS_EQUAL_SET (
 **  Either  argument may also  be a list that is  not a proper  set, in which
 **  case 'IsSubsetSet' silently applies 'Set' (see "Set") to it first.
 */
-static Obj             FuncIS_SUBSET_SET (
-    Obj                 self,
-    Obj                 set1,
-    Obj                 set2 )
+static Obj FuncIS_SUBSET_SET(Obj self, Obj set1, Obj set2)
 {
     UInt                len1;           /* length of  the left  set        */
     UInt                len2;           /* length of  the right set        */
@@ -399,10 +389,7 @@ static Obj             FuncIS_SUBSET_SET (
 **  'AddSet' does not return  anything, it is only  called for the side effect
 **  of changing <set>.
 */
-static Obj FuncADD_SET (
-                 Obj                 self,
-                 Obj                 set,
-                 Obj                 obj )
+static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
 {
   UInt                len;            /* logical length of the list      */
   UInt                pos;            /* position                        */
@@ -523,10 +510,7 @@ static Obj FuncADD_SET (
 **  'RemoveSet'   does   not return anything,  it   is  only called  for  the
 **  side effect of changing <set>.
 */
-static Obj FuncREM_SET (
-    Obj                 self,
-    Obj                 set,
-    Obj                 obj )
+static Obj FuncREM_SET(Obj self, Obj set, Obj obj)
 {
     UInt                len;            /* logical length of the list      */
     UInt                pos;            /* position                        */
@@ -581,10 +565,7 @@ static Obj FuncREM_SET (
 **
 */
 
-static Obj FuncUNITE_SET (
-    Obj                 self,
-    Obj                 set1,
-    Obj                 set2 )
+static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2)
 {
     UInt                lenr;           /* length  of result set           */
     UInt                len1;           /* length  of left  set            */
@@ -754,10 +735,7 @@ static UInt InterSetInner2( Obj set1, Obj set2, Obj setr, UInt len1, UInt len2)
 }
 
 
-static Obj FuncINTER_SET (
-    Obj                 self,
-    Obj                 set1,
-    Obj                 set2 )
+static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2)
 {
     UInt                len1;           /* length  of left  set            */
     UInt                len2;           /* length  of right set            */
@@ -920,10 +898,7 @@ static UInt SubtrSetInner2( Obj set1, Obj set2, UInt len1, UInt len2)
   return lenr;
 }
 
-static Obj FuncSUBTR_SET (
-    Obj                 self,
-    Obj                 set1,
-    Obj                 set2 )
+static Obj FuncSUBTR_SET(Obj self, Obj set1, Obj set2)
 {
     UInt                len1;           /* length  of left  set            */
     UInt                len2;           /* length  of right set            */

@@ -108,7 +108,7 @@ static void CloseAfterLoad( void )
   LoadFile = -1;
 }
 
-static void SAVE_BYTE_BUF( void )
+static void SAVE_BYTE_BUF(void)
 {
   if (SyWrite(SaveFile, LoadBuffer, LBEnd - LoadBuffer) < 0)
     ErrorQuit("Cannot write to file, see 'LastSystemError();'\n", 0L, 0L);
@@ -121,7 +121,7 @@ static void SAVE_BYTE_BUF( void )
 
 static const Char * LoadByteErrorMessage = "Unexpected End of File in Load\n";
 
-static UInt1 LOAD_BYTE_BUF( void )
+static UInt1 LOAD_BYTE_BUF(void)
 {
   Int ret;
   ret = SyRead(LoadFile, LoadBuffer, 100000);
@@ -484,7 +484,7 @@ static void ScanBag( Bag bag)
     hit = bag;
 }
 
-static Obj FuncFindBag( Obj self, Obj minsize, Obj maxsize, Obj tnum )
+static Obj FuncFindBag(Obj self, Obj minsize, Obj maxsize, Obj tnum)
 {
   hit = (Bag) 0;
   fb_minsize = INT_INTOBJ(minsize);
@@ -620,7 +620,7 @@ Obj SaveWorkspace( Obj fname )
 }
 
 
-static Obj FuncSaveWorkspace(Obj self, Obj filename )
+static Obj FuncSaveWorkspace(Obj self, Obj filename)
 {
   return SaveWorkspace( filename );
 }
@@ -770,7 +770,7 @@ static void PrSavedObj( UInt x)
     Pr("Reference to bag number %d\n",x>>2,0L);
 }
 
-static Obj FuncDumpWorkspace( Obj self, Obj fname )
+static Obj FuncDumpWorkspace(Obj self, Obj fname)
 {
   UInt nMods, nGlobs, nBags, i, relative;
   Char buf[256];

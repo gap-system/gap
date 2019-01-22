@@ -684,8 +684,7 @@ Obj             MakeFunction (
 **
 **  'EvalFuncExpr' evaluates the function expression <expr> to a function.
 */
-static Obj             EvalFuncExpr (
-    Expr                expr )
+static Obj EvalFuncExpr(Expr expr)
 {
     Obj                 fexs;           /* func. expr. list of curr. func. */
     Obj                 fexp;           /* function expression bag         */
@@ -705,8 +704,7 @@ static Obj             EvalFuncExpr (
 **
 **  'PrintFuncExpr' prints a function expression.
 */
-static void            PrintFuncExpr (
-    Expr                expr )
+static void PrintFuncExpr(Expr expr)
 {
     Obj                 fexs;           /* func. expr. list of curr. func. */
     Obj                 fexp;           /* function expression bag         */
@@ -725,21 +723,17 @@ static void            PrintFuncExpr (
 **
 **  'PrintProccall' prints a procedure call.
 */
-static  void            PrintFunccall (
-            Expr                call );
+static void PrintFunccall(Expr call);
 
-static  void            PrintFunccallOpts (
-            Expr                call );
+static void PrintFunccallOpts(Expr call);
 
-static void            PrintProccall (
-    Stat                call )
+static void PrintProccall(Stat call)
 {
     PrintFunccall( call );
     Pr( ";", 0L, 0L );
 }
 
-static void            PrintProccallOpts (
-    Stat                call )
+static void PrintProccallOpts(Stat call)
 {
     PrintFunccallOpts( call );
     Pr( ";", 0L, 0L );
@@ -773,8 +767,7 @@ static void            PrintFunccall1 (
     }
 }
 
-static void            PrintFunccall (
-    Expr                call )
+static void PrintFunccall(Expr call)
 {
   PrintFunccall1( call );
   
@@ -783,8 +776,7 @@ static void            PrintFunccall (
 }
 
 
-static void             PrintFunccallOpts (
-    Expr                call )
+static void PrintFunccallOpts(Expr call)
 {
     PrintFunccall1(READ_STAT(call, 1));
     Pr(" :%2> ", 0L, 0L);
@@ -824,7 +816,7 @@ void ExecEnd(UInt error)
 **
 */
 
-static Obj FuncSetRecursionTrapInterval( Obj self,  Obj interval )
+static Obj FuncSetRecursionTrapInterval(Obj self, Obj interval)
 {
     while (!IS_INTOBJ(interval) || INT_INTOBJ(interval) <= 5)
         interval = ErrorReturnObj(
@@ -835,7 +827,7 @@ static Obj FuncSetRecursionTrapInterval( Obj self,  Obj interval )
     return 0;
 }
 
-static Obj FuncGetRecursionDepth( Obj self )
+static Obj FuncGetRecursionDepth(Obj self)
 {
     return INTOBJ_INT(GetRecursionDepth());
 }

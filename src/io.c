@@ -406,7 +406,7 @@ static TypOutputFile * PushNewOutput(void)
 static GVarDescriptor DEFAULT_INPUT_STREAM;
 static GVarDescriptor DEFAULT_OUTPUT_STREAM;
 
-static UInt OpenDefaultInput( void )
+static UInt OpenDefaultInput(void)
 {
   Obj func, stream;
   stream = TLS(DefaultInput);
@@ -424,7 +424,7 @@ static UInt OpenDefaultInput( void )
   return OpenInputStream(stream, 0);
 }
 
-static UInt OpenDefaultOutput( void )
+static UInt OpenDefaultOutput(void)
 {
   Obj func, stream;
   stream = TLS(DefaultOutput);
@@ -1219,7 +1219,7 @@ static Int GetLine2 (
 **  If there is an  input logfile in use  and the input  file is '*stdin*' or
 **  '*errin*' 'GetLine' echoes the new line to the logfile.
 */
-static Char GetLine ( void )
+static Char GetLine(void)
 {
     /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
     /* if the GAP function `PrintPromptHook' is defined then it is called  */
@@ -1287,10 +1287,7 @@ static Char GetLine ( void )
 **  with the inefficient C- strlen.  (FL)
 */
 
-static void PutLine2(
-        TypOutputFile *         output,
-        const Char *            line,
-        UInt                    len )
+static void PutLine2(TypOutputFile * output, const Char * line, UInt len)
 {
   Obj                     str;
   UInt                    lstr;
@@ -1360,10 +1357,8 @@ static void PutLineTo(TypOutputFile * stream, UInt len)
 
 /* helper function to add a hint about a possible line break;
    a triple (pos, value, indent), such that the minimal (value-pos) wins */
-static void addLineBreakHint(TypOutputFile * stream,
-                      Int             pos,
-                      Int             val,
-                      Int             indentdiff)
+static void
+addLineBreakHint(TypOutputFile * stream, Int pos, Int val, Int indentdiff)
 {
   Int nr, i;
   /* find next free slot */
@@ -1571,7 +1566,7 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
 **
 */
 
-static Obj FuncToggleEcho( Obj self)
+static Obj FuncToggleEcho(Obj self)
 {
     IO()->Input->echo = 1 - IO()->Input->echo;
     return (Obj)0;
@@ -1583,7 +1578,7 @@ static Obj FuncToggleEcho( Obj self)
 **
 **  returns the current `Prompt' as GAP string.
 */
-static Obj FuncCPROMPT( Obj self)
+static Obj FuncCPROMPT(Obj self)
 {
   Obj p;
   p = MakeString(STATE(Prompt));
@@ -1599,7 +1594,7 @@ static Obj FuncCPROMPT( Obj self)
 **  (important is the flush character without resetting the cursor column)
 */
 
-static Obj FuncPRINT_CPROMPT( Obj self, Obj prompt )
+static Obj FuncPRINT_CPROMPT(Obj self, Obj prompt)
 {
   if (IS_STRING_REP(prompt)) {
     /* by assigning to Prompt we also tell readline (if used) what the
@@ -2015,7 +2010,7 @@ void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 }
 
 
-static Obj FuncINPUT_FILENAME( Obj self)
+static Obj FuncINPUT_FILENAME(Obj self)
 {
     if (IO()->Input == 0)
         return MakeImmString("*defin*");
@@ -2024,7 +2019,7 @@ static Obj FuncINPUT_FILENAME( Obj self)
     return GetCachedFilename(gapnameid);
 }
 
-static Obj FuncINPUT_LINENUMBER( Obj self)
+static Obj FuncINPUT_LINENUMBER(Obj self)
 {
     return INTOBJ_INT(IO()->Input ? IO()->Input->number : 0);
 }

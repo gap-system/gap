@@ -73,8 +73,8 @@ typedef struct {
 
 
 StructInitInfoExt Modules[MAX_MODULES];
-static UInt              NrModules;
-static UInt              NrBuiltinModules;
+static UInt       NrModules;
+static UInt       NrBuiltinModules;
 
 
 typedef struct {
@@ -180,7 +180,7 @@ void ActivateModule(StructInitInfo * info)
 **  return value indicates which error occurred.
 */
 #ifdef HAVE_DLOPEN
-static Int SyLoadModule( const Char * name, InitInfoFunc * func )
+static Int SyLoadModule(const Char * name, InitInfoFunc * func)
 {
     void *          init;
     void *          handle;

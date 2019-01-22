@@ -42,10 +42,7 @@
 **  The  list is  automatically extended to   make room for  the new element.
 **  'AddList' returns nothing, it is called only for its side effect.
 */
-static void            AddList3 (
-    Obj                 list,
-    Obj                 obj,
-    Int                 pos)
+static void AddList3(Obj list, Obj obj, Int pos)
 {
     Int                 len;
     Int                 i;
@@ -65,10 +62,7 @@ void            AddList (
 }
 
 
-static void            AddPlist3 (
-    Obj                 list,
-    Obj                 obj,
-    Int                 pos )
+static void AddPlist3(Obj list, Obj obj, Int pos)
 {
   UInt len;
 
@@ -103,11 +97,7 @@ void            AddPlist (
 
 static Obj AddListOper;
 
-static Obj FuncADD_LIST3 (
-    Obj                 self,
-    Obj                 list,
-    Obj                 obj,
-    Obj                 pos)
+static Obj FuncADD_LIST3(Obj self, Obj list, Obj obj, Obj pos)
 {
     /* dispatch                */
   Int ipos;
@@ -140,10 +130,7 @@ static Obj FuncADD_LIST3 (
 }
 
 
-static Obj FuncADD_LIST (
-                  Obj self,
-                  Obj list,
-                  Obj obj)
+static Obj FuncADD_LIST(Obj self, Obj list, Obj obj)
 {
   FuncADD_LIST3(self, list, obj, (Obj)0);
   return (Obj) 0;
@@ -157,8 +144,7 @@ static Obj FuncADD_LIST (
 **  'RemList' removes the last object <obj> from the end of the list <list>,
 **  and returns it.
 */
-static Obj            RemList (
-    Obj                 list)
+static Obj RemList(Obj list)
 {
     Int                 pos; 
     Obj result;
@@ -198,9 +184,7 @@ static Obj RemPlist(Obj list)
 
 static Obj RemListOper;
 
-static Obj FuncREM_LIST (
-    Obj                 self,
-    Obj                 list)
+static Obj FuncREM_LIST(Obj self, Obj list)
 
 {
     /* dispatch                                                            */
@@ -230,10 +214,7 @@ static Obj FuncREM_LIST (
 **  in which case the corresponding positions  will be left empty in <list1>.
 **  'AppendList' returns nothing, it is called only for its side effect.
 */
-static Obj             FuncAPPEND_LIST_INTR (
-    Obj                 self,
-    Obj                 list1,
-    Obj                 list2 )
+static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
 {
     UInt                len1;           /* length of the first list        */
     UInt                len2;           /* length of the second list       */
@@ -305,10 +286,7 @@ static Obj             FuncAPPEND_LIST_INTR (
 
 static Obj AppendListOper;
 
-static Obj             FuncAPPEND_LIST (
-    Obj                 self,
-    Obj                 list,
-    Obj                 obj )
+static Obj FuncAPPEND_LIST(Obj self, Obj list, Obj obj)
 {
     /* dispatch                                                            */
     if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
@@ -338,9 +316,7 @@ static Obj             FuncAPPEND_LIST (
 **  of <list>, the index where <obj> must be inserted to keep the list sorted
 **  is returned.
 */
-static UInt            POSITION_SORTED_LIST (
-    Obj                 list,
-    Obj                 obj )
+static UInt POSITION_SORTED_LIST(Obj list, Obj obj)
 {
     UInt                l;              /* low                             */
     UInt                h;              /* high                            */
@@ -382,10 +358,7 @@ UInt            PositionSortedDensePlist (
     return h;
 }
 
-static Obj             FuncPOSITION_SORTED_LIST (
-    Obj                 self,
-    Obj                 list,
-    Obj                 obj )
+static Obj FuncPOSITION_SORTED_LIST(Obj self, Obj list, Obj obj)
 {
     UInt                h;              /* position, result                */
 
@@ -420,10 +393,7 @@ static Obj             FuncPOSITION_SORTED_LIST (
 **  of <list>, the index where <obj> must be inserted to keep the list sorted
 **  is returned.
 */
-static UInt            POSITION_SORTED_LISTComp (
-    Obj                 list,
-    Obj                 obj,
-    Obj                 func )
+static UInt POSITION_SORTED_LISTComp(Obj list, Obj obj, Obj func)
 {
     UInt                l;              /* low                             */
     UInt                h;              /* high                            */
@@ -443,10 +413,7 @@ static UInt            POSITION_SORTED_LISTComp (
     return h;
 }
 
-static UInt            PositionSortedDensePlistComp (
-    Obj                 list,
-    Obj                 obj,
-    Obj                 func )
+static UInt PositionSortedDensePlistComp(Obj list, Obj obj, Obj func)
 {
     UInt                l;              /* low                             */
     UInt                h;              /* high                            */
@@ -466,11 +433,8 @@ static UInt            PositionSortedDensePlistComp (
     return h;
 }
 
-static Obj             FuncPOSITION_SORTED_LIST_COMP (
-    Obj                 self,
-    Obj                 list,
-    Obj                 obj,
-    Obj                 func )
+static Obj
+FuncPOSITION_SORTED_LIST_COMP(Obj self, Obj list, Obj obj, Obj func)
 {
     UInt                h;              /* position, result                */
 
@@ -493,10 +457,7 @@ static Obj             FuncPOSITION_SORTED_LIST_COMP (
 }
 
 
-static Obj             FuncPOSITION_FIRST_COMPONENT_SORTED (
-    Obj                 self,
-    Obj                 list,
-    Obj                 obj)
+static Obj FuncPOSITION_FIRST_COMPONENT_SORTED(Obj self, Obj list, Obj obj)
 {
   UInt top, bottom,middle;
   Obj x;
@@ -831,9 +792,7 @@ UInt            RemoveDupsDensePlist (
 **
 *F  FuncSORT_LIST( <self>, <list> ) . . . . . . . . . . . . . . . sort a list
 */
-static Obj FuncSORT_LIST (
-    Obj                 self,
-    Obj                 list )
+static Obj FuncSORT_LIST(Obj self, Obj list)
 {
     /* check the first argument                                            */
     RequireSmallList("SORT_LIST", list);
@@ -851,9 +810,7 @@ static Obj FuncSORT_LIST (
     return (Obj)0;
 }
 
-static Obj FuncSTABLE_SORT_LIST (
-    Obj                 self,
-    Obj                 list )
+static Obj FuncSTABLE_SORT_LIST(Obj self, Obj list)
 {
     /* check the first argument                                            */
     RequireSmallList("STABLE_SORT_LIST", list);
@@ -877,10 +834,7 @@ static Obj FuncSTABLE_SORT_LIST (
 **
 *F  FuncSORT_LIST_COMP( <self>, <list>, <func> )  . . . . . . . . sort a list
 */
-static Obj FuncSORT_LIST_COMP (
-    Obj                 self,
-    Obj                 list,
-    Obj                 func )
+static Obj FuncSORT_LIST_COMP(Obj self, Obj list, Obj func)
 {
     /* check the first argument                                            */
     RequireSmallList("SORT_LIST_COMP", list);
@@ -900,10 +854,7 @@ static Obj FuncSORT_LIST_COMP (
     return (Obj)0;
 }
 
-static Obj FuncSTABLE_SORT_LIST_COMP (
-    Obj                 self,
-    Obj                 list,
-    Obj                 func )
+static Obj FuncSTABLE_SORT_LIST_COMP(Obj self, Obj list, Obj func)
 {
     /* check the first argument                                            */
     RequireSmallList("STABLE_SORT_LIST_COMP", list);
@@ -928,10 +879,7 @@ static Obj FuncSTABLE_SORT_LIST_COMP (
 **
 *F  FuncSORT_PARA_LIST( <self>, <list> )  . . . . . . sort a list with shadow
 */
-static Obj FuncSORT_PARA_LIST (
-    Obj                 self,
-    Obj                 list,
-    Obj               shadow )
+static Obj FuncSORT_PARA_LIST(Obj self, Obj list, Obj shadow)
 {
     /* check the first two arguments                                       */
     RequireSmallList("SORT_PARA_LIST", list);
@@ -951,10 +899,7 @@ static Obj FuncSORT_PARA_LIST (
     return (Obj)0;
 }
 
-static Obj FuncSTABLE_SORT_PARA_LIST (
-    Obj                 self,
-    Obj                 list,
-    Obj               shadow )
+static Obj FuncSTABLE_SORT_PARA_LIST(Obj self, Obj list, Obj shadow)
 {
     /* check the first two arguments                                       */
     RequireSmallList("STABLE_SORT_PARA_LIST", list);
@@ -979,11 +924,7 @@ static Obj FuncSTABLE_SORT_PARA_LIST (
 **
 *F  FuncSORT_LIST_COMP( <self>, <list>, <func> )  . . . . . . . . sort a list
 */
-static Obj FuncSORT_PARA_LIST_COMP (
-    Obj                 self,
-    Obj                 list,
-    Obj               shadow,
-    Obj                 func )
+static Obj FuncSORT_PARA_LIST_COMP(Obj self, Obj list, Obj shadow, Obj func)
 {
     /* check the first two arguments                                       */
     RequireSmallList("SORT_PARA_LIST_COMP", list);
@@ -1005,11 +946,8 @@ static Obj FuncSORT_PARA_LIST_COMP (
     return (Obj)0;
 }
 
-static Obj FuncSTABLE_SORT_PARA_LIST_COMP (
-    Obj                 self,
-    Obj                 list,
-    Obj               shadow,
-    Obj                 func )
+static Obj
+FuncSTABLE_SORT_PARA_LIST_COMP(Obj self, Obj list, Obj shadow, Obj func)
 {
     /* check the first two arguments                                       */
     RequireSmallList("SORT_PARA_LIST_COMP", list);
@@ -1044,10 +982,7 @@ static Obj FuncSTABLE_SORT_PARA_LIST_COMP (
 **  equivalent  to  specifying no operation.   This function  exists  because
 **  there are places where the operation in not an option.
 */
-static Obj             FuncOnPoints (
-    Obj                 self,
-    Obj                 point,
-    Obj                 elm )
+static Obj FuncOnPoints(Obj self, Obj point, Obj elm)
 {
     return POW( point, elm );
 }
@@ -1064,10 +999,7 @@ static Obj             FuncOnPoints (
 **  specifies  the componentwise operation    of group elements on  pairs  of
 **  points, which are represented by lists of length 2.
 */
-static Obj             FuncOnPairs (
-    Obj                 self,
-    Obj                 pair,
-    Obj                 elm )
+static Obj FuncOnPairs(Obj self, Obj pair, Obj elm)
 {
     Obj                 img;            /* image, result                   */
     Obj                 tmp;            /* temporary                       */
@@ -1107,10 +1039,7 @@ static Obj             FuncOnPairs (
 **  points, which are represented by lists.  'OnPairs' is the special case of
 **  'OnTuples' for tuples with two elements.
 */
-static Obj             FuncOnTuples (
-    Obj                 self,
-    Obj                 tuple,
-    Obj                 elm )
+static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm)
 {
     Obj                 img;            /* image, result                   */
     Obj                 tmp;            /* temporary                       */
@@ -1174,10 +1103,7 @@ static Obj             FuncOnTuples (
 **  represented by sorted lists of points without duplicates (see "Sets").
 */
 
-static Obj             FuncOnSets (
-    Obj                 self,
-    Obj                 set,
-    Obj                 elm )
+static Obj FuncOnSets(Obj self, Obj set, Obj elm)
 {
     Obj                 img;            /* handle of the image, result     */
     UInt                status;        /* the elements are mutable        */
@@ -1254,10 +1180,7 @@ static Obj             FuncOnSets (
 **
 **  specifies that group elements operate by multiplication from the right.
 */
-static Obj             FuncOnRight (
-    Obj                 self,
-    Obj                 point,
-    Obj                 elm )
+static Obj FuncOnRight(Obj self, Obj point, Obj elm)
 {
     return PROD( point, elm );
 }
@@ -1274,10 +1197,7 @@ static Obj             FuncOnRight (
 **  specifies that group elements operate by multiplication from the left
 **  with the inverse.
 */
-static Obj             FuncOnLeftInverse (
-    Obj                 self,
-    Obj                 point,
-    Obj                 elm )
+static Obj FuncOnLeftInverse(Obj self, Obj point, Obj elm)
 {
     return LQUO(elm, point);
 }
@@ -1411,7 +1331,7 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
 **  Argument names in the manual: fromlst, fromind, fromstep, tolst, toind, tostep, n
 */
 
-static Obj FuncCOPY_LIST_ENTRIES( Obj self, Obj args )
+static Obj FuncCOPY_LIST_ENTRIES(Obj self, Obj args)
 {  
   Obj srclist;
   Int srcstart;

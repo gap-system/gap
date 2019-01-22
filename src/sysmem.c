@@ -182,9 +182,9 @@ static inline UInt SyRoundUpToPagesize(UInt x)
     return r == 0 ? x : x - r + pagesize;
 }
 
-static void *     POOL = NULL;
-static UInt * * * syWorkspace = NULL;
-static UInt       syWorksize = 0;
+static void *   POOL = NULL;
+static UInt *** syWorkspace = NULL;
+static UInt     syWorksize = 0;
 
 #ifdef GAP_MEM_CHECK
 
@@ -335,7 +335,7 @@ void SyMAdviseFree(void) {
 #endif
 }
 
-static void *SyAnonMMap(size_t size)
+static void * SyAnonMMap(size_t size)
 {
     void *result;
     size = SyRoundUpToPagesize(size);
@@ -384,7 +384,8 @@ static int SyTryToIncreasePool(void)
 
 #else
 
-static void SyMAdviseFree(void) {
+static void SyMAdviseFree(void)
+{
     /* do nothing */
 }
 
@@ -398,7 +399,7 @@ static int SyTryToIncreasePool(void)
 
 static int halvingsdone = 0;
 
-static void SyInitialAllocPool( void )
+static void SyInitialAllocPool(void)
 {
 #ifdef HAVE_SYSCONF
 #ifdef _SC_PAGESIZE
@@ -432,7 +433,7 @@ static void SyInitialAllocPool( void )
    /* Now both syWorkspace and SyAllocPool are aligned to pagesize */
 }
 
-static UInt ***SyAllocBagsFromPool(Int size, UInt need)
+static UInt *** SyAllocBagsFromPool(Int size, UInt need)
 {
   /* get the storage, but only if we stay within the bounds              */
   /* if ( (0 < size && syWorksize + size <= SyStorMax) */
@@ -455,9 +456,7 @@ static UInt ***SyAllocBagsFromPool(Int size, UInt need)
 
 #if defined(HAVE_SBRK) && !defined(HAVE_VM_ALLOCATE) /* prefer `vm_allocate' over `sbrk' */
 
-UInt * * * SyAllocBags (
-    Int                 size,
-    UInt                need )
+UInt *** SyAllocBags(Int size, UInt need)
 {
     UInt * * *          ret;
     UInt adjust = 0;

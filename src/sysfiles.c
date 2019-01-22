@@ -352,7 +352,8 @@ gap> CrcString("GAP example string");
 */
 
 /* And here we include a variant working on a GAP string */
-static Obj FuncCrcString( Obj self, Obj str ) {
+static Obj FuncCrcString(Obj self, Obj str)
+{
     UInt4       crc;
     UInt4       old;
     UInt4       new;
@@ -401,7 +402,8 @@ static Obj FuncCrcString( Obj self, Obj str ) {
 ** the MIT License : http://stackoverflow.com/a/34271901/928031
 */
 
-static void find_yourself(const char * argv0, char * result, size_t resultsize)
+static void
+find_yourself(const char * argv0, char * result, size_t resultsize)
 {
     GAP_ASSERT(resultsize >= GAP_PATH_MAX);
 
@@ -589,7 +591,7 @@ void syWinPut (
 **  '@J'.  Then  'SyWinCmd' waits for  the window handlers answer and returns
 **  that string.
 */
-static Char WinCmdBuffer [8000];
+static Char WinCmdBuffer[8000];
 
 const Char * SyWinCmd (
     const Char *        str,
@@ -1012,14 +1014,14 @@ struct termios   syOld, syNew;           /* old and new terminal state      */
 
 static Int syFid;
 
-static void syAnswerCont ( int signr )
+static void syAnswerCont(int signr)
 {
     syStartraw( syFid );
     signal( SIGCONT, SIG_DFL );
     kill( getpid(), SIGCONT );
 }
 
-static void syAnswerTstp ( int signr )
+static void syAnswerTstp(int signr)
 {
     syStopraw( syFid );
     signal( SIGCONT, syAnswerCont );
@@ -1116,14 +1118,14 @@ void syStopraw (
 #ifdef HAVE_SIGNAL
 
 
-static UInt            syLastIntr;             /* time of the last interrupt      */
+static UInt syLastIntr; /* time of the last interrupt      */
 
 
 #ifdef HAVE_LIBREADLINE
 static Int doingReadline;
 #endif
 
-static void syAnswerIntr ( int signr )
+static void syAnswerIntr(int signr)
 {
     UInt                nowIntr;
 
@@ -1276,9 +1278,7 @@ void getwindowsize( void )
 **
 *f  syEchoch( <ch>, <fid> )
 */
-static void syEchoch (
-    Int                 ch,
-    Int                 fid )
+static void syEchoch(Int ch, Int fid)
 {
     Char                ch2;
 
@@ -1321,9 +1321,7 @@ Int SyEchoch (
 **
 *f  syEchos( <ch>, <fid> )
 */
-static void syEchos (
-    const Char *        str,
-    Int                 fid )
+static void syEchos(const Char * str, Int fid)
 {
     /* if running under a window handler, send the line to it              */
     if ( SyWindow && fid < 4 )
@@ -1341,9 +1339,8 @@ static void syEchos (
 **
 **  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
 */
-static UInt   syNrchar;                        /* nr of chars already on the line */
-static Char   syPrompt [MAXLENOUTPUTLINE];     /* characters already on the line  */
-
+static UInt syNrchar;                   /* nr of chars already on the line */
+static Char syPrompt[MAXLENOUTPUTLINE]; /* characters already on the line  */
 
 
 /****************************************************************************
@@ -1567,8 +1564,7 @@ static ssize_t SyWriteandcheck(Int fid, const void * buf, size_t count)
     return ret;
 }
 
-static Int syGetchTerm (
-    Int                 fid )
+static Int syGetchTerm(Int fid)
 {
     UChar                ch;
     Char                str[2];
@@ -1626,8 +1622,7 @@ static Int syGetchTerm (
     return (Int)ch;
 }
 
-static Int syGetchNonTerm (
-    Int                 fid )
+static Int syGetchNonTerm(Int fid)
 {
     UChar                ch;
     UInt                bufno;
@@ -1694,8 +1689,7 @@ static Int syGetchNonTerm (
 *f  syGetch( <fid> )
 */
 
-static Int syGetch (
-    Int                 fid )
+static Int syGetch(Int fid)
 {
     if (syBuf[fid].isTTY)
       return syGetchTerm(fid);
@@ -1791,12 +1785,12 @@ Int SyGetch (
 **      <esc>-T exchange two words.
 */
 
-static UInt   syCTRO;                          /* number of '<ctr>-O' pending     */
-static UInt   syESCN;                          /* number of '<Esc>-N' pending     */
+static UInt syCTRO; /* number of '<ctr>-O' pending     */
+static UInt syESCN; /* number of '<Esc>-N' pending     */
 
 static UInt FreezeStdin;    // When true, ignore if any new input from stdin
-                     // This is used to stop HPC-GAP from reading stdin while
-                     // forked subprocesses are running.
+                            // This is used to stop HPC-GAP from reading stdin
+                            // while forked subprocesses are running.
 
 
 #ifdef HAVE_SELECT
@@ -1987,13 +1981,7 @@ Int HasAvailableBytes( UInt fid )
 }
 
 
-
-
-static Char * syFgetsNoEdit (
-    Char *              line,
-    UInt                length,
-    Int                 fid,
-    UInt                block)
+static Char * syFgetsNoEdit(Char * line, UInt length, Int fid, UInt block)
 {
   UInt x = 0;
   int ret = 0;
@@ -2177,7 +2165,7 @@ static int GAP_rl_func(int count, int key)
    return 0;
 }
 
-static Obj FuncBINDKEYSTOGAPHANDLER (Obj self, Obj keys)
+static Obj FuncBINDKEYSTOGAPHANDLER(Obj self, Obj keys)
 {
   Char*  seq;
 
@@ -2188,7 +2176,7 @@ static Obj FuncBINDKEYSTOGAPHANDLER (Obj self, Obj keys)
   return True;
 }
 
-static Obj FuncBINDKEYSTOMACRO (Obj self, Obj keys, Obj macro)
+static Obj FuncBINDKEYSTOMACRO(Obj self, Obj keys, Obj macro)
 {
   Char   *seq, *macr;
 
@@ -2200,7 +2188,7 @@ static Obj FuncBINDKEYSTOMACRO (Obj self, Obj keys, Obj macro)
   return True;
 }
 
-static Obj FuncREADLINEINITLINE (Obj self, Obj line)
+static Obj FuncREADLINEINITLINE(Obj self, Obj line)
 {
   Char   *cline;
 
@@ -2214,7 +2202,7 @@ static Obj FuncREADLINEINITLINE (Obj self, Obj line)
 static Int ISINITREADLINE = 0;
 /* a hook function called regularly while waiting on input */
 static Int current_rl_fid;
-static int charreadhook_rl ( void )
+static int charreadhook_rl(void)
 {
 #ifdef HAVE_SELECT
     if (OnCharReadHookActiveCheck())
@@ -2223,7 +2211,7 @@ static int charreadhook_rl ( void )
   return 0;
 }
 
-static void initreadline ( void )
+static void initreadline(void)
 {
 
   /* allows users to configure GAP specific settings in their ~/.inputrc like:
@@ -2248,11 +2236,7 @@ static void initreadline ( void )
   ISINITREADLINE = 1;
 }
 
-static Char * readlineFgets (
-    Char *              line,
-    UInt                length,
-    Int                 fid,
-    UInt                block)
+static Char * readlineFgets(Char * line, UInt length, Int fid, UInt block)
 {
   char *                 rlres = (char*)NULL;
 
@@ -2330,11 +2314,7 @@ static Int syEndEdit(Int fid)
 
 #endif
 
-static Char * syFgets (
-    Char *              line,
-    UInt                length,
-    Int                 fid,
-    UInt                block)
+static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
 {
     Int                 ch,  ch2,  ch3, last;
     Char                * p,  * q,  * r,  * s,  * t;

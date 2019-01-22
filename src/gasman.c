@@ -747,7 +747,7 @@ TNumGlobalBags GlobalBags;
 */
 static UInt GlobalSortingStatus;
 
-static void ClearGlobalBags ( void )
+static void ClearGlobalBags(void)
 {
   UInt i;
   for (i = 0; i < GlobalBags.nr; i++)
@@ -1796,7 +1796,7 @@ UInt ResizeBag (
 syJmp_buf RegsBags;
 
 #if defined(SPARC)
-static void SparcStackFuncBags( void )
+static void SparcStackFuncBags(void)
 {
   asm (" ta 0x3 ");
   asm (" mov %sp,%o0" );
@@ -1804,7 +1804,7 @@ static void SparcStackFuncBags( void )
 #endif
 
 
-static void GenStackFuncBags ( void )
+static void GenStackFuncBags(void)
 {
     Bag *               top;            /* top of stack                    */
     Bag *               p;              /* loop variable                   */

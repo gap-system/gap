@@ -118,9 +118,7 @@ void SET_TNAM_TNUM(UInt tnum, const Char *name)
 **
 *F  FuncFAMILY_TYPE( <self>, <type> ) . . . . . . handler for 'FAMILY_TYPE'
 */
-static Obj FuncFAMILY_TYPE (
-    Obj                 self,
-    Obj                 type )
+static Obj FuncFAMILY_TYPE(Obj self, Obj type)
 {
     return FAMILY_TYPE( type );
 }
@@ -130,9 +128,7 @@ static Obj FuncFAMILY_TYPE (
 **
 *F  FuncFAMILY_OBJ( <self>, <obj> ) . . . . . . .  handler for 'FAMILY_OBJ'
 */
-static Obj FuncFAMILY_OBJ (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncFAMILY_OBJ(Obj self, Obj obj)
 {
     return FAMILY_OBJ( obj );
 }
@@ -148,8 +144,7 @@ static Obj FuncFAMILY_OBJ (
 */
 Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
-static Obj TypeObjError (
-    Obj                 obj )
+static Obj TypeObjError(Obj obj)
 {
     ErrorQuit( "Panic: basic object of type '%s' is unkind",
                (Int)TNAM_OBJ(obj), 0L );
@@ -165,7 +160,7 @@ static Obj TypeObjError (
 
 void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj type );
 
-static void SetTypeObjError ( Obj obj, Obj type )
+static void SetTypeObjError(Obj obj, Obj type)
 {
     ErrorQuit( "Panic: cannot change type of object of type '%s'",
                (Int)TNAM_OBJ(obj), 0L );
@@ -177,9 +172,7 @@ static void SetTypeObjError ( Obj obj, Obj type )
 *F  FuncTYPE_OBJ( <self>, <obj> ) . . . . . . . . .  handler for 'TYPE_OBJ'
 */
 #ifndef WARD_ENABLED
-static Obj FuncTYPE_OBJ (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncTYPE_OBJ(Obj self, Obj obj)
 {
     return TYPE_OBJ( obj );
 }
@@ -189,10 +182,7 @@ static Obj FuncTYPE_OBJ (
 **
 *F  FuncSET_TYPE_OBJ( <self>, <obj>, <type> ) . . handler for 'SET_TYPE_OBJ'
 */
-static Obj FuncSET_TYPE_OBJ (
-    Obj                 self,
-    Obj                 obj,
-    Obj                 type )
+static Obj FuncSET_TYPE_OBJ(Obj self, Obj obj, Obj type)
 {
     SET_TYPE_OBJ( obj, type );
     return (Obj) 0;
@@ -213,8 +203,7 @@ Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 static Obj IsMutableObjFilt;
 
-static Int IsMutableObjError (
-    Obj                 obj )
+static Int IsMutableObjError(Obj obj)
 {
     ErrorQuit(
         "Panic: tried to test mutability of unsupported type '%s'",
@@ -222,8 +211,7 @@ static Int IsMutableObjError (
     return 0;
 }
 
-static Int IsMutableObjObject (
-    Obj                 obj )
+static Int IsMutableObjObject(Obj obj)
 {
 #ifdef HPCGAP
     if (RegionBag(obj) == ReadOnlyRegion)
@@ -237,9 +225,7 @@ static Int IsMutableObjObject (
 **
 *F  IsMutableObjHandler( <self>, <obj> )  . . .  handler for 'IS_MUTABLE_OBJ'
 */
-static Obj IsMutableObjHandler (
-    Obj                 self,
-    Obj                 obj )
+static Obj IsMutableObjHandler(Obj self, Obj obj)
 {
     return (IS_MUTABLE_OBJ( obj ) ? True : False);
 }
@@ -253,9 +239,7 @@ static Obj IsMutableObjHandler (
 
 static Obj IsInternallyMutableObjFilt;
 
-static Obj IsInternallyMutableObjHandler (
-    Obj                 self,
-    Obj                 obj )
+static Obj IsInternallyMutableObjHandler(Obj self, Obj obj)
 {
     return (TNUM_OBJ(obj) == T_DATOBJ &&
       RegionBag(obj) != ReadOnlyRegion &&
@@ -284,8 +268,7 @@ Int (*IsCopyableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 static Obj IsCopyableObjFilt;
 
-static Int IsCopyableObjError (
-    Obj                 obj )
+static Int IsCopyableObjError(Obj obj)
 {
     ErrorQuit(
         "Panic: tried to test copyability of unsupported type '%s'",
@@ -293,8 +276,7 @@ static Int IsCopyableObjError (
     return 0L;
 }
 
-static Int IsCopyableObjObject (
-    Obj                 obj )
+static Int IsCopyableObjObject(Obj obj)
 {
     return (DoFilter( IsCopyableObjFilt, obj ) == True);
 }
@@ -304,9 +286,7 @@ static Int IsCopyableObjObject (
 **
 *F  IsCopyableObjHandler( <self>, <obj> ) . . . handler for 'IS_COPYABLE_OBJ'
 */
-static Obj IsCopyableObjHandler (
-    Obj                 self,
-    Obj                 obj )
+static Obj IsCopyableObjHandler(Obj self, Obj obj)
 {
     return (IS_COPYABLE_OBJ( obj ) ? True : False);
 }
@@ -325,8 +305,7 @@ static Obj ShallowCopyObjOper;
 **
 *F  ShallowCopyObjError( <obj> )  . . . . . . . . . . . . . . .  unknown type
 */
-static Obj ShallowCopyObjError (
-    Obj                 obj )
+static Obj ShallowCopyObjError(Obj obj)
 {
     ErrorQuit(
         "Panic: tried to shallow copy object of unsupported type '%s'",
@@ -339,8 +318,7 @@ static Obj ShallowCopyObjError (
 **
 *F  ShallowCopyObjConstant( <obj> ) . . . . . . . . . . . . . . .  do nothing
 */
-static Obj ShallowCopyObjConstant (
-    Obj                 obj )
+static Obj ShallowCopyObjConstant(Obj obj)
 {
     return obj;
 }
@@ -350,8 +328,7 @@ static Obj ShallowCopyObjConstant (
 **
 *F  ShallowCopyObjObject( <obj> ) . . . . . . . . . . . . . . . . call method
 */
-static Obj ShallowCopyObjObject (
-    Obj                 obj )
+static Obj ShallowCopyObjObject(Obj obj)
 {
     return DoOperation1Args( ShallowCopyObjOper, obj );
 }
@@ -361,8 +338,7 @@ static Obj ShallowCopyObjObject (
 **
 *F  ShallowCopyObjDefault( <obj> )  . . . . . . . . . .  default shallow copy
 */
-static Obj ShallowCopyObjDefault (
-    Obj                 obj )
+static Obj ShallowCopyObjDefault(Obj obj)
 {
     Obj                 new;
     const Obj *         o;
@@ -383,9 +359,7 @@ static Obj ShallowCopyObjDefault (
 **
 *F  ShallowCopyObjHandler( <self>, <obj> )  .  handler for 'SHALLOW_COPY_OBJ'
 */
-static Obj ShallowCopyObjHandler (
-    Obj                 self,
-    Obj                 obj )
+static Obj ShallowCopyObjHandler(Obj self, Obj obj)
 {
     return SHALLOW_COPY_OBJ( obj );
 }
@@ -548,9 +522,7 @@ static void MarkCopyingSubBags(Obj obj)
 **
 *F  CopyObjError( <obj> ) . . . . . . . . . . . . . . . . . . .  unknown type
 */
-static Obj             CopyObjError (
-    Obj                 obj,
-    Int                 mut )
+static Obj CopyObjError(Obj obj, Int mut)
 {
     ErrorQuit(
         "Panic: tried to copy object of unsupported type '%s'",
@@ -563,8 +535,7 @@ static Obj             CopyObjError (
 **
 *F  CleanObjError( <obj> )  . . . . . . . . . . . . . . . . . .  unknown type
 */
-static void CleanObjError (
-    Obj                 obj )
+static void CleanObjError(Obj obj)
 {
     ErrorQuit(
         "Panic: tried to clean object of unsupported type '%s'",
@@ -576,9 +547,7 @@ static void CleanObjError (
 **
 *F  CopyObjConstant( <obj> )  . . . . . . . . . . . .  copy a constant object
 */
-static Obj CopyObjConstant (
-    Obj                 obj,
-    Int                 mut )
+static Obj CopyObjConstant(Obj obj, Int mut)
 {
     return obj;
 }
@@ -588,9 +557,7 @@ static Obj CopyObjConstant (
 **
 *F  CopyObjPosObj( <obj>, <mut> ) . . . . . . . . .  copy a positional object
 */
-static Obj CopyObjPosObj (
-    Obj                 obj,
-    Int                 mut )
+static Obj CopyObjPosObj(Obj obj, Int mut)
 {
     Obj                 copy;           /* copy, result                    */
     Obj                 tmp;            /* temporary variable              */
@@ -633,8 +600,7 @@ static Obj CopyObjPosObj (
 **
 *F  CleanObjPosObj( <obj> ) . . . . . . . . . . . . . . . . . .  clean posobj
 */
-static void CleanObjPosObj (
-    Obj                 obj )
+static void CleanObjPosObj(Obj obj)
 {
     UInt                i;              /* loop variable                   */
 
@@ -651,9 +617,7 @@ static void CleanObjPosObj (
 **
 *F  CopyObjComObj( <obj>, <mut> ) . . . . . . . . . . . . . . . copy a comobj
 */
-static Obj CopyObjComObj (
-    Obj                 obj,
-    Int                 mut )
+static Obj CopyObjComObj(Obj obj, Int mut)
 {
     Obj                 copy;           /* copy, result                    */
     Obj                 tmp;            /* temporary variable              */
@@ -697,8 +661,7 @@ static Obj CopyObjComObj (
 **
 *F  CleanObjComObj( <obj> ) . . . . . . . . . . . . . . . . .  clean a comobj
 */
-static void CleanObjComObj (
-    Obj                 obj )
+static void CleanObjComObj(Obj obj)
 {
     UInt                i;              /* loop variable                   */
 
@@ -714,9 +677,7 @@ static void CleanObjComObj (
 **
 *F  CopyObjDatObj( <obj>, <mut> ) . . . . . . . . . . . . . . . copy a datobj
 */
-static Obj CopyObjDatObj (
-    Obj                 obj,
-    Int                 mut )
+static Obj CopyObjDatObj(Obj obj, Int mut)
 {
     Obj                 copy;           /* copy, result                    */
 
@@ -748,8 +709,7 @@ static Obj CopyObjDatObj (
 **
 *F  CleanObjDatObj( <obj> ) . . . . . . . . . . . . . . . . .  clean a datobj
 */
-static void CleanObjDatObj (
-    Obj                 obj )
+static void CleanObjDatObj(Obj obj)
 {
 }
 
@@ -759,9 +719,7 @@ static void CleanObjDatObj (
 **
 *F  FuncIMMUTABLE_COPY_OBJ( <self>, <obj> )  . . . . immutable copy of <obj>
 */
-static Obj FuncIMMUTABLE_COPY_OBJ (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncIMMUTABLE_COPY_OBJ(Obj self, Obj obj)
 {
     return CopyObj( obj, 0 );
 }
@@ -771,9 +729,7 @@ static Obj FuncIMMUTABLE_COPY_OBJ (
 **
 *F  FuncDEEP_COPY_OBJ( <self>, <obj> )  . . . . . . mutable copy of <obj>
 */
-static Obj FuncDEEP_COPY_OBJ (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncDEEP_COPY_OBJ(Obj self, Obj obj)
 {
     return CopyObj( obj, 1 );
 }
@@ -809,21 +765,20 @@ void CheckedMakeImmutable( Obj obj )
 }
 #endif
 
-static void MakeImmutableError( Obj obj)
+static void MakeImmutableError(Obj obj)
 {
   ErrorQuit("No make immutable function installed for a %s",
             (Int)TNAM_OBJ(obj), 0L);
 }
 
 
-
-static void MakeImmutableComObj( Obj obj)
+static void MakeImmutableComObj(Obj obj)
 {
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
   CALL_1ARGS( PostMakeImmutableOp, obj);
 }
 
-static void MakeImmutablePosObj( Obj obj)
+static void MakeImmutablePosObj(Obj obj)
 {
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
   CALL_1ARGS( PostMakeImmutableOp, obj);
@@ -845,7 +800,7 @@ static void MakeImmutablePosObj( Obj obj)
 static int ReadOnlyDatObjs = 0;
 #endif
 
-static void MakeImmutableDatObj( Obj obj)
+static void MakeImmutableDatObj(Obj obj)
 {
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
 #ifdef HPCGAP
@@ -858,7 +813,7 @@ static void MakeImmutableDatObj( Obj obj)
 #endif
 }
 
-static Obj FuncMakeImmutable( Obj self, Obj obj)
+static Obj FuncMakeImmutable(Obj self, Obj obj)
 {
 #ifdef HPCGAP
   CheckedMakeImmutable(obj);
@@ -1035,8 +990,7 @@ void (* PrintObjFuncs [ LAST_REAL_TNUM  +1 ])( Obj obj );
 */
 Obj PrintObjOper;
 
-static void PrintObjObject (
-    Obj                 obj )
+static void PrintObjObject(Obj obj)
 {
     DoOperation1Args( PrintObjOper, obj );
 }
@@ -1046,16 +1000,14 @@ static void PrintObjObject (
 **
 *F  PrintObjHandler( <self>, <obj> )  . . . . . . . .  handler for 'PrintObj'
 */
-static Obj PrintObjHandler (
-    Obj                 self,
-    Obj                 obj )
+static Obj PrintObjHandler(Obj self, Obj obj)
 {
     PrintObj( obj );
     return 0L;
 }
 
 
-static Obj FuncSET_PRINT_OBJ_INDEX (Obj self, Obj ind)
+static Obj FuncSET_PRINT_OBJ_INDEX(Obj self, Obj ind)
 {
   if (IS_INTOBJ(ind))
     STATE(PrintObjIndex) = INT_INTOBJ(ind);
@@ -1149,9 +1101,7 @@ void            ViewObj (
 **
 *F  FuncViewObj( <self>, <obj> )  . . . . . . . .  handler for 'ViewObj'
 */
-static Obj FuncViewObj (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncViewObj(Obj self, Obj obj)
 {
     ViewObj( obj );
     return 0L;
@@ -1170,9 +1120,7 @@ static Obj FuncViewObj (
 */
 void (* PrintPathFuncs [ LAST_REAL_TNUM /* +PRINTING */+1 ])( Obj obj, Int indx );
 
-static void PrintPathError (
-    Obj                 obj,
-    Int                 indx )
+static void PrintPathError(Obj obj, Int indx)
 {
     ErrorQuit(
         "Panic: tried to print a path of unsupported type '%s'",
@@ -1185,8 +1133,7 @@ static void PrintPathError (
 *F  TypeComObj( <obj> ) . . . . . . . . . . function version of 'TYPE_COMOBJ'
 */
 #ifndef WARD_ENABLED
-static Obj             TypeComObj (
-    Obj                 obj )
+static Obj TypeComObj(Obj obj)
 {
     Obj result = TYPE_COMOBJ( obj );
 #ifdef HPCGAP
@@ -1195,7 +1142,7 @@ static Obj             TypeComObj (
     return result;
 }
 
-static void SetTypeComObj( Obj obj, Obj type)
+static void SetTypeComObj(Obj obj, Obj type)
 {
 #ifdef HPCGAP
     ReadGuard(obj);
@@ -1211,9 +1158,7 @@ static void SetTypeComObj( Obj obj, Obj type)
 **
 *F  FuncIS_COMOBJ( <self>, <obj> ) . . . . . . . . handler for 'IS_COMOBJ'
 */
-static Obj FuncIS_COMOBJ (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncIS_COMOBJ(Obj self, Obj obj)
 {
 #ifdef HPCGAP
     switch (TNUM_OBJ(obj)) {
@@ -1233,10 +1178,7 @@ static Obj FuncIS_COMOBJ (
 **
 *F  FuncSET_TYPE_COMOBJ( <self>, <obj>, <type> ) . . .  'SET_TYPE_COMOBJ'
 */
-static Obj FuncSET_TYPE_COMOBJ (
-    Obj                 self,
-    Obj                 obj,
-    Obj                 type )
+static Obj FuncSET_TYPE_COMOBJ(Obj self, Obj obj, Obj type)
 {
 #ifdef HPCGAP
     switch (TNUM_OBJ(obj)) {
@@ -1347,8 +1289,7 @@ Int IsbComObj(Obj obj, UInt rnam)
 *F  TypePosObj( <obj> ) . . . . . . . . . . function version of 'TYPE_POSOBJ'
 */
 #ifndef WARD_ENABLED
-static Obj TypePosObj (
-    Obj                 obj )
+static Obj TypePosObj(Obj obj)
 {
     Obj result = TYPE_POSOBJ( obj );
 #ifdef HPCGAP
@@ -1357,7 +1298,7 @@ static Obj TypePosObj (
     return result;
 }
 
-static void SetTypePosObj( Obj obj, Obj type)
+static void SetTypePosObj(Obj obj, Obj type)
 {
 #ifdef HPCGAP
     ReadGuard(obj);
@@ -1373,9 +1314,7 @@ static void SetTypePosObj( Obj obj, Obj type)
 **
 *F  FuncIS_POSOBJ( <self>, <obj> )  . . . . . . . handler for 'IS_POSOBJ'
 */
-static Obj FuncIS_POSOBJ (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncIS_POSOBJ(Obj self, Obj obj)
 {
    switch (TNUM_OBJ(obj)) {
       case T_POSOBJ:
@@ -1393,10 +1332,7 @@ static Obj FuncIS_POSOBJ (
 **
 *F  FuncSET_TYPE_POSOBJ( <self>, <obj>, <type> )  . . .  'SET_TYPE_POSOB'
 */
-static Obj FuncSET_TYPE_POSOBJ (
-    Obj                 self,
-    Obj                 obj,
-    Obj                 type )
+static Obj FuncSET_TYPE_POSOBJ(Obj self, Obj obj, Obj type)
 {
 #ifdef HPCGAP
     switch (TNUM_OBJ(obj)) {
@@ -1430,9 +1366,7 @@ static Obj FuncSET_TYPE_POSOBJ (
 **
 *F  FuncLEN_POSOBJ( <self>, <obj> ) . . . . . .  handler for 'LEN_POSOBJ'
 */
-static Obj FuncLEN_POSOBJ (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncLEN_POSOBJ(Obj self, Obj obj)
 {
 #ifdef HPCGAP
     switch (TNUM_OBJ(obj)) {
@@ -1576,8 +1510,7 @@ Int IsbPosObj(Obj obj, Int idx)
 **
 *F  TypeDatObj( <obj> ) . . . . . . . . . . function version of 'TYPE_DATOBJ'
 */
-static Obj             TypeDatObj (
-    Obj                 obj )
+static Obj TypeDatObj(Obj obj)
 {
     return TYPE_DATOBJ( obj );
 }
@@ -1602,9 +1535,7 @@ void SetTypeDatObj( Obj obj, Obj type)
 **
 *F  FuncIS_DATOBJ( <self>, <obj> ) . . . . . . . . handler for 'IS_DATOBJ'
 */
-static Obj FuncIS_DATOBJ (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncIS_DATOBJ(Obj self, Obj obj)
 {
     return (TNUM_OBJ(obj) == T_DATOBJ ? True : False);
 }
@@ -1614,10 +1545,7 @@ static Obj FuncIS_DATOBJ (
 **
 *F  FuncSET_TYPE_DATOBJ( <self>, <obj>, <type> ) . . .  'SET_TYPE_DATOBJ'
 */
-static Obj FuncSET_TYPE_DATOBJ (
-    Obj                 self,
-    Obj                 obj,
-    Obj                 type )
+static Obj FuncSET_TYPE_DATOBJ(Obj self, Obj obj, Obj type)
 {
 #ifndef WARD_ENABLED
 #ifdef HPCGAP
@@ -1640,10 +1568,7 @@ static Obj FuncSET_TYPE_DATOBJ (
 **
 **  'FuncIS_IDENTICAL_OBJ' implements 'IsIdentical'
 */
-static Obj FuncIS_IDENTICAL_OBJ (
-    Obj                 self,
-    Obj                 obj1,
-    Obj                 obj2 )
+static Obj FuncIS_IDENTICAL_OBJ(Obj self, Obj obj1, Obj obj2)
 {
     return (obj1 == obj2 ? True : False);
 }
@@ -1703,7 +1628,7 @@ void LoadObjError( Obj obj )
 **
 */
 
-static void SaveComObj( Obj comobj)
+static void SaveComObj(Obj comobj)
 {
   UInt len,i;
   SaveSubObj(TYPE_COMOBJ( comobj ));
@@ -1722,7 +1647,7 @@ static void SaveComObj( Obj comobj)
 **
 */
 
-static void SavePosObj( Obj posobj)
+static void SavePosObj(Obj posobj)
 {
   UInt len,i;
   SaveSubObj(TYPE_POSOBJ( posobj ));
@@ -1741,7 +1666,7 @@ static void SavePosObj( Obj posobj)
 **  UInts, or if it might be smaller data
 */
 
-static void SaveDatObj( Obj datobj)
+static void SaveDatObj(Obj datobj)
 {
   UInt len,i;
   const UInt * ptr;
@@ -1760,7 +1685,7 @@ static void SaveDatObj( Obj datobj)
 **
 */
 
-static void LoadComObj( Obj comobj)
+static void LoadComObj(Obj comobj)
 {
   UInt len,i;
   SET_TYPE_COMOBJ(comobj, LoadSubObj());
@@ -1779,7 +1704,7 @@ static void LoadComObj( Obj comobj)
 **
 */
 
-static void LoadPosObj( Obj posobj)
+static void LoadPosObj(Obj posobj)
 {
   UInt len,i;
   SET_TYPE_POSOBJ(posobj, LoadSubObj());
@@ -1798,7 +1723,7 @@ static void LoadPosObj( Obj posobj)
 **  UInts, or if it might be smaller data
 */
 
-static void LoadDatObj( Obj datobj)
+static void LoadDatObj(Obj datobj)
 {
   UInt len,i;
   UInt *ptr;
@@ -1836,10 +1761,7 @@ static Obj IsToBeDefinedObj;
 
 static Obj REREADING;
 
-static Obj FuncCLONE_OBJ (
-    Obj             self,
-    Obj             dst,
-    Obj             src )
+static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
 {
     const Obj *     psrc;
     Obj *           pdst;

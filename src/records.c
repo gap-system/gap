@@ -270,9 +270,7 @@ UInt            RNamObj (
 **  'RNamObj' returns the record name  corresponding  to  the  object  <obj>,
 **  which currently must be a string or an integer.
 */
-static Obj             FuncRNamObj (
-    Obj                 self,
-    Obj                 obj )
+static Obj FuncRNamObj(Obj self, Obj obj)
 {
     return INTOBJ_INT( RNamObj( obj ) );
 }
@@ -288,9 +286,7 @@ static Obj             FuncRNamObj (
 **
 **  'NameRName' returns the string corresponding to the record name <rnam>.
 */
-static Obj             FuncNameRNam (
-    Obj                 self,
-    Obj                 rnam )
+static Obj FuncNameRNam(Obj self, Obj rnam)
 {
     Obj                 name;
     Obj                 oname;
@@ -319,17 +315,14 @@ static Obj             FuncNameRNam (
 */
 Int             (*IsRecFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
-static Obj             IsRecFilt;
+static Obj IsRecFilt;
 
-static Obj             IsRecHandler (
-    Obj                 self,
-    Obj                 obj )
+static Obj IsRecHandler(Obj self, Obj obj)
 {
     return (IS_REC(obj) ? True : False);
 }
 
-static Int             IsRecObject (
-    Obj                 obj )
+static Int IsRecObject(Obj obj)
 {
     return (DoFilter( IsRecFilt, obj ) == True);
 }
@@ -345,19 +338,14 @@ static Int             IsRecObject (
 */
 Obj             (*ElmRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
-static Obj             ElmRecOper;
+static Obj ElmRecOper;
 
-static Obj             ElmRecHandler (
-    Obj                 self,
-    Obj                 rec,
-    Obj                 rnam )
+static Obj ElmRecHandler(Obj self, Obj rec, Obj rnam)
 {
     return ELM_REC( rec, INT_INTOBJ(rnam) );
 }
 
-static Obj             ElmRecError (
-    Obj                 rec,
-    UInt                rnam )
+static Obj ElmRecError(Obj rec, UInt rnam)
 {
     rec = ErrorReturnObj(
         "Record Element: <rec> must be a record (not a %s)",
@@ -366,9 +354,7 @@ static Obj             ElmRecError (
     return ELM_REC( rec, rnam );
 }
 
-static Obj             ElmRecObject (
-    Obj                 obj,
-    UInt                rnam )
+static Obj ElmRecObject(Obj obj, UInt rnam)
 {
   Obj elm;
   elm = DoOperation2Args( ElmRecOper, obj, INTOBJ_INT(rnam) );
@@ -390,19 +376,14 @@ static Obj             ElmRecObject (
 */
 Int             (*IsbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
-static Obj             IsbRecOper;
+static Obj IsbRecOper;
 
-static Obj             IsbRecHandler (
-    Obj                 self,
-    Obj                 rec,
-    Obj                 rnam )
+static Obj IsbRecHandler(Obj self, Obj rec, Obj rnam)
 {
     return (ISB_REC( rec, INT_INTOBJ(rnam) ) ? True : False);
 }
 
-static Int             IsbRecError (
-    Obj                 rec,
-    UInt                rnam )
+static Int IsbRecError(Obj rec, UInt rnam)
 {
     rec = ErrorReturnObj(
         "Record IsBound: <rec> must be a record (not a %s)",
@@ -411,9 +392,7 @@ static Int             IsbRecError (
     return ISB_REC( rec, rnam );
 }
 
-static Int             IsbRecObject (
-    Obj                 obj,
-    UInt                rnam )
+static Int IsbRecObject(Obj obj, UInt rnam)
 {
     return (DoOperation2Args( IsbRecOper, obj, INTOBJ_INT(rnam) ) == True);
 }
@@ -429,22 +408,15 @@ static Int             IsbRecObject (
 */
 void            (*AssRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam, Obj obj );
 
-static Obj             AssRecOper;
+static Obj AssRecOper;
 
-static Obj             AssRecHandler (
-    Obj                 self,
-    Obj                 rec,
-    Obj                 rnam,
-    Obj                 obj )
+static Obj AssRecHandler(Obj self, Obj rec, Obj rnam, Obj obj)
 {
     ASS_REC( rec, INT_INTOBJ(rnam), obj );
     return 0;
 }
 
-static void            AssRecError (
-    Obj                 rec,
-    UInt                rnam,
-    Obj                 obj )
+static void AssRecError(Obj rec, UInt rnam, Obj obj)
 {
     rec = ErrorReturnObj(
         "Record Assignment: <rec> must be a record (not a %s)",
@@ -453,10 +425,7 @@ static void            AssRecError (
     ASS_REC( rec, rnam, obj );
 }
 
-static void            AssRecObject (
-    Obj                 obj,
-    UInt                rnam,
-    Obj                 val )
+static void AssRecObject(Obj obj, UInt rnam, Obj val)
 {
     DoOperation3Args( AssRecOper, obj, INTOBJ_INT(rnam), val );
 }
@@ -471,20 +440,15 @@ static void            AssRecObject (
 */
 void            (*UnbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
-static Obj             UnbRecOper;
+static Obj UnbRecOper;
 
-static Obj             UnbRecHandler (
-    Obj                 self,
-    Obj                 rec,
-    Obj                 rnam )
+static Obj UnbRecHandler(Obj self, Obj rec, Obj rnam)
 {
     UNB_REC( rec, INT_INTOBJ(rnam) );
     return 0;
 }
 
-static void            UnbRecError (
-    Obj                 rec,
-    UInt                rnam )
+static void UnbRecError(Obj rec, UInt rnam)
 {
     rec = ErrorReturnObj(
         "Record Unbind: <rec> must be a record (not a %s)",
@@ -492,10 +456,8 @@ static void            UnbRecError (
         "you can replace <rec> via 'return <rec>;'" );
     UNB_REC( rec, rnam );
 }
-        
-static void            UnbRecObject (
-    Obj                 obj,
-    UInt                rnam )
+
+static void UnbRecObject(Obj obj, UInt rnam)
 {
     DoOperation2Args( UnbRecOper, obj, INTOBJ_INT(rnam) );
 }
@@ -552,8 +514,7 @@ UInt            completion_rnam (
     return next != 0;
 }
 
-static Obj FuncALL_RNAMES (
-    Obj                 self )
+static Obj FuncALL_RNAMES(Obj self)
 {
     Obj                 copy, s;
     UInt                i;
