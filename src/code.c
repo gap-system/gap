@@ -1583,7 +1583,8 @@ void CodeIntExpr(Obj val)
     else {
         GAP_ASSERT(TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG);
         expr = NewExpr( T_INT_EXPR, sizeof(UInt) );
-        WRITE_EXPR(expr, 0, PushValue(val));
+        Int ix = PushValue(val);
+        WRITE_EXPR(expr, 0, ix);
     }
 
     /* push the expression                                                 */
@@ -1781,7 +1782,8 @@ void CodeStringExpr (
     GAP_ASSERT(IS_STRING_REP(str));
 
     Expr string = NewExpr( T_STRING_EXPR, sizeof(UInt) );
-    WRITE_EXPR(string, 0, PushValue(str));
+    Int ix = PushValue(str);
+    WRITE_EXPR(string, 0, ix);
     PushExpr( string );
 }
 
