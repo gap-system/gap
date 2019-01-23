@@ -40,6 +40,16 @@ extern UInt Last2;
 */
 extern UInt Last3;
 
+/****************************************************************************
+**
+*F  UpdateLast(<newLast>, <lastDepth>)
+**
+**  Updates Last, Last2 and Last3 by the new result 'newLast'.
+**  <lastDepth> determines how many of these variables should be updated, starting
+**  always with 'Last'.
+*/
+void UpdateLast(Obj newLast, Int lastDepth);
+
 
 /****************************************************************************
 **

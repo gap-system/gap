@@ -20,6 +20,7 @@
 #include "gap.h"
 #include "gapstate.h"
 #include "gvars.h"
+#include "integer.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
@@ -396,15 +397,13 @@ static void READ_TEST_OR_LOOP(Obj context)
         type = ReadEvalCommand(context, &evalResult, &dualSemicolon);
 
         /* stop the stopwatch                                              */
-        AssGVar( Time, INTOBJ_INT( SyTime() - oldtime ) );
+        AssGVarWithoutReadOnlyCheck(Time, ObjInt_Int(SyTime() - oldtime));
 
         /* handle ordinary command                                         */
         if ( type == 0 && evalResult != 0 ) {
 
             /* remember the value in 'last' and the time in 'time'         */
-            AssGVar( Last3, ValGVarTL( Last2 ) );
-            AssGVar( Last2, ValGVarTL( Last  ) );
-            AssGVar( Last, evalResult );
+            UpdateLast(evalResult, 3);
 
             /* print the result                                            */
             if ( ! dualSemicolon ) {

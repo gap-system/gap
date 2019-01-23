@@ -161,6 +161,9 @@ Var="time"/>. This is an integer that holds the number of
 milliseconds. Similarly the amount of memory allocated during that
 statement (in bytes) is stored in the variable <Ref Var="memory_allocated"/>.
 
+The variables <C>last</C>, <C>last2</C>, <C>last3</C>, <Ref
+Var="time"/> and <Ref Var="memory_allocated"/> are all write-protected.
+
 </Section>
 
 
