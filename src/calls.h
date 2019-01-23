@@ -45,6 +45,7 @@
 #ifndef GAP_CALLS_H
 #define GAP_CALLS_H
 
+#include "funcs.h"
 #include "gaputils.h"
 #include "objects.h"
 
@@ -328,42 +329,66 @@ EXPORT_INLINE int IS_FUNC(Obj obj)
 */
 EXPORT_INLINE Obj CALL_0ARGS(Obj f)
 {
-    return HDLR_0ARGS(f)(f);
+    CheckRecursionBefore();
+    Obj o = HDLR_0ARGS(f)(f);
+    DecRecursionDepth();
+    return o;
 }
 
 EXPORT_INLINE Obj CALL_1ARGS(Obj f, Obj a1)
 {
-    return HDLR_1ARGS(f)(f, a1);
+    CheckRecursionBefore();
+    Obj o = HDLR_1ARGS(f)(f, a1);
+    DecRecursionDepth();
+    return o;
 }
 
 EXPORT_INLINE Obj CALL_2ARGS(Obj f, Obj a1, Obj a2)
 {
-    return HDLR_2ARGS(f)(f, a1, a2);
+    CheckRecursionBefore();
+    Obj o = HDLR_2ARGS(f)(f, a1, a2);
+    DecRecursionDepth();
+    return o;
 }
 
 EXPORT_INLINE Obj CALL_3ARGS(Obj f, Obj a1, Obj a2, Obj a3)
 {
-    return HDLR_3ARGS(f)(f, a1, a2, a3);
+    CheckRecursionBefore();
+    Obj o = HDLR_3ARGS(f)(f, a1, a2, a3);
+    DecRecursionDepth();
+    return o;
 }
 
 EXPORT_INLINE Obj CALL_4ARGS(Obj f, Obj a1, Obj a2, Obj a3, Obj a4)
 {
-    return HDLR_4ARGS(f)(f, a1, a2, a3, a4);
+    CheckRecursionBefore();
+    Obj o = HDLR_4ARGS(f)(f, a1, a2, a3, a4);
+    DecRecursionDepth();
+    return o;
 }
 
 EXPORT_INLINE Obj CALL_5ARGS(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
 {
-    return HDLR_5ARGS(f)(f, a1, a2, a3, a4, a5);
+    CheckRecursionBefore();
+    Obj o = HDLR_5ARGS(f)(f, a1, a2, a3, a4, a5);
+    DecRecursionDepth();
+    return o;
 }
 
 EXPORT_INLINE Obj CALL_6ARGS(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
 {
-    return HDLR_6ARGS(f)(f, a1, a2, a3, a4, a5, a6);
+    CheckRecursionBefore();
+    Obj o = HDLR_6ARGS(f)(f, a1, a2, a3, a4, a5, a6);
+    DecRecursionDepth();
+    return o;
 }
 
 EXPORT_INLINE Obj CALL_XARGS(Obj f, Obj as)
 {
-    return HDLR_XARGS(f)(f, as);
+    CheckRecursionBefore();
+    Obj o = HDLR_XARGS(f)(f, as);
+    DecRecursionDepth();
+    return o;
 }
 
 
@@ -384,42 +409,66 @@ EXPORT_INLINE Obj CALL_XARGS(Obj f, Obj as)
 */
 EXPORT_INLINE Obj CALL_0ARGS_PROF(Obj f)
 {
-    return HDLR_0ARGS(PROF_FUNC(f))(f);
+    CheckRecursionBefore();
+    Obj o = HDLR_0ARGS(PROF_FUNC(f))(f);
+    DecRecursionDepth();
+    return o;
 }
 
 EXPORT_INLINE Obj CALL_1ARGS_PROF(Obj f, Obj a1)
 {
-    return HDLR_1ARGS(PROF_FUNC(f))(f, a1);
+    CheckRecursionBefore();
+    Obj o = HDLR_1ARGS(PROF_FUNC(f))(f, a1);
+    DecRecursionDepth();
+    return o;
 }
 
 EXPORT_INLINE Obj CALL_2ARGS_PROF(Obj f, Obj a1, Obj a2)
 {
-    return HDLR_2ARGS(PROF_FUNC(f))(f, a1, a2);
+    CheckRecursionBefore();
+    Obj o = HDLR_2ARGS(PROF_FUNC(f))(f, a1, a2);
+    DecRecursionDepth();
+    return o;
 }
 
 EXPORT_INLINE Obj CALL_3ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3)
 {
-    return HDLR_3ARGS(PROF_FUNC(f))(f, a1, a2, a3);
+    CheckRecursionBefore();
+    Obj o = HDLR_3ARGS(PROF_FUNC(f))(f, a1, a2, a3);
+    DecRecursionDepth();
+    return o;
 }
 
 EXPORT_INLINE Obj CALL_4ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3, Obj a4)
 {
-    return HDLR_4ARGS(PROF_FUNC(f))(f, a1, a2, a3, a4);
+    CheckRecursionBefore();
+    Obj o = HDLR_4ARGS(PROF_FUNC(f))(f, a1, a2, a3, a4);
+    DecRecursionDepth();
+    return o;
 }
 
 EXPORT_INLINE Obj CALL_5ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
 {
-    return HDLR_5ARGS(PROF_FUNC(f))(f, a1, a2, a3, a4, a5);
+    CheckRecursionBefore();
+    Obj o = HDLR_5ARGS(PROF_FUNC(f))(f, a1, a2, a3, a4, a5);
+    DecRecursionDepth();
+    return o;
 }
 
 EXPORT_INLINE Obj CALL_6ARGS_PROF(Obj f, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
 {
-    return HDLR_6ARGS(PROF_FUNC(f))(f, a1, a2, a3, a4, a5, a6);
+    CheckRecursionBefore();
+    Obj o = HDLR_6ARGS(PROF_FUNC(f))(f, a1, a2, a3, a4, a5, a6);
+    DecRecursionDepth();
+    return o;
 }
 
 EXPORT_INLINE Obj CALL_XARGS_PROF(Obj f, Obj as)
 {
-    return HDLR_XARGS(PROF_FUNC(f))(f, as);
+    CheckRecursionBefore();
+    Obj o = HDLR_XARGS(PROF_FUNC(f))(f, as);
+    DecRecursionDepth();
+    return o;
 }
 
 

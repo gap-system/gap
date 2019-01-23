@@ -1,0 +1,13 @@
+gap> f := function() f(); end;
+function(  ) ... end
+gap> f();
+Error, recursion depth trap (5000) in
+  f(  ); at *stdin*:2 called from 
+f(  ); at *stdin*:2 called from
+f(  ); at *stdin*:2 called from
+f(  ); at *stdin*:2 called from
+f(  ); at *stdin*:2 called from
+f(  ); at *stdin*:2 called from
+...  at *stdin*:3
+you may 'return;'
+brk> QUIT;

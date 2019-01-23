@@ -404,14 +404,6 @@ void RecursionDepthTrap( void )
     }
 }
 
-#define CHECK_RECURSION_BEFORE \
-            HookedLineIntoFunction(func); \
-            CheckRecursionBefore();
-
-#define CHECK_RECURSION_AFTER \
-            DecRecursionDepth(); \
-            HookedLineOutFunction(func);
-
 #ifdef HPCGAP
 
 #define REMEMBER_LOCKSTACK() \
@@ -465,7 +457,7 @@ static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg)
 {
     Bag oldLvars; /* old values bag */
     Obj result;
-    CHECK_RECURSION_BEFORE
+    HookedLineIntoFunction(func);
 
 #ifdef HPCGAP
     REMEMBER_LOCKSTACK();
@@ -489,7 +481,7 @@ static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg)
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
-    CHECK_RECURSION_AFTER
+    HookedLineOutFunction(func);
 
     /* return the result                                                   */
     return result;
@@ -543,7 +535,7 @@ static Obj DoExecFuncXargs(Obj func, Obj args)
     UInt i;        /* loop variable */
     Obj  result;
 
-    CHECK_RECURSION_BEFORE
+    HookedLineIntoFunction(func);
 
     /* check the number of arguments                                       */
     len = NARG_FUNC( func );
@@ -574,7 +566,7 @@ static Obj DoExecFuncXargs(Obj func, Obj args)
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
-    CHECK_RECURSION_AFTER
+    HookedLineOutFunction(func);
 
     /* return the result                                                   */
     return result;
@@ -589,7 +581,7 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
     UInt len;
     Obj  argx, result;
 
-    CHECK_RECURSION_BEFORE
+    HookedLineIntoFunction(func);
 
     named = ((UInt)-NARG_FUNC(func))-1;
     len = LEN_PLIST(args);
@@ -627,7 +619,7 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
     /* switch back to the old values bag                                   */
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
-    CHECK_RECURSION_AFTER
+    HookedLineOutFunction(func);
 
     /* return the result                                                   */
     return result;
