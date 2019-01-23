@@ -1606,7 +1606,7 @@ static Int PostRestore (
     StructInitInfo *    module )
 {
     /* construct the `ViewObj' variable                                    */
-    ViewObjGVar = GVarName( "ViewObj" ); 
+    ViewObjGVar = GVarName( "ViewObj" );
 
     /* construct the last and time variables                               */
     Last              = GVarName( "last"  );
@@ -1614,8 +1614,7 @@ static Int PostRestore (
     Last3             = GVarName( "last3" );
     Time              = GVarName( "time"  );
     MemoryAllocated   = GVarName( "memory_allocated"  );
-    AssGVar_NoReadOnlyCheck(Time, INTOBJ_INT(0));
-    AssGVar_NoReadOnlyCheck(MemoryAllocated, INTOBJ_INT(0));
+
     QUITTINGGVar      = GVarName( "QUITTING" );
     
     /* return success                                                      */
@@ -1642,6 +1641,13 @@ static Int InitLibrary (
 #else
     AssConstantGVar( GVarName( "IsHPCGAP" ), False );
 #endif
+
+    AssReadOnlyGVar(GVarName("last"), Fail);
+    AssReadOnlyGVar(GVarName("last2"), Fail);
+    AssReadOnlyGVar(GVarName("last3"), Fail);
+    AssReadOnlyGVar(GVarName("time"), INTOBJ_INT(0));
+    AssReadOnlyGVar(GVarName("memory_allocated"), INTOBJ_INT(0));
+
 
     /* return success                                                      */
     return PostRestore( module );
