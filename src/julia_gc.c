@@ -9,7 +9,7 @@
 **  and gasman.c for two other garbage collector implementations.
 **/
 
-#include "code.h"
+#include "fibhash.h"
 #include "funcs.h"
 #include "gapstate.h"
 #include "gasman.h"
