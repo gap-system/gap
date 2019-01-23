@@ -304,6 +304,20 @@ void            AssGVar (
     UInt                gvar,
     Obj                 val )
 {
+    /* make certain that the variable is not read only                     */
+    if ((REREADING != True) &&
+        (ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(0))) {
+        ErrorMayQuit("Variable: '%g' is read only", (Int)NameGVar(gvar), 0);
+    }
+
+    AssGVarWithoutReadOnlyCheck(gvar, val);
+}
+
+// This is a kernel-only variant of AssGVar which will change read-only
+// variables, which is used for constants like:
+// Time, MemoryAllocated, last, last2, last3
+void AssGVarWithoutReadOnlyCheck(UInt gvar, Obj val)
+{
     Obj                 cops;           /* list of internal copies         */
     Obj *               copy;           /* one copy                        */
     UInt                i;              /* loop variable                   */
@@ -316,12 +330,6 @@ void            AssGVar (
     // Make certain variable is not constant
     if (writeval == INTOBJ_INT(-1)) {
         ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0L);
-    }
-
-    /* make certain that the variable is not read only                     */
-    if ((REREADING != True) &&
-        (ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(0))) {
-        ErrorMayQuit("Variable: '%g' is read only", (Int)NameGVar(gvar), 0);
     }
 
     /* assign the value to the global variable                             */

@@ -71,8 +71,12 @@ extern Obj ErrorMustHaveAssObjFunc;
 *F  AssGVar(<gvar>,<val>) . . . . . . . . . . . . assign to a global variable
 **
 **  'AssGVar' assigns the value <val> to the global variable <gvar>.
+**  'AssGVarWithoutReadOnlyCheck' does the same thing, while not checking if the
+**                            variable is read only.
 */
 void AssGVar(UInt gvar, Obj val);
+
+extern void AssGVarWithoutReadOnlyCheck(UInt gvar, Obj val);
 
 
 /****************************************************************************

@@ -18,16 +18,16 @@
 #F  Demonstration( <file> ) . . . . . . . . . . run a demonstration from file
 ##
 if not IsBound(last) then
-    last := fail;
+    UPDATE_STAT("last", fail);
 fi;
 if not IsBound(last2) then
-    last2 := fail;
+    UPDATE_STAT("last2", fail);
 fi;
 if not IsBound(last3) then
-    last3 := fail;
+    UPDATE_STAT("last3", fail);
 fi;
 if not IsBound(time) then
-    time := fail;
+    UPDATE_STAT("time", fail);
 fi;
 
 
@@ -47,11 +47,11 @@ BindGlobal( "Demonstration", function( file )
     while CHAR_INT( ReadByte( keyboard ) ) <> 'q' do
         storedtime := Runtime();
         result:=READ_COMMAND_REAL( input, true ); # Executing the command.
-        time := Runtime()-storedtime;
+        UPDATE_STAT("time", Runtime()-storedtime);
         if Length(result) = 2 then
-            last3 := last2;
-            last2 := last;
-            last := result[2];
+            UPDATE_STAT("last3", last2);
+            UPDATE_STAT("last2", last);
+            UPDATE_STAT("last", result[2]);
             View( result[2] );
             Print("\n" );
         fi;
@@ -92,12 +92,12 @@ local   input,command,exec,result,blank,semic,hash,process,l,view,estream;
         estream:=InputTextString( exec );
         storedtime := Runtime();
         result:=READ_COMMAND_REAL( estream, true ); # Executing the command.
-        time := Runtime()-storedtime;
+        UPDATE_STAT("time", Runtime()-storedtime);
         CloseStream(estream);
         if Length(result) = 2 then
-            last3 := last2;
-            last2 := last;
-            last := result[2];
+            UPDATE_STAT("last3", last2);
+            UPDATE_STAT("last2", last);
+            UPDATE_STAT("last", result[2]);
             if view then
                View(result[2]);
                Print("\n");

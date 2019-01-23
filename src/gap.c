@@ -239,12 +239,7 @@ static Obj Shell(Obj    context,
     if ( status == STATUS_END && evalResult != 0 ) {
 
       /* remember the value in 'last'    */
-      if (lastDepth >= 3)
-        AssGVar( Last3, ValGVarTL( Last2 ) );
-      if (lastDepth >= 2)
-        AssGVar( Last2, ValGVarTL( Last  ) );
-      if (lastDepth >= 1)
-        AssGVar( Last, evalResult );
+      UpdateLast(evalResult, lastDepth);
 
       /* print the result                                            */
       if ( ! dualSemicolon ) {
@@ -283,8 +278,9 @@ static Obj Shell(Obj    context,
         
     /* stop the stopwatch                                          */
     if (setTime) {
-      AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
-      AssGVar(MemoryAllocated, ObjInt_Int8(SizeAllBags - mem));
+        AssGVarWithoutReadOnlyCheck(Time, ObjInt_Int(SyTime() - time));
+        AssGVarWithoutReadOnlyCheck(MemoryAllocated,
+                                ObjInt_Int8(SizeAllBags - mem));
     }
 
     if (STATE(UserHasQuit))
@@ -1470,6 +1466,46 @@ static Obj FuncTHREAD_UI(Obj self)
 
 #endif
 
+void UpdateLast(Obj newLast, Int lastDepth)
+{
+    if (lastDepth >= 3)
+        AssGVarWithoutReadOnlyCheck(Last3, ValGVarTL(Last2));
+    if (lastDepth >= 2)
+        AssGVarWithoutReadOnlyCheck(Last2, ValGVarTL(Last));
+    if (lastDepth >= 1)
+        AssGVarWithoutReadOnlyCheck(Last, newLast);
+}
+
+// UPDATE_STAT lets code assign the special variables which GAP
+// automatically sets in interactive sessions. This is for demonstration
+// code which wants to look like iteractive usage of GAP. Using this
+// function will not stop GAP automatically changing these variables as
+// usual.
+static void FuncUPDATE_STAT(Obj self, Obj name, Obj newStat)
+{
+    RequireStringRep("UPDATE_STAT", name);
+
+    const char * cname = CONST_CSTR_STRING(name);
+    if (strcmp(cname, "time") == 0) {
+        AssGVarWithoutReadOnlyCheck(Time, newStat);
+    }
+    else if (strcmp(cname, "last") == 0) {
+        AssGVarWithoutReadOnlyCheck(Last, newStat);
+    }
+    else if (strcmp(cname, "last2") == 0) {
+        AssGVarWithoutReadOnlyCheck(Last2, newStat);
+    }
+    else if (strcmp(cname, "last3") == 0) {
+        AssGVarWithoutReadOnlyCheck(Last3, newStat);
+    }
+    else if (strcmp(cname, "memory_allocated") == 0) {
+        AssGVarWithoutReadOnlyCheck(MemoryAllocated, newStat);
+    }
+    else {
+        ErrorMayQuit("UPDATE_STAT: unsupported <name> value '%g'", (Int)name, 0);
+    }
+}
+
 
 /****************************************************************************
 **
@@ -1505,8 +1541,10 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(QUIT_GAP, -1, "args"),
     GVAR_FUNC(FORCE_QUIT_GAP, -1, "args"),
     GVAR_FUNC(SHOULD_QUIT_ON_BREAK, 0, ""),
-    GVAR_FUNC(SHELL, -1, "context, canReturnVoid, canReturnObj, lastDepth, "
-                         "setTime, prompt, promptHook, infile, outfile"),
+    GVAR_FUNC(SHELL,
+              -1,
+              "context, canReturnVoid, canReturnObj, lastDepth, "
+              "setTime, prompt, promptHook, infile, outfile"),
     GVAR_FUNC(KERNEL_INFO, 0, ""),
 #ifdef HPCGAP
     GVAR_FUNC(THREAD_UI, 0, ""),
@@ -1514,6 +1552,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(MASTER_POINTER_NUMBER, 1, "ob"),
     GVAR_FUNC(FUNC_BODY_SIZE, 1, "f"),
     GVAR_FUNC(BREAKPOINT, 1, "integer"),
+    GVAR_FUNC(UPDATE_STAT, 2, "string, object"),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -1575,8 +1614,8 @@ static Int PostRestore (
     Last3             = GVarName( "last3" );
     Time              = GVarName( "time"  );
     MemoryAllocated   = GVarName( "memory_allocated"  );
-    AssGVar(Time, INTOBJ_INT(0));
-    AssGVar(MemoryAllocated, INTOBJ_INT(0));
+    AssGVar_NoReadOnlyCheck(Time, INTOBJ_INT(0));
+    AssGVar_NoReadOnlyCheck(MemoryAllocated, INTOBJ_INT(0));
     QUITTINGGVar      = GVarName( "QUITTING" );
     
     /* return success                                                      */
