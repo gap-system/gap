@@ -57,11 +57,14 @@ Error, usage: the argument must be a partial perm,
 
 # test input validation
 gap> DegreeOfPartialPerm(fail);
-Error, DegreeOfPartialPerm: <f> must be a partial perm,
+Error, DegreeOfPartialPerm: <f> must be a partial permutation (not the value '\
+fail')
 gap> CoDegreeOfPartialPerm(fail);
-Error, CoDegreeOfPartialPerm: <f> must be a partial perm,
+Error, CoDegreeOfPartialPerm: <f> must be a partial permutation (not the value\
+ 'fail')
 gap> RankOfPartialPerm(fail);
-Error, RankOfPartialPerm: <f> must be a partial perm,
+Error, RankOfPartialPerm: <f> must be a partial permutation (not the value 'fa\
+il')
 gap> 
 
 # SmallestIdempotentPower, IndexPeriodOfPartialPerm, IsIdempotent
@@ -707,7 +710,8 @@ gap> g:=PartialPerm( [ 1, 3 ], [ 3, 1 ] );;
 gap> NaturalLeqPartialPerm(f,g);
 false
 gap> NaturalLeqPartialPerm(fail, f);
-Error, usage: the arguments must be partial perms,
+Error, NaturalLeqPartialPerm: <f> must be a partial permutation (not the value\
+ 'fail')
 gap> NaturalLeqPartialPerm(EmptyPartialPerm(), f);
 true
 
@@ -3577,11 +3581,14 @@ false
 gap> ShortLexLeqPartialPerm(PartialPerm([1]), f);
 false
 gap> ShortLexLeqPartialPerm(1, f);
-Error, usage: the arguments must be partial perms,
+Error, ShortLexLeqPartialPerm: <f> must be a partial permutation (not the inte\
+ger 1)
 gap> ShortLexLeqPartialPerm(f, 1);
-Error, usage: the arguments must be partial perms,
+Error, ShortLexLeqPartialPerm: <g> must be a partial permutation (not the inte\
+ger 1)
 gap> ShortLexLeqPartialPerm(2, 1);
-Error, usage: the arguments must be partial perms,
+Error, ShortLexLeqPartialPerm: <f> must be a partial permutation (not the inte\
+ger 2)
 
 # CodegreeOfPartialPerm
 gap> CodegreeOfPartialPerm(ID_PPERM2);

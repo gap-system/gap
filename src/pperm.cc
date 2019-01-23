@@ -50,6 +50,10 @@ extern "C" {
 
 static Obj EmptyPartialPerm;
 
+#define RequirePartialPerm(funcname, op)                                     \
+    RequireArgumentCondition(funcname, op, IS_PPERM(op),                     \
+                             "must be a partial permutation")
+
 
 static ModuleStateOffset PPermStateOffset = -1;
 
@@ -475,41 +479,23 @@ static Obj FuncSparsePartialPermNC(Obj self, Obj dom, Obj img)
 /* the degree of pperm is the maximum point where it is defined */
 static Obj FuncDegreeOfPartialPerm(Obj self, Obj f)
 {
-    if (TNUM_OBJ(f) == T_PPERM2) {
-        return INTOBJ_INT(DEG_PPERM2(f));
-    }
-    else if (TNUM_OBJ(f) == T_PPERM4) {
-        return INTOBJ_INT(DEG_PPERM4(f));
-    }
-    ErrorQuit("DegreeOfPartialPerm: <f> must be a partial perm,", 0L, 0L);
-    return Fail;
+    RequirePartialPerm("DegreeOfPartialPerm", f);
+    return INTOBJ_INT(DEG_PPERM(f));
 }
 
 /* the codegree of pperm is the maximum point in its image */
 
 static Obj FuncCoDegreeOfPartialPerm(Obj self, Obj f)
 {
-    if (TNUM_OBJ(f) == T_PPERM2) {
-        return INTOBJ_INT(CODEG_PPERM2(f));
-    }
-    else if (TNUM_OBJ(f) == T_PPERM4) {
-        return INTOBJ_INT(CODEG_PPERM4(f));
-    }
-    ErrorQuit("CoDegreeOfPartialPerm: <f> must be a partial perm,", 0L, 0L);
-    return Fail;
+    RequirePartialPerm("CoDegreeOfPartialPerm", f);
+    return INTOBJ_INT(CODEG_PPERM(f));
 }
 
 /* the rank is the number of points where it is defined */
 static Obj FuncRankOfPartialPerm(Obj self, Obj f)
 {
-    if (TNUM_OBJ(f) == T_PPERM2) {
-        return INTOBJ_INT(RANK_PPERM2(f));
-    }
-    else if (TNUM_OBJ(f) == T_PPERM4) {
-        return INTOBJ_INT(RANK_PPERM4(f));
-    }
-    ErrorQuit("RankOfPartialPerm: <f> must be a partial perm,", 0L, 0L);
-    return Fail;
+    RequirePartialPerm("RankOfPartialPerm", f);
+    return INTOBJ_INT(RANK_PPERM(f));
 }
 
 /* domain of a partial perm */
@@ -1606,8 +1592,8 @@ static Obj FuncNaturalLeqPartialPerm(Obj self, Obj f, Obj g)
     UInt4 *ptf4, *ptg4;
     Obj    dom;
 
-    if (!IS_PPERM(f) || !IS_PPERM(g))
-        ErrorQuit("usage: the arguments must be partial perms,", 0L, 0L);
+    RequirePartialPerm("NaturalLeqPartialPerm", f);
+    RequirePartialPerm("NaturalLeqPartialPerm", g);
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         def = DEG_PPERM2(f);
@@ -2446,9 +2432,8 @@ static Obj FuncShortLexLeqPartialPerm(Obj self, Obj f, Obj g)
     UInt2 *ptf2, *ptg2;
     UInt4 *ptf4, *ptg4;
 
-    if (!IS_PPERM(f) || !IS_PPERM(g)) {
-        ErrorQuit("usage: the arguments must be partial perms,", 0L, 0L);
-    }
+    RequirePartialPerm("ShortLexLeqPartialPerm", f);
+    RequirePartialPerm("ShortLexLeqPartialPerm", g);
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         if (DEG_PPERM2(f) == 0)
