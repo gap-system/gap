@@ -291,6 +291,16 @@ static UInt INIT_PPERM4(Obj f)
     return rank;
 }
 
+static UInt INIT_PPERM(Obj f)
+{
+    if (TNUM_OBJ(f) == T_PPERM2) {
+        return INIT_PPERM2(f);
+    }
+    else {
+        return INIT_PPERM4(f);
+    }
+}
+
 UInt RANK_PPERM2(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
@@ -504,12 +514,7 @@ static Obj FuncDOMAIN_PPERM(Obj self, Obj f)
     GAP_ASSERT(IS_PPERM(f));
 
     if (DOM_PPERM(f) == NULL) {
-        if (TNUM_OBJ(f) == T_PPERM2) {
-            INIT_PPERM2(f);
-        }
-        else {
-            INIT_PPERM4(f);
-        }
+        INIT_PPERM(f);
     }
     return DOM_PPERM(f);
 }
@@ -519,50 +524,33 @@ static Obj FuncIMAGE_PPERM(Obj self, Obj f)
 {
     GAP_ASSERT(IS_PPERM(f));
 
-    UInt2 * ptf2;
-    UInt4 * ptf4;
-    UInt    i, rank;
-    Obj     out, dom;
+    if (IMG_PPERM(f) == NULL) {
+        INIT_PPERM(f);
+        return IMG_PPERM(f);
+    }
+    else if (!IS_SSORT_LIST(IMG_PPERM(f))) {
+        return IMG_PPERM(f);
+    }
+
+    UInt rank = RANK_PPERM(f);
+    if (rank == 0) {
+        return ImmutableEmptyPlist;
+    }
+
+    Obj dom = DOM_PPERM(f);
+    Obj out = NEW_PLIST_IMM(T_PLIST_CYC, rank);
+    SET_LEN_PLIST(out, rank);
+
     if (TNUM_OBJ(f) == T_PPERM2) {
-        if (IMG_PPERM(f) == NULL) {
-            INIT_PPERM2(f);
-            return IMG_PPERM(f);
-        }
-        else if (!IS_SSORT_LIST(IMG_PPERM(f))) {
-            return IMG_PPERM(f);
-        }
-        rank = RANK_PPERM2(f);
-        if (rank == 0) {
-            out = ImmutableEmptyPlist;
-            return out;
-        }
-        out = NEW_PLIST_IMM(T_PLIST_CYC, rank);
-        SET_LEN_PLIST(out, rank);
-        ptf2 = ADDR_PPERM2(f);
-        dom = DOM_PPERM(f);
-        for (i = 1; i <= rank; i++) {
+        UInt2 * ptf2 = ADDR_PPERM2(f);
+        for (UInt i = 1; i <= rank; i++) {
             SET_ELM_PLIST(
                 out, i, INTOBJ_INT(ptf2[INT_INTOBJ(ELM_PLIST(dom, i)) - 1]));
         }
     }
     else {
-        if (IMG_PPERM(f) == NULL) {
-            INIT_PPERM4(f);
-            return IMG_PPERM(f);
-        }
-        else if (!IS_SSORT_LIST(IMG_PPERM(f))) {
-            return IMG_PPERM(f);
-        }
-        rank = RANK_PPERM4(f);
-        if (rank == 0) {
-            out = ImmutableEmptyPlist;
-            return out;
-        }
-        out = NEW_PLIST_IMM(T_PLIST_CYC, rank);
-        SET_LEN_PLIST(out, rank);
-        ptf4 = ADDR_PPERM4(f);
-        dom = DOM_PPERM(f);
-        for (i = 1; i <= rank; i++) {
+        UInt4 * ptf4 = ADDR_PPERM4(f);
+        for (UInt i = 1; i <= rank; i++) {
             SET_ELM_PLIST(
                 out, i, INTOBJ_INT(ptf4[INT_INTOBJ(ELM_PLIST(dom, i)) - 1]));
         }
@@ -573,30 +561,16 @@ static Obj FuncIMAGE_PPERM(Obj self, Obj f)
 /* image set of partial perm */
 static Obj FuncIMAGE_SET_PPERM(Obj self, Obj f)
 {
-    if (TNUM_OBJ(f) == T_PPERM2) {
-        if (IMG_PPERM(f) == NULL) {
-            INIT_PPERM2(f);
-            return SORT_PLIST_INTOBJ(IMG_PPERM(f));
-        }
-        else if (!IS_SSORT_LIST(IMG_PPERM(f))) {
-            return SORT_PLIST_INTOBJ(IMG_PPERM(f));
-        }
-        return IMG_PPERM(f);
+    RequirePartialPerm("IMAGE_SET_PPERM", f);
+
+    if (IMG_PPERM(f) == NULL) {
+        INIT_PPERM(f);
+        return SORT_PLIST_INTOBJ(IMG_PPERM(f));
     }
-    else if (TNUM_OBJ(f) == T_PPERM4) {
-        if (IMG_PPERM(f) == NULL) {
-            INIT_PPERM4(f);
-            return SORT_PLIST_INTOBJ(IMG_PPERM(f));
-        }
-        else if (!IS_SSORT_LIST(IMG_PPERM(f))) {
-            return SORT_PLIST_INTOBJ(IMG_PPERM(f));
-        }
-        return IMG_PPERM(f);
+    else if (!IS_SSORT_LIST(IMG_PPERM(f))) {
+        return SORT_PLIST_INTOBJ(IMG_PPERM(f));
     }
-    else {
-        ErrorQuit("usage: the argument must be a partial perm,", 0L, 0L);
-        return 0L;
-    }
+    return IMG_PPERM(f);
 }
 
 /* preimage under a partial perm */

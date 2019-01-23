@@ -53,7 +53,8 @@ gap> ImageSetOfPartialPerm(f);
 gap> ImageListOfPartialPerm(f);
 [  ]
 gap> IMAGE_SET_PPERM(fail);
-Error, usage: the argument must be a partial perm,
+Error, IMAGE_SET_PPERM: <f> must be a partial permutation (not the value 'fail\
+')
 
 # test input validation
 gap> DegreeOfPartialPerm(fail);
