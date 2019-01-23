@@ -404,15 +404,7 @@ AS_IF([test $BUILD_ZLIB = no],
 AS_IF([test x$BUILD_ZLIB = xyes],[
   BUILD_ZLIB=yes
   ZLIB_CPPFLAGS='-I${abs_builddir}/extern/install/zlib/include'
-  AS_CASE([$host_os],
-    [*cygwin*],[
-      ZLIB_LDFLAGS='-L${abs_builddir}/extern/install/zlib/lib/ -lz'
-    ],
-    [*],[
-      ZLIB_LDFLAGS='${abs_builddir}/extern/install/zlib/lib/libz.a'
-    ]
-  )
-
+  ZLIB_LDFLAGS='-L${abs_builddir}/extern/install/zlib/lib/ -Wl,-rpath -Wl,${abs_builddir}/extern/install/zlib/lib/ -lz'
   ZLIB_LIBS=
 ])
 
