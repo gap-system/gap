@@ -772,13 +772,17 @@ local brci,gcd,fam,fc,gc;
   if gcd=fail then
     # fall back to the original version:
     gcd:=RPIGcd(f,g);
-    if Length(gcd)>0 and not IsOne(gcd[1]) then gcd:=gcd/gcd[1];fi;
+    if Length(gcd)>0 and not IsOne(gcd[Length(gcd)]) then
+      gcd:=gcd/gcd[Length(gcd)];
+    fi;
     return gcd;
 
   fi;
   fc:=Minimum(fc[2],gc[2]);
   fc:=fc+RemoveOuterCoeffs(gcd,fam!.zeroCoefficient);
-  if Length(gcd)>0 and not IsOne(gcd[1]) then gcd:=gcd/gcd[1];fi;
+  if Length(gcd)>0 and not IsOne(gcd[Length(gcd)]) then
+    gcd:=gcd/gcd[Length(gcd)];
+  fi;
   return LaurentPolynomialByExtRepNC(fam,gcd,fc,brci);
 end);
 
@@ -1856,7 +1860,7 @@ local   fc,ind, v, g, q, s, r, x,shift;
   Append(s,List([1..v],f->x));
   Sort(s);
 
-  if not IsBound(opt.stopdegs) and Sum(s,DegreeOfLaurentPolynomial)<>DegreeOfLaurentPolynomial(f)+v then
+  if not (IsBound(opt.stopdegs) or IsBound(opt.onlydegs)) and Sum(s,DegreeOfLaurentPolynomial)<>DegreeOfLaurentPolynomial(f)+v then
     Error("degree discrepancy!");
   fi;
 

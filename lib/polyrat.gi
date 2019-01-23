@@ -760,13 +760,17 @@ local brci,gcd,fam,fc,gc;
   if gcd=fail then
     # fall back to the original version:
     gcd:=RPIGcd(f,g);
-    if Length(gcd)>0 and not IsOne(gcd[1]) then gcd:=gcd/gcd[1];fi;
+    if Length(gcd)>0 and not IsOne(gcd[Length(gcd)]) then
+      gcd:=gcd/gcd[Length(gcd)];
+    fi;
     return gcd;
 
   fi;
   fc:=Minimum(fc[2],gc[2]);
   fc:=fc+RemoveOuterCoeffs(gcd,fam!.zeroCoefficient);
-  if Length(gcd)>0 and not IsOne(gcd[1]) then gcd:=gcd/gcd[1];fi;
+  if Length(gcd)>0 and not IsOne(gcd[Length(gcd)]) then
+    gcd:=gcd/gcd[Length(gcd)];
+  fi;
   return LaurentPolynomialByExtRepNC(fam,gcd,fc,brci);
 end);
 
