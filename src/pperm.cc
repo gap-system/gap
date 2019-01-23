@@ -2843,8 +2843,8 @@ Obj ProdPPerm22(Obj f, Obj g)
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
     GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
 
-    UInt   deg, degg, i, j, rank;
-    UInt2 *ptf, *ptg, *ptfg, codeg;
+    UInt   deg, degg, i, j, rank, codeg;
+    UInt2 *ptf, *ptg, *ptfg;
     Obj    fg, dom;
 
     if (DEG_PPERM2(g) == 0)
@@ -2901,9 +2901,9 @@ Obj ProdPPerm42(Obj f, Obj g)
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
     GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
 
-    UInt    deg, degg, i, j, rank;
+    UInt    deg, degg, i, j, rank, codeg;
     UInt4 * ptf;
-    UInt2 * ptg, *ptfg, codeg;
+    UInt2 * ptg, *ptfg;
     Obj     fg, dom;
 
     if (DEG_PPERM2(g) == 0)
@@ -3288,9 +3288,9 @@ Obj ProdPPerm4Perm2(Obj f, Obj p)
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
 
     UInt4 *ptf, *ptfp;
-    UInt2 *ptp, dep;
+    UInt2 *ptp;
     Obj    fp, dom;
-    UInt   codeg, deg, i, j, rank;
+    UInt   codeg, deg, dep,i, j, rank;
 
     deg = DEG_PPERM4(f);
     fp = NEW_PPERM4(deg);
@@ -3327,8 +3327,8 @@ Obj ProdPerm2PPerm2(Obj p, Obj f)
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
 
-    UInt2 deg, *ptp, *ptf, *ptpf;
-    UInt  degf, i;
+    UInt2 *ptp, *ptf, *ptpf;
+    UInt  deg, degf, i;
     Obj   pf;
 
     if (DEG_PPERM2(f) == 0)
@@ -3370,8 +3370,8 @@ Obj ProdPerm4PPerm4(Obj p, Obj f)
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
 
-    UInt4 deg, *ptp, *ptf, *ptpf;
-    UInt  degf, i;
+    UInt4 *ptp, *ptf, *ptpf;
+    UInt  deg, degf, i;
     Obj   pf;
 
     if (DEG_PPERM4(f) == 0)
@@ -3413,9 +3413,9 @@ Obj ProdPerm4PPerm2(Obj p, Obj f)
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
 
-    UInt4  deg, *ptp;
+    UInt4  *ptp;
     UInt2 *ptf, *ptpf;
-    UInt   degf, i;
+    UInt   deg, degf, i;
     Obj    pf;
 
     if (DEG_PPERM2(f) == 0)
@@ -3609,8 +3609,8 @@ Obj PowPPerm2Perm2(Obj f, Obj p)
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
 
-    UInt   deg, rank, degconj, i, j, k, codeg;
-    UInt2 *ptf, *ptp, *ptconj, dep;
+    UInt   deg, dep, rank, degconj, i, j, k, codeg;
+    UInt2 *ptf, *ptp, *ptconj;
     Obj    conj, dom;
 
     deg = DEG_PPERM2(f);
@@ -3621,6 +3621,12 @@ Obj PowPPerm2Perm2(Obj f, Obj p)
     rank = RANK_PPERM2(f);
     ptp = ADDR_PERM2(p);
     dom = DOM_PPERM(f);
+
+    // FIXME HACK: workaround bug (proper fix will come with
+    // refactoring of this code to use C++ templates)
+    if (dep == 65536) {
+        return PROD(LQUO(p, f), p);
+    }
 
     // find deg of conjugate
     if (deg > dep) {
@@ -3668,9 +3674,9 @@ Obj PowPPerm2Perm4(Obj f, Obj p)
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
 
-    UInt    deg, rank, degconj, i, j, k, codeg;
+    UInt    deg, dep, rank, degconj, i, j, k, codeg;
     UInt2 * ptf;
-    UInt4 * ptp, *ptconj, dep;
+    UInt4 * ptp, *ptconj;
     Obj     conj, dom;
 
     deg = DEG_PPERM2(f);
@@ -3717,8 +3723,8 @@ Obj PowPPerm4Perm2(Obj f, Obj p)
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
 
-    UInt    deg, rank, degconj, i, j, k, codeg;
-    UInt4 * ptf, *ptconj, dep;
+    UInt    deg, dep, rank, degconj, i, j, k, codeg;
+    UInt4 * ptf, *ptconj;
     UInt2 * ptp;
     Obj     conj, dom;
 
@@ -3776,8 +3782,8 @@ Obj PowPPerm4Perm4(Obj f, Obj p)
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
 
-    UInt   deg, rank, degconj, i, j, k, codeg;
-    UInt4 *ptf, *ptp, *ptconj, dep;
+    UInt   deg, dep, rank, degconj, i, j, k, codeg;
+    UInt4 *ptf, *ptp, *ptconj;
     Obj    conj, dom;
 
     deg = DEG_PPERM4(f);
@@ -5398,8 +5404,8 @@ Obj LQuoPerm2PPerm2(Obj p, Obj f)
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
 
-    UInt2 *ptp, *ptf, *ptlquo, dep;
-    UInt   def, i, j, del, len;
+    UInt2 *ptp, *ptf, *ptlquo;
+    UInt   def, dep, i, j, del, len;
     Obj    dom, lquo;
 
     def = DEG_PPERM2(f);
@@ -5482,9 +5488,9 @@ Obj LQuoPerm2PPerm4(Obj p, Obj f)
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
 
-    UInt2 *ptp, dep;
+    UInt2 *ptp;
     UInt4 *ptf, *ptlquo;
-    UInt   def, i, j, del, len;
+    UInt   def, dep, i, j, del, len;
     Obj    dom, lquo;
 
     def = DEG_PPERM4(f);
@@ -5651,8 +5657,8 @@ Obj LQuoPerm4PPerm4(Obj p, Obj f)
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
 
-    UInt4 *ptp, *ptf, *ptlquo, dep;
-    UInt   def, i, j, del, len;
+    UInt4 *ptp, *ptf, *ptlquo;
+    UInt   def, dep, i, j, del, len;
     Obj    dom, lquo;
 
     def = DEG_PPERM4(f);
