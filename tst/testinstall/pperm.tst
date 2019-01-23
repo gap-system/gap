@@ -1030,7 +1030,8 @@ gap> AsPermutation(f);
 # PermLeftQuoPartialPerm
 gap> f := PartialPerm([1, 100], [100, 2]);;
 gap> p := (2, 100);;
-gap> g:=f*p;;
+gap> g:=f*p;
+[1,2](100)
 gap> PermLeftQuoPartialPerm(f, g)=p;
 true
 gap> h := PartialPerm([200, 300, 400, 1900, 10 ^ 6], 
@@ -1231,7 +1232,8 @@ true
 gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
 > DomainOfPartialPerm(f);;
 gap> p:=(7, 100);;
-gap> g:=f*p;;
+gap> g:=f*p;
+[1,2,100][3,8](6,10)
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
@@ -1246,14 +1248,16 @@ gap> f * p;
 # ProdPPerm2Perm2, Case 2 of 6: codeg(f)<=deg(p), domain not known
 gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
 gap> p:=(7, 100);;
-gap> g:=f*p;;
+gap> g:=f*p;
+[1,2,100][3,8](6,10)
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
 true
 gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );;
 gap> p:=(7, 100);;
-gap> g:=f*p;;
+gap> g:=f*p;
+[1,2,100][3,8](6,10)
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
@@ -1264,7 +1268,8 @@ true
 # ProdPPerm2Perm2, Case 3 of 6: codeg(f)>deg(p), domain known
 gap> f:=PartialPerm([1, 100], [100, 2]);; DomainOfPartialPerm(f);;
 gap> p:=(7, 10);;
-gap> g:=f*p;;
+gap> g:=f*p;
+[1,100,2]
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
 true
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
@@ -1273,7 +1278,8 @@ gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 gap> f:=PartialPerm([1, 65535], [65535, 2]);;
 gap> p:=(17, 10000);;
-gap> g:=f*p;;
+gap> g:=f*p;
+[1,65535,2]
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
@@ -1283,8 +1289,9 @@ true
 
 # ProdPPerm2Perm2, Case 4 of 6: codeg(f)>deg(p), domain not known
 gap> f:=PartialPerm([1, 100], [100, 2]);;
-gap> p:=(7, 10);;   
-gap> g:=f*p;;                       
+gap> p:=(7, 10);;
+gap> g:=f*p;
+[1,100,2]
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
@@ -1292,8 +1299,9 @@ true
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
 true
 gap> f:=PartialPerm([1, 10000], [10000, 2]);;
-gap> p:=(13, 1000);; 
-gap> g:=f*p;;
+gap> p:=(13, 1000);;
+gap> g:=f*p;
+[1,10000,2]
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
@@ -1304,7 +1312,8 @@ true
 # ProdPPerm2Perm2, Case 5 of 6: deg(p)=65536, domain not known
 gap> p:=(1,65536);;
 gap> f:=PartialPerm([1, 10000], [10000, 2]);;
-gap> g:=f*p;;
+gap> g:=f*p;
+[1,10000,2]
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
@@ -1315,7 +1324,8 @@ true
 # ProdPPerm2Perm2, Case 6 of 6: deg(p)=65536, domain known
 gap> f:=PartialPerm([1, 10000], [10000, 2]);; DomainOfPartialPerm(f);;
 gap> p:=(1,65536);;
-gap> g:=f*p;;
+gap> g:=f*p;
+[1,10000,2]
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
@@ -1326,7 +1336,8 @@ true
 # ProdPPerm2Perm4, Case 1 of 2: domain known
 gap> f:=PartialPerm( [ 1, 2, 3, 6, 10 ], [ 2, 7, 8, 10, 6 ] );; DomainOfPartialPerm(f);;
 gap> p:=(1,100000);;
-gap> g:=f*p;;
+gap> g:=f*p;
+[1,2,7][3,8](6,10)
 gap> DomainOfPartialPerm(g)=DomainOfPartialPerm(f);
 true
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
@@ -1337,7 +1348,8 @@ true
 # ProdPPerm2Perm4, Case 2 of 2: domain not known
 gap> f:=PartialPerm([1, 1000], [1000, 2]);;
 gap> p:=(1,100000);;
-gap> g:=f*p;;
+gap> g:=f*p;
+[1,1000,2]
 gap> OnTuples(ImageListOfPartialPerm(f), p)=ImageListOfPartialPerm(g);
 true
 gap> CodegreeOfPartialPerm(g)=Maximum(ImageSetOfPartialPerm(g));
@@ -2966,6 +2978,72 @@ gap> f^g;
 [4,6][10,1][17,13](19)
 gap> g^-1*f*g;
 [4,6][10,1][17,13](19)
+
+#
+# a bunch of tests involving T_PERM2 permutations of degree 65536
+#
+gap> f:=PartialPerm([0,0,1,5]);
+[3,1][4,5]
+gap> g:=PartialPermNC(Concatenation(List([1..65535], x-> 0), [1,100001]));
+[65536,1][65537,100001]
+gap> p1 := (1,65536);
+(1,65536)
+gap> p2 := (3,65536);
+(3,65536)
+
+# products
+gap> f*p1;
+[3,65536][4,5]
+gap> f*p2;
+[3,1][4,5]
+gap> p1*f;
+[3,1][4,5]
+gap> p2*f;
+[4,5][65536,1]
+gap> g*p1;
+[65537,100001](65536)
+gap> g*p2;
+[65536,1][65537,100001]
+gap> p1*g;
+[65537,100001](1)
+gap> p2*g;
+[3,1][65537,100001]
+
+# quotients
+gap> f/p1 = f*p1;
+true
+gap> f/p2 = f*p2;
+true
+gap> g/p1 = g*p1;
+true
+gap> g/p2 = g*p2;
+true
+gap> LQUO(p1,f) = p1*f;
+true
+gap> LQUO(p2,f) = p2*f;
+true
+gap> LQUO(p1,g) = p1*g;
+true
+gap> LQUO(p2,g) = p2*g;
+true
+
+# conjugation: f^p = p^-1 * f * p
+gap> f^p1;
+[3,65536][4,5]
+gap> f^p2;
+[4,5][65536,1]
+gap> g^p1;
+[1,65536][65537,100001]
+gap> g^p2;
+[3,1][65537,100001]
+gap> ListX([p1,p2],[f,g], {x,y} -> (x*y)*x = y^x);
+[ true, true, true, true ]
+gap> ListX([p1,p2],[f,g], {x,y} -> x*(y*x) = y^x);
+[ true, true, true, true ]
+
+#
+#
+#
 
 # from Semigroups...
 gap> f:=PartialPermNC([0,1,0,20]);
