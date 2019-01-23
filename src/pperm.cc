@@ -2346,14 +2346,13 @@ static Obj FuncPERM_LEFT_QUO_PPERM_NC(Obj self, Obj f, Obj g)
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         deg = CODEG_PPERM2(f);
+        rank = RANK_PPERM2(f);
+        dom = DOM_PPERM(f);
+
         perm = NEW_PERM2(deg);
         ptp2 = ADDR_PERM2(perm);
         for (i = 0; i < deg; i++)
             ptp2[i] = i;
-        rank = RANK_PPERM2(f);
-        dom = DOM_PPERM(f);
-        // renew pointers since RANK_PPERM can trigger garbage collection
-        ptp2 = ADDR_PERM2(perm);
         ptf2 = ADDR_PPERM2(f);
         if (TNUM_OBJ(g) == T_PPERM2) {
             ptg2 = ADDR_PPERM2(g);
@@ -2372,14 +2371,13 @@ static Obj FuncPERM_LEFT_QUO_PPERM_NC(Obj self, Obj f, Obj g)
     }
     else {
         deg = CODEG_PPERM4(f);
+        rank = RANK_PPERM4(f);
+        dom = DOM_PPERM(f);
+
         perm = NEW_PERM4(deg);
         ptp4 = ADDR_PERM4(perm);
         for (i = 0; i < deg; i++)
             ptp4[i] = i;
-        rank = RANK_PPERM4(f);
-        dom = DOM_PPERM(f);
-        // renew pointers since RANK_PPERM can trigger garbage collection
-        ptp4 = ADDR_PERM4(perm);
         ptf4 = ADDR_PPERM4(f);
         if (TNUM_OBJ(g) == T_PPERM2) {
             ptg2 = ADDR_PPERM2(g);
