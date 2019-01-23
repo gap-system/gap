@@ -16,6 +16,7 @@
 #ifndef GAP_CODE_H
 #define GAP_CODE_H
 
+#include "gapstate.h"
 #include "objects.h"
 
 /****************************************************************************
@@ -243,14 +244,42 @@ enum STAT_TNUM {
         T_ASSERT_3ARGS,
 
     END_ENUM_RANGE(LAST_STAT_TNUM),
+
+    T_NO_STAT = -1,
 };
 
-#define T_NO_STAT               (Stat)(-1)
+
+/****************************************************************************
+**
+*F  ADDR_STAT(<stat>) . . . . . . . . . . . . absolute address of a statement
+**
+**  'ADDR_STAT' returns   the  absolute address of the    memory block of the
+**  statement <stat>.
+*/
+EXPORT_INLINE const Stat * CONST_ADDR_STAT(Stat stat)
+{
+    return (const Stat *)STATE(PtrBody) + stat / sizeof(Stat);
+}
 
 
+/****************************************************************************
+**
+*F  READ_STAT(<stat>,<idx>)
+*/
+EXPORT_INLINE Stat READ_STAT(Stat stat, UInt idx)
+{
+    return CONST_ADDR_STAT(stat)[idx];
+}
 
-#define CONST_STAT_HEADER(stat)                                              \
-    (((const StatHeader *)CONST_ADDR_STAT(stat)) - 1)
+
+/****************************************************************************
+**
+*F  CONST_STAT_HEADER(<stat>)
+*/
+EXPORT_INLINE const StatHeader * CONST_STAT_HEADER(Stat stat)
+{
+    return (const StatHeader *)CONST_ADDR_STAT(stat) - 1;
+}
 
 
 /****************************************************************************
@@ -259,7 +288,10 @@ enum STAT_TNUM {
 **
 **  'TNUM_STAT' returns the type of the statement <stat>.
 */
-#define TNUM_STAT(stat) (CONST_STAT_HEADER(stat)->type)
+EXPORT_INLINE Int TNUM_STAT(Stat stat)
+{
+    return CONST_STAT_HEADER(stat)->type;
+}
 
 
 /****************************************************************************
@@ -268,7 +300,11 @@ enum STAT_TNUM {
 **
 **  'SIZE_STAT' returns the size of the statement <stat>.
 */
-#define SIZE_STAT(stat) (CONST_STAT_HEADER(stat)->size)
+EXPORT_INLINE Int SIZE_STAT(Stat stat)
+{
+    return CONST_STAT_HEADER(stat)->size;
+}
+
 
 /****************************************************************************
 **
@@ -276,7 +312,11 @@ enum STAT_TNUM {
 **
 **  'LINE_STAT' returns the line number of the statement <stat>.
 */
-#define LINE_STAT(stat) (CONST_STAT_HEADER(stat)->line)
+EXPORT_INLINE Int LINE_STAT(Stat stat)
+{
+    return CONST_STAT_HEADER(stat)->line;
+}
+
 
 /****************************************************************************
 **
@@ -285,7 +325,10 @@ enum STAT_TNUM {
 **  'VISITED_STAT' returns true if the statement has ever been executed
 **  while profiling is turned on.
 */
-#define VISITED_STAT(stat) (CONST_STAT_HEADER(stat)->visited)
+EXPORT_INLINE Int VISITED_STAT(Stat stat)
+{
+    return CONST_STAT_HEADER(stat)->visited;
+}
 
 
 /****************************************************************************
@@ -297,18 +340,6 @@ enum STAT_TNUM {
 */
 void SET_VISITED_STAT(Stat stat);
 
-
-/****************************************************************************
-**
-*F  ADDR_STAT(<stat>) . . . . . . . . . . . . absolute address of a statement
-**
-**  'ADDR_STAT' returns   the  absolute address of the    memory block of the
-**  statement <stat>.
-*/
-#define CONST_ADDR_STAT(stat)                                                \
-    ((const Stat *)STATE(PtrBody) + (stat) / sizeof(Stat))
-
-#define READ_STAT(stat, idx) (CONST_ADDR_STAT(stat)[idx])
 
 /****************************************************************************
 **
@@ -325,14 +356,20 @@ void SET_VISITED_STAT(Stat stat);
 **  'LVAR_REFLVAR' returns the local variable (by  its index) to which <expr>
 **  is a (immediate) reference.
 */
-#define IS_REFLVAR(expr)        \
-                        (((Int)(expr) & 0x03) == 0x03)
+EXPORT_INLINE Int IS_REFLVAR(Expr expr)
+{
+    return ((Int)expr & 0x03) == 0x03;
+}
 
-#define REFLVAR_LVAR(lvar)      \
-                        ((Expr)(((lvar) << 2) + 0x03))
+EXPORT_INLINE Expr REFLVAR_LVAR(Int lvar)
+{
+    return (Expr)((lvar << 2) + 0x03);
+}
 
-#define LVAR_REFLVAR(expr)      \
-                        ((Int)(expr) >> 2)
+EXPORT_INLINE Int LVAR_REFLVAR(Expr expr)
+{
+    return (Int)expr >> 2;
+}
 
 
 /****************************************************************************
@@ -350,14 +387,20 @@ void SET_VISITED_STAT(Stat stat);
 **  'INT_INTEXPR' converts the (immediate) integer  expression <expr> to a  C
 **  integer.
 */
-#define IS_INTEXPR(expr)        \
-                        (((Int)(expr) & 0x03) == 0x01)
+EXPORT_INLINE Int IS_INTEXPR(Expr expr)
+{
+    return ((Int)expr & 0x03) == 0x01;
+}
 
-#define INTEXPR_INT(indx)       \
-                        ((Expr)(((UInt)(indx) << 2) + 0x01))
+EXPORT_INLINE Expr INTEXPR_INT(Int indx)
+{
+    return (Expr)(((UInt)indx << 2) + 0x01);
+}
 
-#define INT_INTEXPR(expr)       \
-                        (((Int)(expr)-0x01) >> 2)
+EXPORT_INLINE Int INT_INTEXPR(Expr expr)
+{
+    return ((Int)expr-0x01) >> 2;
+}
 
 
 /****************************************************************************
@@ -459,10 +502,14 @@ enum EXPR_TNUM {
 **
 **  'TNUM_EXPR' returns the type of the expression <expr>.
 */
-#define TNUM_EXPR(expr)         \
-                        (IS_REFLVAR( (expr) ) ? T_REFLVAR : \
-                         (IS_INTEXPR( (expr) ) ? T_INTEXPR : \
-                          TNUM_STAT(expr) ))
+EXPORT_INLINE Int TNUM_EXPR(Expr expr)
+{
+    if (IS_REFLVAR(expr))
+        return T_REFLVAR;
+    if (IS_INTEXPR(expr))
+        return T_INTEXPR;
+    return TNUM_STAT(expr);
+}
 
 
 /****************************************************************************
