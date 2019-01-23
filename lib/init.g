@@ -95,7 +95,6 @@ Ignore := function ( arg )  end;
 ##
 SetFilterObj := "2b defined";
 infinity := "2b defined";
-last:="2b defined";
 
 
 #############################################################################
