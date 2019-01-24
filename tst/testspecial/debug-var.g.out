@@ -24,14 +24,14 @@ brk> Unbind(x);
 brk> x:=42;
 Syntax warning: Unbound global variable in *errin*:4
 x:=42;
- ^^
+^
 42
 brk> IsBound(x);
 true
 brk> unbound_global;
 Syntax warning: Unbound global variable in *errin*:6
 unbound_global;
-              ^
+^^^^^^^^^^^^^^
 Error, Variable: 'unbound_global' must have a value in
   Error( "breakpoint" ); at *stdin*:9 called from 
 g( 10 ) at *stdin*:12 called from

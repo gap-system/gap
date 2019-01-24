@@ -30,13 +30,13 @@ Error, Variable: 'BADVARNAME' must have an assigned value
 gap> f := ({} -> BADVARNAME );;
 Syntax warning: Unbound global variable in stream:1
 f := ({} -> BADVARNAME );;
-                       ^
+            ^^^^^^^^^^
 gap> f();
 Error, Variable: 'BADVARNAME' must have an assigned value
 gap> f := ({} -> IsBound(BADVARNAME[BADLISTNAME]) );;
 Syntax warning: Unbound global variable in stream:1
 f := ({} -> IsBound(BADVARNAME[BADLISTNAME]) );;
-                                          ^
+                               ^^^^^^^^^^^
 gap> f();
 Error, Variable: 'BADVARNAME' must have an assigned value
 

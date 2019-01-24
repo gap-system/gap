@@ -4,7 +4,7 @@ gap> g := function(x) Print("Checkg\n"); end;;
 gap> f := function(x) Print("Checkf\n"); testglobalvar := 3; end;;
 Syntax warning: Unbound global variable in stream:1
 f := function(x) Print("Checkf\n"); testglobalvar := 3; end;;
-                                                  ^^
+                                    ^^^^^^^^^^^^^
 gap> AUTO(g, 1, "testglobalvar");
 gap> IsAutoGlobal("testglobalvar");
 true

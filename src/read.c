@@ -780,7 +780,8 @@ static void ReadCallVarAss(TypSymbolSet follow, Char mode)
           ||  ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
       && ! SyCompilePlease )        // Not compiling
     {
-        SyntaxWarning("Unbound global variable");
+        // Need to pass an offset, because we have already parsed more tokens
+        SyntaxWarningWithOffset("Unbound global variable", 2);
     }
 
     /* followed by one or more selectors                                   */

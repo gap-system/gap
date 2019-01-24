@@ -61,8 +61,10 @@ typedef struct GAPState {
     UInt   NrError;
     UInt   NrErrLine;
     UInt   Symbol;
-    UInt   SymbolStartPos;
-    UInt   SymbolStartLine;
+
+    // Track the last 3 symbols, for 'Unbound global' warnings
+    UInt   SymbolStartPos[3];
+    UInt   SymbolStartLine[3];
 
     // Used for recording the first line of the fragment of code currently
     // begin interpreted, so the current line is outputted when profiling
