@@ -1273,7 +1273,7 @@ DeclareGlobalFunction("MaximalSolvableSubgroups");
 ##  is the smallest normal subgroup of <A>G</A> that has a solvable factor group.
 ##  <Example><![CDATA[
 ##  gap> PerfectResiduum(Group((1,2,3,4,5),(1,2)));
-##  Group([ (1,3,2), (1,4,3), (3,5,4) ])
+##  Group([ (1,3,2), (1,4,3), (2,5,4) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

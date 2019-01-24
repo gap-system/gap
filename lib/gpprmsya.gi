@@ -1552,6 +1552,20 @@ local og,oh,cb,cc,cac,perm1,perm2,
   fi;
 end);
 
+InstallMethod( IsConjugate, "for natural symmetric group",
+    true, [ IsNaturalSymmetricGroup, IsGroup, IsGroup ],
+function (s, g, h)
+  local res;
+  res := SubgpConjSymmgp(s, g, h);
+  if IsPerm(res) then
+    return true;
+  elif res = fail then
+    return false;
+  else
+   TryNextMethod();
+  fi;
+end);
+
 #############################################################################
 ##
 #M  RepresentativeAction( <G>, <d>, <e>, <opr> ) .  . for symmetric groups
