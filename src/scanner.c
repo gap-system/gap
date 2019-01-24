@@ -37,8 +37,10 @@ static UInt NextSymbol(void);
 **  Helper function used by 'SyntaxError' and 'SyntaxWarning'.
 **
 */
-static void SyntaxErrorOrWarning(const Char * msg, UInt error)
+static void
+SyntaxErrorOrWarning(const Char * msg, UInt error, Int tokenoffset)
 {
+    GAP_ASSERT(tokenoffset >= 0 && tokenoffset <= 2);
     // do not print a message if we found one already on the current line
     if (STATE(NrErrLine) == 0) {
 
@@ -65,10 +67,18 @@ static void SyntaxErrorOrWarning(const Char * msg, UInt error)
             Pr("%s", (Int)line, 0);
 
         // print a '^' pointing to the current position
-        Int startPos = STATE(SymbolStartPos);
-        Int pos = GetInputLinePosition();
-        if (STATE(SymbolStartLine) != GetInputLineNumber())
+        Int startPos = STATE(SymbolStartPos)[tokenoffset];
+        Int pos;
+        if (tokenoffset == 0)
+            pos = GetInputLinePosition();
+        else
+            pos = STATE(SymbolStartPos)[tokenoffset - 1];
+
+        if (STATE(SymbolStartLine)[tokenoffset] != GetInputLineNumber()) {
             startPos = 0;
+            pos = GetInputLinePosition();
+        }
+
         if (startPos <= pos) {
             Int i;
             for (i = 0; i <= startPos; i++) {
@@ -100,9 +110,9 @@ static void SyntaxErrorOrWarning(const Char * msg, UInt error)
 *F  SyntaxError( <msg> ) . . . . . . . . . . . . . . . . raise a syntax error
 **
 */
-void SyntaxError(const Char * msg)
+void SyntaxErrorWithOffset(const Char * msg, Int tokenoffset)
 {
-    SyntaxErrorOrWarning(msg, 1);
+    SyntaxErrorOrWarning(msg, 1, tokenoffset);
 }
 
 /****************************************************************************
@@ -110,9 +120,9 @@ void SyntaxError(const Char * msg)
 *F  SyntaxWarning( <msg> ) . . . . . . . . . . . . . . raise a syntax warning
 **
 */
-void SyntaxWarning(const Char * msg)
+void SyntaxWarningWithOffset(const Char * msg, Int tokenoffset)
 {
-    SyntaxErrorOrWarning(msg, 0);
+    SyntaxErrorOrWarning(msg, 0, tokenoffset);
 }
 
 
@@ -197,7 +207,7 @@ void Match (
     Char                errmsg [256];
 
     if (STATE(InterpreterStartLine) == 0 && symbol != S_ILLEGAL) {
-        STATE(InterpreterStartLine) = STATE(SymbolStartLine);
+        STATE(InterpreterStartLine) = STATE(SymbolStartLine)[0];
     }
 
     // if 'STATE(Symbol)' is the expected symbol match it away
@@ -887,6 +897,26 @@ static void GetHelp(void)
     STATE(ValueObj) = AppendBufToString(string, buf, i);
 }
 
+
+/****************************************************************************
+**
+*F  StoreSymbolPosition()
+**
+**  Store the current position in the input stream, for use in error and
+**  warning messages. A sequence of positions is stored, which record the start
+**  and end of each symbol.
+*/
+static void StoreSymbolPosition(void)
+{
+    STATE(SymbolStartLine)[2] = STATE(SymbolStartLine)[1];
+    STATE(SymbolStartPos)[2] = STATE(SymbolStartPos)[1];
+    STATE(SymbolStartLine)[1] = STATE(SymbolStartLine)[0];
+    STATE(SymbolStartPos)[1] = STATE(SymbolStartPos)[0];
+    STATE(SymbolStartLine)[0] = GetInputLineNumber();
+    STATE(SymbolStartPos)[0] = GetInputLinePosition();
+}
+
+
 /****************************************************************************
 **
 *F  NextSymbol() . . . . . . . . . . . . . . . . . get the next symbol, local
@@ -902,8 +932,8 @@ static void GetHelp(void)
 */
 static UInt NextSymbol(void)
 {
-    STATE(SymbolStartLine) = GetInputLineNumber();
-    STATE(SymbolStartPos) = GetInputLinePosition();
+    // Record end of previous symbol's position
+    StoreSymbolPosition();
 
     Char c = PEEK_CURR_CHAR();
 
@@ -920,8 +950,8 @@ static UInt NextSymbol(void)
         c = GET_NEXT_CHAR();
     }
 
-  STATE(SymbolStartLine) = GetInputLineNumber();
-  STATE(SymbolStartPos) = GetInputLinePosition();
+    // Record start of this symbol's position
+    StoreSymbolPosition();
 
     // switch according to the character
     if (IsAlpha(c)) {

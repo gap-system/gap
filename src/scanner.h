@@ -278,10 +278,24 @@ int IsKeyword(const char * str);
 **  Both functions should only be called from the scanner or reader, but not
 **  from e.g. the interpreter or coder, let alone any other parts of GAP.
 **
+**  The 'WithOffset' variants allow marking a previously parsed token as
+**  the syntax error. This is used by 'Unbound global variable', as GAP
+**  does not know if a variable is unbound until another 2 tokens are read.
+**
 */
-void SyntaxError(const Char * msg);
+void SyntaxErrorWithOffset(const Char * msg, Int tokenoffset);
 
-void SyntaxWarning(const Char * msg);
+void SyntaxWarningWithOffset(const Char * msg, Int tokenoffset);
+
+EXPORT_INLINE void SyntaxError(const Char * msg)
+{
+    SyntaxErrorWithOffset(msg, 0);
+}
+
+EXPORT_INLINE void SyntaxWarning(const Char * msg)
+{
+    SyntaxWarningWithOffset(msg, 0);
+}
 
 
 /****************************************************************************
