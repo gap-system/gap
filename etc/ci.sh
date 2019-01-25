@@ -57,11 +57,12 @@ do
     # see <https://gcc.gnu.org/gcc-4.9/porting_to.html>
     printf "%s\n" 1 i "#include <stddef.h>" . w | ed float*/src/mp_poly.C
 
-    # reset CFLAGS and LDFLAGS before compiling packages, to prevent
+    # reset CFLAGS, CXXFLAGS, LDFLAGS before compiling packages, to prevent
     # them from being compiled with coverage gathering, because
     # otherwise gcov may confuse IO's src/io.c, or anupq's src/read.c,
     # with GAP kernel files with the same name
     unset CFLAGS
+    unset CXXFLAGS
     unset LDFLAGS
     if ! "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR"
     then
