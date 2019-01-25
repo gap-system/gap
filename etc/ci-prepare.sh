@@ -90,10 +90,10 @@ then
   time git clone https://github.com/gap-packages/profiling
 
   # Compile io and profiling packages
-  # we deliberately reset CFLAGS and LDFLAGS to prevent them from being
+  # we deliberately reset CFLAGS, CXXFLAGS, LDFLAGS to prevent them from being
   # compiled with coverage gathering, because otherwise gcov may confuse
   # IO's src/io.c with GAP's.
-  CFLAGS= LDFLAGS= "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR" io* profiling*
+  CFLAGS= CXXFLAGS= LDFLAGS= "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR" io* profiling*
 
   #
   # Factint is incompatible with HPCGAP and interferes with some tests

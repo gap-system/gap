@@ -4,7 +4,8 @@ language: c
 
 env:
   global:
-    - CFLAGS="--coverage -O2"
+    - CFLAGS="--coverage -O2 -g"
+    - CXXFLAGS="--coverage -O2 -g"
     - LDFLAGS="--coverage"
     # default config flags: enable debug asserts
     - CONFIGFLAGS="--enable-debug"
@@ -45,7 +46,7 @@ matrix:
     # digraphs and other kernel extensions using C++ code (due to GCC's
     # `profiler_trace.h` calling `atexit`; but that fails in loadable modules
     # for technical reasons)
-    - env: TEST_SUITES=testpackages CFLAGS="-O2" LDFLAGS=
+    - env: TEST_SUITES=testpackages CFLAGS="-O2" CXXFLAGS="-O2" LDFLAGS=
       addons:
         apt_packages:
           - gcc-multilib
@@ -62,7 +63,7 @@ matrix:
           - libzmq3-dev             # for ZeroMQInterface
 
     # compiler packages and run package tests in 32 bit mode
-    - env: TEST_SUITES=testpackages CFLAGS="-O2" LDFLAGS= ABI=32
+    - env: TEST_SUITES=testpackages CFLAGS="-O2" CXXFLAGS="-O2" LDFLAGS= ABI=32
       addons:
         apt_packages:
           - gcc-multilib
