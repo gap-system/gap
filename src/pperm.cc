@@ -2918,235 +2918,74 @@ static Obj InvPPerm4(Obj f)
 }
 
 // Conjugation: p ^ -1 * f * p
+template <typename Res, typename TF, typename TP>
+static Obj PowPPermPerm(Obj f, Obj p)
+{
+    ASSERT_IS_PPERM<TF>(f);
+    ASSERT_IS_PERM<TP>(p);
+
+    TF *    ptf;
+    TP *    ptp;
+    Res *   ptconj;
+    UInt    deg, dep, rank, degconj, i, j, k, codeg;
+    Obj     conj, dom;
+
+    deg = DEG_PPERM<TF>(f);
+    if (deg == 0)
+        return EmptyPartialPerm;
+
+    dep = DEG_PERM<TP>(p);
+    rank = RANK_PPERM<TF>(f);
+    ptp = ADDR_PERM<TP>(p);
+    dom = DOM_PPERM(f);
+
+    // find deg of conjugate
+    if (deg > dep) {
+        degconj = deg;
+    }
+    else {
+        degconj = 0;
+        for (i = 1; i <= rank; i++) {
+            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
+            if (ptp[j] >= degconj)
+                degconj = ptp[j] + 1;
+        }
+    }
+
+    conj = NEW_PPERM<Res>(degconj);
+    ptconj = ADDR_PPERM<Res>(conj);
+    ptp = ADDR_PERM<TP>(p);
+    ptf = ADDR_PPERM<TF>(f);
+    codeg = CODEG_PPERM<TF>(f);
+
+    if (codeg > dep) {
+        SET_CODEG_PPERM<Res>(conj, codeg);
+        for (i = 1; i <= rank; i++) {
+            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
+            ptconj[IMAGE(j, ptp, dep)] = IMAGE(ptf[j] - 1, ptp, dep) + 1;
+        }
+    }
+    else {
+        codeg = 0;
+        for (i = 1; i <= rank; i++) {
+            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
+            k = ptp[ptf[j] - 1] + 1;
+            ptconj[IMAGE(j, ptp, dep)] = k;
+            if (k > codeg)
+                codeg = k;
+        }
+        SET_CODEG_PPERM<Res>(conj, codeg);
+    }
+    return conj;
+}
+
+// special case for permutations of degree 65536
 static Obj PowPPerm2Perm2(Obj f, Obj p)
 {
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
-
-    UInt   deg, dep, rank, degconj, i, j, k, codeg;
-    UInt2 *ptf, *ptp, *ptconj;
-    Obj    conj, dom;
-
-    deg = DEG_PPERM2(f);
-    if (deg == 0)
-        return EmptyPartialPerm;
-
-    dep = DEG_PERM2(p);
-    rank = RANK_PPERM2(f);
-    ptp = ADDR_PERM2(p);
-    dom = DOM_PPERM(f);
-
-    // FIXME HACK: workaround bug (proper fix will come with
-    // refactoring of this code to use C++ templates)
-    if (dep == 65536) {
-        return PROD(LQUO(p, f), p);
-    }
-
-    // find deg of conjugate
-    if (deg > dep) {
-        degconj = deg;
-    }
-    else {
-        degconj = 0;
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (ptp[j] >= degconj)
-                degconj = ptp[j] + 1;
-        }
-    }
-
-    conj = NEW_PPERM2(degconj);
-    ptconj = ADDR_PPERM2(conj);
-    ptp = ADDR_PERM2(p);
-    ptf = ADDR_PPERM2(f);
-    codeg = CODEG_PPERM2(f);
-
-    if (codeg > dep) {
-        SET_CODEG_PPERM2(conj, codeg);
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            ptconj[IMAGE(j, ptp, dep)] = IMAGE(ptf[j] - 1, ptp, dep) + 1;
-        }
-    }
-    else {
-        codeg = 0;
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            k = ptp[ptf[j] - 1] + 1;
-            ptconj[IMAGE(j, ptp, dep)] = k;
-            if (k > codeg)
-                codeg = k;
-        }
-        SET_CODEG_PPERM2(conj, codeg);
-    }
-
-    return conj;
-}
-
-static Obj PowPPerm2Perm4(Obj f, Obj p)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
-
-    UInt    deg, dep, rank, degconj, i, j, k, codeg;
-    UInt2 * ptf;
-    UInt4 * ptp, *ptconj;
-    Obj     conj, dom;
-
-    deg = DEG_PPERM2(f);
-    if (deg == 0)
-        return EmptyPartialPerm;
-
-    dep = DEG_PERM4(p);
-    rank = RANK_PPERM2(f);
-    ptp = ADDR_PERM4(p);
-    dom = DOM_PPERM(f);
-    // find deg of conjugate
-    if (deg > dep) {
-        degconj = deg;
-    }
-    else {
-        degconj = 0;
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (ptp[j] >= degconj)
-                degconj = ptp[j] + 1;
-        }
-    }
-
-    conj = NEW_PPERM4(degconj);
-    ptconj = ADDR_PPERM4(conj);
-    ptp = ADDR_PERM4(p);
-    ptf = ADDR_PPERM2(f);
-    codeg = 0;
-
-    for (i = 1; i <= rank; i++) {
-        j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-        k = ptp[ptf[j] - 1] + 1;
-        ptconj[IMAGE(j, ptp, dep)] = k;
-        if (k > codeg)
-            codeg = k;
-    }
-    SET_CODEG_PPERM4(conj, codeg);
-
-    return conj;
-}
-
-static Obj PowPPerm4Perm2(Obj f, Obj p)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
-
-    UInt    deg, dep, rank, degconj, i, j, k, codeg;
-    UInt4 * ptf, *ptconj;
-    UInt2 * ptp;
-    Obj     conj, dom;
-
-    deg = DEG_PPERM4(f);
-    if (deg == 0)
-        return EmptyPartialPerm;
-
-    dep = DEG_PERM2(p);
-    rank = RANK_PPERM4(f);
-    ptp = ADDR_PERM2(p);
-    dom = DOM_PPERM(f);
-
-    // find deg of conjugate
-    if (deg > dep) {
-        degconj = deg;
-    }
-    else {
-        degconj = 0;
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (ptp[j] >= degconj)
-                degconj = ptp[j] + 1;
-        }
-    }
-
-    conj = NEW_PPERM4(degconj);
-    ptconj = ADDR_PPERM4(conj);
-    ptp = ADDR_PERM2(p);
-    ptf = ADDR_PPERM4(f);
-    codeg = CODEG_PPERM4(f);
-
-    if (codeg > dep) {
-        SET_CODEG_PPERM4(conj, codeg);
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            ptconj[IMAGE(j, ptp, dep)] = IMAGE(ptf[j] - 1, ptp, dep) + 1;
-        }
-    }
-    else {
-        codeg = 0;
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            k = ptp[ptf[j] - 1] + 1;
-            ptconj[IMAGE(j, ptp, dep)] = k;
-            if (k > codeg)
-                codeg = k;
-        }
-        SET_CODEG_PPERM4(conj, codeg);
-    }
-    return conj;
-}
-
-static Obj PowPPerm4Perm4(Obj f, Obj p)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
-
-    UInt   deg, dep, rank, degconj, i, j, k, codeg;
-    UInt4 *ptf, *ptp, *ptconj;
-    Obj    conj, dom;
-
-    deg = DEG_PPERM4(f);
-    if (deg == 0)
-        return EmptyPartialPerm;
-
-    dep = DEG_PERM4(p);
-    rank = RANK_PPERM4(f);
-    ptp = ADDR_PERM4(p);
-    dom = DOM_PPERM(f);
-
-    // find deg of conjugate
-    if (deg > dep) {
-        degconj = deg;
-    }
-    else {
-        degconj = 0;
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (ptp[j] >= degconj)
-                degconj = ptp[j] + 1;
-        }
-    }
-
-    conj = NEW_PPERM4(degconj);
-    ptconj = ADDR_PPERM4(conj);
-    ptp = ADDR_PERM4(p);
-    ptf = ADDR_PPERM4(f);
-    codeg = CODEG_PPERM4(f);
-
-    if (codeg > dep) {
-        SET_CODEG_PPERM4(conj, codeg);
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            ptconj[IMAGE(j, ptp, dep)] = IMAGE(ptf[j] - 1, ptp, dep) + 1;
-        }
-    }
-    else {    // codeg(f)<=deg(p)
-        codeg = 0;
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            k = ptp[ptf[j] - 1] + 1;
-            ptconj[IMAGE(j, ptp, dep)] = k;
-            if (k > codeg)
-                codeg = k;
-        }
-        SET_CODEG_PPERM4(conj, codeg);
-    }
-    return conj;
+    if (DEG_PERM2(p) == 65536)
+        return PowPPermPerm<UInt4, UInt2, UInt2>(f, p);
+    else
+        return PowPPermPerm<UInt2, UInt2, UInt2>(f, p);
 }
 
 // g ^ -1 * f * g
@@ -4173,10 +4012,10 @@ static Int InitKernel(StructInitInfo * module)
     ProdFuncs[T_PERM2][T_PPERM4] = ProdPermPPerm<UInt2, UInt4>;
     PowFuncs[T_INT][T_PPERM2] = PowIntPPerm2;
     PowFuncs[T_INT][T_PPERM4] = PowIntPPerm4;
-    PowFuncs[T_PPERM2][T_PERM2] = PowPPerm2Perm2;
-    PowFuncs[T_PPERM2][T_PERM4] = PowPPerm2Perm4;
-    PowFuncs[T_PPERM4][T_PERM2] = PowPPerm4Perm2;
-    PowFuncs[T_PPERM4][T_PERM4] = PowPPerm4Perm4;
+    PowFuncs[T_PPERM2][T_PERM2] = PowPPerm2Perm2; // special case
+    PowFuncs[T_PPERM2][T_PERM4] = PowPPermPerm<UInt4, UInt2, UInt4>;
+    PowFuncs[T_PPERM4][T_PERM2] = PowPPermPerm<UInt4, UInt4, UInt2>;
+    PowFuncs[T_PPERM4][T_PERM4] = PowPPermPerm<UInt4, UInt4, UInt4>;
     PowFuncs[T_PPERM2][T_PPERM2] = PowPPerm<UInt2, UInt2>;
     PowFuncs[T_PPERM2][T_PPERM4] = PowPPerm<UInt2, UInt4>;
     PowFuncs[T_PPERM4][T_PPERM2] = PowPPerm<UInt4, UInt2>;
