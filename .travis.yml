@@ -111,7 +111,14 @@ matrix:
     # vary compared to the in-tree builds, we turn off coverage reporting by
     # setting NO_COVERAGE=1; this has the extra benefit of also running the
     # tests at least once with the ReproducibleBehaviour option turned off.
-    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=64 BUILDDIR=build
+    #
+    # The '--enable-valgrind' checks that GAP builds and runs correctly when
+    # compiled with valgrind support. We do not actually run any tests using
+    # valgrind, as it is too slow.
+    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=64 BUILDDIR=build CONFIGFLAGS="--enable-valgrind"
+      addons:
+        apt_packages:
+            valgrind
 
     # same as above, but in 32 bit mode, also turn off debugging (see elsewhere in this file for
     # an explanation)
