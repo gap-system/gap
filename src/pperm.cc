@@ -2924,8 +2924,8 @@ static Obj PowPPermPerm(Obj f, Obj p)
     ASSERT_IS_PPERM<TF>(f);
     ASSERT_IS_PERM<TP>(p);
 
-    TF *    ptf;
-    TP *    ptp;
+    const TF * ptf;
+    const TP * ptp;
     Res *   ptconj;
     UInt    deg, dep, rank, degconj, i, j, k, codeg;
     Obj     conj, dom;
@@ -2936,7 +2936,7 @@ static Obj PowPPermPerm(Obj f, Obj p)
 
     dep = DEG_PERM<TP>(p);
     rank = RANK_PPERM<TF>(f);
-    ptp = ADDR_PERM<TP>(p);
+    ptp = CONST_ADDR_PERM<TP>(p);
     dom = DOM_PPERM(f);
 
     // find deg of conjugate
@@ -2954,8 +2954,8 @@ static Obj PowPPermPerm(Obj f, Obj p)
 
     conj = NEW_PPERM<Res>(degconj);
     ptconj = ADDR_PPERM<Res>(conj);
-    ptp = ADDR_PERM<TP>(p);
-    ptf = ADDR_PPERM<TF>(f);
+    ptp = CONST_ADDR_PERM<TP>(p);
+    ptf = CONST_ADDR_PPERM<TF>(f);
     codeg = CODEG_PPERM<TF>(f);
 
     if (codeg > dep) {
@@ -2997,8 +2997,8 @@ static Obj PowPPerm(Obj f, Obj g)
     ASSERT_IS_PPERM<TF>(f);
     ASSERT_IS_PPERM<TG>(g);
 
-    TF *  ptf;
-    TG *  ptg;
+    const TF * ptf;
+    const TG * ptg;
     Res * ptconj;
     UInt  i, j, def, deg, dec, codeg, codec, min, img, len;
     Obj   dom, conj;
@@ -3009,8 +3009,8 @@ static Obj PowPPerm(Obj f, Obj g)
     if (def == 0 || deg == 0)
         return EmptyPartialPerm;
 
-    ptf = ADDR_PPERM<TF>(f);
-    ptg = ADDR_PPERM<TG>(g);
+    ptf = CONST_ADDR_PPERM<TF>(f);
+    ptg = CONST_ADDR_PPERM<TG>(g);
     dom = DOM_PPERM(f);
     codeg = CODEG_PPERM<TG>(g);
     dec = 0;
@@ -3034,8 +3034,8 @@ static Obj PowPPerm(Obj f, Obj g)
             // create new pperm
             conj = NEW_PPERM<Res>(dec);
             ptconj = ADDR_PPERM<Res>(conj);
-            ptf = ADDR_PPERM<TF>(f);
-            ptg = ADDR_PPERM<TG>(g);
+            ptf = CONST_ADDR_PPERM<TF>(f);
+            ptg = CONST_ADDR_PPERM<TG>(g);
 
             // multiply
             for (i = 0; i < min; i++) {
@@ -3066,8 +3066,8 @@ static Obj PowPPerm(Obj f, Obj g)
             // create new pperm
             conj = NEW_PPERM<Res>(dec);
             ptconj = ADDR_PPERM<Res>(conj);
-            ptf = ADDR_PPERM<TF>(f);
-            ptg = ADDR_PPERM<TG>(g);
+            ptf = CONST_ADDR_PPERM<TF>(f);
+            ptg = CONST_ADDR_PPERM<TG>(g);
 
             // multiply
             for (i = 0; i < min; i++) {
@@ -3098,8 +3098,8 @@ static Obj PowPPerm(Obj f, Obj g)
             // create new pperm
             conj = NEW_PPERM<Res>(dec);
             ptconj = ADDR_PPERM<Res>(conj);
-            ptf = ADDR_PPERM<TF>(f);
-            ptg = ADDR_PPERM<TG>(g);
+            ptf = CONST_ADDR_PPERM<TF>(f);
+            ptg = CONST_ADDR_PPERM<TG>(g);
 
             // multiply
             for (i = 1; i <= len; i++) {
@@ -3130,8 +3130,8 @@ static Obj PowPPerm(Obj f, Obj g)
             // create new pperm
             conj = NEW_PPERM<Res>(dec);
             ptconj = ADDR_PPERM<Res>(conj);
-            ptf = ADDR_PPERM<TF>(f);
-            ptg = ADDR_PPERM<TG>(g);
+            ptf = CONST_ADDR_PPERM<TF>(f);
+            ptg = CONST_ADDR_PPERM<TG>(g);
 
             // multiply
             for (i = 1; i <= len; i++) {
@@ -3163,8 +3163,8 @@ static Obj PowPPerm(Obj f, Obj g)
             // create new pperm
             conj = NEW_PPERM<Res>(dec);
             ptconj = ADDR_PPERM<Res>(conj);
-            ptf = ADDR_PPERM<TF>(f);
-            ptg = ADDR_PPERM<TG>(g);
+            ptf = CONST_ADDR_PPERM<TF>(f);
+            ptg = CONST_ADDR_PPERM<TG>(g);
 
             // multiply
             for (i = 1; i <= len; i++) {
@@ -3194,8 +3194,8 @@ static Obj PowPPerm(Obj f, Obj g)
             // create new pperm
             conj = NEW_PPERM<Res>(dec);
             ptconj = ADDR_PPERM<Res>(conj);
-            ptf = ADDR_PPERM<TF>(f);
-            ptg = ADDR_PPERM<TG>(g);
+            ptf = CONST_ADDR_PPERM<TF>(f);
+            ptg = CONST_ADDR_PPERM<TG>(g);
 
             // multiply
             for (i = 1; i <= len; i++) {
@@ -3223,8 +3223,8 @@ static Obj QuoPPerm(Obj f, Obj g)
     ASSERT_IS_PPERM<TF>(f);
     ASSERT_IS_PPERM<TG>(g);
 
-    TF *    ptf;
-    TG *    ptg;
+    const TF * ptf;
+    const TG * ptg;
     UInt4 * ptquo;
     UInt4 * pttmp;
     UInt    deg, i, j, deginv, codeg, rank;
@@ -3242,7 +3242,7 @@ static Obj QuoPPerm(Obj f, Obj g)
         pttmp[i] = 0;
 
     // invert g into the buffer bag
-    ptg = ADDR_PPERM<TG>(g);
+    ptg = CONST_ADDR_PPERM<TG>(g);
     if (DOM_PPERM(g) == NULL) {
         deg = DEG_PPERM<TG>(g);
         for (i = 0; i < deg; i++)
@@ -3260,7 +3260,7 @@ static Obj QuoPPerm(Obj f, Obj g)
 
     // find the degree of the quotient
     deg = DEG_PPERM<TF>(f);
-    ptf = ADDR_PPERM<TF>(f);
+    ptf = CONST_ADDR_PPERM<TF>(f);
     while (deg > 0 &&
            (ptf[deg - 1] == 0 || IMAGEPP(ptf[deg - 1], pttmp, deginv) == 0))
         deg--;
@@ -3270,7 +3270,7 @@ static Obj QuoPPerm(Obj f, Obj g)
     // create new pperm
     quo = NEW_PPERM4(deg);
     ptquo = ADDR_PPERM4(quo);
-    ptf = ADDR_PPERM<TF>(f);
+    ptf = CONST_ADDR_PPERM<TF>(f);
     pttmp = ADDR_PPERM4(TmpPPerm);
     codeg = 0;
 
@@ -3336,8 +3336,8 @@ static Obj LQuoPermPPerm(Obj p, Obj f)
     ASSERT_IS_PERM<TP>(p);
     ASSERT_IS_PPERM<TF>(f);
 
-    TP *   ptp;
-    TF *   ptf;
+    const TP *   ptp;
+    const TF *   ptf;
     TF *   ptlquo;
     UInt   def, dep, i, j, del, len;
     Obj    dom, lquo;
@@ -3352,8 +3352,8 @@ static Obj LQuoPermPPerm(Obj p, Obj f)
     if (dep < def) {
         lquo = NEW_PPERM<TF>(def);
         ptlquo = ADDR_PPERM<TF>(lquo);
-        ptp = ADDR_PERM<TP>(p);
-        ptf = ADDR_PPERM<TF>(f);
+        ptp = CONST_ADDR_PERM<TP>(p);
+        ptf = CONST_ADDR_PPERM<TF>(f);
         if (dom == NULL) {
             for (i = 0; i < dep; i++)
                 ptlquo[ptp[i]] = ptf[i];
@@ -3370,8 +3370,8 @@ static Obj LQuoPermPPerm(Obj p, Obj f)
     }
     else {    // deg(p)>=deg(f)
         del = 0;
-        ptp = ADDR_PERM<TP>(p);
-        ptf = ADDR_PPERM<TF>(f);
+        ptp = CONST_ADDR_PERM<TP>(p);
+        ptf = CONST_ADDR_PPERM<TF>(f);
         if (dom == NULL) {
             // find the degree
             for (i = 0; i < def; i++) {
@@ -3383,8 +3383,8 @@ static Obj LQuoPermPPerm(Obj p, Obj f)
             }
             lquo = NEW_PPERM<TF>(del);
             ptlquo = ADDR_PPERM<TF>(lquo);
-            ptp = ADDR_PERM<TP>(p);
-            ptf = ADDR_PPERM<TF>(f);
+            ptp = CONST_ADDR_PERM<TP>(p);
+            ptf = CONST_ADDR_PPERM<TF>(f);
 
             // if required below in case ptp[i]>del but ptf[i]=0
             for (i = 0; i < def; i++)
@@ -3403,8 +3403,8 @@ static Obj LQuoPermPPerm(Obj p, Obj f)
             }
             lquo = NEW_PPERM<TF>(del);
             ptlquo = ADDR_PPERM<TF>(lquo);
-            ptp = ADDR_PERM<TP>(p);
-            ptf = ADDR_PPERM<TF>(f);
+            ptp = CONST_ADDR_PERM<TP>(p);
+            ptf = CONST_ADDR_PPERM<TF>(f);
 
             for (i = 1; i <= len; i++) {
                 j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
@@ -3425,8 +3425,8 @@ static Obj LQuoPPerm(Obj f, Obj g)
     ASSERT_IS_PPERM<TF>(f);
     ASSERT_IS_PPERM<TG>(g);
 
-    TF * ptf;
-    TG * ptg;
+    const TF * ptf;
+    const TG * ptg;
     TG * ptlquo;
     UInt i, j, def, deg, del, codef, codel, min, len;
     Obj  dom, lquo;
@@ -3437,8 +3437,8 @@ static Obj LQuoPPerm(Obj f, Obj g)
     if (def == 0 || deg == 0)
         return EmptyPartialPerm;
 
-    ptf = ADDR_PPERM<TF>(f);
-    ptg = ADDR_PPERM<TG>(g);
+    ptf = CONST_ADDR_PPERM<TF>(f);
+    ptg = CONST_ADDR_PPERM<TG>(g);
     dom = DOM_PPERM(g);
     del = 0;
     codef = CODEG_PPERM<TF>(f);
@@ -3460,8 +3460,8 @@ static Obj LQuoPPerm(Obj f, Obj g)
         // create new pperm
         lquo = NEW_PPERM<TG>(del);
         ptlquo = ADDR_PPERM<TG>(lquo);
-        ptf = ADDR_PPERM<TF>(f);
-        ptg = ADDR_PPERM<TG>(g);
+        ptf = CONST_ADDR_PPERM<TF>(f);
+        ptg = CONST_ADDR_PPERM<TG>(g);
 
         // multiply
         for (i = 0; i < min; i++) {
@@ -3487,8 +3487,8 @@ static Obj LQuoPPerm(Obj f, Obj g)
         // create new pperm
         lquo = NEW_PPERM<TG>(del);
         ptlquo = ADDR_PPERM<TG>(lquo);
-        ptf = ADDR_PPERM<TF>(f);
-        ptg = ADDR_PPERM<TG>(g);
+        ptf = CONST_ADDR_PPERM<TF>(f);
+        ptg = CONST_ADDR_PPERM<TG>(g);
 
         // multiply
         for (i = 1; i <= len; i++) {
@@ -3514,8 +3514,8 @@ static Obj LQuoPPerm(Obj f, Obj g)
         // create new pperm
         lquo = NEW_PPERM<TG>(del);
         ptlquo = ADDR_PPERM<TG>(lquo);
-        ptf = ADDR_PPERM<TF>(f);
-        ptg = ADDR_PPERM<TG>(g);
+        ptf = CONST_ADDR_PPERM<TF>(f);
+        ptg = CONST_ADDR_PPERM<TG>(g);
 
         // multiply
         for (i = 1; i <= len; i++) {
