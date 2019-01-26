@@ -4489,27 +4489,31 @@ static Obj LQuoPermPPerm(Obj p, Obj f)
     return lquo;
 }
 
+
 // f^-1*g
-static Obj LQuoPPerm22(Obj f, Obj g)
+template <typename TF, typename TG>
+static Obj LQuoPPerm(Obj f, Obj g)
 {
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+    ASSERT_IS_PPERM<TF>(f);
+    ASSERT_IS_PPERM<TG>(g);
 
-    UInt2 *ptg, *ptf, *ptlquo;
-    UInt   i, j, def, deg, del, codef, codel, min, len;
-    Obj    dom, lquo;
+    TF * ptf;
+    TG * ptg;
+    TG * ptlquo;
+    UInt i, j, def, deg, del, codef, codel, min, len;
+    Obj  dom, lquo;
 
     // check if we're in the trivial case
-    def = DEG_PPERM2(f);
-    deg = DEG_PPERM2(g);
+    def = DEG_PPERM<TF>(f);
+    deg = DEG_PPERM<TG>(g);
     if (def == 0 || deg == 0)
         return EmptyPartialPerm;
 
-    ptf = ADDR_PPERM2(f);
-    ptg = ADDR_PPERM2(g);
+    ptf = ADDR_PPERM<TF>(f);
+    ptg = ADDR_PPERM<TG>(g);
     dom = DOM_PPERM(g);
     del = 0;
-    codef = CODEG_PPERM2(f);
+    codef = CODEG_PPERM<TF>(f);
     codel = 0;
 
     if (dom == NULL) {
@@ -4526,10 +4530,10 @@ static Obj LQuoPPerm22(Obj f, Obj g)
             return EmptyPartialPerm;
 
         // create new pperm
-        lquo = NEW_PPERM2(del);
-        ptlquo = ADDR_PPERM2(lquo);
-        ptf = ADDR_PPERM2(f);
-        ptg = ADDR_PPERM2(g);
+        lquo = NEW_PPERM<TG>(del);
+        ptlquo = ADDR_PPERM<TG>(lquo);
+        ptf = ADDR_PPERM<TF>(f);
+        ptg = ADDR_PPERM<TG>(g);
 
         // multiply
         for (i = 0; i < min; i++) {
@@ -4553,10 +4557,10 @@ static Obj LQuoPPerm22(Obj f, Obj g)
         }
 
         // create new pperm
-        lquo = NEW_PPERM2(del);
-        ptlquo = ADDR_PPERM2(lquo);
-        ptf = ADDR_PPERM2(f);
-        ptg = ADDR_PPERM2(g);
+        lquo = NEW_PPERM<TG>(del);
+        ptlquo = ADDR_PPERM<TG>(lquo);
+        ptf = ADDR_PPERM<TF>(f);
+        ptg = ADDR_PPERM<TG>(g);
 
         // multiply
         for (i = 1; i <= len; i++) {
@@ -4580,10 +4584,10 @@ static Obj LQuoPPerm22(Obj f, Obj g)
         }
 
         // create new pperm
-        lquo = NEW_PPERM2(del);
-        ptlquo = ADDR_PPERM2(lquo);
-        ptf = ADDR_PPERM2(f);
-        ptg = ADDR_PPERM2(g);
+        lquo = NEW_PPERM<TG>(del);
+        ptlquo = ADDR_PPERM<TG>(lquo);
+        ptf = ADDR_PPERM<TF>(f);
+        ptg = ADDR_PPERM<TG>(g);
 
         // multiply
         for (i = 1; i <= len; i++) {
@@ -4595,338 +4599,10 @@ static Obj LQuoPPerm22(Obj f, Obj g)
             }
         }
     }
-    SET_CODEG_PPERM2(lquo, codel);
+    SET_CODEG_PPERM<TG>(lquo, codel);
     return lquo;
 }
 
-static Obj LQuoPPerm24(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
-
-    UInt4 * ptg, *ptlquo;
-    UInt2 * ptf;
-    UInt    i, j, def, deg, del, codef, codel, min, len;
-    Obj     dom, lquo;
-
-    // check if we're in the trivial case
-    def = DEG_PPERM2(f);
-    deg = DEG_PPERM4(g);
-    if (def == 0 || deg == 0)
-        return EmptyPartialPerm;
-
-    ptf = ADDR_PPERM2(f);
-    ptg = ADDR_PPERM4(g);
-    dom = DOM_PPERM(g);
-    del = 0;
-    codef = CODEG_PPERM2(f);
-    codel = 0;
-
-    if (dom == NULL) {
-        // find the degree of lquo
-        min = MIN(def, deg);
-        for (i = 0; i < min; i++) {
-            if (ptg[i] != 0 && ptf[i] > del) {
-                del = ptf[i];
-                if (del == codef)
-                    break;
-            }
-        }
-        if (del == 0)
-            return EmptyPartialPerm;
-
-        // create new pperm
-        lquo = NEW_PPERM4(del);
-        ptlquo = ADDR_PPERM4(lquo);
-        ptf = ADDR_PPERM2(f);
-        ptg = ADDR_PPERM4(g);
-
-        // multiply
-        for (i = 0; i < min; i++) {
-            if (ptf[i] != 0 && ptg[i] != 0) {
-                ptlquo[ptf[i] - 1] = ptg[i];
-                if (ptg[i] > codel)
-                    codel = ptg[i];
-            }
-        }
-    }
-    else if (deg > def) {    // dom(g) is known
-        // find the degree of lquo
-        len = LEN_PLIST(dom);
-        for (i = 1; i <= len; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (IMAGEPP(j + 1, ptf, def) > del) {
-                del = ptf[j];
-                if (del == codef)
-                    break;
-            }
-        }
-
-        // create new pperm
-        lquo = NEW_PPERM4(del);
-        ptlquo = ADDR_PPERM4(lquo);
-        ptf = ADDR_PPERM2(f);
-        ptg = ADDR_PPERM4(g);
-
-        // multiply
-        for (i = 1; i <= len; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (IMAGEPP(j + 1, ptf, def) != 0) {
-                ptlquo[ptf[j] - 1] = ptg[j];
-                if (ptg[j] > codel)
-                    codel = ptg[j];
-            }
-        }
-    }
-    else {    // deg<=def and dom(g) is known
-        len = LEN_PLIST(dom);
-        for (i = 1; i <= len; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (ptf[j] > del) {
-                del = ptf[j];
-                if (del == codef)
-                    break;
-            }
-        }
-
-        // create new pperm
-        lquo = NEW_PPERM4(del);
-        ptlquo = ADDR_PPERM4(lquo);
-        ptf = ADDR_PPERM2(f);
-        ptg = ADDR_PPERM4(g);
-
-        // multiply
-        for (i = 1; i <= len; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (ptf[j] != 0) {
-                ptlquo[ptf[j] - 1] = ptg[j];
-                if (ptg[j] > codel)
-                    codel = ptg[j];
-            }
-        }
-    }
-    SET_CODEG_PPERM4(lquo, codel);
-    return lquo;
-}
-
-static Obj LQuoPPerm42(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
-
-    UInt2 * ptg, *ptlquo;
-    UInt4 * ptf;
-    UInt    i, j, def, deg, del, codef, codel, min, len;
-    Obj     dom, lquo;
-
-    // check if we're in the trivial case
-    def = DEG_PPERM4(f);
-    deg = DEG_PPERM2(g);
-    if (def == 0 || deg == 0)
-        return EmptyPartialPerm;
-
-    ptf = ADDR_PPERM4(f);
-    ptg = ADDR_PPERM2(g);
-    dom = DOM_PPERM(g);
-    del = 0;
-    codef = CODEG_PPERM4(f);
-    codel = 0;
-
-    if (dom == NULL) {
-        // find the degree of lquo
-        min = MIN(def, deg);
-        for (i = 0; i < min; i++) {
-            if (ptg[i] != 0 && ptf[i] > del) {
-                del = ptf[i];
-                if (del == codef)
-                    break;
-            }
-        }
-        if (del == 0)
-            return EmptyPartialPerm;
-
-        // create new pperm
-        lquo = NEW_PPERM2(del);
-        ptlquo = ADDR_PPERM2(lquo);
-        ptf = ADDR_PPERM4(f);
-        ptg = ADDR_PPERM2(g);
-
-        // multiply
-        for (i = 0; i < min; i++) {
-            if (ptf[i] != 0 && ptg[i] != 0) {
-                ptlquo[ptf[i] - 1] = ptg[i];
-                if (ptg[i] > codel)
-                    codel = ptg[i];
-            }
-        }
-    }
-    else if (deg > def) {    // dom(g) is known
-        // find the degree of lquo
-        len = LEN_PLIST(dom);
-        for (i = 1; i <= len; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (IMAGEPP(j + 1, ptf, def) > del) {
-                del = ptf[j];
-                if (del == codef)
-                    break;
-            }
-        }
-
-        // create new pperm
-        lquo = NEW_PPERM2(del);
-        ptlquo = ADDR_PPERM2(lquo);
-        ptf = ADDR_PPERM4(f);
-        ptg = ADDR_PPERM2(g);
-
-        // multiply
-        for (i = 1; i <= len; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (IMAGEPP(j + 1, ptf, def) != 0) {
-                ptlquo[ptf[j] - 1] = ptg[j];
-                if (ptg[j] > codel)
-                    codel = ptg[j];
-            }
-        }
-    }
-    else {    // deg<=def and dom(g) is known
-        len = LEN_PLIST(dom);
-        for (i = 1; i <= len; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (ptf[j] > del) {
-                del = ptf[j];
-                if (del == codef)
-                    break;
-            }
-        }
-
-        // create new pperm
-        lquo = NEW_PPERM2(del);
-        ptlquo = ADDR_PPERM2(lquo);
-        ptf = ADDR_PPERM4(f);
-        ptg = ADDR_PPERM2(g);
-
-        // multiply
-        for (i = 1; i <= len; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (ptf[j] != 0) {
-                ptlquo[ptf[j] - 1] = ptg[j];
-                if (ptg[j] > codel)
-                    codel = ptg[j];
-            }
-        }
-    }
-    SET_CODEG_PPERM2(lquo, codel);
-    return lquo;
-}
-
-static Obj LQuoPPerm44(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
-
-    UInt4 *ptg, *ptf, *ptlquo;
-    UInt   i, j, def, deg, del, codef, codel, min, len;
-    Obj    dom, lquo;
-
-    // check if we're in the trivial case
-    def = DEG_PPERM4(f);
-    deg = DEG_PPERM4(g);
-    if (def == 0 || deg == 0)
-        return EmptyPartialPerm;
-
-    ptf = ADDR_PPERM4(f);
-    ptg = ADDR_PPERM4(g);
-    dom = DOM_PPERM(g);
-    del = 0;
-    codef = CODEG_PPERM4(f);
-    codel = 0;
-
-    if (dom == NULL) {
-        // find the degree of lquo
-        min = MIN(def, deg);
-        for (i = 0; i < min; i++) {
-            if (ptg[i] != 0 && ptf[i] > del) {
-                del = ptf[i];
-                if (del == codef)
-                    break;
-            }
-        }
-        if (del == 0)
-            return EmptyPartialPerm;
-
-        // create new pperm
-        lquo = NEW_PPERM4(del);
-        ptlquo = ADDR_PPERM4(lquo);
-        ptf = ADDR_PPERM4(f);
-        ptg = ADDR_PPERM4(g);
-
-        // multiply
-        for (i = 0; i < min; i++) {
-            if (ptf[i] != 0 && ptg[i] != 0) {
-                ptlquo[ptf[i] - 1] = ptg[i];
-                if (ptg[i] > codel)
-                    codel = ptg[i];
-            }
-        }
-    }
-    else if (deg > def) {    // dom(g) is known
-        // find the degree of lquo
-        len = LEN_PLIST(dom);
-        for (i = 1; i <= len; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (IMAGEPP(j + 1, ptf, def) > del) {
-                del = ptf[j];
-                if (del == codef)
-                    break;
-            }
-        }
-
-        // create new pperm
-        lquo = NEW_PPERM4(del);
-        ptlquo = ADDR_PPERM4(lquo);
-        ptf = ADDR_PPERM4(f);
-        ptg = ADDR_PPERM4(g);
-
-        // multiply
-        for (i = 1; i <= len; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (IMAGEPP(j + 1, ptf, def) != 0) {
-                ptlquo[ptf[j] - 1] = ptg[j];
-                if (ptg[j] > codel)
-                    codel = ptg[j];
-            }
-        }
-    }
-    else {    // deg<=def and dom(g) is known
-        len = LEN_PLIST(dom);
-        for (i = 1; i <= len; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (ptf[j] > del) {
-                del = ptf[j];
-                if (del == codef)
-                    break;
-            }
-        }
-
-        // create new pperm
-        lquo = NEW_PPERM4(del);
-        ptlquo = ADDR_PPERM4(lquo);
-        ptf = ADDR_PPERM4(f);
-        ptg = ADDR_PPERM4(g);
-
-        // multiply
-        for (i = 1; i <= len; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (ptf[j] != 0) {
-                ptlquo[ptf[j] - 1] = ptg[j];
-                if (ptg[j] > codel)
-                    codel = ptg[j];
-            }
-        }
-    }
-    SET_CODEG_PPERM4(lquo, codel);
-    return lquo;
-}
 
 /****************************************************************************
 **
@@ -5429,10 +5105,10 @@ static Int InitKernel(StructInitInfo * module)
     LQuoFuncs[T_PERM2][T_PPERM4] = LQuoPermPPerm<UInt2, UInt4>;
     LQuoFuncs[T_PERM4][T_PPERM2] = LQuoPermPPerm<UInt4, UInt2>;
     LQuoFuncs[T_PERM4][T_PPERM4] = LQuoPermPPerm<UInt4, UInt4>;
-    LQuoFuncs[T_PPERM2][T_PPERM2] = LQuoPPerm22;
-    LQuoFuncs[T_PPERM2][T_PPERM4] = LQuoPPerm24;
-    LQuoFuncs[T_PPERM4][T_PPERM2] = LQuoPPerm42;
-    LQuoFuncs[T_PPERM4][T_PPERM4] = LQuoPPerm44;
+    LQuoFuncs[T_PPERM2][T_PPERM2] = LQuoPPerm<UInt2, UInt2>;
+    LQuoFuncs[T_PPERM2][T_PPERM4] = LQuoPPerm<UInt2, UInt4>;
+    LQuoFuncs[T_PPERM4][T_PPERM2] = LQuoPPerm<UInt4, UInt2>;
+    LQuoFuncs[T_PPERM4][T_PPERM4] = LQuoPPerm<UInt4, UInt4>;
 
     /* install the one function for partial perms */
     OneFuncs[T_PPERM2] = OnePPerm;
