@@ -3376,39 +3376,43 @@ static Obj PowPPerm(Obj f, Obj g)
     return conj;
 }
 
+
 // f*g^-1 for partial perms
-static Obj QuoPPerm22(Obj f, Obj g)
+template <typename TF, typename TG>
+static Obj QuoPPerm(Obj f, Obj g)
 {
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+    ASSERT_IS_PPERM<TF>(f);
+    ASSERT_IS_PPERM<TG>(g);
 
-    UInt   deg, i, j, deginv, codeg, rank;
-    UInt2 *ptf, *ptg;
-    UInt4 *ptquo, *pttmp;
-    Obj    quo, dom;
+    TF *    ptf;
+    TG *    ptg;
+    UInt4 * ptquo;
+    UInt4 * pttmp;
+    UInt    deg, i, j, deginv, codeg, rank;
+    Obj     quo, dom;
 
     // do nothing in the trivial case
-    if (DEG_PPERM2(g) == 0 || DEG_PPERM2(f) == 0)
+    if (DEG_PPERM<TG>(g) == 0 || DEG_PPERM<TF>(f) == 0)
         return EmptyPartialPerm;
 
     // init the buffer bag
-    deginv = CODEG_PPERM2(g);
+    deginv = CODEG_PPERM<TG>(g);
     ResizeTmpPPerm(deginv);
     pttmp = ADDR_PPERM4(TmpPPerm);
     for (i = 0; i < deginv; i++)
         pttmp[i] = 0;
 
     // invert g into the buffer bag
-    ptg = ADDR_PPERM2(g);
+    ptg = ADDR_PPERM<TG>(g);
     if (DOM_PPERM(g) == NULL) {
-        deg = DEG_PPERM2(g);
+        deg = DEG_PPERM<TG>(g);
         for (i = 0; i < deg; i++)
             if (ptg[i] != 0)
                 pttmp[ptg[i] - 1] = i + 1;
     }
     else {
         dom = DOM_PPERM(g);
-        rank = RANK_PPERM2(g);
+        rank = RANK_PPERM<TG>(g);
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
             pttmp[ptg[j] - 1] = j + 1;
@@ -3416,8 +3420,8 @@ static Obj QuoPPerm22(Obj f, Obj g)
     }
 
     // find the degree of the quotient
-    deg = DEG_PPERM2(f);
-    ptf = ADDR_PPERM2(f);
+    deg = DEG_PPERM<TF>(f);
+    ptf = ADDR_PPERM<TF>(f);
     while (deg > 0 &&
            (ptf[deg - 1] == 0 || IMAGEPP(ptf[deg - 1], pttmp, deginv) == 0))
         deg--;
@@ -3427,14 +3431,14 @@ static Obj QuoPPerm22(Obj f, Obj g)
     // create new pperm
     quo = NEW_PPERM4(deg);
     ptquo = ADDR_PPERM4(quo);
-    ptf = ADDR_PPERM2(f);
+    ptf = ADDR_PPERM<TF>(f);
     pttmp = ADDR_PPERM4(TmpPPerm);
     codeg = 0;
 
     // compose f with g^-1 in rank operations
     if (DOM_PPERM(f) != NULL) {
         dom = DOM_PPERM(f);
-        rank = RANK_PPERM2(f);
+        rank = RANK_PPERM<TF>(f);
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
             if (j < deg && ptf[j] <= deginv) {
@@ -3458,261 +3462,6 @@ static Obj QuoPPerm22(Obj f, Obj g)
     return quo;
 }
 
-static Obj QuoPPerm24(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
-
-    UInt    deg, i, j, deginv, codeg, rank;
-    UInt2 * ptf;
-    UInt4 * ptg, *ptquo, *pttmp;
-    Obj     quo, dom;
-
-    // do nothing in the trivial case
-    if (DEG_PPERM4(g) == 0 || DEG_PPERM2(f) == 0)
-        return EmptyPartialPerm;
-
-    // init the buffer bag
-    deginv = CODEG_PPERM4(g);
-    ResizeTmpPPerm(deginv);
-    pttmp = ADDR_PPERM4(TmpPPerm);
-    for (i = 0; i < deginv; i++)
-        pttmp[i] = 0;
-
-    // invert g into the buffer bag
-    ptg = ADDR_PPERM4(g);
-    if (DOM_PPERM(g) == NULL) {
-        deg = DEG_PPERM4(g);
-        for (i = 0; i < deg; i++)
-            if (ptg[i] != 0)
-                pttmp[ptg[i] - 1] = i + 1;
-    }
-    else {
-        dom = DOM_PPERM(g);
-        rank = RANK_PPERM4(g);
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            pttmp[ptg[j] - 1] = j + 1;
-        }
-    }
-
-    // find the degree of the quotient
-    deg = DEG_PPERM2(f);
-    ptf = ADDR_PPERM2(f);
-    if (CODEG_PPERM2(f) <= deginv) {
-        while (deg > 0 && (ptf[deg - 1] == 0 || pttmp[ptf[deg - 1] - 1] == 0))
-            deg--;
-    }
-    else {
-        while (deg > 0 && (ptf[deg - 1] == 0 ||
-                           IMAGEPP(ptf[deg - 1], pttmp, deginv) == 0))
-            deg--;
-    }
-
-    if (deg == 0)
-        return EmptyPartialPerm;
-
-    // create new pperm
-    quo = NEW_PPERM4(deg);
-    ptquo = ADDR_PPERM4(quo);
-    ptf = ADDR_PPERM2(f);
-    pttmp = ADDR_PPERM4(TmpPPerm);
-    codeg = 0;
-
-    // compose f with g^-1 in rank operations
-    if (DOM_PPERM(f) != NULL) {
-        dom = DOM_PPERM(f);
-        rank = RANK_PPERM2(f);
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (j < deg && ptf[j] <= deginv) {
-                ptquo[j] = pttmp[ptf[j] - 1];
-                if (ptquo[j] > codeg)
-                    codeg = ptquo[j];
-            }
-        }
-    }
-    else {
-        // compose f with g^-1 in deg operations
-        for (i = 0; i < deg; i++) {
-            if (ptf[i] != 0 && ptf[i] <= deginv) {
-                ptquo[i] = pttmp[ptf[i] - 1];
-                if (ptquo[i] > codeg)
-                    codeg = ptquo[i];
-            }
-        }
-    }
-    SET_CODEG_PPERM4(quo, codeg);
-    return quo;
-}
-
-static Obj QuoPPerm42(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
-
-    UInt    deg, i, j, deginv, codeg, rank;
-    UInt2 * ptg;
-    UInt4 * ptf, *ptquo, *pttmp;
-    Obj     quo, dom;
-
-    // do nothing in the trivial case
-    if (DEG_PPERM2(g) == 0 || DEG_PPERM4(f) == 0)
-        return EmptyPartialPerm;
-
-    // init the buffer bag
-    deginv = CODEG_PPERM2(g);
-    ResizeTmpPPerm(deginv);
-    pttmp = ADDR_PPERM4(TmpPPerm);
-    for (i = 0; i < deginv; i++)
-        pttmp[i] = 0;
-
-    // invert g into the buffer bag
-    ptg = ADDR_PPERM2(g);
-    if (DOM_PPERM(g) == NULL) {
-        deg = DEG_PPERM2(g);
-        for (i = 0; i < deg; i++)
-            if (ptg[i] != 0)
-                pttmp[ptg[i] - 1] = i + 1;
-    }
-    else {
-        dom = DOM_PPERM(g);
-        rank = RANK_PPERM2(g);
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            pttmp[ptg[j] - 1] = j + 1;
-        }
-    }
-
-    // find the degree of the quotient
-    deg = DEG_PPERM4(f);
-    ptf = ADDR_PPERM4(f);
-    if (CODEG_PPERM4(f) <= deginv) {
-        while (deg > 0 && (ptf[deg - 1] == 0 || pttmp[ptf[deg - 1] - 1] == 0))
-            deg--;
-    }
-    else {
-        while (deg > 0 && (ptf[deg - 1] == 0 ||
-                           IMAGEPP(ptf[deg - 1], pttmp, deginv) == 0))
-            deg--;
-    }
-
-    if (deg == 0)
-        return EmptyPartialPerm;
-
-    // create new pperm
-    quo = NEW_PPERM4(deg);
-    ptquo = ADDR_PPERM4(quo);
-    ptf = ADDR_PPERM4(f);
-    pttmp = ADDR_PPERM4(TmpPPerm);
-    codeg = 0;
-
-    // compose f with g^-1 in rank operations
-    if (DOM_PPERM(f) != NULL) {
-        dom = DOM_PPERM(f);
-        rank = RANK_PPERM4(f);
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (j < deg && ptf[j] <= deginv) {
-                ptquo[j] = pttmp[ptf[j] - 1];
-                if (ptquo[j] > codeg)
-                    codeg = ptquo[j];
-            }
-        }
-    }
-    else {
-        // compose f with g^-1 in deg operations
-        for (i = 0; i < deg; i++) {
-            if (ptf[i] != 0 && ptf[i] <= deginv) {
-                ptquo[i] = pttmp[ptf[i] - 1];
-                if (ptquo[i] > codeg)
-                    codeg = ptquo[i];
-            }
-        }
-    }
-    SET_CODEG_PPERM4(quo, codeg);
-    return quo;
-}
-
-static Obj QuoPPerm44(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
-
-    UInt   deg, i, j, deginv, codeg, rank;
-    UInt4 *ptf, *ptg, *ptquo, *pttmp;
-    Obj    quo, dom;
-
-    // do nothing in the trivial case
-    if (DEG_PPERM4(g) == 0 || DEG_PPERM4(f) == 0)
-        return EmptyPartialPerm;
-
-    // init the buffer bag
-    deginv = CODEG_PPERM4(g);
-    ResizeTmpPPerm(deginv);
-    pttmp = ADDR_PPERM4(TmpPPerm);
-    for (i = 0; i < deginv; i++)
-        pttmp[i] = 0;
-
-    // invert g into the buffer bag
-    ptg = ADDR_PPERM4(g);
-    if (DOM_PPERM(g) == NULL) {
-        deg = DEG_PPERM4(g);
-        for (i = 0; i < deg; i++)
-            if (ptg[i] != 0)
-                pttmp[ptg[i] - 1] = i + 1;
-    }
-    else {
-        dom = DOM_PPERM(g);
-        rank = RANK_PPERM4(g);
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            pttmp[ptg[j] - 1] = j + 1;
-        }
-    }
-
-    // find the degree of the quotient
-    deg = DEG_PPERM4(f);
-    ptf = ADDR_PPERM4(f);
-    while (deg > 0 &&
-           (ptf[deg - 1] == 0 || IMAGEPP(ptf[deg - 1], pttmp, deginv) == 0))
-        deg--;
-    if (deg == 0)
-        return EmptyPartialPerm;
-
-    // create new pperm
-    quo = NEW_PPERM4(deg);
-    ptquo = ADDR_PPERM4(quo);
-    ptf = ADDR_PPERM4(f);
-    pttmp = ADDR_PPERM4(TmpPPerm);
-    codeg = 0;
-
-    // compose f with g^-1 in rank operations
-    if (DOM_PPERM(f) != NULL) {
-        dom = DOM_PPERM(f);
-        rank = RANK_PPERM4(f);
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (j < deg && ptf[j] <= deginv) {
-                ptquo[j] = pttmp[ptf[j] - 1];
-                if (ptquo[j] > codeg)
-                    codeg = ptquo[j];
-            }
-        }
-    }
-    else {
-        // compose f with g^-1 in deg operations
-        for (i = 0; i < deg; i++) {
-            if (ptf[i] != 0 && ptf[i] <= deginv) {
-                ptquo[i] = pttmp[ptf[i] - 1];
-                if (ptquo[i] > codeg)
-                    codeg = ptquo[i];
-            }
-        }
-    }
-    SET_CODEG_PPERM4(quo, codeg);
-    return quo;
-}
 
 // i^f
 static Obj PowIntPPerm2(Obj i, Obj f)
@@ -4435,10 +4184,10 @@ static Int InitKernel(StructInitInfo * module)
     // for quotients of a partial permutation by a permutation, we rely on the
     // default handler 'QuoDefault'; that uses the inverse of the permutation,
     // which is cached
-    QuoFuncs[T_PPERM2][T_PPERM2] = QuoPPerm22;
-    QuoFuncs[T_PPERM2][T_PPERM4] = QuoPPerm24;
-    QuoFuncs[T_PPERM4][T_PPERM2] = QuoPPerm42;
-    QuoFuncs[T_PPERM4][T_PPERM4] = QuoPPerm44;
+    QuoFuncs[T_PPERM2][T_PPERM2] = QuoPPerm<UInt2, UInt2>;
+    QuoFuncs[T_PPERM2][T_PPERM4] = QuoPPerm<UInt2, UInt4>;
+    QuoFuncs[T_PPERM4][T_PPERM2] = QuoPPerm<UInt4, UInt2>;
+    QuoFuncs[T_PPERM4][T_PPERM4] = QuoPPerm<UInt4, UInt4>;
     QuoFuncs[T_INT][T_PPERM2] = PreImagePPermInt<UInt2>;
     QuoFuncs[T_INT][T_PPERM4] = PreImagePPermInt<UInt4>;
     LQuoFuncs[T_PERM2][T_PPERM2] = LQuoPermPPerm<UInt2, UInt2>;
