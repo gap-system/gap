@@ -17,6 +17,7 @@ addons:
     - libreadline-dev
     - python
     - python-pip
+    - perl
 
 #
 # The following test jobs are roughly sorted by duration, from longest to
