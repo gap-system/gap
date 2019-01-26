@@ -76,7 +76,7 @@ struct T_PPERM<UInt4> {
 
 
 //
-// Various helper functions
+// Various helper functions for partial permutations
 //
 template <typename T>
 static void ASSERT_IS_PPERM(Obj pperm)
@@ -103,6 +103,49 @@ static inline UInt DEG_PPERM(Obj f)
 {
     ASSERT_IS_PPERM<T>(f);
     return (UInt)(SIZE_OBJ(f) - sizeof(T) - 2 * sizeof(Obj)) / sizeof(T);
+}
+
+
+//
+// Various helper functions for permutations
+//
+template <typename T>
+struct T_PERM {
+};
+template <>
+struct T_PERM<UInt2> {
+    static const UInt tnum = T_PERM2;
+};
+template <>
+struct T_PERM<UInt4> {
+    static const UInt tnum = T_PERM4;
+};
+
+template <typename T>
+static void ASSERT_IS_PERM(Obj perm)
+{
+    GAP_ASSERT(TNUM_OBJ(perm) == T_PERM<T>::tnum);
+}
+
+template <typename T>
+static inline UInt DEG_PERM(Obj perm)
+{
+    ASSERT_IS_PERM<T>(perm);
+    return (SIZE_OBJ(perm) - sizeof(Obj)) / sizeof(T);
+}
+
+template <typename T>
+static inline T * ADDR_PERM(Obj perm)
+{
+    ASSERT_IS_PERM<T>(perm);
+    return (T *)(ADDR_OBJ(perm) + 1);
+}
+
+template <typename T>
+static inline const T * CONST_ADDR_PERM(Obj perm)
+{
+    ASSERT_IS_PERM<T>(perm);
+    return (const T *)(CONST_ADDR_OBJ(perm) + 1);
 }
 
 
