@@ -2403,18 +2403,19 @@ static Obj OnePPerm(Obj f)
 }
 
 /* equality for partial perms */
-static Int EqPPerm22(Obj f, Obj g)
+template <typename TF, typename TG>
+static Int EqPPerm(Obj f, Obj g)
 {
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+    ASSERT_IS_PPERM<TF>(f);
+    ASSERT_IS_PPERM<TG>(g);
 
-    UInt2 * ptf = ADDR_PPERM2(f);
-    UInt2 * ptg = ADDR_PPERM2(g);
-    UInt    deg = DEG_PPERM2(f);
+    TF *    ptf = ADDR_PPERM<TF>(f);
+    TG *    ptg = ADDR_PPERM<TG>(g);
+    UInt    deg = DEG_PPERM<TF>(f);
     UInt    i, j, rank;
     Obj     dom;
 
-    if (deg != DEG_PPERM2(g) || CODEG_PPERM2(f) != CODEG_PPERM2(g))
+    if (deg != DEG_PPERM<TG>(g) || CODEG_PPERM<TF>(f) != CODEG_PPERM<TG>(g))
         return 0L;
 
     if (DOM_PPERM(f) == NULL || DOM_PPERM(g) == NULL) {
@@ -2424,84 +2425,10 @@ static Int EqPPerm22(Obj f, Obj g)
         return 1L;
     }
 
-    if (RANK_PPERM2(f) != RANK_PPERM2(g))
+    if (RANK_PPERM<TF>(f) != RANK_PPERM<TG>(g))
         return 0L;
     dom = DOM_PPERM(f);
-    rank = RANK_PPERM2(f);
-
-    for (i = 1; i <= rank; i++) {
-        j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-        if (ptf[j] != ptg[j]) {
-            return 0L;
-        }
-    }
-    return 1L;
-}
-
-static Int EqPPerm24(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
-
-    UInt2 * ptf = ADDR_PPERM2(f);
-    UInt4 * ptg = ADDR_PPERM4(g);
-    UInt    deg = DEG_PPERM2(f);
-    UInt    i, j, rank;
-    Obj     dom;
-
-    if (deg != DEG_PPERM4(g) || CODEG_PPERM2(f) != CODEG_PPERM4(g))
-        return 0L;
-
-    if (DOM_PPERM(f) == NULL || DOM_PPERM(g) == NULL) {
-        for (i = 0; i < deg; i++)
-            if (*(ptf++) != *(ptg++))
-                return 0L;
-        return 1L;
-    }
-
-    if (RANK_PPERM2(f) != RANK_PPERM4(g))
-        return 0L;
-    dom = DOM_PPERM(f);
-    rank = RANK_PPERM2(f);
-
-    for (i = 1; i <= rank; i++) {
-        j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-        if (ptf[j] != ptg[j])
-            return 0L;
-    }
-    return 1L;
-}
-
-static Int EqPPerm42(Obj f, Obj g)
-{
-    return EqPPerm24(g, f);
-}
-
-static Int EqPPerm44(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
-
-    UInt4 * ptf = ADDR_PPERM4(f);
-    UInt4 * ptg = ADDR_PPERM4(g);
-    UInt    i, j, rank;
-    UInt    deg = DEG_PPERM4(f);
-    Obj     dom;
-
-    if (deg != DEG_PPERM4(g) || CODEG_PPERM4(f) != CODEG_PPERM4(g))
-        return 0L;
-
-    if (DOM_PPERM(f) == NULL || DOM_PPERM(g) == NULL) {
-        for (i = 0; i < deg; i++)
-            if (*(ptf++) != *(ptg++))
-                return 0L;
-        return 1L;
-    }
-
-    if (RANK_PPERM4(f) != RANK_PPERM4(g))
-        return 0L;
-    dom = DOM_PPERM(f);
-    rank = RANK_PPERM4(f);
+    rank = RANK_PPERM<TF>(f);
 
     for (i = 1; i <= rank; i++) {
         j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
@@ -2512,108 +2439,19 @@ static Int EqPPerm44(Obj f, Obj g)
 }
 
 /* less than for partial perms */
-static Int LtPPerm22(Obj f, Obj g)
+template <typename TF, typename TG>
+static Int LtPPerm(Obj f, Obj g)
 {
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+    ASSERT_IS_PPERM<TF>(f);
+    ASSERT_IS_PPERM<TG>(g);
 
-    UInt2 * ptf = ADDR_PPERM2(f);
-    UInt2 * ptg = ADDR_PPERM2(g);
+    TF *    ptf = ADDR_PPERM<TF>(f);
+    TG *    ptg = ADDR_PPERM<TG>(g);
     UInt    deg, i;
 
-    deg = DEG_PPERM2(f);
-    if (deg != DEG_PPERM2(g)) {
-        if (deg < DEG_PPERM2(g)) {
-            return 1L;
-        }
-        else {
-            return 0L;
-        }
-    }
-
-    for (i = 0; i < deg; i++) {
-        if (*(ptf++) != *(ptg++)) {
-            if (*(--ptf) < *(--ptg))
-                return 1L;
-            else
-                return 0L;
-        }
-    }
-    return 0L;
-}
-
-static Int LtPPerm24(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
-
-    UInt2 * ptf = ADDR_PPERM2(f);
-    UInt4 * ptg = ADDR_PPERM4(g);
-    UInt    deg, i;
-
-    deg = DEG_PPERM2(f);
-    if (deg != DEG_PPERM4(g)) {
-        if (deg < DEG_PPERM4(g)) {
-            return 1L;
-        }
-        else {
-            return 0L;
-        }
-    }
-
-    for (i = 0; i < deg; i++) {
-        if (*(ptf++) != *(ptg++)) {
-            if (*(--ptf) < *(--ptg))
-                return 1L;
-            else
-                return 0L;
-        }
-    }
-    return 0L;
-}
-
-static Int LtPPerm42(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
-
-    UInt4 * ptf = ADDR_PPERM4(f);
-    UInt2 * ptg = ADDR_PPERM2(g);
-    UInt    deg, i;
-
-    deg = DEG_PPERM4(f);
-    if (deg != DEG_PPERM2(g)) {
-        if (deg < DEG_PPERM2(g)) {
-            return 1L;
-        }
-        else {
-            return 0L;
-        }
-    }
-
-    for (i = 0; i < deg; i++) {
-        if (*(ptf++) != *(ptg++)) {
-            if (*(--ptf) < *(--ptg))
-                return 1L;
-            else
-                return 0L;
-        }
-    }
-    return 0L;
-}
-
-static Int LtPPerm44(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
-
-    UInt4 * ptf = ADDR_PPERM4(f);
-    UInt4 * ptg = ADDR_PPERM4(g);
-    UInt    deg, i;
-
-    deg = DEG_PPERM4(f);
-    if (deg != DEG_PPERM4(g)) {
-        if (deg < DEG_PPERM4(g)) {
+    deg = DEG_PPERM<TF>(f);
+    if (deg != DEG_PPERM<TG>(g)) {
+        if (deg < DEG_PPERM<TG>(g)) {
             return 1L;
         }
         else {
@@ -6073,14 +5911,14 @@ static Int InitKernel(StructInitInfo * module)
     LoadObjFuncs[T_PPERM4] = LoadPPerm4;
 
     /* install the comparison methods                                      */
-    EqFuncs[T_PPERM2][T_PPERM2] = EqPPerm22;
-    EqFuncs[T_PPERM4][T_PPERM4] = EqPPerm44;
-    EqFuncs[T_PPERM4][T_PPERM2] = EqPPerm42;
-    EqFuncs[T_PPERM2][T_PPERM4] = EqPPerm24;
-    LtFuncs[T_PPERM2][T_PPERM2] = LtPPerm22;
-    LtFuncs[T_PPERM4][T_PPERM4] = LtPPerm44;
-    LtFuncs[T_PPERM2][T_PPERM4] = LtPPerm24;
-    LtFuncs[T_PPERM4][T_PPERM2] = LtPPerm42;
+    EqFuncs[T_PPERM2][T_PPERM2] = EqPPerm<UInt2, UInt2>;
+    EqFuncs[T_PPERM4][T_PPERM4] = EqPPerm<UInt4, UInt4>;
+    EqFuncs[T_PPERM4][T_PPERM2] = EqPPerm<UInt4, UInt2>;
+    EqFuncs[T_PPERM2][T_PPERM4] = EqPPerm<UInt2, UInt4>;
+    LtFuncs[T_PPERM2][T_PPERM2] = LtPPerm<UInt2, UInt2>;
+    LtFuncs[T_PPERM4][T_PPERM4] = LtPPerm<UInt4, UInt4>;
+    LtFuncs[T_PPERM2][T_PPERM4] = LtPPerm<UInt2, UInt4>;
+    LtFuncs[T_PPERM4][T_PPERM2] = LtPPerm<UInt4, UInt2>;
 
     /* install the binary operations */
     ProdFuncs[T_PPERM2][T_PPERM2] = ProdPPerm22;
