@@ -386,38 +386,26 @@ static Obj SORT_PLIST_INTOBJ(Obj res)
     return res;
 }
 
+template <typename T>
 static Obj PreImagePPermInt(Obj pt, Obj f)
 {
     GAP_ASSERT(IS_INTOBJ(pt));
-    GAP_ASSERT(IS_PPERM(f));
+    ASSERT_IS_PPERM<T>(f);
 
-    UInt2 * ptf2;
-    UInt4 * ptf4;
+    T *     ptf;
     UInt    i, cpt, deg;
 
     cpt = INT_INTOBJ(pt);
-
-    if (cpt > (TNUM_OBJ(f) == T_PPERM2 ? CODEG_PPERM2(f) : CODEG_PPERM4(f)))
+    if (cpt > CODEG_PPERM<T>(f))
         return Fail;
 
     i = 0;
-
-    if (TNUM_OBJ(f) == T_PPERM2) {
-        ptf2 = ADDR_PPERM2(f);
-        deg = DEG_PPERM2(f);
-        while (i < deg && ptf2[i] != cpt)
-            i++;
-        if (i == deg || ptf2[i] != cpt)
-            return Fail;
-    }
-    else {
-        ptf4 = ADDR_PPERM4(f);
-        deg = DEG_PPERM4(f);
-        while (i < deg && ptf4[i] != cpt)
-            i++;
-        if (i == deg || ptf4[i] != cpt)
-            return Fail;
-    }
+    ptf = ADDR_PPERM<T>(f);
+    deg = DEG_PPERM<T>(f);
+    while (i < deg && ptf[i] != cpt)
+        i++;
+    if (i == deg || ptf[i] != cpt)
+        return Fail;
     return INTOBJ_INT(i + 1);
 }
 
@@ -638,7 +626,12 @@ static Obj FuncIMAGE_SET_PPERM(Obj self, Obj f)
 /* preimage under a partial perm */
 static Obj FuncPREIMAGE_PPERM_INT(Obj self, Obj f, Obj pt)
 {
-    return PreImagePPermInt(pt, f);
+    RequirePartialPerm("PREIMAGE_PPERM_INT", f);
+    RequireSmallInt("PREIMAGE_PPERM_INT", pt, "pt");
+    if (TNUM_OBJ(f) == T_PPERM2)
+        return PreImagePPermInt<UInt2>(pt, f);
+    else
+        return PreImagePPermInt<UInt4>(pt, f);
 }
 
 // find img(f)
@@ -6384,8 +6377,8 @@ static Int InitKernel(StructInitInfo * module)
     QuoFuncs[T_PPERM2][T_PPERM4] = QuoPPerm24;
     QuoFuncs[T_PPERM4][T_PPERM2] = QuoPPerm42;
     QuoFuncs[T_PPERM4][T_PPERM4] = QuoPPerm44;
-    QuoFuncs[T_INT][T_PPERM2] = PreImagePPermInt;
-    QuoFuncs[T_INT][T_PPERM4] = PreImagePPermInt;
+    QuoFuncs[T_INT][T_PPERM2] = PreImagePPermInt<UInt2>;
+    QuoFuncs[T_INT][T_PPERM4] = PreImagePPermInt<UInt4>;
     LQuoFuncs[T_PERM2][T_PPERM2] = LQuoPerm2PPerm2;
     LQuoFuncs[T_PERM2][T_PPERM4] = LQuoPerm2PPerm4;
     LQuoFuncs[T_PERM4][T_PPERM2] = LQuoPerm4PPerm2;
