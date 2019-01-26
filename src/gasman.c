@@ -509,7 +509,7 @@ static void CANARY_FORBID_ACCESS_ALL_BAGS(void)
 #define CANARY_ENABLE_VALGRIND() VALGRIND_ENABLE_ERROR_REPORTING
 
 // CHANGED_BAG must be here to disable/enable valgrind
-static void CHANGED_BAG(Bag bag)
+void CHANGED_BAG(Bag bag)
 {
     CANARY_DISABLE_VALGRIND();
     if (CONST_PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
