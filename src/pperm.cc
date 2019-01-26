@@ -415,7 +415,7 @@ static Obj PreImagePPermInt(Obj pt, Obj f)
     GAP_ASSERT(IS_INTOBJ(pt));
     ASSERT_IS_PPERM<T>(f);
 
-    T *     ptf;
+    const T * ptf;
     UInt    i, cpt, deg;
 
     cpt = INT_INTOBJ(pt);
@@ -423,7 +423,7 @@ static Obj PreImagePPermInt(Obj pt, Obj f)
         return Fail;
 
     i = 0;
-    ptf = ADDR_PPERM<T>(f);
+    ptf = CONST_ADDR_PPERM<T>(f);
     deg = DEG_PPERM<T>(f);
     while (i < deg && ptf[i] != cpt)
         i++;
@@ -1641,17 +1641,17 @@ template <typename TF, typename TG>
 static Obj NaturalLeqPartialPerm(Obj f, Obj g)
 {
     UInt   def, deg, i, j, rank;
-    TF *   ptf;
-    TG *   ptg;
+    const TF * ptf;
+    const TG * ptg;
     Obj    dom;
 
     def = DEG_PPERM<TF>(f);
-    ptf = ADDR_PPERM<TF>(f);
+    ptf = CONST_ADDR_PPERM<TF>(f);
     if (def == 0)
         return True;
 
     deg = DEG_PPERM<TG>(g);
-    ptg = ADDR_PPERM<TG>(g);
+    ptg = CONST_ADDR_PPERM<TG>(g);
     if (DOM_PPERM(f) == NULL) {
         for (i = 0; i < def; i++) {
             if (ptf[i] != 0 && ptf[i] != IMAGEPP(i + 1, ptg, deg))
@@ -1698,8 +1698,8 @@ static Obj JOIN_IDEM_PPERMS(Obj f, Obj g)
     UInt  def, deg, i;
     Obj   join = NULL;
     Res * ptjoin;
-    TF *  ptf;
-    TG *  ptg;
+    const TF * ptf;
+    const TG * ptg;
 
     def = DEG_PPERM(f);
     deg = DEG_PPERM(g);
@@ -1709,8 +1709,8 @@ static Obj JOIN_IDEM_PPERMS(Obj f, Obj g)
     join = NEW_PPERM<Res>(deg);
     SET_CODEG_PPERM<Res>(join, deg);
     ptjoin = ADDR_PPERM<Res>(join);
-    ptf = ADDR_PPERM<TF>(f);
-    ptg = ADDR_PPERM<TG>(g);
+    ptf = CONST_ADDR_PPERM<TF>(f);
+    ptg = CONST_ADDR_PPERM<TG>(g);
     for (i = 0; i < def; i++) {
         ptjoin[i] = (ptf[i] != 0 ? ptf[i] : ptg[i]);
     }
@@ -1760,8 +1760,8 @@ static Obj JOIN_PPERMS(Obj f, Obj g)
 
     UInt   deg, i, j, degf, degg, codeg, rank;
     Res *   ptjoin;
-    TF *    ptf;
-    TG *    ptg;
+    const TF * ptf;
+    const TG * ptg;
     UInt4 * ptseen;
     Obj    join, dom;
 
@@ -1779,8 +1779,8 @@ static Obj JOIN_PPERMS(Obj f, Obj g)
     SET_CODEG_PPERM<Res>(join, codeg);
 
     ptjoin = ADDR_PPERM<Res>(join);
-    ptf = ADDR_PPERM<TF>(f);
-    ptg = ADDR_PPERM<TG>(g);
+    ptf = CONST_ADDR_PPERM<TF>(f);
+    ptg = CONST_ADDR_PPERM<TG>(g);
     ptseen = ADDR_PPERM4(TmpPPerm);
 
     if (DOM_PPERM(f) != NULL) {
@@ -2452,8 +2452,8 @@ static Int EqPPerm(Obj f, Obj g)
     ASSERT_IS_PPERM<TF>(f);
     ASSERT_IS_PPERM<TG>(g);
 
-    TF *    ptf = ADDR_PPERM<TF>(f);
-    TG *    ptg = ADDR_PPERM<TG>(g);
+    const TF * ptf = CONST_ADDR_PPERM<TF>(f);
+    const TG * ptg = CONST_ADDR_PPERM<TG>(g);
     UInt    deg = DEG_PPERM<TF>(f);
     UInt    i, j, rank;
     Obj     dom;
@@ -2488,8 +2488,8 @@ static Int LtPPerm(Obj f, Obj g)
     ASSERT_IS_PPERM<TF>(f);
     ASSERT_IS_PPERM<TG>(g);
 
-    TF *    ptf = ADDR_PPERM<TF>(f);
-    TG *    ptg = ADDR_PPERM<TG>(g);
+    const TF * ptf = CONST_ADDR_PPERM<TF>(f);
+    const TG * ptg = CONST_ADDR_PPERM<TG>(g);
     UInt    deg, i;
 
     deg = DEG_PPERM<TF>(f);
@@ -2521,8 +2521,8 @@ static Obj ProdPPerm(Obj f, Obj g)
     ASSERT_IS_PPERM<TG>(g);
 
     UInt    deg, degg, i, j, rank, codeg;
-    TF *    ptf;
-    TG *    ptg;
+    const TF * ptf;
+    const TG * ptg;
     TG *    ptfg;
     Obj     fg, dom;
 
@@ -2532,8 +2532,8 @@ static Obj ProdPPerm(Obj f, Obj g)
     if (deg == 0 || degg == 0)
         return EmptyPartialPerm;
 
-    ptf = ADDR_PPERM<TF>(f);
-    ptg = ADDR_PPERM<TG>(g);
+    ptf = CONST_ADDR_PPERM<TF>(f);
+    ptg = CONST_ADDR_PPERM<TG>(g);
     while (deg > 0 &&
            (ptf[deg - 1] == 0 || IMAGEPP(ptf[deg - 1], ptg, degg) == 0))
         deg--;
@@ -2543,8 +2543,8 @@ static Obj ProdPPerm(Obj f, Obj g)
     // create new pperm
     fg = NEW_PPERM<TG>(deg);
     ptfg = ADDR_PPERM<TG>(fg);
-    ptf = ADDR_PPERM<TF>(f);
-    ptg = ADDR_PPERM<TG>(g);
+    ptf = CONST_ADDR_PPERM<TF>(f);
+    ptg = CONST_ADDR_PPERM<TG>(g);
     codeg = 0;
 
     // compose in rank operations
@@ -2818,8 +2818,8 @@ static Obj ProdPermPPerm(Obj p, Obj f)
     ASSERT_IS_PERM<TP>(p);
     ASSERT_IS_PPERM<TF>(f);
 
-    TP * ptp;
-    TF * ptf;
+    const TP * ptp;
+    const TF * ptf;
     TF * ptpf;
     UInt degp, degf, i;
     Obj  pf;
@@ -2833,8 +2833,8 @@ static Obj ProdPermPPerm(Obj p, Obj f)
     if (degp < degf) {
         pf = NEW_PPERM<TF>(degf);
         ptpf = ADDR_PPERM<TF>(pf);
-        ptp = ADDR_PERM<TP>(p);
-        ptf = ADDR_PPERM<TF>(f);
+        ptp = CONST_ADDR_PERM<TP>(p);
+        ptf = CONST_ADDR_PPERM<TF>(f);
         for (i = 0; i < degp; i++)
             *ptpf++ = ptf[*ptp++];
         for (; i < degf; i++)
@@ -2842,14 +2842,14 @@ static Obj ProdPermPPerm(Obj p, Obj f)
     }
     else {    // deg(f)<=deg(p)
         // find the degree
-        ptp = ADDR_PERM<TP>(p);
-        ptf = ADDR_PPERM<TF>(f);
+        ptp = CONST_ADDR_PERM<TP>(p);
+        ptf = CONST_ADDR_PPERM<TF>(f);
         while (ptp[degp - 1] >= degf || ptf[ptp[degp - 1]] == 0)
             degp--;
         pf = NEW_PPERM<TF>(degp);
         ptpf = ADDR_PPERM<TF>(pf);
-        ptp = ADDR_PERM<TP>(p);
-        ptf = ADDR_PPERM<TF>(f);
+        ptp = CONST_ADDR_PERM<TP>(p);
+        ptf = CONST_ADDR_PPERM<TF>(f);
         for (i = 0; i < degp; i++)
             if (ptp[i] < degf)
                 ptpf[i] = ptf[ptp[i]];
@@ -4402,27 +4402,30 @@ static Obj PowIntPPerm4(Obj i, Obj f)
 }
 
 // p^-1*f
-static Obj LQuoPerm2PPerm2(Obj p, Obj f)
+template <typename TP, typename TF>
+static Obj LQuoPermPPerm(Obj p, Obj f)
 {
-    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    ASSERT_IS_PERM<TP>(p);
+    ASSERT_IS_PPERM<TF>(f);
 
-    UInt2 *ptp, *ptf, *ptlquo;
+    TP *   ptp;
+    TF *   ptf;
+    TF *   ptlquo;
     UInt   def, dep, i, j, del, len;
     Obj    dom, lquo;
 
-    def = DEG_PPERM2(f);
+    def = DEG_PPERM<TF>(f);
     if (def == 0)
         return EmptyPartialPerm;
 
-    dep = DEG_PERM2(p);
+    dep = DEG_PERM<TP>(p);
     dom = DOM_PPERM(f);
 
     if (dep < def) {
-        lquo = NEW_PPERM2(def);
-        ptlquo = ADDR_PPERM2(lquo);
-        ptp = ADDR_PERM2(p);
-        ptf = ADDR_PPERM2(f);
+        lquo = NEW_PPERM<TF>(def);
+        ptlquo = ADDR_PPERM<TF>(lquo);
+        ptp = ADDR_PERM<TP>(p);
+        ptf = ADDR_PPERM<TF>(f);
         if (dom == NULL) {
             for (i = 0; i < dep; i++)
                 ptlquo[ptp[i]] = ptf[i];
@@ -4439,8 +4442,8 @@ static Obj LQuoPerm2PPerm2(Obj p, Obj f)
     }
     else {    // deg(p)>=deg(f)
         del = 0;
-        ptp = ADDR_PERM2(p);
-        ptf = ADDR_PPERM2(f);
+        ptp = ADDR_PERM<TP>(p);
+        ptf = ADDR_PPERM<TF>(f);
         if (dom == NULL) {
             // find the degree
             for (i = 0; i < def; i++) {
@@ -4450,10 +4453,10 @@ static Obj LQuoPerm2PPerm2(Obj p, Obj f)
                         break;
                 }
             }
-            lquo = NEW_PPERM2(del);
-            ptlquo = ADDR_PPERM2(lquo);
-            ptp = ADDR_PERM2(p);
-            ptf = ADDR_PPERM2(f);
+            lquo = NEW_PPERM<TF>(del);
+            ptlquo = ADDR_PPERM<TF>(lquo);
+            ptp = ADDR_PERM<TP>(p);
+            ptf = ADDR_PPERM<TF>(f);
 
             // if required below in case ptp[i]>del but ptf[i]=0
             for (i = 0; i < def; i++)
@@ -4470,10 +4473,10 @@ static Obj LQuoPerm2PPerm2(Obj p, Obj f)
                         break;
                 }
             }
-            lquo = NEW_PPERM2(del);
-            ptlquo = ADDR_PPERM2(lquo);
-            ptp = ADDR_PERM2(p);
-            ptf = ADDR_PPERM2(f);
+            lquo = NEW_PPERM<TF>(del);
+            ptlquo = ADDR_PPERM<TF>(lquo);
+            ptp = ADDR_PERM<TP>(p);
+            ptf = ADDR_PPERM<TF>(f);
 
             for (i = 1; i <= len; i++) {
                 j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
@@ -4482,260 +4485,7 @@ static Obj LQuoPerm2PPerm2(Obj p, Obj f)
         }
     }
 
-    SET_CODEG_PPERM2(lquo, CODEG_PPERM2(f));
-    return lquo;
-}
-
-static Obj LQuoPerm2PPerm4(Obj p, Obj f)
-{
-    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-
-    UInt2 *ptp;
-    UInt4 *ptf, *ptlquo;
-    UInt   def, dep, i, j, del, len;
-    Obj    dom, lquo;
-
-    def = DEG_PPERM4(f);
-    if (def == 0)
-        return EmptyPartialPerm;
-
-    dep = DEG_PERM2(p);
-    dom = DOM_PPERM(f);
-
-    if (dep < def) {
-        lquo = NEW_PPERM4(def);
-        ptlquo = ADDR_PPERM4(lquo);
-        ptp = ADDR_PERM2(p);
-        ptf = ADDR_PPERM4(f);
-        if (dom == NULL) {
-            for (i = 0; i < dep; i++)
-                ptlquo[ptp[i]] = ptf[i];
-            for (; i < def; i++)
-                ptlquo[i] = ptf[i];
-        }
-        else {
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                ptlquo[IMAGE(j, ptp, dep)] = ptf[j];
-            }
-        }
-    }
-    else {    // deg(p)>=deg(f)
-        del = 0;
-        ptp = ADDR_PERM2(p);
-        ptf = ADDR_PPERM4(f);
-        if (dom == NULL) {
-            // find the degree
-            for (i = 0; i < def; i++) {
-                if (ptf[i] != 0 && ptp[i] >= del) {
-                    del = ptp[i] + 1;
-                    if (del == dep)
-                        break;
-                }
-            }
-            lquo = NEW_PPERM4(del);
-            ptlquo = ADDR_PPERM4(lquo);
-            ptp = ADDR_PERM2(p);
-            ptf = ADDR_PPERM4(f);
-
-            // if required below in case ptp[i]>del but ptf[i]=0
-            for (i = 0; i < def; i++)
-                if (ptf[i] != 0)
-                    ptlquo[ptp[i]] = ptf[i];
-        }
-        else {    // dom(f) is known
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptp[j] >= del) {
-                    del = ptp[j] + 1;
-                    if (del == dep)
-                        break;
-                }
-            }
-            lquo = NEW_PPERM4(del);
-            ptlquo = ADDR_PPERM4(lquo);
-            ptp = ADDR_PERM2(p);
-            ptf = ADDR_PPERM4(f);
-
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                ptlquo[ptp[j]] = ptf[j];
-            }
-        }
-    }
-    SET_CODEG_PPERM4(lquo, CODEG_PPERM4(f));
-    return lquo;
-}
-
-static Obj LQuoPerm4PPerm2(Obj p, Obj f)
-{
-    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-
-    UInt4 *ptp, dep;
-    UInt2 *ptf, *ptlquo;
-    UInt   def, i, j, del, len;
-    Obj    dom, lquo;
-
-    def = DEG_PPERM2(f);
-    if (def == 0)
-        return EmptyPartialPerm;
-
-    dep = DEG_PERM4(p);
-    dom = DOM_PPERM(f);
-
-    if (dep < def) {
-        lquo = NEW_PPERM2(def);
-        ptlquo = ADDR_PPERM2(lquo);
-        ptp = ADDR_PERM4(p);
-        ptf = ADDR_PPERM2(f);
-        if (dom == NULL) {
-            for (i = 0; i < dep; i++)
-                ptlquo[ptp[i]] = ptf[i];
-            for (; i < def; i++)
-                ptlquo[i] = ptf[i];
-        }
-        else {
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                ptlquo[IMAGE(j, ptp, dep)] = ptf[j];
-            }
-        }
-    }
-    else {    // deg(p)>=deg(f)
-        del = 0;
-        ptp = ADDR_PERM4(p);
-        ptf = ADDR_PPERM2(f);
-        if (dom == NULL) {
-            // find the degree
-            for (i = 0; i < def; i++) {
-                if (ptf[i] != 0 && ptp[i] >= del) {
-                    del = ptp[i] + 1;
-                    if (del == dep)
-                        break;
-                }
-            }
-            lquo = NEW_PPERM2(del);
-            ptlquo = ADDR_PPERM2(lquo);
-            ptp = ADDR_PERM4(p);
-            ptf = ADDR_PPERM2(f);
-
-            // if required below in case ptp[i]>del but ptf[i]=0
-            for (i = 0; i < def; i++)
-                if (ptf[i] != 0)
-                    ptlquo[ptp[i]] = ptf[i];
-        }
-        else {    // dom(f) is known
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptp[j] >= del) {
-                    del = ptp[j] + 1;
-                    if (del == dep)
-                        break;
-                }
-            }
-            lquo = NEW_PPERM2(del);
-            ptlquo = ADDR_PPERM2(lquo);
-            ptp = ADDR_PERM4(p);
-            ptf = ADDR_PPERM2(f);
-
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                ptlquo[ptp[j]] = ptf[j];
-            }
-        }
-    }
-
-    SET_CODEG_PPERM2(lquo, CODEG_PPERM2(f));
-    return lquo;
-}
-
-static Obj LQuoPerm4PPerm4(Obj p, Obj f)
-{
-    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-
-    UInt4 *ptp, *ptf, *ptlquo;
-    UInt   def, dep, i, j, del, len;
-    Obj    dom, lquo;
-
-    def = DEG_PPERM4(f);
-    if (def == 0)
-        return EmptyPartialPerm;
-
-    dep = DEG_PERM4(p);
-    dom = DOM_PPERM(f);
-
-    if (dep < def) {
-        lquo = NEW_PPERM4(def);
-        ptlquo = ADDR_PPERM4(lquo);
-        ptp = ADDR_PERM4(p);
-        ptf = ADDR_PPERM4(f);
-        if (dom == NULL) {
-            for (i = 0; i < dep; i++)
-                ptlquo[ptp[i]] = ptf[i];
-            for (; i < def; i++)
-                ptlquo[i] = ptf[i];
-        }
-        else {
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                ptlquo[IMAGE(j, ptp, dep)] = ptf[j];
-            }
-        }
-    }
-    else {    // deg(p)>=deg(f)
-        del = 0;
-        ptp = ADDR_PERM4(p);
-        ptf = ADDR_PPERM4(f);
-        if (dom == NULL) {
-            // find the degree
-            for (i = 0; i < def; i++) {
-                if (ptf[i] != 0 && ptp[i] >= del) {
-                    del = ptp[i] + 1;
-                    if (del == dep)
-                        break;
-                }
-            }
-            lquo = NEW_PPERM4(del);
-            ptlquo = ADDR_PPERM4(lquo);
-            ptp = ADDR_PERM4(p);
-            ptf = ADDR_PPERM4(f);
-
-            // if required below in case ptp[i]>del but ptf[i]=0
-            for (i = 0; i < def; i++)
-                if (ptf[i] != 0)
-                    ptlquo[ptp[i]] = ptf[i];
-        }
-        else {    // dom(f) is known
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptp[j] >= del) {
-                    del = ptp[j] + 1;
-                    if (del == dep)
-                        break;
-                }
-            }
-            lquo = NEW_PPERM4(del);
-            ptlquo = ADDR_PPERM4(lquo);
-            ptp = ADDR_PERM4(p);
-            ptf = ADDR_PPERM4(f);
-
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                ptlquo[ptp[j]] = ptf[j];
-            }
-        }
-    }
-
-    SET_CODEG_PPERM4(lquo, CODEG_PPERM4(f));
+    SET_CODEG_PPERM<TF>(lquo, CODEG_PPERM<TF>(f));
     return lquo;
 }
 
@@ -5675,10 +5425,10 @@ static Int InitKernel(StructInitInfo * module)
     QuoFuncs[T_PPERM4][T_PPERM4] = QuoPPerm44;
     QuoFuncs[T_INT][T_PPERM2] = PreImagePPermInt<UInt2>;
     QuoFuncs[T_INT][T_PPERM4] = PreImagePPermInt<UInt4>;
-    LQuoFuncs[T_PERM2][T_PPERM2] = LQuoPerm2PPerm2;
-    LQuoFuncs[T_PERM2][T_PPERM4] = LQuoPerm2PPerm4;
-    LQuoFuncs[T_PERM4][T_PPERM2] = LQuoPerm4PPerm2;
-    LQuoFuncs[T_PERM4][T_PPERM4] = LQuoPerm4PPerm4;
+    LQuoFuncs[T_PERM2][T_PPERM2] = LQuoPermPPerm<UInt2, UInt2>;
+    LQuoFuncs[T_PERM2][T_PPERM4] = LQuoPermPPerm<UInt2, UInt4>;
+    LQuoFuncs[T_PERM4][T_PPERM2] = LQuoPermPPerm<UInt4, UInt2>;
+    LQuoFuncs[T_PERM4][T_PPERM4] = LQuoPermPPerm<UInt4, UInt4>;
     LQuoFuncs[T_PPERM2][T_PPERM2] = LQuoPPerm22;
     LQuoFuncs[T_PPERM2][T_PPERM4] = LQuoPPerm24;
     LQuoFuncs[T_PPERM4][T_PPERM2] = LQuoPPerm42;
