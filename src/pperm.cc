@@ -3509,110 +3509,62 @@ static Obj ProdPerm2PPerm4(Obj p, Obj f)
 }
 
 // the inverse of a partial perm
+template <typename Res, typename T>
+static Obj InvPPerm(Obj f)
+{
+    ASSERT_IS_PPERM<T>(f);
+
+    UInt    deg, codeg, i, j, rank;
+    const T * ptf;
+    Res *     ptinv;
+    Obj     inv, dom;
+
+    deg = DEG_PPERM<T>(f);
+    codeg = CODEG_PPERM<T>(f);
+
+    GAP_ASSERT((deg < 65536) == (sizeof(Res) == 2));
+
+    inv = NEW_PPERM<Res>(codeg);
+    ptf = CONST_ADDR_PPERM<T>(f);
+    ptinv = ADDR_PPERM<Res>(inv);
+    dom = DOM_PPERM(f);
+    if (dom == NULL) {
+        for (i = 0; i < deg; i++)
+            if (ptf[i] != 0)
+                ptinv[ptf[i] - 1] = i + 1;
+    }
+    else {
+        rank = RANK_PPERM<T>(f);
+        for (i = 1; i <= rank; i++) {
+            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
+            ptinv[ptf[j] - 1] = j + 1;
+        }
+    }
+    SET_CODEG_PPERM<Res>(inv, deg);
+
+    return inv;
+}
+
 static Obj InvPPerm2(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-
-    UInt    deg, codeg, i, j, rank;
-    UInt2 * ptf, *ptinv2;
-    UInt4 * ptinv4;
-    Obj     inv, dom;
-
-    deg = DEG_PPERM2(f);
-    codeg = CODEG_PPERM2(f);
-
-    if (deg < 65536) {
-        inv = NEW_PPERM2(codeg);
-        ptf = ADDR_PPERM2(f);
-        ptinv2 = ADDR_PPERM2(inv);
-        if (DOM_PPERM(f) == NULL) {
-            for (i = 0; i < deg; i++)
-                if (ptf[i] != 0)
-                    ptinv2[ptf[i] - 1] = i + 1;
-        }
-        else {
-            dom = DOM_PPERM(f);
-            rank = RANK_PPERM2(f);
-            for (i = 1; i <= rank; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                ptinv2[ptf[j] - 1] = j + 1;
-            }
-        }
-        SET_CODEG_PPERM2(inv, deg);
+    if (DEG_PPERM2(f) < 65536) {
+        return InvPPerm<UInt2, UInt2>(f);
     }
     else {
-        inv = NEW_PPERM4(codeg);
-        ptf = ADDR_PPERM2(f);
-        ptinv4 = ADDR_PPERM4(inv);
-        if (DOM_PPERM(f) == NULL) {
-            for (i = 0; i < deg; i++)
-                if (ptf[i] != 0)
-                    ptinv4[ptf[i] - 1] = i + 1;
-        }
-        else {
-            dom = DOM_PPERM(f);
-            rank = RANK_PPERM2(f);
-            for (i = 1; i <= rank; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                ptinv4[ptf[j] - 1] = j + 1;
-            }
-        }
-        SET_CODEG_PPERM4(inv, deg);
+        return InvPPerm<UInt4, UInt2>(f);
     }
-    return inv;
 }
 
 static Obj InvPPerm4(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-
-    UInt    deg, codeg, i, j, rank;
-    UInt2 * ptinv2;
-    UInt4 * ptf, *ptinv4;
-    Obj     inv, dom;
-
-    deg = DEG_PPERM4(f);
-    codeg = CODEG_PPERM4(f);
-
-    if (deg < 65536) {
-        inv = NEW_PPERM2(codeg);
-        ptf = ADDR_PPERM4(f);
-        ptinv2 = ADDR_PPERM2(inv);
-        if (DOM_PPERM(f) == NULL) {
-            for (i = 0; i < deg; i++)
-                if (ptf[i] != 0)
-                    ptinv2[ptf[i] - 1] = i + 1;
-        }
-        else {
-            dom = DOM_PPERM(f);
-            rank = RANK_PPERM4(f);
-            for (i = 1; i <= rank; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                ptinv2[ptf[j] - 1] = j + 1;
-            }
-        }
-        SET_CODEG_PPERM2(inv, deg);
+    if (DEG_PPERM4(f) < 65536) {
+        return InvPPerm<UInt2, UInt4>(f);
     }
     else {
-        inv = NEW_PPERM4(codeg);
-        ptf = ADDR_PPERM4(f);
-        ptinv4 = ADDR_PPERM4(inv);
-        if (DOM_PPERM(f) == NULL) {
-            for (i = 0; i < deg; i++)
-                if (ptf[i] != 0)
-                    ptinv4[ptf[i] - 1] = i + 1;
-        }
-        else {
-            dom = DOM_PPERM(f);
-            rank = RANK_PPERM4(f);
-            for (i = 1; i <= rank; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                ptinv4[ptf[j] - 1] = j + 1;
-            }
-        }
-        SET_CODEG_PPERM4(inv, deg);
+        return InvPPerm<UInt4, UInt4>(f);
     }
-    return inv;
 }
 
 // Conjugation: p ^ -1 * f * p
