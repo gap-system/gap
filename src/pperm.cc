@@ -43,6 +43,69 @@ extern "C" {
 } // extern "C"
 
 
+//
+// convert TNUM to underlying C data type
+//
+template <UInt tnum>
+struct DataType;
+
+template <>
+struct DataType<T_PPERM2> {
+    typedef UInt2 type;
+};
+template <>
+struct DataType<T_PPERM4> {
+    typedef UInt4 type;
+};
+
+
+//
+// convert underlying C data type to TNUM
+//
+template <typename T>
+struct T_PPERM {
+};
+template <>
+struct T_PPERM<UInt2> {
+    static const UInt tnum = T_PPERM2;
+};
+template <>
+struct T_PPERM<UInt4> {
+    static const UInt tnum = T_PPERM4;
+};
+
+
+//
+// Various helper functions
+//
+template <typename T>
+static void ASSERT_IS_PPERM(Obj pperm)
+{
+    GAP_ASSERT(TNUM_OBJ(pperm) == T_PPERM<T>::tnum);
+}
+
+template <typename T>
+static inline T * ADDR_PPERM(Obj f)
+{
+    ASSERT_IS_PPERM<T>(f);
+    return (T *)(ADDR_OBJ(f) + 2) + 1;
+}
+
+template <typename T>
+static inline const T * CONST_ADDR_PPERM(Obj f)
+{
+    ASSERT_IS_PPERM<T>(f);
+    return (const T *)(CONST_ADDR_OBJ(f) + 2) + 1;
+}
+
+template <typename T>
+static inline UInt DEG_PPERM(Obj f)
+{
+    ASSERT_IS_PPERM<T>(f);
+    return (UInt)(SIZE_OBJ(f) - sizeof(T) - 2 * sizeof(Obj)) / sizeof(T);
+}
+
+
 #define MAX(a, b) (a < b ? b : a)
 #define MIN(a, b) (a < b ? a : b)
 
@@ -94,78 +157,77 @@ static inline void ResizeTmpPPerm(UInt len)
  * Static functions for partial perms
  *****************************************************************************/
 
-static inline UInt GET_CODEG_PPERM2(Obj f)
+template <typename T>
+static inline UInt GET_CODEG_PPERM(Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
-    return *(const UInt2 *)(CONST_ADDR_OBJ(f) + 2);
+    ASSERT_IS_PPERM<T>(f);
+    return *(const T *)(CONST_ADDR_OBJ(f) + 2);
+}
+
+template <typename T>
+static inline void SET_CODEG_PPERM(Obj f, T codeg)
+{
+    ASSERT_IS_PPERM<T>(f);
+    *(T *)(ADDR_OBJ(f) + 2) = codeg;
+}
+
+template <typename T>
+static UInt CODEG_PPERM(Obj f)
+{
+    ASSERT_IS_PPERM<T>(f);
+    if (GET_CODEG_PPERM<T>(f) != 0) {
+        return GET_CODEG_PPERM<T>(f);
+    }
+    // The following is only ever entered by the EmptyPartialPerm.
+    UInt    codeg = 0;
+    UInt    i;
+    const T * ptf = CONST_ADDR_PPERM<T>(f);
+    for (i = 0; i < DEG_PPERM<T>(f); i++) {
+        if (ptf[i] > codeg) {
+            codeg = ptf[i];
+        }
+    }
+    SET_CODEG_PPERM<T>(f, codeg);
+    return codeg;
 }
 
 static inline void SET_CODEG_PPERM2(Obj f, UInt2 codeg)
 {
-    GAP_ASSERT(IS_PPERM(f));
-    (*(UInt2 *)((Obj *)(ADDR_OBJ(f)) + 2)) = codeg;
-}
-
-UInt CODEG_PPERM2(Obj f)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    if (GET_CODEG_PPERM2(f) != 0) {
-        return GET_CODEG_PPERM2(f);
-    }
-    // The following is only ever entered by the EmptyPartialPerm.
-    UInt    codeg = 0;
-    UInt    i;
-    UInt2 * ptf = ADDR_PPERM2(f);
-    for (i = 0; i < DEG_PPERM2(f); i++) {
-        if (ptf[i] > codeg) {
-            codeg = ptf[i];
-        }
-    }
-    SET_CODEG_PPERM2(f, codeg);
-    return codeg;
-}
-
-static inline UInt GET_CODEG_PPERM4(Obj f)
-{
-    GAP_ASSERT(IS_PPERM(f));
-    return *(const UInt4 *)(CONST_ADDR_OBJ(f) + 2);
+    SET_CODEG_PPERM<UInt2>(f, codeg);
 }
 
 static inline void SET_CODEG_PPERM4(Obj f, UInt4 codeg)
 {
-    GAP_ASSERT(IS_PPERM(f));
-    (*(UInt4 *)((Obj *)(ADDR_OBJ(f)) + 2)) = codeg;
+    SET_CODEG_PPERM<UInt4>(f, codeg);
+}
+
+UInt CODEG_PPERM2(Obj f)
+{
+    return CODEG_PPERM<UInt2>(f);
 }
 
 UInt CODEG_PPERM4(Obj f)
 {
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    if (GET_CODEG_PPERM4(f) != 0) {
-        return GET_CODEG_PPERM4(f);
-    }
-    // The following is only ever entered by the EmptyPartialPerm.
-    UInt    codeg = 0;
-    UInt    i;
-    UInt4 * ptf = ADDR_PPERM4(f);
-    for (i = 0; i < DEG_PPERM4(f); i++) {
-        if (ptf[i] > codeg) {
-            codeg = ptf[i];
-        }
-    }
-    SET_CODEG_PPERM4(f, codeg);
-    return codeg;
+    return CODEG_PPERM<UInt4>(f);
+}
+
+template <typename T>
+static inline Obj NEW_PPERM(UInt deg)
+{
+    return NewBag(T_PPERM<T>::tnum, (deg + 1) * sizeof(T) + 2 * sizeof(Obj));
+
 }
 
 Obj NEW_PPERM2(UInt deg)
 {
     // No assert since the values stored in this pperm must be UInt2s but the
     // degree might be a UInt4.
-    return NewBag(T_PPERM2, (deg + 1) * sizeof(UInt2) + 2 * sizeof(Obj));
+    return NEW_PPERM<UInt2>(deg);
 }
 
 Obj NEW_PPERM4(UInt deg)
 {
-    return NewBag(T_PPERM4, (deg + 1) * sizeof(UInt4) + 2 * sizeof(Obj));
+    return NEW_PPERM<UInt4>(deg);
 }
 
 static inline Obj IMG_PPERM(Obj f)
