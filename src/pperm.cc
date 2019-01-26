@@ -1710,18 +1710,17 @@ static Obj FuncJOIN_IDEM_PPERMS(Obj self, Obj f, Obj g)
 
 
 // the union of f and g where this defines an injective function
-static Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
+template <typename TF, typename TG>
+static Obj JOIN_PPERMS(Obj f, Obj g)
 {
-    GAP_ASSERT(IS_PPERM(f));
-    GAP_ASSERT(IS_PPERM(g));
+    typedef typename ResultType<TF, TG>::type Res;
 
     UInt   deg, i, j, degf, degg, codeg, rank;
-    UInt2 *ptf2, *ptg2, *ptjoin2;
-    UInt4 *ptf4, *ptg4, *ptjoin4, *ptseen;
+    Res *   ptjoin;
+    TF *    ptf;
+    TG *    ptg;
+    UInt4 * ptseen;
     Obj    join, dom;
-
-    if (EQ(f, g))
-        return f;
 
     // init the buffer
     codeg = MAX(CODEG_PPERM(f), CODEG_PPERM(g));
@@ -1730,250 +1729,107 @@ static Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
     for (i = 0; i < codeg; i++)
         ptseen[i] = 0;
 
-    if (TNUM_OBJ(f) == T_PPERM4 && TNUM_OBJ(g) == T_PPERM4) {
-        degf = DEG_PPERM4(f);
-        degg = DEG_PPERM4(g);
-        deg = MAX(degf, degg);
-        join = NEW_PPERM4(deg);
-        SET_CODEG_PPERM4(join, codeg);
+    degf = DEG_PPERM<TF>(f);
+    degg = DEG_PPERM<TG>(g);
+    deg = MAX(degf, degg);
+    join = NEW_PPERM<Res>(deg);
+    SET_CODEG_PPERM<Res>(join, codeg);
 
-        ptjoin4 = ADDR_PPERM4(join);
-        ptf4 = ADDR_PPERM4(f);
-        ptg4 = ADDR_PPERM4(g);
-        ptseen = ADDR_PPERM4(TmpPPerm);
+    ptjoin = ADDR_PPERM<Res>(join);
+    ptf = ADDR_PPERM<TF>(f);
+    ptg = ADDR_PPERM<TG>(g);
+    ptseen = ADDR_PPERM4(TmpPPerm);
 
-        if (DOM_PPERM(f) != NULL) {
-            dom = DOM_PPERM(f);
-            rank = RANK_PPERM4(f);
-            for (i = 1; i <= rank; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                ptjoin4[j] = ptf4[j];
-                ptseen[ptf4[j] - 1] = 1;
+    if (DOM_PPERM(f) != NULL) {
+        dom = DOM_PPERM(f);
+        rank = RANK_PPERM<TF>(f);
+        for (i = 1; i <= rank; i++) {
+            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
+            ptjoin[j] = ptf[j];
+            ptseen[ptf[j] - 1] = 1;
+        }
+    }
+
+    if (DOM_PPERM(g) != NULL) {
+        dom = DOM_PPERM(g);
+        rank = RANK_PPERM<TG>(g);
+        for (i = 1; i <= rank; i++) {
+            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
+            if (ptjoin[j] == 0) {
+                if (ptseen[ptg[j] - 1] == 0) {
+                    ptjoin[j] = ptg[j];
+                    ptseen[ptg[j] - 1] = 1;
+                }
+                else {
+                    return Fail;    // join is not injective
+                }
+            }
+            else if (ptjoin[j] != ptg[j]) {
+                return Fail;
             }
         }
+    }
 
-        if (DOM_PPERM(g) != NULL) {
-            dom = DOM_PPERM(g);
-            rank = RANK_PPERM4(g);
-            for (i = 1; i <= rank; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptjoin4[j] == 0) {
-                    if (ptseen[ptg4[j] - 1] == 0) {
-                        ptjoin4[j] = ptg4[j];
-                        ptseen[ptg4[j] - 1] = 1;
+    if (DOM_PPERM(f) == NULL) {
+        for (i = 0; i < degf; i++) {
+            if (ptf[i] != 0) {
+                if (ptjoin[i] == 0) {
+                    if (ptseen[ptf[i] - 1] == 0) {
+                        ptjoin[i] = ptf[i];
+                        ptseen[ptf[i] - 1] = 1;
                     }
                     else {
-                        return Fail;    // join is not injective
+                        return Fail;
                     }
                 }
-                else if (ptjoin4[j] != ptg4[j]) {
+                else if (ptjoin[i] != ptf[i]) {
                     return Fail;
                 }
             }
         }
-
-        if (DOM_PPERM(f) == NULL) {
-            for (i = 0; i < degf; i++) {
-                if (ptf4[i] != 0) {
-                    if (ptjoin4[i] == 0) {
-                        if (ptseen[ptf4[i] - 1] == 0) {
-                            ptjoin4[i] = ptf4[i];
-                            ptseen[ptf4[i] - 1] = 1;
-                        }
-                        else {
-                            return Fail;
-                        }
-                    }
-                    else if (ptjoin4[i] != ptf4[i]) {
-                        return Fail;
-                    }
-                }
-            }
-        }
-
-        if (DOM_PPERM(g) == NULL) {
-            for (i = 0; i < degg; i++) {
-                if (ptg4[i] != 0) {
-                    if (ptjoin4[i] == 0) {
-                        if (ptseen[ptg4[i] - 1] == 0) {
-                            ptjoin4[i] = ptg4[i];
-                            ptseen[ptg4[i] - 1] = 1;
-                        }
-                        else {
-                            return Fail;
-                        }
-                    }
-                    else if (ptjoin4[i] != ptg4[i]) {
-                        return Fail;
-                    }
-                }
-            }
-        }
     }
-    else if (TNUM_OBJ(f) == T_PPERM4 && TNUM_OBJ(g) == T_PPERM2) {
-        degf = DEG_PPERM4(f);
-        degg = DEG_PPERM2(g);
-        deg = MAX(degf, degg);
-        join = NEW_PPERM4(deg);
-        SET_CODEG_PPERM4(join, codeg);
 
-        ptjoin4 = ADDR_PPERM4(join);
-        ptf4 = ADDR_PPERM4(f);
-        ptg2 = ADDR_PPERM2(g);
-        ptseen = ADDR_PPERM4(TmpPPerm);
-
-        if (DOM_PPERM(f) != NULL) {
-            dom = DOM_PPERM(f);
-            rank = RANK_PPERM4(f);
-            for (i = 1; i <= rank; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                ptjoin4[j] = ptf4[j];
-                ptseen[ptf4[j] - 1] = 1;
-            }
-        }
-
-        if (DOM_PPERM(g) != NULL) {
-            dom = DOM_PPERM(g);
-            rank = RANK_PPERM2(g);
-            for (i = 1; i <= rank; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptjoin4[j] == 0) {
-                    if (ptseen[ptg2[j] - 1] == 0) {
-                        ptjoin4[j] = ptg2[j];
-                        ptseen[ptg2[j] - 1] = 1;
+    if (DOM_PPERM(g) == NULL) {
+        for (i = 0; i < degg; i++) {
+            if (ptg[i] != 0) {
+                if (ptjoin[i] == 0) {
+                    if (ptseen[ptg[i] - 1] == 0) {
+                        ptjoin[i] = ptg[i];
+                        ptseen[ptg[i] - 1] = 1;
                     }
                     else {
-                        return Fail;    // join is not injective
+                        return Fail;
                     }
                 }
-                else if (ptjoin4[j] != ptg2[j]) {
+                else if (ptjoin[i] != ptg[i]) {
                     return Fail;
-                }
-            }
-        }
-
-        if (DOM_PPERM(f) == NULL) {
-            for (i = 0; i < degf; i++) {
-                if (ptf4[i] != 0) {
-                    if (ptjoin4[i] == 0) {
-                        if (ptseen[ptf4[i] - 1] == 0) {
-                            ptjoin4[i] = ptf4[i];
-                            ptseen[ptf4[i] - 1] = 1;
-                        }
-                        else {
-                            return Fail;
-                        }
-                    }
-                    else if (ptjoin4[i] != ptf4[i]) {
-                        return Fail;
-                    }
-                }
-            }
-        }
-
-        if (DOM_PPERM(g) == NULL) {
-            for (i = 0; i < degg; i++) {
-                if (ptg2[i] != 0) {
-                    if (ptjoin4[i] == 0) {
-                        if (ptseen[ptg2[i] - 1] == 0) {
-                            ptjoin4[i] = ptg2[i];
-                            ptseen[ptg2[i] - 1] = 1;
-                        }
-                        else {
-                            return Fail;
-                        }
-                    }
-                    else if (ptjoin4[i] != ptg2[i]) {
-                        return Fail;
-                    }
-                }
-            }
-        }
-    }
-    else if (TNUM_OBJ(f) == T_PPERM2 && TNUM_OBJ(g) == T_PPERM4) {
-        return FuncJOIN_PPERMS(self, g, f);
-    }
-    else {
-        degf = DEG_PPERM2(f);
-        degg = DEG_PPERM2(g);
-        deg = MAX(degf, degg);
-        join = NEW_PPERM2(deg);
-        SET_CODEG_PPERM2(join, codeg);
-
-        ptjoin2 = ADDR_PPERM2(join);
-        ptf2 = ADDR_PPERM2(f);
-        ptg2 = ADDR_PPERM2(g);
-        ptseen = ADDR_PPERM4(TmpPPerm);
-
-        if (DOM_PPERM(f) != NULL) {
-            dom = DOM_PPERM(f);
-            rank = RANK_PPERM2(f);
-            for (i = 1; i <= rank; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                ptjoin2[j] = ptf2[j];
-                ptseen[ptf2[j] - 1] = 1;
-            }
-        }
-
-        if (DOM_PPERM(g) != NULL) {
-            dom = DOM_PPERM(g);
-            rank = RANK_PPERM2(g);
-            for (i = 1; i <= rank; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptjoin2[j] == 0) {
-                    if (ptseen[ptg2[j] - 1] == 0) {
-                        ptjoin2[j] = ptg2[j];
-                        ptseen[ptg2[j] - 1] = 1;
-                    }
-                    else {
-                        return Fail;    // join is not injective
-                    }
-                }
-                else if (ptjoin2[j] != ptg2[j]) {
-                    return Fail;
-                }
-            }
-        }
-
-        if (DOM_PPERM(f) == NULL) {
-            for (i = 0; i < degf; i++) {
-                if (ptf2[i] != 0) {
-                    if (ptjoin2[i] == 0) {
-                        if (ptseen[ptf2[i] - 1] == 0) {
-                            ptjoin2[i] = ptf2[i];
-                            ptseen[ptf2[i] - 1] = 1;
-                        }
-                        else {
-                            return Fail;
-                        }
-                    }
-                    else if (ptjoin2[i] != ptf2[i]) {
-                        return Fail;
-                    }
-                }
-            }
-        }
-
-        if (DOM_PPERM(g) == NULL) {
-            for (i = 0; i < degg; i++) {
-                if (ptg2[i] != 0) {
-                    if (ptjoin2[i] == 0) {
-                        if (ptseen[ptg2[i] - 1] == 0) {
-                            ptjoin2[i] = ptg2[i];
-                            ptseen[ptg2[i] - 1] = 1;
-                        }
-                        else {
-                            return Fail;
-                        }
-                    }
-                    else if (ptjoin2[i] != ptg2[i]) {
-                        return Fail;
-                    }
                 }
             }
         }
     }
     return join;
+}
+
+static Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
+{
+    GAP_ASSERT(IS_PPERM(f));
+    GAP_ASSERT(IS_PPERM(g));
+
+    if (EQ(f, g))
+        return f;
+
+    if (TNUM_OBJ(f) == T_PPERM2 && TNUM_OBJ(g) == T_PPERM2) {
+        return JOIN_PPERMS<UInt2, UInt2>(f, g);
+    }
+    else if (TNUM_OBJ(f) == T_PPERM2 && TNUM_OBJ(g) == T_PPERM4) {
+        return JOIN_PPERMS<UInt2, UInt4>(f, g);
+    }
+    else if (TNUM_OBJ(f) == T_PPERM4 && TNUM_OBJ(g) == T_PPERM2) {
+        return JOIN_PPERMS<UInt4, UInt2>(f, g);
+    }
+    else /* if (TNUM_OBJ(f) == T_PPERM4 && TNUM_OBJ(g) == T_PPERM4) */ {
+        return JOIN_PPERMS<UInt4, UInt4>(f, g);
+    }
 }
 
 static Obj FuncMEET_PPERMS(Obj self, Obj f, Obj g)
