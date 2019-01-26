@@ -106,6 +106,23 @@ static inline UInt DEG_PPERM(Obj f)
 }
 
 
+//
+// The 'ResultType' template is used by functions which take two partial
+// permutations as argument to select the type of the output they produce: by
+// default, a T_PPERM4, whose entries are stored as UInt4. But if both inputs
+// are T_PPERM2, then as a special case the output is also a T_PPERM2, whose
+// entries are stored as UInt2.
+//
+template <typename TL, typename TR>
+struct ResultType {
+    typedef UInt4 type;
+};
+template <>
+struct ResultType<UInt2, UInt2> {
+    typedef UInt2 type;
+};
+
+
 #define MAX(a, b) (a < b ? b : a)
 #define MIN(a, b) (a < b ? a : b)
 
@@ -1630,15 +1647,43 @@ static Obj FuncNaturalLeqPartialPerm(Obj self, Obj f, Obj g)
     }
 }
 
+template <typename TF, typename TG>
+static Obj JOIN_IDEM_PPERMS(Obj f, Obj g)
+{
+    typedef typename ResultType<TF, TG>::type Res;
+
+    UInt  def, deg, i;
+    Obj   join = NULL;
+    Res * ptjoin;
+    TF *  ptf;
+    TG *  ptg;
+
+    def = DEG_PPERM(f);
+    deg = DEG_PPERM(g);
+
+    GAP_ASSERT(def <= deg);
+
+    join = NEW_PPERM<Res>(deg);
+    SET_CODEG_PPERM<Res>(join, deg);
+    ptjoin = ADDR_PPERM<Res>(join);
+    ptf = ADDR_PPERM<TF>(f);
+    ptg = ADDR_PPERM<TG>(g);
+    for (i = 0; i < def; i++) {
+        ptjoin[i] = (ptf[i] != 0 ? ptf[i] : ptg[i]);
+    }
+    for (; i < deg; i++) {
+        ptjoin[i] = ptg[i];
+    }
+
+    return join;
+}
+
 static Obj FuncJOIN_IDEM_PPERMS(Obj self, Obj f, Obj g)
 {
     GAP_ASSERT(IS_PPERM(f));
     GAP_ASSERT(IS_PPERM(g));
 
-    UInt   def, deg, i;
-    Obj    join = NULL;
-    UInt2 *ptjoin2, *ptf2, *ptg2;
-    UInt4 *ptjoin4, *ptf4, *ptg4;
+    UInt def, deg;
 
     if (EQ(f, g)) {
         return f;
@@ -1653,47 +1698,16 @@ static Obj FuncJOIN_IDEM_PPERMS(Obj self, Obj f, Obj g)
     }
 
     if (TNUM_OBJ(f) == T_PPERM2 && TNUM_OBJ(g) == T_PPERM2) {
-        join = NEW_PPERM2(deg);
-        SET_CODEG_PPERM2(join, deg);
-        ptjoin2 = ADDR_PPERM2(join);
-        ptf2 = ADDR_PPERM2(f);
-        ptg2 = ADDR_PPERM2(g);
-        for (i = 0; i < def; i++) {
-            ptjoin2[i] = (ptf2[i] != 0 ? ptf2[i] : ptg2[i]);
-        }
-        for (; i < deg; i++) {
-            ptjoin2[i] = ptg2[i];
-        }
+        return JOIN_IDEM_PPERMS<UInt2, UInt2>(f, g);
     }
     else if (TNUM_OBJ(f) == T_PPERM2 && TNUM_OBJ(g) == T_PPERM4) {
-        join = NEW_PPERM4(deg);
-        SET_CODEG_PPERM4(join, deg);
-        ptjoin4 = ADDR_PPERM4(join);
-        ptf2 = ADDR_PPERM2(f);
-        ptg4 = ADDR_PPERM4(g);
-        for (i = 0; i < def; i++) {
-            ptjoin4[i] = (ptf2[i] != 0 ? ptf2[i] : ptg4[i]);
-        }
-        for (; i < deg; i++) {
-            ptjoin4[i] = ptg4[i];
-        }
+        return JOIN_IDEM_PPERMS<UInt2, UInt4>(f, g);
     }
-    else if (TNUM_OBJ(f) == T_PPERM4 && TNUM_OBJ(g) == T_PPERM4) {
-        join = NEW_PPERM4(deg);
-        SET_CODEG_PPERM4(join, deg);
-        ptjoin4 = ADDR_PPERM4(join);
-        ptf4 = ADDR_PPERM4(f);
-        ptg4 = ADDR_PPERM4(g);
-        for (i = 0; i < def; i++) {
-            ptjoin4[i] = (ptf4[i] != 0 ? ptf4[i] : ptg4[i]);
-        }
-        for (; i < deg; i++) {
-            ptjoin4[i] = ptg4[i];
-        }
+    else /* if (TNUM_OBJ(f) == T_PPERM4 && TNUM_OBJ(g) == T_PPERM4) */ {
+        return JOIN_IDEM_PPERMS<UInt4, UInt4>(f, g);
     }
-    GAP_ASSERT(join != NULL);
-    return join;
 }
+
 
 // the union of f and g where this defines an injective function
 static Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
