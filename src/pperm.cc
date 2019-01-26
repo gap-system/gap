@@ -5465,8 +5465,8 @@ Obj OnSetsPPerm(Obj set, Obj f)
     UInt4 *     ptf4;
     UInt        deg;
     const Obj * ptset;
-    Obj *       ptres, tmp, res;
-    UInt        i, isint, k, reslen;
+    Obj *       ptres, res;
+    UInt        i, k, reslen;
 
     GAP_ASSERT(IS_PLIST(set));
     GAP_ASSERT(LEN_PLIST(set) > 0);
@@ -5480,7 +5480,6 @@ Obj OnSetsPPerm(Obj set, Obj f)
     ptset = CONST_ADDR_OBJ(set) + len;
     ptres = ADDR_OBJ(res) + 1;
     reslen = 0;
-    isint = 1;
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         ptf2 = ADDR_PPERM2(f);
@@ -5491,9 +5490,8 @@ Obj OnSetsPPerm(Obj set, Obj f)
             if (IS_POS_INTOBJ(*ptset)) {
                 k = INT_INTOBJ(*ptset);
                 if (k <= deg && ptf2[k - 1] != 0) {
-                    tmp = INTOBJ_INT(ptf2[k - 1]);
                     reslen++;
-                    *ptres++ = tmp;
+                    *ptres++ = INTOBJ_INT(ptf2[k - 1]);
                 }
             }
             else {
@@ -5516,9 +5514,8 @@ Obj OnSetsPPerm(Obj set, Obj f)
             if (IS_POS_INTOBJ(*ptset)) {
                 k = INT_INTOBJ(*ptset);
                 if (k <= deg && ptf4[k - 1] != 0) {
-                    tmp = INTOBJ_INT(ptf4[k - 1]);
                     reslen++;
-                    *ptres++ = tmp;
+                    *ptres++ = INTOBJ_INT(ptf4[k - 1]);
                 }
             }
             else {
@@ -5536,17 +5533,12 @@ Obj OnSetsPPerm(Obj set, Obj f)
         RetypeBagSM(res, T_PLIST_EMPTY);
         return res;
     }
-    ResizeBag(res, (reslen + 1) * sizeof(Obj));
     SET_LEN_PLIST(res, reslen);
+    SHRINK_PLIST(res, reslen);
 
     // sort the result
-    if (isint) {
-        SortPlistByRawObj(res);
-        RetypeBagSM(res, T_PLIST_CYC_SSORT);
-    }
-    else {
-        SortDensePlist(res);
-    }
+    SortPlistByRawObj(res);
+    RetypeBagSM(res, T_PLIST_CYC_SSORT);
 
     return res;
 }
@@ -5586,13 +5578,14 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
     if (TNUM_OBJ(f) == T_PPERM2) {
         ptf2 = ADDR_PPERM2(f);
         deg = DEG_PPERM2(f);
+
         /* loop over the entries of the tuple                              */
         for (i = 1; i <= len; i++, pttup++) {
             if (IS_POS_INTOBJ(*pttup)) {
                 k = INT_INTOBJ(*pttup);
                 if (k <= deg && ptf2[k - 1] != 0) {
                     reslen++;
-                    *(ptres++) = INTOBJ_INT(ptf2[k - 1]);
+                    *ptres++ = INTOBJ_INT(ptf2[k - 1]);
                 }
             }
             else {
@@ -5609,13 +5602,14 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
     else {
         ptf4 = ADDR_PPERM4(f);
         deg = DEG_PPERM4(f);
+
         /* loop over the entries of the tuple                              */
         for (i = 1; i <= len; i++, pttup++) {
             if (IS_POS_INTOBJ(*pttup)) {
                 k = INT_INTOBJ(*pttup);
                 if (k <= deg && ptf4[k - 1] != 0) {
                     reslen++;
-                    *(ptres++) = INTOBJ_INT(ptf4[k - 1]);
+                    *ptres++ = INTOBJ_INT(ptf4[k - 1]);
                 }
             }
             else {
@@ -5629,8 +5623,8 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
             }
         }
     }
-    SET_LEN_PLIST(res, (Int)reslen);
-    SHRINK_PLIST(res, (Int)reslen);
+    SET_LEN_PLIST(res, reslen);
+    SHRINK_PLIST(res, reslen);
 
     return res;
 }
