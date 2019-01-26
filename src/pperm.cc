@@ -3150,31 +3150,36 @@ static Obj PowPPerm4Perm4(Obj f, Obj p)
 }
 
 // g ^ -1 * f * g
-static Obj PowPPerm22(Obj f, Obj g)
+template <typename TF, typename TG>
+static Obj PowPPerm(Obj f, Obj g)
 {
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+    typedef typename ResultType<TF, TG>::type Res;
 
-    UInt2 *ptg, *ptf, *ptconj, img;
-    UInt   i, j, def, deg, dec, codeg, codec, min, len;
-    Obj    dom, conj;
+    ASSERT_IS_PPERM<TF>(f);
+    ASSERT_IS_PPERM<TG>(g);
+
+    TF *  ptf;
+    TG *  ptg;
+    Res * ptconj;
+    UInt  i, j, def, deg, dec, codeg, codec, min, img, len;
+    Obj   dom, conj;
 
     // check if we're in the trivial case
-    def = DEG_PPERM2(f);
-    deg = DEG_PPERM2(g);
+    def = DEG_PPERM<TF>(f);
+    deg = DEG_PPERM<TG>(g);
     if (def == 0 || deg == 0)
         return EmptyPartialPerm;
 
-    ptf = ADDR_PPERM2(f);
-    ptg = ADDR_PPERM2(g);
+    ptf = ADDR_PPERM<TF>(f);
+    ptg = ADDR_PPERM<TG>(g);
     dom = DOM_PPERM(f);
-    codeg = CODEG_PPERM2(g);
+    codeg = CODEG_PPERM<TG>(g);
     dec = 0;
     codec = 0;
 
     if (dom == NULL) {
         min = MIN(def, deg);
-        if (CODEG_PPERM2(f) <= deg) {
+        if (CODEG_PPERM<TF>(f) <= deg) {
             // find the degree
             for (i = 0; i < min; i++) {
                 if (ptf[i] != 0 && ptg[i] > dec && ptg[ptf[i] - 1] != 0) {
@@ -3188,10 +3193,10 @@ static Obj PowPPerm22(Obj f, Obj g)
                 return EmptyPartialPerm;
 
             // create new pperm
-            conj = NEW_PPERM2(dec);
-            ptconj = ADDR_PPERM2(conj);
-            ptf = ADDR_PPERM2(f);
-            ptg = ADDR_PPERM2(g);
+            conj = NEW_PPERM<Res>(dec);
+            ptconj = ADDR_PPERM<Res>(conj);
+            ptf = ADDR_PPERM<TF>(f);
+            ptg = ADDR_PPERM<TG>(g);
 
             // multiply
             for (i = 0; i < min; i++) {
@@ -3220,10 +3225,10 @@ static Obj PowPPerm22(Obj f, Obj g)
                 return EmptyPartialPerm;
 
             // create new pperm
-            conj = NEW_PPERM2(dec);
-            ptconj = ADDR_PPERM2(conj);
-            ptf = ADDR_PPERM2(f);
-            ptg = ADDR_PPERM2(g);
+            conj = NEW_PPERM<Res>(dec);
+            ptconj = ADDR_PPERM<Res>(conj);
+            ptf = ADDR_PPERM<TF>(f);
+            ptg = ADDR_PPERM<TG>(g);
 
             // multiply
             for (i = 0; i < min; i++) {
@@ -3239,7 +3244,7 @@ static Obj PowPPerm22(Obj f, Obj g)
         }
     }
     else if (def > deg) {    // dom(f) is known
-        if (CODEG_PPERM2(f) <= deg) {
+        if (CODEG_PPERM<TF>(f) <= deg) {
             // find the degree of conj
             len = LEN_PLIST(dom);
             for (i = 1; i <= len; i++) {
@@ -3252,232 +3257,10 @@ static Obj PowPPerm22(Obj f, Obj g)
             }
 
             // create new pperm
-            conj = NEW_PPERM2(dec);
-            ptconj = ADDR_PPERM2(conj);
-            ptf = ADDR_PPERM2(f);
-            ptg = ADDR_PPERM2(g);
-            len = LEN_PLIST(dom);
-            // multiply
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (IMAGEPP(j + 1, ptg, deg) != 0) {
-                    img = ptg[ptf[j] - 1];
-                    if (img != 0) {
-                        ptconj[ptg[j] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-        else {    // codeg(f)>deg(g)
-            // find the degree of conj
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (IMAGEPP(j + 1, ptg, deg) > dec &&
-                    IMAGEPP(ptf[j], ptg, deg) != 0) {
-                    dec = ptg[j];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            // create new pperm
-            conj = NEW_PPERM2(dec);
-            ptconj = ADDR_PPERM2(conj);
-            ptf = ADDR_PPERM2(f);
-            ptg = ADDR_PPERM2(g);
-
-            // multiply
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (IMAGEPP(j + 1, ptg, deg) != 0) {
-                    img = IMAGEPP(ptf[j], ptg, deg);
-                    if (img != 0) {
-                        ptconj[ptg[j] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-    }
-    else {    // def<=deg and dom(f) is known
-        if (CODEG_PPERM2(f) <= deg) {
-            // find the degree of conj
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptg[j] > dec && ptg[ptf[j] - 1] != 0) {
-                    dec = ptg[j];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            // create new pperm
-            conj = NEW_PPERM2(dec);
-            ptconj = ADDR_PPERM2(conj);
-            ptf = ADDR_PPERM2(f);
-            ptg = ADDR_PPERM2(g);
-
-            // multiply
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptg[j] != 0) {
-                    img = ptg[ptf[j] - 1];
-                    if (img != 0) {
-                        ptconj[ptg[j] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-        else {    // codeg(f)>deg(g)
-            // find the degree of conj
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptg[j] > dec && IMAGEPP(ptf[j], ptg, deg) != 0) {
-                    dec = ptg[j];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            // create new pperm
-            conj = NEW_PPERM2(dec);
-            ptconj = ADDR_PPERM2(conj);
-            ptf = ADDR_PPERM2(f);
-            ptg = ADDR_PPERM2(g);
-
-            // multiply
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptg[j] != 0) {
-                    img = IMAGEPP(ptf[j], ptg, deg);
-                    if (img != 0) {
-                        ptconj[ptg[j] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-    }
-    SET_CODEG_PPERM2(conj, codec);
-    return conj;
-}
-
-static Obj PowPPerm24(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
-
-    UInt4 * ptg, *ptconj;
-    UInt2 * ptf;
-    UInt    i, j, def, deg, dec, codeg, codec, min, img, len;
-    Obj     dom, conj;
-
-    // check if we're in the trivial case
-    def = DEG_PPERM2(f);
-    deg = DEG_PPERM4(g);
-    if (def == 0 || deg == 0)
-        return EmptyPartialPerm;
-
-    ptf = ADDR_PPERM2(f);
-    ptg = ADDR_PPERM4(g);
-    dom = DOM_PPERM(f);
-    codeg = CODEG_PPERM4(g);
-    dec = 0;
-    codec = 0;
-
-    if (dom == NULL) {
-        min = MIN(def, deg);
-        if (CODEG_PPERM2(f) <= deg) {
-            // find the degree
-            for (i = 0; i < min; i++) {
-                if (ptf[i] != 0 && ptg[i] > dec && ptg[ptf[i] - 1] != 0) {
-                    dec = ptg[i];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            if (dec == 0)
-                return EmptyPartialPerm;
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM2(f);
-            ptg = ADDR_PPERM4(g);
-
-            // multiply
-            for (i = 0; i < min; i++) {
-                if (ptf[i] != 0 && ptg[i] != 0) {
-                    img = ptg[ptf[i] - 1];
-                    if (img != 0) {
-                        ptconj[ptg[i] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-        else {    // codeg(f)>deg(g)
-            // find the degree
-            for (i = 0; i < min; i++) {
-                if (ptf[i] != 0 && ptg[i] > dec &&
-                    IMAGEPP(ptf[i], ptg, deg) != 0) {
-                    dec = ptg[i];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            if (dec == 0)
-                return EmptyPartialPerm;
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM2(f);
-            ptg = ADDR_PPERM4(g);
-
-            // multiply
-            for (i = 0; i < min; i++) {
-                if (ptf[i] != 0 && ptg[i] != 0) {
-                    img = IMAGEPP(ptf[i], ptg, deg);
-                    if (img != 0) {
-                        ptconj[ptg[i] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-    }
-    else if (def > deg) {    // dom(f) is known
-        if (CODEG_PPERM2(f) <= deg) {
-            // find the degree of conj
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (IMAGEPP(j + 1, ptg, deg) > dec && ptg[ptf[j] - 1] != 0) {
-                    dec = ptg[j];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM2(f);
-            ptg = ADDR_PPERM4(g);
+            conj = NEW_PPERM<Res>(dec);
+            ptconj = ADDR_PPERM<Res>(conj);
+            ptf = ADDR_PPERM<TF>(f);
+            ptg = ADDR_PPERM<TG>(g);
 
             // multiply
             for (i = 1; i <= len; i++) {
@@ -3506,10 +3289,10 @@ static Obj PowPPerm24(Obj f, Obj g)
             }
 
             // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM2(f);
-            ptg = ADDR_PPERM4(g);
+            conj = NEW_PPERM<Res>(dec);
+            ptconj = ADDR_PPERM<Res>(conj);
+            ptf = ADDR_PPERM<TF>(f);
+            ptg = ADDR_PPERM<TG>(g);
 
             // multiply
             for (i = 1; i <= len; i++) {
@@ -3526,7 +3309,7 @@ static Obj PowPPerm24(Obj f, Obj g)
         }
     }
     else {    // def<=deg and dom(f) is known
-        if (CODEG_PPERM2(f) <= deg) {
+        if (CODEG_PPERM<TF>(f) <= deg) {
             // find the degree of conj
             len = LEN_PLIST(dom);
             for (i = 1; i <= len; i++) {
@@ -3539,10 +3322,10 @@ static Obj PowPPerm24(Obj f, Obj g)
             }
 
             // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM2(f);
-            ptg = ADDR_PPERM4(g);
+            conj = NEW_PPERM<Res>(dec);
+            ptconj = ADDR_PPERM<Res>(conj);
+            ptf = ADDR_PPERM<TF>(f);
+            ptg = ADDR_PPERM<TG>(g);
 
             // multiply
             for (i = 1; i <= len; i++) {
@@ -3570,10 +3353,10 @@ static Obj PowPPerm24(Obj f, Obj g)
             }
 
             // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM2(f);
-            ptg = ADDR_PPERM4(g);
+            conj = NEW_PPERM<Res>(dec);
+            ptconj = ADDR_PPERM<Res>(conj);
+            ptf = ADDR_PPERM<TF>(f);
+            ptg = ADDR_PPERM<TG>(g);
 
             // multiply
             for (i = 1; i <= len; i++) {
@@ -3589,450 +3372,7 @@ static Obj PowPPerm24(Obj f, Obj g)
             }
         }
     }
-    SET_CODEG_PPERM4(conj, codec);
-    return conj;
-}
-
-static Obj PowPPerm42(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
-
-    UInt4 * ptf, *ptconj;
-    UInt2 * ptg;
-    UInt    i, j, def, deg, dec, codeg, codec, min, img, len;
-    Obj     dom, conj;
-
-    // check if we're in the trivial case
-    def = DEG_PPERM4(f);
-    deg = DEG_PPERM2(g);
-    if (def == 0 || deg == 0)
-        return EmptyPartialPerm;
-
-    ptf = ADDR_PPERM4(f);
-    ptg = ADDR_PPERM2(g);
-    dom = DOM_PPERM(f);
-    codeg = CODEG_PPERM2(g);
-    dec = 0;
-    codec = 0;
-
-    if (dom == NULL) {
-        min = MIN(def, deg);
-        if (CODEG_PPERM4(f) <= deg) {
-            // find the degree
-            for (i = 0; i < min; i++) {
-                if (ptf[i] != 0 && ptg[i] > dec && ptg[ptf[i] - 1] != 0) {
-                    dec = ptg[i];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            if (dec == 0)
-                return EmptyPartialPerm;
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM4(f);
-            ptg = ADDR_PPERM2(g);
-
-            // multiply
-            for (i = 0; i < min; i++) {
-                if (ptf[i] != 0 && ptg[i] != 0) {
-                    img = ptg[ptf[i] - 1];
-                    if (img != 0) {
-                        ptconj[ptg[i] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-        else {    // codeg(f)>deg(g)
-            // find the degree
-            for (i = 0; i < min; i++) {
-                if (ptf[i] != 0 && ptg[i] > dec &&
-                    IMAGEPP(ptf[i], ptg, deg) != 0) {
-                    dec = ptg[i];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            if (dec == 0)
-                return EmptyPartialPerm;
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM4(f);
-            ptg = ADDR_PPERM2(g);
-
-            // multiply
-            for (i = 0; i < min; i++) {
-                if (ptf[i] != 0 && ptg[i] != 0) {
-                    img = IMAGEPP(ptf[i], ptg, deg);
-                    if (img != 0) {
-                        ptconj[ptg[i] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-    }
-    else if (def > deg) {    // dom(f) is known
-        if (CODEG_PPERM4(f) <= deg) {
-            // find the degree of conj
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (IMAGEPP(j + 1, ptg, deg) > dec && ptg[ptf[j] - 1] != 0) {
-                    dec = ptg[j];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM4(f);
-            ptg = ADDR_PPERM2(g);
-
-            // multiply
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (IMAGEPP(j + 1, ptg, deg) != 0) {
-                    img = ptg[ptf[j] - 1];
-                    if (img != 0) {
-                        ptconj[ptg[j] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-        else {    // codeg(f)>deg(g)
-            // find the degree of conj
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (IMAGEPP(j + 1, ptg, deg) > dec &&
-                    IMAGEPP(ptf[j], ptg, deg) != 0) {
-                    dec = ptg[j];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM4(f);
-            ptg = ADDR_PPERM2(g);
-
-            // multiply
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (IMAGEPP(j + 1, ptg, deg) != 0) {
-                    img = IMAGEPP(ptf[j], ptg, deg);
-                    if (img != 0) {
-                        ptconj[ptg[j] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-    }
-    else {    // def<=deg and dom(f) is known
-        if (CODEG_PPERM4(f) <= deg) {
-            // find the degree of conj
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptg[j] > dec && ptg[ptf[j] - 1] != 0) {
-                    dec = ptg[j];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM4(f);
-            ptg = ADDR_PPERM2(g);
-
-            // multiply
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptg[j] != 0) {
-                    img = ptg[ptf[j] - 1];
-                    if (img != 0) {
-                        ptconj[ptg[j] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-        else {    // codeg(f)>deg(g)
-            // find the degree of conj
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptg[j] > dec && IMAGEPP(ptf[j], ptg, deg) != 0) {
-                    dec = ptg[j];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM4(f);
-            ptg = ADDR_PPERM2(g);
-
-            // multiply
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptg[j] != 0) {
-                    img = IMAGEPP(ptf[j], ptg, deg);
-                    if (img != 0) {
-                        ptconj[ptg[j] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-    }
-    SET_CODEG_PPERM4(conj, codec);
-    return conj;
-}
-
-static Obj PowPPerm44(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
-
-    UInt4 *ptg, *ptf, *ptconj, img;
-    UInt   i, j, def, deg, dec, codeg, codec, min, len;
-    Obj    dom, conj;
-
-    // check if we're in the trivial case
-    def = DEG_PPERM4(f);
-    deg = DEG_PPERM4(g);
-    if (def == 0 || deg == 0)
-        return EmptyPartialPerm;
-
-    ptf = ADDR_PPERM4(f);
-    ptg = ADDR_PPERM4(g);
-    dom = DOM_PPERM(f);
-    codeg = CODEG_PPERM4(g);
-    dec = 0;
-    codec = 0;
-
-    if (dom == NULL) {
-        min = MIN(def, deg);
-        if (CODEG_PPERM4(f) <= deg) {
-            // find the degree
-            for (i = 0; i < min; i++) {
-                if (ptf[i] != 0 && ptg[i] > dec && ptg[ptf[i] - 1] != 0) {
-                    dec = ptg[i];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            if (dec == 0)
-                return EmptyPartialPerm;
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM4(f);
-            ptg = ADDR_PPERM4(g);
-
-            // multiply
-            for (i = 0; i < min; i++) {
-                if (ptf[i] != 0 && ptg[i] != 0) {
-                    img = ptg[ptf[i] - 1];
-                    if (img != 0) {
-                        ptconj[ptg[i] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-        else {    // codeg(f)>deg(g)
-            // find the degree
-            for (i = 0; i < min; i++) {
-                if (ptf[i] != 0 && ptg[i] > dec &&
-                    IMAGEPP(ptf[i], ptg, deg) != 0) {
-                    dec = ptg[i];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            if (dec == 0)
-                return EmptyPartialPerm;
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM4(f);
-            ptg = ADDR_PPERM4(g);
-
-            // multiply
-            for (i = 0; i < min; i++) {
-                if (ptf[i] != 0 && ptg[i] != 0) {
-                    img = IMAGEPP(ptf[i], ptg, deg);
-                    if (img != 0) {
-                        ptconj[ptg[i] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-    }
-    else if (def > deg) {    // dom(f) is known
-        if (CODEG_PPERM4(f) <= deg) {
-            // find the degree of conj
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (IMAGEPP(j + 1, ptg, deg) > dec && ptg[ptf[j] - 1] != 0) {
-                    dec = ptg[j];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM4(f);
-            ptg = ADDR_PPERM4(g);
-
-            // multiply
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (IMAGEPP(j + 1, ptg, deg) != 0) {
-                    img = ptg[ptf[j] - 1];
-                    if (img != 0) {
-                        ptconj[ptg[j] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-        else {    // codeg(f)>deg(g)
-            // find the degree of conj
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (IMAGEPP(j + 1, ptg, deg) > dec &&
-                    IMAGEPP(ptf[j], ptg, deg) != 0) {
-                    dec = ptg[j];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM4(f);
-            ptg = ADDR_PPERM4(g);
-
-            // multiply
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (IMAGEPP(j + 1, ptg, deg) != 0) {
-                    img = IMAGEPP(ptf[j], ptg, deg);
-                    if (img != 0) {
-                        ptconj[ptg[j] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-    }
-    else {    // def<=deg and dom(f) is known
-        if (CODEG_PPERM4(f) <= deg) {
-            // find the degree of conj
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptg[j] > dec && ptg[ptf[j] - 1] != 0) {
-                    dec = ptg[j];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM4(f);
-            ptg = ADDR_PPERM4(g);
-
-            // multiply
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptg[j] != 0) {
-                    img = ptg[ptf[j] - 1];
-                    if (img != 0) {
-                        ptconj[ptg[j] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-        else {    // codeg(f)>deg(g)
-            // find the degree of conj
-            len = LEN_PLIST(dom);
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptg[j] > dec && IMAGEPP(ptf[j], ptg, deg) != 0) {
-                    dec = ptg[j];
-                    if (dec == codeg)
-                        break;
-                }
-            }
-
-            // create new pperm
-            conj = NEW_PPERM4(dec);
-            ptconj = ADDR_PPERM4(conj);
-            ptf = ADDR_PPERM4(f);
-            ptg = ADDR_PPERM4(g);
-
-            // multiply
-            for (i = 1; i <= len; i++) {
-                j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-                if (ptg[j] != 0) {
-                    img = IMAGEPP(ptf[j], ptg, deg);
-                    if (img != 0) {
-                        ptconj[ptg[j] - 1] = img;
-                        if (img > codec)
-                            codec = img;
-                    }
-                }
-            }
-        }
-    }
-    SET_CODEG_PPERM4(conj, codec);
+    SET_CODEG_PPERM<Res>(conj, codec);
     return conj;
 }
 
@@ -5088,10 +4428,10 @@ static Int InitKernel(StructInitInfo * module)
     PowFuncs[T_PPERM2][T_PERM4] = PowPPerm2Perm4;
     PowFuncs[T_PPERM4][T_PERM2] = PowPPerm4Perm2;
     PowFuncs[T_PPERM4][T_PERM4] = PowPPerm4Perm4;
-    PowFuncs[T_PPERM2][T_PPERM2] = PowPPerm22;
-    PowFuncs[T_PPERM2][T_PPERM4] = PowPPerm24;
-    PowFuncs[T_PPERM4][T_PPERM2] = PowPPerm42;
-    PowFuncs[T_PPERM4][T_PPERM4] = PowPPerm44;
+    PowFuncs[T_PPERM2][T_PPERM2] = PowPPerm<UInt2, UInt2>;
+    PowFuncs[T_PPERM2][T_PPERM4] = PowPPerm<UInt2, UInt4>;
+    PowFuncs[T_PPERM4][T_PPERM2] = PowPPerm<UInt4, UInt2>;
+    PowFuncs[T_PPERM4][T_PPERM4] = PowPPerm<UInt4, UInt4>;
     // for quotients of a partial permutation by a permutation, we rely on the
     // default handler 'QuoDefault'; that uses the inverse of the permutation,
     // which is cached
