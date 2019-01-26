@@ -2471,23 +2471,26 @@ static Int LtPPerm(Obj f, Obj g)
 }
 
 /* product of partial perm and partial perm */
-static Obj ProdPPerm22(Obj f, Obj g)
+template <typename TF, typename TG>
+static Obj ProdPPerm(Obj f, Obj g)
 {
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
+    ASSERT_IS_PPERM<TF>(f);
+    ASSERT_IS_PPERM<TG>(g);
 
-    UInt   deg, degg, i, j, rank, codeg;
-    UInt2 *ptf, *ptg, *ptfg;
-    Obj    fg, dom;
-
-    if (DEG_PPERM2(g) == 0)
-        return EmptyPartialPerm;
+    UInt    deg, degg, i, j, rank, codeg;
+    TF *    ptf;
+    TG *    ptg;
+    TG *    ptfg;
+    Obj     fg, dom;
 
     // find the degree
-    deg = DEG_PPERM2(f);
-    degg = DEG_PPERM2(g);
-    ptf = ADDR_PPERM2(f);
-    ptg = ADDR_PPERM2(g);
+    deg = DEG_PPERM<TF>(f);
+    degg = DEG_PPERM<TG>(g);
+    if (deg == 0 || degg == 0)
+        return EmptyPartialPerm;
+
+    ptf = ADDR_PPERM<TF>(f);
+    ptg = ADDR_PPERM<TG>(g);
     while (deg > 0 &&
            (ptf[deg - 1] == 0 || IMAGEPP(ptf[deg - 1], ptg, degg) == 0))
         deg--;
@@ -2495,16 +2498,16 @@ static Obj ProdPPerm22(Obj f, Obj g)
         return EmptyPartialPerm;
 
     // create new pperm
-    fg = NEW_PPERM2(deg);
-    ptfg = ADDR_PPERM2(fg);
-    ptf = ADDR_PPERM2(f);
-    ptg = ADDR_PPERM2(g);
+    fg = NEW_PPERM<TG>(deg);
+    ptfg = ADDR_PPERM<TG>(fg);
+    ptf = ADDR_PPERM<TF>(f);
+    ptg = ADDR_PPERM<TG>(g);
     codeg = 0;
 
     // compose in rank operations
     if (DOM_PPERM(f) != NULL) {
         dom = DOM_PPERM(f);
-        rank = RANK_PPERM2(f);
+        rank = RANK_PPERM<TF>(f);
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
             if (j < deg && ptf[j] <= degg) {
@@ -2524,199 +2527,10 @@ static Obj ProdPPerm22(Obj f, Obj g)
             }
         }
     }
-    SET_CODEG_PPERM2(fg, codeg);
+    SET_CODEG_PPERM<TG>(fg, codeg);
     return fg;
 }
 
-// the product is always pperm2
-static Obj ProdPPerm42(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM2);
-
-    UInt    deg, degg, i, j, rank, codeg;
-    UInt4 * ptf;
-    UInt2 * ptg, *ptfg;
-    Obj     fg, dom;
-
-    if (DEG_PPERM2(g) == 0)
-        return EmptyPartialPerm;
-
-    // find the degree
-    deg = DEG_PPERM4(f);
-    degg = DEG_PPERM2(g);
-    ptf = ADDR_PPERM4(f);
-    ptg = ADDR_PPERM2(g);
-    while (deg > 0 && (ptf[deg - 1] == 0 || ptf[deg - 1] > degg ||
-                       ptg[ptf[deg - 1] - 1] == 0))
-        deg--;
-    if (deg == 0)
-        return EmptyPartialPerm;
-
-    // create new pperm
-    fg = NEW_PPERM2(deg);
-    ptfg = ADDR_PPERM2(fg);
-    ptf = ADDR_PPERM4(f);
-    ptg = ADDR_PPERM2(g);
-    codeg = 0;
-
-    // compose in rank operations
-    if (DOM_PPERM(f) != NULL) {
-        dom = DOM_PPERM(f);
-        rank = RANK_PPERM4(f);
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (j < deg && ptf[j] <= degg) {
-                ptfg[j] = ptg[ptf[j] - 1];
-                if (ptfg[j] > codeg)
-                    codeg = ptfg[j];
-            }
-        }
-    }
-    else {
-        // compose in deg operations
-        for (i = 0; i < deg; i++) {
-            if (ptf[i] != 0 && ptf[i] <= degg) {
-                ptfg[i] = ptg[ptf[i] - 1];
-                if (ptfg[i] > codeg)
-                    codeg = ptfg[i];
-            }
-        }
-    }
-    SET_CODEG_PPERM2(fg, codeg);
-    return fg;
-}
-
-// it is possible that f*g could be represented as a PPERM2
-static Obj ProdPPerm44(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
-
-    UInt   deg, degg, codeg, i, j, rank;
-    UInt4 *ptf, *ptg, *ptfg;
-    Obj    fg, dom;
-
-    if (DEG_PPERM4(f) == 0 || DEG_PPERM4(g) == 0) {
-        return EmptyPartialPerm;
-    }
-
-    // find the degree
-    deg = DEG_PPERM4(f);
-    degg = DEG_PPERM4(g);
-    ptf = ADDR_PPERM4(f);
-    ptg = ADDR_PPERM4(g);
-    while (deg > 0 && (ptf[deg - 1] == 0 || ptf[deg - 1] > degg ||
-                       ptg[ptf[deg - 1] - 1] == 0)) {
-        deg--;
-    }
-
-    if (deg == 0) {
-        return EmptyPartialPerm;
-    }
-
-    // create new pperm
-    fg = NEW_PPERM4(deg);
-    ptfg = ADDR_PPERM4(fg);
-    ptf = ADDR_PPERM4(f);
-    ptg = ADDR_PPERM4(g);
-    codeg = 0;
-
-    // compose in rank operations
-    if (DOM_PPERM(f) != NULL) {
-        dom = DOM_PPERM(f);
-        rank = RANK_PPERM4(f);
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (j < deg && ptf[j] <= degg) {
-                ptfg[j] = ptg[ptf[j] - 1];
-                if (ptfg[j] > codeg) {
-                    codeg = ptfg[j];
-                }
-            }
-        }
-    }
-    else {
-        // compose in deg operations
-        for (i = 0; i < deg; i++) {
-            if (ptf[i] != 0 && ptf[i] <= degg) {
-                ptfg[i] = ptg[ptf[i] - 1];
-                if (ptfg[i] > codeg) {
-                    codeg = ptfg[i];
-                }
-            }
-        }
-    }
-    SET_CODEG_PPERM4(fg, codeg);
-    return fg;
-}
-
-// it is possible that f*g could be represented as a PPERM2
-static Obj ProdPPerm24(Obj f, Obj g)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    GAP_ASSERT(TNUM_OBJ(g) == T_PPERM4);
-
-    UInt    deg, degg, i, j, codeg, rank;
-    UInt2 * ptf;
-    UInt4 * ptg, *ptfg;
-    Obj     fg, dom;
-
-    if (DEG_PPERM4(g) == 0)
-        return EmptyPartialPerm;
-
-    // find the degree
-    deg = DEG_PPERM2(f);
-    degg = DEG_PPERM4(g);
-    ptf = ADDR_PPERM2(f);
-    ptg = ADDR_PPERM4(g);
-
-    if (CODEG_PPERM2(f) <= degg) {
-        while (deg > 0 && (ptf[deg - 1] == 0 || ptg[ptf[deg - 1] - 1] == 0))
-            deg--;
-    }
-    else {
-        while (deg > 0 &&
-               (ptf[deg - 1] == 0 || IMAGEPP(ptf[deg - 1], ptg, degg) == 0))
-            deg--;
-    }
-
-    if (deg == 0)
-        return EmptyPartialPerm;
-
-    // create new pperm
-    fg = NEW_PPERM4(deg);
-    ptfg = ADDR_PPERM4(fg);
-    ptf = ADDR_PPERM2(f);
-    ptg = ADDR_PPERM4(g);
-    codeg = 0;
-
-    // compose in rank operations
-    if (DOM_PPERM(f) != NULL) {
-        dom = DOM_PPERM(f);
-        rank = RANK_PPERM2(f);
-        for (i = 1; i <= rank; i++) {
-            j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
-            if (j < deg && ptf[j] <= degg) {
-                ptfg[j] = ptg[ptf[j] - 1];
-                if (ptfg[j] > codeg)
-                    codeg = ptfg[j];
-            }
-        }
-    }
-    else {
-        // compose in deg operations
-        for (i = 0; i < deg; i++) {
-            if (ptf[i] != 0 && ptf[i] <= degg) {
-                ptfg[i] = ptg[ptf[i] - 1];
-                if (ptfg[i] > codeg)
-                    codeg = ptfg[i];
-            }
-        }
-    }
-    SET_CODEG_PPERM4(fg, codeg);
-    return fg;
-}
 
 // compose partial perms and perms
 static Obj ProdPPerm2Perm2(Obj f, Obj p)
@@ -5915,10 +5729,10 @@ static Int InitKernel(StructInitInfo * module)
     LtFuncs[T_PPERM4][T_PPERM2] = LtPPerm<UInt4, UInt2>;
 
     /* install the binary operations */
-    ProdFuncs[T_PPERM2][T_PPERM2] = ProdPPerm22;
-    ProdFuncs[T_PPERM4][T_PPERM2] = ProdPPerm42;
-    ProdFuncs[T_PPERM2][T_PPERM4] = ProdPPerm24;
-    ProdFuncs[T_PPERM4][T_PPERM4] = ProdPPerm44;
+    ProdFuncs[T_PPERM2][T_PPERM2] = ProdPPerm<UInt2, UInt2>;
+    ProdFuncs[T_PPERM4][T_PPERM2] = ProdPPerm<UInt4, UInt2>;
+    ProdFuncs[T_PPERM2][T_PPERM4] = ProdPPerm<UInt2, UInt4>;
+    ProdFuncs[T_PPERM4][T_PPERM4] = ProdPPerm<UInt4, UInt4>;
     ProdFuncs[T_PPERM2][T_PERM2] = ProdPPerm2Perm2;
     ProdFuncs[T_PPERM4][T_PERM4] = ProdPPerm4Perm4;
     ProdFuncs[T_PPERM2][T_PERM4] = ProdPPerm2Perm4;
