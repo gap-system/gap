@@ -1577,107 +1577,57 @@ static Obj FuncRIGHT_ONE_PPERM(Obj self, Obj f)
 }
 
 // f<=g if and only if f is a restriction of g
-static Obj FuncNaturalLeqPartialPerm(Obj self, Obj f, Obj g)
+template <typename TF, typename TG>
+static Obj NaturalLeqPartialPerm(Obj f, Obj g)
 {
     UInt   def, deg, i, j, rank;
-    UInt2 *ptf2, *ptg2;
-    UInt4 *ptf4, *ptg4;
+    TF *   ptf;
+    TG *   ptg;
     Obj    dom;
 
+    def = DEG_PPERM<TF>(f);
+    ptf = ADDR_PPERM<TF>(f);
+    if (def == 0)
+        return True;
+
+    deg = DEG_PPERM<TG>(g);
+    ptg = ADDR_PPERM<TG>(g);
+    if (DOM_PPERM(f) == NULL) {
+        for (i = 0; i < def; i++) {
+            if (ptf[i] != 0 && ptf[i] != IMAGEPP(i + 1, ptg, deg))
+                return False;
+        }
+    }
+    else {
+        dom = DOM_PPERM(f);
+        rank = RANK_PPERM<TF>(f);
+        for (i = 1; i <= rank; i++) {
+            j = INT_INTOBJ(ELM_PLIST(dom, i));
+            if (ptf[j - 1] != IMAGEPP(j, ptg, deg))
+                return False;
+        }
+    }
+
+    return True;
+}
+
+static Obj FuncNaturalLeqPartialPerm(Obj self, Obj f, Obj g)
+{
     RequirePartialPerm("NaturalLeqPartialPerm", f);
     RequirePartialPerm("NaturalLeqPartialPerm", g);
 
-    if (TNUM_OBJ(f) == T_PPERM2) {
-        def = DEG_PPERM2(f);
-        ptf2 = ADDR_PPERM2(f);
-        if (def == 0)
-            return True;
-
-        if (TNUM_OBJ(g) == T_PPERM2) {
-            deg = DEG_PPERM2(g);
-            ptg2 = ADDR_PPERM2(g);
-            if (DOM_PPERM(f) == NULL) {
-                for (i = 0; i < def; i++) {
-                    if (ptf2[i] != 0 && ptf2[i] != IMAGEPP(i + 1, ptg2, deg))
-                        return False;
-                }
-            }
-            else {
-                dom = DOM_PPERM(f);
-                rank = RANK_PPERM2(f);
-                for (i = 1; i <= rank; i++) {
-                    j = INT_INTOBJ(ELM_PLIST(dom, i));
-                    if (ptf2[j - 1] != IMAGEPP(j, ptg2, deg))
-                        return False;
-                }
-            }
-        }
-        else {
-            deg = DEG_PPERM4(g);
-            ptg4 = ADDR_PPERM4(g);
-            if (DOM_PPERM(f) == NULL) {
-                for (i = 0; i < def; i++) {
-                    if (ptf2[i] != 0 && ptf2[i] != IMAGEPP(i + 1, ptg4, deg))
-                        return False;
-                }
-            }
-            else {
-                dom = DOM_PPERM(f);
-                rank = RANK_PPERM2(f);
-                for (i = 1; i <= rank; i++) {
-                    j = INT_INTOBJ(ELM_PLIST(dom, i));
-                    if (ptf2[j - 1] != IMAGEPP(j, ptg4, deg))
-                        return False;
-                }
-            }
-        }
+    if (TNUM_OBJ(f) == T_PPERM2 && TNUM_OBJ(g) == T_PPERM2) {
+        return NaturalLeqPartialPerm<UInt2, UInt2>(f, g);
     }
-    else if (TNUM_OBJ(f) == T_PPERM4) {
-        def = DEG_PPERM4(f);
-        ptf4 = ADDR_PPERM4(f);
-        if (def == 0)
-            return True;
-
-        if (TNUM_OBJ(g) == T_PPERM2) {
-            deg = DEG_PPERM2(g);
-            ptg2 = ADDR_PPERM2(g);
-            if (DOM_PPERM(f) == NULL) {
-                for (i = 0; i < def; i++) {
-                    if (ptf4[i] != 0 && ptf4[i] != IMAGEPP(i + 1, ptg2, deg))
-                        return False;
-                }
-            }
-            else {
-                dom = DOM_PPERM(f);
-                rank = RANK_PPERM4(f);
-                for (i = 1; i <= rank; i++) {
-                    j = INT_INTOBJ(ELM_PLIST(dom, i));
-                    if (ptf4[j - 1] != IMAGEPP(j, ptg2, deg))
-                        return False;
-                }
-            }
-        }
-        else {
-            deg = DEG_PPERM4(g);
-            ptg4 = ADDR_PPERM4(g);
-            if (DOM_PPERM(f) == NULL) {
-                for (i = 0; i < def; i++) {
-                    if (ptf4[i] != 0 && ptf4[i] != IMAGEPP(i + 1, ptg4, deg))
-                        return False;
-                }
-            }
-            else {
-                dom = DOM_PPERM(f);
-                rank = RANK_PPERM4(f);
-                for (i = 1; i <= rank; i++) {
-                    j = INT_INTOBJ(ELM_PLIST(dom, i));
-                    if (ptf4[j - 1] != IMAGEPP(j, ptg4, deg))
-                        return False;
-                }
-            }
-        }
+    else if (TNUM_OBJ(f) == T_PPERM2 && TNUM_OBJ(g) == T_PPERM4) {
+        return NaturalLeqPartialPerm<UInt2, UInt4>(f, g);
     }
-    return True;
+    else if (TNUM_OBJ(f) == T_PPERM4 && TNUM_OBJ(g) == T_PPERM2) {
+        return NaturalLeqPartialPerm<UInt4, UInt2>(f, g);
+    }
+    else /* if (TNUM_OBJ(f) == T_PPERM4 && TNUM_OBJ(g) == T_PPERM4) */ {
+        return NaturalLeqPartialPerm<UInt4, UInt4>(f, g);
+    }
 }
 
 static Obj FuncJOIN_IDEM_PPERMS(Obj self, Obj f, Obj g)
