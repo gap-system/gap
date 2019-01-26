@@ -2812,177 +2812,49 @@ static Obj ProdPPerm4Perm2(Obj f, Obj p)
 }
 
 // product of a perm and a partial perm
-static Obj ProdPerm2PPerm2(Obj p, Obj f)
+template <typename TP, typename TF>
+static Obj ProdPermPPerm(Obj p, Obj f)
 {
-    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    ASSERT_IS_PERM<TP>(p);
+    ASSERT_IS_PPERM<TF>(f);
 
-    UInt2 *ptp, *ptf, *ptpf;
-    UInt  deg, degf, i;
-    Obj   pf;
+    TP * ptp;
+    TF * ptf;
+    TF * ptpf;
+    UInt degp, degf, i;
+    Obj  pf;
 
-    if (DEG_PPERM2(f) == 0)
+    if (DEG_PPERM<TF>(f) == 0)
         return EmptyPartialPerm;
 
-    deg = DEG_PERM2(p);
-    degf = DEG_PPERM2(f);
+    degp = DEG_PERM<TP>(p);
+    degf = DEG_PPERM<TF>(f);
 
-    if (deg < degf) {
-        pf = NEW_PPERM2(degf);
-        ptpf = ADDR_PPERM2(pf);
-        ptp = ADDR_PERM2(p);
-        ptf = ADDR_PPERM2(f);
-        for (i = 0; i < deg; i++)
+    if (degp < degf) {
+        pf = NEW_PPERM<TF>(degf);
+        ptpf = ADDR_PPERM<TF>(pf);
+        ptp = ADDR_PERM<TP>(p);
+        ptf = ADDR_PPERM<TF>(f);
+        for (i = 0; i < degp; i++)
             *ptpf++ = ptf[*ptp++];
         for (; i < degf; i++)
             *ptpf++ = ptf[i];
     }
     else {    // deg(f)<=deg(p)
         // find the degree
-        ptp = ADDR_PERM2(p);
-        ptf = ADDR_PPERM2(f);
-        while (ptp[deg - 1] >= degf || ptf[ptp[deg - 1]] == 0)
-            deg--;
-        pf = NEW_PPERM2(deg);
-        ptpf = ADDR_PPERM2(pf);
-        ptp = ADDR_PERM2(p);
-        ptf = ADDR_PPERM2(f);
-        for (i = 0; i < deg; i++)
+        ptp = ADDR_PERM<TP>(p);
+        ptf = ADDR_PPERM<TF>(f);
+        while (ptp[degp - 1] >= degf || ptf[ptp[degp - 1]] == 0)
+            degp--;
+        pf = NEW_PPERM<TF>(degp);
+        ptpf = ADDR_PPERM<TF>(pf);
+        ptp = ADDR_PERM<TP>(p);
+        ptf = ADDR_PPERM<TF>(f);
+        for (i = 0; i < degp; i++)
             if (ptp[i] < degf)
                 ptpf[i] = ptf[ptp[i]];
     }
-    SET_CODEG_PPERM2(pf, CODEG_PPERM2(f));
-    return pf;
-}
-
-static Obj ProdPerm4PPerm4(Obj p, Obj f)
-{
-    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-
-    UInt4 *ptp, *ptf, *ptpf;
-    UInt  deg, degf, i;
-    Obj   pf;
-
-    if (DEG_PPERM4(f) == 0)
-        return EmptyPartialPerm;
-
-    deg = DEG_PERM4(p);
-    degf = DEG_PPERM4(f);
-
-    if (deg < degf) {
-        pf = NEW_PPERM4(degf);
-        ptpf = ADDR_PPERM4(pf);
-        ptp = ADDR_PERM4(p);
-        ptf = ADDR_PPERM4(f);
-        for (i = 0; i < deg; i++)
-            *ptpf++ = ptf[*ptp++];
-        for (; i < degf; i++)
-            *ptpf++ = ptf[i];
-    }
-    else {    // deg(f)<deg(p)
-        // find the degree
-        ptp = ADDR_PERM4(p);
-        ptf = ADDR_PPERM4(f);
-        while (ptp[deg - 1] >= degf || ptf[ptp[deg - 1]] == 0)
-            deg--;
-        pf = NEW_PPERM4(deg);
-        ptpf = ADDR_PPERM4(pf);
-        ptp = ADDR_PERM4(p);
-        ptf = ADDR_PPERM4(f);
-        for (i = 0; i < deg; i++)
-            if (ptp[i] < degf)
-                ptpf[i] = ptf[ptp[i]];
-    }
-    SET_CODEG_PPERM4(pf, CODEG_PPERM4(f));
-    return pf;
-}
-
-static Obj ProdPerm4PPerm2(Obj p, Obj f)
-{
-    GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-
-    UInt4  *ptp;
-    UInt2 *ptf, *ptpf;
-    UInt   deg, degf, i;
-    Obj    pf;
-
-    if (DEG_PPERM2(f) == 0)
-        return EmptyPartialPerm;
-
-    deg = DEG_PERM4(p);
-    degf = DEG_PPERM2(f);
-    if (deg < degf) {
-        pf = NEW_PPERM2(degf);
-        ptpf = ADDR_PPERM2(pf);
-        ptp = ADDR_PERM4(p);
-        ptf = ADDR_PPERM2(f);
-        for (i = 0; i < deg; i++)
-            *ptpf++ = ptf[*ptp++];
-        for (; i < degf; i++)
-            *ptpf++ = ptf[i];
-    }
-    else {    // deg(f)<=deg(p)
-        // find the degree
-        ptp = ADDR_PERM4(p);
-        ptf = ADDR_PPERM2(f);
-        while (ptp[deg - 1] >= degf || ptf[ptp[deg - 1]] == 0)
-            deg--;
-        pf = NEW_PPERM2(deg);
-        ptp = ADDR_PERM4(p);
-        ptf = ADDR_PPERM2(f);
-        ptpf = ADDR_PPERM2(pf);
-        for (i = 0; i < deg; i++)
-            if (ptp[i] < degf)
-                ptpf[i] = ptf[ptp[i]];
-    }
-
-    SET_CODEG_PPERM2(pf, CODEG_PPERM2(f));
-    return pf;
-}
-
-static Obj ProdPerm2PPerm4(Obj p, Obj f)
-{
-    GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-
-    UInt2 * ptp;
-    UInt4 * ptf, *ptpf;
-    UInt    deg, degf, i;
-    Obj     pf;
-
-    if (DEG_PPERM4(f) == 0)
-        return EmptyPartialPerm;
-
-    deg = DEG_PERM2(p);
-    degf = DEG_PPERM4(f);
-    if (deg < degf) {
-        pf = NEW_PPERM4(degf);
-        ptpf = ADDR_PPERM4(pf);
-        ptp = ADDR_PERM2(p);
-        ptf = ADDR_PPERM4(f);
-        for (i = 0; i < deg; i++)
-            *ptpf++ = ptf[*ptp++];
-        for (; i < degf; i++)
-            *ptpf++ = ptf[i];
-    }
-    else {    // deg(f)<deg(p)
-        // find the degree
-        ptp = ADDR_PERM2(p);
-        ptf = ADDR_PPERM4(f);
-        while (ptp[deg - 1] >= degf || ptf[ptp[deg - 1]] == 0)
-            deg--;
-        pf = NEW_PPERM4(deg);
-        ptpf = ADDR_PPERM4(pf);
-        ptp = ADDR_PERM2(p);
-        ptf = ADDR_PPERM4(f);
-        for (i = 0; i < deg; i++)
-            if (ptp[i] < degf)
-                ptpf[i] = ptf[ptp[i]];
-    }
-
-    SET_CODEG_PPERM4(pf, CODEG_PPERM4(f));
+    SET_CODEG_PPERM<TF>(pf, CODEG_PPERM<TF>(f));
     return pf;
 }
 
@@ -5780,10 +5652,10 @@ static Int InitKernel(StructInitInfo * module)
     ProdFuncs[T_PPERM4][T_PERM4] = ProdPPerm4Perm4;
     ProdFuncs[T_PPERM2][T_PERM4] = ProdPPerm2Perm4;
     ProdFuncs[T_PPERM4][T_PERM2] = ProdPPerm4Perm2;
-    ProdFuncs[T_PERM2][T_PPERM2] = ProdPerm2PPerm2;
-    ProdFuncs[T_PERM4][T_PPERM4] = ProdPerm4PPerm4;
-    ProdFuncs[T_PERM4][T_PPERM2] = ProdPerm4PPerm2;
-    ProdFuncs[T_PERM2][T_PPERM4] = ProdPerm2PPerm4;
+    ProdFuncs[T_PERM2][T_PPERM2] = ProdPermPPerm<UInt2, UInt2>;
+    ProdFuncs[T_PERM4][T_PPERM4] = ProdPermPPerm<UInt4, UInt4>;
+    ProdFuncs[T_PERM4][T_PPERM2] = ProdPermPPerm<UInt4, UInt2>;
+    ProdFuncs[T_PERM2][T_PPERM4] = ProdPermPPerm<UInt2, UInt4>;
     PowFuncs[T_INT][T_PPERM2] = PowIntPPerm2;
     PowFuncs[T_INT][T_PPERM4] = PowIntPPerm4;
     PowFuncs[T_PPERM2][T_PERM2] = PowPPerm2Perm2;
