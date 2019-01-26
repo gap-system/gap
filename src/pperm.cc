@@ -264,15 +264,16 @@ static inline void SET_DOM_PPERM(Obj f, Obj dom)
 
 // find domain and img set (unsorted) return the rank
 
-static UInt INIT_PPERM2(Obj f)
+template <typename T>
+static UInt INIT_PPERM(Obj f)
 {
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
+    ASSERT_IS_PPERM<T>(f);
 
     UInt    deg, rank, i;
-    UInt2 * ptf;
+    T *     ptf;
     Obj     img, dom;
 
-    deg = DEG_PPERM2(f);
+    deg = DEG_PPERM<T>(f);
 
     if (deg == 0) {
         dom = ImmutableEmptyPlist;
@@ -286,51 +287,7 @@ static UInt INIT_PPERM2(Obj f)
     img = NEW_PLIST_IMM(T_PLIST_CYC, deg);
 
     /* renew the ptr in case of garbage collection */
-    ptf = ADDR_PPERM2(f);
-
-    rank = 0;
-    for (i = 0; i < deg; i++) {
-        if (ptf[i] != 0) {
-            rank++;
-            SET_ELM_PLIST(dom, rank, INTOBJ_INT(i + 1));
-            SET_ELM_PLIST(img, rank, INTOBJ_INT(ptf[i]));
-        }
-    }
-    GAP_ASSERT(rank != 0);    // rank = 0 => deg = 0, so this is not allowed
-
-    SHRINK_PLIST(img, (Int)rank);
-    SET_LEN_PLIST(img, (Int)rank);
-    SHRINK_PLIST(dom, (Int)rank);
-    SET_LEN_PLIST(dom, (Int)rank);
-
-    SET_DOM_PPERM(f, dom);
-    SET_IMG_PPERM(f, img);
-    CHANGED_BAG(f);
-    return rank;
-}
-
-static UInt INIT_PPERM4(Obj f)
-{
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-
-    UInt    deg, rank, i;
-    UInt4 * ptf;
-    Obj     img, dom;
-
-    deg = DEG_PPERM4(f);
-
-    if (deg == 0) {
-        dom = ImmutableEmptyPlist;
-        SET_DOM_PPERM(f, dom);
-        SET_IMG_PPERM(f, dom);
-        CHANGED_BAG(f);
-        return deg;
-    }
-
-    dom = NEW_PLIST_IMM(T_PLIST_CYC_SSORT, deg);
-    img = NEW_PLIST_IMM(T_PLIST_CYC, deg);
-
-    ptf = ADDR_PPERM4(f);
+    ptf = ADDR_PPERM<T>(f);
 
     rank = 0;
     for (i = 0; i < deg; i++) {
@@ -356,23 +313,29 @@ static UInt INIT_PPERM4(Obj f)
 static UInt INIT_PPERM(Obj f)
 {
     if (TNUM_OBJ(f) == T_PPERM2) {
-        return INIT_PPERM2(f);
+        return INIT_PPERM<UInt2>(f);
     }
     else {
-        return INIT_PPERM4(f);
+        return INIT_PPERM<UInt4>(f);
     }
+}
+
+template <typename T>
+static UInt RANK_PPERM(Obj f)
+{
+    ASSERT_IS_PPERM<T>(f);
+    return (IMG_PPERM(f) == NULL ? INIT_PPERM<T>(f)
+                                 : LEN_PLIST(IMG_PPERM(f)));
 }
 
 UInt RANK_PPERM2(Obj f)
 {
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
-    return (IMG_PPERM(f) == NULL ? INIT_PPERM2(f) : LEN_PLIST(IMG_PPERM(f)));
+    return RANK_PPERM<UInt2>(f);
 }
 
 UInt RANK_PPERM4(Obj f)
 {
-    GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
-    return (IMG_PPERM(f) == NULL ? INIT_PPERM4(f) : LEN_PLIST(IMG_PPERM(f)));
+    return RANK_PPERM<UInt4>(f);
 }
 
 static Obj SORT_PLIST_INTOBJ(Obj res)
