@@ -17,9 +17,6 @@
 
 #include "bool.h"
 #include "error.h"
-#ifdef USE_GASMAN
-#include "gasman_intern.h"
-#endif
 #include "lists.h"
 #include "modules.h"
 #include "plist.h"
@@ -35,6 +32,10 @@
 #  define GC_THREADS
 # endif
 # include <gc/gc.h>
+#endif
+
+#ifdef USE_GASMAN
+#include "gasman_intern.h"
 #endif
 
 #ifdef USE_JULIA_GC

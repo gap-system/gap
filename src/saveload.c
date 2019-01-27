@@ -19,9 +19,6 @@
 #include "compstat.h"
 #include "error.h"
 #include "finfield.h"
-#ifdef USE_GASMAN
-#include "gasman_intern.h"
-#endif
 #include "gvars.h"
 #include "io.h"
 #include "modules.h"
@@ -30,6 +27,10 @@
 #include "stringobj.h"
 #include "sysfiles.h"
 #include "sysopt.h"
+
+#ifdef USE_GASMAN
+#include "gasman_intern.h"
+#endif
 
 #include <unistd.h>
 

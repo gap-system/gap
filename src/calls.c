@@ -39,9 +39,6 @@
 #include "bool.h"
 #include "code.h"
 #include "error.h"
-#ifdef USE_GASMAN
-#include "gasman_intern.h"
-#endif
 #include "gvars.h"
 #include "integer.h"
 #include "io.h"
@@ -56,6 +53,10 @@
 
 #ifdef HPCGAP
 #include "hpc/thread.h"
+#endif
+
+#ifdef USE_GASMAN
+#include "gasman_intern.h"
 #endif
 
 void SET_NAME_FUNC(Obj func, Obj name)

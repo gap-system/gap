@@ -19,9 +19,6 @@
 #include "calls.h"
 #include "error.h"
 #include "gapstate.h"
-#ifdef USE_GASMAN
-#include "gasman_intern.h"
-#endif
 #include "gvars.h"
 #include "io.h"
 #include "lists.h"
@@ -39,6 +36,10 @@
 #include "hpc/guards.h"
 #include "hpc/thread.h"
 #include <pthread.h>
+#endif
+
+#ifdef USE_GASMAN
+#include "gasman_intern.h"
 #endif
 
 /****************************************************************************

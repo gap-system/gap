@@ -123,6 +123,7 @@
 #include <sys/mman.h>
 #endif
 
+
 /****************************************************************************
 **
 *F  WORDS_BAG( <size> ) . . . . . . . . . . words used by a bag of given size

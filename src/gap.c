@@ -19,9 +19,6 @@
 #include "error.h"
 #include "funcs.h"
 #include "gapstate.h"
-#ifdef USE_GASMAN
-#include "gasman_intern.h"
-#endif
 #include "gvars.h"
 #include "integer.h"
 #include "io.h"
@@ -49,6 +46,10 @@
 #endif
 
 #include <gmp.h>
+
+#ifdef USE_GASMAN
+#include "gasman_intern.h"
+#endif
 
 #ifdef USE_JULIA_GC
 #include "julia.h"
