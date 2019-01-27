@@ -27,7 +27,7 @@
 #include "core/calls.h"
 #include "error.h"
 #include "gapstate.h"
-#include "gaputils.h"
+#include "util/gaputils.h"
 #include "tnums/integer.h"
 #include "io.h"
 #include "modules.h"

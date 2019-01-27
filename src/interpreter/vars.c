@@ -25,7 +25,7 @@
 #include "error.h"
 #include "interpreter/expressions.h"
 #include "gap.h"
-#include "gaputils.h"
+#include "util/gaputils.h"
 #include "core/gvars.h"
 #include "interpreter/hookintrprtr.h"
 #include "io.h"

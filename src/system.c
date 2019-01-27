@@ -15,7 +15,7 @@
 
 #include "system.h"
 
-#include "gaputils.h"
+#include "util/gaputils.h"
 #ifdef GAP_MEM_CHECK
 #include "gasman.h"
 #endif

@@ -32,7 +32,7 @@
 #include "tnums/bool.h"
 #include "error.h"
 #include "interpreter/funcs.h"
-#include "gaputils.h"
+#include "util/gaputils.h"
 #include "io.h"
 #include "modules.h"
 #include "core/opers.h"

@@ -18,7 +18,7 @@
 
 #include "error.h"
 #include "gapstate.h"
-#include "gaputils.h"
+#include "util/gaputils.h"
 #include "io.h"
 #include "core/lists.h"
 #include "modules.h"

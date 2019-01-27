@@ -54,7 +54,7 @@
 #include "core/ariths.h"
 #include "tnums/bool.h"
 #include "error.h"
-#include "gaputils.h"
+#include "util/gaputils.h"
 #include "io.h"
 #include "core/lists.h"
 #include "modules.h"

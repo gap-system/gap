@@ -14,7 +14,7 @@
 **  and gasman.c for two other garbage collector implementations.
 **/
 
-#include "fibhash.h"
+#include "util/fibhash.h"
 #include "interpreter/funcs.h"
 #include "gapstate.h"
 #include "gasman.h"

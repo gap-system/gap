@@ -12,7 +12,7 @@
 
 #include "interpreter/code.h"
 #include "error.h"
-#include "fibhash.h"
+#include "util/fibhash.h"
 #include "gapstate.h"
 #include "core/gvars.h"
 #include "modules.h"

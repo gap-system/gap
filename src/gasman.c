@@ -114,7 +114,7 @@
 #include "gasman.h"
 #include "gasman_intern.h"
 
-#include "gaputils.h"
+#include "util/gaputils.h"
 #include "io.h"
 #include "sysfiles.h"
 #include "sysmem.h"

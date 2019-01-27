@@ -25,7 +25,7 @@
 #include "core/calls.h"
 #include "error.h"
 #include "gapstate.h"
-#include "gaputils.h"
+#include "util/gaputils.h"
 #include "core/gvars.h"
 #include "core/lists.h"
 #include "modules.h"

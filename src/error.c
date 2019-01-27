@@ -19,7 +19,7 @@
 #include "interpreter/expressions.h"
 #include "interpreter/funcs.h"
 #include "gapstate.h"
-#include "gaputils.h"
+#include "util/gaputils.h"
 #include "io.h"
 #include "core/lists.h"
 #include "modules.h"

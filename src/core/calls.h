@@ -46,7 +46,7 @@
 #define GAP_CALLS_H
 
 #include "interpreter/funcs.h"
-#include "gaputils.h"
+#include "util/gaputils.h"
 #include "core/objects.h"
 
 

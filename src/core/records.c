@@ -17,7 +17,7 @@
 
 #include "tnums/bool.h"
 #include "error.h"
-#include "gaputils.h"
+#include "util/gaputils.h"
 #include "modules.h"
 #include "core/opers.h"
 #include "tnums/plist.h"

@@ -18,7 +18,7 @@
 
 #include "core/calls.h"
 #include "compiled.h"
-#include "fibhash.h"
+#include "util/fibhash.h"
 #include "interpreter/hookintrprtr.h"
 
 #ifdef HPCGAP

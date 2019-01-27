@@ -14,8 +14,8 @@
 
 #include "tnums/bool.h"
 #include "error.h"
-#include "fibhash.h"
-#include "gaputils.h"
+#include "util/fibhash.h"
+#include "util/gaputils.h"
 #include "core/gvars.h"
 #include "io.h"
 #include "core/lists.h"
