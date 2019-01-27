@@ -15,9 +15,9 @@
 #include "ariths.h"
 #include "tnums/bool.h"
 #include "calls.h"
-#include "code.h"
+#include "interpreter/code.h"
 #include "error.h"
-#include "exprs.h"
+#include "interpreter/expressions.h"
 #include "gvars.h"
 #include "tnums/integer.h"
 #include "io.h"
@@ -25,10 +25,10 @@
 #include "modules.h"
 #include "tnums/plist.h"
 #include "records.h"
-#include "stats.h"
+#include "interpreter/statements.h"
 #include "tnums/string.h"
 #include "sysopt.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #include <stdarg.h>
 

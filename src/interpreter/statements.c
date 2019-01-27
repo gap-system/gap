@@ -13,17 +13,17 @@
 **  statements for their effects and prints statements.
 */
 
-#include "stats.h"
+#include "interpreter/statements.h"
 
 #include "ariths.h"
 #include "tnums/bool.h"
 #include "calls.h"
-#include "code.h"
+#include "interpreter/code.h"
 #include "error.h"
-#include "exprs.h"
+#include "interpreter/expressions.h"
 #include "gvars.h"
-#include "hookintrprtr.h"
-#include "intrprtr.h"
+#include "interpreter/hookintrprtr.h"
+#include "interpreter/interpreter.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
@@ -33,7 +33,7 @@
 #include "tnums/string.h"
 #include "sysfiles.h"
 #include "sysmem.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #ifdef HPCGAP
 #include "hpc/thread.h"

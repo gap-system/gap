@@ -14,7 +14,7 @@
 **  identifiers or digits that make up integers from the rest of GAP.
 */
 
-#include "scanner.h"
+#include "interpreter/scanner.h"
 
 #include "error.h"
 #include "gapstate.h"

@@ -22,7 +22,7 @@
 
 #ifdef TRACK_CREATOR
 #include "calls.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 #endif
 
 #ifdef HPCGAP

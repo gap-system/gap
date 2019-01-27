@@ -19,7 +19,7 @@
 #include "calls.h"
 #include "compiled.h"
 #include "fibhash.h"
-#include "hookintrprtr.h"
+#include "interpreter/hookintrprtr.h"
 
 #ifdef HPCGAP
 #include "hpc/guards.h"

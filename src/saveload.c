@@ -22,7 +22,7 @@
 #include "gvars.h"
 #include "io.h"
 #include "modules.h"
-#include "read.h"
+#include "interpreter/read.h"
 #include "streams.h"
 #include "tnums/string.h"
 #include "sysfiles.h"

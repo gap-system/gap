@@ -16,10 +16,10 @@
 
 #include "ariths.h"
 #include "tnums/bool.h"
-#include "code.h"
+#include "interpreter/code.h"
 #include "compstat.h"
 #include "error.h"
-#include "funcs.h"
+#include "interpreter/funcs.h"
 #include "gap.h"
 #include "gapstate.h"
 #include "gvars.h"

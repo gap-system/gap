@@ -11,14 +11,14 @@
 **
 */
 
-#include "hookintrprtr.h"
+#include "interpreter/hookintrprtr.h"
 
-#include "code.h"
-#include "exprs.h"
+#include "interpreter/code.h"
+#include "interpreter/expressions.h"
 #include "gapstate.h"
 #include "gaputils.h"
 #include "modules.h"
-#include "stats.h"
+#include "interpreter/statements.h"
 
 #include "hpc/thread.h"
 

@@ -13,16 +13,16 @@
 **  expressions to their values and prints expressions.
 */
 
-#include "exprs.h"
+#include "interpreter/expressions.h"
 
 #include "ariths.h"
 #include "tnums/bool.h"
 #include "calls.h"
-#include "code.h"
+#include "interpreter/code.h"
 #include "error.h"
 #include "gapstate.h"
 #include "gvars.h"
-#include "hookintrprtr.h"
+#include "interpreter/hookintrprtr.h"
 #include "tnums/integer.h"
 #include "io.h"
 #include "lists.h"
@@ -34,7 +34,7 @@
 #include "tnums/range.h"
 #include "records.h"
 #include "tnums/string.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"

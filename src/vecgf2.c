@@ -24,7 +24,7 @@
 #include "tnums/precord.h"
 #include "tnums/range.h"
 #include "records.h"
-#include "stats.h"
+#include "interpreter/statements.h"
 #include "vec8bit.h"
 
 #include <gmp.h>

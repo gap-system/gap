@@ -76,7 +76,7 @@
 #include "modules.h"
 #include "opers.h"
 #include "saveload.h"
-#include "stats.h"
+#include "interpreter/statements.h"
 #include "tnums/string.h"
 
 

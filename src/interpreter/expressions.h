@@ -16,9 +16,9 @@
 #ifndef GAP_EXPRS_H
 #define GAP_EXPRS_H
 
-#include "code.h"
+#include "interpreter/code.h"
 #include "system.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 /****************************************************************************
 **

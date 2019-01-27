@@ -14,7 +14,7 @@
 
 #include "sysmem.h"
 
-#include "stats.h"
+#include "interpreter/statements.h"
 #include "sysfiles.h"
 #include "sysopt.h"
 

@@ -17,7 +17,7 @@
 #include "calls.h"
 #include "compiler.h"
 #include "error.h"
-#include "funcs.h"
+#include "interpreter/funcs.h"
 #include "gapstate.h"
 #include "gvars.h"
 #include "tnums/integer.h"
@@ -26,20 +26,20 @@
 #include "modules.h"
 #include "tnums/plist.h"
 #include "tnums/precord.h"
-#include "read.h"
+#include "interpreter/read.h"
 #include "records.h"
 #include "saveload.h"
-#include "stats.h"    // for ClearError
+#include "interpreter/statements.h"    // for ClearError
 #include "streams.h"
 #include "tnums/string.h"
 #include "sysenv.h"
 #include "sysfiles.h"
 #include "sysmem.h"
 #include "sysopt.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #ifdef HPCGAP
-#include "intrprtr.h"
+#include "interpreter/interpreter.h"
 #include "hpc/misc.h"
 #include "hpc/thread.h"
 #include "hpc/threadapi.h"

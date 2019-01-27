@@ -15,14 +15,14 @@
 **/
 
 #include "fibhash.h"
-#include "funcs.h"
+#include "interpreter/funcs.h"
 #include "gapstate.h"
 #include "gasman.h"
 #include "objects.h"
 #include "tnums/plist.h"
 #include "sysmem.h"
 #include "system.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #include <stdio.h>
 #include <stdlib.h>

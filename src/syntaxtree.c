@@ -12,9 +12,9 @@
 
 #include "tnums/bool.h"
 #include "calls.h"
-#include "code.h"
+#include "interpreter/code.h"
 #include "error.h"
-#include "exprs.h"
+#include "interpreter/expressions.h"
 #include "gvars.h"
 #include "tnums/integer.h"
 #include "lists.h"
@@ -23,10 +23,10 @@
 #include "tnums/plist.h"
 #include "tnums/precord.h"
 #include "records.h"
-#include "stats.h"
+#include "interpreter/statements.h"
 #include "tnums/string.h"
 #include "system.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #include <stdarg.h>
 #include <ctype.h>

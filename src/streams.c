@@ -16,7 +16,7 @@
 #include "tnums/bool.h"
 #include "calls.h"
 #include "error.h"
-#include "funcs.h"
+#include "interpreter/funcs.h"
 #include "gap.h"
 #include "gapstate.h"
 #include "gvars.h"
@@ -27,13 +27,13 @@
 #include "opers.h"
 #include "tnums/plist.h"
 #include "tnums/precord.h"
-#include "read.h"
+#include "interpreter/read.h"
 #include "records.h"
-#include "stats.h"
+#include "interpreter/statements.h"
 #include "tnums/string.h"
 #include "sysfiles.h"
 #include "sysopt.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #include <dirent.h>
 #include <errno.h>

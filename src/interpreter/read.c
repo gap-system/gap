@@ -10,24 +10,24 @@
 **  This module contains the functions to read expressions and statements.
 */
 
-#include "read.h"
+#include "interpreter/read.h"
 
 #include "tnums/bool.h"
 #include "calls.h"
-#include "code.h"
-#include "funcs.h"
+#include "interpreter/code.h"
+#include "interpreter/funcs.h"
 #include "gapstate.h"
 #include "gvars.h"
-#include "intrprtr.h"
+#include "interpreter/interpreter.h"
 #include "io.h"
 #include "modules.h"
 #include "tnums/plist.h"
 #include "records.h"
-#include "scanner.h"
-#include "stats.h"
+#include "interpreter/scanner.h"
+#include "interpreter/statements.h"
 #include "tnums/string.h"
 #include "sysopt.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #ifdef HPCGAP
 #include "hpc/thread.h"

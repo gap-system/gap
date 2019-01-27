@@ -31,7 +31,7 @@
 #include "ariths.h"
 #include "tnums/bool.h"
 #include "error.h"
-#include "funcs.h"
+#include "interpreter/funcs.h"
 #include "gaputils.h"
 #include "io.h"
 #include "modules.h"

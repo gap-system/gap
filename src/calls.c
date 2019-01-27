@@ -37,7 +37,7 @@
 #include "calls.h"
 
 #include "tnums/bool.h"
-#include "code.h"
+#include "interpreter/code.h"
 #include "error.h"
 #include "gvars.h"
 #include "tnums/integer.h"
@@ -47,9 +47,9 @@
 #include "opers.h"
 #include "tnums/plist.h"
 #include "saveload.h"
-#include "stats.h"
+#include "interpreter/statements.h"
 #include "tnums/string.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #ifdef HPCGAP
 #include "hpc/thread.h"

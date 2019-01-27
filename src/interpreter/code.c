@@ -13,24 +13,24 @@
 **  expressions.  Its functions are called from the reader.
 */
 
-#include "code.h"
+#include "interpreter/code.h"
 
 #include "tnums/bool.h"
 #include "calls.h"
-#include "funcs.h"
+#include "interpreter/funcs.h"
 #include "gap.h"
 #include "gapstate.h"
 #include "gvars.h"
-#include "hookintrprtr.h"
+#include "interpreter/hookintrprtr.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
 #include "tnums/plist.h"
-#include "read.h"
+#include "interpreter/read.h"
 #include "records.h"
 #include "saveload.h"
 #include "tnums/string.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #include "hpc/thread.h"
 

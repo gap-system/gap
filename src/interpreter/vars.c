@@ -17,17 +17,17 @@
 **  global variables, list elements, and record elements.
 */
 
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #include "tnums/bool.h"
 #include "calls.h"
-#include "code.h"
+#include "interpreter/code.h"
 #include "error.h"
-#include "exprs.h"
+#include "interpreter/expressions.h"
 #include "gap.h"
 #include "gaputils.h"
 #include "gvars.h"
-#include "hookintrprtr.h"
+#include "interpreter/hookintrprtr.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
@@ -35,7 +35,7 @@
 #include "tnums/precord.h"
 #include "records.h"
 #include "saveload.h"
-#include "stats.h"
+#include "interpreter/statements.h"
 #include "tnums/string.h"
 
 #ifdef HPCGAP

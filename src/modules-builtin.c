@@ -10,7 +10,7 @@
 
 #include "compiled.h"
 #include "gap.h"
-#include "hookintrprtr.h"
+#include "interpreter/hookintrprtr.h"
 #include "intfuncs.h"
 #include "iostream.h"
 #include "objccoll.h"

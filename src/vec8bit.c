@@ -26,7 +26,7 @@
 #include "tnums/precord.h"
 #include "tnums/range.h"
 #include "records.h"
-#include "stats.h"
+#include "interpreter/statements.h"
 #include "vecgf2.h"
 
 #ifdef HPCGAP

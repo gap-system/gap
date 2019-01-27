@@ -16,17 +16,17 @@
 **  coder.
 */
 
-#include "intrprtr.h"
+#include "interpreter/interpreter.h"
 
 #include "ariths.h"
 #include "tnums/bool.h"
 #include "calls.h"
-#include "code.h"
+#include "interpreter/code.h"
 #include "error.h"
-#include "funcs.h"
+#include "interpreter/funcs.h"
 #include "gapstate.h"
 #include "gvars.h"
-#include "hookintrprtr.h"
+#include "interpreter/hookintrprtr.h"
 #include "tnums/integer.h"
 #include "io.h"
 #include "lists.h"
@@ -36,10 +36,10 @@
 #include "tnums/plist.h"
 #include "tnums/precord.h"
 #include "tnums/range.h"
-#include "read.h"
+#include "interpreter/read.h"
 #include "records.h"
 #include "tnums/string.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"

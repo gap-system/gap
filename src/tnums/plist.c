@@ -44,7 +44,7 @@
 #include "tnums/cyclotom.h"
 #include "error.h"
 #include "tnums/finfield.h"
-#include "funcs.h"
+#include "interpreter/funcs.h"
 #include "gaputils.h"
 #include "io.h"
 #include "lists.h"

@@ -15,17 +15,17 @@
 
 #include "tnums/bool.h"
 #include "calls.h"
-#include "code.h"
+#include "interpreter/code.h"
 #include "error.h"
-#include "funcs.h"
-#include "hookintrprtr.h"
+#include "interpreter/funcs.h"
+#include "interpreter/hookintrprtr.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
 #include "tnums/plist.h"
 #include "tnums/string.h"
 #include "sysfiles.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #include "hpc/thread.h"
 

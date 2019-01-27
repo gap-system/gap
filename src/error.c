@@ -15,9 +15,9 @@
 #include "error.h"
 
 #include "tnums/bool.h"
-#include "code.h"
-#include "exprs.h"
-#include "funcs.h"
+#include "interpreter/code.h"
+#include "interpreter/expressions.h"
+#include "interpreter/funcs.h"
 #include "gapstate.h"
 #include "gaputils.h"
 #include "io.h"
@@ -26,9 +26,9 @@
 #include "tnums/plist.h"
 #include "tnums/precord.h"
 #include "records.h"
-#include "stats.h"
+#include "interpreter/statements.h"
 #include "tnums/string.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #ifdef HPCGAP
 #include "hpc/thread.h"

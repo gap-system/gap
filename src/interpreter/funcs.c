@@ -16,23 +16,23 @@
 **  It uses the function call mechanism defined by the calls package.
 */
 
-#include "funcs.h"
+#include "interpreter/funcs.h"
 
 #include "calls.h"
-#include "code.h"
+#include "interpreter/code.h"
 #include "error.h"
-#include "exprs.h"
+#include "interpreter/expressions.h"
 #include "gapstate.h"
-#include "hookintrprtr.h"
+#include "interpreter/hookintrprtr.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
 #include "opers.h"
 #include "tnums/plist.h"
-#include "read.h"
-#include "stats.h"
+#include "interpreter/read.h"
+#include "interpreter/statements.h"
 #include "tnums/string.h"
-#include "vars.h"
+#include "interpreter/vars.h"
 
 #ifdef HPCGAP
 #include "hpc/guards.h"
