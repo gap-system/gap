@@ -26,8 +26,8 @@
 
 #else
 
-#include "hpc/tlsconfig.h"
 #include "hpc/region.h"
+#include "hpc/tlsconfig.h"
 
 /* Maximum number of threads excluding the main thread */
 #define MAX_THREADS 1023

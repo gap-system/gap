@@ -16,23 +16,23 @@
 
 #include "sysfiles.h"
 
-#include "bool.h"
-#include "calls.h"
 #include "compstat.h"
+#include "core/calls.h"
+#include "core/gvars.h"
+#include "core/lists.h"
+#include "core/records.h"
 #include "error.h"
 #include "gapstate.h"
-#include "gaputils.h"
-#include "gvars.h"
+#include "interpreter/read.h"
+#include "interpreter/statements.h"
 #include "io.h"
-#include "lists.h"
 #include "modules.h"
-#include "plist.h"
-#include "read.h"
-#include "records.h"
-#include "stats.h"
-#include "stringobj.h"
 #include "sysenv.h"
 #include "sysopt.h"
+#include "tnums/bool.h"
+#include "tnums/plist.h"
+#include "tnums/string.h"
+#include "util/gaputils.h"
 
 #include "hpc/thread.h"
 
@@ -47,7 +47,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #ifdef HAVE_SYS_WAIT_H
@@ -65,7 +64,7 @@ typedef void sig_handler_t ( int );
 #endif
 
 #ifdef HAVE_SYS_IOCTL_H
-#include <sys/ioctl.h>                  /* for TIOCGWINSZ */
+#include <sys/ioctl.h> /* for TIOCGWINSZ */
 #endif
 
 #ifdef SYS_IS_CYGWIN32

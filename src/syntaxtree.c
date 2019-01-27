@@ -10,26 +10,26 @@
 
 #include "syntaxtree.h"
 
-#include "bool.h"
-#include "calls.h"
-#include "code.h"
+#include "core/calls.h"
+#include "core/gvars.h"
+#include "core/lists.h"
+#include "core/opers.h"
+#include "core/records.h"
 #include "error.h"
-#include "exprs.h"
-#include "gvars.h"
-#include "integer.h"
-#include "lists.h"
+#include "interpreter/code.h"
+#include "interpreter/expressions.h"
+#include "interpreter/statements.h"
+#include "interpreter/vars.h"
 #include "modules.h"
-#include "opers.h"
-#include "plist.h"
-#include "precord.h"
-#include "records.h"
-#include "stats.h"
-#include "stringobj.h"
 #include "system.h"
-#include "vars.h"
+#include "tnums/bool.h"
+#include "tnums/integer.h"
+#include "tnums/plist.h"
+#include "tnums/precord.h"
+#include "tnums/string.h"
 
-#include <stdarg.h>
 #include <ctype.h>
+#include <stdarg.h>
 
 typedef Obj (*CompileFuncT)(Obj node, Expr expr);
 typedef Obj (*CompileArgT)(Expr expr);

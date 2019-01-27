@@ -14,15 +14,15 @@
 **  and gasman.c for two other garbage collector implementations.
 **/
 
-#include "fibhash.h"
-#include "funcs.h"
+#include "core/objects.h"
 #include "gapstate.h"
 #include "gasman.h"
-#include "objects.h"
-#include "plist.h"
+#include "interpreter/funcs.h"
+#include "interpreter/vars.h"
 #include "sysmem.h"
 #include "system.h"
-#include "vars.h"
+#include "tnums/plist.h"
+#include "util/fibhash.h"
 
 #include <stdio.h>
 #include <stdlib.h>

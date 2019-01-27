@@ -1,0 +1,7 @@
+* funcs.c vs. calls.c: is this always a clear distinction?
+
+* move some things out of listoper.c*, e.g. FuncMONOM_TOT_DEG_LEX to a new math/polynomial.c ?
+
+* split streams.c: move library funcs dealing which directories and files (IsWritableFile etc.)
+  to new separate file?
+

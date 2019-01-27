@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "debug.h"
+#include "util/debug.h"
 
 
 /* check if we are on a 64 bit machine                                     */

@@ -12,43 +12,44 @@
 
 #include "gap.h"
 
-#include "ariths.h"
-#include "bool.h"
-#include "calls.h"
 #include "compiler.h"
+#include "core/ariths.h"
+#include "core/calls.h"
+#include "core/gvars.h"
+#include "core/lists.h"
+#include "core/records.h"
+#include "core/saveload.h"
 #include "error.h"
-#include "funcs.h"
 #include "gapstate.h"
-#ifdef USE_GASMAN
-#include "gasman_intern.h"
-#endif
-#include "gvars.h"
-#include "integer.h"
+#include "general/streams.h"
+#include "interpreter/funcs.h"
+#include "interpreter/read.h"
+#include "interpreter/statements.h"    // for ClearError
+#include "interpreter/vars.h"
 #include "io.h"
-#include "lists.h"
 #include "modules.h"
-#include "plist.h"
-#include "precord.h"
-#include "read.h"
-#include "records.h"
-#include "saveload.h"
-#include "stats.h"    // for ClearError
-#include "streams.h"
-#include "stringobj.h"
 #include "sysenv.h"
 #include "sysfiles.h"
 #include "sysmem.h"
 #include "sysopt.h"
-#include "vars.h"
+#include "tnums/bool.h"
+#include "tnums/integer.h"
+#include "tnums/plist.h"
+#include "tnums/precord.h"
+#include "tnums/string.h"
 
 #ifdef HPCGAP
-#include "intrprtr.h"
 #include "hpc/misc.h"
 #include "hpc/thread.h"
 #include "hpc/threadapi.h"
+#include "interpreter/interpreter.h"
 #endif
 
 #include <gmp.h>
+
+#ifdef USE_GASMAN
+#include "gasman_intern.h"
+#endif
 
 #ifdef USE_JULIA_GC
 #include "julia.h"

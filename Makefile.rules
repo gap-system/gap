@@ -28,10 +28,10 @@ default: all
 # makes it trivial to comment out lines, or to insert conditionals.
 ########################################################################
 SOURCES =
-SOURCES += src/ariths.c
+SOURCES += src/core/ariths.c
 SOURCES += src/bags.c
-SOURCES += src/blister.c
-SOURCES += src/bool.c
+SOURCES += src/tnums/blist.c
+SOURCES += src/tnums/bool.c
 ifeq ($(HPCGAP),yes)
 SOURCES += src/hpc/c_oper1.c
 SOURCES += src/hpc/c_type1.c
@@ -39,73 +39,73 @@ else
 SOURCES += src/c_oper1.c
 SOURCES += src/c_type1.c
 endif
-SOURCES += src/calls.c
-SOURCES += src/code.c
+SOURCES += src/core/calls.c
+SOURCES += src/interpreter/code.c
 SOURCES += src/collectors.cc
 SOURCES += src/compiler.c
 SOURCES += src/compstat.c
-SOURCES += src/costab.c
-SOURCES += src/cyclotom.c
-SOURCES += src/debug.c
-SOURCES += src/dt.c
-SOURCES += src/dteval.c
+SOURCES += src/math/coset_table.c
+SOURCES += src/tnums/cyclotom.c
+SOURCES += src/util/debug.c
+SOURCES += src/math/dt.c
+SOURCES += src/math/dteval.c
 SOURCES += src/error.c
-SOURCES += src/exprs.c
-SOURCES += src/ffdata.c
-SOURCES += src/finfield.c
-SOURCES += src/funcs.c
+SOURCES += src/interpreter/expressions.c
+SOURCES += src/tnums/ffdata.c
+SOURCES += src/tnums/finfield.c
+SOURCES += src/interpreter/funcs.c
 SOURCES += src/gap.c
 SOURCES += gen/gap_version.c	# generated source file
-SOURCES += src/gvars.c
-SOURCES += src/hookintrprtr.c
-SOURCES += src/integer.c
-SOURCES += src/intfuncs.c
-SOURCES += src/intrprtr.c
+SOURCES += src/core/gvars.c
+SOURCES += src/interpreter/hookintrprtr.c
+SOURCES += src/tnums/integer.c
+SOURCES += src/general/intfuncs.c
+SOURCES += src/interpreter/interpreter.c
 SOURCES += src/io.c
-SOURCES += src/iostream.c
+SOURCES += src/general/iostream.c
 ifeq ($(HPCGAP),no)             # we don't support a kernel API in HPC-GAP atm
 SOURCES += src/libgap-api.c
 endif
-SOURCES += src/listfunc.c
-SOURCES += src/listoper.c
-SOURCES += src/lists.c
-SOURCES += src/macfloat.c
+SOURCES += src/applications/listfunc.c
+SOURCES += src/math/listoper.c
+SOURCES += src/core/lists.c
+SOURCES += src/tnums/macfloat.c
 SOURCES += src/modules.c
 SOURCES += src/modules-builtin.c
-SOURCES += src/objcftl.c
-SOURCES += src/objects.c
-SOURCES += src/objfgelm.cc
-SOURCES += src/objpcgel.cc
-SOURCES += src/objset.c
-SOURCES += src/opers.c
-SOURCES += src/permutat.cc
-SOURCES += src/plist.c
-SOURCES += src/pperm.cc
-SOURCES += src/precord.c
+SOURCES += src/math/collector_ftl.c
+SOURCES += src/core/objects.c
+SOURCES += src/math/freegroup_elms.cc
+SOURCES += src/math/pcgroup-elms.cc
+SOURCES += src/tnums/objset.c
+SOURCES += src/core/opers.c
+SOURCES += src/tnums/permutat.cc
+SOURCES += src/tnums/plist.c
+SOURCES += src/tnums/pperm.cc
+SOURCES += src/tnums/precord.c
 SOURCES += src/profile.c
-SOURCES += src/range.c
-SOURCES += src/rational.c
-SOURCES += src/read.c
-SOURCES += src/records.c
-SOURCES += src/saveload.c
-SOURCES += src/scanner.c
-SOURCES += src/sctable.c
-SOURCES += src/set.c
-SOURCES += src/stats.c
-SOURCES += src/streams.c
-SOURCES += src/stringobj.c
+SOURCES += src/tnums/range.c
+SOURCES += src/tnums/rational.c
+SOURCES += src/interpreter/read.c
+SOURCES += src/core/records.c
+SOURCES += src/core/saveload.c
+SOURCES += src/interpreter/scanner.c
+SOURCES += src/math/sctable.c
+SOURCES += src/core/set.c
+SOURCES += src/interpreter/statements.c
+SOURCES += src/general/streams.c
+SOURCES += src/tnums/string.c
 SOURCES += src/syntaxtree.c
 SOURCES += src/sysfiles.c
 SOURCES += src/sysmem.c
 SOURCES += src/system.c
-SOURCES += src/tietze.c
-SOURCES += src/trans.cc
-SOURCES += src/vars.c
-SOURCES += src/vec8bit.c
-SOURCES += src/vecffe.c
-SOURCES += src/vecgf2.c
-SOURCES += src/vector.c
-SOURCES += src/weakptr.c
+SOURCES += src/math/tietze.c
+SOURCES += src/tnums/trans.cc
+SOURCES += src/interpreter/vars.c
+SOURCES += src/math/vec8bit.c
+SOURCES += src/math/vecffe.c
+SOURCES += src/math/vecgf2.c
+SOURCES += src/math/vector.c
+SOURCES += src/tnums/weakptr.c
 
 SOURCES += $(GC_SOURCES)
 
@@ -428,7 +428,7 @@ ffgen: etc/ffgen.c
 
 ffdata: ffgen
 	./ffgen -h > $(abs_srcdir)/src/ffdata.h
-	./ffgen -c > $(abs_srcdir)/src/ffdata.c
+	./ffgen -c > $(abs_srcdir)/src/tnums/ffdata.c
 
 .PHONY: ffdata
 

@@ -15,14 +15,14 @@
 
 #include "boehm_gc.h"
 
+#include "core/objects.h"
 #include "gapstate.h"
 #include "gasman.h"
-#include "objects.h"
 #include "sysmem.h"
 
 #ifdef TRACK_CREATOR
-#include "calls.h"
-#include "vars.h"
+#include "core/calls.h"
+#include "interpreter/vars.h"
 #endif
 
 #ifdef HPCGAP

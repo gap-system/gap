@@ -14,20 +14,20 @@
 
 #include "libgap-api.h"
 
-#include "ariths.h"
-#include "bool.h"
-#include "calls.h"
+#include "core/ariths.h"
+#include "core/calls.h"
+#include "core/gvars.h"
+#include "core/lists.h"
+#include "core/opers.h"
 #include "gap.h"
 #include "gapstate.h"
 #include "gasman.h"
-#include "gvars.h"
-#include "integer.h"
-#include "lists.h"
-#include "macfloat.h"
-#include "opers.h"
-#include "plist.h"
-#include "streams.h"
-#include "stringobj.h"
+#include "general/streams.h"
+#include "tnums/bool.h"
+#include "tnums/integer.h"
+#include "tnums/macfloat.h"
+#include "tnums/plist.h"
+#include "tnums/string.h"
 
 
 //

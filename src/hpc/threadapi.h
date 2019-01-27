@@ -11,7 +11,7 @@
 #ifndef GAP_THREADAPI_H
 #define GAP_THREADAPI_H
 
-#include "objects.h"
+#include "core/objects.h"
 
 #include <pthread.h>
 

@@ -27,16 +27,16 @@ extern "C" {
 
 #include "collectors.h"
 
-#include "bool.h"
+#include "core/gvars.h"
+#include "core/lists.h"
 #include "error.h"
 #include "gapstate.h"
-#include "gvars.h"
-#include "lists.h"
+#include "math/collector.h"
+#include "math/freegroup_elms.h"
 #include "modules.h"
-#include "objccoll.h"
-#include "objfgelm.h"
-#include "plist.h"
-#include "stringobj.h"
+#include "tnums/bool.h"
+#include "tnums/plist.h"
+#include "tnums/string.h"
 
 } // extern "C"
 
