@@ -12,7 +12,7 @@
 #define GAP_OBJPCGEL_H
 
 #include "system.h"
-#include "objfgelm.h"
+#include "math/freegroup_elms.h"
 
 /****************************************************************************
 **

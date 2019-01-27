@@ -8,7 +8,7 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "vec8bit.h"
+#include "math/vec8bit.h"
 
 #include "core/ariths.h"
 #include "tnums/bool.h"
@@ -18,7 +18,7 @@
 #include "core/gvars.h"
 #include "tnums/integer.h"
 #include "io.h"
-#include "listoper.h"
+#include "math/listoper.h"
 #include "core/lists.h"
 #include "modules.h"
 #include "core/opers.h"
@@ -27,7 +27,7 @@
 #include "tnums/range.h"
 #include "core/records.h"
 #include "interpreter/statements.h"
-#include "vecgf2.h"
+#include "math/vecgf2.h"
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"

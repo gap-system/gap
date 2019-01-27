@@ -10,7 +10,7 @@
 **  This file contains the functions of for coset tables.
 */
 
-#include "costab.h"
+#include "math/coset_table.h"
 
 #include "tnums/bool.h"
 #include "error.h"

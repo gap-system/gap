@@ -24,12 +24,12 @@
 **  is 0 if also the polynomials f_{m1},...,f_{mn} for (m > i) are trivial .
 */
 
-#include "dteval.h"
+#include "math/dteval.h"
 
-#include "dt.h"
+#include "math/dt.h"
 #include "tnums/integer.h"
 #include "modules.h"
-#include "objcftl.h"
+#include "math/collector_ftl.h"
 #include "tnums/plist.h"
 #include "tnums/precord.h"
 #include "core/records.h"

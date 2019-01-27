@@ -17,7 +17,7 @@
 **  vector flag and the compact representation of vectors over finite fields.
 */
 
-#include "vector.h"
+#include "math/vector.h"
 
 #include "core/ariths.h"
 #include "modules.h"

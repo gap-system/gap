@@ -11,7 +11,7 @@
 **  generic lists.
 */
 
-#include "listoper.h"
+#include "math/listoper.h"
 
 #include "core/ariths.h"
 #include "tnums/bool.h"

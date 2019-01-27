@@ -33,8 +33,8 @@ extern "C" {
 #include "core/gvars.h"
 #include "core/lists.h"
 #include "modules.h"
-#include "objccoll.h"
-#include "objfgelm.h"
+#include "math/collector.h"
+#include "math/freegroup_elms.h"
 #include "tnums/plist.h"
 #include "tnums/string.h"
 

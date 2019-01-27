@@ -29,7 +29,7 @@
 **  of accessing these entries directly you should use the following macros.
 **
 **
-**  The file "objfgelm.h" defines the following functions and macros:
+**  The file "math/freegroup_elms.h" defines the following functions and macros:
 **
 **   NewWord(( <type>, <npairs> )
 **    returns a new objects of type <type> with room for <npairs>
@@ -70,7 +70,7 @@
 
 extern "C" {
 
-#include "objfgelm.h"
+#include "math/freegroup_elms.h"
 
 #include "core/ariths.h"
 #include "tnums/bool.h"

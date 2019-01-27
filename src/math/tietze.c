@@ -10,7 +10,7 @@
 **  This file contains the functions for computing with finite presentations.
 */
 
-#include "tietze.h"
+#include "math/tietze.h"
 
 #include "tnums/bool.h"
 #include "error.h"

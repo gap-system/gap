@@ -10,7 +10,7 @@
 
 extern "C" {
 
-#include "objpcgel.h"
+#include "math/pcgroup-elms.h"
 
 #include "tnums/bool.h"
 #include "collectors.h"

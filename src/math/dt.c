@@ -52,7 +52,7 @@
 **  for pos( <b> ) for all trees <b> which are represented by <a>.
 */
 
-#include "dt.h"
+#include "math/dt.h"
 
 #include "core/calls.h"
 #include "error.h"

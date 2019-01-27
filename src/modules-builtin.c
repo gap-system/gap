@@ -13,13 +13,13 @@
 #include "interpreter/hookintrprtr.h"
 #include "general/intfuncs.h"
 #include "general/iostream.h"
-#include "objccoll.h"
+#include "math/collector.h"
 #include "tnums/objset.h"
 #include "profile.h"
 #include "syntaxtree.h"
-#include "vec8bit.h"
-#include "vecffe.h"
-#include "vecgf2.h"
+#include "math/vec8bit.h"
+#include "math/vecffe.h"
+#include "math/vecgf2.h"
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"

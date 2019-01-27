@@ -37,7 +37,7 @@
 **        can fool around with SCTables as s/he likes. 
 */
 
-#include "sctable.h"
+#include "math/sctable.h"
 
 #include "core/ariths.h"
 #include "error.h"
