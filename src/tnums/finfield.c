@@ -13,10 +13,10 @@
 **  The concepts of this kernel module are documented in finfield.h
 */
 
-#include "finfield.h"
+#include "tnums/finfield.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "error.h"
 #include "finfield_conway.h"
@@ -25,7 +25,7 @@
 #include "lists.h"
 #include "modules.h"
 #include "opers.h"
-#include "plist.h"
+#include "tnums/plist.h"
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"

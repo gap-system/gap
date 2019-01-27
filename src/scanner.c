@@ -22,8 +22,8 @@
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
-#include "plist.h"
-#include "stringobj.h"
+#include "tnums/plist.h"
+#include "tnums/string.h"
 #include "sysopt.h"
 
 

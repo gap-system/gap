@@ -14,7 +14,7 @@
 #include "intfuncs.h"
 #include "iostream.h"
 #include "objccoll.h"
-#include "objset.h"
+#include "tnums/objset.h"
 #include "profile.h"
 #include "syntaxtree.h"
 #include "vec8bit.h"

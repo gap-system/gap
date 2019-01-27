@@ -14,7 +14,7 @@
 #ifndef GAP_OPERS_H
 #define GAP_OPERS_H
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "system.h"
 

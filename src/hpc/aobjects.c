@@ -17,7 +17,7 @@
 #include "hpc/traverse.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "error.h"
 #include "fibhash.h"
@@ -28,10 +28,10 @@
 #include "lists.h"
 #include "modules.h"
 #include "objects.h"
-#include "plist.h"
-#include "precord.h"
+#include "tnums/plist.h"
+#include "tnums/precord.h"
 #include "records.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 
 
 static Obj TYPE_ALIST;

@@ -29,16 +29,16 @@
 
 #include "gvars.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "error.h"
 #include "gapstate.h"
-#include "integer.h"
+#include "tnums/integer.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
-#include "plist.h"
-#include "stringobj.h"
+#include "tnums/plist.h"
+#include "tnums/string.h"
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"

@@ -73,14 +73,14 @@ extern "C" {
 #include "objfgelm.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "gvars.h"
 #include "lists.h"
 #include "modules.h"
 #include "opers.h"
-#include "plist.h"
-#include "stringobj.h"
+#include "tnums/plist.h"
+#include "tnums/string.h"
 
 #ifdef HPCGAP
 #include "hpc/guards.h"

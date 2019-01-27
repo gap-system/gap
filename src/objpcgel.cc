@@ -12,12 +12,12 @@ extern "C" {
 
 #include "objpcgel.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "collectors.h"
 #include "gvars.h"
 #include "lists.h"
 #include "modules.h"
-#include "plist.h"
+#include "tnums/plist.h"
 
 } // extern "C"
 

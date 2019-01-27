@@ -69,17 +69,17 @@
 *N  1992/12/16 martin should have 'LtBlist'
 */
 
-#include "blister.h"
+#include "tnums/blist.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "gaputils.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
-#include "plist.h"
-#include "range.h"
+#include "tnums/plist.h"
+#include "tnums/range.h"
 #include "saveload.h"
 #include "set.h"
 

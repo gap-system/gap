@@ -23,14 +23,14 @@
 #include "set.h"
 
 #include "ariths.h"
-#include "bool.h"
-#include "cyclotom.h"
+#include "tnums/bool.h"
+#include "tnums/cyclotom.h"
 #include "error.h"
 #include "io.h"
 #include "listfunc.h"
 #include "lists.h"
 #include "modules.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "sysfiles.h"
 #include "sysopt.h"    // for SyInitializing
 

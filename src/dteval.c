@@ -27,11 +27,11 @@
 #include "dteval.h"
 
 #include "dt.h"
-#include "integer.h"
+#include "tnums/integer.h"
 #include "modules.h"
 #include "objcftl.h"
-#include "plist.h"
-#include "precord.h"
+#include "tnums/plist.h"
+#include "tnums/precord.h"
 #include "records.h"
 
 #ifdef HPCGAP

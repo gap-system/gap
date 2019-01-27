@@ -13,13 +13,13 @@
 **  in some other kind of object).
 */
 
-#include "weakptr.h"
+#include "tnums/weakptr.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "lists.h"
 #include "modules.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "saveload.h"
 
 #ifdef HPCGAP

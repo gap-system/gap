@@ -49,17 +49,17 @@
 **  The  third part consists  ...
 */
 
-#include "range.h"
+#include "tnums/range.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "gaputils.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
 #include "opers.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "saveload.h"
 
 

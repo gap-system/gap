@@ -10,18 +10,18 @@
 
 #include "hpc/serialize.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "error.h"
 #include "gapstate.h"
 #include "gvars.h"
 #include "modules.h"
-#include "objset.h"
-#include "plist.h"
-#include "precord.h"
-#include "rational.h"
+#include "tnums/objset.h"
+#include "tnums/plist.h"
+#include "tnums/precord.h"
+#include "tnums/rational.h"
 #include "records.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 
 #include "hpc/aobjects.h"
 

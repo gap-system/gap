@@ -35,21 +35,21 @@
 **  functions called from the generic lists package.
 */
 
-#include "plist.h"
+#include "tnums/plist.h"
 
 #include "ariths.h"
-#include "blister.h"
-#include "bool.h"
+#include "tnums/blist.h"
+#include "tnums/bool.h"
 #include "calls.h"
-#include "cyclotom.h"
+#include "tnums/cyclotom.h"
 #include "error.h"
-#include "finfield.h"
+#include "tnums/finfield.h"
 #include "funcs.h"
 #include "gaputils.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
-#include "range.h"
+#include "tnums/range.h"
 #include "saveload.h"
 #include "sysopt.h"    // for SyInitializing
 

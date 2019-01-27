@@ -12,13 +12,13 @@
 
 #include "costab.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
-#include "integer.h"
+#include "tnums/integer.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
-#include "plist.h"
+#include "tnums/plist.h"
 
 
 /****************************************************************************

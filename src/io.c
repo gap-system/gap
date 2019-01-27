@@ -21,7 +21,7 @@
 
 #include "io.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "error.h"
 #include "gapstate.h"
@@ -29,10 +29,10 @@
 #include "gvars.h"
 #include "lists.h"
 #include "modules.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "read.h"
 #include "scanner.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 #include "sysfiles.h"
 #include "sysopt.h"
 

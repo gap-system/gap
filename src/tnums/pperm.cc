@@ -22,22 +22,22 @@
 
 extern "C" {
 
-#include "pperm.h"
+#include "tnums/pperm.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "gapstate.h"
 #include "gvars.h"
-#include "integer.h"
+#include "tnums/integer.h"
 #include "intfuncs.h"
 #include "io.h"
 #include "listfunc.h"
 #include "lists.h"
 #include "modules.h"
 #include "opers.h"
-#include "permutat.h"
-#include "plist.h"
+#include "tnums/permutat.h"
+#include "tnums/plist.h"
 #include "saveload.h"
 
 } // extern "C"

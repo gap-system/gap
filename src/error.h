@@ -16,7 +16,7 @@
 #define GAP_ERROR_H
 
 #include "system.h"
-#include "intobj.h"
+#include "tnums/intobj.h"
 
 /****************************************************************************
 **

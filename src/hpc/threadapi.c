@@ -12,7 +12,7 @@
 
 #include "hpc/threadapi.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "code.h"
 #include "error.h"
@@ -24,12 +24,12 @@
 #include "lists.h"
 #include "modules.h"
 #include "objects.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "read.h"
 #include "records.h"
 #include "set.h"
 #include "stats.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 
 #include "hpc/guards.h"
 #include "hpc/misc.h"

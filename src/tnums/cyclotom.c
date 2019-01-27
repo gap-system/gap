@@ -87,18 +87,18 @@
 **  arithmetic functions need this, but it makes the equality test simpler.
 */
 
-#include "cyclotom.h"
+#include "tnums/cyclotom.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "gapstate.h"
-#include "integer.h"
+#include "tnums/integer.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
 #include "opers.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "saveload.h"
 
 

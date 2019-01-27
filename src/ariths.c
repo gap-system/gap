@@ -12,7 +12,7 @@
 
 #include "ariths.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "modules.h"
 #include "opers.h"

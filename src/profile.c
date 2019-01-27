@@ -13,7 +13,7 @@
 
 #include "profile.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "code.h"
 #include "error.h"
@@ -22,8 +22,8 @@
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
-#include "plist.h"
-#include "stringobj.h"
+#include "tnums/plist.h"
+#include "tnums/string.h"
 #include "sysfiles.h"
 #include "vars.h"
 

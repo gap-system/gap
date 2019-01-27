@@ -14,7 +14,7 @@
 #include "listoper.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "error.h"
 #include "gvars.h"
@@ -23,8 +23,8 @@
 #include "lists.h"
 #include "modules.h"
 #include "opers.h"
-#include "plist.h"
-#include "range.h"
+#include "tnums/plist.h"
+#include "tnums/range.h"
 
 
 #ifndef HPCGAP

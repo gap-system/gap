@@ -23,13 +23,13 @@
 #include "objcftl.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "gapstate.h"
 #include "gvars.h"
-#include "integer.h"
+#include "tnums/integer.h"
 #include "modules.h"
-#include "plist.h"
+#include "tnums/plist.h"
 
 
 static ModuleStateOffset CFTLStateOffset = -1;

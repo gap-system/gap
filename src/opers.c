@@ -14,8 +14,8 @@
 #include "opers.h"
 
 #include "ariths.h"
-#include "blister.h"
-#include "bool.h"
+#include "tnums/blist.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "error.h"
 #include "gapstate.h"
@@ -23,12 +23,12 @@
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
-#include "plist.h"
-#include "precord.h"
-#include "range.h"
+#include "tnums/plist.h"
+#include "tnums/precord.h"
+#include "tnums/range.h"
 #include "records.h"
 #include "saveload.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 #include "sysfiles.h"
 
 #ifdef HPCGAP

@@ -28,10 +28,10 @@
 #include "lists.h"
 #include "modules.h"
 #include "opers.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "read.h"
 #include "stats.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 #include "vars.h"
 
 #ifdef HPCGAP

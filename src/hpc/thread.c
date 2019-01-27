@@ -16,9 +16,9 @@
 #include "gapstate.h"
 #include "gvars.h"
 #include "modules.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "stats.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 #include "vars.h"
 
 #include "hpc/guards.h"

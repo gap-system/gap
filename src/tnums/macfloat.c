@@ -20,17 +20,17 @@
 
 #include <math.h>
 
-#include "macfloat.h"
+#include "tnums/macfloat.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "io.h"
-#include "integer.h"
+#include "tnums/integer.h"
 #include "modules.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "saveload.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 
 #define RequireMacFloat(funcname, op) \
     RequireArgumentCondition(funcname, op, IS_MACFLOAT(op), \

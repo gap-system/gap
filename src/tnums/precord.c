@@ -26,20 +26,20 @@
 **
 */
 
-#include "precord.h"
+#include "tnums/precord.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "funcs.h"
 #include "gaputils.h"
 #include "io.h"
 #include "modules.h"
 #include "opers.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "records.h"
 #include "saveload.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"

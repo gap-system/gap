@@ -65,10 +65,10 @@
 **  GMP_NORMALIZE and GMP_REDUCE can be used to ensure this.
 */
 
-#include "integer.h"
+#include "tnums/integer.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "error.h"
 #include "intfuncs.h"
@@ -77,7 +77,7 @@
 #include "opers.h"
 #include "saveload.h"
 #include "stats.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 
 
 /* TODO: Remove after Ward2 */

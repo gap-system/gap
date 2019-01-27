@@ -14,7 +14,7 @@
 **  True and Fail.
 */
 
-#include "bool.h"
+#include "tnums/bool.h"
 
 #include "ariths.h"
 #include "calls.h"

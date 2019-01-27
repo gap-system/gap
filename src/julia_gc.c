@@ -19,7 +19,7 @@
 #include "gapstate.h"
 #include "gasman.h"
 #include "objects.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "sysmem.h"
 #include "system.h"
 #include "vars.h"

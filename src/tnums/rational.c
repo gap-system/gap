@@ -43,12 +43,12 @@
 **  'SumInt', 'ProdInt' or 'GcdInt'.
 */
 
-#include "rational.h"
+#include "tnums/rational.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
-#include "integer.h"
+#include "tnums/integer.h"
 #include "io.h"
 #include "modules.h"
 #include "opers.h"

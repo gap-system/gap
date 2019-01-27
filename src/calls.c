@@ -36,19 +36,19 @@
 
 #include "calls.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "code.h"
 #include "error.h"
 #include "gvars.h"
-#include "integer.h"
+#include "tnums/integer.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
 #include "opers.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "saveload.h"
 #include "stats.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 #include "vars.h"
 
 #ifdef HPCGAP

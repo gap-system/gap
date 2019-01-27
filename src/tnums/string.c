@@ -50,18 +50,18 @@
 **  string, and if so converts it into the above format.
 */
 
-#include "stringobj.h"
+#include "tnums/string.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "gaputils.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
 #include "opers.h"
-#include "plist.h"
-#include "range.h"
+#include "tnums/plist.h"
+#include "tnums/range.h"
 #include "saveload.h"
 
 #ifdef HPCGAP

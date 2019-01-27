@@ -14,17 +14,17 @@
 
 #include "saveload.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "compstat.h"
 #include "error.h"
-#include "finfield.h"
+#include "tnums/finfield.h"
 #include "gvars.h"
 #include "io.h"
 #include "modules.h"
 #include "read.h"
 #include "streams.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 #include "sysfiles.h"
 #include "sysopt.h"
 

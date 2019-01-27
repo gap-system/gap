@@ -18,7 +18,7 @@
 #define GAP_OBJECTS_H
 
 #include "gasman.h"
-#include "intobj.h"
+#include "tnums/intobj.h"
 
 #ifdef HPCGAP
 #define USE_THREADSAFE_COPYING

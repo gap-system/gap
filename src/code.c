@@ -15,7 +15,7 @@
 
 #include "code.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "funcs.h"
 #include "gap.h"
@@ -25,11 +25,11 @@
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "read.h"
 #include "records.h"
 #include "saveload.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 #include "vars.h"
 
 #include "hpc/thread.h"

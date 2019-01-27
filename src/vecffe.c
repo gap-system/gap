@@ -12,15 +12,15 @@
 #include "vecffe.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "error.h"
-#include "finfield.h"
+#include "tnums/finfield.h"
 #include "gvars.h"
 #include "listoper.h"
 #include "modules.h"
 #include "opers.h"
-#include "plist.h"
+#include "tnums/plist.h"
 
 
 /****************************************************************************

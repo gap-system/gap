@@ -24,12 +24,12 @@
 
 #include "iostream.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 
 #include "hpc/thread.h"
 

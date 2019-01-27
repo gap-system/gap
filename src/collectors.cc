@@ -27,7 +27,7 @@ extern "C" {
 
 #include "collectors.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "gapstate.h"
 #include "gvars.h"
@@ -35,8 +35,8 @@ extern "C" {
 #include "modules.h"
 #include "objccoll.h"
 #include "objfgelm.h"
-#include "plist.h"
-#include "stringobj.h"
+#include "tnums/plist.h"
+#include "tnums/string.h"
 
 } // extern "C"
 

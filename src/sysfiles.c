@@ -16,7 +16,7 @@
 
 #include "sysfiles.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "calls.h"
 #include "compstat.h"
 #include "error.h"
@@ -26,11 +26,11 @@
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "read.h"
 #include "records.h"
 #include "stats.h"
-#include "stringobj.h"
+#include "tnums/string.h"
 #include "sysenv.h"
 #include "sysopt.h"
 

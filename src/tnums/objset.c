@@ -10,9 +10,9 @@
 **  This file contains the GAP interface for thread primitives.
 */
 
-#include "objset.h"
+#include "tnums/objset.h"
 
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "fibhash.h"
 #include "gaputils.h"
@@ -20,7 +20,7 @@
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
-#include "plist.h"
+#include "tnums/plist.h"
 #include "saveload.h"
 
 #ifdef HPCGAP

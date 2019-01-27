@@ -43,7 +43,7 @@
 #include "error.h"
 #include "lists.h"
 #include "modules.h"
-#include "plist.h"
+#include "tnums/plist.h"
 
 
 /****************************************************************************

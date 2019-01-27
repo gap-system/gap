@@ -48,25 +48,25 @@
 
 extern "C" {
 
-#include "permutat.h"
+#include "tnums/permutat.h"
 
 #include "ariths.h"
-#include "bool.h"
+#include "tnums/bool.h"
 #include "error.h"
 #include "gapstate.h"
-#include "integer.h"
+#include "tnums/integer.h"
 #include "io.h"
 #include "listfunc.h"
 #include "lists.h"
 #include "modules.h"
 #include "opers.h"
-#include "plist.h"
-#include "precord.h"
-#include "range.h"
+#include "tnums/plist.h"
+#include "tnums/precord.h"
+#include "tnums/range.h"
 #include "records.h"
 #include "saveload.h"
 #include "sysfiles.h"
-#include "trans.h"
+#include "tnums/trans.h"
 
 } // extern "C"
 

@@ -57,9 +57,9 @@
 #include "calls.h"
 #include "error.h"
 #include "gvars.h"
-#include "integer.h"
+#include "tnums/integer.h"
 #include "modules.h"
-#include "plist.h"
+#include "tnums/plist.h"
 
 static void UnmarkTree(Obj z);
 static UInt Mark(Obj tree, Obj reftree, Int indexx);
