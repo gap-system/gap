@@ -71,7 +71,7 @@
 #include "tnums/bool.h"
 #include "core/calls.h"
 #include "error.h"
-#include "intfuncs.h"
+#include "general/intfuncs.h"
 #include "io.h"
 #include "modules.h"
 #include "core/opers.h"

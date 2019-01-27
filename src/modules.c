@@ -30,7 +30,7 @@
 #include "core/opers.h"
 #include "tnums/plist.h"
 #include "core/saveload.h"
-#include "streams.h"
+#include "general/streams.h"
 #include "tnums/string.h"
 #include "sysfiles.h"
 #include "sysopt.h"

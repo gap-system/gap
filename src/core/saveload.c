@@ -23,7 +23,7 @@
 #include "io.h"
 #include "modules.h"
 #include "interpreter/read.h"
-#include "streams.h"
+#include "general/streams.h"
 #include "tnums/string.h"
 #include "sysfiles.h"
 #include "sysopt.h"

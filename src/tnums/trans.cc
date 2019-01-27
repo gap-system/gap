@@ -55,7 +55,7 @@ extern "C" {
 #include "gapstate.h"
 #include "core/gvars.h"
 #include "tnums/integer.h"
-#include "intfuncs.h"
+#include "general/intfuncs.h"
 #include "listfunc.h"
 #include "core/lists.h"
 #include "modules.h"

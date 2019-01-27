@@ -11,7 +11,7 @@
 ** large integer representation in use. See integer.c for other things.
 */
 
-#include "intfuncs.h"
+#include "general/intfuncs.h"
 
 #include "tnums/bool.h"
 #include "core/calls.h"

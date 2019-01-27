@@ -30,7 +30,7 @@
 #include "core/records.h"
 #include "core/saveload.h"
 #include "interpreter/statements.h"    // for ClearError
-#include "streams.h"
+#include "general/streams.h"
 #include "tnums/string.h"
 #include "sysenv.h"
 #include "sysfiles.h"

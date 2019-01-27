@@ -59,10 +59,10 @@ SOURCES += gen/gap_version.c	# generated source file
 SOURCES += src/core/gvars.c
 SOURCES += src/interpreter/hookintrprtr.c
 SOURCES += src/tnums/integer.c
-SOURCES += src/intfuncs.c
+SOURCES += src/general/intfuncs.c
 SOURCES += src/interpreter/interpreter.c
 SOURCES += src/io.c
-SOURCES += src/iostream.c
+SOURCES += src/general/iostream.c
 ifeq ($(HPCGAP),no)             # we don't support a kernel API in HPC-GAP atm
 SOURCES += src/libgap-api.c
 endif
@@ -92,7 +92,7 @@ SOURCES += src/interpreter/scanner.c
 SOURCES += src/sctable.c
 SOURCES += src/core/set.c
 SOURCES += src/interpreter/statements.c
-SOURCES += src/streams.c
+SOURCES += src/general/streams.c
 SOURCES += src/tnums/string.c
 SOURCES += src/syntaxtree.c
 SOURCES += src/sysfiles.c

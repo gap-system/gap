@@ -26,7 +26,7 @@
 #include "tnums/macfloat.h"
 #include "core/opers.h"
 #include "tnums/plist.h"
-#include "streams.h"
+#include "general/streams.h"
 #include "tnums/string.h"
 
 

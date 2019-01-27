@@ -11,7 +11,7 @@
 **  stuff.  The system depend part is in "sysfiles.c".
 */
 
-#include "streams.h"
+#include "general/streams.h"
 
 #include "tnums/bool.h"
 #include "core/calls.h"
