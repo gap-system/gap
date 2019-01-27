@@ -127,7 +127,7 @@ typedef UInt    RNam;
 /* higher variables, should go into 'vars.c' * * * * * * * * * * * * * * * */
 
 #define SWITCH_TO_NEW_FRAME     SWITCH_TO_NEW_LVARS
-#define SWITCH_TO_OLD_FRAME     SWITCH_TO_OLD_LVARS
+#define SWITCH_TO_OLD_FRAME     SWITCH_TO_OLD_LVARS_AND_FREE
 
 
 /* lists, should go into 'lists.c' * * * * * * * * * * * * * * * * * * * * */

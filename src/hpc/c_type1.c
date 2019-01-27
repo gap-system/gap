@@ -343,6 +343,7 @@ static Obj  HdlrFunc3 (
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,2,0,oldFrame);
+ MakeHighVars(STATE(CurrLVars));
  ASS_LVAR( 1, a_name );
  ASS_LVAR( 2, a_tester );
  
