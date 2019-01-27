@@ -123,8 +123,9 @@ moveto_subdir applications \
     listfunc \
     sortbase
 
-# GROSS HACK: io package directly #includes src/iostream.h
-# we can't use a symlink, because that breaks on Windows / AppVeyor
-# cp src/general/iostream.h src/iostream.h
-# git add src/iostream.h
-# git commit -m "HACK: cp src/iostream.h back so IO package compiles"
+# force sorting all #include statements
+perl -pi -e "s;#include;#include ;" src/*.* src/*/*.*
+git add src
+git clang-format
+git add src
+git commit -m "Sort #includes"
