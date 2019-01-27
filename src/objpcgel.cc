@@ -14,8 +14,8 @@ extern "C" {
 
 #include "tnums/bool.h"
 #include "collectors.h"
-#include "gvars.h"
-#include "lists.h"
+#include "core/gvars.h"
+#include "core/lists.h"
 #include "modules.h"
 #include "tnums/plist.h"
 

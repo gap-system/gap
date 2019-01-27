@@ -10,21 +10,21 @@
 **  This file contains the functions of the objects package.
 */
 
-#include "objects.h"
+#include "core/objects.h"
 
 #include "tnums/bool.h"
-#include "calls.h"
+#include "core/calls.h"
 #include "error.h"
 #include "gapstate.h"
-#include "gvars.h"
+#include "core/gvars.h"
 #include "io.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
-#include "opers.h"
+#include "core/opers.h"
 #include "tnums/plist.h"
 #include "tnums/precord.h"
-#include "records.h"
-#include "saveload.h"
+#include "core/records.h"
+#include "core/saveload.h"
 #include "tnums/string.h"
 
 #ifdef HPCGAP

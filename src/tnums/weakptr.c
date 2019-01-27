@@ -17,10 +17,10 @@
 
 #include "tnums/bool.h"
 #include "error.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
 #include "tnums/plist.h"
-#include "saveload.h"
+#include "core/saveload.h"
 
 #ifdef HPCGAP
 #include "hpc/guards.h"

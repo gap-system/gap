@@ -12,14 +12,14 @@
 **  throughout the kernel
 */
 
-#include "saveload.h"
+#include "core/saveload.h"
 
 #include "tnums/bool.h"
-#include "calls.h"
+#include "core/calls.h"
 #include "compstat.h"
 #include "error.h"
 #include "tnums/finfield.h"
-#include "gvars.h"
+#include "core/gvars.h"
 #include "io.h"
 #include "modules.h"
 #include "interpreter/read.h"

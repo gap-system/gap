@@ -22,7 +22,7 @@
 #ifndef GAP_STRINGOBJ_H
 #define GAP_STRINGOBJ_H
 
-#include "objects.h"
+#include "core/objects.h"
 
 
 /****************************************************************************

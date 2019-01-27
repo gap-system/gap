@@ -13,13 +13,13 @@
 **  records and the elements for the other packages in the GAP kernel.
 */
 
-#include "records.h"
+#include "core/records.h"
 
 #include "tnums/bool.h"
 #include "error.h"
 #include "gaputils.h"
 #include "modules.h"
-#include "opers.h"
+#include "core/opers.h"
 #include "tnums/plist.h"
 #include "tnums/string.h"
 

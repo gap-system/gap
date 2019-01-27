@@ -19,7 +19,7 @@
 
 #include "vector.h"
 
-#include "ariths.h"
+#include "core/ariths.h"
 #include "modules.h"
 #include "tnums/plist.h"
 

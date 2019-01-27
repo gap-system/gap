@@ -34,19 +34,19 @@
 **  ...what the other components are...
 */
 
-#include "calls.h"
+#include "core/calls.h"
 
 #include "tnums/bool.h"
 #include "interpreter/code.h"
 #include "error.h"
-#include "gvars.h"
+#include "core/gvars.h"
 #include "tnums/integer.h"
 #include "io.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
-#include "opers.h"
+#include "core/opers.h"
 #include "tnums/plist.h"
-#include "saveload.h"
+#include "core/saveload.h"
 #include "interpreter/statements.h"
 #include "tnums/string.h"
 #include "interpreter/vars.h"

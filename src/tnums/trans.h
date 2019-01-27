@@ -11,7 +11,7 @@
 #ifndef GAP_TRANS_H
 #define GAP_TRANS_H
 
-#include "objects.h"
+#include "core/objects.h"
 
 EXPORT_INLINE int IS_TRANS(Obj f)
 {

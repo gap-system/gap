@@ -16,12 +16,12 @@
 
 #include "tnums/bool.h"
 
-#include "ariths.h"
-#include "calls.h"
-#include "gvars.h"
+#include "core/ariths.h"
+#include "core/calls.h"
+#include "core/gvars.h"
 #include "io.h"
 #include "modules.h"
-#include "opers.h"
+#include "core/opers.h"
 
 
 /****************************************************************************

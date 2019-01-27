@@ -72,13 +72,13 @@ extern "C" {
 
 #include "objfgelm.h"
 
-#include "ariths.h"
+#include "core/ariths.h"
 #include "tnums/bool.h"
 #include "error.h"
-#include "gvars.h"
-#include "lists.h"
+#include "core/gvars.h"
+#include "core/lists.h"
 #include "modules.h"
-#include "opers.h"
+#include "core/opers.h"
 #include "tnums/plist.h"
 #include "tnums/string.h"
 

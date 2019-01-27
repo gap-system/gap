@@ -37,20 +37,20 @@
 
 #include "tnums/plist.h"
 
-#include "ariths.h"
+#include "core/ariths.h"
 #include "tnums/blist.h"
 #include "tnums/bool.h"
-#include "calls.h"
+#include "core/calls.h"
 #include "tnums/cyclotom.h"
 #include "error.h"
 #include "tnums/finfield.h"
 #include "interpreter/funcs.h"
 #include "gaputils.h"
 #include "io.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
 #include "tnums/range.h"
-#include "saveload.h"
+#include "core/saveload.h"
 #include "sysopt.h"    // for SyInitializing
 
 #ifdef HPCGAP

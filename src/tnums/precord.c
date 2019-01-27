@@ -28,17 +28,17 @@
 
 #include "tnums/precord.h"
 
-#include "ariths.h"
+#include "core/ariths.h"
 #include "tnums/bool.h"
 #include "error.h"
 #include "interpreter/funcs.h"
 #include "gaputils.h"
 #include "io.h"
 #include "modules.h"
-#include "opers.h"
+#include "core/opers.h"
 #include "tnums/plist.h"
-#include "records.h"
-#include "saveload.h"
+#include "core/records.h"
+#include "core/saveload.h"
 #include "tnums/string.h"
 
 #ifdef HPCGAP

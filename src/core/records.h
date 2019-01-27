@@ -16,7 +16,7 @@
 #ifndef GAP_RECORDS_H
 #define GAP_RECORDS_H
 
-#include "objects.h"
+#include "core/objects.h"
 
 /****************************************************************************
 **

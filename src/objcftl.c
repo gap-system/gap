@@ -22,11 +22,11 @@
 
 #include "objcftl.h"
 
-#include "ariths.h"
+#include "core/ariths.h"
 #include "tnums/bool.h"
 #include "error.h"
 #include "gapstate.h"
-#include "gvars.h"
+#include "core/gvars.h"
 #include "tnums/integer.h"
 #include "modules.h"
 #include "tnums/plist.h"

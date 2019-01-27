@@ -16,7 +16,7 @@
 
 #include "system.h"
 
-#include "calls.h"
+#include "core/calls.h"
 #include "compiled.h"
 #include "fibhash.h"
 #include "interpreter/hookintrprtr.h"

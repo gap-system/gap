@@ -13,7 +13,7 @@
 #ifndef GAP_ARITHS_H
 #define GAP_ARITHS_H
 
-#include "objects.h"
+#include "core/objects.h"
 
 /****************************************************************************
 **

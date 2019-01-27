@@ -39,9 +39,9 @@
 
 #include "sctable.h"
 
-#include "ariths.h"
+#include "core/ariths.h"
 #include "error.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
 #include "tnums/plist.h"
 

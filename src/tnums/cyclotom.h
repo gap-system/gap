@@ -14,7 +14,7 @@
 #ifndef GAP_CYCLOTOM_H
 #define GAP_CYCLOTOM_H
 
-#include "objects.h"
+#include "core/objects.h"
 
 
 /****************************************************************************

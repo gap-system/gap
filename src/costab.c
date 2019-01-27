@@ -16,7 +16,7 @@
 #include "error.h"
 #include "tnums/integer.h"
 #include "io.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
 #include "tnums/plist.h"
 

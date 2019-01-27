@@ -15,16 +15,16 @@
 
 #include "tnums/finfield.h"
 
-#include "ariths.h"
+#include "core/ariths.h"
 #include "tnums/bool.h"
-#include "calls.h"
+#include "core/calls.h"
 #include "error.h"
 #include "finfield_conway.h"
-#include "gvars.h"
+#include "core/gvars.h"
 #include "io.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
-#include "opers.h"
+#include "core/opers.h"
 #include "tnums/plist.h"
 
 #ifdef HPCGAP

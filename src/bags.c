@@ -10,7 +10,7 @@
 
 #include "error.h"
 #include "gasman.h"
-#include "objects.h"    // HACK: for FIRST_IMM_MUT_TNUM; remove this later
+#include "core/objects.h"    // HACK: for FIRST_IMM_MUT_TNUM; remove this later
 
 /****************************************************************************
 **

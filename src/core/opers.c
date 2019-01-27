@@ -11,23 +11,23 @@
 **  and properties package.
 */
 
-#include "opers.h"
+#include "core/opers.h"
 
-#include "ariths.h"
+#include "core/ariths.h"
 #include "tnums/blist.h"
 #include "tnums/bool.h"
-#include "calls.h"
+#include "core/calls.h"
 #include "error.h"
 #include "gapstate.h"
-#include "gvars.h"
+#include "core/gvars.h"
 #include "io.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
 #include "tnums/plist.h"
 #include "tnums/precord.h"
 #include "tnums/range.h"
-#include "records.h"
-#include "saveload.h"
+#include "core/records.h"
+#include "core/saveload.h"
 #include "tnums/string.h"
 #include "sysfiles.h"
 

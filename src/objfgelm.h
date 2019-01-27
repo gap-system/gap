@@ -11,7 +11,7 @@
 #ifndef GAP_OBJFGELM_H
 #define GAP_OBJFGELM_H
 
-#include "objects.h"
+#include "core/objects.h"
 
 /****************************************************************************
 **

@@ -47,7 +47,7 @@
 
 #include "interpreter/funcs.h"
 #include "gaputils.h"
-#include "objects.h"
+#include "core/objects.h"
 
 
 typedef Obj (* ObjFunc_0ARGS) (Obj self);

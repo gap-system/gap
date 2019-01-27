@@ -14,7 +14,7 @@
 #include "boehm_gc.h"
 #endif
 #include "gasman.h"
-#include "objects.h"
+#include "core/objects.h"
 
 // #include "hpc/misc.h"
 #include "hpc/thread.h"

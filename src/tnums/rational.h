@@ -21,7 +21,7 @@
 #ifndef GAP_RATIONAL_H
 #define GAP_RATIONAL_H
 
-#include "objects.h"
+#include "core/objects.h"
 
 /****************************************************************************
 **

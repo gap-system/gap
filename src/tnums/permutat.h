@@ -13,7 +13,7 @@
 #ifndef GAP_PERMUTAT_H
 #define GAP_PERMUTAT_H
 
-#include "objects.h"
+#include "core/objects.h"
 
 /****************************************************************************
 **

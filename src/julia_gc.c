@@ -18,7 +18,7 @@
 #include "interpreter/funcs.h"
 #include "gapstate.h"
 #include "gasman.h"
-#include "objects.h"
+#include "core/objects.h"
 #include "tnums/plist.h"
 #include "sysmem.h"
 #include "system.h"

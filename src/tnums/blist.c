@@ -71,17 +71,17 @@
 
 #include "tnums/blist.h"
 
-#include "ariths.h"
+#include "core/ariths.h"
 #include "tnums/bool.h"
 #include "error.h"
 #include "gaputils.h"
 #include "io.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
 #include "tnums/plist.h"
 #include "tnums/range.h"
-#include "saveload.h"
-#include "set.h"
+#include "core/saveload.h"
+#include "core/set.h"
 
 
 #define RequireBlist(funcname, op, argname)                                  \

@@ -14,7 +14,7 @@
 #include "error.h"
 #include "fibhash.h"
 #include "gapstate.h"
-#include "gvars.h"
+#include "core/gvars.h"
 #include "modules.h"
 #include "tnums/plist.h"
 #include "interpreter/statements.h"

@@ -17,11 +17,11 @@
 
 #include "gapstate.h"
 #include "gasman.h"
-#include "objects.h"
+#include "core/objects.h"
 #include "sysmem.h"
 
 #ifdef TRACK_CREATOR
-#include "calls.h"
+#include "core/calls.h"
 #include "interpreter/vars.h"
 #endif
 

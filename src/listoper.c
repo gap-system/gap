@@ -13,16 +13,16 @@
 
 #include "listoper.h"
 
-#include "ariths.h"
+#include "core/ariths.h"
 #include "tnums/bool.h"
-#include "calls.h"
+#include "core/calls.h"
 #include "error.h"
-#include "gvars.h"
+#include "core/gvars.h"
 #include "io.h"
 #include "listfunc.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
-#include "opers.h"
+#include "core/opers.h"
 #include "tnums/plist.h"
 #include "tnums/range.h"
 

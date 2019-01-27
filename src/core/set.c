@@ -20,15 +20,15 @@
 **  union, intersection, or difference of two sets.
 */
 
-#include "set.h"
+#include "core/set.h"
 
-#include "ariths.h"
+#include "core/ariths.h"
 #include "tnums/bool.h"
 #include "tnums/cyclotom.h"
 #include "error.h"
 #include "io.h"
 #include "listfunc.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
 #include "tnums/plist.h"
 #include "sysfiles.h"

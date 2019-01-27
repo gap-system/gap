@@ -13,7 +13,7 @@
 #ifndef GAP_MACFLOAT_H
 #define GAP_MACFLOAT_H
 
-#include "objects.h"
+#include "core/objects.h"
 
 #ifdef VERY_LONG_DOUBLES
 typedef long double /* __float128 */ Double;

@@ -13,7 +13,7 @@
 #ifndef GAP_INTEGER_H
 #define GAP_INTEGER_H
 
-#include "objects.h"
+#include "core/objects.h"
 
 
 #ifdef SYS_IS_64_BIT

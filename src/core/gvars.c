@@ -27,15 +27,15 @@
 **  Otherwise the internal copies reference functions that signal an error.
 */
 
-#include "gvars.h"
+#include "core/gvars.h"
 
 #include "tnums/bool.h"
-#include "calls.h"
+#include "core/calls.h"
 #include "error.h"
 #include "gapstate.h"
 #include "tnums/integer.h"
 #include "io.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
 #include "tnums/plist.h"
 #include "tnums/string.h"

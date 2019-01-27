@@ -52,17 +52,17 @@
 
 #include "tnums/string.h"
 
-#include "ariths.h"
+#include "core/ariths.h"
 #include "tnums/bool.h"
 #include "error.h"
 #include "gaputils.h"
 #include "io.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
-#include "opers.h"
+#include "core/opers.h"
 #include "tnums/plist.h"
 #include "tnums/range.h"
-#include "saveload.h"
+#include "core/saveload.h"
 
 #ifdef HPCGAP
 #include "hpc/guards.h"

@@ -27,7 +27,7 @@
 #include "tnums/bool.h"
 #include "error.h"
 #include "io.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
 #include "tnums/string.h"
 

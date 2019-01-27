@@ -10,12 +10,12 @@
 **  This file contains the functions of the  arithmetic  operations  package.
 */
 
-#include "ariths.h"
+#include "core/ariths.h"
 
 #include "tnums/bool.h"
 #include "error.h"
 #include "modules.h"
-#include "opers.h"
+#include "core/opers.h"
 
 
 #define RequireValue(funcname, val)                                          \

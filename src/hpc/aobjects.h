@@ -11,7 +11,7 @@
 #ifndef GAP_AOBJECTS_H
 #define GAP_AOBJECTS_H
 
-#include "objects.h"
+#include "core/objects.h"
 #include "hpc/atomic.h"
 
 #ifndef HPCGAP

@@ -21,7 +21,7 @@
 #define GAP_BLISTER_H
 
 #include "tnums/bool.h"
-#include "objects.h"
+#include "core/objects.h"
 
 /****************************************************************************
 **

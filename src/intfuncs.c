@@ -14,13 +14,13 @@
 #include "intfuncs.h"
 
 #include "tnums/bool.h"
-#include "calls.h"
+#include "core/calls.h"
 #include "error.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
 #include "tnums/plist.h"
 #include "tnums/precord.h"
-#include "records.h"
+#include "core/records.h"
 #include "tnums/string.h"
 
 

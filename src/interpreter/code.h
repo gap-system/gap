@@ -17,7 +17,7 @@
 #define GAP_CODE_H
 
 #include "gapstate.h"
-#include "objects.h"
+#include "core/objects.h"
 
 /****************************************************************************
 **

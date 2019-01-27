@@ -16,12 +16,12 @@
 #include "error.h"
 #include "fibhash.h"
 #include "gaputils.h"
-#include "gvars.h"
+#include "core/gvars.h"
 #include "io.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
 #include "tnums/plist.h"
-#include "saveload.h"
+#include "core/saveload.h"
 
 #ifdef HPCGAP
 #include "hpc/traverse.h"

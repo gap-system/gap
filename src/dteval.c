@@ -32,7 +32,7 @@
 #include "objcftl.h"
 #include "tnums/plist.h"
 #include "tnums/precord.h"
-#include "records.h"
+#include "core/records.h"
 
 #ifdef HPCGAP
 #include "hpc/guards.h"

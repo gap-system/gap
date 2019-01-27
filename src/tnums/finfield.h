@@ -53,7 +53,7 @@
 #define GAP_FINFIELD_H
 
 #include "tnums/ffdata.h"
-#include "objects.h"
+#include "core/objects.h"
 
 
 /****************************************************************************

@@ -20,7 +20,7 @@
 #include "gapstate.h"
 #include "gaputils.h"
 #include "io.h"
-#include "lists.h"
+#include "core/lists.h"
 #include "modules.h"
 #include "tnums/plist.h"
 #include "tnums/string.h"

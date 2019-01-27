@@ -20,22 +20,22 @@
 **  by the plain list package to access and modify plain lists.
 */
 
-#include "lists.h"
+#include "core/lists.h"
 
-#include "ariths.h"
+#include "core/ariths.h"
 #include "tnums/bool.h"
-#include "calls.h"
+#include "core/calls.h"
 #include "error.h"
 #include "gapstate.h"
 #include "gaputils.h"
 #include "tnums/integer.h"
 #include "io.h"
 #include "modules.h"
-#include "opers.h"
+#include "core/opers.h"
 #include "tnums/plist.h"
 #include "tnums/precord.h"
 #include "tnums/range.h"
-#include "records.h"
+#include "core/records.h"
 #include "tnums/string.h"
 
 #ifdef HPCGAP

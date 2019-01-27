@@ -28,7 +28,7 @@ default: all
 # makes it trivial to comment out lines, or to insert conditionals.
 ########################################################################
 SOURCES =
-SOURCES += src/ariths.c
+SOURCES += src/core/ariths.c
 SOURCES += src/bags.c
 SOURCES += src/tnums/blist.c
 SOURCES += src/tnums/bool.c
@@ -39,7 +39,7 @@ else
 SOURCES += src/c_oper1.c
 SOURCES += src/c_type1.c
 endif
-SOURCES += src/calls.c
+SOURCES += src/core/calls.c
 SOURCES += src/interpreter/code.c
 SOURCES += src/collectors.cc
 SOURCES += src/compiler.c
@@ -56,7 +56,7 @@ SOURCES += src/tnums/finfield.c
 SOURCES += src/interpreter/funcs.c
 SOURCES += src/gap.c
 SOURCES += gen/gap_version.c	# generated source file
-SOURCES += src/gvars.c
+SOURCES += src/core/gvars.c
 SOURCES += src/interpreter/hookintrprtr.c
 SOURCES += src/tnums/integer.c
 SOURCES += src/intfuncs.c
@@ -68,16 +68,16 @@ SOURCES += src/libgap-api.c
 endif
 SOURCES += src/listfunc.c
 SOURCES += src/listoper.c
-SOURCES += src/lists.c
+SOURCES += src/core/lists.c
 SOURCES += src/tnums/macfloat.c
 SOURCES += src/modules.c
 SOURCES += src/modules-builtin.c
 SOURCES += src/objcftl.c
-SOURCES += src/objects.c
+SOURCES += src/core/objects.c
 SOURCES += src/objfgelm.cc
 SOURCES += src/objpcgel.cc
 SOURCES += src/tnums/objset.c
-SOURCES += src/opers.c
+SOURCES += src/core/opers.c
 SOURCES += src/tnums/permutat.cc
 SOURCES += src/tnums/plist.c
 SOURCES += src/tnums/pperm.cc
@@ -86,11 +86,11 @@ SOURCES += src/profile.c
 SOURCES += src/tnums/range.c
 SOURCES += src/tnums/rational.c
 SOURCES += src/interpreter/read.c
-SOURCES += src/records.c
-SOURCES += src/saveload.c
+SOURCES += src/core/records.c
+SOURCES += src/core/saveload.c
 SOURCES += src/interpreter/scanner.c
 SOURCES += src/sctable.c
-SOURCES += src/set.c
+SOURCES += src/core/set.c
 SOURCES += src/interpreter/statements.c
 SOURCES += src/streams.c
 SOURCES += src/tnums/string.c

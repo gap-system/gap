@@ -54,9 +54,9 @@
 
 #include "dt.h"
 
-#include "calls.h"
+#include "core/calls.h"
 #include "error.h"
-#include "gvars.h"
+#include "core/gvars.h"
 #include "tnums/integer.h"
 #include "modules.h"
 #include "tnums/plist.h"

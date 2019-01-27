@@ -11,7 +11,7 @@
 #ifndef GAP_PPERM_H
 #define GAP_PPERM_H
 
-#include "objects.h"
+#include "core/objects.h"
 
 EXPORT_INLINE int IS_PPERM(Obj f)
 {

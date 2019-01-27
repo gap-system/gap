@@ -20,7 +20,7 @@
 
 #include "error.h"
 #include "io.h"
-#include "objects.h"
+#include "core/objects.h"
 
 /****************************************************************************
 **
