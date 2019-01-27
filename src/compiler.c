@@ -5135,6 +5135,9 @@ static void CompFunc(Obj func)
     /* emit the code to switch to a new frame for outer functions          */
     Emit( "\n/* allocate new stack frame */\n" );
     Emit( "SWITCH_TO_NEW_FRAME(self,%d,0,oldFrame);\n",NHVAR_INFO(info));
+    if (NHVAR_INFO(info) > 0) {
+        Emit("MakeHighVars(STATE(CurrLVars));\n");
+    }
     for ( i = 1; i <= narg; i++ ) {
         if ( CompGetUseHVar( i ) ) {
             Emit( "ASS_LVAR( %d, %c );\n",GetIndxHVar(i),CVAR_LVAR(i));
@@ -5154,6 +5157,7 @@ static void CompFunc(Obj func)
 
     /* emit the code to switch back to the old frame and return            */
     Emit( "\n/* return; */\n" );
+
     Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
     Emit( "return 0;\n" );
     Emit( "}\n" );

@@ -2604,6 +2604,7 @@ static Obj  HdlrFunc7 (
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,2,0,oldFrame);
+ MakeHighVars(STATE(CurrLVars));
  ASS_LVAR( 1, a_getter );
  
  /* if not IS_IDENTICAL_OBJ( filter, IS_OBJECT ) then */
@@ -3335,6 +3336,7 @@ static Obj  HdlrFunc11 (
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,4,0,oldFrame);
+ MakeHighVars(STATE(CurrLVars));
  ASS_LVAR( 1, a_name );
  ASS_LVAR( 2, a_keytest );
  
@@ -3838,6 +3840,7 @@ static Obj  HdlrFunc17 (
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,5,0,oldFrame);
+ MakeHighVars(STATE(CurrLVars));
  
  /* if LEN_LIST( arg ) = 5 then */
  t_3 = GF_LEN__LIST;
