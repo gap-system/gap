@@ -32,7 +32,7 @@ extern "C" {
 #include "tnums/integer.h"
 #include "general/intfuncs.h"
 #include "io.h"
-#include "listfunc.h"
+#include "applications/listfunc.h"
 #include "core/lists.h"
 #include "modules.h"
 #include "core/opers.h"

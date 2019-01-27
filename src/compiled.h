@@ -42,7 +42,7 @@ extern "C" {
 #include "interpreter/interpreter.h"
 #include "io.h"
 #include "general/iostream.h"
-#include "listfunc.h"
+#include "applications/listfunc.h"
 #include "math/listoper.h"
 #include "core/lists.h"
 #include "tnums/macfloat.h"

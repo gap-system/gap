@@ -19,7 +19,7 @@
 #include "error.h"
 #include "core/gvars.h"
 #include "io.h"
-#include "listfunc.h"
+#include "applications/listfunc.h"
 #include "core/lists.h"
 #include "modules.h"
 #include "core/opers.h"

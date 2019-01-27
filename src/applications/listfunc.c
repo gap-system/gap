@@ -10,7 +10,7 @@
 **  This file contains the functions for generic lists.
 */
 
-#include "listfunc.h"
+#include "applications/listfunc.h"
 
 #include "core/ariths.h"
 #include "tnums/blist.h"
@@ -515,7 +515,7 @@ static Obj FuncPOSITION_FIRST_COMPONENT_SORTED(Obj self, Obj list, Obj obj)
   if(IS_PLIST(list)) \
     RESET_FILT_LIST(list, FN_IS_NSORT);
 
-#include "sortbase.h"
+#include "applications/sortbase.h"
 
 #define SORT_FUNC_NAME SortDensePlist
 #define SORT_FUNC_ARGS Obj list
@@ -530,7 +530,7 @@ static Obj FuncPOSITION_FIRST_COMPONENT_SORTED(Obj self, Obj list, Obj obj)
 #define SORT_FILTER_CHECKS() \
   RESET_FILT_LIST(list, FN_IS_NSORT);
 
-#include "sortbase.h"
+#include "applications/sortbase.h"
 
 // This is a variant of SortDensePlist, which sorts plists by
 // Obj pointer. It works on non-dense plists, and can be
@@ -548,7 +548,7 @@ static Obj FuncPOSITION_FIRST_COMPONENT_SORTED(Obj self, Obj list, Obj obj)
     RESET_FILT_LIST(list, FN_IS_NSORT); \
     RESET_FILT_LIST(list, FN_IS_SSORT);
 
-#include "sortbase.h"
+#include "applications/sortbase.h"
 
 /****************************************************************************
 **
@@ -571,7 +571,7 @@ static Obj FuncPOSITION_FIRST_COMPONENT_SORTED(Obj self, Obj list, Obj obj)
   RESET_FILT_LIST(list, FN_IS_SSORT); \
   RESET_FILT_LIST(list, FN_IS_NSORT);
 
-#include "sortbase.h"
+#include "applications/sortbase.h"
 
 #define SORT_FUNC_NAME SortDensePlistComp
 #define SORT_FUNC_ARGS Obj list, Obj func
@@ -588,7 +588,7 @@ static Obj FuncPOSITION_FIRST_COMPONENT_SORTED(Obj self, Obj list, Obj obj)
   RESET_FILT_LIST(list, FN_IS_SSORT); \
   RESET_FILT_LIST(list, FN_IS_NSORT);
 
-#include "sortbase.h"
+#include "applications/sortbase.h"
 
 /****************************************************************************
 **
@@ -643,7 +643,7 @@ static Obj FuncPOSITION_FIRST_COMPONENT_SORTED(Obj self, Obj list, Obj obj)
   RESET_FILT_LIST(shadow, FN_IS_SSORT); \
   RESET_FILT_LIST(shadow, FN_IS_NSORT);
 
-#include "sortbase.h"
+#include "applications/sortbase.h"
 
 #define SORT_FUNC_NAME SortParaDensePlist
 #define SORT_FUNC_ARGS Obj list, Obj shadow
@@ -666,7 +666,7 @@ static Obj FuncPOSITION_FIRST_COMPONENT_SORTED(Obj self, Obj list, Obj obj)
   RESET_FILT_LIST(shadow, FN_IS_SSORT); \
   RESET_FILT_LIST(shadow, FN_IS_NSORT);
 
-#include "sortbase.h"
+#include "applications/sortbase.h"
 
 #define SORT_FUNC_NAME SORT_PARA_LISTComp
 #define SORT_FUNC_ARGS Obj list, Obj shadow, Obj func
@@ -687,7 +687,7 @@ static Obj FuncPOSITION_FIRST_COMPONENT_SORTED(Obj self, Obj list, Obj obj)
     RESET_FILT_LIST(shadow, FN_IS_NSORT); \
     RESET_FILT_LIST(shadow, FN_IS_SSORT);
 
-#include "sortbase.h"
+#include "applications/sortbase.h"
   
 #define SORT_FUNC_NAME SortParaDensePlistComp
 #define SORT_FUNC_ARGS Obj list, Obj shadow, Obj func
@@ -710,7 +710,7 @@ static Obj FuncPOSITION_FIRST_COMPONENT_SORTED(Obj self, Obj list, Obj obj)
     RESET_FILT_LIST(shadow, FN_IS_NSORT); \
     RESET_FILT_LIST(shadow, FN_IS_SSORT);
 
-#include "sortbase.h"
+#include "applications/sortbase.h"
 
 
 
