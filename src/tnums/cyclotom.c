@@ -90,16 +90,16 @@
 #include "tnums/cyclotom.h"
 
 #include "core/ariths.h"
-#include "tnums/bool.h"
+#include "core/lists.h"
+#include "core/opers.h"
+#include "core/saveload.h"
 #include "error.h"
 #include "gapstate.h"
-#include "tnums/integer.h"
 #include "io.h"
-#include "core/lists.h"
 #include "modules.h"
-#include "core/opers.h"
+#include "tnums/bool.h"
+#include "tnums/integer.h"
 #include "tnums/plist.h"
-#include "core/saveload.h"
 
 
 /****************************************************************************

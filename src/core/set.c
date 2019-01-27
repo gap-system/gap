@@ -22,17 +22,17 @@
 
 #include "core/set.h"
 
+#include "applications/listfunc.h"
 #include "core/ariths.h"
-#include "tnums/bool.h"
-#include "tnums/cyclotom.h"
+#include "core/lists.h"
 #include "error.h"
 #include "io.h"
-#include "applications/listfunc.h"
-#include "core/lists.h"
 #include "modules.h"
-#include "tnums/plist.h"
 #include "sysfiles.h"
 #include "sysopt.h"    // for SyInitializing
+#include "tnums/bool.h"
+#include "tnums/cyclotom.h"
+#include "tnums/plist.h"
 
 
 #define RequireMutableSet(funcname, op)                                      \

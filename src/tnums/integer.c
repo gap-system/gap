@@ -68,15 +68,15 @@
 #include "tnums/integer.h"
 
 #include "core/ariths.h"
-#include "tnums/bool.h"
 #include "core/calls.h"
-#include "error.h"
-#include "general/intfuncs.h"
-#include "io.h"
-#include "modules.h"
 #include "core/opers.h"
 #include "core/saveload.h"
+#include "error.h"
+#include "general/intfuncs.h"
 #include "interpreter/statements.h"
+#include "io.h"
+#include "modules.h"
+#include "tnums/bool.h"
 #include "tnums/string.h"
 
 

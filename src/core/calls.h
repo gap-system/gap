@@ -45,9 +45,9 @@
 #ifndef GAP_CALLS_H
 #define GAP_CALLS_H
 
+#include "core/objects.h"
 #include "interpreter/funcs.h"
 #include "util/gaputils.h"
-#include "core/objects.h"
 
 
 typedef Obj (* ObjFunc_0ARGS) (Obj self);

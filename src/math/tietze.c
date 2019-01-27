@@ -12,12 +12,12 @@
 
 #include "math/tietze.h"
 
-#include "tnums/bool.h"
-#include "error.h"
 #include "core/lists.h"
-#include "modules.h"
-#include "tnums/plist.h"
+#include "error.h"
 #include "interpreter/statements.h"
+#include "modules.h"
+#include "tnums/bool.h"
+#include "tnums/plist.h"
 #include "tnums/string.h"
 
 

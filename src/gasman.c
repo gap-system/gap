@@ -114,10 +114,10 @@
 #include "gasman.h"
 #include "gasman_intern.h"
 
-#include "util/gaputils.h"
 #include "io.h"
 #include "sysfiles.h"
 #include "sysmem.h"
+#include "util/gaputils.h"
 
 #ifdef GAP_MEM_CHECK
 #include <sys/mman.h>
@@ -459,8 +459,8 @@ static inline UInt IS_BAG_BODY(void * ptr)
 
 #if defined(MEMORY_CANARY)
 
-#include <valgrind/valgrind.h>
 #include <valgrind/memcheck.h>
+#include <valgrind/valgrind.h>
 
 // tell valgrind that the masterpointer, bag contents and bag header of Bag
 // should all be accessible

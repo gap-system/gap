@@ -14,19 +14,19 @@
 
 #include "core/saveload.h"
 
-#include "tnums/bool.h"
-#include "core/calls.h"
 #include "compstat.h"
-#include "error.h"
-#include "tnums/finfield.h"
+#include "core/calls.h"
 #include "core/gvars.h"
+#include "error.h"
+#include "general/streams.h"
+#include "interpreter/read.h"
 #include "io.h"
 #include "modules.h"
-#include "interpreter/read.h"
-#include "general/streams.h"
-#include "tnums/string.h"
 #include "sysfiles.h"
 #include "sysopt.h"
+#include "tnums/bool.h"
+#include "tnums/finfield.h"
+#include "tnums/string.h"
 
 #ifdef USE_GASMAN
 #include "gasman_intern.h"

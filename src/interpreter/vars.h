@@ -21,8 +21,8 @@
 #define GAP_VARS_H
 
 #include "core/calls.h"
-#include "gapstate.h"
 #include "core/objects.h"
+#include "gapstate.h"
 
 
 /****************************************************************************

@@ -18,9 +18,9 @@
 #ifndef GAP_LISTS_H
 #define GAP_LISTS_H
 
+#include "core/objects.h"
 #include "error.h"
 #include "io.h"
-#include "core/objects.h"
 
 /****************************************************************************
 **

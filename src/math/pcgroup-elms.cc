@@ -12,11 +12,11 @@ extern "C" {
 
 #include "math/pcgroup-elms.h"
 
-#include "tnums/bool.h"
 #include "collectors.h"
 #include "core/gvars.h"
 #include "core/lists.h"
 #include "modules.h"
+#include "tnums/bool.h"
 #include "tnums/plist.h"
 
 } // extern "C"

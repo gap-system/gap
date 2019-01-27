@@ -12,12 +12,12 @@
 
 #include "math/coset_table.h"
 
-#include "tnums/bool.h"
-#include "error.h"
-#include "tnums/integer.h"
-#include "io.h"
 #include "core/lists.h"
+#include "error.h"
+#include "io.h"
 #include "modules.h"
+#include "tnums/bool.h"
+#include "tnums/integer.h"
 #include "tnums/plist.h"
 
 

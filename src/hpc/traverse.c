@@ -13,12 +13,12 @@
  */
 #include "hpc/traverse.h"
 
-#include "tnums/bool.h"
 #include "error.h"
+#include "modules.h"
+#include "tnums/bool.h"
+#include "tnums/plist.h"
 #include "util/fibhash.h"
 #include "util/gaputils.h"
-#include "modules.h"
-#include "tnums/plist.h"
 
 #include "hpc/guards.h"
 #include "hpc/thread.h"

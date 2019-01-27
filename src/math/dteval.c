@@ -26,13 +26,13 @@
 
 #include "math/dteval.h"
 
-#include "math/dt.h"
-#include "tnums/integer.h"
-#include "modules.h"
+#include "core/records.h"
 #include "math/collector_ftl.h"
+#include "math/dt.h"
+#include "modules.h"
+#include "tnums/integer.h"
 #include "tnums/plist.h"
 #include "tnums/precord.h"
-#include "core/records.h"
 
 #ifdef HPCGAP
 #include "hpc/guards.h"

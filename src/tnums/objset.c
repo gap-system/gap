@@ -12,16 +12,16 @@
 
 #include "tnums/objset.h"
 
-#include "tnums/bool.h"
+#include "core/gvars.h"
+#include "core/lists.h"
+#include "core/saveload.h"
 #include "error.h"
+#include "io.h"
+#include "modules.h"
+#include "tnums/bool.h"
+#include "tnums/plist.h"
 #include "util/fibhash.h"
 #include "util/gaputils.h"
-#include "core/gvars.h"
-#include "io.h"
-#include "core/lists.h"
-#include "modules.h"
-#include "tnums/plist.h"
-#include "core/saveload.h"
 
 #ifdef HPCGAP
 #include "hpc/traverse.h"

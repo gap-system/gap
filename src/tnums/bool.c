@@ -19,9 +19,9 @@
 #include "core/ariths.h"
 #include "core/calls.h"
 #include "core/gvars.h"
+#include "core/opers.h"
 #include "io.h"
 #include "modules.h"
-#include "core/opers.h"
 
 
 /****************************************************************************

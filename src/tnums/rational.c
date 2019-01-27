@@ -46,13 +46,13 @@
 #include "tnums/rational.h"
 
 #include "core/ariths.h"
-#include "tnums/bool.h"
-#include "error.h"
-#include "tnums/integer.h"
-#include "io.h"
-#include "modules.h"
 #include "core/opers.h"
 #include "core/saveload.h"
+#include "error.h"
+#include "io.h"
+#include "modules.h"
+#include "tnums/bool.h"
+#include "tnums/integer.h"
 
 
 #if defined(DEBUG_RATIONALS)

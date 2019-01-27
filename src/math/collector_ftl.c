@@ -23,12 +23,12 @@
 #include "math/collector_ftl.h"
 
 #include "core/ariths.h"
-#include "tnums/bool.h"
+#include "core/gvars.h"
 #include "error.h"
 #include "gapstate.h"
-#include "core/gvars.h"
-#include "tnums/integer.h"
 #include "modules.h"
+#include "tnums/bool.h"
+#include "tnums/integer.h"
 #include "tnums/plist.h"
 
 

@@ -15,12 +15,12 @@
 
 #include "tnums/weakptr.h"
 
-#include "tnums/bool.h"
-#include "error.h"
 #include "core/lists.h"
-#include "modules.h"
-#include "tnums/plist.h"
 #include "core/saveload.h"
+#include "error.h"
+#include "modules.h"
+#include "tnums/bool.h"
+#include "tnums/plist.h"
 
 #ifdef HPCGAP
 #include "hpc/guards.h"

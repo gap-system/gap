@@ -73,12 +73,12 @@ extern "C" {
 #include "math/freegroup_elms.h"
 
 #include "core/ariths.h"
-#include "tnums/bool.h"
-#include "error.h"
 #include "core/gvars.h"
 #include "core/lists.h"
-#include "modules.h"
 #include "core/opers.h"
+#include "error.h"
+#include "modules.h"
+#include "tnums/bool.h"
 #include "tnums/plist.h"
 #include "tnums/string.h"
 

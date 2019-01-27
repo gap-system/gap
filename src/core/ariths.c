@@ -12,10 +12,10 @@
 
 #include "core/ariths.h"
 
-#include "tnums/bool.h"
+#include "core/opers.h"
 #include "error.h"
 #include "modules.h"
-#include "core/opers.h"
+#include "tnums/bool.h"
 
 
 #define RequireValue(funcname, val)                                          \

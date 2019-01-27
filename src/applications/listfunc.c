@@ -13,20 +13,20 @@
 #include "applications/listfunc.h"
 
 #include "core/ariths.h"
-#include "tnums/blist.h"
-#include "tnums/bool.h"
 #include "core/calls.h"
+#include "core/lists.h"
+#include "core/opers.h"
+#include "core/set.h"
 #include "error.h"
 #include "io.h"
-#include "core/lists.h"
 #include "modules.h"
-#include "core/opers.h"
+#include "sysfiles.h"
+#include "tnums/blist.h"
+#include "tnums/bool.h"
 #include "tnums/permutat.h"
 #include "tnums/plist.h"
 #include "tnums/pperm.h"
-#include "core/set.h"
 #include "tnums/string.h"
-#include "sysfiles.h"
 #include "tnums/trans.h"
 
 #ifdef HPCGAP
@@ -688,7 +688,7 @@ static Obj FuncPOSITION_FIRST_COMPONENT_SORTED(Obj self, Obj list, Obj obj)
     RESET_FILT_LIST(shadow, FN_IS_SSORT);
 
 #include "applications/sortbase.h"
-  
+
 #define SORT_FUNC_NAME SortParaDensePlistComp
 #define SORT_FUNC_ARGS Obj list, Obj shadow, Obj func
 #define SORT_ARGS list, shadow, func
@@ -711,7 +711,6 @@ static Obj FuncPOSITION_FIRST_COMPONENT_SORTED(Obj self, Obj list, Obj obj)
     RESET_FILT_LIST(shadow, FN_IS_SSORT);
 
 #include "applications/sortbase.h"
-
 
 
 /****************************************************************************

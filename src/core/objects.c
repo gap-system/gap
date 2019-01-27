@@ -12,19 +12,19 @@
 
 #include "core/objects.h"
 
-#include "tnums/bool.h"
 #include "core/calls.h"
-#include "error.h"
-#include "gapstate.h"
 #include "core/gvars.h"
-#include "io.h"
 #include "core/lists.h"
-#include "modules.h"
 #include "core/opers.h"
-#include "tnums/plist.h"
-#include "tnums/precord.h"
 #include "core/records.h"
 #include "core/saveload.h"
+#include "error.h"
+#include "gapstate.h"
+#include "io.h"
+#include "modules.h"
+#include "tnums/bool.h"
+#include "tnums/plist.h"
+#include "tnums/precord.h"
 #include "tnums/string.h"
 
 #ifdef HPCGAP

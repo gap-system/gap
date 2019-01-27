@@ -10,16 +10,16 @@
 
 #include "compiled.h"
 #include "gap.h"
-#include "interpreter/hookintrprtr.h"
 #include "general/intfuncs.h"
 #include "general/iostream.h"
+#include "interpreter/hookintrprtr.h"
 #include "math/collector.h"
-#include "tnums/objset.h"
-#include "profile.h"
-#include "syntaxtree.h"
 #include "math/vec8bit.h"
 #include "math/vecffe.h"
 #include "math/vecgf2.h"
+#include "profile.h"
+#include "syntaxtree.h"
+#include "tnums/objset.h"
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"

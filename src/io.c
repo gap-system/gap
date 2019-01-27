@@ -21,20 +21,20 @@
 
 #include "io.h"
 
-#include "tnums/bool.h"
 #include "core/calls.h"
-#include "error.h"
-#include "gapstate.h"
-#include "util/gaputils.h"
 #include "core/gvars.h"
 #include "core/lists.h"
-#include "modules.h"
-#include "tnums/plist.h"
+#include "error.h"
+#include "gapstate.h"
 #include "interpreter/read.h"
 #include "interpreter/scanner.h"
-#include "tnums/string.h"
+#include "modules.h"
 #include "sysfiles.h"
 #include "sysopt.h"
+#include "tnums/bool.h"
+#include "tnums/plist.h"
+#include "tnums/string.h"
+#include "util/gaputils.h"
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"

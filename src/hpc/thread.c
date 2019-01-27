@@ -10,16 +10,16 @@
 
 #include "hpc/thread.h"
 
-#include "interpreter/code.h"
-#include "error.h"
-#include "util/fibhash.h"
-#include "gapstate.h"
 #include "core/gvars.h"
+#include "error.h"
+#include "gapstate.h"
+#include "interpreter/code.h"
+#include "interpreter/statements.h"
+#include "interpreter/vars.h"
 #include "modules.h"
 #include "tnums/plist.h"
-#include "interpreter/statements.h"
 #include "tnums/string.h"
-#include "interpreter/vars.h"
+#include "util/fibhash.h"
 
 #include "hpc/guards.h"
 #include "hpc/misc.h"

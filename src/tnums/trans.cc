@@ -49,20 +49,20 @@ extern "C" {
 
 #include "tnums/trans.h"
 
+#include "applications/listfunc.h"
 #include "core/ariths.h"
-#include "tnums/bool.h"
+#include "core/gvars.h"
+#include "core/lists.h"
+#include "core/opers.h"
+#include "core/saveload.h"
 #include "error.h"
 #include "gapstate.h"
-#include "core/gvars.h"
-#include "tnums/integer.h"
 #include "general/intfuncs.h"
-#include "applications/listfunc.h"
-#include "core/lists.h"
 #include "modules.h"
-#include "core/opers.h"
+#include "tnums/bool.h"
+#include "tnums/integer.h"
 #include "tnums/permutat.h"
 #include "tnums/plist.h"
-#include "core/saveload.h"
 
 } // extern "C"
 

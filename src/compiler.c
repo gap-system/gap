@@ -13,22 +13,22 @@
 #include "compiler.h"
 
 #include "core/ariths.h"
-#include "tnums/bool.h"
 #include "core/calls.h"
-#include "interpreter/code.h"
-#include "error.h"
-#include "interpreter/expressions.h"
 #include "core/gvars.h"
-#include "tnums/integer.h"
-#include "io.h"
 #include "core/lists.h"
-#include "modules.h"
-#include "tnums/plist.h"
 #include "core/records.h"
+#include "error.h"
+#include "interpreter/code.h"
+#include "interpreter/expressions.h"
 #include "interpreter/statements.h"
-#include "tnums/string.h"
-#include "sysopt.h"
 #include "interpreter/vars.h"
+#include "io.h"
+#include "modules.h"
+#include "sysopt.h"
+#include "tnums/bool.h"
+#include "tnums/integer.h"
+#include "tnums/plist.h"
+#include "tnums/string.h"
 
 #include <stdarg.h>
 
@@ -5209,7 +5209,7 @@ Int CompileFunc (
 
     /* emit code to include the interface files                            */
     Emit( "/* C file produced by GAC */\n" );
-    Emit( "#include \"compiled.h\"\n" );
+    Emit("#include  \"compiled.h\"\n");
     Emit( "#define FILE_CRC  \"%d\"\n", magic1 );
 
     /* emit code for global variables                                      */

@@ -13,12 +13,12 @@
 
 #include "interpreter/hookintrprtr.h"
 
+#include "gapstate.h"
 #include "interpreter/code.h"
 #include "interpreter/expressions.h"
-#include "gapstate.h"
-#include "util/gaputils.h"
-#include "modules.h"
 #include "interpreter/statements.h"
+#include "modules.h"
+#include "util/gaputils.h"
 
 #include "hpc/thread.h"
 

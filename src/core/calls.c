@@ -36,20 +36,20 @@
 
 #include "core/calls.h"
 
-#include "tnums/bool.h"
-#include "interpreter/code.h"
-#include "error.h"
 #include "core/gvars.h"
-#include "tnums/integer.h"
-#include "io.h"
 #include "core/lists.h"
-#include "modules.h"
 #include "core/opers.h"
-#include "tnums/plist.h"
 #include "core/saveload.h"
+#include "error.h"
+#include "interpreter/code.h"
 #include "interpreter/statements.h"
-#include "tnums/string.h"
 #include "interpreter/vars.h"
+#include "io.h"
+#include "modules.h"
+#include "tnums/bool.h"
+#include "tnums/integer.h"
+#include "tnums/plist.h"
+#include "tnums/string.h"
 
 #ifdef HPCGAP
 #include "hpc/thread.h"

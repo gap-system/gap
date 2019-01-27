@@ -19,8 +19,8 @@
 #ifndef GAP_INTRPRTR_H
 #define GAP_INTRPRTR_H
 
-#include "system.h"
 #include "gap.h"
+#include "system.h"
 
 /****************************************************************************
 **

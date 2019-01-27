@@ -8,9 +8,9 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 */
 
+#include "core/objects.h"    // HACK: for FIRST_IMM_MUT_TNUM; remove this later
 #include "error.h"
 #include "gasman.h"
-#include "core/objects.h"    // HACK: for FIRST_IMM_MUT_TNUM; remove this later
 
 /****************************************************************************
 **

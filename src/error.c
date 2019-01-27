@@ -14,21 +14,21 @@
 
 #include "error.h"
 
-#include "tnums/bool.h"
+#include "core/lists.h"
+#include "core/records.h"
+#include "gapstate.h"
 #include "interpreter/code.h"
 #include "interpreter/expressions.h"
 #include "interpreter/funcs.h"
-#include "gapstate.h"
-#include "util/gaputils.h"
+#include "interpreter/statements.h"
+#include "interpreter/vars.h"
 #include "io.h"
-#include "core/lists.h"
 #include "modules.h"
+#include "tnums/bool.h"
 #include "tnums/plist.h"
 #include "tnums/precord.h"
-#include "core/records.h"
-#include "interpreter/statements.h"
 #include "tnums/string.h"
-#include "interpreter/vars.h"
+#include "util/gaputils.h"
 
 #ifdef HPCGAP
 #include "hpc/thread.h"

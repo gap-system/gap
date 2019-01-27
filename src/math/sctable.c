@@ -40,8 +40,8 @@
 #include "math/sctable.h"
 
 #include "core/ariths.h"
-#include "error.h"
 #include "core/lists.h"
+#include "error.h"
 #include "modules.h"
 #include "tnums/plist.h"
 

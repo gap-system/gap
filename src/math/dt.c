@@ -55,10 +55,10 @@
 #include "math/dt.h"
 
 #include "core/calls.h"
-#include "error.h"
 #include "core/gvars.h"
-#include "tnums/integer.h"
+#include "error.h"
 #include "modules.h"
+#include "tnums/integer.h"
 #include "tnums/plist.h"
 
 static void UnmarkTree(Obj z);

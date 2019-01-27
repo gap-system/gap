@@ -38,20 +38,20 @@
 #include "tnums/plist.h"
 
 #include "core/ariths.h"
+#include "core/calls.h"
+#include "core/lists.h"
+#include "core/saveload.h"
+#include "error.h"
+#include "interpreter/funcs.h"
+#include "io.h"
+#include "modules.h"
+#include "sysopt.h"    // for SyInitializing
 #include "tnums/blist.h"
 #include "tnums/bool.h"
-#include "core/calls.h"
 #include "tnums/cyclotom.h"
-#include "error.h"
 #include "tnums/finfield.h"
-#include "interpreter/funcs.h"
-#include "util/gaputils.h"
-#include "io.h"
-#include "core/lists.h"
-#include "modules.h"
 #include "tnums/range.h"
-#include "core/saveload.h"
-#include "sysopt.h"    // for SyInitializing
+#include "util/gaputils.h"
 
 #ifdef HPCGAP
 #include "hpc/guards.h"

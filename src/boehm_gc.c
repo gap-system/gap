@@ -15,9 +15,9 @@
 
 #include "boehm_gc.h"
 
+#include "core/objects.h"
 #include "gapstate.h"
 #include "gasman.h"
-#include "core/objects.h"
 #include "sysmem.h"
 
 #ifdef TRACK_CREATOR

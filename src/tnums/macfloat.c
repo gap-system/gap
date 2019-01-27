@@ -23,13 +23,13 @@
 #include "tnums/macfloat.h"
 
 #include "core/ariths.h"
-#include "tnums/bool.h"
+#include "core/saveload.h"
 #include "error.h"
 #include "io.h"
-#include "tnums/integer.h"
 #include "modules.h"
+#include "tnums/bool.h"
+#include "tnums/integer.h"
 #include "tnums/plist.h"
-#include "core/saveload.h"
 #include "tnums/string.h"
 
 #define RequireMacFloat(funcname, op) \

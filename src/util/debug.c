@@ -16,10 +16,10 @@
 
 #include "system.h"
 
-#include "core/calls.h"
 #include "compiled.h"
-#include "util/fibhash.h"
+#include "core/calls.h"
 #include "interpreter/hookintrprtr.h"
+#include "util/fibhash.h"
 
 #ifdef HPCGAP
 #include "hpc/guards.h"

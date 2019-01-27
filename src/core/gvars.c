@@ -29,14 +29,14 @@
 
 #include "core/gvars.h"
 
-#include "tnums/bool.h"
 #include "core/calls.h"
+#include "core/lists.h"
 #include "error.h"
 #include "gapstate.h"
-#include "tnums/integer.h"
 #include "io.h"
-#include "core/lists.h"
 #include "modules.h"
+#include "tnums/bool.h"
+#include "tnums/integer.h"
 #include "tnums/plist.h"
 #include "tnums/string.h"
 

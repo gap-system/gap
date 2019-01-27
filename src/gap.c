@@ -12,37 +12,37 @@
 
 #include "gap.h"
 
-#include "core/ariths.h"
-#include "tnums/bool.h"
-#include "core/calls.h"
 #include "compiler.h"
-#include "error.h"
-#include "interpreter/funcs.h"
-#include "gapstate.h"
+#include "core/ariths.h"
+#include "core/calls.h"
 #include "core/gvars.h"
-#include "tnums/integer.h"
-#include "io.h"
 #include "core/lists.h"
-#include "modules.h"
-#include "tnums/plist.h"
-#include "tnums/precord.h"
-#include "interpreter/read.h"
 #include "core/records.h"
 #include "core/saveload.h"
-#include "interpreter/statements.h"    // for ClearError
+#include "error.h"
+#include "gapstate.h"
 #include "general/streams.h"
-#include "tnums/string.h"
+#include "interpreter/funcs.h"
+#include "interpreter/read.h"
+#include "interpreter/statements.h"    // for ClearError
+#include "interpreter/vars.h"
+#include "io.h"
+#include "modules.h"
 #include "sysenv.h"
 #include "sysfiles.h"
 #include "sysmem.h"
 #include "sysopt.h"
-#include "interpreter/vars.h"
+#include "tnums/bool.h"
+#include "tnums/integer.h"
+#include "tnums/plist.h"
+#include "tnums/precord.h"
+#include "tnums/string.h"
 
 #ifdef HPCGAP
-#include "interpreter/interpreter.h"
 #include "hpc/misc.h"
 #include "hpc/thread.h"
 #include "hpc/threadapi.h"
+#include "interpreter/interpreter.h"
 #endif
 
 #include <gmp.h>

@@ -44,11 +44,11 @@
 #include <readline/readline.h>
 #endif
 
-#include <sys/time.h>                   /* definition of 'struct timeval' */
+#include <sys/time.h> /* definition of 'struct timeval' */
 #include <sys/types.h>
 
 #ifdef HAVE_SYS_RESOURCE_H
-#include <sys/resource.h>               /* definition of 'struct rusage' */
+#include <sys/resource.h> /* definition of 'struct rusage' */
 #endif
 
 #ifdef SYS_IS_DARWIN

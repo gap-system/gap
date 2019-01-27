@@ -14,9 +14,9 @@
 #ifndef GAP_OPERS_H
 #define GAP_OPERS_H
 
-#include "tnums/bool.h"
 #include "core/calls.h"
 #include "system.h"
+#include "tnums/bool.h"
 
 
 enum {

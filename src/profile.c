@@ -13,27 +13,27 @@
 
 #include "profile.h"
 
-#include "tnums/bool.h"
 #include "core/calls.h"
-#include "interpreter/code.h"
+#include "core/lists.h"
 #include "error.h"
+#include "interpreter/code.h"
 #include "interpreter/funcs.h"
 #include "interpreter/hookintrprtr.h"
+#include "interpreter/vars.h"
 #include "io.h"
-#include "core/lists.h"
 #include "modules.h"
+#include "sysfiles.h"
+#include "tnums/bool.h"
 #include "tnums/plist.h"
 #include "tnums/string.h"
-#include "sysfiles.h"
-#include "interpreter/vars.h"
 
 #include "hpc/thread.h"
 
-#include <sys/time.h>                   // for gettimeofday
+#include <sys/time.h>    // for gettimeofday
 #include <sys/types.h>
 #include <unistd.h>
 #ifdef HAVE_SYS_RESOURCE_H
-#include <sys/resource.h>               // definition of 'struct rusage'
+#include <sys/resource.h>    // definition of 'struct rusage'
 #endif
 
 

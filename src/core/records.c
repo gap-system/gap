@@ -15,13 +15,13 @@
 
 #include "core/records.h"
 
-#include "tnums/bool.h"
-#include "error.h"
-#include "util/gaputils.h"
-#include "modules.h"
 #include "core/opers.h"
+#include "error.h"
+#include "modules.h"
+#include "tnums/bool.h"
 #include "tnums/plist.h"
 #include "tnums/string.h"
+#include "util/gaputils.h"
 
 #ifdef HPCGAP
 #include "hpc/thread.h"

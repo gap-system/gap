@@ -52,8 +52,8 @@
 #ifndef GAP_FINFIELD_H
 #define GAP_FINFIELD_H
 
-#include "tnums/ffdata.h"
 #include "core/objects.h"
+#include "tnums/ffdata.h"
 
 
 /****************************************************************************

@@ -12,23 +12,23 @@
 
 #include "hpc/threadapi.h"
 
-#include "tnums/bool.h"
 #include "core/calls.h"
-#include "interpreter/code.h"
-#include "error.h"
-#include "interpreter/funcs.h"
-#include "gapstate.h"
 #include "core/gvars.h"
-#include "interpreter/interpreter.h"
-#include "io.h"
 #include "core/lists.h"
-#include "modules.h"
 #include "core/objects.h"
-#include "tnums/plist.h"
-#include "interpreter/read.h"
 #include "core/records.h"
 #include "core/set.h"
+#include "error.h"
+#include "gapstate.h"
+#include "interpreter/code.h"
+#include "interpreter/funcs.h"
+#include "interpreter/interpreter.h"
+#include "interpreter/read.h"
 #include "interpreter/statements.h"
+#include "io.h"
+#include "modules.h"
+#include "tnums/bool.h"
+#include "tnums/plist.h"
 #include "tnums/string.h"
 
 #include "hpc/guards.h"
@@ -38,8 +38,8 @@
 #include "hpc/tls.h"
 #include "hpc/traverse.h"
 
-#include <stdio.h>
 #include <signal.h>
+#include <stdio.h>
 #include <sys/time.h>
 
 #include <pthread.h>

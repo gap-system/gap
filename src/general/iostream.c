@@ -24,11 +24,11 @@
 
 #include "general/iostream.h"
 
-#include "tnums/bool.h"
+#include "core/lists.h"
 #include "error.h"
 #include "io.h"
-#include "core/lists.h"
 #include "modules.h"
+#include "tnums/bool.h"
 #include "tnums/string.h"
 
 #include "hpc/thread.h"
@@ -45,12 +45,12 @@
 
 #ifdef HAVE_OPENPTY
   #if defined(HAVE_UTIL_H)
-    #include <util.h>     /* for openpty() on Mac OS X, OpenBSD and NetBSD */
-  #elif defined(HAVE_LIBUTIL_H)
-    #include <libutil.h>  /* for openpty() on FreeBSD */
-  #elif defined(HAVE_PTY_H)
-    #include <pty.h>      /* for openpty() on Cygwin, Interix, OSF/1 4 and 5 */
-  #endif
+#include <util.h> /* for openpty() on Mac OS X, OpenBSD and NetBSD */
+#elif defined(HAVE_LIBUTIL_H)
+#include <libutil.h> /* for openpty() on FreeBSD */
+#elif defined(HAVE_PTY_H)
+#include <pty.h> /* for openpty() on Cygwin, Interix, OSF/1 4 and 5 */
+#endif
 #endif
 
 

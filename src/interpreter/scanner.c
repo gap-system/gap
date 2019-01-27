@@ -16,15 +16,15 @@
 
 #include "interpreter/scanner.h"
 
+#include "core/lists.h"
 #include "error.h"
 #include "gapstate.h"
-#include "util/gaputils.h"
 #include "io.h"
-#include "core/lists.h"
 #include "modules.h"
+#include "sysopt.h"
 #include "tnums/plist.h"
 #include "tnums/string.h"
-#include "sysopt.h"
+#include "util/gaputils.h"
 
 
 static UInt NextSymbol(void);
