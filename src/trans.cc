@@ -4280,116 +4280,21 @@ static Obj ProdPerm4Trans4(Obj p, Obj f)
 ** Conjugate a transformation f by a permutation p: p ^ -1 * f * p
 *******************************************************************************/
 
-static Obj PowTrans2Perm2(Obj f, Obj p)
+template <typename TF, typename TP>
+static Obj PowTransPerm(Obj f, Obj p)
 {
-    const UInt2 *ptf, *ptp;
-    UInt2 *ptcnj;
-    UInt   i, def, dep, decnj;
-    Obj    cnj;
+    typedef typename ResultType<TF, TP>::type Res;
 
-    dep = DEG_PERM2(p);
-    def = DEG_TRANS2(f);
-    decnj = MAX(dep, def);
-    cnj = NEW_TRANS2(decnj);
+    UInt dep = DEG_PERM<TP>(p);
+    UInt def = DEG_TRANS<TF>(f);
+    UInt decnj = MAX(dep, def);
+    UInt i;
 
-    ptcnj = ADDR_TRANS2(cnj);
-    ptf = CONST_ADDR_TRANS2(f);
-    ptp = CONST_ADDR_PERM2(p);
+    Obj cnj = NEW_TRANS<Res>(decnj);
 
-    if (def == dep) {
-        for (i = 0; i < decnj; i++) {
-            ptcnj[ptp[i]] = ptp[ptf[i]];
-        }
-    }
-    else {
-        for (i = 0; i < decnj; i++) {
-            ptcnj[IMAGE(i, ptp, dep)] = IMAGE(IMAGE(i, ptf, def), ptp, dep);
-        }
-    }
-    return cnj;
-}
-
-static Obj PowTrans2Perm4(Obj f, Obj p)
-{
-    const UInt2 * ptf;
-    const UInt4 * ptp;
-    UInt4 * ptcnj;
-    UInt    i, def, dep, decnj;
-    Obj     cnj;
-
-    dep = DEG_PERM4(p);
-    def = DEG_TRANS2(f);
-    decnj = MAX(dep, def);
-    cnj = NEW_TRANS4(decnj);
-
-    ptcnj = ADDR_TRANS4(cnj);
-    ptf = CONST_ADDR_TRANS2(f);
-    ptp = CONST_ADDR_PERM4(p);
-
-    if (def == dep) {
-        // I don't know how to create a permutation of type T_PERM4 with
-        // (internal) degree 65536 or less, so this case isn't tested. It is
-        // included to make the code more robust.
-        for (i = 0; i < decnj; i++) {
-            ptcnj[ptp[i]] = ptp[ptf[i]];
-        }
-    }
-    else {
-        for (i = 0; i < decnj; i++) {
-            ptcnj[IMAGE(i, ptp, dep)] = IMAGE(IMAGE(i, ptf, def), ptp, dep);
-        }
-    }
-    return cnj;
-}
-
-static Obj PowTrans4Perm2(Obj f, Obj p)
-{
-    const UInt2 * ptp;
-    const UInt4 * ptf;
-    UInt4 * ptcnj;
-    UInt    i, def, dep, decnj;
-    Obj     cnj;
-
-    dep = DEG_PERM2(p);
-    def = DEG_TRANS4(f);
-    decnj = MAX(dep, def);
-    cnj = NEW_TRANS4(decnj);
-
-    ptcnj = ADDR_TRANS4(cnj);
-    ptf = CONST_ADDR_TRANS4(f);
-    ptp = CONST_ADDR_PERM2(p);
-
-    if (def == dep) {
-        // The only transformation created within this file that is of type
-        // T_TRANS4 and that does not have (internal) degree 65537 or greater
-        // is ID_TRANS4.
-        for (i = 0; i < decnj; i++) {
-            ptcnj[ptp[i]] = ptp[ptf[i]];
-        }
-    }
-    else {
-        for (i = 0; i < decnj; i++) {
-            ptcnj[IMAGE(i, ptp, dep)] = IMAGE(IMAGE(i, ptf, def), ptp, dep);
-        }
-    }
-    return cnj;
-}
-
-static Obj PowTrans4Perm4(Obj f, Obj p)
-{
-    const UInt4 *ptf, *ptp;
-    UInt4 *ptcnj;
-    UInt   i, def, dep, decnj;
-    Obj    cnj;
-
-    dep = DEG_PERM4(p);
-    def = DEG_TRANS4(f);
-    decnj = MAX(dep, def);
-    cnj = NEW_TRANS4(decnj);
-
-    ptcnj = ADDR_TRANS4(cnj);
-    ptf = CONST_ADDR_TRANS4(f);
-    ptp = CONST_ADDR_PERM4(p);
+    Res *      ptcnj = ADDR_TRANS<Res>(cnj);
+    const TF * ptf = CONST_ADDR_TRANS<TF>(f);
+    const TP * ptp = CONST_ADDR_PERM<TP>(p);
 
     if (def == dep) {
         for (i = 0; i < decnj; i++) {
@@ -4899,10 +4804,10 @@ static Int InitKernel(StructInitInfo * module)
     ProdFuncs[T_PERM4][T_TRANS2] = ProdPerm4Trans2;
     ProdFuncs[T_PERM2][T_TRANS4] = ProdPerm2Trans4;
     ProdFuncs[T_PERM4][T_TRANS4] = ProdPerm4Trans4;
-    PowFuncs[T_TRANS2][T_PERM2] = PowTrans2Perm2;
-    PowFuncs[T_TRANS2][T_PERM4] = PowTrans2Perm4;
-    PowFuncs[T_TRANS4][T_PERM2] = PowTrans4Perm2;
-    PowFuncs[T_TRANS4][T_PERM4] = PowTrans4Perm4;
+    PowFuncs[T_TRANS2][T_PERM2] = PowTransPerm<UInt2, UInt2>;
+    PowFuncs[T_TRANS2][T_PERM4] = PowTransPerm<UInt2, UInt4>;
+    PowFuncs[T_TRANS4][T_PERM2] = PowTransPerm<UInt4, UInt2>;
+    PowFuncs[T_TRANS4][T_PERM4] = PowTransPerm<UInt4, UInt4>;
     // for quotients of a transformation by a permutation, we rely on the
     // default handler 'QuoDefault'; that uses the inverse of the permutation,
     // which is cached
