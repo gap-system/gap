@@ -1213,14 +1213,16 @@ void IntrHelp(Obj topic)
 
     /* FIXME: Hard coded function name */
     hgvar = GVarName("HELP");
-    if (hgvar == 0) {
-        ErrorQuit( "Global function \"HELP\" is not declared. Cannot access help.",
-                   0L, 0L );
-    }
     help = ValGVar(hgvar);
     if (!help) {
-        ErrorQuit( "Global function \"HELP\" is not defined. Cannot access help.",
-                   0L, 0L );
+        ErrorQuit(
+            "Global variable \"HELP\" is not defined. Cannot access help", 0,
+            0);
+    }
+    if (!IS_FUNC(help)) {
+        ErrorQuit(
+            "Global variable \"HELP\" is not a function. Cannot access help",
+            0, 0);
     }
 
     res = CALL_1ARGS(help, topic);
