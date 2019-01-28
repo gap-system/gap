@@ -93,6 +93,17 @@ rec(
 true
 rec(  )
 
+# test special case in CodeRecExprBeginElmExpr
+gap> f:=x-> rec( x:= 1, ("y") := 2, 42 := 3, (43) := 4);; Display(f); f(0);
+function ( x )
+    return rec(
+        x := 1,
+         ("y") := 2,
+        42 := 3,
+        43 := 4 );
+end
+rec( 42 := 3, 43 := 4, x := 1, y := 2 )
+
 #
 # component objects (atomic by default in HPC-GAP)
 #

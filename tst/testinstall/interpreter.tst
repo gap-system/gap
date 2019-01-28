@@ -107,6 +107,10 @@ gap> Unbind(r!.("a"));
 gap> r;
 rec(  )
 
+# test special case in IntrRecExprBeginElmExpr
+gap> rec( x:= 1, ("y") := 2, 42 := 3, (43) := 4);
+rec( 42 := 3, 43 := 4, x := 1, y := 2 )
+
 #
 # component objects (atomic by default in HPC-GAP)
 #
