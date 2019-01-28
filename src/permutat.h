@@ -162,6 +162,17 @@ UInt LargestMovedPointPerm(Obj perm);
 
 /****************************************************************************
 **
+*F  TrimPerm( <perm>, <m> ) . . . . . . .  trim the permutation to degree <m>
+**
+**  Trim <perm> to degree <m> and if possible change it to a T_PERM2 bag.
+**  No checks are performed, the caller is responsible for ensuring that this
+**  operation is valid.
+*/
+void TrimPerm(Obj perm, UInt m);
+
+
+/****************************************************************************
+**
 *F  ScanPermCycle( <perm>, <m>, <cycle>, <len>, <readElm> )
 */
 UInt ScanPermCycle(

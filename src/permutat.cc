@@ -1808,36 +1808,15 @@ static Obj FuncRESTRICTED_PERM(Obj self, Obj perm, Obj dom, Obj test)
 */
 static Obj FuncTRIM_PERM(Obj self, Obj perm, Obj n)
 {
-    UInt        deg,rdeg,i;
-    UInt4*      addr;
-
-    /* check arguments and extract permutation */
     RequirePermutation("TRIM_PERM", perm);
-
-    deg = INT_INTOBJ(n);
-    /*T a test might be useful here */
-
-    if ( TNUM_OBJ(perm) == T_PERM2 ) {
-      rdeg = deg < DEG_PERM2(perm) ? deg : DEG_PERM2(perm);
-      ResizeBag(perm, SIZEBAG_PERM2(rdeg));
-    }
-    else {
-      rdeg = deg < DEG_PERM4(perm) ? deg : DEG_PERM4(perm);
-      if (rdeg > 65536UL ) {
-          ResizeBag(perm, SIZEBAG_PERM4(rdeg));
-      }
-      else {
-        /* Convert to 2Byte rep: move the points up */
-        addr=ADDR_PERM4(perm);
-        for (i=0;i<=rdeg;i++) {
-          ((UInt2*)addr)[i]=(UInt2)addr[i];
-        }
-        RetypeBag( perm, T_PERM2 );
-        ResizeBag(perm, SIZEBAG_PERM2(rdeg));
-      }
-    }
-
-    return (Obj)0;
+    RequireNonnegativeSmallInt("TRIM_PERM", n);
+    UInt newDeg = INT_INTOBJ(n);
+    UInt oldDeg =
+        (TNUM_OBJ(perm) == T_PERM2) ? DEG_PERM2(perm) : DEG_PERM4(perm);
+    if (newDeg > oldDeg)
+        newDeg = oldDeg;
+    TrimPerm(perm, newDeg);
+    return 0;
 }
 
 /****************************************************************************
@@ -2245,11 +2224,9 @@ Obj Array2Perm (
     Obj                 array )
 {
     Obj                 perm;           /* permutation, result             */
-    UInt4 *             ptr4;           /* pointer into perm               */
-    UInt2 *             ptr2;           /* pointer into perm               */
     UInt                m;              /* maximal entry in permutation    */
     Obj                 cycle;          /* one cycle of permutation        */
-    UInt                i, k;           /* loop variable                   */
+    UInt                i;              /* loop variable                   */
 
     /* special case for identity permutation                               */
     if ( LEN_LIST(array) == 0 ) {
@@ -2269,23 +2246,32 @@ Obj Array2Perm (
     }
 
     /* if possible represent the permutation with short entries            */
-    if ( m <= 65536UL ) {
-        ptr2 = ADDR_PERM2( perm );
-        ptr4 = ADDR_PERM4( perm );
-        for ( k = 1; k <= m; k++ ) {
-            ptr2[k-1] = ptr4[k-1];
-        };
-        RetypeBag( perm, T_PERM2 );
-        ResizeBag(perm, SIZEBAG_PERM2(m));
-    }
-
-    /* otherwise just shorten the permutation                              */
-    else {
-        ResizeBag(perm, SIZEBAG_PERM4(m));
-    }
+    TrimPerm(perm, m);
 
     /* return the permutation                                              */
     return perm;
+}
+
+void TrimPerm(Obj perm, UInt m)
+{
+    if (TNUM_OBJ(perm) == T_PERM2) {
+        GAP_ASSERT(m <= DEG_PERM2(perm));
+        ResizeBag(perm, SIZEBAG_PERM2(m));
+    }
+    else if (m <= 65536) {
+        GAP_ASSERT(m <= DEG_PERM4(perm));
+        UInt2 *       ptr2 = ADDR_PERM2(perm);
+        const UInt4 * ptr4 = CONST_ADDR_PERM4(perm);
+        for (UInt k = 1; k <= m; k++) {
+            ptr2[k - 1] = ptr4[k - 1];
+        };
+        RetypeBag(perm, T_PERM2);
+        ResizeBag(perm, SIZEBAG_PERM2(m));
+    }
+    else {
+        GAP_ASSERT(m <= DEG_PERM4(perm));
+        ResizeBag(perm, SIZEBAG_PERM4(m));
+    }
 }
 
 UInt ScanPermCycle(
