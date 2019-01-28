@@ -220,7 +220,7 @@ creators <C>NewFloat(filter,IsRat)</C>, <C>NewFloat(IsString)</C>.
 <P/>
 
 It must then install methods for all arithmetic and numerical
-operations: <C>PLUS</C>, <C>Exp</C>, ...
+operations: <C>SUM</C>, <C>Exp</C>, ...
 <P/>
 
 The user chooses that implementation by calling
