@@ -69,6 +69,75 @@ extern "C" {
 #include "permutat_intern.hh"
 
 
+//
+// convert TNUM to underlying C data type
+//
+template <UInt tnum>
+struct DataType;
+
+template <>
+struct DataType<T_TRANS2> {
+    typedef UInt2 type;
+};
+template <>
+struct DataType<T_TRANS4> {
+    typedef UInt4 type;
+};
+
+
+//
+// convert underlying C data type to TNUM
+//
+template <typename T>
+struct T_TRANS {
+};
+template <>
+struct T_TRANS<UInt2> {
+    static const UInt tnum = T_TRANS2;
+};
+template <>
+struct T_TRANS<UInt4> {
+    static const UInt tnum = T_TRANS4;
+};
+
+
+//
+// Various helper functions for partial permutations
+//
+template <typename T>
+static void ASSERT_IS_TRANS(Obj f)
+{
+    GAP_ASSERT(TNUM_OBJ(f) == T_TRANS<T>::tnum);
+}
+
+template <typename T>
+static inline Obj NEW_TRANS(UInt deg)
+{
+    return NewBag(T_TRANS<T>::tnum, deg * sizeof(T) + 3 * sizeof(Obj));
+}
+
+template <typename T>
+static inline T * ADDR_TRANS(Obj f)
+{
+    ASSERT_IS_TRANS<T>(f);
+    return (T *)(ADDR_OBJ(f) + 3);
+}
+
+template <typename T>
+static inline const T * CONST_ADDR_TRANS(Obj f)
+{
+    ASSERT_IS_TRANS<T>(f);
+    return (const T *)(CONST_ADDR_OBJ(f) + 3);
+}
+
+template <typename T>
+static inline UInt DEG_TRANS(Obj f)
+{
+    ASSERT_IS_TRANS<T>(f);
+    return (UInt)(SIZE_OBJ(f) - 3 * sizeof(Obj)) / sizeof(T);
+}
+
+
 #define MIN(a, b) (a < b ? a : b)
 #define MAX(a, b) (a < b ? b : a)
 
