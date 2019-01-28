@@ -3909,159 +3909,34 @@ static Int EqTrans42(Obj f, Obj g)
 ** Less than for transformations
 *******************************************************************************/
 
-static Int LtTrans22(Obj f, Obj g)
+template <typename TF, typename TG>
+static Int LtTrans(Obj f, Obj g)
 {
-    UInt   i, def, deg;
-    const UInt2 *ptf, *ptg;
+    UInt def = DEG_TRANS<TF>(f);
+    UInt deg = DEG_TRANS<TG>(g);
+    UInt i;
 
-    ptf = CONST_ADDR_TRANS2(f);
-    ptg = CONST_ADDR_TRANS2(g);
-    def = DEG_TRANS2(f);
-    deg = DEG_TRANS2(g);
+    const TF * ptf = CONST_ADDR_TRANS<TF>(f);
+    const TG * ptg = CONST_ADDR_TRANS<TG>(g);
 
     if (def <= deg) {
         for (i = 0; i < def; i++) {
             if (ptf[i] != ptg[i]) {
                 if (ptf[i] < ptg[i]) {
-                    return 1L;
+                    return 1;
                 }
                 else {
-                    return 0L;
+                    return 0;
                 }
             }
         }
         for (; i < deg; i++) {
             if (ptg[i] != i) {
                 if (i < ptg[i]) {
-                    return 1L;
+                    return 1;
                 }
                 else {
-                    return 0L;
-                }
-            }
-        }
-    }
-    else {
-        // def > deg
-        for (i = 0; i < deg; i++) {
-            if (ptf[i] != ptg[i]) {
-                if (ptf[i] < ptg[i]) {
-                    return 1L;
-                }
-                else {
-                    return 0L;
-                }
-            }
-        }
-        for (; i < def; i++) {
-            if (ptf[i] != i) {
-                if (i > ptf[i]) {
-                    return 1L;
-                }
-                else {
-                    return 0L;
-                }
-            }
-        }
-    }
-    return 0L;
-}
-
-static Int LtTrans24(Obj f, Obj g)
-{
-    UInt    i, def, deg;
-    const UInt2 * ptf;
-    const UInt4 * ptg;
-
-    ptf = CONST_ADDR_TRANS2(f);
-    ptg = CONST_ADDR_TRANS4(g);
-    def = DEG_TRANS2(f);
-    deg = DEG_TRANS4(g);
-
-    if (def <= deg) {
-        for (i = 0; i < def; i++) {
-            if (ptf[i] != ptg[i]) {
-                if (ptf[i] < ptg[i]) {
-                    return 1L;
-                }
-                else {
-                    return 0L;
-                }
-            }
-        }
-        for (; i < deg; i++) {
-            if (ptg[i] != i) {
-                if (i < ptg[i]) {
-                    return 1L;
-                }
-                else {
-                    return 0L;
-                }
-            }
-        }
-    }
-    else {
-        // The only transformation created within this file that is of type
-        // T_TRANS4 and that does not have (internal) degree 65537 or greater
-        // is ID_TRANS4.
-
-        for (i = 0; i < deg; i++) {
-            if (ptf[i] != ptg[i]) {
-                if (ptf[i] < ptg[i]) {
-                    return 1L;
-                }
-                else {
-                    return 0L;
-                }
-            }
-        }
-        for (; i < def; i++) {
-            if (ptf[i] != i) {
-                if (i > ptf[i]) {
-                    return 1L;
-                }
-                else {
-                    return 0L;
-                }
-            }
-        }
-    }
-    return 0L;
-}
-
-static Int LtTrans42(Obj f, Obj g)
-{
-    UInt    i, def, deg;
-    const UInt4 * ptf;
-    const UInt2 * ptg;
-
-    ptf = CONST_ADDR_TRANS4(f);
-    ptg = CONST_ADDR_TRANS2(g);
-    def = DEG_TRANS4(f);
-    deg = DEG_TRANS2(g);
-
-    if (def <= deg) {
-        // The only transformation created within this file that is of type
-        // T_TRANS4 and that does not have (internal) degree 65537 or greater
-        // is ID_TRANS4.
-
-        for (i = 0; i < def; i++) {
-            if (ptf[i] != ptg[i]) {
-                if (ptf[i] < ptg[i]) {
-                    return 1L;
-                }
-                else {
-                    return 0L;
-                }
-            }
-        }
-        for (; i < deg; i++) {
-            if (ptg[i] != i) {
-                if (i < ptg[i]) {
-                    return 1L;
-                }
-                else {
-                    return 0L;
+                    return 0;
                 }
             }
         }
@@ -4070,83 +3945,27 @@ static Int LtTrans42(Obj f, Obj g)
         for (i = 0; i < deg; i++) {
             if (ptf[i] != ptg[i]) {
                 if (ptf[i] < ptg[i]) {
-                    return 1L;
+                    return 1;
                 }
                 else {
-                    return 0L;
+                    return 0;
                 }
             }
         }
         for (; i < def; i++) {
             if (ptf[i] != i) {
                 if (i > ptf[i]) {
-                    return 1L;
+                    return 1;
                 }
                 else {
-                    return 0L;
+                    return 0;
                 }
             }
         }
     }
-    return 0L;
+    return 0;
 }
 
-static Int LtTrans44(Obj f, Obj g)
-{
-    UInt   i, def, deg;
-    const UInt4 *ptf, *ptg;
-
-    ptf = CONST_ADDR_TRANS4(f);
-    ptg = CONST_ADDR_TRANS4(g);
-    def = DEG_TRANS4(f);
-    deg = DEG_TRANS4(g);
-
-    if (def <= deg) {
-        for (i = 0; i < def; i++) {
-            if (ptf[i] != ptg[i]) {
-                if (ptf[i] < ptg[i]) {
-                    return 1L;
-                }
-                else {
-                    return 0L;
-                }
-            }
-        }
-        for (; i < deg; i++) {
-            if (ptg[i] != i) {
-                if (i < ptg[i]) {
-                    return 1L;
-                }
-                else {
-                    return 0L;
-                }
-            }
-        }
-    }
-    else {
-        for (i = 0; i < deg; i++) {
-            if (ptf[i] != ptg[i]) {
-                if (ptf[i] < ptg[i]) {
-                    return 1L;
-                }
-                else {
-                    return 0L;
-                }
-            }
-        }
-        for (; i < def; i++) {
-            if (ptf[i] != i) {
-                if (i > ptf[i]) {
-                    return 1L;
-                }
-                else {
-                    return 0L;
-                }
-            }
-        }
-    }
-    return 0L;
-}
 
 /*******************************************************************************
 ** Products for transformations
@@ -5179,10 +4998,10 @@ static Int InitKernel(StructInitInfo * module)
     EqFuncs[T_TRANS2][T_TRANS4] = EqTrans24;
     EqFuncs[T_TRANS4][T_TRANS2] = EqTrans42;
     EqFuncs[T_TRANS4][T_TRANS4] = EqTrans44;
-    LtFuncs[T_TRANS2][T_TRANS2] = LtTrans22;
-    LtFuncs[T_TRANS2][T_TRANS4] = LtTrans24;
-    LtFuncs[T_TRANS4][T_TRANS2] = LtTrans42;
-    LtFuncs[T_TRANS4][T_TRANS4] = LtTrans44;
+    LtFuncs[T_TRANS2][T_TRANS2] = LtTrans<UInt2, UInt2>;
+    LtFuncs[T_TRANS2][T_TRANS4] = LtTrans<UInt2, UInt4>;
+    LtFuncs[T_TRANS4][T_TRANS2] = LtTrans<UInt4, UInt2>;
+    LtFuncs[T_TRANS4][T_TRANS4] = LtTrans<UInt4, UInt4>;
 
     /* install the binary operations */
     ProdFuncs[T_TRANS2][T_TRANS2] = ProdTrans<UInt2, UInt2>;
