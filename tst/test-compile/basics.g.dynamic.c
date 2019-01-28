@@ -32,7 +32,6 @@ static Obj  GF_test__loops;
 static GVar G_runtest;
 
 /* record names used in handlers */
-static RNam R_WarnOnUnboundGlobals;
 static RNam R_myopt;
 static RNam R_x;
 static RNam R_a;
@@ -1964,7 +1963,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_runtest = GVarName( "runtest" );
  
  /* record names used in handlers */
- R_WarnOnUnboundGlobals = RNamName( "WarnOnUnboundGlobals" );
  R_myopt = RNamName( "myopt" );
  R_x = RNamName( "x" );
  R_a = RNamName( "a" );

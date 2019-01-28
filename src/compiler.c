@@ -539,7 +539,7 @@ typedef UInt    GVar;
 #define COMP_USE_GVAR_COPY      (1L << 1)
 #define COMP_USE_GVAR_FOPY      (1L << 2)
 
-Bag             CompInfoGVar;
+static Bag CompInfoGVar;
 
 static void CompSetUseGVar(GVar gvar, UInt mode)
 {
@@ -581,7 +581,7 @@ typedef UInt    RNam;
 
 #define COMP_USE_RNAM_ID        (1L << 0)
 
-Bag             CompInfoRNam;
+static Bag CompInfoRNam;
 
 static void CompSetUseRNam(RNam rnam, UInt mode)
 {
@@ -4708,7 +4708,7 @@ static void CompUnbRecExpr(Stat stat)
     /* compile the record expression                                       */
     record = CompExpr(READ_STAT(stat, 0));
 
-    /* get the name (stored immediately in the statement)                  */
+    /* get the name expression                                             */
     rnam = CompExpr(READ_STAT(stat, 1));
 
     /* emit the code for the assignment                                    */
@@ -4899,9 +4899,8 @@ static void CompUnbComObjExpr(Stat stat)
     /* compile the record expression                                       */
     record = CompExpr(READ_STAT(stat, 0));
 
-    /* get the name (stored immediately in the statement)                  */
+    /* get the name expression                                             */
     rnam = CompExpr(READ_STAT(stat, 1));
-    CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
     /* emit the code for the assignment                                    */
     Emit( "UnbComObj( %c, RNamObj(%c) );\n", record, rnam );
