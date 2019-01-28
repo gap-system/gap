@@ -477,13 +477,35 @@ AC_SUBST([READLINE_LIBS])
 
 dnl Find julia
 AC_ARG_WITH([julia],
-  [AS_HELP_STRING([--with-julia@<:@=PREFIX@:>@],
-    [specify a prefix where julia can be found])],
-  [],[with_julia=no]
-)
+  [AS_HELP_STRING([--with-julia@<:@=PATH@:>@],
+    [specify a prefix for a julia binary or a julia binary])],
+  [],[
+    AS_IF([test "x$with_gc" = xjulia],
+    [
+      with_julia=yes
+    ],
+    [
+      with_julia=no
+    ])
+  ])
 
-AS_IF([test "x$with_julia" != xno],[
-  AC_PATH_PROG([JULIA], [julia], [], [${with_julia}/bin ${PATH}])
+AS_IF([test "x$with_julia" != xno ],[
+  AS_IF([test -x "$with_julia" && test ! -d "$with_julia" ],
+  [
+    JULIA="${with_julia}"
+  ],
+  [
+    AS_IF([test -d "$with_julia"  ],
+    [
+      JULIA_PATH="${with_julia}/bin:${with_julia}:${with_julia}/usr/bin"
+    ],
+    [
+      AS_IF([test "x$with_julia" != xyes ],
+        [ AC_MSG_ERROR([invalid argument to --with-julia]) ] )
+      JULIA_PATH="${PATH}"
+    ])
+    AC_PATH_PROG([JULIA], [julia], [], [$JULIA_PATH])
+  ])
   AS_IF([test "x$JULIA" = x],[ AC_MSG_ERROR([no julia executable found]) ])
 
   JL_SHARE=$($JULIA --startup-file=no -e 'print(joinpath(Sys.BINDIR, Base.DATAROOTDIR, "julia"))')
@@ -512,6 +534,12 @@ AS_IF([test "x$with_julia" != xno],[
   AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_LIBS from julia-config.jl])])
   JULIA_LIBS=${JULIA_LIBS//\'/}
   AC_MSG_RESULT([${JULIA_LIBS}])
+],
+[
+  AS_IF( [ test "x$with_gc" = xjulia ],
+  [
+    AC_MSG_ERROR([ julia was selected as GC, but julia support was disabled ])
+  ])
 ])
 AC_SUBST([JULIA])
 AC_SUBST([JULIA_CPPFLAGS])

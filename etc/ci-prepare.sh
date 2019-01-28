@@ -41,7 +41,7 @@ then
   pushd julia-*
   JULIA_PATH=$(pwd)
   popd
-  CONFIGFLAGS="--with-gc=julia --with-julia=$JULIA_PATH $CONFIGFLAGS"
+  CONFIGFLAGS="--with-gc=julia --with-julia=${JULIA_PATH}/bin/julia $CONFIGFLAGS"
 fi
 
 
