@@ -70,72 +70,8 @@ extern "C" {
 
 } // extern "C"
 
+#include "permutat_intern.hh"
 
-#ifdef GAP_KERNEL_DEBUG
-template <typename T>
-static bool CHECK_PERM_TYPE(Obj perm);
-
-template <>
-inline bool CHECK_PERM_TYPE<UInt2>(Obj perm)
-{
-    return TNUM_OBJ(perm) == T_PERM2;
-}
-
-template <>
-inline bool CHECK_PERM_TYPE<UInt4>(Obj perm)
-{
-    return TNUM_OBJ(perm) == T_PERM4;
-}
-#endif
-
-template <typename T>
-static inline UInt SIZEBAG_PERM(UInt deg)
-{
-    return sizeof(Obj) + deg * sizeof(T);
-}
-
-template <typename T>
-static inline Obj NEW_PERM(UInt deg)
-{
-    return NewBag(sizeof(T) == 2 ? T_PERM2 : T_PERM4, SIZEBAG_PERM<T>(deg));
-}
-
-template <typename T>
-static inline UInt DEG_PERM(Obj perm)
-{
-    GAP_ASSERT(CHECK_PERM_TYPE<T>(perm));
-    return (SIZE_OBJ(perm) - sizeof(Obj)) / sizeof(T);
-}
-
-template <typename T>
-static inline T * ADDR_PERM(Obj perm)
-{
-    GAP_ASSERT(CHECK_PERM_TYPE<T>(perm));
-    return (T *)(ADDR_OBJ(perm) + 1);
-}
-
-template <typename T>
-static inline const T * CONST_ADDR_PERM(Obj perm)
-{
-    GAP_ASSERT(CHECK_PERM_TYPE<T>(perm));
-    return (const T *)(CONST_ADDR_OBJ(perm) + 1);
-}
-
-//
-// The 'ResultType' template is used by functions which take two permutations
-// as argument to select the type of the output they produce: by default, a
-// T_PERM4, whose entries are stored as UInt4. But if both inputs are
-// T_PERM2, then as a special case the output is also a T_PERM2, whose
-// entries are stored as UInt2.
-//
-template <typename TL, typename TR>
-struct ResultType {
-    typedef UInt4 type;
-};
-template <>
-struct ResultType<UInt2, UInt2> {
-    typedef UInt2 type;
-};
 
 /****************************************************************************
 **
