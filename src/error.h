@@ -227,6 +227,7 @@ GetSmallIntEx(const char * funcname, Obj op, const char * argname)
 #define GetSmallInt(funcname, op)                                            \
     GetSmallIntEx(funcname, op, NICE_ARGNAME(op))
 
+
 /****************************************************************************
 **
 *F  GetPositiveSmallIntEx, GetPositiveSmallInt
@@ -240,6 +241,18 @@ GetPositiveSmallIntEx(const char * funcname, Obj op, const char * argname)
 
 #define GetPositiveSmallInt(funcname, op)                                    \
     GetPositiveSmallIntEx(funcname, op, NICE_ARGNAME(op))
+
+
+/****************************************************************************
+**
+*F  GetNonnegativeSmallInt
+*/
+EXPORT_INLINE Int
+GetNonnegativeSmallInt(const char * funcname, Obj op)
+{
+    RequireNonnegativeSmallInt(funcname, op);
+    return INT_INTOBJ(op);
+}
 
 
 /****************************************************************************
