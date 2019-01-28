@@ -27,13 +27,13 @@ EXPORT_INLINE Obj NEW_TRANS2(UInt deg)
 EXPORT_INLINE UInt2 * ADDR_TRANS2(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_TRANS2);
-    return ((UInt2 *)((Obj *)(ADDR_OBJ(f)) + 3));
+    return (UInt2 *)(ADDR_OBJ(f) + 3);
 }
 
 EXPORT_INLINE const UInt2 * CONST_ADDR_TRANS2(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_TRANS2);
-    return ((const UInt2 *)((const Obj *)(CONST_ADDR_OBJ(f)) + 3));
+    return (const UInt2 *)(CONST_ADDR_OBJ(f) + 3);
 }
 
 EXPORT_INLINE UInt DEG_TRANS2(Obj f)
@@ -54,13 +54,13 @@ EXPORT_INLINE Obj NEW_TRANS4(UInt deg)
 EXPORT_INLINE UInt4 * ADDR_TRANS4(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_TRANS4);
-    return ((UInt4 *)((Obj *)(ADDR_OBJ(f)) + 3));
+    return (UInt4 *)(ADDR_OBJ(f) + 3);
 }
 
 EXPORT_INLINE const UInt4 * CONST_ADDR_TRANS4(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_TRANS4);
-    return ((const UInt4 *)((const Obj *)(CONST_ADDR_OBJ(f)) + 3));
+    return (const UInt4 *)(CONST_ADDR_OBJ(f) + 3);
 }
 
 EXPORT_INLINE UInt DEG_TRANS4(Obj f)
