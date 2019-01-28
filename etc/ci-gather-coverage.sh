@@ -30,6 +30,7 @@ BUILDDIR=$PWD
 
 # Get dir for coverage results
 COVDIR=coverage
+ls -l "$COVDIR" # for debugging
 
 # generate library coverage reports
 $GAP -a 500M -m 500M -q <<GAPInput
