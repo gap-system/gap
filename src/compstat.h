@@ -11,6 +11,8 @@
 #ifndef GAP_COMPSTAT_H
 #define GAP_COMPSTAT_H
 
+#include "system.h"
+
 /****************************************************************************
 **
 *V  CompInitFuncs . . . . . . . . . .  list of compiled module init functions
