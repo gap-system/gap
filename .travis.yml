@@ -47,7 +47,8 @@ matrix:
     # digraphs and other kernel extensions using C++ code (due to GCC's
     # `profiler_trace.h` calling `atexit`; but that fails in loadable modules
     # for technical reasons)
-    - env: TEST_SUITES=testpackages CFLAGS="-O2" CXXFLAGS="-O2" LDFLAGS=
+    # also don't use --enable-debug to prevent the tests from taking too long
+    - env: TEST_SUITES="testpackages testinstall-loadall" ABI=64 CFLAGS=-O2 CXXFLAGS=-O2 LDFLAGS=
       addons:
         apt_packages:
           - gcc-multilib
@@ -64,7 +65,7 @@ matrix:
           - libzmq3-dev             # for ZeroMQInterface
 
     # compiler packages and run package tests in 32 bit mode
-    - env: TEST_SUITES=testpackages CFLAGS="-O2" CXXFLAGS="-O2" LDFLAGS= ABI=32
+    - env: TEST_SUITES=testpackages ABI=32 CFLAGS=-O2 CXXFLAGS=-O2 LDFLAGS=
       addons:
         apt_packages:
           - gcc-multilib
