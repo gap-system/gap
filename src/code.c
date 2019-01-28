@@ -661,7 +661,7 @@ void            CodeFuncCallOptionsEnd ( UInt nr )
 **  If <error> is  non-zero, a syntax error  was detected by the  reader, and
 **  the coder should only clean up.
 **
-**  ...only function expressions inbetween...
+**  ...only function expressions in between...
 */
 
 void CodeBegin ( void )
@@ -872,7 +872,7 @@ void CodeFuncExprEnd(UInt nr)
     fexp = CURR_FUNC();
     
     /* get the body of the function                                        */
-    /* push an additional return-void-statement if neccessary              */
+    /* push an additional return-void-statement if necessary              */
     /* the function interpreters depend on each function ``returning''     */
     if ( nr == 0 ) {
         CodeReturnVoid();
@@ -2693,7 +2693,7 @@ void CodeElmRecName (
     UInt                rnam )
 {
     Expr                expr;           /* reference, result               */
-    Expr                rec;            /* record expresion                */
+    Expr                rec;            /* record expression               */
 
     /* allocate the reference                                              */
     expr = NewExpr( T_ELM_REC_NAME, 2 * sizeof(Expr) );
@@ -2713,7 +2713,7 @@ void CodeElmRecExpr ( void )
 {
     Expr                expr;           /* reference, result               */
     Expr                rnam;           /* name expression                 */
-    Expr                rec;            /* record expresion                */
+    Expr                rec;            /* record expression               */
 
     /* allocate the reference                                              */
     expr = NewExpr( T_ELM_REC_EXPR, 2 * sizeof(Expr) );
@@ -2739,7 +2739,7 @@ void CodeIsbRecName (
     UInt                rnam )
 {
     Expr                expr;           /* isbound, result                 */
-    Expr                rec;            /* record expresion                */
+    Expr                rec;            /* record expression               */
 
     /* allocate the isbound                                                */
     expr = NewExpr( T_ISB_REC_NAME, 2 * sizeof(Expr) );
@@ -2764,7 +2764,7 @@ void CodeIsbRecExpr ( void )
 {
     Expr                expr;           /* reference, result               */
     Expr                rnam;           /* name expression                 */
-    Expr                rec;            /* record expresion                */
+    Expr                rec;            /* record expression               */
 
     /* allocate the isbound                                                */
     expr = NewExpr( T_ISB_REC_EXPR, 2 * sizeof(Expr) );
@@ -2998,7 +2998,7 @@ void CodeElmComObjName (
     UInt                rnam )
 {
     Expr                expr;           /* reference, result               */
-    Expr                rec;            /* record expresion                */
+    Expr                rec;            /* record expression               */
 
     /* allocate the reference                                              */
     expr = NewExpr( T_ELM_COMOBJ_NAME, 2 * sizeof(Expr) );
@@ -3018,7 +3018,7 @@ void CodeElmComObjExpr ( void )
 {
     Expr                expr;           /* reference, result               */
     Expr                rnam;           /* name expression                 */
-    Expr                rec;            /* record expresion                */
+    Expr                rec;            /* record expression               */
 
     /* allocate the reference                                              */
     expr = NewExpr( T_ELM_COMOBJ_EXPR, 2 * sizeof(Expr) );
@@ -3044,7 +3044,7 @@ void CodeIsbComObjName (
     UInt                rnam )
 {
     Expr                expr;           /* isbound, result                 */
-    Expr                rec;            /* record expresion                */
+    Expr                rec;            /* record expression               */
 
     /* allocate the isbound                                                */
     expr = NewExpr( T_ISB_COMOBJ_NAME, 2 * sizeof(Expr) );
@@ -3068,7 +3068,7 @@ void CodeIsbComObjExpr ( void )
 {
     Expr                expr;           /* reference, result               */
     Expr                rnam;           /* name expression                 */
-    Expr                rec;            /* record expresion                */
+    Expr                rec;            /* record expression               */
 
     /* allocate the isbound                                                */
     expr = NewExpr( T_ISB_COMOBJ_EXPR, 2 * sizeof(Expr) );
@@ -3202,7 +3202,7 @@ static void SaveBody(Obj body)
 {
   UInt i;
   const UInt *ptr = (const UInt *) CONST_ADDR_OBJ(body);
-  /* Save the new inforation in the body */
+  /* Save the new information in the body */
   for (i =0; i < sizeof(BodyHeader)/sizeof(Obj); i++)
     SaveSubObj((Obj)(*ptr++));
   /* and the rest */
