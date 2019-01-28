@@ -4409,22 +4409,21 @@ static Obj PowTrans4Perm4(Obj f, Obj p)
 ** Left quotient a transformation f by a permutation p: p ^ -1 * f
 *******************************************************************************/
 
-static Obj LQuoPerm2Trans2(Obj opL, Obj opR)
+template <typename TL, typename TR>
+static Obj LQuoPermTrans(Obj opL, Obj opR)
 {
-    UInt   degL, degR, degM, p;
-    Obj    mod;
-    const UInt2 *ptL;
-    const UInt2 *ptR;
-    UInt2 *ptM;
+    typedef typename ResultType<TL, TR>::type Res;
 
-    degL = DEG_PERM2(opL);
-    degR = DEG_TRANS2(opR);
-    degM = degL < degR ? degR : degL;
-    mod = NEW_TRANS2(degM);
+    UInt degL = DEG_PERM<TL>(opL);
+    UInt degR = DEG_TRANS<TR>(opR);
+    UInt degM = degL < degR ? degR : degL;
+    UInt p;
 
-    ptL = CONST_ADDR_PERM2(opL);
-    ptR = CONST_ADDR_TRANS2(opR);
-    ptM = ADDR_TRANS2(mod);
+    Obj mod = NEW_TRANS<Res>(degM);
+
+    Res *      ptM = ADDR_TRANS<Res>(mod);
+    const TL * ptL = CONST_ADDR_PERM<TL>(opL);
+    const TR * ptR = CONST_ADDR_TRANS<TR>(opR);
 
     if (degL <= degR) {
         for (p = 0; p < degL; p++) {
@@ -4446,122 +4445,6 @@ static Obj LQuoPerm2Trans2(Obj opL, Obj opR)
     return mod;
 }
 
-static Obj LQuoPerm2Trans4(Obj opL, Obj opR)
-{
-    UInt    degL, degR, degM, p;
-    Obj     mod;
-    const UInt2 *ptL;
-    const UInt4 *ptR;
-    UInt4 *ptM;
-
-    degL = DEG_PERM2(opL);
-    degR = DEG_TRANS4(opR);
-    degM = degL < degR ? degR : degL;
-    mod = NEW_TRANS4(degM);
-
-    ptL = CONST_ADDR_PERM2(opL);
-    ptR = CONST_ADDR_TRANS4(opR);
-    ptM = ADDR_TRANS4(mod);
-
-    if (degL <= degR) {
-        for (p = 0; p < degL; p++) {
-            ptM[*(ptL++)] = *(ptR++);
-        }
-        for (p = degL; p < degR; p++) {
-            ptM[p] = *(ptR++);
-        }
-    }
-    else {
-        // The only transformation created within this file that is of type
-        // T_TRANS4 and that does not have (internal) degree 65537 or greater
-        // is ID_TRANS4.
-        for (p = 0; p < degR; p++) {
-            ptM[*(ptL++)] = *(ptR++);
-        }
-        for (p = degR; p < degL; p++) {
-            ptM[*(ptL++)] = p;
-        }
-    }
-
-    return mod;
-}
-
-static Obj LQuoPerm4Trans2(Obj opL, Obj opR)
-{
-    UInt    degL, degR, degM, p;
-    Obj     mod;
-    const UInt4 *ptL;
-    const UInt2 *ptR;
-    UInt4 *ptM;
-
-    degL = DEG_PERM4(opL);
-    degR = DEG_TRANS2(opR);
-    degM = degL < degR ? degR : degL;
-    mod = NEW_TRANS4(degM);
-
-    ptL = CONST_ADDR_PERM4(opL);
-    ptR = CONST_ADDR_TRANS2(opR);
-    ptM = ADDR_TRANS4(mod);
-
-    if (degL <= degR) {
-        // I don't know how to create a permutation of type T_PERM4 with
-        // (internal) degree 65536 or less, so this case isn't tested. It is
-        // included to make the code more robust.
-        for (p = 0; p < degL; p++) {
-            ptM[*(ptL++)] = *(ptR++);
-        }
-        for (p = degL; p < degR; p++) {
-            ptM[p] = *(ptR++);
-        }
-    }
-    else {
-        for (p = 0; p < degR; p++) {
-            ptM[*(ptL++)] = *(ptR++);
-        }
-        for (p = degR; p < degL; p++) {
-            ptM[*(ptL++)] = p;
-        }
-    }
-
-    return mod;
-}
-
-static Obj LQuoPerm4Trans4(Obj opL, Obj opR)
-{
-    UInt   degL, degR, degM, p;
-    Obj    mod;
-    const UInt4 *ptL;
-    const UInt4 *ptR;
-    UInt4 *ptM;
-
-    degL = DEG_PERM4(opL);
-    degR = DEG_TRANS4(opR);
-    degM = degL < degR ? degR : degL;
-    mod = NEW_TRANS4(degM);
-
-    ptL = CONST_ADDR_PERM4(opL);
-    ptR = CONST_ADDR_TRANS4(opR);
-    ptM = ADDR_TRANS4(mod);
-
-    if (degL <= degR) {
-        for (p = 0; p < degL; p++) {
-            ptM[*(ptL++)] = *(ptR++);
-        }
-        for (p = degL; p < degR; p++) {
-            ptM[p] = *(ptR++);
-        }
-    }
-    else {
-        for (p = 0; p < degR; p++) {
-            ptM[*(ptL++)] = *(ptR++);
-        }
-        for (p = degR; p < degL; p++) {
-            ptM[*(ptL++)] = p;
-        }
-    }
-
-    return mod;
-}
 
 /*******************************************************************************
 ** Apply a transformation to a point
@@ -5023,10 +4906,10 @@ static Int InitKernel(StructInitInfo * module)
     // for quotients of a transformation by a permutation, we rely on the
     // default handler 'QuoDefault'; that uses the inverse of the permutation,
     // which is cached
-    LQuoFuncs[T_PERM2][T_TRANS2] = LQuoPerm2Trans2;
-    LQuoFuncs[T_PERM4][T_TRANS2] = LQuoPerm4Trans2;
-    LQuoFuncs[T_PERM2][T_TRANS4] = LQuoPerm2Trans4;
-    LQuoFuncs[T_PERM4][T_TRANS4] = LQuoPerm4Trans4;
+    LQuoFuncs[T_PERM2][T_TRANS2] = LQuoPermTrans<UInt2, UInt2>;
+    LQuoFuncs[T_PERM2][T_TRANS4] = LQuoPermTrans<UInt2, UInt4>;
+    LQuoFuncs[T_PERM4][T_TRANS2] = LQuoPermTrans<UInt4, UInt2>;
+    LQuoFuncs[T_PERM4][T_TRANS4] = LQuoPermTrans<UInt4, UInt4>;
     PowFuncs[T_INT][T_TRANS2] = PowIntTrans2;
     PowFuncs[T_INT][T_TRANS4] = PowIntTrans4;
     PowFuncs[T_INTPOS][T_TRANS2] = PowIntTrans2;
