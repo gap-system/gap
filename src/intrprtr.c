@@ -1973,10 +1973,7 @@ void            IntrPerm (
     UInt                nrc )
 {
     Obj                 perm;           /* permutation, result             */
-    UInt4 *             ptr4;           /* pointer into permutation        */
-    UInt2 *             ptr2;           /* pointer into permutation        */
     UInt                m;              /* maximal entry in permutation    */
-    UInt                k;              /* loop variable                   */
 
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
@@ -1997,21 +1994,7 @@ void            IntrPerm (
         perm = PopObj();
 
         /* if possible represent the permutation with short entries        */
-        if ( m <= 65536UL ) {
-            ptr2 = ADDR_PERM2( perm );
-            ptr4 = ADDR_PERM4( perm );
-            for ( k = 1; k <= m; k++ ) {
-                ptr2[k-1] = ptr4[k-1];
-            };
-            RetypeBag( perm, T_PERM2 );
-            ResizeBag(perm, SIZEBAG_PERM2(m));
-        }
-
-        /* otherwise just shorten the permutation                          */
-        else {
-            ResizeBag(perm, SIZEBAG_PERM4(m));
-        }
-
+        TrimPerm(perm, m);
     }
 
     /* push the result                                                     */

@@ -772,11 +772,9 @@ static Obj GetFromExpr(Obj cycle, Int j)
 static Obj EvalPermExpr(Expr expr)
 {
     Obj                 perm;           /* permutation, result             */
-    UInt4 *             ptr4;           /* pointer into perm               */
-    UInt2 *             ptr2;           /* pointer into perm               */
     UInt                m;              /* maximal entry in permutation    */
     Expr                cycle;          /* one cycle of permutation        */
-    UInt                i, k;           /* loop variable                   */
+    UInt                i;              /* loop variable                   */
 
     /* special case for identity permutation                               */
     if ( SIZE_EXPR(expr) == 0 ) {
@@ -800,20 +798,7 @@ static Obj EvalPermExpr(Expr expr)
     }
 
     /* if possible represent the permutation with short entries            */
-    if ( m <= 65536UL ) {
-        ptr2 = ADDR_PERM2( perm );
-        ptr4 = ADDR_PERM4( perm );
-        for ( k = 1; k <= m; k++ ) {
-            ptr2[k-1] = ptr4[k-1];
-        };
-        RetypeBag( perm, T_PERM2 );
-        ResizeBag(perm, SIZEBAG_PERM2(m));
-    }
-
-    /* otherwise just shorten the permutation                              */
-    else {
-        ResizeBag(perm, SIZEBAG_PERM4(m));
-    }
+    TrimPerm(perm, m);
 
     /* return the permutation                                              */
     return perm;
