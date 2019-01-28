@@ -1,11 +1,6 @@
 #############################################################################
 #@local w
 gap> START_TEST("weakptr-badargs.tst");
-gap> w := WeakPointerObject([1,,3,4]);
-Syntax warning: Unbound global variable in stream:1
-w := WeakPointerObject([1,,3,4]);
-     ^^^^^^^^^^^^^^^^^
-Error, Variable: 'WeakPointerObject' must have a value
 gap> w := WeakPointerObj([1,,3,4]);;
 gap> SetElmWPObj(w, 0, 0);
 Error, SetElmWPObj: <pos> must be a positive small integer (not the integer 0)
@@ -34,11 +29,6 @@ Error, ElmWPObj: <pos> must be a positive small integer (not a list (plain,emp\
 ty))
 gap> ElmWPObj([], 1);
 Error, ElmWPObj: <wp> must be a weak pointer object (not a list (plain,empty))
-gap> IsBoundWPObj(w, 0);
-Syntax warning: Unbound global variable in stream:1
-IsBoundWPObj(w, 0);
-^^^^^^^^^^^^
-Error, Variable: 'IsBoundWPObj' must have a value
 gap> IsBoundElmWPObj(w, 0);
 Error, IsBoundElmWPObj: <pos> must be a positive small integer (not the intege\
 r 0)
