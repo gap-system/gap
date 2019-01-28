@@ -1539,11 +1539,8 @@ static Obj FuncCONV_GF2MAT(Obj self, Obj list)
 static Obj FuncPLAIN_GF2VEC(Obj self, Obj list)
 {
     // check whether <list> is a GF2 vector
-    while (!IS_GF2VEC_REP(list)) {
-        list = ErrorReturnObj(
-            "PLAIN_GF2VEC: <list> must be a GF2 vector (not a %s)",
-            (Int)TNAM_OBJ(list), 0L,
-            "you can replace <list> via 'return <list>;'");
+    if (!IS_GF2VEC_REP(list)) {
+        RequireArgument("PLAIN_GF2VEC", list, "must be a GF2 vector");
     }
     PlainGF2Vec(list);
 
@@ -2523,20 +2520,20 @@ static Obj FuncPOSITION_NONZERO_GF2VEC3(Obj self, Obj vec, Obj zero, Obj from)
 static Obj FuncCOPY_SECTION_GF2VECS(
     Obj self, Obj src, Obj dest, Obj from, Obj to, Obj howmany)
 {
-    Int  ifrom;
-    Int  ito;
-    Int  ihowmany;
-    UInt lens;
-    UInt lend;
-    if (!IS_GF2VEC_REP(src) || !IS_GF2VEC_REP(dest) || !IS_INTOBJ(from) ||
-        !IS_INTOBJ(to) || !IS_INTOBJ(howmany))
-        ErrorMayQuit("Bad argument types", 0, 0);
-    ifrom = INT_INTOBJ(from);
-    ito = INT_INTOBJ(to);
-    ihowmany = INT_INTOBJ(howmany);
-    lens = LEN_GF2VEC(src);
-    lend = LEN_GF2VEC(dest);
-    if (ifrom <= 0 || ito <= 0 || ihowmany < 0 ||
+    Int ifrom = GetPositiveSmallInt("COPY_SECTION_GF2VECS", from);
+    Int ito = GetPositiveSmallInt("COPY_SECTION_GF2VECS", to);
+    Int ihowmany = GetSmallInt("COPY_SECTION_GF2VECS", howmany);
+
+    if (!IS_GF2VEC_REP(src)) {
+        RequireArgument("COPY_SECTION_GF2VECS", src, "must be a GF2 vector");
+    }
+    if (!IS_GF2VEC_REP(dest)) {
+        RequireArgument("COPY_SECTION_GF2VECS", dest, "must be a GF2 vector");
+    }
+
+    UInt lens = LEN_GF2VEC(src);
+    UInt lend = LEN_GF2VEC(dest);
+    if (ihowmany < 0 ||
         ifrom + ihowmany - 1 > lens || ito + ihowmany - 1 > lend)
         ErrorMayQuit("Bad argument values", 0, 0);
     if (!IS_MUTABLE_OBJ(dest))
@@ -3395,15 +3392,7 @@ static Obj FuncRESIZE_GF2VEC(Obj self, Obj vec, Obj newlen)
                         "you may 'return;' to skip the operation");
         return (Obj)0;
     }
-    if (!IS_INTOBJ(newlen))
-        ErrorMayQuit(
-            "RESIZE_GF2VEC: newlen must be a small integer, not a %s",
-            (Int)TNAM_OBJ(newlen), 0L);
-    newlen1 = INT_INTOBJ(newlen);
-    if (newlen1 < 0)
-        ErrorMayQuit("RESIZE_GF2VEC: the new size must be a non-negative "
-                     "integer, not %d",
-                     newlen1, 0);
+    newlen1 = GetNonnegativeSmallInt("RESIZE_GF2VEC", newlen);
     ResizeGF2Vec(vec, newlen1);
     return (Obj)0;
 }
@@ -3467,15 +3456,7 @@ static Obj FuncSHIFT_LEFT_GF2VEC(Obj self, Obj vec, Obj amount)
                         "you may 'return;' to skip the operation");
         return (Obj)0;
     }
-    if (!IS_INTOBJ(amount))
-        ErrorMayQuit("SHIFT_LEFT_GF2VEC: the amount to shift must be a small "
-                     "integer, not a %d",
-                     (Int)TNAM_OBJ(amount), 0L);
-    amount1 = INT_INTOBJ(amount);
-    if (amount1 < 0)
-        ErrorMayQuit("SHIFT_LEFT_GF2VEC: <amount> must be a non-negative "
-                     "integer, not %d",
-                     amount1, 0);
+    amount1 = GetNonnegativeSmallInt("SHIFT_LEFT_GF2VEC", amount);
     ShiftLeftGF2Vec(vec, amount1);
     return (Obj)0;
 }
@@ -3543,15 +3524,7 @@ static Obj FuncSHIFT_RIGHT_GF2VEC(Obj self, Obj vec, Obj amount)
                         0, "you may 'return;' to skip the operation");
         return (Obj)0;
     }
-    if (!IS_INTOBJ(amount))
-        ErrorMayQuit("SHIFT_RIGHT_GF2VEC: the amount to shift must be a "
-                     "small integer, not a %s",
-                     (Int)TNAM_OBJ(amount), 0L);
-    amount1 = INT_INTOBJ(amount);
-    if (amount1 < 0)
-        ErrorMayQuit("SHIFT_RIGHT_GF2VEC: <amount> must be a non-negative "
-                     "integer, not %d",
-                     amount1, 0);
+    amount1 = GetNonnegativeSmallInt("SHIFT_RIGHT_GF2VEC", amount);
     ShiftRightGF2Vec(vec, amount1);
     return (Obj)0;
 }
@@ -3621,23 +3594,13 @@ static Obj
 FuncADD_GF2VEC_GF2VEC_SHIFTED(Obj self, Obj vec1, Obj vec2, Obj len2, Obj off)
 {
     Int off1, len2a;
-    if (!IS_INTOBJ(off))
-        ErrorMayQuit("ADD_GF2VEC_GF2VEC_SHIFTED: offset should be a small "
-                     "integer not a %s",
-                     (Int)TNAM_OBJ(off), 0L);
-    off1 = INT_INTOBJ(off);
-    if (off1 < 0) {
-        ErrorMayQuit("ADD_GF2VEC_GF2VEC_SHIFTED: <offset> must be a "
-                     "non-negative integer",
-                     0, 0);
-    }
-    len2a = INT_INTOBJ(len2);
-    while (len2a < 0 && len2a <= LEN_GF2VEC(vec2)) {
-        len2 = ErrorReturnObj(
+    off1 = GetNonnegativeSmallInt("ADD_GF2VEC_GF2VEC_SHIFTED", off);
+    len2a = GetNonnegativeSmallInt("ADD_GF2VEC_GF2VEC_SHIFTED", len2);
+    if (len2a >= LEN_GF2VEC(vec2)) {
+        ErrorMayQuit(
             "ADD_GF2VEC_GF2VEC_SHIFTED: <len2> must be a non-negative "
-            "integer\nand less than the actual length of the vector",
-            0, 0, "you can replace <len2> via 'return <len2>;'");
-        len2a = INT_INTOBJ(len2);
+            "integer less than the actual length of the vector",
+            0, 0);
     }
     if (len2a + off1 > LEN_GF2VEC(vec1))
         ResizeGF2Vec(vec1, len2a + off1);

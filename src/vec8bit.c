@@ -4494,14 +4494,9 @@ static Obj FuncADD_COEFFS_VEC8BIT_2(Obj self, Obj vec1, Obj vec2)
 
 static Obj FuncSHIFT_VEC8BIT_LEFT(Obj self, Obj vec, Obj amount)
 {
-    // should be checked in method selection
-    assert(IS_MUTABLE_OBJ(vec));
-    while (!IS_INTOBJ(amount) || INT_INTOBJ(amount) < 0) {
-        amount = ErrorReturnObj(
-            "SHIFT_VEC8BIT_LEFT: <amount> must be a non-negative small "
-            "integer",
-            0, 0, "you can replace <amount> via 'return <amount>;'");
-    }
+    if (!IS_MUTABLE_OBJ(vec))
+        RequireArgument("SHIFT_VEC8BIT_LEFT", vec, "must be mutable");
+    RequireNonnegativeSmallInt("SHIFT_VEC8BIT_LEFT", amount);
     ShiftLeftVec8Bit(vec, INT_INTOBJ(amount));
     return (Obj)0;
 }
@@ -4514,13 +4509,9 @@ static Obj FuncSHIFT_VEC8BIT_LEFT(Obj self, Obj vec, Obj amount)
 
 static Obj FuncSHIFT_VEC8BIT_RIGHT(Obj self, Obj vec, Obj amount, Obj zero)
 {
-    assert(IS_MUTABLE_OBJ(vec));
-    while (!IS_INTOBJ(amount) || INT_INTOBJ(amount) < 0) {
-        amount = ErrorReturnObj(
-            "SHIFT_VEC8BIT_RIGHT: <amount> must be a non-negative small "
-            "integer",
-            0, 0, "you can replace <amount> via 'return <amount>;'");
-    }
+    if (!IS_MUTABLE_OBJ(vec))
+        RequireArgument("SHIFT_VEC8BIT_RIGHT", vec, "must be mutable");
+    RequireNonnegativeSmallInt("SHIFT_VEC8BIT_RIGHT", amount);
     ShiftRightVec8Bit(vec, INT_INTOBJ(amount));
     return (Obj)0;
 }
