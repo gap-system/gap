@@ -3327,6 +3327,14 @@ argument must be a duplicate-free list of positive integers of equal length to\
 gap> x := PartialPerm([0, 0, 0]);
 <empty partial perm>
 
+# IsPPermHandler
+gap> IsPartialPerm(x);
+true
+gap> IsPartialPerm(1);
+false
+gap> IsPartialPerm(infinity);
+false
+
 # PreImagePPermInt
 gap> 1 / EmptyPartialPerm();
 fail
