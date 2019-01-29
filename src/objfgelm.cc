@@ -183,16 +183,10 @@ static Obj FuncNBits_ExponentSums3(Obj self, Obj obj, Obj vstart, Obj vend)
     const UIntN * ptr;          /* pointer into the data area of <obj>     */
 
     /* <start> must be positive                                            */
-    while ( !IS_POS_INTOBJ(vstart) )
-        vstart = ErrorReturnObj( "<start> must be a positive small integer", 0L, 0L,
-                                 "you can replace <start> via 'return <start>;'" );
-    start = INT_INTOBJ(vstart);
+    start = GetPositiveSmallIntEx("NBits_ExponentSums3", vstart, "<start>");
 
     /* <end> must be positive                                              */
-    while ( !IS_POS_INTOBJ(vend) )
-        vend = ErrorReturnObj( "<end> must be a positive small integer", 0L, 0L,
-                               "you can replace <end> via 'return <end>;'" );
-    end = INT_INTOBJ(vend);
+    end = GetPositiveSmallIntEx("NBits_ExponentSums3", vend, "<end>");
 
     /* <end> must be at least <start>                                      */
     if ( end < start ) {
@@ -601,11 +595,9 @@ static Obj FuncNBits_AssocWord(Obj self, Obj type, Obj data)
         vgen = ELMW_LIST( data, 2*i-1 );
         ngen = INT_INTOBJ(vgen);
         vexp = ELMW_LIST( data, 2*i );
-        while ( ! IS_INTOBJ(vexp) || vexp == INTOBJ_INT(0) ) {
-            vexp = ErrorReturnObj( "<exponent> must be a non-zero integer", 
-                                   0L, 0L,
-                                   "you can replace <exponent> via 'return <exponent>;'" );
-        }
+        if (!IS_INTOBJ(vexp) || vexp == INTOBJ_INT(0))
+            RequireArgument("NBits_AssocWord", vexp,
+                            "must be a non-zero small integer");
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
         assert( ptr == DATA_WORD(obj) + (i-1) );
@@ -645,12 +637,7 @@ static Obj FuncNBits_ObjByVector(Obj self, Obj type, Obj data)
     /* count the number of non-zero entries                                */
     for ( i = LEN_LIST(data), num = 0, j = 1;  0 < i;  i-- ) {
         vexp = ELMW_LIST(data,i);
-        while ( ! IS_INTOBJ(vexp) ) {
-            vexp = ErrorReturnObj(
-                "%d element must be a small integer (not a %s)",
-                (Int) i, (Int) TNAM_OBJ(vexp),
-                "you can replace the element by <val> via 'return <val>;'" );
-        }
+        RequireSmallInt("NBits_ObjByVector", vexp, "<vexp>");
         if ( vexp != INTOBJ_INT(0) ) {
             j = i;
             num++;
@@ -1146,18 +1133,8 @@ static Obj FuncMULT_WOR_LETTREP(Obj self, Obj a, Obj b)
   Obj *q;
 
   /* short check */
-  while ( ! IS_PLIST(a) ) {
-      a = ErrorReturnObj(
-                "first argument must be plain list (not a %s)",
-                (Int) TNAM_OBJ(a), 0L,
-                "you can replace the element by <val> via 'return <val>;'" );
-  }
-  while ( ! IS_PLIST(b) ) {
-      b = ErrorReturnObj(
-                "second argument must be plain list (not a %s)",
-                (Int) TNAM_OBJ(b), 0L, 
-                "you can replace the element by <val> via 'return <val>;'" );
-  }
+  RequirePlainList("MULT_WOR_LETTREP", a);
+  RequirePlainList("MULT_WOR_LETTREP", b);
 
   /* Find overlap */
   /* l:=Length(a); */
@@ -1254,18 +1231,8 @@ static Obj FuncMULT_BYT_LETTREP(Obj self, Obj a, Obj b)
   const Char *p,*q;
   
   /* short check, if necessary strings are compacted */
-  while ( ! IsStringConv(a) ) {
-      a = ErrorReturnObj(
-                "first argument must be string (not a %s)",
-                (Int) TNAM_OBJ(a), 0L,
-                "you can replace the element by <val> via 'return <val>;'" );
-  }
-  while ( ! IsStringConv(b) ) {
-      b = ErrorReturnObj(
-                "second argument must be string (not a %s)",
-                (Int) TNAM_OBJ(b), 0L, 
-                "you can replace the element by <val> via 'return <val>;'" );
-  }
+  RequireStringRep("MULT_BYT_LETTREP", a);
+  RequireStringRep("MULT_BYT_LETTREP", b);
   
   /* Find overlap */
   /* l:=Length(a); */
@@ -1411,8 +1378,8 @@ static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(NBits_NumberSyllables, 1, "N_bits_word"),
 
-    GVAR_FUNC(MULT_WOR_LETTREP, 2, "list,list"),
-    GVAR_FUNC(MULT_BYT_LETTREP, 2, "string,string"),
+    GVAR_FUNC(MULT_WOR_LETTREP, 2, "a, b"),
+    GVAR_FUNC(MULT_BYT_LETTREP, 2, "a, b"),
 
     { 0, 0, 0, 0, 0 }
 

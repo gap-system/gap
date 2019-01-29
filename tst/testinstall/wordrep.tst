@@ -39,9 +39,11 @@ gap> ExponentSums(w8, 3, 4);
 gap> ExponentSums(w8, 4, 1);
 [  ]
 gap> ExponentSums(w8, 0, 1);
-Error, <start> must be a positive small integer
+Error, NBits_ExponentSums3: <start> must be a positive small integer (not the \
+integer 0)
 gap> ExponentSums(w8, 1, 0);
-Error, <end> must be a positive small integer
+Error, NBits_ExponentSums3: <end> must be a positive small integer (not the in\
+teger 0)
 
 #
 gap> ExponentSums(w16);
@@ -51,9 +53,11 @@ gap> ExponentSums(w16, 3, 4);
 gap> ExponentSums(w16, 4, 1);
 [  ]
 gap> ExponentSums(w16, 0, 1);
-Error, <start> must be a positive small integer
+Error, NBits_ExponentSums3: <start> must be a positive small integer (not the \
+integer 0)
 gap> ExponentSums(w16, 1, 0);
-Error, <end> must be a positive small integer
+Error, NBits_ExponentSums3: <end> must be a positive small integer (not the in\
+teger 0)
 
 #
 gap> ExponentSums(w32);
@@ -63,9 +67,11 @@ gap> ExponentSums(w32, 3, 4);
 gap> ExponentSums(w32, 4, 1);
 [  ]
 gap> ExponentSums(w32, 0, 1);
-Error, <start> must be a positive small integer
+Error, NBits_ExponentSums3: <start> must be a positive small integer (not the \
+integer 0)
 gap> ExponentSums(w32, 1, 0);
-Error, <end> must be a positive small integer
+Error, NBits_ExponentSums3: <end> must be a positive small integer (not the in\
+teger 0)
 
 #
 gap> ExponentSums(winf);
