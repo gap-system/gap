@@ -47,9 +47,13 @@ Error, Function: number of arguments must be at least 2 (not 0)
 gap> f:={a1,a2,a3,a4,a5,a6,a7,a8}->a1;;
 gap> f();
 Error, Function: number of arguments must be 8 (not 0)
+gap> f(1,2,3,4,5,6,7,8,9);
+Error, Function: number of arguments must be 8 (not 9)
 gap> f:={a1,a2,a3,a4,a5,a6,a7,a8,rest...}->a1;;
 gap> f();
 Error, Function: number of arguments must be at least 8 (not 0)
+gap> f(1,2,3,4,5,6,7);
+Error, Function: number of arguments must be at least 8 (not 7)
 
 # test DoProf0args, DoProf1args, ...
 gap> o:={l...} -> l;;

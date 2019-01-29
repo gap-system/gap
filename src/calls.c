@@ -311,7 +311,7 @@ static Obj DoWrap6args(
 /* Pull this out to avoid repetition, since it gets a little more complex in 
    the presence of partially variadic functions */
 
-Obj NargError(Obj func, Int actual)
+NORETURN static void NargError(Obj func, Int actual)
 {
   Int narg = NARG_FUNC(func);
 
@@ -326,9 +326,7 @@ Obj NargError(Obj func, Int actual)
 
 static Obj DoFail0args(Obj self)
 {
-    Obj                 argx;           /* arguments list (to continue)    */
-    argx =NargError(self, 0);
-    return CallFuncList( self, argx );
+    NargError(self, 0);
 }
 
 
@@ -338,9 +336,7 @@ static Obj DoFail0args(Obj self)
 */
 static Obj DoFail1args(Obj self, Obj arg1)
 {
-    Obj                 argx;           /* arguments list (to continue)    */
-    argx =NargError(self, 1);
-    return CallFuncList( self, argx );
+    NargError(self, 1);
 }
 
 
@@ -350,9 +346,7 @@ static Obj DoFail1args(Obj self, Obj arg1)
 */
 static Obj DoFail2args(Obj self, Obj arg1, Obj arg2)
 {
-    Obj                 argx;           /* arguments list (to continue)    */
-    argx =NargError(self, 2);
-    return CallFuncList( self, argx );
+    NargError(self, 2);
 }
 
 
@@ -362,9 +356,7 @@ static Obj DoFail2args(Obj self, Obj arg1, Obj arg2)
 */
 static Obj DoFail3args(Obj self, Obj arg1, Obj arg2, Obj arg3)
 {
-    Obj                 argx;           /* arguments list (to continue)    */
-    argx =NargError(self, 3);
-    return CallFuncList( self, argx );
+    NargError(self, 3);
 }
 
 
@@ -374,9 +366,7 @@ static Obj DoFail3args(Obj self, Obj arg1, Obj arg2, Obj arg3)
 */
 static Obj DoFail4args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-    Obj                 argx;           /* arguments list (to continue)    */
-    argx =NargError(self, 4);
-    return CallFuncList( self, argx );
+    NargError(self, 4);
 }
 
 
@@ -387,9 +377,7 @@ static Obj DoFail4args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 static Obj
 DoFail5args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-    Obj                 argx;           /* arguments list (to continue)    */
-    argx =NargError(self, 5);
-    return CallFuncList( self, argx );
+    NargError(self, 5);
 }
 
 
@@ -400,9 +388,7 @@ DoFail5args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 static Obj DoFail6args(
     Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-    Obj                 argx;           /* arguments list (to continue)    */
-    argx =NargError(self, 6);
-    return CallFuncList( self, argx );
+    NargError(self, 6);
 }
 
 
@@ -412,9 +398,7 @@ static Obj DoFail6args(
 */
 static Obj DoFailXargs(Obj self, Obj args)
 {
-    Obj                 argx;           /* arguments list (to continue)    */
-    argx =NargError(self, LEN_LIST(args));
-    return CallFuncList( self, argx );
+    NargError(self, LEN_LIST(args));
 }
 
 
