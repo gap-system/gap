@@ -8,18 +8,45 @@ gap> CLOSE_LOG_TO();
 Error, LogTo: can not close the logfile
 gap> LOG_TO(fail);
 Error, LogTo: <filename> must be a string (not the value 'fail')
+gap> LOG_TO("foobar.LOG_TO");
+true
+gap> CLOSE_LOG_TO();
+true
+gap> str := "";; s:=OutputTextString(str, false);;
+gap> LOG_TO_STREAM(s);
+true
+gap> CLOSE_LOG_TO();
+true
 
 #
 gap> CLOSE_INPUT_LOG_TO();
 Error, InputLogTo: can not close the logfile
 gap> INPUT_LOG_TO(fail);
 Error, InputLogTo: <filename> must be a string (not the value 'fail')
+gap> INPUT_LOG_TO("foobar.INPUT_LOG_TO");
+true
+gap> CLOSE_INPUT_LOG_TO();
+true
+gap> str := "";; s:=OutputTextString(str, false);;
+gap> INPUT_LOG_TO_STREAM(s);
+true
+gap> CLOSE_INPUT_LOG_TO();
+true
 
 #
 gap> CLOSE_OUTPUT_LOG_TO();
 Error, OutputLogTo: can not close the logfile
 gap> OUTPUT_LOG_TO(fail);
 Error, OutputLogTo: <filename> must be a string (not the value 'fail')
+gap> OUTPUT_LOG_TO("foobar.OUTPUT_LOG_TO");
+true
+gap> CLOSE_OUTPUT_LOG_TO();
+true
+gap> str := "";; s:=OutputTextString(str, false);;
+gap> OUTPUT_LOG_TO_STREAM(s);
+true
+gap> CLOSE_OUTPUT_LOG_TO();
+true
 
 #
 gap> READ(fail);
