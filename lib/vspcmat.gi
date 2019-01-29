@@ -1045,6 +1045,7 @@ InstallMethod( CloseMutableBasis,
       ResetFilterObj( MB, IsMutableBasisOfGaussianMatrixSpaceRep );
 
       MB!.immutableBasis:= Basis( V );
+      return true;
 
     else
 
@@ -1077,10 +1078,12 @@ InstallMethod( CloseMutableBasis,
           od;
           Add( basisvectors, v );
           heads[i][j]:= Length( basisvectors );
-          break;
+          return true;
         fi;
       od;
 
+      # The basis was not extended.
+      return false;
     fi;
     end );
 

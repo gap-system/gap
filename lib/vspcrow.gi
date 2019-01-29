@@ -1560,6 +1560,7 @@ InstallMethod( CloseMutableBasis,
       ResetFilterObj( MB, IsMutableBasisOfGaussianRowSpaceRep );
 
       MB!.immutableBasis:= Basis( V );
+      return true;
 
     else
 
@@ -1568,7 +1569,7 @@ InstallMethod( CloseMutableBasis,
       ncols:= Length( v );
       heads:= MB!.heads;
 
-      if ncols <> Length( MB!.heads ) then
+      if ncols <> Length( heads ) then
         Error( "<v> must have same length as `MB!.heads'" );
       fi;
 
@@ -1588,6 +1589,10 @@ InstallMethod( CloseMutableBasis,
         MultVector( v, Inverse( v[j] ) );
         Add( basisvectors, v );
         heads[j]:= Length( basisvectors );
+        return true;
+      else
+        # The basis was not extended.
+        return false;
       fi;
 
     fi;
