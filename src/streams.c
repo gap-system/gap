@@ -49,6 +49,16 @@
 static Obj IsInputStream;
 static Obj IsOutputStream;
 
+#define RequireInputStream(funcname, op)                                     \
+    RequireArgumentCondition(funcname, op,                                   \
+                             CALL_1ARGS(IsInputStream, op) == True,          \
+                             "must be an input stream")
+
+#define RequireOutputStream(funcname, op)                                    \
+    RequireArgumentCondition(funcname, op,                                   \
+                             CALL_1ARGS(IsOutputStream, op) == True,         \
+                             "must be an output stream")
+
 
 /****************************************************************************
 **
@@ -138,9 +148,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
     Obj        outstream = 0;
     Obj        outstreamString = 0;
 
-    if (CALL_1ARGS(IsInputStream, instream) != True) {
-        ErrorQuit("READ_ALL_COMMANDS: <instream> must be an input stream", 0, 0);
-    }
+    RequireInputStream("READ_ALL_COMMANDS", instream);
 
     /* try to open the streams */
     if (!OpenInputStream(instream, echo == True)) {
@@ -228,9 +236,7 @@ static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
     Obj result;
     Obj evalResult;
 
-    if (CALL_1ARGS(IsInputStream, stream) != True) {
-        ErrorQuit("READ_COMMAND_REAL: <stream> must be an input stream", 0, 0);
-    }
+    RequireInputStream("READ_COMMAND_REAL", stream);
 
     result = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST(result, 1);
@@ -573,6 +579,7 @@ static Obj FuncLOG_TO(Obj self, Obj filename)
 */
 static Obj FuncLOG_TO_STREAM(Obj self, Obj stream)
 {
+    RequireOutputStream("LogTo", stream);
     if ( ! OpenLogStream(stream) ) {
         ErrorReturnVoid( "LogTo: cannot log to stream", 0L, 0L,
                          "you can 'return;'" );
@@ -635,6 +642,7 @@ static Obj FuncINPUT_LOG_TO(Obj self, Obj filename)
 */
 static Obj FuncINPUT_LOG_TO_STREAM(Obj self, Obj stream)
 {
+    RequireOutputStream("InputLogTo", stream);
     if ( ! OpenInputLogStream(stream) ) {
         ErrorReturnVoid( "InputLogTo: cannot log to stream", 0L, 0L,
                          "you can 'return;'" );
@@ -697,6 +705,7 @@ static Obj FuncOUTPUT_LOG_TO(Obj self, Obj filename)
 */
 static Obj FuncOUTPUT_LOG_TO_STREAM(Obj self, Obj stream)
 {
+    RequireOutputStream("OutputLogTo", stream);
     if ( ! OpenOutputLogStream(stream) ) {
         ErrorReturnVoid( "OutputLogTo: cannot log to stream", 0L, 0L,
                          "you can 'return;'" );
@@ -936,10 +945,7 @@ static Obj FuncREAD_NORECOVERY(Obj self, Obj input)
 */
 static Obj FuncREAD_STREAM(Obj self, Obj stream)
 {
-
-    if (CALL_1ARGS(IsInputStream, stream) != True) {
-        ErrorQuit("READ_STREAM: <stream> must be an input stream", 0, 0);
-    }
+    RequireInputStream("READ_STREAM", stream);
 
     /* try to open the file                                                */
     if (!OpenInputStream(stream, 0)) {
@@ -964,13 +970,8 @@ static Obj FuncREAD_STREAM_LOOP_WITH_CONTEXT(Obj self,
 {
     Int res;
 
-    if (CALL_1ARGS(IsInputStream, instream) != True) {
-        ErrorQuit("READ_STREAM_LOOP: <instream> must be an input stream", 0, 0);
-    }
-
-    if (CALL_1ARGS(IsOutputStream, outstream) != True) {
-        ErrorQuit("READ_STREAM_LOOP: <outstream> must be an output stream", 0, 0);
-    }
+    RequireInputStream("READ_STREAM_LOOP", instream);
+    RequireOutputStream("READ_STREAM_LOOP", outstream);
 
     if (!OpenInputStream(instream, 0)) {
         return False;
@@ -1021,13 +1022,11 @@ static Obj FuncREAD_AS_FUNC(Obj self, Obj filename)
 
 /****************************************************************************
 **
-*F  FuncREAD_AS_FUNC_STREAM( <self>, <filename> ) . . . . . . . . read a file
+*F  FuncREAD_AS_FUNC_STREAM( <self>, <stream> ) . . . . . . . . read a file
 */
 static Obj FuncREAD_AS_FUNC_STREAM(Obj self, Obj stream)
 {
-    if (CALL_1ARGS(IsInputStream, stream) != True) {
-        ErrorQuit("READ_AS_FUNC_STREAM: <stream> must be an input stream", 0, 0);
-    }
+    RequireInputStream("READ_AS_FUNC_STREAM", stream);
 
     /* try to open the file                                                */
     if (!OpenInputStream(stream, 0)) {
