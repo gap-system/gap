@@ -291,7 +291,6 @@ EXPORT_INLINE ObjFunc_1ARGS HDLR_XARGS(Obj func)
     return (ObjFunc_1ARGS)HDLR_FUNC(func, 7);
 }
 
-Obj NargError(Obj func, Int actual);
 
 /****************************************************************************
 **

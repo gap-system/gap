@@ -579,7 +579,7 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
     UInt named;    /* number of arguments */
     UInt i;        /* loop variable */
     UInt len;
-    Obj  argx, result;
+    Obj  result;
 
     HookedLineIntoFunction(func);
 
@@ -587,8 +587,7 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
     len = LEN_PLIST(args);
 
     if (named > len) { /* Can happen for > 6 arguments */
-      argx = NargError(func, len);
-      return DoOperation2Args(CallFuncListOper, func, argx);
+        ErrorMayQuitNrAtLeastArgs(named, len);
     }
 
 #ifdef HPCGAP
