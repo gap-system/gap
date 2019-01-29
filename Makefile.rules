@@ -681,6 +681,9 @@ sysinfo.gap: config.status $(srcdir)/Makefile.rules cnf/GAP-CFLAGS cnf/GAP-CPPFL
 	@echo "GAP_OBJS=\"$(OBJS)\"" >> $@
 	@echo "" >> $@
 	@echo "JULIA=\"$(JULIA)\"" >> $@
+	@echo "JULIA_CPPFLAGS=\"$(JULIA_CPPFLAGS)\"" >> $@
+	@echo "JULIA_LDFLAGS=\"$(JULIA_LDFLAGS)\"" >> $@
+	@echo "JULIA_LIBS=\"$(JULIA_LIBS)\"" >> $@
 
 
 ########################################################################
