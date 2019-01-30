@@ -1130,7 +1130,22 @@ static CVar CompFuncExpr(Expr expr)
     func = CVAR_TEMP( NewTemp( "func" ) );
 
     /* make the function (all the pieces are in global variables)          */
-    Emit( "%c = NewFunction( NameFunc[%d], %d, 0", func, nr, NARG_FUNC(fexp) );
+    Int narg = NARG_FUNC(fexp);
+    Emit( "%c = NewFunction( NameFunc[%d], %d", func, nr, narg );
+    if (narg != 0) {
+        Obj nams = NAMS_FUNC(fexp);
+        if (narg < 0)
+            narg = -narg;
+        Emit( ", ArgStringToList(\"" );
+        Emit( "%g", ELM_PLIST(nams, 1) );
+        for (Int i = 2; i <= narg; i++) {
+            Emit( ",%g", ELM_PLIST(nams, i) );
+        }
+        Emit( "\")" );
+    }
+    else {
+        Emit( ", 0" );
+    }
     Emit( ", HdlrFunc%d );\n", nr );
 
     /* this should probably be done by 'NewFunction'                       */

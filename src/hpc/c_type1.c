@@ -370,7 +370,7 @@ static Obj  HdlrFunc3 (
   CHECK_BOUND( t_5, "IS_OBJECT" )
   SET_ELM_PLIST( t_4, 2, t_5 );
   CHANGED_BAG( t_4 );
-  t_5 = NewFunction( NameFunc[4], 2, 0, HdlrFunc4 );
+  t_5 = NewFunction( NameFunc[4], 2, ArgStringToList("obj,val"), HdlrFunc4 );
   SET_ENVI_FUNC( t_5, STATE(CurrLVars) );
   t_6 = NewFunctionBody();
   SET_STARTLINE_BODY(t_6, 40);
@@ -2887,7 +2887,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_InstallAttributeFunction;
- t_2 = NewFunction( NameFunc[2], 6, 0, HdlrFunc2 );
+ t_2 = NewFunction( NameFunc[2], 6, ArgStringToList("name,filter,getter,setter,tester,mutflag"), HdlrFunc2 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewFunctionBody();
  SET_STARTLINE_BODY(t_3, 20);
@@ -2916,7 +2916,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_InstallAttributeFunction;
- t_2 = NewFunction( NameFunc[3], 6, 0, HdlrFunc3 );
+ t_2 = NewFunction( NameFunc[3], 6, ArgStringToList("name,filter,getter,setter,tester,mutflag"), HdlrFunc3 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewFunctionBody();
  SET_STARTLINE_BODY(t_3, 32);
@@ -2963,7 +2963,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NEW_FAMILY" );
- t_3 = NewFunction( NameFunc[5], 4, 0, HdlrFunc5 );
+ t_3 = NewFunction( NameFunc[5], 4, ArgStringToList("typeOfFamilies,name,req_filter,imp_filter"), HdlrFunc5 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 92);
@@ -2977,7 +2977,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily2" );
- t_3 = NewFunction( NameFunc[6], 2, 0, HdlrFunc6 );
+ t_3 = NewFunction( NameFunc[6], 2, ArgStringToList("typeOfFamilies,name"), HdlrFunc6 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 146);
@@ -2991,7 +2991,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily3" );
- t_3 = NewFunction( NameFunc[7], 3, 0, HdlrFunc7 );
+ t_3 = NewFunction( NameFunc[7], 3, ArgStringToList("typeOfFamilies,name,req"), HdlrFunc7 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 154);
@@ -3005,7 +3005,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily4" );
- t_3 = NewFunction( NameFunc[8], 4, 0, HdlrFunc8 );
+ t_3 = NewFunction( NameFunc[8], 4, ArgStringToList("typeOfFamilies,name,req,imp"), HdlrFunc8 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 162);
@@ -3019,7 +3019,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily5" );
- t_3 = NewFunction( NameFunc[9], 5, 0, HdlrFunc9 );
+ t_3 = NewFunction( NameFunc[9], 5, ArgStringToList("typeOfFamilies,name,req,imp,filter"), HdlrFunc9 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 171);
@@ -3044,7 +3044,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewFamily" );
- t_3 = NewFunction( NameFunc[10], -1, 0, HdlrFunc10 );
+ t_3 = NewFunction( NameFunc[10], -1, ArgStringToList("arg"), HdlrFunc10 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 179);
@@ -3143,7 +3143,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NEW_TYPE" );
- t_3 = NewFunction( NameFunc[11], 5, 0, HdlrFunc11 );
+ t_3 = NewFunction( NameFunc[11], 5, ArgStringToList("typeOfTypes,family,flags,data,parent"), HdlrFunc11 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 230);
@@ -3157,7 +3157,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewType3" );
- t_3 = NewFunction( NameFunc[12], 3, 0, HdlrFunc12 );
+ t_3 = NewFunction( NameFunc[12], 3, ArgStringToList("typeOfTypes,family,filter"), HdlrFunc12 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 351);
@@ -3171,7 +3171,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewType4" );
- t_3 = NewFunction( NameFunc[13], 4, 0, HdlrFunc13 );
+ t_3 = NewFunction( NameFunc[13], 4, ArgStringToList("typeOfTypes,family,filter,data"), HdlrFunc13 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 361);
@@ -3196,7 +3196,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewType" );
- t_3 = NewFunction( NameFunc[14], -1, 0, HdlrFunc14 );
+ t_3 = NewFunction( NameFunc[14], -1, ArgStringToList("arg"), HdlrFunc14 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 371);
@@ -3210,7 +3210,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Subtype2" );
- t_3 = NewFunction( NameFunc[15], 2, 0, HdlrFunc15 );
+ t_3 = NewFunction( NameFunc[15], 2, ArgStringToList("type,filter"), HdlrFunc15 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 408);
@@ -3224,7 +3224,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Subtype3" );
- t_3 = NewFunction( NameFunc[16], 3, 0, HdlrFunc16 );
+ t_3 = NewFunction( NameFunc[16], 3, ArgStringToList("type,filter,data"), HdlrFunc16 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 418);
@@ -3252,7 +3252,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Subtype" );
- t_3 = NewFunction( NameFunc[17], -1, 0, HdlrFunc17 );
+ t_3 = NewFunction( NameFunc[17], -1, ArgStringToList("arg"), HdlrFunc17 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 429);
@@ -3266,7 +3266,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SupType2" );
- t_3 = NewFunction( NameFunc[18], 2, 0, HdlrFunc18 );
+ t_3 = NewFunction( NameFunc[18], 2, ArgStringToList("type,filter"), HdlrFunc18 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 465);
@@ -3280,7 +3280,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SupType3" );
- t_3 = NewFunction( NameFunc[19], 3, 0, HdlrFunc19 );
+ t_3 = NewFunction( NameFunc[19], 3, ArgStringToList("type,filter,data"), HdlrFunc19 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 475);
@@ -3302,7 +3302,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SupType" );
- t_3 = NewFunction( NameFunc[20], -1, 0, HdlrFunc20 );
+ t_3 = NewFunction( NameFunc[20], -1, ArgStringToList("arg"), HdlrFunc20 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 485);
@@ -3316,7 +3316,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "FamilyType" );
- t_3 = NewFunction( NameFunc[21], 1, 0, HdlrFunc21 );
+ t_3 = NewFunction( NameFunc[21], 1, ArgStringToList("K"), HdlrFunc21 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 513);
@@ -3330,7 +3330,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "FlagsType" );
- t_3 = NewFunction( NameFunc[22], 1, 0, HdlrFunc22 );
+ t_3 = NewFunction( NameFunc[22], 1, ArgStringToList("K"), HdlrFunc22 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 527);
@@ -3344,7 +3344,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "DataType" );
- t_3 = NewFunction( NameFunc[23], 1, 0, HdlrFunc23 );
+ t_3 = NewFunction( NameFunc[23], 1, ArgStringToList("K"), HdlrFunc23 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 543);
@@ -3359,7 +3359,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetDataType" );
- t_3 = NewFunction( NameFunc[24], 2, 0, HdlrFunc24 );
+ t_3 = NewFunction( NameFunc[24], 2, ArgStringToList("K,data"), HdlrFunc24 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 545);
@@ -3387,7 +3387,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "FlagsObj" );
- t_3 = NewFunction( NameFunc[25], 1, 0, HdlrFunc25 );
+ t_3 = NewFunction( NameFunc[25], 1, ArgStringToList("obj"), HdlrFunc25 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 650);
@@ -3401,7 +3401,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "DataObj" );
- t_3 = NewFunction( NameFunc[26], 1, 0, HdlrFunc26 );
+ t_3 = NewFunction( NameFunc[26], 1, ArgStringToList("obj"), HdlrFunc26 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 664);
@@ -3474,7 +3474,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Objectify" );
- t_3 = NewFunction( NameFunc[27], 2, 0, HdlrFunc27 );
+ t_3 = NewFunction( NameFunc[27], 2, ArgStringToList("type,obj"), HdlrFunc27 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 685);
@@ -3506,7 +3506,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetFilterObj" );
- t_3 = NewFunction( NameFunc[28], 2, 0, HdlrFunc28 );
+ t_3 = NewFunction( NameFunc[28], 2, ArgStringToList("obj,filter"), HdlrFunc28 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 742);
@@ -3539,7 +3539,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ResetFilterObj" );
- t_3 = NewFunction( NameFunc[29], 2, 0, HdlrFunc29 );
+ t_3 = NewFunction( NameFunc[29], 2, ArgStringToList("obj,filter"), HdlrFunc29 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 784);
@@ -3624,7 +3624,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ObjectifyWithAttributes" );
- t_3 = NewFunction( NameFunc[30], -1, 0, HdlrFunc30 );
+ t_3 = NewFunction( NameFunc[30], -1, ArgStringToList("arg"), HdlrFunc30 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 848);
