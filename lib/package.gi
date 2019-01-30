@@ -1078,7 +1078,7 @@ InstallGlobalFunction( IsPackageMarkedForLoading, function( name, version )
 #F  DefaultPackageBannerString( <inforec> )
 ##
 InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
-    local len, sep, i, str, authors, role, fill, person;
+    local len, sep, i, str, authors, maintainers, contributors, printPersons;
 
     # Start with a row of `-' signs.
     len:= SizeScreen()[1] - 3;
@@ -1114,19 +1114,13 @@ InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
     fi;
     Add( str, '\n' );
 
-    # Add info about the authors if there are authors;
-    # otherwise add maintainers.
-    if IsBound( inforec.Persons ) then
-      authors:= Filtered( inforec.Persons, x -> x.IsAuthor );
-      role:= "by ";
-      if IsEmpty( authors ) then
-        authors:= Filtered( inforec.Persons, x -> x.IsMaintainer );
-        role:= "maintained by ";
-      fi;
+    # Add info about the authors and/or maintainers
+    printPersons := function( role, persons )
+      local fill, person;
       fill:= ListWithIdenticalEntries( Length(role), ' ' );
       Append( str, role );
-      for i in [ 1 .. Length( authors ) ] do
-        person:= authors[i];
+      for i in [ 1 .. Length( persons ) ] do
+        person:= persons[i];
         Append( str, person.FirstNames );
         Append( str, " " );
         Append( str, person.LastName );
@@ -1135,9 +1129,9 @@ InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
         elif IsBound( person.Email ) then
           Append( str, Concatenation( " (", person.Email, ")" ) );
         fi;
-        if   i = Length( authors ) then
+        if   i = Length( persons ) then
           Append( str, ".\n" );
-        elif i = Length( authors )-1 then
+        elif i = Length( persons )-1 then
           if i = 1 then
             Append( str, " and\n" );
           else
@@ -1149,12 +1143,35 @@ InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
           Append( str, fill );
         fi;
       od;
+    end;
+    if IsBound( inforec.Persons ) then
+      authors:= Filtered( inforec.Persons, x -> x.IsAuthor );
+      if not IsEmpty( authors ) then
+        printPersons( "by ", authors );
+      fi;
+      contributors:= Filtered( inforec.Persons, x -> not x.IsAuthor and not x.IsMaintainer );
+      if not IsEmpty( contributors ) then
+        Append( str, "with contributions by:\n");
+        printPersons( "   ", contributors );
+      fi;
+      maintainers:= Filtered( inforec.Persons, x -> x.IsMaintainer );
+      if not IsEmpty( maintainers ) and authors <> maintainers then
+        Append( str, "maintained by:\n");
+        printPersons( "   ", maintainers );
+      fi;
     fi;
 
     # Add info about the home page of the package.
     if IsBound( inforec.PackageWWWHome ) then
       Append( str, "Homepage: " );
       Append( str, inforec.PackageWWWHome );
+      Append( str, "\n" );
+    fi;
+
+    # Add info about the issue tracker of the package.
+    if IsBound( inforec.IssueTrackerURL ) then
+      Append( str, "Report issues at " );
+      Append( str, inforec.IssueTrackerURL );
       Append( str, "\n" );
     fi;
 

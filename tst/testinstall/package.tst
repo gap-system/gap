@@ -52,19 +52,20 @@ gap> Display(DefaultPackageBannerString(rec()));
 -----------------------------------------------------------------------------
 
 
-#
+# 
 gap> pkginfo := rec(
 >         PackageName := "TestPkg",
 >         Version := "1.0",
 >         PackageWWWHome := "https://www.gap-system.org",
 >         PackageDoc := [ rec( LongTitle := "A test package" ) ],
 >         Persons := [ rec( IsAuthor := true,
+>                           IsMaintainer := true,
 >                           FirstNames := "Lord",
 >                           LastName := "Vader",
 >                           WWWHome := "https://www.gap-system.org/~darth"
 >                           ) ]);;
 
-#
+# just one author & maintainer
 gap> Display(DefaultPackageBannerString(pkginfo));
 -----------------------------------------------------------------------------
 Loading  TestPkg 1.0 (A test package)
@@ -73,39 +74,120 @@ Homepage: https://www.gap-system.org
 -----------------------------------------------------------------------------
 
 
-#
-gap> Add(pkginfo.Persons, rec( IsAuthor := true, FirstNames := "Luke",
->                           LastName := "Skywalker", Email := "luke.skywalker@gap-system.org" ));
+# add a maintainer who is not an author
+gap> Add(pkginfo.Persons, rec( IsAuthor := false, IsMaintainer := true,
+>                           FirstNames := "Luke", LastName := "Skywalker",
+>                           Email := "luke.skywalker@gap-system.org" ));
 gap> Display(DefaultPackageBannerString(pkginfo));
 -----------------------------------------------------------------------------
 Loading  TestPkg 1.0 (A test package)
-by Lord Vader (https://www.gap-system.org/~darth) and
+by Lord Vader (https://www.gap-system.org/~darth).
+maintained by:
+   Lord Vader (https://www.gap-system.org/~darth) and
    Luke Skywalker (luke.skywalker@gap-system.org).
 Homepage: https://www.gap-system.org
 -----------------------------------------------------------------------------
 
 
-#
-gap> Add(pkginfo.Persons, rec( IsAuthor := true, FirstNames := "Leia", LastName := "Organa" ));
+# add an author who is not a maintainer
+gap> Add(pkginfo.Persons, rec( IsAuthor := true, IsMaintainer := false,
+>                           FirstNames := "Leia", LastName := "Organa" ));
+gap> Display(DefaultPackageBannerString(pkginfo));
+-----------------------------------------------------------------------------
+Loading  TestPkg 1.0 (A test package)
+by Lord Vader (https://www.gap-system.org/~darth) and
+   Leia Organa.
+maintained by:
+   Lord Vader (https://www.gap-system.org/~darth) and
+   Luke Skywalker (luke.skywalker@gap-system.org).
+Homepage: https://www.gap-system.org
+-----------------------------------------------------------------------------
+
+
+# add a contributor
+gap> Add(pkginfo.Persons, rec( IsAuthor := false, IsMaintainer := false,
+>                           FirstNames := "Yoda", LastName := "",
+>                           WWWHome := "https://www.gap-system.org/~yoda"));
+gap> Display(DefaultPackageBannerString(pkginfo));
+-----------------------------------------------------------------------------
+Loading  TestPkg 1.0 (A test package)
+by Lord Vader (https://www.gap-system.org/~darth) and
+   Leia Organa.
+with contributions by:
+   Yoda  (https://www.gap-system.org/~yoda).
+maintained by:
+   Lord Vader (https://www.gap-system.org/~darth) and
+   Luke Skywalker (luke.skywalker@gap-system.org).
+Homepage: https://www.gap-system.org
+-----------------------------------------------------------------------------
+
+
+# test what happens if all are authors and maintainers
+gap> for p in pkginfo.Persons do p.IsAuthor:=true; p.IsMaintainer:=true; od;
 gap> Display(DefaultPackageBannerString(pkginfo));
 -----------------------------------------------------------------------------
 Loading  TestPkg 1.0 (A test package)
 by Lord Vader (https://www.gap-system.org/~darth),
-   Luke Skywalker (luke.skywalker@gap-system.org), and
-   Leia Organa.
+   Luke Skywalker (luke.skywalker@gap-system.org),
+   Leia Organa, and
+   Yoda  (https://www.gap-system.org/~yoda).
 Homepage: https://www.gap-system.org
 -----------------------------------------------------------------------------
 
 
-#
+# test what happens if all are authors but not maintainers
+gap> for p in pkginfo.Persons do p.IsAuthor:=true; p.IsMaintainer:=false; od;
+gap> Display(DefaultPackageBannerString(pkginfo));
+-----------------------------------------------------------------------------
+Loading  TestPkg 1.0 (A test package)
+by Lord Vader (https://www.gap-system.org/~darth),
+   Luke Skywalker (luke.skywalker@gap-system.org),
+   Leia Organa, and
+   Yoda  (https://www.gap-system.org/~yoda).
+Homepage: https://www.gap-system.org
+-----------------------------------------------------------------------------
+
+
+# test what happens if all are maintainers but not authors
 gap> for p in pkginfo.Persons do p.IsAuthor:=false; p.IsMaintainer:=true; od;
 gap> Display(DefaultPackageBannerString(pkginfo));
 -----------------------------------------------------------------------------
 Loading  TestPkg 1.0 (A test package)
-maintained by Lord Vader (https://www.gap-system.org/~darth),
-              Luke Skywalker (luke.skywalker@gap-system.org), and
-              Leia Organa.
+maintained by:
+   Lord Vader (https://www.gap-system.org/~darth),
+   Luke Skywalker (luke.skywalker@gap-system.org),
+   Leia Organa, and
+   Yoda  (https://www.gap-system.org/~yoda).
 Homepage: https://www.gap-system.org
+-----------------------------------------------------------------------------
+
+
+# test what happens if all are contributors
+gap> for p in pkginfo.Persons do p.IsAuthor:=false; p.IsMaintainer:=false; od;
+gap> Display(DefaultPackageBannerString(pkginfo));
+-----------------------------------------------------------------------------
+Loading  TestPkg 1.0 (A test package)
+with contributions by:
+   Lord Vader (https://www.gap-system.org/~darth),
+   Luke Skywalker (luke.skywalker@gap-system.org),
+   Leia Organa, and
+   Yoda  (https://www.gap-system.org/~yoda).
+Homepage: https://www.gap-system.org
+-----------------------------------------------------------------------------
+
+
+# test IssueTrackerURL
+gap> pkginfo.IssueTrackerURL := "https://issues.gap-system.org/";;
+gap> Display(DefaultPackageBannerString(pkginfo));
+-----------------------------------------------------------------------------
+Loading  TestPkg 1.0 (A test package)
+with contributions by:
+   Lord Vader (https://www.gap-system.org/~darth),
+   Luke Skywalker (luke.skywalker@gap-system.org),
+   Leia Organa, and
+   Yoda  (https://www.gap-system.org/~yoda).
+Homepage: https://www.gap-system.org
+Report issues at https://issues.gap-system.org/
 -----------------------------------------------------------------------------
 
 
