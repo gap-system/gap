@@ -3839,40 +3839,69 @@ DeclareOperation( "CharacterTableFactorGroup",
 
 #############################################################################
 ##
+#A  CharacterTableIsoclinic( <tbl> )
+#O  CharacterTableIsoclinic( <tbl>, <arec> )
+#O  CharacterTableIsoclinic( <modtbl>, <ordiso> )
 #O  CharacterTableIsoclinic( <tbl>[, <classes>][, <centre>] )
 #A  SourceOfIsoclinicTable( <tbl> )
 ##
 ##  <#GAPDoc Label="CharacterTableIsoclinic">
 ##  <ManSection>
-##  <Oper Name="CharacterTableIsoclinic" Arg='tbl[, classes][, centre]'/>
+##  <Oper Name="CharacterTableIsoclinic" Arg='tbl[, arec]'/>
+##  <Oper Name="CharacterTableIsoclinic" Arg='tbl[, classes][, centre]'
+##   Label="for a character table and one or two lists"/>
+##  <Oper Name="CharacterTableIsoclinic" Arg='modtbl, ordiso'
+##   Label="for a Brauer table and an ordinary table"/>
 ##  <Attr Name="SourceOfIsoclinicTable" Arg='tbl'/>
 ##
 ##  <Description>
-##  If <A>tbl</A> is the (ordinary or modular) character table of a group
-##  with the structure <M>2.G.2</M> with a central subgroup <M>Z</M> of order
-##  <M>2</M> or <M>4</M> and a normal subgroup <M>N</M> of index <M>2</M>
-##  that contains <M>Z</M> then <Ref Oper="CharacterTableIsoclinic"/> returns
-##  the table of the isoclinic group in the sense of the
+##  Let <A>tbl</A> be the (ordinary or modular) character table of a group
+##  <M>H</M>, say, with the structure <M>p.G.p</M> for some prime <M>p</M>,
+##  that is, <M>H/Z</M> has a normal subgroup <M>N</M> of index <M>p</M>
+##  and a central subgroup <M>Z</M> of order <M>p</M> contained in <M>N</M>.
+##  <P/>
+##  Then <Ref Oper="CharacterTableIsoclinic"/> returns
+##  the table of an isoclinic group in the sense of the
 ##  &ATLAS; of Finite Groups
 ##  <Cite Key="CCN85" Where="Chapter 6, Section 7"/>.
-##  If <M>N</M> is not uniquely determined then the positions of the classes
-##  forming <M>N</M> must be entered as list <A>classes</A>.
-##  If <M>Z</M> is not unique inside <M>N</M> then the positions of the
-##  classes in <M>Z</M> must be entered as list <A>centre</A>;
-##  If <M>Z</M> has order <M>2</M> then <A>centre</A> can be also the
-##  position of the involution in <M>Z</M>.
 ##  <P/>
-##  Note that also if <A>tbl</A> is a Brauer table then <A>classes</A> and
-##  <A>centre</A> denote class numbers w.r.t.&nbsp;the <E>ordinary</E>
-##  character table.
+##  If <M>p = 2</M> then also the case <M>H = 4.G.2</M> is supported,
+##  that is, <M>Z</M> has order four and <M>N</M> has index two in <M>H</M>.
 ##  <P/>
-##  For an ordinary character table that has been constructed via
-##  <Ref Oper="CharacterTableIsoclinic"/>,
-##  the value of <Ref Attr="SourceOfIsoclinicTable"/> is the list of three
-##  arguments in the <Ref Oper="CharacterTableIsoclinic"/> call.
+##  The optional arguments are needed if <A>tbl</A> does not determine
+##  the class positions of <M>N</M> or <M>Z</M> uniquely,
+##  and in the case <M>p > 2</M> if one wants to specify a
+##  <Q>variant number</Q> for the result.
 ##  <P/>
-##  Note that there is no default method for <E>computing</E> the value of
-##  <Ref Attr="SourceOfIsoclinicTable"/>.
+##  <List>
+##  <Item>
+##    In general, the values can be specified via a record <A>arec</A>.
+##    If <M>N</M> is not uniquely determined then the positions of the
+##    classes forming <M>N</M> must be entered as the value of the component
+##    <C>normalSubgroup</C>.
+##    If <M>Z</M> is not unique inside <M>N</M> then the class position of
+##    a generator of <M>Z</M> must be entered as the value of the
+##    component <C>centralElement</C>.
+##  </Item>
+##  <Item>
+##    If <M>p = 2</M> then one may specify the positions of the classes
+##    forming <M>N</M> via a list <A>classes</A>,
+##    and the positions of the classes in <M>Z</M> as a list <A>centre</A>;
+##    if <M>Z</M> has order <M>2</M> then <A>centre</A> can be also the
+##    position of the involution in <M>Z</M>.
+##  </Item>
+##  </List>
+##  <P/>
+##  Note that also if <A>tbl</A> is a Brauer table then <C>normalSubgroup</C>
+##  and <C>centralElement</C>, resp.&nbsp; <A>classes</A> and <A>centre</A>,
+##  denote class numbers w.r.t.&nbsp;the <E>ordinary</E> character table.
+##  <P/>
+##  If <M>p</M> is odd then the &ATLAS; construction describes <M>p</M>
+##  isoclinic variants that arise from <M>p.G.p</M>.
+##  (These groups need not be pairwise nonisomorphic.)
+##  Entering an integer <M>k \in \{ 1, 2, \ldots, k-1 \}</M> as the value of
+##  the component <C>k</C> of <A>arec</A> yields the <M>k</M>-th of the
+##  corresponding character tables; the default for <C>k</C> is <M>1</M>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> d8:= CharacterTable( "Dihedral", 8 );
@@ -3880,8 +3909,8 @@ DeclareOperation( "CharacterTableFactorGroup",
 ##  gap> nsg:= ClassPositionsOfNormalSubgroups( d8 );
 ##  [ [ 1 ], [ 1, 3 ], [ 1 .. 3 ], [ 1, 3, 4 ], [ 1, 3 .. 5 ], [ 1 .. 5 ] 
 ##   ]
-##  gap> iso:= CharacterTableIsoclinic( d8, nsg[3] );;
-##  gap> Display( iso );
+##  gap> isod8:= CharacterTableIsoclinic( d8, nsg[3] );;
+##  gap> Display( isod8 );
 ##  Isoclinic(Dihedral(8))
 ##  
 ##       2  3  2  3  2  2
@@ -3894,16 +3923,126 @@ DeclareOperation( "CharacterTableFactorGroup",
 ##  X.3     1 -1  1  1 -1
 ##  X.4     1 -1  1 -1  1
 ##  X.5     2  . -2  .  .
-##  gap> SourceOfIsoclinicTable( iso );
-##  [ CharacterTable( "Dihedral(8)" ), [ 1, 2, 3 ], [ 3 ], 3 ]
+##  gap> t1:= CharacterTable( SmallGroup( 27, 3 ) );;
+##  gap> t2:= CharacterTable( SmallGroup( 27, 4 ) );;
+##  gap> nsg:= ClassPositionsOfNormalSubgroups( t1 );
+##  [ [ 1 ], [ 1, 4, 8 ], [ 1, 2, 4, 5, 8 ], [ 1, 3, 4, 7, 8 ], 
+##    [ 1, 4, 6, 8, 11 ], [ 1, 4, 8, 9, 10 ], [ 1 .. 11 ] ]
+##  gap> iso1:= CharacterTableIsoclinic( t1, rec( k:= 1,
+##  >               normalSubgroup:= nsg[3] ) );;
+##  gap> iso2:= CharacterTableIsoclinic( t1, rec( k:= 2,
+##  >               normalSubgroup:= nsg[3] ) );;
+##  gap> TransformingPermutationsCharacterTables( iso1, t1 ) <> fail;
+##  false
+##  gap> TransformingPermutationsCharacterTables( iso1, t2 ) <> fail;
+##  true
+##  gap> TransformingPermutationsCharacterTables( iso2, t2 ) <> fail;
+##  true
 ##  ]]></Example>
+##  <P/>
+##  For an ordinary character table that has been constructed via
+##  <Ref Oper="CharacterTableIsoclinic"/>,
+##  the value of <Ref Attr="SourceOfIsoclinicTable"/> encodes this
+##  construction, and is defined as follows.
+##  If <M>p = 2</M> then the value is the list with entries <A>tbl</A>,
+##  <A>classes</A>, the list of class positions of the nonidentity
+##  elements in <M>Z</M>, and the class position of a generator of <M>Z</M>.
+##  If <M>p</M> is an odd prime then the value is a record with the
+##  following components.
+##  <P/>
+##  <List>
+##  <Mark><C>table</C></Mark>
+##  <Item>
+##    the character table <A>tbl</A>,
+##  </Item>
+##  <Mark><C>p</C></Mark>
+##  <Item>
+##    the prime <M>p</M>,
+##  </Item>
+##  <Mark><C>k</C></Mark>
+##  <Item>
+##    the variant number <M>k</M>,
+##  </Item>
+##  <Mark><C>outerClasses</C></Mark>
+##  <Item>
+##    the list of length <M>p-1</M> that contains at position <M>i</M>
+##    the sorted list of class positions of the <M>i</M>-th coset of the
+##    normal subgroup <M>N</M>
+##  </Item>
+##  <Mark><C>centralElement</C></Mark>
+##  <Item>
+##    the class position of a generator of the central subgroup <M>Z</M>.
+##  </Item>
+##  </List>
+##  <P/>
+##  There is no default method for <E>computing</E> the value of
+##  <Ref Attr="SourceOfIsoclinicTable"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> SourceOfIsoclinicTable( isod8 );
+##  [ CharacterTable( "Dihedral(8)" ), [ 1 .. 3 ], [ 3 ], 3 ]
+##  gap> SourceOfIsoclinicTable( iso1 );
+##  rec( centralElement := 4, k := 1, 
+##    outerClasses := [ [ 3, 6, 9 ], [ 7, 10, 11 ] ], p := 3, 
+##    table := CharacterTable( <pc group of size 27 with 3 generators> ) )
+##  ]]></Example>
+##  <P/>
+##  If the arguments of <Ref Oper="CharacterTableIsoclinic"/> are
+##  a Brauer table <A>modtbl</A> and an ordinary table <A>ordiso</A>
+##  then the <Ref Attr="SourceOfIsoclinicTable"/> value of <A>ordiso</A>
+##  is assumed to be identical with the
+##  <Ref Attr="OrdinaryCharacterTable" Label="for a character table"/>
+##  value of <A>modtbl</A>,
+##  and the specified isoclinic table of <A>modtbl</A> is returned.
+##  This variant is useful if one has already constructed <A>ordiso</A>
+##  in advance.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> g:= GL(2,3);;
+##  gap> t:= CharacterTable( g );;
+##  gap> iso:= CharacterTableIsoclinic( t );;
+##  gap> t3:= t mod 3;;
+##  gap> iso3:= CharacterTableIsoclinic( t3, iso );;
+##  gap> TransformingPermutationsCharacterTables( iso3,
+##  >        CharacterTableIsoclinic( t3 ) ) <> fail;
+##  true
+##  ]]></Example>
+##  <P/>
+##  <E>Theoretical background:</E>
+##  Consider the central product <M>K</M> of <M>H</M> with a cyclic group
+##  <M>C</M> of order <M>p^2</M>.
+##  That is, <M>K = H C</M>, <M>C \leq Z(K)</M>, and the central subgroup
+##  <M>Z</M> of order <M>p</M> in <M>H</M> lies in <M>C</M>.
+##  There are <M>p+1</M> subgroups of <M>K</M> that contain
+##  the normal subgroup <M>N</M> of index <M>p</M> in <M>H</M>.
+##  One of them is the central product of <M>C</M> with <M>N</M>,
+##  the others are <M>H_0 = H</M> and its isoclinic variants
+##  <M>H_1, H_2, \ldots, H_{{p-1}}</M>.
+##  We fix <M>g \in H \setminus N</M> and a generator <M>z</M> of <M>C</M>,
+##  and get <M>H = N \cup N g \cup N g^2 \cup \cdots \cup N g^{{p-1}}</M>.
+##  Then <M>H_k</M>, <M>0 \leq k \leq p-1</M>, is given by
+##  <M>N \cup N gz^k \cup N (gz^k)^2 \cup \cdots \cup N (gz^k)^{{p-1}}</M>.
+##  The conjugacy classes of all <M>H_k</M> are in bijection via multiplying
+##  the elements with suitable powers of <M>z</M>,
+##  and the irreducible characters of all <M>H_k</M> extend to <M>K</M> and
+##  are in bijection via multiplying the character values with suitable
+##  <M>p^2</M>-th roots of unity.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+DeclareAttributeSuppCT( "SourceOfIsoclinicTable", IsNearlyCharacterTable,
+    [] );
+
 DeclareAttribute( "CharacterTableIsoclinic", IsNearlyCharacterTable );
+
+DeclareOperation( "CharacterTableIsoclinic",
+    [ IsNearlyCharacterTable, IsRecord ] );
 DeclareOperation( "CharacterTableIsoclinic",
     [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection ] );
+DeclareOperation( "CharacterTableIsoclinic",
+    [ IsBrauerTable, IsOrdinaryTable and HasSourceOfIsoclinicTable ] );
+
 DeclareOperation( "CharacterTableIsoclinic",
     [ IsNearlyCharacterTable, IsPosInt ] );
 DeclareOperation( "CharacterTableIsoclinic",
@@ -3911,9 +4050,6 @@ DeclareOperation( "CharacterTableIsoclinic",
 DeclareOperation( "CharacterTableIsoclinic",
     [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection,
       IsList and IsCyclotomicCollection ] );
-
-DeclareAttributeSuppCT( "SourceOfIsoclinicTable", IsNearlyCharacterTable,
-    [] );
 
 
 #############################################################################
