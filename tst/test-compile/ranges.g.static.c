@@ -236,7 +236,7 @@ static Obj  HdlrFunc1 (
  /* range2 := function ( a, b )
       return [ a .. b ];
   end; */
- t_1 = NewFunction( NameFunc[2], 2, 0, HdlrFunc2 );
+ t_1 = NewFunction( NameFunc[2], 2, ArgStringToList("a,b"), HdlrFunc2 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 1);
@@ -248,7 +248,7 @@ static Obj  HdlrFunc1 (
  /* range3 := function ( a, b, c )
       return [ a, b .. c ];
   end; */
- t_1 = NewFunction( NameFunc[3], 3, 0, HdlrFunc3 );
+ t_1 = NewFunction( NameFunc[3], 3, ArgStringToList("a,b,c"), HdlrFunc3 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 2);

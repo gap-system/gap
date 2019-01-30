@@ -2724,7 +2724,7 @@ static Obj  HdlrFunc7 (
    SET_LEN_PLIST( t_5, 1 );
    SET_ELM_PLIST( t_5, 1, l_cats );
    CHANGED_BAG( t_5 );
-   t_6 = NewFunction( NameFunc[8], 1, 0, HdlrFunc8 );
+   t_6 = NewFunction( NameFunc[8], 1, ArgStringToList("obj"), HdlrFunc8 );
    SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
    t_7 = NewFunctionBody();
    SET_STARTLINE_BODY(t_7, 671);
@@ -3290,7 +3290,7 @@ static Obj  HdlrFunc11 (
       fi;
       return;
   end; */
-  t_1 = NewFunction( NameFunc[12], 1, 0, HdlrFunc12 );
+  t_1 = NewFunction( NameFunc[12], 1, ArgStringToList("key"), HdlrFunc12 );
   SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
   t_2 = NewFunctionBody();
   SET_STARTLINE_BODY(t_2, 868);
@@ -3369,7 +3369,7 @@ static Obj  HdlrFunc11 (
  SET_LEN_PLIST( t_5, 1 );
  SET_ELM_PLIST( t_5, 1, a_domreq );
  CHANGED_BAG( t_5 );
- t_6 = NewFunction( NameFunc[13], 1, 0, HdlrFunc13 );
+ t_6 = NewFunction( NameFunc[13], 1, ArgStringToList("D"), HdlrFunc13 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
  SET_STARTLINE_BODY(t_7, 889);
@@ -3431,7 +3431,7 @@ static Obj  HdlrFunc11 (
  CHANGED_BAG( t_5 );
  SET_ELM_PLIST( t_5, 2, a_keyreq );
  CHANGED_BAG( t_5 );
- t_6 = NewFunction( NameFunc[14], 2, 0, HdlrFunc14 );
+ t_6 = NewFunction( NameFunc[14], 2, ArgStringToList("D,key"), HdlrFunc14 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
  SET_STARTLINE_BODY(t_7, 911);
@@ -3479,7 +3479,7 @@ static Obj  HdlrFunc11 (
  CHANGED_BAG( t_5 );
  SET_ELM_PLIST( t_5, 2, a_keyreq );
  CHANGED_BAG( t_5 );
- t_6 = NewFunction( NameFunc[15], 2, 0, HdlrFunc15 );
+ t_6 = NewFunction( NameFunc[15], 2, ArgStringToList("D,key"), HdlrFunc15 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
  SET_STARTLINE_BODY(t_7, 944);
@@ -3540,7 +3540,7 @@ static Obj  HdlrFunc11 (
  CHECK_BOUND( t_6, "IS_OBJECT" )
  SET_ELM_PLIST( t_5, 3, t_6 );
  CHANGED_BAG( t_5 );
- t_6 = NewFunction( NameFunc[16], 3, 0, HdlrFunc16 );
+ t_6 = NewFunction( NameFunc[16], 3, ArgStringToList("D,key,obj"), HdlrFunc16 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
  SET_STARTLINE_BODY(t_7, 961);
@@ -3902,7 +3902,7 @@ static Obj  HdlrFunc17 (
  CHECK_BOUND( l_fampred, "fampred" )
  t_3 = OBJ_LVAR( 2 );
  CHECK_BOUND( t_3, "reqs" )
- t_4 = NewFunction( NameFunc[18], -1, 0, HdlrFunc18 );
+ t_4 = NewFunction( NameFunc[18], -1, ArgStringToList("arg"), HdlrFunc18 );
  SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
  t_5 = NewFunctionBody();
  SET_STARTLINE_BODY(t_5, 1040);
@@ -3998,7 +3998,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "RunImmediateMethods" );
- t_3 = NewFunction( NameFunc[2], 2, 0, HdlrFunc2 );
+ t_3 = NewFunction( NameFunc[2], 2, ArgStringToList("obj,flags"), HdlrFunc2 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 28);
@@ -4108,7 +4108,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "INSTALL_METHOD_FLAGS" );
- t_3 = NewFunction( NameFunc[3], 6, 0, HdlrFunc3 );
+ t_3 = NewFunction( NameFunc[3], 6, ArgStringToList("opr,info,rel,flags,baserank,method"), HdlrFunc3 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 147);
@@ -4123,7 +4123,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "InstallMethod" );
- t_3 = NewFunction( NameFunc[4], -1, 0, HdlrFunc4 );
+ t_3 = NewFunction( NameFunc[4], -1, ArgStringToList("arg"), HdlrFunc4 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 338);
@@ -4138,7 +4138,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "InstallOtherMethod" );
- t_3 = NewFunction( NameFunc[5], -1, 0, HdlrFunc5 );
+ t_3 = NewFunction( NameFunc[5], -1, ArgStringToList("arg"), HdlrFunc5 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 365);
@@ -4307,7 +4307,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "INSTALL_METHOD" );
- t_3 = NewFunction( NameFunc[6], 2, 0, HdlrFunc6 );
+ t_3 = NewFunction( NameFunc[6], 2, ArgStringToList("arglist,check"), HdlrFunc6 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 378);
@@ -4365,7 +4365,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_InstallAttributeFunction;
- t_2 = NewFunction( NameFunc[7], 6, 0, HdlrFunc7 );
+ t_2 = NewFunction( NameFunc[7], 6, ArgStringToList("name,filter,getter,setter,tester,mutflag"), HdlrFunc7 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewFunctionBody();
  SET_STARTLINE_BODY(t_3, 629);
@@ -4379,7 +4379,7 @@ static Obj  HdlrFunc1 (
       return;
   end ); */
  t_1 = GF_InstallAttributeFunction;
- t_2 = NewFunction( NameFunc[9], 6, 0, HdlrFunc9 );
+ t_2 = NewFunction( NameFunc[9], 6, ArgStringToList("name,filter,getter,setter,tester,mutflag"), HdlrFunc9 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewFunctionBody();
  SET_STARTLINE_BODY(t_3, 696);
@@ -4407,7 +4407,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "PositionSortedOddPositions" );
- t_3 = NewFunction( NameFunc[10], 2, 0, HdlrFunc10 );
+ t_3 = NewFunction( NameFunc[10], 2, ArgStringToList("list,elm"), HdlrFunc10 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 715);
@@ -4491,7 +4491,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "KeyDependentOperation" );
- t_3 = NewFunction( NameFunc[11], 4, 0, HdlrFunc11 );
+ t_3 = NewFunction( NameFunc[11], 4, ArgStringToList("name,domreq,keyreq,keytest"), HdlrFunc11 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 864);
@@ -4542,7 +4542,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "RedispatchOnCondition" );
- t_3 = NewFunction( NameFunc[17], -1, 0, HdlrFunc17 );
+ t_3 = NewFunction( NameFunc[17], -1, ArgStringToList("arg"), HdlrFunc17 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 1010);

@@ -371,7 +371,7 @@ static Obj  HdlrFunc1 (
       Print( "f1:", a, "\n" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[2], 1, 0, HdlrFunc2 );
+ t_1 = NewFunction( NameFunc[2], 1, ArgStringToList("a"), HdlrFunc2 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 1);
@@ -384,7 +384,7 @@ static Obj  HdlrFunc1 (
       Print( "f2:", a, ":", b, "\n" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[3], 2, 0, HdlrFunc3 );
+ t_1 = NewFunction( NameFunc[3], 2, ArgStringToList("a,b"), HdlrFunc3 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 5);
@@ -397,7 +397,7 @@ static Obj  HdlrFunc1 (
       Print( "f3:", a, "\n" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[4], -1, 0, HdlrFunc4 );
+ t_1 = NewFunction( NameFunc[4], -1, ArgStringToList("a"), HdlrFunc4 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 9);
@@ -410,7 +410,7 @@ static Obj  HdlrFunc1 (
       Print( "f4:", a, ":", b, "\n" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[5], -2, 0, HdlrFunc5 );
+ t_1 = NewFunction( NameFunc[5], -2, ArgStringToList("a,b"), HdlrFunc5 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 13);
