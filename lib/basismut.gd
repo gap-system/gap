@@ -218,24 +218,33 @@ DeclareOperation( "ImmutableBasis", [ IsMutableBasis, IsFreeLeftModule ] );
 ##
 ##  <Description>
 ##  For a mutable basis <A>MB</A> over the coefficient ring <M>R</M>, say,
-##  and a vector <A>v</A>, <C>CloseMutableBasis</C> changes <A>MB</A> such that afterwards
-##  it describes the <M>R</M>-span of the former basis vectors together with <A>v</A>.
+##  and a vector <A>v</A>, <Ref Oper="CloseMutableBasis"/> changes <A>MB</A>
+##  such that afterwards it describes the <M>R</M>-span of the former
+##  basis vectors together with <A>v</A>.
 ##  <P/>
 ##  <E>Note</E> that if <A>v</A> enlarges the dimension then this does in general <E>not</E>
 ##  mean that <A>v</A> is simply added to the basis vectors of <A>MB</A>.
 ##  Usually a linear combination of <A>v</A> and the other basis vectors is added,
 ##  and also the old basis vectors may be modified, for example in order to
-##  keep the list of basis vectors echelonized (see&nbsp;<Ref Prop="IsSemiEchelonized"/>).
+##  keep the list of basis vectors echelonized
+##  (see&nbsp;<Ref Prop="IsSemiEchelonized"/>).
+##  <P/>
+##  <Ref Oper="CloseMutableBasis"/> returns <K>false</K> if <A>v</A> was
+##  already in the <M>R</M>-span described by <A>MB</A>,
+##  and <K>true</K> if <A>MB</A> got extended.
 ##  <Example><![CDATA[
 ##  gap> MB:= MutableBasis( Rationals, [ [ 1, 1, 3 ], [ 2, 2, 1 ] ] );
 ##  <mutable basis over Rationals, 2 vectors>
 ##  gap> IsContainedInSpan( MB, [ 1, 0, 0 ] );
 ##  false
 ##  gap> CloseMutableBasis( MB, [ 1, 0, 0 ] );
+##  true
 ##  gap> MB;
 ##  <mutable basis over Rationals, 3 vectors>
 ##  gap> IsContainedInSpan( MB, [ 1, 0, 0 ] );
 ##  true
+##  gap> CloseMutableBasis( MB, [ 1, 0, 0 ] );
+##  false
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

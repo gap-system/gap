@@ -206,6 +206,10 @@ InstallMethod( CloseMutableBasis,
       V:= LeftModuleByGenerators( LeftActingDomain( V ), vectors );
       UseBasis( V, vectors );
       MB!.immutableBasis := Basis( V );
+      return true;
+    else
+      # The basis was not extended.
+      return false;
     fi;
     end );
 
@@ -406,7 +410,7 @@ InstallMethod( CloseMutableBasis,
     function( MB, v )
     local R, M;
     if IsBound( MB!.niceMutableBasis ) then
-      CloseMutableBasis( MB!.niceMutableBasis,
+      return CloseMutableBasis( MB!.niceMutableBasis,
                          NiceVector( MB!.leftModule, v ) );
     elif v <> MB!.zero then
 
@@ -419,6 +423,7 @@ InstallMethod( CloseMutableBasis,
       MB!.leftModule:= M;
       MB!.niceMutableBasis:= MutableBasis( R,
                                        [ NiceVector( M, v ) ] );
+      return true;
 
     fi;
     end );

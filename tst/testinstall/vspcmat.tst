@@ -322,6 +322,7 @@ gap> mb:= MutableBasis( Rationals,
 gap> IsMutableBasisOfGaussianMatrixSpaceRep( mb );
 true
 gap> CloseMutableBasis( mb, [ [ E(4), 0 ], [ 0, 0 ] ] );
+true
 gap> IsMutableBasisOfGaussianMatrixSpaceRep( mb );
 false
 gap> BasisVectors( mb );
@@ -332,8 +333,11 @@ gap> mb:= MutableBasis( Rationals,
 >            [ [ 1, 1 ], [ 1, 1 ] ] ] );
 <mutable basis over Rationals, 2 vectors>
 gap> CloseMutableBasis( mb, [ [ 1, 2 ], [ 3, 4 ] ] );
+true
 gap> CloseMutableBasis( mb, [ [ 1, 2 ], [ 3, 5 ] ] );
+true
 gap> CloseMutableBasis( mb, [ [ 0, 0 ], [ 0, 7 ] ] );
+false
 gap> IsMutableBasisOfGaussianMatrixSpaceRep( mb );
 true
 gap> bv:= BasisVectors( mb );;
@@ -347,8 +351,11 @@ SemiEchelonBasis( <vector space of dimension 4 over Rationals>,
 gap> mb:= MutableBasis( Rationals, [], [ [ 0, 0 ], [ 0, 0 ] ] );
 <mutable basis over Rationals, 0 vectors>
 gap> CloseMutableBasis( mb, [ [ 1, 2 ], [ 3, 4 ] ] );
+true
 gap> CloseMutableBasis( mb, [ [ 1, 2 ], [ 3, 5 ] ] );
+true
 gap> CloseMutableBasis( mb, [ [ 0, 0 ], [ 0, 7 ] ] );
+false
 gap> IsMutableBasisOfGaussianMatrixSpaceRep( mb );
 true
 gap> BasisVectors( mb );
@@ -359,7 +366,22 @@ SemiEchelonBasis( <vector space of dimension 2 over Rationals>,
 gap> mb:= MutableBasis( Rationals, [], [ [ 0, 0 ], [ 0, 0 ] ] );
 <mutable basis over Rationals, 0 vectors>
 gap> CloseMutableBasis( mb, [ [ 1, 0 ], [ 0, 1 ] ] );
+true
 gap> CloseMutableBasis( mb, [ [ 0, 1 ], [ 1, 0 ] ] );   
+true
 gap> IsContainedInSpan( mb, [ [ 1, 1 ], [ 1, 1 ] ] );
 true
+
+#############################################################################
+##
+##  8. Methods for mutable bases of non-Gaussian matrix spaces
+##
+gap> mb:= MutableBasis( Rationals, [ [ [ E(4) ] ] ] );
+<mutable basis over Rationals, 1 vectors>
+gap> CloseMutableBasis( mb, [ [ E(3) ] ] );
+true
+gap> CloseMutableBasis( mb, [ [ E(3)+E(4) ] ] );
+false
+
+##
 gap> STOP_TEST( "vspcmat.tst", 1);

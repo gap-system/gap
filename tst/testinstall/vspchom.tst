@@ -404,7 +404,10 @@ gap> IsSubset( hom, triv );
 true
 gap> mb:= MutableBasis( f, [], zero );
 <mutable basis over GF(3), 0 vectors>
+gap> CloseMutableBasis( mb, zero );
+false
 gap> CloseMutableBasis( mb, map6 );
+true
 gap> ImmutableBasis( mb );
 Basis( <vector space of dimension 1 over GF(3)>, ... )
 

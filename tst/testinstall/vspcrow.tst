@@ -290,6 +290,7 @@ gap> mb:= MutableBasis( Rationals,
 gap> IsMutableBasisOfGaussianRowSpaceRep( mb );
 true
 gap> CloseMutableBasis( mb, [ E(4), 0, 0, 0 ] );
+true
 gap> IsMutableBasisOfGaussianRowSpaceRep( mb );
 false
 gap> BasisVectors( mb );
@@ -298,8 +299,11 @@ gap> mb:= MutableBasis( Rationals,
 >          [ [ 1, 1, 1, 1 ], [ 0, 1, 1, 1 ], [ 1, 1, 1, 1 ] ] );
 <mutable basis over Rationals, 2 vectors>
 gap> CloseMutableBasis( mb, [ 1, 2, 3, 4 ] );
+true
 gap> CloseMutableBasis( mb, [ 1, 2, 3, 5 ] );
+true
 gap> CloseMutableBasis( mb, [ 0, 0, 0, 7 ] );
+false
 gap> IsMutableBasisOfGaussianRowSpaceRep( mb );
 true
 gap> BasisVectors( mb );
@@ -310,8 +314,11 @@ SemiEchelonBasis( <vector space of dimension 4 over Rationals>,
 gap> mb:= MutableBasis( Rationals, [], [ 0, 0, 0, 0 ] );
 <mutable basis over Rationals, 0 vectors>
 gap> CloseMutableBasis( mb, [ 1, 2, 3, 4 ] );
+true
 gap> CloseMutableBasis( mb, [ 1, 2, 3, 5 ] );
+true
 gap> CloseMutableBasis( mb, [ 0, 0, 0, 7 ] );
+false
 gap> IsMutableBasisOfGaussianRowSpaceRep( mb );
 true
 gap> BasisVectors( mb );
@@ -320,9 +327,20 @@ gap> ImmutableBasis( mb );
 SemiEchelonBasis( <vector space of dimension 2 over Rationals>, 
 [ [ 1, 2, 3, 4 ], [ 0, 0, 0, 1 ] ] )
 
+############################################################################
+##
+##  8. Methods for mutable bases of non-Gaussian row spaces
+##
+gap> mb:= MutableBasis( Rationals, [ [ E(4) ] ] );
+<mutable basis over Rationals, 1 vectors>
+gap> CloseMutableBasis( mb, [ E(3) ] );
+true
+gap> CloseMutableBasis( mb, [ E(3)+E(4) ] );
+false
+
 #############################################################################
 ##
-##  8. Enumerations
+##  9. Enumerations
 ##
 gap> erg:= [];;  i:= 0;;
 gap> dims:= [ 1,4,27,28,29,31,32,33,63,64,65,92,127,128,129,384 ];;
@@ -338,7 +356,7 @@ gap> erg;
 
 #############################################################################
 ##
-##  9. Arithmetic
+##  10. Arithmetic
 ##
 gap> A := [ [ Z(2^2)^2, 0*Z(2), Z(2^2), 0*Z(2), 0*Z(2), 0*Z(2) ], 
 >   [ Z(2^2)^2, 0*Z(2), Z(2^2)^2, Z(2)^0, Z(2^2)^2, Z(2)^0 ], 

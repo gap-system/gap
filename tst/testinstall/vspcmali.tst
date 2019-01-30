@@ -365,6 +365,7 @@ gap> mb:= MutableBasis( Rationals,
 gap> IsMutableBasisOfGaussianMatrixSpaceRep( mb );
 true
 gap> CloseMutableBasis( mb, LieObject( [ [ E(4), 0 ], [ 0, 0 ] ] ) );
+true
 gap> IsMutableBasisOfGaussianMatrixSpaceRep( mb );
 false
 gap> Print( BasisVectors( mb ), "\n" );
@@ -376,8 +377,11 @@ gap> mb:= MutableBasis( Rationals,
 >            LieObject( [ [ 1, 1 ], [ 1, 1 ] ] ) ] );
 <mutable basis over Rationals, 2 vectors>
 gap> CloseMutableBasis( mb, LieObject( [ [ 1, 2 ], [ 3, 4 ] ] ) );
+true
 gap> CloseMutableBasis( mb, LieObject( [ [ 1, 2 ], [ 3, 5 ] ] ) );
+true
 gap> CloseMutableBasis( mb, LieObject( [ [ 0, 0 ], [ 0, 7 ] ] ) );
+false
 gap> IsMutableBasisOfGaussianMatrixSpaceRep( mb );
 true
 gap> bv:= BasisVectors( mb );;
@@ -392,8 +396,11 @@ gap> mb:= MutableBasis( Rationals, [],
 >             LieObject( [ [ 0, 0 ], [ 0, 0 ] ] ) );
 <mutable basis over Rationals, 0 vectors>
 gap> CloseMutableBasis( mb, LieObject( [ [ 1, 2 ], [ 3, 4 ] ] ) );
+true
 gap> CloseMutableBasis( mb, LieObject( [ [ 1, 2 ], [ 3, 5 ] ] ) );
+true
 gap> CloseMutableBasis( mb, LieObject( [ [ 0, 0 ], [ 0, 7 ] ] ) );
+false
 gap> IsMutableBasisOfGaussianMatrixSpaceRep( mb );
 true
 gap> BasisVectors( mb );

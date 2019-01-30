@@ -568,8 +568,7 @@ InstallMethod( CloseMutableBasis,
     [ IsMutableBasis and IsMutable and
       IsMutableBasisViaUnderlyingMutableBasisRep, IsVector ], 0,
     function( MB, v )
-
-       CloseMutableBasis( MB!.underlyingMutableBasis, ExtRepOfObj( v ) );
+    return CloseMutableBasis( MB!.underlyingMutableBasis, ExtRepOfObj( v ) );
 
 end );
 
