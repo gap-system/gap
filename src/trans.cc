@@ -3564,102 +3564,61 @@ static Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
 // number of classes as ker(x). Then INV_KER_TRANS(X, f) returns a
 // transformation g such that g<f> ^ ker(x) = ker(x) = ker(gfx) and the action
 // of g<f> on ker(x) is the identity.
-
-static Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
+template <typename TF, typename TG>
+static Obj INV_KER_TRANS(Obj X, Obj f)
 {
     Obj    g;
-    const UInt2 *ptf2;
-    const UInt4 *ptf4;
-    UInt2 *ptg2;
-    UInt4 *pttmp, *ptg4;
+    const TF * ptf;
+    TG *       ptg;
+    UInt4 *    pttmp;
     UInt   deg, i, len;
 
     len = LEN_LIST(X);
     ResizeTmpTrans(len);
 
+    deg = DEG_TRANS<TF>(f);
+    g = NEW_TRANS<TG>(len);
+    pttmp = ADDR_TRANS4(TmpTrans);
+    ptf = CONST_ADDR_TRANS<TF>(f);
+    ptg = ADDR_TRANS<TG>(g);
+    if (deg >= len) {
+        // calculate a transversal of f ^ ker(x) = ker(fx)
+        for (i = 0; i < len; i++) {
+            pttmp[INT_INTOBJ(ELM_LIST(X, ptf[i] + 1)) - 1] = i;
+        }
+    }
+    else {
+        for (i = 0; i < deg; i++) {
+            pttmp[INT_INTOBJ(ELM_LIST(X, ptf[i] + 1)) - 1] = i;
+        }
+        for (; i < len; i++) {
+            pttmp[INT_INTOBJ(ELM_LIST(X, i + 1)) - 1] = i;
+        }
+    }
+    for (i = len; i >= 1; i--) {
+        ptg[i - 1] = pttmp[INT_INTOBJ(ELM_LIST(X, i)) - 1];
+    }
+    return g;
+}
+
+static Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
+{
+    UInt len = LEN_LIST(X);
+
     if (TNUM_OBJ(f) == T_TRANS2) {
-        deg = DEG_TRANS2(f);
         if (len <= 65536) {
-            // deg(g) <= 65536 and g is T_TRANS2
-            g = NEW_TRANS2(len);
-            pttmp = ADDR_TRANS4(TmpTrans);
-            ptf2 = CONST_ADDR_TRANS2(f);
-            ptg2 = ADDR_TRANS2(g);
-            if (deg >= len) {
-                // calculate a transversal of f ^ ker(x) = ker(fx)
-                for (i = 0; i < len; i++) {
-                    pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i] + 1)) - 1] = i;
-                }
-                // install values in g
-                for (i = len; i >= 1; i--) {
-                    ptg2[i - 1] = pttmp[INT_INTOBJ(ELM_LIST(X, i)) - 1];
-                }
-            }
-            else {
-                for (i = 0; i < deg; i++) {
-                    pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i] + 1)) - 1] = i;
-                }
-                for (; i < len; i++) {
-                    pttmp[INT_INTOBJ(ELM_LIST(X, i + 1)) - 1] = i;
-                }
-                for (i = len; i >= 1; i--) {
-                    ptg2[i - 1] = pttmp[INT_INTOBJ(ELM_LIST(X, i)) - 1];
-                }
-            }
-            return g;
+            return INV_KER_TRANS<UInt2, UInt2>(X, f);
         }
         else {
-            // deg(g) = len > 65536 >= deg and g is T_TRANS4
-            g = NEW_TRANS4(len);
-            pttmp = ADDR_TRANS4(TmpTrans);
-            ptf2 = CONST_ADDR_TRANS2(f);
-            ptg4 = ADDR_TRANS4(g);
-            for (i = 0; i < deg; i++) {
-                pttmp[INT_INTOBJ(ELM_LIST(X, ptf2[i] + 1)) - 1] = i;
-            }
-            for (; i < len; i++) {
-                pttmp[INT_INTOBJ(ELM_LIST(X, i + 1)) - 1] = i;
-            }
-            for (i = len; i >= 1; i--) {
-                ptg4[i - 1] = pttmp[INT_INTOBJ(ELM_LIST(X, i)) - 1];
-            }
-            return g;
+            return INV_KER_TRANS<UInt2, UInt4>(X, f);
         }
     }
     else if (TNUM_OBJ(f) == T_TRANS4) {
-        deg = DEG_TRANS4(f);
         if (len <= 65536) {
-            // deg(g) <= 65536 and g is T_TRANS2
-            g = NEW_TRANS2(len);
-            pttmp = ADDR_TRANS4(TmpTrans);
-            ptf4 = CONST_ADDR_TRANS4(f);
-            ptg2 = ADDR_TRANS2(g);
-            // calculate a transversal of f ^ ker(x) = ker(fx)
-            for (i = 0; i < len; i++) {
-                pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i] + 1)) - 1] = i;
-            }
-            // install values in g
-            for (i = len; i >= 1; i--) {
-                ptg2[i - 1] = pttmp[INT_INTOBJ(ELM_LIST(X, i)) - 1];
-            }
-            return g;
+            return INV_KER_TRANS<UInt4, UInt2>(X, f);
         }
         else {
-            // deg(g) = len > 65536 >= deg and g is T_TRANS4
-            g = NEW_TRANS4(len);
-            pttmp = ADDR_TRANS4(TmpTrans);
-            ptf4 = CONST_ADDR_TRANS4(f);
-            ptg4 = ADDR_TRANS4(g);
-            for (i = 0; i < deg; i++) {
-                pttmp[INT_INTOBJ(ELM_LIST(X, ptf4[i] + 1)) - 1] = i;
-            }
-            for (; i < len; i++) {
-                pttmp[INT_INTOBJ(ELM_LIST(X, i + 1)) - 1] = i;
-            }
-            for (i = len; i >= 1; i--) {
-                ptg4[i - 1] = pttmp[INT_INTOBJ(ELM_LIST(X, i)) - 1];
-            }
-            return g;
+            return INV_KER_TRANS<UInt4, UInt4>(X, f);
         }
     }
     RequireTransformation("INV_KER_TRANS", f);
