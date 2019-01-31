@@ -2571,150 +2571,101 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
 /* end ); */
 
 
-static Obj FuncSCR_SIFT_HELPER(Obj self, Obj S, Obj g, Obj n)
+static UInt RN_stabilizer = 0;
+static UInt RN_orbit = 0;
+static UInt RN_transversal = 0;
+
+template <typename TG, typename Res>
+static Obj SCR_SIFT_HELPER(Obj stb, Obj g, UInt nn)
 {
-  Obj stb = S;
-  static UInt RN_stabilizer = 0;
-  static UInt RN_orbit = 0;
-  static UInt RN_transversal = 0;
-  UInt nn = INT_INTOBJ(n);
-  UInt useP2;
-  Obj result;
-  Obj t;
-  Obj trans;
-  int i;
+    int  i;
+    Obj  result = NEW_PERM<Res>(nn);
+    UInt dg = DEG_PERM<TG>(g);
 
-  /* Setup the result, sort out which rep we are going to work in  */
-  if (nn > 65535) {
-    result = NEW_PERM4(nn);
-    useP2 = 0;
-  } else {
-    result = NEW_PERM2(nn);
-    useP2 = 1;
-  }
+    if (dg > nn) /* In this case the caller has messed up or
+                    g just ends with a lot of fixed points which we can
+                    ignore */
+        dg = nn;
 
-  UInt dg;
-  if (IS_PERM2(g))
-    dg = DEG_PERM2(g);
-  else
-    dg = DEG_PERM4(g);
-
-  if (dg > nn) /* In this case the caller has messed up or 
-                  g just ends with a lot of fixed points which we can 
-                  ignore */
-    dg = nn;
-
-  /* Copy g into the buffer */
-  if (IS_PERM2(g) && useP2) {
-    UInt2 * ptR = ADDR_PERM2(result);
-    memcpy(ptR, CONST_ADDR_PERM2(g), 2*dg);
-    for ( i = dg; i < nn; i++)
-      ptR[i] = (UInt2)i;
-  } else if (IS_PERM4(g) && !useP2) {
-    UInt4 *ptR = ADDR_PERM4(result);
-    memcpy(ptR, CONST_ADDR_PERM4(g), 4*dg);
-    for ( i = dg; i <nn; i++)
-      ptR[i] = (UInt4)i;
-  } else if (IS_PERM2(g) && !useP2) {
-    UInt4 *ptR = ADDR_PERM4(result);
-    const UInt2 *ptG = CONST_ADDR_PERM2(g);
-    for ( i = 0; i < dg; i++)
-      ptR[i] = (UInt4)ptG[i];
-    for (i = dg; i < nn; i++)
-      ptR[i] = (UInt4)i;
-  } else {
-    UInt2 *ptR = ADDR_PERM2(result);
-    const UInt4 *ptG = CONST_ADDR_PERM4(g);
-    for ( i = 0; i < dg; i++)
-      ptR[i] = (UInt2)ptG[i];
-    for (i = dg; i < nn; i++)
-      ptR[i] = (UInt2)i;
-  }    
-    
-  
-  if (!RN_stabilizer)
-    RN_stabilizer = RNamName("stabilizer");
-  if (!RN_orbit)
-    RN_orbit = RNamName("orbit");
-  if (!RN_transversal)
-    RN_transversal = RNamName("transversal");
-  while (IsbPRec(stb,RN_stabilizer)) {
-    trans = ElmPRec(stb, RN_transversal);
-    Obj orb = ElmPRec(stb,RN_orbit);
-    Int bpt = INT_INTOBJ(ELM_LIST(orb,1))-1;
-    Int im;
-
-    if (useP2) {
-        const UInt2* ptrResult = CONST_ADDR_PERM2(result);
-        UInt degResult = DEG_PERM2(result);
-        im = (Int)(IMAGE(bpt, ptrResult, degResult));
+    /* Copy g into the buffer */
+    Res *      ptR = ADDR_PERM<Res>(result);
+    const TG * ptG = CONST_ADDR_PERM<TG>(g);
+    if (sizeof(TG) == sizeof(Res)) {
+        memcpy(ptR, ptG, sizeof(TG) * dg);
     }
     else {
-        const UInt4* ptrResult = CONST_ADDR_PERM4(result);
-        UInt degResult = DEG_PERM2(result);
-        im = (Int)(IMAGE(bpt, ptrResult, degResult));
+        for (i = 0; i < dg; i++)
+            ptR[i] = (Res)ptG[i];
     }
+    for (i = dg; i < nn; i++)
+        ptR[i] = (Res)i;
 
-    if (!(t = ELM0_LIST(trans,im+1)))
-      break;
-    else {
-      while (bpt != im) {
 
-        /* Ugly -- eight versions of the loop */
-        if (useP2) {
-          UInt2 *ptR = ADDR_PERM2(result);
-          if (IS_PERM2(t)) {
-            const UInt2 *ptT = CONST_ADDR_PERM2(t);
-            UInt dt = DEG_PERM2(t);
-            if (dt >= nn)
-              for (i = 0; i < nn; i++) 
-                ptR[i] = ptT[ptR[i]];
-            else
-              for ( i = 0; i < nn; i++)
-                ptR[i] = IMAGE(ptR[i], ptT, dt);
-          }
-          else {
-            const UInt4 *ptT = CONST_ADDR_PERM4(t);
-            UInt dt = DEG_PERM4(t);
-            if (dt >= nn)
-              for ( i = 0; i < nn; i++)
-                ptR[i] = (UInt2) ptT[ptR[i]];
-            else
-              for ( i = 0; i < nn; i++)
-                ptR[i] = (UInt2)IMAGE(ptR[i], ptT, dt);
-          }
-          im = (Int)ptR[bpt];
-        } else {
-          UInt4 *ptR = ADDR_PERM4(result);
-          if (IS_PERM2(t)) {
-            const UInt2 *ptT = CONST_ADDR_PERM2(t);
-            UInt dt = DEG_PERM2(t);
-            if (dt >= nn)
-              for ( i = 0; i < nn; i++)
-                ptR[i] = (UInt4)ptT[ptR[i]];
-            else
-              for ( i = 0; i < nn; i++)
-                ptR[i] = (UInt4)IMAGE(ptR[i], ptT, dt);
-          }
-          else {
-            const UInt4 *ptT = CONST_ADDR_PERM4(t);
-            UInt dt = DEG_PERM4(t);
-            if (dt >= nn)
-              for ( i = 0; i < nn; i++)
-                ptR[i] = ptT[ptR[i]];
-            else
-              for ( i = 0; i < nn; i++)
-                ptR[i] = IMAGE(ptR[i], ptT, dt);
-          }
-          im = (Int)ptR[bpt];
+    while (IsbPRec(stb, RN_stabilizer)) {
+        Obj trans = ElmPRec(stb, RN_transversal);
+        Obj orb = ElmPRec(stb, RN_orbit);
+        Int bpt = INT_INTOBJ(ELM_LIST(orb, 1)) - 1;
+
+        const Res * ptrResult = CONST_ADDR_PERM<Res>(result);
+        UInt        degResult = DEG_PERM<Res>(result);
+        Int         im = (Int)(IMAGE(bpt, ptrResult, degResult));
+        Obj         t = ELM0_LIST(trans, im + 1);
+
+        if (!t)
+            break;
+
+        while (bpt != im) {
+
+            ptR = ADDR_PERM<Res>(result);
+            if (IS_PERM2(t)) {
+                const UInt2 * ptT = CONST_ADDR_PERM2(t);
+                UInt          dt = DEG_PERM2(t);
+                if (dt >= nn)
+                    for (i = 0; i < nn; i++)
+                        ptR[i] = ptT[ptR[i]];
+                else
+                    for (i = 0; i < nn; i++)
+                        ptR[i] = IMAGE(ptR[i], ptT, dt);
+            }
+            else {
+                const UInt4 * ptT = CONST_ADDR_PERM4(t);
+                UInt          dt = DEG_PERM4(t);
+                if (dt >= nn)
+                    for (i = 0; i < nn; i++)
+                        ptR[i] = ptT[ptR[i]];
+                else
+                    for (i = 0; i < nn; i++)
+                        ptR[i] = IMAGE(ptR[i], ptT, dt);
+            }
+            im = (Int)ptR[bpt];
+            t = ELM_PLIST(trans, im + 1);
         }
-        t = ELM_PLIST(trans,im+1);
-      }
+        stb = ElmPRec(stb, RN_stabilizer);
     }
-    stb = ElmPRec(stb, RN_stabilizer);
-  }
-  /* so we're done sifting, and now we just have to clean up result */  
-  return result;
+    /* so we're done sifting, and now we just have to clean up result */
+    return result;
+}
+
+static Obj FuncSCR_SIFT_HELPER(Obj self, Obj stb, Obj g, Obj n)
+{
+    if (!IS_PREC(stb))
+        RequireArgument("SCR_SIFT_HELPER", stb, "must be a plain record");
+    RequirePermutation("SCR_SIFT_HELPER", g);
+    UInt nn = GetSmallInt("SCR_SIFT_HELPER", n);
+
+    /* Setup the result, sort out which rep we are going to work in  */
+    if (nn > 65535) {
+        if (IS_PERM2(g))
+            return SCR_SIFT_HELPER<UInt2, UInt4>(stb, g, nn);
+        else
+            return SCR_SIFT_HELPER<UInt4, UInt4>(stb, g, nn);
+    }
+    else {
+        if (IS_PERM2(g))
+            return SCR_SIFT_HELPER<UInt2, UInt2>(stb, g, nn);
+        else
+            return SCR_SIFT_HELPER<UInt4, UInt2>(stb, g, nn);
+    }
 }
 
 
@@ -2894,6 +2845,21 @@ static Int InitKernel (
 
 /****************************************************************************
 **
+*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
+*/
+static Int PostRestore(StructInitInfo * module)
+{
+    RN_stabilizer = RNamName("stabilizer");
+    RN_orbit = RNamName("orbit");
+    RN_transversal = RNamName("transversal");
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
@@ -2907,7 +2873,7 @@ static Int InitLibrary (
     IdentityPerm = NEW_PERM2(0);
 
     /* return success                                                      */
-    return 0;
+    return PostRestore(module);
 }
 
 
@@ -2937,7 +2903,7 @@ static StructInitInfo module = {
  /* checkInit   = */ 0,
  /* preSave     = */ 0,
  /* postSave    = */ 0,
- /* postRestore = */ 0,
+ /* postRestore = */ PostRestore,
  /* moduleStateSize      = */ sizeof(PermutatModuleState),
  /* moduleStateOffsetPtr = */ &PermutatStateOffset,
  /* initModuleState      = */ InitModuleState,
