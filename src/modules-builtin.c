@@ -66,6 +66,12 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
 
     /* arithmetic operations                                               */
     InitInfoAriths,
+
+    /* record packages                                                     */
+    InitInfoRecords,
+    InitInfoPRecord,
+
+    /* internal types                                                      */
     InitInfoInt,
     InitInfoIntFuncs,
     InitInfoRat,
@@ -76,10 +82,6 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoPPerm,
     InitInfoBool,
     InitInfoMacfloat,
-
-    /* record packages                                                     */
-    InitInfoRecords,
-    InitInfoPRecord,
 
     /* list packages                                                       */
     InitInfoLists,
