@@ -3922,44 +3922,24 @@ static Int LtTrans(Obj f, Obj g)
     if (def <= deg) {
         for (i = 0; i < def; i++) {
             if (ptf[i] != ptg[i]) {
-                if (ptf[i] < ptg[i]) {
-                    return 1;
-                }
-                else {
-                    return 0;
-                }
+                return ptf[i] < ptg[i];
             }
         }
         for (; i < deg; i++) {
             if (ptg[i] != i) {
-                if (i < ptg[i]) {
-                    return 1;
-                }
-                else {
-                    return 0;
-                }
+                return i < ptg[i];
             }
         }
     }
     else {
         for (i = 0; i < deg; i++) {
             if (ptf[i] != ptg[i]) {
-                if (ptf[i] < ptg[i]) {
-                    return 1;
-                }
-                else {
-                    return 0;
-                }
+                return ptf[i] < ptg[i];
             }
         }
         for (; i < def; i++) {
             if (ptf[i] != i) {
-                if (i > ptf[i]) {
-                    return 1;
-                }
-                else {
-                    return 0;
-                }
+                return ptf[i] < i;
             }
         }
     }
