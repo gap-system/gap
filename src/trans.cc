@@ -4008,137 +4008,37 @@ static Obj ProdTrans(Obj f, Obj g)
 ** Products for a transformation and permutation
 *******************************************************************************/
 
-static Obj ProdTrans2Perm2(Obj f, Obj p)
+template <typename TF, typename TP>
+static Obj ProdTransPerm(Obj f, Obj p)
 {
-    const UInt2 *ptf, *ptp;
-    UInt2 *ptfp;
-    UInt   i, def, dep;
-    Obj    fp;
+    typedef typename ResultType<TF, TP>::type Res;
 
-    dep = DEG_PERM2(p);
-    def = DEG_TRANS2(f);
-    fp = NEW_TRANS2(MAX(def, dep));
+    UInt dep = DEG_PERM<TP>(p);
+    UInt def = DEG_TRANS<TF>(f);
+    UInt i;
 
-    ptfp = ADDR_TRANS2(fp);
-    ptf = CONST_ADDR_TRANS2(f);
-    ptp = CONST_ADDR_PERM2(p);
+    Obj fp = NEW_TRANS<Res>(MAX(def, dep));
+
+    Res *      ptfp = ADDR_TRANS<Res>(fp);
+    const TF * ptf = CONST_ADDR_TRANS<TF>(f);
+    const TP * ptp = CONST_ADDR_PERM<TP>(p);
 
     if (def <= dep) {
         for (i = 0; i < def; i++) {
-            *(ptfp++) = ptp[*(ptf++)];
+            *ptfp++ = ptp[*ptf++];
         }
         for (; i < dep; i++) {
-            *(ptfp++) = ptp[i];
+            *ptfp++ = ptp[i];
         }
     }
     else {
         for (i = 0; i < def; i++) {
-            *(ptfp++) = IMAGE(ptf[i], ptp, dep);
+            *ptfp++ = IMAGE(ptf[i], ptp, dep);
         }
     }
     return fp;
 }
 
-static Obj ProdTrans2Perm4(Obj f, Obj p)
-{
-    const UInt2 * ptf;
-    const UInt4 * ptp;
-    UInt4 * ptfp;
-    UInt    i, def, dep;
-    Obj     fp;
-
-    dep = DEG_PERM4(p);
-    def = DEG_TRANS2(f);
-    fp = NEW_TRANS4(MAX(def, dep));
-
-    ptfp = ADDR_TRANS4(fp);
-    ptf = CONST_ADDR_TRANS2(f);
-    ptp = CONST_ADDR_PERM4(p);
-
-    if (def <= dep) {
-        for (i = 0; i < def; i++) {
-            *(ptfp++) = ptp[*(ptf++)];
-        }
-        for (; i < dep; i++) {
-            *(ptfp++) = ptp[i];
-        }
-    }
-    else {
-        // I don't know how to create a permutation of type T_PERM4 with
-        // (internal) degree 65536 or less, so this case isn't tested. It is
-        // included to make the code more robust.
-        for (i = 0; i < def; i++) {
-            *(ptfp++) = IMAGE(ptf[i], ptp, dep);
-        }
-    }
-    return fp;
-}
-
-static Obj ProdTrans4Perm2(Obj f, Obj p)
-{
-    const UInt4 * ptf;
-    UInt4 * ptfp;
-    const UInt2 * ptp;
-    UInt    i, def, dep;
-    Obj     fp;
-
-    dep = DEG_PERM2(p);
-    def = DEG_TRANS4(f);
-    fp = NEW_TRANS4(MAX(def, dep));
-
-    ptfp = ADDR_TRANS4(fp);
-    ptf = CONST_ADDR_TRANS4(f);
-    ptp = CONST_ADDR_PERM2(p);
-
-    if (def <= dep) {
-        // The only transformation created within this file that is of type
-        // T_TRANS4 and that does not have (internal) degree 65537 or greater
-        // is ID_TRANS4.
-        for (i = 0; i < def; i++) {
-            *(ptfp++) = ptp[*(ptf++)];
-        }
-        for (; i < dep; i++) {
-            *(ptfp++) = ptp[i];
-        }
-    }
-    else {
-        for (i = 0; i < def; i++) {
-            *(ptfp++) = IMAGE(ptf[i], ptp, dep);
-        }
-    }
-    return fp;
-}
-
-static Obj ProdTrans4Perm4(Obj f, Obj p)
-{
-    const UInt4 *ptf, *ptp;
-    UInt4 *ptfp;
-    UInt   i, def, dep;
-    Obj    fp;
-
-    dep = DEG_PERM4(p);
-    def = DEG_TRANS4(f);
-    fp = NEW_TRANS4(MAX(def, dep));
-
-    ptfp = ADDR_TRANS4(fp);
-    ptf = CONST_ADDR_TRANS4(f);
-    ptp = CONST_ADDR_PERM4(p);
-
-    if (def <= dep) {
-        for (i = 0; i < def; i++) {
-            *(ptfp++) = ptp[*(ptf++)];
-        }
-        for (; i < dep; i++) {
-            *(ptfp++) = ptp[i];
-        }
-    }
-    else {
-        for (i = 0; i < def; i++) {
-            *(ptfp++) = IMAGE(ptf[i], ptp, dep);
-        }
-    }
-    return fp;
-}
 
 /*******************************************************************************
 ** Products for a permutation and transformation
@@ -4796,10 +4696,10 @@ static Int InitKernel(StructInitInfo * module)
     ProdFuncs[T_TRANS2][T_TRANS4] = ProdTrans<UInt2, UInt4>;
     ProdFuncs[T_TRANS4][T_TRANS2] = ProdTrans<UInt4, UInt2>;
     ProdFuncs[T_TRANS4][T_TRANS4] = ProdTrans<UInt4, UInt4>;
-    ProdFuncs[T_TRANS2][T_PERM2] = ProdTrans2Perm2;
-    ProdFuncs[T_TRANS2][T_PERM4] = ProdTrans2Perm4;
-    ProdFuncs[T_TRANS4][T_PERM2] = ProdTrans4Perm2;
-    ProdFuncs[T_TRANS4][T_PERM4] = ProdTrans4Perm4;
+    ProdFuncs[T_TRANS2][T_PERM2] = ProdTransPerm<UInt2, UInt2>;
+    ProdFuncs[T_TRANS2][T_PERM4] = ProdTransPerm<UInt2, UInt4>;
+    ProdFuncs[T_TRANS4][T_PERM2] = ProdTransPerm<UInt4, UInt2>;
+    ProdFuncs[T_TRANS4][T_PERM4] = ProdTransPerm<UInt4, UInt4>;
     ProdFuncs[T_PERM2][T_TRANS2] = ProdPerm2Trans2;
     ProdFuncs[T_PERM4][T_TRANS2] = ProdPerm4Trans2;
     ProdFuncs[T_PERM2][T_TRANS4] = ProdPerm2Trans4;
