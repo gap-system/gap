@@ -1102,9 +1102,9 @@ void PrintKernelFunction(Obj func)
 
 /****************************************************************************
 **
-*F  FuncIS_FUNCTION( <self>, <func> ) . . . . . . . . . . . test for function
+*F  FiltIS_FUNCTION( <self>, <func> ) . . . . . . . . . . . test for function
 **
-**  'FuncIS_FUNCTION' implements the internal function 'IsFunction'.
+**  'FiltIS_FUNCTION' implements the internal function 'IsFunction'.
 **
 **  'IsFunction( <func> )'
 **
@@ -1113,7 +1113,7 @@ void PrintKernelFunction(Obj func)
 */
 static Obj IsFunctionFilt;
 
-static Obj FuncIS_FUNCTION(Obj self, Obj obj)
+static Obj FiltIS_FUNCTION(Obj self, Obj obj)
 {
     if      ( TNUM_OBJ(obj) == T_FUNCTION ) {
         return True;
@@ -1653,7 +1653,7 @@ static StructBagNames BagNames[] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    GVAR_FILTER(IS_FUNCTION, "obj", &IsFunctionFilt),
+    GVAR_FILT(IS_FUNCTION, "obj", &IsFunctionFilt),
     { 0, 0, 0, 0, 0 }
 
 };

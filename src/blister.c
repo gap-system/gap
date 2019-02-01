@@ -931,9 +931,9 @@ static UInt SizeBlist(Obj blist)
 
 /****************************************************************************
 **
-*F  FuncIS_BLIST( <self>, <val> ) . . . . . test if a value is a boolean list
+*F  FiltIS_BLIST( <self>, <val> ) . . . . . test if a value is a boolean list
 **
-**  'FuncIS_BLIST' handles the internal function 'IsBlist'.
+**  'FiltIS_BLIST' handles the internal function 'IsBlist'.
 **
 **  'IsBlist( <val> )'
 **
@@ -943,7 +943,7 @@ static UInt SizeBlist(Obj blist)
 */
 static Obj IsBlistFilt;
 
-static Obj FuncIS_BLIST(Obj self, Obj val)
+static Obj FiltIS_BLIST(Obj self, Obj val)
 {
     /* let 'IsBlist' do the work                                           */
     return IsBlist( val ) ? True : False;
@@ -972,11 +972,11 @@ static Obj FuncIS_BLIST_CONV(Obj self, Obj val)
 /****************************************************************************
 **
 **
-*F  FuncIS_BLIST_REP( <self>, <obj> ) . . test if value is a boolean list rep
+*F  FiltIS_BLIST_REP( <self>, <obj> ) . . test if value is a boolean list rep
 */
 static Obj IsBlistRepFilt;
 
-static Obj FuncIS_BLIST_REP(Obj self, Obj obj)
+static Obj FiltIS_BLIST_REP(Obj self, Obj obj)
 {
     return (IS_BLIST_REP( obj ) ? True : False);
 }
@@ -1690,8 +1690,8 @@ static Int ResetFiltTab [] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    GVAR_FILTER(IS_BLIST, "obj", &IsBlistFilt),
-    GVAR_FILTER(IS_BLIST_REP, "obj", &IsBlistRepFilt),
+    GVAR_FILT(IS_BLIST, "obj", &IsBlistFilt),
+    GVAR_FILT(IS_BLIST_REP, "obj", &IsBlistRepFilt),
     { 0, 0, 0, 0, 0 }
 
 };

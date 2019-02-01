@@ -55,7 +55,7 @@ Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
 
 static Obj IsListFilt;
 
-static Obj FuncIS_LIST(Obj self, Obj obj)
+static Obj FiltIS_LIST(Obj self, Obj obj)
 {
     return (IS_LIST( obj ) ? True : False);
 }
@@ -112,7 +112,7 @@ static Int IsSmallListObject(Obj obj)
 
 /****************************************************************************
 **
-*F  FuncLENGTH( <self>, <list> ) . . . . . . . . . . .  'Length' interface
+*F  AttrLENGTH( <self>, <list> ) . . . . . . . . . . .  'Length' interface
 **
 **  There are  the ``relatively''  easy  changes to  'LEN_LIST' to  allow  it
 **  return GAP  objects instead of small C  integers, but then the kernel has
@@ -141,7 +141,7 @@ static Int IsSmallListObject(Obj obj)
 **    internal types (NOT YET IMPLEMENTED)
 */
 
-static Obj FuncLENGTH(Obj self, Obj list)
+static Obj AttrLENGTH(Obj self, Obj list)
 {
     /* internal list types                                                 */
 #ifdef HPCGAP
@@ -177,7 +177,7 @@ static Obj FuncLENGTH(Obj self, Obj list)
 **
 **  At the  moment  this also handles external    types but this   is a hack,
 **  because external  lists can have large  length or even  be infinite.  See
-**  'FuncLENGTH'.
+**  'AttrLENGTH'.
 */
 Int (*LenListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
@@ -190,7 +190,7 @@ static Obj FuncLEN_LIST(Obj self, Obj list)
 
     /* generic case (will signal an error if <list> is not a list)         */
     else {
-        return FuncLENGTH( LengthAttr, list );
+        return AttrLENGTH( LengthAttr, list );
     }
 }
 
@@ -205,7 +205,7 @@ static Int LenListObject(Obj obj)
 {
     Obj                 len;
 
-    len = FuncLENGTH( LengthAttr, obj );
+    len = AttrLENGTH( LengthAttr, obj );
     if (!IS_NONNEG_INTOBJ(len)) {
         RequireArgumentEx("Length", len, 0,
                           "method must return a non-negative value");
@@ -235,7 +235,7 @@ static Obj LengthError(Obj list)
 
 static Obj LengthObject(Obj obj)
 {
-    return FuncLENGTH( LengthAttr, obj );
+    return AttrLENGTH( LengthAttr, obj );
 }
 
 static Obj LengthInternal(Obj obj)
@@ -1002,7 +1002,7 @@ Int             (*IsDenseListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 static Obj IsDenseListFilt;
 
-static Obj FuncIS_DENSE_LIST(Obj self, Obj obj)
+static Obj FiltIS_DENSE_LIST(Obj self, Obj obj)
 {
     return (IS_DENSE_LIST( obj ) ? True : False);
 }
@@ -1053,7 +1053,7 @@ Int             (*IsHomogListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 static Obj IsHomogListFilt;
 
-static Obj FuncIS_HOMOG_LIST(Obj self, Obj obj)
+static Obj FiltIS_HOMOG_LIST(Obj self, Obj obj)
 {
     return (IS_HOMOG_LIST( obj ) ? True : False);
 }
@@ -1113,7 +1113,7 @@ Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 static Obj IsTableListFilt;
 
-static Obj FuncIS_TABLE_LIST(Obj self, Obj obj)
+static Obj FiltIS_TABLE_LIST(Obj self, Obj obj)
 {
     return (IS_TABLE_LIST( obj ) ? True : False);
 }
@@ -1182,7 +1182,7 @@ Int (*IsSSortListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 static Obj IsSSortListProp;
 
-static Obj FuncIS_SSORT_LIST(Obj self, Obj obj)
+static Obj PropIS_SSORT_LIST(Obj self, Obj obj)
 {
     return (IS_SSORT_LIST( obj ) ? True : False);
 }
@@ -1251,7 +1251,7 @@ Int             (*IsPossListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 static Obj IsPossListProp;
 
-static Obj FuncIS_POSS_LIST(Obj self, Obj obj)
+static Obj PropIS_POSS_LIST(Obj self, Obj obj)
 {
     return (IS_POSS_LIST(obj) ? True : False);
 }
@@ -1906,10 +1906,10 @@ void AsssListLevelCheck (
 */
 static StructGVarFilt GVarFilts [] = {
 
-    GVAR_FILTER(IS_LIST, "obj", &IsListFilt),
-    GVAR_FILTER(IS_DENSE_LIST, "obj", &IsDenseListFilt),
-    GVAR_FILTER(IS_HOMOG_LIST, "obj", &IsHomogListFilt),
-    GVAR_FILTER(IS_TABLE_LIST, "obj", &IsTableListFilt),
+    GVAR_FILT(IS_LIST, "obj", &IsListFilt),
+    GVAR_FILT(IS_DENSE_LIST, "obj", &IsDenseListFilt),
+    GVAR_FILT(IS_HOMOG_LIST, "obj", &IsHomogListFilt),
+    GVAR_FILT(IS_TABLE_LIST, "obj", &IsTableListFilt),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -1921,7 +1921,7 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarAttr GVarAttrs [] = {
 
-    GVAR_FILTER(LENGTH, "list", &LengthAttr),
+    GVAR_ATTR(LENGTH, "list", &LengthAttr),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -1933,8 +1933,8 @@ static StructGVarAttr GVarAttrs [] = {
 */
 static StructGVarProp GVarProps [] = {
 
-    GVAR_FILTER(IS_SSORT_LIST, "obj", &IsSSortListProp),
-    GVAR_FILTER(IS_POSS_LIST, "obj", &IsPossListProp),
+    GVAR_PROP(IS_SSORT_LIST, "obj", &IsSSortListProp),
+    GVAR_PROP(IS_POSS_LIST, "obj", &IsPossListProp),
     { 0, 0, 0, 0, 0 }
 
 };

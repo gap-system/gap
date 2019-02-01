@@ -1276,9 +1276,9 @@ Int IsStringConv (
 
 /****************************************************************************
 **
-*F  FuncIS_STRING( <self>, <obj> )  . . . . . . . . .  test value is a string
+*F  FiltIS_STRING( <self>, <obj> )  . . . . . . . . .  test value is a string
 */
-static Obj FuncIS_STRING(Obj self, Obj obj)
+static Obj FiltIS_STRING(Obj self, Obj obj)
 {
     return (IS_STRING( obj ) ? True : False);
 }
@@ -1316,11 +1316,11 @@ static Obj FuncCONV_STRING(Obj self, Obj string)
 
 /****************************************************************************
 **
-*F  FuncIS_STRING_REP( <self>, <obj> )  . . . . test if value is a string rep
+*F  FiltIS_STRING_REP( <self>, <obj> )  . . . . test if value is a string rep
 */
 static Obj IsStringRepFilt;
 
-static Obj FuncIS_STRING_REP(Obj self, Obj obj)
+static Obj FiltIS_STRING_REP(Obj self, Obj obj)
 {
     return (IS_STRING_REP( obj ) ? True : False);
 }
@@ -1901,8 +1901,8 @@ static Int ResetFiltTab [] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    GVAR_FILTER(IS_STRING, "obj", &IsStringFilt),
-    GVAR_FILTER(IS_STRING_REP, "obj", &IsStringRepFilt),
+    GVAR_FILT(IS_STRING, "obj", &IsStringFilt),
+    GVAR_FILT(IS_STRING_REP, "obj", &IsStringRepFilt),
     { 0, 0, 0, 0, 0 }
 
 };

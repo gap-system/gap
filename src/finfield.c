@@ -1241,7 +1241,7 @@ static Obj PowFFEFFE(Obj opL, Obj opR)
 
 /****************************************************************************
 **
-*F  FuncIS_FFE( <self>, <obj> ) . . . . . . .  test for finite field elements
+*F  FiltIS_FFE( <self>, <obj> ) . . . . . . .  test for finite field elements
 **
 **  'FuncIsFFE' implements the internal function 'IsFFE( <obj> )'.
 **
@@ -1251,7 +1251,7 @@ static Obj PowFFEFFE(Obj opL, Obj opR)
 */
 static Obj IsFFEFilt;
 
-static Obj FuncIS_FFE(Obj self, Obj obj)
+static Obj FiltIS_FFE(Obj self, Obj obj)
 {
     /* return 'true' if <obj> is a finite field element                    */
     if ( IS_FFE(obj) ) {
@@ -1517,7 +1517,7 @@ static StructBagNames BagNames[] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    GVAR_FILTER(IS_FFE, "obj", &IsFFEFilt),
+    GVAR_FILT(IS_FFE, "obj", &IsFFEFilt),
     { 0, 0, 0, 0, 0 }
 
 };

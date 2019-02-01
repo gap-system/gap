@@ -1533,9 +1533,9 @@ static Obj FuncE(Obj self, Obj n)
 
 /****************************************************************************
 **
-*F  FuncIS_CYC( <self>, <val> ) . . . . . .  test if an object is a cyclomtic
+*F  FiltIS_CYC( <self>, <val> ) . . . . . .  test if an object is a cyclomtic
 **
-**  'FuncIS_CYC' implements the internal function 'IsCyc'.
+**  'FiltIS_CYC' implements the internal function 'IsCyc'.
 **
 **  'IsCyc( <val> )'
 **
@@ -1544,7 +1544,7 @@ static Obj FuncE(Obj self, Obj n)
 */
 static Obj IsCycFilt;
 
-static Obj FuncIS_CYC(Obj self, Obj val)
+static Obj FiltIS_CYC(Obj self, Obj val)
 {
     /* return 'true' if <obj> is a cyclotomic and 'false' otherwise        */
     if (IS_CYC(val))
@@ -1606,9 +1606,9 @@ static Obj FuncIS_CYC_INT(Obj self, Obj val)
 
 /****************************************************************************
 **
-*F  FuncCONDUCTOR( <self>, <cyc> )  . . . . . . . . . . . . N of a cyclotomic
+*F  AttrCONDUCTOR( <self>, <cyc> )  . . . . . . . . . . . . N of a cyclotomic
 **
-**  'FuncCONDUCTOR' implements the internal function 'Conductor'.
+**  'AttrCONDUCTOR' implements the internal function 'Conductor'.
 **
 **  'Conductor( <cyc> )'
 **
@@ -1617,7 +1617,7 @@ static Obj FuncIS_CYC_INT(Obj self, Obj val)
 */
 static Obj ConductorAttr;
 
-static Obj FuncCONDUCTOR(Obj self, Obj cyc)
+static Obj AttrCONDUCTOR(Obj self, Obj cyc)
 {
     UInt                n;              /* N of the cyclotomic, result     */
     UInt                m;              /* N of element of the list        */
@@ -1770,7 +1770,7 @@ static Obj FuncGALOIS_CYC(Obj self, Obj cyc, Obj ord)
 
     /* get and check <ord>                                                 */
     if ( ! IS_INTOBJ(ord) ) {
-        ord = MOD( ord, FuncCONDUCTOR( 0, cyc ) );
+        ord = MOD( ord, AttrCONDUCTOR( 0, cyc ) );
     }
     o = INT_INTOBJ(ord);
 
@@ -2030,7 +2030,7 @@ static StructBagNames BagNames[] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    GVAR_FILTER(IS_CYC, "obj", &IsCycFilt),
+    GVAR_FILT(IS_CYC, "obj", &IsCycFilt),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -2042,7 +2042,7 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarAttr GVarAttrs [] = {
 
-    GVAR_FILTER(CONDUCTOR, "cyc", &ConductorAttr),
+    GVAR_ATTR(CONDUCTOR, "cyc", &ConductorAttr),
     { 0, 0, 0, 0, 0 }
 
 };

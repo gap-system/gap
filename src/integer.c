@@ -188,16 +188,16 @@ static Obj TypeIntLargeNeg(Obj val)
 
 /****************************************************************************
 **
-*F  FuncIS_INT( <self>, <val> ) . . . . . . . . . . internal function 'IsInt'
+*F  FiltIS_INT( <self>, <val> ) . . . . . . . . . . internal function 'IsInt'
 **
-**  'FuncIS_INT' implements the internal filter 'IsInt'.
+**  'FiltIS_INT' implements the internal filter 'IsInt'.
 **
 **  'IsInt( <val> )'
 **
 **  'IsInt'  returns 'true'  if the  value  <val>  is a small integer or a
 **  large int, and 'false' otherwise.
 */
-static Obj FuncIS_INT(Obj self, Obj val)
+static Obj FiltIS_INT(Obj self, Obj val)
 {
   if ( IS_INT(val) ) {
     return True;
@@ -2734,7 +2734,7 @@ static StructBagNames BagNames[] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-  GVAR_FILTER(IS_INT, "obj", &IsIntFilt),
+  GVAR_FILT(IS_INT, "obj", &IsIntFilt),
   { 0, 0, 0, 0, 0 }
 
 };
