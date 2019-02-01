@@ -23,6 +23,7 @@
 #include "gasman.h"
 #include "objects.h"
 #include "plist.h"
+#include "sysfiles.h"
 #include "sysmem.h"
 #include "system.h"
 #include "vars.h"
@@ -743,6 +744,8 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     if (jl_exception_occurred()) {
         Panic("could not read GapObj variable from Julia");
     }
+
+    SyInstallAnswerIntr();
 
     JuliaTLS = jl_get_ptls_states();
     // These callbacks potentially require access to the Julia
