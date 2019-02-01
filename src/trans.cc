@@ -4375,7 +4375,7 @@ static Obj TypeTrans4(Obj f)
 
 static Obj IsTransFilt;
 
-static Obj IsTransHandler(Obj self, Obj val)
+static Obj FiltIS_TRANS(Obj self, Obj val)
 {
     if (TNUM_OBJ(val) == T_TRANS2 || TNUM_OBJ(val) == T_TRANS4) {
         return True;
@@ -4409,9 +4409,7 @@ static StructBagNames BagNames[] = {
 */
 static StructGVarFilt GVarFilts[] = {
 
-    { "IS_TRANS", "obj", &IsTransFilt, IsTransHandler,
-      "src/trans.c:IS_TRANS" },
-
+    GVAR_FILT(IS_TRANS, "obj", &IsTransFilt),
     { 0, 0, 0, 0, 0 }
 
 };

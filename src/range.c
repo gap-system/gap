@@ -678,7 +678,7 @@ static Int IsRange(Obj list)
 **  a range and 'false' otherwise.  A range is a list without holes such that
 **  the elements are  consecutive integers.
 */
-static Obj FuncIS_RANGE(Obj self, Obj obj)
+static Obj FiltIS_RANGE(Obj self, Obj obj)
 {
     /* let 'IsRange' do the work for lists                                 */
     return IsRange(obj) ? True : False;
@@ -793,11 +793,11 @@ Obj Range3Check (
 
 /****************************************************************************
 **
-*F  FuncIS_RANGE_REP( <self>, <obj> ) . . . . . test if value is in range rep
+*F  FiltIS_RANGE_REP( <self>, <obj> ) . . . . . test if value is in range rep
 */
 static Obj IsRangeRepFilt;
 
-static Obj FuncIS_RANGE_REP(Obj self, Obj obj)
+static Obj FiltIS_RANGE_REP(Obj self, Obj obj)
 {
     return (IS_RANGE( obj ) ? True : False);
 }
@@ -1036,8 +1036,8 @@ static Int ResetFiltTab [] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    GVAR_FILTER(IS_RANGE, "obj", &IsRangeFilt),
-    GVAR_FILTER(IS_RANGE_REP, "obj", &IsRangeRepFilt),
+    GVAR_FILT(IS_RANGE, "obj", &IsRangeFilt),
+    GVAR_FILT(IS_RANGE_REP, "obj", &IsRangeRepFilt),
     { 0, 0, 0, 0, 0 }
 
 };

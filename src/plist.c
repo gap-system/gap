@@ -841,11 +841,11 @@ static Obj FuncShrinkAllocationPlist(Obj self, Obj plist)
 
 /****************************************************************************
 **
-*F  FuncIS_PLIST_REP( <self>, <obj> ) . . . . . . . .  handler for `IS_PLIST'
+*F  FiltIS_PLIST_REP( <self>, <obj> ) . . . . . . . .  handler for `IS_PLIST'
 */
 static Obj IsPlistFilt;
 
-static Obj FuncIS_PLIST_REP(Obj self, Obj obj)
+static Obj FiltIS_PLIST_REP(Obj self, Obj obj)
 {
     return (IS_PLIST( obj ) ? True : False);
 }
@@ -3274,7 +3274,7 @@ static Int ResetFiltTab [] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    GVAR_FILTER(IS_PLIST_REP, "obj", &IsPlistFilt),
+    GVAR_FILT(IS_PLIST_REP, "obj", &IsPlistFilt),
     { 0, 0, 0, 0, 0 }
 
 };

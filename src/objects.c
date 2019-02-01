@@ -223,23 +223,23 @@ static Int IsMutableObjObject(Obj obj)
 
 /****************************************************************************
 **
-*F  IsMutableObjHandler( <self>, <obj> )  . . .  handler for 'IS_MUTABLE_OBJ'
+*F  FiltIS_MUTABLE_OBJ( <self>, <obj> )  . . .  handler for 'IS_MUTABLE_OBJ'
 */
-static Obj IsMutableObjHandler(Obj self, Obj obj)
+static Obj FiltIS_MUTABLE_OBJ(Obj self, Obj obj)
 {
     return (IS_MUTABLE_OBJ( obj ) ? True : False);
 }
 
 /****************************************************************************
 **
-*F  IsInternallyMutableObjHandler(<self>, <obj>)  -- 'IS_INTERNALLY_MUTABLE_OBJ'
+*F  FiltIS_INTERNALLY_MUTABLE_OBJ(<self>, <obj>) 
 */
 
 #ifdef HPCGAP
 
 static Obj IsInternallyMutableObjFilt;
 
-static Obj IsInternallyMutableObjHandler(Obj self, Obj obj)
+static Obj FiltIS_INTERNALLY_MUTABLE_OBJ(Obj self, Obj obj)
 {
     return (TNUM_OBJ(obj) == T_DATOBJ &&
       RegionBag(obj) != ReadOnlyRegion &&
@@ -284,9 +284,9 @@ static Int IsCopyableObjObject(Obj obj)
 
 /****************************************************************************
 **
-*F  IsCopyableObjHandler( <self>, <obj> ) . . . handler for 'IS_COPYABLE_OBJ'
+*F  FiltIS_COPYABLE_OBJ( <self>, <obj> ) . . . handler for 'IS_COPYABLE_OBJ'
 */
-static Obj IsCopyableObjHandler(Obj self, Obj obj)
+static Obj FiltIS_COPYABLE_OBJ(Obj self, Obj obj)
 {
     return (IS_COPYABLE_OBJ( obj ) ? True : False);
 }
@@ -1987,17 +1987,11 @@ static StructBagNames BagNames[] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_MUTABLE_OBJ", "obj", &IsMutableObjFilt,
-      IsMutableObjHandler, "src/objects.c:IS_MUTABLE_OBJ" },
-
-    { "IS_COPYABLE_OBJ", "obj", &IsCopyableObjFilt,
-      IsCopyableObjHandler, "src/objects.c:IS_COPYABLE_OBJ" },
-
+    GVAR_FILT(IS_MUTABLE_OBJ, "obj", &IsMutableObjFilt),
+    GVAR_FILT(IS_COPYABLE_OBJ, "obj", &IsCopyableObjFilt),
 #ifdef HPCGAP
-    { "IS_INTERNALLY_MUTABLE_OBJ", "obj", &IsInternallyMutableObjFilt,
-      IsInternallyMutableObjHandler, "src/objects.c:IS_INTERNALLY_MUTABLE_OBJ" },
+    GVAR_FILT(IS_INTERNALLY_MUTABLE_OBJ, "obj", &IsInternallyMutableObjFilt),
 #endif
-
     { 0, 0, 0, 0, 0 }
 
 };

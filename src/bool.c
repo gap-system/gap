@@ -144,7 +144,7 @@ static Int LtBool(Obj boolL, Obj boolR)
 */
 static Obj IsBoolFilt;
 
-static Obj IsBoolHandler(Obj self, Obj obj)
+static Obj FiltIS_BOOL(Obj self, Obj obj)
 {
     /* return 'true' if <obj> is a boolean and 'false' otherwise           */
     if ( TNUM_OBJ(obj) == T_BOOL ) {
@@ -302,9 +302,7 @@ static StructBagNames BagNames[] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_BOOL", "obj", &IsBoolFilt,
-      IsBoolHandler, "src/bool.c:IS_BOOL" },
-
+    GVAR_FILT(IS_BOOL, "obj", &IsBoolFilt),
     { 0, 0, 0, 0, 0 }
 
 };

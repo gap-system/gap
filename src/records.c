@@ -317,7 +317,7 @@ Int             (*IsRecFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 static Obj IsRecFilt;
 
-static Obj IsRecHandler(Obj self, Obj obj)
+static Obj FiltIS_REC(Obj self, Obj obj)
 {
     return (IS_REC(obj) ? True : False);
 }
@@ -542,9 +542,7 @@ static Obj FuncALL_RNAMES(Obj self)
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_REC", "obj", &IsRecFilt,
-      IsRecHandler, "src/records.c:IS_REC" },
-
+    GVAR_FILT(IS_REC, "obj", &IsRecFilt),
     { 0, 0, 0, 0, 0 }
 
 };

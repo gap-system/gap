@@ -3794,7 +3794,7 @@ static Obj TypePPerm4(Obj f)
 
 static Obj IsPPermFilt;
 
-static Obj IsPPermHandler(Obj self, Obj val)
+static Obj FiltIS_PPERM(Obj self, Obj val)
 {
     /* return 'true' if <val> is a partial perm and 'false' otherwise       */
     if (TNUM_OBJ(val) == T_PPERM2 || TNUM_OBJ(val) == T_PPERM4) {
@@ -3831,9 +3831,7 @@ static StructBagNames BagNames[] = {
 */
 static StructGVarFilt GVarFilts[] = {
 
-    { "IS_PPERM", "obj", &IsPPermFilt, IsPPermHandler,
-      "src/pperm.c:IS_PPERM" },
-
+    GVAR_FILT(IS_PPERM, "obj", &IsPPermFilt),
     { 0, 0, 0, 0, 0 }
 
 };

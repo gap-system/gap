@@ -512,7 +512,7 @@ static Obj TypeWPObj(Obj wp)
 */
 static Obj IsWPObjFilt;
 
-static Obj FuncIsWPObj(Obj self, Obj wp)
+static Obj FiltIsWPObj(Obj self, Obj wp)
 {
   return (TNUM_OBJ(wp) == T_WPOBJ) ? True : False;
 }
@@ -791,7 +791,7 @@ static StructBagNames BagNames[] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    GVAR_FILTER(IsWPObj, "obj", &IsWPObjFilt),
+    GVAR_FILT(IsWPObj, "obj", &IsWPObjFilt),
     { 0, 0, 0, 0, 0 }
 
 };

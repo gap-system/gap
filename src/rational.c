@@ -685,9 +685,9 @@ static Obj PowRat(Obj opL, Obj opR)
 
 /****************************************************************************
 **
-*F  IsRatHandler(<self>,<val>)  . . . . . . . . . . . . is a value a rational
+*F  FiltIS_RAT(<self>,<val>) . . . . . . . . . . . . .  is a value a rational
 **
-**  'IsRatHandler' implements the internal function 'IsRat'.
+**  'FiltIS_RAT' implements the internal function 'IsRat'.
 **
 **  'IsRat( <val> )'
 **
@@ -696,7 +696,7 @@ static Obj PowRat(Obj opL, Obj opR)
 */
 static Obj IsRatFilt;
 
-static Obj IsRatHandler(Obj self, Obj val)
+static Obj FiltIS_RAT(Obj self, Obj val)
 {
     /* return 'true' if <val> is a rational and 'false' otherwise          */
     if ( TNUM_OBJ(val) == T_RAT || IS_INT(val)  ) {
@@ -795,9 +795,7 @@ static void LoadRat(Obj rat)
 */
 static StructGVarFilt GVarFilts [] = {
 
-    { "IS_RAT", "obj", &IsRatFilt,
-      IsRatHandler, "src/rational.c:IS_RAT" },
-
+    GVAR_FILT(IS_RAT, "obj", &IsRatFilt),
     { 0, 0, 0, 0, 0 }
 
 };

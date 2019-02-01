@@ -3271,11 +3271,11 @@ static Obj FuncINSTALL_GLOBAL_FUNCTION(Obj self, Obj oper, Obj func)
 
 /****************************************************************************
 **
-*F  FuncIS_OPERATION( <self>, <obj> ) . . . . . . . . . is <obj> an operation
+*F  FiltIS_OPERATION( <self>, <obj> ) . . . . . . . . . is <obj> an operation
 */
 static Obj IsOperationFilt;
 
-static Obj FuncIS_OPERATION(Obj self, Obj obj)
+static Obj FiltIS_OPERATION(Obj self, Obj obj)
 {
     if ( TNUM_OBJ(obj) == T_FUNCTION && IS_OPERATION(obj) ) {
         return True;
@@ -3717,7 +3717,7 @@ static StructBagNames BagNames[] = {
 */
 static StructGVarFilt GVarFilts [] = {
 
-    GVAR_FILTER(IS_OPERATION, "obj", &IsOperationFilt),
+    GVAR_FILT(IS_OPERATION, "obj", &IsOperationFilt),
     { 0, 0, 0, 0, 0 }
 
 };
