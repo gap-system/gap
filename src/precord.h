@@ -168,17 +168,29 @@ EXPORT_INLINE Obj GET_ELM_PREC(Obj rec, UInt i)
 
 /****************************************************************************
 **
-*F  FindPRec( <rec>, <rnam>, <pos>, <cleanup> )
+*F  PositionPRec( <rec>, <rnam>, <cleanup> )
 *F   . . . . . . . . . . . . . . . . . find a component name by binary search
 **
-**  Searches <rnam> in <rec>, sets <pos> to the position where it is found
-**  (return value 1) or where it should be inserted if it is not found
-**  (return value 0).
+**  Searches <rnam> in <rec>, returns the position where it is found, or 0
+**  if it is not present.
 **  If <cleanup> is nonzero, a dirty record is automatically cleaned up.
 **  If <cleanup> is 0, this does not happen.
+**
+**
+*F  FindPRec( <rec>, <rnam>, <pos>, <cleanup> )
+*F   . . . . . . . . . . . . . . . . . find a component name by binary search
+**  A deprecated variant of PositionPRec, which sets <pos> to the position
+**  where the value is contained (or NULL if it is not present) and returns 1
+**  if the record contained rnam, and 0 otherwise.
 **/
 
-UInt FindPRec(Obj rec, UInt rnam, UInt * pos, int cleanup);
+UInt PositionPRec(Obj rec, UInt rnam, int cleanup);
+
+EXPORT_INLINE UInt FindPRec(Obj rec, UInt rnam, UInt * pos, int cleanup)
+{
+    *pos = PositionPRec(rec, rnam, cleanup);
+    return (*pos != 0);
+}
 
 
 /****************************************************************************
