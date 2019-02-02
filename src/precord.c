@@ -242,16 +242,11 @@ static void MakeImmutablePRec(Obj rec)
  * If cleanup is nonzero, a dirty record is automatically cleaned up.
  * If cleanup is 0, this does not happen.
  */
-
-UInt FindPRec( Obj rec, UInt rnam, UInt *pos, int cleanup )
+UInt PositionPRec(Obj rec, UInt rnam, int cleanup)
 {
     /* This only assumes that the rnam values in the record are sorted! */
-    UInt i;
-    Int rnam2;
     UInt low = 1;
-    UInt high;
-
-    high = LEN_PREC(rec);
+    UInt high = LEN_PREC(rec);
     if (high > 0 && (Int) (GET_RNAM_PREC(rec,high)) > 0) {
         /* DIRTY! Not everything sorted! */
         if (cleanup) {
@@ -264,12 +259,12 @@ UInt FindPRec( Obj rec, UInt rnam, UInt *pos, int cleanup )
             /* We are not allowed to cleanup, so we live with it, we
              * first try to find rnam in the mess at the end, then
              * fall back to binary search: */
-            i = high;
+            UInt i = high;
             while (i >= 1) {
-                rnam2 = (Int) (GET_RNAM_PREC(rec,i));
+                Int rnam2 = (Int)(GET_RNAM_PREC(rec, i));
                 if (rnam == rnam2) {
-                    *pos = i;
-                    return 1;
+                    GAP_ASSERT(i != 0);
+                    return i;
                 }
                 if (rnam2 < 0) { /* reached the sorted area! */
                     high = i;  /* will be incremented by 1 */
@@ -282,19 +277,23 @@ UInt FindPRec( Obj rec, UInt rnam, UInt *pos, int cleanup )
         }
     }
     high++;
+    Int rnam2 = 0;
+    // Negate rnam, as the sorted part of the record is stored negated
+    rnam = -rnam;
     while (low < high) {
-        i = (low + high) >> 1;   /* we always have low <= i < high */
-        rnam2 = -(Int)(GET_RNAM_PREC( rec, i ));
-        if (rnam2 < rnam) low = i+1;
-        else if (rnam2 > rnam) high = i;
+        UInt i = (low + high) / 2; /* we always have low <= i < high */
+        rnam2 = (Int)(GET_RNAM_PREC(rec, i));
+        if (rnam2 > rnam) {
+            low = i + 1;
+        }
+        else if (rnam2 < rnam) {
+            high = i;
+        }
         else {
-            /* found! */
-            *pos = i;
-            return 1;
+            return i;
         }
     }
-    /* Now low == high and we did not find it. */
-    *pos = low;
+
     return 0;
 }
 
