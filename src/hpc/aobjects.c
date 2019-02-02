@@ -603,8 +603,7 @@ static void PrintTLRecord(Obj obj)
   for (i = 0; i < deftable[AR_CAP].atom; i++) {
     UInt key = deftable[AR_DATA+2*i].atom;
     Obj value = deftable[AR_DATA+2*i+1].obj;
-    UInt dummy;
-    if (key && (!record || !FindPRec(record, key, &dummy, 0))) {
+    if (key && (!record || !PositionPRec(record, key, 0))) {
       if (comma)
         Pr("%2<, %2>", 0L, 0L);
       Pr("%H", (Int)(NAME_RNAM(key)), 0L);
@@ -994,7 +993,7 @@ Obj GetTLRecordField(Obj record, UInt rnam)
   contents = GetTLInner(record);
   table = ADDR_OBJ(contents);
   tlrecord = table[TLR_DATA+TLS(threadID)];
-  if (!tlrecord || !FindPRec(tlrecord, rnam, &pos, 1)) {
+  if (!tlrecord || !(pos = PositionPRec(tlrecord, rnam, 1))) {
     Obj result;
     Obj defrec = table[TLR_DEFAULTS];
     result = GetARecordField(defrec, rnam);
@@ -1022,7 +1021,8 @@ Obj GetTLRecordField(Obj record, UInt rnam)
           result = CALL_1ARGS(func, record);
         TLS(currentRegion) = savedRegion;
         if (!result) {
-          if (!FindPRec(tlrecord, rnam, &pos, 1))
+          pos = PositionPRec(tlrecord, rnam, 1);
+          if (!pos)
             return 0;
           return GET_ELM_PREC(tlrecord, pos);
         }

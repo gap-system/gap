@@ -308,9 +308,7 @@ Int IsbPRec (
     Obj                 rec,
     UInt                rnam )
 {
-    UInt                i;              /* loop variable                   */
-
-    return FindPRec(rec,rnam,&i,1);
+    return PositionPRec(rec, rnam, 1) != 0;
 }
 
 
@@ -326,9 +324,8 @@ Obj ElmPRec (
     Obj                 rec,
     UInt                rnam )
 {
-    UInt                i;              /* loop variable                   */
-
-    if (FindPRec(rec,rnam,&i,1))
+    UInt i = PositionPRec(rec, rnam, 1);
+    if (i)
         return GET_ELM_PREC( rec, i );
 
     ErrorMayQuit("Record Element: '<rec>.%g' must have an assigned value",
@@ -348,14 +345,15 @@ void UnbPRec (
     UInt                rnam )
 {
     UInt                len;            /* length of <rec>                 */
-    UInt                i;              /* loop variable                   */
 
     // Accept T_PREC and T_COMOBJ, reject T_PREC+IMMUTABLE
     if (TNUM_OBJ(rec) == T_PREC+IMMUTABLE) {
         ErrorMayQuit("Record Unbind: <rec> must be a mutable record", 0, 0);
     }
 
-    if (FindPRec( rec, rnam, &i, 1 )) {
+    UInt i = PositionPRec(rec, rnam, 1);
+
+    if (i) {
         /* otherwise move everything forward                               */
         len = LEN_PREC( rec );
         for ( ; i < len; i++ ) {
@@ -368,8 +366,8 @@ void UnbPRec (
 
         /* resize the record                                               */
         SET_LEN_PREC(rec,LEN_PREC(rec)-1);
-
-    } else
+    }
+    else
         /* do nothing if no such component exists                          */
         return;
 }
@@ -388,7 +386,6 @@ void AssPRec (
     Obj                 val )
 {
     UInt                len;            /* length of <rec>                 */
-    UInt                i;              /* loop variable                   */
 
     // Accept T_PREC and T_COMOBJ, reject T_PREC+IMMUTABLE
     if (TNUM_OBJ(rec) == T_PREC+IMMUTABLE) {
@@ -403,7 +400,9 @@ void AssPRec (
         SortPRecRNam(rec,0);
     }
 
-    if (!FindPRec( rec, rnam, &i, 0 )) {
+    UInt i = PositionPRec(rec, rnam, 0);
+
+    if (!i) {
         /* No cleanup allowed here to allow for multiple assignments! */
         /* extend the record if no such component exists                   */
         len++;
