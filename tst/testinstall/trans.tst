@@ -959,7 +959,7 @@ gap> INV_LIST_TRANS("a", f);
 Error, INV_LIST_TRANS: <list>[1] must be a positive small integer (not a chara\
 cter)
 gap> INV_LIST_TRANS(0, f);
-Error, INV_LIST_TRANS: the first argument must be a list (not a integer)
+Error, INV_LIST_TRANS: <list> must be a dense list (not the integer 0)
 gap> INV_LIST_TRANS([1, 2], "a");
 Error, INV_LIST_TRANS: <f> must be a transformation (not a list (string))
 gap> INV_LIST_TRANS([1, -1], Transformation([1], [65537]));

@@ -4100,17 +4100,9 @@ static Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
 */
 static Obj FuncMAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col)
 {
-    if (!IS_POS_INTOBJ(row)) {
-        ErrorMayQuit("row index must be a small positive integer, not a %s",
-                     (Int)TNAM_OBJ(row), 0L);
-    }
-    if (!IS_POS_INTOBJ(col)) {
-        ErrorMayQuit(
-            "column index must be a small positive integer, not a %s",
-            (Int)TNAM_OBJ(col), 0L);
-    }
+    UInt r = GetPositiveSmallInt("MAT_ELM_GF2MAT", row);
+    UInt c = GetPositiveSmallInt("MAT_ELM_GF2MAT", col);
 
-    UInt r = INT_INTOBJ(row);
     if (LEN_GF2MAT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,
                      LEN_GF2MAT(mat));
@@ -4118,7 +4110,6 @@ static Obj FuncMAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col)
 
     Obj vec = ELM_GF2MAT(mat, r);
 
-    UInt c = INT_INTOBJ(col);
     if (LEN_GF2VEC(vec) < c) {
         ErrorMayQuit("column index %d exceeds %d, the number of columns", c,
                      LEN_GF2VEC(vec));
@@ -4136,17 +4127,9 @@ static Obj FuncMAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col)
 static Obj
 FuncSET_MAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
 {
-    if (!IS_POS_INTOBJ(row)) {
-        ErrorMayQuit("row index must be a small positive integer, not a %s",
-                     (Int)TNAM_OBJ(row), 0L);
-    }
-    if (!IS_POS_INTOBJ(col)) {
-        ErrorMayQuit(
-            "column index must be a small positive integer, not a %s",
-            (Int)TNAM_OBJ(col), 0L);
-    }
+    UInt r = GetPositiveSmallInt("SET_MAT_ELM_GF2MAT", row);
+    UInt c = GetPositiveSmallInt("SET_MAT_ELM_GF2MAT", col);
 
-    UInt r = INT_INTOBJ(row);
     if (LEN_GF2MAT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,
                      LEN_GF2MAT(mat));
@@ -4157,7 +4140,6 @@ FuncSET_MAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
         ErrorMayQuit("row %d is immutable", r, 0);
     }
 
-    UInt c = INT_INTOBJ(col);
     if (LEN_GF2VEC(vec) < c) {
         ErrorMayQuit("column index %d exceeds %d, the number of columns", c,
                      LEN_GF2VEC(vec));

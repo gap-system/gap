@@ -38,11 +38,11 @@ rec( booleanGetters := [ function( data ) ... end ],
 
 #
 gap> bf.getters[1](Z(5));
-Error, Field getter: argument must be small integer
+Error, Field getter: <data> must be a small integer (not a ffe)
 gap> bf.setters[1](1, (1,2));
-Error, Field Setter: both arguments must be small integers
+Error, Field Setter: <val> must be a small integer (not a permutation (small))
 gap> bf.setters[1]([],1);
-Error, Field Setter: both arguments must be small integers
+Error, Field Setter: <data> must be a small integer (not a list (plain,empty))
 gap> BuildBitfields([1],Z(5));
 Error, Fields builder: values must be small integers
 gap> MakeBitfields(100);

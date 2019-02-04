@@ -1562,8 +1562,8 @@ void            AssListLevel (
     Obj pos,pos1,pos2;
 
     /* check <objs>                                                        */
-    CheckIsDenseList("List Assignments", "objs", objs);
-    CheckSameLength("List Assignments", "objs", "lists", objs, lists);
+    RequireDenseList("List Assignments", objs);
+    RequireSameLength("List Assignments", objs, lists);
 
     /* if <level> is one, perform the assignments                          */
     if ( level == 1 ) {
@@ -1645,8 +1645,8 @@ void            AsssListLevel (
     Int                 i;              /* loop variable                   */
 
     /* check <objs>                                                        */
-    CheckIsDenseList("List Assignments", "objs", objs);
-    CheckSameLength("List Assignments", "objs", "lists", objs, lists);
+    RequireDenseList("List Assignments", objs);
+    RequireSameLength("List Assignments", objs, lists);
 
     /* if <lev> is one, loop over all the lists and assign the value       */
     if ( lev == 1 ) {
@@ -1873,7 +1873,7 @@ void AsssListCheck (
     Obj                 rhss )
 {
     CheckIsPossList("List Assignments", poss);
-    CheckIsDenseList("List Assignments", "rhss", rhss);
+    RequireDenseList("List Assignments", rhss);
     CheckSameLength("List Assignments", "rhss", "positions", rhss, poss);
     ASSS_LIST( list, poss, rhss );
 }

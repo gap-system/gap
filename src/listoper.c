@@ -1334,7 +1334,7 @@ static Obj FuncADD_ROW_VECTOR_3(Obj self, Obj list1, Obj list2, Obj mult)
   UInt i;
   UInt len = LEN_LIST(list1);
   Obj el1, el2;
-  CheckSameLength("AddRowVector", "list1", "list2", list1, list2);
+  RequireSameLength("AddRowVector", list1, list2);
   for (i = 1; i <= len; i++)
     {
       el1 = ELMW_LIST(list1,i);
@@ -1362,7 +1362,7 @@ static Obj FuncADD_ROW_VECTOR_3_FAST(Obj self, Obj list1, Obj list2, Obj mult)
   UInt i;
   Obj e1,e2, prd, sum;
   UInt len = LEN_PLIST(list1);
-  CheckSameLength("AddRowVector", "list1", "list2", list1, list2);
+  RequireSameLength("AddRowVector", list1, list2);
   for (i = 1; i <= len; i++)
     {
       e1 = ELM_PLIST(list1,i);
@@ -1398,7 +1398,7 @@ static Obj FuncADD_ROW_VECTOR_2(Obj self, Obj list1, Obj list2)
   UInt i;
   Obj el1,el2;
   UInt len = LEN_LIST(list1);
-  CheckSameLength("AddRowVector", "list1", "list2", list1, list2);
+  RequireSameLength("AddRowVector", list1, list2);
   for (i = 1; i <= len; i++)
     {
       el1 = ELMW_LIST(list1,i);
@@ -1425,7 +1425,7 @@ static Obj FuncADD_ROW_VECTOR_2_FAST(Obj self, Obj list1, Obj list2)
   UInt i;
   Obj e1,e2, sum;
   UInt len = LEN_PLIST(list1);
-  CheckSameLength("AddRowVector", "list1", "list2", list1, list2);
+  RequireSameLength("AddRowVector", list1, list2);
   for (i = 1; i <= len; i++)
     {
       e1 = ELM_PLIST(list1,i);

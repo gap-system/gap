@@ -562,49 +562,37 @@ static inline void SET_OFFFSET_BITFIELD_FUNC(Obj func, UInt offset)
 
 static Obj DoFieldGetter(Obj self, Obj data)
 {
+    UInt x = GetSmallInt("Field getter", data);
     UInt mask = MASK_BITFIELD_FUNC(self);
     UInt offset = OFFSET_BITFIELD_FUNC(self);
-    if (!IS_INTOBJ(data))
-        ErrorMayQuit("Field getter: argument must be small integer", 0, 0);
-    UInt x = INT_INTOBJ(data);
     return INTOBJ_INT((x & mask) >> offset);
 }
 
 static Obj DoFieldSetter(Obj self, Obj data, Obj val)
 {
+    UInt x = GetSmallInt("Field Setter", data);
+    UInt y = GetSmallInt("Field Setter", val);
     UInt mask = MASK_BITFIELD_FUNC(self);
     UInt offset = OFFSET_BITFIELD_FUNC(self);
-    if (!ARE_INTOBJS(data, val))
-        ErrorMayQuit("Field Setter: both arguments must be small integers", 0,
-                     0);
-    UInt x = INT_INTOBJ(data);
-    UInt y = INT_INTOBJ(val);
     return INTOBJ_INT((x & ~mask) | (y << offset));
 }
 
 static Obj DoBooleanFieldGetter(Obj self, Obj data)
 {
-  UInt mask = MASK_BITFIELD_FUNC(self);
-    if (!IS_INTOBJ(data))
-        ErrorMayQuit("Boolean Field getter: argument must be small integer", 0, 0);
-    UInt x = INT_INTOBJ(data);
+    UInt x = GetSmallInt("Boolean Field getter", data);
+    UInt mask = MASK_BITFIELD_FUNC(self);
     return (x & mask) ? True : False;
 }
 
 static Obj DoBooleanFieldSetter(Obj self, Obj data, Obj val)
 {
+    UInt x = GetSmallInt("Boolean Field Setter", data);
+    RequireTrueOrFalse("Boolean Field Setter", val);
     UInt mask = MASK_BITFIELD_FUNC(self);
-    if (!IS_INTOBJ(data))
-        ErrorMayQuit("Boolean Field Setter: data must be small integer", 0,
-                     0);
-    UInt x = INT_INTOBJ(data);
     if (val == True)
         x |= mask;
     else if (val == False)
         x &= ~mask;
-    else
-        ErrorMayQuit("Boolean Field Setter: value must be true or false", 0,
-                     0);
     return INTOBJ_INT(x);
 }
 

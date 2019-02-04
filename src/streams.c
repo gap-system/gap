@@ -1378,12 +1378,7 @@ static Obj FuncOUTPUT_TEXT_FILE(Obj self, Obj filename, Obj append)
 
     // check the argument
     RequireStringRep("OUTPUT_TEXT_FILE", filename);
-    while ( append != True && append != False ) {
-        filename = ErrorReturnObj(
-            "OUTPUT_TEXT_FILE: <append> must be a boolean (not a %s)",
-            (Int)TNAM_OBJ(append), 0L,
-            "you can replace <append> via 'return <append>;'" );
-    }
+    RequireTrueOrFalse("OUTPUT_TEXT_FILE", append);
     
     /* call the system dependent function                                  */
     SyClearErrorNo();
