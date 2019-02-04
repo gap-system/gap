@@ -604,12 +604,12 @@ static UInt ExecAsssList(Expr stat)
 
     /* evaluate and check the positions                                    */
     poss = EVAL_EXPR(READ_STAT(stat, 1));
-    CheckIsPossList("List Assignment", poss);
+    CheckIsPossList("List Assignments", poss);
 
     /* evaluate and check right hand sides                                 */
     rhss = EVAL_EXPR(READ_STAT(stat, 2));
-    CheckIsDenseList("List Assignment", "rhss", rhss);
-    CheckSameLength("List Assignment", "rhss", "positions", rhss, poss);
+    CheckIsDenseList("List Assignments", "rhss", rhss);
+    CheckSameLength("List Assignments", "rhss", "positions", rhss, poss);
 
     /* assign the right hand sides to several elements of the list         */
     ASSS_LIST( list, poss, rhss );
@@ -695,7 +695,7 @@ static UInt ExecAsssListLevel(Expr stat)
 
     /* evaluate and check the positions                                    */
     poss = EVAL_EXPR(READ_EXPR(stat, 1));
-    CheckIsPossList("List Assignment", poss);
+    CheckIsPossList("List Assignments", poss);
 
     /* evaluate right hand sides (checking is done by 'AsssListLevel')     */
     rhss = EVAL_EXPR(READ_STAT(stat, 2));

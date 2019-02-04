@@ -2892,12 +2892,12 @@ void            IntrAsssList ( void )
 
     /* get the right hand sides                                            */
     rhss = PopObj();
-    CheckIsDenseList("List Assignment", "rhss", rhss);
+    CheckIsDenseList("List Assignments", "rhss", rhss);
 
     /* get and check the positions                                         */
     poss = PopObj();
-    CheckIsPossList("List Assignment", poss);
-    CheckSameLength("List Assignment", "rhss", "positions", rhss, poss);
+    CheckIsPossList("List Assignments", poss);
+    CheckSameLength("List Assignments", "rhss", "positions", rhss, poss);
 
     /* get the list (checking is done by 'ASSS_LIST')                      */
     list = PopObj();
@@ -2965,7 +2965,7 @@ void            IntrAsssListLevel (
 
     /* get and check the positions                                         */
     poss = PopObj();
-    CheckIsPossList("List Assignment", poss);
+    CheckIsPossList("List Assignments", poss);
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
     /* checking it is nested <level>+1 deep is done by 'AsssListLevel')    */
