@@ -1577,7 +1577,7 @@ static ObjFunc LoadHandler( void )
 static void SaveFunction(Obj func)
 {
   const FuncBag * header = CONST_FUNC(func);
-  for (UInt i = 0; i <= 7; i++)
+  for (UInt i = 0; i < ARRAY_SIZE(header->handlers); i++)
     SaveHandler(header->handlers[i]);
   SaveSubObj(header->name);
   SaveSubObj(header->nargs);
@@ -1587,7 +1587,7 @@ static void SaveFunction(Obj func)
   SaveSubObj(header->body);
   SaveSubObj(header->envi);
   SaveSubObj(header->fexs);
-  if (SIZE_OBJ(func) != sizeof(FuncBag))
+  if (IS_OPERATION(func))
     SaveOperationExtras( func );
 }
 
@@ -1599,7 +1599,7 @@ static void SaveFunction(Obj func)
 static void LoadFunction(Obj func)
 {
   FuncBag * header = FUNC(func);
-  for (UInt i = 0; i <= 7; i++)
+  for (UInt i = 0; i < ARRAY_SIZE(header->handlers); i++)
     header->handlers[i] = LoadHandler();
   header->name = LoadSubObj();
   header->nargs = LoadSubObj();
@@ -1609,7 +1609,7 @@ static void LoadFunction(Obj func)
   header->body = LoadSubObj();
   header->envi = LoadSubObj();
   header->fexs = LoadSubObj();
-  if (SIZE_OBJ(func) != sizeof(FuncBag))
+  if (IS_OPERATION(func))
     LoadOperationExtras( func );
 }
 
