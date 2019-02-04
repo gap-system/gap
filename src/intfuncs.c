@@ -489,34 +489,32 @@ Int HASHKEY_WHOLE_BAG_NC(Obj obj, UInt4 seed)
     return HASHKEY_BAG_NC(obj, seed, 0, SIZE_OBJ(obj));
 }
 
+
 /****************************************************************************
 **
-*F SmallInt Bitfield operations
-*
-* The goal here it to set up a division of the usable bits in a small
-* integer into fields which can be accessed very quickly from GAP
-* level and quickly and conveniently from C. The purpose is to allow
-* implementation of data structures that divide up the bits within a
-* word without having to make them entirely opaque to the GAP level or
-* ridiculously slow
-*
-* The API is defined in lib/bitfields.gd and works by providing the
-* user with a collection of functions to get and set fields and
-* assemble an entire word.
-*
-* These functions are constructed here and have special handlers. The
-* information the handlers need about the size and position of the
-* bitfields are stored in some of the fields of the function header
-* which are not normally used for kernel functions. Specifically, we
-* use the NLOC_FUNC and FEXS_FUNC fields, which we alias as
-* MASK_BITFIELD_FUNC and OFFSET_BITFIELD_FUNC.
-*
-* For fields of size 1 we also offer Boolean setters and getters which
-* accept and return True for 1 and False for 0. This makes for much
-* nicer code on the GAP side.
-*
+*F  SmallInt Bitfield operations
+**
+**  The goal here it to set up a division of the usable bits in a small
+**  integer into fields which can be accessed very quickly from GAP level and
+**  quickly and conveniently from C. The purpose is to allow implementation
+**  of data structures that divide up the bits within a word without having
+**  to make them entirely opaque to the GAP level or ridiculously slow.
+**
+**  The API is defined in lib/bitfields.gd and works by providing the user
+**  with a collection of functions to get and set fields and assemble an
+**  entire word.
+**
+**  These functions are constructed here and have special handlers. The
+**  information the handlers need about the size and position of the
+**  bitfields are stored in some of the fields of the function header which
+**  are not normally used for kernel functions. Specifically, we use the
+**  NLOC_FUNC and FEXS_FUNC fields, which we alias as MASK_BITFIELD_FUNC and
+**  OFFSET_BITFIELD_FUNC.
+**
+**  For fields of size 1 we also offer Boolean setters and getters which
+**  accept and return True for 1 and False for 0. This makes for much nicer
+**  code on the GAP side.
 */
-
 
 static inline UInt MASK_BITFIELD_FUNC(Obj func)
 {
