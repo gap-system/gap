@@ -109,7 +109,7 @@ typedef struct {
     ObjFunc handlers[8];
     Obj name;
     Obj nargs;
-    Obj namesOfLocals;
+    Obj namesOfArgsAndLocals;
     Obj prof;
     Obj nloc;
     Obj body;
@@ -152,7 +152,7 @@ EXPORT_INLINE Int NARG_FUNC(Obj func)
 
 EXPORT_INLINE Obj NAMS_FUNC(Obj func)
 {
-    return CONST_FUNC(func)->namesOfLocals;
+    return CONST_FUNC(func)->namesOfArgsAndLocals;
 }
 
 Obj NAMI_FUNC(Obj func, Int i);
@@ -203,9 +203,9 @@ EXPORT_INLINE void SET_NARG_FUNC(Obj func, Int nargs)
     FUNC(func)->nargs = INTOBJ_INT(nargs);
 }
 
-EXPORT_INLINE void SET_NAMS_FUNC(Obj func, Obj namesOfLocals)
+EXPORT_INLINE void SET_NAMS_FUNC(Obj func, Obj namesOfArgsAndLocals)
 {
-    FUNC(func)->namesOfLocals = namesOfLocals;
+    FUNC(func)->namesOfArgsAndLocals = namesOfArgsAndLocals;
 }
 
 EXPORT_INLINE void SET_PROF_FUNC(Obj func, Obj prof)
