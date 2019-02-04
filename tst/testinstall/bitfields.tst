@@ -35,6 +35,8 @@ rec( booleanGetters := [ function( data ) ... end ],
   booleanSetters := [ function( data, val ) ... end ], 
   getters := [ function( data ) ... end ], 
   setters := [ function( data, val ) ... end ], widths := [ 1 ] )
+
+#
 gap> bf.getters[1](Z(5));
 Error, Field getter: argument must be small integer
 gap> bf.setters[1](1, (1,2));
@@ -45,4 +47,16 @@ gap> BuildBitfields([1],Z(5));
 Error, Fields builder: values must be small integers
 gap> MakeBitfields(100);
 Error, MAKE_BITFIELDS: total widths too large
+
+#
+gap> NameFunction(bf.getters[1]);
+"<field getter>"
+gap> NameFunction(bf.setters[1]);
+"<field setter>"
+gap> NameFunction(bf.booleanGetters[1]);
+"<boolean field getter>"
+gap> NameFunction(bf.booleanSetters[1]);
+"<boolean field setter>"
+
+#
 gap> STOP_TEST("bitfields.tst", 1);
