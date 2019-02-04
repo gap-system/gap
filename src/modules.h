@@ -159,7 +159,7 @@ typedef struct {
 // GVAR_FILT a helper macro for quickly creating table entries in
 // StructGVarFilt arrays
 #define GVAR_FILT(name, argument, filter)                                    \
-    (StructGVarFilt){                                                        \
+    {                                                                        \
         #name, argument, filter, Filt##name, __FILE__ ":" #name              \
     }
 
@@ -179,7 +179,7 @@ typedef struct {
 // GVAR_ATTR a helper macro for quickly creating table entries in
 // StructGVarAttr arrays
 #define GVAR_ATTR(name, argument, filter)                                    \
-    (StructGVarAttr){                                                        \
+    {                                                                        \
         #name, argument, filter, Attr##name, __FILE__ ":" #name              \
     }
 
@@ -199,7 +199,7 @@ typedef struct {
 // GVAR_PROP a helper macro for quickly creating table entries in
 // StructGVarProp arrays
 #define GVAR_PROP(name, argument, filter)                                    \
-    (StructGVarProp){                                                        \
+    {                                                                        \
         #name, argument, filter, Prop##name, __FILE__ ":" #name              \
     }
 
@@ -221,7 +221,7 @@ typedef struct {
 // GVAR_OPER is a helper macro for quickly creating table entries in
 // StructGVarOper arrays
 #define GVAR_OPER(name, nargs, args, operation)                              \
-    (StructGVarOper){                                                        \
+    {                                                                        \
         #name, nargs, args, operation, Func##name, __FILE__ ":" #name        \
     }
 
@@ -241,7 +241,7 @@ typedef struct {
 // GVAR_FUNC is a helper macro for quickly creating table entries in
 // StructGVarFunc arrays
 #define GVAR_FUNC(name, nargs, args)                                         \
-    (StructGVarFunc){                                                        \
+    {                                                                        \
         #name, nargs, args, (GenericHandler)Func##name, __FILE__ ":" #name   \
     }
 
