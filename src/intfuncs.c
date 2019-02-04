@@ -16,6 +16,7 @@
 #include "bool.h"
 #include "calls.h"
 #include "error.h"
+#include "integer.h"
 #include "lists.h"
 #include "modules.h"
 #include "plist.h"
@@ -506,35 +507,57 @@ Int HASHKEY_WHOLE_BAG_NC(Obj obj, UInt4 seed)
 **
 **  These functions are constructed here and have special handlers. The
 **  information the handlers need about the size and position of the
-**  bitfields are stored in some of the fields of the function header which
-**  are not normally used for kernel functions. Specifically, we use the
-**  NLOC_FUNC and FEXS_FUNC fields, which we alias as MASK_BITFIELD_FUNC and
+**  bitfields are stored in special fields added after the regular function
+**  bag fields, and are referred to as MASK_BITFIELD_FUNC and
 **  OFFSET_BITFIELD_FUNC.
 **
 **  For fields of size 1 we also offer Boolean setters and getters which
 **  accept and return True for 1 and False for 0. This makes for much nicer
 **  code on the GAP side.
 */
+typedef struct {
+    FuncBag f;
+
+    Obj mask;
+    Obj offset;
+} BitfieldFuncBag;
+
+static inline const BitfieldFuncBag * CBFB(Obj func)
+{
+    return (const BitfieldFuncBag *)CONST_ADDR_OBJ(func);
+}
+
+static inline BitfieldFuncBag * BFB(Obj func)
+{
+    return (BitfieldFuncBag *)ADDR_OBJ(func);
+}
 
 static inline UInt MASK_BITFIELD_FUNC(Obj func)
 {
-  return NLOC_FUNC(func);
+    GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
+    GAP_ASSERT(SIZE_OBJ(func) == sizeof(BitfieldFuncBag));
+    return UInt_ObjInt(CBFB(func)->mask);
 }
 
 static inline void SET_MASK_BITFIELD_FUNC(Obj func, UInt mask)
 {
-  SET_NLOC_FUNC(func, mask);
+    GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
+    GAP_ASSERT(SIZE_OBJ(func) == sizeof(BitfieldFuncBag));
+    BFB(func)->mask = ObjInt_UInt(mask);
 }
 
 static inline UInt OFFSET_BITFIELD_FUNC(Obj func)
 {
-  GAP_ASSERT(IS_INTOBJ(FEXS_FUNC(func)));
-  return INT_INTOBJ(FEXS_FUNC(func));
+    GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
+    GAP_ASSERT(SIZE_OBJ(func) == sizeof(BitfieldFuncBag));
+    return UInt_ObjInt(CBFB(func)->offset);
 }
 
 static inline void SET_OFFFSET_BITFIELD_FUNC(Obj func, UInt offset)
 {
-  SET_FEXS_FUNC(func, INTOBJ_INT(offset));
+    GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
+    GAP_ASSERT(SIZE_OBJ(func) == sizeof(BitfieldFuncBag));
+    BFB(func)->offset = ObjInt_UInt(offset);
 }
 
 static Obj DoFieldGetter(Obj self, Obj data)
@@ -635,6 +658,13 @@ static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
     if (starts[nfields] > 8 * sizeof(UInt))
         ErrorMayQuit("MAKE_BITFIELDS: total widths too large", 0, 0);
 
+    Obj nameSetter = MakeImmString("<field setter>");
+    Obj nameGetter = MakeImmString("<field getter>");
+    Obj nameBSetter = MakeImmString("<boolean field setter>");
+    Obj nameBGetter = MakeImmString("<boolean field getter>");
+    Obj dataArgs = ArgStringToList("data");
+    Obj dataValArgs = ArgStringToList("data, val");
+
     Obj  setters = NEW_PLIST_IMM(T_PLIST_DENSE, nfields);
     Obj  getters = NEW_PLIST_IMM(T_PLIST_DENSE, nfields);
     Obj  bsetters = NEW_PLIST_IMM(T_PLIST, nfields);
@@ -642,26 +672,28 @@ static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
     Obj  bgetters = NEW_PLIST_IMM(T_PLIST, nfields);
     for (UInt i = 1; i <= nfields; i++) {
         UInt mask = (1L << starts[i]) - (1L << starts[i - 1]);
-        Obj s = NewFunctionC("<field setter>", 2, "data, val", DoFieldSetter);
+        Obj  s = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag), nameSetter,
+                             2, dataValArgs, DoFieldSetter);
         SET_MASK_BITFIELD_FUNC(s, mask);
         SET_OFFFSET_BITFIELD_FUNC(s, starts[i - 1]);
         SET_ELM_PLIST(setters, i, s);
         CHANGED_BAG(setters);
-        Obj g = NewFunctionC("<field getter>", 1, "data", DoFieldGetter);
+        Obj g = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag), nameGetter,
+                             1, dataArgs, DoFieldGetter);
         SET_MASK_BITFIELD_FUNC(g, mask);
         SET_OFFFSET_BITFIELD_FUNC(g, starts[i - 1]);
         SET_ELM_PLIST(getters, i, g);
         CHANGED_BAG(getters);
         if (starts[i] - starts[i - 1] == 1) {
-            s = NewFunctionC("<boolean field setter>", 2, "data, val",
-                             DoBooleanFieldSetter);
+            s = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag), nameBSetter,
+                             2, dataValArgs, DoBooleanFieldSetter);
             SET_MASK_BITFIELD_FUNC(s, mask);
             SET_OFFFSET_BITFIELD_FUNC(s, starts[i - 1]);
             SET_ELM_PLIST(bsetters, i, s);
             CHANGED_BAG(bsetters);
             bslen = i;
-            g = NewFunctionC("<boolean field getter>", 1, "data",
-                             DoBooleanFieldGetter);
+            g = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag), nameBGetter,
+                             1, dataArgs, DoBooleanFieldGetter);
             SET_MASK_BITFIELD_FUNC(g, mask);
             SET_OFFFSET_BITFIELD_FUNC(g, starts[i - 1]);
             SET_ELM_PLIST(bgetters, i, g);
