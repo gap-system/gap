@@ -1581,7 +1581,7 @@ static void SaveFunction(Obj func)
     SaveHandler(header->handlers[i]);
   SaveSubObj(header->name);
   SaveSubObj(header->nargs);
-  SaveSubObj(header->namesOfLocals);
+  SaveSubObj(header->namesOfArgsAndLocals);
   SaveSubObj(header->prof);
   SaveSubObj(header->nloc);
   SaveSubObj(header->body);
@@ -1603,7 +1603,7 @@ static void LoadFunction(Obj func)
     header->handlers[i] = LoadHandler();
   header->name = LoadSubObj();
   header->nargs = LoadSubObj();
-  header->namesOfLocals = LoadSubObj();
+  header->namesOfArgsAndLocals = LoadSubObj();
   header->prof = LoadSubObj();
   header->nloc = LoadSubObj();
   header->body = LoadSubObj();
