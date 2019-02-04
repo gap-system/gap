@@ -180,6 +180,33 @@ Obj RequireArgumentEx(const char * funcname,
 
 /****************************************************************************
 **
+*F  RequirePlainList
+*/
+#define RequirePlainList(funcname, op)                                       \
+    RequireArgumentCondition(funcname, op, IS_PLIST(op),                     \
+                             "must be a plain list")
+
+
+/****************************************************************************
+**
+*F  RequireDenseList
+*/
+#define RequireDenseList(funcname, op)                                       \
+    RequireArgumentCondition(funcname, op, IS_DENSE_LIST(op),                \
+                             "must be a dense list")
+
+
+/****************************************************************************
+**
+*F  RequirePossList
+*/
+#define RequirePossList(funcname, op)                                        \
+    RequireArgumentCondition(funcname, op, IS_POSS_LIST(op),                 \
+                             "must be a dense list of positive integers")
+
+
+/****************************************************************************
+**
 *F  RequireFunction
 */
 #define RequireFunction(funcname, op)                                        \
@@ -206,11 +233,11 @@ Obj RequireArgumentEx(const char * funcname,
 
 /****************************************************************************
 **
-*F  RequirePlainList
+*F  RequireTrueOrFalse
 */
-#define RequirePlainList(funcname, op)                                       \
-    RequireArgumentCondition(funcname, op, IS_PLIST(op),                     \
-                             "must be a plain list")
+#define RequireTrueOrFalse(funcname, op)                                     \
+    RequireArgumentCondition(funcname, op, op == True || op == False,        \
+                             "must be true or false")
 
 
 /****************************************************************************
@@ -274,10 +301,21 @@ void CheckIsDenseList(const Char * desc, const Char * listName, Obj list);
 *F  CheckSameLength
 */
 void CheckSameLength(const Char * desc,
-                     const Char * leftName,
-                     const Char * rightName,
-                     Obj          left,
-                     Obj          right);
+                     const Char * name1,
+                     const Char * name2,
+                     Obj          op1,
+                     Obj          op2);
+
+
+/****************************************************************************
+**
+*F  RequireSameLength
+**
+**  This one is a bit different from the other Require functions, as it takes
+**  two operands into account.
+*/
+#define RequireSameLength(funcname, op1, op2)                                \
+    CheckSameLength(funcname, #op1, #op2, op1, op2)
 
 
 /****************************************************************************

@@ -2892,7 +2892,7 @@ void            IntrAsssList ( void )
 
     /* get the right hand sides                                            */
     rhss = PopObj();
-    CheckIsDenseList("List Assignments", "rhss", rhss);
+    RequireDenseList("List Assignments", rhss);
 
     /* get and check the positions                                         */
     poss = PopObj();

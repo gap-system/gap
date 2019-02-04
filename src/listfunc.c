@@ -884,7 +884,7 @@ static Obj FuncSORT_PARA_LIST(Obj self, Obj list, Obj shadow)
     /* check the first two arguments                                       */
     RequireSmallList("SORT_PARA_LIST", list);
     RequireSmallList("SORT_PARA_LIST", shadow);
-    CheckSameLength("SORT_PARA_LIST", "list", "shadow", list, shadow);
+    RequireSameLength("SORT_PARA_LIST", list, shadow);
 
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
@@ -904,7 +904,7 @@ static Obj FuncSTABLE_SORT_PARA_LIST(Obj self, Obj list, Obj shadow)
     /* check the first two arguments                                       */
     RequireSmallList("STABLE_SORT_PARA_LIST", list);
     RequireSmallList("STABLE_SORT_PARA_LIST", shadow);
-    CheckSameLength("STABLE_SORT_PARA_LIST", "list", "shadow", list, shadow);
+    RequireSameLength("STABLE_SORT_PARA_LIST", list, shadow);
 
     /* dispatch                                                            */
     if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
@@ -929,7 +929,7 @@ static Obj FuncSORT_PARA_LIST_COMP(Obj self, Obj list, Obj shadow, Obj func)
     /* check the first two arguments                                       */
     RequireSmallList("SORT_PARA_LIST_COMP", list);
     RequireSmallList("SORT_PARA_LIST_COMP", shadow);
-    CheckSameLength("SORT_PARA_LIST_COMP", "list", "shadow", list, shadow);
+    RequireSameLength("SORT_PARA_LIST_COMP", list, shadow);
 
     /* check the third argument                                            */
     RequireFunction("SORT_PARA_LIST_COMP", func);
@@ -952,7 +952,7 @@ FuncSTABLE_SORT_PARA_LIST_COMP(Obj self, Obj list, Obj shadow, Obj func)
     /* check the first two arguments                                       */
     RequireSmallList("SORT_PARA_LIST_COMP", list);
     RequireSmallList("SORT_PARA_LIST_COMP", shadow);
-    CheckSameLength("SORT_PARA_LIST_COMP", "list", "shadow", list, shadow);
+    RequireSameLength("SORT_PARA_LIST_COMP", list, shadow);
 
     /* check the third argument                                            */
     RequireFunction("SORT_PARA_LIST_COMP", func);

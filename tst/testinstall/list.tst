@@ -45,15 +45,15 @@ gap> a{[1]}{[1]}[1];
 
 #
 gap> a{[1,,2]}:=1;
-Error, List Assignment: <rhss> must be a dense list
+Error, List Assignments: <rhss> must be a dense list (not the integer 1)
 gap> a{[1,,2]}:=[1,2];
-Error, List Assignment: <positions> must be a dense list of positive integers
+Error, List Assignments: <positions> must be a dense list of positive integers
 
 #
 gap> a{[1]}{[1]}[1] := 42;
-Error, List Assignment: <objs> must be a dense list
+Error, List Assignments: <objs> must be a dense list (not the integer 42)
 gap> a{[1]}{[1]}[1] := [ 42 ];
-Error, List Assignment: <objs> must be a dense list
+Error, List Assignments: <objs> must be a dense list (not the integer 42)
 gap> a{[1]}{[1]}[1] := [ [ 42 ] ];
 [ [ 42 ] ]
 gap> a;
@@ -61,15 +61,15 @@ gap> a;
 
 #
 gap> a{[1]}{[1]} := 19;
-Error, List Assignment: <objs> must be a dense list
+Error, List Assignments: <objs> must be a dense list (not the integer 19)
 gap> a{[1]}{[1]} := [ 18, 19 ];
-Error, List Assignment: <objs> must have the same length as <lists> (lengths a\
-re 2 and 1)
+Error, List Assignments: <objs> must have the same length as <lists> (lengths \
+are 2 and 1)
 gap> a{[1]}{[1]} := [ [ 18, 19 ] ] ;
 Error, List Assignments: <objs> must have the same length as <positions> (leng\
 ths are 2 and 1)
 gap> a{[1]}{[1,,3]} := [ [ [ 18, 19 ] ] ];
-Error, List Assignment: <positions> must be a dense list of positive integers
+Error, List Assignments: <positions> must be a dense list of positive integers
 gap> a{[1]}{[1]} := [ [ [ 18, 19 ] ] ];
 [ [ [ 18, 19 ] ] ]
 gap> a;

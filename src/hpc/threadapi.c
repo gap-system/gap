@@ -1414,7 +1414,7 @@ static Obj FuncTransmitChannel(Obj self, Obj channel, Obj obj)
 static Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list)
 {
     RequireChannel("MultiSendChannel", channel);
-    CheckIsDenseList("MultiSendChannel", "list", list);
+    RequireDenseList("MultiSendChannel", list);
     MultiSendChannel(ObjPtr(channel), list, 1);
     return (Obj)0;
 }
@@ -1422,7 +1422,7 @@ static Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list)
 static Obj FuncMultiTransmitChannel(Obj self, Obj channel, Obj list)
 {
     RequireChannel("MultiTransmitChannel", channel);
-    CheckIsDenseList("MultiTransmitChannel", "list", list);
+    RequireDenseList("MultiTransmitChannel", list);
     MultiSendChannel(ObjPtr(channel), list, 0);
     return (Obj)0;
 }
@@ -1430,7 +1430,7 @@ static Obj FuncMultiTransmitChannel(Obj self, Obj channel, Obj list)
 static Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list)
 {
     RequireChannel("TryMultiSendChannel", channel);
-    CheckIsDenseList("TryMultiSendChannel", "list", list);
+    RequireDenseList("TryMultiSendChannel", list);
     return INTOBJ_INT(TryMultiSendChannel(ObjPtr(channel), list, 1));
 }
 
@@ -1438,7 +1438,7 @@ static Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list)
 static Obj FuncTryMultiTransmitChannel(Obj self, Obj channel, Obj list)
 {
     RequireChannel("TryMultiTransmitChannel", channel);
-    CheckIsDenseList("TryMultiTransmitChannel", "list", list);
+    RequireDenseList("TryMultiTransmitChannel", list);
     return INTOBJ_INT(TryMultiSendChannel(ObjPtr(channel), list, 0));
 }
 

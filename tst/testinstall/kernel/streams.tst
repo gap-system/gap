@@ -127,7 +127,7 @@ fail
 gap> OUTPUT_TEXT_FILE(fail, fail);
 Error, OUTPUT_TEXT_FILE: <filename> must be a string (not the value 'fail')
 gap> OUTPUT_TEXT_FILE("test", fail);
-Error, OUTPUT_TEXT_FILE: <append> must be a boolean (not a boolean or fail)
+Error, OUTPUT_TEXT_FILE: <append> must be true or false (not the value 'fail')
 
 #
 gap> POSITION_FILE(fail);

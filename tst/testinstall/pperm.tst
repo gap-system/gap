@@ -4043,19 +4043,19 @@ true
 
 # OnSets and OnTuples
 gap> OnSets([2 ^ 60], PartialPerm([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
-Error, <set> must be a list of small integers
+Error, <set> must be a list of positive small integers
 gap> OnTuples([2 ^ 60], PartialPerm([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
 Error, <tup> must be a list of small integers
 gap> OnSets(["a"], PartialPerm([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
-Error, <set> must be a list of small integers
+Error, <set> must be a list of positive small integers
 gap> OnTuples(["a"], PartialPerm([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
 Error, <tup> must be a list of small integers
 gap> OnSets([2 ^ 60], PPerm4([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
-Error, <set> must be a list of small integers
+Error, <set> must be a list of positive small integers
 gap> OnTuples([2 ^ 60], PPerm4([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
 Error, <tup> must be a list of small integers
 gap> OnSets(["a"], PPerm4([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
-Error, <set> must be a list of small integers
+Error, <set> must be a list of positive small integers
 gap> OnTuples(["a"], PPerm4([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
 Error, <tup> must be a list of small integers
 

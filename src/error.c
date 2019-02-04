@@ -539,14 +539,20 @@ void CheckIsDenseList(const Char * desc, const Char * listName, Obj list)
 **
 *F  CheckSameLength
 */
-void CheckSameLength(const Char * desc, const Char *leftName, const Char *rightName, Obj left, Obj right)
+void CheckSameLength(const Char * desc,
+                     const Char * name1,
+                     const Char * name2,
+                     Obj          op1,
+                     Obj          op2)
 {
-    UInt ll = LEN_LIST(left);
-    UInt lr = LEN_LIST(right);
-    if ( ll != lr ) {
+    UInt len1 = LEN_LIST(op1);
+    UInt len2 = LEN_LIST(op2);
+    if (len1 != len2) {
         Char message[1024];
-        snprintf(message, sizeof(message), "%s: <%s> must have the same length as <%s> "
-            "(lengths are %d and %d)", desc, leftName, rightName, (int)ll, (int)lr);
+        snprintf(message, sizeof(message),
+                 "%s: <%s> must have the same length as <%s> "
+                 "(lengths are %d and %d)",
+                 desc, name1, name2, (int)len1, (int)len2);
         ErrorMayQuit(message, 0, 0);
     }
 }

@@ -3526,7 +3526,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
                 // POW, which calls PowIntPerm2/4, which if called with a
                 // non-small positive integer returns that integer, since every
                 // permutation fixes every non-small positive integer.
-                ErrorQuit("<set> must be a list of small integers", 0, 0);
+                ErrorQuit("<set> must be a list of positive small integers", 0, 0);
             }
         }
     }
@@ -3550,7 +3550,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
                 // POW, which calls PowIntPerm2/4, which if called with a
                 // non-small positive integer returns that integer, since every
                 // permutation fixes every non-small positive integer.
-                ErrorQuit("<set> must be a list of small integers", 0, 0);
+                ErrorQuit("<set> must be a list of positive small integers", 0, 0);
             }
         }
     }

@@ -1058,7 +1058,7 @@ static Obj FuncLIST_BLIST(Obj self, Obj list, Obj blist)
     RequireSmallList("ListBlist", list);
     /* get and check the second argument                                   */
     RequireBlist("ListBlist", blist, "blist");
-    CheckSameLength("ListBlist", "blist", "list", blist, list);
+    RequireSameLength("ListBlist", blist, list);
 
     /* compute the number of 'true'-s                                      */
     n = SizeBlist(blist);
@@ -1228,7 +1228,7 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
     lenList  = LEN_LIST( list );
 
     RequireBlist("UniteBlistList", blist, "blist");
-    CheckSameLength("UniteBlistList", "blist", "list", blist, list);
+    RequireSameLength("UniteBlistList", blist, list);
     RequireSmallList("UniteBlistList", sub);
 
     lenSub   = LEN_LIST( sub );

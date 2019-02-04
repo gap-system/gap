@@ -465,23 +465,24 @@ fail
 gap> MappingPermListList([1,2], [1000,1000]);
 fail
 gap> MappingPermListList((), []);
-Error, first argument must be a list (not a permutation (small))
+Error, AddRowVector: <src> must be a dense list (not a permutation (small))
 gap> MappingPermListList([], ());
-Error, second argument must be a list (not a permutation (small))
+Error, AddRowVector: <dst> must be a dense list (not a permutation (small))
 gap> MappingPermListList("cheese", "cake");
-Error, arguments must be lists of equal length
+Error, AddRowVector: <src> must have the same length as <dst> (lengths are 6 a\
+nd 4)
 gap> MappingPermListList("cheese", "cakeba");
-Error, first argument must be a list of positive integers
+Error, <src> must be a dense list of positive small integers
 gap> MappingPermListList([1,2], [3,[]]);
-Error, second argument must be a list of positive integers
+Error, <dst> must be a dense list of positive small integers
 gap> MappingPermListList([1,[]], [3,4]);
-Error, first argument must be a list of positive integers
+Error, <src> must be a dense list of positive small integers
 gap> MappingPermListList([1,2], [3,0]);
-Error, second argument must be a list of positive integers
+Error, <dst> must be a dense list of positive small integers
 gap> MappingPermListList([1,0], [3,4]);
-Error, first argument must be a list of positive integers
+Error, <src> must be a dense list of positive small integers
 gap> MappingPermListList([1,-1], [3,4]);
-Error, first argument must be a list of positive integers
+Error, <src> must be a dense list of positive small integers
 gap> MappingPermListList([1,2], [3,4]);
 (1,3)(2,4)
 gap> (1,128000) = ();

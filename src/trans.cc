@@ -429,7 +429,7 @@ static Obj FuncTransformationListListNC(Obj self, Obj src, Obj ran)
 
     RequireSmallList("TransformationListListNC", src);
     RequireSmallList("TransformationListListNC", ran);
-    CheckSameLength("TransformationListListNC", "src", "ran", src, ran);
+    RequireSameLength("TransformationListListNC", src, ran);
 
     deg = 0;
     for (i = LEN_LIST(src); 1 <= i; i--) {
@@ -3233,11 +3233,8 @@ static Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
     UInt   deg, i, j;
     Obj    g, k;
 
-    if (!IS_LIST(list)) {
-        ErrorQuit("INV_LIST_TRANS: the first argument must be a "
-                  "list (not a %s)",
-                  (Int)TNAM_OBJ(list), 0L);
-    }
+    RequireDenseList("INV_LIST_TRANS", list);
+    RequireTransformation("INV_LIST_TRANS", f);
 
     if (TNUM_OBJ(f) == T_TRANS2) {
         deg = DEG_TRANS2(f);
@@ -3288,7 +3285,6 @@ static Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
         }
         return g;
     }
-    RequireTransformation("INV_LIST_TRANS", f);
     return 0L;
 }
 
