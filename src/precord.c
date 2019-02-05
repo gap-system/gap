@@ -251,10 +251,6 @@ UInt PositionPRec(Obj rec, UInt rnam, int cleanup)
         /* DIRTY! Not everything sorted! */
         if (cleanup) {
             SortPRecRNam(rec,0);
-            /* Note that this does not change the length and it cannot
-             * trigger a garbage collection if cleanup is 1!
-             * We do not want record accesses to trigger garbage
-             * collections! */
         } else {
             /* We are not allowed to cleanup, so we live with it, we
              * first try to find rnam in the mess at the end, then
