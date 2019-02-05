@@ -97,6 +97,7 @@ EXPORT_INLINE UInt LEN_PREC(Obj rec)
 EXPORT_INLINE void SET_LEN_PREC(Obj rec, UInt nr)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
+    GAP_ASSERT(nr <= CAPACITY_PREC(rec));
     ((UInt *)(ADDR_OBJ(rec)))[1] = nr;
 }
 
@@ -126,7 +127,7 @@ EXPORT_INLINE void SET_RNAM_PREC(Obj rec, UInt i, UInt rnam)
 EXPORT_INLINE UInt GET_RNAM_PREC(Obj rec, UInt i)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
-    GAP_ASSERT(i <= CAPACITY_PREC(rec));
+    GAP_ASSERT(i <= LEN_PREC(rec));
     return *(const UInt *)(CONST_ADDR_OBJ(rec)+2*(i));
 }
 
@@ -156,7 +157,7 @@ EXPORT_INLINE void SET_ELM_PREC(Obj rec, UInt i, Obj val)
 EXPORT_INLINE Obj GET_ELM_PREC(Obj rec, UInt i)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
-    GAP_ASSERT(i <= CAPACITY_PREC(rec));
+    GAP_ASSERT(i <= LEN_PREC(rec));
     return *(CONST_ADDR_OBJ(rec)+2*(i)+1);
 }
 
