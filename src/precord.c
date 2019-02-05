@@ -247,7 +247,7 @@ UInt PositionPRec(Obj rec, UInt rnam, int cleanup)
     /* This only assumes that the rnam values in the record are sorted! */
     UInt low = 1;
     UInt high = LEN_PREC(rec);
-    if (high > 0 && (Int) (GET_RNAM_PREC(rec,high)) > 0) {
+    if (high > 0 && GET_RNAM_PREC(rec,high) > 0) {
         /* DIRTY! Not everything sorted! */
         if (cleanup) {
             SortPRecRNam(rec,0);
@@ -261,7 +261,7 @@ UInt PositionPRec(Obj rec, UInt rnam, int cleanup)
              * fall back to binary search: */
             UInt i = high;
             while (i >= 1) {
-                Int rnam2 = (Int)(GET_RNAM_PREC(rec, i));
+                Int rnam2 = GET_RNAM_PREC(rec, i);
                 if (rnam == rnam2) {
                     GAP_ASSERT(i != 0);
                     return i;
@@ -282,7 +282,7 @@ UInt PositionPRec(Obj rec, UInt rnam, int cleanup)
     rnam = -rnam;
     while (low < high) {
         UInt i = (low + high) / 2; /* we always have low <= i < high */
-        rnam2 = (Int)(GET_RNAM_PREC(rec, i));
+        rnam2 = GET_RNAM_PREC(rec, i);
         if (rnam2 > rnam) {
             low = i + 1;
         }
@@ -460,13 +460,12 @@ void SortPRecRNam (
     UInt i,j,k,save;
     int issorted = 1;
     Obj space;
-    Obj tmp;
 
     /* Nothing has to be done if it is already sorted: */
-    if ( len == 0 || (Int) (GET_RNAM_PREC(rec,len)) < 0) return;
+    if ( len == 0 || GET_RNAM_PREC(rec,len) < 0) return;
 
     /* First find the "unsorted part" and check whether it is sorted! */
-    for (i = len-1;i >= 1 && (Int)(GET_RNAM_PREC(rec,i)) > 0;i--) {
+    for (i = len-1;i >= 1 && GET_RNAM_PREC(rec,i) > 0;i--) {
         if (issorted && GET_RNAM_PREC(rec,i) > GET_RNAM_PREC(rec,i+1)) {
             issorted = 0;
         }
@@ -481,11 +480,11 @@ void SortPRecRNam (
      * sorted. */
     save = i;
     if (save == 1 ||
-        -(Int)(GET_RNAM_PREC(rec,save-1)) < GET_RNAM_PREC(rec,save)) {
+        -GET_RNAM_PREC(rec,save-1) < GET_RNAM_PREC(rec,save)) {
         /* Otherwise, nothing has to be done since it is already
          * sorted, we only have to negate the RNams! */
         for (j = save;j <= len;j++)
-            SET_RNAM_PREC(rec,j,-(Int)(GET_RNAM_PREC(rec,j)));
+            SET_RNAM_PREC(rec,j,-GET_RNAM_PREC(rec,j));
         return;
     }
     /* Next we perform a merge sort on the two presorted areas. */
@@ -495,12 +494,12 @@ void SortPRecRNam (
         j = 1;
         k = 1;
         while (j < save && i <= len) {
-            if (-(Int)(GET_RNAM_PREC(rec,j)) < GET_RNAM_PREC(rec,i)) {
+            if (-GET_RNAM_PREC(rec,j) < GET_RNAM_PREC(rec,i)) {
                 SET_RNAM_PREC(space,k,GET_RNAM_PREC(rec,j));
                 SET_ELM_PREC(space,k,GET_ELM_PREC(rec,j));
                 j++; k++;
             } else {
-                SET_RNAM_PREC(space,k,-(Int)(GET_RNAM_PREC(rec,i)));
+                SET_RNAM_PREC(space,k,-GET_RNAM_PREC(rec,i));
                 SET_ELM_PREC(space,k,GET_ELM_PREC(rec,i));
                 i++; k++;
             }
@@ -512,7 +511,7 @@ void SortPRecRNam (
             j++; k++;
         }
         while (i <= len) {
-            SET_RNAM_PREC(space,k,-(Int)(GET_RNAM_PREC(rec,i)));
+            SET_RNAM_PREC(space,k,-GET_RNAM_PREC(rec,i));
             SET_ELM_PREC(space,k,GET_ELM_PREC(rec,i));
             i++; k++;
         }
@@ -522,21 +521,21 @@ void SortPRecRNam (
         /* i == save is the cut point */
         j = 1;
         for (j = 1; j < save; j++) {
-            if (-(Int)(GET_RNAM_PREC(rec,j)) > GET_RNAM_PREC(rec,i)) {
+            if (-GET_RNAM_PREC(rec,j) > GET_RNAM_PREC(rec,i)) {
                 /* we have to move something to position j! */
-                tmp = (Obj) (-(Int)(GET_RNAM_PREC(rec,j)));
-                SET_RNAM_PREC(rec,j,-(Int)(GET_RNAM_PREC(rec,i)));
-                SET_RNAM_PREC(rec,i,(UInt) tmp);
-                tmp = GET_ELM_PREC(rec,j);
+                Int tmprnam = (-GET_RNAM_PREC(rec,j));
+                SET_RNAM_PREC(rec,j,-GET_RNAM_PREC(rec,i));
+                SET_RNAM_PREC(rec,i,tmprnam);
+                Obj tmp = GET_ELM_PREC(rec,j);
                 SET_ELM_PREC(rec,j,GET_ELM_PREC(rec,i));
                 SET_ELM_PREC(rec,i,tmp);
                 /* Now we have to "bubble pos i up" until it is in the
                  * right position: */
                 for (k = i;k < len;k++) {
                     if (GET_RNAM_PREC(rec,k) > GET_RNAM_PREC(rec,k+1)) {
-                        tmp = (Obj) GET_RNAM_PREC(rec,k);
+                        tmprnam = GET_RNAM_PREC(rec,k);
                         SET_RNAM_PREC(rec,k,GET_RNAM_PREC(rec,k+1));
-                        SET_RNAM_PREC(rec,k+1,(UInt) tmp);
+                        SET_RNAM_PREC(rec,k+1,tmprnam);
                         tmp = GET_ELM_PREC(rec,k);
                         SET_ELM_PREC(rec,k,GET_ELM_PREC(rec,k+1));
                         SET_ELM_PREC(rec,k+1,tmp);
@@ -546,7 +545,7 @@ void SortPRecRNam (
         }
         /* Finally, we have to negate everything in the end: */
         for (j = save;j <= len;j++)
-            SET_RNAM_PREC(rec,j,-(Int)(GET_RNAM_PREC(rec,j)));
+            SET_RNAM_PREC(rec,j,-GET_RNAM_PREC(rec,j));
     }
 }
 
@@ -558,7 +557,7 @@ void SortPRecRNam (
 
 static void PrintPathPRec(Obj rec, Int indx)
 {
-    Pr( ".%H", (Int)NAME_RNAM( labs((Int)(GET_RNAM_PREC(rec,indx))) ), 0L );
+    Pr( ".%H", (Int)NAME_RNAM( labs(GET_RNAM_PREC(rec,indx)) ), 0L );
 }
 
 /****************************************************************************
@@ -587,7 +586,7 @@ static Obj InnerRecNames(Obj rec)
 
     /* loop over the components                                            */
     for ( i = 1; i <= LEN_PREC(rec); i++ ) {
-        rnam = -(Int)(GET_RNAM_PREC( rec, i ));
+        rnam = -GET_RNAM_PREC( rec, i );
         /* could have been moved by garbage collection */
         name = NAME_RNAM( rnam );
         string = CopyToStringRep( name );
@@ -724,8 +723,8 @@ static Int LtPRec(Obj left, Obj right)
         /* The sense of this comparison is determined by the rule that
            unbound entries compare less than bound ones                    */
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
-            res = !LT( NAME_RNAM( labs((Int)(GET_RNAM_PREC(left,i))) ),
-                   NAME_RNAM( labs((Int)(GET_RNAM_PREC(right,i))) ) );
+            res = !LT( NAME_RNAM( labs(GET_RNAM_PREC(left,i)) ),
+                   NAME_RNAM( labs(GET_RNAM_PREC(right,i)) ) );
             break;
         }
 
