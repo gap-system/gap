@@ -229,7 +229,7 @@ static void MakeImmutablePRec(Obj rec)
     // Sort the record at this point. This can never hurt, unless the record
     // will never be accessed again anyway. But for HPC-GAP it is essential so
     // that immutable records are actually binary unchanging.
-    SortPRecRNam(rec, 1);
+    SortPRecRNam(rec, 0);
 }
 
 
