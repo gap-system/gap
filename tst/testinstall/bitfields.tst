@@ -29,12 +29,30 @@ gap> for i in [1..2+GAPInfo.BytesPerVariable] do
 
 #
 # Now test various error and extreme conditions
-#<
+#
 gap> bf := MakeBitfields(1);
 rec( booleanGetters := [ function( data ) ... end ], 
   booleanSetters := [ function( data, val ) ... end ], 
   getters := [ function( data ) ... end ], 
   setters := [ function( data, val ) ... end ], widths := [ 1 ] )
+
+#
+gap> Display(bf.getters[1]);
+function ( data )
+    <<kernel or compiled code>>
+end
+gap> Display(bf.setters[1]);
+function ( data, val )
+    <<kernel or compiled code>>
+end
+gap> Display(bf.booleanGetters[1]);
+function ( data )
+    <<kernel or compiled code>>
+end
+gap> Display(bf.booleanSetters[1]);
+function ( data, val )
+    <<kernel or compiled code>>
+end
 
 #
 gap> bf.getters[1](Z(5));

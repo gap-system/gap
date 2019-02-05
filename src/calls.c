@@ -988,12 +988,8 @@ void PrintFunction (
 {
     Int                 narg;           /* number of arguments             */
     Int                 nloc;           /* number of locals                */
-    Obj                 oldLVars;       /* terrible hack                   */
     UInt                i;              /* loop variable                   */
     UInt                isvarg;         /* does function have varargs?     */
-#ifdef HPCGAP
-    const Char          *locks = 0;
-#endif
 
     isvarg = 0;
 
@@ -1005,7 +1001,6 @@ void PrintFunction (
 #ifdef HPCGAP
     /* print 'function (' or 'atomic function ('                          */
     if (LCKS_FUNC(func)) {
-      locks = CONST_CSTR_STRING(LCKS_FUNC(func));
       Pr("%5>atomic function%< ( %>",0L,0L);
     } else
       Pr("%5>function%< ( %>",0L,0L);
@@ -1023,7 +1018,8 @@ void PrintFunction (
     
     for ( i = 1; i <= narg; i++ ) {
 #ifdef HPCGAP
-        if (locks) {
+        if (LCKS_FUNC(func)) {
+            const Char * locks = CONST_CSTR_STRING(LCKS_FUNC(func));
             switch(locks[i-1]) {
             case LOCK_QUAL_READONLY:
                 Pr("%>readonly %<", 0L, 0L);
@@ -1043,10 +1039,13 @@ void PrintFunction (
         }
         if ( i != narg )  Pr("%<, %>",0L,0L);
     }
-    Pr(" %<)",0L,0L);
+    Pr(" %<)\n",0L,0L);
 
-        Pr("\n",0L,0L);
-
+    // print the body
+    if (IsKernelFunction(func)) {
+        PrintKernelFunction(func);
+    }
+    else {
         /* print the locals                                                */
         nloc = NLOC_FUNC(func);
         if ( nloc >= 1 ) {
@@ -1061,17 +1060,13 @@ void PrintFunction (
             Pr("%<;\n",0L,0L);
         }
 
-        /* print the body                                                  */
-        if (IsKernelFunction(func)) {
-            PrintKernelFunction(func);
-        }
-        else {
-            SWITCH_TO_NEW_LVARS( func, narg, NLOC_FUNC(func),
-                                 oldLVars );
-            PrintStat( OFFSET_FIRST_STAT );
-            SWITCH_TO_OLD_LVARS( oldLVars );
-        }
-        Pr("%4<\n",0L,0L);
+        // print the code
+        Obj oldLVars;
+        SWITCH_TO_NEW_LVARS(func, narg, NLOC_FUNC(func), oldLVars);
+        PrintStat( OFFSET_FIRST_STAT );
+        SWITCH_TO_OLD_LVARS( oldLVars );
+    }
+    Pr("%4<\n",0L,0L);
     
     /* print 'end'                                                         */
     Pr("end",0L,0L);
