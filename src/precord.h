@@ -109,11 +109,11 @@ EXPORT_INLINE void SET_LEN_PREC(Obj rec, UInt nr)
 **  'SET_RNAM_PREC' sets   the name of  the  <i>-th  record component  of the
 **  record <rec> to the record name <rnam>.
 */
-EXPORT_INLINE void SET_RNAM_PREC(Obj rec, UInt i, UInt rnam)
+EXPORT_INLINE void SET_RNAM_PREC(Obj rec, UInt i, Int rnam)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(i <= CAPACITY_PREC(rec));
-    *(UInt *)(ADDR_OBJ(rec)+2*(i)) = rnam;
+    *(Int *)(ADDR_OBJ(rec)+2*(i)) = rnam;
 }
 
 
@@ -124,11 +124,11 @@ EXPORT_INLINE void SET_RNAM_PREC(Obj rec, UInt i, UInt rnam)
 **  'GET_RNAM_PREC' returns the record name of the <i>-th record component of
 **  the record <rec>.
 */
-EXPORT_INLINE UInt GET_RNAM_PREC(Obj rec, UInt i)
+EXPORT_INLINE Int GET_RNAM_PREC(Obj rec, UInt i)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(i <= LEN_PREC(rec));
-    return *(const UInt *)(CONST_ADDR_OBJ(rec)+2*(i));
+    return *(const Int *)(CONST_ADDR_OBJ(rec)+2*(i));
 }
 
 

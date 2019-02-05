@@ -586,7 +586,7 @@ static void PrintTLRecord(Obj obj)
   if (record) {
     for (i = 1; i <= LEN_PREC(record); i++) {
       Obj val = GET_ELM_PREC(record, i);
-      Pr("%H", (Int)NAME_RNAM(labs((Int)GET_RNAM_PREC(record, i))), 0L);
+      Pr("%H", (Int)NAME_RNAM(labs(GET_RNAM_PREC(record, i))), 0L);
       Pr ("%< := %>", 0L, 0L);
       if (val)
         PrintObj(val);
