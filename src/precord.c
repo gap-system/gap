@@ -439,9 +439,8 @@ static void PrintPRec(Obj rec)
 **  in not necessarily sorted order in the kernel. It is automatically
 **  called on the first read access if necessary. See the top of "precord.c"
 **  for a comment on lazy sorting.
-**  If inplace is 1 then a slightly slower algorithm is used of
-**  which we know that it does not produce garbage collections.
-**  If inplace is 0 a garbage collection may be triggered.
+**  The second argument remains for backwards compatability with packages
+**  and should always be 0.
 **
 */
 static int PrecComparer(const void *a, const void *b)
@@ -456,6 +455,8 @@ static int PrecComparer(const void *a, const void *b)
 void SortPRecRNam (
     Obj                 rec, int inplace )
 {
+    GAP_ASSERT(inplace == 0);
+
     UInt len = LEN_PREC(rec);
     UInt i,j,k,save;
     int issorted = 1;
@@ -489,64 +490,33 @@ void SortPRecRNam (
     }
     /* Next we perform a merge sort on the two presorted areas. */
     /* For optimal performance, we need some space to mess around: */
-    if (!inplace) {
-        space = NEW_PREC(len);
-        j = 1;
-        k = 1;
-        while (j < save && i <= len) {
-            if (-GET_RNAM_PREC(rec,j) < GET_RNAM_PREC(rec,i)) {
-                SET_RNAM_PREC(space,k,GET_RNAM_PREC(rec,j));
-                SET_ELM_PREC(space,k,GET_ELM_PREC(rec,j));
-                j++; k++;
-            } else {
-                SET_RNAM_PREC(space,k,-GET_RNAM_PREC(rec,i));
-                SET_ELM_PREC(space,k,GET_ELM_PREC(rec,i));
-                i++; k++;
-            }
-        }
-        /* Copy the rest of the part still missing: */
-        while (j < save) {
+    space = NEW_PREC(len);
+    j = 1;
+    k = 1;
+    while (j < save && i <= len) {
+        if (-GET_RNAM_PREC(rec,j) < GET_RNAM_PREC(rec,i)) {
             SET_RNAM_PREC(space,k,GET_RNAM_PREC(rec,j));
             SET_ELM_PREC(space,k,GET_ELM_PREC(rec,j));
             j++; k++;
-        }
-        while (i <= len) {
+        } else {
             SET_RNAM_PREC(space,k,-GET_RNAM_PREC(rec,i));
             SET_ELM_PREC(space,k,GET_ELM_PREC(rec,i));
             i++; k++;
         }
-        /* Finally, copy everything back to where it came from: */
-        memcpy(ADDR_OBJ(rec)+2,CONST_ADDR_OBJ(space)+2,sizeof(Obj)*2*len);
-    } else {   /* We have to work in place to avoid a garbage collection. */
-        /* i == save is the cut point */
-        j = 1;
-        for (j = 1; j < save; j++) {
-            if (-GET_RNAM_PREC(rec,j) > GET_RNAM_PREC(rec,i)) {
-                /* we have to move something to position j! */
-                Int tmprnam = (-GET_RNAM_PREC(rec,j));
-                SET_RNAM_PREC(rec,j,-GET_RNAM_PREC(rec,i));
-                SET_RNAM_PREC(rec,i,tmprnam);
-                Obj tmp = GET_ELM_PREC(rec,j);
-                SET_ELM_PREC(rec,j,GET_ELM_PREC(rec,i));
-                SET_ELM_PREC(rec,i,tmp);
-                /* Now we have to "bubble pos i up" until it is in the
-                 * right position: */
-                for (k = i;k < len;k++) {
-                    if (GET_RNAM_PREC(rec,k) > GET_RNAM_PREC(rec,k+1)) {
-                        tmprnam = GET_RNAM_PREC(rec,k);
-                        SET_RNAM_PREC(rec,k,GET_RNAM_PREC(rec,k+1));
-                        SET_RNAM_PREC(rec,k+1,tmprnam);
-                        tmp = GET_ELM_PREC(rec,k);
-                        SET_ELM_PREC(rec,k,GET_ELM_PREC(rec,k+1));
-                        SET_ELM_PREC(rec,k+1,tmp);
-                    } else break;
-                }
-            }
-        }
-        /* Finally, we have to negate everything in the end: */
-        for (j = save;j <= len;j++)
-            SET_RNAM_PREC(rec,j,-GET_RNAM_PREC(rec,j));
     }
+    /* Copy the rest of the part still missing: */
+    while (j < save) {
+        SET_RNAM_PREC(space,k,GET_RNAM_PREC(rec,j));
+        SET_ELM_PREC(space,k,GET_ELM_PREC(rec,j));
+        j++; k++;
+    }
+    while (i <= len) {
+        SET_RNAM_PREC(space,k,-GET_RNAM_PREC(rec,i));
+        SET_ELM_PREC(space,k,GET_ELM_PREC(rec,i));
+        i++; k++;
+    }
+    /* Finally, copy everything back to where it came from: */
+    memcpy(ADDR_OBJ(rec)+2,CONST_ADDR_OBJ(space)+2,sizeof(Obj)*2*len);
 }
 
 /****************************************************************************
