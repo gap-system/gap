@@ -695,7 +695,8 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##  <Listing><![CDATA[
 ##    StructureDescription(<G>) ::=
 ##        1                                 ; trivial group 
-##      | C<size>                           ; cyclic group
+##      | C<size>                           ; finite cyclic group
+##      | Z                                 ; infinite cyclic group
 ##      | A<degree>                         ; alternating group
 ##      | S<degree>                         ; symmetric group
 ##      | D<size>                           ; dihedral group
@@ -759,7 +760,7 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##    If <A>G</A> is abelian, then decompose it into cyclic factors
 ##    in <Q>elementary divisors style</Q>. For example,
 ##    <C>"C2 x C3 x C3"</C> is <C>"C6 x C3"</C>.
-##    For infinite abelian groups, <C>"C0"</C> denotes the group of integers.
+##    For infinite abelian groups, <C>"Z"</C> denotes the group of integers.
 ##  </Item>
 ##  <Mark>3.</Mark>
 ##  <Item>
@@ -883,9 +884,9 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##  gap> StructureDescription(SmallGroup(504,7):nice);
 ##  "(C7 : Q8) : C9"
 ##  gap> StructureDescription(AbelianGroup([0,2,3]));
-##  "C0 x C6"
+##  "Z x C6"
 ##  gap> StructureDescription(AbelianGroup([0,0,0,2,3,6]):short);
-##  "0^3x6^2"
+##  "Z^3x6^2"
 ##  gap> StructureDescription(PSL(4,2));
 ##  "A8"
 ##  ]]></Example>

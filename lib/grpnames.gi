@@ -490,7 +490,7 @@ local Ns,MinNs,sel,a,sz,j,gs,g,N;
     Add(MinNs,Ns[a]);
     for j in ShallowCopy(sel) do
       if Size(Ns[j])>sz and Size(Ns[j]) mod sz=0 and IsSubset(Ns[j],Ns[a]) then
-	RemoveSet(sel,j);
+        RemoveSet(sel,j);
       fi;
     od;
   od;
@@ -1672,23 +1672,35 @@ BindGlobal( "SD_insertsep", # function to join parts of name
       return s;
     end);
 
+BindGlobal( "SD_cyclic",
+    function ( n )
+      if n = 0 or n = infinity then
+        return "Z";
+      fi;
+      return Concatenation("C",String(n));
+    end);
+
 BindGlobal( "SD_cycsaspowers", # function to write C2 x C2 x C2 as 2^3, etc.
     function ( name, cycsizes )
 
-      local  short, d, k, j, n;
+      local  short, g, d, k, j, n;
 
       short := ValueOption("short") = true;
       if not short then return name; fi;
       RemoveCharacters(name," ");
         cycsizes := Collected(cycsizes);
-        for n in cycsizes
-        do
+        for n in cycsizes do
           d := n[1]; k := n[2];
+          g := SD_cyclic(d);
+          if d = 0 then
+            d := "Z";
+          else
+            d := String(d);
+          fi;
           if k > 1 then
             for j in Reversed([2..k]) do
-              name := ReplacedString(name,SD_insertsep(List([1..j],
-                        i->Concatenation("C",String(d))),"x",""),
-                        Concatenation(String(d),"^",String(j)));
+              name := ReplacedString(name,SD_insertsep(List([1..j],i->g),"x",""),
+                        Concatenation(d,"^",String(j)));
             od;
           fi;
         od;
@@ -1709,8 +1721,7 @@ BindGlobal( "StructureDescriptionForAbelianGroups", # for abelian groups
     cycsizes := AbelianInvariants(G);
     cycsizes := Reversed(ElementaryDivisorsMat(DiagonalMat(cycsizes)));
     cycsizes := Filtered(cycsizes,n->n<>1);
-    return SD_cycsaspowers(SD_insertsep(List(cycsizes,
-                                             n->Concatenation("C",String(n))),
+    return SD_cycsaspowers(SD_insertsep(List(cycsizes, SD_cyclic),
                                         " x ",""), cycsizes);
   end );
 
@@ -1886,8 +1897,7 @@ BindGlobal( "StructureDescriptionForFiniteGroups", # for finite groups
       if cyclics <> [] then
         cycsizes := ElementaryDivisorsMat(DiagonalMat(List(cyclics,Size)));
         cycsizes := Filtered(cycsizes,n->n<>1);
-        cycname  := SD_cycsaspowers(SD_insertsep(List(cycsizes,
-                                    n->Concatenation("C",String(n))),
+        cycname  := SD_cycsaspowers(SD_insertsep(List(cycsizes, SD_cyclic),
                                     " x ",":."), cycsizes);
       else cycname := ""; fi;
       noncyclics := Difference(Gs,cyclics);

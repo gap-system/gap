@@ -15,9 +15,9 @@ gap> StructureDescription(SmallGroup(504,7));
 gap> StructureDescription(SmallGroup(504,7):nice);
 "(C7 : Q8) : C9"
 gap> StructureDescription(AbelianGroup([0,2,3]));
-"C0 x C6"
+"Z x C6"
 gap> StructureDescription(AbelianGroup([0,0,0,2,3,6]):short);
-"0^3x6^2"
+"Z^3x6^2"
 gap> StructureDescription(PSL(4,2));
 "A8"
 
@@ -34,7 +34,7 @@ gap> List(AllPrimitiveGroups(DegreeAction, 8), StructureDescription);
 [ "(C2 x C2 x C2) : C7", "(C2 x C2 x C2) : (C7 : C3)", 
   "(C2 x C2 x C2) : PSL(3,2)", "PSL(3,2)", "PSL(3,2) : C2", "A8", "S8" ]
 gap> StructureDescription(AbelianGroup([0,0,0,2,3,6]):short);
-"0^3x6^2"
+"Z^3x6^2"
 gap> G := Group([ (4,8)(6,10), (4,6,10,8,12), (2,4,12)(6,10,8), (3,9)(4,6,10,8,12)(7,11), (3,5)(4,6,10,8,12)(9,11), (1,3,11,9,5)(4,6,10,8,12) ]);;
 gap> StructureDescription(G);
 "A5 x A5"
@@ -87,9 +87,9 @@ true
 gap> StructureDescriptionForFiniteSimpleGroups(Ree(27));
 "Ree(27)"
 gap> StructureDescription(AbelianGroup([0,0,0,2,3,4,5,6,7,8,9,10]));
-"C0 x C0 x C0 x C2520 x C60 x C6 x C2 x C2"
+"Z x Z x Z x C2520 x C60 x C6 x C2 x C2"
 gap> StructureDescription(AbelianGroup([0,0,0,2,3,4,5,6,7,8,9,10]):short);
-"0^3x2520x60x6x2^2"
+"Z^3x2520x60x6x2^2"
 gap> infolevel:=InfoLevel(InfoWarning);; SetInfoLevel(InfoWarning,2);
 gap> StructureDescription(SmallGroup(48,16):recompute,nice);
 #I  Warning! Non-unique semidirect product:
@@ -104,7 +104,15 @@ gap> F := FreeGroup("r", "s");; r := F.1;; s := F.2;;
 gap> G := F/[s^2, r^3, s*r*s*r];;
 gap> StructureDescription(G);
 "S3"
+
+# some infinite groups
 gap> G := F/[s*r*s^(-1)*r^(-1)];;
 gap> StructureDescription(G);
-"C0 x C0"
+"Z x Z"
+gap> StructureDescription(CyclicGroup(infinity));
+"Z"
+gap> StructureDescription(AbelianGroup([0,2,0]));
+"Z x Z x C2"
+
+#
 gap> STOP_TEST("StructureDescription.tst", 1);
