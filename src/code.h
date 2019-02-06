@@ -104,6 +104,10 @@ void SET_ENDLINE_BODY(Obj body, UInt val);
 
 Obj GET_VALUE_FROM_CURRENT_BODY(Int ix);
 
+EXPORT_INLINE Obj VALUES_BODY(Obj body)
+{
+    return BODY_HEADER(body)->values;
+}
 
 /****************************************************************************
 **

@@ -70,7 +70,6 @@ typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5,
 *F  NLOC_FUNC(<func>) . . . . . . . . . . . .  number of locals of a function
 *F  BODY_FUNC(<func>) . . . . . . . . . . . . . . . . . .  body of a function
 *F  ENVI_FUNC(<func>) . . . . . . . . . . . . . . . environment of a function
-*F  FEXS_FUNC(<func>) . . . . . . . . . . . .  func. expr. list of a function
 **
 **  These macros  make it possible  to access  the  various components  of  a
 **  function.
@@ -96,9 +95,6 @@ typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5,
 **  'ENVI_FUNC(<func>)'  is the  environment (i.e., the local  variables bag)
 **  that was current when <func> was created.
 **
-**  'FEXS_FUNC(<func>)'  is the function expressions list (i.e., the list of
-**  the function expressions of the functions defined inside of <func>).
-**
 **  'LCKS_FUNC(<func>)' is a string that contains the lock mode for the
 **  arguments of <func>. Each byte corresponds to the mode for an argument:
 **  0 means no lock, 1 means a read-only lock, 2 means a read-write lock.
@@ -114,7 +110,6 @@ typedef struct {
     Obj nloc;
     Obj body;
     Obj envi;
-    Obj fexs;
 #ifdef HPCGAP
     Obj locks;
 #endif
@@ -177,11 +172,6 @@ EXPORT_INLINE Obj ENVI_FUNC(Obj func)
     return CONST_FUNC(func)->envi;
 }
 
-EXPORT_INLINE Obj FEXS_FUNC(Obj func)
-{
-    return CONST_FUNC(func)->fexs;
-}
-
 #ifdef HPCGAP
 EXPORT_INLINE Obj LCKS_FUNC(Obj func)
 {
@@ -227,11 +217,6 @@ EXPORT_INLINE void SET_BODY_FUNC(Obj func, Obj body)
 EXPORT_INLINE void SET_ENVI_FUNC(Obj func, Obj envi)
 {
     FUNC(func)->envi = envi;
-}
-
-EXPORT_INLINE void SET_FEXS_FUNC(Obj func, Obj fexs)
-{
-    FUNC(func)->fexs = fexs;
 }
 
 #ifdef HPCGAP

@@ -660,7 +660,6 @@ Obj             MakeFunction (
 #ifdef HPCGAP
     SET_LCKS_FUNC( func, LCKS_FUNC( fexp ) );
 #endif
-    SET_FEXS_FUNC( func, FEXS_FUNC( fexp ) );
 
     /* return the function                                                 */
     return func;
@@ -675,12 +674,8 @@ Obj             MakeFunction (
 */
 static Obj EvalFuncExpr(Expr expr)
 {
-    Obj                 fexs;           /* func. expr. list of curr. func. */
-    Obj                 fexp;           /* function expression bag         */
-
     /* get the function expression bag                                     */
-    fexs = FEXS_FUNC( CURR_FUNC() );
-    fexp = ELM_PLIST(fexs, READ_EXPR(expr, 0));
+    Obj fexp = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 0));
 
     /* and make the function                                               */
     return MakeFunction( fexp );
@@ -695,14 +690,9 @@ static Obj EvalFuncExpr(Expr expr)
 */
 static void PrintFuncExpr(Expr expr)
 {
-    Obj                 fexs;           /* func. expr. list of curr. func. */
-    Obj                 fexp;           /* function expression bag         */
-
     /* get the function expression bag                                     */
-    fexs = FEXS_FUNC( CURR_FUNC() );
-    fexp = ELM_PLIST(fexs, READ_EXPR(expr, 0));
+    Obj fexp = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 0));
     PrintFunction( fexp );
-    /* Pr("function ... end",0L,0L); */
 }
 
 

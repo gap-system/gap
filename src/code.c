@@ -812,7 +812,6 @@ void CodeFuncExprBegin (
     Int                 startLine)
 {
     Obj                 fexp;           /* function expression bag         */
-    Obj                 fexs;           /* function expressions list       */
     Bag                 body;           /* function body                   */
     Bag                 old;            /* old frame                       */
     Stat                stat1;          /* first statement in body         */
@@ -828,11 +827,6 @@ void CodeFuncExprBegin (
 #ifdef HPCGAP
     if (nams) MakeBagPublic(nams);
 #endif
-    CHANGED_BAG( fexp );
-
-    /* give it a functions expressions list                                */
-    fexs = NEW_PLIST( T_PLIST, 0 );
-    SET_FEXS_FUNC( fexp, fexs );
     CHANGED_BAG( fexp );
 
     /* give it a body                                                      */
@@ -864,7 +858,6 @@ void CodeFuncExprEnd(UInt nr)
     Expr                expr;           /* function expression, result     */
     Stat                stat1;          /* single statement of body        */
     Obj                 fexp;           /* function expression bag         */
-    Obj                 fexs;           /* funct. expr. list of outer func */
     UInt                len;            /* length of func. expr. list      */
     UInt                i;              /* loop variable                   */
 
@@ -906,9 +899,6 @@ void CodeFuncExprEnd(UInt nr)
         WRITE_STAT(OFFSET_FIRST_STAT, nr - i, stat1);
     }
 
-    // make the function expression list immutable
-    MakeImmutable( FEXS_FUNC( fexp ) );
-
     // make the body values list (if any) immutable
     Obj values = ((BodyHeader *)STATE(PtrBody))->values;
     if (values)
@@ -927,8 +917,7 @@ void CodeFuncExprEnd(UInt nr)
     /* if this was inside another function definition, make the expression */
     /* and store it in the function expression list of the outer function  */
     if (STATE(CurrLVars) != CS(CodeLVars)) {
-        fexs = FEXS_FUNC( CURR_FUNC() );
-        len = PushPlist( fexs, fexp );
+        len = PushValue(fexp);
         expr = NewExpr( T_FUNC_EXPR, sizeof(Expr) );
         WRITE_EXPR(expr, 0, len);
         PushExpr( expr );
