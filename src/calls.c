@@ -1581,7 +1581,6 @@ static void SaveFunction(Obj func)
   SaveSubObj(header->nloc);
   SaveSubObj(header->body);
   SaveSubObj(header->envi);
-  SaveSubObj(header->fexs);
   if (IS_OPERATION(func))
     SaveOperationExtras( func );
 }
@@ -1603,7 +1602,6 @@ static void LoadFunction(Obj func)
   header->nloc = LoadSubObj();
   header->body = LoadSubObj();
   header->envi = LoadSubObj();
-  header->fexs = LoadSubObj();
   if (IS_OPERATION(func))
     LoadOperationExtras( func );
 }

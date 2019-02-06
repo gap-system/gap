@@ -1117,13 +1117,11 @@ static CVar CompFuncExpr(Expr expr)
     CVar                func;           /* function, result                */
     CVar                tmp;            /* dummy body                      */
 
-    Obj                 fexs;           /* function expressions list       */
     Obj                 fexp;           /* function expression             */
     Int                 nr;             /* number of the function          */
 
     /* get the number of the function                                      */
-    fexs = FEXS_FUNC( CURR_FUNC() );
-    fexp = ELM_PLIST(fexs, READ_EXPR(expr, 0));
+    fexp = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 0));
     nr   = NR_INFO( INFO_FEXP( fexp ) );
 
     /* allocate a new temporary for the function                           */
@@ -5034,7 +5032,6 @@ static void CompFunc(Obj func)
     Bag                 info;           /* info bag for this function      */
     Int                 narg;           /* number of arguments             */
     Int                 nloc;           /* number of locals                */
-    Obj                 fexs;           /* function expression list        */
     Bag                 oldFrame;       /* old frame                       */
     Int                 i;              /* loop variable                   */
     Int                 prevarargs;     /* we have varargs with a prefix   */
@@ -5073,10 +5070,15 @@ static void CompFunc(Obj func)
     /* get the info bag                                                    */
     info = INFO_FEXP( CURR_FUNC() );
 
-    /* compile the innner functions                                        */
-    fexs = FEXS_FUNC(func);
-    for ( i = 1;  i <= LEN_PLIST(fexs);  i++ ) {
-        CompFunc( ELM_PLIST( fexs, i ) );
+    /* compile the inner functions                                         */
+    Obj values = VALUES_BODY(BODY_FUNC(func));
+    if (values) {
+        UInt len = LEN_PLIST(values);
+        for (i = 1; i <= len; i++) {
+            Obj val = ELM_PLIST(values, i);
+            if (IS_FUNC(val))
+                CompFunc(val);
+        }
     }
 
     /* emit the code for the function header and the arguments             */

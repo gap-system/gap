@@ -163,11 +163,7 @@ static Obj SyntaxTreeFunccall(Obj result, Expr expr)
 
 static Obj SyntaxTreeFuncExpr(Obj result, Expr expr)
 {
-    Obj fexs;
-    Obj fexp;
-
-    fexs = FEXS_FUNC(CURR_FUNC());
-    fexp = ELM_PLIST(fexs, READ_EXPR(expr, 0));
+    Obj fexp = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 0));
 
     SyntaxTreeFunc(result, fexp);
 
