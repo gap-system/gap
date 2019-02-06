@@ -959,6 +959,42 @@ BIND_GLOBAL( "SetFeatureObj", function ( obj, filter, val )
     fi;
 end );
 
+#############################################################################
+##
+#F  TemporaryGlobalVarName( [<prefix>] )   name of an unbound global variable
+##
+##  TemporaryGlobalVarName ( [<prefix>]  ) returns a string  that can be used
+##  as the  name  of a global  variable  that is not bound   at the time when
+##  TemporaryGlobalVarName()  is called.    The optional  argument prefix can
+##  specify a string with which the name of the global variable starts.
+##
+
+InstallGlobalFunction( TemporaryGlobalVarName,
+        function( arg )
+    local   prefix,  nr,  gvar;
+
+  Info(InfoObsolete, 2, "This usage of `TemporaryGlobalVarName` is no longer ",
+         "supported and will be removed eventually." );
+
+    if Length(arg) = 0 then
+        prefix := "TEMP";
+    elif Length(arg) = 1 and IsString( arg[1] ) then
+        prefix := arg[1];
+        CheckGlobalName( prefix );
+    else
+        return Error( "usage: TemporaryGlobalVarName( [<prefix>] )" );
+    fi;
+
+    nr := 0;
+    gvar:= prefix;
+    while ISBOUND_GLOBAL( gvar ) do
+        nr := nr + 1;
+        gvar := Concatenation( prefix, String(nr) );
+    od;
+
+    return gvar;
+end );
+
 
 if IsHPCGAP then
     BindThreadLocal("HIDDEN_GVARS",[]);

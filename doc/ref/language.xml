@@ -583,8 +583,7 @@ Second, the variable names are passed as strings,
 rather than being written directly into the statements. 
 <P/>
 Note that the functions <Ref Func="NamesGVars"/>,
-<Ref Func="NamesSystemGVars"/>, <Ref Func="NamesUserGVars"/>,
-and <Ref Func="TemporaryGlobalVarName"/>
+<Ref Func="NamesSystemGVars"/>, and <Ref Func="NamesUserGVars"/>,
 deal with the <E>global namespace</E>.
 
 
@@ -714,19 +713,6 @@ variable names created by the &GAP; library when &GAP; was started.
 This function returns an immutable sorted list of the global variable
 names created since the library was read, to which a value is
 currently bound.
-</Description>
-</ManSection>
-
-
-<ManSection>
-<Func Name="TemporaryGlobalVarName" Arg='[prefix]'/>
-
-<Description>
-returns a string  that can be used
-as the  name  of a global  variable  that is not bound   at the time when
-<Ref Func="TemporaryGlobalVarName"/> is called.
-The optional argument <A>prefix</A> can
-specify a string with which the name of the global variable starts.
 </Description>
 </ManSection>
 
