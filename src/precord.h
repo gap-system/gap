@@ -113,7 +113,7 @@ EXPORT_INLINE void SET_RNAM_PREC(Obj rec, UInt i, Int rnam)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(i <= CAPACITY_PREC(rec));
-    *(Int *)(ADDR_OBJ(rec)+2*(i)) = rnam;
+    *(Int *)(ADDR_OBJ(rec) + 2 * (i)) = rnam;
 }
 
 
@@ -128,7 +128,7 @@ EXPORT_INLINE Int GET_RNAM_PREC(Obj rec, UInt i)
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(i <= LEN_PREC(rec));
-    return *(const Int *)(CONST_ADDR_OBJ(rec)+2*(i));
+    return *(const Int *)(CONST_ADDR_OBJ(rec) + 2 * (i));
 }
 
 
