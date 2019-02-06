@@ -257,20 +257,3 @@ DeclareGlobalFunction("MakeConstantGlobal");
 ##
 DeclareGlobalFunction("BindGlobal");
 DeclareGlobalFunction("BindConstant");
-
-#############################################################################
-##
-#F  TemporaryGlobalVarName( [<prefix>] )   name of an unbound global variable
-##
-##  <ManSection>
-##  <Func Name="TemporaryGlobalVarName" Arg='[prefix]'/>
-##
-##  <Description>
-##  TemporaryGlobalVarName ( [<A>prefix</A>] ) returns a string that can be used
-##  as the name of a global variable that is not bound at the time when
-##  TemporaryGlobalVarName() is called.  The optional argument prefix can
-##  specify a string with which the name of the global variable starts.
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction("TemporaryGlobalVarName");

@@ -691,6 +691,24 @@ if GAPInfo.CommandLineOptions.D then InfoRead1 := Print; fi;
 if not IsBound(InfoRead1) then InfoRead1 := Ignore; fi;
 if not IsBound(InfoRead2) then InfoRead2 := Ignore; fi;
 
+#############################################################################
+##
+#F  TemporaryGlobalVarName( [<prefix>] )   name of an unbound global variable
+##
+##  <ManSection>
+##  <Func Name="TemporaryGlobalVarName" Arg='[prefix]'/>
+##
+##  <Description>
+##  TemporaryGlobalVarName ( [<A>prefix</A>] ) returns a string that can be used
+##  as the name of a global variable that is not bound at the time when
+##  TemporaryGlobalVarName() is called.  The optional argument prefix can
+##  specify a string with which the name of the global variable starts.
+##  </Description>
+##  </ManSection>
+##
+##  Still used in anupq, nq, resclasses, SCSCP (02/2019)
+DeclareGlobalFunction("TemporaryGlobalVarName");
+
 
 #############################################################################
 ##

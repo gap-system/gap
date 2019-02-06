@@ -275,36 +275,3 @@ InstallGlobalFunction( BindConstant,
     Info( InfoGlobal, 2, "BindConstant: called to set ", name, " to ", value);
     BIND_CONSTANT( name, value );
 end);
-
-#############################################################################
-##
-#F  TemporaryGlobalVarName( [<prefix>] )   name of an unbound global variable
-##
-##  TemporaryGlobalVarName ( [<prefix>]  ) returns a string  that can be used
-##  as the  name  of a global  variable  that is not bound   at the time when
-##  TemporaryGlobalVarName()  is called.    The optional  argument prefix can
-##  specify a string with which the name of the global variable starts.
-##
-
-InstallGlobalFunction( TemporaryGlobalVarName,
-        function( arg )
-    local   prefix,  nr,  gvar;
-
-    if Length(arg) = 0 then
-        prefix := "TEMP";
-    elif Length(arg) = 1 and IsString( arg[1] ) then
-        prefix := arg[1];
-        CheckGlobalName( prefix );
-    else
-        return Error( "usage: TemporaryGlobalVarName( [<prefix>] )" );
-    fi;
-
-    nr := 0;
-    gvar:= prefix;
-    while ISBOUND_GLOBAL( gvar ) do
-        nr := nr + 1;
-        gvar := Concatenation( prefix, String(nr) );
-    od;
-
-    return gvar;
-end );

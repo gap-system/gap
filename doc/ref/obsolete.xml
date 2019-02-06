@@ -195,6 +195,12 @@ deprecated in GAP 4.10 since it was unused and only available for coefficient
 lists.
 Note that <C>MultRowVector</C> was also renamed to <C>MultVectorLeft</C>.
 
+<Index Key="TemporaryGlobalVarName"><C>TemporaryGlobalVarName</C></Index>
+The function <C>TemporaryGlobalVarName</C> has been deprecated in GAP 4.11.
+Code using it typically can be restructured to not need it, e.g. by
+using <Ref Func="EvalString"/>.
+
+
 <ManSection>
 <InfoClass Name="InfoObsolete"/>
 <Description>
