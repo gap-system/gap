@@ -31,12 +31,41 @@
 #include "julia.h"
 #include "julia_gcext.h"
 
+
+/****************************************************************************
+**
+**  Various options controlling special features of the Julia GC code follow
+*/
+
+// if DISABLE_BIGVAL_TRACKING is defined, we don't track the location of
+// large bags; this speeds up some things, but may expose bugs in GAP code
+// which incorrectly holds pointers into bags over a GC.
+// #define DISABLE_BIGVAL_TRACKING
+
+// if REQUIRE_PRECISE_MARKING is defined, we assume that all marking
+// functions are precise, i.e., they only invoke MarkBag on valid bags,
+// immediate objects or NULL pointers, but not on any other random data
+// #define REQUIRE_PRECISE_MARKING
+
+// if STAT_MARK_CACHE is defined, we track some statistics about the
+// usage of the MarkCache
+// #define STAT_MARK_CACHE
+
+// if MARKING_STRESS_TEST is defined, we stress test the TryMark code
+// #define MARKING_STRESS_TEST
+
+
+/****************************************************************************
+**
+**
+*/
+
+#ifndef REQUIRE_PRECISE_MARKING
+
 #define MARK_CACHE_BITS 16
 #define MARK_CACHE_SIZE (1 << MARK_CACHE_BITS)
 
 #define MARK_HASH(x) (FibHash((x), MARK_CACHE_BITS))
-
-// #define STAT_MARK_CACHE
 
 // The MarkCache exists to speed up the conservative tracing of
 // objects. While its performance benefit is minimal with the current
@@ -55,6 +84,7 @@ static Bag MarkCache[MARK_CACHE_SIZE];
 static UInt MarkCacheHits, MarkCacheAttempts, MarkCacheCollisions;
 #endif
 
+#endif
 
 static inline Bag * DATA(BagHeader * bag)
 {
@@ -94,6 +124,8 @@ static void JFinalizer(jl_value_t * obj)
         TabFreeFuncBags[tnum]((Bag)&contents);
 }
 
+#if !defined(DISABLE_BIGVAL_TRACKING)
+
 /****************************************************************************
 **
 **  Treap functionality
@@ -126,6 +158,7 @@ static inline int cmp_ptr(void * p, void * q)
     else
         return 0;
 }
+#endif
 
 static inline int lt_ptr(void * a, void * b)
 {
@@ -162,6 +195,8 @@ static inline void * align_ptr(void * p)
     u &= ~(sizeof(p) - 1);
     return (void *)u;
 }
+
+#if !defined(DISABLE_BIGVAL_TRACKING)
 
 typedef struct treap_t {
     struct treap_t *left, *right;
@@ -358,6 +393,8 @@ static void free_bigval(void * p)
     }
 }
 
+#endif
+
 static jl_module_t *   Module;
 static jl_datatype_t * datatype_mptr;
 static jl_datatype_t * datatype_bag;
@@ -366,7 +403,9 @@ static UInt            StackAlignBags;
 static Bag *           GapStackBottom;
 static jl_ptls_t       JuliaTLS, SaveTLS;
 static size_t          max_pool_obj_size;
+#if !defined(DISABLE_BIGVAL_TRACKING)
 static size_t          bigval_startoffset;
+#endif
 static UInt            YoungRef;
 
 
@@ -443,6 +482,7 @@ static void TryMark(void * p)
 {
     jl_value_t * p2 = jl_gc_internal_obj_base_ptr(p);
     if (!p2) {
+#if !defined(DISABLE_BIGVAL_TRACKING)
         // It is possible for p to point past the end of
         // the object, so we subtract one word from the
         // address. This is safe, as the object is preceded
@@ -462,12 +502,15 @@ static void TryMark(void * p)
             if (hdr->type != jl_gc_internal_obj_base_ptr(hdr->type))
                 return;
         }
+#endif
     }
     else {
         // Prepopulate the mark cache with references we know
         // are valid and in current use.
+#ifndef REQUIRE_PRECISE_MARKING
         if (jl_typeis(p2, datatype_mptr))
             MarkCache[MARK_HASH((UInt)p2)] = (Bag)p2;
+#endif
     }
     if (p2) {
         JMark(p2);
@@ -601,9 +644,11 @@ static void PreGCHook(int full)
         CHANGED_BAG(STATE(CurrLVars));
     /* information at the beginning of garbage collections                 */
     SyMsgsBags(full, 0, 0);
-    memset(MarkCache, 0, sizeof(MarkCache));
+#ifndef REQUIRE_PRECISE_MARKING
+   memset(MarkCache, 0, sizeof(MarkCache));
 #ifdef STAT_MARK_CACHE
     MarkCacheHits = MarkCacheAttempts = MarkCacheCollisions = 0;
+#endif
 #endif
 }
 
@@ -628,6 +673,12 @@ static uintptr_t JMarkMPtr(jl_ptls_t ptls, jl_value_t * obj)
 {
     if (!*(void **)obj)
         return 0;
+#ifdef MARKING_STRESS_TEST
+    for (int j = 0; j < 1000; ++j) {
+        UInt val = (UInt)obj + rand() - rand();
+        TryMark((void*)val);
+    }
+#endif
     if (JMark(BAG_HEADER((Bag)obj)))
         return 1;
     return 0;
@@ -653,9 +704,11 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
         TabMarkFuncBags[i] = MarkAllSubBags;
     // These callbacks need to be set before initialization so
     // that we can track objects allocated during `jl_init()`.
+#if !defined(DISABLE_BIGVAL_TRACKING)
     jl_gc_set_cb_notify_external_alloc(alloc_bigval, 1);
     jl_gc_set_cb_notify_external_free(free_bigval, 1);
     bigval_startoffset = jl_gc_external_obj_hdr_size();
+#endif
     max_pool_obj_size = jl_gc_max_internal_obj_size();
     jl_gc_enable_conservative_gc_support();
     jl_init();
@@ -764,15 +817,27 @@ Bag NewBag(UInt type, UInt size)
     if (size == 0)
         alloc_size++;
 
+#if defined(DISABLE_BIGVAL_TRACKING)
+    bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), datatype_mptr);
+    SET_PTR_BAG(bag, 0);
+#endif
+
     BagHeader * header = AllocateBagMemory(type, alloc_size);
 
     header->type = type;
     header->flags = 0;
     header->size = size;
 
+
+#if !defined(DISABLE_BIGVAL_TRACKING)
     // allocate the new masterpointer
     bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), datatype_mptr);
     SET_PTR_BAG(bag, DATA(header));
+#else
+    // change the masterpointer to reference the new bag memory
+    SET_PTR_BAG(bag, DATA(header));
+    jl_gc_wb_back((void *)bag);
+#endif
 
     // return the identifier of the new bag
     return bag;
@@ -843,6 +908,7 @@ inline void MarkBag(Bag bag)
         return;
 
     jl_value_t * p = (jl_value_t *)bag;
+#ifndef REQUIRE_PRECISE_MARKING
 #ifdef STAT_MARK_CACHE
     MarkCacheAttempts++;
 #endif
@@ -864,6 +930,7 @@ inline void MarkBag(Bag bag)
         MarkCacheHits++;
 #endif
     }
+#endif
     // The following code is a performance optimization and
     // relies on Julia internals. It is functionally equivalent
     // to:
