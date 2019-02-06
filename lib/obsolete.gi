@@ -893,7 +893,7 @@ InstallOtherMethod( MultVector, "obsolete five argument method",
       IsObject ],
     0,
 function( l1, p1, l2, p2, m )
-    Info(InfoObsolete, 1, "This usage of `MultVector` is no longer",
+    Info(InfoObsolete, 1, "This usage of `MultVector` is no longer ",
            "supported and will be removed eventually." );
     l1{p1} := m * l2{p2};
 end );
@@ -969,7 +969,7 @@ fi;
 InstallGlobalFunction(HideGlobalVariables,function(arg)
 local p,i;
 
-  Info(InfoObsolete, 1, "This usage of `HideGlobalVariables` is no longer",
+  Info(InfoObsolete, 2, "This usage of `HideGlobalVariables` is no longer ",
          "supported and will be removed eventually." );
 
   p:=Length(HIDDEN_GVARS);
@@ -1002,7 +1002,7 @@ end);
 InstallGlobalFunction(UnhideGlobalVariables,function(arg)
 local p,str,all,l,which;
 
-  Info(InfoObsolete, 1, "This usage of `UnhideGlobalVariables` is no longer",
+  Info(InfoObsolete, 2, "This usage of `UnhideGlobalVariables` is no longer ",
          "supported and will be removed eventually." );
 
   all:=Length(arg)=0; # doe we want to unhide all?
