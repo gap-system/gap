@@ -3025,9 +3025,7 @@ static void InstallGlobalFunction(Obj oper, Obj func)
     Obj name = NAME_FUNC(oper);
 
     // clone the function
-    if ( SIZE_OBJ(oper) != SIZE_OBJ(func) ) {
-        ErrorQuit( "size mismatch of function bags", 0L, 0L );
-    }
+    ResizeBag(oper, SIZE_OBJ(func));
     memcpy(ADDR_OBJ(oper), CONST_ADDR_OBJ(func), SIZE_OBJ(func));
 
     SET_NAME_FUNC(oper, name ? ImmutableString(name) : 0);
