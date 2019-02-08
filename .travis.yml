@@ -117,10 +117,15 @@ matrix:
     # The '--enable-valgrind' checks that GAP builds and runs correctly when
     # compiled with valgrind support. We do not actually run any tests using
     # valgrind, as it is too slow.
-    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=64 BUILDDIR=build CONFIGFLAGS="--enable-valgrind"
+    #
+    # Also change the compiler to GCC 4.7, to ensure we stay compatible
+    # with that older version.
+    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=64 BUILDDIR=build CONFIGFLAGS="--enable-valgrind CC=gcc-4.7 CXX=g++-4.7"
       addons:
         apt_packages:
-            valgrind
+          - gcc-4.7
+          - g++-4.7
+          - valgrind
 
     # same as above, but in 32 bit mode, also turn off debugging (see elsewhere in this file for
     # an explanation)
