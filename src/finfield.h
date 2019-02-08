@@ -143,6 +143,8 @@ extern  Obj             SuccFF;
 */
 typedef UInt2           FFV;
 
+GAP_STATIC_ASSERT(sizeof(UInt) >= 2 * sizeof(FFV),
+                  "Overflow possibility in POW_FFV");
 
 /****************************************************************************
 **
@@ -287,8 +289,6 @@ EXPORT_INLINE FFV POW_FFV(FFV a, UInt n, const FFV * f)
 {
     GAP_ASSERT(a <= f[0]);
     GAP_ASSERT(n <= f[0]);
-    GAP_STATIC_ASSERT(sizeof(UInt) >= 2 * sizeof(FFV),
-                      "Overflow possibility in POW_FFV");
     if (!n)
         return 1;
     if (!a)
