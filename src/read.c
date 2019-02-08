@@ -259,20 +259,22 @@ enum REFTYPE {
 };
 
 typedef struct {
-    enum REFTYPE type;
+    UInt1 type;
 
     union {
-        UInt var;
-        UInt narg;
-        UInt rnam;
+        UInt2 nest0;
+        UInt2 level;
     };
 
     union {
-        UInt nest0;
-        UInt level;
+        UInt4 var;
+        UInt4 narg;
+        UInt4 rnam;
     };
+
 } LHSRef;
 
+GAP_STATIC_ASSERT(sizeof(LHSRef) <= 8, "LHSRef is too big");
 
 /****************************************************************************
 **
