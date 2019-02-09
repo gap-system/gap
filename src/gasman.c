@@ -1046,7 +1046,7 @@ void            InitCollectFuncBags (
 
 Int EnableMemCheck = 0;
 
-static Int enableMemCheck(Char ** argv, void * dummy)
+Int enableMemCheck(Char ** argv, void * dummy)
 {
     SyFputs( "# Warning: --enableMemCheck causes SEVERE slowdowns. Starting GAP may take several days!\n", 3 );
     EnableMemCheck = 1;
