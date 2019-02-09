@@ -208,17 +208,17 @@ enum { membufcount = 64 };
 static void * membufs[membufcount];
 static UInt   membufSize;
 
-static UInt GetMembufCount(void)
+UInt GetMembufCount(void)
 {
     return membufcount;
 }
 
-static void * GetMembuf(UInt i)
+void * GetMembuf(UInt i)
 {
     return membufs[i];
 }
 
-static UInt GetMembufSize(void)
+UInt GetMembufSize(void)
 {
     return membufSize;
 }
