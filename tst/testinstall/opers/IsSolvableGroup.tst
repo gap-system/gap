@@ -33,6 +33,12 @@ gap> A := AbelianGroup([3,3,3]);; H := AutomorphismGroup(A);;
 gap> B := SylowSubgroup(H, 13);; G := SemidirectProduct(B, A);;
 gap> HasIsSolvableGroup(G) and IsSolvable(G);
 true
+gap> G := DirectProduct(CyclicGroup(27), SymmetricGroup(3));;
+gap> HasSize(G) and HasIsSolvableGroup(G) and IsSolvableGroup(G);
+true
+gap> G := DirectProduct(CyclicGroup(6), SymmetricGroup(4));;
+gap> HasSize(G) and not HasIsSolvableGroup(G) and IsSolvableGroup(G);
+true
 
 ## some fp-groups
 ## The following four tests check whether the current IsSolvable method using
@@ -53,4 +59,13 @@ true
 gap> G := F/[ a^2, b^2, c^2, d^2, (a*b)^3, (b*c)^3, (c*d)^3, (a*c)^2, (a*d)^2, (b*d)^2 ];;
 gap> not IsSolvable(G) and HasIsAbelian(G) and not IsAbelian(G);
 true
+gap> G := F/[ a^2, b^2, c^2, d^2, (a*b)^3, (b*c)^3, (c*d)^3, (a*c)^2, (a*d)^2, (b*d)^2 ];; Size(G);;
+gap> not IsSolvable(G) and HasIsAbelian(G) and not IsAbelian(G);
+true
+gap> F := FreeGroup("a", "x");; a := F.1;; x := F.2;;
+gap> G := F/[x^2*a^8, a^16, x*a*x^(-1)*a];; Size(G);;
+gap> not HasIsSolvableGroup(G) and IsSolvableGroup(G) and HasIsPGroup(G) and IsPGroup(G) and HasPrimePGroup(G) and HasIsNilpotentGroup(G) and IsNilpotentGroup(G);
+true
+gap> PrimePGroup(G);
+2
 gap> STOP_TEST("IsSolvableGroup.tst", 1);
