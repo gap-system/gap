@@ -563,12 +563,42 @@ InstallMethod( IsAlmostSimpleGroup,
 ##  By the odd order theorem, N is solvable, and so is G. Thus the order of
 ##  any non-solvable finite group is a multiple of 4.
 ##
+##  By Burnside's theorem, every group of order p^a q^b is solvable. If a
+##  group of such order is not already caught by the reasoning above, then
+##  it must have order 2^a q^b with a>1.
+##
 InstallImmediateMethod( IsSolvableGroup, IsGroup and HasSize, 10,
     function( G )
     local size;
     size := Size( G );
     if IsInt( size ) and size mod 4 <> 0 then
       return true;
+    fi;
+    TryNextMethod();
+    end );
+
+InstallMethod( IsSolvableGroup,
+    "if group size can be computed and size is 2m or p^a q^b",
+    [ IsGroup and CanComputeSize ], 25,
+    function( G )
+    local size;
+    size := Size( G );
+    if IsInt( size ) then
+      if size mod 4 <> 0 then
+        return true;
+      else
+        size := size/4;
+        while size mod 2 = 0 do
+          size := size/2;
+        od;
+        if size = 1 then
+          SetIsPGroup( G, true );
+          SetPrimePGroup( G, 2 );
+          return true;
+        elif IsPrimePowerInt( size ) then
+          return true;
+        fi;
+      fi;
     fi;
     TryNextMethod();
     end );
