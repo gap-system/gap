@@ -64,7 +64,7 @@ gap> not IsSolvable(G) and not IsAbelian(G);
 true
 gap> F := FreeGroup("a", "x");; a := F.1;; x := F.2;;
 gap> G := F/[x^2*a^8, a^16, x*a*x^(-1)*a];; Size(G);;
-gap> IsSolvableGroup(G) and IsPgroup(G) and IsNilpotentGroup(G);
+gap> IsSolvableGroup(G) and IsPGroup(G) and IsNilpotentGroup(G);
 true
 gap> PrimePGroup(G);
 2
