@@ -4103,10 +4103,10 @@ DeclareOperation( "CharacterTableIsoclinic",
 ##  gap> tg:= CharacterTable( g );;
 ##  gap> IsRecord(
 ##  >        TransformingPermutationsCharacterTables( index2[1], tg ) );
-##  false
+##  true
 ##  gap> IsRecord(
 ##  >        TransformingPermutationsCharacterTables( index2[2], tg ) );
-##  true
+##  false
 ##  ]]></Example>
 ##  <P/>
 ##  Alternatively, we could construct the character table of the central
