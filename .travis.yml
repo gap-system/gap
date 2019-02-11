@@ -102,7 +102,9 @@ matrix:
     - env: TEST_SUITES=testmanuals
 
     # run bugfix regression tests
-    - env: TEST_SUITES=testbugfix
+    # Also Turn on '--enable-memory-checking' to make sure GAP compiles with the flag enabled.
+    # We do not actually test the memory checking, as this slows down GAP too much.
+    - env: TEST_SUITES=testbugfix CONFIGFLAGS="--enable-memory-checking"
 
     # out of tree builds -- these are mainly done to verify that the build
     # system work in this scenario. Since we don't expect the test results to
@@ -124,8 +126,8 @@ matrix:
           - valgrind
 
     # same as above, but in 32 bit mode, also turn off debugging (see elsewhere in this file for
-    # an explanation)
-    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS=""
+    # an explanation).
+    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=build
       addons:
         apt_packages:
           - gcc-multilib
