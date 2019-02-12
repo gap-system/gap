@@ -2206,6 +2206,9 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         x -> IsString(x) and Length(x) = 10 and x{ [3,6] } = "//"
                  and ForAll( x{ [1,2,4,5,7,8,9,10] }, IsDigitChar ),
         "a string of the form `dd/mm/yyyy'" );
+    TestOption( record, "License",
+        x -> IsString(x) and 0 < Length(x),
+        "a nonempty string containing an SPDX ID" );
     TestMandat( record, "ArchiveURL", IsURL, "a string started with http://, https:// or ftp://" );
     TestMandat( record, "ArchiveFormats", IsString, "a string" );
     TestOption( record, "TextFiles", IsStringList, "a list of strings" );
