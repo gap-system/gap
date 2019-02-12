@@ -578,7 +578,7 @@ InstallImmediateMethod( IsSolvableGroup, IsGroup and HasSize, 10,
     end );
 
 InstallMethod( IsSolvableGroup,
-    "if group size is known and is 2m or p^a q^b",
+    "if group size is known and is not divisible by 4 or p^a q^b",
     [ IsGroup and HasSize ], 25,
     function( G )
     local size;
