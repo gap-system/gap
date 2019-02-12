@@ -1014,6 +1014,10 @@ testbugfix: all
           ReadGapRoot( "tst/testbugfix.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/testbugfix2_%Y-%m-%d-%H-%M` )
 
+#
+check:
+	$(TESTGAP) tst/testinstall.g
+
 LIBGAPTESTS := $(addprefix tst/testlibgap/,basic wscreate wsload)
 
 # run a test in tst/testlibgap
@@ -1035,6 +1039,7 @@ testlibgap: ${LIBGAPTESTS}
 
 .PHONY: testinstall testmanuals testobsoletes teststandard testbugfix
 .PHONY: testpackage testpackages testpackagesload testpackagesvars
+.PHONY: check
 
 ########################################################################
 # Bootstrap rules
