@@ -1006,6 +1006,10 @@ testbugfix: all
           ReadGapRoot( "tst/testbugfix.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/testbugfix2_%Y-%m-%d-%H-%M` )
 
+#
+check:
+	$(TESTGAP) tst/testinstall.g
+
 testlibgap: libgap.la obj/tst/testlibgap/basic.lo 
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) obj/tst/testlibgap/basic.lo libgap.la -o test-libgap
 	./test-libgap -A -l $(top_srcdir) -m 32m -q -T --nointeract > basic.out
@@ -1018,6 +1022,7 @@ coverage:
 .PHONY: testinstall testmanuals testobsoletes teststandard testbugfix
 .PHONY: testpackage testpackages testpackagesload testpackagesvars
 .PHONY: coverage
+.PHONY: check
 
 ########################################################################
 # Bootstrap rules
