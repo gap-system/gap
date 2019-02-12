@@ -578,8 +578,8 @@ InstallImmediateMethod( IsSolvableGroup, IsGroup and HasSize, 10,
     end );
 
 InstallMethod( IsSolvableGroup,
-    "if group size can be computed and size is 2m or p^a q^b",
-    [ IsGroup and CanComputeSize ], 25,
+    "if group size is known and is 2m or p^a q^b",
+    [ IsGroup and HasSize ], 25,
     function( G )
     local size;
     size := Size( G );
