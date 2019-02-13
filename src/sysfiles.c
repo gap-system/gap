@@ -1795,13 +1795,13 @@ static UInt FreezeStdin;    // When true, ignore if any new input from stdin
 
 #ifdef HAVE_SELECT
 
-Obj OnCharReadHookActive = 0;  /* if bound the hook is active */
-Obj OnCharReadHookInFds = 0;   /* a list of UNIX file descriptors for reading */
-Obj OnCharReadHookInFuncs = 0; /* a list of GAP functions with 0 args */
-Obj OnCharReadHookOutFds = 0;  /* a list of UNIX file descriptors for writing */
-Obj OnCharReadHookOutFuncs = 0;/* a list of GAP functions with 0 args */
-Obj OnCharReadHookExcFds = 0;  /* a list of UNIX file descriptors */
-Obj OnCharReadHookExcFuncs = 0;/* a list of GAP functions with 0 args */
+static Obj OnCharReadHookActive = 0;  /* if bound the hook is active */
+static Obj OnCharReadHookInFds = 0;   /* a list of UNIX file descriptors for reading */
+static Obj OnCharReadHookInFuncs = 0; /* a list of GAP functions with 0 args */
+static Obj OnCharReadHookOutFds = 0;  /* a list of UNIX file descriptors for writing */
+static Obj OnCharReadHookOutFuncs = 0;/* a list of GAP functions with 0 args */
+static Obj OnCharReadHookExcFds = 0;  /* a list of UNIX file descriptors */
+static Obj OnCharReadHookExcFuncs = 0;/* a list of GAP functions with 0 args */
 
 static Int OnCharReadHookActiveCheck(void)
 {
@@ -3726,6 +3726,17 @@ static Int InitKernel(
   DeclareGVar(&GVarBeginEdit, "TERMINAL_BEGIN_EDIT");
   DeclareGVar(&GVarEndEdit, "TERMINAL_END_EDIT");
 #endif
+
+#ifdef HAVE_SELECT
+    InitCopyGVar("OnCharReadHookActive",&OnCharReadHookActive);
+    InitCopyGVar("OnCharReadHookInFds",&OnCharReadHookInFds);
+    InitCopyGVar("OnCharReadHookInFuncs",&OnCharReadHookInFuncs);
+    InitCopyGVar("OnCharReadHookOutFds",&OnCharReadHookOutFds);
+    InitCopyGVar("OnCharReadHookOutFuncs",&OnCharReadHookOutFuncs);
+    InitCopyGVar("OnCharReadHookExcFds",&OnCharReadHookExcFds);
+    InitCopyGVar("OnCharReadHookExcFuncs",&OnCharReadHookExcFuncs);
+#endif
+
 
   /* return success                                                      */
   return 0;
