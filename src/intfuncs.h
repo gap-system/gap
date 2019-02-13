@@ -54,9 +54,7 @@ Int HASHKEY_BAG_NC(Obj obj, UInt4 seed, Int skip, int read);
 */
 
 /****************************************************************************
-**                                              \
-                                                \
-
+**
 *F  InitInfoInt() . . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoIntFuncs ( void );
