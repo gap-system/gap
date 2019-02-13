@@ -1579,17 +1579,6 @@ static Int InitKernel (
     /* establish Fopy of ViewObj                                           */
     ImportFuncFromLibrary(  "ViewObj", 0L );
     ImportFuncFromLibrary(  "Error", &Error );
-
-#ifdef HAVE_SELECT
-    InitCopyGVar("OnCharReadHookActive",&OnCharReadHookActive);
-    InitCopyGVar("OnCharReadHookInFds",&OnCharReadHookInFds);
-    InitCopyGVar("OnCharReadHookInFuncs",&OnCharReadHookInFuncs);
-    InitCopyGVar("OnCharReadHookOutFds",&OnCharReadHookOutFds);
-    InitCopyGVar("OnCharReadHookOutFuncs",&OnCharReadHookOutFuncs);
-    InitCopyGVar("OnCharReadHookExcFds",&OnCharReadHookExcFds);
-    InitCopyGVar("OnCharReadHookExcFuncs",&OnCharReadHookExcFuncs);
-#endif
-
     /* return success                                                      */
     return 0;
 }

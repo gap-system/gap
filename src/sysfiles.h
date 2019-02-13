@@ -250,16 +250,6 @@ void syStopraw(Int fid);
 **      <ctr>-_ undo a command.
 **      <esc>-T exchange two words.
 */
-#ifdef HAVE_SELECT
-extern Obj OnCharReadHookActive;  /* if bound the hook is active */
-extern Obj OnCharReadHookInFds;   /* a list of UNIX file descriptors */
-extern Obj OnCharReadHookInFuncs; /* a list of GAP functions */
-extern Obj OnCharReadHookOutFds;  /* a list of UNIX file descriptors */
-extern Obj OnCharReadHookOutFuncs;/* a list of GAP functions with 0 args */
-extern Obj OnCharReadHookExcFds;  /* a list of UNIX file descriptors */
-extern Obj OnCharReadHookExcFuncs;/* a list of GAP functions with 0 args */
-#endif
-
 Char * SyFgets(Char * line, UInt length, Int fid);
 
 
