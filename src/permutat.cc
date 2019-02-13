@@ -1363,7 +1363,7 @@ static Obj FuncCYCLE_STRUCT_PERM(Obj self, Obj perm)
 **  'OrderPerm' returns the  order  of  the  permutation  <perm>,  i.e.,  the
 **  smallest positive integer <n> such that '<perm>\^<n>' is the identity.
 **
-**  Since the largest element in S(65536) has oder greater than  10^382  this
+**  Since the largest element in S(65536) has order greater than 10^382  this
 **  computation may easily overflow.  So we have to use  arbitrary precision.
 */
 template <typename T>
