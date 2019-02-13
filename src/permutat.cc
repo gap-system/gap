@@ -945,9 +945,9 @@ static Obj OnePerm(Obj op)
 
 /****************************************************************************
 **
-*F  IsPermHandler( <self>, <val> )  . . . .  test if a value is a permutation
+*F  FiltIS_PERM( <self>, <val> ) . . . . . . test if a value is a permutation
 **
-**  'FuncIsPerm' implements the internal function 'IsPerm'.
+**  'FiltIS_PERM' implements the internal function 'IsPerm'.
 **
 **  'IsPerm( <val> )'
 **
@@ -956,7 +956,7 @@ static Obj OnePerm(Obj op)
 */
 static Obj IsPermFilt;
 
-static Obj IsPermHandler(Obj self, Obj val)
+static Obj FiltIS_PERM(Obj self, Obj val)
 {
     /* return 'true' if <val> is a permutation and 'false' otherwise       */
     if ( TNUM_OBJ(val) == T_PERM2 || TNUM_OBJ(val) == T_PERM4 ) {
@@ -2685,11 +2685,9 @@ static StructBagNames BagNames[] = {
 **
 *V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
-static StructGVarFilt GVarFilts [] = {
+static StructGVarFilt GVarFilts[] = {
 
-    { "IS_PERM", "obj", &IsPermFilt,
-      IsPermHandler, "src/permutat.c:IS_PERM" },
-
+    GVAR_FILT(IS_PERM, "obj", &IsPermFilt),
     { 0, 0, 0, 0, 0 }
 
 };
