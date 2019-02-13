@@ -26,10 +26,9 @@
 **  To aid overflow check the most significant two bits must always be equal,
 **  that is to say that the sign bit of immediate integers has a guard bit.
 **
-**  The macros 'INTOBJ_INT' and 'INT_INTOBJ' should be used to convert between
-a
-**  small integer value and its representation as immediate integer handle.
-
+**  The functions 'INTOBJ_INT' and 'INT_INTOBJ' should be used to convert
+**  between a small integer value and its representation as immediate integer
+**  handle.
 */
 
 #ifndef GAP_INTOBJ_H

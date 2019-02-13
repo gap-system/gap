@@ -301,7 +301,7 @@ GAP_STATIC_ASSERT(LAST_REAL_TNUM <= 254, "LAST_REAL_TNUM is too large");
 *F  SET_OBJ_FLAG(<obj>, <flag>) . . . . . . . . . . . . . . . set object flag
 *F  CLEAR_OBJ_FLAG(<obj>, <flag>) . . . . . . . . . . . . . clear object flag
 **
-**  These three macros test, set, and clear object flags, respectively.
+**  These three functions test, set, and clear object flags, respectively.
 **  For non-immediate objects, these are simply the bag flags, see
 **  TEST_BAG_FLAG, SET_BAG_FLAG, CLEAR_BAG_FLAG.
 **
@@ -677,8 +677,8 @@ Obj CopyObj(Obj obj, Int mut);
 **  'COPY_OBJ'  implements  the first pass  of  'CopyObj', i.e., it makes the
 **  structural copy of <obj> and marks <obj> as already copied.
 **
-**  Note that 'COPY_OBJ' is a macro, so do not call it with arguments that
-**  have side effects.
+**  'COPY_OBJ' must only be used from within CopyObjFuncs functions. To copy
+**  an object from regular code, call 'CopyObj'.
 */
 #if !defined(USE_THREADSAFE_COPYING)
 Obj COPY_OBJ(Obj obj, Int mut);

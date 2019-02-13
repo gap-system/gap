@@ -811,8 +811,8 @@ typedef enum {
 **
 **  'SetFiltListTNums[<tnum>][<fnum>]'
 **
-**  The macro  'SET_FILT_LIST' is  used  to  set  the filter  for a  list  by
-**  changing its type number.
+**  'SET_FILT_LIST' is used to set the filter for a list by changing its
+**  type number.
 **
 **  Two values are treated specially:
 **    0 : The default. This tnum should not change.
@@ -854,8 +854,8 @@ Obj SET_FILTER_LIST(Obj list, Obj filter);
 **
 **  'ResetFiltListTNums[<tnum>][<fnum>]'
 **
-**  The macro 'RESET_FILT_LIST' is used  to  set  the filter  for a  list  by
-**  changing its type number.
+**  'RESET_FILT_LIST' is used to set the filter for a list by changing its
+**  type number.
 **
 **  The same special values are used as SetFiltListTNums.
 */
@@ -902,7 +902,7 @@ extern Int HasFiltListTNums [ LAST_REAL_TNUM ] [ LAST_FN + 1 ];
 **
 **  'ClearPropsTNums[<tnum>]'
 **
-**  The macro 'CLEAR_PROPS_LIST' is used to clear all properties of a list.
+**  'CLEAR_PROPS_LIST' is used to clear all properties of a list.
 */
 extern UInt ClearFiltsTNums [ LAST_REAL_TNUM ];
 

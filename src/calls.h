@@ -71,7 +71,7 @@ typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5,
 *F  BODY_FUNC(<func>) . . . . . . . . . . . . . . . . . .  body of a function
 *F  ENVI_FUNC(<func>) . . . . . . . . . . . . . . . environment of a function
 **
-**  These macros  make it possible  to access  the  various components  of  a
+**  These functions make it possible to access the various components of a
 **  function.
 **
 **  'HDLR_FUNC(<func>,<i>)' is the <i>-th handler of the function <func>.

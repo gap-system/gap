@@ -72,7 +72,7 @@ GAP_STATIC_ASSERT(sizeof(void *) == SIZEOF_VOID_P, "sizeof(void *) is wrong");
 **  truncated, or GAP aborts.
 **
 **  Note that no fixed buffer size is sufficient to store arbitrary paths
-**  on contemporary operation systems, as paths can have arbitrary length.
+**  on contemporary operating systems, as paths can have arbitrary length.
 **  This also means that the POSIX constant PATH_MAX does not really do the
 **  job its name would suggest (nor do MAXPATHLEN, MAX_PATH etc.).
 **
@@ -80,7 +80,7 @@ GAP_STATIC_ASSERT(sizeof(void *) == SIZEOF_VOID_P, "sizeof(void *) is wrong");
 **  challenging, as often there is no way to find out in advance how large a
 **  buffer may need to be. So you have to start with some buffer size, then
 **  check for errors; if 'errno' equals 'ERANGE', double the buffer size and
-**  repeated, until you succeed or run out of memory.
+**  repeat, until you succeed or run out of memory.
 **
 **  Instead of going down this road, we use a fixed buffer size after all.
 **  This way, at least our code stays simple. Also, this is what most (?)

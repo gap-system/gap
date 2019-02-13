@@ -17,7 +17,7 @@
 
 /****************************************************************************
 **
-*F * * * * * * * * * * standard macros for plain records  * * * * * * * * * *
+*F * * * * * * * * * standard functions for plain records * * * * * * * * * *
 */
 
 
