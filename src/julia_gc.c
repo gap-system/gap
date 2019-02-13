@@ -526,8 +526,15 @@ static void TryMarkRangeReverse(void * start, void * end)
     char * q = (char *)end - sizeof(void *);
     while (!lt_ptr(q, p)) {
         void * addr = *(void **)q;
-        if (addr)
+        if (addr) {
             TryMark(addr);
+#ifdef MARKING_STRESS_TEST
+            for (int j = 0; j < 1000; ++j) {
+                UInt val = (UInt)addr + rand() - rand();
+                TryMark((void*)val);
+            }
+#endif
+        }
         q -= StackAlignBags;
     }
 }
@@ -541,8 +548,15 @@ static void TryMarkRange(void * start, void * end)
     char * q = (char *)end - sizeof(void *) + StackAlignBags;
     while (lt_ptr(p, q)) {
         void * addr = *(void **)p;
-        if (addr)
+        if (addr) {
             TryMark(addr);
+#ifdef MARKING_STRESS_TEST
+            for (int j = 0; j < 1000; ++j) {
+                UInt val = (UInt)addr + rand() - rand();
+                TryMark((void*)val);
+            }
+#endif
+        }
         p += StackAlignBags;
     }
 }
@@ -673,12 +687,6 @@ static uintptr_t JMarkMPtr(jl_ptls_t ptls, jl_value_t * obj)
 {
     if (!*(void **)obj)
         return 0;
-#ifdef MARKING_STRESS_TEST
-    for (int j = 0; j < 1000; ++j) {
-        UInt val = (UInt)obj + rand() - rand();
-        TryMark((void*)val);
-    }
-#endif
     if (JMark(BAG_HEADER((Bag)obj)))
         return 1;
     return 0;
