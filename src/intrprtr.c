@@ -1428,7 +1428,7 @@ void            IntrNot ( void )
 **  actions to interpret the respective operator expression.  They are called
 **  by the reader *after* *both* operands are read.
 */
-static void IntrXX(void)
+static void StackSwap(void)
 {
     Obj                 opL;            /* left operand                    */
     Obj                 opR;            /* right operand                   */
@@ -1523,7 +1523,7 @@ void            IntrGt ( void )
 
 
     /* '<left> > <right>' is '<right> < <left>'                            */
-    IntrXX();
+    StackSwap();
     IntrLt();
 }
 
@@ -1536,7 +1536,7 @@ void            IntrLe ( void )
 
 
     /* '<left> <= <right>' is 'not <right> < <left>'                       */
-    IntrXX();
+    StackSwap();
     IntrLt();
     IntrNot();
 }
