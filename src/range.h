@@ -14,8 +14,8 @@
 **  Read  also   "More about Ranges"  about  the different  representation of
 **  ranges.
 **
-**  Ranges  can  be  accessed  through  the macros  'NEW_RANGE',  'IS_RANGE',
-**  'SET_LEN_RANGE',   'GET_LEN_RANGE',  'SET_LOW_RANGE',    'GET_LOW_RANGE',
+**  Ranges can be accessed through the functions 'NEW_RANGE', 'IS_RANGE',
+**  'SET_LEN_RANGE', 'GET_LEN_RANGE', 'SET_LOW_RANGE', 'GET_LOW_RANGE',
 **  'SET_INC_RANGE', 'GET_INC_RANGE', and 'GET_ELM_RANGE'.
 **
 **  This package  also contains  the  list  functions  for ranges, which  are

@@ -14,7 +14,7 @@
 **  current  logical length.  The  last position to  which  an element can be
 **  assigned without resizing the plain list is called the physical length.
 **
-**  This representation  is encoded by  the macros 'NEW_PLIST', 'GROW_PLIST',
+**  This representation is encoded by the functions 'NEW_PLIST', 'GROW_PLIST',
 **  'SHRINK_PLIST', 'SET_LEN_PLIST',    'LEN_PLIST',     'SET_ELM_PLIST', and
 **  'ELM_PLIST', which are used by the functions in this package and the rest
 **  of the {\GAP} kernel to access plain lists.
