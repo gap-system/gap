@@ -237,6 +237,8 @@ Error, QuoIntPerm: <point> must be a positive integer (not the integer 0)
 gap> n:=10^30;;
 gap> ForAll(permAll, g -> n/g = n);
 true
+gap> 30000/(1,20000);  # test a perm with degree > PERM_INVERSE_THRESHOLD
+30000
 gap> List([1,2,3,4,1000],n->List(permSml, g->n/g));
 [ [ 1, 1, 2, 3, 2, 3 ], [ 2, 3, 1, 1, 3, 2 ], [ 3, 2, 3, 2, 1, 1 ], 
   [ 4, 4, 4, 4, 4, 4 ], [ 1000, 1000, 1000, 1000, 1000, 1000 ] ]
@@ -370,6 +372,20 @@ gap> List(permBig, SignPerm);
 [ 1, -1, -1, 1, 1, -1 ]
 gap> SIGN_PERM(fail);
 Error, SignPerm: <perm> must be a permutation (not the value 'fail')
+
+#
+# SmallestGeneratorPerm
+#
+gap> SMALLEST_GENERATOR_PERM( 1 );
+Error, SmallestGeneratorPerm: <perm> must be a permutation (not the integer 1)
+gap> SmallestGeneratorPerm( (1,3,2) );
+(1,2,3)
+gap> SmallestGeneratorPerm( (1,2,3) );
+(1,2,3)
+gap> SmallestGeneratorPerm( (1,65537,2) );
+(1,2,65537)
+gap> SmallestGeneratorPerm( (1,2,65537) );
+(1,2,65537)
 
 #
 # DistancePerms
