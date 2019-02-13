@@ -562,13 +562,13 @@ BIND_GLOBAL( "ReturnNothing", RETURN_NOTHING );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> f:=ReturnFirst;
-##  function( object... ) ... end
+##  function( first, rest... ) ... end
 ##  gap> f(1);
 ##  1
 ##  gap> f(2,3,4);
 ##  2
 ##  gap> f();
-##  Error, RETURN_FIRST requires one or more arguments
+##  Error, Function: number of arguments must be at least 1 (not 0)
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

@@ -493,10 +493,10 @@ static Obj FuncID_FUNC(Obj self, Obj val1)
 */
 static Obj FuncRETURN_FIRST(Obj self, Obj args)
 {
-  if (!IS_PLIST(args) || LEN_PLIST(args) < 1)
+    if (!IS_PLIST(args) || LEN_PLIST(args) < 1)
         ErrorMayQuit("RETURN_FIRST requires one or more arguments",0,0);
 
-  return ELM_PLIST(args, 1);
+    return ELM_PLIST(args, 1);
 }
 
 /****************************************************************************
@@ -1516,7 +1516,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(NanosecondsSinceEpochInfo, 0, ""),
     GVAR_FUNC(SizeScreen, -1, "args"),
     GVAR_FUNC(ID_FUNC, 1, "object"),
-    GVAR_FUNC(RETURN_FIRST, -1, "object"),
+    GVAR_FUNC(RETURN_FIRST, -2, "first, rest"),
     GVAR_FUNC(RETURN_NOTHING, -1, "object"),
     GVAR_FUNC(GASMAN, -1, "args"),
     GVAR_FUNC(GASMAN_STATS, 0, ""),

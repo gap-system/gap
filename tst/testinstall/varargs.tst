@@ -79,7 +79,7 @@ Syntax error: Three dots required for variadic argument list in stream:1
 f := function(a,b..) end;
                  ^^
 gap> Display(RETURN_FIRST);
-function ( object... )
+function ( first, rest... )
     <<kernel code>> from src/gap.c:RETURN_FIRST
 end
 gap> Print(INSTALL_METHOD_FLAGS,"\n");
