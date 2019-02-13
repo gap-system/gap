@@ -18,7 +18,6 @@
 #include "sysmem.h"
 #include "system.h"
 #include "vars.h"
-#include "fibhash.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -111,7 +110,7 @@ void InitFreeFuncBag(UInt type, TNumFreeFuncBags finalizer_func)
     TabFreeFuncBags[type] = finalizer_func;
 }
 
-void JFinalizer(jl_value_t * obj)
+static void JFinalizer(jl_value_t * obj)
 {
     BagHeader * hdr = (BagHeader *)obj;
     Bag         contents = (Bag)(hdr + 1);
@@ -223,7 +222,7 @@ treap_t * alloc_treap(void)
     return result;
 }
 
-void free_treap(treap_t * t)
+static void free_treap(treap_t * t)
 {
     t->right = treap_free_list;
     treap_free_list = t;
@@ -377,7 +376,7 @@ static uint64_t xorshift_rng(void)
 
 static treap_t * bigvals;
 
-void alloc_bigval(void * addr, size_t size)
+static void alloc_bigval(void * addr, size_t size)
 {
     treap_t * node = alloc_treap();
     node->addr = addr;
@@ -386,7 +385,7 @@ void alloc_bigval(void * addr, size_t size)
     treap_insert(&bigvals, node);
 }
 
-void free_bigval(void * p)
+static void free_bigval(void * p)
 {
     if (p) {
         treap_delete(&bigvals, p);
@@ -557,7 +556,7 @@ void CHANGED_BAG(Bag bag)
     jl_gc_wb_back(BAG_HEADER(bag));
 }
 
-void GapRootScanner(int full)
+static void GapRootScanner(int full)
 {
     // mark our Julia module (this contains references to our custom data
     // types, which thus also will not be collected prematurely)
@@ -596,7 +595,7 @@ void GapRootScanner(int full)
     }
 }
 
-void GapTaskScanner(jl_task_t * task, int root_task)
+static void GapTaskScanner(jl_task_t * task, int root_task)
 {
     size_t size;
     int    tid;
