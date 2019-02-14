@@ -44,8 +44,6 @@
 #endif
 
 
-#if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
 void InstallBacktraceHandlers(void);
-#endif
 
 #endif
