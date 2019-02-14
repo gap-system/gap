@@ -2791,6 +2791,12 @@ static Int InitKernel ( StructInitInfo * module )
   if (mp_bits_per_limb != GMP_LIMB_BITS) {
     Panic("GMP limb size mismatch");
   }
+  if (INTOBJ_MIN != INTOBJ_INT(INT_INTOBJ_MIN)) {
+    Panic("INTOBJ_MIN mismatch");
+  }
+  if (INTOBJ_MAX != INTOBJ_INT(INT_INTOBJ_MAX)) {
+    Panic("INTOBJ_MAX mismatch");
+  }
 
   /* init filters and functions                                            */
   InitHdlrFiltsFromTable( GVarFilts );
