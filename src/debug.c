@@ -71,4 +71,10 @@ void InstallBacktraceHandlers(void)
     signal(SIGFPE, BacktraceHandler);
 }
 
+#else
+
+void InstallBacktraceHandlers(void)
+{
+}
+
 #endif

@@ -464,9 +464,7 @@ int realmain( int argc, char * argv[] )
 #if !defined(COMPILECYGWINDLL)
 int main ( int argc, char * argv[] )
 {
-#if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
   InstallBacktraceHandlers();
-#endif
 
 #ifdef HPCGAP
   RunThreadedMain(realmain, argc, argv);
