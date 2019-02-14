@@ -921,7 +921,7 @@ Bag NextBagRestoring( UInt type, UInt flags, UInt size )
   header->flags = flags;
   header->size = size;
   header->link = NextMptrRestoring;
-#if SIZEOF_VOID_P == 4
+#ifndef SYS_IS_64_BIT
   header->reserved = 0;
 #endif
 
@@ -1291,7 +1291,7 @@ Bag NewBag (
     header->type = type;
     header->flags = 0;
     header->size = size;
-#if SIZEOF_VOID_P == 4
+#ifndef SYS_IS_64_BIT
     header->reserved = 0;
 #endif
 
@@ -1446,7 +1446,7 @@ UInt ResizeBag (
     UInt type     = header->type;
     UInt flags    = header->flags;
     UInt old_size = header->size;
-#if SIZEOF_VOID_P == 4
+#ifndef SYS_IS_64_BIT
     GAP_ASSERT(header->reserved == 0);
 #endif
 
@@ -1484,7 +1484,7 @@ UInt ResizeBag (
         }
 
         header->size = new_size;
-#if SIZEOF_VOID_P == 4
+#ifndef SYS_IS_64_BIT
         GAP_ASSERT(header->reserved == 0);
 #endif
     }
@@ -1512,7 +1512,7 @@ UInt ResizeBag (
         SizeAllBags             += new_size - old_size;
 
         header->size = new_size;
-#if SIZEOF_VOID_P == 4
+#ifndef SYS_IS_64_BIT
         GAP_ASSERT(header->reserved == 0);
 #endif
     }
@@ -1534,7 +1534,7 @@ UInt ResizeBag (
         header->flags = 0;
         header->size =
             sizeof(BagHeader) + (TIGHT_WORDS_BAG(old_size) - 1) * sizeof(Bag);
-#if SIZEOF_VOID_P == 4
+#ifndef SYS_IS_64_BIT
         GAP_ASSERT(header->reserved == 0);
 #endif
 
@@ -1545,7 +1545,7 @@ UInt ResizeBag (
         newHeader->type = type;
         newHeader->flags = flags;
         newHeader->size = new_size;
-#if SIZEOF_VOID_P == 4
+#ifndef SYS_IS_64_BIT
         GAP_ASSERT(newHeader->reserved == 0);
 #endif
 
@@ -2108,7 +2108,7 @@ again:
             dstHeader->type = header->type;
             dstHeader->flags = header->flags;
             dstHeader->size = header->size;
-#if SIZEOF_VOID_P == 4
+#ifndef SYS_IS_64_BIT
             dstHeader->reserved = 0;
 #endif
 
@@ -2374,7 +2374,7 @@ void CheckMasterPointers( void )
             Panic("Master pointer with bad link word detected");
         }
 
-#if SIZEOF_VOID_P == 4
+#ifndef SYS_IS_64_BIT
         // sanity check: reserved bits must be unused
         if (BAG_HEADER(bag)->reserved != 0) {
             Panic("Master pointer with non-zero reserved bits "

@@ -20,7 +20,7 @@
 
 #ifndef HAVE_NATIVE_TLS
 
-#if SIZEOF_VOID_P == 8
+#ifdef SYS_IS_64_BIT
 #define TLS_SIZE (1L << 20)
 #else
 #define TLS_SIZE (1L << 18)
