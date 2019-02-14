@@ -746,10 +746,6 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "PreOrbishProcessing", [IsGroup]);
-
-InstallMethod( PreOrbishProcessing, [IsGroup], x->x );
-
 BindGlobal( "OrbitishFO", function( name, reqs, famrel, usetype,realenum )
 local str, orbish, func,isnotest;
 
@@ -822,8 +818,6 @@ local str, orbish, func,isnotest;
 	Error( "usage: ", name, "(<xset>,<pnt>)\n",
 	      "or ", name, "(<G>[,<Omega>],<pnt>[,<gens>,<acts>][,<act>])" );
       fi;
-      
-      G := PreOrbishProcessing(G);
       
       if not IsBound( gens )  then
 	  if (not IsPermGroup(G)) and CanEasilyComputePcgs( G )  then
@@ -1119,8 +1113,6 @@ local str, orbish, func;
 	Error( "usage: ", name, "(<xset>,<pnt>)\n",
 	      "or ", name, "(<G>[,<Omega>],<pnt>[,<gens>,<acts>][,<act>])" );
       fi;
-      
-      G := PreOrbishProcessing(G);
       
       if not IsBound( gens )  then
 	  if (not IsPermGroup(G)) and CanEasilyComputePcgs( G )  then
