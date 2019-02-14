@@ -123,37 +123,29 @@ enum {
 **
 *T  Char, Int1, Int2, Int4, Int, UChar, UInt1, UInt2, UInt4, UInt .  integers
 **
-**  'Char',  'Int1',  'Int2',  'Int4',  'Int',   'UChar',   'UInt1', 'UInt2',
-**  'UInt4', 'UInt'  and possibly 'Int8' and 'UInt8' are the integer types.
-**
-**  Note that to get this to work, all files must be compiled with or without
-**  '-DSYS_IS_64_BIT', not just "system.c".
+**  'Char', 'Int1', 'Int2', 'Int4', 'Int8', 'Int', 'UChar', 'UInt1', 'UInt2',
+**  'UInt4', 'UInt8', 'UInt' are the integer types.
 **
 **  '(U)Int<n>' should be exactly <n> bytes long
 **  '(U)Int' should be the same length as a bag identifier
 */
 
 
-typedef char              Char;
+typedef char     Char;
+typedef uint8_t  UChar;
 
 typedef int8_t   Int1;
 typedef int16_t  Int2;
 typedef int32_t  Int4;
 typedef int64_t  Int8;
 
-typedef uint8_t  UChar;
 typedef uint8_t  UInt1;
 typedef uint16_t UInt2;
 typedef uint32_t UInt4;
 typedef uint64_t UInt8;
 
-#ifdef SYS_IS_64_BIT
-typedef Int8     Int;
-typedef UInt8    UInt;
-#else
-typedef Int4     Int;
-typedef UInt4    UInt;
-#endif
+typedef intptr_t  Int;
+typedef uintptr_t UInt;
 
 GAP_STATIC_ASSERT(sizeof(void *) == sizeof(Int), "sizeof(Int) is wrong");
 GAP_STATIC_ASSERT(sizeof(void *) == sizeof(UInt), "sizeof(UInt) is wrong");
