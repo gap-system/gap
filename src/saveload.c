@@ -221,7 +221,7 @@ void SaveUInt( UInt data )
     SaveUInt8(data);
 }
 
-UInt8 LoadUInt ( void )
+UInt LoadUInt ( void )
 {
     return LoadUInt8();
 }
