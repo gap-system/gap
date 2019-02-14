@@ -36,19 +36,17 @@
 
 #include "system.h"
 
-#ifdef SYS_IS_64_BIT
-#define NR_SMALL_INT_BITS  (64 - 4)
-#else
-#define NR_SMALL_INT_BITS  (32 - 4)
-#endif
+enum {
+    NR_SMALL_INT_BITS = sizeof(UInt) * 8 - 4,
 
-// the minimal / maximal possible values of an immediate integer object:
-#define INT_INTOBJ_MIN  (-(1L << NR_SMALL_INT_BITS))
-#define INT_INTOBJ_MAX  ((1L << NR_SMALL_INT_BITS) - 1)
+    // the minimal / maximal possible values of an immediate integer object:
+    INT_INTOBJ_MIN = -(1L << NR_SMALL_INT_BITS),
+    INT_INTOBJ_MAX =  (1L << NR_SMALL_INT_BITS) - 1,
+};
 
 // the minimal / maximal possible immediate integer objects:
-#define INTOBJ_MIN  INTOBJ_INT(INT_INTOBJ_MIN)
-#define INTOBJ_MAX  INTOBJ_INT(INT_INTOBJ_MAX)
+#define INTOBJ_MIN  (Obj)(((UInt)INT_INTOBJ_MIN << 2) + 0x01)
+#define INTOBJ_MAX  (Obj)(((UInt)INT_INTOBJ_MAX << 2) + 0x01)
 
 
 /****************************************************************************
