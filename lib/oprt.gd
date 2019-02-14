@@ -1082,7 +1082,7 @@ local str, orbish, func;
 
     # Create the wrapper function.
     func := function( arg )
-    local   G,  D,  pnt,  gens,  acts,  act,  xset,  p,  attrG,  result,le;
+    local   G,  D,  pnt,  gens,  acts,  act,   p,  attrG,  result,le;
 
       # Get the arguments.
       if 2 <= Length( arg ) then
@@ -1090,7 +1090,6 @@ local str, orbish, func;
 	  G := arg[ 1 ];
 	  if IsFunction( arg[ le ] )  then
 	      act := arg[ le ];
-	      le:=le-1;
 	  else
 	      act := OnPoints;
 	  fi;
@@ -1111,8 +1110,7 @@ local str, orbish, func;
 	      acts := arg[ p + 2 ];
 	  fi;
       else
-	Error( "usage: ", name, "(<xset>,<pnt>)\n",
-	      "or ", name, "(<G>[,<Omega>],<pnt>[,<gens>,<acts>][,<act>])" );
+	Error( "usage: ", name, "(<G>[,<Omega>],<pnts>[,<gens>,<acts>][,<act>])" );
       fi;
       
       if not IsBound( gens )  then
@@ -1131,12 +1129,7 @@ local str, orbish, func;
       if IsBound( D )  then
 	  result := orbish( G, D, pnt, gens, acts, act );
       else
-
-	  # The following line is also executed  when `Blocks(<G>, <Omega>, <act>)'
-	  # is called to compute blocks with no  seed, but then <pnt> is really
-	  # <Omega>, i.e., the operation domain!
 	  result := orbish( G, pnt, gens, acts, act );
-
       fi;
 
       return result;
