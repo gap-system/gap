@@ -81,9 +81,9 @@ typedef UInt * *        Bag;
 typedef struct {
     uint8_t type : 8;
     uint8_t flags : 8;
-#if SIZEOF_VOID_P == 8
+#ifdef SYS_IS_64_BIT
     uint64_t size : 48;
-#elif SIZEOF_VOID_P == 4
+#else
     uint16_t reserved : 16;
     uint32_t size : 32;
 #endif
