@@ -89,7 +89,7 @@ void SortPlistByRawObj(Obj list);
 **  'RemoveDupsDensePlist' removes duplicate elements from the dense
 **  plain list <list>.  <list> must be sorted.  'RemoveDupsDensePlist'
 **  returns 0 if <list> contains mutable elements, 1 if immutable but
-**  not homogenout, 2 otherwise
+**  not homogeneous, 2 otherwise
 */
 UInt RemoveDupsDensePlist(Obj list);
 
