@@ -85,9 +85,6 @@
 
 #include <gmp.h>
 
-#if (GMP_LIMB_BITS != INTEGER_UNIT_SIZE * 8)
-#error Aborting compile: unexpected GMP limb size
-#endif
 #if GMP_NAIL_BITS != 0
 #error Aborting compile: GAP does not support non-zero GMP nail size
 #endif
@@ -97,6 +94,8 @@
  #endif
 #endif
 
+GAP_STATIC_ASSERT(GMP_LIMB_BITS == 8 * sizeof(UInt),
+                  "GMP_LIMB_BITS != 8 * sizeof(UInt)");
 GAP_STATIC_ASSERT(sizeof(mp_limb_t) == sizeof(UInt),
                   "sizeof(mp_limb_t) != sizeof(UInt)");
 
@@ -890,18 +889,18 @@ Obj IntHexString(Obj str)
   }
 
   else {
-    /* Each hex digit corresponds to to 4 bits, and each GMP limb has INTEGER_UNIT_SIZE
-       bytes, thus 2*INTEGER_UNIT_SIZE hex digits fit into one limb. We use this
+    /* Each hex digit corresponds to to 4 bits, and each GMP limb has sizeof(UInt)
+       bytes, thus 2*sizeof(UInt) hex digits fit into one limb. We use this
        to compute the number of limbs minus 1: */
-    nd = (len - 1) / (2*INTEGER_UNIT_SIZE);
+    nd = (len - 1) / (2*sizeof(UInt));
     res = NewBag( (sign == 1) ? T_INTPOS : T_INTNEG, (nd + 1) * sizeof(mp_limb_t) );
 
     /* update pointer, in case a garbage collection happened */
     p = CONST_CHARS_STRING(str) + i;
     limbs = ADDR_INT(res);
 
-    /* if len is not divisible by 2*INTEGER_UNIT_SIZE, then take care of the extra bytes */
-    UInt diff = len - nd * (2*INTEGER_UNIT_SIZE);
+    /* if len is not divisible by 2*sizeof(UInt), then take care of the extra bytes */
+    UInt diff = len - nd * (2*sizeof(UInt));
     if ( diff ) {
         n = hexstr2int( p, diff );
         p += diff;
@@ -911,9 +910,9 @@ Obj IntHexString(Obj str)
 
     /*  */
     while ( len ) {
-        n = hexstr2int( p, 2*INTEGER_UNIT_SIZE );
-        p += 2*INTEGER_UNIT_SIZE;
-        len -= 2*INTEGER_UNIT_SIZE;
+        n = hexstr2int( p, 2*sizeof(UInt) );
+        p += 2*sizeof(UInt);
+        len -= 2*sizeof(UInt);
         limbs[nd--] = n;
     }
 

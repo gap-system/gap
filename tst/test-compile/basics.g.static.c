@@ -91,7 +91,7 @@ static Obj  HdlrFunc2 (
  CALL_2ARGS( t_1, l_x, t_2 );
  
  /* y := 10000000000; */
- l_y = C_MAKE_MED_INT(10000000000);
+ l_y = ObjInt_Int8(10000000000);
  
  /* Print( y, "\n" ); */
  t_1 = GF_Print;
@@ -114,7 +114,7 @@ static Obj  HdlrFunc2 (
  CALL_2ARGS( t_1, l_x, t_2 );
  
  /* y := 100000000000000000000; */
- t_1 = C_MAKE_INTEGER_BAG(16, 1);
+ t_1 = NewWordSizedBag(1, 16);
  C_SET_LIMB8( t_1, 0, 7766279631452241920LL);
  C_SET_LIMB8( t_1, 1, 5LL);
  l_y = t_1;

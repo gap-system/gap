@@ -702,7 +702,7 @@ static void Emit(const char * fmt, ...)
                     if (x >= -(1L <<28) && x < (1L << 28))
                         Pr( "INTOBJ_INT(%d)", x, 0L );
                     else
-                        Pr( "C_MAKE_MED_INT(%d)", x, 0L );
+                        Pr( "ObjInt_Int8(%d)", x, 0L );
                 }
                 else if ( IS_TEMP_CVAR(cvar) ) {
                     Pr( "t_%d", TEMP_CVAR(cvar), 0L );
@@ -2199,8 +2199,7 @@ static CVar CompPow(Expr expr)
 **  representation of the stored literal in the compiling process but NOT the
 **  representation which will apply to the compiled code or the endianness
 **
-**  The solution to this is macros: C_MAKE_INTEGER_BAG( size, type)
-**                                  C_SET_LIMB4(bag, limbnumber, value)
+**  The solution to this is macros: C_SET_LIMB4(bag, limbnumber, value)
 **                                  C_SET_LIMB8(bag, limbnumber, value)
 **
 **  we compile using the one appropriate for the compiling system, but their
@@ -2225,7 +2224,7 @@ static CVar CompIntExpr(Expr expr)
         val = CVAR_TEMP( NewTemp( "val" ) );
         siz = SIZE_OBJ(obj);
         typ = TNUM_OBJ(obj);
-        Emit( "%c = C_MAKE_INTEGER_BAG(%d, %d);\n", val, siz, typ);
+        Emit( "%c = NewWordSizedBag(%d, %d);\n", val, typ, siz);
         if ( typ == T_INTPOS ) {
             SetInfoCVar(val, W_INT_POS);
         }
@@ -2233,18 +2232,19 @@ static CVar CompIntExpr(Expr expr)
             SetInfoCVar(val, W_INT);
         }
 
-        for ( i = 0; i < siz/INTEGER_UNIT_SIZE; i++ ) {
+        for ( i = 0; i < siz/sizeof(UInt); i++ ) {
             UInt limb = CONST_ADDR_INT(obj)[i];
-#if INTEGER_UNIT_SIZE == 4
-            Emit("C_SET_LIMB4( %c, %d, %dL);\n", val, i, limb);
-#elif INTEGER_UNIT_SIZE == 8
+#ifdef SYS_IS_64_BIT 
             Emit("C_SET_LIMB8( %c, %d, %dLL);\n", val, i, limb);
 #else
-            #error unsupported INTEGER_UNIT_SIZE
+            Emit("C_SET_LIMB4( %c, %d, %dL);\n", val, i, limb);
 #endif
         }
-        if (siz <= 8)
+        if (siz <= 8) {
+            Emit("#ifdef SYS_IS_64_BIT");
             Emit("%c = C_NORMALIZE_64BIT(%c);\n", val,val);
+            Emit("#endif");
+        }
         return val;
     }
 }

@@ -16,13 +16,6 @@
 #include "objects.h"
 
 
-#ifdef SYS_IS_64_BIT
-#define INTEGER_UNIT_SIZE 8
-#else
-#define INTEGER_UNIT_SIZE 4
-#endif
-
-
 /****************************************************************************
 **
 **  'IS_LARGEINT' returns 1 if 'obj' is large positive or negative integer
