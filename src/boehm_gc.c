@@ -76,7 +76,7 @@ Bag MakeBagReadOnly(Bag bag)
 *F  InitFreeFuncBag(<type>,<free-func>)
 */
 
-TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
+static TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
 
 void InitFreeFuncBag(UInt type, TNumFreeFuncBags finalizer_func)
 {

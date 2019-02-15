@@ -142,9 +142,9 @@ typedef struct {
     UInt buflen;
 } SYS_SY_BUFFER;
 
-SYS_SY_BUF syBuf[256];
+static SYS_SY_BUF syBuf[256];
 
-SYS_SY_BUFFER syBuffers[32];
+static SYS_SY_BUFFER syBuffers[32];
 
 
 /* utility to check return value of 'write'  */
@@ -1008,7 +1008,7 @@ Int SyIsEndOfFile (
 **  continue signals if this particular version  of UNIX supports them, so we
 **  can turn the terminal line back to cooked mode before stopping GAP.
 */
-struct termios   syOld, syNew;           /* old and new terminal state      */
+static struct termios   syOld, syNew;           /* old and new terminal state      */
 
 #ifdef SIGTSTP
 

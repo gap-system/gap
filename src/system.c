@@ -138,7 +138,7 @@ Char DotGapPath[GAP_PATH_MAX];
 *V  IgnoreGapRC . . . . . . . . . . . . . . . . . . . -r option for kernel
 **
 */
-Int IgnoreGapRC;
+static Int IgnoreGapRC;
 
 /****************************************************************************
 **
@@ -851,7 +851,7 @@ void syLongjmp(syJmp_buf* buf, int val)
 
 typedef struct { Char symbol; UInt value; } sizeMultiplier;
 
-sizeMultiplier memoryUnits[]= {
+static sizeMultiplier memoryUnits[]= {
   {'k', 1024},
   {'K', 1024},
   {'m', 1024*1024},
@@ -998,7 +998,7 @@ static Int preAllocAmount;
 
 /* These options must be kept in sync with those in system.g, so the help output
    is correct */
-struct optInfo options[] = {
+static struct optInfo options[] = {
   { 'B',  "architecture", storeString, &SyArchitecture, 1}, /* default architecture needs to be passed from kernel 
                                                                   to library. Might be needed for autoload of compiled files */
   { 'C',  "", processCompilerArgs, 0, 4}, /* must handle in kernel */

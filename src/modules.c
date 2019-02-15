@@ -72,7 +72,7 @@ typedef struct {
 } StructInitInfoExt;
 
 
-StructInitInfoExt Modules[MAX_MODULES];
+static StructInitInfoExt Modules[MAX_MODULES];
 static UInt       NrModules;
 static UInt       NrBuiltinModules;
 

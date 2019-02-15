@@ -279,11 +279,11 @@ static inline Bag *DATA(BagHeader *bag)
 */
 Bag *                   MptrBags;
 Bag *                   MptrEndBags;
-Bag *                   OldBags;
+static Bag *            OldBags;
 Bag *                   YoungBags;
 Bag *                   AllocBags;
 static UInt             AllocSizeBags;
-Bag *                   EndBags;
+static Bag *            EndBags;
 
 /* These macros, are (a) for more readable code, but more importantly
    (b) to ensure that unsigned subtracts and divides are used (since
@@ -1793,7 +1793,7 @@ UInt ResizeBag (
 **  identifiers can exist, and so 'CollectBags' frees these masterpointers.
 */
 
-syJmp_buf RegsBags;
+static syJmp_buf RegsBags;
 
 #if defined(SPARC)
 static void SparcStackFuncBags(void)
@@ -1849,8 +1849,8 @@ not look like valid pointers, and should be congruent to 1 mod sizeof(Bag),
 to ensure that IsWeakDeadBag works correctly.
 */
 
-Bag * NewWeakDeadBagMarker = (Bag *)(1000*sizeof(Bag) + 1L);
-Bag * OldWeakDeadBagMarker = (Bag *)(1001*sizeof(Bag) + 1L);
+static Bag * NewWeakDeadBagMarker = (Bag *)(1000*sizeof(Bag) + 1L);
+static Bag * OldWeakDeadBagMarker = (Bag *)(1001*sizeof(Bag) + 1L);
 
 
 
