@@ -39,9 +39,7 @@ void SaveUInt1(UInt1 x);
 void SaveUInt2(UInt2 x);
 void SaveUInt4(UInt4 x);
 void SaveUInt(UInt x);
-#ifdef SYS_IS_64_BIT
 void SaveUInt8(UInt8 x);
-#endif
 void SaveCStr(const Char * s);
 void SaveString(Obj string);
 void LoadString(Obj string);
@@ -51,9 +49,7 @@ UInt1 LoadUInt1(void);
 UInt2 LoadUInt2(void);
 UInt4 LoadUInt4(void);
 UInt  LoadUInt(void);
-#ifdef SYS_IS_64_BIT
 UInt8 LoadUInt8(void);
-#endif
 void LoadCStr(Char * buf, UInt maxlen);
 Obj  LoadSubObj(void);
 
