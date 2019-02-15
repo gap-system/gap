@@ -162,7 +162,7 @@ typedef struct {
 **  'IdentityTrans' is an identity transformation.
 */
 /* mp this will become a ReadOnly object? */
-Obj IdentityTrans;
+static Obj IdentityTrans;
 
 /*******************************************************************************
 ** Forward declarations

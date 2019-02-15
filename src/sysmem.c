@@ -584,7 +584,7 @@ UInt *** SyAllocBags(Int size, UInt need)
 #define task_self mach_task_self
 #endif
 
-vm_address_t syBase;
+static vm_address_t syBase;
  
 UInt * * * SyAllocBags (
     Int                 size,

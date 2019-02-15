@@ -49,9 +49,9 @@ static Obj NewList(UInt size)
 }
 
 
-TraversalFunction     TraversalFunc[LAST_REAL_TNUM + 1];
-TraversalCopyFunction TraversalCopyFunc[LAST_REAL_TNUM + 1];
-TraversalMethodEnum   TraversalMethod[LAST_REAL_TNUM + 1];
+static TraversalFunction     TraversalFunc[LAST_REAL_TNUM + 1];
+static TraversalCopyFunction TraversalCopyFunc[LAST_REAL_TNUM + 1];
+static TraversalMethodEnum   TraversalMethod[LAST_REAL_TNUM + 1];
 
 static UInt FindTraversedObj(TraversalState * traversal, Obj);
 

@@ -688,7 +688,7 @@ static Int Solution(Obj sc, Obj ww, Obj uu, FuncIOOO func)
 **
 *V  C8Bits_SingleCollector
 */
-FinPowConjCol C8Bits_SingleCollector = {
+static FinPowConjCol C8Bits_SingleCollector = {
     WordVectorAndClear<UInt1>,
     VectorWord<UInt1>,
     SingleCollectWord<UInt1>,
@@ -699,7 +699,7 @@ FinPowConjCol C8Bits_SingleCollector = {
 **
 *V  C16Bits_SingleCollector
 */
-FinPowConjCol C16Bits_SingleCollector = {
+static FinPowConjCol C16Bits_SingleCollector = {
     WordVectorAndClear<UInt2>,
     VectorWord<UInt2>,
     SingleCollectWord<UInt2>,
@@ -710,7 +710,7 @@ FinPowConjCol C16Bits_SingleCollector = {
 **
 *V  C32Bits_SingleCollector
 */
-FinPowConjCol C32Bits_SingleCollector = {
+static FinPowConjCol C32Bits_SingleCollector = {
     WordVectorAndClear<UInt4>,
     VectorWord<UInt4>,
     SingleCollectWord<UInt4>,
@@ -1180,7 +1180,7 @@ static Int CombiCollectWord(Obj sc, Obj vv, Obj w)
 **
 *V  C8Bits_CombiCollector
 */
-FinPowConjCol C8Bits_CombiCollector = {
+static FinPowConjCol C8Bits_CombiCollector = {
     WordVectorAndClear<UInt1>,
     VectorWord<UInt1>,
     CombiCollectWord<UInt1>,
@@ -1191,7 +1191,7 @@ FinPowConjCol C8Bits_CombiCollector = {
 **
 *V  C16Bits_CombiCollector
 */
-FinPowConjCol C16Bits_CombiCollector = {
+static FinPowConjCol C16Bits_CombiCollector = {
     WordVectorAndClear<UInt2>,
     VectorWord<UInt2>,
     CombiCollectWord<UInt2>,
@@ -1202,7 +1202,7 @@ FinPowConjCol C16Bits_CombiCollector = {
 **
 *V  C32Bits_CombiCollector
 */
-FinPowConjCol C32Bits_CombiCollector = {
+static FinPowConjCol C32Bits_CombiCollector = {
     WordVectorAndClear<UInt4>,
     VectorWord<UInt4>,
     CombiCollectWord<UInt4>,
@@ -1213,7 +1213,7 @@ FinPowConjCol C32Bits_CombiCollector = {
 **
 *V  FinPowConjCollectors
 */
-FinPowConjCol * FinPowConjCollectors [6] =
+static FinPowConjCol * FinPowConjCollectors [6] =
 {
 #define C8Bits_SingleCollectorNo        0
        &C8Bits_SingleCollector,

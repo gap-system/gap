@@ -45,8 +45,8 @@ typedef struct SerializeModuleState {
 
 #ifndef WARD_ENABLED
 
-SerializationFunction   SerializationFuncByTNum[256];
-DeserializationFunction DeserializationFuncByTNum[256];
+static SerializationFunction   SerializationFuncByTNum[256];
+static DeserializationFunction DeserializationFuncByTNum[256];
 
 
 static void DeserializationError(void)

@@ -115,7 +115,7 @@ struct StatementLocation
 
 typedef enum { Tick_WallTime, Tick_CPUTime, Tick_Mem } TickMethod;
 
-struct ProfileState
+static struct ProfileState
 {
   // C steam we are writing to
   FILE* Stream;
@@ -588,7 +588,7 @@ static void registerInterpretedStat(Int file, Int line)
 }
 
 
-struct InterpreterHooks profileHooks = { visitStat,
+static struct InterpreterHooks profileHooks = { visitStat,
                                          visitInterpretedStat,
                                          enterFunction,
                                          leaveFunction,
@@ -850,7 +850,7 @@ static void ProfilePrintExprPassthrough(Expr stat)
   }
 }
 
-struct PrintHooks profilePrintHooks =
+static struct PrintHooks profilePrintHooks =
   {ProfilePrintStatPassthrough, ProfilePrintExprPassthrough};
 
 static Obj activate_colored_output_from_profile(void)
