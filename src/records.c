@@ -111,7 +111,6 @@ UInt RNamNameWithLen(const Char * name, UInt len)
     if (len > 1023) {
         // Note: We can't pass 'name' here, as it might get moved by garbage collection
         ErrorQuit("Record names must consist of at most 1023 characters", 0, 0);
-        return 0;
     }
 
     /* start looking in the table at the following hash position           */

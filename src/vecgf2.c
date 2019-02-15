@@ -215,7 +215,6 @@ static Obj AddPartialGF2VecGF2Vec(Obj sum, Obj vl, Obj vr, UInt n)
     len = LEN_GF2VEC(vl);
     if (len != LEN_GF2VEC(vr)) {
         ErrorMayQuit("Vector +: vectors must have the same length", 0L, 0L);
-        return 0;
     }
 
 
@@ -320,7 +319,6 @@ static Obj ProdGF2VecGF2Vec(Obj vl, Obj vr)
     if (len == 0) {
         ErrorMayQuit("Vector *: both vectors must have at least one entry",
                      (Int)0, (Int)0);
-        return 0;
     }
 
     // loop over the entries and multiply
@@ -1783,7 +1781,6 @@ static Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
             if (lenList < pos) {
                 ErrorMayQuit("List Elements: <list>[%d] must have a value",
                              pos, 0L);
-                return 0;
             }
 
             // assign the element into <elms>
@@ -1805,12 +1802,10 @@ static Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
         if (lenList < pos) {
             ErrorMayQuit("List Elements: <list>[%d] must have a value", pos,
                          0L);
-            return 0;
         }
         if (lenList < pos + (lenPoss - 1) * inc) {
             ErrorMayQuit("List Elements: <list>[%d] must have a value",
                          pos + (lenPoss - 1) * inc, 0L);
-            return 0;
         }
 
         // make the result vector
@@ -2556,7 +2551,6 @@ static Obj FuncAPPEND_GF2VEC(Obj self, Obj vecl, Obj vecr)
     lenr = LEN_GF2VEC(vecr);
     if (True == DoFilter(IsLockedRepresentationVector, vecl) && lenr > 0) {
         ErrorMayQuit("Append to locked compressed vector is forbidden", 0, 0);
-        return 0;
     }
     ResizeWordSizedBag(vecl, SIZE_PLEN_GF2VEC(lenl + lenr));
     CopySection_GF2Vecs(vecr, vecl, 1, lenl + 1, lenr);
@@ -2936,7 +2930,6 @@ static Obj FuncDIST_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
     if (len != LEN_GF2VEC(vr)) {
         ErrorMayQuit("DIST_GF2VEC_GF2VEC: vectors must have the same length",
                      0L, 0L);
-        return 0;
     }
 
     // calculate the offsets

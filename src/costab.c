@@ -106,7 +106,6 @@ static Obj FuncApplyRel(Obj self,
     if ( LEN_PLIST(app) != 4 ) {
         ErrorQuit( "<app> must be a list of length 4 not %d",
                    (Int) LEN_PLIST(app), 0L );
-        return 0;
     }
 
     /* get the four entries                                                */
@@ -173,7 +172,6 @@ static void CompressDeductionList ( void )
     /* check if the situation is as assumed                                */
     if ( dedlst != dedSize ) {
         ErrorQuit( "invalid call of CompressDeductionList", 0L, 0L );
-        return;
     }
 
     /* run through the lists and compress them                             */
@@ -583,7 +581,6 @@ static Obj FuncMakeConsequencesPres(Obj self, Obj list)
     if ( ! ( IS_PLIST(objDefs1) && IS_PLIST(objDefs2) &&
         LEN_PLIST(objDefs1) == LEN_PLIST(objDefs2) ) ) {
         ErrorQuit( "inconsistent definitions lists", 0L, 0L );
-        return 0;
     }
     ndefsMax = LEN_PLIST(objDefs1);
     apply = 1;
@@ -627,7 +624,6 @@ static Obj FuncMakeConsequencesPres(Obj self, Obj list)
                 ndefs++;
                 if ( ndefs > ndefsMax ) {
                     ErrorQuit( "inconsistent definitions lists", 0L, 0L );
-                    return 0;
                 }
                 SET_ELM_PLIST( objDefs1, ndefs, INTOBJ_INT( lc ) );
                 SET_ELM_PLIST( objDefs2, ndefs, ptNums[lp] );
@@ -686,7 +682,6 @@ static Obj FuncStandardizeTableC(Obj self, Obj table, Obj stan)
                 "<table>[%d] must be a plain list (not a %s)",
                 (Int)j,
                 (Int)TNAM_OBJ(ptTable[j]) );
-            return 0;
         }
     }
     if ( IS_INTOBJ(stan) && INT_INTOBJ(stan) == 1 ) {
@@ -1036,7 +1031,6 @@ static void AddCosetFactor2 (
                     ErrorQuit(
                         "exponent too large, Modified Todd-Coxeter aborted",
                         0L, 0L );
-                    return;
                 }
                 ptWord[i] = sum;
             }
@@ -1051,7 +1045,6 @@ static void AddCosetFactor2 (
                     ErrorQuit(
                         "exponent too large, Modified Todd-Coxeter aborted",
                         0L, 0L );
-                    return;
                 }
                 ptWord[i] = sum;
             }
@@ -1116,7 +1109,6 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
     if ( LEN_PLIST(app) != 9 ) {
         ErrorQuit( "<app> must be a list of length 9 not %d",
                    (Int) LEN_PLIST(app), 0L );
-        return 0;
     }
     ptApp = BASE_PTR_PLIST(app) - 1;
 
@@ -1197,7 +1189,6 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
             treeWordLength = INT_INTOBJ( ptTree[4] );
             if ( LEN_PLIST(objTree2) != treeWordLength ) {
                 ErrorQuit( "ApplyRel2: illegal word length", 0L, 0L );
-                return 0;
             }
 
             /* initialize the coset representative word                    */
@@ -1241,7 +1232,6 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
             if ( ptWord != ptTree2 ) {
                 if ( LEN_PLIST(word) != treeWordLength ) {
                     ErrorQuit( "illegal word length", 0L, 0L );
-                    return 0;
                 }
                 for ( i = 1;  i <= treeWordLength;  i++ ) {
                     ptWord[i] = ptTree2[i];
@@ -1552,19 +1542,16 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
     objTree = tree;
     if ( ! IS_PLIST(tree) || LEN_PLIST(tree) < 5 ) {
         ErrorQuit( "invalid <tree>", 0L, 0L );
-        return 0;
     }
 
     /*  Get and check the tree components                                  */
     objTree1 = ELM_PLIST(objTree,1);
     if ( ! IS_PLIST(objTree1) ) {
         ErrorQuit( "invalid <tree>[1]", 0L, 0L );
-        return 0;
     }
     objTree2 = ELM_PLIST(objTree,2);
     if ( ! IS_PLIST(objTree2) ) {
         ErrorQuit( "invalid <tree>[2]", 0L, 0L );
-        return 0;
     }
     ptTree1 = BASE_PTR_PLIST(objTree1) - 1;
     ptTree2 = BASE_PTR_PLIST(objTree2) - 1;
@@ -1576,7 +1563,6 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
     /*  Get the second argument (word)                                     */
     if ( ! IS_PLIST(word) ) {
         ErrorQuit( "invalid <word>", 0L, 0L );
-        return 0;
     }
 
     /* handle the abelianized case                                         */
@@ -1584,7 +1570,6 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
     if ( treeType == 0 ) {
         if ( LEN_PLIST(word) != treeWordLength ) {
             ErrorQuit( "inconsistent <word> length", 0L, 0L );
-            return 0;
         }
         ptWord = BASE_PTR_PLIST(objTree2) - 1;
         for ( leng = treeWordLength;  leng >= 1;  leng-- ) {
@@ -1654,7 +1639,6 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
     /* handle the general case                                             */
     if ( LEN_PLIST(objTree1) != LEN_PLIST(objTree2) ) {
         ErrorQuit( "inconsistent <tree> components", 0L, 0L );
-        return 0;
     }
 
     for ( i = 1;  i <= numgens;  i++ ) {
@@ -1662,7 +1646,6 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
           || INT_INTOBJ(ptTree2[i]) <= -i || INT_INTOBJ(ptTree2[i]) >= i )
         {
             ErrorQuit( "invalid <tree> components", 0L, 0L );
-            return 0;
         }
     }
 
@@ -1675,7 +1658,6 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
         }
         if ( gen > numgens || gen < -numgens ) {
             ErrorQuit( "invalid <word> entry [%d]", i, 0L );
-            return 0;
         }
         if ( j > 0 && gen == - INT_INTOBJ(ptWord[j]) ) {
             j--;
@@ -1826,7 +1808,6 @@ static Obj FuncStandardizeTable2C(Obj self, Obj table, Obj table2, Obj stan)
                 "<table>[%d] must be a plain list (not a %s)",
                 (Int)j,
                 (Int)TNAM_OBJ(ptTable[j]) );
-            return 0;
         }
     }
     objTable2 = table2;
@@ -1934,19 +1915,16 @@ static Obj FuncAddAbelianRelator(Obj self,
     if ( !IS_INTOBJ(number) ) {
         ErrorQuit( "<number> must be a small integer (not a %s)",
             (Int)TNAM_OBJ(number), 0L );
-        return 0;
     }
 
     /* get the length of the given relators list                           */
     numrows = INT_INTOBJ(number);
     if ( numrows < 1 || LEN_PLIST(rels) < numrows ) {
         ErrorQuit( "inconsistent relator number", 0L, 0L );
-        return 0;
     }
     tmp = ELM_PLIST( rels, numrows );
     if ( tmp == 0 ) {
         ErrorQuit( "inconsistent relator number", 0L, 0L );
-        return 0;
     }
     pt2 = BASE_PTR_PLIST(tmp) - 1;
 

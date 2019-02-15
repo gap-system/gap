@@ -704,7 +704,6 @@ static int IsLessHandlerInfo (
             return strcmp(h1->cookie, h2->cookie) < 0;
         default:
             ErrorQuit( "Invalid sort mode %u", (Int)byWhat, 0L );
-            return 0; /* please lint */
     }
 }
 
@@ -1362,14 +1361,12 @@ static Obj FuncCLEAR_PROFILE_FUNC(Obj self, Obj func)
     prof = PROF_FUNC(func);
     if ( prof == 0 ) {
         ErrorQuit( "<func> has corrupted profile info", 0L, 0L );
-        return 0;
     }
     if ( TNUM_OBJ(prof) == T_FUNCTION ) {
         prof = PROF_FUNC(prof);
     }
     if ( prof == 0 ) {
         ErrorQuit( "<func> has corrupted profile info", 0L, 0L );
-        return 0;
     }
     SET_COUNT_PROF( prof, 0 );
     SET_TIME_WITH_PROF( prof, 0 );

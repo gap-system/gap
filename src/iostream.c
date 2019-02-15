@@ -519,7 +519,6 @@ static UInt HashLockStreamIfAvailable(Obj stream)
     if (!PtyIOStreams[pty].inuse) {
         HashUnlock(PtyIOStreams);
         ErrorMayQuit("IOSTREAM %d is not in use", pty, 0L);
-        return -1;
     }
     return pty;
 }

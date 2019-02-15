@@ -5394,7 +5394,6 @@ static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
     if ( len < 5 ) {
         ErrorQuit( "usage: COMPILE_FUNC( <output>, <func>, <name>, %s",
                    (Int)"<magic1>, <magic2>, ... )", 0 );
-        return 0;
     }
     output = ELM_LIST( arg, 1 );
     func   = ELM_LIST( arg, 2 );

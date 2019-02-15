@@ -819,7 +819,6 @@ static Obj FuncWindowCmd(Obj self, Obj args)
     }
     else {
       ErrorQuit( "unknown return value '%s'", (Int)inptr, 0 );
-      return 0;
     }
     i++;
   }

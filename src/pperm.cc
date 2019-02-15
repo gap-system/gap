@@ -3252,7 +3252,6 @@ static Obj PowIntPPerm2(Obj i, Obj f)
     if (!IS_INTOBJ(i) || INT_INTOBJ(i) <= 0) {
         ErrorQuit("usage: the first argument must be a positive integer,",
                   0L, 0L);
-        return 0L;
     }
     return INTOBJ_INT(
         IMAGEPP((UInt)INT_INTOBJ(i), ADDR_PPERM2(f), DEG_PPERM2(f)));
@@ -3265,7 +3264,6 @@ static Obj PowIntPPerm4(Obj i, Obj f)
     if (!IS_INTOBJ(i) || INT_INTOBJ(i) <= 0) {
         ErrorQuit("usage: the first argument must be a positive integer,",
                   0L, 0L);
-        return 0L;
     }
     return INTOBJ_INT(
         IMAGEPP((UInt)INT_INTOBJ(i), ADDR_PPERM4(f), DEG_PPERM4(f)));
