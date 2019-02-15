@@ -222,22 +222,9 @@ extern  Obj             GF_NEXT_ITER;
 
 /* More or less all of this will get inlined away */
 
-/* Allocate a bag suitable for a size-byte integer of type type. 
-   The allocation may need to be bigger than size bytes 
-   due to limb size or other aspects of the representation */
-
-EXPORT_INLINE  Obj C_MAKE_INTEGER_BAG( UInt size, UInt type)  {
-  /* Round size up to nearest multiple of INTEGER_UNIT_SIZE */
-  return NewBag(type,INTEGER_UNIT_SIZE*
-                ((size + INTEGER_UNIT_SIZE-1)/INTEGER_UNIT_SIZE));
-}
-
-
-EXPORT_INLINE void C_SET_LIMB4(Obj bag, UInt limbnumber, UInt4 value)  {
-
-#if INTEGER_UNIT_SIZE == 4
-  ((UInt4 *)ADDR_OBJ(bag))[limbnumber] = value;
-#elif INTEGER_UNIT_SIZE == 8
+EXPORT_INLINE void C_SET_LIMB4(Obj bag, UInt limbnumber, UInt4 value)
+{
+#ifdef SYS_IS_64_BIT 
   UInt8 *p;
   if (limbnumber % 2) {
     p = ((UInt8*)ADDR_OBJ(bag)) + (limbnumber-1) / 2;
@@ -247,55 +234,21 @@ EXPORT_INLINE void C_SET_LIMB4(Obj bag, UInt limbnumber, UInt4 value)  {
     *p = (*p & 0xFFFFFFFF00000000UL) | (UInt8)value;
   }
 #else
-   #error unsupported INTEGER_UNIT_SIZE
+  ((UInt4 *)ADDR_OBJ(bag))[limbnumber] = value;
 #endif  
 }
 
 
-
-EXPORT_INLINE void C_SET_LIMB8(Obj bag, UInt limbnumber, UInt8 value)  { 
-#if INTEGER_UNIT_SIZE == 8
+EXPORT_INLINE void C_SET_LIMB8(Obj bag, UInt limbnumber, UInt8 value)
+{ 
+#ifdef SYS_IS_64_BIT 
   ((UInt8 *)ADDR_OBJ(bag))[limbnumber] = value;
-#elif INTEGER_UNIT_SIZE == 4
+#else
   ((UInt4 *)ADDR_OBJ(bag))[2*limbnumber] = (UInt4)(value & 0xFFFFFFFFUL);
   ((UInt4 *)ADDR_OBJ(bag))[2*limbnumber+1] = (UInt4)(value >>32);
-#else
-   #error unsupported INTEGER_UNIT_SIZE
 #endif
 }
 
-/* C_MAKE_MED_INT handles numbers between 2^28 and 2^60 in magnitude,
-   and is used in code compiled on 64 bit systems. If the target system
-   is 64 bit an immediate integer is constructed. If the target is 32 bits then
-   an 8-byte large integer is constructed using the representation-neutral 
-   macros above 
-
-   C_NORMALIZE_64BIT is called when a large integer has been
-   constructed (because the literal was large on the compiling system)
-   and might be small on the target system. */
-
- 
-#ifdef SYS_IS_64_BIT 
-EXPORT_INLINE Obj C_MAKE_MED_INT( Int8 value ) {
-  return INTOBJ_INT(value);
-}
-
-EXPORT_INLINE Obj C_NORMALIZE_64BIT(Obj o) {
-  return GMP_REDUCE(o);
-}
-
-
-#else
-EXPORT_INLINE Obj C_MAKE_MED_INT( Int8 value )
-{
-    return ObjInt_Int8(value);
-}
-
-EXPORT_INLINE Obj C_NORMALIZE_64BIT( Obj o) {
-  return o;
-}
-
-#endif
 
 #ifdef __cplusplus
 } // extern "C"
