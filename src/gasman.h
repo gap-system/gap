@@ -737,6 +737,9 @@ void InitMsgsFuncBags(TNumMsgsFuncBags msgs_func);
 typedef void (* TNumMarkFuncBags )( Bag bag );
 void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func);
 
+#if !defined(USE_THREADSAFE_COPYING) && !defined(USE_BOEHM_GC)
+extern TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
+#endif
 
 /****************************************************************************
 **
