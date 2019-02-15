@@ -501,8 +501,6 @@ void CLEAN_OBJ(Obj obj)
 
 #if !defined(USE_THREADSAFE_COPYING) && !defined(USE_BOEHM_GC)
 
-extern TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
-
 static void MarkCopyingSubBags(Obj obj)
 {
     Obj fpl = CONST_ADDR_OBJ(obj)[0];

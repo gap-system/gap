@@ -214,11 +214,6 @@ typedef UInt    RNam;
 #define GF_IS_DONE_ITER IS_DONE_ITER
 #define GF_NEXT_ITER    NEXT_ITER
 
-extern  Obj             GF_ITERATOR;
-extern  Obj             GF_IS_DONE_ITER;
-extern  Obj             GF_NEXT_ITER;
-
-
 
 /* More or less all of this will get inlined away */
 

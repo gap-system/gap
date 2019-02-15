@@ -13,6 +13,8 @@
 
 #include "objects.h"
 
+#include "gvars.h"
+
 #include <pthread.h>
 
 #if !defined(HPCGAP)
@@ -36,6 +38,7 @@ Obj NewThreadObject(UInt id);
 
 void InitSignals(void);
 
+extern GVarDescriptor LastInaccessibleGVar;
 
 /****************************************************************************
 **

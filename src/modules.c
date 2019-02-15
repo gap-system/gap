@@ -27,6 +27,7 @@
 #include "intobj.h"
 #include "io.h"
 #include "lists.h"
+#include "modules_builtin.h"
 #include "opers.h"
 #include "plist.h"
 #include "saveload.h"
@@ -55,8 +56,6 @@
 
 static Char   LoadedModuleFilenames[MAX_MODULE_FILENAMES];
 static Char * NextLoadedModuleFilename = LoadedModuleFilenames;
-
-extern const InitInfoFunc InitFuncsBuiltinModules[];
 
 typedef struct {
 

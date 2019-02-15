@@ -333,12 +333,9 @@ static UInt ExecIfElifElse(Stat stat)
 **  for the loop variable, the second subbag  is the list-expression, and the
 **  remaining subbags are the statements.
 */
-Obj             ITERATOR;
-
-Obj             IS_DONE_ITER;
-
-Obj             NEXT_ITER;
-
+Obj ITERATOR;
+Obj IS_DONE_ITER;
+Obj NEXT_ITER;
 static Obj STD_ITER;
 
 static ALWAYS_INLINE UInt ExecForHelper(Stat stat, UInt nr)

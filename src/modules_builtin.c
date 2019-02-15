@@ -8,6 +8,8 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 */
 
+#include "modules_builtin.h"
+
 #include "compiled.h"
 #include "gap.h"
 #include "hookintrprtr.h"

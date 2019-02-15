@@ -418,8 +418,6 @@ void AssPRec (
 **
 **  'PrintRec' prints the plain record <rec>.
 */
-extern Obj PrintObjOper;
-
 static void PrintPRec(Obj rec)
 {
     DoOperation1Args( PrintObjOper, rec );

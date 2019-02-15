@@ -1216,8 +1216,6 @@ Region * CurrentRegion(void)
     return TLS(currentRegion);
 }
 
-extern GVarDescriptor LastInaccessibleGVar;
-
 #ifdef VERBOSE_GUARDS
 
 static void PrintGuardError(char *       buffer,
