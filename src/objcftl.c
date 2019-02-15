@@ -130,11 +130,9 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
 
     if( LEN_PLIST(list) < ngens ) {
         ErrorQuit( "vector too short", 0L, 0L );
-        return (Obj)0;
     }
     if( LEN_PLIST(word) % 2 != 0 ) {
         ErrorQuit( "Length of word odd", 0L, 0L );
-        return (Obj)0;
     }
 
     st = 0;

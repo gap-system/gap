@@ -48,7 +48,6 @@ static void CheckTietzeStack(Obj tietze, Obj ** ptTietze)
     if ( LEN_PLIST(tietze) != TZ_LENGTHTIETZE ) {
         ErrorQuit( "<tietze> must have length %d (not %d)",
                    (Int)TZ_LENGTHTIETZE, (Int)LEN_PLIST(tietze) );
-        return;
     }
     *ptTietze = ADDR_OBJ(tietze);
 }
@@ -65,7 +64,6 @@ CheckTietzeRelators(Obj * ptTietze, Obj * rels, Obj ** ptRels, Int * numrels)
     *numrels = INT_INTOBJ(ptTietze[TZ_NUMRELS]);
     if ( *rels == 0 || ! IS_PLIST(*rels) || LEN_PLIST(*rels) != *numrels ) {
         ErrorQuit( "invalid Tietze relators list", 0L, 0L );
-        return;
     }
     *ptRels = ADDR_OBJ(*rels);
 }
@@ -83,7 +81,6 @@ CheckTietzeInverses(Obj * ptTietze, Obj * invs, Obj ** ptInvs, Int * numgens)
     *numgens = INT_INTOBJ(ptTietze[TZ_NUMGENS]);
     if ( *invs==0 || !IS_PLIST(*invs) || LEN_PLIST(*invs)!=2*(*numgens)+1 ) {
         ErrorQuit( "invalid Tietze inverses list", 0L, 0L );
-        return;
     }
     *ptInvs = ADDR_OBJ(*invs) + (*numgens+1);
 }
@@ -100,7 +97,6 @@ CheckTietzeLengths(Obj * ptTietze, Int numrels, Obj * lens, Obj ** ptLens)
     *lens = ptTietze[TZ_LENGTHS];
     if ( *lens == 0 || ! IS_PLIST(*lens) || LEN_PLIST(*lens) != numrels ) {
         ErrorQuit( "invalid Tietze lengths list", 0L, 0L );
-        return;
     }
     *ptLens = ADDR_OBJ(*lens);
 }
@@ -117,7 +113,6 @@ CheckTietzeFlags(Obj * ptTietze, Int numrels, Obj * flags, Obj ** ptFlags)
     *flags = ptTietze[TZ_FLAGS];
     if ( *flags==0 || ! IS_PLIST(*flags) || LEN_PLIST(*flags)!=numrels ) {
         ErrorQuit( "invalid Tietze flags list", 0L, 0L );
-        return;
     }
     *ptFlags = ADDR_OBJ(*flags);
 }
@@ -140,13 +135,11 @@ static void CheckTietzeRelLengths(
           || INT_INTOBJ(ptLens[i]) != LEN_PLIST(ptRels[i]) )
         {
             ErrorQuit( "inconsistent Tietze lengths list", 0L, 0L );
-            return;
         }
         *total += INT_INTOBJ(ptLens[i]);
     }
     if ( *total != INT_INTOBJ(ptTietze[TZ_TOTAL]) ) {
         ErrorQuit( "inconsistent total length", 0L, 0L );
-        return;
     }
 }
 

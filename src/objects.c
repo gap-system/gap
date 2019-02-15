@@ -569,7 +569,6 @@ static Obj CopyObjPosObj(Obj obj, Int mut)
     /* if the object is not copyable return                                */
     if ( ! IS_COPYABLE_OBJ(obj) ) {
         ErrorQuit("Panic: encountered mutable, non-copyable object",0L,0L);
-        return obj;
     }
 
     /* make a copy                                                         */
@@ -628,7 +627,6 @@ static Obj CopyObjComObj(Obj obj, Int mut)
     /* if the object is not copyable return                                */
     if ( ! IS_COPYABLE_OBJ(obj) ) {
         ErrorQuit("Panic: encountered mutable, non-copyable object",0L,0L);
-        return obj;
     }
 
     /* make a copy                                                         */
@@ -687,7 +685,6 @@ static Obj CopyObjDatObj(Obj obj, Int mut)
     /* if the object is not copyable return                                */
     if ( ! IS_COPYABLE_OBJ(obj) ) {
         ErrorQuit("Panic: encountered mutable, non-copyable object",0L,0L);
-        return obj;
     }
 
     /* make a copy                                                         */

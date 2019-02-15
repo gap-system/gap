@@ -1604,13 +1604,10 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
       res = INV(mat);
       CheckedMakeImmutable(res);
       return res;
-      break;
     case 1:
       return INV_MUT(mat);
-      break;
     case 2:
       return INV(mat);
-      break;
     }
   }
 
