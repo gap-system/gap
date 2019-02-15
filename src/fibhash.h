@@ -13,16 +13,13 @@
 
 #include "system.h"
 
-#ifndef SYS_IS_64_BIT
-#define FIB_HASH_MULT 0x9e3779b9UL
-#else
-#define FIB_HASH_MULT 0x9e3779b97f4a7c13UL
-#endif
-
-#define FIB_HASH_BITS (sizeof(void *) * 8)
+enum {
+    FIB_HASH_BITS = sizeof(void *) * 8,
+};
 
 EXPORT_INLINE UInt FibHash(UInt word, unsigned bits)
 {
+    const UInt FIB_HASH_MULT = (FIB_HASH_BITS == 64) ? 0x9e3779b97f4a7c13UL : 0x9e3779b9UL;
     return (word * FIB_HASH_MULT) >> (FIB_HASH_BITS - bits);
 }
 
