@@ -185,9 +185,6 @@ UInt4 LoadUInt4 ( void )
   return res;
 }
 
-
-#ifdef SYS_IS_64_BIT
-
 void SaveUInt8( UInt8 data )
 {
   SAVE_BYTE( (UInt1) (data & 0xFF) );
@@ -203,42 +200,35 @@ void SaveUInt8( UInt8 data )
 UInt8 LoadUInt8 ( void )
 {
   UInt8 res;
-  res = (UInt)LOAD_BYTE();
-  res |= (UInt)LOAD_BYTE() << 8;
-  res |= (UInt)LOAD_BYTE() << 16;
-  res |= (UInt)LOAD_BYTE() << 24;
-  res |= (UInt)LOAD_BYTE() << 32;
-  res |= (UInt)LOAD_BYTE() << 40;
-  res |= (UInt)LOAD_BYTE() << 48;
-  res |= (UInt)LOAD_BYTE() << 56;
+  res = (UInt8)LOAD_BYTE();
+  res |= (UInt8)LOAD_BYTE() << 8;
+  res |= (UInt8)LOAD_BYTE() << 16;
+  res |= (UInt8)LOAD_BYTE() << 24;
+  res |= (UInt8)LOAD_BYTE() << 32;
+  res |= (UInt8)LOAD_BYTE() << 40;
+  res |= (UInt8)LOAD_BYTE() << 48;
+  res |= (UInt8)LOAD_BYTE() << 56;
 
   return res;
 }
 
-
 void SaveUInt( UInt data )
 {
+#ifdef SYS_IS_64_BIT
     SaveUInt8(data);
-}
-
-UInt LoadUInt ( void )
-{
-    return LoadUInt8();
-}
-
 #else
-
-void SaveUInt( UInt data )
-{
     SaveUInt4(data);
+#endif
 }
 
 UInt LoadUInt ( void )
 {
+#ifdef SYS_IS_64_BIT
+    return LoadUInt8();
+#else
     return LoadUInt4();
-}
-
 #endif
+}
 
 void SaveCStr( const Char * str)
 {
