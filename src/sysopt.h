@@ -15,6 +15,8 @@
 #ifndef GAP_SYSOPT_H
 #define GAP_SYSOPT_H
 
+#include "system.h"
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * command line settable options  * * * * * * * * * * *

@@ -19,6 +19,7 @@
 **  entries are the  proper prime powers,  odd entries are the  corresponding
 **  conway polynomials.
 */
+extern const unsigned long PolsFF[]; // FIXME: should be static, but cvec uses it
 const unsigned long PolsFF[] = {
        4, 1+2,
        8, 1+2,
