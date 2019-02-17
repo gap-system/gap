@@ -304,6 +304,25 @@ Obj GAP_ElmList(Obj list, UInt pos);
 // Returns a new empty plain list with capacity <capacity>
 Obj GAP_NewPlist(Int capacity);
 
+////
+//// Records
+////
+
+// Returns 1 if <obj> is a GAP record, 0 if not.
+int GAP_IsRecord(Obj obj);
+
+// Assign <val> to component given by <name> in the GAP record <rec>.
+// If <val> is zero, then this unbinds the record entry.
+// If <record> is not a GAP record, an error may be raised.
+void GAP_AssRecord(Obj rec, Obj name, Obj val);
+
+// Returns the component given by <name> in the GAP record <rec>.
+// Returns 0 if there is no entry of the given name.
+// If <rec> is not a GAP record, an error may be raised.
+Obj GAP_ElmRecord(Obj rec, Obj name);
+
+// Returns a new empty plain record with capacity <capacity>.
+Obj GAP_NewPrecord(Int capacity);
 
 ////
 //// strings
