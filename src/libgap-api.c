@@ -26,6 +26,8 @@
 #include "macfloat.h"
 #include "opers.h"
 #include "plist.h"
+#include "precord.h"
+#include "records.h"
 #include "streams.h"
 #include "stringobj.h"
 
@@ -307,6 +309,33 @@ Obj GAP_NewPlist(Int capacity)
     return NEW_PLIST(T_PLIST_EMPTY, capacity);
 }
 
+////
+//// records
+////
+
+int GAP_IsRecord(Obj obj)
+{
+    return obj && IS_REC(obj);
+}
+
+void GAP_AssRecord(Obj rec, Obj name, Obj val)
+{
+    UInt rnam = RNamObj(name);
+    ASS_REC(rec, rnam, val);
+}
+
+Obj GAP_ElmRecord(Obj rec, Obj name)
+{
+    UInt rnam = RNamObj(name);
+    if (ISB_REC(rec, rnam))
+        return ELM_REC(rec, rnam);
+    return 0;
+}
+
+Obj GAP_NewPrecord(Int capacity)
+{
+    return NEW_PREC(capacity);
+}
 
 ////
 //// strings
