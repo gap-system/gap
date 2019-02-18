@@ -14,7 +14,7 @@
 ##
 
 InstallGlobalFunction(FittingFreeSubgroupSetup,function(G,U)
-local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r;
+local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r,pool,i,xx,inv,pregens;
   ffs:=FittingFreeLiftSetup(G);
 
   # result cached?
@@ -57,13 +57,24 @@ local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r;
     k:=ffs.pcgs;
   else
 
-    it:=CoKernelGensIterator(RestrictedInverseGeneralMapping(rest));
+    inv:=RestrictedInverseGeneralMapping(rest);
+    pregens:=List(SmallGeneratingSet(Image(rest)),
+      x->ImagesRepresentative(inv,x));
+    it:=CoKernelGensIterator(inv);
     kpc:=TrivialSubgroup(Image(pcisom));
     while not IsDoneIterator(it) do
-      x:=ImagesRepresentative(pcisom,NextIterator(it));
-      if not x in kpc then
-	kpc:=ClosureGroup(kpc,x);
-      fi;
+      x:=NextIterator(it);
+      pool:=[x];
+      for x in pool do
+        xx:=ImagesRepresentative(pcisom,x);
+        if not xx in kpc then
+          kpc:=ClosureGroup(kpc,xx);
+          for i in pregens do
+            Add(pool,x^i);
+          od;
+        fi;
+      od;
+      #Print("|pool|=",Length(pool),"\n");
     od;
     SetSize(U,Size(Image(rest))*Size(kpc));
     k:=InducedPcgs(FamilyPcgs(Image(pcisom)),kpc);
