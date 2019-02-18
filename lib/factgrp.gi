@@ -340,8 +340,6 @@ local G,pool,p,comb,i,c,perm,l,isi,N,discard,ab;
     p:=c; # use only minimal ones if there is lots
   fi;
 
-  #if Length(p)>20 then Error("hier!");fi;
-
   # do the abelians extra.
   p:=Filtered(p,x->not HasAbelianFactorGroup(G,pool.ker[x]));
   
@@ -1171,7 +1169,7 @@ InstallMethod(FindActionKernel,"perm",IsIdenticalObj,
   [IsPermGroup,IsPermGroup],0,
 function(G,N)
 local pool, dom, bestdeg, blocksdone, o, s, badnormals, cnt, v, u, oo, m,
-      badcomb, idx, i, comb;
+      badcomb, idx, i, comb,act,k;
 
   if Index(G,N)<50 then
     # small index, anything is OK
@@ -1198,7 +1196,26 @@ local pool, dom, bestdeg, blocksdone, o, s, badnormals, cnt, v, u, oo, m,
 	List(s,i->NaturalHomomorphismByNormalSubgroup(G,i));
       fi;
     fi;
+
     CloseNaturalHomomorphismsPool(G,N);
+
+    # action in orbit image -- sometimes helps
+    if Length(o)>1 then
+      for i in o do
+
+        act:=ActionHomomorphism(G,i,OnPoints,"surjective");
+        k:=KernelOfMultiplicativeGeneralMapping(act);
+        k:=ClosureGroup(k,N); # pre-image of (image of normal subgroup under act)
+        u:=Image(act,N);
+        v:=NaturalHomomorphismByNormalSubgroupNC(Image(act),u);
+
+        o:=DegreeNaturalHomomorphismsPool(Image(act),u);
+        if IsInt(o) then # otherwise its solvable factor we do differently
+          AddNaturalHomomorphismsPool(G,k,act*v,o);
+        fi;
+      od;
+      CloseNaturalHomomorphismsPool(G,N);
+    fi;
 
     bestdeg:=DegreeNaturalHomomorphismsPool(G,N);
 
