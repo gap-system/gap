@@ -609,7 +609,7 @@ local i,l,fam,e,m,mm,a,p,egen;
 
   # are the genimages simple generators themselves?
   if IsAssocWordWithInverseCollection(gens2) 
-     and ForAll(gens2,i->Length(i)=1) then
+     and ForAll(gens2,i->Length(i)=1 and not IsStraightLineProgElm(i)) then
     e:= List( gens2, i->LetterRepAssocWord(i)[1] );
     if Length(e)=Length(Set(List(e,AbsInt))) then
       # all images are different, no overlap. Try to form the image word
