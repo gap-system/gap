@@ -2903,6 +2903,7 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
   fi;
   offset:=m+1;
   rels:=ShallowCopy(freerels);
+  rels:=Filtered(freerels, x -> Length(x) > 0);
   SortBy(rels,Length);
   ri:=Union(rels,List(rels,x->x^-1));
   ri:=List(ri,LetterRepAssocWord);
