@@ -1195,6 +1195,7 @@ config.status: $(srcdir)/configure
 
 $(srcdir)/configure: $(configure_deps)
 	@if command -v autoconf >/dev/null 2>&1 ; then \
+	   echo "running autoconf" ; \
 	   cd $(srcdir) && autoconf ; \
 	 else \
 	   echo "autoconf not available, proceeding with stale configure" ; \
@@ -1211,6 +1212,7 @@ gen/stamp-h: $(srcdir)/src/config.h.in config.status
 
 $(srcdir)/src/config.h.in: $(configure_deps) 
 	@if command -v autoheader >/dev/null 2>&1 ; then \
+	   echo "running autoheader" ; \
 	   cd $(srcdir) && autoheader ; \
 	   rm -f gen/stamp-h ; \
 	 else \
