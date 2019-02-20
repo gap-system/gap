@@ -73,7 +73,7 @@ const Char * SyKernelVersion = "4.dev";
 **
 *V  SyArchitecture  . . . . . . . . . . . . . . . .  name of the architecture
 */
-const Char * SyArchitecture = SYS_ARCH;
+const Char * SyArchitecture = GAPARCH;
 
 
 /****************************************************************************

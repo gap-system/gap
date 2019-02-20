@@ -27,7 +27,7 @@
 #include "hpc/region.h"
 #endif
 
-#if defined(HAVE_BACKTRACE) && defined(PRINT_BACKTRACE)
+#if defined(HAVE_BACKTRACE) && defined(GAP_PRINT_BACKTRACE)
 #include <execinfo.h>
 #include <signal.h>
 
