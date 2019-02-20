@@ -456,7 +456,7 @@ static inline UInt IS_BAG_BODY(void * ptr)
             ((UInt)ptr & (sizeof(Bag) - 1)) == 0);
 }
 
-#if defined(MEMORY_CANARY)
+#if defined(GAP_MEMORY_CANARY)
 
 #include <valgrind/valgrind.h>
 #include <valgrind/memcheck.h>

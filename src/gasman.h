@@ -90,7 +90,7 @@ typedef struct {
 #ifdef USE_GASMAN
     Bag link;
 #endif
-#if defined(MEMORY_CANARY)
+#if defined(GAP_MEMORY_CANARY)
     // The following variable is marked as not readable or writable
     // in valgrind, to check for code reading before the start of a Bag.
     uint64_t memory_canary_padding[8];
@@ -370,18 +370,18 @@ void CHANGED_BAG(Bag bag);
 
 int IsGapObj(void *);
 
-#elif defined(MEMORY_CANARY)
+#elif defined(GAP_MEMORY_CANARY)
 
 /****************************************************************************
 **
-**  MEMORY_CANARY provides (basic) support for catching out-of-bounds memory
-**  problems in GAP. This is done through the excellent 'valgrind' program.
-**  valgrind is of limited use in GAP normally, because it doesn't understand
-**  GAP's memory manager. Enabling MEMORY_CANARY will make an executable where
-**  valgrind will detect memory issues.
+**  GAP_MEMORY_CANARY provides (basic) support for catching out-of-bounds
+**  memory problems in GAP. This is done through the excellent 'valgrind'
+**  program. Valgrind is of limited use in GAP normally, because it doesn't
+**  understand GAP's memory manager. Enabling GAP_MEMORY_CANARY will make an
+**  executable where valgrind will detect memory issues.
 **
-**  At the moment the detection is limited to only writing off the last allocated
-**  block.
+**  At the moment the detection is limited to only writing off the last
+**  allocated block.
 */
 
 void CHANGED_BAG(Bag b);

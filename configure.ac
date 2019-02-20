@@ -208,7 +208,7 @@ dnl
 AC_ARG_ENABLE([debug],
     [AS_HELP_STRING([--enable-debug], [enable debug mode])],
     [AC_DEFINE([GAP_KERNEL_DEBUG], [1], [define if building in debug mode]),
-     AC_DEFINE([PRINT_BACKTRACE], [1], [to enable backtraces upon crashes])],
+     AC_DEFINE([GAP_PRINT_BACKTRACE], [1], [to enable backtraces upon crashes])],
     [enable_debug=no]
     )
 AC_MSG_CHECKING([whether to enable debug mode])
@@ -224,7 +224,7 @@ AC_MSG_RESULT([$enable_memory_checking])
 
 AC_ARG_ENABLE([valgrind],
     [AS_HELP_STRING([--enable-valgrind], [enable valgrind extensions to GASMAN])],
-    [AC_DEFINE([MEMORY_CANARY], [1], [define if building with valgrind extensions])],
+    [AC_DEFINE([GAP_MEMORY_CANARY], [1], [define if building with valgrind extensions])],
     [enable_valgrind=no]
     )
 AC_MSG_CHECKING([whether to enable valgrind extensions to GASMAN])
@@ -576,7 +576,7 @@ AS_IF([test "x$ARCHEXT" != "x"],
 AS_IF([test "x$ARCH" != "x"],
   [GAPARCH="$ARCH"])
 
-AC_DEFINE_UNQUOTED([SYS_ARCH], ["$GAPARCH"], [for backwards compatibility])
+AC_DEFINE_UNQUOTED([GAPARCH], ["$GAPARCH"], [for backwards compatibility])
 AC_SUBST([GAPARCH])
 
 AC_ARG_ENABLE([compat-mode],
@@ -756,7 +756,7 @@ AX_EXECINFO
 AS_IF([test "x$enable_hpcgap" = xyes],[
   AS_BOX([WARNING: Experimental HPC-GAP mode enabled])
   dnl also enable backtrace, to help debug spurious crashes
-  AC_DEFINE([PRINT_BACKTRACE], [1], [to enable backtraces upon crashes])
+  AC_DEFINE([GAP_PRINT_BACKTRACE], [1], [to enable backtraces upon crashes])
   ])
 
 dnl
