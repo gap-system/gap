@@ -72,6 +72,7 @@
 #include "blister.h"
 
 #include "ariths.h"
+#include "bits_intern.h"
 #include "bool.h"
 #include "error.h"
 #include "gaputils.h"

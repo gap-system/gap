@@ -14,6 +14,7 @@
 #include "opers.h"
 
 #include "ariths.h"
+#include "bits_intern.h"
 #include "blister.h"
 #include "bool.h"
 #include "calls.h"
