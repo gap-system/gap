@@ -109,14 +109,13 @@ EXPORT_INLINE Int ARE_INTOBJS(Obj o1, Obj o2)
 /* Note that the C standard does not define what >> does here if the
  * value is negative. So we have to be careful if the C compiler
  * chooses to do a logical right shift. */
+GAP_STATIC_ASSERT((-1) >> 1 == -1, "right shifts are not arithmetic");
+GAP_STATIC_ASSERT((-2) >> 1 == -1, "right shifts are not arithmetic");
+
 EXPORT_INLINE Int INT_INTOBJ(Obj o)
 {
     GAP_ASSERT(IS_INTOBJ(o));
-#ifdef HAVE_ARITHRIGHTSHIFT
     return (Int)o >> 2;
-#else
-    return ((Int)o - 1) / 4;
-#endif
 }
 
 
@@ -272,14 +271,9 @@ EXPORT_INLINE Obj prod_intobjs(Int l, Int r)
     if ((HalfInt)l == (Int)l && (HalfInt)r == (Int)r)
         return (Obj)prod;
 
-// last resort: perform trial division
-#ifdef HAVE_ARITHRIGHTSHIFT
+    // last resort: perform trial division using arithmetic right shift
     if ((prod - 1) / (l >> 2) == r - 1)
         return (Obj)prod;
-#else
-    if ((prod - 1) / ((l - 1) / 4) == r - 1)
-        return (Obj)prod;
-#endif
 
     return (Obj)0;
 }
