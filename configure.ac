@@ -263,10 +263,10 @@ dnl User setting: Enable popcnt (on by default)
 dnl
 
 AC_ARG_ENABLE([popcnt],
-    AS_HELP_STRING([--enable-popcnt], [use __builtin_popcntl if available]),
+    AS_HELP_STRING([--enable-popcnt], [use __builtin_popcountl if available]),
     [],
     [enable_popcnt=yes])
-AC_MSG_CHECKING([whether to try and use __builtin_popcntl])
+AC_MSG_CHECKING([whether to try and use __builtin_popcountl])
 AC_MSG_RESULT([$enable_popcnt])
 
 AS_IF([test "x$enable_popcnt" != "xno"],
@@ -275,7 +275,7 @@ AS_IF([test "x$enable_popcnt" != "xno"],
 
 AC_DEFINE_UNQUOTED([USE_POPCNT],
     [$USE_POPCNT],
-    [define as 1 if we should try and use the __builtin_popcntl function if available])
+    [define as 1 if we should try and use the __builtin_popcountl function if available])
 
 dnl
 dnl External dependencies
