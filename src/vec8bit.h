@@ -11,7 +11,8 @@
 #ifndef GAP_VEC8BIT_H
 #define GAP_VEC8BIT_H
 
-#include "system.h"
+#include "objects.h"
+#include "opers.h"
 
 /****************************************************************************
 **
@@ -19,16 +20,16 @@
 **                convert a GF(2) vector into a GF(2^k) vector in place
 **
 */
-
 void RewriteGF2Vec(Obj vec, UInt q);
+
 
 /****************************************************************************
 **
 *F  CopyVec8Bit( <list>, <mut> ) . . . . . . . . . . . . . . copying function
 **
 */
-
 Obj CopyVec8Bit(Obj list, UInt mut);
+
 
 /****************************************************************************
 **
@@ -36,8 +37,10 @@ Obj CopyVec8Bit(Obj list, UInt mut);
 */
 extern Obj IsVec8bitRep;
 
-#define IS_VEC8BIT_REP(obj)                                                  \
-    (TNUM_OBJ(obj) == T_DATOBJ && True == DoFilter(IsVec8bitRep, obj))
+EXPORT_INLINE int IS_VEC8BIT_REP(Obj obj)
+{
+    return TNUM_OBJ(obj) == T_DATOBJ && True == DoFilter(IsVec8bitRep, obj);
+}
 
 
 /****************************************************************************
@@ -47,6 +50,7 @@ extern Obj IsVec8bitRep;
 **  'PlainVec8Bit' converts the  vector <list> to a plain list.
 */
 void PlainVec8Bit(Obj list);
+
 
 /****************************************************************************
 **
@@ -63,12 +67,12 @@ void ASS_VEC8BIT(Obj list, Obj pos, Obj elm);
 */
 Obj ZeroVec8Bit(UInt q, UInt len, UInt mut);
 
+
 /****************************************************************************
 **
 **  Low-level access, needed for meataxe64 package
 **
 */
-
 Obj GetFieldInfo8Bit(UInt q);
 
 
@@ -78,11 +82,12 @@ Obj GetFieldInfo8Bit(UInt q);
 **
 **  'LEN_VEC8BIT' returns the logical length of the 8bit GFQ vector <list>,
 **  as a C integer.
-**
-**  Note that 'LEN_VEC8BIT' is a macro, so do not call it with arguments that
-**  have side effects.
 */
-#define LEN_VEC8BIT(list) ((Int)(CONST_ADDR_OBJ(list)[1]))
+EXPORT_INLINE UInt LEN_VEC8BIT(Obj list)
+{
+    return (UInt)CONST_ADDR_OBJ(list)[1];
+}
+
 
 /****************************************************************************
 **
@@ -92,7 +97,11 @@ Obj GetFieldInfo8Bit(UInt q);
 **  to the C integer <len>.
 **
 */
-#define SET_LEN_VEC8BIT(list, len) ((ADDR_OBJ(list)[1] = (Obj)(len)))
+EXPORT_INLINE void SET_LEN_VEC8BIT(Obj list, UInt len)
+{
+    ADDR_OBJ(list)[1] = (Obj)len;
+}
+
 
 /****************************************************************************
 **
@@ -100,12 +109,12 @@ Obj GetFieldInfo8Bit(UInt q);
 **
 **  'FIELD_VEC8BIT' returns the field size Q of the 8bit GFQ vector <list>,
 **  as a C integer.
-**
-**  Note that 'FIELD_VEC8BIT' is a macro, so do not call it with  arguments
-**  that have side effects.
 */
+EXPORT_INLINE UInt FIELD_VEC8BIT(Obj list)
+{
+    return (UInt)CONST_ADDR_OBJ(list)[2];
+}
 
-#define FIELD_VEC8BIT(list) ((Int)(CONST_ADDR_OBJ(list)[2]))
 
 /****************************************************************************
 **
@@ -113,9 +122,11 @@ Obj GetFieldInfo8Bit(UInt q);
 **
 **  'SET_FIELD_VEC8BIT' sets the field size of the 8bit GFQ vector <vec>,
 **  to the C integer <q>.
-**
 */
-#define SET_FIELD_VEC8BIT(list, q) ((ADDR_OBJ(list)[2] = (Obj)(q)))
+EXPORT_INLINE void SET_FIELD_VEC8BIT(Obj list, UInt q)
+{
+    ADDR_OBJ(list)[2] = (Obj)q;
+}
 
 
 /****************************************************************************
@@ -124,8 +135,15 @@ Obj GetFieldInfo8Bit(UInt q);
 **
 **  returns a pointer to the start of the data of the 8bit GFQ vector
 */
-#define BYTES_VEC8BIT(list) ((UInt1 *)(ADDR_OBJ(list) + 3))
-#define CONST_BYTES_VEC8BIT(list) ((const UInt1 *)(CONST_ADDR_OBJ(list) + 3))
+EXPORT_INLINE UInt1 * BYTES_VEC8BIT(Obj list)
+{
+    return (UInt1 *)(ADDR_OBJ(list) + 3);
+}
+
+EXPORT_INLINE const UInt1 * CONST_BYTES_VEC8BIT(Obj list)
+{
+    return (const UInt1 *)(CONST_ADDR_OBJ(list) + 3);
+}
 
 
 /****************************************************************************

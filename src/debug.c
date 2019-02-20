@@ -20,6 +20,7 @@
 #include "compiled.h"
 #include "fibhash.h"
 #include "hookintrprtr.h"
+#include "vec8bit.h"
 
 #ifdef HPCGAP
 #include "hpc/guards.h"
