@@ -147,9 +147,7 @@ AC_DEFUN([CHECK_COMPILER_BUILTIN],
             [Define to 1 if the system has the `]$1[' built-in function])], []
         )])
 
-CHECK_COMPILER_BUILTIN([__builtin_smul_overflow],[0,0,0]);
-CHECK_COMPILER_BUILTIN([__builtin_smull_overflow],[0,0,0]);
-CHECK_COMPILER_BUILTIN([__builtin_smulll_overflow],[0,0,0]);
+CHECK_COMPILER_BUILTIN([__builtin_mul_overflow],[0,0,0]);
 CHECK_COMPILER_BUILTIN([__builtin_clz],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_clzl],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_clzll],[0]);
