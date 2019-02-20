@@ -108,21 +108,6 @@ dnl
 dnl endianess
 AC_C_BIGENDIAN
 
-dnl shifts
-AC_MSG_CHECKING([whether right shifts are arithmetic])
-AC_COMPUTE_INT(RIGHTSHIFTMINUSONE, [(-1L >> 1)+1])
-AS_IF([test x"$RIGHTSHIFTMINUSONE" = x0],
-    [
-    HAVE_ARITHRIGHTSHIFT=1
-    AC_MSG_RESULT([yes])
-    ],[
-    HAVE_ARITHRIGHTSHIFT=0
-    AC_MSG_RESULT([no])
-    ])
-AC_DEFINE_UNQUOTED([HAVE_ARITHRIGHTSHIFT],
-    [$HAVE_ARITHRIGHTSHIFT],
-    [define as 1 if >> for long int behaves like an arithmetic right shift for negative numbers])
-
 dnl function attributes
 AX_GCC_FUNC_ATTRIBUTE([always_inline])
 AX_GCC_FUNC_ATTRIBUTE([format])
