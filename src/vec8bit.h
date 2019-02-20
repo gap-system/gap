@@ -156,45 +156,120 @@ EXPORT_INLINE const UInt1 * CONST_BYTES_VEC8BIT(Obj list)
 *F  ADD_FIELDINFO_8BIT( <obj> )
 *F  SET_XXX_FIELDINFO_8BIT( <obj>, <xxx> ) . . .setters needed by ANSI
 **                                         needed for scalar but not pointers
-**
-**  For machines with alignment restrictions. It is important to put all
-**  the word-sized data BEFORE all the byte-sized data; especially
-**  FFE_FELT_FIELDINFO_8BIT which may have odd length
-**
-**  Note ADD_* has to be last, because it is not there in characteristic 2
 */
+struct FieldInfo8Bit {
+    Obj   type;
+    UInt  q;                        // field size, 3 <= q <= 256
+    UInt  p;                        // prime
+    UInt  d;                        // degree; q = p^d
+    UInt  e;                        // number of elements per byte; <= 5
+    Obj   FFE_FELT[256];            // position in GAP < order  by number
+    Obj   GAPSEQ[256];              // numbering from FFV
+    UInt1 FELT_FFE[256];            // immediate FFE by number
+    UInt1 SETELT[256 * 256 * 5];    // set element lookup (5 is largest possible value for e)
+    UInt1 GETELT[256 * 5];          // get element lookup
+    UInt1 SCALAR[256 * 256];        // scalar multiply
+    UInt1 INNER[256 * 256];         // inner product
+    UInt1 PMULL[256 * 256];         // one lot of polynomial multiply data
+    UInt1 PMULU[256 * 256];         // the other lot of polynomial data (only used if e > 1)
+    UInt1 ADD[256 * 256];           // add byte (only used if p > 2)
+};
 
-#define Q_FIELDINFO_8BIT(info) ((UInt)(CONST_ADDR_OBJ(info)[1]))
-#define SET_Q_FIELDINFO_8BIT(info, q) (ADDR_OBJ(info)[1] = (Obj)(q))
-#define P_FIELDINFO_8BIT(info) ((UInt)(CONST_ADDR_OBJ(info)[2]))
-#define SET_P_FIELDINFO_8BIT(info, p) (ADDR_OBJ(info)[2] = (Obj)(p))
-#define D_FIELDINFO_8BIT(info) ((UInt)(CONST_ADDR_OBJ(info)[3]))
-#define SET_D_FIELDINFO_8BIT(info, d) (ADDR_OBJ(info)[3] = (Obj)(d))
-#define ELS_BYTE_FIELDINFO_8BIT(info) ((UInt)(CONST_ADDR_OBJ(info)[4]))
-#define SET_ELS_BYTE_FIELDINFO_8BIT(info, e) (ADDR_OBJ(info)[4] = (Obj)(e))
-#define FFE_FELT_FIELDINFO_8BIT(info) (CONST_ADDR_OBJ(info) + 5)
-#define SET_FFE_FELT_FIELDINFO_8BIT(info, i, d)                              \
-    (ADDR_OBJ(info)[5 + (i)] = (Obj)(d))
-#define GAPSEQ_FELT_FIELDINFO_8BIT(info)                                     \
-    (CONST_ADDR_OBJ(info) + 5 + Q_FIELDINFO_8BIT(info))
-#define SET_GAPSEQ_FELT_FIELDINFO_8BIT(info, i, d)                           \
-    (ADDR_OBJ(info)[5 + Q_FIELDINFO_8BIT(info) + (i)] = (Obj)(d))
-#define FELT_FFE_FIELDINFO_8BIT(info)                                        \
-    ((UInt1 *)(GAPSEQ_FELT_FIELDINFO_8BIT(info) + Q_FIELDINFO_8BIT(info)))
-#define SETELT_FIELDINFO_8BIT(info)                                          \
-    (FELT_FFE_FIELDINFO_8BIT(info) + Q_FIELDINFO_8BIT(info))
-#define GETELT_FIELDINFO_8BIT(info)                                          \
-    (SETELT_FIELDINFO_8BIT(info) +                                           \
-     256 * Q_FIELDINFO_8BIT(info) * ELS_BYTE_FIELDINFO_8BIT(info))
-#define SCALAR_FIELDINFO_8BIT(info)                                          \
-    (GETELT_FIELDINFO_8BIT(info) + 256 * ELS_BYTE_FIELDINFO_8BIT(info))
-#define INNER_FIELDINFO_8BIT(info)                                           \
-    (SCALAR_FIELDINFO_8BIT(info) + 256 * Q_FIELDINFO_8BIT(info))
-#define PMULL_FIELDINFO_8BIT(info) (INNER_FIELDINFO_8BIT(info) + 256 * 256)
-#define PMULU_FIELDINFO_8BIT(info) (PMULL_FIELDINFO_8BIT(info) + 256 * 256)
-#define ADD_FIELDINFO_8BIT(info)                                             \
-    (PMULU_FIELDINFO_8BIT(info) +                                            \
-     ((ELS_BYTE_FIELDINFO_8BIT(info) == 1) ? 0 : 256 * 256))
+typedef struct FieldInfo8Bit * FieldInfo8BitPtr;
+typedef const struct FieldInfo8Bit * ConstFieldInfo8BitPtr;
+
+EXPORT_INLINE FieldInfo8BitPtr FIELDINFO_8BIT(Obj info)
+{
+    return (FieldInfo8BitPtr)ADDR_OBJ(info);
+}
+
+EXPORT_INLINE ConstFieldInfo8BitPtr CONST_FIELDINFO_8BIT(Obj info)
+{
+    return (ConstFieldInfo8BitPtr)CONST_ADDR_OBJ(info);
+}
+
+EXPORT_INLINE UInt Q_FIELDINFO_8BIT(Obj info)
+{
+    return CONST_FIELDINFO_8BIT(info)->q;
+}
+
+EXPORT_INLINE UInt P_FIELDINFO_8BIT(Obj info)
+{
+    return CONST_FIELDINFO_8BIT(info)->p;
+}
+
+EXPORT_INLINE UInt D_FIELDINFO_8BIT(Obj info)
+{
+    return CONST_FIELDINFO_8BIT(info)->d;
+}
+
+EXPORT_INLINE UInt ELS_BYTE_FIELDINFO_8BIT(Obj info)
+{
+    return CONST_FIELDINFO_8BIT(info)->e;
+}
+
+EXPORT_INLINE const Obj *CONST_FFE_FELT_FIELDINFO_8BIT(Obj info)
+{
+    return CONST_FIELDINFO_8BIT(info)->FFE_FELT;
+}
+
+EXPORT_INLINE Obj FFE_FELT_FIELDINFO_8BIT(Obj info, UInt i)
+{
+    GAP_ASSERT(i < 256);
+    return CONST_FIELDINFO_8BIT(info)->FFE_FELT[i];
+}
+
+EXPORT_INLINE const Obj * GAPSEQ_FELT_FIELDINFO_8BIT(Obj info)
+{
+    return CONST_FIELDINFO_8BIT(info)->GAPSEQ;
+}
+
+EXPORT_INLINE void SET_GAPSEQ_FELT_FIELDINFO_8BIT(Obj info, UInt i, Obj d)
+{
+    GAP_ASSERT(i < 256);
+    FIELDINFO_8BIT(info)->GAPSEQ[i] = d;
+}
+
+EXPORT_INLINE const UInt1 * FELT_FFE_FIELDINFO_8BIT(Obj info)
+{
+    return CONST_FIELDINFO_8BIT(info)->FELT_FFE;
+}
+
+EXPORT_INLINE const UInt1 * SETELT_FIELDINFO_8BIT(Obj info)
+{
+    return CONST_FIELDINFO_8BIT(info)->SETELT;
+}
+
+EXPORT_INLINE const UInt1 * GETELT_FIELDINFO_8BIT(Obj info)
+{
+    return CONST_FIELDINFO_8BIT(info)->GETELT;
+}
+
+EXPORT_INLINE const UInt1 * SCALAR_FIELDINFO_8BIT(Obj info)
+{
+    return CONST_FIELDINFO_8BIT(info)->SCALAR;
+}
+
+EXPORT_INLINE const UInt1 * INNER_FIELDINFO_8BIT(Obj info)
+{
+    return CONST_FIELDINFO_8BIT(info)->INNER;
+}
+
+EXPORT_INLINE const UInt1 * PMULL_FIELDINFO_8BIT(Obj info)
+{
+    return CONST_FIELDINFO_8BIT(info)->PMULL;
+}
+
+EXPORT_INLINE const UInt1 * PMULU_FIELDINFO_8BIT(Obj info)
+{
+    return CONST_FIELDINFO_8BIT(info)->PMULU;
+}
+
+EXPORT_INLINE const UInt1 * ADD_FIELDINFO_8BIT(Obj info)
+{
+    return CONST_FIELDINFO_8BIT(info)->ADD;
+}
+
 
 
 /****************************************************************************

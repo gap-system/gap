@@ -264,7 +264,6 @@ static void MakeFieldInfo8Bit(UInt q)
     UInt d;             // degree
     UInt i, j, k, l;    // loop variables
     UInt e;             // number of elements per byte
-    UInt size;          // data structure size
     UInt pows[7];    // table of powers of q for packing and unpacking bytes
     Obj  info;       // The table being constructed
     FFV  mult;       // multiplier for scalar product
@@ -273,10 +272,6 @@ static void MakeFieldInfo8Bit(UInt q)
     UInt val0;
     UInt elt, el1, el2;    // used to build up some answers
     const FFV * succ;
-    UInt1 * setelt_info;    // Cache a value, mainly to get around a bug in
-                            // xcode 5.0
-    UInt1 * getelt_info;    // ditto
-    Int     iej_cache;      // ditto
 
 
     p = (UInt)PbyQ[q];
@@ -287,50 +282,37 @@ static void MakeFieldInfo8Bit(UInt q)
         pows[e++] = i;
     pows[e] = i;    // simplifies things to have one more
     e--;
+    GAP_ASSERT(e <= 5);
 
-    size =
-        sizeof(Obj) +        // type
-        sizeof(Obj) +        // q
-        sizeof(Obj) +        // p
-        sizeof(Obj) +        // d
-        sizeof(Obj) +        // els per byte
-        q * sizeof(Obj) +    // position in GAP < order  by number
-        q * sizeof(Obj) +    // numbering from FFV
-        q * sizeof(Obj) +    // immediate FFE by number
-        256 * q * e +        // set element lookup
-        256 * e +            // get element lookup
-        256 * q +            // scalar multiply
-        2 * 256 * 256 +    // inner product, 1 lot of polynomial multiply data
-        ((e == 1) ? 0 : (256 * 256)) +    // the other lot of polynomial data
-        ((p == 2) ? 0 : (256 * 256));     // add byte
-
-    info = NewWordSizedBag(T_DATOBJ, size);
+    info = NewWordSizedBag(T_DATOBJ, sizeof(struct FieldInfo8Bit));
     SetTypeDatObj(info, TYPE_FIELDINFO_8BIT);
 
     succ = SUCC_FF(gfq);
 
     // from here to the end, no garbage collections should happen
-    SET_Q_FIELDINFO_8BIT(info, q);
-    SET_P_FIELDINFO_8BIT(info, p);
-    SET_D_FIELDINFO_8BIT(info, d);
-    SET_ELS_BYTE_FIELDINFO_8BIT(info, e);
+    FieldInfo8BitPtr fi = FIELDINFO_8BIT(info);
+    fi->q = q;
+    fi->p = p;
+    fi->d = d;
+    fi->e = e;
 
     // conversion tables FFV to/from our numbering
     // we assume that 0 and 1 are always the zero and one
     // of the field. In char 2, we assume that xor corresponds
     // to addition, otherwise, the order doesn't matter
 
+    UInt1 * convtab = fi->FELT_FFE;
     if (p != 2)
         for (i = 0; i < q; i++)
-            FELT_FFE_FIELDINFO_8BIT(info)[i] = (UInt1)i;
+            convtab[i] = (UInt1)i;
     else
         for (i = 0; i < q; i++)
-            FELT_FFE_FIELDINFO_8BIT(info)[i] = Char2Lookup[d][i];
+            convtab[i] = Char2Lookup[d][i];
 
     // simply invert the permutation to get the other one
     for (i = 0; i < q; i++) {
-        j = FELT_FFE_FIELDINFO_8BIT(info)[i];
-        SET_FFE_FELT_FIELDINFO_8BIT(info, j, NEW_FFE(gfq, i));
+        j = convtab[i];
+        fi->FFE_FELT[j] = NEW_FFE(gfq, i);
     }
 
     // Now we need to store the position in Elements(GF(q)) of each field
@@ -340,14 +322,13 @@ static void MakeFieldInfo8Bit(UInt q)
     // complex for non-prime fields
 
     // deal with zero and one
-    SET_GAPSEQ_FELT_FIELDINFO_8BIT(info, 0, INTOBJ_INT(0));
-    SET_GAPSEQ_FELT_FIELDINFO_8BIT(info, FELT_FFE_FIELDINFO_8BIT(info)[1],
-                                   INTOBJ_INT(1));
+    fi->GAPSEQ[0] = INTOBJ_INT(0);
+    fi->GAPSEQ[fi->FELT_FFE[1]] = INTOBJ_INT(1);
 
     if (q != 2) {
         if (d == 1)
             for (i = 2; i < q; i++)
-                SET_GAPSEQ_FELT_FIELDINFO_8BIT(info, i, INTOBJ_INT(i));
+                fi->GAPSEQ[i] = INTOBJ_INT(i);
         else {
             // run through subfields, filling in entry for all the new
             // elements of each field in turn
@@ -357,11 +338,9 @@ static void MakeFieldInfo8Bit(UInt q)
                 q1 *= p;
                 if (d % i == 0) {
                     for (j = 2; j < q1; j++) {
-                        UInt place = FELT_FFE_FIELDINFO_8BIT(
-                            info)[1 + (j - 1) * (q - 1) / (q1 - 1)];
-                        if (GAPSEQ_FELT_FIELDINFO_8BIT(info)[place] == 0) {
-                            SET_GAPSEQ_FELT_FIELDINFO_8BIT(info, place,
-                                                           INTOBJ_INT(pos));
+                        UInt place = fi->FELT_FFE[1 + (j - 1) * (q - 1) / (q1 - 1)];
+                        if (fi->GAPSEQ[place] == 0) {
+                            fi->GAPSEQ[place] = INTOBJ_INT(pos);
                             pos++;
                         }
                     }
@@ -370,16 +349,13 @@ static void MakeFieldInfo8Bit(UInt q)
         }
     }
 
-    setelt_info = SETELT_FIELDINFO_8BIT(info);
-    getelt_info = GETELT_FIELDINFO_8BIT(info);
-
     // entry setting table SETELT...[(i*e+j)*256 +k] is the result
     // of overwriting the jth element with i in the byte k
     for (i = 0; i < q; i++)
         for (j = 0; j < e; j++) {
-            iej_cache = (i * e + j) * 256;
+            Int iej_cache = (i * e + j) * 256;
             for (k = 0; k < 256; k++)
-                setelt_info[iej_cache + k] =
+                fi->SETELT[iej_cache + k] =
                     (UInt1)((k / pows[j + 1]) * pows[j + 1] + i * pows[j] +
                             (k % pows[j]));
         }
@@ -388,21 +364,21 @@ static void MakeFieldInfo8Bit(UInt q)
     // byte j
     for (i = 0; i < e; i++)
         for (j = 0; j < 256; j++)
-            getelt_info[i * 256 + j] = (UInt1)(j / pows[i]) % q;
+            fi->GETELT[i * 256 + j] = (UInt1)(j / pows[i]) % q;
 
     // scalar * vector multiply SCALAR...[i*256+j] is the scalar
     // product of the byte j with the felt i
     for (i = 0; i < q; i++) {
-        mult = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info)[i]);
+        mult = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(info, i));
         for (j = 0; j < 256; j++) {
             val = 0;
             for (k = 0; k < e; k++) {
                 elt = VAL_FFE(
-                    FFE_FELT_FIELDINFO_8BIT(info)[getelt_info[k * 256 + j]]);
+                    FFE_FELT_FIELDINFO_8BIT(info, fi->GETELT[k * 256 + j]));
                 prod = PROD_FFV(elt, mult, succ);
                 val += pows[k] * FELT_FFE_FIELDINFO_8BIT(info)[prod];
             }
-            SCALAR_FIELDINFO_8BIT(info)[i * 256 + j] = val;
+            fi->SCALAR[i * 256 + j] = val;
         }
     }
 
@@ -413,15 +389,15 @@ static void MakeFieldInfo8Bit(UInt q)
             val = 0;
             for (k = 0; k < e; k++) {
                 el1 = VAL_FFE(
-                    FFE_FELT_FIELDINFO_8BIT(info)[getelt_info[k * 256 + i]]);
+                    FFE_FELT_FIELDINFO_8BIT(info, fi->GETELT[k * 256 + i]));
                 el2 = VAL_FFE(
-                    FFE_FELT_FIELDINFO_8BIT(info)[getelt_info[k * 256 + j]]);
+                    FFE_FELT_FIELDINFO_8BIT(info, fi->GETELT[k * 256 + j]));
                 elt = PROD_FFV(el1, el2, succ);
                 val = SUM_FFV(val, elt, succ);
             }
-            val = setelt_info[256 * e * FELT_FFE_FIELDINFO_8BIT(info)[val]];
-            INNER_FIELDINFO_8BIT(info)[i + 256 * j] = val;
-            INNER_FIELDINFO_8BIT(info)[j + 256 * i] = val;
+            val = fi->SETELT[256 * e * FELT_FFE_FIELDINFO_8BIT(info)[val]];
+            fi->INNER[i + 256 * j] = val;
+            fi->INNER[j + 256 * i] = val;
         }
 
     // PMULL and PMULU are the lower and upper bytes of the product
@@ -433,16 +409,16 @@ static void MakeFieldInfo8Bit(UInt q)
                 val = 0;
                 for (l = 0; l <= k; l++) {
                     el1 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(
-                        info)[getelt_info[l * 256 + i]]);
+                        info, fi->GETELT[l * 256 + i]));
                     el2 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(
-                        info)[getelt_info[(k - l) * 256 + j]]);
+                        info, fi->GETELT[(k - l) * 256 + j]));
                     elt = PROD_FFV(el1, el2, succ);
                     val = SUM_FFV(val, elt, succ);
                 }
                 val0 += pows[k] * FELT_FFE_FIELDINFO_8BIT(info)[val];
             }
-            PMULL_FIELDINFO_8BIT(info)[i + 256 * j] = val0;
-            PMULL_FIELDINFO_8BIT(info)[j + 256 * i] = val0;
+            fi->PMULL[i + 256 * j] = val0;
+            fi->PMULL[j + 256 * i] = val0;
 
             // if there is just one entry per byte then we don't need the
             // upper half
@@ -452,16 +428,16 @@ static void MakeFieldInfo8Bit(UInt q)
                     val = 0;
                     for (l = k - e + 1; l < e; l++) {
                         el1 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(
-                            info)[getelt_info[l * 256 + i]]);
+                            info, fi->GETELT[l * 256 + i]));
                         el2 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(
-                            info)[getelt_info[(k - l) * 256 + j]]);
+                            info, fi->GETELT[(k - l) * 256 + j]));
                         elt = PROD_FFV(el1, el2, succ);
                         val = SUM_FFV(val, elt, succ);
                     }
                     val0 += pows[k - e] * FELT_FFE_FIELDINFO_8BIT(info)[val];
                 }
-                PMULU_FIELDINFO_8BIT(info)[i + 256 * j] = val0;
-                PMULU_FIELDINFO_8BIT(info)[j + 256 * i] = val0;
+                fi->PMULU[i + 256 * j] = val0;
+                fi->PMULU[j + 256 * i] = val0;
             }
         }
 
@@ -474,14 +450,14 @@ static void MakeFieldInfo8Bit(UInt q)
                 val = 0;
                 for (k = 0; k < e; k++) {
                     el1 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(
-                        info)[getelt_info[k * 256 + i]]);
+                        info, fi->GETELT[k * 256 + i]));
                     el2 = VAL_FFE(FFE_FELT_FIELDINFO_8BIT(
-                        info)[getelt_info[k * 256 + j]]);
+                        info, fi->GETELT[k * 256 + j]));
                     val += pows[k] * FELT_FFE_FIELDINFO_8BIT(
                                          info)[SUM_FFV(el1, el2, succ)];
                 }
-                ADD_FIELDINFO_8BIT(info)[i + 256 * j] = val;
-                ADD_FIELDINFO_8BIT(info)[j + 256 * i] = val;
+                fi->ADD[i + 256 * j] = val;
+                fi->ADD[j + 256 * i] = val;
             }
     }
 
@@ -579,7 +555,7 @@ static void RewriteVec8Bit(Obj vec, UInt q)
     ResizeWordSizedBag(vec, SIZE_VEC8BIT(len, els));
 
     gettab1 = GETELT_FIELDINFO_8BIT(info1);
-    convtab1 = FFE_FELT_FIELDINFO_8BIT(info1);
+    convtab1 = CONST_FFE_FELT_FIELDINFO_8BIT(info1);
     settab = SETELT_FIELDINFO_8BIT(info);
     convtab = FELT_FFE_FIELDINFO_8BIT(info);
     ptr1 = CONST_BYTES_VEC8BIT(vec) + (len - 1) / els1;
@@ -992,18 +968,18 @@ void PlainVec8Bit(Obj list)
         // because setting the third destroys them
 
         first = FFE_FELT_FIELDINFO_8BIT(
-            info)[gettab[CONST_BYTES_VEC8BIT(list)[0]]];
+            info, gettab[CONST_BYTES_VEC8BIT(list)[0]]);
         if (len > 1)
             second = FFE_FELT_FIELDINFO_8BIT(
-                info)[gettab[256 * (1 % elts) +
-                             CONST_BYTES_VEC8BIT(list)[1 / elts]]];
+                info, gettab[256 * (1 % elts) +
+                             CONST_BYTES_VEC8BIT(list)[1 / elts]]);
 
         // replace the bits by FF elts as the case may be
         // this must of course be done from the end of the list backwards
         for (i = len; 2 < i; i--) {
             fieldobj = FFE_FELT_FIELDINFO_8BIT(
-                info)[gettab[256 * ((i - 1) % elts) +
-                             CONST_BYTES_VEC8BIT(list)[(i - 1) / elts]]];
+                info, gettab[256 * ((i - 1) % elts) +
+                             CONST_BYTES_VEC8BIT(list)[(i - 1) / elts]]);
             SET_ELM_PLIST(list, i, fieldobj);
         }
         if (len > 1)
@@ -2013,7 +1989,7 @@ static Int CmpVec8BitVec8Bit(Obj vl, Obj vr)
     endL = ptrL + lenl / elts;
     endR = ptrR + lenr / elts;
     gettab = GETELT_FIELDINFO_8BIT(info);
-    ffe_elt = FFE_FELT_FIELDINFO_8BIT(info);
+    ffe_elt = CONST_FFE_FELT_FIELDINFO_8BIT(info);
     while (ptrL < endL && ptrR < endR) {
         if (*ptrL == *ptrR) {
             ptrL++;
@@ -2107,7 +2083,7 @@ static Obj ScalarProductVec8Bits(Obj vl, Obj vr)
             acc = addtab[256 * acc + contrib];
         }
     }
-    return FFE_FELT_FIELDINFO_8BIT(info)[GETELT_FIELDINFO_8BIT(info)[acc]];
+    return FFE_FELT_FIELDINFO_8BIT(info, GETELT_FIELDINFO_8BIT(info)[acc]);
 }
 
 /****************************************************************************
@@ -2556,7 +2532,7 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
                 ptr = BYTES_VEC8BIT(v) + (i - 1) / elts;
                 ptrw = BYTES_VEC8BIT(w);
                 for (k = 2; k < q; k++) {
-                    qk = FFE_FELT_FIELDINFO_8BIT(info)[k];
+                    qk = FFE_FELT_FIELDINFO_8BIT(info, k);
                     MultVec8BitFFEInner(wc, w, qk, 1, lenw);
                     ptrw = BYTES_VEC8BIT(wc);
                     sy = 0;
@@ -2731,9 +2707,9 @@ static Obj FuncELM0_VEC8BIT(Obj self, Obj list, Obj pos)
     else {
         info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
         elts = ELS_BYTE_FIELDINFO_8BIT(info);
-        return FFE_FELT_FIELDINFO_8BIT(info)[GETELT_FIELDINFO_8BIT(
+        return FFE_FELT_FIELDINFO_8BIT(info, GETELT_FIELDINFO_8BIT(
             info)[CONST_BYTES_VEC8BIT(list)[(p - 1) / elts] +
-                  256 * ((p - 1) % elts)]];
+                  256 * ((p - 1) % elts)]);
     }
 }
 
@@ -2760,9 +2736,9 @@ static Obj FuncELM_VEC8BIT(Obj self, Obj list, Obj pos)
     else {
         info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
         elts = ELS_BYTE_FIELDINFO_8BIT(info);
-        return FFE_FELT_FIELDINFO_8BIT(info)[GETELT_FIELDINFO_8BIT(
+        return FFE_FELT_FIELDINFO_8BIT(info, GETELT_FIELDINFO_8BIT(
             info)[CONST_BYTES_VEC8BIT(list)[(p - 1) / elts] +
-                  256 * ((p - 1) % elts)]];
+                  256 * ((p - 1) % elts)]);
     }
 }
 
@@ -3271,7 +3247,7 @@ static Obj FuncPROD_VEC8BIT_MATRIX(Obj self, Obj vec, Obj mat)
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     gettab = GETELT_FIELDINFO_8BIT(info);
-    ffefelt = FFE_FELT_FIELDINFO_8BIT(info);
+    ffefelt = CONST_FFE_FELT_FIELDINFO_8BIT(info);
 
     for (i = 0; i < len; i++)
         if (i < l2) {
@@ -3419,7 +3395,7 @@ static Obj ProdVec8BitMat8Bit(Obj vec, Obj mat)
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     gettab = GETELT_FIELDINFO_8BIT(info);
-    ffefelt = FFE_FELT_FIELDINFO_8BIT(info);
+    ffefelt = CONST_FFE_FELT_FIELDINFO_8BIT(info);
 
     bptr = CONST_BYTES_VEC8BIT(vec);
     for (i = 0; i + elts < len; i += elts, bptr++) {
@@ -3676,7 +3652,7 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
 
     if (len == 1) {
         gettab = GETELT_FIELDINFO_8BIT(info);
-        ffefelt = FFE_FELT_FIELDINFO_8BIT(info);
+        ffefelt = CONST_FFE_FELT_FIELDINFO_8BIT(info);
         x = gettab[CONST_BYTES_VEC8BIT(row)[0]];
         if (x == 0)
             return Fail;
@@ -3723,7 +3699,7 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
     // Now do Gaussian elimination in cmat and mirror it on inv
     // from here, no garbage collections are allowed until the end
     gettab = GETELT_FIELDINFO_8BIT(info);
-    ffefelt = FFE_FELT_FIELDINFO_8BIT(info);
+    ffefelt = CONST_FFE_FELT_FIELDINFO_8BIT(info);
 
     for (i = 1; i <= len; i++) {
         off = (i - 1) / elts;
@@ -3769,7 +3745,7 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
         }
         if (TakeInterrupt()) {
             gettab = GETELT_FIELDINFO_8BIT(info);
-            ffefelt = FFE_FELT_FIELDINFO_8BIT(info);
+            ffefelt = CONST_FFE_FELT_FIELDINFO_8BIT(info);
         }
     }
 
@@ -4830,7 +4806,7 @@ static Obj MakeShiftedVecs(Obj v, UInt len)
     }
 
     gettab = GETELT_FIELDINFO_8BIT(info);
-    ffefelt = FFE_FELT_FIELDINFO_8BIT(info);
+    ffefelt = CONST_FFE_FELT_FIELDINFO_8BIT(info);
 
     x = gettab[BYTES_VEC8BIT(vn)[(len - 1) / elts] +
                256 * ((len - 1) % elts)];
@@ -4916,7 +4892,7 @@ static void ReduceCoeffsVec8Bit(Obj vl, Obj vrshifted, Obj quot)
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     gettab = GETELT_FIELDINFO_8BIT(info);
     feltffe = FELT_FFE_FIELDINFO_8BIT(info);
-    ffefelt = FFE_FELT_FIELDINFO_8BIT(info);
+    ffefelt = CONST_FFE_FELT_FIELDINFO_8BIT(info);
     if (quot) {
         settab = SETELT_FIELDINFO_8BIT(info);
         qptr = BYTES_VEC8BIT(quot);
@@ -5125,7 +5101,7 @@ static Obj SemiEchelonListVec8Bits(Obj mat, UInt TransformationsNeeded)
         }
         // No garbage collection risk from here
         gettab = GETELT_FIELDINFO_8BIT(info);
-        convtab1 = FFE_FELT_FIELDINFO_8BIT(info);
+        convtab1 = CONST_FFE_FELT_FIELDINFO_8BIT(info);
 
         // Clear out the current row
         for (j = 1; j <= ncols; j++) {
@@ -5240,7 +5216,7 @@ static UInt TriangulizeListVec8Bits(Obj mat, UInt clearup, Obj * deterp)
     // Nothing here can cause a garbage collection
 
     gettab = GETELT_FIELDINFO_8BIT(info);
-    convtab = FFE_FELT_FIELDINFO_8BIT(info);
+    convtab = CONST_FFE_FELT_FIELDINFO_8BIT(info);
 
     if (deterp != (Obj *)0) {
         deter = ONE(convtab[1]);
@@ -5286,7 +5262,7 @@ static UInt TriangulizeListVec8Bits(Obj mat, UInt clearup, Obj * deterp)
         }
         if (TakeInterrupt()) {
             gettab = GETELT_FIELDINFO_8BIT(info);
-            convtab = FFE_FELT_FIELDINFO_8BIT(info);
+            convtab = CONST_FFE_FELT_FIELDINFO_8BIT(info);
         }
     }
     if (deterp) {
