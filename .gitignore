@@ -10,6 +10,8 @@
 /config.log
 /config.status
 /configure
+/confdefs.h
+/conftest*
 /libtool
 /src/config.h.in
 /src/config.h.in~
