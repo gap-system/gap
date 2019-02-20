@@ -538,7 +538,8 @@ static void RewriteVec8Bit(Obj vec, UInt q)
     // UInt mut = IS_MUTABLE_OBJ(vec);
     UInt mult;
 
-    UInt1 *       gettab1, byte1;
+    const UInt1 * gettab1;
+    UInt          byte1;
     const UInt1 * ptr1;
     const UInt1 * settab;
     UInt1 *       ptr;
@@ -962,7 +963,7 @@ void PlainVec8Bit(Obj list)
     UInt    q;
     UInt    elts;
     Obj     info;
-    UInt1 * gettab;
+    const UInt1 * gettab;
     Obj     fieldobj;
     Char *  startblank;
     Char *  endblank;
@@ -1157,7 +1158,7 @@ AddVec8BitVec8BitInner(Obj sum, Obj vl, Obj vr, UInt start, UInt stop)
         UInt1 * ptrS;
         UInt1 * endS;
         UInt    x;
-        UInt1 * addtab = ADD_FIELDINFO_8BIT(info);
+        const UInt1 * addtab = ADD_FIELDINFO_8BIT(info);
         // HPCGAP: Make sure to only check read guards for vl & vr.
         ptrL = (UInt1 *)(CONST_BYTES_VEC8BIT(vl) + start / elts);
         ptrR = (UInt1 *)(CONST_BYTES_VEC8BIT(vr) + start / elts);
@@ -1304,7 +1305,7 @@ MultVec8BitFFEInner(Obj prod, Obj vec, Obj scal, UInt start, UInt stop)
     const UInt1 * ptrV;
     UInt1 *       ptrS;
     UInt1 *       endS;
-    UInt1 *       tab;
+    const UInt1 * tab;
 
     if (!stop)
         return;
@@ -1549,8 +1550,8 @@ static void AddVec8BitVec8BitMultInner(
     UInt1 * ptrR;
     UInt1 * ptrS;
     UInt1 * endS;
-    UInt1 * addtab = 0;
-    UInt1 * multab;
+    const UInt1 * addtab = 0;
+    const UInt1 * multab;
     UInt    x;
 
     if (!stop)
@@ -1996,7 +1997,7 @@ static Int CmpVec8BitVec8Bit(Obj vl, Obj vr)
     UInt          elts;
     UInt          vall, valr;
     UInt          e;
-    UInt1 *       gettab;
+    const UInt1 * gettab;
     const Obj *   ffe_elt;
     UInt          len;
     assert(FIELD_VEC8BIT(vl) == FIELD_VEC8BIT(vr));
@@ -2078,8 +2079,8 @@ static Obj ScalarProductVec8Bits(Obj vl, Obj vr)
     UInt          q;
     UInt          elts;
     UInt1         contrib;
-    UInt1 *       inntab;
-    UInt1 *       addtab;
+    const UInt1 * inntab;
+    const UInt1 * addtab;
     len = LEN_VEC8BIT(vl);
     if (len > LEN_VEC8BIT(vr))
         len = LEN_VEC8BIT(vr);
@@ -2141,7 +2142,7 @@ static UInt DistanceVec8Bits(Obj vl, Obj vr)
     UInt          elts;
     UInt          acc;
     UInt          i;
-    UInt1 *       gettab;
+    const UInt1 * gettab;
 
     len = LEN_VEC8BIT(vl);
     q = FIELD_VEC8BIT(vl);
@@ -2453,7 +2454,7 @@ static Obj FuncNUMBER_VEC8BIT(Obj self, Obj vec)
     UInt          len;
     UInt          i;
     Obj           elt;
-    UInt1 *       gettab;
+    const UInt1 * gettab;
     const UInt1 * ptrS;
     const Obj *   convtab;
 
@@ -2517,7 +2518,7 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
     UInt    elts;
     UInt1 * ptr, *ptrw;
     const UInt1 * gettab;
-    UInt1 * feltffe;
+    const UInt1 * feltffe;
     Obj     x;
     Obj     vp;
 
@@ -3113,7 +3114,7 @@ static UInt PositionNonZeroVec8Bit(Obj list, UInt from)
     UInt          elts;
     const UInt1 * ptr;
     UInt1         byte;
-    UInt1 *       gettab;
+    const UInt1 * gettab;
 
     len = LEN_VEC8BIT(list);
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
@@ -3249,7 +3250,7 @@ static Obj FuncPROD_VEC8BIT_MATRIX(Obj self, Obj vec, Obj mat)
     Obj         row1;
     UInt        i;
     UInt        elts;
-    UInt1 *     gettab;
+    const UInt1 * gettab;
     const Obj * ffefelt;
     Obj         x;
 
@@ -3402,7 +3403,7 @@ static Obj ProdVec8BitMat8Bit(Obj vec, Obj mat)
     Obj           row1;
     Obj           res;
     Obj           info;
-    UInt1 *       gettab;
+    const UInt1 * gettab;
     const Obj *   ffefelt;
     Obj           x;
 
@@ -3657,7 +3658,7 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
     UInt1       byte;
     Obj         row, row1, row2;
     const Obj * ffefelt;
-    UInt1 *     feltffe;
+    const UInt1 * feltffe;
     UInt        pos;
     UInt1       x = 0;
     UInt        o;
@@ -4144,7 +4145,7 @@ static UInt RightMostNonZeroVec8Bit(Obj vec)
     UInt         elts;
     const UInt1 *ptr, *ptrS;
     Int          i;
-    UInt1 *      gettab;
+    const UInt1 * gettab;
     // UInt1 byte;
     len = LEN_VEC8BIT(vec);
     if (len == 0)
@@ -4559,9 +4560,9 @@ static void ProdCoeffsVec8Bit(Obj res, Obj vl, UInt ll, Obj vr, UInt lr)
     UInt         q;
     Obj          info;
     UInt         elts;
-    UInt1 *      addtab = 0;
-    UInt1 *      pmulltab;
-    UInt1 *      pmulutab = 0;
+    const UInt1 * addtab = 0;
+    const UInt1 * pmulltab;
+    const UInt1 * pmulutab = 0;
     UInt         p;
     UInt         i, j;
     const UInt1 *ptrl, *ptrr;
@@ -5221,7 +5222,8 @@ static UInt TriangulizeListVec8Bits(Obj mat, UInt clearup, Obj * deterp)
     Obj         info;
     UInt        elts;
     UInt1       x = 0;
-    UInt1 *     gettab, *getcol;
+    const UInt1 * gettab;
+    const UInt1 * getcol;
     Obj         deter = 0;
     UInt        sign = 0;
     const Obj * convtab;
