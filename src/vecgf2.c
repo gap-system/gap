@@ -11,6 +11,7 @@
 #include "vecgf2.h"
 
 #include "ariths.h"
+#include "bits_intern.h"
 #include "blister.h"
 #include "bool.h"
 #include "error.h"
