@@ -220,31 +220,29 @@ EXPORT_INLINE int diff_intobjs(Obj * o, Obj l, Obj r)
 **  The product itself is stored in <o>.
 */
 
+// check for __builtin_mul_overflow support
+#if defined(__has_builtin)
+  // clang >= 3.8 supports it, but better to check with __has_builtin
+  #if __has_builtin(__builtin_mul_overflow)
+  #define HAVE___BUILTIN_MUL_OVERFLOW 1
+  #endif
+#elif defined(__INTEL_COMPILER)
+  // icc >= 19.0 supports it; but already version 18.0 claims to be GCC 5
+  // compatible, so we must perform this check before that for __GNUC__
+  #if __INTEL_COMPILER >= 1900
+  #define HAVE___BUILTIN_MUL_OVERFLOW 1
+  #endif
+#elif defined(__GNUC__) && (__GNUC__ >= 5)
+  // GCC >= 5 supports it
+  #define HAVE___BUILTIN_MUL_OVERFLOW 1
+#endif
 
-#if SIZEOF_VOID_P == SIZEOF_INT && defined(HAVE_ARITHRIGHTSHIFT) &&          \
-    defined(HAVE___BUILTIN_SMUL_OVERFLOW)
-EXPORT_INLINE Obj prod_intobjs(int l, int r)
+
+#ifdef HAVE___BUILTIN_MUL_OVERFLOW
+EXPORT_INLINE Obj prod_intobjs(Int l, Int r)
 {
-    int prod;
-    if (__builtin_smul_overflow(l >> 1, r ^ 1, &prod))
-        return (Obj)0;
-    return (Obj)((prod >> 1) ^ 1);
-}
-#elif SIZEOF_VOID_P == SIZEOF_LONG && defined(HAVE_ARITHRIGHTSHIFT) &&       \
-    defined(HAVE___BUILTIN_SMULL_OVERFLOW)
-EXPORT_INLINE Obj prod_intobjs(long l, long r)
-{
-    long prod;
-    if (__builtin_smull_overflow(l >> 1, r ^ 1, &prod))
-        return (Obj)0;
-    return (Obj)((prod >> 1) ^ 1);
-}
-#elif SIZEOF_VOID_P == SIZEOF_LONG_LONG && defined(HAVE_ARITHRIGHTSHIFT) &&  \
-    defined(HAVE___BUILTIN_SMULLL_OVERFLOW)
-EXPORT_INLINE Obj prod_intobjs(long long l, long long r)
-{
-    long long prod;
-    if (__builtin_smulll_overflow(l >> 1, r ^ 1, &prod))
+    Int prod;
+    if (__builtin_mul_overflow(l >> 1, r ^ 1, &prod))
         return (Obj)0;
     return (Obj)((prod >> 1) ^ 1);
 }
