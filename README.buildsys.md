@@ -184,7 +184,7 @@ GAP also search in `GAPROOT/lib`.
 
 There are many things that still need to be done in the new build system. For
 an overview, see
-<https://github.com/gap-system/gap/issues?q=is:open+is:issue+label:"build system">
+<https://github.com/gap-system/gap/issues?q=is%3Aopen+is%3Aissue+label%3A%22topic%3A+build+system%22>
 
 The main open task is to add support for `make install`. There are some
 pitfalls to that, esp. when it comes to handling packages with kernel
