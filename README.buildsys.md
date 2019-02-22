@@ -189,3 +189,39 @@ an overview, see
 The main open task is to add support for `make install`. There are some
 pitfalls to that, esp. when it comes to handling packages with kernel
 extensions.
+
+
+## FAQ
+
+### Q: Why don't you just use `automake`? Then you get `make install` for free!
+
+A: This is simply wrong. Using `automake` does not give us `make install`
+support for free. While it does indeed provide various parts of the puzzle,
+from our perspective those are mostly the easy ones (they may be tedious, but
+are not conceptually difficult). The real obstacles for `make install` support
+are unfortunately not resolved by using `automake`. Among these are:
+- dealing with installing the generated `config.h`. This file should ideally
+  not be installed at all and to this end not be included from any other
+  headers. But note that in GAP, currently *all* headers need to include
+  config.h directly or indirectly... Alternatively one can attempt to use
+  something like `AX_PREFIX_CONFIG_H`, but this, too, has its pitfalls
+- removing dependencies on compiler specific features in the headers and API,
+  mainly as introduced by `config.h`
+- making `gac` installable; in particular installing a version of GNU
+  libtool needed by `gac`
+- The probably hardest problem of them all is coming up with a sane way for
+  dealing with the installation of GAP packages with kernel modules in such a
+  way that existing workflows are not unduly broken. This has the added
+  difficulty that it requires convincing the authors of ~20 GAP packages to
+  apply changes needed to support this, in a way that the packages can still
+  be used with the at that time latest stable release of GAP; then getting
+  them to make releases of their packages with those changes.
+- There are probably more bits and pieces that also need to be resolved, which
+  I just can't remember right now.
+
+Of course none of this is rocket science, but it is a lot of tedious and
+finicky work, and care must be taken not to break stuff. Help with this is
+welcome, but it is strongly suggested that you first talk to us, to avoid
+disappointments (e.g. due to rejected pull requests) later on.
+
+In any case: GNU `automake` does not help with this at all.
