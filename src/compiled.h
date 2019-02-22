@@ -85,6 +85,11 @@ extern "C" {
 extern Obj InfoDecision;
 
 
+// for compatibility with the Digraphs package
+UInt COUNT_TRUES_BLOCK(UInt block);
+UInt COUNT_TRUES_BLOCKS(const UInt * ptr, UInt nblocks);
+
+
 /* types, should go into 'gvars.c' and 'records.c' * * * * * * * * * * * * */
 
 typedef UInt    GVar;

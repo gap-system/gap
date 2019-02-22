@@ -50,7 +50,7 @@
 **  'COUNT_TRUES_BLOCKS'.
 **
 */
-static inline UInt COUNT_TRUES_BLOCK(UInt block)
+EXPORT_INLINE UInt COUNT_TRUES_BLOCK(UInt block)
 {
 #if USE_POPCNT && defined(HAVE___BUILTIN_POPCOUNTL)
     return __builtin_popcountl(block);
@@ -96,7 +96,7 @@ static inline UInt COUNT_TRUES_BLOCK(UInt block)
 **
 **  TODO: monitor this situation periodically.
 */
-static inline UInt COUNT_TRUES_BLOCKS(const UInt * ptr, UInt nblocks)
+EXPORT_INLINE UInt COUNT_TRUES_BLOCKS(const UInt * ptr, UInt nblocks)
 {
     UInt n = 0;
     while (nblocks >= 4) {
