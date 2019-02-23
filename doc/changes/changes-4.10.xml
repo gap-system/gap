@@ -601,7 +601,7 @@ with the graphical objects by clicking, selecting, dragging and zooming.
 </Item>
 <Item>
 The <Package>JupyterVis</Package> package by Nathan Carter, which is intended for use
-in Jupyter Notebooks running GAP kernels and adds visualization tools for use
+in Jupyter Notebooks running &GAP; kernels and adds visualization tools for use
 in such notebooks, such as charts and graphs.
 </Item>
 </List>
@@ -621,6 +621,187 @@ fix the package, the latest sources are available at
 </List>
 
 </Subsection> 
+
+</Section>
+
+<Section Label="GAP4.10.1">
+<Heading>&GAP; 4.10.1 (February 2019)</Heading>
+
+<Subsection Label="Changes in the core GAP system introduced in GAP 4.10.1">
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.10.1</Heading>
+
+Fixes in the experimental way to allow 3rd party code to link &GAP; as a library:
+<List>
+<Item>
+Do not start a session when loading workspace if <C>--nointeract</C> command line option is used
+(<URL><LinkText>&Hash;2840</LinkText><Link>https://github.com/gap-system/gap/pull/2840</Link></URL>).
+</Item>
+<Item>
+Add prototype for <C>GAP_Enter</C> and <C>GAP_Leave</C> macros
+(<URL><LinkText>&Hash;3096</LinkText><Link>https://github.com/gap-system/gap/pull/3096</Link></URL>).
+</Item>
+<Item>
+Prevent infinite recursions in <C>echoandcheck</C> and <C>SyWriteandcheck</C>
+(<URL><LinkText>&Hash;3102</LinkText><Link>https://github.com/gap-system/gap/pull/3102</Link></URL>).
+</Item>
+<Item>
+Remove <C>environ</C> arguments and <C>sysenviron</C>
+(<URL><LinkText>&Hash;3111</LinkText><Link>https://github.com/gap-system/gap/pull/3111</Link></URL>).
+</Item>
+</List>
+
+Fixes in the experimental support for using the Julia garbage collector:
+<List>
+<Item>
+Fix task scanning for the Julia GC
+(<URL><LinkText>&Hash;2969</LinkText><Link>https://github.com/gap-system/gap/pull/2969</Link></URL>).
+</Item>
+<Item>
+Fix stack marking for the Julia GC
+(<URL><LinkText>&Hash;3199</LinkText><Link>https://github.com/gap-system/gap/pull/3199</Link></URL>).
+</Item>
+<Item>
+Specify the Julia binary instead of the Julia prefix
+(<URL><LinkText>&Hash;3243</LinkText><Link>https://github.com/gap-system/gap/pull/3243</Link></URL>).
+</Item>
+<Item>
+Export Julia <C>CFLAGS</C>, <C>LDFLAGS</C>, and <C>LIBS</C> to <C>sysinfo.gap</C>
+(<URL><LinkText>&Hash;3248</LinkText><Link>https://github.com/gap-system/gap/pull/3248</Link></URL>).
+</Item>
+</List>
+
+Improved and extended functionality:
+<List>
+<Item>
+Always generate <C>sysinfo.gap</C> (previously, it was only generated if 
+the "compatibility mode" of the build system was enabled)
+(<URL><LinkText>&Hash;3042</LinkText><Link>https://github.com/gap-system/gap/pull/3042</Link></URL>).
+</Item>
+<Item>
+Add support for writing to <C>ERROR_OUTPUT</C> from kernel code
+(<URL><LinkText>&Hash;3043</LinkText><Link>https://github.com/gap-system/gap/pull/3043</Link></URL>).
+</Item>
+<Item>
+Add <C>make check</C>
+(<URL><LinkText>&Hash;3285</LinkText><Link>https://github.com/gap-system/gap/pull/3285</Link></URL>).
+</Item>
+</List>
+
+Changed documentation:
+<List>
+<Item>
+Fix documentation of <Ref Oper="NumberFFVector" BookName="ref"/> and add an example
+(<URL><LinkText>&Hash;3079</LinkText><Link>https://github.com/gap-system/gap/pull/3079</Link></URL>).
+</Item>
+</List>
+
+Fixed bugs that could lead to crashes:
+<List>
+<Item>
+Fix readline crash when using autocomplete with <C>colored-completion-prefix</C> turned on in Bash
+(<URL><LinkText>&Hash;2991</LinkText><Link>https://github.com/gap-system/gap/pull/2991</Link></URL>).
+</Item>
+<Item>
+Fix overlapping <C>memcpy</C> in <C>APPEND_LIST</C>
+(<URL><LinkText>&Hash;3216</LinkText><Link>https://github.com/gap-system/gap/pull/3216</Link></URL>).
+</Item>
+</List>
+
+Fixed bugs that could lead to incorrect results:
+<List>
+<Item>
+Fix bugs in the code for partial permutations
+(<URL><LinkText>&Hash;3220</LinkText><Link>https://github.com/gap-system/gap/pull/3220</Link></URL>).
+</Item>
+<Item>
+Fix a bug in <C>Gcd</C> for polynomials not returning standard associates, introduced in &GAP; 4.10.0
+(<URL><LinkText>&Hash;3227</LinkText><Link>https://github.com/gap-system/gap/pull/3227</Link></URL>).
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+Change <Ref Oper="GroupWithGenerators" BookName="ref"/> to accept collections again (to avoid
+regressions in code that relied on this undocumented behavior)
+(<URL><LinkText>&Hash;3095</LinkText><Link>https://github.com/gap-system/gap/pull/3095</Link></URL>).
+</Item>
+<Item>
+Fix <Ref Oper="ShallowCopy" BookName="ref"/> for for a Knuth-Bendix rewriting system
+(<URL><LinkText>&Hash;3128</LinkText><Link>https://github.com/gap-system/gap/pull/3128</Link></URL>).
+[Reported by Ignat Soroko]
+</Item>
+<Item>
+Fix <Ref Prop="IsMonomialMatrix" BookName="ref"/> to work with  compressed matrices
+(<URL><LinkText>&Hash;3149</LinkText><Link>https://github.com/gap-system/gap/pull/3149</Link></URL>).
+[Reported by Dominik Bernhardt]
+</Item>
+</List>
+
+Removed or obsolete functionality:
+<List>
+<Item>
+Disable <C>make install</C> (previously it displayed a warning which often got ignored)
+(<URL><LinkText>&Hash;3005</LinkText><Link>https://github.com/gap-system/gap/pull/3005</Link></URL>).
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+Fix some errors which stopped triggering a break loop
+(<URL><LinkText>&Hash;3013</LinkText><Link>https://github.com/gap-system/gap/pull/3013</Link></URL>).
+</Item>
+<Item>
+Fix compiler error with GCC 4.4.7
+(<URL><LinkText>&Hash;3026</LinkText><Link>https://github.com/gap-system/gap/pull/3026</Link></URL>).
+</Item>
+<Item>
+Fix string copying logic
+(<URL><LinkText>&Hash;3071</LinkText><Link>https://github.com/gap-system/gap/pull/3071</Link></URL>).
+</Item>
+</List>
+
+</Subsection>
+
+<Subsection Label="New and updated packages since GAP 4.10.0">
+<Heading>New and updated packages since &GAP; 4.10.0</Heading>
+
+&GAP; 4.10.1 distribution contains 145 packages, including updated
+versions of 35 packages from &GAP; 4.10.0 distribution, and also
+the following five new packages:
+
+<List>
+<Item>
+<Package>MajoranaAlgebras</Package>
+by Markus Pfeiffer and Madeleine Whybrow, which constructs Majorana
+representations of finite groups.
+</Item>
+<Item>
+<Package>PackageManager</Package>
+by Michael Torpey, providing a collection of functions for
+installing and removing &GAP; packages, with the eventual aim of
+becoming a full pip-style package manager for the &GAP; system.
+</Item>
+<Item>
+<Package>Thelma</Package>
+by Victor Bovdi and Vasyl Laver, implementing algorithms to deal
+with threshold elements.
+</Item>
+<Item>
+<Package>walrus</Package>
+by Markus Pfeiffer, providing methods for proving hyperbolicity
+of finitely presented groups in polynomial time.
+</Item>
+<Item>
+<Package>YangBaxter</Package>
+by Leandro Vendramin and Alexander Konovalov, which provides
+functionality to construct classical and skew braces, and also
+includes a database of classical and skew braces of small orders.
+</Item>
+</List>
+
+</Subsection>
 
 </Section>
 
