@@ -478,7 +478,7 @@ AC_SUBST([READLINE_LIBS])
 dnl Find julia
 AC_ARG_WITH([julia],
   [AS_HELP_STRING([--with-julia@<:@=PATH@:>@],
-    [specify a prefix for a julia binary or a julia binary])],
+    [specify a julia binary or a prefix for a julia binary])],
   [],[
     AS_IF([test "x$with_gc" = xjulia],
     [
