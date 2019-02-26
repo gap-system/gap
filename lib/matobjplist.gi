@@ -246,6 +246,18 @@ InstallMethod( Vector, "for a list and a plist vector",
     return v;
   end );
 
+# compatibility method for older representations as list of elements
+InstallOtherMethod( ZeroVector, "for an integer and a plist vector/mat",
+  [ IsInt, IsPlistRep ],
+  -1, # rank lower than default as only fallback
+function( l, t )
+  if IsList(t[1]) then
+    return ListWithIdenticalEntries(Length(t[1]),Zero(t[1][1]));
+  else
+    return ListWithIdenticalEntries(Length(t),Zero(t[1]));
+  fi;
+end);
+
 ############################################################################
 # A selection of list operations:
 ############################################################################

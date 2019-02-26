@@ -14,4 +14,6 @@ gap> v0 := ZeroVector( 12, v3 );
 gap> Unpack( v0 );
 [ 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 
   0*Z(5), 0*Z(5), 0*Z(5) ]
+gap> ZeroVector(2,[Z(2^9)^22,Z(2^9)^503]);
+[ 0*Z(2), 0*Z(2) ]
 gap> STOP_TEST("ZeroVector.tst",1);
