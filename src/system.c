@@ -1072,11 +1072,7 @@ void InitSystem (
 #else
     SyStorMin = 64 * 1024L;
     SyStorMax = 1024*1024L;          /* This is in kB! */
-#ifdef SYS_IS_CYGWIN32
-    SyAllocPool = 0;                 /* works better on cygwin */
-#else
     SyAllocPool = 1536L*1024*1024;   /* Note this is in bytes! */
-#endif
 #endif
     SyStorOverrun = 0;
     SyStorKill = 0;

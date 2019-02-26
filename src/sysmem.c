@@ -280,6 +280,12 @@ int SyTryToIncreasePool(void)
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 
+#ifdef SYS_IS_CYGWIN32
+#define GAP_MMAP_FLAGS MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE
+#else
+#define GAP_MMAP_FLAGS MAP_PRIVATE|MAP_ANONYMOUS
+#endif
+
 static void *SyMMapStart = NULL;   /* Start of mmap'ed region for POOL */
 static void *SyMMapEnd;            /* End of mmap'ed region for POOL */
 static void *SyMMapAdvised;        /* We have already advised about non-usage
@@ -341,15 +347,15 @@ static void * SyAnonMMap(size_t size)
     size = SyRoundUpToPagesize(size);
 #ifdef SYS_IS_64_BIT
     /* The following is at 16 Terabyte: */
-    result = mmap((void *) (16L*1024*1024*1024*1024), size, 
-                  PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+    result = mmap((void *) (16L*1024*1024*1024*1024), size,
+                  PROT_READ|PROT_WRITE, GAP_MMAP_FLAGS, -1, 0);
     if (result == MAP_FAILED) {
         result = mmap(NULL, size, PROT_READ|PROT_WRITE,
-            MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+            GAP_MMAP_FLAGS, -1, 0);
     }
 #else
     result = mmap(NULL, size, PROT_READ|PROT_WRITE,
-        MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+        GAP_MMAP_FLAGS, -1, 0);
 #endif
     if (result == MAP_FAILED)
         result = NULL;
@@ -370,7 +376,7 @@ static int SyTryToIncreasePool(void)
     size = (Int) SyMMapEnd - (Int) SyMMapStart;
     newchunk = SyRoundUpToPagesize(size/2);
     result = mmap(SyMMapEnd, newchunk, PROT_READ|PROT_WRITE,
-                  MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+                  GAP_MMAP_FLAGS, -1, 0);
     if (result == MAP_FAILED) return -1;
     if (result != SyMMapEnd) {
         munmap(result,newchunk);
