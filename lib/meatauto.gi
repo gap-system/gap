@@ -1176,9 +1176,10 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
       if proveIndecomposability() then
 	return fail;
       fi;
-    until (cnt >= 2000);
+    until (cnt >= 20000);
     Error("Unable to ascertain module decomposition within time limits.\n",
 	  "Call `return;' to try again.");
+    cnt:=0;
   until false;
 end);
 
