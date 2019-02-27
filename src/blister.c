@@ -806,6 +806,57 @@ void ConvBlist (
     SET_LEN_BLIST( list, len );
 }
 
+/****************************************************************************
+**
+*F  COUNT_TRUES_BLOCK( <block> ) . . . . . . . . . . .  count number of trues
+*/
+UInt COUNT_TRUES_BLOCK(UInt block)
+{
+#if USE_POPCNT && defined(HAVE___BUILTIN_POPCOUNTL)
+    return __builtin_popcountl(block);
+#else
+#ifdef SYS_IS_64_BIT
+    block =
+        (block & 0x5555555555555555L) + ((block >> 1) & 0x5555555555555555L);
+    block =
+        (block & 0x3333333333333333L) + ((block >> 2) & 0x3333333333333333L);
+    block = (block + (block >> 4)) & 0x0f0f0f0f0f0f0f0fL;
+    block = (block + (block >> 8));
+    block = (block + (block >> 16));
+    block = (block + (block >> 32)) & 0x00000000000000ffL;
+#else
+    block = (block & 0x55555555) + ((block >> 1) & 0x55555555);
+    block = (block & 0x33333333) + ((block >> 2) & 0x33333333);
+    block = (block + (block >> 4)) & 0x0f0f0f0f;
+    block = (block + (block >> 8));
+    block = (block + (block >> 16)) & 0x000000ff;
+#endif
+    return block;
+#endif
+}
+
+/****************************************************************************
+**
+*F  COUNT_TRUES_BLOCKS( <ptr>, <nblocks> )
+*/
+UInt COUNT_TRUES_BLOCKS(const UInt * ptr, UInt nblocks)
+{
+    UInt n = 0;
+    while (nblocks >= 4) {
+        UInt n1 = COUNT_TRUES_BLOCK(*ptr++);
+        UInt n2 = COUNT_TRUES_BLOCK(*ptr++);
+        UInt n3 = COUNT_TRUES_BLOCK(*ptr++);
+        UInt n4 = COUNT_TRUES_BLOCK(*ptr++);
+        n += n1 + n2 + n3 + n4;
+        nblocks -= 4;
+    }
+    while (nblocks) {
+        n += COUNT_TRUES_BLOCK(*ptr++);
+        nblocks--;
+    }
+    // return the number of bits
+    return n;
+}
 
 /****************************************************************************
 **
