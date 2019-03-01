@@ -478,8 +478,8 @@ CallAndInstallPostRestore( function()
 
       PRINT_TO("*errout*",
        "\n",
-       "  Boolean options (b,q,e,r,A,D,E,M,N,T,X,Y) toggle the current value\n",
-       "  each time they are called. Default actions are indicated first.\n",
+       "  Boolean options toggle the current value each time they are called.\n",
+       "  Default actions are indicated first.\n",
        "\n" );
       QUIT_GAP();
     fi;
