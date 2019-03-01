@@ -1024,7 +1024,7 @@ static struct optInfo options[] = {
   { 'P', "", storePosInteger, &SyNumProcessors, 1 }, /* Thread UI */
   { 'G', "", storePosInteger, &SyNumGCThreads, 1 }, /* Thread UI */
 #endif
-  /* The following three options must be handled in the kernel so they happen early enough */
+  /* The following options must be handled in the kernel so they are set up before loading the library */
   { 0  , "prof", enableProfilingAtStartup, 0, 1},    /* enable profiling at startup */
   { 0  , "memprof", enableMemoryProfilingAtStartup, 0, 1 }, /* enable memory profiling at startup */
   { 0  , "cover", enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup */
