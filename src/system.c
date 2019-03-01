@@ -990,8 +990,6 @@ static Int enableMemCheck(Char ** argv, void * dummy)
 #endif
 
 
-static Int preAllocAmount;
-
 /* These are just the options that need kernel processing. Additional options will be 
    recognised and handled in the library */
 
@@ -1006,7 +1004,6 @@ static struct optInfo options[] = {
   { 'L', "", storeString, &SyRestoring, 1}, /* must be handled in kernel  */
   { 'M', "", toggle, &SyUseModule, 0}, /* must be handled in kernel */
   { 'R', "", unsetString, &SyRestoring, 0}, /* kernel */
-  { 'a', "", storeMemory, &preAllocAmount, 1 }, /* kernel -- is this still useful */
   { 'e', "", toggle, &SyCTRD, 0 }, /* kernel */
   { 'f', "", forceLineEditing, (void *)2, 0 }, /* probably library now */
   { 'E', "", toggle, &SyUseReadline, 0 }, /* kernel */
@@ -1043,7 +1040,6 @@ void InitSystem (
     Char *              argv [],
     UInt                handleSignals )
 {
-    Char *              *ptrlist;
     UInt                i;             /* loop variable                   */
     Int res;                       /* return from option processing function */
 
@@ -1084,8 +1080,6 @@ void InitSystem (
         SyGasmanNumbers[i][j] = 0;
       }
     }
-
-    preAllocAmount = 4*1024*1024;
 
     InitSysFiles();
 
@@ -1197,27 +1191,6 @@ void InitSystem (
                  SyCTRD       = 1; */
         SyRedirectStderrToStdOut();
         syWinPut( 0, "@p", "1." );
-    }
-   
-
-    if (SyAllocPool == 0) {
-      /* premalloc stuff                                                     */
-      /* allocate in small chunks, and write something to them
-       * (the GNU clib uses mmap for large chunks and give it back to the
-       * system after free'ing; also it seems that memory is only really 
-       * allocated (pagewise) when it is first used)                     */
-      ptrlist = (Char **)malloc((1+preAllocAmount/1000)*sizeof(Char*));
-      for (i = 1; i*1000 < preAllocAmount; i++) {
-        ptrlist[i-1] = (Char *)malloc( 1000 );
-        if (ptrlist[i-1] != NULL) ptrlist[i-1][900] = 13;
-      }
-      for (i = 1; (i+1)*1000 < preAllocAmount; i++) 
-        if (ptrlist[i-1] != NULL) free(ptrlist[i-1]);
-      free(ptrlist);
-       
-     /* ptr = (Char *)malloc( preAllocAmount );
-      ptr1 = (Char *)malloc(4);
-      if ( ptr != 0 )  free( ptr ); */
     }
 
     /* should GAP load 'init/lib.g' on initialization */

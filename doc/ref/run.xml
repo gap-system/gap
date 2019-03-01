@@ -80,26 +80,6 @@ which can be useful for debugging or testing.
 The needed packages (and their needed packages, and so on)
 are loaded in any case.
 </Item>
-<Mark><Index Key="-a"><C>-a</C></Index>
-<C>-a </C><A>memory</A></Mark>
-<Item>
-GASMAN, the storage manager of &GAP; uses <C>sbrk</C> to get blocks of memory
-from (certain) operating systems and it is required that subsequent calls
-to <C>sbrk</C> produce adjacent blocks of memory in this case  because  &GAP;
-only wants to deal with one large block of  memory.  If  the  C  function
-<C>malloc</C> is called for whatever reason, it is likely that 
-<C>sbrk</C> will  no
-longer produce adjacent blocks, therefore &GAP; does  not  use  <C>malloc</C>
-itself.
-<P/>
-However some operating systems insist on calling  <C>malloc</C>  to  create  a
-buffer when a file is opened, or for some other reason. In order to catch
-these cases &GAP; preallocates a block of memory with <C>malloc</C> which  is
-immediately freed. The amount preallocated can  be  controlled  with  the
-<C>-a</C> option. (Most users do not need this option.)
-<P/>
-The option argument <A>memory</A> is specified as with the <C>-m</C> option.
-</Item>
 <Mark><Index Key="-B"><C>-B</C></Index>
 <C>-B </C><A>architecture</A></Mark>
 <Item>
