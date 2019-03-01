@@ -434,9 +434,9 @@ CallAndInstallPostRestore( function()
             PRINT_TO("*errout*", " -", opt.short);
             if(IsBound(opt.long)) then
               PRINT_TO("*errout*", ", --", opt.long);
-              padspace(4+LENGTH(opt.long), 16);
+              padspace(4+LENGTH(opt.long), 18);
             else
-              padspace(0, 16);
+              padspace(0, 18);
             fi;
             if(IsBound(opt.arg)) then
               PRINT_TO("*errout*", " ", opt.arg);
@@ -449,7 +449,7 @@ CallAndInstallPostRestore( function()
             # opt.short unbound, opt.long bound
 
             PRINT_TO("*errout*", "  --", opt.long);
-            padspace(4+LENGTH(opt.long), 16);
+            padspace(4+LENGTH(opt.long), 18);
             if(IsBound(opt.arg)) then
               PRINT_TO("*errout*", " ", opt.arg);
               padspace(LENGTH(opt.arg)+1, 8);
@@ -457,16 +457,16 @@ CallAndInstallPostRestore( function()
               padspace(0, 8);
             fi;
           fi;
-          if IsBound(opt.long) and LENGTH(opt.long) > 12 then
+          if IsBound(opt.long) and LENGTH(opt.long) > 14 then
             PRINT_TO("*errout*", "\n");
-            padspace(0, 3+16+8+3);
+            padspace(0, 3+18+8+3);
           else
             PRINT_TO("*errout*", "   ");
           fi;
 
           PRINT_TO("*errout*", opt.help[1], "\n");
           for j in [2..LENGTH(opt.help)] do
-            padspace(0, 3+16+8+3);
+            padspace(0, 3+18+8+3);
             PRINT_TO("*errout*", opt.help[j],"\n");
           od;
         else
