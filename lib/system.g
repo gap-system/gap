@@ -75,7 +75,7 @@ BIND_GLOBAL( "GAPInfo", rec(
       rec( short:= "m", long := "minworkspace", default := "128m", arg := "<mem>",
            help := ["set the initial workspace size"] ),
       rec( short:= "o", long := "maxworkspace", default := "2g", arg := "<mem>",
-           help := [ "set hint for maximal workspace size (GAP may", "allocate more)"] ),
+           help := [ "set workspace size where GAP will warn about", "excessive memory usage (GAP may allocate more)"] ),
       rec( short:= "K", long := "limitworkspace", default := "0", arg := "<mem>",
            help := [ "set maximal workspace size (GAP never", "allocates more)"] ),
       rec( short:= "s", default := "4g", arg := "<mem>", help := [ "set the initially mapped virtual memory" ] ),
