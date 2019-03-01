@@ -457,8 +457,8 @@ to do something which required more memory than you have (as listing all
 elements of S_15 for example). You can use the command line option `-g` (see
 Section "Command Line Options" of the GAP Reference manual) to display how
 much memory GAP uses. If this is below what your machine has available
-extending the workspace is impossible. Start GAP with more memory or use
-the `-a` option to pre-allocate initially a large piece of workspace.
+extending the workspace is impossible. Start GAP with more memory using the
+`-o` option.
 
 ### GAP is not able to allocate memory above a certain limit
 
