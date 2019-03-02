@@ -81,12 +81,10 @@ typedef UInt * *        Bag;
 typedef struct {
     uint8_t type : 8;
     uint8_t flags : 8;
-#ifdef SYS_IS_64_BIT
-    uint64_t size : 48;
-#else
-    uint16_t reserved : 16;
-    uint32_t size : 32;
-#endif
+    // the following unnamed field ensures that on 32 bit systems,
+    // the 'size' field is aligned to a 32 bit boundary
+    uint16_t : (sizeof(UInt) == 8) ? 0 : 16;
+    uint64_t size : (sizeof(UInt) == 8) ? 48 : 32;
 #ifdef USE_GASMAN
     Bag link;
 #endif
