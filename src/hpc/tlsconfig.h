@@ -20,16 +20,13 @@
 
 #ifndef HAVE_NATIVE_TLS
 
-#ifdef SYS_IS_64_BIT
-#define TLS_SIZE (1L << 20)
-#else
-#define TLS_SIZE (1L << 18)
-#endif
+enum {
+    TLS_SIZE = (sizeof(UInt) == 8) ? (1L << 20) : (1L << 18),
+};
 #define TLS_MASK (~(TLS_SIZE - 1L))
 
-#if TLS_SIZE & ~TLS_MASK
-#error TLS_SIZE must be a power of 2
-#endif
+GAP_STATIC_ASSERT((TLS_SIZE & (TLS_SIZE - 1)) == 0,
+                  "TLS_SIZE must be a power of 2");
 
 #endif // HAVE_NATIVE_TLS
 
