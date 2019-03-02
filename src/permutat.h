@@ -101,14 +101,13 @@ EXPORT_INLINE void SET_STOREDINV_PERM(Obj perm, Obj inv)
 
 #define IMAGE(i,pt,dg)  (((i) < (dg)) ? (pt)[(i)] : (i))
 
-#ifdef SYS_IS_64_BIT
-#define MAX_DEG_PERM4 ((1L<<32)-1)
-#else
-#define MAX_DEG_PERM4 ((1L<<28)-1)
-#endif
+enum {
+    MAX_DEG_PERM4 = (1L << (sizeof(UInt) == 8 ? 32 : 28)) - 1
+};
 
 #define IS_PERM2(perm)  (TNUM_OBJ(perm) == T_PERM2)
 #define IS_PERM4(perm)  (TNUM_OBJ(perm) == T_PERM4)
+
 
 EXPORT_INLINE int IS_PERM(Obj f)
 {
