@@ -216,33 +216,8 @@ typedef UInt    RNam;
 
 
 /* More or less all of this will get inlined away */
-
-EXPORT_INLINE void C_SET_LIMB4(Obj bag, UInt limbnumber, UInt4 value)
-{
-#ifdef SYS_IS_64_BIT 
-  UInt8 *p;
-  if (limbnumber % 2) {
-    p = ((UInt8*)ADDR_OBJ(bag)) + (limbnumber-1) / 2;
-    *p = (*p & 0xFFFFFFFFUL) | ((UInt8)value << 32);
-  } else {
-    p = ((UInt8 *)ADDR_OBJ(bag)) + limbnumber / 2;
-    *p = (*p & 0xFFFFFFFF00000000UL) | (UInt8)value;
-  }
-#else
-  ((UInt4 *)ADDR_OBJ(bag))[limbnumber] = value;
-#endif  
-}
-
-
-EXPORT_INLINE void C_SET_LIMB8(Obj bag, UInt limbnumber, UInt8 value)
-{ 
-#ifdef SYS_IS_64_BIT 
-  ((UInt8 *)ADDR_OBJ(bag))[limbnumber] = value;
-#else
-  ((UInt4 *)ADDR_OBJ(bag))[2*limbnumber] = (UInt4)(value & 0xFFFFFFFFUL);
-  ((UInt4 *)ADDR_OBJ(bag))[2*limbnumber+1] = (UInt4)(value >>32);
-#endif
-}
+void C_SET_LIMB4(Obj bag, UInt limbnumber, UInt4 value);
+void C_SET_LIMB8(Obj bag, UInt limbnumber, UInt8 value);
 
 
 #ifdef __cplusplus
