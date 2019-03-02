@@ -921,9 +921,6 @@ Bag NextBagRestoring( UInt type, UInt flags, UInt size )
   header->flags = flags;
   header->size = size;
   header->link = NextMptrRestoring;
-#ifndef SYS_IS_64_BIT
-  header->reserved = 0;
-#endif
 
   NextMptrRestoring++;
 
@@ -1291,9 +1288,6 @@ Bag NewBag (
     header->type = type;
     header->flags = 0;
     header->size = size;
-#ifndef SYS_IS_64_BIT
-    header->reserved = 0;
-#endif
 
     /* enter link word                                                     */
     header->link = bag;
@@ -1446,9 +1440,6 @@ UInt ResizeBag (
     UInt type     = header->type;
     UInt flags    = header->flags;
     UInt old_size = header->size;
-#ifndef SYS_IS_64_BIT
-    GAP_ASSERT(header->reserved == 0);
-#endif
 
 #ifdef COUNT_BAGS
     /* update the statistics                                               */
@@ -1484,9 +1475,6 @@ UInt ResizeBag (
         }
 
         header->size = new_size;
-#ifndef SYS_IS_64_BIT
-        GAP_ASSERT(header->reserved == 0);
-#endif
     }
 
     // if the last bag is enlarged ...
@@ -1512,9 +1500,6 @@ UInt ResizeBag (
         SizeAllBags             += new_size - old_size;
 
         header->size = new_size;
-#ifndef SYS_IS_64_BIT
-        GAP_ASSERT(header->reserved == 0);
-#endif
     }
 
     // if the bag is enlarged ...
@@ -1534,9 +1519,6 @@ UInt ResizeBag (
         header->flags = 0;
         header->size =
             sizeof(BagHeader) + (TIGHT_WORDS_BAG(old_size) - 1) * sizeof(Bag);
-#ifndef SYS_IS_64_BIT
-        GAP_ASSERT(header->reserved == 0);
-#endif
 
         /* allocate the storage for the bag                                */
         BagHeader * newHeader = (BagHeader *)AllocBags;
@@ -1545,9 +1527,6 @@ UInt ResizeBag (
         newHeader->type = type;
         newHeader->flags = flags;
         newHeader->size = new_size;
-#ifndef SYS_IS_64_BIT
-        GAP_ASSERT(newHeader->reserved == 0);
-#endif
 
 
 #ifdef COUNT_BAGS
@@ -2108,9 +2087,6 @@ again:
             dstHeader->type = header->type;
             dstHeader->flags = header->flags;
             dstHeader->size = header->size;
-#ifndef SYS_IS_64_BIT
-            dstHeader->reserved = 0;
-#endif
 
             dstHeader->link = (Bag)UNMARKED_ALIVE(header->link);
             dst = DATA(dstHeader);
@@ -2374,13 +2350,6 @@ void CheckMasterPointers( void )
             Panic("Master pointer with bad link word detected");
         }
 
-#ifndef SYS_IS_64_BIT
-        // sanity check: reserved bits must be unused
-        if (BAG_HEADER(bag)->reserved != 0) {
-            Panic("Master pointer with non-zero reserved bits "
-                  "detected");
-        }
-#endif
     }
 
     // check the chain of free master pointers
