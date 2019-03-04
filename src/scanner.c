@@ -634,7 +634,7 @@ static inline Char GetOctalDigits( void )
 static inline Char CharHexDigit( Char c )
 {
     c = GET_NEXT_CHAR();
-    if (!IsHexDigit(c)) {
+    if (!isxdigit((unsigned int)c)) {
         SyntaxError("Expecting hexadecimal digit");
     }
     if (c >= 'a') {
