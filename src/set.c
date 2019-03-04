@@ -403,7 +403,7 @@ static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
     
   /* check the arguments                                                 */
   RequireMutableSet("AddSet", set);
-  len = LEN_LIST(set);
+  len = LEN_PLIST(set);
 
   /* perform the binary search to find the position                      */
   pos = PositionSortedDensePlist( set, obj );
@@ -412,11 +412,8 @@ static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
   if ( len < pos || ! EQ( ELM_PLIST(set,pos), obj ) ) {
     GROW_PLIST( set, len+1 );
     SET_LEN_PLIST( set, len+1 );
-    {
-      Obj *ptr;
-      ptr = PTR_BAG(set);
-      SyMemmove(ptr + pos+1, ptr+pos, sizeof(Obj)*(len+1-pos));
-    }
+    Obj * ptr = ADDR_OBJ(set) + pos;
+    SyMemmove(ptr + 1, ptr, sizeof(Obj) * (len - pos + 1));
     SET_ELM_PLIST( set, pos, obj );
     CHANGED_BAG( set );
 
@@ -514,12 +511,10 @@ static Obj FuncREM_SET(Obj self, Obj set, Obj obj)
 {
     UInt                len;            /* logical length of the list      */
     UInt                pos;            /* position                        */
-    UInt                i;              /* loop variable                   */
-    Obj                 *ptr;
 
     /* check the arguments                                                 */
     RequireMutableSet("RemoveSet", set);
-    len = LEN_LIST(set);
+    len = LEN_PLIST(set);
 
     /* perform the binary search to find the position                      */
     pos = PositionSortedDensePlist( set, obj );
@@ -527,11 +522,8 @@ static Obj FuncREM_SET(Obj self, Obj set, Obj obj)
     /* remove the element from the set if it is there                      */
     if ( pos <= len && EQ( ELM_PLIST(set,pos), obj ) ) {
 
-        ptr = PTR_BAG(set) + pos;
-        for ( i = pos; i < len; i++ ) {
-            *ptr = *(ptr+1);
-            ptr ++;
-        }
+        Obj * ptr = ADDR_OBJ(set) + pos;
+        SyMemmove(ptr, ptr + 1, sizeof(Obj) * (len - pos + 1));
         SET_ELM_PLIST( set, len, 0 );
         SET_LEN_PLIST( set, len-1 );
 
