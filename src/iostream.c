@@ -62,14 +62,14 @@
 typedef struct {
   int childPID;   /* Also used as a link to make a linked free list */
   int ptyFD;      /* GAP reading from external prog */
-  UInt inuse;     /* we need to scan all the "live" structures when we have
+  int inuse;      /* we need to scan all the "live" structures when we have
                      had SIGCHLD so, for now, we just walk the array for
                      the ones marked in use */
-  UInt changed;   /* set non-zero by the signal handler if our child has
+  int changed;    /* set non-zero by the signal handler if our child has
                      done something -- stopped or exited */
   int status;     /* status from wait3 -- meaningful only if changed is 1 */
-  UInt blocked;   /* we have already reported a problem, which is still there */
-  UInt alive;     /* gets set after waiting for a child actually fails
+  int blocked;    /* we have already reported a problem, which is still there */
+  int alive;      /* gets set after waiting for a child actually fails
                      implying that the child has vanished under our noses */
 } PtyIOStream;
 

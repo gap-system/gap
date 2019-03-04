@@ -1405,6 +1405,7 @@ Int SyFtell (
     case gzip_socket:
         ret = (Int)gzseek(syBuf[fid].gzfp, 0, SEEK_CUR);
         break;
+    case unused_socket:
     default:
         return -1;
     }
@@ -1442,6 +1443,7 @@ Int SyFseek (
         return (Int)lseek(syBuf[fid].fp, pos, SEEK_SET);
     case gzip_socket:
         return (Int)gzseek(syBuf[fid].gzfp, pos, SEEK_SET);
+    case unused_socket:
     default:
         return -1;
     }
