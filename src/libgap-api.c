@@ -412,7 +412,7 @@ void GAP_LeaveStack_(void)
     EnterStackCount--;
 }
 
-void GAP_EnterDebugMessage(char * message, char * file, int line)
+void GAP_EnterDebugMessage_(char * message, char * file, int line)
 {
     fprintf(stderr, "%s: %d; %s:%d\n", message, EnterStackCount, file,
             line);
