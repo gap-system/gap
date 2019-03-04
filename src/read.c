@@ -260,18 +260,16 @@ enum REFTYPE {
 
 typedef struct {
     UInt1 type;
-
+    UInt1 _padding;
     union {
         UInt2 nest0;
         UInt2 level;
     };
-
     union {
         UInt4 var;
         UInt4 narg;
         UInt4 rnam;
     };
-
 } LHSRef;
 
 GAP_STATIC_ASSERT(sizeof(LHSRef) <= 8, "LHSRef is too big");
@@ -618,7 +616,7 @@ static void ReadReferenceModifiers(TypSymbolSet follow)
 */
 static LHSRef ReadVar(TypSymbolSet follow)
 {
-    LHSRef ref = { R_INVALID, {0}, {0} };
+    LHSRef ref = { R_INVALID, 0, {0}, {0} };
 
     Obj  nams;                      // list of names of local vars.
     Obj  lvars;                     // environment

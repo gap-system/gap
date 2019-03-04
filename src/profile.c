@@ -124,9 +124,9 @@ static struct ProfileState
   // Did we use 'popen' to open the stream (matters when closing)
   int StreamWasPopened;
   // Are we currently outputting repeats (false=code coverage)
-  Int OutputRepeats;
+  int OutputRepeats;
   // Are we colouring output (not related to profiling directly)
-  Int ColouringOutput;
+  int ColouringOutput;
 
   // Used to generate 'X' statements, to make sure we correctly
   // attach each function call to the line it was executed on

@@ -419,8 +419,10 @@ static Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat)
 
   Obj str = NEW_STRING(str_len);
   char *s = CSTR_STRING(str), *p = s+str_len-1;
-  if (f < 0.0)
-    f = -f, s[0] = '-';
+  if (f < 0.0) {
+    f = -f;
+    s[0] = '-';
+  }
   while (p > s || (p == s && s[0] != '-')) {
     int d = (int) fmod(f,16.0);
     *p-- = d < 10 ? '0'+d : 'a'+d-10;
