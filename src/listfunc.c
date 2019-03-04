@@ -80,11 +80,10 @@ static void AddPlist3(Obj list, Obj obj, Int pos)
     if (pos <= len) {
       GROW_PLIST(list, len+1);
       SET_LEN_PLIST(list, len+1);
-      SyMemmove(ADDR_OBJ(list) + pos+1,
-              CONST_ADDR_OBJ(list) + pos,
-              (size_t)(sizeof(Obj)*(len - pos + 1)));
+      Obj * ptr = ADDR_OBJ(list) + pos;
+      SyMemmove(ptr + 1, ptr, sizeof(Obj) * (len - pos + 1));
     }
-    ASS_LIST( list, pos, obj);
+    ASS_LIST(list, pos, obj);
 }
 
 void            AddPlist (
