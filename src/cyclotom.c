@@ -140,7 +140,7 @@ static inline void SET_NOF_CYC(Obj cyc, Obj val)
     COEFS_CYC(cyc)[0] = val;
 }
 
-#define XXX_CYC(cyc,len)        (EXPOS_CYC(cyc,len)[0])
+// #define XXX_CYC(cyc,len)        (EXPOS_CYC(cyc,len)[0])
 
 
 static ModuleStateOffset CycStateOffset = -1;

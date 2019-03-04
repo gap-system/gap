@@ -300,8 +300,8 @@ static inline UInt SpaceBetweenPointers(const Bag * a, const Bag * b)
 }
 
 #define SizeMptrsArea SpaceBetweenPointers(MptrEndBags, MptrBags)
-#define SizeOldBagsArea SpaceBetweenPointers(YoungBags, OldBags)
-#define SizeYoungBagsArea SpaceBetweenPointers(AllocBags, YoungBags)
+// #define SizeOldBagsArea SpaceBetweenPointers(YoungBags, OldBags)
+// #define SizeYoungBagsArea SpaceBetweenPointers(AllocBags, YoungBags)
 #define SizeAllocationArea SpaceBetweenPointers(EndBags, AllocBags)
 
 #define SizeAllBagsArea SpaceBetweenPointers(AllocBags, OldBags)

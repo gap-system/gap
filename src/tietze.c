@@ -28,12 +28,12 @@
 #define TZ_NUMGENS               1
 #define TZ_NUMRELS               2
 #define TZ_TOTAL                 3
-#define TZ_GENERATORS            4
+// #define TZ_GENERATORS            4
 #define TZ_INVERSES              5
 #define TZ_RELATORS              6
 #define TZ_LENGTHS               7
 #define TZ_FLAGS                 8
-#define TZ_FREEGENS              9
+// #define TZ_FREEGENS              9
 #define TZ_LENGTHTIETZE         21
 
 
