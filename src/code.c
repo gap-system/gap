@@ -284,7 +284,7 @@ static Stat NewStatWithProf (
     while (bodySize < CS(OffsBody))
         bodySize *= 2;
     ResizeBag(body, bodySize);
-    STATE(PtrBody) = (Stat*)PTR_BAG(body);
+    STATE(PtrBody) = PTR_BAG(body);
 
     /* enter type and size                                                 */
     STAT_HEADER(stat)->line = line;
@@ -569,7 +569,7 @@ static Int PushValue(Obj val)
         // Recalculate header in case NEW_PLIST caused a GC
         header = (BodyHeader *)STATE(PtrBody);
         header->values = values;
-        GAP_ASSERT(STATE(PtrBody) == (Stat *)PTR_BAG(BODY_FUNC(CURR_FUNC())));
+        GAP_ASSERT(STATE(PtrBody) == PTR_BAG(BODY_FUNC(CURR_FUNC())));
         // This is the bag PtrBody points at
         CHANGED_BAG(BODY_FUNC(CURR_FUNC()));
     }

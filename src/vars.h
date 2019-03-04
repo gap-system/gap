@@ -213,7 +213,7 @@ EXPORT_INLINE Obj SwitchToNewLvars(Obj func, UInt narg, UInt nloc)
   // switch to new lvars
   STATE(CurrLVars) = new_lvars;
   STATE(PtrLVars) = (Obj *)hdr;
-  STATE(PtrBody) = (Stat *)ADDR_OBJ(BODY_FUNC(func));
+  STATE(PtrBody) = ADDR_OBJ(BODY_FUNC(func));
 
   return old;
 }
@@ -239,7 +239,7 @@ EXPORT_INLINE void SWITCH_TO_OLD_LVARS(Obj old)
     LVarsHeader * hdr = (LVarsHeader *)ADDR_OBJ(old);
     STATE(CurrLVars) = old;
     STATE(PtrLVars) = (Obj *)hdr;
-    STATE(PtrBody) = (Stat *)ADDR_OBJ(BODY_FUNC(hdr->func));
+    STATE(PtrBody) = ADDR_OBJ(BODY_FUNC(hdr->func));
 }
 
 EXPORT_INLINE void SWITCH_TO_OLD_LVARS_AND_FREE(Obj old)
