@@ -132,18 +132,6 @@ static Obj  Part(Obj list, Int pos1, Int pos2);
 
 /**************************************************************************
 **
-*F  SET_DT_GEN(tree, index, obj) . . . assign the generator of(<tree>, index)
-**
-**  'SET_DT_GEN sets num(<a>) to the object <obj>, where <a> is the subtree
-**  of <tree>,  rooted at (<tree>, index).  <index> has to be a positive
-**  integer less or equal to the number of nodes of <tree>
-*/
-#define  SET_DT_GEN(tree, index, obj) \
-              (SET_ELM_PLIST(tree, (index-1)*5 + 2, obj) )
-
-
-/**************************************************************************
-**
 *F  DT_IS_MARKED(tree, index) . . . . . . tests if (<tree>, index) is marked
 **
 **  'DT_IS_MARKED' returns 1 (as C integer) if (<tree>, index) is marked, and

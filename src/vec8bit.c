@@ -1022,14 +1022,11 @@ static Obj FuncPLAIN_VEC8BIT(Obj self, Obj list)
 }
 
 
-    /****************************************************************************
-    **
-    *F * * * * * * * * * * * * arithmetic operations  * * * * * * * * * * * *
-    ** *
-    */
-
-#define NUMBLOCKS_VEC8BIT(len, elts)                                         \
-    (((len) + sizeof(UInt) * (elts)-1) / (sizeof(UInt) * (elts)))
+/****************************************************************************
+**
+*F * * * * * * * * * * * * arithmetic operations  * * * * * * * * * * * *
+** *
+*/
 
 #define BLOCKS_VEC8BIT(vec) ((UInt *)BYTES_VEC8BIT(vec))
 #define CONST_BLOCKS_VEC8BIT(vec) ((const UInt *)CONST_BYTES_VEC8BIT(vec))
