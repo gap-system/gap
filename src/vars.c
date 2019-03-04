@@ -2059,7 +2059,7 @@ static void VarsAfterCollectBags(void)
   if (STATE(CurrLVars))
     {
       STATE(PtrLVars) = PTR_BAG( STATE(CurrLVars) );
-      STATE(PtrBody)  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC() ) );
+      STATE(PtrBody)  = PTR_BAG( BODY_FUNC( CURR_FUNC() ) );
     }
   GVarsAfterCollectBags();
 }
