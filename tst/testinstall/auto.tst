@@ -5,6 +5,11 @@ gap> f := function(x) Print("Checkf\n"); testglobalvar := 3; end;;
 Syntax warning: Unbound global variable in stream:1
 f := function(x) Print("Checkf\n"); testglobalvar := 3; end;;
                                     ^^^^^^^^^^^^^
+gap> AUTO();
+Error, Function: number of arguments must be at least 2 (not 0)
+gap> AUTO(g);
+Error, Function: number of arguments must be at least 2 (not 1)
+gap> AUTO(g, 1);
 gap> AUTO(g, 1, "testglobalvar");
 gap> IsAutoGlobal("testglobalvar");
 true

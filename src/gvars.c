@@ -888,14 +888,6 @@ static Obj FuncAUTO(Obj self, Obj args)
     UInt                gvar;           /* one global variable             */
     UInt                i;              /* loop variable                   */
 
-    /* check that there are enough arguments                               */
-    if ( LEN_LIST(args) < 2 ) {
-        ErrorQuit(
-            "usage: AUTO( <func>, <arg>, <name1>... )",
-            0L, 0L );
-        return 0;
-    }
-
     /* get and check the function                                          */
     func = ELM_LIST( args, 1 );
     RequireFunction("AUTO", func);
@@ -1489,7 +1481,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(MakeConstantGVar, 1, "name"),
     GVAR_FUNC(IsReadOnlyGVar, 1, "name"),
     GVAR_FUNC(IsConstantGVar, 1, "name"),
-    GVAR_FUNC(AUTO, -1, "args"),
+    GVAR_FUNC(AUTO, -3, "func, arg, names..."),
 
 
     GVAR_FUNC(IDENTS_GVAR, 0, ""),
