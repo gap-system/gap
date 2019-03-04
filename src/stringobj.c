@@ -1694,7 +1694,7 @@ static Obj FuncSMALLINT_STR(Obj self, Obj str)
   const Char *string = CONST_CSTR_STRING(str);
   Int x = 0;
   Int sign = 1;
-  while (IsSpace(*string))
+  while (isspace((unsigned int)*string))
     string++;
   if (*string == '-') {
     sign = -1;

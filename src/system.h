@@ -291,25 +291,6 @@ UInt SyTimeChildrenSys(void);
 
 /****************************************************************************
 **
-*F  IsHexDigit( <ch> ) . . . . . . . . . . . . . . .  is a character a digit
-**
-**  'IsDigit' returns 1 if its character argument is a digit from the ranges
-**  '0..9', 'A..F', or 'a..f' and 0 otherwise.
-*/
-#define IsHexDigit(ch)     (isxdigit((unsigned int)ch))
-
-/****************************************************************************
-**
-*F  IsSpace( <ch> ) . . . . . . . . . . . . . . . .is a character whitespace
-**
-**  'IsDigit' returns 1 if its character argument is whitespace: ' ', tab,
-**  carriage return, linefeed or vertical tab
-*/
-#define IsSpace(ch)     (isspace((unsigned int)ch))
-
-
-/****************************************************************************
-**
 *F  strlcpy( <dst>, <src>, <len> )
 **
 **  Copy <src> to buffer <dst> of size <len>. At most <len>-1 characters will
