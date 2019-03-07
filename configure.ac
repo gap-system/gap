@@ -207,7 +207,7 @@ dnl User setting: Debug mode (off by default)
 dnl
 AC_ARG_ENABLE([debug],
     [AS_HELP_STRING([--enable-debug], [enable debug mode])],
-    [AC_DEFINE([GAP_KERNEL_DEBUG], [1], [define if building in debug mode]),
+    [AC_DEFINE([GAP_KERNEL_DEBUG], [1], [define if building in debug mode])
      AC_DEFINE([GAP_PRINT_BACKTRACE], [1], [to enable backtraces upon crashes])],
     [enable_debug=no]
     )
