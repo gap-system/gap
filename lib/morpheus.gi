@@ -2151,8 +2151,11 @@ local m;
     IsFinite(G);
     IsFinite(H);
   fi;
-  if not IsFinite(G) and IsFinite(H) then
+  if not IsFinite(G) and not IsFinite(H) then
     Error("cannot test isomorphism of infinite groups");
+  fi;
+  if IsFinite(G) <> IsFinite(H) then
+    return fail;
   fi;
 
   #AH: Spezielle Methoden ?
