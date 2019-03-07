@@ -203,8 +203,6 @@ typedef struct {
         #name, argument, filter, Prop##name, __FILE__ ":" #name              \
     }
 
-typedef Obj (*GenericHandler)();
-
 /****************************************************************************
 **
 *T  StructGVarOper  . . . . . . . . . . . . . . . . . . .  exported operation
@@ -214,7 +212,7 @@ typedef struct {
     Int          nargs;
     const Char * args;
     Obj *        operation;
-    GenericHandler handler;
+    ObjFunc      handler;
     const Char * cookie;
 } StructGVarOper;
 
@@ -234,7 +232,7 @@ typedef struct {
     const Char * name;
     Int          nargs;
     const Char * args;
-    Obj (*handler)(/*arguments*/);
+    ObjFunc      handler;
     const Char * cookie;
 } StructGVarFunc;
 
@@ -242,7 +240,7 @@ typedef struct {
 // StructGVarFunc arrays
 #define GVAR_FUNC(name, nargs, args)                                         \
     {                                                                        \
-        #name, nargs, args, (GenericHandler)Func##name, __FILE__ ":" #name   \
+        #name, nargs, args, (ObjFunc)Func##name, __FILE__ ":" #name   \
     }
 
 
