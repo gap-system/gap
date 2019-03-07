@@ -98,6 +98,7 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
             -Wmissing-include-dirs dnl
             dnl -Wmissing-noreturn dnl
             -Wmissing-variable-declarations dnl
+            -Wno-pragmas dnl # for GCC and the ObjFunc typedef
             dnl -Wnull-dereference dnl
             -Wpacked dnl
             -Wpointer-arith dnl
@@ -108,6 +109,7 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
             -Wshadow dnl
             -Wno-sign-compare dnl # disabled: too many places trigger this
             -Wstrict-aliasing dnl
+            dnl -Wstrict-prototypes dnl # disabled because GCC does not support it for C code (clang does)
             dnl -Wswitch-default dnl
             dnl -Wswitch-enum dnl
             -Wundef dnl
@@ -131,7 +133,7 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
             dnl -Wmissing-prototypes dnl
             -Wnested-externs dnl
             -Wold-style-definition dnl
-            dnl -Wstrict-prototypes dnl
+            -Wstrict-prototypes dnl
             ],ax_warn_cflags_variable,[$ax_compiler_flags_test])
         fi
 
