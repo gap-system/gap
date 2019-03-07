@@ -80,41 +80,40 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
         AX_APPEND_COMPILE_FLAGS([ dnl
             -Wall dnl
             -Wextra dnl
-            -Wundef dnl
-            -Wwrite-strings dnl
-            -Wpointer-arith dnl
-            dnl -Wmissing-declarations dnl
-            -Wredundant-decls dnl
-            -Wno-unused-parameter dnl
-            -Wmissing-field-initializers dnl
-            -Wformat=2 dnl
+            -Warray-bounds dnl
             dnl -Wcast-align dnl
+            -Wno-cast-function-type dnl # GCC otherwise warns about ObjFunc casts in GVAR_FUNC
+            -Wdouble-promotion dnl
+            -Wduplicated-branches dnl
+            -Wduplicated-cond dnl
             -Wformat-nonliteral dnl
             -Wformat-security dnl
-            -Wno-sign-compare dnl
-            -Wstrict-aliasing dnl
-            -Wshadow dnl
-            -Winline dnl
-            -Wpacked dnl
-            -Wmissing-format-attribute dnl
-            dnl -Wmissing-noreturn dnl
+            -Wformat=2 dnl
             -Winit-self dnl
-            -Wredundant-decls dnl
-            -Wmissing-include-dirs dnl
-            -Wunused-but-set-variable dnl
-            -Warray-bounds dnl
-            -Wreturn-type dnl
-            dnl -Wswitch-enum dnl
-            dnl -Wswitch-default dnl
-            -Wno-inline dnl
-            -Wduplicated-cond dnl
-            -Wduplicated-branches dnl
+            -Wno-inline dnl # lots of warnings with GCC on Linux
             -Wlogical-op dnl
-            -Wrestrict dnl
-            dnl -Wnull-dereference dnl
-            -Wdouble-promotion dnl
-            -Wno-cast-function-type dnl
+            dnl -Wmissing-declarations dnl
+            -Wmissing-field-initializers dnl
+            -Wmissing-format-attribute dnl
+            -Wmissing-include-dirs dnl
+            dnl -Wmissing-noreturn dnl
             -Wmissing-variable-declarations dnl
+            dnl -Wnull-dereference dnl
+            -Wpacked dnl
+            -Wpointer-arith dnl
+            -Wredundant-decls dnl
+            -Wredundant-decls dnl
+            -Wrestrict dnl
+            -Wreturn-type dnl
+            -Wshadow dnl
+            -Wno-sign-compare dnl # disabled: too many places trigger this
+            -Wstrict-aliasing dnl
+            dnl -Wswitch-default dnl
+            dnl -Wswitch-enum dnl
+            -Wundef dnl
+            -Wunused-but-set-variable dnl
+            -Wno-unused-parameter dnl # disabled: too many places trigger this
+            -Wwrite-strings dnl
         ],ax_warn_cflags_variable,[$ax_compiler_flags_test])
 
         # HACK: use the warning flags determined so far also for the C++ compiler.
@@ -125,14 +124,14 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
         # Test for warnings that only work in C++, not in C
         if test "$ax_compiler_cxx" = "no" ; then
             AX_APPEND_COMPILE_FLAGS([ dnl
-            -Wnested-externs dnl
-            dnl -Wmissing-prototypes dnl
-            dnl -Wstrict-prototypes dnl
             dnl -Wdeclaration-after-statement dnl
             -Wno-implicit-fallthrough dnl
             -Wimplicit-function-declaration dnl
-            -Wold-style-definition dnl
             -Wjump-misses-init dnl
+            dnl -Wmissing-prototypes dnl
+            -Wnested-externs dnl
+            -Wold-style-definition dnl
+            dnl -Wstrict-prototypes dnl
             ],ax_warn_cflags_variable,[$ax_compiler_flags_test])
         fi
 
