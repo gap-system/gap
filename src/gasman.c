@@ -1800,14 +1800,26 @@ static void GenStackFuncBags(void)
     top = (Bag*)((void*)&top);
     if ( StackBottomBags < top ) {
         for ( i = 0; i < sizeof(Bag*); i += StackAlignBags ) {
-            for ( p = (Bag*)((char*)StackBottomBags + i); p < top; p++ )
-                MarkBag( *p );
+            for (p = (Bag *)((char *)StackBottomBags + i); p < top; p++) {
+                Bag * pcpy = p;
+#if defined(GAP_MEMORY_CANARY)
+                // Need to mark this pointer as readable for valgrind
+                VALGRIND_MAKE_MEM_DEFINED(&pcpy, sizeof(pcpy));
+#endif
+                MarkBag(*pcpy);
+            }
         }
     }
     else {
         for ( i = 0; i < sizeof(Bag*); i += StackAlignBags ) {
-            for ( p = (Bag*)((char*)StackBottomBags - i); top < p; p-- )
-                MarkBag( *p );
+            for (p = (Bag *)((char *)StackBottomBags - i); top < p; p--) {
+                Bag * pcpy = p;
+#if defined(GAP_MEMORY_CANARY)
+                // Need to mark this pointer as readable for valgrind
+                VALGRIND_MAKE_MEM_DEFINED(&pcpy, sizeof(pcpy));
+#endif
+                MarkBag(*pcpy);
+            }
         }
     }
 
