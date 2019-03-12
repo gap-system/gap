@@ -327,18 +327,6 @@ Int IsStringConv(Obj obj);
 
 /****************************************************************************
 **
-*F  C_NEW_STRING( <string>, <len>, <cstring> )  . . . . . . create GAP string
-*/
-#define C_NEW_STRING(string,len,cstr) \
-  do { \
-    size_t tmp_len = (len); \
-    string = NEW_STRING( tmp_len ); \
-    memcpy( CHARS_STRING(string), (cstr), tmp_len ); \
-  } while ( 0 );
-
-
-/****************************************************************************
-**
 *F  MakeImmutableString( <str> ) . . . . . . make a string immutable in place
 */
 EXPORT_INLINE void MakeImmutableString(Obj str)
@@ -351,20 +339,39 @@ EXPORT_INLINE void MakeImmutableString(Obj str)
 // MakeString and MakeImmString are inlineable so 'strlen' can be optimised
 // away for constant strings.
 
-EXPORT_INLINE Obj MakeString(const Char * cstr)
+EXPORT_INLINE Obj MakeStringWithLen(const char * buf, size_t len)
 {
-    size_t len = strlen(cstr);
-    Obj    result = NEW_STRING(len);
-    memcpy(CHARS_STRING(result), cstr, len);
+    Obj result = NEW_STRING(len);
+    memcpy(CHARS_STRING(result), buf, len);
     return result;
 }
 
-EXPORT_INLINE Obj MakeImmString(const Char * cstr)
+EXPORT_INLINE Obj MakeString(const char * cstr)
+{
+    return MakeStringWithLen(cstr, strlen(cstr));
+}
+
+EXPORT_INLINE Obj MakeImmString(const char * cstr)
 {
     Obj result = MakeString(cstr);
     MakeImmutableString(result);
     return result;
 }
+
+EXPORT_INLINE Obj MakeImmStringWithLen(const char * buf, size_t len)
+{
+    Obj result = MakeStringWithLen(buf, len);
+    MakeImmutableString(result);
+    return result;
+}
+
+
+/****************************************************************************
+**
+*F  C_NEW_STRING( <string>, <len>, <cstring> )  . . . . . . create GAP string
+*/
+#define C_NEW_STRING(string,len,cstr) \
+    string = MakeStringWithLen( (cstr), (len) )
 
 
 /****************************************************************************
@@ -380,6 +387,7 @@ EXPORT_INLINE Obj MakeImmString(const Char * cstr)
 */
 #define C_NEW_STRING_DYN(string,cstr) \
   C_NEW_STRING(string, strlen(cstr), cstr)
+
 
 /****************************************************************************
 **
