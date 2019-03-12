@@ -1808,16 +1808,13 @@ void IntrFloatExpr(Obj string, Char * str)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
+    if (string == 0)
+        string = MakeString(str);
     if ( STATE(IntrCoding)    > 0 ) {
-        if (string)
-            CodeLongFloatExpr(string);
-        else
-            CodeFloatExpr( str );
+        CodeFloatExpr(string);
         return;
     }
 
-    if (string == 0)
-        string = MakeString(str);
     PushObj(ConvertFloatLiteralEager(string));
 }
 

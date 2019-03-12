@@ -1075,7 +1075,6 @@ static Obj MAX_FLOAT_LITERAL_CACHE_SIZE;
 static Obj EvalFloatExprLazy(Expr expr)
 {
     Obj                 string;         /* string value            */
-    UInt                 len;           /* size of expression              */
     UInt                 ix;
     Obj cache= 0;
     Obj fl;
@@ -1084,7 +1083,7 @@ static Obj EvalFloatExprLazy(Expr expr)
      * cache concurrently in that it won't crash, but may occasionally
      * result in evaluating a floating point literal twice.
      */
-    ix = READ_EXPR(expr, 1);
+    ix = READ_EXPR(expr, 0);
     if (ix && (!MAX_FLOAT_LITERAL_CACHE_SIZE || 
                MAX_FLOAT_LITERAL_CACHE_SIZE == INTOBJ_INT(0) ||
                ix <= INT_INTOBJ(MAX_FLOAT_LITERAL_CACHE_SIZE))) {
@@ -1094,10 +1093,7 @@ static Obj EvalFloatExprLazy(Expr expr)
       if (fl)
         return fl;
     }
-    len = READ_EXPR(expr, 0);
-    string = NEW_STRING(len);
-    memcpy(CHARS_STRING(string),
-           (const char *)CONST_ADDR_EXPR(expr) + 2 * sizeof(UInt), len);
+    string = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 1));
     fl = CALL_1ARGS(CONVERT_FLOAT_LITERAL, string);
     if (cache) {
       ASS_LIST(cache, ix, fl);
@@ -1116,7 +1112,7 @@ static Obj EvalFloatExprLazy(Expr expr)
 static Obj EvalFloatExprEager(Expr expr)
 {
     UInt ix = READ_EXPR(expr, 0);
-    return  GET_VALUE_FROM_CURRENT_BODY(ix);
+    return GET_VALUE_FROM_CURRENT_BODY(ix);
 }
 
 
@@ -1622,8 +1618,8 @@ static void PrintStringExpr(Expr expr)
 */
 static void PrintFloatExprLazy(Expr expr)
 {
-  // FIXME: this code is not GC safe
-  Pr("%s", (Int)(((const char *)CONST_ADDR_EXPR(expr) + 2*sizeof(UInt))), 0L);
+    UInt ix = READ_EXPR(expr, 1);
+    Pr("%g", (Int)GET_VALUE_FROM_CURRENT_BODY(ix), 0L);
 }
 
 /****************************************************************************
@@ -1634,14 +1630,12 @@ static void PrintFloatExprLazy(Expr expr)
 */
 static void PrintFloatExprEager(Expr expr)
 {
-  // FIXME: this code is not GC safe
-  Char mark;
-  Pr("%s", (Int)(((const char *)CONST_ADDR_EXPR(expr) + 3*sizeof(UInt))), 0L);
-  Pr("_",0L,0L);
-  mark = (Char)(((const UInt *)CONST_ADDR_EXPR(expr))[2]);
-  if (mark != '\0') {
-    Pr("%c",mark,0L);
-  }
+    UInt ix = READ_EXPR(expr, 1);
+    Char mark = (Char)READ_EXPR(expr, 2);
+    Pr("%g_", (Int)GET_VALUE_FROM_CURRENT_BODY(ix), 0L);
+    if (mark != '\0') {
+        Pr("%c", mark, 0);
+    }
 }
 
 
