@@ -812,7 +812,7 @@ static Obj FuncWindowCmd(Obj self, Obj args)
       for ( n=0,m=1;  '0' <= *inptr && *inptr <= '9';  inptr++,m *= 10,len-- )
         n += (*inptr-'0') * m;
       inptr++; /* ignore the '+' */
-      C_NEW_STRING(tmp, n, inptr);
+      tmp = MakeImmStringWithLen(inptr, n);
       inptr += n;
       len -= n+2;
       AssPlist( list, i, tmp );

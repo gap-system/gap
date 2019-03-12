@@ -1942,8 +1942,7 @@ void CodeFloatExpr(Char * str)
         mark = str[l - 1];
     }
     if (l1 < l) {
-        Obj s;
-        C_NEW_STRING(s, l1, str);
+        Obj s = MakeImmStringWithLen(str, l1);
         CodeEagerFloatExpr(s, mark);
     }
     else {

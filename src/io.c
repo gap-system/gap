@@ -1305,7 +1305,7 @@ static void PutLine2(TypOutputFile * output, const Char * line, UInt len)
     }
 
     /* Space for the null is allowed for in GAP strings */
-    C_NEW_STRING( str, len, line );
+    str = MakeImmStringWithLen(line, len);
 
     /* now delegate to library level */
     CALL_2ARGS( WriteAllFunc, output->stream, str );

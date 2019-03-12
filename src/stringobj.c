@@ -34,9 +34,9 @@
 **  This package consists of three parts.
 **  
 **  The first part consists of the functions 'NEW_STRING', 'CHARS_STRING' (or
-**  'CSTR_STRING'),  'GET_LEN_STRING', 'SET_LEN_STRING', 'C_NEW_STRING' and
-**  more. These and the functions below use the detailed knowledge about the
-**  representation of strings.
+**  'CSTR_STRING'),  'GET_LEN_STRING', 'SET_LEN_STRING', and more. These and
+**  the functions below use the detailed knowledge about the representation
+**  of strings.
 **  
 **  The second part  consists  of  the  functions  'LenString',  'ElmString',
 **  'ElmsStrings', 'AssString',  'AsssString', PlainString',

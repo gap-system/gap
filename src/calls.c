@@ -940,8 +940,7 @@ Obj ArgStringToList(const Char *nams_c) {
         while ( nams_c[l] != ' ' && nams_c[l] != ',' && nams_c[l] != '\0' ) {
             l++;
         }
-        C_NEW_STRING( tmp, l - k, nams_c + k );
-        MakeImmutableString( tmp );
+        tmp = MakeImmStringWithLen(nams_c + k, l - k);
         SET_ELM_PLIST( nams_o, i, tmp );
         CHANGED_BAG( nams_o );
         k = l;
