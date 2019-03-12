@@ -1849,7 +1849,7 @@ static UInt getNextFloatExprNumber(void)
     return next;
 }
 
-static UInt CheckForCommonFloat(Char * str)
+static UInt CheckForCommonFloat(const Char * str)
 {
     /* skip leading zeros */
     while (*str == '0')
@@ -1895,20 +1895,18 @@ static UInt CheckForCommonFloat(Char * str)
         return 0;
 }
 
-static void CodeLazyFloatExpr(Char * str, UInt len)
+static void CodeLazyFloatExpr(Obj str)
 {
     UInt ix;
 
     /* Lazy case, store the string for conversion at run time */
-    Expr fl = NewExpr(T_FLOAT_EXPR_LAZY, 2 * sizeof(UInt) + len + 1);
-    /* copy the string                                                     */
-    memcpy((char *)ADDR_EXPR(fl) + 2 * sizeof(UInt), str, len + 1);
+    Expr fl = NewExpr(T_FLOAT_EXPR_LAZY, 2 * sizeof(UInt));
 
-    WRITE_EXPR(fl, 0, len);
-    ix = CheckForCommonFloat(str);
+    ix = CheckForCommonFloat(CONST_CSTR_STRING(str));
     if (!ix)
         ix = getNextFloatExprNumber();
-    WRITE_EXPR(fl, 1, ix);
+    WRITE_EXPR(fl, 0, ix);
+    WRITE_EXPR(fl, 1, PushValue(str));
 
     /* push the expression */
     PushExpr(fl);
@@ -1917,49 +1915,19 @@ static void CodeLazyFloatExpr(Char * str, UInt len)
 static void CodeEagerFloatExpr(Obj str, Char mark)
 {
     /* Eager case, do the conversion now */
-    UInt l = GET_LEN_STRING(str);
-    Expr fl = NewExpr(T_FLOAT_EXPR_EAGER, sizeof(UInt) * 3 + l + 1);
+    Expr fl = NewExpr(T_FLOAT_EXPR_EAGER, sizeof(UInt) * 3);
     Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
-    UInt ix = PushValue(v);
-    WRITE_EXPR(fl, 0, ix);
-    WRITE_EXPR(fl, 1, l);
+    WRITE_EXPR(fl, 0, PushValue(v));
+    WRITE_EXPR(fl, 1, PushValue(str));  // store for printing
     WRITE_EXPR(fl, 2, (UInt)mark);
-    memcpy(ADDR_EXPR(fl) + 3, CONST_CSTR_STRING(str), l + 1);
     PushExpr(fl);
 }
 
-void CodeFloatExpr(Char * str)
-{
-    UInt l = strlen(str);
-    UInt l1 = l;
-    Char mark = '\0'; /* initialize to please compilers */
-    if (str[l - 1] == '_') {
-        l1 = l - 1;
-        mark = '\0';
-    }
-    else if (str[l - 2] == '_') {
-        l1 = l - 2;
-        mark = str[l - 1];
-    }
-    if (l1 < l) {
-        Obj s = MakeImmStringWithLen(str, l1);
-        CodeEagerFloatExpr(s, mark);
-    }
-    else {
-        CodeLazyFloatExpr(str, l);
-    }
-}
-
-/****************************************************************************
-**
-*F  CodeLongFloatExpr( <str> ) . . . . . . code long literal float expression
-*/
-
-void CodeLongFloatExpr(Obj s)
+void CodeFloatExpr(Obj s)
 {
     Char * str = CSTR_STRING(s);
 
-    UInt l = GET_LEN_STRING(s);
+    const UInt l = GET_LEN_STRING(s);
     UInt l1 = l;
     Char mark = '\0'; /* initialize to please compilers */
     if (str[l - 1] == '_') {
@@ -1976,7 +1944,7 @@ void CodeLongFloatExpr(Obj s)
         CodeEagerFloatExpr(s, mark);
     }
     else {
-        CodeLazyFloatExpr(str, l);
+        CodeLazyFloatExpr(s);
     }
 }
 

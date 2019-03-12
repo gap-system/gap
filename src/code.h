@@ -1073,9 +1073,7 @@ void CodeStringExpr(Obj str);
 **
 *F  CodeFloatExpr(<str>) . . . . . . . . . .  code literal float expression
 */
-void CodeFloatExpr(Char * str);
-
-void CodeLongFloatExpr(Obj str);
+void CodeFloatExpr(Obj str);
 
 
 /****************************************************************************

@@ -297,13 +297,9 @@ static Obj SyntaxTreeRecExpr(Obj result, Expr expr)
 
 static Obj SyntaxTreeFloatLazy(Obj result, Expr expr)
 {
-    UInt len;
     Obj  string;
 
-    len = READ_EXPR(expr, 0);
-    string = NEW_STRING(len);
-    memcpy(CHARS_STRING(string),
-           (const char *)CONST_ADDR_EXPR(expr) + 2 * sizeof(UInt), len);
+    string = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 1));
     AssPRec(result, RNamName("value"), string);
     return result;
 }
