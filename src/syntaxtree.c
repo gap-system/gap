@@ -65,6 +65,8 @@ static const CompilerT Compilers[];
     }
 #define ARG_(name) ARG(name, SyntaxTreeCompiler)
 
+#define ARGS(name) ARG(name, 0)
+
 static Obj SyntaxTreeFunc(Obj result, Obj func);
 
 static inline Obj NewSyntaxTreeNode(const char * type)
@@ -101,6 +103,11 @@ static Obj SyntaxTreeArgcompInt(UInt i)
     return INTOBJ_INT(i);
 }
 
+static Obj SyntaxTreeRNam(Expr expr)
+{
+    return NAME_RNAM(expr);
+}
+
 static Obj SyntaxTreeRefLVar(Obj result, Expr expr)
 {
     return INTOBJ_INT(LVAR_REFLVAR(expr));
@@ -117,8 +124,32 @@ static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
     comp = Compilers[tnum];
 
     for (i = 0; i < comp.arity; i++) {
-        AssPRec(result, RNamName(comp.args[i].argname),
-                comp.args[i].argcomp(READ_EXPR(expr, i)));
+        UInt rnam = RNamName(comp.args[i].argname);
+        Obj compiled;
+
+        if (comp.args[i].argcomp) {
+            Expr subexpr = READ_EXPR(expr, i);
+            compiled = comp.args[i].argcomp(subexpr);
+        }
+        else {
+            // special case: the last argument may have zero as decompiler,
+            // meaning that all remaining slots of the statement should be
+            // decompiled into a single list
+            const UInt offset = comp.arity - 1;
+            GAP_ASSERT(i == offset);
+
+            // compile the complete rest into one statement
+            const UInt nr = SIZE_EXPR(expr) / sizeof(expr);
+            compiled = NEW_PLIST(T_PLIST, nr - offset);
+            for (; i < nr; i++) {
+                Expr subexpr = READ_EXPR(expr, i);
+                // handle 0 to properly deal with T_LIST_EXPR
+                Obj obj = subexpr ? SyntaxTreeCompiler(subexpr) : 0;
+                PushPlist(compiled, obj);
+            }
+        }
+
+        AssPRec(result, rnam, compiled);
     }
     return result;
 }
@@ -137,96 +168,11 @@ static Obj SyntaxTreeEvalCompiler(Obj result, Expr expr)
     return result;
 }
 
-
-static Obj SyntaxTreeFunccall(Obj result, Expr expr)
-{
-    Obj  func;
-    Obj  args, argi;
-    UInt narg, i;
-
-    func = SyntaxTreeCompiler(FUNC_CALL(expr));
-    AssPRec(result, RNamName("funcref"), func);
-
-    /* compile the argument expressions */
-    narg = NARG_SIZE_CALL(SIZE_EXPR(expr));
-    args = NEW_PLIST(T_PLIST, narg);
-    SET_LEN_PLIST(args, narg);
-
-    for (i = 1; i <= narg; i++) {
-        argi = SyntaxTreeCompiler(ARGI_CALL(expr, i));
-        SET_ELM_PLIST(args, i, argi);
-        CHANGED_BAG(args);
-    }
-    AssPRec(result, RNamName("args"), args);
-    return result;
-}
-
 static Obj SyntaxTreeFuncExpr(Obj result, Expr expr)
 {
     Obj fexp = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 0));
 
     SyntaxTreeFunc(result, fexp);
-
-    return result;
-}
-
-static Obj SyntaxTreePermExpr(Obj result, Expr expr)
-{
-    Obj  cycles;
-    Obj  cycle;
-    Obj  val;
-    Expr cycleexpr;
-    Int  csize, n;
-    Int  i, j;
-
-    /* determine number of cycles */
-    n = SIZE_EXPR(expr) / sizeof(Expr);
-    cycles = NEW_PLIST(T_PLIST, n);
-    AssPRec(result, RNamName("cycles"), cycles);
-    SET_LEN_PLIST(cycles, n);
-
-    /* enter cycles */
-    for (i = 1; i <= n; i++) {
-        cycleexpr = READ_EXPR(expr, i - 1);
-        csize = SIZE_EXPR(cycleexpr) / sizeof(Expr);
-        cycle = NEW_PLIST(T_PLIST, csize);
-        SET_LEN_PLIST(cycle, csize);
-        SET_ELM_PLIST(cycles, i, cycle);
-        CHANGED_BAG(cycles);
-
-        /* entries of the cycle */
-        for (j = 1; j <= csize; j++) {
-            val = SyntaxTreeCompiler(READ_EXPR(cycleexpr, j - 1));
-            SET_ELM_PLIST(cycle, j, val);
-            CHANGED_BAG(cycle);
-        }
-    }
-    return result;
-}
-
-static Obj SyntaxTreeListExpr(Obj result, Expr expr)
-{
-    Obj list;
-    Int len;
-    Int i;
-
-    len = SIZE_EXPR(expr) / sizeof(Expr);
-
-    list = NEW_PLIST(T_PLIST, len);
-    SET_LEN_PLIST(list, len);
-
-    for (i = 1; i <= len; i++) {
-        if (READ_EXPR(expr, i - 1) == 0) {
-            continue;
-        }
-        else {
-            SET_ELM_PLIST(list, i,
-                          SyntaxTreeCompiler(READ_EXPR(expr, i - 1)));
-            CHANGED_BAG(list);
-        }
-    }
-
-    AssPRec(result, RNamName("list"), list);
 
     return result;
 }
@@ -275,8 +221,7 @@ static Obj SyntaxTreeRecExpr(Obj result, Expr expr)
         GAP_ASSERT(tmp != 0);
 
         subrec = NEW_PREC(2);
-        SET_ELM_PLIST(list, i, subrec);
-        CHANGED_BAG(list);
+        PushPlist(list, subrec);
 
         if (IS_INTEXPR(tmp)) {
             key = NAME_RNAM((UInt)INT_INTEXPR(tmp));
@@ -308,32 +253,6 @@ static Obj SyntaxTreeFloatLazy(Obj result, Expr expr)
     return result;
 }
 
-static Obj SyntaxTreeRNam(Expr expr)
-{
-    return NAME_RNAM(expr);
-}
-
-static Obj SyntaxTreeSeqStat(Obj result, Stat stat)
-{
-    Obj  list;
-    UInt nr;
-    UInt i;
-
-    /* get the number of statements */
-    nr = SIZE_STAT(stat) / sizeof(Stat);
-    list = NEW_PLIST(T_PLIST, nr);
-    SET_LEN_PLIST(list, nr);
-
-    /* compile the statements */
-    for (i = 1; i <= nr; i++) {
-        SET_ELM_PLIST(list, i, SyntaxTreeCompiler(READ_STAT(stat, i - 1)));
-        CHANGED_BAG(list);
-    }
-    AssPRec(result, RNamName("statements"), list);
-
-    return result;
-}
-
 static Obj SyntaxTreeIf(Obj result, Stat stat)
 {
     Obj cond;
@@ -349,9 +268,6 @@ static Obj SyntaxTreeIf(Obj result, Stat stat)
 
     AssPRec(result, RNamName("branches"), branches);
 
-    cond = SyntaxTreeCompiler(READ_STAT(stat, 0));
-    then = SyntaxTreeCompiler(READ_STAT(stat, 1));
-
     for (i = 0; i < nr; i++) {
         cond = SyntaxTreeCompiler(READ_STAT(stat, 2 * i));
         then = SyntaxTreeCompiler(READ_STAT(stat, 2 * i + 1));
@@ -360,125 +276,7 @@ static Obj SyntaxTreeIf(Obj result, Stat stat)
         AssPRec(pair, RNamName("condition"), cond);
         AssPRec(pair, RNamName("body"), then);
 
-        SET_ELM_PLIST(branches, i + 1, pair);
-        CHANGED_BAG(branches);
-    }
-    return result;
-}
-
-static Obj SyntaxTreeFor(Obj result, Stat stat)
-{
-    Obj  body;
-    UInt i, nr;
-
-    AssPRec(result, RNamName("variable"),
-            SyntaxTreeCompiler(READ_STAT(stat, 0)));
-    AssPRec(result, RNamName("collection"),
-            SyntaxTreeCompiler(READ_STAT(stat, 1)));
-
-    nr = SIZE_STAT(stat) / sizeof(Stat) - 2;
-    body = NEW_PLIST(T_PLIST, nr);
-    SET_LEN_PLIST(body, nr);
-    AssPRec(result, RNamName("body"), body);
-
-    for (i = 2; i < 2 + nr; i++) {
-        SET_ELM_PLIST(body, i - 1, SyntaxTreeCompiler(READ_STAT(stat, i)));
-        CHANGED_BAG(body);
-    }
-
-    return result;
-}
-
-static Obj SyntaxTreeWhile(Obj result, Stat stat)
-{
-    Obj  condition;
-    Obj  body;
-    UInt nr, i;
-
-    condition = SyntaxTreeCompiler(READ_STAT(stat, 0));
-    AssPRec(result, RNamName("condition"), condition);
-
-    nr = SIZE_STAT(stat) / sizeof(Stat) - 1;
-    body = NEW_PLIST(T_PLIST, nr);
-    SET_LEN_PLIST(body, nr);
-    AssPRec(result, RNamName("body"), body);
-
-    for (i = 1; i < 1 + nr; i++) {
-        SET_ELM_PLIST(body, i, SyntaxTreeCompiler(READ_STAT(stat, i)));
-        CHANGED_BAG(body);
-    }
-
-    return result;
-}
-
-static Obj SyntaxTreeRepeat(Obj result, Stat stat)
-{
-    Obj  cond;
-    Obj  body;
-    UInt i, nr;
-
-    cond = SyntaxTreeCompiler(READ_STAT(stat, 0));
-    AssPRec(result, RNamName("condition"), cond);
-
-    nr = SIZE_STAT(stat) / sizeof(Stat) - 1;
-    body = NEW_PLIST(T_PLIST, nr);
-    SET_LEN_PLIST(body, nr);
-    AssPRec(result, RNamName("body"), body);
-
-    for (i = 1; i < 1 + nr; i++) {
-        SET_ELM_PLIST(body, i, SyntaxTreeCompiler(READ_STAT(stat, i)));
-        CHANGED_BAG(body);
-    }
-
-    return result;
-}
-
-static Obj SyntaxTreeInfo(Obj result, Stat stat)
-{
-    Obj  sel;
-    Obj  lev;
-    Obj  lst;
-    Obj  tmp;
-    UInt narg, i;
-
-    sel = SyntaxTreeCompiler(ARGI_INFO(stat, 1));
-    lev = SyntaxTreeCompiler(ARGI_INFO(stat, 2));
-
-    AssPRec(result, RNamName("sel"), sel);
-    AssPRec(result, RNamName("lev"), lev);
-
-    narg = NARG_SIZE_INFO(SIZE_STAT(stat)) - 2;
-    lst = NEW_PLIST(T_PLIST, narg);
-    SET_LEN_PLIST(lst, narg);
-
-    for (i = 1; i <= narg; i++) {
-        tmp = SyntaxTreeCompiler(ARGI_INFO(stat, i + 2));
-        SET_ELM_PLIST(lst, i, tmp);
-        CHANGED_BAG(lst);
-    }
-    AssPRec(result, RNamName("args"), lst);
-
-    return result;
-}
-
-static Obj SyntaxTreeElmList(Obj result, Stat stat)
-{
-    Obj list, refs;
-    Int nr;
-    Int i;
-
-    list = SyntaxTreeCompiler(READ_STAT(stat, 0));
-    AssPRec(result, RNamName("list"), list);
-
-    nr = SIZE_STAT(stat) / sizeof(Stat) - 1;
-
-    refs = NEW_PLIST(T_PLIST, nr);
-    SET_LEN_PLIST(refs, nr);
-    AssPRec(result, RNamName("refs"), refs);
-
-    for (i = 1; i < 1 + nr; i++) {
-        SET_ELM_PLIST(refs, i, SyntaxTreeCompiler(READ_STAT(stat, i)));
-        CHANGED_BAG(refs);
+        PushPlist(branches, pair);
     }
     return result;
 }
@@ -548,14 +346,14 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
 }
 
 static const CompilerT Compilers[] = {
-    COMPILER(T_PROCCALL_0ARGS, SyntaxTreeFunccall),
-    COMPILER(T_PROCCALL_1ARGS, SyntaxTreeFunccall),
-    COMPILER(T_PROCCALL_2ARGS, SyntaxTreeFunccall),
-    COMPILER(T_PROCCALL_3ARGS, SyntaxTreeFunccall),
-    COMPILER(T_PROCCALL_4ARGS, SyntaxTreeFunccall),
-    COMPILER(T_PROCCALL_5ARGS, SyntaxTreeFunccall),
-    COMPILER(T_PROCCALL_6ARGS, SyntaxTreeFunccall),
-    COMPILER(T_PROCCALL_XARGS, SyntaxTreeFunccall),
+    COMPILER_(T_PROCCALL_0ARGS, ARG_("funcref"), ARGS("args")),
+    COMPILER_(T_PROCCALL_1ARGS, ARG_("funcref"), ARGS("args")),
+    COMPILER_(T_PROCCALL_2ARGS, ARG_("funcref"), ARGS("args")),
+    COMPILER_(T_PROCCALL_3ARGS, ARG_("funcref"), ARGS("args")),
+    COMPILER_(T_PROCCALL_4ARGS, ARG_("funcref"), ARGS("args")),
+    COMPILER_(T_PROCCALL_5ARGS, ARG_("funcref"), ARGS("args")),
+    COMPILER_(T_PROCCALL_6ARGS, ARG_("funcref"), ARGS("args")),
+    COMPILER_(T_PROCCALL_XARGS, ARG_("funcref"), ARGS("args")),
 
     COMPILER_(T_PROCCALL_OPTS,
               ARG_("opts"),
@@ -563,34 +361,34 @@ static const CompilerT Compilers[] = {
 
     COMPILER_(T_EMPTY),
 
-    COMPILER(T_SEQ_STAT, SyntaxTreeSeqStat),
-    COMPILER(T_SEQ_STAT2, SyntaxTreeSeqStat),
-    COMPILER(T_SEQ_STAT3, SyntaxTreeSeqStat),
-    COMPILER(T_SEQ_STAT4, SyntaxTreeSeqStat),
-    COMPILER(T_SEQ_STAT5, SyntaxTreeSeqStat),
-    COMPILER(T_SEQ_STAT6, SyntaxTreeSeqStat),
-    COMPILER(T_SEQ_STAT7, SyntaxTreeSeqStat),
+    COMPILER_(T_SEQ_STAT,  ARGS("statements")),
+    COMPILER_(T_SEQ_STAT2, ARGS("statements")),
+    COMPILER_(T_SEQ_STAT3, ARGS("statements")),
+    COMPILER_(T_SEQ_STAT4, ARGS("statements")),
+    COMPILER_(T_SEQ_STAT5, ARGS("statements")),
+    COMPILER_(T_SEQ_STAT6, ARGS("statements")),
+    COMPILER_(T_SEQ_STAT7, ARGS("statements")),
 
     COMPILER(T_IF, SyntaxTreeIf),
     COMPILER(T_IF_ELSE, SyntaxTreeIf),
     COMPILER(T_IF_ELIF, SyntaxTreeIf),
     COMPILER(T_IF_ELIF_ELSE, SyntaxTreeIf),
 
-    COMPILER(T_FOR, SyntaxTreeFor),
-    COMPILER(T_FOR2, SyntaxTreeFor),
-    COMPILER(T_FOR3, SyntaxTreeFor),
+    COMPILER_(T_FOR, ARG_("variable"), ARG_("collection"), ARGS("body")),
+    COMPILER_(T_FOR2, ARG_("variable"), ARG_("collection"), ARGS("body")),
+    COMPILER_(T_FOR3, ARG_("variable"), ARG_("collection"), ARGS("body")),
 
-    COMPILER(T_FOR_RANGE, SyntaxTreeFor),
-    COMPILER(T_FOR_RANGE2, SyntaxTreeFor),
-    COMPILER(T_FOR_RANGE3, SyntaxTreeFor),
+    COMPILER_(T_FOR_RANGE, ARG_("variable"), ARG_("collection"), ARGS("body")),
+    COMPILER_(T_FOR_RANGE2, ARG_("variable"), ARG_("collection"), ARGS("body")),
+    COMPILER_(T_FOR_RANGE3, ARG_("variable"), ARG_("collection"), ARGS("body")),
 
-    COMPILER(T_WHILE, SyntaxTreeWhile),
-    COMPILER(T_WHILE2, SyntaxTreeWhile),
-    COMPILER(T_WHILE3, SyntaxTreeWhile),
+    COMPILER_(T_WHILE, ARG_("condition"), ARGS("body")),
+    COMPILER_(T_WHILE2, ARG_("condition"), ARGS("body")),
+    COMPILER_(T_WHILE3, ARG_("condition"), ARGS("body")),
 
-    COMPILER(T_REPEAT, SyntaxTreeRepeat),
-    COMPILER(T_REPEAT2, SyntaxTreeRepeat),
-    COMPILER(T_REPEAT3, SyntaxTreeRepeat),
+    COMPILER_(T_REPEAT, ARG_("condition"), ARGS("body")),
+    COMPILER_(T_REPEAT2, ARG_("condition"), ARGS("body")),
+    COMPILER_(T_REPEAT3, ARG_("condition"), ARGS("body")),
 
 #ifdef HPCGAP
     COMPILER_(T_ATOMIC),
@@ -643,20 +441,20 @@ static const CompilerT Compilers[] = {
     COMPILER_(T_UNB_COMOBJ_NAME, ARG_("comobj"), ARG("rnam", SyntaxTreeRNam)),
     COMPILER_(T_UNB_COMOBJ_EXPR, ARG_("comobj"), ARG_("expression")),
 
-    COMPILER(T_INFO, SyntaxTreeInfo),
+    COMPILER_(T_INFO, ARG_("sel"), ARG_("lev"), ARGS("args")),
     COMPILER_(T_ASSERT_2ARGS, ARG_("level"), ARG_("condition")),
     COMPILER_(
         T_ASSERT_3ARGS, ARG_("level"), ARG_("condition"), ARG_("message")),
 
     /* Statements */
-    COMPILER(T_FUNCCALL_0ARGS, SyntaxTreeFunccall),
-    COMPILER(T_FUNCCALL_1ARGS, SyntaxTreeFunccall),
-    COMPILER(T_FUNCCALL_2ARGS, SyntaxTreeFunccall),
-    COMPILER(T_FUNCCALL_3ARGS, SyntaxTreeFunccall),
-    COMPILER(T_FUNCCALL_4ARGS, SyntaxTreeFunccall),
-    COMPILER(T_FUNCCALL_5ARGS, SyntaxTreeFunccall),
-    COMPILER(T_FUNCCALL_6ARGS, SyntaxTreeFunccall),
-    COMPILER(T_FUNCCALL_XARGS, SyntaxTreeFunccall),
+    COMPILER_(T_FUNCCALL_0ARGS, ARG_("funcref"), ARGS("args")),
+    COMPILER_(T_FUNCCALL_1ARGS, ARG_("funcref"), ARGS("args")),
+    COMPILER_(T_FUNCCALL_2ARGS, ARG_("funcref"), ARGS("args")),
+    COMPILER_(T_FUNCCALL_3ARGS, ARG_("funcref"), ARGS("args")),
+    COMPILER_(T_FUNCCALL_4ARGS, ARG_("funcref"), ARGS("args")),
+    COMPILER_(T_FUNCCALL_5ARGS, ARG_("funcref"), ARGS("args")),
+    COMPILER_(T_FUNCCALL_6ARGS, ARG_("funcref"), ARGS("args")),
+    COMPILER_(T_FUNCCALL_XARGS, ARG_("funcref"), ARGS("args")),
 
     COMPILER(T_FUNC_EXPR, SyntaxTreeFuncExpr),
 
@@ -687,10 +485,10 @@ static const CompilerT Compilers[] = {
     COMPILER_(T_FALSE_EXPR),
     COMPILER_(T_TILDE_EXPR),
     COMPILER(T_CHAR_EXPR, SyntaxTreeEvalCompiler, ARG_("value")),
-    COMPILER(T_PERM_EXPR, SyntaxTreePermExpr),
-    COMPILER_(T_PERM_CYCLE),
-    COMPILER(T_LIST_EXPR, SyntaxTreeListExpr),
-    COMPILER(T_LIST_TILDE_EXPR, SyntaxTreeListExpr),
+    COMPILER_(T_PERM_EXPR, ARGS("cycles")),
+    COMPILER_(T_PERM_CYCLE, ARGS("points")),
+    COMPILER_(T_LIST_EXPR, ARGS("list")),
+    COMPILER_(T_LIST_TILDE_EXPR, ARGS("list")),
     COMPILER(T_RANGE_EXPR, SyntaxTreeRangeExpr),
     COMPILER(T_STRING_EXPR, SyntaxTreeEvalCompiler, ARG_("string")),
     COMPILER(T_REC_EXPR, SyntaxTreeRecExpr),
@@ -713,7 +511,7 @@ static const CompilerT Compilers[] = {
 
     // TODO: can this be unified?
     COMPILER_(T_ELM_LIST, ARG_("list"), ARG_("pos")),
-    COMPILER(T_ELM2_LIST, SyntaxTreeElmList),
+    COMPILER_(T_ELM2_LIST, ARG_("list"), ARG_("pos1"), ARG_("pos2")),
     COMPILER_(T_ELMS_LIST, ARG_("list"), ARG_("poss")),
     COMPILER_(T_ELM_LIST_LEV, ARG_("lists"), ARG_("pos"), ARG_("level")),
     COMPILER_(T_ELMS_LIST_LEV, ARG_("lists"), ARG_("poss"), ARG_("level")),
