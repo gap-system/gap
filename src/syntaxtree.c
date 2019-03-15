@@ -481,15 +481,11 @@ static Obj SyntaxTreeElmList(Obj result, Stat stat)
 
 static Obj SyntaxTreeFunc(Obj result, Obj func)
 {
-    Obj str;
     Obj stats;
-    Obj argnams;
-    Obj locnams;
 
     Bag oldFrame;
     Int narg;
     Int nloc;
-    Int i;
 
     if (NAME_FUNC(func)) {
         AssPRec(result, RNamName("name"), NAME_FUNC(func));
@@ -504,34 +500,11 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
         AssPRec(result, RNamName("variadic"), False);
     }
     AssPRec(result, RNamName("narg"), INTOBJ_INT(narg));
-
-    /* names of arguments */
-    argnams = NEW_PLIST(T_PLIST, narg);
-    SET_LEN_PLIST(argnams, narg);
-    AssPRec(result, RNamName("argnams"), argnams);
-    for (i = 1; i <= narg; i++) {
-        /* TODO: Check if it ever happens that a plain gap
-           function has unnamed arguments/local variables */
-        if (NAMI_FUNC(func, i) != 0) {
-            str = CopyToStringRep(NAMI_FUNC(func, i));
-            SET_ELM_PLIST(argnams, i, str);
-            CHANGED_BAG(argnams);
-        }
-    }
-
-    /* names of local variables */
     nloc = NLOC_FUNC(func);
     AssPRec(result, RNamName("nloc"), INTOBJ_INT(nloc));
-    locnams = NEW_PLIST(T_PLIST, nloc);
-    SET_LEN_PLIST(locnams, nloc);
-    AssPRec(result, RNamName("locnams"), locnams);
-    for (i = 1; i <= nloc; i++) {
-        if (NAMI_FUNC(func, narg + i) != 0) {
-            str = CopyToStringRep(NAMI_FUNC(func, narg + i));
-            SET_ELM_PLIST(locnams, i, str);
-            CHANGED_BAG(locnams);
-        }
-    }
+
+    /* names of arguments and locals*/
+    AssPRec(result, RNamName("nams"), NAMS_FUNC(func));
 
     /* switch to this function (so that 'READ_STAT' and 'READ_EXPR' work) */
     SWITCH_TO_NEW_LVARS(func, narg, nloc, oldFrame);
