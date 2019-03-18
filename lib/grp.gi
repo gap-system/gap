@@ -1091,7 +1091,7 @@ InstallOtherMethod( ElementaryAbelianSeries,
 
     # if <G> is a list compute an elementary series through a given normal one
     if not IsSolvableGroup( G[1] )  then
-      Error( "<G> must be solvable" );
+      return fail;
     fi;
     for i  in [ 1 .. Length(G)-1 ]  do
       if not IsNormal(G[1],G[i+1]) or not IsSubgroup(G[i],G[i+1])  then
@@ -1115,7 +1115,7 @@ InstallMethod( ElementaryAbelianSeries,
 
     # compute an elementary series if it is not known
     if not IsSolvableGroup( G )  then
-      Error( "<G> must be solvable" );
+      return fail;
     fi;
 
     # there is a method for pcgs computable groups we should use if
