@@ -266,7 +266,7 @@ rec(
                       type := "T_REFLVAR" ),
                   type := "T_PROCCALL_1ARGS" ),
               opts := rec(
-                  keyvalue := [ , rec(
+                  keyvalue := [ rec(
                           key := "opt",
                           value := rec(
                               type := "T_TRUE_EXPR" ) ) ],
@@ -293,7 +293,7 @@ rec(
                       type := "T_REFLVAR" ),
                   type := "T_PROCCALL_1ARGS" ),
               opts := rec(
-                  keyvalue := [ , rec(
+                  keyvalue := [ rec(
                           key := "opt",
                           value := rec(
                               type := "T_INTEXPR",
@@ -341,7 +341,7 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              branches := [ , rec(
+              branches := [ rec(
                       body := rec(
                           statements := [ rec(
                                   type := "T_RETURN_VOID" ), rec(
@@ -480,7 +480,7 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              branches := [ , rec(
+              branches := [ rec(
                       body := rec(
                           type := "T_EMPTY" ),
                       condition := rec(
@@ -499,7 +499,7 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              branches := [ ,, rec(
+              branches := [ rec(
                       body := rec(
                           type := "T_EMPTY" ),
                       condition := rec(
@@ -522,7 +522,7 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              branches := [ ,, rec(
+              branches := [ rec(
                       body := rec(
                           type := "T_EMPTY" ),
                       condition := rec(
@@ -546,7 +546,7 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              branches := [ ,,, rec(
+              branches := [ rec(
                       body := rec(
                           type := "T_EMPTY" ),
                       condition := rec(
@@ -574,7 +574,7 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              branches := [ ,,,, rec(
+              branches := [ rec(
                       body := rec(
                           type := "T_EMPTY" ),
                       condition := rec(
@@ -2114,7 +2114,7 @@ rec(
                           type := "T_REFLVAR" ),
                       type := "T_FUNCCALL_1ARGS" ),
                   opts := rec(
-                      keyvalue := [ , rec(
+                      keyvalue := [ rec(
                               key := "opt",
                               value := rec(
                                   type := "T_TRUE_EXPR" ) ) ],
@@ -2142,7 +2142,7 @@ rec(
                           type := "T_REFLVAR" ),
                       type := "T_FUNCCALL_1ARGS" ),
                   opts := rec(
-                      keyvalue := [ , rec(
+                      keyvalue := [ rec(
                               key := "opt",
                               value := rec(
                                   type := "T_INTEXPR",
@@ -2756,7 +2756,7 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  keyvalue := [ , rec(
+                  keyvalue := [ rec(
                           key := "abc",
                           value := rec(
                               type := "T_INTEXPR",
@@ -2775,7 +2775,7 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  keyvalue := [ , rec(
+                  keyvalue := [ rec(
                           key := rec(
                               lvar := 1,
                               type := "T_REFLVAR" ),
@@ -2796,7 +2796,7 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  keyvalue := [ , rec(
+                  keyvalue := [ rec(
                           key := rec(
                               type := "T_STRING_EXPR",
                               value := "abc" ),
@@ -2817,7 +2817,7 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  keyvalue := [ , rec(
+                  keyvalue := [ rec(
                           key := "1",
                           value := rec(
                               type := "T_INTEXPR",
