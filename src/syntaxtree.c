@@ -156,15 +156,7 @@ static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
 
 static Obj SyntaxTreeEvalCompiler(Obj result, Expr expr)
 {
-    UInt      tnum;
-    CompilerT comp;
-
-    // TODO: GAP_ASSERT tnum range
-    tnum = TNUM_EXPR(expr);
-    comp = Compilers[tnum];
-    GAP_ASSERT(comp.arity == 1);
-
-    AssPRec(result, RNamName(comp.args[0].argname), EVAL_EXPR(expr));
+    AssPRec(result, RNamName("value"), EVAL_EXPR(expr));
     return result;
 }
 
@@ -448,22 +440,22 @@ static const CompilerT Compilers[] = {
     COMPILER_(T_MOD, ARG_("left"), ARG_("right")),
     COMPILER_(T_POW, ARG_("left"), ARG_("right")),
 
-    COMPILER(T_INTEXPR, SyntaxTreeEvalCompiler, ARG_("value")),
-    COMPILER(T_INT_EXPR, SyntaxTreeEvalCompiler, ARG_("value")),
+    COMPILER(T_INTEXPR, SyntaxTreeEvalCompiler),
+    COMPILER(T_INT_EXPR, SyntaxTreeEvalCompiler),
     COMPILER_(T_TRUE_EXPR),
     COMPILER_(T_FALSE_EXPR),
     COMPILER_(T_TILDE_EXPR),
-    COMPILER(T_CHAR_EXPR, SyntaxTreeEvalCompiler, ARG_("value")),
+    COMPILER(T_CHAR_EXPR, SyntaxTreeEvalCompiler),
     COMPILER_(T_PERM_EXPR, ARGS("cycles")),
     COMPILER_(T_PERM_CYCLE, ARGS("points")),
     COMPILER_(T_LIST_EXPR, ARGS("list")),
     COMPILER_(T_LIST_TILDE_EXPR, ARGS("list")),
     COMPILER(T_RANGE_EXPR, SyntaxTreeRangeExpr),
-    COMPILER(T_STRING_EXPR, SyntaxTreeEvalCompiler, ARG_("string")),
+    COMPILER(T_STRING_EXPR, SyntaxTreeEvalCompiler),
     COMPILER(T_REC_EXPR, SyntaxTreeRecExpr),
     COMPILER_(T_REC_TILDE_EXPR),
 
-    COMPILER(T_FLOAT_EXPR_EAGER, SyntaxTreeEvalCompiler, ARG_("value")),
+    COMPILER(T_FLOAT_EXPR_EAGER, SyntaxTreeEvalCompiler),
     COMPILER(T_FLOAT_EXPR_LAZY, SyntaxTreeFloatLazy),
 
     // T_REFLVAR is encoded differently from all other
