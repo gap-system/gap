@@ -359,7 +359,8 @@ static const CompilerT Compilers[] = {
     COMPILER_(T_REPEAT3, ARG_("condition"), ARGS("body")),
 
 #ifdef HPCGAP
-    COMPILER_(T_ATOMIC),
+    COMPILER_(
+        T_ATOMIC, ARG_("body"), ARGS("locks")),    // TODO: better output
 #endif
 
     COMPILER_(T_BREAK),
