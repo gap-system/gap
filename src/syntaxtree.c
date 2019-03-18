@@ -99,9 +99,7 @@ static Obj SyntaxTreeCompiler(Expr expr)
 
     result = NewSyntaxTreeNode(comp.tnum);
 
-    comp.compile(result, expr);
-
-    return result;
+    return comp.compile(result, expr);
 }
 
 static Obj SyntaxTreeArgcompInt(UInt i)
