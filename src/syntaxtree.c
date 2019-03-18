@@ -371,8 +371,8 @@ static const CompilerT Compilers[] = {
     COMPILER_(T_ASS_HVAR, ARG("hvar", SyntaxTreeArgcompInt), ARG_("rhs")),
     COMPILER_(T_UNB_HVAR, ARG("hvar", SyntaxTreeArgcompInt)),
 
-    COMPILER_(T_ASS_GVAR, ARG("gvar", SyntaxTreeArgcompInt), ARG_("rhs")),
-    COMPILER_(T_UNB_GVAR, ARG("gvar", SyntaxTreeArgcompInt)),
+    COMPILER_(T_ASS_GVAR, ARG("gvar", NameGVar), ARG_("rhs")),
+    COMPILER_(T_UNB_GVAR, ARG("gvar", NameGVar)),
 
     COMPILER_(T_ASS_LIST, ARG_("list"), ARG_("pos"), ARG_("rhs")),
     COMPILER_(T_ASS2_LIST, ARG_("list"), ARG_("pos"), ARG_("rhs")),
@@ -472,8 +472,8 @@ static const CompilerT Compilers[] = {
     COMPILER_(T_REF_HVAR, ARG("hvar", SyntaxTreeArgcompInt)),
     COMPILER_(T_ISB_HVAR, ARG("hvar", SyntaxTreeArgcompInt)),
 
-    COMPILER_(T_REF_GVAR, ARG("gvar", SyntaxTreeArgcompInt)),
-    COMPILER_(T_ISB_GVAR, ARG("gvar", SyntaxTreeArgcompInt)),
+    COMPILER_(T_REF_GVAR, ARG("gvar", NameGVar)),
+    COMPILER_(T_ISB_GVAR, ARG("gvar", NameGVar)),
 
     // TODO: can this be unified?
     COMPILER_(T_ELM_LIST, ARG_("list"), ARG_("pos")),

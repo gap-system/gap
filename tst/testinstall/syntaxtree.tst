@@ -1238,15 +1238,14 @@ rec(
 true
 
 # T_ASS_GVAR
-# Note: this is a bit fragile, as the gvar ids can change
-gap> testit(function(x) REREADING := 1; end);
+gap> testit(function(x) testit := 1; end);
 rec(
   nams := [ "x" ],
   narg := 1,
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              gvar := 1,
+              gvar := "testit",
               rhs := rec(
                   type := "T_INTEXPR",
                   value := 1 ),
@@ -1258,15 +1257,14 @@ rec(
 true
 
 # T_UNB_GVAR
-# Note: this is a bit fragile, as the gvar ids can change
-gap> testit(function(x) Unbind(REREADING); end);
+gap> testit(function(x) Unbind(testit); end);
 rec(
   nams := [ "x" ],
   narg := 1,
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              gvar := 1,
+              gvar := "testit",
               type := "T_UNB_GVAR" ), rec(
               type := "T_RETURN_VOID" ) ],
       type := "T_SEQ_STAT2" ),
@@ -2970,8 +2968,7 @@ rec(
 true
 
 # T_REF_GVAR
-# Note: this is a bit fragile, as the gvar ids can change
-gap> testit(x -> REREADING);
+gap> testit(x -> testit);
 rec(
   nams := [ "x" ],
   narg := 1,
@@ -2979,7 +2976,7 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  gvar := 1,
+                  gvar := "testit",
                   type := "T_REF_GVAR" ),
               type := "T_RETURN_OBJ" ) ],
       type := "T_SEQ_STAT" ),
@@ -2988,8 +2985,7 @@ rec(
 true
 
 # T_ISB_GVAR
-# Note: this is a bit fragile, as the gvar ids can change
-gap> testit(x -> IsBound(REREADING));
+gap> testit(x -> IsBound(testit));
 rec(
   nams := [ "x" ],
   narg := 1,
@@ -2997,7 +2993,7 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  gvar := 1,
+                  gvar := "testit",
                   type := "T_ISB_GVAR" ),
               type := "T_RETURN_OBJ" ) ],
       type := "T_SEQ_STAT" ),
