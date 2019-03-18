@@ -211,7 +211,6 @@ static Obj SyntaxTreeRecExpr(Obj result, Expr expr)
 
     len = SIZE_EXPR(expr) / (2 * sizeof(Expr));
     list = NEW_PLIST(T_PLIST, len);
-    SET_LEN_PLIST(list, len);
 
     for (i = 1; i <= len; i++) {
         tmp = READ_EXPR(expr, 2 * i - 2);
@@ -257,7 +256,6 @@ static Obj SyntaxTreeIf(Obj result, Stat stat)
 
     nr = SIZE_STAT(stat) / (2 * sizeof(Stat));
     branches = NEW_PLIST(T_PLIST, nr);
-    SET_LEN_PLIST(branches, nr);
 
     AssPRec(result, RNamName("branches"), branches);
 
