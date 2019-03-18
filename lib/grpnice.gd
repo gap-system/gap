@@ -786,7 +786,12 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphism", function( oper, par )
         function( obj )
             local   nice,  list,  i;
             nice := NiceMonomorphism(obj);
-            list := ShallowCopy( oper( NiceObject(obj) ) );
+            list := oper( NiceObject(obj) );
+            if not IsList( list ) then
+              # The result may be 'fail'.
+              return list;
+            fi;
+            list:= ShallowCopy( list );
             for i  in [ 1 .. Length(list) ]  do
                 list[i] := GroupByNiceMonomorphism( nice, list[i] );
                 SetParent( list[i], obj );
