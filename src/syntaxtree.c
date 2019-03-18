@@ -114,7 +114,8 @@ static Obj SyntaxTreeRNam(Expr expr)
 
 static Obj SyntaxTreeRefLVar(Obj result, Expr expr)
 {
-    return INTOBJ_INT(LVAR_REFLVAR(expr));
+    AssPRec(result, RNamName("lvar"), INTOBJ_INT(LVAR_REFLVAR(expr)));
+    return result;
 }
 
 static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
