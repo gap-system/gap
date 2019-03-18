@@ -69,14 +69,18 @@ static const CompilerT Compilers[];
 
 #define ARGS(name) ARG(name, 0)
 
+
+static Obj typeStrings;
+
+
 static Obj SyntaxTreeFunc(Obj result, Obj func);
 
-static inline Obj NewSyntaxTreeNode(const char * type)
+static inline Obj NewSyntaxTreeNode(UInt1 tnum)
 {
     Obj result;
     Obj typestr;
 
-    typestr = MakeImmString(type);
+    typestr = ELM_PLIST(typeStrings, tnum + 1);
     result = NEW_PREC(2);
     AssPRec(result, RNamName("type"), typestr);
 
@@ -93,7 +97,7 @@ static Obj SyntaxTreeCompiler(Expr expr)
     tnum = TNUM_EXPR(expr);
     comp = Compilers[tnum];
 
-    result = NewSyntaxTreeNode(comp.name);
+    result = NewSyntaxTreeNode(comp.tnum);
 
     comp.compile(result, expr);
 
@@ -500,7 +504,7 @@ static Obj FuncSYNTAX_TREE(Obj self, Obj func)
         RequireArgument("SYNTAX_TREE", func, "must be a plain GAP function");
     }
 
-    result = NewSyntaxTreeNode("T_FUNC_EXPR");
+    result = NewSyntaxTreeNode(T_FUNC_EXPR);
     return SyntaxTreeFunc(result, func);
 }
 
@@ -512,6 +516,8 @@ static Int InitKernel(StructInitInfo * module)
     /* init filters and functions */
     InitHdlrFuncsFromTable(GVarFuncs);
 
+    InitGlobalBag(&typeStrings, "typeStrings");
+
     return 0;
 }
 
@@ -519,6 +525,13 @@ static Int InitLibrary(StructInitInfo * module)
 {
     /* init filters and functions */
     InitGVarFuncsFromTable(GVarFuncs);
+
+    typeStrings = NEW_PLIST(T_PLIST, ARRAY_SIZE(Compilers));
+    for (UInt tnum = 0; tnum < ARRAY_SIZE(Compilers); tnum++) {
+        const char * str = Compilers[tnum].name;
+        if (str)
+            ASS_LIST(typeStrings, tnum + 1, MakeImmString(str));
+    }
 
     /* return success */
     return 0;
