@@ -40,10 +40,10 @@ typedef struct {
 } ArgT;
 
 typedef struct {
-    UInt         tnum;
+    UInt1        tnum;
     CompileFuncT compile;
     const Char * name;
-    UInt         arity;
+    UInt1        arity;
     ArgT         args[4]; /* The maximum compiler arity is currently 4 */
 } CompilerT;
 
@@ -86,7 +86,7 @@ static inline Obj NewSyntaxTreeNode(const char * type)
 static Obj SyntaxTreeCompiler(Expr expr)
 {
     Obj       result;
-    UInt      tnum;
+    UInt1     tnum;
     CompilerT comp;
 
     // TODO: GAP_ASSERT
@@ -118,7 +118,7 @@ static Obj SyntaxTreeRefLVar(Obj result, Expr expr)
 static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
 {
     int       i;
-    UInt      tnum;
+    UInt1     tnum;
     CompilerT comp;
 
     // TODO: GAP_ASSERT tnum range
