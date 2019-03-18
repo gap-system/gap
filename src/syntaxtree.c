@@ -51,13 +51,15 @@ typedef struct {
 // assuming that the set of their respective ids are disjoint.
 static const CompilerT Compilers[];
 #define COMPILER_ARITY(...) (sizeof((ArgT[]){ __VA_ARGS__ }) / sizeof(ArgT))
-#define COMPILER(tnum, compiler, ...)                                        \
+#define COMPILER_GENERIC(tnum, compiler, ...)                                \
     [tnum] = {                                                               \
         tnum, compiler, #tnum, COMPILER_ARITY(__VA_ARGS__), { __VA_ARGS__ }  \
     }
 
+#define COMPILER(tnum, compiler) COMPILER_GENERIC(tnum, compiler)
+
 #define COMPILER_(tnum, ...)                                                 \
-    COMPILER(tnum, SyntaxTreeDefaultCompiler, __VA_ARGS__)
+    COMPILER_GENERIC(tnum, SyntaxTreeDefaultCompiler, __VA_ARGS__)
 
 #define ARG(name, func)                                                      \
     {                                                                        \
