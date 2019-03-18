@@ -287,8 +287,6 @@ static Obj FuncRNamObj(Obj self, Obj obj)
 */
 static Obj FuncNameRNam(Obj self, Obj rnam)
 {
-    Obj                 name;
-    Obj                 oname;
     const UInt          countRNam = LEN_PLIST(NamesRNam);
     while ( ! IS_INTOBJ(rnam)
          || INT_INTOBJ(rnam) <= 0
@@ -298,9 +296,7 @@ static Obj FuncNameRNam(Obj self, Obj rnam)
             (Int)TNAM_OBJ(rnam), 0L,
             "you can replace <rnam> via 'return <rnam>;'" );
     }
-    oname = NAME_RNAM( INT_INTOBJ(rnam) );
-    name = CopyToStringRep(oname);
-    return name;
+    return NAME_RNAM( INT_INTOBJ(rnam) );
 }
 
 
@@ -515,18 +511,14 @@ UInt            completion_rnam (
 
 static Obj FuncALL_RNAMES(Obj self)
 {
-    Obj                 copy, s;
+    Obj                 copy;
     UInt                i;
-    Obj                 name;
     const UInt          countRNam = LEN_PLIST(NamesRNam);
 
     copy = NEW_PLIST_IMM( T_PLIST, countRNam );
     for ( i = 1;  i <= countRNam;  i++ ) {
-        name = NAME_RNAM( i );
-        s = CopyToStringRep(name);
-        SET_ELM_PLIST( copy, i, s );
+        PushPlist( copy, NAME_RNAM( i ) );
     }
-    SET_LEN_PLIST( copy, countRNam );
     return copy;
 }
 

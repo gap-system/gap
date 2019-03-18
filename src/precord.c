@@ -543,23 +543,16 @@ static Obj InnerRecNames(Obj rec)
 {
     Obj                 list;           /* list of record names, result    */
     UInt                rnam;           /* one name of record              */
-    Obj                 string;         /* one name as string              */
     UInt                i;
-    Obj                 name;
     SortPRecRNam(rec,0);   /* Make sure rnams are sorted and thus negative */
 
     /* allocate the list                                                   */
     list = NEW_PLIST( T_PLIST, LEN_PREC(rec) );
-    SET_LEN_PLIST( list, LEN_PREC(rec) );
 
     /* loop over the components                                            */
     for ( i = 1; i <= LEN_PREC(rec); i++ ) {
         rnam = -GET_RNAM_PREC(rec, i);
-        /* could have been moved by garbage collection */
-        name = NAME_RNAM( rnam );
-        string = CopyToStringRep( name );
-        SET_ELM_PLIST( list, i, string );
-        CHANGED_BAG( list );
+        PushPlist( list, NAME_RNAM( rnam ) );
     }
 
     /* return the list                                                     */
