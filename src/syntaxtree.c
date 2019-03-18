@@ -28,8 +28,8 @@
 #include "system.h"
 #include "vars.h"
 
-#include <stdarg.h>
 #include <ctype.h>
+#include <stdarg.h>
 
 typedef Obj (*CompileFuncT)(Obj node, Expr expr);
 typedef Obj (*CompileArgT)(Expr expr);
@@ -125,7 +125,7 @@ static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
 
     for (i = 0; i < comp.arity; i++) {
         UInt rnam = RNamName(comp.args[i].argname);
-        Obj compiled;
+        Obj  compiled;
 
         if (comp.args[i].argcomp) {
             Expr subexpr = READ_EXPR(expr, i);
@@ -234,7 +234,7 @@ static Obj SyntaxTreeRecExpr(Obj result, Expr expr)
 
 static Obj SyntaxTreeFloatLazy(Obj result, Expr expr)
 {
-    Obj  string;
+    Obj string;
 
     string = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 1));
     AssPRec(result, RNamName("value"), string);
@@ -316,13 +316,11 @@ static const CompilerT Compilers[] = {
     COMPILER_(T_PROCCALL_6ARGS, ARG_("funcref"), ARGS("args")),
     COMPILER_(T_PROCCALL_XARGS, ARG_("funcref"), ARGS("args")),
 
-    COMPILER_(T_PROCCALL_OPTS,
-              ARG_("opts"),
-              ARG_("call")),
+    COMPILER_(T_PROCCALL_OPTS, ARG_("opts"), ARG_("call")),
 
     COMPILER_(T_EMPTY),
 
-    COMPILER_(T_SEQ_STAT,  ARGS("statements")),
+    COMPILER_(T_SEQ_STAT, ARGS("statements")),
     COMPILER_(T_SEQ_STAT2, ARGS("statements")),
     COMPILER_(T_SEQ_STAT3, ARGS("statements")),
     COMPILER_(T_SEQ_STAT4, ARGS("statements")),
@@ -339,9 +337,12 @@ static const CompilerT Compilers[] = {
     COMPILER_(T_FOR2, ARG_("variable"), ARG_("collection"), ARGS("body")),
     COMPILER_(T_FOR3, ARG_("variable"), ARG_("collection"), ARGS("body")),
 
-    COMPILER_(T_FOR_RANGE, ARG_("variable"), ARG_("collection"), ARGS("body")),
-    COMPILER_(T_FOR_RANGE2, ARG_("variable"), ARG_("collection"), ARGS("body")),
-    COMPILER_(T_FOR_RANGE3, ARG_("variable"), ARG_("collection"), ARGS("body")),
+    COMPILER_(
+        T_FOR_RANGE, ARG_("variable"), ARG_("collection"), ARGS("body")),
+    COMPILER_(
+        T_FOR_RANGE2, ARG_("variable"), ARG_("collection"), ARGS("body")),
+    COMPILER_(
+        T_FOR_RANGE3, ARG_("variable"), ARG_("collection"), ARGS("body")),
 
     COMPILER_(T_WHILE, ARG_("condition"), ARGS("body")),
     COMPILER_(T_WHILE2, ARG_("condition"), ARGS("body")),
