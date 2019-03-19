@@ -1024,10 +1024,6 @@ static Obj FuncPLAIN_VEC8BIT(Obj self, Obj list)
 ** *
 */
 
-#define BLOCKS_VEC8BIT(vec) ((UInt *)BYTES_VEC8BIT(vec))
-#define CONST_BLOCKS_VEC8BIT(vec) ((const UInt *)CONST_BYTES_VEC8BIT(vec))
-
-
 /****************************************************************************
 **
 *F  CopyVec8Bit( <list>, <mut> ) .copying function
