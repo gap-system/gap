@@ -13,17 +13,17 @@ GAP INSTALLATION INSTRUCTIONS
 10. If Things Go Wrong
 11. Known Problems of the Configure Process
 12. Optimisation and Compiler Options
-13. GAP for OS X
+13. GAP for macOS
 14. Expert Windows Installation
 
 These are the installation instructions for the GAP source distribution
-on Unix (which covers Linux and OS X), and for the GAP binary distribution
+on Unix (which covers Linux and macOS), and for the GAP binary distribution
 for Windows.
 
 Alternative installation methods which aim to simplify the installation
 mostly by offering precompiled binaries are:
 
-* GAP installer for Homebrew (package manager for OS X)
+* GAP installer for Homebrew (package manager for macOS)
 * BOB - a tool to download and build GAP and its packages from source
 * Docker image for GAP and most of the packages
 * the rsync-based binary distribution for Linux
@@ -76,7 +76,7 @@ common problems with the installation.
 =====================
 
 You can get archives for the GAP distribution from the GAP website at
-<https://www.gap-system.org/Releases/>. If you use Unix (including OS X),
+<https://www.gap-system.org/Releases/>. If you use Unix (including macOS),
 you need to download the GAP source distribution, that is, a file named
 
     gap-4.X.Y.tar.bz2
@@ -94,10 +94,10 @@ for GAP and some packages and provides the standard installation procedure.
 The exact method of unpacking will vary dependently on the operating system
 and the type of archive used.
 
-Unix (including OS X)
+Unix (including macOS)
 ---------------------
 
-Under Unix style operating systems (such as Linux and OS X), unpack the
+Under Unix style operating systems (such as Linux and macOS), unpack the
 archive `gap-4.X.Y.tar.bz2` in whatever place you want GAP to reside.
 It will expand into a directory named `gap-4.X.Y`.
 
@@ -124,7 +124,7 @@ it in a directory named like `C:\Users\alice\My Documents\gap-4.X.Y` or
 
 For the Windows version the unpacking process will already have put
 binaries in place. Under Unix you will have to compile such a binary
-yourself. (OS X users: please see section "GAP for OS X" below for
+yourself. (macOS users: please see section "GAP for macOS" below for
 additional information about compilation)
 
 Change to the directory `gap-4.X.Y` (which you just created by unpacking).
@@ -140,7 +140,7 @@ Both will produce a lot of text output. You should end up with a shell
 script `bin/gap.sh` which you can use to start GAP. If you want, you can
 copy this script later to a directory that is listed in your search path.
 
-OS X users please note that this script must be started from within the
+macOS users please note that this script must be started from within the
 Terminal Application. It is not possible to start GAP by clicking this
 script.
 
@@ -201,7 +201,7 @@ will not be used.
 Note that `--with-readline` is equivalent to `--with-readline=yes` and
 `--without-readline` is equivalent to `--with-readline=no`.
 
-There was an annoying bug in the readline library on OS X which made
+There was an annoying bug in the readline library on macOS which made
 pasting text very slow. If you have that version of the readline library,
 this delay be avoided by pressing a key (e.g. space) during the paste, or
 you may prefer to build GAP without readline to avoid this issue entirely.
@@ -234,7 +234,7 @@ modes using "out of tree builds". For details, please refer to the file
 ==========================
 
 You are now at a point where you can start GAP for the first time. Unix
-users (including those on OS X) should type
+users (including those on macOS) should type
 
     ./bin/gap.sh
 
@@ -347,7 +347,7 @@ and their `README` files should tell exactly which commands to use.
 
 To help with this tedious process, we ship a shell script called
 `bin/BuildPackages.sh` that will compile most of the packages that require
-compilation on Unix systems (including Linux and OS X) with sufficiently
+compilation on Unix systems (including Linux and macOS) with sufficiently
 many libraries, headers and tools available. To use it, change to the
 `gap-4.X.Y/pkg` directory and execute the script like this:
 
@@ -491,14 +491,16 @@ finite) which are required for the available algorithms. See section
 "ApplicableMethod" and "KnownPropertiesOfObject" of the GAP Reference
 manual.
 
-Problems specific to Windows
-
 ### The ^-key or "-key cannot be entered.
 
 This is a problem if you are running a keyboard driver for some non-english
-languages. These drivers catch the ^ character to produce the French
-circumflex accent and do not pass it properly to GAP. No fix is known. (One
-can type POW(a,b) for a^b.)
+languages. These drivers catch the ^ character to produce the French circumflex
+accent and do not pass it properly to GAP. For macOS users, as a workaround
+please refer to the section "GAP for macOS" below for information on
+how to install readline and section 5 on how to recompile GAP, for windows no
+fix is known. (One can type POW(a,b) for a^b.)
+
+## Problems specific to Windows
 
 ### Cut and Paste does not work
 
@@ -582,11 +584,11 @@ debug mode enabled:
     ./configure CC=clang-5.0 CXX=clang++-5.0 CFLAGS="-g -Og" CXXFLAGS="-g -Og" --enable-debug
 
 
-13 GAP for OS X
-===============
+13 GAP for macOS
+================
 
-Currently we provide no precompiled binary distribution for OS X. However,
-since OS X is an operating system in the Unix family, you can follow the
+Currently we provide no precompiled binary distribution for macOS. However,
+since macOS is an operating system in the Unix family, you can follow the
 Unix installation guidelines to compile GAP; then you will be able to use
 all features of GAP as well as all packages. However for installation you
 might need a basic knowledge of Unix.
@@ -603,11 +605,37 @@ can be found in the Utilities folder in the Applications folder.
 
 Next, you will need a compiler and build tools like `make`. These tools are
 included in the "Xcode" application which is not installed by default on a
-new Mac. On all recent versions of OS X, you can install it for free via
+new Mac. On all recent versions of macOS, you can install it for free via
 the App Store. Afterwards, you also need to run the following command from
 a terminal in order to make all required tools available via the command line:
 
      xcode-select --install
+
+You might want to consider using GNU readline by installing it via:
+
+ * using Homebrew: `brew install readline`
+ * using Fink: `fink install readline7`
+ * using MacPorts: `port install readline`
+ 
+After that you have to compile GAP and tell it where to find your installation of GNU readline
+using the following commands.
+
+For Homebrew, use these commands:
+
+    ./configure --with-readline=$(brew --prefix)/opt/readline
+    make
+
+For Fink, use these commands:
+
+    ./configure CPPFLAGS=-I/sw/include LDFLAGS=-L/sw/lib
+    make
+
+For MacPorts, use these commands:
+
+    ./configure CPPFLAGS=-I/opt/local/include LDFLAGS=-L/opt/local/lib
+    make
+
+For further information on how to use GNU readline, refer to section 5 above.
 
 Now simply follow the Unix installation instructions to compile and start
 GAP and then it will run in this Terminal window.
