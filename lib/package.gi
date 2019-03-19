@@ -213,7 +213,7 @@ end );
 #F  AddPackageInfo( files )
 ##
 BindGlobal( "AddPackageInfos", function( files, pkgdir, ignore )
-    local file, record, pkgname, version;
+    local file, record, pkgname, version, date, dd, mm;
     for file in files do
       # Read the `PackageInfo.g' file.
       Unbind( GAPInfo.PackageInfoCurrent );
@@ -241,6 +241,30 @@ BindGlobal( "AddPackageInfos", function( files, pkgdir, ignore )
           elif IsRecord( record.PackageDoc ) then
             record.PackageDoc:= [ record.PackageDoc ];
           fi;
+
+          # Normalize the format of 'Date', i.e. if it is the format yyyy-mm-dd
+          # then we change it to dd/mm/yyyy. When other tools have adapted to
+          # the yyyy-mm-dd format we can normalize to that format and at some
+          # point in the future get rid of this code.
+          if record.Date{[5,8]} = "--" then
+            date := List( SplitString( record.Date, "-" ), Int);
+            date := Permuted(date, (1,3)); # date = [dd,mm,yyyy]
+            # generate the day and month strings
+            # if the day has only one digit we have to add a 0
+            if date[1] < 10 then
+              dd := Concatenation("0", String(date[1]));
+            else
+              dd := String(date[1]);
+            fi;
+            # if the month has only one digit we have to add a 0
+            if date[2] < 10 then
+              mm := Concatenation("0", String(date[2]));
+            else
+              mm := String(date[2]);
+            fi;
+            record.Date := Concatenation(dd, "/", mm, "/", String(date[3]));
+          fi;
+
           if IsHPCGAP then
             # FIXME: we make the package info record immutable, to
             # allow access from multiple threads; but that in turn
@@ -2130,7 +2154,7 @@ InstallGlobalFunction( DeclareAutoreadableVariables,
 InstallGlobalFunction( ValidatePackageInfo, function( info )
     local record, pkgdir, i, IsStringList, IsRecordList, IsProperBool, IsURL,
           IsFilename, IsFilenameList, result, TestOption, TestMandat, subrec,
-          list;
+          list, CheckDateValidity;
 
     if IsString( info ) then
       if IsReadableFile( info ) then
@@ -2197,10 +2221,34 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
     TestMandat( record, "Version",
         x -> IsString(x) and 0 < Length(x) and x[1] <> '=',
         "a nonempty string that does not start with `='" );
-    TestMandat( record, "Date",
-        x -> IsString(x) and Length(x) = 10 and x{ [3,6] } = "//"
-                 and ForAll( x{ [1,2,4,5,7,8,9,10] }, IsDigitChar ),
-        "a string of the form `dd/mm/yyyy'" );
+
+    # check if the date is valid
+    CheckDateValidity := function(x)
+      local date;
+
+      if not ( IsString(x) and Length(x) = 10
+        and ( ( ForAll( x{ [1,2,4,5,7,8,9,10] }, IsDigitChar )
+        and  x{ [3,6] } = "//" ) or ( ForAll( x{ [1,2,3,4,6,7,9,10] }, IsDigitChar ) and x{ [5,8] } = "--" ) ) ) then
+        return false;
+      elif x{ [3,6] } = "//" then # for the old format split at '/'
+        date := List( SplitString( x, "/" ), Int);
+      elif x{ [5,8] } = "--" then # for the yyyy-mm-dd format split at '-'
+        date := List( SplitString( x, "-" ), Int);
+        date := date{ [3,2,1] }; # sort such that date=[dd,mm,yyyy]
+      fi;
+      return date[2] in [1..12] and date[3] >= 1999 # GAP 4 appeared in 1999
+          and date[1] in [1..DaysInMonth( date[2], date[3] )];
+    end;
+
+    TestMandat( record, "Date", CheckDateValidity, Concatenation( "a string of the form yyyy-mm-dd or dd/mm/yyyy",
+    " that represents a date since 1999") );
+
+    # If the date is in the format `dd/mm/yyyy` a message is printed
+    # code to be used after an adaption period for packages
+    #if IsBound( record.Date ) and  CheckDateValidity( record.Date ) and record.Date{ [3,6] } = "//" then
+    #   Info( InfoPackageLoading, 2, Concatenation( record.PackageName, ": Please be advised to change the date format to `yyyy-mm-dd`") );
+    #fi;
+
     TestOption( record, "License",
         x -> IsString(x) and 0 < Length(x),
         "a nonempty string containing an SPDX ID" );

@@ -202,7 +202,8 @@ gap> ValidatePackageInfo(rec());
 #E  component `Subtitle' must be bound to a string
 #E  component `Version' must be bound to a nonempty string that does not start\
  with `='
-#E  component `Date' must be bound to a string of the form `dd/mm/yyyy'
+#E  component `Date' must be bound to a string of the form yyyy-mm-dd or dd/mm\
+/yyyy that represents a date since 1999
 #E  component `ArchiveURL' must be bound to a string started with http://, htt\
 ps:// or ftp://
 #E  component `ArchiveFormats' must be bound to a string
@@ -217,6 +218,120 @@ ps:// or ftp://
  https:// or ftp://
 #E  component `PackageDoc' must be bound to a record or a list of records
 #E  component `AvailabilityTest' must be bound to a function
+false
+gap> info := rec(
+>     PackageName := "pkg",
+>     Subtitle := "desc",
+>     Version := "0",
+>     Date := "01/20/2015",
+>     ArchiveURL := "https://",
+>     ArchiveFormats := "",
+>     Status := "other",
+>     README_URL := "https://",
+>     PackageInfoURL := "https://",
+>     AbstractHTML := "",
+>     PackageWWWHome := "https://",
+>     PackageDoc := rec(),
+>     AvailabilityTest := ReturnTrue,
+>   );;
+gap> ValidatePackageInfo(info);
+#E  component `Date' must be bound to a string of the form yyyy-mm-dd or dd/mm\
+/yyyy that represents a date since 1999
+#E  component `BookName' must be bound to a string
+#E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
+elative paths to readable files or directories
+#E  component `HTMLStart' must be bound to a string denoting a relative path t\
+o a readable file
+#E  component `PDFFile' must be bound to a string denoting a relative path to \
+a readable file
+#E  component `SixFile' must be bound to a string denoting a relative path to \
+a readable file
+#E  component `LongTitle' must be bound to a string
+false
+gap> info := rec(
+>     PackageName := "pkg",
+>     Subtitle := "desc",
+>     Version := "0",
+>     Date := "2013-05-22",
+>     ArchiveURL := "https://",
+>     ArchiveFormats := "",
+>     Status := "other",
+>     README_URL := "https://",
+>     PackageInfoURL := "https://",
+>     AbstractHTML := "",
+>     PackageWWWHome := "https://",
+>     PackageDoc := rec(),
+>     AvailabilityTest := ReturnTrue,
+>   );;
+gap> ValidatePackageInfo(info);
+#E  component `BookName' must be bound to a string
+#E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
+elative paths to readable files or directories
+#E  component `HTMLStart' must be bound to a string denoting a relative path t\
+o a readable file
+#E  component `PDFFile' must be bound to a string denoting a relative path to \
+a readable file
+#E  component `SixFile' must be bound to a string denoting a relative path to \
+a readable file
+#E  component `LongTitle' must be bound to a string
+false
+gap> info := rec(
+>     PackageName := "pkg",
+>     Subtitle := "desc",
+>     Version := "0",
+>     Date := "2013-22-05",
+>     ArchiveURL := "https://",
+>     ArchiveFormats := "",
+>     Status := "other",
+>     README_URL := "https://",
+>     PackageInfoURL := "https://",
+>     AbstractHTML := "",
+>     PackageWWWHome := "https://",
+>     PackageDoc := rec(),
+>     AvailabilityTest := ReturnTrue,
+>   );;
+gap> ValidatePackageInfo(info);
+#E  component `Date' must be bound to a string of the form yyyy-mm-dd or dd/mm\
+/yyyy that represents a date since 1999
+#E  component `BookName' must be bound to a string
+#E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
+elative paths to readable files or directories
+#E  component `HTMLStart' must be bound to a string denoting a relative path t\
+o a readable file
+#E  component `PDFFile' must be bound to a string denoting a relative path to \
+a readable file
+#E  component `SixFile' must be bound to a string denoting a relative path to \
+a readable file
+#E  component `LongTitle' must be bound to a string
+false
+gap> info := rec(
+>     PackageName := "pkg",
+>     Subtitle := "desc",
+>     Version := "0",
+>     Date := "2013-05-22-",
+>     ArchiveURL := "https://",
+>     ArchiveFormats := "",
+>     Status := "other",
+>     README_URL := "https://",
+>     PackageInfoURL := "https://",
+>     AbstractHTML := "",
+>     PackageWWWHome := "https://",
+>     PackageDoc := rec(),
+>     AvailabilityTest := ReturnTrue,
+>   );;
+gap> ValidatePackageInfo(info);
+#E  component `Date' must be bound to a string of the form yyyy-mm-dd or dd/mm\
+/yyyy that represents a date since 1999
+#E  component `BookName' must be bound to a string
+#E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
+elative paths to readable files or directories
+#E  component `HTMLStart' must be bound to a string denoting a relative path t\
+o a readable file
+#E  component `PDFFile' must be bound to a string denoting a relative path to \
+a readable file
+#E  component `SixFile' must be bound to a string denoting a relative path to \
+a readable file
+#E  component `LongTitle' must be bound to a string
 false
 gap> info := rec(
 >     PackageName := "pkg",
