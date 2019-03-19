@@ -2252,11 +2252,13 @@ static CVar CompIntExpr(Expr expr)
         val = CVAR_TEMP( NewTemp( "val" ) );
         siz = SIZE_OBJ(obj);
         typ = TNUM_OBJ(obj);
-        Emit( "%c = NewWordSizedBag(%d, %d);\n", val, typ, siz);
         if ( typ == T_INTPOS ) {
+            Emit( "%c = NewWordSizedBag(T_INTPOS, %d);\n", val, siz);
             SetInfoCVar(val, W_INT_POS);
         }
         else {
+            GAP_ASSERT(typ == T_INTNEG);
+            Emit( "%c = NewWordSizedBag(T_INTNEG, %d);\n", val, siz);
             SetInfoCVar(val, W_INT);
         }
 

@@ -114,7 +114,7 @@ static Obj  HdlrFunc2 (
  CALL_2ARGS( t_1, l_x, t_2 );
  
  /* y := 100000000000000000000; */
- t_1 = NewWordSizedBag(1, 16);
+ t_1 = NewWordSizedBag(T_INTPOS, 16);
  C_SET_LIMB8( t_1, 0, 7766279631452241920LL);
  C_SET_LIMB8( t_1, 1, 5LL);
  l_y = t_1;
