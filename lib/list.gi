@@ -677,11 +677,11 @@ end);
 ##
 #M  SSortedList( <list> )  . . . . . . . . . . . set of the elements of a list
 ##
-InstallOtherMethod( SSortedList, "for a plist",
+InstallMethod( SSortedList, "for a plist",
     [ IsList and IsPlistRep ],
     SSortedListList );
 
-InstallOtherMethod( SSortedList, "for a list",
+InstallMethod( SSortedList, "for a list",
     [ IsList ],
     l->SSortedListList(AsPlist(l)) );
 
@@ -690,15 +690,15 @@ InstallOtherMethod( SSortedList, "for a list",
 ##
 #M  SSortedList( <list>, <func> )
 ##
-InstallOtherMethod( SSortedList,
+InstallMethod( SSortedList,
     "for a list, and a function",
     [ IsList, IsFunction ],
     function ( list, func )
     local   res, i, squashsize;
     squashsize := 100;
     res := [];
-    for i  in [ 1 .. Length( list ) ] do
-        Add( res, func( list[i] ) );
+    for i in list do
+        Add( res, func( i ) );
         if Length(res) > squashsize then
             res := Set(res);
             squashsize := Maximum(100, Size(res) * 2);
