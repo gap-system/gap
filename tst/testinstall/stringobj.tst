@@ -3,7 +3,7 @@
 ##  This file tests various aspects of strings in IsStringRep
 ##
 #@local OldCopyToStringRep,a2000,a3000,at2000,at3000,cp1,cp2,cp3
-#@local ret2000,ret3000,s,tmp,tmpdir,fname,dir,filename
+#@local ret2000,ret3000,s,tmp,tmpdir,fname,dir,filename,sstream,fstream,t,u
 gap> START_TEST("stringobj.tst");
 
 # RemoveCharacters
@@ -132,6 +132,42 @@ gap> ReadCSV(fname,true);
   rec( field1 := "\"Alas, poor Yorick\", the call went", field4 := 4, 
       field5 := 6 ), rec( field4 := 7 ), rec( field3 := 11, field5 := 12 ), 
   rec( field3 := "yy", field4 := "x", field5 := "zzz" ) ]
+gap> sstream := OutputTextString([],false);;
+gap> fstream := OutputTextFile(fname,false);;
+gap> SetPrintFormattingStatus(sstream,false);;
+gap> SetPrintFormattingStatus(fstream,true);;
+gap> s:=rec(string1:=List([1..200],x->'a'),string2:=List([1..200],x->'b'));;
+gap> t:=rec(string1:=List([1..200],x->'c'),string2:=List([1..200],x->'d'));;
+gap> u:=rec(string1:=List([1..200],x->'e'),string2:=List([1..200],x->'f'));;
+gap> PrintCSV(sstream,[s,t,u]);
+gap> PrintCSV(fstream,[s,t,u]);
+gap> ReadCSV(fname,true);
+[ rec( field1 := "string1", field2 := "string2" ), 
+  rec( 
+      field1 := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 
+      field2 := "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" ), 
+  rec( 
+      field1 := "ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", 
+      field2 := "ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\
+ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" ), 
+  rec( 
+      field1 := "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", 
+      field2 := "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" ) ]
+gap> PrintFormattingStatus(sstream) = false;
+true
+gap> PrintFormattingStatus(fstream) = true;
+true
 
 # Long Strings
 # All these strings are 2000 or 3000 characters long, to make sure we fill the string buffer at least once or twice
