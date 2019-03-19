@@ -97,7 +97,7 @@ static Obj FuncInitRandomMT(Obj self, Obj initstr)
      endianness marker */
   str = NEW_STRING(4*626);
   SET_LEN_STRING(str, 4*626);
-  mt = (UInt4*) CHARS_STRING(str);
+  mt = (UInt4 *)(ADDR_OBJ(str) + 1);
   /* here the counter mti is set to 624 */
   initGRMT(mt, 19650218UL);
   i=1; j=0;
