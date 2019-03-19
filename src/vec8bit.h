@@ -131,18 +131,35 @@ EXPORT_INLINE void SET_FIELD_VEC8BIT(Obj list, UInt q)
 
 /****************************************************************************
 **
+*F  BLOCKS_VEC8BIT( <list> ) . . . . . . . . first block of a 8bit GFQ vector
+**
+**  returns a pointer to the start of the data of the 8bit GFQ vector
+*/
+EXPORT_INLINE UInt * BLOCKS_VEC8BIT(Obj list)
+{
+    return (UInt *)(ADDR_OBJ(list) + 3);
+}
+
+EXPORT_INLINE const UInt * CONST_BLOCKS_VEC8BIT(Obj list)
+{
+    return (const UInt *)(CONST_ADDR_OBJ(list) + 3);
+}
+
+
+/****************************************************************************
+**
 *F  BYTES_VEC8BIT( <list> ) . . . . . . . . . first byte of a 8bit GFQ vector
 **
 **  returns a pointer to the start of the data of the 8bit GFQ vector
 */
 EXPORT_INLINE UInt1 * BYTES_VEC8BIT(Obj list)
 {
-    return (UInt1 *)(ADDR_OBJ(list) + 3);
+    return (UInt1 *)BLOCKS_VEC8BIT(list);
 }
 
 EXPORT_INLINE const UInt1 * CONST_BYTES_VEC8BIT(Obj list)
 {
-    return (const UInt1 *)(CONST_ADDR_OBJ(list) + 3);
+    return (const UInt1 *)CONST_BLOCKS_VEC8BIT(list);
 }
 
 
