@@ -95,9 +95,42 @@ true
 gap> ForAny( ComputedPrimeBlockss( t ), IsMutable );
 false
 
-##
-gap> STOP_TEST( "ctbl.tst", 1);
+# create certain Brauer tables ...
+# ... of p-solvable groups
+gap> t:= CharacterTable( SymmetricGroup( 4 ) );;
+gap> IsCharacterTable( t mod 2 );
+true
+gap> IsCharacterTable( t mod 3 );
+true
 
-#############################################################################
+# ... where all Brauer characters lift to characteristic zero
+gap> g:= PSL(2,5);;
+gap> t:= CharacterTable( g );;
+gap> IsCharacterTable( t mod 3 );
+true
+gap> IsCharacterTable( t mod 5 );
+true
+
+# ... where the Brauer tables of the factors of a product can be computed
+gap> g:= AlternatingGroup( 5 );;
+gap> t:= CharacterTable( g );;
+gap> t:= CharacterTableDirectProduct( t, t );;
+gap> IsCharacterTable( t mod 5 );
+true
+
+# test a bugfix
+gap> g:= SmallGroup( 96, 3 );;
+gap> t:= CharacterTable( g );;
+gap> ClassPositionsOfLowerCentralSeries( t );
+[ [ 1 .. 12 ], [ 1, 3, 4, 5, 6, 9, 10, 11 ] ]
+gap> g:= SmallGroup( 3^5, 22 );;
+gap> t:= CharacterTable( g );;
+gap> ClassPositionsOfLowerCentralSeries( t );
+[ [ 1 .. 35 ], [ 1, 4, 6, 12, 15 ], [ 1, 6, 15 ], [ 1 ] ]
+gap> g:= SmallGroup( 96, 66 );;
+gap> t:= CharacterTable( g );;
+gap> ClassPositionsOfSupersolvableResiduum( t );
+[ 1, 5, 6 ]
+
 ##
-#E
+gap> STOP_TEST( "ctbl.tst" );

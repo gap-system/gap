@@ -1263,10 +1263,19 @@ InstallMethod( IsPerfectCharacterTable,
 ##
 #M  IsSimpleCharacterTable( <tbl> ) . . . . . for an ordinary character table
 ##
+##  Avoid computing all normal subgroups of abelian groups and p-groups.
+##
 InstallMethod( IsSimpleCharacterTable,
     "for an ordinary character table",
     [ IsOrdinaryTable ],
-    tbl -> Length( ClassPositionsOfNormalSubgroups( tbl ) ) = 2 );
+    function( tbl )
+    if IsAbelian( tbl ) then
+      return IsPrimeInt( Size( tbl ) );
+    else
+      return not IsPrimePowerInt( Size( tbl ) ) and
+             Length( ClassPositionsOfNormalSubgroups( tbl ) ) = 2;
+    fi;
+    end );
 
 
 #############################################################################
@@ -1943,12 +1952,10 @@ InstallMethod( ClassPositionsOfMinimalNormalSubgroups,
           minimal,   # list of minimal kernels
           k;         # one kernel
 
-    # Every normal subgroup is an intersection of kernels of characters,
-    # so maximal normal subgroups are kernels of irreducible characters.
-    normal:= Set( ClassPositionsOfNormalSubgroups( tbl ) );
+    normal:= Set( List( [ 2 .. NrConjugacyClasses( tbl ) ],
+                        i -> ClassPositionsOfNormalClosure( tbl, [ i ] ) ) );
 
     # Remove non-minimal kernels
-    RemoveSet( normal, [ 1 ] );
     Sort( normal, function(x,y) return Length(x) < Length(y); end );
     minimal:= [];
     for k in normal do
@@ -2093,7 +2100,8 @@ InstallMethod( ClassPositionsOfElementaryAbelianSeries,
       return [ [ 1 ] ];
     fi;
 
-    # Sort normal subgroups according to decreasing number of classes.
+    # Compute all normal subgroups.
+    # They are sorted according to increasing number of classes.
     nsg:= ShallowCopy( ClassPositionsOfNormalSubgroups( tbl ) );
 
     elab:= [ [ 1 .. NrConjugacyClasses( tbl ) ] ];
@@ -2139,6 +2147,11 @@ InstallMethod( ClassPositionsOfFittingSubgroup,
           ppord,    # classes in normal subgroups of prime power order
           n;        # one normal subgroup of `tbl'
 
+    # Avoid computing all normal subgroups in obvious cases.
+    if IsPrimePowerInt( Size( tbl ) ) or IsAbelian( tbl ) then
+      return [ 1 .. NrConjugacyClasses( tbl ) ];
+    fi;
+
     # Compute all normal subgroups.
     nsg:= ClassPositionsOfNormalSubgroups( tbl );
 
@@ -2166,6 +2179,12 @@ InstallMethod( ClassPositionsOfSolvableRadical,
     function( tbl )
     local nsg, classes, N, sizeN, nextN;
 
+    # Avoid computing all normal subgroups in obvious cases.
+    if IsPrimePowerInt( Size( tbl ) ) or IsAbelian( tbl ) then
+      return [ 1 .. NrConjugacyClasses( tbl ) ];
+    fi;
+
+    # Compute all normal subgroups.
     nsg:= ClassPositionsOfNormalSubgroups( tbl );
     classes:= SizesConjugacyClasses( tbl );
     nextN:= [ 1 ];
@@ -2185,21 +2204,22 @@ InstallMethod( ClassPositionsOfSolvableRadical,
 ##
 #M  ClassPositionsOfLowerCentralSeries( <tbl> )
 ##
-##  Let <tbl> the character table of the group $G$.
-##  The lower central series $[ K_1, K_2, \ldots, K_n ]$ of $G$ is defined
-##  by $K_1 = G$, and $K_{i+1} = [ K_i, G ]$.
-##  `LowerCentralSeries( <tbl> )' is a list
-##  $[ C_1, C_2, \ldots, C_n ]$ where $C_i$ is the set of positions of
-##  $G$-conjugacy classes contained in $K_i$.
-##
-##  Given an element $x$ of $G$, then $g\in G$ is conjugate to $[x,y]$ for
-##  an element $y\in G$ if and only if
-##  $\sum_{\chi\in Irr(G)} \frac{|\chi(x)|^2 \overline{\chi(g)}}{\chi(1)}
-##  \not= 0$, or equivalently, if the structure constant
-##  $a_{x,\overline{x},g}$ is nonzero.
-##
-##  Thus $K_{i+1}$ consists of all classes $Cl(g)$ in $K_i$ for that there
-##  is an $x\in K_i$ such that $a_{x,\overline{x},g}$ is nonzero.
+##  Let <A>tbl</A> be the character table of the group <M>G</M>, say.
+##  The lower central series <M>[ K_1, K_2, \ldots, K_n ]</M> of <M>G</M>
+##  is defined by <M>K_1 = G</M>, and <M>K_{i+1} = [ K_i, G ]</M>.
+##  <C>ClassPositionsOfLowerCentralSeries( <A>tbl</A> )</C> is a list
+##  <M>[ C_1, C_2, \ldots, C_n ]</M> where <M>C_i</M> is the set of positions
+##  of <M>G</M>-conjugacy classes contained in <M>K_i</M>.
+##  <P/>
+##  Given an element <M>x \in K_i</M>, <M>g^{-1} \in G</M> is conjugate to
+##  <M>[x,y]</M> for an element <M>y \in G</M> if and only if
+##  <M>\sum_{{\chi \in Irr(G)}} |\chi(x)|^2 \chi(g) / \chi(1) \neq 0</M>,
+##  see&nbsp;<Cite Key="Isa76" Where="Problem 3.10"/>,
+##  or equivalently, if the structure constant <M>a_{g, x, x}</M> is nonzero.
+##  <P/>
+##  Thus <M>K_{i+1}</M> consists of the normal closure in <M>G</M>
+##  of all classes <M>g^G</M> inside <M>K_i</M> for which there
+##  is an <M>x \in K_i</M> such that <M>a_{g, x, x}</M> is nonzero.
 ##
 InstallMethod( ClassPositionsOfLowerCentralSeries,
     "for an ordinary table",
@@ -2207,48 +2227,41 @@ InstallMethod( ClassPositionsOfLowerCentralSeries,
     function( tbl )
     local series,     # list of normal subgroups, result
           K,          # actual last element of `series'
-          inv,        # list of inverses of classes of `tbl'
           mat,        # matrix of structure constants
           i, j,       # loop over `mat'
-          running,    # loop not yet terminated
           new;        # next element in `series'
 
-    series:= [];
-    series[1]:= [ 1 .. NrConjugacyClasses( tbl ) ];
+    series:= [ [ 1 .. NrConjugacyClasses( tbl ) ] ];
     K:= ClassPositionsOfDerivedSubgroup( tbl );
     if K = series[1] then
       return series;
     fi;
     series[2]:= K;
 
-    # Compute the structure constants $a_{x,\overline{x},g}$ with $g$ and $x$
-    # in $K_2$.
+    # Compute the structure constants $a_{g,x,x}$ with $g$ and $x$ in $K_2$.
     # Put them into a matrix, the rows indexed by $g$, the columns by $x$.
-    inv:= InverseClasses( tbl );
     mat:= List( K, x -> [] );
     for i in [ 2 .. Length( K ) ] do
       for j in K do
-        mat[i][j]:= ClassMultiplicationCoefficient( tbl, K[i], j, inv[j] );
+        mat[i,j]:= ClassMultiplicationCoefficient( tbl, K[i], j, j );
       od;
     od;
 
-    running:= true;
-
-    while running do
+    while true do
 
       new:= [ 1 ];
       for i in [ 2 .. Length( mat ) ] do
-        if ForAny( K, x -> mat[i][x] <> 0 ) then
+        if ForAny( K, x -> mat[i,x] <> 0 ) then
           Add( new, i );
         fi;
       od;
-
+      new:= ClassPositionsOfNormalClosure( tbl, K{ new } );
       if Length( new ) = Length( K ) then
-        running:= false;
+        break;
       else
-        mat:= mat{ new };
-        K:= K{ new };
-        Add( series, new );
+        mat:= mat{ List( new, i -> Position( K, i ) ) };
+        K:= new;
+        Add( series, K );
       fi;
 
     od;
@@ -2336,10 +2349,16 @@ InstallMethod( ClassPositionsOfSolvableResiduum,
           nextsize,  # size of largest normal subgroup contained in `N'
           classes;   # class lengths
 
+    # Avoid computing all normal subgroups in obvious cases.
+    if IsPrimePowerInt( Size( tbl ) ) or IsAbelian( tbl ) then
+      return [ 1 ];
+    fi;
+
+    # Compute all normal subgroups.
     nsg:= ClassPositionsOfNormalSubgroups( tbl );
 
     # Go down a chief series, starting with the whole group,
-    # until there is no step of prime order.
+    # until there is no step of prime power order.
     i:= Length( nsg );
     nextsize:= Size( tbl );
     classes:= SizesConjugacyClasses( tbl );
@@ -2352,17 +2371,22 @@ InstallMethod( ClassPositionsOfSolvableResiduum,
 
       # Get the largest normal subgroup contained in `N' \ldots
       i:= posN - 1;
-      while not IsSubsetSet( N, nsg[ i ] ) do i:= i-1; od;
+      while 1 <= i do
+        if IsSubsetSet( N, nsg[i] ) then
+          # \ldots and its size.
+          nextsize:= Sum( classes{ nsg[i] }, 0 );
+          if IsPrimePowerInt( size / nextsize ) then
+            # The chief factor `N / nsg[i]' has prime power order.
+            break;
+          fi;
+        fi;
+        i:= i-1;
+      od;
 
-      # \ldots and its size.
-      nextsize:= Sum( classes{ nsg[i] }, 0 );
-
-      if not IsPrimePowerInt( size / nextsize ) then
-
-        # The chief factor `N / nsg[i]' is not of prime power order,
+      if i = 0 then
+        # The chief factors `N / nsg[j]' are not of prime power order,
         # i.e., `N' is the solvable residuum.
         return N;
-
       fi;
 
     od;
@@ -2388,6 +2412,14 @@ InstallMethod( ClassPositionsOfSupersolvableResiduum,
           nextsize,  # size of largest normal subgroup contained in `N'
           classes;   # class lengths
 
+    # Avoid computing all normal subgroups in obvious cases.
+    if IsPrimePowerInt( Size( tbl ) ) or IsAbelian( tbl ) then
+      return [ 1 ];
+    fi;
+
+    # Compute all normal subgroups.
+#T One could start with the classes in the derived subgroup.
+#T Provide a two-argument version of 'ClassPositionsOfNormalSubgroups'?
     nsg:= ClassPositionsOfNormalSubgroups( tbl );
 
     # Go down a chief series, starting with the whole group,
@@ -2404,17 +2436,22 @@ InstallMethod( ClassPositionsOfSupersolvableResiduum,
 
       # Get the largest normal subgroup contained in `N' \ldots
       i:= posN - 1;
-      while not IsSubsetSet( N, nsg[ i ] ) do i:= i-1; od;
+      while 1 <= i do
+        if IsSubsetSet( N, nsg[i] ) then
+          # \ldots and its size.
+          nextsize:= Sum( classes{ nsg[i] }, 0 );
+          if IsPrimeInt( size / nextsize ) then
+            # The chief factor `N / nsg[i]' has prime order.
+            break;
+          fi;
+        fi;
+        i:= i-1;
+      od;
 
-      # \ldots and its size.
-      nextsize:= Sum( classes{ nsg[i] }, 0 );
-
-      if not IsPrimeInt( size / nextsize ) then
-
-        # The chief factor `N / nsg[i]' is not of prime order,
+      if i = 0 then
+        # The chief factors `N / nsg[j]' are not of prime order,
         # i.e., `N' is the supersolvable residuum.
         return N;
-
       fi;
 
     od;
@@ -3718,7 +3755,7 @@ InstallMethod( IsPSolvableCharacterTable,
 #M  IsPSolvableCharacterTableOp( <tbl>, <p> )
 ##
 InstallMethod( IsPSolvableCharacterTableOp,
-    "for an ordinary character table, an an integer",
+    "for an ordinary character table, and an integer",
     [ IsOrdinaryTable, IsInt ],
     function( tbl, p )
     local nsg,       # list of all normal subgroups
@@ -3730,6 +3767,12 @@ InstallMethod( IsPSolvableCharacterTableOp,
           classes,   # class lengths
           facts;     # set of prime factors of a chief factor
 
+    # Avoid computing all normal subgroups in obvious cases.
+    if IsPrimePowerInt( Size( tbl ) ) or IsAbelian( tbl ) then
+      return true;
+    fi;
+
+    # Compute all normal subgroups.
     nsg:= ClassPositionsOfNormalSubgroups( tbl );
 
     # Go up a chief series, starting with the trivial subgroup
