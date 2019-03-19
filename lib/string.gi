@@ -943,9 +943,15 @@ local nohead,file,sep,f, line, fields, l, r, i,s,t,add,dir;
 end);
 
 InstallGlobalFunction(PrintCSV,function(arg)
-  local file,l,printEntry, rf, r, i, j,sz;
+  local stream,l,printEntry, rf, r, i, j, oldStreamFormattingStatus;
 
-  file:=arg[1];
+  if IsString(arg[1]) then
+    stream:=OutputTextFile(arg[1],false);
+  elif IsOutputStream(arg[1]) then
+    stream:=arg[1];
+  else
+    Error("PrintCSV: filename must be a string or an output stream");
+  fi;
   l:=arg[2];
   printEntry:=function(s)
   local p,q;
@@ -984,11 +990,11 @@ InstallGlobalFunction(PrintCSV,function(arg)
       # integers as string
       s:=Concatenation("\"_",s,"\"");
     fi;
-    AppendTo(file,s,"\c");
+    AppendTo(stream,s,"\c");
   end;
 
-  sz:=SizeScreen();
-  SizeScreen([4096,sz[2]]);
+  oldStreamFormattingStatus:=PrintFormattingStatus(stream);
+  SetPrintFormattingStatus(stream,false);
   if Length(arg)>2 then
     rf:=arg[3];
   else
@@ -1016,29 +1022,29 @@ InstallGlobalFunction(PrintCSV,function(arg)
     end);
   fi;
 
-  PrintTo(file);
+  PrintTo(stream);
 
   if ValueOption("noheader")<>true then
     printEntry(rf[1]);
     for j in [2..Length(rf)] do
-      AppendTo(file,",");
+      AppendTo(stream,",");
       printEntry(ReplacedString(rf[j],"_"," "));
     od;
-    AppendTo(file,"\n");
+    AppendTo(stream,"\n");
   fi;
 
   for  i in l do
     for j in [1..Length(rf)] do
       if j>1 then
-	AppendTo(file,",");
+        AppendTo(stream,",");
       fi;
       if IsBound(i.(rf[j])) then
         printEntry(i.(rf[j]));
       fi;
     od;
-    AppendTo(file,"\n");
+    AppendTo(stream,"\n");
   od;
-  SizeScreen(sz);
+  SetPrintFormattingStatus(stream,oldStreamFormattingStatus);
 end);
 
 
