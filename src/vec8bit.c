@@ -1092,29 +1092,27 @@ AddVec8BitVec8BitInner(Obj sum, Obj vl, Obj vr, UInt start, UInt stop)
     start--;
     stop--;
     if (p == 2) {
-        UInt * ptrL2;
-        UInt * ptrR2;
+        const UInt * ptrL2;
+        const UInt * ptrR2;
         UInt * ptrS2;
         UInt * endS2;
         // HPCGAP: Make sure to only check read guards for vl & vr.
-        ptrL2 = (UInt *)(CONST_BLOCKS_VEC8BIT(vl) +
-                         start / (sizeof(UInt) * elts));
-        ptrR2 = (UInt *)(CONST_BLOCKS_VEC8BIT(vr) +
-                         start / (sizeof(UInt) * elts));
+        ptrL2 = CONST_BLOCKS_VEC8BIT(vl) + start / (sizeof(UInt) * elts);
+        ptrR2 = CONST_BLOCKS_VEC8BIT(vr) + start / (sizeof(UInt) * elts);
         ptrS2 = BLOCKS_VEC8BIT(sum) + start / (sizeof(UInt) * elts);
         endS2 = BLOCKS_VEC8BIT(sum) + stop / (sizeof(UInt) * elts) + 1;
         if (sum == vl) {
-            while (ptrL2 < endS2) {
-                *ptrL2 ^= *ptrR2;
-                ptrL2++;
+            while (ptrS2 < endS2) {
+                *ptrS2 ^= *ptrR2;
+                ptrS2++;
                 ptrR2++;
             }
         }
         else if (sum == vr) {
-            while (ptrR2 < endS2) {
-                *ptrR2 ^= *ptrL2;
+            while (ptrS2 < endS2) {
+                *ptrS2 ^= *ptrL2;
                 ptrL2++;
-                ptrR2++;
+                ptrS2++;
             }
         }
         else
@@ -1122,30 +1120,32 @@ AddVec8BitVec8BitInner(Obj sum, Obj vl, Obj vr, UInt start, UInt stop)
                 *ptrS2++ = *ptrL2++ ^ *ptrR2++;
     }
     else {
-        UInt1 * ptrL;
-        UInt1 * ptrR;
+        const UInt1 * ptrL;
+        const UInt1 * ptrR;
         UInt1 * ptrS;
         UInt1 * endS;
         UInt    x;
         const UInt1 * addtab = ADD_FIELDINFO_8BIT(info);
         // HPCGAP: Make sure to only check read guards for vl & vr.
-        ptrL = (UInt1 *)(CONST_BYTES_VEC8BIT(vl) + start / elts);
-        ptrR = (UInt1 *)(CONST_BYTES_VEC8BIT(vr) + start / elts);
+        ptrL = CONST_BYTES_VEC8BIT(vl) + start / elts;
+        ptrR = CONST_BYTES_VEC8BIT(vr) + start / elts;
         ptrS = BYTES_VEC8BIT(sum) + start / elts;
         endS = BYTES_VEC8BIT(sum) + stop / elts + 1;
         if (vl == sum) {
-            while (ptrL < endS) {
-                if ((x = *ptrR) != 0)
-                    *ptrL = addtab[256 * (*ptrL) + x];
+            while (ptrS < endS) {
+                x = *ptrR;
+                if (x != 0)
+                    *ptrS = addtab[256 * (*ptrS) + x];
                 ptrR++;
-                ptrL++;
+                ptrS++;
             }
         }
         else if (vr == sum) {
-            while (ptrR < endS) {
-                if ((x = *ptrL) != 0)
-                    *ptrR = addtab[256 * (x) + *ptrR];
-                ptrR++;
+            while (ptrS < endS) {
+                x = *ptrL;
+                if (x != 0)
+                    *ptrS = addtab[256 * (x) + *ptrS];
+                ptrS++;
                 ptrL++;
             }
         }
