@@ -254,7 +254,6 @@ static Obj FuncTzRenumberGens(Obj self, Obj tietze)
             old = INT_INTOBJ( ptRel[j] );
             if ( old < -numgens || numgens < old || old == 0 ) {
                 ErrorQuit( "gen no. %d in rel no. %d out of range", j,i );
-                return 0;
             }
             ptRel[j] = ptInvs[-old];
         }
@@ -329,7 +328,6 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
             if ( old < -numgens || numgens < old || old == 0 ) {
                 ErrorQuit( "gen no. %d in rel no. %d out of range",
                            (Int)j, (Int)i );
-                return 0;
             }
 
             new = INT_INTOBJ( ptInvs[-old] );
@@ -444,20 +442,17 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
     /* check the second argument (generator number)                        */
     if ( ! IS_INTOBJ(gennum) ) {
         ErrorQuit( "<gennum> must be an integer", 0L, 0L );
-        return 0;
     }
     given = INT_INTOBJ(gennum);
     gen   = ( given > 0 ) ? given : -given;
     if ( gen <= 0 || numgens < gen ) {
         ErrorQuit( "generator number %d out of range", (Int)gen, 0L );
-        return 0;
     }
     ginv = INT_INTOBJ(ptInvs[gen]);
 
     /* check the third argument (replacing word)                           */
     if ( ! IS_PLIST(word) ) {
         ErrorQuit( "invalid replacing word", 0L, 0L );
-        return 0;
     }
     ptWrd = ADDR_OBJ(word);
     wleng = LEN_PLIST(word);
@@ -466,7 +461,6 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
         if ( next < -numgens || next == 0 || next > numgens ) {
             ErrorQuit( "entry [%d] of <Tietze word> out of range",
                        (Int)i, 0L );
-            return 0;
         }
     }
 
@@ -519,7 +513,6 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
             if ( next < -numgens || numgens < next ) {
                 ErrorQuit( "gen no. %d in rel no. %d out of range",
                            (Int)j, (Int)i );
-                return 0;
             }
             if (next == gen || next == ginv )
                 ++occ;
@@ -644,7 +637,6 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
     if ( ! IS_SMALL_LIST(args) || 2 < LEN_LIST(args) || LEN_LIST(args) < 1 ) {
         ErrorQuit( "usage: TzOccurrences( <Tietze stack>[, <gen no.> ] )",
                    0L, 0L );
-        return 0;
     }
 
     /* check the first argument (Tietze stack)                             */
@@ -660,7 +652,6 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
         num = INT_INTOBJ( ELM_LIST(args,2) );
         if ( num <= 0 || numgens < num ) {
             ErrorQuit( "given generator number out of range", 0L, 0L );
-            return 0;
         }
         numgens = 1;
     }
@@ -714,7 +705,6 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
             if ( rel == 0 || ! IS_PLIST(rel) ) {
                 ErrorQuit( "invalid entry [%d] in Tietze relators list",
                            (Int)i, 0L );
-                return 0;
             }
             ptRel = ADDR_OBJ(rel);
             leng  = LEN_PLIST(rel);
@@ -759,7 +749,6 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
             if ( rel == 0 || ! IS_PLIST(rel) ) {
                 ErrorQuit( "invalid entry [%d] in Tietze relators list",
                            (Int)i, 0L );
-                return 0;
             }
             ptRel = ADDR_OBJ(rel);
             leng  = LEN_PLIST(rel);
@@ -771,7 +760,6 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
                 if ( next == 0 || numgens < next ) {
                     ErrorQuit( "invalid entry [%d][%d] in Tietze rels list",
                                (Int)i, (Int)k );
-                    return 0;
                 }
                 (ptAux[next])++;
             }
@@ -784,7 +772,6 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
                 ptAux[k] = 0;
                 if ( ! SUM_INTOBJS( ptCnts[k], ptCnts[k], INTOBJ_INT(c) ) ) {
                     ErrorQuit( "integer overflow", 0L, 0L );
-                    return 0;
                 }
                 if ( 0 < c ) {
                     if ( ptLens[k] == 0 || c < INT_INTOBJ(ptLens[k])
@@ -841,7 +828,6 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
         ErrorQuit(
           "usage: TzOccurrencesPairs( <Tietze stack>, <gen>[, <list>] )",
           0L, 0L );
-        return 0;
     }
 
     /* check the first argument (Tietze stack)                             */
@@ -858,12 +844,10 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
     numObj = ELM_LIST( args, 2 );
     if ( ! IS_INTOBJ(numObj) ) {
         ErrorQuit( "<gen> must be a Tietze generator number", 0L, 0L );
-        return 0;
     }
     num = INT_INTOBJ(numObj);
     if ( num <= 0 || num > numgens ) {
         ErrorQuit( "given generator number is out of range", 0L, 0L );
-        return 0;
     }
 
     /*  Get and check the list for the results, if specified               */
@@ -876,7 +860,6 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
         if ( res == 0 || ! IS_PLIST(res) || LEN_PLIST(res) != 4*numgens ) {
             ErrorQuit( "<list> must be a list of length %d",
                        (Int)4*numgens, 0L );
-            return 0;
         }
     }
 
@@ -908,7 +891,6 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
         rel = ptRels[r];
         if ( rel == 0 || ! IS_PLIST(rel) ) {
             ErrorQuit( "invalid Tietze relator [%d]", (Int)r, 0L );
-            return 0;
         }
         ptRel = ADDR_OBJ(rel) + 1;
 
@@ -933,7 +915,6 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
                 if ( i < -numgens || numgens < i ) {
                     ErrorQuit( "invalid entry %d in Tietze relator [%d]",
                                (Int)i, (Int)r );
-                    return 0;
                 }
                 if ( i < 0 )
                     i = numgens - i;
@@ -941,7 +922,6 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
                     i = i + 2 * numgens;
                 if ( ! SUM_INTOBJS( ptRes[i], ptRes[i], INTOBJ_INT(1) ) ) {
                     ErrorQuit( "integer overflow", 0L, 0L );
-                    return 0;
                 }
             }
 
@@ -956,7 +936,6 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
                 if ( i < - numgens || numgens < i ) {
                     ErrorQuit( "invalid entry %d in Tietze relator [%d]",
                                (Int)i, (Int)r );
-                    return 0;
                 }
                 ii = INT_INTOBJ( ptInvs[i] );
                 if ( !( (numObj == invObj
@@ -971,7 +950,6 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
                         ii = ii + 2 * numgens;
                     if ( !SUM_INTOBJS(ptRes[ii],ptRes[ii],INTOBJ_INT(1)) ) {
                         ErrorQuit( "integer overflow", 0L, 0L );
-                        return 0;
                     }
                 }
             }
@@ -1041,7 +1019,6 @@ static Obj FuncTzSearchC(Obj self, Obj args)
         ErrorQuit(
           "usage: TzSearchC( <Tietze stack>, <pos1>, <pos2>[, <equal>] )",
           0L, 0L );
-        return 0;
     }
 
     /* check the first argument (Tietze stack)                             */
@@ -1067,24 +1044,20 @@ static Obj FuncTzSearchC(Obj self, Obj args)
     tmp = ELM_LIST( args, 2 );
     if ( ! IS_INTOBJ(tmp) ) {
         ErrorQuit( "<pos1> must be a positive int", 0L ,0L );
-        return 0;
     }
     pos1 = INT_INTOBJ(tmp);
     if ( pos1 > numrels ) {
         ErrorQuit( "<pos1> out of range: %d", (Int)pos1, 0L );
-        return 0;
     }
 
     /* check the third argument                                            */
     tmp = ELM_LIST( args, 3 );
     if ( ! IS_INTOBJ(tmp) ) {
         ErrorQuit( "<pos2> must be a positive int", 0L ,0L );
-        return 0;
     }
     pos2 = INT_INTOBJ(tmp);
     if ( pos2 > numrels ) {
         ErrorQuit( "<pos2> out of range: %d", (Int)pos2, 0L );
-        return 0;
     }
 
     /* check the fourth argument                                           */
@@ -1095,7 +1068,6 @@ static Obj FuncTzSearchC(Obj self, Obj args)
         equ = ELM_LIST( args, 4 );
         if ( equ != False && equ != True ) {
             ErrorQuit( "<equal> must be false or true", 0L, 0L );
-            return 0;
         }
     }
     equal = ( equ == True );
