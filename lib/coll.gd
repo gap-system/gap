@@ -2131,25 +2131,38 @@ DeclareOperation( "SortedList", [ IsListOrCollection ] );
 
 #############################################################################
 ##
-#O  SSortedList( <C> )  . . . . . . . . . . . set of elements of a collection
-#O  SSortedList( <list> ) . . . . . . . . . . . . . set of elements of a list
-#O  Set( <C> )
+#O  SSortedList( <C>[, <fun>] ) . . . . . . . set of elements of a collection
+#O  SSortedList( <list>[, <fun>] )  . . . . . . . . set of elements of a list
+#O  Set( <C>[, <fun>] )
 ##
 ##  <#GAPDoc Label="SSortedList">
 ##  <ManSection>
-##  <Oper Name="SSortedList" Arg='listorcoll'/>
-##  <Oper Name="Set" Arg='C'/>
+##  <Oper Name="SSortedList" Arg='listorcoll[, fun]'/>
+##  <Oper Name="Set" Arg='C[, fun]'/>
 ##
 ##  <Description>
 ##  <Ref Oper="SSortedList"/> (<Q>strictly sorted list</Q>) returns a new
 ##  dense, mutable, and duplicate free list <A>new</A>.
 ##  The argument must be a collection or list <A>listorcoll</A>
-##  which may contain holes but whose elements lie in the same family
-##  (see&nbsp;<Ref Sect="Families"/>).
+##  which may contain holes.
+##  <P/>
+##  If the optional argument <A>fun</A> is not given then
 ##  <C>Length( <A>new</A> )</C> is the number of different elements of
 ##  <A>listorcoll</A>,
 ##  and <A>new</A> contains the different elements in strictly sorted order,
 ##  w.r.t.&nbsp;<Ref Oper="\&lt;"/>.
+##  For that, any two entries of <A>listorcoll</A> must be comparable via
+##  <Ref Oper="\&lt;"/>.
+##  (Typically, the entries lie in the same family,
+##  see&nbsp;<Ref Sect="Families"/>.)
+##  <P/>
+##  If <A>fun</A> is given then it must be a unary function.
+##  In this case, <A>fun</A> is applied to all elements of <A>listorcoll</A>,
+##  <A>new</A> contains the different return values in strictly sorted order,
+##  and <C>Length( <A>new</A> )</C> is the number of different such values.
+##  For that, any two return values must be comparable via
+##  <Ref Oper="\&lt;"/>.
+##  <P/>
 ##  <C><A>new</A>[<A>pos</A>]</C> executes in constant time
 ##  (see&nbsp;<Ref Filt="IsConstantTimeAccessList"/>),
 ##  and the size of <A>new</A> in memory is proportional to its length.
@@ -2166,14 +2179,20 @@ DeclareOperation( "SortedList", [ IsListOrCollection ] );
 ##  true
 ##  true
 ##  true
+##  gap> SSortedList( Group( (1,2,3) ), Order );
+##  [ 1, 3 ]
 ##  gap> SSortedList( [ 1, 2, 1,, 3, 2 ] );
 ##  [ 1, 2, 3 ]
+##  gap> SSortedList( [ 1, 2, 1,, 3, 2 ], x -> x^2 );
+##  [ 1, 4, 9 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "SSortedList", [ IsListOrCollection ] );
+DeclareOperation( "SSortedList", [ IsListOrCollection, IsFunction ] );
+
 DeclareSynonym( "Set", SSortedList );
 
 
