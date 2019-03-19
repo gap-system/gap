@@ -149,11 +149,20 @@ static inline UInt DEG_TRANS(Obj f)
 static ModuleStateOffset TransStateOffset = -1;
 
 typedef struct {
+    // TmpTrans is essentially the same as TmpPerm
     Obj TmpTrans;
 } TransModuleState;
 
-// TmpTrans is the same as TmpPerm
-#define TmpTrans MODULE_STATE(Trans).TmpTrans
+static inline Obj GetTmpTrans(void)
+{
+    return MODULE_STATE(Trans).TmpTrans;
+}
+
+static inline UInt4 * AddrTmpTrans(void)
+{
+    return ADDR_TRANS4(GetTmpTrans());
+}
+
 
 /****************************************************************************
 **
@@ -217,30 +226,21 @@ static inline void SET_EXT_TRANS(Obj f, Obj deg)
 
 static inline void ResizeTmpTrans(UInt len)
 {
-    if (TmpTrans == (Obj)0) {
-        TmpTrans = NewBag(T_TRANS4, len * sizeof(UInt4) + 3 * sizeof(Obj));
+    Obj tmpTrans = GetTmpTrans();
+    if (tmpTrans == (Obj)0) {
+        MODULE_STATE(Trans).TmpTrans = NewBag(T_TRANS4, len * sizeof(UInt4) + 3 * sizeof(Obj));
     }
-    else if (SIZE_OBJ(TmpTrans) < len * sizeof(UInt4) + 3 * sizeof(Obj)) {
-        ResizeBag(TmpTrans, len * sizeof(UInt4) + 3 * sizeof(Obj));
+    else if (SIZE_OBJ(tmpTrans) < len * sizeof(UInt4) + 3 * sizeof(Obj)) {
+        ResizeBag(tmpTrans, len * sizeof(UInt4) + 3 * sizeof(Obj));
     }
 }
 
 static inline UInt4 * ResizeInitTmpTrans(UInt len)
 {
-    UInt    i;
-    UInt4 * pttmp;
+    ResizeTmpTrans(len);
 
-    if (TmpTrans == (Obj)0) {
-        TmpTrans = NewBag(T_TRANS4, len * sizeof(UInt4) + 3 * sizeof(Obj));
-    }
-    else if (SIZE_BAG(TmpTrans) < len * sizeof(UInt4) + 3 * sizeof(Obj)) {
-        ResizeBag(TmpTrans, len * sizeof(UInt4) + 3 * sizeof(Obj));
-    }
-
-    pttmp = ADDR_TRANS4(TmpTrans);
-    for (i = 0; i < len; i++) {
-        pttmp[i] = 0;
-    }
+    UInt4 * pttmp = AddrTmpTrans();
+    memset(pttmp, 0, len * sizeof(UInt4));
     return pttmp;
 }
 
@@ -575,7 +575,7 @@ static Obj FuncIDEM_IMG_KER_NC(Obj self, Obj img, Obj ker)
     deg = LEN_LIST(copy_ker);
     rank = LEN_LIST(copy_img);
     ResizeTmpTrans(deg);
-    pttmp = ADDR_TRANS4(TmpTrans);
+    pttmp = AddrTmpTrans();
 
     // setup the lookup table
     for (i = 0; i < rank; i++) {
@@ -585,7 +585,7 @@ static Obj FuncIDEM_IMG_KER_NC(Obj self, Obj img, Obj ker)
     if (deg <= 65536) {
         f = NEW_TRANS2(deg);
         ptf2 = ADDR_TRANS2(f);
-        pttmp = ADDR_TRANS4(TmpTrans);
+        pttmp = AddrTmpTrans();
 
         for (i = 0; i < deg; i++) {
             ptf2[i] = pttmp[INT_INTOBJ(ELM_PLIST(copy_ker, i + 1)) - 1];
@@ -594,7 +594,7 @@ static Obj FuncIDEM_IMG_KER_NC(Obj self, Obj img, Obj ker)
     else {
         f = NEW_TRANS4(deg);
         ptf4 = ADDR_TRANS4(f);
-        pttmp = ADDR_TRANS4(TmpTrans);
+        pttmp = AddrTmpTrans();
 
         for (i = 0; i < deg; i++) {
             ptf4[i] = pttmp[INT_INTOBJ(ELM_PLIST(copy_ker, i + 1)) - 1];
@@ -1041,10 +1041,10 @@ static Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
             nr++;
             SET_ELM_PLIST(ker, j, NEW_PLIST(T_PLIST_CYC_SSORT, 1));
             CHANGED_BAG(ker);
-            pttmp = ADDR_TRANS4(TmpTrans);
+            pttmp = AddrTmpTrans();
         }
         AssPlist(ELM_PLIST(ker, j), (Int)++pttmp[j - 1], INTOBJ_INT(i + 1));
-        pttmp = ADDR_TRANS4(TmpTrans);
+        pttmp = AddrTmpTrans();
     }
 
     // add trailing singletons, if any
@@ -1407,7 +1407,7 @@ static Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
 
                     // update bag pointers, in case a garbage collection happened
                     ptf2 = CONST_ADDR_TRANS2(f);
-                    seen = ADDR_TRANS4(TmpTrans);
+                    seen = AddrTmpTrans();
                 }
                 if (dist > pow) {
                     pow = dist;
@@ -1452,7 +1452,7 @@ static Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
 
                     // update bag pointers, in case a garbage collection happened
                     ptf4 = CONST_ADDR_TRANS4(f);
-                    seen = ADDR_TRANS4(TmpTrans);
+                    seen = AddrTmpTrans();
                 }
                 if (dist > pow) {
                     pow = dist;
@@ -1940,7 +1940,7 @@ static Obj FuncPermutationOfImage(Obj self, Obj f)
         p = NEW_PERM2(deg);
         ResizeTmpTrans(deg);
 
-        pttmp = ADDR_TRANS4(TmpTrans);
+        pttmp = AddrTmpTrans();
         ptp2 = ADDR_PERM2(p);
         for (i = 0; i < deg; i++) {
             pttmp[i] = 0;
@@ -1968,7 +1968,7 @@ static Obj FuncPermutationOfImage(Obj self, Obj f)
         p = NEW_PERM4(deg);
         ResizeTmpTrans(deg);
 
-        pttmp = ADDR_TRANS4(TmpTrans);
+        pttmp = AddrTmpTrans();
         ptp4 = ADDR_PERM4(p);
         for (i = 0; i < deg; i++) {
             pttmp[i] = 0;
@@ -2649,7 +2649,7 @@ static Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
                     AssPlist(out, nr++, comp);
                 }
                 ptf2 = CONST_ADDR_TRANS2(f);
-                seen = ADDR_TRANS4(TmpTrans);
+                seen = AddrTmpTrans();
             }
         }
         for (i = 0; i < deg; i++) {
@@ -2663,7 +2663,7 @@ static Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
                 SET_ELM_PLIST(comp, 1, INTOBJ_INT(i + 1));
                 AssPlist(out, nr++, comp);
                 ptf2 = CONST_ADDR_TRANS2(f);
-                seen = ADDR_TRANS4(TmpTrans);
+                seen = AddrTmpTrans();
             }
         }
     }
@@ -2701,7 +2701,7 @@ static Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
                     AssPlist(out, nr++, comp);
                 }
                 ptf4 = CONST_ADDR_TRANS4(f);
-                seen = ADDR_TRANS4(TmpTrans);
+                seen = AddrTmpTrans();
             }
         }
         for (i = 0; i < deg; i++) {
@@ -2715,7 +2715,7 @@ static Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
                 SET_ELM_PLIST(comp, 1, INTOBJ_INT(i + 1));
                 AssPlist(out, nr++, comp);
                 ptf4 = CONST_ADDR_TRANS4(f);
-                seen = ADDR_TRANS4(TmpTrans);
+                seen = AddrTmpTrans();
             }
         }
     }
@@ -2825,7 +2825,7 @@ static Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
                     SET_LEN_PLIST(comp, csize);
                     AssPlist(out, nr, comp);
                 }
-                seen = ADDR_TRANS4(TmpTrans);
+                seen = AddrTmpTrans();
                 ptf2 = CONST_ADDR_TRANS2(f);
 
                 pt = i;
@@ -2869,7 +2869,7 @@ static Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
                     SET_LEN_PLIST(comp, csize);
                     AssPlist(out, nr, comp);
                 }
-                seen = ADDR_TRANS4(TmpTrans);
+                seen = AddrTmpTrans();
                 ptf4 = CONST_ADDR_TRANS4(f);
 
                 pt = i;
@@ -2916,7 +2916,7 @@ static Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
     if (TNUM_OBJ(f) == T_TRANS2) {
         do {
             AssPlist(out, ++len, INTOBJ_INT(cpt + 1));
-            ptseen = ADDR_TRANS4(TmpTrans);
+            ptseen = AddrTmpTrans();
             ptf2 = CONST_ADDR_TRANS2(f);
             ptseen[cpt] = 1;
             cpt = ptf2[cpt];
@@ -2925,7 +2925,7 @@ static Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
     else {
         do {
             AssPlist(out, ++len, INTOBJ_INT(cpt + 1));
-            ptseen = ADDR_TRANS4(TmpTrans);
+            ptseen = AddrTmpTrans();
             ptf4 = CONST_ADDR_TRANS4(f);
             ptseen[cpt] = 1;
             cpt = ptf4[cpt];
@@ -3038,14 +3038,14 @@ static Obj FuncCYCLES_TRANS(Obj self, Obj f)
                     comp = NEW_PLIST(T_PLIST_CYC, 0);
                     AssPlist(out, ++nr, comp);
 
-                    seen = ADDR_TRANS4(TmpTrans);
+                    seen = AddrTmpTrans();
                     ptf2 = CONST_ADDR_TRANS2(f);
 
                     for (; seen[pt] == 1; pt = ptf2[pt]) {
                         seen[pt] = 2;
                         AssPlist(comp, LEN_PLIST(comp) + 1,
                                  INTOBJ_INT(pt + 1));
-                        seen = ADDR_TRANS4(TmpTrans);
+                        seen = AddrTmpTrans();
                         ptf2 = CONST_ADDR_TRANS2(f);
                     }
                 }
@@ -3070,14 +3070,14 @@ static Obj FuncCYCLES_TRANS(Obj self, Obj f)
                     comp = NEW_PLIST(T_PLIST_CYC, 0);
                     AssPlist(out, ++nr, comp);
 
-                    seen = ADDR_TRANS4(TmpTrans);
+                    seen = AddrTmpTrans();
                     ptf4 = CONST_ADDR_TRANS4(f);
 
                     for (; seen[pt] == 1; pt = ptf4[pt]) {
                         seen[pt] = 2;
                         AssPlist(comp, LEN_PLIST(comp) + 1,
                                  INTOBJ_INT(pt + 1));
-                        seen = ADDR_TRANS4(TmpTrans);
+                        seen = AddrTmpTrans();
                         ptf4 = CONST_ADDR_TRANS4(f);
                     }
                 }
@@ -3134,7 +3134,7 @@ static Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
                 SET_LEN_PLIST(comp, 1);
                 SET_ELM_PLIST(comp, 1, list_i);
                 AssPlist(out, ++nr, comp);
-                seen = ADDR_TRANS4(TmpTrans);
+                seen = AddrTmpTrans();
                 ptf2 = CONST_ADDR_TRANS2(f);
             }
             else if (seen[j] == 0) {
@@ -3149,14 +3149,14 @@ static Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
                     comp = NEW_PLIST(T_PLIST_CYC, 0);
                     AssPlist(out, ++nr, comp);
 
-                    seen = ADDR_TRANS4(TmpTrans);
+                    seen = AddrTmpTrans();
                     ptf2 = CONST_ADDR_TRANS2(f);
 
                     for (; seen[pt] == 1; pt = ptf2[pt]) {
                         seen[pt] = 2;
                         AssPlist(comp, LEN_PLIST(comp) + 1,
                                  INTOBJ_INT(pt + 1));
-                        seen = ADDR_TRANS4(TmpTrans);
+                        seen = AddrTmpTrans();
                         ptf2 = CONST_ADDR_TRANS2(f);
                     }
                 }
@@ -3181,7 +3181,7 @@ static Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
                 SET_LEN_PLIST(comp, 1);
                 SET_ELM_PLIST(comp, 1, list_i);
                 AssPlist(out, ++nr, comp);
-                seen = ADDR_TRANS4(TmpTrans);
+                seen = AddrTmpTrans();
                 ptf4 = CONST_ADDR_TRANS4(f);
             }
             else if (seen[j] == 0) {
@@ -3196,14 +3196,14 @@ static Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
                     comp = NEW_PLIST(T_PLIST_CYC, 0);
                     AssPlist(out, ++nr, comp);
 
-                    seen = ADDR_TRANS4(TmpTrans);
+                    seen = AddrTmpTrans();
                     ptf4 = CONST_ADDR_TRANS4(f);
 
                     for (; seen[pt] == 1; pt = ptf4[pt]) {
                         seen[pt] = 2;
                         AssPlist(comp, LEN_PLIST(comp) + 1,
                                  INTOBJ_INT(pt + 1));
-                        seen = ADDR_TRANS4(TmpTrans);
+                        seen = AddrTmpTrans();
                         ptf4 = CONST_ADDR_TRANS4(f);
                     }
                 }
@@ -3471,7 +3471,7 @@ static Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
     SET_LEN_PLIST(out, len);
 
     ResizeTmpTrans(2 * len);
-    ptcnj = (UInt4 *)ADDR_OBJ(TmpTrans);
+    ptcnj = AddrTmpTrans();
 
     rank = 1;
     ptlkp = ptcnj + len;
@@ -3574,7 +3574,7 @@ static Obj INV_KER_TRANS(Obj X, Obj f)
 
     deg = DEG_TRANS<TF>(f);
     g = NEW_TRANS<TG>(len);
-    pttmp = ADDR_TRANS4(TmpTrans);
+    pttmp = AddrTmpTrans();
     ptf = CONST_ADDR_TRANS<TF>(f);
     ptg = ADDR_TRANS<TG>(g);
     if (deg >= len) {
@@ -4502,7 +4502,7 @@ static Int InitKernel(StructInitInfo * module)
 
 /* make the buffer bag                                                 */
 #ifndef HPCGAP
-    InitGlobalBag(&TmpTrans, "src/trans.c:TmpTrans");
+    InitGlobalBag(&MODULE_STATE(Trans).TmpTrans, "src/trans.c:TmpTrans");
 #endif
 
     // make the identity trans
@@ -4589,7 +4589,7 @@ static Int InitLibrary(StructInitInfo * module)
 
 static Int InitModuleState(void)
 {
-    TmpTrans = 0;
+    MODULE_STATE(Trans).TmpTrans = 0;
 
     // return success
     return 0;
