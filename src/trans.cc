@@ -1669,80 +1669,57 @@ static Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
         return FuncFLAT_KERNEL_TRANS_INT(self, f, n);
     }
 
+    RequireTransformation("ON_KERNEL_ANTI_ACTION", f);
+
     rank = 1;
+    deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
+    if (len < deg) {
+        ErrorQuit("ON_KERNEL_ANTI_ACTION: the length of the first "
+                  "argument must be at least %d",
+                  (Int)deg, 0L);
+    }
+
+    if (len == 0) {
+        out = ImmutableEmptyPlist;
+        return out;
+    }
+    out = NEW_PLIST_IMM(T_PLIST_CYC, len);
+    SET_LEN_PLIST(out, len);
+    pttmp = ResizeInitTmpTrans(len);
 
     if (TNUM_OBJ(f) == T_TRANS2) {
-        deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
-        if (len >= deg) {
-            if (len == 0) {
-                out = ImmutableEmptyPlist;
-                return out;
+        ptf2 = CONST_ADDR_TRANS2(f);
+        for (i = 0; i < deg; i++) {
+            // <f> then <g> with ker(<g>) = <ker>
+            j = INT_INTOBJ(ELM_LIST(ker, ptf2[i] + 1)) - 1;    // f first!
+            if (pttmp[j] == 0) {
+                pttmp[j] = rank++;
             }
-            out = NEW_PLIST_IMM(T_PLIST_CYC, len);
-            SET_LEN_PLIST(out, len);
-            pttmp = ResizeInitTmpTrans(len);
-            ptf2 = CONST_ADDR_TRANS2(f);
-            for (i = 0; i < deg; i++) {
-                // <f> then <g> with ker(<g>) = <ker>
-                j = INT_INTOBJ(ELM_LIST(ker, ptf2[i] + 1)) - 1;    // f first!
-                if (pttmp[j] == 0) {
-                    pttmp[j] = rank++;
-                }
-                SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[j]));
-            }
-            i++;
-            for (; i <= len; i++) {
-                // just <ker>
-                j = INT_INTOBJ(ELM_LIST(ker, i)) - 1;
-                if (pttmp[j] == 0) {
-                    pttmp[j] = rank++;
-                }
-                SET_ELM_PLIST(out, i, INTOBJ_INT(pttmp[j]));
-            }
-            return out;
+            SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[j]));
         }
-        ErrorQuit("ON_KERNEL_ANTI_ACTION: the length of the first "
-                  "argument must be at least %d",
-                  (Int)deg, 0L);
-        return 0L;
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
-        deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
-        if (len >= deg) {
-            if (len == 0) {
-                out = ImmutableEmptyPlist;
-                return out;
+    else /* if (TNUM_OBJ(f) == T_TRANS4) */ {
+        ptf4 = CONST_ADDR_TRANS4(f);
+        for (i = 0; i < deg; i++) {
+            // <f> then <g> with ker(<g>) = <ker>
+            j = INT_INTOBJ(ELM_LIST(ker, ptf4[i] + 1)) - 1;    // f first!
+            if (pttmp[j] == 0) {
+                pttmp[j] = rank++;
             }
-            out = NEW_PLIST_IMM(T_PLIST_CYC, len);
-            SET_LEN_PLIST(out, len);
-            pttmp = ResizeInitTmpTrans(len);
-            ptf4 = CONST_ADDR_TRANS4(f);
-            for (i = 0; i < deg; i++) {
-                // <f> then <g> with ker(<g>) = <ker>
-                j = INT_INTOBJ(ELM_LIST(ker, ptf4[i] + 1)) - 1;    // f first!
-                if (pttmp[j] == 0) {
-                    pttmp[j] = rank++;
-                }
-                SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[j]));
-            }
-            i++;
-            for (; i <= len; i++) {
-                // just <ker>
-                j = INT_INTOBJ(ELM_LIST(ker, i)) - 1;
-                if (pttmp[j] == 0) {
-                    pttmp[j] = rank++;
-                }
-                SET_ELM_PLIST(out, i, INTOBJ_INT(pttmp[j]));
-            }
-            return out;
+            SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[j]));
         }
-        ErrorQuit("ON_KERNEL_ANTI_ACTION: the length of the first "
-                  "argument must be at least %d",
-                  (Int)deg, 0L);
-        return 0L;
     }
-    RequireTransformation("ON_KERNEL_ANTI_ACTION", f);
-    return 0L;
+
+    i++;
+    for (; i <= len; i++) {
+        // just <ker>
+        j = INT_INTOBJ(ELM_LIST(ker, i)) - 1;
+        if (pttmp[j] == 0) {
+            pttmp[j] = rank++;
+        }
+        SET_ELM_PLIST(out, i, INTOBJ_INT(pttmp[j]));
+    }
+    return out;
 }
 
 /*******************************************************************************
