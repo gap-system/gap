@@ -543,10 +543,12 @@ static Obj FuncAND_FLAGS(Obj self, Obj flags1, Obj flags2)
             CHANGED_BAG(flags1);
         }
         hash = (UInt)flags2;
+        entry = 0;
         for ( i = 0;  i < 24;  i++ ) {
             hash2 = (hash + 97*i) % AND_FLAGS_HASH_SIZE;
             entry = ELM_PLIST( cache, 2*hash2+1 );
             if ( entry == 0 ) {
+                hash = hash2;
                 break;
             }
             if ( entry == flags2 ) {
@@ -560,10 +562,7 @@ static Obj FuncAND_FLAGS(Obj self, Obj flags1, Obj flags2)
                 return ELM_PLIST( cache, 2*hash2+2 );
             }
         }
-        if ( entry == 0 ) {
-            hash = hash2;
-        }
-        else {
+        if ( entry != 0 ) {
             next = (next+1) % 24;
             hash = (hash + 97*next) % AND_FLAGS_HASH_SIZE;
         }
@@ -2043,6 +2042,7 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
             res = CALL_6ARGS(method, arg1, arg2, arg3, arg4, arg5, arg6);
             break;
         default:
+            res = 0; // redundant, but silences a warning later on
             GAP_ASSERT(0);
         }
     } while (res == TRY_NEXT_METHOD);

@@ -1628,7 +1628,7 @@ static Int syGetchTerm(Int fid)
 
 static Int syGetchNonTerm(Int fid)
 {
-    UChar                ch;
+    UChar               ch = 0;
     UInt                bufno;
     int                 ret;
 
