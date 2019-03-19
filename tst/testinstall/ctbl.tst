@@ -112,5 +112,19 @@ gap> t:= CharacterTableDirectProduct( t, t );;
 gap> IsCharacterTable( t mod 5 );
 true
 
+# test a bugfix
+gap> g:= SmallGroup( 96, 3 );;
+gap> t:= CharacterTable( g );;
+gap> ClassPositionsOfLowerCentralSeries( t );
+[ [ 1 .. 12 ], [ 1, 3, 4, 5, 6, 9, 10, 11 ] ]
+gap> g:= SmallGroup( 3^5, 22 );;
+gap> t:= CharacterTable( g );;
+gap> ClassPositionsOfLowerCentralSeries( t );
+[ [ 1 .. 35 ], [ 1, 4, 6, 12, 15 ], [ 1, 6, 15 ], [ 1 ] ]
+gap> g:= SmallGroup( 96, 66 );;
+gap> t:= CharacterTable( g );;
+gap> ClassPositionsOfSupersolvableResiduum( t );
+[ 1, 5, 6 ]
+
 ##
-gap> STOP_TEST( "ctbl.tst", 1);
+gap> STOP_TEST( "ctbl.tst" );
