@@ -511,15 +511,11 @@ Int READ_GAP_ROOT ( const Char * filename )
             ClearError();
             return 1;
         }
-        else {
-            return 0;
-        }
     }
 
     /* don't know                                                          */
     else {
         ErrorQuit( "unknown result code %d from 'SyFindGapRoot'", res, 0L );
-        return 0;
     }
     return 0;
 }
@@ -541,7 +537,6 @@ static Obj FuncCLOSE_LOG_TO(Obj self)
 {
     if ( ! CloseLog() ) {
         ErrorQuit("LogTo: can not close the logfile",0L,0L);
-        return False;
     }
     return True;
 }
@@ -605,7 +600,6 @@ static Obj FuncCLOSE_INPUT_LOG_TO(Obj self)
 {
     if ( ! CloseInputLog() ) {
         ErrorQuit("InputLogTo: can not close the logfile",0L,0L);
-        return False;
     }
     return True;
 }
@@ -668,7 +662,6 @@ static Obj FuncCLOSE_OUTPUT_LOG_TO(Obj self)
 {
     if ( ! CloseOutputLog() ) {
         ErrorQuit("OutputLogTo: can not close the logfile",0L,0L);
-        return False;
     }
     return True;
 }

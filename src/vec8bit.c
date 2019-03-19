@@ -534,7 +534,6 @@ static void RewriteVec8Bit(Obj vec, UInt q)
         ErrorMayQuit("You cannot convert a locked vector compressed over "
                      "GF(%i) to GF(%i)",
                      q1, q);
-        return;
     }
 
     // extract the required info
@@ -613,7 +612,6 @@ void RewriteGF2Vec(Obj vec, UInt q)
         ErrorMayQuit("You cannot convert a locked vector compressed over "
                      "GF(2) to GF(%i)",
                      q, 0);
-        return;
     }
 
     // extract the required info
@@ -949,7 +947,6 @@ void PlainVec8Bit(Obj list)
         ErrorMayQuit(
             "Attempt to convert locked compressed vector to plain list", 0,
             0);
-        return;
     }
 
     len = LEN_VEC8BIT(list);
@@ -1013,7 +1010,6 @@ static Obj FuncPLAIN_VEC8BIT(Obj self, Obj list)
         ErrorMayQuit("You cannot convert a locked vector compressed over "
                      "GF(%i) to a plain list",
                      FIELD_VEC8BIT(list), 0);
-        return 0;
     }
     PlainVec8Bit(list);
 

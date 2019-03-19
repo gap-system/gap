@@ -675,7 +675,6 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
        coverage == True) {
         ErrorMayQuit("Code coverage can only be started once per"
                      " GAP session. Please exit GAP and restart. Sorry.",0,0);
-        return Fail;
     }
 
     memset(&profileState, 0, sizeof(profileState));
