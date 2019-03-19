@@ -2622,7 +2622,7 @@ static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
 
   /* small int case */
   if (n <= NR_SMALL_INT_BITS) {
-     mt = (UInt4*) CHARS_STRING(mtstr);
+     mt = (UInt4 *)(ADDR_OBJ(mtstr) + 1);
 #ifdef SYS_IS_64_BIT
      if (n <= 32) {
        res = INTOBJ_INT((Int)(nextrandMT_int32(mt) & ((UInt4) -1L >> (32-n))));
@@ -2648,7 +2648,7 @@ static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
      len = (qoff*4 +  sizeof(mp_limb_t) - 1) / sizeof(mp_limb_t);
      res = NewBag( T_INTPOS, len*sizeof(mp_limb_t) );
      pt = (UInt4*) ADDR_INT(res);
-     mt = (UInt4*) CHARS_STRING(mtstr);
+     mt = (UInt4 *)(ADDR_OBJ(mtstr) + 1);
      for (i = 0; i < qoff; i++, pt++) {
        *pt = nextrandMT_int32(mt);
      }

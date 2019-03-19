@@ -186,6 +186,11 @@ static void *   POOL = NULL;
 static UInt *** syWorkspace = NULL;
 static UInt     syWorksize = 0;
 
+static inline UInt *** EndOfWorkspace(void)
+{
+    return syWorkspace + syWorksize * (1024 / sizeof(UInt **));
+}
+
 #ifdef GAP_MEM_CHECK
 
 /***************************************************************
@@ -296,7 +301,7 @@ void SyMAdviseFree(void) {
     void *from;
     if (!SyMMapStart) 
         return;
-    from = (char *) syWorkspace + syWorksize * 1024;
+    from = EndOfWorkspace();
     from = (void *)SyRoundUpToPagesize((UInt) from);
     if (from > SyMMapAdvised) {
         SyMMapAdvised = from;
@@ -452,10 +457,10 @@ static UInt *** SyAllocBagsFromPool(Int size, UInt need)
     while ((syWorksize+size)*1024 > SyAllocPool) {
         if (SyTryToIncreasePool()) return (UInt***)-1;
     }
-    return (UInt***)((char*)syWorkspace + syWorksize*1024);
+    return EndOfWorkspace();
   }
   else if  (size < 0 && (need >= 2 || SyStorMin <= syWorksize + size))
-    return (UInt***)((char*)syWorkspace + syWorksize*1024);
+    return EndOfWorkspace();
   else
     return (UInt***)-1;
 }
@@ -501,15 +506,14 @@ UInt *** SyAllocBags(Int size, UInt need)
               {
                 ret = (UInt ***)sbrk(1024*1024*1024);
                 if (ret != (UInt ***)-1  && 
-                    ret != (UInt***)((char*)syWorkspace + syWorksize*1024))
+                    ret != EndOfWorkspace())
                   {
                     sbrk(-1024*1024*1024);
                     ret = (UInt ***)-1;
                   }
                 if (ret == (UInt ***)-1)
                   break;
-                memset((void *)((char *)syWorkspace + syWorksize*1024), 0, 
-                       1024*1024*1024);
+                memset(EndOfWorkspace(), 0, 1024*1024*1024);
                 size -= 1024*1024;
                 syWorksize += 1024*1024;
                 adjust++;
@@ -517,13 +521,13 @@ UInt *** SyAllocBags(Int size, UInt need)
 #endif
             ret = (UInt ***)sbrk(size*1024);
             if (ret != (UInt ***)-1  && 
-                ret != (UInt***)((char*)syWorkspace + syWorksize*1024))
+                ret != EndOfWorkspace())
               {
                 sbrk(-size*1024);
                 ret = (UInt ***)-1;
               }
             if (ret != (UInt ***)-1)
-              memset((void *)((char *)syWorkspace + syWorksize*1024), 0, 
+              memset(EndOfWorkspace(), 0, 
                      1024*size);
             
           }

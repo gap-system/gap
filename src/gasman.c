@@ -222,7 +222,7 @@ static inline UInt WORDS_BAG(UInt size)
 
 static inline Bag *DATA(BagHeader *bag)
 {
-    return (Bag *)(((char *)bag) + sizeof(BagHeader));
+    return (Bag *)(bag + 1);
 }
 
 
@@ -611,12 +611,12 @@ static inline Bag MARKED_DEAD(Bag x)
 
 static inline Bag MARKED_ALIVE(Bag x)
 {
-    return (Bag)(((Char *)x) + 1);
+    return (Bag)((UInt)x | ALIVE);
 }
 
 static inline Bag MARKED_HALFDEAD(Bag x)
 {
-    return (Bag)(((Char *)x) + 2);
+    return (Bag)((UInt)x | HALFDEAD);
 }
 
 static inline Int IS_MARKED_DEAD(Bag x)
@@ -645,13 +645,13 @@ static inline Bag UNMARKED_DEAD(Bag x)
 static inline Bag UNMARKED_ALIVE(Bag x)
 {
     GAP_ASSERT(GET_MARK_BITS(x) == ALIVE);
-    return (Bag)(((Char *)x) - ALIVE);
+    return (Bag)(((UInt)x) & ~ALIVE);
 }
 
 static inline Bag UNMARKED_HALFDEAD(Bag x)
 {
     GAP_ASSERT(GET_MARK_BITS(x) == HALFDEAD);
-    return (Bag)(((Char *)x) - HALFDEAD);
+    return (Bag)(((UInt)x) & ~HALFDEAD);
 }
 
 
