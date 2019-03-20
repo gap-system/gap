@@ -2078,6 +2078,59 @@ DeclareOperation( "FirstOp", [ IsListOrCollection, IsFunction ] );
 
 #############################################################################
 ##
+#F  Last( <list>[, <func>] ) . .  find last element in a list with a property
+##
+##  <#GAPDoc Label="Last">
+##  <ManSection>
+##  <Func Name="Last" Arg='list[, func]'/>
+##
+##  <Description>
+##  <Ref Func="Last"/> returns the last element of the list <A>list</A>
+##  for which the unary function <A>func</A> returns <K>true</K>;
+##  if <A>func</A> is not given, the first element is returned.
+##  <A>list</A> may contain holes.
+##  <A>func</A> must return either <K>true</K> or <K>false</K> for each
+##  element of <A>list</A>, otherwise an error is signalled.
+##  If <A>func</A> returns <K>false</K> for all elements of <A>list</A>
+##  then <Ref Func="Last"/> returns <K>fail</K>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> Last( [10^7..10^8], IsPrime );
+##  99999989
+##  gap> Last( [10^5..10^6],
+##  >      n -> not IsPrime(n) and IsPrimePowerInt(n) );
+##  994009
+##  gap> Last( [ 1 .. 20 ], x -> x < 0 );
+##  fail
+##  gap> Last( [ fail ], x -> x = fail );
+##  fail
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "Last" );
+
+
+#############################################################################
+##
+#O  LastOp( <list>[, <func>] )
+##
+##  <ManSection>
+##  <Oper Name="LastOp" Arg='list[, func]'/>
+##
+##  <Description>
+##  <Ref Oper="LastOp"/> is the operation called by <Ref Func="Last"/>
+##  if <A>list</A> is not an internally represented list.
+##  </Description>
+##  </ManSection>
+##
+DeclareOperation( "LastOp", [ IsListOrCollection ] );
+DeclareOperation( "LastOp", [ IsListOrCollection, IsFunction ] );
+
+
+#############################################################################
+##
 #O  Iterated( <list>, <f> ) . . . . . . . . .  iterate a function over a list
 ##
 ##  <#GAPDoc Label="Iterated">
