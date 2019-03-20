@@ -1040,6 +1040,20 @@ teststandard: all
           ReadGapRoot( "tst/teststandard.g" );' | $(TESTGAP) | \
             tee `date -u +dev/log/teststandard2_%Y-%m-%d-%H-%M` )
 
+# run testextra.g twice:
+# - without packages (except needed to run GAP)
+# - with all packages loaded
+testextra: all
+	$(MKDIR_P) dev/log
+	( echo 'SetUserPreference("UseColorsInTerminal",false); \
+          SetUserPreference("ReproducibleBehaviour", true); \
+          ReadGapRoot( "tst/testextra.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/testextra1_%Y-%m-%d-%H-%M` )
+	( echo 'SetUserPreference("UseColorsInTerminal",false); LoadAllPackages(); \
+	      SetUserPreference("ReproducibleBehaviour", true); \
+          ReadGapRoot( "tst/testextra.g" );' | $(TESTGAP) | \
+            tee `date -u +dev/log/testextra2_%Y-%m-%d-%H-%M` )
+
 # run testbugfix.g twice:
 # - without packages (except needed to run GAP)
 # - with all packages loaded
