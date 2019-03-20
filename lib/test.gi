@@ -292,6 +292,8 @@ end);
 ##  lines, compares the actual output with the output stored in 
 ##  <Arg>fname</Arg> and reports differences. With an optional record as
 ##  argument <Arg>optrec</Arg> details of this process can be adjusted.
+##  Note that the <C>rewriteToFile</C> option is especially useful for
+##  generating test files.
 ##  <P/>
 ##  More precisely, the content of <Arg>fname</Arg> must have the following
 ##  format. <Br/>
@@ -371,7 +373,11 @@ end);
 ##  and that file is written with the same input and comment lines as
 ##  <Arg>fname</Arg> but the output substituted by the newly generated
 ##  version; if it is bound to <K>true</K>, then this is treated as if
-##  it was bound to <Arg>fname</Arg> (default is <K>false</K>).</Item>
+##  it was bound to <Arg>fname</Arg> (default is <K>false</K>). This is
+##  especially useful for generating test files because it ensures that
+##  the test files are formatted exactly as <Ref Func="Test" /> expects
+##  them to be.
+##  </Item>
 ##  <Mark><C>writeTimings</C></Mark>
 ##  <Item>If this is bound to a string it is considered as a file name,
 ##  that file is written and contains timing information for each input 
@@ -705,6 +711,8 @@ end);
 ##  printed, and <K>true</K> returned if all tests passed.
 ##  <P/>
 ##  If the optional argument <Arg>optrec</Arg> is given it must be a record.
+##  Note that the <C>rewriteToFile</C> option is especially useful for
+##  generating test files.
 ##  The following components of <Arg>optrec</Arg> are recognized and can change
 ##  the default behaviour of <Ref Func="TestDirectory" />:
 ##  <List>
@@ -725,6 +733,9 @@ end);
 ##  <Mark><C>rewriteToFile</C></Mark>
 ##  <Item>If <K>true</K>, then rewrite each test file to disc, with the output substituted
 ##  by the results of running the test (defaults to <K>false</K>).
+##  This is especially useful for generating test files because it ensures that
+##  the test files are formatted exactly as <Ref Func="Test" /> expects
+##  them to be.
 ##  </Item>
 ##  <Mark><C>exclude</C></Mark>
 ##  <Item>A list of file and directory names which will be excluded from
