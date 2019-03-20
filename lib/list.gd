@@ -2021,15 +2021,16 @@ DeclareGlobalFunction( "IteratorList" );
 
 #############################################################################
 ##
-#F  First( <list>, <func> ) . .  find first element in a list with a property
+#F  First( <list>[, <func>] ) .  find first element in a list with a property
 ##
 ##  <#GAPDoc Label="First">
 ##  <ManSection>
-##  <Func Name="First" Arg='list, func'/>
+##  <Func Name="First" Arg='list[, func]'/>
 ##
 ##  <Description>
 ##  <Ref Func="First"/> returns the first element of the list <A>list</A>
-##  for which the unary function <A>func</A> returns <K>true</K>.
+##  for which the unary function <A>func</A> returns <K>true</K>;
+##  if <A>func</A> is not given, the first element is returned.
 ##  <A>list</A> may contain holes.
 ##  <A>func</A> must return either <K>true</K> or <K>false</K> for each
 ##  element of <A>list</A>, otherwise an error is signalled.
@@ -2060,10 +2061,10 @@ DeclareGlobalFunction( "First" );
 
 #############################################################################
 ##
-#O  FirstOp( <list>, <func> )
+#O  FirstOp( <list>[, <func>] )
 ##
 ##  <ManSection>
-##  <Oper Name="FirstOp" Arg='list, func'/>
+##  <Oper Name="FirstOp" Arg='list[, func]'/>
 ##
 ##  <Description>
 ##  <Ref Oper="FirstOp"/> is the operation called by <Ref Func="First"/>
@@ -2071,6 +2072,7 @@ DeclareGlobalFunction( "First" );
 ##  </Description>
 ##  </ManSection>
 ##
+DeclareOperation( "FirstOp", [ IsListOrCollection ] );
 DeclareOperation( "FirstOp", [ IsListOrCollection, IsFunction ] );
 
 
