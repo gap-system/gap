@@ -387,6 +387,26 @@ gap> First([0..3], IsPosInt);
 gap> First(Enumerator(Integers), IsPosInt);
 1
 
+# Last
+gap> Last([0,1,2,3]);
+3
+gap> Last([0..3]);
+3
+gap> Last(Enumerator(Integers));
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `LastOp' on 1 arguments
+gap> Last([0,1,2,3], IsFFE);
+fail
+gap> Last([0..3], IsFFE);
+fail
+gap> Last([0,1,2,3], IsZero);
+0
+gap> Last([0..3], IsZero);
+0
+gap> Last(Enumerator(Integers), IsZero);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `LastOp' on 2 arguments
+
 # Positions
 gap> ll := [ 1, 2, 3, 2, 1, 2 ];;
 gap> Positions( ll, 1 );

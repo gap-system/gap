@@ -2849,6 +2849,62 @@ InstallMethod( FirstOp,
 
 #############################################################################
 ##
+#F  Last( <C>, <func> )  . . . .  find last element in a list with a property
+##
+InstallGlobalFunction( Last,
+    function ( C, func... )
+    local tnum, i;
+    if Length( func ) > 1 then
+      Error( "too many arguments" );
+    fi;
+    tnum:= TNUM_OBJ( C );
+    if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
+      if Length( func ) = 0 then
+        func := ReturnTrue;
+      else
+        func := func[1];
+      fi;
+      for i in [Length(C),Length(C)-1..1] do
+          if IsBound(C[i]) and func(C[i]) then
+              return C[i];
+          fi;
+      od;
+      return fail;
+    elif Length( func ) = 0 then
+      return LastOp( C );
+    else
+      return LastOp( C, func[1] );
+    fi;
+end );
+
+
+#############################################################################
+##
+#M  LastOp( <C>, <func> )  . . .  find last element in a list with a property
+##
+InstallMethod( LastOp,
+    "for a list and a function",
+    [ IsList and IsFinite, IsFunction ],
+    function ( list, func )
+    local i;
+    for i in [Length(list),Length(list)-1..1] do
+        if IsBound(list[i]) and func(list[i]) then
+            return list[i];
+        fi;
+    od;
+    return fail;
+    end );
+
+InstallMethod( LastOp,
+    "for a list",
+    [ IsList and IsFinite ],
+    function ( list )
+    return LastOp(list, ReturnTrue);
+    end );
+
+
+#############################################################################
+##
 #M  Iterated( <list>, <func> )  . . . . . . .  iterate a function over a list
 ##
 InstallMethod( Iterated,
