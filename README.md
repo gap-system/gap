@@ -61,7 +61,7 @@ On Ubuntu or Debian, you can install these with the following command:
 
     sudo apt install build-essential autoconf libtool libgmp-dev libreadline-dev
 
-On OS X, you can install the dependencies in several ways:
+On macOS, you can install the dependencies in several ways:
 
  * using Homebrew: `brew install autoconf libtool gmp readline`
  * using Fink: `fink install autoconf2.6 libtool2 gmp5 readline7`
@@ -78,13 +78,13 @@ Then to build GAP, first run this command to generate the `configure` script:
     ./autogen.sh
 
 Afterwards you can proceed similar to what is described in `INSTALL.md`, in
-particular enter the following commands to compile GAP itself (for OS X users,
+particular enter the following commands to compile GAP itself (for macOS users,
 see below for a few additional hints):
 
     ./configure
     make
 
-For OS X users you may ned to tell GAP where it can find these dependencies.
+For macOS users you may ned to tell GAP where it can find these dependencies.
 
 For Homebrew, use these commands:
 

@@ -95,7 +95,7 @@ The exact method of unpacking will vary dependently on the operating system
 and the type of archive used.
 
 Unix (including macOS)
----------------------
+----------------------
 
 Under Unix style operating systems (such as Linux and macOS), unpack the
 archive `gap-4.X.Y.tar.bz2` in whatever place you want GAP to reside.
