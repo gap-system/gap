@@ -12,7 +12,7 @@ pkg=$1; shift
 src=$1; shift # directory with package sources -- must be an absolute path
 
 builddir=extern/build/$pkg
-prefix=$PWD/extern/install/$pkg
+prefix="$PWD/extern/install/$pkg"
 
 mkdir -p "$builddir"
 
@@ -21,7 +21,7 @@ mkdir -p "$builddir"
 if [[ ( ! "$builddir/config.status" -nt "$src/configure" )
     || ( "config.status" -nt "$builddir/config.status" ) ]] ; then
   pushd "$builddir"
-  "$src/configure" --prefix=$prefix "$@"
+  "$src/configure" --prefix="$prefix" "$@"
   popd
 fi
 

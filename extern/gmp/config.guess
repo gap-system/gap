@@ -60,11 +60,11 @@ SHELL=${CONFIG_SHELL-/bin/sh}
 # Identify ourselves on --version, --help or errors
 if test $# != 0; then
   echo "(GNU MP wrapped config.guess)"
-  $SHELL $configfsf_guess "$@"
+  $SHELL "$configfsf_guess" "$@"
   exit 1
 fi
 
-guess_full=`$SHELL $configfsf_guess`
+guess_full=`$SHELL "$configfsf_guess"`
 if test $? != 0; then
   exit 1
 fi
