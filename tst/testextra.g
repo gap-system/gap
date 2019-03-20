@@ -7,7 +7,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file exercices 'tst/testextra' tests, which are very slow. 
+##  This file exercises 'tst/testextra' tests, which are very slow. 
 ##
 ##  To run it, use this command:
 ##
