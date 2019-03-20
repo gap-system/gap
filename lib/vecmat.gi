@@ -2309,20 +2309,6 @@ InstallOtherMethod( KroneckerProduct, "for two gf2 matrices",
   [IsGF2MatrixRep and IsMatrix, IsGF2MatrixRep and IsMatrix],
   KRONECKERPRODUCT_GF2MAT_GF2MAT );
 
-InstallMethod( Fold, "for a gf2 vector, a positive int, and a gf2 matrix",
-  [ IsVectorObj and IsGF2VectorRep, IsPosInt, IsGF2MatrixRep ],
-  function( v, rl, t )
-    local rows,i,tt,m;
-    m := [];
-    tt := ZeroVector(rl,v);
-    for i in [1..Length(v)/rl] do
-        CopySubVector(v,tt,[(i-1)*rl+1..i*rl],[1..rl]);
-        Add(m,ShallowCopy(tt)); 
-    od;
-    ConvertToMatrixRep(m,2);
-    return m;
-  end );
-
 InstallMethod( ConstructingFilter, "for a gf2 vector",
   [ IsGF2VectorRep ], function(v) return IsGF2VectorRep; end );
 InstallMethod( ConstructingFilter, "for a gf2 matrix",

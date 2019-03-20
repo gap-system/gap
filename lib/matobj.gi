@@ -311,37 +311,6 @@ InstallMethod( IdentityMatrix,
     return NewMatrix( rep, basedomain, dim, IdentityMat( dim, basedomain ) );
   end );
 
-
-
-InstallMethod( Unfold, "for a matrix object, and a vector object",
-  [ IsMatrixObj, IsVectorObj ],
-  function( m, w )
-    local v,i,l;
-    if Length(m) = 0 then
-        return ZeroVector(0,w);
-    else
-        l := NumberColumns(m);
-        v := ZeroVector(Length(m)*l,w);
-        for i in [1..Length(m)] do
-            CopySubVector( m[i], v, [1..l], [(i-1)*l+1..i*l] );
-        od;
-        return v;
-    fi;
-  end );
-
-InstallMethod( Fold, "for a vector, a positive int, and a matrix",
-  [ IsVectorObj, IsPosInt, IsMatrixObj ],
-  function( v, rl, t )
-    local rows,i,tt,m;
-    m := Matrix([],rl,t);
-    tt := ZeroVector(rl,v);
-    for i in [1..Length(v)/rl] do
-        CopySubVector(v,tt,[(i-1)*rl+1..i*rl],[1..rl]);
-        Add(m,ShallowCopy(tt));
-    od;
-    return m;
-  end );
-
 InstallMethod( CompanionMatrix, "for a polynomial and a matrix",
   [ IsUnivariatePolynomial, IsMatrixObj ],
   function( po, m )

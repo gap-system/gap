@@ -1122,20 +1122,6 @@ InstallOtherMethod( KroneckerProduct, "for two 8bit matrices",
     return kroneckerproduct;
   end );
 
-InstallMethod( Fold, "for an 8bit vector, a positive int, and an 8bit matrix",
-  [ IsVectorObj and Is8BitVectorRep, IsPosInt, Is8BitMatrixRep ],
-  function( v, rl, t )
-    local rows,i,tt,m;
-    m := [];
-    tt := ZeroVector(rl,v);
-    for i in [1..Length(v)/rl] do
-        CopySubVector(v,tt,[(i-1)*rl+1..i*rl],[1..rl]);
-        Add(m,ShallowCopy(tt)); 
-    od;
-    ConvertToMatrixRep(m,Q_VEC8BIT(m[1]));
-    return m;
-  end );
-
 InstallMethod( ConstructingFilter, "for an 8bit vector",
   [ Is8BitVectorRep ], function(v) return Is8BitVectorRep; end );
 InstallMethod( ConstructingFilter, "for an 8bit matrix",

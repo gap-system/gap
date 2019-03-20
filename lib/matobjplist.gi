@@ -1292,35 +1292,6 @@ InstallMethod( \*, "for a plist vector and a plist matrix",
     return res;
   end );
 
-InstallMethod( Unfold, "for a plist matrix",
-  [ IsPlistMatrixRep, IsPlistVectorRep ],
-  function( m, w )
-    local v,i,l;
-    if Length(m![ROWSPOS]) = 0 then
-        return ShallowCopy(m![EMPOS]);
-    else
-        l := m![RLPOS];
-        v := ZeroVector(Length(m![ROWSPOS])*l,m![EMPOS]);
-        for i in [1..Length(m![ROWSPOS])] do
-            CopySubVector( m![ROWSPOS][i], v, [1..l], [(i-1)*l+1..i*l] );
-        od;
-        return v;
-    fi;
-  end );
-
-InstallMethod( Fold, "for a plist vector, a positive int, and a plist matrix",
-  [ IsPlistVectorRep, IsPosInt, IsPlistMatrixRep ],
-  function( v, rl, t )
-    local rows,i,tt,m;
-    m := Matrix([],rl,t);
-    tt := ZeroVector(rl,v);
-    for i in [1..Length(v![ELSPOS])/rl] do
-        Add(m![ROWSPOS],v{[(i-1)*rl+1..i*rl]});
-    od;
-    return m;
-  end );
-
-
 #InstallMethod( \^, "for a plist vector and an integer",
 #  [ IsPlistMatrixRep, IsInt ],
 #  function( m, i )
