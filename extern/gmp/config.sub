@@ -71,7 +71,7 @@ SHELL=${CONFIG_SHELL-/bin/sh}
 case "$1" in
 "" | -*)
   echo "(GNU MP wrapped config.sub)" 1>&2
-  $SHELL $configfsf_sub "$@"
+  $SHELL "$configfsf_sub" "$@"
   exit
   ;;
 esac
@@ -135,7 +135,7 @@ armcortexr4 | armcortexr5 | armcortexm3 | arm*neon | xgene1 | exynosm1 | thunder
 
 *)
   # Don't need or want to change the given name, just run configfsf.sub
-  $SHELL $configfsf_sub "$given_full"
+  $SHELL "$configfsf_sub" "$given_full"
   if test $? = 0; then
     exit 0
   else
@@ -146,7 +146,7 @@ esac
 
 
 test_full="$test_cpu$given_rest"
-canonical_full=`$SHELL $configfsf_sub "$test_full"`
+canonical_full=`$SHELL "$configfsf_sub" "$test_full"`
 if test $? = 0; then
   :
 else
