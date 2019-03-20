@@ -289,34 +289,33 @@ BindGlobal("BITLISTS_NFIM", MakeImmutable(
 # * - possible non-zero entry in upper right corner...
 #
 #
-BindGlobal("DoNFIM", function(arg)
+BindGlobal("DoNFIM", function(mat, options)
 local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
       t, tmp, i, q, R, rank, signdet;
 
-  if not Length(arg)=2
-     or not (IsMatrix(arg[1])
-         or (IsList(arg[1]) and Length(arg[1])=1
-             and IsList(arg[1][1]) and Length(arg[1][1])=0))
-     or not IsInt(arg[2]) then
-    Error("syntax is DoNFIM(<matrix>,<options>)");
+  if not (IsMatrix(mat)
+         or (IsList(mat) and Length(mat)=1
+             and IsList(mat[1]) and Length(mat[1])=0))
+     or not IsInt(options) then
+    Error("syntax is DoNFIM(<mat>,<options>)");
   fi;
 
   #Parse options
-  opt := BITLISTS_NFIM[arg[2]+1];
-  #List(CoefficientsQadic(arg[2],2),x->x=1);
+  opt := BITLISTS_NFIM[options+1];
+  #List(CoefficientsQadic(options,2),x->x=1);
   #if Length(opt)<4 then
   #  opt{[Length(opt)+1..4]} := List([Length(opt)+1..4],x->false);
   #fi;
 
   sig:=1;
 
-  #Embed arg[1] in 2 larger "id" matrix
-  n := Length(arg[1])+2;
-  m := Length(arg[1,1])+2;
+  #Embed matrix in 2 larger "id" matrix
+  n := NrRows(mat)+2;
+  m := NrCols(mat)+2;
   k:=ListWithIdenticalEntries(m,0);
   if opt[5] then
     # change the matrix
-    A:=arg[1];
+    A:=mat;
     for i in [n-1,n-2..2] do
       A[i]:=ShallowCopy(k);
       A[i]{[2..m-1]}:=A[i-1];
@@ -325,10 +324,10 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
     A := [];
     for i in [2..n-1] do
       #A[i] := [0];
-      #Append(A[i],arg[1,i-1]);
+      #Append(A[i],mat[i-1]);
       #A[i,m] := 0;
       A[i]:=ShallowCopy(k);
-      A[i]{[2..m-1]}:=arg[1,i-1];
+      A[i]{[2..m-1]}:=mat[i-1];
     od;
   fi;
   A[1]:=ShallowCopy(k);
