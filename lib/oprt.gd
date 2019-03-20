@@ -1769,10 +1769,11 @@ OrbitsishOperation( "Earns", OrbitsishReq, false, NewAttribute );
 ##  <M>D</M> if and only if for every pair of points <M>d, e \in D</M>
 ##  there is an element <M>g</M> in <A>G</A> such that <M>d^g = e</M>.
 ##  <P/>
-##  For permutation groups, the syntax <C>IsTransitive(<A>G</A>)</C> is also
-##  permitted and tests whether the group is transitive on the points moved
-##  by it, that is the group <M>\langle (2,3,4),(2,3) \rangle</M>
-##  is transitive (on 3 points).
+##  For a permutation groups <A>G</A>, one may also invoke this as
+##  <C>IsTransitive(<A>G</A>)</C>, which tests whether the group is
+##  transitive with respect to its natural action on the points moved by it.
+##  For example the group <M>\langle (2,3,4),(2,3) \rangle</M>
+##  is transitive on the three points 2, 3, 4.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1783,6 +1784,7 @@ OrbitsishOperation( "IsTransitive", OrbitsishReq, false, NewProperty );
 #############################################################################
 ##
 #O  IsPrimitive( <G>, <Omega>[, <gens>, <acts>][, <act>] )
+#P  IsPrimitive( <G> )
 #P  IsPrimitive( <xset> )
 ##
 ##  <#GAPDoc Label="IsPrimitive">
@@ -1790,6 +1792,8 @@ OrbitsishOperation( "IsTransitive", OrbitsishReq, false, NewProperty );
 ##  <Heading>IsPrimitive</Heading>
 ##  <Oper Name="IsPrimitive" Arg='G, Omega[, gens, acts][, act]'
 ##   Label="for a group, an action domain, etc."/>
+##  <Prop Name="IsPrimitive" Arg='G'
+##   Label="for a permutation group"/>
 ##  <Prop Name="IsPrimitive" Arg='xset'
 ##   Label="for an external set"/>
 ##
@@ -1799,7 +1803,23 @@ OrbitsishOperation( "IsTransitive", OrbitsishReq, false, NewProperty );
 ##  <P/>
 ##  <Index>primitive</Index>
 ##  An action is <E>primitive</E> if it is transitive and the action admits
-##  no nontrivial block systems. See&nbsp;<Ref Sect="Block Systems"/>.
+##  no nontrivial block systems. See&nbsp;<Ref Sect="Block Systems"/> for
+##  the definition of block systems.
+##  <P/>
+##  For a permutation groups <A>G</A>, one may also invoke this as
+##  <C>IsPrimitive(<A>G</A>)</C>, which tests whether the group is
+##  primitive with respect to its natural action on the points moved by it.
+##  For example the group <M>\langle (2,3,4),(2,3) \rangle</M>
+##  is primitive on the three points 2, 3, 4.
+##  <P/>
+##  For an explanation of the meaning of all the inputs, please refer to
+##  &nbsp;<Ref Sect="About Group Actions"/>.
+##  <P/>
+##  <E>Note:</E> This operation does not tell whether a matrix group is
+##  primitive in the sense of preserving a direct sum of vector spaces.
+##  To do this use <C>IsPrimitiveMatrixGroup</C> or
+##  <C>IsPrimitive</C> from the package <Package>IRREDSOL</Package>.
+##  
 ##  <Example><![CDATA[
 ##  gap> IsPrimitive(g,Orbit(g,(1,2)(3,4)));
 ##  true
