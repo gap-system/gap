@@ -99,7 +99,7 @@ in the following ways:
   actually induces a homomorphism
   and the results are unpredictable if this is not the case.
 </Item>
-<Mark><C>OrbitsDomain</C><M>( extset )</M></Mark>
+<Mark><C>OrbitsDomain</C><M>( xset )</M></Mark>
 <Item>
   A third variant is to call the operation with an external set,
   which then provides <M>G</M>, <M>\Omega</M> and <M>\mu</M>.
