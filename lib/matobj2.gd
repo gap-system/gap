@@ -1135,19 +1135,6 @@ DeclareOperation( "IsLowerTriangularMat", [IsMatrixObj] );
 DeclareOperation( "KroneckerProduct", [IsMatrixObj,IsMatrixObj] );
 # The result is fully mutable.
 
-# FIXME: what is the purpose of Unfold and Fold?
-# Maybe remove them, and wait if somebody asks for / needs this
-
-DeclareOperation( "Unfold", [IsMatrixObj, IsVectorObj] );
-# Concatenates all rows of a matrix to one single vector in the same
-# representation as the given template vector. Usually this must
-# be compatible with the representation of the matrix given.
-DeclareOperation( "Fold", [IsVectorObj, IsPosInt, IsMatrixObj] );
-# Cuts the row vector into pieces of length the second argument
-# and forms a matrix out of the pieces in the same representation 
-# as the third argument. The length of the vector must be a multiple
-# of the second argument.
-
 # The following unwraps a matrix to a list of lists:
 DeclareOperation( "Unpack", [IsRowListMatrix] );
 # It guarantees to copy, that is changing the returned object does
