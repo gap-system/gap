@@ -369,6 +369,24 @@ gap> l := [40, 39 .. 10];;
 gap> RepresentativeSmallest(l);
 10
 
+# First
+gap> First([0,1,2,3]);
+0
+gap> First([0..3]);
+0
+gap> First(Enumerator(Integers));
+0
+gap> First([0,1,2,3], IsFFE);
+fail
+gap> First([0..3], IsFFE);
+fail
+gap> First([0,1,2,3], IsPosInt);
+1
+gap> First([0..3], IsPosInt);
+1
+gap> First(Enumerator(Integers), IsPosInt);
+1
+
 # Positions
 gap> ll := [ 1, 2, 3, 2, 1, 2 ];;
 gap> Positions( ll, 1 );

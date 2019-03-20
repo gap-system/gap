@@ -2792,18 +2792,28 @@ InstallMethod( Permuted,
 #F  First( <C>, <func> )  . . .  find first element in a list with a property
 ##
 InstallGlobalFunction( First,
-    function ( C, func )
+    function ( C, func... )
     local tnum, elm;
+    if Length( func ) > 1 then
+      Error( "too many arguments" );
+    fi;
     tnum:= TNUM_OBJ( C );
     if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
+      if Length( func ) = 0 then
+        func := ReturnTrue;
+      else
+        func := func[1];
+      fi;
       for elm in C do
           if func( elm ) then
               return elm;
           fi;
       od;
       return fail;
+    elif Length( func ) = 0 then
+      return FirstOp( C );
     else
-      return FirstOp( C, func );
+      return FirstOp( C, func[1] );
     fi;
 end );
 
@@ -2821,6 +2831,17 @@ InstallMethod( FirstOp,
         if func( elm ) then
             return elm;
         fi;
+    od;
+    return fail;
+    end );
+
+InstallMethod( FirstOp,
+    "for a list or collection",
+    [ IsListOrCollection ],
+    function ( C )
+    local elm;
+    for elm in C do
+        return elm;
     od;
     return fail;
     end );
