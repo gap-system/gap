@@ -1822,6 +1822,17 @@ void CodeStringExpr (
     PushExpr( string );
 }
 
+void CodePragma(Obj pragma)
+{
+    GAP_ASSERT(IS_STRING_REP(pragma));
+
+    Expr pragmaexpr = NewStat(T_PRAGMA, sizeof(UInt));
+    Int  ix = PushValue(pragma);
+    WRITE_EXPR(pragmaexpr, 0, ix);
+    PushStat(pragmaexpr);
+}
+
+
 /****************************************************************************
 **
 *F  CodeFloatExpr( <str> ) . . . . . . . .  code literal float expression

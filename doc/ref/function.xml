@@ -184,4 +184,64 @@ there is one operation <Ref Attr="Zero"/> instead of two operations
 
 </Section>
 
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Pragmas">
+<Heading>Code annotations (pragmas)</Heading>
+<Index>Pragmas</Index>
+<Index>Code annotations</Index>
+<Index>#%</Index>
+
+GAP supports the use of code annotations (pragmas) in functions, i.e.,
+adding comments to functions that are stored in the function object itself,
+unlike regular comments. Pragmas are single-line comments,
+starting with <C>#%</C>:
+<Example><![CDATA[
+gap> function()
+>       #% This is a pragma
+>       #  This is not a pragma
+>       return;
+> end;;
+gap> Display( last );
+function (  )
+    #% This is a pragma
+    return;
+end
+]]></Example>
+<P/>
+Pragmas can be used to mark parts of functions that should
+later be manipulated using <Ref Sect="Syntax Trees"/>.
+<P/>
+Please note that heavy use of pragmas in functions slows
+down the execution of your function in the same way as adding
+empty <C>;</C> statements to your code.
+<Log><![CDATA[
+gap> a := function( )
+>       local i;
+>       for i in [ 1 .. 1000000 ] do
+>               i := i + 1;
+>       od;
+> end;
+function(  ) ... end
+gap> a();
+gap> time;
+14
+gap> b := function( )
+>       local i;
+>       for i in [ 1 .. 1000000 ] do
+>               i := i + 1;
+>               #% pragma
+>               #% pragma
+>               #% pragma
+>               #% pragma
+>               #% pragma
+>       od;
+> end;
+function(  ) ... end
+gap> b();
+gap> time;
+25
+]]></Log>
+</Section>
+
+
 </Chapter>

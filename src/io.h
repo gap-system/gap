@@ -26,6 +26,7 @@
 
 
 Char GET_NEXT_CHAR(void);
+Char GET_NEXT_CHAR_NO_LC(void);
 Char PEEK_NEXT_CHAR(void);
 Char PEEK_CURR_CHAR(void);
 
