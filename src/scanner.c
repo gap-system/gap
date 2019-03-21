@@ -746,6 +746,30 @@ static void GetStr(void)
     }
 }
 
+
+static void GetPragma(void)
+{
+    Obj  string = 0;
+    Char buf[1024];
+    UInt i = 0;
+    Char c = PEEK_CURR_CHAR();
+
+    while ( c != '\n' && c != '\r' && c != '\f' && c != '\t' && c != '\377') {
+        i = AddCharToBuf(&string, buf, sizeof(buf), i, c);
+
+        // read the next character
+        c = GET_NEXT_CHAR();
+    }
+
+    // append any remaining data to STATE(ValueObj)
+    STATE(ValueObj) = AppendBufToString(string, buf, i);
+
+    if (c == '\377') {
+        *STATE(In) = '\0';
+    }
+}
+
+
 /****************************************************************************
 **
 *F  GetTripStr() . . . . . . . . . . . . .  get a triple quoted string, local
@@ -945,8 +969,16 @@ static UInt NextSymbol(void)
 
     // skip over <spaces>, <tabs>, <newlines> and comments
     while (c == ' ' || c == '\t' || c== '\n' || c== '\r' || c == '\f' || c=='#') {
-        if (c == '#')
+        if (c == '#') {
+            c = GET_NEXT_CHAR_NO_LC();
+            if (c == '%') {
+                // we have encountered a pragma
+                GetPragma();
+                return S_PRAGMA;
+            }
+
             SKIP_TO_END_OF_LINE();
+        }
         c = GET_NEXT_CHAR();
     }
 

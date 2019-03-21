@@ -1965,7 +1965,7 @@ For examples of <K>return</K> statements, see the functions <C>fib</C> and
 
 </Section>
 
-<Section>
+<Section Label="Syntax Trees">
     <Heading>Syntax Trees</Heading>
 
     This section describes the tools available to handle &GAP; syntax trees.

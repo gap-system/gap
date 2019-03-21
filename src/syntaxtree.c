@@ -272,6 +272,14 @@ static Obj SyntaxTreeIf(Obj result, Stat stat)
     return result;
 }
 
+static Obj SyntaxTreeCompilePragma(Obj result, Stat stat)
+{
+    Obj message = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(stat, 0));
+    AssPRec(result, RNamName("value"), message);
+    return result;
+}
+
+
 static Obj SyntaxTreeFunc(Obj result, Obj func)
 {
     Obj stats;
@@ -411,6 +419,8 @@ static const CompilerT Compilers[] = {
     COMPILER_(T_ASSERT_2ARGS, ARG_("level"), ARG_("condition")),
     COMPILER_(
         T_ASSERT_3ARGS, ARG_("level"), ARG_("condition"), ARG_("message")),
+
+    COMPILER(T_PRAGMA, SyntaxTreeCompilePragma),
 
     /* Statements */
     COMPILER_(T_FUNCCALL_0ARGS, ARG_("funcref"), ARGS("args")),

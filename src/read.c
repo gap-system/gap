@@ -2345,6 +2345,12 @@ static void ReadHelp(TypSymbolSet follow)
     STATE(ValueObj) = 0;
 }
 
+static void ReadPragma(TypSymbolSet follow)
+{
+    TRY_IF_NO_ERROR { IntrPragma(STATE(ValueObj)); }
+    STATE(ValueObj) = 0;
+}
+
 /****************************************************************************
 **
 *F  ReadQuit( <follow> )  . . . . . . . . . . . . . . . read a quit statement
@@ -2424,6 +2430,7 @@ static Int TryReadStatement(TypSymbolSet follow)
     case S_TRYNEXT:   ReadTryNext(   follow    ); break;
     case S_ATOMIC:    ReadAtomic(    follow    ); break;
     case S_SEMICOLON: ReadEmpty(     follow    ); break;
+    case S_PRAGMA:    ReadPragma(    follow    ); break;
     case S_QUIT:      SyntaxError("'quit;' cannot be used in this context"); break;
     case S_QQUIT:     SyntaxError("'QUIT;' cannot be used in this context"); break;
     case S_HELP:      SyntaxError("'?' cannot be used in this context"); break;
@@ -2443,7 +2450,12 @@ static UInt ReadStats (
             SyntaxError("statement expected");
         }
         nr++;
-        MatchSemicolon(follow);
+        if( STATE(Symbol) != S_PRAGMA ){
+            MatchSemicolon(follow);
+        }
+        else {
+            Match(S_PRAGMA, "", 0L );
+        }
     }
 
     // return the number of statements
@@ -2557,6 +2569,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     case S_QUIT:      ReadQuit(    S_SEMICOLON|S_EOF      ); break;
     case S_QQUIT:     ReadQUIT(    S_SEMICOLON|S_EOF      ); break;
     case S_HELP:      ReadHelp(    S_SEMICOLON|S_EOF      ); break;
+    case S_PRAGMA:    ReadPragma(  S_SEMICOLON|S_EOF      ); break;
 
     // otherwise try to read a generic statement
     default:
@@ -2567,7 +2580,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     }
 
     /* every statement must be terminated by a semicolon                  */
-    if (!IS_IN(STATE(Symbol), S_SEMICOLON) && STATE(Symbol) != S_HELP) {
+    if (!IS_IN(STATE(Symbol), S_SEMICOLON) && STATE(Symbol) != S_HELP && STATE(Symbol) != S_PRAGMA) {
         SyntaxError( "; expected");
     }
 

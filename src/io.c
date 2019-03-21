@@ -258,7 +258,7 @@ Char GET_NEXT_CHAR(void)
 // GET_NEXT_CHAR_NO_LC is like GET_NEXT_CHAR, but does not handle
 // line continuations. This is used when skipping to the end of the
 // current line, when handling comment lines.
-static Char GET_NEXT_CHAR_NO_LC(void)
+Char GET_NEXT_CHAR_NO_LC(void)
 {
     if (STATE(In) == &IO()->Pushback) {
         STATE(In) = IO()->RealIn;

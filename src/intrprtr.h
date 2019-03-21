@@ -622,6 +622,8 @@ void IntrListExprEnd(UInt nr, UInt range, UInt top, UInt tilde);
 */
 void IntrStringExpr(Obj string);
 
+void IntrPragma(Obj pragma);
+
 
 /****************************************************************************
 **
