@@ -1256,9 +1256,9 @@ InstallGlobalFunction(StringOfMemoryAmount, function(m)
     s := ShallowCopy(String(whole));
     if whole < 100 then
         Append(s,".");
-        Append(s,String(Int(frac/102.4)));
+        Append(s,String(Int(frac*10/1024)));
         if whole < 10 then
-            Append(s, String(Int(frac/10.24) mod 10));
+            Append(s, String(Int(frac*100/1024) mod 10));
         fi;
     fi;
     units := ["B","KB","MB","GB","TB","PB","EB","YB","ZB"];    
