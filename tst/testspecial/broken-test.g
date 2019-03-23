@@ -6,6 +6,8 @@ Test("broken-test-4.tst", rec(width := 800));
 quit;
 Test("broken-test-5.tst", rec(width := 800));
 quit;
+Test("broken-test-6.tst", rec(width := 800));
+quit;
 Test("invalidtestfile.tst", rec(width := 800));
 quit;
 Test("empty.tst", rec(width := 800));
