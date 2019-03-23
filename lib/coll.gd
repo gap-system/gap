@@ -2097,7 +2097,7 @@ DeclareOperation( "ListOp", [ IsListOrCollection, IsFunction ] );
 ##
 ##  <#GAPDoc Label="SortedList">
 ##  <ManSection>
-##  <Oper Name="SortedList" Arg='listorcoll'/>
+##  <Oper Name="SortedList" Arg='listorcoll[, func]'/>
 ##
 ##  <Description>
 ##  <Ref Oper="SortedList"/> returns a new mutable and dense list <A>new</A>.
@@ -2107,7 +2107,8 @@ DeclareOperation( "ListOp", [ IsListOrCollection, IsFunction ] );
 ##  <C>Length( <A>new</A> )</C> is the number of elements of
 ##  <A>listorcoll</A>,
 ##  and <A>new</A> contains the elements in sorted order,
-##  w.r.t.&nbsp;<C>&lt;=</C>.
+##  w.r.t.&nbsp;<C>&lt;</C> or <A>func</A> if it is specified.
+##  For details, please refer to <Ref Oper="Sort"/>.
 ##  <C><A>new</A>[<A>pos</A>]</C> executes in constant time
 ##  (see&nbsp;<Ref Filt="IsConstantTimeAccessList"/>),
 ##  and the size of <A>new</A> in memory is proportional to its length.
@@ -2127,6 +2128,7 @@ DeclareOperation( "ListOp", [ IsListOrCollection, IsFunction ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "SortedList", [ IsListOrCollection ] );
+DeclareOperation( "SortedList", [ IsListOrCollection, IsFunction ] );
 
 
 #############################################################################
