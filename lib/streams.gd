@@ -629,6 +629,11 @@ DeclareOperation( "InputTextString", [ IsString ] );
 ##  <Ref Filt="IsInputTextStream"/> that delivers the characters from the file
 ##  <A>filename</A>. If <A>filename</A> ends in <C>.gz</C> and the file is
 ##  a valid gzipped file, then the file will be transparently uncompressed.
+##  <P/>
+##  <C>InputTextFile</C> is designed for use with text files and automatically
+##  handles windows-style line endings. This means it should <E>not</E> be used for
+##  binary data. The <Ref BookName="IO" Oper="IO_File" /> function from the <Package>IO</Package>
+##  package should be used to access binary data.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
