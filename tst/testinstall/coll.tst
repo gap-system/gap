@@ -154,6 +154,13 @@ gap> SetEnumeratorSorted(M0, []);
 gap> RepresentativeSmallest(M0);
 Error, <C> must be nonempty to have a representative
 
+# SortedList
+gap> l := Immutable([2, 1, 3]);;
+gap> SortedList(l);
+[ 1, 2, 3 ]
+gap> SortedList(l, {x, y} -> y < x);
+[ 3, 2, 1 ]
+
 #############################################################################
 #
 # Random

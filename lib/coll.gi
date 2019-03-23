@@ -762,6 +762,19 @@ local l;
   return l;
 end);
 
+InstallMethod(SortedList, "for a list or collection and a function",
+[ IsListOrCollection, IsFunction ],
+function(C, func)
+local l;
+  if IsList(C) then
+    l := Compacted(C);
+  else
+    l := List(C);
+  fi;
+  Sort(l, func);
+  return l;
+end);
+
 InstallMethod( AsSortedList, "for a list or collection",
         true, [ IsListOrCollection ], 0, 
         function(l) 
