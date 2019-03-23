@@ -259,7 +259,7 @@ end);
 ##
 InstallGlobalFunction(ActionSubspacesElementaryAbelianGroup,function(arg)
 local P,g,op,act,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,
-      dims,Pgens,Pcgens,Pu,Pc,perms,one,par,ker,kersz;
+      dims,Pgens,Pcgens,Pu,Pc,perms,one,par,ker,kersz,pcelm,pccache,asz;
 
   P:=arg[1];
   if IsModuloPcgs(arg[2]) then
@@ -432,15 +432,32 @@ local P,g,op,act,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,
   ma:=new;
 
   # convert to grps
+  pccache:=[]; # avoid recerating different copies of same element 
+  pcelm:=function(vec)
+  local e,p;
+    e:=Immutable([vec]);
+    p:=PositionSorted(pccache,e);
+    if IsBound(pccache[p]) and pccache[p][1]=vec then
+      return pccache[p][2];
+    else
+      e:=Immutable([vec,PcElementByExponentsNC(pcgs,vec)]);
+      AddSet(pccache,e);
+      return e[2];
+    fi;
+  end;
+
   new:=[];
   for i in ma do
     #a:=SubgroupNC(Parent(g),List(i,j->Product([1..d],k->pcgs[k]^j[k])));
+    asz:=kersz*p^Length(i);
     if kersz=1 then
-      a:=SubgroupNC(par,List(i,j->PcElementByExponentsNC(pcgs,j)));
+      a:=SubgroupNC(par,List(i,j->pcelm(j)));
     else
-      a:=ClosureGroup(ker,List(i,j->PcElementByExponentsNC(pcgs,j)));
+      #a:=ClosureGroup(ker,List(i,j->pcelm(j)):knownClosureSize:=asz);
+      a:=SubgroupNC(par,Concatenation(GeneratorsOfGroup(ker),
+        List(i,j->pcelm(j))));
     fi;
-    SetSize(a,kersz*p^Length(i));
+    SetSize(a,asz);
     Add(new,a);
   od;
 
