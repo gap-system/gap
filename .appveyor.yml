@@ -40,15 +40,13 @@ build_script:
         Where-Object pullRequestId -eq $env:APPVEYOR_PULL_REQUEST_NUMBER)[0].buildNumber) { `
         throw "There are newer queued builds for this pull request, failing early." }
   - SET "PATH=%CYG_ROOT%\bin;%PATH%"
-  # HACK: test to see whether this prevents segfaults on 32 bit builds.
-  - bash -lc "python -m pip install --upgrade pip"
-  # gcovr install done here so it uses cygwin python we installed
-  - bash -lc "python -m pip install gcovr"
+  - python -m pip install gcovr # for coverage reporting later on
   - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./etc/ci-prepare.sh"
 
 test_script:
   - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./etc/ci.sh"
 
 on_success:
-  - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./etc/ci-gather-coverage.sh"
+  # make sure to use AppVeyor's Python (not Cygwin's) in the next step
+  - bash -lc "export PATH="/cygdrive/c/Python27:/cygdrive/c/Python27/Scripts:$PATH" ; cd $APPVEYOR_BUILD_FOLDER && ./etc/ci-gather-coverage.sh"
   - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./etc/ci-run-codecov.sh"
