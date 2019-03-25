@@ -1776,12 +1776,12 @@ static Obj FuncUNIXSelect(Obj self,
 **
 *F  FuncExecuteProcess( <self>, <dir>, <prg>, <in>, <out>, <args> )   process
 */
-static Obj    ExecArgs  [ 1024 ];
-static Char * ExecCArgs [ 1024 ];
-
 static Obj
 FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
 {
+    Obj    ExecArgs[1024];
+    Char * ExecCArgs[1024];
+
     Obj                 tmp;
     Int                 res;
     Int                 i;
