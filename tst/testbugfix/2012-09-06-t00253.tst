@@ -13,6 +13,7 @@ gap> Read(s);
 Syntax error: ) expected in stream:4
     v := rec(a := [];);
                     ^
-Syntax error: end expected in stream:5
+Syntax error: while parsing a function: statement or 'end' expected in stream:\
+5
 od;
 ^^

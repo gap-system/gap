@@ -5,7 +5,8 @@ gap> if true then ?what fi;
 Syntax error: '?' cannot be used in this context in stream:1
 if true then ?what fi;
              ^^^^^^^^^
-Syntax error: fi expected in stream:2
+Syntax error: while parsing an 'if' statement: statement or 'fi' expected in s\
+tream:2
 
 
 #
@@ -13,7 +14,8 @@ gap> if false then ?what fi;
 Syntax error: '?' cannot be used in this context in stream:1
 if false then ?what fi;
               ^^^^^^^^^
-Syntax error: fi expected in stream:2
+Syntax error: while parsing an 'if' statement: statement or 'fi' expected in s\
+tream:2
 
 
 #
@@ -22,7 +24,8 @@ gap> f := function()
 Syntax error: '?' cannot be used in this context in stream:2
 ?help
 ^^^^^
-Syntax error: end expected in stream:3
+Syntax error: while parsing a function: statement or 'end' expected in stream:\
+3
 
 
 #
