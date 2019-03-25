@@ -101,23 +101,23 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
         Add(outp[1], '\n');
       fi;
     elif Length(lines[i]) = 0 and ignorecomments = true and i < Length(lines) 
-         and Length(lines[i+1]) > 0 and lines[i+1][1] = '#' then
+         and StartsWith(lines[i+1], "#") then
       # ignore an empty line followed by comment lines
       Add(ign, i);
       i := i+1;
-      while i <= Length(lines) and Length(lines[i]) > 0 and
-            lines[i][1] = '#' and not StartsWith(lines[i], "#@") do
+      while i <= Length(lines) and StartsWith(lines[i], "#") and
+            not StartsWith(lines[i], "#@") do
         Add(ign, i);
         i := i+1;
       od;
-    elif Length(lines[i]) > 4 and lines[i]{[1..5]} = "gap> " then
+    elif StartsWith(lines[i], "gap> ") then
       foundcmd := false;
       Add(outp, "");
       Add(inp, lines[i]{[6..Length(lines[i])]});
       Add(inp[Length(inp)], '\n');
       Add(pos, i);
       i := i+1;
-    elif Length(lines[i]) > 1 and lines[i]{[1..2]} = "> " then
+    elif StartsWith(lines[i], "> ") then
       if foundcmd then
         testError("Invalid test file: #@ command found in the middle of a single test");
       fi;
