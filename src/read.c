@@ -1338,7 +1338,7 @@ static void ReadFuncExpr (
     ReadFuncExprBody(follow, 0, nloc, args, startLine);
 
     /* 'end'                                                               */
-    Match( S_END, "end", follow );
+    Match(S_END, "while parsing a function: statement or 'end'", follow);
 }
 
 
@@ -1994,7 +1994,7 @@ static void ReadIf (
     }
 
     /* 'fi'                                                                */
-    Match( S_FI, "fi", follow );
+    Match(S_FI, "while parsing an 'if' statement: statement or 'fi'", follow);
     TRY_IF_NO_ERROR { IntrIfEnd( nrb ); }
 }
 
@@ -2044,7 +2044,7 @@ static void ReadFor (
     ReaderState()->LoopNesting--;
 
     /* 'od'                                                                */
-    Match( S_OD, "od", follow );
+    Match(S_OD, "while parsing a 'for' loop: statement or 'od'", follow);
     TRY_IF_NO_ERROR {
         IntrForEnd();
     }
@@ -2095,7 +2095,7 @@ static void ReadWhile (
     ReaderState()->LoopNesting--;
 
     /* 'od'                                                                */
-    Match( S_OD, "od", follow );
+    Match(S_OD, "while parsing a 'while' loop: statement or 'od'", follow);
     TRY_IF_NO_ERROR {
         IntrWhileEnd();
     }
@@ -2171,7 +2171,7 @@ static void ReadAtomic (
     TRY_IF_NO_ERROR { IntrAtomicEndBody( nrs ); }
 
     /* 'od'                                                                */
-    Match( S_OD, "od", follow );
+    Match(S_OD, "while parsing an atomic block: statement or 'od'", follow);
     TRY_IF_NO_ERROR {
         IntrAtomicEnd();
     }
@@ -2225,7 +2225,7 @@ static void ReadRepeat (
     ReaderState()->LoopNesting--;
 
     /* 'until' <Expr>                                                      */
-    Match( S_UNTIL, "until", EXPRBEGIN|follow );
+    Match(S_UNTIL, "while parsing a 'repeat' loop: statement or 'until'", EXPRBEGIN|follow);
     ReadExpr( follow, 'r' );
     TRY_IF_NO_ERROR {
         IntrRepeatEnd();
