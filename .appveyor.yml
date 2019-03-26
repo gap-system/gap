@@ -10,10 +10,10 @@ environment:
   # does not see to work if '--coverage' is used, so we only use that flag in
   # the 64 bit build.
   matrix:
-    - CYG_ARCH: x86
-      CYG_ROOT: C:\cygwin
-      PACKAGES: "-P python27,python27-pip"
-      ABI: 32
+#    - CYG_ARCH: x86
+#      CYG_ROOT: C:\cygwin
+#      PACKAGES: "-P python27,python27-pip"
+#      ABI: 32
     - CYG_ARCH: x86_64
       CYG_ROOT: C:\cygwin64
       PACKAGES: "-P libgmp-devel,zlib-devel,python27,python27-pip"
