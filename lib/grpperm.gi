@@ -736,6 +736,8 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
             fi;
         od;
     else
+        o:=ValueOption("knownClosureSize");
+        if IsInt(o) then options.limit:=o;fi;
         chain := ClosureRandomPermGroup( chain, gens, options );
     fi;
 
