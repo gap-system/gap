@@ -190,12 +190,15 @@ end );
 #F TrivialModule( <n>, <F> ) . . . . . . . . . . . trivial module with n gens
 ##
 InstallGlobalFunction( TrivialModule, function( n, F )
-    return rec( field := F,
-                dimension := 1,
-                generators := ListWithIdenticalEntries( n,
-                                  Immutable( IdentityMat( 1, F ) ) ),
-                isMTXModule := true,
-                basis := [[One(F)]] );
+local r;
+    r:=rec( field := F,
+      dimension := 1,
+      generators := ListWithIdenticalEntries( n,
+                        Immutable( IdentityMat( 1, F ) ) ),
+      isMTXModule := true,
+      basis := [[One(F)]] );
+  if IsFinite(F) then r.IsOverFiniteField:=true;fi;
+  return r;
 end );
 
 #############################################################################

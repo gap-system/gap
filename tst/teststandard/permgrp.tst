@@ -56,6 +56,12 @@ true
 gap> Sum(ConjugacyClasses(g),Size);
 1384120320
 
+# Construct modules
+gap> g:=PerfectGroup(IsPermGroup,5376,1);;
+gap> s:=IrreducibleModules(g,GF(2),0);;
+gap> Collected(List(s[2],x->x.dimension));
+[ [ 1, 1 ], [ 3, 2 ], [ 8, 1 ] ]
+
 # Unbind variables so we can GC memory
 gap> Unbind(g); Unbind(dc); Unbind(ac); Unbind(g); Unbind(p); Unbind(s);
 gap> STOP_TEST( "permgrp.tst", 1);

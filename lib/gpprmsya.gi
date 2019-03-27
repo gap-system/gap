@@ -275,6 +275,7 @@ end);
 InstallMethod( IsomorphismFpGroup, "alternating group", true,
     [ IsNaturalAlternatingGroup ], 10, # override `IsSimpleGroup' method
 function(G)
+  if Size(G)=1 then TryNextMethod();fi;
   return IsomorphismFpGroup(G,
            Concatenation("A_",String(Length(MovedPoints(G))),".") );
 end);
@@ -297,8 +298,8 @@ local   F,      # free group
 	j;      # loop variables
 
     # test for internal rep
-    if HasGeneratorsOfGroup(G) and 
-      not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
+    if (HasGeneratorsOfGroup(G) and
+      not ForAll(GeneratorsOfGroup(G),IsInternalRep)) or Size(G)=1 then
       TryNextMethod();
     fi;
 
@@ -349,51 +350,58 @@ local   F,      # free group
     return hom;
 end);
 
-# alternative, which has nicer (but more) generators
-#function ( G )
-#local   F,      # free group
-#	gens,	#generators of F
-#	imgs,
-#	hom,	# bijection
-#	mov,deg,
-#	relators,
-#	i, k;       # loop variables
-#
-#    mov:=MovedPoints(G);
-#    deg:=Length(mov);
-#
-#    # create the finitely presented group with <G>.degree-1 generators
-#    F := FreeGroup( deg-2, Concatenation("A_",String(deg),".") );
-#    gens:=GeneratorsOfGroup(F);
-#
-#    # add the relations according to the presentation by Carmichael
-#    # (see Coxeter/Moser)
-#    relators := [];
-#    for i  in [1..deg-2]  do
-#        Add( relators, gens[i]^3 );
-#    od;
-#    for i  in [1..deg-3]  do
-#        for k  in [i+1..deg-2]  do
-#            Add( relators, (gens[i] * gens[k])^2 );
-#        od;
-#    od;
-#
-#    F:=F/relators;
-#
-#    SetSize(F,Size(G));
-#    UseIsomorphismRelation( G, F );
-#
-#    # compute the bijection
-#    imgs:=[];
-#    for i in [1..deg-2] do
-#      Add(imgs,(mov[1],mov[i+1],mov[deg]));
-#    od;
-#
-#    # return the isomorphism to the finitely presented group
-#    hom:= GroupHomomorphismByImagesNC(G,F,imgs,GeneratorsOfGroup(F));
-#    SetIsBijective( hom, true );
-#    return hom;
-#end);
+# Presentation that gives nicer rewriting (from Derek Holt)
+# A_n = < x_1, ..., x_{n-2} | x_1^3, x_i^2 (i > 1),
+#                           (x_i x_{i+1})^3 (1 <= i <= n-3)
+#                           (x_i x_j)^2  (1 <= i, i+1 < j, j <= n-2) >.
+InstallMethod(IsomorphismFpGroupForRewriting,"alternating",
+  [IsNaturalAlternatingGroup],0,
+function ( G )
+local   F,      # free group
+	gens,	#generators of F
+	imgs,
+	hom,	# bijection
+	mov,deg,
+	relators,
+	i, j;       # loop variables
+
+  if Size(G)=1 then TryNextMethod();fi;
+  mov:=MovedPoints(G);
+  deg:=Length(mov);
+
+  # create the finitely presented group with <G>.degree-1 generators
+  F := FreeGroup( deg-2, Concatenation("A_",String(deg),".") );
+  gens:=GeneratorsOfGroup(F);
+
+  relators := [];
+  Add(relators,gens[1]^3);
+  for i in [2..deg-2]  do
+    Add(relators,gens[i]^2);
+  od;
+  for i  in [1..deg-3]  do
+    Add(relators,(gens[i]*gens[i+1])^3);
+    for j in [i+2..deg-2]  do
+          Add(relators,(gens[i]*gens[j])^2);
+    od;
+  od;
+
+  F:=F/relators;
+
+  SetSize(F,Size(G));
+  UseIsomorphismRelation( G, F );
+
+  # compute the bijection
+  imgs:=[];
+  Add(imgs,(mov[1],mov[2],mov[3]));
+  for i in [3..deg-1] do
+    Add(imgs,(mov[1],mov[2])(mov[i],mov[i+1]));
+  od;
+
+  # return the isomorphism to the finitely presented group
+  hom:= GroupHomomorphismByImagesNC(G,F,imgs,GeneratorsOfGroup(F));
+  SetIsBijective( hom, true );
+  return hom;
+end);
 
 ################################################
 # h has socle A_n^{l1}, acting on l1-tuples of l2-sets

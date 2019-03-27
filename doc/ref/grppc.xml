@@ -417,6 +417,8 @@ The only method with is special for pc groups is a method
 to compute intersections of subgroups, since here a pcgs of a parent
 group is needed and this can only by guaranteed within pc groups.
 
+Section <Ref Sect="2-Cohomology"/> describes operations and methods for
+arbitrary finite groups.
 </Section>
 
 

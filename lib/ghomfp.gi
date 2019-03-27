@@ -799,6 +799,7 @@ local aug,w,p,pres,f,fam,opt;
   pres := PresentationAugmentedCosetTable( aug, "y",0# printlevel
                     ,true) ;# intialize tracking before the `1or2' routine!
   opt:=TzOptions(pres);
+
   if ValueOption("expandLimit")<>fail then
     opt.expandLimit:=ValueOption("expandLimit");
   else
@@ -815,12 +816,16 @@ local aug,w,p,pres,f,fam,opt;
     opt.lengthLimit:=Int(3/2*pres!.tietze[TZ_TOTAL]); # not too big.
   fi;
   if ValueOption("generatorsLimit")<>fail then
-    opt.lengthLimit:=ValueOption("generatorsLimit");
+    opt.generatorsLimit:=ValueOption("generatorsLimit");
   fi;
 
   TzOptions(pres).printLevel:=InfoLevel(InfoFpGroup); 
-  TzEliminateRareOcurrences(pres,50);
-  TzGoGo(pres); # cleanup
+  if ValueOption("quick")=true then
+    TzGo(pres);
+  else
+    TzEliminateRareOcurrences(pres,50);
+    TzGoGo(pres); # cleanup
+  fi;
 
   # new free group
   f:=FpGroupPresentation(pres,str);
@@ -1143,7 +1148,11 @@ InstallMethod(MaximalAbelianQuotient,
         true, [IsSubgroupFpGroup], 0,
 function(U)
 local phi,m;
-  phi:=IsomorphismFpGroup(U);
+  # do cheaper Tietze (and thus do not store)
+  phi:=AttributeValueNotSet(IsomorphismFpGroup,U:
+    eliminationsLimit:=50,
+    generatorsLimit:=Length(GeneratorsOfGroup(Parent(U)))*LogInt(IndexInWholeGroup(U),2),
+    quick); 
   m:=MaximalAbelianQuotient(Image(phi));
   SetAbelianInvariants(U,AbelianInvariants(Image(phi)));
   return phi*MaximalAbelianQuotient(Image(phi));
