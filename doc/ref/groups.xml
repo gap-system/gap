@@ -589,6 +589,18 @@ see <Cite Key="BJR87"/>.
 </Section>
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="2-Cohomology">
+<Heading>2-Cohomology</Heading>
+
+<#Include Label="TwoCohomologyGeneric">
+<#Include Label="FpGroupCocycle">
+
+Also see Section <Ref Sect="2-Cohomology and Extensions"/> for operations and
+methods specific for Pc groups.
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Tests for the Availability of Methods">
 <Heading>Tests for the Availability of Methods</Heading>
 

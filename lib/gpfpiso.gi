@@ -273,7 +273,12 @@ function(g,str,N)
       f:=Image(hom);
       # knowing simplicity makes it easy to test whether a map is faithful
       if IsSimpleGroup(f) then
-	if IsPermGroup(f) and
+        if DataAboutSimpleGroup(f).idSimple.series="A" and
+          not IsNaturalAlternatingGroup(f) then
+          # force natural alternating 
+          hom:=hom*IsomorphismGroups(f,
+            AlternatingGroup(DataAboutSimpleGroup(f).idSimple.parameter));
+	elif IsPermGroup(f) and
 	  NrMovedPoints(f)>SufficientlySmallDegreeSimpleGroupOrder(Size(f)) then
 	  hom:=hom*SmallerDegreePermutationRepresentation(f);
 	fi;
@@ -311,34 +316,46 @@ function(g,str,N)
       # we know sf is simple
       SetIsSimpleGroup(sf,true);
       IsNaturalAlternatingGroup(sf);
-      a:=IsomorphismFpGroup(sf:noassert);
+      if ValueOption("rewrite")=true then
+        a:=IsomorphismFpGroupForRewriting(sf:noassert);
+      else
+        a:=IsomorphismFpGroup(sf:noassert);
+      fi;
       ad:=List(GeneratorsOfGroup(Range(a)),i->PreImagesRepresentative(a,i));
       lad:=Length(ad);
 
       n:=Length(orb);
-      fg:=FreeGroup(Length(ad)*n,"@");
-      free:=GeneratorsOfGroup(fg);
-      rels:=[];
-      fgens:=[];
-      for j in [1..n] do
-	Append(fgens,List(ad,x->Image(tra[j],x)));
-	# translate relators
-	for k in RelatorsOfFpGroup(Range(a)) do
-	  Add(rels,MappedWord(k,FreeGeneratorsOfFpGroup(Range(a)),
-	                        free{[(j-1)*lad+1..j*lad]}));
-	od;
-	# commutators with older gens
-	for k in [j+1..n] do
-	  for l in [1..Length(ad)] do
-	    for m in [1..Length(ad)] do
-	      Add(rels,Comm(free[(k-1)*lad+l],free[(j-1)*lad+m]));
-	    od;
-	  od;
-	od;
-      od;
+      if n=1 and ValueOption("rewrite")=true then
+        fgens:=ad;
+      else
+        if ValueOption("rewrite")=true then
+          Info(InfoPerformance,1,
+          "Rewriting system preservation for direct product not yet written");
+        fi;
+        fg:=FreeGroup(Length(ad)*n,"@");
+        free:=GeneratorsOfGroup(fg);
+        rels:=[];
+        fgens:=[];
+        for j in [1..n] do
+          Append(fgens,List(ad,x->Image(tra[j],x)));
+          # translate relators
+          for k in RelatorsOfFpGroup(Range(a)) do
+            Add(rels,MappedWord(k,FreeGeneratorsOfFpGroup(Range(a)),
+                                  free{[(j-1)*lad+1..j*lad]}));
+          od;
+          # commutators with older gens
+          for k in [j+1..n] do
+            for l in [1..Length(ad)] do
+              for m in [1..Length(ad)] do
+                Add(rels,Comm(free[(k-1)*lad+l],free[(j-1)*lad+m]));
+              od;
+            od;
+          od;
+        od;
 
-      fp:=fg/rels;
-      a:=GroupHomomorphismByImagesNC(f,fp,fgens,GeneratorsOfGroup(fp):noassert);
+        fp:=fg/rels;
+        a:=GroupHomomorphismByImagesNC(f,fp,fgens,GeneratorsOfGroup(fp):noassert);
+      fi;
       Append(gens,List(fgens,i->PreImagesRepresentative(hom,i)));
 
       # here we really want a composed homomorphism, to avoid extra work for 
@@ -430,7 +447,7 @@ function(g,str,N)
   Assert(1,ForAll(rels,i->MappedWord(i,GeneratorsOfGroup(f),gens) in N));
 
   fp:=f/rels;
-  di:=rec(gens:=gens,fp:=fp,idx:=idx,dec:=dec,source:=g);
+  di:=rec(gens:=gens,fp:=fp,idx:=idx,dec:=dec,source:=g,homs:=homs);
   if IsTrivial(N) then
     hom:=GroupHomomorphismByImagesNC(g,fp,gens,GeneratorsOfGroup(fp):noassert);
     SetIsBijective(hom,true);
@@ -864,3 +881,6 @@ InstallOtherMethod( IsomorphismFpGroupBySubnormalSeries, "for groups", true,
 function( G, series )
     return IsomorphismFpGroupBySubnormalSeries( G, series, "F" );
 end);
+
+InstallOtherMethod(IsomorphismFpGroupForRewriting,"generic fallback",true,
+  [IsGroup],0,IsomorphismFpGroup);

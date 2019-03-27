@@ -1,7 +1,7 @@
 #############################################################################
 ##
 ##  This file is part of GAP, a system for computational discrete algebra.
-##  This files's authors include Bettina Eick.
+##  This files's authors include Bettina Eick and Alexander Hulpke.
 ##
 ##  Copyright of GAP belongs to its developers, whose names are too numerous
 ##  to list here. Please refer to the COPYRIGHT file for details.
@@ -667,6 +667,168 @@ function( G, M )
     return TwoCoboundariesSQ( C, G, M );
 end );
 
+# non-solvable cohomology based on rewriting
+
+# return isomorphism G-fp and fp->mon, such that presentation of monoid is
+# confluent (wrt wreath order). Returns list [fphom,monhom,ordering]
+BindGlobal("ConfluentMonoidPresentationForGroup",function(G)
+local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
+      loff,off,monreps,left,right,fmgens,r,diff,monreal,nums,reduce,hom,dept;
+  iso:=IsomorphismFpGroupByChiefSeries(G:rewrite);
+  fp:=Range(iso);
+  gens:=GeneratorsOfGroup(fp);
+  n:=Length(gens);
+  dec:=iso!.decompinfo;
+
+  fmgens:=[];
+  mgens:=[];
+  for i in gens do
+    Add(fmgens,i);
+    Add(fmgens,i^-1);
+    Add(mgens,String(i));
+    Add(mgens,String(i^-1));
+  od;
+  nums:=List(fmgens,x->LetterRepAssocWord(UnderlyingElement(x))[1]);
+  fm:=FreeMonoid(mgens);
+  mgens:=GeneratorsOfMonoid(fm);
+  rules:=[];
+  reduce:=function(w)
+  local red,i,p;
+    w:=LetterRepAssocWord(w);
+    repeat
+      i:=1;
+      red:=false;
+      while i<=Length(rules) and red=false do
+        p:=PositionSublist(w,LetterRepAssocWord(rules[i][1]));
+        if p<>fail then
+          #Print("Apply ",rules[i],p,w,"\n");
+          w:=Concatenation(w{[1..p-1]},LetterRepAssocWord(rules[i][2]),
+            w{[p+Length(rules[i][1])..Length(w)]});
+          red:=true;
+        else
+          i:=i+1;
+        fi;
+      od;
+    until red=false;
+    return AssocWordByLetterRep(FamilyObj(One(fm)),w);
+  end;
+
+
+  homs:=ShallowCopy(dec.homs);
+  mos:=[];
+  off:=Length(mgens);
+  dept:=[];
+  # go up so we may reduce tails
+  for i in [Length(homs),Length(homs)-1..1] do
+    Add(dept,off);
+    if IsPcgs(homs[i]) then
+      ffp:=AbelianGroup(IsFpGroup,RelativeOrders(homs[i]));
+    else
+      ffp:=Range(dec.homs[i]);
+    fi;
+    imo:=IsomorphismFpMonoid(ffp);
+    Add(mos,imo);
+    m:=Range(imo);
+    loff:=off-Length(GeneratorsOfMonoid(m));
+    monreps:=fmgens{[loff+1..off]};
+    monreal:=mgens{[loff+1..off]};
+    if IsBound(m!.rewritingSystem) then
+      k:=m!.rewritingSystem;
+    else
+      k:=KnuthBendixRewritingSystem(m);
+    fi;
+    MakeConfluent(k);
+    # convert rules
+    for r in Rules(k) do
+      left:=MappedWord(r[1],FreeGeneratorsOfFpMonoid(m),monreps);
+      right:=MappedWord(r[2],FreeGeneratorsOfFpMonoid(m),monreps);
+      diff:=LeftQuotient(PreImagesRepresentative(iso,right),
+              PreImagesRepresentative(iso,left));
+      diff:=ImagesRepresentative(iso,diff);
+
+      left:=MappedWord(r[1],FreeGeneratorsOfFpMonoid(m),monreal);
+      right:=MappedWord(r[2],FreeGeneratorsOfFpMonoid(m),monreal);
+      if not IsOne(diff) then 
+        right:=right*Product(List(LetterRepAssocWord(UnderlyingElement(diff)),
+          x->mgens[Position(nums,x)]));
+      fi;
+      right:=reduce(right); # monoid word might change
+      Add(rules,[left,right]);
+    od;
+    for j in [loff+1..off] do
+      # if the generator gets reduced away, won't need to use it
+      if reduce(mgens[j])=mgens[j] then
+        for k in [off+1..Length(mgens)] do
+          if reduce(mgens[k])=mgens[k] then
+            right:=fmgens[j]^-1*fmgens[k]*fmgens[j];
+            #collect
+            right:=ImagesRepresentative(iso,PreImagesRepresentative(iso,right));
+            right:=Product(List(LetterRepAssocWord(UnderlyingElement(right)),
+              x->mgens[Position(nums,x)]));
+            right:=reduce(mgens[j]*right);
+            Add(rules,[mgens[k]*mgens[j],right]);
+          fi;
+        od;
+      fi;
+    od;
+    #if i<Length(homs) then Error("ZU");fi;
+    off:=loff;
+  od;
+  Add(dept,off);
+  # calculate levels for ordering
+  dept:=dept+1;
+  dept:=List([1..Length(mgens)],
+    x->PositionProperty(dept,y->x>=y)-1);
+
+  if ForAny(rules,x->x[2]<>reduce(x[2])) then Error("irreduced right");fi;
+
+  # inverses are true inverses, also for extension
+  for i in [1..Length(gens)] do
+    left:=mgens[2*i-1]*mgens[2*i];
+    left:=reduce(left);
+    if left<>One(fm) then Add(rules,[left,One(fm)]); fi;
+    left:=mgens[2*i]*mgens[2*i-1];
+    left:=reduce(left);
+    if left<>One(fm) then Add(rules,[left,One(fm)]); fi;
+  od;
+
+  # finally create 
+  m:=FactorFreeMonoidByRelations(fm,rules);
+  mgens:=GeneratorsOfMonoid(m);
+
+  hom:=MagmaIsomorphismByFunctionsNC(fp,m,
+        function(w)
+          local l,i;
+          l:=[];
+          for i in LetterRepAssocWord(UnderlyingElement(w)) do
+            if i>0 then Add(l,2*i-1);
+            else Add(l,-2*i);fi;
+          od;
+          return ElementOfFpMonoid(FamilyObj(One(m)),
+                  AssocWordByLetterRep(FamilyObj(One(fm)),l));
+        end,
+        function(w)
+          local g,i,x;
+          g:=[];
+          for i in LetterRepAssocWord(UnderlyingElement(w)) do
+            if IsOddInt(i) then x:=(i+1)/2;
+            else x:=-i/2;fi;
+            # word must be freely cancelled
+            if Length(g)>0 and x=-g[Length(g)] then
+              Unbind(g[Length(g)]);
+            else Add(g,x); fi;
+          od;
+          return ElementOfFpGroup(FamilyObj(One(fp)),
+                  AssocWordByLetterRep(FamilyObj(One(FreeGroupOfFpGroup(fp))),g));
+        end);
+
+  hom!.type:=1;
+  if not HasIsomorphismFpMonoid(G) then
+    SetIsomorphismFpMonoid(G,hom);
+  fi;
+  return [iso,hom,WreathProductOrdering(fm,dept)];
+end);
+
 #############################################################################
 ##
 #M  TwoCohomology( G, M )
@@ -691,7 +853,593 @@ function( G, M )
     return rec( group := G,
                 module := M,
                 collector := C,
+                isPcCohomology:=true,
                 cohom := 
                 NaturalHomomorphismBySubspaceOntoFullRowSpace(co,cb),
                 presentation := FpGroupPcGroupSQ( G ) );
 end );
+
+# code for generic 2-cohomology (solvable not required)
+
+InstallMethod( TwoCohomologyGeneric,"generic, using rewriting system",true, 
+  [IsGroup and IsFinite,IsObject],0,
+function(G,mo)
+local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
+      len1,l2,m,start,formalinverse,hastail,one,zero,new,v1,v2,collectail,
+      findtail,colltz,mapped,mapped2,onemat,zerovec,dict,max,mal,s,p,
+      c,nvars,htpos,zeroq,r,ogens,bds,model,q,pre,pcgs,miso,ker,solvec,rulpos;
+
+
+  # collect the word in factor group
+  colltz:=function(a)
+  local i,j,s,mm,p;
+
+    # collect from left
+    i:=1;
+    while i<=Length(a) do
+
+      # does a rule apply at position i?
+      j:=0;
+      s:=0;
+      mm:=Minimum(mal,Length(a)-i+1);
+      while j<mm do
+        s:=s*max+a[i+j];
+        p:=LookupDictionary(dict,s);
+        if p<>fail then break; fi;
+        j:=j+1;
+      od;
+
+      if p<>fail then
+        a:=Concatenation(a{[1..i-1]},tzrules[p][2],
+          a{[i+Length(tzrules[p][1])..Length(a)]});
+        i:=Maximum(0,i-mal); # earliest which could be affected
+      fi;
+      i:=i+1;
+    od;
+
+    return a;
+  end;
+
+  onemat:=One(mo.generators[1]);
+  zerovec:=Zero(onemat[1]);
+
+  # matrix corresponding to monoid word
+  mapped:=function(list)
+  local a,i;
+    a:=one;
+    for i in list do
+      a:=a*mats[i];
+    od;
+    return a;
+  end;
+
+  # normalform word and collect the tails
+  collectail:=function(wrd)
+  local v,tail,i,j,s,p,mm;
+    v:=List(rules,x->zero);
+
+    # collect from left
+    i:=1;
+    while i<=Length(wrd) do
+
+      # does a rule apply at position i?
+      j:=0;
+      s:=0;
+      mm:=Minimum(mal,Length(wrd)-i+1);
+      while j<mm do
+        s:=s*max+wrd[i+j];
+        p:=LookupDictionary(dict,s);
+        if p<>fail and rulpos[p]<>fail then break; fi;
+        j:=j+1;
+      od;
+
+      if p<>fail and rulpos[p]<>fail then
+        p:=rulpos[p];
+        tail:=wrd{[i+Length(rules[p][1])..Length(wrd)]};
+        wrd:=Concatenation(wrd{[1..i-1]},rules[p][2],tail);
+#Print("Apply ",p,"@",i,":",wrd,"\n");
+        if p in hastail then v[p]:=v[p]+mapped(tail); fi;
+        i:=Maximum(0,i-mal); # earliest which could be affected
+      fi;
+      i:=i+1;
+    od;
+
+    return [wrd,v];
+  end;
+
+  field:=mo.field;
+
+  ogens:=GeneratorsOfGroup(G);
+
+  if false then
+    #  old general KB code, left for debugging
+    fp:=IsomorphismFpGroup(G);
+    fpg:=Range(fp);
+    fm:=IsomorphismFpMonoid(fpg);
+    mon:=Range(fm);
+
+    if IsBound(mon!.confl) then 
+      tzrules:=mon!.confl;
+    else
+      kb:=KnuthBendixRewritingSystem(mon);
+      MakeConfluent(kb);
+      tzrules:=kb!.tzrules;
+      mon!.confl:=tzrules;
+    fi;
+  else
+    # new approach with RWS from chief series
+    mon:=ConfluentMonoidPresentationForGroup(G);
+    fp:=mon[1];
+    fpg:=Range(fp);
+    fm:=mon[2];
+    mon:=Range(fm);
+    tzrules:=List(RelationsOfFpMonoid(mon),x->List(x,LetterRepAssocWord));
+  fi;
+
+  # build data structure to find rule applicable at given position. Assumes
+  # that rule set is reduced.
+  max:=Maximum(Union(List(tzrules,x->x[1])))+1;
+  mal:=Maximum(List(tzrules,x->Length(x[1])));
+  dict:=NewDictionary(max,Integers,true);
+  for i in [1..mal] do
+    p:=Filtered([1..Length(tzrules)],x->Length(tzrules[x][1])=i);
+    for j in p do
+      s:=0;
+      for k in [1..i] do
+        s:=s*max+tzrules[j][1][k];
+      od;
+      AddDictionary(dict,s,j);
+    od;
+  od;
+
+  gens:=List(GeneratorsOfGroup(FamilyObj(fpg)!.wholeGroup),
+    x->PreImagesRepresentative(fp,x));
+
+  hom:=GroupHomomorphismByImages(G,Group(mo.generators),GeneratorsOfGroup(G),mo.generators);
+  mo:=GModuleByMats(List(gens,x->ImagesRepresentative(hom,x)),mo.field); # new gens
+
+  #rules:=ShallowCopy(kb!.tzrules);
+  #hastail:=Filtered([1..Length(rules)],x->Length(rules[x][1])<>2 or
+  #  Length(rules[x][2])>0 or formalinverse[rules[x][1][1]]<>rules[x][1][2]);
+  #IsSet(hastail); # quick membership test
+
+  l1:=GeneratorsOfGroup(fpg);
+  l1:=Concatenation(l1,List(l1,Inverse));
+  formalinverse:=[];
+  for i in l1 do
+    j:=LetterRepAssocWord(UnderlyingElement(ImagesRepresentative(fm,i)));
+    o:=LetterRepAssocWord(UnderlyingElement(ImagesRepresentative(fm,i^-1)));
+    if Length(j)<>1 or Length(o)<>1 then Error("length!");fi;
+    formalinverse[j[1]]:=o[1];
+  od;
+
+  # rules that describe formal inverses, or delete generators of order 2 get no
+  # tails.
+  hastail:=[];
+  rules:=[];
+  for r in tzrules do
+    if Length(r[1])>=2 then
+      Add(rules,r);
+      if Length(r[1])>2 or
+        (Length(r[1])=2 and (Length(r[2])>0 or formalinverse[r[1][1]]<>r[1][2]))
+        then 
+          AddSet(hastail,Length(rules));
+      fi;
+    elif Length(r[1])>1 then
+      if Length(r[2])=0 then Error("generator is trivial");fi;
+      if Length(r[2])<>1 or formalinverse[r[1][1]]<>r[2][1] then
+        Add(rules,r);
+        AddSet(hastail,Length(rules));
+      else
+Print("Not use: ",r,"\n");
+        # Do not use these rules for overlaps
+        if r[2][1]>r[1][1] then
+          Error("code assumes that larger number gets reduced to smaller");
+        fi;
+        if ForAny(rules,x->r[1][1] in x[2] or (x<>r and r[1][1] in x[1])) then
+          Error("rules are not reduced");
+        fi;
+      fi;
+    else
+      # Length of r[1] is 1. That is this generator is not used.
+      # check that it is really just an inverse that goes away, otherwise
+      # awkward.
+      if formalinverse[r[1][1]]>r[1][1] then
+        Error("generator vanishes?");
+      fi;
+    fi;
+  od;
+
+  rulpos:=List(tzrules,x->PositionProperty(rules,y->y[1]=x[1]));
+
+  htpos:=List([1..Length(rules)],x->Position(hastail,x));
+
+  model:=ValueOption("model");
+  if model<>fail then
+    q:=GQuotients(model,G)[1];
+    pre:=List(gens,x->PreImagesRepresentative(q,x));
+    ker:=KernelOfMultiplicativeGeneralMapping(q);
+    pcgs:=Pcgs(ker);
+    l1:=GModuleByMats(LinearActionLayer(Group(pre),pcgs),mo.field);
+    MTX.IsIrreducible(mo);
+    miso:=MTX.Isomorphism(mo,l1);
+    new:=List(miso,x->PcElementByExponents(pcgs,x));
+    pcgs:=PcgsByPcSequence(FamilyObj(One(model)),new);
+    # now calculate the vector
+    solvec:=[];
+    one:=One(model);
+    m:=GroupGeneralMappingByImagesNC(fpg,model,GeneratorsOfGroup(fpg),pre);
+    mats:=List(GeneratorsOfMonoid(mon),
+      x->ImagesRepresentative(m,
+      PreImagesRepresentative(fm,x))); #Elements for monoid generators
+    pre:=mats;
+    for i in [1..Length(hastail)] do
+      r:=rules[hastail[i]];
+      m:=LeftQuotient(mapped(r[2]),mapped(r[1]));
+      m:=ExponentsOfPcElement(pcgs,m);
+      solvec:=Concatenation(solvec,m*One(field));
+    od;
+  fi;
+
+  mats:=List(GeneratorsOfMonoid(mon),
+    x->ImagesRepresentative(hom,PreImagesRepresentative(fp,
+    PreImagesRepresentative(fm,x)))); # matrices for monoid generators
+  one:=One(mats[1]);
+  zero:=Zero(one);
+  dim:=Length(one);
+  nvars:=dim*Length(hastail); #Number of variables
+
+  eqs:=[];
+  zeroq:=ImmutableVector(field,ListWithIdenticalEntries(nvars,Zero(field)));
+  for i in [1..Length(rules)] do
+    l1:=rules[i][1];
+    len1:=Length(l1);
+    for j in [1..Length(rules)] do
+      l2:=rules[j][1];
+      m:=Minimum(len1,Length(l2));
+      for o in [1..m-1] do # possible overlap Length
+        start:=len1-o;
+        if ForAll([1..o],k->l1[start+k]=l2[k]) then
+          #Print("Overlap ",l1," ",l2," ",o,"\n");
+
+          # apply l1 first
+          new:=Concatenation(rules[i][2],l2{[o+1..Length(l2)]});
+          c:=collectail(new);
+          v1:=c[2];c:=c[1];
+          if i in hastail then
+            v1[i]:=v1[i]+mapped(l2{[o+1..Length(l2)]});
+          fi;
+
+          # apply l2 first
+          new:=Concatenation(l1{[1..len1-o]},rules[j][2]);
+          v2:=collectail(new);
+          if c<>v2[1] then Error("different in factor");
+          #else Print("Both reduce to ",c,"\n");
+          fi;
+          v2:=v2[2];
+          if j in hastail then
+            v2[j]:=v2[j]+one;
+          fi;
+          if v1<>v2 then # If entries stay zero they are identical (and thus test cheaply)
+            c:=List([1..dim],x->ShallowCopy(zeroq));
+            for k in hastail do
+              if v1[k]<>v2[k] then
+                new:=TransposedMat(v1[k]-v2[k]);
+                r:=(htpos[k]-1)*dim+[1..dim];
+                for l in [1..dim] do
+                  if not IsZero(new[l]) then
+                    c[l]{r}:=new[l];
+                  fi;
+                od;
+              fi;
+            od;
+            for k in c do
+              if not IsZero(k) then
+                if model<>fail and not IsZero(solvec*k) then
+                  Error("model does not fit");
+                fi;
+                AddSet(eqs,ImmutableVector(field,k));
+              fi;
+            od;
+          fi;
+        fi;
+      od;
+    od;
+  od;
+  eqs:=Filtered(TriangulizedMat(eqs),x->not IsZero(x));
+  eqs:=NullspaceMat(TransposedMat(eqs)); # basis of cocycles
+
+  # Now get Coboundaries
+
+  # different collection function: Sum up changes for generator i
+  collectail:=function(wrd,nums,vecs)
+  local a,i,j,p,v;
+    a:=Zero(vecs[1]);
+    for i in [1..Length(wrd)] do
+      p:=Position(nums,wrd[i]);
+      if p<>fail then
+        v:=vecs[p];
+        for j in [i+1..Length(wrd)] do
+          v:=v*mats[wrd[j]];
+        od;
+        a:=a+v;
+      fi;
+    od;
+    return a;
+  end;
+
+  bds:=[];
+  for i in [1..Length(mats)] do
+    if formalinverse[i]>i then
+      c:=[i,formalinverse[i]];
+      for k in one do
+        r:=[k,-k*mats[formalinverse[i]]];
+
+        new:=[];
+        for j in hastail do
+          v1:=collectail(rules[j][1],c,r);
+          v2:=collectail(rules[j][2],c,r);
+          Append(new,v1-v2);
+        od;
+        new:=ImmutableVector(field,new);
+        Assert(1,SolutionMat(eqs,new)<>fail);
+        Add(bds,new);
+      od;
+    fi;
+  od;
+  bds:=Filtered(TriangulizedMat(bds),x->not IsZero(x));
+  bds:=List(bds,Immutable);
+
+  if gens<>GeneratorsOfGroup(G) then
+    G:=GroupWithGenerators(gens);
+  fi;
+  r:=rec(group:=G,module:=mo,cocycles:=eqs,coboundaries:=bds,zero:=zeroq,
+         prime:=Size(field));
+  new:=List(BaseSteinitzVectors(eqs,bds).factorspace,x->ImmutableVector(field,x));
+  r.cohomology:=new;
+
+  new:=[];
+  one:=One(FreeGroupOfFpGroup(fpg));
+  mats:=List(GeneratorsOfMonoid(mon),
+    x->UnderlyingElement(PreImagesRepresentative(fm,x)));
+  for i in hastail do
+    Add(new,LeftQuotient(mapped(rules[i][1]),mapped(rules[i][2]))); # rule that would get the tail
+  od;
+  r.presentation:=rec(group:=FreeGroupOfFpGroup(fpg),relators:=new,
+    prewords:=List(ogens,x->UnderlyingElement(ImagesRepresentative(fp,x))));
+
+  r.pairact:=function(zy,pair)
+  local autom,mat,i,imagemonwords,imgwrd,left,right,extim,prdout,myinvers,v;
+
+    autom:=InverseGeneralMapping(pair[1]);
+
+    # cache words for images of monoid generators
+    if not IsBound(autom!.imagemonwords) then autom!.imagemonwords:=[]; fi;
+    imagemonwords:=autom!.imagemonwords;
+    imgwrd:=function(nr)
+    local a;
+      if not IsBound(imagemonwords[nr]) then
+        # apply automorphism
+        a:=PreImagesRepresentative(fm,GeneratorsOfMonoid(mon)[nr]);
+        a:=PreImagesRepresentative(fp,a);
+        a:=ImagesRepresentative(autom,a);
+        a:=ImagesRepresentative(fp,a);
+        a:=ImagesRepresentative(fm,a);
+        a:=LetterRepAssocWord(UnderlyingElement(a));
+        a:=colltz(a);
+        imagemonwords[nr]:=a;
+      fi;
+      return imagemonwords[nr];
+    end;
+
+    # normalform word and collect the tails
+    collectail:=function(wrd)
+    local v,i,j,s,p,mm,w,tail;
+      v:=zerovec;
+
+      # collect from left
+      i:=1;
+      while i<=Length(wrd) do
+
+        # does a rule apply at position i?
+        j:=0;
+        s:=0;
+        mm:=Minimum(mal,Length(wrd)-i+1);
+        while j<mm do
+          s:=s*max+wrd[i+j];
+          p:=LookupDictionary(dict,s);
+          if p<>fail and rulpos[p]<>fail then break; fi;
+          j:=j+1;
+        od;
+
+        if p<>fail and rulpos[p]<>fail then
+          p:=rulpos[p];
+          tail:=wrd{[i+Length(rules[p][1])..Length(wrd)]};
+          wrd:=Concatenation(wrd{[1..i-1]},rules[p][2],tail);
+
+          if p in hastail then
+            w:=zy{dim*(htpos[p]-1)+[1..dim]};
+            for j in tail do
+              w:=w*mats[j];
+            od;
+            v:=v+w;
+          fi;
+
+          i:=Maximum(0,i-mal); # earliest which could be affected
+        fi;
+        i:=i+1;
+      od;
+      return [wrd,v];
+    end;
+
+    prdout:=function(l)
+    local w,v,j;
+      w:=[];
+      v:=zerovec;
+      for j in l do
+        v:=v*mapped(j[1]); # move right
+        w:=collectail(Concatenation(w,j[1]));
+        v:=v+w[2]+j[2];
+        w:=w[1];
+      od;
+      return [w,v];
+    end;
+
+    mat:=pair[2];
+    new:=[];
+
+    # inverses of generators
+    myinvers:=wrd->[colltz(formalinverse{Reversed(wrd)}),
+      -collectail(Concatenation(wrd,colltz(formalinverse{Reversed(wrd)})))[2]];
+
+    # images of generators
+    extim:=List([1..Length(mats)/2],x->imgwrd(2*x-1));
+
+    # collect inverses and interleave generators/inverses
+    extim:=Concatenation(List(extim,x->[[x,zerovec],myinvers(x)]));
+
+    for i in [1..Length(hastail)] do
+      # evaluate rules in images
+      left:=prdout(extim{rules[hastail[i]][1]});
+
+      # invert left
+      v:=myinvers(left[1]);
+      left:=[v[1],v[2]-left[2]/mapped(left[1])];
+
+      right:=prdout(extim{rules[hastail[i]][2]});
+
+      # quotient left^-1*right
+      left:=prdout(Concatenation([left],[right]));
+      if left[1]<>[] then Error("not rule");fi;
+
+      Append(new,-left[2]*mat);
+    od;
+
+# debugging code: Construct group and work there
+#    new2:=[];
+#    ext:=FpGroupCocycle(r,zy,true);
+#    hom:=IsomorphismPermGroup(ext);
+#    ext:=Image(hom);
+#    epcgs:=PcgsByPcSequence(FamilyObj(One(ext)),
+#      GeneratorsOfGroup(ext){[Length(mats)/2+1..Length(GeneratorsOfGroup(ext))]});
+#
+#    exta:=Concatenation(List([1..Length(mats)/2],x->[ext.(x),ext.(x)^-1]));
+#    exte:=exta;
+#
+#    myprd:=function(wrd)
+#    local i,w;
+#      w:=One(ext);
+#      for i in wrd do
+#        w:=w*exte[i]; 
+#      od;
+#      return w;
+#    end;
+#
+#    v:=List([1..Length(mats)/2],x->myprd(imgwrd(2*x-1))); # new generators
+#    v:=Concatenation(List([1..Length(mats)/2],x->[v[x],v[x]^-1]));
+#    exte:=v;
+#
+#    for i in [1..Length(hastail)] do
+#      left:=rules[hastail[i]][1];
+#      right:=rules[hastail[i]][2];
+#      left:=myprd(left)^-1*myprd(right);
+#      v:=-ExponentsOfPcElement(epcgs,left)*One(mo.field);
+#
+#      Append(new2,v*mat);
+#    od;
+#    if new2<>new then Error("wrong ",pair);fi;
+#    if IsOne(pair[1]) and IsOne(pair[2]) then
+#      if new<>zy then Error("one");else Print("onegood\n");fi;
+#    fi;
+
+    return ImmutableVector(mo.field,new);
+  end;
+
+  return r;
+end);
+
+InstallGlobalFunction(FpGroupCocycle,function(arg)
+local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim;
+  r:=arg[1];
+  z:=arg[2];
+  ogens:=GeneratorsOfGroup(r.presentation.group);
+  n:=Length(ogens);
+  str:=List(ogens,String);
+  dim:=r.module.dimension;
+  for i in [1..dim] do
+    Add(str,Concatenation("m",String(i)));
+  od;
+  f:=FreeGroup(str);
+  gens:=GeneratorsOfGroup(f);
+  rels:=[];
+  for i in [1..Length(r.presentation.relators)] do
+    new:=MappedWord(r.presentation.relators[i],ogens,gens{[1..n]});
+    for j in [1..dim] do
+      new:=new*gens[n+j]^Int(z[(i-1)*dim+j]);
+    od;
+    Add(rels,new);
+  od;
+  for i in [n+1..Length(gens)] do
+    Add(rels,gens[i]^r.prime);
+    for j in [i+1..Length(gens)] do
+      Add(rels,Comm(gens[i],gens[j]));
+    od;
+  od;
+  for i in [1..n] do
+    for j in [1..dim] do
+      Add(rels,gens[n+j]^gens[i]/
+        LinearCombinationPcgs(gens{[n+1..Length(gens)]},r.module.generators[i][j]));
+    od;
+  od;
+  fp:=f/rels;
+  SetSize(fp,Size(r.group)*Size(r.module.field)^r.module.dimension);
+
+  if Length(arg)>2 and arg[3]=true then
+    sim:=IsomorphismSimplifiedFpGroup(fp);
+
+    g:=r.group;
+    quot:=InverseGeneralMapping(sim)*GroupHomomorphismByImages(fp,g,GeneratorsOfGroup(fp),
+      Concatenation(GeneratorsOfGroup(g),
+        ListWithIdenticalEntries(r.module.dimension,One(g))));
+    p:=Image(quot);
+    old:=[];
+    while Size(p)<Size(fp) do
+      lay:=0;
+      repeat
+        if lay=0 then
+          if IsPermGroup(p) then
+            m:=List(Orbits(p,MovedPoints(p)),x->Stabilizer(p,x[1]));
+          else
+            m:=[];
+          fi;
+        else
+          m:=ShallowCopy(LowLayerSubgroups(p,lay));
+        fi;
+        # no repetition
+        m:=Filtered(m,x->not ForAny(old,y->Size(x)=Size(y) and x=y));
+        Append(old,m);
+
+        SortBy(m,x->-Size(x));
+        i:=1;
+        e:=fail;
+        while i<=Length(m) and e=fail do
+          e:=LargerQuotientBySubgroupAbelianization(quot,m[i]);
+          i:=i+1;
+        od;
+        lay:=lay+1;
+      until e<>fail;
+
+      quot:=DefiningQuotientHomomorphism(Intersection(e,
+        KernelOfMultiplicativeGeneralMapping(quot)));
+      p:=Image(quot);
+    od;
+    quot:=sim*quot;
+    new:=GroupHomomorphismByImages(fp,p,GeneratorsOfGroup(fp),
+      List(GeneratorsOfGroup(fp),x->ImagesRepresentative(quot,x)));
+    new:=new*SmallerDegreePermutationRepresentation(p);
+    SetIsomorphismPermGroup(fp,new);
+  fi;
+
+  return fp;
+end);
+

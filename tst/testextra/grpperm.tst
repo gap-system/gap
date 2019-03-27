@@ -250,4 +250,27 @@ gap> NrMovedPoints(Source(sm));
 157464
 gap> NrMovedPoints(Range(sm))<200;
 true
+
+# construct extensions
+gap> g:=PerfectGroup(IsPermGroup,3840,1);;
+gap> cf:=List(MTX.CollectedFactors(RegularModule(g,GF(2))[2]),x->x[1]);;
+gap> List(cf,x->x.dimension);
+[ 1, 4, 4 ]
+gap> coh:=TwoCohomologyGeneric(g,cf[2]);;
+gap> coh.cohomology;
+[ <an immutable GF2 vector of length 336>, <an immutable GF2 vector of length
+    336> ]
+gap> e:=Elements(VectorSpace(GF(2),coh.cohomology));;
+gap> p:=List(e,x->FpGroupCocycle(coh,x,true));
+[ <fp group of size 61440 on the generators [ F1, F2, F3, F4, F5, F6, F7, F8,
+      m1, m2, m3, m4 ]>, <fp group of size 61440 on the generators
+    [ F1, F2, F3, F4, F5, F6, F7, F8, m1, m2, m3, m4 ]>,
+  <fp group of size 61440 on the generators [ F1, F2, F3, F4, F5, F6, F7, F8,
+      m1, m2, m3, m4 ]>, <fp group of size 61440 on the generators
+    [ F1, F2, F3, F4, F5, F6, F7, F8, m1, m2, m3, m4 ]> ]
+gap> p:=List(p,x->Image(IsomorphismPermGroup(x)));
+[ <permutation group of size 61440 with 12 generators>,
+  <permutation group of size 61440 with 12 generators>,
+  <permutation group of size 61440 with 12 generators>,
+  <permutation group of size 61440 with 12 generators> ]
 gap> STOP_TEST( "grpperm.tst", 1);

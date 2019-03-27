@@ -156,7 +156,9 @@ DeclareOperation( "TwoCoboundaries", [ IsPcGroup, IsObject ] );
 ##  <Oper Name="TwoCohomology" Arg='G, M'/>
 ##
 ##  <Description>
-##  returns a record defining the second cohomology group as factor space of 
+##  This operation computes the second cohomology group for the special
+##  case of a Pc Group.
+##  It returns a record defining the second cohomology group as factor space of 
 ##  the space of cocycles by the space of coboundaries.
 ##  <A>G</A> must be a pc group and the generators of <A>M</A> must
 ##  correspond to the pcgs of <A>G</A>.
@@ -184,3 +186,123 @@ DeclareOperation( "TwoCoboundaries", [ IsPcGroup, IsObject ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "TwoCohomology", [ IsPcGroup, IsObject ] );
+
+#############################################################################
+##
+#O  TwoCohomologyGeneric( <G>, <M> )
+##
+##  <#GAPDoc Label="TwoCohomologyGeneric">
+##  <ManSection>
+##  <Oper Name="TwoCohomologyGeneric" Arg='G, M'/>
+##
+##  <Description>
+##  This function computes the second cohomology group for an arbitrary
+##  finite group <A>G</A>. The generators of the module <A>M</A> must
+##  correspond to the generators of <A>G</A>.
+##  
+##  It returns a record with components <C>coboundaries</C>,
+##  <C>cocycles</C> and <C>cohomology</C> which are lists of vectors that form a
+##  basis of the respective group. <C>cohomology</C> is chosen as a vector space
+##  complement to <C>coboundaries</C> in the <C>cocycles</C>.
+##  These vectors are representing tails in <A>M</A> with respect to the
+##  <C>relators</C> of the presentation <C>presentation</C> of <A>G</A>.
+##  (Note that this presentation is on a generating set chosen by the
+##  routine, this generating system corresponds to the components
+##  <C>group</C> and <C>module</C> of the record returned.
+##  The extension corresponding to a cocyle <C>c</C> can be constructed as
+##  <C>Extension(r,c)</C> where <C>r</C> is the cohomology record. This is
+##  currently done as a finitely presented group.
+##  <Example><![CDATA[
+##  gap> g:=Group((1,2,3,4,5),(1,2,3));;
+##  gap> mats:=[[[2,0,0,1],[1,2,1,0],[2,1,1,1],[2,1,1,0]],
+##  > [[0,2,0,0],[1,2,1,0],[0,0,1,0],[0,0,0,1]]]*Z(3)^0;;
+##  gap> mo:=GModuleByMats(mats,GF(3));;
+##  gap> coh:=TwoCohomologyGeneric(g,mo);;
+##  gap> coh.cocycles;
+##  [ < immutable compressed vector length 44 over GF(3) >,
+##    < immutable compressed vector length 44 over GF(3) >,
+##    < immutable compressed vector length 44 over GF(3) >,
+##    < immutable compressed vector length 44 over GF(3) >,
+##    < immutable compressed vector length 44 over GF(3) >,
+##    < immutable compressed vector length 44 over GF(3) >,
+##    < immutable compressed vector length 44 over GF(3) >,
+##    < immutable compressed vector length 44 over GF(3) > ]
+##  gap> coh.coboundaries;
+##  [ < immutable compressed vector length 44 over GF(3) >,
+##    < immutable compressed vector length 44 over GF(3) >,
+##    < immutable compressed vector length 44 over GF(3) >,
+##    < immutable compressed vector length 44 over GF(3) >,
+##    < immutable compressed vector length 44 over GF(3) >,
+##    < immutable compressed vector length 44 over GF(3) >,
+##    < immutable compressed vector length 44 over GF(3) > ]
+##  gap> coh.cohomology;
+##  [ < immutable compressed vector length 44 over GF(3) > ]
+##  gap> g1:=FpGroupCocycle(coh,coh.zero);
+##  <fp group of size 4860 on the generators [ F1, F2, F3, m1, m2, m3, m4 ]>
+##  gap> g2:=FpGroupCocycle(coh,coh.cohomology[1]);
+##  <fp group of size 4860 on the generators [ F1, F2, F3, m1, m2, m3, m4 ]>
+##  gap> Length(ComplementClassesRepresentatives(g1,RadicalGroup(g1)));
+##  3
+##  gap> Length(ComplementClassesRepresentatives(g2,RadicalGroup(g2)));
+##  0
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "TwoCohomologyGeneric", [ IsGroup, IsObject ] );
+
+#############################################################################
+##
+#O  FpGroupCocycle( <r>, <c>, <doperm> )
+##
+##  <#GAPDoc Label="FpGroupCocycle">
+##  <ManSection>
+##  <Func Name="FpGroupCocycle" Arg='r, c [,doperm]'/>
+##
+##  <Description>
+##  For a record <A>r</A> as returned by
+##  <Ref Oper="TwoCohomologyGeneric"/> and a vector <A>c</A> in the space of
+##  two-cocycles, this operation returns a finitely presented group that is
+##  an extension corresponding to the cocycle <A>c</A>. If the underlying
+##  module has dimension <M>d</M>, the last <M>d</M> generators generate the
+##  normal subgroup.
+##  If the optional parameter <A>doperm</A> is given as <A>true</A>, a
+##  faithful permutation representation is computed and stored in the
+##  attribute <Ref Attr="IsomorphismPermGroup"/> of the computed group.
+##  <Example><![CDATA[
+##  gap> g:=Group((2,15,8,16)(3,17,14,21)(4,23,20,6)(5,9,22,11)(7,13,19,25),
+##  > (2,12,7,17)(3,18,13,23)(4,24,19,9)(5,10,25,15)(6,11,16,21));;
+##  gap> StructureDescription(g);
+##  "GL(2,5)"
+##  gap> mats:=[[[1,1,0,2],[2,0,0,0],[0,2,2,0],[0,1,0,0]],
+##  > [[0,0,0,1],[1,1,2,0],[1,0,2,1],[1,0,1,0]]]*Z(3)^0;;
+##  gap> mo:=GModuleByMats(mats,GF(3));;
+##  gap> coh:=TwoCohomologyGeneric(g,mo);;
+##  gap> coh.cohomology;
+##  [ < immutable compressed vector length 116 over GF(3) > ]
+##  gap> p:=FpGroupCocycle(coh,coh.zero,true);
+##  <fp group of size 38880 on the generators
+##  [ F1, F2, F3, F4, F5, F6, m1, m2, m3, m4 ]>
+##  gap> g1:=Image(IsomorphismPermGroup(p));
+##  <permutation group with 10 generators>
+##  gap> NrMovedPoints(g1);
+##  39
+##  gap> p:=FpGroupCocycle(coh,coh.cohomology[1],true);
+##  <fp group of size 38880 on the generators
+##  [ F1, F2, F3, F4, F5, F6, m1, m2, m3, m4 ]>
+##  gap> g2:=Image(IsomorphismPermGroup(p));
+##  <permutation group with 10 generators>
+##  gap> NrMovedPoints(g2);
+##  69
+##  gap> List(MaximalSubgroupClassReps(g1),Size);
+##  [ 480, 480, 480, 19440, 3888, 7776, 6480 ]
+##  gap> List(MaximalSubgroupClassReps(g2),Size);
+##  [ 19440, 3888, 7776, 6480 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("FpGroupCocycle");
+

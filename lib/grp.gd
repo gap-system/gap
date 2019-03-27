@@ -4390,6 +4390,34 @@ DeclareOperation(
 
 DeclareGlobalFunction( "IsomorphismFpGroupByPcgs" );
 
+#############################################################################
+##
+#A  IsomorphismFpGroupForRewriting( <G> )
+##
+##  <#GAPDoc Label="IsomorphismFpGroupForRewriting">
+##  <ManSection>
+##  <Attr Name="IsomorphismFpGroupForRewriting" Arg='G'/>
+##
+##  <Description>
+##  returns an isomorphism from the given finite group <A>G</A> to a finitely
+##  presented group isomorphic to <A>G</A>. If possible, generators are
+##  chosen to lead to a monoid presentation that leads to a short
+##  set of confluent rewriting rules.
+##  <Example><![CDATA[
+##  gap> g := AlternatingGroup(5);;
+##  gap> iso := IsomorphismFpGroupForRewriting( g );
+##  [ (1,2,3), (1,2)(3,4), (1,2)(4,5) ] -> [ A_5.1, A_5.2, A_5.3 ]
+##  gap> fp := Image( iso );;
+##  gap> RelatorsOfFpGroup( fp );
+##  [ A_5.1^3, A_5.2^2, A_5.3^2, (A_5.1*A_5.2)^3, (A_5.1*A_5.3)^2,
+##    (A_5.2*A_5.3)^3 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "IsomorphismFpGroupForRewriting", IsGroup );
+
 
 #############################################################################
 ##
