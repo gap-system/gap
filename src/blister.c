@@ -1577,6 +1577,102 @@ static Obj FuncMEET_BLIST(Obj self, Obj list1, Obj list2)
     return False;
 }
 
+/****************************************************************************
+**
+*F  FuncFLIP_BLIST( <self>, <list> ) . . .
+**
+**  'FuncFLIP_BLIST' implements the internal function 'FlipBlist'.
+**
+**  'FlipBlist( <list> )'
+**
+**  'FlipBlist' changes every value in the blist <list> from true to false, and
+**  vice versa.
+*/
+
+static Obj FuncFLIP_BLIST(Obj self, Obj list)
+{
+    // get and check the arguments
+    RequireBlist("FlipBlist", list, "blist");
+
+    if (LEN_BLIST(list) == 0) {
+        return 0;
+    }
+
+    UInt * ptr = BLOCKS_BLIST(list);
+    for (UInt i = NUMBER_BLOCKS_BLIST(list); 0 < i; i--) {
+        *ptr = ~(*ptr);
+        ptr++;
+    }
+    // If the logical length of the boolean list is not a multiple of BIPEB the
+    // last block will contain unused bits, which are then zero.
+    UInt mask =
+        ~(UInt)0 >> ((BIPEB * NUMBER_BLOCKS_BLIST(list)) - LEN_BLIST(list));
+    ptr = BLOCK_ELM_BLIST_PTR(list, LEN_BLIST(list));
+    *ptr &= mask;
+    return 0;
+}
+
+/****************************************************************************
+**
+*F  FuncCLEAR_ALL_BLIST( <self>, <list> ) . . .
+**
+**  'FuncCLEAR_ALL_BLIST' implements the internal function 'ClearAllBlist'.
+**
+**  'ClearAllBlist( <list> )'
+**
+**  'ClearAllBlist' changes every value in the blist <list> to false.
+*/
+
+static Obj FuncCLEAR_ALL_BLIST(Obj self, Obj list)
+{
+    // get and check the arguments
+    RequireBlist("ClearAllBitsBlist", list, "blist");
+
+    if (LEN_BLIST(list) == 0) {
+        return 0;
+    }
+
+    UInt * ptr = BLOCKS_BLIST(list);
+    for (UInt i = NUMBER_BLOCKS_BLIST(list); 0 < i; i--) {
+        *ptr++ = 0;
+    }
+
+    return 0;
+}
+
+/****************************************************************************
+**
+*F  FuncSET_ALL_BLIST( <self>, <list> ) . . .
+**
+**  'FuncSET_ALL_BLIST' implements the internal function 'SetAllBlist'.
+**
+**  'SetAllBlist( <list> )'
+**
+**  'SetAllBlist' changes every value in the blist <list> to true.
+*/
+
+static Obj FuncSET_ALL_BLIST(Obj self, Obj list)
+{
+    // get and check the arguments
+    RequireBlist("SetAllBitsBlist", list, "blist");
+
+    if (LEN_BLIST(list) == 0) {
+        return 0;
+    }
+
+    UInt * ptr = BLOCKS_BLIST(list);
+    for (UInt i = NUMBER_BLOCKS_BLIST(list); 0 < i; i--) {
+        *ptr++ = ~(UInt)0;
+    }
+    // If the logical length of the boolean list is not a multiple of BIPEB the
+    // last block will contain unused bits, which are then zero.
+    UInt mask =
+        ~(UInt)0 >> ((BIPEB * NUMBER_BLOCKS_BLIST(list)) - LEN_BLIST(list));
+    ptr = BLOCK_ELM_BLIST_PTR(list, LEN_BLIST(list));
+    *ptr &= mask;
+
+    return 0;
+}
 
 /****************************************************************************
 **
@@ -1765,6 +1861,9 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(INTER_BLIST, 2, "blist1, blist2"),
     GVAR_FUNC(SUBTR_BLIST, 2, "blist1, blist2"),
     GVAR_FUNC(MEET_BLIST, 2, "blist1, blist2"),
+    GVAR_FUNC(FLIP_BLIST, 1, "blist"),
+    GVAR_FUNC(CLEAR_ALL_BLIST, 1, "blist"),
+    GVAR_FUNC(SET_ALL_BLIST, 1, "blist"),
     GVAR_FUNC(PositionNthTrueBlist, 2, "blist, nth"),
     { 0, 0, 0, 0, 0 }
 

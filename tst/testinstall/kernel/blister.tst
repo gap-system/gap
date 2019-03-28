@@ -209,5 +209,59 @@ true
 gap> MEET_BLIST(x, [true,false,false,false]);
 false
 
+# FuncFLIP_BLIST
+gap> FLIP_BLIST(fail);
+Error, FlipBlist: <blist> must be a boolean list (not the value 'fail')
+gap> x:= [false,true,true,false];;
+gap> FLIP_BLIST(x);
+gap> x;
+[ true, false, false, true ]
+gap> FLIP_BLIST(x);
+gap> x;
+[ false, true, true, false ]
+gap> for i in [0..200] do
+> f1 := List([1..i], x -> false);
+> f2 := List([1..i], x -> false);
+> t1 := List([1..i], x -> true);
+> t2 := List([1..i], x -> true);
+> FLIP_BLIST(f1); FLIP_BLIST(t1);
+> if f1 <> t2 or t1 <> f2 then Print("Broken FLIP_BLIST", i, "\n"); fi;
+> od;
+
+# FuncSET_ALL_BLIST
+gap> SET_ALL_BLIST(fail);
+Error, SetAllBitsBlist: <blist> must be a boolean list (not the value 'fail')
+gap> x:= [false,true,true,false];;
+gap> SET_ALL_BLIST(x);
+gap> x;
+[ true, true, true, true ]
+gap> SET_ALL_BLIST(x);
+gap> x;
+[ true, true, true, true ]
+gap> for i in [0..200] do
+> f1 := List([1..i], x -> false);
+> t1 := List([1..i], x -> true);
+> SET_ALL_BLIST(f1);
+> if f1 <> t1 then Print("Broken SET_ALL_BLIST\n"); fi;
+> od;
+
+# FuncCLEAR_ALL_BLIST
+gap> CLEAR_ALL_BLIST(fail);
+Error, ClearAllBitsBlist: <blist> must be a boolean list (not the value 'fail'\
+)
+gap> x:= [false,true,true,false];;
+gap> CLEAR_ALL_BLIST(x);
+gap> x;
+[ false, false, false, false ]
+gap> CLEAR_ALL_BLIST(x);
+gap> x;
+[ false, false, false, false ]
+gap> for i in [0..200] do
+> f1 := List([1..i], x -> false);
+> t1 := List([1..i], x -> true);
+> CLEAR_ALL_BLIST(t1);
+> if f1 <> t1 then Print("Broken CLEAR_ALL_BLIST\n"); fi;
+> od;
+
 #
 gap> STOP_TEST("kernel/blister.tst", 1);
