@@ -57,7 +57,9 @@ In function names we call boolean lists <E>blists</E> for brevity.
 <#Include Label="UniteBlistList">
 <#Include Label="IntersectBlist">
 <#Include Label="SubtractBlist">
-
+<#Include Label="FlipBlist">
+<#Include Label="SetAllBlist">
+<#Include Label="ClearAllBlist">
 </Section>
 
 

@@ -875,3 +875,108 @@ DeclareSynonym( "IntersectBlist", INTER_BLIST );
 ##  <#/GAPDoc>
 ##
 DeclareSynonym( "SubtractBlist", SUBTR_BLIST );
+
+#############################################################################
+##
+#F  FlipBlist( <blist> )
+##
+##  <#GAPDoc Label="FlipBlist">
+##  <ManSection>
+##  <Func Name="FlipBlist" Arg='blist'/>
+##
+##  <Description>
+##  Changes every entry in <A>blist</A> that equals <K>true</K> to <K>false</K>
+##  and vice versa. If <C>blist1</C> and <C>blist2</C> are boolean lists with
+##  equal length and every value in <C>blist2</C> is <K>true</K>,
+##  then <C>FlipBlist( blist1 )</C> is equivalent to
+##  <C>SubtractBlist( blist2, blist1 ); blist1 := blist2;</C>
+##  but <C>FlipBlist</C> is faster, and simpler to type.
+##  <P/>
+##  <Ref Func="FlipBlist"/> returns nothing, it is only called to change
+##  <A>blist</A> in-place.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> blist1 := [ true, true, true, true ];;
+##  gap> blist2 := [ true, false, true, false ];;
+##  gap> SubtractBlist( blist1, blist2 );
+##  gap> blist1;
+##  [ false, true, false, true ]
+##  gap> FlipBlist( blist2 );
+##  gap> blist2;
+##  [ false, true, false, true ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareSynonym( "FlipBlist", FLIP_BLIST );
+
+#############################################################################
+##
+#F  ClearAllBlist( <blist> )
+##
+##  <#GAPDoc Label="ClearAllBlist">
+##  <ManSection>
+##  <Func Name="ClearAllBlist" Arg='blist'/>
+##
+##  <Description>
+##  Changes every entry in <A>blist</A> to <K>false</K>.
+##  If <C>blist1</C> and <C>blist2</C> are boolean lists with
+##  equal length and every value in <C>blist2</C> is <K>false</K>,
+##  then <C>ClearAllBlist( blist1 )</C> is equivalent to
+##  <C>IntersectBlist( blist1, blist2 );</C> but is faster, and simpler to
+##  type.
+##  <P/>
+##  <Ref Func="ClearAllBlist"/> returns nothing, it is only called to change
+##  <A>blist</A> in-place.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> blist1 := [ true, true, true, true ];;
+##  gap> blist2 := [ true, false, true, false ];;
+##  gap> ClearAllBlist( blist1 );
+##  gap> blist1;
+##  [ false, false, false, false ]
+##  gap> ClearAllBlist(blist2);
+##  gap> blist2;
+##  [ false, false, false, false ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareSynonym( "ClearAllBlist", CLEAR_ALL_BLIST );
+
+#############################################################################
+##
+#F  SetAllBlist( <blist> )
+##
+##  <#GAPDoc Label="SetAllBlist">
+##  <ManSection>
+##  <Func Name="SetAllBlist" Arg='blist'/>
+##
+##  <Description>
+##  Changes every entry in <A>blist</A> to <K>true</K>.
+##  If <C>blist1</C> and <C>blist2</C> are boolean lists with
+##  equal length and every value in <C>blist2</C> is <K>true</K>,
+##  then <C>SetAllBlist( blist1 )</C> is equivalent to
+##  <C>UniteBlist( blist1, blist2 );</C> but is faster, and simpler to
+##  type.
+##  <P/>
+##  <Ref Func="SetAllBlist"/> returns nothing, it is only called to change
+##  <A>blist</A> in-place.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> blist1 := [ true, true, true, true ];;
+##  gap> blist2 := [ true, false, true, false ];;
+##  gap> SetAllBlist( blist1 );
+##  gap> blist1;
+##  [ true, true, true, true ]
+##  gap> SetAllBlist(blist2);
+##  gap> blist2;
+##  [ true, true, true, true ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareSynonym( "SetAllBlist", SET_ALL_BLIST );
