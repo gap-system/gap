@@ -106,6 +106,8 @@ algorithms for the computation of a subgroup lattice.
 Note that not all info classes defined in the &GAP; library are currently
 documented.  Many &GAP; packages define additional info classes, which are
 typically documented in the corresponding package documentation.
+The function <Ref Func="ShowUsedInfoClasses"/> will show all info classes which
+&GAP; considers while executing code.
 <P/>
 The amount of information to be displayed by each info class can be separately
 specified by the user. This is done by selecting a non-negative integer
@@ -158,6 +160,35 @@ returns the info level of <A>infoclass</A>.
 </Description>
 </ManSection>
 <P/>
+<ManSection>
+<Func Name="ShowUsedInfoClasses" Arg='infoclass'/>
+
+<Description>
+Called with argument <K>true</K>, this makes &GAP; print the info class and level of
+ any executed <Ref Func="Info"/> statement. Calling with the argument <K>false</K> stops this
+ printing.
+
+Each level of each info class is only printed once. The history of printed
+info classes and levels is reset whenever <K>true</K> is passed.
+<P/>
+
+<Example><![CDATA[
+gap> ShowUsedInfoClasses(true);
+gap> Intersection(Group((1,3,2,4,5,6)), Group((1,2,3,4,5,6)));
+#I Would print info with SetInfoLevel(InfoOptions,1)
+#I Would print info with SetInfoLevel(InfoBckt,1)
+#I Would print info with SetInfoLevel(InfoBckt,3)
+#I Would print info with SetInfoLevel(InfoBckt,5)
+Group(())
+gap> Intersection(Group((1,3,2,4,5,6)), Group((1,2,3,4,5,6)));
+Group(())
+gap> ShowUsedInfoClasses(false);
+]]></Example>
+
+</Description>
+</ManSection>
+<P/>
+
 <ManSection>
 <Func Name="Info" Arg='infoclass, level, info[, moreinfo ...]'/>
 
