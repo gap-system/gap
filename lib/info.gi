@@ -317,6 +317,43 @@ end );
 
 #############################################################################
 ##
+##  The following functions are used by ShowUsedInfoClasses
+##
+##  SHOWN_USED_INFO_CLASSES contains the InfoClasses which have been printed
+##  out by ShowUsedInfoClasses.
+##  RESET_SHOW_USED_INFO_CLASSES and SHOW_USED_INFO_CLASSES are called from
+##  the kernel.
+
+SHOWN_USED_INFO_CLASSES := [];
+
+if IsHPCGAP then
+    ShareInternalObj(INFO_CLASSES);
+fi;
+
+
+BIND_GLOBAL("RESET_SHOW_USED_INFO_CLASSES", function()
+    atomic readwrite SHOWN_USED_INFO_CLASSES do
+        SHOWN_USED_INFO_CLASSES := [];
+    od;
+end);
+
+BIND_GLOBAL("SHOW_USED_INFO_CLASSES", function(selectors, level)
+    local selector;
+    # Handle selectors possibly being a list
+    selectors := Flat([selectors]);
+    atomic readwrite SHOWN_USED_INFO_CLASSES do
+        for selector in selectors do
+            if not [selector, level] in SHOWN_USED_INFO_CLASSES then
+                Add(SHOWN_USED_INFO_CLASSES, [selector, level]);
+                Print("#I Would print info with SetInfoLevel(",
+                    selector, ",", level, ")\n");
+            fi;
+        od;
+    od;
+end);
+
+#############################################################################
+##
 #V  InfoDebug
 ##
 ##  This info class has a default level of 1.

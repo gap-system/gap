@@ -15,6 +15,8 @@
 
 #include "bool.h"
 #include "calls.h"
+#include "error.h"
+#include "gapstate.h"
 #include "gvars.h"
 #include "modules.h"
 #include "plist.h"
@@ -34,6 +36,24 @@ enum {
 static Obj InfoDecision;
 static Obj IsInfoClassListRep;
 static Obj DefaultInfoHandler;
+static Obj ResetShowUsedInfoClassesHandler;
+static Obj ShowUsedInfoClassesHandler;
+
+
+Obj FuncShowUsedInfoClasses(Obj self, Obj choice)
+{
+    RequireTrueOrFalse("ShowUsedInfoClasses", choice);
+
+    if (choice == True) {
+        STATE(ShowUsedInfoClassesActive) = 1;
+        CALL_0ARGS(ResetShowUsedInfoClassesHandler);
+    }
+    else {
+        STATE(ShowUsedInfoClassesActive) = 0;
+    }
+
+    return 0;
+}
 
 void InfoDoPrint(Obj cls, Obj lvl, Obj args)
 {
@@ -53,6 +73,9 @@ void InfoDoPrint(Obj cls, Obj lvl, Obj args)
 
 Obj InfoCheckLevel(Obj selectors, Obj level)
 {
+    if (STATE(ShowUsedInfoClassesActive)) {
+        CALL_2ARGS(ShowUsedInfoClassesHandler, selectors, level);
+    }
     // Fast-path the most common failing case.
     // The fast-path only deals with the case where all arguments are of the
     // correct type, and were False is returned.
@@ -77,6 +100,14 @@ Obj InfoCheckLevel(Obj selectors, Obj level)
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs[] = {
+    GVAR_FUNC(ShowUsedInfoClasses, 1, "choice"), { 0, 0, 0, 0, 0 }
+};
+
 
 /****************************************************************************
 **
@@ -84,10 +115,17 @@ Obj InfoCheckLevel(Obj selectors, Obj level)
 */
 static Int InitKernel(StructInitInfo * module)
 {
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable(GVarFuncs);
+
     /* The work of handling Info messages is delegated to the GAP level */
     ImportFuncFromLibrary("InfoDecision", &InfoDecision);
     ImportFuncFromLibrary("DefaultInfoHandler", &DefaultInfoHandler);
     ImportFuncFromLibrary("IsInfoClassListRep", &IsInfoClassListRep);
+    ImportFuncFromLibrary("RESET_SHOW_USED_INFO_CLASSES",
+                          &ResetShowUsedInfoClassesHandler);
+    ImportFuncFromLibrary("SHOW_USED_INFO_CLASSES",
+                          &ShowUsedInfoClassesHandler);
 
     /* return success                                                      */
     return 0;
@@ -100,6 +138,9 @@ static Int InitKernel(StructInitInfo * module)
 */
 static Int InitLibrary(StructInitInfo * module)
 {
+
+    InitGVarFuncsFromTable(GVarFuncs);
+
     ExportAsConstantGVar(INFODATA_CURRENTLEVEL);
     ExportAsConstantGVar(INFODATA_CLASSNAME);
     ExportAsConstantGVar(INFODATA_HANDLER);

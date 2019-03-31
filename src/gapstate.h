@@ -104,6 +104,9 @@ typedef struct GAPState {
     Int PrintObjIndex;
     Int PrintObjDepth;
 
+    /* From info.c */
+    Int ShowUsedInfoClassesActive;
+
     UInt1 StateSlots[STATE_SLOTS_SIZE];
 
 /* Allocation */
