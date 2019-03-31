@@ -38,6 +38,7 @@ extern "C" {
 #include "gapstate.h"
 #include "gasman.h"
 #include "gvars.h"
+#include "info.h"
 #include "integer.h"
 #include "intrprtr.h"
 #include "io.h"

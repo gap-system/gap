@@ -58,6 +58,7 @@ SOURCES += src/gap.c
 SOURCES += gen/gap_version.c	# generated source file
 SOURCES += src/gvars.c
 SOURCES += src/hookintrprtr.c
+SOURCES += src/info.c
 SOURCES += src/integer.c
 SOURCES += src/intfuncs.c
 SOURCES += src/intrprtr.c
