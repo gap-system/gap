@@ -13,6 +13,7 @@
 #include "compiled.h"
 #include "gap.h"
 #include "hookintrprtr.h"
+#include "info.h"
 #include "intfuncs.h"
 #include "iostream.h"
 #include "objccoll.h"
@@ -63,6 +64,7 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoVars,       /* must come after InitExpr and InitStats */
     InitInfoFuncs,
     InitInfoOpers,
+    InitInfoInfo,
     InitInfoIntrprtr,
     InitInfoCompiler,
 

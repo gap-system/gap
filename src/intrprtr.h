@@ -835,15 +835,11 @@ void IntrEmpty(void);
 *F  IntrInfoBegin() . . . . . . . . .  start interpretation of Info statement
 *F  IntrInfoMiddle() . . . . . . .  shift to interpreting printable arguments
 *F  IntrInfoEnd( <narg> ) . . Info statement complete, <narg> things to print
-*F  InfoCheckLevel( <selectors>, <level> )  . . . check if Info should output
 */
 
 void IntrInfoBegin(void);
 void IntrInfoMiddle(void);
 void IntrInfoEnd(UInt narg);
-Obj  InfoCheckLevel(Obj, Obj);
-
-void InfoDoPrint(Obj cls, Obj lvl, Obj args);
 
 
 /****************************************************************************

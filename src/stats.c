@@ -23,6 +23,7 @@
 #include "exprs.h"
 #include "gvars.h"
 #include "hookintrprtr.h"
+#include "info.h"
 #include "intrprtr.h"
 #include "io.h"
 #include "lists.h"

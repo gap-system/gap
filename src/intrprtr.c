@@ -27,6 +27,7 @@
 #include "gapstate.h"
 #include "gvars.h"
 #include "hookintrprtr.h"
+#include "info.h"
 #include "integer.h"
 #include "io.h"
 #include "lists.h"
@@ -3765,55 +3766,6 @@ void            IntrInfoBegin( void )
 
 }
 
-enum {
-    INFODATA_NUM = 1,
-    INFODATA_CURRENTLEVEL,
-    INFODATA_CLASSNAME,
-    INFODATA_HANDLER,
-    INFODATA_OUTPUT,
-};
-
-static Obj InfoDecision;
-static Obj IsInfoClassListRep;
-static Obj DefaultInfoHandler;
-
-void InfoDoPrint(Obj cls, Obj lvl, Obj args)
-{
-    if (IS_PLIST(cls))
-        cls = ELM_PLIST(cls, 1);
-#if defined(HPCGAP)
-    Obj fun = Elm0AList(cls, INFODATA_HANDLER);
-#else
-    Obj fun = ELM_PLIST(cls, INFODATA_HANDLER);
-#endif
-    if (!fun)
-        fun = DefaultInfoHandler;
-
-    CALL_3ARGS(fun, cls, lvl, args);
-}
-
-
-Obj InfoCheckLevel(Obj selectors, Obj level)
-{
-    // Fast-path the most common failing case.
-    // The fast-path only deals with the case where all arguments are of the
-    // correct type, and were False is returned.
-    if (CALL_1ARGS(IsInfoClassListRep, selectors) == True) {
-#if defined(HPCGAP)
-        Obj index = ElmAList(selectors, INFODATA_CURRENTLEVEL);
-#else
-        Obj index = ELM_PLIST(selectors, INFODATA_CURRENTLEVEL);
-#endif
-        if (IS_INTOBJ(index) && IS_INTOBJ(level)) {
-            // < on INTOBJs compares the represented integers.
-            if (index < level) {
-                return False;
-            }
-        }
-    }
-    return CALL_2ARGS(InfoDecision, selectors, level);
-}
-
 
 void            IntrInfoMiddle( void )
 {
@@ -4026,11 +3978,6 @@ static Int InitKernel (
     InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 
-    /* The work of handling Info messages is delegated to the GAP level */
-    ImportFuncFromLibrary("InfoDecision", &InfoDecision);
-    ImportFuncFromLibrary("DefaultInfoHandler", &DefaultInfoHandler);
-    ImportFuncFromLibrary("IsInfoClassListRep", &IsInfoClassListRep);
-
     /* The work of handling Options is also delegated*/
     ImportFuncFromLibrary( "PushOptions", &PushOptions );
     ImportFuncFromLibrary( "PopOptions",  &PopOptions  );
@@ -4052,12 +3999,6 @@ static Int InitLibrary (
     /* The Assertion level is also controlled at GAP level                 */
     lev = GVarName("CurrentAssertionLevel");
     AssGVar( lev, INTOBJ_INT(0) );
-
-    ExportAsConstantGVar(INFODATA_CURRENTLEVEL);
-    ExportAsConstantGVar(INFODATA_CLASSNAME);
-    ExportAsConstantGVar(INFODATA_HANDLER);
-    ExportAsConstantGVar(INFODATA_OUTPUT);
-    ExportAsConstantGVar(INFODATA_NUM);
 
     /* return success                                                      */
     return 0;
