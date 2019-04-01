@@ -251,11 +251,11 @@ end);
 ##  compute the permutation action of <P> on the subspaces of the
 ##  elementary abelian subgroup <G> of <P>. Returns
 ##  a list [<subspaces>,<action>], where <subspaces> is a list of all the
-##  subspaces and <action> a homomorphism from <P> in a permutation group,
-##  which is equal to the action homomrophism for the action of <P> on
-##  <subspaces>. If <dims> is given, only subspaces of dimension <dims> are
-##  considered.
-##  Instead of <G> also a (modulo) pcgs may be given.
+##  subspaces (as groups) and <action> a homomorphism from <P> in a 
+##  permutation group, which is equal to the action homomrophism for the
+##  action of <P> on <subspaces>. If <dims> is given, only subspaces of
+##  dimension <dims> are considered.  Instead of <G> also a (modulo) pcgs
+##  may be given, in this case <subspaces> are pre-images of the subspaces.
 ##
 InstallGlobalFunction(ActionSubspacesElementaryAbelianGroup,function(arg)
 local P,g,op,act,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,
@@ -453,7 +453,7 @@ local P,g,op,act,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,
     if kersz=1 then
       a:=SubgroupNC(par,List(i,j->pcelm(j)));
     else
-      #a:=ClosureGroup(ker,List(i,j->pcelm(j)):knownClosureSize:=asz);
+      #a:=ClosureSubgroup(ker,List(i,j->pcelm(j)):knownClosureSize:=asz);
       a:=SubgroupNC(par,Concatenation(GeneratorsOfGroup(ker),
         List(i,j->pcelm(j))));
     fi;
