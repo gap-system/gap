@@ -202,7 +202,7 @@ This can be raised (although not lowered) using
 <Ref Func="SetCyclotomicsLimit"/> and
 accessed using <Ref Func="GetCyclotomicsLimit"/>.
 The maximum value of the limit is <M>2^{28}-1</M> on <M>32</M> bit systems,
-and <M>2^{32}</M> on <M>64</M> bit systems.
+and <M>2^{32}-1</M> on <M>64</M> bit systems.
 So the maximal cyclotomic field implemented in &GAP; is not really
 the field <M>&QQ;^{ab}</M>.
 <P/>
