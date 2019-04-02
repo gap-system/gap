@@ -276,6 +276,10 @@ he integer 0)
 gap> SetCyclotomicsLimit(100);
 Error, SetCyclotomicsLimit: <newlimit> must not be less than old limit of 1000\
 000
+#@if 8*GAPInfo.BytesPerVariable = 64
+gap> SetCyclotomicsLimit(2^32);
+Error, Cyclotomic field size limit must be less than 2^32
+#@fi
 gap> SetCyclotomicsLimit(1000000);
 
 #
