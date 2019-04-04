@@ -540,7 +540,7 @@ static void PushBinaryOp(UInt type)
 }
 
 
-Int PushValue(Obj val)
+Int AddValueToBody(Obj val)
 {
     BodyHeader * header = (BodyHeader *)STATE(PtrBody);
     Obj values = header->values;
@@ -905,7 +905,7 @@ Expr CodeFuncExprEnd(UInt nr, UInt pushExpr)
     /* if this was inside another function definition, make the expression */
     /* and store it in the function expression list of the outer function  */
     if (STATE(CurrLVars) != CS(CodeLVars)) {
-        len = PushValue(fexp);
+        len = AddValueToBody(fexp);
         expr = NewExpr( T_FUNC_EXPR, sizeof(Expr) );
         WRITE_EXPR(expr, 0, len);
         if (pushExpr) {
@@ -1610,7 +1610,7 @@ void CodeIntExpr(Obj val)
     else {
         GAP_ASSERT(TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG);
         expr = NewExpr( T_INT_EXPR, sizeof(UInt) );
-        Int ix = PushValue(val);
+        Int ix = AddValueToBody(val);
         WRITE_EXPR(expr, 0, ix);
     }
 
@@ -1809,7 +1809,7 @@ void CodeStringExpr (
     GAP_ASSERT(IS_STRING_REP(str));
 
     Expr string = NewExpr( T_STRING_EXPR, sizeof(UInt) );
-    Int ix = PushValue(str);
+    Int ix = AddValueToBody(str);
     WRITE_EXPR(string, 0, ix);
     PushExpr( string );
 }
@@ -1819,7 +1819,7 @@ void CodePragma(Obj pragma)
     GAP_ASSERT(IS_STRING_REP(pragma));
 
     Expr pragmaexpr = NewStat(T_PRAGMA, sizeof(UInt));
-    Int  ix = PushValue(pragma);
+    Int  ix = AddValueToBody(pragma);
     WRITE_EXPR(pragmaexpr, 0, ix);
     PushStat(pragmaexpr);
 }
@@ -1909,7 +1909,7 @@ Expr CodeLazyFloatExpr(Obj str, UInt pushExpr)
     if (!ix)
         ix = getNextFloatExprNumber();
     WRITE_EXPR(fl, 0, ix);
-    WRITE_EXPR(fl, 1, PushValue(str));
+    WRITE_EXPR(fl, 1, AddValueToBody(str));
 
     /* push the expression */
     if (pushExpr) {
@@ -1923,8 +1923,8 @@ static void CodeEagerFloatExpr(Obj str, Char mark)
     /* Eager case, do the conversion now */
     Expr fl = NewExpr(T_FLOAT_EXPR_EAGER, sizeof(UInt) * 3);
     Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
-    WRITE_EXPR(fl, 0, PushValue(v));
-    WRITE_EXPR(fl, 1, PushValue(str));  // store for printing
+    WRITE_EXPR(fl, 0, AddValueToBody(v));
+    WRITE_EXPR(fl, 1, AddValueToBody(str));  // store for printing
     WRITE_EXPR(fl, 2, (UInt)mark);
     PushExpr(fl);
 }

@@ -692,12 +692,13 @@ Expr CodeFuncExprEnd(UInt nr, UInt pushExpr);
 
 /****************************************************************************
 **
-*F  PushValue( <val> ) . . . . . . . . . . . . . . store value in values list
+*F  AddValueToBody( <val> ) . . . . . . . . . . .  store value in values list
 **
-**  'PushValue' pushes a value into the value list of the body, and returns
-**  the index at which the value was inserted.
+**  'AddValueToBody' adds a value into the value list of the body of the
+**  function currently being coded, and returns the index at which the value
+**  was inserted. This function must only be called while coding a function.
 */
-Int PushValue(Obj val);
+Int AddValueToBody(Obj val);
 
 /****************************************************************************
 **
