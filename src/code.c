@@ -134,7 +134,7 @@ static Stat * ADDR_STAT(Stat stat)
     return (Stat *)STATE(PtrBody) + stat / sizeof(Stat);
 }
 
-static void WRITE_EXPR(Expr expr, UInt idx, UInt val)
+void WRITE_EXPR(Expr expr, UInt idx, UInt val)
 {
     ADDR_EXPR(expr)[idx] = val;
 }
@@ -250,20 +250,7 @@ Obj GET_VALUE_FROM_CURRENT_BODY(Int ix)
     return ELM_PLIST(values, ix);
 }
 
-
-/****************************************************************************
-**
-*F  NewStat( <type>, <size> ) . . . . . . . . . . .  allocate a new statement
-**
-**  'NewStat'   allocates a new   statement memory block  of  type <type> and
-**  <size> bytes.  'NewStat' returns the identifier of the new statement.
-**
-**  NewStatWithProf( <type>, <size>, <line>, <file> ) allows the line number
-**  and fileid of the statement to also be specified, else the current line
-**  and file when NewStat was called is used. line=0, file=0 is used
-**  to denote a statement which should not be tracked.
-*/
-static Stat NewStatWithProf (
+Stat NewStatWithProf (
     UInt                type,
     UInt                size,
     UInt                line)
@@ -337,7 +324,7 @@ static inline UInt CapacityStatStack(void)
     return SIZE_BAG(CS(StackStat)) / sizeof(Stat) - 1;
 }
 
-static void PushStat (
+void PushStat (
     Stat                stat )
 {
     /* there must be a stack, it must not be underfull or overfull         */
@@ -553,14 +540,7 @@ static void PushBinaryOp(UInt type)
 }
 
 
-/****************************************************************************
-**
-*F  PushValue( <val> ) . . . . . . . . . . . . . . store value in values list
-**
-**  'PushValue' pushes a value into the value list of the body, and returns
-**  the index at which the value was inserted.
-*/
-static Int PushValue(Obj val)
+Int PushValue(Obj val)
 {
     BodyHeader * header = (BodyHeader *)STATE(PtrBody);
     Obj values = header->values;
