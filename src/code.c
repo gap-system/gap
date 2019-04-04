@@ -1898,7 +1898,7 @@ static UInt CheckForCommonFloat(const Char * str)
         return 0;
 }
 
-static void CodeLazyFloatExpr(Obj str)
+Expr CodeLazyFloatExpr(Obj str, UInt pushExpr)
 {
     UInt ix;
 
@@ -1912,7 +1912,10 @@ static void CodeLazyFloatExpr(Obj str)
     WRITE_EXPR(fl, 1, PushValue(str));
 
     /* push the expression */
-    PushExpr(fl);
+    if (pushExpr) {
+        PushExpr(fl);
+    }
+    return fl;
 }
 
 static void CodeEagerFloatExpr(Obj str, Char mark)
@@ -1947,7 +1950,7 @@ void CodeFloatExpr(Obj s)
         CodeEagerFloatExpr(s, mark);
     }
     else {
-        CodeLazyFloatExpr(s);
+        CodeLazyFloatExpr(s, 1);
     }
 }
 

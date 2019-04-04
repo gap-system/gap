@@ -1105,6 +1105,13 @@ void CodePragma(Obj pragma);
 
 /****************************************************************************
 **
+*F  CodeLazyFloatExpr(<str>,<pushExpr>) . . . . .  code lazy float expression
+*/
+Expr CodeLazyFloatExpr(Obj str, UInt pushExpr);
+
+
+/****************************************************************************
+**
 *F  CodeFloatExpr(<str>) . . . . . . . . . .  code literal float expression
 */
 void CodeFloatExpr(Obj str);
