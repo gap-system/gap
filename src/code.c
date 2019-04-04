@@ -833,7 +833,7 @@ void CodeFuncExprBegin (
     assert( stat1 == OFFSET_FIRST_STAT );
 }
 
-void CodeFuncExprEnd(UInt nr)
+Expr CodeFuncExprEnd(UInt nr, UInt pushExpr)
 {
     Expr                expr;           /* function expression, result     */
     Stat                stat1;          /* single statement of body        */
@@ -853,10 +853,18 @@ void CodeFuncExprEnd(UInt nr)
     }
     else {
         stat1 = PopStat();
-        PushStat( stat1 );
-        if ( TNUM_STAT(stat1) != T_RETURN_VOID
-          && TNUM_STAT(stat1) != T_RETURN_OBJ )
-        {
+        PushStat(stat1);
+        //  If we code a function where the body is already packed into nested
+        //  sequence statements, e.g., from reading in a syntax tree, we need
+        //  to find the last `real` statement of the last innermost sequence
+        //  statement to determine if there is already a return or not.
+        while (T_SEQ_STAT <= TNUM_STAT(stat1) &&
+               TNUM_STAT(stat1) <= T_SEQ_STAT7) {
+            UInt size = SIZE_STAT(stat1) / sizeof(Stat);
+            stat1 = READ_STAT(stat1, size - 1);
+        }
+        if (TNUM_STAT(stat1) != T_RETURN_VOID &&
+            TNUM_STAT(stat1) != T_RETURN_OBJ) {
             CodeReturnVoidWhichIsNotProfiled();
             nr++;
         }
@@ -900,7 +908,10 @@ void CodeFuncExprEnd(UInt nr)
         len = PushValue(fexp);
         expr = NewExpr( T_FUNC_EXPR, sizeof(Expr) );
         WRITE_EXPR(expr, 0, len);
-        PushExpr( expr );
+        if (pushExpr) {
+            PushExpr(expr);
+        }
+        return expr;
     }
 
     // otherwise, make the function and store it in 'CS(CodeResult)'
@@ -908,6 +919,7 @@ void CodeFuncExprEnd(UInt nr)
         CS(CodeResult) = MakeFunction(fexp);
     }
 
+    return 0;
 }
 
 
