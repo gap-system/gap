@@ -10,6 +10,13 @@ gap> SyntaxTree(x -> x);
 <syntax tree>
 gap> SyntaxTree(\+);
 Error, SYNTAX_TREE: <func> must be a plain GAP function (not a function)
+gap> test_tree := function( f )
+>       local curr_tree, new_func, new_tree;
+>       curr_tree := SYNTAX_TREE( f );
+>       new_func := SYNTAX_TREE_CODE( curr_tree );
+>       new_tree := SYNTAX_TREE( new_func );
+>       return new_tree = curr_tree;
+> end;;
 
 # Just try compiling all functions we can find in the workspace
 # to see nothing crashes.
@@ -17,12 +24,16 @@ gap> for n in NamesGVars() do
 >        if IsBoundGlobal(n) and not IsAutoGlobal(n) then
 >            v := ValueGlobal(n);
 >            if IsFunction(v) and not IsKernelFunction(v) then
->                SYNTAX_TREE(v);
+>                if not test_tree(v) then
+>                   Print("failed round trip: ",n,"\n");
+>                fi;
 >            elif IsOperation(v) then
 >                for i in [1..6] do
 >                    for x in METHODS_OPERATION(v, i) do
 >                        if IsFunction(x) and not IsKernelFunction(v) then
->                        SYNTAX_TREE(x);
+>                            if not test_tree(v) then
+>                                Print("METHODS_OPERATION(", n, ",", i, ") failed round trip\n");
+>                            fi;
 >                        fi;
 >                    od; 
 >                od;
@@ -37,8 +48,7 @@ gap> testit := function(f)
 >   local tree;
 >   tree := SYNTAX_TREE(f);
 >   Display(tree);
->   # TODO: recode the tree, then decode again and compare
->   return true;
+>   return test_tree( f );
 > end;;
 
 # T_PROCCALL_0ARGS
@@ -1616,6 +1626,9 @@ rec(
               comobj := rec(
                   lvar := 1,
                   type := "T_REFLVAR" ),
+              rhs := rec(
+                  type := "T_INTEXPR",
+                  value := 1 ),
               rnam := "abc",
               type := "T_ASS_COMOBJ_NAME" ), rec(
               type := "T_RETURN_VOID" ) ],
@@ -2681,6 +2694,23 @@ rec(
                           value := 1 ), rec(
                           type := "T_INTEXPR",
                           value := 2 ) ],
+                  type := "T_LIST_EXPR" ),
+              type := "T_RETURN_OBJ" ) ],
+      type := "T_SEQ_STAT" ),
+  type := "T_FUNC_EXPR",
+  variadic := false )
+true
+gap> testit( x -> [, [] ] );
+rec(
+  nams := [ "x" ],
+  narg := 1,
+  nloc := 0,
+  stats := rec(
+      statements := [ rec(
+              obj := rec(
+                  list := [ , rec(
+                          list := [  ],
+                          type := "T_LIST_EXPR" ) ],
                   type := "T_LIST_EXPR" ),
               type := "T_RETURN_OBJ" ) ],
       type := "T_SEQ_STAT" ),
