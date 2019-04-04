@@ -109,6 +109,25 @@ EXPORT_INLINE Obj VALUES_BODY(Obj body)
     return BODY_HEADER(body)->values;
 }
 
+
+/****************************************************************************
+**
+*F  NewStat( <type>, <size> ) . . . . . . . . . . .  allocate a new statement
+**
+**  'NewStat'   allocates a new   statement memory block  of  type <type> and
+**  <size> bytes.  'NewStat' returns the identifier of the new statement.
+**
+**  NewStatWithProf( <type>, <size>, <line>, <file> ) allows the line number
+**  and fileid of the statement to also be specified, else the current line
+**  and file when NewStat was called is used. line=0, file=0 is used
+**  to denote a statement which should not be tracked.
+*/
+Stat NewStatWithProf(UInt type, UInt size, UInt line);
+
+
+void PushStat(Stat stat);
+
+
 /****************************************************************************
 **
 *V  OFFSET_FIRST_STAT . . . . . . . . . . offset of first statement in a body
@@ -126,6 +145,9 @@ enum {
 *F  NewFunctionBody() . . . . . . . . . . . . . .  create a new function body
 */
 Obj NewFunctionBody(void);
+
+
+void WRITE_EXPR(Expr expr, UInt idx, UInt val);
 
 
 /****************************************************************************
@@ -666,6 +688,15 @@ void CodeFuncCallEnd(UInt funccall, UInt options, UInt nr);
 void CodeFuncExprBegin(Int narg, Int nloc, Obj nams, Int startLine);
 
 void CodeFuncExprEnd(UInt nr);
+
+/****************************************************************************
+**
+*F  PushValue( <val> ) . . . . . . . . . . . . . . store value in values list
+**
+**  'PushValue' pushes a value into the value list of the body, and returns
+**  the index at which the value was inserted.
+*/
+Int PushValue(Obj val);
 
 /****************************************************************************
 **
