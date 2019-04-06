@@ -221,8 +221,7 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
     Int                 i;              /* loop variable                   */
 
     /* check the mutability of the first argument */
-    if (!IS_MUTABLE_OBJ(list1))
-        ErrorMayQuit("Append: <list1> must be a mutable list", 0, 0);
+    RequireMutable("Append", list1, "list");
 
 
     /* handle the case of strings now */

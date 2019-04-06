@@ -110,8 +110,15 @@ gap> tmp = MatrixByBlockMatrix(m2);
 true
 
 # block matrices are immutable
+#@if IsHPCGAP
 gap> m1[1,2] := 5;
-Error, Matrix Assignment: <mat> must be a mutable matrix
+Error, Matrix Assignment: <mat> must be a mutable matrix (not a atomic compone\
+nt object)
+#@else
+gap> m1[1,2] := 5;
+Error, Matrix Assignment: <mat> must be a mutable matrix (not a object (compon\
+ent))
+#@fi
 
 #
 gap> STOP_TEST( "matblock.tst", 1);

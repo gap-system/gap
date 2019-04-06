@@ -863,16 +863,13 @@ void ASSB_LIST (
     DoOperation3Args( AssListOper, list, pos, obj );
 }
 
-void ASS2_LIST(Obj list, Obj pos1, Obj pos2, Obj obj)
+void ASS2_LIST(Obj mat, Obj pos1, Obj pos2, Obj obj)
 {
-    if (!IS_MUTABLE_OBJ(list)) {
-        ErrorMayQuit("Matrix Assignment: <mat> must be a mutable matrix", 0,
-                     0);
-    }
-    if (IS_POS_INTOBJ(pos1) && IS_POS_INTOBJ(pos2) && IS_PLIST(list)) {
+    RequireMutable("Matrix Assignment", mat, "matrix");
+    if (IS_POS_INTOBJ(pos1) && IS_POS_INTOBJ(pos2) && IS_PLIST(mat)) {
         Int p1 = INT_INTOBJ(pos1);
-        if ( p1 <= LEN_PLIST(list) ) {
-            Obj row = ELM_PLIST( list, p1 );
+        if (p1 <= LEN_PLIST(mat)) {
+            Obj row = ELM_PLIST(mat, p1);
             Int p2 = INT_INTOBJ(pos2);
 
             ASS_LIST( row, p2, obj );
@@ -880,7 +877,7 @@ void ASS2_LIST(Obj list, Obj pos1, Obj pos2, Obj obj)
         }
     }
 
-    DoOperation4Args( AssListOper, list, pos1, pos2, obj );
+    DoOperation4Args(AssListOper, mat, pos1, pos2, obj);
 }
 
 

@@ -239,6 +239,14 @@ Obj RequireArgumentEx(const char * funcname,
     RequireArgumentCondition(funcname, op, op == True || op == False,        \
                              "must be true or false")
 
+/****************************************************************************
+**
+*F  RequireMutable
+*/
+#define RequireMutable(funcname, op, type)                                   \
+    RequireArgumentCondition(funcname, op, IS_MUTABLE_OBJ(op),               \
+                             "must be a mutable " type)
+
 
 /****************************************************************************
 **
