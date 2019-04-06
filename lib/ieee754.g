@@ -42,25 +42,11 @@ INSTALLFLOATCREATOR("for IsIEEE754FloatRep and string",
     return MACFLOAT_STRING(s);
 end);
 
-#############################################################################
-##
-#M  String( x ) . . . . . . . . . . . . . . . . . . . . . . . .  for macfloats
-##
-BindGlobal("MACFLOAT_STRING_DOTTIFY", function(s)
-    local p;
-    if '.' in s or Intersection(s,"0123456789")=[] then return s; fi;
-    for p in [1..Length(s)] do
-        if not s[p] in "+-0123456789" then p := p-1; break; fi;
-    od;
-    Add(s,'.',p+1);
-    return s;
-end);    
-
 InstallMethod( String, "for macfloats", [ IsIEEE754FloatRep ],
-        f->MACFLOAT_STRING_DOTTIFY(STRING_DIGITS_MACFLOAT(FLOAT.DECIMAL_DIG,f)));
+        f->STRING_DIGITS_MACFLOAT(FLOAT.DECIMAL_DIG,f));
 
 InstallMethod( ViewString, "for macfloats", [ IsIEEE754FloatRep ],
-        f->MACFLOAT_STRING_DOTTIFY(STRING_DIGITS_MACFLOAT(FLOAT.VIEW_DIG,f)));
+        f->STRING_DIGITS_MACFLOAT(FLOAT.VIEW_DIG,f));
 
 #############################################################################
 ##

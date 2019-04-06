@@ -70,6 +70,10 @@ static void PrintMacfloatToBuf(char *buf, size_t bufsize, Double val, int precis
     }
     else {
         snprintf(buf, bufsize, "%.*" PRINTFFORMAT, precision, val);
+        if(!strchr(buf, '.'))
+        {
+          strcat(buf, ".");
+        }
     }
 }
 
