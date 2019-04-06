@@ -201,11 +201,11 @@ gap> l := [];; Append(l,l); l;
 gap> l := [1,2,3,4];; Append(l,l); l;
 [ 1, 2, 3, 4, 1, 2, 3, 4 ]
 gap> Append(Immutable([1,2,3]), [1,2,3]);
-Error, Append: <list1> must be a mutable list
+Error, Append: <list1> must be a mutable list (not a list (plain,cyc,imm))
 gap> Append([1,2,3], () );
 Error, AppendList: <list2> must be a small list (not a permutation (small))
 gap> Append( () , [1,2,3] );
-Error, Append: <list1> must be a mutable list
+Error, Append: <list1> must be a mutable list (not a permutation (small))
 gap> s;
 [  ]
 

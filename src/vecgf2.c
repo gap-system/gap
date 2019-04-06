@@ -1845,11 +1845,7 @@ static Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
 static Obj FuncASS_GF2VEC(Obj self, Obj list, Obj pos, Obj elm)
 {
     // check that <list> is mutable
-    if (!IS_MUTABLE_OBJ(list)) {
-        ErrorReturnVoid("List Assignment: <list> must be a mutable list", 0L,
-                        0L, "you can 'return;' and ignore the assignment");
-        return 0;
-    }
+    RequireMutable("List Assignment", list, "list");
 
     // get the position
     UInt p = GetSmallInt("ASS_GF2VEC", pos);
@@ -1913,11 +1909,7 @@ static Obj FuncPLAIN_GF2MAT(Obj self, Obj list)
 static Obj FuncASS_GF2MAT(Obj self, Obj list, Obj pos, Obj elm)
 {
     // check that <list> is mutable
-    if (!IS_MUTABLE_OBJ(list)) {
-        ErrorReturnVoid("List Assignment: <list> must be a mutable list", 0L,
-                        0L, "you can 'return;' and ignore the assignment");
-        return 0;
-    }
+    RequireMutable("List Assignment", list, "list");
 
     // get the position
     UInt p = GetSmallInt("ASS_GF2MAT", pos);
@@ -1984,11 +1976,7 @@ static Obj FuncELM_GF2MAT(Obj self, Obj mat, Obj row)
 static Obj FuncUNB_GF2VEC(Obj self, Obj list, Obj pos)
 {
     // check that <list> is mutable
-    if (!IS_MUTABLE_OBJ(list)) {
-        ErrorReturnVoid("List Unbind: <list> must be a mutable list", 0L, 0L,
-                        "you can 'return;' and ignore the unbind");
-        return 0;
-    }
+    RequireMutable("List Unbind", list, "vector");
 
     if (DoFilter(IsLockedRepresentationVector, list) == True) {
         ErrorReturnVoid("Unbind forbidden on locked GF2 vector", 0L, 0L,
@@ -2027,11 +2015,7 @@ static Obj FuncUNB_GF2VEC(Obj self, Obj list, Obj pos)
 static Obj FuncUNB_GF2MAT(Obj self, Obj list, Obj pos)
 {
     // check that <list> is mutable
-    if (!IS_MUTABLE_OBJ(list)) {
-        ErrorReturnVoid("List Unbind: <list> must be a mutable list", 0L, 0L,
-                        "you can 'return;' and ignore the unbind");
-        return 0;
-    }
+    RequireMutable("List Unbind", list, "matrix");
 
     // get the position
     UInt p = GetSmallInt("UNB_GF2MAT", pos);
@@ -2532,8 +2516,8 @@ static Obj FuncCOPY_SECTION_GF2VECS(
     if (ihowmany < 0 ||
         ifrom + ihowmany - 1 > lens || ito + ihowmany - 1 > lend)
         ErrorMayQuit("Bad argument values", 0, 0);
-    if (!IS_MUTABLE_OBJ(dest))
-        ErrorMayQuit("Immutable destination vector", 0, 0);
+    RequireMutable("COPY_SECTION_GF2VECS", dest, "vector");
+
     CopySection_GF2Vecs(src, dest, (UInt)ifrom, (UInt)ito, (UInt)ihowmany);
     return (Obj)0;
 }
@@ -3381,11 +3365,8 @@ static void ResizeGF2Vec(Obj vec, UInt newlen)
 static Obj FuncRESIZE_GF2VEC(Obj self, Obj vec, Obj newlen)
 {
     Int newlen1;
-    if (!IS_MUTABLE_OBJ(vec)) {
-        ErrorReturnVoid("RESIZE_GF2VEC: the vector must be mutable", 0, 0,
-                        "you may 'return;' to skip the operation");
-        return (Obj)0;
-    }
+    RequireMutable("RESIZE_GF2VEC", vec, "vector");
+
     newlen1 = GetNonnegativeSmallInt("RESIZE_GF2VEC", newlen);
     ResizeGF2Vec(vec, newlen1);
     return (Obj)0;
@@ -3445,11 +3426,8 @@ static void ShiftLeftGF2Vec(Obj vec, UInt amount)
 static Obj FuncSHIFT_LEFT_GF2VEC(Obj self, Obj vec, Obj amount)
 {
     Int amount1;
-    if (!IS_MUTABLE_OBJ(vec)) {
-        ErrorReturnVoid("SHIFT_LEFT_GF2VEC: the vector must be mutable", 0, 0,
-                        "you may 'return;' to skip the operation");
-        return (Obj)0;
-    }
+    RequireMutable("SHIFT_LEFT_GF2VEC", vec, "vector");
+
     amount1 = GetNonnegativeSmallInt("SHIFT_LEFT_GF2VEC", amount);
     ShiftLeftGF2Vec(vec, amount1);
     return (Obj)0;
@@ -3513,11 +3491,8 @@ static void ShiftRightGF2Vec(Obj vec, UInt amount)
 static Obj FuncSHIFT_RIGHT_GF2VEC(Obj self, Obj vec, Obj amount)
 {
     Int amount1;
-    if (!IS_MUTABLE_OBJ(vec)) {
-        ErrorReturnVoid("SHIFT_RIGHT_GF2VEC: the vector must be mutable", 0,
-                        0, "you may 'return;' to skip the operation");
-        return (Obj)0;
-    }
+    RequireMutable("SHIFT_RIGHT_GF2VEC", vec, "vector");
+
     amount1 = GetNonnegativeSmallInt("SHIFT_RIGHT_GF2VEC", amount);
     ShiftRightGF2Vec(vec, amount1);
     return (Obj)0;
