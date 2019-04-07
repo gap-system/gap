@@ -2542,65 +2542,65 @@ static Obj FuncIsRectangularTablePlist(Obj self, Obj plist)
 *V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
 */
 static StructBagNames BagNames[] = {
-  { T_PLIST,                                "list (plain)" },
-  { T_PLIST            +IMMUTABLE,          "list (plain,imm)" },
+  { T_PLIST,                                "plain list" },
+  { T_PLIST            +IMMUTABLE,          "immutable plain list" },
 
-  { T_PLIST_NDENSE,                         "list (plain,ndense)" },
-  { T_PLIST_NDENSE     +IMMUTABLE,          "list (plain,ndense,imm)" },
+  { T_PLIST_NDENSE,                         "non-dense plain list" },
+  { T_PLIST_NDENSE     +IMMUTABLE,          "immutable non-dense plain list" },
 
-  { T_PLIST_DENSE,                          "list (plain,dense)" },
-  { T_PLIST_DENSE      +IMMUTABLE,          "list (plain,dense,imm)" },
+  { T_PLIST_DENSE,                          "dense plain list" },
+  { T_PLIST_DENSE      +IMMUTABLE,          "immutable dense plain list" },
 
-  { T_PLIST_DENSE_NHOM,                     "list (plain,dense,nhom)" },
-  { T_PLIST_DENSE_NHOM +IMMUTABLE,          "list (plain,dense,nhom,imm)" },
+  { T_PLIST_DENSE_NHOM,                     "dense non-homogeneous plain list" },
+  { T_PLIST_DENSE_NHOM +IMMUTABLE,          "immutable dense non-homogeneous plain list" },
 
-  { T_PLIST_DENSE_NHOM_SSORT,               "list (plain,dense,nhom,ssort)" },
-  { T_PLIST_DENSE_NHOM_SSORT +IMMUTABLE,    "list (plain,dense,nhom,ssort,imm)" },
+  { T_PLIST_DENSE_NHOM_SSORT,               "dense non-homogeneous strictly-sorted plain list" },
+  { T_PLIST_DENSE_NHOM_SSORT +IMMUTABLE,    "immutable dense non-homogeneous strictly-sorted plain list" },
 
-  { T_PLIST_DENSE_NHOM_NSORT,               "list (plain,dense,nhom,nsort)" },
-  { T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE,    "list (plain,dense,nhom,nsort,imm)" },
+  { T_PLIST_DENSE_NHOM_NSORT,               "dense non-homogeneous non-strictly-sorted plain list" },
+  { T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE,    "immutable dense non-homogeneous non-strictly-sorted plain list" },
 
-  { T_PLIST_EMPTY,                          "list (plain,empty)" },
-  { T_PLIST_EMPTY      +IMMUTABLE,          "list (plain,empty,imm)" },
+  { T_PLIST_EMPTY,                          "empty plain list" },
+  { T_PLIST_EMPTY      +IMMUTABLE,          "immutable empty plain list" },
 
-  { T_PLIST_HOM,                            "list (plain,hom)" },
-  { T_PLIST_HOM        +IMMUTABLE,          "list (plain,hom,imm)" },
+  { T_PLIST_HOM,                            "homogeneous plain list" },
+  { T_PLIST_HOM        +IMMUTABLE,          "immutable homogeneous plain list" },
 
-  { T_PLIST_HOM_NSORT,                      "list (plain,hom,nsort)" },
-  { T_PLIST_HOM_NSORT  +IMMUTABLE,          "list (plain,hom,nsort,imm)" },
+  { T_PLIST_HOM_NSORT,                      "homogeneous non-strictly-sorted plain list" },
+  { T_PLIST_HOM_NSORT  +IMMUTABLE,          "immutable homogeneous non-strictly-sorted plain list" },
 
-  { T_PLIST_HOM_SSORT,                      "list (plain,hom,ssort)" },
-  { T_PLIST_HOM_SSORT +IMMUTABLE,           "list (plain,hom,ssort,imm)" },
+  { T_PLIST_HOM_SSORT,                      "homogeneous strictly-sorted plain list" },
+  { T_PLIST_HOM_SSORT +IMMUTABLE,           "immutable homogeneous strictly-sorted plain list" },
 
-  { T_PLIST_TAB,                            "list (plain,table)" },
-  { T_PLIST_TAB       +IMMUTABLE,           "list (plain,table,imm)" },
+  { T_PLIST_TAB,                            "plain list (table)" },
+  { T_PLIST_TAB       +IMMUTABLE,           "immutable plain list (table)" },
 
-  { T_PLIST_TAB_NSORT,                      "list (plain,table,nsort)" },
-  { T_PLIST_TAB_NSORT +IMMUTABLE,           "list (plain,table,nsort,imm)" },
+  { T_PLIST_TAB_NSORT,                      "non-strictly-sorted plain list (table)" },
+  { T_PLIST_TAB_NSORT +IMMUTABLE,           "immutable non-strictly-sorted plain list (table)" },
 
-  { T_PLIST_TAB_SSORT,                      "list (plain,table,ssort)" },
-  { T_PLIST_TAB_SSORT +IMMUTABLE,           "list (plain,table,ssort,imm)" },
+  { T_PLIST_TAB_SSORT,                      "strictly-sorted plain list (table)" },
+  { T_PLIST_TAB_SSORT +IMMUTABLE,           "immutable strictly-sorted plain list (table)" },
 
-  { T_PLIST_TAB_RECT,                       "list (plain,rect table)" },
-  { T_PLIST_TAB_RECT       +IMMUTABLE,      "list (plain,rect table,imm)" },
+  { T_PLIST_TAB_RECT,                       "plain list (rectangular table)" },
+  { T_PLIST_TAB_RECT       +IMMUTABLE,      "immutable plain list (rectangular table)" },
 
-  { T_PLIST_TAB_RECT_NSORT,                 "list (plain,rect table,nsort)" },
-  { T_PLIST_TAB_RECT_NSORT +IMMUTABLE,      "list (plain,rect table,nsort,imm)" },
+  { T_PLIST_TAB_RECT_NSORT,                 "non-strictly-sorted plain list (rectangular table)" },
+  { T_PLIST_TAB_RECT_NSORT +IMMUTABLE,      "immutable non-strictly-sorted plain list (rectangular table)" },
 
-  { T_PLIST_TAB_RECT_SSORT,                 "list (plain,rect table,ssort)" },
-  { T_PLIST_TAB_RECT_SSORT +IMMUTABLE,      "list (plain,rect table,ssort,imm)" },
+  { T_PLIST_TAB_RECT_SSORT,                 "strictly-sorted plain list (rectangular table)" },
+  { T_PLIST_TAB_RECT_SSORT +IMMUTABLE,      "immutable strictly-sorted plain list (rectangular table)" },
 
-  { T_PLIST_CYC,                            "list (plain,cyc)" },
-  { T_PLIST_CYC       +IMMUTABLE,           "list (plain,cyc,imm)" },
+  { T_PLIST_CYC,                            "plain list of cyclotomics" },
+  { T_PLIST_CYC       +IMMUTABLE,           "immutable plain list of cyclotomics" },
 
-  { T_PLIST_CYC_NSORT,                      "list (plain,cyc,nsort)" },
-  { T_PLIST_CYC_NSORT +IMMUTABLE,           "list (plain,cyc,nsort,imm)" },
+  { T_PLIST_CYC_NSORT,                      "non-strictly-sorted plain list of cyclotomics" },
+  { T_PLIST_CYC_NSORT +IMMUTABLE,           "immutable non-strictly-sorted plain list of cyclotomics" },
 
-  { T_PLIST_CYC_SSORT,                      "list (plain,cyc,ssort)" },
-  { T_PLIST_CYC_SSORT +IMMUTABLE,           "list (plain,cyc,ssort,imm)" },
+  { T_PLIST_CYC_SSORT,                      "strictly-sorted plain list of cyclotomics" },
+  { T_PLIST_CYC_SSORT +IMMUTABLE,           "immutable strictly-sorted plain list of cyclotomics" },
 
-  { T_PLIST_FFE,                     "list (sml fin fld elms)" },
-  { T_PLIST_FFE +IMMUTABLE,          "list (sml fin fld elms,imm)" },
+  { T_PLIST_FFE,                            "plain list of small finite field elements" },
+  { T_PLIST_FFE +IMMUTABLE,                 "immutable plain list of small finite field elements" },
 
   { -1,                                     "" }
 };

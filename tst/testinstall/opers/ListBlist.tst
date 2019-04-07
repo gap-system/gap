@@ -5,7 +5,8 @@ gap> ListBlist([],[false,true]);
 Error, ListBlist: <blist> must have the same length as <list> (lengths are 2 a\
 nd 0)
 gap> ListBlist([],[1,2]);
-Error, ListBlist: <blist> must be a boolean list (not a list (plain,cyc))
+Error, ListBlist: <blist> must be a boolean list (not a plain list of cyclotom\
+ics)
 gap> ListBlist([],[]);
 [  ]
 gap> ListBlist([1,2],[false,true]);
