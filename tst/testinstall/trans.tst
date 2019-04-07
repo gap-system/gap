@@ -754,14 +754,14 @@ gap> IsInjectiveListTrans([1, 2], [2,3]);
 Error, the second argument must consist of positive integers in the range [1 .\
 . 2]
 gap> IsInjectiveListTrans([1, []], f);
-Error, the entries of the first argument must be positive integers (not a list\
- (plain,empty))
+Error, the entries of the first argument must be positive integers (not a empt\
+y plain list)
 gap> IsInjectiveListTrans([1, []], [1, 2, 3]);
-Error, the entries of the first argument must be positive integers (not a list\
- (plain,empty))
+Error, the entries of the first argument must be positive integers (not a empt\
+y plain list)
 gap> IsInjectiveListTrans([1, []], ID_TRANS4);
-Error, the entries of the first argument must be positive integers (not a list\
- (plain,empty))
+Error, the entries of the first argument must be positive integers (not a empt\
+y plain list)
 
 # Test PermLeftQuoTransformationNC
 gap> f := Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6]);;
@@ -1256,7 +1256,8 @@ gap> f := AsTransformation((1,2)(3,65537));;
 gap> h := INV_KER_TRANS([1, 2], f);
 Transformation( [ 2, 1 ] )
 gap> h := INV_KER_TRANS([1, 2], [1]);
-Error, INV_KER_TRANS: <f> must be a transformation (not a list (plain,cyc))
+Error, INV_KER_TRANS: <f> must be a transformation (not a plain list of cyclot\
+omics)
 
 # IS_IDEM_TRANS
 gap> IS_IDEM_TRANS(IdentityTransformation);

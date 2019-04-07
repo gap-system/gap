@@ -246,56 +246,56 @@ gap> IsIdenticalObj(l[1], l[2]);
 true
 gap> l := ListWithIdenticalEntries(10, "GAP");;
 gap> TNAM_OBJ(l);
-"list (plain,hom)"
+"homogeneous plain list"
 gap> l;
 [ "GAP", "GAP", "GAP", "GAP", "GAP", "GAP", "GAP", "GAP", "GAP", "GAP" ]
 gap> TNAM_OBJ(l);
-"list (plain,table)"
+"plain list (table)"
 gap> l := ListWithIdenticalEntries(10, PrimitiveRoot(GF(5)));
 [ Z(5), Z(5), Z(5), Z(5), Z(5), Z(5), Z(5), Z(5), Z(5), Z(5) ]
 gap> TNAM_OBJ(l);
-"list (sml fin fld elms)"
+"plain list of small finite field elements"
 gap> l := ListWithIdenticalEntries(10, 5 / 7);
 [ 5/7, 5/7, 5/7, 5/7, 5/7, 5/7, 5/7, 5/7, 5/7, 5/7 ]
 gap> TNAM_OBJ(l);
-"list (plain,cyc)"
+"plain list of cyclotomics"
 gap> l := ListWithIdenticalEntries(5, -1);
 [ -1, -1, -1, -1, -1 ]
 gap> TNAM_OBJ(l);
-"list (plain,cyc)"
+"plain list of cyclotomics"
 gap> l := ListWithIdenticalEntries(5, 8);
 [ 8, 8, 8, 8, 8 ]
 gap> TNAM_OBJ(l);
-"list (plain,cyc)"
+"plain list of cyclotomics"
 gap> l := ListWithIdenticalEntries(5, 0);
 [ 0, 0, 0, 0, 0 ]
 gap> TNAM_OBJ(l);
-"list (plain,cyc)"
+"plain list of cyclotomics"
 gap> l := ListWithIdenticalEntries(5, infinity);
 [ infinity, infinity, infinity, infinity, infinity ]
 gap> TNAM_OBJ(l);
-"list (plain,hom)"
+"homogeneous plain list"
 gap> l := ListWithIdenticalEntries(4, []);;
 gap> TNAM_OBJ(l);
-"list (plain,hom)"
+"homogeneous plain list"
 gap> l;
 [ [  ], [  ], [  ], [  ] ]
 gap> TNAM_OBJ(l);
-"list (plain,rect table)"
+"plain list (rectangular table)"
 gap> l := ListWithIdenticalEntries(4, [5]);;
 gap> TNAM_OBJ(l);
-"list (plain,hom)"
+"homogeneous plain list"
 gap> l;
 [ [ 5 ], [ 5 ], [ 5 ], [ 5 ] ]
 gap> TNAM_OBJ(l);
-"list (plain,rect table)"
+"plain list (rectangular table)"
 
 # Check TNUM behaviours
 gap> x := [1,,"cheese"];;
 gap> x[2] := 2;;
 gap> IsSSortedList(x);;
 gap> TNAM_OBJ(x);
-"list (plain,dense)"
+"dense plain list"
 gap> x := [1,,"cheese"];;
 gap> x[2] := 2;
 2
@@ -303,12 +303,12 @@ gap> y := Immutable(x);;
 gap> IsIdenticalObj(x,y);
 false
 gap> TNAM_OBJ(x);
-"list (plain)"
+"plain list"
 gap> TNAM_OBJ(y);
-"list (plain,imm)"
+"immutable plain list"
 gap> IsSSortedList(y);;
 gap> TNAM_OBJ(y);
-"list (plain,dense,nhom,ssort,imm)"
+"immutable dense non-homogeneous strictly-sorted plain list"
 
 # String, for a range
 gap> l := [5 .. 10];

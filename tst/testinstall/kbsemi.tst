@@ -51,7 +51,7 @@ gap> kbrws := KnuthBendixRewritingSystem(N);
 Knuth Bendix Rewriting System for Monoid( [ m1, m2 ] ) with rules 
 [ [ m2, m1 ] ]
 gap> kbrws := KnuthBendixRewritingSystem(N, {x,y} -> [y,x]);
-Error, <expr> must be 'true' or 'false' (not a list (plain,dense))
+Error, <expr> must be 'true' or 'false' (not a dense plain list)
 gap> kbrws := KnuthBendixRewritingSystem(N, \<);
 Knuth Bendix Rewriting System for Monoid( [ m1, m2 ] ) with rules 
 [ [ m2, m1 ] ]

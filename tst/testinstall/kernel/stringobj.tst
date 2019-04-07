@@ -67,7 +67,7 @@ Error, STRING_SINTLIST: <val> must be a plain list of small integers or a rang\
 e (not the integer 1)
 gap> STRING_SINTLIST([ 'B' ]);
 Error, STRING_SINTLIST: <val> must be a plain list of small integers or a rang\
-e (not a list (plain,hom))
+e (not a homogeneous plain list)
 
 #
 gap> REVNEG_STRING(1);
