@@ -975,14 +975,18 @@ static CVar CompFunccall0to6Args(Expr expr)
     CVar                args [8];       /* arguments                       */
     Int                 narg;           /* number of arguments             */
     Int                 i;              /* loop variable                   */
+    Expr                funcExpr;
+
+    funcExpr = READ_EXPR(expr, 0);
+    narg = SIZE_STAT(expr) / sizeof(Expr) - 1;
 
     /* special case to inline 'Length'                                     */
     if ( CompFastListFuncs
-      && TNUM_EXPR( FUNC_CALL(expr) ) == T_REF_GVAR
-      && READ_EXPR( FUNC_CALL(expr), 0 ) == G_Length
-      && NARG_SIZE_CALL(SIZE_EXPR(expr)) == 1 ) {
+      && TNUM_EXPR(funcExpr) == T_REF_GVAR
+      && READ_EXPR(funcExpr, 0) == G_Length
+      && narg == 1 ) {
         result = CVAR_TEMP( NewTemp( "result" ) );
-        args[1] = CompExpr( ARGI_CALL(expr,1) );
+        args[1] = CompExpr(READ_EXPR(expr, 1));
         if ( CompFastPlainLists ) {
             Emit( "C_LEN_LIST_FPL( %c, %c )\n", result, args[1] );
         }
@@ -998,18 +1002,17 @@ static CVar CompFunccall0to6Args(Expr expr)
     result = CVAR_TEMP( NewTemp( "result" ) );
 
     /* compile the reference to the function                               */
-    if ( TNUM_EXPR( FUNC_CALL(expr) ) == T_REF_GVAR ) {
-        func = CompRefGVarFopy( FUNC_CALL(expr) );
+    if (TNUM_EXPR(funcExpr) == T_REF_GVAR) {
+        func = CompRefGVarFopy(funcExpr);
     }
     else {
-        func = CompExpr( FUNC_CALL(expr) );
+        func = CompExpr(funcExpr);
         CompCheckFunc( func );
     }
 
     /* compile the argument expressions                                    */
-    narg = NARG_SIZE_CALL(SIZE_EXPR(expr));
     for ( i = 1; i <= narg; i++ ) {
-        args[i] = CompExpr( ARGI_CALL(expr,i) );
+        args[i] = CompExpr(READ_EXPR(expr, i));
     }
 
     /* emit the code for the procedure call                                */
@@ -1045,26 +1048,29 @@ static CVar CompFunccallXArgs(Expr expr)
     CVar                argi;           /* <i>-th argument                 */
     UInt                narg;           /* number of arguments             */
     UInt                i;              /* loop variable                   */
+    Expr                funcExpr;
+
+    funcExpr = READ_EXPR(expr, 0);
 
     /* allocate a temporary for the result                                 */
     result = CVAR_TEMP( NewTemp( "result" ) );
 
     /* compile the reference to the function                               */
-    if ( TNUM_EXPR( FUNC_CALL(expr) ) == T_REF_GVAR ) {
-        func = CompRefGVarFopy( FUNC_CALL(expr) );
+    if (TNUM_EXPR(funcExpr) == T_REF_GVAR) {
+        func = CompRefGVarFopy(funcExpr);
     }
     else {
-        func = CompExpr( FUNC_CALL(expr) );
+        func = CompExpr(funcExpr);
         CompCheckFunc( func );
     }
 
     /* compile the argument expressions                                    */
-    narg = NARG_SIZE_CALL(SIZE_EXPR(expr));
+    narg = SIZE_STAT(expr) / sizeof(Expr) - 1;
     argl = CVAR_TEMP( NewTemp( "argl" ) );
     Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", argl, narg );
     Emit( "SET_LEN_PLIST( %c, %d );\n", argl, narg );
     for ( i = 1; i <= narg; i++ ) {
-        argi = CompExpr( ARGI_CALL( expr, i ) );
+        argi = CompExpr(READ_EXPR(expr, i));
         Emit( "SET_ELM_PLIST( %c, %d, %c );\n", argl, i, argi );
         if ( ! HasInfoCVar( argi, W_INT_SMALL ) ) {
             Emit( "CHANGED_BAG( %c );\n", argl );
@@ -3576,6 +3582,10 @@ static void CompProccall0to6Args(Stat stat)
     CVar                args[8];        /* arguments                       */
     UInt                narg;           /* number of arguments             */
     UInt                i;              /* loop variable                   */
+    Expr                funcExpr;
+
+    funcExpr = READ_EXPR(stat, 0);
+    narg = SIZE_STAT(stat) / sizeof(Expr) - 1;
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
@@ -3584,11 +3594,11 @@ static void CompProccall0to6Args(Stat stat)
 
     /* special case to inline 'Add'                                        */
     if ( CompFastListFuncs
-      && TNUM_EXPR( FUNC_CALL(stat) ) == T_REF_GVAR
-      && READ_EXPR( FUNC_CALL(stat), 0 ) == G_Add
-      && NARG_SIZE_CALL(SIZE_EXPR(stat)) == 2 ) {
-        args[1] = CompExpr( ARGI_CALL(stat,1) );
-        args[2] = CompExpr( ARGI_CALL(stat,2) );
+      && TNUM_EXPR(funcExpr) == T_REF_GVAR
+      && READ_EXPR(funcExpr, 0 ) == G_Add
+      && narg == 2 ) {
+        args[1] = CompExpr(READ_EXPR(stat, 1));
+        args[2] = CompExpr(READ_EXPR(stat, 2));
         if ( CompFastPlainLists ) {
             Emit( "C_ADD_LIST_FPL( %c, %c )\n", args[1], args[2] );
         }
@@ -3601,18 +3611,17 @@ static void CompProccall0to6Args(Stat stat)
     }
 
     /* compile the reference to the function                               */
-    if ( TNUM_EXPR( FUNC_CALL(stat) ) == T_REF_GVAR ) {
-        func = CompRefGVarFopy( FUNC_CALL(stat) );
+    if (TNUM_EXPR(funcExpr) == T_REF_GVAR) {
+        func = CompRefGVarFopy(funcExpr);
     }
     else {
-        func = CompExpr( FUNC_CALL(stat) );
+        func = CompExpr(funcExpr);
         CompCheckFunc( func );
     }
 
     /* compile the argument expressions                                    */
-    narg = NARG_SIZE_CALL(SIZE_STAT(stat));
     for ( i = 1; i <= narg; i++ ) {
-        args[i] = CompExpr( ARGI_CALL(stat,i) );
+        args[i] = CompExpr(READ_EXPR(stat, i));
     }
 
     /* emit the code for the procedure call                                */
@@ -3641,6 +3650,9 @@ static void CompProccallXArgs(Stat stat)
     CVar                argi;           /* <i>-th argument                 */
     UInt                narg;           /* number of arguments             */
     UInt                i;              /* loop variable                   */
+    Expr                funcExpr;
+
+    funcExpr = READ_EXPR(stat, 0);
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
@@ -3648,21 +3660,21 @@ static void CompProccallXArgs(Stat stat)
     }
 
     /* compile the reference to the function                               */
-    if ( TNUM_EXPR( FUNC_CALL(stat) ) == T_REF_GVAR ) {
-        func = CompRefGVarFopy( FUNC_CALL(stat) );
+    if (TNUM_EXPR(funcExpr) == T_REF_GVAR) {
+        func = CompRefGVarFopy(funcExpr);
     }
     else {
-        func = CompExpr( FUNC_CALL(stat) );
+        func = CompExpr(funcExpr);
         CompCheckFunc( func );
     }
 
     /* compile the argument expressions                                    */
-    narg = NARG_SIZE_CALL(SIZE_STAT(stat));
+    narg = SIZE_STAT(stat) / sizeof(Expr) - 1;
     argl = CVAR_TEMP( NewTemp( "argl" ) );
     Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", argl, narg );
     Emit( "SET_LEN_PLIST( %c, %d );\n", argl, narg );
     for ( i = 1; i <= narg; i++ ) {
-        argi = CompExpr( ARGI_CALL( stat, i ) );
+        argi = CompExpr(READ_EXPR(stat, i));
         Emit( "SET_ELM_PLIST( %c, %d, %c );\n", argl, i, argi );
         if ( ! HasInfoCVar( argi, W_INT_SMALL ) ) {
             Emit( "CHANGED_BAG( %c );\n", argl );

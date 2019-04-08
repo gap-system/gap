@@ -542,32 +542,6 @@ EXPORT_INLINE Int TNUM_EXPR(Expr expr)
 
 #define READ_EXPR(expr, idx) (CONST_ADDR_EXPR(expr)[idx])
 
-/****************************************************************************
-**
-*F  FUNC_CALL(<call>) . . . . . . . . . . . . .  function for a function call
-*F  ARGI_CALL(<call>,<i>) . . . .  <i>-th formal argument for a function call
-*F  NARG_SIZE_CALL(<size>)  . . . . . number of arguments for a function call
-*F  SIZE_NARG_CALL(<narg>)  . . . . . . . size of the bag for a function call
-**
-**  'FUNC_CALL'  returns the expression that should  evaluate to the function
-**  for the procedure or  function call <call>.   This is a legal left value,
-**  so it can be used to set the expression too.
-**
-**  'ARGI_CALL'  returns  the expression that evaluate   to the <i>-th actual
-**  argument for the procedure or function call <call>.  This is a legal left
-**  value, so it can be used to set the expression too.
-**
-**  'NARG_SIZE_CALL' returns the number of  arguments in a function call from
-**  the size <size> of the function call bag (as returned by 'SIZE_EXPR').
-**
-**  'SIZE_NARG_CALL' returns the size a  function call bag  should have for a
-**  function call bag with <narg> arguments.
-*/
-#define FUNC_CALL(call)         READ_EXPR(call, 0)
-#define ARGI_CALL(call,i)       READ_EXPR(call, i)
-#define NARG_SIZE_CALL(size)    (((size) / sizeof(Expr)) - 1)
-#define SIZE_NARG_CALL(narg)    (((narg) + 1) * sizeof(Expr))
-
 
 /****************************************************************************
 **
