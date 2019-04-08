@@ -2855,7 +2855,7 @@ rec(
       statements := [ rec(
               obj := rec(
                   type := "T_FLOAT_EXPR_EAGER",
-                  value := 1 ),
+                  value := 1. ),
               type := "T_RETURN_OBJ" ) ],
       type := "T_SEQ_STAT" ),
   type := "T_FUNC_EXPR",
