@@ -571,27 +571,6 @@ EXPORT_INLINE Int TNUM_EXPR(Expr expr)
 
 /****************************************************************************
 **
-*F  ARGI_INFO(<info>,<i>) . . .  <i>-th formal argument for an Info statement
-*F  NARG_SIZE_INFO(<size>)  . . . . number of arguments for an Info statement
-*F  SIZE_NARG_INFO(<narg>)  . . . . . . size of the bag for an Info statement
-**
-**  'ARGI_INFO' returns the expression   that evaluates to the <i>-th  actual
-**  argument for the Info  statement <info>.  This is a  legal left value, so
-**  it can be used to set the expression too.
-**
-**  'NARG_SIZE_INFO' returns the number of  arguments in a function call from
-**  the size <size> of the function call bag (as returned by 'SIZE_STAT').
-**
-**  'SIZE_NARG_INFO' returns the size a  function call bag  should have for a
-**  function call bag with <narg> arguments.
-*/
-#define ARGI_INFO(info,i)       READ_STAT(info, (i) - 1)
-#define NARG_SIZE_INFO(size)    ((size) / sizeof(Expr))
-#define SIZE_NARG_INFO(narg)    ((narg) * sizeof(Expr))
-
-
-/****************************************************************************
-**
 *V  CodeResult  . . . . . . . . . . . . . . . . . . . . . .  result of coding
 **
 **  'CodeResult'  is the result  of the coding, i.e.,   the function that was

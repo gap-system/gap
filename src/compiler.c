@@ -4961,19 +4961,19 @@ static void CompInfo(Stat stat)
     Int                 i;
 
     Emit( "\n/* Info( ... ); */\n" );
-    sel = CompExpr( ARGI_INFO( stat, 1 ) );
-    lev = CompExpr( ARGI_INFO( stat, 2 ) );
+    sel = CompExpr(READ_STAT(stat, 0));
+    lev = CompExpr(READ_STAT(stat, 1));
     lst = CVAR_TEMP( NewTemp( "lst" ) );
     tmp = CVAR_TEMP( NewTemp( "tmp" ) );
     Emit( "%c = InfoCheckLevel( %c, %c );\n", tmp, sel, lev );
     Emit( "if ( %c == True ) {\n", tmp );
     if ( IS_TEMP_CVAR( tmp ) )  FreeTemp( TEMP_CVAR( tmp ) );
-    narg = NARG_SIZE_INFO(SIZE_STAT(stat))-2;
+    narg = SIZE_STAT(stat) / sizeof(Expr);
     Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", lst, narg );
     Emit( "SET_LEN_PLIST( %c, %d );\n", lst, narg );
-    for ( i = 1;  i <= narg;  i++ ) {
-        tmp = CompExpr( ARGI_INFO( stat, i+2 ) );
-        Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lst, i, tmp );
+    for (i = 2; i < narg; i++) {
+        tmp = CompExpr(READ_STAT(stat, i));
+        Emit("SET_ELM_PLIST( %c, %d, %c );\n", lst, i - 1, tmp);
         Emit( "CHANGED_BAG(%c);\n", lst );
         if ( IS_TEMP_CVAR( tmp ) )  FreeTemp( TEMP_CVAR( tmp ) );
     }

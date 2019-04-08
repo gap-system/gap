@@ -846,14 +846,14 @@ static UInt ExecInfo(Stat stat)
     Obj             args;
     Obj             arg;
 
-    selectors = EVAL_EXPR( ARGI_INFO( stat, 1 ) );
-    level = EVAL_EXPR( ARGI_INFO( stat, 2) );
+    selectors = EVAL_EXPR(READ_STAT(stat, 0));
+    level = EVAL_EXPR(READ_STAT(stat, 1));
 
     selected = InfoCheckLevel(selectors, level);
     if (selected == True) {
 
         /* Get the number of arguments to be printed                       */
-        narg = NARG_SIZE_INFO(SIZE_STAT(stat)) - 2;
+        narg = SIZE_STAT(stat) / sizeof(Expr) - 2;
 
         /* set up a list                                                   */
         args = NEW_PLIST( T_PLIST, narg );
@@ -867,7 +867,7 @@ static UInt ExecInfo(Stat stat)
                of arg, which may happen after the pointer to args has been
                extracted
             */
-            arg = EVAL_EXPR(ARGI_INFO(stat, i+2));
+            arg = EVAL_EXPR(READ_STAT(stat, i + 1));
             SET_ELM_PLIST(args, i, arg);
             CHANGED_BAG(args);
         }
@@ -1416,9 +1416,10 @@ static void PrintInfo(Stat stat)
     Pr("%<( %>",0L,0L);
 
     /* print the expressions that evaluate to the actual arguments         */
-    for ( i = 1; i <= NARG_SIZE_INFO( SIZE_STAT(stat) ); i++ ) {
-        PrintExpr( ARGI_INFO(stat,i) );
-        if ( i != NARG_SIZE_INFO( SIZE_STAT(stat) ) ) {
+    UInt narg = SIZE_STAT(stat) / sizeof(Expr);
+    for (i = 0; i < narg; i++) {
+        PrintExpr(READ_STAT(stat, i));
+        if (i != narg) {
             Pr("%<, %>",0L,0L);
         }
     }
