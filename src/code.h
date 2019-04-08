@@ -265,6 +265,11 @@ EXPORT_INLINE const Stat * CONST_ADDR_STAT(Stat stat)
     return (const Stat *)STATE(PtrBody) + stat / sizeof(Stat);
 }
 
+EXPORT_INLINE const Stat * CONST_ADDR_STAT_IN_BODY(Obj body, Stat stat)
+{
+    return (const Stat *)CONST_ADDR_OBJ(body) + stat / sizeof(Stat);
+}
+
 
 /****************************************************************************
 **
@@ -285,6 +290,12 @@ EXPORT_INLINE const StatHeader * CONST_STAT_HEADER(Stat stat)
     return (const StatHeader *)CONST_ADDR_STAT(stat) - 1;
 }
 
+EXPORT_INLINE const StatHeader * CONST_STAT_HEADER_IN_BODY(Obj  body,
+                                                           Stat stat)
+{
+    return (const StatHeader *)CONST_ADDR_STAT_IN_BODY(body, stat) - 1;
+}
+
 
 /****************************************************************************
 **
@@ -297,6 +308,10 @@ EXPORT_INLINE Int TNUM_STAT(Stat stat)
     return CONST_STAT_HEADER(stat)->type;
 }
 
+EXPORT_INLINE Int TNUM_STAT_IN_BODY(Obj body, Stat stat)
+{
+    return CONST_STAT_HEADER_IN_BODY(body, stat)->type;
+}
 
 /****************************************************************************
 **
@@ -309,6 +324,11 @@ EXPORT_INLINE Int SIZE_STAT(Stat stat)
     return CONST_STAT_HEADER(stat)->size;
 }
 
+EXPORT_INLINE Int SIZE_STAT_IN_BODY(Obj body, Stat stat)
+{
+    return CONST_STAT_HEADER_IN_BODY(body, stat)->size;
+}
+
 
 /****************************************************************************
 **
@@ -316,9 +336,9 @@ EXPORT_INLINE Int SIZE_STAT(Stat stat)
 **
 **  'LINE_STAT' returns the line number of the statement <stat>.
 */
-EXPORT_INLINE Int LINE_STAT(Stat stat)
+EXPORT_INLINE Int LINE_STAT(Obj body, Stat stat)
 {
-    return CONST_STAT_HEADER(stat)->line;
+    return CONST_STAT_HEADER_IN_BODY(body, stat)->line;
 }
 
 
@@ -343,6 +363,8 @@ EXPORT_INLINE Int VISITED_STAT(Stat stat)
 **  profiling wass turned on.
 */
 void SET_VISITED_STAT(Stat stat);
+
+Stat READ_STAT_IN_BODY(Obj body, Stat stat, Int idx);
 
 
 /****************************************************************************
@@ -515,6 +537,15 @@ EXPORT_INLINE Int TNUM_EXPR(Expr expr)
     return TNUM_STAT(expr);
 }
 
+EXPORT_INLINE Int TNUM_EXPR_IN_BODY(Obj body, Expr expr)
+{
+    if (IS_REFLVAR(expr))
+        return T_REFLVAR;
+    if (IS_INTEXPR(expr))
+        return T_INTEXPR;
+    return TNUM_STAT_IN_BODY(body, expr);
+}
+
 
 /****************************************************************************
 **
@@ -526,6 +557,7 @@ EXPORT_INLINE Int TNUM_EXPR(Expr expr)
 **  'T_REFLVAR' or 'T_INTEXPR'.
 */
 #define SIZE_EXPR(expr) SIZE_STAT(expr)
+#define SIZE_EXPR_IN_BODY(body, expr) SIZE_STAT_IN_BODY(body, expr)
 
 
 /****************************************************************************
@@ -541,6 +573,8 @@ EXPORT_INLINE Int TNUM_EXPR(Expr expr)
 #define CONST_ADDR_EXPR(expr) CONST_ADDR_STAT(expr)
 
 #define READ_EXPR(expr, idx) (CONST_ADDR_EXPR(expr)[idx])
+
+#define READ_EXPR_IN_BODY(body, expr, idx) READ_STAT_IN_BODY(body, expr, idx)
 
 
 /****************************************************************************

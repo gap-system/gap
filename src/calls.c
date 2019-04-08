@@ -1061,7 +1061,7 @@ void PrintFunction (
         // print the code
         Obj oldLVars;
         SWITCH_TO_NEW_LVARS(func, narg, NLOC_FUNC(func), oldLVars);
-        PrintStat( OFFSET_FIRST_STAT );
+        PrintStat(BODY_FUNC(func), OFFSET_FIRST_STAT);
         SWITCH_TO_OLD_LVARS( oldLVars );
     }
     Pr("%4<\n",0L,0L);

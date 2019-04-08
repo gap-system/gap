@@ -135,11 +135,11 @@ EXPORT_INLINE Obj EVAL_BOOL_EXPR(Expr expr)
 **
 **  'PrintExpr' prints the expression <expr>.
 */
-void PrintExpr(Expr expr);
+void PrintExpr(Obj body, Expr);
 
 
-void PrintRecExpr1(Expr expr); /* needed for printing
-                                       function calls with options */
+void PrintRecExpr1(Obj body, Expr); /* needed for printing
+                                          function calls with options */
 
 /****************************************************************************
 **
@@ -149,7 +149,7 @@ void PrintRecExpr1(Expr expr); /* needed for printing
 **  expressions a pointer to the printer for expressions  of this type, i.e.,
 **  the function that should be called to print expressions of this type.
 */
-extern  void            (* PrintExprFuncs [256] ) ( Expr expr );
+extern void (*PrintExprFuncs[256])(Obj body, Expr expr);
 
 
 /****************************************************************************

@@ -1261,10 +1261,9 @@ static void RecExpr2(Obj rec, Expr expr)
 **  'PrintExpr' simply dispatches  through  the table 'PrintExprFuncs' to the
 **  appropriate printer.
 */
-void            PrintExpr (
-    Expr                expr )
+void PrintExpr(Obj body, Expr expr)
 {
-    (*PrintExprFuncs[ TNUM_EXPR(expr) ])( expr );
+    (*PrintExprFuncs[TNUM_EXPR_IN_BODY(body, expr)])(body, expr);
 }
 
 
@@ -1276,7 +1275,7 @@ void            PrintExpr (
 **  expressions a pointer to the printer for expressions  of this type, i.e.,
 **  the function that should be called to print expressions of this type.
 */
-void            (* PrintExprFuncs[256] ) ( Expr expr );
+void (*PrintExprFuncs[256])(Obj body, Expr expr);
 
 
 /****************************************************************************
@@ -1288,10 +1287,10 @@ void            (* PrintExprFuncs[256] ) ( Expr expr );
 **  this  is ever called,   then  GAP is  in  serious   trouble, such as   an
 **  overwritten type field of an expression.
 */
-static void PrintUnknownExpr(Expr expr)
+static void PrintUnknownExpr(Obj body, Expr expr)
 {
-    Pr( "Panic: tried to print an expression of unknown type '%d'\n",
-        (Int)TNUM_EXPR(expr), 0L );
+    Pr("Panic: tried to print an expression of unknown type '%d'\n",
+       (Int)TNUM_EXPR_IN_BODY(body, expr), 0);
 }
 
 
@@ -1329,7 +1328,7 @@ extern inline struct ExprsState * ExprsState(void)
 **
 **  'PrintNot' print a not operation in the following form: 'not <expr>'.
 */
-static void PrintNot(Expr expr)
+static void PrintNot(Obj body, Expr expr)
 {
     UInt                oldPrec;
 
@@ -1341,7 +1340,7 @@ static void PrintNot(Expr expr)
     else Pr("%2>",0L,0L);
     
     Pr("not%> ",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<",0L,0L);
     
     /* if necessary print the closing parenthesis                          */
@@ -1359,7 +1358,7 @@ static void PrintNot(Expr expr)
 **  'PrintBinop'  prints  the   binary operator    expression <expr>,   using
 **  'PrintPrecedence' for parenthesising.
 */
-static void PrintAInv(Expr expr)
+static void PrintAInv(Obj body, Expr expr)
 {
     UInt                oldPrec;
 
@@ -1371,7 +1370,7 @@ static void PrintAInv(Expr expr)
     else Pr("%2>",0L,0L);
     
     Pr("-%> ",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<",0L,0L);
     
     /* if necessary print the closing parenthesis                          */
@@ -1381,7 +1380,7 @@ static void PrintAInv(Expr expr)
     PrintPrecedence = oldPrec;
 }
 
-static void PrintBinop(Expr expr)
+static void PrintBinop(Obj body, Expr expr)
 {
     UInt                oldPrec;        /* old precedence level           */
     const Char *        op;             /* operand                         */
@@ -1389,7 +1388,7 @@ static void PrintBinop(Expr expr)
     oldPrec = PrintPrecedence;
 
     /* select the new precedence level                                    */
-    switch ( TNUM_EXPR(expr) ) {
+    switch (TNUM_EXPR_IN_BODY(body, expr)) {
     case T_OR:     op = "or";   PrintPrecedence =  2;  break;
     case T_AND:    op = "and";  PrintPrecedence =  4;  break;
     case T_EQ:     op = "=";    PrintPrecedence =  8;  break;
@@ -1413,17 +1412,17 @@ static void PrintBinop(Expr expr)
     else Pr("%2>",0L,0L);
 
     /* print the left operand                                              */
-    if ( TNUM_EXPR(expr) == T_POW
-         && ((  (IS_INTEXPR(READ_EXPR(expr, 0))
-                 && INT_INTEXPR(READ_EXPR(expr, 0)) < 0)
-                || TNUM_EXPR(READ_EXPR(expr, 0)) == T_INTNEG)
-             || TNUM_EXPR(READ_EXPR(expr, 0)) == T_POW) ) {
+    if (TNUM_EXPR_IN_BODY(body, expr) == T_POW &&
+        (((IS_INTEXPR(READ_EXPR(expr, 0)) &&
+           INT_INTEXPR(READ_EXPR(expr, 0)) < 0) ||
+          TNUM_EXPR_IN_BODY(body, READ_EXPR(expr, 0)) == T_INTNEG) ||
+         TNUM_EXPR_IN_BODY(body, READ_EXPR(expr, 0)) == T_POW)) {
         Pr( "(", 0L, 0L );
-        PrintExpr(READ_EXPR(expr, 0));
+        PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
         Pr( ")", 0L, 0L );
     }
     else {
-        PrintExpr(READ_EXPR(expr, 0));
+        PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     }
 
     /* print the operator                                                  */
@@ -1431,7 +1430,7 @@ static void PrintBinop(Expr expr)
 
     /* print the right operand                                             */
     PrintPrecedence++;
-    PrintExpr(READ_EXPR(expr, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 1));
     PrintPrecedence--;
 
     /* if necessary print the closing parenthesis                          */
@@ -1449,7 +1448,7 @@ static void PrintBinop(Expr expr)
 **
 **  'PrintIntExpr' prints the literal integer expression <expr>.
 */
-static void PrintIntExpr(Expr expr)
+static void PrintIntExpr(Obj body, Expr expr)
 {
     if ( IS_INTEXPR(expr) ) {
         Pr( "%d", INT_INTEXPR(expr), 0L );
@@ -1464,7 +1463,7 @@ static void PrintIntExpr(Expr expr)
 **
 *F  PrintTildeExpr(<expr>) . . . . . . . . . . . print tilde expression
 */
-static void PrintTildeExpr(Expr expr)
+static void PrintTildeExpr(Obj body, Expr expr)
 {
     Pr( "~", 0L, 0L );
 }
@@ -1473,7 +1472,7 @@ static void PrintTildeExpr(Expr expr)
 **
 *F  PrintTrueExpr(<expr>) . . . . . . . . . . . print literal true expression
 */
-static void PrintTrueExpr(Expr expr)
+static void PrintTrueExpr(Obj body, Expr expr)
 {
     Pr( "true", 0L, 0L );
 }
@@ -1483,7 +1482,7 @@ static void PrintTrueExpr(Expr expr)
 **
 *F  PrintFalseExpr(<expr>)  . . . . . . . . .  print literal false expression
 */
-static void PrintFalseExpr(Expr expr)
+static void PrintFalseExpr(Obj body, Expr expr)
 {
     Pr( "false", 0L, 0L );
 }
@@ -1493,7 +1492,7 @@ static void PrintFalseExpr(Expr expr)
 **
 *F  PrintCharExpr(<expr>) . . . . . . . .  print literal character expression
 */
-static void PrintCharExpr(Expr expr)
+static void PrintCharExpr(Obj body, Expr expr)
 {
     UChar               chr;
 
@@ -1515,27 +1514,31 @@ static void PrintCharExpr(Expr expr)
 **
 **  'PrintPermExpr' prints the permutation expression <expr>.
 */
-static void PrintPermExpr(Expr expr)
+static void PrintPermExpr(Obj body, Expr expr)
 {
     Expr                cycle;          /* one cycle of permutation expr.  */
     UInt                i, j;           /* loop variables                  */
 
+    const UInt ncycles = SIZE_EXPR_IN_BODY(body, expr) / sizeof(Expr);
+
     /* if there are no cycles, print the identity permutation              */
-    if ( SIZE_EXPR(expr) == 0 ) {
+    if (ncycles == 0) {
         Pr("()",0L,0L);
     }
-    
+
     /* print all cycles                                                    */
-    for ( i = 1; i <= SIZE_EXPR(expr)/sizeof(Expr); i++ ) {
+    for (i = 1; i <= ncycles; i++) {
         cycle = READ_EXPR(expr, i - 1);
         Pr("%>(",0L,0L);
 
         /* print all entries of that cycle                                 */
-        for ( j = 1; j <= SIZE_EXPR(cycle)/sizeof(Expr); j++ ) {
+        const UInt len = SIZE_EXPR_IN_BODY(body, cycle) / sizeof(Expr);
+        for (j = 1; j <= len; j++) {
             Pr("%>",0L,0L);
-            PrintExpr(READ_EXPR(cycle, j - 1));
+            PrintExpr(body, READ_EXPR_IN_BODY(body, cycle, j - 1));
             Pr("%<",0L,0L);
-            if ( j < SIZE_EXPR(cycle)/sizeof(Expr) )  Pr(",",0L,0L);
+            if (j < len)
+                Pr(",", 0L, 0L);
         }
 
         Pr("%<)",0L,0L);
@@ -1549,14 +1552,14 @@ static void PrintPermExpr(Expr expr)
 **
 **  'PrintListExpr' prints the list expression <expr>.
 */
-static void PrintListExpr(Expr expr)
+static void PrintListExpr(Obj body, Expr expr)
 {
     Int                 len;            /* logical length of <list>        */
     Expr                elm;            /* one element from <list>         */
     Int                 i;              /* loop variable                   */
 
     /* get the logical length of the list                                  */
-    len = SIZE_EXPR( expr ) / sizeof(Expr);
+    len = SIZE_EXPR_IN_BODY(body, expr) / sizeof(Expr);
 
     /* loop over the entries                                               */
     Pr("%2>[ %2>",0L,0L);
@@ -1564,7 +1567,7 @@ static void PrintListExpr(Expr expr)
         elm = READ_EXPR(expr, i - 1);
         if ( elm != 0 ) {
             if ( 1 < i )  Pr("%<,%< %2>",0L,0L);
-            PrintExpr( elm );
+            PrintExpr(body, elm);
         }
         else {
             if ( 1 < i )  Pr("%2<,%2>",0L,0L);
@@ -1580,17 +1583,22 @@ static void PrintListExpr(Expr expr)
 **
 **  'PrintRangeExpr' prints the record expression <expr>.
 */
-static void PrintRangeExpr(Expr expr)
+static void PrintRangeExpr(Obj body, Expr expr)
 {
-    if ( SIZE_EXPR( expr ) == 2*sizeof(Expr) ) {
-        Pr("%2>[ %2>",0L,0L);    PrintExpr( READ_EXPR(expr, 0) );
-        Pr("%2< .. %2>",0L,0L);  PrintExpr( READ_EXPR(expr, 1) );
+    if (SIZE_EXPR_IN_BODY(body, expr) == 2 * sizeof(Expr)) {
+        Pr("%2>[ %2>", 0L, 0L);
+        PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
+        Pr("%2< .. %2>", 0L, 0L);
+        PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 1));
         Pr(" %4<]",0L,0L);
     }
     else {
-        Pr("%2>[ %2>",0L,0L);    PrintExpr( READ_EXPR(expr, 0) );
-        Pr("%<,%< %2>",0L,0L);   PrintExpr( READ_EXPR(expr, 1) );
-        Pr("%2< .. %2>",0L,0L);  PrintExpr( READ_EXPR(expr, 2) );
+        Pr("%2>[ %2>", 0L, 0L);
+        PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
+        Pr("%<,%< %2>", 0L, 0L);
+        PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 1));
+        Pr("%2< .. %2>", 0L, 0L);
+        PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 2));
         Pr(" %4<]",0L,0L);
     }
 }
@@ -1602,7 +1610,7 @@ static void PrintRangeExpr(Expr expr)
 **
 **  'PrintStringExpr' prints the string expression <expr>.
 */
-static void PrintStringExpr(Expr expr)
+static void PrintStringExpr(Obj body, Expr expr)
 {
     UInt ix = READ_EXPR(expr, 0);
     Obj string =  GET_VALUE_FROM_CURRENT_BODY(ix);
@@ -1616,7 +1624,7 @@ static void PrintStringExpr(Expr expr)
 **
 **  'PrintFloatExpr' prints the float expression <expr>.
 */
-static void PrintFloatExprLazy(Expr expr)
+static void PrintFloatExprLazy(Obj body, Expr expr)
 {
     UInt ix = READ_EXPR(expr, 1);
     Pr("%g", (Int)GET_VALUE_FROM_CURRENT_BODY(ix), 0L);
@@ -1628,7 +1636,7 @@ static void PrintFloatExprLazy(Expr expr)
 **
 **  'PrintFloatExpr' prints the float expression <expr>.
 */
-static void PrintFloatExprEager(Expr expr)
+static void PrintFloatExprEager(Obj body, Expr expr)
 {
     UInt ix = READ_EXPR(expr, 1);
     Char mark = (Char)READ_EXPR(expr, 2);
@@ -1645,13 +1653,12 @@ static void PrintFloatExprEager(Expr expr)
 **
 **  'PrintRecExpr' the record expression <expr>.
 */
-void            PrintRecExpr1 (
-    Expr                expr )
+void PrintRecExpr1(Obj body, Expr expr)
 {
-  Expr                tmp;            /* temporary variable              */
-  UInt                i;              /* loop variable                   */
-  
-  for ( i = 1; i <= SIZE_EXPR(expr)/(2*sizeof(Expr)); i++ ) {
+    Expr tmp; /* temporary variable              */
+
+    const UInt len = SIZE_EXPR_IN_BODY(body, expr) / (2 * sizeof(Expr));
+    for (UInt i = 1; i <= len; i++) {
         /* print an ordinary record name                                   */
         tmp = READ_EXPR(expr, 2 * i - 2);
         if ( IS_INTEXPR(tmp) ) {
@@ -1661,24 +1668,23 @@ void            PrintRecExpr1 (
         /* print an evaluating record name                                 */
         else {
             Pr(" (",0L,0L);
-            PrintExpr( tmp );
+            PrintExpr(body, tmp);
             Pr(")",0L,0L);
         }
 
         /* print the component                                             */
         tmp = READ_EXPR(expr, 2 * i - 1);
         Pr("%< := %>",0L,0L);
-        PrintExpr( tmp );
-        if ( i < SIZE_EXPR(expr)/(2*sizeof(Expr)) )
+        PrintExpr(body, tmp);
+        if (i < len)
             Pr("%2<,\n%2>",0L,0L);
-
     }
 }
 
-static void PrintRecExpr(Expr expr)
+static void PrintRecExpr(Obj body, Expr expr)
 {
     Pr("%2>rec(\n%2>",0L,0L);
-    PrintRecExpr1(expr);
+    PrintRecExpr1(body, expr);
     Pr(" %4<)",0L,0L);
 
 }

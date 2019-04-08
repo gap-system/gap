@@ -245,6 +245,17 @@ Obj GET_VALUE_FROM_CURRENT_BODY(Int ix)
     return ELM_PLIST(values, ix);
 }
 
+/****************************************************************************
+**
+*/
+Stat READ_STAT_IN_BODY(Obj body, Stat stat, Int idx)
+{
+    GAP_ASSERT(TNUM_OBJ(body) == T_BODY);
+    GAP_ASSERT(stat % sizeof(Stat) == 0);
+    const Stat * s = (const Stat *)CONST_ADDR_OBJ(body) + stat / sizeof(Stat);
+    return s[idx];
+}
+
 
 /****************************************************************************
 **
@@ -855,12 +866,14 @@ void CodeFuncExprEnd(UInt nr)
     Expr                expr;           /* function expression, result     */
     Stat                stat1;          /* single statement of body        */
     Obj                 fexp;           /* function expression bag         */
+    Obj                 body;
     UInt                len;            /* length of func. expr. list      */
     UInt                i;              /* loop variable                   */
 
     /* get the function expression                                         */
     fexp = CURR_FUNC();
-    
+    body = BODY_FUNC(fexp);
+
     /* get the body of the function                                        */
     /* push an additional return-void-statement if necessary              */
     /* the function interpreters depend on each function ``returning''     */
@@ -888,7 +901,7 @@ void CodeFuncExprEnd(UInt nr)
 
     /* stuff the first statements into the first statement sequence       */
     /* Making sure to preserve the line number and file name              */
-    STAT_HEADER(OFFSET_FIRST_STAT)->line = LINE_STAT(OFFSET_FIRST_STAT);
+    STAT_HEADER(OFFSET_FIRST_STAT)->line = LINE_STAT(body, OFFSET_FIRST_STAT);
     STAT_HEADER(OFFSET_FIRST_STAT)->size = nr*sizeof(Stat);
     STAT_HEADER(OFFSET_FIRST_STAT)->type = T_SEQ_STAT+nr-1;
     for ( i = 1; i <= nr; i++ ) {
@@ -902,8 +915,8 @@ void CodeFuncExprEnd(UInt nr)
         MakeImmutable(values);
 
     /* make the body smaller                                               */
-    ResizeBag(BODY_FUNC(fexp), CS(OffsBody));
-    SET_ENDLINE_BODY(BODY_FUNC(fexp), GetInputLineNumber());
+    ResizeBag(body, CS(OffsBody));
+    SET_ENDLINE_BODY(body, GetInputLineNumber());
 
     /* switch back to the previous function                                */
     SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );

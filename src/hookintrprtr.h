@@ -19,8 +19,8 @@
 void InstallEvalBoolFunc(Int, Obj (*)(Expr));
 void InstallEvalExprFunc(Int, Obj (*)(Expr));
 void InstallExecStatFunc(Int, UInt (*)(Stat));
-void InstallPrintStatFunc(Int, void (*)(Stat));
-void InstallPrintExprFunc(Int, void (*)(Expr));
+void InstallPrintStatFunc(Int, void (*)(Obj, Stat));
+void InstallPrintExprFunc(Int, void (*)(Obj, Expr));
 
 
 /****************************************************************************
@@ -36,8 +36,8 @@ extern UInt (*OriginalExecStatFuncsForHook[256])(Stat stat);
 extern Obj (*OriginalEvalExprFuncsForHook[256])(Expr expr);
 extern Obj (*OriginalEvalBoolFuncsForHook[256])(Expr expr);
 
-extern void (*OriginalPrintStatFuncsForHook[256])(Stat stat);
-extern void (*OriginalPrintExprFuncsForHook[256])(Expr expr);
+extern void (*OriginalPrintStatFuncsForHook[256])(Obj body, Stat stat);
+extern void (*OriginalPrintExprFuncsForHook[256])(Obj body, Expr expr);
 
 
 /****************************************************************************
@@ -103,8 +103,8 @@ Int DeactivateHooks(struct InterpreterHooks * hook);
 ** Look at that code to get an idea how to use them.
 */
 struct PrintHooks {
-    void (*printStatPassthrough)(Stat stat);
-    void (*printExprPassthrough)(Expr stat);
+    void (*printStatPassthrough)(Obj body, Stat stat);
+    void (*printExprPassthrough)(Obj body, Expr stat);
 };
 
 void ActivatePrintHooks(struct PrintHooks * hook);

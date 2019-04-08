@@ -501,7 +501,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
         return;
     }
 
-    line = LINE_STAT(stat);
+    line = LINE_STAT(CURR_FUNC(), stat);
     printOutput(line, nameid, exec, visited);
 }
 
@@ -810,7 +810,7 @@ static void setColour(void)
   }
 }
 
-static void ProfilePrintStatPassthrough(Stat stat)
+static void ProfilePrintStatPassthrough(Obj body, Stat stat)
 {
   Int SavedColour = CurrentColour;
   if(VISITED_STAT(stat)) {
@@ -820,20 +820,21 @@ static void ProfilePrintStatPassthrough(Stat stat)
     CurrentColour = 2;
   }
   setColour();
-  OriginalPrintStatFuncsForHook[TNUM_STAT(stat)](stat);
+  UInt tnum = TNUM_STAT_IN_BODY(body, stat);
+  OriginalPrintStatFuncsForHook[tnum](body, stat);
   CurrentColour = SavedColour;
   setColour();
 }
 
-static void ProfilePrintExprPassthrough(Expr stat)
+static void ProfilePrintExprPassthrough(Obj body, Expr stat)
 {
   Int SavedColour = -1;
   /* There are two cases we must pass through without touching */
   /* From TNUM_EXPR */
   if(IS_REFLVAR(stat)) {
-    OriginalPrintExprFuncsForHook[T_REFLVAR](stat);
+    OriginalPrintExprFuncsForHook[T_REFLVAR](body, stat);
   } else if(IS_INTEXPR(stat)) {
-    OriginalPrintExprFuncsForHook[T_INTEXPR](stat);
+    OriginalPrintExprFuncsForHook[T_INTEXPR](body, stat);
   } else {
     SavedColour = CurrentColour;
     if(VISITED_STAT(stat)) {
@@ -843,7 +844,8 @@ static void ProfilePrintExprPassthrough(Expr stat)
       CurrentColour = 2;
     }
     setColour();
-    OriginalPrintExprFuncsForHook[TNUM_STAT(stat)](stat);
+    UInt tnum = TNUM_EXPR_IN_BODY(body, stat);
+    OriginalPrintExprFuncsForHook[tnum](body, stat);
     CurrentColour = SavedColour;
     setColour();
   }

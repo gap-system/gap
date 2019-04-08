@@ -3589,7 +3589,9 @@ static void CompProccall0to6Args(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* special case to inline 'Add'                                        */
@@ -3656,7 +3658,9 @@ static void CompProccallXArgs(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the reference to the function                               */
@@ -3747,7 +3751,7 @@ static void CompIf(Stat stat)
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
         Emit( "\n/* if " );
-        PrintExpr(READ_EXPR(stat, 0));
+        PrintExpr(BODY_FUNC(CURR_FUNC()), READ_EXPR(stat, 0));
         Emit( " then */\n" );
     }
 
@@ -3782,7 +3786,7 @@ static void CompIf(Stat stat)
         /* print a comment                                                 */
         if ( CompPass == 2 ) {
             Emit( "\n/* elif " );
-            PrintExpr(READ_EXPR(stat, 2 * (i - 1)));
+            PrintExpr(BODY_FUNC(CURR_FUNC()), READ_EXPR(stat, 2 * (i - 1)));
             Emit( " then */\n" );
         }
 
@@ -3890,9 +3894,9 @@ static void CompFor(Stat stat)
         /* print a comment                                                 */
         if ( CompPass == 2 ) {
             Emit( "\n/* for " );
-            PrintExpr(READ_EXPR(stat, 0));
+            PrintExpr(BODY_FUNC(CURR_FUNC()), READ_EXPR(stat, 0));
             Emit( " in " );
-            PrintExpr(READ_EXPR(stat, 1));
+            PrintExpr(BODY_FUNC(CURR_FUNC()), READ_EXPR(stat, 1));
             Emit( " do */\n" );
         }
 
@@ -3976,9 +3980,9 @@ static void CompFor(Stat stat)
         /* print a comment                                                 */
         if ( CompPass == 2 ) {
             Emit( "\n/* for " );
-            PrintExpr(READ_EXPR(stat, 0));
+            PrintExpr(BODY_FUNC(CURR_FUNC()), READ_EXPR(stat, 0));
             Emit( " in " );
-            PrintExpr(READ_EXPR(stat, 1));
+            PrintExpr(BODY_FUNC(CURR_FUNC()), READ_EXPR(stat, 1));
             Emit( " do */\n" );
         }
 
@@ -4135,7 +4139,7 @@ static void CompWhile(Stat stat)
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
         Emit( "\n/* while " );
-        PrintExpr(READ_EXPR(stat, 0));
+        PrintExpr(BODY_FUNC(CURR_FUNC()), READ_EXPR(stat, 0));
         Emit( " do */\n" );
     }
 
@@ -4205,7 +4209,7 @@ static void CompRepeat(Stat stat)
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
         Emit( "\n/* until " );
-        PrintExpr(READ_EXPR(stat, 0));
+        PrintExpr(BODY_FUNC(CURR_FUNC()), READ_EXPR(stat, 0));
         Emit( " */\n" );
     }
 
@@ -4227,7 +4231,9 @@ static void CompBreak(Stat stat)
 {
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     Emit( "break;\n" );
@@ -4241,7 +4247,9 @@ static void CompContinue(Stat stat)
 {
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     Emit( "continue;\n" );
@@ -4258,7 +4266,9 @@ static void CompReturnObj(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the expression                                              */
@@ -4283,7 +4293,9 @@ static void CompReturnVoid(Stat stat)
 {
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* emit code to remove stack frame                                     */
@@ -4305,7 +4317,9 @@ static void CompAssLVar(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the right hand side expression                              */
@@ -4336,7 +4350,9 @@ static void CompUnbLVar(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* emit the code for the assignment                                    */
@@ -4362,7 +4378,9 @@ static void CompAssHVar(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the right hand side expression                              */
@@ -4389,7 +4407,9 @@ static void CompUnbHVar(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* emit the code for the assignment                                    */
@@ -4411,7 +4431,9 @@ static void CompAssGVar(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the right hand side expression                              */
@@ -4437,7 +4459,9 @@ static void CompUnbGVar(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* emit the code for the assignment                                    */
@@ -4459,7 +4483,9 @@ static void CompAssList(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the list expression                                         */
@@ -4504,7 +4530,9 @@ static void CompAsssList(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the list expression                                         */
@@ -4539,7 +4567,9 @@ static void CompAssListLev(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the list expressions                                        */
@@ -4578,7 +4608,9 @@ static void CompAsssListLev(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the list expressions                                        */
@@ -4615,7 +4647,9 @@ static void CompUnbList(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the list expression                                         */
@@ -4646,7 +4680,9 @@ static void CompAssRecName(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the record expression                                       */
@@ -4680,7 +4716,9 @@ static void CompAssRecExpr(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the record expression                                       */
@@ -4713,7 +4751,9 @@ static void CompUnbRecName(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the record expression                                       */
@@ -4742,7 +4782,9 @@ static void CompUnbRecExpr(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the record expression                                       */
@@ -4772,7 +4814,9 @@ static void CompAssPosObj(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the list expression                                         */
@@ -4806,7 +4850,9 @@ static void CompUnbPosObj(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the list expression                                         */
@@ -4837,7 +4883,9 @@ static void CompAssComObjName(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the record expression                                       */
@@ -4871,7 +4919,9 @@ static void CompAssComObjExpr(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the record expression                                       */
@@ -4904,7 +4954,9 @@ static void CompUnbComObjName(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the record expression                                       */
@@ -4933,7 +4985,9 @@ static void CompUnbComObjExpr(Stat stat)
 
     /* print a comment                                                     */
     if ( CompPass == 2 ) {
-        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+        Emit("\n/* ");
+        PrintStat(BODY_FUNC(CURR_FUNC()), stat);
+        Emit(" */\n");
     }
 
     /* compile the record expression                                       */

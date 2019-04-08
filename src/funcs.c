@@ -686,10 +686,10 @@ static Obj EvalFuncExpr(Expr expr)
 **
 **  'PrintFuncExpr' prints a function expression.
 */
-static void PrintFuncExpr(Expr expr)
+static void PrintFuncExpr(Obj body, Expr expr)
 {
     /* get the function expression bag                                     */
-    Obj fexp = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 0));
+    Obj fexp = ELM_PLIST(VALUES_BODY(body), READ_EXPR(expr, 0));
     PrintFunction( fexp );
 }
 
@@ -700,19 +700,19 @@ static void PrintFuncExpr(Expr expr)
 **
 **  'PrintProccall' prints a procedure call.
 */
-static void PrintFunccall(Expr call);
+static void PrintFunccall(Obj body, Expr call);
 
-static void PrintFunccallOpts(Expr call);
+static void PrintFunccallOpts(Obj body, Expr call);
 
-static void PrintProccall(Stat call)
+static void PrintProccall(Obj body, Stat call)
 {
-    PrintFunccall( call );
+    PrintFunccall(body, call);
     Pr( ";", 0L, 0L );
 }
 
-static void PrintProccallOpts(Stat call)
+static void PrintProccallOpts(Obj body, Stat call)
 {
-    PrintFunccallOpts( call );
+    PrintFunccallOpts(body, call);
     Pr( ";", 0L, 0L );
 }
 
@@ -723,42 +723,41 @@ static void PrintProccallOpts(Stat call)
 **
 **  'PrintFunccall' prints a function call.
 */
-static void            PrintFunccall1 (
-    Expr                call )
+static void PrintFunccall1(Obj body, Expr call)
 {
     UInt                i;              /* loop variable                   */
 
     /* print the expression that should evaluate to a function             */
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(call, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, call, 0));
 
     /* print the opening parenthesis                                       */
     Pr("%<( %>",0L,0L);
 
     /* print the expressions that evaluate to the actual arguments         */
-    const UInt nr = SIZE_EXPR(call) / sizeof(Expr) - 1;
+    const UInt nr = SIZE_EXPR_IN_BODY(body, call) / sizeof(Expr) - 1;
     for (i = 1; i <= nr; i++) {
-        PrintExpr(READ_EXPR(call, i));
+        PrintExpr(body, READ_EXPR_IN_BODY(body, call, i));
         if (i != nr) {
             Pr("%<, %>",0L,0L);
         }
     }
 }
 
-static void PrintFunccall(Expr call)
+static void PrintFunccall(Obj body, Expr call)
 {
-  PrintFunccall1( call );
-  
-  /* print the closing parenthesis                                       */
-  Pr(" %2<)",0L,0L);
+    PrintFunccall1(body, call);
+
+    /* print the closing parenthesis                                       */
+    Pr(" %2<)", 0L, 0L);
 }
 
 
-static void PrintFunccallOpts(Expr call)
+static void PrintFunccallOpts(Obj body, Expr call)
 {
-    PrintFunccall1(READ_STAT(call, 1));
+    PrintFunccall1(body, READ_STAT_IN_BODY(body, call, 1));
     Pr(" :%2> ", 0L, 0L);
-    PrintRecExpr1(READ_STAT(call, 0));
+    PrintRecExpr1(body, READ_STAT_IN_BODY(body, call, 0));
     Pr(" %4<)", 0L, 0L);
 }
 

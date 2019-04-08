@@ -1149,10 +1149,9 @@ void ClearError ( void )
 **  'PrintStat' simply dispatches  through the table  'PrintStatFuncs' to the
 **  appropriate printer.
 */
-void            PrintStat (
-    Stat                stat )
+void PrintStat(Obj body, Stat stat)
 {
-    (*PrintStatFuncs[TNUM_STAT(stat)])( stat );
+    (*PrintStatFuncs[TNUM_STAT_IN_BODY(body, stat)])(body, stat);
 }
 
 
@@ -1164,7 +1163,7 @@ void            PrintStat (
 **  statements a pointer to the  printer for statements  of this type,  i.e.,
 **  the function that should be called to print statements of this type.
 */
-void            (* PrintStatFuncs[256] ) ( Stat stat );
+void (*PrintStatFuncs[256])(Obj body, Stat stat);
 
 
 /****************************************************************************
@@ -1176,11 +1175,10 @@ void            (* PrintStatFuncs[256] ) ( Stat stat );
 **  this  is  ever called,   then GAP  is in  serious   trouble, such  as  an
 **  overwritten type field of a statement.
 */
-static void PrintUnknownStat(Stat stat)
+static void PrintUnknownStat(Obj body, Stat stat)
 {
-    ErrorQuit(
-        "Panic: cannot print statement of type '%d'",
-        (Int)TNUM_STAT(stat), 0L );
+    ErrorQuit("Panic: cannot print statement of type '%d'",
+              (Int)TNUM_STAT_IN_BODY(body, stat), 0);
 }
 
 
@@ -1190,19 +1188,19 @@ static void PrintUnknownStat(Stat stat)
 **
 **  'PrintSeqStat' prints the statement sequence <stat>.
 */
-static void PrintSeqStat(Stat stat)
+static void PrintSeqStat(Obj body, Stat stat)
 {
     UInt                nr;             /* number of statements            */
     UInt                i;              /* loop variable                   */
 
     /* get the number of statements                                        */
-    nr = SIZE_STAT( stat ) / sizeof(Stat);
+    nr = SIZE_STAT_IN_BODY(body, stat) / sizeof(Stat);
 
     /* loop over the statements                                            */
     for ( i = 1; i <= nr; i++ ) {
 
         /* print the <i>-th statement                                      */
-        PrintStat(READ_STAT(stat, i - 1));
+        PrintStat(body, READ_STAT_IN_BODY(body, stat, i - 1));
 
         /* print a line break after all but the last statement             */
         if ( i < nr )  Pr( "\n", 0L, 0L );
@@ -1221,31 +1219,37 @@ static void PrintSeqStat(Stat stat)
 **  Linebreaks are printed after the 'then' and the statements in the bodies.
 **  If necessary one is preferred immediately before the 'then'.
 */
-static void PrintIf(Stat stat)
+static void PrintIf(Obj body, Stat stat)
 {
     UInt                i;              /* loop variable                   */
     UInt                len;            /* length of loop                  */
 
+    Expr cond;
+    Stat sub;
+
     /* print the 'if' branch                                               */
+    cond = READ_EXPR_IN_BODY(body, stat, 0);
+    sub = READ_EXPR_IN_BODY(body, stat, 1);
     Pr( "if%4> ", 0L, 0L );
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, cond);
     Pr( "%2< then%2>\n", 0L, 0L );
-    PrintStat(READ_STAT(stat, 1));
+    PrintStat(body, sub);
     Pr( "%4<\n", 0L, 0L );
 
-    len = SIZE_STAT(stat) / (2 * sizeof(Stat));
+    len = SIZE_STAT_IN_BODY(body, stat) / (2 * sizeof(Stat));
     /* print the 'elif' branch                                             */
     for (i = 2; i <= len; i++) {
-        if (i == len &&
-            TNUM_EXPR(READ_STAT(stat, 2 * (i - 1))) == T_TRUE_EXPR) {
+        cond = READ_EXPR_IN_BODY(body, stat, 2 * (i - 1));
+        sub = READ_STAT_IN_BODY(body, stat, 2 * (i - 1) + 1);
+        if (i == len && TNUM_EXPR_IN_BODY(body, cond) == T_TRUE_EXPR) {
             Pr( "else%4>\n", 0L, 0L );
         }
         else {
             Pr( "elif%4> ", 0L, 0L );
-            PrintExpr(READ_EXPR(stat, 2 * (i - 1)));
+            PrintExpr(body, cond);
             Pr( "%2< then%2>\n", 0L, 0L );
         }
-        PrintStat(READ_STAT(stat, 2 * (i - 1) + 1));
+        PrintStat(body, sub);
         Pr( "%4<\n", 0L, 0L );
     }
 
@@ -1263,18 +1267,18 @@ static void PrintIf(Stat stat)
 **  Linebreaks are printed after the 'do' and the statements in the body.  If
 **  necesarry it is preferred immediately before the 'in'.
 */
-static void PrintFor(Stat stat)
+static void PrintFor(Obj body, Stat stat)
 {
-    UInt                i;              /* loop variable                   */
-
     Pr( "for%4> ", 0L, 0L );
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr( "%2< in%2> ", 0L, 0L );
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     Pr( "%2< do%2>\n", 0L, 0L );
-    for ( i = 2; i <= SIZE_STAT(stat)/sizeof(Stat)-1; i++ ) {
-        PrintStat(READ_STAT(stat, i));
-        if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr( "\n", 0L, 0L );
+    const UInt nr = SIZE_STAT_IN_BODY(body, stat) / sizeof(Stat) - 1;
+    for (UInt i = 2; i <= nr; i++) {
+        PrintStat(body, READ_STAT_IN_BODY(body, stat, i));
+        if (i < nr)
+            Pr("\n", 0L, 0L);
     }
     Pr( "%4<\nod;", 0L, 0L );
 }
@@ -1289,23 +1293,23 @@ static void PrintFor(Stat stat)
 **  Linebreaks are printed after the 'do' and the statments  in the body.  If
 **  necessary one is preferred immediately before the 'do'.
 */
-static void PrintWhile(Stat stat)
+static void PrintWhile(Obj body, Stat stat)
 {
-    UInt                i;              /* loop variable                   */
-
     Pr( "while%4> ", 0L, 0L );
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr( "%2< do%2>\n", 0L, 0L );
-    for ( i = 1; i <= SIZE_STAT(stat)/sizeof(Stat)-1; i++ ) {
-        PrintStat(READ_STAT(stat, i));
-        if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr( "\n", 0L, 0L );
+    const UInt nr = SIZE_STAT_IN_BODY(body, stat) / sizeof(Stat) - 1;
+    for (UInt i = 1; i <= nr; i++) {
+        PrintStat(body, READ_STAT_IN_BODY(body, stat, i));
+        if (i < nr)
+            Pr("\n", 0L, 0L);
     }
     Pr( "%4<\nod;", 0L, 0L );
 }
 
 /****************************************************************************
 **
-*F  PrintAtomic(<stat>)  . . . . . . . . . . . . . . . . .  print a atomic loop
+*F  PrintAtomic(<stat>) . . . . . . . . . . . . . . . . . print a atomic loop
 **
 **  'PrintAtomic' prints the atomic-loop <stat>.
 **
@@ -1313,31 +1317,29 @@ static void PrintWhile(Stat stat)
 **  necessary one is preferred immediately before the 'do'.
 */
 #ifdef HPCGAP
-static void PrintAtomic(Stat stat)
+static void PrintAtomic(Obj body, Stat stat)
 {
-  UInt nrexprs;
-    UInt                i;              /* loop variable                   */
+    const UInt nrexprs = SIZE_STAT_IN_BODY(body, stat) / (2 * sizeof(Stat));
 
-    Pr( "atomic%4> ", 0L, 0L );
-    nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
-    for (i = 1; i <=  nrexprs; i++) {
-      if (i != 1)
-        Pr(", ",0L,0L);
-      switch (INT_INTEXPR(READ_STAT(stat, 2 * i - 1))) {
-      case LOCK_QUAL_NONE:
-        break;
-      case LOCK_QUAL_READONLY:
-        Pr("readonly ",0L,0L);
-        break;
-      case LOCK_QUAL_READWRITE:
-        Pr("readwrite ",0L,0L);
-        break;
-      }
-      PrintExpr(READ_EXPR(stat, 2 * i));
+    Pr("atomic%4> ", 0, 0);
+    for (UInt i = 1; i <= nrexprs; i++) {
+        if (i != 1)
+            Pr(", ", 0, 0);
+        switch (INT_INTEXPR(READ_STAT_IN_BODY(body, stat, 2 * i - 1))) {
+        case LOCK_QUAL_NONE:
+            break;
+        case LOCK_QUAL_READONLY:
+            Pr("readonly ", 0, 0);
+            break;
+        case LOCK_QUAL_READWRITE:
+            Pr("readwrite ", 0, 0);
+            break;
+        }
+        PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 2 * i));
     }
-    Pr( "%2< do%2>\n", 0L, 0L );
-    PrintStat(READ_STAT(stat, 0));
-    Pr( "%4<\nod;", 0L, 0L );
+    Pr("%2< do%2>\n", 0, 0);
+    PrintStat(body, READ_STAT_IN_BODY(body, stat, 0));
+    Pr("%4<\nod;", 0, 0);
 }
 #endif
 
@@ -1351,17 +1353,17 @@ static void PrintAtomic(Stat stat)
 **  Linebreaks are printed after the 'repeat' and the statements in the body.
 **  If necessary one is preferred after the 'until'.
 */
-static void PrintRepeat(Stat stat)
+static void PrintRepeat(Obj body, Stat stat)
 {
-    UInt                i;              /* loop variable                   */
-
     Pr( "repeat%4>\n", 0L, 0L );
-    for ( i = 1; i <= SIZE_STAT(stat)/sizeof(Stat)-1; i++ ) {
-        PrintStat(READ_STAT(stat, i));
-        if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr( "\n", 0L, 0L );
+    const UInt nr = SIZE_STAT_IN_BODY(body, stat) / sizeof(Stat) - 1;
+    for (UInt i = 1; i <= nr; i++) {
+        PrintStat(body, READ_STAT_IN_BODY(body, stat, i));
+        if (i < nr)
+            Pr("\n", 0L, 0L);
     }
     Pr( "%4<\nuntil%2> ", 0L, 0L );
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr( "%2<;", 0L, 0L );
 }
 
@@ -1372,7 +1374,7 @@ static void PrintRepeat(Stat stat)
 **
 **  'PrintBreak' prints the break-statement <stat>.
 */
-static void PrintBreak(Stat stat)
+static void PrintBreak(Obj body, Stat stat)
 {
     Pr( "break;", 0L, 0L );
 }
@@ -1383,7 +1385,7 @@ static void PrintBreak(Stat stat)
 **
 **  'PrintContinue' prints the continue-statement <stat>.
 */
-static void PrintContinue(Stat stat)
+static void PrintContinue(Obj body, Stat stat)
 {
     Pr( "continue;", 0L, 0L );
 }
@@ -1393,7 +1395,7 @@ static void PrintContinue(Stat stat)
 *F  PrintEmpty(<stat>)
 **
 */
-static void PrintEmpty(Stat stat)
+static void PrintEmpty(Obj body, Stat stat)
 {
   Pr( ";", 0L, 0L);
 }
@@ -1405,7 +1407,7 @@ static void PrintEmpty(Stat stat)
 **  'PrintInfo' prints the info-statement <stat>.
 */
 
-static void PrintInfo(Stat stat)
+static void PrintInfo(Obj body, Stat stat)
 {
     UInt                i;              /* loop variable                   */
 
@@ -1416,9 +1418,9 @@ static void PrintInfo(Stat stat)
     Pr("%<( %>",0L,0L);
 
     /* print the expressions that evaluate to the actual arguments         */
-    UInt narg = SIZE_STAT(stat) / sizeof(Expr);
+    UInt narg = SIZE_STAT_IN_BODY(body, stat) / sizeof(Expr);
     for (i = 0; i < narg; i++) {
-        PrintExpr(READ_STAT(stat, i));
+        PrintExpr(body, READ_EXPR_IN_BODY(body, stat, i));
         if (i != narg) {
             Pr("%<, %>",0L,0L);
         }
@@ -1435,7 +1437,7 @@ static void PrintInfo(Stat stat)
 **  'PrintAssert2Args' prints the 2 argument assert-statement <stat>.
 */
 
-static void PrintAssert2Args(Stat stat)
+static void PrintAssert2Args(Obj body, Stat stat)
 {
 
     /* print the keyword                                                   */
@@ -1445,9 +1447,9 @@ static void PrintAssert2Args(Stat stat)
     Pr("%<( %>",0L,0L);
 
     /* Print the arguments, separated by a comma                           */
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<, %>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
 
     /* print the closing parenthesis                                       */
     Pr(" %2<);",0L,0L);
@@ -1460,7 +1462,7 @@ static void PrintAssert2Args(Stat stat)
 **  'PrintAssert3Args' prints the 3 argument assert-statement <stat>.
 */
 
-static void PrintAssert3Args(Stat stat)
+static void PrintAssert3Args(Obj body, Stat stat)
 {
 
     /* print the keyword                                                   */
@@ -1470,11 +1472,11 @@ static void PrintAssert3Args(Stat stat)
     Pr("%<( %>",0L,0L);
 
     /* Print the arguments, separated by commas                            */
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<, %>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     Pr("%<, %>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 2));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 2));
 
     /* print the closing parenthesis                                       */
     Pr(" %2<);",0L,0L);
@@ -1488,16 +1490,16 @@ static void PrintAssert3Args(Stat stat)
 **
 **  'PrintReturnObj' prints the return-value-statement <stat>.
 */
-static void PrintReturnObj(Stat stat)
+static void PrintReturnObj(Obj body, Stat stat)
 {
-    Expr expr = READ_STAT(stat, 0);
-    if (TNUM_EXPR(expr) == T_REF_GVAR &&
-        READ_STAT(expr, 0) == GVarName("TRY_NEXT_METHOD")) {
+    Expr expr = READ_STAT_IN_BODY(body, stat, 0);
+    if (TNUM_EXPR_IN_BODY(body, expr) == T_REF_GVAR &&
+        READ_STAT_IN_BODY(body, expr, 0) == GVarName("TRY_NEXT_METHOD")) {
         Pr( "TryNextMethod();", 0L, 0L );
     }
     else {
         Pr( "%2>return%< %>", 0L, 0L );
-        PrintExpr( expr );
+        PrintExpr(body, expr);
         Pr( "%2<;", 0L, 0L );
     }
 }
@@ -1509,7 +1511,7 @@ static void PrintReturnObj(Stat stat)
 **
 **  'PrintReturnVoid' prints the return-void-statement <stat>.
 */
-static void PrintReturnVoid(Stat stat)
+static void PrintReturnVoid(Obj body, Stat stat)
 {
     Pr( "return;", 0L, 0L );
 }

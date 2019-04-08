@@ -116,7 +116,7 @@ void InterruptExecStat(void);
 **  'PrintStat' simply dispatches  through the table  'PrintStatFuncs' to the
 **  appropriate printer.
 */
-void PrintStat(Stat stat);
+void PrintStat(Obj body, Stat);
 
 
 /****************************************************************************
@@ -127,7 +127,7 @@ void PrintStat(Stat stat);
 **  statements a pointer to the  printer for statements  of this type,  i.e.,
 **  the function that should be called to print statements of this type.
 */
-extern  void            (* PrintStatFuncs[256] ) ( Stat stat );
+extern void (*PrintStatFuncs[256])(Obj body, Stat stat);
 
 
 /****************************************************************************

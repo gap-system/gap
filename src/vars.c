@@ -196,16 +196,16 @@ static Obj EvalIsbLVar(Expr expr)
 **
 **  'PrintAssLVar' prints the local variable assignment statement <stat>.
 */
-static void PrintAssLVar(Stat stat)
+static void PrintAssLVar(Obj body, Stat stat)
 {
     Pr( "%2>", 0L, 0L );
     Pr("%H", (Int)NAME_LVAR(READ_STAT(stat, 0)), 0L);
     Pr( "%< %>:= ", 0L, 0L );
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     Pr( "%2<;", 0L, 0L );
 }
 
-static void PrintUnbLVar(Stat stat)
+static void PrintUnbLVar(Obj body, Stat stat)
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%H", (Int)NAME_LVAR(READ_STAT(stat, 0)), 0L);
@@ -219,15 +219,15 @@ static void PrintUnbLVar(Stat stat)
 **
 **  'PrintRefLVar' prints the local variable reference expression <expr>.
 */
-static void PrintRefLVar(Expr expr)
+static void PrintRefLVar(Obj body, Expr expr)
 {
     Pr( "%H", (Int)NAME_LVAR( LVAR_REFLVAR(expr) ), 0L );
 }
 
-static void PrintIsbLVar(Expr expr)
+static void PrintIsbLVar(Obj body, Expr expr)
 {
     Pr( "IsBound( ", 0L, 0L );
-    Pr("%H", (Int)NAME_LVAR(READ_EXPR(expr, 0)), 0L);
+    Pr("%H", (Int)NAME_LVAR(READ_EXPR_IN_BODY(body, expr, 0)), 0L);
     Pr( " )", 0L, 0L );
 }
 
@@ -367,19 +367,19 @@ static Obj EvalIsbHVar(Expr expr)
 **
 **  'PrintAssHVar' prints the higher variable assignment statement <stat>.
 */
-static void PrintAssHVar(Stat stat)
+static void PrintAssHVar(Obj body, Stat stat)
 {
     Pr( "%2>", 0L, 0L );
-    Pr("%H", (Int)NAME_HVAR(READ_STAT(stat, 0)), 0L);
+    Pr("%H", (Int)NAME_HVAR(READ_STAT_IN_BODY(body, stat, 0)), 0L);
     Pr( "%< %>:= ", 0L, 0L );
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     Pr( "%2<;", 0L, 0L );
 }
 
-static void PrintUnbHVar(Stat stat)
+static void PrintUnbHVar(Obj body, Stat stat)
 {
     Pr( "Unbind( ", 0L, 0L );
-    Pr("%H", (Int)NAME_HVAR(READ_STAT(stat, 0)), 0L);
+    Pr("%H", (Int)NAME_HVAR(READ_STAT_IN_BODY(body, stat, 0)), 0L);
     Pr( " );", 0L, 0L );
 }
 
@@ -390,15 +390,15 @@ static void PrintUnbHVar(Stat stat)
 **
 **  'PrintRefHVar' prints the higher variable reference expression <expr>.
 */
-static void PrintRefHVar(Expr expr)
+static void PrintRefHVar(Obj body, Expr expr)
 {
-    Pr("%H", (Int)NAME_HVAR(READ_EXPR(expr, 0)), 0L);
+    Pr("%H", (Int)NAME_HVAR(READ_EXPR_IN_BODY(body, expr, 0)), 0L);
 }
 
-static void PrintIsbHVar(Expr expr)
+static void PrintIsbHVar(Obj body, Expr expr)
 {
     Pr( "IsBound( ", 0L, 0L );
-    Pr("%H", (Int)NAME_HVAR(READ_EXPR(expr, 0)), 0L);
+    Pr("%H", (Int)NAME_HVAR(READ_EXPR_IN_BODY(body, expr, 0)), 0L);
     Pr( " )", 0L, 0L );
 }
 
@@ -472,19 +472,19 @@ static Obj EvalIsbGVar(Expr expr)
 **
 **  'PrVarAss' prints the global variable assignment statement <stat>.
 */
-static void PrintAssGVar(Stat stat)
+static void PrintAssGVar(Obj body, Stat stat)
 {
     Pr( "%2>", 0L, 0L );
-    Pr("%H", (Int)NameGVar(READ_STAT(stat, 0)), 0L);
+    Pr("%H", (Int)NameGVar(READ_STAT_IN_BODY(body, stat, 0)), 0L);
     Pr( "%< %>:= ", 0L, 0L );
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     Pr( "%2<;", 0L, 0L );
 }
 
-static void PrintUnbGVar(Stat stat)
+static void PrintUnbGVar(Obj body, Stat stat)
 {
     Pr( "Unbind( ", 0L, 0L );
-    Pr("%H", (Int)NameGVar(READ_STAT(stat, 0)), 0L);
+    Pr("%H", (Int)NameGVar(READ_STAT_IN_BODY(body, stat, 0)), 0L);
     Pr( " );", 0L, 0L );
 }
 
@@ -495,15 +495,15 @@ static void PrintUnbGVar(Stat stat)
 **
 **  'PrintRefGVar' prints the global variable reference expression <expr>.
 */
-static void PrintRefGVar(Expr expr)
+static void PrintRefGVar(Obj body, Expr expr)
 {
-    Pr("%H", (Int)NameGVar(READ_STAT(expr, 0)), 0L);
+    Pr("%H", (Int)NameGVar(READ_STAT_IN_BODY(body, expr, 0)), 0L);
 }
 
-static void PrintIsbGVar(Expr expr)
+static void PrintIsbGVar(Obj body, Expr expr)
 {
     Pr( "IsBound( ", 0L, 0L );
-    Pr("%H", (Int)NameGVar(READ_EXPR(expr, 0)), 0L);
+    Pr("%H", (Int)NameGVar(READ_EXPR_IN_BODY(body, expr, 0)), 0L);
     Pr( " )", 0L, 0L );
 }
 
@@ -987,44 +987,44 @@ static Obj EvalIsbList(Expr expr)
 **
 **  Linebreaks are preferred before the ':='.
 */
-static void PrintAssList(Stat stat)
+static void PrintAssList(Obj body, Stat stat)
 {
     Pr("%4>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<[",0L,0L);
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     Pr("%<]",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr(READ_EXPR(stat, 2));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 2));
     Pr("%2<;",0L,0L);
 }
 
-static void PrintAss2List(Stat stat)
+static void PrintAss2List(Obj body, Stat stat)
 {
     Pr("%4>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<[",0L,0L);
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     Pr("%<, %>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 2));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 2));
     Pr("%<]",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr(READ_EXPR(stat, 3));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 3));
     Pr("%2<;",0L,0L);
 }
 
-static void PrintUnbList(Stat stat)
+static void PrintUnbList(Obj body, Stat stat)
 {
   Int narg = SIZE_STAT(stat)/sizeof(Stat) -1;
   Int i;
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<[",0L,0L);
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     for (i = 2; i <= narg; i++) {
       Pr("%<, %>",0L,0L);
-      PrintExpr(READ_EXPR(stat, i));
+      PrintExpr(body, READ_EXPR_IN_BODY(body, stat, i));
     }
     Pr("%<]",0L,0L);
     Pr( " );", 0L, 0L );
@@ -1040,15 +1040,15 @@ static void PrintUnbList(Stat stat)
 **
 **  Linebreaks are preferred before the ':='.
 */
-static void PrintAsssList(Stat stat)
+static void PrintAsssList(Obj body, Stat stat)
 {
     Pr("%4>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<{",0L,0L);
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     Pr("%<}",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr(READ_EXPR(stat, 2));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 2));
     Pr("%2<;",0L,0L);
 }
 
@@ -1062,54 +1062,54 @@ static void PrintAsssList(Stat stat)
 **
 **  Linebreaks are preferred after the '['.
 */
-static void PrintElmList(Expr expr)
+static void PrintElmList(Obj body, Expr expr)
 {
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<[",0L,0L);
-    PrintExpr(READ_EXPR(expr, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 1));
     Pr("%<]",0L,0L);
 }
 
-static void PrintElm2List(Expr expr)
+static void PrintElm2List(Obj body, Expr expr)
 {
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<[",0L,0L);
-    PrintExpr(READ_EXPR(expr, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 1));
     Pr("%<, %<",0L,0L);
-    PrintExpr(READ_EXPR(expr, 2));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 2));
     Pr("%<]",0L,0L);
 }
 
-static void PrintElmListLevel(Expr expr)
+static void PrintElmListLevel(Obj body, Expr expr)
 {
   Int i;
   Int narg = SIZE_EXPR(expr)/sizeof(Expr) -2 ;
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<[",0L,0L);
-    PrintExpr(READ_EXPR(expr, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 1));
     for (i = 2; i <= narg; i++) {
       Pr("%<, %<",0L,0L);
-      PrintExpr(READ_EXPR(expr, i));
+      PrintExpr(body, READ_EXPR_IN_BODY(body, expr, i));
     }
     Pr("%<]",0L,0L);
 }
 
 
-static void PrintIsbList(Expr expr)
+static void PrintIsbList(Obj body, Expr expr)
 {
   Int narg = SIZE_EXPR(expr)/sizeof(Expr) - 1;
   Int i;
     Pr( "IsBound( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<[",0L,0L);
-    PrintExpr(READ_EXPR(expr, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 1));
     for (i = 2; i <= narg; i++) {
       Pr("%<, %>", 0L, 0L);
-      PrintExpr(READ_EXPR(expr, i));
+      PrintExpr(body, READ_EXPR_IN_BODY(body, expr, i));
     }
     Pr("%<]",0L,0L);
     Pr( " )", 0L, 0L );
@@ -1125,12 +1125,12 @@ static void PrintIsbList(Expr expr)
 **
 **  Linebreaks are preferred after the '{'.
 */
-static void PrintElmsList(Expr expr)
+static void PrintElmsList(Obj body, Expr expr)
 {
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<{",0L,0L);
-    PrintExpr(READ_EXPR(expr, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 1));
     Pr("%<}",0L,0L);
 }
 
@@ -1354,25 +1354,25 @@ static Obj EvalIsbRecExpr(Expr expr)
 **  'PrintAssRecName' prints the  record  assignment statement <stat>  of the
 **  form '<record>.<name> := <rhs>;'.
 */
-static void PrintAssRecName(Stat stat)
+static void PrintAssRecName(Obj body, Stat stat)
 {
     Pr("%4>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_STAT_IN_BODY(body, stat, 1)), 0L);
     Pr("%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr(READ_EXPR(stat, 2));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 2));
     Pr("%2<;",0L,0L);
 }
 
-static void PrintUnbRecName(Stat stat)
+static void PrintUnbRecName(Obj body, Stat stat)
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_STAT_IN_BODY(body, stat, 1)), 0L);
     Pr("%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -1385,25 +1385,25 @@ static void PrintUnbRecName(Stat stat)
 **  'PrintAssRecExpr' prints the  record  assignment statement <stat>  of the
 **  form '<record>.(<name>) := <rhs>;'.
 */
-static void PrintAssRecExpr(Stat stat)
+static void PrintAssRecExpr(Obj body, Stat stat)
 {
     Pr("%4>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<.(",0L,0L);
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     Pr(")%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr(READ_EXPR(stat, 2));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 2));
     Pr("%2<;",0L,0L);
 }
 
-static void PrintUnbRecExpr(Stat stat)
+static void PrintUnbRecExpr(Obj body, Stat stat)
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<.(",0L,0L);
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     Pr(")%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -1416,22 +1416,22 @@ static void PrintUnbRecExpr(Stat stat)
 **  'PrintElmRecName' prints the record element expression <expr> of the form
 **  '<record>.<name>'.
 */
-static void PrintElmRecName(Expr expr)
+static void PrintElmRecName(Obj body, Expr expr)
 {
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_EXPR_IN_BODY(body, expr, 1)), 0L);
     Pr("%<",0L,0L);
 }
 
-static void PrintIsbRecName(Expr expr)
+static void PrintIsbRecName(Obj body, Expr expr)
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_EXPR_IN_BODY(body, expr, 1)), 0L);
     Pr("%<",0L,0L);
     Pr( " )", 0L, 0L );
 }
@@ -1444,22 +1444,22 @@ static void PrintIsbRecName(Expr expr)
 **  'PrintElmRecExpr' prints the record element expression <expr> of the form
 **  '<record>.(<name>)'.
 */
-static void PrintElmRecExpr(Expr expr)
+static void PrintElmRecExpr(Obj body, Expr expr)
 {
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<.(",0L,0L);
-    PrintExpr(READ_EXPR(expr, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 1));
     Pr(")%<",0L,0L);
 }
 
-static void PrintIsbRecExpr(Expr expr)
+static void PrintIsbRecExpr(Obj body, Expr expr)
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<.(",0L,0L);
-    PrintExpr(READ_EXPR(expr, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 1));
     Pr(")%<",0L,0L);
     Pr( " )", 0L, 0L );
 }
@@ -1592,25 +1592,25 @@ static Obj EvalIsbPosObj(Expr expr)
 **
 **  Linebreaks are preferred before the ':='.
 */
-static void PrintAssPosObj(Stat stat)
+static void PrintAssPosObj(Obj body, Stat stat)
 {
     Pr("%4>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<![",0L,0L);
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     Pr("%<]",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr(READ_EXPR(stat, 2));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 2));
     Pr("%2<;",0L,0L);
 }
 
-static void PrintUnbPosObj(Stat stat)
+static void PrintUnbPosObj(Obj body, Stat stat)
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<![",0L,0L);
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     Pr("%<]",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -1625,22 +1625,22 @@ static void PrintUnbPosObj(Stat stat)
 **
 **  Linebreaks are preferred after the '['.
 */
-static void PrintElmPosObj(Expr expr)
+static void PrintElmPosObj(Obj body, Expr expr)
 {
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<![",0L,0L);
-    PrintExpr(READ_EXPR(expr, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 1));
     Pr("%<]",0L,0L);
 }
 
-static void PrintIsbPosObj(Expr expr)
+static void PrintIsbPosObj(Obj body, Expr expr)
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<![",0L,0L);
-    PrintExpr(READ_EXPR(expr, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 1));
     Pr("%<]",0L,0L);
     Pr( " )", 0L, 0L );
 }
@@ -1873,25 +1873,25 @@ static Obj EvalIsbComObjExpr(Expr expr)
 **  'PrintAssComObjName' prints the  record assignment statement <stat>  of the
 **  form '<record>.<name> := <rhs>;'.
 */
-static void PrintAssComObjName(Stat stat)
+static void PrintAssComObjName(Obj body, Stat stat)
 {
     Pr("%4>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<!.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_STAT_IN_BODY(body, stat, 1)), 0L);
     Pr("%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr(READ_EXPR(stat, 2));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 2));
     Pr("%2<;",0L,0L);
 }
 
-static void PrintUnbComObjName(Stat stat)
+static void PrintUnbComObjName(Obj body, Stat stat)
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<!.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_STAT_IN_BODY(body, stat, 1)), 0L);
     Pr("%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -1904,25 +1904,25 @@ static void PrintUnbComObjName(Stat stat)
 **  'PrintAssComObjExpr' prints the  record assignment statement <stat>  of the
 **  form '<record>.(<name>) := <rhs>;'.
 */
-static void PrintAssComObjExpr(Stat stat)
+static void PrintAssComObjExpr(Obj body, Stat stat)
 {
     Pr("%4>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<!.(",0L,0L);
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     Pr(")%<",0L,0L);
     Pr("%< %>:= ",0L,0L);
-    PrintExpr(READ_EXPR(stat, 2));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 2));
     Pr("%2<;",0L,0L);
 }
 
-static void PrintUnbComObjExpr(Stat stat)
+static void PrintUnbComObjExpr(Obj body, Stat stat)
 {
     Pr( "Unbind( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(stat, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 0));
     Pr("%<!.(",0L,0L);
-    PrintExpr(READ_EXPR(stat, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, stat, 1));
     Pr(")%<",0L,0L);
     Pr( " );", 0L, 0L );
 }
@@ -1935,22 +1935,22 @@ static void PrintUnbComObjExpr(Stat stat)
 **  'PrintElmComObjName' prints the  record  element expression <expr> of   the
 **  form '<record>.<name>'.
 */
-static void PrintElmComObjName(Expr expr)
+static void PrintElmComObjName(Obj body, Expr expr)
 {
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<!.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_EXPR_IN_BODY(body, expr, 1)), 0L);
     Pr("%<",0L,0L);
 }
 
-static void PrintIsbComObjName(Expr expr)
+static void PrintIsbComObjName(Obj body, Expr expr)
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<!.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0L);
+    Pr("%H", (Int)NAME_RNAM(READ_EXPR_IN_BODY(body, expr, 1)), 0L);
     Pr("%<",0L,0L);
     Pr( " )", 0L, 0L );
 }
@@ -1963,22 +1963,22 @@ static void PrintIsbComObjName(Expr expr)
 **  'PrintElmComObjExpr' prints the record   element expression <expr>  of  the
 **  form '<record>.(<name>)'.
 */
-static void PrintElmComObjExpr(Expr expr)
+static void PrintElmComObjExpr(Obj body, Expr expr)
 {
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<!.(",0L,0L);
-    PrintExpr(READ_EXPR(expr, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 1));
     Pr(")%<",0L,0L);
 }
 
-static void PrintIsbComObjExpr(Expr expr)
+static void PrintIsbComObjExpr(Obj body, Expr expr)
 {
     Pr( "IsBound( ", 0L, 0L );
     Pr("%2>",0L,0L);
-    PrintExpr(READ_EXPR(expr, 0));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 0));
     Pr("%<!.(",0L,0L);
-    PrintExpr(READ_EXPR(expr, 1));
+    PrintExpr(body, READ_EXPR_IN_BODY(body, expr, 1));
     Pr(")%<",0L,0L);
     Pr( " )", 0L, 0L );
 }

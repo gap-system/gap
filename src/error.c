@@ -180,10 +180,10 @@ static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
     GAP_ASSERT(call == BRK_CALL_TO());
 
     Obj retlist = Fail;
-    Int type = TNUM_STAT(call);
+    Int type = TNUM_STAT_IN_BODY(body, call);
     if ((FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) ||
         (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM)) {
-        Int line = LINE_STAT(call);
+        Int line = LINE_STAT(body, call);
         Obj filename = GET_FILENAME_BODY(body);
         retlist = NewPlistFromArgs(filename, INTOBJ_INT(line));
     }
@@ -224,21 +224,18 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
         Pr("<corrupted statement> ", 0L, 0L);
     }
     else {
-        Obj currLVars = STATE(CurrLVars);
-        SWITCH_TO_OLD_LVARS(context);
         GAP_ASSERT(call == BRK_CALL_TO());
 
-        Int type = TNUM_STAT(call);
+        Int type = TNUM_STAT_IN_BODY(body, call);
         Obj filename = GET_FILENAME_BODY(body);
         if (FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) {
-            PrintStat(call);
-            Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
+            PrintStat(body, call);
+            Pr(" at %g:%d", (Int)filename, LINE_STAT(body, call));
         }
         else if (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM) {
-            PrintExpr(call);
-            Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
+            PrintExpr(body, call);
+            Pr(" at %g:%d", (Int)filename, LINE_STAT(body, call));
         }
-        SWITCH_TO_OLD_LVARS(currLVars);
     }
 
     /* HACK: close the output again */

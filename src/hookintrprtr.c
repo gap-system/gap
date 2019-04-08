@@ -43,8 +43,8 @@ UInt (*OriginalExecStatFuncsForHook[256])(Stat stat);
 Obj (*OriginalEvalExprFuncsForHook[256])(Expr expr);
 Obj (*OriginalEvalBoolFuncsForHook[256])(Expr expr);
 
-void (*OriginalPrintStatFuncsForHook[256])(Stat stat);
-void (*OriginalPrintExprFuncsForHook[256])(Expr expr);
+void (*OriginalPrintStatFuncsForHook[256])(Obj body, Stat stat);
+void (*OriginalPrintExprFuncsForHook[256])(Obj body, Expr expr);
 
 /****************************************************************************
 **
@@ -82,7 +82,7 @@ void InstallExecStatFunc(Int pos, UInt (*stat)(Stat))
     HashUnlock(&activeHooks);
 }
 
-void InstallPrintStatFunc(Int pos, void (*stat)(Stat))
+void InstallPrintStatFunc(Int pos, void (*stat)(Obj, Stat))
 {
     OriginalPrintStatFuncsForHook[pos] = stat;
     HashLock(&activeHooks);
@@ -92,7 +92,7 @@ void InstallPrintStatFunc(Int pos, void (*stat)(Stat))
     HashUnlock(&activeHooks);
 }
 
-void InstallPrintExprFunc(Int pos, void (*expr)(Expr))
+void InstallPrintExprFunc(Int pos, void (*expr)(Obj, Expr))
 {
     OriginalPrintExprFuncsForHook[pos] = expr;
     HashLock(&activeHooks);
