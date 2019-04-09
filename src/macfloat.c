@@ -55,7 +55,8 @@ static Obj TypeMacfloat(Obj val)
 
 // helper function for printing a "decimal" representation of a macfloat
 // into a buffer.
-static void PrintMacfloatToBuf(char *buf, size_t bufsize, Double val, int precision)
+static void
+PrintMacfloatToBuf(char * buf, size_t bufsize, Double val, int precision)
 {
     // handle printing of NaN and infinities ourselves, to ensure
     // they are printed uniformly across all platforms
@@ -70,9 +71,23 @@ static void PrintMacfloatToBuf(char *buf, size_t bufsize, Double val, int precis
     }
     else {
         snprintf(buf, bufsize, "%.*" PRINTFFORMAT, precision, val);
-        if(!strchr(buf, '.'))
-        {
-          strcat(buf, ".");
+        // check if a period is in the output; this is not always the case,
+        // e.g. if the value is an integer
+        if (strchr(buf, '.'))
+            return;    // everything is fine
+        // we need to insert a '.'; either at the end, or before an exponent
+        // (e.g. "7e10" -> "7.e10"). For this we need 1 extra byte of storage,
+        // plus of course 1 byte for the string terminator; check if the
+        // buffer is big enough
+        if (strlen(buf) + 2 <= bufsize) {
+            char * loc = strchr(buf, 'e');
+            if (loc) {
+                memmove(loc + 1, loc, strlen(loc) + 1);
+                loc[0] = '.';
+            }
+            else {
+                strxcat(buf, ".", bufsize);
+            }
         }
     }
 }
