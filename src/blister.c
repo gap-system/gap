@@ -1016,7 +1016,7 @@ static Obj FiltIS_BLIST(Obj self, Obj val)
 */
 static Obj FuncIS_BLIST_CONV(Obj self, Obj val)
 {
-    /* let 'IsBlist' do the work                                           */
+    // let 'IsBlistConv' do the work
     return IsBlistConv( val ) ? True : False;
 }
 
@@ -1047,7 +1047,6 @@ static Obj FuncSIZE_BLIST(Obj self, Obj blist)
 }
 
 
-
 /****************************************************************************
 **
 *F  FuncBLIST_LIST( <self>, <list>, <sub> )  make boolean list from a sublist
@@ -1069,7 +1068,6 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub);
 
 static Obj FuncBLIST_LIST(Obj self, Obj list, Obj sub)
 {
-    /* get and check the arguments                                         */
     RequireSmallList("BlistList", list);
     RequireSmallList("BlistList", sub);
 
@@ -1081,7 +1079,6 @@ static Obj FuncBLIST_LIST(Obj self, Obj list, Obj sub)
 
     return blist;
 }
-
 
 
 /****************************************************************************
@@ -1106,9 +1103,7 @@ static Obj FuncLIST_BLIST(Obj self, Obj list, Obj blist)
     UInt                nn;
     UInt                i;              /* loop variable                   */
 
-    /* get and check the first argument                                    */
     RequireSmallList("ListBlist", list);
-    /* get and check the second argument                                   */
     RequireBlist("ListBlist", blist);
     RequireSameLength("ListBlist", blist, list);
 
@@ -1139,8 +1134,6 @@ static Obj FuncLIST_BLIST(Obj self, Obj list, Obj blist)
 **
 *F  FuncPositionNthTrueBlist( <self>, <blist>, <Nth> )  . . . find true value
 **
-*N  1992/12/15 martin this depends on 'BIPEB' being 32
-*N  Fixed up for 64 SL
 */
 static Obj FuncPositionNthTrueBlist(
 
@@ -1197,7 +1190,6 @@ static Obj FuncIS_SUB_BLIST(Obj self, Obj blist1, Obj blist2)
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
-    /* get and check the arguments                                         */
     RequireBlist("IsSubsetBlist", blist1);
     RequireBlist("IsSubsetBlist", blist2);
     RequireSameLength("IsSubsetBlist", blist1, blist2);
@@ -1235,7 +1227,6 @@ static Obj FuncUNITE_BLIST(Obj self, Obj blist1, Obj blist2)
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
-    /* get and check the arguments                                         */
     RequireBlist("UniteBlist", blist1);
     RequireMutable("UniteBlist", blist1, "boolean list");
     RequireBlist("UniteBlist", blist2);
@@ -1275,7 +1266,6 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
     UInt                i, j, k = 0, l;     /* loop variables                  */
     long                s, t;           /* elements of a range             */
 
-    /* get and check the arguments                                         */
     RequireSmallList("UniteBlistList", list);
     RequireBlist("UniteBlistList", blist);
     RequireMutable("UniteBlistList", blist, "boolean list");
@@ -1489,7 +1479,6 @@ static Obj FuncINTER_BLIST(Obj self, Obj blist1, Obj blist2)
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
-    /* get and check the arguments                                         */
     RequireBlist("IntersectBlist", blist1);
     RequireMutable("IntersectBlist", blist1, "boolean list");
     RequireBlist("IntersectBlist", blist2);
@@ -1524,7 +1513,6 @@ static Obj FuncSUBTR_BLIST(Obj self, Obj blist1, Obj blist2)
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
-    /* get and check the arguments                                         */
     RequireBlist("SubtractBlist", blist1);
     RequireMutable("SubtractBlist", blist1, "boolean list");
     RequireBlist("SubtractBlist", blist2);
@@ -1560,7 +1548,6 @@ static Obj FuncMEET_BLIST(Obj self, Obj blist1, Obj blist2)
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
-    /* get and check the arguments                                         */
     RequireBlist("MeetBlist", blist1);
     RequireBlist("MeetBlist", blist2);
     RequireSameLength("MeetBlist", blist1, blist2);
