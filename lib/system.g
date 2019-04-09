@@ -53,10 +53,16 @@ BIND_GLOBAL( "GAPInfo", rec(
     # These options must be kept in sync with those in system.c, so the help output
     # for those options is correct
     CommandLineOptionData := [
+      rec( section:= ["Startup:"] ),
       rec( short:= "h", long := "help", default := false, help := ["print this help and exit"] ),
       rec( long := "version", default := false, help := ["print the GAP version and exit"] ),
       rec( long := "print-gaproot", default := false, help := ["print the primary GAP root and exit"] ),
       rec( short:= "b", long := "banner", default := false, help := ["disable/enable the banner"] ),
+      rec( short:= "c", default := "", arg := "<expr>", help := [ "execute the expression <expr>"] ),
+      rec( long := "systemfile", default := "", arg := "<file>",
+           help := [ "read this file after 'lib/system.g'" ] ),
+      ,
+      rec( section:= ["Input/output:"] ),
       rec( short:= "q", long := "quiet", default := false, help := ["enable/disable quiet mode"] ),
       rec( short:= "e", default := false, help := ["disable/enable quitting on <ctrl>-D"] ),
       rec( short:= "f", default := false, help := ["force line editing"] ),
@@ -65,19 +71,23 @@ BIND_GLOBAL( "GAPInfo", rec(
            help := ["disable/enable use of readline library (if", "possible)"] ),
       rec( short:= "x", long := "width", default := "", arg := "<num>", help := ["set line width"] ),
       rec( short:= "y", long := "lines", default := "", arg := "<num>", help := ["set number of lines"] ),
+      rec( short:= "p", default := false, help := ["enable/disable package output mode", "(for use by XGAP and similar interfaces)"] ),
+      ,
+      rec( section:= ["Memory:",
+                      "  (may use postfix 'k' = *1024, 'm' = *1024*1024,",
+                      "                   'g' = *1024*1024*1024):"] ),
       ,
       rec( short:= "g", long := "gasinfo", default := 0,
            help := ["show GASMAN messages (full/all/no garbage","collections)", "(only available if GAP uses GASMAN)"] ),
       rec( short:= "m", long := "minworkspace", default := "128m", arg := "<mem>",
            help := ["set the initial workspace size"] ),
       rec( short:= "o", long := "maxworkspace", default := "2g", arg := "<mem>",
-           help := [ "set workspace size where GAP will warn about", "excessive memory usage (GAP may allocate more)", "(available only if GAP uses GASMAN)"] ),
+           help := [ "set workspace size where GAP will warn about", "excessive memory usage (GAP may allocate more)", "(only available if GAP uses GASMAN)"] ),
       rec( short:= "K", long := "limitworkspace", default := "0", arg := "<mem>",
            help := [ "set maximal workspace size (GAP never", "allocates more)"] ),
-      rec( short:= "s", default := "4g", arg := "<mem>", help := [ "set the initially mapped virtual memory", "(available only if GAP uses GASMAN)" ] ),
-      rec( short:= "a", default := "0",  arg := "<mem>",help := [ "set amount to pre-malloc-ate",
-             "postfix 'k' = *1024, 'm' = *1024*1024,", "'g' = *1024*1024*1024"] ),
+      rec( short:= "s", default := "4g", arg := "<mem>", help := [ "set the initially mapped virtual memory", "(only available if GAP uses GASMAN)" ] ),
       ,
+      rec( section:= ["Roots:"] ),
       rec( short:= "l", long := "roots", default := [], arg := "<paths>",
            help := [ "set or modify the GAP root paths",
                      "Directories are separated using ';'.",
@@ -85,39 +95,39 @@ BIND_GLOBAL( "GAPInfo", rec(
                      "directories to the end/start of existing list",
                      "of root paths" ] ),
       rec( short:= "r", default := false, help := ["disable/enable user GAP root dir", "GAPInfo.UserGapRoot"] ),
+      ,
+      rec( section:= ["Loading:"] ),
       rec( short:= "A", default := false, help := ["disable/enable autoloading of suggested", "GAP packages"] ),
       rec( short:= "D", default := false, help := ["enable/disable debugging the loading of files"] ),
       rec( short:= "M", default := false, help := ["disable/enable loading of compiled modules"] ),
-      rec( short:= "N", default := false, help := ["do not use hidden implications"] ),
-      rec( short:= "O", default := false, help := ["disable/enable loading of obsolete files"] ),
+      ,
+      rec( section:= ["Error handling, REPL:"] ),
       rec( short:= "T", long := "nobreakloop", default := false, help := ["disable/enable break loop and error traceback"] ),
       rec( long := "alwaystrace", default := false, help := ["always print error traceback", "(overrides behaviour of -T)"] ),
       rec( long := "quitonbreak", default := false, help := ["quit GAP with non-zero return value instead", "of entering break loop"]),
+      rec( long := "norepl", default := false,
+           help := [ "Disable the GAP read-evaluate-print loop (REPL)" ] ),
+      rec( long := "nointeract", default := false,
+           help := [ "Start GAP in non-interactive mode (disable REPL", "and break loop)" ] ),
       ,
-      rec( short:= "L", default := "", arg := "<file>", help := [ "restore a saved workspace", "(available only if GAP uses GASMAN)"] ),
+      rec( section:= ["Workspaces:", "  (only available if GAP uses GASMAN)"] ),
+      rec( short:= "L", default := "", arg := "<file>", help := [ "restore a saved workspace"] ),
       rec( short:= "R", default := false, help := ["prevent restoring of workspace (ignoring -L)"] ),
       ,
-      rec( short:= "p", default := false, help := ["enable/disable package output mode"] ),
-      rec( short := "E", default :=false ),
-      rec( short := "s", default := "4g" ),
-      rec( short := "z", default := "20" ),
+      rec( section:= ["Profiling:"] ),
       rec( long := "prof", default := "", arg := "<file>",
            help := [ "Run ProfileLineByLine(<file>) on GAP start"] ),
       rec( long := "memprof", default := "", arg := "<file>",
            help := [ "Run ProfileLineByLine(<file>) on GAP start", "with recordMem := true"] ),
       rec( long := "cover", default := "", arg := "<file>",
            help := [ "Run CoverageLineByLine(<file>) on GAP start"] ),
-      rec( long := "enableMemCheck", default := false),
-      rec( long := "norepl", default := false,
-           help := [ "Disable the GAP read-evaluate-print loop (REPL)" ] ),
-      rec( long := "nointeract", default := false,
-           help := [ "Start GAP in non-interactive mode (disable REPL", "and break loop)" ] ),
-      rec( long := "systemfile", default := "", arg := "<file>",
-           help := [ "Read this file after 'lib/system.g'" ] ),
-      rec( long := "bare", default := false,
-           help := [ "Attempt to start GAP without even needed", "packages (developer tool)" ] ),
+      rec( long := "enableMemCheck", default := false), # TODO: document this?
       ,
-      rec( short:= "c", default := "", arg := "<expr>", help := [ "execute the expression <expr>"] ),
+      rec( section:= ["Internal developer tools"] ),
+      rec( short:= "N", default := false, help := ["do not use hidden implications"] ),
+      rec( short:= "O", default := false, help := ["disable/enable loading of obsolete files"] ),
+      rec( long := "bare", default := false,
+           help := [ "Attempt to start GAP without even needed", "packages" ] ),
     ],
     ) );
 
@@ -185,6 +195,7 @@ if IsHPCGAP then
     GAPInfo.TestData:= ThreadLocalRecord( rec() );
     APPEND_LIST_INTR(GAPInfo.CommandLineOptionData, [
         ,
+        rec( section:= ["HPC-GAP:"] ),
         rec( short:= "S", default := false, help := ["disable/enable multi-threaded interface"] ),
         rec( short:= "P", default := "0", arg := "<num>", help := ["set number of logical processors"] ),
         rec( short:= "G", default := "0", arg := "<num>", help := ["set number of GC threads"] ),
@@ -257,7 +268,7 @@ CallAndInstallPostRestore( function()
       if IsBound(option.long) then
         GAPInfo.CommandLineOptionCanonicalName.(option.long) := option.short;
       fi;
-    else
+    elif IsBound(option.long) then
         GAPInfo.CommandLineOptionCanonicalName.(option.long) := option.long;
     fi;
   od;
@@ -337,7 +348,7 @@ CallAndInstallPostRestore( function()
     for opt in GAPInfo.CommandLineOptionData do
       if IsBound(opt.short) then
         CommandLineOptions.( opt.short ):= SHALLOW_COPY_OBJ( opt.default );
-      else
+      elif IsBound(opt.long) then
         CommandLineOptions.( opt.long ):= SHALLOW_COPY_OBJ( opt.default );
       fi;
     od;
@@ -428,13 +439,16 @@ CallAndInstallPostRestore( function()
         GAPInfo.KernelVersion, "\n\n" );
 
       for i in [ 1 .. LENGTH( GAPInfo.CommandLineOptionData ) ] do
-        if IsBound( GAPInfo.CommandLineOptionData[i] ) and
-           IsBound( GAPInfo.CommandLineOptionData[i].help ) then
-          opt:= GAPInfo.CommandLineOptionData[i];
+        if not IsBound(GAPInfo.CommandLineOptionData[i]) then
+          PRINT_TO( "*stdout*", "\n" );
+          continue;
+        fi;
+        opt:= GAPInfo.CommandLineOptionData[i];
+        if IsBound( opt.help ) then
 
           # At least one of opt.short or opt.long must be bound
           if(IsBound(opt.short)) then
-            PRINT_TO("*stdout*", " -", opt.short);
+            PRINT_TO("*stdout*", "  -", opt.short);
             if(IsBound(opt.long)) then
               PRINT_TO("*stdout*", ", --", opt.long);
               padspace(4+LENGTH(opt.long), 18);
@@ -448,7 +462,7 @@ CallAndInstallPostRestore( function()
               padspace(0, 8);
             fi;
           else
-            PRINT_TO("*stdout*", "   ");
+            PRINT_TO("*stdout*", "    ");
             # opt.short unbound, opt.long bound
 
             PRINT_TO("*stdout*", "  --", opt.long);
@@ -469,13 +483,15 @@ CallAndInstallPostRestore( function()
 
           PRINT_TO("*stdout*", opt.help[1], "\n");
           for j in [2..LENGTH(opt.help)] do
-            padspace(0, 3+18+8+3 + 2);
+            padspace(0, 4+18+8+3 + 2);
             PRINT_TO("*stdout*", opt.help[j],"\n");
           od;
-        else
-          if not IsBound(GAPInfo.CommandLineOptionData[i]) then
-            PRINT_TO( "*stdout*", "\n" );
-          fi;
+        elif IsBound(opt.section) then
+          PRINT_TO( "*stdout*", opt.section[1], "\n" );
+          for j in [2..LENGTH(opt.section)] do
+            #padspace(0, 3);
+            PRINT_TO("*stdout*", opt.section[j],"\n");
+          od;
         fi;
       od;
 
