@@ -1181,32 +1181,32 @@ static Obj FuncPositionNthTrueBlist(
 
 /****************************************************************************
 **
-*F  FuncIsSubsetBlist( <self>, <list1>, <list2> ) . . . . . . . . subset test
+*F  FuncIsSubsetBlist( <self>, <blist1>, <blist2> ) . . . . . . . subset test
 **
 **  'FuncIsSubsetBlist' implements the internal function 'IsSubsetBlist'.
 **
-**  'IsSubsetBlist( <list1>, <list2> )'
+**  'IsSubsetBlist( <blist1>, <blist2> )'
 **
-**  'IsSubsetBlist' returns 'true' if the boolean list <list2> is a subset of
-**  the  boolean  list <list1>, which must  have  equal length.  <list2> is a
-**  subset of <list1> if '<list2>[<i>] >= <list1>[<i>]' for all <i>.
+**  'IsSubsetBlist' returns 'true' if the boolean list <blist2> is a subset
+**  of the  boolean  list <blist1>, which must  have  equal length.  <blist2>
+**  is a subset of <blist1> if '<blist2>[<i>] >= <blist1>[<i>]' for all <i>.
 */
-static Obj FuncIS_SUB_BLIST(Obj self, Obj list1, Obj list2)
+static Obj FuncIS_SUB_BLIST(Obj self, Obj blist1, Obj blist2)
 {
     const UInt *        ptr1;           /* pointer to the first argument   */
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    RequireBlist("IsSubsetBlist", list1, "blist1");
-    RequireBlist("IsSubsetBlist", list2, "blist2");
-    CheckSameLength("IsSubsetBlist", "blist1", "blist2", list1, list2);
+    RequireBlist("IsSubsetBlist", blist1, "blist1");
+    RequireBlist("IsSubsetBlist", blist2, "blist2");
+    CheckSameLength("IsSubsetBlist", "blist1", "blist2", blist1, blist2);
 
     /* test for subset property blockwise                                  */
-    ptr1 = CONST_BLOCKS_BLIST(list1);
-    ptr2 = CONST_BLOCKS_BLIST(list2);
+    ptr1 = CONST_BLOCKS_BLIST(blist1);
+    ptr2 = CONST_BLOCKS_BLIST(blist2);
 
-    for ( i = NUMBER_BLOCKS_BLIST(list1); 0 < i; i-- ) {
+    for ( i = NUMBER_BLOCKS_BLIST(blist1); 0 < i; i-- ) {
         if ( *ptr1 != (*ptr1 | *ptr2) )
             break;
         ptr1++;  ptr2++;
@@ -1219,7 +1219,7 @@ static Obj FuncIS_SUB_BLIST(Obj self, Obj list1, Obj list2)
 
 /****************************************************************************
 **
-*F  FuncUNITE_BLIST( <self>, <list1>, <list2> ) . unite one list with another
+*F  FuncUNITE_BLIST( <self>, <blist1>, <blist2> ) . unite one list with another
 **
 **  'FuncUNITE_BLIST' implements the internal function 'UniteBlist'.
 **
@@ -1229,21 +1229,21 @@ static Obj FuncIS_SUB_BLIST(Obj self, Obj list1, Obj list2)
 **  <blist2>,  which  must  have the   same  length.  This  is  equivalent to
 **  assigning '<blist1>[<i>] := <blist1>[<i>] or <blist2>[<i>]' for all <i>.
 */
-static Obj FuncUNITE_BLIST(Obj self, Obj list1, Obj list2)
+static Obj FuncUNITE_BLIST(Obj self, Obj blist1, Obj blist2)
 {
     UInt *              ptr1;           /* pointer to the first argument   */
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    RequireBlist("UniteBlist", list1, "blist1");
-    RequireBlist("UniteBlist", list2, "blist2");
-    CheckSameLength("UniteBlist", "blist1", "blist2", list1, list2);
+    RequireBlist("UniteBlist", blist1, "blist1");
+    RequireBlist("UniteBlist", blist2, "blist2");
+    CheckSameLength("UniteBlist", "blist1", "blist2", blist1, blist2);
 
     /* compute the union by *or*-ing blockwise                             */
-    ptr1 = BLOCKS_BLIST(list1);
-    ptr2 = CONST_BLOCKS_BLIST(list2);
-    for ( i = (LEN_BLIST(list1)+BIPEB-1)/BIPEB; 0 < i; i-- ) {
+    ptr1 = BLOCKS_BLIST(blist1);
+    ptr2 = CONST_BLOCKS_BLIST(blist2);
+    for ( i = (LEN_BLIST(blist1)+BIPEB-1)/BIPEB; 0 < i; i-- ) {
         *ptr1++ |= *ptr2++;
     }
 
@@ -1473,33 +1473,32 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
 
 /****************************************************************************
 **
-*F  FuncINTER_BLIST( <self>, <list1>, <list2> ) .  <list1> intersection <list2>
+*F  FuncINTER_BLIST( <self>, <blist1>, <blist2> ) .  <blist1> intersection <blist2>
 **
 **  'FuncINTER_BLIST' implements the function 'IntersectBlist'.
 **
-**  'IntersectBlist( <list1>, <list2> )'
+**  'IntersectBlist( <blist1>, <blist2> )'
 **
-**  'IntersectBlist' intersects the   boolean list <list1> with  the  boolean
-**  list <list2>, which  must have the  same length.   This is equivalent  to
-**  assigning '<list1>[<i>] := <list1>[<i>] and <list2>[<i>]' for all <i>.
+**  'IntersectBlist' intersects the   boolean list <blist1> with  the  boolean
+**  list <blist2>, which  must have the  same length.   This is equivalent  to
+**  assigning '<blist1>[<i>] := <blist1>[<i>] and <blist2>[<i>]' for all <i>.
 */
-static Obj FuncINTER_BLIST(Obj self, Obj list1, Obj list2)
+static Obj FuncINTER_BLIST(Obj self, Obj blist1, Obj blist2)
 {
     UInt *              ptr1;           /* pointer to the first argument   */
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    RequireBlist("IntersectBlist", list1, "blist1");
-    RequireBlist("IntersectBlist", list2, "blist2");
-    CheckSameLength("IntersectBlist", "blist1", "blist2", list1, list2);
+    RequireBlist("IntersectBlist", blist1, "blist1");
+    RequireBlist("IntersectBlist", blist2, "blist2");
+    CheckSameLength("IntersectBlist", "blist1", "blist2", blist1, blist2);
 
     /* compute the intersection by *and*-ing blockwise                     */
-    ptr1 = BLOCKS_BLIST(list1);
-    ptr2 = CONST_BLOCKS_BLIST(list2);
-    for ( i = NUMBER_BLOCKS_BLIST(list1); 0 < i; i-- ) {
+    ptr1 = BLOCKS_BLIST(blist1);
+    ptr2 = CONST_BLOCKS_BLIST(blist2);
+    for ( i = NUMBER_BLOCKS_BLIST(blist1); 0 < i; i-- )
         *ptr1++ &= *ptr2++;
-    }
 
     /* return nothing, this function is a procedure                        */
     return 0;
@@ -1508,34 +1507,32 @@ static Obj FuncINTER_BLIST(Obj self, Obj list1, Obj list2)
 
 /****************************************************************************
 **
-*F  FuncSUBTR_BLIST( <self>, <list1>, <list2> ) . . . . . . <list1> - <list2>
+*F  FuncSUBTR_BLIST( <self>, <blist1>, <blist2> ) . . . . . . <blist1> - <blist2>
 **
 **  'FuncSUBTR_BLIST' implements the internal function 'SubtractBlist'.
 **
-**  'SubtractBlist( <list1>, <list2> )'
+**  'SubtractBlist( <blist1>, <blist2> )'
 **
-**  'SubtractBlist' subtracts the boolean  list <list2> from the boolean list
-**  <list1>, which  must have the  same length.  This is equivalent assigning
-**  '<list1>[<i>] := <list1>[<i>] and not <list2>[<i>]' for all <i>.
+**  'SubtractBlist' subtracts the boolean  list <blist2> from the boolean list
+**  <blist1>, which  must have the  same length.  This is equivalent assigning
+**  '<blist1>[<i>] := <blist1>[<i>] and not <blist2>[<i>]' for all <i>.
 */
-static Obj FuncSUBTR_BLIST(Obj self, Obj list1, Obj list2)
+static Obj FuncSUBTR_BLIST(Obj self, Obj blist1, Obj blist2)
 {
     UInt *              ptr1;           /* pointer to the first argument   */
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    RequireBlist("SubtractBlist", list1, "blist1");
-    RequireBlist("SubtractBlist", list2, "blist2");
-    CheckSameLength("SubtractBlist", "blist1", "blist2", list1, list2);
+    RequireBlist("SubtractBlist", blist1, "blist1");
+    RequireBlist("SubtractBlist", blist2, "blist2");
+    CheckSameLength("SubtractBlist", "blist1", "blist2", blist1, blist2);
 
     /* compute the difference by operating blockwise                       */
-    ptr1 = BLOCKS_BLIST(list1);
-    ptr2 = CONST_BLOCKS_BLIST(list2);
-    for ( i = NUMBER_BLOCKS_BLIST(list1); 0 < i; i-- ) 
-      { 
+    ptr1 = BLOCKS_BLIST(blist1);
+    ptr2 = CONST_BLOCKS_BLIST(blist2);
+    for ( i = NUMBER_BLOCKS_BLIST(blist1); 0 < i; i-- )
         *ptr1++ &= ~ *ptr2++; 
-      }
 
     /* return nothing, this function is a procedure */
     return 0;
@@ -1543,97 +1540,95 @@ static Obj FuncSUBTR_BLIST(Obj self, Obj list1, Obj list2)
 
 /****************************************************************************
 **
-*F  FuncMEET_BLIST( <self>, <list1>, <list2> ) . . . 
+*F  FuncMEET_BLIST( <self>, <blist1>, <blist2> ) . . . 
 **
 **  'FuncMEET_BLIST' implements the internal function 'MeetBlist'.
 **
-**  'MeetBlist( <list1>, <list2> )'
+**  'MeetBlist( <blist1>, <blist2> )'
 **
-**  'MeetBlist' returns true if list1 and list2 have true in the same
+**  'MeetBlist' returns true if blist1 and blist2 have true in the same
 **  position and false otherwise. It is equivalent to, but faster than
-**  SizeBlist(IntersectionBlist(list1, list2)) <> 0
+**  SizeBlist(IntersectionBlist(blist1, blist2)) <> 0
 **  The lists must have the same length.
 */
 
-static Obj FuncMEET_BLIST(Obj self, Obj list1, Obj list2)
+static Obj FuncMEET_BLIST(Obj self, Obj blist1, Obj blist2)
 {
     const UInt *        ptr1;           /* pointer to the first argument   */
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
     /* get and check the arguments                                         */
-    RequireBlist("MeetBlist", list1, "blist1");
-    RequireBlist("MeetBlist", list2, "blist2");
-    CheckSameLength("MeetBlist", "blist1", "blist2", list1, list2);
+    RequireBlist("MeetBlist", blist1, "blist1");
+    RequireBlist("MeetBlist", blist2, "blist2");
+    CheckSameLength("MeetBlist", "blist1", "blist2", blist1, blist2);
 
     /* compute the difference by operating blockwise                       */
-    ptr1 = CONST_BLOCKS_BLIST(list1);
-    ptr2 = CONST_BLOCKS_BLIST(list2);
-    for ( i = NUMBER_BLOCKS_BLIST(list1); 0 < i; i-- ) 
-      { 
+    ptr1 = CONST_BLOCKS_BLIST(blist1);
+    ptr2 = CONST_BLOCKS_BLIST(blist2);
+    for ( i = NUMBER_BLOCKS_BLIST(blist1); 0 < i; i-- )
         if (*ptr1++ & *ptr2++) return True;
-      }
 
     return False;
 }
 
 /****************************************************************************
 **
-*F  FuncFLIP_BLIST( <self>, <list> ) . . .
+*F  FuncFLIP_BLIST( <self>, <blist> ) . . .
 **
 **  'FuncFLIP_BLIST' implements the internal function 'FlipBlist'.
 **
-**  'FlipBlist( <list> )'
+**  'FlipBlist( <blist> )'
 **
-**  'FlipBlist' changes every value in the blist <list> from true to false, and
-**  vice versa.
+**  'FlipBlist' changes every value in the blist <blist> from true to false,
+**  and vice versa.
 */
 
-static Obj FuncFLIP_BLIST(Obj self, Obj list)
+static Obj FuncFLIP_BLIST(Obj self, Obj blist)
 {
     // get and check the arguments
-    RequireBlist("FlipBlist", list, "blist");
+    RequireBlist("FlipBlist", blist, "blist");
 
-    if (LEN_BLIST(list) == 0) {
+    if (LEN_BLIST(blist) == 0) {
         return 0;
     }
 
-    UInt * ptr = BLOCKS_BLIST(list);
-    for (UInt i = NUMBER_BLOCKS_BLIST(list); 0 < i; i--) {
+    UInt * ptr = BLOCKS_BLIST(blist);
+    for (UInt i = NUMBER_BLOCKS_BLIST(blist); 0 < i; i--) {
         *ptr = ~(*ptr);
         ptr++;
     }
     // If the logical length of the boolean list is not a multiple of BIPEB the
     // last block will contain unused bits, which are then zero.
     UInt mask =
-        ~(UInt)0 >> ((BIPEB * NUMBER_BLOCKS_BLIST(list)) - LEN_BLIST(list));
-    ptr = BLOCK_ELM_BLIST_PTR(list, LEN_BLIST(list));
+        ~(UInt)0 >> ((BIPEB * NUMBER_BLOCKS_BLIST(blist)) - LEN_BLIST(blist));
+    ptr = BLOCK_ELM_BLIST_PTR(blist, LEN_BLIST(blist));
     *ptr &= mask;
     return 0;
 }
 
 /****************************************************************************
 **
-*F  FuncCLEAR_ALL_BLIST( <self>, <list> ) . . .
+*F  FuncCLEAR_ALL_BLIST( <self>, <blist> ) . . .
 **
 **  'FuncCLEAR_ALL_BLIST' implements the internal function 'ClearAllBlist'.
 **
-**  'ClearAllBlist( <list> )'
+**  'ClearAllBlist( <blist> )'
 **
-**  'ClearAllBlist' changes every value in the blist <list> to false.
+**  'ClearAllBlist' changes every value in the blist <blist> to false.
 */
 
-static Obj FuncCLEAR_ALL_BLIST(Obj self, Obj list)
+static Obj FuncCLEAR_ALL_BLIST(Obj self, Obj blist)
 {
     // get and check the arguments
-    RequireBlist("ClearAllBitsBlist", list, "blist");
+    RequireBlist("ClearAllBitsBlist", blist, "blist");
 
-    if (LEN_BLIST(list) == 0) {
+    if (LEN_BLIST(blist) == 0) {
         return 0;
     }
 
-    UInt * ptr = BLOCKS_BLIST(list);
-    for (UInt i = NUMBER_BLOCKS_BLIST(list); 0 < i; i--) {
+    UInt * ptr = BLOCKS_BLIST(blist);
+    for (UInt i = NUMBER_BLOCKS_BLIST(blist); 0 < i; i--) {
         *ptr++ = 0;
     }
 
@@ -1642,33 +1637,33 @@ static Obj FuncCLEAR_ALL_BLIST(Obj self, Obj list)
 
 /****************************************************************************
 **
-*F  FuncSET_ALL_BLIST( <self>, <list> ) . . .
+*F  FuncSET_ALL_BLIST( <self>, <blist> ) . . .
 **
 **  'FuncSET_ALL_BLIST' implements the internal function 'SetAllBlist'.
 **
-**  'SetAllBlist( <list> )'
+**  'SetAllBlist( <blist> )'
 **
-**  'SetAllBlist' changes every value in the blist <list> to true.
+**  'SetAllBlist' changes every value in the blist <blist> to true.
 */
 
-static Obj FuncSET_ALL_BLIST(Obj self, Obj list)
+static Obj FuncSET_ALL_BLIST(Obj self, Obj blist)
 {
     // get and check the arguments
-    RequireBlist("SetAllBitsBlist", list, "blist");
+    RequireBlist("SetAllBitsBlist", blist, "blist");
 
-    if (LEN_BLIST(list) == 0) {
+    if (LEN_BLIST(blist) == 0) {
         return 0;
     }
 
-    UInt * ptr = BLOCKS_BLIST(list);
-    for (UInt i = NUMBER_BLOCKS_BLIST(list); 0 < i; i--) {
+    UInt * ptr = BLOCKS_BLIST(blist);
+    for (UInt i = NUMBER_BLOCKS_BLIST(blist); 0 < i; i--) {
         *ptr++ = ~(UInt)0;
     }
     // If the logical length of the boolean list is not a multiple of BIPEB the
     // last block will contain unused bits, which are then zero.
     UInt mask =
-        ~(UInt)0 >> ((BIPEB * NUMBER_BLOCKS_BLIST(list)) - LEN_BLIST(list));
-    ptr = BLOCK_ELM_BLIST_PTR(list, LEN_BLIST(list));
+        ~(UInt)0 >> ((BIPEB * NUMBER_BLOCKS_BLIST(blist)) - LEN_BLIST(blist));
+    ptr = BLOCK_ELM_BLIST_PTR(blist, LEN_BLIST(blist));
     *ptr &= mask;
 
     return 0;
