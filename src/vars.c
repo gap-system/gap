@@ -609,7 +609,7 @@ static UInt ExecAsssList(Expr stat)
     /* evaluate and check right hand sides                                 */
     rhss = EVAL_EXPR(READ_STAT(stat, 2));
     RequireDenseList("List Assignments", rhss);
-    CheckSameLength("List Assignments", "rhss", "positions", rhss, poss);
+    CheckSameLength("List Assignments", "rhss", "poss", rhss, poss);
 
     /* assign the right hand sides to several elements of the list         */
     ASSS_LIST( list, poss, rhss );

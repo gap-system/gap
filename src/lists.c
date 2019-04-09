@@ -922,7 +922,7 @@ void            AsssListDefault (
 
     CheckIsPossList("List Assignments", poss);
     CheckIsDenseList("List Assignments", "rhss", objs);
-    CheckSameLength("List Assignments", "rhss", "positions", objs, poss);
+    CheckSameLength("List Assignments", "rhss", "poss", objs, poss);
 
     /* general code                                                        */
     if ( ! IS_RANGE(poss) ) {
@@ -1658,7 +1658,7 @@ void            AsssListLevel (
             /* select the elements to assign                               */
             obj = ELMW_LIST( objs, i );
             CheckIsDenseList("List Assignments", "objs", obj);
-            CheckSameLength("List Assignments", "objs", "positions", obj, poss);
+            CheckSameLength("List Assignments", "objs", "poss", obj, poss);
 
             /* assign the elements                                         */
             ASSS_LIST( list, poss, obj );
@@ -1871,7 +1871,7 @@ void AsssListCheck (
 {
     CheckIsPossList("List Assignments", poss);
     RequireDenseList("List Assignments", rhss);
-    CheckSameLength("List Assignments", "rhss", "positions", rhss, poss);
+    CheckSameLength("List Assignments", "rhss", "poss", rhss, poss);
     ASSS_LIST( list, poss, rhss );
 }
 
