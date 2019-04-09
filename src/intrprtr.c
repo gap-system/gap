@@ -2894,7 +2894,7 @@ void            IntrAsssList ( void )
     /* get and check the positions                                         */
     poss = PopObj();
     CheckIsPossList("List Assignments", poss);
-    CheckSameLength("List Assignments", "rhss", "poss", rhss, poss);
+    RequireSameLength("List Assignments", rhss, poss);
 
     /* get the list (checking is done by 'ASSS_LIST')                      */
     list = PopObj();

@@ -1200,7 +1200,7 @@ static Obj FuncIS_SUB_BLIST(Obj self, Obj blist1, Obj blist2)
     /* get and check the arguments                                         */
     RequireBlist("IsSubsetBlist", blist1, "blist1");
     RequireBlist("IsSubsetBlist", blist2, "blist2");
-    CheckSameLength("IsSubsetBlist", "blist1", "blist2", blist1, blist2);
+    RequireSameLength("IsSubsetBlist", blist1, blist2);
 
     /* test for subset property blockwise                                  */
     ptr1 = CONST_BLOCKS_BLIST(blist1);
@@ -1238,7 +1238,7 @@ static Obj FuncUNITE_BLIST(Obj self, Obj blist1, Obj blist2)
     /* get and check the arguments                                         */
     RequireBlist("UniteBlist", blist1, "blist1");
     RequireBlist("UniteBlist", blist2, "blist2");
-    CheckSameLength("UniteBlist", "blist1", "blist2", blist1, blist2);
+    RequireSameLength("UniteBlist", blist1, blist2);
 
     /* compute the union by *or*-ing blockwise                             */
     ptr1 = BLOCKS_BLIST(blist1);
@@ -1492,7 +1492,7 @@ static Obj FuncINTER_BLIST(Obj self, Obj blist1, Obj blist2)
     /* get and check the arguments                                         */
     RequireBlist("IntersectBlist", blist1, "blist1");
     RequireBlist("IntersectBlist", blist2, "blist2");
-    CheckSameLength("IntersectBlist", "blist1", "blist2", blist1, blist2);
+    RequireSameLength("IntersectBlist", blist1, blist2);
 
     /* compute the intersection by *and*-ing blockwise                     */
     ptr1 = BLOCKS_BLIST(blist1);
@@ -1526,7 +1526,7 @@ static Obj FuncSUBTR_BLIST(Obj self, Obj blist1, Obj blist2)
     /* get and check the arguments                                         */
     RequireBlist("SubtractBlist", blist1, "blist1");
     RequireBlist("SubtractBlist", blist2, "blist2");
-    CheckSameLength("SubtractBlist", "blist1", "blist2", blist1, blist2);
+    RequireSameLength("SubtractBlist", blist1, blist2);
 
     /* compute the difference by operating blockwise                       */
     ptr1 = BLOCKS_BLIST(blist1);
@@ -1561,7 +1561,7 @@ static Obj FuncMEET_BLIST(Obj self, Obj blist1, Obj blist2)
     /* get and check the arguments                                         */
     RequireBlist("MeetBlist", blist1, "blist1");
     RequireBlist("MeetBlist", blist2, "blist2");
-    CheckSameLength("MeetBlist", "blist1", "blist2", blist1, blist2);
+    RequireSameLength("MeetBlist", blist1, blist2);
 
     /* compute the difference by operating blockwise                       */
     ptr1 = CONST_BLOCKS_BLIST(blist1);
