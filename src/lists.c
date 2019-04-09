@@ -1871,7 +1871,7 @@ void AsssListCheck (
 {
     CheckIsPossList("List Assignments", poss);
     RequireDenseList("List Assignments", rhss);
-    CheckSameLength("List Assignments", "rhss", "poss", rhss, poss);
+    RequireSameLength("List Assignments", rhss, poss);
     ASSS_LIST( list, poss, rhss );
 }
 
