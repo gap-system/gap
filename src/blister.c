@@ -1237,6 +1237,7 @@ static Obj FuncUNITE_BLIST(Obj self, Obj blist1, Obj blist2)
 
     /* get and check the arguments                                         */
     RequireBlist("UniteBlist", blist1);
+    RequireMutable("UniteBlist", blist1, "boolean list");
     RequireBlist("UniteBlist", blist2);
     RequireSameLength("UniteBlist", blist1, blist2);
 
@@ -1276,13 +1277,12 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
 
     /* get and check the arguments                                         */
     RequireSmallList("UniteBlistList", list);
-
-    lenList  = LEN_LIST( list );
-
     RequireBlist("UniteBlistList", blist);
+    RequireMutable("UniteBlistList", blist, "boolean list");
     RequireSameLength("UniteBlistList", blist, list);
     RequireSmallList("UniteBlistList", sub);
 
+    lenList  = LEN_LIST( list );
     lenSub   = LEN_LIST( sub );
 
     // if the sublist is empty, nothing has to be done
@@ -1491,6 +1491,7 @@ static Obj FuncINTER_BLIST(Obj self, Obj blist1, Obj blist2)
 
     /* get and check the arguments                                         */
     RequireBlist("IntersectBlist", blist1);
+    RequireMutable("IntersectBlist", blist1, "boolean list");
     RequireBlist("IntersectBlist", blist2);
     RequireSameLength("IntersectBlist", blist1, blist2);
 
@@ -1525,6 +1526,7 @@ static Obj FuncSUBTR_BLIST(Obj self, Obj blist1, Obj blist2)
 
     /* get and check the arguments                                         */
     RequireBlist("SubtractBlist", blist1);
+    RequireMutable("SubtractBlist", blist1, "boolean list");
     RequireBlist("SubtractBlist", blist2);
     RequireSameLength("SubtractBlist", blist1, blist2);
 
@@ -1588,6 +1590,7 @@ static Obj FuncFLIP_BLIST(Obj self, Obj blist)
 {
     // get and check the arguments
     RequireBlist("FlipBlist", blist);
+    RequireMutable("FlipBlist", blist, "boolean list");
 
     if (LEN_BLIST(blist) == 0) {
         return 0;
@@ -1622,6 +1625,7 @@ static Obj FuncCLEAR_ALL_BLIST(Obj self, Obj blist)
 {
     // get and check the arguments
     RequireBlist("ClearAllBitsBlist", blist);
+    RequireMutable("ClearAllBitsBlist", blist, "boolean list");
 
     if (LEN_BLIST(blist) == 0) {
         return 0;
@@ -1650,6 +1654,7 @@ static Obj FuncSET_ALL_BLIST(Obj self, Obj blist)
 {
     // get and check the arguments
     RequireBlist("SetAllBitsBlist", blist);
+    RequireMutable("SetAllBitsBlist", blist, "boolean list");
 
     if (LEN_BLIST(blist) == 0) {
         return 0;
