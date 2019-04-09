@@ -47,7 +47,7 @@ gap> a{[1]}{[1]}[1];
 gap> a{[1,,2]}:=1;
 Error, List Assignments: <rhss> must be a dense list (not the integer 1)
 gap> a{[1,,2]}:=[1,2];
-Error, List Assignments: <positions> must be a dense list of positive integers
+Error, List Assignments: <poss> must be a dense list of positive integers
 
 #
 gap> a{[1]}{[1]}[1] := 42;
@@ -66,10 +66,10 @@ gap> a{[1]}{[1]} := [ 18, 19 ];
 Error, List Assignments: <objs> must have the same length as <lists> (lengths \
 are 2 and 1)
 gap> a{[1]}{[1]} := [ [ 18, 19 ] ] ;
-Error, List Assignments: <objs> must have the same length as <positions> (leng\
-ths are 2 and 1)
+Error, List Assignments: <objs> must have the same length as <poss> (lengths a\
+re 2 and 1)
 gap> a{[1]}{[1,,3]} := [ [ [ 18, 19 ] ] ];
-Error, List Assignments: <positions> must be a dense list of positive integers
+Error, List Assignments: <poss> must be a dense list of positive integers
 gap> a{[1]}{[1]} := [ [ [ 18, 19 ] ] ];
 [ [ [ 18, 19 ] ] ]
 gap> a;
@@ -99,12 +99,12 @@ Unbind(a[1,1,1]);
 # slices
 #
 gap> 1{1};
-Error, List Elements: <positions> must be a dense list of positive integers
+Error, List Elements: <poss> must be a dense list of positive integers
 
 # ... for blists
 gap> list := [true,false,true];;
 gap> list{1};
-Error, List Elements: <positions> must be a dense list of positive integers
+Error, List Elements: <poss> must be a dense list of positive integers
 gap> list{[4]};
 Error, List Elements: <list>[4] must have an assigned value
 gap> list{[1,2,3]} = list;  # with a plist as selector
@@ -121,7 +121,7 @@ Error, List Elements: <list>[4] must have an assigned value
 # ... for plists
 gap> list := [1, 2, 4];;
 gap> list{1};
-Error, List Elements: <positions> must be a dense list of positive integers
+Error, List Elements: <poss> must be a dense list of positive integers
 gap> list{[4]};
 Error, List Elements: <list>[4] must have an assigned value
 gap> list{[1,2,3]} = list;  # with a plist as selector
@@ -138,7 +138,7 @@ Error, List Elements: <list>[4] must have an assigned value
 # ... for ranges
 gap> list := [1..3];;
 gap> list{1};
-Error, List Elements: <positions> must be a dense list of positive integers
+Error, List Elements: <poss> must be a dense list of positive integers
 gap> list{[4]};
 Error, List Elements: <list>[4] must have an assigned value
 gap> list{[1,2,3]} = list;  # with a plist as selector
@@ -155,7 +155,7 @@ Error, List Elements: <list>[4] must have an assigned value
 # ... for strings
 gap> list := "abc";;
 gap> list{1};
-Error, List Elements: <positions> must be a dense list of positive integers
+Error, List Elements: <poss> must be a dense list of positive integers
 gap> list{[4]};
 Error, List Elements: <list>[4] must have an assigned value
 gap> list{[1,2,3]} = list;  # with a plist as selector

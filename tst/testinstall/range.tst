@@ -82,7 +82,7 @@ gap> [-5,-3..5]{[2..3]};
 gap> [-5,-3..5]{[2..4]};
 [ -3, -1 .. 1 ]
 gap> [-5,-3..5]{[0..7]};
-Error, List Elements: <positions> must be a dense list of positive integers
+Error, List Elements: <poss> must be a dense list of positive integers
 gap> [-5,-3..5]{[1..7]};
 Error, List Elements: <list>[7] must have an assigned value
 gap> [-5,-3..5]{[1..6]};
@@ -106,8 +106,8 @@ gap> x{[2,5,3]} := [7,8,9];
 gap> x;
 [ -5, 7, 9, 1, 8, 5 ]
 gap> x{[2,4]} := [2..4];
-Error, List Assignments: <rhss> must have the same length as <positions> (leng\
-ths are 3 and 2)
+Error, List Assignments: <rhss> must have the same length as <poss> (lengths a\
+re 3 and 2)
 gap> Immutable([-5,-3..5]){[2..3]} := [2..3];
 Error, List Assignments: <list> must be a mutable list
 gap> x := [-5,-3..5];

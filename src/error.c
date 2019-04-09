@@ -519,7 +519,7 @@ void ErrorMayQuit(const Char * msg, Int arg1, Int arg2)
 void CheckIsPossList(const Char * desc, Obj poss)
 {
     if ( ! IS_POSS_LIST( poss ) ) {
-        ErrorMayQuit("%s: <positions> must be a dense list of positive integers",
+        ErrorMayQuit("%s: <poss> must be a dense list of positive integers",
             (Int)desc, 0 );
     }
 }

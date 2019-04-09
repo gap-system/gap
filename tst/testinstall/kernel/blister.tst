@@ -95,7 +95,7 @@ gap> IsPositionsList(d);
 false
 gap> x:=[1,2,3];;
 gap> x{a};
-Error, List Elements: <positions> must be a dense list of positive integers
+Error, List Elements: <poss> must be a dense list of positive integers
 
 # IsHomogBlist
 gap> List(l, IsHomogeneousList);
