@@ -1840,8 +1840,6 @@ Obj SET_FILTER_LIST(Obj list, Obj filter)
     if (FuncIS_SUBSET_FLAGS(0,flags,FLAGS_FILT(IsSSortListProp))==True) {
         new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_DENSE];
         if ( new < 0 )  goto error;
-        new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_HOMOG];
-        if ( new < 0 )  goto error;
         new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_SSORT];
         if ( new > 0 )  RetypeBag( list, new );  else goto error;
     }
