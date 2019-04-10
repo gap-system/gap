@@ -2402,7 +2402,9 @@ local G,obj,close;
     else
       obj:= ClosureGroup( G, obj, arg[3] );
     fi;
+
     if close and not IsIdenticalObj( Parent( G ), obj ) then
+      Assert(2,IsSubset(Parent(G),obj));
       SetParent( obj, Parent( G ) );
     fi;
     return obj;
