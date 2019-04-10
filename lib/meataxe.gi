@@ -2445,6 +2445,17 @@ SMTX_Homomorphisms:= function(m1, m2)
 
    dim1:=SMTX.Dimension(m1); dim2:=SMTX.Dimension(m2);
 
+   if dim1=1 then
+     # m1 is 1-dimensional -- eigenspace intersection
+     el:=List([1..Length(m1.generators)],x->NullspaceMat(m2.generators[x]-m1.generators[x][1][1]*m2.generators[x]^0));
+
+     imvecs:=el[1];
+     for j in [2..Length(el)] do
+       imvecs:=SumIntersectionMat(imvecs,el[j])[2];
+     od;
+     return List(imvecs,x->ImmutableMatrix(m1.field,[x]));
+   fi;
+
    m1bas:=[];
    m1bas[1]:= SMTX.AlgElNullspaceVec(m1);
 
