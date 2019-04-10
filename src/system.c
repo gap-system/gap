@@ -868,7 +868,7 @@ static sizeMultiplier memoryUnits[]= {
 
 static UInt ParseMemory( Char * s)
 {
-  UInt size  = atol(s);
+  double size = atof(s);
   Char symbol =  s[strlen(s)-1];
   UInt i;
   UInt maxmem;
@@ -882,10 +882,9 @@ static UInt ParseMemory( Char * s)
     if (symbol == memoryUnits[i].symbol) {
       UInt value = memoryUnits[i].value;
       if (size > maxmem/value)
-        size = maxmem;
+        return maxmem;
       else
-        size *= value;
-      return size;
+        return size * value;
     }      
   }
   if (!IsDigit(symbol))
