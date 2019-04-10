@@ -947,7 +947,9 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
       # make generators of homomorphism fit nicely to presentation
       gf:=IsomorphismFpGroup(a);
       e:=List(MappingGeneratorsImages(gf)[1],x->PreImagesRepresentative(hom,x));
-      k:=ClosureSubgroupNC(KernelOfMultiplicativeGeneralMapping(hom),e);
+      # we cannot guarantee that the parent contains e, so no
+      # ClosureSubgroup.
+      k:=ClosureGroup(KernelOfMultiplicativeGeneralMapping(hom),e);
       Add(nu,k);
       Add(nn,PreImage(hom,Stabilizer(i)));
       Add(nf,GroupHomomorphismByImagesNC(k,Range(gf),Concatenation(e,kg),
