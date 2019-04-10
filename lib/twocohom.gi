@@ -900,8 +900,6 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     return a;
   end;
 
-  onemat:=One(mo.generators[1]);
-  zerovec:=Zero(onemat[1]);
   # matrix corresponding to monoid word
   mapped:=function(list)
   local a,i;
@@ -1072,6 +1070,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       x->ImagesRepresentative(m,
       PreImagesRepresentative(fm,x))); #Elements for monoid generators
     pre:=mats;
+    onemat:=One(G);
     for i in [1..Length(hastail)] do
       r:=rules[hastail[i]];
       m:=LeftQuotient(mapped(r[2]),mapped(r[1]));
@@ -1079,6 +1078,9 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       solvec:=Concatenation(solvec,m*One(field));
     od;
   fi;
+
+  onemat:=One(mo.generators[1]);
+  zerovec:=Zero(onemat[1]);
 
   mats:=List(GeneratorsOfMonoid(mon),
     x->ImagesRepresentative(hom,PreImagesRepresentative(fp,
