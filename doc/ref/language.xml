@@ -190,7 +190,7 @@ Note also that during the process of scanning all whitespace is removed
 
 <Index>space</Index>
 <Index>blank</Index><Index>tabulator</Index><Index>newline</Index>
-<Index>comments</Index>
+<Index>comments</Index><Index>#</Index>
 The characters <B>Space</B>, <B>Tab</B>, <B>Newline</B>, and <B>Return</B>
 are called <E>whitespace characters</E>.
 Whitespace is used as necessary to separate lexical symbols,
