@@ -164,7 +164,9 @@ gap> MASTER_POINTER_NUMBER(Z(2));
 
 #
 gap> FUNC_BODY_SIZE(fail);
-fail
+Error, FUNC_BODY_SIZE: <func> must be a function (not the value 'fail')
+gap> FUNC_BODY_SIZE(SHELL) / GAPInfo.BytesPerVariable;
+4
 
 #
 gap> Sleep(fail);

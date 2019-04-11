@@ -1080,7 +1080,7 @@ static Obj FuncTNAM_OBJ(Obj self, Obj obj)
 */
 static Obj FuncOBJ_HANDLE(Obj self, Obj handle)
 {
-    if (handle != INTPOST_INT(0) && !IS_POS_INT(handle))
+    if (handle != INTOBJ_INT(0) && !IS_POS_INT(handle))
         RequireArgument("OBJ_HANDLE", handle,
                         "must be a non-negative integer");
     return (Obj)UInt_ObjInt(handle);
@@ -1121,16 +1121,6 @@ static Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
 #else
     return ObjInt_UInt((UInt)o / sizeof(Obj));
 #endif
-}
-
-/* Returns a measure of the size of a GAP function */
-static Obj FuncFUNC_BODY_SIZE(Obj self, Obj f)
-{
-    Obj body;
-    if (TNUM_OBJ(f) != T_FUNCTION) return Fail;
-    body = BODY_FUNC(f);
-    if (body == 0) return INTOBJ_INT(0);
-    else return ObjInt_UInt( SIZE_BAG( body ) );
 }
 
 /****************************************************************************
@@ -1525,7 +1515,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(THREAD_UI, 0, ""),
 #endif
     GVAR_FUNC(MASTER_POINTER_NUMBER, 1, "ob"),
-    GVAR_FUNC(FUNC_BODY_SIZE, 1, "f"),
     GVAR_FUNC(BREAKPOINT, 1, "integer"),
     GVAR_FUNC(UPDATE_STAT, 2, "string, object"),
     { 0, 0, 0, 0, 0 }

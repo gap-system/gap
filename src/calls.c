@@ -1531,6 +1531,17 @@ Int IsKernelFunction(Obj func)
            (SIZE_OBJ(BODY_FUNC(func)) == sizeof(BodyHeader));
 }
 
+
+/* Returns a measure of the size of a GAP function */
+static Obj FuncFUNC_BODY_SIZE(Obj self, Obj func)
+{
+    RequireFunction("FUNC_BODY_SIZE", func);
+    Obj body = BODY_FUNC(func);
+    if (body == 0)
+        return INTOBJ_INT(0);
+    return ObjInt_UInt(SIZE_BAG(body));
+}
+
 #ifdef USE_GASMAN
 
 static void SaveHandler(ObjFunc hdlr)
@@ -1671,7 +1682,7 @@ static StructGVarOper GVarOpers [] = {
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(CLEAR_PROFILE_FUNC, 1, "func"),
     GVAR_FUNC(IS_PROFILED_FUNC, 1, "func"),
@@ -1682,6 +1693,9 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(LOCATION_FUNC, 1, "func"),
     GVAR_FUNC(STARTLINE_FUNC, 1, "func"),
     GVAR_FUNC(ENDLINE_FUNC, 1, "func"),
+
+    GVAR_FUNC(FUNC_BODY_SIZE, 1, "func"),
+
     { 0, 0, 0, 0, 0 }
 
 };
