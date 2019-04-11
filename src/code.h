@@ -112,17 +112,17 @@ EXPORT_INLINE Obj VALUES_BODY(Obj body)
 
 /****************************************************************************
 **
-*F  NewStat( <type>, <size> ) . . . . . . . . . . .  allocate a new statement
+*F  NewStatOrExpr(<type>,<size>,<line>) . . . . . .  allocate a new statement
 **
-**  'NewStat'   allocates a new   statement memory block  of  type <type> and
-**  <size> bytes.  'NewStat' returns the identifier of the new statement.
+**  'NewStatOrExpr' allocates a new statement or expressions memory block of
+**  type <type> and with <size> bytes. It also records the line number <line>
+**  of the statement for profiling. It returns the offset of the new
+**  statement.
 **
-**  NewStatWithProf( <type>, <size>, <line>, <file> ) allows the line number
-**  and fileid of the statement to also be specified, else the current line
-**  and file when NewStat was called is used. line=0, file=0 is used
-**  to denote a statement which should not be tracked.
+**  Callers may pass zero for <line> to denote a statement which should not
+**  be tracked by the profiling code.
 */
-Stat NewStatWithProf(UInt type, UInt size, UInt line);
+Stat NewStatOrExpr(UInt type, UInt size, UInt line);
 
 
 void PushStat(Stat stat);

@@ -250,7 +250,7 @@ Obj GET_VALUE_FROM_CURRENT_BODY(Int ix)
     return ELM_PLIST(values, ix);
 }
 
-Stat NewStatWithProf (
+Stat NewStatOrExpr (
     UInt                type,
     UInt                size,
     UInt                line)
@@ -284,7 +284,7 @@ Stat NewStatWithProf (
 
 static Stat NewStat(UInt type, UInt size)
 {
-    return NewStatWithProf(type, size, GetInputLineNumber());
+    return NewStatOrExpr(type, size, GetInputLineNumber());
 }
 
 
@@ -1442,7 +1442,7 @@ void CodeReturnVoidWhichIsNotProfiled ( void )
 
     /* allocate the return-statement, without profile information          */
 
-    stat = NewStatWithProf( T_RETURN_VOID, 0 * sizeof(Expr), 0 );
+    stat = NewStatOrExpr( T_RETURN_VOID, 0 * sizeof(Expr), 0 );
 
     /* push the return-statement                                           */
     PushStat( stat );
