@@ -1039,7 +1039,7 @@ static Obj FuncIDENTS_BOUND_GVARS(Obj self)
 static Obj FuncASS_GVAR(Obj self, Obj gvar, Obj val)
 {
     // check the argument
-    RequireStringRep("READ", gvar);
+    RequireStringRep("ASS_GVAR", gvar);
 
     AssGVar( GVarName( CONST_CSTR_STRING(gvar) ), val );
     return 0L;
