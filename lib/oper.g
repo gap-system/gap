@@ -2032,9 +2032,12 @@ BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
                 fi;
 
                 if PRINT_REORDERED_METHODS then
-                    Print(NAME_FUNC(oper), " ", n," args. Moving method ",i," (",
-                          meths[base+n+4]," from ",meths[base+n+5][1],":", meths[base+n+5][2],
-                          ") to position ",k,"\n");
+                    Print(NAME_FUNC(oper), " ", n," args. Moving method ",i,
+                          " with rank ", rank,
+                          " to position ",k,
+                          " (",meths[base+n+4],
+                          " from ",meths[base+n+5][1],":", meths[base+n+5][2],
+                          ")\n");
                 fi;
                 # extract the current method
                 l := meths{[base+1..base+entrysize]};
