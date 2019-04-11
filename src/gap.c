@@ -1076,34 +1076,15 @@ static Obj FuncTNAM_OBJ(Obj self, Obj obj)
 
 /****************************************************************************
 **
-*F  FuncOBJ_HANDLE( <self>, <obj> ) . . . . . .  expert function 'OBJ_HANDLE'
+*F  FuncOBJ_HANDLE( <self>, <handle> ) . . . . . expert function 'OBJ_HANDLE'
 */
-static Obj FuncOBJ_HANDLE(Obj self, Obj obj)
+static Obj FuncOBJ_HANDLE(Obj self, Obj handle)
 {
-    UInt                hand;
-    UInt                prod;
-    Obj                 rem;
-
-    if ( IS_INTOBJ(obj) ) {
-        return (Obj)INT_INTOBJ(obj);
-    }
-    else if ( TNUM_OBJ(obj) == T_INTPOS ) {
-        hand = 0;
-        prod = 1;
-        while ( EQ( obj, INTOBJ_INT(0) ) == 0 ) {
-            rem  = RemInt( obj, INTOBJ_INT( 1 << 16 ) );
-            obj  = QuoInt( obj, INTOBJ_INT( 1 << 16 ) );
-            hand = hand + prod * INT_INTOBJ(rem);
-            prod = prod * ( 1 << 16 );
-        }
-        return (Obj) hand;
-    }
-    else {
-        ErrorQuit( "<handle> must be a positive integer", 0L, 0L );
-        return (Obj) 0;
-    }
+    if (handle != INTPOST_INT(0) && !IS_POS_INT(handle))
+        RequireArgument("OBJ_HANDLE", handle,
+                        "must be a non-negative integer");
+    return (Obj)UInt_ObjInt(handle);
 }
-
 
 /****************************************************************************
 **
@@ -1526,7 +1507,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(SIZE_OBJ, 1, "object"),
     GVAR_FUNC(TNUM_OBJ, 1, "object"),
     GVAR_FUNC(TNAM_OBJ, 1, "object"),
-    GVAR_FUNC(OBJ_HANDLE, 1, "object"),
+    GVAR_FUNC(OBJ_HANDLE, 1, "handle"),
     GVAR_FUNC(HANDLE_OBJ, 1, "object"),
     GVAR_FUNC(WindowCmd, 1, "arg-list"),
     GVAR_FUNC(MicroSleep, 1, "msecs"),

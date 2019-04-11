@@ -146,6 +146,12 @@ gap> SIZE_OBJ(Z(2));
 0
 
 #
+gap> OBJ_HANDLE(-1);
+Error, OBJ_HANDLE: <handle> must be a non-negative integer (not the integer -1\
+)
+gap> OBJ_HANDLE(false);
+Error, OBJ_HANDLE: <handle> must be a non-negative integer (not the value 'fal\
+se')
 gap> OBJ_HANDLE(0);
 gap> OBJ_HANDLE(HANDLE_OBJ("test"));
 "test"
