@@ -757,6 +757,8 @@ void PrintObj(Obj obj);
 
 extern Obj PrintObjOper;
 
+void SetPrintObjIndex(Int index);
+
 
 /****************************************************************************
 **

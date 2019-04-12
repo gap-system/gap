@@ -1759,7 +1759,7 @@ static void PrintListDefault(Obj list)
         if ( elm != 0 ) {
             if (1 < i)
                 Pr("%<,%< %2>", 0L, 0L);
-            STATE(PrintObjIndex) = i;
+            SetPrintObjIndex(i);
             PrintObj( elm );
         }
         else {

@@ -101,7 +101,6 @@ typedef struct GAPState {
                                    // that use GAP as a library to handle errors
 
     /* From objects.c */
-    Int PrintObjIndex;
     Int PrintObjDepth;
 
     /* From info.c */
