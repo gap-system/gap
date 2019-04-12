@@ -47,6 +47,7 @@ static ModuleStateOffset ObjectsStateOffset = -1;
 
 typedef struct {
     Obj   PrintObjThis;
+    Int   PrintObjIndex;
 #if defined(HPCGAP)
     Obj   PrintObjThissObj;
     Obj * PrintObjThiss;
@@ -920,14 +921,14 @@ void            PrintObj (
 
     if ( !fromview  && 0 < STATE(PrintObjDepth) ) {
         os->PrintObjThiss[STATE(PrintObjDepth)-1]   = os->PrintObjThis;
-        os->PrintObjIndices[STATE(PrintObjDepth)-1] = STATE(PrintObjIndex);
+        os->PrintObjIndices[STATE(PrintObjDepth)-1] = os->PrintObjIndex;
     }
 
     /* handle the <obj>                                                    */
     if (!fromview) {
         STATE(PrintObjDepth) += 1;
         os->PrintObjThis   = obj;
-        STATE(PrintObjIndex)  = 0;
+        os->PrintObjIndex  = 0;
     }
 
     /* dispatch to the appropriate printing function                       */
@@ -958,7 +959,7 @@ void            PrintObj (
         /* if <obj> is a subobject, then restore and unmark the superobject*/
         if ( 0 < STATE(PrintObjDepth) ) {
             os->PrintObjThis  = os->PrintObjThiss[STATE(PrintObjDepth)-1];
-            STATE(PrintObjIndex) = os->PrintObjIndices[STATE(PrintObjDepth)-1];
+            os->PrintObjIndex = os->PrintObjIndices[STATE(PrintObjDepth)-1];
         }
     }
     LastPV = lastPV;
@@ -1002,11 +1003,15 @@ static Obj PrintObjHandler(Obj self, Obj obj)
 }
 
 
-static Obj FuncSET_PRINT_OBJ_INDEX(Obj self, Obj ind)
+void SetPrintObjIndex(Int index)
 {
-  if (IS_INTOBJ(ind))
-    STATE(PrintObjIndex) = INT_INTOBJ(ind);
-  return 0;
+    MODULE_STATE(Objects).PrintObjIndex = index;
+}
+
+static Obj FuncSET_PRINT_OBJ_INDEX(Obj self, Obj index)
+{
+    SetPrintObjIndex(GetSmallInt("SET_PRINT_OBJ_INDEX", index));
+    return 0;
 }
 
 
@@ -1051,13 +1056,13 @@ void            ViewObj (
 
     if ( 0 < STATE(PrintObjDepth) ) {
         os->PrintObjThiss[STATE(PrintObjDepth)-1]   = os->PrintObjThis;
-        os->PrintObjIndices[STATE(PrintObjDepth)-1] =  STATE(PrintObjIndex);
+        os->PrintObjIndices[STATE(PrintObjDepth)-1] = os->PrintObjIndex;
     }
 
     /* handle the <obj>                                                    */
     STATE(PrintObjDepth) += 1;
     os->PrintObjThis   = obj;
-    STATE(PrintObjIndex)  = 0;
+    os->PrintObjIndex  = 0;
 
     /* dispatch to the appropriate viewing function                       */
 
@@ -1086,7 +1091,7 @@ void            ViewObj (
     /* if <obj> is a subobject, then restore and unmark the superobject    */
     if ( 0 < STATE(PrintObjDepth) ) {
         os->PrintObjThis  = os->PrintObjThiss[STATE(PrintObjDepth)-1];
-        STATE(PrintObjIndex) = os->PrintObjIndices[STATE(PrintObjDepth)-1];
+        os->PrintObjIndex = os->PrintObjIndices[STATE(PrintObjDepth)-1];
     }
 
     LastPV = lastPV;
