@@ -1,4 +1,4 @@
-#@local aqq,bool,f,l,list1,list2,r,rec1,rec2,rem,i
+#@local aqq,bool,f,l,r,l2,r2,l3,r3,list1,list2,rec1,rec2,rem,i
 gap> START_TEST("tilde.tst");
 
 #
@@ -31,6 +31,54 @@ gap> [ 1, 2, [0 .. Length(~)] ];
 [ 1, 2, [ 0 .. 2 ] ]
 gap> [0, 1 + ~, 2 ];
 [ 0, [ 1 ], 2 ]
+
+#
+# Test viewing of nested self-referential lists and records
+# (involves kernel vars PrintObjDepth, PrintObjIndex, ...)
+#
+gap> l := [ ~ ];
+[ ~ ]
+gap> r := rec(a:=~);
+rec( a := ~ )
+gap> l2 := [l, r];
+[ [ ~[1] ], rec( a := ~[2] ) ]
+gap> r2 := rec(l:=l, r:=r);
+rec( l := [ ~.l ], r := rec( a := ~.r ) )
+gap> l3 := [ l2, r2 ];
+[ [ [ ~[1][1] ], rec( a := ~[1][2] ) ], 
+  rec( l := [ ~[2].l ], r := rec( a := ~[2].r ) ) ]
+gap> r3:= rec( a:= l2, b := r2 );
+rec( a := [ [ ~.a[1] ], rec( a := ~.a[2] ) ], 
+  b := rec( l := [ ~.b.l ], r := rec( a := ~.b.r ) ) )
+
+# now also test printing
+gap> Print(l, "\n");
+[ ~ ]
+gap> Print(l2, "\n");
+[ [ ~[1] ], rec(
+      a := ~[2] ) ]
+gap> Print(l3, "\n");
+[ [ [ ~[1][1] ], rec(
+          a := ~[1][2] ) ], rec(
+      l := [ ~[2].l ],
+      r := rec(
+          a := ~[2].r ) ) ]
+gap> Print(r, "\n");
+rec(
+  a := ~ )
+gap> Print(r2, "\n");
+rec(
+  l := [ ~.l ],
+  r := rec(
+      a := ~.r ) )
+gap> Print(r3, "\n");
+rec(
+  a := [ [ ~.a[1] ], rec(
+          a := ~.a[2] ) ],
+  b := rec(
+      l := [ ~.b.l ],
+      r := rec(
+          a := ~.b.r ) ) )
 
 #
 gap> [ (x->~)(1) ];
