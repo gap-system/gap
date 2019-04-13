@@ -18,16 +18,6 @@ else
   echo "No terminfo entry for cygwin found!"
   exit 1
 fi
-if test -r $SOURCE/r/rxvt ; then
-  cp $SOURCE/r/rxvt terminfo/r
-  cp $SOURCE/r/rxvt terminfo/72
-elif test -r $SOURCE/72/rxvt ; then
-  cp $SOURCE/72/rxvt terminfo/r
-  cp $SOURCE/72/rxvt terminfo/72
-else
-  echo "No terminfo entry for rxvt found!"
-  exit 1
-fi
 if test -r $SOURCE/x/xterm ; then
   cp $SOURCE/x/xterm terminfo/x
   cp $SOURCE/x/xterm terminfo/78

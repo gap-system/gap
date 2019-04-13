@@ -83,8 +83,8 @@ executable falls under the GPL too, which it does anyhow.
 <P/>
 The <F>cyggcc_s-1.dll</F>, <F>cygncurses-10.dll</F>, <F>cygncursesw-10.dll</F>,
 <F>cygpanel-10.dll</F>, <F>cygpopt-0.dll</F>, <F>cygreadline7.dll</F>,
-<F>cygstart.exe</F>, <F>cygwin1.dll</F>, <F>libW11.dll</F>, <F>mintty.exe</F>, 
-<F>rxvt.exe</F> and <F>regtool.exe</F> are taken unmodified from the 
+<F>cygstart.exe</F>, <F>cygwin1.dll</F>, <F>libW11.dll</F>, <F>mintty.exe</F> 
+and <F>regtool.exe</F> are taken unmodified from the 
 <Package>Cygwin</Package> distribution. They are copyright by RedHat Software
 and released under the GPL. For more information on <Package>Cygwin</Package>,
 see <URL>http://www.cygwin.com</URL>. 
