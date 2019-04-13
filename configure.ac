@@ -640,7 +640,6 @@ case "$host_os" in
 
         AC_CONFIG_FILES([bin/gap.bat:cnf/cygwin/gap.bat.in], [chmod +x bin/gap.bat])
         AC_CONFIG_FILES([bin/gapcmd.bat:cnf/cygwin/gapcmd.bat.in], [chmod +x bin/gapcmd.bat])
-        AC_CONFIG_FILES([bin/gaprxvt.bat:cnf/cygwin/gaprxvt.bat.in], [chmod +x bin/gaprxvt.bat])
     ])
     ;;
   *darwin*)

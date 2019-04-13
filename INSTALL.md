@@ -320,8 +320,8 @@ Intel Core 2 Duo / 2.53 GHz machine, and produces an output similar to the
 
 Windows users should note that the Command Prompt user interface provided
 by Microsoft might not offer history scrolling or cut and paste with the
-mouse. To get a better environment, use scripts `gap.bat` or `gaprxvt.bat`
-to start GAP instead of `gapcmd.bat`.
+mouse. To get a better environment, use the script `gap.bat` to start GAP
+instead of `gapcmd.bat`.
 
 
 7 Packages
@@ -504,15 +504,15 @@ fix is known. (One can type POW(a,b) for a^b.)
 
 ### Cut and Paste does not work
 
-You might want to try different shells, starting each of the three .bat
-files in the `bin` directory: `gap.bat`. `gaprxvt.bat` and `gapcmd.bat`.
-Also, <https://www.gap-system.org/Faq/faq.html#4> might give a remedy.
+You might want to try different shells, using both of the two `.bat`
+files in the `bin` directory: `gap.bat` and `gapcmd.bat`. Also,
+<https://www.gap-system.org/Faq/faq.html#4> might give a remedy.
 
 ### GAP does not work in the remote desktop
 
 GAP can not be started in the Windows Command Prompt shell (via `gapcmd.bat`)
-in the remote desktop. To start GAP in the remote desktop, use scripts
-`gap.bat` or `gaprxvt.bat` which should work in such setting.
+in the remote desktop. To start GAP in the remote desktop, use the script
+`gap.bat` which should work in such setting.
 
 ### You get an error message about the `cygwin1.dll`
 
@@ -662,7 +662,6 @@ in a wrong place or in a separate directory.
 After extraction you can start GAP with one of the following files:
 
     C:\gap-4.X.Y\bin\gap.bat       (recommended)
-    C:\gap-4.X.Y\bin\gaprxvt.bat
     C:\gap-4.X.Y\bin\gapcmd.bat
 
 The `gap.bat` file will start GAP in the `mintty` shell. It allows for
