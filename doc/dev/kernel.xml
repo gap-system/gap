@@ -863,9 +863,10 @@ $ gap -b
 GAP4, Version: 4.dev of today, ....
 gap> LoadDynamicModule("./foo.so");
 gap> Print(foo);
-function ( <<arg-1>> )
-    <<compiled code>>
-endgap> foo(3);
+function ( x )
+    <<compiled GAP code>> from foo.g:1
+end
+gap> foo(3);
 [ 3, 9, 27 ]
 ]]>
 </Log>
