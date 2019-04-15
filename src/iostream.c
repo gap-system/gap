@@ -131,7 +131,7 @@ static void KillChild(UInt stream)
 
 /****************************************************************************
 **
-*F  GetMasterPty( <fid> ) . . . . . . . . .  open a master pty (from "xterm")
+*F  OpenPty( <master>, <slave> ) . . . . . . . . open a pty master/slave pair
 */
 
 #ifdef HAVE_OPENPTY
