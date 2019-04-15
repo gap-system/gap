@@ -956,7 +956,7 @@ static void ReadListExpr (
 
     /* incorrect place for three dots                                      */
     if (STATE(Symbol) == S_DOTDOTDOT) {
-            SyntaxError("Only two dots in a range");
+        SyntaxError("Only two dots in a range");
     }
 
     /* '..' <Expr> ']'                                                     */
@@ -2142,8 +2142,8 @@ static void ReadAtomic (
     Match( S_ATOMIC, "atomic", follow );
     /* Might just be an atomic function literal as an expression */
     if (STATE(Symbol) == S_FUNCTION) {
-          ReadExpr(follow, 'a');
-          return;
+        ReadExpr(follow, 'a');
+        return;
     }
 
     /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'    */
