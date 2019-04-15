@@ -754,7 +754,7 @@ static void GetPragma(void)
     UInt i = 0;
     Char c = PEEK_CURR_CHAR();
 
-    while ( c != '\n' && c != '\r' && c != '\f' && c != '\t' && c != '\377') {
+    while ( c != '\n' && c != '\r' && c != '\377') {
         i = AddCharToBuf(&string, buf, sizeof(buf), i, c);
 
         // read the next character
