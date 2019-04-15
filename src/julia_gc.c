@@ -450,6 +450,10 @@ void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
 
 static inline int JMark(void * obj)
 {
+    void *ty = jl_typeof(obj);
+    if (ty != datatype_mptr && ty != datatype_bag
+        && ty != datatype_largebag && ty != jl_weakref_type)
+        return 0;
     return jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)obj);
 }
 
