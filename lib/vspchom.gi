@@ -2172,7 +2172,8 @@ InstallMethod( Hom,
                                 IsFreeLeftModule
                             and IsFullHomModule
                             and IsLinearMappingsModule
-                            and IsGeneralMappingCollection ),
+                            and IsGeneralMappingCollection
+                            and IsAttributeStoringRep ),
                    rec() );
 
     SetLeftActingDomain( M, F );

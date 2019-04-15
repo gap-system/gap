@@ -294,6 +294,21 @@ end);
 ##
 
 BIND_GLOBAL( "InstallTrueMethod", function ( tofilt, from )
+    local i;
+
+    # Check whether 'tofilt' involves or implies representations.
+    for i in TRUES_FLAGS( WITH_IMPS_FLAGS( FLAGS_FILTER( tofilt ) ) ) do
+      if INFO_FILTERS[i] = FNUM_REP_KERN or INFO_FILTERS[i] = FNUM_REP then
+        # This is allowed only if 'from' consists of representations.
+        for i in TRUES_FLAGS( WITH_IMPS_FLAGS( FLAGS_FILTER( from ) ) ) do
+          if not ( INFO_FILTERS[i] = FNUM_REP_KERN or
+                   INFO_FILTERS[i] = FNUM_REP ) then
+            Error( "<tofilt> must not involve representation filters" );
+          fi;
+        od;
+        break;
+      fi;
+    od;
 
     InstallTrueMethodNewFilter( tofilt, from );
 

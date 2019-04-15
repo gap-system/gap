@@ -9,4 +9,9 @@ Error, required filters [ "IsInt", "IsRat", "IsCyc", "IsExtAElement",
     , "IsMultiplicativeElementWithInverse", "IsZDFRE", "IsAssociativeElement",
   "IsAdditivelyCommutativeElement", "IsCommutativeElement", "IsCyclotomic" ]
 for 1st argument do not match a declaration of Size
+gap> InstallTrueMethod( IsInternalRep, IsList );
+Error, <tofilt> must not involve representation filters
+gap> InstallTrueMethod( IsDenseCoeffVectorRep, IsList );
+Error, <tofilt> must not involve representation filters
+gap> InstallTrueMethod( IsInternalRep, IsSmallIntRep );
 gap> STOP_TEST("method.tst", 1);
