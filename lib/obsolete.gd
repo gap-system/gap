@@ -211,11 +211,11 @@ DeclareObsoleteSynonym( "ReadPkg", "ReadPackage" );
 ##
 #V  KERNEL_VERSION   - Not used in any redistributed package (11/2017)
 #V  VERSION          - Not used in any redistributed package (11/2018)
-#V  GAP_ARCHITECTURE - still used in gbnp (11/2018)
+#V  GAP_ARCHITECTURE - still used in gbnp (04/2019)
 #V  GAP_ROOT_PATHS   - Not used in any redistributed package (03/2018)
-#V  DEBUG_LOADING    - still used in the GAP kernel itself (11/2017)
-#V  BANNER           - still used in loops, quagroup (11/2018)
-#V  QUIET            - still used in loops, quagroup (11/2018)
+#V  DEBUG_LOADING    - Not used in any redistributed package (04/2019)
+#V  BANNER           - Not used in any redistributed package (04/2019)
+#V  QUIET            - Not used in any redistributed package (04/2019)
 #V  LOADED_PACKAGES  - Not used in any redistributed package (11/2017)
 ##
 ##  Up to GAP 4.3,
@@ -225,14 +225,15 @@ DeclareObsoleteSynonym( "ReadPkg", "ReadPackage" );
 #BindGlobal( "VERSION", GAPInfo.Version );
 BindGlobal( "GAP_ARCHITECTURE", GAPInfo.Architecture );
 #BindGlobal( "GAP_ROOT_PATHS", GAPInfo.RootPaths );
-BindGlobal( "BANNER", not GAPInfo.CommandLineOptions.b );
-BindGlobal( "QUIET", GAPInfo.CommandLineOptions.q );
+#BindGlobal( "DEBUG_LOADING", GAPInfo.CommandLineOptions.D );
+#BindGlobal( "BANNER", not GAPInfo.CommandLineOptions.b );
+#BindGlobal( "QUIET", GAPInfo.CommandLineOptions.q );
 #BindGlobal( "LOADED_PACKAGES", GAPInfo.PackagesLoaded );
 
 #############################################################################
 ##
 #V  PACKAGES_VERSIONS - Not used in any redistributed package (11/2017)
-#V  Revision          - still used in HAPcryst, polymaking, rds (11/2018)
+#V  Revision          - still used in HAPcryst (04/2019)
 #BindGlobal( "PACKAGES_VERSIONS", rec() );
 BindGlobal( "Revision", rec() );
 
@@ -638,7 +639,7 @@ DeclareObsoleteSynonym( "MultRowVector", "MultVector" );
 ##  former is still used in some packages, for backwards compatibility we
 ##  replace it by the call of `Test' with comparison up to whitespaces.
 ##
-##  Still used in ctbllib, cubefree, gbnp, hapcryst, polymaking (11/2018)
+##  Still used in ctbllib, cubefree, gbnp, hapcryst (04/2019)
 ##  Safely used in compatibility code: gapdoc (09/2018)
 BindGlobal( "ReadTest", function( fn )
   Print("#I  ReadTest is no longer supported. Please use more robust and flexible\n",
@@ -653,7 +654,7 @@ end);
 ##
 ##  This got a nicer name before is became documented.
 ##
-##  Still used in ctbllib, Browse, resclasses (11/2018)
+##  Still used in ctbllib, Browse (04/2019)
 ##  Safely used in compatibility code: digraphs, profiling, semigroups (09/2018)
 DeclareObsoleteSynonym( "USER_HOME_EXPAND", "UserHomeExpand" );
 
@@ -686,7 +687,8 @@ DeclareObsoleteSynonym( "RecFields", "RecNames" );
 #V  InfoRead? 
 ##
 ##  InfoRead used to be used to print when a file is read using `Read()`
-##  
+##
+##  Still used in gbnp (04/2019)
 if GAPInfo.CommandLineOptions.D then InfoRead1 := Print; fi;
 if not IsBound(InfoRead1) then InfoRead1 := Ignore; fi;
 if not IsBound(InfoRead2) then InfoRead2 := Ignore; fi;
@@ -706,7 +708,7 @@ if not IsBound(InfoRead2) then InfoRead2 := Ignore; fi;
 ##  </Description>
 ##  </ManSection>
 ##
-##  Still used in anupq, nq, resclasses, SCSCP (02/2019)
+##  Still used in anupq, SCSCP (04/2019)
 DeclareGlobalFunction("TemporaryGlobalVarName");
 
 
@@ -731,7 +733,7 @@ DeclareGlobalFunction("TemporaryGlobalVarName");
 ##
 ##  This function was never documented.
 ##
-##  Still used in anupq, nq, resclasses, rcwa (01/2019)
+##  Still used in anupq (04/2019)
 DeclareGlobalFunction("HideGlobalVariables");
 
 
@@ -751,5 +753,5 @@ DeclareGlobalFunction("HideGlobalVariables");
 ##
 ##  This function was never documented.
 ##
-##  Still used in anupq, nq, resclasses, rcwa (01/2019)
+##  Still used in anupq (04/2019)
 DeclareGlobalFunction("UnhideGlobalVariables");
