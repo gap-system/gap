@@ -249,8 +249,6 @@ enum STAT_TNUM {
         T_PRAGMA,
 
     END_ENUM_RANGE(LAST_STAT_TNUM),
-
-    T_NO_STAT = -1,
 };
 
 

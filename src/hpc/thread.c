@@ -387,7 +387,7 @@ Obj RunThread(void (*start)(void *), void * arg)
     if (GlobalPauseInProgress) {
         /* New threads will be automatically paused */
         result->state = TSTATE_PAUSED;
-        HandleInterrupts(0, T_NO_STAT);
+        HandleInterrupts(0, 0);
     }
     else {
         result->state = TSTATE_RUNNING;
@@ -858,11 +858,11 @@ static void PauseCurrentThread(int locked)
 
 static void InterruptCurrentThread(int locked, Stat stat)
 {
+    if (stat == 0)
+        return;
     ThreadData * thread = thread_data + TLS(threadID);
     int          state;
     Obj handler = (Obj)0;
-    if (stat == T_NO_STAT)
-        return;
     if (!locked)
         pthread_mutex_lock(thread->lock);
     STATE(CurrExecStatFuncs) = ExecStatFuncs;

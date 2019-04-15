@@ -185,11 +185,11 @@ static void WaitThreadSignal(void)
 {
     int id = TLS(threadID);
     if (!UpdateThreadState(id, TSTATE_RUNNING, TSTATE_BLOCKED))
-        HandleInterrupts(1, T_NO_STAT);
+        HandleInterrupts(1, 0);
     pthread_cond_wait(TLS(threadSignal), TLS(threadLock));
     if (!UpdateThreadState(id, TSTATE_BLOCKED, TSTATE_RUNNING) &&
         GetThreadState(id) != TSTATE_RUNNING)
-        HandleInterrupts(1, T_NO_STAT);
+        HandleInterrupts(1, 0);
 }
 
 void LockMonitor(Monitor * monitor)
