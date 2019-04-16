@@ -280,18 +280,6 @@ GetPositiveSmallIntEx(const char * funcname, Obj op, const char * argname)
 
 /****************************************************************************
 **
-*F  GetNonnegativeSmallInt
-*/
-EXPORT_INLINE Int
-GetNonnegativeSmallInt(const char * funcname, Obj op)
-{
-    RequireNonnegativeSmallInt(funcname, op);
-    return INT_INTOBJ(op);
-}
-
-
-/****************************************************************************
-**
 *F  CheckIsPossList( <desc>, <poss> ) . . . . . . . . . . check for poss list
 */
 void CheckIsPossList(const Char * desc, Obj poss);
