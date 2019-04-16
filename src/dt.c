@@ -88,7 +88,7 @@ static void FindSubs(Obj tree,
 static void SetSubs(Obj list, Obj a, Obj tree);
 static void UnmarkAEClass(Obj tree, Obj list);
 
-#if 0
+#ifdef TEST_TREE
 static void TestTree(Obj tree);
 static Obj  Part(Obj list, Int pos1, Int pos2);
 #endif
@@ -663,8 +663,7 @@ static Obj MakeFormulaVector(Obj tree, Obj pr)
 static Obj FuncMakeFormulaVector(Obj self, Obj tree, Obj pr)
 {
     if  (LEN_PLIST(tree) == 5)
-        ErrorReturnVoid("<tree> has to be a non-atom", 0L, 0L,
-                        "you can 'return;'");
+        ErrorMayQuit("<tree> has to be a non-atom", 0, 0);
     return  MakeFormulaVector(tree, pr);
 }
 
@@ -841,8 +840,8 @@ static void GetPols(Obj list, Obj pr, Obj pols)
 static Obj FuncGetPols(Obj self, Obj list, Obj pr, Obj pols)
 {
     if  (LEN_PLIST(list) != 4)
-        ErrorReturnVoid("<list> must be a generalised representative not a tree"
-                        ,0L, 0L, "you can 'return;'");
+        ErrorMayQuit("<list> must be a generalised representative not a tree",
+                     0, 0);
     GetPols(list, pr, pols);
     return (Obj) 0;
 }
@@ -1272,11 +1271,12 @@ static void FindNewReps(Obj tree,
 static Obj FuncFindNewReps(Obj self, Obj tree, Obj reps, Obj pr, Obj max)
 {
 
+#ifdef TEST_TREE
     /*  test if <tree> is really a tree                                    */
-    /* TestTree(tree);                                                     */
-    if  ( LEN_PLIST(tree) < 15 )  
-        ErrorReturnVoid("<tree> must be a tree not a plain list", 0L, 0L,
-                        "you can 'return;'");
+    TestTree(tree);
+#endif
+    if (LEN_PLIST(tree) < 15)
+        ErrorMayQuit("<tree> must be a tree not a plain list", 0, 0);
     FindNewReps(tree, reps, pr, max);   
     return  0;
 }
@@ -1289,38 +1289,33 @@ static Obj FuncFindNewReps(Obj self, Obj tree, Obj reps, Obj pr, Obj max)
 **  'TestTree' tests if <tree> is a tree. If <tree> is not a tree 'TestTree'
 **  signals an error.
 */
-#if 0
+#ifdef TEST_TREE
 static void  TestTree(
                Obj     tree)
 {
-
     if ( TNUM_OBJ(tree) != T_PLIST || LEN_PLIST(tree) % 7 != 0)
-        ErrorReturnVoid("<tree> must be a plain list,  whose length is a multiple of 7", 0L, 0L, "you can 'return;'");
+        ErrorMayQuit(
+            "<tree> must be a plain list,  whose length is a multiple of 7",
+            0, 0);
     if ( DT_LENGTH(tree, 1) != LEN_PLIST(tree)/7 )
-        ErrorReturnVoid("<tree> must be a tree, not a plain list.", 0L, 0L,
-                        "you can 'return;'");
+        ErrorMayQuit("<tree> must be a tree, not a plain list", 0, 0);
     if ( DT_SIDE(tree, 1) >= DT_LENGTH(tree, 1) )
-        ErrorReturnVoid("<tree> must be a tree, not a plain list.", 0L, 0L,
-                        "you can 'return;'");        
+        ErrorMayQuit("<tree> must be a tree, not a plain list", 0, 0);
     if ( DT_LENGTH(tree, 1) == 1)
     {
         if ( DT_SIDE(tree, 1) != LEFT && DT_SIDE(tree, 1) != RIGHT )
-            ErrorReturnVoid("<tree> must be a tree, not a plain list.", 0L, 0L,
-                            "you can 'return;'");
+            ErrorMayQuit("<tree> must be a tree, not a plain list", 0, 0);
         return;
     }
     if ( DT_SIDE(tree, 1) <= 1 )
-        ErrorReturnVoid("<tree> must be a tree, not a plain list.", 0L, 0L,
-                        "you can 'return;'");
+        ErrorMayQuit("<tree> must be a tree, not a plain list", 0, 0);
     if (DT_LENGTH(tree, 1) !=
           DT_LENGTH(tree, DT_LEFT(tree, 1)) + 
           DT_LENGTH(tree, DT_RIGHT(tree, 1)) +  
           1                                           )
-        ErrorReturnVoid("<tree> must be a tree, not a plain list.", 0L, 0L,
-                        "you can 'return;'");
+        ErrorMayQuit("<tree> must be a tree, not a plain list", 0, 0);
     if ( DT_SIDE(tree, 1) != DT_LENGTH(tree, DT_LEFT(tree, 1) ) + 1 )
-        ErrorReturnVoid("<tree> must be a tree, not a plain list.", 0L, 0L,
-                        "you can 'return;'");
+        ErrorMayQuit("<tree> must be a tree, not a plain list", 0, 0);
     TestTree( Part(tree, (DT_LEFT(tree, 1) - 1)*7, 
                          (DT_RIGHT(tree, 1) - 1)*7                    )    );
     TestTree( Part(tree, (DT_RIGHT(tree, 1) - 1)*7,  LEN_PLIST(tree) ) );
@@ -1334,7 +1329,7 @@ static void  TestTree(
 **
 **  'Part' returns <list>{ [<pos1>+1 .. <pos2>] }.
 */
-#if 0
+#ifdef TEST_TREE
 static Obj    Part(
              Obj      list,
              Int      pos1,
