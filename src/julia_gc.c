@@ -37,10 +37,14 @@
 **  Various options controlling special features of the Julia GC code follow
 */
 
-// if DISABLE_BIGVAL_TRACKING is defined, we don't track the location of
-// large bags; this speeds up some things, but may expose bugs in GAP code
-// which incorrectly holds pointers into bags over a GC.
-// #define DISABLE_BIGVAL_TRACKING
+// if SCAN_STACK_FOR_MPTRS_ONLY is defined, stack scanning will only
+// look for references to master pointers, but not bags themselves. This
+// should be safe, as GASMAN uses the same mechanism. It is also faster
+// and avoids certain complicated issues that can lead to crashes, and
+// is therefore the default. The option to scan for all pointers remains
+// available for the time being and should be considered to be
+// deprecated.
+#define SCAN_STACK_FOR_MPTRS_ONLY
 
 // if REQUIRE_PRECISE_MARKING is defined, we assume that all marking
 // functions are precise, i.e., they only invoke MarkBag on valid bags,
@@ -53,6 +57,12 @@
 
 // if MARKING_STRESS_TEST is defined, we stress test the TryMark code
 // #define MARKING_STRESS_TEST
+
+// if VALIDATE_MARKING is defined, the program is aborted if we ever
+// encounter a reference during marking that does not meet additional
+// validation criteria. These tests are compararively expensive and
+// should not be enabled by default.
+// #define VALIDATE_MARKING
 
 
 /****************************************************************************
@@ -125,7 +135,7 @@ static void JFinalizer(jl_value_t * obj)
         TabFreeFuncBags[tnum]((Bag)&contents);
 }
 
-#if !defined(DISABLE_BIGVAL_TRACKING)
+#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
 
 /****************************************************************************
 **
@@ -197,7 +207,7 @@ static inline void * align_ptr(void * p)
     return (void *)u;
 }
 
-#if !defined(DISABLE_BIGVAL_TRACKING)
+#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
 
 typedef struct treap_t {
     struct treap_t *left, *right;
@@ -404,10 +414,10 @@ static UInt            StackAlignBags;
 static Bag *           GapStackBottom;
 static jl_ptls_t       JuliaTLS, SaveTLS;
 static size_t          max_pool_obj_size;
-#if !defined(DISABLE_BIGVAL_TRACKING)
-static size_t          bigval_startoffset;
-#endif
 static UInt            YoungRef;
+#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
+static size_t bigval_startoffset;
+#endif
 
 
 #ifndef NR_GLOBAL_BAGS
@@ -449,10 +459,31 @@ void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
     TabMarkFuncBags[type] = mark_func;
 }
 
-static inline int JMark(void * obj)
+static inline int JMarkGapObjSafe(void * obj)
 {
+    // only traverse objects internally used by GAP
+    void * ty = jl_typeof(obj);
+    if (ty != datatype_mptr && ty != datatype_bag &&
+        ty != datatype_largebag && ty != jl_weakref_type)
+        return 0;
     return jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)obj);
 }
+
+static inline int JMark(void * obj)
+{
+#ifdef VALIDATE_MARKING
+    // Validate that `obj` is still allocated and not on a
+    // free list already. We verify this by checking that the
+    // type is a pool object of type `jl_datatype_type`.
+    jl_value_t * ty = jl_typeof(obj);
+    if (jl_gc_internal_obj_base_ptr(ty) != ty)
+        abort();
+    if (!jl_typeis(ty, jl_datatype_type))
+        abort();
+#endif
+    return jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)obj);
+}
+
 
 // Overview of conservative stack scanning
 //
@@ -478,12 +509,19 @@ static inline int JMark(void * obj)
 // the stack (including Julia task stacks) that points to a master pointer
 // or the contents of a bag (including a location after the start of the
 // bag) indicates a valid reference that needs to be marked.
+//
+// One additional concern is that Julia may opportunistically free a subset
+// of unreachable objects. Thus, with conservative stack scanning, it is
+// possible for a pointer to resurrect a previously unreachable object,
+// from which freed objects are then marked. Hence, we add additional checks
+// when traversing GAP master pointer and bag objects that this happens
+// only for live objects.
 
 static void TryMark(void * p)
 {
     jl_value_t * p2 = jl_gc_internal_obj_base_ptr(p);
     if (!p2) {
-#if !defined(DISABLE_BIGVAL_TRACKING)
+#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
         // It is possible for p to point past the end of
         // the object, so we subtract one word from the
         // address. This is safe, as the object is preceded
@@ -514,7 +552,12 @@ static void TryMark(void * p)
 #endif
     }
     if (p2) {
-        JMark(p2);
+#ifdef SCAN_STACK_FOR_MPTRS_ONLY
+        if (jl_typeis(p2, datatype_mptr))
+            JMark(p2);
+#else
+        JMarkGapObjSafe(p2);
+#endif
     }
 }
 
@@ -574,9 +617,12 @@ void CHANGED_BAG(Bag bag)
 
 static void GapRootScanner(int full)
 {
-    // mark our Julia module (this contains references to our custom data
-    // types, which thus also will not be collected prematurely)
-    JMark(Module);
+    // Mark our Julia module (this contains references to our custom data
+    // types, which thus also will not be collected prematurely).
+    // We call jl_gc_mark_queue_obj() directly here, because we know that
+    // Module is a valid Julia object at this point, so further checks
+    // in JMark() can be skipped.
+    jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)Module);
     jl_task_t * task = JuliaTLS->current_task;
     size_t      size;
     int         tid;
@@ -688,7 +734,15 @@ static uintptr_t JMarkMPtr(jl_ptls_t ptls, jl_value_t * obj)
 {
     if (!*(void **)obj)
         return 0;
-    if (JMark(BAG_HEADER((Bag)obj)))
+    void * header = BAG_HEADER((Bag)obj);
+    // The following check ensures that the master pointer does
+    // indeed reference a bag that has not yet been freed. See
+    // the comments on conservative stack scanning for an in-depth
+    // explanation.
+    void * ty = jl_typeof(header);
+    if (ty != datatype_bag && ty != datatype_largebag)
+        return 0;
+    if (JMark(header))
         return 1;
     return 0;
 }
@@ -714,7 +768,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     }
     // These callbacks need to be set before initialization so
     // that we can track objects allocated during `jl_init()`.
-#if !defined(DISABLE_BIGVAL_TRACKING)
+#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
     jl_gc_set_cb_notify_external_alloc(alloc_bigval, 1);
     jl_gc_set_cb_notify_external_free(free_bigval, 1);
     bigval_startoffset = jl_gc_external_obj_hdr_size();
@@ -827,7 +881,7 @@ Bag NewBag(UInt type, UInt size)
     if (size == 0)
         alloc_size++;
 
-#if defined(DISABLE_BIGVAL_TRACKING)
+#if defined(SCAN_STACK_FOR_MPTRS_ONLY)
     bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), datatype_mptr);
     SET_PTR_BAG(bag, 0);
 #endif
@@ -839,7 +893,7 @@ Bag NewBag(UInt type, UInt size)
     header->size = size;
 
 
-#if !defined(DISABLE_BIGVAL_TRACKING)
+#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
     // allocate the new masterpointer
     bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), datatype_mptr);
     SET_PTR_BAG(bag, DATA(header));
@@ -945,18 +999,19 @@ inline void MarkBag(Bag bag)
     // relies on Julia internals. It is functionally equivalent
     // to:
     //
-    //     if (JMark(p)) YoungRef++;
+    //     if (JMarkGapObjSafe(p)) YoungRef++;
     //
     switch (jl_astaggedvalue(p)->bits.gc) {
     case 0:
-        if (JMark(p))
+        if (JMarkGapObjSafe(p))
             YoungRef++;
         break;
     case 1:
         YoungRef++;
         break;
     case 2:
-        JMark(p);
+        JMarkGapObjSafe(p);
+        break;
     case 3:
         break;
     }
