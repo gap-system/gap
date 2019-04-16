@@ -976,8 +976,9 @@ FuncPROD_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR, Obj depthdiff)
     case 0:
       break;
     default:
-      ErrorReturnVoid("PROD_LIST_LIST_DEFAULT: depth difference should be -1, 0 or 1, not %i",
-                      INT_INTOBJ(depthdiff),0L,"you can return to carry on anyway");
+        ErrorMayQuit("PROD_LIST_LIST_DEFAULT: depth difference should be -1, "
+                     "0 or 1, not %i",
+                     INT_INTOBJ(depthdiff), 0);
     }
   return prod;
         
@@ -1008,10 +1009,8 @@ static Obj OneMatrix(Obj mat, UInt mut)
     /* check that the operand is a *square* matrix                         */
     len = LEN_LIST( mat );
     if ( len != LEN_LIST( ELM_LIST( mat, 1 ) ) ) {
-        return ErrorReturnObj(
-            "Matrix ONE: <mat> must be square (not %d by %d)",
-            (Int)len, (Int)LEN_LIST( ELM_LIST( mat, 1 ) ),
-            "you can replace ONE matrix <mat> via 'return <mat>;'" );
+        ErrorMayQuit("Matrix ONE: <mat> must be square (not %d by %d)",
+                     (Int)len, (Int)LEN_LIST(ELM_LIST(mat, 1)));
     }
 
     /* get the zero and the one                                            */
@@ -1112,10 +1111,8 @@ static Obj InvMatrix(Obj mat, UInt mut)
     /* check that the operand is a *square* matrix                         */
     len = LEN_LIST( mat );
     if ( len != LEN_LIST( ELM_LIST( mat, 1 ) ) ) {
-        return ErrorReturnObj(
-            "Matrix INV: <mat> must be square (not %d by %d)",
-            (Int)len, (Int)LEN_LIST( ELM_LIST( mat, 1 ) ),
-            "you can replace <mat> via 'return <mat>;'" );
+        ErrorMayQuit("Matrix INV: <mat> must be square (not %d by %d)",
+                     (Int)len, (Int)LEN_LIST(ELM_LIST(mat, 1)));
     }
 
     /* get the zero and the one                                            */
@@ -1254,69 +1251,61 @@ static Obj FuncINV_MATRIX_IMMUTABLE(Obj self, Obj mat)
 
 /* We need these to redispatch when the user has supplied a replacement value. */
 
-static Obj AddRowVectorOp;   /* BH changed to static */
-static Obj MultVectorLeftOp; /* BH changed to static */
+static Obj AddRowVectorOp;
+static Obj MultVectorLeftOp;
 
 static Obj FuncADD_ROW_VECTOR_5(
     Obj self, Obj list1, Obj list2, Obj mult, Obj from, Obj to)
 {
-  UInt i;
-  Obj el1,el2;
-  while (!IS_INTOBJ(to) ||
-         INT_INTOBJ(to) > LEN_LIST(list1) ||
-         INT_INTOBJ(to) > LEN_LIST(list2))
-    to = ErrorReturnObj("AddRowVector: Upper limit too large", 0L, 0L, 
-                        "you can replace limit by <lim> via 'return <lim>;'");
-  for (i = INT_INTOBJ(from); i <= INT_INTOBJ(to); i++)
-    {
-      el1 = ELM_LIST(list1,i);
-      el2 = ELM_LIST(list2,i);
-      el2 = PROD(mult, el2);
-      el1 = SUM(el1,el2);
-      ASS_LIST(list1,i,el1);
-      CHANGED_BAG(list1);
+    Int ifrom = GetSmallInt("AddRowVector", from);
+    Int ito = GetSmallInt("AddRowVector", to);
+    if (ito > LEN_LIST(list1) || ito > LEN_LIST(list2))
+        ErrorMayQuit("AddRowVector: Upper limit too large", 0, 0);
+    for (Int i = ifrom; i <= ito; i++) {
+        Obj el1 = ELM_LIST(list1, i);
+        Obj el2 = ELM_LIST(list2, i);
+        el2 = PROD(mult, el2);
+        el1 = SUM(el1, el2);
+        ASS_LIST(list1, i, el1);
+        CHANGED_BAG(list1);
     }
-  return 0;
+    return 0;
 }
 
 /****************************************************************************
 **
-*F  FuncADD_ROW_VECTOR_5_FAST( <self>, <list1>, <list2>, <mult>, <from>, <to> )
+*F  FuncADD_ROW_VECTOR_5_FAST(<self>,<list1>,<list2>,<mult>,<from>,<to>)
 **
 **  This function adds <mult>*<list2>[i] destructively to <list1>[i] for
 **  each i in the range <from>..<to>. It does very little checking
 **
 **  This version is specialised to the "fast" case where list1 and list2 are
-**  plain lists of cyclotomics and mult is a small integers
+**  plain lists of cyclotomics and mult is a small integer.
 */
 static Obj FuncADD_ROW_VECTOR_5_FAST(
     Obj self, Obj list1, Obj list2, Obj mult, Obj from, Obj to)
 {
-  UInt i;
-  Obj e1,e2, prd, sum;
-  while (!IS_INTOBJ(to) ||
-         INT_INTOBJ(to) > LEN_LIST(list1) ||
-         INT_INTOBJ(to) > LEN_LIST(list2))
-    to = ErrorReturnObj("AddRowVector: Upper limit too large", 0L, 0L, 
-                        "you can replace limit by <lim> via 'return <lim>;'");
-  for (i = INT_INTOBJ(from); i <= INT_INTOBJ(to); i++)
-    {
-      e1 = ELM_PLIST(list1,i);
-      e2 = ELM_PLIST(list2,i);
-      if ( !ARE_INTOBJS( e2, mult ) || !PROD_INTOBJS( prd, e2, mult ))
-        {
-          prd = PROD(e2,mult);
+    Int ifrom = GetSmallInt("AddRowVector", from);
+    Int ito = GetSmallInt("AddRowVector", to);
+    if (ito > LEN_LIST(list1) || ito > LEN_LIST(list2))
+        ErrorMayQuit("AddRowVector: Upper limit too large", 0, 0);
+
+    Obj prd, sum;
+    for (Int i = ifrom; i <= ito; i++) {
+        Obj e1 = ELM_PLIST(list1, i);
+        Obj e2 = ELM_PLIST(list2, i);
+        if (!ARE_INTOBJS(e2, mult) || !PROD_INTOBJS(prd, e2, mult)) {
+            prd = PROD(e2, mult);
         }
-      if ( !ARE_INTOBJS(e1, prd) || !SUM_INTOBJS( sum, e1, prd) )
-        {
-          sum = SUM(e1,prd);
-          SET_ELM_PLIST(list1,i,sum);
-          CHANGED_BAG(list1);
+        if (!ARE_INTOBJS(e1, prd) || !SUM_INTOBJS(sum, e1, prd)) {
+            sum = SUM(e1, prd);
+            SET_ELM_PLIST(list1, i, sum);
+            CHANGED_BAG(list1);
         }
-      else
-          SET_ELM_PLIST(list1,i,sum);
+        else
+            SET_ELM_PLIST(list1, i, sum);
     }
-  return 0;
+    return 0;
 }
 
 /****************************************************************************
@@ -1531,15 +1520,9 @@ static Obj FuncPROD_VEC_MAT_DEFAULT(Obj self, Obj vec, Obj mat)
   Obj vecr;
   UInt i,len;
   Obj z;
-/*Obj o;  */
   res = (Obj) 0;
   len = LEN_LIST(vec);
-  if (len != LEN_LIST(mat))
-    {
-      mat = ErrorReturnObj("<vec> * <mat>: vector and matrix must have same length", 0L, 0L,
-                           "you can replace <mat> via 'return <mat>;'");
-      return PROD(vec,mat);
-    }
+  RequireSameLength("<vec> * <mat>", vec, mat);
   elt = ELMW_LIST(vec,1);
   z = ZERO(elt);
   for (i = 1; i <= len; i++)
@@ -1595,20 +1578,8 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
   /* check that the operand is a *square* matrix                         */
   len = LEN_LIST( mat );
   if ( len != LEN_LIST( ELM_LIST( mat, 1 ) ) ) {
-    mat = ErrorReturnObj(
-                         "Matrix INV: <mat> must be square (not %d by %d)",
-                         (Int)len, (Int)LEN_LIST( ELM_LIST( mat, 1 ) ),
-                         "you can replace <mat> via 'return <mat>;'" );
-    switch( mut) {
-    case 0:
-      res = INV(mat);
-      CheckedMakeImmutable(res);
-      return res;
-    case 1:
-      return INV_MUT(mat);
-    case 2:
-      return INV(mat);
-    }
+      ErrorMayQuit("Matrix INV: <mat> must be square (not %d by %d)",
+                   (Int)len, (Int)LEN_LIST(ELM_LIST(mat, 1)));
   }
 
   /* get the zero and the one                                            */

@@ -618,11 +618,10 @@ static Obj FuncSizeScreen(Obj self, Obj args)
   UInt                nr;             /* number of lines on the screen   */
 
   /* check the arguments                                                 */
-  while ( ! IS_SMALL_LIST(args) || 1 < LEN_LIST(args) ) {
-    args = ErrorReturnObj(
-                          "Function: number of arguments must be 0 or 1 (not %d)",
-                          LEN_LIST(args), 0L,
-                          "you can replace the argument list <args> via 'return <args>;'" );
+  RequireSmallList("SizeScreen", args);
+  if (1 < LEN_LIST(args)) {
+      ErrorMayQuit("SizeScreen: number of arguments must be 0 or 1 (not %d)",
+                   LEN_LIST(args), 0);
   }
 
   /* get the arguments                                                   */
@@ -633,11 +632,9 @@ static Obj FuncSizeScreen(Obj self, Obj args)
   /* otherwise check the argument                                        */
   else {
     size = ELM_LIST( args, 1 );
-    while ( ! IS_SMALL_LIST(size) || 2 < LEN_LIST(size) ) {
-      size = ErrorReturnObj(
-                            "SizeScreen: <size> must be a list of length 2",
-                            0L, 0L,
-                            "you can replace <size> via 'return <size>;'" );
+    if (!IS_SMALL_LIST(size) || 2 < LEN_LIST(size)) {
+        ErrorMayQuit("SizeScreen: <size> must be a list of length at most 2",
+                     0, 0);
     }
   }
 
@@ -647,11 +644,8 @@ static Obj FuncSizeScreen(Obj self, Obj args)
   }
   else {
     elm = ELMW_LIST(size,1);
-    while ( !IS_INTOBJ(elm) ) {
-      elm = ErrorReturnObj(
-                           "SizeScreen: <x> must be an integer",
-                           0L, 0L,
-                           "you can replace <x> via 'return <x>;'" );
+    if (!IS_INTOBJ(elm)) {
+        ErrorMayQuit("SizeScreen: <x> must be an integer", 0, 0);
     }
     len = INT_INTOBJ( elm );
     if ( len < 20  )  len = 20;
@@ -664,11 +658,8 @@ static Obj FuncSizeScreen(Obj self, Obj args)
   }
   else {
     elm = ELMW_LIST(size,2);
-    while ( !IS_INTOBJ(elm) ) {
-      elm = ErrorReturnObj(
-                           "SizeScreen: <y> must be an integer",
-                           0L, 0L,
-                           "you can replace <y> via 'return <y>;'" );
+    if (!IS_INTOBJ(elm)) {
+        ErrorMayQuit("SizeScreen: <y> must be an integer", 0, 0);
     }
     nr = INT_INTOBJ( elm );
     if ( nr < 10 )  nr = 10;
@@ -712,38 +703,27 @@ static Obj FuncWindowCmd(Obj self, Obj args)
   const Char *    inptr;
   const Char *    qtr;
 
-  /* check arguments                                                     */
-  while ( ! IS_SMALL_LIST(args) ) {
-    args = ErrorReturnObj( "argument list must be a list (not a %s)",
-                           (Int)TNAM_OBJ(args), 0L,
-                           "you can replace the argument list <args> via 'return <args>;'" );
-
+  // check arguments
+  RequireSmallList("WindowCmd", args);
+  tmp = ELM_LIST(args, 1);
+  if (!IsStringConv(tmp)) {
+      ErrorMayQuit("WindowCmd: <cmd> must be a string (not a %s)",
+                   (Int)TNAM_OBJ(tmp), 0);
   }
-  tmp = ELM_LIST(args,1);
-  while ( ! IsStringConv(tmp) || 3 != LEN_LIST(tmp) ) {
-    while ( ! IsStringConv(tmp) ) {
-      tmp = ErrorReturnObj( "<cmd> must be a string (not a %s)",
-                            (Int)TNAM_OBJ(tmp), 0L,
-                            "you can replace <cmd> via 'return <cmd>;'" );
-    }
     if ( 3 != LEN_LIST(tmp) ) {
-      tmp = ErrorReturnObj( "<cmd> must be a string of length 3",
-                            0L, 0L,
-                            "you can replace <cmd> via 'return <cmd>;'" );
+        ErrorMayQuit("WindowCmd: <cmd> must be a string of length 3", 0, 0);
     }
-  }
 
   /* compute size needed to store argument string                        */
   len = 13;
   for ( i = 2;  i <= LEN_LIST(args);  i++ )
     {
       tmp = ELM_LIST( args, i );
-      while ( !IS_INTOBJ(tmp) && ! IsStringConv(tmp) ) {
-        tmp = ErrorReturnObj(
-                             "%d. argument must be a string or integer (not a %s)",
-                             i, (Int)TNAM_OBJ(tmp),
-                             "you can replace the argument <arg> via 'return <arg>;'" );
-        SET_ELM_PLIST( args, i, tmp );
+      if (!IS_INTOBJ(tmp) && !IsStringConv(tmp)) {
+          ErrorMayQuit("WindowCmd: %d. argument must be a string or integer "
+                       "(not a %s)",
+                       i, (Int)TNAM_OBJ(tmp));
+          SET_ELM_PLIST(args, i, tmp);
       }
       if ( IS_INTOBJ(tmp) )
         len += 12;
@@ -866,7 +846,6 @@ static Obj FuncGASMAN(Obj self, Obj args)
 
         /* evaluate and check the command                                  */
         Obj cmd = ELM_PLIST( args, i );
-again:
         RequireStringRep("GASMAN", cmd);
 
         // perform full garbage collection
@@ -881,10 +860,8 @@ again:
 
 #if !defined(USE_GASMAN)
         else {
-            cmd = ErrorReturnObj(
-                "GASMAN: <cmd> must be \"collect\" or \"partial\"", 0L, 0L,
-                "you can replace <cmd> via 'return <cmd>;'" );
-            goto again;
+            ErrorMayQuit("GASMAN: <cmd> must be \"collect\" or \"partial\"",
+                         0, 0);
         }
 
 #else
@@ -968,12 +945,9 @@ again:
 
         /* otherwise complain                                              */
         else {
-            cmd = ErrorReturnObj(
-                "GASMAN: <cmd> must be %s or %s",
-                (Int)"\"display\" or \"clear\" or \"global\" or ",
-                (Int)"\"collect\" or \"partial\" or \"message\"",
-                "you can replace <cmd> via 'return <cmd>;'" );
-            goto again;
+            ErrorMayQuit("GASMAN: <cmd> must be %s or %s",
+                         (Int) "\"display\" or \"clear\" or \"global\" or ",
+                         (Int) "\"collect\" or \"partial\" or \"message\"");
         }
 #endif // USE_GASMAN
     }

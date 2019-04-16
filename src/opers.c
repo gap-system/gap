@@ -954,12 +954,9 @@ static Obj DoSetAndFilter(Obj self, Obj obj, Obj val)
 {
     Obj                 op;
 
-    while (val != True)
-      val = ErrorReturnObj(
-             "You cannot set an \"and-filter\" except to true", 0L, 0L,
-             "you can type 'return true;' to set all components true\n"
-             "(but you might really want to reset just one component)");
-    
+    if (val != True)
+        ErrorMayQuit("You cannot set an \"and-filter\" except to true", 0, 0);
+
     /* call the first 'and'-ed function                                    */
     op = FLAG1_FILT( self );
     CALL_2ARGS( op, obj, val );
@@ -1047,10 +1044,7 @@ static Obj DoSetFilter(Obj self, Obj obj, Obj val)
     
     /* return the value of the feature                                     */
     if ( val != SAFE_ELM_FLAGS( flags, flag1 ) ) {
-        ErrorReturnVoid(
-            "value feature is already set the other way",
-            0L, 0L,
-            "you can 'return;' and ignore it" );
+        ErrorMayQuit("filter is already set the other way", 0, 0);
     }
 
     /* return 'void'                                                       */
@@ -1222,9 +1216,7 @@ Obj ReturnTrueFilter;
 static Obj DoSetReturnTrueFilter(Obj self, Obj obj, Obj val)
 {
     if ( val != True ) {
-         ErrorReturnVoid( "you cannot set this flag to 'false'",
-             0L, 0L,
-             "you can 'return;' and ignore it" );
+        ErrorMayQuit("you cannot set this flag to 'false'", 0, 0);
     }
     return 0;
 }
@@ -2473,10 +2465,8 @@ static Obj DoVerboseAttribute(Obj self, Obj obj)
     
     /* call the operation to compute the value                             */
     val = DoVerboseOperation1Args( self, obj );
-    while (val == (Obj) 0) {
-        val = ErrorReturnObj("Method for an attribute must return a value",
-                             0L, 0L,
-                             "you can supply a value <val> via 'return <val>;'");
+    if (val == (Obj)0) {
+        ErrorMayQuit("Method for an attribute must return a value", 0, 0);
     }
     val = CopyObj( val, 0 );
     
@@ -2771,10 +2761,7 @@ static Obj DoSetProperty(Obj self, Obj obj, Obj val)
             return 0;
         }
         else {
-            ErrorReturnVoid(
-                "Value property is already set the other way",
-                0L, 0L,
-                "you can 'return;' to set it anyhow" );
+            ErrorMayQuit("property is already set the other way", 0, 0);
         }
     }
 
@@ -2801,10 +2788,7 @@ static Obj DoSetProperty(Obj self, Obj obj, Obj val)
         }
     }
     else {
-        ErrorReturnVoid(
-            "Value cannot be set for internal objects",
-            0L, 0L,
-            "you can 'return;' without setting it" );
+        ErrorMayQuit("property cannot be set for internal objects", 0, 0);
     }
 
     return 0;
@@ -2840,11 +2824,9 @@ Obj DoProperty (
 
     /* call the operation to compute the value                             */
     val = DoOperation1Args( self, obj );
-    while ( val != True && val != False ) {
-        val = ErrorReturnObj(
-               "Method for a property did not return true or false",
-               0L, 0L,
-               "you can 'return true;' or 'return false;'");
+    if (val != True && val != False) {
+        ErrorMayQuit("Method for a property did not return true or false", 0,
+                     0);
     }
 
     /* set the value (but not for internal objects)                        */
@@ -2894,11 +2876,9 @@ static Obj DoVerboseProperty(Obj self, Obj obj)
 
     /* call the operation to compute the value                             */
     val = DoVerboseOperation1Args( self, obj );
-    while ( val != True && val != False ) {
-        val = ErrorReturnObj(
-               "Method for a property did not return true or false",
-               0L, 0L,
-               "you can 'return true;' or 'return false;'");
+    if (val != True && val != False) {
+        ErrorMayQuit("Method for a property did not return true or false", 0,
+                     0);
     }
 
     /* set the value (but not for internal objects)                        */

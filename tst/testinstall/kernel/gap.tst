@@ -45,9 +45,9 @@ gap> RecNames(NanosecondsSinceEpochInfo());
 gap> List(SizeScreen(), IsPosInt);
 [ true, true ]
 gap> SizeScreen(100, 100);
-Error, Function: number of arguments must be 0 or 1 (not 2)
+Error, SizeScreen: number of arguments must be 0 or 1 (not 2)
 gap> SizeScreen(100);
-Error, SizeScreen: <size> must be a list of length 2
+Error, SizeScreen: <size> must be a list of length at most 2
 gap> SizeScreen([fail,fail]);
 Error, SizeScreen: <x> must be an integer
 gap> SizeScreen([100,fail]);
@@ -55,15 +55,16 @@ Error, SizeScreen: <y> must be an integer
 
 #
 gap> WindowCmd(fail);
-Error, argument list must be a list (not a boolean or fail)
+Error, WindowCmd: <args> must be a small list (not the value 'fail')
 gap> WindowCmd([]);
 Error, List Element: <list>[1] must have an assigned value
 gap> WindowCmd([fail]);
-Error, <cmd> must be a string (not a boolean or fail)
+Error, WindowCmd: <cmd> must be a string (not a boolean or fail)
 gap> WindowCmd([""]);
-Error, <cmd> must be a string of length 3
+Error, WindowCmd: <cmd> must be a string of length 3
 gap> WindowCmd(["abc",fail]);
-Error, 2. argument must be a string or integer (not a boolean or fail)
+Error, WindowCmd: 2. argument must be a string or integer (not a boolean or fa\
+il)
 gap> WindowCmd(["abc"]);
 Error, window system: No Window Handler Present
 gap> WindowCmd(["abc",1,"foo"]);

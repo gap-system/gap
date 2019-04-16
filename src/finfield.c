@@ -1088,11 +1088,7 @@ static Obj QuoFFEFFE(Obj opL, Obj opR)
 
     /* compute and return the result                                       */
     if ( vR == 0 ) {
-        opR = ErrorReturnObj(
-            "FFE operations: <divisor> must not be zero",
-            0L, 0L,
-            "you can replace <divisor> via 'return <divisor>;'" );
-        return QUO( opL, opR );
+        ErrorMayQuit("FFE operations: <divisor> must not be zero", 0, 0);
     }
     vX = QUO_FFV( vL, vR, SUCC_FF(fX) );
     return NEW_FFE( fX, vX );
@@ -1125,11 +1121,7 @@ static Obj QuoFFEInt(Obj opL, Obj opR)
 
     /* compute and return the result                                       */
     if ( vR == 0 ) {
-        opR = ErrorReturnObj(
-            "FFE operations: <divisor> must not be zero",
-            0L, 0L,
-            "you can replace <divisor> via 'return <divisor>;'" );
-        return QUO( opL, opR );
+        ErrorMayQuit("FFE operations: <divisor> must not be zero", 0, 0);
     }
     vX = QUO_FFV( vL, vR, sX );
     return NEW_FFE( fX, vX );
@@ -1162,11 +1154,7 @@ static Obj QuoIntFFE(Obj opL, Obj opR)
 
     /* compute and return the result                                       */
     if ( vR == 0 ) {
-        opR = ErrorReturnObj(
-            "FFE operations: <divisor> must not be zero",
-            0L, 0L,
-            "you can replace <divisor> via 'return <divisor>;'" );
-        return QUO( opL, opR );
+        ErrorMayQuit("FFE operations: <divisor> must not be zero", 0, 0);
     }
     vX = QUO_FFV( vL, vR, sX );
     return NEW_FFE( fX, vX );
@@ -1204,11 +1192,7 @@ static Obj PowFFEInt(Obj opL, Obj opR)
     /* if the exponent is negative, invert the left operand                */
     if ( vR < 0 ) {
         if ( vL == 0 ) {
-            opL = ErrorReturnObj(
-                "FFE operations: <divisor> must not be zero",
-                0L, 0L,
-                "you can replace <divisor> via 'return <divisor>;'" );
-            return POW( opL, opR );
+            ErrorMayQuit("FFE operations: <divisor> must not be zero", 0, 0);
         }
         vL = QUO_FFV( 1, vL, sX );
         vR = -vR;
@@ -1288,17 +1272,13 @@ static Obj FuncLOG_FFE_DEFAULT(Obj self, Obj opZ, Obj opR)
     Int                 a, b, c, d, t;  /* temporaries                     */
 
     /* check the arguments                                                 */
-    while ( ! IS_FFE(opZ) || VAL_FFE(opZ) == 0 ) {
-        opZ = ErrorReturnObj(
-            "LogFFE: <z> must be a nonzero finite field element",
-             0L, 0L,
-             "you can replace <z> via 'return <z>;'" );
+    if (!IS_FFE(opZ) || VAL_FFE(opZ) == 0) {
+        ErrorMayQuit("LogFFE: <z> must be a nonzero finite field element", 0,
+                     0);
     }
-    while ( ! IS_FFE(opR) || VAL_FFE(opR) == 0 ) {
-        opR = ErrorReturnObj(
-            "LogFFE: <r> must be a nonzero finite field element",
-             0L, 0L,
-             "you can replace <r> via 'return <r>;'" );
+    if (!IS_FFE(opR) || VAL_FFE(opR) == 0) {
+        ErrorMayQuit("LogFFE: <r> must be a nonzero finite field element", 0,
+                     0);
     }
 
     /* get the values, handle trivial cases                                */
@@ -1440,11 +1420,7 @@ static Obj FuncINT_FFE_DEFAULT(Obj self, Obj z)
 
     /* check the argument                                                  */
     if ( (v-1) % ((q-1)/(p-1)) != 0 ) {
-        z = ErrorReturnObj(
-            "IntFFE: <z> must lie in prime field",
-            0L, 0L,
-            "you can replace <z> via 'return <z>;'" );
-        return FuncINT_FFE_DEFAULT( self, z );
+        ErrorMayQuit("IntFFE: <z> must lie in prime field", 0, 0);
     }
 
     /* convert the value into the prime field                              */

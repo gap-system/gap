@@ -1979,9 +1979,7 @@ static Obj FuncUNB_GF2VEC(Obj self, Obj list, Obj pos)
     RequireMutable("List Unbind", list, "vector");
 
     if (DoFilter(IsLockedRepresentationVector, list) == True) {
-        ErrorReturnVoid("Unbind forbidden on locked GF2 vector", 0L, 0L,
-                        "you can 'return;' and ignore the operation");
-        return 0;
+        ErrorMayQuit("Unbind forbidden on locked GF2 vector", 0, 0);
     }
 
     // get the position
@@ -2094,10 +2092,7 @@ static Obj FuncINV_GF2MAT_MUTABLE(Obj self, Obj mat)
     len = LEN_GF2MAT(mat);
     if (len != 0) {
         if (len != LEN_GF2VEC(ELM_GF2MAT(mat, 1))) {
-            mat = ErrorReturnObj(
-                "<matrix> must be square", 0, 0,
-                "you can replace <matrix> via 'return <matrix>;'");
-            return INV(mat);
+            ErrorMayQuit("<matrix> must be square", 0, 0);
         }
     }
     return InverseGF2Mat(mat, 2);
@@ -2118,10 +2113,7 @@ static Obj FuncINV_GF2MAT_SAME_MUTABILITY(Obj self, Obj mat)
     len = LEN_GF2MAT(mat);
     if (len != 0) {
         if (len != LEN_GF2VEC(ELM_GF2MAT(mat, 1))) {
-            mat = ErrorReturnObj(
-                "<matrix> must be square", 0, 0,
-                "you can replace <matrix> via 'return <matrix>;'");
-            return INV_MUT(mat);
+            ErrorMayQuit("<matrix> must be square", 0, 0);
         }
     }
     return InverseGF2Mat(mat, 1);
@@ -2142,13 +2134,7 @@ static Obj FuncINV_GF2MAT_IMMUTABLE(Obj self, Obj mat)
     len = LEN_GF2MAT(mat);
     if (len != 0) {
         if (len != LEN_GF2VEC(ELM_GF2MAT(mat, 1))) {
-            Obj inv;
-            mat = ErrorReturnObj(
-                "<matrix> must be square", 0, 0,
-                "you can replace <matrix> via 'return <matrix>;'");
-            inv = INV(mat);
-            MakeImmutable(inv);
-            return inv;
+            ErrorMayQuit("<matrix> must be square", 0, 0);
         }
     }
     return InverseGF2Mat(mat, 0);
@@ -2663,9 +2649,8 @@ static Obj FuncTRANSPOSED_GF2MAT(Obj self, Obj mat)
 
     // check argument
     if (TNUM_OBJ(mat) != T_POSOBJ) {
-        mat = ErrorReturnObj(
-            "TRANSPOSED_GF2MAT: Need compressed matrix over GF(2)\n", 0, 0,
-            "You can return such matrix with 'return mat;'\n");
+        ErrorMayQuit("TRANSPOSED_GF2MAT: Need compressed matrix over GF(2)\n",
+                     0, 0);
     }
     // type for mat
     typ = TYPE_LIST_GF2MAT;
@@ -3304,9 +3289,7 @@ static void ResizeGF2Vec(Obj vec, UInt newlen)
     if (len == newlen)
         return;
     if (True == DoFilter(IsLockedRepresentationVector, vec)) {
-        ErrorReturnVoid("Resize of locked compressed vector is forbidden", 0,
-                        0, "You can `return;' to ignore the operation");
-        return;
+        ErrorMayQuit("Resize of locked compressed vector is forbidden", 0, 0);
     }
 
 
@@ -3697,20 +3680,14 @@ FuncREDUCE_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 {
     UInt last;
     Int  len2a;
-    if (!IS_INTOBJ(len1))
-        ErrorMayQuit("REDUCE_COEFFS_GF2VEC: given length <len1> of left argt "
-                     "must be a small integer, not a %s",
-                     (Int)TNAM_OBJ(len1), 0L);
-    if (INT_INTOBJ(len1) < 0 || INT_INTOBJ(len1) > LEN_GF2VEC(vec1))
+    RequireNonnegativeSmallInt("ReduceCoeffs", len1);
+    RequireNonnegativeSmallInt("ReduceCoeffs", len2);
+    if (INT_INTOBJ(len1) > LEN_GF2VEC(vec1))
         ErrorMayQuit("ReduceCoeffs: given length <len1> of left argt "
                      "(%d)\nis longer than the argt (%d)",
                      INT_INTOBJ(len1), LEN_GF2VEC(vec1));
-    if (!IS_INTOBJ(len2))
-        ErrorMayQuit("REDUCE_COEFFS_GF2VEC: given length <len2> of right "
-                     "argt must be a small integer, not a %s",
-                     (Int)TNAM_OBJ(len2), 0L);
     len2a = INT_INTOBJ(len2);
-    if (len2a < 0 || len2a > LEN_GF2VEC(vec2))
+    if (len2a > LEN_GF2VEC(vec2))
         ErrorMayQuit("ReduceCoeffs: given length <len2> of right argt "
                      "(%d)\nis longer than the argt (%d)",
                      len2a, LEN_GF2VEC(vec2));
@@ -3748,20 +3725,14 @@ FuncQUOTREM_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
     Int len2a;
     Int len1a = INT_INTOBJ(len1);
     Obj quotv, remv, ret;
-    if (!IS_INTOBJ(len1))
-        ErrorMayQuit("QUOTREM_COEFFS_GF2VEC: given length <len1> of left "
-                     "argt must be a small integer, not a %s",
-                     (Int)TNAM_OBJ(len1), 0L);
-    if (INT_INTOBJ(len1) < 0 || INT_INTOBJ(len1) > LEN_GF2VEC(vec1))
+    RequireNonnegativeSmallInt("QuotremCoeffs", len1);
+    RequireNonnegativeSmallInt("QuotremCoeffs", len2);
+    if (INT_INTOBJ(len1) > LEN_GF2VEC(vec1))
         ErrorMayQuit("QuotremCoeffs: given length <len1> of left argt "
                      "(%d)\nis longer than the argt (%d)",
                      INT_INTOBJ(len1), LEN_GF2VEC(vec1));
-    if (!IS_INTOBJ(len2))
-        ErrorMayQuit("QUOTREM_COEFFS_GF2VEC: given length <len2> of right "
-                     "argt must be a small integer, not a %s",
-                     (Int)TNAM_OBJ(len2), 0L);
     len2a = INT_INTOBJ(len2);
-    if (len2a < 0 || len2a > LEN_GF2VEC(vec2))
+    if (len2a > LEN_GF2VEC(vec2))
         ErrorMayQuit("QuotremCoeffs: given length <len2> of right argt "
                      "(%d)\nis longer than the argt (%d)",
                      len2a, LEN_GF2VEC(vec2));

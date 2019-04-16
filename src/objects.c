@@ -1785,16 +1785,6 @@ static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
                      0, 0);
     }
 #endif
-    /* check <dst>                                                         
-    if ( (REREADING != True) &&
-         (CALL_1ARGS( IsToBeDefinedObj, dst ) != True) ) {
-        ErrorReturnVoid( "the destination must be `to-be-defined' (not a %s)",
-                         (Int)TNAM_OBJ(dst), 0,
-                         "you can 'return;'" );
-        return 0;
-    }
-
-    */
     
     /* if object is mutable, produce a structural copy                     */
     if ( IS_MUTABLE_OBJ(src) ) {
