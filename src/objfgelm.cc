@@ -261,7 +261,7 @@ static Obj FuncNBits_ExponentSums1(Obj self, Obj obj)
 #define Func16Bits_ExponentSyllable FuncNBits_ExponentSyllable<UInt2>
 #define Func32Bits_ExponentSyllable FuncNBits_ExponentSyllable<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_ExponentSyllable(Obj self, Obj w, Obj vi)
+static Obj FuncNBits_ExponentSyllable(Obj self, Obj w, Obj pos)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* signed exponent mask                    */
@@ -272,10 +272,9 @@ static Obj FuncNBits_ExponentSyllable(Obj self, Obj w, Obj vi)
 
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
-    while ( !IS_INTOBJ(vi) || INT_INTOBJ(vi) <= 0 || num < INT_INTOBJ(vi) )
-        vi = ErrorReturnObj( "<i> must be an integer between 1 and %d", num, 0L,
-                             "you can replace <i> via 'return <i>;'" );
-    i = INT_INTOBJ(vi);
+    i = GetPositiveSmallInt("NBits_ExponentSyllable", pos);
+    if (num < i)
+        ErrorMayQuit("<pos> must be an integer between 1 and %d", num, 0);
 
     /* get the number of bits for exponents                                */
     ebits = EBITS_WORD(w);
@@ -356,7 +355,7 @@ static Obj FuncNBits_ExtRepOfObj(Obj self, Obj obj)
 #define Func16Bits_GeneratorSyllable FuncNBits_GeneratorSyllable<UInt2>
 #define Func32Bits_GeneratorSyllable FuncNBits_GeneratorSyllable<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_GeneratorSyllable(Obj self, Obj w, Obj vi)
+static Obj FuncNBits_GeneratorSyllable(Obj self, Obj w, Obj pos)
 {
     Int         ebits;          /* number of bits in the exponent          */
     Int         num;            /* number of gen/exp pairs in <data>       */
@@ -365,10 +364,9 @@ static Obj FuncNBits_GeneratorSyllable(Obj self, Obj w, Obj vi)
 
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
-    while ( !IS_INTOBJ(vi) || INT_INTOBJ(vi) <= 0 || num < INT_INTOBJ(vi) )
-        vi = ErrorReturnObj( "<i> must be an integer between 1 and %d", num, 0L,
-                             "you can replace <i> via 'return <i>;'" );
-    i = INT_INTOBJ(vi);
+    i = GetPositiveSmallInt("NBits_GeneratorSyllable", pos);
+    if (num < i)
+        ErrorMayQuit("<pos> must be an integer between 1 and %d", num, 0);
 
     /* get the number of bits for exponents                                */
     ebits = EBITS_WORD(w);
@@ -1334,9 +1332,9 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(8Bits_Equal, 2, "8_bits_word, 8_bits_word"),
     GVAR_FUNC(8Bits_ExponentSums1, 1, "8_bits_word"),
     GVAR_FUNC(8Bits_ExponentSums3, 3, "8_bits_word, start, end"),
-    GVAR_FUNC(8Bits_ExponentSyllable, 2, "8_bits_word, position"),
+    GVAR_FUNC(8Bits_ExponentSyllable, 2, "8_bits_word, pos"),
     GVAR_FUNC(8Bits_ExtRepOfObj, 1, "8_bits_word"),
-    GVAR_FUNC(8Bits_GeneratorSyllable, 2, "8_bits_word, position"),
+    GVAR_FUNC(8Bits_GeneratorSyllable, 2, "8_bits_word, pos"),
     GVAR_FUNC(8Bits_Less, 2, "8_bits_word, 8_bits_word"),
     GVAR_FUNC(8Bits_AssocWord, 2, "type, data"),
     GVAR_FUNC(8Bits_ObjByVector, 2, "type, data"),
@@ -1349,7 +1347,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(16Bits_Equal, 2, "16_bits_word, 16_bits_word"),
     GVAR_FUNC(16Bits_ExponentSums1, 1, "16_bits_word"),
     GVAR_FUNC(16Bits_ExponentSums3, 3, "16_bits_word, start, end"),
-    GVAR_FUNC(16Bits_ExponentSyllable, 2, "16_bits_word, position"),
+    GVAR_FUNC(16Bits_ExponentSyllable, 2, "16_bits_word, pos"),
     GVAR_FUNC(16Bits_ExtRepOfObj, 1, "16_bits_word"),
     GVAR_FUNC(16Bits_GeneratorSyllable, 2, "16_bits_word, pos"),
     GVAR_FUNC(16Bits_Less, 2, "16_bits_word, 16_bits_word"),
@@ -1364,7 +1362,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(32Bits_Equal, 2, "32_bits_word, 32_bits_word"),
     GVAR_FUNC(32Bits_ExponentSums1, 1, "32_bits_word"),
     GVAR_FUNC(32Bits_ExponentSums3, 3, "32_bits_word, start, end"),
-    GVAR_FUNC(32Bits_ExponentSyllable, 2, "32_bits_word, position"),
+    GVAR_FUNC(32Bits_ExponentSyllable, 2, "32_bits_word, pos"),
     GVAR_FUNC(32Bits_ExtRepOfObj, 1, "32_bits_word"),
     GVAR_FUNC(32Bits_GeneratorSyllable, 2, "32_bits_word, pos"),
     GVAR_FUNC(32Bits_Less, 2, "32_bits_word, 32_bits_word"),

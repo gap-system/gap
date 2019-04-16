@@ -97,20 +97,20 @@ gap> ForAll(words, w -> ExponentSyllable(w, 2) = -10);
 true
 
 #
-gap> 8Bits_ExponentSyllable(w8, 0);
-Error, <i> must be an integer between 1 and 3
-gap> 16Bits_ExponentSyllable(w16, 0);
-Error, <i> must be an integer between 1 and 3
-gap> 32Bits_ExponentSyllable(w32, 0);
-Error, <i> must be an integer between 1 and 3
+gap> 8Bits_ExponentSyllable(w8, 4);
+Error, <pos> must be an integer between 1 and 3
+gap> 16Bits_ExponentSyllable(w16, 4);
+Error, <pos> must be an integer between 1 and 3
+gap> 32Bits_ExponentSyllable(w32, 4);
+Error, <pos> must be an integer between 1 and 3
 
 #
-gap> 8Bits_GeneratorSyllable(w8, 0);
-Error, <i> must be an integer between 1 and 3
-gap> 16Bits_GeneratorSyllable(w16, 0);
-Error, <i> must be an integer between 1 and 3
-gap> 32Bits_GeneratorSyllable(w32, 0);
-Error, <i> must be an integer between 1 and 3
+gap> 8Bits_GeneratorSyllable(w8, 4);
+Error, <pos> must be an integer between 1 and 3
+gap> 16Bits_GeneratorSyllable(w16, 4);
+Error, <pos> must be an integer between 1 and 3
+gap> 32Bits_GeneratorSyllable(w32, 4);
+Error, <pos> must be an integer between 1 and 3
 
 #
 # test powering (esp. 8Bits_Power), with various shapes

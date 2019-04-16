@@ -90,10 +90,9 @@ static Obj SumFFEVecFFE(Obj elmL, Obj vecR)
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmL)))
             return SumSclList(elmL, vecR);
 
-        elmL = ErrorReturnObj(
-            "<elm>+<vec>: <elm> and <vec> must belong to the same finite field",
-            0L, 0L, "you can replace <elm> via 'return <elm>;'");
-        return SUM(elmL, vecR);
+        ErrorMayQuit("<elm>+<vec>: <elm> and <vec> must belong to the same "
+                     "finite field",
+                     0, 0);
     }
 
     /* make the result list                                                */
@@ -150,10 +149,9 @@ static Obj SumVecFFEFFE(Obj vecL, Obj elmR)
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmR)))
             return SumListScl(vecL, elmR);
 
-        elmR = ErrorReturnObj(
-            "<vec>+<elm>: <elm> and <vec> must belong to the same finite field",
-            0L, 0L, "you can replace <elm> via 'return <elm>;'");
-        return SUM(vecL, elmR);
+        ErrorMayQuit("<vec>+<elm>: <elm> and <vec> must belong to the same "
+                     "finite field",
+                     0, 0);
     }
 
     /* make the result list                                                */
@@ -222,10 +220,7 @@ static Obj SumVecFFEVecFFE(Obj vecL, Obj vecR)
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
             return SumListList(vecL, vecR);
 
-        vecR = ErrorReturnObj(
-            "Vector +: vectors have different fields",
-            0L, 0L, "you can replace vector <right> via 'return <right>;'");
-        return SUM(vecL, vecR);
+        ErrorMayQuit("Vector +: vectors have different fields", 0, 0);
     }
 
     /* make the result list                                                */
@@ -289,10 +284,9 @@ static Obj DiffFFEVecFFE(Obj elmL, Obj vecR)
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmL)))
             return DiffSclList(elmL, vecR);
 
-        elmL = ErrorReturnObj(
-            "<elm>-<vec>: <elm> and <vec> must belong to the same finite field",
-            0L, 0L, "you can replace <elm> via 'return <elm>;'");
-        return DIFF(elmL, vecR);
+        ErrorMayQuit("<elm>-<vec>: <elm> and <vec> must belong to the same "
+                     "finite field",
+                     0, 0);
     }
 
     /* make the result list                                                */
@@ -350,10 +344,9 @@ static Obj DiffVecFFEFFE(Obj vecL, Obj elmR)
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmR)))
             return DiffListScl(vecL, elmR);
 
-        elmR = ErrorReturnObj(
-            "<vec>-<elm>: <elm> and <vec> must belong to the same finite field",
-            0L, 0L, "you can replace <elm> via 'return <elm>;'");
-        return DIFF(vecL, elmR);
+        ErrorMayQuit("<vec>-<elm>: <elm> and <vec> must belong to the same "
+                     "finite field",
+                     0, 0);
     }
 
     /* make the result list                                                */
@@ -424,10 +417,7 @@ static Obj DiffVecFFEVecFFE(Obj vecL, Obj vecR)
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
             return DiffListList(vecL, vecR);
 
-        vecR = ErrorReturnObj(
-            "Vector -: vectors have different fields",
-            0L, 0L, "you can replace vector <right> via 'return <right>;'");
-        return DIFF(vecL, vecR);
+        ErrorMayQuit("Vector -: vectors have different fields", 0, 0);
     }
 
     /* make the result list                                                */
@@ -496,10 +486,9 @@ static Obj ProdFFEVecFFE(Obj elmL, Obj vecR)
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmL)))
             return ProdSclList(elmL, vecR);
 
-        elmL = ErrorReturnObj(
-            "<elm>*<vec>: <elm> and <vec> must belong to the same finite field",
-            0L, 0L, "you can replace <elm> via 'return <elm>;'");
-        return PROD(elmL, vecR);
+        ErrorMayQuit("<elm>*<vec>: <elm> and <vec> must belong to the same "
+                     "finite field",
+                     0, 0);
     }
 
     /* make the result list                                                */
@@ -555,10 +544,9 @@ static Obj ProdVecFFEFFE(Obj vecL, Obj elmR)
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmR)))
             return ProdListScl(vecL, elmR);
 
-        elmR = ErrorReturnObj(
-            "<vec>*<elm>: <elm> and <vec> must belong to the same finite field",
-            0L, 0L, "you can replace <elm> via 'return <elm>;'");
-        return PROD(vecL, elmR);
+        ErrorMayQuit("<vec>*<elm>: <elm> and <vec> must belong to the same "
+                     "finite field",
+                     0, 0);
     }
 
     /* make the result list                                                */
@@ -620,11 +608,7 @@ static Obj ProdVecFFEVecFFE(Obj vecL, Obj vecR)
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
             return ProdListList(vecL, vecR);
 
-        vecR = ErrorReturnObj(
-            "Vector *: vectors have different fields",
-            0L, 0L,
-            "you can replace vector <right> via 'return <right>;'");
-        return PROD(vecL, vecR);
+        ErrorMayQuit("Vector *: vectors have different fields", 0, 0);
     }
 
     /* to add we need the successor table                                  */

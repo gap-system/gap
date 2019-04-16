@@ -248,12 +248,9 @@ UInt            RNamObj (
 
     /* otherwise fail                                                      */
     else {
-        Obj err;
-        err = ErrorReturnObj(
-            "Record: '<rec>.(<obj>)' <obj> must be a string or an integer",
-            0L, 0L,
-            "you can replace <obj> via 'return <obj>;'" );
-        return RNamObj( err );
+        ErrorMayQuit("Record: '<rec>.(<obj>)' <obj> must be a string or a "
+                     "small integer (not a %s)",
+                     (Int)TNAM_OBJ(obj), 0);
     }
 }
 
@@ -290,15 +287,11 @@ static Obj FuncNameRNam(Obj self, Obj rnam)
     Obj                 name;
     Obj                 oname;
     const UInt          countRNam = LEN_PLIST(NamesRNam);
-    while ( ! IS_INTOBJ(rnam)
-         || INT_INTOBJ(rnam) <= 0
-        || countRNam < INT_INTOBJ(rnam) ) {
-        rnam = ErrorReturnObj(
-            "NameRName: <rnam> must be a record name (not a %s)",
-            (Int)TNAM_OBJ(rnam), 0L,
-            "you can replace <rnam> via 'return <rnam>;'" );
+    Int                 inam = GetPositiveSmallInt("NameRName", rnam);
+    if (countRNam < inam) {
+        ErrorMayQuit("NameRName: <rnam> is not a valid record name", 0, 0);
     }
-    oname = NAME_RNAM( INT_INTOBJ(rnam) );
+    oname = NAME_RNAM(inam);
     name = CopyToStringRep(oname);
     return name;
 }
@@ -346,20 +339,16 @@ static Obj ElmRecHandler(Obj self, Obj rec, Obj rnam)
 
 static Obj ElmRecError(Obj rec, UInt rnam)
 {
-    rec = ErrorReturnObj(
-        "Record Element: <rec> must be a record (not a %s)",
-        (Int)TNAM_OBJ(rec), 0L,
-        "you can replace <rec> via 'return <rec>;'" );
-    return ELM_REC( rec, rnam );
+    ErrorMayQuit("Record Element: <rec> must be a record (not a %s)",
+                 (Int)TNAM_OBJ(rec), 0);
 }
 
 static Obj ElmRecObject(Obj obj, UInt rnam)
 {
   Obj elm;
   elm = DoOperation2Args( ElmRecOper, obj, INTOBJ_INT(rnam) );
-  while (elm == 0)
-    elm =  ErrorReturnObj("Record access method must return a value",0L,0L,
-                          "you can supply a value <val> via 'return <val>;'");
+  if (elm == 0)
+      ErrorMayQuit("Record access method must return a value", 0, 0);
   return elm;
 
 }
@@ -384,11 +373,8 @@ static Obj IsbRecHandler(Obj self, Obj rec, Obj rnam)
 
 static Int IsbRecError(Obj rec, UInt rnam)
 {
-    rec = ErrorReturnObj(
-        "Record IsBound: <rec> must be a record (not a %s)",
-        (Int)TNAM_OBJ(rec), 0L,
-        "you can replace <rec> via 'return <rec>;'" );
-    return ISB_REC( rec, rnam );
+    ErrorMayQuit("Record IsBound: <rec> must be a record (not a %s)",
+                 (Int)TNAM_OBJ(rec), 0);
 }
 
 static Int IsbRecObject(Obj obj, UInt rnam)
@@ -417,11 +403,8 @@ static Obj AssRecHandler(Obj self, Obj rec, Obj rnam, Obj obj)
 
 static void AssRecError(Obj rec, UInt rnam, Obj obj)
 {
-    rec = ErrorReturnObj(
-        "Record Assignment: <rec> must be a record (not a %s)",
-        (Int)TNAM_OBJ(rec), 0L,
-        "you can replace <rec> via 'return <rec>;'" );
-    ASS_REC( rec, rnam, obj );
+    ErrorMayQuit("Record Assignment: <rec> must be a record (not a %s)",
+                 (Int)TNAM_OBJ(rec), 0);
 }
 
 static void AssRecObject(Obj obj, UInt rnam, Obj val)
@@ -449,11 +432,8 @@ static Obj UnbRecHandler(Obj self, Obj rec, Obj rnam)
 
 static void UnbRecError(Obj rec, UInt rnam)
 {
-    rec = ErrorReturnObj(
-        "Record Unbind: <rec> must be a record (not a %s)",
-        (Int)TNAM_OBJ(rec), 0L,
-        "you can replace <rec> via 'return <rec>;'" );
-    UNB_REC( rec, rnam );
+    ErrorMayQuit("Record Unbind: <rec> must be a record (not a %s)",
+                 (Int)TNAM_OBJ(rec), 0);
 }
 
 static void UnbRecObject(Obj obj, UInt rnam)

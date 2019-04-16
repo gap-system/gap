@@ -17,15 +17,17 @@ gap> mockRec := Objectify(type,["myName"]);;
 gap> ForAll([1,-1,"abc"], x -> IsInt(RNamObj(x)));
 true
 gap> RNamObj(fail);
-Error, Record: '<rec>.(<obj>)' <obj> must be a string or an integer
+Error, Record: '<rec>.(<obj>)' <obj> must be a string or a small integer (not \
+a boolean or fail)
 
 # NameRNam
 gap> ForAll([1,-1,"abc"], x -> NameRNam(RNamObj(x)) = String(x));
 true
 gap> NameRNam(-1);
-Error, NameRName: <rnam> must be a record name (not a integer)
+Error, NameRName: <rnam> must be a positive small integer (not the integer -1)
 gap> NameRNam(fail);
-Error, NameRName: <rnam> must be a record name (not a boolean or fail)
+Error, NameRName: <rnam> must be a positive small integer (not the value 'fail\
+')
 
 # ElmRecHandler
 gap> ELM_REC(r, RNamObj(1));

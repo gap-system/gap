@@ -114,7 +114,7 @@ Error, You cannot set an "and-filter" except to true
 gap> filter:=SETTER_FILTER(IsMutable);;
 gap> filter(G, false);
 gap> filter(G, true);
-Error, value feature is already set the other way
+Error, filter is already set the other way
 
 # test DoSetReturnTrueFilter
 gap> Setter(IS_OBJECT)(G, true);
@@ -124,7 +124,7 @@ Error, you cannot set this flag to 'false'
 # test DoSetProperty
 gap> SetIsPGroup(G, false);
 gap> SetIsPGroup(G, true);
-Error, Value property is already set the other way
+Error, property is already set the other way
 
 #
 gap> NEW_FILTER(fail);
@@ -255,7 +255,7 @@ gap> f:=SETTER_FUNCTION("foobar", IsPGroup);;
 gap> f(fail, false);
 Error, <obj> must be a component object
 gap> SetIsPGroup(fail, false);
-Error, Value cannot be set for internal objects
+Error, property cannot be set for internal objects
 
 #
 gap> f:=GETTER_FUNCTION("foobar");;

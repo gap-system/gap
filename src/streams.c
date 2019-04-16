@@ -1669,21 +1669,9 @@ static Obj FuncUNIXSelect(Obj self,
   Int i,j;
   Obj o;
 
-  while (inlist == (Obj) 0 || !(IS_PLIST(inlist)))
-    inlist = ErrorReturnObj(
-           "UNIXSelect: <inlist> must be a list of small integers (not a %s)",
-           (Int)TNAM_OBJ(inlist),0L,
-           "you can replace <inlist> via 'return <inlist>;'" );
-  while (outlist == (Obj) 0 || !(IS_PLIST(outlist)))
-    outlist = ErrorReturnObj(
-           "UNIXSelect: <outlist> must be a list of small integers (not a %s)",
-           (Int)TNAM_OBJ(outlist),0L,
-           "you can replace <outlist> via 'return <outlist>;'" );
-  while (exclist == (Obj) 0 || !(IS_PLIST(exclist)))
-    exclist = ErrorReturnObj(
-           "UNIXSelect: <exclist> must be a list of small integers (not a %s)",
-           (Int)TNAM_OBJ(exclist),0L,
-           "you can replace <exclist> via 'return <exclist>;'" );
+  RequirePlainList("UNIXSelect", inlist);
+  RequirePlainList("UNIXSelect", outlist);
+  RequirePlainList("UNIXSelect", exclist);
 
   FD_ZERO(&infds);
   FD_ZERO(&outfds);

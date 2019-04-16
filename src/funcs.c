@@ -191,10 +191,8 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call)
         return 0;
     }
 
-    while (result == 0) {
-        result =
-            ErrorReturnObj("Function Calls: <func> must return a value", 0, 0,
-                           "you can supply one by 'return <value>;'");
+    if (result == 0) {
+        ErrorMayQuit("Function Calls: <func> must return a value", 0, 0);
     }
     return result;
 }

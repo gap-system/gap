@@ -1000,11 +1000,10 @@ void PlainVec8Bit(Obj list)
 static Obj FuncPLAIN_VEC8BIT(Obj self, Obj list)
 {
     // check whether <list> is an 8bit vector
-    while (!IS_VEC8BIT_REP(list)) {
-        list = ErrorReturnObj(
+    if (!IS_VEC8BIT_REP(list)) {
+        ErrorMayQuit(
             "PLAIN_VEC8BIT: <list> must be an 8bit vector (not a %s)",
-            (Int)TNAM_OBJ(list), 0L,
-            "you can replace <list> via 'return <list>;'");
+            (Int)TNAM_OBJ(list), 0);
     }
     if (DoFilter(IsLockedRepresentationVector, list) == True) {
         ErrorMayQuit("You cannot convert a locked vector compressed over "
@@ -1636,19 +1635,14 @@ static Obj FuncADD_ROWVECTOR_VEC8BITS_5(
         return (Obj)0;
 
     if (len != LEN_VEC8BIT(vr)) {
-        vr = ErrorReturnObj("AddRowVector: <left> and <right> must be "
-                            "vectors of the same length",
-                            0L, 0L,
-                            "you can replace <right> via 'return <right>;'");
-
-        // Now redispatch, because vr could be anything
-        return CALL_3ARGS(AddRowVector, vl, vr, mul);
+        ErrorMayQuit("AddRowVector: <left> and <right> must be "
+                     "vectors of the same length",
+                     0, 0);
     }
-    while (LT(INTOBJ_INT(len), to)) {
-        to = ErrorReturnObj("AddRowVector: <to> (%d) is greater than the "
-                            "length of the vectors (%d)",
-                            INT_INTOBJ(to), len,
-                            "you can replace <to> via 'return <to>;'");
+    if (LT(INTOBJ_INT(len), to)) {
+        ErrorMayQuit("AddRowVector: <to> (%d) is greater than the "
+                     "length of the vectors (%d)",
+                     INT_INTOBJ(to), len);
     }
     if (LT(to, from))
         return (Obj)0;
@@ -1710,12 +1704,9 @@ static Obj FuncADD_ROWVECTOR_VEC8BITS_3(Obj self, Obj vl, Obj vr, Obj mul)
 {
     UInt q;
     if (LEN_VEC8BIT(vl) != LEN_VEC8BIT(vr)) {
-        vr = ErrorReturnObj(
-            "SUM: <left> and <right> must be vectors of the same length", 0L,
-            0L, "you can replace <right> via 'return <right>;'");
-
-        // Now redispatch, because vr could be anything
-        return CALL_3ARGS(AddRowVector, vl, vr, mul);
+        ErrorMayQuit(
+            "SUM: <left> and <right> must be vectors of the same length", 0,
+            0);
     }
     // Now we know that the characteristics must match, but not the fields
     q = FIELD_VEC8BIT(vl);
@@ -1772,12 +1763,9 @@ static Obj FuncADD_ROWVECTOR_VEC8BITS_2(Obj self, Obj vl, Obj vr)
 {
     UInt q;
     if (LEN_VEC8BIT(vl) != LEN_VEC8BIT(vr)) {
-        vr = ErrorReturnObj(
-            "SUM: <left> and <right> must be vectors of the same length", 0L,
-            0L, "you can replace <right> via 'return <right>;'");
-
-        // Now redispatch, because vr could be anything
-        return CALL_2ARGS(AddRowVector, vl, vr);
+        ErrorMayQuit(
+            "SUM: <left> and <right> must be vectors of the same length", 0,
+            0);
     }
     // Now we know that the characteristics must match, but not the fields
     q = FIELD_VEC8BIT(vl);
@@ -2917,11 +2905,7 @@ void ASS_VEC8BIT(Obj list, Obj pos, Obj elm)
     Obj  newelm;
 
     // check that <list> is mutable
-    if (!IS_MUTABLE_OBJ(list)) {
-        ErrorReturnVoid("List Assignment: <list> must be a mutable list", 0L,
-                        0L, "you can 'return;' and ignore the assignment");
-        return;
-    }
+    RequireMutable("List Assignment", list, "list");
 
     // get the position
     p = GetPositiveSmallInt("ASS_VEC8BIT", pos);
@@ -3024,11 +3008,7 @@ static Obj FuncUNB_VEC8BIT(Obj self, Obj list, Obj pos)
     UInt elts;
 
     // check that <list> is mutable
-    if (!IS_MUTABLE_OBJ(list)) {
-        ErrorReturnVoid("List Unbind: <list> must be a mutable list", 0L, 0L,
-                        "you can 'return;' and ignore the unbind");
-        return 0;
-    }
+    RequireMutable("List Unbind", list, "list");
     if (True == DoFilter(IsLockedRepresentationVector, list)) {
         ErrorReturnVoid(
             "Unbind of entry of locked compressed vector is forbidden", 0, 0,
@@ -3762,11 +3742,8 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
 static Obj FuncINV_MAT8BIT_MUTABLE(Obj self, Obj mat)
 {
     if (LEN_MAT8BIT(mat) != LEN_VEC8BIT(ELM_MAT8BIT(mat, 1))) {
-        mat = ErrorReturnObj(
-            "InverseOp: matrix must be square, not %d by %d",
-            LEN_MAT8BIT(mat), LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)),
-            "you can replace matrix <inv> via 'return <inv>;'");
-        return INV(mat);
+        ErrorMayQuit("InverseOp: matrix must be square, not %d by %d",
+                     LEN_MAT8BIT(mat), LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)));
     }
 
     return InverseMat8Bit(mat, 2);
@@ -3781,11 +3758,8 @@ static Obj FuncINV_MAT8BIT_MUTABLE(Obj self, Obj mat)
 static Obj FuncINV_MAT8BIT_SAME_MUTABILITY(Obj self, Obj mat)
 {
     if (LEN_MAT8BIT(mat) != LEN_VEC8BIT(ELM_MAT8BIT(mat, 1))) {
-        mat = ErrorReturnObj(
-            "INVOp: matrix must be square, not %d by %d", LEN_MAT8BIT(mat),
-            LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)),
-            "you can replace matrix <inv> via 'return <inv>;'");
-        return INV_MUT(mat);
+        ErrorMayQuit("INVOp: matrix must be square, not %d by %d",
+                     LEN_MAT8BIT(mat), LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)));
     }
 
     return InverseMat8Bit(mat, 1);
@@ -3800,14 +3774,8 @@ static Obj FuncINV_MAT8BIT_SAME_MUTABILITY(Obj self, Obj mat)
 static Obj FuncINV_MAT8BIT_IMMUTABLE(Obj self, Obj mat)
 {
     if (LEN_MAT8BIT(mat) != LEN_VEC8BIT(ELM_MAT8BIT(mat, 1))) {
-        Obj inv;
-        mat = ErrorReturnObj(
-            "Inverse: matrix must be square, not %d by %d", LEN_MAT8BIT(mat),
-            LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)),
-            "you can replace matrix <inv> via 'return <inv>;'");
-        inv = INV_MUT(mat);
-        MakeImmutable(inv);
-        return inv;
+        ErrorMayQuit("Inverse: matrix must be square, not %d by %d",
+                     LEN_MAT8BIT(mat), LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)));
     }
 
     return InverseMat8Bit(mat, 0);
@@ -4490,15 +4458,8 @@ static Obj FuncSHIFT_VEC8BIT_RIGHT(Obj self, Obj vec, Obj amount, Obj zero)
 
 static Obj FuncRESIZE_VEC8BIT(Obj self, Obj vec, Obj newsize)
 {
-    if (!IS_MUTABLE_OBJ(vec))
-        ErrorReturnVoid("RESIZE_VEC8BIT: vector must be mutable", 0, 0,
-                        "you can 'return;'");
-    while (IS_INTOBJ(newsize) && INT_INTOBJ(newsize) < 0) {
-        newsize = ErrorReturnObj(
-            "RESIZE_VEC8BIT: <amount> must be a non-negative integer, not %d",
-            INT_INTOBJ(newsize), 0,
-            "you can replace <amount> via 'return <amount>;'");
-    }
+    RequireMutable("RESIZE_VEC8BIT", vec, "vector");
+    RequireNonnegativeSmallInt("RESIZE_VEC8BIT", newsize);
     ResizeVec8Bit(vec, INT_INTOBJ(newsize), 0);
     return (Obj)0;
 }
@@ -5532,9 +5493,7 @@ static Obj FuncTRANSPOSED_MAT8BIT(Obj self, Obj mat)
 
     // check argument
     if (TNUM_OBJ(mat) != T_POSOBJ) {
-        mat = ErrorReturnObj(
-            "TRANSPOSED_MAT8BIT: Need compressed matrix\n", 0, 0,
-            "You can return such matrix with 'return mat;'\n");
+        ErrorMayQuit("TRANSPOSED_MAT8BIT: Need compressed matrix", 0, 0);
     }
     // we will give result same type as mat
 
