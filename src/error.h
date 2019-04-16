@@ -237,7 +237,7 @@ Obj RequireArgumentEx(const char * funcname,
 */
 #define RequireTrueOrFalse(funcname, op)                                     \
     RequireArgumentCondition(funcname, op, op == True || op == False,        \
-                             "must be true or false")
+                             "must be 'true' or 'false'")
 
 /****************************************************************************
 **
@@ -319,6 +319,15 @@ void CheckSameLength(const Char * desc,
 *F  CALL_WITH_CATCH
 */
 Obj CALL_WITH_CATCH(Obj func, Obj args);
+
+
+/****************************************************************************
+**
+*F  AssertionFailure() . . . . . . . . . . .  trigger a GAP assertion failure
+**
+**  This helper function is used by GAP's 'Assert' statement.
+*/
+void AssertionFailure(void);
 
 
 /****************************************************************************

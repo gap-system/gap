@@ -5001,8 +5001,7 @@ static void CompAssert2(Stat stat)
     Emit( "if ( ! LT(CurrentAssertionLevel, %c) ) {\n", lev );
     cnd = CompBoolExpr(READ_STAT(stat, 1));
     Emit( "if ( ! %c ) {\n", cnd );
-    Emit( "ErrorReturnVoid(\"Assertion failure\",0L,0L,\"you may 'return;'\"" );
-    Emit( ");\n");
+    Emit( "AssertionFailure();\n" );
     Emit( "}\n" );
     Emit( "}\n" );
 

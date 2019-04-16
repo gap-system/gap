@@ -597,6 +597,11 @@ Obj RequireArgumentEx(const char * funcname,
     ErrorMayQuit(msgbuf, arg1, arg2);
 }
 
+void AssertionFailure(void)
+{
+    ErrorReturnVoid("Assertion failure", 0, 0, "you may 'return;'");
+}
+
 
 /****************************************************************************
 **
