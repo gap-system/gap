@@ -57,7 +57,7 @@ static Obj  HdlrFunc2 (
   t_2 = False;
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
-   ErrorReturnVoid("Assertion failure",0L,0L,"you may 'return;'");
+   AssertionFailure();
   }
  }
  
@@ -81,7 +81,7 @@ static Obj  HdlrFunc2 (
   t_2 = True;
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
-   ErrorReturnVoid("Assertion failure",0L,0L,"you may 'return;'");
+   AssertionFailure();
   }
  }
  
@@ -117,7 +117,7 @@ static Obj  HdlrFunc2 (
   t_2 = False;
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
-   ErrorReturnVoid("Assertion failure",0L,0L,"you may 'return;'");
+   AssertionFailure();
   }
  }
  
@@ -141,7 +141,7 @@ static Obj  HdlrFunc2 (
   t_2 = True;
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
-   ErrorReturnVoid("Assertion failure",0L,0L,"you may 'return;'");
+   AssertionFailure();
   }
  }
  

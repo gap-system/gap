@@ -891,17 +891,14 @@ static UInt ExecInfo(Stat stat)
 static UInt ExecAssert2Args(Stat stat)
 {
     Obj             level;
-    Obj             decision;
+    Obj             cond;
 
     level = EVAL_EXPR(READ_STAT(stat, 0));
     if ( ! LT(CurrentAssertionLevel, level) )  {
-        decision = EVAL_EXPR(READ_STAT(stat, 1));
-        if (decision != True && decision != False) {
-            RequireArgumentEx("Assert", decision, "<cond>",
-                              "must be 'true' or 'false'");
-        }
-        if ( decision == False ) {
-            ErrorReturnVoid( "Assertion failure", 0L, 0L, "you may 'return;'");
+        cond = EVAL_EXPR(READ_STAT(stat, 1));
+        RequireTrueOrFalse("Assert", cond);
+        if (cond == False) {
+            AssertionFailure();
         }
     }
   return 0;
@@ -919,17 +916,14 @@ static UInt ExecAssert2Args(Stat stat)
 static UInt ExecAssert3Args(Stat stat)
 {
     Obj             level;
-    Obj             decision;
+    Obj             cond;
     Obj             message;
 
     level = EVAL_EXPR(READ_STAT(stat, 0));
     if ( ! LT(CurrentAssertionLevel, level) ) {
-        decision = EVAL_EXPR(READ_STAT(stat, 1));
-        if (decision != True && decision != False) {
-            RequireArgumentEx("Assert", decision, "<cond>",
-                              "must be 'true' or 'false'");
-        }
-        if ( decision == False ) {
+        cond = EVAL_EXPR(READ_STAT(stat, 1));
+        RequireTrueOrFalse("Assert", cond);
+        if (cond == False) {
             message = EVAL_EXPR(READ_STAT(stat, 2));
             if ( message != (Obj) 0 ) {
                 SET_BRK_CALL_TO( stat );

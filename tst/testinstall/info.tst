@@ -74,11 +74,11 @@ gap> Info(InfoTest1 + InfoTest2, 3, "apple");
 gap> Info(InfoTest1 + InfoTest2, 3, "apple");
 gap> ShowUsedInfoClasses(false);
 gap> ShowUsedInfoClasses(fail);
-Error, ShowUsedInfoClasses: <choice> must be true or false (not the value 'fai\
-l')
+Error, ShowUsedInfoClasses: <choice> must be 'true' or 'false' (not the value \
+'fail')
 gap> ShowUsedInfoClasses("abc");
-Error, ShowUsedInfoClasses: <choice> must be true or false (not a list (string\
-))
+Error, ShowUsedInfoClasses: <choice> must be 'true' or 'false' (not a list (st\
+ring))
 gap> str := "";;
 gap> str2 := "";;
 gap> SetDefaultInfoOutput(OutputTextString(str, false));
