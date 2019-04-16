@@ -3364,11 +3364,9 @@ static void ResizeGF2Vec(Obj vec, UInt newlen)
 
 static Obj FuncRESIZE_GF2VEC(Obj self, Obj vec, Obj newlen)
 {
-    Int newlen1;
     RequireMutable("RESIZE_GF2VEC", vec, "vector");
-
-    newlen1 = GetNonnegativeSmallInt("RESIZE_GF2VEC", newlen);
-    ResizeGF2Vec(vec, newlen1);
+    RequireNonnegativeSmallInt("RESIZE_GF2VEC", newlen);
+    ResizeGF2Vec(vec, INT_INTOBJ(newlen));
     return (Obj)0;
 }
 
@@ -3425,11 +3423,9 @@ static void ShiftLeftGF2Vec(Obj vec, UInt amount)
 
 static Obj FuncSHIFT_LEFT_GF2VEC(Obj self, Obj vec, Obj amount)
 {
-    Int amount1;
     RequireMutable("SHIFT_LEFT_GF2VEC", vec, "vector");
-
-    amount1 = GetNonnegativeSmallInt("SHIFT_LEFT_GF2VEC", amount);
-    ShiftLeftGF2Vec(vec, amount1);
+    RequireNonnegativeSmallInt("SHIFT_LEFT_GF2VEC", amount);
+    ShiftLeftGF2Vec(vec, INT_INTOBJ(amount));
     return (Obj)0;
 }
 
@@ -3490,11 +3486,9 @@ static void ShiftRightGF2Vec(Obj vec, UInt amount)
 
 static Obj FuncSHIFT_RIGHT_GF2VEC(Obj self, Obj vec, Obj amount)
 {
-    Int amount1;
     RequireMutable("SHIFT_RIGHT_GF2VEC", vec, "vector");
-
-    amount1 = GetNonnegativeSmallInt("SHIFT_RIGHT_GF2VEC", amount);
-    ShiftRightGF2Vec(vec, amount1);
+    RequireNonnegativeSmallInt("SHIFT_RIGHT_GF2VEC", amount);
+    ShiftRightGF2Vec(vec, INT_INTOBJ(amount));
     return (Obj)0;
 }
 
@@ -3562,9 +3556,10 @@ static void AddShiftedVecGF2VecGF2(Obj vec1, Obj vec2, UInt len2, UInt off)
 static Obj
 FuncADD_GF2VEC_GF2VEC_SHIFTED(Obj self, Obj vec1, Obj vec2, Obj len2, Obj off)
 {
-    Int off1, len2a;
-    off1 = GetNonnegativeSmallInt("ADD_GF2VEC_GF2VEC_SHIFTED", off);
-    len2a = GetNonnegativeSmallInt("ADD_GF2VEC_GF2VEC_SHIFTED", len2);
+    RequireNonnegativeSmallInt("ADD_GF2VEC_GF2VEC_SHIFTED", off);
+    RequireNonnegativeSmallInt("ADD_GF2VEC_GF2VEC_SHIFTED", len2);
+    Int off1 = INT_INTOBJ(off);
+    Int len2a = INT_INTOBJ(len2);
     if (len2a >= LEN_GF2VEC(vec2)) {
         ErrorMayQuit(
             "ADD_GF2VEC_GF2VEC_SHIFTED: <len2> must be a non-negative "
