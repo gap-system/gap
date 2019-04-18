@@ -18,6 +18,7 @@
 #include "funcs.h"
 #include "gapstate.h"
 #include "gasman.h"
+#include "julia_gc.h"
 #include "objects.h"
 #include "plist.h"
 #include "sysmem.h"
@@ -482,6 +483,31 @@ static inline int JMark(void * obj)
         abort();
 #endif
     return jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)obj);
+}
+
+void MarkJuliaObjSafe(void * obj)
+{
+    if (!obj)
+        return;
+    // Validate that `obj` is still allocated and not on a
+    // free list already. We verify this by checking that the
+    // type is a pool object of type `jl_datatype_type`.
+    jl_value_t * ty = jl_typeof(obj);
+    if (jl_gc_internal_obj_base_ptr(ty) != ty)
+        return;
+    if (!jl_typeis(ty, jl_datatype_type))
+        return;
+    if (jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)obj))
+        YoungRef++;
+}
+
+
+void MarkJuliaObj(void * obj)
+{
+    if (!obj)
+        return;
+    if (JMark(obj))
+        YoungRef++;
 }
 
 
