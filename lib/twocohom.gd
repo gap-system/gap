@@ -306,3 +306,20 @@ DeclareOperation( "TwoCohomologyGeneric", [ IsGroup, IsObject ] );
 ##
 DeclareGlobalFunction("FpGroupCocycle");
 
+#############################################################################
+##
+#O  CompatiblePairOrbitRepsGeneric( <compair>,<coh> )
+##
+##  <#GAPDoc Label="CompatiblePairOrbitRepsGeneric">
+##  <ManSection>
+##  <Func Name="CompatiblePairOrbitRepsGeneric" Arg='compair, coh'/>
+##
+##  <Description>
+##  <Example><![CDATA[
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("CompatiblePairOrbitRepsGeneric");
+
