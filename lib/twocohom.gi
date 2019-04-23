@@ -902,11 +902,10 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
 
   onemat:=One(mo.generators[1]);
   zerovec:=Zero(onemat[1]);
-
   # matrix corresponding to monoid word
   mapped:=function(list)
   local a,i;
-    a:=one;
+    a:=onemat;
     for i in list do
       a:=a*mats[i];
     od;
@@ -1031,7 +1030,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
         Add(rules,r);
         AddSet(hastail,Length(rules));
       else
-Print("Not use: ",r,"\n");
+#Print("Not use: ",r,"\n");
         # Do not use these rules for overlaps
         if r[2][1]>r[1][1] then
           Error("code assumes that larger number gets reduced to smaller");
@@ -1085,8 +1084,8 @@ Print("Not use: ",r,"\n");
     x->ImagesRepresentative(hom,PreImagesRepresentative(fp,
     PreImagesRepresentative(fm,x)))); # matrices for monoid generators
   one:=One(mats[1]);
-  zero:=Zero(one);
-  dim:=Length(one);
+  zero:=zerovec;
+  dim:=Length(zero);
   nvars:=dim*Length(hastail); #Number of variables
 
   eqs:=[];
@@ -1152,9 +1151,9 @@ Print("Not use: ",r,"\n");
   # Now get Coboundaries
 
   # different collection function: Sum up changes for generator i
-  collectail:=function(wrd,nums,vecs)
+  findtail:=function(wrd,nums,vecs)
   local a,i,j,p,v;
-    a:=Zero(vecs[1]);
+    a:=zerovec;
     for i in [1..Length(wrd)] do
       p:=Position(nums,wrd[i]);
       if p<>fail then
@@ -1177,8 +1176,8 @@ Print("Not use: ",r,"\n");
 
         new:=[];
         for j in hastail do
-          v1:=collectail(rules[j][1],c,r);
-          v2:=collectail(rules[j][2],c,r);
+          v1:=findtail(rules[j][1],c,r);
+          v2:=findtail(rules[j][2],c,r);
           Append(new,v1-v2);
         od;
         new:=ImmutableVector(field,new);
@@ -1200,10 +1199,22 @@ Print("Not use: ",r,"\n");
 
   new:=[];
   one:=One(FreeGroupOfFpGroup(fpg));
-  mats:=List(GeneratorsOfMonoid(mon),
+
+  k:=List(GeneratorsOfMonoid(mon),
     x->UnderlyingElement(PreImagesRepresentative(fm,x)));
+  # matrix corresponding to monoid word
+  mapped2:=function(list)
+  local a,i;
+    a:=one;
+    for i in list do
+      a:=a*k[i];
+    od;
+    return a;
+  end;
+
   for i in hastail do
-    Add(new,LeftQuotient(mapped(rules[i][1]),mapped(rules[i][2]))); # rule that would get the tail
+    # rule that would get the tail
+    Add(new,LeftQuotient(mapped2(rules[i][1]),mapped2(rules[i][2])));
   od;
   r.presentation:=rec(group:=FreeGroupOfFpGroup(fpg),relators:=new,
     prewords:=List(ogens,x->UnderlyingElement(ImagesRepresentative(fp,x))));
@@ -1395,7 +1406,8 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim;
   SetSize(fp,Size(r.group)*Size(r.module.field)^r.module.dimension);
 
   if Length(arg)>2 and arg[3]=true then
-    sim:=IsomorphismSimplifiedFpGroup(fp);
+    #sim:=IsomorphismSimplifiedFpGroup(fp);
+    sim:=IdentityMapping(fp);
 
     g:=r.group;
     quot:=InverseGeneralMapping(sim)*GroupHomomorphismByImages(fp,g,GeneratorsOfGroup(fp),
@@ -1443,3 +1455,19 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim;
   return fp;
 end);
 
+InstallGlobalFunction("CompatiblePairOrbitRepsGeneric",function(cp,coh)
+local bas,ran,mats,o;
+  if Length(coh.cohomology)=0 then return [coh.zero];fi;
+  if Length(coh.cohomology)=1 and Size(coh.module.field)=2 then
+    # 1-dim space over GF(2)
+    return [coh.zero,coh.cohomology[1]];
+  fi; 
+  # make basis
+  bas:=Concatenation(coh.coboundaries,coh.cohomology);
+  ran:=[Length(coh.coboundaries)+1..Length(bas)];
+  mats:=List(GeneratorsOfGroup(cp),g->List(coh.cohomology,
+    v->SolutionMat(bas,coh.pairact(v,g)){ran}));
+  o:=Orbits(Group(mats),coh.module.field^Length(coh.cohomology));
+  o:=List(o,x->x[1]*coh.cohomology);
+  return o;
+end);
