@@ -92,12 +92,13 @@ local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,clos,bas,rad;
 
     # get augmentation ideal of subgroup, at least approximate from
     # generators
-    a:=AsList(G);
-    cf:=Set(List(GeneratorsOfGroup(si),x->Position(a,x)));
+    a:=Enumerator(G);
+    cf:=Set(GeneratorsOfGroup(si),x->Position(a,x));
 
     for i in cf do
       v:=ShallowCopy(Zero(modu.generators[1][1]));
-      v[Position(a,One(si))]:=One(F);v[i]:=-One(F);
+      Assert(0, Position(a,One(si)) = 1);
+      v[1]:=One(F);v[i]:=-One(F);
       v:=SolutionMat(bas,v){[rad+1..Length(bas)]};
       if not IsZero(v) then
         sub:=MTX.SpinnedBasis(v,mats,modu.field);

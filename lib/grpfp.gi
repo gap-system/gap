@@ -191,6 +191,9 @@ local hom,gp,f;
   if HasIsFinite(gp) and not IsFinite(gp) then
     return fail;
   fi;
+  if HasIsomorphismPermGroup(gp) then return IsomorphismPermGroup(gp); fi;
+  if HasIsomorphismPcGroup(gp) then return IsomorphismPcGroup(gp); fi;
+
   if HasSize(gp) then
     f:=Factors(Size(gp));
     if Length(Set(f))=1 then
