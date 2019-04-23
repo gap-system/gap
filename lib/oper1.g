@@ -389,7 +389,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
           rank,
           method,
           oreqs,
-          req, reqs, match, j, k, imp, notmatch, lk;
+          req, reqs, match, j, k, imp, notmatch, lk, funcname;
 
     if IsHPCGAP then
         # TODO: once the GAP compiler supports 'atomic', use that
@@ -599,6 +599,31 @@ BIND_GLOBAL( "INSTALL_METHOD",
         od;
 
       fi;
+    fi;
+
+    if IS_FUNCTION(method) and IsBound(HasNameFunction) and
+      IsBound(TYPE_FUNCTION_WITH_NAME) and IsBound(TYPE_OPERATION_WITH_NAME) and
+      not VAL_GVAR("HasNameFunction")(method) then
+        funcname := SHALLOW_COPY_OBJ(NAME_FUNC(opr));
+        APPEND_LIST_INTR(funcname, " ");
+        if info <> false then
+            APPEND_LIST_INTR(funcname, info);
+        else
+            APPEND_LIST_INTR(funcname, "method");
+        fi;
+        SET_NAME_FUNC(method, funcname);
+    fi;
+
+    if IS_FUNCTION(rank) and IsBound(HasNameFunction) and
+       IsBound(TYPE_FUNCTION_WITH_NAME) and IsBound(TYPE_OPERATION_WITH_NAME) and
+       not VAL_GVAR("HasNameFunction")(rank) then
+        funcname := "Priority calculation for ";
+        APPEND_LIST_INTR(funcname, NAME_FUNC(opr));
+        if info <> false then
+            APPEND_LIST_INTR(funcname, " ");
+            APPEND_LIST_INTR(funcname, info);
+        fi;
+        SET_NAME_FUNC(rank, funcname);
     fi;
 
     # Install the method in the operation.

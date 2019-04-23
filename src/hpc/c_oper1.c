@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "127678438"
+#define FILE_CRC  "72241890"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -12,10 +12,16 @@ static GVar G_PRINT__OBJ;
 static Obj  GC_PRINT__OBJ;
 static GVar G_GAPInfo;
 static Obj  GC_GAPInfo;
+static GVar G_TYPE__FUNCTION__WITH__NAME;
+static Obj  GC_TYPE__FUNCTION__WITH__NAME;
+static GVar G_TYPE__OPERATION__WITH__NAME;
+static Obj  GC_TYPE__OPERATION__WITH__NAME;
 static GVar G_IS__FUNCTION;
 static Obj  GF_IS__FUNCTION;
 static GVar G_NAME__FUNC;
 static Obj  GF_NAME__FUNC;
+static GVar G_SET__NAME__FUNC;
+static Obj  GF_SET__NAME__FUNC;
 static GVar G_NARG__FUNC;
 static Obj  GF_NARG__FUNC;
 static GVar G_IS__OPERATION;
@@ -32,6 +38,8 @@ static GVar G_IS__STRING__REP;
 static Obj  GF_IS__STRING__REP;
 static GVar G_Error;
 static Obj  GF_Error;
+static GVar G_VAL__GVAR;
+static Obj  GF_VAL__GVAR;
 static GVar G_TYPE__OBJ;
 static Obj  GF_TYPE__OBJ;
 static GVar G_IMMUTABLE__COPY__OBJ;
@@ -146,6 +154,8 @@ static GVar G_NamesFilter;
 static Obj  GF_NamesFilter;
 static GVar G_Ordinal;
 static Obj  GF_Ordinal;
+static GVar G_HasNameFunction;
+static Obj  GC_HasNameFunction;
 static GVar G_INSTALL__METHOD__FLAGS;
 static Obj  GF_INSTALL__METHOD__FLAGS;
 static GVar G_LENGTH__SETTER__METHODS__2;
@@ -1741,6 +1751,7 @@ static Obj  HdlrFunc6 (
  Obj l_imp = 0;
  Obj l_notmatch = 0;
  Obj l_lk = 0;
+ Obj l_funcname = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -1773,6 +1784,7 @@ static Obj  HdlrFunc6 (
  (void)l_imp;
  (void)l_notmatch;
  (void)l_lk;
+ (void)l_funcname;
  Bag oldFrame;
  
  /* allocate new stack frame */
@@ -3104,9 +3116,256 @@ static Obj  HdlrFunc6 (
  }
  /* fi */
  
+ /* if IS_FUNCTION( method ) and IsBound( HasNameFunction ) and IsBound( TYPE_FUNCTION_WITH_NAME ) and IsBound( TYPE_OPERATION_WITH_NAME ) and not VAL_GVAR( "HasNameFunction" )( method ) then */
+ t_7 = GF_IS__FUNCTION;
+ if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+  t_6 = CALL_1ARGS( t_7, l_method );
+ }
+ else {
+  t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( l_method ) );
+ }
+ CHECK_FUNC_RESULT( t_6 );
+ CHECK_BOOL( t_6 );
+ t_5 = (Obj)(UInt)(t_6 != False);
+ t_4 = t_5;
+ if ( t_4 ) {
+  t_8 = GC_HasNameFunction;
+  t_7 = ((t_8 != 0) ? True : False);
+  t_6 = (Obj)(UInt)(t_7 != False);
+  t_4 = t_6;
+ }
+ t_3 = t_4;
+ if ( t_3 ) {
+  t_7 = GC_TYPE__FUNCTION__WITH__NAME;
+  t_6 = ((t_7 != 0) ? True : False);
+  t_5 = (Obj)(UInt)(t_6 != False);
+  t_3 = t_5;
+ }
+ t_2 = t_3;
+ if ( t_2 ) {
+  t_6 = GC_TYPE__OPERATION__WITH__NAME;
+  t_5 = ((t_6 != 0) ? True : False);
+  t_4 = (Obj)(UInt)(t_5 != False);
+  t_2 = t_4;
+ }
+ t_1 = t_2;
+ if ( t_1 ) {
+  t_7 = GF_VAL__GVAR;
+  t_8 = MakeString( "HasNameFunction" );
+  if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+   t_6 = CALL_1ARGS( t_7, t_8 );
+  }
+  else {
+   t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( t_8 ) );
+  }
+  CHECK_FUNC_RESULT( t_6 );
+  if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+   t_5 = CALL_1ARGS( t_6, l_method );
+  }
+  else {
+   t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( l_method ) );
+  }
+  CHECK_FUNC_RESULT( t_5 );
+  CHECK_BOOL( t_5 );
+  t_4 = (Obj)(UInt)(t_5 != False);
+  t_3 = (Obj)(UInt)( ! ((Int)t_4) );
+  t_1 = t_3;
+ }
+ if ( t_1 ) {
+  
+  /* funcname := SHALLOW_COPY_OBJ( NAME_FUNC( opr ) ); */
+  t_2 = GF_SHALLOW__COPY__OBJ;
+  t_4 = GF_NAME__FUNC;
+  if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+   t_3 = CALL_1ARGS( t_4, l_opr );
+  }
+  else {
+   t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( l_opr ) );
+  }
+  CHECK_FUNC_RESULT( t_3 );
+  if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+   t_1 = CALL_1ARGS( t_2, t_3 );
+  }
+  else {
+   t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3 ) );
+  }
+  CHECK_FUNC_RESULT( t_1 );
+  l_funcname = t_1;
+  
+  /* APPEND_LIST_INTR( funcname, " " ); */
+  t_1 = GF_APPEND__LIST__INTR;
+  t_2 = MakeString( " " );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_2ARGS( t_1, l_funcname, t_2 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_funcname, t_2 ) );
+  }
+  
+  /* if info <> false then */
+  t_2 = False;
+  t_1 = (Obj)(UInt)( ! EQ( l_info, t_2 ));
+  if ( t_1 ) {
+   
+   /* APPEND_LIST_INTR( funcname, info ); */
+   t_1 = GF_APPEND__LIST__INTR;
+   if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+    CALL_2ARGS( t_1, l_funcname, l_info );
+   }
+   else {
+    DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_funcname, l_info ) );
+   }
+   
+  }
+  
+  /* else */
+  else {
+   
+   /* APPEND_LIST_INTR( funcname, "method" ); */
+   t_1 = GF_APPEND__LIST__INTR;
+   t_2 = MakeString( "method" );
+   if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+    CALL_2ARGS( t_1, l_funcname, t_2 );
+   }
+   else {
+    DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_funcname, t_2 ) );
+   }
+   
+  }
+  /* fi */
+  
+  /* SET_NAME_FUNC( method, funcname ); */
+  t_1 = GF_SET__NAME__FUNC;
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_2ARGS( t_1, l_method, l_funcname );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_method, l_funcname ) );
+  }
+  
+ }
+ /* fi */
+ 
+ /* if IS_FUNCTION( rank ) and IsBound( HasNameFunction ) and IsBound( TYPE_FUNCTION_WITH_NAME ) and IsBound( TYPE_OPERATION_WITH_NAME ) and not VAL_GVAR( "HasNameFunction" )( rank ) then */
+ t_7 = GF_IS__FUNCTION;
+ CHECK_BOUND( l_rank, "rank" );
+ if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+  t_6 = CALL_1ARGS( t_7, l_rank );
+ }
+ else {
+  t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( l_rank ) );
+ }
+ CHECK_FUNC_RESULT( t_6 );
+ CHECK_BOOL( t_6 );
+ t_5 = (Obj)(UInt)(t_6 != False);
+ t_4 = t_5;
+ if ( t_4 ) {
+  t_8 = GC_HasNameFunction;
+  t_7 = ((t_8 != 0) ? True : False);
+  t_6 = (Obj)(UInt)(t_7 != False);
+  t_4 = t_6;
+ }
+ t_3 = t_4;
+ if ( t_3 ) {
+  t_7 = GC_TYPE__FUNCTION__WITH__NAME;
+  t_6 = ((t_7 != 0) ? True : False);
+  t_5 = (Obj)(UInt)(t_6 != False);
+  t_3 = t_5;
+ }
+ t_2 = t_3;
+ if ( t_2 ) {
+  t_6 = GC_TYPE__OPERATION__WITH__NAME;
+  t_5 = ((t_6 != 0) ? True : False);
+  t_4 = (Obj)(UInt)(t_5 != False);
+  t_2 = t_4;
+ }
+ t_1 = t_2;
+ if ( t_1 ) {
+  t_7 = GF_VAL__GVAR;
+  t_8 = MakeString( "HasNameFunction" );
+  if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+   t_6 = CALL_1ARGS( t_7, t_8 );
+  }
+  else {
+   t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( t_8 ) );
+  }
+  CHECK_FUNC_RESULT( t_6 );
+  if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+   t_5 = CALL_1ARGS( t_6, l_rank );
+  }
+  else {
+   t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( l_rank ) );
+  }
+  CHECK_FUNC_RESULT( t_5 );
+  CHECK_BOOL( t_5 );
+  t_4 = (Obj)(UInt)(t_5 != False);
+  t_3 = (Obj)(UInt)( ! ((Int)t_4) );
+  t_1 = t_3;
+ }
+ if ( t_1 ) {
+  
+  /* funcname := "Priority calculation for "; */
+  t_1 = MakeString( "Priority calculation for " );
+  l_funcname = t_1;
+  
+  /* APPEND_LIST_INTR( funcname, NAME_FUNC( opr ) ); */
+  t_1 = GF_APPEND__LIST__INTR;
+  t_3 = GF_NAME__FUNC;
+  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+   t_2 = CALL_1ARGS( t_3, l_opr );
+  }
+  else {
+   t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( l_opr ) );
+  }
+  CHECK_FUNC_RESULT( t_2 );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_2ARGS( t_1, l_funcname, t_2 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_funcname, t_2 ) );
+  }
+  
+  /* if info <> false then */
+  t_2 = False;
+  t_1 = (Obj)(UInt)( ! EQ( l_info, t_2 ));
+  if ( t_1 ) {
+   
+   /* APPEND_LIST_INTR( funcname, " " ); */
+   t_1 = GF_APPEND__LIST__INTR;
+   t_2 = MakeString( " " );
+   if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+    CALL_2ARGS( t_1, l_funcname, t_2 );
+   }
+   else {
+    DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_funcname, t_2 ) );
+   }
+   
+   /* APPEND_LIST_INTR( funcname, info ); */
+   t_1 = GF_APPEND__LIST__INTR;
+   if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+    CALL_2ARGS( t_1, l_funcname, l_info );
+   }
+   else {
+    DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_funcname, l_info ) );
+   }
+   
+  }
+  /* fi */
+  
+  /* SET_NAME_FUNC( rank, funcname ); */
+  t_1 = GF_SET__NAME__FUNC;
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_2ARGS( t_1, l_rank, l_funcname );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_rank, l_funcname ) );
+  }
+  
+ }
+ /* fi */
+ 
  /* INSTALL_METHOD_FLAGS( opr, info, rel, flags, rank, method ); */
  t_1 = GF_INSTALL__METHOD__FLAGS;
- CHECK_BOUND( l_rank, "rank" );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
   CALL_6ARGS( t_1, l_opr, l_info, l_rel, l_flags, l_rank, l_method );
  }
@@ -3563,8 +3822,8 @@ static Obj  HdlrFunc7 (
    t_6 = NewFunction( NameFunc[8], 1, ArgStringToList("obj"), HdlrFunc8 );
    SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
    t_7 = NewFunctionBody();
-   SET_STARTLINE_BODY(t_7, 671);
-   SET_ENDLINE_BODY(t_7, 689);
+   SET_STARTLINE_BODY(t_7, 696);
+   SET_ENDLINE_BODY(t_7, 714);
    SET_FILENAME_BODY(t_7, FileName);
    SET_BODY_FUNC(t_6, t_7);
    if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4267,8 +4526,8 @@ static Obj  HdlrFunc11 (
   t_1 = NewFunction( NameFunc[12], 1, ArgStringToList("key"), HdlrFunc12 );
   SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
   t_2 = NewFunctionBody();
-  SET_STARTLINE_BODY(t_2, 868);
-  SET_ENDLINE_BODY(t_2, 872);
+  SET_STARTLINE_BODY(t_2, 893);
+  SET_ENDLINE_BODY(t_2, 897);
   SET_FILENAME_BODY(t_2, FileName);
   SET_BODY_FUNC(t_1, t_2);
   ASS_LVAR( 2, t_1 );
@@ -4386,8 +4645,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[13], 1, ArgStringToList("D"), HdlrFunc13 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
- SET_STARTLINE_BODY(t_7, 889);
- SET_ENDLINE_BODY(t_7, 889);
+ SET_STARTLINE_BODY(t_7, 914);
+ SET_ENDLINE_BODY(t_7, 914);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4495,8 +4754,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[14], 2, ArgStringToList("D,key"), HdlrFunc14 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
- SET_STARTLINE_BODY(t_7, 911);
- SET_ENDLINE_BODY(t_7, 934);
+ SET_STARTLINE_BODY(t_7, 936);
+ SET_ENDLINE_BODY(t_7, 959);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4563,8 +4822,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[15], 2, ArgStringToList("D,key"), HdlrFunc15 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
- SET_STARTLINE_BODY(t_7, 944);
- SET_ENDLINE_BODY(t_7, 952);
+ SET_STARTLINE_BODY(t_7, 969);
+ SET_ENDLINE_BODY(t_7, 977);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4644,8 +4903,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[16], 3, ArgStringToList("D,key,obj"), HdlrFunc16 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
- SET_STARTLINE_BODY(t_7, 961);
- SET_ENDLINE_BODY(t_7, 974);
+ SET_STARTLINE_BODY(t_7, 986);
+ SET_ENDLINE_BODY(t_7, 999);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5063,8 +5322,8 @@ static Obj  HdlrFunc17 (
  t_4 = NewFunction( NameFunc[18], -1, ArgStringToList("arg"), HdlrFunc18 );
  SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
  t_5 = NewFunctionBody();
- SET_STARTLINE_BODY(t_5, 1040);
- SET_ENDLINE_BODY(t_5, 1056);
+ SET_STARTLINE_BODY(t_5, 1065);
+ SET_ENDLINE_BODY(t_5, 1081);
  SET_FILENAME_BODY(t_5, FileName);
  SET_BODY_FUNC(t_4, t_5);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5364,7 +5623,7 @@ static Obj  HdlrFunc1 (
  AssGVar( G_INSTALL__METHOD, 0 );
  
  /* BIND_GLOBAL( "INSTALL_METHOD", function ( arglist, check )
-      local len, opr, info, pos, rel, filters, info1, isstr, flags, i, rank, method, oreqs, req, reqs, match, j, k, imp, notmatch, lk;
+      local len, opr, info, pos, rel, filters, info1, isstr, flags, i, rank, method, oreqs, req, reqs, match, j, k, imp, notmatch, lk, funcname;
       lk := READ_LOCK( OPERATIONS_REGION );
       len := LEN_LIST( arglist );
       if len < 3 then
@@ -5509,6 +5768,25 @@ static Obj  HdlrFunc1 (
               od;
           fi;
       fi;
+      if IS_FUNCTION( method ) and IsBound( HasNameFunction ) and IsBound( TYPE_FUNCTION_WITH_NAME ) and IsBound( TYPE_OPERATION_WITH_NAME ) and not VAL_GVAR( "HasNameFunction" )( method ) then
+          funcname := SHALLOW_COPY_OBJ( NAME_FUNC( opr ) );
+          APPEND_LIST_INTR( funcname, " " );
+          if info <> false then
+              APPEND_LIST_INTR( funcname, info );
+          else
+              APPEND_LIST_INTR( funcname, "method" );
+          fi;
+          SET_NAME_FUNC( method, funcname );
+      fi;
+      if IS_FUNCTION( rank ) and IsBound( HasNameFunction ) and IsBound( TYPE_FUNCTION_WITH_NAME ) and IsBound( TYPE_OPERATION_WITH_NAME ) and not VAL_GVAR( "HasNameFunction" )( rank ) then
+          funcname := "Priority calculation for ";
+          APPEND_LIST_INTR( funcname, NAME_FUNC( opr ) );
+          if info <> false then
+              APPEND_LIST_INTR( funcname, " " );
+              APPEND_LIST_INTR( funcname, info );
+          fi;
+          SET_NAME_FUNC( rank, funcname );
+      fi;
       INSTALL_METHOD_FLAGS( opr, info, rel, flags, rank, method );
       UNLOCK( lk );
       return;
@@ -5519,7 +5797,7 @@ static Obj  HdlrFunc1 (
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 378);
- SET_ENDLINE_BODY(t_4, 610);
+ SET_ENDLINE_BODY(t_4, 635);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5581,8 +5859,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[7], 6, ArgStringToList("name,filter,getter,setter,tester,mutflag"), HdlrFunc7 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewFunctionBody();
- SET_STARTLINE_BODY(t_3, 629);
- SET_ENDLINE_BODY(t_3, 693);
+ SET_STARTLINE_BODY(t_3, 654);
+ SET_ENDLINE_BODY(t_3, 718);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5600,8 +5878,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[9], 6, ArgStringToList("name,filter,getter,setter,tester,mutflag"), HdlrFunc9 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewFunctionBody();
- SET_STARTLINE_BODY(t_3, 696);
- SET_ENDLINE_BODY(t_3, 702);
+ SET_STARTLINE_BODY(t_3, 721);
+ SET_ENDLINE_BODY(t_3, 727);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5633,8 +5911,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[10], 2, ArgStringToList("list,elm"), HdlrFunc10 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 715);
- SET_ENDLINE_BODY(t_4, 739);
+ SET_STARTLINE_BODY(t_4, 740);
+ SET_ENDLINE_BODY(t_4, 764);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5722,8 +6000,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[11], 4, ArgStringToList("name,domreq,keyreq,keytest"), HdlrFunc11 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 864);
- SET_ENDLINE_BODY(t_4, 975);
+ SET_STARTLINE_BODY(t_4, 889);
+ SET_ENDLINE_BODY(t_4, 1000);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5778,8 +6056,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[17], -1, ArgStringToList("arg"), HdlrFunc17 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 1010);
- SET_ENDLINE_BODY(t_4, 1057);
+ SET_STARTLINE_BODY(t_4, 1035);
+ SET_ENDLINE_BODY(t_4, 1082);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5828,8 +6106,11 @@ static Int PostRestore ( StructInitInfo * module )
  G_SHALLOW__COPY__OBJ = GVarName( "SHALLOW_COPY_OBJ" );
  G_PRINT__OBJ = GVarName( "PRINT_OBJ" );
  G_GAPInfo = GVarName( "GAPInfo" );
+ G_TYPE__FUNCTION__WITH__NAME = GVarName( "TYPE_FUNCTION_WITH_NAME" );
+ G_TYPE__OPERATION__WITH__NAME = GVarName( "TYPE_OPERATION_WITH_NAME" );
  G_IS__FUNCTION = GVarName( "IS_FUNCTION" );
  G_NAME__FUNC = GVarName( "NAME_FUNC" );
+ G_SET__NAME__FUNC = GVarName( "SET_NAME_FUNC" );
  G_NARG__FUNC = GVarName( "NARG_FUNC" );
  G_IS__OPERATION = GVarName( "IS_OPERATION" );
  G_AINV = GVarName( "AINV" );
@@ -5838,6 +6119,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_ADD__LIST = GVarName( "ADD_LIST" );
  G_IS__STRING__REP = GVarName( "IS_STRING_REP" );
  G_Error = GVarName( "Error" );
+ G_VAL__GVAR = GVarName( "VAL_GVAR" );
  G_TYPE__OBJ = GVarName( "TYPE_OBJ" );
  G_IMMUTABLE__COPY__OBJ = GVarName( "IMMUTABLE_COPY_OBJ" );
  G_IS__IDENTICAL__OBJ = GVarName( "IS_IDENTICAL_OBJ" );
@@ -5895,6 +6177,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_GET__OPER__FLAGS = GVarName( "GET_OPER_FLAGS" );
  G_NamesFilter = GVarName( "NamesFilter" );
  G_Ordinal = GVarName( "Ordinal" );
+ G_HasNameFunction = GVarName( "HasNameFunction" );
  G_INSTALL__METHOD__FLAGS = GVarName( "INSTALL_METHOD_FLAGS" );
  G_LENGTH__SETTER__METHODS__2 = GVarName( "LENGTH_SETTER_METHODS_2" );
  G_InstallAttributeFunction = GVarName( "InstallAttributeFunction" );
@@ -5953,8 +6236,11 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "SHALLOW_COPY_OBJ", &GF_SHALLOW__COPY__OBJ );
  InitCopyGVar( "PRINT_OBJ", &GC_PRINT__OBJ );
  InitCopyGVar( "GAPInfo", &GC_GAPInfo );
+ InitCopyGVar( "TYPE_FUNCTION_WITH_NAME", &GC_TYPE__FUNCTION__WITH__NAME );
+ InitCopyGVar( "TYPE_OPERATION_WITH_NAME", &GC_TYPE__OPERATION__WITH__NAME );
  InitFopyGVar( "IS_FUNCTION", &GF_IS__FUNCTION );
  InitFopyGVar( "NAME_FUNC", &GF_NAME__FUNC );
+ InitFopyGVar( "SET_NAME_FUNC", &GF_SET__NAME__FUNC );
  InitFopyGVar( "NARG_FUNC", &GF_NARG__FUNC );
  InitFopyGVar( "IS_OPERATION", &GF_IS__OPERATION );
  InitFopyGVar( "AINV", &GF_AINV );
@@ -5963,6 +6249,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "ADD_LIST", &GF_ADD__LIST );
  InitFopyGVar( "IS_STRING_REP", &GF_IS__STRING__REP );
  InitFopyGVar( "Error", &GF_Error );
+ InitFopyGVar( "VAL_GVAR", &GF_VAL__GVAR );
  InitFopyGVar( "TYPE_OBJ", &GF_TYPE__OBJ );
  InitFopyGVar( "IMMUTABLE_COPY_OBJ", &GF_IMMUTABLE__COPY__OBJ );
  InitFopyGVar( "IS_IDENTICAL_OBJ", &GF_IS__IDENTICAL__OBJ );
@@ -6020,6 +6307,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "GET_OPER_FLAGS", &GF_GET__OPER__FLAGS );
  InitFopyGVar( "NamesFilter", &GF_NamesFilter );
  InitFopyGVar( "Ordinal", &GF_Ordinal );
+ InitCopyGVar( "HasNameFunction", &GC_HasNameFunction );
  InitFopyGVar( "INSTALL_METHOD_FLAGS", &GF_INSTALL__METHOD__FLAGS );
  InitCopyGVar( "LENGTH_SETTER_METHODS_2", &GC_LENGTH__SETTER__METHODS__2 );
  InitFopyGVar( "InstallAttributeFunction", &GF_InstallAttributeFunction );
@@ -6110,7 +6398,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = 127678438,
+ .crc         = 72241890,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
