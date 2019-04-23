@@ -39,6 +39,7 @@
 
 #ifdef USE_JULIA_GC
 #include "julia.h"
+#include "julia_gc.h"
 #endif
 
 #define RequireWPObj(funcname, op)                                           \
@@ -552,6 +553,22 @@ static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
 
 #endif
 
+#ifdef USE_JULIA_GC
+
+static void MarkWeakPointerObj(Obj wp)
+{
+    // can't use the stored length here, in case we are in the middle of
+    // copying
+    const UInt len = SIZE_BAG(wp) / sizeof(Obj) - 1;
+    for (UInt i = 1; i <= len; i++) {
+        Bag elm = CONST_ADDR_OBJ(wp)[i];
+        if (IS_BAG_REF(elm))
+            MarkJuliaWeakRef(elm);
+    }
+}
+
+#endif
+
 
 #ifdef USE_THREADSAFE_COPYING
 #ifndef WARD_ENABLED
@@ -832,7 +849,7 @@ static Int InitKernel (
     InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
     InitSweepFuncBags( T_WPOBJ,          SweepWeakPointerObj  );
 #elif defined(USE_JULIA_GC)
-    InitMarkFuncBags ( T_WPOBJ,          MarkAllButFirstSubBags   );
+    InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
 #else
 #error Unknown garbage collector implementation, no weak pointer object implemention available
 #endif

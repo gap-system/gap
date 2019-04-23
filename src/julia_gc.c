@@ -14,11 +14,12 @@
 **  and gasman.c for two other garbage collector implementations.
 **/
 
+#include "julia_gc.h"
+
 #include "fibhash.h"
 #include "funcs.h"
 #include "gapstate.h"
 #include "gasman.h"
-#include "julia_gc.h"
 #include "objects.h"
 #include "plist.h"
 #include "sysmem.h"
@@ -460,12 +461,10 @@ void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
     TabMarkFuncBags[type] = mark_func;
 }
 
-static inline int JMarkGapObjSafe(void * obj)
+static inline int JMarkTyped(void * obj, jl_datatype_t * ty)
 {
     // only traverse objects internally used by GAP
-    void * ty = jl_typeof(obj);
-    if (ty != datatype_mptr && ty != datatype_bag &&
-        ty != datatype_largebag && ty != jl_weakref_type)
+    if (!jl_typeis(obj, ty))
         return 0;
     return jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)obj);
 }
@@ -582,7 +581,11 @@ static void TryMark(void * p)
         if (jl_typeis(p2, datatype_mptr))
             JMark(p2);
 #else
-        JMarkGapObjSafe(p2);
+        void * ty = jl_typeof(p2);
+        if (ty != datatype_mptr && ty != datatype_bag &&
+            ty != datatype_largebag && ty != jl_weakref_type)
+            return;
+        JMark(p2);
 #endif
     }
 }
@@ -756,7 +759,7 @@ static void PostGCHook(int full)
 
 // the Julia marking function for master pointer objects (i.e., this function
 // is called by the Julia GC whenever it marks a GAP master pointer object)
-static uintptr_t JMarkMPtr(jl_ptls_t ptls, jl_value_t * obj)
+static uintptr_t MPtrMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
 {
     if (!*(void **)obj)
         return 0;
@@ -775,7 +778,7 @@ static uintptr_t JMarkMPtr(jl_ptls_t ptls, jl_value_t * obj)
 
 // the Julia marking function for bags (i.e., this function is called by the
 // Julia GC whenever it marks a GAP bag object)
-static uintptr_t JMarkBag(jl_ptls_t ptls, jl_value_t * obj)
+static uintptr_t BagMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
 {
     BagHeader * hdr = (BagHeader *)obj;
     Bag         contents = (Bag)(hdr + 1);
@@ -815,13 +818,13 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     Module->parent = jl_main_module;
     jl_set_const(jl_main_module, jl_symbol("ForeignGAP"),
                  (jl_value_t *)Module);
-    datatype_mptr = jl_new_foreign_type(jl_symbol("MPtr"), Module,
-                                        jl_any_type, JMarkMPtr, NULL, 1, 0);
+    datatype_mptr = jl_new_foreign_type(
+        jl_symbol("MPtr"), Module, jl_any_type, MPtrMarkFunc, NULL, 1, 0);
     datatype_bag = jl_new_foreign_type(jl_symbol("Bag"), Module, jl_any_type,
-                                       JMarkBag, JFinalizer, 1, 0);
+                                       BagMarkFunc, JFinalizer, 1, 0);
     datatype_largebag =
         jl_new_foreign_type(jl_symbol("LargeBag"), Module, jl_any_type,
-                            JMarkBag, JFinalizer, 1, 1);
+                            BagMarkFunc, JFinalizer, 1, 1);
 
     // export datatypes to Julia level
     jl_set_const(Module, jl_symbol("MPtr"), (jl_value_t *)datatype_mptr);
@@ -1025,20 +1028,29 @@ inline void MarkBag(Bag bag)
     // relies on Julia internals. It is functionally equivalent
     // to:
     //
-    //     if (JMarkGapObjSafe(p)) YoungRef++;
+    //     if (JMarkTyped(p, datatype_mptr)) YoungRef++;
     //
     switch (jl_astaggedvalue(p)->bits.gc) {
     case 0:
-        if (JMarkGapObjSafe(p))
+        if (JMarkTyped(p, datatype_mptr))
             YoungRef++;
         break;
     case 1:
         YoungRef++;
         break;
     case 2:
-        JMarkGapObjSafe(p);
+        JMarkTyped(p, datatype_mptr);
         break;
     case 3:
         break;
     }
+}
+
+void MarkJuliaWeakRef(void * p)
+{
+    // If `jl_nothing` gets passed in as an argument, it will not
+    // be marked. This is harmless, because `jl_nothing` will always
+    // be live regardless.
+    if (JMarkTyped(p, jl_weakref_type))
+        YoungRef++;
 }

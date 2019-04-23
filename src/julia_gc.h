@@ -17,7 +17,9 @@
 **
 *F  MarkJuliaObj(<obj>) . . . . . . . . . . . . . . . . . . mark Julia object
 **
-**  'MarkJuliaObjSafe' marks a Julia object; the argument can be NULL.
+**  'MarkJuliaObjSafe' marks a Julia object; the argument can be NULL. No
+**  further checks are performed. If <obj> is not a Julia object, a crash
+**  may result.
 */
 
 void MarkJuliaObj(void * obj);
@@ -32,5 +34,15 @@ void MarkJuliaObj(void * obj);
 */
 
 void MarkJuliaObjSafe(void * obj);
+
+/****************************************************************************
+**
+*F  MarkJuliaWeakRef(<ref>)  . . . . . . . . . . .  mark Julia weak reference
+**
+**  'MarkJuliaWeakRef` marks a Julia weak reference. This must be a valid
+**  reference and cannot be NULL.
+*/
+
+void MarkJuliaWeakRef(void * obj);
 
 #endif
