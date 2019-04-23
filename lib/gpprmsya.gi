@@ -30,7 +30,7 @@ function( g, S )
     fi;
     m := MovedPoints(S);
     l := NrMovedPoints(S);
-    
+   
     if g = One( g )  then
         return true;
     elif l = 0  then
@@ -57,13 +57,13 @@ end );
 ##
 ##
 InstallOtherMethod( RepresentativeActionOp, "natural alternating group",
-  true, [ IsNaturalAlternatingGroup, IsObject, IsObject, IsFunction ], 
-  # the objects might be group elements: rank up	
+  true, [ IsNaturalAlternatingGroup, IsObject, IsObject, IsFunction ],
+  # the objects might be group elements: rank up       
   {} -> 2*RankFilter(IsMultiplicativeElementWithInverse),
 function ( G, d, e, opr )
 local dom,dom2,sortfun,max,cd,ce,rep,dp,ep;
   # test for internal rep
-  if HasGeneratorsOfGroup(G) and 
+  if HasGeneratorsOfGroup(G) and
     not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
     TryNextMethod();
   fi;
@@ -71,7 +71,7 @@ local dom,dom2,sortfun,max,cd,ce,rep,dp,ep;
   if opr=OnPoints then
     if IsInt(d) and IsInt(e) then
       if d in dom and e in dom and Length(dom)>2 then
-	return (d,e,First(dom,i->i<>d and i<>e));
+        return (d,e,First(dom,i->i<>d and i<>e));
       else
         return fail;
       fi;
@@ -79,10 +79,10 @@ local dom,dom2,sortfun,max,cd,ce,rep,dp,ep;
       sortfun:=function(a,b) return Length(a)<Length(b);end;
       if Order(d)=1 then #LargestMovedPoint does not work for ().
         if Order(e)=1 then
-	  return ();
-	else
-	  return fail;
-	fi;
+          return ();
+        else
+          return fail;
+        fi;
       fi;
       if CycleStructurePerm(d)<>CycleStructurePerm(e) then
         return fail;
@@ -97,38 +97,38 @@ local dom,dom2,sortfun,max,cd,ce,rep,dp,ep;
       rep:=MappingPermListList(Concatenation(cd),Concatenation(ce));
       if SignPerm(rep)=-1 then
         dom2:=Difference(dom,Union(Concatenation(cd),Concatenation(ce)));
-	if Length(dom2)>1 then
-	  rep:=rep*(dom2[1],dom2[2]);
-	else
-	  #this is more complicated
-	  TryNextMethod();
+        if Length(dom2)>1 then
+          rep:=rep*(dom2[1],dom2[2]);
+        else
+          #this is more complicated
+          TryNextMethod();
 
-	  # temporarily disabled, Situation is more complicated
-	  cd:=Filtered(cd,i->IsSubset(dom,i));
-	  d:=CycleStructurePerm(d);
-	  e:=PositionProperty([1..Length(d)],i->IsBound(d[i]) and
-	    # cycle structure is shifted, so this is even length
-	    # we need either to swap a pair of even cycles or to 3-cycle
-	    # odd cycles
-	    ((IsInt((i+1)/2) and d[i]>1) or
-	    (IsInt(i/2) and d[i]>2)));
-	  if e=fail then
-	    rep:=fail;
-	  elif IsInt((e+1)/2) then
-	    cd:=Filtered(cd,i->Length(i)=e+1);
-	    cd:=cd{[1,2]};
-	    rep:=MappingPermListList(Concatenation(cd),
-	                                 Concatenation([cd[2],cd[1]]))*rep;
-	  else
-	    cd:=Filtered(cd,i->Length(i)=e+1);
-	    cd:=cd{[1,2,3]};
-	    rep:=MappingPermListList(Concatenation(cd),
-	                             Concatenation([cd[2],cd[3],cd[1]]))*rep;
-	  fi;
+          # temporarily disabled, Situation is more complicated
+          cd:=Filtered(cd,i->IsSubset(dom,i));
+          d:=CycleStructurePerm(d);
+          e:=PositionProperty([1..Length(d)],i->IsBound(d[i]) and
+            # cycle structure is shifted, so this is even length
+            # we need either to swap a pair of even cycles or to 3-cycle
+            # odd cycles
+            ((IsInt((i+1)/2) and d[i]>1) or
+            (IsInt(i/2) and d[i]>2)));
+          if e=fail then
+            rep:=fail;
+          elif IsInt((e+1)/2) then
+            cd:=Filtered(cd,i->Length(i)=e+1);
+            cd:=cd{[1,2]};
+            rep:=MappingPermListList(Concatenation(cd),
+                                         Concatenation([cd[2],cd[1]]))*rep;
+          else
+            cd:=Filtered(cd,i->Length(i)=e+1);
+            cd:=cd{[1,2,3]};
+            rep:=MappingPermListList(Concatenation(cd),
+                                     Concatenation([cd[2],cd[3],cd[1]]))*rep;
+          fi;
         fi;
       fi;
       if rep<>fail then
-	Assert(1,dp^rep=ep);
+        Assert(1,dp^rep=ep);
       fi;
       return rep;
     fi;
@@ -140,23 +140,23 @@ local dom,dom2,sortfun,max,cd,ce,rep,dp,ep;
     if IsSubset(dom,Set(d)) and IsSubset(dom,Set(e)) then
       rep:=MappingPermListList(d,e);
       if SignPerm(rep)=-1 then
-	cd:=Difference(dom,e);
-	if Length(cd)>1 then
-	  rep:=rep*(cd[1],cd[2]);
-	elif opr=OnSets then
-	  if Length(d)>1 then
-	    rep:=(d[1],d[2])*rep;
-	  else
-	    rep:=fail; # set Length <2, maximal 1 further point in dom,imposs.
-	  fi;
-	else # opr=OnTuples, not enough points left
-	  rep:=fail;
-	fi;
+        cd:=Difference(dom,e);
+        if Length(cd)>1 then
+          rep:=rep*(cd[1],cd[2]);
+        elif opr=OnSets then
+          if Length(d)>1 then
+            rep:=(d[1],d[2])*rep;
+          else
+            rep:=fail; # set Length <2, maximal 1 further point in dom,imposs.
+          fi;
+        else # opr=OnTuples, not enough points left
+          rep:=fail;
+        fi;
       fi;
       return rep;
     fi;
   fi;
-  TryNextMethod(); 
+  TryNextMethod();
 end);
 
 
@@ -169,12 +169,12 @@ function ( G, p )
             sgs,        # strong generating set of <G>
             q,          # power of <p>
             i,          # loop variable
-	    trf,
-	    mov,
-	    deg;
+            trf,
+            mov,
+            deg;
 
     # test for internal rep
-    if HasGeneratorsOfGroup(G) and 
+    if HasGeneratorsOfGroup(G) and
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
       TryNextMethod();
     fi;
@@ -188,7 +188,7 @@ function ( G, p )
             Add( sgs, (mov[1],mov[2])(mov[i-1],mov[i]) );
             q := q * p;
         fi;
-	trf:=MappingPermListList([1..deg],mov); # translating perm
+        trf:=MappingPermListList([1..deg],mov); # translating perm
         while i mod q = 0  do
             Add( sgs, PermList( Concatenation(
                         [1..i-q], [i-q+1+q/p..i], [i-q+1..i-q+q/p] ) )^trf );
@@ -199,7 +199,7 @@ function ( G, p )
     # make the Sylow subgroup
     S := SubgroupNC( G, sgs );
     SetSize(S,p^Length(sgs));
-    
+   
 
     # add the stabilizer chain
     #MakeStabChainStrongGenerators( S, Reversed([1..G.degree]), sgs );
@@ -224,11 +224,11 @@ function ( G )
             prt,        # partition of <G>
             sum,        # partial sum of the entries in <prt>
             rep,        # representative of a conjugacy class of <G>
-	    mov,deg,trf, # degree, moved points, transfer
+            mov,deg,trf, # degree, moved points, transfer
             i;          # loop variable
 
     # test for internal rep
-    if HasGeneratorsOfGroup(G) and 
+    if HasGeneratorsOfGroup(G) and
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
       TryNextMethod();
     fi;
@@ -286,16 +286,16 @@ InstallOtherMethod( IsomorphismFpGroup, "alternating group,name",
     10, # override `IsSimpleGroup' method
 function ( G,str )
 local   F,      # free group
-	gens,	#generators of F
-	imgs,
-	hom,	# bijection
-	mov,deg,# moved pts, degree
-	m,	#[n/2]
-	relators,
-	r,s,	# generators
-	d,	# subset of pts
-	p,	# permutation
-	j;      # loop variables
+        gens,   #generators of F
+        imgs,
+        hom,    # bijection
+        mov,deg,# moved pts, degree
+        m,      #[n/2]
+        relators,
+        r,s,    # generators
+        d,      # subset of pts
+        p,      # permutation
+        j;      # loop variables
 
     # test for internal rep
     if (HasGeneratorsOfGroup(G) and
@@ -318,7 +318,7 @@ local   F,      # free group
       m:=(deg-1)/2;
       relators:=[r^deg/s^deg,r^deg/(r*s)^m];
       for j in [2..m] do
-	Add(relators,(r^-j*s^j)^2);
+        Add(relators,(r^-j*s^j)^2);
       od;
       #(1,2,3,..deg) and (1,3,2,4,5,..deg)
       p:=MappingPermListList(mov,Concatenation(mov{[2..deg]},[mov[1]]));
@@ -327,7 +327,7 @@ local   F,      # free group
       m:=deg/2;
       relators:=[r^(deg-1)/s^(deg-1),r^(deg-1)/(r*s)^m];
       for j in [1..m-1] do
-	Add(relators,(r^-j*s^-1*r*s^j)^2);
+        Add(relators,(r^-j*s^-1*r*s^j)^2);
       od;
       # (1,2,3,4..,deg-2,deg),(1,2,3,4,deg-3,deg-1,deg);
       d:=Concatenation(mov{[1..deg-2]},[mov[deg]]);
@@ -358,12 +358,12 @@ InstallMethod(IsomorphismFpGroupForRewriting,"alternating",
   [IsNaturalAlternatingGroup],0,
 function ( G )
 local   F,      # free group
-	gens,	#generators of F
-	imgs,
-	hom,	# bijection
-	mov,deg,
-	relators,
-	i, j;       # loop variables
+        gens,   #generators of F
+        imgs,
+        hom,    # bijection
+        mov,deg,
+        relators,
+        i, j;       # loop variables
 
   if Size(G)=1 then TryNextMethod();fi;
   mov:=MovedPoints(G);
@@ -424,11 +424,11 @@ local schreiertree, cosetrepresentative, flag, schtree, stab, k, p, j,
     schtree[k]:=();
     for i in list do
       for j in [1..Length(gens)] do
-	if mark[i^(inv[j])]=false then
-	    Add(list,i^(inv[j]));
-	    mark[i^(inv[j])]:=true;
-	    schtree[i^(inv[j])]:=gens[j];
-	fi;
+        if mark[i^(inv[j])]=false then
+            Add(list,i^(inv[j]));
+            mark[i^(inv[j])]:=true;
+            schtree[i^(inv[j])]:=gens[j];
+        fi;
       od;
     od;
     return schtree;
@@ -480,29 +480,29 @@ local schreiertree, cosetrepresentative, flag, schtree, stab, k, p, j,
     Add(int,orbits[k][1]);
     Add(int,1);
     if Length(int) <> n then
-	flag:=false;
+        flag:=false;
     else
       # int contains l2-1 extra l2-sets
       if l2=1 then
-	set:=Set(int);
+        set:=Set(int);
       else
-	count:=1;
-	flag2:=false;
-	repeat
-	  j:=int[count];
-	  cosetrep:=cosetrepresentative(schtree,pt1,j);
-	  cosetrep:=cosetrep^(-1);
-	  neworb2:=List(orbits[k],x->x^cosetrep);
-	  if Length(Intersection(int,neworb2))=n-l2 then
-	    set:= Union(Intersection(int,neworb2),[int[count]]);
-	    flag2:=true;
-	  else
-	    count:=count+1;
-	  fi;
-	until flag2 or count>l2;
-	if not flag2 then
-	    flag:=false;
-	fi;
+        count:=1;
+        flag2:=false;
+        repeat
+          j:=int[count];
+          cosetrep:=cosetrepresentative(schtree,pt1,j);
+          cosetrep:=cosetrep^(-1);
+          neworb2:=List(orbits[k],x->x^cosetrep);
+          if Length(Intersection(int,neworb2))=n-l2 then
+            set:= Union(Intersection(int,neworb2),[int[count]]);
+            flag2:=true;
+          else
+            count:=count+1;
+          fi;
+        until flag2 or count>l2;
+        if not flag2 then
+            flag:=false;
+        fi;
       fi;
     fi;
   fi;
@@ -572,36 +572,36 @@ local dom, n, mine, root, d, k, b, m, l,lh;
 
   if n>10 then # otherwise the size is immediate
     # test whether its socle could be A_l^m, acting on k-tuples in product
-    # action. 
+    # action.
     mine:=Minimum(List(Collected(Factors(n)),i->i[2]));
     for m in [1..mine] do
       root:=RootInt(n,m);
       if root^m=n then
-	# case k=1 -> A_root on points
-	if m>1 then # k=1, m=1: then it's A_n
-	  d:=PermNatAnTestDetect(g,root,m,1);
-	  if d<>fail then
-	    Info(InfoGroup,3,"Detected ",root,",",m,",",1,"\n");
-	    return d;
-	  fi;
-	fi;
+        # case k=1 -> A_root on points
+        if m>1 then # k=1, m=1: then it's A_n
+          d:=PermNatAnTestDetect(g,root,m,1);
+          if d<>fail then
+            Info(InfoGroup,3,"Detected ",root,",",m,",",1,"\n");
+            return d;
+          fi;
+        fi;
 
-	for l in [2..RootInt(2*root,2)+1] do
-	  lh:=Int(l/2)+1;
-	  k:=2;
-	  b:=Binomial(l,k);
-	  while b<root and k<lh do
-	    k:=k+1;
-	    b:=Binomial(l,k);
-	  od;
-	  if b=root then
-	    d:=PermNatAnTestDetect(g,l,m,k);
-	    if d<>fail then
-	      Info(InfoGroup,3,"Detected ",l,",",m,",",k,"\n");
-	      return d;
-	    fi;
-	  fi;
-	od;
+        for l in [2..RootInt(2*root,2)+1] do
+          lh:=Int(l/2)+1;
+          k:=2;
+          b:=Binomial(l,k);
+          while b<root and k<lh do
+            k:=k+1;
+            b:=Binomial(l,k);
+          od;
+          if b=root then
+            d:=PermNatAnTestDetect(g,l,m,k);
+            if d<>fail then
+              Info(InfoGroup,3,"Detected ",l,",",m,",",k,"\n");
+              return d;
+            fi;
+          fi;
+        od;
       fi;
     od;
   fi;
@@ -697,7 +697,7 @@ function( g, S )
 
     m := MovedPoints(S);
     l := NrMovedPoints(S);
-    
+   
     if g = One( g )  then
         return true;
     elif l = 0  then
@@ -777,7 +777,7 @@ BindGlobal("FLOYDS_ALGORITHM", function(rs, deg, even)
     return rnd;
 end);
 
-    
+   
 
 InstallMethodWithRandomSource( Random,
     "for a random source and a natural symmetric group: floyd's algorithm",
@@ -790,7 +790,7 @@ function ( rs, G )
             mov;
 
     # test for internal rep
-    if HasGeneratorsOfGroup(G) and 
+    if HasGeneratorsOfGroup(G) and
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
       TryNextMethod();
     fi;
@@ -816,7 +816,7 @@ function ( rs, G )
             mov;
 
     # test for internal rep
-    if HasGeneratorsOfGroup(G) and 
+    if HasGeneratorsOfGroup(G) and
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
       TryNextMethod();
     fi;
@@ -915,12 +915,12 @@ end);
 #M  StabilizerOp( <nat-sym-grp>, ...... )
 ##
 SYMGP_STABILIZER := function(sym, arg...)
-    local  k, act, pt, mov, stab, nat, diff, int, bls, mov1, parts, 
+    local  k, act, pt, mov, stab, nat, diff, int, bls, mov1, parts,
            part, bl, i, gens, size;
     k := Length(arg);
     act := arg[k];
     pt := arg[k-3];
-    
+   
     if arg[k-1] <> arg[k-2] then
         TryNextMethod();
     fi;
@@ -949,7 +949,7 @@ SYMGP_STABILIZER := function(sym, arg...)
         fi;
     elif act = OnTuplesTuples and IsList(pt) and ForAll(pt, x->IsList(x) and ForAll(x,IsPosInt)) then
         stab := SymmetricGroup(Difference(mov,Set(Flat(pt))));
-        nat := true;        
+        nat := true;       
     elif act = OnTuplesSets and IsList(pt) and ForAll(pt, x-> IsSet(x) and ForAll(x,IsPosInt)) then
         bls := List(mov, x-> List(pt, y-> x in y));
         mov1 := ShallowCopy(mov);
@@ -971,7 +971,7 @@ SYMGP_STABILIZER := function(sym, arg...)
         if Length(part) > 1 then
             Add(parts, part);
         fi;
-        
+       
         gens := [];
         size := 1;
         for part in parts do
@@ -991,32 +991,32 @@ SYMGP_STABILIZER := function(sym, arg...)
     return stab;
 end;
 
-        
+       
 
-        
-            
-        
+       
+           
+       
 
 InstallOtherMethod( StabilizerOp,"symmetric group", true,
     [ IsNaturalSymmetricGroup, IsObject, IsList, IsList, IsFunction ],
-  # the objects might be a group element: rank up	
-        {} -> RankFilter(IsMultiplicativeElementWithInverse) + 
+  # the objects might be a group element: rank up      
+        {} -> RankFilter(IsMultiplicativeElementWithInverse) +
         RankFilter(IsSolvableGroup),
         SYMGP_STABILIZER);
 
 InstallOtherMethod( StabilizerOp,"symmetric group", true,
     [ IsNaturalSymmetricGroup, IsDomain, IsObject, IsList, IsList, IsFunction ],
-  # the objects might be a group element: rank up	
-        {} -> RankFilter(IsMultiplicativeElementWithInverse) + 
+  # the objects might be a group element: rank up      
+        {} -> RankFilter(IsMultiplicativeElementWithInverse) +
         RankFilter(IsSolvableGroup),
         SYMGP_STABILIZER);
 
 InstallOtherMethod( StabilizerOp,"alternating group", true,
     [ IsNaturalAlternatingGroup, IsObject, IsList, IsList, IsFunction ],
-  # the objects might be a group element: rank up	
-        {} -> RankFilter(IsMultiplicativeElementWithInverse) + 
+  # the objects might be a group element: rank up      
+        {} -> RankFilter(IsMultiplicativeElementWithInverse) +
         RankFilter(IsSolvableGroup),
-function(g, arg...) 
+function(g, arg...)
 local s;
   s:=SymmetricParentGroup(g);
   # we cannot go to the symmetric group if the acting elements are different
@@ -1029,8 +1029,8 @@ end);
 
 InstallOtherMethod( StabilizerOp,"alternating group", true,
     [ IsNaturalAlternatingGroup, IsDomain, IsObject, IsList, IsList, IsFunction ],
-  # the objects might be a group element: rank up	
-        {} -> RankFilter(IsMultiplicativeElementWithInverse) + 
+  # the objects might be a group element: rank up      
+        {} -> RankFilter(IsMultiplicativeElementWithInverse) +
         RankFilter(IsSolvableGroup),
         function(g, arg...)
     return AlternatingSubgroup(CallFuncList(Stabilizer, Concatenation([SymmetricParentGroup(g)], arg)));
@@ -1058,12 +1058,12 @@ function ( G, g )
             lasts,      # '<lasts>[<l>]' is the last cycle of length <l>
             last,       # one cycle from <lasts>
             counts,     # number of cycles of each length
-	    mov,        # moved points of group
+            mov,        # moved points of group
             siz,        # size of centraliser
             l;
-    
+   
     # test for internal rep
-    if HasGeneratorsOfGroup(G) and 
+    if HasGeneratorsOfGroup(G) and
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
       TryNextMethod();
     fi;
@@ -1092,38 +1092,38 @@ function ( G, g )
             counts[l] := counts[l]+1;
         fi;
     od;
-    
+   
     # loop over the cycles
     for cycle  in cycles  do
         l := Length(cycle);
       # add that cycle itself to the strong generators
       if l <> 1  then
-	  gen := MappingPermListList(cycle,
-	            Concatenation(cycle{[2..l]},[cycle[1]]));
-	  Add( sgs, gen );
+          gen := MappingPermListList(cycle,
+                    Concatenation(cycle{[2..l]},[cycle[1]]));
+          Add( sgs, gen );
       fi;
 
       # and this cycle can be mapped to the last cycle of this length
       if cycle <> lasts[ Length(cycle) ]  then
-	  last := lasts[ Length(cycle) ];
-	  gen := MappingPermListList(Concatenation(cycle,last),
-	                              Concatenation(last,cycle));
-	  Add( sgs, gen );
+          last := lasts[ Length(cycle) ];
+          gen := MappingPermListList(Concatenation(cycle,last),
+                                      Concatenation(last,cycle));
+          Add( sgs, gen );
       fi;
 
   od;
-  
+ 
   siz := 1;
   for l in [1..Length(counts)] do
       if IsBound(counts[l]) then
           siz := siz*l^counts[l]*Factorial(counts[l]);
       fi;
   od;
-  
+ 
   # make the centralizer
   C := SubgroupNC(  G , sgs );
   SetSize(C,siz);
-  
+ 
 
   # return the centralizer
   return C;
@@ -1145,12 +1145,12 @@ local b, bl,prop;
 
       # type of action on blocks
       if TransitiveGroupsAvailable(Length(dom)/Length(s)) then
-	Add(p,TransitiveIdentification(Action(G,Orbit(G,s,OnSets),OnSets)));
+        Add(p,TransitiveIdentification(Action(G,Orbit(G,s,OnSets),OnSets)));
       fi;
 
       # type of action on blocks
       if TransitiveGroupsAvailable(Length(s)) then
-	Add(p,TransitiveIdentification(Action(Stabilizer(G,s,OnSets),s)));
+        Add(p,TransitiveIdentification(Action(Stabilizer(G,s,OnSets),s)));
       fi;
     fi;
 
@@ -1203,11 +1203,11 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
       pg:=Centralizer(s,b);
       for i in GeneratorsOfGroup(GL(Length(bas),RelativeOrders(bas)[1])) do
         bp:=dom[1];
-	w:=GroupHomomorphismByImagesNC(b,b,bas,
-	  List([1..Length(bas)],x->PcElementByExponents(bas,i[x])));
-	w:=List(dom,x->bp^Image(w,First(AsSSortedList(b),a->bp^a=x)));
-	w:=MappingPermListList(dom,w);
-	pg:=ClosureGroup(pg,w);
+        w:=GroupHomomorphismByImagesNC(b,b,bas,
+          List([1..Length(bas)],x->PcElementByExponents(bas,i[x])));
+        w:=List(dom,x->bp^Image(w,First(AsSSortedList(b),a->bp^a=x)));
+        w:=MappingPermListList(dom,w);
+        pg:=ClosureGroup(pg,w);
       od;
       return Intersection(s,pg);
     else
@@ -1215,7 +1215,7 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
       b:=Reversed(b); # larger ones should give most reduction.
       pg:=NormalizerParentSA(s,b[1]);
       for i in [2..Length(b)] do
-	pg:=Normalizer(pg,b[i]);
+        pg:=Normalizer(pg,b[i]);
       od;
       return Intersection(s,pg);
     fi;
@@ -1230,23 +1230,23 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
       return NormalizerParentSA(s,b);
     fi;
     # nonabelian socle
-    if PrimitiveGroupsAvailable(Length(dom)) 
+    if PrimitiveGroupsAvailable(Length(dom))
       and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
       Info(InfoPerformance,2,"Using Primitive Groups Library");
       # use library
       beta:=Factorial(Length(dom))/2;
       w:=CallFuncList(ValueGlobal("AllPrimitiveGroups"),
-	  [NrMovedPoints,Length(dom),IsSolvableGroup,false,
-	  x->Size(x)>Size(u) and Size(x) mod Size(u)=0 and
-	  Size(x)<beta,true]);
+          [NrMovedPoints,Length(dom),IsSolvableGroup,false,
+          x->Size(x)>Size(u) and Size(x) mod Size(u)=0 and
+          Size(x)<beta,true]);
       if Length(w)=0 then
-	return u; # must be self-normalizing
+        return u; # must be self-normalizing
       fi;
     fi;
     # find right automorphisms (socle cannot have centralizer)
     w:=AutomorphismGroup(b);
     opg:=NaturalHomomorphismByNormalSubgroupNC(w,
-	  InnerAutomorphismsAutomorphismGroup(w));
+          InnerAutomorphismsAutomorphismGroup(w));
     ll:=List(AsSSortedList(Image(opg)),x->PreImagesRepresentative(opg,x));
     ll:=Filtered(ll,IsConjugatorAutomorphism);
     ll:=List(ll,ConjugatorInnerAutomorphism);
@@ -1273,21 +1273,21 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
       na:=Normalizer(SymmetricGroup(Length(b[1])),Image(alpha));
       w:=WreathProduct(na,nb);
       if issym then
-	perm:=s;
+        perm:=s;
       else
-	perm:=SymmetricGroup(MovedPoints(s));
+        perm:=SymmetricGroup(MovedPoints(s));
       fi;
       perm:=RepresentativeAction(perm,emb,GeneratorsOfGroup(u),OnTuples);
       if perm<>fail then
-	pg:=w^perm;
+        pg:=w^perm;
       else
-	#Print("Embedding Problem!\n");
-	w:=WreathProduct(SymmetricGroup(Length(b[1])),SymmetricGroup(Length(b)));
-	perm:=MappingPermListList([1..Length(o[1])],Concatenation(b));
-	pg:=w^perm;
+        #Print("Embedding Problem!\n");
+        w:=WreathProduct(SymmetricGroup(Length(b[1])),SymmetricGroup(Length(b)));
+        perm:=MappingPermListList([1..Length(o[1])],Concatenation(b));
+        pg:=w^perm;
       fi;
       if opg<>fail then
-	pg:=Intersection(pg,opg);
+        pg:=Intersection(pg,opg);
 
       fi;
       opg:=pg;
@@ -1309,67 +1309,67 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
     while is<=l do
       ll:=Length(o[is]);
       while ie<=l and Length(o[ie])=ll do
-	ie:=ie+1;
+        ie:=ie+1;
       od;
       # now length block is from is to ie-1
 
       syll:=SymmetricGroup(ll);
       # if the degrees are small enough, even get local types
-      if ll>1 and TransitiveGroupsAvailable(ll) 
+      if ll>1 and TransitiveGroupsAvailable(ll)
         and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
-	Info(InfoPerformance,2,"Using Transitive Groups Library");
-	Info(InfoGroup,1,"Length ",ll," sort by types");
-	act:=[];
-	typ:=[];
-	for i in [is..ie-1] do
-	  act[i]:=Action(u,o[i]);
-	  typ[i]:=TransitiveIdentification(act[i]);
-	od;
-	# rearrange
-	for i in Set(typ) do
-	  sel:=Filtered([is..ie-1],j->typ[j]=i);
-	  bas:=NormalizerParentSA(syll,act[sel[1]]);
-	  bas:=Normalizer(bas,act[sel[1]]);
-	  w:=WreathProduct(bas,SymmetricGroup(Length(sel)));
-	  wdom:=[1..ll*Length(sel)];
-	  comp:=WreathProductInfo(w).components;
-	  # now the suitable permutation
-	  perm:=();
-	  # first permutation on each component
-	  for j in [1..Length(sel)] do
-	    if j=1 then
-	      lperm:=();
-	    else
-	      lperm:=RepresentativeAction(syll,act[sel[1]],act[sel[j]]);
-	    fi;
-	    other:=Difference(wdom,comp[j]);
-	    away:=[1..Length(other)]+Length(wdom);
-	    perm:=perm*MappingPermListList(Concatenation(comp[j],other),
-				Concatenation([1..ll],away)) # j-th component
-		  *lperm # standard form
-		  *MappingPermListList(Concatenation([1..ll],away),
-				Concatenation(comp[j],other)); # to j orbit
-	  od;
-	  # and then of components
-	  perm:=perm*MappingPermListList(wdom,Concatenation(o{sel}));
-	  for i in SmallGeneratingSet(w) do
-	    Add(pg,i^perm);
-	  od;
-	od;
+        Info(InfoPerformance,2,"Using Transitive Groups Library");
+        Info(InfoGroup,1,"Length ",ll," sort by types");
+        act:=[];
+        typ:=[];
+        for i in [is..ie-1] do
+          act[i]:=Action(u,o[i]);
+          typ[i]:=TransitiveIdentification(act[i]);
+        od;
+        # rearrange
+        for i in Set(typ) do
+          sel:=Filtered([is..ie-1],j->typ[j]=i);
+          bas:=NormalizerParentSA(syll,act[sel[1]]);
+          bas:=Normalizer(bas,act[sel[1]]);
+          w:=WreathProduct(bas,SymmetricGroup(Length(sel)));
+          wdom:=[1..ll*Length(sel)];
+          comp:=WreathProductInfo(w).components;
+          # now the suitable permutation
+          perm:=();
+          # first permutation on each component
+          for j in [1..Length(sel)] do
+            if j=1 then
+              lperm:=();
+            else
+              lperm:=RepresentativeAction(syll,act[sel[1]],act[sel[j]]);
+            fi;
+            other:=Difference(wdom,comp[j]);
+            away:=[1..Length(other)]+Length(wdom);
+            perm:=perm*MappingPermListList(Concatenation(comp[j],other),
+                                Concatenation([1..ll],away)) # j-th component
+                  *lperm # standard form
+                  *MappingPermListList(Concatenation([1..ll],away),
+                                Concatenation(comp[j],other)); # to j orbit
+          od;
+          # and then of components
+          perm:=perm*MappingPermListList(wdom,Concatenation(o{sel}));
+          for i in SmallGeneratingSet(w) do
+            Add(pg,i^perm);
+          od;
+        od;
 
       else
-	bas:=syll;
-	w:=WreathProduct(bas,SymmetricGroup(ie-is));
-	perm:=MappingPermListList([1..ll*(ie-is)],Concatenation(o{[is..ie-1]}));
-	for i in SmallGeneratingSet(w) do
-	  Add(pg,i^perm);
-	od;
+        bas:=syll;
+        w:=WreathProduct(bas,SymmetricGroup(ie-is));
+        perm:=MappingPermListList([1..ll*(ie-is)],Concatenation(o{[is..ie-1]}));
+        for i in SmallGeneratingSet(w) do
+          Add(pg,i^perm);
+        od;
       fi;
       is:=ie;
     od;
     pg:=Group(pg,());
   fi;
-  if not issym then 
+  if not issym then
     pg:=AlternatingSubgroup(pg);
   fi;
   if (Size(pg)/Size(u))>10000 and IsSolvableGroup(pg) then
@@ -1382,7 +1382,7 @@ end);
 BindGlobal("DoNormalizerSA",function ( G, U )
 local P;
     # test for internal rep
-    if HasGeneratorsOfGroup(G) and 
+    if HasGeneratorsOfGroup(G) and
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
       TryNextMethod();
     fi;
@@ -1481,7 +1481,7 @@ local og,oh,cb,cc,cac,perm1,perm2,
     ac:=SubgroupNC(s,ac);
     SetSize(ac,a);
     a:=RepresentativeAction(ac,g^perm,h);
-    if a=fail then 
+    if a=fail then
       return fail;
     else
       return perm*a;
@@ -1529,8 +1529,8 @@ local og,oh,cb,cc,cac,perm1,perm2,
       ac2:=Action(Stabilizer(g,b[i],OnSets),b[i]);
       perm:=RepresentativeAction(t,ac2,ac);
       if perm=fail then
-	# b cannot be conjugated -- inconsistent
-	Error("inconsistence");
+        # b cannot be conjugated -- inconsistent
+        Error("inconsistence");
       fi;
       perm:=perm^MappingPermListList([1..c],b[i]);
       g:=g^perm;
@@ -1539,8 +1539,8 @@ local og,oh,cb,cc,cac,perm1,perm2,
       ac2:=Action(Stabilizer(h,b[i],OnSets),b[i]);
       perm:=RepresentativeAction(t,ac2,ac);
       if perm=fail then
-	# cannot map onto -- wrong
-	return fail;
+        # cannot map onto -- wrong
+        return fail;
       fi;
       perm:=perm^MappingPermListList([1..c],b[i]);
       h:=h^perm;
@@ -1578,13 +1578,13 @@ end);
 #M  RepresentativeAction( <G>, <d>, <e>, <opr> ) .  . for symmetric groups
 ##
 InstallOtherMethod( RepresentativeActionOp, "for natural symmetric group",
-    true, [ IsNaturalSymmetricGroup, IsObject, IsObject, IsFunction ], 
-  # the objects might be group elements: rank up	
+    true, [ IsNaturalSymmetricGroup, IsObject, IsObject, IsFunction ],
+  # the objects might be group elements: rank up       
   {} -> 2*RankFilter(IsMultiplicativeElementWithInverse),
 function ( G, d, e, opr )
 local dom,n,sortfun,max,cd,ce,p1,p2;
   # test for internal rep
-  if HasGeneratorsOfGroup(G) and 
+  if HasGeneratorsOfGroup(G) and
     not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
     TryNextMethod();
   fi;
@@ -1594,7 +1594,7 @@ local dom,n,sortfun,max,cd,ce,p1,p2;
   if opr=OnPoints then
     if IsInt(d) and IsInt(e) then
       if d in dom and e in dom then
-	return (d,e);
+        return (d,e);
       else
         return fail;
       fi;
@@ -1602,10 +1602,10 @@ local dom,n,sortfun,max,cd,ce,p1,p2;
       sortfun:=function(a,b) return Length(a)<Length(b);end;
       if Order(d)=1 then #LargestMovedPoint does not work for ().
         if Order(e)=1 then
-	  return ();
-	else
-	  return fail;
-	fi;
+          return ();
+        else
+          return fail;
+        fi;
       fi;
       if CycleStructurePerm(d)<>CycleStructurePerm(e) then
         return fail;
@@ -1616,26 +1616,26 @@ local dom,n,sortfun,max,cd,ce,p1,p2;
       Sort(cd,sortfun);
       Sort(ce,sortfun);
       return MappingPermListList(Concatenation(cd),Concatenation(ce));
-    elif IsPermGroup(d) and IsPermGroup(e) 
-      #and IsTransitive(d,dom) and IsTransitive(e,dom) 
+    elif IsPermGroup(d) and IsPermGroup(e)
+      #and IsTransitive(d,dom) and IsTransitive(e,dom)
       and IsSubset(G,d) and IsSubset(G,e) then
 
       if dom<>[1..n] then
-	# translate
-	p1:=MappingPermListList(dom,[1..n]);
-	p2:=SubgpConjSymmgp(G^p1,d^p1,e^p1);
-	if p2=false then
-	    TryNextMethod();
-	elif p2<>fail then
-	  p2:=p2^Inverse(p1);
-	fi;
-	return p2;
+        # translate
+        p1:=MappingPermListList(dom,[1..n]);
+        p2:=SubgpConjSymmgp(G^p1,d^p1,e^p1);
+        if p2=false then
+            TryNextMethod();
+        elif p2<>fail then
+          p2:=p2^Inverse(p1);
+        fi;
+        return p2;
       else
-	p2:=SubgpConjSymmgp(G,d,e);
-	if p2=false then
-	  TryNextMethod();
-	fi;
-	return p2;
+        p2:=SubgpConjSymmgp(G,d,e);
+        if p2=false then
+          TryNextMethod();
+        fi;
+        return p2;
       fi;
     fi;
   elif (opr=OnSets or opr=OnTuples) and (IsDuplicateFreeList(d) and
@@ -1651,7 +1651,7 @@ local dom,n,sortfun,max,cd,ce,p1,p2;
       return MappingPermListList(d,e);
     fi;
   fi;
-  TryNextMethod(); 
+  TryNextMethod();
 end);
 
 InstallMethod( SylowSubgroupOp,
@@ -1660,13 +1660,13 @@ InstallMethod( SylowSubgroupOp,
     [ IsNaturalSymmetricGroup, IsPosInt ], 0,
 function ( G, p )
 local   S,          # <p>-Sylow subgroup of <G>, result
-	sgs,        # strong generating set of <G>
-	q,          # power of <p>
-	mov,deg,trf, # degree, moved points, transfer
-	i;          # loop variable
+        sgs,        # strong generating set of <G>
+        q,          # power of <p>
+        mov,deg,trf, # degree, moved points, transfer
+        i;          # loop variable
 
     # test for internal rep
-    if HasGeneratorsOfGroup(G) and 
+    if HasGeneratorsOfGroup(G) and
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
       TryNextMethod();
     fi;
@@ -1688,8 +1688,8 @@ local   S,          # <p>-Sylow subgroup of <G>, result
     # make the Sylow subgroup
     S := SubgroupNC(  G , sgs );
     SetSize(S,p^Length(sgs));
-    
-    
+   
+   
     if Size( S ) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );
@@ -1709,11 +1709,11 @@ function ( G )
             prt,        # partition of <G>
             sum,        # partial sum of the entries in <prt>
             rep,        # representative of a conjugacy class of <G>
-	    mov,deg,trf, # degree, moved points, transfer
+            mov,deg,trf, # degree, moved points, transfer
             i;          # loop variable
 
     # test for internal rep
-    if HasGeneratorsOfGroup(G) and 
+    if HasGeneratorsOfGroup(G) and
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
       TryNextMethod();
     fi;
@@ -1729,8 +1729,8 @@ function ( G )
       rep := [2..deg];
       sum := 1;
       for i  in prt  do
-	  rep[sum+i-1] := sum;
-	  sum := sum + i;
+          rep[sum+i-1] := sum;
+          sum := sum + i;
       od;
       rep := PermList( rep )^trf;
 
@@ -1754,12 +1754,12 @@ InstallOtherMethod( IsomorphismFpGroup, "symmetric group,name", true,
     [ IsNaturalSymmetricGroup,IsString ], 0,
 function ( G,nam )
 local   F,      # free group
-	gens,	#generators of F
-	imgs,
-	hom,	# bijection
-	mov,deg,
-	relators,
-	i, k;       # loop variables
+        gens,   #generators of F
+        imgs,
+        hom,    # bijection
+        mov,deg,
+        relators,
+        i, k;       # loop variables
 
     if IsTrivial(G) then
       return GroupHomomorphismByFunction(G, TRIVIAL_FP_GROUP,
@@ -1767,7 +1767,7 @@ local   F,      # free group
                                          x->One(G):noassert);
     fi;
     # test for internal rep
-    if HasGeneratorsOfGroup(G) and 
+    if HasGeneratorsOfGroup(G) and
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
       TryNextMethod();
     fi;
@@ -1933,7 +1933,7 @@ local o,d,i,j,l,s;
     if j-1>i then
       s:=WreathProduct(s,SymmetricGroup(j-i));
     fi;
-    if d=false then 
+    if d=false then
       d:=s;
     else
       d:=DirectProduct(d,s);
@@ -1953,7 +1953,7 @@ function(G,r)
 local dom, l, sgs, nondupbase;
 
   # test for internal rep
-  if HasGeneratorsOfGroup(G) and 
+  if HasGeneratorsOfGroup(G) and
     not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
     TryNextMethod();
   fi;
@@ -1977,7 +1977,7 @@ function(G,r)
 local dom, l, sgs, nondupbase;
 
   # test for internal rep
-  if HasGeneratorsOfGroup(G) and 
+  if HasGeneratorsOfGroup(G) and
     not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
     TryNextMethod();
   fi;
@@ -1987,7 +1987,7 @@ local dom, l, sgs, nondupbase;
   fi;
   dom:=Set(MovedPoints(G));
   l:=Length(dom);
-  
+ 
   if IsBound(r.base) then
       nondupbase:=DuplicateFreeList(r.base);
       dom:=Concatenation(Filtered(nondupbase,i->i in dom),Difference(dom,nondupbase));
@@ -2018,17 +2018,17 @@ local a,b,x,i;
     else
       Add(b,i);
       if Order(i)>2 then
-	Add(a,i^2);
+        Add(a,i^2);
       fi;
       if Length(b)>1 then
-	Add(a,b[1]/i);
+        Add(a,b[1]/i);
       fi;
     fi;
   od;
   a:=SubgroupNC(G,a);
   StabChainOptions(a).limit:=Size(G)/2;
   while Size(a)<Size(G)/2 do
-    repeat 
+    repeat
       #Print("close\n");
       x:=Random(GeneratorsOfGroup(a))^Random(b);
     until not x in a;
@@ -2163,7 +2163,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
   G:=arg[1];
   if Length(arg)>1 then
     prim:=arg[2];
-  else 
+  else
     prim:=false;
   fi;
   dom:=Set(MovedPoints(G));
@@ -2205,16 +2205,16 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
     p:=Filtered(Partitions(n,2),i->i[1]<>i[2]);
     for i in p do
       if issn then
-	m:=DirectProduct(SymmetricGroup(i[1]),SymmetricGroup(i[2]));
+        m:=DirectProduct(SymmetricGroup(i[1]),SymmetricGroup(i[2]));
       else
-	if i[2]<2 then
-	  m:=AlternatingGroup(i[1]);
-	else
-	  m:=DirectProduct(AlternatingGroup(i[1]),AlternatingGroup(i[2]));
-	  # add a double transposition
-	  m:=ClosureGroupAddElm(m,(1,2)(n-1,n));
-	  SetSize(m,Factorial(i[1])*Factorial(i[2])/2);
-	fi;
+        if i[2]<2 then
+          m:=AlternatingGroup(i[1]);
+        else
+          m:=DirectProduct(AlternatingGroup(i[1]),AlternatingGroup(i[2]));
+          # add a double transposition
+          m:=ClosureGroupAddElm(m,(1,2)(n-1,n));
+          SetSize(m,Factorial(i[1])*Factorial(i[2])/2);
+        fi;
       fi;
       Add(max,m);
     od;
@@ -2227,15 +2227,15 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
     for i in p do
       # exception: Table I, 1
       if n<>8 or i<>2 or issn then
-	v:=Group(SmallGeneratingSet(SymmetricGroup(i)));
-	SetSize(v,Factorial(i));
-	k:=Group(SmallGeneratingSet(SymmetricGroup(n/i)));
-	SetSize(k,Factorial(n/i));
-	m:=WreathProduct(v,k);
-	if not issn then
-	  m:=AlternatingSubgroup(m);
-	fi;
-	Add(max,m);
+        v:=Group(SmallGeneratingSet(SymmetricGroup(i)));
+        SetSize(v,Factorial(i));
+        k:=Group(SmallGeneratingSet(SymmetricGroup(n/i)));
+        SetSize(k,Factorial(n/i));
+        m:=WreathProduct(v,k);
+        if not issn then
+          m:=AlternatingSubgroup(m);
+        fi;
+        Add(max,m);
       fi;
     od;
   fi;
@@ -2252,23 +2252,23 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
     m:=ClosureGroup(m,PermList(List(v,i->Position(v,i+k))));
     if Size(m)<Size(S) then
       if SignPermGroup(m)=1 then
-	# it's a subgroup of A_n, but there are two classes
-	# (the normalizer in S_n cannot increase)
-	if not issn then
-	  Add(max,m);
-	  Add(max,m^invol);
-	fi;
+        # it's a subgroup of A_n, but there are two classes
+        # (the normalizer in S_n cannot increase)
+        if not issn then
+          Add(max,m);
+          Add(max,m^invol);
+        fi;
       else
-	# the (intersection with A_n) is a maximal subgroup
-	if issn then
-	  Add(max,m);
-	else
-	  # exceptions: table I and Aff(3)=A3.
-	  if not n in [3,7,11,17,23] then
-	    m:=AlternatingSubgroup(m);
-	    Add(max,m);
-	  fi;
-	fi;
+        # the (intersection with A_n) is a maximal subgroup
+        if issn then
+          Add(max,m);
+        else
+          # exceptions: table I and Aff(3)=A3.
+          if not n in [3,7,11,17,23] then
+            m:=AlternatingSubgroup(m);
+            Add(max,m);
+          fi;
+        fi;
       fi;
     fi;
   fi;
@@ -2282,39 +2282,39 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
     for i in pd do
       if IsBound(gps.series) then
         if gps.series="A" then
-	  gps:=[AlternatingGroup(gps.parameter)];
-	elif gps.series="L" then
-	  gps:=[PSL(gps.parameter[1],gps.parameter[2])];
-	elif gps.series="Z" then
-	  gps:=[];
-	fi;
+          gps:=[AlternatingGroup(gps.parameter)];
+        elif gps.series="L" then
+          gps:=[PSL(gps.parameter[1],gps.parameter[2])];
+        elif gps.series="Z" then
+          gps:=[];
+        fi;
       fi;
       if not IsList(gps) then
-	Error("code for creation of simple groups not yet implemented");
+        Error("code for creation of simple groups not yet implemented");
       else
-	# did we construct with some automorphisms?
-	for j in [1..Length(gps)] do
-	  while Size(gps[j])>n do
-	    gps[j]:=DerivedSubgroup(gps[j]);
-	  od;
-	od;
+        # did we construct with some automorphisms?
+        for j in [1..Length(gps)] do
+          while Size(gps[j])>n do
+            gps[j]:=DerivedSubgroup(gps[j]);
+          od;
+        od;
         gps:=List(gps,i->Image(SmallerDegreePermutationRepresentation(i)));
       fi;
       for j in gps do
-	m:=DiagonalSocleAction(j,i[2]+1);
-	m:=Normalizer(S,m);
-	if issn then
-	  if SignPermGroup(m)=-1 then
-	    Add(max,m);
-	  fi;
-	else
-	  if SignPermGroup(m)=-1 then
-	    Add(max,AlternatingSubgroup(m));
-	  else
-	    Add(max,m);
-	    Add(max,m^invol);
-	  fi;
-	fi;
+        m:=DiagonalSocleAction(j,i[2]+1);
+        m:=Normalizer(S,m);
+        if issn then
+          if SignPermGroup(m)=-1 then
+            Add(max,m);
+          fi;
+        else
+          if SignPermGroup(m)=-1 then
+            Add(max,AlternatingSubgroup(m));
+          else
+            Add(max,m);
+            Add(max,m^invol);
+          fi;
+        fi;
       od;
     od;
   fi;
@@ -2324,24 +2324,24 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
     if i[1]>4 then # up to s_4 we get a solvable normal subgroup
       m:=WreathProductProductAction(SymmetricGroup(i[1]),SymmetricGroup(i[2]));
       if issn then
-	# add if not contained in A_n
-	if SignPermGroup(m)=-1 then
-	  Add(max,m);
-	fi;
+        # add if not contained in A_n
+        if SignPermGroup(m)=-1 then
+          Add(max,m);
+        fi;
       else
-	if SignPermGroup(m)=1 then
-	  Add(max,m);
-	  # the wreath product is alternating, so the normalizer cannot grow
-	  # and there must be a second class
-	  Add(max,m^invol);
-	else
-	  # the group is larger, so we have to intersect with A_n
-	  m:=AlternatingSubgroup(m);
-	  # but it might become imprimitive, use remark 2:
-	  if i[2]<>2 or 2<>(i[1] mod 4) or IsPrimitive(m,[1..n]) then
-	    Add(max,m);
-	  fi;
-	fi;
+        if SignPermGroup(m)=1 then
+          Add(max,m);
+          # the wreath product is alternating, so the normalizer cannot grow
+          # and there must be a second class
+          Add(max,m^invol);
+        else
+          # the group is larger, so we have to intersect with A_n
+          m:=AlternatingSubgroup(m);
+          # but it might become imprimitive, use remark 2:
+          if i[2]<>2 or 2<>(i[1] mod 4) or IsPrimitive(m,[1..n]) then
+            Add(max,m);
+          fi;
+        fi;
       fi;
     fi;
   od;
@@ -2355,10 +2355,10 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
     # all type 2 nonalt groups of right parity
     k:=Factorial(n)/2;
     l:=CallFuncList(ValueGlobal("AllPrimitiveGroups"),
-	      [DegreeOperation,n,
-			  i->Size(i)<k and IsSimpleGroup(Socle(i))
-			  and not IsAbelian(Socle(i)),true,
-			  SignPermGroup,SignPermGroup(G)]);
+              [DegreeOperation,n,
+                          i->Size(i)<k and IsSimpleGroup(Socle(i))
+                          and not IsAbelian(Socle(i)),true,
+                          SignPermGroup,SignPermGroup(G)]);
 
     # remove obvious subgroups
     Sort(l,function(a,b)return Size(a)<Size(b);end);
@@ -2388,17 +2388,17 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
     mf:=[];
     for i in [Length(l),Length(l)-1..1] do
       if i in sel then
-	Add(mf,l[i]);
-	for j in [1..i] do
-	  #is there a permisomorphic primitive subgroup?
-	  k:=IsomorphicSubgroups(l[i],l[j]);
-	  k:=List(k,Image);
-	  if ForAny(k,x->IsTransitive(x,[1..n]) and IsPrimitive(x,[1..n]) and
-	              PrimitiveIdentification(x)=PrimitiveIdentification(l[j]))
-		      then
-	    RemoveSet(sel,j);
-	  fi;
-	od;
+        Add(mf,l[i]);
+        for j in [1..i] do
+          #is there a permisomorphic primitive subgroup?
+          k:=IsomorphicSubgroups(l[i],l[j]);
+          k:=List(k,Image);
+          if ForAny(k,x->IsTransitive(x,[1..n]) and IsPrimitive(x,[1..n]) and
+                      PrimitiveIdentification(x)=PrimitiveIdentification(l[j]))
+                      then
+            RemoveSet(sel,j);
+          fi;
+        od;
       fi;
     od;
   else
@@ -2419,11 +2419,11 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
       # is a larger primitive group in S_n
       k:=CallFuncList(ValueGlobal("AllPrimitiveGroups"),
        [NrMovedPoints,n,SocleTypePrimitiveGroup,
-	  SocleTypePrimitiveGroup(m),SignPermGroup,-1]);
+          SocleTypePrimitiveGroup(m),SignPermGroup,-1]);
       k:=List(k,i->AlternatingSubgroup(i));
       if ForAll(k,j->not IsTransitive(j,[1..n]) or not IsPrimitive(j,[1..n])
-	      or PrimitiveIdentification(j)<>PrimitiveIdentification(m)) then
-	Add(max,m^invol);
+              or PrimitiveIdentification(j)<>PrimitiveIdentification(m)) then
+        Add(max,m^invol);
       fi;
     od;
   fi;
