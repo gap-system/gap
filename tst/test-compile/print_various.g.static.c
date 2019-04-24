@@ -33,13 +33,23 @@ static Obj  HdlrFunc2 (
  /* Print( 1, "\n" ); */
  t_1 = GF_Print;
  t_2 = MakeString( "\n" );
- CALL_2ARGS( t_1, INTOBJ_INT(1), t_2 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, INTOBJ_INT(1), t_2 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( INTOBJ_INT(1), t_2 ) );
+ }
  
  /* Print( "abc", "\n" ); */
  t_1 = GF_Print;
  t_2 = MakeString( "abc" );
  t_3 = MakeString( "\n" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* Print( (1,2)(5,6), "\n" ); */
  t_1 = GF_Print;
@@ -64,7 +74,12 @@ static Obj  HdlrFunc2 (
  CHANGED_BAG( t_3 );
  t_2 = Array2Perm( t_4 );
  t_3 = MakeString( "\n" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* Print( [ 1, "abc" ], "\n" ); */
  t_1 = GF_Print;
@@ -75,7 +90,12 @@ static Obj  HdlrFunc2 (
  SET_ELM_PLIST( t_2, 2, t_3 );
  CHANGED_BAG( t_2 );
  t_3 = MakeString( "\n" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* Print( Group( (1,2,3) ), "\n" ); */
  t_1 = GF_Print;
@@ -94,10 +114,20 @@ static Obj  HdlrFunc2 (
  SET_ELM_PLIST( t_5, 3, INTOBJ_INT(3) );
  CHANGED_BAG( t_5 );
  t_4 = Array2Perm( t_6 );
- t_2 = CALL_1ARGS( t_3, t_4 );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_1ARGS( t_3, t_4 );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( t_4 ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);

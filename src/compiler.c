@@ -863,22 +863,6 @@ static void CompCheckBool(CVar obj)
 }
 
 
-
-/****************************************************************************
-**
-*F  CompCheckFunc( <obj> )  . . . emit code to check that <obj> is a function
-*/
-static void CompCheckFunc(CVar obj)
-{
-    if ( ! HasInfoCVar( obj, W_FUNC ) ) {
-        if ( CompCheckTypes ) {
-            Emit( "CHECK_FUNC( %c );\n", obj );
-        }
-        SetInfoCVar( obj, W_FUNC );
-    }
-}
-
-
 /****************************************************************************
 **
 *F * * * * * * * * * * * *  compile expressions * * * * * * * * * * * * * * *
@@ -1003,7 +987,6 @@ static CVar CompFunccall0to6Args(Expr expr)
     }
     else {
         func = CompExpr( FUNC_CALL(expr) );
-        CompCheckFunc( func );
     }
 
     /* compile the argument expressions                                    */
@@ -1012,12 +995,24 @@ static CVar CompFunccall0to6Args(Expr expr)
         args[i] = CompExpr( ARGI_CALL(expr,i) );
     }
 
-    /* emit the code for the procedure call                                */
+    /* emit the code for the function call                                 */
+    Emit( "if ( TNUM_OBJ( %c ) == T_FUNCTION ) {\n", func );
     Emit( "%c = CALL_%dARGS( %c", result, narg, func );
     for ( i = 1; i <= narg; i++ ) {
         Emit( ", %c", args[i] );
     }
     Emit( " );\n" );
+    Emit( "}\n" );
+    Emit( "else {\n" );
+    Emit( "%c = DoOperation2Args( CallFuncListOper, %c, NewPlistFromArgs(", result, func);
+    if (narg >= 1) {
+        Emit( " %c", args[1] );
+    }
+    for ( i = 2; i <= narg; i++ ) {
+        Emit( ", %c", args[i] );
+    }
+    Emit( " ) );\n" );
+    Emit( "}\n" );
 
     /* emit code for the check (sets the information for the result)       */
     CompCheckFuncResult( result );
@@ -1055,7 +1050,6 @@ static CVar CompFunccallXArgs(Expr expr)
     }
     else {
         func = CompExpr( FUNC_CALL(expr) );
-        CompCheckFunc( func );
     }
 
     /* compile the argument expressions                                    */
@@ -1072,8 +1066,13 @@ static CVar CompFunccallXArgs(Expr expr)
         if ( IS_TEMP_CVAR( argi ) )  FreeTemp( TEMP_CVAR( argi ) );
     }
 
-    /* emit the code for the procedure call                                */
+    /* emit the code for the function call                                 */
+    Emit( "if ( TNUM_OBJ( %c ) == T_FUNCTION ) {\n", func );
     Emit( "%c = CALL_XARGS( %c, %c );\n", result, func, argl );
+    Emit( "}\n" );
+    Emit( "else {\n" );
+    Emit( "%c = DoOperation2Args( CallFuncListOper, %c, %c );\n", result, func, argl );
+    Emit( "}\n" );
 
     /* emit code for the check (sets the information for the result)       */
     CompCheckFuncResult( result );
@@ -3606,7 +3605,6 @@ static void CompProccall0to6Args(Stat stat)
     }
     else {
         func = CompExpr( FUNC_CALL(stat) );
-        CompCheckFunc( func );
     }
 
     /* compile the argument expressions                                    */
@@ -3616,11 +3614,23 @@ static void CompProccall0to6Args(Stat stat)
     }
 
     /* emit the code for the procedure call                                */
+    Emit( "if ( TNUM_OBJ( %c ) == T_FUNCTION ) {\n", func );
     Emit( "CALL_%dARGS( %c", narg, func );
     for ( i = 1; i <= narg; i++ ) {
         Emit( ", %c", args[i] );
     }
     Emit( " );\n" );
+    Emit( "}\n" );
+    Emit( "else {\n" );
+    Emit( "DoOperation2Args( CallFuncListOper, %c, NewPlistFromArgs(", func);
+    if (narg >= 1) {
+        Emit( " %c", args[1] );
+    }
+    for ( i = 2; i <= narg; i++ ) {
+        Emit( ", %c", args[i] );
+    }
+    Emit( " ) );\n" );
+    Emit( "}\n" );
 
     /* free the temporaries                                                */
     for ( i = narg; 1 <= i; i-- ) {
@@ -3653,7 +3663,6 @@ static void CompProccallXArgs(Stat stat)
     }
     else {
         func = CompExpr( FUNC_CALL(stat) );
-        CompCheckFunc( func );
     }
 
     /* compile the argument expressions                                    */
@@ -3671,7 +3680,12 @@ static void CompProccallXArgs(Stat stat)
     }
 
     /* emit the code for the procedure call                                */
+    Emit( "if ( TNUM_OBJ( %c ) == T_FUNCTION ) {\n", func );
     Emit( "CALL_XARGS( %c, %c );\n", func, argl );
+    Emit( "}\n" );
+    Emit( "else {\n" );
+    Emit( "DoOperation2Args( CallFuncListOper, %c, %c );\n", func, argl );
+    Emit( "}\n" );
 
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( argl ) )  FreeTemp( TEMP_CVAR( argl ) );
