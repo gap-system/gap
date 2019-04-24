@@ -111,11 +111,15 @@ typedef UInt    RNam;
     if (!IS_POS_INT(obj))                                                    \
         RequireArgumentEx(0, obj, "<obj>", "must be a positive integer");
 
-#define CHECK_BOOL(obj)                                                      \
-    if (obj != True && obj != False)                                         \
-        RequireArgumentEx(0, obj, "<obj>", "must be 'true' or 'false'");
+static inline void CHECK_BOOL(Obj expr)
+{
+    RequireTrueOrFalse(0, expr); // use <expr> to match interpreter error
+}
 
-#define CHECK_FUNC(obj) RequireFunction(0, obj);
+static inline void CHECK_FUNC(Obj obj)
+{
+    RequireFunction(0, obj);
+}
 
 #define CHECK_NR_ARGS(narg, args)                                            \
     if (narg != LEN_PLIST(args))                                             \

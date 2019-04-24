@@ -15,4 +15,7 @@ CALL_WITH_CATCH({} -> Center and IsAssociative, []);
 # trigger error 2:
 CALL_WITH_CATCH({} -> IsAssociative and Center, []);
 
+CALL_WITH_CATCH({} -> 1 and false, []);
+CALL_WITH_CATCH({} -> 1 or true, []);
+
 end;

@@ -1,6 +1,6 @@
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "-49920958"
+#define FILE_CRC  "-101028112"
 
 /* global variables used in handlers */
 static GVar G_Print;
@@ -17,7 +17,7 @@ static Obj  GC_Center;
 /* record names used in handlers */
 
 /* information for the functions */
-static Obj  NameFunc[7];
+static Obj  NameFunc[9];
 static Obj FileName;
 
 /* handler for function 3 */
@@ -168,6 +168,72 @@ static Obj  HdlrFunc6 (
  return 0;
 }
 
+/* handler for function 7 */
+static Obj  HdlrFunc7 (
+ Obj  self )
+{
+ Obj t_1 = 0;
+ Obj t_2 = 0;
+ Obj t_3 = 0;
+ Bag oldFrame;
+ 
+ /* allocate new stack frame */
+ SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
+ 
+ /* return 1 and false; */
+ if ( INTOBJ_INT(1) == False ) {
+  t_1 = INTOBJ_INT(1);
+ }
+ else if ( INTOBJ_INT(1) == True ) {
+  t_2 = False;
+  t_1 = t_2;
+ }
+ else if (IS_FILTER( INTOBJ_INT(1) ) ) {
+  t_3 = False;
+  t_1 = NewAndFilter( INTOBJ_INT(1), t_3 );
+ }
+ else {
+  RequireArgumentEx(0, INTOBJ_INT(1), "<expr>",
+  "must be 'true' or 'false' or a filter" );
+ }
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return t_1;
+ 
+ /* return; */
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+}
+
+/* handler for function 8 */
+static Obj  HdlrFunc8 (
+ Obj  self )
+{
+ Obj t_1 = 0;
+ Obj t_2 = 0;
+ Obj t_3 = 0;
+ Obj t_4 = 0;
+ Bag oldFrame;
+ 
+ /* allocate new stack frame */
+ SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
+ 
+ /* return 1 or true; */
+ CHECK_BOOL( INTOBJ_INT(1) );
+ t_2 = (Obj)(UInt)(INTOBJ_INT(1) != False);
+ t_1 = (t_2 ? True : False);
+ if ( t_1 == False ) {
+  t_4 = True;
+  t_3 = (Obj)(UInt)(t_4 != False);
+  t_1 = (t_3 ? True : False);
+ }
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return t_1;
+ 
+ /* return; */
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+}
+
 /* handler for function 2 */
 static Obj  HdlrFunc2 (
  Obj  self )
@@ -306,6 +372,36 @@ static Obj  HdlrFunc2 (
  SET_LEN_PLIST( t_3, 0 );
  CALL_2ARGS( t_1, t_2, t_3 );
  
+ /* CALL_WITH_CATCH( function (  )
+      return 1 and false;
+  end, [  ] ); */
+ t_1 = GF_CALL__WITH__CATCH;
+ t_2 = NewFunction( NameFunc[7], 0, 0, HdlrFunc7 );
+ SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
+ t_3 = NewFunctionBody();
+ SET_STARTLINE_BODY(t_3, 18);
+ SET_ENDLINE_BODY(t_3, 18);
+ SET_FILENAME_BODY(t_3, FileName);
+ SET_BODY_FUNC(t_2, t_3);
+ t_3 = NEW_PLIST( T_PLIST, 0 );
+ SET_LEN_PLIST( t_3, 0 );
+ CALL_2ARGS( t_1, t_2, t_3 );
+ 
+ /* CALL_WITH_CATCH( function (  )
+      return 1 or true;
+  end, [  ] ); */
+ t_1 = GF_CALL__WITH__CATCH;
+ t_2 = NewFunction( NameFunc[8], 0, 0, HdlrFunc8 );
+ SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
+ t_3 = NewFunctionBody();
+ SET_STARTLINE_BODY(t_3, 19);
+ SET_ENDLINE_BODY(t_3, 19);
+ SET_FILENAME_BODY(t_3, FileName);
+ SET_BODY_FUNC(t_2, t_3);
+ t_3 = NEW_PLIST( T_PLIST, 0 );
+ SET_LEN_PLIST( t_3, 0 );
+ CALL_2ARGS( t_1, t_2, t_3 );
+ 
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
@@ -343,13 +439,19 @@ static Obj  HdlrFunc1 (
       CALL_WITH_CATCH( function (  )
             return IsAssociative and Center;
         end, [  ] );
+      CALL_WITH_CATCH( function (  )
+            return 1 and false;
+        end, [  ] );
+      CALL_WITH_CATCH( function (  )
+            return 1 or true;
+        end, [  ] );
       return;
   end; */
  t_1 = NewFunction( NameFunc[2], 0, 0, HdlrFunc2 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 1);
- SET_ENDLINE_BODY(t_2, 18);
+ SET_ENDLINE_BODY(t_2, 21);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_runtest, t_1 );
@@ -384,6 +486,8 @@ static Int PostRestore ( StructInitInfo * module )
  NameFunc[4] = 0;
  NameFunc[5] = 0;
  NameFunc[6] = 0;
+ NameFunc[7] = 0;
+ NameFunc[8] = 0;
  
  /* return success */
  return 0;
@@ -415,6 +519,10 @@ static Int InitKernel ( StructInitInfo * module )
  InitGlobalBag( &(NameFunc[5]), "and_filter.g:NameFunc[5]("FILE_CRC")" );
  InitHandlerFunc( HdlrFunc6, "and_filter.g:HdlrFunc6("FILE_CRC")" );
  InitGlobalBag( &(NameFunc[6]), "and_filter.g:NameFunc[6]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc7, "and_filter.g:HdlrFunc7("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[7]), "and_filter.g:NameFunc[7]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc8, "and_filter.g:HdlrFunc8("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[8]), "and_filter.g:NameFunc[8]("FILE_CRC")" );
  
  /* return success */
  return 0;
@@ -449,7 +557,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "and_filter.g",
- .crc         = -49920958,
+ .crc         = -101028112,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
