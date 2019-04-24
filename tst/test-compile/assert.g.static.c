@@ -32,10 +32,20 @@ static Obj  HdlrFunc2 (
  /* Print( AssertionLevel(  ), "\n" ); */
  t_1 = GF_Print;
  t_3 = GF_AssertionLevel;
- t_2 = CALL_0ARGS( t_3 );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_0ARGS( t_3 );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* Assert( ... ); */
  if ( ! LT(CurrentAssertionLevel, INTOBJ_INT(1)) ) {
@@ -87,15 +97,30 @@ static Obj  HdlrFunc2 (
  
  /* SetAssertionLevel( 2 ); */
  t_1 = GF_SetAssertionLevel;
- CALL_1ARGS( t_1, INTOBJ_INT(2) );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_1ARGS( t_1, INTOBJ_INT(2) );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( INTOBJ_INT(2) ) );
+ }
  
  /* Print( AssertionLevel(  ), "\n" ); */
  t_1 = GF_Print;
  t_3 = GF_AssertionLevel;
- t_2 = CALL_0ARGS( t_3 );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_0ARGS( t_3 );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* Assert( ... ); */
  if ( ! LT(CurrentAssertionLevel, INTOBJ_INT(3)) ) {
@@ -163,7 +188,12 @@ static Obj  HdlrFunc2 (
  /* Print( "end of function\n" ); */
  t_1 = GF_Print;
  t_2 = MakeString( "end of function\n" );
- CALL_1ARGS( t_1, t_2 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_1ARGS( t_1, t_2 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+ }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);

@@ -37,10 +37,20 @@ static Obj  HdlrFunc2 (
  t_3 = GF_InfoLevel;
  t_4 = GC_InfoDebug;
  CHECK_BOUND( t_4, "InfoDebug" );
- t_2 = CALL_1ARGS( t_3, t_4 );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_1ARGS( t_3, t_4 );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( t_4 ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* Info( ... ); */
  t_1 = GC_InfoDebug;
@@ -72,17 +82,32 @@ static Obj  HdlrFunc2 (
  t_1 = GF_SetInfoLevel;
  t_2 = GC_InfoDebug;
  CHECK_BOUND( t_2, "InfoDebug" );
- CALL_2ARGS( t_1, t_2, INTOBJ_INT(2) );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, INTOBJ_INT(2) );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, INTOBJ_INT(2) ) );
+ }
  
  /* Print( InfoLevel( InfoDebug ), "\n" ); */
  t_1 = GF_Print;
  t_3 = GF_InfoLevel;
  t_4 = GC_InfoDebug;
  CHECK_BOUND( t_4, "InfoDebug" );
- t_2 = CALL_1ARGS( t_3, t_4 );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_1ARGS( t_3, t_4 );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( t_4 ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* Info( ... ); */
  t_1 = GC_InfoDebug;

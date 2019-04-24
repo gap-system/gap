@@ -236,9 +236,19 @@ static Obj  HdlrFunc2 (
  t_5 = GC_GETTER__FLAGS;
  CHECK_BOUND( t_5, "GETTER_FLAGS" );
  t_7 = GF_GETTER__FUNCTION;
- t_6 = CALL_1ARGS( t_7, a_name );
+ if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+  t_6 = CALL_1ARGS( t_7, a_name );
+ }
+ else {
+  t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( a_name ) );
+ }
  CHECK_FUNC_RESULT( t_6 );
- CALL_6ARGS( t_1, a_getter, t_2, t_3, t_4, t_5, t_6 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_6ARGS( t_1, a_getter, t_2, t_3, t_4, t_5, t_6 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_getter, t_2, t_3, t_4, t_5, t_6 ) );
+ }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -271,7 +281,12 @@ static Obj  HdlrFunc4 (
  t_1 = GF_SetFilterObj;
  t_2 = OBJ_HVAR( (1 << 16) | 2 );
  CHECK_BOUND( t_2, "tester" );
- CALL_2ARGS( t_1, a_obj, t_2 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, a_obj, t_2 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, t_2 ) );
+ }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -338,7 +353,12 @@ static Obj  HdlrFunc3 (
   SET_ENDLINE_BODY(t_6, 43);
   SET_FILENAME_BODY(t_6, FileName);
   SET_BODY_FUNC(t_5, t_6);
-  CALL_6ARGS( t_1, a_setter, t_2, t_3, t_4, INTOBJ_INT(0), t_5 );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_6ARGS( t_1, a_setter, t_2, t_3, t_4, INTOBJ_INT(0), t_5 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_setter, t_2, t_3, t_4, INTOBJ_INT(0), t_5 ) );
+  }
   
  }
  
@@ -364,9 +384,19 @@ static Obj  HdlrFunc3 (
   CHECK_BOUND( t_7, "name" );
   t_8 = OBJ_LVAR( 2 );
   CHECK_BOUND( t_8, "tester" );
-  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
+  if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+   t_5 = CALL_2ARGS( t_6, t_7, t_8 );
+  }
+  else {
+   t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7, t_8 ) );
+  }
   CHECK_FUNC_RESULT( t_5 );
-  CALL_6ARGS( t_1, a_setter, t_2, t_3, t_4, INTOBJ_INT(0), t_5 );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_6ARGS( t_1, a_setter, t_2, t_3, t_4, INTOBJ_INT(0), t_5 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_setter, t_2, t_3, t_4, INTOBJ_INT(0), t_5 ) );
+  }
   
  }
  /* fi */
@@ -412,9 +442,19 @@ static Obj  HdlrFunc5 (
  /* imp_filter := WITH_IMPS_FLAGS( AND_FLAGS( imp_filter, req_filter ) ); */
  t_2 = GF_WITH__IMPS__FLAGS;
  t_4 = GF_AND__FLAGS;
- t_3 = CALL_2ARGS( t_4, a_imp__filter, a_req__filter );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_2ARGS( t_4, a_imp__filter, a_req__filter );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_imp__filter, a_req__filter ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
- t_1 = CALL_1ARGS( t_2, t_3 );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_1ARGS( t_2, t_3 );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3 ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  a_imp__filter = t_1;
  
@@ -422,7 +462,12 @@ static Obj  HdlrFunc5 (
  t_2 = GF_Subtype;
  t_3 = GC_IsAttributeStoringRep;
  CHECK_BOUND( t_3, "IsAttributeStoringRep" );
- t_1 = CALL_2ARGS( t_2, a_typeOfFamilies, t_3 );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_2ARGS( t_2, a_typeOfFamilies, t_3 );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( a_typeOfFamilies, t_3 ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  l_type = t_1;
  
@@ -453,7 +498,12 @@ static Obj  HdlrFunc5 (
   /* if IS_SUBSET_FLAGS( imp_filter, pair[1] ) then */
   t_7 = GF_IS__SUBSET__FLAGS;
   C_ELM_LIST_FPL( t_8, l_pair, INTOBJ_INT(1) )
-  t_6 = CALL_2ARGS( t_7, a_imp__filter, t_8 );
+  if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+   t_6 = CALL_2ARGS( t_7, a_imp__filter, t_8 );
+  }
+  else {
+   t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( a_imp__filter, t_8 ) );
+  }
   CHECK_FUNC_RESULT( t_6 );
   CHECK_BOOL( t_6 );
   t_5 = (Obj)(UInt)(t_6 != False);
@@ -462,7 +512,12 @@ static Obj  HdlrFunc5 (
    /* type := Subtype( type, pair[2] ); */
    t_6 = GF_Subtype;
    C_ELM_LIST_FPL( t_7, l_pair, INTOBJ_INT(2) )
-   t_5 = CALL_2ARGS( t_6, l_type, t_7 );
+   if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+    t_5 = CALL_2ARGS( t_6, l_type, t_7 );
+   }
+   else {
+    t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( l_type, t_7 ) );
+   }
    CHECK_FUNC_RESULT( t_5 );
    l_type = t_5;
    
@@ -480,11 +535,21 @@ static Obj  HdlrFunc5 (
  
  /* SET_TYPE_COMOBJ( family, type ); */
  t_1 = GF_SET__TYPE__COMOBJ;
- CALL_2ARGS( t_1, l_family, l_type );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, l_family, l_type );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_family, l_type ) );
+ }
  
  /* family!.NAME := IMMUTABLE_COPY_OBJ( name ); */
  t_2 = GF_IMMUTABLE__COPY__OBJ;
- t_1 = CALL_1ARGS( t_2, a_name );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_1ARGS( t_2, a_name );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( a_name ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  AssComObj( l_family, R_NAME, t_1 );
  
@@ -544,7 +609,12 @@ static Obj  HdlrFunc6 (
  CHECK_BOUND( t_3, "EMPTY_FLAGS" );
  t_4 = GC_EMPTY__FLAGS;
  CHECK_BOUND( t_4, "EMPTY_FLAGS" );
- t_1 = CALL_4ARGS( t_2, a_typeOfFamilies, a_name, t_3, t_4 );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_4ARGS( t_2, a_typeOfFamilies, a_name, t_3, t_4 );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( a_typeOfFamilies, a_name, t_3, t_4 ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -573,11 +643,21 @@ static Obj  HdlrFunc7 (
  /* return NEW_FAMILY( typeOfFamilies, name, FLAGS_FILTER( req ), EMPTY_FLAGS ); */
  t_2 = GF_NEW__FAMILY;
  t_4 = GF_FLAGS__FILTER;
- t_3 = CALL_1ARGS( t_4, a_req );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, a_req );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_req ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
  t_4 = GC_EMPTY__FLAGS;
  CHECK_BOUND( t_4, "EMPTY_FLAGS" );
- t_1 = CALL_4ARGS( t_2, a_typeOfFamilies, a_name, t_3, t_4 );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_4ARGS( t_2, a_typeOfFamilies, a_name, t_3, t_4 );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( a_typeOfFamilies, a_name, t_3, t_4 ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -608,12 +688,27 @@ static Obj  HdlrFunc8 (
  /* return NEW_FAMILY( typeOfFamilies, name, FLAGS_FILTER( req ), FLAGS_FILTER( imp ) ); */
  t_2 = GF_NEW__FAMILY;
  t_4 = GF_FLAGS__FILTER;
- t_3 = CALL_1ARGS( t_4, a_req );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, a_req );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_req ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
  t_5 = GF_FLAGS__FILTER;
- t_4 = CALL_1ARGS( t_5, a_imp );
+ if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
+  t_4 = CALL_1ARGS( t_5, a_imp );
+ }
+ else {
+  t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( a_imp ) );
+ }
  CHECK_FUNC_RESULT( t_4 );
- t_1 = CALL_4ARGS( t_2, a_typeOfFamilies, a_name, t_3, t_4 );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_4ARGS( t_2, a_typeOfFamilies, a_name, t_3, t_4 );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( a_typeOfFamilies, a_name, t_3, t_4 ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -646,15 +741,35 @@ static Obj  HdlrFunc9 (
  /* return NEW_FAMILY( Subtype( typeOfFamilies, filter ), name, FLAGS_FILTER( req ), FLAGS_FILTER( imp ) ); */
  t_2 = GF_NEW__FAMILY;
  t_4 = GF_Subtype;
- t_3 = CALL_2ARGS( t_4, a_typeOfFamilies, a_filter );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_2ARGS( t_4, a_typeOfFamilies, a_filter );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_typeOfFamilies, a_filter ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
  t_5 = GF_FLAGS__FILTER;
- t_4 = CALL_1ARGS( t_5, a_req );
+ if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
+  t_4 = CALL_1ARGS( t_5, a_req );
+ }
+ else {
+  t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( a_req ) );
+ }
  CHECK_FUNC_RESULT( t_4 );
  t_6 = GF_FLAGS__FILTER;
- t_5 = CALL_1ARGS( t_6, a_imp );
+ if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+  t_5 = CALL_1ARGS( t_6, a_imp );
+ }
+ else {
+  t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( a_imp ) );
+ }
  CHECK_FUNC_RESULT( t_5 );
- t_1 = CALL_4ARGS( t_2, t_3, a_name, t_4, t_5 );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_4ARGS( t_2, t_3, a_name, t_4, t_5 );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, a_name, t_4, t_5 ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -683,7 +798,12 @@ static Obj  HdlrFunc10 (
  
  /* if LEN_LIST( arg ) = 1 then */
  t_3 = GF_LEN__LIST;
- t_2 = CALL_1ARGS( t_3, a_arg );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_1ARGS( t_3, a_arg );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_arg ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(1) ));
  if ( t_1 ) {
@@ -693,7 +813,12 @@ static Obj  HdlrFunc10 (
   t_3 = GC_TypeOfFamilies;
   CHECK_BOUND( t_3, "TypeOfFamilies" );
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
-  t_1 = CALL_2ARGS( t_2, t_3, t_4 );
+  if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+   t_1 = CALL_2ARGS( t_2, t_3, t_4 );
+  }
+  else {
+   t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4 ) );
+  }
   CHECK_FUNC_RESULT( t_1 );
   SWITCH_TO_OLD_FRAME(oldFrame);
   return t_1;
@@ -703,7 +828,12 @@ static Obj  HdlrFunc10 (
  /* elif LEN_LIST( arg ) = 2 then */
  else {
   t_3 = GF_LEN__LIST;
-  t_2 = CALL_1ARGS( t_3, a_arg );
+  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+   t_2 = CALL_1ARGS( t_3, a_arg );
+  }
+  else {
+   t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_arg ) );
+  }
   CHECK_FUNC_RESULT( t_2 );
   t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(2) ));
   if ( t_1 ) {
@@ -714,7 +844,12 @@ static Obj  HdlrFunc10 (
    CHECK_BOUND( t_3, "TypeOfFamilies" );
    C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
    C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
-   t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
+   if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+    t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
+   }
+   else {
+    t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5 ) );
+   }
    CHECK_FUNC_RESULT( t_1 );
    SWITCH_TO_OLD_FRAME(oldFrame);
    return t_1;
@@ -724,7 +859,12 @@ static Obj  HdlrFunc10 (
   /* elif LEN_LIST( arg ) = 3 then */
   else {
    t_3 = GF_LEN__LIST;
-   t_2 = CALL_1ARGS( t_3, a_arg );
+   if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+    t_2 = CALL_1ARGS( t_3, a_arg );
+   }
+   else {
+    t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_arg ) );
+   }
    CHECK_FUNC_RESULT( t_2 );
    t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(3) ));
    if ( t_1 ) {
@@ -736,7 +876,12 @@ static Obj  HdlrFunc10 (
     C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
     C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
     C_ELM_LIST_FPL( t_6, a_arg, INTOBJ_INT(3) )
-    t_1 = CALL_4ARGS( t_2, t_3, t_4, t_5, t_6 );
+    if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+     t_1 = CALL_4ARGS( t_2, t_3, t_4, t_5, t_6 );
+    }
+    else {
+     t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5, t_6 ) );
+    }
     CHECK_FUNC_RESULT( t_1 );
     SWITCH_TO_OLD_FRAME(oldFrame);
     return t_1;
@@ -746,7 +891,12 @@ static Obj  HdlrFunc10 (
    /* elif LEN_LIST( arg ) = 4 then */
    else {
     t_3 = GF_LEN__LIST;
-    t_2 = CALL_1ARGS( t_3, a_arg );
+    if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+     t_2 = CALL_1ARGS( t_3, a_arg );
+    }
+    else {
+     t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_arg ) );
+    }
     CHECK_FUNC_RESULT( t_2 );
     t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(4) ));
     if ( t_1 ) {
@@ -759,7 +909,12 @@ static Obj  HdlrFunc10 (
      C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
      C_ELM_LIST_FPL( t_6, a_arg, INTOBJ_INT(3) )
      C_ELM_LIST_FPL( t_7, a_arg, INTOBJ_INT(4) )
-     t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, t_7 );
+     if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+      t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, t_7 );
+     }
+     else {
+      t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5, t_6, t_7 ) );
+     }
      CHECK_FUNC_RESULT( t_1 );
      SWITCH_TO_OLD_FRAME(oldFrame);
      return t_1;
@@ -772,7 +927,12 @@ static Obj  HdlrFunc10 (
      /* Error( "usage: NewFamily( <name> [, <req> [, <imp> [, <famfilter> ] ] ] )" ); */
      t_1 = GF_Error;
      t_2 = MakeString( "usage: NewFamily( <name> [, <req> [, <imp> [, <famfilter> ] ] ] )" );
-     CALL_1ARGS( t_1, t_2 );
+     if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+      CALL_1ARGS( t_1, t_2 );
+     }
+     else {
+      DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+     }
      
     }
    }
@@ -839,7 +999,12 @@ static Obj  HdlrFunc11 (
  
  /* hash := HASH_FLAGS( flags ) mod family!.HASH_SIZE + 1; */
  t_4 = GF_HASH__FLAGS;
- t_3 = CALL_1ARGS( t_4, a_flags );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, a_flags );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_flags ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
  t_4 = ElmComObj( a_family, R_HASH__SIZE );
  t_2 = MOD( t_3, t_4 );
@@ -859,7 +1024,12 @@ static Obj  HdlrFunc11 (
   /* if IS_EQUAL_FLAGS( flags, cached![2] ) then */
   t_3 = GF_IS__EQUAL__FLAGS;
   t_4 = ElmPosObj( l_cached, 2 );
-  t_2 = CALL_2ARGS( t_3, a_flags, t_4 );
+  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+   t_2 = CALL_2ARGS( t_3, a_flags, t_4 );
+  }
+  else {
+   t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_flags, t_4 ) );
+  }
   CHECK_FUNC_RESULT( t_2 );
   CHECK_BOOL( t_2 );
   t_1 = (Obj)(UInt)(t_2 != False);
@@ -872,7 +1042,12 @@ static Obj  HdlrFunc11 (
    /* if IS_IDENTICAL_OBJ( data, cached![3] ) and IS_IDENTICAL_OBJ( typeOfTypes, TYPE_OBJ( cached ) ) then */
    t_4 = GF_IS__IDENTICAL__OBJ;
    t_5 = ElmPosObj( l_cached, 3 );
-   t_3 = CALL_2ARGS( t_4, a_data, t_5 );
+   if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+    t_3 = CALL_2ARGS( t_4, a_data, t_5 );
+   }
+   else {
+    t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_data, t_5 ) );
+   }
    CHECK_FUNC_RESULT( t_3 );
    CHECK_BOOL( t_3 );
    t_2 = (Obj)(UInt)(t_3 != False);
@@ -880,9 +1055,19 @@ static Obj  HdlrFunc11 (
    if ( t_1 ) {
     t_5 = GF_IS__IDENTICAL__OBJ;
     t_7 = GF_TYPE__OBJ;
-    t_6 = CALL_1ARGS( t_7, l_cached );
+    if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+     t_6 = CALL_1ARGS( t_7, l_cached );
+    }
+    else {
+     t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( l_cached ) );
+    }
     CHECK_FUNC_RESULT( t_6 );
-    t_4 = CALL_2ARGS( t_5, a_typeOfTypes, t_6 );
+    if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
+     t_4 = CALL_2ARGS( t_5, a_typeOfTypes, t_6 );
+    }
+    else {
+     t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( a_typeOfTypes, t_6 ) );
+    }
     CHECK_FUNC_RESULT( t_4 );
     CHECK_BOOL( t_4 );
     t_3 = (Obj)(UInt)(t_4 != False);
@@ -894,7 +1079,12 @@ static Obj  HdlrFunc11 (
     t_3 = GF_IS__IDENTICAL__OBJ;
     t_4 = GC_fail;
     CHECK_BOUND( t_4, "fail" );
-    t_2 = CALL_2ARGS( t_3, a_parent, t_4 );
+    if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+     t_2 = CALL_2ARGS( t_3, a_parent, t_4 );
+    }
+    else {
+     t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_parent, t_4 ) );
+    }
     CHECK_FUNC_RESULT( t_2 );
     CHECK_BOOL( t_2 );
     t_1 = (Obj)(UInt)(t_2 != False);
@@ -906,7 +1096,12 @@ static Obj  HdlrFunc11 (
      
      /* for i in [ 5 .. LEN_POSOBJ( cached ) ] do */
      t_3 = GF_LEN__POSOBJ;
-     t_2 = CALL_1ARGS( t_3, l_cached );
+     if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+      t_2 = CALL_1ARGS( t_3, l_cached );
+     }
+     else {
+      t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( l_cached ) );
+     }
      CHECK_FUNC_RESULT( t_2 );
      CHECK_INT_SMALL( t_2 );
      for ( t_1 = INTOBJ_INT(5);
@@ -954,10 +1149,20 @@ static Obj  HdlrFunc11 (
     
     /* if LEN_POSOBJ( parent ) = LEN_POSOBJ( cached ) then */
     t_3 = GF_LEN__POSOBJ;
-    t_2 = CALL_1ARGS( t_3, a_parent );
+    if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+     t_2 = CALL_1ARGS( t_3, a_parent );
+    }
+    else {
+     t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_parent ) );
+    }
     CHECK_FUNC_RESULT( t_2 );
     t_4 = GF_LEN__POSOBJ;
-    t_3 = CALL_1ARGS( t_4, l_cached );
+    if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+     t_3 = CALL_1ARGS( t_4, l_cached );
+    }
+    else {
+     t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( l_cached ) );
+    }
     CHECK_FUNC_RESULT( t_3 );
     t_1 = (Obj)(UInt)(EQ( t_2, t_3 ));
     if ( t_1 ) {
@@ -968,7 +1173,12 @@ static Obj  HdlrFunc11 (
      
      /* for i in [ 5 .. LEN_POSOBJ( parent ) ] do */
      t_3 = GF_LEN__POSOBJ;
-     t_2 = CALL_1ARGS( t_3, a_parent );
+     if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+      t_2 = CALL_1ARGS( t_3, a_parent );
+     }
+     else {
+      t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_parent ) );
+     }
      CHECK_FUNC_RESULT( t_2 );
      CHECK_INT_SMALL( t_2 );
      for ( t_1 = INTOBJ_INT(5);
@@ -1006,7 +1216,12 @@ static Obj  HdlrFunc11 (
        t_8 = GF_IS__IDENTICAL__OBJ;
        t_9 = ElmPosObj( a_parent, INT_INTOBJ(l_i) );
        t_10 = ElmPosObj( l_cached, INT_INTOBJ(l_i) );
-       t_7 = CALL_2ARGS( t_8, t_9, t_10 );
+       if ( TNUM_OBJ( t_8 ) == T_FUNCTION ) {
+        t_7 = CALL_2ARGS( t_8, t_9, t_10 );
+       }
+       else {
+        t_7 = DoOperation2Args( CallFuncListOper, t_8, NewPlistFromArgs( t_9, t_10 ) );
+       }
        CHECK_FUNC_RESULT( t_7 );
        CHECK_BOOL( t_7 );
        t_6 = (Obj)(UInt)(t_7 != False);
@@ -1080,15 +1295,30 @@ static Obj  HdlrFunc11 (
   /* GASMAN( "collect" ); */
   t_1 = GF_GASMAN;
   t_2 = MakeString( "collect" );
-  CALL_1ARGS( t_1, t_2 );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_1ARGS( t_1, t_2 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  }
   
   /* FLUSH_ALL_METHOD_CACHES(  ); */
   t_1 = GF_FLUSH__ALL__METHOD__CACHES;
-  CALL_0ARGS( t_1 );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_0ARGS( t_1 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( ) );
+  }
   
   /* NEW_TYPE_NEXT_ID := COMPACT_TYPE_IDS(  ); */
   t_2 = GF_COMPACT__TYPE__IDS;
-  t_1 = CALL_0ARGS( t_2 );
+  if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+   t_1 = CALL_0ARGS( t_2 );
+  }
+  else {
+   t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( ) );
+  }
   CHECK_FUNC_RESULT( t_1 );
   AssGVar( G_NEW__TYPE__NEXT__ID, t_1 );
   
@@ -1116,7 +1346,12 @@ static Obj  HdlrFunc11 (
  t_4 = GF_IS__IDENTICAL__OBJ;
  t_5 = GC_fail;
  CHECK_BOUND( t_5, "fail" );
- t_3 = CALL_2ARGS( t_4, a_parent, t_5 );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_2ARGS( t_4, a_parent, t_5 );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_parent, t_5 ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
  CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
@@ -1125,7 +1360,12 @@ static Obj  HdlrFunc11 (
   
   /* for i in [ 5 .. LEN_POSOBJ( parent ) ] do */
   t_3 = GF_LEN__POSOBJ;
-  t_2 = CALL_1ARGS( t_3, a_parent );
+  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+   t_2 = CALL_1ARGS( t_3, a_parent );
+  }
+  else {
+   t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_parent ) );
+  }
   CHECK_FUNC_RESULT( t_2 );
   CHECK_INT_SMALL( t_2 );
   for ( t_1 = INTOBJ_INT(5);
@@ -1160,7 +1400,12 @@ static Obj  HdlrFunc11 (
  
  /* SET_TYPE_POSOBJ( type, typeOfTypes ); */
  t_1 = GF_SET__TYPE__POSOBJ;
- CALL_2ARGS( t_1, l_type, a_typeOfTypes );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, l_type, a_typeOfTypes );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_type, a_typeOfTypes ) );
+ }
  
  /* if 3 * family!.nTYPES > family!.HASH_SIZE then */
  t_3 = ElmComObj( a_family, R_nTYPES );
@@ -1206,7 +1451,12 @@ static Obj  HdlrFunc11 (
    /* ncache[HASH_FLAGS( t![2] ) mod ncl + 1] := t; */
    t_8 = GF_HASH__FLAGS;
    t_9 = ElmPosObj( l_t, 2 );
-   t_7 = CALL_1ARGS( t_8, t_9 );
+   if ( TNUM_OBJ( t_8 ) == T_FUNCTION ) {
+    t_7 = CALL_1ARGS( t_8, t_9 );
+   }
+   else {
+    t_7 = DoOperation2Args( CallFuncListOper, t_8, NewPlistFromArgs( t_9 ) );
+   }
    CHECK_FUNC_RESULT( t_7 );
    t_6 = MOD( t_7, l_ncl );
    C_SUM_FIA( t_5, t_6, INTOBJ_INT(1) )
@@ -1224,7 +1474,12 @@ static Obj  HdlrFunc11 (
   
   /* ncache[HASH_FLAGS( flags ) mod ncl + 1] := type; */
   t_4 = GF_HASH__FLAGS;
-  t_3 = CALL_1ARGS( t_4, a_flags );
+  if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+   t_3 = CALL_1ARGS( t_4, a_flags );
+  }
+  else {
+   t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_flags ) );
+  }
   CHECK_FUNC_RESULT( t_3 );
   t_2 = MOD( t_3, l_ncl );
   C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
@@ -1283,17 +1538,37 @@ static Obj  HdlrFunc12 (
  t_6 = GF_AND__FLAGS;
  t_7 = ElmComObj( a_family, R_IMP__FLAGS );
  t_9 = GF_FLAGS__FILTER;
- t_8 = CALL_1ARGS( t_9, a_filter );
+ if ( TNUM_OBJ( t_9 ) == T_FUNCTION ) {
+  t_8 = CALL_1ARGS( t_9, a_filter );
+ }
+ else {
+  t_8 = DoOperation2Args( CallFuncListOper, t_9, NewPlistFromArgs( a_filter ) );
+ }
  CHECK_FUNC_RESULT( t_8 );
- t_5 = CALL_2ARGS( t_6, t_7, t_8 );
+ if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
+ }
+ else {
+  t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7, t_8 ) );
+ }
  CHECK_FUNC_RESULT( t_5 );
- t_3 = CALL_1ARGS( t_4, t_5 );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, t_5 );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
  t_4 = GC_fail;
  CHECK_BOUND( t_4, "fail" );
  t_5 = GC_fail;
  CHECK_BOUND( t_5, "fail" );
- t_1 = CALL_5ARGS( t_2, a_typeOfTypes, a_family, t_3, t_4, t_5 );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_5ARGS( t_2, a_typeOfTypes, a_family, t_3, t_4, t_5 );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( a_typeOfTypes, a_family, t_3, t_4, t_5 ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -1331,15 +1606,35 @@ static Obj  HdlrFunc13 (
  t_6 = GF_AND__FLAGS;
  t_7 = ElmComObj( a_family, R_IMP__FLAGS );
  t_9 = GF_FLAGS__FILTER;
- t_8 = CALL_1ARGS( t_9, a_filter );
+ if ( TNUM_OBJ( t_9 ) == T_FUNCTION ) {
+  t_8 = CALL_1ARGS( t_9, a_filter );
+ }
+ else {
+  t_8 = DoOperation2Args( CallFuncListOper, t_9, NewPlistFromArgs( a_filter ) );
+ }
  CHECK_FUNC_RESULT( t_8 );
- t_5 = CALL_2ARGS( t_6, t_7, t_8 );
+ if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
+ }
+ else {
+  t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7, t_8 ) );
+ }
  CHECK_FUNC_RESULT( t_5 );
- t_3 = CALL_1ARGS( t_4, t_5 );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, t_5 );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
  t_4 = GC_fail;
  CHECK_BOUND( t_4, "fail" );
- t_1 = CALL_5ARGS( t_2, a_typeOfTypes, a_family, t_3, a_data, t_4 );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_5ARGS( t_2, a_typeOfTypes, a_family, t_3, a_data, t_4 );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( a_typeOfTypes, a_family, t_3, a_data, t_4 ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -1370,7 +1665,12 @@ static Obj  HdlrFunc14 (
  /* if not IsFamily( arg[1] ) then */
  t_4 = GF_IsFamily;
  C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(1) )
- t_3 = CALL_1ARGS( t_4, t_5 );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, t_5 );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
  CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
@@ -1380,14 +1680,24 @@ static Obj  HdlrFunc14 (
   /* Error( "<family> must be a family" ); */
   t_1 = GF_Error;
   t_2 = MakeString( "<family> must be a family" );
-  CALL_1ARGS( t_1, t_2 );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_1ARGS( t_1, t_2 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  }
   
  }
  /* fi */
  
  /* if LEN_LIST( arg ) = 2 then */
  t_3 = GF_LEN__LIST;
- t_2 = CALL_1ARGS( t_3, a_arg );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_1ARGS( t_3, a_arg );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_arg ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(2) ));
  if ( t_1 ) {
@@ -1398,7 +1708,12 @@ static Obj  HdlrFunc14 (
   CHECK_BOUND( t_3, "TypeOfTypes" );
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
   C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
-  t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
+  if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+   t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
+  }
+  else {
+   t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5 ) );
+  }
   CHECK_FUNC_RESULT( t_1 );
   l_type = t_1;
   
@@ -1407,7 +1722,12 @@ static Obj  HdlrFunc14 (
  /* elif LEN_LIST( arg ) = 3 then */
  else {
   t_3 = GF_LEN__LIST;
-  t_2 = CALL_1ARGS( t_3, a_arg );
+  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+   t_2 = CALL_1ARGS( t_3, a_arg );
+  }
+  else {
+   t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_arg ) );
+  }
   CHECK_FUNC_RESULT( t_2 );
   t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(3) ));
   if ( t_1 ) {
@@ -1419,7 +1739,12 @@ static Obj  HdlrFunc14 (
    C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
    C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
    C_ELM_LIST_FPL( t_6, a_arg, INTOBJ_INT(3) )
-   t_1 = CALL_4ARGS( t_2, t_3, t_4, t_5, t_6 );
+   if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+    t_1 = CALL_4ARGS( t_2, t_3, t_4, t_5, t_6 );
+   }
+   else {
+    t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5, t_6 ) );
+   }
    CHECK_FUNC_RESULT( t_1 );
    l_type = t_1;
    
@@ -1431,7 +1756,12 @@ static Obj  HdlrFunc14 (
    /* Error( "usage: NewType( <family>, <filter> [, <data> ] )" ); */
    t_1 = GF_Error;
    t_2 = MakeString( "usage: NewType( <family>, <filter> [, <data> ] )" );
-   CALL_1ARGS( t_1, t_2 );
+   if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+    CALL_1ARGS( t_1, t_2 );
+   }
+   else {
+    DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   }
    
   }
  }
@@ -1478,14 +1808,34 @@ static Obj  HdlrFunc15 (
  t_8 = GF_AND__FLAGS;
  t_9 = ElmPosObj( a_type, 2 );
  t_11 = GF_FLAGS__FILTER;
- t_10 = CALL_1ARGS( t_11, a_filter );
+ if ( TNUM_OBJ( t_11 ) == T_FUNCTION ) {
+  t_10 = CALL_1ARGS( t_11, a_filter );
+ }
+ else {
+  t_10 = DoOperation2Args( CallFuncListOper, t_11, NewPlistFromArgs( a_filter ) );
+ }
  CHECK_FUNC_RESULT( t_10 );
- t_7 = CALL_2ARGS( t_8, t_9, t_10 );
+ if ( TNUM_OBJ( t_8 ) == T_FUNCTION ) {
+  t_7 = CALL_2ARGS( t_8, t_9, t_10 );
+ }
+ else {
+  t_7 = DoOperation2Args( CallFuncListOper, t_8, NewPlistFromArgs( t_9, t_10 ) );
+ }
  CHECK_FUNC_RESULT( t_7 );
- t_5 = CALL_1ARGS( t_6, t_7 );
+ if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+  t_5 = CALL_1ARGS( t_6, t_7 );
+ }
+ else {
+  t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7 ) );
+ }
  CHECK_FUNC_RESULT( t_5 );
  t_6 = ElmPosObj( a_type, 3 );
- t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, a_type );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, a_type );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5, t_6, a_type ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -1527,13 +1877,33 @@ static Obj  HdlrFunc16 (
  t_8 = GF_AND__FLAGS;
  t_9 = ElmPosObj( a_type, 2 );
  t_11 = GF_FLAGS__FILTER;
- t_10 = CALL_1ARGS( t_11, a_filter );
+ if ( TNUM_OBJ( t_11 ) == T_FUNCTION ) {
+  t_10 = CALL_1ARGS( t_11, a_filter );
+ }
+ else {
+  t_10 = DoOperation2Args( CallFuncListOper, t_11, NewPlistFromArgs( a_filter ) );
+ }
  CHECK_FUNC_RESULT( t_10 );
- t_7 = CALL_2ARGS( t_8, t_9, t_10 );
+ if ( TNUM_OBJ( t_8 ) == T_FUNCTION ) {
+  t_7 = CALL_2ARGS( t_8, t_9, t_10 );
+ }
+ else {
+  t_7 = DoOperation2Args( CallFuncListOper, t_8, NewPlistFromArgs( t_9, t_10 ) );
+ }
  CHECK_FUNC_RESULT( t_7 );
- t_5 = CALL_1ARGS( t_6, t_7 );
+ if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+  t_5 = CALL_1ARGS( t_6, t_7 );
+ }
+ else {
+  t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7 ) );
+ }
  CHECK_FUNC_RESULT( t_5 );
- t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, a_data, a_type );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, a_data, a_type );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5, a_data, a_type ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -1565,7 +1935,12 @@ static Obj  HdlrFunc17 (
  /* if not IsType( arg[1] ) then */
  t_4 = GF_IsType;
  C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(1) )
- t_3 = CALL_1ARGS( t_4, t_5 );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, t_5 );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
  CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
@@ -1575,14 +1950,24 @@ static Obj  HdlrFunc17 (
   /* Error( "<type> must be a type" ); */
   t_1 = GF_Error;
   t_2 = MakeString( "<type> must be a type" );
-  CALL_1ARGS( t_1, t_2 );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_1ARGS( t_1, t_2 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  }
   
  }
  /* fi */
  
  /* if LEN_LIST( arg ) = 2 then */
  t_3 = GF_LEN__LIST;
- t_2 = CALL_1ARGS( t_3, a_arg );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_1ARGS( t_3, a_arg );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_arg ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(2) ));
  if ( t_1 ) {
@@ -1591,7 +1976,12 @@ static Obj  HdlrFunc17 (
   t_2 = GF_Subtype2;
   C_ELM_LIST_FPL( t_3, a_arg, INTOBJ_INT(1) )
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(2) )
-  t_1 = CALL_2ARGS( t_2, t_3, t_4 );
+  if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+   t_1 = CALL_2ARGS( t_2, t_3, t_4 );
+  }
+  else {
+   t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4 ) );
+  }
   CHECK_FUNC_RESULT( t_1 );
   l_type = t_1;
   
@@ -1605,7 +1995,12 @@ static Obj  HdlrFunc17 (
   C_ELM_LIST_FPL( t_3, a_arg, INTOBJ_INT(1) )
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(2) )
   C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(3) )
-  t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
+  if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+   t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
+  }
+  else {
+   t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5 ) );
+  }
   CHECK_FUNC_RESULT( t_1 );
   l_type = t_1;
   
@@ -1649,12 +2044,27 @@ static Obj  HdlrFunc18 (
  t_6 = GF_SUB__FLAGS;
  t_7 = ElmPosObj( a_type, 2 );
  t_9 = GF_FLAGS__FILTER;
- t_8 = CALL_1ARGS( t_9, a_filter );
+ if ( TNUM_OBJ( t_9 ) == T_FUNCTION ) {
+  t_8 = CALL_1ARGS( t_9, a_filter );
+ }
+ else {
+  t_8 = DoOperation2Args( CallFuncListOper, t_9, NewPlistFromArgs( a_filter ) );
+ }
  CHECK_FUNC_RESULT( t_8 );
- t_5 = CALL_2ARGS( t_6, t_7, t_8 );
+ if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
+ }
+ else {
+  t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7, t_8 ) );
+ }
  CHECK_FUNC_RESULT( t_5 );
  t_6 = ElmPosObj( a_type, 3 );
- t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, a_type );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, a_type );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5, t_6, a_type ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -1693,11 +2103,26 @@ static Obj  HdlrFunc19 (
  t_6 = GF_SUB__FLAGS;
  t_7 = ElmPosObj( a_type, 2 );
  t_9 = GF_FLAGS__FILTER;
- t_8 = CALL_1ARGS( t_9, a_filter );
+ if ( TNUM_OBJ( t_9 ) == T_FUNCTION ) {
+  t_8 = CALL_1ARGS( t_9, a_filter );
+ }
+ else {
+  t_8 = DoOperation2Args( CallFuncListOper, t_9, NewPlistFromArgs( a_filter ) );
+ }
  CHECK_FUNC_RESULT( t_8 );
- t_5 = CALL_2ARGS( t_6, t_7, t_8 );
+ if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
+ }
+ else {
+  t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7, t_8 ) );
+ }
  CHECK_FUNC_RESULT( t_5 );
- t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, a_data, a_type );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, a_data, a_type );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5, a_data, a_type ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -1725,7 +2150,12 @@ static Obj  HdlrFunc20 (
  /* if not IsType( arg[1] ) then */
  t_4 = GF_IsType;
  C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(1) )
- t_3 = CALL_1ARGS( t_4, t_5 );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, t_5 );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
  CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
@@ -1735,14 +2165,24 @@ static Obj  HdlrFunc20 (
   /* Error( "<type> must be a type" ); */
   t_1 = GF_Error;
   t_2 = MakeString( "<type> must be a type" );
-  CALL_1ARGS( t_1, t_2 );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_1ARGS( t_1, t_2 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  }
   
  }
  /* fi */
  
  /* if LEN_LIST( arg ) = 2 then */
  t_3 = GF_LEN__LIST;
- t_2 = CALL_1ARGS( t_3, a_arg );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_1ARGS( t_3, a_arg );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_arg ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(2) ));
  if ( t_1 ) {
@@ -1751,7 +2191,12 @@ static Obj  HdlrFunc20 (
   t_2 = GF_SupType2;
   C_ELM_LIST_FPL( t_3, a_arg, INTOBJ_INT(1) )
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(2) )
-  t_1 = CALL_2ARGS( t_2, t_3, t_4 );
+  if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+   t_1 = CALL_2ARGS( t_2, t_3, t_4 );
+  }
+  else {
+   t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4 ) );
+  }
   CHECK_FUNC_RESULT( t_1 );
   SWITCH_TO_OLD_FRAME(oldFrame);
   return t_1;
@@ -1766,7 +2211,12 @@ static Obj  HdlrFunc20 (
   C_ELM_LIST_FPL( t_3, a_arg, INTOBJ_INT(1) )
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(2) )
   C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(3) )
-  t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
+  if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+   t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
+  }
+  else {
+   t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5 ) );
+  }
   CHECK_FUNC_RESULT( t_1 );
   SWITCH_TO_OLD_FRAME(oldFrame);
   return t_1;
@@ -1886,9 +2336,19 @@ static Obj  HdlrFunc25 (
  /* return FlagsType( TypeObj( obj ) ); */
  t_2 = GF_FlagsType;
  t_4 = GF_TypeObj;
- t_3 = CALL_1ARGS( t_4, a_obj );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, a_obj );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_obj ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
- t_1 = CALL_1ARGS( t_2, t_3 );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_1ARGS( t_2, t_3 );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3 ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -1915,9 +2375,19 @@ static Obj  HdlrFunc26 (
  /* return DataType( TypeObj( obj ) ); */
  t_2 = GF_DataType;
  t_4 = GF_TypeObj;
- t_3 = CALL_1ARGS( t_4, a_obj );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, a_obj );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_obj ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
- t_1 = CALL_1ARGS( t_2, t_3 );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_1ARGS( t_2, t_3 );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3 ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -1946,7 +2416,12 @@ static Obj  HdlrFunc27 (
  
  /* if not IsType( type ) then */
  t_4 = GF_IsType;
- t_3 = CALL_1ARGS( t_4, a_type );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, a_type );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_type ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
  CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
@@ -1956,14 +2431,24 @@ static Obj  HdlrFunc27 (
   /* Error( "<type> must be a type" ); */
   t_1 = GF_Error;
   t_2 = MakeString( "<type> must be a type" );
-  CALL_1ARGS( t_1, t_2 );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_1ARGS( t_1, t_2 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  }
   
  }
  /* fi */
  
  /* if IS_LIST( obj ) then */
  t_3 = GF_IS__LIST;
- t_2 = CALL_1ARGS( t_3, a_obj );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_1ARGS( t_3, a_obj );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_obj ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
@@ -1971,14 +2456,24 @@ static Obj  HdlrFunc27 (
   
   /* SET_TYPE_POSOBJ( obj, type ); */
   t_1 = GF_SET__TYPE__POSOBJ;
-  CALL_2ARGS( t_1, a_obj, a_type );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_2ARGS( t_1, a_obj, a_type );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, a_type ) );
+  }
   
  }
  
  /* elif IS_REC( obj ) then */
  else {
   t_3 = GF_IS__REC;
-  t_2 = CALL_1ARGS( t_3, a_obj );
+  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+   t_2 = CALL_1ARGS( t_3, a_obj );
+  }
+  else {
+   t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_obj ) );
+  }
   CHECK_FUNC_RESULT( t_2 );
   CHECK_BOOL( t_2 );
   t_1 = (Obj)(UInt)(t_2 != False);
@@ -1986,7 +2481,12 @@ static Obj  HdlrFunc27 (
    
    /* SET_TYPE_COMOBJ( obj, type ); */
    t_1 = GF_SET__TYPE__COMOBJ;
-   CALL_2ARGS( t_1, a_obj, a_type );
+   if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+    CALL_2ARGS( t_1, a_obj, a_type );
+   }
+   else {
+    DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, a_type ) );
+   }
    
   }
  }
@@ -1994,7 +2494,12 @@ static Obj  HdlrFunc27 (
  
  /* if not IsNoImmediateMethodsObject( obj ) then */
  t_4 = GF_IsNoImmediateMethodsObject;
- t_3 = CALL_1ARGS( t_4, a_obj );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, a_obj );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_obj ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
  CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
@@ -2004,7 +2509,12 @@ static Obj  HdlrFunc27 (
   /* RunImmediateMethods( obj, type![2] ); */
   t_1 = GF_RunImmediateMethods;
   t_2 = ElmPosObj( a_type, 2 );
-  CALL_2ARGS( t_1, a_obj, t_2 );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_2ARGS( t_1, a_obj, t_2 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, t_2 ) );
+  }
   
  }
  /* fi */
@@ -2041,19 +2551,34 @@ static Obj  HdlrFunc28 (
  
  /* type := TYPE_OBJ( obj ); */
  t_2 = GF_TYPE__OBJ;
- t_1 = CALL_1ARGS( t_2, a_obj );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_1ARGS( t_2, a_obj );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( a_obj ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  l_type = t_1;
  
  /* newtype := Subtype2( type, filter ); */
  t_2 = GF_Subtype2;
- t_1 = CALL_2ARGS( t_2, l_type, a_filter );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_2ARGS( t_2, l_type, a_filter );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( l_type, a_filter ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  l_newtype = t_1;
  
  /* if IS_POSOBJ( obj ) then */
  t_3 = GF_IS__POSOBJ;
- t_2 = CALL_1ARGS( t_3, a_obj );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_1ARGS( t_3, a_obj );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_obj ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
@@ -2061,14 +2586,24 @@ static Obj  HdlrFunc28 (
   
   /* SET_TYPE_POSOBJ( obj, newtype ); */
   t_1 = GF_SET__TYPE__POSOBJ;
-  CALL_2ARGS( t_1, a_obj, l_newtype );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_2ARGS( t_1, a_obj, l_newtype );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, l_newtype ) );
+  }
   
  }
  
  /* elif IS_COMOBJ( obj ) then */
  else {
   t_3 = GF_IS__COMOBJ;
-  t_2 = CALL_1ARGS( t_3, a_obj );
+  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+   t_2 = CALL_1ARGS( t_3, a_obj );
+  }
+  else {
+   t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_obj ) );
+  }
   CHECK_FUNC_RESULT( t_2 );
   CHECK_BOOL( t_2 );
   t_1 = (Obj)(UInt)(t_2 != False);
@@ -2076,14 +2611,24 @@ static Obj  HdlrFunc28 (
    
    /* SET_TYPE_COMOBJ( obj, newtype ); */
    t_1 = GF_SET__TYPE__COMOBJ;
-   CALL_2ARGS( t_1, a_obj, l_newtype );
+   if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+    CALL_2ARGS( t_1, a_obj, l_newtype );
+   }
+   else {
+    DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, l_newtype ) );
+   }
    
   }
   
   /* elif IS_DATOBJ( obj ) then */
   else {
    t_3 = GF_IS__DATOBJ;
-   t_2 = CALL_1ARGS( t_3, a_obj );
+   if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+    t_2 = CALL_1ARGS( t_3, a_obj );
+   }
+   else {
+    t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_obj ) );
+   }
    CHECK_FUNC_RESULT( t_2 );
    CHECK_BOOL( t_2 );
    t_1 = (Obj)(UInt)(t_2 != False);
@@ -2091,7 +2636,12 @@ static Obj  HdlrFunc28 (
     
     /* SET_TYPE_DATOBJ( obj, newtype ); */
     t_1 = GF_SET__TYPE__DATOBJ;
-    CALL_2ARGS( t_1, a_obj, l_newtype );
+    if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+     CALL_2ARGS( t_1, a_obj, l_newtype );
+    }
+    else {
+     DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, l_newtype ) );
+    }
     
    }
    
@@ -2101,7 +2651,12 @@ static Obj  HdlrFunc28 (
     /* ErrorNoReturn( "cannot set filter for internal object" ); */
     t_1 = GF_ErrorNoReturn;
     t_2 = MakeString( "cannot set filter for internal object" );
-    CALL_1ARGS( t_1, t_2 );
+    if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+     CALL_1ARGS( t_1, t_2 );
+    }
+    else {
+     DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+    }
     
    }
   }
@@ -2116,7 +2671,12 @@ static Obj  HdlrFunc28 (
  t_2 = t_3;
  if ( ! t_2 ) {
   t_6 = GF_IsNoImmediateMethodsObject;
-  t_5 = CALL_1ARGS( t_6, a_obj );
+  if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+   t_5 = CALL_1ARGS( t_6, a_obj );
+  }
+  else {
+   t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( a_obj ) );
+  }
   CHECK_FUNC_RESULT( t_5 );
   CHECK_BOOL( t_5 );
   t_4 = (Obj)(UInt)(t_5 != False);
@@ -2130,9 +2690,19 @@ static Obj  HdlrFunc28 (
   t_3 = GF_SUB__FLAGS;
   t_4 = ElmPosObj( l_newtype, 2 );
   t_5 = ElmPosObj( l_type, 2 );
-  t_2 = CALL_2ARGS( t_3, t_4, t_5 );
+  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+   t_2 = CALL_2ARGS( t_3, t_4, t_5 );
+  }
+  else {
+   t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( t_4, t_5 ) );
+  }
   CHECK_FUNC_RESULT( t_2 );
-  CALL_2ARGS( t_1, a_obj, t_2 );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_2ARGS( t_1, a_obj, t_2 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, t_2 ) );
+  }
   
  }
  /* fi */
@@ -2164,7 +2734,12 @@ static Obj  HdlrFunc29 (
  
  /* if IS_AND_FILTER( filter ) then */
  t_3 = GF_IS__AND__FILTER;
- t_2 = CALL_1ARGS( t_3, a_filter );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_1ARGS( t_3, a_filter );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_filter ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
@@ -2173,14 +2748,24 @@ static Obj  HdlrFunc29 (
   /* Error( "You can't reset an \"and-filter\". Reset components individually." ); */
   t_1 = GF_Error;
   t_2 = MakeString( "You can't reset an \"and-filter\". Reset components individually." );
-  CALL_1ARGS( t_1, t_2 );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_1ARGS( t_1, t_2 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  }
   
  }
  /* fi */
  
  /* if IS_POSOBJ( obj ) then */
  t_3 = GF_IS__POSOBJ;
- t_2 = CALL_1ARGS( t_3, a_obj );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_1ARGS( t_3, a_obj );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_obj ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
@@ -2190,18 +2775,38 @@ static Obj  HdlrFunc29 (
   t_1 = GF_SET__TYPE__POSOBJ;
   t_3 = GF_SupType2;
   t_5 = GF_TYPE__OBJ;
-  t_4 = CALL_1ARGS( t_5, a_obj );
+  if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
+   t_4 = CALL_1ARGS( t_5, a_obj );
+  }
+  else {
+   t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( a_obj ) );
+  }
   CHECK_FUNC_RESULT( t_4 );
-  t_2 = CALL_2ARGS( t_3, t_4, a_filter );
+  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+   t_2 = CALL_2ARGS( t_3, t_4, a_filter );
+  }
+  else {
+   t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( t_4, a_filter ) );
+  }
   CHECK_FUNC_RESULT( t_2 );
-  CALL_2ARGS( t_1, a_obj, t_2 );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_2ARGS( t_1, a_obj, t_2 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, t_2 ) );
+  }
   
  }
  
  /* elif IS_COMOBJ( obj ) then */
  else {
   t_3 = GF_IS__COMOBJ;
-  t_2 = CALL_1ARGS( t_3, a_obj );
+  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+   t_2 = CALL_1ARGS( t_3, a_obj );
+  }
+  else {
+   t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_obj ) );
+  }
   CHECK_FUNC_RESULT( t_2 );
   CHECK_BOOL( t_2 );
   t_1 = (Obj)(UInt)(t_2 != False);
@@ -2211,18 +2816,38 @@ static Obj  HdlrFunc29 (
    t_1 = GF_SET__TYPE__COMOBJ;
    t_3 = GF_SupType2;
    t_5 = GF_TYPE__OBJ;
-   t_4 = CALL_1ARGS( t_5, a_obj );
+   if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
+    t_4 = CALL_1ARGS( t_5, a_obj );
+   }
+   else {
+    t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( a_obj ) );
+   }
    CHECK_FUNC_RESULT( t_4 );
-   t_2 = CALL_2ARGS( t_3, t_4, a_filter );
+   if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+    t_2 = CALL_2ARGS( t_3, t_4, a_filter );
+   }
+   else {
+    t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( t_4, a_filter ) );
+   }
    CHECK_FUNC_RESULT( t_2 );
-   CALL_2ARGS( t_1, a_obj, t_2 );
+   if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+    CALL_2ARGS( t_1, a_obj, t_2 );
+   }
+   else {
+    DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, t_2 ) );
+   }
    
   }
   
   /* elif IS_DATOBJ( obj ) then */
   else {
    t_3 = GF_IS__DATOBJ;
-   t_2 = CALL_1ARGS( t_3, a_obj );
+   if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+    t_2 = CALL_1ARGS( t_3, a_obj );
+   }
+   else {
+    t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_obj ) );
+   }
    CHECK_FUNC_RESULT( t_2 );
    CHECK_BOOL( t_2 );
    t_1 = (Obj)(UInt)(t_2 != False);
@@ -2232,11 +2857,26 @@ static Obj  HdlrFunc29 (
     t_1 = GF_SET__TYPE__DATOBJ;
     t_3 = GF_SupType2;
     t_5 = GF_TYPE__OBJ;
-    t_4 = CALL_1ARGS( t_5, a_obj );
+    if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
+     t_4 = CALL_1ARGS( t_5, a_obj );
+    }
+    else {
+     t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( a_obj ) );
+    }
     CHECK_FUNC_RESULT( t_4 );
-    t_2 = CALL_2ARGS( t_3, t_4, a_filter );
+    if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+     t_2 = CALL_2ARGS( t_3, t_4, a_filter );
+    }
+    else {
+     t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( t_4, a_filter ) );
+    }
     CHECK_FUNC_RESULT( t_2 );
-    CALL_2ARGS( t_1, a_obj, t_2 );
+    if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+     CALL_2ARGS( t_1, a_obj, t_2 );
+    }
+    else {
+     DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, t_2 ) );
+    }
     
    }
    
@@ -2246,7 +2886,12 @@ static Obj  HdlrFunc29 (
     /* Error( "cannot reset filter for internal object" ); */
     t_1 = GF_Error;
     t_2 = MakeString( "cannot reset filter for internal object" );
-    CALL_1ARGS( t_1, t_2 );
+    if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+     CALL_1ARGS( t_1, t_2 );
+    }
+    else {
+     DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+    }
     
    }
   }
@@ -2309,7 +2954,12 @@ static Obj  HdlrFunc30 (
  
  /* flags := FlagsType( type ); */
  t_2 = GF_FlagsType;
- t_1 = CALL_1ARGS( t_2, l_type );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_1ARGS( t_2, l_type );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( l_type ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  l_flags = t_1;
  
@@ -2322,7 +2972,12 @@ static Obj  HdlrFunc30 (
  t_4 = GF_IS__SUBSET__FLAGS;
  t_5 = GC_IsAttributeStoringRepFlags;
  CHECK_BOUND( t_5, "IsAttributeStoringRepFlags" );
- t_3 = CALL_2ARGS( t_4, l_flags, t_5 );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_2ARGS( t_4, l_flags, t_5 );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( l_flags, t_5 ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
  CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
@@ -2331,7 +2986,12 @@ static Obj  HdlrFunc30 (
   
   /* extra := arg{[ 3 .. LEN_LIST( arg ) ]}; */
   t_4 = GF_LEN__LIST;
-  t_3 = CALL_1ARGS( t_4, a_arg );
+  if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+   t_3 = CALL_1ARGS( t_4, a_arg );
+  }
+  else {
+   t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_arg ) );
+  }
   CHECK_FUNC_RESULT( t_3 );
   t_2 = Range2Check( INTOBJ_INT(3), t_3 );
   t_1 = ElmsListCheck( a_arg, t_2 );
@@ -2341,11 +3001,21 @@ static Obj  HdlrFunc30 (
   t_1 = GF_INFO__OWA;
   t_2 = MakeString( "#W ObjectifyWithAttributes called " );
   t_3 = MakeString( "for non-attribute storing rep\n" );
-  CALL_2ARGS( t_1, t_2, t_3 );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_2ARGS( t_1, t_2, t_3 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  }
   
   /* Objectify( type, obj ); */
   t_1 = GF_Objectify;
-  CALL_2ARGS( t_1, l_type, l_obj );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_2ARGS( t_1, l_type, l_obj );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_type, l_obj ) );
+  }
   
  }
  
@@ -2359,7 +3029,12 @@ static Obj  HdlrFunc30 (
   
   /* for i in [ 3, 5 .. LEN_LIST( arg ) - 1 ] do */
   t_7 = GF_LEN__LIST;
-  t_6 = CALL_1ARGS( t_7, a_arg );
+  if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+   t_6 = CALL_1ARGS( t_7, a_arg );
+  }
+  else {
+   t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( a_arg ) );
+  }
   CHECK_FUNC_RESULT( t_6 );
   C_DIFF_FIA( t_5, t_6, INTOBJ_INT(1) )
   t_4 = Range3Check( INTOBJ_INT(3), INTOBJ_INT(5), t_5 );
@@ -2397,7 +3072,12 @@ static Obj  HdlrFunc30 (
    
    /* if 0 <> FLAG1_FILTER( attr ) then */
    t_7 = GF_FLAG1__FILTER;
-   t_6 = CALL_1ARGS( t_7, l_attr );
+   if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+    t_6 = CALL_1ARGS( t_7, l_attr );
+   }
+   else {
+    t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( l_attr ) );
+   }
    CHECK_FUNC_RESULT( t_6 );
    t_5 = (Obj)(UInt)( ! EQ( INTOBJ_INT(0), t_6 ));
    if ( t_5 ) {
@@ -2410,9 +3090,19 @@ static Obj  HdlrFunc30 (
      /* nflags := AND_FLAGS( nflags, FLAGS_FILTER( attr ) ); */
      t_6 = GF_AND__FLAGS;
      t_8 = GF_FLAGS__FILTER;
-     t_7 = CALL_1ARGS( t_8, l_attr );
+     if ( TNUM_OBJ( t_8 ) == T_FUNCTION ) {
+      t_7 = CALL_1ARGS( t_8, l_attr );
+     }
+     else {
+      t_7 = DoOperation2Args( CallFuncListOper, t_8, NewPlistFromArgs( l_attr ) );
+     }
      CHECK_FUNC_RESULT( t_7 );
-     t_5 = CALL_2ARGS( t_6, l_nflags, t_7 );
+     if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+      t_5 = CALL_2ARGS( t_6, l_nflags, t_7 );
+     }
+     else {
+      t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( l_nflags, t_7 ) );
+     }
      CHECK_FUNC_RESULT( t_5 );
      l_nflags = t_5;
      
@@ -2425,11 +3115,26 @@ static Obj  HdlrFunc30 (
      t_6 = GF_AND__FLAGS;
      t_8 = GF_FLAGS__FILTER;
      t_10 = GF_Tester;
-     t_9 = CALL_1ARGS( t_10, l_attr );
+     if ( TNUM_OBJ( t_10 ) == T_FUNCTION ) {
+      t_9 = CALL_1ARGS( t_10, l_attr );
+     }
+     else {
+      t_9 = DoOperation2Args( CallFuncListOper, t_10, NewPlistFromArgs( l_attr ) );
+     }
      CHECK_FUNC_RESULT( t_9 );
-     t_7 = CALL_1ARGS( t_8, t_9 );
+     if ( TNUM_OBJ( t_8 ) == T_FUNCTION ) {
+      t_7 = CALL_1ARGS( t_8, t_9 );
+     }
+     else {
+      t_7 = DoOperation2Args( CallFuncListOper, t_8, NewPlistFromArgs( t_9 ) );
+     }
      CHECK_FUNC_RESULT( t_7 );
-     t_5 = CALL_2ARGS( t_6, l_nflags, t_7 );
+     if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+      t_5 = CALL_2ARGS( t_6, l_nflags, t_7 );
+     }
+     else {
+      t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( l_nflags, t_7 ) );
+     }
      CHECK_FUNC_RESULT( t_5 );
      l_nflags = t_5;
      
@@ -2443,11 +3148,26 @@ static Obj  HdlrFunc30 (
     t_7 = GF_LEN__LIST;
     t_9 = GF_METHODS__OPERATION;
     t_11 = GF_Setter;
-    t_10 = CALL_1ARGS( t_11, l_attr );
+    if ( TNUM_OBJ( t_11 ) == T_FUNCTION ) {
+     t_10 = CALL_1ARGS( t_11, l_attr );
+    }
+    else {
+     t_10 = DoOperation2Args( CallFuncListOper, t_11, NewPlistFromArgs( l_attr ) );
+    }
     CHECK_FUNC_RESULT( t_10 );
-    t_8 = CALL_2ARGS( t_9, t_10, INTOBJ_INT(2) );
+    if ( TNUM_OBJ( t_9 ) == T_FUNCTION ) {
+     t_8 = CALL_2ARGS( t_9, t_10, INTOBJ_INT(2) );
+    }
+    else {
+     t_8 = DoOperation2Args( CallFuncListOper, t_9, NewPlistFromArgs( t_10, INTOBJ_INT(2) ) );
+    }
     CHECK_FUNC_RESULT( t_8 );
-    t_6 = CALL_1ARGS( t_7, t_8 );
+    if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+     t_6 = CALL_1ARGS( t_7, t_8 );
+    }
+    else {
+     t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( t_8 ) );
+    }
     CHECK_FUNC_RESULT( t_6 );
     t_7 = GC_LENGTH__SETTER__METHODS__2;
     CHECK_BOUND( t_7, "LENGTH_SETTER_METHODS_2" );
@@ -2456,11 +3176,21 @@ static Obj  HdlrFunc30 (
      
      /* ADD_LIST( extra, attr ); */
      t_5 = GF_ADD__LIST;
-     CALL_2ARGS( t_5, l_extra, l_attr );
+     if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
+      CALL_2ARGS( t_5, l_extra, l_attr );
+     }
+     else {
+      DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( l_extra, l_attr ) );
+     }
      
      /* ADD_LIST( extra, val ); */
      t_5 = GF_ADD__LIST;
-     CALL_2ARGS( t_5, l_extra, l_val );
+     if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
+      CALL_2ARGS( t_5, l_extra, l_val );
+     }
+     else {
+      DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( l_extra, l_val ) );
+     }
      
     }
     
@@ -2469,10 +3199,20 @@ static Obj  HdlrFunc30 (
      
      /* obj.(NAME_FUNC( attr )) := IMMUTABLE_COPY_OBJ( val ); */
      t_6 = GF_NAME__FUNC;
-     t_5 = CALL_1ARGS( t_6, l_attr );
+     if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+      t_5 = CALL_1ARGS( t_6, l_attr );
+     }
+     else {
+      t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( l_attr ) );
+     }
      CHECK_FUNC_RESULT( t_5 );
      t_7 = GF_IMMUTABLE__COPY__OBJ;
-     t_6 = CALL_1ARGS( t_7, l_val );
+     if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+      t_6 = CALL_1ARGS( t_7, l_val );
+     }
+     else {
+      t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( l_val ) );
+     }
      CHECK_FUNC_RESULT( t_6 );
      ASS_REC( l_obj, RNamObj(t_5), t_6 );
      
@@ -2480,11 +3220,26 @@ static Obj  HdlrFunc30 (
      t_6 = GF_AND__FLAGS;
      t_8 = GF_FLAGS__FILTER;
      t_10 = GF_Tester;
-     t_9 = CALL_1ARGS( t_10, l_attr );
+     if ( TNUM_OBJ( t_10 ) == T_FUNCTION ) {
+      t_9 = CALL_1ARGS( t_10, l_attr );
+     }
+     else {
+      t_9 = DoOperation2Args( CallFuncListOper, t_10, NewPlistFromArgs( l_attr ) );
+     }
      CHECK_FUNC_RESULT( t_9 );
-     t_7 = CALL_1ARGS( t_8, t_9 );
+     if ( TNUM_OBJ( t_8 ) == T_FUNCTION ) {
+      t_7 = CALL_1ARGS( t_8, t_9 );
+     }
+     else {
+      t_7 = DoOperation2Args( CallFuncListOper, t_8, NewPlistFromArgs( t_9 ) );
+     }
      CHECK_FUNC_RESULT( t_7 );
-     t_5 = CALL_2ARGS( t_6, l_nflags, t_7 );
+     if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+      t_5 = CALL_2ARGS( t_6, l_nflags, t_7 );
+     }
+     else {
+      t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( l_nflags, t_7 ) );
+     }
      CHECK_FUNC_RESULT( t_5 );
      l_nflags = t_5;
      
@@ -2497,7 +3252,12 @@ static Obj  HdlrFunc30 (
   
   /* if not IS_SUBSET_FLAGS( flags, nflags ) then */
   t_4 = GF_IS__SUBSET__FLAGS;
-  t_3 = CALL_2ARGS( t_4, l_flags, l_nflags );
+  if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+   t_3 = CALL_2ARGS( t_4, l_flags, l_nflags );
+  }
+  else {
+   t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( l_flags, l_nflags ) );
+  }
   CHECK_FUNC_RESULT( t_3 );
   CHECK_BOOL( t_3 );
   t_2 = (Obj)(UInt)(t_3 != False);
@@ -2507,9 +3267,19 @@ static Obj  HdlrFunc30 (
    /* flags := WITH_IMPS_FLAGS( AND_FLAGS( flags, nflags ) ); */
    t_2 = GF_WITH__IMPS__FLAGS;
    t_4 = GF_AND__FLAGS;
-   t_3 = CALL_2ARGS( t_4, l_flags, l_nflags );
+   if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+    t_3 = CALL_2ARGS( t_4, l_flags, l_nflags );
+   }
+   else {
+    t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( l_flags, l_nflags ) );
+   }
    CHECK_FUNC_RESULT( t_3 );
-   t_1 = CALL_1ARGS( t_2, t_3 );
+   if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+    t_1 = CALL_1ARGS( t_2, t_3 );
+   }
+   else {
+    t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3 ) );
+   }
    CHECK_FUNC_RESULT( t_1 );
    l_flags = t_1;
    
@@ -2519,16 +3289,36 @@ static Obj  HdlrFunc30 (
    t_4 = GC_TypeOfTypes;
    CHECK_BOUND( t_4, "TypeOfTypes" );
    t_6 = GF_FamilyType;
-   t_5 = CALL_1ARGS( t_6, l_type );
+   if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+    t_5 = CALL_1ARGS( t_6, l_type );
+   }
+   else {
+    t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( l_type ) );
+   }
    CHECK_FUNC_RESULT( t_5 );
    t_7 = GF_DataType;
-   t_6 = CALL_1ARGS( t_7, l_type );
+   if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+    t_6 = CALL_1ARGS( t_7, l_type );
+   }
+   else {
+    t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( l_type ) );
+   }
    CHECK_FUNC_RESULT( t_6 );
    t_7 = GC_fail;
    CHECK_BOUND( t_7, "fail" );
-   t_2 = CALL_5ARGS( t_3, t_4, t_5, l_flags, t_6, t_7 );
+   if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+    t_2 = CALL_5ARGS( t_3, t_4, t_5, l_flags, t_6, t_7 );
+   }
+   else {
+    t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( t_4, t_5, l_flags, t_6, t_7 ) );
+   }
    CHECK_FUNC_RESULT( t_2 );
-   CALL_2ARGS( t_1, t_2, l_obj );
+   if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+    CALL_2ARGS( t_1, t_2, l_obj );
+   }
+   else {
+    DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, l_obj ) );
+   }
    
   }
   
@@ -2537,7 +3327,12 @@ static Obj  HdlrFunc30 (
    
    /* Objectify( type, obj ); */
    t_1 = GF_Objectify;
-   CALL_2ARGS( t_1, l_type, l_obj );
+   if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+    CALL_2ARGS( t_1, l_type, l_obj );
+   }
+   else {
+    DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_type, l_obj ) );
+   }
    
   }
   /* fi */
@@ -2547,7 +3342,12 @@ static Obj  HdlrFunc30 (
  
  /* for i in [ 1, 3 .. LEN_LIST( extra ) - 1 ] do */
  t_7 = GF_LEN__LIST;
- t_6 = CALL_1ARGS( t_7, l_extra );
+ if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+  t_6 = CALL_1ARGS( t_7, l_extra );
+ }
+ else {
+  t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( l_extra ) );
+ }
  CHECK_FUNC_RESULT( t_6 );
  C_DIFF_FIA( t_5, t_6, INTOBJ_INT(1) )
  t_4 = Range3Check( INTOBJ_INT(1), INTOBJ_INT(3), t_5 );
@@ -2576,10 +3376,19 @@ static Obj  HdlrFunc30 (
   t_8 = GF_Tester;
   CHECK_INT_POS( l_i );
   C_ELM_LIST_FPL( t_9, l_extra, l_i )
-  t_7 = CALL_1ARGS( t_8, t_9 );
+  if ( TNUM_OBJ( t_8 ) == T_FUNCTION ) {
+   t_7 = CALL_1ARGS( t_8, t_9 );
+  }
+  else {
+   t_7 = DoOperation2Args( CallFuncListOper, t_8, NewPlistFromArgs( t_9 ) );
+  }
   CHECK_FUNC_RESULT( t_7 );
-  CHECK_FUNC( t_7 );
-  t_6 = CALL_1ARGS( t_7, l_obj );
+  if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+   t_6 = CALL_1ARGS( t_7, l_obj );
+  }
+  else {
+   t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( l_obj ) );
+  }
   CHECK_FUNC_RESULT( t_6 );
   CHECK_BOOL( t_6 );
   t_5 = (Obj)(UInt)(t_6 != False);
@@ -2590,18 +3399,38 @@ static Obj  HdlrFunc30 (
    t_6 = MakeString( "#W  Supplied type has tester of " );
    t_8 = GF_NAME__FUNC;
    C_ELM_LIST_FPL( t_9, l_extra, l_i )
-   t_7 = CALL_1ARGS( t_8, t_9 );
+   if ( TNUM_OBJ( t_8 ) == T_FUNCTION ) {
+    t_7 = CALL_1ARGS( t_8, t_9 );
+   }
+   else {
+    t_7 = DoOperation2Args( CallFuncListOper, t_8, NewPlistFromArgs( t_9 ) );
+   }
    CHECK_FUNC_RESULT( t_7 );
    t_8 = MakeString( "with non-standard setter\n" );
-   CALL_3ARGS( t_5, t_6, t_7, t_8 );
+   if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
+    CALL_3ARGS( t_5, t_6, t_7, t_8 );
+   }
+   else {
+    DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( t_6, t_7, t_8 ) );
+   }
    
    /* ResetFilterObj( obj, Tester( extra[i] ) ); */
    t_5 = GF_ResetFilterObj;
    t_7 = GF_Tester;
    C_ELM_LIST_FPL( t_8, l_extra, l_i )
-   t_6 = CALL_1ARGS( t_7, t_8 );
+   if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+    t_6 = CALL_1ARGS( t_7, t_8 );
+   }
+   else {
+    t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( t_8 ) );
+   }
    CHECK_FUNC_RESULT( t_6 );
-   CALL_2ARGS( t_5, l_obj, t_6 );
+   if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
+    CALL_2ARGS( t_5, l_obj, t_6 );
+   }
+   else {
+    DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( l_obj, t_6 ) );
+   }
    
   }
   /* fi */
@@ -2609,13 +3438,22 @@ static Obj  HdlrFunc30 (
   /* Setter( extra[i] )( obj, extra[i + 1] ); */
   t_6 = GF_Setter;
   C_ELM_LIST_FPL( t_7, l_extra, l_i )
-  t_5 = CALL_1ARGS( t_6, t_7 );
+  if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+   t_5 = CALL_1ARGS( t_6, t_7 );
+  }
+  else {
+   t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7 ) );
+  }
   CHECK_FUNC_RESULT( t_5 );
-  CHECK_FUNC( t_5 );
   C_SUM_FIA( t_7, l_i, INTOBJ_INT(1) )
   CHECK_INT_POS( t_7 );
   C_ELM_LIST_FPL( t_6, l_extra, t_7 )
-  CALL_2ARGS( t_5, l_obj, t_6 );
+  if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
+   CALL_2ARGS( t_5, l_obj, t_6 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( l_obj, t_6 ) );
+  }
   
  }
  /* od */
@@ -2655,7 +3493,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_3, 27);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CALL_1ARGS( t_1, t_2 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_1ARGS( t_1, t_2 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+ }
  
  /* LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + (6 + 2); */
  t_2 = GC_LENGTH__SETTER__METHODS__2;
@@ -2684,7 +3527,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_3, 53);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CALL_1ARGS( t_1, t_2 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_1ARGS( t_1, t_2 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+ }
  
  /* Subtype := "defined below"; */
  t_1 = MakeString( "defined below" );
@@ -2723,7 +3571,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 143);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "NewFamily2", function ( typeOfFamilies, name )
       return NEW_FAMILY( typeOfFamilies, name, EMPTY_FLAGS, EMPTY_FLAGS );
@@ -2737,7 +3590,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 151);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "NewFamily3", function ( typeOfFamilies, name, req )
       return NEW_FAMILY( typeOfFamilies, name, FLAGS_FILTER( req ), EMPTY_FLAGS );
@@ -2751,7 +3609,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 159);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "NewFamily4", function ( typeOfFamilies, name, req, imp )
       return NEW_FAMILY( typeOfFamilies, name, FLAGS_FILTER( req ), FLAGS_FILTER( imp ) );
@@ -2765,7 +3628,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 167);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "NewFamily5", function ( typeOfFamilies, name, req, imp, filter )
       return NEW_FAMILY( Subtype( typeOfFamilies, filter ), name, FLAGS_FILTER( req ), FLAGS_FILTER( imp ) );
@@ -2779,7 +3647,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 176);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "NewFamily", function ( arg... )
       if LEN_LIST( arg ) = 1 then
@@ -2804,7 +3677,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 202);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* NEW_TYPE_CACHE_MISS := 0; */
  AssGVar( G_NEW__TYPE__CACHE__MISS, INTOBJ_INT(0) );
@@ -2902,7 +3780,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 347);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "NewType3", function ( typeOfTypes, family, filter )
       return NEW_TYPE( typeOfTypes, family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), fail, fail );
@@ -2916,7 +3799,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 358);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "NewType4", function ( typeOfTypes, family, filter, data )
       return NEW_TYPE( typeOfTypes, family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), data, fail );
@@ -2930,7 +3818,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 368);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "NewType", function ( arg... )
       local type;
@@ -2955,7 +3848,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 395);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "Subtype2", function ( type, filter )
       return NEW_TYPE( TypeOfTypes, type![1], WITH_IMPS_FLAGS( AND_FLAGS( type![2], FLAGS_FILTER( filter ) ) ), type![3], type );
@@ -2969,7 +3867,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 415);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "Subtype3", function ( type, filter, data )
       return NEW_TYPE( TypeOfTypes, type![1], WITH_IMPS_FLAGS( AND_FLAGS( type![2], FLAGS_FILTER( filter ) ) ), data, type );
@@ -2983,7 +3886,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 425);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* Unbind( Subtype ); */
  AssGVar( G_Subtype, 0 );
@@ -3011,7 +3919,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 451);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "SupType2", function ( type, filter )
       return NEW_TYPE( TypeOfTypes, type![1], SUB_FLAGS( type![2], FLAGS_FILTER( filter ) ), type![3], type );
@@ -3025,7 +3938,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 472);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "SupType3", function ( type, filter, data )
       return NEW_TYPE( TypeOfTypes, type![1], SUB_FLAGS( type![2], FLAGS_FILTER( filter ) ), data, type );
@@ -3039,7 +3957,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 482);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "SupType", function ( arg... )
       if not IsType( arg[1] ) then
@@ -3061,7 +3984,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 499);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "FamilyType", function ( K )
       return K![1];
@@ -3075,7 +4003,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 513);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "FlagsType", function ( K )
       return K![2];
@@ -3089,7 +4022,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 527);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "DataType", function ( K )
       return K![3];
@@ -3103,7 +4041,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 543);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "SetDataType", function ( K, data )
       K![3] := data;
@@ -3118,21 +4061,36 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 551);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "TypeObj", TYPE_OBJ ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "TypeObj" );
  t_3 = GC_TYPE__OBJ;
  CHECK_BOUND( t_3, "TYPE_OBJ" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "FamilyObj", FAMILY_OBJ ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "FamilyObj" );
  t_3 = GC_FAMILY__OBJ;
  CHECK_BOUND( t_3, "FAMILY_OBJ" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "FlagsObj", function ( obj )
       return FlagsType( TypeObj( obj ) );
@@ -3146,7 +4104,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 650);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "DataObj", function ( obj )
       return DataType( TypeObj( obj ) );
@@ -3160,7 +4123,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 664);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "IsNonAtomicComponentObjectRepFlags", FLAGS_FILTER( IsNonAtomicComponentObjectRep ) ); */
  t_1 = GF_BIND__GLOBAL;
@@ -3168,9 +4136,19 @@ static Obj  HdlrFunc1 (
  t_4 = GF_FLAGS__FILTER;
  t_5 = GC_IsNonAtomicComponentObjectRep;
  CHECK_BOUND( t_5, "IsNonAtomicComponentObjectRep" );
- t_3 = CALL_1ARGS( t_4, t_5 );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, t_5 );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "IsAtomicPositionalObjectRepFlags", FLAGS_FILTER( IsAtomicPositionalObjectRep ) ); */
  t_1 = GF_BIND__GLOBAL;
@@ -3178,9 +4156,19 @@ static Obj  HdlrFunc1 (
  t_4 = GF_FLAGS__FILTER;
  t_5 = GC_IsAtomicPositionalObjectRep;
  CHECK_BOUND( t_5, "IsAtomicPositionalObjectRep" );
- t_3 = CALL_1ARGS( t_4, t_5 );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, t_5 );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "IsReadOnlyPositionalObjectRepFlags", FLAGS_FILTER( IsReadOnlyPositionalObjectRep ) ); */
  t_1 = GF_BIND__GLOBAL;
@@ -3188,9 +4176,19 @@ static Obj  HdlrFunc1 (
  t_4 = GF_FLAGS__FILTER;
  t_5 = GC_IsReadOnlyPositionalObjectRep;
  CHECK_BOUND( t_5, "IsReadOnlyPositionalObjectRep" );
- t_3 = CALL_1ARGS( t_4, t_5 );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, t_5 );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "Objectify", function ( type, obj )
       local flags;
@@ -3218,7 +4216,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 720);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* Unbind( SetFilterObj ); */
  AssGVar( G_SetFilterObj, 0 );
@@ -3250,14 +4253,24 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 762);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "SET_FILTER_OBJ", SetFilterObj ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SET_FILTER_OBJ" );
  t_3 = GC_SetFilterObj;
  CHECK_BOUND( t_3, "SetFilterObj" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "ResetFilterObj", function ( obj, filter )
       if IS_AND_FILTER( filter ) then
@@ -3283,14 +4296,24 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 798);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "RESET_FILTER_OBJ", ResetFilterObj ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "RESET_FILTER_OBJ" );
  t_3 = GC_ResetFilterObj;
  CHECK_BOUND( t_3, "ResetFilterObj" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "IsAttributeStoringRepFlags", FLAGS_FILTER( IsAttributeStoringRep ) ); */
  t_1 = GF_BIND__GLOBAL;
@@ -3298,21 +4321,41 @@ static Obj  HdlrFunc1 (
  t_4 = GF_FLAGS__FILTER;
  t_5 = GC_IsAttributeStoringRep;
  CHECK_BOUND( t_5, "IsAttributeStoringRep" );
- t_3 = CALL_1ARGS( t_4, t_5 );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, t_5 );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
+ }
  CHECK_FUNC_RESULT( t_3 );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BIND_GLOBAL( "INFO_OWA", Ignore ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "INFO_OWA" );
  t_3 = GC_Ignore;
  CHECK_BOUND( t_3, "Ignore" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* MAKE_READ_WRITE_GLOBAL( "INFO_OWA" ); */
  t_1 = GF_MAKE__READ__WRITE__GLOBAL;
  t_2 = MakeString( "INFO_OWA" );
- CALL_1ARGS( t_1, t_2 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_1ARGS( t_1, t_2 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+ }
  
  /* BIND_GLOBAL( "ObjectifyWithAttributes", function ( arg... )
       local obj, type, flags, attr, val, i, extra, nflags;
@@ -3368,7 +4411,12 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_4, 914);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);

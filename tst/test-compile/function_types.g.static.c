@@ -41,7 +41,12 @@ static Obj  HdlrFunc2 (
  t_1 = GF_Print;
  t_2 = MakeString( "f1:" );
  t_3 = MakeString( "\n" );
- CALL_3ARGS( t_1, t_2, a_a, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_3ARGS( t_1, t_2, a_a, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, a_a, t_3 ) );
+ }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -72,7 +77,12 @@ static Obj  HdlrFunc3 (
  t_2 = MakeString( "f2:" );
  t_3 = MakeString( ":" );
  t_4 = MakeString( "\n" );
- CALL_5ARGS( t_1, t_2, a_a, t_3, a_b, t_4 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_5ARGS( t_1, t_2, a_a, t_3, a_b, t_4 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, a_a, t_3, a_b, t_4 ) );
+ }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -100,7 +110,12 @@ static Obj  HdlrFunc4 (
  t_1 = GF_Print;
  t_2 = MakeString( "f3:" );
  t_3 = MakeString( "\n" );
- CALL_3ARGS( t_1, t_2, a_a, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_3ARGS( t_1, t_2, a_a, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, a_a, t_3 ) );
+ }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -136,7 +151,12 @@ static Obj  HdlrFunc5 (
  t_2 = MakeString( "f4:" );
  t_3 = MakeString( ":" );
  t_4 = MakeString( "\n" );
- CALL_5ARGS( t_1, t_2, a_a, t_3, a_b, t_4 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_5ARGS( t_1, t_2, a_a, t_3, a_b, t_4 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, a_a, t_3, a_b, t_4 ) );
+ }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -160,7 +180,12 @@ static Obj  HdlrFunc7 (
  
  /* return f1(  ); */
  t_2 = GF_f1;
- t_1 = CALL_0ARGS( t_2 );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_0ARGS( t_2 );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -183,7 +208,12 @@ static Obj  HdlrFunc8 (
  
  /* return f1( 1, 2 ); */
  t_2 = GF_f1;
- t_1 = CALL_2ARGS( t_2, INTOBJ_INT(1), INTOBJ_INT(2) );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_2ARGS( t_2, INTOBJ_INT(1), INTOBJ_INT(2) );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2) ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -206,7 +236,12 @@ static Obj  HdlrFunc9 (
  
  /* return f2( 1, 2, 3 ); */
  t_2 = GF_f2;
- t_1 = CALL_3ARGS( t_2, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_3ARGS( t_2, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -229,7 +264,12 @@ static Obj  HdlrFunc10 (
  
  /* return f4(  ); */
  t_2 = GF_f4;
- t_1 = CALL_0ARGS( t_2 );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_0ARGS( t_2 );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( ) );
+ }
  CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -253,35 +293,75 @@ static Obj  HdlrFunc6 (
  
  /* f1( 2 ); */
  t_1 = GF_f1;
- CALL_1ARGS( t_1, INTOBJ_INT(2) );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_1ARGS( t_1, INTOBJ_INT(2) );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( INTOBJ_INT(2) ) );
+ }
  
  /* f2( 2, 3 ); */
  t_1 = GF_f2;
- CALL_2ARGS( t_1, INTOBJ_INT(2), INTOBJ_INT(3) );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, INTOBJ_INT(2), INTOBJ_INT(3) );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( INTOBJ_INT(2), INTOBJ_INT(3) ) );
+ }
  
  /* f3(  ); */
  t_1 = GF_f3;
- CALL_0ARGS( t_1 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_0ARGS( t_1 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( ) );
+ }
  
  /* f3( 2 ); */
  t_1 = GF_f3;
- CALL_1ARGS( t_1, INTOBJ_INT(2) );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_1ARGS( t_1, INTOBJ_INT(2) );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( INTOBJ_INT(2) ) );
+ }
  
  /* f3( 2, 3, 4 ); */
  t_1 = GF_f3;
- CALL_3ARGS( t_1, INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4) );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_3ARGS( t_1, INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4) );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4) ) );
+ }
  
  /* f4( 1 ); */
  t_1 = GF_f4;
- CALL_1ARGS( t_1, INTOBJ_INT(1) );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_1ARGS( t_1, INTOBJ_INT(1) );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( INTOBJ_INT(1) ) );
+ }
  
  /* f4( 1, 2 ); */
  t_1 = GF_f4;
- CALL_2ARGS( t_1, INTOBJ_INT(1), INTOBJ_INT(2) );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, INTOBJ_INT(1), INTOBJ_INT(2) );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2) ) );
+ }
  
  /* f4( 1, 2, 3 ); */
  t_1 = GF_f4;
- CALL_3ARGS( t_1, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_3ARGS( t_1, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) ) );
+ }
  
  /* BreakOnError := false; */
  t_1 = False;
@@ -300,7 +380,12 @@ static Obj  HdlrFunc6 (
  SET_BODY_FUNC(t_2, t_3);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* CALL_WITH_CATCH( function (  )
       return f1( 1, 2 );
@@ -315,7 +400,12 @@ static Obj  HdlrFunc6 (
  SET_BODY_FUNC(t_2, t_3);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* CALL_WITH_CATCH( function (  )
       return f2( 1, 2, 3 );
@@ -330,7 +420,12 @@ static Obj  HdlrFunc6 (
  SET_BODY_FUNC(t_2, t_3);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* CALL_WITH_CATCH( function (  )
       return f4(  );
@@ -345,7 +440,12 @@ static Obj  HdlrFunc6 (
  SET_BODY_FUNC(t_2, t_3);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);

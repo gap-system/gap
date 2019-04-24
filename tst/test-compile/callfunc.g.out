@@ -1,0 +1,51 @@
+test with a regular function
+p0
+p1
+p7
+f0
+true
+f1
+true
+f7
+true
+test with a custom function
+p0
+p1
+p7
+f0
+[  ]
+f1
+[ 1 ]
+f7
+[ 1, 2, 3, 4, 5, 6, 7 ]
+test with a non-function
+p0
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments
+The 1st argument is 'fail' which might point to an earlier problem
+
+p1
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments
+The 1st argument is 'fail' which might point to an earlier problem
+
+p7
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments
+The 1st argument is 'fail' which might point to an earlier problem
+
+f0
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments
+The 1st argument is 'fail' which might point to an earlier problem
+
+f1
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments
+The 1st argument is 'fail' which might point to an earlier problem
+
+f7
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `CallFuncList' on 2 arguments
+The 1st argument is 'fail' which might point to an earlier problem
+

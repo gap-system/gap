@@ -266,7 +266,12 @@ static Obj  HdlrFunc2 (
   "must be 'true' or 'false' or a filter" );
  }
  t_3 = MakeString( "\n" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* Print( true or 1, "\n" ); */
  t_1 = GF_Print;
@@ -279,7 +284,12 @@ static Obj  HdlrFunc2 (
   t_2 = (t_4 ? True : False);
  }
  t_3 = MakeString( "\n" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* Print( function (  )
         return false and 1;
@@ -292,10 +302,20 @@ static Obj  HdlrFunc2 (
  SET_ENDLINE_BODY(t_4, 5);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- t_2 = CALL_0ARGS( t_3 );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_0ARGS( t_3 );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* Print( function (  )
         return true or 1;
@@ -308,10 +328,20 @@ static Obj  HdlrFunc2 (
  SET_ENDLINE_BODY(t_4, 6);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- t_2 = CALL_0ARGS( t_3 );
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_0ARGS( t_3 );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( ) );
+ }
  CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* Print( IsAssociative and IsAssociative, "\n" ); */
  t_1 = GF_Print;
@@ -336,7 +366,12 @@ static Obj  HdlrFunc2 (
   "must be 'true' or 'false' or a filter" );
  }
  t_3 = MakeString( "\n" );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* BreakOnError := false; */
  t_1 = False;
@@ -355,7 +390,12 @@ static Obj  HdlrFunc2 (
  SET_BODY_FUNC(t_2, t_3);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* CALL_WITH_CATCH( function (  )
       return IsAssociative and Center;
@@ -370,7 +410,12 @@ static Obj  HdlrFunc2 (
  SET_BODY_FUNC(t_2, t_3);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* CALL_WITH_CATCH( function (  )
       return 1 and false;
@@ -385,7 +430,12 @@ static Obj  HdlrFunc2 (
  SET_BODY_FUNC(t_2, t_3);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* CALL_WITH_CATCH( function (  )
       return 1 or true;
@@ -400,7 +450,12 @@ static Obj  HdlrFunc2 (
  SET_BODY_FUNC(t_2, t_3);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
- CALL_2ARGS( t_1, t_2, t_3 );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
